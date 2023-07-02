@@ -26,7 +26,7 @@ Here is an example of a user-land program containing one policy bound to the var
 
 ## print, user-land program
 ```λ-calculus
-print "hello\sworld"
+print "hello\x20world"
 ```
 
 ## print, policy definition
