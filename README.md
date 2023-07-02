@@ -12,3 +12,6 @@ This programming language implements the `eval-soft` and `eval-hard` functions o
 If you want to fully understand or extend L1's core type system then this is the place to start.
 Necessarily the L1 bootstrap does not utilize the `eval-*` functions at the type level.
 The bootstrap itself should hopefully be fairly legible, but things start to get quirky after that.
+
+`eval-soft` and `eval-hard` are both *exactly equivalent* to well-defined reductions of lambda-calculus terms.
+When possible we recommend checking equivalence and/or proving it.
