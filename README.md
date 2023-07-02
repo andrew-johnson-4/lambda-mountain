@@ -40,7 +40,7 @@ The "string" syntax from the above program needs to be rewritten into a lambda-c
 Grammatical Rewriting is accomplished in the policy definition as follows.
 
 ```λ☶
-TBD
+::pre := λuser-input. ... parser goes here ...
 ```
 
 ## print, policy definition
@@ -58,7 +58,7 @@ The x86 assembler output here needs to be compiled and run.
 This is accomplished in the policy definition as follows.
 
 ```λ☶
-TBD
+::post := λeval-result. ... side effects go here ...
 ```
 
 # L1 Bootstrap
