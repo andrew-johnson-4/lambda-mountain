@@ -33,7 +33,10 @@ print "hello\x20world"
 
 ## print, policy definition
 
-TBD
+```λ-calculus
+eval-hard := λmsg. org  0x100 \n (splat msg)  mov  ah, 0x4c \n int  0x21 \n
+splat := λc cs. mov dl, c \n mov ah, 2 \n int 0x21 \n (splat cs)
+```
 
 # L1 Bootstrap
 
