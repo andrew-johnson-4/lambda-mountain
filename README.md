@@ -31,11 +31,29 @@ Below is an example of a user-land program containing one policy bound to the va
 print "hello\x20world"
 ```
 
+## preprocessing, policy definition
+
+The "string" syntax here needs to be rewritten into a lambda-calculus expression.
+This is accomplished in the policy definition as follows.
+
+```λ☶
+TBD
+```
+
 ## print, policy definition
 
-```λ-calculus
-eval-hard := λmsg. org  0x100 \n (splat msg)  mov  ah, 0x4c \n int  0x21 \n
+```λ☶
+print := λmsg. org  0x100 \n (splat msg)  mov  ah, 0x4c \n int  0x21 \n
 splat := λc cs. mov dl, c \n mov ah, 2 \n int 0x21 \n (splat cs)
+```
+
+## postprocessing, policy definition
+
+The x86 assembler output here needs to be compiled and run.
+This is accomplished in the policy definition as follows.
+
+```λ☶
+TBD
 ```
 
 # L1 Bootstrap
