@@ -16,3 +16,19 @@ The bootstrap itself should hopefully be fairly legible, but things start to get
 `eval-soft` and `eval-hard` are both *exactly equivalent* to well-defined reductions of lambda-calculus terms.
 When possible we recommend checking equivalence and/or proving it.
 λ☶ is meant only as shorthand for existing techniques for evaluation, testing, optimization, and verification of programs.
+
+# Syntax and Formatting
+
+λ☶ is a programming language written in the passive voice.
+`eval-soft` and `eval-hard` are the only exposed entry points into your program.
+A λ☶ program is then defined as *capabilities* gifted to anyone with access to your entry points.
+Each program defines a policy and implementation of capabilities.
+Any attempt to subvert these policies should result in an error instead of actual evaluation.
+
+Syntactically, capabilities are exposed to the user as globally bound variables.
+User-land programs can then be thought of as simple lambda-calculus expressions.
+Here is an example of a user-land program containing one policy bound to the variable `print`:
+
+```λ-calculus
+print "hello world"
+```
