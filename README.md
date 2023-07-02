@@ -20,7 +20,7 @@ When possible we recommend checking equivalence and/or proving it.
 # Syntax and Formatting
 
 λ☶ is a programming language written in the passive voice.
-`eval-soft` and `eval-hard` are the only exposed entry points into your program.
+`eval-soft` and `eval-hard` are the exposed entry points into your program.
 A λ☶ program is then defined as *capabilities* gifted to anyone with access to your entry points.
 Each program defines a policy and implementation of capabilities.
 Any attempt to subvert these policies should result in an error instead of actual evaluation.
