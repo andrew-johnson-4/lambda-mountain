@@ -22,7 +22,7 @@ Any attempt to subvert these policies should result in an error instead of actua
 
 Syntactically, capabilities are exposed to the user as globally bound variables.
 User-land programs can then be thought of as simple lambda-calculus expressions.
-Here is an example of a user-land program containing one policy bound to the variable `print`.
+Below is an example of a user-land program containing one policy bound to the variable `print`.
 
 ## print, user-land program
 ```λ-calculus
