@@ -1,11 +1,6 @@
 # λ☶. Lambda Mountain
 An incredibly hard to read programming language.
 
-# L1 Bootstrap
-
-A definition of a minimal language kernel will be developed in [L1](https://github.com/andrew-johnson-4/LSTS).
-L1 itself is not stable yet, so development of this project is delayed pending.
-
 # Scope
 
 This programming language implements the `eval-soft` and `eval-hard` functions of [L1's type system](https://github.com/andrew-johnson-4/L1Pearls/blob/main/normalize_kindof.md).
@@ -37,3 +32,8 @@ print "hello world"
 ## print, policy definition
 
 TBD
+
+# L1 Bootstrap
+
+A definition of a minimal language kernel will be developed in [L1](https://github.com/andrew-johnson-4/LSTS).
+L1 itself is not stable yet, so development of this project is delayed pending.
