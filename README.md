@@ -1,5 +1,5 @@
-# λ☶
-An incredibly hard to read programming language (pronounced Lambda Mountain).
+# λ☶. Lambda Mountain
+An incredibly hard to read programming language.
 
 # L1 Bootstrap
 
