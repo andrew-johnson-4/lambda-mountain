@@ -1,2 +1,2 @@
 # λ☶
-An incredibly hard to read programming language (pronounced Lambda Mountain)
+An incredibly hard to read programming language (pronounced Lambda Mountain).
