@@ -29,11 +29,11 @@ Syntactically, capabilities are exposed to the user as globally bound variables.
 User-land programs can then be thought of as simple lambda-calculus expressions.
 Here is an example of a user-land program containing one policy bound to the variable `print`.
 
-## user-land program
+## print, user-land program
 ```λ-calculus
 print "hello world"
 ```
 
-## policy definition
+## print, policy definition
 
 TBD
