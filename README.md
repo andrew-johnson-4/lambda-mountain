@@ -48,8 +48,8 @@ Grammatical Rewriting is accomplished in the policy definition as follows.
 Each bound variable gets its own line in the policy definition.
 
 ```λ☶
-print := λmsg. org  0x100 \n (splat msg)  mov  ah, 0x4c \n int  0x21 \n
-splat := λc cs. mov dl, c \n mov ah, 2 \n int 0x21 \n (splat cs)
+print := λmsg. org  0x100 \n (::splat msg)  mov  ah, 0x4c \n int  0x21 \n
+::splat := λc cs. mov dl, c \n mov ah, 2 \n int 0x21 \n (splat cs)
 ```
 
 ## postprocessing, policy definition
