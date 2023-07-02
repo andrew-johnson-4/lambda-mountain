@@ -27,20 +27,25 @@ User-land programs can then be thought of as simple lambda-calculus expressions.
 Below is an example of a user-land program containing one policy bound to the variable `print`.
 
 ## print, user-land program
+
+User programs can be any unicode text. Anything. Really. "Free Grammar!"
+
 ```λ-calculus
 print "hello world"
 ```
 
 ## preprocessing, policy definition
 
-The "string" syntax here needs to be rewritten into a lambda-calculus expression.
-This is accomplished in the policy definition as follows.
+The "string" syntax from the above program needs to be rewritten into a lambda-calculus expression.
+Grammar Rewriting is accomplished in the policy definition as follows.
 
 ```λ☶
 TBD
 ```
 
 ## print, policy definition
+
+Each bound variable gets its own line in the policy definition.
 
 ```λ☶
 print := λmsg. org  0x100 \n (splat msg)  mov  ah, 0x4c \n int  0x21 \n
