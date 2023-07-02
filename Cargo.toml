@@ -1,5 +1,5 @@
 [package]
-name = "λMountain"
+name = "lambda_mountain"
 version = "0.0.1"
 authors = ["Andrew <andrew@subarctic.org>"]
 license = "MIT"
