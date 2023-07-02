@@ -37,7 +37,7 @@ print "hello world"
 ## preprocessing, policy definition
 
 The "string" syntax from the above program needs to be rewritten into a lambda-calculus expression.
-Grammar Rewriting is accomplished in the policy definition as follows.
+Grammatical Rewriting is accomplished in the policy definition as follows.
 
 ```λ☶
 TBD
