@@ -40,9 +40,9 @@ The "string" syntax from the above program needs to be rewritten into a lambda-c
 Grammatical Rewriting is accomplished in the policy definition as follows.
 
 ```λ☶
-::pre := λ :" (::literal s) :". s
-::pre := λ c cs. c (::pre cs)
-::literal :[^"]@c (::literal cs) := c cs
+::pre := λ:" (::literal s) :". s
+::pre := λc cs. c (::pre cs)
+::literal := λ:[^"]@c (::literal cs). c cs
 ```
 
 ## print, policy definition
