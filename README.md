@@ -74,3 +74,12 @@ TBD.
 
 A definition of a minimal language kernel will also be developed in [L1](https://github.com/andrew-johnson-4/LSTS).
 L1 itself is not stable yet, so development of this project is delayed pending.
+
+# What happens after the Bootstrap
+
+The magic really starts to happen when we connect the above term definitions with *intelligent equivalences* and *goals*.
+Equivalences are defined by [rewrite rules](https://en.wikipedia.org/wiki/Type_theory#Rules) that look like this:
+
+![Rewrite Rule](https://github.com/andrew-johnson-4/-/blob/main/4487ca46bc4413415a8ccc0820eddb8978a06a81.svg "lambda introduction")
+
+Goals define a precedence to determine which rewrite rules will apply first. 
