@@ -3,7 +3,7 @@ An incredibly hard to read programming language.
 
 # Scope
 
-L1 is polymorphic. λ☶ is monomorphic. That's the core difference. λ☶ does code-lowering for L1.
+L1 is polymorphic. λ☶ is monomorphic. That's the core difference.
 
 This programming language implements the `eval-soft` and `eval-hard` functions of [L1's type system](https://github.com/andrew-johnson-4/L1Pearls/blob/main/normalize_kindof.md).
 If you want to fully understand or extend L1's core type system then this is the place to start.
