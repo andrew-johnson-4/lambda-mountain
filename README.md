@@ -12,7 +12,7 @@ The bootstrap itself should hopefully be fairly legible, but things start to get
 
 `eval-soft` and `eval-hard` are both *exactly equivalent* to well-defined reductions of lambda-calculus terms.
 When possible we recommend checking equivalence and/or proving it.
-λ☶ is meant only as shorthand for existing techniques for evaluation, testing, optimization, and verification of programs.
+λ☶ is meant only as shorthand for existing techniques to evaluate, test, optimize, and verify programs.
 
 # Syntax and Formatting
 
