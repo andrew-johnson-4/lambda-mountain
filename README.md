@@ -29,7 +29,7 @@ Grammatical Rewriting is accomplished in the policy definition as follows.
 
 ```λ☶
 ::pre := λ:" (literal s) :". s
-::pre := λc cs. c (::pre cs)
+::pre := λc (::pre cs). c cs
 literal := λc (literal cs). c cs
 ```
 
