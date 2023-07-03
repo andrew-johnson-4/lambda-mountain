@@ -2,19 +2,6 @@
 
 A more idiomatic approach to code lowering.
 
-# Scope
-
-L1 is polymorphic. λ☶ is monomorphic. That's the core difference.
-
-This programming language implements the `eval-soft` and `eval-hard` functions of [L1's type system](https://github.com/andrew-johnson-4/L1Pearls/blob/main/normalize_kindof.md).
-If you want to fully understand or extend L1's core type system then this is the place to start.
-Necessarily the L1 bootstrap does not utilize the `eval-*` functions at the type level.
-The bootstrap itself should hopefully be fairly legible, but things start to get quirky after that.
-
-`eval-soft` and `eval-hard` are both *exactly equivalent* to well-defined reductions of lambda-calculus terms.
-When possible we recommend checking equivalence and/or proving it.
-λ☶ is meant only as shorthand for existing techniques to evaluate, test, optimize, and verify programs.
-
 # Syntax and Formatting
 
 λ☶ is a programming language written in the passive voice.
