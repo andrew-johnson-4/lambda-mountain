@@ -1,5 +1,6 @@
 # λ☶. Lambda Mountain
-An incredibly hard to read programming language.
+
+A more idiomatic approach to code lowering.
 
 # Scope
 
