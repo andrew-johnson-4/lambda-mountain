@@ -66,16 +66,7 @@ note: "strongly normalizing" does not mean the term is "normalized".
 hard reductions are evaluations until normal form and may diverge.
 ```
 
-# Rust Bootstrap
-
-TBD.
-
-# L1 Bootstrap
-
-A definition of a minimal language kernel will also be developed in [L1](https://github.com/andrew-johnson-4/LSTS).
-L1 itself is not stable yet, so development of this project is delayed pending.
-
-# What happens after the Bootstrap
+# intelligent reduction
 
 The magic really starts to happen when we connect the above term definitions with *intelligent equivalences* and *goals*.
 Equivalences are defined by [rewrite rules](https://en.wikipedia.org/wiki/Type_theory#Rules) that look like this:
