@@ -40,9 +40,8 @@ The "string" syntax from the above program needs to be rewritten into a lambda-c
 Grammatical Rewriting is accomplished in the policy definition as follows.
 
 ```λ☶
-// TBD Pattern Matching Algorithm
-::pre := λ :" s :". ... parser goes here ...
-::pre := λ user-input. ... parser goes here ...
+::pre := λ :" (::pre s) :". literal s
+::pre := λ c cs. c (::pre cs)
 ```
 
 ## print, policy definition
