@@ -63,6 +63,18 @@ This is accomplished in the policy definition as follows.
 ::post := λeval-result. ... side effects go here ...
 ```
 
+## print, soft-eval reduction
+
+```
+TBD
+```
+
+## print, hard-eval reduction
+
+```
+TBD
+```
+
 # Rust Bootstrap
 
 TBD.
