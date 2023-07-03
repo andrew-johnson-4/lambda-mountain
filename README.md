@@ -37,11 +37,12 @@ print "hello world"
 ## preprocessing, policy definition
 
 The "string" syntax from the above program needs to be rewritten into a lambda-calculus expression.
-During this step of rewriting, any term that is not reduced to a variable will become an error.
 Grammatical Rewriting is accomplished in the policy definition as follows.
 
 ```λ☶
-::pre := λuser-input. ... parser goes here ...
+// TBD Pattern Matching Algorithm
+::pre := λ :" s :". ... parser goes here ...
+::pre := λ user-input. ... parser goes here ...
 ```
 
 ## print, policy definition
