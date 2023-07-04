@@ -1,8 +1,7 @@
 use std::fs::File;
 use std::io::prelude::*;
 
-struct Policy {
-}
+use lambda_mountain::Policy;
 
 fn main() {
    let mut policy = Policy {};
