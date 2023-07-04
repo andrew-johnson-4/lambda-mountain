@@ -1,3 +1,5 @@
+use std::fs::File;
+use std::io::prelude::*;
 
 fn main() {
    let mut hard = true;
@@ -10,9 +12,15 @@ fn main() {
 }
 
 fn eval_soft(filename: &str) {
-   println!("eval soft {filename}");
+   let mut policy = String::new();
+   let mut file = File::open(filename).expect("eval_soft: error opening file");
+   file.read_to_string(&mut policy).expect("eval_soft: unable to read to string");
+   println!("eval soft:\n{policy}\n");
 }
 
 fn eval_hard(filename: &str) {
-   println!("eval hard {filename}");
+   let mut policy = String::new();
+   let mut file = File::open(filename).expect("eval_hard: error opening file");
+   file.read_to_string(&mut policy).expect("eval_hard: unable to read to string");
+   println!("eval hard:\n{policy}\n");
 }
