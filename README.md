@@ -11,7 +11,7 @@ Each program defines a policy and implementation of capabilities.
 Any attempt to subvert these policies should result in an error instead of actual evaluation.
 
 Syntactically, capabilities are exposed to the user as globally bound variables.
-User-land programs can then be thought of as simple lambda-calculus expressions.
+User-land programs can then be thought of as simple [lambda-calculus](https://ncatlab.org/nlab/show/lambda-calculus) expressions.
 Below is an example of a user-land program containing one policy bound to the variable `print`.
 
 ## print, user-land program
