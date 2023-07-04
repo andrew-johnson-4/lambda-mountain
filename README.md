@@ -54,9 +54,9 @@ This is accomplished in the policy definition as follows.
 ## print, soft-eval reduction
 
 ```
-soft reductions are not guaranteed to reach normal form.
-though, up until they halt they will always be equivalent.
 soft reductions will not diverge and are strongly normalizing.
+if a term may diverge then an error may occur.
+blame is defined by the rewrite rules.
 ```
 
 ## print, hard-eval reduction
