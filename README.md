@@ -57,7 +57,6 @@ This is accomplished in the policy definition as follows.
 soft reductions are not guaranteed to reach normal form.
 though, up until they halt they will always be equivalent.
 soft reductions will not diverge and are strongly normalizing.
-note: "strongly normalizing" does not mean the term is "normalized".
 ```
 
 ## print, hard-eval reduction
