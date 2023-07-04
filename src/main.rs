@@ -11,21 +11,23 @@ fn main() {
       else if arg=="soft" { hard = false; }
       else         { load_policy(&mut policy, &arg); }
    }
-   if hard { eval_hard(&policy); }
-   else { eval_soft(&policy); }
+   if hard { eval_hard(&mut policy); }
+   else { eval_soft(&mut policy); }
 }
 
 fn load_policy(policy: &mut Policy, filename: &str) {
    let mut p = String::new();
    let mut file = File::open(filename).expect("load_policy: error opening file");
    file.read_to_string(&mut p).expect("load_policy: unable to read to string");
-   println!("load_policy: {p}");
+   policy.load(&p);
 }
 
-fn eval_soft(policy: &Policy) {
-   println!("eval soft\n");
+fn eval_soft(policy: &mut Policy) {
+   let input = "";
+   policy.soft(input)
 }
 
-fn eval_hard(policy: &Policy) {
-   println!("eval hard\n");
+fn eval_hard(policy: &mut Policy) {
+   let input = "";
+   policy.hard(input)
 }
