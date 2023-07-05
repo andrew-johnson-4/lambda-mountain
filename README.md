@@ -69,7 +69,7 @@ blame is defined by the rewrite rules.
 hard reductions are evaluations until normal form and may diverge.
 ```
 
-## print, command line
+## print, running the program
 
 ```bash
 lambda_mountain print.lm < print.txt
