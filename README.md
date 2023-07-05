@@ -1,6 +1,10 @@
 # λ☶. Lambda Mountain
 
-A more idiomatic approach to code lowering. λ symbolizes a process for defining the ways to do something. ☶ symbolizes a process for selecting the natural way to do something.
+A more idiomatic approach to code lowering.
+λ symbolizes a process for defining the ways to do something.
+☶ symbolizes a process for selecting the natural way to do something.
+λ answers "why is this correct?"
+☶ answers "why is this desirable?"
 
 # Syntax and Formatting
 
