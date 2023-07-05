@@ -3,11 +3,6 @@ use std::io::prelude::*;
 
 use lambda_mountain::Policy;
 
-fn load_policy(policy: &mut Policy, filename: &str) {
-   let mut p = String::new();
-   policy.load(&p);
-}
-
 #[test]
 fn print_soft() {
    let mut p = Policy::new();
