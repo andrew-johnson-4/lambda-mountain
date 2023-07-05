@@ -69,6 +69,12 @@ blame is defined by the rewrite rules.
 hard reductions are evaluations until normal form and may diverge.
 ```
 
+## print, command line
+
+```bash
+lambda_mountain print.lm < print.txt
+```
+
 # Intelligent Reduction
 
 The magic really starts to happen when we connect the above term definitions with *intelligent equivalences* and *goals*.
