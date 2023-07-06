@@ -16,11 +16,12 @@ impl Policy {
          if c=='\n' {
             if line.len()>0 && !line.starts_with("#") {
                if let Some((symbol,term)) = line.split_once(" := ") {
+                  let term = parse_term(term);
                   if !self.symbols.contains_key(symbol) {
                      self.symbols.insert(symbol.to_string(), Vec::new());
                   }
                   self.symbols.get_mut(symbol).expect("Policy::load")
-                      .push(parse_term(term));
+                      .push(term);
                } else {
                   panic!("Syntax Error: {line}", line=line)
                }
@@ -46,11 +47,29 @@ pub enum LHS {
    Plural(Vec<LHS>),
    App(Vec<LHS>),
 }
+impl LHS {
+   pub fn to_string(&self) -> String {
+      match self {
+         LHS::Symbol(s) => s.clone(),
+         LHS::Plural(ps) => ps.iter().map(|l| l.to_string()).collect::<Vec<String>>().join(" "),
+         LHS::App(ps) => format!("({})", ps.iter().map(|l| l.to_string()).collect::<Vec<String>>().join(" ") ),
+      }
+   }
+}
 
 pub enum Term {
    Variable(String),
    Lambda(LHS,Box<Term>),
    App(Vec<Term>),
+}
+impl Term {
+   pub fn to_string(&self) -> String {
+      match self {
+         Term::Variable(s) => s.clone(),
+         Term::Lambda(lhs,rhs) => format!("λ{}.{}", lhs.to_string(), rhs.to_string()),
+         Term::App(ps) => format!("({})", ps.iter().map(|l| l.to_string()).collect::<Vec<String>>().join(" ") ),
+      }
+   }
 }
 
 pub fn parse_lhs(s: &str) -> LHS {
