@@ -40,6 +40,7 @@ impl Policy {
 pub enum LHS {
    Symbol(String),
    Plural(Vec<LHS>),
+   App(Vec<LHS>),
 }
 
 pub enum Term {
@@ -52,7 +53,11 @@ pub fn parse_lhs(s: &str) -> LHS {
       return LHS::Symbol(s.to_string());
    }
    if s.starts_with("(") && s.ends_with(")") {
-      unimplemented!("parse_lhs nested: {}", s)
+      return match parse_lhs(&s[1..s.len()-1]) {
+         LHS::Plural(lhs) => { LHS::App(lhs) },
+         LHS::App(lhs) => { LHS::App(lhs) },
+         symbol => { LHS::App(vec![symbol]) },
+      };
    }
    let mut nesting_level = 0;
    let mut tokens = Vec::new();
