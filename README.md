@@ -87,3 +87,8 @@ Equivalences are defined by [rewrite rules](https://en.wikipedia.org/wiki/Type_t
 Stylistic considerations are important when proof trees start to look like this:
 
 <img src="https://github.com/andrew-johnson-4/-/blob/main/calligraphy.png" alt="proof tree" width=40%>
+
+# Why is the repo name -
+
+The proper name for this project is λ☶.
+However, Github disallows most unicode in repo names, probably to avoid lookalike characters in urls.
