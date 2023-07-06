@@ -45,7 +45,25 @@ pub enum Term {
    Lambda(LHS,Box<Term>)
 }
 
+pub fn parse_lhs(s: &str) -> LHS {
+   let s = s.trim();
+   println!("parse_lhs: {s}");
+   unimplemented!("parse_lhs")
+}
+
 pub fn parse_term(s: &str) -> Term {
-   println!("parse_term: {s}");
-   unimplemented!("parse_term")
+   let s = s.trim();
+   if s.starts_with("λ") {
+      if let Some((lhs,rhs)) = s[2..].split_once(".") {
+         Term::Lambda(
+            parse_lhs(lhs),
+            Box::new( parse_term(rhs) )
+         )
+      } else {
+         panic!("Syntax Error: {term}", term=s)
+      }
+   } else {
+      println!("parse_term: {s}");
+      unimplemented!("parse_term")
+   }
 }
