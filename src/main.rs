@@ -4,7 +4,7 @@ use std::io::prelude::*;
 use lambda_mountain::Policy;
 
 fn main() {
-   let mut policy = Policy {};
+   let mut policy = Policy::new();
    let mut hard = true;
    for arg in std::env::args().skip(1) {
       if arg=="hard" { hard = true; }

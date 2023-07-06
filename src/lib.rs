@@ -1,18 +1,25 @@
+use std::collections::HashMap;
 
 pub struct Policy {
+   symbols: HashMap<String,Term>,
 }
 
 impl Policy {
    pub fn new() -> Policy {
-      Policy {}
+      Policy {
+         symbols: HashMap::new()
+      }
    }
    pub fn load(&mut self, p: &str) {
       let mut line = String::new();
       for c in p.chars() {
          if c=='\n' {
             if line.len()>0 && !line.starts_with("#") {
-               println!("parse line: {line}");
-               unimplemented!("Policy::load line");
+               if let Some((symbol,term)) = line.split_once(" := ") {
+                  self.symbols.insert(symbol.to_string(), parse_term(term));
+               } else {
+                  panic!("Syntax Error: {line}", line=line)
+               }
             }
             line = String::new();
          } else {
@@ -28,4 +35,17 @@ impl Policy {
       println!("Policy::soft\n{input}\n");
       unimplemented!("Policy::soft");
    }
+}
+
+pub enum LHS {
+   Symbol(String),
+}
+
+pub enum Term {
+   Lambda(LHS,Box<Term>)
+}
+
+pub fn parse_term(s: &str) -> Term {
+   println!("parse_term: {s}");
+   unimplemented!("parse_term")
 }
