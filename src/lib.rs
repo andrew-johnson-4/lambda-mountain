@@ -37,8 +37,12 @@ impl Policy {
       unimplemented!("Policy::hard");
    }
    pub fn soft(&mut self, input: &str) {
-      println!("Policy::soft\n{input}\n");
-      unimplemented!("Policy::soft");
+      for (k,vs) in self.symbols.iter() {
+         for v in vs.iter() {
+            println!("{} := {}", k, v.to_string())
+         }
+      }
+      println!("#input:\n{input}\n");
    }
 }
 
