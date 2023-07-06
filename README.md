@@ -91,4 +91,4 @@ Stylistic considerations are important when proof trees start to look like this:
 # Why is the repo name -
 
 The proper name for this project is λ☶.
-However, Github disallows most unicode in repo names, probably to avoid lookalike characters in urls.
+However, GitHub disallows most unicode in repo names, probably to avoid lookalike characters in urls.
