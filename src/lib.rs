@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 pub struct Policy {
-   symbols: HashMap<String,Term>,
+   symbols: HashMap<String,Vec<Term>>,
 }
 
 impl Policy {
@@ -16,7 +16,11 @@ impl Policy {
          if c=='\n' {
             if line.len()>0 && !line.starts_with("#") {
                if let Some((symbol,term)) = line.split_once(" := ") {
-                  self.symbols.insert(symbol.to_string(), parse_term(term));
+                  if !self.symbols.contains_key(symbol) {
+                     self.symbols.insert(symbol.to_string(), Vec::new());
+                  }
+                  self.symbols.get_mut(symbol).expect("Policy::load")
+                      .push(parse_term(term));
                } else {
                   panic!("Syntax Error: {line}", line=line)
                }
@@ -44,7 +48,9 @@ pub enum LHS {
 }
 
 pub enum Term {
-   Lambda(LHS,Box<Term>)
+   Variable(String),
+   Lambda(LHS,Box<Term>),
+   App(Vec<Term>),
 }
 
 pub fn parse_lhs(s: &str) -> LHS {
@@ -94,8 +100,32 @@ pub fn parse_term(s: &str) -> Term {
       } else {
          panic!("Syntax Error: {term}", term=s)
       }
+   } else if s.starts_with("(") && s.ends_with(")") {
+      parse_term(&s[1..s.len()-1])
+   } else if !s.contains(" ") {
+      Term::Variable(s.to_string())
    } else {
-      println!("parse_term: {s}");
-      unimplemented!("parse_term")
+      let mut nesting_level = 0;
+      let mut tokens = Vec::new();
+      let mut token = String::new();
+      for c in s.chars() {
+         if c==' ' && nesting_level==0 {
+            tokens.push(parse_term(&token));
+            token = String::new();
+         } else if c=='(' {
+            nesting_level += 1;
+            token.push(c);
+         } else if c==')' {
+            if nesting_level==0 {
+               panic!("Syntax Error: {term}", term=s)
+            }
+            nesting_level -= 1;
+            token.push(c);
+         } else {
+            token.push(c);
+         }
+      }
+      tokens.push(parse_term(&token));
+      Term::App(tokens)
    }
 }
