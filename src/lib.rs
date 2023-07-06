@@ -39,6 +39,7 @@ impl Policy {
 
 pub enum LHS {
    Symbol(String),
+   Plural(Vec<LHS>),
 }
 
 pub enum Term {
@@ -47,8 +48,34 @@ pub enum Term {
 
 pub fn parse_lhs(s: &str) -> LHS {
    let s = s.trim();
-   println!("parse_lhs: {s}");
-   unimplemented!("parse_lhs")
+   if !s.contains(" ") {
+      return LHS::Symbol(s.to_string());
+   }
+   if s.starts_with("(") && s.ends_with(")") {
+      unimplemented!("parse_lhs nested: {}", s)
+   }
+   let mut nesting_level = 0;
+   let mut tokens = Vec::new();
+   let mut token = String::new();
+   for c in s.chars() {
+      if c==' ' && nesting_level==0 {
+         tokens.push(parse_lhs(&token));
+         token = String::new();
+      } else if c=='(' {
+         nesting_level += 1;
+         token.push(c);
+      } else if c==')' {
+         if nesting_level==0 {
+            panic!("Syntax Error: {lhs}", lhs=s)
+         }
+         nesting_level -= 1;
+         token.push(c);
+      } else {
+         token.push(c);
+      }
+   }
+   tokens.push(parse_lhs(&token));
+   LHS::Plural(tokens)
 }
 
 pub fn parse_term(s: &str) -> Term {
