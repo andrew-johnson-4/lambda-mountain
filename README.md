@@ -77,9 +77,13 @@ lambda_mountain print.lm < print.txt
 
 # Intelligent Reduction
 
-The magic really starts to happen when we connect the above term definitions with *intelligent equivalences* and *goals*.
+The magic really starts to happen when we connect the above term definitions with *intelligent equivalences*.
 Equivalences are defined by [rewrite rules](https://en.wikipedia.org/wiki/Type_theory#Rules) that look like this:
 
 <img src="https://github.com/andrew-johnson-4/-/blob/main/4487ca46bc4413415a8ccc0820eddb8978a06a81.svg" alt="lambda introduction" width=40%>
 
-Goals define a precedence to determine which rewrite rules will apply first. 
+# Calligraphy
+
+Stylistic considerations are important when proof trees start to look like this:
+
+<img src="https://github.com/andrew-johnson-4/-/blob/main/calligraphy.svg" alt="proof tree" width=40%>
