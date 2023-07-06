@@ -1,0 +1,2 @@
+tex:
+	pdflatex calligraphy.tex

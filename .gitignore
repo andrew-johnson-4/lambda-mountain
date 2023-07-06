@@ -1,4 +1,7 @@
 debug/
 target/
+tmp/
 
 Cargo.lock
+calligraphy.aux
+calligraphy.log
