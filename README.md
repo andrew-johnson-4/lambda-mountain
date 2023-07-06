@@ -86,4 +86,4 @@ Equivalences are defined by [rewrite rules](https://en.wikipedia.org/wiki/Type_t
 
 Stylistic considerations are important when proof trees start to look like this:
 
-<img src="https://github.com/andrew-johnson-4/-/blob/main/calligraphy.svg" alt="proof tree" width=40%>
+<img src="https://github.com/andrew-johnson-4/-/blob/main/calligraphy.png" alt="proof tree" width=40%>
