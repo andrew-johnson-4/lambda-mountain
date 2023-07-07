@@ -37,12 +37,13 @@ impl Policy {
       unimplemented!("Policy::hard");
    }
    pub fn soft(&mut self, input: &str) {
-      for (k,vs) in self.symbols.iter() {
-         for v in vs.iter() {
-            println!("{} := {}", k, v.to_string())
-         }
-      }
-      println!("#input:\n{input}\n");
+      let input = if self.symbols.contains_key("::pre") {
+         self.parse("::pre", input).to_string()
+      } else { input.to_string() };
+      println!("Policy::soft parsed input:\n{input}\n");
+   }
+   pub fn parse(&mut self, rule: &str, input: &str) -> &str {
+      unimplemented!("Policy::parse")
    }
 }
 
