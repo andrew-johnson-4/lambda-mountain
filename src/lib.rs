@@ -74,7 +74,23 @@ impl Policy {
       }
    }
    pub fn parse_pack(&self, ctx: &Vec<(String,String)>, term: &Term) -> String {
-      unimplemented!("Policy::parse_pack")
+      match term {
+         Term::Lambda(_,_) => panic!("Policy::parse_pack, cannot reduce lambda"),
+         Term::Variable(i) => {
+            for (k,v) in ctx.iter().rev() {
+            if k==i {
+               return v.clone();
+            }}
+            i.clone()
+         },
+         Term::App(ps) => {
+            let mut e = String::new();
+            for p in ps.iter() {
+               e.push_str(&self.parse_pack(ctx, p));
+            }
+            e
+         }
+      }
    }
 }
 
