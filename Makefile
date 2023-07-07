@@ -1,5 +1,5 @@
 test:
-	cargo test -- --nocapture
+	cargo test print_soft -- --nocapture
 
 tex:
 	pdflatex calligraphy.tex
