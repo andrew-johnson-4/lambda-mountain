@@ -3,7 +3,7 @@ use lambda_mountain::Policy;
 #[test]
 fn print_echo0() {
    let mut p = Policy::new();
-   p.load("pre := λs.");
+   p.load("::pre := λs.");
 
    assert_eq!( p.soft("a"), "" );
 }
@@ -11,7 +11,7 @@ fn print_echo0() {
 #[test]
 fn print_echo1() {
    let mut p = Policy::new();
-   p.load("pre := λs. s");
+   p.load("::pre := λs. s");
 
    assert_eq!( p.soft("a"), "a" );
 }
@@ -19,7 +19,7 @@ fn print_echo1() {
 #[test]
 fn print_echo2() {
    let mut p = Policy::new();
-   p.load("pre := λs. s s");
+   p.load("::pre := λs. s s");
 
    assert_eq!( p.soft("a"), "aa" );
 }

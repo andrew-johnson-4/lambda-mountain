@@ -11,6 +11,7 @@ impl Policy {
       }
    }
    pub fn load(&mut self, p: &str) {
+      let p = p.to_string() + "\n";
       let mut line = String::new();
       for c in p.chars() {
          if c=='\n' {
@@ -39,7 +40,9 @@ impl Policy {
    pub fn soft(&mut self, input: &str) -> String {
       let input = if self.symbols.contains_key("::pre") {
          self.parse(&vec![], "::pre", input).to_string()
-      } else { input.to_string() };
+      } else {
+         input.to_string()
+      };
       input
    }
    pub fn parse(&self, ctx: &Vec<(String,String)>, rule: &str, input: &str) -> String {
