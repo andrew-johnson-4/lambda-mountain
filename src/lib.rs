@@ -36,24 +36,24 @@ impl Policy {
       println!("Policy::hard\n{input}\n");
       unimplemented!("Policy::hard");
    }
-   pub fn soft(&mut self, input: &str) {
+   pub fn soft(&mut self, input: &str) -> String {
       let input = if self.symbols.contains_key("::pre") {
          self.parse(&vec![], "::pre", input).to_string()
       } else { input.to_string() };
-      println!("Policy::soft parsed input:\n{input}\n");
+      input
    }
-   pub fn parse(&self, ctx: &Vec<(String,String)>, rule: &str, input: &str) -> &str {
+   pub fn parse(&self, ctx: &Vec<(String,String)>, rule: &str, input: &str) -> String {
       if !self.symbols.contains_key(rule) {
          panic!("unable to apply non-existent rule: {}", rule)
       }
       for term in self.symbols.get(rule).unwrap() {
       if let Term::Lambda(pat,body) = term {
          let ctx = self.parse_unpack(&ctx, pat, input);
-         unimplemented!("Policy::parse λ{}. {}", pat, body)
+         return self.parse_pack(&ctx, body);
       } else {
          panic!("unable to apply non-lambda rule: {}", rule)
       }}
-      "" //default case is empty string
+      "".to_string() //default case is empty string
    }
    pub fn parse_unpack(&self, ctx: &Vec<(String,String)>, pat: &LHS, input: &str) -> Vec<(String,String)> {
       let mut ctx = ctx.clone();
@@ -63,12 +63,15 @@ impl Policy {
             ctx
          },
          LHS::Plural(ps) => {
-            unimplemented!("Policy::parse_unpack LHS::Plural")
+            unimplemented!("Policy::parse_unpack LHS::Plural {}", pat)
          },
          LHS::App(ps) => {
-            unimplemented!("Policy::parse_unpack LHS::App")
+            unimplemented!("Policy::parse_unpack LHS::App {}", pat)
          },
       }
+   }
+   pub fn parse_pack(&self, ctx: &Vec<(String,String)>, term: &Term) -> String {
+      unimplemented!("Policy::parse_pack")
    }
 }
 

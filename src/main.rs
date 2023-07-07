@@ -24,7 +24,7 @@ fn load_policy(policy: &mut Policy, filename: &str) {
 
 fn eval_soft(policy: &mut Policy) {
    let input = "";
-   policy.soft(input)
+   println!("{}", policy.soft(input));
 }
 
 fn eval_hard(policy: &mut Policy) {
