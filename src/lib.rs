@@ -43,7 +43,16 @@ impl Policy {
       println!("Policy::soft parsed input:\n{input}\n");
    }
    pub fn parse(&mut self, rule: &str, input: &str) -> &str {
-      unimplemented!("Policy::parse")
+      if !self.symbols.contains_key(rule) {
+         panic!("unable to apply non-existent rule: {}", rule)
+      }
+      for term in self.symbols.get(rule).unwrap() {
+      if let Term::Lambda(pat,body) = term {
+         unimplemented!("Policy::parse λ{}. {}", pat, body)
+      } else {
+         panic!("unable to apply non-lambda rule: {}", rule)
+      }}
+      "" //default case is empty string
    }
 }
 
@@ -52,12 +61,12 @@ pub enum LHS {
    Plural(Vec<LHS>),
    App(Vec<LHS>),
 }
-impl LHS {
-   pub fn to_string(&self) -> String {
+impl std::fmt::Display for LHS {
+   fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
       match self {
-         LHS::Symbol(s) => s.clone(),
-         LHS::Plural(ps) => ps.iter().map(|l| l.to_string()).collect::<Vec<String>>().join(" "),
-         LHS::App(ps) => format!("({})", ps.iter().map(|l| l.to_string()).collect::<Vec<String>>().join(" ") ),
+         LHS::Symbol(s) => write!(f, "{}", s),
+         LHS::Plural(ps) => write!(f, "{}", ps.iter().map(|l| l.to_string()).collect::<Vec<String>>().join(" ") ),
+         LHS::App(ps) => write!(f, "({})", ps.iter().map(|l| l.to_string()).collect::<Vec<String>>().join(" ") ),
       }
    }
 }
@@ -67,12 +76,12 @@ pub enum Term {
    Lambda(LHS,Box<Term>),
    App(Vec<Term>),
 }
-impl Term {
-   pub fn to_string(&self) -> String {
+impl std::fmt::Display for Term {
+   fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
       match self {
-         Term::Variable(s) => s.clone(),
-         Term::Lambda(lhs,rhs) => format!("λ{}.{}", lhs.to_string(), rhs.to_string()),
-         Term::App(ps) => format!("({})", ps.iter().map(|l| l.to_string()).collect::<Vec<String>>().join(" ") ),
+         Term::Variable(s) => write!(f, "{}", s),
+         Term::Lambda(lhs,rhs) => write!(f, "λ{}.{}", lhs, rhs),
+         Term::App(ps) => write!(f, "({})", ps.iter().map(|l| l.to_string()).collect::<Vec<String>>().join(" ") ),
       }
    }
 }
