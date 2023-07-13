@@ -18,7 +18,6 @@ impl Policy {
    pub fn load(&mut self, input: &str) {
       let input = StringSlice::new(input.to_string());
       for (symbol,rhs) in parse_program(input) {
-         println!("Policy::load {} := {}", symbol, rhs);
          if !self.symbols.contains_key(&symbol) {
             self.symbols.insert(symbol.clone(), Vec::new());
          }
@@ -26,14 +25,25 @@ impl Policy {
                      .push(rhs);
       }
    }
-   pub fn hard(&mut self, input: &str) {
-      println!("Policy::hard\n{input}\n");
-      unimplemented!("Policy::hard");
+   pub fn hard(&mut self, input: &str) -> String {
+      let context = Context::new(Rc::new(self.symbols.clone()));
+      let input = StringSlice::new(input.to_string());
+      let input = if self.symbols.contains_key("::pre") {
+         StringSlice::new(
+            eval_parse(context.clone(), "::pre", input)
+         )
+      } else {
+         input
+      };
+      let program = vec![ Rhs::Variable("::program".to_string()), Rhs::Literal(input.to_string()) ];
+      let post = eval_rhs(context.clone(), &program);
+      post.to_string()
    }
    pub fn soft(&mut self, input: &str) -> String {
+      let context = Context::new(Rc::new(self.symbols.clone()));
       let input = StringSlice::new(input.to_string());
       if self.symbols.contains_key("::pre") {
-         eval_parse(Context::new(Rc::new(self.symbols.clone())), "::pre", input)
+         eval_parse(context.clone(), "::pre", input)
       } else {
          input.to_string()
       }

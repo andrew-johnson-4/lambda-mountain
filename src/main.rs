@@ -29,5 +29,5 @@ fn eval_soft(policy: &mut Policy) {
 
 fn eval_hard(policy: &mut Policy) {
    let input = "";
-   policy.hard(input)
+   println!("{}", policy.hard(input));
 }
