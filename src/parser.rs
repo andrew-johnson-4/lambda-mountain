@@ -1,7 +1,20 @@
 use crate::ast::*;
 
-pub fn parse_program(s: StringSlice) -> Vec<(String,Rhs)> {
-   unimplemented!("ast::parse_rhs")
+pub fn parse_program(input: StringSlice) -> Vec<(String,Rhs)> {
+   let mut program = Vec::new();
+   for line in input.string[input.start..input.end].split("\n") {
+      let line = line.trim();
+      if line.starts_with("#") {}
+      else if line=="" {}
+      else {
+         program.push(parse_binding( StringSlice::new(line.to_string()) ));
+      }
+   }
+   program
+}
+
+pub fn parse_binding(input: StringSlice) -> (String,Rhs) {
+   unimplemented!("parser::parse_binding {}", &input.string[input.start..input.end])
 }
 
 /*

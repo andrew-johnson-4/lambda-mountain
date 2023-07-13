@@ -1,9 +1,9 @@
 use std::rc::Rc;
 
 pub struct StringSlice {
-   string: Rc<String>,
-   start: usize,
-   end: usize,
+   pub string: Rc<String>,
+   pub start: usize,
+   pub end: usize,
 }
 impl StringSlice {
    pub fn new(s: String) -> StringSlice {
