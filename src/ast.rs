@@ -18,6 +18,30 @@ impl StringSlice {
    pub fn len(&self) -> usize {
       self.end - self.start
    }
+   pub fn before(&self, l: usize) -> StringSlice {
+      assert!( self.len() >= l );
+      StringSlice {
+         string: self.string.clone(),
+         start: self.start,
+         end: self.end - l,
+      }
+   }
+   pub fn after(&self, l: usize) -> StringSlice {
+      assert!( self.len() >= l );
+      StringSlice {
+         string: self.string.clone(),
+         start: self.start + l,
+         end: self.end,
+      }
+   }
+   pub fn starts_with(&self, v: &str) -> bool {
+      self.len() >= v.len() &&
+      &self.string[self.start..self.start+v.len()] == v
+   }
+   pub fn ends_with(&self, v: &str) -> bool {
+      self.len() >= v.len() &&
+      &self.string[(self.end-v.len())..self.end] == v
+   }
    pub fn to_string(&self) -> String {
       self.string[self.start..self.end].to_string()
    }

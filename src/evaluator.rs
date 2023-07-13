@@ -26,6 +26,15 @@ impl Context {
          is_null: true,
       }
    }
+   pub fn bind(self, symbol: String, term: Rhs) -> Context {
+      let mut locals = self.locals.clone();
+      locals.push_front((symbol, term));
+      Context {
+         globals: self.globals.clone(),
+         locals: locals,
+         is_null: false,
+      }
+   }
 }
 
 pub fn eval_parse(context: Context, rule: &str, input: StringSlice) -> String {
@@ -42,19 +51,27 @@ pub fn eval_parse(context: Context, rule: &str, input: StringSlice) -> String {
    panic!("Parse Error [{}]: {}", rule, input.to_string())
 }
 
-pub fn destructure_parse(context: Context, lhs: &Vec<Lhs>, input: StringSlice) -> Context {
+pub fn destructure_parse(context: Context, lhs: &[Lhs], input: StringSlice) -> Context {
    if lhs.len()==0 {
       if input.len()==0 {
          context
       } else {
          Context::null()
       }
-   } else if let Lhs::Literal(v) = &lhs[0] {
-      unimplemented!("evaluator::destructure_parse {}", lhs[0])     
-   } else if let Lhs::Literal(v) = &lhs[lhs.len()-1] {
-      unimplemented!("evaluator::destructure_parse {}", lhs[lhs.len()-1])
    } else if let Lhs::Variable(v) = &lhs[0] {
-      unimplemented!("evaluator::destructure_parse {}", lhs[0])
+      context.bind(v.clone(), Rhs::Literal(input.to_string()) )
+   } else if let Lhs::Literal(v) = &lhs[0] {
+      if input.starts_with(v) {
+         destructure_parse( context, &lhs[1..], input.after(v.len()) )
+      } else {
+         Context::null()
+      }
+   } else if let Lhs::Literal(v) = &lhs[lhs.len()-1] {
+      if input.ends_with(v) {
+         destructure_parse( context, &lhs[..lhs.len()-1], input.before(v.len()) )
+      } else {
+         Context::null()
+      }
    } else {
       unimplemented!("evaluator::destructure_parse {}", lhs[0])
    }
