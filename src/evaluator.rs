@@ -42,7 +42,11 @@ impl Context {
          }
       }
       if let Some(vs) = self.globals.get(symbol) {
-         return Rhs::Poly(vs.clone());
+         if vs.len()==1 {
+            return vs[0].clone();
+         } else {
+            return Rhs::Poly(vs.clone());
+         }
       }
       Rhs::Variable(symbol.to_string())
    }
@@ -115,7 +119,19 @@ pub fn eval_rhs(context: Context, rhs: &[Rhs]) -> Rhs {
       let gs = rhs.iter().map(|g| eval_rhs(context.clone(), &[g.clone()])).collect::<Vec<Rhs>>();
       if let Rhs::Lambda(lhs,rhs) = &gs[0] {
          let inner_context = destructure_rhs(context.clone(), lhs, &gs[1..]);
+         if inner_context.is_null {
+            panic!("Pattern Match Failure: {}", Rhs::App(gs))
+         }
          eval_rhs(inner_context, rhs)
+      } else if let Rhs::Poly(ps) = &gs[0] {
+         for p in ps {
+         if let Rhs::Lambda(lhs,rhs) = p {
+            let inner_context = destructure_rhs(context.clone(), lhs, &gs[1..]);
+            if !inner_context.is_null {
+               return eval_rhs(inner_context, rhs);
+            }
+         }}
+         panic!("Pattern Match Failure: {}", Rhs::App(gs))
       } else {
          Rhs::App(gs)
       }
@@ -123,20 +139,22 @@ pub fn eval_rhs(context: Context, rhs: &[Rhs]) -> Rhs {
 }
 
 pub fn destructure_rhs(mut context: Context, lhs: &[Lhs], rhs: &[Rhs]) -> Context {
-   unimplemented!("evaluator::destructure_rhs")
-/*
    if lhs.len() != rhs.len() {
-      panic!("Wrong Arity")
+      return Context::null();
    }
    for (l,r) in std::iter::zip(lhs,rhs) {
       if let (Lhs::App(ls),Rhs::App(rs)) = (l,r) {
-         context = destructure(context,ls,rs);
+         context = destructure_rhs(context,ls,rs);
       } else if let (Lhs::Variable(lv),rv) = (l,r) {
-         context = context.bind(lv, rv);
+         context = context.bind(lv.clone(), rv.clone());
+      } else if let (Lhs::Literal(ll),Rhs::Literal(rl)) = (l,r) {
+         if ll != rl {
+            return Context::null();
+         }
+      } else {
+         return Context::null();
       }
    }
    context
-}
-*/
 }
 

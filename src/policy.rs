@@ -35,7 +35,8 @@ impl Policy {
       } else {
          input
       };
-      let program = vec![ Rhs::Variable("::program".to_string()), Rhs::Literal(input.to_string()) ];
+      let program = parse_rhs(input);
+      println!("hard: {}", program.iter().map(|t| t.to_string()).collect::<Vec<String>>().join(" ") );
       let post = eval_rhs(context.clone(), &program);
       post.to_string()
    }
