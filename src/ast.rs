@@ -1,5 +1,6 @@
 use std::rc::Rc;
 
+#[derive(Clone)]
 pub struct StringSlice {
    pub string: Rc<String>,
    pub start: usize,
@@ -13,6 +14,9 @@ impl StringSlice {
          start: 0,
          end: s_len,
       }
+   }
+   pub fn len(&self) -> usize {
+      self.end - self.start
    }
    pub fn to_string(&self) -> String {
       self.string[self.start..self.end].to_string()

@@ -4,9 +4,11 @@ use std::rc::Rc;
 use std::collections::HashMap;
 use std::collections::LinkedList;
 
+#[derive(Clone)]
 pub struct Context {
    globals: Rc<HashMap<String,Vec<Rhs>>>,
    locals: LinkedList<(String,Rhs)>,
+   is_null: bool,
 }
 
 impl Context {
@@ -14,15 +16,52 @@ impl Context {
       Context {
          globals: policy,
          locals: LinkedList::new(),
+         is_null: false,
+      }
+   }
+   pub fn null() -> Context {
+      Context {
+         globals: Rc::new(HashMap::new()),
+         locals: LinkedList::new(),
+         is_null: true,
       }
    }
 }
 
 pub fn eval_parse(context: Context, rule: &str, input: StringSlice) -> String {
    for rhs in context.globals.get(rule).expect(rule) {
-      unimplemented!("apply parse rule: {}", rhs)
+      if let Rhs::Lambda(lhs,rhs) = rhs {
+         let context = destructure_parse(context.clone(), lhs, input.clone());
+         if !context.is_null {
+            return eval_rhs(context.clone(), rhs).to_string();
+         }
+      } else {
+         return rhs.to_string()
+      }
    }
    panic!("Parse Error [{}]: {}", rule, input.to_string())
+}
+
+pub fn destructure_parse(context: Context, lhs: &Vec<Lhs>, input: StringSlice) -> Context {
+   if lhs.len()==0 {
+      if input.len()==0 {
+         context
+      } else {
+         Context::null()
+      }
+   } else if let Lhs::Literal(v) = &lhs[0] {
+      unimplemented!("evaluator::destructure_parse {}", lhs[0])     
+   } else if let Lhs::Literal(v) = &lhs[lhs.len()-1] {
+      unimplemented!("evaluator::destructure_parse {}", lhs[lhs.len()-1])
+   } else if let Lhs::Variable(v) = &lhs[0] {
+      unimplemented!("evaluator::destructure_parse {}", lhs[0])
+   } else {
+      unimplemented!("evaluator::destructure_parse {}", lhs[0])
+   }
+}
+
+pub fn eval_rhs(context: Context, rhs: &Vec<Rhs>) -> Rhs {
+   unimplemented!("evaluator::eval_rhs")
 }
 
 /*
