@@ -1,21 +1,28 @@
-
 use crate::ast::*;
 
 use std::rc::Rc;
 use std::collections::HashMap;
+use std::collections::LinkedList;
 
 pub struct Context {
+   globals: Rc<HashMap<String,Vec<Rhs>>>,
+   locals: LinkedList<(String,Rhs)>,
 }
 
 impl Context {
    pub fn new(policy: Rc<HashMap<String,Vec<Rhs>>>) -> Context {
       Context {
+         globals: policy,
+         locals: LinkedList::new(),
       }
    }
 }
 
 pub fn eval_parse(context: Context, rule: &str, input: StringSlice) -> String {
-   unimplemented!("evaluator::eval_parse")
+   for rhs in context.globals.get(rule).expect(rule) {
+      unimplemented!("apply parse rule: {}", rhs)
+   }
+   panic!("Parse Error [{}]: {}", rule, input.to_string())
 }
 
 /*
