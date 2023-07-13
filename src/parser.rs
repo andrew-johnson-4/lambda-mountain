@@ -14,48 +14,36 @@ pub fn parse_program(input: StringSlice) -> Vec<(String,Rhs)> {
 }
 
 pub fn parse_binding(input: StringSlice) -> (String,Rhs) {
-   unimplemented!("parser::parse_binding {}", &input.string[input.start..input.end])
-}
-
-/*
-pub fn parse_lhs(s: &str) -> LHS {
-   let s = s.trim();
-   if !s.contains(" ") {
-      return LHS::Symbol(s.to_string());
-   }
-   if s.starts_with("(") && s.ends_with(")") {
-      return match parse_lhs(&s[1..s.len()-1]) {
-         LHS::Plural(lhs) => { LHS::App(lhs) },
-         LHS::App(lhs) => { LHS::App(lhs) },
-         symbol => { LHS::App(vec![symbol]) },
-      };
-   }
-   let mut nesting_level = 0;
-   let mut tokens = Vec::new();
-   let mut token = String::new();
-   for c in s.chars() {
-      if c==' ' && nesting_level==0 {
-         tokens.push(parse_lhs(&token));
-         token = String::new();
-      } else if c=='(' {
-         nesting_level += 1;
-         token.push(c);
-      } else if c==')' {
-         if nesting_level==0 {
-            panic!("Syntax Error: {lhs}", lhs=s)
-         }
-         nesting_level -= 1;
-         token.push(c);
+   let input = input.string[input.start..input.end].trim();
+   if let Some((symbol,rhs)) = input.split_once(":=") {
+      let rhs = parse_rhs(StringSlice::new(rhs.to_string()));
+      if rhs.len()==1 {
+         ( symbol.trim().to_string(), rhs[0].clone() )
       } else {
-         token.push(c);
+         panic!("Syntax Error: {}", input)
       }
+   } else {
+      panic!("Syntax Error: {}", input)
    }
-   tokens.push(parse_lhs(&token));
-   LHS::Plural(tokens)
 }
 
-pub fn parse_term(s: &str) -> Rhs {
-   let s = s.trim();
+pub fn parse_rhs(input: StringSlice) -> Vec<Rhs> {
+   let input = input.string[input.start..input.end].trim();
+
+   if input.starts_with("λ") {
+      if let Some((lhs,rhs)) = input["λ".len()..].split_once(".") {
+         vec![Rhs::Lambda(
+            parse_lhs(StringSlice::new(lhs.to_string())),
+            parse_rhs(StringSlice::new(rhs.to_string()))
+         )]
+      } else {
+         panic!("Syntax Error: {}", input)
+      }
+   } else {
+      unimplemented!("parser::parse_rhs {}", input)
+   }
+
+   /*
    if s.starts_with("λ") {
       if let Some((lhs,rhs)) = s[2..].split_once(".") {
          Rhs::Lambda(
@@ -93,5 +81,11 @@ pub fn parse_term(s: &str) -> Rhs {
       tokens.push(parse_term(&token));
       Rhs::App(tokens)
    }
+   */
+
 }
-*/
+
+//parse_lhs is same as parse_rhs minus the lambda rule
+pub fn parse_lhs(input: StringSlice) -> Vec<Lhs> {
+   unimplemented!("parser::parse_lhs")
+}

@@ -16,6 +16,7 @@ impl StringSlice {
    }
 }
 
+#[derive(Clone)]
 pub enum Lhs {
    Literal(String),
    Variable(String),
@@ -31,6 +32,7 @@ impl std::fmt::Display for Lhs {
    }
 }
 
+#[derive(Clone)]
 pub enum Rhs {
    Literal(String),
    Variable(String),
