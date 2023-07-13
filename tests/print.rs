@@ -15,7 +15,9 @@ fn print_soft() {
    let mut is = String::new();
    let mut file = File::open("examples/print.txt").expect("load_policy: error opening file");
    file.read_to_string(&mut is).expect("load_policy: unable to read to string");
-   p.soft(&is);
+   let soft = p.soft(&is);
+
+   assert_eq!( p.soft(&is), "::program print \"hello_world\"" )
 }
 
 #[test]
@@ -30,5 +32,7 @@ fn print_hard() {
    let mut is = String::new();
    let mut file = File::open("examples/print.txt").expect("load_policy: error opening file");
    file.read_to_string(&mut is).expect("load_policy: unable to read to string");
-   p.hard(&is);
+   let hard = p.hard(&is);
+
+   assert_eq!( hard, "TODO" )
 }
