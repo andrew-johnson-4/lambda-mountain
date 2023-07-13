@@ -27,7 +27,7 @@ fn print_echo2() {
 #[test]
 fn print_pat1() {
    let mut p = Policy::new();
-   p.load(r#"::pre := λ["] s. s\n::pre := λs. s"#);
+   p.load("::pre := λ[\"] s. s\n::pre := λs. s");
 
    assert_eq!( p.soft("\"a"), "a" );
    assert_eq!( p.soft("a"), "a" );
@@ -36,7 +36,7 @@ fn print_pat1() {
 #[test]
 fn print_pat2() {
    let mut p = Policy::new();
-   p.load(r#"::pre := λs ["]. s\n::pre := λs. s"#);
+   p.load("::pre := λs [\"]. s\n::pre := λs. s");
 
    assert_eq!( p.soft("a\""), "a" );
    assert_eq!( p.soft("a"), "a" );
@@ -45,7 +45,7 @@ fn print_pat2() {
 #[test]
 fn print_pat3() {
    let mut p = Policy::new();
-   p.load(r#"::pre := λ["] s ["]. s\n::pre := λs. s"#);
+   p.load("::pre := λ[\"] s [\"]. s\n::pre := λs. s");
 
    assert_eq!( p.soft("\"a\""), "a" );
    assert_eq!( p.soft("a"), "a" );

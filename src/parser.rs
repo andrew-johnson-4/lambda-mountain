@@ -2,7 +2,7 @@ use crate::ast::*;
 
 pub fn parse_program(input: StringSlice) -> Vec<(String,Rhs)> {
    let mut program = Vec::new();
-   for line in input.string[input.start..input.end].split("\n") {
+   for line in input.string[input.start..input.end].split('\n') {
       let line = line.trim();
       if line.starts_with("#") {}
       else if line=="" {}
@@ -30,7 +30,9 @@ pub fn parse_binding(input: StringSlice) -> (String,Rhs) {
 pub fn parse_rhs(input: StringSlice) -> Vec<Rhs> {
    let input = input.string[input.start..input.end].trim();
 
-   if input.starts_with("λ") {
+   if input=="" {
+      Vec::new()
+   } else if input.starts_with("λ") {
       if let Some((lhs,rhs)) = input["λ".len()..].split_once(".") {
          vec![Rhs::Lambda(
             parse_lhs(StringSlice::new(lhs.to_string())),
@@ -39,53 +41,86 @@ pub fn parse_rhs(input: StringSlice) -> Vec<Rhs> {
       } else {
          panic!("Syntax Error: {}", input)
       }
-   } else {
-      unimplemented!("parser::parse_rhs {}", input)
-   }
-
-   /*
-   if s.starts_with("λ") {
-      if let Some((lhs,rhs)) = s[2..].split_once(".") {
-         Rhs::Lambda(
-            parse_lhs(lhs),
-            Box::new( parse_term(rhs) )
-         )
-      } else {
-         panic!("Syntax Error: {term}", term=s)
-      }
-   } else if s.starts_with("(") && s.ends_with(")") {
-      parse_term(&s[1..s.len()-1])
-   } else if !s.contains(" ") {
-      Rhs::Variable(s.to_string())
-   } else {
-      let mut nesting_level = 0;
-      let mut tokens = Vec::new();
-      let mut token = String::new();
-      for c in s.chars() {
-         if c==' ' && nesting_level==0 {
-            tokens.push(parse_term(&token));
-            token = String::new();
+   } else if input.starts_with("(") {
+      let mut app = String::new();
+      let mut rem = String::new();
+      let mut nest_level = 1;
+      for c in input.chars().skip(1) {
+         if nest_level==0 {
+            rem.push(c);
          } else if c=='(' {
-            nesting_level += 1;
-            token.push(c);
+            app.push('(');
+            nest_level += 1;
          } else if c==')' {
-            if nesting_level==0 {
-               panic!("Syntax Error: {term}", term=s)
+            nest_level -= 1;
+            if nest_level > 0 {
+               app.push(')');
             }
-            nesting_level -= 1;
-            token.push(c);
          } else {
-            token.push(c);
+            app.push(c);
          }
       }
-      tokens.push(parse_term(&token));
-      Rhs::App(tokens)
+      let mut cs = parse_rhs(StringSlice::new(rem));
+      cs.insert(0, Rhs::App( parse_rhs(StringSlice::new(app)) ) );
+      cs
+   } else {
+      let (id,cs) = if let Some((id,cs)) = input.split_once(" ") {
+         (id.to_string(), cs.to_string())
+      } else {
+         (input.to_string(), "".to_string())
+      };
+      let cs = StringSlice::new(cs);
+      let mut cs = parse_rhs(cs);
+      if id.chars().collect::<Vec<char>>().first().unwrap().is_alphabetic() {
+         cs.insert(0, Rhs::Variable(id));
+      } else {
+         cs.insert(0, Rhs::Literal(id));
+      }
+      cs
    }
-   */
-
 }
 
 //parse_lhs is same as parse_rhs minus the lambda rule
 pub fn parse_lhs(input: StringSlice) -> Vec<Lhs> {
-   unimplemented!("parser::parse_lhs")
+   let input = input.string[input.start..input.end].trim();
+
+   if input=="" {
+      Vec::new()
+   } else if input.starts_with("(") {
+      let mut app = String::new();
+      let mut rem = String::new();
+      let mut nest_level = 1;
+      for c in input.chars().skip(1) {
+         if nest_level==0 {
+            rem.push(c);
+         } else if c=='(' {
+            app.push('(');
+            nest_level += 1;
+         } else if c==')' {
+            nest_level -= 1;
+            if nest_level > 0 {
+               app.push(')');
+            }
+         } else {
+            app.push(c);
+         }
+      }
+      let mut cs = parse_lhs(StringSlice::new(rem));
+      cs.insert(0, Lhs::App( parse_lhs(StringSlice::new(app)) ) );
+      cs
+   } else {
+      let (id,cs) = if let Some((id,cs)) = input.split_once(" ") {
+         (id.to_string(), cs.to_string())
+      } else {
+         (input.to_string(), "".to_string())
+      };
+      let cs = StringSlice::new(cs);
+      let mut cs = parse_lhs(cs);
+      if id.chars().collect::<Vec<char>>().first().unwrap().is_alphabetic() {
+         cs.insert(0, Lhs::Variable(id));
+      } else {
+         cs.insert(0, Lhs::Literal(id));
+      }
+      cs
+   }
 }

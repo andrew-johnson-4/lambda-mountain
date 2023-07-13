@@ -14,8 +14,9 @@ impl Policy {
       }
    }
    pub fn load(&mut self, input: &str) {
-      let input = StringSlice::new(input.to_string() + "\n");
+      let input = StringSlice::new(input.to_string());
       for (symbol,rhs) in parse_program(input) {
+         println!("Policy::load {} := {}", symbol, rhs);
          if !self.symbols.contains_key(&symbol) {
             self.symbols.insert(symbol.clone(), Vec::new());
          }
