@@ -69,6 +69,7 @@ pub enum Rhs {
    Variable(String),
    App(Vec<Rhs>),
    Lambda(Vec<Lhs>,Vec<Rhs>),
+   Poly(Vec<Rhs>),
 }
 impl std::fmt::Display for Rhs {
    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
@@ -80,6 +81,7 @@ impl std::fmt::Display for Rhs {
             ls.iter().map(|l| l.to_string()).collect::<Vec<String>>().join(" "),
             rs.iter().map(|r| r.to_string()).collect::<Vec<String>>().join(" "),
          ),
+         Rhs::Poly(vs) => write!(f, "({})", vs.iter().map(|v| v.to_string()).collect::<Vec<String>>().join(" | ") ),
       }
    }
 }
