@@ -14,6 +14,9 @@ impl StringSlice {
          end: s_len,
       }
    }
+   pub fn to_string(&self) -> String {
+      self.string[self.start..self.end].to_string()
+   }
 }
 
 #[derive(Clone)]

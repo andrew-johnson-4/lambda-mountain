@@ -1,6 +1,8 @@
 use crate::ast::*;
 use crate::parser::*;
+use crate::evaluator::*;
 
+use std::rc::Rc;
 use std::collections::HashMap;
 
 pub struct Policy {
@@ -29,15 +31,12 @@ impl Policy {
       unimplemented!("Policy::hard");
    }
    pub fn soft(&mut self, input: &str) -> String {
-      unimplemented!("Policy::soft");
-      /*
-      let input = if self.symbols.contains_key("::pre") {
-         self.parse(&vec![], "::pre", input).to_string()
+      let input = StringSlice::new(input.to_string());
+      if self.symbols.contains_key("::pre") {
+         eval_parse(Context::new(Rc::new(self.symbols.clone())), "::pre", input)
       } else {
          input.to_string()
-      };
-      input
-      */
+      }
    }
 }
 
