@@ -6,7 +6,7 @@ use std::rc::Rc;
 use std::collections::HashMap;
 
 pub struct Policy {
-   symbols: HashMap<String,Vec<Rhs>>,
+   pub symbols: HashMap<String,Vec<Rhs>>,
 }
 
 impl Policy {
@@ -15,14 +15,17 @@ impl Policy {
          symbols: HashMap::new()
       }
    }
+   pub fn bind(&mut self, k: &str, v: Rhs) {
+      if !self.symbols.contains_key(k) {
+         self.symbols.insert(k.to_string(), Vec::new());
+      }
+      self.symbols.get_mut(k).expect("Policy::load")
+                  .push(v);
+   }
    pub fn load(&mut self, input: &str) -> Result<(),String> {
       let input = StringSlice::new(input.to_string());
       for (symbol,rhs) in parse_program(input)? {
-         if !self.symbols.contains_key(&symbol) {
-            self.symbols.insert(symbol.clone(), Vec::new());
-         }
-         self.symbols.get_mut(&symbol).expect("Policy::load")
-                     .push(rhs);
+         self.bind(&symbol, rhs);
       }
       Result::Ok(())
    }

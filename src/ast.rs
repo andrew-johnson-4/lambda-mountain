@@ -70,11 +70,11 @@ impl StringSlice {
    }
    pub fn starts_with(&self, v: &str) -> bool {
       self.len() >= v.len() &&
-      &self.string[self.start..self.start+v.len()] == v
+      self.string[self.start..self.start+v.len()].as_bytes() == v.as_bytes()
    }
    pub fn ends_with(&self, v: &str) -> bool {
       self.len() >= v.len() &&
-      &self.string[(self.end-v.len())..self.end] == v
+      self.string[(self.end-v.len())..self.end].as_bytes() == v.as_bytes()
    }
    pub fn to_string(&self) -> String {
       self.string[self.start..self.end].to_string()
