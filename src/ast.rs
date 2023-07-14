@@ -26,8 +26,32 @@ impl StringSlice {
    pub fn chars(&self) -> std::str::Chars {
       self.string[self.start..self.end].chars()
    }
-   pub fn split<'a>(&'a self, sep: &'a str) -> std::str::Split<'a, &str> {
-      self.string[self.start..self.end].split(sep)
+   pub fn split<'a>(&'a self, sep: &'a str) -> Vec<String> {
+      if sep != "\n" {
+         return self.string[self.start..self.end].split(sep).map(|s|s.to_string()).collect::<Vec<String>>();
+      }
+      let mut r = Vec::new();
+      let mut s = String::new();
+      let mut nest_level = 0;
+      for c in self.string[self.start..self.end].chars() {
+         if c=='\n' && nest_level > 0 {
+            //ignore
+         } else if c=='(' {
+            nest_level += 1;
+            s.push('(');
+         } else if c==')' {
+            nest_level -= 1;
+            s.push(')');
+         } else if nest_level <= 0 && c=='\n' {
+            nest_level = 0;
+            r.push(s);
+            s = String::new();
+         } else {
+            s.push(c);
+         }
+      }
+      r.push(s);
+      r
    }
    pub fn split_once<'a>(&'a self, sep: &'a str) -> Option<(&'a str, &'a str)> {
       self.string[self.start..self.end].split_once(sep)

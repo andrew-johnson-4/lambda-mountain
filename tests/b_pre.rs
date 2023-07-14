@@ -25,6 +25,14 @@ fn print_echo2() {
 }
 
 #[test]
+fn print_echo3() {
+   let mut p = Policy::new();
+   p.s_load("::pre := λs. (s\n s)");
+
+   assert_eq!( p.s_soft("a"), "aa" );
+}
+
+#[test]
 fn print_pat1() {
    let mut p = Policy::new();
    p.s_load("::pre := λ\" s. s\n::pre := λs. s");
