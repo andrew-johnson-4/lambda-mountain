@@ -71,7 +71,9 @@ pub fn parse_rhs(input: StringSlice) -> Result<Vec<Rhs>,String> {
       };
       let cs = StringSlice::new(cs);
       let mut cs = parse_rhs(cs)?;
-      if id.chars().collect::<Vec<char>>().first().unwrap().is_alphabetic() {
+      let c = id.chars().collect::<Vec<char>>();
+      let c = c.first().unwrap();
+      if c.is_alphabetic() && !c.is_uppercase() {
          cs.insert(0, Rhs::Variable(id));
       } else {
          cs.insert(0, Rhs::Literal(id));
@@ -116,7 +118,9 @@ pub fn parse_lhs(input: StringSlice) -> Result<Vec<Lhs>,String> {
       };
       let cs = StringSlice::new(cs);
       let mut cs = parse_lhs(cs)?;
-      if id.chars().collect::<Vec<char>>().first().unwrap().is_alphabetic() {
+      let c = id.chars().collect::<Vec<char>>();
+      let c = c.first().unwrap();
+      if c.is_alphabetic() && !c.is_uppercase() {
          cs.insert(0, Lhs::Variable(id));
       } else {
          cs.insert(0, Lhs::Literal(id));
