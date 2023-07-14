@@ -2,12 +2,12 @@ use crate::ast::*;
 
 use std::rc::Rc;
 use std::collections::HashMap;
-use std::collections::LinkedList;
+use im_lists::list::*;
 
 #[derive(Clone)]
 pub struct Context {
    globals: Rc<HashMap<String,Vec<Rhs>>>,
-   locals: LinkedList<(String,Rhs)>,
+   locals: List<(String,Rhs)>,
    is_null: bool,
 }
 
@@ -15,20 +15,19 @@ impl Context {
    pub fn new(policy: Rc<HashMap<String,Vec<Rhs>>>) -> Context {
       Context {
          globals: policy,
-         locals: LinkedList::new(),
+         locals: List::new(),
          is_null: false,
       }
    }
    pub fn null() -> Context {
       Context {
          globals: Rc::new(HashMap::new()),
-         locals: LinkedList::new(),
+         locals: List::new(),
          is_null: true,
       }
    }
    pub fn bind(self, symbol: String, term: Rhs) -> Context {
-      let mut locals = self.locals.clone();
-      locals.push_front((symbol, term));
+      let locals = List::cons((symbol, term), self.locals);
       Context {
          globals: self.globals.clone(),
          locals: locals,
