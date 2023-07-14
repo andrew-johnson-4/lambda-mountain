@@ -25,28 +25,40 @@ impl Policy {
                      .push(rhs);
       }
    }
-   pub fn hard(&mut self, input: &str) -> String {
+   pub fn hard(&mut self, input: &str) -> Result<Rhs,String> {
       let context = Context::new(Rc::new(self.symbols.clone()));
       let input = StringSlice::new(input.to_string());
       let input = if self.symbols.contains_key("::pre") {
          StringSlice::new(
-            eval_parse(context.clone(), "::pre", input)
+            eval_parse(context.clone(), "::pre", input)?.to_string()
          )
       } else {
          input
       };
       let program = parse_rhs(input);
-      println!("hard: {}", program.iter().map(|t| t.to_string()).collect::<Vec<String>>().join(" ") );
       let post = eval_rhs(context.clone(), &program);
-      post.to_string()
+      Result::Ok( post )
    }
-   pub fn soft(&mut self, input: &str) -> String {
+   pub fn soft(&mut self, input: &str) -> Result<Rhs,String> {
       let context = Context::new(Rc::new(self.symbols.clone()));
       let input = StringSlice::new(input.to_string());
-      if self.symbols.contains_key("::pre") {
-         eval_parse(context.clone(), "::pre", input)
+      let post = if self.symbols.contains_key("::pre") {
+         eval_parse(context.clone(), "::pre", input)?
       } else {
-         input.to_string()
+         Rhs::Literal( input.to_string() )
+      };
+      Result::Ok( post )
+   }
+   pub fn s_hard(&mut self, input: &str) -> String {
+      match self.hard(input) {
+         Result::Ok(r) => r.to_string(),
+         Result::Err(e) => e
+      }
+   }
+   pub fn s_soft(&mut self, input: &str) -> String {
+      match self.soft(input) {
+         Result::Ok(r) => r.to_string(),
+         Result::Err(e) => e
       }
    }
 }

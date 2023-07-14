@@ -24,10 +24,10 @@ fn load_policy(policy: &mut Policy, filename: &str) {
 
 fn eval_soft(policy: &mut Policy) {
    let input = "";
-   println!("{}", policy.soft(input));
+   println!("{}", policy.s_soft(input));
 }
 
 fn eval_hard(policy: &mut Policy) {
    let input = "";
-   println!("{}", policy.hard(input));
+   println!("{}", policy.s_hard(input));
 }

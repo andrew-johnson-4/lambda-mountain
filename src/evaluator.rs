@@ -51,7 +51,7 @@ impl Context {
    }
 }
 
-pub fn eval_parse(context: Context, rule: &str, input: StringSlice) -> String {
+pub fn eval_parse(context: Context, rule: &str, input: StringSlice) -> Result<Rhs,String> {
    for rhs in context.globals.get(rule).expect(rule) {
       if let Rhs::Lambda(lhs,rhs) = rhs {
          let context = destructure_literal(context.clone(), lhs, input.clone());
@@ -68,13 +68,13 @@ pub fn eval_parse(context: Context, rule: &str, input: StringSlice) -> String {
                }
                Rhs::Literal(s)
             } else { rhs };
-            return rhs.to_string();
+            return Result::Ok( rhs.clone() )
          }
       } else {
-         return rhs.to_string();
+         return Result::Ok( rhs.clone() )
       }
    }
-   panic!("Parse Error [{}]: {}", rule, input.to_string())
+   Result::Err( format!("Parse Error [{}]: {}", rule, input.to_string()) )
 }
 
 pub fn destructure_literal(context: Context, lhs: &[Lhs], input: StringSlice) -> Context {
