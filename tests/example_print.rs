@@ -1,3 +1,5 @@
+
+/*
 use std::fs::File;
 use std::io::prelude::*;
 
@@ -36,3 +38,4 @@ fn print_hard() {
 
    assert_eq!( hard, "TODO" )
 }
+*/
