@@ -2,7 +2,7 @@ use crate::ast::*;
 
 pub fn parse_program(input: StringSlice) -> Vec<(String,Rhs)> {
    let mut program = Vec::new();
-   for line in input.string[input.start..input.end].split('\n') {
+   for line in input.split("\n") {
       let line = line.trim();
       if line.starts_with("#") {}
       else if line=="" {}
@@ -14,7 +14,7 @@ pub fn parse_program(input: StringSlice) -> Vec<(String,Rhs)> {
 }
 
 pub fn parse_binding(input: StringSlice) -> (String,Rhs) {
-   let input = input.string[input.start..input.end].trim();
+   let input = input.trim();
    if let Some((symbol,rhs)) = input.split_once(":=") {
       let rhs = parse_rhs(StringSlice::new(rhs.to_string()));
       if rhs.len()==1 {
@@ -28,12 +28,12 @@ pub fn parse_binding(input: StringSlice) -> (String,Rhs) {
 }
 
 pub fn parse_rhs(input: StringSlice) -> Vec<Rhs> {
-   let input = input.string[input.start..input.end].trim();
+   let input = input.trim();
 
-   if input=="" {
+   if input.len()==0 {
       Vec::new()
    } else if input.starts_with("λ") {
-      if let Some((lhs,rhs)) = input["λ".len()..].split_once(".") {
+      if let Some((lhs,rhs)) = input.after("λ".len()).split_once(".") {
          vec![Rhs::Lambda(
             parse_lhs(StringSlice::new(lhs.to_string())),
             parse_rhs(StringSlice::new(rhs.to_string()))
@@ -82,9 +82,9 @@ pub fn parse_rhs(input: StringSlice) -> Vec<Rhs> {
 
 //parse_lhs is same as parse_rhs minus the lambda rule
 pub fn parse_lhs(input: StringSlice) -> Vec<Lhs> {
-   let input = input.string[input.start..input.end].trim();
+   let input = input.trim();
 
-   if input=="" {
+   if input.len()==0 {
       Vec::new()
    } else if input.starts_with("(") {
       let mut app = String::new();

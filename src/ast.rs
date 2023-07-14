@@ -6,6 +6,11 @@ pub struct StringSlice {
    pub start: usize,
    pub end: usize,
 }
+impl std::fmt::Display for StringSlice {
+   fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+      write!(f, "{}", &self.string[self.start..self.end])
+   }
+}
 impl StringSlice {
    pub fn new(s: String) -> StringSlice {
       let s_len = s.len();
@@ -17,6 +22,35 @@ impl StringSlice {
    }
    pub fn len(&self) -> usize {
       self.end - self.start
+   }
+   pub fn chars(&self) -> std::str::Chars {
+      self.string[self.start..self.end].chars()
+   }
+   pub fn split<'a>(&'a self, sep: &'a str) -> std::str::Split<'a, &str> {
+      self.string[self.start..self.end].split(sep)
+   }
+   pub fn split_once<'a>(&'a self, sep: &'a str) -> Option<(&'a str, &'a str)> {
+      self.string[self.start..self.end].split_once(sep)
+   }
+   pub fn trim(&self) -> StringSlice {
+      let mut s = self.clone();
+      while s.start < s.end && (
+         s.string.as_bytes()[s.start] == b' ' ||
+         s.string.as_bytes()[s.start] == b'\t' ||
+         s.string.as_bytes()[s.start] == b'\n' ||
+         s.string.as_bytes()[s.start] == b'\r'
+      ) {
+         s.start += 1;
+      }
+      while s.start < s.end && (
+         s.string.as_bytes()[s.end-1] == b' ' ||
+         s.string.as_bytes()[s.end-1] == b'\t' ||
+         s.string.as_bytes()[s.end-1] == b'\n' ||
+         s.string.as_bytes()[s.end-1] == b'\r'
+      ) {
+         s.end -= 1;
+      }
+      s
    }
    pub fn before(&self, l: usize) -> StringSlice {
       assert!( self.len() >= l );
