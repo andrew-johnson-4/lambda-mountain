@@ -56,7 +56,7 @@ pub fn eval_parse(context: Context, rule: &str, input: StringSlice) -> Result<Rh
       if let Rhs::Lambda(lhs,rhs) = rhs {
          let context = destructure_literal(context.clone(), lhs, input.clone());
          if !context.is_null {
-            let rhs = eval_rhs(context.clone(), rhs);
+            let rhs = eval_rhs(context.clone(), rhs)?;
             let rhs = if let Rhs::App(rs) = rhs {
                let mut s = String::new();
                for rv in rs {
@@ -103,23 +103,26 @@ pub fn destructure_literal(context: Context, lhs: &[Lhs], input: StringSlice) ->
    }
 }
 
-pub fn eval_rhs(context: Context, rhs: &[Rhs]) -> Rhs {
+pub fn eval_rhs(context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
    if rhs.len()==0 {
-      Rhs::App(Vec::new())
+      Result::Ok( Rhs::App(Vec::new()) )
    } else if rhs.len()==1 {
-      if let Rhs::Variable(v) = &rhs[0] {
+      Result::Ok( if let Rhs::Variable(v) = &rhs[0] {
          context.lookup(v)
       } else if let Rhs::App(gs) = &rhs[0] {
-         eval_rhs(context, gs)
+         eval_rhs(context, gs)?
       } else {
          rhs[0].clone()
-      }
+      })
    } else {
-      let gs = rhs.iter().map(|g| eval_rhs(context.clone(), &[g.clone()])).collect::<Vec<Rhs>>();
+      let mut gs = Vec::new();
+      for g in rhs {
+         gs.push( eval_rhs(context.clone(), &[g.clone()])? );
+      }
       if let Rhs::Lambda(lhs,rhs) = &gs[0] {
          let inner_context = destructure_rhs(context.clone(), lhs, &gs[1..]);
          if inner_context.is_null {
-            panic!("Pattern Match Failure: {}", Rhs::App(gs))
+            return Result::Err( format!("Pattern Match Failure: {}", Rhs::App(gs)) )
          }
          eval_rhs(inner_context, rhs)
       } else if let Rhs::Poly(ps) = &gs[0] {
@@ -130,9 +133,9 @@ pub fn eval_rhs(context: Context, rhs: &[Rhs]) -> Rhs {
                return eval_rhs(inner_context, rhs);
             }
          }}
-         panic!("Pattern Match Failure: {}", Rhs::App(gs))
+         Result::Err( format!("Pattern Match Failure: {}", Rhs::App(gs)) )
       } else {
-         Rhs::App(gs)
+         Result::Ok( Rhs::App(gs) )
       }
    }
 }

@@ -3,7 +3,7 @@ use lambda_mountain::Policy;
 #[test]
 fn print_echo0() {
    let mut p = Policy::new();
-   p.load("::pre := λs.");
+   p.s_load("::pre := λs.");
 
    assert_eq!( p.s_soft("a"), "" );
 }
@@ -11,7 +11,7 @@ fn print_echo0() {
 #[test]
 fn print_echo1() {
    let mut p = Policy::new();
-   p.load("::pre := λs. s");
+   p.s_load("::pre := λs. s");
 
    assert_eq!( p.s_soft("a"), "a" );
 }
@@ -19,7 +19,7 @@ fn print_echo1() {
 #[test]
 fn print_echo2() {
    let mut p = Policy::new();
-   p.load("::pre := λs. s s");
+   p.s_load("::pre := λs. s s");
 
    assert_eq!( p.s_soft("a"), "aa" );
 }
@@ -27,7 +27,7 @@ fn print_echo2() {
 #[test]
 fn print_pat1() {
    let mut p = Policy::new();
-   p.load("::pre := λ\" s. s\n::pre := λs. s");
+   p.s_load("::pre := λ\" s. s\n::pre := λs. s");
 
    assert_eq!( p.s_soft("\"a"), "a" );
    assert_eq!( p.s_soft("a"), "a" );
@@ -36,7 +36,7 @@ fn print_pat1() {
 #[test]
 fn print_pat2() {
    let mut p = Policy::new();
-   p.load("::pre := λs \". s\n::pre := λs. s");
+   p.s_load("::pre := λs \". s\n::pre := λs. s");
 
    assert_eq!( p.s_soft("a\""), "a" );
    assert_eq!( p.s_soft("a"), "a" );
@@ -45,7 +45,7 @@ fn print_pat2() {
 #[test]
 fn print_pat3() {
    let mut p = Policy::new();
-   p.load("::pre := λ\" s \". s\n::pre := λs. s");
+   p.s_load("::pre := λ\" s \". s\n::pre := λs. s");
 
    assert_eq!( p.s_soft("\"a\""), "a" );
    assert_eq!( p.s_soft("a"), "a" );

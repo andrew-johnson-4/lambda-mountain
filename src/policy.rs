@@ -15,14 +15,20 @@ impl Policy {
          symbols: HashMap::new()
       }
    }
-   pub fn load(&mut self, input: &str) {
+   pub fn load(&mut self, input: &str) -> Result<(),String> {
       let input = StringSlice::new(input.to_string());
-      for (symbol,rhs) in parse_program(input) {
+      for (symbol,rhs) in parse_program(input)? {
          if !self.symbols.contains_key(&symbol) {
             self.symbols.insert(symbol.clone(), Vec::new());
          }
          self.symbols.get_mut(&symbol).expect("Policy::load")
                      .push(rhs);
+      }
+      Result::Ok(())
+   }
+   pub fn s_load(&mut self, input: &str) {
+      if let Result::Err(e) = self.load(input) {
+         panic!("{}", e);
       }
    }
    pub fn hard(&mut self, input: &str) -> Result<Rhs,String> {
@@ -35,8 +41,8 @@ impl Policy {
       } else {
          input
       };
-      let program = parse_rhs(input);
-      let post = eval_rhs(context.clone(), &program);
+      let program = parse_rhs(input)?;
+      let post = eval_rhs(context.clone(), &program)?;
       Result::Ok( post )
    }
    pub fn soft(&mut self, input: &str) -> Result<Rhs,String> {

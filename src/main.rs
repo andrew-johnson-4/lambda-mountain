@@ -19,7 +19,7 @@ fn load_policy(policy: &mut Policy, filename: &str) {
    let mut p = String::new();
    let mut file = File::open(filename).expect("load_policy: error opening file");
    file.read_to_string(&mut p).expect("load_policy: unable to read to string");
-   policy.load(&p);
+   policy.s_load(&p);
 }
 
 fn eval_soft(policy: &mut Policy) {
