@@ -4,6 +4,8 @@ use crate::evaluator::*;
 
 use std::rc::Rc;
 use std::collections::HashMap;
+use std::fs::File;
+use std::io::Read;
 
 pub struct Policy {
    pub symbols: HashMap<String,Vec<Rhs>>,
@@ -33,6 +35,12 @@ impl Policy {
       if let Result::Err(e) = self.load(input) {
          panic!("{}", e);
       }
+   }
+   pub fn f_load(&mut self, filename: &str) {
+      let mut p = String::new();
+      let mut file = File::open(filename).expect(&format!("Policy::f_load: error opening file {}", filename));
+      file.read_to_string(&mut p).expect("Policy::f_load: unable to read to string");
+      self.s_load(&p);
    }
    pub fn pre(&mut self, input: &str) -> Result<StringSlice, String> {
       let context = Context::new(Rc::new(self.symbols.clone()));

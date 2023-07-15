@@ -94,11 +94,11 @@ impl StringSlice {
    }
    pub fn starts_with(&self, v: &str) -> bool {
       self.len() >= v.len() &&
-      self.string[self.start..self.start+v.len()].as_bytes() == v.as_bytes()
+      &self.string.as_bytes()[self.start..self.start+v.len()] == v.as_bytes()
    }
    pub fn ends_with(&self, v: &str) -> bool {
       self.len() >= v.len() &&
-      self.string[(self.end-v.len())..self.end].as_bytes() == v.as_bytes()
+      &self.string.as_bytes()[(self.end-v.len())..self.end] == v.as_bytes()
    }
    pub fn to_string(&self) -> String {
       self.string[self.start..self.end].to_string()
