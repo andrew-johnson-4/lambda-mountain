@@ -24,7 +24,7 @@ pub fn repl_start_session(policy: &mut Policy) {
          }}
       } else {
          let input = StringSlice::new(input);
-         match parse_rhs(input) { Result::Err(e) => {
+         match parse_many_rhs(input) { Result::Err(e) => {
             println!("{}", e);
          }, Result::Ok(program) => {
             match eval_rhs(context.clone(), &program) { Result::Err(e) => {

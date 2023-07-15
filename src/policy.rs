@@ -55,7 +55,7 @@ impl Policy {
    }
    pub fn infer(&mut self, input: StringSlice) -> Result<Vec<Rhs>,String> {
       let context = Context::new(Rc::new(self.symbols.clone()));
-      let rhs = parse_rhs(input)?;
+      let rhs = parse_many_rhs(input)?;
       if self.symbols.contains_key("::infer") {
          Result::Ok(
             eval_lazy(context.clone(), Rhs::Variable("::infer".to_string()), &[

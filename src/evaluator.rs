@@ -86,13 +86,13 @@ pub fn destructure_literal(context: Context, lhs: &[Rhs], input: StringSlice) ->
       }
    } else if let Rhs::Literal(v) = &lhs[0] {
       if input.starts_with(v) {
-         destructure_literal( context, &lhs[1..], input.after(v.len()) )
+         destructure_literal( context, &lhs[1..], input.after(v) )
       } else {
          Context::null()
       }
    } else if let Rhs::Literal(v) = &lhs[lhs.len()-1] {
       if input.ends_with(v) {
-         destructure_literal( context, &lhs[..lhs.len()-1], input.before(v.len()) )
+         destructure_literal( context, &lhs[..lhs.len()-1], input.before(v) )
       } else {
          Context::null()
       }
