@@ -10,7 +10,7 @@
    let tctx (cons (x typeofx))
    let typeofy (eval tctx y)
    (:
-      (lambda (: x typeofx). (eval tctx y))
+      (lambda (: x typeofx) . (eval tctx y))
       (Arrow typeofx typeofy)
    )
 )

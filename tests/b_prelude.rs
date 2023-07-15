@@ -12,3 +12,9 @@ fn print_match0() {
    assert_eq!( p.s_hard("match 1 ((λ1. 2) (λ3. 4))"), "2" );
    assert_eq!( p.s_hard("match 3 ((λ1. 2) (λ3. 4))"), "4" );
 }
+
+#[test]
+fn print_lambda0() {
+   let mut p = Policy::new();
+   assert_eq!( p.s_hard("lambda w x . y z"), "(λw x.y z)" );
+}

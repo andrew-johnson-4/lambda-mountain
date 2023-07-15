@@ -134,21 +134,52 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
       return Result::Ok( Rhs::App(Vec::new()) );
    }
    if rhs.len()==1 {
-      return Result::Ok( if let Rhs::Variable(v) = &rhs[0] {
-         context.lookup(v)
+      if let Rhs::Variable(v) = &rhs[0] {
+         return Result::Ok(context.lookup(v));
       } else if let Rhs::App(gs) = &rhs[0] {
-         eval_rhs(context, gs)?
+         return eval_rhs(context, gs);
       } else {
-         rhs[0].clone()
-      });
+         return Result::Ok(rhs[0].clone());
+      }
+   }
+   if let Rhs::Literal(tag) = &rhs[0] {
+      let mut ps = Vec::new();
+      for a in rhs[1..].iter() {
+         ps.push( eval_rhs(context.clone(), &[a.clone()])? );
+      }
+      ps.insert(0, rhs[0].clone());
+      return Result::Ok(Rhs::App(ps));
    }
    if let [Rhs::Variable(op), x] = rhs {
    if op == "lazy" {
       return Result::Ok(x.clone());
    }}
+   if let Rhs::Variable(op) = &rhs[0] {
+   if op == "lambda" {
+      println!("lambda");
+      let mut l = Vec::new();
+      let mut r = Vec::new();
+      let mut left = true;
+      for ai in 1..rhs.len() {
+         println!("lambda {}", rhs[ai]);
+         if let Rhs::Literal(a) = &rhs[ai] {
+         if a=="." {
+            left = false;
+            continue
+         }}
+         let a = eval_rhs( context.clone(), &[rhs[ai].clone()] )?;
+         if left {
+            l.push(a);
+         } else {
+            r.push(a);
+         }
+      }
+      return Result::Ok(Rhs::Lambda(l,r));
+   }}
    if let [Rhs::Variable(op), x, ps] = rhs {
    if op == "match" {
       let x = eval_rhs(context.clone(), &[x.clone()])?;
+      println!("match {} {}", x, ps);
       if let Rhs::App(ps) = ps {
       for p in ps {
       if let Rhs::Lambda(lhs,rhs) = p {
