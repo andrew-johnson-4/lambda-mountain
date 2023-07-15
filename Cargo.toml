@@ -9,6 +9,9 @@ readme = "README.md"
 repository = "https://github.com/andrew-johnson-4/-"
 keywords = ["programming-language","interpreter","compiler"]
 
+[[bin]]
+name = "lm"
+
 [dependencies]
 im-lists   = { version = "0.4" }
 

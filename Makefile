@@ -1,7 +1,7 @@
 test:
 	cargo install --path .
 	cargo test -- --nocapture
-	lambda_mountain repl
+	lm repl
 
 tex:
 	pdflatex calligraphy.tex
