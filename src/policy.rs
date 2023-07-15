@@ -58,6 +58,9 @@ impl Policy {
       };
       Result::Ok( post )
    }
+   pub fn infer(&mut self, input: &str) -> Result<Rhs,String> {
+      unimplemented!("Policy::infer")
+   }
    pub fn s_hard(&mut self, input: &str) -> String {
       match self.hard(input) {
          Result::Ok(r) => r.to_string(),
@@ -66,6 +69,12 @@ impl Policy {
    }
    pub fn s_soft(&mut self, input: &str) -> String {
       match self.soft(input) {
+         Result::Ok(r) => r.to_string(),
+         Result::Err(e) => e
+      }
+   }
+   pub fn s_infer(&mut self, input: &str) -> String {
+      match self.infer(input) {
          Result::Ok(r) => r.to_string(),
          Result::Err(e) => e
       }
