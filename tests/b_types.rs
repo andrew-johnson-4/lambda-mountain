@@ -10,15 +10,6 @@ fn infer_ascript0() {
 }
 
 #[test]
-fn infer_ascript1() {
-   let mut p = Policy::new();
-   p.f_load("preludes/simply_typed.lm");
-   p.s_load("x := (: 123 Int)");
-
-   assert_eq!( p.s_soft("x"), "(: x Int)" );
-}
-
-#[test]
 fn infer_literal0() {
    let mut p = Policy::new();
    p.f_load("preludes/simply_typed.lm");

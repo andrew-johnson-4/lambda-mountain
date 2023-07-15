@@ -127,40 +127,65 @@ pub fn eval_lazy(context: Context, f: Rhs, xs: &[Rhs]) -> Result<Rhs,String> {
    }
 }
 
-pub fn eval_rhs(context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
+pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
    if rhs.len()==0 {
-      Result::Ok( Rhs::App(Vec::new()) )
-   } else if rhs.len()==1 {
-      Result::Ok( if let Rhs::Variable(v) = &rhs[0] {
+      return Result::Ok( Rhs::App(Vec::new()) );
+   }
+   if rhs.len()==1 {
+      return Result::Ok( if let Rhs::Variable(v) = &rhs[0] {
          context.lookup(v)
       } else if let Rhs::App(gs) = &rhs[0] {
          eval_rhs(context, gs)?
       } else {
          rhs[0].clone()
-      })
-   } else {
-      let mut gs = Vec::new();
-      for g in rhs {
-         gs.push( eval_rhs(context.clone(), &[g.clone()])? );
-      }
-      if let Rhs::Lambda(lhs,rhs) = &gs[0] {
-         let inner_context = destructure_rhs(context.clone(), lhs, &gs[1..]);
-         if inner_context.is_null {
-            return Result::Err( format!("Pattern Match Failure: {}", Rhs::App(gs)) )
+      });
+   }
+   if let [Rhs::Variable(op), x, ps] = rhs {
+   if op == "match" {
+      let x = eval_rhs(context.clone(), &[x.clone()])?;
+      if let Rhs::App(ps) = ps {
+      for p in ps {
+      if let Rhs::Lambda(lhs,rhs) = p {
+         let inner_context = destructure_rhs(context.clone(), lhs, &[x.clone()]);
+         if !inner_context.is_null {
+            return eval_rhs(inner_context, rhs);
          }
-         eval_rhs(inner_context, rhs)
-      } else if let Rhs::Poly(ps) = &gs[0] {
-         for p in ps {
-         if let Rhs::Lambda(lhs,rhs) = p {
-            let inner_context = destructure_rhs(context.clone(), lhs, &gs[1..]);
-            if !inner_context.is_null {
-               return eval_rhs(inner_context, rhs);
-            }
-         }}
-         Result::Err( format!("Pattern Match Failure: {}", Rhs::App(gs)) )
-      } else {
-         Result::Ok( Rhs::App(gs) )
+      }}}
+      return Result::Err( format!("Pattern Match Failure: {}", Rhs::App(rhs.to_vec())) )
+   }}
+   if let [Rhs::Variable(op), cs, x] = rhs {
+   if op == "ctx" {
+      let x = eval_rhs(context.clone(), &[x.clone()])?;
+      let cs = eval_rhs(context.clone(), &[x.clone()])?;
+      if let Rhs::App(cs) = cs {
+      for c in cs {
+      if let Rhs::App(c) = c {
+      if let [Rhs::Variable(cv), ct] = &c[..] {
+         context = context.bind(cv.clone(), ct.clone());
+      }}}}
+      return eval_rhs(context.clone(), &[x.clone()]);
+   }}
+   let mut gs = Vec::new();
+   for g in rhs {
+      gs.push( eval_rhs(context.clone(), &[g.clone()])? );
+   }
+   if let Rhs::Lambda(lhs,rhs) = &gs[0] {
+      let inner_context = destructure_rhs(context.clone(), lhs, &gs[1..]);
+      if inner_context.is_null {
+         return Result::Err( format!("Pattern Match Failure: {}", Rhs::App(gs)) )
       }
+      return eval_rhs(inner_context, rhs);
+   } else if let Rhs::Poly(ps) = &gs[0] {
+      for p in ps {
+      if let Rhs::Lambda(lhs,rhs) = p {
+         let inner_context = destructure_rhs(context.clone(), lhs, &gs[1..]);
+         if !inner_context.is_null {
+            return eval_rhs(inner_context, rhs);
+         }
+      }}
+      return Result::Err( format!("Pattern Match Failure: {}", Rhs::App(gs)) );
+   } else {
+      return Result::Ok( Rhs::App(gs) );
    }
 }
 
