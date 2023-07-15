@@ -26,31 +26,32 @@ impl StringSlice {
    pub fn chars(&self) -> std::str::Chars {
       self.string[self.start..self.end].chars()
    }
-   pub fn split<'a>(&'a self, sep: &'a str) -> Vec<String> {
-      if sep != "\n" {
-         return self.string[self.start..self.end].split(sep).map(|s|s.to_string()).collect::<Vec<String>>();
-      }
+   pub fn split<'a>(&'a self, sep: char) -> Vec<String> {
       let mut r = Vec::new();
       let mut s = String::new();
       let mut nest_level = 0;
       for c in self.string[self.start..self.end].chars() {
          if c=='\n' && nest_level > 0 {
-            //ignore
+            //ignore nested line breaks
          } else if c=='(' {
             nest_level += 1;
             s.push('(');
          } else if c==')' {
             nest_level -= 1;
             s.push(')');
-         } else if nest_level <= 0 && c=='\n' {
+         } else if nest_level <= 0 && c==sep {
             nest_level = 0;
-            r.push(s);
+            if s.len()>0 {
+               r.push(s);
+            }
             s = String::new();
          } else {
             s.push(c);
          }
       }
-      r.push(s);
+      if s.len() > 0 {
+         r.push(s);
+      }
       r
    }
    pub fn split_once<'a>(&'a self, sep: &'a str) -> Option<(String, String)> {
@@ -108,19 +109,19 @@ impl StringSlice {
       }
       s
    }
-   pub fn before(&self, l: usize) -> StringSlice {
-      assert!( self.len() >= l );
+   pub fn before(&self, s: &str) -> StringSlice {
+      assert!( self.len() >= s.len() );
       StringSlice {
          string: self.string.clone(),
          start: self.start,
-         end: self.end - l,
+         end: self.end - s.len(),
       }
    }
-   pub fn after(&self, l: usize) -> StringSlice {
-      assert!( self.len() >= l );
+   pub fn after(&self, s: &str) -> StringSlice {
+      assert!( self.len() >= s.len() );
       StringSlice {
          string: self.string.clone(),
-         start: self.start + l,
+         start: self.start + s.len(),
          end: self.end,
       }
    }
