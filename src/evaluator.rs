@@ -128,6 +128,7 @@ pub fn eval_lazy(context: Context, f: Rhs, xs: &[Rhs]) -> Result<Rhs,String> {
 }
 
 pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
+   println!("eval_rhs {}", Rhs::App(rhs.to_vec()));
    if rhs.len()==0 {
       return Result::Ok( Rhs::App(Vec::new()) );
    }
@@ -151,7 +152,11 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
             return eval_rhs(inner_context, rhs);
          }
       }}}
-      return Result::Err( format!("Pattern Match Failure: {}", Rhs::App(rhs.to_vec())) )
+      return Result::Err( format!("Pattern Match Failure: {}", Rhs::App(vec![
+         Rhs::Variable("match".to_string()),
+         x.clone(),
+         ps.clone(),
+      ])) )
    }}
    if let [Rhs::Variable(op), cs, x] = rhs {
    if op == "ctx" {
@@ -164,6 +169,12 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
          context = context.bind(cv.clone(), ct.clone());
       }}}}
       return eval_rhs(context.clone(), &[x.clone()]);
+   }}
+   if let [Rhs::Variable(op), Rhs::Variable(v), t] = &rhs[..2] {
+   if op == "let" {
+      let t = eval_rhs(context.clone(), &[t.clone()])?;
+      context = context.bind(v.clone(), t.clone());
+      return eval_rhs(context.clone(), &rhs[2..]);
    }}
    let mut gs = Vec::new();
    for g in rhs {
@@ -206,6 +217,9 @@ pub fn destructure_rhs(mut context: Context, lhs: &[Lhs], rhs: &[Rhs]) -> Contex
       return Context::null();
    }
    for (l,r) in std::iter::zip(lhs,rhs) {
+      if context.is_null {
+         return context;
+      }
       if let (Lhs::App(ls),Rhs::App(rs)) = (l,r) {
          context = destructure_rhs(context,ls,rs);
       } else if let (Lhs::Variable(lv),rv) = (l,r) {
