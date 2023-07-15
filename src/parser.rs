@@ -28,7 +28,6 @@ pub fn parse_binding(input: StringSlice) -> Result<(String,Rhs),String> {
 }
 
 pub fn parse_many_rhs(input: StringSlice) -> Result<Vec<Rhs>,String> {
-   println!("parse_many_rhs: '{}'", input);
    let input = input.trim();
    if input.starts_with("λ") {
       return Result::Ok(vec![ parse_one_rhs(input)? ]);
@@ -42,7 +41,6 @@ pub fn parse_many_rhs(input: StringSlice) -> Result<Vec<Rhs>,String> {
 }
 
 pub fn parse_one_rhs(input: StringSlice) -> Result<Rhs,String> {
-   println!("parse_one_rhs: '{}'", input);
    let input = input.trim();
    if input.starts_with("λ") {
       if let Some((lhs,rhs)) = input.after("λ").split_once(".") {

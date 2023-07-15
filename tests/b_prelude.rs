@@ -3,7 +3,7 @@ use lambda_mountain::Policy;
 #[test]
 fn print_let0() {
    let mut p = Policy::new();
-   assert_eq!( p.s_hard("let (x 1) x"), "1" );
+   assert_eq!( p.s_hard("let x 1 x"), "1" );
 }
 
 #[test]

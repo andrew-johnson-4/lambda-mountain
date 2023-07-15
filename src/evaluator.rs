@@ -175,12 +175,13 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
       }}}}
       return eval_rhs(context.clone(), &[x.clone()]);
    }}
-   if let [Rhs::Variable(op), Rhs::Variable(v), t] = &rhs[..2] {
+   if rhs.len()>3 {
+   if let [Rhs::Variable(op), Rhs::Variable(k), v] = &rhs[..3] {
    if op == "let" {
-      let t = eval_rhs(context.clone(), &[t.clone()])?;
-      context = context.bind(v.clone(), t.clone());
-      return eval_rhs(context.clone(), &rhs[2..]);
-   }}
+      let t = eval_rhs(context.clone(), &[v.clone()])?;
+      context = context.bind(k.clone(), v.clone());
+      return eval_rhs(context.clone(), &rhs[3..]);
+   }}}
    let mut gs = Vec::new();
    for g in rhs {
       gs.push( eval_rhs(context.clone(), &[g.clone()])? );

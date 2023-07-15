@@ -7,8 +7,8 @@
 
 #infer_abstraction
 ::infer := λtctx (λ(: x typeofx). y). (
-   let (tctx (cons (x typeofx)))
-   let (typeofy (eval tctx y))
+   let tctx (cons (x typeofx))
+   let typeofy (eval tctx y)
    (:
       (lambda (: x typeofx). (eval tctx y))
       (Arrow typeofx typeofy)
