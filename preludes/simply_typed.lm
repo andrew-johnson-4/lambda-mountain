@@ -1,13 +1,13 @@
 
 #infer_ascription
-infer := λtctx (: x typeofx). (: x typeofx)
+::infer := λtctx (: x typeofx). (: x typeofx)
 
 #infer_constant
-infer := λtctx (~ x Int). (: x Int)
-infer := λtctx (~ x Float). (: x Float)
+::infer := λtctx (~ x Int). (: x Int)
+::infer := λtctx (~ x Float). (: x Float)
 
 #infer_abstraction
-infer := λtctx (λ(: x typeofx). y). (
+::infer := λtctx (λ(: x typeofx). y). (
    let (tctx (cons (x typeofx)))
    let (typeofy (eval tctx y))
    (:
@@ -17,7 +17,7 @@ infer := λtctx (λ(: x typeofx). y). (
 ))
 
 #infer_application
-infer := λtctx (f x). (match ((infer tctx f) (infer tctx x))
+::infer := λtctx (f x). (match ((infer tctx f) (infer tctx x))
    λ ((: f (Arrow typeofx typeofy)) (: x typeofx)).
    : ((: f typeoff) (: x typeofx)) typeofy
 )

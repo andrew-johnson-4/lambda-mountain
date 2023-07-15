@@ -151,4 +151,11 @@ impl Rhs {
          Rhs::App(rhs)
       }
    }
+   pub fn as_vec(&self) -> Vec<Rhs> {
+      if let Rhs::App(rhs) = self {
+         rhs.clone()
+      } else {
+         vec![self.clone()]
+      }
+   }
 }

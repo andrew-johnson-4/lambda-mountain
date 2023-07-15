@@ -103,6 +103,30 @@ pub fn destructure_literal(context: Context, lhs: &[Lhs], input: StringSlice) ->
    }
 }
 
+pub fn eval_lazy(context: Context, f: Rhs, xs: &[Rhs]) -> Result<Rhs,String> {
+   let f = eval_rhs(context.clone(), &[f])?;
+   if let Rhs::Lambda(lhs,rhs) = &f {
+      let inner_context = destructure_rhs(context.clone(), lhs, xs);
+      if inner_context.is_null {
+         return Result::Err( format!("Pattern Match Failure: {}", Rhs::App(xs.to_vec())) )
+      }
+      eval_rhs(inner_context, rhs)
+   } else if let Rhs::Poly(ps) = &f {
+      for p in ps {
+      if let Rhs::Lambda(lhs,rhs) = p {
+         let inner_context = destructure_rhs(context.clone(), lhs, xs);
+         if !inner_context.is_null {
+            return eval_rhs(inner_context, rhs);
+         }
+      }}
+      Result::Err( format!("Pattern Match Failure: {}", Rhs::App(xs.to_vec())) )
+   } else {
+      let mut r = xs.to_vec();
+      r.insert(0, f);
+      Result::Ok(Rhs::App(r))
+   }
+}
+
 pub fn eval_rhs(context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
    if rhs.len()==0 {
       Result::Ok( Rhs::App(Vec::new()) )

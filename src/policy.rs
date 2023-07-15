@@ -54,8 +54,18 @@ impl Policy {
       }    
    }
    pub fn infer(&mut self, input: StringSlice) -> Result<Vec<Rhs>,String> {
+      let context = Context::new(Rc::new(self.symbols.clone()));
       let rhs = parse_rhs(input)?;
-      Result::Ok(rhs)
+      if self.symbols.contains_key("::infer") {
+         Result::Ok(
+            eval_lazy(context.clone(), Rhs::Variable("::infer".to_string()), &[
+               Rhs::App(Vec::new()),
+               Rhs::naked(rhs),
+            ])?.as_vec()
+         )
+      } else {
+         Result::Ok(rhs)
+      }
    }
    pub fn hard(&mut self, input: &str) -> Result<Rhs,String> {
       let context = Context::new(Rc::new(self.symbols.clone()));
