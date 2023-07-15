@@ -141,6 +141,10 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
          rhs[0].clone()
       });
    }
+   if let [Rhs::Variable(op), x] = rhs {
+   if op == "lazy" {
+      return Result::Ok(x.clone());
+   }}
    if let [Rhs::Variable(op), x, ps] = rhs {
    if op == "match" {
       let x = eval_rhs(context.clone(), &[x.clone()])?;
