@@ -53,8 +53,40 @@ impl StringSlice {
       r.push(s);
       r
    }
-   pub fn split_once<'a>(&'a self, sep: &'a str) -> Option<(&'a str, &'a str)> {
-      self.string[self.start..self.end].split_once(sep)
+   pub fn split_once<'a>(&'a self, sep: &'a str) -> Option<(String, String)> {
+      if sep.len()>1 {
+         if let Some((l,r)) = self.string[self.start..self.end].split_once(sep) {
+            Some((l.to_string(), r.to_string()))
+         } else {
+            None
+         }
+      } else {
+         let mut sep = sep.chars();
+         let sep = sep.next().unwrap();
+         let mut nest_level = 0;
+         let mut sepd = false;
+         let mut l = String::new();
+         let mut r = String::new();
+         for c in self.string[self.start..self.end].chars() {
+            if c=='(' {
+               nest_level += 1;
+            } else if c==')' {
+               nest_level -= 1;
+            }
+            if sepd {
+               r.push(c);
+            } else if nest_level==0 && c==sep {
+               sepd = true;
+            } else {
+               l.push(c);
+            }
+         }
+         if sepd {
+            Some((l,r))
+         } else {
+            None
+         }
+      }
    }
    pub fn trim(&self) -> StringSlice {
       let mut s = self.clone();

@@ -35,7 +35,7 @@ pub fn parse_rhs(input: StringSlice) -> Result<Vec<Rhs>,String> {
    } else if input.starts_with("λ") {
       if let Some((lhs,rhs)) = input.after("λ".len()).split_once(".") {
          Result::Ok( vec![Rhs::Lambda(
-            parse_lhs(StringSlice::new(lhs.to_string()))?,
+            parse_rhs(StringSlice::new(lhs.to_string()))?,
             parse_rhs(StringSlice::new(rhs.to_string()))?
          )] )
       } else {
@@ -71,53 +71,6 @@ pub fn parse_rhs(input: StringSlice) -> Result<Vec<Rhs>,String> {
       };
       let cs = StringSlice::new(cs);
       let mut cs = parse_rhs(cs)?;
-      let c = id.chars().collect::<Vec<char>>();
-      let c = c.first().unwrap();
-      if c.is_alphabetic() && !c.is_uppercase() {
-         cs.insert(0, Rhs::Variable(id));
-      } else {
-         cs.insert(0, Rhs::Literal(id));
-      }
-      Result::Ok( cs )
-   }
-}
-
-//parse_lhs is same as parse_rhs minus the lambda rule
-pub fn parse_lhs(input: StringSlice) -> Result<Vec<Rhs>,String> {
-   let input = input.trim();
-
-   if input.len()==0 {
-      Result::Ok( Vec::new() )
-   } else if input.starts_with("(") {
-      let mut app = String::new();
-      let mut rem = String::new();
-      let mut nest_level = 1;
-      for c in input.chars().skip(1) {
-         if nest_level==0 {
-            rem.push(c);
-         } else if c=='(' {
-            app.push('(');
-            nest_level += 1;
-         } else if c==')' {
-            nest_level -= 1;
-            if nest_level > 0 {
-               app.push(')');
-            }
-         } else {
-            app.push(c);
-         }
-      }
-      let mut cs = parse_lhs(StringSlice::new(rem))?;
-      cs.insert(0, Rhs::App( parse_lhs(StringSlice::new(app))? ) );
-      Result::Ok( cs )
-   } else {
-      let (id,cs) = if let Some((id,cs)) = input.split_once(" ") {
-         (id.to_string(), cs.to_string())
-      } else {
-         (input.to_string(), "".to_string())
-      };
-      let cs = StringSlice::new(cs);
-      let mut cs = parse_lhs(cs)?;
       let c = id.chars().collect::<Vec<char>>();
       let c = c.first().unwrap();
       if c.is_alphabetic() && !c.is_uppercase() {
