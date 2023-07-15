@@ -165,6 +165,18 @@ pub fn eval_rhs(context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
 }
 
 pub fn destructure_rhs(mut context: Context, lhs: &[Lhs], rhs: &[Rhs]) -> Context {
+   if lhs.len()==3 {
+   if let [Lhs::Literal(lop),Lhs::Variable(lv),Lhs::Literal(lc)] = lhs {
+   if lop=="~" {
+   if let Rhs::Literal(rv) = &rhs[0] {
+      if lc=="Int" && rv.chars().all(|c| c.is_digit(10) || c=='_') {
+         return context.bind(lv.clone(), rhs[0].clone());
+      } else if lc=="Float" && rv.chars().all(|c| c.is_digit(10) || c=='_' || c=='.') {
+         return context.bind(lv.clone(), rhs[0].clone());
+      } else {
+         return Context::null();
+      }
+   }}}}
    if lhs.len() != rhs.len() {
       return Context::null();
    }
@@ -177,6 +189,8 @@ pub fn destructure_rhs(mut context: Context, lhs: &[Lhs], rhs: &[Rhs]) -> Contex
          if ll != rl {
             return Context::null();
          }
+      } else if let (Lhs::App(ls),Rhs::Literal(_)) = (l,r) {
+         context = destructure_rhs(context, &ls, &[r.clone()]);
       } else {
          return Context::null();
       }

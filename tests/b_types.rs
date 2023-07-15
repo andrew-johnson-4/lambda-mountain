@@ -24,7 +24,7 @@ fn infer_literal0() {
    p.f_load("preludes/simply_typed.lm");
 
    assert_eq!( p.s_soft("1"), "(: 1 Int)" );
-   assert_eq!( p.s_soft("1.2"), "(: 1 Float)" );
+   assert_eq!( p.s_soft("1.2"), "(: 1.2 Float)" );
 }
 
 #[test]
