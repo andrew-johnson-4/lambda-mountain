@@ -7,14 +7,13 @@
 
 #infer_abstraction
 ::infer := λtctx (λ(: x typeofx). y). (
-   infer_abstraction
+   let (tctx (cons (x typeofx)))
+   let (typeofy (eval tctx y))
+   (:
+      (lambda (: x typeofx). (eval tctx y))
+      (Arrow typeofx typeofy)
+   )
 )
-#   let (tctx (cons (x typeofx)))
-#   let (typeofy (eval tctx y))
-#   (:
-#      (lambda (: x typeofx). (eval tctx y))
-#      (Arrow typeofx typeofy)
-#   )
 
 #infer_application
 #::infer := λtctx (f x). (match ((infer tctx f) (infer tctx x))
@@ -23,6 +22,6 @@
 #)
 
 #infer_variable
-::infer := λtctx x. match (ctx tctx x) (
-   (λ(x typeofx). (: x typeofx))
-)
+#::infer := λtctx x. match (ctx tctx x) (
+#   (λ(x typeofx). (: x typeofx))
+#)

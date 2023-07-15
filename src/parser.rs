@@ -41,6 +41,24 @@ pub fn parse_rhs(input: StringSlice) -> Result<Vec<Rhs>,String> {
       } else {
          Result::Err( format!("Syntax Error: {}", input) )
       }
+   } else if input.starts_with("(λ") {
+      let mut nest_level = 1;
+      let mut inner = String::new();
+      for c in input.chars().skip(1) {
+         if nest_level==0 {
+         } else if c=='(' {
+            inner.push('(');
+            nest_level += 1;
+         } else if c==')' {
+            nest_level -= 1;
+            if nest_level > 0 {
+               inner.push(')');
+            }
+         } else {
+            inner.push(c);
+         }
+      }
+      parse_rhs(StringSlice::new(inner))
    } else if input.starts_with("(") {
       let mut app = String::new();
       let mut rem = String::new();

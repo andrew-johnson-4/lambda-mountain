@@ -104,6 +104,7 @@ pub fn destructure_literal(context: Context, lhs: &[Rhs], input: StringSlice) ->
 }
 
 pub fn eval_lazy(context: Context, f: Rhs, xs: &[Rhs]) -> Result<Rhs,String> {
+   println!("eval_lazy {} {}", f, Rhs::App(xs.to_vec()));
    let f = eval_rhs(context.clone(), &[f])?;
    if let Rhs::Lambda(lhs,rhs) = &f {
       let inner_context = destructure_rhs(context.clone(), lhs, xs);
