@@ -34,32 +34,31 @@ impl Policy {
          panic!("{}", e);
       }
    }
+   pub fn pre(&mut self, input: &str) -> Result<StringSlice, String> {
+      let context = Context::new(Rc::new(self.symbols.clone()));
+      let input = StringSlice::new(input.to_string());
+      if self.symbols.contains_key("::pre") {
+         Result::Ok(StringSlice::new(
+            eval_parse(context.clone(), "::pre", input)?.to_string()
+         ))
+      } else {
+         Result::Ok(input)
+      }    
+   }
+   pub fn infer(&mut self, input: StringSlice) -> Result<Vec<Rhs>,String> {
+      let rhs = parse_rhs(input)?;
+      Result::Ok(rhs)
+   }
    pub fn hard(&mut self, input: &str) -> Result<Rhs,String> {
       let context = Context::new(Rc::new(self.symbols.clone()));
-      let input = StringSlice::new(input.to_string());
-      let input = if self.symbols.contains_key("::pre") {
-         StringSlice::new(
-            eval_parse(context.clone(), "::pre", input)?.to_string()
-         )
-      } else {
-         input
-      };
-      let program = parse_rhs(input)?;
-      let post = eval_rhs(context.clone(), &program)?;
-      Result::Ok( post )
+      let input = self.pre(input)?;
+      let program = self.infer(input)?;
+      Result::Ok( eval_rhs(context.clone(), &program)? )
    }
    pub fn soft(&mut self, input: &str) -> Result<Rhs,String> {
-      let context = Context::new(Rc::new(self.symbols.clone()));
-      let input = StringSlice::new(input.to_string());
-      let post = if self.symbols.contains_key("::pre") {
-         eval_parse(context.clone(), "::pre", input)?
-      } else {
-         Rhs::Literal( input.to_string() )
-      };
-      Result::Ok( post )
-   }
-   pub fn infer(&mut self, input: &str) -> Result<Rhs,String> {
-      unimplemented!("Policy::infer")
+      let input = self.pre(input)?;
+      let program = self.infer(input)?;
+      Result::Ok( Rhs::naked(program) )
    }
    pub fn s_hard(&mut self, input: &str) -> String {
       match self.hard(input) {
@@ -69,12 +68,6 @@ impl Policy {
    }
    pub fn s_soft(&mut self, input: &str) -> String {
       match self.soft(input) {
-         Result::Ok(r) => r.to_string(),
-         Result::Err(e) => e
-      }
-   }
-   pub fn s_infer(&mut self, input: &str) -> String {
-      match self.infer(input) {
          Result::Ok(r) => r.to_string(),
          Result::Err(e) => e
       }

@@ -143,4 +143,12 @@ impl std::fmt::Display for Rhs {
       }
    }
 }
-
+impl Rhs {
+   pub fn naked(rhs: Vec<Rhs>) -> Rhs {
+      if rhs.len()==1 {
+         rhs[0].clone()
+      } else {
+         Rhs::App(rhs)
+      }
+   }
+}

@@ -5,7 +5,7 @@ fn print_echo0() {
    let mut p = Policy::new();
    p.s_load("::pre := λs.");
 
-   assert_eq!( p.s_soft("a"), "" );
+   assert_eq!( p.s_soft("a"), "()" );
 }
 
 #[test]
