@@ -83,7 +83,7 @@ pub fn parse_rhs(input: StringSlice) -> Result<Vec<Rhs>,String> {
 }
 
 //parse_lhs is same as parse_rhs minus the lambda rule
-pub fn parse_lhs(input: StringSlice) -> Result<Vec<Lhs>,String> {
+pub fn parse_lhs(input: StringSlice) -> Result<Vec<Rhs>,String> {
    let input = input.trim();
 
    if input.len()==0 {
@@ -108,7 +108,7 @@ pub fn parse_lhs(input: StringSlice) -> Result<Vec<Lhs>,String> {
          }
       }
       let mut cs = parse_lhs(StringSlice::new(rem))?;
-      cs.insert(0, Lhs::App( parse_lhs(StringSlice::new(app))? ) );
+      cs.insert(0, Rhs::App( parse_lhs(StringSlice::new(app))? ) );
       Result::Ok( cs )
    } else {
       let (id,cs) = if let Some((id,cs)) = input.split_once(" ") {
@@ -121,9 +121,9 @@ pub fn parse_lhs(input: StringSlice) -> Result<Vec<Lhs>,String> {
       let c = id.chars().collect::<Vec<char>>();
       let c = c.first().unwrap();
       if c.is_alphabetic() && !c.is_uppercase() {
-         cs.insert(0, Lhs::Variable(id));
+         cs.insert(0, Rhs::Variable(id));
       } else {
-         cs.insert(0, Lhs::Literal(id));
+         cs.insert(0, Rhs::Literal(id));
       }
       Result::Ok( cs )
    }

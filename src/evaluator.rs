@@ -77,26 +77,26 @@ pub fn eval_parse(context: Context, rule: &str, input: StringSlice) -> Result<Rh
    Result::Err( format!("Parse Error [{}]: {}", rule, input.to_string()) )
 }
 
-pub fn destructure_literal(context: Context, lhs: &[Lhs], input: StringSlice) -> Context {
+pub fn destructure_literal(context: Context, lhs: &[Rhs], input: StringSlice) -> Context {
    if lhs.len()==0 {
       if input.len()==0 {
          context
       } else {
          Context::null()
       }
-   } else if let Lhs::Literal(v) = &lhs[0] {
+   } else if let Rhs::Literal(v) = &lhs[0] {
       if input.starts_with(v) {
          destructure_literal( context, &lhs[1..], input.after(v.len()) )
       } else {
          Context::null()
       }
-   } else if let Lhs::Literal(v) = &lhs[lhs.len()-1] {
+   } else if let Rhs::Literal(v) = &lhs[lhs.len()-1] {
       if input.ends_with(v) {
          destructure_literal( context, &lhs[..lhs.len()-1], input.before(v.len()) )
       } else {
          Context::null()
       }
-   } else if let Lhs::Variable(v) = &lhs[0] {
+   } else if let Rhs::Variable(v) = &lhs[0] {
       context.bind(v.clone(), Rhs::Literal(input.to_string()) )
    } else {
       unimplemented!("evaluator::destructure_literal {}", lhs[0])
@@ -200,9 +200,9 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
    }
 }
 
-pub fn destructure_rhs(mut context: Context, lhs: &[Lhs], rhs: &[Rhs]) -> Context {
+pub fn destructure_rhs(mut context: Context, lhs: &[Rhs], rhs: &[Rhs]) -> Context {
    if lhs.len()==3 {
-   if let [Lhs::Literal(lop),Lhs::Variable(lv),Lhs::Literal(lc)] = lhs {
+   if let [Rhs::Literal(lop),Rhs::Variable(lv),Rhs::Literal(lc)] = lhs {
    if lop=="~" {
    if let Rhs::Literal(rv) = &rhs[0] {
       if lc=="Int" && rv.chars().all(|c| c.is_digit(10) || c=='_') {
@@ -220,15 +220,25 @@ pub fn destructure_rhs(mut context: Context, lhs: &[Lhs], rhs: &[Rhs]) -> Contex
       if context.is_null {
          return context;
       }
-      if let (Lhs::App(ls),Rhs::App(rs)) = (l,r) {
+      if let (Rhs::App(ls),Rhs::App(rs)) = (l,r) {
          context = destructure_rhs(context,ls,rs);
-      } else if let (Lhs::Variable(lv),rv) = (l,r) {
+      } else if let (Rhs::Lambda(llhs,lrhs),Rhs::Lambda(rlhs,rrhs)) = (l,r) {
+         context = destructure_rhs(context,llhs,rlhs);
+         if context.is_null {
+            return context;
+         }
+         if lrhs.len()==1 {
+            context = destructure_rhs(context,lrhs,&[Rhs::App(rrhs.to_vec())]);
+         } else {
+            context = destructure_rhs(context,lrhs,rrhs);
+         }
+      } else if let (Rhs::Variable(lv),rv) = (l,r) {
          context = context.bind(lv.clone(), rv.clone());
-      } else if let (Lhs::Literal(ll),Rhs::Literal(rl)) = (l,r) {
+      } else if let (Rhs::Literal(ll),Rhs::Literal(rl)) = (l,r) {
          if ll != rl {
             return Context::null();
          }
-      } else if let (Lhs::App(ls),Rhs::Literal(_)) = (l,r) {
+      } else if let (Rhs::App(ls),Rhs::Literal(_)) = (l,r) {
          context = destructure_rhs(context, &ls, &[r.clone()]);
       } else {
          return Context::null();
