@@ -6,8 +6,16 @@ pub fn parse_program(input: StringSlice) -> Result<Vec<(String,Rhs)>,String> {
       let line = line.trim();
       if line.starts_with("#") {}
       else if line=="" {}
-      else {
+      else if line.contains(":=") {
          program.push(parse_binding( StringSlice::new(line.to_string()) )?);
+      } else {
+         let e = parse_many_rhs(StringSlice::new(line.to_string()))?;
+         let e = if e.len()==1 {
+            e[0].clone()
+         } else {
+            Rhs::App(e)
+         };
+         program.push(("".to_string(), e));
       }
    }
    Result::Ok( program )

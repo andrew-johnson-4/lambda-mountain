@@ -29,6 +29,10 @@ impl Policy {
       for (symbol,rhs) in parse_program(input)? {
          self.bind(&symbol, rhs);
       }
+      let context = Context::new(Rc::new(self.symbols.clone()));
+      for e in self.symbols.get("").unwrap_or(&vec![]) {
+         eval_rhs(context.clone(), &[e.clone()])?;
+      }
       Result::Ok(())
    }
    pub fn s_load(&mut self, input: &str) {

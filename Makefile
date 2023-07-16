@@ -1,7 +1,7 @@
 test:
 	cargo install --path .
 	cargo test -- --nocapture
-	lm repl
+	lm examples/history.lm
 
 tex:
 	pdflatex calligraphy.tex

@@ -263,6 +263,23 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
       context = context.bind(k.clone(), v.clone());
       return eval_rhs(context.clone(), &rhs[3..]);
    }}}
+   if let [Rhs::Variable(op), e] = &rhs[..] {
+   if op == "print" {
+      let e = eval_rhs(context.clone(), &[e.clone()])?;
+      if let Rhs::App(es) = e {
+         for (i,e) in es.iter().enumerate() {
+            if i>0 {
+               print!(" {}", e);
+            } else {
+               print!("{}", e);
+            }
+         }
+         println!("");
+      } else {
+         println!("{}", e)
+      }
+      return Result::Ok(Rhs::App(Vec::new()));
+   }}
    let mut gs = Vec::new();
    for g in rhs {
       gs.push( eval_rhs(context.clone(), &[g.clone()])? );
