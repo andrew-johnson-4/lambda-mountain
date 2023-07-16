@@ -147,7 +147,7 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
          return Result::Ok(rhs[0].clone());
       }
    }
-   if let Rhs::Literal(tag) = &rhs[0] {
+   if let Rhs::Literal(_tag) = &rhs[0] {
       let mut ps = Vec::new();
       ps.push(rhs[0].clone());
       for a in rhs[1..].iter() {
@@ -179,13 +179,15 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
       }
       return Result::Ok(Rhs::Lambda(l,r));
    }}
-   if let [Rhs::Variable(op), x, Rhs::App(xs)] = rhs {
+   if let [Rhs::Variable(op), x, xs] = rhs {
    if op == "cons" {
       let mut rs = Vec::new();
       rs.push( eval_rhs(context.clone(), &[x.clone()])? );
+      if let Rhs::App(xs) = eval_rhs(context.clone(), &[xs.clone()])? {
       for x in xs {
          rs.push( eval_rhs(context.clone(), &[x.clone()])? );
-      }
+      }}
+      println!("eval cons {}", Rhs::App(rs.clone()));
       return Result::Ok(Rhs::App(rs));
    }}
    if let [Rhs::Variable(op), kv] = rhs {
@@ -239,11 +241,13 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
    }}
    if let [Rhs::Variable(op), cs, x] = rhs {
    if op == "ctx" {
+      println!("raw ctx {}", Rhs::App(rhs.to_vec()));
       let cs = eval_rhs(context.clone(), &[cs.clone()])?;
       let x = eval_rhs(context.clone(), &[x.clone()])?;
-      println!("in ctx {} {}", cs, x);
+      println!("in ctx {}", cs);
       if let Rhs::App(cs) = cs {
       for kv in cs {
+         println!("ctx case {}", kv);
          if let Rhs::App(kv) = kv {
          if let [Rhs::Variable(k), v] = &kv[..] {
          if let Rhs::Variable(x) = &x {
@@ -258,6 +262,7 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
    if op == "let" {
       let v = eval_rhs(context.clone(), &[v.clone()])?;
       context = context.bind(k.clone(), v.clone());
+      println!("let {} {}", k, v);
       return eval_rhs(context.clone(), &rhs[3..]);
    }}}
    let mut gs = Vec::new();
