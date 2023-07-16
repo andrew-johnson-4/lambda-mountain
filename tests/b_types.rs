@@ -23,7 +23,7 @@ fn infer_abs0() {
    let mut p = Policy::new();
    p.f_load("preludes/simply_typed.lm");
 
-   assert_eq!( p.s_soft("λ(: s Int). s"), "(: (λ(: s Int). (: s Int)) (Arrow Int Int))");
+   assert_eq!( p.s_soft("λ(: s Int). s"), "(: (λ(: s Int).(: s Int)) (Arrow Int Int))");
 }
 
 #[test]

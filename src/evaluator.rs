@@ -58,7 +58,6 @@ pub fn eval_parse(context: Context, rule: &str, input: StringSlice) -> Result<Rh
          if !context.is_null {
             let mut s = String::new();
             let rv = eval_rhs(context.clone(), &rhs)?;
-            println!("eval_parse {}. {}", Rhs::App(lhs.clone()), rv);
             if let Rhs::App(rvs) = rv {
             for rv in rvs {
                if let Rhs::Literal(l) = rv {
@@ -131,9 +130,6 @@ pub fn eval_lazy(context: Context, f: Rhs, xs: &[Rhs]) -> Result<Rhs,String> {
 
 pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
    println!("eval_rhs {}", Rhs::App(rhs.to_vec()));
-   for (k,v) in context.locals.iter() {
-      println!("\t{} := {}", k, v);
-   }
    if rhs.len()==0 {
       return Result::Ok( Rhs::App(Vec::new()) );
    }
@@ -190,7 +186,6 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
       for x in xs {
          rs.push( eval_rhs(context.clone(), &[x.clone()])? );
       }}
-      println!("eval cons {}", Rhs::App(rs.clone()));
       return Result::Ok(Rhs::App(rs));
    }}
    if let [Rhs::Variable(op), kv] = rhs {
@@ -227,7 +222,6 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
       else {
          ps = eval_rhs(context.clone(), &gs)?;
       }}
-      println!("match {} {}", x, ps);
       if let Rhs::App(ps) = &ps {
       for p in ps {
       if let Rhs::Lambda(lhs,rhs) = p {
@@ -246,7 +240,6 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
    if op == "ctx" {
       let cs = eval_rhs(context.clone(), &[cs.clone()])?;
       let x = eval_rhs(context.clone(), &[x.clone()])?;
-      println!("ctx {} {}", cs, x);
       if let Rhs::App(cs) = cs {
       for kv in cs {
          if let Rhs::App(kv) = kv {
@@ -263,7 +256,6 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
    if op == "let" {
       let v = eval_rhs(context.clone(), &[v.clone()])?;
       context = context.bind(k.clone(), v.clone());
-      println!("let {} {}", k, v);
       return eval_rhs(context.clone(), &rhs[3..]);
    }}}
    let mut gs = Vec::new();
@@ -318,7 +310,7 @@ pub fn destructure_rhs(mut context: Context, lhs: &[Rhs], rhs: &[Rhs]) -> Contex
             return context;
          }
          if lrhs.len()==1 {
-            context = destructure_rhs(context,lrhs,&[Rhs::App(rrhs.to_vec())]);
+            context = destructure_rhs(context,lrhs,rrhs);
          } else {
             context = destructure_rhs(context,lrhs,rrhs);
          }
