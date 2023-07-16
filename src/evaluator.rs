@@ -6,9 +6,9 @@ use im_lists::list::*;
 
 #[derive(Clone)]
 pub struct Context {
-   globals: Rc<HashMap<String,Vec<Rhs>>>,
-   locals: List<(String,Rhs)>,
-   is_null: bool,
+   pub globals: Rc<HashMap<String,Vec<Rhs>>>,
+   pub locals: List<(String,Rhs)>,
+   pub is_null: bool,
 }
 
 impl Context {
@@ -131,6 +131,9 @@ pub fn eval_lazy(context: Context, f: Rhs, xs: &[Rhs]) -> Result<Rhs,String> {
 
 pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
    println!("eval_rhs {}", Rhs::App(rhs.to_vec()));
+   for (k,v) in context.locals.iter() {
+      println!("\t{} := {}", k, v);
+   }
    if rhs.len()==0 {
       return Result::Ok( Rhs::App(Vec::new()) );
    }
@@ -241,13 +244,11 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
    }}
    if let [Rhs::Variable(op), cs, x] = rhs {
    if op == "ctx" {
-      println!("raw ctx {}", Rhs::App(rhs.to_vec()));
       let cs = eval_rhs(context.clone(), &[cs.clone()])?;
       let x = eval_rhs(context.clone(), &[x.clone()])?;
-      println!("in ctx {}", cs);
+      println!("ctx {} {}", cs, x);
       if let Rhs::App(cs) = cs {
       for kv in cs {
-         println!("ctx case {}", kv);
          if let Rhs::App(kv) = kv {
          if let [Rhs::Variable(k), v] = &kv[..] {
          if let Rhs::Variable(x) = &x {
