@@ -16,10 +16,18 @@
 )
 
 #infer_application
-#::infer := λtctx (f x). (match ((infer tctx f) (infer tctx x))
-#   λ ((: f (Arrow typeofx typeofy)) (: x typeofx)).
-#   : ((: f typeoff) (: x typeofx)) typeofy
-#)
+::infer := λtctx (f x). match ((::infer tctx f) (::infer tctx x)) (
+   λ (
+      (: f (Arrow typeofx typeofy))
+      (: x typeofx)
+   ). (:
+      (
+         (: f (Arrow typeofx typeofy))
+         (: x typeofx)
+      )
+      typeofy
+   )
+)
 
 #infer_variable
 ::infer := λtctx x. match (ctx tctx x) (
