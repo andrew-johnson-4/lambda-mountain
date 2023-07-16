@@ -8,9 +8,9 @@
 #infer_abstraction
 ::infer := λtctx (λ(: x typeofx). y). (
    let tctx (cons (x typeofx))
-   let typeofy (eval tctx y)
+   let typeofy (match y (cases tctx))
    (:
-      (lambda (: x typeofx) . (eval tctx y))
+      (lambda (: x typeofx) . (::infer tctx y))
       (Arrow typeofx typeofy)
    )
 )

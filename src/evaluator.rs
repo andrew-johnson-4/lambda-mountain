@@ -156,12 +156,10 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
    }}
    if let Rhs::Variable(op) = &rhs[0] {
    if op == "lambda" {
-      println!("lambda");
       let mut l = Vec::new();
       let mut r = Vec::new();
       let mut left = true;
       for ai in 1..rhs.len() {
-         println!("lambda {}", rhs[ai]);
          if let Rhs::Literal(a) = &rhs[ai] {
          if a=="." {
             left = false;
@@ -185,6 +183,16 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
       }
       return Result::Ok(Rhs::App(rs));
    }}
+   if let Rhs::Variable(op) = &rhs[0] {
+   if op == "cases" {
+      let mut rs = Vec::new();
+      for kv in &rhs[1..] {
+      if let Rhs::App(kv) = kv {
+      if let [k,v] = &kv[..] {
+         rs.push(Rhs::Lambda(vec![k.clone()], vec![v.clone()]));
+      }}}
+      return Result::Ok(Rhs::App(rs));
+   }}
    if let [Rhs::Variable(op), ctx, x] = rhs {
    if op == "eval" {
       let ctx = eval_rhs(context.clone(), &[ctx.clone()])?;
@@ -200,8 +208,14 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
    if let [Rhs::Variable(op), x, ps] = rhs {
    if op == "match" {
       let x = eval_rhs(context.clone(), &[x.clone()])?;
+      let mut ps = ps.clone();
+      if let Rhs::App(gs) = &ps {
+      if let Rhs::Lambda(_,_) = gs[0] {}
+      else {
+         ps = eval_rhs(context.clone(), &gs)?;
+      }}
       println!("match {} {}", x, ps);
-      if let Rhs::App(ps) = ps {
+      if let Rhs::App(ps) = &ps {
       for p in ps {
       if let Rhs::Lambda(lhs,rhs) = p {
          let inner_context = destructure_rhs(context.clone(), lhs, &[x.clone()]);
@@ -230,7 +244,7 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
    if rhs.len()>3 {
    if let [Rhs::Variable(op), Rhs::Variable(k), v] = &rhs[..3] {
    if op == "let" {
-      let t = eval_rhs(context.clone(), &[v.clone()])?;
+      let v = eval_rhs(context.clone(), &[v.clone()])?;
       context = context.bind(k.clone(), v.clone());
       return eval_rhs(context.clone(), &rhs[3..]);
    }}}
