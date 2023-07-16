@@ -34,20 +34,27 @@ impl Context {
          is_null: false,
       }
    }
-   pub fn lookup(self, symbol: &str) -> Rhs {
-      for (k,v) in self.locals {
+   pub fn maybe_lookup(&self, symbol: &str) -> Option<Rhs> {
+      for (k,v) in &self.locals {
          if k==symbol {
-            return v.clone();
+            return Some(v.clone());
          }
       }
       if let Some(vs) = self.globals.get(symbol) {
          if vs.len()==1 {
-            return vs[0].clone();
+            return Some(vs[0].clone());
          } else {
-            return Rhs::Poly(vs.clone());
+            return Some(Rhs::Poly(vs.clone()));
          }
       }
-      Rhs::Variable(symbol.to_string())
+      None
+   }
+   pub fn lookup(&self, symbol: &str) -> Rhs {
+      if let Some(o) = self.maybe_lookup(symbol) {
+         o
+      } else {
+         Rhs::Variable(symbol.to_string())
+      }
    }
 }
 
@@ -283,6 +290,7 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
 }
 
 pub fn destructure_rhs(mut context: Context, lhs: &[Rhs], rhs: &[Rhs]) -> Context {
+   println!("destructure_rhs {} {}", Rhs::App(lhs.to_vec()), Rhs::App(rhs.to_vec()));
    if lhs.len()==3 {
    if let [Rhs::Literal(lop),Rhs::Variable(lv),Rhs::Literal(lc)] = lhs {
    if lop=="~" {
@@ -315,6 +323,11 @@ pub fn destructure_rhs(mut context: Context, lhs: &[Rhs], rhs: &[Rhs]) -> Contex
             context = destructure_rhs(context,lrhs,rrhs);
          }
       } else if let (Rhs::Variable(lv),rv) = (l,r) {
+         if let Some(ov) = &context.maybe_lookup(lv) {
+         println!("{} is bound {}", lv, ov);
+         if rv != ov {
+            return Context::null();
+         }}
          context = context.bind(lv.clone(), rv.clone());
       } else if let (Rhs::Literal(ll),Rhs::Literal(rl)) = (l,r) {
          if ll != rl {

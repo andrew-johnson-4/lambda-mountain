@@ -18,14 +18,14 @@
 #infer_application
 ::infer := λtctx (f x). match ((::infer tctx f) (::infer tctx x)) (
    λ (
-      (: f (Arrow typeofx typeofy))
-      (: x typeofx)
+      (: g (Arrow typeofa typeofr))
+      (: a typeofa)
    ). (:
       (
-         (: f (Arrow typeofx typeofy))
-         (: x typeofx)
+         (: g (Arrow typeofa typeofr))
+         (: a typeofa)
       )
-      typeofy
+      typeofr
    )
 )
 

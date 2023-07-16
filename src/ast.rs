@@ -138,7 +138,7 @@ impl StringSlice {
    }
 }
 
-#[derive(Clone)]
+#[derive(PartialEq,Eq,Clone)]
 pub enum Rhs {
    Literal(String),
    Variable(String),
