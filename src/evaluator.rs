@@ -56,19 +56,20 @@ pub fn eval_parse(context: Context, rule: &str, input: StringSlice) -> Result<Rh
       if let Rhs::Lambda(lhs,rhs) = rhs {
          let context = destructure_literal(context.clone(), lhs, input.clone());
          if !context.is_null {
-            let rhs = eval_rhs(context.clone(), rhs)?;
-            let rhs = if let Rhs::App(rs) = rhs {
-               let mut s = String::new();
-               for rv in rs {
-                  if let Rhs::Literal(l) = rv {
-                     s.push_str(&l);
-                  } else {
-                     s.push_str(&rv.to_string());
-                  }
+            let mut s = String::new();
+            let rv = eval_rhs(context.clone(), &rhs)?;
+            println!("eval_parse {}. {}", Rhs::App(lhs.clone()), rv);
+            if let Rhs::App(rvs) = rv {
+            for rv in rvs {
+               if let Rhs::Literal(l) = rv {
+                  s.push_str(&l);
+               } else {
+                  s.push_str(&rv.to_string());
                }
-               Rhs::Literal(s)
-            } else { rhs };
-            return Result::Ok( rhs.clone() )
+            }} else {
+               s.push_str(&rv.to_string());
+            }
+            return Result::Ok(Rhs::Literal( s.clone() ))
          }
       } else {
          return Result::Ok( rhs.clone() )
@@ -137,7 +138,11 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
       if let Rhs::Variable(v) = &rhs[0] {
          return Result::Ok(context.lookup(v));
       } else if let Rhs::App(gs) = &rhs[0] {
-         return eval_rhs(context, gs);
+         if gs.len()==1 {
+            return Result::Ok(Rhs::App(vec![ eval_rhs(context, gs)? ]));
+         } else {
+            return eval_rhs(context, gs);
+         }
       } else {
          return Result::Ok(rhs[0].clone());
       }
@@ -183,14 +188,17 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
       }
       return Result::Ok(Rhs::App(rs));
    }}
-   if let Rhs::Variable(op) = &rhs[0] {
+   if let [Rhs::Variable(op), kv] = rhs {
    if op == "cases" {
+      let kvs = eval_rhs(context.clone(), &[kv.clone()])?;
       let mut rs = Vec::new();
-      for kv in &rhs[1..] {
+      if let Rhs::App(kvs) = kvs {
+      for kv in kvs {
       if let Rhs::App(kv) = kv {
       if let [k,v] = &kv[..] {
+         let v = eval_rhs(context.clone(), &[v.clone()])?;
          rs.push(Rhs::Lambda(vec![k.clone()], vec![v.clone()]));
-      }}}
+      }}}}
       return Result::Ok(Rhs::App(rs));
    }}
    if let [Rhs::Variable(op), ctx, x] = rhs {
@@ -231,15 +239,19 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
    }}
    if let [Rhs::Variable(op), cs, x] = rhs {
    if op == "ctx" {
+      let cs = eval_rhs(context.clone(), &[cs.clone()])?;
       let x = eval_rhs(context.clone(), &[x.clone()])?;
-      let cs = eval_rhs(context.clone(), &[x.clone()])?;
+      println!("in ctx {} {}", cs, x);
       if let Rhs::App(cs) = cs {
-      for c in cs {
-      if let Rhs::App(c) = c {
-      if let [Rhs::Variable(cv), ct] = &c[..] {
-         context = context.bind(cv.clone(), ct.clone());
-      }}}}
-      return eval_rhs(context.clone(), &[x.clone()]);
+      for kv in cs {
+         if let Rhs::App(kv) = kv {
+         if let [Rhs::Variable(k), v] = &kv[..] {
+         if let Rhs::Variable(x) = &x {
+         if k == x {
+            return Result::Ok( Rhs::App(vec![Rhs::Variable(k.clone()),v.clone()]) );
+         }}}}
+      }}
+      return Result::Ok( Rhs::App(Vec::new()) );
    }}
    if rhs.len()>3 {
    if let [Rhs::Variable(op), Rhs::Variable(k), v] = &rhs[..3] {

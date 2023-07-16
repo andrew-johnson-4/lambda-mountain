@@ -7,7 +7,7 @@
 
 #infer_abstraction
 ::infer := λtctx (λ(: x typeofx). y). (
-   let tctx (cons (x typeofx))
+   let tctx (cons (x typeofx) tctx)
    let typeofy (match y (cases tctx))
    (:
       (lambda (: x typeofx) . (::infer tctx y))
@@ -22,6 +22,6 @@
 #)
 
 #infer_variable
-#::infer := λtctx x. match (ctx tctx x) (
-#   (λ(x typeofx). (: x typeofx))
-#)
+::infer := λtctx x. match (ctx tctx x) (
+   (λ(x typeofx). (: x typeofx))
+)

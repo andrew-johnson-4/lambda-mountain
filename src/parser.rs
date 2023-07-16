@@ -60,7 +60,9 @@ pub fn parse_one_rhs(input: StringSlice) -> Result<Rhs,String> {
    } else {
       let cs = input.to_string();
       let c = cs.chars().next().unwrap();
-      if c.is_alphabetic() && !c.is_uppercase() {
+      if cs.starts_with("::") {
+         Result::Ok(Rhs::Variable(cs))
+      } else if c.is_alphabetic() && !c.is_uppercase() {
          Result::Ok(Rhs::Variable(cs))
       } else {
          Result::Ok(Rhs::Literal(cs))

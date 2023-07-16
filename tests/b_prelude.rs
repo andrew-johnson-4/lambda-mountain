@@ -22,7 +22,7 @@ fn print_lambda0() {
 #[test]
 fn print_cases0() {
    let mut p = Policy::new();
-   assert_eq!( p.s_hard("cases (a b) (c d)"), "((λa.b) (λc.d))" );
+   assert_eq!( p.s_hard("cases ((a b) (c d))"), "((λa.b) (λc.d))" );
 }
 
 #[test]
@@ -31,4 +31,12 @@ fn print_cons0() {
    assert_eq!( p.s_hard("cons 1 ()"), "(1)" );
    assert_eq!( p.s_hard("cons 1 (2)"), "(1 2)" );
    assert_eq!( p.s_hard("cons 1 (2 3)"), "(1 2 3)" );
+}
+
+#[test]
+fn print_ctx0() {
+   let mut p = Policy::new();
+   assert_eq!( p.s_hard("ctx () x"), "()" );
+   assert_eq!( p.s_hard("ctx ((x 2)) x"), "(x 2)" );
+   assert_eq!( p.s_hard("ctx ((x 2) (y 3)) y"), "(y 3)" );
 }
