@@ -206,25 +206,6 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
       }}}}
       return Result::Ok(Rhs::App(rs));
    }}
-   if let [Rhs::Variable(op), l, r, t] = rhs {
-   if op == "if" {
-      let l = eval_rhs(context.clone(), &[l.clone()])?;
-      let r = eval_rhs(context.clone(), &[r.clone()])?;
-      if l != r {
-         return Result::Err(format!("Assert Failure: {} != {}", l, r))
-      }
-      return eval_rhs(context.clone(), &[t.clone()]);
-   }}
-   if let [Rhs::Variable(op), l, r, t, f] = rhs {
-   if op == "if" {
-      let l = eval_rhs(context.clone(), &[l.clone()])?;
-      let r = eval_rhs(context.clone(), &[r.clone()])?;
-      if l == r {
-         return eval_rhs(context.clone(), &[t.clone()]);
-      } else {
-         return eval_rhs(context.clone(), &[f.clone()]);
-      }
-   }}
    if let [Rhs::Variable(op), ctx, x] = rhs {
    if op == "eval" {
       let ctx = eval_rhs(context.clone(), &[ctx.clone()])?;
@@ -326,6 +307,16 @@ pub fn destructure_rhs(mut context: Context, lhs: &[Rhs], rhs: &[Rhs]) -> Contex
       if context.is_null {
          return context;
       }
+      if let Rhs::App(ls) = l {
+      if let [Rhs::Variable(op), Rhs::Variable(x)] = &ls[..] {
+      if op == "eq" {
+         let x = context.lookup(x);
+         if &x==r {
+            continue;
+         } else {
+            return Context::null();
+         }
+      }}}
       if let (Rhs::App(ls),Rhs::App(rs)) = (l,r) {
          context = destructure_rhs(context,ls,rs);
       } else if let (Rhs::Lambda(llhs,lrhs),Rhs::Lambda(rlhs,rrhs)) = (l,r) {
