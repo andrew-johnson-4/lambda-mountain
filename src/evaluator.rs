@@ -111,7 +111,6 @@ pub fn destructure_literal(context: Context, lhs: &[Rhs], input: StringSlice) ->
 }
 
 pub fn eval_lazy(context: Context, f: Rhs, xs: &[Rhs]) -> Result<Rhs,String> {
-   println!("eval_lazy {} {}", f, Rhs::App(xs.to_vec()));
    let f = eval_rhs(context.clone(), &[f])?;
    if let Rhs::Lambda(lhs,rhs) = &f {
       let inner_context = destructure_rhs(context.clone(), lhs, xs);
@@ -136,7 +135,6 @@ pub fn eval_lazy(context: Context, f: Rhs, xs: &[Rhs]) -> Result<Rhs,String> {
 }
 
 pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
-   println!("eval_rhs {}", Rhs::App(rhs.to_vec()));
    if rhs.len()==0 {
       return Result::Ok( Rhs::App(Vec::new()) );
    }
@@ -207,6 +205,25 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
          rs.push(Rhs::Lambda(vec![k.clone()], vec![v.clone()]));
       }}}}
       return Result::Ok(Rhs::App(rs));
+   }}
+   if let [Rhs::Variable(op), l, r, t] = rhs {
+   if op == "if" {
+      let l = eval_rhs(context.clone(), &[l.clone()])?;
+      let r = eval_rhs(context.clone(), &[r.clone()])?;
+      if l != r {
+         return Result::Err(format!("Assert Failure: {} != {}", l, r))
+      }
+      return eval_rhs(context.clone(), &[t.clone()]);
+   }}
+   if let [Rhs::Variable(op), l, r, t, f] = rhs {
+   if op == "if" {
+      let l = eval_rhs(context.clone(), &[l.clone()])?;
+      let r = eval_rhs(context.clone(), &[r.clone()])?;
+      if l == r {
+         return eval_rhs(context.clone(), &[t.clone()]);
+      } else {
+         return eval_rhs(context.clone(), &[f.clone()]);
+      }
    }}
    if let [Rhs::Variable(op), ctx, x] = rhs {
    if op == "eval" {
@@ -290,7 +307,6 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
 }
 
 pub fn destructure_rhs(mut context: Context, lhs: &[Rhs], rhs: &[Rhs]) -> Context {
-   println!("destructure_rhs {} {}", Rhs::App(lhs.to_vec()), Rhs::App(rhs.to_vec()));
    if lhs.len()==3 {
    if let [Rhs::Literal(lop),Rhs::Variable(lv),Rhs::Literal(lc)] = lhs {
    if lop=="~" {
@@ -323,11 +339,6 @@ pub fn destructure_rhs(mut context: Context, lhs: &[Rhs], rhs: &[Rhs]) -> Contex
             context = destructure_rhs(context,lrhs,rrhs);
          }
       } else if let (Rhs::Variable(lv),rv) = (l,r) {
-         if let Some(ov) = &context.maybe_lookup(lv) {
-         println!("{} is bound {}", lv, ov);
-         if rv != ov {
-            return Context::null();
-         }}
          context = context.bind(lv.clone(), rv.clone());
       } else if let (Rhs::Literal(ll),Rhs::Literal(rl)) = (l,r) {
          if ll != rl {

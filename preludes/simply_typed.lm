@@ -18,9 +18,9 @@
 #infer_application
 ::infer := λtctx (f x). match ((::infer tctx f) (::infer tctx x)) (
    λ (
-      (: g (Arrow typeofa typeofr))
+      (: g (Arrow typeofga typeofr))
       (: a typeofa)
-   ). (:
+   ). if typeofga typeofa (:
       (
          (: g (Arrow typeofa typeofr))
          (: a typeofa)
