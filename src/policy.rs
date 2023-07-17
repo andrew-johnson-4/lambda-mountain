@@ -2,18 +2,19 @@ use crate::ast::*;
 use crate::parser::*;
 use crate::evaluator::*;
 
-use std::rc::Rc;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Read;
 
 pub struct Policy {
+   pub externs: HashMap<String,&'static dyn Fn(&[Rhs]) -> Rhs>,
    pub symbols: HashMap<String,Vec<Rhs>>,
 }
 
 impl Policy {
    pub fn new() -> Policy {
       Policy {
+         externs: HashMap::new(),
          symbols: HashMap::new()
       }
    }
@@ -24,12 +25,15 @@ impl Policy {
       self.symbols.get_mut(k).expect("Policy::load")
                   .push(v);
    }
+   pub fn bind_extern(&mut self, k: &str, f: &'static dyn Fn(&[Rhs]) -> Rhs) {
+      self.externs.insert(k.to_string(), f);
+   }
    pub fn load(&mut self, input: &str) -> Result<(),String> {
       let input = StringSlice::new(input.to_string());
       for (symbol,rhs) in parse_program(input)? {
          self.bind(&symbol, rhs);
       }
-      let context = Context::new(Rc::new(self.symbols.clone()));
+      let context = Context::new(self);
       for e in self.symbols.get("").unwrap_or(&vec![]) {
          eval_rhs(context.clone(), &[e.clone()])?;
       }
@@ -47,7 +51,7 @@ impl Policy {
       self.s_load(&p);
    }
    pub fn pre(&mut self, input: &str) -> Result<StringSlice, String> {
-      let context = Context::new(Rc::new(self.symbols.clone()));
+      let context = Context::new(self);
       let input = StringSlice::new(input.to_string());
       if self.symbols.contains_key("::pre") {
          Result::Ok(StringSlice::new(
@@ -58,7 +62,7 @@ impl Policy {
       }    
    }
    pub fn infer(&mut self, input: StringSlice) -> Result<Vec<Rhs>,String> {
-      let context = Context::new(Rc::new(self.symbols.clone()));
+      let context = Context::new(self);
       let rhs = parse_many_rhs(input)?;
       if self.symbols.contains_key("::infer") {
          Result::Ok(
@@ -72,7 +76,7 @@ impl Policy {
       }
    }
    pub fn hard(&mut self, input: &str) -> Result<Rhs,String> {
-      let context = Context::new(Rc::new(self.symbols.clone()));
+      let context = Context::new(self);
       let input = self.pre(input)?;
       let program = self.infer(input)?;
       Result::Ok( eval_rhs(context.clone(), &program)? )

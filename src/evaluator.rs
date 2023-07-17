@@ -1,4 +1,5 @@
 use crate::ast::*;
+use crate::policy::Policy;
 
 use std::rc::Rc;
 use std::collections::HashMap;
@@ -6,21 +7,24 @@ use im_lists::list::*;
 
 #[derive(Clone)]
 pub struct Context {
+   pub externs: Rc<HashMap<String,&'static dyn Fn(&[Rhs]) -> Rhs>>,
    pub globals: Rc<HashMap<String,Vec<Rhs>>>,
    pub locals: List<(String,Rhs)>,
    pub is_null: bool,
 }
 
 impl Context {
-   pub fn new(policy: Rc<HashMap<String,Vec<Rhs>>>) -> Context {
+   pub fn new(policy: &Policy) -> Context {
       Context {
-         globals: policy,
+         externs: Rc::new(policy.externs.clone()),
+         globals: Rc::new(policy.symbols.clone()),
          locals: List::new(),
          is_null: false,
       }
    }
    pub fn null() -> Context {
       Context {
+         externs: Rc::new(HashMap::new()),
          globals: Rc::new(HashMap::new()),
          locals: List::new(),
          is_null: true,
@@ -29,6 +33,7 @@ impl Context {
    pub fn bind(self, symbol: String, term: Rhs) -> Context {
       let locals = List::cons((symbol, term), self.locals);
       Context {
+         externs: self.externs.clone(),
          globals: self.globals.clone(),
          locals: locals,
          is_null: false,
@@ -300,6 +305,10 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
       }}
       return Result::Err( format!("Pattern Match Failure: {}", Rhs::App(gs)) );
    } else {
+      if let Rhs::Variable(f) = &gs[0] {
+      if let Some(f) = context.externs.get(f) {
+         return Result::Ok(f(&gs[1..]));
+      }}
       return Result::Ok( Rhs::App(gs) );
    }
 }
