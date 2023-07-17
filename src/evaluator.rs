@@ -140,7 +140,6 @@ pub fn eval_lazy(context: Context, f: Rhs, xs: &[Rhs]) -> Result<Rhs,String> {
 }
 
 pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
-   println!("eval_rhs {}", Rhs::App(rhs.to_vec()));
    if rhs.len()==0 {
       return Result::Ok( Rhs::App(Vec::new()) );
    }
