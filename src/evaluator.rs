@@ -241,6 +241,7 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
       if let Rhs::App(gs) = &ps {
       if let Rhs::Lambda(_,_) = gs[0] {}
       else {
+         //evaluate pattern expression if it is not already full of lambdas
          ps = eval_rhs(context.clone(), &gs)?;
       }}
       if let Rhs::App(ps) = &ps {

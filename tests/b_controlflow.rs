@@ -28,6 +28,6 @@ fn print_if0() {
 #[test]
 fn print_match0() {
    let mut p = Policy::new();
-   assert_eq!( p.s_hard("match (A 1) ( (λA a.a) (λB b.b) )"), "1");
-   assert_eq!( p.s_hard("match (B 2) ( (λA a.a) (λB b.b) )"), "2");
+   assert_eq!( p.s_hard("match (A 1) ( (λ(A a).a) (λ(B b).b) )"), "1");
+   assert_eq!( p.s_hard("match (B 2) ( (λ(A a).a) (λ(B b).b) )"), "2");
 }
