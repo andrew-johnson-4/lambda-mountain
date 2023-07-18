@@ -234,6 +234,17 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
       let f = eval_rhs(context.clone(), &[f.clone()])?;
       return Result::Ok(f);
    }}
+   if let [Rhs::Variable(op), x, f] = rhs {
+   if op == "foreach" {
+      let mut rs = Vec::new();
+      let x = eval_rhs(context.clone(), &[x.clone()])?;
+      if let Rhs::App(xs) = x {
+      for x in xs {
+         let x = eval_rhs(context.clone(), &[f.clone(), x.clone()])?;
+         rs.push(x);
+      }}
+      return Result::Ok(Rhs::App(rs))
+   }}
    if let [Rhs::Variable(op), x, ps] = rhs {
    if op == "match" {
       let x = eval_rhs(context.clone(), &[x.clone()])?;
