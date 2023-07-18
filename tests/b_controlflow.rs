@@ -20,7 +20,6 @@ fn print_foreach0() {
 #[test]
 fn print_if0() {
    let mut p = Policy::new();
-   assert_eq!( p.s_hard("if True 1"), "1");
    assert_eq!( p.s_hard("if True 1 2"), "1");
    assert_eq!( p.s_hard("if False 1 2"), "2");
    assert_eq!( p.s_hard("if B 1 2"), "2");

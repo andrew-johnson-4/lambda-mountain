@@ -223,6 +223,17 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
       let x = eval_rhs(context.clone(), &[x.clone()])?;
       return Result::Ok(x);
    }}
+   if let [Rhs::Variable(op), c, t, f] = rhs {
+   if op == "if" {
+      let c = eval_rhs(context.clone(), &[c.clone()])?;
+      if let Rhs::Literal(c) = c {
+      if c=="True" {
+         let t = eval_rhs(context.clone(), &[t.clone()])?;
+         return Result::Ok(t);
+      }}
+      let f = eval_rhs(context.clone(), &[f.clone()])?;
+      return Result::Ok(f);
+   }}
    if let [Rhs::Variable(op), x, ps] = rhs {
    if op == "match" {
       let x = eval_rhs(context.clone(), &[x.clone()])?;
