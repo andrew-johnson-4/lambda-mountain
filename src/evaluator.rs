@@ -245,6 +245,15 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
       }}
       return Result::Ok(Rhs::App(rs))
    }}
+   if let [Rhs::Variable(op), x, f] = rhs {
+   if op == "while" {
+      let mut rs = Vec::new();
+      while if let Rhs::Literal(x)=&eval_rhs(context.clone(), &[x.clone()])? { x=="True" } else { false } {
+         let r = eval_rhs(context.clone(), &[f.clone(), Rhs::App(Vec::new())])?;
+         rs.push(r);
+      }
+      return Result::Ok(Rhs::App(rs))
+   }}
    if let [Rhs::Variable(op), x, ps] = rhs {
    if op == "match" {
       let x = eval_rhs(context.clone(), &[x.clone()])?;

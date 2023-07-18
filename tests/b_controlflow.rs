@@ -1,14 +1,23 @@
 use lambda_mountain::{Policy,Rhs};
 
-fn once(args: &Rhs) -> Rhs {
-   Rhs::Literal("True".to_string())
+static mut ONCE_COUNTER: u32 = 0;
+fn once(_: &[Rhs]) -> Rhs {
+   unsafe {
+      if ONCE_COUNTER == 0 {
+         ONCE_COUNTER += 1;
+         Rhs::Literal("True".to_string())
+      } else {
+         Rhs::Literal("False".to_string())
+      }
+   }
 }
 
 #[test]
 fn print_while0() {
    let mut p = Policy::new();
-   assert_eq!( p.s_hard("while False (λ.print Hello World)"), "" );
-   assert_eq!( p.s_hard("while (once ()) (λ.print Hello World)"), "Hello World" );
+   p.bind_extern("once",&once);
+   assert_eq!( p.s_hard("while False (λ().Hello World)"), "()" );
+   assert_eq!( p.s_hard("while (once ()) (λ().Hello World)"), "((Hello World))" );
 }
 
 #[test]
