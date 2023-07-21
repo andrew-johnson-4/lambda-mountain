@@ -88,6 +88,10 @@ Stylistic considerations are important when proof trees start to look like this:
 
 <img src="https://github.com/andrew-johnson-4/-/blob/main/calligraphy.png" alt="proof tree" width=40%>
 
+# How is λ☶ different from LSTS
+
+λ☶ is ad-hoc monomorphic. LSTS is ad-hoc polymorphic. 
+
 # Why is the repo name -
 
 The proper name for this project is λ☶.
