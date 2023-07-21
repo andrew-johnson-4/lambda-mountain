@@ -105,7 +105,7 @@ f := λ(B b). b
 //LSTS programs try to apply all function candidates,
 //     at the same time, immediately
 let f(a: A): A = a;
-let f(a: B): B = b;
+let f(b: B): B = b;
 f(x) : A + B
 ```
 
