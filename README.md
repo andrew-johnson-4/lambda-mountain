@@ -95,8 +95,8 @@ Stylistic considerations are important when proof trees start to look like this:
 ```λ☶
 #λ☶ programs try to apply the first function candidate,
 #    followed by the next, in descending order
-f : λ(A a). a
-f : λ(B b). b
+f := λ(A a). a
+f := λ(B b). b
 (: (f x) A)
 (: (f y) B)
 ```
