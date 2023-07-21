@@ -92,6 +92,23 @@ Stylistic considerations are important when proof trees start to look like this:
 
 λ☶ is ad-hoc monomorphic. LSTS is ad-hoc polymorphic. 
 
+```λ☶
+#λ☶ programs try to apply the first function candidate,
+#    followed by the next, in descending order
+f : λ(A a). a
+f : λ(B b). b
+(: (f x) A)
+(: (f y) B)
+```
+
+```LSTS
+//LSTS programs try to apply all function candidates,
+//     at the same time, immediately
+let f(a: A): A = a;
+let f(a: B): B = b;
+f(x) : A + B
+```
+
 # Why is the repo name -
 
 The proper name for this project is λ☶.
