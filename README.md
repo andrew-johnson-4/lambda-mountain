@@ -3,7 +3,7 @@
 A more idiomatic approach to code lowering.
 λ symbolizes a process for defining the ways to do something.
 ☶ symbolizes a process for selecting the natural way to do something.
-λ answers ["why is this correct?"](https://ncatlab.org/nlab/show/calculus%20of%20constructions)
+λ answers ["why is this correct?"](https://en.wikipedia.org/wiki/Calculus_of_constructions)
 ☶ answers ["why is this desirable?"](https://medium.com/@andrew_johnson_4/calligraphy-principles-are-useful-for-proof-construction-e18e9b9a53a5)
 
 # Syntax and Formatting
