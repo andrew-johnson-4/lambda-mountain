@@ -3,8 +3,8 @@
 A more idiomatic approach to code lowering.
 λ symbolizes a process for defining the ways to do something.
 ☶ symbolizes a process for selecting the natural way to do something.
-λ answers "why is this correct?"
-☶ answers "why is this desirable?"
+λ answers ["why is this correct?"](https://github.com/andrew-johnson-4/perplexity/blob/main/categorical_prelude.md)
+☶ answers ["why is this desirable?"](https://medium.com/@andrew_johnson_4/calligraphy-principles-are-useful-for-proof-construction-e18e9b9a53a5)
 
 # Syntax and Formatting
 
@@ -32,9 +32,9 @@ The "string" syntax from the above program needs to be rewritten into a lambda-c
 Grammatical Rewriting is accomplished in the policy definition as follows.
 
 ```λ☶
-::pre := λ["] (literal s) ["]. s
-::pre := λc (::pre cs). c cs
-literal := λc (literal cs). c cs
+::pre := λ(literal t) (::pre ts). t ts
+::pre := λt (::pre ts). t ts
+literal := λ" cs ". cs
 ```
 
 ## print, policy definition
@@ -87,6 +87,27 @@ Equivalences are defined by [rewrite rules](https://en.wikipedia.org/wiki/Type_t
 Stylistic considerations are important when proof trees start to look like this:
 
 <img src="https://github.com/andrew-johnson-4/-/blob/main/calligraphy.png" alt="proof tree" width=40%>
+
+# How is λ☶ different from LSTS
+
+λ☶ is ad-hoc monomorphic. LSTS is ad-hoc polymorphic. 
+
+```λ☶
+#λ☶ programs try to apply the first function candidate,
+#    followed by the next, in descending order
+f := λ(A a). a
+f := λ(B b). b
+(: (f x) A)
+(: (f y) B)
+```
+
+```LSTS
+//LSTS programs try to apply all function candidates,
+//     at the same time, immediately
+let f(a: A): A = a;
+let f(b: B): B = b;
+f(x) : A + B
+```
 
 # Why is the repo name -
 
