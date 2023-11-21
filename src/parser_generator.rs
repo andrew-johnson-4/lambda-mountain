@@ -1,4 +1,6 @@
 
+//Compiled Grammars are just special-case left-hand-sides for term bindings
+
 //Type-0 Grammar Rules
 struct Rule {
    name: String,
@@ -12,3 +14,4 @@ enum Symbol {
    Scan(String,String,String),
    Descend(String),
 }
+
