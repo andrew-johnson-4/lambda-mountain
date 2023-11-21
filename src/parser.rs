@@ -54,7 +54,7 @@ pub fn parse_one_rhs(input: StringSlice) -> Result<Rhs,String> {
       if let Some((lhs,rhs)) = input.after("λ").split_once(".") {
          Result::Ok( Rhs::Lambda(
             parse_many_rhs(StringSlice::new(lhs.to_string()))?,
-            parse_many_rhs(StringSlice::new(rhs.to_string()))?
+            Box::new( parse_one_rhs(StringSlice::new(rhs.to_string()))? )
          ) )
       } else {
          Result::Err( format!("Syntax Error: {}", input) )

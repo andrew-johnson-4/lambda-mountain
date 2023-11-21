@@ -143,7 +143,7 @@ pub enum Rhs {
    Literal(String),
    Variable(String),
    App(Vec<Rhs>),
-   Lambda(Vec<Rhs>,Vec<Rhs>),
+   Lambda(Vec<Rhs>,Box<Rhs>),
    Poly(Vec<Rhs>),
 }
 impl std::fmt::Display for Rhs {
@@ -152,9 +152,9 @@ impl std::fmt::Display for Rhs {
          Rhs::Literal(s) => write!(f, "{}", s),
          Rhs::Variable(s) => write!(f, "{}", s),
          Rhs::App(ps) => write!(f, "({})", ps.iter().map(|l| l.to_string()).collect::<Vec<String>>().join(" ") ),
-         Rhs::Lambda(ls,rs) => write!(f, "(λ{}.{})",
+         Rhs::Lambda(ls,r) => write!(f, "(λ{}.{})",
             ls.iter().map(|l| l.to_string()).collect::<Vec<String>>().join(" "),
-            rs.iter().map(|r| r.to_string()).collect::<Vec<String>>().join(" "),
+            r.to_string(),
          ),
          Rhs::Poly(vs) => write!(f, "({})", vs.iter().map(|v| v.to_string()).collect::<Vec<String>>().join(" | ") ),
       }

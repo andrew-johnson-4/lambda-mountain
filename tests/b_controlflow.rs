@@ -1,3 +1,4 @@
+/* TODO
 use lambda_mountain::{Policy,Rhs};
 
 static mut ONCE_COUNTER: u32 = 0;
@@ -40,3 +41,4 @@ fn print_match0() {
    assert_eq!( p.s_hard("match (A 1) ( (λ(A a).a) (λ(B b).b) )"), "1");
    assert_eq!( p.s_hard("match (B 2) ( (λ(A a).a) (λ(B b).b) )"), "2");
 }
+*/

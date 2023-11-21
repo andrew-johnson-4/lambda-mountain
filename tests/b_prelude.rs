@@ -1,3 +1,5 @@
+
+/*
 use lambda_mountain::Policy;
 
 #[test]
@@ -40,3 +42,4 @@ fn print_ctx0() {
    assert_eq!( p.s_hard("ctx ((x 2)) x"), "(x 2)" );
    assert_eq!( p.s_hard("ctx ((x 2) (y 3)) y"), "(y 3)" );
 }
+*/

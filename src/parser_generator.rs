@@ -7,6 +7,7 @@ use std::collections::HashMap;
 //Type-0 Grammar Rules
 struct Rule {
    string: Vec<Symbol>,
+   retval: Rhs,
 }
 
 //Symbols in Production Rules
@@ -40,6 +41,26 @@ impl Grammar {
 }
 
 pub fn compile_rule(grammar: &mut Grammar, rule_name: String, rule: Rhs) {
+   match rule {
+      //App(Vec<Rhs>),
+      //Poly(Vec<Rhs>),
+      Rhs::Literal(s) => unimplemented!("compile_rule Literal {}", s),
+      Rhs::Variable(s) => unimplemented!("compile_rule Variable {}", s),
+      Rhs::Lambda(lhs,rhs) => {
+         let mut string = Vec::new();
+         for (li,l) in lhs.iter().enumerate() {
+            unimplemented!("compile_rule {}.{} := {}", rule_name, li, l)
+         }
+         if !grammar.rules.contains_key(&rule_name) {
+            grammar.rules.insert(rule_name.clone(), Vec::new());
+         }
+         grammar.rules.get_mut(&rule_name).expect("parser_generator::compile_rule grammar.rules.get_mut").push(Rule {
+            string: string,
+            retval: *rhs,
+         });
+      },
+      r => unimplemented!("compile_rule unknown {}", r)
+   }
 }
 
 pub fn compile(input: &str) -> Grammar {

@@ -63,6 +63,18 @@ impl Context {
    }
 }
 
+
+pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
+   unimplemented!("evaluator::eval_rhs")
+}
+pub fn eval_parse(context: Context, rule: &str, input: StringSlice) -> Result<Rhs,String> {
+   unimplemented!("evaluator::eval_parse")
+}
+pub fn eval_lazy(context: Context, f: Rhs, xs: &[Rhs]) -> Result<Rhs,String> {
+   unimplemented!("evaluator::eval_lazy")
+}
+
+/* TODO
 pub fn eval_parse(context: Context, rule: &str, input: StringSlice) -> Result<Rhs,String> {
    for rhs in context.globals.get(rule).expect(rule) {
       if let Rhs::Lambda(lhs,rhs) = rhs {
@@ -418,4 +430,4 @@ pub fn destructure_rhs(mut context: Context, lhs: &[Rhs], rhs: &[Rhs]) -> Contex
    }
    context
 }
-
+*/

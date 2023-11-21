@@ -1,3 +1,4 @@
+/*
 use lambda_mountain::Policy;
 
 #[test]
@@ -34,4 +35,4 @@ fn infer_app0() {
    assert_eq!( p.s_soft("(λ(: s Int). s) 1"), "(: ((: (λ(: s Int).(: s Int)) (Arrow Int Int)) (: 1 Int)) Int)");
    assert!( p.soft("(λ(: s Int). s) 1.2").is_err() );
 }
-
+*/

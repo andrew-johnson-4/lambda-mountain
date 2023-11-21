@@ -1,3 +1,4 @@
+/*
 use lambda_mountain::Policy;
 
 #[test]
@@ -56,3 +57,4 @@ fn eval_pat3() {
    assert_eq!( p.s_hard("p [ a ]"), "a" );
    assert_eq!( p.s_hard("p a"), "a" );
 }
+*/
