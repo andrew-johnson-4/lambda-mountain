@@ -5,13 +5,15 @@ use std::collections::HashMap;
 //Compiled Grammars are just special-case left-hand-sides for term bindings
 
 //Type-0 Grammar Rules
+#[derive(Clone)]
 struct Rule {
    string: Vec<Symbol>,
    retval: Rhs,
 }
 
 //Symbols in Production Rules
-enum Symbol {
+#[derive(Clone)]
+pub enum Symbol {
    Bind(String,String),
    Regex(String),
    Scan(String,String,String),
@@ -40,24 +42,26 @@ impl Grammar {
    }
 }
 
-pub fn compile_rule(grammar: &mut Grammar, rule_name: String, rule: Rhs) {
+pub fn compile_rule(grammar: &mut Grammar, rule_name: String, rule: Rhs) -> Symbol {
    match rule {
       //App(Vec<Rhs>),
       //Poly(Vec<Rhs>),
-      Rhs::Literal(s) => unimplemented!("compile_rule Literal {}", s),
+      Rhs::Literal(s) => Symbol::Regex(s),
       Rhs::Variable(s) => unimplemented!("compile_rule Variable {}", s),
       Rhs::Lambda(lhs,rhs) => {
          let mut string = Vec::new();
          for (li,l) in lhs.iter().enumerate() {
-            unimplemented!("compile_rule {}.{} := {}", rule_name, li, l)
+            string.push(compile_rule( grammar, format!("{}.{}",rule_name,li), l.clone()));
          }
          if !grammar.rules.contains_key(&rule_name) {
             grammar.rules.insert(rule_name.clone(), Vec::new());
          }
-         grammar.rules.get_mut(&rule_name).expect("parser_generator::compile_rule grammar.rules.get_mut").push(Rule {
+         grammar.rules.get_mut(&rule_name).expect("parser_generator::compile_rule grammar.rules.get_mut")
+                      .push(Rule {
             string: string,
             retval: *rhs,
          });
+         Symbol::Descend(rule_name)
       },
       r => unimplemented!("compile_rule unknown {}", r)
    }
