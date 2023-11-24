@@ -68,16 +68,17 @@ pub fn compile_rule(grammar: &mut Grammar, rule_name: String, rule: Rhs) -> Symb
 }
 
 pub fn compile(input: &str) -> Grammar {
+   //Compilation Target here is just a dynamic Tree definition of the grammar
+   //Optimized compilation target should be defined in LM, not Rust
    let input = StringSlice::new(input.to_string());
-   let grammar = parse_program(input);
-   match grammar {
+   let rules = parse_program(input);
+   match rules {
       Ok(lines) => {
          let mut grammar = Grammar::new();
          for (k,v) in lines {
             compile_rule(&mut grammar, k.clone(), v.clone());
-            println!("{} := {}", k, v);
          }
-         unimplemented!("parser_generator::compile")
+         grammar
       },
       Err(err) => panic!("{}", err),
    }
