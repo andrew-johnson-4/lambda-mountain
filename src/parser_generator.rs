@@ -37,8 +37,17 @@ impl Grammar {
          rules: HashMap::new(),
       }
    }
-   pub fn run(&self, input: &str) -> ParseResult {
-      unimplemented!("Grammar::run")
+   pub fn run(&self, rule: &str, input: &str) -> ParseResult {
+      for rule in self.rules.get(rule).expect(&format!("Could not find rule {} in grammar",rule)) {
+         for symbol in rule.string.iter() {
+         match symbol {
+            Symbol::Bind(l,r) => unimplemented!("Grammar::run Symbol::Bind({},{})", l, r),
+            Symbol::Regex(p) => unimplemented!("Grammar::run Symbol::Regex({})", p),
+            Symbol::Scan(l,m,r) => unimplemented!("Grammar::run Symbol::Scan({},{},{})", l, m, r),
+            Symbol::Descend(r) => unimplemented!("Grammar::run Symbol::Descend({})", r),
+         }}
+      }
+      unimplemented!("Grammar::run Error")
    }
 }
 
