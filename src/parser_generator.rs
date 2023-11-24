@@ -1,6 +1,7 @@
 use crate::{StringSlice, parse_program, Rhs};
 use std::collections::HashMap;
 use regex::Regex;
+use std::rc::Rc;
 
 //Compiled Grammars are just special-case left-hand-sides for term bindings
 
@@ -21,16 +22,24 @@ pub enum Symbol {
 }
 
 pub enum ParseResult {
-   Result(String),
+   Result(String,Input),
    Error(String),
 }
 impl ParseResult {
    pub fn to_string(&self) -> String {
       match self {
-         ParseResult::Result(s) => { format!("Parse Result: {}", s) },
+         ParseResult::Result(s,_) => { format!("Parse Result: {}", s) },
          ParseResult::Error(s) => { format!("Parse Error: {}", s) },
       }
    }
+}
+
+#[derive(Clone)]
+pub struct Input {
+   data: Rc<String>,
+   line_no: usize,
+   column_no: usize,
+   offset_start: usize,
 }
 
 pub struct Grammar {
@@ -44,32 +53,62 @@ impl Grammar {
          regexes: HashMap::new(),
       }
    }
-   fn run_local(&mut self, rule: &str, input: &str, lineno: usize, colno: usize) -> ParseResult {
-      for rule in self.rules.get(rule).expect(&format!("Could not find rule {} in grammar",rule)) {
-         for symbol in rule.string.iter() {
-         match symbol {
-            Symbol::Bind(l,r) => unimplemented!("Grammar::run Symbol::Bind({},{})", l, r),
-            Symbol::Regex(p) => {
-               if !self.regexes.contains_key(p) {
-                  println!("Compile regex: {}", p);
-                  let re = Regex::new(p).expect(&format!("Could not compile regular expression: {}", p));
-                  self.regexes.insert(p.clone(), re);
+   fn run_local_rule(&mut self, rule: &Rule, mut input: Input) -> ParseResult {
+      let mut results = Vec::new();
+      for symbol in rule.string.iter() {
+      match symbol {
+         Symbol::Bind(l,r) => unimplemented!("Grammar::run Symbol::Bind({},{})", l, r),
+         Symbol::Regex(p) => {
+            if !self.regexes.contains_key(p) {
+               let re = Regex::new(p).expect(&format!("Could not compile regular expression: {}", p));
+               self.regexes.insert(p.clone(), re);
+            }
+            let re = self.regexes.get(p).unwrap();
+            if let Some(m) = re.find_at(&input.data, input.offset_start) {
+               let m = m.as_str().to_string();
+               input.offset_start += m.len();
+               input.line_no += m.matches("\n").count();
+               if m.contains("\n") {
+                  input.column_no = m.len() - m.rfind("\n").unwrap();
+               } else {
+                  input.column_no += m.len();
                }
-               let re = self.regexes.get(p).unwrap();
-               println!("try regex {} on input '{}'", p, input);
-               if let Some(m) = re.find(input) {
-                  println!("match regex {} on input '{}'", p, input);
-                  return ParseResult::Result(m.as_str().to_string());
-               }
-            },
-            Symbol::Scan(l,m,r) => unimplemented!("Grammar::run Symbol::Scan({},{},{})", l, m, r),
-            Symbol::Descend(r) => unimplemented!("Grammar::run Symbol::Descend({})", r),
-         }}
+               results.push(m);
+            } else {
+               return ParseResult::Error(format!("Expected /{}/ at line {}, column {}", p, input.line_no, input.column_no))
+            }
+         },
+         Symbol::Scan(l,m,r) => unimplemented!("Grammar::run Symbol::Scan({},{},{})", l, m, r),
+         Symbol::Descend(r) => unimplemented!("Grammar::run Symbol::Descend({})", r),
+      }}
+      return ParseResult::Result(results.join(","),input)
+   }
+   fn run_local(&mut self, rule: &str, input: Input) -> ParseResult {
+      let rules = self.rules.get(rule).expect(&format!("Could not find rule {} in grammar",rule)).clone();
+      for rule in rules.iter() {
+         if let ParseResult::Result(r,i) = self.run_local_rule(rule, input.clone()) {
+            return ParseResult::Result(r,i);
+         }
       }
-      ParseResult::Error(format!("Expected {} at line {}, column {}", rule, lineno, colno))
+      ParseResult::Error(format!("Expected {} at line {}, column {}", rule, input.line_no, input.column_no))
    }
    pub fn run(&mut self, rule: &str, input: &str) -> ParseResult {
-      self.run_local(rule, input, 1, 1)
+      let input = Input {
+         data: Rc::new(input.to_string()),
+         line_no: 1,
+         column_no: 1,
+         offset_start: 0,
+      };
+      match self.run_local(rule, input.clone()) {
+         ParseResult::Result(retval,input) => {
+            if input.offset_start != input.data.len() {
+               ParseResult::Error(format!("Expected EOF at line {}, column {}", input.line_no, input.column_no))      
+            } else {
+               ParseResult::Result(retval,input)
+            }
+         },
+         e => e
+      }
    }
 }
 
