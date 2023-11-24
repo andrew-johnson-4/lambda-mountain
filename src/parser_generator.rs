@@ -1,6 +1,6 @@
-
 use crate::{StringSlice, parse_program, Rhs};
 use std::collections::HashMap;
+use regex::Regex;
 
 //Compiled Grammars are just special-case left-hand-sides for term bindings
 
@@ -20,34 +20,56 @@ pub enum Symbol {
    Descend(String),
 }
 
-pub struct ParseResult {
+pub enum ParseResult {
+   Result(String),
+   Error(String),
 }
 impl ParseResult {
    pub fn to_string(&self) -> String {
-      unimplemented!("ParseResult::to_string")
+      match self {
+         ParseResult::Result(s) => { format!("Parse Result: {}", s) },
+         ParseResult::Error(s) => { format!("Parse Error: {}", s) },
+      }
    }
 }
 
 pub struct Grammar {
+   regexes: HashMap<String,Regex>,
    rules: HashMap<String,Vec<Rule>>,
 }
 impl Grammar {
    pub fn new() -> Grammar {
       Grammar {
          rules: HashMap::new(),
+         regexes: HashMap::new(),
       }
    }
-   pub fn run(&self, rule: &str, input: &str) -> ParseResult {
+   fn run_local(&mut self, rule: &str, input: &str, lineno: usize, colno: usize) -> ParseResult {
       for rule in self.rules.get(rule).expect(&format!("Could not find rule {} in grammar",rule)) {
          for symbol in rule.string.iter() {
          match symbol {
             Symbol::Bind(l,r) => unimplemented!("Grammar::run Symbol::Bind({},{})", l, r),
-            Symbol::Regex(p) => unimplemented!("Grammar::run Symbol::Regex({})", p),
+            Symbol::Regex(p) => {
+               if !self.regexes.contains_key(p) {
+                  println!("Compile regex: {}", p);
+                  let re = Regex::new(p).expect(&format!("Could not compile regular expression: {}", p));
+                  self.regexes.insert(p.clone(), re);
+               }
+               let re = self.regexes.get(p).unwrap();
+               println!("try regex {} on input '{}'", p, input);
+               if let Some(m) = re.find(input) {
+                  println!("match regex {} on input '{}'", p, input);
+                  return ParseResult::Result(m.as_str().to_string());
+               }
+            },
             Symbol::Scan(l,m,r) => unimplemented!("Grammar::run Symbol::Scan({},{},{})", l, m, r),
             Symbol::Descend(r) => unimplemented!("Grammar::run Symbol::Descend({})", r),
          }}
       }
-      unimplemented!("Grammar::run Error")
+      ParseResult::Error(format!("Expected {} at line {}, column {}", rule, lineno, colno))
+   }
+   pub fn run(&mut self, rule: &str, input: &str) -> ParseResult {
+      self.run_local(rule, input, 1, 1)
    }
 }
 
@@ -55,7 +77,11 @@ pub fn compile_rule(grammar: &mut Grammar, rule_name: String, rule: Rhs) -> Symb
    match rule {
       //App(Vec<Rhs>),
       //Poly(Vec<Rhs>),
-      Rhs::Literal(s) => Symbol::Regex(s),
+      Rhs::Literal(s) => {
+         let s = s.strip_prefix("/").expect("regex must start with /")
+                  .strip_suffix("/").expect("regex must end with /");
+         Symbol::Regex(format!("^{}", s))
+      }
       Rhs::Variable(s) => unimplemented!("compile_rule Variable {}", s),
       Rhs::Lambda(lhs,rhs) => {
          let mut string = Vec::new();

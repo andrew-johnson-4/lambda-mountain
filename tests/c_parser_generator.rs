@@ -3,31 +3,31 @@ use lambda_mountain::parser_generator::compile;
 
 #[test]
 fn cfg1() {
-   let grammar = compile("entry-point := λ /a/ . slug");
+   let mut grammar = compile("entry-point := λ /a/ . slug");
    assert_eq!(
       grammar.run("entry-point","").to_string(),
-      "Error in String at line 1 column 1: expected /a/ in rule entry-point"
+      "Parse Error: Expected entry-point at line 1, column 1"
    );
    assert_eq!(
       grammar.run("entry-point","a").to_string(),
-      "Success: slug"
+      "Parse Result: a"
    );
    assert_eq!(
       grammar.run("entry-point","aa").to_string(),
-      "Error in String at line 1 column 1: expected EOF in rule entry-point"
+      "Parse Error: Expected entry-point at line 1, column 1"
    );
 
-   let grammar = compile("entry-point := λ x:/a/ . slug x");
+   let mut grammar = compile("entry-point := λ x:/a/ . slug x");
    assert_eq!(
       grammar.run("entry-point","").to_string(),
-      "Error in String at line 1 column 1: expected /a/ in rule entry-point"
+      "Parse Error: Expected entry-point at line 1, column 1"
    );
    assert_eq!(
       grammar.run("entry-point","a").to_string(),
-      "Success: slug a"
+      "Parse Result: a"
    );
    assert_eq!(
       grammar.run("entry-point","aa").to_string(),
-      "Error in String at line 1 column 1: expected EOF in rule entry-point"
+      "Parse Error: Expected entry-point at line 1, column 1"
    );
 }
