@@ -33,7 +33,7 @@ impl Policy {
       for (symbol,rhs) in parse_program(input)? {
          self.bind(&symbol, rhs);
       }
-      let context = Context::new(self);
+      let context = Context::new_with_policy(self);
       for e in self.symbols.get("").unwrap_or(&vec![]) {
          eval_rhs(context.clone(), &[e.clone()])?;
       }
@@ -51,7 +51,7 @@ impl Policy {
       self.s_load(&p);
    }
    pub fn pre(&mut self, input: &str) -> Result<StringSlice, String> {
-      let context = Context::new(self);
+      let context = Context::new_with_policy(self);
       let input = StringSlice::new(input.to_string());
       if self.symbols.contains_key("::pre") {
          Result::Ok(StringSlice::new(
@@ -62,7 +62,7 @@ impl Policy {
       }    
    }
    pub fn infer(&mut self, input: StringSlice) -> Result<Vec<Rhs>,String> {
-      let context = Context::new(self);
+      let context = Context::new_with_policy(self);
       let rhs = parse_many_rhs(input)?;
       if self.symbols.contains_key("::infer") {
          Result::Ok(
@@ -76,7 +76,7 @@ impl Policy {
       }
    }
    pub fn hard(&mut self, input: &str) -> Result<Rhs,String> {
-      let context = Context::new(self);
+      let context = Context::new_with_policy(self);
       let input = self.pre(input)?;
       let program = self.infer(input)?;
       Result::Ok( eval_rhs(context.clone(), &program)? )

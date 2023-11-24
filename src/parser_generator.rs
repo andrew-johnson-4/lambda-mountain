@@ -1,4 +1,4 @@
-use crate::{StringSlice, parse_program, Rhs};
+use crate::{StringSlice, parse_program, Rhs, Context};
 use std::collections::HashMap;
 use regex::Regex;
 use std::rc::Rc;
@@ -22,7 +22,7 @@ pub enum Symbol {
 }
 
 pub enum ParseResult {
-   Result(String,Input),
+   Result(Rhs,Input),
    Error(String),
 }
 impl ParseResult {
@@ -53,8 +53,7 @@ impl Grammar {
          regexes: HashMap::new(),
       }
    }
-   fn run_local_rule(&mut self, rule: &Rule, mut input: Input) -> ParseResult {
-      let mut results = Vec::new();
+   fn run_local_rule(&mut self, rule: &Rule, ctx: Context, mut input: Input) -> ParseResult {
       for symbol in rule.string.iter() {
       match symbol {
          Symbol::Bind(l,r) => unimplemented!("Grammar::run Symbol::Bind({},{})", l, r),
@@ -73,7 +72,6 @@ impl Grammar {
                } else {
                   input.column_no += m.len();
                }
-               results.push(m);
             } else {
                return ParseResult::Error(format!("Expected /{}/ at line {}, column {}", p, input.line_no, input.column_no))
             }
@@ -81,12 +79,12 @@ impl Grammar {
          Symbol::Scan(l,m,r) => unimplemented!("Grammar::run Symbol::Scan({},{},{})", l, m, r),
          Symbol::Descend(r) => unimplemented!("Grammar::run Symbol::Descend({})", r),
       }}
-      return ParseResult::Result(results.join(","),input)
+      return ParseResult::Result(rule.retval.clone(),input)
    }
-   fn run_local(&mut self, rule: &str, input: Input) -> ParseResult {
+   fn run_local(&mut self, rule: &str, ctx: Context, input: Input) -> ParseResult {
       let rules = self.rules.get(rule).expect(&format!("Could not find rule {} in grammar",rule)).clone();
       for rule in rules.iter() {
-         if let ParseResult::Result(r,i) = self.run_local_rule(rule, input.clone()) {
+         if let ParseResult::Result(r,i) = self.run_local_rule(rule, ctx.clone(), input.clone()) {
             return ParseResult::Result(r,i);
          }
       }
@@ -99,7 +97,8 @@ impl Grammar {
          column_no: 1,
          offset_start: 0,
       };
-      match self.run_local(rule, input.clone()) {
+      let ctx = Context::new();
+      match self.run_local(rule, ctx, input.clone()) {
          ParseResult::Result(retval,input) => {
             if input.offset_start != input.data.len() {
                ParseResult::Error(format!("Expected EOF at line {}, column {}", input.line_no, input.column_no))      

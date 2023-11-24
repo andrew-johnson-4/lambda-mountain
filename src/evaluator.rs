@@ -14,7 +14,15 @@ pub struct Context {
 }
 
 impl Context {
-   pub fn new(policy: &Policy) -> Context {
+   pub fn new() -> Context {
+      Context {
+         externs: Rc::new(HashMap::new()),
+         globals: Rc::new(HashMap::new()),
+         locals: List::new(),
+         is_null: false,
+      }
+   }
+   pub fn new_with_policy(policy: &Policy) -> Context {
       Context {
          externs: Rc::new(policy.externs.clone()),
          globals: Rc::new(policy.symbols.clone()),

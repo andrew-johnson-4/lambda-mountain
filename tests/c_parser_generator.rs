@@ -10,7 +10,7 @@ fn cfg1() {
    );
    assert_eq!(
       grammar.run("entry-point","a").to_string(),
-      "Parse Result: a"
+      "Parse Result: slug"
    );
    assert_eq!(
       grammar.run("entry-point","aa").to_string(),
@@ -24,7 +24,7 @@ fn cfg1() {
    );
    assert_eq!(
       grammar.run("entry-point","a").to_string(),
-      "Parse Result: a"
+      "Parse Result: slug a"
    );
    assert_eq!(
       grammar.run("entry-point","aa").to_string(),

@@ -12,7 +12,7 @@ pub fn repl_start_session(policy: &mut Policy) {
       let _ = io::stdout().flush();
       let mut input = String::new();
       io::stdin().read_line(&mut input).expect("Error reading from stdin");
-      let context = Context::new(policy);
+      let context = Context::new_with_policy(policy);
 
       if input.contains(":=") {
          let input = StringSlice::new(input);
