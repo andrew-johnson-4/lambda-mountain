@@ -71,9 +71,31 @@ impl Context {
    }
 }
 
-pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
-   unimplemented!("evaluator::eval_rhs")
+//There are no error conditions for evaluation; this function is total
+pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Rhs {
+   if rhs.len()==0 {
+      return Rhs::App(Vec::new());
+   }
+   if rhs.len()==1 {
+      if let Rhs::Variable(v) = &rhs[0] {
+         return context.lookup(v);
+      } else if let Rhs::App(gs) = &rhs[0] {
+         if gs.len()==1 {
+            return Rhs::App(vec![ eval_rhs(context, gs) ]);
+         } else {
+            return eval_rhs(context, gs);
+         }
+      } else {
+         return rhs[0].clone();
+      }
+   }
+   let mut gs = Vec::new();
+   for g in rhs {
+      gs.push( eval_rhs(context.clone(), &[g.clone()]) );
+   }
+   return Rhs::App(gs);
 }
+
 pub fn eval_parse(context: Context, rule: &str, input: StringSlice) -> Result<Rhs,String> {
    unimplemented!("evaluator::eval_parse")
 }
@@ -159,22 +181,6 @@ pub fn eval_lazy(context: Context, f: Rhs, xs: &[Rhs]) -> Result<Rhs,String> {
 }
 
 pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
-   if rhs.len()==0 {
-      return Result::Ok( Rhs::App(Vec::new()) );
-   }
-   if rhs.len()==1 {
-      if let Rhs::Variable(v) = &rhs[0] {
-         return Result::Ok(context.lookup(v));
-      } else if let Rhs::App(gs) = &rhs[0] {
-         if gs.len()==1 {
-            return Result::Ok(Rhs::App(vec![ eval_rhs(context, gs)? ]));
-         } else {
-            return eval_rhs(context, gs);
-         }
-      } else {
-         return Result::Ok(rhs[0].clone());
-      }
-   }
    if let Rhs::Literal(_tag) = &rhs[0] {
       let mut ps = Vec::new();
       ps.push(rhs[0].clone());
@@ -353,10 +359,6 @@ pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
       }
       return Result::Err(s);
    }}
-   let mut gs = Vec::new();
-   for g in rhs {
-      gs.push( eval_rhs(context.clone(), &[g.clone()])? );
-   }
    if let Rhs::Lambda(lhs,rhs) = &gs[0] {
       let inner_context = destructure_rhs(context.clone(), lhs, &gs[1..]);
       if inner_context.is_null {

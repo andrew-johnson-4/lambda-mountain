@@ -70,6 +70,7 @@ impl Grammar {
          Symbol::Bind(l,r) => {
             match self.run_local_symbol(&r,ctx,input.clone()) {
                ParseResult::Result(v,i) => {
+                  println!("bind {} := {}", l, v);
                   let i = i.bind(l.clone(), v.clone());
                   ParseResult::Result(v,i)   
                },
@@ -108,8 +109,7 @@ impl Grammar {
          }
       }
       return ParseResult::Result(
-        eval_rhs(ctx, &[rule.retval.clone()])
-        .expect(&format!("Grammar::run_local_rule could not evaluate: {}", rule.retval)),
+        eval_rhs(ctx, &[rule.retval.clone()]),
         input
       )
    }
@@ -146,8 +146,6 @@ impl Grammar {
 
 pub fn compile_rule(grammar: &mut Grammar, rule_name: String, rule: Rhs) -> Symbol {
    match rule {
-      //App(Vec<Rhs>),
-      //Poly(Vec<Rhs>),
       Rhs::App(ref rs) => {
          if rs.len() == 3 {
          if let Rhs::Literal(ref rl) = &rs[0] {

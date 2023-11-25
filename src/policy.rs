@@ -35,7 +35,7 @@ impl Policy {
       }
       let context = Context::new_with_policy(self);
       for e in self.symbols.get("").unwrap_or(&vec![]) {
-         eval_rhs(context.clone(), &[e.clone()])?;
+         eval_rhs(context.clone(), &[e.clone()]);
       }
       Result::Ok(())
    }
@@ -79,7 +79,7 @@ impl Policy {
       let context = Context::new_with_policy(self);
       let input = self.pre(input)?;
       let program = self.infer(input)?;
-      Result::Ok( eval_rhs(context.clone(), &program)? )
+      Result::Ok( eval_rhs(context.clone(), &program) )
    }
    pub fn soft(&mut self, input: &str) -> Result<Rhs,String> {
       let input = self.pre(input)?;

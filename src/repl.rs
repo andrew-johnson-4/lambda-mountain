@@ -26,11 +26,8 @@ pub fn repl_start_session(policy: &mut Policy) {
          match parse_many_rhs(input) { Result::Err(e) => {
             println!("{}", e);
          }, Result::Ok(program) => {
-            match eval_rhs(context.clone(), &program) { Result::Err(e) => {
-               println!("{}", e);
-            }, Result::Ok(r) => {
-               println!("{}", r.to_string());
-            }}
+            let r = eval_rhs(context.clone(), &program);
+            println!("{}", r.to_string());
          }}
       }
    }
