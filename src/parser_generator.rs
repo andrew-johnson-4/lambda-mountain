@@ -1,4 +1,4 @@
-use crate::{StringSlice, parse_program, Rhs, Context};
+use crate::{StringSlice, parse_program, Rhs, Context, eval_rhs};
 use std::collections::HashMap;
 use regex::Regex;
 use std::rc::Rc;
@@ -36,10 +36,22 @@ impl ParseResult {
 
 #[derive(Clone)]
 pub struct Input {
+   ctx: Context,
    data: Rc<String>,
    line_no: usize,
    column_no: usize,
    offset_start: usize,
+}
+impl Input {
+   fn bind(&self, k: String, v: Rhs) -> Input {
+      Input {
+         ctx: self.ctx.clone().bind(k,v),
+         data: self.data.clone(),
+         line_no: self.line_no,
+         column_no: self.column_no,
+         offset_start: self.offset_start,
+      }
+   }
 }
 
 pub struct Grammar {
@@ -53,13 +65,20 @@ impl Grammar {
          regexes: HashMap::new(),
       }
    }
-   fn run_local_rule(&mut self, rule: &Rule, ctx: Context, mut input: Input) -> ParseResult {
-      for symbol in rule.string.iter() {
-      match symbol {
-         Symbol::Bind(l,r) => unimplemented!("Grammar::run Symbol::Bind({},Symbol)", l),
+   fn run_local_symbol(&mut self, sym: &Symbol, ctx: Context, mut input: Input) -> ParseResult {
+      match sym {
+         Symbol::Bind(l,r) => {
+            match self.run_local_symbol(&r,ctx,input.clone()) {
+               ParseResult::Result(v,i) => {
+                  let i = i.bind(l.clone(), v.clone());
+                  ParseResult::Result(v,i)   
+               },
+               err => err,
+            }
+         },
          Symbol::Regex(p) => {
             if !self.regexes.contains_key(p) {
-               let re = Regex::new(p).expect(&format!("Could not compile regular expression: {}", p));
+               let re = Regex::new(&p).expect(&format!("Could not compile regular expression: {}", p));
                self.regexes.insert(p.clone(), re);
             }
             let re = self.regexes.get(p).unwrap();
@@ -72,14 +91,27 @@ impl Grammar {
                } else {
                   input.column_no += m.len();
                }
+               ParseResult::Result(Rhs::Literal(m),input)
             } else {
-               return ParseResult::Error(format!("Expected /{}/ at line {}, column {}", p, input.line_no, input.column_no))
+               ParseResult::Error(format!("Expected /{}/ at line {}, column {}", p, input.line_no, input.column_no))
             }
          },
          Symbol::Scan(l,m,r) => unimplemented!("Grammar::run Symbol::Scan({},{},{})", l, m, r),
          Symbol::Descend(r) => unimplemented!("Grammar::run Symbol::Descend({})", r),
-      }}
-      return ParseResult::Result(rule.retval.clone(),input)
+      }
+   }
+   fn run_local_rule(&mut self, rule: &Rule, ctx: Context, mut input: Input) -> ParseResult {
+      for symbol in rule.string.iter() {
+         match self.run_local_symbol(symbol, ctx.clone(), input.clone()) {
+            ParseResult::Result(r,i) => { input = i; },
+            err => { return err; },
+         }
+      }
+      return ParseResult::Result(
+        eval_rhs(ctx, &[rule.retval.clone()])
+        .expect(&format!("Grammar::run_local_rule could not evaluate: {}", rule.retval)),
+        input
+      )
    }
    fn run_local(&mut self, rule: &str, ctx: Context, input: Input) -> ParseResult {
       let rules = self.rules.get(rule).expect(&format!("Could not find rule {} in grammar",rule)).clone();
@@ -92,6 +124,7 @@ impl Grammar {
    }
    pub fn run(&mut self, rule: &str, input: &str) -> ParseResult {
       let input = Input {
+         ctx: Context::new(),
          data: Rc::new(input.to_string()),
          line_no: 1,
          column_no: 1,

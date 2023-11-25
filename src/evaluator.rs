@@ -71,7 +71,6 @@ impl Context {
    }
 }
 
-
 pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Result<Rhs,String> {
    unimplemented!("evaluator::eval_rhs")
 }
