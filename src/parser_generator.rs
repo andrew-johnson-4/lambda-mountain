@@ -65,12 +65,11 @@ impl Grammar {
          regexes: HashMap::new(),
       }
    }
-   fn run_local_symbol(&mut self, sym: &Symbol, ctx: Context, mut input: Input) -> ParseResult {
+   fn run_local_symbol(&mut self, sym: &Symbol, mut input: Input) -> ParseResult {
       match sym {
          Symbol::Bind(l,r) => {
-            match self.run_local_symbol(&r,ctx,input.clone()) {
+            match self.run_local_symbol(&r,input.clone()) {
                ParseResult::Result(v,i) => {
-                  println!("bind {} := {}", l, v);
                   let i = i.bind(l.clone(), v.clone());
                   ParseResult::Result(v,i)   
                },
@@ -101,22 +100,22 @@ impl Grammar {
          Symbol::Descend(r) => unimplemented!("Grammar::run Symbol::Descend({})", r),
       }
    }
-   fn run_local_rule(&mut self, rule: &Rule, ctx: Context, mut input: Input) -> ParseResult {
+   fn run_local_rule(&mut self, rule: &Rule, mut input: Input) -> ParseResult {
       for symbol in rule.string.iter() {
-         match self.run_local_symbol(symbol, ctx.clone(), input.clone()) {
+         match self.run_local_symbol(symbol, input.clone()) {
             ParseResult::Result(r,i) => { input = i; },
             err => { return err; },
          }
       }
       return ParseResult::Result(
-        eval_rhs(ctx, &[rule.retval.clone()]),
+        eval_rhs(input.ctx.clone(), &[rule.retval.clone()]),
         input
       )
    }
-   fn run_local(&mut self, rule: &str, ctx: Context, input: Input) -> ParseResult {
+   fn run_local(&mut self, rule: &str, input: Input) -> ParseResult {
       let rules = self.rules.get(rule).expect(&format!("Could not find rule {} in grammar",rule)).clone();
       for rule in rules.iter() {
-         if let ParseResult::Result(r,i) = self.run_local_rule(rule, ctx.clone(), input.clone()) {
+         if let ParseResult::Result(r,i) = self.run_local_rule(rule, input.clone()) {
             return ParseResult::Result(r,i);
          }
       }
@@ -130,8 +129,7 @@ impl Grammar {
          column_no: 1,
          offset_start: 0,
       };
-      let ctx = Context::new();
-      match self.run_local(rule, ctx, input.clone()) {
+      match self.run_local(rule, input.clone()) {
          ParseResult::Result(retval,input) => {
             if input.offset_start != input.data.len() {
                ParseResult::Error(format!("Expected EOF at line {}, column {}", input.line_no, input.column_no))      

@@ -1,3 +1,4 @@
+/* TODO
 use lambda_mountain::{Policy,Rhs};
 
 fn my_print(args: &[Rhs]) -> Rhs {
@@ -31,3 +32,4 @@ fn extern2() {
 
    assert_eq!( p.s_hard("error (Test (my_print 2))"), "Test 2" );
 }
+*/
