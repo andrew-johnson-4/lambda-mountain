@@ -15,7 +15,7 @@ struct Rule {
 //Symbols in Production Rules
 #[derive(Clone)]
 pub enum Symbol {
-   Bind(String,String),
+   Bind(String,Box<Symbol>),
    Regex(String),
    Scan(String,String,String),
    Descend(String),
@@ -56,7 +56,7 @@ impl Grammar {
    fn run_local_rule(&mut self, rule: &Rule, ctx: Context, mut input: Input) -> ParseResult {
       for symbol in rule.string.iter() {
       match symbol {
-         Symbol::Bind(l,r) => unimplemented!("Grammar::run Symbol::Bind({},{})", l, r),
+         Symbol::Bind(l,r) => unimplemented!("Grammar::run Symbol::Bind({},Symbol)", l),
          Symbol::Regex(p) => {
             if !self.regexes.contains_key(p) {
                let re = Regex::new(p).expect(&format!("Could not compile regular expression: {}", p));
@@ -115,11 +115,21 @@ pub fn compile_rule(grammar: &mut Grammar, rule_name: String, rule: Rhs) -> Symb
    match rule {
       //App(Vec<Rhs>),
       //Poly(Vec<Rhs>),
+      Rhs::App(ref rs) => {
+         if rs.len() == 3 {
+         if let Rhs::Literal(ref rl) = &rs[0] {
+         if let Rhs::Variable(ref rv) = &rs[1] {
+         if rl == ":" {
+            let rt = compile_rule(grammar, rule_name, rs[2].clone());
+            return Symbol::Bind(rv.clone(),Box::new(rt));
+         }}}}
+         unimplemented!("compile_rule unknown rule application: {}", rule)
+      },
       Rhs::Literal(s) => {
          let s = s.strip_prefix("/").expect("regex must start with /")
                   .strip_suffix("/").expect("regex must end with /");
          Symbol::Regex(format!("^{}", s))
-      }
+      },
       Rhs::Variable(s) => unimplemented!("compile_rule Variable {}", s),
       Rhs::Lambda(lhs,rhs) => {
          let mut string = Vec::new();

@@ -17,7 +17,7 @@ fn cfg1() {
       "Parse Error: Expected EOF at line 1, column 2"
    );
 
-   let mut grammar = compile("entry-point := λ x:/a/ . slug x");
+   let mut grammar = compile("entry-point := λ (: x /a/) . slug x");
    assert_eq!(
       grammar.run("entry-point","").to_string(),
       "Parse Error: Expected entry-point at line 1, column 1"
