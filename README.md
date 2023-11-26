@@ -24,8 +24,8 @@ User-land programs can then be thought of as simple [lambda-calculus](https://nc
 ```λ☶
 #λ☶ programs try to apply the first function candidate,
 #    followed by the next, in descending order
-f := λ(A a). a
-f := λ(B b). b
+f := λ(: a A). a
+f := λ(: b B). b
 (: (f x) A)
 (: (f y) B)
 ```
