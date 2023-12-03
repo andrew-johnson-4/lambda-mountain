@@ -17,6 +17,8 @@ Any attempt to subvert these policies should result in an error instead of actua
 Syntactically, capabilities are exposed to the user as globally bound variables.
 User-land programs can then be thought of as simple [lambda-calculus](https://ncatlab.org/nlab/show/lambda-calculus) expressions.
 
+![Equation](https://github.com/andrew-johnson-4/-/blob/main/equation.png)
+
 # How is eval-soft different from eval-hard?
 
 _eval-soft_ attempts to evaluate an expression to normal form with two restrictions:
