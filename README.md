@@ -3,7 +3,7 @@
 A more idiomatic approach to code lowering.
 λ symbolizes a process for defining the ways to do something.
 ☶ symbolizes a process for selecting the natural way to do something.
-λ answers ["why is this correct?"](https://github.com/andrew-johnson-4/perplexity/blob/main/categorical_prelude.md)
+λ answers ["why is this correct?"](https://github.com/andrew-johnson-4/PunCalculus)
 ☶ answers ["why is this desirable?"](https://medium.com/@andrew_johnson_4/calligraphy-principles-are-useful-for-proof-construction-e18e9b9a53a5)
 
 # Syntax and Formatting
@@ -16,87 +16,26 @@ Any attempt to subvert these policies should result in an error instead of actua
 
 Syntactically, capabilities are exposed to the user as globally bound variables.
 User-land programs can then be thought of as simple [lambda-calculus](https://ncatlab.org/nlab/show/lambda-calculus) expressions.
-Below is an example of a user-land program containing one policy bound to the variable `print`.
 
-## print, user-land program
+![Equation](https://github.com/andrew-johnson-4/-/blob/main/equation.png)
 
-User programs can be any unicode text. Anything. Really. "Free Grammar!"
+# How is eval-soft different from eval-hard?
 
-```λ-calculus
-print "hello world"
-```
+_eval-soft_ attempts to evaluate an expression to normal form with two restrictions:
+* the evaluation must not diverge
+* the result must be referentially transparent
 
-## preprocessing, policy definition
+_eval-hard_ does not have any restrictions.
 
-The "string" syntax from the above program needs to be rewritten into a lambda-calculus expression.
-Grammatical Rewriting is accomplished in the policy definition as follows.
-
-```λ☶
-::pre := λ(literal t) (::pre ts). t ts
-::pre := λt (::pre ts). t ts
-literal := λ" cs ". cs
-```
-
-## print, policy definition
-
-Each bound variable gets its own line in the policy definition.
-
-```λ☶
-print := λmsg. org  0x100 \n (splat msg)  mov  ah, 0x4c \n int  0x21 \n
-splat := λc cs. mov dl, c \n mov ah, 2 \n int 0x21 \n (splat cs)
-```
-
-## postprocessing, policy definition
-
-The x86 assembler output here needs to be compiled and run.
-This is accomplished in the policy definition as follows.
-
-```λ☶
-::post := λeval-result. ... side effects go here ...
-```
-
-## print, soft-eval reduction
-
-```
-soft reductions will not diverge and are strongly normalizing.
-if a term may diverge then an error may occur.
-blame is defined by the rewrite rules.
-```
-
-## print, hard-eval reduction
-
-```
-hard reductions are evaluations until normal form and may diverge.
-```
-
-## print, running the program
-
-```bash
-lambda_mountain print.lm < print.txt
-```
-
-# Intelligent Reduction
-
-The magic really starts to happen when we connect the above term definitions with *intelligent equivalences*.
-Equivalences are defined by [rewrite rules](https://en.wikipedia.org/wiki/Type_theory#Rules) that look like this:
-
-<img src="https://github.com/andrew-johnson-4/-/blob/main/4487ca46bc4413415a8ccc0820eddb8978a06a81.svg" alt="lambda introduction" width=40%>
-
-# Calligraphy
-
-Stylistic considerations are important when proof trees start to look like this:
-
-<img src="https://github.com/andrew-johnson-4/-/blob/main/calligraphy.png" alt="proof tree" width=40%>
-
-# How is λ☶ different from LSTS
+# How is λ☶ different from LSTS?
 
 λ☶ is ad-hoc monomorphic. LSTS is ad-hoc polymorphic. 
 
 ```λ☶
 #λ☶ programs try to apply the first function candidate,
 #    followed by the next, in descending order
-f := λ(A a). a
-f := λ(B b). b
+f := λ(: a A). a
+f := λ(: b B). b
 (: (f x) A)
 (: (f y) B)
 ```
