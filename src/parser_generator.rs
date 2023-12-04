@@ -20,6 +20,16 @@ pub enum Symbol {
    Scan(String,String,String),
    Descend(String),
 }
+impl Symbol {
+   pub fn to_string(&self) -> String {
+      match self {
+         Symbol::Bind(x,y) => format!("Bind({},{})", x, y.to_string()),
+         Symbol::Regex(r) => format!("Regex({})", r),
+         Symbol::Scan(x,y,z) => format!("Scan({},{},{})", x, y, z),
+         Symbol::Descend(x) => format!("Descend({})", x),
+      }
+   }
+}
 
 pub enum ParseResult {
    Result(Rhs,Input),
@@ -66,6 +76,7 @@ impl Grammar {
       }
    }
    fn run_local_symbol(&mut self, sym: &Symbol, mut input: Input) -> ParseResult {
+      println!("run_local_symbol {} at line {} column {}", sym.to_string(), input.line_no, input.column_no);
       match sym {
          Symbol::Bind(l,r) => {
             match self.run_local_symbol(&r,input.clone()) {
@@ -97,7 +108,9 @@ impl Grammar {
             }
          },
          Symbol::Scan(l,m,r) => unimplemented!("Grammar::run Symbol::Scan({},{},{})", l, m, r),
-         Symbol::Descend(r) => unimplemented!("Grammar::run Symbol::Descend({})", r),
+         Symbol::Descend(d) => {
+            self.run_local(d, input)
+         },
       }
    }
    fn run_local_rule(&mut self, rule: &Rule, mut input: Input) -> ParseResult {
@@ -113,6 +126,7 @@ impl Grammar {
       )
    }
    fn run_local(&mut self, rule: &str, input: Input) -> ParseResult {
+      println!("run_local {}", rule);
       let rules = self.rules.get(rule).expect(&format!("Could not find rule {} in grammar",rule)).clone();
       for rule in rules.iter() {
          if let ParseResult::Result(r,i) = self.run_local_rule(rule, input.clone()) {
@@ -122,6 +136,7 @@ impl Grammar {
       ParseResult::Error(format!("Expected {} at line {}, column {}", rule, input.line_no, input.column_no))
    }
    pub fn run(&mut self, rule: &str, input: &str) -> ParseResult {
+      println!("\nrun grammar from {}", rule);
       let input = Input {
          ctx: Context::new(),
          data: Rc::new(input.to_string()),
