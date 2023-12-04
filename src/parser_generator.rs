@@ -159,7 +159,9 @@ pub fn compile_rule(grammar: &mut Grammar, rule_name: String, rule: Rhs) -> Symb
                   .strip_suffix("/").expect("regex must end with /");
          Symbol::Regex(format!("^{}", s))
       },
-      Rhs::Variable(s) => unimplemented!("compile_rule Variable {}", s),
+      Rhs::Variable(s) => {
+         Symbol::Descend(s.clone())
+      },
       Rhs::Lambda(lhs,rhs) => {
          let mut string = Vec::new();
          for (li,l) in lhs.iter().enumerate() {
