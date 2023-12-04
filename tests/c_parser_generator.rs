@@ -47,23 +47,23 @@ expr-atom := λ(: x /[0-9]+/). x"#);
    );
    assert_eq!(
       grammar.run("expr","1+2").to_string(),
-      "Parse Result: + 1 2"
+      "Parse Result: (+ 1 2)"
    );
    assert_eq!(
       grammar.run("expr","1-2").to_string(),
-      "Parse Result: - 1 2"
+      "Parse Result: (- 1 2)"
    );
    assert_eq!(
       grammar.run("expr","1*2").to_string(),
-      "Parse Result: * 1 2"
+      "Parse Result: (* 1 2)"
    );
    assert_eq!(
-      grammar.run("expr","1+2").to_string(),
-      "Parse Result: / 1 2"
+      grammar.run("expr","1/2").to_string(),
+      "Parse Result: (/ 1 2)"
    );
 
    assert_eq!(
       grammar.run("expr","1*2+3/4-5").to_string(),
-      "Parse Result: - (+ (* 1 2) (/ 3 4)) 5"
+      "Parse Result: (+ (* 1 2) (- (/ 3 4) 5))"
    );
 }

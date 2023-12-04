@@ -63,6 +63,15 @@ pub struct Input {
    offset_start: usize,
 }
 impl Input {
+   fn with_context(&self, ctx: Context) -> Input {
+      Input {
+         ctx: ctx,
+         data: self.data.clone(),
+         line_no: self.line_no,
+         column_no: self.column_no,
+         offset_start: self.offset_start,
+      }
+   }
    fn bind(&self, k: String, v: Rhs) -> Input {
       Input {
          ctx: self.ctx.clone().bind(k,v),
@@ -123,6 +132,7 @@ impl Grammar {
       }
    }
    fn run_local_rule(&mut self, rule: &Rule, mut input: Input) -> ParseResult {
+      let clean_context = input.ctx.clone();
       for symbol in rule.string.iter() {
          match self.run_local_symbol(symbol, input.clone()) {
             ParseResult::Result(r,i) => { input = i; },
@@ -131,7 +141,7 @@ impl Grammar {
       }
       return ParseResult::Result(
         eval_rhs(input.ctx.clone(), &[rule.retval.clone()]),
-        input
+        input.with_context(clean_context),
       )
    }
    fn run_local(&mut self, rule: &str, input: Input) -> ParseResult {
@@ -195,7 +205,6 @@ pub fn compile_rule(grammar: &mut Grammar, rule_name: String, rule: Rhs) -> Symb
          if !grammar.rules.contains_key(&rule_name) {
             grammar.rules.insert(rule_name.clone(), Vec::new());
          }
-         println!("compile rhs {}", rhs);
          grammar.rules.get_mut(&rule_name).expect("parser_generator::compile_rule grammar.rules.get_mut")
                       .push(Rule {
             string: string,
