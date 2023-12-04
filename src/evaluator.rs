@@ -73,24 +73,28 @@ impl Context {
 
 //There are no error conditions for evaluation; this function is total
 pub fn eval_rhs(mut context: Context, rhs: &[Rhs]) -> Rhs {
+   println!("eval_rhs {} |{}|", rhs.iter().map(|r| r.to_string()).collect::<Vec<String>>().join(" "), rhs.len());
    if rhs.len()==0 {
       return Rhs::App(Vec::new());
    }
    if rhs.len()==1 {
       if let Rhs::Variable(v) = &rhs[0] {
+         println!("lookup {} = {}", v, context.lookup(v));
          return context.lookup(v);
-      } else if let Rhs::App(gs) = &rhs[0] {
-         if gs.len()==1 {
-            return Rhs::App(vec![ eval_rhs(context, gs) ]);
-         } else {
-            return eval_rhs(context, gs);
+      } else if let Rhs::App(xs) = &rhs[0] {
+         println!("apply {}", &rhs[0]);
+         let mut gs = Vec::new();
+         for x in xs {
+            gs.push( eval_rhs(context.clone(), &[x.clone()]) );
          }
+         return Rhs::App(gs);
       } else {
          return rhs[0].clone();
       }
    }
    let mut gs = Vec::new();
    for g in rhs {
+      println!("eval part {}", g);
       gs.push( eval_rhs(context.clone(), &[g.clone()]) );
    }
    return Rhs::App(gs);

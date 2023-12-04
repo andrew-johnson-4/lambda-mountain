@@ -86,7 +86,6 @@ impl Grammar {
       }
    }
    fn run_local_symbol(&mut self, sym: &Symbol, mut input: Input) -> ParseResult {
-      println!("run_local_symbol {} at '{}'", sym.to_string(), &input.data[input.offset_start..]);
       match sym {
          Symbol::Bind(l,r) => {
             match self.run_local_symbol(&r,input.clone()) {
@@ -103,7 +102,6 @@ impl Grammar {
                self.regexes.insert(p.clone(), re);
             }
             let re = self.regexes.get(p).unwrap();
-            println!("try regex /{}/ at '{}'", p, &input.data[input.offset_start..]);
             if let Some(m) = re.find_at(&input.data[input.offset_start..], 0) {
                let m = m.as_str().to_string();
                input.offset_start += m.len();
@@ -113,10 +111,8 @@ impl Grammar {
                } else {
                   input.column_no += m.len();
                }
-               println!("Regex accepted: '{}'", m);
                ParseResult::Result(Rhs::Literal(m),input)
             } else {
-               println!("Regex rejected");
                ParseResult::Error(format!("Expected /{}/ at line {}, column {}", p, input.line_no, input.column_no))
             }
          },
@@ -139,19 +135,15 @@ impl Grammar {
       )
    }
    fn run_local(&mut self, rule: &str, input: Input) -> ParseResult {
-      println!("run_local {}", rule);
       let rules = self.rules.get(rule).expect(&format!("Could not find rule {} in grammar",rule)).clone();
       for rule in rules.iter() {
-         println!("run_local line {}", rule.to_string());
          if let ParseResult::Result(r,i) = self.run_local_rule(rule, input.clone()) {
             return ParseResult::Result(r,i);
          }
       }
-      println!("fail run_local {}", rule);
       ParseResult::Error(format!("Expected {} at line {}, column {}", rule, input.line_no, input.column_no))
    }
    pub fn run(&mut self, rule: &str, input: &str) -> ParseResult {
-      println!("\nrun grammar from {}", rule);
       let input = Input {
          ctx: Context::new(),
          data: Rc::new(input.to_string()),
@@ -164,7 +156,10 @@ impl Grammar {
             if input.offset_start != input.data.len() {
                ParseResult::Error(format!("Expected EOF at line {}, column {}", input.line_no, input.column_no))      
             } else {
-               ParseResult::Result(retval,input)
+               ParseResult::Result(
+                  eval_rhs(input.ctx.clone(), &[retval.clone()]),
+                  input
+               )
             }
          },
          e => e
@@ -200,6 +195,7 @@ pub fn compile_rule(grammar: &mut Grammar, rule_name: String, rule: Rhs) -> Symb
          if !grammar.rules.contains_key(&rule_name) {
             grammar.rules.insert(rule_name.clone(), Vec::new());
          }
+         println!("compile rhs {}", rhs);
          grammar.rules.get_mut(&rule_name).expect("parser_generator::compile_rule grammar.rules.get_mut")
                       .push(Rule {
             string: string,

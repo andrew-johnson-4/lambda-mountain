@@ -36,6 +36,7 @@ pub fn parse_binding(input: StringSlice) -> Result<(String,Rhs),String> {
 }
 
 pub fn parse_many_rhs(input: StringSlice) -> Result<Vec<Rhs>,String> {
+   println!("parse_many_rhs: {}", input);
    let input = input.trim();
    if input.starts_with("λ") {
       return Result::Ok(vec![ parse_one_rhs(input)? ]);
@@ -49,12 +50,19 @@ pub fn parse_many_rhs(input: StringSlice) -> Result<Vec<Rhs>,String> {
 }
 
 pub fn parse_one_rhs(input: StringSlice) -> Result<Rhs,String> {
+   println!("parse_one_rhs: {}", input);
    let input = input.trim();
    if input.starts_with("λ") {
       if let Some((lhs,rhs)) = input.after("λ").split_once(".") {
+         let rhs = parse_many_rhs(StringSlice::new(rhs.to_string()))?;
+         let rhs = if rhs.len()==1 {
+            rhs[0].clone()
+         } else {
+            Rhs::App(rhs)
+         };
          Result::Ok( Rhs::Lambda(
             parse_many_rhs(StringSlice::new(lhs.to_string()))?,
-            Box::new( parse_one_rhs(StringSlice::new(rhs.to_string()))? )
+            Box::new(rhs),
          ) )
       } else {
          Result::Err( format!("Syntax Error: {}", input) )
