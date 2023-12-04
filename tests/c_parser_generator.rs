@@ -34,10 +34,12 @@ fn cfg1() {
 
 #[test]
 fn cfg2() {
-   let mut grammar = compile(r#"expr := λ(: x expr-mul) /+/ (: y expr). + x y
+   let mut grammar = compile(r#"expr := λ(: x expr-mul) /[+]/ (: y expr). + x y
 expr := λ(: x expr-mul) /-/ (: y expr). - x y
-expr-mul := λ(: x expr-atom) /*/ (: y expr-mul). * x y
-expr-mul := λ(: x expr-atom) /// (: y expr-mul). / x y
+expr := λ(: x expr-mul). x
+expr-mul := λ(: x expr-atom) /[*]/ (: y expr-mul). * x y
+expr-mul := λ(: x expr-atom) /[/]/ (: y expr-mul). / x y
+expr-mul := λ(: x expr-atom). x
 expr-atom := λ(: x /[0-9]+/). x"#);
    assert_eq!(
       grammar.run("expr","1").to_string(),

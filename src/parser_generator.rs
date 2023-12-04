@@ -11,6 +11,16 @@ struct Rule {
    string: Vec<Symbol>,
    retval: Rhs,
 }
+impl Rule {
+   pub fn to_string(&self) -> String {
+      let mut line = "".to_string();
+      for (i,s) in self.string.iter().enumerate() {
+         if i>0 { line += " "; }
+         line += &s.to_string();
+      }
+      line
+   }
+}
 
 //Symbols in Production Rules
 #[derive(Clone)]
@@ -76,7 +86,7 @@ impl Grammar {
       }
    }
    fn run_local_symbol(&mut self, sym: &Symbol, mut input: Input) -> ParseResult {
-      println!("run_local_symbol {} at line {} column {}", sym.to_string(), input.line_no, input.column_no);
+      println!("run_local_symbol {} at '{}'", sym.to_string(), &input.data[input.offset_start..]);
       match sym {
          Symbol::Bind(l,r) => {
             match self.run_local_symbol(&r,input.clone()) {
@@ -129,10 +139,12 @@ impl Grammar {
       println!("run_local {}", rule);
       let rules = self.rules.get(rule).expect(&format!("Could not find rule {} in grammar",rule)).clone();
       for rule in rules.iter() {
+         println!("run_local line {}", rule.to_string());
          if let ParseResult::Result(r,i) = self.run_local_rule(rule, input.clone()) {
             return ParseResult::Result(r,i);
          }
       }
+      println!("fail run_local {}", rule);
       ParseResult::Error(format!("Expected {} at line {}, column {}", rule, input.line_no, input.column_no))
    }
    pub fn run(&mut self, rule: &str, input: &str) -> ParseResult {
