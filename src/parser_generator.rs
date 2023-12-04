@@ -103,7 +103,8 @@ impl Grammar {
                self.regexes.insert(p.clone(), re);
             }
             let re = self.regexes.get(p).unwrap();
-            if let Some(m) = re.find_at(&input.data, input.offset_start) {
+            println!("try regex /{}/ at '{}'", p, &input.data[input.offset_start..]);
+            if let Some(m) = re.find_at(&input.data[input.offset_start..], 0) {
                let m = m.as_str().to_string();
                input.offset_start += m.len();
                input.line_no += m.matches("\n").count();
@@ -112,8 +113,10 @@ impl Grammar {
                } else {
                   input.column_no += m.len();
                }
+               println!("Regex accepted: '{}'", m);
                ParseResult::Result(Rhs::Literal(m),input)
             } else {
+               println!("Regex rejected");
                ParseResult::Error(format!("Expected /{}/ at line {}, column {}", p, input.line_no, input.column_no))
             }
          },
