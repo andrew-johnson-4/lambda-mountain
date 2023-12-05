@@ -10,6 +10,7 @@ the code and IP as they would like. Please, just be nice.
 S: A Library for S-Expressions
 
 This library may transparently hide certain internal data structures such as
+* Regular Expressions
 * Records
 * Products
 * Vectors

@@ -11,6 +11,8 @@ P: A fast String to AST parser
 
 */
 
+use crate::*;
+
 pub fn parse_expression(s: &str) -> S {
    s_nil()
 }

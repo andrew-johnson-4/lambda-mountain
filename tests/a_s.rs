@@ -1,8 +1,8 @@
 
-use lambda_mountain::s::*;
+use lambda_mountain::*;
 
 #[test]
-fn a() {
+fn s_equality() {
    assert_eq!( s_nil().to_string(), "()" );
    assert_eq!( s_atom("a").to_string(), "a" );
    assert_eq!( s_cons(s_atom("a"),s_nil()).to_string(), "(a . ())" );
