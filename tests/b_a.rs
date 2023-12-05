@@ -15,6 +15,32 @@ fn equality() {
 
 #[test]
 fn destructure() {
+   assert_eq!( map( literal("1"), literal("1"), literal("123") ).to_string(), "(literal . 123)" );
+   assert_eq!( map( literal("1"), literal("2"), literal("123") ).to_string(), "()" );
+   assert_eq!( map( variable("a"), literal("123"), variable("a") ).to_string(), "(literal . 123)" );
+   assert_eq!( map( variable("a"), literal("123"), variable("b") ).to_string(), "(variable . b)" );
+
+   assert_eq!( map(
+      lambda(literal("a"), variable("bc")),
+      lambda(literal("a"), variable("bc")),
+      literal("123"),
+   ).to_string(), "(literal . 123)" );
+   assert_eq!( map(
+      lambda(literal("a"), variable("bc")),
+      lambda(literal("a"), variable("b")),
+      literal("123"),
+   ).to_string(), "()" );
+
+   assert_eq!( map(
+      list(&[ literal("a"), variable("b") ]),
+      list(&[ literal("a"), literal("b") ]),
+      variable("b"),
+   ).to_string(), "(literal . b)" );
+   assert_eq!( map(
+      list(&[ literal("a"), literal("b") ]),
+      list(&[ literal("a"), literal("c") ]),
+      variable("b"),
+   ).to_string(), "()" );
 }
 
 #[test]

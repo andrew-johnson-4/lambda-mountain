@@ -32,3 +32,7 @@ pub fn list(s: &[S]) -> S {
    }
    tail
 }
+
+pub fn map(lhs: S, v: S, rhs: S) -> S {
+   rhs
+}
