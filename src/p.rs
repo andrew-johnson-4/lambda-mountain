@@ -45,7 +45,7 @@ pub fn parse_expression(input: &str) -> S {
    for c in input.chars() {
       if c=='(' { depth += 1; buf.push(c); }
       else if c==')' { depth -= 1; buf.push(c); }
-      else if c=='λ' { depth += 1; buf.push(c); }
+      else if depth==0 && c=='λ' { depth += 1; buf.push(c); }
       else if c==' ' {
          if depth>0 { buf.push(c); }
          else if buf.len()>0 {
