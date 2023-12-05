@@ -10,3 +10,11 @@ the code and IP as they would like. Please, just be nice.
 P: A fast String to AST parser
 
 */
+
+pub fn parse_expression(s: &str) -> S {
+   s_nil()
+}
+
+pub fn parse_program(s: &str) -> S {
+   s_nil()
+}
