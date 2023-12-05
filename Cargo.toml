@@ -13,5 +13,4 @@ keywords = ["programming-language","interpreter","compiler"]
 name = "lm"
 
 [dependencies]
-im-lists   = { version = "0.4" }
 regex = { version = "1" }

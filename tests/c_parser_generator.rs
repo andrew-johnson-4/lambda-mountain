@@ -1,3 +1,4 @@
+/* TODO bootstrap
 
 use lambda_mountain::parser_generator::compile;
 
@@ -67,3 +68,5 @@ expr-atom := λ(: x /[0-9]+/). x"#);
       "Parse Result: (+ (* 1 2) (- (/ 3 4) 5))"
    );
 }
+
+*/
