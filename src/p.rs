@@ -7,4 +7,6 @@ the attached permissive MIT license. This license is intended only to protect
 the future development of the project while otherwise allowing people to use
 the code and IP as they would like. Please, just be nice.
 
+P: A fast String to AST parser
+
 */

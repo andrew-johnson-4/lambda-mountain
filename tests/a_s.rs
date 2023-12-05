@@ -3,16 +3,16 @@ use lambda_mountain::s::*;
 
 #[test]
 fn a() {
-   assert_eq!( nil().to_string(), "()" );
-   assert_eq!( atom("a").to_string(), "a" );
-   assert_eq!( cons(atom("a"),nil()).to_string(), "(a . ())" );
-   assert_eq!( head(cons(atom("a"),nil())).to_string(), "a" );
-   assert_eq!( tail(cons(atom("a"),nil())).to_string(), "()" );
-   assert_eq!( nil(), nil() );
-   assert_eq!( atom("a"), atom("a") );
-   assert_ne!( atom("a"), atom("b") );
-   assert_eq!( cons(atom("a"),nil()), cons(atom("a"),nil()) );
-   assert_ne!( cons(atom("a"),nil()), cons(nil(),atom("a")) );
-   assert_eq!( cons(cons(nil(),atom("a")),nil()),  cons(cons(nil(),atom("a")),nil()) );
-   assert_ne!( cons(cons(nil(),atom("a")),nil()),  cons(cons(nil(),atom("b")),nil()) );
+   assert_eq!( s_nil().to_string(), "()" );
+   assert_eq!( s_atom("a").to_string(), "a" );
+   assert_eq!( s_cons(s_atom("a"),s_nil()).to_string(), "(a . ())" );
+   assert_eq!( head(s_cons(s_atom("a"),s_nil())).to_string(), "a" );
+   assert_eq!( tail(s_cons(s_atom("a"),s_nil())).to_string(), "()" );
+   assert_eq!( s_nil(), s_nil() );
+   assert_eq!( s_atom("a"), s_atom("a") );
+   assert_ne!( s_atom("a"), s_atom("b") );
+   assert_eq!( s_cons(s_atom("a"),s_nil()), s_cons(s_atom("a"),s_nil()) );
+   assert_ne!( s_cons(s_atom("a"),s_nil()), s_cons(s_nil(),s_atom("a")) );
+   assert_eq!( s_cons(s_cons(s_nil(),s_atom("a")),s_nil()),  s_cons(s_cons(s_nil(),s_atom("a")),s_nil()) );
+   assert_ne!( s_cons(s_cons(s_nil(),s_atom("a")),s_nil()),  s_cons(s_cons(s_nil(),s_atom("b")),s_nil()) );
 }
