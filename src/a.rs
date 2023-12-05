@@ -25,6 +25,10 @@ pub fn lambda(l: S, r: S) -> S {
    s_cons( s_atom("lambda"), s_cons(l,r) )
 }
 
+pub fn regex(r: &str) -> S {
+   s_nil()
+}
+
 pub fn list(s: &[S]) -> S {
    let mut tail = s_nil();
    for x in s.iter().rev() {

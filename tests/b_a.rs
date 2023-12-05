@@ -41,6 +41,17 @@ fn destructure() {
       list(&[ literal("a"), literal("c") ]),
       variable("b"),
    ).to_string(), "()" );
+
+   assert_eq!( map(
+      regex("^([abc]+)$"),
+      literal("aab"),
+      variable("{0}"),
+   ).to_string(), "(literal . aab)");
+   assert_eq!( map(
+      regex("^([abc]+)$"),
+      literal("abcd"),
+      variable("{0}"),
+   ).to_string(), "()");
 }
 
 #[test]
