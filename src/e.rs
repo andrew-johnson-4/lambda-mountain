@@ -14,9 +14,14 @@ E: An AST Expression Evaluator
 use crate::*;
 
 pub fn eval(s: &S) -> S {
-   s.clone()
+   ctx_eval(&s_nil(), s)
 }
 
 pub fn ctx_eval(ctx: &S, s: &S) -> S {
+   println!("evaluate: {} with context {}", s, ctx);
+   if !is_cons(s) { return s.clone(); }
+   if head(&s).to_string()=="variable" {
+      return kv_lookup( ctx, &s, &s );
+   }
    s.clone()
 }

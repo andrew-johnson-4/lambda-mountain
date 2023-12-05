@@ -7,11 +7,12 @@ fn test_eval() {
    assert_eq!( eval(&parse_expression("123")).to_string(), "(literal . 123)" );
    assert_eq!( eval(&parse_expression("/a/")).to_string(), "(regex . a)" );
    assert_eq!( eval(&parse_expression("λx.y")).to_string(), "(lambda . ((variable . x) . (variable . y)))" );
+   assert_eq!( eval(&parse_expression("x y")).to_string(), "(app . ((variable . x) . (variable . y)))" );
    assert_eq!( eval(&parse_expression("(λx.y) z")).to_string(), "(lambda . ((variable . x) . (variable . y)))" );
 }
 
 #[test]
 fn test_ctx_eval() {
-   assert_eq!( ctx_eval(&kv(&[(variable("a"),literal("b"))]),&parse_expression("a")).to_string(), "(literal . b)" );
    assert_eq!( ctx_eval(&kv(&[(variable("a"),literal("b"))]),&parse_expression("b")).to_string(), "(variable . b)" );
+   assert_eq!( ctx_eval(&kv(&[(variable("a"),literal("b"))]),&parse_expression("a")).to_string(), "(literal . b)" );
 }

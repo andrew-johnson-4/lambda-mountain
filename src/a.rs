@@ -64,6 +64,13 @@ pub fn kv_iter(s: &S) -> Vec<(S,S)> {
    kvs
 }
 
+pub fn kv_lookup(ctx: &S, key: &S, default: &S) -> S {
+   for (k,v) in kv_iter(ctx) {
+      if k==*key { return v.clone(); }
+   }
+   default.clone()
+}
+
 fn destructure(ctx: &mut HashMap<String,S>, pattern: S, value: S) -> bool {
    if pattern==value { return true; }
    if !is_cons(&pattern) { return false; }
