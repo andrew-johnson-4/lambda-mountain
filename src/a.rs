@@ -11,6 +11,7 @@ A: An S-Expression based AST
 
 */
 
+use regex::Regex;
 use std::collections::HashMap;
 use crate::*;
 
@@ -27,7 +28,7 @@ pub fn lambda(l: S, r: S) -> S {
 }
 
 pub fn regex(r: &str) -> S {
-   s_nil()
+   s_cons( s_atom("regex"), s_atom(r) )
 }
 
 pub fn list(s: &[S]) -> S {
@@ -53,6 +54,20 @@ fn destructure(ctx: &mut HashMap<String,S>, pattern: S, value: S) -> bool {
    if !is_cons(&value) { return false; }
    if is_atom(&head(&pattern)) && head(&pattern).to_string()=="lambda" {
       return false;
+   }
+   if is_atom(&head(&pattern)) && head(&pattern).to_string()=="regex" {
+      if !is_atom(&head(&value)) || head(&value).to_string()!="literal" { return false; }
+      let value = tail(&value).to_string();
+      let re = Regex::new(&tail(&pattern).to_string()).unwrap();
+      return if let Some(c) = re.captures(&value) {
+         for (ci,cm) in c.iter().enumerate() {
+            if let Some(m) = cm.map(|m| m.as_str()) {
+               let k = "{".to_string() + &format!("{}",ci) + "}";
+               ctx.insert( k, literal(m) );
+            }
+         }
+         true
+      } else { false }
    }
    destructure(ctx, head(&pattern), head(&value)) &&
    destructure(ctx, tail(&pattern), tail(&value))

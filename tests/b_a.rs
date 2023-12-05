@@ -52,6 +52,11 @@ fn destructure() {
       literal("abcd"),
       variable("{0}"),
    ).to_string(), "()");
+   assert_eq!( map(
+      regex("^([abc]+)[d]$"),
+      literal("abcd"),
+      variable("{1}"),
+   ).to_string(), "(literal . abc)");
 }
 
 #[test]
