@@ -11,6 +11,7 @@ A: An S-Expression based AST
 
 */
 
+use std::collections::HashMap;
 use crate::*;
 
 pub fn literal(s: &str) -> S {
@@ -41,6 +42,33 @@ pub fn kv(s: &[(S,S)]) -> S {
    s_nil()
 }
 
+fn destructure(ctx: &mut HashMap<String,S>, pattern: S, value: S) -> bool {
+   if pattern==value { return true; }
+   if !is_cons(&pattern) { return false; }
+   if head(&pattern)==s_atom("variable") {
+      let k = tail(&pattern).to_string();
+      ctx.insert( k, value );
+      return true;
+   }
+   if !is_cons(&value) { return false; }
+   if is_atom(&head(&pattern)) && head(&pattern).to_string()=="lambda" {
+      return false;
+   }
+   destructure(ctx, head(&pattern), head(&value)) &&
+   destructure(ctx, tail(&pattern), tail(&value))
+}
+fn restructure(ctx: &HashMap<String,S>, value: S) -> S {
+   if !is_cons(&value) { return value; }
+   if head(&value)==s_atom("variable") {
+      let k = tail(&value).to_string();
+      return if let Some(v) = ctx.get(&k) { v.clone() }
+      else { value };
+   }
+   value
+}
 pub fn map(lhs: S, v: S, rhs: S) -> S {
-   rhs
+   let mut ctx = HashMap::new();
+   if destructure(&mut ctx, lhs, v) {
+      restructure(&ctx, rhs)
+   } else { s_nil() }
 }

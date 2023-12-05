@@ -59,13 +59,33 @@ pub fn s_cons( x: S, y: S ) -> S {
    Rc::new(S_::Cons( x, y ))
 }
 
-pub fn head( s: S ) -> S {
+pub fn head( s: &S ) -> S {
    if let S_::Cons(h,_) = s.borrow() { h.clone() }
    else { s_nil() }
 }
 
-pub fn tail( s: S ) -> S {
+pub fn tail( s: &S ) -> S {
    if let S_::Cons(_,t) = s.borrow() { t.clone() }
    else { s_nil() }
 }
 
+pub fn is_nil( s: &S ) -> bool {
+   match s.borrow() {
+      S_::Nil => true,
+      _ => false,
+   }
+}
+
+pub fn is_atom( s: &S ) -> bool {
+   match s.borrow() {
+      S_::Atom(_) => true,
+      _ => false,
+   }
+}
+
+pub fn is_cons( s: &S ) -> bool {
+   match s.borrow() {
+      S_::Cons(_,_) => true,
+      _ => false,
+   }
+}
