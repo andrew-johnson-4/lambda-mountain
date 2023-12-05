@@ -27,6 +27,10 @@ pub fn lambda(l: S, r: S) -> S {
    s_cons( s_atom("lambda"), s_cons(l,r) )
 }
 
+pub fn app(f: S, x: S) -> S {
+   s_cons( s_atom("app"), s_cons(f,x) )
+}
+
 pub fn regex(r: &str) -> S {
    s_cons( s_atom("regex"), s_atom(r) )
 }

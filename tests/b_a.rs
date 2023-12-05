@@ -10,6 +10,7 @@ fn equality() {
    assert_eq!( variable("bc").to_string(), "(variable . bc)" );
 
    assert_eq!( lambda(literal("a"), variable("bc")).to_string(), "(lambda . ((literal . a) . (variable . bc)))");
+   assert_eq!( app(literal("f"),literal("x")).to_string(), "(app . ((literal . f) . (literal . x)))");
    assert_eq!( list(&[literal("a"), variable("c")]).to_string(), "((literal . a) . ((variable . c) . ()))" );
 }
 
