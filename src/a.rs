@@ -13,6 +13,7 @@ A: An S-Expression based AST
 
 use regex::Regex;
 use std::collections::HashMap;
+use itertools::Itertools;
 use crate::*;
 
 pub fn literal(s: &str) -> S {
@@ -64,6 +65,16 @@ pub fn kv_iter(s: &S) -> Vec<(S,S)> {
    kvs
 }
 
+pub fn kv_ctx(s: &S) -> HashMap<String,S> {
+   let mut ctx = HashMap::new();
+   for (k,v) in kv_iter(s) {
+   if head(&k).to_string()=="variable" {
+      let k = tail(&k).to_string();
+      ctx.insert( k, v );
+   }}
+   ctx
+}
+
 pub fn kv_lookup(ctx: &S, key: &S, default: &S) -> S {
    for (k,v) in kv_iter(ctx) {
       if k==*key { return v.clone(); }
@@ -71,7 +82,11 @@ pub fn kv_lookup(ctx: &S, key: &S, default: &S) -> S {
    default.clone()
 }
 
-fn destructure(ctx: &mut HashMap<String,S>, pattern: S, value: S) -> bool {
+pub fn kv_s(ctx: &HashMap<String,S>) -> S {
+   kv(&ctx.iter().sorted_by_key(|x| x.0).map(|(k,v)|(variable(k),v.clone())).collect::<Vec<(S,S)>>())
+}
+
+pub fn destructure(ctx: &mut HashMap<String,S>, pattern: S, value: S) -> bool {
    if pattern==value { return true; }
    if !is_cons(&pattern) { return false; }
    if head(&pattern)==s_atom("variable") {

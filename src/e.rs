@@ -23,5 +23,17 @@ pub fn ctx_eval(ctx: &S, s: &S) -> S {
    if head(&s).to_string()=="variable" {
       return kv_lookup( ctx, &s, &s );
    }
+   if head(&s).to_string()=="app" {
+      let fx = tail(&s);
+      let f = head(&fx);
+      let x = tail(&fx);
+      if head(&f).to_string()=="lambda" {
+         let fl = head(&tail(&f));
+         let fr = tail(&tail(&f));
+         let mut ctx = kv_ctx(ctx);
+         destructure(&mut ctx, fl, x);
+         return ctx_eval(&kv_s(&ctx), &fr);
+      }
+   }
    s.clone()
 }
