@@ -10,3 +10,13 @@ the code and IP as they would like. Please, just be nice.
 E: An AST Expression Evaluator
 
 */
+
+use crate::*;
+
+pub fn eval(s: &S) -> S {
+   s.clone()
+}
+
+pub fn ctx_eval(ctx: &S, s: &S) -> S {
+   s.clone()
+}
