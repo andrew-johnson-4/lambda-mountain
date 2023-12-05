@@ -40,7 +40,24 @@ pub fn list(s: &[S]) -> S {
 }
 
 pub fn kv(s: &[(S,S)]) -> S {
-   s_nil()
+   let mut tail = s_nil();
+   for (k,v) in s.iter().rev() {
+      tail = s_cons( s_cons(k.clone(),v.clone()), tail );
+   }
+   s_cons( s_atom("kv"), tail )
+}
+
+pub fn kv_iter(s: &S) -> Vec<(S,S)> {
+   let mut kvs = Vec::new();
+   let mut h = s.clone();
+   while is_cons(&h) {
+      let kv = head(&h);
+      if is_cons(&kv) {
+         kvs.push(( head(&kv), tail(&kv) ));
+      }
+      h = tail(&h);
+   }
+   kvs
 }
 
 fn destructure(ctx: &mut HashMap<String,S>, pattern: S, value: S) -> bool {
@@ -68,6 +85,21 @@ fn destructure(ctx: &mut HashMap<String,S>, pattern: S, value: S) -> bool {
          }
          true
       } else { false }
+   }
+   if is_atom(&head(&pattern)) && head(&pattern).to_string()=="kv" &&
+      is_atom(&head(&value)) && head(&value).to_string()=="kv" {
+      for (lk,lv) in kv_iter(&tail(&pattern)) {
+         let mut found = false;
+         for (rk,rv) in kv_iter(&tail(&value)) {
+            if lk==rk {
+               if !destructure(ctx, lv, rv) { return false; }
+               found = true;
+               break;
+            }
+         }
+         if !found { return false; }
+      }
+      return true;
    }
    destructure(ctx, head(&pattern), head(&value)) &&
    destructure(ctx, tail(&pattern), tail(&value))
