@@ -9,14 +9,7 @@ the code and IP as they would like. Please, just be nice.
 
 */
 
-pub mod ast; pub use crate::ast::*;
-
-pub mod parser; pub use crate::parser::*;
-
-pub mod evaluator; pub use crate::evaluator::*;
-
-pub mod policy; pub use crate::policy::*;
-
-pub mod repl; pub use crate::repl::*;
-
-pub mod parser_generator;
+pub mod s; pub use crate::s::*; //S-Expression Library
+pub mod a; pub use crate::a::*; //S-Expression based AST helper functions
+pub mod p; pub use crate::p::*; //Quickly parse input into AST
+pub mod e; pub use crate::e::*; //Evaluate expressions

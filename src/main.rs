@@ -1,3 +1,8 @@
+
+fn main() {}
+
+/* TODO bootstrap
+
 use std::fs::File;
 use std::io::prelude::*;
 
@@ -32,3 +37,5 @@ fn eval_hard(policy: &mut Policy) {
    let input = "";
    println!("{}", policy.s_hard(input));
 }
+
+*/
