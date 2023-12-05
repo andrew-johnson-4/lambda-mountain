@@ -56,4 +56,14 @@ fn destructure() {
 
 #[test]
 fn datastructures() {
+   assert_eq!( map(
+      kv(&[ (literal("1"),literal("23")), (list(&[literal("45")]),literal("6")) ]),
+      kv(&[ (literal("1"),regex("^([0-9]+)$")) ]),
+      variable("{0}"),
+   ).to_string(), "(literal . 23)");
+   assert_eq!( map(
+      kv(&[ (literal("1"),literal("a")), (list(&[literal("45")]),literal("6")) ]),
+      kv(&[ (literal("1"),regex("^([0-9]+)$")) ]),
+      variable("{0}"),
+   ).to_string(), "()");
 }

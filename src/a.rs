@@ -37,6 +37,10 @@ pub fn list(s: &[S]) -> S {
    tail
 }
 
+pub fn kv(s: &[(S,S)]) -> S {
+   s_nil()
+}
+
 pub fn map(lhs: S, v: S, rhs: S) -> S {
    rhs
 }
