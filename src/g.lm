@@ -12,6 +12,13 @@ ported from Chibi codegen https://github.com/rui314/chibicc
 
 */
 
+compile := λ(: prog Prog). (
+   let o (File::open "tmp.asm")
+   ; (emit_data o prog)
+   ; (emit_text o prog)
+   (Cmd::run as -c tmp.asm -o a.out)
+)
+
 #include "chibicc.h"
 
 #define GP_MAX 6
