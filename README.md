@@ -34,27 +34,6 @@ _eval-soft_ attempts to evaluate an expression to normal form with two restricti
 
 _eval-hard_ does not have any restrictions.
 
-# How is λ☶ different from LSTS?
-
-λ☶ is ad-hoc monomorphic. LSTS is ad-hoc polymorphic. 
-
-```λ☶
-#λ☶ programs try to apply the first function candidate,
-#    followed by the next, in descending order
-f := λ(: a A). a
-f := λ(: b B). b
-(: (f x) A)
-(: (f y) B)
-```
-
-```LSTS
-//LSTS programs try to apply all function candidates,
-//     at the same time, immediately
-let f(a: A): A = a;
-let f(b: B): B = b;
-f(x) : A + B
-```
-
 # Why is the repo name -
 
 The proper name for this project is λ☶.
