@@ -18,6 +18,7 @@ Future work will also be done to provide a zoom-in/zoom-out interface for rules.
 λ☶ is a programming language written in the passive voice.
 `eval-soft` and `eval-hard` are the exposed entry points into your program.
 A λ☶ program is then defined as *capabilities* gifted to anyone with access to your entry points.
+λ☶ syntax consists of typed lambda calculus expressions potentially nested inside of rules.
 
 ![Equation](https://github.com/andrew-johnson-4/-/blob/main/equation.png)
 
