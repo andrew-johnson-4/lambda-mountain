@@ -14,14 +14,71 @@ G: A Basic Codegen
 use crate::*;
 use punc::*;
 
+struct StructuredExpression {
+   //Put Cons in %rdi idk
+   //Put Atoms in %rsi idk
+   //Nil if neither %rsi nor %rdi
+   term: Term,
+   labels: Vec<Term>,
+}
+
+static mut UUID_COUNTER: usize = 0;
+fn uuid() -> String {
+   let id = unsafe { UUID_COUNTER += 1; UUID_COUNTER };
+   format!("uuid_{}", id)
+}
+
+fn introduce_constant(s: &S) -> StructuredExpression {
+   if is_nil(s) {
+      StructuredExpression {
+         term: punc!(
+            (xor %rdi %rdi)
+            (xor %rsi %rsi)
+         ),
+         labels: vec![]
+      }
+   } else if is_atom(s) {
+      let id = uuid();
+      StructuredExpression {
+         term: punc!(
+            (xor %rdi %rdi)
+            (mov {Term::var(&format!("@{}",id))} %rsi)
+         ),
+         labels: vec![punc!(
+            (label {Term::var(&id)} 
+               (.ascii {Term::var(&format!("\"{}\"",s))})
+            )
+         )]
+      }
+   } else {
+      panic!("Term is not a constant: {}", s)
+   }
+}
+
+fn compile_expression(s: &S) -> StructuredExpression {
+   introduce_constant(s)
+}
+
 pub fn compile(cfg: &str, s: &S) {
-  punc!(
+  let t = compile_expression(s);
+
+  let mut label_t = punc!( label eof );
+  for label in t.labels {
+     label_t = punc!( ; {label} {label_t} );
+  }
+
+  let program = punc!(
       (.global _start)
       (.text)
       (label _start
+         ; { t.term }
+
          (mov @60 %rax)
          (xor %rdi %rdi)
          (syscall)
       )
-   ).compile(cfg);
+      ({label_t})
+   );
+   println!("compile program: {}", program.to_string());
+   program.compile(cfg);
 }

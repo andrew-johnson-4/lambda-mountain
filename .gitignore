@@ -4,6 +4,6 @@ tmp/
 
 Cargo.lock
 
-a.out
 *.o
 *.s
+*.exe

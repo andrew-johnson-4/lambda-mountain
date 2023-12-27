@@ -1,12 +1,17 @@
+#![feature(thread_id_value)]
+
 use std::process::Command;
 use lambda_mountain::*;
 
 fn compile_and_run(s: &S) -> String {
-   compile("a.out", s);
+   let a_out = format!("tmp.{}.{}.exe",std::process::id(),std::thread::current().id().as_u64());
+   compile(&a_out, s);
 
-   let output = Command::new("./a.out")
-                            .output()
+   let output = Command::new(&format!("./{}",a_out))
+                            .spawn()
                             .expect("failed to execute process")
+                            .wait_with_output()
+                            .expect("failed to wait for process")
                             .stdout;
    String::from_utf8_lossy(&output).to_string()
 }
