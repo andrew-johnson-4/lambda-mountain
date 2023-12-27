@@ -12,7 +12,16 @@ G: A Basic Codegen
 */
 
 use crate::*;
+use punc::*;
 
-pub fn compile(cfg: &str, s: &S) -> S {
-   unimplemented!("g::compile")
+pub fn compile(cfg: &str, s: &S) {
+  punc!(
+      (.global _start)
+      (.text)
+      (label _start
+         (mov @60 %rax)
+         (xor %rdi %rdi)
+         (syscall)
+      )
+   ).compile(cfg);
 }

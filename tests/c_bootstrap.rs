@@ -15,3 +15,8 @@ fn compile_and_run(s: &S) -> String {
 fn nil() {
    assert_eq!( compile_and_run(&s_nil()), "" );
 }
+
+#[test]
+fn hello_world() {
+   assert_eq!( compile_and_run(&s_atom("hello world")), "hello world" );
+}

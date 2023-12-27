@@ -15,3 +15,4 @@ name = "lm"
 [dependencies]
 regex = { version = "1" }
 itertools = { version = "0.12" }
+punc = { version = "1" }

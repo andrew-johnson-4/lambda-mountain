@@ -3,5 +3,7 @@ target/
 tmp/
 
 Cargo.lock
-calligraphy.aux
-calligraphy.log
+
+a.out
+*.o
+*.s
