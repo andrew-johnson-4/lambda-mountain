@@ -1,0 +1,33 @@
+/*
+
+Copyright 2023 - Andrew Johnson
+
+This code and all related intellectual property is available under the terms of
+the attached permissive MIT license. This license is intended only to protect
+the future development of the project while otherwise allowing people to use
+the code and IP as they would like. Please, just be nice.
+
+E: An AST Expression Evaluator
+
+*/
+
+eval := λ(: e S). ctx-eval () e
+
+ctx-eval := λ(: ctx S)(: e S). (
+   if (not (is-cons s)) e
+   if (== (head s) "variable") (kv-lookup ctx s s)
+   if (== (head s) "app") (
+      let fx (tail s)
+      let f (head fx)
+      let x (tail fx)
+      if (== (head f) "lambda") (
+         let fl (head (tail f))
+         let fr (tail (tail f))
+         let ctx (kv-ctx ctx)
+         ; (destructure ctx fl x)
+         (ctx-eval (kv-s ctx) fr)
+      )
+      s
+   )
+   s
+)
