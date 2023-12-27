@@ -18,11 +18,6 @@ Future work will also be done to provide a zoom-in/zoom-out interface for rules.
 λ☶ is a programming language written in the passive voice.
 `eval-soft` and `eval-hard` are the exposed entry points into your program.
 A λ☶ program is then defined as *capabilities* gifted to anyone with access to your entry points.
-Each program defines a policy and implementation of capabilities.
-Any attempt to subvert these policies should result in an error instead of actual evaluation.
-
-Syntactically, capabilities are exposed to the user as globally bound variables.
-User-land programs can then be thought of as simple [lambda-calculus](https://ncatlab.org/nlab/show/lambda-calculus) expressions.
 
 ![Equation](https://github.com/andrew-johnson-4/-/blob/main/equation.png)
 
