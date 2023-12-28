@@ -64,21 +64,22 @@ pub fn compile(cfg: &str, s: &S) {
 
   let mut label_t = punc!( label eof );
   for label in t.labels {
-     label_t = punc!( ; {label} {label_t} );
+     label_t = punc!( {label} {label_t} );
   }
 
   let program = punc!(
       (.global _start)
       (.text)
       (label _start
-         ; { t.term }
-
+         { t.term }
+         (call print)
          (mov @60 %rax)
          (xor %rdi %rdi)
          (syscall)
       )
+      ({ include!("../stdlib/prelude.rs") })
       ({label_t})
    );
-   println!("compile program: {}", program.to_string());
+   println!("program {}", program.to_string());
    program.compile(cfg);
 }
