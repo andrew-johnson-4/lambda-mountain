@@ -47,6 +47,7 @@ fn introduce_constant(s: &S) -> StructuredExpression {
          labels: vec![punc!(
             (label {Term::var(&id)} 
                (.asciz {Term::var(&format!("\"{}\"",s))})
+               (.zero 1)
             )
          )]
       }
@@ -62,7 +63,7 @@ fn compile_expression(s: &S) -> StructuredExpression {
 pub fn compile(cfg: &str, s: &S) {
   let t = compile_expression(s);
 
-  let mut label_t = punc!( label nil_as_string (.asciz "()") );
+  let mut label_t = punc!( label nil_as_string (.asciz "()") (.zero 1) );
   for label in t.labels {
      label_t = punc!( {label} {label_t} );
   }

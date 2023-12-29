@@ -22,9 +22,10 @@ punc!(
    (je print_cons)
    (mov %rsi %rdx)
    (call strlen)
-   (movq %rax %rdx)
-   (mov @1 %rax)
-   (mov @1 %rdi)
+   (mov %rax %rdx) //set write length to strlen
+   //%rsi is pointer to string
+   (mov @1 %rax) //set write as command
+   (mov @1 %rdi) //set output to STDOUT
    (syscall)
    (jmp print_ret)
 
