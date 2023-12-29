@@ -8,6 +8,7 @@ fn compile_and_run(s: &S) -> String {
    compile(&a_out, s);
 
    let output = Command::new(&format!("./{}",a_out))
+                            .stdout(std::process::Stdio::piped())
                             .spawn()
                             .expect("failed to execute process")
                             .wait_with_output()
