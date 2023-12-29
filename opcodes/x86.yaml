@@ -1,0 +1,171 @@
+
+add:
+   binary: true
+
+adc:
+   binary: true
+
+and:
+   binary: true
+
+push:
+   binary: true
+
+pusha:
+   binary: true
+
+pop:
+   binary: true
+
+popa:
+   binary: true
+
+test:
+   binary: true
+
+xchg:
+   binary: true
+
+xor:
+   binary: true
+
+inc:
+   unary: true
+
+ret:
+   zero: true
+
+mov:
+   binary: true
+
+movq:
+   binary: true
+
+in:
+   binary: true
+
+out:
+   binary: true
+
+lock:
+   binary: true
+
+hlt:
+   binary: true
+
+cmc:
+   binary: true
+
+or:
+   binary: true
+
+sbb:
+   binary: true
+
+sub:
+   binary: true
+
+cmp:
+   binary: true
+
+imul:
+   binary: true
+
+wait:
+   binary: true
+
+stos:
+   binary: true
+
+lods:
+   binary: true
+
+clc:
+   binary: true
+
+stc:
+   binary: true
+
+cli:
+   binary: true
+
+sti:
+   binary: true
+
+cld:
+   binary: true
+
+std:
+   binary: true
+
+into:
+   binary: true
+
+iret:
+   binary: true
+
+call:
+   unary: true
+
+int:
+   unary: true
+
+jo:
+   unary: true
+
+jno:
+   unary: true
+
+jb:
+   unary: true
+
+jnb:
+   unary: true
+
+jz:
+   unary: true
+
+jnz:
+   unary: true
+
+jbe:
+   unary: true
+
+jnbe:
+   unary: true
+
+js:
+   unary: true
+
+jns:
+   unary: true
+
+jp:
+   unary: true
+
+jnp:
+   unary: true
+
+jl:
+   unary: true
+
+jnl:
+   unary: true
+
+jle:
+   unary: true
+
+jnle:
+   unary: true
+
+jmp:
+   unary: true
+
+je:
+   unary: true
+
+jne:
+   unary: true
+
+syscall:
+   zero: true
