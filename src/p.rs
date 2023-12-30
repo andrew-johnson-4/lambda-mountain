@@ -42,12 +42,21 @@ fn parse_one_expression(input: &str) -> S {
 pub fn parse_expression(input: &str) -> S {
    let input = input.trim();
    let mut depth = 0;
+   let mut in_regex = false;
    let mut buf = String::new();
    let mut terms = Vec::new();
    for c in input.chars() {
       if c=='(' { depth += 1; buf.push(c); }
-      else if c==')' { depth -= 1; buf.push(c); }
-      else if depth==0 && c=='λ' { depth += 1; buf.push(c); }
+      else if c==')' {
+         depth -= 1; buf.push(c);
+         if depth==0 && !in_regex {
+            terms.push(parse_one_expression(&buf));
+            buf = String::new();
+         }
+      }
+      else if depth==0 && !in_regex && c=='/' { in_regex = true; buf.push(c); }
+      else if depth==0 && in_regex && c=='/' { in_regex = false; buf.push(c); }
+      else if depth==0 && !in_regex && c=='λ' { depth += 1; buf.push(c); }
       else if c==' ' {
          if depth>0 { buf.push(c); }
          else if buf.len()>0 {
