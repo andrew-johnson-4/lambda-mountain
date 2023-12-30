@@ -68,6 +68,11 @@ pub fn parse_expression(input: &str) -> S {
 //All strings are valid programs, this function is total
 pub fn parse_program(s: &str) -> S {
    let mut kvs = Vec::new();
+   let mut new_s = String::new();
+   for line in s.split("\n") {
+      new_s += &(line.split("#").next().unwrap().trim().to_owned() + "\n");
+   }
+   let s = new_s;
    for line in s.split(";") {
    if let Some((l,r)) = line.split_once(":=") {
       let l = l.trim();
