@@ -1,5 +1,14 @@
 
 
+::yield-assembly := λprogram. (
+   (.global _start)
+   (.text)
+   (label _start)
+   (mov $0 %rdi)  # set exit status to 0
+   (mov $60 %rax) # system call 60 is exit
+   (syscall)      # invoke operating system
+);
+
 ::safe-compile-expression := λexpr rett. (
-   Block
-)
+   ::yield-assembly ()
+);
