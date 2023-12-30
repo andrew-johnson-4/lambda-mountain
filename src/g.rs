@@ -22,7 +22,15 @@ pub fn compile(_cfg: &str, ctx: &S) {
      if k.to_string().starts_with("::") {}
      //if is symbol, reduce and compile
      else {
-        println!("g::compile: {} := {}", k, v);
+        let safe = app(
+           variable("::safe-compile-expression"),
+           app(
+              v,
+              typ("Block"),
+           )
+        );
+        let fragment = ctx_eval(&ctx, &safe);
+        println!("g::compile fragment {} = {}", k, fragment);
      }
   }
   unimplemented!("g::compile")

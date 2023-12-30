@@ -18,7 +18,6 @@ pub fn eval(s: &S) -> S {
 }
 
 pub fn ctx_eval(ctx: &S, s: &S) -> S {
-   println!("evaluate: {} with context {}", s, ctx);
    if !is_cons(s) { return s.clone(); }
    if head(&s).to_string()=="variable" {
       return kv_lookup( ctx, &s, &s );
