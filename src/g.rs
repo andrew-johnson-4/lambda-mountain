@@ -61,6 +61,10 @@ fn compile_expression(s: &S) -> StructuredExpression {
 }
 
 pub fn compile(cfg: &str, s: &S) {
+  unimplemented!("g::compile")
+  /*
+  TODO: fix prelude and verify output before sending to PunC
+
   let t = compile_expression(s);
 
   let mut label_t = punc!( label nil_as_string (.asciz "()") (.zero 1) );
@@ -83,4 +87,5 @@ pub fn compile(cfg: &str, s: &S) {
    );
    println!("program {}", program.to_string());
    program.compile(cfg);
+   */
 }
