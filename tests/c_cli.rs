@@ -1,13 +1,15 @@
 #![feature(thread_id_value)]
 
 use std::process::Command;
-use lambda_mountain::*;
 
-fn compile_and_run(s: &S) -> String {
-   let a_out = format!("tmp.{}.{}.exe",std::process::id(),std::thread::current().id().as_u64());
-   compile(&a_out, s);
-
-   let output = Command::new(&format!("./{}",a_out))
+fn compile_and_run(fp: &str) -> String {
+   Command::new("lambda_mountain")
+           .arg(fp)
+           .spawn()
+           .expect("failed to execute process")
+           .wait()
+           .expect("failed to wait for process");
+   let output = Command::new("./a.out")
                             .stdout(std::process::Stdio::piped())
                             .spawn()
                             .expect("failed to execute process")
@@ -18,11 +20,6 @@ fn compile_and_run(s: &S) -> String {
 }
 
 #[test]
-fn nil() {
-   assert_eq!( compile_and_run(&s_nil()), "" );
-}
-
-#[test]
-fn hello_world() {
-   assert_eq!( compile_and_run(&s_atom("hello world")), "hello world" );
+fn cli_123() {
+   assert_eq!( compile_and_run("tests/123.lm"), "123" );
 }
