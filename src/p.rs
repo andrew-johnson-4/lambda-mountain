@@ -68,7 +68,7 @@ pub fn parse_expression(input: &str) -> S {
 //All strings are valid programs, this function is total
 pub fn parse_program(s: &str) -> S {
    let mut kvs = Vec::new();
-   for line in s.split("\n") {
+   for line in s.split(";") {
    if let Some((l,r)) = line.split_once(":=") {
       kvs.push(( s_atom(l), parse_expression(r) ));
    }}
