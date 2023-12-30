@@ -24,6 +24,10 @@ pub fn variable(s: &str) -> S {
    s_cons( s_atom("variable"), s_atom(s) )
 }
 
+pub fn typ(s: &str) -> S {
+   s_cons( s_atom("type"), s_atom(s) )
+}
+
 pub fn lambda(l: S, r: S) -> S {
    s_cons( s_atom("lambda"), s_cons(l,r) )
 }

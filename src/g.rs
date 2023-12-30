@@ -56,11 +56,15 @@ fn introduce_constant(s: &S) -> StructuredExpression {
    }
 }
 
-fn compile_expression(s: &S) -> StructuredExpression {
-   introduce_constant(s)
+fn safe_compile_expression(e: &S, tt: &S) -> S {
+   unimplemented!("g::safe_compile_expression {} : {}", e, tt)
 }
 
 pub fn compile(cfg: &str, s: &S) {
+  for (k,v) in kv_iter(s) {
+     let e = safe_compile_expression(&v, &typ("Block"));
+     println!("g::compile: {} := {}", k, e);
+  }
   unimplemented!("g::compile")
   /*
   TODO: fix prelude and verify output before sending to PunC
