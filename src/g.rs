@@ -14,56 +14,11 @@ G: A Basic Codegen
 use crate::*;
 use punc::*;
 
-struct StructuredExpression {
-   //Put Cons in %rdi idk
-   //Put Atoms in %rsi idk
-   //Nil if neither %rsi nor %rdi
-   term: Term,
-   labels: Vec<Term>,
-}
-
-static mut UUID_COUNTER: usize = 0;
-fn uuid() -> String {
-   let id = unsafe { UUID_COUNTER += 1; UUID_COUNTER };
-   format!("uuid_{}", id)
-}
-
-fn introduce_constant(s: &S) -> StructuredExpression {
-   if is_nil(s) {
-      StructuredExpression {
-         term: punc!(
-            (xor %rdi %rdi)
-            (xor %rsi %rsi)
-         ),
-         labels: vec![]
-      }
-   } else if is_atom(s) {
-      let id = uuid();
-      StructuredExpression {
-         term: punc!(
-            (xor %rdi %rdi)
-            (mov {Term::var(&format!("@{}",id))} %rsi)
-         ),
-         labels: vec![punc!(
-            (label {Term::var(&id)} 
-               (.asciz {Term::var(&format!("\"{}\"",s))})
-               (.zero 1)
-            )
-         )]
-      }
-   } else {
-      panic!("Term is not a constant: {}", s)
-   }
-}
-
-fn safe_compile_expression(e: &S, tt: &S) -> S {
-   unimplemented!("g::safe_compile_expression {} : {}", e, tt)
-}
-
 pub fn compile(cfg: &str, s: &S) {
   for (k,v) in kv_iter(s) {
-     let e = safe_compile_expression(&v, &typ("Block"));
-     println!("g::compile: {} := {}", k, e);
+     //try to use LM bootstrap mostly
+     //let e = safe_compile_expression(&v, &typ("Block"));
+     //println!("g::compile: {} := {}", k, e);
   }
   unimplemented!("g::compile")
   /*

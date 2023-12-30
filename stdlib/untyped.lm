@@ -1,0 +1,5 @@
+
+
+safe_compile_expression := λexpr rett. (
+   Block
+)
