@@ -14,11 +14,13 @@ G: A Basic Codegen
 use crate::*;
 use punc::*;
 
-pub fn compile(cfg: &str, s: &S) {
-  for (k,v) in kv_iter(s) {
+pub fn compile(_cfg: &str, ctx: &S) {
+  let helpers = parse_file("stdlib/untyped.lm");
+  let ctx = kv_merge(&helpers, &ctx);
+  for (k,v) in kv_iter(&ctx) {
+     println!("g::compile: {} := {}", k, v);
      //try to use LM bootstrap mostly
      //let e = safe_compile_expression(&v, &typ("Block"));
-     //println!("g::compile: {} := {}", k, e);
   }
   unimplemented!("g::compile")
   /*

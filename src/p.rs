@@ -12,6 +12,8 @@ P: A fast String to AST parser
 */
 
 use crate::*;
+use std::fs::File;
+use std::io::Read;
 
 fn parse_one_expression(input: &str) -> S {
    let input = input.trim();
@@ -71,4 +73,11 @@ pub fn parse_program(s: &str) -> S {
       kvs.push(( s_atom(l), parse_expression(r) ));
    }}
    kv(&kvs)
+}
+
+pub fn parse_file(path: &str) -> S {
+   let mut file = File::open(path).expect(&format!("Could not open file: {}", path));
+   let mut file_contents = String::new();
+   file.read_to_string(&mut file_contents).expect(&format!("Could not read file: {}", path));
+   parse_program(&file_contents)
 }

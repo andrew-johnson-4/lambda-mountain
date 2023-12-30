@@ -69,6 +69,17 @@ pub fn kv_iter(s: &S) -> Vec<(S,S)> {
    kvs
 }
 
+pub fn kv_merge(l: &S, r: &S) -> S {
+   let mut kvs = Vec::new();
+   for (k,v) in kv_iter(l) {
+      kvs.push(( k, v ));
+   }
+   for (k,v) in kv_iter(r) {
+      kvs.push(( k, v ));
+   }
+   kv(&kvs)
+}
+
 pub fn kv_ctx(s: &S) -> HashMap<String,S> {
    let mut ctx = HashMap::new();
    for (k,v) in kv_iter(s) {
