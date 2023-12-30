@@ -13,7 +13,6 @@ A: An S-Expression based AST
 
 use regex::Regex;
 use std::collections::HashMap;
-use itertools::Itertools;
 use crate::*;
 
 pub fn literal(s: &str) -> S {
@@ -83,10 +82,9 @@ pub fn kv_merge(l: &S, r: &S) -> S {
 pub fn kv_ctx(s: &S) -> HashMap<String,S> {
    let mut ctx = HashMap::new();
    for (k,v) in kv_iter(s) {
-   if head(&k).to_string()=="variable" {
-      let k = tail(&k).to_string();
+      let k = k.to_string();
       ctx.insert( k, v );
-   }}
+   }
    ctx
 }
 
@@ -98,7 +96,7 @@ pub fn kv_lookup(ctx: &S, key: &S, default: &S) -> S {
 }
 
 pub fn kv_s(ctx: &HashMap<String,S>) -> S {
-   kv(&ctx.iter().sorted_by_key(|x| x.0).map(|(k,v)|(variable(k),v.clone())).collect::<Vec<(S,S)>>())
+   kv(&ctx.iter().map(|(k,v)| (s_atom(&k),v.clone())).collect::<Vec<(S,S)>>())
 }
 
 pub fn destructure(ctx: &mut HashMap<String,S>, pattern: S, value: S) -> bool {

@@ -30,7 +30,7 @@ fn parse_one_expression(input: &str) -> S {
    } else {
       let cs = input.to_string();
       let c = cs.chars().next().unwrap();
-      if c.is_alphabetic() && !c.is_uppercase() {
+      if c=='_' || c==':' || (c.is_alphabetic() && !c.is_uppercase()) {
          variable(&cs)
       } else {
          literal(&cs)
