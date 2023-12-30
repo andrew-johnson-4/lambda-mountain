@@ -1,5 +1,5 @@
 
 
-safe_compile_expression := λexpr rett. (
+::safe-compile-expression := λexpr rett. (
    Block
 )

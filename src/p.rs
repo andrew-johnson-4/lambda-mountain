@@ -70,6 +70,7 @@ pub fn parse_program(s: &str) -> S {
    let mut kvs = Vec::new();
    for line in s.split(";") {
    if let Some((l,r)) = line.split_once(":=") {
+      let l = l.trim();
       kvs.push(( s_atom(l), parse_expression(r) ));
    }}
    kv(&kvs)

@@ -14,5 +14,5 @@ fn expressions() {
 
 #[test]
 fn programs() {
-   assert_eq!( parse_program("a := b").to_string(), "(kv . ((a  . (variable . b)) . ()))" );
+   assert_eq!( parse_program("a := b").to_string(), "(kv . ((a . (variable . b)) . ()))" );
 }
