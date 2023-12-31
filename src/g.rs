@@ -20,12 +20,12 @@ pub fn flatten(output: &mut String, input: &S) {
       flatten( output, &tail(input) );
    } else if is_atom(input) {
       let l = input.to_string();
-      println!("atom: '{}'", l);
       if l == "literal" || l == "variable" || l == "app" {}
       else if l=="\\t" { output.push('\t'); }
       else if l=="\\n" { output.push('\n'); }
       else {
          output.push_str( &l );
+         output.push( ' ' );
       }
    }
 }
@@ -33,7 +33,7 @@ pub fn flatten(output: &mut String, input: &S) {
 pub fn assemble(cfg: &str, program: &S) {
    let mut code = String::new();
    flatten( &mut code, program );
-   unimplemented!("compile_punc {}", code)
+   unimplemented!("compile_punc:\n{}", code)
 }
 
 pub fn compile(cfg: &str, ctx: &S) {

@@ -54,7 +54,7 @@ pub fn parse_expression(input: &str) -> S {
             buf = String::new();
          }
       }
-      else if c==' ' {
+      else if c==' ' || c=='\t' || c=='\n' || c=='\r' {
          if depth>0 { buf.push(c); }
          else if buf.len()>0 {
             terms.push(parse_one_expression(&buf));
