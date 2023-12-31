@@ -1,2 +1,4 @@
 
-main := print "123"
+main := (
+   print_s 123
+);

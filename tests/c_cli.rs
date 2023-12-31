@@ -22,3 +22,13 @@ fn compile_and_run(fp: &str) -> String {
 fn cli_123() {
    assert_eq!( compile_and_run("tests/123.lm"), "123" );
 }
+
+#[test]
+fn cli_nil() {
+   assert_eq!( compile_and_run("tests/nil.lm"), "()" );
+}
+
+#[test]
+fn cli_cons() {
+   assert_eq!( compile_and_run("tests/cons.lm"), "(123 . (() . 456))" );
+}
