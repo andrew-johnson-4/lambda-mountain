@@ -4,13 +4,20 @@ use std::fs::File;
 use std::io::Read;
 
 fn main() {
+   let mut target = "a.out".to_string();
+   let mut option = "".to_string();
    for arg in std::env::args().skip(1) {
-      if arg.ends_with(".lm") {
+      if option == "-o" {
+         target = arg;
+         option = "".to_string();
+      } else if arg.starts_with("-") {
+         option = arg;
+      } else if arg.ends_with(".lm") {
          let mut file = File::open(&arg).unwrap();
          let mut file_contents = String::new();
          file.read_to_string(&mut file_contents).unwrap();
          let s = parse_program(&file_contents);
-         compile("", &s);
+         compile(&target, &s);
       }
    }
 }

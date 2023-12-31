@@ -13,6 +13,9 @@ G: A Basic Codegen
 
 use crate::*;
 use std::collections::HashMap;
+use std::process::Command;
+use std::fs::File;
+use std::io::Write;
 
 pub fn flatten(output: &mut String, input: &S) {
    if is_cons(input) {
@@ -33,7 +36,34 @@ pub fn flatten(output: &mut String, input: &S) {
 pub fn assemble(cfg: &str, program: &S) {
    let mut code = String::new();
    flatten( &mut code, program );
-   unimplemented!("compile_punc:\n{}", code)
+   if cfg.ends_with(".s") {
+      let mut file = File::create(cfg).expect("Could not create file in Term::compile");
+      file.write_all(code.as_bytes()).expect("Could not write to file in Term::compile");
+   } else {
+      let tmp_o = format!("tmp.{}.{}.o",std::process::id(), std::thread::current().id().as_u64() );
+      let tmp_s = format!("tmp.{}.{}.s",std::process::id(), std::thread::current().id().as_u64() );
+      let mut file = File::create(&tmp_s).expect("Could not create file in Term::compile");
+      file.write_all(code.as_bytes()).expect("Could not write to file in Term::compile");
+
+      Command::new("as")
+              .arg(&tmp_s)
+              .arg("-o")
+              .arg(&tmp_o)
+              .spawn()
+              .expect("Could not run assembler in g::assemble")
+              .wait()
+              .expect("Could not wait for assembler in g::assemble");
+
+      Command::new("ld")
+              .arg("-s")
+              .arg("-o")
+              .arg(cfg)
+              .arg(&tmp_o)
+              .spawn()
+              .expect("Could not run linker in g::assemble")
+              .wait()
+              .expect("Could not wait for linker in g::assemble");
+   }
 }
 
 pub fn compile(cfg: &str, ctx: &S) {
