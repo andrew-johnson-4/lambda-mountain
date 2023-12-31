@@ -1,6 +1,6 @@
 [package]
 name = "lambda_mountain"
-version = "0.0.19"
+version = "0.1.0"
 authors = ["Andrew <andrew@subarctic.org>"]
 license = "MIT"
 description = "Lambda Mountain"
@@ -14,4 +14,4 @@ name = "lm"
 
 [dependencies]
 regex = { version = "1" }
-itertools = { version = "0.12" }
+glob = { version = "0.3" }

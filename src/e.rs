@@ -18,21 +18,22 @@ pub fn eval(s: &S) -> S {
 }
 
 pub fn ctx_eval(ctx: &S, s: &S) -> S {
-   println!("evaluate: {} with context {}", s, ctx);
    if !is_cons(s) { return s.clone(); }
    if head(&s).to_string()=="variable" {
-      return kv_lookup( ctx, &s, &s );
+      let k = tail(&s);
+      return kv_lookup( ctx, &k, &s );
    }
    if head(&s).to_string()=="app" {
       let fx = tail(&s);
       let f = head(&fx);
+      let f = ctx_eval(ctx, &f);
       let x = tail(&fx);
       if head(&f).to_string()=="lambda" {
          let fl = head(&tail(&f));
          let fr = tail(&tail(&f));
-         let mut ctx = kv_ctx(ctx);
-         destructure(&mut ctx, fl, x);
-         return ctx_eval(&kv_s(&ctx), &fr);
+         let mut inner_ctx = kv_ctx(ctx);
+         destructure(&mut inner_ctx, fl, x);
+         return ctx_eval(&kv_s(&inner_ctx), &fr);
       }
    }
    s.clone()
