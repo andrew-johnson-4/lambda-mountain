@@ -94,5 +94,7 @@ pub fn compile(cfg: &str, ctx: &S) {
          typ("Program"),
       )
    ));
+   //at this point the program should be in normal form
+   //so it is safe to just dump it to a file and finish
    assemble(cfg, &program);
 }
