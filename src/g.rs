@@ -14,8 +14,26 @@ G: A Basic Codegen
 use crate::*;
 use std::collections::HashMap;
 
+pub fn flatten(output: &mut String, input: &S) {
+   if is_cons(input) {
+      flatten( output, &head(input) );
+      flatten( output, &tail(input) );
+   } else if is_atom(input) {
+      let l = input.to_string();
+      println!("atom: '{}'", l);
+      if l == "literal" || l == "variable" || l == "app" {}
+      else if l=="\\t" { output.push('\t'); }
+      else if l=="\\n" { output.push('\n'); }
+      else {
+         output.push_str( &l );
+      }
+   }
+}
+
 pub fn assemble(cfg: &str, program: &S) {
-   unimplemented!("compile_punc {}", program)
+   let mut code = String::new();
+   flatten( &mut code, program );
+   unimplemented!("compile_punc {}", code)
 }
 
 pub fn compile(cfg: &str, ctx: &S) {

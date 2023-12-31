@@ -1,12 +1,12 @@
 
 
 ::yield-program := λprogram. (
-   (.global _start)
-   (.text)
-   (label _start)
-   (mov $0 %rdi)  # set exit status to 0
-   (mov $60 %rax) # system call 60 is exit
-   (syscall)      # invoke operating system
+   .global _start \n
+   .text \n
+   _start:
+   \t mov $0 , %rdi   \n # set exit status to 0
+   \t mov $60 , %rax) \n # system call 60 is exit
+   \t syscall         \n # invoke operating system
 );
 
 ::yield-expression := λblock. (
