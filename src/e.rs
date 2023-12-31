@@ -13,11 +13,11 @@ E: An AST Expression Evaluator
 
 use crate::*;
 
-pub fn eval(s: &S) -> S {
-   ctx_eval(&s_nil(), s)
+pub fn eval_soft(s: &S) -> S {
+   ctx_eval_soft(&s_nil(), s)
 }
 
-pub fn ctx_eval(ctx: &S, s: &S) -> S {
+pub fn ctx_eval_soft(ctx: &S, s: &S) -> S {
    if !is_cons(s) { return s.clone(); }
    if head(&s).to_string()=="variable" {
       let k = tail(&s);
@@ -26,14 +26,14 @@ pub fn ctx_eval(ctx: &S, s: &S) -> S {
    if head(&s).to_string()=="app" {
       let fx = tail(&s);
       let f = head(&fx);
-      let f = ctx_eval(ctx, &f);
+      let f = ctx_eval_soft(ctx, &f);
       let x = tail(&fx);
       if head(&f).to_string()=="lambda" {
          let fl = head(&tail(&f));
          let fr = tail(&tail(&f));
          let mut inner_ctx = kv_ctx(ctx);
          destructure(&mut inner_ctx, fl, x);
-         return ctx_eval(&kv_s(&inner_ctx), &fr);
+         return ctx_eval_soft(&kv_s(&inner_ctx), &fr);
       }
    }
    s.clone()

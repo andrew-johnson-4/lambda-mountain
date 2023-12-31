@@ -76,7 +76,7 @@ pub fn compile(cfg: &str, ctx: &S) {
       if k.starts_with("::") {}
       //if is symbol, reduce and compile
       else {
-         let block = ctx_eval(&ctx, &app(
+         let block = ctx_eval_soft(&ctx, &app(
             variable("::safe-compile-expression"),
             app(
                v,
@@ -87,7 +87,7 @@ pub fn compile(cfg: &str, ctx: &S) {
       }
    }
    let fragments = kv_s(&fragments);
-   let program = ctx_eval(&ctx, &app(
+   let program = ctx_eval_soft(&ctx, &app(
       variable("::safe-compile-program"),
       app(
          fragments,
