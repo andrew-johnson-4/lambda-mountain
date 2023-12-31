@@ -12,26 +12,40 @@ G: A Basic Codegen
 */
 
 use crate::*;
+use std::collections::HashMap;
 use punc::*;
 
-pub fn compile(_cfg: &str, ctx: &S) {
-  let helpers = parse_file("stdlib/untyped.lm");
-  let ctx = kv_merge(&helpers, &ctx);
-  for (k,v) in kv_iter(&ctx) {
-     //if is helper, ignore
-     if k.to_string().starts_with("::") {}
-     //if is symbol, reduce and compile
-     else {
-        let safe = app(
-           variable("::safe-compile-expression"),
-           app(
-              v,
-              typ("Block"),
-           )
-        );
-        let fragment = ctx_eval(&ctx, &safe);
-        println!("g::compile fragment {} = {}", k, fragment);
-     }
-  }
-  unimplemented!("g::compile")
+pub fn compile_punc(cfg: &str, program: &S) {
+   unimplemented!("compile_punc {}", program)
+}
+
+pub fn compile(cfg: &str, ctx: &S) {
+   let helpers = parse_file("stdlib/untyped.lm");
+   let ctx = kv_merge(&helpers, &ctx);
+   let mut fragments = HashMap::new();
+   for (k,v) in kv_iter(&ctx) {
+      let k = k.to_string();
+      //if is helper, ignore
+      if k.starts_with("::") {}
+      //if is symbol, reduce and compile
+      else {
+         let block = ctx_eval(&ctx, &app(
+            variable("::safe-compile-expression"),
+            app(
+               v,
+               typ("Block"),
+            )
+         ));
+         fragments.insert( k, block );
+      }
+   }
+   let fragments = kv_s(&fragments);
+   let program = ctx_eval(&ctx, &app(
+      variable("::safe-compile-program"),
+      app(
+         fragments,
+         typ("Program"),
+      )
+   ));
+   compile_punc(cfg, &program);
 }

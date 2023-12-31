@@ -1,6 +1,6 @@
 
 
-::yield-assembly := λprogram. (
+::yield-program := λprogram. (
    (.global _start)
    (.text)
    (label _start)
@@ -9,6 +9,14 @@
    (syscall)      # invoke operating system
 );
 
+::yield-expression := λblock. (
+   TODO implement yield-expression
+);
+
 ::safe-compile-expression := λexpr rett. (
-   ::yield-assembly ()
+   ::yield-expression ()
+);
+
+::safe-compile-program := λsymbols rett. (
+   ::yield-program ()
 );
