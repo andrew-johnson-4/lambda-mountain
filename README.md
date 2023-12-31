@@ -1,4 +1,4 @@
-# λ☶. Lambda Mountain
+# [λ☶. Lambda Mountain](https://github.com/andrew-johnson-4/-/wiki)
 
 A more idiomatic approach to code lowering.
 λ symbolizes a process for defining the ways to do something.
