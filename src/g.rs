@@ -13,9 +13,8 @@ G: A Basic Codegen
 
 use crate::*;
 use std::collections::HashMap;
-use punc::*;
 
-pub fn compile_punc(cfg: &str, program: &S) {
+pub fn assemble(cfg: &str, program: &S) {
    unimplemented!("compile_punc {}", program)
 }
 
@@ -47,5 +46,5 @@ pub fn compile(cfg: &str, ctx: &S) {
          typ("Program"),
       )
    ));
-   compile_punc(cfg, &program);
+   assemble(cfg, &program);
 }
