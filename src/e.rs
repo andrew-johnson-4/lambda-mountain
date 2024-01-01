@@ -18,16 +18,15 @@ pub fn eval_soft(s: &S) -> S {
 }
 
 pub fn ctx_eval_soft(ctx: &S, s: &S) -> S {
-   if !is_cons(s) { return s.clone(); }
-   if head(&s).to_string()=="variable" {
+   if !is_cons(s) {
+      s.clone()
+   } else if head(&s).to_string()=="variable" {
       let k = tail(&s);
-      return kv_lookup( ctx, &k, &s );
-   }
-   if head(&s).to_string()=="app" {
+      kv_lookup( ctx, &k, &s )
+   } else if head(&s).to_string()=="app" {
       let fx = tail(&s);
-      let f = head(&fx);
-      let f = ctx_eval_soft(ctx, &f);
-      let x = tail(&fx);
+      let f = ctx_eval_soft(ctx, &head(&fx));
+      let x = ctx_eval_soft(ctx, &tail(&fx));
       if head(&f).to_string()=="lambda" {
          let fl = head(&tail(&f));
          let fr = tail(&tail(&f));
@@ -35,6 +34,6 @@ pub fn ctx_eval_soft(ctx: &S, s: &S) -> S {
          destructure(&mut inner_ctx, fl, x);
          return ctx_eval_soft(&kv_s(&inner_ctx), &fr);
       }
-   }
-   s.clone()
+      app(f, x)
+   } else { s.clone() }
 }

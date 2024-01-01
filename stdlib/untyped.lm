@@ -1,9 +1,35 @@
 
+# struct $_ {
+#   %rdi $0
+#   %rsi $1
+#   %rdx $2
+#   %r10 $3
+# }
+
+# struct S {
+#   $0 atom : *char
+#   $1 head : *S
+#   $2 tail : *S
+#   $3 misc : bool[64]
+# }
+
+::yield-nil := λ_. (
+   \t mov $0, %rdi    \n
+   \t mov $0, %rsi    \n
+   \t mov $0, %rdx    \n
+   \t mov $0, %r10    \n
+);
+
+::print-$_ := λ_. (
+   \n                    # TODO print $_
+);
 
 ::yield-program := λprogram. (
    .global _start     \n
    .text              \n
    _start:            \n
+   (::yield-nil ())      # mov nil into $_
+   (::print-$_  ())      # print $_
    \t mov $0 , %rdi   \n # set exit status to 0
    \t mov $60 , %rax  \n # system call 60 is exit
    \t syscall         \n # invoke operating system
