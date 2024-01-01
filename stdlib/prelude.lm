@@ -1,27 +1,33 @@
 
-print-this := (
+.text := (
    # entry point
-   __print_this:              \n
+   __print_this:               \n
 
    # if .atom != NULL
-   __print_this_atom:         \n
-   \t cmp $0, %r8             \n
-   \t je print_this_cons      \n
+   __print_this_atom:          \n
+   \t cmp $0, %r8              \n
+   \t je __print_this_cons     \n
    # TODO print .atom
-   \t ret                     \n
+   \t ret                      \n
 
-   __print_this_cons:         \n
+   __print_this_cons:          \n
    # if .head != NULL && .tail != NULL
-   \t cmp $0, %r9             \n
-   \t je __print_this_nil     \n
+   \t cmp $0, %r9              \n
+   \t je __print_this_nil      \n
    # TODO print .head / .tail
-   \t ret                     \n
+   \t ret                      \n
 
-   __print_this_nil:          \n
-   \t mov $1, %rax            \n   # system call 1 is write
-   \t mov $1, %rdi            \n   # file handle 1 is stdout
-   \t mov $nil_literal, %rsi  \n   # address of string to output
-   \t mov $2, %rdx            \n   # nil is 2 bytes
-   \t syscall                 \n   # invoke operating system to do the write
-   \t ret                     \n
+   __print_this_nil:           \n
+   \t mov $1, %rax             \n   # system call 1 is write
+   \t mov $1, %rdi             \n   # file handle 1 is stdout
+   \t mov $__nil_literal, %rsi \n   # address of string to output
+   \t mov $2, %rdx             \n   # nil is 2 bytes
+   \t syscall                  \n   # invoke operating system to do the write
+   \t ret                      \n
+);
+
+.data := (
+  __nil_literal:               \n
+  \t .ascii "()"               \n
+  \t .zero 1                   \n
 );

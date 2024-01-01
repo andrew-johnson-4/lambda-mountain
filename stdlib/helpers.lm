@@ -37,12 +37,10 @@
 ::program-header := (
    .global _start        \n
    .text                 \n
-   start:                \n
+   _start:               \n
+   \t jmp main           \n
 );
 
 ::data-header := (
    .data                 \n
-   nil_literal:          \n
-   \t .ascii "()"        \n
-   \t .zero 1            \n
 );

@@ -82,9 +82,11 @@ fn compile_symbol(ctx: &S, e: &S) -> S {
    nil()
 }
 
-fn compile_program(helpers_ctx: &S, program: &S) -> S {
+fn compile_program(helpers_ctx: &S, raw_program: &S, raw_data: &S) -> S {
    let head = ctx_eval_soft(&helpers_ctx, &variable("::program-header"));
+   let head = app( head, raw_program.clone() );
    let data = ctx_eval_soft(&helpers_ctx, &variable("::data-header"));
+   let data = app( data, raw_data.clone() );
    app(
       head,
       data,
@@ -94,12 +96,23 @@ fn compile_program(helpers_ctx: &S, program: &S) -> S {
 pub fn compile(cfg: &str, main_ctx: &S) {
    let helpers_ctx = parse_file("stdlib/helpers.lm");
    let prelude_ctx = parse_file("stdlib/prelude.lm");
-   let mut program = nil();
+   let mut raw_program = nil();
+   let mut raw_data = nil();
    for (k,v) in kv_iter(&prelude_ctx) {
-      program = app(
-         program,
-         ctx_eval_soft(&helpers_ctx, &v),
-      );
+      let k = k.to_string();
+      if k == ".data" {
+         raw_data = app(
+            raw_data,
+            ctx_eval_soft(&helpers_ctx, &v),
+         );
+      } else if k == ".text" {
+         raw_program = app(
+            raw_program,
+            ctx_eval_soft(&helpers_ctx, &v),
+         );
+      } else {
+         panic!("unexpected prelude symbol: {}", k);
+      }
    }
    /* TODO: user
    for (k,v) in kv_iter(&main_ctx) {
@@ -113,6 +126,6 @@ pub fn compile(cfg: &str, main_ctx: &S) {
       );
    }
    */
-   let program = compile_program(&helpers_ctx, &program);
+   let program = compile_program(&helpers_ctx, &raw_program, &raw_data);
    assemble(cfg, &program);
 }
