@@ -7,6 +7,17 @@ Future work will also be done to provide a zoom-in/zoom-out interface for rules.
 
 <img src="https://raw.githubusercontent.com/andrew-johnson-4/-/main/DOBY.jpg" height=200 title="Doby being a prototypical ass.">
 
+# Installation
+
+LM is currently working towards a bootstrap release.
+Until then [Rust and Cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html) are required.
+
+After installing Rust, LM can be installed with
+
+```bash
+cargo install lambda_mountain
+```
+
 # Syntax and Formatting
 
 In a file `hello_world.lm` put a main function
