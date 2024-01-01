@@ -10,15 +10,20 @@
 # y.$3 = %r10
 # etc.
 
+# for the bootstrap compiler, only one expression will be open at a time
+
+# S-Expressions are a common datastructure used heavily in the bootstrap compiler
+# Not all structures need to be S-Expressions, but they will always be available
+# Aside from the usual Cons,Atom,Nil information there is also a reference counter and some flags
+#
 # struct S {
 #   $0 ref_counter : u64
 #   $1 atom        : *char
 #   $2 head        : *S
 #   $3 tail        : *S
-#   $4 misc        : bool[64]
+#   $4 flags       : bool[64]
 # }
 
-# for the bootstrap compiler, only one expression will be open at a time
 
 ::yield-nil := λ_. (
                          # $_.$0 ref_counter is unnecessary when open
