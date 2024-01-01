@@ -39,4 +39,6 @@ However, GitHub disallows most unicode in repo names, probably to avoid lookalik
 
 # Mascot
 
-"Doby being a prototypical ass."
+Doby was a donkey that refused to cross a bridge on the way back from a camping trek.
+He was left for dead in the rough wilderness with winter approaching.
+Somehow he survived the whole winter under that bridge and was discovered by the game warden the next year.
