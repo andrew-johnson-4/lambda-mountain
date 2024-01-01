@@ -42,5 +42,13 @@
 );
 
 ::data-header := (
+                         \n
    .data                 \n
+);
+
+::exit-cleanup := (
+                         \n
+   \t mov $60, %eax      \n # _exit system call
+   \t mov $0, %edi       \n # error code 0
+   \t syscall            \n
 );

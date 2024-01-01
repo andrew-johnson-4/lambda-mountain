@@ -27,6 +27,7 @@
 );
 
 .data := (
+                               \n
   __nil_literal:               \n
   \t .ascii "()"               \n
   \t .zero 1                   \n

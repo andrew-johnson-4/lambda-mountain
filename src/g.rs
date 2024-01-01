@@ -74,12 +74,10 @@ fn label_case(s: &str) -> String {
 
 fn compile_expr(ctx: &S, e: &S) -> S {
    println!("TODO, compile_expr: {}", e);
-   nil()
-}
-
-fn compile_symbol(ctx: &S, e: &S) -> S {
-   println!("TODO, compile_symbol: {}", e);
-   nil()
+   s_cons(
+      nil(),
+      nil(),
+   )
 }
 
 fn compile_program(helpers_ctx: &S, raw_program: &S, raw_data: &S) -> S {
@@ -114,18 +112,29 @@ pub fn compile(cfg: &str, main_ctx: &S) {
          panic!("unexpected prelude symbol: {}", k);
       }
    }
-   /* TODO: user
    for (k,v) in kv_iter(&main_ctx) {
       let k = k.to_string();
-      program = app(
-         program,
+      let v = compile_expr(&main_ctx, &v);
+      println!("compile user {} = {}", k, v);
+      println!("compile user {} = {}", k, head(&v));
+      raw_program = app(
+         raw_program,
          app(
-            variable(&format!("\n{}:\n",&label_case(&k))),
-            compile_symbol(&main_ctx, &ctx_eval_soft(&helpers_ctx, &v) ),
+            variable(&format!("{}:\n",label_case(&k))),
+            head(&v),
          ),
       );
+      if k == "main" {
+         raw_program = app(
+            raw_program,
+            ctx_eval_soft(&helpers_ctx, &variable("::exit-cleanup")),
+         );
+      }
+      raw_data = app(
+         raw_data,
+         tail(&v),
+      );
    }
-   */
    let program = compile_program(&helpers_ctx, &raw_program, &raw_data);
    assemble(cfg, &program);
 }
