@@ -26,6 +26,9 @@ pub fn flatten(output: &mut String, input: &S) {
       if l == "literal" || l == "variable" || l == "app" {}
       else if l=="\\t" { output.push('\t'); }
       else if l=="\\n" { output.push('\n'); }
+      else if l=="(" { output.push('('); }
+      else if l==")" { output.push(')'); }
+      else if l=="\"" { output.push('"'); }
       else {
          output.push_str( &l );
          output.push( ' ' );

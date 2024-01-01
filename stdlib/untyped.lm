@@ -27,25 +27,53 @@
 
 ::yield-nil := λ_. (
                          # $_.$0 ref_counter is unnecessary when open
-   \t mov $0, %rdi    \n # $_.$1 = 0
-   \t mov $0, %rsi    \n # $_.$2 = 0
-   \t mov $0, %rdx    \n # $_.$3 = 0
-   \t mov $0, %r10    \n # $_.$4 = 0
+                         # open structures must be completely "owned" by the current context
+   \t mov $0, %r8    \n # $_.$1 = 0, .atom
+   \t mov $0, %r9    \n # $_.$2 = 0, .head
+   \t mov $0, %r10   \n # $_.$3 = 0, .tail
+   \t mov $0, %r11   \n # $_.$4 = 0, .flags
 );
 
-::print-$_ := λ_. (
-   \n                    # TODO print $_
+print-this := λ_. (
+   # entry point
+   __print_this:              \n
+
+   # if .atom != NULL
+   __print_this_atom:         \n
+   \t cmp $0, %r8             \n
+   \t je print_this_cons      \n
+   # TODO print .atom
+   \t ret                     \n
+
+   __print_this_cons:
+   # if .head != NULL && .tail != NULL
+   \t cmp $0, %r9             \n
+   \t je __print_this_nil     \n
+   # TODO print .head / .tail
+   \t ret                     \n
+
+   __print_this_nil:          \n
+   \t mov $1, %rax            \n   # system call 1 is write
+   \t mov $1, %rdi            \n   # file handle 1 is stdout
+   \t mov $nil_literal, %rsi  \n   # address of string to output
+   \t mov $2, %rdx            \n   # nil is 2 bytes
+   \t syscall                 \n   # invoke operating system to do the write
+   \t ret                     \n
 );
 
 ::yield-program := λprogram. (
-   .global _start     \n
-   .text              \n
-   _start:            \n
-   (::yield-nil ())      # mov nil into $_
-   (::print-$_  ())      # print $_
-   \t mov $0 , %rdi   \n # set exit status to 0
-   \t mov $60 , %rax  \n # system call 60 is exit
-   \t syscall         \n # invoke operating system
+   .global _start        \n
+   .text                 \n
+   _start:               \n
+   (::yield-nil ())         # mov nil into $_
+   \t call __print_this  \n # print $_
+   \t mov $0 , %rdi      \n # set exit status to 0
+   \t mov $60 , %rax     \n # system call 60 is exit
+   \t syscall            \n # invoke operating system
+   .data                 \n
+   nil_literal:          \n
+   \t .ascii "()"        \n
+   \t .zero 1            \n
 );
 
 ::yield-expression := λblock. (
