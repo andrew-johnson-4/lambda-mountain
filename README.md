@@ -1,4 +1,4 @@
-# Lambda Mountain](https://github.com/andrew-johnson-4/-/wiki)
+# [Lambda Mountain](https://github.com/andrew-johnson-4/-/wiki)
 
 LM aims to provide a convenient interface to formally encode a variety of big-step semantics.
 This project is a **User Inferface** for existing theoretical frameworks.
