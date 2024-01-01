@@ -7,14 +7,45 @@ Future work will also be done to provide a zoom-in/zoom-out interface for rules.
 
 <img src="https://raw.githubusercontent.com/andrew-johnson-4/-/main/DOBY.jpg" height=200 title="Doby being a prototypical ass.">
 
+# Installation
+
+LM is currently working towards a bootstrap release.
+Until then [Rust and Cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html) are required.
+
+After installing Rust, LM can be installed with
+
+```bash
+cargo install lambda_mountain
+```
+
 # Syntax and Formatting
 
-LM is a programming language written in the passive voice.
-`eval-soft` and `eval-hard` are the exposed entry points into your program.
-An LM program is then defined as *capabilities* gifted to anyone with access to your entry points.
-LM syntax consists of typed lambda calculus expressions potentially nested inside of rules.
+In a file `hello_world.lm` put a main function
 
-<img src="https://raw.githubusercontent.com/andrew-johnson-4/-/main/equation.png" height=200 title="Equation">
+```
+main := λ_. (
+   .global _start     \n
+   .text              \n
+   _start:            \n
+   (print_s hello_world)
+   \t mov $0 , %rdi   \n # set exit status to 0
+   \t mov $60 , %rax  \n # system call 60 is exit
+   \t syscall         \n # invoke operating system
+);
+```
+
+Compile `hello_world` from a shell
+
+```
+lambda_mountain -o hello_world hello_world.lm
+```
+
+Run the result
+
+```
+./hello_world
+[stdout] hello_world
+```
 
 # How is eval-soft different from eval-hard?
 
