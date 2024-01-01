@@ -1,6 +1,6 @@
-# [λ☶. Lambda Mountain](https://github.com/andrew-johnson-4/-/wiki)
+# Lambda Mountain](https://github.com/andrew-johnson-4/-/wiki)
 
-λ☶ aims to provide a convenient interface to formally encode a variety of big-step semantics.
+LM aims to provide a convenient interface to formally encode a variety of big-step semantics.
 This project is a **User Inferface** for existing theoretical frameworks.
 The text language here is a simple encoding of basic lambda calculus and types.
 Future work will also be done to provide a zoom-in/zoom-out interface for rules.
@@ -23,11 +23,6 @@ _eval-soft_ attempts to evaluate an expression to normal form with two restricti
 * the result must be referentially transparent
 
 _eval-hard_ does not have any restrictions.
-
-# Why is the repo name -
-
-The proper name for this project is λ☶.
-However, GitHub disallows most unicode in repo names, probably to avoid lookalike characters in urls.
 
 # Mascot
 
