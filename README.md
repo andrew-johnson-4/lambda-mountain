@@ -23,8 +23,8 @@ cargo install lambda_mountain
 In a file `hello_world.lm` put a main function
 
 ```
-main := λ_. (
-   print_s hello_world
+main := (
+   print-s hello_world
 );
 ```
 
