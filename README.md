@@ -24,13 +24,7 @@ In a file `hello_world.lm` put a main function
 
 ```
 main := λ_. (
-   .global _start     \n
-   .text              \n
-   _start:            \n
-   (print_s hello_world)
-   \t mov $0 , %rdi   \n # set exit status to 0
-   \t mov $60 , %rax  \n # system call 60 is exit
-   \t syscall         \n # invoke operating system
+   print_s hello_world
 );
 ```
 
