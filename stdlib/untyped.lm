@@ -1,10 +1,14 @@
 
-# struct $_ {
-#   %rdi $0
-#   %rsi $1
-#   %rdx $2
-#   %r10 $3
-# }
+# LM provides a concept of open vs closed structures
+# a closed structure may always be referred to by a single pointer
+# a closed structure may exist on the stack or the heap or even a file or mapped network resource
+# an open structure by comparison is thought to exist in the registers
+# multiple structures may be open at the same time as long as they don't conflict
+# fields of open structures are referred to by their ordered position $0, $1, $2
+# a mapping of registers is then applied to these field positions
+# x.$0 = %rdi
+# y.$3 = %r10
+# etc.
 
 # struct S {
 #   $0 atom : *char
