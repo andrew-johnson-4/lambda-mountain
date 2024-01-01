@@ -18,6 +18,8 @@
 #   $4 misc        : bool[64]
 # }
 
+# for the bootstrap compiler, only one expression will be open at a time
+
 ::yield-nil := λ_. (
                          # $_.$0 ref_counter is unnecessary when open
    \t mov $0, %rdi    \n # $_.$1 = 0
