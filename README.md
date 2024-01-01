@@ -34,3 +34,7 @@ _eval-hard_ does not have any restrictions.
 
 The proper name for this project is λ☶.
 However, GitHub disallows most unicode in repo names, probably to avoid lookalike characters in urls.
+
+# Mascot
+
+"Doby being a prototypical ass."
