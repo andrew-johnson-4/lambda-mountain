@@ -11,17 +11,19 @@
 # etc.
 
 # struct S {
-#   $0 atom : *char
-#   $1 head : *S
-#   $2 tail : *S
-#   $3 misc : bool[64]
+#   $0 ref_counter : u64
+#   $1 atom        : *char
+#   $2 head        : *S
+#   $3 tail        : *S
+#   $4 misc        : bool[64]
 # }
 
 ::yield-nil := λ_. (
-   \t mov $0, %rdi    \n
-   \t mov $0, %rsi    \n
-   \t mov $0, %rdx    \n
-   \t mov $0, %r10    \n
+                         # $_.$0 ref_counter is unnecessary when open
+   \t mov $0, %rdi    \n # $_.$1 = 0
+   \t mov $0, %rsi    \n # $_.$2 = 0
+   \t mov $0, %rdx    \n # $_.$3 = 0
+   \t mov $0, %r10    \n # $_.$4 = 0
 );
 
 ::print-$_ := λ_. (
