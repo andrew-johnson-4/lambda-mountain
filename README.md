@@ -6,6 +6,8 @@ A more idiomatic approach to code lowering.
 λ answers ["why is this correct?"](https://github.com/andrew-johnson-4/PunCalculus)
 ☶ answers ["why is this desirable?"](https://medium.com/@andrew_johnson_4/calligraphy-principles-are-useful-for-proof-construction-e18e9b9a53a5)
 
+<img src="https://raw.githubusercontent.com/andrew-johnson-4/-/main/DOBY.jpg" height=200 title="Doby being a prototypical ass.">
+
 # Contribution
 
 λ☶ aims to provide a convenient interface to formally encode a variety of big-step semantics.
