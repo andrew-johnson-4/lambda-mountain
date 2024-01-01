@@ -9,10 +9,10 @@ Future work will also be done to provide a zoom-in/zoom-out interface for rules.
 
 # Syntax and Formatting
 
-λ☶ is a programming language written in the passive voice.
+LM is a programming language written in the passive voice.
 `eval-soft` and `eval-hard` are the exposed entry points into your program.
-A λ☶ program is then defined as *capabilities* gifted to anyone with access to your entry points.
-λ☶ syntax consists of typed lambda calculus expressions potentially nested inside of rules.
+An LM program is then defined as *capabilities* gifted to anyone with access to your entry points.
+LM syntax consists of typed lambda calculus expressions potentially nested inside of rules.
 
 <img src="https://raw.githubusercontent.com/andrew-johnson-4/-/main/equation.png" height=200 title="Equation">
 
