@@ -1,4 +1,4 @@
 
-main := λ_. (
-   print_s hello_world
+main := (
+   print-s hello_world
 );

@@ -12,12 +12,11 @@ G: A Basic Codegen
 */
 
 use crate::*;
-use std::collections::HashMap;
 use std::process::Command;
 use std::fs::File;
 use std::io::Write;
 
-pub fn flatten(output: &mut String, input: &S) {
+fn flatten(output: &mut String, input: &S) {
    if is_cons(input) {
       flatten( output, &head(input) );
       flatten( output, &tail(input) );
@@ -36,7 +35,7 @@ pub fn flatten(output: &mut String, input: &S) {
    }
 }
 
-pub fn assemble(cfg: &str, program: &S) {
+fn assemble(cfg: &str, program: &S) {
    let mut code = String::new();
    flatten( &mut code, program );
    if cfg.ends_with(".s") {
@@ -69,34 +68,44 @@ pub fn assemble(cfg: &str, program: &S) {
    }
 }
 
-pub fn compile(cfg: &str, ctx: &S) {
-   let helpers = parse_file("stdlib/untyped.lm");
-   let ctx = kv_merge(&helpers, &ctx);
-   let mut fragments = HashMap::new();
-   for (k,v) in kv_iter(&ctx) {
-      let k = k.to_string();
-      //if is helper, ignore
-      if k.starts_with("::") {}
-      //if is symbol, reduce and compile
-      else {
-         let block = ctx_eval_soft(&ctx, &app(
-            variable("::safe-compile-expression"),
-            app(
-               v,
-               typ("Block"),
-            )
-         ));
-         fragments.insert( k, block );
-      }
-   }
-   let fragments = kv_s(&fragments);
-   let program = ctx_eval_soft(&ctx, &app(
+fn label_case(s: &str) -> String {
+   format!("{}", s.replace("-","_"))
+}
+
+fn compile_expr(ctx: &S, e: &S) -> S {
+   unimplemented!("compile_expr: {}", e)
+}
+
+fn compile_symbol(ctx: &S, e: &S) -> S {
+   unimplemented!("compile_symbol: {}", e)
+}
+
+pub fn compile(cfg: &str, main_ctx: &S) {
+   let helpers_ctx = parse_file("stdlib/helpers.lm");
+   let mut program = ctx_eval_soft(&helpers_ctx, &app(
       variable("::safe-compile-program"),
       app(
-         fragments,
+         app( variable("main"), nil() ),
          typ("Program"),
       )
    ));
+   let prelude_ctx = parse_file("stdlib/prelude.lm");
+   for (k,v) in kv_iter(&prelude_ctx) {
+      program = app(
+         program,
+         compile_symbol(&prelude_ctx, &ctx_eval_soft(&helpers_ctx, &v) ),
+      );
+   }
+   for (k,v) in kv_iter(&main_ctx) {
+      let k = k.to_string();
+      program = app(
+         program,
+         app(
+            variable(&format!("\n{}:\n",&label_case(&k))),
+            compile_symbol(&main_ctx, &ctx_eval_soft(&helpers_ctx, &v) ),
+         ),
+      );
+   }
    //at this point the program should be in normal form
    //so it is safe to just dump it to a file and finish
    assemble(cfg, &program);

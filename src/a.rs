@@ -39,6 +39,10 @@ pub fn regex(r: &str) -> S {
    s_cons( s_atom("regex"), s_atom(r) )
 }
 
+pub fn nil() -> S {
+   s_nil()
+}
+
 pub fn list(s: &[S]) -> S {
    let mut tail = s_nil();
    for x in s.iter().rev() {

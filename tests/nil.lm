@@ -1,4 +1,4 @@
 
 main := (
-   print_s ()
+   print-s ()
 );
