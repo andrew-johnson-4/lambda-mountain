@@ -1,6 +1,7 @@
 
 .text := (
-   # entry point
+   # entry points
+   print_s:                    \n
    __print_this:               \n
 
    # if .atom != NULL

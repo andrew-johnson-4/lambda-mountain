@@ -72,12 +72,30 @@ fn label_case(s: &str) -> String {
    format!("{}", s.replace("-","_"))
 }
 
-fn compile_expr(ctx: &S, e: &S) -> S {
-   println!("TODO, compile_expr: {}", e);
-   s_cons(
-      nil(),
-      nil(),
-   )
+fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
+   if head(e).to_string() == "lambda" {
+      unimplemented!("compile_expr: {}", e);
+   } else if head(e).to_string() == "app" {
+      let fx = tail(e);
+      let f = head(&fx);
+      let x = tail(&fx);
+      let xpg = compile_expr(helpers_ctx, program_ctx, &x);
+      assert_eq!( head(&f).to_string(), "variable" );
+      let f_name = variable(&label_case( &tail(&f).to_string() ));
+      let call = app( variable("jmp"), f_name );
+      let prog = app(
+         head(&xpg),
+         call
+      );
+      s_cons(prog, tail(&xpg))
+   } else if is_nil(e) {
+      s_cons(
+         ctx_eval_soft(helpers_ctx, &variable("::yield-nil")),
+         nil(),
+      )
+   } else {
+      unimplemented!("compile_expr: {}", e);
+   }
 }
 
 fn compile_program(helpers_ctx: &S, raw_program: &S, raw_data: &S) -> S {
@@ -114,7 +132,7 @@ pub fn compile(cfg: &str, main_ctx: &S) {
    }
    for (k,v) in kv_iter(&main_ctx) {
       let k = k.to_string();
-      let v = compile_expr(&main_ctx, &v);
+      let v = compile_expr(&helpers_ctx, &main_ctx, &v);
       println!("compile user {} = {}", k, v);
       println!("compile user {} = {}", k, head(&v));
       raw_program = app(
