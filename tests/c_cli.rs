@@ -32,3 +32,25 @@ fn cli_nil() {
 fn cli_cons() {
    assert_eq!( compile_and_run("tests/cons.lm"), "(123 . (() . 456))" );
 }
+
+#[test]
+fn cli_hello_world() {
+   let exit = Command::new("lambda_mountain")
+                      .arg("-o")
+                      .arg("hello_world")
+                      .arg("tests/hello_world.lm")
+                      .spawn()
+                      .expect("failed to execute process")
+                      .wait()
+                      .expect("failed to wait for process");
+   assert!(exit.success());
+   let output = Command::new("./hello_world")
+                            .stdout(std::process::Stdio::piped())
+                            .spawn()
+                            .expect("failed to execute process")
+                            .wait_with_output()
+                            .expect("failed to wait for process")
+                            .stdout;
+   let output = String::from_utf8_lossy(&output).to_string();
+   assert_eq!( output, "hello_world" );
+}

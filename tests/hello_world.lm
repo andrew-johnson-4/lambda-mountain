@@ -1,0 +1,4 @@
+
+main := λ_. (
+   print_s hello_world
+);
