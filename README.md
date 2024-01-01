@@ -14,7 +14,7 @@ Future work will also be done to provide a zoom-in/zoom-out interface for rules.
 A λ☶ program is then defined as *capabilities* gifted to anyone with access to your entry points.
 λ☶ syntax consists of typed lambda calculus expressions potentially nested inside of rules.
 
-<img src="https://raw.githubusercontent.com/andrew-johnson-4/-/blob/main/equation.png" height=200 title="Equation">
+<img src="https://raw.githubusercontent.com/andrew-johnson-4/-/main/equation.png" height=200 title="Equation">
 
 # How is eval-soft different from eval-hard?
 
