@@ -34,6 +34,15 @@
    \t mov $0, %r11   \n # $_.$4 = 0, .flags
 );
 
+::yield-atom := λlabel. (
+                              # $_.$0 ref_counter is unnecessary when open
+                              # open structures must be completely "owned" by the current context
+   \t mov $ label , %r8    \n # $_.$1 = 0, .atom
+   \t mov $0, %r9          \n # $_.$2 = 0, .head
+   \t mov $0, %r10         \n # $_.$3 = 0, .tail
+   \t mov $0, %r11         \n # $_.$4 = 0, .flags
+);
+
 ::program-header := (
    .global _start        \n
    .text                 \n

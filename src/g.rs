@@ -27,6 +27,7 @@ fn flatten(output: &mut String, input: &S) {
       else if l=="\\n" { output.push('\n'); }
       else if l=="(" { output.push('('); }
       else if l==")" { output.push(')'); }
+      else if l=="$" { output.push('$'); }
       else if l=="\"" { output.push('"'); }
       else {
          output.push_str( &l );
@@ -72,6 +73,20 @@ fn label_case(s: &str) -> String {
    format!("{}", s.replace("-","_"))
 }
 
+static mut UUID_COUNTER: usize = 0;
+fn uuid() -> String {
+   let id = unsafe { UUID_COUNTER += 1; UUID_COUNTER };
+   format!("_uuid_{}", id)
+}
+
+fn yield_atom(helpers_ctx: &S, s: &str) -> S {
+   let id = uuid();
+   s_cons(
+      ctx_eval_soft(helpers_ctx, &app( variable("::yield-atom"), variable(&id) )),
+      variable(&format!("{}:\n\t.ascii \"{}\"\n\t.zero 1\n", id, s)),
+   )
+}
+
 fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
    if head(e).to_string() == "lambda" {
       unimplemented!("compile_expr: {}", e);
@@ -81,13 +96,17 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
       let x = tail(&fx);
       let xpg = compile_expr(helpers_ctx, program_ctx, &x);
       assert_eq!( head(&f).to_string(), "variable" );
-      let f_name = variable(&label_case( &tail(&f).to_string() ));
-      let call = app( variable("jmp"), f_name );
+      let f_name = label_case( &tail(&f).to_string() );
+      let call = variable( &format!("\tjmp {}\n", f_name) );
       let prog = app(
          head(&xpg),
          call
       );
       s_cons(prog, tail(&xpg))
+   } else if head(e).to_string() == "variable" {
+      yield_atom(helpers_ctx, &tail(e).to_string() )
+   } else if head(e).to_string() == "literal" {
+      yield_atom(helpers_ctx, &tail(e).to_string() )
    } else if is_nil(e) {
       s_cons(
          ctx_eval_soft(helpers_ctx, &variable("::yield-nil")),
