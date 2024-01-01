@@ -10,7 +10,7 @@ print-this := (
    # TODO print .atom
    \t ret                     \n
 
-   __print_this_cons:
+   __print_this_cons:         \n
    # if .head != NULL && .tail != NULL
    \t cmp $0, %r9             \n
    \t je __print_this_nil     \n

@@ -73,29 +73,35 @@ fn label_case(s: &str) -> String {
 }
 
 fn compile_expr(ctx: &S, e: &S) -> S {
-   unimplemented!("compile_expr: {}", e)
+   println!("TODO, compile_expr: {}", e);
+   nil()
 }
 
 fn compile_symbol(ctx: &S, e: &S) -> S {
-   unimplemented!("compile_symbol: {}", e)
+   println!("TODO, compile_symbol: {}", e);
+   nil()
+}
+
+fn compile_program(helpers_ctx: &S, program: &S) -> S {
+   let head = ctx_eval_soft(&helpers_ctx, &variable("::program-header"));
+   let data = ctx_eval_soft(&helpers_ctx, &variable("::data-header"));
+   app(
+      head,
+      data,
+   )
 }
 
 pub fn compile(cfg: &str, main_ctx: &S) {
    let helpers_ctx = parse_file("stdlib/helpers.lm");
-   let mut program = ctx_eval_soft(&helpers_ctx, &app(
-      variable("::safe-compile-program"),
-      app(
-         app( variable("main"), nil() ),
-         typ("Program"),
-      )
-   ));
    let prelude_ctx = parse_file("stdlib/prelude.lm");
+   let mut program = nil();
    for (k,v) in kv_iter(&prelude_ctx) {
       program = app(
          program,
-         compile_symbol(&prelude_ctx, &ctx_eval_soft(&helpers_ctx, &v) ),
+         ctx_eval_soft(&helpers_ctx, &v),
       );
    }
+   /* TODO: user
    for (k,v) in kv_iter(&main_ctx) {
       let k = k.to_string();
       program = app(
@@ -106,7 +112,7 @@ pub fn compile(cfg: &str, main_ctx: &S) {
          ),
       );
    }
-   //at this point the program should be in normal form
-   //so it is safe to just dump it to a file and finish
+   */
+   let program = compile_program(&helpers_ctx, &program);
    assemble(cfg, &program);
 }
