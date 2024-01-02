@@ -30,11 +30,18 @@
    \t syscall                  \n   # invoke operating system to do the write
    \t ret                      \n
 
-   __print_this_cons:          \n
    # if .head != NULL && .tail != NULL
+   __print_this_cons:          \n
    \t cmp $0, %r9              \n
    \t je __print_this_nil      \n
-   # TODO print .head / .tail
+   \t cmp $0, %r10             \n
+   \t je __print_this_nil      \n
+   \t mov $1, %rax             \n   # system call 1 is write
+   \t mov $1, %rdi             \n   # file handle 1 is stdout
+   \t mov $__nil_literal, %rsi \n   # address of string to output
+   \t mov $2, %rdx             \n   # nil is 2 bytes
+   \t syscall                  \n   # invoke operating system to do the write
+   \t syscall                  \n   # invoke operating system to do the write
    \t ret                      \n
 
    __print_this_nil:           \n

@@ -59,15 +59,15 @@
    # move this S onto the heap
    # %r12 becomes pointer to new location
    \t mov $__cons_section, %r12    \n # %r12 now points to root cons
-   \t add $__cons_counter, %r12    \n # %r12 now points to top free cons
-   \t mov $__cons_counter, %r14    \n # load current cons counter
+   \t mov $__cons_counter, %r13    \n # %r13 now points to cons counter
+   \t mov 0(%r13), %r14            \n # %r14 now hold value of cons counter
+   \t add %r14, %r12               \n # %r12 now points to top cons
    \t add $32, %r14                \n # increment cons counter
-   \t mov $__cons_counter, %r15    \n # address of cons counter
-   \t mov %r14, 0(%r15)            \n # overwrite new cons counter
-   \t mov %r8, 0(%r12)             \n # set %r12.atom
-   \t mov %r9, 1(%r12)             \n # set %r12.head
-   \t mov %r10, 2(%r12)            \n # set %r12.tail 
-   \t mov %r11, 3(%r12)            \n # set %r12.flags
+   \t mov %r14, 0(%r13)            \n # overwrite new cons counter
+   \t mov %r8, 0(%r12)             \n # set top.atom
+   \t mov %r9, 1(%r12)             \n # set top.head
+   \t mov %r10, 2(%r12)            \n # set top.tail 
+   \t mov %r11, 3(%r12)            \n # set top.flags
 );
 
 ::open-this := (
