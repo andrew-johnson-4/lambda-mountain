@@ -94,17 +94,29 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
       let fx = tail(e);
       let f = head(&fx);
       let x = tail(&fx);
-      let xpg = compile_expr(helpers_ctx, program_ctx, &x);
+      let xpd = compile_expr(helpers_ctx, program_ctx, &x);
       if head(&f).to_string() == "variable" {
          let f_name = label_case( &tail(&f).to_string() );
          let call = variable( &format!("\tcall {}\n", f_name) );
          let prog = app(
-            head(&xpg),
+            head(&xpd),
             call
          );
-         s_cons(prog, tail(&xpg))
+         s_cons(prog, tail(&xpd))
       } else {
-         unimplemented!("compile_expr: {}", e)
+         let fpd = compile_expr(helpers_ctx, program_ctx, &f);
+         let prog = ctx_eval_soft(helpers_ctx, &app(
+            variable("::yield-cons"),
+            app(
+               head(&fpd),
+               head(&xpd),
+            )
+         ));
+         let data = app(
+            tail(&fpd),
+            tail(&xpd),
+         );
+         s_cons(prog, data)
       }
    } else if head(e).to_string() == "variable" {
       yield_atom(helpers_ctx, &tail(e).to_string() )
