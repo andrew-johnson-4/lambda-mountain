@@ -41,12 +41,14 @@
    ::push-this
    \t mov %r13, %r8             \n
    ::open-this
+   ::show-cons
    ::pop-this
 
-   # print head
+   # print tail
    ::push-this
    \t mov %r14, %r8             \n
    ::open-this
+   ::show-cons
    ::pop-this
 
    \t ret                       \n

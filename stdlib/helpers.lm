@@ -100,17 +100,11 @@
 
 ::yield-cons := λhead tail. (
    head                        # this is head
-   ::show-cons
    ::close-this
-   ::open-this
-   ::show-cons
-
    \t mov %r8, %r9          \n # %r9  is head
+
    tail                        # this is tail
-   ::show-cons
-   ::close-this
-   ::open-this
-   ::show-cons
+   ::close-this                # %r8  is tail
 
    \t mov $0, %r12          \n # this.atom is NULL
    \t mov %r9, %r13         \n # this.head is head
