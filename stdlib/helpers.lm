@@ -24,51 +24,53 @@
 #   $4 flags       : bool[64]
 # }
 
-# put8 (%r8 bool[4], %r9: *char)
+# put8 (%r11 bool[4], %r8: *char)
 ::put8 := (
-#   \t mov %8l, %10l                   \n   # lower four bits of %r8 goes into %r10
-#   \t mov $__hex_buffer, %rbx         \n   # %rbx is index into hex buffer
-#   \t add %sil, %bxl                  \n   # %rbx is index into char in hex buffer
-#   \t mov 0(%rbx), %sil               \n   # %sil is a hexadecimal char
-#   \t mov %sil, 0(%rax)               \n   # put byte into __put64_write_buffer
-#   \t inc %rax                        \n
+    \t mov %r11b, %r12b                   \n # lower byte of %r11 goes into %r12
+    \t and $0xf, %r12b                    \n # only show lower 4 bits
+    \t mov $__hex_buffer, %rbx            \n # %rbx is index into hex buffer
+    \t add %r12b, %bxl                    \n # %rbx is index into char in hex buffer
+    \t mov 0(%rbx), %sil                  \n # %sil is a hexadecimal char
+    \t mov %sil, 0(%r8)                   \n # write char into buffer
+    \t inc %r8                            \n
 );
 
 # put64 (%r11: char[8])
 ::put64 := (
-#   \t mov $__put64_write_buffer, %rax \n   # %rax points to __put64_write_buffer
+   \t mov $__put64_write_buffer, %r8  \n   # %rax points to __put64_write_buffer
 
-#   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[0]
-#   \t call __put4                     \n
-#   \t rol $4, %rdi                    \n
-#   \t call __put4                     \n
-#   \t rol $4, %rdi                    \n
-#   \t call __put4                     \n
-#   \t rol $4, %rdi                    \n
-#   \t call __put4                     \n
-#   \t rol $4, %rdi                    \n
-#   \t call __put4                     \n
-#   \t rol $4, %rdi                    \n
-#   \t call __put4                     \n
-#   \t rol $4, %rdi                    \n
-#   \t call __put4                     \n
-#   \t rol $4, %rdi                    \n
-#   \t call __put4                     \n
-#   \t rol $4, %rdi                    \n
-#   \t call __put4                     \n
-#   \t rol $4, %rdi                    \n
-#   \t call __put4                     \n
-#   \t rol $4, %rdi                    \n
-#   \t call __put4                     \n
-#   \t rol $4, %rdi                    \n
-#   \t call __put4                     \n
-#   \t rol $4, %rdi                    \n
-#   \t call __put4                     \n
-#   \t rol $4, %rdi                    \n
-#   \t call __put4                     \n
-#   \t rol $4, %rdi                    \n
-#   \t call __put4                     \n
-#   \t rol $4, %rdi                    \n
+   \t rol $4, %r11                    \n   # %r11[0]
+   ::put8
+   \t rol $4, %r11                    \n   # %r11[1]
+   ::put8
+   \t rol $4, %r11                    \n   # %r11[2]
+   ::put8
+   \t rol $4, %r11                    \n   # %r11[3]
+   ::put8
+   \t rol $4, %r11                    \n   # %r11[4]
+   ::put8
+   \t rol $4, %r11                    \n   # %r11[5]
+   ::put8
+   \t rol $4, %r11                    \n   # %r11[6]
+   ::put8
+   \t rol $4, %r11                    \n   # %r11[7]
+   ::put8
+   \t rol $4, %r11                    \n   # %r11[8]
+   ::put8
+   \t rol $4, %r11                    \n   # %r11[9]
+   ::put8
+   \t rol $4, %r11                    \n   # %r11[10]
+   ::put8
+   \t rol $4, %r11                    \n   # %r11[11]
+   ::put8
+   \t rol $4, %r11                    \n   # %r11[12]
+   ::put8
+   \t rol $4, %r11                    \n   # %r11[13]
+   ::put8
+   \t rol $4, %r11                    \n   # %r11[14]
+   ::put8
+   \t rol $4, %r11                    \n   # %r11[15]
+   ::put8
 
    \t mov $1, %rax              \n
    \t mov $1, %rdi              \n
@@ -114,31 +116,20 @@
    \t mov %r9, %r13         \n # this.head is head
    \t mov %r8, %r14         \n # this.tail is tail
    \t mov $0, %r15          \n # this.flags is 0
-   ::show-cons
-   ::close-this
-   ::open-this
-   ::show-cons
 );
 
 ::show-cons := (
-   \t mov $0x012345789abcdef, %rdi \n
+   \t mov %r12, %r11            \n
    ::put64
-   ::put64
-   \t mov $0xfedcba987654321, %rdi \n
-   ::put64
-   ::put64
-   
-   #\t mov %r12, %rdi           \n
-   #\t call __put64             \n
 
-   #\t mov %r13, %rdi           \n
-   #\t call __put64             \n
+   \t mov %r13, %r11            \n
+   ::put64
 
-   #\t mov %r14, %rdi           \n
-   #\t call __put64             \n
+   \t mov %r14, %r11            \n
+   ::put64
 
-   #\t mov %r15, %rdi           \n
-   #\t call __put64             \n
+   \t mov %r15, %r11            \n
+   ::put64
 );
 
 ::call := λf. (
