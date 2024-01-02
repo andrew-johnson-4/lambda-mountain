@@ -46,16 +46,26 @@
 
 ::yield-cons := λhead tail. (
    head                        # this is head
-   ::close-this                # %r8  is head
+   ::show-cons
+   ::close-this
+   ::open-this
+   ::show-cons
 
    \t mov %r8, %r9          \n # %r9  is head
    tail                        # this is tail
-   ::close-this                # %r8  is tail
+   ::show-cons
+   ::close-this
+   ::open-this
+   ::show-cons
 
    \t mov $0, %r12          \n # this.atom is NULL
    \t mov %r9, %r13         \n # this.head is head
    \t mov %r8, %r14         \n # this.tail is tail
    \t mov $0, %r15          \n # this.flags is 0
+   ::show-cons
+   ::close-this
+   ::open-this
+   ::show-cons
 );
 
 ::show-cons := (
@@ -84,10 +94,10 @@
 );
 
 ::pop-this := (
-   \t pop %r12 \n
-   \t pop %r13 \n
-   \t pop %r14 \n
    \t pop %r15 \n
+   \t pop %r14 \n
+   \t pop %r13 \n
+   \t pop %r12 \n
 );
 
 ::close-this := (
@@ -107,7 +117,11 @@
 
 ::open-this := (
    # move S from heap into this
-   # %r12 is pointer to current location
+   # %r8 is pointer to current location
+   \t mov 0(%r8), %r12             \n
+   \t mov 1(%r8), %r13             \n
+   \t mov 2(%r8), %r14             \n
+   \t mov 3(%r8), %r15             \n
 );
 
 ::program-header := (
