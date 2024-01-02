@@ -58,10 +58,10 @@
 ::close-this := (
    # move this S onto the heap
    # %r12 becomes pointer to new location
-   # push 4
-   # call malloc
-   # add esp, 4
-   # ; now eax points to an allocated buffer of the requested size
+   \t mov $32, %edi        \n # allocate 8*4 bytes
+   \t call malloc          \n # call malloc
+   # ; now rax points to an allocated buffer of the requested size
+   \t mov %rax, %r12       \n # set %r12 as result
 );
 
 ::open-this := (

@@ -48,24 +48,32 @@ fn assemble(cfg: &str, program: &S) {
       let mut file = File::create(&tmp_s).expect("Could not create file in Term::compile");
       file.write_all(code.as_bytes()).expect("Could not write to file in Term::compile");
 
-      Command::new("as")
+      let output = Command::new("as")
               .arg(&tmp_s)
               .arg("-o")
               .arg(&tmp_o)
               .spawn()
               .expect("Could not run assembler in g::assemble")
-              .wait()
+              .wait_with_output()
               .expect("Could not wait for assembler in g::assemble");
+      if !output.status.success() {
+         let err = String::from_utf8_lossy(&output.stderr).to_string();
+         panic!("{}", err)
+      }
 
-      Command::new("ld")
-              .arg("-s")
+      let output = Command::new("ld")
+              .arg("-lc")
               .arg("-o")
               .arg(cfg)
               .arg(&tmp_o)
               .spawn()
               .expect("Could not run linker in g::assemble")
-              .wait()
+              .wait_with_output()
               .expect("Could not wait for linker in g::assemble");
+      if !output.status.success() {
+         let err = String::from_utf8_lossy(&output.stderr).to_string();
+         panic!("{}", err)
+      }
    }
 }
 
