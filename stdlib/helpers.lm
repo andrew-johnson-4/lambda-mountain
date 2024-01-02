@@ -46,16 +46,16 @@
 
 ::yield-cons := λhead tail. (
    head                        # this is head
-   ::close-this                # %r12 is head
+   ::close-this                # %r8  is head
 
-   \t mov %r12, %r13        \n # %r13 is head
+   \t mov %r8, %r9          \n # %r9  is head
    tail                        # this is tail
-   ::close-this                # %r12 is tail
+   ::close-this                # %r8  is tail
 
-   \t mov $0, %r8              \n # this.atom is NULL
-   \t mov %r13, %r9            \n # this.head is head
-   \t mov %r12, %r10           \n # this.tail is tail
-   \t mov $0, %r11             \n # this.flags is 0
+   \t mov $0, %r12          \n # this.atom is NULL
+   \t mov %r9, %r13         \n # this.head is head
+   \t mov %r8, %r14         \n # this.tail is tail
+   \t mov $0, %r15          \n # this.flags is 0
 );
 
 ::show-cons := (
