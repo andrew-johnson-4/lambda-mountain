@@ -28,24 +28,26 @@
 ::yield-nil := (
                          # $_.$0 ref_counter is unnecessary when open
                          # open structures are completely "owned" by the current context
-   \t mov $0, %r8    \n # $_.$1 = 0, .atom
-   \t mov $0, %r9    \n # $_.$2 = 0, .head
-   \t mov $0, %r10   \n # $_.$3 = 0, .tail
-   \t mov $0, %r11   \n # $_.$4 = 0, .flags
+   # these registers are supposed to be "preserved"
+   \t mov $0, %r12   \n # $_.$1 = 0, .atom
+   \t mov $0, %r13   \n # $_.$2 = 0, .head
+   \t mov $0, %r14   \n # $_.$3 = 0, .tail
+   \t mov $0, %r15   \n # $_.$4 = 0, .flags
 );
 
 ::yield-atom := λlabel. (
                                # $_.$0 ref_counter is unnecessary when open
                                # open structures must be completely "owned" by the current context
-   \t mov $ label , %r8     \n # $_.$1 = 0, .atom
-   \t mov $0, %r9           \n # $_.$2 = 0, .head
-   \t mov $0, %r10          \n # $_.$3 = 0, .tail
-   \t mov $0, %r11          \n # $_.$4 = 0, .flags
+   \t mov $ label , %r12     \n # $_.$1 = 0, .atom
+   \t mov $0, %r13           \n # $_.$2 = 0, .head
+   \t mov $0, %r14           \n # $_.$3 = 0, .tail
+   \t mov $0, %r15           \n # $_.$4 = 0, .flags
 );
 
 ::yield-cons := λhead tail. (
    head                        # this is head
    ::close-this                # %r12 is head
+
    \t mov %r12, %r13        \n # %r13 is head
    tail                        # this is tail
    ::close-this                # %r12 is tail
@@ -54,59 +56,53 @@
    \t mov %r13, %r9            \n # this.head is head
    \t mov %r12, %r10           \n # this.tail is tail
    \t mov $0, %r11             \n # this.flags is 0
-
-   ::show-cons
 );
 
 ::show-cons := (
-   ::push-this
-   \t mov %r8, %rdi            \n
+   \t mov %r12, %rdi           \n
    \t call __put64             \n
-   ::pop-this
 
-   ::push-this
-   \t mov %r9, %rdi            \n
+   \t mov %r13, %rdi           \n
    \t call __put64             \n
-   ::pop-this
 
-   ::push-this
-   \t mov %r10, %rdi           \n
+   \t mov %r14, %rdi           \n
    \t call __put64             \n
-   ::pop-this
 
-   ::push-this
-   \t mov %r11, %rdi           \n
+   \t mov %r15, %rdi           \n
    \t call __put64             \n
-   ::pop-this
+);
+
+::call := λf. (
+   \t call f                   \n
 );
 
 ::push-this := (
-   \t push %r8  \n
-   \t push %r9  \n
-   \t push %r10 \n
-   \t push %r11 \n
+   \t push %r12 \n
+   \t push %r13 \n
+   \t push %r14 \n
+   \t push %r15 \n
 );
 
 ::pop-this := (
-   \t pop %r11 \n
-   \t pop %r10 \n
-   \t pop %r9  \n
-   \t pop %r8  \n
+   \t pop %r12 \n
+   \t pop %r13 \n
+   \t pop %r14 \n
+   \t pop %r15 \n
 );
 
 ::close-this := (
    # move this S onto the heap
    # %r12 becomes pointer to new location
-   \t mov $__cons_section, %r12    \n # %r12 now points to root cons
-   \t mov $__cons_counter, %r13    \n # %r13 now points to cons counter
-   \t mov 0(%r13), %r14            \n # %r14 now hold value of cons counter
-   \t add %r14, %r12               \n # %r12 now points to top cons
-   \t add $32, %r14                \n # increment cons counter
-   \t mov %r14, 0(%r13)            \n # overwrite new cons counter
-   \t mov %r8, 0(%r12)             \n # set top.atom
-   \t mov %r9, 1(%r12)             \n # set top.head
-   \t mov %r10, 2(%r12)            \n # set top.tail 
-   \t mov %r11, 3(%r12)            \n # set top.flags
+   \t mov $__cons_section, %r8     \n # %r8 now points to root cons
+   \t mov $__cons_counter, %r9     \n # %r9 now points to cons counter
+   \t mov 0(%r9), %r10             \n # %r10 now hold value of cons counter
+   \t add %r10, %r8                \n # %r8 now points to top cons
+   \t add $32, %r10                \n # increment cons counter
+   \t mov %r10, 0(%r9)             \n # overwrite new cons counter
+   \t mov %r12, 0(%r8)             \n # set top.atom
+   \t mov %r13, 1(%r8)             \n # set top.head
+   \t mov %r14, 2(%r8)             \n # set top.tail 
+   \t mov %r15, 3(%r8)             \n # set top.flags
 );
 
 ::open-this := (

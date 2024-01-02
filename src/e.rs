@@ -22,7 +22,12 @@ pub fn ctx_eval_soft(ctx: &S, s: &S) -> S {
       s.clone()
    } else if head(&s).to_string()=="variable" {
       let k = tail(&s);
-      kv_lookup( ctx, &k, &s )
+      let v = kv_lookup( ctx, &k, &s );
+      if s != &v {
+          ctx_eval_soft(ctx, &v)
+      } else {
+          v
+      }
    } else if head(&s).to_string()=="app" {
       let fx = tail(&s);
       let f = ctx_eval_soft(ctx, &head(&fx));

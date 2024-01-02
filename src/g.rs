@@ -104,11 +104,10 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
       let x = tail(&fx);
       let xpd = compile_expr(helpers_ctx, program_ctx, &x);
       if head(&f).to_string() == "variable" {
-         let f_name = label_case( &tail(&f).to_string() );
-         let call = variable( &format!("\tcall {}\n", f_name) );
+         let f_name = variable(&label_case( &tail(&f).to_string() ));
          let prog = ctx_eval_soft(helpers_ctx, &app(
             head(&xpd),
-            call
+            app( variable("::call"), f_name ),
          ));
          s_cons(prog, tail(&xpd))
       } else {
