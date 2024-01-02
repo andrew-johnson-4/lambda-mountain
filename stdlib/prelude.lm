@@ -1,56 +1,111 @@
 
 .text := (
    # internal strlen (%rdi: *char)
-   _strlen:                    \n
-   \t xor %rcx, %rcx           \n
-   _strlen_loop:               \n
-   \t cmpb $0, 0(%rdi)         \n
-   \t jz _strlen_exit          \n
-   \t inc %rcx                 \n
-   \t inc %rdi                 \n
-   \t jmp  _strlen_loop        \n
-   _strlen_exit:               \n
-   \t ret                      \n
+   _strlen:                     \n
+   \t xor %rcx, %rcx            \n
+   _strlen_loop:                \n
+   \t cmpb $0, 0(%rdi)          \n
+   \t jz _strlen_exit           \n
+   \t inc %rcx                  \n
+   \t inc %rdi                  \n
+   \t jmp  _strlen_loop         \n
+   _strlen_exit:                \n
+   \t ret                       \n
    # result is stored in %rcx
 
    # entry points
-   print_s:                    \n
-   __print_this:               \n
+   print_s:                     \n
+   __print_this:                \n
 
    # if .atom != NULL
-   __print_this_atom:          \n
-   \t cmp $0, %r8              \n
-   \t je __print_this_cons     \n
-   \t mov %r8, %rdi            \n
-   \t call _strlen             \n
-   \t mov %r8, %rsi            \n   # address of string to output
-   \t mov %rcx, %rdx           \n   # length is %rcx
-   \t mov $1, %rax             \n   # system call 1 is write
-   \t mov $1, %rdi             \n   # file handle 1 is stdout
-   \t syscall                  \n   # invoke operating system to do the write
-   \t ret                      \n
+   __print_this_atom:           \n
+   \t cmp $0, %r8               \n
+   \t je __print_this_cons      \n
+   \t mov %r8, %rdi             \n
+   \t call _strlen              \n
+   \t mov %r8, %rsi             \n   # address of string to output
+   \t mov %rcx, %rdx            \n   # length is %rcx
+   \t mov $1, %rax              \n   # system call 1 is write
+   \t mov $1, %rdi              \n   # file handle 1 is stdout
+   \t syscall                   \n   # invoke operating system to do the write
+   \t ret                       \n
 
    # if .head != NULL && .tail != NULL
-   __print_this_cons:          \n
-   \t cmp $0, %r9              \n
-   \t je __print_this_nil      \n
-   \t cmp $0, %r10             \n
-   \t je __print_this_nil      \n
-   \t mov $1, %rax             \n   # system call 1 is write
-   \t mov $1, %rdi             \n   # file handle 1 is stdout
-   \t mov $__nil_literal, %rsi \n   # address of string to output
-   \t mov $2, %rdx             \n   # nil is 2 bytes
-   \t syscall                  \n   # invoke operating system to do the write
-   \t syscall                  \n   # invoke operating system to do the write
-   \t ret                      \n
+   __print_this_cons:           \n
+   \t cmp $0, %r9               \n
+   \t je __print_this_nil       \n
+   \t cmp $0, %r10              \n
+   \t je __print_this_nil       \n
+   \t mov $1, %rax              \n   # system call 1 is write
+   \t mov $1, %rdi              \n   # file handle 1 is stdout
+   \t mov $__nil_literal, %rsi  \n   # address of string to output
+   \t mov $2, %rdx              \n   # nil is 2 bytes
+   \t syscall                   \n   # invoke operating system to do the write
+   \t syscall                   \n   # invoke operating system to do the write
+   \t ret                       \n
 
-   __print_this_nil:           \n
-   \t mov $1, %rax             \n   # system call 1 is write
-   \t mov $1, %rdi             \n   # file handle 1 is stdout
-   \t mov $__nil_literal, %rsi \n   # address of string to output
-   \t mov $2, %rdx             \n   # nil is 2 bytes
-   \t syscall                  \n   # invoke operating system to do the write
-   \t ret                      \n
+   __print_this_nil:            \n
+   \t mov $1, %rax              \n   # system call 1 is write
+   \t mov $1, %rdi              \n   # file handle 1 is stdout
+   \t mov $__nil_literal, %rsi  \n   # address of string to output
+   \t mov $2, %rdx              \n   # nil is 2 bytes
+   \t syscall                   \n   # invoke operating system to do the write
+   \t ret                       \n
+
+   # put8 (%rdi bool[4], %rax: *char)
+   __put4:                            \n
+   \t mov %rdi, %rsi                  \n
+   \t and $0xf, %rsi                  \n   # only show lowest 4 bits
+   \t mov $__hex_buffer, %rbx         \n
+   \t add %rsi, %rbx                  \n
+   \t mov 0(%rbx), %sil               \n
+   \t mov %sil, 0(%rax)               \n   # put byte into __put64_write_buffer
+   \t inc %rax                        \n
+   \t ret                             \n
+
+   # put64 (%rdi: char[8])
+   __put64:                           \n
+   \t mov $__put64_write_buffer, %rax \n   # %rax points to __put64_write_buffer
+
+   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[0]
+   \t call __put4                     \n
+   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[1]
+   \t call __put4                     \n
+   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[2]
+   \t call __put4                     \n
+   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[3]
+   \t call __put4                     \n
+   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[4]
+   \t call __put4                     \n
+   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[5]
+   \t call __put4                     \n
+   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[6]
+   \t call __put4                     \n
+   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[7]
+   \t call __put4                     \n
+   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[8]
+   \t call __put4                     \n
+   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[9]
+   \t call __put4                     \n
+   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[10]
+   \t call __put4                     \n
+   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[11]
+   \t call __put4                     \n
+   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[12]
+   \t call __put4                     \n
+   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[13]
+   \t call __put4                     \n
+   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[14]
+   \t call __put4                     \n
+   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[15]
+   \t call __put4                     \n
+
+   \t mov $1, %rax              \n
+   \t mov $1, %rdi              \n
+   \t mov $__put64_buffer, %rsi \n
+   \t mov $18, %rdx             \n
+   \t syscall                   \n
+   \t ret                       \n
 );
 
 .data := (
@@ -61,5 +116,12 @@
   \t .zero 65536               \n
   __nil_literal:               \n
   \t .ascii "()"               \n
+  \t .zero 1                   \n
+  __hex_buffer:                \n
+  \t .ascii "0123456789abcdef" \n 
+  __put64_buffer:              \n
+  \t .ascii "0x"               \n
+  __put64_write_buffer:        \n
+  \t .ascii "0000000000000000" \n
   \t .zero 1                   \n
 );

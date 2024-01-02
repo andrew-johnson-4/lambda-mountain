@@ -49,10 +49,21 @@
    \t mov %r12, %r13        \n # %r13 is head
    tail                        # this is tail
    ::close-this                # %r12 is tail
+
    \t mov $0, %r8           \n # this.atom is NULL
-   \t mov %r13, %r9         \n # this.head is NULL
-   \t mov %r12, %r10        \n # this.tail is NULL
+   \t mov %r13, %r9         \n # this.head is head
+   \t mov %r12, %r10        \n # this.tail is tail
    \t mov $0, %r11          \n # this.flags is 0
+
+   #debug log
+   \t mov %r8, %rdi            \n
+   \t call __put64             \n
+   \t mov %r9, %rdi            \n
+   \t call __put64             \n
+   \t mov %r10, %rdi           \n
+   \t call __put64             \n
+   \t mov %r11, %rdi           \n
+   \t call __put64             \n
 );
 
 ::close-this := (
