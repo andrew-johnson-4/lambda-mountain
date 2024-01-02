@@ -37,16 +37,10 @@
    \t cmp $0, %r14              \n
    \t je __print_this_nil       \n
 
-   ::show-cons
-   ::push-this
-   ::pop-this
-   ::show-cons
-
    # print head
    ::push-this
    \t mov %r13, %r8             \n
    ::open-this
-   ::show-cons
    \t call __print_this         \n
    ::pop-this
 
@@ -54,7 +48,6 @@
    ::push-this
    \t mov %r14, %r8             \n
    ::open-this
-   ::show-cons
    \t call __print_this         \n
    ::pop-this
 

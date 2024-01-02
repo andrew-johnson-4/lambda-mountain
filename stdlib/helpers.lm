@@ -101,13 +101,13 @@
 ::yield-cons := λhead tail. (
    head                        # this is head
    ::close-this
-   \t mov %r8, %r9          \n # %r9  is head
+   \t mov %r8, %rax         \n # %rax  is head
 
    tail                        # this is tail
    ::close-this                # %r8  is tail
 
    \t mov $0, %r12          \n # this.atom is NULL
-   \t mov %r9, %r13         \n # this.head is head
+   \t mov %rax, %r13        \n # this.head is head
    \t mov %r8, %r14         \n # this.tail is tail
    \t mov $0, %r15          \n # this.flags is 0
 );

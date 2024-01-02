@@ -1,5 +1,5 @@
 
 main := (
-   print-s (() ())
+   print-s (() 123)
 #   print-s (123 () 456)
 );
