@@ -1,5 +1,18 @@
 
 .text := (
+   # internal strlen (%rdi: *char)
+   _strlen:                    \n
+   \t xor %rcx, %rcx           \n
+   _strlen_loop:               \n
+   \t cmpb $0, 0(%rdi)         \n
+   \t jz _strlen_exit          \n
+   \t inc %rcx                 \n
+   \t inc %rdi                 \n
+   \t jmp  _strlen_loop        \n
+   _strlen_exit:               \n
+   \t ret                      \n
+   # result is stored in %rcx
+
    # entry points
    print_s:                    \n
    __print_this:               \n
@@ -8,7 +21,13 @@
    __print_this_atom:          \n
    \t cmp $0, %r8              \n
    \t je __print_this_cons     \n
-   # TODO print .atom
+   \t mov %r8, %rdi            \n
+   \t call _strlen             \n
+   \t mov %r8, %rsi            \n   # address of string to output
+   \t mov %rcx, %rdx           \n   # length is %rcx
+   \t mov $1, %rax             \n   # system call 1 is write
+   \t mov $1, %rdi             \n   # file handle 1 is stdout
+   \t syscall                  \n   # invoke operating system to do the write
    \t ret                      \n
 
    __print_this_cons:          \n

@@ -97,7 +97,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
       let xpg = compile_expr(helpers_ctx, program_ctx, &x);
       assert_eq!( head(&f).to_string(), "variable" );
       let f_name = label_case( &tail(&f).to_string() );
-      let call = variable( &format!("\tjmp {}\n", f_name) );
+      let call = variable( &format!("\tcall {}\n", f_name) );
       let prog = app(
          head(&xpg),
          call
@@ -152,8 +152,6 @@ pub fn compile(cfg: &str, main_ctx: &S) {
    for (k,v) in kv_iter(&main_ctx) {
       let k = k.to_string();
       let v = compile_expr(&helpers_ctx, &main_ctx, &v);
-      println!("compile user {} = {}", k, v);
-      println!("compile user {} = {}", k, head(&v));
       raw_program = app(
          raw_program,
          app(
