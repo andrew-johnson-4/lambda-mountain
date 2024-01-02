@@ -41,14 +41,6 @@ Run the result
 [stdout] hello_world
 ```
 
-# How is eval-soft different from eval-hard?
-
-_eval-soft_ attempts to evaluate an expression to normal form with two restrictions:
-* the evaluation must not diverge
-* the result must be referentially transparent
-
-_eval-hard_ does not have any restrictions.
-
 # Mascot
 
 Doby was a donkey that refused to cross a bridge on the way back from a camping trek.
