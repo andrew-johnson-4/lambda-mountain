@@ -43,6 +43,20 @@
    \t mov $0, %r11         \n # $_.$4 = 0, .flags
 );
 
+::close-this := (
+   # move this S onto the heap
+   # %r12 becomes pointer to new location
+   # push 4
+   # call malloc
+   # add esp, 4
+   # ; now eax points to an allocated buffer of the requested size
+);
+
+::open-this := (
+   # move S from heap into this
+   # %r12 is pointer to current location
+);
+
 ::program-header := (
    .global _start        \n
    .text                 \n
