@@ -95,20 +95,21 @@ fn yield_atom(helpers_ctx: &S, s: &str) -> S {
 }
 
 fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
-   if head(e).to_string() == "lambda" {
+   let e = ctx_eval_soft(helpers_ctx, e);
+   if head(&e).to_string() == "lambda" {
       unimplemented!("compile_expr: {}", e);
-   } else if head(e).to_string() == "app" {
-      let fx = tail(e);
+   } else if head(&e).to_string() == "app" {
+      let fx = tail(&e);
       let f = head(&fx);
       let x = tail(&fx);
       let xpd = compile_expr(helpers_ctx, program_ctx, &x);
       if head(&f).to_string() == "variable" {
          let f_name = label_case( &tail(&f).to_string() );
          let call = variable( &format!("\tcall {}\n", f_name) );
-         let prog = app(
+         let prog = ctx_eval_soft(helpers_ctx, &app(
             head(&xpd),
             call
-         );
+         ));
          s_cons(prog, tail(&xpd))
       } else {
          let fpd = compile_expr(helpers_ctx, program_ctx, &f);
@@ -125,11 +126,11 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
          );
          s_cons(prog, data)
       }
-   } else if head(e).to_string() == "variable" {
-      yield_atom(helpers_ctx, &tail(e).to_string() )
-   } else if head(e).to_string() == "literal" {
-      yield_atom(helpers_ctx, &tail(e).to_string() )
-   } else if is_nil(e) {
+   } else if head(&e).to_string() == "variable" {
+      yield_atom(helpers_ctx, &tail(&e).to_string() )
+   } else if head(&e).to_string() == "literal" {
+      yield_atom(helpers_ctx, &tail(&e).to_string() )
+   } else if is_nil(&e) {
       s_cons(
          ctx_eval_soft(helpers_ctx, &variable("::yield-nil")),
          nil(),

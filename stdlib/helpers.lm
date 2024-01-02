@@ -50,20 +50,48 @@
    tail                        # this is tail
    ::close-this                # %r12 is tail
 
-   \t mov $0, %r8           \n # this.atom is NULL
-   \t mov %r13, %r9         \n # this.head is head
-   \t mov %r12, %r10        \n # this.tail is tail
-   \t mov $0, %r11          \n # this.flags is 0
+   \t mov $0, %r8              \n # this.atom is NULL
+   \t mov %r13, %r9            \n # this.head is head
+   \t mov %r12, %r10           \n # this.tail is tail
+   \t mov $0, %r11             \n # this.flags is 0
 
-   #debug log
+   ::show-cons
+);
+
+::show-cons := (
+   ::push-this
    \t mov %r8, %rdi            \n
    \t call __put64             \n
+   ::pop-this
+
+   ::push-this
    \t mov %r9, %rdi            \n
    \t call __put64             \n
+   ::pop-this
+
+   ::push-this
    \t mov %r10, %rdi           \n
    \t call __put64             \n
+   ::pop-this
+
+   ::push-this
    \t mov %r11, %rdi           \n
    \t call __put64             \n
+   ::pop-this
+);
+
+::push-this := (
+   \t push %r8  \n
+   \t push %r9  \n
+   \t push %r10 \n
+   \t push %r11 \n
+);
+
+::pop-this := (
+   \t pop %r11 \n
+   \t pop %r10 \n
+   \t pop %r9  \n
+   \t pop %r8  \n
 );
 
 ::close-this := (

@@ -103,25 +103,25 @@
    \t mov $1, %rax              \n
    \t mov $1, %rdi              \n
    \t mov $__put64_buffer, %rsi \n
-   \t mov $18, %rdx             \n
+   \t mov $19, %rdx             \n
    \t syscall                   \n
    \t ret                       \n
 );
 
 .data := (
-                               \n
-  __cons_counter:              \n
-  \t .zero 8                   \n
-  __cons_section:              \n
-  \t .zero 65536               \n
-  __nil_literal:               \n
-  \t .ascii "()"               \n
-  \t .zero 1                   \n
-  __hex_buffer:                \n
-  \t .ascii "0123456789abcdef" \n 
-  __put64_buffer:              \n
-  \t .ascii "0x"               \n
-  __put64_write_buffer:        \n
-  \t .ascii "0000000000000000" \n
-  \t .zero 1                   \n
+                                \n
+  __cons_counter:               \n
+  \t .zero 8                    \n
+  __cons_section:               \n
+  \t .zero 65536                \n
+  __nil_literal:                \n
+  \t .ascii "()"                \n
+  \t .zero 1                    \n
+  __hex_buffer:                 \n
+  \t .ascii "0123456789abcdef"  \n 
+  __put64_buffer:               \n
+  \t .ascii "0x"                \n
+  __put64_write_buffer:         \n
+  \t .ascii "0000000000000000 " \n
+  \t .zero 1                    \n
 );
