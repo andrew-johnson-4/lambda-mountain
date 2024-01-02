@@ -95,14 +95,17 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
       let f = head(&fx);
       let x = tail(&fx);
       let xpg = compile_expr(helpers_ctx, program_ctx, &x);
-      assert_eq!( head(&f).to_string(), "variable" );
-      let f_name = label_case( &tail(&f).to_string() );
-      let call = variable( &format!("\tcall {}\n", f_name) );
-      let prog = app(
-         head(&xpg),
-         call
-      );
-      s_cons(prog, tail(&xpg))
+      if head(&f).to_string() == "variable" {
+         let f_name = label_case( &tail(&f).to_string() );
+         let call = variable( &format!("\tcall {}\n", f_name) );
+         let prog = app(
+            head(&xpg),
+            call
+         );
+         s_cons(prog, tail(&xpg))
+      } else {
+         unimplemented!("compile_expr: {}", e)
+      }
    } else if head(e).to_string() == "variable" {
       yield_atom(helpers_ctx, &tail(e).to_string() )
    } else if head(e).to_string() == "literal" {
