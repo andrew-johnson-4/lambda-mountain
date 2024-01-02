@@ -58,61 +58,6 @@
    \t mov $2, %rdx              \n   # nil is 2 bytes
    \t syscall                   \n   # invoke operating system to do the write
    \t ret                       \n
-
-   # put8 (%rdi bool[4], %rax: *char)
-   __put4:                            \n
-   \t mov %rdi, %rsi                  \n
-   \t and $0xf, %rsi                  \n   # only show lowest 4 bits
-   \t mov $__hex_buffer, %rbx         \n
-   \t add %rsi, %rbx                  \n
-   \t mov 0(%rbx), %sil               \n
-   \t mov %sil, 0(%rax)               \n   # put byte into __put64_write_buffer
-   \t inc %rax                        \n
-   \t ret                             \n
-
-   # put64 (%rdi: char[8])
-   __put64:                           \n
-   \t mov $__put64_write_buffer, %rax \n   # %rax points to __put64_write_buffer
-
-   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[0]
-   \t call __put4                     \n
-   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[1]
-   \t call __put4                     \n
-   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[2]
-   \t call __put4                     \n
-   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[3]
-   \t call __put4                     \n
-   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[4]
-   \t call __put4                     \n
-   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[5]
-   \t call __put4                     \n
-   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[6]
-   \t call __put4                     \n
-   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[7]
-   \t call __put4                     \n
-   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[8]
-   \t call __put4                     \n
-   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[9]
-   \t call __put4                     \n
-   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[10]
-   \t call __put4                     \n
-   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[11]
-   \t call __put4                     \n
-   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[12]
-   \t call __put4                     \n
-   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[13]
-   \t call __put4                     \n
-   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[14]
-   \t call __put4                     \n
-   \t rol $4, %rdi                    \n   # lowest %rdi 4 bits is %rdi[15]
-   \t call __put4                     \n
-
-   \t mov $1, %rax              \n
-   \t mov $1, %rdi              \n
-   \t mov $__put64_buffer, %rsi \n
-   \t mov $19, %rdx             \n
-   \t syscall                   \n
-   \t ret                       \n
 );
 
 .data := (
