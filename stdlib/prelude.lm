@@ -48,6 +48,10 @@
 
 .data := (
                                \n
+  __cons_counter:              \n
+  \t .zero 8                   \n
+  __cons_section:              \n
+  \t .zero 65536               \n
   __nil_literal:               \n
   \t .ascii "()"               \n
   \t .zero 1                   \n

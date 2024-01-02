@@ -62,8 +62,6 @@ fn assemble(cfg: &str, program: &S) {
       }
 
       let output = Command::new("ld")
-              //.arg("-lc")
-              // linking c library causes ELF to need an interpreter that it can't find...
               .arg("-o")
               .arg(cfg)
               .arg(&tmp_o)
