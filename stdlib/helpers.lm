@@ -145,13 +145,13 @@
    \t mov 0(%rbx), %r8            \n
    ::put64
 
-   \t mov 1(%rbx), %r8            \n
+   \t mov 4(%rbx), %r8            \n
    ::put64
 
-   \t mov 2(%rbx), %r8            \n
+   \t mov 8(%rbx), %r8            \n
    ::put64
 
-   \t mov 3(%rbx), %r8            \n
+   \t mov 12(%rbx), %r8            \n
    ::put64
 );
 
@@ -183,18 +183,18 @@
    \t add $64, %r10                 \n # increment cons counter
    \t mov %r10, 0(%r8)              \n # overwrite new cons counter
    \t mov %r12, 0(%rbx)             \n # set top.atom
-   \t mov %r13, 1(%rbx)             \n # set top.head
-   \t mov %r14, 2(%rbx)             \n # set top.tail 
-   \t mov %r15, 3(%rbx)             \n # set top.flags
+   \t mov %r13, 8(%rbx)             \n # set top.head
+   \t mov %r14, 16(%rbx)            \n # set top.tail 
+   \t mov %r15, 24(%rbx)            \n # set top.flags
 );
 
 ::open-this := (
    # move S from heap into this
    # %rbx is pointer to current location
    \t mov 0(%rbx), %r12             \n
-   \t mov 1(%rbx), %r13             \n
-   \t mov 2(%rbx), %r14             \n
-   \t mov 3(%rbx), %r15             \n
+   \t mov 8(%rbx), %r13             \n
+   \t mov 16(%rbx), %r14            \n
+   \t mov 24(%rbx), %r15            \n
 );
 
 ::program-header := (
