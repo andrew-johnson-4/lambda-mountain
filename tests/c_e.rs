@@ -13,7 +13,7 @@ fn test_eval() {
 
 #[test]
 fn test_ctx_eval() {
-   assert_eq!( ctx_eval_soft(&kv(&[(variable("a"),literal("b"))]),&parse_expression("b")).to_string(), "(variable . b)" );
-   assert_eq!( ctx_eval_soft(&kv(&[(variable("a"),literal("b"))]),&parse_expression("a")).to_string(), "(literal . b)" );
-   assert_eq!( ctx_eval_soft(&kv(&[(variable("a"),literal("b"))]),&parse_expression("(λx.a) z")).to_string(), "(literal . b)" );
+   assert_eq!( ctx_eval_soft(&kv(&[(s_atom("a"),literal("b"))]),&parse_expression("b")).to_string(), "(variable . b)" );
+   assert_eq!( ctx_eval_soft(&kv(&[(s_atom("a"),literal("b"))]),&parse_expression("a")).to_string(), "(literal . b)" );
+   assert_eq!( ctx_eval_soft(&kv(&[(s_atom("a"),literal("b"))]),&parse_expression("(λx.a) z")).to_string(), "(literal . b)" );
 }

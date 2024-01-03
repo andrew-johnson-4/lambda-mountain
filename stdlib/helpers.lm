@@ -248,7 +248,7 @@
    \t mov $__cons_counter, %r8      \n # %r8 now points to cons counter
    \t mov 0(%r8), %r10              \n # %r10 now hold value of cons counter
    \t add %r10, %rsi                \n # %rsi now points to top cons
-   \t add $128, %r10                \n # increment cons counter
+   \t add $32, %r10                \n # increment cons counter
    \t mov %r10, 0(%r8)              \n # overwrite new cons counter
    \t mov %r12, 0(%rsi)             \n # set top.atom
    \t mov %r13, 8(%rsi)             \n # set top.head
