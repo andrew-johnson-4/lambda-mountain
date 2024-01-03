@@ -33,9 +33,9 @@
 ::put8 := (
     \t mov %r8b, %axl                     \n # lower byte of %r11 goes into %rax
     \t and $0xf, %axl                     \n # only show lower 4 bits
-    \t mov $__hex_buffer, %rbx            \n # %rbx is index into hex buffer
-    \t add %axl, %bxl                     \n # %rbx is index into char in hex buffer
-    \t mov 0(%rbx), %sil                  \n # %sil is a hexadecimal char
+    \t mov $__hex_buffer, %r10            \n # %r10 is index into hex buffer
+    \t add %axl, %r10b                    \n # %r10 is index into char in hex buffer
+    \t mov 0(%r10), %sil                  \n # %sil is a hexadecimal char
     \t mov %sil, 0(%r9)                   \n # write char into buffer
     \t inc %r9                            \n
 );
@@ -105,21 +105,25 @@
 
 ::yield-cons := λhead tail. (
    head                        # this is head
-   ::show-cons
+   ::show-this
+   ::push-this
+   ::pop-this
+   ::show-this
    ::push-this
 
    tail                        # this is tail
-   ::show-cons
+   ::show-this
+   ::push-this
+   ::pop-this
+   ::show-this
    ::push-this
 
    ::pop-this
    ::close-this
-   ::show-close                
    mov %rbx, %rsp           \n # %rsp is tail
 
    ::pop-this
    ::close-this                # %rbx is head
-   ::show-close                
 
    \t mov $0, %r12          \n # this.atom is NULL
    \t mov %rbx, %r13        \n # this.head is head
@@ -127,7 +131,7 @@
    \t mov $0, %r15          \n # this.flags is 0
 );
 
-::show-cons := (
+::show-this := (
    \t mov %r12, %r8            \n
    ::put64
 
@@ -145,13 +149,13 @@
    \t mov 0(%rbx), %r8            \n
    ::put64
 
-   \t mov 4(%rbx), %r8            \n
-   ::put64
-
    \t mov 8(%rbx), %r8            \n
    ::put64
 
-   \t mov 12(%rbx), %r8            \n
+   \t mov 16(%rbx), %r8            \n
+   ::put64
+
+   \t mov 24(%rbx), %r8            \n
    ::put64
 );
 
@@ -180,7 +184,7 @@
    \t mov $__cons_counter, %r8      \n # %r8 now points to cons counter
    \t mov 0(%r8), %r10              \n # %r10 now hold value of cons counter
    \t add %r10, %rbx                \n # %r8 now points to top cons
-   \t add $64, %r10                 \n # increment cons counter
+   \t add $128, %r10                \n # increment cons counter
    \t mov %r10, 0(%r8)              \n # overwrite new cons counter
    \t mov %r12, 0(%rbx)             \n # set top.atom
    \t mov %r13, 8(%rbx)             \n # set top.head
