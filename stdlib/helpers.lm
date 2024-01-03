@@ -84,6 +84,14 @@
    \t syscall                   \n
 );
 
+::newline := (
+   \t mov $1, %rax              \n
+   \t mov $1, %rdi              \n
+   \t mov $__newline, %rsi      \n
+   \t mov $1, %rdx              \n
+   \t syscall                   \n
+);
+
 ::yield-nil := (
                          # $_.$0 ref_counter is unnecessary when open
                          # open structures are completely "owned" by the current context
@@ -105,19 +113,16 @@
 
 ::yield-cons := λhead tail. (
    head                        # this is head
+   ::show-this
    ::push-this
 
    tail                        # this is tail
-   ::push-this
-
-   ::pop-this
    ::show-this
    ::close-this
    ::show-close
    mov %rbx, %rsp           \n # %rsp is tail
 
    ::pop-this
-   ::show-this
    ::close-this                # %rbx is head
    ::show-close
 
@@ -143,6 +148,8 @@
 
    \t mov %r15, %r8            \n
    ::put64
+
+   ::newline
 );
 
 ::show-close := (
@@ -163,6 +170,8 @@
 
    \t mov 24(%rbx), %r8            \n
    ::put64
+
+   ::newline
 );
 
 ::call := λf. (

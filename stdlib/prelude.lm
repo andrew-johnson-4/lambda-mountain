@@ -63,4 +63,7 @@
   __put64_write_buffer:         \n
   \t .ascii "0000000000000000 " \n
   \t .zero 1                    \n
+  __newline:                    \n
+  \t .ascii "\n"                \n
+  \t .zero 1                    \n
 );
