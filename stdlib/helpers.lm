@@ -105,17 +105,21 @@
 
 ::yield-cons := λhead tail. (
    head                        # this is head
+   ::show-cons
    ::push-this
 
    tail                        # this is tail
+   ::show-cons
    ::push-this
 
    ::pop-this
-   ::close-this                
+   ::close-this
+   ::show-close                
    mov %rbx, %rsp           \n # %rsp is tail
 
    ::pop-this
    ::close-this                # %rbx is head
+   ::show-close                
 
    \t mov $0, %r12          \n # this.atom is NULL
    \t mov %rbx, %r13        \n # this.head is head
@@ -134,6 +138,20 @@
    ::put64
 
    \t mov %r15, %r8            \n
+   ::put64
+);
+
+::show-close := (
+   \t mov 0(%rbx), %r8            \n
+   ::put64
+
+   \t mov 1(%rbx), %r8            \n
+   ::put64
+
+   \t mov 2(%rbx), %r8            \n
+   ::put64
+
+   \t mov 3(%rbx), %r8            \n
    ::put64
 );
 
