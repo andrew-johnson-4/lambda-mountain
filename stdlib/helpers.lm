@@ -25,9 +25,9 @@
 # }
 
 # bootstrap register allocation
-# r12 , r13 , r14 , r15 : open this
-# rbx , rsp             : closed reference 1, 2
-# r8, r9, r10, r11      : volatile internal registers
+# r12 , r13 , r14 , r15           : open this
+# rbx , rsp                       : closed reference 1, 2
+# r8, r9, r10, r11, rax, rcx      : volatile internal registers
 
 # put8 (%r8 bool[4], %r9: *char)
 ::put8 := (
@@ -35,8 +35,8 @@
     \t and $0xf, %axl                     \n # only show lower 4 bits
     \t mov $__hex_buffer, %r10            \n # %r10 is index into hex buffer
     \t add %axl, %r10b                    \n # %r10 is index into char in hex buffer
-    \t mov 0(%r10), %sil                  \n # %sil is a hexadecimal char
-    \t mov %sil, 0(%r9)                   \n # write char into buffer
+    \t mov 0(%r10), %cxl                  \n # %sil is a hexadecimal char
+    \t mov %cxl, 0(%r9)                   \n # write char into buffer
     \t inc %r9                            \n
 );
 
