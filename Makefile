@@ -1,3 +1,2 @@
 test:
-	cargo install --path .
-	cargo test -- --nocapture
+	cargo test; cargo test cli_cons; ./a.out

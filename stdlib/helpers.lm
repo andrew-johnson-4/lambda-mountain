@@ -113,11 +113,9 @@
 
 ::yield-cons := λhead tail. (
    head                        # this is head
-   ::show-this
    ::push-this
 
    tail                        # this is tail
-   ::show-this
    ::close-this
    ::show-close
    mov %rbx, %rsp           \n # %rsp is tail
