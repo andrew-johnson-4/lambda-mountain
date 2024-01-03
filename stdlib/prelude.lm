@@ -38,18 +38,9 @@
    \t je __print_this_nil       \n
 
    # print head
-   ::push-this
-   \t mov %r13, %r8             \n
+   \t mov %r13, %rbx            \n
    ::open-this
-   \t call __print_this         \n
-   ::pop-this
-
-   # print tail
-   ::push-this
-   \t mov %r14, %r8             \n
-   ::open-this
-   \t call __print_this         \n
-   ::pop-this
+   ::show-cons
 
    \t ret                       \n
 

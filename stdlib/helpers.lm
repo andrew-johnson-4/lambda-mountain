@@ -24,52 +24,57 @@
 #   $4 flags       : bool[64]
 # }
 
-# put8 (%r11 bool[4], %r8: *char)
+# bootstrap register allocation
+# r12 , r13 , r14 , r15 : open this
+# rbx , rsp             : closed reference 1, 2
+# r8, r9, r10, r11      : volatile internal registers
+
+# put8 (%r8 bool[4], %r9: *char)
 ::put8 := (
-    \t mov %r11b, %axl                    \n # lower byte of %r11 goes into %rax
+    \t mov %r8b, %axl                     \n # lower byte of %r11 goes into %rax
     \t and $0xf, %axl                     \n # only show lower 4 bits
     \t mov $__hex_buffer, %rbx            \n # %rbx is index into hex buffer
     \t add %axl, %bxl                     \n # %rbx is index into char in hex buffer
     \t mov 0(%rbx), %sil                  \n # %sil is a hexadecimal char
-    \t mov %sil, 0(%r8)                   \n # write char into buffer
-    \t inc %r8                            \n
+    \t mov %sil, 0(%r9)                   \n # write char into buffer
+    \t inc %r9                            \n
 );
 
-# put64 (%r11: char[8])
+# put64 (%r8: char[8])
 ::put64 := (
-   \t mov $__put64_write_buffer, %r8  \n   # %rax points to __put64_write_buffer
+   \t mov $__put64_write_buffer, %r9  \n   # %r9 points to __put64_write_buffer
 
-   \t rol $4, %r11                    \n   # %r11[0]
+   \t rol $4, %r8                    \n   # %r8[0]
    ::put8
-   \t rol $4, %r11                    \n   # %r11[1]
+   \t rol $4, %r8                    \n   # %r8[1]
    ::put8
-   \t rol $4, %r11                    \n   # %r11[2]
+   \t rol $4, %r8                    \n   # %r8[2]
    ::put8
-   \t rol $4, %r11                    \n   # %r11[3]
+   \t rol $4, %r8                    \n   # %r8[3]
    ::put8
-   \t rol $4, %r11                    \n   # %r11[4]
+   \t rol $4, %r8                    \n   # %r8[4]
    ::put8
-   \t rol $4, %r11                    \n   # %r11[5]
+   \t rol $4, %r8                    \n   # %r8[5]
    ::put8
-   \t rol $4, %r11                    \n   # %r11[6]
+   \t rol $4, %r8                    \n   # %r8[6]
    ::put8
-   \t rol $4, %r11                    \n   # %r11[7]
+   \t rol $4, %r8                    \n   # %r8[7]
    ::put8
-   \t rol $4, %r11                    \n   # %r11[8]
+   \t rol $4, %r8                    \n   # %r8[8]
    ::put8
-   \t rol $4, %r11                    \n   # %r11[9]
+   \t rol $4, %r8                    \n   # %r8[9]
    ::put8
-   \t rol $4, %r11                    \n   # %r11[10]
+   \t rol $4, %r8                    \n   # %r8[10]
    ::put8
-   \t rol $4, %r11                    \n   # %r11[11]
+   \t rol $4, %r8                    \n   # %r8[11]
    ::put8
-   \t rol $4, %r11                    \n   # %r11[12]
+   \t rol $4, %r8                    \n   # %r8[12]
    ::put8
-   \t rol $4, %r11                    \n   # %r11[13]
+   \t rol $4, %r8                    \n   # %r8[13]
    ::put8
-   \t rol $4, %r11                    \n   # %r11[14]
+   \t rol $4, %r8                    \n   # %r8[14]
    ::put8
-   \t rol $4, %r11                    \n   # %r11[15]
+   \t rol $4, %r8                    \n   # %r8[15]
    ::put8
 
    \t mov $1, %rax              \n
@@ -100,29 +105,35 @@
 
 ::yield-cons := λhead tail. (
    head                        # this is head
-   ::close-this
-   \t mov %r8, %rax         \n # %rax  is head
+   ::push-this
 
    tail                        # this is tail
-   ::close-this                # %r8  is tail
+   ::push-this
+
+   ::pop-this
+   ::close-this                
+   mov %rbx, %rsp           \n # %rsp is tail
+
+   ::pop-this
+   ::close-this                # %rbx is head
 
    \t mov $0, %r12          \n # this.atom is NULL
-   \t mov %rax, %r13        \n # this.head is head
-   \t mov %r8, %r14         \n # this.tail is tail
+   \t mov %rbx, %r13        \n # this.head is head
+   \t mov %rsp, %r14        \n # this.tail is tail
    \t mov $0, %r15          \n # this.flags is 0
 );
 
 ::show-cons := (
-   \t mov %r12, %r11            \n
+   \t mov %r12, %r8            \n
    ::put64
 
-   \t mov %r13, %r11            \n
+   \t mov %r13, %r8            \n
    ::put64
 
-   \t mov %r14, %r11            \n
+   \t mov %r14, %r8            \n
    ::put64
 
-   \t mov %r15, %r11            \n
+   \t mov %r15, %r8            \n
    ::put64
 );
 
@@ -146,26 +157,26 @@
 
 ::close-this := (
    # move this S onto the heap
-   # %r12 becomes pointer to new location
-   \t mov $__cons_section, %r8     \n # %r8 now points to root cons
-   \t mov $__cons_counter, %r9     \n # %r9 now points to cons counter
-   \t mov 0(%r9), %r10             \n # %r10 now hold value of cons counter
-   \t add %r10, %r8                \n # %r8 now points to top cons
-   \t add $123, %r10               \n # increment cons counter
-   \t mov %r10, 0(%r9)             \n # overwrite new cons counter
-   \t mov %r12, 0(%r8)             \n # set top.atom
-   \t mov %r13, 1(%r8)             \n # set top.head
-   \t mov %r14, 2(%r8)             \n # set top.tail 
-   \t mov %r15, 3(%r8)             \n # set top.flags
+   # %rbx becomes pointer to new location
+   \t mov $__cons_section, %rbx     \n # %rbx now points to root cons
+   \t mov $__cons_counter, %r8      \n # %r8 now points to cons counter
+   \t mov 0(%r8), %r10              \n # %r10 now hold value of cons counter
+   \t add %r10, %rbx                \n # %r8 now points to top cons
+   \t add $64, %r10                 \n # increment cons counter
+   \t mov %r10, 0(%r8)              \n # overwrite new cons counter
+   \t mov %r12, 0(%rbx)             \n # set top.atom
+   \t mov %r13, 1(%rbx)             \n # set top.head
+   \t mov %r14, 2(%rbx)             \n # set top.tail 
+   \t mov %r15, 3(%rbx)             \n # set top.flags
 );
 
 ::open-this := (
    # move S from heap into this
-   # %r8 is pointer to current location
-   \t mov 0(%r8), %r12             \n
-   \t mov 1(%r8), %r13             \n
-   \t mov 2(%r8), %r14             \n
-   \t mov 3(%r8), %r15             \n
+   # %rbx is pointer to current location
+   \t mov 0(%rbx), %r12             \n
+   \t mov 1(%rbx), %r13             \n
+   \t mov 2(%rbx), %r14             \n
+   \t mov 3(%rbx), %r15             \n
 );
 
 ::program-header := (
