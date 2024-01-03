@@ -90,13 +90,55 @@
    \t pop %rsi                  \n
 );
 
-::newline := (
+::show-newline := (
    \t push %rsi                 \n
    \t push %rdi                 \n
 
    \t mov $1, %rax              \n
    \t mov $1, %rdi              \n
    \t mov $__newline, %rsi      \n
+   \t mov $1, %rdx              \n
+   \t syscall                   \n
+
+   \t pop %rdi                  \n
+   \t pop %rsi                  \n
+);
+
+::show-lparen := (
+   \t push %rsi                 \n
+   \t push %rdi                 \n
+
+   \t mov $1, %rax              \n
+   \t mov $1, %rdi              \n
+   \t mov $__lparen, %rsi      \n
+   \t mov $1, %rdx              \n
+   \t syscall                   \n
+
+   \t pop %rdi                  \n
+   \t pop %rsi                  \n
+);
+
+::show-rparen := (
+   \t push %rsi                 \n
+   \t push %rdi                 \n
+
+   \t mov $1, %rax              \n
+   \t mov $1, %rdi              \n
+   \t mov $__rparen, %rsi      \n
+   \t mov $1, %rdx              \n
+   \t syscall                   \n
+
+   \t pop %rdi                  \n
+   \t pop %rsi                  \n
+);
+
+::show-space := (
+   \t push %rsi                 \n
+   \t push %rdi                 \n
+
+   \t mov $1, %rax              \n
+   \t mov $1, %rdi              \n
+   \t mov $__space, %rsi        \n
    \t mov $1, %rdx              \n
    \t syscall                   \n
 
@@ -156,7 +198,7 @@
    \t mov %r15, %r8            \n
    ::put64
 
-   ::newline
+   ::show-newline
 );
 
 ::show-close := (
@@ -178,7 +220,7 @@
    \t mov 24(%rsi), %r8            \n
    ::put64
 
-   ::newline
+   ::show-newline
 );
 
 ::call := λf. (

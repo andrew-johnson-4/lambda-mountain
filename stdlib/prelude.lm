@@ -36,6 +36,19 @@
    \t je __print_this_nil       \n
    \t cmp $0, %r14              \n
    \t je __print_this_nil       \n
+   ::show-lparen
+   ::push-this
+   \t mov %r13, %rsi            \n
+   ::open-this
+   \t call __print_this         \n
+   ::pop-this
+   ::show-space
+   ::push-this
+   \t mov %r14, %rsi            \n
+   ::open-this
+   \t call __print_this         \n
+   ::pop-this
+   ::show-rparen
    \t ret                       \n
 
    __print_this_nil:            \n
@@ -65,5 +78,10 @@
   \t .zero 1                    \n
   __newline:                    \n
   \t .ascii "\n"                \n
-  \t .zero 1                    \n
+  __lparen:                     \n
+  \t .ascii "\lparen"           \n
+  __rparen:                     \n
+  \t .ascii "\rparen"           \n
+  __space:                      \n
+  \t .ascii "\space"            \n
 );

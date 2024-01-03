@@ -30,7 +30,7 @@ fn cli_nil() {
 
 #[test]
 fn cli_cons() {
-   assert_eq!( compile_and_run("tests/cons.lm"), "(123 . (() . 456))" );
+   assert_eq!( compile_and_run("tests/cons.lm"), "((123 ()) 456)" );
 }
 
 #[test]

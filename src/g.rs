@@ -27,6 +27,9 @@ fn flatten(output: &mut String, input: &S) {
       else if l=="\\n" { output.push('\n'); }
       else if l=="(" { output.push('('); }
       else if l==")" { output.push(')'); }
+      else if l==r#""\lparen""# { output.push_str(r#""(""#); }
+      else if l==r#""\rparen""# { output.push_str(r#"")""#); }
+      else if l==r#""\space""# { output.push_str(r#"" ""#); }
       else if l=="$" { output.push('$'); }
       else if l=="\"" { output.push('"'); }
       else {
