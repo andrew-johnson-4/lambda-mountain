@@ -25,23 +25,26 @@
 # }
 
 # bootstrap register allocation
-# r12 , r13 , r14 , r15           : open this
-# rbx , rsp                       : closed reference 1, 2
-# r8, r9, r10, r11, rax, rcx      : volatile internal registers
+# r12 , r13 , r14 , r15                : open this
+# rsi , rdi                            : closed reference 1, 2
+# r8, r9, r10, r11, rax, rbx, rcx, rdx : volatile internal registers
 
 # put8 (%r8 bool[4], %r9: *char)
 ::put8 := (
-    \t mov %r8b, %axl                     \n # lower byte of %r11 goes into %rax
-    \t and $0xf, %axl                     \n # only show lower 4 bits
+    \t mov %r8b, %al                      \n # lower byte of %r11 goes into %rax
+    \t and $0xf, %al                      \n # only show lower 4 bits
     \t mov $__hex_buffer, %r10            \n # %r10 is index into hex buffer
-    \t add %axl, %r10b                    \n # %r10 is index into char in hex buffer
-    \t mov 0(%r10), %cxl                  \n # %sil is a hexadecimal char
-    \t mov %cxl, 0(%r9)                   \n # write char into buffer
+    \t add %al, %r10b                     \n # %r10 is index into char in hex buffer
+    \t mov 0(%r10), %cl                   \n # %cl is a hexadecimal char
+    \t mov %cl, 0(%r9)                    \n # write char into buffer
     \t inc %r9                            \n
 );
 
 # put64 (%r8: char[8])
 ::put64 := (
+   \t push %rsi                  \n
+   \t push %rdi                  \n
+
    \t mov $__put64_write_buffer, %r9  \n   # %r9 points to __put64_write_buffer
 
    \t rol $4, %r8                    \n   # %r8[0]
@@ -82,14 +85,23 @@
    \t mov $__put64_buffer, %rsi \n
    \t mov $19, %rdx             \n
    \t syscall                   \n
+
+   \t pop %rdi                  \n
+   \t pop %rsi                  \n
 );
 
 ::newline := (
+   \t push %rsi                 \n
+   \t push %rdi                 \n
+
    \t mov $1, %rax              \n
    \t mov $1, %rdi              \n
    \t mov $__newline, %rsi      \n
    \t mov $1, %rdx              \n
    \t syscall                   \n
+
+   \t pop %rdi                  \n
+   \t pop %rsi                  \n
 );
 
 ::yield-nil := (
@@ -116,19 +128,16 @@
    ::push-this
 
    tail                        # this is tail
-   ::close-this
-   ::show-close
-   mov %rbx, %rsp           \n # %rsp is tail
+   ::close-this                # %rsi is tail
+   mov %rsi, %rdi           \n # %rdi is tail
 
    ::pop-this
-   ::close-this                # %rbx is head
-   ::show-close
+   ::close-this                # %rsi is head
 
    \t mov $0, %r12          \n # this.atom is NULL
-   \t mov %rbx, %r13        \n # this.head is head
-   \t mov %rsp, %r14        \n # this.tail is tail
+   \t mov %rsi, %r13        \n # this.head is head
+   \t mov %rdi, %r14        \n # this.tail is tail
    \t mov $0, %r15          \n # this.flags is 0
-   ::show-this
 );
 
 ::show-this := (
@@ -154,19 +163,19 @@
    \t mov $0xdeadcccc, %r8            \n
    ::put64
 
-   \t mov %rbx, %r8             \n
+   \t mov %rsi, %r8             \n
    ::put64
 
-   \t mov 0(%rbx), %r8            \n
+   \t mov 0(%rsi), %r8            \n
    ::put64
 
-   \t mov 8(%rbx), %r8            \n
+   \t mov 8(%rsi), %r8            \n
    ::put64
 
-   \t mov 16(%rbx), %r8            \n
+   \t mov 16(%rsi), %r8            \n
    ::put64
 
-   \t mov 24(%rbx), %r8            \n
+   \t mov 24(%rsi), %r8            \n
    ::put64
 
    ::newline
@@ -192,26 +201,26 @@
 
 ::close-this := (
    # move this S onto the heap
-   # %rbx becomes pointer to new location
-   \t mov $__cons_section, %rbx     \n # %rbx now points to root cons
+   # %rsi becomes pointer to new location
+   \t mov $__cons_section, %rsi     \n # %rsi now points to root cons
    \t mov $__cons_counter, %r8      \n # %r8 now points to cons counter
    \t mov 0(%r8), %r10              \n # %r10 now hold value of cons counter
-   \t add %r10, %rbx                \n # %r8 now points to top cons
+   \t add %r10, %rsi                \n # %rsi now points to top cons
    \t add $128, %r10                \n # increment cons counter
    \t mov %r10, 0(%r8)              \n # overwrite new cons counter
-   \t mov %r12, 0(%rbx)             \n # set top.atom
-   \t mov %r13, 8(%rbx)             \n # set top.head
-   \t mov %r14, 16(%rbx)            \n # set top.tail 
-   \t mov %r15, 24(%rbx)            \n # set top.flags
+   \t mov %r12, 0(%rsi)             \n # set top.atom
+   \t mov %r13, 8(%rsi)             \n # set top.head
+   \t mov %r14, 16(%rsi)            \n # set top.tail 
+   \t mov %r15, 24(%rsi)            \n # set top.flags
 );
 
 ::open-this := (
    # move S from heap into this
-   # %rbx is pointer to current location
-   \t mov 0(%rbx), %r12             \n
-   \t mov 8(%rbx), %r13             \n
-   \t mov 16(%rbx), %r14            \n
-   \t mov 24(%rbx), %r15            \n
+   # %rsi is pointer to current location
+   \t mov 0(%rsi), %r12             \n
+   \t mov 8(%rsi), %r13             \n
+   \t mov 16(%rsi), %r14            \n
+   \t mov 24(%rsi), %r15            \n
 );
 
 ::program-header := (
