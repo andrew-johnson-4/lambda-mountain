@@ -265,6 +265,15 @@
    \t mov 24(%rsi), %r15            \n
 );
 
+::head := (
+   \t mov %r13, %rsi                \n
+   ::open-this
+);
+::tail := (
+   \t mov %r14, %rsi                \n
+   ::open-this
+);
+
 ::program-header := (
    .global _start        \n
    .text                 \n

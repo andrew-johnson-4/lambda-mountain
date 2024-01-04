@@ -1,1 +1,1 @@
-main := head (123 ())
+main := print-s (head (123 ()))

@@ -1,1 +1,1 @@
-main := tail (() 123)
+main := print-s (tail (() 123))

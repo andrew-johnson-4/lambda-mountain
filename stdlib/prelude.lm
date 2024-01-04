@@ -13,7 +13,7 @@
    \t ret                       \n
    # result is stored in %rcx
 
-   # entry points
+   # print-s
    print_s:                     \n
    __print_this:                \n
 
@@ -58,6 +58,15 @@
    \t mov $2, %rdx              \n   # nil is 2 bytes
    \t syscall                   \n   # invoke operating system to do the write
    \t ret                       \n
+
+   head:                        \n
+   ::head
+   \t ret                       \n
+
+   tail:                        \n
+   ::tail
+   \t ret                       \n
+
 );
 
 .data := (
