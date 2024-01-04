@@ -29,6 +29,11 @@
 # rsi , rdi                            : closed reference 1, 2
 # r8, r9, r10, r11, rax, rbx, rcx, rdx : volatile internal registers
 
+# .flags can be though of as a "type" for the S structure
+# the ref_counter and flags must still be preserved for alternative types
+# the atom, head, and tail are free to use as general purpose fields
+# type flags=0 denotes an S-Expression
+
 # put8 (%r8 bool[4], %r9: *char)
 ::put8 := (
     \t mov %r8b, %al                      \n # lower byte of %r11 goes into %rax
