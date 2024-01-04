@@ -20,17 +20,17 @@ fn compile_and_run(fp: &str) -> String {
 
 #[test]
 fn cli_123() {
-   assert_eq!( compile_and_run("tests/123.lm"), "123" );
+   assert_eq!( compile_and_run("tests/lm/123.lm"), "123" );
 }
 
 #[test]
 fn cli_nil() {
-   assert_eq!( compile_and_run("tests/nil.lm"), "()" );
+   assert_eq!( compile_and_run("tests/lm/nil.lm"), "()" );
 }
 
 #[test]
 fn cli_cons() {
-   assert_eq!( compile_and_run("tests/cons.lm"), "((123 ()) 456)" );
+   assert_eq!( compile_and_run("tests/lm/cons.lm"), "((123 ()) 456)" );
 }
 
 #[test]
@@ -38,7 +38,7 @@ fn cli_hello_world() {
    let exit = Command::new("lambda_mountain")
                       .arg("-o")
                       .arg("hello_world")
-                      .arg("tests/hello_world.lm")
+                      .arg("tests/lm/hello_world.lm")
                       .spawn()
                       .expect("failed to execute process")
                       .wait()
@@ -54,3 +54,14 @@ fn cli_hello_world() {
    let output = String::from_utf8_lossy(&output).to_string();
    assert_eq!( output, "hello_world" );
 }
+
+#[test]
+fn cli_head() {
+   assert_eq!( compile_and_run("tests/lm/head.lm"), "123" );
+}
+
+#[test]
+fn cli_tail() {
+   assert_eq!( compile_and_run("tests/lm/tail.lm"), "123" );
+}
+
