@@ -59,9 +59,17 @@ fn cli_hello_world() {
 fn cli_head() {
    assert_eq!( compile_and_run("tests/lm/head.lm"), "123" );
 }
+#[test]
+fn cli_head_is_nil() {
+   assert_eq!( compile_and_run("tests/lm/head_is_nil.lm"), "()" );
+}
 
 #[test]
 fn cli_tail() {
    assert_eq!( compile_and_run("tests/lm/tail.lm"), "123" );
+}
+#[test]
+fn cli_tail_is_nil() {
+   assert_eq!( compile_and_run("tests/lm/tail_is_nil.lm"), "()" );
 }
 

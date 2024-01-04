@@ -60,11 +60,21 @@
    \t ret                       \n
 
    head:                        \n
+   \t cmp $0, %rdi              \n
+   \t je __head_is_nil          \n
    ::head
+   \t ret                       \n
+   __head_is_nil:               \n
+   ::yield-nil
    \t ret                       \n
 
    tail:                        \n
+   \t cmp $0, %rdi              \n
+   \t je __tail_is_nil          \n
    ::tail
+   \t ret                       \n
+   __tail_is_nil:               \n
+   ::yield-nil
    \t ret                       \n
 
 );
