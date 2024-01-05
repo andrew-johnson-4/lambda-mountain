@@ -89,6 +89,48 @@
    __not_is_some:               \n
    ::yield-nil
    \t ret                       \n
+
+   equal:                       \n
+   \t cmp $0, %r13              \n
+   \t je __equal_nil            \n
+   \t cmp $0, %r14              \n
+   \t je __equal_nil            \n
+   \t mov 0(%r13), %rsi         \n # mov x.atom into %rsi
+   \t mov 0(%r14), %rdi         \n # mov y.atom into %rdi
+   \t cmp $0, %rsi              \n
+   \t je __equal_nil            \n
+   \t cmp $0, %rdi              \n
+   \t je __equal_nil            \n
+   \t call streq                \n
+   \t ret                       \n
+   __equal_nil:                 \n
+   ::yield-nil                  \n
+   \t ret                       \n
+
+   inequal:                     \n
+   \t call equal                \n
+   \t call not                  \n
+   \t ret                       \n
+
+   streq:                       \n
+   __streq_loop:                \n
+   \t mov 0(%rdi), %ax          \n
+   \t mov 0(%rsi), %bx          \n
+   \t cmp %ax, %bx              \n
+   \t jne __streq_false         \n
+   \t cmp $0, %ax               \n
+   \t je __streq_true           \n
+   \t inc %rdi                  \n
+   \t inc %rsi                  \n
+   \t jmp __streq_loop          \n
+   __streq_true:                \n
+   \t ret                       \n
+   ::yield-nil
+   \t call not                  \n
+   \t ret                       \n
+   __streq_false:               \n
+   ::yield-nil
+   \t ret                       \n
 );
 
 .data := (

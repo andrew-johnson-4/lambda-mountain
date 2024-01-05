@@ -117,7 +117,7 @@ fn yield_atom(helpers_ctx: &S, s: &str) -> S {
    )
 }
 
-fn is_free(program_ctx: &S, s: &str) -> bool {
+fn is_free(_program_ctx: &S, s: &str) -> bool {
    for (k,_v) in OPERATORS {
    if s==k {
       return false;
