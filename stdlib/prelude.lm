@@ -101,7 +101,7 @@
    \t je __equal_nil            \n
    \t cmp $0, %rdi              \n
    \t je __equal_nil            \n
-   \t call streq                \n
+   ::yield-nil                  \n
    \t ret                       \n
    __equal_nil:                 \n
    ::yield-nil                  \n
