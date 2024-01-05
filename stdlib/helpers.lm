@@ -175,7 +175,7 @@
 
    tail                        # this is tail
    ::close-this                # %rsi is tail
-   mov %rsi, %rdi           \n # %rdi is tail
+   \t mov %rsi, %rdi        \n # %rdi is tail
 
    ::pop-this
    ::close-this                # %rsi is head

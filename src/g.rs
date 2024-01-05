@@ -79,14 +79,20 @@ fn assemble(cfg: &str, program: &S) {
    }
 }
 
-const OPERATORS: [(&str,&str); 7] = [
+const OPERATORS: [(&str,&str); 11] = [
    ("==", "equal"),
    ("!=", "inequal"),
    ("+", "plus"),
    ("-", "minus"),
    ("/", "div"),
+
    ("*", "mul"),
    ("%", "mod"),
+   ("not", "not"),
+   ("head", "head"),
+   ("tail", "tail"),
+
+   ("print-s", "print_s"),
 ];
 
 fn label_case(s: &str) -> String {
@@ -112,7 +118,7 @@ fn yield_atom(helpers_ctx: &S, s: &str) -> S {
 }
 
 fn is_free(program_ctx: &S, s: &str) -> bool {
-   for (k,v) in OPERATORS {
+   for (k,_v) in OPERATORS {
    if s==k {
       return false;
    }}
@@ -130,7 +136,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
       let xpd = compile_expr(helpers_ctx, program_ctx, &x);
       if (head(&f).to_string() == "variable" ||
          head(&f).to_string() == "literal") &&
-         is_free(program_ctx, &tail(&f).to_string()) {
+         !is_free(program_ctx, &tail(&f).to_string()) {
          let f_name = variable(&label_case( &tail(&f).to_string() ));
          let prog = ctx_eval_soft(helpers_ctx, &app(
             head(&xpd),
