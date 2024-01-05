@@ -19,22 +19,7 @@ fn compile_and_run(fp: &str) -> String {
 }
 
 #[test]
-fn cli_123() {
-   assert_eq!( compile_and_run("tests/lm/123.lm"), "123" );
-}
-
-#[test]
-fn cli_nil() {
-   assert_eq!( compile_and_run("tests/lm/nil.lm"), "()" );
-}
-
-#[test]
-fn cli_cons() {
-   assert_eq!( compile_and_run("tests/lm/cons.lm"), "((123 ()) 456)" );
-}
-
-#[test]
-fn cli_hello_world() {
+fn cli_cli() {
    let exit = Command::new("lambda_mountain")
                       .arg("-o")
                       .arg("hello_world")
@@ -56,20 +41,17 @@ fn cli_hello_world() {
 }
 
 #[test]
-fn cli_head() {
-   assert_eq!( compile_and_run("tests/lm/head.lm"), "123" );
-}
-#[test]
-fn cli_head_is_nil() {
-   assert_eq!( compile_and_run("tests/lm/head_is_nil.lm"), "()" );
+fn cli_yield() {
+   assert_eq!( compile_and_run("tests/lm/nil.lm"), "()" );
+   assert_eq!( compile_and_run("tests/lm/123.lm"), "123" );
+   assert_eq!( compile_and_run("tests/lm/cons.lm"), "((123 ()) 456)" );
 }
 
 #[test]
-fn cli_tail() {
+fn cli_headtail() {
+   assert_eq!( compile_and_run("tests/lm/head.lm"), "123" );
+   assert_eq!( compile_and_run("tests/lm/head_is_nil.lm"), "()" );
    assert_eq!( compile_and_run("tests/lm/tail.lm"), "123" );
-}
-#[test]
-fn cli_tail_is_nil() {
    assert_eq!( compile_and_run("tests/lm/tail_is_nil.lm"), "()" );
 }
 
