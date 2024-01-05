@@ -1,0 +1,21 @@
+
+
+eval-soft := λ(: t S). ctx-eval-soft () s;
+
+eval-ctx-soft := λ(: ctx S)(: t S). (
+   if (== (head t) "variable") (
+      let k (tail t)
+      let v (kv-lookup ctx k t)
+      if (!= t v) (ctx-eval-soft ctx v) v
+   ) if (== (head t) "app") (
+      let fx (tail t)
+      let f (ctx-eval-soft ctx (head fx))
+      let x (ctx-eval-soft ctx (tail fx))
+      if (== (head f) "lambda") (
+         let fl (head (tail f))
+         let fr (tail (tail f))
+         let inner_ctx (destructure inner-ctx fl x)
+         (ctx-eval-soft inner-ctx fr)
+      ) (App f x)
+   ) t
+);
