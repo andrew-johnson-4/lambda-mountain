@@ -73,3 +73,9 @@ fn cli_tail_is_nil() {
    assert_eq!( compile_and_run("tests/lm/tail_is_nil.lm"), "()" );
 }
 
+#[test]
+fn cli_comparison() {
+   assert_eq!( compile_and_run("tests/lm/atom_comparison_inequal.lm"), "()" );
+   assert_eq!( compile_and_run("tests/lm/atom_comparison_equal.lm"), "True" );
+   assert_eq!( compile_and_run("tests/lm/atom_comparison_not.lm"), "True" );
+}
