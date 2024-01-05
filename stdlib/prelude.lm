@@ -77,6 +77,18 @@
    ::yield-nil
    \t ret                       \n
 
+   not:                         \n
+   \t cmp $0, %r12              \n
+   \t jne __not_is_some         \n
+   \t cmp $0, %r13              \n
+   \t jne __not_is_some         \n
+   \t cmp $0, %r14              \n
+   \t jne __not_is_some         \n
+   (::yield-atom __true)
+   \t ret                       \n
+   __not_is_some:               \n
+   ::yield-nil
+   \t ret                       \n
 );
 
 .data := (
@@ -103,4 +115,7 @@
   \t .ascii "\rparen"           \n
   __space:                      \n
   \t .ascii "\space"            \n
+  __true:                       \n
+  \t .ascii "True"              \n
+  \t .zero 1                    \n
 );

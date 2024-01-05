@@ -1,2 +1,2 @@
 
-main := not ()
+main := print-s (not ())
