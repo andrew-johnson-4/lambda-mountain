@@ -10,8 +10,6 @@
 # y.$3 = %r10
 # etc.
 
-# for the bootstrap compiler, only one expression will be open at a time
-
 # S-Expressions are a common datastructure used heavily in the bootstrap compiler
 # Not all structures need to be S-Expressions, but they will always be available
 # Aside from the usual Cons,Atom,Nil information there is also a reference counter and some flags
@@ -24,10 +22,16 @@
 #   $4 flags       : bool[64]
 # }
 
-# bootstrap register allocation
+# BOOTSTRAP REGISTER ALLOCATION
 # r12 , r13 , r14 , r15                : open this
 # rsi , rdi                            : closed reference 1, 2
 # r8, r9, r10, r11, rax, rbx, rcx, rdx : volatile internal registers
+
+# BOOTSTRAP TYPES
+# the bootstrap compiler uses S-Expressions for everything
+# even the little types like bool or int
+# specialization to use more efficient representations is available in the optimizing compiler
+# which is what we are bootstrapping
 
 # put8 (%r8 bool[4], %r9: *char)
 ::put8 := (
