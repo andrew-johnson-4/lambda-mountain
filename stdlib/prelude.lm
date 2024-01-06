@@ -13,7 +13,7 @@
    \t ret                       \n
    # result is stored in %rcx
 
-   # entry points
+   # print-s
    print_s:                     \n
    __print_this:                \n
 
@@ -58,6 +58,78 @@
    \t mov $2, %rdx              \n   # nil is 2 bytes
    \t syscall                   \n   # invoke operating system to do the write
    \t ret                       \n
+
+   head:                        \n
+   \t cmp $0, %rdi              \n
+   \t je __head_is_nil          \n
+   ::head
+   \t ret                       \n
+   __head_is_nil:               \n
+   ::yield-nil
+   \t ret                       \n
+
+   tail:                        \n
+   \t cmp $0, %rdi              \n
+   \t je __tail_is_nil          \n
+   ::tail
+   \t ret                       \n
+   __tail_is_nil:               \n
+   ::yield-nil
+   \t ret                       \n
+
+   not:                         \n
+   \t cmp $0, %r12              \n
+   \t jne __not_is_some         \n
+   \t cmp $0, %r13              \n
+   \t jne __not_is_some         \n
+   \t cmp $0, %r14              \n
+   \t jne __not_is_some         \n
+   (::yield-atom __true)
+   \t ret                       \n
+   __not_is_some:               \n
+   ::yield-nil
+   \t ret                       \n
+
+   equal:                       \n
+   \t cmp $0, %r13              \n
+   \t je __equal_nil            \n
+   \t cmp $0, %r14              \n
+   \t je __equal_nil            \n
+   \t mov 0(%r13), %rsi         \n # mov x.atom into %rsi
+   \t mov 0(%r14), %rdi         \n # mov y.atom into %rdi
+   \t cmp $0, %rsi              \n
+   \t je __equal_nil            \n
+   \t cmp $0, %rdi              \n
+   \t je __equal_nil            \n
+   \t call streq                \n
+   \t ret                       \n
+   __equal_nil:                 \n
+   ::yield-nil                  \n
+   \t ret                       \n
+
+   inequal:                     \n
+   \t call equal                \n
+   \t call not                  \n
+   \t ret                       \n
+
+   streq:                       \n
+   __streq_loop:                \n
+   \t mov 0(%rdi), %al          \n
+   \t mov 0(%rsi), %bl          \n
+
+   \t cmp %al, %bl              \n
+   \t jne __streq_false         \n
+   \t cmp $0, %al               \n
+   \t je __streq_true           \n
+   \t inc %rdi                  \n
+   \t inc %rsi                  \n
+   \t jmp __streq_loop          \n
+   __streq_true:                \n
+   ::yield-true
+   \t ret                       \n
+   __streq_false:               \n
+   ::yield-nil
+   \t ret                       \n
 );
 
 .data := (
@@ -84,4 +156,7 @@
   \t .ascii "\rparen"           \n
   __space:                      \n
   \t .ascii "\space"            \n
+  __true:                       \n
+  \t .ascii "True"              \n
+  \t .zero 1                    \n
 );

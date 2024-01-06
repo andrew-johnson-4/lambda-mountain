@@ -19,26 +19,11 @@ fn compile_and_run(fp: &str) -> String {
 }
 
 #[test]
-fn cli_123() {
-   assert_eq!( compile_and_run("tests/123.lm"), "123" );
-}
-
-#[test]
-fn cli_nil() {
-   assert_eq!( compile_and_run("tests/nil.lm"), "()" );
-}
-
-#[test]
-fn cli_cons() {
-   assert_eq!( compile_and_run("tests/cons.lm"), "((123 ()) 456)" );
-}
-
-#[test]
-fn cli_hello_world() {
+fn cli_cli() {
    let exit = Command::new("lambda_mountain")
                       .arg("-o")
                       .arg("hello_world")
-                      .arg("tests/hello_world.lm")
+                      .arg("tests/lm/hello_world.lm")
                       .spawn()
                       .expect("failed to execute process")
                       .wait()
@@ -53,4 +38,27 @@ fn cli_hello_world() {
                             .stdout;
    let output = String::from_utf8_lossy(&output).to_string();
    assert_eq!( output, "hello_world" );
+}
+
+#[test]
+fn cli_yield() {
+   assert_eq!( compile_and_run("tests/lm/nil.lm"), "()" );
+   assert_eq!( compile_and_run("tests/lm/123.lm"), "123" );
+   assert_eq!( compile_and_run("tests/lm/cons.lm"), "((123 ()) 456)" );
+}
+
+#[test]
+fn cli_headtail() {
+   assert_eq!( compile_and_run("tests/lm/head.lm"), "123" );
+   assert_eq!( compile_and_run("tests/lm/head_is_nil.lm"), "()" );
+   assert_eq!( compile_and_run("tests/lm/tail.lm"), "123" );
+   assert_eq!( compile_and_run("tests/lm/tail_is_nil.lm"), "()" );
+}
+
+#[test]
+fn cli_comparison() {
+   assert_eq!( compile_and_run("tests/lm/atom_comparison_not.lm"), "True" );
+   assert_eq!( compile_and_run("tests/lm/atom_comparison_notnot.lm"), "()" );
+   assert_eq!( compile_and_run("tests/lm/atom_comparison_inequal.lm"), "()" );
+   assert_eq!( compile_and_run("tests/lm/atom_comparison_equal.lm"), "True" );
 }

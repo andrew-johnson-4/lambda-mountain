@@ -10,8 +10,6 @@
 # y.$3 = %r10
 # etc.
 
-# for the bootstrap compiler, only one expression will be open at a time
-
 # S-Expressions are a common datastructure used heavily in the bootstrap compiler
 # Not all structures need to be S-Expressions, but they will always be available
 # Aside from the usual Cons,Atom,Nil information there is also a reference counter and some flags
@@ -24,10 +22,16 @@
 #   $4 flags       : bool[64]
 # }
 
-# bootstrap register allocation
+# BOOTSTRAP REGISTER ALLOCATION
 # r12 , r13 , r14 , r15                : open this
 # rsi , rdi                            : closed reference 1, 2
 # r8, r9, r10, r11, rax, rbx, rcx, rdx : volatile internal registers
+
+# BOOTSTRAP TYPES
+# the bootstrap compiler uses S-Expressions for everything
+# even the little types like bool or int
+# specialization to use more efficient representations is available in the optimizing compiler
+# which is what we are bootstrapping
 
 # put8 (%r8 bool[4], %r9: *char)
 ::put8 := (
@@ -156,22 +160,32 @@
    \t mov $0, %r15   \n # $_.$4 = 0, .flags
 );
 
-::yield-atom := λlabel. (
+::yield-true := (
+                         # $_.$0 ref_counter is unnecessary when open
+                         # open structures are completely "owned" by the current context
+   # these registers are supposed to be "preserved"
+   \t mov $__true, %r12   \n # $_.$1 = 0, .atom
+   \t mov $0, %r13   \n # $_.$2 = 0, .head
+   \t mov $0, %r14   \n # $_.$3 = 0, .tail
+   \t mov $0, %r15   \n # $_.$4 = 0, .flags
+);
+
+::yield-atom := λ::yield-atom-label. (
                                # $_.$0 ref_counter is unnecessary when open
                                # open structures must be completely "owned" by the current context
-   \t mov $ label , %r12     \n # $_.$1 = 0, .atom
+   \t mov $ ::yield-atom-label , %r12     \n # $_.$1 = 0, .atom
    \t mov $0, %r13           \n # $_.$2 = 0, .head
    \t mov $0, %r14           \n # $_.$3 = 0, .tail
    \t mov $0, %r15           \n # $_.$4 = 0, .flags
 );
 
-::yield-cons := λhead tail. (
-   head                        # this is head
+::yield-cons := λ::cons-head ::cons-tail. (
+   ::cons-head
    ::push-this
 
-   tail                        # this is tail
+   ::cons-tail
    ::close-this                # %rsi is tail
-   mov %rsi, %rdi           \n # %rdi is tail
+   \t mov %rsi, %rdi        \n # %rdi is tail
 
    ::pop-this
    ::close-this                # %rsi is head
@@ -223,10 +237,6 @@
    ::show-newline
 );
 
-::call := λf. (
-   \t call f                   \n
-);
-
 ::push-this := (
    \t push %r12 \n
    \t push %r13 \n
@@ -263,6 +273,15 @@
    \t mov 8(%rsi), %r13             \n
    \t mov 16(%rsi), %r14            \n
    \t mov 24(%rsi), %r15            \n
+);
+
+::head := (
+   \t mov %r13, %rsi                \n
+   ::open-this
+);
+::tail := (
+   \t mov %r14, %rsi                \n
+   ::open-this
 );
 
 ::program-header := (

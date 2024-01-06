@@ -79,7 +79,27 @@ fn assemble(cfg: &str, program: &S) {
    }
 }
 
+const OPERATORS: [(&str,&str); 11] = [
+   ("==", "equal"),
+   ("!=", "inequal"),
+   ("+", "plus"),
+   ("-", "minus"),
+   ("/", "div"),
+
+   ("*", "mul"),
+   ("%", "mod"),
+   ("not", "not"),
+   ("head", "head"),
+   ("tail", "tail"),
+
+   ("print-s", "print_s"),
+];
+
 fn label_case(s: &str) -> String {
+   for (k,v) in OPERATORS {
+   if s==k {
+      return v.to_string();
+   }}
    format!("{}", s.replace("-","_"))
 }
 
@@ -93,8 +113,16 @@ fn yield_atom(helpers_ctx: &S, s: &str) -> S {
    let id = uuid();
    s_cons(
       ctx_eval_soft(helpers_ctx, &app( variable("::yield-atom"), variable(&id) )),
-      variable(&format!("{}:\n\t.ascii \"{}\"\n\t.zero 1\n", id, s)),
+      variable(&format!("\n{}:\n\t.ascii \"{}\"\n\t.zero 1\n", id, s)),
    )
+}
+
+fn is_free(_program_ctx: &S, s: &str) -> bool {
+   for (k,_v) in OPERATORS {
+   if s==k {
+      return false;
+   }}
+   true
 }
 
 fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
@@ -106,21 +134,17 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
       let f = head(&fx);
       let x = tail(&fx);
       let xpd = compile_expr(helpers_ctx, program_ctx, &x);
-      if head(&f).to_string() == "variable" {
+      if (head(&f).to_string() == "variable" ||
+         head(&f).to_string() == "literal") &&
+         !is_free(program_ctx, &tail(&f).to_string()) {
          let f_name = variable(&label_case( &tail(&f).to_string() ));
-         let prog = ctx_eval_soft(helpers_ctx, &app(
-            head(&xpd),
-            app( variable("::call"), f_name ),
-         ));
+         let prog = s_cons( head(&xpd) , s_cons( s_cons( variable("\tcall"), f_name ), variable("\n") ));
          s_cons(prog, tail(&xpd))
       } else {
          let fpd = compile_expr(helpers_ctx, program_ctx, &f);
          let prog = ctx_eval_soft(helpers_ctx, &app(
             variable("::yield-cons"),
-            app(
-               head(&fpd),
-               head(&xpd),
-            )
+            app( head(&fpd), head(&xpd) )
          ));
          let data = app(
             tail(&fpd),
@@ -180,7 +204,7 @@ pub fn compile(cfg: &str, main_ctx: &S) {
       raw_program = app(
          raw_program,
          app(
-            variable(&format!("{}:\n",label_case(&k))),
+            variable(&format!("\n{}:\n",label_case(&k))),
             head(&v),
          ),
       );
