@@ -160,6 +160,16 @@
    \t mov $0, %r15   \n # $_.$4 = 0, .flags
 );
 
+::yield-true := (
+                         # $_.$0 ref_counter is unnecessary when open
+                         # open structures are completely "owned" by the current context
+   # these registers are supposed to be "preserved"
+   \t mov $__true, %r12   \n # $_.$1 = 0, .atom
+   \t mov $0, %r13   \n # $_.$2 = 0, .head
+   \t mov $0, %r14   \n # $_.$3 = 0, .tail
+   \t mov $0, %r15   \n # $_.$4 = 0, .flags
+);
+
 ::yield-atom := λ::yield-atom-label. (
                                # $_.$0 ref_counter is unnecessary when open
                                # open structures must be completely "owned" by the current context

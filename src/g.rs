@@ -113,7 +113,7 @@ fn yield_atom(helpers_ctx: &S, s: &str) -> S {
    let id = uuid();
    s_cons(
       ctx_eval_soft(helpers_ctx, &app( variable("::yield-atom"), variable(&id) )),
-      variable(&format!("{}:\n\t.ascii \"{}\"\n\t.zero 1\n", id, s)),
+      variable(&format!("\n{}:\n\t.ascii \"{}\"\n\t.zero 1\n", id, s)),
    )
 }
 
@@ -204,7 +204,7 @@ pub fn compile(cfg: &str, main_ctx: &S) {
       raw_program = app(
          raw_program,
          app(
-            variable(&format!("{}:\n",label_case(&k))),
+            variable(&format!("\n{}:\n",label_case(&k))),
             head(&v),
          ),
       );
