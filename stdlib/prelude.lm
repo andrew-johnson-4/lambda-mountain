@@ -117,13 +117,6 @@
    \t mov 0(%rdi), %al          \n
    \t mov 0(%rsi), %bl          \n
 
-   \t xor %r8, %r8              \n
-   \t mov %al, %r8b             \n
-   ::put64 
-   \t xor %r8, %r8              \n
-   \t mov %bl, %r8b             \n
-   ::put64 
-
    \t cmp %al, %bl              \n
    \t jne __streq_false         \n
    \t cmp $0, %al               \n
@@ -132,7 +125,6 @@
    \t inc %rsi                  \n
    \t jmp __streq_loop          \n
    __streq_true:                \n
-   \t ret                       \n
    ::yield-true
    \t ret                       \n
    __streq_false:               \n
