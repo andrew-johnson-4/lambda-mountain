@@ -160,19 +160,20 @@
    \t mov $0, %r15   \n # $_.$4 = 0, .flags
 );
 
-::yield-atom := λlabel. (
+::yield-atom := λ::yield-atom-label. (
                                # $_.$0 ref_counter is unnecessary when open
                                # open structures must be completely "owned" by the current context
-   \t mov $ label , %r12     \n # $_.$1 = 0, .atom
+   \t mov $ ::yield-atom-label , %r12     \n # $_.$1 = 0, .atom
    \t mov $0, %r13           \n # $_.$2 = 0, .head
    \t mov $0, %r14           \n # $_.$3 = 0, .tail
    \t mov $0, %r15           \n # $_.$4 = 0, .flags
 );
 
-::yield-cons-after-head := (
+::yield-cons := λ::cons-head ::cons-tail. (
+   ::cons-head
    ::push-this
-);
-::yield-cons-after-tail := (
+
+   ::cons-tail
    ::close-this                # %rsi is tail
    \t mov %rsi, %rdi        \n # %rdi is tail
 
@@ -224,10 +225,6 @@
    ::put64
 
    ::show-newline
-);
-
-::call := λf. (
-   \t call f                   \n
 );
 
 ::push-this := (

@@ -126,6 +126,7 @@ fn is_free(_program_ctx: &S, s: &str) -> bool {
 }
 
 fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
+   let e = ctx_eval_soft(helpers_ctx, e);
    if head(&e).to_string() == "lambda" {
       unimplemented!("compile_expr: {}", e);
    } else if head(&e).to_string() == "app" {
@@ -137,17 +138,14 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
          head(&f).to_string() == "literal") &&
          !is_free(program_ctx, &tail(&f).to_string()) {
          let f_name = variable(&label_case( &tail(&f).to_string() ));
-         let prog = s_cons( s_cons( variable("\t call"), f_name ), variable("\n") );
+         let prog = s_cons( head(&xpd) , s_cons( s_cons( variable("\t call"), f_name ), variable("\n") ));
          s_cons(prog, tail(&xpd))
       } else {
          let fpd = compile_expr(helpers_ctx, program_ctx, &f);
-         let prog_head = head(&fpd);
-         let prog_tail = head(&xpd);
-         let prog_after_head = ctx_eval_soft(helpers_ctx, &variable("::yield-cons-after-head"));
-         let prog_after_tail = ctx_eval_soft(helpers_ctx, &variable("::yield-cons-after-tail"));
-         let prog = s_cons(prog_head, prog_after_head);
-         let prog = s_cons(prog, prog_tail);
-         let prog = s_cons(prog, prog_after_tail);
+         let prog = ctx_eval_soft(helpers_ctx, &app(
+            variable("::yield-cons"),
+            s_cons( head(&fpd), head(&xpd) )
+         ));
          let data = app(
             tail(&fpd),
             tail(&xpd),
