@@ -144,7 +144,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
          let fpd = compile_expr(helpers_ctx, program_ctx, &f);
          let prog = ctx_eval_soft(helpers_ctx, &app(
             variable("::yield-cons"),
-            s_cons( head(&fpd), head(&xpd) )
+            app( head(&fpd), head(&xpd) )
          ));
          let data = app(
             tail(&fpd),
