@@ -138,7 +138,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
          head(&f).to_string() == "literal") &&
          !is_free(program_ctx, &tail(&f).to_string()) {
          let f_name = variable(&label_case( &tail(&f).to_string() ));
-         let prog = s_cons( head(&xpd) , s_cons( s_cons( variable("\t call"), f_name ), variable("\n") ));
+         let prog = s_cons( head(&xpd) , s_cons( s_cons( variable("\tcall"), f_name ), variable("\n") ));
          s_cons(prog, tail(&xpd))
       } else {
          let fpd = compile_expr(helpers_ctx, program_ctx, &f);
