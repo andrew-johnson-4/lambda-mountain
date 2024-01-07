@@ -127,9 +127,7 @@ fn is_free(_program_ctx: &S, s: &str) -> bool {
 
 fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
    let e = ctx_eval_soft(helpers_ctx, e);
-   if head(&e).to_string() == "lambda" {
-      unimplemented!("compile_expr: {}", e);
-   } else if head(&e).to_string() == "app" {
+   if head(&e).to_string() == "app" {
       let fx = tail(&e);
       let f = head(&fx);
       let x = tail(&fx);
@@ -156,13 +154,21 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
       yield_atom(helpers_ctx, &tail(&e).to_string() )
    } else if head(&e).to_string() == "literal" {
       yield_atom(helpers_ctx, &tail(&e).to_string() )
+   } else if head(&e).to_string() == "lambda" {
+      let args = head(&tail(&e));
+      let body = tail(&tail(&e));
+      if is_nil(&args) {
+         compile_expr(helpers_ctx, program_ctx, &body)
+      } else {
+         unimplemented!("compile_expr sugar lambda: {}. {}", args, body);
+      }
    } else if is_nil(&e) {
       s_cons(
          ctx_eval_soft(helpers_ctx, &variable("::yield-nil")),
          nil(),
       )
    } else {
-      unimplemented!("compile_expr: {}", e);
+      panic!("compile_expr unexpected term: {}", e);
    }
 }
 
@@ -200,12 +206,12 @@ pub fn compile(cfg: &str, main_ctx: &S) {
    }
    for (k,v) in kv_iter(&main_ctx) {
       let k = k.to_string();
-      let v = compile_expr(&helpers_ctx, &main_ctx, &v);
+      let vpd = compile_expr(&helpers_ctx, &main_ctx, &v);
       raw_program = app(
          raw_program,
          app(
             variable(&format!("\n{}:\n",label_case(&k))),
-            head(&v),
+            head(&vpd),
          ),
       );
       if k == "main" {
@@ -216,7 +222,7 @@ pub fn compile(cfg: &str, main_ctx: &S) {
       }
       raw_data = app(
          raw_data,
-         tail(&v),
+         tail(&vpd),
       );
    }
    let program = compile_program(&helpers_ctx, &raw_program, &raw_data);
