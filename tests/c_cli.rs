@@ -62,3 +62,8 @@ fn cli_comparison() {
    assert_eq!( compile_and_run("tests/lm/atom_comparison_inequal.lm"), "()" );
    assert_eq!( compile_and_run("tests/lm/atom_comparison_equal.lm"), "True" );
 }
+
+#[test]
+fn user_defined() {
+   assert_eq!( compile_and_run("tests/lm/user_function_unsugared.lm"), "b" );
+}
