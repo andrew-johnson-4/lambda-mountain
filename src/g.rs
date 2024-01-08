@@ -113,9 +113,10 @@ fn uuid() -> String {
    format!("_uuid_{}", id)
 }
 
-fn yield_atom(helpers_ctx: &S, s: &str) -> S {
+//returns (prog, data)
+fn yield_atom(helpers_ctx: &S, s: &str) -> (S,S) {
    let id = uuid();
-   s_cons(
+   (
       ctx_eval_soft(helpers_ctx, &app( variable("::yield-atom"), variable(&id) )),
       variable(&format!("\n{}:\n\t.ascii \"{}\"\n\t.zero 1\n", id, s)),
    )
@@ -147,51 +148,60 @@ fn is_local(program_ctx: &S, s: &str) -> String {
    panic!("is_local could not find variable: {}", s)
 }
 
-fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S) -> (S,S) {
+//returns (program, data, new program_ctx)
+fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S) -> (S,S,S) {
    if is_nil(e) {
-      ( s_nil(), program_ctx.clone() )
+      ( s_nil(), s_nil(), program_ctx.clone() )
    } else if head(&e).to_string()=="variable" {
       unimplemented!("destructure_args: {}", e)
    } else if head(&e).to_string()=="app" {
       let arg_head = head(&tail(&e));
       let arg_tail = tail(&tail(&e));
+      //store head in %r8, r9, r10, r11
+      //load tail into this
+      /*
+      let store_head = compile_expr(helpers_ctx, program_ctx
+      let load_head_into_this = compile_expr(helpers_ctx, program_ctx, &app(variable("head"),variable("$_")) )
       let (mut preh, program_ctx) = destructure_args(helpers_ctx, program_ctx, &arg_head);
       let (mut pret, program_ctx) = destructure_args(helpers_ctx, &program_ctx, &arg_tail);
       ( s_cons(preh, pret), program_ctx )
+      */
+      unimplemented!("destructure_args: {}", e)
    } else {
       panic!("Unexpected lhs in destructure_args: {}", e)
    }
 }
 
-fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
+//returns (program, data)
+fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> (S,S) {
    let e = ctx_eval_soft(helpers_ctx, e);
    if head(&e).to_string() == "app" {
       let fx = tail(&e);
       let f = head(&fx);
       let x = tail(&fx);
-      let xpd = compile_expr(helpers_ctx, program_ctx, &x);
+      let (xprog,xdata) = compile_expr(helpers_ctx, program_ctx, &x);
       if (head(&f).to_string() == "variable" ||
          head(&f).to_string() == "literal") &&
          !is_free(program_ctx, &tail(&f).to_string()) {
          let f_name = variable(&label_case( &tail(&f).to_string() ));
-         let prog = s_cons( head(&xpd) , s_cons( s_cons( variable("\tcall"), f_name ), variable("\n") ));
-         s_cons(prog, tail(&xpd))
+         let prog = s_cons( xprog , s_cons( s_cons( variable("\tcall"), f_name ), variable("\n") ));
+         (prog, xdata)
       } else {
-         let fpd = compile_expr(helpers_ctx, program_ctx, &f);
+         let (fprog,fdata) = compile_expr(helpers_ctx, program_ctx, &f);
          let prog = ctx_eval_soft(helpers_ctx, &app(
             variable("::yield-cons"),
-            app( head(&fpd), head(&xpd) )
+            app( fprog, xprog )
          ));
          let data = app(
-            tail(&fpd),
-            tail(&xpd),
+            fdata,
+            xdata,
          );
-         s_cons(prog, data)
+         (prog, data)
       }
    } else if head(&e).to_string() == "variable" &&
              tail(&e).to_string() == "$_" {
       // $_ is a noop expression and colloquially refers to 'this' expression
-      s_cons( s_nil(), s_nil() )
+      ( s_nil(), s_nil() )
    } else if head(&e).to_string() == "variable" {
       yield_atom(helpers_ctx, &tail(&e).to_string() )
    } else if head(&e).to_string() == "literal" {
@@ -199,18 +209,18 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
    } else if head(&e).to_string() == "lambda" {
       let args = head(&tail(&e));
       let body = tail(&tail(&e));
-      let (push_locals,program_ctx) = destructure_args(helpers_ctx, program_ctx, &args);
-      let epd = compile_expr(helpers_ctx, &program_ctx, &body);
+      let (push_prog,push_data,program_ctx) = destructure_args(helpers_ctx, program_ctx, &args);
+      let (eprog,edata) = compile_expr(helpers_ctx, &program_ctx, &body);
       //TODO put locals into program_ctx
       //TODO compile body expression
       //TODO pop locals
       //don't forget to ret...
-      s_cons(
-         s_cons( head(&epd), variable("\n\t ret \n") ),
-         tail(&epd),
+      (
+         s_cons( eprog, variable("\n\t ret \n") ),
+         edata,
       )
    } else if is_nil(&e) {
-      s_cons(
+      (
          ctx_eval_soft(helpers_ctx, &variable("::yield-nil")),
          nil(),
       )
@@ -253,12 +263,12 @@ pub fn compile(cfg: &str, main_ctx: &S) {
    }
    for (k,v) in kv_iter(&main_ctx) {
       let k = k.to_string();
-      let vpd = compile_expr(&helpers_ctx, &main_ctx, &v);
+      let (vprog,vdata) = compile_expr(&helpers_ctx, &main_ctx, &v);
       raw_program = app(
          raw_program,
          app(
             variable(&format!("\n{}:\n",label_case(&k))),
-            head(&vpd),
+            vprog,
          ),
       );
       if k == "main" {
@@ -269,7 +279,7 @@ pub fn compile(cfg: &str, main_ctx: &S) {
       }
       raw_data = app(
          raw_data,
-         tail(&vpd),
+         vdata,
       );
    }
    let program = compile_program(&helpers_ctx, &raw_program, &raw_data);
