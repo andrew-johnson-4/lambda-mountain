@@ -33,6 +33,24 @@
 # specialization to use more efficient representations is available in the optimizing compiler
 # which is what we are bootstrapping
 
+# bootstrap is inefficient with calling conventions
+::callee-save-registers := (
+   \t push %r12 \n
+   \t push %r13 \n
+   \t push %r14 \n
+   \t push %r15 \n
+   \t push %rsi \n
+   \t push %rdi \n
+);
+::callee-restore-registers := (
+   \t pop %rdi \n
+   \t pop %rsi \n
+   \t pop %r15 \n
+   \t pop %r14 \n
+   \t pop %r13 \n
+   \t pop %r12 \n
+);
+
 # put8 (%r8 bool[4], %r9: *char)
 ::put8 := (
     \t mov %r8b, %al                      \n # lower byte of %r11 goes into %rax
@@ -185,8 +203,8 @@
 
    ::cons-tail
    ::close-this                # %rsi is tail
-   \t mov %rsi, %rdi        \n # %rdi is tail
 
+   \t mov %rsi, %rdi        \n # %rdi is tail
    ::pop-this
    ::close-this                # %rsi is head
 
@@ -254,12 +272,12 @@
 ::close-this := (
    # move this S onto the heap
    # %rsi becomes pointer to new location
-   \t mov $__cons_section, %rsi     \n # %rsi now points to root cons
-   \t mov $__cons_counter, %r8      \n # %r8 now points to cons counter
+   \t mov $__s_section, %rsi        \n # %rsi now points to root s
+   \t mov $__s_counter, %r8         \n # %r8 now points to s counter
    \t mov 0(%r8), %r10              \n # %r10 now hold value of cons counter
-   \t add %r10, %rsi                \n # %rsi now points to top cons
-   \t add $32, %r10                \n # increment cons counter
-   \t mov %r10, 0(%r8)              \n # overwrite new cons counter
+   \t add %r10, %rsi                \n # %rsi now points to top free cons
+   \t add $32, %r10                 \n # increment s counter
+   \t mov %r10, 0(%r8)              \n # overwrite new s counter
    \t mov %r12, 0(%rsi)             \n # set top.atom
    \t mov %r13, 8(%rsi)             \n # set top.head
    \t mov %r14, 16(%rsi)            \n # set top.tail 

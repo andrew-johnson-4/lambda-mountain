@@ -1,14 +1,15 @@
 
 .text := (
-   # internal strlen (%rdi: *char)
+   # internal _strlen (%rax: *char) -> %rbx
+   # not a call-convention function
    _strlen:                     \n
-   \t xor %rcx, %rcx            \n
+   \t xor %rbx, %rbx            \n
    _strlen_loop:                \n
-   \t cmpb $0, 0(%rdi)          \n
+   \t cmpb $0, 0(%rax)          \n
    \t jz _strlen_exit           \n
-   \t inc %rcx                  \n
-   \t inc %rdi                  \n
-   \t jmp  _strlen_loop         \n
+   \t inc %rax                  \n
+   \t inc %rbx                  \n
+   \t jmp _strlen_loop         \n
    _strlen_exit:                \n
    \t ret                       \n
    # result is stored in %rcx
@@ -16,18 +17,20 @@
    # print-s
    print_s:                     \n
    __print_this:                \n
-
+   ::callee-save-registers
+ 
    # if .atom != NULL
    __print_this_atom:           \n
    \t cmp $0, %r12              \n
    \t je __print_this_cons      \n
-   \t mov %r12, %rdi            \n
-   \t call _strlen              \n
+   \t mov %r12, %rax            \n
+   \t call _strlen              \n   # %rbx is length of string
    \t mov %r12, %rsi            \n   # address of string to output
-   \t mov %rcx, %rdx            \n   # length is %rcx
+   \t mov %rbx, %rdx            \n   # length is %rcx
    \t mov $1, %rax              \n   # system call 1 is write
    \t mov $1, %rdi              \n   # file handle 1 is stdout
    \t syscall                   \n   # invoke operating system to do the write
+   ::callee-restore-registers
    \t ret                       \n
 
    # if .head != NULL && .tail != NULL
@@ -36,19 +39,18 @@
    \t je __print_this_nil       \n
    \t cmp $0, %r14              \n
    \t je __print_this_nil       \n
-   ::show-lparen
    ::push-this
+   ::show-lparen
    \t mov %r13, %rsi            \n
    ::open-this
    \t call __print_this         \n
    ::pop-this
    ::show-space
-   ::push-this
    \t mov %r14, %rsi            \n
    ::open-this
    \t call __print_this         \n
-   ::pop-this
    ::show-rparen
+   ::callee-restore-registers
    \t ret                       \n
 
    __print_this_nil:            \n
@@ -57,10 +59,11 @@
    \t mov $__nil_literal, %rsi  \n   # address of string to output
    \t mov $2, %rdx              \n   # nil is 2 bytes
    \t syscall                   \n   # invoke operating system to do the write
+   ::callee-restore-registers
    \t ret                       \n
 
    head:                        \n
-   \t cmp $0, %rdi              \n
+   \t cmp $0, %r13              \n
    \t je __head_is_nil          \n
    ::head
    \t ret                       \n
@@ -69,7 +72,7 @@
    \t ret                       \n
 
    tail:                        \n
-   \t cmp $0, %rdi              \n
+   \t cmp $0, %r14              \n
    \t je __tail_is_nil          \n
    ::tail
    \t ret                       \n
@@ -78,15 +81,18 @@
    \t ret                       \n
 
    not:                         \n
+   ::callee-save-registers
    \t cmp $0, %r12              \n
    \t jne __not_is_some         \n
    \t cmp $0, %r13              \n
    \t jne __not_is_some         \n
    \t cmp $0, %r14              \n
    \t jne __not_is_some         \n
+   ::callee-restore-registers
    (::yield-atom __true)
    \t ret                       \n
    __not_is_some:               \n
+   ::callee-restore-registers
    ::yield-nil
    \t ret                       \n
 
@@ -95,16 +101,16 @@
    \t je __equal_nil            \n
    \t cmp $0, %r14              \n
    \t je __equal_nil            \n
-   \t mov 0(%r13), %rsi         \n # mov x.atom into %rsi
-   \t mov 0(%r14), %rdi         \n # mov y.atom into %rdi
-   \t cmp $0, %rsi              \n
+   \t mov 0(%r13), %rax         \n # mov x.atom into %rax
+   \t mov 0(%r14), %rbx         \n # mov y.atom into %rbx
+   \t cmp $0, %rax              \n
    \t je __equal_nil            \n
-   \t cmp $0, %rdi              \n
+   \t cmp $0, %rbx              \n
    \t je __equal_nil            \n
-   \t call streq                \n
+   \t call _streq               \n
    \t ret                       \n
    __equal_nil:                 \n
-   ::yield-nil                  \n
+   ::yield-nil
    \t ret                       \n
 
    inequal:                     \n
@@ -112,17 +118,19 @@
    \t call not                  \n
    \t ret                       \n
 
-   streq:                       \n
+   # _streq (%rax: *char, %rbx: *char) -> 
+   # internal, not a call-convention function
+   _streq:                      \n
    __streq_loop:                \n
-   \t mov 0(%rdi), %al          \n
-   \t mov 0(%rsi), %bl          \n
+   \t mov 0(%rax), %cl          \n
+   \t mov 0(%rbx), %dl          \n
 
-   \t cmp %al, %bl              \n
+   \t cmp %cl, %dl              \n
    \t jne __streq_false         \n
-   \t cmp $0, %al               \n
+   \t cmp $0, %cl               \n
    \t je __streq_true           \n
-   \t inc %rdi                  \n
-   \t inc %rsi                  \n
+   \t inc %rax                  \n
+   \t inc %rbx                  \n
    \t jmp __streq_loop          \n
    __streq_true:                \n
    ::yield-true
@@ -134,9 +142,9 @@
 
 .data := (
                                 \n
-  __cons_counter:               \n
+  __s_counter:               \n
   \t .zero 64                   \n
-  __cons_section:               \n
+  __s_section:               \n
   \t .zero 65536                \n
   __nil_literal:                \n
   \t .ascii "()"                \n
