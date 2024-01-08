@@ -174,6 +174,10 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
             tail(&epd),
          )
       } else {
+         //TODO push locals
+         //TODO put locals into program_ctx
+         //TODO compile body expression
+         //TODO pop locals
          unimplemented!("compile_expr sugar lambda: {}. {}", args, body);
       }
    } else if is_nil(&e) {
