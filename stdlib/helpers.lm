@@ -33,6 +33,11 @@
 # specialization to use more efficient representations is available in the optimizing compiler
 # which is what we are bootstrapping
 
+# BOOTSTRAP FUNCTIONS
+# the bootstrap compiler does not internally use closures
+# the bootstrap compiler only refers to functions through labels, never pointers
+# bootstrap functions have a simple calling convention that expects nonvolatile registers to be preserved
+
 # bootstrap is inefficient with calling conventions
 ::callee-save-registers := (
    \t push %r12 \n
