@@ -157,6 +157,10 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
       }
    } else if head(&e).to_string() == "variable" {
       yield_atom(helpers_ctx, &tail(&e).to_string() )
+   } else if head(&e).to_string() == "literal" &&
+             tail(&e).to_string() == "$_" {
+      // $_ is a noop expression and colloquially refers to 'this' expression
+      s_cons( s_nil(), s_nil() )
    } else if head(&e).to_string() == "literal" {
       yield_atom(helpers_ctx, &tail(&e).to_string() )
    } else if head(&e).to_string() == "lambda" {
