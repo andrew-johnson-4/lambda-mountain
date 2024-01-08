@@ -19,6 +19,11 @@ use std::io::Write;
 fn flatten(output: &mut String, input: &S) {
    if is_cons(input) {
       flatten( output, &head(input) );
+      if !(output.ends_with(" ") ||
+           output.ends_with("\t") ||
+           output.ends_with("\n")) {
+         output.push(' ');
+      }
       flatten( output, &tail(input) );
    } else if is_atom(input) {
       let l = input.to_string();
@@ -34,7 +39,6 @@ fn flatten(output: &mut String, input: &S) {
       else if l=="\"" { output.push('"'); }
       else {
          output.push_str( &l );
-         output.push( ' ' );
       }
    }
 }
