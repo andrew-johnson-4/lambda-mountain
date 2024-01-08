@@ -191,6 +191,8 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
             tail(&epd),
          )
       } else {
+         let mut push_locals = s_nil();
+         unimplemented!("destructure args: {}", args);
          //TODO push locals
          //TODO put locals into program_ctx
          //TODO compile body expression
