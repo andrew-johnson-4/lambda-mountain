@@ -134,6 +134,19 @@ fn is_free(program_ctx: &S, s: &str) -> bool {
    true
 }
 
+fn is_local(program_ctx: &S, s: &str) -> String {
+   for (k,v) in kv_iter(program_ctx) {
+   let k = k.to_string();
+   if s==k {
+      if head(&v).to_string() == "local" {
+         return tail(&v).to_string();
+      } else {
+         return "".to_string();
+      }
+   }}
+   panic!("is_local could not find variable: {}", s)
+}
+
 fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
    let e = ctx_eval_soft(helpers_ctx, e);
    if head(&e).to_string() == "app" {

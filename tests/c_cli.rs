@@ -66,4 +66,7 @@ fn cli_comparison() {
 #[test]
 fn user_defined() {
    assert_eq!( compile_and_run("tests/lm/user_function_unsugared.lm"), "b" );
+   assert_eq!( compile_and_run("tests/lm/user_function_sugar1.lm"), "1" );
+   assert_eq!( compile_and_run("tests/lm/user_function_sugar2.lm"), "2" );
+   assert_eq!( compile_and_run("tests/lm/user_function_sugar3.lm"), "3" );
 }
