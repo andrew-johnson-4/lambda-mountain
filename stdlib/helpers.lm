@@ -274,6 +274,20 @@
    \t pop %r12 \n
 );
 
+::shadow-this := (
+   \t mov %r12, %r8 \n
+   \t mov %r13, %r9 \n
+   \t mov %r14, %r10 \n
+   \t mov %r15, %r11 \n
+);
+
+::unshadow-this := (
+   \t mov %r8, %r15 \n
+   \t mov %r9, %r14 \n
+   \t mov %r10, %r13 \n
+   \t mov %r11, %r12 \n
+);
+
 ::close-this := (
    # move this S onto the heap
    # %rsi becomes pointer to new location
