@@ -63,27 +63,21 @@
    \t ret                       \n
 
    head:                        \n
-   ::callee-save-registers
    \t cmp $0, %r13              \n
    \t je __head_is_nil          \n
    ::head
-   ::callee-restore-registers
    \t ret                       \n
    __head_is_nil:               \n
    ::yield-nil
-   ::callee-restore-registers
    \t ret                       \n
 
    tail:                        \n
-   ::callee-save-registers
    \t cmp $0, %r14              \n
    \t je __tail_is_nil          \n
    ::tail
-   ::callee-restore-registers
    \t ret                       \n
    __tail_is_nil:               \n
    ::yield-nil
-   ::callee-restore-registers
    \t ret                       \n
 
    not:                         \n
