@@ -144,6 +144,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
          let prog = s_cons( head(&xpd) , s_cons( s_cons( variable("\tcall"), f_name ), variable("\n") ));
          s_cons(prog, tail(&xpd))
       } else {
+         println!("yield cons app: {}", e);
          let fpd = compile_expr(helpers_ctx, program_ctx, &f);
          let prog = ctx_eval_soft(helpers_ctx, &app(
             variable("::yield-cons"),

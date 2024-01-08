@@ -16,18 +16,20 @@
    # print-s
    print_s:                     \n
    __print_this:                \n
-
+ 
    # if .atom != NULL
    __print_this_atom:           \n
    \t cmp $0, %r12              \n
    \t je __print_this_cons      \n
    \t mov %r12, %rdi            \n
    \t call _strlen              \n
+   ::push-this
    \t mov %r12, %rsi            \n   # address of string to output
    \t mov %rcx, %rdx            \n   # length is %rcx
    \t mov $1, %rax              \n   # system call 1 is write
    \t mov $1, %rdi              \n   # file handle 1 is stdout
    \t syscall                   \n   # invoke operating system to do the write
+   ::pop-this
    \t ret                       \n
 
    # if .head != NULL && .tail != NULL
@@ -52,11 +54,13 @@
    \t ret                       \n
 
    __print_this_nil:            \n
+   ::push-this
    \t mov $1, %rax              \n   # system call 1 is write
    \t mov $1, %rdi              \n   # file handle 1 is stdout
    \t mov $__nil_literal, %rsi  \n   # address of string to output
    \t mov $2, %rdx              \n   # nil is 2 bytes
    \t syscall                   \n   # invoke operating system to do the write
+   ::pop-this
    \t ret                       \n
 
    head:                        \n
