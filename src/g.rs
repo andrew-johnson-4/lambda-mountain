@@ -147,6 +147,18 @@ fn is_local(program_ctx: &S, s: &str) -> String {
    panic!("is_local could not find variable: {}", s)
 }
 
+fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S) -> (S,S) {
+   if is_nil(e) {
+      ( s_nil(), program_ctx.clone() )
+   } else if head(&e).to_string()=="variable" {
+      unimplemented!("destructure_args: {}", e)
+   } else if head(&e).to_string()=="app" {
+      unimplemented!("destructure_args: {}", e)
+   } else {
+      panic!("Unexpected lhs in destructure_args: {}", e)
+   }
+}
+
 fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
    let e = ctx_eval_soft(helpers_ctx, e);
    if head(&e).to_string() == "app" {
@@ -183,22 +195,16 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
    } else if head(&e).to_string() == "lambda" {
       let args = head(&tail(&e));
       let body = tail(&tail(&e));
-      if is_nil(&args) {
-         let epd = compile_expr(helpers_ctx, program_ctx, &body);
-         //don't forget to ret...
-         s_cons(
-            s_cons( head(&epd), variable("\n\t ret \n") ),
-            tail(&epd),
-         )
-      } else {
-         let mut push_locals = s_nil();
-         unimplemented!("destructure args: {}", args);
-         //TODO push locals
-         //TODO put locals into program_ctx
-         //TODO compile body expression
-         //TODO pop locals
-         unimplemented!("compile_expr sugar lambda: {}. {}", args, body);
-      }
+      let (push_locals,program_ctx) = destructure_args(helpers_ctx, program_ctx, &args);
+      let epd = compile_expr(helpers_ctx, &program_ctx, &body);
+      //TODO put locals into program_ctx
+      //TODO compile body expression
+      //TODO pop locals
+      //don't forget to ret...
+      s_cons(
+         s_cons( head(&epd), variable("\n\t ret \n") ),
+         tail(&epd),
+      )
    } else if is_nil(&e) {
       s_cons(
          ctx_eval_soft(helpers_ctx, &variable("::yield-nil")),
