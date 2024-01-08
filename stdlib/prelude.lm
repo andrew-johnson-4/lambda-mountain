@@ -142,9 +142,9 @@
 
 .data := (
                                 \n
-  __cons_counter:               \n
+  __s_counter:               \n
   \t .zero 64                   \n
-  __cons_section:               \n
+  __s_section:               \n
   \t .zero 65536                \n
   __nil_literal:                \n
   \t .ascii "()"                \n
