@@ -1,6 +1,6 @@
 
 my-tail := λ. (
-   tail $_
+   print-s $_
 );
 
 main := (

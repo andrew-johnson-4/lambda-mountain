@@ -33,6 +33,24 @@
 # specialization to use more efficient representations is available in the optimizing compiler
 # which is what we are bootstrapping
 
+# bootstrap is inefficient with calling conventions
+::callee-save-registers := (
+   \t push %r12 \n
+   \t push %r13 \n
+   \t push %r14 \n
+   \t push %r15 \n
+   \t push %rsi \n
+   \t push %rdi \n
+);
+::callee-restore-registers := (
+   \t pop %rdi \n
+   \t pop %rsi \n
+   \t pop %r15 \n
+   \t pop %r14 \n
+   \t pop %r13 \n
+   \t pop %r12 \n
+);
+
 # put8 (%r8 bool[4], %r9: *char)
 ::put8 := (
     \t mov %r8b, %al                      \n # lower byte of %r11 goes into %rax

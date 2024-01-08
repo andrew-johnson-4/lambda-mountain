@@ -2,6 +2,7 @@
 .text := (
    # internal strlen (%rdi: *char)
    _strlen:                     \n
+   ::callee-save-registers
    \t xor %rcx, %rcx            \n
    _strlen_loop:                \n
    \t cmpb $0, 0(%rdi)          \n
@@ -10,12 +11,14 @@
    \t inc %rdi                  \n
    \t jmp  _strlen_loop         \n
    _strlen_exit:                \n
+   ::callee-restore-registers
    \t ret                       \n
    # result is stored in %rcx
 
    # print-s
    print_s:                     \n
    __print_this:                \n
+   ::callee-save-registers
  
    # if .atom != NULL
    __print_this_atom:           \n
@@ -23,13 +26,12 @@
    \t je __print_this_cons      \n
    \t mov %r12, %rdi            \n
    \t call _strlen              \n
-   ::push-this
    \t mov %r12, %rsi            \n   # address of string to output
    \t mov %rcx, %rdx            \n   # length is %rcx
    \t mov $1, %rax              \n   # system call 1 is write
    \t mov $1, %rdi              \n   # file handle 1 is stdout
    \t syscall                   \n   # invoke operating system to do the write
-   ::pop-this
+   ::callee-restore-registers
    \t ret                       \n
 
    # if .head != NULL && .tail != NULL
@@ -38,63 +40,71 @@
    \t je __print_this_nil       \n
    \t cmp $0, %r14              \n
    \t je __print_this_nil       \n
-   ::show-lparen
    ::push-this
+   ::show-lparen
    \t mov %r13, %rsi            \n
    ::open-this
    \t call __print_this         \n
    ::pop-this
    ::show-space
-   ::push-this
    \t mov %r14, %rsi            \n
    ::open-this
    \t call __print_this         \n
-   ::pop-this
    ::show-rparen
+   ::callee-restore-registers
    \t ret                       \n
 
    __print_this_nil:            \n
-   ::push-this
    \t mov $1, %rax              \n   # system call 1 is write
    \t mov $1, %rdi              \n   # file handle 1 is stdout
    \t mov $__nil_literal, %rsi  \n   # address of string to output
    \t mov $2, %rdx              \n   # nil is 2 bytes
    \t syscall                   \n   # invoke operating system to do the write
-   ::pop-this
+   ::callee-restore-registers
    \t ret                       \n
 
    head:                        \n
+   ::callee-save-registers
    \t cmp $0, %r13              \n
    \t je __head_is_nil          \n
    ::head
+   ::callee-restore-registers
    \t ret                       \n
    __head_is_nil:               \n
    ::yield-nil
+   ::callee-restore-registers
    \t ret                       \n
 
    tail:                        \n
+   ::callee-save-registers
    \t cmp $0, %r14              \n
    \t je __tail_is_nil          \n
    ::tail
+   ::callee-restore-registers
    \t ret                       \n
    __tail_is_nil:               \n
    ::yield-nil
+   ::callee-restore-registers
    \t ret                       \n
 
    not:                         \n
+   ::callee-save-registers
    \t cmp $0, %r12              \n
    \t jne __not_is_some         \n
    \t cmp $0, %r13              \n
    \t jne __not_is_some         \n
    \t cmp $0, %r14              \n
    \t jne __not_is_some         \n
+   ::callee-restore-registers
    (::yield-atom __true)
    \t ret                       \n
    __not_is_some:               \n
+   ::callee-restore-registers
    ::yield-nil
    \t ret                       \n
 
    equal:                       \n
+   ::callee-save-registers
    \t cmp $0, %r13              \n
    \t je __equal_nil            \n
    \t cmp $0, %r14              \n
@@ -105,9 +115,11 @@
    \t je __equal_nil            \n
    \t cmp $0, %rdi              \n
    \t je __equal_nil            \n
+   ::callee-restore-registers
    \t call streq                \n
    \t ret                       \n
    __equal_nil:                 \n
+   ::callee-restore-registers
    ::yield-nil                  \n
    \t ret                       \n
 
@@ -118,6 +130,7 @@
 
    streq:                       \n
    __streq_loop:                \n
+   ::callee-save-registers
    \t mov 0(%rdi), %al          \n
    \t mov 0(%rsi), %bl          \n
 
@@ -129,9 +142,11 @@
    \t inc %rsi                  \n
    \t jmp __streq_loop          \n
    __streq_true:                \n
+   ::callee-restore-registers
    ::yield-true
    \t ret                       \n
    __streq_false:               \n
+   ::callee-restore-registers
    ::yield-nil
    \t ret                       \n
 );
