@@ -155,7 +155,9 @@ fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S) -> (S,S) {
    } else if head(&e).to_string()=="app" {
       let arg_head = head(&tail(&e));
       let arg_tail = tail(&tail(&e));
-      unimplemented!("destructure_args: {} {}", arg_head, arg_tail)
+      let (mut preh, program_ctx) = destructure_args(helpers_ctx, program_ctx, &arg_head);
+      let (mut pret, program_ctx) = destructure_args(helpers_ctx, &program_ctx, &arg_tail);
+      ( s_cons(preh, pret), program_ctx )
    } else {
       panic!("Unexpected lhs in destructure_args: {}", e)
    }
