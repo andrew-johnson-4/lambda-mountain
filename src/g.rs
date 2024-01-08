@@ -144,7 +144,6 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
          let prog = s_cons( head(&xpd) , s_cons( s_cons( variable("\tcall"), f_name ), variable("\n") ));
          s_cons(prog, tail(&xpd))
       } else {
-         println!("yield cons app: {}", e);
          let fpd = compile_expr(helpers_ctx, program_ctx, &f);
          let prog = ctx_eval_soft(helpers_ctx, &app(
             variable("::yield-cons"),
@@ -164,7 +163,12 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> S {
       let args = head(&tail(&e));
       let body = tail(&tail(&e));
       if is_nil(&args) {
-         compile_expr(helpers_ctx, program_ctx, &body)
+         let epd = compile_expr(helpers_ctx, program_ctx, &body);
+         //don't forget to ret...
+         s_cons(
+            s_cons( head(&epd), variable("\n\t ret \n") ),
+            tail(&epd),
+         )
       } else {
          unimplemented!("compile_expr sugar lambda: {}. {}", args, body);
       }
