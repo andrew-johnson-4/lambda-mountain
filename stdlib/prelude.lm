@@ -60,7 +60,7 @@
    \t ret                       \n
 
    head:                        \n
-   \t cmp $0, %rdi              \n
+   \t cmp $0, %r13              \n
    \t je __head_is_nil          \n
    ::head
    \t ret                       \n
@@ -69,7 +69,7 @@
    \t ret                       \n
 
    tail:                        \n
-   \t cmp $0, %rdi              \n
+   \t cmp $0, %r14              \n
    \t je __tail_is_nil          \n
    ::tail
    \t ret                       \n
