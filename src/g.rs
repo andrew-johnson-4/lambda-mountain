@@ -153,7 +153,9 @@ fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S) -> (S,S) {
    } else if head(&e).to_string()=="variable" {
       unimplemented!("destructure_args: {}", e)
    } else if head(&e).to_string()=="app" {
-      unimplemented!("destructure_args: {}", e)
+      let arg_head = head(&tail(&e));
+      let arg_tail = tail(&tail(&e));
+      unimplemented!("destructure_args: {} {}", arg_head, arg_tail)
    } else {
       panic!("Unexpected lhs in destructure_args: {}", e)
    }
