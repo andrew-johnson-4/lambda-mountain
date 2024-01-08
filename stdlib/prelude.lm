@@ -1,17 +1,16 @@
 
 .text := (
-   # internal strlen (%rdi: *char)
+   # internal _strlen (%rax: *char) -> %rbx
+   # not a call-convention function
    _strlen:                     \n
-   ::callee-save-registers
-   \t xor %rcx, %rcx            \n
+   \t xor %rbx, %rbx            \n
    _strlen_loop:                \n
-   \t cmpb $0, 0(%rdi)          \n
+   \t cmpb $0, 0(%rax)          \n
    \t jz _strlen_exit           \n
-   \t inc %rcx                  \n
-   \t inc %rdi                  \n
-   \t jmp  _strlen_loop         \n
+   \t inc %rax                  \n
+   \t inc %rbx                  \n
+   \t jmp _strlen_loop         \n
    _strlen_exit:                \n
-   ::callee-restore-registers
    \t ret                       \n
    # result is stored in %rcx
 
@@ -24,10 +23,10 @@
    __print_this_atom:           \n
    \t cmp $0, %r12              \n
    \t je __print_this_cons      \n
-   \t mov %r12, %rdi            \n
-   \t call _strlen              \n
+   \t mov %r12, %rax            \n
+   \t call _strlen              \n   # %rbx is length of string
    \t mov %r12, %rsi            \n   # address of string to output
-   \t mov %rcx, %rdx            \n   # length is %rcx
+   \t mov %rbx, %rdx            \n   # length is %rcx
    \t mov $1, %rax              \n   # system call 1 is write
    \t mov $1, %rdi              \n   # file handle 1 is stdout
    \t syscall                   \n   # invoke operating system to do the write
@@ -115,12 +114,14 @@
    \t je __equal_nil            \n
    \t cmp $0, %rdi              \n
    \t je __equal_nil            \n
-   ::callee-restore-registers
    \t call streq                \n
+   ::push-this
+   ::callee-restore-registers
+   ::pop-this
    \t ret                       \n
    __equal_nil:                 \n
    ::callee-restore-registers
-   ::yield-nil                  \n
+   ::yield-nil
    \t ret                       \n
 
    inequal:                     \n
