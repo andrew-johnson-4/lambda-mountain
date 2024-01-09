@@ -149,7 +149,7 @@ fn is_local(program_ctx: &S, s: &str) -> String {
 }
 
 //returns (push program, pop program, new program_ctx)
-fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: usize) -> (S,S,S) {
+fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S) {
    if is_nil(e) {
       ( s_nil(), s_nil(), program_ctx.clone() )
    } else if head(&e).to_string()=="variable" {
@@ -161,10 +161,10 @@ fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: usize) -> (
           \tmov {}(%rbp), %r13\n \
           \tmov {}(%rbp), %r14\n \
           \tmov {}(%rbp), %r15\n",
-         offset*32 + 0,
-         offset*32 + 8,
-         offset*32 + 16,
-         offset*32 + 24
+         -offset*32 - 8,
+         -offset*32 - 16,
+         -offset*32 - 24,
+         -offset*32 - 32,
       ));
       let program_ctx = kv_add( program_ctx, &vname, &refer );
       (push_this, pop_this, program_ctx)
