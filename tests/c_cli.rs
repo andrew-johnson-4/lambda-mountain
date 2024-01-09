@@ -70,3 +70,9 @@ fn user_defined() {
    assert_eq!( compile_and_run("tests/lm/user_function_sugar2.lm"), "2" );
    assert_eq!( compile_and_run("tests/lm/user_function_sugar3.lm"), "3" );
 }
+
+#[test]
+fn eval_soft() {
+   assert_eq!( compile_and_run("tests/lm/eval_cons.lm"), "((123 ()) abc)" );
+   assert_eq!( compile_and_run("tests/lm/eval_substition.lm"), "123" );
+}

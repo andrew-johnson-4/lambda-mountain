@@ -1,0 +1,2 @@
+
+main := eval-soft (123 () abc);
