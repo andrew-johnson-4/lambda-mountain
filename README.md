@@ -9,8 +9,3 @@ There is also a concept of equivalence relations formed by big-step rules.
 
 More information is available on the [Wiki](https://github.com/andrew-johnson-4/-/wiki).
 
-# Mascot
-
-Doby was a donkey that refused to cross a bridge on the way back from a camping trek.
-He was left for dead in the rough wilderness with winter approaching.
-Somehow he survived the whole winter under that bridge and was discovered by the game warden the next year.
