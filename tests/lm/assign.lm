@@ -1,0 +1,8 @@
+
+main := (
+   (locals a b c) ;
+   (= a 123) ;
+   (= b abc) ;
+   (= c xyz) ;
+   (a b c)
+);
