@@ -145,7 +145,7 @@ fn is_local(program_ctx: &S, s: &str) -> String {
          return "".to_string();
       }
    }}
-   panic!("is_local could not find variable: {}", s)
+   "".to_string()
 }
 
 //returns (push program, pop program, new program_ctx)
@@ -156,7 +156,16 @@ fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: usize) -> (
       let vname = tail(&e);
       let push_this = ctx_eval_soft(helpers_ctx, &variable("::push-this"));
       let pop_this = ctx_eval_soft(helpers_ctx, &variable("::unpush-this"));
-      let refer = local("TODO");
+      let refer = local(&format!(
+         "\tmov {}(%rbp), %r12\n \
+          \tmov {}(%rbp), %r13\n \
+          \tmov {}(%rbp), %r14\n \
+          \tmov {}(%rbp), %r15\n",
+         offset*32 + 0,
+         offset*32 + 8,
+         offset*32 + 16,
+         offset*32 + 24
+      ));
       let program_ctx = kv_add( program_ctx, &vname, &refer );
       (push_this, pop_this, program_ctx)
    } else if head(&e).to_string()=="app" {
@@ -211,7 +220,13 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> (S,S) {
       // $_ is a noop expression and colloquially refers to 'this' expression
       ( s_nil(), s_nil() )
    } else if head(&e).to_string() == "variable" {
-      yield_atom(helpers_ctx, &tail(&e).to_string() )
+      let vname = tail(&e).to_string();
+      let local = is_local(program_ctx, &vname);
+      if local == "" {
+         yield_atom(helpers_ctx, &vname )
+      } else {
+         ( s_atom(&local), s_nil() )
+      }
    } else if head(&e).to_string() == "literal" {
       yield_atom(helpers_ctx, &tail(&e).to_string() )
    } else if head(&e).to_string() == "lambda" {
