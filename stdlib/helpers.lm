@@ -56,6 +56,16 @@
    \t pop %r12 \n
 );
 
+::enter-function := (
+   \t push %rbp \n
+   \t mov %rsp, %rbp \n
+);
+::leave-function := (
+   \t mov %rbp, %rsp \n
+   \t pop %rbp \n
+   \t ret \n
+);
+
 # put8 (%r8 bool[4], %r9: *char)
 ::put8 := (
     \t mov %r8b, %al                      \n # lower byte of %r11 goes into %rax

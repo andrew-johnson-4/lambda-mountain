@@ -156,7 +156,8 @@ fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: usize) -> (
       let vname = tail(&e);
       let push_this = ctx_eval_soft(helpers_ctx, &variable("::push-this"));
       let pop_this = ctx_eval_soft(helpers_ctx, &variable("::unpush-this"));
-      let program_ctx = kv_add( program_ctx, &vname, &local(&format!("{}",offset*32)) );
+      let refer = local("TODO");
+      let program_ctx = kv_add( program_ctx, &vname, &refer );
       (push_this, pop_this, program_ctx)
    } else if head(&e).to_string()=="app" {
       let arg_head = head(&tail(&e));
@@ -218,9 +219,13 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> (S,S) {
       let body = tail(&tail(&e));
       let (push_prog,pop_prog,program_ctx) = destructure_args(helpers_ctx, program_ctx, &args, 0);
       let (eprog,edata) = compile_expr(helpers_ctx, &program_ctx, &body);
-      let prog = s_cons( push_prog, eprog );
+      let enter = ctx_eval_soft(helpers_ctx, &variable("::enter-function"));
+      let leave = ctx_eval_soft(helpers_ctx, &variable("::leave-function"));
+      let prog = enter;
+      let prog = s_cons( prog, push_prog );
+      let prog = s_cons( prog, eprog );
       let prog = s_cons( prog, pop_prog );
-      let prog = s_cons( prog, variable("\n\tret\n") );
+      let prog = s_cons( prog, leave );
       //TODO put locals into program_ctx
       //TODO compile body expression
       //TODO pop locals
