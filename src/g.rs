@@ -148,15 +148,16 @@ fn is_local(program_ctx: &S, s: &str) -> String {
    panic!("is_local could not find variable: {}", s)
 }
 
-//returns (program, new program_ctx)
-fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: usize) -> (S,S) {
+//returns (push program, pop program, new program_ctx)
+fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: usize) -> (S,S,S) {
    if is_nil(e) {
-      ( s_nil(), program_ctx.clone() )
+      ( s_nil(), s_nil(), program_ctx.clone() )
    } else if head(&e).to_string()=="variable" {
       let vname = tail(&e);
       let push_this = ctx_eval_soft(helpers_ctx, &variable("::push-this"));
+      let pop_this = ctx_eval_soft(helpers_ctx, &variable("::unpush-this"));
       let program_ctx = kv_add( program_ctx, &vname, &local(&format!("{}",offset*32)) );
-      (push_this, program_ctx)
+      (push_this, pop_this, program_ctx)
    } else if head(&e).to_string()=="app" {
       let arg_head = head(&tail(&e));
       let arg_tail = tail(&tail(&e));
@@ -164,14 +165,15 @@ fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: usize) -> (
       let restore_this = ctx_eval_soft(helpers_ctx, &variable("::unshadow-this"));
       let (load_head,_) = compile_expr(helpers_ctx, program_ctx, &app(variable("head"),variable("$_")) );
       let (load_tail,_) = compile_expr(helpers_ctx, program_ctx, &app(variable("tail"),variable("$_")) );
-      let (dest_head, program_ctx) = destructure_args(helpers_ctx, program_ctx, &arg_head, offset+1);
-      let (dest_tail, program_ctx) = destructure_args(helpers_ctx, &program_ctx, &arg_tail, offset);
+      let (push_head, pop_head, program_ctx) = destructure_args(helpers_ctx, program_ctx, &arg_head, offset+1);
+      let (push_tail, pop_tail, program_ctx) = destructure_args(helpers_ctx, &program_ctx, &arg_tail, offset);
       let prog = s_cons(store_this, load_tail);
-      let prog = s_cons(prog, dest_tail);
+      let prog = s_cons(prog, push_tail);
       let prog = s_cons(prog, restore_this);
       let prog = s_cons(prog, load_head);
-      let prog = s_cons(prog, dest_head);
-      (prog, program_ctx)
+      let prog = s_cons(prog, push_head);
+      let unprog = s_cons(pop_head, pop_tail);
+      (prog, unprog, program_ctx)
    } else {
       panic!("Unexpected lhs in destructure_args: {}", e)
    }
@@ -214,9 +216,10 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> (S,S) {
    } else if head(&e).to_string() == "lambda" {
       let args = head(&tail(&e));
       let body = tail(&tail(&e));
-      let (push_prog,program_ctx) = destructure_args(helpers_ctx, program_ctx, &args, 0);
+      let (push_prog,pop_prog,program_ctx) = destructure_args(helpers_ctx, program_ctx, &args, 0);
       let (eprog,edata) = compile_expr(helpers_ctx, &program_ctx, &body);
       let prog = s_cons( push_prog, eprog );
+      let prog = s_cons( prog, pop_prog );
       let prog = s_cons( prog, variable("\n\tret\n") );
       //TODO put locals into program_ctx
       //TODO compile body expression

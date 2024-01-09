@@ -267,6 +267,13 @@
    \t push %r15 \n
 );
 
+::unpush-this := (
+   \t pop %r8 \n
+   \t pop %r8 \n
+   \t pop %r8 \n
+   \t pop %r8 \n
+);
+
 ::pop-this := (
    \t pop %r15 \n
    \t pop %r14 \n
@@ -282,10 +289,10 @@
 );
 
 ::unshadow-this := (
-   \t mov %r8, %r15 \n
-   \t mov %r9, %r14 \n
-   \t mov %r10, %r13 \n
-   \t mov %r11, %r12 \n
+   \t mov %r8, %r12 \n
+   \t mov %r9, %r13 \n
+   \t mov %r10, %r14 \n
+   \t mov %r11, %r15 \n
 );
 
 ::close-this := (
