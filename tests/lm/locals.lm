@@ -1,5 +1,5 @@
 
-main := print-s(
-   (locals a b c) ;
+main := print-s(tail(
+   (locals a b c)
    b
-);
+));

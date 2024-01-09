@@ -74,7 +74,7 @@ fn user_defined() {
 #[test]
 fn helpers() {
    assert_eq!( compile_and_run("tests/lm/sequence.lm"), "123" );
-   assert_eq!( compile_and_run("tests/lm/locals.lm"), "123" );
+   assert_eq!( compile_and_run("tests/lm/locals.lm"), "()" );
    assert_eq!( compile_and_run("tests/lm/assign.lm"), "123" );
 }
 

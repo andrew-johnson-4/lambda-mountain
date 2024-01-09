@@ -1,8 +1,8 @@
 
-main := print-s(
-   (locals a b c) ;
-   (= a 123) ;
-   (= b abc) ;
-   (= c xyz) ;
+main := print-s(tail(
+   (locals a b c)
+   (= a 123)
+   (= b abc)
+   (= c xyz)
    (a b c)
-);
+));
