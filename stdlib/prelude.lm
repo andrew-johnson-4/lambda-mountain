@@ -5,7 +5,7 @@
    _strlen:                     \n
    \t xor %rbx, %rbx            \n
    _strlen_loop:                \n
-   \t cmpb $0, 0(%rax)          \n
+   \t cmpb $0, 0\(%rax\)          \n
    \t jz _strlen_exit           \n
    \t inc %rax                  \n
    \t inc %rbx                  \n
@@ -101,8 +101,8 @@
    \t je __equal_nil            \n
    \t cmp $0, %r14              \n
    \t je __equal_nil            \n
-   \t mov 0(%r13), %rax         \n # mov x.atom into %rax
-   \t mov 0(%r14), %rbx         \n # mov y.atom into %rbx
+   \t mov 0\(%r13\), %rax         \n # mov x.atom into %rax
+   \t mov 0\(%r14\), %rbx         \n # mov y.atom into %rbx
    \t cmp $0, %rax              \n
    \t je __equal_nil            \n
    \t cmp $0, %rbx              \n
@@ -122,8 +122,8 @@
    # internal, not a call-convention function
    _streq:                      \n
    __streq_loop:                \n
-   \t mov 0(%rax), %cl          \n
-   \t mov 0(%rbx), %dl          \n
+   \t mov 0\(%rax\), %cl          \n
+   \t mov 0\(%rbx\), %dl          \n
 
    \t cmp %cl, %dl              \n
    \t jne __streq_false         \n
@@ -147,7 +147,7 @@
   __s_section:               \n
   \t .zero 65536                \n
   __nil_literal:                \n
-  \t .ascii "()"                \n
+  \t .ascii "\nil"                \n
   \t .zero 1                    \n
   __hex_buffer:                 \n
   \t .ascii "0123456789abcdef"  \n 

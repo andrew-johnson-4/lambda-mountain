@@ -35,7 +35,11 @@ fn flatten(output: &mut String, input: &S) {
       else if l==r#""\lparen""# { output.push_str(r#""(""#); }
       else if l==r#""\rparen""# { output.push_str(r#"")""#); }
       else if l==r#""\space""# { output.push_str(r#"" ""#); }
+      else if l==r#""\nil""# { output.push_str(r#""()""#); }
       else if l=="$" { output.push('$'); }
+      else if l==r#"\lparen"# { output.push_str(r#"("#); }
+      else if l==r#"\rparen"# { output.push_str(r#")"#); }
+      else if l==r#"\space"# { output.push_str(r#" "#); }
       else if l=="\"" { output.push('"'); }
       else {
          output.push_str( &l );

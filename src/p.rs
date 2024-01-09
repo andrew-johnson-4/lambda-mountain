@@ -73,6 +73,10 @@ pub fn parse_expression(input: &str) -> S {
 
 //All strings are valid programs, this function is total
 pub fn parse_program(s: &str) -> S {
+   let s = s.replace(r#"\("#, r#" \lparen "#);
+   let s = s.replace(r#"\)"#, r#" \rparen "#);
+   let s = s.replace("(", " ( ");
+   let s = s.replace(")", " ) ");
    let mut kvs = Vec::new();
    let mut new_s = String::new();
    for line in s.split("\n") {
