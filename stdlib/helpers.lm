@@ -56,6 +56,16 @@
    \t pop %r12 \n
 );
 
+::enter-function := (
+   \t push %rbp \n
+   \t mov %rsp, %rbp \n
+);
+::leave-function := (
+   \t mov %rbp, %rsp \n
+   \t pop %rbp \n
+   \t ret \n
+);
+
 # put8 (%r8 bool[4], %r9: *char)
 ::put8 := (
     \t mov %r8b, %al                      \n # lower byte of %r11 goes into %rax
@@ -267,11 +277,32 @@
    \t push %r15 \n
 );
 
+::unpush-this := (
+   \t pop %r8 \n
+   \t pop %r8 \n
+   \t pop %r8 \n
+   \t pop %r8 \n
+);
+
 ::pop-this := (
    \t pop %r15 \n
    \t pop %r14 \n
    \t pop %r13 \n
    \t pop %r12 \n
+);
+
+::shadow-this := (
+   \t mov %r12, %r8 \n
+   \t mov %r13, %r9 \n
+   \t mov %r14, %r10 \n
+   \t mov %r15, %r11 \n
+);
+
+::unshadow-this := (
+   \t mov %r8, %r12 \n
+   \t mov %r9, %r13 \n
+   \t mov %r10, %r14 \n
+   \t mov %r11, %r15 \n
 );
 
 ::close-this := (

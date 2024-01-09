@@ -27,6 +27,10 @@ pub fn typ(s: &str) -> S {
    s_cons( s_atom("type"), s_atom(s) )
 }
 
+pub fn local(s: &str) -> S {
+   s_cons( s_atom("local"), s_atom(s) )
+}
+
 pub fn lambda(l: S, r: S) -> S {
    s_cons( s_atom("lambda"), s_cons(l,r) )
 }
@@ -81,6 +85,10 @@ pub fn kv_merge(l: &S, r: &S) -> S {
       kvs.push(( k, v ));
    }
    kv(&kvs)
+}
+
+pub fn kv_add(kv: &S, k: &S, v: &S) -> S {
+   s_cons( s_cons(k.clone(),v.clone()), kv.clone() )
 }
 
 pub fn kv_ctx(s: &S) -> HashMap<String,S> {
