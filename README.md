@@ -7,39 +7,7 @@ There is also a concept of equivalence relations formed by big-step rules.
 
 <img src="https://raw.githubusercontent.com/andrew-johnson-4/-/main/DOBY.jpg" height=200 title="Doby being a prototypical ass.">
 
-# Installation
-
-LM is currently working towards a bootstrap release.
-Until then [Rust and Cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html) are required.
-
-After installing Rust, LM can be installed with
-
-```bash
-cargo install lambda_mountain
-```
-
-# Syntax and Formatting
-
-In a file `hello_world.lm` put a main function
-
-```
-main := (
-   print-s hello_world
-);
-```
-
-Compile `hello_world` from a shell
-
-```
-lambda_mountain -o hello_world hello_world.lm
-```
-
-Run the result
-
-```
-./hello_world
-[stdout] hello_world
-```
+More information is available on the [Wiki](https://github.com/andrew-johnson-4/-/wiki).
 
 # Mascot
 
