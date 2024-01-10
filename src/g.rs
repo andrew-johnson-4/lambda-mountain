@@ -178,7 +178,7 @@ fn declare_local(helpers_ctx: &S, program_ctx: &S, vname: &S, offset: i64) -> (S
       -offset*32 - 24,
       -offset*32 - 32,
    ));
-   let assign_vname = variable(&format!("set {}",vname));
+   let assign_vname = s_atom(&format!("set {}",vname));
    let program_ctx = kv_add( program_ctx, &vname, &refer );
    let program_ctx = kv_add( &program_ctx, &assign_vname, &assign );
    (push_this, unpush_this, program_ctx, offset+1)
@@ -224,6 +224,18 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          let zero_this = ctx_eval_soft(helpers_ctx, &variable("::yield-nil"));
 	 let (p,d,pc,offset) = declare_local(helpers_ctx, program_ctx, &tail(&x), offset);
          ( s_cons(zero_this,p), d, pc, offset )
+      } else if head(&f).to_string()=="app" &&
+                head(&head(&tail(&f))).to_string() == "literal" &&
+                tail(&head(&tail(&f))).to_string() == "=" &&
+                head(&tail(&tail(&f))).to_string() == "variable" {
+         let lname = tail(&tail(&tail(&f))).to_string();
+         let local = is_local(program_ctx, &format!("set {}", lname));
+         if local == "" {
+            panic!("assignment to undefined local {}", lname);
+         } else {
+            let (xprog,xdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &x, offset);
+            ( s_cons(xprog, s_atom(&local)), xdata, program_ctx.clone(), offset )
+         }
       } else if (head(&f).to_string() == "variable" ||
          head(&f).to_string() == "literal") &&
          !is_free(program_ctx, &tail(&f).to_string()) &&
