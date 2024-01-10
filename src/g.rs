@@ -311,20 +311,18 @@ pub fn compile(cfg: &str, main_ctx: &S) {
    let mut program_ctx = main_ctx.clone();
    for (k,v) in kv_iter(&main_ctx) {
       let k = k.to_string();
-      let (vprog,vdata,pc,off) = compile_expr(&helpers_ctx, &program_ctx, &v, offset);
-      program_ctx = pc;
-      offset = off;
+      raw_program = s_cons(
+         raw_program,
+         s_atom(&format!("\n{}:\n",label_case(&k))),
+      );
       if k == "main" {
          let enter = ctx_eval_soft(&helpers_ctx, &variable("::enter-function"));
          raw_program = s_cons( raw_program, enter );
       }
-      raw_program = s_cons(
-         raw_program,
-         s_cons(
-            variable(&format!("\n{}:\n",label_case(&k))),
-            vprog,
-         ),
-      );
+      let (vprog,vdata,pc,off) = compile_expr(&helpers_ctx, &program_ctx, &v, offset);
+      program_ctx = pc;
+      offset = off;
+      raw_program = s_cons( raw_program, vprog );
       if k == "main" {
          raw_program = s_cons(
             raw_program,

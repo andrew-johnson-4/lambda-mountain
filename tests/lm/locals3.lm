@@ -1,0 +1,6 @@
+
+main := print-s(tail(
+   (local a)
+   (local b)
+   a
+));
