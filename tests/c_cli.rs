@@ -2,20 +2,23 @@ use std::process::Command;
 
 fn compile_and_run(fp: &str) -> String {
    let exit = Command::new("lambda_mountain")
+                      .stdout(std::process::Stdio::piped())
+                      .stderr(std::process::Stdio::piped())
                       .arg(fp)
                       .spawn()
                       .expect("failed to execute process")
                       .wait()
                       .expect("failed to wait for process");
-   assert!(exit.success());
-   let output = Command::new("./a.out")
-                            .stdout(std::process::Stdio::piped())
-                            .spawn()
-                            .expect("failed to execute process")
-                            .wait_with_output()
-                            .expect("failed to wait for process")
-                            .stdout;
-   String::from_utf8_lossy(&output).to_string()
+   if !exit.success() { return "lambda_mountain error code".to_string() };
+   let exit = Command::new("./a.out")
+                      .stdout(std::process::Stdio::piped())
+                      .stderr(std::process::Stdio::piped())
+                      .spawn()
+                      .expect("failed to execute process")
+                      .wait_with_output()
+                      .expect("failed to wait for process");
+   if !exit.status.success() { return "./a.out error code".to_string() };
+   String::from_utf8_lossy(&exit.stdout).to_string()
 }
 
 #[test]

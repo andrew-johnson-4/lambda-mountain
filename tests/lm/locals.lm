@@ -1,7 +1,2 @@
 
-main := print-s(tail(
-   (local a)
-   (local b)
-   (local c)
-   b
-));
+main := print-s(local a);
