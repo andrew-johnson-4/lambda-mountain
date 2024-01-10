@@ -155,8 +155,13 @@ fn is_local(program_ctx: &S, s: &str) -> String {
 }
 
 //returns (push program, pop program, new program_ctx, new offset)
-fn declare_local(helpers_ctx: &S, program_ctx: &S, vname: &S, offset: i64) -> (S,S,S,i64) {
-   let push_this = ctx_eval_soft(helpers_ctx, &variable("::push-this"));
+fn declare_local(helpers_ctx: &S, program_ctx: &S, vname: &S, offset: i64, zero: bool) -> (S,S,S,i64) {
+  
+   let push_this = if zero {
+      ctx_eval_soft(helpers_ctx, &variable("::push-zero"))
+   } else {
+      ctx_eval_soft(helpers_ctx, &variable("::push-this"))
+   };
    let unpush_this = ctx_eval_soft(helpers_ctx, &variable("::unpush-this"));
    let refer = local(&format!(
       "\tmov {}(%rbp), %r12\n \
@@ -189,7 +194,7 @@ fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,
    if is_nil(e) {
       ( s_nil(), s_nil(), program_ctx.clone(), offset )
    } else if head(&e).to_string()=="variable" {
-      declare_local(helpers_ctx, program_ctx, &tail(&e), offset)
+      declare_local(helpers_ctx, program_ctx, &tail(&e), offset, false)
    } else if head(&e).to_string()=="app" {
       let arg_head = head(&tail(&e));
       let arg_tail = tail(&tail(&e));
@@ -221,9 +226,8 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
       if head(&f).to_string() == "variable" &&
          tail(&f).to_string() == "local" &&
          head(&x).to_string() == "variable" {
-         let zero_this = ctx_eval_soft(helpers_ctx, &variable("::yield-nil"));
-	 let (p,d,pc,offset) = declare_local(helpers_ctx, program_ctx, &tail(&x), offset);
-         ( s_cons(zero_this,p), d, pc, offset )
+	 let (p,d,pc,offset) = declare_local(helpers_ctx, program_ctx, &tail(&x), offset, true);
+         ( p, d, pc, offset )
       } else if head(&f).to_string()=="app" &&
                 head(&head(&tail(&f))).to_string() == "literal" &&
                 tail(&head(&tail(&f))).to_string() == "=" &&

@@ -277,6 +277,13 @@
    \t push %r15 \n
 );
 
+::push-zero := (
+   \t pushq $0 \n
+   \t pushq $0 \n
+   \t pushq $0 \n
+   \t pushq $0 \n
+);
+
 ::unpush-this := (
    \t pop %r8 \n
    \t pop %r8 \n
