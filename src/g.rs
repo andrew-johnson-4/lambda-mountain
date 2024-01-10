@@ -201,7 +201,12 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S) -> (S,S) {
       let f = head(&fx);
       let x = tail(&fx);
       let (xprog,xdata) = compile_expr(helpers_ctx, program_ctx, &x);
-      if (head(&f).to_string() == "variable" ||
+      if head(&f).to_string() == "variable" &&
+         tail(&f).to_string() == "local" &&
+         head(&x).to_string() == "variable" {
+         let lname = tail(&x).to_string();
+         unimplemented!("declare local: {}", lname)
+      } else if (head(&f).to_string() == "variable" ||
          head(&f).to_string() == "literal") &&
          !is_free(program_ctx, &tail(&f).to_string()) {
          let f_name = variable(&label_case( &tail(&f).to_string() ));

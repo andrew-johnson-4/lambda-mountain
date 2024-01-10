@@ -1,6 +1,8 @@
 
 main := print-s(tail(
-   (locals a b c)
+   (local a)
+   (local b)
+   (local c)
    (= a 123)
    (= b abc)
    (= c xyz)
