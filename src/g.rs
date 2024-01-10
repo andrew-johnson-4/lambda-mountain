@@ -27,7 +27,7 @@ fn flatten(output: &mut String, input: &S) {
       flatten( output, &tail(input) );
    } else if is_atom(input) {
       let l = input.to_string();
-      if l=="literal" || l=="variable" || l=="app" {}
+      if l=="literal" || l=="variable" || l=="app" || l=="local" || l=="type" {}
       else if l=="\\t" { output.push('\t'); }
       else if l=="\\n" { output.push('\n'); }
       else if l=="(" { output.push('('); }
@@ -157,13 +157,9 @@ fn yield_atom(helpers_ctx: &S, program_ctx: &S, s: &str, offset: i64) -> (S,S,S,
 }
 
 //returns (frame program, expression program, unframe program, data, new program_ctx, new offset)
-fn declare_local(helpers_ctx: &S, program_ctx: &S, vname: &S, offset: i64, zero: bool) -> (S,S,S,S,S,i64) {
+fn declare_local(helpers_ctx: &S, program_ctx: &S, vname: &S, offset: i64) -> (S,S,S,S,S,i64) {
   
-   let frame_this = if zero {
-      ctx_eval_soft(helpers_ctx, &variable("::push-zero"))
-   } else {
-      ctx_eval_soft(helpers_ctx, &variable("::push-this"))
-   };
+   let frame_this = ctx_eval_soft(helpers_ctx, &variable("::push-zero"));
    let unframe_this = ctx_eval_soft(helpers_ctx, &variable("::unpush-this"));
    let refer = local(&format!(
       "\tmov {}(%rbp), %r12\n \
@@ -185,10 +181,11 @@ fn declare_local(helpers_ctx: &S, program_ctx: &S, vname: &S, offset: i64, zero:
       -offset*32 - 24,
       -offset*32 - 32,
    ));
+   let set_this = assign.clone();
    let assign_vname = s_atom(&format!("set {}",vname));
    let program_ctx = kv_add( program_ctx, &vname, &refer );
    let program_ctx = kv_add( &program_ctx, &assign_vname, &assign );
-   (frame_this, s_nil(), unframe_this, s_nil(), program_ctx, offset+1)
+   (frame_this, set_this, unframe_this, s_nil(), program_ctx, offset+1)
 }
 
 //returns (frame program, expression program, unframe program, data, new program_ctx, new offset)
@@ -196,7 +193,7 @@ fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,
    if is_nil(e) {
       ( s_nil(), s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
    } else if head(&e).to_string()=="variable" {
-      declare_local(helpers_ctx, program_ctx, &tail(&e), offset, false)
+      declare_local(helpers_ctx, program_ctx, &tail(&e), offset)
    } else if head(&e).to_string()=="app" {
       let arg_head = head(&tail(&e));
       let arg_tail = tail(&tail(&e));
@@ -229,8 +226,8 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
       if head(&f).to_string() == "variable" &&
          tail(&f).to_string() == "local" &&
          head(&x).to_string() == "variable" {
-	 let (f,p,u,d,pc,offset) = declare_local(helpers_ctx, program_ctx, &tail(&x), offset, true);
-         ( f, p, u, d, pc, offset )
+	 let (f,_p,u,d,pc,offset) = declare_local(helpers_ctx, program_ctx, &tail(&x), offset);
+         ( f, s_nil(), u, d, pc, offset )
       } else if head(&f).to_string()=="app" &&
                 head(&head(&tail(&f))).to_string() == "literal" &&
                 tail(&head(&tail(&f))).to_string() == "=" &&
