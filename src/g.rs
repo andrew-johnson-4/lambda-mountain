@@ -271,6 +271,13 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
             program_ctx,
             offset
          )
+      } else if head(&e).to_string()=="app" &&
+                head(&head(&tail(&e))).to_string() == "app" &&
+                head(&head(&tail(&head(&tail(&e))))).to_string() == "variable" &&
+                tail(&head(&tail(&head(&tail(&e))))).to_string() == "match" {
+         let p = tail(&tail(&e));
+         let c = tail(&tail(&head(&tail(&e))));
+         unimplemented!("match {} {}", c, p);
       } else if (head(&f).to_string() == "variable" ||
          head(&f).to_string() == "literal") &&
          !is_free(program_ctx, &tail(&f).to_string()) &&
