@@ -168,7 +168,19 @@ fn declare_local(helpers_ctx: &S, program_ctx: &S, vname: &S, offset: i64) -> (S
       -offset*32 - 24,
       -offset*32 - 32,
    ));
+   let assign = local(&format!(
+      "\tmov %r12, {}(%rbp)\n \
+       \tmov %r13, {}(%rbp)\n \
+       \tmov %r14, {}(%rbp)\n \
+       \tmov %r15, {}(%rbp)\n",
+      -offset*32 - 8,
+      -offset*32 - 16,
+      -offset*32 - 24,
+      -offset*32 - 32,
+   ));
+   let assign_vname = variable(&format!("set {}",vname));
    let program_ctx = kv_add( program_ctx, &vname, &refer );
+   let program_ctx = kv_add( &program_ctx, &assign_vname, &assign );
    (push_this, unpush_this, program_ctx, offset+1)
 }
 
@@ -214,7 +226,8 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          ( s_cons(zero_this,p), d, pc, offset )
       } else if (head(&f).to_string() == "variable" ||
          head(&f).to_string() == "literal") &&
-         !is_free(program_ctx, &tail(&f).to_string()) {
+         !is_free(program_ctx, &tail(&f).to_string()) &&
+         is_local(program_ctx, &tail(&f).to_string())=="" {
          let (xprog,xdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &x, offset);
          let f_name = variable(&label_case( &tail(&f).to_string() ));
          let prog = s_cons( xprog , s_cons( s_cons( variable("\tcall"), f_name ), variable("\n") ));
