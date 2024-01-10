@@ -236,6 +236,37 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
             let (xprog,xdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &x, offset);
             ( s_cons(xprog, s_atom(&local)), xdata, program_ctx.clone(), offset )
          }
+      } else if head(&e).to_string()=="app" &&
+                head(&head(&tail(&e))).to_string() == "app" &&
+                head(&head(&tail(&head(&tail(&e))))).to_string() == "app" &&
+                head(&head(&tail(&head(&tail(&head(&tail(&e))))))).to_string() == "variable" &&
+                tail(&head(&tail(&head(&tail(&head(&tail(&e))))))).to_string() == "if" {
+         let f = tail(&tail(&e));
+         let t = tail(&tail(&head(&tail(&e))));
+         let c = tail(&tail(&head(&tail(&head(&tail(&e))))));
+         unimplemented!("if {} {} {}", c, t, f)
+         /* app . (
+               (app . (
+                  (app . (
+                     (variable . "if")
+                     (Condition)
+                  ))
+                  (TrueCase)
+               )) .
+               (FalseCase)
+            )
+            [check] head = app
+            [save]  tail tail = FalseCase
+                    head tail = inner_if
+            [check] head head tail = app
+                    head tail head tail = inner_if
+            [save]  tail tail head tail = TrueCase
+            [check] head head tail head tail = app
+            [save]  head tail head tail head tail = Equal
+            [check] head head tail head tail head tail = variable
+            [check] tail head tail head tail head tail = "="
+            [save]  tail tail head tail head tail = Condition
+         */
       } else if (head(&f).to_string() == "variable" ||
          head(&f).to_string() == "literal") &&
          !is_free(program_ctx, &tail(&f).to_string()) &&
