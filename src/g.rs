@@ -27,7 +27,7 @@ fn flatten(output: &mut String, input: &S) {
       flatten( output, &tail(input) );
    } else if is_atom(input) {
       let l = input.to_string();
-      if l == "literal" || l == "variable" || l == "app" {}
+      if l=="literal" || l=="variable" || l=="app" {}
       else if l=="\\t" { output.push('\t'); }
       else if l=="\\n" { output.push('\n'); }
       else if l=="(" { output.push('('); }
@@ -277,10 +277,10 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
 
 fn compile_program(helpers_ctx: &S, raw_program: &S, raw_data: &S) -> S {
    let head = ctx_eval_soft(&helpers_ctx, &variable("::program-header"));
-   let head = app( head, raw_program.clone() );
+   let head = s_cons( head, raw_program.clone() );
    let data = ctx_eval_soft(&helpers_ctx, &variable("::data-header"));
-   let data = app( data, raw_data.clone() );
-   app(
+   let data = s_cons( data, raw_data.clone() );
+   s_cons(
       head,
       data,
    )
@@ -314,20 +314,24 @@ pub fn compile(cfg: &str, main_ctx: &S) {
       let (vprog,vdata,pc,off) = compile_expr(&helpers_ctx, &program_ctx, &v, offset);
       program_ctx = pc;
       offset = off;
-      raw_program = app(
+      if k == "main" {
+         let enter = ctx_eval_soft(&helpers_ctx, &variable("::enter-function"));
+         raw_program = s_cons( raw_program, enter );
+      }
+      raw_program = s_cons(
          raw_program,
-         app(
+         s_cons(
             variable(&format!("\n{}:\n",label_case(&k))),
             vprog,
          ),
       );
       if k == "main" {
-         raw_program = app(
+         raw_program = s_cons(
             raw_program,
             ctx_eval_soft(&helpers_ctx, &variable("::exit-cleanup")),
          );
       }
-      raw_data = app(
+      raw_data = s_cons(
          raw_data,
          vdata,
       );
