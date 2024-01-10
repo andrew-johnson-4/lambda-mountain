@@ -244,29 +244,22 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          let f = tail(&tail(&e));
          let t = tail(&tail(&head(&tail(&e))));
          let c = tail(&tail(&head(&tail(&head(&tail(&e))))));
-         unimplemented!("if {} {} {}", c, t, f)
-         /* app . (
-               (app . (
-                  (app . (
-                     (variable . "if")
-                     (Condition)
-                  ))
-                  (TrueCase)
-               )) .
-               (FalseCase)
-            )
-            [check] head = app
-            [save]  tail tail = FalseCase
-                    head tail = inner_if
-            [check] head head tail = app
-                    head tail head tail = inner_if
-            [save]  tail tail head tail = TrueCase
-            [check] head head tail head tail = app
-            [save]  head tail head tail head tail = Equal
-            [check] head head tail head tail head tail = variable
-            [check] tail head tail head tail head tail = "="
-            [save]  tail tail head tail head tail = Condition
-         */
+         let (c_p,c_d,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &c, offset);
+         let (t_p,t_d,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &t, offset);
+         let (f_p,f_d,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &f, offset);
+         let label_if_true = uuid();
+         let label_if_end = uuid();
+         let prog = c_p;
+         let prog = s_cons( prog, s_atom(&format!("\tcmp $0, %r12\n\tjne {}\n", label_if_true)) );
+         let prog = s_cons( prog, s_atom(&format!("\tcmp $0, %r13\n\tjne {}\n", label_if_true)) );
+         let prog = s_cons( prog, s_atom(&format!("\tcmp $0, %r14\n\tjne {}\n", label_if_true)) );
+         let prog = s_cons( prog, s_atom(&format!("\tcmp $0, %r15\n\tjne {}\n", label_if_true)) );
+         let prog = s_cons( prog, f_p );
+         let prog = s_cons( prog, s_atom(&format!("\tjmp {}\n", label_if_end)) );
+         let prog = s_cons( prog, s_atom(&format!("\t{}:\n",label_if_true)) );
+         let prog = s_cons( prog, t_p );
+         let prog = s_cons( prog, s_atom(&format!("\t{}:\n",label_if_end)) );
+         ( prog, s_cons(s_cons(c_d,t_d),f_d), program_ctx, offset )
       } else if (head(&f).to_string() == "variable" ||
          head(&f).to_string() == "literal") &&
          !is_free(program_ctx, &tail(&f).to_string()) &&
