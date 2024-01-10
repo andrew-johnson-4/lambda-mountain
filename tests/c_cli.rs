@@ -7,9 +7,12 @@ fn compile_and_run(fp: &str) -> String {
                       .arg(fp)
                       .spawn()
                       .expect("failed to execute process")
-                      .wait()
+                      .wait_with_output()
                       .expect("failed to wait for process");
-   if !exit.success() { return "lambda_mountain error code".to_string() };
+   if !exit.status.success() {
+      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
+      return format!("lambda_mountain error code: {}", stderr);
+   };
    let exit = Command::new("./a.out")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
@@ -17,31 +20,18 @@ fn compile_and_run(fp: &str) -> String {
                       .expect("failed to execute process")
                       .wait_with_output()
                       .expect("failed to wait for process");
-   if !exit.status.success() { return "./a.out error code".to_string() };
+   if !exit.status.success() {
+      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
+      return format!("./a.out error code: {}", stderr);
+   };
    String::from_utf8_lossy(&exit.stdout).to_string()
 }
 
 #[test]
 fn cli_cli() {
-   let exit = Command::new("lambda_mountain")
-                      .arg("-o")
-                      .arg("hello_world")
-                      .arg("tests/lm/hello_world.lm")
-                      .spawn()
-                      .expect("failed to execute process")
-                      .wait()
-                      .expect("failed to wait for process");
-   assert!(exit.success());
-   let output = Command::new("./hello_world")
-                            .stdout(std::process::Stdio::piped())
-                            .spawn()
-                            .expect("failed to execute process")
-                            .wait_with_output()
-                            .expect("failed to wait for process")
-                            .stdout;
-   let output = String::from_utf8_lossy(&output).to_string();
-   assert_eq!( output, "hello_world" );
+   assert_eq!( compile_and_run("tests/lm/hello_world.lm"), "hello_world" );
 }
+
 
 #[test]
 fn cli_yield() {
@@ -81,6 +71,12 @@ fn helpers() {
    assert_eq!( compile_and_run("tests/lm/locals2.lm"), "123" );
    assert_eq!( compile_and_run("tests/lm/locals3.lm"), "()" );
    assert_eq!( compile_and_run("tests/lm/assign.lm"), "((123 abc) xyz)" );
+}
+
+#[test]
+fn control_flow() {
+   assert_eq!( compile_and_run("tests/lm/if_truthy.lm"), "True" );
+   assert_eq!( compile_and_run("tests/lm/if_falsy.lm"), "False" );
 }
 
 #[test]
