@@ -217,6 +217,16 @@ fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,
 }
 
 //returns (frame program, expression program, unframe program, data, new program_ctx, new offset)
+fn yield_patterns(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,S,S,S,i64) {
+   if is_nil(p) {
+      let yield_nil = ctx_eval_soft(helpers_ctx, &variable("::yield-nil"));
+      ( s_nil(), yield_nil, s_nil(), s_nil(), program_ctx.clone(), offset )
+   } else {
+      unimplemented!("yield patterns: {}", p)
+   }
+}
+
+//returns (frame program, expression program, unframe program, data, new program_ctx, new offset)
 fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,S,S,i64) {
    let e = ctx_eval_soft(helpers_ctx, e);
    if head(&e).to_string() == "app" {
@@ -277,7 +287,9 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
                 tail(&head(&tail(&head(&tail(&e))))).to_string() == "match" {
          let p = tail(&tail(&e));
          let c = tail(&tail(&head(&tail(&e))));
-         unimplemented!("match {} {}", c, p);
+         let (cframe,cprog,cunframe,cdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &c, offset);
+         let (pframe,pprog,punframe,pdata,program_ctx,offset) = yield_patterns(helpers_ctx, &program_ctx, &p, offset);
+         ( s_cons(cframe,pframe), s_cons(cprog,pprog), s_cons(cunframe,punframe), s_cons(cdata,pdata), program_ctx, offset )
       } else if (head(&f).to_string() == "variable" ||
          head(&f).to_string() == "literal") &&
          !is_free(program_ctx, &tail(&f).to_string()) &&
