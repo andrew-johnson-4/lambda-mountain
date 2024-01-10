@@ -209,8 +209,9 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
       if head(&f).to_string() == "variable" &&
          tail(&f).to_string() == "local" &&
          head(&x).to_string() == "variable" {
-         let lname = tail(&x).to_string();
-         unimplemented!("declare local: {}", lname)
+         let zero_this = ctx_eval_soft(helpers_ctx, &variable("::yield-nil"));
+	 let (p,d,pc,offset) = declare_local(helpers_ctx, program_ctx, &tail(&x), offset);
+         ( s_cons(zero_this,p), d, pc, offset )
       } else if (head(&f).to_string() == "variable" ||
          head(&f).to_string() == "literal") &&
          !is_free(program_ctx, &tail(&f).to_string()) {
