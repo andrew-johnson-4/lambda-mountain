@@ -2,20 +2,23 @@ use std::process::Command;
 
 fn compile_and_run(fp: &str) -> String {
    let exit = Command::new("lambda_mountain")
+                      .stdout(std::process::Stdio::piped())
+                      .stderr(std::process::Stdio::piped())
                       .arg(fp)
                       .spawn()
                       .expect("failed to execute process")
                       .wait()
                       .expect("failed to wait for process");
-   assert!(exit.success());
-   let output = Command::new("./a.out")
-                            .stdout(std::process::Stdio::piped())
-                            .spawn()
-                            .expect("failed to execute process")
-                            .wait_with_output()
-                            .expect("failed to wait for process")
-                            .stdout;
-   String::from_utf8_lossy(&output).to_string()
+   if !exit.success() { return "lambda_mountain error code".to_string() };
+   let exit = Command::new("./a.out")
+                      .stdout(std::process::Stdio::piped())
+                      .stderr(std::process::Stdio::piped())
+                      .spawn()
+                      .expect("failed to execute process")
+                      .wait_with_output()
+                      .expect("failed to wait for process");
+   if !exit.status.success() { return "./a.out error code".to_string() };
+   String::from_utf8_lossy(&exit.stdout).to_string()
 }
 
 #[test]
@@ -69,4 +72,19 @@ fn user_defined() {
    assert_eq!( compile_and_run("tests/lm/user_function_sugar1.lm"), "1" );
    assert_eq!( compile_and_run("tests/lm/user_function_sugar2.lm"), "2" );
    assert_eq!( compile_and_run("tests/lm/user_function_sugar3.lm"), "3" );
+}
+
+#[test]
+fn helpers() {
+   assert_eq!( compile_and_run("tests/lm/sequence.lm"), "123" );
+   assert_eq!( compile_and_run("tests/lm/locals.lm"), "()" );
+   assert_eq!( compile_and_run("tests/lm/locals2.lm"), "123" );
+   assert_eq!( compile_and_run("tests/lm/locals3.lm"), "()" );
+   assert_eq!( compile_and_run("tests/lm/assign.lm"), "((123 abc) xyz)" );
+}
+
+#[test]
+fn eval_soft() {
+   assert_eq!( compile_and_run("tests/lm/eval_cons.lm"), "((123 ()) abc)" );
+   assert_eq!( compile_and_run("tests/lm/eval_substition.lm"), "123" );
 }

@@ -1,0 +1,2 @@
+
+main := print-s(tail(a b 123));

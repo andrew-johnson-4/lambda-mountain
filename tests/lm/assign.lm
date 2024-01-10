@@ -1,0 +1,10 @@
+
+main := print-s(tail(
+   (local a)
+   (local b)
+   (local c)
+   (= a 123)
+   (= b abc)
+   (= c xyz)
+   (a b c)
+));

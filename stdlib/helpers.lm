@@ -72,8 +72,8 @@
     \t and $0xf, %al                      \n # only show lower 4 bits
     \t mov $__hex_buffer, %r10            \n # %r10 is index into hex buffer
     \t add %al, %r10b                     \n # %r10 is index into char in hex buffer
-    \t mov 0(%r10), %cl                   \n # %cl is a hexadecimal char
-    \t mov %cl, 0(%r9)                    \n # write char into buffer
+    \t mov 0\(%r10\), %cl                   \n # %cl is a hexadecimal char
+    \t mov %cl, 0\(%r9\)                    \n # write char into buffer
     \t inc %r9                            \n
 );
 
@@ -255,16 +255,16 @@
    \t mov %rsi, %r8             \n
    ::put64
 
-   \t mov 0(%rsi), %r8            \n
+   \t mov 0\(%rsi\), %r8            \n
    ::put64
 
-   \t mov 8(%rsi), %r8            \n
+   \t mov 8\(%rsi\), %r8            \n
    ::put64
 
-   \t mov 16(%rsi), %r8            \n
+   \t mov 16\(%rsi\), %r8            \n
    ::put64
 
-   \t mov 24(%rsi), %r8            \n
+   \t mov 24\(%rsi\), %r8            \n
    ::put64
 
    ::show-newline
@@ -310,23 +310,23 @@
    # %rsi becomes pointer to new location
    \t mov $__s_section, %rsi        \n # %rsi now points to root s
    \t mov $__s_counter, %r8         \n # %r8 now points to s counter
-   \t mov 0(%r8), %r10              \n # %r10 now hold value of cons counter
+   \t mov 0\(%r8\), %r10              \n # %r10 now hold value of cons counter
    \t add %r10, %rsi                \n # %rsi now points to top free cons
    \t add $32, %r10                 \n # increment s counter
-   \t mov %r10, 0(%r8)              \n # overwrite new s counter
-   \t mov %r12, 0(%rsi)             \n # set top.atom
-   \t mov %r13, 8(%rsi)             \n # set top.head
-   \t mov %r14, 16(%rsi)            \n # set top.tail 
-   \t mov %r15, 24(%rsi)            \n # set top.flags
+   \t mov %r10, 0\(%r8\)              \n # overwrite new s counter
+   \t mov %r12, 0\(%rsi\)             \n # set top.atom
+   \t mov %r13, 8\(%rsi\)             \n # set top.head
+   \t mov %r14, 16\(%rsi\)            \n # set top.tail 
+   \t mov %r15, 24\(%rsi\)            \n # set top.flags
 );
 
 ::open-this := (
    # move S from heap into this
    # %rsi is pointer to current location
-   \t mov 0(%rsi), %r12             \n
-   \t mov 8(%rsi), %r13             \n
-   \t mov 16(%rsi), %r14            \n
-   \t mov 24(%rsi), %r15            \n
+   \t mov 0\(%rsi\), %r12             \n
+   \t mov 8\(%rsi\), %r13             \n
+   \t mov 16\(%rsi\), %r14            \n
+   \t mov 24\(%rsi\), %r15            \n
 );
 
 ::head := (
