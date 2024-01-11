@@ -173,12 +173,10 @@
   \t .zero 1                    \n
 );
 
-#does not preserve "order", O(n)
-fast-zip := λl r. match (l r) (
+zip := λl r. match (l r) (
    ()
-   ( (() y) y )
    ( (x ()) x )
-   ( ((xs x) (ys y)) ((fast-zip (xs ys)) x y) )
+   ( (x (ys y)) ((zip(x ys)) y) )
 );
 
 kv-lookup := λctx key. match ctx (
