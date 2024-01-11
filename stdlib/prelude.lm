@@ -173,16 +173,14 @@
   \t .zero 1                    \n
 );
 
-kv-merge := λl r. match (l r) (
+#does not preserve "order", O(n)
+fast-zip := λl r. match (l r) (
    ()
-   ((x y) (() x y KV))
-#   (((() KV) (y KV)) (y KV))
+   ( (() y) y )
+   ( (x ()) x )
+   ( ((xs x) (ys y)) ((fast-zip (xs ys)) x y) )
 );
 
-#pub fn kv_add(kv: &S, k: &S, v: &S) -> S {
-#   s_cons( s_cons(k.clone(),v.clone()), kv.clone() )
-#}
-#
 #pub fn kv_ctx(s: &S) -> HashMap<String,S> {
 #   let mut ctx = HashMap::new();
 #   for (k,v) in kv_iter(s) {
