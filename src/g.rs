@@ -305,7 +305,6 @@ fn yield_patterns(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,
       let prog = pprog;
       let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %rsi\n\tjne {}\n",label_skip)));
       let prog = s_cons(prog, lprog); //set %rsi to non-zero if success
-      let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::yield-nil")) );
       let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %rsi\n\tje {}\n",label_skip)));
       let prog = s_cons(prog, rprog);
       let prog = s_cons(prog, s_atom("\tmov $1, %rsi\n"));
