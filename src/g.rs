@@ -150,7 +150,7 @@ fn yield_atom(helpers_ctx: &S, program_ctx: &S, s: &str, offset: i64) -> (S,S,S,
       s_nil(),
       ctx_eval_soft(helpers_ctx, &app( variable("::yield-atom"), variable(&id) )),
       s_nil(),
-      variable(&format!("\n{}:\n\t.ascii \"{}\"\n\t.zero 1\n", id, s)),
+      variable(&format!("{}:\n\t.ascii \"{}\"\n\t.zero 1\n", id, s)),
       program_ctx.clone(),
       offset,
    )
@@ -216,13 +216,43 @@ fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,
    }
 }
 
+fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,S,S,S,i64) {
+   unimplemented!("destructure pattern lhs: {}", p)
+}
+
 //returns (frame program, expression program, unframe program, data, new program_ctx, new offset)
 fn yield_patterns(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,S,S,S,i64) {
    if is_nil(p) {
       let yield_nil = ctx_eval_soft(helpers_ctx, &variable("::yield-nil"));
-      ( s_nil(), yield_nil, s_nil(), s_nil(), program_ctx.clone(), offset )
+      let clear_r8 = s_atom("\tmov $0, %r8\n");
+      ( s_nil(), s_cons(yield_nil,clear_r8), s_nil(), s_nil(), program_ctx.clone(), offset )
+   } else if head(&p).to_string()=="app" &&
+             head(&tail(&tail(&p))).to_string()=="app" {
+      let prev = head(&tail(&p));
+      let lr = tail(&tail(&tail(&p)));
+      let lhs = head(&lr);
+      let rhs = tail(&lr);
+      let (pframe,pprog,punframe,pdata,_inner_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &prev, offset);
+      let (lframe,lprog,lunframe,ldata,inner_ctx,offset) = destructure_pattern_lhs(helpers_ctx, &program_ctx, &lhs, offset);
+      let (rframe,rprog,runframe,rdata,_inner_ctx,offset) = compile_expr(helpers_ctx, &inner_ctx, &rhs, offset);
+      let label_skip = uuid();
+      let prog = pprog;
+      let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %r8\n\tjne {}\n",label_skip)));
+      let prog = s_cons(prog, lprog);
+      let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %r8\n\tje {}\n",label_skip)));
+      let prog = s_cons(prog, rprog);
+      let prog = s_cons(prog, s_atom("\tmov $1, %r8\n"));
+      let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
+      (
+         s_cons(s_cons(pframe,lframe),rframe),
+         prog,
+         s_cons(s_cons(punframe,lunframe),runframe),
+         s_cons(s_cons(pdata,ldata),rdata),
+         program_ctx.clone(),
+         offset
+      )
    } else {
-      unimplemented!("yield patterns: {}", p)
+      panic!("invalid patterns case: {}", p)
    }
 }
 
@@ -270,9 +300,9 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          let prog = s_cons( prog, s_atom(&format!("\tcmp $0, %r15\n\tjne {}\n", label_if_true)) );
          let prog = s_cons( prog, f_p );
          let prog = s_cons( prog, s_atom(&format!("\tjmp {}\n", label_if_end)) );
-         let prog = s_cons( prog, s_atom(&format!("\t{}:\n",label_if_true)) );
+         let prog = s_cons( prog, s_atom(&format!("{}:\n",label_if_true)) );
          let prog = s_cons( prog, t_p );
-         let prog = s_cons( prog, s_atom(&format!("\t{}:\n",label_if_end)) );
+         let prog = s_cons( prog, s_atom(&format!("{}:\n",label_if_end)) );
          (
             s_cons(s_cons(c_f,t_f),f_f),
             prog,
@@ -393,7 +423,7 @@ pub fn compile(cfg: &str, main_ctx: &S) {
       let k = k.to_string();
       raw_program = s_cons(
          raw_program,
-         s_atom(&format!("\n{}:\n",label_case(&k))),
+         s_atom(&format!("{}:\n",label_case(&k))),
       );
       if k == "main" {
          let enter = ctx_eval_soft(&helpers_ctx, &variable("::enter-function"));
