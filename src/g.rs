@@ -242,8 +242,36 @@ fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64)
       let prog = s_cons(prog, s_atom("\tmov $1, %rsi\n"));
       let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
       ( s_nil(), prog, s_nil(), adata, program_ctx.clone(), offset )
+   } else if head(&p).to_string()=="app" {
+      let label_skip = uuid();
+      let l = head(&tail(&p));
+      let r = tail(&tail(&p));
+      let (lframe,lprog,lunframe,ldata,program_ctx,offset) = destructure_pattern_lhs(helpers_ctx, program_ctx, &l, offset);
+      let (rframe,rprog,runframe,rdata,program_ctx,offset) = destructure_pattern_lhs(helpers_ctx, &program_ctx, &r, offset);
+      let prog = ctx_eval_soft(helpers_ctx, &variable("::push-this"));
+      let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::head")));
+      let prog = s_cons(prog, lprog);
+      let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::pop-this")));
+      let prog = s_cons(prog, s_atom("\tcmp $0, %rsi\n"));
+      let prog = s_cons(prog, s_atom(&format!("\tje {}\n",label_skip)));
+      let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::push-this")));
+      let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::tail")));
+      let prog = s_cons(prog, rprog);
+      let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::pop-this")));
+      let prog = s_cons(prog, s_atom("\tcmp $0, %rsi\n"));
+      let prog = s_cons(prog, s_atom(&format!("\tje {}\n",label_skip)));
+      let prog = s_cons(prog, s_atom("\tmov $1, %rsi\n"));
+      let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
+      (
+         s_cons(lframe,rframe),
+         prog,
+         s_cons(lunframe,runframe),
+         s_cons(ldata,rdata),
+         program_ctx,
+         offset
+      )
    } else {
-      unimplemented!("destructure pattern lhs: {}", p)
+      panic!("unexpected pattern lhs: {}", p)
    }
 }
 
