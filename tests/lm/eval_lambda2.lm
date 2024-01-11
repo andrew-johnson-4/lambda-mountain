@@ -1,0 +1,4 @@
+
+main := print-s(
+   ctx-eval-soft( (() (y 456)) (Lambda x (x y)) 123 )
+);

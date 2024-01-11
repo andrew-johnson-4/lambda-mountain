@@ -191,6 +191,7 @@ eval-soft := λt. ctx-eval-soft( () t );
 
 ctx-eval-soft := λctx t. match t (
    ()
+   (((Lambda fl fr) x) TODO)
    ((l r) (l r))
    (v (
       kv-lookup(ctx v v)

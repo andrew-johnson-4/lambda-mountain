@@ -1,0 +1,4 @@
+
+main := print-s(
+   eval-soft( (Lambda x (x x)) 123 )
+);
