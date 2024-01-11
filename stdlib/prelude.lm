@@ -175,8 +175,8 @@
 
 kv-merge := λl r. match (l r) (
    ()
-   (((x KV) (() KV)) (x KV))
-   (((() KV) (y KV)) (y KV))
+   ((x y) (() x y KV))
+#   (((() KV) (y KV)) (y KV))
 );
 
 #pub fn kv_add(kv: &S, k: &S, v: &S) -> S {

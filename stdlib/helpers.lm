@@ -336,21 +336,25 @@
 );
 
 ::open-this := (
-   # move S from heap into this
-   # %rsi is pointer to current location
    \t mov 0\(%rsi\), %r12             \n
    \t mov 8\(%rsi\), %r13             \n
    \t mov 16\(%rsi\), %r14            \n
    \t mov 24\(%rsi\), %r15            \n
+   # move S from heap into this
+   # %rsi is pointer to current location
 );
 
 ::head := (
-   \t mov %r13, %rsi                \n
-   ::open-this
+   \t mov 0\(%r13\), %r12             \n
+   \t mov 16\(%r13\), %r14            \n
+   \t mov 24\(%r13\), %r15            \n
+   \t mov 8\(%r13\), %r13             \n
 );
 ::tail := (
-   \t mov %r14, %rsi                \n
-   ::open-this
+   \t mov 0\(%r14\), %r12             \n
+   \t mov 24\(%r14\), %r15            \n
+   \t mov 8\(%r14\), %r13             \n
+   \t mov 16\(%r14\), %r14            \n
 );
 
 ::program-header := (
