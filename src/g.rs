@@ -452,24 +452,25 @@ fn compile_program(helpers_ctx: &S, raw_program: &S, raw_data: &S) -> S {
 }
 
 pub fn compile(cfg: &str, main_ctx: &S) {
+   let mut main_ctx = main_ctx.clone();
    let helpers_ctx = parse_file("stdlib/helpers.lm");
    let prelude_ctx = parse_file("stdlib/prelude.lm");
    let mut raw_program = nil();
    let mut raw_data = nil();
    for (k,v) in kv_iter(&prelude_ctx) {
-      let k = k.to_string();
-      if k == ".data" {
+      let ks = k.to_string();
+      if ks == ".data" {
          raw_data = app(
             raw_data,
             ctx_eval_soft(&helpers_ctx, &v),
          );
-      } else if k == ".text" {
+      } else if ks == ".text" {
          raw_program = app(
             raw_program,
             ctx_eval_soft(&helpers_ctx, &v),
          );
       } else {
-         panic!("unexpected prelude symbol: {}", k);
+         main_ctx = kv_add(&main_ctx, &k, &v);
       }
    }
    let mut offset = 0;

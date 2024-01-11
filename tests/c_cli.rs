@@ -85,6 +85,11 @@ fn control_flow() {
    assert_eq!( compile_and_run("tests/lm/match4.lm"), "(1 3)" );
 }
 
+#[test]
+fn dsa() {
+   assert_eq!( compile_and_run("tests/lm/kv_merge.lm"), "(KV)" );
+}
+
 /* TODO eval-soft
 #[test]
 fn eval_soft() {
