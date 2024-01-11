@@ -1,5 +1,9 @@
 
-main := print-s(match (() (1 2)) (
+my-lookup := λctx key. match ctx (
    ()
-   ((() (x y)) x)
-));
+   ((ctxs k) (
+      k
+   ))
+);
+
+main := print-s(my-lookup (() (1 2)) 1);

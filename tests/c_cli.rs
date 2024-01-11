@@ -84,7 +84,7 @@ fn control_flow() {
    assert_eq!( compile_and_run("tests/lm/match3.lm"), "456" );
    assert_eq!( compile_and_run("tests/lm/match4.lm"), "(1 3)" );
    assert_eq!( compile_and_run("tests/lm/match5.lm"), "1" );
-   assert_eq!( compile_and_run("tests/lm/match6.lm"), "1" );
+   assert_eq!( compile_and_run("tests/lm/match6.lm"), "2" );
 }
 
 #[test]
