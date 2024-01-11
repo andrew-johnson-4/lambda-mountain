@@ -32,6 +32,8 @@ fn parse_one_expression(input: &str) -> S {
       let c = cs.chars().next().unwrap();
       if c=='_' || c==':' || c=='$' || (c.is_alphabetic() && !c.is_uppercase()) {
          variable(&cs)
+      } else if c=='\'' {
+         literal(&cs[1..])
       } else {
          literal(&cs)
       }

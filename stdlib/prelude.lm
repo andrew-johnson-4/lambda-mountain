@@ -179,18 +179,22 @@ concat := λl r. match (l r) (
    ( (x (ys y)) ((concat(x ys)) y) )
 );
 
-kv-lookup := λctx key. match ctx (
+kv-lookup := λctx key default. match ctx (
    ()
    ((ctxs (k v)) (
-      if (==(k key)) v (kv-lookup(ctxs key))
+      if (==(k key)) v (kv-lookup(ctxs key default))
    ))
+   (() default)
 );
 
 eval-soft := λt. ctx-eval-soft( () t );
 
 ctx-eval-soft := λctx t. match t (
    ()
-   (v v)
+   ((l r) (l r))
+   (v (
+      kv-lookup(ctx v v)
+   ))
 );
 #   if (== (head t) Var) (
 #      let k (tail t)

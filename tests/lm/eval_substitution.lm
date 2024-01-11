@@ -1,2 +1,2 @@
 
-main := print-s( ctx-eval-soft( ((x 123) ()) x ) );
+main := print-s( ctx-eval-soft( (() (x 123)) x ) );
