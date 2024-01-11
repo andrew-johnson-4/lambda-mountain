@@ -216,16 +216,21 @@ fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,
    }
 }
 
+//returns (frame program, expression program, unframe program, data, new program_ctx, new offset)
 fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,S,S,S,i64) {
-   unimplemented!("destructure pattern lhs: {}", p)
+   if head(&p).to_string() == "variable" &&
+      tail(&p).to_string() == "_" {
+      ( s_nil(), s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
+   } else {
+      unimplemented!("destructure pattern lhs: {}", p)
+   }
 }
 
 //returns (frame program, expression program, unframe program, data, new program_ctx, new offset)
 fn yield_patterns(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,S,S,S,i64) {
    if is_nil(p) {
-      let yield_nil = ctx_eval_soft(helpers_ctx, &variable("::yield-nil"));
       let clear_r8 = s_atom("\tmov $0, %r8\n");
-      ( s_nil(), s_cons(yield_nil,clear_r8), s_nil(), s_nil(), program_ctx.clone(), offset )
+      ( s_nil(), clear_r8, s_nil(), s_nil(), program_ctx.clone(), offset )
    } else if head(&p).to_string()=="app" &&
              head(&tail(&tail(&p))).to_string()=="app" {
       let prev = head(&tail(&p));
@@ -319,7 +324,12 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          let c = tail(&tail(&head(&tail(&e))));
          let (cframe,cprog,cunframe,cdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &c, offset);
          let (pframe,pprog,punframe,pdata,program_ctx,offset) = yield_patterns(helpers_ctx, &program_ctx, &p, offset);
-         ( s_cons(cframe,pframe), s_cons(cprog,pprog), s_cons(cunframe,punframe), s_cons(cdata,pdata), program_ctx, offset )
+         let label_skip = uuid();
+         let prog = s_cons(cprog,pprog);
+         let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %r8\n\tjne {}\n",label_skip)));
+         let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::yield-nil")) );
+         let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
+         ( s_cons(cframe,pframe), prog, s_cons(cunframe,punframe), s_cons(cdata,pdata), program_ctx, offset )
       } else if (head(&f).to_string() == "variable" ||
          head(&f).to_string() == "literal") &&
          !is_free(program_ctx, &tail(&f).to_string()) &&
@@ -366,10 +376,6 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
       let prog = s_cons( prog, unframe_args );
       let prog = s_cons( prog, eunframe );
       let prog = s_cons( prog, leave );
-      //TODO put locals into program_ctx
-      //TODO compile body expression
-      //TODO pop locals
-      //don't forget to ret...
       ( s_nil(), prog, s_nil(), edata, program_ctx, offset )
    } else if is_nil(&e) {
       (
