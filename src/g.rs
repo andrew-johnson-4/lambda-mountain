@@ -270,6 +270,19 @@ fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64)
          program_ctx,
          offset
       )
+   } else if is_nil(&p) {
+      let label_skip = uuid();
+      let prog = s_atom("\tcmp $0, %r12\n");
+      let prog = s_cons(prog, s_atom(&format!("\tjne {}\n",label_skip)));
+      let prog = s_cons(prog, s_atom("\tcmp $0, %r13\n"));
+      let prog = s_cons(prog, s_atom(&format!("\tjne {}\n",label_skip)));
+      let prog = s_cons(prog, s_atom("\tcmp $0, %r14\n"));
+      let prog = s_cons(prog, s_atom(&format!("\tjne {}\n",label_skip)));
+      let prog = s_cons(prog, s_atom("\tcmp $0, %r15\n"));
+      let prog = s_cons(prog, s_atom(&format!("\tjne {}\n",label_skip)));
+      let prog = s_cons(prog, s_atom("\tmov $1, %rsi\n"));
+      let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
+      ( s_nil(), prog, s_nil(), s_nil(), program_ctx.clone(), offset )
    } else {
       panic!("unexpected pattern lhs: {}", p)
    }

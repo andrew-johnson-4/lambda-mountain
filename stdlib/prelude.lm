@@ -175,6 +175,8 @@
 
 kv-merge := λl r. match (l r) (
    ()
+   (((x KV) (() KV)) (x KV))
+   (((() KV) (y KV)) (y KV))
 );
 
 /*
