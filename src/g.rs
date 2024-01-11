@@ -227,6 +227,18 @@ fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64)
       let set_r8 = s_atom("\tmov $1, %r8\n");
       let prog = s_cons(lprog, set_r8);
       (lframe, prog, lunframe, ldata, program_ctx, offset)
+   } else if head(&p).to_string()=="literal" {
+      let label_skip = uuid();
+      let prog = s_atom("\tmov %r12, %rax\n");
+      let (_aframe,aprog,_aunframe,adata,_program_ctx,_offset) = yield_atom(helpers_ctx, program_ctx, &tail(&p).to_string(), offset);
+      let prog = s_cons(prog, aprog);
+      let prog = s_cons(prog, s_atom("\tmov %r12, %rbx\n"));
+      let prog = s_cons(prog, s_atom("\tcall _streq\n"));
+      let prog = s_cons(prog, s_atom("\tcmp $0, %r12\n"));
+      let prog = s_cons(prog, s_atom(&format!("\tje {}\n",label_skip)));
+      let prog = s_cons(prog, s_atom("\tmov $1, %r8\n"));
+      let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
+      ( s_nil(), prog, s_nil(), adata, program_ctx.clone(), offset )
    } else {
       unimplemented!("destructure pattern lhs: {}", p)
    }

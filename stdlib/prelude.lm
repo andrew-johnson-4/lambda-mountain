@@ -122,6 +122,10 @@
    # internal, not a call-convention function
    _streq:                      \n
    __streq_loop:                \n
+   \t cmp $0, %rax              \n
+   \t je __streq_false          \n
+   \t cmp $0, %rbx              \n
+   \t je __streq_false          \n
    \t mov 0\(%rax\), %cl          \n
    \t mov 0\(%rbx\), %dl          \n
 
