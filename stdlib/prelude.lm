@@ -173,10 +173,10 @@
   \t .zero 1                    \n
 );
 
-zip := λl r. match (l r) (
+concat := λl r. match (l r) (
    ()
    ( (x ()) x )
-   ( (x (ys y)) ((zip(x ys)) y) )
+   ( (x (ys y)) ((concat(x ys)) y) )
 );
 
 kv-lookup := λctx key. match ctx (

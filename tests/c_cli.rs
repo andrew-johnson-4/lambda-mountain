@@ -89,7 +89,7 @@ fn control_flow() {
 
 #[test]
 fn dsa() {
-   assert_eq!( compile_and_run("tests/lm/zip.lm"), "(((() 1) 2) 3)" );
+   assert_eq!( compile_and_run("tests/lm/concat.lm"), "(((() 1) 2) 3)" );
    assert_eq!( compile_and_run("tests/lm/kv_merge.lm"), "(((((() (1 2)) (3 4)) (5 6)) (7 8)) (9 0))" );
    assert_eq!( compile_and_run("tests/lm/kv_lookup.lm"), "456" );
 }
