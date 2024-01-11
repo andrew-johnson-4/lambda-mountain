@@ -99,6 +99,7 @@ fn dsa() {
 
 #[test]
 fn eval_soft() {
+   assert_eq!( compile_and_run("tests/lm/destructure.lm"), "((() (b 1)) (c 3))" );
    assert_eq!( compile_and_run("tests/lm/eval_cons.lm"), "((123 ()) abc)" );
    assert_eq!( compile_and_run("tests/lm/eval_substitution.lm"), "123" );
    assert_eq!( compile_and_run("tests/lm/eval_lambda.lm"), "(123 123)" );
