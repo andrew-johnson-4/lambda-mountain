@@ -184,6 +184,7 @@ fast-zip := λl r. match (l r) (
 kv-lookup := λctx key. match ctx (
    ()
    ((ctxs (k v)) (
-     if (== k key) v (kv-lookup ctxs key)
+      v
+#     if (== k key) v (kv-lookup ctxs key)
    ))
 );
