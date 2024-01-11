@@ -473,8 +473,6 @@ pub fn compile(cfg: &str, main_ctx: &S) {
          main_ctx = kv_add(&main_ctx, &k, &v);
       }
    }
-   let mut offset = 0;
-   let mut program_ctx = main_ctx.clone();
    for (k,v) in kv_iter(&main_ctx) {
       let k = k.to_string();
       raw_program = s_cons(
@@ -484,23 +482,19 @@ pub fn compile(cfg: &str, main_ctx: &S) {
       if k == "main" {
          let enter = ctx_eval_soft(&helpers_ctx, &variable("::enter-function"));
          raw_program = s_cons( raw_program, enter );
+         let (vframe,vprog,vunframe,vdata,_pc,_offset) = compile_expr(&helpers_ctx, &main_ctx, &v, 0);
+         raw_program = s_cons( raw_program, vframe );
+         raw_program = s_cons( raw_program, vprog );
+         raw_program = s_cons( raw_program, vunframe );
+         raw_program = s_cons( raw_program, ctx_eval_soft(&helpers_ctx, &variable("::exit-cleanup")) );
+         raw_data = s_cons(raw_data,vdata);
+      } else {
+         let (vframe,vprog,vunframe,vdata,_pc,_offset) = compile_expr(&helpers_ctx, &main_ctx, &v, 0);
+         raw_program = s_cons( raw_program, vframe );
+         raw_program = s_cons( raw_program, vprog );
+         raw_program = s_cons( raw_program, vunframe );
+         raw_data = s_cons(raw_data,vdata);
       }
-      let (vframe,vprog,vunframe,vdata,pc,off) = compile_expr(&helpers_ctx, &program_ctx, &v, offset);
-      program_ctx = pc;
-      offset = off;
-      raw_program = s_cons( raw_program, vframe );
-      raw_program = s_cons( raw_program, vprog );
-      raw_program = s_cons( raw_program, vunframe );
-      if k == "main" {
-         raw_program = s_cons(
-            raw_program,
-            ctx_eval_soft(&helpers_ctx, &variable("::exit-cleanup")),
-         );
-      }
-      raw_data = s_cons(
-         raw_data,
-         vdata,
-      );
    }
    let program = compile_program(&helpers_ctx, &raw_program, &raw_data);
    assemble(cfg, &program);
