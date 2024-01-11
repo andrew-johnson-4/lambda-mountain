@@ -220,7 +220,8 @@ fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,
 fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,S,S,S,i64) {
    if head(&p).to_string() == "variable" &&
       tail(&p).to_string() == "_" {
-      ( s_nil(), s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
+      let set_r8 = s_atom("\tmov $1, %r8\n");
+      ( s_nil(), set_r8, s_nil(), s_nil(), program_ctx.clone(), offset )
    } else {
       unimplemented!("destructure pattern lhs: {}", p)
    }
@@ -237,7 +238,7 @@ fn yield_patterns(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,
       let lr = tail(&tail(&tail(&p)));
       let lhs = head(&lr);
       let rhs = tail(&lr);
-      let (pframe,pprog,punframe,pdata,_inner_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &prev, offset);
+      let (pframe,pprog,punframe,pdata,_inner_ctx,offset) = yield_patterns(helpers_ctx, program_ctx, &prev, offset);
       let (lframe,lprog,lunframe,ldata,inner_ctx,offset) = destructure_pattern_lhs(helpers_ctx, &program_ctx, &lhs, offset);
       let (rframe,rprog,runframe,rdata,_inner_ctx,offset) = compile_expr(helpers_ctx, &inner_ctx, &rhs, offset);
       let label_skip = uuid();
