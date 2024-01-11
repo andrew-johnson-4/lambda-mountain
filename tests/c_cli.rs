@@ -94,10 +94,8 @@ fn dsa() {
    assert_eq!( compile_and_run("tests/lm/kv_lookup.lm"), "456" );
 }
 
-/* TODO eval-soft
 #[test]
 fn eval_soft() {
    assert_eq!( compile_and_run("tests/lm/eval_cons.lm"), "((123 ()) abc)" );
-   assert_eq!( compile_and_run("tests/lm/eval_substition.lm"), "123" );
+   assert_eq!( compile_and_run("tests/lm/eval_substitution.lm"), "123" );
 }
-*/
