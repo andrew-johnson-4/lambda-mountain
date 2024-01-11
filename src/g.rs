@@ -250,6 +250,8 @@ fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64)
       let (rframe,rprog,runframe,rdata,program_ctx,offset) = destructure_pattern_lhs(helpers_ctx, &program_ctx, &r, offset);
       let prog = s_atom("\tmov $0, %rsi\n");
       let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::push-this")));
+      let prog = s_cons(prog, s_atom("\tcmp $0, %r13\n"));
+      let prog = s_cons(prog, s_atom(&format!("\tje {}\n",label_skip)));
       let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::head")));
       let prog = s_cons(prog, lprog);
       let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::pop-this")));
@@ -257,6 +259,8 @@ fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64)
       let prog = s_cons(prog, s_atom(&format!("\tje {}\n",label_skip)));
       let prog = s_cons(prog, s_atom("\tmov $0, %rsi\n"));
       let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::push-this")));
+      let prog = s_cons(prog, s_atom("\tcmp $0, %r14\n"));
+      let prog = s_cons(prog, s_atom(&format!("\tje {}\n",label_skip)));
       let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::tail")));
       let prog = s_cons(prog, rprog);
       let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::pop-this")));

@@ -6,4 +6,4 @@ my-lookup := λctx key. match ctx (
    ))
 );
 
-main := print-s(my-lookup (() (1 2)) 1);
+main := print-s(my-lookup ((() (1 2)) 1));
