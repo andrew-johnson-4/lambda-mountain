@@ -254,13 +254,11 @@ fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64)
       let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::pop-this")));
       let prog = s_cons(prog, s_atom("\tcmp $0, %rsi\n"));
       let prog = s_cons(prog, s_atom(&format!("\tje {}\n",label_skip)));
+      let prog = s_cons(prog, s_atom("\tmov $0, %rsi\n"));
       let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::push-this")));
       let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::tail")));
       let prog = s_cons(prog, rprog);
       let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::pop-this")));
-      let prog = s_cons(prog, s_atom("\tcmp $0, %rsi\n"));
-      let prog = s_cons(prog, s_atom(&format!("\tje {}\n",label_skip)));
-      let prog = s_cons(prog, s_atom("\tmov $1, %rsi\n"));
       let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
       (
          s_cons(lframe,rframe),
