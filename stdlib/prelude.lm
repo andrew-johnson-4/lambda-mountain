@@ -172,3 +172,18 @@
   \t .ascii "True"              \n
   \t .zero 1                    \n
 );
+
+#does not preserve "order", O(n)
+fast-zip := λl r. match (l r) (
+   ()
+   ( (() y) y )
+   ( (x ()) x )
+   ( ((xs x) (ys y)) ((fast-zip (xs ys)) x y) )
+);
+
+kv-lookup := λctx key. match ctx (
+   ()
+   ((ctxs (k v)) (
+      if (==(k key)) v (kv-lookup(ctxs key))
+   ))
+)

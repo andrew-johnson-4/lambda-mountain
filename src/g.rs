@@ -248,19 +248,22 @@ fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64)
       let r = tail(&tail(&p));
       let (lframe,lprog,lunframe,ldata,program_ctx,offset) = destructure_pattern_lhs(helpers_ctx, program_ctx, &l, offset);
       let (rframe,rprog,runframe,rdata,program_ctx,offset) = destructure_pattern_lhs(helpers_ctx, &program_ctx, &r, offset);
-      let prog = ctx_eval_soft(helpers_ctx, &variable("::push-this"));
+      let prog = s_atom("\tmov $0, %rsi\n");
+      let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::push-this")));
+      let prog = s_cons(prog, s_atom("\tcmp $0, %r13\n"));
+      let prog = s_cons(prog, s_atom(&format!("\tje {}\n",label_skip)));
       let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::head")));
       let prog = s_cons(prog, lprog);
       let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::pop-this")));
       let prog = s_cons(prog, s_atom("\tcmp $0, %rsi\n"));
       let prog = s_cons(prog, s_atom(&format!("\tje {}\n",label_skip)));
+      let prog = s_cons(prog, s_atom("\tmov $0, %rsi\n"));
       let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::push-this")));
+      let prog = s_cons(prog, s_atom("\tcmp $0, %r14\n"));
+      let prog = s_cons(prog, s_atom(&format!("\tje {}\n",label_skip)));
       let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::tail")));
       let prog = s_cons(prog, rprog);
       let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::pop-this")));
-      let prog = s_cons(prog, s_atom("\tcmp $0, %rsi\n"));
-      let prog = s_cons(prog, s_atom(&format!("\tje {}\n",label_skip)));
-      let prog = s_cons(prog, s_atom("\tmov $1, %rsi\n"));
       let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
       (
          s_cons(lframe,rframe),
@@ -270,6 +273,19 @@ fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64)
          program_ctx,
          offset
       )
+   } else if is_nil(&p) {
+      let label_skip = uuid();
+      let prog = s_atom("\tcmp $0, %r12\n");
+      let prog = s_cons(prog, s_atom(&format!("\tjne {}\n",label_skip)));
+      let prog = s_cons(prog, s_atom("\tcmp $0, %r13\n"));
+      let prog = s_cons(prog, s_atom(&format!("\tjne {}\n",label_skip)));
+      let prog = s_cons(prog, s_atom("\tcmp $0, %r14\n"));
+      let prog = s_cons(prog, s_atom(&format!("\tjne {}\n",label_skip)));
+      let prog = s_cons(prog, s_atom("\tcmp $0, %r15\n"));
+      let prog = s_cons(prog, s_atom(&format!("\tjne {}\n",label_skip)));
+      let prog = s_cons(prog, s_atom("\tmov $1, %rsi\n"));
+      let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
+      ( s_nil(), prog, s_nil(), s_nil(), program_ctx.clone(), offset )
    } else {
       panic!("unexpected pattern lhs: {}", p)
    }
@@ -452,28 +468,27 @@ fn compile_program(helpers_ctx: &S, raw_program: &S, raw_data: &S) -> S {
 }
 
 pub fn compile(cfg: &str, main_ctx: &S) {
+   let mut main_ctx = main_ctx.clone();
    let helpers_ctx = parse_file("stdlib/helpers.lm");
    let prelude_ctx = parse_file("stdlib/prelude.lm");
    let mut raw_program = nil();
    let mut raw_data = nil();
    for (k,v) in kv_iter(&prelude_ctx) {
-      let k = k.to_string();
-      if k == ".data" {
+      let ks = k.to_string();
+      if ks == ".data" {
          raw_data = app(
             raw_data,
             ctx_eval_soft(&helpers_ctx, &v),
          );
-      } else if k == ".text" {
+      } else if ks == ".text" {
          raw_program = app(
             raw_program,
             ctx_eval_soft(&helpers_ctx, &v),
          );
       } else {
-         panic!("unexpected prelude symbol: {}", k);
+         main_ctx = kv_add(&main_ctx, &k, &v);
       }
    }
-   let mut offset = 0;
-   let mut program_ctx = main_ctx.clone();
    for (k,v) in kv_iter(&main_ctx) {
       let k = k.to_string();
       raw_program = s_cons(
@@ -483,23 +498,19 @@ pub fn compile(cfg: &str, main_ctx: &S) {
       if k == "main" {
          let enter = ctx_eval_soft(&helpers_ctx, &variable("::enter-function"));
          raw_program = s_cons( raw_program, enter );
+         let (vframe,vprog,vunframe,vdata,_pc,_offset) = compile_expr(&helpers_ctx, &main_ctx, &v, 0);
+         raw_program = s_cons( raw_program, vframe );
+         raw_program = s_cons( raw_program, vprog );
+         raw_program = s_cons( raw_program, vunframe );
+         raw_program = s_cons( raw_program, ctx_eval_soft(&helpers_ctx, &variable("::exit-cleanup")) );
+         raw_data = s_cons(raw_data,vdata);
+      } else {
+         let (vframe,vprog,vunframe,vdata,_pc,_offset) = compile_expr(&helpers_ctx, &main_ctx, &v, 0);
+         raw_program = s_cons( raw_program, vframe );
+         raw_program = s_cons( raw_program, vprog );
+         raw_program = s_cons( raw_program, vunframe );
+         raw_data = s_cons(raw_data,vdata);
       }
-      let (vframe,vprog,vunframe,vdata,pc,off) = compile_expr(&helpers_ctx, &program_ctx, &v, offset);
-      program_ctx = pc;
-      offset = off;
-      raw_program = s_cons( raw_program, vframe );
-      raw_program = s_cons( raw_program, vprog );
-      raw_program = s_cons( raw_program, vunframe );
-      if k == "main" {
-         raw_program = s_cons(
-            raw_program,
-            ctx_eval_soft(&helpers_ctx, &variable("::exit-cleanup")),
-         );
-      }
-      raw_data = s_cons(
-         raw_data,
-         vdata,
-      );
    }
    let program = compile_program(&helpers_ctx, &raw_program, &raw_data);
    assemble(cfg, &program);

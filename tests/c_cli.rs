@@ -83,6 +83,15 @@ fn control_flow() {
    assert_eq!( compile_and_run("tests/lm/match2.lm"), "2" );
    assert_eq!( compile_and_run("tests/lm/match3.lm"), "456" );
    assert_eq!( compile_and_run("tests/lm/match4.lm"), "(1 3)" );
+   assert_eq!( compile_and_run("tests/lm/match5.lm"), "1" );
+   assert_eq!( compile_and_run("tests/lm/match6.lm"), "(1 2)" );
+}
+
+#[test]
+fn dsa() {
+   assert_eq!( compile_and_run("tests/lm/zip.lm"), "(((() 2) 1) 3)" );
+   assert_eq!( compile_and_run("tests/lm/kv_merge.lm"), "(((((() (1 2)) (3 4)) (7 8)) (5 6)) (9 0))" );
+   assert_eq!( compile_and_run("tests/lm/kv_lookup.lm"), "456" );
 }
 
 /* TODO eval-soft
