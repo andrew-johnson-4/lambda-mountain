@@ -222,6 +222,11 @@ fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64)
       tail(&p).to_string() == "_" {
       let set_r8 = s_atom("\tmov $1, %r8\n");
       ( s_nil(), set_r8, s_nil(), s_nil(), program_ctx.clone(), offset )
+   } else if head(&p).to_string()=="variable" {
+      let (lframe,lprog,lunframe,ldata,program_ctx,offset) = declare_local(helpers_ctx, program_ctx, &tail(&p), offset);
+      let set_r8 = s_atom("\tmov $1, %r8\n");
+      let prog = s_cons(lprog, set_r8);
+      (lframe, prog, lunframe, ldata, program_ctx, offset)
    } else {
       unimplemented!("destructure pattern lhs: {}", p)
    }
