@@ -220,12 +220,12 @@ fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,
 fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,S,S,S,i64) {
    if head(&p).to_string() == "variable" &&
       tail(&p).to_string() == "_" {
-      let set_r8 = s_atom("\tmov $1, %r8\n");
-      ( s_nil(), set_r8, s_nil(), s_nil(), program_ctx.clone(), offset )
+      let set_rsi = s_atom("\tmov $1, %rsi\n");
+      ( s_nil(), set_rsi, s_nil(), s_nil(), program_ctx.clone(), offset )
    } else if head(&p).to_string()=="variable" {
       let (lframe,lprog,lunframe,ldata,program_ctx,offset) = declare_local(helpers_ctx, program_ctx, &tail(&p), offset);
-      let set_r8 = s_atom("\tmov $1, %r8\n");
-      let prog = s_cons(lprog, set_r8);
+      let set_rsi = s_atom("\tmov $1, %rsi\n");
+      let prog = s_cons(lprog, set_rsi);
       (lframe, prog, lunframe, ldata, program_ctx, offset)
    } else if head(&p).to_string()=="literal" {
       let label_skip = uuid();
@@ -235,11 +235,11 @@ fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64)
       let prog = s_cons(prog, aprog);
       let prog = s_cons(prog, s_atom("\tmov %r12, %rbx\n"));
       let prog = s_cons(prog, s_atom("\tcall _streq\n"));
-      let prog = s_cons(prog, s_atom("\tmov %r12, %rax\n"));
+      let prog = s_cons(prog, s_atom("\tmov %r12, %rdi\n"));
       let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::unshadow-this")));
-      let prog = s_cons(prog, s_atom("\tcmp $0, %rax\n")); // %rax is zero if strings are not equal
-      let prog = s_cons(prog, s_atom(&format!("\tje {}\n",label_skip))); //skip if strings are not equal
-      let prog = s_cons(prog, s_atom("\tmov $1, %r8\n"));
+      let prog = s_cons(prog, s_atom("\tcmp $0, %rdi\n"));
+      let prog = s_cons(prog, s_atom(&format!("\tje {}\n",label_skip)));
+      let prog = s_cons(prog, s_atom("\tmov $1, %rsi\n"));
       let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
       ( s_nil(), prog, s_nil(), adata, program_ctx.clone(), offset )
    } else {
@@ -250,8 +250,8 @@ fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64)
 //returns (frame program, expression program, unframe program, data, new program_ctx, new offset)
 fn yield_patterns(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,S,S,S,i64) {
    if is_nil(p) {
-      let clear_r8 = s_atom("\tmov $0, %r8\n");
-      ( s_nil(), clear_r8, s_nil(), s_nil(), program_ctx.clone(), offset )
+      let clear_rsi = s_atom("\tmov $0, %rsi\n");
+      ( s_nil(), clear_rsi, s_nil(), s_nil(), program_ctx.clone(), offset )
    } else if head(&p).to_string()=="app" &&
              head(&tail(&tail(&p))).to_string()=="app" {
       let prev = head(&tail(&p));
@@ -263,11 +263,11 @@ fn yield_patterns(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,
       let (rframe,rprog,runframe,rdata,_inner_ctx,offset) = compile_expr(helpers_ctx, &inner_ctx, &rhs, offset);
       let label_skip = uuid();
       let prog = pprog;
-      let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %r8\n\tjne {}\n",label_skip)));
-      let prog = s_cons(prog, lprog); //set %r8 to non-zero if success
-      let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %r8\n\tje {}\n",label_skip)));
+      let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %rsi\n\tjne {}\n",label_skip)));
+      let prog = s_cons(prog, lprog); //set %rsi to non-zero if success
+      let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %rsi\n\tje {}\n",label_skip)));
       let prog = s_cons(prog, rprog);
-      let prog = s_cons(prog, s_atom("\tmov $1, %r8\n"));
+      let prog = s_cons(prog, s_atom("\tmov $1, %rsi\n"));
       let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
       (
          s_cons(s_cons(pframe,lframe),rframe),
@@ -347,7 +347,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          let (pframe,pprog,punframe,pdata,program_ctx,offset) = yield_patterns(helpers_ctx, &program_ctx, &p, offset);
          let label_skip = uuid();
          let prog = s_cons(cprog,pprog);
-         let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %r8\n\tjne {}\n",label_skip)));
+         let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %rsi\n\tjne {}\n",label_skip)));
          let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::yield-nil")) );
          let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
          ( s_cons(cframe,pframe), prog, s_cons(cunframe,punframe), s_cons(cdata,pdata), program_ctx, offset )
