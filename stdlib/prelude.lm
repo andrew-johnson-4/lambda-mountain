@@ -187,14 +187,18 @@ kv-lookup := λctx key default. match ctx (
    (() default)
 );
 
-eval-soft := λt. ctx-eval-soft( () t );
+eval-soft := λt. (
+   (ctx-eval-soft ( () t ))
+);
 
-ctx-eval-soft := λctx t. match t (
-   ()
-   (((Lambda fl fr) x) TODO)
-   ((l r) (l r))
-   (v (
-      kv-lookup(ctx v v)
+ctx-eval-soft := λctx t. (
+   (match t (
+      ()
+      ( ((Lambda fl fr) x) TODO )
+      ((l r) (l r))
+      (v (
+         kv-lookup(ctx v v)
+      ))
    ))
 );
 #   if (== (head t) Var) (
