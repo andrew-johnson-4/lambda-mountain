@@ -89,6 +89,7 @@ fn control_flow() {
 fn dsa() {
    assert_eq!( compile_and_run("tests/lm/zip.lm"), "(((() 2) 1) 3)" );
    assert_eq!( compile_and_run("tests/lm/kv_merge.lm"), "(((((() (1 2)) (3 4)) (7 8)) (5 6)) (9 0))" );
+   assert_eq!( compile_and_run("tests/lm/kv_lookup.lm"), "456" );
 }
 
 /* TODO eval-soft

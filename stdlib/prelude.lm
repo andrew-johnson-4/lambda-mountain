@@ -181,20 +181,9 @@ fast-zip := λl r. match (l r) (
    ( ((xs x) (ys y)) ((fast-zip (xs ys)) x y) )
 );
 
-#pub fn kv_ctx(s: &S) -> HashMap<String,S> {
-#   let mut ctx = HashMap::new();
-#   for (k,v) in kv_iter(s) {
-#      let k = k.to_string();
-#      ctx.insert( k, v );
-#   }
-#   ctx
-#}
-#pub fn kv_lookup(ctx: &S, key: &S, default: &S) -> S {
-#   for (k,v) in kv_iter(ctx) {
-#      if k==*key { return v.clone(); }
-#   }
-#   default.clone()
-#}
-#pub fn kv_s(ctx: &HashMap<String,S>) -> S {
-#   kv(&ctx.iter().map(|(k,v)| (s_atom(&k),v.clone())).collect::<Vec<(S,S)>>())
-#}
+kv-lookup := λctx key. match ctx (
+   ()
+   ((ctxs (k v)) (
+     if (== k key) v (kv-lookup ctxs key)
+   ))
+);
