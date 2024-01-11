@@ -229,13 +229,16 @@ fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64)
       (lframe, prog, lunframe, ldata, program_ctx, offset)
    } else if head(&p).to_string()=="literal" {
       let label_skip = uuid();
-      let prog = s_atom("\tmov %r12, %rax\n");
+      let prog = ctx_eval_soft(helpers_ctx, &variable("::shadow-this"));
+      let prog = s_cons(prog, s_atom("\tmov %r12, %rax\n"));
       let (_aframe,aprog,_aunframe,adata,_program_ctx,_offset) = yield_atom(helpers_ctx, program_ctx, &tail(&p).to_string(), offset);
       let prog = s_cons(prog, aprog);
       let prog = s_cons(prog, s_atom("\tmov %r12, %rbx\n"));
       let prog = s_cons(prog, s_atom("\tcall _streq\n"));
-      let prog = s_cons(prog, s_atom("\tcmp $0, %r12\n"));
-      let prog = s_cons(prog, s_atom(&format!("\tje {}\n",label_skip)));
+      let prog = s_cons(prog, s_atom("\tmov %r12, %rax\n"));
+      let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::unshadow-this")));
+      let prog = s_cons(prog, s_atom("\tcmp $0, %rax\n")); // %rax is zero if strings are not equal
+      let prog = s_cons(prog, s_atom(&format!("\tje {}\n",label_skip))); //skip if strings are not equal
       let prog = s_cons(prog, s_atom("\tmov $1, %r8\n"));
       let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
       ( s_nil(), prog, s_nil(), adata, program_ctx.clone(), offset )
@@ -261,7 +264,7 @@ fn yield_patterns(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,
       let label_skip = uuid();
       let prog = pprog;
       let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %r8\n\tjne {}\n",label_skip)));
-      let prog = s_cons(prog, lprog);
+      let prog = s_cons(prog, lprog); //set %r8 to non-zero if success
       let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %r8\n\tje {}\n",label_skip)));
       let prog = s_cons(prog, rprog);
       let prog = s_cons(prog, s_atom("\tmov $1, %r8\n"));

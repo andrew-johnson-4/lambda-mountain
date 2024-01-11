@@ -40,6 +40,10 @@
 
 # bootstrap is inefficient with calling conventions
 ::callee-save-registers := (
+   \t push %rax \n
+   \t push %rbx \n
+   \t push %rcx \n
+   \t push %rdx \n
    \t push %r12 \n
    \t push %r13 \n
    \t push %r14 \n
@@ -54,6 +58,10 @@
    \t pop %r14 \n
    \t pop %r13 \n
    \t pop %r12 \n
+   \t pop %rdx \n
+   \t pop %rcx \n
+   \t pop %rbx \n
+   \t pop %rax \n
 );
 
 ::enter-function := (
