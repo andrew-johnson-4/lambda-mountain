@@ -188,17 +188,16 @@ kv-lookup := λctx key default. match ctx (
 );
 
 eval-soft := λt. (
-   (ctx-eval-soft ( CTX t ))
+   ctx-eval-soft ( CTX t )
 );
 
 ctx-eval-soft := λctx t. (
    (match t (
       ()
       ( ((Lambda fl fr) x) (tail(
-         (print-s ctx)
-         (= ctx (destructure (ctx fl x)))
-         (print-s ctx)
-         (ctx-eval-soft (ctx fr))
+         (local inner_ctx)
+         (= inner_ctx (destructure (ctx fl x)))
+         (ctx-eval-soft (inner_ctx fr))
       )))
       ((l r) (
          ( (ctx-eval-soft (ctx l)) (ctx-eval-soft (ctx r)) )
@@ -215,9 +214,10 @@ destructure := λctx pat val. if ctx (match (pat val) (
       (ctx (x y))
    ))
    ( ((xs x) (ys y)) (tail(
-      (= ctx (destructure (ctx xs ys)))
-      (= ctx (destructure (ctx x y)))
-      ctx
+      (local inner_ctx)
+      (= inner_ctx (destructure (ctx xs ys)))
+      (= inner_ctx (destructure (inner_ctx x y)))
+      inner_ctx
    )))
    ( (x y) (
       if (== (x y)) ctx ()
