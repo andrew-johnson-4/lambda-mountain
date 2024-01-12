@@ -1,0 +1,6 @@
+
+main := print-s(match (1 2 3) (
+   ()
+   (((Lambda x y) z) (x z))
+   ( (x y) (x y) )
+));

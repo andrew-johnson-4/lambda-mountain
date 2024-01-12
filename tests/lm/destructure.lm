@@ -1,0 +1,4 @@
+
+main := print-s(
+   destructure( CTX (A ((Var b) 2) (Var c)) (A (1 2) 3) )
+);

@@ -1,2 +1,2 @@
 
-main := eval-soft (123 () abc);
+main := print-s( eval-soft (123 () abc) );
