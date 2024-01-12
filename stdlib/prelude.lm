@@ -211,8 +211,32 @@ ctx-eval-soft := λctx t. (
 #         (ctx-eval-soft inner-ctx fr)
 #      ) (App f x)
 
-destructure := λctx pat val. (
-);
+destructure := λctx pat val. if (== (ctx ())) () (match (pat val) (
+   ()
+   ( ((Var x) y) (
+      (ctx (x y))
+   ))
+   ( ((xs x) (ys y)) (tail(
+      (= ctx (destructure (ctx xs ys)))
+      (= ctx (destructure (ctx x y)))
+      ctx
+   )))
+   ( (x y) (
+      if (== (x y)) ctx ()
+   ))
+));
+
+#destructure := λctx pat val. if (== ctx ()) () (match (pat val) (
+#   ()
+#   ( ((Var x) y) TODO1 )
+#   ( ((xs x) (ys y)) (tail(
+#     (= ctx (destructure (ctx xs ys)))
+#     concat( (destructure ctx) () )
+#   )))
+#   ( (x y) (
+#      if (== (x y)) ctx ()
+#   ))
+#));
 #pub fn destructure(ctx: &mut HashMap<String,S>, pattern: S, value: S) -> bool {
 #   if pattern==value { return true; }
 #   if !is_cons(&pattern) { return false; }
