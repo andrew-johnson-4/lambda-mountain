@@ -184,7 +184,7 @@ kv-lookup := λctx key default. match ctx (
    ((ctxs (k v)) (
       if (==(k key)) v (kv-lookup(ctxs key default))
    ))
-   (() default)
+   (_ default)
 );
 
 eval-soft := λt. (
@@ -200,10 +200,10 @@ ctx-eval-soft := λctx t. (
          (ctx-eval-soft (inner_ctx fr))
       )))
       ((l r) (
-         ( (ctx-eval-soft (ctx l)) (ctx-eval-soft (ctx r)) )
+         ( (ctx-eval-soft(ctx l)) (ctx-eval-soft(ctx r)) )
       ))
       (v (
-         kv-lookup(ctx v v)
+         (kv-lookup(ctx v v))
       ))
    ))
 );
