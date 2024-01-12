@@ -1,4 +1,4 @@
 
 main := print-s(
-   eval-soft( (Lambda x (x x)) 123 )
+   eval-soft( (Lambda (Var x) (x x)) 123 )
 );

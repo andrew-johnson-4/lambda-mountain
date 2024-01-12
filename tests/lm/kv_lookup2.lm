@@ -1,0 +1,8 @@
+
+main := print-s(
+   kv-lookup (
+      (() (abc def) (123 456) (qrs xyz))
+      789
+      000
+   )
+);
