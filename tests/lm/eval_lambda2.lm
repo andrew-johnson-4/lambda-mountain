@@ -1,4 +1,4 @@
 
 main := print-s(
-   ctx-eval-soft( (CTX (y 456)) (Lambda x (x y)) 123 )
+   ctx-eval-soft( (CTX (y 456)) ((Lambda (Var x) (x y)) 123) )
 );

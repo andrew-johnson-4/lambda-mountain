@@ -194,14 +194,22 @@ eval-soft := λt. (
 ctx-eval-soft := λctx t. (
    (match t (
       ()
-      ( ((Lambda fl fr) x) (tail(
-         (local inner_ctx)
-         (= inner_ctx (destructure (ctx fl x)))
-         (ctx-eval-soft (inner_ctx fr))
+      ((Lambda fl fr) (Lambda fl fr))
+      ((l r) (tail(
+         (local le)
+         (= le (ctx-eval-soft(ctx l)))
+         (local re)
+         (= re (ctx-eval-soft(ctx r)))
+         (match le (
+            ()
+            ( (Lambda fl fr) (tail(
+               (local inner_ctx)
+               (= inner_ctx (destructure (ctx fl re)))
+               (ctx-eval-soft (inner_ctx fr))
+            )))
+            (_ (le re))
+         ))
       )))
-      ((l r) (
-         ( (ctx-eval-soft(ctx l)) (ctx-eval-soft(ctx r)) )
-      ))
       (v (
          (kv-lookup(ctx v v))
       ))
