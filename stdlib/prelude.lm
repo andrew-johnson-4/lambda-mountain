@@ -211,7 +211,7 @@ ctx-eval-soft := λctx t. (
 #         (ctx-eval-soft inner-ctx fr)
 #      ) (App f x)
 
-destructure := λctx pat val. if (== (ctx ())) () (match (pat val) (
+destructure := λctx pat val. if ctx (match (pat val) (
    ()
    ( ((Var x) y) (
       (ctx (x y))
@@ -224,46 +224,4 @@ destructure := λctx pat val. if (== (ctx ())) () (match (pat val) (
    ( (x y) (
       if (== (x y)) ctx ()
    ))
-));
-
-#destructure := λctx pat val. if (== ctx ()) () (match (pat val) (
-#   ()
-#   ( ((Var x) y) TODO1 )
-#   ( ((xs x) (ys y)) (tail(
-#     (= ctx (destructure (ctx xs ys)))
-#     concat( (destructure ctx) () )
-#   )))
-#   ( (x y) (
-#      if (== (x y)) ctx ()
-#   ))
-#));
-#pub fn destructure(ctx: &mut HashMap<String,S>, pattern: S, value: S) -> bool {
-#   if pattern==value { return true; }
-#   if !is_cons(&pattern) { return false; }
-#   if head(&pattern)==s_atom("variable") {
-#      let k = tail(&pattern).to_string();
-#      ctx.insert( k, value );
-#      return true;
-#   }
-#   if !is_cons(&value) { return false; }
-#   if is_atom(&head(&pattern)) && head(&pattern).to_string()=="lambda" {
-#      return false;
-#   }
-#   if is_atom(&head(&pattern)) && head(&pattern).to_string()=="kv" &&
-#      is_atom(&head(&value)) && head(&value).to_string()=="kv" {
-#      for (lk,lv) in kv_iter(&tail(&pattern)) {
-#         let mut found = false;
-#         for (rk,rv) in kv_iter(&tail(&value)) {
-#            if lk==rk {
-#               if !destructure(ctx, lv, rv) { return false; }
-#               found = true;
-#               break;
-#            }
-#         }
-#         if !found { return false; }
-#      }
-#      return true;
-#   }
-#   destructure(ctx, head(&pattern), head(&value)) &&
-#   destructure(ctx, tail(&pattern), tail(&value))
-#}
+)) ();
