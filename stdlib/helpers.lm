@@ -378,7 +378,7 @@
 
 # $this is the Rope to iterate over
 # ::foreach-call is a label to be called for each atom
-::foreach-atom := λ::foreach-label ::foreach-notcons ::foreach-call.(
+::foreach-atom := λ::foreach-head ::foreach-notcons ::foreach-apply.(
    #define label for this function
    ::foreach-head : \n
 
@@ -395,11 +395,12 @@
    ::tail
    \t call ::foreach-head \n
    ::pop-this
+   \t ret \n
 
    #if not cons, apply
    ::foreach-notcons : \n
    ::push-this
-   \t call ::foreach-call \n
+   \t call ::foreach-apply \n
    ::pop-this
    \t ret \n
 );
