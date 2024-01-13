@@ -352,6 +352,13 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          }
       } else if head(&e).to_string()=="app" &&
                 head(&head(&tail(&e))).to_string() == "app" &&
+                head(&head(&tail(&head(&tail(&e))))).to_string() == "variable" &&
+                tail(&head(&tail(&head(&tail(&e))))).to_string() == "foreach-atom" {
+         let atom = tail(&tail(&head(&tail(&e)))); 
+         let label = tail(&tail(&e));
+         unimplemented!("foreach-atom {} {}", atom, label)
+      } else if head(&e).to_string()=="app" &&
+                head(&head(&tail(&e))).to_string() == "app" &&
                 head(&head(&tail(&head(&tail(&e))))).to_string() == "app" &&
                 head(&head(&tail(&head(&tail(&head(&tail(&e))))))).to_string() == "variable" &&
                 tail(&head(&tail(&head(&tail(&head(&tail(&e))))))).to_string() == "if" {
