@@ -355,11 +355,12 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
                 head(&head(&tail(&head(&tail(&e))))).to_string() == "variable" &&
                 tail(&head(&tail(&head(&tail(&e))))).to_string() == "foreach-atom" {
          let atom = tail(&tail(&head(&tail(&e)))); 
-         let label = tail(&tail(&tail(&e)));
-         let label = variable(&label_case(&label.to_string()));
-         let foreach_head = variable(&uuid());
+         let apply_label = tail(&tail(&tail(&e)));
+         let apply_label = variable(&label_case(&apply_label.to_string()));
+         let foreach_label = variable(&uuid());
+         let foreach_notcons = variable(&uuid());
          let (aframe,prog,aunframe,adata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &atom, offset);
-         let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &app(variable("::foreach-atom"),app(foreach_head,label))) );
+         let ftext = ctx_eval_soft(helpers_ctx, &app(variable("::foreach-atom"),app(app(foreach_label,foreach_notcons),apply_label)));
          ( aframe, prog, aunframe, adata, program_ctx, offset )
       } else if head(&e).to_string()=="app" &&
                 head(&head(&tail(&e))).to_string() == "app" &&
