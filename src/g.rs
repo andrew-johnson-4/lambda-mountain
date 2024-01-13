@@ -356,7 +356,9 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
                 tail(&head(&tail(&head(&tail(&e))))).to_string() == "foreach-atom" {
          let atom = tail(&tail(&head(&tail(&e)))); 
          let label = tail(&tail(&e));
-         unimplemented!("foreach-atom {} {}", atom, label)
+         let (aframe,prog,aunframe,adata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &atom, offset);
+         let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &app(variable("::foreach-atom"),label)) );
+         ( aframe, prog, aunframe, adata, program_ctx, offset )
       } else if head(&e).to_string()=="app" &&
                 head(&head(&tail(&e))).to_string() == "app" &&
                 head(&head(&tail(&head(&tail(&e))))).to_string() == "app" &&
