@@ -378,6 +378,10 @@
 
 # $this is the Rope to iterate over
 # ::foreach-call is a label to be called for each atom
-::foreach-atom := λ::foreach-call.(
-   TODO
+::foreach-atom := λ::foreach-head ::foreach-call.(
+   ::foreach-head : \n
+   #if this is an atom: call label
+   \t call ::foreach-call \n
+   #if this is a cons: recurse
+   #if there are cons on stack: take off stack and loop
 );
