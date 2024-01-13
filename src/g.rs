@@ -143,12 +143,13 @@ fn is_local(program_ctx: &S, s: &str) -> String {
    "".to_string()
 }
 
-//returns (frame program, expression program, unframe program, data, new program_ctx, new offset)
-fn yield_atom(helpers_ctx: &S, program_ctx: &S, s: &str, offset: i64) -> (S,S,S,S,S,i64) {
+//returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
+fn yield_atom(helpers_ctx: &S, program_ctx: &S, s: &str, offset: i64) -> (S,S,S,S,S,S,i64) {
    let id = uuid();
    (
       s_nil(),
       ctx_eval_soft(helpers_ctx, &app( variable("::yield-atom"), variable(&id) )),
+      s_nil(),
       s_nil(),
       variable(&format!("{}:\n\t.ascii \"{}\"\n\t.zero 1\n", id, s)),
       program_ctx.clone(),
@@ -156,8 +157,8 @@ fn yield_atom(helpers_ctx: &S, program_ctx: &S, s: &str, offset: i64) -> (S,S,S,
    )
 }
 
-//returns (frame program, expression program, unframe program, data, new program_ctx, new offset)
-fn declare_local(helpers_ctx: &S, program_ctx: &S, vname: &S, offset: i64) -> (S,S,S,S,S,i64) {
+//returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
+fn declare_local(helpers_ctx: &S, program_ctx: &S, vname: &S, offset: i64) -> (S,S,S,S,S,S,i64) {
   
    let frame_this = ctx_eval_soft(helpers_ctx, &variable("::push-zero"));
    let unframe_this = ctx_eval_soft(helpers_ctx, &variable("::unpush-this"));
@@ -185,13 +186,13 @@ fn declare_local(helpers_ctx: &S, program_ctx: &S, vname: &S, offset: i64) -> (S
    let assign_vname = s_atom(&format!("set {}",vname));
    let program_ctx = kv_add( program_ctx, &vname, &refer );
    let program_ctx = kv_add( &program_ctx, &assign_vname, &assign );
-   (frame_this, set_this, unframe_this, s_nil(), program_ctx, offset+1)
+   (frame_this, set_this, unframe_this, s_nil(), s_nil(), program_ctx, offset+1)
 }
 
-//returns (frame program, expression program, unframe program, data, new program_ctx, new offset)
-fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,S,S,i64) {
+//returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
+fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,S,S,S,i64) {
    if is_nil(e) {
-      ( s_nil(), s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
+      ( s_nil(), s_nil(), s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
    } else if head(&e).to_string()=="variable" {
       declare_local(helpers_ctx, program_ctx, &tail(&e), offset)
    } else if head(&e).to_string()=="app" {
@@ -199,10 +200,10 @@ fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,
       let arg_tail = tail(&tail(&e));
       let store_this = ctx_eval_soft(helpers_ctx, &variable("::shadow-this"));
       let restore_this = ctx_eval_soft(helpers_ctx, &variable("::unshadow-this"));
-      let (_frame,load_head,_unframe,_data,_ctx,_) = compile_expr(helpers_ctx, program_ctx, &app(variable("head"),variable("$_")), offset );
-      let (_frame,load_tail,_unframe,_data,_ctx,_) = compile_expr(helpers_ctx, program_ctx, &app(variable("tail"),variable("$_")), offset );
-      let (frame_tail, prog_tail, unframe_tail, _data, program_ctx, offset) = destructure_args(helpers_ctx, program_ctx, &arg_tail, offset);
-      let (frame_head, prog_head, unframe_head, _data, program_ctx, offset) = destructure_args(helpers_ctx, &program_ctx, &arg_head, offset);
+      let (_frame,load_head,_unframe,_text,_data,_ctx,_) = compile_expr(helpers_ctx, program_ctx, &app(variable("head"),variable("$_")), offset );
+      let (_frame,load_tail,_unframe,_text,_data,_ctx,_) = compile_expr(helpers_ctx, program_ctx, &app(variable("tail"),variable("$_")), offset );
+      let (frame_tail, prog_tail, unframe_tail, _text, _data, program_ctx, offset) = destructure_args(helpers_ctx, program_ctx, &arg_tail, offset);
+      let (frame_head, prog_head, unframe_head, _text, _data, program_ctx, offset) = destructure_args(helpers_ctx, &program_ctx, &arg_head, offset);
       let prog = s_cons(store_this, load_tail);
       let prog = s_cons(prog, prog_tail);
       let prog = s_cons(prog, restore_this);
@@ -210,28 +211,28 @@ fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,
       let prog = s_cons(prog, prog_head);
       let frame = s_cons(frame_head, frame_tail);
       let unframe = s_cons(unframe_head, unframe_tail);
-      (frame, prog, unframe, s_nil(), program_ctx, offset)
+      (frame, prog, unframe, s_nil(), s_nil(), program_ctx, offset)
    } else {
       panic!("Unexpected lhs in destructure_args: {}", e)
    }
 }
 
-//returns (frame program, expression program, unframe program, data, new program_ctx, new offset)
-fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,S,S,S,i64) {
+//returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
+fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,S,S,S,S,i64) {
    if head(&p).to_string() == "variable" &&
       tail(&p).to_string() == "_" {
       let set_rsi = s_atom("\tmov $1, %rsi\n");
-      ( s_nil(), set_rsi, s_nil(), s_nil(), program_ctx.clone(), offset )
+      ( s_nil(), set_rsi, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
    } else if head(&p).to_string()=="variable" {
-      let (lframe,lprog,lunframe,ldata,program_ctx,offset) = declare_local(helpers_ctx, program_ctx, &tail(&p), offset);
+      let (lframe,lprog,lunframe,ltext,ldata,program_ctx,offset) = declare_local(helpers_ctx, program_ctx, &tail(&p), offset);
       let set_rsi = s_atom("\tmov $1, %rsi\n");
       let prog = s_cons(lprog, set_rsi);
-      (lframe, prog, lunframe, ldata, program_ctx, offset)
+      (lframe, prog, lunframe, ltext, ldata, program_ctx, offset)
    } else if head(&p).to_string()=="literal" {
       let label_skip = uuid();
       let prog = ctx_eval_soft(helpers_ctx, &variable("::shadow-this"));
       let prog = s_cons(prog, s_atom("\tmov %r12, %rax\n"));
-      let (_aframe,aprog,_aunframe,adata,_program_ctx,_offset) = yield_atom(helpers_ctx, program_ctx, &tail(&p).to_string(), offset);
+      let (_aframe,aprog,_aunframe,atext,adata,_program_ctx,_offset) = yield_atom(helpers_ctx, program_ctx, &tail(&p).to_string(), offset);
       let prog = s_cons(prog, aprog);
       let prog = s_cons(prog, s_atom("\tmov %r12, %rbx\n"));
       let prog = s_cons(prog, s_atom("\tcall _streq\n"));
@@ -241,13 +242,13 @@ fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64)
       let prog = s_cons(prog, s_atom(&format!("\tje {}\n",label_skip)));
       let prog = s_cons(prog, s_atom("\tmov $1, %rsi\n"));
       let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
-      ( s_nil(), prog, s_nil(), adata, program_ctx.clone(), offset )
+      ( s_nil(), prog, s_nil(), atext, adata, program_ctx.clone(), offset )
    } else if head(&p).to_string()=="app" {
       let label_skip = uuid();
       let l = head(&tail(&p));
       let r = tail(&tail(&p));
-      let (lframe,lprog,lunframe,ldata,program_ctx,offset) = destructure_pattern_lhs(helpers_ctx, program_ctx, &l, offset);
-      let (rframe,rprog,runframe,rdata,program_ctx,offset) = destructure_pattern_lhs(helpers_ctx, &program_ctx, &r, offset);
+      let (lframe,lprog,lunframe,ltext,ldata,program_ctx,offset) = destructure_pattern_lhs(helpers_ctx, program_ctx, &l, offset);
+      let (rframe,rprog,runframe,rtext,rdata,program_ctx,offset) = destructure_pattern_lhs(helpers_ctx, &program_ctx, &r, offset);
       let prog = s_atom("\tmov $0, %rsi\n");
       let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::push-this")));
       let prog = s_cons(prog, s_atom("\tcmp $0, %r13\n"));
@@ -269,6 +270,7 @@ fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64)
          s_cons(lframe,rframe),
          prog,
          s_cons(lunframe,runframe),
+         s_cons(ltext,rtext),
          s_cons(ldata,rdata),
          program_ctx,
          offset
@@ -285,26 +287,26 @@ fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64)
       let prog = s_cons(prog, s_atom(&format!("\tjne {}\n",label_skip)));
       let prog = s_cons(prog, s_atom("\tmov $1, %rsi\n"));
       let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
-      ( s_nil(), prog, s_nil(), s_nil(), program_ctx.clone(), offset )
+      ( s_nil(), prog, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
    } else {
       panic!("unexpected pattern lhs: {}", p)
    }
 }
 
-//returns (frame program, expression program, unframe program, data, new program_ctx, new offset)
-fn yield_patterns(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,S,S,S,i64) {
+//returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
+fn yield_patterns(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,S,S,S,S,i64) {
    if is_nil(p) {
       let clear_rsi = s_atom("\tmov $0, %rsi\n");
-      ( s_nil(), clear_rsi, s_nil(), s_nil(), program_ctx.clone(), offset )
+      ( s_nil(), clear_rsi, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
    } else if head(&p).to_string()=="app" &&
              head(&tail(&tail(&p))).to_string()=="app" {
       let prev = head(&tail(&p));
       let lr = tail(&tail(&tail(&p)));
       let lhs = head(&lr);
       let rhs = tail(&lr);
-      let (pframe,pprog,punframe,pdata,_inner_ctx,offset) = yield_patterns(helpers_ctx, program_ctx, &prev, offset);
-      let (lframe,lprog,lunframe,ldata,inner_ctx,offset) = destructure_pattern_lhs(helpers_ctx, &program_ctx, &lhs, offset);
-      let (rframe,rprog,runframe,rdata,_inner_ctx,offset) = compile_expr(helpers_ctx, &inner_ctx, &rhs, offset);
+      let (pframe,pprog,punframe,ptext,pdata,_inner_ctx,offset) = yield_patterns(helpers_ctx, program_ctx, &prev, offset);
+      let (lframe,lprog,lunframe,ltext,ldata,inner_ctx,offset) = destructure_pattern_lhs(helpers_ctx, &program_ctx, &lhs, offset);
+      let (rframe,rprog,runframe,rtext,rdata,_inner_ctx,offset) = compile_expr(helpers_ctx, &inner_ctx, &rhs, offset);
       let label_skip = uuid();
       let prog = pprog;
       let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %rsi\n\tjne {}\n",label_skip)));
@@ -317,6 +319,7 @@ fn yield_patterns(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,
          s_cons(s_cons(pframe,lframe),rframe),
          prog,
          s_cons(s_cons(punframe,lunframe),runframe),
+         s_cons(s_cons(ptext,ltext),rtext),
          s_cons(s_cons(pdata,ldata),rdata),
          program_ctx.clone(),
          offset
@@ -326,8 +329,8 @@ fn yield_patterns(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,
    }
 }
 
-//returns (frame program, expression program, unframe program, data, new program_ctx, new offset)
-fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,S,S,i64) {
+//returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
+fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,S,S,S,i64) {
    let e = ctx_eval_soft(helpers_ctx, e);
    if head(&e).to_string() == "app" {
       let fx = tail(&e);
@@ -336,8 +339,8 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
       if head(&f).to_string() == "variable" &&
          tail(&f).to_string() == "local" &&
          head(&x).to_string() == "variable" {
-	 let (f,_p,u,d,pc,offset) = declare_local(helpers_ctx, program_ctx, &tail(&x), offset);
-         ( f, s_nil(), u, d, pc, offset )
+	 let (f,_p,u,t,d,pc,offset) = declare_local(helpers_ctx, program_ctx, &tail(&x), offset);
+         ( f, s_nil(), u, t, d, pc, offset )
       } else if head(&f).to_string()=="app" &&
                 head(&head(&tail(&f))).to_string() == "literal" &&
                 tail(&head(&tail(&f))).to_string() == "=" &&
@@ -347,9 +350,22 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          if local == "" {
             panic!("assignment to undefined local {}", lname);
          } else {
-            let (xframe,xprog,xunframe,xdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &x, offset);
-            ( xframe, s_cons(xprog, s_atom(&local)), xunframe, xdata, program_ctx.clone(), offset )
+            let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &x, offset);
+            ( xframe, s_cons(xprog, s_atom(&local)), xunframe, xtext, xdata, program_ctx.clone(), offset )
          }
+      } else if head(&e).to_string()=="app" &&
+                head(&head(&tail(&e))).to_string() == "app" &&
+                head(&head(&tail(&head(&tail(&e))))).to_string() == "variable" &&
+                tail(&head(&tail(&head(&tail(&e))))).to_string() == "foreach-atom" {
+         let atom = tail(&tail(&head(&tail(&e)))); 
+         let apply_label = tail(&tail(&tail(&e)));
+         let apply_label = s_atom(&label_case(&apply_label.to_string()));
+         let foreach_label = s_atom(&uuid());
+         let foreach_notcons = s_atom(&uuid());
+         let (aframe,prog,aunframe,atext,adata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &atom, offset);
+         let ftext = ctx_eval_soft(helpers_ctx, &app(variable("::foreach-atom"),app(app(foreach_label.clone(),foreach_notcons),apply_label.clone())));
+         let prog = s_cons( prog, s_atom(&format!("\tcall {}\n",foreach_label)) );
+         ( aframe, prog, aunframe, s_cons(atext,ftext), adata, program_ctx, offset )
       } else if head(&e).to_string()=="app" &&
                 head(&head(&tail(&e))).to_string() == "app" &&
                 head(&head(&tail(&head(&tail(&e))))).to_string() == "app" &&
@@ -358,9 +374,9 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          let f = tail(&tail(&e));
          let t = tail(&tail(&head(&tail(&e))));
          let c = tail(&tail(&head(&tail(&head(&tail(&e))))));
-         let (c_f,c_p,c_u,c_d,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &c, offset);
-         let (t_f,t_p,t_u,t_d,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &t, offset);
-         let (f_f,f_p,f_u,f_d,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &f, offset);
+         let (c_f,c_p,c_u,c_t,c_d,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &c, offset);
+         let (t_f,t_p,t_u,t_t,t_d,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &t, offset);
+         let (f_f,f_p,f_u,f_t,f_d,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &f, offset);
          let label_if_true = uuid();
          let label_if_end = uuid();
          let prog = c_p;
@@ -377,6 +393,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
             s_cons(s_cons(c_f,t_f),f_f),
             prog,
             s_cons(s_cons(c_u,t_u),f_u),
+            s_cons(s_cons(c_t,t_t),f_t),
             s_cons(s_cons(c_d,t_d),f_d),
             program_ctx,
             offset
@@ -387,50 +404,50 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
                 tail(&head(&tail(&head(&tail(&e))))).to_string() == "match" {
          let p = tail(&tail(&e));
          let c = tail(&tail(&head(&tail(&e))));
-         let (cframe,cprog,cunframe,cdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &c, offset);
-         let (pframe,pprog,punframe,pdata,program_ctx,offset) = yield_patterns(helpers_ctx, &program_ctx, &p, offset);
+         let (cframe,cprog,cunframe,ctext,cdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &c, offset);
+         let (pframe,pprog,punframe,ptext,pdata,program_ctx,offset) = yield_patterns(helpers_ctx, &program_ctx, &p, offset);
          let label_skip = uuid();
          let prog = s_cons(cprog,pprog);
          let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %rsi\n\tjne {}\n",label_skip)));
          let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::yield-nil")) );
          let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
-         ( s_cons(cframe,pframe), prog, s_cons(cunframe,punframe), s_cons(cdata,pdata), program_ctx, offset )
+         ( s_cons(cframe,pframe), prog, s_cons(cunframe,punframe), s_cons(ctext,ptext), s_cons(cdata,pdata), program_ctx, offset )
       } else if (head(&f).to_string() == "variable" ||
          head(&f).to_string() == "literal") &&
          !is_free(program_ctx, &tail(&f).to_string()) &&
          is_local(program_ctx, &tail(&f).to_string())=="" {
-         let (xframe,xprog,xunframe,xdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &x, offset);
+         let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &x, offset);
          let f_name = variable(&label_case( &tail(&f).to_string() ));
          let prog = s_cons( xprog , s_cons( s_cons( variable("\tcall"), f_name ), variable("\n") ));
-         (xframe, prog, xunframe, xdata, program_ctx.clone(), offset)
+         (xframe, prog, xunframe, xtext, xdata, program_ctx.clone(), offset)
       } else {
-         let (fframe,fprog,funframe,fdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &f, offset);
-         let (xframe,xprog,xunframe,xdata,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &x, offset);
+         let (fframe,fprog,funframe,ftext,fdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &f, offset);
+         let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &x, offset);
          let prog = ctx_eval_soft(helpers_ctx, &app(
             variable("::yield-cons"),
             app( fprog, xprog )
          ));
-         (s_cons(fframe,xframe), prog, s_cons(funframe,xunframe), s_cons(fdata,xdata), program_ctx, offset)
+         (s_cons(fframe,xframe), prog, s_cons(funframe,xunframe), s_cons(ftext,xtext), s_cons(fdata,xdata), program_ctx, offset)
       }
    } else if head(&e).to_string() == "variable" &&
              tail(&e).to_string() == "$_" {
       // $_ is a noop expression and colloquially refers to 'this' expression
-      ( s_nil(), s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
+      ( s_nil(), s_nil(), s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
    } else if head(&e).to_string() == "variable" {
       let vname = tail(&e).to_string();
       let local = is_local(program_ctx, &vname);
       if local == "" {
          yield_atom(helpers_ctx, program_ctx, &vname, offset)
       } else {
-         ( s_nil(), s_atom(&local), s_nil(), s_nil(), program_ctx.clone(), offset )
+         ( s_nil(), s_atom(&local), s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
       }
    } else if head(&e).to_string() == "literal" {
       yield_atom(helpers_ctx, program_ctx, &tail(&e).to_string(), offset )
    } else if head(&e).to_string() == "lambda" {
       let args = head(&tail(&e));
       let body = tail(&tail(&e));
-      let (frame_args,prog_args,unframe_args,_data,program_ctx,offset) = destructure_args(helpers_ctx, program_ctx, &args, 0);
-      let (eframe,eprog,eunframe,edata,program_ctx,_) = compile_expr(helpers_ctx, &program_ctx, &body, offset);
+      let (frame_args,prog_args,unframe_args,_text,_data,program_ctx,offset) = destructure_args(helpers_ctx, program_ctx, &args, 0);
+      let (eframe,eprog,eunframe,etext,edata,program_ctx,_) = compile_expr(helpers_ctx, &program_ctx, &body, offset);
       let enter = ctx_eval_soft(helpers_ctx, &variable("::enter-function"));
       let leave = ctx_eval_soft(helpers_ctx, &variable("::leave-function"));
       let prog = enter;
@@ -441,13 +458,14 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
       let prog = s_cons( prog, unframe_args );
       let prog = s_cons( prog, eunframe );
       let prog = s_cons( prog, leave );
-      ( s_nil(), prog, s_nil(), edata, program_ctx, offset )
+      ( s_nil(), prog, s_nil(), etext, edata, program_ctx, offset )
    } else if is_nil(&e) {
       (
          s_nil(),
          ctx_eval_soft(helpers_ctx, &variable("::yield-nil")),
          s_nil(),
-         nil(),
+         s_nil(),
+         s_nil(),
          program_ctx.clone(),
          offset,
       )
@@ -498,17 +516,19 @@ pub fn compile(cfg: &str, main_ctx: &S) {
       if k == "main" {
          let enter = ctx_eval_soft(&helpers_ctx, &variable("::enter-function"));
          raw_program = s_cons( raw_program, enter );
-         let (vframe,vprog,vunframe,vdata,_pc,_offset) = compile_expr(&helpers_ctx, &main_ctx, &v, 0);
+         let (vframe,vprog,vunframe,vtext,vdata,_pc,_offset) = compile_expr(&helpers_ctx, &main_ctx, &v, 0);
          raw_program = s_cons( raw_program, vframe );
          raw_program = s_cons( raw_program, vprog );
          raw_program = s_cons( raw_program, vunframe );
          raw_program = s_cons( raw_program, ctx_eval_soft(&helpers_ctx, &variable("::exit-cleanup")) );
+         raw_program = s_cons( raw_program, vtext );
          raw_data = s_cons(raw_data,vdata);
       } else {
-         let (vframe,vprog,vunframe,vdata,_pc,_offset) = compile_expr(&helpers_ctx, &main_ctx, &v, 0);
+         let (vframe,vprog,vunframe,vtext,vdata,_pc,_offset) = compile_expr(&helpers_ctx, &main_ctx, &v, 0);
          raw_program = s_cons( raw_program, vframe );
          raw_program = s_cons( raw_program, vprog );
          raw_program = s_cons( raw_program, vunframe );
+         raw_program = s_cons( raw_program, vtext );
          raw_data = s_cons(raw_data,vdata);
       }
    }
