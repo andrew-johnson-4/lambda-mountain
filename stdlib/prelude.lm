@@ -146,12 +146,16 @@
 
 .data := (
                                 \n
-  __s_counter:               \n
+  __s_counter:                  \n
   \t .zero 64                   \n
-  __s_section:               \n
-  \t .zero 65536                \n
+  __s_section:                  \n
+  \t .zero 131072               \n
+  __a_counter:                  \n
+  \t .zero 64                   \n
+  __a_section:                  \n
+  \t .zero 131072               \n
   __nil_literal:                \n
-  \t .ascii "\nil"                \n
+  \t .ascii "\nil"              \n
   \t .zero 1                    \n
   __hex_buffer:                 \n
   \t .ascii "0123456789abcdef"  \n 
