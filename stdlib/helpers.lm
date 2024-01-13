@@ -380,6 +380,7 @@
 # ::foreach-call is a label to be called for each atom
 ::foreach-atom := λ::foreach-head ::foreach-call.(
    ::foreach-head : \n
+   #if %rax is greater than zero, pop this (in a recursive call) and decrement rax
    #if this is an atom: call label
    \t call ::foreach-call \n
    #if this is a cons: recurse
