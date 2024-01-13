@@ -375,3 +375,9 @@
    \t mov $0, %edi       \n # error code 0
    \t syscall            \n
 );
+
+# $this is the Rope to iterate over
+# ::foreach-call is a label to be called for each atom
+::foreach-atom := λ::foreach-call.(
+   TODO
+);
