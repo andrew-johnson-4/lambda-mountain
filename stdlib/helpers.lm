@@ -404,3 +404,37 @@
    ::pop-this
    \t ret \n
 );
+
+# $this is the Rope to iterate over
+# ::foreach-call is a label to be called for each atom
+::foreach-char := λ::foreach-data ::foreach-head ::foreach-notcons ::foreach-apply.(
+   #define label for this function
+   ::foreach-head : \n
+
+   #if this is a cons, recurse
+   \t cmp $0, %r13 \n
+   \t je ::foreach-notcons \n
+   \t cmp $0, %r14 \n
+   \t je ::foreach-notcons \n
+   ::push-this
+   ::head
+   \t call ::foreach-head \n
+   ::pop-this
+   ::push-this
+   ::tail
+   \t call ::foreach-head \n
+   ::pop-this
+   \t ret \n
+
+   #if not cons, apply
+   ::foreach-notcons : \n
+   ::push-this
+   \t call ::foreach-apply \n
+   ::pop-this
+   \t ret \n
+);
+
+::foreach-char-data := λ::foreach-data.(
+   ::foreach-data : \n
+   \t .zero 2 \n
+);
