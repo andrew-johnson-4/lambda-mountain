@@ -1,0 +1,9 @@
+
+print-space := λc. (
+   (print-s c)
+   (print-s '_)
+);
+
+main := (
+   foreach-char (hello world) print-s
+);
