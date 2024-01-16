@@ -142,6 +142,62 @@
    __streq_false:               \n
    ::yield-nil
    \t ret                       \n
+
+
+   clone_rope:                  \n
+   \t mov $__a_section, %r8     \n
+   \t mov $__a_counter, %r10    \n
+   \t mov 0\(%r10\), %r11       \n
+   \t add %r11, %r8             \n
+   \t mov %r8, %r9              \n
+   #r8 holds pointer to head of new data
+   #r9 holds pointer to tail of new data
+   \t call __clone_rope         \n
+   \t movb $0, 0\(%r9\)         \n
+   \t inc %r9                   \n
+   \t sub %r8, %r9              \n
+   \t mov $__a_counter, %r10    \n
+   \t mov %r9, 0\(%r10\)        \n
+   \t mov %r8, %r12             \n
+   \t mov $0, %r13              \n
+   \t mov $0, %r14              \n
+   \t mov $0, %r15              \n
+   \t ret                       \n
+
+   __clone_rope:                \n
+   #if this is a cons, recurse
+   \t cmp $0, %r13              \n
+   \t je clone_rope_notcons     \n
+   \t cmp $0, %r14              \n
+   \t je clone_rope_notcons     \n
+   ::push-this
+   ::head
+   \t call __clone_rope         \n
+   ::pop-this
+   ::tail
+   \t call __clone_rope         \n
+   \t jmp clone_rope_end        \n
+
+   #if not cons, concat
+   clone_rope_notcons:          \n
+
+   #if nil, return
+   \t cmp $0, %r12              \n
+   \t je clone_rope_end         \n
+
+   #if atom, break into characters and concat
+   clone_rope_small:            \n
+   \t cmpb $0, 0\(%r12\)        \n
+   \t je clone_rope_end         \n
+   \t movb 0\(%r12\), %bl       \n
+   \t movb %bl, 0\(%r9\)        \n
+   \t inc %r12                  \n
+   \t inc %r9                   \n
+   \t jmp clone_rope_small      \n
+
+   clone_rope_end:              \n
+   \t ret                       \n
+
 );
 
 .data := (
