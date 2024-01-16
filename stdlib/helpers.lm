@@ -429,7 +429,28 @@
    #if not cons, apply
    ::foreach-notcons : \n
    ::push-this
+
+   #if nil, apply and return
+   \t mov %r12, %rax \n
+   \t mov $ ::foreach-data , %r12 \n
+   \t cmp $0, %r12 \n
+   \t jne ::foreach-small \n
    \t call ::foreach-apply \n
+   ::pop-this
+   \t ret \n
+
+   #if atom, break into characters and apply
+   ::foreach-small : \n
+   ::push-this
+   \t movb 0\(%rax\), %bl \n
+   \t movb %bl, 0\(%r12\) \n
+   \t movb $0, 1\(%r12\) \n
+   \t call ::foreach-apply \n
+   \t inc %rax \n
+   ::pop-this
+   \t cmp $0, -1\(%rax\) \n
+   \t jne ::foreach-small \n
+
    ::pop-this
    \t ret \n
 );
