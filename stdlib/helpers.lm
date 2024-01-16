@@ -407,7 +407,7 @@
 
 # $this is the Rope to iterate over
 # ::foreach-call is a label to be called for each atom
-::foreach-char := λ::foreach-data ::foreach-head ::foreach-small ::foreach-notcons ::foreach-apply.(
+::foreach-char := λ::foreach-data ::foreach-head ::foreach-small ::foreach-end ::foreach-notcons ::foreach-apply.(
    #define label for this function
    ::foreach-head : \n
 
@@ -432,7 +432,6 @@
 
    #if nil, apply and return
    \t mov %r12, %rax \n
-   \t mov $ ::foreach-data , %r12 \n
    \t cmp $0, %r12 \n
    \t jne ::foreach-small \n
    \t call ::foreach-apply \n
@@ -441,16 +440,20 @@
 
    #if atom, break into characters and apply
    ::foreach-small : \n
-   ::push-this
+   \t cmpb $0, 0\(%rax\) \n
+   \t je ::foreach-end \n
+   \t mov $ ::foreach-data , %r12 \n
+   \t mov $0, %r13 \n
+   \t mov $0, %r14 \n
+   \t mov $0, %r15 \n
    \t movb 0\(%rax\), %bl \n
    \t movb %bl, 0\(%r12\) \n
    \t movb $0, 1\(%r12\) \n
    \t call ::foreach-apply \n
    \t inc %rax \n
-   ::pop-this
-   \t cmp $0, -1\(%rax\) \n
-   \t jne ::foreach-small \n
+   \t jmp ::foreach-small \n
 
+   ::foreach-end : \n
    ::pop-this
    \t ret \n
 );

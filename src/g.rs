@@ -375,13 +375,14 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          let apply_label = s_atom(&label_case(&apply_label.to_string()));
          let foreach_head = s_atom(&uuid());
          let foreach_small = s_atom(&uuid());
+         let foreach_end = s_atom(&uuid());
          let foreach_notcons = s_atom(&uuid());
          let foreach_data = s_atom(&uuid());
          let (aframe,prog,aunframe,atext,adata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &atom, offset);
          let ftext = ctx_eval_soft(helpers_ctx, &app(variable("::foreach-char"),
-            app(app(
+            app(app(app(
                app(app(foreach_data.clone(),foreach_head.clone()),foreach_small.clone())
-           ,foreach_notcons),apply_label.clone())
+           ,foreach_end),foreach_notcons),apply_label.clone())
          ));
          let fdata = ctx_eval_soft(helpers_ctx, &app(variable("::foreach-char-data"),foreach_data.clone()));
          let prog = s_cons( prog, s_atom(&format!("\tcall {}\n",foreach_head)) );
