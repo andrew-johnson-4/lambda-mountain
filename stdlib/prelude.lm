@@ -142,6 +142,55 @@
    __streq_false:               \n
    ::yield-nil
    \t ret                       \n
+
+
+   clone_rope:                  \n
+   #rax holds pointer to head of new data
+   \t mov $__a_section, %rax    \n
+   \t mov $__a_section, %rbx    \n
+
+   __clone_rope:                \n
+   #if this is a cons, recurse
+   \t cmp $0, %r13              \n
+   \t je clone_rope_notcons     \n
+   \t cmp $0, %r14              \n
+   \t je clone_rope_notcons     \n
+   ::push-this
+   ::head
+   \t call __clone_rope         \n
+   ::pop-this
+   ::tail
+   \t call __clone_rope         \n
+   \t jmp clone_rope_end        \n
+
+   #if not cons, concat
+   clone_rope_notcons:          \n
+
+   #if nil, return
+   \t cmp $0, %r12              \n
+   \t je clone_rope_end         \n
+
+   #if atom, break into characters and concat
+   clone_rope_small:            \n
+   \t cmpb $0, 0\(%r12\)        \n
+   \t je clone_rope_end         \n
+   \t movb 0\(%r12\), %bl       \n
+   \t movb %bl, 0\(%rbx\)       \n
+   \t inc %r12                  \n
+   \t inc %rbx                  \n
+   \t jmp clone_rope_small      \n
+
+   clone_rope_end:              \n
+   \t movb $0, 0\(%rbx\)        \n
+   \t sub %rax, %rbx            \n
+   \t mov $__a_counter, %rcx    \n
+   \t mov %rbx, 0\(%rcx\)       \n
+   \t mov %rax, %r12            \n
+   \t mov $0, %r13              \n
+   \t mov $0, %r14              \n
+   \t mov $0, %r15              \n
+   \t ret                       \n
+
 );
 
 .data := (
