@@ -407,7 +407,7 @@
 
 # $this is the Rope to iterate over
 # ::foreach-call is a label to be called for each atom
-::foreach-char := λ::foreach-data ::foreach-head ::foreach-notcons ::foreach-apply.(
+::foreach-char := λ::foreach-data ::foreach-head ::foreach-small ::foreach-notcons ::foreach-apply.(
    #define label for this function
    ::foreach-head : \n
 
