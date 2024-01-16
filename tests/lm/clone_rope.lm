@@ -1,2 +1,2 @@
 
-main := print-s (clone-rope (hello world));
+main := print-s (clone-rope (he (llo ()) world));
