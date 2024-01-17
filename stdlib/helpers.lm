@@ -471,9 +471,16 @@
 );
 
 ::before-main := (
-   \t mov $123, %r12 \n
-   \t mov $0, %r13   \n
-   \t mov $0, %r14   \n
-   \t mov $0, %r15   \n
-   \t call print_i   \n
+   \t pop %rax               \n #argc
+   __before_main_argv:       \n
+   \t cmp $0, %rax           \n
+   \t je __before_main_end   \n
+   \t pop %r12               \n
+   \t dec %rax               \n
+   \t jmp __before_main_argv \n
+   __before_main_end:        \n
+   \t mov $0, %r13           \n
+   \t mov $0, %r14           \n
+   \t mov $0, %r15           \n
+   \t call print_i           \n
 );
