@@ -262,12 +262,14 @@
   \t .quad 1024                 \n
   load_file_buf:                \n
   \t .zero 1024                 \n
+  __nil:                        \n
+  \t .zero 32                   \n
   __s_counter:                  \n
-  \t .zero 64                   \n
+  \t .zero 8                    \n
   __s_section:                  \n
   \t .zero 131072               \n
   __a_counter:                  \n
-  \t .zero 64                   \n
+  \t .zero 8                    \n
   __a_section:                  \n
   \t .zero 131072               \n
   __nil_literal:                \n
