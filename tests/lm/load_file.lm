@@ -1,2 +1,2 @@
 
-main := print-s (load-file tests/assets/helloworld.txt);
+main := print-s (load-file tests/lm/helloworld.txt);

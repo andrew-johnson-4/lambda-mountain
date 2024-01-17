@@ -247,6 +247,8 @@
    \t mov $load_file_buf, %rcx  \n # buffer
    \t mov $load_file_bsz, %rdx  \n # buffer size
    \t syscall                   \n
+
+   # close the file
    
    \t mov $load_file_buf, %r12  \n
    \t ret                       \n
