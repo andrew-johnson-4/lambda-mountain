@@ -462,3 +462,18 @@
    ::foreach-data : \n
    \t .zero 2 \n
 );
+
+::argv := (
+   \t mov $0, %r12 \n
+   \t mov $0, %r13 \n
+   \t mov $0, %r14 \n
+   \t mov $0, %r15 \n
+);
+
+::before-main := (
+   \t mov $123, %r12 \n
+   \t mov $0, %r13   \n
+   \t mov $0, %r14   \n
+   \t mov $0, %r15   \n
+   \t call print_i   \n
+);

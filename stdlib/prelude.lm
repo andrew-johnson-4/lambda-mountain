@@ -213,6 +213,7 @@
    load_file:                   \n
 
    # open file
+   \t call print_i              \n
    \t mov $5, %rax              \n # syscall open
    \t mov %r12, %rbx            \n # file name
    \t mov $0, %rcx              \n # flags
