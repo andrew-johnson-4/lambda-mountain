@@ -95,6 +95,7 @@ const OPERATORS: [(&str,&str); 6] = [
 
    ("print-s", "print_s"),
    ("clone-rope", "clone_rope"),
+   ("load-file", "load_file"),
 ];
 
 fn label_case(s: &str) -> String {
