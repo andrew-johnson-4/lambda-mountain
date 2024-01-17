@@ -87,13 +87,15 @@ fn assemble(cfg: &str, program: &S) {
    }
 }
 
-const OPERATORS: [(&str,&str); 7] = [
+const OPERATORS: [(&str,&str); 9] = [
    ("==", "equal"),
    ("not", "not"),
    ("head", "head"),
    ("tail", "tail"),
 
    ("print-s", "print_s"),
+   ("print-i", "print_i"),
+   ("print-p", "print_p"),
    ("clone-rope", "clone_rope"),
    ("load-file", "load_file"),
 ];

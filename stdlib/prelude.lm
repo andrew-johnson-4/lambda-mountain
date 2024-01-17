@@ -14,6 +14,18 @@
    \t ret                       \n
    # result is stored in %rcx
 
+   # print-i: print value of integer
+   print_i:                     \n
+   \t mov %r12, %r8             \n
+   ::put64
+   \t ret                       \n
+
+   # print-p: print value from pointer
+   print_p:                     \n
+   \t mov 0\(%r12\), %r8        \n
+   ::put64
+   \t ret                       \n
+
    # print-s
    print_s:                     \n
    __print_this:                \n
@@ -202,7 +214,7 @@
 
    # open file
    \t mov $load_file_bsz, %r12  \n
-   \t call print_s              \n
+   \t call print_p              \n
    \t mov %r12, %rbx            \n # file name
    \t mov $5, %rax              \n # open
    \t mov $0, %rcx              \n # read-only mode
