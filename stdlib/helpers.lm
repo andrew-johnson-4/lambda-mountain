@@ -476,7 +476,7 @@
    __before_main_argv:       \n
    \t cmp $0, %rax           \n
    \t je __before_main_end   \n
-   \t pop %rbx               \n
+   \t pop %rbx               \n #argv[i]
    \t dec %rax               \n
    \t jmp __before_main_argv \n
    __before_main_end:        \n
