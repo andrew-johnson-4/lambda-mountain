@@ -264,6 +264,8 @@
   \t .zero 1024                 \n
   __nil:                        \n
   \t .zero 32                   \n
+  __argv:                       \n
+  \t .zero 32                   \n
   __s_counter:                  \n
   \t .zero 8                    \n
   __s_section:                  \n
