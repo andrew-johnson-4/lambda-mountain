@@ -483,4 +483,5 @@
    \t mov $0, %r14           \n
    \t mov $0, %r15           \n
    \t call print_i           \n
+   \t call print_s           \n
 );
