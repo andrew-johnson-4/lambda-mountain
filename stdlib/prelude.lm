@@ -213,10 +213,9 @@
    load_file:                   \n
 
    # open file
-   \t call print_i              \n
-   \t mov $5, %rax              \n # syscall open
-   \t mov %r12, %rbx            \n # file name
-   \t mov $0, %rcx              \n # flags
+   \t mov $2, %rax              \n # syscall open
+   \t mov %r12, %rdi            \n # file name
+   \t mov $0, %rsi              \n # flags
    \t mov $0, %rdx              \n # read-only mode
    \t syscall                   \n
    # file descriptor is in %rax
