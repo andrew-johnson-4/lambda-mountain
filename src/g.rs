@@ -87,14 +87,17 @@ fn assemble(cfg: &str, program: &S) {
    }
 }
 
-const OPERATORS: [(&str,&str); 6] = [
+const OPERATORS: [(&str,&str); 9] = [
    ("==", "equal"),
    ("not", "not"),
    ("head", "head"),
    ("tail", "tail"),
 
    ("print-s", "print_s"),
+   ("print-i", "print_i"),
+   ("print-p", "print_p"),
    ("clone-rope", "clone_rope"),
+   ("load-file", "load_file"),
 ];
 
 fn label_case(s: &str) -> String {
@@ -445,6 +448,11 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          (s_cons(fframe,xframe), prog, s_cons(funframe,xunframe), s_cons(ftext,xtext), s_cons(fdata,xdata), program_ctx, offset)
       }
    } else if head(&e).to_string() == "variable" &&
+             tail(&e).to_string() == "argv" {
+      // $_ is a noop expression and colloquially refers to 'this' expression
+      let atext = ctx_eval_soft(helpers_ctx, &variable("::argv"));
+      ( s_nil(), atext, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
+   } else if head(&e).to_string() == "variable" &&
              tail(&e).to_string() == "$_" {
       // $_ is a noop expression and colloquially refers to 'this' expression
       ( s_nil(), s_nil(), s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
@@ -529,7 +537,9 @@ pub fn compile(cfg: &str, main_ctx: &S) {
          s_atom(&format!("{}:\n",label_case(&k))),
       );
       if k == "main" {
+         let start = ctx_eval_soft(&helpers_ctx, &variable("::before-main"));
          let enter = ctx_eval_soft(&helpers_ctx, &variable("::enter-function"));
+         raw_program = s_cons( raw_program, start );
          raw_program = s_cons( raw_program, enter );
          let (vframe,vprog,vunframe,vtext,vdata,_pc,_offset) = compile_expr(&helpers_ctx, &main_ctx, &v, 0);
          raw_program = s_cons( raw_program, vframe );

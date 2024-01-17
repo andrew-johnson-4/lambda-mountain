@@ -114,3 +114,9 @@ fn rope() {
    assert_eq!( compile_and_run("tests/lm/foreach_char.lm"), "h_e_l_l_o_w_o_r_l_d_" );
    assert_eq!( compile_and_run("tests/lm/clone_rope.lm"), "helloworld" );
 }
+
+#[test]
+fn system_calls() {
+   assert_eq!( compile_and_run("tests/lm/argv.lm"), "(./a.out ())" );
+//   assert_eq!( compile_and_run("tests/lm/load_file.lm"), "helloworld" );
+}

@@ -462,3 +462,41 @@
    ::foreach-data : \n
    \t .zero 2 \n
 );
+
+::argv := (
+   \t mov $__argv, %rax      \n
+   \t mov 0\(%rax\), %r12    \n
+   \t mov 8\(%rax\), %r13    \n
+   \t mov 16\(%rax\), %r14   \n
+   \t mov 24\(%rax\), %r15   \n
+);
+
+::before-main := (
+   \t pop %rax               \n #argc
+   \t mov $0, %r12           \n
+   \t mov $0, %r13           \n
+   \t mov $0, %r14           \n
+   \t mov $0, %r15           \n
+   __before_main_argv:       \n
+   \t cmp $0, %rax           \n
+   \t je __before_main_end   \n
+   ::close-this
+   \t mov %rsi, %rdi         \n
+   \t pop %r12               \n #argv[i]
+   \t mov $0, %r13           \n
+   \t mov $0, %r14           \n
+   \t mov $0, %r15           \n
+   ::close-this
+   \t mov $0, %r12           \n
+   \t mov %rsi, %r13         \n
+   \t mov %rdi, %r14         \n
+   \t mov $0, %r15           \n
+   \t dec %rax               \n
+   \t jmp __before_main_argv \n
+   __before_main_end:        \n
+   \t mov $__argv, %rax      \n
+   \t mov %r12, 0\(%rax\)    \n
+   \t mov %r13, 8\(%rax\)    \n
+   \t mov %r14, 16\(%rax\)   \n
+   \t mov %r15, 24\(%rax\)   \n
+);

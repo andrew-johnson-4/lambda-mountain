@@ -14,6 +14,18 @@
    \t ret                       \n
    # result is stored in %rcx
 
+   # print-i: print value of integer
+   print_i:                     \n
+   \t mov %r12, %r8             \n
+   ::put64
+   \t ret                       \n
+
+   # print-p: print value from pointer
+   print_p:                     \n
+   \t mov 0\(%r12\), %r8        \n
+   ::put64
+   \t ret                       \n
+
    # print-s
    print_s:                     \n
    __print_this:                \n
@@ -126,8 +138,8 @@
    \t je __streq_false          \n
    \t cmp $0, %rbx              \n
    \t je __streq_false          \n
-   \t mov 0\(%rax\), %cl          \n
-   \t mov 0\(%rbx\), %dl          \n
+   \t mov 0\(%rax\), %cl        \n
+   \t mov 0\(%rbx\), %dl        \n
 
    \t cmp %cl, %dl              \n
    \t jne __streq_false         \n
@@ -198,16 +210,68 @@
    clone_rope_end:              \n
    \t ret                       \n
 
+   load_file:                   \n
+
+   # open file
+   \t call print_i              \n
+   \t mov $5, %rax              \n # syscall open
+   \t mov %r12, %rbx            \n # file name
+   \t mov $0, %rcx              \n # flags
+   \t mov $0, %rdx              \n # read-only mode
+   \t syscall                   \n
+   # file descriptor is in %rax
+
+   \t cmp $0, %rax              \n
+   # if return value is positive then open was a success
+   \t jge load_file_contents    \n
+
+   \t mov %rax, %r12            \n
+   \t call print_i              \n
+   \t mov $__err_fopen, %r12    \n
+   \t mov $0, %r13              \n
+   \t mov $0, %r14              \n
+   \t mov $0, %r15              \n
+   \t ret                       \n
+
+   load_file_contents:          \n
+   \t mov %rax, %r12            \n
+   \t call print_i              \n
+   \t mov $0, %r12              \n
+   \t mov $0, %r13              \n
+   \t mov $0, %r14              \n
+   \t mov $0, %r15              \n
+   \t ret                       \n
+
+   # read the file
+   \t mov %rax, %rbx            \n # file descriptor
+   \t mov $3, %rax              \n # read
+   \t mov $load_file_buf, %rcx  \n # buffer
+   \t mov $load_file_bsz, %rdx  \n # buffer size
+   \t syscall                   \n
+
+   # close the file
+   
+   \t mov $load_file_buf, %r12  \n
+   \t ret                       \n
+   
 );
 
 .data := (
                                 \n
+  load_file_bsz:                \n
+  \t .quad 1024                 \n
+  load_file_buf:                \n
+  \t .zero 1024                 \n
+  __nil:                        \n
+  \t .zero 32                   \n
+  __argv:                       \n
+  \t .zero 32                   \n
   __s_counter:                  \n
-  \t .zero 64                   \n
+  \t .zero 8                    \n
   __s_section:                  \n
   \t .zero 131072               \n
   __a_counter:                  \n
-  \t .zero 64                   \n
+  \t .zero 8                    \n
   __a_section:                  \n
   \t .zero 131072               \n
   __nil_literal:                \n
@@ -230,6 +294,9 @@
   \t .ascii "\space"            \n
   __true:                       \n
   \t .ascii "True"              \n
+  \t .zero 1                    \n
+  __err_fopen:                  \n
+  \t .ascii "Could not open file." \n
   \t .zero 1                    \n
 );
 
