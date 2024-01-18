@@ -1,7 +1,7 @@
 
 main := (
    (print-s argv)
-   (foreach-atom (head argv) (
+   (foreach-atom (tail argv) (
       print-s $_
    ))
 );

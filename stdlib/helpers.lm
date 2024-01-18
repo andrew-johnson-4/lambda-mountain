@@ -472,31 +472,39 @@
 );
 
 ::before-main := (
+   # let argv = close ()
+   # let t = argv
+   # for a in argv:
+   #    t.tail = (a ())
+   #    t = t.tail
    \t pop %rax               \n #argc
-   \t mov $0, %r12           \n
-   \t mov $0, %r13           \n
-   \t mov $0, %r14           \n
-   \t mov $0, %r15           \n
+   \t mov $__argv, %rbx      \n
+   \t movq $0, 0\(%rbx\)      \n
+   \t movq $0, 8\(%rbx\)      \n
+   \t movq $0, 16\(%rbx\)     \n
+   \t movq $0, 24\(%rbx\)     \n
+
    __before_main_argv:       \n
    \t cmp $0, %rax           \n
    \t je __before_main_end   \n
-   ::close-this
-   \t mov %rsi, %rdi         \n
    \t pop %r12               \n #argv[i]
    \t mov $0, %r13           \n
    \t mov $0, %r14           \n
    \t mov $0, %r15           \n
    ::close-this
+   \t mov %rsi, %rdi         \n
+   #rdi is a
    \t mov $0, %r12           \n
-   \t mov %rsi, %r13         \n
-   \t mov %rdi, %r14         \n
+   \t mov $0, %r13           \n
+   \t mov $0, %r14           \n
    \t mov $0, %r15           \n
+   ::close-this
+   #rsi is clean closed ()
+   \t mov %rdi, 8\(%rbx\)    \n
+   \t mov %rsi, 16\(%rbx\)   \n
+   \t mov %rsi, %rbx         \n
+   #rbx is tail of argv
    \t dec %rax               \n
    \t jmp __before_main_argv \n
    __before_main_end:        \n
-   \t mov $__argv, %rax      \n
-   \t mov %r12, 0\(%rax\)    \n
-   \t mov %r13, 8\(%rax\)    \n
-   \t mov %r14, 16\(%rax\)   \n
-   \t mov %r15, 24\(%rax\)   \n
 );
