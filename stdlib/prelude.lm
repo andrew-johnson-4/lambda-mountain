@@ -28,9 +28,27 @@
 
    # print-s
    print_s:                     \n
+   \t mov $0, %r9               \n
+   \t jmp __print_this          \n
+
+   print_d:                     \n
+   \t mov $1, %r9               \n
+   \t jmp __print_this          \n
+ 
    __print_this:                \n
    ::callee-save-registers
- 
+   \t cmp $0, %r9               \n
+   \t je __print_clear          \n
+   #TODO print debug info
+   \t mov %r12, %r8             \n
+   ::put64
+   \t mov %r13, %r8             \n
+   ::put64
+   \t mov %r14, %r8             \n
+   ::put64
+   \t mov %r15, %r8             \n
+   ::put64
+   __print_clear:               \n
    # if .atom != NULL
    __print_this_atom:           \n
    \t cmp $0, %r12              \n

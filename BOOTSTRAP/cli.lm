@@ -62,7 +62,7 @@ parse-program := λtext. (tail(
          (= buffer (
             buffer (clone-rope c)
          ))
-         (print-s buffer)
+         (print-d buffer)
       ))
    )))
    program
