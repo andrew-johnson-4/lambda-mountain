@@ -37,9 +37,18 @@ parse-program := λtext. (tail(
       (\o (print-s (OCTOTHORPE)))
       (\[ (print-s (OPEN PARENS)))
       (\] (print-s (CLOSE PARENS)))
-      (\n (print-s (ENDLINE)))
-      (\t (print-s (TAB)))
-      (\s (print-s (SPACE)))
+      (\n (if buffer (
+         (= program (program (clone-rope buffer)))
+         (= buffer ())
+      ) ()))
+      (\t (if buffer (
+         (= program (program (clone-rope buffer)))
+         (= buffer ())
+      ) ()))
+      (\s (if buffer (
+         (= program (program (clone-rope buffer)))
+         (= buffer ())
+      ) ()))
 
 #     These characters are special characters
 #     They are permitted as parts of literals in context-sensitive ways
@@ -48,7 +57,13 @@ parse-program := λtext. (tail(
 #     : COLON
 #     = EQUAL
 
-      (c (print-s (ETC c)))
+      (c (
+         (print-s c)
+         (= buffer (
+            buffer (clone-rope c)
+         ))
+         (print-s buffer)
+      ))
    )))
    program
 ));
