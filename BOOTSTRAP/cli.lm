@@ -58,11 +58,9 @@ parse-program := λtext. (tail(
 #     = EQUAL
 
       (c (
-         (print-s c)
          (= buffer (
             buffer (clone-rope c)
          ))
-         (print-s buffer)
       ))
    )))
    program
