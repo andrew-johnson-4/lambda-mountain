@@ -20,5 +20,38 @@ main := (
 );
 
 parse-file := λpath. (
-   load-file path
+   parse-program (load-file path)
 );
+
+parse-program := λtext. (tail(
+   (print-s (PARSE_PROGRAM text))
+   (local program)
+   (= program ())
+   (local buffer)
+   (= buffer ())
+   (foreach-char text (
+      (local c)
+      (= c $_)
+      (print-s (CHAR c))
+   ))
+   program
+));
+
+#pub fn parse_program(s: &str) -> S {
+#   let s = s.replace(r#"\("#, r#" \lparen "#);
+#   let s = s.replace(r#"\)"#, r#" \rparen "#);
+#   let s = s.replace("(", " ( ");
+#   let s = s.replace(")", " ) ");
+#   let mut kvs = Vec::new();
+#   let mut new_s = String::new();
+#   for line in s.split("\n") {
+#      new_s += &(line.split("#").next().unwrap().trim().to_owned() + "\n");
+#   }
+#   let s = new_s;
+#   for line in s.split(";") {
+#   if let Some((l,r)) = line.split_once(":=") {
+#      let l = l.trim();
+#      kvs.push(( s_atom(l), parse_expression(r) ));
+#   }}
+#   kv(&kvs)
+#}
