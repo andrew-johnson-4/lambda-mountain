@@ -30,7 +30,7 @@ fn compile_and_run(target: &str) -> String {
 }
 
 #[test]
-fn cli_cli() {
+fn cli_parser() {
    assert_eq!( compile_and_run("tests/lm/parse_variable1.lm"), "(Variable abc)" );
    assert_eq!( compile_and_run("tests/lm/parse_literal1.lm"), "(Literal 123)" );
    assert_eq!( compile_and_run("tests/lm/parse_literal2.lm"), "(Literal abc)" );
