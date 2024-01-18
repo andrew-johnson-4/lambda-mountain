@@ -542,6 +542,7 @@ pub fn compile(cfg: &str, main_ctx: &S) {
          main_ctx = kv_add(&main_ctx, &k, &v);
       }
    }
+   let mut has_main = false;
    for (k,v) in kv_iter(&main_ctx) {
       let k = k.to_string();
       raw_program = s_cons(
@@ -549,6 +550,7 @@ pub fn compile(cfg: &str, main_ctx: &S) {
          s_atom(&format!("{}:\n",label_case(&k))),
       );
       if k == "main" {
+         has_main = true;
          let start = ctx_eval_soft(&helpers_ctx, &variable("::before-main"));
          let enter = ctx_eval_soft(&helpers_ctx, &variable("::enter-function"));
          raw_program = s_cons( raw_program, start );
@@ -568,6 +570,10 @@ pub fn compile(cfg: &str, main_ctx: &S) {
          raw_program = s_cons( raw_program, vtext );
          raw_data = s_cons(raw_data,vdata);
       }
+   }
+   if !has_main {
+      raw_program = s_cons( raw_program, s_atom("main:\n") );
+      raw_program = s_cons( raw_program, ctx_eval_soft(&helpers_ctx, &variable("::exit-cleanup")) );
    }
    let program = compile_program(&helpers_ctx, &raw_program, &raw_data);
    assemble(cfg, &program);
