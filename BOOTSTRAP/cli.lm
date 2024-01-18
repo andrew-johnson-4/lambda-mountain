@@ -31,23 +31,26 @@ parse-program := λtext. (tail(
    (= buffer ())
    (foreach-char text (match $_ (
       ()
+
+#     These characters are special characters
+#     They are never allowed in escaped strings etc.
+      (\o (print-s (OCTOTHORPE)))
+      (\[ (print-s (OPEN PARENS)))
+      (\] (print-s (CLOSE PARENS)))
+      (\n (print-s (ENDLINE)))
+      (\t (print-s (TAB)))
+      (\s (print-s (SPACE)))
+
+#     These characters are special characters
+#     They are permitted as parts of literals in context-sensitive ways
+#     λ LAMBDA
+#     . DOT
+#     : COLON
+#     = EQUAL
+
       (c (print-s (ETC c)))
    )))
    program
 ));
 
-#      These characters are special characters
-#      They are never used in escaped strings etc.
-#      # (print-s (OCTOTHORPE)))
-#      ( (print-s (OPEN PARENS)))
-#      ) (print-s (CLOSE PARENS)))
-#      \n (print-s (ENDLINE)))
-#      \t (print-s (TAB)))
-#      \s (print-s (SPACE)))
 
-#      These characters are special characters
-#      They are permitted as parts of literals in context-sensitive ways
-#      λ LAMBDA
-#      . DOT
-#      : COLON
-#      = EQUAL
