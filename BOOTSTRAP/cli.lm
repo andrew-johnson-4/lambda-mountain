@@ -1,15 +1,15 @@
 
 main := (
    (local mode)
-   (= mode Options)
+   (set mode Options)
    (local inputs)
-   (= inputs ())
+   (set inputs ())
    (foreach-atom (tail argv) (match $_ (
       ()
-      (--parse (= mode Parse))
-      (--tokenize (= mode Tokenize))
+      (--parse (set mode Parse))
+      (--tokenize (set mode Tokenize))
       (() ())
-      (fp (= inputs (fp inputs)))
+      (fp (set inputs (fp inputs)))
    )))
    (match mode (
       ()
@@ -35,9 +35,9 @@ parse-program := λtoks. toks;
 
 tokenize := λtext. (tail(
    (local program)
-   (= program ())
+   (set program ())
    (local buffer)
-   (= buffer ())
+   (set buffer ())
    (foreach-char text (match $_ (
       ()
 
@@ -45,41 +45,39 @@ tokenize := λtext. (tail(
 #     They are removed during tokenization
       (\o (print-s (OCTOTHORPE)))
       (\n (if buffer (
-         (= program (program (clone-rope buffer)))
-         (= buffer ())
+         (set program (program (clone-rope buffer)))
+         (set buffer ())
       ) ()))
       (\t (if buffer (
-         (= program (program (clone-rope buffer)))
-         (= buffer ())
+         (set program (program (clone-rope buffer)))
+         (set buffer ())
       ) ()))
       (\s (if buffer (
-         (= program (program (clone-rope buffer)))
-         (= buffer ())
+         (set program (program (clone-rope buffer)))
+         (set buffer ())
       ) ()))
 
 #     These characters are special characters
 #     They are isolated during tokenization
-      (\[ (print-s (OPEN PARENS)))
-      (\] (print-s (CLOSE PARENS)))
-      (. (if buffer (
-         (= program (program (clone-rope buffer)))
-         (= program (program .))
-         (= buffer ())
-      ) ()))
+      (\[ (OPEN PARENS))
+      (\] (CLOSE PARENS))
 #      (: (if buffer (
-#         (= program (program (clone-rope buffer)))
-#         (= program (program :))
-#         (= buffer ())
+#         (set program (program (clone-rope buffer)))
+#         (set program (program :))
+#         (set buffer ())
 #      ) ()))
-#      (= (if buffer (
-#         (= program (program (clone-rope buffer)))
-#         (= program (program =))
-#         (= buffer ())
+      (= (
+         (print-s EQ)
+      ))
+# (if buffer (
+#         (set program (program (clone-rope buffer)))
+#         (set program (program :eq))
+#         (set buffer ())
 #      ) ()))
 #      (λ (if buffer (
-#         (= program (program (clone-rope buffer)))
-#         (= program (program λ))
-#         (= buffer ())
+#         (set program (program (clone-rope buffer)))
+#         (set program (program λ))
+#         (set buffer ())
 #      ) ()))
 
       (c (
@@ -92,3 +90,8 @@ tokenize := λtext. (tail(
 ));
 
 
+#      (. (if buffer (
+#         (= program (program (clone-rope buffer)))
+#         (= program (program .))
+#         (= buffer ())
+#      ) ()))

@@ -1,2 +1,2 @@
 
-main := print-s (== (abc abc))
+main := print-s (eq (abc abc))

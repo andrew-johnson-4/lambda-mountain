@@ -3,8 +3,8 @@ main := print-s(tail(
    (local a)
    (local b)
    (local c)
-   (= a 123)
-   (= b abc)
-   (= c xyz)
+   (set a 123)
+   (set b abc)
+   (set c xyz)
    (a b c)
 ));

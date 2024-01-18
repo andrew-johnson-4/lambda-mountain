@@ -88,7 +88,7 @@ fn assemble(cfg: &str, program: &S) {
 }
 
 const OPERATORS: [(&str,&str); 10] = [
-   ("==", "equal"),
+   ("eq", "eq"),
    ("not", "not"),
    ("head", "head"),
    ("tail", "tail"),
@@ -340,8 +340,8 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
 	 let (f,_p,u,t,d,pc,offset) = declare_local(helpers_ctx, program_ctx, &tail(&x), offset);
          ( f, s_nil(), u, t, d, pc, offset )
       } else if head(&f).to_string()=="app" &&
-                head(&head(&tail(&f))).to_string() == "literal" &&
-                tail(&head(&tail(&f))).to_string() == "=" &&
+                head(&head(&tail(&f))).to_string() == "variable" &&
+                tail(&head(&tail(&f))).to_string() == "set" &&
                 head(&tail(&tail(&f))).to_string() == "variable" {
          let lname = tail(&tail(&tail(&f))).to_string();
          let local = is_local(program_ctx, &format!("set {}", lname));

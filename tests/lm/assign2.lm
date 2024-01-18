@@ -1,9 +1,9 @@
 
 main := print-s(tail(
    (local a)
-   (= a ())
-   (= a (a 123))
-   (= a (a abc))
-   (= a (a xyz))
+   (set a ())
+   (set a (a 123))
+   (set a (a abc))
+   (set a (a xyz))
    a
 ));

@@ -126,7 +126,7 @@
    ::yield-nil
    \t ret                       \n
 
-   equal:                       \n
+   eq:                          \n
    \t cmp $0, %r13              \n
    \t je __equal_nil            \n
    \t cmp $0, %r14              \n
@@ -141,11 +141,6 @@
    \t ret                       \n
    __equal_nil:                 \n
    ::yield-nil
-   \t ret                       \n
-
-   inequal:                     \n
-   \t call equal                \n
-   \t call not                  \n
    \t ret                       \n
 
    # _streq (%rax: *char, %rbx: *char) -> 
@@ -361,7 +356,7 @@ concat := λl r. match (l r) (
 kv-lookup := λctx key default. match ctx (
    ()
    ((ctxs (k v)) (
-      if (==(k key)) v (kv-lookup(ctxs key default))
+      if (eq(k key)) v (kv-lookup(ctxs key default))
    ))
    (_ default)
 );
@@ -376,14 +371,14 @@ ctx-eval-soft := λctx t. (
       ((Lambda fl fr) (Lambda fl fr))
       ((l r) (tail(
          (local le)
-         (= le (ctx-eval-soft(ctx l)))
+         (set le (ctx-eval-soft(ctx l)))
          (local re)
-         (= re (ctx-eval-soft(ctx r)))
+         (set re (ctx-eval-soft(ctx r)))
          (match le (
             ()
             ( (Lambda fl fr) (tail(
                (local inner_ctx)
-               (= inner_ctx (destructure (ctx fl re)))
+               (set inner_ctx (destructure (ctx fl re)))
                (ctx-eval-soft (inner_ctx fr))
             )))
             (_ (le re))
@@ -402,11 +397,11 @@ destructure := λctx pat val. if ctx (match (pat val) (
    ))
    ( ((xs x) (ys y)) (tail(
       (local inner_ctx)
-      (= inner_ctx (destructure (ctx xs ys)))
-      (= inner_ctx (destructure (inner_ctx x y)))
+      (set inner_ctx (destructure (ctx xs ys)))
+      (set inner_ctx (destructure (inner_ctx x y)))
       inner_ctx
    )))
    ( (x y) (
-      if (== (x y)) ctx ()
+      if (eq (x y)) ctx ()
    ))
 )) ();
