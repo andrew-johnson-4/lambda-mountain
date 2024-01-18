@@ -13,6 +13,12 @@ main := (
    (match mode (
       ()
       (Options (print-s (TODO list options)))
-      (Parse (print-s (ParseFiles inputs)))
+      (Parse (foreach-atom inputs (
+         if $_ (print-s (parse-file $_)) ()
+      )))
    ))
+);
+
+parse-file := λpath. (
+   load-file path
 );
