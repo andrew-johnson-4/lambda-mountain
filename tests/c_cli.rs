@@ -72,6 +72,7 @@ fn helpers() {
    assert_eq!( compile_and_run("tests/lm/locals3.lm"), "()" );
    assert_eq!( compile_and_run("tests/lm/locals4.lm"), "()" );
    assert_eq!( compile_and_run("tests/lm/assign.lm"), "((123 abc) xyz)" );
+   assert_eq!( compile_and_run("tests/lm/assign2.lm"), "(((() 123) abc) xyz)" );
 }
 
 #[test]
