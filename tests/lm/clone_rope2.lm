@@ -1,13 +1,10 @@
 
 main := (
-   (local c)
-   (local e)
-   (= e ())
-   (= c a)
-   (= e (e c))
-   (= c b)
-   (= e (e c))
-   (= c c)
-   (= e (e c))
-   (print-s e)
+   print-s (()
+      ((clone-rope A)
+         ((clone-rope B)
+            (clone-rope C)
+         )
+      )
+   )
 );

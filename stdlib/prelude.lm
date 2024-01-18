@@ -205,7 +205,9 @@
    \t call __clone_rope         \n
    ::pop-this
    ::tail
+   ::push-this
    \t call __clone_rope         \n
+   ::pop-this
    \t jmp clone_rope_end        \n
 
    #if not cons, concat
