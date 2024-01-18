@@ -7,6 +7,7 @@ main := (
    (foreach-atom (tail argv) (match $_ (
       ()
       (--parse (= mode Parse))
+      (--tokenize (= mode Tokenize))
       (() ())
       (fp (= inputs (fp inputs)))
    )))
@@ -16,15 +17,23 @@ main := (
       (Parse (foreach-atom inputs (
          if $_ (print-s (parse-file $_)) ()
       )))
+      (Tokenize (foreach-atom inputs (
+         if $_ (print-s (tokenize-file $_)) ()
+      )))
    ))
 );
 
 parse-file := λpath. (
-   parse-program (load-file path)
+   parse-program (tokenize (load-file path))
 );
 
-parse-program := λtext. (tail(
-   (print-s (PARSE_PROGRAM text))
+tokenize-file := λpath. (
+   tokenize (load-file path)
+);
+
+parse-program := λtoks. toks;
+
+tokenize := λtext. (tail(
    (local program)
    (= program ())
    (local buffer)

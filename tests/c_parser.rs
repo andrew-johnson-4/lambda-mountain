@@ -1,6 +1,6 @@
 use std::process::Command;
 
-fn compile_and_run(target: &str) -> String {
+fn compile_and_run(mode: &str, target: &str) -> String {
    let exit = Command::new("lambda_mountain")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
@@ -16,7 +16,7 @@ fn compile_and_run(target: &str) -> String {
    let exit = Command::new("./a.out")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
-                      .arg("--parse")
+                      .arg(mode)
                       .arg(target)
                       .spawn()
                       .expect("failed to execute process")
@@ -29,9 +29,19 @@ fn compile_and_run(target: &str) -> String {
    String::from_utf8_lossy(&exit.stdout).to_string()
 }
 
+/*
 #[test]
 fn cli_parser() {
-   assert_eq!( compile_and_run("tests/lm/parse_variable1.lm"), "(Variable abc)" );
-   assert_eq!( compile_and_run("tests/lm/parse_literal1.lm"), "(Literal 123)" );
-   assert_eq!( compile_and_run("tests/lm/parse_literal2.lm"), "(Literal abc)" );
+   assert_eq!( compile_and_run("--parse","tests/lm/parse_variable1.lm"), "(Variable abc)" );
+   assert_eq!( compile_and_run("--parse","tests/lm/parse_literal1.lm"), "(Literal 123)" );
+   assert_eq!( compile_and_run("--parse","tests/lm/parse_literal2.lm"), "(Literal abc)" );
+}
+*/
+
+#[test]
+fn cli_tokenizer() {
+   assert_eq!( compile_and_run("--tokenize","tests/lm/parse_variable1.lm"), "(() abc)" );
+   assert_eq!( compile_and_run("--tokenize","tests/lm/parse_literal1.lm"), "(() 123)" );
+   assert_eq!( compile_and_run("--tokenize","tests/lm/parse_literal2.lm"), "(() 'abc)" );
+   assert_eq!( compile_and_run("--tokenize","tests/lm/parse_literal3.lm"), "((() abc) 123)" );
 }
