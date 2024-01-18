@@ -42,10 +42,8 @@ tokenize := λtext. (tail(
       ()
 
 #     These characters are special characters
-#     They are never allowed in escaped strings etc.
+#     They are removed during tokenization
       (\o (print-s (OCTOTHORPE)))
-      (\[ (print-s (OPEN PARENS)))
-      (\] (print-s (CLOSE PARENS)))
       (\n (if buffer (
          (= program (program (clone-rope buffer)))
          (= buffer ())
@@ -60,11 +58,29 @@ tokenize := λtext. (tail(
       ) ()))
 
 #     These characters are special characters
-#     They are permitted as parts of literals in context-sensitive ways
-#     λ LAMBDA
-#     . DOT
-#     : COLON
-#     = EQUAL
+#     They are isolated during tokenization
+      (\[ (print-s (OPEN PARENS)))
+      (\] (print-s (CLOSE PARENS)))
+      (. (if buffer (
+         (= program (program (clone-rope buffer)))
+         (= program (program .))
+         (= buffer ())
+      ) ()))
+#      (: (if buffer (
+#         (= program (program (clone-rope buffer)))
+#         (= program (program :))
+#         (= buffer ())
+#      ) ()))
+#      (= (if buffer (
+#         (= program (program (clone-rope buffer)))
+#         (= program (program =))
+#         (= buffer ())
+#      ) ()))
+#      (λ (if buffer (
+#         (= program (program (clone-rope buffer)))
+#         (= program (program λ))
+#         (= buffer ())
+#      ) ()))
 
       (c (
          (= buffer (
