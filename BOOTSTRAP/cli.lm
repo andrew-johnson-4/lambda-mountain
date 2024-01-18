@@ -66,9 +66,9 @@ tokenize := λtext. (tail(
 #         (set program (program :))
 #         (set buffer ())
 #      ) ()))
-      (= (
-         (print-s EQ)
-      ))
+#      (= (
+#         (print-s EQ)
+#      ))
 # (if buffer (
 #         (set program (program (clone-rope buffer)))
 #         (set program (program :eq))
@@ -81,11 +81,14 @@ tokenize := λtext. (tail(
 #      ) ()))
 
       (c (
-         (= buffer (
+         (set buffer (
             buffer (clone-rope c)
          ))
       ))
    )))
+   (if buffer (
+      (set program (program (clone-rope buffer)))
+   ) ())
    program
 ));
 
