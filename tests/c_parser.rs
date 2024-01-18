@@ -16,6 +16,7 @@ fn compile_and_run(target: &str) -> String {
    let exit = Command::new("./a.out")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
+                      .arg("--parse")
                       .arg(target)
                       .spawn()
                       .expect("failed to execute process")
