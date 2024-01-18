@@ -355,35 +355,47 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
                 head(&head(&tail(&head(&tail(&e))))).to_string() == "variable" &&
                 tail(&head(&tail(&head(&tail(&e))))).to_string() == "foreach-atom" {
          let atom = tail(&tail(&head(&tail(&e)))); 
-         let apply_label = tail(&tail(&tail(&e)));
-         let apply_label = s_atom(&label_case(&apply_label.to_string()));
+         let apply_expr = tail(&tail(&e));
          let foreach_label = s_atom(&uuid());
          let foreach_notcons = s_atom(&uuid());
-         let (aframe,prog,aunframe,atext,adata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &atom, offset);
-         let ftext = ctx_eval_soft(helpers_ctx, &app(variable("::foreach-atom"),app(app(foreach_label.clone(),foreach_notcons),apply_label.clone())));
-         let prog = s_cons( prog, s_atom(&format!("\tcall {}\n",foreach_label)) );
-         ( aframe, prog, aunframe, s_cons(atext,ftext), adata, program_ctx, offset )
+         let (aframe,aprog,aunframe,atext,adata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &atom, offset);
+         let (eframe,eprog,eunframe,etext,edata,program_ctx,offset) = if head(&apply_expr).to_string()=="variable" {
+            let apply_label = tail(&apply_expr);
+            let apply_prog = s_atom(&format!("\tcall {}\n", label_case(&apply_label.to_string())));
+            (s_nil(), apply_prog, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset)
+         } else {
+            panic!("foreach-atom apply: {}", apply_expr);
+         };
+         let ftext = ctx_eval_soft(helpers_ctx, &app(variable("::foreach-atom"),app(app(foreach_label.clone(),foreach_notcons),eprog.clone())));
+         let prog = s_cons( aprog, s_atom(&format!("\tcall {}\n",foreach_label)) );
+         ( s_cons(aframe,eframe), prog, s_cons(aunframe,eunframe), s_cons(s_cons(atext,ftext),etext), s_cons(adata,edata), program_ctx, offset )
       } else if head(&e).to_string()=="app" &&
                 head(&head(&tail(&e))).to_string() == "app" &&
                 head(&head(&tail(&head(&tail(&e))))).to_string() == "variable" &&
                 tail(&head(&tail(&head(&tail(&e))))).to_string() == "foreach-char" {
          let atom = tail(&tail(&head(&tail(&e)))); 
-         let apply_label = tail(&tail(&tail(&e)));
-         let apply_label = s_atom(&label_case(&apply_label.to_string()));
+         let apply_expr = tail(&tail(&e));
          let foreach_head = s_atom(&uuid());
          let foreach_small = s_atom(&uuid());
          let foreach_end = s_atom(&uuid());
          let foreach_notcons = s_atom(&uuid());
          let foreach_data = s_atom(&uuid());
          let (aframe,prog,aunframe,atext,adata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &atom, offset);
+         let (eframe,eprog,eunframe,etext,edata,program_ctx,offset) = if head(&apply_expr).to_string()=="variable" {
+            let apply_label = tail(&apply_expr);
+            let apply_prog = s_atom(&format!("\tcall {}\n", label_case(&apply_label.to_string())));
+            (s_nil(), apply_prog, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset)
+         } else {
+            panic!("foreach apply: {}", apply_expr);
+         };
          let ftext = ctx_eval_soft(helpers_ctx, &app(variable("::foreach-char"),
             app(app(app(
                app(app(foreach_data.clone(),foreach_head.clone()),foreach_small.clone())
-           ,foreach_end),foreach_notcons),apply_label.clone())
+           ,foreach_end),foreach_notcons),eprog.clone())
          ));
          let fdata = ctx_eval_soft(helpers_ctx, &app(variable("::foreach-char-data"),foreach_data.clone()));
          let prog = s_cons( prog, s_atom(&format!("\tcall {}\n",foreach_head)) );
-         ( aframe, prog, aunframe, s_cons(atext,ftext), s_cons(adata,fdata), program_ctx, offset )
+         ( s_cons(aframe,eframe), prog, s_cons(aunframe,eunframe), s_cons(s_cons(atext,ftext),etext), s_cons(s_cons(adata,fdata),edata), program_ctx, offset )
       } else if head(&e).to_string()=="app" &&
                 head(&head(&tail(&e))).to_string() == "app" &&
                 head(&head(&tail(&head(&tail(&e))))).to_string() == "app" &&
