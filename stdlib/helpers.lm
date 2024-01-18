@@ -442,6 +442,7 @@
    ::foreach-small : \n
    \t cmpb $0, 0\(%rax\) \n
    \t je ::foreach-end \n
+   \t push %rax \n
    \t mov $ ::foreach-data , %r12 \n
    \t mov $0, %r13 \n
    \t mov $0, %r14 \n
@@ -450,6 +451,7 @@
    \t movb %bl, 0\(%r12\) \n
    \t movb $0, 1\(%r12\) \n
    \t call ::foreach-apply \n
+   \t pop %rax \n
    \t inc %rax \n
    \t jmp ::foreach-small \n
 
