@@ -1,0 +1,7 @@
+
+main := (
+   (print-s argv)
+   (foreach-atom (head argv) (
+      print-s $_
+   ))
+);
