@@ -400,7 +400,7 @@
    #if not cons, apply
    ::foreach-notcons : \n
    ::push-this
-   \t call ::foreach-apply \n
+   ::foreach-apply
    ::pop-this
    \t ret \n
 );
@@ -434,7 +434,7 @@
    \t mov %r12, %rax \n
    \t cmp $0, %r12 \n
    \t jne ::foreach-small \n
-   \t call ::foreach-apply \n
+   ::foreach-apply
    ::pop-this
    \t ret \n
 
@@ -449,7 +449,7 @@
    \t movb 0\(%rax\), %bl \n
    \t movb %bl, 0\(%r12\) \n
    \t movb $0, 1\(%r12\) \n
-   \t call ::foreach-apply \n
+   ::foreach-apply
    \t inc %rax \n
    \t jmp ::foreach-small \n
 
