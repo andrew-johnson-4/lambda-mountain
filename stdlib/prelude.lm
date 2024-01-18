@@ -224,8 +224,6 @@
    # if return value is positive then open was a success
    \t jge load_file_contents    \n
 
-   \t mov %rax, %r12            \n
-   \t call print_i              \n
    \t mov $__err_fopen, %r12    \n
    \t mov $0, %r13              \n
    \t mov $0, %r14              \n
@@ -233,24 +231,58 @@
    \t ret                       \n
 
    load_file_contents:          \n
-   \t mov %rax, %r12            \n
-   \t call print_i              \n
-   \t mov $0, %r12              \n
+   \t mov $__a_section, %r8     \n
+   \t mov $__a_counter, %r10    \n
+   \t mov 0\(%r10\), %r11       \n
+   \t add %r11, %r8             \n
+   \t mov %r8, %r9              \n
+   \t mov $0, %r10              \n
+   \t mov $load_file_buf, %r11  \n
+   #r8 holds pointer to head of new data
+   #r9 holds pointer to tail of new data
+   #r10 holds amount of data on buffer currently
+   #r11 holds pointer to head of buffer
+
+   # move data from buffer into string
+   load_file_loop:              \n
+   \t cmp $0, %r10              \n
+   \t je load_file_bufempty     \n
+   \t movb 0\(%r11\), %bl       \n
+   \t mov %bl, 0\(%r9\)         \n
+   \t inc %r9                   \n
+   \t inc %r11                  \n
+   \t dec %r10                  \n
+   \t jmp load_file_loop        \n
+
+   # read file
+   load_file_bufempty:          \n
+   \t push %rax                 \n
+   \t mov %rax, %rdi            \n # file descriptor
+   \t mov $0, %rax              \n # read
+   \t mov $load_file_buf, %rsi  \n # buffer
+   \t mov $load_file_bsz, %rdx  \n
+   \t mov 0\(%rdx\), %rdx       \n # buffer size
+   \t syscall                   \n
+   \t mov %rax, %r10            \n
+   \t pop %rax                  \n
+   \t mov $load_file_buf, %r11  \n
+   \t cmp $0, %r10              \n
+   \t jne load_file_loop        \n
+
+   # close file
+   \t mov %rax, %rdi            \n # file descriptor
+   \t mov $3, %rax              \n # close
+   \t syscall                   \n
+   
+   \t movb $0, 0\(%r9\)         \n
+   \t inc %r9                   \n
+   \t sub %r8, %r9              \n
+   \t mov $__a_counter, %r10    \n
+   \t mov %r9, 0\(%r10\)        \n
+   \t mov %r8, %r12             \n
    \t mov $0, %r13              \n
    \t mov $0, %r14              \n
    \t mov $0, %r15              \n
-   \t ret                       \n
-
-   # read the file
-   \t mov %rax, %rbx            \n # file descriptor
-   \t mov $3, %rax              \n # read
-   \t mov $load_file_buf, %rcx  \n # buffer
-   \t mov $load_file_bsz, %rdx  \n # buffer size
-   \t syscall                   \n
-
-   # close the file
-   
-   \t mov $load_file_buf, %r12  \n
    \t ret                       \n
    
 );

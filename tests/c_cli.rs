@@ -118,5 +118,6 @@ fn rope() {
 #[test]
 fn system_calls() {
    assert_eq!( compile_and_run("tests/lm/argv.lm"), "(./a.out ())" );
-   assert_eq!( compile_and_run("tests/lm/load_file.lm"), "helloworld" );
+   assert_eq!( compile_and_run("tests/lm/load_file.lm"), "helloworld\n" );
+   assert_eq!( compile_and_run("tests/lm/load_bigger_file.lm"), "helloworld\n" );
 }
