@@ -119,5 +119,7 @@ fn rope() {
 fn system_calls() {
    assert_eq!( compile_and_run("tests/lm/argv.lm"), "(./a.out ())" );
    assert_eq!( compile_and_run("tests/lm/load_file.lm"), "helloworld\n" );
-   assert_eq!( compile_and_run("tests/lm/load_bigger_file.lm"), "helloworld\n" );
+   let bigger_contents = std::fs::read_to_string("tests/lm/bigger_file.txt")
+                        .expect("Could not read tests/lm/bigger_file.txt");
+   assert_eq!( compile_and_run("tests/lm/load_bigger_file.lm"), bigger_contents );
 }
