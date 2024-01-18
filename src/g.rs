@@ -364,7 +364,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
             let apply_prog = s_atom(&format!("\tcall {}\n", label_case(&apply_label.to_string())));
             (s_nil(), apply_prog, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset)
          } else {
-            panic!("foreach-atom apply: {}", apply_expr);
+            compile_expr(helpers_ctx, &program_ctx, &apply_expr, offset)
          };
          let ftext = ctx_eval_soft(helpers_ctx, &app(variable("::foreach-atom"),app(app(foreach_label.clone(),foreach_notcons),eprog.clone())));
          let prog = s_cons( aprog, s_atom(&format!("\tcall {}\n",foreach_label)) );
@@ -386,7 +386,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
             let apply_prog = s_atom(&format!("\tcall {}\n", label_case(&apply_label.to_string())));
             (s_nil(), apply_prog, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset)
          } else {
-            panic!("foreach apply: {}", apply_expr);
+            compile_expr(helpers_ctx, &program_ctx, &apply_expr, offset)
          };
          let ftext = ctx_eval_soft(helpers_ctx, &app(variable("::foreach-char"),
             app(app(app(

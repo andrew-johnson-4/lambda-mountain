@@ -112,7 +112,7 @@ fn eval_soft() {
 fn rope() {
    assert_eq!( compile_and_run("tests/lm/foreach_atom.lm"), "helloworld" );
    assert_eq!( compile_and_run("tests/lm/foreach_char.lm"), "h_e_l_l_o_w_o_r_l_d_" );
-   assert_eq!( compile_and_run("tests/lm/foreach_atom_e.lm"), "h_e_l_l_o_w_o_r_l_d_" );
+   assert_eq!( compile_and_run("tests/lm/foreach_atom_e.lm"), "hello_world_" );
    assert_eq!( compile_and_run("tests/lm/foreach_char_e.lm"), "h_e_l_l_o_w_o_r_l_d_" );
    assert_eq!( compile_and_run("tests/lm/clone_rope.lm"), "helloworld" );
 }
