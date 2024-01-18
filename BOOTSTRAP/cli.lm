@@ -1,7 +1,18 @@
 
 main := (
-   (print-s argv)
-   (foreach-atom (tail argv) (
-      print-s $_
+   (local mode)
+   (= mode Options)
+   (local inputs)
+   (= inputs ())
+   (foreach-atom (tail argv) (match $_ (
+      ()
+      (--parse (= mode Parse))
+      (() ())
+      (fp (= inputs (fp inputs)))
+   )))
+   (match mode (
+      ()
+      (Options (print-s (TODO list options)))
+      (Parse (print-s (ParseFiles inputs)))
    ))
 );
