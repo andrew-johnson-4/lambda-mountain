@@ -180,6 +180,7 @@
    \t mov 0\(%r10\), %r11       \n
    \t add %r11, %r8             \n
    \t mov %r8, %r9              \n
+   ::put64
    #r8 holds pointer to head of new data
    #r9 holds pointer to tail of new data
    \t call __clone_rope         \n
@@ -192,6 +193,7 @@
    \t mov $0, %r13              \n
    \t mov $0, %r14              \n
    \t mov $0, %r15              \n
+   \t call print_d              \n
    \t ret                       \n
 
    __clone_rope:                \n

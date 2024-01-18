@@ -89,6 +89,13 @@
 ::put64 := (
    \t push %rsi                  \n
    \t push %rdi                  \n
+   \t push %rax                  \n
+   \t push %rbx                  \n
+   \t push %rcx                  \n
+   \t push %rdx                  \n
+   \t push %r8                   \n
+   \t push %r9                   \n
+   \t push %r10                  \n
 
    \t mov $__put64_write_buffer, %r9  \n   # %r9 points to __put64_write_buffer
 
@@ -131,6 +138,13 @@
    \t mov $19, %rdx             \n
    \t syscall                   \n
 
+   \t pop %r10                  \n
+   \t pop %r9                   \n
+   \t pop %r8                   \n
+   \t pop %rdx                  \n
+   \t pop %rcx                  \n
+   \t pop %rbx                  \n
+   \t pop %rax                  \n
    \t pop %rdi                  \n
    \t pop %rsi                  \n
 );
