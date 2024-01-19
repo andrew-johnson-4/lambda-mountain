@@ -93,6 +93,13 @@ tokenize := λtext. (tail(
          ) ())
          (set program (program '))
       )))
+      (\: (if in_comment () (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+         (set program (program \:))
+      )))
       (': (if in_comment () (
          (if buffer (
             (set program (program (clone-rope buffer)))
