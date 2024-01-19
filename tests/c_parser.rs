@@ -43,5 +43,5 @@ fn cli_tokenizer() {
    assert_eq!( compile_and_run("--tokenize","tests/lm/parse_variable1.lm"), "(() abc)" );
    assert_eq!( compile_and_run("--tokenize","tests/lm/parse_literal1.lm"), "(() 123)" );
    assert_eq!( compile_and_run("--tokenize","tests/lm/parse_literal2.lm"), "((() ') abc)" );
-   assert_eq!( compile_and_run("--tokenize","tests/lm/parse_literal3.lm"), "((() abc) 123)" );
+   assert_eq!( compile_and_run("--tokenize","tests/lm/parse_literal3.lm"), "((((((((((((((() abc) 123) :) :) =) () )) () xyz) .) λ) λ) ') d)" );
 }

@@ -31,6 +31,7 @@ fn flatten(output: &mut String, input: &S) {
       let l = l.replace("\\[","(");
       let l = l.replace("\\]",")");
       let l = l.replace("\\s"," ");
+      let l = l.replace("\\l","λ");
       if l=="literal" || l=="variable" || l=="app" || l=="local" || l=="type" {}
       else if l == "\\n" {
          output.push_str("\n"); 
