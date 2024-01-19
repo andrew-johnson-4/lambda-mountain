@@ -27,21 +27,17 @@ fn flatten(output: &mut String, input: &S) {
       flatten( output, &tail(input) );
    } else if is_atom(input) {
       let l = input.to_string();
+      let l = l.replace("\\o","#");
+      let l = l.replace("\\[","(");
+      let l = l.replace("\\]",")");
+      let l = l.replace("\\s"," ");
+      let l = l.replace("\\l","λ");
       if l=="literal" || l=="variable" || l=="app" || l=="local" || l=="type" {}
-      else if l=="\\t" { output.push('\t'); }
-      else if l=="\\n" { output.push('\n'); }
-      else if l=="(" { output.push('('); }
-      else if l==")" { output.push(')'); }
-      else if l==r#""\lparen""# { output.push_str(r#""(""#); }
-      else if l==r#""\rparen""# { output.push_str(r#"")""#); }
-      else if l==r#""\space""# { output.push_str(r#"" ""#); }
-      else if l==r#""\nil""# { output.push_str(r#""()""#); }
-      else if l=="$" { output.push('$'); }
-      else if l==r#"\lparen"# { output.push_str(r#"("#); }
-      else if l==r#"\rparen"# { output.push_str(r#")"#); }
-      else if l==r#"\space"# { output.push_str(r#" "#); }
-      else if l=="\"" { output.push('"'); }
-      else {
+      else if l == "\\n" {
+         output.push_str("\n"); 
+      } else if l == "\\t" {
+         output.push_str("\t"); 
+      } else {
          output.push_str( &l );
       }
    }
@@ -87,8 +83,8 @@ fn assemble(cfg: &str, program: &S) {
    }
 }
 
-const OPERATORS: [(&str,&str); 9] = [
-   ("==", "equal"),
+const OPERATORS: [(&str,&str); 10] = [
+   ("eq", "eq"),
    ("not", "not"),
    ("head", "head"),
    ("tail", "tail"),
@@ -96,6 +92,7 @@ const OPERATORS: [(&str,&str); 9] = [
    ("print-s", "print_s"),
    ("print-i", "print_i"),
    ("print-p", "print_p"),
+   ("print-d", "print_d"),
    ("clone-rope", "clone_rope"),
    ("load-file", "load_file"),
 ];
@@ -339,8 +336,8 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
 	 let (f,_p,u,t,d,pc,offset) = declare_local(helpers_ctx, program_ctx, &tail(&x), offset);
          ( f, s_nil(), u, t, d, pc, offset )
       } else if head(&f).to_string()=="app" &&
-                head(&head(&tail(&f))).to_string() == "literal" &&
-                tail(&head(&tail(&f))).to_string() == "=" &&
+                head(&head(&tail(&f))).to_string() == "variable" &&
+                tail(&head(&tail(&f))).to_string() == "set" &&
                 head(&tail(&tail(&f))).to_string() == "variable" {
          let lname = tail(&tail(&tail(&f))).to_string();
          let local = is_local(program_ctx, &format!("set {}", lname));
@@ -380,6 +377,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          let foreach_end = s_atom(&uuid());
          let foreach_notcons = s_atom(&uuid());
          let foreach_data = s_atom(&uuid());
+         let foreach_apply = s_atom(&uuid());
          let (aframe,prog,aunframe,atext,adata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &atom, offset);
          let (eframe,eprog,eunframe,etext,edata,program_ctx,offset) = if head(&apply_expr).to_string()=="variable" {
             let apply_label = tail(&apply_expr);
@@ -389,9 +387,9 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
             compile_expr(helpers_ctx, &program_ctx, &apply_expr, offset)
          };
          let ftext = ctx_eval_soft(helpers_ctx, &app(variable("::foreach-char"),
-            app(app(app(
+            app(app(app(app(
                app(app(foreach_data.clone(),foreach_head.clone()),foreach_small.clone())
-           ,foreach_end),foreach_notcons),eprog.clone())
+           ,foreach_end),foreach_notcons),foreach_apply),eprog.clone())
          ));
          let fdata = ctx_eval_soft(helpers_ctx, &app(variable("::foreach-char-data"),foreach_data.clone()));
          let prog = s_cons( prog, s_atom(&format!("\tcall {}\n",foreach_head)) );
@@ -542,6 +540,7 @@ pub fn compile(cfg: &str, main_ctx: &S) {
          main_ctx = kv_add(&main_ctx, &k, &v);
       }
    }
+   let mut has_main = false;
    for (k,v) in kv_iter(&main_ctx) {
       let k = k.to_string();
       raw_program = s_cons(
@@ -549,6 +548,7 @@ pub fn compile(cfg: &str, main_ctx: &S) {
          s_atom(&format!("{}:\n",label_case(&k))),
       );
       if k == "main" {
+         has_main = true;
          let start = ctx_eval_soft(&helpers_ctx, &variable("::before-main"));
          let enter = ctx_eval_soft(&helpers_ctx, &variable("::enter-function"));
          raw_program = s_cons( raw_program, start );
@@ -568,6 +568,10 @@ pub fn compile(cfg: &str, main_ctx: &S) {
          raw_program = s_cons( raw_program, vtext );
          raw_data = s_cons(raw_data,vdata);
       }
+   }
+   if !has_main {
+      raw_program = s_cons( raw_program, s_atom("main:\n") );
+      raw_program = s_cons( raw_program, ctx_eval_soft(&helpers_ctx, &variable("::exit-cleanup")) );
    }
    let program = compile_program(&helpers_ctx, &raw_program, &raw_data);
    assemble(cfg, &program);

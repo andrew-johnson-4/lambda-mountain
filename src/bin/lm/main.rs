@@ -10,6 +10,12 @@ fn main() {
       if option == "-o" {
          target = arg;
          option = "".to_string();
+      } else if option == "-p" {
+         let mut file = File::open(&arg).unwrap();
+         let mut file_contents = String::new();
+         file.read_to_string(&mut file_contents).unwrap();
+         let s = parse_program(&file_contents);
+         println!("{}", s);
       } else if arg.starts_with("-") {
          option = arg;
       } else if arg.ends_with(".lm") {

@@ -1,0 +1,134 @@
+
+main := (
+   (local mode)
+   (set mode Options)
+   (local inputs)
+   (set inputs ())
+   (foreach-atom (tail argv) (match $_ (
+      ()
+      (--parse (set mode Parse))
+      (--tokenize (set mode Tokenize))
+      (() ())
+      (fp (set inputs (fp inputs)))
+   )))
+   (match mode (
+      ()
+      (Options (print-s (TODO list options)))
+      (Parse (foreach-atom inputs (
+         if $_ (print-s (parse-file $_)) ()
+      )))
+      (Tokenize (foreach-atom inputs (
+         if $_ (print-s (tokenize-file $_)) ()
+      )))
+   ))
+);
+
+parse-file := λpath. (
+   parse-program (tokenize (load-file path))
+);
+
+tokenize-file := λpath. (
+   tokenize (load-file path)
+);
+
+parse-program := λtoks. toks;
+
+tokenize := λtext. (tail(
+   (local program)
+   (set program ())
+   (local buffer)
+   (set buffer ())
+   (local in_comment)
+   (set in_comment ())
+   (foreach-char text (match $_ (
+      ()
+
+#     These characters are special characters
+#     They are removed during tokenization
+      (\o (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+         (set in_comment True)
+      ))
+      (\n (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+         (set in_comment ())
+      ))
+      (\s (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+      ))
+      (\t (if buffer (
+         (set program (program (clone-rope buffer)))
+         (set buffer ())
+      ) ()))
+
+#     These characters are special characters
+#     They are isolated during tokenization
+      (\[ (if in_comment () (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+         (set program (program \[))
+      )))
+      (\] (if in_comment () (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+         (set program (program \]))
+      )))
+      (' (if in_comment () (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+         (set program (program '))
+      )))
+      (': (if in_comment () (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+         (set program (program ':))
+      )))
+      (= (if in_comment () (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+         (set program (program =))
+      )))
+      (. (if in_comment () (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+         (set program (program .))
+      )))
+
+      (c (if in_comment () (
+         (set buffer (
+            buffer (clone-rope c)
+         ))
+         (if (eq(\l (clone-rope buffer))) (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+      )))
+   )))
+   (if buffer (
+      (set program (program (clone-rope buffer)))
+   ) ())
+   program
+));
+
+

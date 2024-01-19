@@ -1,0 +1,5 @@
+
+main := print-s (
+   (eq (\l \l))
+   \l
+);

@@ -1,0 +1,10 @@
+
+main := (
+   print-s (()
+      ((clone-rope A)
+         ((clone-rope B)
+            (clone-rope C)
+         )
+      )
+   )
+);

@@ -1,0 +1,13 @@
+
+main := (
+   (local c)
+   (local e)
+   (set e ())
+   (set c A)
+   (set e (e (clone-rope c)))
+   (set c B)
+   (set e (e (clone-rope c)))
+   (set c C)
+   (set e (e (clone-rope c)))
+   (print-s e)
+);

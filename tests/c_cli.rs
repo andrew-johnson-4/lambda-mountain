@@ -54,6 +54,7 @@ fn cli_comparison() {
    assert_eq!( compile_and_run("tests/lm/atom_comparison_notnot.lm"), "()" );
    assert_eq!( compile_and_run("tests/lm/atom_comparison_inequal.lm"), "()" );
    assert_eq!( compile_and_run("tests/lm/atom_comparison_equal.lm"), "True" );
+   assert_eq!( compile_and_run("tests/lm/atom_comparison_equal2.lm"), "(True λ)" );
 }
 
 #[test]
@@ -72,6 +73,7 @@ fn helpers() {
    assert_eq!( compile_and_run("tests/lm/locals3.lm"), "()" );
    assert_eq!( compile_and_run("tests/lm/locals4.lm"), "()" );
    assert_eq!( compile_and_run("tests/lm/assign.lm"), "((123 abc) xyz)" );
+   assert_eq!( compile_and_run("tests/lm/assign2.lm"), "(((() 123) abc) xyz)" );
 }
 
 #[test]
@@ -110,11 +112,13 @@ fn eval_soft() {
 
 #[test]
 fn rope() {
+   assert_eq!( compile_and_run("tests/lm/clone_rope2.lm"), "(() (A (B C)))" );
+   assert_eq!( compile_and_run("tests/lm/clone_rope3.lm"), "(((() A) B) C)" );
+   assert_eq!( compile_and_run("tests/lm/clone_rope.lm"), "helloworld" );
    assert_eq!( compile_and_run("tests/lm/foreach_atom.lm"), "helloworld" );
    assert_eq!( compile_and_run("tests/lm/foreach_char.lm"), "h_e_l_l_o_w_o_r_l_d_" );
    assert_eq!( compile_and_run("tests/lm/foreach_atom_e.lm"), "hello_world_" );
    assert_eq!( compile_and_run("tests/lm/foreach_char_e.lm"), "h_e_l_l_o_w_o_r_l_d_" );
-   assert_eq!( compile_and_run("tests/lm/clone_rope.lm"), "helloworld" );
 }
 
 #[test]

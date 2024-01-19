@@ -80,8 +80,8 @@
     \t and $0xf, %al                      \n # only show lower 4 bits
     \t mov $__hex_buffer, %r10            \n # %r10 is index into hex buffer
     \t add %al, %r10b                     \n # %r10 is index into char in hex buffer
-    \t mov 0\(%r10\), %cl                   \n # %cl is a hexadecimal char
-    \t mov %cl, 0\(%r9\)                    \n # write char into buffer
+    \t mov 0\[%r10\], %cl                 \n # %cl is a hexadecimal char
+    \t mov %cl, 0\[%r9\]                  \n # write char into buffer
     \t inc %r9                            \n
 );
 
@@ -89,6 +89,13 @@
 ::put64 := (
    \t push %rsi                  \n
    \t push %rdi                  \n
+   \t push %rax                  \n
+   \t push %rbx                  \n
+   \t push %rcx                  \n
+   \t push %rdx                  \n
+   \t push %r8                   \n
+   \t push %r9                   \n
+   \t push %r10                  \n
 
    \t mov $__put64_write_buffer, %r9  \n   # %r9 points to __put64_write_buffer
 
@@ -131,6 +138,13 @@
    \t mov $19, %rdx             \n
    \t syscall                   \n
 
+   \t pop %r10                  \n
+   \t pop %r9                   \n
+   \t pop %r8                   \n
+   \t pop %rdx                  \n
+   \t pop %rcx                  \n
+   \t pop %rbx                  \n
+   \t pop %rax                  \n
    \t pop %rdi                  \n
    \t pop %rsi                  \n
 );
@@ -263,16 +277,16 @@
    \t mov %rsi, %r8             \n
    ::put64
 
-   \t mov 0\(%rsi\), %r8            \n
+   \t mov 0\[%rsi\], %r8            \n
    ::put64
 
-   \t mov 8\(%rsi\), %r8            \n
+   \t mov 8\[%rsi\], %r8            \n
    ::put64
 
-   \t mov 16\(%rsi\), %r8            \n
+   \t mov 16\[%rsi\], %r8            \n
    ::put64
 
-   \t mov 24\(%rsi\), %r8            \n
+   \t mov 24\[%rsi\], %r8            \n
    ::put64
 
    ::show-newline
@@ -325,36 +339,36 @@
    # %rsi becomes pointer to new location
    \t mov $__s_section, %rsi        \n # %rsi now points to root s
    \t mov $__s_counter, %r8         \n # %r8 now points to s counter
-   \t mov 0\(%r8\), %r10              \n # %r10 now hold value of cons counter
+   \t mov 0\[%r8\], %r10              \n # %r10 now hold value of cons counter
    \t add %r10, %rsi                \n # %rsi now points to top free cons
    \t add $32, %r10                 \n # increment s counter
-   \t mov %r10, 0\(%r8\)              \n # overwrite new s counter
-   \t mov %r12, 0\(%rsi\)             \n # set top.atom
-   \t mov %r13, 8\(%rsi\)             \n # set top.head
-   \t mov %r14, 16\(%rsi\)            \n # set top.tail 
-   \t mov %r15, 24\(%rsi\)            \n # set top.flags
+   \t mov %r10, 0\[%r8\]              \n # overwrite new s counter
+   \t mov %r12, 0\[%rsi\]             \n # set top.atom
+   \t mov %r13, 8\[%rsi\]             \n # set top.head
+   \t mov %r14, 16\[%rsi\]            \n # set top.tail 
+   \t mov %r15, 24\[%rsi\]            \n # set top.flags
 );
 
 ::open-this := (
-   \t mov 0\(%rsi\), %r12             \n
-   \t mov 8\(%rsi\), %r13             \n
-   \t mov 16\(%rsi\), %r14            \n
-   \t mov 24\(%rsi\), %r15            \n
+   \t mov 0\[%rsi\], %r12             \n
+   \t mov 8\[%rsi\], %r13             \n
+   \t mov 16\[%rsi\], %r14            \n
+   \t mov 24\[%rsi\], %r15            \n
    # move S from heap into this
    # %rsi is pointer to current location
 );
 
 ::head := (
-   \t mov 0\(%r13\), %r12             \n
-   \t mov 16\(%r13\), %r14            \n
-   \t mov 24\(%r13\), %r15            \n
-   \t mov 8\(%r13\), %r13             \n
+   \t mov 0\[%r13\], %r12             \n
+   \t mov 16\[%r13\], %r14            \n
+   \t mov 24\[%r13\], %r15            \n
+   \t mov 8\[%r13\], %r13             \n
 );
 ::tail := (
-   \t mov 0\(%r14\), %r12             \n
-   \t mov 24\(%r14\), %r15            \n
-   \t mov 8\(%r14\), %r13             \n
-   \t mov 16\(%r14\), %r14            \n
+   \t mov 0\[%r14\], %r12             \n
+   \t mov 24\[%r14\], %r15            \n
+   \t mov 8\[%r14\], %r13             \n
+   \t mov 16\[%r14\], %r14            \n
 );
 
 ::program-header := (
@@ -407,7 +421,7 @@
 
 # $this is the Rope to iterate over
 # ::foreach-call is a label to be called for each atom
-::foreach-char := λ::foreach-data ::foreach-head ::foreach-small ::foreach-end ::foreach-notcons ::foreach-apply.(
+::foreach-char := λ::foreach-data ::foreach-head ::foreach-small ::foreach-end ::foreach-notcons ::foreach-apply ::foreach-expr.(
    #define label for this function
    ::foreach-head : \n
 
@@ -431,30 +445,36 @@
    ::push-this
 
    #if nil, apply and return
-   \t mov %r12, %rax \n
+   \t mov %r12, %r8 \n
    \t cmp $0, %r12 \n
    \t jne ::foreach-small \n
-   ::foreach-apply
+   \t call ::foreach-apply \n
    ::pop-this
    \t ret \n
 
    #if atom, break into characters and apply
    ::foreach-small : \n
-   \t cmpb $0, 0\(%rax\) \n
+   \t cmpb $0, 0\[%r8\] \n
    \t je ::foreach-end \n
+   \t push %r8 \n
    \t mov $ ::foreach-data , %r12 \n
    \t mov $0, %r13 \n
    \t mov $0, %r14 \n
    \t mov $0, %r15 \n
-   \t movb 0\(%rax\), %bl \n
-   \t movb %bl, 0\(%r12\) \n
-   \t movb $0, 1\(%r12\) \n
-   ::foreach-apply
-   \t inc %rax \n
+   \t movb 0\[%r8\], %bl \n
+   \t movb %bl, 0\[%r12\] \n
+   \t movb $0, 1\[%r12\] \n
+   \t call ::foreach-apply \n
+   \t pop %r8 \n
+   \t inc %r8 \n
    \t jmp ::foreach-small \n
 
    ::foreach-end : \n
    ::pop-this
+   \t ret \n
+
+   ::foreach-apply : \n
+   ::foreach-expr
    \t ret \n
 );
 
@@ -465,38 +485,46 @@
 
 ::argv := (
    \t mov $__argv, %rax      \n
-   \t mov 0\(%rax\), %r12    \n
-   \t mov 8\(%rax\), %r13    \n
-   \t mov 16\(%rax\), %r14   \n
-   \t mov 24\(%rax\), %r15   \n
+   \t mov 0\[%rax\], %r12    \n
+   \t mov 8\[%rax\], %r13    \n
+   \t mov 16\[%rax\], %r14   \n
+   \t mov 24\[%rax\], %r15   \n
 );
 
 ::before-main := (
+   # let argv = close ()
+   # let t = argv
+   # for a in argv:
+   #    t.tail = (a ())
+   #    t = t.tail
    \t pop %rax               \n #argc
-   \t mov $0, %r12           \n
-   \t mov $0, %r13           \n
-   \t mov $0, %r14           \n
-   \t mov $0, %r15           \n
+   \t mov $__argv, %rbx      \n
+   \t movq $0, 0\[%rbx\]      \n
+   \t movq $0, 8\[%rbx\]      \n
+   \t movq $0, 16\[%rbx\]     \n
+   \t movq $0, 24\[%rbx\]     \n
+
    __before_main_argv:       \n
    \t cmp $0, %rax           \n
    \t je __before_main_end   \n
-   ::close-this
-   \t mov %rsi, %rdi         \n
    \t pop %r12               \n #argv[i]
    \t mov $0, %r13           \n
    \t mov $0, %r14           \n
    \t mov $0, %r15           \n
    ::close-this
+   \t mov %rsi, %rdi         \n
+   #rdi is a
    \t mov $0, %r12           \n
-   \t mov %rsi, %r13         \n
-   \t mov %rdi, %r14         \n
+   \t mov $0, %r13           \n
+   \t mov $0, %r14           \n
    \t mov $0, %r15           \n
+   ::close-this
+   #rsi is clean closed ()
+   \t mov %rdi, 8\[%rbx\]    \n
+   \t mov %rsi, 16\[%rbx\]   \n
+   \t mov %rsi, %rbx         \n
+   #rbx is tail of argv
    \t dec %rax               \n
    \t jmp __before_main_argv \n
    __before_main_end:        \n
-   \t mov $__argv, %rax      \n
-   \t mov %r12, 0\(%rax\)    \n
-   \t mov %r13, 8\(%rax\)    \n
-   \t mov %r14, 16\(%rax\)   \n
-   \t mov %r15, 24\(%rax\)   \n
 );
