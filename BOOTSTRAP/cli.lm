@@ -61,6 +61,13 @@ tokenize := λtext. (tail(
 #     They are isolated during tokenization
       (\[ (OPEN PARENS))
       (\] (CLOSE PARENS))
+      (' (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ))
+         (set program (program '))
+      ))
 #      (: (if buffer (
 #         (set program (program (clone-rope buffer)))
 #         (set program (program :))
