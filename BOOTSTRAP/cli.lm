@@ -49,14 +49,14 @@ tokenize := λtext. (tail(
          (if buffer (
             (set program (program (clone-rope buffer)))
             (set buffer ())
-         ))
+         ) ())
          (set in_comment True)
       ))
       (\n (
          (if buffer (
             (set program (program (clone-rope buffer)))
             (set buffer ())
-         ))
+         ) ())
          (set in_comment ())
       ))
       (\t (if buffer (

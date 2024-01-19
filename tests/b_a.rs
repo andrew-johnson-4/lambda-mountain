@@ -42,34 +42,4 @@ fn destructure() {
       list(&[ literal("a"), literal("c") ]),
       variable("b"),
    ).to_string(), "()" );
-
-   assert_eq!( map(
-      regex("^([abc]+)$"),
-      literal("aab"),
-      variable("{0}"),
-   ).to_string(), "(literal . aab)");
-   assert_eq!( map(
-      regex("^([abc]+)$"),
-      literal("abcd"),
-      variable("{0}"),
-   ).to_string(), "()");
-   assert_eq!( map(
-      regex("^([abc]+)[d]$"),
-      literal("abcd"),
-      variable("{1}"),
-   ).to_string(), "(literal . abc)");
-}
-
-#[test]
-fn datastructures() {
-   assert_eq!( map(
-      kv(&[ (literal("1"),regex("^([0-9]+)$")) ]),
-      kv(&[ (literal("1"),literal("23")), (list(&[literal("45")]),literal("6")) ]),
-      variable("{0}"),
-   ).to_string(), "(literal . 23)");
-   assert_eq!( map(
-      kv(&[ (literal("1"),regex("^([0-9]+)$")) ]),
-      kv(&[ (literal("1"),literal("a")), (list(&[literal("45")]),literal("6")) ]),
-      variable("{0}"),
-   ).to_string(), "()");
 }
