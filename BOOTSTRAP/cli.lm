@@ -65,32 +65,36 @@ tokenize := λtext. (tail(
          (if buffer (
             (set program (program (clone-rope buffer)))
             (set buffer ())
-         ))
+         ) ())
          (set program (program '))
       ))
-#      (: (if buffer (
-#         (set program (program (clone-rope buffer)))
-#         (set program (program :))
-#         (set buffer ())
-#      ) ()))
-#      (= (
-#         (print-s EQ)
-#      ))
-# (if buffer (
-#         (set program (program (clone-rope buffer)))
-#         (set program (program :eq))
-#         (set buffer ())
-#      ) ()))
-#      (λ (if buffer (
-#         (set program (program (clone-rope buffer)))
-#         (set program (program λ))
-#         (set buffer ())
-#      ) ()))
+      (': (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+         (set program (program ':))
+      ))
+      (= (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+         (set program (program =))
+      ))
+      (. (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+         (set program (program .))
+      ))
 
       (c (
          (set buffer (
             buffer (clone-rope c)
          ))
+         #TODO if buffer is λ push
       ))
    )))
    (if buffer (
@@ -100,8 +104,3 @@ tokenize := λtext. (tail(
 ));
 
 
-#      (. (if buffer (
-#         (= program (program (clone-rope buffer)))
-#         (= program (program .))
-#         (= buffer ())
-#      ) ()))
