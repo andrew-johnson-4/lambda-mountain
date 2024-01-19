@@ -27,6 +27,7 @@ fn flatten(output: &mut String, input: &S) {
       flatten( output, &tail(input) );
    } else if is_atom(input) {
       let l = input.to_string();
+      let l = l.replace("\\o","#");
       if l=="literal" || l=="variable" || l=="app" || l=="local" || l=="type" {}
       else if l=="\\t" { output.push('\t'); }
       else if l=="\\n" { output.push('\n'); }

@@ -38,16 +38,27 @@ tokenize := λtext. (tail(
    (set program ())
    (local buffer)
    (set buffer ())
+   (local in_comment)
+   (set in_comment ())
    (foreach-char text (match $_ (
       ()
 
 #     These characters are special characters
 #     They are removed during tokenization
-      (\o (print-s (OCTOTHORPE)))
-      (\n (if buffer (
-         (set program (program (clone-rope buffer)))
-         (set buffer ())
-      ) ()))
+      (\o (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ))
+         (set in_comment True)
+      ))
+      (\n (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ))
+         (set in_comment ())
+      ))
       (\t (if buffer (
          (set program (program (clone-rope buffer)))
          (set buffer ())
@@ -61,41 +72,41 @@ tokenize := λtext. (tail(
 #     They are isolated during tokenization
       (\[ (OPEN PARENS))
       (\] (CLOSE PARENS))
-      (' (
+      (' (if in_comment () (
          (if buffer (
             (set program (program (clone-rope buffer)))
             (set buffer ())
          ) ())
          (set program (program '))
-      ))
-      (': (
+      )))
+      (': (if in_comment () (
          (if buffer (
             (set program (program (clone-rope buffer)))
             (set buffer ())
          ) ())
          (set program (program ':))
-      ))
-      (= (
+      )))
+      (= (if in_comment () (
          (if buffer (
             (set program (program (clone-rope buffer)))
             (set buffer ())
          ) ())
          (set program (program =))
-      ))
-      (. (
+      )))
+      (. (if in_comment () (
          (if buffer (
             (set program (program (clone-rope buffer)))
             (set buffer ())
          ) ())
          (set program (program .))
-      ))
+      )))
 
-      (c (
+      (c (if in_comment () (
          (set buffer (
             buffer (clone-rope c)
          ))
          #TODO if buffer is λ push
-      ))
+      )))
    )))
    (if buffer (
       (set program (program (clone-rope buffer)))
