@@ -7,6 +7,7 @@ main := (
    (foreach-atom (tail argv) (match $_ (
       ()
       (--parse (set mode Parse))
+      (--parse-expression (set mode ParseExpression))
       (--tokenize (set mode Tokenize))
       (() ())
       (fp (set inputs (fp inputs)))
@@ -15,22 +16,22 @@ main := (
       ()
       (Options (print-s (TODO list options)))
       (Parse (foreach-atom inputs (
-         if $_ (print-s (parse-file $_)) ()
+         if $_ (print-s (parse-program (tokenize (load-file $_)))) ()
+      )))
+      (ParseExpression (foreach-atom inputs (
+         if $_ (print-s (parse-expression (tokenize (load-file $_)))) ()
       )))
       (Tokenize (foreach-atom inputs (
-         if $_ (print-s (tokenize-file $_)) ()
+         if $_ (print-s (tokenize (load-file $_))) ()
       )))
    ))
-);
-
-parse-file := λpath. (
-   parse-program (tokenize (load-file path))
 );
 
 tokenize-file := λpath. (
    tokenize (load-file path)
 );
 
+parse-expression := λtoks. toks;
 parse-program := λtoks. toks;
 
 tokenize := λtext. (tail(
