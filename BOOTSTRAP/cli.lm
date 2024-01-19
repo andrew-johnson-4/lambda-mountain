@@ -70,8 +70,20 @@ tokenize := λtext. (tail(
 
 #     These characters are special characters
 #     They are isolated during tokenization
-      (\[ (OPEN PARENS))
-      (\] (CLOSE PARENS))
+      (\[ (if in_comment () (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+         (set program (program \[))
+      )))
+      (\] (if in_comment () (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+         (set program (program \]))
+      )))
       (' (if in_comment () (
          (if buffer (
             (set program (program (clone-rope buffer)))

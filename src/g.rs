@@ -28,21 +28,15 @@ fn flatten(output: &mut String, input: &S) {
    } else if is_atom(input) {
       let l = input.to_string();
       let l = l.replace("\\o","#");
+      let l = l.replace("\\[","(");
+      let l = l.replace("\\]",")");
+      let l = l.replace("\\s"," ");
       if l=="literal" || l=="variable" || l=="app" || l=="local" || l=="type" {}
-      else if l=="\\t" { output.push('\t'); }
-      else if l=="\\n" { output.push('\n'); }
-      else if l=="(" { output.push('('); }
-      else if l==")" { output.push(')'); }
-      else if l==r#""\lparen""# { output.push_str(r#""(""#); }
-      else if l==r#""\rparen""# { output.push_str(r#"")""#); }
-      else if l==r#""\space""# { output.push_str(r#"" ""#); }
-      else if l==r#""\nil""# { output.push_str(r#""()""#); }
-      else if l=="$" { output.push('$'); }
-      else if l==r#"\lparen"# { output.push_str(r#"("#); }
-      else if l==r#"\rparen"# { output.push_str(r#")"#); }
-      else if l==r#"\space"# { output.push_str(r#" "#); }
-      else if l=="\"" { output.push('"'); }
-      else {
+      else if l == "\\n" {
+         output.push_str("\n"); 
+      } else if l == "\\t" {
+         output.push_str("\t"); 
+      } else {
          output.push_str( &l );
       }
    }
