@@ -50,17 +50,11 @@ parse-lambda := λtoks. (tail(
 
 parse-one-expression := λtoks. (tail(
    (local remainder)
-   (set remainder ())
    (local is_lambda)
-   (set is_lambda ())
    (local expr)
-   (set expr ())
    (local is_literal)
-   (set is_literal ())
    (local is_grouped)
-   (set is_grouped ())
    (local grouped_tokens)
-   (set grouped_tokens ())
    (foreach-atom toks (
       (local c)
       (set c $_)
@@ -141,11 +135,8 @@ parse-expression := λtoks. (parse-many-expressions toks);
 
 parse-program := λtoks. (tail(
    (local program)
-   (set program ())
    (local key)
-   (set key ())
    (local rhs)
-   (set rhs ())
    (foreach-atom toks (
       (local a)
       (set a $_)
@@ -175,11 +166,8 @@ parse-program := λtoks. (tail(
 
 tokenize := λtext. (tail(
    (local program)
-   (set program ())
    (local buffer)
-   (set buffer ())
    (local in_comment)
-   (set in_comment ())
    (foreach-char text (match $_ (
       ()
 
@@ -280,9 +268,7 @@ tokenize := λtext. (tail(
 
 is_variable := λv. (tail(
    (local is_variable)
-   (set is_variable ())
    (local passed_char)
-   (set passed_char ())
    (foreach-char v (
       (local c)
       (set c $_)
