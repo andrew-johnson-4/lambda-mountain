@@ -65,26 +65,37 @@ parse-one-expression := λtoks. (tail(
       (local c)
       (set c $_)
       (if expr (set remainder (remainder c)) (
+      (if grouped_tokens (
          (match c (
             ()
             (() ())
-            (\l ((set is_lambda True) (set expr INVALID)))
-            (\' (set is_literal True))
-            (\[ (
-               (if is_grouped (
-                  (set grouped_tokens (grouped_tokens \[))
-               ) ())
+            ( \[ (
+               (set grouped_tokens (grouped_tokens \[))
                (set is_grouped (\[ is_grouped))
             ))
-            (\] (
+            ( \] (
                (set is_grouped (tail is_grouped))
-               (if is_grouped (
-                  (set grouped_tokens (grouped_tokens \]))
-               ) (
-                  (set expr (parse-many-expressions grouped_tokens))
-               ))
+               (print-s (PARSEGROUP grouped_tokens))
+               (set expr (parse-many-expressions grouped_tokens))
             ))
-            (a (
+            ( a (
+               (set grouped_tokens (grouped_tokens a))
+            ))
+         ))
+      ) (
+         (match c (
+            ()
+            (() ())
+            ( \l ((set is_lambda True) (set expr INVALID)))
+            ( \' (set is_literal True))
+            ( \[ (
+               (set is_grouped (\[ is_grouped))
+            ))
+            ( \] (
+               (set is_grouped (tail is_grouped))
+               (set grouped_tokens (grouped_tokens \]))
+            ))
+            ( a (
                (if is_literal (
                   (set expr (Literal a))
                   (set is_literal ())
@@ -96,6 +107,7 @@ parse-one-expression := λtoks. (tail(
               ))
             ))
          ))
+      ))
       ))
    ))
    (if is_lambda
