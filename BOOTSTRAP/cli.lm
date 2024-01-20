@@ -330,8 +330,17 @@ is_variable := λv. (tail(
 ));
 
 assemble := λconfig program. (
+   (local target)
+   (set target a.out)
+   (while config (
+      (match (tail config) (
+         ()
+         ((Target t) (set target t))
+      ))
+      (set config (head config))
+   ))
    (print-s ASSEMBLE)
-   (print-s config)
+   (print-s target)
    (print-s program)
 );
 
