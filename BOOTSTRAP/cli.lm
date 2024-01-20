@@ -57,6 +57,10 @@ parse-one-expression := λtoks. (tail(
    (set expr ())
    (local is_literal)
    (set is_literal ())
+   (local is_grouped)
+   (set is_grouped ())
+   (local grouped_tokens)
+   (set grouped_tokens ())
    (foreach-atom toks (
       (local c)
       (set c $_)
@@ -66,6 +70,20 @@ parse-one-expression := λtoks. (tail(
             (() ())
             (\l ((set is_lambda True) (set expr INVALID)))
             (\' (set is_literal True))
+            (\[ (
+               (if is_grouped (
+                  (set grouped_tokens (grouped_tokens \[))
+               ) ())
+               (set is_grouped (\[ is_grouped))
+            ))
+            (\] (
+               (set is_grouped (tail is_grouped))
+               (if is_grouped (
+                  (set grouped_tokens (grouped_tokens \]))
+               ) (
+                  (set expr (parse-many-expressions grouped_tokens))
+               ))
+            ))
             (a (
                (if is_literal (
                   (set expr (Literal a))
