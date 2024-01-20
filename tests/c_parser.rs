@@ -51,5 +51,5 @@ fn cli_parse_expression() {
 
 #[test]
 fn cli_parse_program() {
-   assert_eq!( compile_and_run("--parse","tests/lm/parse_program.lm"), "((() (x (Variable y))) (a (Variable b)))" );
+   assert_eq!( compile_and_run("--parse","tests/lm/parse_program.lm"), "((() (Global (x (Variable y)))) (Global (a (Variable b))))" );
 }

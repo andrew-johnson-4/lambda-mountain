@@ -142,7 +142,7 @@ parse-program := λtoks. (tail(
       (set a $_)
       (if (eq(a \:)) (
          (if key (
-            (set program (program (key (parse-many-expressions rhs))))
+            (set program (program (Global (key (parse-many-expressions rhs)))))
             (set key ())
          ) ())
          (set rhs ())
@@ -159,7 +159,7 @@ parse-program := λtoks. (tail(
       ))
    ))
    (if key (
-     (set program (program (key (parse-many-expressions rhs))))
+     (set program (program (Global (key (parse-many-expressions rhs)))))
    ) ())
    program
 ));
