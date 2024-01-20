@@ -14,4 +14,3 @@ name = "lm"
 
 [dependencies]
 glob = { version = "0.3" }
-regex = { version = "1" }

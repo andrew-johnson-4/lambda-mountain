@@ -21,9 +21,6 @@ fn parse_one_expression(input: &str) -> S {
       if let Some((lhs,rhs)) = input.strip_prefix("λ").unwrap().split_once(".") {
          lambda( parse_expression(lhs), parse_expression(rhs) )
       } else { s_nil() }
-   } else if input.len()>=2 && input.starts_with("/") && input.ends_with("/") {
-      let input = input.strip_prefix("/").unwrap().strip_suffix("/").unwrap();      
-      regex(input)
    } else if input.starts_with("(") && input.ends_with(")") {
       let input = input.strip_prefix("(").unwrap().strip_suffix(")").unwrap();
       parse_expression(input)

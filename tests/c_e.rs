@@ -5,7 +5,6 @@ use lambda_mountain::*;
 fn test_eval() {
    assert_eq!( eval_soft(&parse_expression("a")).to_string(), "(variable . a)" );
    assert_eq!( eval_soft(&parse_expression("123")).to_string(), "(literal . 123)" );
-   assert_eq!( eval_soft(&parse_expression("/a/")).to_string(), "(regex . a)" );
    assert_eq!( eval_soft(&parse_expression("λx.y")).to_string(), "(lambda . ((variable . x) . (variable . y)))" );
    assert_eq!( eval_soft(&parse_expression("x y")).to_string(), "(app . ((variable . x) . (variable . y)))" );
    assert_eq!( eval_soft(&parse_expression("(λx.x) z")).to_string(), "(variable . z)" );
