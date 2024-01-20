@@ -1,20 +1,41 @@
 
 main := (
    (local mode)
-   (set mode Options)
+   (set mode Compile)
    (local inputs)
-   (set inputs ())
-   (foreach-atom (tail argv) (match $_ (
-      ()
-      (--parse (set mode Parse))
-      (--parse-expression (set mode ParseExpression))
-      (--tokenize (set mode Tokenize))
-      (() ())
-      (fp (set inputs (fp inputs)))
+   (local target)
+   (local option)
+   (local arg)
+   (local config)
+   (foreach-atom (tail argv) ((set arg $_) (if option
+      (match option (
+         ()
+         (() ())
+         (SetTarget (
+            (set config (config (Target arg)))
+            (set option ())
+         ))
+      ))
+      (match arg (
+         ()
+         (() ())
+         (-o (set option SetTarget))
+         (--parse (set mode Parse))
+         (--parse-expression (set mode ParseExpression))
+         (--tokenize (set mode Tokenize))
+         (fp (set inputs (fp inputs)))
+      ))
    )))
    (match mode (
       ()
-      (Options (print-s (TODO list options)))
+      (Compile (
+         (foreach-atom inputs (
+            (set arg $_)
+            (if arg (
+               (assemble (config (parse-program (tokenize (load-file arg)))))
+            ) ())
+         ))
+      ))
       (Parse (foreach-atom inputs (
          if $_ (print-s (parse-program (tokenize (load-file $_)))) ()
       )))
@@ -307,3 +328,25 @@ is_variable := λv. (tail(
    ))
    is_variable
 ));
+
+assemble := λconfig program. (
+   (print-s ASSEMBLE)
+   (print-s config)
+   (print-s program)
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
