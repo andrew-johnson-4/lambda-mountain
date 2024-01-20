@@ -115,6 +115,7 @@ parse-one-expression := λtoks. (tail(
       ))
       ))
    ))
+   (if expr () (set expr Nil))
    (if is_lambda
       ((Lambda (parse-lambda remainder)) ())
       (expr remainder)
@@ -137,7 +138,40 @@ parse-many-expressions := λtoks. (tail(
 ));
 
 parse-expression := λtoks. (parse-many-expressions toks);
-parse-program := λtoks. toks;
+
+parse-program := λtoks. (tail(
+   (local program)
+   (set program ())
+   (local key)
+   (set key ())
+   (local rhs)
+   (set rhs ())
+   (foreach-atom toks (
+      (local a)
+      (set a $_)
+      (if (eq(a \:)) (
+         (if key (
+            (set program (program (key (parse-many-expressions rhs))))
+            (set key ())
+         ) ())
+         (set rhs ())
+      ) (
+         (if a (set rhs (rhs a)) ())
+         (match rhs (
+            ()
+            ( (((() k) ':) =) (
+               (set key k)
+               (set rhs ())
+            ))
+            ( _ () )
+         ))
+      ))
+   ))
+   (if key (
+     (set program (program (key (parse-many-expressions rhs))))
+   ) ())
+   program
+));
 
 tokenize := λtext. (tail(
    (local program)
