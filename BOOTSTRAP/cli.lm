@@ -37,11 +37,14 @@ parse-lambda := λtoks. (tail(
    (match er (
       ()
       (((Literal .) r) (() (parse-many-expressions r)))
-      ((e r) (
+      ((e r) (tail(
          (local lr)
          (set lr (parse-lambda r))
-         ( (e (head lr)) (tail lr) )
-      ))
+         (if (head lr)
+             ( (e (head lr)) (tail lr) )
+             ( e (tail lr) )
+         )
+      )))
    ))
 ));
 

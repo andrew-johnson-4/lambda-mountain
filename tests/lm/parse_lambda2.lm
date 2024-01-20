@@ -1,1 +1,1 @@
-λ(X x (y z)). x (y z)
+λx y. (w x) (y z)
