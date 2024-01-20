@@ -401,7 +401,31 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
                 tail(&head(&tail(&head(&tail(&e))))).to_string() == "while" {
          let d = tail(&tail(&e));
          let c = tail(&tail(&head(&tail(&e))));
-         panic!("while {} {}", c, d)
+         let (c_f,c_p,c_u,c_t,c_d,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &c, offset);
+         let (d_f,d_p,d_u,d_t,d_d,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &d, offset);
+         let label_w_start = uuid();
+         let label_w_end = uuid();
+         let prog = s_atom(&format!("{}:\n",label_w_start));
+         let prog = s_cons( prog, c_p );
+         let prog = s_cons( prog, s_atom("\tmov $0, %rax\n") );
+         let prog = s_cons( prog, s_atom("\tadd %r12, %rax\n") );
+         let prog = s_cons( prog, s_atom("\tadd %r13, %rax\n") );
+         let prog = s_cons( prog, s_atom("\tadd %r14, %rax\n") );
+         let prog = s_cons( prog, s_atom("\tadd %r15, %rax\n") );
+         let prog = s_cons( prog, s_atom("\tcmp $0, %rax\n") );
+         let prog = s_cons( prog, s_atom(&format!("\tje {}\n", label_w_end)) );
+         let prog = s_cons( prog, d_p );
+         let prog = s_cons( prog, s_atom(&format!("\tjmp {}\n", label_w_start)) );
+         let prog = s_cons( prog, s_atom(&format!("{}:\n",label_w_end)) );
+         (
+            s_cons(c_f,d_f),
+            prog,
+            s_cons(c_u,d_u),
+            s_cons(c_t,d_t),
+            s_cons(c_d,d_d),
+            program_ctx,
+            offset
+         )
       } else if head(&e).to_string()=="app" &&
                 head(&head(&tail(&e))).to_string() == "app" &&
                 head(&head(&tail(&head(&tail(&e))))).to_string() == "app" &&

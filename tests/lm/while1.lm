@@ -3,7 +3,7 @@ main := (
    (local x)
    (set x (1 2 3))
    (while x (
-      (print-s (head x))
-      (set x (tail x))
+      (print-s x)
+      (set x (head x))
    ))
 );
