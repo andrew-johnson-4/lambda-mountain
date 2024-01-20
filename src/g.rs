@@ -397,9 +397,16 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          ( s_cons(aframe,eframe), prog, s_cons(aunframe,eunframe), s_cons(s_cons(atext,ftext),etext), s_cons(s_cons(adata,fdata),edata), program_ctx, offset )
       } else if head(&e).to_string()=="app" &&
                 head(&head(&tail(&e))).to_string() == "app" &&
+                head(&head(&tail(&head(&tail(&e))))).to_string() == "variable" &&
+                tail(&head(&tail(&head(&tail(&e))))).to_string() == "while" {
+         let d = tail(&tail(&e));
+         let c = tail(&tail(&head(&tail(&e))));
+         panic!("while {} {}", c, d)
+      } else if head(&e).to_string()=="app" &&
+                head(&head(&tail(&e))).to_string() == "app" &&
                 head(&head(&tail(&head(&tail(&e))))).to_string() == "app" &&
                 head(&head(&tail(&head(&tail(&head(&tail(&e))))))).to_string() == "variable" &&
-                tail(&head(&tail(&head(&tail(&head(&tail(&e))))))).to_string() == "if" {
+                tail(&head(&tail(&head(&tail(&head(&tail(&e))))))).to_string() == "if" {         
          let f = tail(&tail(&e));
          let t = tail(&tail(&head(&tail(&e))));
          let c = tail(&tail(&head(&tail(&head(&tail(&e))))));
