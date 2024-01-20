@@ -31,29 +31,39 @@ tokenize-file := λpath. (
    tokenize (load-file path)
 );
 
-parse-expression := λtoks. (tail(
-   (local e)
-   (set e ())
+parse-one-expression := λtoks. (tail(
+   (local remainder)
+   (set remainder ())
+   (local expr)
+   (set expr ())
    (local is_literal)
    (set is_literal ())
-   (foreach-atom toks (match $_ (
-      ()
-      (() ())
-      (\' (set is_literal True))
-      (a (
-         (if is_literal (
-            (set e (Literal a))
-            (set is_literal ())
-         ) (
-            (if (is_variable a)
-               (set e (Variable a))
-               (set e (Literal a))
-            )
+   (foreach-atom toks (
+      (local c)
+      (set c $_)
+      (if expr (set remainder (remainder c)) (
+         (match c (
+            ()
+            (() ())
+            (\' (set is_literal True))
+            (a (
+               (if is_literal (
+                  (set expr (Literal a))
+                  (set is_literal ())
+               ) (
+                  (if (is_variable a)
+                     (set expr (Variable a))
+                     (set expr (Literal a))
+                  )
+              ))
+            ))
          ))
       ))
-   )))
-   e
+   ))
+   (expr remainder)
 ));
+
+parse-expression := λtoks. (head (parse-one-expression toks));
 parse-program := λtoks. toks;
 
 tokenize := λtext. (tail(
