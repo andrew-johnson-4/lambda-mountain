@@ -44,4 +44,5 @@ fn cli_parse_expression() {
    assert_eq!( compile_and_run("--parse-expression","tests/lm/parse_literal2.lm"), "(Literal abc)" );
    assert_eq!( compile_and_run("--parse-expression","tests/lm/parse_application.lm"), "((App (Variable x)) ((App (Variable y)) (Variable z)))" );
    assert_eq!( compile_and_run("--parse-expression","tests/lm/parse_lambda.lm"), "(Lambda x y)" );
+   assert_eq!( compile_and_run("--parse-expression","tests/lm/parse_lambda2.lm"), "(Lambda x y)" );
 }

@@ -32,8 +32,17 @@ tokenize-file := λpath. (
 );
 
 parse-lambda := λtoks. (tail(
-   (print-s (PARSELAMBDA toks))
-   LAMBDA
+   (local er)
+   (set er (parse-one-expression toks))
+   (match er (
+      ()
+      (((Literal .) r) (() (parse-many-expressions r)))
+      ((e r) (
+         (local lr)
+         (set lr (parse-lambda r))
+         ( (e (head lr)) (tail lr) )
+      ))
+   ))
 ));
 
 parse-one-expression := λtoks. (tail(
@@ -52,7 +61,7 @@ parse-one-expression := λtoks. (tail(
          (match c (
             ()
             (() ())
-            (\l (set is_lambda True))
+            (\l ((set is_lambda True) (set expr INVALID)))
             (\' (set is_literal True))
             (a (
                (if is_literal (
@@ -69,7 +78,7 @@ parse-one-expression := λtoks. (tail(
       ))
    ))
    (if is_lambda
-      ((parse-lambda remainder) ())
+      ((Lambda (parse-lambda remainder)) ())
       (expr remainder)
    )
 ));
