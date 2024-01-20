@@ -130,7 +130,7 @@ parse-many-expressions := λtoks. (tail(
    (set remainder (tail er))
    (while remainder (
       (set er (parse-one-expression remainder))
-      (set return (App (remainder (head er))))
+      (set return (App (return (head er))))
       (set remainder (tail er))
    ) (head er))
    return

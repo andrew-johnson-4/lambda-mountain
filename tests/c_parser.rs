@@ -42,8 +42,8 @@ fn cli_parse_expression() {
    assert_eq!( compile_and_run("--parse-expression","tests/lm/parse_variable1.lm"), "(Variable abc)" );
    assert_eq!( compile_and_run("--parse-expression","tests/lm/parse_literal1.lm"), "(Literal 123)" );
    assert_eq!( compile_and_run("--parse-expression","tests/lm/parse_literal2.lm"), "(Literal abc)" );
-   assert_eq!( compile_and_run("--parse-expression","tests/lm/parse_application.lm"), "((App (Variable x)) ((App (Variable y)) (Variable z)))" );
-   assert_eq!( compile_and_run("--parse-expression","tests/lm/parse_grouped.lm"), "((App (Variable x)) ((App (Variable y)) (Variable z)))" );
+   assert_eq!( compile_and_run("--parse-expression","tests/lm/parse_application.lm"), "(App ((App ((Variable x) (Variable y))) (Variable z)))" );
+   assert_eq!( compile_and_run("--parse-expression","tests/lm/parse_grouped.lm"), "(App ((App ((Variable w) (Variable x))) (App ((Variable y) (Variable z)))))" );
    assert_eq!( compile_and_run("--parse-expression","tests/lm/parse_lambda.lm"), "(Lambda ((Variable x) (Variable y)))" );
-   assert_eq!( compile_and_run("--parse-expression","tests/lm/parse_lambda2.lm"), "(Lambda x y)" );
+   assert_eq!( compile_and_run("--parse-expression","tests/lm/parse_lambda2.lm"), "(Lambda (((Variable x) (Variable y)) (App ((App ((Variable w) (Variable x))) (App ((Variable y) (Variable z)))))))" );
 }
