@@ -63,7 +63,17 @@ parse-one-expression := λtoks. (tail(
    (expr remainder)
 ));
 
-parse-expression := λtoks. (head (parse-one-expression toks));
+parse-many-expressions := λtoks. (tail(
+   (local er)
+   (set er (parse-one-expression toks))
+   (if (tail er) (
+      (App (head er) (
+         parse-many-expressions (tail er)
+      ))
+   ) (head er))
+));
+
+parse-expression := λtoks. (parse-many-expressions toks);
 parse-program := λtoks. toks;
 
 tokenize := λtext. (tail(
