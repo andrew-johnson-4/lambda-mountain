@@ -227,6 +227,18 @@
    \t ret                       \n
 
    write_file:                  \n
+   \t mov 0\[%r13\], %rdi       \n # file name
+   \t pushq 0\[%r14\]           \n
+   \t mov $2, %rax              \n # syscall open
+   \t mov $65, %rsi             \n # flags
+   \t mov $420, %rdx            \n # mode
+   \t syscall                   \n
+   \t mov %rax, %r12            \n
+   \t call print_i              \n
+   \t pop %r12                  \n # data to write
+   \t mov $0, %r13              \n
+   \t mov $0, %r14              \n
+   \t mov $0, %r15              \n
    \t call print_s              \n
    \t ret                       \n
 
@@ -235,8 +247,7 @@
    # open file
    \t mov $2, %rax              \n # syscall open
    \t mov %r12, %rdi            \n # file name
-   \t mov $0, %rsi              \n # flags
-   \t mov $0, %rdx              \n # read-only mode
+   \t mov $0, %rsi              \n # read-only mode
    \t syscall                   \n
    # file descriptor is in %rax
 
