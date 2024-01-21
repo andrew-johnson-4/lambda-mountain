@@ -1,5 +1,5 @@
 
 main := (
-   (write-file tests/lm/writable_hello.txt hello_world)
+   (write-file(tests/lm/writable_hello.txt hello_world))
    (print-s (load-file tests/lm/writable_hello.txt))
 );

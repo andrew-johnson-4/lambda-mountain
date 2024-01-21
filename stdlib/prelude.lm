@@ -226,6 +226,10 @@
    clone_rope_end:              \n
    \t ret                       \n
 
+   write_file:                  \n
+   \t call print_s              \n
+   \t ret                       \n
+
    load_file:                   \n
 
    # open file
