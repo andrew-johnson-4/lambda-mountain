@@ -129,4 +129,6 @@ fn system_calls() {
    let bigger_contents = std::fs::read_to_string("tests/lm/bigger_file.txt")
                         .expect("Could not read tests/lm/bigger_file.txt");
    assert_eq!( compile_and_run("tests/lm/load_bigger_file.lm"), bigger_contents );
+   let _ = std::fs::remove_file("tests/lm/writable_hello.txt");
+   assert_eq!( compile_and_run("tests/lm/write_file.lm"), "hello_world" );
 }
