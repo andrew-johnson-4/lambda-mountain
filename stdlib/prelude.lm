@@ -227,19 +227,29 @@
    \t ret                       \n
 
    write_file:                  \n
+   #open file
    \t mov 0\[%r13\], %rdi       \n # file name
-   \t pushq 0\[%r14\]           \n
+   \t pushq 0\[%r14\]           \n # data to write
    \t mov $2, %rax              \n # syscall open
    \t mov $65, %rsi             \n # flags
    \t mov $420, %rdx            \n # mode
    \t syscall                   \n
-   \t mov %rax, %r12            \n
-   \t call print_i              \n
-   \t pop %r12                  \n # data to write
-   \t mov $0, %r13              \n
-   \t mov $0, %r14              \n
-   \t mov $0, %r15              \n
-   \t call print_s              \n
+   \t mov %rax, %r8             \n # r8 now holds file descriptor
+
+   #write to file
+   \t pop %rax                  \n
+   \t mov %rax, %r9             \n
+   \t call _strlen              \n
+   \t mov %rbx, %rdx            \n # length to write
+   \t mov %r9, %rsi             \n # data to write
+   \t mov %r8, %rdi             \n # file descriptor
+   \t mov $1, %rax              \n # 'write' system call
+   \t syscall                   \n
+
+   #close file
+   \t mov %r8, %rdi             \n # file descriptor
+   \t mov $3, %rax              \n # close
+   \t syscall                   \n
    \t ret                       \n
 
    load_file:                   \n
