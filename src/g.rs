@@ -357,6 +357,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          let apply_expr = tail(&tail(&e));
          let foreach_label = s_atom(&uuid());
          let foreach_notcons = s_atom(&uuid());
+         let foreach_ignore = s_atom(&uuid());
          let (aframe,aprog,aunframe,atext,adata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &atom, offset);
          let (eframe,eprog,eunframe,etext,edata,program_ctx,offset) = if head(&apply_expr).to_string()=="variable" {
             let apply_label = tail(&apply_expr);
@@ -365,7 +366,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          } else {
             compile_expr(helpers_ctx, &program_ctx, &apply_expr, offset)
          };
-         let ftext = ctx_eval_soft(helpers_ctx, &app(variable("::foreach-atom"),app(app(foreach_label.clone(),foreach_notcons),eprog.clone())));
+         let ftext = ctx_eval_soft(helpers_ctx, &app(variable("::foreach-atom"),app(app(app(foreach_label.clone(),foreach_notcons),foreach_ignore),eprog.clone())));
          let prog = s_cons( aprog, s_atom(&format!("\tcall {}\n",foreach_label)) );
          ( s_cons(aframe,eframe), prog, s_cons(aunframe,eunframe), s_cons(s_cons(atext,ftext),etext), s_cons(adata,edata), program_ctx, offset )
       } else if head(&e).to_string()=="app" &&
