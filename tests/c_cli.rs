@@ -102,6 +102,11 @@ fn dump() {
 }
 
 #[test]
+fn uuid() {
+   assert_eq!( compile_and_run("tests/lm/uuid1.lm"),  "uuid_00000001uuid_00000002" );
+}
+
+#[test]
 fn dsa() {
    assert_eq!( compile_and_run("tests/lm/concat.lm"), "(((() 1) 2) 3)" );
    assert_eq!( compile_and_run("tests/lm/kv_merge.lm"), "(((((() (1 2)) (3 4)) (5 6)) (7 8)) (9 0))" );
