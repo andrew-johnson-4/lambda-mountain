@@ -352,6 +352,16 @@
    \t ret                       \n
 
    as_parent:                   \n
+   \t mov %rax, %rdi            \n #pid
+   \t mov $0, %rsi              \n
+   \t mov $247, %rax            \n #waitid
+   \t mov $0, %rdx              \n
+   \t mov $0, %r8               \n
+#   \t mov $__as_siginfo, %rdx   \n
+#   \t mov $__as_rusage, %r8     \n
+   \t mov $0, %r9               \n
+   \t mov $4, %r10              \n #WEXITED
+   \t syscall                   \n
    \t ret                       \n   
 );
 
@@ -406,6 +416,10 @@
   __as_argv:                    \n
   \t .zero 64                   \n
   __as_envp:                    \n
+  \t .zero 64                   \n
+  __as_siginfo:                 \n
+  \t .zero 64                   \n
+  __as_rusage:                  \n
   \t .zero 64                   \n
 );
 
