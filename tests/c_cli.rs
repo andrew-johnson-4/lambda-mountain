@@ -131,4 +131,5 @@ fn system_calls() {
    assert_eq!( compile_and_run("tests/lm/load_bigger_file.lm"), bigger_contents );
    let _ = std::fs::remove_file("tests/lm/writable_hello.txt");
    assert_eq!( compile_and_run("tests/lm/write_file.lm"), "hello_world" );
+   assert_eq!( compile_and_run("tests/lm/as.lm"), "hello_world" );
 }
