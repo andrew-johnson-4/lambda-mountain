@@ -1,4 +1,0 @@
-
-main := (
-   (as(tests/lm/tmp.as tests/lm/a.out))
-);
