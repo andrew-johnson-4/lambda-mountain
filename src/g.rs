@@ -141,6 +141,7 @@ fn is_local(program_ctx: &S, s: &str) -> String {
 
 //returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 fn yield_atom(helpers_ctx: &S, program_ctx: &S, s: &str, offset: i64) -> (S,S,S,S,S,S,i64) {
+   let s = s.replace(r#"""#,r#"\\""#);
    let id = uuid();
    (
       s_nil(),

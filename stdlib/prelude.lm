@@ -340,11 +340,11 @@
   __s_counter:                  \n
   \t .zero 8                    \n
   __s_section:                  \n
-  \t .zero 131072               \n
+  \t .zero 268435456            \n
   __a_counter:                  \n
   \t .zero 8                    \n
   __a_section:                  \n
-  \t .zero 131072               \n
+  \t .zero 268435456            \n
   __nil_literal:                \n
   \t .ascii "\[\]"              \n
   \t .zero 1                    \n
