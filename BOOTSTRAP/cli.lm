@@ -339,23 +339,29 @@ assemble := λconfig program. (
       ))
       (set config (head config))
    ))
-   (print-s ASSEMBLE)
-   (print-s target)
-   (print-s program)
+   (local program)
+   (set program (_program-header()))
+   (set program (program (main: \n)))
+   (set program (program (_exit-cleanup())))
+   (set program (program (_data-header())))
+   (set program (clone-rope program))
+   (write-file (target program))
 );
 
+_program-header := λ.(
+   .global \s _start     \n
+   .text                 \n
+   _start:               \n
+   \t jmp \s main        \n
+);
 
+_data-header := λ.(
+   .data                 \n
+);
 
-
-
-
-
-
-
-
-
-
-
-
-
+_exit-cleanup := λ.(
+   \t mov \s $60, \s %eax   \n # _exit system call
+   \t mov \s $0, \s %edi    \n # error code 0
+   \t syscall               \n
+);
 

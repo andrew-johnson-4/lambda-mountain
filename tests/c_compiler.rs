@@ -40,6 +40,7 @@ fn compile_and_run(target: &str) -> String {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
       return format!("./a.out error code: {}", stderr);
    };
+   println!("{}", String::from_utf8_lossy(&exit.stdout).to_string());
    let exit = Command::new("as")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
