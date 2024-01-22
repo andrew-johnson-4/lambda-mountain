@@ -41,6 +41,10 @@
    \t mov $0, %r14              \n
    \t mov $0, %r15              \n
    \t ret                       \n
+
+   inc:                         \n
+   \t inc %r12                  \n
+   \t ret                       \n
  
    __print_this:                \n
    ::callee-save-registers

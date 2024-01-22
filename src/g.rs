@@ -84,9 +84,10 @@ fn assemble(cfg: &str, program: &S) {
    }
 }
 
-const OPERATORS: [(&str,&str); 12] = [
+const OPERATORS: [(&str,&str); 13] = [
    ("eq", "eq"),
    ("not", "not"),
+   ("inc", "inc"),
    ("head", "head"),
    ("tail", "tail"),
 
