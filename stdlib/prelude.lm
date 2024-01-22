@@ -339,7 +339,7 @@
    \t mov %rax, 0\[%rbx\]       \n
    \t mov $__as_o, %rax         \n
    \t mov %rax, 8\[%rbx\]       \n
-   \t mov 0\[%r14\], %rax       \n
+   \t mov $__tmp_o, %rax        \n
    \t mov %rax, 16\[%rbx\]      \n
    \t mov $59, %rax             \n #execve
    \t mov $__as_path, %rdi      \n
@@ -352,15 +352,9 @@
    \t ret                       \n
 
    as_parent:                   \n
-   \t mov %rax, %rdi            \n #pid
-   \t mov $0, %rsi              \n
-   \t mov $247, %rax            \n #waitid
-   \t mov $0, %rdx              \n
-   \t mov $0, %r8               \n
-#   \t mov $__as_siginfo, %rdx   \n
-#   \t mov $__as_rusage, %r8     \n
-   \t mov $0, %r9               \n
-   \t mov $4, %r10              \n #WEXITED
+   \t mov $35, %rax             \n #nanosleep
+   \t mov $__rqtp_s, %rdi       \n
+   \t mov $__rmtp_s, %rsi       \n
    \t syscall                   \n
    \t ret                       \n   
 );
@@ -421,6 +415,13 @@
   \t .zero 64                   \n
   __as_rusage:                  \n
   \t .zero 64                   \n
+  __tmp_o:                      \n
+  \t .ascii "tmp.o"             \n
+  \t .zero 1                    \n
+  __rqtp_s:                     \n
+  \t .long 5, 0                 \n
+  __rmtp_s:                     \n
+  \t .long 5, 0                 \n
 );
 
 concat := λl r. match (l r) (
