@@ -346,7 +346,9 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          let lname = tail(&tail(&tail(&f))).to_string();
          let local = is_local(program_ctx, &format!("set {}", lname));
          if local == "" {
-            panic!("assignment to undefined local {}", lname);
+            let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &x, offset);
+            let prog = s_cons(xprog, ctx_eval_soft(helpers_ctx, &app(variable("::set-global"), variable(&label_case(&lname)) )) );
+            ( xframe, prog, xunframe, xtext, xdata, program_ctx.clone(), offset )
          } else {
             let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &x, offset);
             ( xframe, s_cons(xprog, s_atom(&local)), xunframe, xtext, xdata, program_ctx.clone(), offset )
@@ -506,7 +508,8 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
       let vname = tail(&e).to_string();
       let local = is_local(program_ctx, &vname);
       if local == "" {
-         yield_atom(helpers_ctx, program_ctx, &vname, offset)
+         let prog = ctx_eval_soft(helpers_ctx, &app(variable("::get-global"), variable(&vname)) );
+         ( s_nil(), prog, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
       } else {
          ( s_nil(), s_atom(&local), s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
       }
@@ -578,6 +581,13 @@ pub fn compile(cfg: &str, main_ctx: &S) {
    }
    let mut has_main = false;
    for (k,v) in kv_iter(&main_ctx) {
+   if is_nil(&v) {
+      let k = k.to_string();
+      raw_data = s_cons(
+         raw_data,
+         s_atom(&format!("{}:\n\t.zero 32\n",label_case(&k))),
+      );
+   } else {
       let k = k.to_string();
       raw_program = s_cons(
          raw_program,
@@ -604,7 +614,7 @@ pub fn compile(cfg: &str, main_ctx: &S) {
          raw_program = s_cons( raw_program, vtext );
          raw_data = s_cons(raw_data,vdata);
       }
-   }
+   }}
    if !has_main {
       raw_program = s_cons( raw_program, s_atom("main:\n") );
       raw_program = s_cons( raw_program, ctx_eval_soft(&helpers_ctx, &variable("::exit-cleanup")) );

@@ -390,6 +390,22 @@
    \t syscall            \n
 );
 
+::get-global := λ::global-name. (
+   \t mov $ ::global-name , %rax \n
+   \t mov 0\[%rax\], %r12        \n
+   \t mov 8\[%rax\], %r13        \n
+   \t mov 16\[%rax\], %r14       \n
+   \t mov 24\[%rax\], %r15       \n
+);
+
+::set-global := λ::global-name. (
+   \t mov $ ::global-name , %rax \n
+   \t mov %r12, 0\[%rax\]        \n
+   \t mov %r13, 8\[%rax\]        \n
+   \t mov %r14, 16\[%rax\]       \n
+   \t mov %r15, 24\[%rax\]       \n
+);
+
 # $this is the Rope to iterate over
 # ::foreach-call is a label to be called for each atom
 ::foreach-atom := λ::foreach-head ::foreach-notcons ::foreach-ignore ::foreach-apply.(
