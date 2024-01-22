@@ -34,6 +34,13 @@
    print_d:                     \n
    \t mov $1, %r9               \n
    \t jmp __print_this          \n
+
+   dump_i:                      \n
+   \t mov $__dump_i, %r12       \n
+   \t mov $0, %r13              \n
+   \t mov $0, %r14              \n
+   \t mov $0, %r15              \n
+   \t ret                       \n
  
    __print_this:                \n
    ::callee-save-registers
@@ -365,6 +372,9 @@
   \t .ascii "\s"                \n
   __true:                       \n
   \t .ascii "True"              \n
+  \t .zero 1                    \n
+  __dump_i:                     \n
+  \t .ascii "00000000"          \n
   \t .zero 1                    \n
   __err_fopen:                  \n
   \t .ascii "Could not open file." \n
