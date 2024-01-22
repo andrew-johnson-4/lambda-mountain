@@ -361,7 +361,7 @@ assemble := λconfig program. (
          (set program pc)
          (set output_p (output_p (main: \n)))
          (set output_p (output_p (_before-main())))
-#         (set output_p (output_p (_enter-function())))
+         (set output_p (output_p (_enter-function())))
          #TODO compile expression $body
          (set output_p (output_p (_exit-cleanup())))
          (set has_main True)
@@ -504,7 +504,7 @@ _before-main := λ.(
    __before_main_end:                 \n
 );
 
-_close-this := (
+_close-this := λ.(
    # move this S onto the heap
    # %rsi becomes pointer to new location
    \t mov \s $__s_section, \s %rsi        \n # %rsi now points to root s
@@ -517,4 +517,14 @@ _close-this := (
    \t mov \s %r13, \s 8 \[ %rsi \]        \n # set top.head
    \t mov \s %r14, \s 16 \[ %rsi \]       \n # set top.tail
    \t mov \s %r15, \s 24 \[ %rsi \]       \n # set top.flags
+);
+
+_enter-function := λ.(
+   \t push \s %rbp                        \n
+   \t mov \s %rsp, \s %rbp                \n
+);
+_leave-function := λ.(
+   \t mov \s %rbp, \s %rsp                \n
+   \t pop \s %rbp                         \n
+   \t ret                                 \n
 );
