@@ -95,9 +95,10 @@ fn control_flow() {
 
 #[test]
 fn dump() {
-   assert_eq!( compile_and_run("tests/lm/dump_i.lm"), "00000000" );
+   assert_eq!( compile_and_run("tests/lm/dump_i.lm"),  "00000000" );
    assert_eq!( compile_and_run("tests/lm/dump_i1.lm"), "00000001" );
    assert_eq!( compile_and_run("tests/lm/dump_i2.lm"), "00000002" );
+   assert_eq!( compile_and_run("tests/lm/dump_i8.lm"), "00000010" );
 }
 
 #[test]
