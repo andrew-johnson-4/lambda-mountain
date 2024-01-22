@@ -131,5 +131,19 @@ fn system_calls() {
    assert_eq!( compile_and_run("tests/lm/load_bigger_file.lm"), bigger_contents );
    let _ = std::fs::remove_file("tests/lm/writable_hello.txt");
    assert_eq!( compile_and_run("tests/lm/write_file.lm"), "hello_world" );
-   assert_eq!( compile_and_run("tests/lm/as.lm"), "hello_world" );
+
+   let _ = std::fs::remove_file("tests/lm/a.out");
+   compile_and_run("tests/lm/as.lm");
+   let exit = Command::new("./tests/lm/a.out")
+                      .stdout(std::process::Stdio::piped())
+                      .stderr(std::process::Stdio::piped())
+                      .spawn()
+                      .expect("failed to execute process")
+                      .wait_with_output()
+                      .expect("failed to wait for process");
+   if !exit.status.success() {
+      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
+      panic!("./tests/lm/a.out error code: {}", stderr);
+   };
+   assert_eq!( String::from_utf8_lossy(&exit.stdout).to_string(), "hello_world" );
 }

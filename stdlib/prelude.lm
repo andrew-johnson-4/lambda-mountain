@@ -334,11 +334,13 @@
    \t jmp as_parent             \n
 
    as_child:                    \n
-   \t mov $59, %rax             \n
-   \t mov $__as_path, %rdi      \n
-   \t mov $__as_argv, %rsi      \n
-   \t mov $__as_envp, %rdx      \n
-   \t syscall                   \n
+   
+   \t call print_s              \n
+#   \t mov $59, %rax             \n
+#   \t mov $__as_path, %rdi      \n
+#   \t mov $__as_argv, %rsi      \n
+#   \t mov $__as_envp, %rdx      \n
+#   \t syscall                   \n
    \t ret                       \n
 
    as_parent:                   \n
