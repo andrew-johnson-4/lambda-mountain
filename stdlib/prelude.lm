@@ -334,13 +334,21 @@
    \t jmp as_parent             \n
 
    as_child:                    \n
-   
-   \t call print_s              \n
-#   \t mov $59, %rax             \n
-#   \t mov $__as_path, %rdi      \n
-#   \t mov $__as_argv, %rsi      \n
-#   \t mov $__as_envp, %rdx      \n
-#   \t syscall                   \n
+   \t mov $__as_argv, %rbx      \n
+   \t mov 0\[%r13\], %rax       \n
+   \t mov %rax, 0\[%rbx\]       \n
+   \t mov $__as_o, %rax         \n
+   \t mov %rax, 8\[%rbx\]       \n
+   \t mov 0\[%r14\], %rax       \n
+   \t mov %rax, 16\[%rbx\]      \n
+   \t mov $59, %rax             \n #execve
+   \t mov $__as_path, %rdi      \n
+   \t mov $__as_argv, %rsi      \n
+   \t mov $__as_envp, %rdx      \n
+   \t syscall                   \n
+   \t mov $60, %rax             \n #exit
+   \t mov $0, %rdi              \n
+   \t syscall                   \n
    \t ret                       \n
 
    as_parent:                   \n
@@ -391,6 +399,9 @@
   \t .zero 1                    \n
   __as_path:                    \n
   \t .ascii "/usr/bin/as"       \n
+  \t .zero 1                    \n
+  __as_o:                       \n
+  \t .ascii "-o"                \n
   \t .zero 1                    \n
   __as_argv:                    \n
   \t .zero 64                   \n
