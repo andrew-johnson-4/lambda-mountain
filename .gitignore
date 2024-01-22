@@ -9,3 +9,4 @@ a.out
 *.o
 *.s
 *.exe
+bootstrap

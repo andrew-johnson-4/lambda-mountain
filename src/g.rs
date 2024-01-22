@@ -609,4 +609,13 @@ pub fn compile(cfg: &str, main_ctx: &S) {
    }
    let program = compile_program(&helpers_ctx, &raw_program, &raw_data);
    assemble(cfg, &program);
+   rm("tmp.s");
+   rm("tmp.o");
+}
+
+fn rm(p: &str) {
+   if std::path::Path::new(p).is_file() {
+      std::fs::remove_file(p).expect(&format!("Could not remove file: {}",p))
+   }
+   assert!( !std::path::Path::new(p).is_file() );
 }
