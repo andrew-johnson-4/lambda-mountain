@@ -353,6 +353,9 @@ assemble := λconfig program. (
    (local has_main)
    (set output_p (_program-header()))
    (set output_d (_data-header()))
+   (local main_ctx)
+   (set main_ctx program)
+   (local e)
 
    (while program (match program (
       ()
@@ -362,7 +365,8 @@ assemble := λconfig program. (
          (set output_p (output_p (main: \n)))
          (set output_p (output_p (_before-main())))
          (set output_p (output_p (_enter-function())))
-         #TODO compile expression $body
+         (set e (compile-expr(main_ctx body 0)))
+         #TODO unpack expression $body
          (set output_p (output_p (_exit-cleanup())))
          (set has_main True)
       ))
@@ -372,7 +376,8 @@ assemble := λconfig program. (
          (print-s (F fname body))
          (set output_p (output_p (fname : \n)))
          (set output_p (output_p (_enter-function())))
-         #TODO compile expression $body
+         (set e (compile-expr(main_ctx body 0)))
+         #TODO unpack expression $body
       ))
    )))
 
@@ -384,28 +389,17 @@ assemble := λconfig program. (
    (write-file (target (clone-rope (output_p output_d))))
 );
 
-#      if k == "main" {
-#         has_main = true;
-#         let start = ctx_eval_soft(&helpers_ctx, &variable("::before-main"));
-#         let enter = ctx_eval_soft(&helpers_ctx, &variable("::enter-function"));
-#         raw_program = s_cons( raw_program, start );
-#         raw_program = s_cons( raw_program, enter );
-#         let (vframe,vprog,vunframe,vtext,vdata,_pc,_offset) = compile_expr(&helpers_ctx, &main_ctx, &v, 0);
-#         raw_program = s_cons( raw_program, vframe );
-#         raw_program = s_cons( raw_program, vprog );
-#         raw_program = s_cons( raw_program, vunframe );
-#         raw_program = s_cons( raw_program, ctx_eval_soft(&helpers_ctx, &variable("::exit-cleanup")) );
-#         raw_program = s_cons( raw_program, vtext );
-#         raw_data = s_cons(raw_data,vdata);
-#      } else {
+compile-expr := λctx e offset. (tail(
+   print-s((COMPILE e offset))
+   ()
+));
+
 #         let (vframe,vprog,vunframe,vtext,vdata,_pc,_offset) = compile_expr(&helpers_ctx, &main_ctx, &v, 0);
 #         raw_program = s_cons( raw_program, vframe );
 #         raw_program = s_cons( raw_program, vprog );
 #         raw_program = s_cons( raw_program, vunframe );
 #         raw_program = s_cons( raw_program, vtext );
 #         raw_data = s_cons(raw_data,vdata);
-#      }
-#   }
 
 _program-header := λ.(
    .global \s _start     \n
