@@ -360,7 +360,6 @@ assemble := λconfig program. (
    (while program (match program (
       ()
       ( (pc (Global ('main body))) (
-         (print-s (MAIN body))
          (set program pc)
          (set output_p (output_p (main: \n)))
          (set output_p (output_p (_before-main())))
@@ -389,9 +388,65 @@ assemble := λconfig program. (
    (write-file (target (clone-rope (output_p output_d))))
 );
 
-compile-expr := λctx e offset. (tail(
-   print-s((COMPILE e offset))
+is-builtin := λf. (match f (
    ()
+   ('eq True)
+   ('not True)
+   ('head True)
+   ('tail True)
+   ('print-s True)
+   ('print-i True)
+   ('print-p True)
+   ('print-p True)
+   ('print-d True)
+   ('clone-rope True)
+   ('write-file True)
+   ('load-file True)
+   (_ ())
+));
+
+#returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
+yield-atom := λctx a offset. (tail(
+   (local id)
+   (set id (uuid()))
+   (print-s (ID id))
+   (
+      ()
+      (\t mov \s $ id , \s %r12 \n # $_.$1 = 0, .atom
+       \t mov \s $0, \s %r13    \n # $_.$2 = 0, .head
+       \t mov $0, \s %r14       \n # $_.$3 = 0, .tail
+       \t mov $0, \s %r15       \n # $_.$4 = 0, .flags
+      )
+      ()
+      ()
+      (id : \n \t .ascii \s " a " \n \t .zero \s 1 \n)
+      ctx
+      offset
+   )
+));
+
+#returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
+compile-expr := λctx e offset. (tail(
+   (local x)
+   (local prog)
+   (match e (
+      ()
+      ( (App ((Variable fname) arg)) (tail(
+         if (is-builtin fname) (
+            (set x (compile-expr(ctx arg offset)))
+            (print-s (BUILTIN fname x))
+#            (set prog (get_prog x))
+#            (set prog (prog (\t call (label-case fname) \n)))
+#            ( (get_frame x) prog (get_unframe x) (get_text x) (get_data x) (get_pc x)
+         ) (
+            print-s((TODOAPP e))
+         )
+      )))
+      ( (Literal l) (
+         (yield-atom (ctx l offset))
+      ))
+      (x (print-s (TODO x)) )
+   ))
 ));
 
 #         let (vframe,vprog,vunframe,vtext,vdata,_pc,_offset) = compile_expr(&helpers_ctx, &main_ctx, &v, 0);

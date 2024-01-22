@@ -1,4 +1,4 @@
 
 main := (
-   print-s hello_world
+   print-s 'hello_world
 );
