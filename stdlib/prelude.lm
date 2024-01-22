@@ -325,38 +325,6 @@
    \t mov $0, %r14              \n
    \t mov $0, %r15              \n
    \t ret                       \n
-
-   as:                          \n
-   \t mov $57, %rax             \n
-   \t syscall                   \n
-   \t cmp $0, %rax              \n
-   \t je as_child               \n
-   \t jmp as_parent             \n
-
-   as_child:                    \n
-   \t mov $__as_argv, %rbx      \n
-   \t mov 0\[%r13\], %rax       \n
-   \t mov %rax, 0\[%rbx\]       \n
-   \t mov $__as_o, %rax         \n
-   \t mov %rax, 8\[%rbx\]       \n
-   \t mov $__tmp_o, %rax        \n
-   \t mov %rax, 16\[%rbx\]      \n
-   \t mov $59, %rax             \n #execve
-   \t mov $__as_path, %rdi      \n
-   \t mov $__as_argv, %rsi      \n
-   \t mov $__as_envp, %rdx      \n
-   \t syscall                   \n
-   \t mov $60, %rax             \n #exit
-   \t mov $0, %rdi              \n
-   \t syscall                   \n
-   \t ret                       \n
-
-   as_parent:                   \n
-   \t mov $35, %rax             \n #nanosleep
-   \t mov $__rqtp_s, %rdi       \n
-   \t mov $__rmtp_s, %rsi       \n
-   \t syscall                   \n
-   \t ret                       \n   
 );
 
 .data := (
@@ -401,27 +369,6 @@
   __err_fopen:                  \n
   \t .ascii "Could not open file." \n
   \t .zero 1                    \n
-  __as_path:                    \n
-  \t .ascii "/usr/bin/as"       \n
-  \t .zero 1                    \n
-  __as_o:                       \n
-  \t .ascii "-o"                \n
-  \t .zero 1                    \n
-  __as_argv:                    \n
-  \t .zero 64                   \n
-  __as_envp:                    \n
-  \t .zero 64                   \n
-  __as_siginfo:                 \n
-  \t .zero 64                   \n
-  __as_rusage:                  \n
-  \t .zero 64                   \n
-  __tmp_o:                      \n
-  \t .ascii "tmp.o"             \n
-  \t .zero 1                    \n
-  __rqtp_s:                     \n
-  \t .long 5, 0                 \n
-  __rmtp_s:                     \n
-  \t .long 5, 0                 \n
 );
 
 concat := λl r. match (l r) (
