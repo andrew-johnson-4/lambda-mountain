@@ -327,7 +327,21 @@
    \t ret                       \n
 
    as:                          \n
-   \t call print_s              \n
+   \t mov $57, %rax             \n
+   \t syscall                   \n
+   \t cmp $0, %rax              \n
+   \t je as_child               \n
+   \t jmp as_parent             \n
+
+   as_child:                    \n
+   \t mov $59, %rax             \n
+   \t mov $__as_path, %rdi      \n
+   \t mov $__as_argv, %rsi      \n
+   \t mov $__as_envp, %rdx      \n
+   \t syscall                   \n
+   \t ret                       \n
+
+   as_parent:                   \n
    \t ret                       \n   
 );
 
@@ -373,6 +387,13 @@
   __err_fopen:                  \n
   \t .ascii "Could not open file." \n
   \t .zero 1                    \n
+  __as_path:                    \n
+  \t .ascii "/usr/bin/as"       \n
+  \t .zero 1                    \n
+  __as_argv:                    \n
+  \t .zero 64                   \n
+  __as_envp:                    \n
+  \t .zero 64                   \n
 );
 
 concat := λl r. match (l r) (

@@ -1,5 +1,4 @@
 
 main := (
-   (print-s(load-file(tests/lm/tmp.as))
    (as(tests/lm/tmp.as tests/lm/a.out))
 );
