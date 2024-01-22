@@ -2,8 +2,7 @@
 _uuid := ();
 uuid := λ. (tail(
    (set _uuid (inc _uuid))
-   (print-i _uuid)
-   ('_uuid_ (dump-i _uuid))
+   (clone-rope ('_uuid_ (dump-i _uuid)))
 ));
 
 main := (
