@@ -397,6 +397,7 @@ assemble := λconfig program. (
    ))
 
    (write-file (target (clone-rope (output_p output_d))))
+   (print-s (load-file target))
 );
 
 is-builtin := λf. (match f (
