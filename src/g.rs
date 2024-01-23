@@ -151,12 +151,13 @@ fn yield_atom(helpers_ctx: &S, program_ctx: &S, s: &str, offset: i64) -> (S,S,S,
    let prog = s_cons(prog, s_atom("\tmov $0, %r13\n"));
    let prog = s_cons(prog, s_atom("\tmov $0, %r14\n"));
    let prog = s_cons(prog, s_atom("\tmov $0, %r15\n"));
+   println!("yield ATOM: {}", s);
    (
       s_nil(),
       prog,
       s_nil(),
       s_nil(),
-      variable(&format!("{}:\n\t.ascii \"{}\"\n\t.zero 1\n", id, s)),
+      literal(&format!("{}:\n\t.ascii \"{}\"\n\t.zero 1\n", id, s)),
       program_ctx.clone(),
       offset,
    )
