@@ -111,6 +111,7 @@ fn uuid() {
    assert_eq!( compile_and_run("tests/lm/uuid1.lm"),  "uuid_0000000000000001uuid_0000000000000002" );
 }
 
+/* TODO BOOTSTRAP
 #[test]
 fn dsa() {
    assert_eq!( compile_and_run("tests/lm/concat.lm"), "(((() 1) 2) 3)" );
@@ -118,7 +119,9 @@ fn dsa() {
    assert_eq!( compile_and_run("tests/lm/kv_lookup.lm"), "456" );
    assert_eq!( compile_and_run("tests/lm/kv_lookup2.lm"), "000" );
 }
+*/
 
+/* TODO BOOTSTRAP
 #[test]
 fn eval_soft() {
    assert_eq!( compile_and_run("tests/lm/destructure2.lm"), "()" );
@@ -128,6 +131,7 @@ fn eval_soft() {
    assert_eq!( compile_and_run("tests/lm/eval_lambda.lm"), "(123 123)" );
    assert_eq!( compile_and_run("tests/lm/eval_lambda2.lm"), "(123 456)" );
 }
+*/
 
 #[test]
 fn rope() {

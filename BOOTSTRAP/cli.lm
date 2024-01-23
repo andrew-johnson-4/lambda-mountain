@@ -48,10 +48,10 @@ main := (
    ))
 );
 
-_uuid := ();
+$uuid := ();
 uuid := λ. (tail(
-   (set _uuid (inc _uuid))
-   (clone-rope ('uuid_ (dump-i _uuid)))
+   (set $uuid (inc $uuid))
+   (clone-rope ('uuid_ (dump-i $uuid)))
 ));
 
 tokenize-file := λpath. (
@@ -564,27 +564,8 @@ _before-main := λ.(
    \t 'mov \s '$0, \s '%r13              \n
    \t 'mov \s '$0, \s '%r14              \n
    \t 'mov \s '$0, \s '%r15              \n
-   (_close-this())
-   \t 'mov \s '%rsi, \s '%rdi            \n
-   #rdi is a
-   \t 'mov \s '$0, \s '%r12              \n
-   \t 'mov \s '$0, \s '%r13              \n
-   \t 'mov \s '$0, \s '%r14              \n
-   \t 'mov \s '$0, \s '%r15              \n
-   (_close-this())
-   #rsi is clean closed ()
-   \t 'mov \s '%rdi, \s '8 \[ '%rbx \]    \n
-   \t 'mov \s '%rsi, \s '16 \[ '%rbx \]   \n
-   \t 'mov \s '%rsi, \s '%rbx            \n
-   #rbx is tail of argv
-   \t 'dec \s '%rax                     \n
-   \t 'jmp \s '__before_main_argv       \n
-   '__before_main_end:                 \n
-);
 
-_close-this := λ.(
-   # move this S onto the heap
-   # %rsi becomes pointer to new location
+   #close this (move S onto the heap)
    \t 'mov \s '$__s_section, \s '%rsi        \n # %rsi now points to root s
    \t 'mov \s '$__s_counter, \s '%r8         \n # %r8 now points to s counter
    \t 'mov \s '0\[ '%r8 \] , \s '%r10         \n # %r10 now hold value of cons counter
@@ -595,6 +576,34 @@ _close-this := λ.(
    \t 'mov \s '%r13, \s '8 \[ '%rsi \]        \n # set top.head
    \t 'mov \s '%r14, \s '16 \[ '%rsi \]       \n # set top.tail
    \t 'mov \s '%r15, \s '24 \[ '%rsi \]       \n # set top.flags
+   \t 'mov \s '%rsi, \s '%rdi            \n
+
+   #rdi is a
+   \t 'mov \s '$0, \s '%r12              \n
+   \t 'mov \s '$0, \s '%r13              \n
+   \t 'mov \s '$0, \s '%r14              \n
+   \t 'mov \s '$0, \s '%r15              \n
+
+   \t 'mov \s '$__s_section, \s '%rsi        \n # %rsi now points to root s
+   \t 'mov \s '$__s_counter, \s '%r8         \n # %r8 now points to s counter
+   \t 'mov \s '0\[ '%r8 \] , \s '%r10         \n # %r10 now hold value of cons counter
+   \t 'add \s '%r10, \s '%rsi                \n # %rsi now points to top free cons
+   \t 'add \s '$32, \s '%r10                 \n # increment s counter
+   \t 'mov \s '%r10, \s '0 \[ '%r8 \]         \n # overwrite new s counter
+   \t 'mov \s '%r12, \s '0 \[ '%rsi \]        \n # set top.atom
+   \t 'mov \s '%r13, \s '8 \[ '%rsi \]        \n # set top.head
+   \t 'mov \s '%r14, \s '16 \[ '%rsi \]       \n # set top.tail
+   \t 'mov \s '%r15, \s '24 \[ '%rsi \]       \n # set top.flags
+   \t 'mov \s '%rsi, \s '%rdi            \n
+
+   #rsi is clean closed ()
+   \t 'mov \s '%rdi, \s '8 \[ '%rbx \]    \n
+   \t 'mov \s '%rsi, \s '16 \[ '%rbx \]   \n
+   \t 'mov \s '%rsi, \s '%rbx            \n
+   #rbx is tail of argv
+   \t 'dec \s '%rax                     \n
+   \t 'jmp \s '__before_main_argv       \n
+   '__before_main_end:                 \n
 );
 
 _enter-function := λ.(

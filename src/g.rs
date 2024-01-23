@@ -33,7 +33,7 @@ fn flatten(output: &mut String, input: &S) {
       let l = l.replace("\\s"," ");
       let l = l.replace("\\l","λ");
       let l = l.replace("\\:",";");
-      if l=="literal" || l=="variable" || l=="app" || l=="local" || l=="type" {}
+      if l=="lambda" || l=="literal" || l=="variable" || l=="app" || l=="local" || l=="type" {}
       else if l == "\\n" {
          output.push_str("\n"); 
       } else if l == "\\t" {
@@ -142,15 +142,21 @@ fn is_local(program_ctx: &S, s: &str) -> String {
 }
 
 //returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
-fn yield_atom(helpers_ctx: &S, program_ctx: &S, s: &str, offset: i64) -> (S,S,S,S,S,S,i64) {
+fn yield_atom(_helpers_ctx: &S, program_ctx: &S, s: &str, offset: i64) -> (S,S,S,S,S,S,i64) {
    let s = s.replace(r#"""#,r#"\""#);
+   let s = s.replace("\n",r#"\n"#);
    let id = uuid();
+   let prog = s_nil();
+   let prog = s_cons(prog, s_atom(&format!("\tmov ${}, %r12\n",id)));
+   let prog = s_cons(prog, s_atom("\tmov $0, %r13\n"));
+   let prog = s_cons(prog, s_atom("\tmov $0, %r14\n"));
+   let prog = s_cons(prog, s_atom("\tmov $0, %r15\n"));
    (
       s_nil(),
-      ctx_eval_soft(helpers_ctx, &app( variable("::yield-atom"), variable(&id) )),
+      prog,
       s_nil(),
       s_nil(),
-      variable(&format!("{}:\n\t.ascii \"{}\"\n\t.zero 1\n", id, s)),
+      literal(&format!("{}:\n\t.ascii \"{}\"\n\t.zero 1\n", id, s)),
       program_ctx.clone(),
       offset,
    )
@@ -566,12 +572,12 @@ pub fn compile(cfg: &str, main_ctx: &S) {
    let mut raw_data = nil();
    for (k,v) in kv_iter(&prelude_ctx) {
       let ks = k.to_string();
-      if ks == ".data" {
+      if ks == "::data" {
          raw_data = app(
             raw_data,
             ctx_eval_soft(&helpers_ctx, &v),
          );
-      } else if ks == ".text" {
+      } else if ks == "::text" {
          raw_program = app(
             raw_program,
             ctx_eval_soft(&helpers_ctx, &v),
@@ -606,6 +612,18 @@ pub fn compile(cfg: &str, main_ctx: &S) {
          raw_program = s_cons( raw_program, vunframe );
          raw_program = s_cons( raw_program, ctx_eval_soft(&helpers_ctx, &variable("::exit-cleanup")) );
          raw_program = s_cons( raw_program, vtext );
+         raw_data = s_cons(raw_data,vdata);
+      } else if k.starts_with("::") {
+         //ignore completely
+      } else if k.starts_with("_") {
+         let mut buf = String::new();
+         flatten(&mut buf, &v);
+         let (vframe,vprog,vunframe,vtext,vdata,_pc,_offset) = yield_atom(&helpers_ctx, &main_ctx, &buf, 0);
+         raw_program = s_cons( raw_program, vframe );
+         raw_program = s_cons( raw_program, vprog );
+         raw_program = s_cons( raw_program, vunframe );
+         raw_program = s_cons( raw_program, vtext );
+         raw_program = s_cons( raw_program, s_atom("\tret\n") );
          raw_data = s_cons(raw_data,vdata);
       } else {
          let (vframe,vprog,vunframe,vtext,vdata,_pc,_offset) = compile_expr(&helpers_ctx, &main_ctx, &v, 0);
