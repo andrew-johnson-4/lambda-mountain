@@ -4,6 +4,8 @@ fn compile_and_run(mode: &str, target: &str) -> String {
    let exit = Command::new("lambda_mountain")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
+                      .arg("-o")
+                      .arg("bootstrap")
                       .arg("BOOTSTRAP/cli.lm")
                       .spawn()
                       .expect("failed to execute process")
@@ -13,7 +15,7 @@ fn compile_and_run(mode: &str, target: &str) -> String {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
       return format!("lambda_mountain error code: {}", stderr);
    };
-   let exit = Command::new("./a.out")
+   let exit = Command::new("./bootstrap")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
                       .arg(mode)
@@ -24,7 +26,7 @@ fn compile_and_run(mode: &str, target: &str) -> String {
                       .expect("failed to wait for process");
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      return format!("./a.out error code: {}", stderr);
+      return format!("./bootstrap error code: {}", stderr);
    };
    String::from_utf8_lossy(&exit.stdout).to_string()
 }
