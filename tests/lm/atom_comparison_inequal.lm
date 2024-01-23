@@ -1,2 +1,2 @@
 
-main := print-s (eq (abc def))
+main := print-s (eq ('abc 'def))
