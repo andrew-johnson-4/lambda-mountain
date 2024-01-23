@@ -5,5 +5,5 @@ print-space := λc. (
 );
 
 main := (
-   foreach-char (hello world) print-space
+   foreach-char ('hello 'world) print-space
 );

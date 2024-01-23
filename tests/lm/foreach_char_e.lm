@@ -1,4 +1,4 @@
 
 main := (
-   foreach-char (hello world) ((print-s $_) (print-s '_))
+   foreach-char ('hello 'world) ((print-s $_) (print-s '_))
 );

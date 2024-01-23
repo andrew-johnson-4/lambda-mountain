@@ -1,4 +1,4 @@
 
 main := (
-   foreach-atom (hello world) ((print-s $_) (print-s '_))
+   foreach-atom ('hello 'world) ((print-s $_) (print-s '_))
 );
