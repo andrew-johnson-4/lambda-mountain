@@ -2,9 +2,17 @@
 main := (
    print-s (dump-i (
       inc(inc(inc(inc(
-         inc(inc(inc(inc(
+      inc(inc(inc(inc(
+      inc(inc(inc(inc(
+      inc(inc(inc(inc(
+      inc(inc(inc(inc(
+      inc(inc(inc(inc(
             ()
-         ))))
+      ))))
+      ))))
+      ))))
+      ))))
+      ))))
       ))))
    ))
 );
