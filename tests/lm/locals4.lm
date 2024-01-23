@@ -1,6 +1,6 @@
 
 main := print-s(tail(
-   (abc (
+   ('abc (
       (local a)
       (local b)
    ))

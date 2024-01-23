@@ -4,7 +4,7 @@ main := print-s(tail(
    (local b)
    (local c)
    (set a 123)
-   (set b abc)
-   (set c xyz)
+   (set b 'abc)
+   (set c 'xyz)
    (a b c)
 ));
