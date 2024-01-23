@@ -33,7 +33,7 @@ fn flatten(output: &mut String, input: &S) {
       let l = l.replace("\\s"," ");
       let l = l.replace("\\l","λ");
       let l = l.replace("\\:",";");
-      if l=="literal" || l=="variable" || l=="app" || l=="local" || l=="type" {}
+      if l=="lambda" || l=="literal" || l=="variable" || l=="app" || l=="local" || l=="type" {}
       else if l == "\\n" {
          output.push_str("\n"); 
       } else if l == "\\t" {
@@ -144,6 +144,7 @@ fn is_local(program_ctx: &S, s: &str) -> String {
 //returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 fn yield_atom(helpers_ctx: &S, program_ctx: &S, s: &str, offset: i64) -> (S,S,S,S,S,S,i64) {
    let s = s.replace(r#"""#,r#"\""#);
+   let s = s.replace("\n",r#"\n"#);
    let id = uuid();
    (
       s_nil(),
@@ -605,6 +606,15 @@ pub fn compile(cfg: &str, main_ctx: &S) {
          raw_program = s_cons( raw_program, vprog );
          raw_program = s_cons( raw_program, vunframe );
          raw_program = s_cons( raw_program, ctx_eval_soft(&helpers_ctx, &variable("::exit-cleanup")) );
+         raw_program = s_cons( raw_program, vtext );
+         raw_data = s_cons(raw_data,vdata);
+      } else if k.starts_with("_") {
+         let mut buf = String::new();
+         flatten(&mut buf, &v);
+         let (vframe,vprog,vunframe,vtext,vdata,_pc,_offset) = yield_atom(&helpers_ctx, &main_ctx, &buf, 0);
+         raw_program = s_cons( raw_program, vframe );
+         raw_program = s_cons( raw_program, vprog );
+         raw_program = s_cons( raw_program, vunframe );
          raw_program = s_cons( raw_program, vtext );
          raw_data = s_cons(raw_data,vdata);
       } else {

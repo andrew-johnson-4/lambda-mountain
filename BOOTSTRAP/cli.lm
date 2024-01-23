@@ -48,10 +48,10 @@ main := (
    ))
 );
 
-_uuid := ();
+$uuid := ();
 uuid := λ. (tail(
-   (set _uuid (inc _uuid))
-   (clone-rope ('uuid_ (dump-i _uuid)))
+   (set $uuid (inc $uuid))
+   (clone-rope ('uuid_ (dump-i $uuid)))
 ));
 
 tokenize-file := λpath. (
