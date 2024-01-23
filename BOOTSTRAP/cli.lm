@@ -48,6 +48,12 @@ main := (
    ))
 );
 
+_uuid := ();
+uuid := λ. (tail(
+   (set _uuid (inc _uuid))
+   (clone-rope ('uuid_ (dump-i _uuid)))
+));
+
 tokenize-file := λpath. (
    tokenize (load-file path)
 );
@@ -340,7 +346,7 @@ label-case := λk. (tail(
 
 assemble := λconfig program. (
    (local target)
-   (set target a.out)
+   (set target 'a.out)
    (while config (
       (match (tail config) (
          ()
@@ -371,7 +377,7 @@ assemble := λconfig program. (
       ))
       ( (pc (Global (fname body))) (
          (set program pc)
-         (set fname (label-case f))
+         (set fname (label-case fname))
          (print-s (F fname body))
          (set output_p (output_p (fname ': \n)))
          (set output_p (output_p (_enter-function())))
@@ -489,10 +495,10 @@ _data-header := λ.(
   '__put64_buffer:                     \n
   \t .ascii \s "0x"                    \n
   '__put64_write_buffer:               \n
-  \t .ascii \s "0000000000000000 "     \n
+  \t .ascii \s "0000000000000000 \s "  \n
   \t .zero \s '1                       \n
   '__newline:                          \n
-  \t .ascii \s " \\ n "                \n
+  \t .ascii \s " \\ 'n "               \n
   '__lparen:                           \n
   \t .ascii \s " \[ "                  \n
   '__rparen:                           \n
