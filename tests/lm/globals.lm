@@ -1,0 +1,10 @@
+
+x := ();
+
+main := (
+   (print-s x)
+   (set x 123)
+   (print-s x)
+   (set x ABC)
+   (print-s x)
+);

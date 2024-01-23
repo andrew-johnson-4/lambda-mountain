@@ -34,6 +34,77 @@
    print_d:                     \n
    \t mov $1, %r9               \n
    \t jmp __print_this          \n
+
+   dump_i:                      \n
+   \t mov %r12, %r8             \n
+   \t mov $__dump_i, %r12       \n
+   \t mov $0, %r13              \n
+   \t mov $0, %r14              \n
+   \t mov $0, %r15              \n
+
+   \t mov $__dump_i, %r11       \n
+   \t rol $4, %r8               \n   # %r8[0]
+   \t call put8                 \n
+   \t mov %cl, 0\[%r11\]        \n
+   \t rol $4, %r8               \n   # %r8[1]
+   \t call put8                 \n
+   \t mov %cl, 1\[%r11\]        \n
+   \t rol $4, %r8               \n   # %r8[2]
+   \t call put8                 \n
+   \t mov %cl, 2\[%r11\]        \n
+   \t rol $4, %r8               \n   # %r8[3]
+   \t call put8                 \n
+   \t mov %cl, 3\[%r11\]        \n
+   \t rol $4, %r8               \n   # %r8[4]
+   \t call put8                 \n
+   \t mov %cl, 4\[%r11\]        \n
+   \t rol $4, %r8               \n   # %r8[5]
+   \t call put8                 \n
+   \t mov %cl, 5\[%r11\]        \n
+   \t rol $4, %r8               \n   # %r8[6]
+   \t call put8                 \n
+   \t mov %cl, 6\[%r11\]        \n
+   \t rol $4, %r8               \n   # %r8[7]
+   \t call put8                 \n
+   \t mov %cl, 7\[%r11\]        \n
+   \t rol $4, %r8               \n   # %r8[8]
+   \t call put8                 \n
+   \t mov %cl, 8\[%r11\]        \n
+   \t rol $4, %r8               \n   # %r8[9]
+   \t call put8                 \n
+   \t mov %cl, 9\[%r11\]        \n
+   \t rol $4, %r8               \n   # %r8[10]
+   \t call put8                 \n
+   \t mov %cl, 10\[%r11\]       \n
+   \t rol $4, %r8               \n   # %r8[11]
+   \t call put8                 \n
+   \t mov %cl, 11\[%r11\]       \n
+   \t rol $4, %r8               \n   # %r8[12]
+   \t call put8                 \n
+   \t mov %cl, 12\[%r11\]       \n
+   \t rol $4, %r8               \n   # %r8[13]
+   \t call put8                 \n
+   \t mov %cl, 13\[%r11\]       \n
+   \t rol $4, %r8               \n   # %r8[14]
+   \t call put8                 \n
+   \t mov %cl, 14\[%r11\]       \n
+   \t rol $4, %r8               \n   # %r8[15]
+   \t call put8                 \n
+   \t mov %cl, 15\[%r11\]       \n
+   \t ret                       \n
+
+   #move ascii representation of lower byte of %r8 into %cl
+   put8:                        \n
+   \t mov %r8b, %al             \n # lower byte of %r11 goes into %rax
+   \t and $0xf, %al             \n # only show lower 4 bits
+   \t mov $__hex_buffer, %r10   \n # %r10 is index into hex buffer
+   \t add %al, %r10b            \n # %r10 is index into char in hex buffer
+   \t mov 0\[%r10\], %cl        \n # %cl is a hexadecimal char
+   \t ret                       \n
+
+   inc:                         \n
+   \t inc %r12                  \n
+   \t ret                       \n
  
    __print_this:                \n
    ::callee-save-registers
@@ -226,13 +297,38 @@
    clone_rope_end:              \n
    \t ret                       \n
 
+   write_file:                  \n
+   #open file
+   \t mov 0\[%r13\], %rdi       \n # file name
+   \t pushq 0\[%r14\]           \n # data to write
+   \t mov $2, %rax              \n # syscall open
+   \t mov $65, %rsi             \n # flags
+   \t mov $420, %rdx            \n # mode
+   \t syscall                   \n
+   \t mov %rax, %r8             \n # r8 now holds file descriptor
+
+   #write to file
+   \t pop %rax                  \n
+   \t mov %rax, %r9             \n
+   \t call _strlen              \n
+   \t mov %rbx, %rdx            \n # length to write
+   \t mov %r9, %rsi             \n # data to write
+   \t mov %r8, %rdi             \n # file descriptor
+   \t mov $1, %rax              \n # 'write' system call
+   \t syscall                   \n
+
+   #close file
+   \t mov %r8, %rdi             \n # file descriptor
+   \t mov $3, %rax              \n # close
+   \t syscall                   \n
+   \t ret                       \n
+
    load_file:                   \n
 
    # open file
    \t mov $2, %rax              \n # syscall open
    \t mov %r12, %rdi            \n # file name
-   \t mov $0, %rsi              \n # flags
-   \t mov $0, %rdx              \n # read-only mode
+   \t mov $0, %rsi              \n # read-only mode
    \t syscall                   \n
    # file descriptor is in %rax
 
@@ -300,7 +396,6 @@
    \t mov $0, %r14              \n
    \t mov $0, %r15              \n
    \t ret                       \n
-   
 );
 
 .data := (
@@ -316,11 +411,11 @@
   __s_counter:                  \n
   \t .zero 8                    \n
   __s_section:                  \n
-  \t .zero 131072               \n
+  \t .zero 268435456            \n
   __a_counter:                  \n
   \t .zero 8                    \n
   __a_section:                  \n
-  \t .zero 131072               \n
+  \t .zero 268435456            \n
   __nil_literal:                \n
   \t .ascii "\[\]"              \n
   \t .zero 1                    \n
@@ -341,6 +436,9 @@
   \t .ascii "\s"                \n
   __true:                       \n
   \t .ascii "True"              \n
+  \t .zero 1                    \n
+  __dump_i:                     \n
+  \t .ascii "0000000000000000"  \n
   \t .zero 1                    \n
   __err_fopen:                  \n
   \t .ascii "Could not open file." \n

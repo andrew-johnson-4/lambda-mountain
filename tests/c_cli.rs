@@ -94,6 +94,24 @@ fn control_flow() {
 }
 
 #[test]
+fn globals() {
+   assert_eq!( compile_and_run("tests/lm/globals.lm"),  "0123ABC" );
+}
+
+#[test]
+fn dump() {
+   assert_eq!( compile_and_run("tests/lm/dump_i.lm"),  "00000000" );
+   assert_eq!( compile_and_run("tests/lm/dump_i1.lm"), "00000001" );
+   assert_eq!( compile_and_run("tests/lm/dump_i2.lm"), "00000002" );
+   assert_eq!( compile_and_run("tests/lm/dump_i8.lm"), "00000010" );
+}
+
+#[test]
+fn uuid() {
+   assert_eq!( compile_and_run("tests/lm/uuid1.lm"),  "uuid_0000000000000001uuid_0000000000000002" );
+}
+
+#[test]
 fn dsa() {
    assert_eq!( compile_and_run("tests/lm/concat.lm"), "(((() 1) 2) 3)" );
    assert_eq!( compile_and_run("tests/lm/kv_merge.lm"), "(((((() (1 2)) (3 4)) (5 6)) (7 8)) (9 0))" );
@@ -129,4 +147,6 @@ fn system_calls() {
    let bigger_contents = std::fs::read_to_string("tests/lm/bigger_file.txt")
                         .expect("Could not read tests/lm/bigger_file.txt");
    assert_eq!( compile_and_run("tests/lm/load_bigger_file.lm"), bigger_contents );
+   let _ = std::fs::remove_file("tests/lm/writable_hello.txt");
+   assert_eq!( compile_and_run("tests/lm/write_file.lm"), "hello_world" );
 }

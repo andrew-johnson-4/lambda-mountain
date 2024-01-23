@@ -1,0 +1,11 @@
+
+_uuid := ();
+uuid := λ. (tail(
+   (set _uuid (inc _uuid))
+   (clone-rope ('uuid_ (dump-i _uuid)))
+));
+
+main := (
+   (print-s (uuid()))
+   (print-s (uuid()))
+);

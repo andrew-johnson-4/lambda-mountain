@@ -84,17 +84,20 @@ fn assemble(cfg: &str, program: &S) {
    }
 }
 
-const OPERATORS: [(&str,&str); 10] = [
+const OPERATORS: [(&str,&str); 13] = [
    ("eq", "eq"),
    ("not", "not"),
+   ("inc", "inc"),
    ("head", "head"),
    ("tail", "tail"),
 
+   ("dump-i", "dump_i"),
    ("print-s", "print_s"),
    ("print-i", "print_i"),
    ("print-p", "print_p"),
    ("print-d", "print_d"),
    ("clone-rope", "clone_rope"),
+   ("write-file", "write_file"),
    ("load-file", "load_file"),
 ];
 
@@ -140,6 +143,7 @@ fn is_local(program_ctx: &S, s: &str) -> String {
 
 //returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 fn yield_atom(helpers_ctx: &S, program_ctx: &S, s: &str, offset: i64) -> (S,S,S,S,S,S,i64) {
+   let s = s.replace(r#"""#,r#"\""#);
    let id = uuid();
    (
       s_nil(),
@@ -343,7 +347,9 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          let lname = tail(&tail(&tail(&f))).to_string();
          let local = is_local(program_ctx, &format!("set {}", lname));
          if local == "" {
-            panic!("assignment to undefined local {}", lname);
+            let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &x, offset);
+            let prog = s_cons(xprog, ctx_eval_soft(helpers_ctx, &app(variable("::set-global"), variable(&label_case(&lname)) )) );
+            ( xframe, prog, xunframe, xtext, xdata, program_ctx.clone(), offset )
          } else {
             let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &x, offset);
             ( xframe, s_cons(xprog, s_atom(&local)), xunframe, xtext, xdata, program_ctx.clone(), offset )
@@ -356,6 +362,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          let apply_expr = tail(&tail(&e));
          let foreach_label = s_atom(&uuid());
          let foreach_notcons = s_atom(&uuid());
+         let foreach_ignore = s_atom(&uuid());
          let (aframe,aprog,aunframe,atext,adata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &atom, offset);
          let (eframe,eprog,eunframe,etext,edata,program_ctx,offset) = if head(&apply_expr).to_string()=="variable" {
             let apply_label = tail(&apply_expr);
@@ -364,7 +371,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          } else {
             compile_expr(helpers_ctx, &program_ctx, &apply_expr, offset)
          };
-         let ftext = ctx_eval_soft(helpers_ctx, &app(variable("::foreach-atom"),app(app(foreach_label.clone(),foreach_notcons),eprog.clone())));
+         let ftext = ctx_eval_soft(helpers_ctx, &app(variable("::foreach-atom"),app(app(app(foreach_label.clone(),foreach_notcons),foreach_ignore),eprog.clone())));
          let prog = s_cons( aprog, s_atom(&format!("\tcall {}\n",foreach_label)) );
          ( s_cons(aframe,eframe), prog, s_cons(aunframe,eunframe), s_cons(s_cons(atext,ftext),etext), s_cons(adata,edata), program_ctx, offset )
       } else if head(&e).to_string()=="app" &&
@@ -502,7 +509,8 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
       let vname = tail(&e).to_string();
       let local = is_local(program_ctx, &vname);
       if local == "" {
-         yield_atom(helpers_ctx, program_ctx, &vname, offset)
+         let prog = ctx_eval_soft(helpers_ctx, &app(variable("::get-global"), variable(&vname)) );
+         ( s_nil(), prog, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
       } else {
          ( s_nil(), s_atom(&local), s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
       }
@@ -574,6 +582,13 @@ pub fn compile(cfg: &str, main_ctx: &S) {
    }
    let mut has_main = false;
    for (k,v) in kv_iter(&main_ctx) {
+   if is_nil(&v) {
+      let k = k.to_string();
+      raw_data = s_cons(
+         raw_data,
+         s_atom(&format!("{}:\n\t.zero 32\n",label_case(&k))),
+      );
+   } else {
       let k = k.to_string();
       raw_program = s_cons(
          raw_program,
@@ -600,11 +615,20 @@ pub fn compile(cfg: &str, main_ctx: &S) {
          raw_program = s_cons( raw_program, vtext );
          raw_data = s_cons(raw_data,vdata);
       }
-   }
+   }}
    if !has_main {
       raw_program = s_cons( raw_program, s_atom("main:\n") );
       raw_program = s_cons( raw_program, ctx_eval_soft(&helpers_ctx, &variable("::exit-cleanup")) );
    }
    let program = compile_program(&helpers_ctx, &raw_program, &raw_data);
    assemble(cfg, &program);
+   rm("tmp.s");
+   rm("tmp.o");
+}
+
+fn rm(p: &str) {
+   if std::path::Path::new(p).is_file() {
+      std::fs::remove_file(p).expect(&format!("Could not remove file: {}",p))
+   }
+   assert!( !std::path::Path::new(p).is_file() );
 }
