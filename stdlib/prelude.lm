@@ -1,5 +1,5 @@
 
-.text := (
+::text := (
    # internal _strlen (%rax: *char) -> %rbx
    # not a call-convention function
    _strlen:                     \n
@@ -398,7 +398,7 @@
    \t ret                       \n
 );
 
-.data := (
+::data := (
                                 \n
   load_file_bsz:                \n
   \t .quad 1024                 \n
@@ -451,55 +451,56 @@ concat := λl r. match (l r) (
    ( (x (ys y)) ((concat(x ys)) y) )
 );
 
-kv-lookup := λctx key default. match ctx (
-   ()
-   ((ctxs (k v)) (
-      if (eq(k key)) v (kv-lookup(ctxs key default))
-   ))
-   (_ default)
-);
+#kv-lookup := λctx key default. match ctx (
+#   ()
+#   ((ctxs (k v)) (
+#      if (eq(k key)) v (kv-lookup(ctxs key default))
+#   ))
+#   (_ default)
+#);
 
-eval-soft := λt. (
-   ctx-eval-soft ( CTX t )
-);
+#eval-soft := λt. (
+#   ctx-eval-soft ( CTX t )
+#);
 
-ctx-eval-soft := λctx t. (
-   (match t (
-      ()
-      ((Lambda fl fr) (Lambda fl fr))
-      ((l r) (tail(
-         (local le)
-         (set le (ctx-eval-soft(ctx l)))
-         (local re)
-         (set re (ctx-eval-soft(ctx r)))
-         (match le (
-            ()
-            ( (Lambda fl fr) (tail(
-               (local inner_ctx)
-               (set inner_ctx (destructure (ctx fl re)))
-               (ctx-eval-soft (inner_ctx fr))
-            )))
-            (_ (le re))
-         ))
-      )))
-      (v (
-         (kv-lookup(ctx v v))
-      ))
-   ))
-);
+#ctx-eval-soft := λctx t. (
+#   (match t (
+#      ()
+#      ((Lambda fl fr) (Lambda fl fr))
+#      ((l r) (tail(
+#         (local le)
+#         (set le (ctx-eval-soft(ctx l)))
+#         (local re)
+#         (set re (ctx-eval-soft(ctx r)))
+#         (match le (
+#            ()
+#            ( (Lambda fl fr) (tail(
+#               (local inner_ctx)
+#               (set inner_ctx (destructure (ctx fl re)))
+#               (ctx-eval-soft (inner_ctx fr))
+#            )))
+#            (_ (le re))
+#         ))
+#      )))
+#      (v (
+#         (kv-lookup(ctx v v))
+#      ))
+#   ))
+#);
 
-destructure := λctx pat val. if ctx (match (pat val) (
-   ()
-   ( ((Var x) y) (
-      (ctx (x y))
-   ))
-   ( ((xs x) (ys y)) (tail(
-      (local inner_ctx)
-      (set inner_ctx (destructure (ctx xs ys)))
-      (set inner_ctx (destructure (inner_ctx x y)))
-      inner_ctx
-   )))
-   ( (x y) (
-      if (eq (x y)) ctx ()
-   ))
-)) ();
+#destructure := λctx pat val. if ctx (match (pat val) (
+#   ()
+#   ( ((Var x) y) (
+#      (ctx (x y))
+#   ))
+#   ( ((xs x) (ys y)) (tail(
+#      (local inner_ctx)
+#      (set inner_ctx (destructure (ctx xs ys)))
+#      (set inner_ctx (destructure (inner_ctx x y)))
+#      inner_ctx
+#   )))
+#   ( (x y) (
+#      if (eq (x y)) ctx ()
+#   ))
+#)) ();
+	

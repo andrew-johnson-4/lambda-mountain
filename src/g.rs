@@ -146,9 +146,14 @@ fn yield_atom(helpers_ctx: &S, program_ctx: &S, s: &str, offset: i64) -> (S,S,S,
    let s = s.replace(r#"""#,r#"\""#);
    let s = s.replace("\n",r#"\n"#);
    let id = uuid();
+   let prog = s_nil();
+   let prog = s_cons(prog, s_atom(&format!("\tmov ${}, %r12\n",id)));
+   let prog = s_cons(prog, s_atom("\tmov $0, %r13\n"));
+   let prog = s_cons(prog, s_atom("\tmov $0, %r14\n"));
+   let prog = s_cons(prog, s_atom("\tmov $0, %r15\n"));
    (
       s_nil(),
-      ctx_eval_soft(helpers_ctx, &app( variable("::yield-atom"), variable(&id) )),
+      prog,
       s_nil(),
       s_nil(),
       variable(&format!("{}:\n\t.ascii \"{}\"\n\t.zero 1\n", id, s)),
@@ -567,12 +572,12 @@ pub fn compile(cfg: &str, main_ctx: &S) {
    let mut raw_data = nil();
    for (k,v) in kv_iter(&prelude_ctx) {
       let ks = k.to_string();
-      if ks == ".data" {
+      if ks == "::data" {
          raw_data = app(
             raw_data,
             ctx_eval_soft(&helpers_ctx, &v),
          );
-      } else if ks == ".text" {
+      } else if ks == "::text" {
          raw_program = app(
             raw_program,
             ctx_eval_soft(&helpers_ctx, &v),
@@ -608,6 +613,8 @@ pub fn compile(cfg: &str, main_ctx: &S) {
          raw_program = s_cons( raw_program, ctx_eval_soft(&helpers_ctx, &variable("::exit-cleanup")) );
          raw_program = s_cons( raw_program, vtext );
          raw_data = s_cons(raw_data,vdata);
+      } else if k.starts_with("::") {
+         //ignore completely
       } else if k.starts_with("_") {
          let mut buf = String::new();
          flatten(&mut buf, &v);
