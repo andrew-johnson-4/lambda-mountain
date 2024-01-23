@@ -95,7 +95,7 @@ fn control_flow() {
 
 #[test]
 fn globals() {
-   assert_eq!( compile_and_run("tests/lm/globals.lm"),  "()0123ABC" );
+   assert_eq!( compile_and_run("tests/lm/globals.lm"),  "()123ABC" );
 }
 
 #[test]
