@@ -616,6 +616,7 @@ pub fn compile(cfg: &str, main_ctx: &S) {
          raw_program = s_cons( raw_program, vprog );
          raw_program = s_cons( raw_program, vunframe );
          raw_program = s_cons( raw_program, vtext );
+         raw_program = s_cons( raw_program, s_atom("\tret\n") );
          raw_data = s_cons(raw_data,vdata);
       } else {
          let (vframe,vprog,vunframe,vtext,vdata,_pc,_offset) = compile_expr(&helpers_ctx, &main_ctx, &v, 0);
@@ -632,8 +633,8 @@ pub fn compile(cfg: &str, main_ctx: &S) {
    }
    let program = compile_program(&helpers_ctx, &raw_program, &raw_data);
    assemble(cfg, &program);
-   rm("tmp.s");
-   rm("tmp.o");
+   //rm("tmp.s");
+   //rm("tmp.o");
 }
 
 fn rm(p: &str) {
