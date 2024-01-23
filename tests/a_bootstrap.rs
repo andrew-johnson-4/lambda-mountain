@@ -79,7 +79,7 @@ fn run_bootstrap(target: &str) -> String {
    String::from_utf8_lossy(&exit.stdout).to_string()
 }
 
-//#[test]
+#[test]
 fn suite() {
    compile_bootstrap();
    for entry in glob("tests/lm/*.lm").unwrap() {
