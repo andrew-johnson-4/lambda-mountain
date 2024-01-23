@@ -142,7 +142,7 @@ fn is_local(program_ctx: &S, s: &str) -> String {
 }
 
 //returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
-fn yield_atom(helpers_ctx: &S, program_ctx: &S, s: &str, offset: i64) -> (S,S,S,S,S,S,i64) {
+fn yield_atom(_helpers_ctx: &S, program_ctx: &S, s: &str, offset: i64) -> (S,S,S,S,S,S,i64) {
    let s = s.replace(r#"""#,r#"\""#);
    let s = s.replace("\n",r#"\n"#);
    let id = uuid();
@@ -640,8 +640,8 @@ pub fn compile(cfg: &str, main_ctx: &S) {
    }
    let program = compile_program(&helpers_ctx, &raw_program, &raw_data);
    assemble(cfg, &program);
-   //rm("tmp.s");
-   //rm("tmp.o");
+   rm("tmp.s");
+   rm("tmp.o");
 }
 
 fn rm(p: &str) {
