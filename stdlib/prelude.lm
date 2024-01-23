@@ -2,200 +2,169 @@
 ::text := (
    # internal _strlen (%rax: *char) -> %rbx
    # not a call-convention function
-   _strlen:                     \n
-   \t xor %rbx, %rbx            \n
-   _strlen_loop:                \n
-   \t cmpb $0, 0\[%rax\]          \n
-   \t jz _strlen_exit           \n
-   \t inc %rax                  \n
-   \t inc %rbx                  \n
-   \t jmp _strlen_loop         \n
-   _strlen_exit:                \n
-   \t ret                       \n
+   '_strlen:                     \n
+   \t 'xor '%rbx, '%rbx          \n
+   '_strlen_loop:                \n
+   \t 'cmpb '$0, 0\[%rax\]        \n
+   \t 'jz '_strlen_exit           \n
+   \t 'inc '%rax                  \n
+   \t 'inc '%rbx                  \n
+   \t 'jmp '_strlen_loop         \n
+   '_strlen_exit:                \n
+   \t 'ret                       \n
    # result is stored in %rcx
 
-   # print-i: print value of integer
-   print_i:                     \n
-   \t mov %r12, %r8             \n
-   ::put64
-   \t ret                       \n
-
-   # print-p: print value from pointer
-   print_p:                     \n
-   \t mov 0\[%r12\], %r8        \n
-   ::put64
-   \t ret                       \n
-
    # print-s
-   print_s:                     \n
-   \t mov $0, %r9               \n
-   \t jmp __print_this          \n
+   'print_s:                     \n
+   \t 'mov '$0, '%r9               \n
+   \t 'jmp '__print_this          \n
 
-   print_d:                     \n
-   \t mov $1, %r9               \n
-   \t jmp __print_this          \n
+   'print_d:                     \n
+   \t 'mov '$1, '%r9               \n
+   \t 'jmp '__print_this          \n
 
-   dump_i:                      \n
-   \t mov %r12, %r8             \n
-   \t mov $__dump_i, %r12       \n
-   \t mov $0, %r13              \n
-   \t mov $0, %r14              \n
-   \t mov $0, %r15              \n
+   'dump_i:                      \n
+   \t 'mov '%r12, '%r8             \n
+   \t 'mov '$__dump_i, '%r12       \n
+   \t 'mov '$0, '%r13              \n
+   \t 'mov '$0, '%r14              \n
+   \t 'mov '$0, '%r15              \n
 
-   \t mov $__dump_i, %r11       \n
-   \t rol $4, %r8               \n   # %r8[0]
-   \t call put8                 \n
-   \t mov %cl, 0\[%r11\]        \n
-   \t rol $4, %r8               \n   # %r8[1]
-   \t call put8                 \n
-   \t mov %cl, 1\[%r11\]        \n
-   \t rol $4, %r8               \n   # %r8[2]
-   \t call put8                 \n
-   \t mov %cl, 2\[%r11\]        \n
-   \t rol $4, %r8               \n   # %r8[3]
-   \t call put8                 \n
-   \t mov %cl, 3\[%r11\]        \n
-   \t rol $4, %r8               \n   # %r8[4]
-   \t call put8                 \n
-   \t mov %cl, 4\[%r11\]        \n
-   \t rol $4, %r8               \n   # %r8[5]
-   \t call put8                 \n
-   \t mov %cl, 5\[%r11\]        \n
-   \t rol $4, %r8               \n   # %r8[6]
-   \t call put8                 \n
-   \t mov %cl, 6\[%r11\]        \n
-   \t rol $4, %r8               \n   # %r8[7]
-   \t call put8                 \n
-   \t mov %cl, 7\[%r11\]        \n
-   \t rol $4, %r8               \n   # %r8[8]
-   \t call put8                 \n
-   \t mov %cl, 8\[%r11\]        \n
-   \t rol $4, %r8               \n   # %r8[9]
-   \t call put8                 \n
-   \t mov %cl, 9\[%r11\]        \n
-   \t rol $4, %r8               \n   # %r8[10]
-   \t call put8                 \n
-   \t mov %cl, 10\[%r11\]       \n
-   \t rol $4, %r8               \n   # %r8[11]
-   \t call put8                 \n
-   \t mov %cl, 11\[%r11\]       \n
-   \t rol $4, %r8               \n   # %r8[12]
-   \t call put8                 \n
-   \t mov %cl, 12\[%r11\]       \n
-   \t rol $4, %r8               \n   # %r8[13]
-   \t call put8                 \n
-   \t mov %cl, 13\[%r11\]       \n
-   \t rol $4, %r8               \n   # %r8[14]
-   \t call put8                 \n
-   \t mov %cl, 14\[%r11\]       \n
-   \t rol $4, %r8               \n   # %r8[15]
-   \t call put8                 \n
-   \t mov %cl, 15\[%r11\]       \n
-   \t ret                       \n
+   \t 'mov '$__dump_i, '%r11       \n
+   \t 'rol '$4, '%r8               \n   # %r8[0]
+   \t 'call 'put8                 \n
+   \t 'mov '%cl, '0\[%r11\]        \n
+   \t 'rol '$4, '%r8               \n   # %r8[1]
+   \t 'call 'put8                 \n
+   \t 'mov '%cl, '1\[%r11\]        \n
+   \t 'rol '$4, '%r8               \n   # %r8[2]
+   \t 'call 'put8                 \n
+   \t 'mov '%cl, '2\[%r11\]        \n
+   \t 'rol '$4, '%r8               \n   # %r8[3]
+   \t 'call 'put8                 \n
+   \t 'mov '%cl, '3\[%r11\]        \n
+   \t 'rol '$4, '%r8               \n   # %r8[4]
+   \t 'call 'put8                 \n
+   \t 'mov '%cl, '4\[%r11\]        \n
+   \t 'rol '$4, '%r8               \n   # %r8[5]
+   \t 'call 'put8                 \n
+   \t 'mov '%cl, '5\[%r11\]        \n
+   \t 'rol '$4, '%r8               \n   # %r8[6]
+   \t 'call 'put8                 \n
+   \t 'mov '%cl, '6\[%r11\]        \n
+   \t 'rol '$4, '%r8               \n   # %r8[7]
+   \t 'call 'put8                 \n
+   \t 'mov '%cl, '7\[%r11\]        \n
+   \t 'rol '$4, '%r8               \n   # %r8[8]
+   \t 'call 'put8                 \n
+   \t 'mov '%cl, '8\[%r11\]        \n
+   \t 'rol '$4, '%r8               \n   # %r8[9]
+   \t 'call 'put8                 \n
+   \t 'mov '%cl, '9\[%r11\]        \n
+   \t 'rol '$4, '%r8               \n   # %r8[10]
+   \t 'call 'put8                 \n
+   \t 'mov '%cl, '10\[%r11\]       \n
+   \t 'rol '$4, '%r8               \n   # %r8[11]
+   \t 'call 'put8                 \n
+   \t 'mov '%cl, '11\[%r11\]       \n
+   \t 'rol '$4, '%r8               \n   # %r8[12]
+   \t 'call 'put8                 \n
+   \t 'mov '%cl, '12\[%r11\]       \n
+   \t 'rol '$4, '%r8               \n   # %r8[13]
+   \t 'call 'put8                 \n
+   \t 'mov '%cl, '13\[%r11\]       \n
+   \t 'rol '$4, '%r8               \n   # %r8[14]
+   \t 'call 'put8                 \n
+   \t 'mov '%cl, '14\[%r11\]       \n
+   \t 'rol '$4, '%r8               \n   # %r8[15]
+   \t 'call 'put8                 \n
+   \t 'mov '%cl, '15\[%r11\]       \n
+   \t 'ret                       \n
 
    #move ascii representation of lower byte of %r8 into %cl
-   put8:                        \n
-   \t mov %r8b, %al             \n # lower byte of %r11 goes into %rax
-   \t and $0xf, %al             \n # only show lower 4 bits
-   \t mov $__hex_buffer, %r10   \n # %r10 is index into hex buffer
-   \t add %al, %r10b            \n # %r10 is index into char in hex buffer
-   \t mov 0\[%r10\], %cl        \n # %cl is a hexadecimal char
-   \t ret                       \n
+   'put8:                        \n
+   \t 'mov '%r8b, '%al             \n # lower byte of %r11 goes into %rax
+   \t 'and '$0xf, '%al             \n # only show lower 4 bits
+   \t 'mov '$__hex_buffer, '%r10   \n # %r10 is index into hex buffer
+   \t 'add '%al, '%r10b            \n # %r10 is index into char in hex buffer
+   \t 'mov '0\[%r10\], '%cl        \n # %cl is a hexadecimal char
+   \t 'ret                       \n
 
-   inc:                         \n
-   \t inc %r12                  \n
-   \t ret                       \n
+   'inc:                         \n
+   \t 'inc '%r12                  \n
+   \t 'ret                       \n
  
-   __print_this:                \n
-   ::callee-save-registers
-   \t cmp $0, %r9               \n
-   \t je __print_clear          \n
-   #TODO print debug info
-   \t mov %r12, %r8             \n
-   ::put64
-   \t mov %r13, %r8             \n
-   ::put64
-   \t mov %r14, %r8             \n
-   ::put64
-   \t mov %r15, %r8             \n
-   ::put64
-   __print_clear:               \n
+   '__print_this:                \n
    # if .atom != NULL
-   __print_this_atom:           \n
-   \t cmp $0, %r12              \n
-   \t je __print_this_cons      \n
-   \t mov %r12, %rax            \n
-   \t call _strlen              \n   # %rbx is length of string
-   \t mov %r12, %rsi            \n   # address of string to output
-   \t mov %rbx, %rdx            \n   # length is %rcx
-   \t mov $1, %rax              \n   # system call 1 is write
-   \t mov $1, %rdi              \n   # file handle 1 is stdout
-   \t syscall                   \n   # invoke operating system to do the write
-   ::callee-restore-registers
-   \t ret                       \n
+   '__print_this_atom:           \n
+   \t 'cmp '$0, '%r12              \n
+   \t 'je '__print_this_cons      \n
+   \t 'mov '%r12, '%rax            \n
+   \t 'call '_strlen              \n   # %rbx is length of string
+   \t 'mov '%r12, '%rsi            \n   # address of string to output
+   \t 'mov '%rbx, '%rdx            \n   # length is %rcx
+   \t 'mov '$1, '%rax              \n   # system call 1 is write
+   \t 'mov '$1, '%rdi              \n   # file handle 1 is stdout
+   \t 'syscall                   \n   # invoke operating system to do the write
+   \t 'ret                       \n
 
    # if .head != NULL && .tail != NULL
-   __print_this_cons:           \n
-   \t cmp $0, %r13              \n
-   \t je __print_this_nil       \n
-   \t cmp $0, %r14              \n
-   \t je __print_this_nil       \n
+   '__print_this_cons:           \n
+   \t 'cmp '$0, '%r13              \n
+   \t 'je '__print_this_nil       \n
+   \t 'cmp '$0, '%r14              \n
+   \t 'je '__print_this_nil       \n
    ::push-this
    ::show-lparen
-   \t mov %r13, %rsi            \n
+   \t 'mov '%r13, '%rsi            \n
    ::open-this
-   \t call __print_this         \n
+   \t 'call '__print_this         \n
    ::pop-this
    ::show-space
-   \t mov %r14, %rsi            \n
+   \t 'mov '%r14, '%rsi            \n
    ::open-this
-   \t call __print_this         \n
+   \t 'call '__print_this         \n
    ::show-rparen
-   ::callee-restore-registers
-   \t ret                       \n
+   \t 'ret                       \n
 
-   __print_this_nil:            \n
-   \t mov $1, %rax              \n   # system call 1 is write
-   \t mov $1, %rdi              \n   # file handle 1 is stdout
-   \t mov $__nil_literal, %rsi  \n   # address of string to output
-   \t mov $2, %rdx              \n   # nil is 2 bytes
-   \t syscall                   \n   # invoke operating system to do the write
-   ::callee-restore-registers
-   \t ret                       \n
+   '__print_this_nil:            \n
+   \t 'mov '$1, '%rax              \n   # system call 1 is write
+   \t 'mov '$1, '%rdi              \n   # file handle 1 is stdout
+   \t 'mov '$__nil_literal, '%rsi  \n   # address of string to output
+   \t 'mov '$2, '%rdx              \n   # nil is 2 bytes
+   \t 'syscall                   \n   # invoke operating system to do the write
+   \t 'ret                       \n
 
-   head:                        \n
-   \t cmp $0, %r13              \n
-   \t je __head_is_nil          \n
+   'head:                        \n
+   \t 'cmp '$0, '%r13              \n
+   \t 'je '__head_is_nil          \n
    ::head
-   \t ret                       \n
-   __head_is_nil:               \n
+   \t 'ret                       \n
+   '__head_is_nil:               \n
    ::yield-nil
-   \t ret                       \n
+   \t 'ret                       \n
 
-   tail:                        \n
-   \t cmp $0, %r14              \n
-   \t je __tail_is_nil          \n
+   'tail:                        \n
+   \t 'cmp '$0, '%r14              \n
+   \t 'je '__tail_is_nil          \n
    ::tail
-   \t ret                       \n
-   __tail_is_nil:               \n
+   \t 'ret                       \n
+   '__tail_is_nil:               \n
    ::yield-nil
-   \t ret                       \n
+   \t 'ret                       \n
 
-   not:                         \n
-   ::callee-save-registers
-   \t cmp $0, %r12              \n
-   \t jne __not_is_some         \n
-   \t cmp $0, %r13              \n
-   \t jne __not_is_some         \n
-   \t cmp $0, %r14              \n
-   \t jne __not_is_some         \n
-   ::callee-restore-registers
+   'not:                         \n
+   \t 'cmp '$0, '%r12              \n
+   \t 'jne '__not_is_some         \n
+   \t 'cmp '$0, '%r13              \n
+   \t 'jne '__not_is_some         \n
+   \t 'cmp '$0, '%r14              \n
+   \t 'jne '__not_is_some         \n
    (::yield-atom __true)
-   \t ret                       \n
-   __not_is_some:               \n
-   ::callee-restore-registers
+   \t 'ret                       \n
+   '__not_is_some:               \n
    ::yield-nil
-   \t ret                       \n
+   \t 'ret                       \n
 
    eq:                          \n
    \t cmp $0, %r13              \n
