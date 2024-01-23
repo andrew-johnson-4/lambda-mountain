@@ -494,13 +494,6 @@ compile-expr := λctx e offset. (tail(
 #         raw_program = s_cons( raw_program, vtext );
 #         raw_data = s_cons(raw_data,vdata);
 
-_program-header := λ.(
-   '.global \s '_start                 \n
-   '.text                              \n
-   '_start:                            \n
-   \t 'jmp \s 'main                    \n
-);
-
 _data-header := λ.(
    .data                               \n
   'load_file_bsz:                      \n
@@ -612,4 +605,99 @@ _leave-function := λ.(
    \t 'mov \s '%rbp, \s '%rsp                \n
    \t 'pop \s '%rbp                         \n
    \t 'ret                                 \n
+);
+
+_program-header := λ.(
+   '.global \s '_start                 \n
+   '.text                              \n
+   '_start:                            \n
+   \t 'jmp \s 'main                    \n
+
+   # internal _strlen (%rax: *char) -> %rbx
+   # not a call-convention function
+   '_strlen:                           \n
+   \t 'xor \s '%rbx, \s '%rbx          \n
+   \t '_strlen_loop:                   \n
+   \t 'cmpb \s '$0, \s '0 \[ '%rax \]  \n
+   \t 'jz \s '_strlen_exit             \n
+   \t 'inc \s '%rax                    \n
+   \t 'inc \s '%rbx                    \n
+   \t 'jmp \s '_strlen_loop            \n
+   '_strlen_exit:                      \n
+   \t 'ret                             \n
+   # result is stored in %rcx
+
+   'print_s:                           \n
+   \t 'mov \s '$0, \s '%r9             \n
+   \t 'jmp \s '__print_this            \n
+   '__print_this:                      \n
+   \t 'cmp \s '$0, \s '%r9             \n
+
+   # if .atom != NULL 
+   '__print_this_atom:                 \n
+   \t 'cmp \s '$0, \s '%r12            \n
+   \t 'je \s '__print_this_cons        \n
+   \t 'mov \s '%r12, \s '%rax          \n
+   \t 'call \s '_strlen                \n # %rbx is length of string
+   \t 'mov \s '%r12, \s '%rsi          \n # address of string to output
+   \t 'mov \s '%rbx, \s '%rdx          \n # length is %rcx
+   \t 'mov \s '$1, \s '%rax            \n # system call 1 is write
+   \t 'mov \s '$1, \s '%rdi            \n # file handle 1 is stdout
+   \t 'syscall                         \n # invoke operating system to do the write
+   \t 'ret                             \n
+
+   # if .head != NULL && .tail != NULL
+   '__print_this_cons:                 \n
+   \t 'cmp \s '$0, \s '%r13            \n
+   \t 'je \s '__print_this_nil         \n
+   \t 'cmp \s '$0, \s '%r14            \n
+   \t 'je \s '__print_this_nil         \n
+   \t 'push \s '%r14                   \n
+   \t 'push \s '%r13                   \n
+   #show lparen
+   \t 'mov \s '$1, \s '%rax            \n
+   \t 'mov \s '$1, \s '%rdi            \n
+   \t 'mov \s '$__lparen, \s '%rsi     \n
+   \t 'mov \s '$1, \s '%rdx            \n
+   \t 'syscall                         \n
+   #show head
+   \t 'pop \s '%r8                     \n
+   \t 'mov \s '0 \[ '%r8 \] , '%r12    \n
+   \t 'mov \s '8 \[ '%r8 \] , '%r13    \n
+   \t 'mov \s '16 \[ '%r8 \] , '%r14   \n
+   \t 'mov \s '24 \[ '%r8 \] , '%r15   \n
+   \t 'call \s 'print_s                \n
+   #show space
+   \t 'mov \s '$1, \s '%rax            \n
+   \t 'mov \s '$1, \s '%rdi            \n
+   \t 'mov \s '$__space, \s '%rsi      \n
+   \t 'mov \s '$1, \s '%rdx            \n
+   \t 'syscall                         \n
+   #show tail
+   \t 'pop \s '%r8                     \n
+   \t 'mov \s '0 \[ '%r8 \] , '%r12    \n
+   \t 'mov \s '8 \[ '%r8 \] , '%r13    \n
+   \t 'mov \s '16 \[ '%r8 \] , '%r14   \n
+   \t 'mov \s '24 \[ '%r8 \] , '%r15   \n
+   \t 'call \s 'print_s                \n
+   #show rparen
+   \t 'mov \s '$1, \s '%rax            \n
+   \t 'mov \s '$1, \s '%rdi            \n
+   \t 'mov \s '$__rparen, \s '%rsi     \n
+   \t 'mov \s '$1, \s '%rdx            \n
+   \t 'syscall                         \n
+   \t 'mov \s '$0, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13            \n
+   \t 'mov \s '$0, \s '%r14            \n
+   \t 'mov \s '$0, \s '%r15            \n
+   \t 'ret                             \n
+
+   '__print_this_nil:                  \n
+   \t 'mov \s '$1, \s '%rax            \n # system call 1 is write
+   \t 'mov \s '$1, \s '%rdi            \n # file handle 1 is stdout
+   \t 'mov \s '$__nil_literal, \s '%rsi \n # address of string to output
+   \t 'mov \s '$2, \s '%rdx            \n # nil is 2 bytes
+   \t 'syscall                         \n # invoke operating system to do the write
+   \t 'ret                             \n
+
 );
