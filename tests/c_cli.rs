@@ -108,7 +108,7 @@ fn dump() {
 
 #[test]
 fn uuid() {
-   assert_eq!( compile_and_run("tests/lm/uuid1.lm"),  "uuid_00000001uuid_00000002" );
+   assert_eq!( compile_and_run("tests/lm/uuid1.lm"),  "uuid_0000000000000001uuid_0000000000000002" );
 }
 
 #[test]
