@@ -268,11 +268,11 @@
 
    'write_file:                  \n
    #open file
-   \t 'mov '0\[%r13\], '%rdi       \n # file name
-   \t 'pushq '0\[%r14\]           \n # data to write
-   \t 'mov '$2, '%rax              \n # syscall open
-   \t 'mov '$65, '%rsi             \n # flags
-   \t 'mov '$420, '%rdx            \n # mode
+   \t 'mov '0\[%r13\], '%rdi        \n # file name
+   \t 'pushq '0\[%r14\]             \n # data to write
+   \t 'mov '$2, '%rax               \n # syscall open
+   \t 'mov $577, %rsi                 \n
+   \t 'mov '$420, '%rdx             \n # mode
    \t 'syscall                   \n
    \t 'mov '%rax, '%r8             \n # r8 now holds file descriptor
 
