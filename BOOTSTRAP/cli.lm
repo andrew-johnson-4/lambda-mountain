@@ -340,13 +340,14 @@ label-case := λk. (tail(
    (foreach-char k (match $_ (
       ()
       (- (set nk (nk '_)))
-      (c (set nk (nk c)))
+      (c (set nk (nk (clone-rope c))))
    )))
+   nk
 ));
 
 assemble := λconfig program. (
    (local target)
-   (set target 'a.out)
+   (set target 'tmp.s)
    (while config (
       (match (tail config) (
          ()
@@ -371,8 +372,12 @@ assemble := λconfig program. (
          (set output_p (output_p (_before-main())))
          (set output_p (output_p (_enter-function())))
          (set e (compile-expr(main_ctx body 0)))
-         #TODO unpack expression $body
+         (set output_p (output_p (get-frame e)))
+         (set output_p (output_p (get-prog e)))
+         (set output_p (output_p (get-unframe e)))
+         (set output_p (output_p (get-text e)))
          (set output_p (output_p (_exit-cleanup())))
+         (set output_d (output_d (get-data e)))
          (set has_main True)
       ))
       ( (pc (Global (fname body))) (
@@ -411,17 +416,45 @@ is-builtin := λf. (match f (
    (_ ())
 ));
 
+get-frame := λe. (match e (
+   ()
+   ((f p u t d pc off) f)
+));
+get-prog := λe. (match e (
+   ()
+   ((f p u t d pc off) p)
+));
+get-unframe := λe. (match e (
+   ()
+   ((f p u t d pc off) u)
+));
+get-text := λe. (match e (
+   ()
+   ((f p u t d pc off) t)
+));
+get-data := λe. (match e (
+   ()
+   ((f p u t d pc off) d)
+));
+get-pc := λe. (match e (
+   ()
+   ((f p u t d pc off) pc)
+));
+get-offset := λe. (match e (
+   ()
+   ((f p u t d pc off) off)
+));
+
 #returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 yield-atom := λctx a offset. (tail(
    (local id)
    (set id (uuid()))
-   (print-s (ID id))
    (
       ()
       (\t 'mov \s '$ id , \s '%r12 \n # $_.$1 = 0, .atom
        \t 'mov \s '$0, \s '%r13    \n # $_.$2 = 0, .head
-       \t 'mov '$0, \s '%r14       \n # $_.$3 = 0, .tail
-       \t 'mov '$0, \s '%r15       \n # $_.$4 = 0, .flags
+       \t 'mov \s '$0, \s '%r14    \n # $_.$3 = 0, .tail
+       \t 'mov \s '$0, \s '%r15    \n # $_.$4 = 0, .flags
       )
       ()
       ()
@@ -440,10 +473,9 @@ compile-expr := λctx e offset. (tail(
       ( (App ((Variable fname) arg)) (tail(
          if (is-builtin fname) (
             (set x (compile-expr(ctx arg offset)))
-            (print-s (BUILTIN fname x))
-#            (set prog (get_prog x))
-#            (set prog (prog (\t call (label-case fname) \n)))
-#            ( (get_frame x) prog (get_unframe x) (get_text x) (get_data x) (get_pc x)
+            (set prog (get-prog x))
+            (set prog (prog (\t 'call \s (label-case fname) \n)))
+            ( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) )
          ) (
             print-s((TODOAPP e))
          )
