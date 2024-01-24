@@ -19,23 +19,22 @@ use std::io::Write;
 fn flatten(output: &mut String, input: &S) {
    if is_cons(input) {
       flatten( output, &head(input) );
-      if !(output.ends_with(" ") ||
-           output.ends_with("\t") ||
-           output.ends_with("\n")) {
-         output.push(' ');
-      }
       flatten( output, &tail(input) );
    } else if is_atom(input) {
       let l = input.to_string();
-      let l = l.replace("\\o","#");
-      let l = l.replace("\\[","(");
-      let l = l.replace("\\]",")");
-      let l = l.replace("\\s"," ");
-      let l = l.replace("\\l","λ");
-      let l = l.replace("\\:",";");
       if l=="lambda" || l=="literal" || l=="variable" || l=="app" || l=="local" || l=="type" {}
-      else if l == "\\n" {
-         output.push_str("\n"); 
+      else if l == "\\o" {
+         output.push_str("\\o"); 
+      } else if l == "\\[" {
+         output.push_str("("); 
+      } else if l == "\\]" {
+         output.push_str(")"); 
+      } else if l == "\\s" {
+         output.push_str(" "); 
+      } else if l == "\\l" {
+         output.push_str("λ"); 
+      } else if l == "\\:" {
+         output.push_str(";"); 
       } else if l == "\\t" {
          output.push_str("\t"); 
       } else {

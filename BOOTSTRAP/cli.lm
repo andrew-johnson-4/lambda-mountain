@@ -638,10 +638,6 @@ _program-header := λ.(
    # result is stored in %rcx
 
    'print_s:                           \n
-   \t 'mov \s '$0, \s '%r9             \n
-   \t 'jmp \s '__print_this            \n
-   '__print_this:                      \n
-   \t 'cmp \s '$0, \s '%r9             \n
 
    # if .atom != NULL 
    '__print_this_atom:                 \n

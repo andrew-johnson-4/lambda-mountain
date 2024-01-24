@@ -3,114 +3,114 @@
    # internal _strlen (%rax: *char) -> %rbx
    # not a call-convention function
    '_strlen:                     \n
-   \t 'xor '%rbx, '%rbx          \n
+   \t 'xor \s '%rbx, \s '%rbx          \n
    '_strlen_loop:                \n
-   \t 'cmpb '$0, 0\[%rax\]        \n
-   \t 'jz '_strlen_exit           \n
-   \t 'inc '%rax                  \n
-   \t 'inc '%rbx                  \n
-   \t 'jmp '_strlen_loop         \n
+   \t 'cmpb \s '$0, \s 0\[%rax\]        \n
+   \t 'jz \s '_strlen_exit           \n
+   \t 'inc \s '%rax                  \n
+   \t 'inc \s '%rbx                  \n
+   \t 'jmp \s '_strlen_loop         \n
    '_strlen_exit:                \n
    \t 'ret                       \n
    # result is stored in %rcx
 
    # print-s
    'print_s:                     \n
-   \t 'mov '$0, '%r9               \n
-   \t 'jmp '__print_this          \n
+   \t 'mov \s '$0, \s '%r9               \n
+   \t 'jmp \s '__print_this          \n
 
    'print_d:                     \n
-   \t 'mov '$1, '%r9               \n
-   \t 'jmp '__print_this          \n
+   \t 'mov \s '$1, \s '%r9               \n
+   \t 'jmp \s '__print_this          \n
 
    'dump_i:                      \n
-   \t 'mov '%r12, '%r8             \n
-   \t 'mov '$__dump_i, '%r12       \n
-   \t 'mov '$0, '%r13              \n
-   \t 'mov '$0, '%r14              \n
-   \t 'mov '$0, '%r15              \n
+   \t 'mov \s '%r12, \s '%r8             \n
+   \t 'mov \s '$__dump_i, \s '%r12       \n
+   \t 'mov \s '$0, \s '%r13              \n
+   \t 'mov \s '$0, \s '%r14              \n
+   \t 'mov \s '$0, \s '%r15              \n
 
-   \t 'mov '$__dump_i, '%r11       \n
-   \t 'rol '$4, '%r8               \n   # %r8[0]
-   \t 'call 'put8                 \n
-   \t 'mov '%cl, '0\[%r11\]        \n
-   \t 'rol '$4, '%r8               \n   # %r8[1]
-   \t 'call 'put8                 \n
-   \t 'mov '%cl, '1\[%r11\]        \n
-   \t 'rol '$4, '%r8               \n   # %r8[2]
-   \t 'call 'put8                 \n
-   \t 'mov '%cl, '2\[%r11\]        \n
-   \t 'rol '$4, '%r8               \n   # %r8[3]
-   \t 'call 'put8                 \n
-   \t 'mov '%cl, '3\[%r11\]        \n
-   \t 'rol '$4, '%r8               \n   # %r8[4]
-   \t 'call 'put8                 \n
-   \t 'mov '%cl, '4\[%r11\]        \n
-   \t 'rol '$4, '%r8               \n   # %r8[5]
-   \t 'call 'put8                 \n
-   \t 'mov '%cl, '5\[%r11\]        \n
-   \t 'rol '$4, '%r8               \n   # %r8[6]
-   \t 'call 'put8                 \n
-   \t 'mov '%cl, '6\[%r11\]        \n
-   \t 'rol '$4, '%r8               \n   # %r8[7]
-   \t 'call 'put8                 \n
-   \t 'mov '%cl, '7\[%r11\]        \n
-   \t 'rol '$4, '%r8               \n   # %r8[8]
-   \t 'call 'put8                 \n
-   \t 'mov '%cl, '8\[%r11\]        \n
-   \t 'rol '$4, '%r8               \n   # %r8[9]
-   \t 'call 'put8                 \n
-   \t 'mov '%cl, '9\[%r11\]        \n
-   \t 'rol '$4, '%r8               \n   # %r8[10]
-   \t 'call 'put8                 \n
-   \t 'mov '%cl, '10\[%r11\]       \n
-   \t 'rol '$4, '%r8               \n   # %r8[11]
-   \t 'call 'put8                 \n
-   \t 'mov '%cl, '11\[%r11\]       \n
-   \t 'rol '$4, '%r8               \n   # %r8[12]
-   \t 'call 'put8                 \n
-   \t 'mov '%cl, '12\[%r11\]       \n
-   \t 'rol '$4, '%r8               \n   # %r8[13]
-   \t 'call 'put8                 \n
-   \t 'mov '%cl, '13\[%r11\]       \n
-   \t 'rol '$4, '%r8               \n   # %r8[14]
-   \t 'call 'put8                 \n
-   \t 'mov '%cl, '14\[%r11\]       \n
-   \t 'rol '$4, '%r8               \n   # %r8[15]
-   \t 'call 'put8                 \n
-   \t 'mov '%cl, '15\[%r11\]       \n
+   \t 'mov \s '$__dump_i, \s '%r11       \n
+   \t 'rol \s '$4, \s '%r8               \n   # %r8[0]
+   \t 'call \s 'put8                 \n
+   \t 'mov \s '%cl, \s '0\[%r11\]        \n
+   \t 'rol \s '$4, \s '%r8               \n   # %r8[1]
+   \t 'call \s 'put8                 \n
+   \t 'mov \s '%cl, \s '1\[%r11\]        \n
+   \t 'rol \s '$4, \s '%r8               \n   # %r8[2]
+   \t 'call \s 'put8                 \n
+   \t 'mov \s '%cl, \s '2\[%r11\]        \n
+   \t 'rol \s '$4, \s '%r8               \n   # %r8[3]
+   \t 'call \s 'put8                 \n
+   \t 'mov \s '%cl, \s '3\[%r11\]        \n
+   \t 'rol \s '$4, \s '%r8               \n   # %r8[4]
+   \t 'call \s 'put8                 \n
+   \t 'mov \s '%cl, \s '4\[%r11\]        \n
+   \t 'rol \s '$4, \s '%r8               \n   # %r8[5]
+   \t 'call \s 'put8                 \n
+   \t 'mov \s '%cl, \s '5\[%r11\]        \n
+   \t 'rol \s '$4, \s '%r8               \n   # %r8[6]
+   \t 'call \s 'put8                 \n
+   \t 'mov \s '%cl, \s '6\[%r11\]        \n
+   \t 'rol \s '$4, \s '%r8               \n   # %r8[7]
+   \t 'call \s 'put8                 \n
+   \t 'mov \s '%cl, \s '7\[%r11\]        \n
+   \t 'rol \s '$4, \s '%r8               \n   # %r8[8]
+   \t 'call \s 'put8                 \n
+   \t 'mov \s '%cl, \s '8\[%r11\]        \n
+   \t 'rol \s '$4, \s '%r8               \n   # %r8[9]
+   \t 'call \s 'put8                 \n
+   \t 'mov \s '%cl, \s '9\[%r11\]        \n
+   \t 'rol \s '$4, \s '%r8               \n   # %r8[10]
+   \t 'call \s 'put8                 \n
+   \t 'mov \s '%cl, \s '10\[%r11\]       \n
+   \t 'rol \s '$4, \s '%r8               \n   # %r8[11]
+   \t 'call \s 'put8                 \n
+   \t 'mov \s '%cl, \s '11\[%r11\]       \n
+   \t 'rol \s '$4, \s '%r8               \n   # %r8[12]
+   \t 'call \s 'put8                 \n
+   \t 'mov \s '%cl, \s '12\[%r11\]       \n
+   \t 'rol \s '$4, \s '%r8               \n   # %r8[13]
+   \t 'call \s 'put8                 \n
+   \t 'mov \s '%cl, \s '13\[%r11\]       \n
+   \t 'rol \s '$4, \s '%r8               \n   # %r8[14]
+   \t 'call \s 'put8                 \n
+   \t 'mov \s '%cl, \s '14\[%r11\]       \n
+   \t 'rol \s '$4, \s '%r8               \n   # %r8[15]
+   \t 'call \s 'put8                 \n
+   \t 'mov \s '%cl, \s '15\[%r11\]       \n
    \t 'ret                       \n
 
    #move ascii representation of lower byte of %r8 into %cl
    'put8:                        \n
-   \t 'mov '%r8b, '%al             \n # lower byte of %r11 goes into %rax
-   \t 'and '$0xf, '%al             \n # only show lower 4 bits
-   \t 'mov '$__hex_buffer, '%r10   \n # %r10 is index into hex buffer
-   \t 'add '%al, '%r10b            \n # %r10 is index into char in hex buffer
-   \t 'mov '0\[%r10\], '%cl        \n # %cl is a hexadecimal char
+   \t 'mov \s '%r8b, \s '%al             \n # lower byte of %r11 goes into %rax
+   \t 'and \s '$0xf, \s '%al             \n # only show lower 4 bits
+   \t 'mov \s '$__hex_buffer, \s '%r10   \n # %r10 is index into hex buffer
+   \t 'add \s '%al, \s '%r10b            \n # %r10 is index into char in hex buffer
+   \t 'mov \s '0\[%r10\], \s '%cl        \n # %cl is a hexadecimal char
    \t 'ret                       \n
 
    'inc:                         \n
-   \t 'inc '%r12                  \n
+   \t 'inc \s '%r12                  \n
    \t 'ret                       \n
  
    '__print_this:                \n
    # if .atom != NULL
    '__print_this_atom:           \n
-   \t 'cmp '$0, '%r12              \n
-   \t 'je '__print_this_cons      \n
-   \t 'mov '%r12, '%rax            \n
-   \t 'call '_strlen              \n   # %rbx is length of string
-   \t 'mov '%r12, '%rsi            \n   # address of string to output
-   \t 'mov '%rbx, '%rdx            \n   # length is %rcx
-   \t 'mov '$1, '%rax              \n   # system call 1 is write
-   \t 'mov '$1, '%rdi              \n   # file handle 1 is stdout
+   \t 'cmp \s '$0, \s '%r12              \n
+   \t 'je \s '__print_this_cons      \n
+   \t 'mov \s '%r12, \s '%rax            \n
+   \t 'call \s '_strlen              \n   # %rbx is length of string
+   \t 'mov \s '%r12, \s '%rsi            \n   # address of string to output
+   \t 'mov \s '%rbx, \s '%rdx            \n   # length is %rcx
+   \t 'mov \s '$1, \s '%rax              \n   # system call 1 is write
+   \t 'mov \s '$1, \s '%rdi              \n   # file handle 1 is stdout
    \t 'syscall                   \n   # invoke operating system to do the write
    \t 'ret                       \n
 
    # if .head != NULL && .tail != NULL
    '__print_this_cons:           \n
-   \t 'cmp '$0, '%r13              \n
+   \t 'cmp \s '$0, \s '%r13              \n
    \t 'je '__print_this_nil       \n
    \t 'cmp '$0, '%r14              \n
    \t 'je '__print_this_nil       \n
