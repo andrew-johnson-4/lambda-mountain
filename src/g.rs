@@ -146,6 +146,12 @@ fn is_local(program_ctx: &S, s: &str) -> String {
 fn yield_atom(_helpers_ctx: &S, program_ctx: &S, s: &str, offset: i64) -> (S,S,S,S,S,S,i64) {
    let s = s.replace(r#"""#,r#"\""#);
    let s = s.replace("\n",r#"\n"#);
+   let s = s.replace("\\s"," ");
+   let s = s.replace("\\:",";");
+   let s = s.replace("\\o","#");
+   let s = s.replace("\\;","λ");
+   let s = s.replace("\\[","(");
+   let s = s.replace("\\]",")");
    let id = uuid();
    let prog = s_nil();
    let prog = s_cons(prog, s_atom(&format!("\tmov ${}, %r12\n",id)));

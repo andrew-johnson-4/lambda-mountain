@@ -17,7 +17,7 @@ fn main() {
          file.read_to_string(&mut file_contents).unwrap();
          let s = parse_program(&file_contents);
          println!("{}", s);
-      } else if arg=="debug" {
+      } else if arg=="--debug" {
          debug = true;
       } else if arg.starts_with("-") {
          option = arg;
