@@ -483,16 +483,17 @@ compile-expr := λctx e offset. (tail(
       ( (Literal l) (
          (yield-atom (ctx l offset))
       ))
+      ( (Variable 'argv) (
+         (set prog (prog ( \t 'mov \s '$__argv, \s '%rax \n )))
+         (set prog (prog ( \t 'mov \s '0 \[ '%rax \] , '%r12 \n )))
+         (set prog (prog ( \t 'mov \s '8 \[ '%rax \] , '%r13 \n )))
+         (set prog (prog ( \t 'mov \s '16 \[ '%rax \] , '%r14 \n )))
+         (set prog (prog ( \t 'mov \s '24 \[ '%rax \] , '%r15 \n )))
+         ( () prog () () () ctx offset )
+      ))
       (x (print-s (TODO x)) )
    ))
 ));
-
-#         let (vframe,vprog,vunframe,vtext,vdata,_pc,_offset) = compile_expr(&helpers_ctx, &main_ctx, &v, 0);
-#         raw_program = s_cons( raw_program, vframe );
-#         raw_program = s_cons( raw_program, vprog );
-#         raw_program = s_cons( raw_program, vunframe );
-#         raw_program = s_cons( raw_program, vtext );
-#         raw_data = s_cons(raw_data,vdata);
 
 _data-header := λ.(
    .data                               \n
