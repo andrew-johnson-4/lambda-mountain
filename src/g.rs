@@ -24,7 +24,7 @@ fn flatten(output: &mut String, input: &S) {
       let l = input.to_string();
       if l=="lambda" || l=="literal" || l=="variable" || l=="app" || l=="local" || l=="type" {}
       else if l == "\\o" {
-         output.push_str("\\o"); 
+         output.push_str("#"); 
       } else if l == "\\[" {
          output.push_str("("); 
       } else if l == "\\]" {
@@ -37,6 +37,8 @@ fn flatten(output: &mut String, input: &S) {
          output.push_str(";"); 
       } else if l == "\\t" {
          output.push_str("\t"); 
+      } else if l == "\\n" {
+         output.push_str("\n"); 
       } else {
          output.push_str( &l );
       }
@@ -490,7 +492,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          is_local(program_ctx, &tail(&f).to_string())=="" {
          let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &x, offset);
          let f_name = variable(&label_case( &tail(&f).to_string() ));
-         let prog = s_cons( xprog , s_cons( s_cons( variable("\tcall"), f_name ), variable("\n") ));
+         let prog = s_cons( xprog , s_cons( s_cons( variable("\tcall "), f_name ), variable("\n") ));
          (xframe, prog, xunframe, xtext, xdata, program_ctx.clone(), offset)
       } else {
          let (fframe,fprog,funframe,ftext,fdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &f, offset);

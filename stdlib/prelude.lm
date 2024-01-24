@@ -5,7 +5,7 @@
    '_strlen:                     \n
    \t 'xor \s '%rbx, \s '%rbx          \n
    '_strlen_loop:                \n
-   \t 'cmpb \s '$0, \s 0\[%rax\]        \n
+   \t 'cmpb \s '$0, \s 0 \[ %rax \]        \n
    \t 'jz \s '_strlen_exit           \n
    \t 'inc \s '%rax                  \n
    \t 'inc \s '%rbx                  \n
@@ -33,52 +33,52 @@
    \t 'mov \s '$__dump_i, \s '%r11       \n
    \t 'rol \s '$4, \s '%r8               \n   # %r8[0]
    \t 'call \s 'put8                 \n
-   \t 'mov \s '%cl, \s '0\[%r11\]        \n
+   \t 'mov \s '%cl, \s '0 \[ %r11 \]        \n
    \t 'rol \s '$4, \s '%r8               \n   # %r8[1]
    \t 'call \s 'put8                 \n
-   \t 'mov \s '%cl, \s '1\[%r11\]        \n
+   \t 'mov \s '%cl, \s '1 \[ %r11 \]        \n
    \t 'rol \s '$4, \s '%r8               \n   # %r8[2]
    \t 'call \s 'put8                 \n
-   \t 'mov \s '%cl, \s '2\[%r11\]        \n
+   \t 'mov \s '%cl, \s '2 \[ %r11 \]        \n
    \t 'rol \s '$4, \s '%r8               \n   # %r8[3]
    \t 'call \s 'put8                 \n
-   \t 'mov \s '%cl, \s '3\[%r11\]        \n
+   \t 'mov \s '%cl, \s '3 \[ %r11 \]        \n
    \t 'rol \s '$4, \s '%r8               \n   # %r8[4]
    \t 'call \s 'put8                 \n
-   \t 'mov \s '%cl, \s '4\[%r11\]        \n
+   \t 'mov \s '%cl, \s '4 \[ %r11 \]        \n
    \t 'rol \s '$4, \s '%r8               \n   # %r8[5]
    \t 'call \s 'put8                 \n
-   \t 'mov \s '%cl, \s '5\[%r11\]        \n
+   \t 'mov \s '%cl, \s '5 \[ %r11 \]        \n
    \t 'rol \s '$4, \s '%r8               \n   # %r8[6]
    \t 'call \s 'put8                 \n
-   \t 'mov \s '%cl, \s '6\[%r11\]        \n
+   \t 'mov \s '%cl, \s '6 \[ %r11 \]        \n
    \t 'rol \s '$4, \s '%r8               \n   # %r8[7]
    \t 'call \s 'put8                 \n
-   \t 'mov \s '%cl, \s '7\[%r11\]        \n
+   \t 'mov \s '%cl, \s '7 \[ %r11 \]        \n
    \t 'rol \s '$4, \s '%r8               \n   # %r8[8]
    \t 'call \s 'put8                 \n
-   \t 'mov \s '%cl, \s '8\[%r11\]        \n
+   \t 'mov \s '%cl, \s '8 \[ %r11 \]        \n
    \t 'rol \s '$4, \s '%r8               \n   # %r8[9]
    \t 'call \s 'put8                 \n
-   \t 'mov \s '%cl, \s '9\[%r11\]        \n
+   \t 'mov \s '%cl, \s '9 \[ %r11 \]        \n
    \t 'rol \s '$4, \s '%r8               \n   # %r8[10]
    \t 'call \s 'put8                 \n
-   \t 'mov \s '%cl, \s '10\[%r11\]       \n
+   \t 'mov \s '%cl, \s '10 \[ %r11 \]       \n
    \t 'rol \s '$4, \s '%r8               \n   # %r8[11]
    \t 'call \s 'put8                 \n
-   \t 'mov \s '%cl, \s '11\[%r11\]       \n
+   \t 'mov \s '%cl, \s '11 \[ %r11 \]       \n
    \t 'rol \s '$4, \s '%r8               \n   # %r8[12]
    \t 'call \s 'put8                 \n
-   \t 'mov \s '%cl, \s '12\[%r11\]       \n
+   \t 'mov \s '%cl, \s '12 \[ %r11 \]       \n
    \t 'rol \s '$4, \s '%r8               \n   # %r8[13]
    \t 'call \s 'put8                 \n
-   \t 'mov \s '%cl, \s '13\[%r11\]       \n
+   \t 'mov \s '%cl, \s '13 \[ %r11 \]       \n
    \t 'rol \s '$4, \s '%r8               \n   # %r8[14]
    \t 'call \s 'put8                 \n
-   \t 'mov \s '%cl, \s '14\[%r11\]       \n
+   \t 'mov \s '%cl, \s '14 \[ %r11 \]       \n
    \t 'rol \s '$4, \s '%r8               \n   # %r8[15]
    \t 'call \s 'put8                 \n
-   \t 'mov \s '%cl, \s '15\[%r11\]       \n
+   \t 'mov \s '%cl, \s '15 \[ %r11 \]       \n
    \t 'ret                       \n
 
    #move ascii representation of lower byte of %r8 into %cl
@@ -87,7 +87,7 @@
    \t 'and \s '$0xf, \s '%al             \n # only show lower 4 bits
    \t 'mov \s '$__hex_buffer, \s '%r10   \n # %r10 is index into hex buffer
    \t 'add \s '%al, \s '%r10b            \n # %r10 is index into char in hex buffer
-   \t 'mov \s '0\[%r10\], \s '%cl        \n # %cl is a hexadecimal char
+   \t 'mov \s '0 \[ %r10 \] , \s '%cl        \n # %cl is a hexadecimal char
    \t 'ret                       \n
 
    'inc:                         \n
@@ -171,8 +171,8 @@
    \t 'je \s '__equal_nil            \n
    \t 'cmp \s '$0, \s '%r14              \n
    \t 'je \s '__equal_nil            \n
-   \t 'mov \s '0\[%r13\], \s '%rax         \n # mov x.atom into %rax
-   \t 'mov \s '0\[%r14\], \s '%rbx         \n # mov y.atom into %rbx
+   \t 'mov \s '0 \[ %r13 \] , \s '%rax         \n # mov x.atom into %rax
+   \t 'mov \s '0 \[ %r14 \] , \s '%rbx         \n # mov y.atom into %rbx
    \t 'cmp \s '$0, \s '%rax              \n
    \t 'je \s '__equal_nil            \n
    \t 'cmp \s '$0, \s '%rbx              \n
@@ -191,8 +191,8 @@
    \t 'je \s '__streq_false          \n
    \t 'cmp \s '$0, \s '%rbx              \n
    \t 'je \s '__streq_false          \n
-   \t 'mov \s '0\[%rax\], \s '%cl        \n
-   \t 'mov \s '0\[%rbx\], \s '%dl        \n
+   \t 'mov \s '0 \[ %rax \] , \s '%cl        \n
+   \t 'mov \s '0 \[ %rbx \] , \s '%dl        \n
 
    \t 'cmp \s '%cl, \s '%dl              \n
    \t 'jne \s '__streq_false         \n
@@ -212,18 +212,18 @@
    'clone_rope:                  \n
    \t 'mov \s '$__a_section, \s '%r8     \n
    \t 'mov \s '$__a_counter, \s '%r10    \n
-   \t 'mov \s '0\[%r10\], \s '%r11       \n
+   \t 'mov \s '0 \[ %r10 \] , \s '%r11       \n
    \t 'add \s '%r11, \s '%r8             \n
    \t 'mov \s '%r8, \s '%r9              \n
    #r8 holds pointer to head of new data
    #r9 holds pointer to tail of new data
    \t 'call \s '__clone_rope         \n
-   \t 'movb \s '$0, \s '0\[%r9\]         \n
+   \t 'movb \s '$0, \s '0 \[ %r9 \]         \n
    \t 'inc \s '%r9                   \n
    \t 'mov \s '$__a_section, \s '%r10    \n
    \t 'sub \s '%r10, \s '%r9             \n
    \t 'mov \s '$__a_counter, \s '%r10    \n
-   \t 'mov \s '%r9, \s '0\[%r10\]        \n
+   \t 'mov \s '%r9, \s '0 \[ %r10 \]        \n
    \t 'mov \s '%r8, \s '%r12             \n
    \t 'mov \s '$0, \s '%r13              \n
    \t 'mov \s '$0, \s '%r14              \n
@@ -255,10 +255,10 @@
 
    #if atom, break into characters and concat
    'clone_rope_small:            \n
-   \t 'cmpb \s '$0, \s '0\[%r12\]        \n
+   \t 'cmpb \s '$0, \s '0 \[ %r12 \]        \n
    \t 'je \s 'clone_rope_end         \n
-   \t 'movb \s '0\[%r12\], \s '%bl       \n
-   \t 'movb \s '%bl, \s '0\[%r9\]        \n
+   \t 'movb \s '0 \[ %r12 \] , \s '%bl       \n
+   \t 'movb \s '%bl, \s '0 \[ %r9 \]        \n
    \t 'inc \s '%r12                  \n
    \t 'inc \s '%r9                   \n
    \t 'jmp \s 'clone_rope_small      \n
@@ -268,8 +268,8 @@
 
    'write_file:                  \n
    #open file
-   \t 'mov \s '0\[%r13\], \s '%rdi        \n # file name
-   \t 'pushq \s '0\[%r14\]             \n # data to write
+   \t 'mov \s '0 \[ %r13 \] , \s '%rdi        \n # file name
+   \t 'pushq \s '0 \[ %r14 \]             \n # data to write
    \t 'mov \s '$2, \s '%rax               \n # syscall open
    \t 'mov \s '$577, \s %rsi                 \n
    \t 'mov \s '$420, \s '%rdx             \n # mode
@@ -314,7 +314,7 @@
    'load_file_contents:          \n
    \t 'mov \s '$__a_section, \s '%r8     \n
    \t 'mov \s '$__a_counter, \s '%r10    \n
-   \t 'mov \s '0\[%r10\], \s '%r11       \n
+   \t 'mov \s '0 \[ %r10 \] , \s '%r11       \n
    \t 'add \s '%r11, \s '%r8             \n
    \t 'mov \s '%r8, \s '%r9              \n
    \t 'mov \s '$0, \s '%r10              \n
@@ -328,8 +328,8 @@
    'load_file_loop:              \n
    \t 'cmp \s '$0, \s '%r10              \n
    \t 'je \s 'load_file_bufempty     \n
-   \t 'movb \s '0\[%r11\], \s '%bl       \n
-   \t 'mov \s '%bl, \s '0\[%r9\]         \n
+   \t 'movb \s '0 \[ %r11 \] , \s '%bl       \n
+   \t 'mov \s '%bl, \s '0 \[ %r9 \]         \n
    \t 'inc \s '%r9                   \n
    \t 'inc \s '%r11                  \n
    \t 'dec \s '%r10                  \n
@@ -342,7 +342,7 @@
    \t 'mov \s '$0, \s '%rax              \n # read
    \t 'mov \s '$load_file_buf, \s '%rsi  \n # buffer
    \t 'mov \s '$load_file_bsz, \s '%rdx  \n
-   \t 'mov \s '0\[%rdx\], \s '%rdx       \n # buffer size
+   \t 'mov \s '0 \[ %rdx \] , \s '%rdx       \n # buffer size
    \t 'syscall                   \n
    \t 'mov \s '%rax, \s '%r10            \n
    \t 'pop \s '%rax                  \n
@@ -355,11 +355,11 @@
    \t 'mov \s '$3, \s '%rax              \n # close
    \t 'syscall                   \n
    
-   \t 'movb \s '$0, \s '0\[%r9\]         \n
+   \t 'movb \s '$0, \s '0 \[ %r9 \]         \n
    \t 'inc \s '%r9                   \n
    \t 'sub \s '%r8, \s '%r9              \n
    \t 'mov \s '$__a_counter, \s '%r10    \n
-   \t 'mov \s '%r9, \s '0\[%r10\]        \n
+   \t 'mov \s '%r9, \s '0 \[ %r10 \]        \n
    \t 'mov \s '%r8, \s '%r12             \n
    \t 'mov \s '$0, \s '%r13              \n
    \t 'mov \s '$0, \s '%r14              \n
@@ -386,23 +386,23 @@
   '__a_section:                  \n
   \t '.zero \s '268435456            \n
   '__nil_literal:                \n
-  \t '.ascii \s '"\[\]"              \n
+  \t '.ascii \s '" \[ \] "              \n
   \t '.zero \s '1                    \n
   '__hex_buffer:                 \n
   \t '.ascii \s '"0123456789abcdef"  \n 
   '__put64_buffer:               \n
   \t '.ascii \s '"0x"                \n
   '__put64_write_buffer:         \n
-  \t '.ascii \s '"0000000000000000 " \n
+  \t '.ascii \s '"0000000000000000 \s " \n
   \t '.zero \s '1                    \n
   '__newline:                    \n
   \t '.ascii \s '"\n"                \n
   '__lparen:                     \n
-  \t '.ascii \s '"\["                \n
+  \t '.ascii \s '" \[ "                \n
   '__rparen:                     \n
-  \t '.ascii \s '"\]"                \n
+  \t '.ascii \s '" \] "                \n
   '__space:                      \n
-  \t '.ascii \s '"\s"                \n
+  \t '.ascii \s '" \s "                \n
   '__true:                       \n
   \t '.ascii \s '"True"              \n
   \t '.zero \s '1                    \n
@@ -410,6 +410,6 @@
   \t '.ascii \s '"0000000000000000"  \n
   \t '.zero \s '1                    \n
   '__err_fopen:                  \n
-  \t '.ascii \s '"Could 'not 'open 'file." \n
+  \t '.ascii \s '"Could \s 'not \s 'open \s 'file." \n
   \t '.zero \s '1                    \n
 );
