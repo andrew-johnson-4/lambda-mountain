@@ -32,6 +32,7 @@ main := (
          (foreach-atom inputs (
             (set arg $_)
             (if arg (
+               (print-s (LOADFILE (tokenize (load-file arg))))
                (assemble (config (parse-program (tokenize (load-file arg)))))
             ) ())
          ))
@@ -195,12 +196,14 @@ tokenize := λtext. (tail(
    (local program)
    (local buffer)
    (local in_comment)
-   (foreach-char text (match $_ (
+   (local char)
+   (foreach-char text ((set char $_) (print-s (CHAR char)) (match char (
       ()
 
 #     These characters are special characters
 #     They are removed during tokenization
       (\o (
+         (print-s O)
          (if buffer (
             (set program (program (clone-rope buffer)))
             (set buffer ())
@@ -208,6 +211,7 @@ tokenize := λtext. (tail(
          (set in_comment True)
       ))
       (\n (
+         (print-s N)
          (if buffer (
             (set program (program (clone-rope buffer)))
             (set buffer ())
@@ -215,15 +219,19 @@ tokenize := λtext. (tail(
          (set in_comment ())
       ))
       (\s (
+         (print-s (SPACE \s))
          (if buffer (
             (set program (program (clone-rope buffer)))
             (set buffer ())
          ) ())
       ))
-      (\t (if buffer (
-         (set program (program (clone-rope buffer)))
-         (set buffer ())
-      ) ()))
+      (\t (
+         (print-s TAB)
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+      ))
 
 #     These characters are special characters
 #     They are isolated during tokenization
@@ -278,6 +286,7 @@ tokenize := λtext. (tail(
       )))
 
       (c (if in_comment () (
+         (print-s (C c))
          (set buffer (
             buffer (clone-rope c)
          ))
@@ -286,7 +295,7 @@ tokenize := λtext. (tail(
             (set buffer ())
          ) ())
       )))
-   )))
+   ))))
    (if buffer (
       (set program (program (clone-rope buffer)))
    ) ())
@@ -372,6 +381,7 @@ assemble := λconfig program. (
          (set output_p (output_p (_before-main())))
          (set output_p (output_p (_enter-function())))
          (set e (compile-expr(main_ctx body 0)))
+         (print-s (COMPILEE e))
          (set output_p (output_p (get-frame e)))
          (set output_p (output_p (get-prog e)))
          (set output_p (output_p (get-unframe e)))

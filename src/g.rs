@@ -565,7 +565,7 @@ fn compile_program(helpers_ctx: &S, raw_program: &S, raw_data: &S) -> S {
    )
 }
 
-pub fn compile(cfg: &str, main_ctx: &S) {
+pub fn compile(debug: bool, cfg: &str, main_ctx: &S) {
    let mut main_ctx = main_ctx.clone();
    let helpers_ctx = parse_file("stdlib/helpers.lm");
    let prelude_ctx = parse_file("stdlib/prelude.lm");
@@ -641,8 +641,10 @@ pub fn compile(cfg: &str, main_ctx: &S) {
    }
    let program = compile_program(&helpers_ctx, &raw_program, &raw_data);
    assemble(cfg, &program);
-   rm("tmp.s");
-   rm("tmp.o");
+   if !debug {
+      rm("tmp.s");
+      rm("tmp.o");
+   }
 }
 
 fn rm(p: &str) {

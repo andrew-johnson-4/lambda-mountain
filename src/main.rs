@@ -6,6 +6,7 @@ use std::io::Read;
 fn main() {
    let mut target = "a.out".to_string();
    let mut option = "".to_string();
+   let mut debug = false;
    for arg in std::env::args().skip(1) {
       if option == "-o" {
          target = arg;
@@ -16,6 +17,8 @@ fn main() {
          file.read_to_string(&mut file_contents).unwrap();
          let s = parse_program(&file_contents);
          println!("{}", s);
+      } else if arg=="debug" {
+         debug = true;
       } else if arg.starts_with("-") {
          option = arg;
       } else if arg.ends_with(".lm") {
@@ -23,7 +26,7 @@ fn main() {
          let mut file_contents = String::new();
          file.read_to_string(&mut file_contents).unwrap();
          let s = parse_program(&file_contents);
-         compile(&target, &s);
+         compile(debug, &target, &s);
       }
    }
 }
