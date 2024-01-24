@@ -367,8 +367,6 @@ assemble := λconfig program. (
    (set main_ctx program)
    (local e)
 
-   (print-s (ASSEMBLE program))
-
    (while program (match program (
       ()
       ( (pc (Global ('main body))) (
@@ -473,7 +471,6 @@ yield-atom := λctx a offset. (tail(
 compile-expr := λctx e offset. (tail(
    (local x)
    (local prog)
-   (print-s (COMPILEE e))
    (match e (
       ()
       ( (App ((Variable fname) arg)) (tail(
@@ -710,6 +707,37 @@ _program-header := λ.(
    \t 'mov \s '$__nil_literal, \s '%rsi \n # address of string to output
    \t 'mov \s '$2, \s '%rdx            \n # nil is 2 bytes
    \t 'syscall                         \n # invoke operating system to do the write
+   \t 'ret                             \n
+
+
+   'head:                              \n
+   \t 'cmp \s '$0, \s '%r13            \n
+   \t 'je \s '__head_is_nil            \n
+   \t 'mov \s '0 \[ '%r13 \] ', '%r12  \n
+   \t 'mov \s '16 \[ '%r13 \] ', '%r14 \n
+   \t 'mov \s '24 \[ '%r13 \] ', '%r15 \n
+   \t 'mov \s '8 \[ '%r13 \] ', '%r13  \n
+   \t 'ret                             \n
+   '__head_is_nil:                     \n
+   \t 'mov \s '$0, \s %r12             \n
+   \t 'mov \s '$0, \s %r13             \n
+   \t 'mov \s '$0, \s %r14             \n
+   \t 'mov \s '$0, \s %r15             \n
+   \t 'ret                             \n
+
+   'tail:                              \n
+   \t 'cmp \s '$0, \s '%r13            \n
+   \t 'je \s '__tail_is_nil            \n
+   \t 'mov \s '0 \[ '%r14 \] ', '%r12  \n
+   \t 'mov \s '8 \[ '%r14 \] ', '%r13  \n
+   \t 'mov \s '24 \[ '%r14 \] ', '%r15 \n
+   \t 'mov \s '16 \[ '%r14 \] ', '%r14 \n
+   \t 'ret                             \n
+   '__tail_is_nil:                     \n
+   \t 'mov \s '$0, \s %r12             \n
+   \t 'mov \s '$0, \s %r13             \n
+   \t 'mov \s '$0, \s %r14             \n
+   \t 'mov \s '$0, \s %r15             \n
    \t 'ret                             \n
 
 );
