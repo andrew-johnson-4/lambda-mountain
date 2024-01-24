@@ -149,7 +149,7 @@ fn yield_atom(_helpers_ctx: &S, program_ctx: &S, s: &str, offset: i64) -> (S,S,S
    let s = s.replace("\\s"," ");
    let s = s.replace("\\:",";");
    let s = s.replace("\\o","#");
-   let s = s.replace("\\;","λ");
+   let s = s.replace("\\l","λ");
    let s = s.replace("\\[","(");
    let s = s.replace("\\]",")");
    let id = uuid();

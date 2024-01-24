@@ -367,6 +367,8 @@ assemble := λconfig program. (
    (set main_ctx program)
    (local e)
 
+   (print-s (ASSEMBLE program))
+
    (while program (match program (
       ()
       ( (pc (Global ('main body))) (
@@ -471,6 +473,7 @@ yield-atom := λctx a offset. (tail(
 compile-expr := λctx e offset. (tail(
    (local x)
    (local prog)
+   (print-s (COMPILEE e))
    (match e (
       ()
       ( (App ((Variable fname) arg)) (tail(
