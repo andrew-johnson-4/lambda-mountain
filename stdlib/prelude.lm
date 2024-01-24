@@ -111,33 +111,33 @@
    # if .head != NULL && .tail != NULL
    '__print_this_cons:           \n
    \t 'cmp \s '$0, \s '%r13              \n
-   \t 'je '__print_this_nil       \n
-   \t 'cmp '$0, '%r14              \n
-   \t 'je '__print_this_nil       \n
+   \t 'je \s '__print_this_nil       \n
+   \t 'cmp \s '$0, \s '%r14              \n
+   \t 'je \s '__print_this_nil       \n
    ::push-this
    ::show-lparen
-   \t 'mov '%r13, '%rsi            \n
+   \t 'mov \s '%r13, \s '%rsi            \n
    ::open-this
-   \t 'call '__print_this         \n
+   \t 'call \s '__print_this         \n
    ::pop-this
    ::show-space
-   \t 'mov '%r14, '%rsi            \n
+   \t 'mov \s '%r14, \s '%rsi            \n
    ::open-this
-   \t 'call '__print_this         \n
+   \t 'call \s '__print_this         \n
    ::show-rparen
    \t 'ret                       \n
 
    '__print_this_nil:            \n
-   \t 'mov '$1, '%rax              \n   # system call 1 is write
-   \t 'mov '$1, '%rdi              \n   # file handle 1 is stdout
-   \t 'mov '$__nil_literal, '%rsi  \n   # address of string to output
-   \t 'mov '$2, '%rdx              \n   # nil is 2 bytes
+   \t 'mov \s '$1, \s '%rax              \n   # system call 1 is write
+   \t 'mov \s '$1, \s '%rdi              \n   # file handle 1 is stdout
+   \t 'mov \s '$__nil_literal, \s '%rsi  \n   # address of string to output
+   \t 'mov \s '$2, \s '%rdx              \n   # nil is 2 bytes
    \t 'syscall                   \n   # invoke operating system to do the write
    \t 'ret                       \n
 
    'head:                        \n
-   \t 'cmp '$0, '%r13              \n
-   \t 'je '__head_is_nil          \n
+   \t 'cmp \s '$0, \s '%r13              \n
+   \t 'je \s '__head_is_nil          \n
    ::head
    \t 'ret                       \n
    '__head_is_nil:               \n
@@ -145,8 +145,8 @@
    \t 'ret                       \n
 
    'tail:                        \n
-   \t 'cmp '$0, '%r14              \n
-   \t 'je '__tail_is_nil          \n
+   \t 'cmp \s '$0, \s '%r14              \n
+   \t 'je \s '__tail_is_nil          \n
    ::tail
    \t 'ret                       \n
    '__tail_is_nil:               \n
@@ -154,12 +154,12 @@
    \t 'ret                       \n
 
    'not:                         \n
-   \t 'cmp '$0, '%r12              \n
-   \t 'jne '__not_is_some         \n
-   \t 'cmp '$0, '%r13              \n
-   \t 'jne '__not_is_some         \n
-   \t 'cmp '$0, '%r14              \n
-   \t 'jne '__not_is_some         \n
+   \t 'cmp \s '$0, \s '%r12              \n
+   \t 'jne \s '__not_is_some         \n
+   \t 'cmp \s '$0, \s '%r13              \n
+   \t 'jne \s '__not_is_some         \n
+   \t 'cmp \s '$0, \s '%r14              \n
+   \t 'jne \s '__not_is_some         \n
    (::yield-atom __true)
    \t 'ret                       \n
    '__not_is_some:               \n
@@ -167,17 +167,17 @@
    \t 'ret                       \n
 
    'eq:                          \n
-   \t 'cmp '$0, '%r13              \n
-   \t 'je '__equal_nil            \n
-   \t 'cmp '$0, '%r14              \n
-   \t 'je '__equal_nil            \n
-   \t 'mov '0\[%r13\], '%rax         \n # mov x.atom into %rax
-   \t 'mov '0\[%r14\], '%rbx         \n # mov y.atom into %rbx
-   \t 'cmp '$0, '%rax              \n
-   \t 'je '__equal_nil            \n
-   \t 'cmp '$0, '%rbx              \n
-   \t 'je '__equal_nil            \n
-   \t 'call '_streq               \n
+   \t 'cmp \s '$0, \s '%r13              \n
+   \t 'je \s '__equal_nil            \n
+   \t 'cmp \s '$0, \s '%r14              \n
+   \t 'je \s '__equal_nil            \n
+   \t 'mov \s '0\[%r13\], \s '%rax         \n # mov x.atom into %rax
+   \t 'mov \s '0\[%r14\], \s '%rbx         \n # mov y.atom into %rbx
+   \t 'cmp \s '$0, \s '%rax              \n
+   \t 'je \s '__equal_nil            \n
+   \t 'cmp \s '$0, \s '%rbx              \n
+   \t 'je \s '__equal_nil            \n
+   \t 'call \s '_streq               \n
    \t 'ret                       \n
    '__equal_nil:                 \n
    ::yield-nil
@@ -187,20 +187,20 @@
    # internal, not a call-convention function
    '_streq:                      \n
    '__streq_loop:                \n
-   \t 'cmp '$0, '%rax              \n
-   \t 'je '__streq_false          \n
-   \t 'cmp '$0, '%rbx              \n
-   \t 'je '__streq_false          \n
-   \t 'mov '0\[%rax\], '%cl        \n
-   \t 'mov '0\[%rbx\], '%dl        \n
+   \t 'cmp \s '$0, \s '%rax              \n
+   \t 'je \s '__streq_false          \n
+   \t 'cmp \s '$0, \s '%rbx              \n
+   \t 'je \s '__streq_false          \n
+   \t 'mov \s '0\[%rax\], \s '%cl        \n
+   \t 'mov \s '0\[%rbx\], \s '%dl        \n
 
-   \t 'cmp '%cl, '%dl              \n
-   \t 'jne '__streq_false         \n
-   \t 'cmp '$0, '%cl               \n
-   \t 'je '__streq_true           \n
-   \t 'inc '%rax                  \n
-   \t 'inc '%rbx                  \n
-   \t 'jmp '__streq_loop          \n
+   \t 'cmp \s '%cl, \s '%dl              \n
+   \t 'jne \s '__streq_false         \n
+   \t 'cmp \s '$0, \s '%cl               \n
+   \t 'je \s '__streq_true           \n
+   \t 'inc \s '%rax                  \n
+   \t 'inc \s '%rbx                  \n
+   \t 'jmp \s '__streq_loop          \n
    '__streq_true:                \n
    ::yield-true
    \t 'ret                       \n
@@ -210,115 +210,115 @@
 
 
    'clone_rope:                  \n
-   \t 'mov '$__a_section, '%r8     \n
-   \t 'mov '$__a_counter, '%r10    \n
-   \t 'mov '0\[%r10\], '%r11       \n
-   \t 'add '%r11, '%r8             \n
-   \t 'mov '%r8, '%r9              \n
+   \t 'mov \s '$__a_section, \s '%r8     \n
+   \t 'mov \s '$__a_counter, \s '%r10    \n
+   \t 'mov \s '0\[%r10\], \s '%r11       \n
+   \t 'add \s '%r11, \s '%r8             \n
+   \t 'mov \s '%r8, \s '%r9              \n
    #r8 holds pointer to head of new data
    #r9 holds pointer to tail of new data
-   \t 'call '__clone_rope         \n
-   \t 'movb '$0, '0\[%r9\]         \n
-   \t 'inc '%r9                   \n
-   \t 'mov '$__a_section, '%r10    \n
-   \t 'sub '%r10, '%r9             \n
-   \t 'mov '$__a_counter, '%r10    \n
-   \t 'mov '%r9, '0\[%r10\]        \n
-   \t 'mov '%r8, '%r12             \n
-   \t 'mov '$0, '%r13              \n
-   \t 'mov '$0, '%r14              \n
-   \t 'mov '$0, '%r15              \n
+   \t 'call \s '__clone_rope         \n
+   \t 'movb \s '$0, \s '0\[%r9\]         \n
+   \t 'inc \s '%r9                   \n
+   \t 'mov \s '$__a_section, \s '%r10    \n
+   \t 'sub \s '%r10, \s '%r9             \n
+   \t 'mov \s '$__a_counter, \s '%r10    \n
+   \t 'mov \s '%r9, \s '0\[%r10\]        \n
+   \t 'mov \s '%r8, \s '%r12             \n
+   \t 'mov \s '$0, \s '%r13              \n
+   \t 'mov \s '$0, \s '%r14              \n
+   \t 'mov \s '$0, \s '%r15              \n
    \t 'ret                       \n
 
    '__clone_rope:                \n
    #if this is a cons, recurse
-   \t 'cmp '$0, '%r13              \n
-   \t 'je 'clone_rope_notcons     \n
-   \t 'cmp '$0, '%r14              \n
-   \t 'je 'clone_rope_notcons     \n
+   \t 'cmp \s '$0, \s '%r13              \n
+   \t 'je \s 'clone_rope_notcons     \n
+   \t 'cmp \s '$0, \s '%r14              \n
+   \t 'je \s 'clone_rope_notcons     \n
    ::push-this
    ::head
-   \t 'call '__clone_rope         \n
+   \t 'call \s '__clone_rope         \n
    ::pop-this
    ::tail
    ::push-this
-   \t 'call '__clone_rope         \n
+   \t 'call \s '__clone_rope         \n
    ::pop-this
-   \t 'jmp 'clone_rope_end        \n
+   \t 'jmp \s 'clone_rope_end        \n
 
    #if not cons, concat
    'clone_rope_notcons:          \n
 
    #if nil, return
-   \t 'cmp '$0, '%r12              \n
-   \t 'je 'clone_rope_end         \n
+   \t 'cmp \s '$0, \s '%r12              \n
+   \t 'je \s 'clone_rope_end         \n
 
    #if atom, break into characters and concat
    'clone_rope_small:            \n
-   \t 'cmpb '$0, '0\[%r12\]        \n
-   \t 'je 'clone_rope_end         \n
-   \t 'movb '0\[%r12\], '%bl       \n
-   \t 'movb '%bl, '0\[%r9\]        \n
-   \t 'inc '%r12                  \n
-   \t 'inc '%r9                   \n
-   \t 'jmp 'clone_rope_small      \n
+   \t 'cmpb \s '$0, \s '0\[%r12\]        \n
+   \t 'je \s 'clone_rope_end         \n
+   \t 'movb \s '0\[%r12\], \s '%bl       \n
+   \t 'movb \s '%bl, \s '0\[%r9\]        \n
+   \t 'inc \s '%r12                  \n
+   \t 'inc \s '%r9                   \n
+   \t 'jmp \s 'clone_rope_small      \n
 
    'clone_rope_end:              \n
    \t 'ret                       \n
 
    'write_file:                  \n
    #open file
-   \t 'mov '0\[%r13\], '%rdi        \n # file name
-   \t 'pushq '0\[%r14\]             \n # data to write
-   \t 'mov '$2, '%rax               \n # syscall open
-   \t 'mov $577, %rsi                 \n
-   \t 'mov '$420, '%rdx             \n # mode
+   \t 'mov \s '0\[%r13\], \s '%rdi        \n # file name
+   \t 'pushq \s '0\[%r14\]             \n # data to write
+   \t 'mov \s '$2, \s '%rax               \n # syscall open
+   \t 'mov \s '$577, \s %rsi                 \n
+   \t 'mov \s '$420, \s '%rdx             \n # mode
    \t 'syscall                   \n
-   \t 'mov '%rax, '%r8             \n # r8 now holds file descriptor
+   \t 'mov \s '%rax, \s '%r8             \n # r8 now holds file descriptor
 
    #write to file
-   \t 'pop '%rax                  \n
-   \t 'mov '%rax, '%r9             \n
-   \t 'call '_strlen              \n
-   \t 'mov '%rbx, '%rdx            \n # length to write
-   \t 'mov '%r9, '%rsi             \n # data to write
-   \t 'mov '%r8, '%rdi             \n # file descriptor
-   \t 'mov '$1, '%rax              \n # 'write' system call
+   \t 'pop \s '%rax                  \n
+   \t 'mov \s '%rax, \s '%r9             \n
+   \t 'call \s '_strlen              \n
+   \t 'mov \s '%rbx, \s '%rdx            \n # length to write
+   \t 'mov \s '%r9, \s '%rsi             \n # data to write
+   \t 'mov \s '%r8, \s '%rdi             \n # file descriptor
+   \t 'mov \s '$1, \s '%rax              \n # 'write' system call
    \t 'syscall                   \n
 
    #close file
-   \t 'mov '%r8, '%rdi             \n # file descriptor
-   \t 'mov '$3, '%rax              \n # close
+   \t 'mov \s '%r8, \s '%rdi             \n # file descriptor
+   \t 'mov \s '$3, \s '%rax              \n # close
    \t 'syscall                   \n
    \t 'ret                       \n
 
    'load_file:                   \n
 
    # open file
-   \t 'mov '$2, '%rax              \n # syscall open
-   \t 'mov '%r12, '%rdi            \n # file name
-   \t 'mov '$0, '%rsi              \n # read-only mode
+   \t 'mov \s '$2, \s '%rax              \n # syscall open
+   \t 'mov \s '%r12, \s '%rdi            \n # file name
+   \t 'mov \s '$0, \s '%rsi              \n # read-only mode
    \t 'syscall                   \n
    # file descriptor is in %rax
 
-   \t 'cmp '$0, '%rax              \n
+   \t 'cmp \s '$0, \s '%rax              \n
    # if return value is positive then open was a success
-   \t 'jge 'load_file_contents    \n
+   \t 'jge \s 'load_file_contents    \n
 
-   \t 'mov '$__err_fopen, '%r12    \n
-   \t 'mov '$0, '%r13              \n
-   \t 'mov '$0, '%r14              \n
-   \t 'mov '$0, '%r15              \n
+   \t 'mov \s '$__err_fopen, \s '%r12    \n
+   \t 'mov \s '$0, \s '%r13              \n
+   \t 'mov \s '$0, \s '%r14              \n
+   \t 'mov \s '$0, \s '%r15              \n
    \t 'ret                       \n
 
    'load_file_contents:          \n
-   \t 'mov '$__a_section, '%r8     \n
-   \t 'mov '$__a_counter, '%r10    \n
-   \t 'mov '0\[%r10\], '%r11       \n
-   \t 'add '%r11, '%r8             \n
-   \t 'mov '%r8, '%r9              \n
-   \t 'mov '$0, '%r10              \n
-   \t 'mov '$load_file_buf, '%r11  \n
+   \t 'mov \s '$__a_section, \s '%r8     \n
+   \t 'mov \s '$__a_counter, \s '%r10    \n
+   \t 'mov \s '0\[%r10\], \s '%r11       \n
+   \t 'add \s '%r11, \s '%r8             \n
+   \t 'mov \s '%r8, \s '%r9              \n
+   \t 'mov \s '$0, \s '%r10              \n
+   \t 'mov \s '$load_file_buf, \s '%r11  \n
    #r8 holds pointer to head of new data
    #r9 holds pointer to tail of new data
    #r10 holds amount of data on buffer currently
@@ -326,90 +326,90 @@
 
    # move data from buffer into string
    'load_file_loop:              \n
-   \t 'cmp '$0, '%r10              \n
-   \t 'je 'load_file_bufempty     \n
-   \t 'movb '0\[%r11\], '%bl       \n
-   \t 'mov '%bl, '0\[%r9\]         \n
-   \t 'inc '%r9                   \n
-   \t 'inc '%r11                  \n
-   \t 'dec '%r10                  \n
-   \t 'jmp 'load_file_loop        \n
+   \t 'cmp \s '$0, \s '%r10              \n
+   \t 'je \s 'load_file_bufempty     \n
+   \t 'movb \s '0\[%r11\], \s '%bl       \n
+   \t 'mov \s '%bl, \s '0\[%r9\]         \n
+   \t 'inc \s '%r9                   \n
+   \t 'inc \s '%r11                  \n
+   \t 'dec \s '%r10                  \n
+   \t 'jmp \s 'load_file_loop        \n
 
    # read file
    'load_file_bufempty:          \n
-   \t 'push '%rax                 \n
-   \t 'mov '%rax, '%rdi            \n # file descriptor
-   \t 'mov '$0, '%rax              \n # read
-   \t 'mov '$load_file_buf, '%rsi  \n # buffer
-   \t 'mov '$load_file_bsz, '%rdx  \n
-   \t 'mov '0\[%rdx\], '%rdx       \n # buffer size
+   \t 'push \s '%rax                 \n
+   \t 'mov \s '%rax, \s '%rdi            \n # file descriptor
+   \t 'mov \s '$0, \s '%rax              \n # read
+   \t 'mov \s '$load_file_buf, \s '%rsi  \n # buffer
+   \t 'mov \s '$load_file_bsz, \s '%rdx  \n
+   \t 'mov \s '0\[%rdx\], \s '%rdx       \n # buffer size
    \t 'syscall                   \n
-   \t 'mov '%rax, '%r10            \n
-   \t 'pop '%rax                  \n
-   \t 'mov '$load_file_buf, '%r11  \n
-   \t 'cmp '$0, '%r10              \n
-   \t 'jne 'load_file_loop        \n
+   \t 'mov \s '%rax, \s '%r10            \n
+   \t 'pop \s '%rax                  \n
+   \t 'mov \s '$load_file_buf, \s '%r11  \n
+   \t 'cmp \s '$0, \s '%r10              \n
+   \t 'jne \s 'load_file_loop        \n
 
    # close file
-   \t 'mov '%rax, '%rdi            \n # file descriptor
-   \t 'mov '$3, '%rax              \n # close
+   \t 'mov \s '%rax, \s '%rdi            \n # file descriptor
+   \t 'mov \s '$3, \s '%rax              \n # close
    \t 'syscall                   \n
    
-   \t 'movb '$0, '0\[%r9\]         \n
-   \t 'inc '%r9                   \n
-   \t 'sub '%r8, '%r9              \n
-   \t 'mov '$__a_counter, '%r10    \n
-   \t 'mov '%r9, '0\[%r10\]        \n
-   \t 'mov '%r8, '%r12             \n
-   \t 'mov '$0, '%r13              \n
-   \t 'mov '$0, '%r14              \n
-   \t 'mov '$0, '%r15              \n
+   \t 'movb \s '$0, \s '0\[%r9\]         \n
+   \t 'inc \s '%r9                   \n
+   \t 'sub \s '%r8, \s '%r9              \n
+   \t 'mov \s '$__a_counter, \s '%r10    \n
+   \t 'mov \s '%r9, \s '0\[%r10\]        \n
+   \t 'mov \s '%r8, \s '%r12             \n
+   \t 'mov \s '$0, \s '%r13              \n
+   \t 'mov \s '$0, \s '%r14              \n
+   \t 'mov \s '$0, \s '%r15              \n
    \t 'ret                       \n
 );
 
 ::data := (
                                 \n
   'load_file_bsz:                \n
-  \t '.quad '1024                 \n
+  \t '.quad \s '1024                 \n
   'load_file_buf:                \n
-  \t '.zero '1024                 \n
+  \t '.zero \s '1024                 \n
   '__nil:                        \n
-  \t '.zero '32                   \n
+  \t '.zero \s '32                   \n
   '__argv:                       \n
-  \t '.zero '32                   \n
+  \t '.zero \s '32                   \n
   '__s_counter:                  \n
-  \t '.zero '8                    \n
+  \t '.zero \s '8                    \n
   '__s_section:                  \n
-  \t '.zero '268435456            \n
+  \t '.zero \s '268435456            \n
   '__a_counter:                  \n
-  \t '.zero '8                    \n
+  \t '.zero \s '8                    \n
   '__a_section:                  \n
-  \t '.zero '268435456            \n
+  \t '.zero \s '268435456            \n
   '__nil_literal:                \n
-  \t '.ascii '"\[\]"              \n
-  \t '.zero '1                    \n
+  \t '.ascii \s '"\[\]"              \n
+  \t '.zero \s '1                    \n
   '__hex_buffer:                 \n
-  \t '.ascii '"0123456789abcdef"  \n 
+  \t '.ascii \s '"0123456789abcdef"  \n 
   '__put64_buffer:               \n
-  \t '.ascii '"0x"                \n
+  \t '.ascii \s '"0x"                \n
   '__put64_write_buffer:         \n
-  \t '.ascii '"0000000000000000 " \n
-  \t '.zero '1                    \n
+  \t '.ascii \s '"0000000000000000 " \n
+  \t '.zero \s '1                    \n
   '__newline:                    \n
-  \t '.ascii '"\n"                \n
+  \t '.ascii \s '"\n"                \n
   '__lparen:                     \n
-  \t '.ascii '"\["                \n
+  \t '.ascii \s '"\["                \n
   '__rparen:                     \n
-  \t '.ascii '"\]"                \n
+  \t '.ascii \s '"\]"                \n
   '__space:                      \n
-  \t '.ascii '"\s"                \n
+  \t '.ascii \s '"\s"                \n
   '__true:                       \n
-  \t '.ascii '"True"              \n
-  \t '.zero '1                    \n
+  \t '.ascii \s '"True"              \n
+  \t '.zero \s '1                    \n
   '__dump_i:                     \n
-  \t '.ascii '"0000000000000000"  \n
-  \t '.zero '1                    \n
+  \t '.ascii \s '"0000000000000000"  \n
+  \t '.zero \s '1                    \n
   '__err_fopen:                  \n
-  \t '.ascii '"Could 'not 'open 'file." \n
-  \t '.zero '1                    \n
+  \t '.ascii \s '"Could 'not 'open 'file." \n
+  \t '.zero \s '1                    \n
 );
