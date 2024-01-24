@@ -507,8 +507,6 @@ compile-expr := λctx e offset. (tail(
          ( () prog () () () ctx offset )
       ))
       ( (App (l r)) (tail(
-         (print-s (CTX ctx))
-         (print-s (OFFSET offset))
          (set e1 (compile-expr(ctx l offset)))
          (set e1_frame (get-frame e1))
          (set e1_prog (get-prog e1))
@@ -525,7 +523,20 @@ compile-expr := λctx e offset. (tail(
          (set e2_data (get-data e2))
          (set ctx (get-pc e2))
          (set offset (get-offset e2))
-         ( (e1_frame e2_frame) (e1_prog e2_prog) (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset )
+
+         (set prog (prog (e1_prog)))
+         (set prog (prog (_push-this())))
+         (set prog (prog (e2_prog)))
+         (set prog (prog (_close-this())))
+         (set prog (prog (\t 'mov \s '%rsi, \s '%rdi \n)))
+         (set prog (prog (_pop-this())))
+         (set prog (prog (_close-this())))
+         (set prog (prog (\t 'mov \s '$0, \s '%r12 \n)))
+         (set prog (prog (\t 'mov \s '%rsi, \s '%r13 \n)))
+         (set prog (prog (\t 'mov \s '%rdi, \s '%r14 \n)))
+         (set prog (prog (\t 'mov \s '$0, \s '%r12 \n)))
+
+         ( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset )
       )))
       ( Nil (tail(
          (set prog (prog ( \t 'mov \s '$0 , '%r12 \n )))
@@ -780,4 +791,47 @@ _program-header := λ.(
    \t 'mov \s '$0, \s %r15             \n
    \t 'ret                             \n
 
+);
+
+_push-this := λ.(
+   \t 'push \s '%r12 \n
+   \t 'push \s '%r13 \n
+   \t 'push \s '%r14 \n
+   \t 'push \s '%r15 \n
+);
+
+_push-zero := λ.(
+   \t 'pushq \s '$0 \n
+   \t 'pushq \s '$0 \n
+   \t 'pushq \s '$0 \n
+   \t 'pushq \s '$0 \n
+);
+
+_unpush-this := λ.(
+   \t 'pop \s '%r8 \n
+   \t 'pop \s '%r8 \n
+   \t 'pop \s '%r8 \n
+   \t 'pop \s '%r8 \n
+);
+
+_pop-this := λ.(
+   \t 'pop \s '%r15 \n
+   \t 'pop \s '%r14 \n
+   \t 'pop \s '%r13 \n
+   \t 'pop \s '%r12 \n
+);
+
+_close-this := λ.(
+   # move this S onto the heap
+   # %rsi becomes pointer to new location
+   \t 'mov \s '$__s_section, \s '%rsi        \n # %rsi now points to root s
+   \t 'mov \s '$__s_counter, \s '%r8         \n # %r8 now points to s counter
+   \t 'mov \s '0 \[ %r8 \] , \s '%r10        \n # %r10 now hold value of cons counter
+   \t 'add \s '%r10, \s '%rsi                \n # %rsi now points to top free cons
+   \t 'add \s '$32, \s '%r10                 \n # increment s counter
+   \t 'mov \s '%r10, \s '0 \[ %r8 \]         \n # overwrite new s counter
+   \t 'mov \s '%r12, \s '0 \[ %rsi \]        \n # set top.atom
+   \t 'mov \s '%r13, \s '8 \[ %rsi \]        \n # set top.head
+   \t 'mov \s '%r14, \s '16 \[ %rsi \]       \n # set top.tail
+   \t 'mov \s '%r15, \s '24 \[ %rsi \]       \n # set top.flags
 );
