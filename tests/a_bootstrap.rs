@@ -1,8 +1,15 @@
 use std::process::Command;
 use glob::glob;
 
+fn rm(p: &str) {
+   if std::path::Path::new(p).is_file() {
+      std::fs::remove_file(p).expect(&format!("Could not remove file: {}",p))
+   }
+   assert!( !std::path::Path::new(p).is_file() );
+}
+
 fn compile_bootstrap() {
-   let _ = std::fs::remove_file("bootstrap");
+   rm("bootstrap");
    let exit = Command::new("lambda_mountain")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
@@ -20,9 +27,9 @@ fn compile_bootstrap() {
 }
 
 fn run_bootstrap(target: &str) -> String {
-   let _ = std::fs::remove_file("tmp.s");
-   let _ = std::fs::remove_file("tmp.o");
-   let _ = std::fs::remove_file("a.out");
+   rm("tmp.s");
+   rm("tmp.o");
+   rm("a.out");
    let exit = Command::new("./bootstrap")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
@@ -89,6 +96,6 @@ fn suite() {
       let stdout = std::fs::read_to_string(stdout).unwrap();
       let stdout = stdout.trim();
       let actual = run_bootstrap(&path);
-      assert_eq!(stdout, actual, "Expected: {}, Actual: {}", stdout, actual);
+      assert_eq!(stdout, actual, "TEST {} Expected: {}, Actual: {}", path, stdout, actual);
    }
 }
