@@ -102,7 +102,7 @@ fn suite() {
       }
    }
    for (path,stdout,actual) in &failures {
-      eprintln!("TEST {} Expected: {}, Actual: {}", path, &stdout[..100], &actual[..100]);
+      eprintln!("TEST {} Expected: {}, Actual: {}", path, &stdout[..std::cmp::min(100,stdout.len())], &actual[..std::cmp::min(100,actual.len())]);
    }
    assert_eq!( failures.len(), 0 );
 }
