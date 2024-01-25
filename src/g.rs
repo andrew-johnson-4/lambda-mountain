@@ -89,6 +89,7 @@ const OPERATORS: [(&str,&str); 13] = [
    ("eq", "eq"),
    ("not", "not"),
    ("inc", "inc"),
+   ("dec", "dec"),
    ("head", "head"),
    ("tail", "tail"),
 

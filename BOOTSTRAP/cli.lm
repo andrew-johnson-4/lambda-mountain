@@ -408,6 +408,8 @@ is-builtin := λf. (match f (
    ('not True)
    ('head True)
    ('tail True)
+   ('inc True)
+   ('dec True)
    ('print-s True)
    ('print-i True)
    ('print-p True)
