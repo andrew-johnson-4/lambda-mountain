@@ -345,7 +345,7 @@ label-case := λk. (tail(
       (- (set nk (nk '_)))
       (c (set nk (nk (clone-rope c))))
    )))
-   nk
+   (clone-rope nk)
 ));
 
 assemble := λconfig program. (
@@ -528,10 +528,10 @@ compile-expr := λctx e offset. (tail(
    (local prog)
    (match e (
       ()
-      ( (App ((Variable 'local) (Variable fname))) (
+      ( (App ((Variable 'local) (Variable fname))) (tail(
          (declare-local (ctx fname offset))
-      ))
-      ( (App( (App( (App( (Variable 'if) c )) t )) f )) (
+      )))
+      ( (App( (App( (App( (Variable 'if) c )) t )) f )) (tail(
          (set e1 (compile-expr(ctx c offset)))
          (set e1_frame (get-frame e1))
          (set e1_prog (get-prog e1))
@@ -567,13 +567,14 @@ compile-expr := λctx e offset. (tail(
          (set prog (prog ( \t 'jne \s label_if_true \n )))
          (set prog (prog ( \t 'cmp \s '$0, '%r14 \n )))
          (set prog (prog ( \t 'jne \s label_if_true \n )))
-         (set prog (prog e2_prog))
+         (set prog (prog e3_prog))
          (set prog (prog ( \t 'jmp \s label_if_end \n )))
          (set prog (prog ( label_if_true ': \n )))
-         (set prog (prog e3_prog))
+         (set prog (prog e2_prog))
          (set prog (prog ( label_if_end ': \n )))
-         (Expr( (e1_frame e2_frame e3_frame) prog (e1_unframe e2_unframe e3_unframe) (e1_text e2_text e3_text) (e1_data e2_data e3_data) ctx offset ))
-      ))
+         (set e1 (Expr( (e1_frame e2_frame e3_frame) prog (e1_unframe e2_unframe e3_unframe) (e1_text e2_text e3_text) (e1_data e2_data e3_data) ctx offset )))
+         e1
+      )))
       ( (App ((Variable fname) arg)) (tail(
          if (is-builtin fname) (
             (set x (compile-expr(ctx arg offset)))
@@ -584,17 +585,18 @@ compile-expr := λctx e offset. (tail(
             print-s((TODOAPP fname arg))
          )
       )))
-      ( (Literal l) (
+      ( (Literal l) (tail(
+         ()
          (yield-atom (ctx l offset))
-      ))
-      ( (Variable 'argv) (
+      )))
+      ( (Variable 'argv) (tail(
          (set prog (prog ( \t 'mov \s '$__argv, \s '%rax \n )))
          (set prog (prog ( \t 'mov \s '0 \[ '%rax \] , '%r12 \n )))
          (set prog (prog ( \t 'mov \s '8 \[ '%rax \] , '%r13 \n )))
          (set prog (prog ( \t 'mov \s '16 \[ '%rax \] , '%r14 \n )))
          (set prog (prog ( \t 'mov \s '24 \[ '%rax \] , '%r15 \n )))
          (Expr( () prog () () () ctx offset ))
-      ))
+      )))
       ( (App (l r)) (tail(
          (set e1 (compile-expr(ctx l offset)))
          (set e1_frame (get-frame e1))
@@ -632,7 +634,7 @@ compile-expr := λctx e offset. (tail(
          (set prog (prog ( \t 'mov \s '$0 , '%r13 \n )))
          (set prog (prog ( \t 'mov \s '$0 , '%r14 \n )))
          (set prog (prog ( \t 'mov \s '$0 , '%r15 \n )))
-         ( () prog () () () ctx offset )
+         (Expr( () prog () () () ctx offset ))
       )))
       (x (print-s (TODO x)) )
    ))
