@@ -850,6 +850,56 @@ _program-header := λ.(
    \t 'mov \s '$0, \s '%r15            \n
    \t 'ret                             \n
 
+   'eq:                                \n
+   \t 'cmp \s '$0, \s '%r13            \n
+   \t 'je \s '__equal_nil              \n
+   \t 'cmp \s '$0, \s '%r14            \n
+   \t 'je \s '__equal_nil              \n
+   \t 'mov \s '0 \[ %r13 \] , \s '%rax \n # mov x.atom into %rax
+   \t 'mov \s '0 \[ %r14 \] , \s '%rbx \n # mov y.atom into %rbx
+   \t 'cmp \s '$0, \s '%rax            \n
+   \t 'je \s '__equal_nil              \n
+   \t 'cmp \s '$0, \s '%rbx            \n
+   \t 'je \s '__equal_nil              \n
+   \t 'call \s '_streq                 \n
+   \t 'ret                             \n
+   '__equal_nil:                       \n
+   \t 'mov \s '$0, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13            \n
+   \t 'mov \s '$0, \s '%r14            \n
+   \t 'mov \s '$0, \s '%r15            \n
+   \t 'ret                             \n
+
+   # _streq (%rax: *char, %rbx: *char)
+   '_streq:                            \n
+   '__streq_loop:                      \n
+   \t 'cmp \s '$0, \s '%rax            \n
+   \t 'je \s '__streq_false            \n
+   \t 'cmp \s '$0, \s '%rbx            \n
+   \t 'je \s '__streq_false            \n
+   \t 'mov \s '0 \[ %rax \] , \s '%cl  \n
+   \t 'mov \s '0 \[ %rbx \] , \s '%dl  \n
+
+   \t 'cmp \s '%cl, \s '%dl            \n
+   \t 'jne \s '__streq_false           \n
+   \t 'cmp \s '$0, \s '%cl             \n
+   \t 'je \s '__streq_true             \n
+   \t 'inc \s '%rax                    \n
+   \t 'inc \s '%rbx                    \n
+   \t 'jmp \s '__streq_loop            \n
+   '__streq_true:                      \n
+   \t 'mov \s '$__true, \s '%r12       \n
+   \t 'mov \s '$0, \s '%r13            \n
+   \t 'mov \s '$0, \s '%r14            \n
+   \t 'mov \s '$0, \s '%r15            \n
+   \t 'ret                             \n
+   '__streq_false:                     \n
+   \t 'mov \s '$0, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13            \n
+   \t 'mov \s '$0, \s '%r14            \n
+   \t 'mov \s '$0, \s '%r15            \n
+   \t 'ret                             \n
+
 );
 
 _push-this := λ.(
