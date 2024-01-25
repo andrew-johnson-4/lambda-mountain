@@ -831,6 +831,25 @@ _program-header := λ.(
    \t 'mov \s '$0, \s %r15             \n
    \t 'ret                             \n
 
+   'not:                               \n
+   \t 'cmp \s '$0, \s '%r12            \n
+   \t 'jne \s '__not_is_some           \n
+   \t 'cmp \s '$0, \s '%r13            \n
+   \t 'jne \s '__not_is_some           \n
+   \t 'cmp \s '$0, \s '%r14            \n
+   \t 'jne \s '__not_is_some           \n
+   \t 'mov \s '$__true, \s '%r12       \n
+   \t 'mov \s '$0, \s '%r13            \n
+   \t 'mov \s '$0, \s '%r14            \n
+   \t 'mov \s '$0, \s '%r15            \n
+   \t 'ret                             \n
+   '__not_is_some:                     \n
+   \t 'mov \s '$0, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13            \n
+   \t 'mov \s '$0, \s '%r14            \n
+   \t 'mov \s '$0, \s '%r15            \n
+   \t 'ret                             \n
+
 );
 
 _push-this := λ.(
