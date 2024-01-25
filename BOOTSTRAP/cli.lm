@@ -421,38 +421,38 @@ is-builtin := λf. (match f (
 
 get-frame := λe. (match e (
    ()
-   ((f p u t d pc off) f)
+   ((Expr(f p u t d pc off)) f)
 ));
 get-prog := λe. (match e (
    ()
-   ((f p u t d pc off) p)
+   ((Expr(f p u t d pc off)) p)
 ));
 get-unframe := λe. (match e (
    ()
-   ((f p u t d pc off) u)
+   ((Expr(f p u t d pc off)) u)
 ));
 get-text := λe. (match e (
    ()
-   ((f p u t d pc off) t)
+   ((Expr(f p u t d pc off)) t)
 ));
 get-data := λe. (match e (
    ()
-   ((f p u t d pc off) d)
+   ((Expr(f p u t d pc off)) d)
 ));
 get-pc := λe. (match e (
    ()
-   ((f p u t d pc off) pc)
+   ((Expr(f p u t d pc off)) pc)
 ));
 get-offset := λe. (match e (
    ()
-   ((f p u t d pc off) off)
+   ((Expr(f p u t d pc off)) off)
 ));
 
 #returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 yield-atom := λctx a offset. (tail(
    (local id)
    (set id (uuid()))
-   (
+   (Expr(
       ()
       (\t 'mov \s '$ id , \s '%r12 \n # $_.$1 = 0, .atom
        \t 'mov \s '$0, \s '%r13    \n # $_.$2 = 0, .head
@@ -464,7 +464,7 @@ yield-atom := λctx a offset. (tail(
       (id ': \n \t '.ascii \s " a " \n \t .zero \s 1 \n)
       ctx
       offset
-   )
+   ))
 ));
 
 #returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
@@ -477,7 +477,7 @@ declare-local := λctx vname offset. (tail(
    (set refer (TODO REFER))
    (local set_this)
    (set set_this (TODO SETTHIS))
-   (frame_this set_this unframe_this () () ctx (inc offset))
+   (Expr(frame_this set_this unframe_this () () ctx (inc offset)))
 ));
 
 #   let refer = local(&format!(
@@ -519,18 +519,67 @@ compile-expr := λctx e offset. (tail(
    (local e2_unframe)
    (local e2_text)
    (local e2_data)
+   (local e3)
+   (local e3_frame)
+   (local e3_prog)
+   (local e3_unframe)
+   (local e3_text)
+   (local e3_data)
    (local prog)
    (match e (
       ()
       ( (App ((Variable 'local) (Variable fname))) (
          (declare-local (ctx fname offset))
       ))
+      ( (App( (App( (App( (Variable 'if) c )) t )) f )) (
+         (set e1 (compile-expr(ctx c offset)))
+         (set e1_frame (get-frame e1))
+         (set e1_prog (get-prog e1))
+         (set e1_unframe (get-unframe e1))
+         (set e1_text (get-text e1))
+         (set e1_data (get-data e1))
+         (set ctx (get-pc e1))
+         (set offset (get-offset e1))
+         (set e2 (compile-expr(ctx t offset)))
+         (set e2_frame (get-frame e2))
+         (set e2_prog (get-prog e2))
+         (set e2_unframe (get-unframe e2))
+         (set e2_text (get-text e2))
+         (set e2_data (get-data e2))
+         (set ctx (get-pc e2))
+         (set offset (get-offset e2))
+         (set e3 (compile-expr(ctx f offset)))
+         (set e3_frame (get-frame e3))
+         (set e3_prog (get-prog e3))
+         (set e3_unframe (get-unframe e3))
+         (set e3_text (get-text e3))
+         (set e3_data (get-data e3))
+         (set ctx (get-pc e3))
+         (set offset (get-offset e3))
+         (local label_if_true)
+         (set label_if_true (uuid()))
+         (local label_if_end)
+         (set label_if_end (uuid()))
+         (set prog (prog e1_prog))
+         (set prog (prog ( \t 'cmp \s '$0, '%r12 \n )))
+         (set prog (prog ( \t 'jne \s label_if_true \n )))
+         (set prog (prog ( \t 'cmp \s '$0, '%r13 \n )))
+         (set prog (prog ( \t 'jne \s label_if_true \n )))
+         (set prog (prog ( \t 'cmp \s '$0, '%r14 \n )))
+         (set prog (prog ( \t 'jne \s label_if_true \n )))
+         (set prog (prog e2_prog))
+         (set prog (prog ( \t 'jmp \s label_if_end \n )))
+         (set prog (prog ( label_if_true ': \n )))
+         (set prog (prog e3_prog))
+         (set prog (prog ( label_if_end ': \n )))
+         (Expr( (e1_frame e2_frame e3_frame) prog (e1_unframe e2_unframe e3_unframe) (e1_text e2_text e3_text) (e1_data e2_data e3_data) ctx offset ))
+      ))
       ( (App ((Variable fname) arg)) (tail(
          if (is-builtin fname) (
             (set x (compile-expr(ctx arg offset)))
             (set prog (get-prog x))
             (set prog (prog (\t 'call \s (label-case fname) \n)))
-            ( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) )
+            (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
          ) (
             print-s((TODOAPP fname arg))
          )
@@ -544,7 +593,7 @@ compile-expr := λctx e offset. (tail(
          (set prog (prog ( \t 'mov \s '8 \[ '%rax \] , '%r13 \n )))
          (set prog (prog ( \t 'mov \s '16 \[ '%rax \] , '%r14 \n )))
          (set prog (prog ( \t 'mov \s '24 \[ '%rax \] , '%r15 \n )))
-         ( () prog () () () ctx offset )
+         (Expr( () prog () () () ctx offset ))
       ))
       ( (App (l r)) (tail(
          (set e1 (compile-expr(ctx l offset)))
@@ -576,7 +625,7 @@ compile-expr := λctx e offset. (tail(
          (set prog (prog (\t 'mov \s '%rdi, \s '%r14 \n)))
          (set prog (prog (\t 'mov \s '$0, \s '%r12 \n)))
 
-         ( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset )
+         (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))
       )))
       ( Nil (tail(
          (set prog (prog ( \t 'mov \s '$0 , '%r12 \n )))
