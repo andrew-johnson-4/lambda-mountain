@@ -1,0 +1,7 @@
+
+main := (
+   print-s (dump-i(mul(
+      (inc (inc () ))
+      (inc (inc (inc () )))
+   )))
+);
