@@ -520,6 +520,19 @@ get-offset := λe. (match e (
    ((Expr(f p u t d pc off)) off)
 ));
 
+escape-sequences := λt. match t (
+   ()
+   ( () () )
+   ( \\: \: )
+   ( \\o \o )
+#   ( \\n \n )
+   ( \\l \l )
+   ( \\[ \[ )
+   ( \\] \] )
+   ( (l r) ( (escape-sequences l) (escape-sequences r) ) )
+   ( s s )
+);
+
 #returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 yield-atom := λctx a offset. (tail(
    (local id)
@@ -533,7 +546,7 @@ yield-atom := λctx a offset. (tail(
       )
       ()
       ()
-      (id ': \n \t '.ascii \s " a " \n \t .zero \s 1 \n)
+      (id ': \n \t '.ascii \s " (escape-sequences a) " \n \t .zero \s 1 \n)
       ctx
       offset
    ))
