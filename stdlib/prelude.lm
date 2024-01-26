@@ -128,6 +128,42 @@
    \t 'mov \s '$0, \s '%r15            \n
    \t 'ret                             \n
 
+   'div:                               \n
+   \t 'cmp \s '$0, \s '%r13            \n
+   \t 'je \s 'div_err                  \n
+   \t 'cmp \s '$0, \s '%r14            \n
+   \t 'je \s 'div_err                  \n
+   \t 'mov \s '0 \[ '%r13 \] , '%rax   \n #dividend
+   \t 'mov \s '$0, \s '%rdx            \n
+   \t 'mov \s '0 \[ '%r14 \] , '%rcx   \n #divisor
+   \t 'idiv \s '%rcx                   \n
+   \t 'mov \s '%rax, \s '%r12          \n
+   \t 'ret                             \n
+   'div_err:                           \n
+   \t 'mov \s '$0, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13            \n
+   \t 'mov \s '$0, \s '%r14            \n
+   \t 'mov \s '$0, \s '%r15            \n
+   \t 'ret                             \n
+
+   'mod:                               \n
+   \t 'cmp \s '$0, \s '%r13            \n
+   \t 'je \s 'mod_err                  \n
+   \t 'cmp \s '$0, \s '%r14            \n
+   \t 'je \s 'mod_err                  \n
+   \t 'mov \s '0 \[ '%r13 \] , '%rax   \n #dividend
+   \t 'mov \s '$0, \s '%rdx            \n
+   \t 'mov \s '0 \[ '%r14 \] , '%rcx   \n #divisor
+   \t 'idiv \s '%rcx                   \n
+   \t 'mov \s '%rdx, \s '%r12          \n
+   \t 'ret                             \n
+   'mod_err:                           \n
+   \t 'mov \s '$0, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13            \n
+   \t 'mov \s '$0, \s '%r14            \n
+   \t 'mov \s '$0, \s '%r15            \n
+   \t 'ret                             \n
+
    'add:                               \n
    \t 'cmp \s '$0, \s '%r13            \n
    \t 'je \s 'add_err                  \n
