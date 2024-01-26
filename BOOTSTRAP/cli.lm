@@ -161,6 +161,13 @@ parse-one-expression := λtoks. (tail(
    )
 ));
 
+print-ctx := λctx. (
+   while ctx (
+      (print-s (tail ctx))
+      (set ctx (head ctx))
+   )
+);
+
 parse-many-expressions := λtoks. (tail(
    (local er)
    (set er (parse-one-expression toks))
@@ -543,13 +550,11 @@ declare-local := λctx vname offset. (tail(
          (i2s( (mul( (add( (mul( thirtytwo offset )) thirtytwo)) (dec(())) )) ))
       ) \[ '%rbp \] , %r15 \n
    ))
-   (print-s refer)
+   (set ctx (ctx (Local(vname refer)) ))
+   (set ctx (ctx (Local( (clone-rope('set \s vname)) set_this)) ))
+   (print-ctx ctx)
    (Expr(frame_this set_this unframe_this () () ctx (inc offset)))
 ));
-
-#   let assign_vname = s_atom(&format!("set {}",vname));
-#   let program_ctx = kv_add( program_ctx, &vname, &refer );
-#   let program_ctx = kv_add( &program_ctx, &assign_vname, &assign );
 
 #returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 compile-expr := λctx e offset. (tail(
