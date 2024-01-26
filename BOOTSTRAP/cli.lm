@@ -374,7 +374,7 @@ assemble := λconfig program. (
          (set output_p (output_p ('main: \n)))
          (set output_p (output_p (_before-main())))
          (set output_p (output_p (_enter-function())))
-         (set e (compile-expr(main_ctx body 0)))
+         (set e (compile-expr(main_ctx body ())))
          (set output_p (output_p (get-frame e)))
          (set output_p (output_p (get-prog e)))
          (set output_p (output_p (get-unframe e)))
@@ -389,7 +389,7 @@ assemble := λconfig program. (
          (print-s (F fname body))
          (set output_p (output_p (fname ': \n)))
          (set output_p (output_p (_enter-function())))
-         (set e (compile-expr(main_ctx body 0)))
+         (set e (compile-expr(main_ctx body ())))
          #TODO unpack expression $body
       ))
    )))
@@ -487,16 +487,15 @@ declare-local := λctx vname offset. (tail(
       ))))))))    
    ))
    (local sixteen)
-   (set sixteen ( mul( eight (inc(inc(()))) ) ))
+   (set sixteen (mul( eight (inc(inc(()))) )))
    (local twentyfour)
    (set twentyfour ( mul( eight (inc(inc(inc(())))) ) ))
    (local thirtytwo)
    (set thirtytwo ( mul( eight (inc(inc(inc(inc(()))))) ) ))
    (local set_this)
-   (print-s (OFFSET (dump-i offset)))
    (set set_this (
       \t 'mov \s '%r12, \s (
-         (mul( (add( (mul( thirtytwo offset )) eight)) (dec(())) ))
+         (dump-i( (mul( (add( (mul( thirtytwo offset )) eight)) (dec(())) )) ))
       ) \[ '%rbp \] \n
    ))
    (print-s set_this)

@@ -29,7 +29,20 @@
    \t 'mov \s '$0, \s '%r13              \n
    \t 'mov \s '$0, \s '%r14              \n
    \t 'mov \s '$0, \s '%r15              \n
+   \t 'mov \s '$__dump_i, \s '%r11     \n
+   \t 'cmp \s '$0, \s '%r8             \n
+   \t 'jge \s 'dump_i_positive         \n
+   \t 'jmp \s 'dump_i_negative         \n
+   'dump_i_positive:                   \n
+   \t 'call \s 'dump_i_digits          \n
+   \t ret                              \n
+   'dump_i_negative:                   \n
+   \t 'neg \s '%r8                     \n
+   \t 'call \s 'dump_i_digits          \n
+   \t 'movb \s '$45, \s '0 \[ %r11 \]  \n
+   \t ret                              \n
 
+   'dump_i_digits:                     \n
    \t 'mov \s '$__dump_i, \s '%r11       \n
    \t 'rol \s '$4, \s '%r8               \n   # %r8[0]
    \t 'call \s 'put8                 \n
