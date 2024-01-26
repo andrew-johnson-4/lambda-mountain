@@ -857,7 +857,7 @@ compile-expr := λctx e offset. (tail(
       ()
       ( (App ((Variable 'local) (Variable fname))) (tail(
          ()
-         (set e1 (declare-local(ctx x offset)))
+         (set e1 (declare-local(ctx fname offset)))
          (set e1_frame (get-frame e1))
          (set e1_prog (get-prog e1))
          (set e1_unframe (get-unframe e1))
