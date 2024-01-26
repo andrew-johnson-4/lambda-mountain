@@ -181,6 +181,9 @@ get-local := λctx v. (tail(
       ))
       (set ctx (head ctx))
    ))
+   (if r () (
+      (print-s (ReferenceToUndefinedLocal v))
+   ))
    r
 ));
 set-local := λctx v. (tail(
@@ -195,6 +198,9 @@ set-local := λctx v. (tail(
          ))
       ))
       (set ctx (head ctx))
+   ))
+   (if r () (
+      (print-s (AssignToUndefinedLocal v))
    ))
    r
 ));
@@ -614,6 +620,20 @@ compile-expr := λctx e offset. (tail(
          ()
          (declare-local (ctx fname offset))
       )))
+      ( (App( (App( (Variable 'set) (Variable vname) )) x )) (tail(
+         ()
+         (set e1 (compile-expr(ctx x offset)))
+         (set e1_frame (get-frame e1))
+         (set e1_prog (get-prog e1))
+         (set e1_unframe (get-unframe e1))
+         (set e1_text (get-text e1))
+         (set e1_data (get-data e1))
+         (set ctx (get-pc e1))
+         (set offset (get-offset e1))
+         (set prog e1_prog)
+         (set prog (prog (set-local(ctx vname))))
+         (Expr( e1_frame prog e1_unframe e1_text e1_data ctx offset ))
+      )))
       ( (App( (App( (Variable 'while) c )) d )) (tail(
          (set e1 (compile-expr(ctx c offset)))
          (set e1_frame (get-frame e1))
@@ -755,9 +775,6 @@ compile-expr := λctx e offset. (tail(
       )))
       ( (Variable vname) (tail(
          (set prog (get-local(ctx vname)))
-         (if prog () (
-            (print-s (ReferenceToUndefinedLocal vname))
-         ))
          (Expr( () prog () () () ctx offset ))
       )))
       (x (print-s (TODO x)) )

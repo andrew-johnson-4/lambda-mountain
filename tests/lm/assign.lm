@@ -6,5 +6,5 @@ main := print-s(tail(
    (set a 123)
    (set b 'abc)
    (set c 'xyz)
-   (a b c)
+   (Assignment a b c)
 ));
