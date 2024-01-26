@@ -626,7 +626,7 @@ destructure-pattern-lhs := λctx lhs offset. (tail(
    (match lhs (
       ()
       ( (Variable '_) (
-         ( () (\t 'mov \s '$1, \s %rsi \n) () () () ctx offset )
+         (Expr( () (\t 'mov \s '$1, \s %rsi \n) () () () ctx offset ))
       ))
       (_ (print-s (UnexpectedPattern lhs)))
    ))
@@ -703,7 +703,7 @@ yield-patterns := λctx p offset. match p (
    ()
    ( Nil (tail(
       ()
-      ( () (\t 'mov \s '$0, \s %rsi \n) () () () ctx offset )
+      (Expr( () (\t 'mov \s '$0, \s %rsi \n) () () () ctx offset ))
    )))
    ( (App( prev (App( lhs rhs )) )) (tail(
       (local e1)
@@ -760,7 +760,7 @@ yield-patterns := λctx p offset. match p (
       (set prog (prog e3_prog))
       (set prog (prog (\t 'mov \s '$1, \s %rsi \n)))
       (set prog (prog (label_skip ': \n)))
-      ( (e1_frame e2_frame e3_frame) prog (e1_unframe e2_unframe e3_unframe) (e1_text e2_text e3_text) (e1_data e2_data e3_data) ctx offset )
+      (Expr( (e1_frame e2_frame e3_frame) prog (e1_unframe e2_unframe e3_unframe) (e1_text e2_text e3_text) (e1_data e2_data e3_data) ctx offset ))
    )))
    ( _ (
       (print-s (InvalidPatternsCase p))
@@ -877,9 +877,9 @@ compile-expr := λctx e offset. (tail(
          (set prog (e1_prog e2_prog))
          (set prog (prog ( \t 'cmp \s '$0, \s %rsi \n )))
          (set prog (prog ( \t 'jne \s label_skip \n )))
-         (set prog (prog (_yield_nil())))
+         (set prog (prog (_yield-nil())))
          (set prog (prog ( label_skip ': \n )))
-         ( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset )
+         (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))
       )))
       ( (App( (App( (Variable 'while) c )) d )) (tail(
          (set e1 (compile-expr(ctx c offset)))
