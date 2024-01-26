@@ -85,7 +85,7 @@ fn assemble(cfg: &str, program: &S) {
    }
 }
 
-const OPERATORS: [(&str,&str); 18] = [
+const OPERATORS: [(&str,&str); 21] = [
    ("eq", "eq"),
    ("not", "not"),
    ("inc", "inc"),
@@ -96,9 +96,9 @@ const OPERATORS: [(&str,&str); 18] = [
    ("mod", "mod"),
    ("inv", "inv"),
    ("is-neg", "is_neg"),
+
    ("head", "head"),
    ("tail", "tail"),
-
    ("dump-i", "dump_i"),
    ("print-s", "print_s"),
    ("print-i", "print_i"),
@@ -107,6 +107,8 @@ const OPERATORS: [(&str,&str); 18] = [
    ("clone-rope", "clone_rope"),
    ("write-file", "write_file"),
    ("load-file", "load_file"),
+
+   ("digit", "digit"),
 ];
 
 fn label_case(s: &str) -> String {

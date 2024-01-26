@@ -23,6 +23,16 @@
    \t 'mov \s '$1, \s '%r9               \n
    \t 'jmp \s '__print_this          \n
 
+   'digit:                               \n
+   \t 'mov \s '%r12, \s '%rax            \n
+   \t 'add \s '$48, \s %rax              \n
+   \t 'mov \s '$__digit, \s %r12         \n
+   \t 'mov \s '%al, \s '0 \[ %r12 \]     \n
+   \t 'mov \s '$0, \s %r13               \n
+   \t 'mov \s '$0, \s %r14               \n
+   \t 'mov \s '$0, \s %r15               \n
+   \t 'ret                               \n
+
    'dump_i:                      \n
    \t 'mov \s '%r12, \s '%r8             \n
    \t 'mov \s '$__dump_i, \s '%r12       \n
@@ -481,6 +491,8 @@
   \t '.zero \s '1024                 \n
   '__nil:                        \n
   \t '.zero \s '32                   \n
+  '__digit:                       \n
+  \t '.zero \s '2                   \n
   '__argv:                       \n
   \t '.zero \s '32                   \n
   '__s_counter:                  \n

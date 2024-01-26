@@ -54,6 +54,26 @@ uuid := λ. (tail(
    (clone-rope ('uuid_ (dump-i $uuid)))
 ));
 
+i2s := λi. (tail(
+   (local ten)
+   (set ten( inc(inc(inc(inc(inc( inc(inc(inc(inc(inc( ))))) ))))) ))
+   (print-s(dump-i ten))
+   (print-s(digit()))
+   (print-s(digit(inc())))
+   (local s)
+   (local r)
+   (if (is-neg i) (
+      (set s (s '-))
+      (set i (inv i))
+   ) ())
+   (while i (
+      (set r (mod(i ten)))
+      (set s (s (clone-rope(digit r))))
+      (set i (div(i ten)))
+   ))
+   (clone-rope s)
+));
+
 tokenize-file := λpath. (
    tokenize (load-file path)
 );
@@ -416,6 +436,7 @@ is-builtin := λf. (match f (
    ('mod True)
    ('inv True)
    ('is-neg True)
+   ('digit True)
    ('dump-i True)
    ('print-s True)
    ('print-i True)
@@ -499,16 +520,16 @@ declare-local := λctx vname offset. (tail(
    (local set_this)
    (set set_this (
       \t 'mov \s '%r12, \s (
-         (clone-rope(dump-i( (mul( (add( (mul( thirtytwo offset )) eight)) (dec(())) )) )))
+         (i2s( (mul( (add( (mul( thirtytwo offset )) eight)) (dec(())) )) ))
       ) \[ '%rbp \] \n
       \t 'mov \s '%r13, \s (
-         (clone-rope(dump-i( (mul( (add( (mul( thirtytwo offset )) sixteen)) (dec(())) )) )))
+         (i2s( (mul( (add( (mul( thirtytwo offset )) sixteen)) (dec(())) )) ))
       ) \[ '%rbp \] \n
       \t 'mov \s '%r14, \s (
-         (clone-rope(dump-i( (mul( (add( (mul( thirtytwo offset )) twentyfour)) (dec(())) )) )))
+         (i2s( (mul( (add( (mul( thirtytwo offset )) twentyfour)) (dec(())) )) ))
       ) \[ '%rbp \] \n
       \t 'mov \s '%r15, \s (
-         (clone-rope(dump-i( (mul( (add( (mul( thirtytwo offset )) thirtytwo)) (dec(())) )) )))
+         (i2s( (mul( (add( (mul( thirtytwo offset )) thirtytwo)) (dec(())) )) ))
       ) \[ '%rbp \] \n
    ))
    (print-s set_this)
@@ -738,6 +759,8 @@ _data-header := λ.(
   '__true:                             \n
   \t .ascii \s "True"                  \n
   \t .zero \s '1                       \n
+  '__digit:                            \n
+  \t '.zero \s '2                      \n
   '__dump_i:                           \n
   \t '.ascii \s '"0000000000000000"    \n
   \t '.zero \s '1                      \n
@@ -843,6 +866,16 @@ _program-header := λ.(
    '_strlen_exit:                      \n
    \t 'ret                             \n
    # result is stored in %rcx
+
+   'digit:                               \n
+   \t 'mov \s '%r12, \s '%rax            \n
+   \t 'add \s '$48, \s %rax              \n
+   \t 'mov \s '$__digit, \s %r12         \n
+   \t 'mov \s '%al, \s '0 \[ %r12 \]     \n
+   \t 'mov \s '$0, \s %r13               \n
+   \t 'mov \s '$0, \s %r14               \n
+   \t 'mov \s '$0, \s %r15               \n
+   \t 'ret                               \n
 
    'print_s:                           \n
 
