@@ -1,5 +1,5 @@
 
-main := print-s(match (1 2 3) (
+main := print-s(match (1 2) (
    ()
    ( (Lambda x) (x 1))
    ( (x y) (x y) )

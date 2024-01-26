@@ -826,7 +826,7 @@ yield-cons := λctx l r offset. (tail(
    (set prog (prog (\t 'mov \s '$0, \s '%r12 \n)))
    (set prog (prog (\t 'mov \s '%rsi, \s '%r13 \n)))
    (set prog (prog (\t 'mov \s '%rdi, \s '%r14 \n)))
-   (set prog (prog (\t 'mov \s '$0, \s '%r12 \n)))
+   (set prog (prog (\t 'mov \s '$0, \s '%r15 \n)))
 
    (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))
 ));
