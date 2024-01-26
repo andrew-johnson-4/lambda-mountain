@@ -863,9 +863,9 @@ _data-header := λ.(
 );
 
 _exit-cleanup := λ.(
-   \t 'mov \s '$60, \s '%eax   \n # _exit system call
-   \t 'mov \s '$0, \s '%edi    \n # error code 0
-   \t 'syscall                 \n
+   \t 'mov \s '$60, \s '%eax           \n # _exit system call
+   \t 'mov \s '$0, \s '%edi            \n # error code 0
+   \t 'syscall                         \n
 );
 
 _before-main := λ.(
@@ -882,477 +882,476 @@ _before-main := λ.(
    \t 'movq \s '$0, \s '24 \[ '%rbx \]    \n
 
    '__before_main_argv:                   \n
-   \t 'cmp \s '$0, \s '%rax              \n
-   \t 'je \s '__before_main_end         \n
-   \t 'pop \s '%r12                     \n #argv[i]
-   \t 'mov \s '$0, \s '%r13              \n
-   \t 'mov \s '$0, \s '%r14              \n
-   \t 'mov \s '$0, \s '%r15              \n
+   \t 'cmp \s '$0, \s '%rax               \n
+   \t 'je \s '__before_main_end           \n
+   \t 'pop \s '%r12                       \n #argv[i]
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$0, \s '%r14               \n
+   \t 'mov \s '$0, \s '%r15               \n
 
    #close this (move S onto the heap)
-   \t 'mov \s '$__s_section, \s '%rsi        \n # %rsi now points to root s
-   \t 'mov \s '$__s_counter, \s '%r8         \n # %r8 now points to s counter
-   \t 'mov \s '0\[ '%r8 \] , \s '%r10         \n # %r10 now hold value of cons counter
-   \t 'add \s '%r10, \s '%rsi                \n # %rsi now points to top free cons
-   \t 'add \s '$32, \s '%r10                 \n # increment s counter
-   \t 'mov \s '%r10, \s '0 \[ '%r8 \]         \n # overwrite new s counter
-   \t 'mov \s '%r12, \s '0 \[ '%rsi \]        \n # set top.atom
-   \t 'mov \s '%r13, \s '8 \[ '%rsi \]        \n # set top.head
-   \t 'mov \s '%r14, \s '16 \[ '%rsi \]       \n # set top.tail
-   \t 'mov \s '%r15, \s '24 \[ '%rsi \]       \n # set top.flags
-   \t 'mov \s '%rsi, \s '%rdi            \n
+   \t 'mov \s '$__s_section, \s '%rsi     \n # %rsi now points to root s
+   \t 'mov \s '$__s_counter, \s '%r8      \n # %r8 now points to s counter
+   \t 'mov \s '0\[ '%r8 \] , \s '%r10     \n # %r10 now hold value of cons counter
+   \t 'add \s '%r10, \s '%rsi             \n # %rsi now points to top free cons
+   \t 'add \s '$32, \s '%r10              \n # increment s counter
+   \t 'mov \s '%r10, \s '0 \[ '%r8 \]     \n # overwrite new s counter
+   \t 'mov \s '%r12, \s '0 \[ '%rsi \]    \n # set top.atom
+   \t 'mov \s '%r13, \s '8 \[ '%rsi \]    \n # set top.head
+   \t 'mov \s '%r14, \s '16 \[ '%rsi \]   \n # set top.tail
+   \t 'mov \s '%r15, \s '24 \[ '%rsi \]   \n # set top.flags
+   \t 'mov \s '%rsi, \s '%rdi             \n
 
    #rdi is a
-   \t 'mov \s '$0, \s '%r12              \n
-   \t 'mov \s '$0, \s '%r13              \n
-   \t 'mov \s '$0, \s '%r14              \n
-   \t 'mov \s '$0, \s '%r15              \n
+   \t 'mov \s '$0, \s '%r12               \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$0, \s '%r14               \n
+   \t 'mov \s '$0, \s '%r15               \n
 
-   \t 'mov \s '$__s_section, \s '%rsi        \n # %rsi now points to root s
-   \t 'mov \s '$__s_counter, \s '%r8         \n # %r8 now points to s counter
-   \t 'mov \s '0\[ '%r8 \] , \s '%r10         \n # %r10 now hold value of cons counter
-   \t 'add \s '%r10, \s '%rsi                \n # %rsi now points to top free cons
-   \t 'add \s '$32, \s '%r10                 \n # increment s counter
-   \t 'mov \s '%r10, \s '0 \[ '%r8 \]         \n # overwrite new s counter
-   \t 'mov \s '%r12, \s '0 \[ '%rsi \]        \n # set top.atom
-   \t 'mov \s '%r13, \s '8 \[ '%rsi \]        \n # set top.head
-   \t 'mov \s '%r14, \s '16 \[ '%rsi \]       \n # set top.tail
-   \t 'mov \s '%r15, \s '24 \[ '%rsi \]       \n # set top.flags
-   \t 'mov \s '%rsi, \s '%rdi            \n
+   \t 'mov \s '$__s_section, \s '%rsi     \n # %rsi now points to root s
+   \t 'mov \s '$__s_counter, \s '%r8      \n # %r8 now points to s counter
+   \t 'mov \s '0\[ '%r8 \] , \s '%r10     \n # %r10 now hold value of cons counter
+   \t 'add \s '%r10, \s '%rsi             \n # %rsi now points to top free cons
+   \t 'add \s '$32, \s '%r10              \n # increment s counter
+   \t 'mov \s '%r10, \s '0 \[ '%r8 \]     \n # overwrite new s counter
+   \t 'mov \s '%r12, \s '0 \[ '%rsi \]    \n # set top.atom
+   \t 'mov \s '%r13, \s '8 \[ '%rsi \]    \n # set top.head
+   \t 'mov \s '%r14, \s '16 \[ '%rsi \]   \n # set top.tail
+   \t 'mov \s '%r15, \s '24 \[ '%rsi \]   \n # set top.flags
 
    #rsi is clean closed ()
    \t 'mov \s '%rdi, \s '8 \[ '%rbx \]    \n
    \t 'mov \s '%rsi, \s '16 \[ '%rbx \]   \n
-   \t 'mov \s '%rsi, \s '%rbx            \n
+   \t 'mov \s '%rsi, \s '%rbx             \n
    #rbx is tail of argv
-   \t 'dec \s '%rax                     \n
-   \t 'jmp \s '__before_main_argv       \n
-   '__before_main_end:                 \n
+   \t 'dec \s '%rax                       \n
+   \t 'jmp \s '__before_main_argv         \n
+   '__before_main_end:                    \n
 );
 
 _enter-function := λ.(
-   \t 'push \s '%rbp                        \n
-   \t 'mov \s '%rsp, \s '%rbp                \n
+   \t 'push \s '%rbp                      \n
+   \t 'mov \s '%rsp, \s '%rbp             \n
 );
 _leave-function := λ.(
-   \t 'mov \s '%rbp, \s '%rsp                \n
-   \t 'pop \s '%rbp                         \n
-   \t 'ret                                 \n
+   \t 'mov \s '%rbp, \s '%rsp             \n
+   \t 'pop \s '%rbp                       \n
+   \t 'ret                                \n
 );
 
 _program-header := λ.(
-   '.global \s '_start                 \n
-   '.text                              \n
-   '_start:                            \n
-   \t 'jmp \s 'main                    \n
+   '.global \s '_start                    \n
+   '.text                                 \n
+   '_start:                               \n
+   \t 'jmp \s 'main                       \n
 
    # internal _strlen (%rax: *char) -> %rbx
    # not a call-convention function
-   '_strlen:                           \n
-   \t 'xor \s '%rbx, \s '%rbx          \n
-   \t '_strlen_loop:                   \n
-   \t 'cmpb \s '$0, \s '0 \[ '%rax \]  \n
-   \t 'jz \s '_strlen_exit             \n
-   \t 'inc \s '%rax                    \n
-   \t 'inc \s '%rbx                    \n
-   \t 'jmp \s '_strlen_loop            \n
-   '_strlen_exit:                      \n
-   \t 'ret                             \n
+   '_strlen:                              \n
+   \t 'xor \s '%rbx, \s '%rbx             \n
+   \t '_strlen_loop:                      \n
+   \t 'cmpb \s '$0, \s '0 \[ '%rax \]     \n
+   \t 'jz \s '_strlen_exit                \n
+   \t 'inc \s '%rax                       \n
+   \t 'inc \s '%rbx                       \n
+   \t 'jmp \s '_strlen_loop               \n
+   '_strlen_exit:                         \n
+   \t 'ret                                \n
    # result is stored in %rcx
 
-   'digit:                               \n
-   \t 'mov \s '%r12, \s '%rax            \n
-   \t 'add \s '$48, \s %rax              \n
-   \t 'mov \s '$__digit, \s %r12         \n
-   \t 'mov \s '%al, \s '0 \[ %r12 \]     \n
-   \t 'mov \s '$0, \s %r13               \n
-   \t 'mov \s '$0, \s %r14               \n
-   \t 'mov \s '$0, \s %r15               \n
-   \t 'ret                               \n
+   'digit:                                \n
+   \t 'mov \s '%r12, \s '%rax             \n
+   \t 'add \s '$48, \s %rax               \n
+   \t 'mov \s '$__digit, \s %r12          \n
+   \t 'mov \s '%al, \s '0 \[ %r12 \]      \n
+   \t 'mov \s '$0, \s %r13                \n
+   \t 'mov \s '$0, \s %r14                \n
+   \t 'mov \s '$0, \s %r15                \n
+   \t 'ret                                \n
 
-   'print_s:                           \n
+   'print_s:                              \n
 
    # if .atom != NULL 
-   '__print_this_atom:                 \n
-   \t 'cmp \s '$0, \s '%r12            \n
-   \t 'je \s '__print_this_cons        \n
-   \t 'mov \s '%r12, \s '%rax          \n
-   \t 'call \s '_strlen                \n # %rbx is length of string
-   \t 'mov \s '%r12, \s '%rsi          \n # address of string to output
-   \t 'mov \s '%rbx, \s '%rdx          \n # length is %rcx
-   \t 'mov \s '$1, \s '%rax            \n # system call 1 is write
-   \t 'mov \s '$1, \s '%rdi            \n # file handle 1 is stdout
-   \t 'syscall                         \n # invoke operating system to do the write
-   \t 'ret                             \n
+   '__print_this_atom:                    \n
+   \t 'cmp \s '$0, \s '%r12               \n
+   \t 'je \s '__print_this_cons           \n
+   \t 'mov \s '%r12, \s '%rax             \n
+   \t 'call \s '_strlen                   \n # %rbx is length of string
+   \t 'mov \s '%r12, \s '%rsi             \n # address of string to output
+   \t 'mov \s '%rbx, \s '%rdx             \n # length is %rcx
+   \t 'mov \s '$1, \s '%rax               \n # system call 1 is write
+   \t 'mov \s '$1, \s '%rdi               \n # file handle 1 is stdout
+   \t 'syscall                            \n # invoke operating system to do the write
+   \t 'ret                                \n
 
    # if .head != NULL && .tail != NULL
-   '__print_this_cons:                 \n
-   \t 'cmp \s '$0, \s '%r13            \n
-   \t 'je \s '__print_this_nil         \n
-   \t 'cmp \s '$0, \s '%r14            \n
-   \t 'je \s '__print_this_nil         \n
-   \t 'push \s '%r14                   \n
-   \t 'push \s '%r13                   \n
+   '__print_this_cons:                    \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s '__print_this_nil            \n
+   \t 'cmp \s '$0, \s '%r14               \n
+   \t 'je \s '__print_this_nil            \n
+   \t 'push \s '%r14                      \n
+   \t 'push \s '%r13                      \n
    #show lparen
-   \t 'mov \s '$1, \s '%rax            \n
-   \t 'mov \s '$1, \s '%rdi            \n
-   \t 'mov \s '$__lparen, \s '%rsi     \n
-   \t 'mov \s '$1, \s '%rdx            \n
-   \t 'syscall                         \n
+   \t 'mov \s '$1, \s '%rax               \n
+   \t 'mov \s '$1, \s '%rdi               \n
+   \t 'mov \s '$__lparen, \s '%rsi        \n
+   \t 'mov \s '$1, \s '%rdx               \n
+   \t 'syscall                            \n
    #show head
-   \t 'pop \s '%r8                     \n
-   \t 'mov \s '0 \[ '%r8 \] , '%r12    \n
-   \t 'mov \s '8 \[ '%r8 \] , '%r13    \n
-   \t 'mov \s '16 \[ '%r8 \] , '%r14   \n
-   \t 'mov \s '24 \[ '%r8 \] , '%r15   \n
-   \t 'call \s 'print_s                \n
+   \t 'pop \s '%r8                        \n
+   \t 'mov \s '0 \[ '%r8 \] , '%r12       \n
+   \t 'mov \s '8 \[ '%r8 \] , '%r13       \n
+   \t 'mov \s '16 \[ '%r8 \] , '%r14      \n
+   \t 'mov \s '24 \[ '%r8 \] , '%r15      \n
+   \t 'call \s 'print_s                   \n
    #show space
-   \t 'mov \s '$1, \s '%rax            \n
-   \t 'mov \s '$1, \s '%rdi            \n
-   \t 'mov \s '$__space, \s '%rsi      \n
-   \t 'mov \s '$1, \s '%rdx            \n
-   \t 'syscall                         \n
+   \t 'mov \s '$1, \s '%rax               \n
+   \t 'mov \s '$1, \s '%rdi               \n
+   \t 'mov \s '$__space, \s '%rsi         \n
+   \t 'mov \s '$1, \s '%rdx               \n
+   \t 'syscall                            \n
    #show tail
-   \t 'pop \s '%r8                     \n
-   \t 'mov \s '0 \[ '%r8 \] , '%r12    \n
-   \t 'mov \s '8 \[ '%r8 \] , '%r13    \n
-   \t 'mov \s '16 \[ '%r8 \] , '%r14   \n
-   \t 'mov \s '24 \[ '%r8 \] , '%r15   \n
-   \t 'call \s 'print_s                \n
+   \t 'pop \s '%r8                        \n
+   \t 'mov \s '0 \[ '%r8 \] , '%r12       \n
+   \t 'mov \s '8 \[ '%r8 \] , '%r13       \n
+   \t 'mov \s '16 \[ '%r8 \] , '%r14      \n
+   \t 'mov \s '24 \[ '%r8 \] , '%r15      \n
+   \t 'call \s 'print_s                   \n
    #show rparen
-   \t 'mov \s '$1, \s '%rax            \n
-   \t 'mov \s '$1, \s '%rdi            \n
-   \t 'mov \s '$__rparen, \s '%rsi     \n
-   \t 'mov \s '$1, \s '%rdx            \n
-   \t 'syscall                         \n
-   \t 'mov \s '$0, \s '%r12            \n
-   \t 'mov \s '$0, \s '%r13            \n
-   \t 'mov \s '$0, \s '%r14            \n
-   \t 'mov \s '$0, \s '%r15            \n
-   \t 'ret                             \n
+   \t 'mov \s '$1, \s '%rax               \n
+   \t 'mov \s '$1, \s '%rdi               \n
+   \t 'mov \s '$__rparen, \s '%rsi        \n
+   \t 'mov \s '$1, \s '%rdx               \n
+   \t 'syscall                            \n
+   \t 'mov \s '$0, \s '%r12               \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$0, \s '%r14               \n
+   \t 'mov \s '$0, \s '%r15               \n
+   \t 'ret                                \n
 
-   '__print_this_nil:                  \n
-   \t 'mov \s '$1, \s '%rax            \n # system call 1 is write
-   \t 'mov \s '$1, \s '%rdi            \n # file handle 1 is stdout
-   \t 'mov \s '$__nil_literal, \s '%rsi \n # address of string to output
-   \t 'mov \s '$2, \s '%rdx            \n # nil is 2 bytes
-   \t 'syscall                         \n # invoke operating system to do the write
-   \t 'ret                             \n
+   '__print_this_nil:                     \n
+   \t 'mov \s '$1, \s '%rax               \n # system call 1 is write
+   \t 'mov \s '$1, \s '%rdi               \n # file handle 1 is stdout
+   \t 'mov \s '$__nil_literal, \s '%rsi   \n # address of string to output
+   \t 'mov \s '$2, \s '%rdx               \n # nil is 2 bytes
+   \t 'syscall                            \n # invoke operating system to do the write
+   \t 'ret                                \n
 
 
-   'head:                              \n
-   \t 'cmp \s '$0, \s '%r13            \n
-   \t 'je \s '__head_is_nil            \n
-   \t 'mov \s '0 \[ '%r13 \] ', '%r12  \n
-   \t 'mov \s '16 \[ '%r13 \] ', '%r14 \n
-   \t 'mov \s '24 \[ '%r13 \] ', '%r15 \n
-   \t 'mov \s '8 \[ '%r13 \] ', '%r13  \n
-   \t 'ret                             \n
-   '__head_is_nil:                     \n
-   \t 'mov \s '$0, \s %r12             \n
-   \t 'mov \s '$0, \s %r13             \n
-   \t 'mov \s '$0, \s %r14             \n
-   \t 'mov \s '$0, \s %r15             \n
-   \t 'ret                             \n
+   'head:                                 \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s '__head_is_nil               \n
+   \t 'mov \s '0 \[ '%r13 \] ', '%r12     \n
+   \t 'mov \s '16 \[ '%r13 \] ', '%r14    \n
+   \t 'mov \s '24 \[ '%r13 \] ', '%r15    \n
+   \t 'mov \s '8 \[ '%r13 \] ', '%r13     \n
+   \t 'ret                                \n
+   '__head_is_nil:                        \n
+   \t 'mov \s '$0, \s %r12                \n
+   \t 'mov \s '$0, \s %r13                \n
+   \t 'mov \s '$0, \s %r14                \n
+   \t 'mov \s '$0, \s %r15                \n
+   \t 'ret                                \n
 
-   'tail:                              \n
-   \t 'cmp \s '$0, \s '%r13            \n
-   \t 'je \s '__tail_is_nil            \n
-   \t 'mov \s '0 \[ '%r14 \] ', '%r12  \n
-   \t 'mov \s '8 \[ '%r14 \] ', '%r13  \n
-   \t 'mov \s '24 \[ '%r14 \] ', '%r15 \n
-   \t 'mov \s '16 \[ '%r14 \] ', '%r14 \n
-   \t 'ret                             \n
-   '__tail_is_nil:                     \n
-   \t 'mov \s '$0, \s %r12             \n
-   \t 'mov \s '$0, \s %r13             \n
-   \t 'mov \s '$0, \s %r14             \n
-   \t 'mov \s '$0, \s %r15             \n
-   \t 'ret                             \n
+   'tail:                                 \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s '__tail_is_nil               \n
+   \t 'mov \s '0 \[ '%r14 \] ', '%r12     \n
+   \t 'mov \s '8 \[ '%r14 \] ', '%r13     \n
+   \t 'mov \s '24 \[ '%r14 \] ', '%r15    \n
+   \t 'mov \s '16 \[ '%r14 \] ', '%r14    \n
+   \t 'ret                                \n
+   '__tail_is_nil:                        \n
+   \t 'mov \s '$0, \s %r12                \n
+   \t 'mov \s '$0, \s %r13                \n
+   \t 'mov \s '$0, \s %r14                \n
+   \t 'mov \s '$0, \s %r15                \n
+   \t 'ret                                \n
 
-   'not:                               \n
-   \t 'cmp \s '$0, \s '%r12            \n
-   \t 'jne \s '__not_is_some           \n
-   \t 'cmp \s '$0, \s '%r13            \n
-   \t 'jne \s '__not_is_some           \n
-   \t 'cmp \s '$0, \s '%r14            \n
-   \t 'jne \s '__not_is_some           \n
-   \t 'mov \s '$__true, \s '%r12       \n
-   \t 'mov \s '$0, \s '%r13            \n
-   \t 'mov \s '$0, \s '%r14            \n
-   \t 'mov \s '$0, \s '%r15            \n
-   \t 'ret                             \n
-   '__not_is_some:                     \n
-   \t 'mov \s '$0, \s '%r12            \n
-   \t 'mov \s '$0, \s '%r13            \n
-   \t 'mov \s '$0, \s '%r14            \n
-   \t 'mov \s '$0, \s '%r15            \n
-   \t 'ret                             \n
+   'not:                                  \n
+   \t 'cmp \s '$0, \s '%r12               \n
+   \t 'jne \s '__not_is_some              \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'jne \s '__not_is_some              \n
+   \t 'cmp \s '$0, \s '%r14               \n
+   \t 'jne \s '__not_is_some              \n
+   \t 'mov \s '$__true, \s '%r12          \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$0, \s '%r14               \n
+   \t 'mov \s '$0, \s '%r15               \n
+   \t 'ret                                \n
+   '__not_is_some:                        \n
+   \t 'mov \s '$0, \s '%r12               \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$0, \s '%r14               \n
+   \t 'mov \s '$0, \s '%r15               \n
+   \t 'ret                                \n
 
-   'eq:                                \n
-   \t 'cmp \s '$0, \s '%r13            \n
-   \t 'je \s '__equal_nil              \n
-   \t 'cmp \s '$0, \s '%r14            \n
-   \t 'je \s '__equal_nil              \n
-   \t 'mov \s '0 \[ %r13 \] , \s '%rax \n # mov x.atom into %rax
-   \t 'mov \s '0 \[ %r14 \] , \s '%rbx \n # mov y.atom into %rbx
-   \t 'cmp \s '$0, \s '%rax            \n
-   \t 'je \s '__equal_nil              \n
-   \t 'cmp \s '$0, \s '%rbx            \n
-   \t 'je \s '__equal_nil              \n
-   \t 'call \s '_streq                 \n
-   \t 'ret                             \n
-   '__equal_nil:                       \n
-   \t 'mov \s '$0, \s '%r12            \n
-   \t 'mov \s '$0, \s '%r13            \n
-   \t 'mov \s '$0, \s '%r14            \n
-   \t 'mov \s '$0, \s '%r15            \n
-   \t 'ret                             \n
+   'eq:                                   \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s '__equal_nil                 \n
+   \t 'cmp \s '$0, \s '%r14               \n
+   \t 'je \s '__equal_nil                 \n
+   \t 'mov \s '0 \[ %r13 \] , \s '%rax    \n # mov x.atom into %rax
+   \t 'mov \s '0 \[ %r14 \] , \s '%rbx    \n # mov y.atom into %rbx
+   \t 'cmp \s '$0, \s '%rax               \n
+   \t 'je \s '__equal_nil                 \n
+   \t 'cmp \s '$0, \s '%rbx               \n
+   \t 'je \s '__equal_nil                 \n
+   \t 'call \s '_streq                    \n
+   \t 'ret                                \n
+   '__equal_nil:                          \n
+   \t 'mov \s '$0, \s '%r12               \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$0, \s '%r14               \n
+   \t 'mov \s '$0, \s '%r15               \n
+   \t 'ret                                \n
 
    # _streq (%rax: *char, %rbx: *char)
-   '_streq:                            \n
-   '__streq_loop:                      \n
-   \t 'cmp \s '$0, \s '%rax            \n
-   \t 'je \s '__streq_false            \n
-   \t 'cmp \s '$0, \s '%rbx            \n
-   \t 'je \s '__streq_false            \n
-   \t 'mov \s '0 \[ %rax \] , \s '%cl  \n
-   \t 'mov \s '0 \[ %rbx \] , \s '%dl  \n
+   '_streq:                               \n
+   '__streq_loop:                         \n
+   \t 'cmp \s '$0, \s '%rax               \n
+   \t 'je \s '__streq_false               \n
+   \t 'cmp \s '$0, \s '%rbx               \n
+   \t 'je \s '__streq_false               \n
+   \t 'mov \s '0 \[ %rax \] , \s '%cl     \n
+   \t 'mov \s '0 \[ %rbx \] , \s '%dl     \n
 
-   \t 'cmp \s '%cl, \s '%dl            \n
-   \t 'jne \s '__streq_false           \n
-   \t 'cmp \s '$0, \s '%cl             \n
-   \t 'je \s '__streq_true             \n
-   \t 'inc \s '%rax                    \n
-   \t 'inc \s '%rbx                    \n
-   \t 'jmp \s '__streq_loop            \n
-   '__streq_true:                      \n
-   \t 'mov \s '$__true, \s '%r12       \n
-   \t 'mov \s '$0, \s '%r13            \n
-   \t 'mov \s '$0, \s '%r14            \n
-   \t 'mov \s '$0, \s '%r15            \n
-   \t 'ret                             \n
-   '__streq_false:                     \n
-   \t 'mov \s '$0, \s '%r12            \n
-   \t 'mov \s '$0, \s '%r13            \n
-   \t 'mov \s '$0, \s '%r14            \n
-   \t 'mov \s '$0, \s '%r15            \n
-   \t 'ret                             \n
+   \t 'cmp \s '%cl, \s '%dl               \n
+   \t 'jne \s '__streq_false              \n
+   \t 'cmp \s '$0, \s '%cl                \n
+   \t 'je \s '__streq_true                \n
+   \t 'inc \s '%rax                       \n
+   \t 'inc \s '%rbx                       \n
+   \t 'jmp \s '__streq_loop               \n
+   '__streq_true:                         \n
+   \t 'mov \s '$__true, \s '%r12          \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$0, \s '%r14               \n
+   \t 'mov \s '$0, \s '%r15               \n
+   \t 'ret                                \n
+   '__streq_false:                        \n
+   \t 'mov \s '$0, \s '%r12               \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$0, \s '%r14               \n
+   \t 'mov \s '$0, \s '%r15               \n
+   \t 'ret                                \n
 
-   'dump_i:                            \n
-   \t 'mov \s '%r12, \s '%r8           \n
-   \t 'mov \s '$__dump_i, \s '%r12     \n
-   \t 'mov \s '$0, \s '%r13            \n
-   \t 'mov \s '$0, \s '%r14            \n
-   \t 'mov \s '$0, \s '%r15            \n
-   \t 'mov \s '$__dump_i, \s '%r11     \n
-   \t 'cmp \s '$0, \s '%r8             \n
-   \t 'jge \s 'dump_i_positive         \n
-   \t 'jmp \s 'dump_i_negative         \n
-   'dump_i_positive:                   \n
-   \t 'call \s 'dump_i_digits          \n
-   \t ret                              \n
-   'dump_i_negative:                   \n
-   \t 'neg \s '%r8                     \n
-   \t 'call \s 'dump_i_digits          \n
-   \t 'movb \s '$45, \s '0 \[ %r11 \]  \n
-   \t ret                              \n
+   'dump_i:                               \n
+   \t 'mov \s '%r12, \s '%r8              \n
+   \t 'mov \s '$__dump_i, \s '%r12        \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$0, \s '%r14               \n
+   \t 'mov \s '$0, \s '%r15               \n
+   \t 'mov \s '$__dump_i, \s '%r11        \n
+   \t 'cmp \s '$0, \s '%r8                \n
+   \t 'jge \s 'dump_i_positive            \n
+   \t 'jmp \s 'dump_i_negative            \n
+   'dump_i_positive:                      \n
+   \t 'call \s 'dump_i_digits             \n
+   \t ret                                 \n
+   'dump_i_negative:                      \n
+   \t 'neg \s '%r8                        \n
+   \t 'call \s 'dump_i_digits             \n
+   \t 'movb \s '$45, \s '0 \[ %r11 \]     \n
+   \t ret                                 \n
    # if return value is positive then open was a success
 
-   'dump_i_digits:                     \n
-   \t 'rol \s '$4, \s '%r8             \n   # %r8[0]
-   \t 'call \s 'put8                   \n
-   \t 'mov \s '%cl, \s '0 \[ %r11 \]   \n
-   \t 'rol \s '$4, \s '%r8             \n   # %r8[1]
-   \t 'call \s 'put8                   \n
-   \t 'mov \s '%cl, \s '1 \[ %r11 \]   \n
-   \t 'rol \s '$4, \s '%r8             \n   # %r8[2]
-   \t 'call \s 'put8                   \n
-   \t 'mov \s '%cl, \s '2 \[ %r11 \]   \n
-   \t 'rol \s '$4, \s '%r8             \n   # %r8[3]
-   \t 'call \s 'put8                   \n
-   \t 'mov \s '%cl, \s '3 \[ %r11 \]   \n
-   \t 'rol \s '$4, \s '%r8             \n   # %r8[4]
-   \t 'call \s 'put8                   \n
-   \t 'mov \s '%cl, \s '4 \[ %r11 \]   \n
-   \t 'rol \s '$4, \s '%r8             \n   # %r8[5]
-   \t 'call \s 'put8                   \n
-   \t 'mov \s '%cl, \s '5 \[ %r11 \]   \n
-   \t 'rol \s '$4, \s '%r8             \n   # %r8[6]
-   \t 'call \s 'put8                   \n
-   \t 'mov \s '%cl, \s '6 \[ %r11 \]   \n
-   \t 'rol \s '$4, \s '%r8             \n   # %r8[7]
-   \t 'call \s 'put8                   \n
-   \t 'mov \s '%cl, \s '7 \[ %r11 \]   \n
-   \t 'rol \s '$4, \s '%r8             \n   # %r8[8]
-   \t 'call \s 'put8                   \n
-   \t 'mov \s '%cl, \s '8 \[ %r11 \]   \n
-   \t 'rol \s '$4, \s '%r8             \n   # %r8[9]
-   \t 'call \s 'put8                   \n
-   \t 'mov \s '%cl, \s '9 \[ %r11 \]   \n
-   \t 'rol \s '$4, \s '%r8             \n   # %r8[10]
-   \t 'call \s 'put8                   \n
-   \t 'mov \s '%cl, \s '10 \[ %r11 \]  \n
-   \t 'rol \s '$4, \s '%r8             \n   # %r8[11]
-   \t 'call \s 'put8                   \n
-   \t 'mov \s '%cl, \s '11 \[ %r11 \]  \n
-   \t 'rol \s '$4, \s '%r8             \n   # %r8[12]
-   \t 'call \s 'put8                   \n
-   \t 'mov \s '%cl, \s '12 \[ %r11 \]  \n
-   \t 'rol \s '$4, \s '%r8             \n   # %r8[13]
-   \t 'call \s 'put8                   \n
-   \t 'mov \s '%cl, \s '13 \[ %r11 \]  \n
-   \t 'rol \s '$4, \s '%r8             \n   # %r8[14]
-   \t 'call \s 'put8                   \n
-   \t 'mov \s '%cl, \s '14 \[ %r11 \]  \n
-   \t 'rol \s '$4, \s '%r8             \n   # %r8[15]
-   \t 'call \s 'put8                   \n
-   \t 'mov \s '%cl, \s '15 \[ %r11 \]  \n
-   \t ret                              \n
+   'dump_i_digits:                        \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[0]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '0 \[ %r11 \]      \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[1]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '1 \[ %r11 \]      \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[2]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '2 \[ %r11 \]      \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[3]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '3 \[ %r11 \]      \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[4]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '4 \[ %r11 \]      \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[5]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '5 \[ %r11 \]      \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[6]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '6 \[ %r11 \]      \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[7]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '7 \[ %r11 \]      \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[8]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '8 \[ %r11 \]      \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[9]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '9 \[ %r11 \]      \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[10]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '10 \[ %r11 \]     \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[11]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '11 \[ %r11 \]     \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[12]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '12 \[ %r11 \]     \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[13]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '13 \[ %r11 \]     \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[14]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '14 \[ %r11 \]     \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[15]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '15 \[ %r11 \]     \n
+   \t ret                                 \n
 
    #move ascii representation of lower byte of %r8 into %cl
-   'put8:                              \n
-   \t 'mov \s '%r8b, \s '%al           \n # lower byte of %r11 goes into %rax
-   \t 'and \s '$0xf, \s '%al           \n # only show lower 4 bits
-   \t 'mov \s '$__hex_buffer, '%r10    \n # %r10 is index into hex buffer
-   \t 'add \s '%al, \s '%r10b          \n # %r10 is index into char in hex buffer
-   \t 'mov \s '0 \[ %r10 \] , \s '%cl  \n # %cl is a hexadecimal char
-   \t 'ret                             \n
+   'put8:                                 \n
+   \t 'mov \s '%r8b, \s '%al              \n # lower byte of %r11 goes into %rax
+   \t 'and \s '$0xf, \s '%al              \n # only show lower 4 bits
+   \t 'mov \s '$__hex_buffer, '%r10       \n # %r10 is index into hex buffer
+   \t 'add \s '%al, \s '%r10b             \n # %r10 is index into char in hex buffer
+   \t 'mov \s '0 \[ %r10 \] , \s '%cl     \n # %cl is a hexadecimal char
+   \t 'ret                                \n
 
-   'inc:                               \n
-   \t 'inc \s '%r12                    \n
-   \t 'ret                             \n
+   'inc:                                  \n
+   \t 'inc \s '%r12                       \n
+   \t 'ret                                \n
 
-   'dec:                               \n
-   \t 'dec \s '%r12                    \n
-   \t 'ret                             \n
+   'dec:                                  \n
+   \t 'dec \s '%r12                       \n
+   \t 'ret                                \n
 
-   'inv:                               \n
-   \t 'neg \s '%r12                    \n
-   \t 'ret                             \n
+   'inv:                                  \n
+   \t 'neg \s '%r12                       \n
+   \t 'ret                                \n
 
-   'is_neg:                            \n
-   \t 'cmp \s '$0, \s %r12             \n
-   \t 'jge \s 'is_neg_ispos            \n
-   \t 'mov \s '$1, \s '%r12            \n
-   \t 'mov \s '$0, \s '%r13            \n
-   \t 'mov \s '$0, \s '%r14            \n
-   \t 'mov \s '$0, \s '%r15            \n
-   \t 'ret                             \n
-   'is_neg_ispos:                      \n
-   \t 'mov \s '$0, \s '%r12            \n
-   \t 'mov \s '$0, \s '%r13            \n
-   \t 'mov \s '$0, \s '%r14            \n
-   \t 'mov \s '$0, \s '%r15            \n
-   \t 'ret                             \n
+   'is_neg:                               \n
+   \t 'cmp \s '$0, \s %r12                \n
+   \t 'jge \s 'is_neg_ispos               \n
+   \t 'mov \s '$1, \s '%r12               \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$0, \s '%r14               \n
+   \t 'mov \s '$0, \s '%r15               \n
+   \t 'ret                                \n
+   'is_neg_ispos:                         \n
+   \t 'mov \s '$0, \s '%r12               \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$0, \s '%r14               \n
+   \t 'mov \s '$0, \s '%r15               \n
+   \t 'ret                                \n
 
-   'mul:                               \n
-   \t 'cmp \s '$0, \s '%r13            \n
-   \t 'je \s 'mul_err                  \n
-   \t 'cmp \s '$0, \s '%r14            \n
-   \t 'je \s 'mul_err                  \n
-   \t 'mov \s '0 \[ '%r13 \] , '%rax   \n  
-   \t 'mov \s '0 \[ '%r14 \] , '%rbx   \n
-   \t 'imul \s '%rax, \s '%rbx         \n
-   \t 'mov \s '%rbx, \s '%r12          \n
-   \t 'ret                             \n
-   'mul_err:                           \n
-   \t 'mov \s '$0, \s '%r12            \n
-   \t 'mov \s '$0, \s '%r13            \n
-   \t 'mov \s '$0, \s '%r14            \n
-   \t 'mov \s '$0, \s '%r15            \n
-   \t 'ret                             \n
+   'mul:                                  \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s 'mul_err                     \n
+   \t 'cmp \s '$0, \s '%r14               \n
+   \t 'je \s 'mul_err                     \n
+   \t 'mov \s '0 \[ '%r13 \] , '%rax      \n  
+   \t 'mov \s '0 \[ '%r14 \] , '%rbx      \n
+   \t 'imul \s '%rax, \s '%rbx            \n
+   \t 'mov \s '%rbx, \s '%r12             \n
+   \t 'ret                                \n
+   'mul_err:                              \n
+   \t 'mov \s '$0, \s '%r12               \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$0, \s '%r14               \n
+   \t 'mov \s '$0, \s '%r15               \n
+   \t 'ret                                \n
 
-   'add:                               \n
-   \t 'cmp \s '$0, \s '%r13            \n
-   \t 'je \s 'add_err                  \n
-   \t 'cmp \s '$0, \s '%r14            \n
-   \t 'je \s 'add_err                  \n
-   \t 'mov \s '0 \[ '%r13 \] , '%rax   \n  
-   \t 'mov \s '0 \[ '%r14 \] , '%rbx   \n
-   \t 'add \s '%rax, \s '%rbx          \n
-   \t 'mov \s '%rbx, \s '%r12          \n
-   \t 'ret                             \n
-   'add_err:                           \n
-   \t 'mov \s '$0, \s '%r12            \n
-   \t 'mov \s '$0, \s '%r13            \n
-   \t 'mov \s '$0, \s '%r14            \n
-   \t 'mov \s '$0, \s '%r15            \n
-   \t 'ret                             \n
+   'add:                                  \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s 'add_err                     \n
+   \t 'cmp \s '$0, \s '%r14               \n
+   \t 'je \s 'add_err                     \n
+   \t 'mov \s '0 \[ '%r13 \] , '%rax      \n  
+   \t 'mov \s '0 \[ '%r14 \] , '%rbx      \n
+   \t 'add \s '%rax, \s '%rbx             \n
+   \t 'mov \s '%rbx, \s '%r12             \n
+   \t 'ret                                \n
+   'add_err:                              \n
+   \t 'mov \s '$0, \s '%r12               \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$0, \s '%r14               \n
+   \t 'mov \s '$0, \s '%r15               \n
+   \t 'ret                                \n
 
-   'div:                               \n
-   \t 'cmp \s '$0, \s '%r13            \n
-   \t 'je \s 'div_err                  \n
-   \t 'cmp \s '$0, \s '%r14            \n
-   \t 'je \s 'div_err                  \n
-   \t 'mov \s '0 \[ '%r13 \] , '%rax   \n #dividend
-   \t 'mov \s '$0, \s '%rdx            \n
-   \t 'mov \s '0 \[ '%r14 \] , '%rcx   \n #divisor
-   \t 'idiv \s '%rcx                   \n
-   \t 'mov \s '%rax, \s '%r12          \n
-   \t 'mov \s '$0, \s '%r13            \n
-   \t 'mov \s '$0, \s '%r14            \n
-   \t 'mov \s '$0, \s '%r15            \n
-   \t 'ret                             \n
-   'div_err:                           \n
-   \t 'mov \s '$0, \s '%r12            \n
-   \t 'mov \s '$0, \s '%r13            \n
-   \t 'mov \s '$0, \s '%r14            \n
-   \t 'mov \s '$0, \s '%r15            \n
-   \t 'ret                             \n
+   'div:                                  \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s 'div_err                     \n
+   \t 'cmp \s '$0, \s '%r14               \n
+   \t 'je \s 'div_err                     \n
+   \t 'mov \s '0 \[ '%r13 \] , '%rax      \n #dividend
+   \t 'mov \s '$0, \s '%rdx               \n
+   \t 'mov \s '0 \[ '%r14 \] , '%rcx      \n #divisor
+   \t 'idiv \s '%rcx                      \n
+   \t 'mov \s '%rax, \s '%r12             \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$0, \s '%r14               \n
+   \t 'mov \s '$0, \s '%r15               \n
+   \t 'ret                                \n
+   'div_err:                              \n
+   \t 'mov \s '$0, \s '%r12               \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$0, \s '%r14               \n
+   \t 'mov \s '$0, \s '%r15               \n
+   \t 'ret                                \n
 
-   'mod:                               \n
-   \t 'cmp \s '$0, \s '%r13            \n
-   \t 'je \s 'mod_err                  \n
-   \t 'cmp \s '$0, \s '%r14            \n
-   \t 'je \s 'mod_err                  \n
-   \t 'mov \s '0 \[ '%r13 \] , '%rax   \n #dividend
-   \t 'mov \s '$0, \s '%rdx            \n
-   \t 'mov \s '0 \[ '%r14 \] , '%rcx   \n #divisor
-   \t 'idiv \s '%rcx                   \n
-   \t 'mov \s '%rdx, \s '%r12          \n
-   \t 'ret                             \n
-   'mod_err:                           \n
-   \t 'mov \s '$0, \s '%r12            \n
-   \t 'mov \s '$0, \s '%r13            \n
-   \t 'mov \s '$0, \s '%r14            \n
-   \t 'mov \s '$0, \s '%r15            \n
-   \t 'ret                             \n
+   'mod:                                  \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s 'mod_err                     \n
+   \t 'cmp \s '$0, \s '%r14               \n
+   \t 'je \s 'mod_err                     \n
+   \t 'mov \s '0 \[ '%r13 \] , '%rax      \n #dividend
+   \t 'mov \s '$0, \s '%rdx               \n
+   \t 'mov \s '0 \[ '%r14 \] , '%rcx      \n #divisor
+   \t 'idiv \s '%rcx                      \n
+   \t 'mov \s '%rdx, \s '%r12             \n
+   \t 'ret                                \n
+   'mod_err:                              \n
+   \t 'mov \s '$0, \s '%r12               \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$0, \s '%r14               \n
+   \t 'mov \s '$0, \s '%r15               \n
+   \t 'ret                                \n
 );
 
 _push-this := λ.(
-   \t 'push \s '%r12 \n
-   \t 'push \s '%r13 \n
-   \t 'push \s '%r14 \n
-   \t 'push \s '%r15 \n
+   \t 'push \s '%r12                      \n
+   \t 'push \s '%r13                      \n
+   \t 'push \s '%r14                      \n
+   \t 'push \s '%r15                      \n
 );
 
 _push-zero := λ.(
-   \t 'pushq \s '$0 \n
-   \t 'pushq \s '$0 \n
-   \t 'pushq \s '$0 \n
-   \t 'pushq \s '$0 \n
+   \t 'pushq \s '$0                       \n
+   \t 'pushq \s '$0                       \n
+   \t 'pushq \s '$0                       \n
+   \t 'pushq \s '$0                       \n
 );
 
 _unpush-this := λ.(
-   \t 'pop \s '%r8 \n
-   \t 'pop \s '%r8 \n
-   \t 'pop \s '%r8 \n
-   \t 'pop \s '%r8 \n
+   \t 'pop \s '%r8                        \n
+   \t 'pop \s '%r8                        \n
+   \t 'pop \s '%r8                        \n
+   \t 'pop \s '%r8                        \n
 );
 
 _pop-this := λ.(
-   \t 'pop \s '%r15 \n
-   \t 'pop \s '%r14 \n
-   \t 'pop \s '%r13 \n
-   \t 'pop \s '%r12 \n
+   \t 'pop \s '%r15                       \n
+   \t 'pop \s '%r14                       \n
+   \t 'pop \s '%r13                       \n
+   \t 'pop \s '%r12                       \n
 );
 
 _yield-nil := λ.(
-   \t 'mov \s '$0, \s '%r12 \n
-   \t 'mov \s '$0, \s '%r13 \n
-   \t 'mov \s '$0, \s '%r14 \n
-   \t 'mov \s '$0, \s '%r15 \n
+   \t 'mov \s '$0, \s '%r12               \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$0, \s '%r14               \n
+   \t 'mov \s '$0, \s '%r15               \n
 );
 
 _close-this := λ.(
