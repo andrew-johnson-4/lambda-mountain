@@ -168,6 +168,37 @@ print-ctx := λctx. (
    )
 );
 
+get-local := λctx v. (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
+         ()
+         ( (Local(l lrefer)) (
+            if (eq(l v)) (
+               (set r lrefer)
+            ) ()
+         ))
+      ))
+      (set ctx (head ctx))
+   ))
+   r
+));
+set-local := λctx v. (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
+         ()
+         ( (Local((Set l) lrefer)) (
+            if (eq(l v)) (
+               (set r lrefer)
+            ) ()
+         ))
+      ))
+      (set ctx (head ctx))
+   ))
+   r
+));
+
 parse-many-expressions := λtoks. (tail(
    (local er)
    (set er (parse-one-expression toks))
@@ -552,7 +583,6 @@ declare-local := λctx vname offset. (tail(
    ))
    (set ctx (ctx (Local(vname refer)) ))
    (set ctx (ctx (Local((Set vname) set_this)) ))
-   (print-ctx ctx)
    (Expr(frame_this set_this unframe_this () () ctx (inc offset)))
 ));
 
@@ -581,6 +611,7 @@ compile-expr := λctx e offset. (tail(
    (match e (
       ()
       ( (App ((Variable 'local) (Variable fname))) (tail(
+         ()
          (declare-local (ctx fname offset))
       )))
       ( (App( (App( (Variable 'while) c )) d )) (tail(
@@ -720,6 +751,13 @@ compile-expr := λctx e offset. (tail(
          (set prog (prog ( \t 'mov \s '$0 , '%r13 \n )))
          (set prog (prog ( \t 'mov \s '$0 , '%r14 \n )))
          (set prog (prog ( \t 'mov \s '$0 , '%r15 \n )))
+         (Expr( () prog () () () ctx offset ))
+      )))
+      ( (Variable vname) (tail(
+         (set prog (get-local(ctx vname)))
+         (if prog () (
+            (print-s (ReferenceToUndefinedLocal vname))
+         ))
          (Expr( () prog () () () ctx offset ))
       )))
       (x (print-s (TODO x)) )
