@@ -675,42 +675,46 @@ destructure-pattern-lhs := λctx lhs offset. (tail(
          (set prog (prog (label_skip ': \n)))
          (Expr( () prog () () () ctx offset ))
       )))
+      ( (App( l r )) (tail(
+         (set e1 (declare-local(ctx l offset)))
+         (set e1_frame (get-frame e1))
+         (set e1_prog (get-prog e1))
+         (set e1_unframe (get-unframe e1))
+         (set e1_text (get-text e1))
+         (set e1_data (get-data e1))
+         (set ctx (get-pc e1))
+         (set offset (get-offset e1))
+         (set e2 (declare-local(ctx r offset)))
+         (set e2_frame (get-frame e2))
+         (set e2_prog (get-prog e2))
+         (set e2_unframe (get-unframe e2))
+         (set e2_text (get-text e2))
+         (set e2_data (get-data e2))
+         (set ctx (get-pc e2))
+         (set offset (get-offset e2))
+         (set label_skip (uuid()))
+         (set prog (prog (\t 'mov \s '$0, \s %rsi \n)))
+         (set prog (prog (_push-this())))
+         (set prog (prog (\t 'cmp \s '$0, \s %r13 \n)))
+         (set prog (prog (\t 'je \s label_skip \n)))
+         (set prog (prog (_head())))
+         (set prog (prog e1_prog))
+         (set prog (prog (_pop-this())))
+         (set prog (prog (_push-this())))
+         (set prog (prog (\t 'cmp \s '$0, \s %rsi \n)))
+         (set prog (prog (\t 'je \s label_skip \n)))
+         (set prog (prog (\t 'mov \s '$0, \s %rsi \n)))
+         (set prog (prog (\t 'cmp \s '$0, \s %r14 \n)))
+         (set prog (prog (\t 'je \s label_skip \n)))
+         (set prog (prog (_tail())))
+         (set prog (prog e2_prog))
+         (set prog (prog (label_skip ': \n)))
+         (set prog (prog (_pop-this())))
+         (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))
+      )))
       (_ (print-s (UnexpectedPattern lhs)))
    ))
 ));
-
-#   } else if head(&p).to_string()=="app" {
-#      let label_skip = uuid();
-#      let l = head(&tail(&p));
-#      let r = tail(&tail(&p));
-#      let (lframe,lprog,lunframe,ltext,ldata,program_ctx,offset) = destructure_pattern_lhs(helpers_ctx, program_ctx, &l, offset);
-#      let (rframe,rprog,runframe,rtext,rdata,program_ctx,offset) = destructure_pattern_lhs(helpers_ctx, &program_ctx, &r, offset);
-#      let prog = s_atom("\tmov $0, %rsi\n");
-#      let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::push-this")));
-#      let prog = s_cons(prog, s_atom("\tcmp $0, %r13\n"));
-#      let prog = s_cons(prog, s_atom(&format!("\tje {}\n",label_skip)));
-#      let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::head")));
-#      let prog = s_cons(prog, lprog);
-#      let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::pop-this")));
-#      let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::push-this")));
-#      let prog = s_cons(prog, s_atom("\tcmp $0, %rsi\n"));
-#      let prog = s_cons(prog, s_atom(&format!("\tje {}\n",label_skip)));
-#      let prog = s_cons(prog, s_atom("\tmov $0, %rsi\n"));
-#      let prog = s_cons(prog, s_atom("\tcmp $0, %r14\n"));
-#      let prog = s_cons(prog, s_atom(&format!("\tje {}\n",label_skip)));
-#      let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::tail")));
-#      let prog = s_cons(prog, rprog);
-#      let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
-#      let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::pop-this")));
-#      (
-#         s_cons(lframe,rframe),
-#         prog,
-#         s_cons(lunframe,runframe),
-#         s_cons(ltext,rtext),
-#         s_cons(ldata,rdata),
-#         program_ctx,
-#         offset
-#      )
 
 #returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 yield-patterns := λctx p offset. match p (
@@ -1667,4 +1671,17 @@ _unshadow-this := λ.(
    \t 'mov \s '%r9, \s '%r13                 \n
    \t 'mov \s '%r10, \s '%r14                \n
    \t 'mov \s '%r11, \s '%r15                \n
+);
+
+_head := λ.(
+   \t 'mov \s '0 \[ %r13 \] , \s '%r12       \n
+   \t 'mov \s '16 \[ %r13 \] , \s '%r14      \n
+   \t 'mov \s '24 \[ %r13 \] , \s '%r15      \n
+   \t 'mov \s '8 \[ %r13 \] , \s '%r13       \n
+);
+_tail := λ.(
+   \t 'mov \s '0 \[ %r14 \] , \s '%r12       \n
+   \t 'mov \s '24 \[ %r14 \] , \s '%r15      \n
+   \t 'mov \s '8 \[ %r14 \] , \s '%r13       \n
+   \t 'mov \s '16 \[ %r14 \] , \s '%r14      \n
 );
