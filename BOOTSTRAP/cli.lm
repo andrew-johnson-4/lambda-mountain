@@ -480,8 +480,26 @@ declare-local := λctx vname offset. (tail(
    (set unframe_this (_unpush-this()))
    (local refer)
    (set refer (TODO REFER))
+   (local eight)
+   (set eight (
+      inc(inc(inc(inc(inc(inc(inc(inc(
+         ()
+      ))))))))    
+   ))
+   (local sixteen)
+   (set sixteen ( mul( eight (inc(inc(()))) ) ))
+   (local twentyfour)
+   (set twentyfour ( mul( eight (inc(inc(inc(())))) ) ))
+   (local thirtytwo)
+   (set thirtytwo ( mul( eight (inc(inc(inc(inc(()))))) ) ))
    (local set_this)
-   (set set_this (TODO SETTHIS))
+   (print-s (OFFSET (dump-i offset)))
+   (set set_this (
+      \t 'mov \s '%r12, \s (
+         (mul( (add( (mul( thirtytwo offset )) eight)) (dec(())) ))
+      ) \[ '%rbp \] \n
+   ))
+   (print-s set_this)
    (Expr(frame_this set_this unframe_this () () ctx (inc offset)))
 ));
 
@@ -1100,9 +1118,9 @@ _program-header := λ.(
 
    'add:                               \n
    \t 'cmp \s '$0, \s '%r13            \n
-   \t 'je \s 'mul_err                  \n
+   \t 'je \s 'add_err                  \n
    \t 'cmp \s '$0, \s '%r14            \n
-   \t 'je \s 'mul_err                  \n
+   \t 'je \s 'add_err                  \n
    \t 'mov \s '0 \[ '%r13 \] , '%rax   \n  
    \t 'mov \s '0 \[ '%r14 \] , '%rbx   \n
    \t 'add \s '%rax, \s '%rbx          \n

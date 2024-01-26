@@ -90,6 +90,8 @@ const OPERATORS: [(&str,&str); 14] = [
    ("not", "not"),
    ("inc", "inc"),
    ("dec", "dec"),
+   ("add", "add"),
+   ("mul", "mul"),
    ("head", "head"),
    ("tail", "tail"),
 
