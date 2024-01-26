@@ -23,9 +23,7 @@ fn flatten(output: &mut String, input: &S) {
    } else if is_atom(input) {
       let l = input.to_string();
       if l=="lambda" || l=="literal" || l=="variable" || l=="app" || l=="local" || l=="type" {}
-      else if l == "\\\\" {
-         output.push_str("\\"); 
-      } else if l == "\\o" {
+      else if l == "\\o" {
          output.push_str("#"); 
       } else if l == "\\[" {
          output.push_str("("); 
@@ -155,15 +153,16 @@ fn is_local(program_ctx: &S, s: &str) -> String {
 
 //returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 fn yield_atom(_helpers_ctx: &S, program_ctx: &S, s: &str, offset: i64) -> (S,S,S,S,S,S,i64) {
-   let s = s.replace(r#"""#,r#"\""#);
    let s = s.replace("\n",r#"\n"#);
+   let s = s.replace("\\\\","[ESCAPE]");
+   let s = s.replace(r#"""#,r#"\""#);
    let s = s.replace("\\s"," ");
    let s = s.replace("\\:",";");
    let s = s.replace("\\o","#");
    let s = s.replace("\\l","λ");
    let s = s.replace("\\[","(");
    let s = s.replace("\\]",")");
-   let s = s.replace("\\\\","\\");
+   let s = s.replace("[ESCAPE]","\\");
    let id = uuid();
    let prog = s_nil();
    let prog = s_cons(prog, s_atom(&format!("\tmov ${}, %r12\n",id)));

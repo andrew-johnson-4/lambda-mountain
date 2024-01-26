@@ -525,7 +525,7 @@ escape-sequences := λt. match t (
    ( () () )
    ( \\: \: )
    ( \\o \o )
-#   ( \\n \n )
+   ( \\n \n )
    ( \\l \l )
    ( \\[ \[ )
    ( \\] \] )
@@ -842,7 +842,7 @@ _data-header := λ.(
   \t .ascii \s "0000000000000000 \s "  \n
   \t .zero \s '1                       \n
   '__newline:                          \n
-  \t .ascii \s " \\ 'n "               \n
+  \t .ascii \s " \\n "                 \n
   '__lparen:                           \n
   \t .ascii \s " \[ "                  \n
   '__rparen:                           \n
