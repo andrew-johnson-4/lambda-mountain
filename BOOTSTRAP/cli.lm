@@ -414,6 +414,8 @@ is-builtin := λf. (match f (
    ('mul True)
    ('div True)
    ('mod True)
+   ('inv True)
+   ('is-neg True)
    ('dump-i True)
    ('print-s True)
    ('print-i True)
@@ -1097,6 +1099,25 @@ _program-header := λ.(
 
    'dec:                               \n
    \t 'dec \s '%r12                    \n
+   \t 'ret                             \n
+
+   'inv:                               \n
+   \t 'neg \s '%r12                    \n
+   \t 'ret                             \n
+
+   'is_neg:                            \n
+   \t 'cmp \s '$0, \s %r12             \n
+   \t 'jge \s 'is_neg_ispos            \n
+   \t 'mov \s '$1, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13            \n
+   \t 'mov \s '$0, \s '%r14            \n
+   \t 'mov \s '$0, \s '%r15            \n
+   \t 'ret                             \n
+   'is_neg_ispos:                      \n
+   \t 'mov \s '$0, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13            \n
+   \t 'mov \s '$0, \s '%r14            \n
+   \t 'mov \s '$0, \s '%r15            \n
    \t 'ret                             \n
 
    'mul:                               \n

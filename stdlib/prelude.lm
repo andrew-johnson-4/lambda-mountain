@@ -111,6 +111,25 @@
    \t 'dec \s '%r12                  \n
    \t 'ret                       \n
 
+   'inv:                               \n 
+   \t 'neg \s '%r12                    \n
+   \t 'ret                             \n
+
+   'is_neg:                            \n
+   \t 'cmp \s '$0, \s %r12             \n
+   \t 'jge \s 'is_neg_ispos            \n 
+   \t 'mov \s '$1, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13            \n
+   \t 'mov \s '$0, \s '%r14            \n
+   \t 'mov \s '$0, \s '%r15            \n
+   \t 'ret                             \n
+   'is_neg_ispos:                      \n
+   \t 'mov \s '$0, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13            \n
+   \t 'mov \s '$0, \s '%r14            \n
+   \t 'mov \s '$0, \s '%r15            \n
+   \t 'ret                             \n
+
    'mul:                               \n
    \t 'cmp \s '$0, \s '%r13            \n
    \t 'je \s 'mul_err                  \n

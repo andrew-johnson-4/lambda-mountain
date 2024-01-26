@@ -94,6 +94,8 @@ const OPERATORS: [(&str,&str); 18] = [
    ("mul", "mul"),
    ("div", "div"),
    ("mod", "mod"),
+   ("inv", "inv"),
+   ("is-neg", "is_neg"),
    ("head", "head"),
    ("tail", "tail"),
 
