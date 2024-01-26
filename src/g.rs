@@ -162,7 +162,7 @@ fn yield_atom(_helpers_ctx: &S, program_ctx: &S, s: &str, offset: i64) -> (S,S,S
    let s = s.replace("\\l","λ");
    let s = s.replace("\\[","(");
    let s = s.replace("\\]",")");
-   let s = s.replace("[ESCAPE]","\\");
+   let s = s.replace("[ESCAPE]","\\\\");
    let id = uuid();
    let prog = s_nil();
    let prog = s_cons(prog, s_atom(&format!("\tmov ${}, %r12\n",id)));
