@@ -625,18 +625,26 @@ destructure-pattern-lhs := λctx lhs offset. (tail(
    (print-s (DESTRUCTURE lhs))
    (match lhs (
       ()
-      ( (Variable '_) (
+      ( (Variable '_) (tail(
+         ()
          (Expr( () (\t 'mov \s '$1, \s %rsi \n) () () () ctx offset ))
-      ))
+      )))
+      ( (Variable v) (tail(
+         (print-s (VARIABLE v))
+         (set e1 (declare-local(ctx v offset)))
+         (set e1_frame (get-frame e1))
+         (set e1_prog (get-prog e1))
+         (set e1_unframe (get-unframe e1))
+         (set e1_text (get-text e1))
+         (set e1_data (get-data e1))
+         (set ctx (get-pc e1))
+         (set offset (get-offset e1))
+         (Expr( e1_frame (e1_prog \t 'mov \s '$1, \s %rsi \n) e1_unframe e1_text e1_data ctx offset ))
+      )))
       (_ (print-s (UnexpectedPattern lhs)))
    ))
 ));
 
-#   } else if head(&p).to_string()=="variable" {
-#      let (lframe,lprog,lunframe,ltext,ldata,program_ctx,offset) = declare_local(helpers_ctx, program_ctx, &tail(&p), offset);
-#      let set_rsi = s_atom("\tmov $1, %rsi\n");
-#      let prog = s_cons(lprog, set_rsi);
-#      (lframe, prog, lunframe, ltext, ldata, program_ctx, offset)
 #   } else if head(&p).to_string()=="literal" {
 #      let label_skip = uuid();
 #      let prog = ctx_eval_soft(helpers_ctx, &variable("::shadow-this"));
