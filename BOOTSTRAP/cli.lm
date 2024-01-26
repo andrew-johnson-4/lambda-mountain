@@ -1319,6 +1319,82 @@ _program-header := λ.(
    \t 'mov \s '$0, \s '%r14               \n
    \t 'mov \s '$0, \s '%r15               \n
    \t 'ret                                \n
+
+   'clone_rope:                          \n
+   \t 'mov \s '$__a_section, \s '%r8     \n
+   \t 'mov \s '$__a_counter, \s '%r10    \n
+   \t 'mov \s '0 \[ %r10 \] , \s '%r11   \n
+   \t 'add \s '%r11, \s '%r8             \n
+   \t 'mov \s '%r8, \s '%r9              \n
+   #r8 holds pointer to head of new data
+   #r9 holds pointer to tail of new data
+   \t 'call \s '__clone_rope             \n
+   \t 'movb \s '$0, \s '0 \[ %r9 \]      \n
+   \t 'inc \s '%r9                       \n
+   \t 'mov \s '$__a_section, \s '%r10    \n
+   \t 'sub \s '%r10, \s '%r9             \n
+   \t 'mov \s '$__a_counter, \s '%r10    \n
+   \t 'mov \s '%r9, \s '0 \[ %r10 \]     \n
+   \t 'mov \s '%r8, \s '%r12             \n
+   \t 'mov \s '$0, \s '%r13              \n
+   \t 'mov \s '$0, \s '%r14              \n
+   \t 'mov \s '$0, \s '%r15              \n
+   \t 'ret                               \n
+
+   '__clone_rope:                        \n
+   #if this is a cons, recurse
+   \t 'cmp \s '$0, \s '%r13              \n
+   \t 'je \s 'clone_rope_notcons         \n
+   \t 'cmp \s '$0, \s '%r14              \n
+   \t 'je \s 'clone_rope_notcons         \n
+   \t 'push \s '%r12                     \n
+   \t 'push \s '%r13                     \n
+   \t 'push \s '%r14                     \n
+   \t 'push \s '%r15                     \n
+   \t 'mov \s '0 \[ %r13 \] , '%r12      \n
+   \t 'mov \s '16 \[ %r13 \] , '%r14     \n
+   \t 'mov \s '24 \[ %r13 \] , '%r15     \n
+   \t 'mov \s '8 \[ %r13 \] , '%r13      \n
+   \t 'call \s '__clone_rope             \n
+   \t 'pop \s '%r15                      \n
+   \t 'pop \s '%r14                      \n
+   \t 'pop \s '%r13                      \n
+   \t 'pop \s '%r12                      \n
+   \t 'mov \s '0 \[ %r14 \] , '%r12      \n
+   \t 'mov \s '24 \[ %r14 \] , '%r15     \n
+   \t 'mov \s '8 \[ %r14 \] , '%r13      \n
+   \t 'mov \s '16 \[ %r14 \] , '%r14     \n
+   \t 'push \s '%r12                     \n
+   \t 'push \s '%r13                     \n
+   \t 'push \s '%r14                     \n
+   \t 'push \s '%r15                     \n
+   \t 'call \s '__clone_rope             \n
+   \t 'pop \s '%r15                      \n
+   \t 'pop \s '%r14                      \n
+   \t 'pop \s '%r13                      \n
+   \t 'pop \s '%r12                      \n
+   \t 'jmp \s 'clone_rope_end            \n
+
+   #if not cons, concat
+   'clone_rope_notcons:                  \n
+
+   #if nil, return
+   \t 'cmp \s '$0, \s '%r12              \n
+   \t 'je \s 'clone_rope_end             \n
+
+   #if atom, break into characters and concat
+   'clone_rope_small:                    \n
+   \t 'cmpb \s '$0, \s '0 \[ %r12 \]     \n
+   \t 'je \s 'clone_rope_end             \n
+   \t 'movb \s '0 \[ %r12 \] , \s '%bl   \n
+   \t 'movb \s '%bl, \s '0 \[ %r9 \]     \n
+   \t 'inc \s '%r12                      \n
+   \t 'inc \s '%r9                       \n
+   \t 'jmp \s 'clone_rope_small          \n
+
+   'clone_rope_end:                      \n
+   \t 'ret                               \n
+
 );
 
 _push-this := λ.(
