@@ -676,7 +676,7 @@ destructure-pattern-lhs := λctx lhs offset. (tail(
          (Expr( () prog () () () ctx offset ))
       )))
       ( (App( l r )) (tail(
-         (set e1 (declare-local(ctx l offset)))
+         (set e1 (destructure-pattern-lhs(ctx l offset)))
          (set e1_frame (get-frame e1))
          (set e1_prog (get-prog e1))
          (set e1_unframe (get-unframe e1))
@@ -684,7 +684,7 @@ destructure-pattern-lhs := λctx lhs offset. (tail(
          (set e1_data (get-data e1))
          (set ctx (get-pc e1))
          (set offset (get-offset e1))
-         (set e2 (declare-local(ctx r offset)))
+         (set e2 (destructure-pattern-lhs(ctx r offset)))
          (set e2_frame (get-frame e2))
          (set e2_prog (get-prog e2))
          (set e2_unframe (get-unframe e2))
