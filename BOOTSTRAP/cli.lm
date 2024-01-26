@@ -604,7 +604,7 @@ declare-local := λctx vname offset. (tail(
    ))
    (set ctx (ctx (Local(vname refer)) ))
    (set ctx (ctx (Local((Set vname) set_this)) ))
-   (Expr(frame_this ((_yield-nil()) set_this) unframe_this () () ctx (inc offset)))
+   (Expr(frame_this set_this unframe_this () () ctx (inc offset)))
 ));
 
 #returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
@@ -847,7 +847,15 @@ compile-expr := λctx e offset. (tail(
       ()
       ( (App ((Variable 'local) (Variable fname))) (tail(
          ()
-         (declare-local (ctx fname offset))
+         (set e1 (declare-local(ctx x offset)))
+         (set e1_frame (get-frame e1))
+         (set e1_prog (get-prog e1))
+         (set e1_unframe (get-unframe e1))
+         (set e1_text (get-text e1))
+         (set e1_data (get-data e1))
+         (set ctx (get-pc e1))
+         (set offset (get-offset e1))
+         (Expr( e1_frame ((_yield-nil()) e1_prog) e1_unframe e1_text e1_data ctx offset ))
       )))
       ( (App( (App( (Variable 'set) (Variable vname) )) x )) (tail(
          ()
