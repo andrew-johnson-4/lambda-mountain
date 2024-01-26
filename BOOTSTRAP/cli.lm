@@ -622,7 +622,7 @@ destructure-pattern-lhs := λctx lhs offset. (tail(
    (local e2_text)
    (local e2_data)
    (local prog)
-   (print-s (DESTRUCTURE lhs))
+   (local label_skip)
    (match lhs (
       ()
       ( (Variable '_) (tail(
@@ -630,7 +630,6 @@ destructure-pattern-lhs := λctx lhs offset. (tail(
          (Expr( () (\t 'mov \s '$1, \s %rsi \n) () () () ctx offset ))
       )))
       ( (Variable v) (tail(
-         (print-s (VARIABLE v))
          (set e1 (declare-local(ctx v offset)))
          (set e1_frame (get-frame e1))
          (set e1_prog (get-prog e1))
@@ -641,25 +640,33 @@ destructure-pattern-lhs := λctx lhs offset. (tail(
          (set offset (get-offset e1))
          (Expr( e1_frame (e1_prog \t 'mov \s '$1, \s %rsi \n) e1_unframe e1_text e1_data ctx offset ))
       )))
+      ( (Literal l) (tail(
+         (set e1 (yield-atom(ctx l offset)))
+         (set e1_frame (get-frame e1))
+         (set e1_prog (get-prog e1))
+         (set e1_unframe (get-unframe e1))
+         (set e1_text (get-text e1))
+         (set e1_data (get-data e1))
+         (set ctx (get-pc e1))
+         (set offset (get-offset e1))
+         (set label_skip (uuid()))
+         (set prog (prog (_shadow-this())))
+         (set prog (prog (\t 'mov \s %r12, \s %rax \n)))
+         (set prog (prog e1_prog))
+         (set prog (prog (\t 'mov \s %r12, \s %rbx \n)))
+         (set prog (prog ('call \s '_streq \n)))
+         (set prog (prog (\t 'mov \s %r12, \s %rdi \n)))
+         (set prog (prog (_unshadow-this())))
+         (set prog (prog (\t 'cmp \s '$0, \s %rdi \n)))
+         (set prog (prog (\t 'je \s label_skip \n)))
+         (set prog (prog (\t 'mov \s '$1, \s %rsi \n)))
+         (set prog (prog (label_skip ': \n)))
+         (Expr( e1_frame prog e1_unframe e1_text e1_data ctx offset ))
+      )))
       (_ (print-s (UnexpectedPattern lhs)))
    ))
 ));
 
-#   } else if head(&p).to_string()=="literal" {
-#      let label_skip = uuid();
-#      let prog = ctx_eval_soft(helpers_ctx, &variable("::shadow-this"));
-#      let prog = s_cons(prog, s_atom("\tmov %r12, %rax\n"));
-#      let (_aframe,aprog,_aunframe,atext,adata,_program_ctx,_offset) = yield_atom(helpers_ctx, program_ctx, &tail(&p).to_string(), offset);
-#      let prog = s_cons(prog, aprog);
-#      let prog = s_cons(prog, s_atom("\tmov %r12, %rbx\n"));
-#      let prog = s_cons(prog, s_atom("\tcall _streq\n"));
-#      let prog = s_cons(prog, s_atom("\tmov %r12, %rdi\n"));
-#      let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::unshadow-this")));
-#      let prog = s_cons(prog, s_atom("\tcmp $0, %rdi\n"));
-#      let prog = s_cons(prog, s_atom(&format!("\tje {}\n",label_skip)));
-#      let prog = s_cons(prog, s_atom("\tmov $1, %rsi\n"));
-#      let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
-#      ( s_nil(), prog, s_nil(), atext, adata, program_ctx.clone(), offset )
 #   } else if head(&p).to_string()=="app" {
 #      let label_skip = uuid();
 #      let l = head(&tail(&p));
@@ -1647,4 +1654,18 @@ _close-this := λ.(
    \t 'mov \s '%r13, \s '8 \[ %rsi \]        \n # set top.head
    \t 'mov \s '%r14, \s '16 \[ %rsi \]       \n # set top.tail
    \t 'mov \s '%r15, \s '24 \[ %rsi \]       \n # set top.flags
+);
+
+_shadow-this := λ.(
+   \t 'mov \s '%r12, \s '%r8                 \n
+   \t 'mov \s '%r13, \s '%r9                 \n
+   \t 'mov \s '%r14, \s '%r10                \n
+   \t 'mov \s '%r15, \s '%r11                \n
+);
+
+_unshadow-this := λ.(
+   \t 'mov \s '%r8, \s '%r12                 \n
+   \t 'mov \s '%r9, \s '%r13                 \n
+   \t 'mov \s '%r10, \s '%r14                \n
+   \t 'mov \s '%r11, \s '%r15                \n
 );
