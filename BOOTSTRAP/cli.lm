@@ -57,21 +57,20 @@ uuid := λ. (tail(
 i2s := λi. (tail(
    (local ten)
    (set ten( inc(inc(inc(inc(inc( inc(inc(inc(inc(inc( ))))) ))))) ))
-   (print-s(dump-i ten))
-   (print-s(digit()))
-   (print-s(digit(inc())))
+   (local sign)
    (local s)
    (local r)
    (if (is-neg i) (
-      (set s (s '-))
+      (set sign '-)
       (set i (inv i))
    ) ())
    (while i (
+      (print-s (I (dump-i i)))
       (set r (mod(i ten)))
-      (set s (s (clone-rope(digit r))))
+      (set s ((clone-rope(digit r) s)))
       (set i (div(i ten)))
    ))
-   (clone-rope s)
+   (clone-rope (sign s))
 ));
 
 tokenize-file := λpath. (
@@ -1197,6 +1196,9 @@ _program-header := λ.(
    \t 'mov \s '0 \[ '%r14 \] , '%rcx   \n #divisor
    \t 'idiv \s '%rcx                   \n
    \t 'mov \s '%rax, \s '%r12          \n
+   \t 'mov \s '$0, \s '%r13            \n
+   \t 'mov \s '$0, \s '%r14            \n
+   \t 'mov \s '$0, \s '%r15            \n
    \t 'ret                             \n
    'div_err:                           \n
    \t 'mov \s '$0, \s '%r12            \n

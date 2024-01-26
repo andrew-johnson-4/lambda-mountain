@@ -167,6 +167,9 @@
    \t 'mov \s '0 \[ '%r14 \] , '%rcx   \n #divisor
    \t 'idiv \s '%rcx                   \n
    \t 'mov \s '%rax, \s '%r12          \n
+   \t 'mov \s '$0, \s '%r13            \n
+   \t 'mov \s '$0, \s '%r14            \n
+   \t 'mov \s '$0, \s '%r15            \n
    \t 'ret                             \n
    'div_err:                           \n
    \t 'mov \s '$0, \s '%r12            \n
