@@ -607,10 +607,42 @@ declare-local := λctx vname offset. (tail(
    (Expr(frame_this ((_yield-nil()) set_this) unframe_this () () ctx (inc offset)))
 ));
 
-yield-patterns := λctx p offset. (tail(
-   (print-s (YIELDPATTERNS p))
+#returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
+yield-patterns := λctx p offset. match p (
    ()
-));
+   ( Nil (tail(
+      ()
+      ( () (\t 'mov \s '$0, \s %rsi \n) () () () ctx offset )
+   )))
+   ( (App( (App( lhs rhs )) prev )) (tail(
+      ()
+      (print-s (CASE lhs rhs))
+   )))
+   ( _ (
+      (print-s (InvalidPatternsCase p))
+   ))
+);
+
+#      let (pframe,pprog,punframe,ptext,pdata,_inner_ctx,offset) = yield_patterns(helpers_ctx, program_ctx, &prev, offset);
+#      let (lframe,lprog,lunframe,ltext,ldata,inner_ctx,offset) = destructure_pattern_lhs(helpers_ctx, &program_ctx, &lhs, offset);
+#      let (rframe,rprog,runframe,rtext,rdata,_inner_ctx,offset) = compile_expr(helpers_ctx, &inner_ctx, &rhs, offset);
+#      let label_skip = uuid();
+#      let prog = pprog;
+#      let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %rsi\n\tjne {}\n",label_skip)));
+#      let prog = s_cons(prog, lprog); //set %rsi to non-zero if success
+#      let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %rsi\n\tje {}\n",label_skip)));
+#      let prog = s_cons(prog, rprog);
+#      let prog = s_cons(prog, s_atom("\tmov $1, %rsi\n"));
+#      let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
+#      (
+#         s_cons(s_cons(pframe,lframe),rframe),
+#         prog,
+#         s_cons(s_cons(punframe,lunframe),runframe),
+#         s_cons(s_cons(ptext,ltext),rtext),
+#         s_cons(s_cons(pdata,ldata),rdata),
+#         program_ctx.clone(),
+#         offset
+#      )
 
 yield-cons := λctx l r offset. (tail(
    (local e1)
