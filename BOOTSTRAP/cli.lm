@@ -608,41 +608,79 @@ declare-local := λctx vname offset. (tail(
 ));
 
 #returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
+destructure-pattern-lhs := λctx lhs offset. (tail(
+   ()
+   (print-s (DESTRUCTURE lhs))
+));
+
+#returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 yield-patterns := λctx p offset. match p (
    ()
    ( Nil (tail(
       ()
       ( () (\t 'mov \s '$0, \s %rsi \n) () () () ctx offset )
    )))
-   ( (App( (App( lhs rhs )) prev )) (tail(
-      ()
-      (print-s (CASE lhs rhs))
+   ( (App( prev (App( lhs rhs )) )) (tail(
+      (local e1)
+      (local e1_frame)
+      (local e1_prog)
+      (local e1_unframe)
+      (local e1_text)
+      (local e1_data)
+      (local e2)
+      (local e2_frame)
+      (local e2_prog)
+      (local e2_unframe)
+      (local e2_text)
+      (local e2_data)
+      (local e3)
+      (local e3_frame)
+      (local e3_prog)
+      (local e3_unframe)
+      (local e3_text)
+      (local e3_data)
+      (local prog)
+      (set e1 (yield-patterns(ctx prev offset)))
+      (set e1_frame (get-frame e1))
+      (set e1_prog (get-prog e1))
+      (set e1_unframe (get-unframe e1))
+      (set e1_text (get-text e1))
+      (set e1_data (get-data e1))
+      (set ctx (get-pc e1))
+      (set offset (get-offset e1))
+      (set e2 (destructure-pattern-lhs(ctx lhs offset)))
+      (set e2_frame (get-frame e2))
+      (set e2_prog (get-prog e2))
+      (set e2_unframe (get-unframe e2))
+      (set e2_text (get-text e2))
+      (set e2_data (get-data e2))
+      (set ctx (get-pc e2))
+      (set offset (get-offset e2))
+      (set e3 (compile-expr(ctx rhs offset)))
+      (set e3_frame (get-frame e3))
+      (set e3_prog (get-prog e3))
+      (set e3_unframe (get-unframe e3))
+      (set e3_text (get-text e3))
+      (set e3_data (get-data e3))
+      (set ctx (get-pc e3))
+      (set offset (get-offset e3))
+      (local label_skip)
+      (set label_skip (uuid()))
+      (set prog (prog e1_prog))
+      (set prog (prog (\t 'cmp \s '$0, \s %rsi \n)))
+      (set prog (prog (\t 'jne \s label_skip \n)))
+      (set prog (prog e2_prog))
+      (set prog (prog (\t 'cmp \s '$0, \s %rsi \n)))
+      (set prog (prog (\t 'je \s label_skip \n)))
+      (set prog (prog e3_prog))
+      (set prog (prog (\t 'mov \s '$1, \s %rsi \n)))
+      (set prog (prog (label_skip ': \n)))
+      ( (e1_frame e2_frame e3_frame) prog (e1_unframe e2_unframe e3_unframe) (e1_text e2_text e3_text) (e1_data e2_data e3_data) ctx offset )
    )))
    ( _ (
       (print-s (InvalidPatternsCase p))
    ))
 );
-
-#      let (pframe,pprog,punframe,ptext,pdata,_inner_ctx,offset) = yield_patterns(helpers_ctx, program_ctx, &prev, offset);
-#      let (lframe,lprog,lunframe,ltext,ldata,inner_ctx,offset) = destructure_pattern_lhs(helpers_ctx, &program_ctx, &lhs, offset);
-#      let (rframe,rprog,runframe,rtext,rdata,_inner_ctx,offset) = compile_expr(helpers_ctx, &inner_ctx, &rhs, offset);
-#      let label_skip = uuid();
-#      let prog = pprog;
-#      let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %rsi\n\tjne {}\n",label_skip)));
-#      let prog = s_cons(prog, lprog); //set %rsi to non-zero if success
-#      let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %rsi\n\tje {}\n",label_skip)));
-#      let prog = s_cons(prog, rprog);
-#      let prog = s_cons(prog, s_atom("\tmov $1, %rsi\n"));
-#      let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
-#      (
-#         s_cons(s_cons(pframe,lframe),rframe),
-#         prog,
-#         s_cons(s_cons(punframe,lunframe),runframe),
-#         s_cons(s_cons(ptext,ltext),rtext),
-#         s_cons(s_cons(pdata,ldata),rdata),
-#         program_ctx.clone(),
-#         offset
-#      )
 
 yield-cons := λctx l r offset. (tail(
    (local e1)
