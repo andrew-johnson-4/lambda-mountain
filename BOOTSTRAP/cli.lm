@@ -589,7 +589,7 @@ declare-local := λctx vname offset. (tail(
    ))
    (set ctx (ctx (Local(vname refer)) ))
    (set ctx (ctx (Local((Set vname) set_this)) ))
-   (Expr(frame_this set_this unframe_this () () ctx (inc offset)))
+   (Expr(frame_this ((_yield-nil()) set_this) unframe_this () () ctx (inc offset)))
 ));
 
 yield-cons := λctx l r offset. (tail(
@@ -1333,6 +1333,13 @@ _pop-this := λ.(
    \t 'pop \s '%r14 \n
    \t 'pop \s '%r13 \n
    \t 'pop \s '%r12 \n
+);
+
+_yield-nil := λ.(
+   \t 'mov \s '$0, \s '%r12 \n
+   \t 'mov \s '$0, \s '%r13 \n
+   \t 'mov \s '$0, \s '%r14 \n
+   \t 'mov \s '$0, \s '%r15 \n
 );
 
 _close-this := λ.(
