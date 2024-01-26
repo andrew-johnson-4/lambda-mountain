@@ -65,7 +65,6 @@ i2s := λi. (tail(
       (set i (inv i))
    ) ())
    (while i (
-      (print-s (I (dump-i i)))
       (set r (mod(i ten)))
       (set s ((clone-rope(digit r) s)))
       (set i (div(i ten)))
@@ -503,7 +502,6 @@ declare-local := λctx vname offset. (tail(
    (local unframe_this)
    (set unframe_this (_unpush-this()))
    (local refer)
-   (set refer (TODO REFER))
    (local eight)
    (set eight (
       inc(inc(inc(inc(inc(inc(inc(inc(
@@ -531,20 +529,24 @@ declare-local := λctx vname offset. (tail(
          (i2s( (mul( (add( (mul( thirtytwo offset )) thirtytwo)) (dec(())) )) ))
       ) \[ '%rbp \] \n
    ))
-   (print-s set_this)
+   (set refer (
+      \t 'mov \s (
+         (i2s( (mul( (add( (mul( thirtytwo offset )) eight)) (dec(())) )) ))
+      ) \[ '%rbp \] , %r12 \n
+      \t 'mov \s (
+         (i2s( (mul( (add( (mul( thirtytwo offset )) sixteen)) (dec(())) )) ))
+      ) \[ '%rbp \] , %r13 \n
+      \t 'mov \s (
+         (i2s( (mul( (add( (mul( thirtytwo offset )) twentyfour)) (dec(())) )) ))
+      ) \[ '%rbp \] , %r14 \n
+      \t 'mov \s (
+         (i2s( (mul( (add( (mul( thirtytwo offset )) thirtytwo)) (dec(())) )) ))
+      ) \[ '%rbp \] , %r15 \n
+   ))
+   (print-s refer)
    (Expr(frame_this set_this unframe_this () () ctx (inc offset)))
 ));
 
-#   let refer = local(&format!(
-#      "\tmov {}(%rbp), %r12\n \
-#       \tmov {}(%rbp), %r13\n \
-#       \tmov {}(%rbp), %r14\n \
-#       \tmov {}(%rbp), %r15\n",
-#      -offset*32 - 8,
-#      -offset*32 - 16,
-#      -offset*32 - 24,
-#      -offset*32 - 32,
-#   ));
 #   let assign_vname = s_atom(&format!("set {}",vname));
 #   let program_ctx = kv_add( program_ctx, &vname, &refer );
 #   let program_ctx = kv_add( &program_ctx, &assign_vname, &assign );
