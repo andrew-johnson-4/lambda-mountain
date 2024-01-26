@@ -607,6 +607,11 @@ declare-local := λctx vname offset. (tail(
    (Expr(frame_this ((_yield-nil()) set_this) unframe_this () () ctx (inc offset)))
 ));
 
+yield-patterns := λctx p offset. (tail(
+   (print-s (YIELDPATTERNS p))
+   ()
+));
+
 yield-cons := λctx l r offset. (tail(
    (local e1)
    (local e1_frame)
@@ -694,6 +699,32 @@ compile-expr := λctx e offset. (tail(
          (set prog e1_prog)
          (set prog (prog (set-local(ctx vname))))
          (Expr( e1_frame prog e1_unframe e1_text e1_data ctx offset ))
+      )))
+      ( (App( (App( (Variable 'match) t )) p )) (tail(
+         (set e1 (compile-expr(ctx t offset)))
+         (set e1_frame (get-frame e1))
+         (set e1_prog (get-prog e1))
+         (set e1_unframe (get-unframe e1))
+         (set e1_text (get-text e1))
+         (set e1_data (get-data e1))
+         (set ctx (get-pc e1))
+         (set offset (get-offset e1))
+         (set e2 (yield-patterns(ctx p offset)))
+         (set e2_frame (get-frame e2))
+         (set e2_prog (get-prog e2))
+         (set e2_unframe (get-unframe e2))
+         (set e2_text (get-text e2))
+         (set e2_data (get-data e2))
+         (set ctx (get-pc e2))
+         (set offset (get-offset e2))
+         (local label_skip)
+         (set label_skip (uuid()))
+         (set prog (e1_prog e2_prog))
+         (set prog (prog ( \t 'cmp \s '$0, \s %rsi \n )))
+         (set prog (prog ( \t 'jne \s label_skip \n )))
+         (set prog (prog (_yield_nil())))
+         (set prog (prog ( label_skip ': \n )))
+         ( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset )
       )))
       ( (App( (App( (Variable 'while) c )) d )) (tail(
          (set e1 (compile-expr(ctx c offset)))
