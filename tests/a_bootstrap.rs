@@ -97,6 +97,7 @@ fn suite() {
       let stdout = std::fs::read_to_string(stdout).unwrap();
       let stdout = stdout.trim().to_string();
       let actual = run_bootstrap(&path);
+      let actual = actual.trim().to_string();
       if stdout != actual {
          failures.push(( path, stdout, actual ));
       }
