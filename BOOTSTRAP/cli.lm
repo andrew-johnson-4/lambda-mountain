@@ -663,6 +663,18 @@ destructure-pattern-lhs := λctx lhs offset. (tail(
          (set prog (prog (label_skip ': \n)))
          (Expr( e1_frame prog e1_unframe e1_text e1_data ctx offset ))
       )))
+      ( Nil (tail(
+         (set label_skip (uuid()))
+         (set prog (prog (\t 'cmp \s '$0, \s %r12 \n)))
+         (set prog (prog (\t 'jne \s label_skip \n)))
+         (set prog (prog (\t 'cmp \s '$0, \s %r13 \n)))
+         (set prog (prog (\t 'jne \s label_skip \n)))
+         (set prog (prog (\t 'cmp \s '$0, \s %r14 \n)))
+         (set prog (prog (\t 'jne \s label_skip \n)))
+         (set prog (prog (\t 'mov \s '$1, \s %rsi \n)))
+         (set prog (prog (label_skip ': \n)))
+         (Expr( () prog () () () ctx offset ))
+      )))
       (_ (print-s (UnexpectedPattern lhs)))
    ))
 ));
@@ -699,19 +711,6 @@ destructure-pattern-lhs := λctx lhs offset. (tail(
 #         program_ctx,
 #         offset
 #      )
-#   } else if is_nil(&p) {
-#      let label_skip = uuid();
-#      let prog = s_atom("\tcmp $0, %r12\n");
-#      let prog = s_cons(prog, s_atom(&format!("\tjne {}\n",label_skip)));
-#      let prog = s_cons(prog, s_atom("\tcmp $0, %r13\n"));
-#      let prog = s_cons(prog, s_atom(&format!("\tjne {}\n",label_skip)));
-#      let prog = s_cons(prog, s_atom("\tcmp $0, %r14\n"));
-#      let prog = s_cons(prog, s_atom(&format!("\tjne {}\n",label_skip)));
-#      let prog = s_cons(prog, s_atom("\tcmp $0, %r15\n"));
-#      let prog = s_cons(prog, s_atom(&format!("\tjne {}\n",label_skip)));
-#      let prog = s_cons(prog, s_atom("\tmov $1, %rsi\n"));
-#      let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
-#      ( s_nil(), prog, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
 
 #returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 yield-patterns := λctx p offset. match p (
