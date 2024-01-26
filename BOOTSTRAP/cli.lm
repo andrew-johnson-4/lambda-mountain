@@ -654,7 +654,7 @@ destructure-pattern-lhs := λctx lhs offset. (tail(
          (set prog (prog (\t 'mov \s %r12, \s %rax \n)))
          (set prog (prog e1_prog))
          (set prog (prog (\t 'mov \s %r12, \s %rbx \n)))
-         (set prog (prog ('call \s '_streq \n)))
+         (set prog (prog (\t 'call \s '_streq \n)))
          (set prog (prog (\t 'mov \s %r12, \s %rdi \n)))
          (set prog (prog (_unshadow-this())))
          (set prog (prog (\t 'cmp \s '$0, \s %rdi \n)))
