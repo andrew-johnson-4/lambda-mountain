@@ -410,6 +410,7 @@ is-builtin := λf. (match f (
    ('tail True)
    ('inc True)
    ('dec True)
+   ('add True)
    ('mul True)
    ('dump-i True)
    ('print-s True)
@@ -1081,7 +1082,6 @@ _program-header := λ.(
    \t 'ret                             \n
 
    'mul:                               \n
-   \t 'dec \s '%r12                    \n
    \t 'cmp \s '$0, \s '%r13            \n
    \t 'je \s 'mul_err                  \n
    \t 'cmp \s '$0, \s '%r14            \n
@@ -1092,6 +1092,23 @@ _program-header := λ.(
    \t 'mov \s '%rbx, \s '%r12          \n
    \t 'ret                             \n
    'mul_err:                           \n
+   \t 'mov \s '$0, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13            \n
+   \t 'mov \s '$0, \s '%r14            \n
+   \t 'mov \s '$0, \s '%r15            \n
+   \t 'ret                             \n
+
+   'add:                               \n
+   \t 'cmp \s '$0, \s '%r13            \n
+   \t 'je \s 'mul_err                  \n
+   \t 'cmp \s '$0, \s '%r14            \n
+   \t 'je \s 'mul_err                  \n
+   \t 'mov \s '0 \[ '%r13 \] , '%rax   \n  
+   \t 'mov \s '0 \[ '%r14 \] , '%rbx   \n
+   \t 'add \s '%rax, \s '%rbx          \n
+   \t 'mov \s '%rbx, \s '%r12          \n
+   \t 'ret                             \n
+   'add_err:                           \n
    \t 'mov \s '$0, \s '%r12            \n
    \t 'mov \s '$0, \s '%r13            \n
    \t 'mov \s '$0, \s '%r14            \n
