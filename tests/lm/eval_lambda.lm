@@ -1,4 +1,0 @@
-
-main := print-s(
-   eval-soft( (Lambda (Var 'x) ('x 'x)) 123 )
-);
