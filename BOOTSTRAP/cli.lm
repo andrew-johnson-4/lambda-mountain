@@ -1288,11 +1288,11 @@ _data-header := λ.(
   '__s_counter:                        \n
   \t .zero \s '8                       \n
   '__s_section:                        \n
-  \t .zero \s '268435456               \n
+  \t .zero \s '536870912               \n
   '__a_counter:                        \n
   \t .zero \s '8                       \n
   '__a_section:                        \n
-  \t .zero \s '268435456               \n
+  \t .zero \s '536870912               \n
   '__nil_literal:                      \n
   \t .ascii \s " \[ \] "               \n
   \t .zero \s 1                        \n
