@@ -650,6 +650,7 @@ destructure-pattern-lhs := λctx lhs offset. (tail(
          (set ctx (get-pc e1))
          (set offset (get-offset e1))
          (set label_skip (uuid()))
+         (set prog (prog (_push-this())))
          (set prog (prog (\t 'mov \s %r12, \s %rax \n)))
          (set prog (prog e1_prog))
          (set prog (prog (\t 'mov \s %r12, \s %rbx \n)))
@@ -659,6 +660,7 @@ destructure-pattern-lhs := λctx lhs offset. (tail(
          (set prog (prog (\t 'je \s label_skip \n)))
          (set prog (prog (\t 'mov \s '$1, \s %rsi \n)))
          (set prog (prog (label_skip ': \n)))
+         (set prog (prog (_pop-this())))
          (Expr( e1_frame prog e1_unframe e1_text e1_data ctx offset ))
       )))
       ( Nil (tail(
