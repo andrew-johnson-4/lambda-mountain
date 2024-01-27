@@ -23,7 +23,9 @@ fn flatten(output: &mut String, input: &S) {
    } else if is_atom(input) {
       let l = input.to_string();
       if l=="lambda" || l=="literal" || l=="variable" || l=="app" || l=="local" || l=="type" {}
-      else if l == "\\o" {
+      else if l == "\\\\" {
+         output.push_str("\\\\"); 
+      } else if l == "\\o" {
          output.push_str("#"); 
       } else if l == "\\[" {
          output.push_str("("); 
@@ -164,6 +166,7 @@ fn yield_atom(_helpers_ctx: &S, program_ctx: &S, s: &str, offset: i64) -> (S,S,S
    let s = s.replace("\\[","(");
    let s = s.replace("\\]",")");
    let s = s.replace("[ESCAPE]","\\\\");
+   let s = if s == "\\" { "\\\\".to_string() } else { s };
    let id = uuid();
    let prog = s_nil();
    let prog = s_cons(prog, s_atom(&format!("\tmov ${}, %r12\n",id)));

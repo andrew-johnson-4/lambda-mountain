@@ -673,7 +673,34 @@ escape-sequences := λt. match t (
    ( \\[ \[ )
    ( \\] \] )
    ( (l r) ( (escape-sequences l) (escape-sequences r) ) )
-   ( s s )
+   ( s (tail(
+      (local c)
+      (local cs)
+      (local is_escape)
+      (foreach-atom s (
+         (set c $_)
+         (match c (
+            ()
+            (\\ (
+               (if is_escape (
+                 (set cs ( cs \\ ))
+                 (set is_escape ())
+               ) (set is_escape True))
+            ))
+            (_ (
+               (if is_escape (
+                  if (eq (c ,)) (
+                     (set cs ( cs \, ))
+                  ) (
+                     (set cs (cs (clone-rope c)))
+                  )
+               ) (set cs (cs (clone-rope c))))
+               (set is_escape ())
+            ))
+         ))
+      ))
+      (clone-rope cs)
+   )))
 );
 
 #returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
