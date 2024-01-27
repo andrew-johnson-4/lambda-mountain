@@ -299,10 +299,10 @@ destructure-args := λctx e offset. (match e (
       (set ctx (get-pc ha))
       (local prog)
       (set prog (prog (_shadow-this()) ))
-      (set prog (prog (_tail()) ))
+      (set prog (prog (\t 'call \s 'tail \n) ))
       (set prog (prog (get-prog ta) ))
       (set prog (prog (_unshadow-this()) ))
-      (set prog (prog (_head()) ))
+      (set prog (prog (\t 'call \s 'head \n) ))
       (set prog (prog (get-prog ha) ))
       (Expr(
          ( (get-frame ta) (get-frame ha) )
