@@ -412,6 +412,11 @@ label-case := λk. (tail(
    (clone-rope nk)
 ));
 
+destructure-args := λctx a offset. (tail(
+   ()
+   ()
+));
+
 assemble := λconfig program. (
    (local target)
    (set target 'tmp.s)
@@ -427,18 +432,22 @@ assemble := λconfig program. (
    (local has_main)
    (set output_p (_program-header()))
    (set output_d (_data-header()))
-   (local main_ctx)
-   (set main_ctx program)
+   (local main-ctx)
+   (set main-ctx program)
    (local e)
+   (local e2)
+   (local offset)
+   (local inner-ctx)
 
    (while program (match program (
       ()
       ( (pc (Global ('main body))) (
          (set program pc)
+         (set offset ())
          (set output_p (output_p ('main: \n)))
          (set output_p (output_p (_before-main())))
          (set output_p (output_p (_enter-function())))
-         (set e (compile-expr(main_ctx body ())))
+         (set e (compile-expr(main-ctx body offset)))
          (set output_p (output_p (get-frame e)))
          (set output_p (output_p (get-prog e)))
          (set output_p (output_p (get-unframe e)))
@@ -449,25 +458,31 @@ assemble := λconfig program. (
       ))
       ( (pc (Global (fname body))) (
          (set program pc)
+         (set offset ())
+         (set inner-ctx main-ctx)
          (match body (
             ()
             ( Nil (
                (print-s (BINDG fname))
             ))
             ( (Lambda(lhs rhs)) (
-               #(set e (compile-expr(main_ctx body ())))
-               #(set output_p (output_p ((label-case fname) ': \n)))
-               #(set output_p (output_p (_enter-function())))
-               (print-s (BINDF fname lhs rhs))
+               (set e (destructure-args(inner-ctx lhs offset))
+               (set offset (get-offset e))
+               (set inner-ctx (get-pc e))
+               (set e2 (compile-expr(inner-ctx rhs offset))
+               (set output_p (output_p ((label-case fname) ': \n)))
+               (set output_p (output_p (_enter-function())))
+               (set output_p (get-frame e))
+               (set output_p (get-frame e2))
+               (set output_p (get-prog e))
+               (set output_p (get-prog e2))
+               (set output_p (get-unframe e))
+               (set output_p (get-unframe e2))
+               (set output_p (output_p (_exit-function())))
+               (set output_d (get-data e))
+               (set output_d (get-data e2))
             ))
          ))
-
-          #raw_program = s_cons( raw_program, vframe );
-          #raw_program = s_cons( raw_program, vprog );
-          #raw_program = s_cons( raw_program, vunframe );
-          #raw_program = s_cons( raw_program, vtext );
-          #raw_data = s_cons(raw_data,vdata);
-
       ))
    )))
 
@@ -1157,16 +1172,6 @@ _before-main := λ.(
    '__before_main_end:                    \n
 );
 
-_enter-function := λ.(
-   \t 'push \s '%rbp                      \n
-   \t 'mov \s '%rsp, \s '%rbp             \n
-);
-_leave-function := λ.(
-   \t 'mov \s '%rbp, \s '%rsp             \n
-   \t 'pop \s '%rbp                       \n
-   \t 'ret                                \n
-);
-
 _program-header := λ.(
    '.global \s '_start                    \n
    '.text                                 \n
@@ -1684,4 +1689,14 @@ _tail := λ.(
    \t 'mov \s '24 \[ %r14 \] , \s '%r15      \n
    \t 'mov \s '8 \[ %r14 \] , \s '%r13       \n
    \t 'mov \s '16 \[ %r14 \] , \s '%r14      \n
+);
+
+_enter-function := λ.(
+   \t 'push \s %rbp                          \n
+   \t 'mov \s %rsp, \s %rbp                  \n
+);
+_exit-function := λ.(
+   \t 'mov \s %rbp, \s %rsp                  \n
+   \t 'pop \s %rbp                           \n
+   \t 'ret                                   \n
 );
