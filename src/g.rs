@@ -19,25 +19,28 @@ use std::io::Write;
 fn flatten(output: &mut String, input: &S) {
    if is_cons(input) {
       flatten( output, &head(input) );
-      if !(output.ends_with(" ") ||
-           output.ends_with("\t") ||
-           output.ends_with("\n")) {
-         output.push(' ');
-      }
       flatten( output, &tail(input) );
    } else if is_atom(input) {
       let l = input.to_string();
-      let l = l.replace("\\o","#");
-      let l = l.replace("\\[","(");
-      let l = l.replace("\\]",")");
-      let l = l.replace("\\s"," ");
-      let l = l.replace("\\l","λ");
-      let l = l.replace("\\:",";");
       if l=="lambda" || l=="literal" || l=="variable" || l=="app" || l=="local" || l=="type" {}
-      else if l == "\\n" {
-         output.push_str("\n"); 
+      else if l == "\\\\" {
+         output.push_str("\\\\"); 
+      } else if l == "\\o" {
+         output.push_str("#"); 
+      } else if l == "\\[" {
+         output.push_str("("); 
+      } else if l == "\\]" {
+         output.push_str(")"); 
+      } else if l == "\\s" {
+         output.push_str(" "); 
+      } else if l == "\\l" {
+         output.push_str("λ"); 
+      } else if l == "\\:" {
+         output.push_str(";"); 
       } else if l == "\\t" {
          output.push_str("\t"); 
+      } else if l == "\\n" {
+         output.push_str("\n"); 
       } else {
          output.push_str( &l );
       }
@@ -84,13 +87,20 @@ fn assemble(cfg: &str, program: &S) {
    }
 }
 
-const OPERATORS: [(&str,&str); 13] = [
+const OPERATORS: [(&str,&str); 21] = [
    ("eq", "eq"),
    ("not", "not"),
    ("inc", "inc"),
+   ("dec", "dec"),
+   ("add", "add"),
+   ("mul", "mul"),
+   ("div", "div"),
+   ("mod", "mod"),
+   ("inv", "inv"),
+   ("is-neg", "is_neg"),
+
    ("head", "head"),
    ("tail", "tail"),
-
    ("dump-i", "dump_i"),
    ("print-s", "print_s"),
    ("print-i", "print_i"),
@@ -99,6 +109,8 @@ const OPERATORS: [(&str,&str); 13] = [
    ("clone-rope", "clone_rope"),
    ("write-file", "write_file"),
    ("load-file", "load_file"),
+
+   ("digit", "digit"),
 ];
 
 fn label_case(s: &str) -> String {
@@ -143,8 +155,18 @@ fn is_local(program_ctx: &S, s: &str) -> String {
 
 //returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 fn yield_atom(_helpers_ctx: &S, program_ctx: &S, s: &str, offset: i64) -> (S,S,S,S,S,S,i64) {
-   let s = s.replace(r#"""#,r#"\""#);
    let s = s.replace("\n",r#"\n"#);
+   let s = s.replace("\\\\","[ESCAPE]");
+   let s = s.replace(r#"""#,r#"\""#);
+   let s = s.replace("\\s"," ");
+   let s = s.replace("\\:",";");
+   let s = s.replace("\\,",".");
+   let s = s.replace("\\o","#");
+   let s = s.replace("\\l","λ");
+   let s = s.replace("\\[","(");
+   let s = s.replace("\\]",")");
+   let s = s.replace("[ESCAPE]","\\\\");
+   let s = if s == "\\" { "\\\\".to_string() } else { s };
    let id = uuid();
    let prog = s_nil();
    let prog = s_cons(prog, s_atom(&format!("\tmov ${}, %r12\n",id)));
@@ -491,7 +513,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          is_local(program_ctx, &tail(&f).to_string())=="" {
          let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &x, offset);
          let f_name = variable(&label_case( &tail(&f).to_string() ));
-         let prog = s_cons( xprog , s_cons( s_cons( variable("\tcall"), f_name ), variable("\n") ));
+         let prog = s_cons( xprog , s_cons( s_cons( variable("\tcall "), f_name ), variable("\n") ));
          (xframe, prog, xunframe, xtext, xdata, program_ctx.clone(), offset)
       } else {
          let (fframe,fprog,funframe,ftext,fdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &f, offset);
@@ -564,7 +586,7 @@ fn compile_program(helpers_ctx: &S, raw_program: &S, raw_data: &S) -> S {
    )
 }
 
-pub fn compile(cfg: &str, main_ctx: &S) {
+pub fn compile(debug: bool, cfg: &str, main_ctx: &S) {
    let mut main_ctx = main_ctx.clone();
    let helpers_ctx = parse_file("stdlib/helpers.lm");
    let prelude_ctx = parse_file("stdlib/prelude.lm");
@@ -640,8 +662,10 @@ pub fn compile(cfg: &str, main_ctx: &S) {
    }
    let program = compile_program(&helpers_ctx, &raw_program, &raw_data);
    assemble(cfg, &program);
-   rm("tmp.s");
-   rm("tmp.o");
+   if !debug {
+      rm("tmp.s");
+      rm("tmp.o");
+   }
 }
 
 fn rm(p: &str) {

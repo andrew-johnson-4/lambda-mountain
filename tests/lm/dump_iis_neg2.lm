@@ -1,0 +1,6 @@
+
+main := (
+   print-s (dump-i(is-neg(
+      (dec (dec () ))
+   )))
+);

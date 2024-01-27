@@ -40,123 +40,123 @@
 
 # bootstrap is inefficient with calling conventions
 ::callee-save-registers := (
-   \t push %rax \n
-   \t push %rbx \n
-   \t push %rcx \n
-   \t push %rdx \n
-   \t push %r12 \n
-   \t push %r13 \n
-   \t push %r14 \n
-   \t push %r15 \n
-   \t push %rsi \n
-   \t push %rdi \n
+   \t 'push \s %rax \n
+   \t 'push \s %rbx \n
+   \t 'push \s %rcx \n
+   \t 'push \s %rdx \n
+   \t 'push \s %r12 \n
+   \t 'push \s %r13 \n
+   \t 'push \s %r14 \n
+   \t 'push \s %r15 \n
+   \t 'push \s %rsi \n
+   \t 'push \s %rdi \n
 );
 ::callee-restore-registers := (
-   \t pop %rdi \n
-   \t pop %rsi \n
-   \t pop %r15 \n
-   \t pop %r14 \n
-   \t pop %r13 \n
-   \t pop %r12 \n
-   \t pop %rdx \n
-   \t pop %rcx \n
-   \t pop %rbx \n
-   \t pop %rax \n
+   \t 'pop \s %rdi \n
+   \t 'pop \s %rsi \n
+   \t 'pop \s %r15 \n
+   \t 'pop \s %r14 \n
+   \t 'pop \s %r13 \n
+   \t 'pop \s %r12 \n
+   \t 'pop \s %rdx \n
+   \t 'pop \s %rcx \n
+   \t 'pop \s %rbx \n
+   \t 'pop \s %rax \n
 );
 
 ::enter-function := (
-   \t push %rbp \n
-   \t mov %rsp, %rbp \n
+   \t 'push \s %rbp \n
+   \t 'mov \s %rsp, \s %rbp \n
 );
 ::leave-function := (
-   \t mov %rbp, %rsp \n
-   \t pop %rbp \n
-   \t ret \n
+   \t 'mov \s %rbp, \s %rsp \n
+   \t 'pop \s %rbp \n
+   \t 'ret \n
 );
 
 ::show-newline := (
-   \t push %rsi                 \n
-   \t push %rdi                 \n
+   \t 'push \s %rsi                 \n
+   \t 'push \s %rdi                 \n
 
-   \t mov $1, %rax              \n
-   \t mov $1, %rdi              \n
-   \t mov $__newline, %rsi      \n
-   \t mov $1, %rdx              \n
-   \t syscall                   \n
+   \t 'mov \s '$1, \s %rax              \n
+   \t 'mov \s '$1, \s %rdi              \n
+   \t 'mov \s '$__newline, \s %rsi      \n
+   \t 'mov \s '$1, \s %rdx              \n
+   \t 'syscall                   \n
 
-   \t pop %rdi                  \n
-   \t pop %rsi                  \n
+   \t 'pop \s %rdi                  \n
+   \t 'pop \s %rsi                  \n
 );
 
 ::show-lparen := (
-   \t push %rsi                 \n
-   \t push %rdi                 \n
+   \t 'push \s %rsi                 \n
+   \t 'push \s %rdi                 \n
 
-   \t mov $1, %rax              \n
-   \t mov $1, %rdi              \n
-   \t mov $__lparen, %rsi      \n
-   \t mov $1, %rdx              \n
-   \t syscall                   \n
+   \t 'mov \s '$1, \s %rax              \n
+   \t 'mov \s '$1, \s %rdi              \n
+   \t 'mov \s '$__lparen, \s %rsi      \n
+   \t 'mov \s '$1, \s %rdx              \n
+   \t 'syscall                   \n
 
-   \t pop %rdi                  \n
-   \t pop %rsi                  \n
+   \t 'pop \s %rdi                  \n
+   \t 'pop \s %rsi                  \n
 );
 
 ::show-rparen := (
-   \t push %rsi                 \n
-   \t push %rdi                 \n
+   \t 'push \s %rsi                 \n
+   \t 'push \s %rdi                 \n
 
-   \t mov $1, %rax              \n
-   \t mov $1, %rdi              \n
-   \t mov $__rparen, %rsi      \n
-   \t mov $1, %rdx              \n
-   \t syscall                   \n
+   \t 'mov \s '$1, \s %rax              \n
+   \t 'mov \s '$1, \s %rdi              \n
+   \t 'mov \s '$__rparen, \s %rsi      \n
+   \t 'mov \s '$1, \s %rdx              \n
+   \t 'syscall                   \n
 
-   \t pop %rdi                  \n
-   \t pop %rsi                  \n
+   \t 'pop \s %rdi                  \n
+   \t 'pop \s %rsi                  \n
 );
 
 ::show-space := (
-   \t push %rsi                 \n
-   \t push %rdi                 \n
+   \t 'push \s %rsi                 \n
+   \t 'push \s %rdi                 \n
 
-   \t mov $1, %rax              \n
-   \t mov $1, %rdi              \n
-   \t mov $__space, %rsi        \n
-   \t mov $1, %rdx              \n
-   \t syscall                   \n
+   \t 'mov \s '$1, \s %rax              \n
+   \t 'mov \s '$1, \s %rdi              \n
+   \t 'mov \s '$__space, \s %rsi        \n
+   \t 'mov \s '$1, \s %rdx              \n
+   \t 'syscall                   \n
 
-   \t pop %rdi                  \n
-   \t pop %rsi                  \n
+   \t 'pop \s %rdi                  \n
+   \t 'pop \s %rsi                  \n
 );
 
 ::yield-nil := (
                          # $_.$0 ref_counter is unnecessary when open
                          # open structures are completely "owned" by the current context
    # these registers are supposed to be "preserved"
-   \t mov $0, %r12   \n # $_.$1 = 0, .atom
-   \t mov $0, %r13   \n # $_.$2 = 0, .head
-   \t mov $0, %r14   \n # $_.$3 = 0, .tail
-   \t mov $0, %r15   \n # $_.$4 = 0, .flags
+   \t 'mov \s '$0, \s '%r12   \n # $_.$1 = 0, .atom
+   \t 'mov \s '$0, \s '%r13   \n # $_.$2 = 0, .head
+   \t 'mov \s '$0, \s '%r14   \n # $_.$3 = 0, .tail
+   \t 'mov \s '$0, \s '%r15   \n # $_.$4 = 0, .flags
 );
 
 ::yield-true := (
                          # $_.$0 ref_counter is unnecessary when open
                          # open structures are completely "owned" by the current context
    # these registers are supposed to be "preserved"
-   \t mov $__true, %r12   \n # $_.$1 = 0, .atom
-   \t mov $0, %r13   \n # $_.$2 = 0, .head
-   \t mov $0, %r14   \n # $_.$3 = 0, .tail
-   \t mov $0, %r15   \n # $_.$4 = 0, .flags
+   \t 'mov \s '$__true, \s %r12   \n # $_.$1 = 0, .atom
+   \t 'mov \s '$0, \s %r13   \n # $_.$2 = 0, .head
+   \t 'mov \s '$0, \s %r14   \n # $_.$3 = 0, .tail
+   \t 'mov \s '$0, \s %r15   \n # $_.$4 = 0, .flags
 );
 
 ::yield-atom := λ::yield-atom-label. (
                                # $_.$0 ref_counter is unnecessary when open
                                # open structures must be completely "owned" by the current context
-   \t mov $ ::yield-atom-label , %r12     \n # $_.$1 = 0, .atom
-   \t mov $0, %r13           \n # $_.$2 = 0, .head
-   \t mov $0, %r14           \n # $_.$3 = 0, .tail
-   \t mov $0, %r15           \n # $_.$4 = 0, .flags
+   \t 'mov \s '$ ::yield-atom-label , \s %r12     \n # $_.$1 = 0, .atom
+   \t 'mov \s '$0, \s %r13           \n # $_.$2 = 0, .head
+   \t 'mov \s '$0, \s %r14           \n # $_.$3 = 0, .tail
+   \t 'mov \s '$0, \s %r15           \n # $_.$4 = 0, .flags
 );
 
 ::yield-cons := λ::cons-head ::cons-tail. (
@@ -166,169 +166,169 @@
    ::cons-tail
    ::close-this                # %rsi is tail
 
-   \t mov %rsi, %rdi        \n # %rdi is tail
+   \t 'mov \s %rsi, \s %rdi        \n # %rdi is tail
    ::pop-this
    ::close-this                # %rsi is head
 
-   \t mov $0, %r12          \n # this.atom is NULL
-   \t mov %rsi, %r13        \n # this.head is head
-   \t mov %rdi, %r14        \n # this.tail is tail
-   \t mov $0, %r15          \n # this.flags is 0
+   \t 'mov \s '$0, \s %r12          \n # this.atom is NULL
+   \t 'mov \s %rsi, \s %r13        \n # this.head is head
+   \t 'mov \s %rdi, \s %r14        \n # this.tail is tail
+   \t 'mov \s '$0, \s %r15          \n # this.flags is 0
 );
 
 ::show-this := (
-   \t mov $0xdeadbeef, %r8            \n
+   \t 'mov \s '$0xdeadbeef, \s %r8            \n
    ::put64
 
-   \t mov %r12, %r8            \n
+   \t 'mov \s '%r12, \s '%r8            \n
    ::put64
 
-   \t mov %r13, %r8            \n
+   \t 'mov \s '%r13, \s '%r8            \n
    ::put64
 
-   \t mov %r14, %r8            \n
+   \t 'mov \s '%r14, \s '%r8            \n
    ::put64
 
-   \t mov %r15, %r8            \n
+   \t 'mov \s '%r15, \s '%r8            \n
    ::put64
 
    ::show-newline
 );
 
 ::show-close := (
-   \t mov $0xdeadcccc, %r8            \n
+   \t 'mov \s '$0xdeadcccc, \s %r8            \n
    ::put64
 
-   \t mov %rsi, %r8             \n
+   \t 'mov \s '%rsi, \s '%r8             \n
    ::put64
 
-   \t mov 0\[%rsi\], %r8            \n
+   \t 'mov \s '0 \[ %rsi \] , \s '%r8            \n
    ::put64
 
-   \t mov 8\[%rsi\], %r8            \n
+   \t 'mov \s '8 \[ %rsi \] , \s '%r8            \n
    ::put64
 
-   \t mov 16\[%rsi\], %r8            \n
+   \t 'mov \s '16 \[ %rsi \] , \s '%r8            \n
    ::put64
 
-   \t mov 24\[%rsi\], %r8            \n
+   \t 'mov \s '24 \[ %rsi \] , \s '%r8            \n
    ::put64
 
    ::show-newline
 );
 
 ::push-this := (
-   \t push %r12 \n
-   \t push %r13 \n
-   \t push %r14 \n
-   \t push %r15 \n
+   \t 'push \s '%r12 \n
+   \t 'push \s '%r13 \n
+   \t 'push \s '%r14 \n
+   \t 'push \s '%r15 \n
 );
 
 ::push-zero := (
-   \t pushq $0 \n
-   \t pushq $0 \n
-   \t pushq $0 \n
-   \t pushq $0 \n
+   \t 'pushq \s '$0 \n
+   \t 'pushq \s '$0 \n
+   \t 'pushq \s '$0 \n
+   \t 'pushq \s '$0 \n
 );
 
 ::unpush-this := (
-   \t pop %r8 \n
-   \t pop %r8 \n
-   \t pop %r8 \n
-   \t pop %r8 \n
+   \t 'pop \s '%r8 \n
+   \t 'pop \s '%r8 \n
+   \t 'pop \s '%r8 \n
+   \t 'pop \s '%r8 \n
 );
 
 ::pop-this := (
-   \t pop %r15 \n
-   \t pop %r14 \n
-   \t pop %r13 \n
-   \t pop %r12 \n
+   \t 'pop \s '%r15 \n
+   \t 'pop \s '%r14 \n
+   \t 'pop \s '%r13 \n
+   \t 'pop \s '%r12 \n
 );
 
 ::shadow-this := (
-   \t mov %r12, %r8 \n
-   \t mov %r13, %r9 \n
-   \t mov %r14, %r10 \n
-   \t mov %r15, %r11 \n
+   \t 'mov \s '%r12, \s '%r8 \n
+   \t 'mov \s '%r13, \s '%r9 \n
+   \t 'mov \s '%r14, \s '%r10 \n
+   \t 'mov \s '%r15, \s '%r11 \n
 );
 
 ::unshadow-this := (
-   \t mov %r8, %r12 \n
-   \t mov %r9, %r13 \n
-   \t mov %r10, %r14 \n
-   \t mov %r11, %r15 \n
+   \t 'mov \s '%r8, \s '%r12 \n
+   \t 'mov \s '%r9, \s '%r13 \n
+   \t 'mov \s '%r10, \s '%r14 \n
+   \t 'mov \s '%r11, \s '%r15 \n
 );
 
 ::close-this := (
    # move this S onto the heap
    # %rsi becomes pointer to new location
-   \t mov $__s_section, %rsi        \n # %rsi now points to root s
-   \t mov $__s_counter, %r8         \n # %r8 now points to s counter
-   \t mov 0\[%r8\], %r10              \n # %r10 now hold value of cons counter
-   \t add %r10, %rsi                \n # %rsi now points to top free cons
-   \t add $32, %r10                 \n # increment s counter
-   \t mov %r10, 0\[%r8\]              \n # overwrite new s counter
-   \t mov %r12, 0\[%rsi\]             \n # set top.atom
-   \t mov %r13, 8\[%rsi\]             \n # set top.head
-   \t mov %r14, 16\[%rsi\]            \n # set top.tail 
-   \t mov %r15, 24\[%rsi\]            \n # set top.flags
+   \t 'mov \s '$__s_section, \s '%rsi        \n # %rsi now points to root s
+   \t 'mov \s '$__s_counter, \s '%r8         \n # %r8 now points to s counter
+   \t 'mov \s '0 \[ %r8 \] , \s '%r10              \n # %r10 now hold value of cons counter
+   \t 'add \s '%r10, \s '%rsi                \n # %rsi now points to top free cons
+   \t 'add \s '$32, \s '%r10                 \n # increment s counter
+   \t 'mov \s '%r10, \s '0 \[ %r8 \]              \n # overwrite new s counter
+   \t 'mov \s '%r12, \s '0 \[ %rsi \]             \n # set top.atom
+   \t 'mov \s '%r13, \s '8 \[ %rsi \]             \n # set top.head
+   \t 'mov \s '%r14, \s '16 \[ %rsi \]            \n # set top.tail 
+   \t 'mov \s '%r15, \s '24 \[ %rsi \]            \n # set top.flags
 );
 
 ::open-this := (
-   \t mov 0\[%rsi\], %r12             \n
-   \t mov 8\[%rsi\], %r13             \n
-   \t mov 16\[%rsi\], %r14            \n
-   \t mov 24\[%rsi\], %r15            \n
+   \t 'mov \s '0 \[ %rsi \] , \s '%r12             \n
+   \t 'mov \s '8 \[ %rsi \] , \s '%r13             \n
+   \t 'mov \s '16 \[ %rsi \] , \s '%r14            \n
+   \t 'mov \s '24 \[ %rsi \] , \s '%r15            \n
    # move S from heap into this
    # %rsi is pointer to current location
 );
 
 ::head := (
-   \t mov 0\[%r13\], %r12             \n
-   \t mov 16\[%r13\], %r14            \n
-   \t mov 24\[%r13\], %r15            \n
-   \t mov 8\[%r13\], %r13             \n
+   \t 'mov \s '0 \[ %r13 \] , \s '%r12             \n
+   \t 'mov \s '16 \[ %r13 \] , \s '%r14            \n
+   \t 'mov \s '24 \[ %r13 \] , \s '%r15            \n
+   \t 'mov \s '8 \[ %r13 \] , \s '%r13             \n
 );
 ::tail := (
-   \t mov 0\[%r14\], %r12             \n
-   \t mov 24\[%r14\], %r15            \n
-   \t mov 8\[%r14\], %r13             \n
-   \t mov 16\[%r14\], %r14            \n
+   \t 'mov \s '0 \[ %r14 \] , \s '%r12             \n
+   \t 'mov \s '24 \[ %r14 \] , \s '%r15            \n
+   \t 'mov \s '8 \[ %r14 \] , \s '%r13             \n
+   \t 'mov \s '16 \[ %r14 \] , \s '%r14            \n
 );
 
 ::program-header := (
-   .global _start        \n
-   .text                 \n
-   _start:               \n
-   \t jmp main           \n
+   '.global \s '_start        \n
+   '.text                 \n
+   '_start:               \n
+   \t 'jmp \s 'main           \n
 );
 
 ::data-header := (
                          \n
-   .data                 \n
+   '.data                 \n
 );
 
 ::exit-cleanup := (
                          \n
-   \t mov $60, %eax      \n # _exit system call
-   \t mov $0, %edi       \n # error code 0
-   \t syscall            \n
+   \t 'mov \s '$60, \s '%eax      \n # _exit system call
+   \t 'mov \s '$0, \s '%edi       \n # error code 0
+   \t 'syscall            \n
 );
 
 ::get-global := λ::global-name. (
-   \t mov $ ::global-name , %rax \n
-   \t mov 0\[%rax\], %r12        \n
-   \t mov 8\[%rax\], %r13        \n
-   \t mov 16\[%rax\], %r14       \n
-   \t mov 24\[%rax\], %r15       \n
+   \t 'mov \s '$ ::global-name ', \s %rax \n
+   \t 'mov \s '0 \[ %rax \] , '%r12        \n
+   \t 'mov \s '8 \[ %rax \] , '%r13        \n
+   \t 'mov \s '16 \[ %rax \] , '%r14       \n
+   \t 'mov \s '24 \[ %rax \] , '%r15       \n
 );
 
 ::set-global := λ::global-name. (
-   \t mov $ ::global-name , %rax \n
-   \t mov %r12, 0\[%rax\]        \n
-   \t mov %r13, 8\[%rax\]        \n
-   \t mov %r14, 16\[%rax\]       \n
-   \t mov %r15, 24\[%rax\]       \n
+   \t 'mov \s '$ ::global-name , \s '%rax \n
+   \t 'mov \s '%r12, \s '0 \[ %rax \]        \n
+   \t 'mov \s '%r13, \s '8 \[ %rax \]        \n
+   \t 'mov \s '%r14, \s '16 \[ %rax \]       \n
+   \t 'mov \s '%r15, \s '24 \[ %rax \]       \n
 );
 
 # $this is the Rope to iterate over
@@ -338,31 +338,31 @@
    ::foreach-head : \n
 
    #if this is a cons, recurse
-   \t cmp $0, %r13 \n
-   \t je ::foreach-notcons \n
-   \t cmp $0, %r14 \n
-   \t je ::foreach-notcons \n
+   \t 'cmp \s '$0, \s '%r13 \n
+   \t 'je \s ::foreach-notcons \n
+   \t 'cmp \s '$0, \s '%r14 \n
+   \t 'je \s ::foreach-notcons \n
    ::push-this
    ::head
-   \t call ::foreach-head \n
+   \t 'call \s ::foreach-head \n
    ::pop-this
    ::push-this
    ::tail
-   \t call ::foreach-head \n
+   \t 'call \s ::foreach-head \n
    ::pop-this
-   \t ret \n
+   \t 'ret \n
 
    #if not cons, apply
    ::foreach-notcons : \n
-   \t cmp $0, %r12 \n
-   \t je ::foreach-ignore \n
+   \t 'cmp \s '$0, \s '%r12 \n
+   \t 'je \s ::foreach-ignore \n
    ::push-this
    ::foreach-apply
    ::pop-this
-   \t ret \n
+   \t 'ret \n
 
    ::foreach-ignore : \n
-   \t ret \n
+   \t 'ret \n
 );
 
 # $this is the Rope to iterate over
@@ -372,48 +372,48 @@
    ::foreach-head : \n
 
    #if this is a cons, recurse
-   \t cmp $0, %r13 \n
-   \t je ::foreach-notcons \n
-   \t cmp $0, %r14 \n
-   \t je ::foreach-notcons \n
+   \t 'cmp \s '$0, \s %r13 \n
+   \t 'je \s ::foreach-notcons \n
+   \t 'cmp \s '$0, \s '%r14 \n
+   \t 'je \s ::foreach-notcons \n
    ::push-this
    ::head
-   \t call ::foreach-head \n
+   \t 'call \s ::foreach-head \n
    ::pop-this
    ::push-this
    ::tail
-   \t call ::foreach-head \n
+   \t 'call \s ::foreach-head \n
    ::pop-this
-   \t ret \n
+   \t 'ret \n
 
    #if not cons, apply
    ::foreach-notcons : \n
    ::push-this
 
    #if nil, apply and return
-   \t mov %r12, %r8 \n
-   \t cmp $0, %r12 \n
-   \t jne ::foreach-small \n
-   \t call ::foreach-apply \n
+   \t 'mov \s '%r12, \s '%r8 \n
+   \t 'cmp \s '$0, \s '%r12 \n
+   \t 'jne \s ::foreach-small \n
+   \t 'call \s ::foreach-apply \n
    ::pop-this
-   \t ret \n
+   \t 'ret \n
 
    #if atom, break into characters and apply
    ::foreach-small : \n
-   \t cmpb $0, 0\[%r8\] \n
-   \t je ::foreach-end \n
-   \t push %r8 \n
-   \t mov $ ::foreach-data , %r12 \n
-   \t mov $0, %r13 \n
-   \t mov $0, %r14 \n
-   \t mov $0, %r15 \n
-   \t movb 0\[%r8\], %bl \n
-   \t movb %bl, 0\[%r12\] \n
-   \t movb $0, 1\[%r12\] \n
-   \t call ::foreach-apply \n
-   \t pop %r8 \n
-   \t inc %r8 \n
-   \t jmp ::foreach-small \n
+   \t 'cmpb \s '$0, \s '0 \[ %r8 \] \n
+   \t 'je \s ::foreach-end \n
+   \t 'push \s '%r8 \n
+   \t 'mov \s '$ ::foreach-data , \s '%r12 \n
+   \t 'mov \s '$0, \s '%r13 \n
+   \t 'mov \s '$0, \s '%r14 \n
+   \t 'mov \s '$0, \s '%r15 \n
+   \t 'movb \s '0 \[ %r8 \] , \s '%bl \n
+   \t 'movb \s '%bl, \s '0 \[ %r12 \] \n
+   \t 'movb \s '$0, \s '1 \[ %r12 \] \n
+   \t 'call \s ::foreach-apply \n
+   \t 'pop \s '%r8 \n
+   \t 'inc \s '%r8 \n
+   \t 'jmp \s ::foreach-small \n
 
    ::foreach-end : \n
    ::pop-this
@@ -421,20 +421,20 @@
 
    ::foreach-apply : \n
    ::foreach-expr
-   \t ret \n
+   \t 'ret \n
 );
 
 ::foreach-char-data := λ::foreach-data.(
    ::foreach-data : \n
-   \t .zero 2 \n
+   \t '.zero \s '2 \n
 );
 
 ::argv := (
-   \t mov $__argv, %rax      \n
-   \t mov 0\[%rax\], %r12    \n
-   \t mov 8\[%rax\], %r13    \n
-   \t mov 16\[%rax\], %r14   \n
-   \t mov 24\[%rax\], %r15   \n
+   \t 'mov \s '$__argv, \s '%rax      \n
+   \t 'mov \s '0 \[ %rax \] , \s '%r12    \n
+   \t 'mov \s '8 \[ %rax \] , \s '%r13    \n
+   \t 'mov \s '16 \[ %rax \] , \s '%r14   \n
+   \t 'mov \s '24 \[ %rax \] , \s '%r15   \n
 );
 
 ::before-main := (
@@ -443,34 +443,34 @@
    # for a in argv:
    #    t.tail = (a ())
    #    t = t.tail
-   \t pop %rax               \n #argc
-   \t mov $__argv, %rbx      \n
-   \t movq $0, 0\[%rbx\]      \n
-   \t movq $0, 8\[%rbx\]      \n
-   \t movq $0, 16\[%rbx\]     \n
-   \t movq $0, 24\[%rbx\]     \n
+   \t 'pop \s '%rax               \n #argc
+   \t 'mov \s '$__argv, \s '%rbx      \n
+   \t 'movq \s '$0, \s '0 \[ %rbx \]      \n
+   \t 'movq \s '$0, \s '8 \[ %rbx \]      \n
+   \t 'movq \s '$0, \s '16 \[ %rbx \]     \n
+   \t 'movq \s '$0, \s '24 \[ %rbx \]     \n
 
-   __before_main_argv:       \n
-   \t cmp $0, %rax           \n
-   \t je __before_main_end   \n
-   \t pop %r12               \n #argv[i]
-   \t mov $0, %r13           \n
-   \t mov $0, %r14           \n
-   \t mov $0, %r15           \n
+   '__before_main_argv:       \n
+   \t 'cmp \s '$0, \s '%rax           \n
+   \t 'je \s '__before_main_end   \n
+   \t 'pop \s '%r12               \n #argv[i]
+   \t 'mov \s '$0, \s '%r13           \n
+   \t 'mov \s '$0, \s '%r14           \n
+   \t 'mov \s '$0, \s '%r15           \n
    ::close-this
-   \t mov %rsi, %rdi         \n
+   \t 'mov \s '%rsi, \s '%rdi         \n
    #rdi is a
-   \t mov $0, %r12           \n
-   \t mov $0, %r13           \n
-   \t mov $0, %r14           \n
-   \t mov $0, %r15           \n
+   \t 'mov \s '$0, \s '%r12           \n
+   \t 'mov \s '$0, \s '%r13           \n
+   \t 'mov \s '$0, \s '%r14           \n
+   \t 'mov \s '$0, \s '%r15           \n
    ::close-this
    #rsi is clean closed ()
-   \t mov %rdi, 8\[%rbx\]    \n
-   \t mov %rsi, 16\[%rbx\]   \n
-   \t mov %rsi, %rbx         \n
+   \t 'mov \s '%rdi, \s '8 \[ %rbx \]    \n
+   \t 'mov \s '%rsi, \s '16 \[ %rbx \]   \n
+   \t 'mov \s '%rsi, \s '%rbx         \n
    #rbx is tail of argv
-   \t dec %rax               \n
-   \t jmp __before_main_argv \n
-   __before_main_end:        \n
+   \t 'dec \s '%rax               \n
+   \t 'jmp \s '__before_main_argv \n
+   '__before_main_end:        \n
 );

@@ -1,6 +1,6 @@
 
-main := print-s(match (1 2 3) (
+main := print-s(match (1 2) (
    ()
-   (((Lambda x y) z) (x z))
+   ( (Lambda x) 3 )
    ( (x y) (x y) )
 ));

@@ -1,6 +1,6 @@
 
 main := (
-   print-s (()
+   print-s (
       ((clone-rope 'A)
          ((clone-rope 'B)
             (clone-rope 'C)

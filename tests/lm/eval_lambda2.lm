@@ -1,4 +1,0 @@
-
-main := print-s(
-   ctx-eval-soft( (CTX ('y 456)) ((Lambda (Var 'x) ('x 'y)) 123) )
-);

@@ -1,8 +1,15 @@
 use std::process::Command;
 use glob::glob;
 
+fn rm(p: &str) {
+   if std::path::Path::new(p).is_file() {
+      std::fs::remove_file(p).expect(&format!("Could not remove file: {}",p))
+   }
+   assert!( !std::path::Path::new(p).is_file() );
+}
+
 fn compile_bootstrap() {
-   let _ = std::fs::remove_file("bootstrap");
+   rm("bootstrap");
    let exit = Command::new("lambda_mountain")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
@@ -20,9 +27,9 @@ fn compile_bootstrap() {
 }
 
 fn run_bootstrap(target: &str) -> String {
-   let _ = std::fs::remove_file("tmp.s");
-   let _ = std::fs::remove_file("tmp.o");
-   let _ = std::fs::remove_file("a.out");
+   rm("tmp.s");
+   rm("tmp.o");
+   rm("a.out");
    let exit = Command::new("./bootstrap")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
@@ -35,7 +42,7 @@ fn run_bootstrap(target: &str) -> String {
                       .expect("failed to wait for process");
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("./bootstrap error code while compiling {}: {}", target, stderr);
+      return format!("./bootstrap error code while compiling {}: {}", target, stderr);
    };
    let exit = Command::new("as")
                       .stdout(std::process::Stdio::piped())
@@ -49,7 +56,7 @@ fn run_bootstrap(target: &str) -> String {
                       .expect("failed to wait for process");
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("as error code while compiling {}: {}", target, stderr);
+      return format!("as error code while compiling {}: {}", target, stderr);
    };
    let exit = Command::new("ld")
                       .stdout(std::process::Stdio::piped())
@@ -63,7 +70,7 @@ fn run_bootstrap(target: &str) -> String {
                       .expect("failed to wait for process");
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("ld error code while compiling {}: {}", target, stderr);
+      return format!("ld error code while compiling {}: {}", target, stderr);
    };
    let exit = Command::new("./a.out")
                       .stdout(std::process::Stdio::piped())
@@ -74,21 +81,29 @@ fn run_bootstrap(target: &str) -> String {
                       .expect("failed to wait for process");
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("./a.out error code while running {}: {}", target, stderr);
+      return format!("./a.out error code while running {}: {}", target, stderr);
    };
    String::from_utf8_lossy(&exit.stdout).to_string()
 }
 
-//#[test]
+#[test]
 fn suite() {
    compile_bootstrap();
+   let mut failures = Vec::new();
    for entry in glob("tests/lm/*.lm").unwrap() {
       let path = entry.unwrap().display().to_string();
       let stdout = path.clone() + ".out";
       assert!(std::path::Path::new(&stdout).exists(),"Expected stdout not found: {}",stdout);
       let stdout = std::fs::read_to_string(stdout).unwrap();
-      let stdout = stdout.trim();
+      let stdout = stdout.trim().to_string();
       let actual = run_bootstrap(&path);
-      assert_eq!(stdout, actual, "Expected: {}, Actual: {}", stdout, actual);
+      let actual = actual.trim().to_string();
+      if stdout != actual {
+         failures.push(( path, stdout, actual ));
+      }
    }
+   for (path,stdout,actual) in &failures {
+      eprintln!("TEST {} Expected: {}, Actual: {}", path, &stdout[..std::cmp::min(100,stdout.len())], &actual[..std::cmp::min(100,actual.len())]);
+   }
+   assert_eq!( failures.len(), 0 );
 }
