@@ -94,7 +94,6 @@ parse-lambda := λtoks. (tail(
 ));
 
 parse-one-expression := λtoks. (tail(
-   (print-s (PARSEONE toks))
    (local remainder)
    (local is_lambda)
    (local expr)
