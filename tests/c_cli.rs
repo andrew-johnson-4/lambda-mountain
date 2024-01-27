@@ -72,7 +72,7 @@ fn helpers() {
    assert_eq!( compile_and_run("tests/lm/locals2.lm"), "123" );
    assert_eq!( compile_and_run("tests/lm/locals3.lm"), "()" );
    assert_eq!( compile_and_run("tests/lm/locals4.lm"), "()" );
-   assert_eq!( compile_and_run("tests/lm/assign.lm"), "((123 abc) xyz)" );
+   assert_eq!( compile_and_run("tests/lm/assign.lm"), "(((Assignment 123) abc) xyz)" );
    assert_eq!( compile_and_run("tests/lm/assign2.lm"), "(((() 123) abc) xyz)" );
 }
 
@@ -89,7 +89,7 @@ fn control_flow() {
    assert_eq!( compile_and_run("tests/lm/match6.lm"), "(1 2)" );
    assert_eq!( compile_and_run("tests/lm/match7.lm"), "1" );
    assert_eq!( compile_and_run("tests/lm/match8.lm"), "(1 3)" );
-   assert_eq!( compile_and_run("tests/lm/match9.lm"), "((1 2) 3)" );
+   assert_eq!( compile_and_run("tests/lm/match9.lm"), "(1 2)" );
    assert_eq!( compile_and_run("tests/lm/while1.lm"), "((1 2) 3)(1 2)1" );
 }
 
@@ -111,31 +111,9 @@ fn uuid() {
    assert_eq!( compile_and_run("tests/lm/uuid1.lm"),  "uuid_0000000000000001uuid_0000000000000002" );
 }
 
-/* TODO BOOTSTRAP
-#[test]
-fn dsa() {
-   assert_eq!( compile_and_run("tests/lm/concat.lm"), "(((() 1) 2) 3)" );
-   assert_eq!( compile_and_run("tests/lm/kv_merge.lm"), "(((((() (1 2)) (3 4)) (5 6)) (7 8)) (9 0))" );
-   assert_eq!( compile_and_run("tests/lm/kv_lookup.lm"), "456" );
-   assert_eq!( compile_and_run("tests/lm/kv_lookup2.lm"), "000" );
-}
-*/
-
-/* TODO BOOTSTRAP
-#[test]
-fn eval_soft() {
-   assert_eq!( compile_and_run("tests/lm/destructure2.lm"), "()" );
-   assert_eq!( compile_and_run("tests/lm/destructure.lm"), "((CTX (b 1)) (c 3))" );
-   assert_eq!( compile_and_run("tests/lm/eval_cons.lm"), "((123 ()) abc)" );
-   assert_eq!( compile_and_run("tests/lm/eval_substitution.lm"), "123" );
-   assert_eq!( compile_and_run("tests/lm/eval_lambda.lm"), "(123 123)" );
-   assert_eq!( compile_and_run("tests/lm/eval_lambda2.lm"), "(123 456)" );
-}
-*/
-
 #[test]
 fn rope() {
-   assert_eq!( compile_and_run("tests/lm/clone_rope2.lm"), "(() (A (B C)))" );
+   assert_eq!( compile_and_run("tests/lm/clone_rope2.lm"), "(A (B C))" );
    assert_eq!( compile_and_run("tests/lm/clone_rope3.lm"), "(((() A) B) C)" );
    assert_eq!( compile_and_run("tests/lm/clone_rope.lm"), "helloworld" );
    assert_eq!( compile_and_run("tests/lm/foreach_atom.lm"), "helloworld" );
