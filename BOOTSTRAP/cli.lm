@@ -76,21 +76,25 @@ tokenize-file := λpath. (
    tokenize (load-file path)
 );
 
+#returns (lhs rhs)
 parse-lambda := λtoks. (tail(
+   (print-s (PARSELAMBDA toks))
    (local er)
    (set er (parse-one-expression toks))
-   (match er (
-      ()
-      (((Literal .) r) (() (parse-many-expressions r)))
-      ((e r) (tail(
-         (local lr)
-         (set lr (parse-lambda r))
-         (if (head lr)
-             ( (e (head lr)) (tail lr) )
-             ( e (tail lr) )
-         )
-      )))
+   (local lmb)
+   (set lmb (head er))
+   (set toks (tail er))
+   (while toks (
+      (set er (parse-one-expression toks))
+      (match er (
+         ()
+         ((e ()) (
+            (set lmb (lmb e))
+         ))
+      ))
+      (print-s (LAMBDANEXT lmb er))
    ))
+   lmb
 ));
 
 parse-one-expression := λtoks. (tail(
