@@ -1818,6 +1818,106 @@ _program-header := λ.(
    'clone_rope_end:                      \n
    \t 'ret                               \n
 
+   'write_file:                          \n
+   #open file
+   \t 'mov \s '0 \[ %r13 \] , \s '%rdi   \n # file name
+   \t 'pushq \s '0 \[ %r14 \]            \n # data to write
+   \t 'mov \s '$2, \s '%rax              \n # syscall open
+   \t 'mov \s '$577, \s %rsi             \n
+   \t 'mov \s '$420, \s '%rdx            \n # mode
+   \t 'syscall                           \n
+   \t 'mov \s '%rax, \s '%r8             \n # r8 now holds file descriptor
+
+   #write to file
+   \t 'pop \s '%rax                      \n
+   \t 'mov \s '%rax, \s '%r9             \n
+   \t 'call \s '_strlen                  \n
+   \t 'mov \s '%rbx, \s '%rdx            \n # length to write
+   \t 'mov \s '%r9, \s '%rsi             \n # data to write
+   \t 'mov \s '%r8, \s '%rdi             \n # file descriptor
+   \t 'mov \s '$1, \s '%rax              \n # 'write' system call
+   \t 'syscall                           \n
+
+   #close file
+   \t 'mov \s '%r8, \s '%rdi             \n # file descriptor
+   \t 'mov \s '$3, \s '%rax              \n # close
+   \t 'syscall                           \n
+   \t 'ret                               \n
+
+   'load_file:                           \n
+
+   # open file
+   \t 'mov \s '$2, \s '%rax              \n # syscall open
+   \t 'mov \s '%r12, \s '%rdi            \n # file name
+   \t 'mov \s '$0, \s '%rsi              \n # read-only mode
+   \t 'syscall                           \n
+   # file descriptor is in %rax
+
+   \t 'cmp \s '$0, \s '%rax              \n
+   # if return value is positive then open was a success
+   \t 'jge \s 'load_file_contents        \n
+
+   \t 'mov \s '$__err_fopen, \s '%r12    \n
+   \t 'mov \s '$0, \s '%r13              \n
+   \t 'mov \s '$0, \s '%r14              \n
+   \t 'mov \s '$0, \s '%r15              \n
+   \t 'ret                               \n
+
+   'load_file_contents:                  \n
+   \t 'mov \s '$__a_section, \s '%r8     \n
+   \t 'mov \s '$__a_counter, \s '%r10    \n
+   \t 'mov \s '0 \[ %r10 \] , \s '%r11   \n
+   \t 'add \s '%r11, \s '%r8             \n
+   \t 'mov \s '%r8, \s '%r9              \n
+   \t 'mov \s '$0, \s '%r10              \n
+   \t 'mov \s '$load_file_buf, \s '%r11  \n
+   #r8 holds pointer to head of new data
+   #r9 holds pointer to tail of new data
+   #r10 holds amount of data on buffer currently
+   #r11 holds pointer to head of buffer
+
+   # move data from buffer into string
+   'load_file_loop:                      \n
+   \t 'cmp \s '$0, \s '%r10              \n
+   \t 'je \s 'load_file_bufempty         \n
+   \t 'movb \s '0 \[ %r11 \] , \s '%bl   \n
+   \t 'mov \s '%bl, \s '0 \[ %r9 \]      \n
+   \t 'inc \s '%r9                       \n
+   \t 'inc \s '%r11                      \n
+   \t 'dec \s '%r10                      \n
+   \t 'jmp \s 'load_file_loop            \n
+
+      # read file
+   'load_file_bufempty:                  \n
+   \t 'push \s '%rax                     \n
+   \t 'mov \s '%rax, \s '%rdi            \n # file descriptor
+   \t 'mov \s '$0, \s '%rax              \n # read
+   \t 'mov \s '$load_file_buf, \s '%rsi  \n # buffer
+   \t 'mov \s '$load_file_bsz, \s '%rdx  \n
+   \t 'mov \s '0 \[ %rdx \] , \s '%rdx   \n # buffer size
+   \t 'syscall                           \n
+   \t 'mov \s '%rax, \s '%r10            \n
+   \t 'pop \s '%rax                      \n
+   \t 'mov \s '$load_file_buf, \s '%r11  \n
+   \t 'cmp \s '$0, \s '%r10              \n
+   \t 'jne \s 'load_file_loop            \n
+
+   # close file
+   \t 'mov \s '%rax, \s '%rdi            \n # file descriptor
+   \t 'mov \s '$3, \s '%rax              \n # close
+   \t 'syscall                   \n
+
+   \t 'movb \s '$0, \s '0 \[ %r9 \]      \n
+   \t 'inc \s '%r9                       \n
+   \t 'sub \s '%r8, \s '%r9              \n
+   \t 'mov \s '$__a_counter, \s '%r10    \n
+   \t 'mov \s '%r9, \s '0 \[ %r10 \]     \n
+   \t 'mov \s '%r8, \s '%r12             \n
+   \t 'mov \s '$0, \s '%r13              \n
+   \t 'mov \s '$0, \s '%r14              \n
+   \t 'mov \s '$0, \s '%r15              \n
+   \t 'ret                               \n
+
 );
 
 _push-this := λ.(
