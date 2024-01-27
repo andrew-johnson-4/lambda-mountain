@@ -1048,20 +1048,20 @@ compile-expr := λctx e offset. (tail(
             (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
          ) (
             ()
-#            (match (get-global(ctx fname)) (
-#               ()
-#               ( (Global (f body)) (tail(
-#                  ()
-#                  (set x (compile-expr(ctx arg offset)))
-#                  (set prog (get-prog x))
-#                  (set prog (prog (\t 'call \s (label-case fname) \n)))
-#                  (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
-#               )))
-#               ( _ (tail(
-#                  ()
-#                  (yield-cons(ctx (Variable fname) arg offset))
-#               )))
-#            ))
+            (match (get-global(ctx fname)) (
+               ()
+               ( (Global (f body)) (tail(
+                  ()
+                  (set x (compile-expr(ctx arg offset)))
+                  (set prog (get-prog x))
+                  (set prog (prog (\t 'call \s (label-case fname) \n)))
+                  (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
+               )))
+               ( _ (tail(
+                  ()
+                  (yield-cons(ctx (Variable fname) arg offset))
+               )))
+            ))
          )
       )))
       ( (Literal l) (tail(
