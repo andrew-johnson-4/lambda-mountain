@@ -677,7 +677,7 @@ escape-sequences := λt. match t (
       (local c)
       (local cs)
       (local is_escape)
-      (foreach-atom s (
+      (foreach-char s (
          (set c $_)
          (match c (
             ()

@@ -1,5 +1,4 @@
 
 main := (
-   argv
-   (print-s (load-file 'tests/lm/bigger_file.txt))
+   (print-s (load-file 'tests/lm/bigger_file\,txt))
 );
