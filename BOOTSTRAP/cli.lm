@@ -449,12 +449,25 @@ assemble := λconfig program. (
       ))
       ( (pc (Global (fname body))) (
          (set program pc)
-         (set fname (label-case fname))
-         (print-s (F fname body))
-         (set output_p (output_p (fname ': \n)))
-         (set output_p (output_p (_enter-function())))
-         (set e (compile-expr(main_ctx body ())))
-         #TODO unpack expression $body
+         (match body (
+            ()
+            ( Nil (
+               (print-s (BINDG fname))
+            ))
+            ( (Lambda(lhs rhs)) (
+               #(set e (compile-expr(main_ctx body ())))
+               #(set output_p (output_p ((label-case fname) ': \n)))
+               #(set output_p (output_p (_enter-function())))
+               (print-s (BINDF fname lhs rhs))
+            ))
+         ))
+
+          #raw_program = s_cons( raw_program, vframe );
+          #raw_program = s_cons( raw_program, vprog );
+          #raw_program = s_cons( raw_program, vunframe );
+          #raw_program = s_cons( raw_program, vtext );
+          #raw_data = s_cons(raw_data,vdata);
+
       ))
    )))
 
