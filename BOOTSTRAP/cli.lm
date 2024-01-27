@@ -174,9 +174,10 @@ get-local := λctx v. (tail(
       (match (tail ctx) (
          ()
          ( (Local(l lrefer)) (
+            if r () (
             if (eq(l v)) (
                (set r lrefer)
-            ) ()
+            ) ())
          ))
       ))
       (set ctx (head ctx))
@@ -192,9 +193,10 @@ set-local := λctx v. (tail(
       (match (tail ctx) (
          ()
          ( (Local((Set l) lrefer)) (
+            if r () (
             if (eq(l v)) (
                (set r lrefer)
-            ) ()
+            ) ())
          ))
       ))
       (set ctx (head ctx))
@@ -655,8 +657,7 @@ destructure-pattern-lhs := λctx lhs offset. (tail(
          (set prog (prog e1_prog))
          (set prog (prog (\t 'mov \s %r12, \s %rbx \n)))
          (set prog (prog (\t 'call \s '_streq \n)))
-         (set prog (prog (\t 'mov \s %r12, \s %rdi \n)))
-         (set prog (prog (\t 'cmp \s '$0, \s %rdi \n)))
+         (set prog (prog (\t 'cmp \s '$0, \s %r12 \n)))
          (set prog (prog (\t 'je \s label_skip \n)))
          (set prog (prog (\t 'mov \s '$1, \s %rsi \n)))
          (set prog (prog (label_skip ': \n)))
