@@ -180,6 +180,19 @@ get-local := λctx v. (tail(
                ) ()
             )
          ))
+         ( (Global(l body)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (
+                     \t 'mov \s '$ (label-case l) , \s %r15 \n
+                     \t 'mov \s '0 \[ %r15 \] , \s %r12 \n
+                     \t 'mov \s '8 \[ %r15 \] , \s %r13 \n
+                     \t 'mov \s '16 \[ %r15 \] , \s %r14 \n
+                     \t 'mov \s '24 \[ %r15 \] , \s %r15 \n
+                  ))
+               ) ()
+            )
+         ))
       ))
       (set ctx (head ctx))
    ))
@@ -217,6 +230,19 @@ set-local := λctx v. (tail(
             if r () (
                if (eq(l v)) (
                   (set r lrefer)
+               ) ()
+            )
+         ))
+         ( (Global(l body)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (
+                     \t 'mov \s '$ (label-case l) , \s %r8 \n
+                     \t 'mov \s %r12 , \s '0 \[ %r8 \] \n
+                     \t 'mov \s %r13 , \s '8 \[ %r8 \] \n
+                     \t 'mov \s %r14 , \s '16 \[ %r8 \] \n
+                     \t 'mov \s %r15 , \s '24 \[ %r8 \] \n
+                  ))
                ) ()
             )
          ))
@@ -281,7 +307,7 @@ parse-program := λtoks. (tail(
 destructure-args := λctx e offset. compile-args(ctx (reverse-args e) offset);
 reverse-args := λa. (match a (
    ()
-   (Nil a)
+   (() a)
    ((Variable v) a)
    ((l r) (tail(
       #l is leftmost
@@ -293,7 +319,7 @@ reverse-args := λa. (match a (
                (set l (l r))
                (set r ())
             ))
-            ( Nil (
+            ( () (
                (set l (l r))
                (set r ())
             ))
@@ -309,7 +335,7 @@ reverse-args := λa. (match a (
 
 compile-args := λctx e offset. (match e (
    ()
-   ( Nil (tail(
+   ( () (tail(
       ()
       (Expr( () () () () () ctx offset ))
    )))
@@ -548,7 +574,7 @@ assemble := λconfig program. (
          (match body (
             ()
             ( Nil (
-               (print-s (BINDG fname))
+               (set output_d (output_d( (label-case fname) ': \n \t '.zero \s '32 \n )))
             ))
             ( (Lambda(lhs rhs)) (
                (set e (destructure-args(inner-ctx lhs offset)))
