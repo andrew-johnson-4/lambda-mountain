@@ -562,8 +562,8 @@ assemble := λconfig program. (
          (set output_p (output_p (get-frame e)))
          (set output_p (output_p (get-prog e)))
          (set output_p (output_p (get-unframe e)))
-         (set output_p (output_p (get-text e)))
          (set output_p (output_p (_exit-cleanup())))
+         (set output_p (output_p (get-text e)))
          (set output_d (output_d (get-data e)))
          (set has_main True)
       ))
@@ -1075,7 +1075,7 @@ compile-expr := λctx e offset. (tail(
          (local foreach_atom_ignore)
          (set foreach_atom_ignore (uuid()))
          (local foreach_text)
-         (set foreach_text (foreach-atom( foreach_atom_label foreach_atom_notcons foreach_atom_ignore e2_prog )))
+         (set foreach_text (yield-foreach-atom( foreach_atom_label foreach_atom_notcons foreach_atom_ignore e2_prog )))
          (set prog ( e1_prog \t 'call \s foreach_atom_label \n ))
          (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text foreach_text) (e1_data e2_data) ctx offset ))
       )))
@@ -1871,7 +1871,7 @@ _unshadow-this := λ.(
    \t 'mov \s '%r11, \s '%r15                \n
 );
 
-foreach-atom := λforeach-head foreach-notcons foreach-ignore foreach-apply. (
+yield-foreach-atom := λforeach-head foreach-notcons foreach-ignore foreach-apply. (
    #define label for this function
    foreach-head ':                           \n
 
