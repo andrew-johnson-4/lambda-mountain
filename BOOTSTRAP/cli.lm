@@ -83,6 +83,13 @@ parse-lambda := λtoks. (tail(
    (local lmb)
    (set lmb (head er))
    (set toks (tail er))
+   (match lmb (
+      ()
+      ((Literal \,) (
+         (set lmb (() (parse-many-expressions toks)))
+         (set toks ())
+      ))
+   ))
    (while toks (
       (set er (parse-one-expression toks))
       (match er (
