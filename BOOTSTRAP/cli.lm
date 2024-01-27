@@ -175,9 +175,10 @@ get-local := λctx v. (tail(
          ()
          ( (Local(l lrefer)) (
             if r () (
-            if (eq(l v)) (
-               (set r lrefer)
-            ) ())
+               if (eq(l v)) (
+                  (set r lrefer)
+               ) ()
+            )
          ))
       ))
       (set ctx (head ctx))
@@ -194,9 +195,10 @@ get-global := λctx v. (tail(
          ()
          ( (Global(name body)) (
             if r () (
-            if (eq(name v)) (
-               (set r (Global(name body)))
-            ) ())
+               if (eq(name v)) (
+                  (set r (Global(name body)))
+               ) ()
+            )
          ))
       ))
       (set ctx (head ctx))
@@ -213,9 +215,10 @@ set-local := λctx v. (tail(
          ()
          ( (Local((Set l) lrefer)) (
             if r () (
-            if (eq(l v)) (
-               (set r lrefer)
-            ) ())
+               if (eq(l v)) (
+                  (set r lrefer)
+               ) ()
+            )
          ))
       ))
       (set ctx (head ctx))
@@ -485,21 +488,21 @@ assemble := λconfig program. (
                (print-s (BINDG fname))
             ))
             ( (Lambda(lhs rhs)) (
-               (set e (destructure-args(inner-ctx lhs offset))
+               (set e (destructure-args(inner-ctx lhs offset)))
                (set offset (get-offset e))
                (set inner-ctx (get-pc e))
-               (set e2 (compile-expr(inner-ctx rhs offset))
+               (set e2 (compile-expr(inner-ctx rhs offset)))
                (set output_p (output_p ((label-case fname) ': \n)))
                (set output_p (output_p (_enter-function())))
-               (set output_p (get-frame e))
-               (set output_p (get-frame e2))
-               (set output_p (get-prog e))
-               (set output_p (get-prog e2))
-               (set output_p (get-unframe e))
-               (set output_p (get-unframe e2))
+               (set output_p (output_p (get-frame e)))
+               (set output_p (output_p (get-frame e2)))
+               (set output_p (output_p (get-prog e)))
+               (set output_p (output_p (get-prog e2)))
+               (set output_p (output_p (get-unframe e)))
+               (set output_p (output_p (get-unframe e2)))
                (set output_p (output_p (_exit-function())))
-               (set output_d (get-data e))
-               (set output_d (get-data e2))
+               (set output_d (output_d (get-data e)))
+               (set output_d (output_d (get-data e2)))
             ))
          ))
       ))
@@ -903,6 +906,10 @@ compile-expr := λctx e offset. (tail(
    (local prog)
    (match e (
       ()
+      ( (Variable '$_) (tail(
+         ()
+         (Expr( () () () () () ctx offset ))
+      )))
       ( (App ((Variable 'local) (Variable fname))) (tail(
          ()
          (set e1 (declare-local(ctx fname offset)))
@@ -1041,17 +1048,20 @@ compile-expr := λctx e offset. (tail(
             (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
          ) (
             ()
-            (match (get-global(ctx fname)) (
-               ()
-               ( (Global (f body)) (tail(
-                  ()
-                  (print-s (GETGLOBAL f body))
-               )))
-               ( _ (tail(
-                  ()
-                  (yield-cons(ctx (Variable fname) arg offset))
-               )))
-            ))
+#            (match (get-global(ctx fname)) (
+#               ()
+#               ( (Global (f body)) (tail(
+#                  ()
+#                  (set x (compile-expr(ctx arg offset)))
+#                  (set prog (get-prog x))
+#                  (set prog (prog (\t 'call \s (label-case fname) \n)))
+#                  (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
+#               )))
+#               ( _ (tail(
+#                  ()
+#                  (yield-cons(ctx (Variable fname) arg offset))
+#               )))
+#            ))
          )
       )))
       ( (Literal l) (tail(
