@@ -1,2 +1,4 @@
+
 test:
-	cargo test; cargo test cli_cons; ./a.out
+	lambda_mountain -o bootstrap BOOTSTRAP/cli.lm
+	./bootstrap --tokenize PRODUCTION/cli.lm
