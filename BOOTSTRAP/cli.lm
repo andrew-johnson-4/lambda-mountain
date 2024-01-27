@@ -650,13 +650,11 @@ destructure-pattern-lhs := λctx lhs offset. (tail(
          (set ctx (get-pc e1))
          (set offset (get-offset e1))
          (set label_skip (uuid()))
-         (set prog (prog (_shadow-this())))
          (set prog (prog (\t 'mov \s %r12, \s %rax \n)))
          (set prog (prog e1_prog))
          (set prog (prog (\t 'mov \s %r12, \s %rbx \n)))
          (set prog (prog (\t 'call \s '_streq \n)))
          (set prog (prog (\t 'mov \s %r12, \s %rdi \n)))
-         (set prog (prog (_unshadow-this())))
          (set prog (prog (\t 'cmp \s '$0, \s %rdi \n)))
          (set prog (prog (\t 'je \s label_skip \n)))
          (set prog (prog (\t 'mov \s '$1, \s %rsi \n)))
@@ -1657,20 +1655,6 @@ _close-this := λ.(
    \t 'mov \s '%r13, \s '8 \[ %rsi \]        \n # set top.head
    \t 'mov \s '%r14, \s '16 \[ %rsi \]       \n # set top.tail
    \t 'mov \s '%r15, \s '24 \[ %rsi \]       \n # set top.flags
-);
-
-_shadow-this := λ.(
-   \t 'mov \s '%r12, \s '%r8                 \n
-   \t 'mov \s '%r13, \s '%r9                 \n
-   \t 'mov \s '%r14, \s '%r10                \n
-   \t 'mov \s '%r15, \s '%r11                \n
-);
-
-_unshadow-this := λ.(
-   \t 'mov \s '%r8, \s '%r12                 \n
-   \t 'mov \s '%r9, \s '%r13                 \n
-   \t 'mov \s '%r10, \s '%r14                \n
-   \t 'mov \s '%r11, \s '%r15                \n
 );
 
 _head := λ.(
