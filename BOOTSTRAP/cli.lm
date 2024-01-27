@@ -1051,6 +1051,34 @@ compile-expr := λctx e offset. (tail(
          (set prog (prog ( label_skip ': \n )))
          (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))
       )))
+      ( (App( (App( (Variable 'foreach-atom) t )) d )) (tail(
+         (set e1 (compile-expr(ctx t offset)))
+         (set e1_frame (get-frame e1))
+         (set e1_prog (get-prog e1))
+         (set e1_unframe (get-unframe e1))
+         (set e1_text (get-text e1))
+         (set e1_data (get-data e1))
+         (set ctx (get-pc e1))
+         (set offset (get-offset e1))
+         (set e2 (compile-expr(ctx d offset)))
+         (set e2_frame (get-frame e2))
+         (set e2_prog (get-prog e2))
+         (set e2_unframe (get-unframe e2))
+         (set e2_text (get-text e2))
+         (set e2_data (get-data e2))
+         (set ctx (get-pc e2))
+         (set offset (get-offset e2))
+         (local foreach_atom_label)
+         (set foreach_atom_label (uuid()))
+         (local foreach_atom_notcons)
+         (set foreach_atom_notcons (uuid()))
+         (local foreach_atom_ignore)
+         (set foreach_atom_ignore (uuid()))
+         (local foreach_text)
+         (set foreach_text (foreach-atom( foreach_atom_label foreach_atom_notcons foreach_atom_ignore e2_prog )))
+         (set prog ( e1_prog \t 'call \s foreach_atom_label \n ))
+         (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text foreach_text) (e1_data e2_data) ctx offset ))
+      )))
       ( (App( (App( (Variable 'while) c )) d )) (tail(
          (set e1 (compile-expr(ctx c offset)))
          (set e1_frame (get-frame e1))
@@ -1843,4 +1871,34 @@ _unshadow-this := λ.(
    \t 'mov \s '%r11, \s '%r15                \n
 );
 
+foreach-atom := λforeach-head foreach-notcons foreach-ignore foreach-apply. (
+   #define label for this function
+   foreach-head ':                           \n
 
+   #if this is a cons, recurse
+   \t 'cmp \s '$0, \s '%r13                  \n
+   \t 'je \s foreach-notcons                 \n
+   \t 'cmp \s '$0, \s '%r14                  \n
+   \t 'je \s foreach-notcons                 \n
+   (_push-this())
+   (_head())
+   \t 'call \s foreach-head                  \n
+   (_pop-this())
+   (_push-this())
+   (_tail())
+   \t 'call \s foreach-head                  \n
+   (_pop-this())
+   \t 'ret                                   \n
+
+   #if not cons, apply
+   foreach-notcons ':                        \n
+   \t 'cmp \s '$0, \s '%r12                  \n
+   \t 'je \s foreach-ignore                  \n
+   (_push-this())
+   foreach-apply
+   (_pop-this())
+   \t 'ret                                   \n
+
+   foreach-ignore ':                         \n
+   \t 'ret                                   \n
+);
