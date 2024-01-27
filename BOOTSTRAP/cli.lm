@@ -187,6 +187,25 @@ get-local := λctx v. (tail(
    ))
    r
 ));
+get-global := λctx v. (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
+         ()
+         ( (Global(name body)) (
+            if r () (
+            if (eq(name v)) (
+               (set r (Global(name body)))
+            ) ())
+         ))
+      ))
+      (set ctx (head ctx))
+   ))
+   (if r () (
+      (print-s (ReferenceToUndefinedGlobal v))
+   ))
+   r
+));
 set-local := λctx v. (tail(
    (local r)
    (while ctx (
@@ -1022,7 +1041,17 @@ compile-expr := λctx e offset. (tail(
             (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
          ) (
             ()
-            (yield-cons(ctx (Variable fname) arg offset))
+            (match (get-global(ctx fname)) (
+               ()
+               ( (Global (f body)) (tail(
+                  ()
+                  (print-s (GETGLOBAL f body))
+               )))
+               ( _ (tail(
+                  ()
+                  (yield-cons(ctx (Variable fname) arg offset))
+               )))
+            ))
          )
       )))
       ( (Literal l) (tail(
