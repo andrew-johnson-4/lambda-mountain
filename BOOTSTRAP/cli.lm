@@ -1079,6 +1079,42 @@ compile-expr := λctx e offset. (tail(
          (set prog ( e1_prog \t 'call \s foreach_atom_label \n ))
          (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text foreach_text) (e1_data e2_data) ctx offset ))
       )))
+      ( (App( (App( (Variable 'foreach-char) t )) d )) (tail(
+         (set e1 (compile-expr(ctx t offset)))
+         (set e1_frame (get-frame e1))
+         (set e1_prog (get-prog e1))
+         (set e1_unframe (get-unframe e1))
+         (set e1_text (get-text e1))
+         (set e1_data (get-data e1))
+         (set ctx (get-pc e1))
+         (set offset (get-offset e1))
+         (set e2 (compile-expr(ctx d offset)))
+         (set e2_frame (get-frame e2))
+         (set e2_prog (get-prog e2))
+         (set e2_unframe (get-unframe e2))
+         (set e2_text (get-text e2))
+         (set e2_data (get-data e2))
+         (set ctx (get-pc e2))
+         (set offset (get-offset e2))
+         (local foreach_char_head)
+         (set foreach_char_head (uuid()))
+         (local foreach_char_small)
+         (set foreach_char_small (uuid()))
+         (local foreach_char_end)
+         (set foreach_char_end (uuid()))
+         (local foreach_char_notcons)
+         (set foreach_char_notcons (uuid()))
+         (local foreach_char_data)
+         (set foreach_char_data (uuid()))
+         (local foreach_char_apply)
+         (set foreach_char_apply (uuid()))
+         (local foreach_data)
+         (set foreach_data ( foreach_char_data ': \n \t '.zero \s '2 \n ))
+         (local foreach_text)
+         (set foreach_text (yield-foreach-char( foreach_char_data foreach_char_head foreach_char_small foreach_char_end foreach_char_notcons foreach_char_apply e2_prog )))
+         (set prog ( e1_prog \t 'call \s foreach_char_head \n ))
+         (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text foreach_text) (e1_data e2_data foreach_data) ctx offset ))
+      )))
       ( (App( (App( (Variable 'while) c )) d )) (tail(
          (set e1 (compile-expr(ctx c offset)))
          (set e1_frame (get-frame e1))
@@ -1900,5 +1936,62 @@ yield-foreach-atom := λforeach-head foreach-notcons foreach-ignore foreach-appl
    \t 'ret                                   \n
 
    foreach-ignore ':                         \n
+   \t 'ret                                   \n
+);
+
+yield-foreach-char := λforeach-data foreach-head foreach-small foreach-end foreach-notcons foreach-apply foreach-expr. (
+   #define label for this function
+   foreach-head ': \n
+
+   #if this is a cons, recurse
+   \t 'cmp \s '$0, \s %r13                   \n
+   \t 'je \s foreach-notcons                 \n
+   \t 'cmp \s '$0, \s '%r14                  \n
+   \t 'je \s foreach-notcons                 \n
+   (_push-this())
+   (_head())
+   \t 'call \s foreach-head                  \n
+   (_pop-this())
+   (_push-this())
+   (_tail())
+   \t 'call \s foreach-head                  \n
+   (_pop-this())
+   \t 'ret                                   \n
+
+   #if not cons, apply
+   foreach-notcons ':                        \n
+   (_push-this())
+
+   #if nil, apply and return
+   \t 'mov \s '%r12, \s '%r8                 \n
+   \t 'cmp \s '$0, \s '%r12                  \n
+   \t 'jne \s foreach-small                  \n
+   \t 'call \s foreach-apply                 \n
+   (_pop-this())
+   \t 'ret                                   \n
+
+   #if atom, break into characters and apply
+   foreach-small ':                          \n
+   \t 'cmpb \s '$0, \s '0 \[ %r8 \]          \n
+   \t 'je \s foreach-end                     \n
+   \t 'push \s '%r8                          \n
+   \t 'mov \s '$ foreach-data , \s '%r12     \n
+   \t 'mov \s '$0, \s '%r13                  \n
+   \t 'mov \s '$0, \s '%r14                  \n
+   \t 'mov \s '$0, \s '%r15                  \n
+   \t 'movb \s '0 \[ %r8 \] , \s '%bl        \n
+   \t 'movb \s '%bl, \s '0 \[ %r12 \]        \n
+   \t 'movb \s '$0, \s '1 \[ %r12 \]         \n
+   \t 'call \s foreach-apply                 \n
+   \t 'pop \s '%r8                           \n
+   \t 'inc \s '%r8                           \n
+   \t 'jmp \s foreach-small                  \n
+
+   foreach-end ':                            \n
+   (_pop-this())
+   \t 'ret                                   \n
+
+   foreach-apply ':                          \n
+   foreach-expr
    \t 'ret                                   \n
 );
