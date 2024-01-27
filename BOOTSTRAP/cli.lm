@@ -295,8 +295,8 @@ destructure-args := λctx e offset. (match e (
       (set ctx (get-pc ta))
       (local ha)
       (set ha (destructure-args(ctx h offset)))
-      (set offset (get-offset ta))
-      (set ctx (get-pc ta))
+      (set offset (get-offset ha))
+      (set ctx (get-pc ha))
       (local prog)
       (set prog (prog (_shadow-this()) ))
       (set prog (prog (_tail()) ))
@@ -522,7 +522,6 @@ assemble := λconfig program. (
                (print-s (BINDG fname))
             ))
             ( (Lambda(lhs rhs)) (
-               (print-s (D lhs rhs))
                (set e (destructure-args(inner-ctx lhs offset)))
                (set offset (get-offset e))
                (set inner-ctx (get-pc e))
