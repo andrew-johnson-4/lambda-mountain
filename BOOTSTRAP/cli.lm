@@ -284,7 +284,11 @@ destructure-args := λctx e offset. (match e (
       ()
       (Expr( () () () () () ctx offset ))
    )))
-   ( (App( h t )) (tail(
+   ( (Variable n) (tail(
+      ()
+      (declare-local(ctx n offset))
+   )))
+   ( ( h t ) (tail(
       (local ta)
       (set ta (destructure-args(ctx t offset)))
       (set offset (get-offset ta))
@@ -518,6 +522,7 @@ assemble := λconfig program. (
                (print-s (BINDG fname))
             ))
             ( (Lambda(lhs rhs)) (
+               (print-s (D lhs rhs))
                (set e (destructure-args(inner-ctx lhs offset)))
                (set offset (get-offset e))
                (set inner-ctx (get-pc e))
