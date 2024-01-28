@@ -1,52 +1,51 @@
 
 main := (
-   print-s 'hello_world
-#   (local mode)
-#   (set mode Compile)
-#   (local inputs)
-#   (local target)
-#   (local option)
-#   (local arg)
-#   (local config)
-#   (foreach-atom (tail argv) ((set arg $_) (if option
-#      (match option (
-#         ()
-#         (() ())
-#         (SetTarget (
-#            (set config (config (Target arg)))
-#            (set option ())
-#         ))
-#      ))
-#      (match arg (
-#         ()
-#         (() ())
-#         (-o (set option SetTarget))
-#         (--parse (set mode Parse))
-#         (--parse-expression (set mode ParseExpression))
-#         (--tokenize (set mode Tokenize))
-#         (fp (set inputs (fp inputs)))
-#      ))
-#   )))
-#   (match mode (
-#      ()
-#      (Compile (
-#         (foreach-atom inputs (
-#            (set arg $_)
-#            (if arg (
-#               (assemble (config (parse-program (tokenize (load-file arg)))))
-#            ) ())
-#         ))
-#      ))
-#      (Parse (foreach-atom inputs (
-#         if $_ (print-s (parse-program (tokenize (load-file $_)))) ()
-#      )))
-#      (ParseExpression (foreach-atom inputs (
-#         if $_ (print-s (parse-expression (tokenize (load-file $_)))) ()
-#      )))
-#      (Tokenize (foreach-atom inputs (
-#         if $_ (print-s (tokenize (load-file $_))) ()
-#      )))
-#   ))
+   (local mode)
+   (set mode Compile)
+   (local inputs)
+   (local target)
+   (local option)
+   (local arg)
+   (local config)
+   (foreach-atom (tail argv) ((set arg $_) (if option
+      (match option (
+         ()
+         (() ())
+         (SetTarget (
+            (set config (config (Target arg)))
+            (set option ())
+         ))
+      ))
+      (match arg (
+         ()
+         (() ())
+         (-o (set option SetTarget))
+         (--parse (set mode Parse))
+         (--parse-expression (set mode ParseExpression))
+         (--tokenize (set mode Tokenize))
+         (fp (set inputs (fp inputs)))
+      ))
+   )))
+   (match mode (
+      ()
+      (Compile (
+         (foreach-atom inputs (
+            (set arg $_)
+            (if arg (
+               (assemble (config (parse-program (tokenize (load-file arg)))))
+            ) ())
+         ))
+      ))
+      (Parse (foreach-atom inputs (
+         if $_ (print-s (parse-program (tokenize (load-file $_)))) ()
+      )))
+      (ParseExpression (foreach-atom inputs (
+         if $_ (print-s (parse-expression (tokenize (load-file $_)))) ()
+      )))
+      (Tokenize (foreach-atom inputs (
+         if $_ (print-s (tokenize (load-file $_))) ()
+      )))
+   ))
 );
 
 $uuid := ();
@@ -77,21 +76,40 @@ tokenize-file := λpath. (
    tokenize (load-file path)
 );
 
+#returns (lhs rhs)
 parse-lambda := λtoks. (tail(
    (local er)
    (set er (parse-one-expression toks))
-   (match er (
+   (local lmb)
+   (set lmb (head er))
+   (set toks (tail er))
+   (match lmb (
       ()
-      (((Literal .) r) (() (parse-many-expressions r)))
-      ((e r) (tail(
-         (local lr)
-         (set lr (parse-lambda r))
-         (if (head lr)
-             ( (e (head lr)) (tail lr) )
-             ( e (tail lr) )
-         )
-      )))
+      ((Literal \,) (
+         (set lmb (() (parse-many-expressions toks)))
+         (set toks ())
+      ))
    ))
+   (while toks (
+      (set er (parse-one-expression toks))
+      (match er (
+         ()
+         (((Literal \,) r) (
+            (set lmb (lmb (parse-many-expressions r)))
+            (set toks ())
+         ))
+         ((e ()) (
+            (set lmb (lmb e))
+            (print-s (ExpectedLambdaRhs lmb))
+            (set toks ())
+         ))
+         ((e r) (
+            (set lmb (lmb e))
+            (set toks r)
+         ))
+      ))
+   ))
+   lmb
 ));
 
 parse-one-expression := λtoks. (tail(
@@ -217,9 +235,6 @@ get-global := λctx v. (tail(
       ))
       (set ctx (head ctx))
    ))
-   (if r () (
-      (print-s (ReferenceToUndefinedGlobal v))
-   ))
    r
 ));
 set-local := λctx v. (tail(
@@ -305,36 +320,7 @@ parse-program := λtoks. (tail(
 ));
 
 #returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
-destructure-args := λctx e offset. compile-args(ctx (reverse-args e) offset);
-reverse-args := λa. (match a (
-   ()
-   (() a)
-   ((Variable v) a)
-   ((l r) (tail(
-      #l is leftmost
-      #r is complex
-      (while r (
-         (match r (
-            ()
-            ( (Variable _) (
-               (set l (l r))
-               (set r ())
-            ))
-            ( () (
-               (set l (l r))
-               (set r ())
-            ))
-            ( (l2 r2) (
-               (set l (l l2))
-               (set r r2)
-            ))
-         ))
-      ))
-      l
-   )))
-));
-
-compile-args := λctx e offset. (match e (
+destructure-args := λctx e offset. (match e (
    ()
    ( () (tail(
       ()
@@ -559,7 +545,7 @@ assemble := λconfig program. (
          (set output_p (output_p ('main: \n)))
          (set output_p (output_p (_before-main())))
          (set output_p (output_p (_enter-function())))
-         (set e (compile-expr(main-ctx body offset)))
+         (set e (compile-expr(main-ctx body offset Unused)))
          (set output_p (output_p (get-frame e)))
          (set output_p (output_p (get-prog e)))
          (set output_p (output_p (get-unframe e)))
@@ -581,7 +567,7 @@ assemble := λconfig program. (
                (set e (destructure-args(inner-ctx lhs offset)))
                (set offset (get-offset e))
                (set inner-ctx (get-pc e))
-               (set e2 (compile-expr(inner-ctx rhs offset)))
+               (set e2 (compile-expr(inner-ctx rhs offset Used)))
                (set output_p (output_p ((label-case fname) ': \n)))
                (set output_p (output_p (_enter-function())))
                (set output_p (output_p (get-frame e)))
@@ -927,7 +913,7 @@ yield-patterns := λctx p offset. match p (
       (set e2_data (get-data e2))
       (set ctx (get-pc e2))
       (set offset (get-offset e2))
-      (set e3 (compile-expr(ctx rhs offset)))
+      (set e3 (compile-expr(ctx rhs offset Used)))
       (set e3_frame (get-frame e3))
       (set e3_prog (get-prog e3))
       (set e3_unframe (get-unframe e3))
@@ -953,7 +939,7 @@ yield-patterns := λctx p offset. match p (
    ))
 );
 
-yield-cons := λctx l r offset. (tail(
+yield-cons := λctx l r offset used. (tail(
    (local e1)
    (local e1_frame)
    (local e1_prog)
@@ -967,7 +953,7 @@ yield-cons := λctx l r offset. (tail(
    (local e2_text)
    (local e2_data)
    (local prog)
-   (set e1 (compile-expr(ctx l offset)))
+   (set e1 (compile-expr(ctx l offset Used)))
    (set e1_frame (get-frame e1))
    (set e1_prog (get-prog e1))
    (set e1_unframe (get-unframe e1))
@@ -975,7 +961,7 @@ yield-cons := λctx l r offset. (tail(
    (set e1_data (get-data e1))
    (set ctx (get-pc e1))
    (set offset (get-offset e1))
-   (set e2 (compile-expr(ctx r offset)))
+   (set e2 (compile-expr(ctx r offset Used)))
    (set e2_frame (get-frame e2))
    (set e2_prog (get-prog e2))
    (set e2_unframe (get-unframe e2))
@@ -984,23 +970,31 @@ yield-cons := λctx l r offset. (tail(
    (set ctx (get-pc e2))
    (set offset (get-offset e2))
 
-   (set prog (prog (e1_prog)))
-   (set prog (prog (_push-this())))
-   (set prog (prog (e2_prog)))
-   (set prog (prog (_close-this())))
-   (set prog (prog (\t 'mov \s '%rsi, \s '%rdi \n)))
-   (set prog (prog (_pop-this())))
-   (set prog (prog (_close-this())))
-   (set prog (prog (\t 'mov \s '$0, \s '%r12 \n)))
-   (set prog (prog (\t 'mov \s '%rsi, \s '%r13 \n)))
-   (set prog (prog (\t 'mov \s '%rdi, \s '%r14 \n)))
-   (set prog (prog (\t 'mov \s '$0, \s '%r15 \n)))
-
-   (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))
+   (match used (
+      ()
+      ( Used (tail(
+         (set prog (prog (e1_prog)))
+         (set prog (prog (_push-this())))
+         (set prog (prog (e2_prog)))
+         (set prog (prog (_close-this())))
+         (set prog (prog (\t 'mov \s '%rsi, \s '%rdi \n)))
+         (set prog (prog (_pop-this())))
+         (set prog (prog (_close-this())))
+         (set prog (prog (\t 'mov \s '$0, \s '%r12 \n)))
+         (set prog (prog (\t 'mov \s '%rsi, \s '%r13 \n)))
+         (set prog (prog (\t 'mov \s '%rdi, \s '%r14 \n)))
+         (set prog (prog (\t 'mov \s '$0, \s '%r15 \n)))
+         (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))
+      )))
+      ( _ (tail(
+         ()
+         (Expr( (e1_frame e2_frame) (e1_prog e2_prog) (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))   
+      )))
+   ))
 ));
 
 #returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
-compile-expr := λctx e offset. (tail(
+compile-expr := λctx e offset used. (tail(
    (local x)
    (local e1)
    (local e1_frame)
@@ -1021,7 +1015,9 @@ compile-expr := λctx e offset. (tail(
    (local e3_text)
    (local e3_data)
    (local prog)
-   (match e (
+   (local tail_safe)
+   (local return)
+   (set return (match e (
       ()
       ( (Variable '$_) (tail(
          ()
@@ -1037,11 +1033,12 @@ compile-expr := λctx e offset. (tail(
          (set e1_data (get-data e1))
          (set ctx (get-pc e1))
          (set offset (get-offset e1))
+         (set tail_safe True)
          (Expr( e1_frame ((_yield-nil()) e1_prog) e1_unframe e1_text e1_data ctx offset ))
       )))
       ( (App( (App( (Variable 'set) (Variable vname) )) x )) (tail(
          ()
-         (set e1 (compile-expr(ctx x offset)))
+         (set e1 (compile-expr(ctx x offset Used)))
          (set e1_frame (get-frame e1))
          (set e1_prog (get-prog e1))
          (set e1_unframe (get-unframe e1))
@@ -1051,10 +1048,11 @@ compile-expr := λctx e offset. (tail(
          (set offset (get-offset e1))
          (set prog e1_prog)
          (set prog (prog (set-local(ctx vname))))
+         (set tail_safe True)
          (Expr( e1_frame prog e1_unframe e1_text e1_data ctx offset ))
       )))
       ( (App( (App( (Variable 'match) t )) p )) (tail(
-         (set e1 (compile-expr(ctx t offset)))
+         (set e1 (compile-expr(ctx t offset Used)))
          (set e1_frame (get-frame e1))
          (set e1_prog (get-prog e1))
          (set e1_unframe (get-unframe e1))
@@ -1080,7 +1078,7 @@ compile-expr := λctx e offset. (tail(
          (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))
       )))
       ( (App( (App( (Variable 'foreach-atom) t )) d )) (tail(
-         (set e1 (compile-expr(ctx t offset)))
+         (set e1 (compile-expr(ctx t offset Used)))
          (set e1_frame (get-frame e1))
          (set e1_prog (get-prog e1))
          (set e1_unframe (get-unframe e1))
@@ -1088,7 +1086,7 @@ compile-expr := λctx e offset. (tail(
          (set e1_data (get-data e1))
          (set ctx (get-pc e1))
          (set offset (get-offset e1))
-         (set e2 (compile-expr(ctx d offset)))
+         (set e2 (compile-expr(ctx d offset Unused)))
          (set e2_frame (get-frame e2))
          (set e2_prog (get-prog e2))
          (set e2_unframe (get-unframe e2))
@@ -1105,10 +1103,11 @@ compile-expr := λctx e offset. (tail(
          (local foreach_text)
          (set foreach_text (yield-foreach-atom( foreach_atom_label foreach_atom_notcons foreach_atom_ignore e2_prog )))
          (set prog ( e1_prog \t 'call \s foreach_atom_label \n ))
+         (set tail_safe True)
          (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text foreach_text) (e1_data e2_data) ctx offset ))
       )))
       ( (App( (App( (Variable 'foreach-char) t )) d )) (tail(
-         (set e1 (compile-expr(ctx t offset)))
+         (set e1 (compile-expr(ctx t offset Used)))
          (set e1_frame (get-frame e1))
          (set e1_prog (get-prog e1))
          (set e1_unframe (get-unframe e1))
@@ -1116,7 +1115,7 @@ compile-expr := λctx e offset. (tail(
          (set e1_data (get-data e1))
          (set ctx (get-pc e1))
          (set offset (get-offset e1))
-         (set e2 (compile-expr(ctx d offset)))
+         (set e2 (compile-expr(ctx d offset Unused)))
          (set e2_frame (get-frame e2))
          (set e2_prog (get-prog e2))
          (set e2_unframe (get-unframe e2))
@@ -1141,10 +1140,11 @@ compile-expr := λctx e offset. (tail(
          (local foreach_text)
          (set foreach_text (yield-foreach-char( foreach_char_data foreach_char_head foreach_char_small foreach_char_end foreach_char_notcons foreach_char_apply e2_prog )))
          (set prog ( e1_prog \t 'call \s foreach_char_head \n ))
+         (set tail_safe True)
          (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text foreach_text) (e1_data e2_data foreach_data) ctx offset ))
       )))
       ( (App( (App( (Variable 'while) c )) d )) (tail(
-         (set e1 (compile-expr(ctx c offset)))
+         (set e1 (compile-expr(ctx c offset Used)))
          (set e1_frame (get-frame e1))
          (set e1_prog (get-prog e1))
          (set e1_unframe (get-unframe e1))
@@ -1152,7 +1152,7 @@ compile-expr := λctx e offset. (tail(
          (set e1_data (get-data e1))
          (set ctx (get-pc e1))
          (set offset (get-offset e1))
-         (set e2 (compile-expr(ctx d offset)))
+         (set e2 (compile-expr(ctx d offset Unused)))
          (set e2_frame (get-frame e2))
          (set e2_prog (get-prog e2))
          (set e2_unframe (get-unframe e2))
@@ -1176,10 +1176,11 @@ compile-expr := λctx e offset. (tail(
          (set prog (prog e2_prog))
          (set prog (prog (\t 'jmp \s label_while_start \n)))
          (set prog (prog (label_while_end ': \n)))
+         (set tail_safe True)
          (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))
       )))
       ( (App( (App( (App( (Variable 'if) c )) t )) f )) (tail(
-         (set e1 (compile-expr(ctx c offset)))
+         (set e1 (compile-expr(ctx c offset Used)))
          (set e1_frame (get-frame e1))
          (set e1_prog (get-prog e1))
          (set e1_unframe (get-unframe e1))
@@ -1187,7 +1188,7 @@ compile-expr := λctx e offset. (tail(
          (set e1_data (get-data e1))
          (set ctx (get-pc e1))
          (set offset (get-offset e1))
-         (set e2 (compile-expr(ctx t offset)))
+         (set e2 (compile-expr(ctx t offset Used)))
          (set e2_frame (get-frame e2))
          (set e2_prog (get-prog e2))
          (set e2_unframe (get-unframe e2))
@@ -1195,7 +1196,7 @@ compile-expr := λctx e offset. (tail(
          (set e2_data (get-data e2))
          (set ctx (get-pc e2))
          (set offset (get-offset e2))
-         (set e3 (compile-expr(ctx f offset)))
+         (set e3 (compile-expr(ctx f offset Used)))
          (set e3_frame (get-frame e3))
          (set e3_prog (get-prog e3))
          (set e3_unframe (get-unframe e3))
@@ -1222,28 +1223,36 @@ compile-expr := λctx e offset. (tail(
          (Expr( (e1_frame e2_frame e3_frame) prog (e1_unframe e2_unframe e3_unframe) (e1_text e2_text e3_text) (e1_data e2_data e3_data) ctx offset ))
       )))
       ( (App ((Variable fname) arg)) (tail(
-         if (is-builtin fname) (
-            (set x (compile-expr(ctx arg offset)))
-            (set prog (get-prog x))
-            (set prog (prog (\t 'call \s (label-case fname) \n)))
-            (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
-         ) (
+         ()
+         (if (is-builtin fname) (tail(
+            ()
+            (if (eq(fname 'tail)) (tail(
+               (set x (compile-expr(ctx arg offset Tail)))
+               (set prog (get-prog x))
+               (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
+            )) (tail(
+               (set x (compile-expr(ctx arg offset Used)))
+               (set prog (get-prog x))
+               (set prog (prog (\t 'call \s (label-case fname) \n)))
+               (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
+            )))
+         )) (tail(
             ()
             (match (get-global(ctx fname)) (
                ()
                ( (Global (f body)) (tail(
                   ()
-                  (set x (compile-expr(ctx arg offset)))
+                  (set x (compile-expr(ctx arg offset Used)))
                   (set prog (get-prog x))
                   (set prog (prog (\t 'call \s (label-case fname) \n)))
                   (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
                )))
                ( _ (tail(
                   ()
-                  (yield-cons(ctx (Variable fname) arg offset))
+                  (yield-cons(ctx (Variable fname) arg offset Used))
                )))
             ))
-         )
+         )))
       )))
       ( (Literal l) (tail(
          ()
@@ -1259,13 +1268,15 @@ compile-expr := λctx e offset. (tail(
       )))
       ( (App (l r)) (tail(
          ()
-         (yield-cons(ctx l r offset))
+         (set tail_safe True)
+         (yield-cons(ctx l r offset used))
       )))
       ( Nil (tail(
          (set prog (prog ( \t 'mov \s '$0 , '%r12 \n )))
          (set prog (prog ( \t 'mov \s '$0 , '%r13 \n )))
          (set prog (prog ( \t 'mov \s '$0 , '%r14 \n )))
          (set prog (prog ( \t 'mov \s '$0 , '%r15 \n )))
+         (set tail_safe True)
          (Expr( () prog () () () ctx offset ))
       )))
       ( (Variable vname) (tail(
@@ -1273,7 +1284,17 @@ compile-expr := λctx e offset. (tail(
          (Expr( () prog () () () ctx offset ))
       )))
       (x (print-s (TODO x)) )
-   ))
+   )))
+   (if tail_safe return (tail(
+      ()
+      (if (eq(used Tail)) (tail(
+         (set prog (get-prog return))
+         (set prog (prog (\t 'call \s 'tail \n)))
+         (Expr( (get-frame return) prog (get-unframe return) (get-text return) (get-data return) (get-pc return) (get-offset return) ))
+      )) (
+         return
+      ))
+   )))
 ));
 
 _data-header := λ.(
@@ -1289,11 +1310,11 @@ _data-header := λ.(
   '__s_counter:                        \n
   \t .zero \s '8                       \n
   '__s_section:                        \n
-  \t .zero \s '268435456               \n
+  \t .zero \s '536870912               \n
   '__a_counter:                        \n
   \t .zero \s '8                       \n
   '__a_section:                        \n
-  \t .zero \s '268435456               \n
+  \t .zero \s '536870912               \n
   '__nil_literal:                      \n
   \t .ascii \s " \[ \] "               \n
   \t .zero \s 1                        \n
