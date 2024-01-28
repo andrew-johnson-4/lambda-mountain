@@ -110,7 +110,7 @@ parse-lambda := λtoks. (tail(
             (set toks ())
          ))
          ((e r) (
-            (set lmb (lmb e))
+            (set lmb (App (lmb e)))
             (set toks r)
          ))
       ))
