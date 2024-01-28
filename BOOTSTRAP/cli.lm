@@ -141,70 +141,39 @@ parse-one-expression := λtoks. (tail(
       (print-stat PARSE_ONE)
    ) ())
    (local remainder)
-   (local is_lambda)
    (local expr)
-   (local is_literal)
-   (local is_grouped)
-   (local grouped_tokens)
-   (foreach-atom toks (
-      (local c)
-      (set c $_)
-      (if expr (set remainder (remainder c)) (
-         (if is_grouped (
-            #grouped
-            (match c (
-               ()
-               (() ())
-               ( \[ (
-                  (set grouped_tokens (grouped_tokens \[))
-                  (set is_grouped (\[ is_grouped))
-               ))
-               ( \] (
-                  (set is_grouped (tail is_grouped))
-                  (if is_grouped (
-                     (set grouped_tokens (grouped_tokens \]))
-                  ) (
-                     (set expr (parse-many-expressions grouped_tokens))
-                     (set grouped_tokens ())
-                  ))
-               ))
-               ( a (
-                  (set grouped_tokens (grouped_tokens a))
-               ))
-            ))
+   (match toks (
+      ()
+      ( () (
+         (set expr Nil)
+         (set remainder ())
+      ))
+      ( ( \l r ) (
+         (print-s (TLambda r))
+      ))
+      ( ( '] r ) (
+         (print-s DANGLING_PARENTHESES)
+         (set toks ())
+      ))
+      ( ( '[ r ) (
+         (print-s TODO_PARENTHESES)
+         (set toks ())
+      ))
+      ( ( \' (i r) ) (
+         (set toks ())
+         (set expr (Literal i))
+         (print-s (TLambda r))
+      ))
+      ( (a r) (
+         (if (is_variable a) (
+            (set expr (Variable a))
          ) (
-            #not grouped
-            (match c (
-               ()
-               (() ())
-               ( \l ( (set is_lambda True) (set expr INVALID) ))
-               ( \' ( (set is_literal True) ))
-               ( \[ (
-                  (set is_grouped (\[ is_grouped))
-               ))
-               ( \] (
-                  (print-s DANGLING_PARENTHESES)
-               ))
-               ( a (
-                  (if is_literal (
-                     (set expr (Literal a))
-                     (set is_literal ())
-                  ) (
-                     (if (is_variable a)
-                        (set expr (Variable a))
-                        (set expr (Literal a))
-                     )
-                  ))
-               ))
-            ))
+            (set expr (Literal a))
          ))
+         (set remainder r)
       ))
    ))
-   (if expr () (set expr Nil))
-   (if is_lambda
-      ((Lambda (parse-lambda remainder)) ())
-      (expr remainder)
-   )
+   (expr remainder)
 ));
 
 print-ctx := λctx. (
