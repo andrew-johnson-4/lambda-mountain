@@ -1314,122 +1314,122 @@ get-text := λe. (match e (
     )))
  ));
  
-# _data-header := λ.(
-#    .data                               \n
-#   'load_file_bsz:                      \n
-#   \t .quad \s '1024                    \n
-#   'load_file_buf:                      \n
-#   \t .zero \s '1024                    \n
-#   '__nil:                              \n
-#   \t .zero \s '32                      \n
-#   '__argv:                             \n
-#   \t .zero \s '32                      \n
-#   '__s_counter:                        \n
-#   \t .zero \s '8                       \n
-#   '__s_section:                        \n
-#   \t .zero \s '536870912               \n
-#   '__a_counter:                        \n
-#   \t .zero \s '8                       \n
-#   '__a_section:                        \n
-#   \t .zero \s '536870912               \n
-#   '__nil_literal:                      \n
-#   \t .ascii \s " \[ \] "               \n
-#   \t .zero \s 1                        \n
-#   '__hex_buffer:                       \n
-#   \t .ascii \s "0123456789abcdef"      \n
-#   '__put64_buffer:                     \n
-#   \t .ascii \s "0x"                    \n
-#   '__put64_write_buffer:               \n
-#   \t .ascii \s "0000000000000000 \s "  \n
-#   \t .zero \s '1                       \n
-#   '__newline:                          \n
-#   \t .ascii \s " \\n "                 \n
-#   '__lparen:                           \n
-#   \t .ascii \s " \[ "                  \n
-#   '__rparen:                           \n
-#   \t .ascii \s " \] "                  \n
-#   '__space:                            \n
-#   \t .ascii \s " \s "                  \n
-#   '__true:                             \n
-#   \t .ascii \s "True"                  \n
-#   \t .zero \s '1                       \n
-#   '__digit:                            \n
-#   \t '.zero \s '2                      \n
-#   '__dump_i:                           \n
-#   \t '.ascii \s '"0000000000000000"    \n
-#   \t '.zero \s '1                      \n
-#   '__err_fopen:                        \n
-#   \t .ascii \s '"Could \s 'not \s 'open \s 'file."  \n
-#   \t .zero \s '1                       \n
-# );
-# 
-# _exit-cleanup := λ.(
-#    \t 'mov \s '$60, \s '%eax           \n # _exit system call
-#    \t 'mov \s '$0, \s '%edi            \n # error code 0
-#    \t 'syscall                         \n
-# );
-# 
-# _before-main := λ.(
-#    # let argv = close ()
-#    # let t = argv
-#    # for a in argv:
-#    #    t.tail = (a ())
-#    #    t = t.tail
-#    \t 'pop \s %rax                        \n #argc
-#    \t 'mov \s '$__argv, \s '%rbx          \n
-#    \t 'movq \s '$0, \s '0 \[ '%rbx \]     \n
-#    \t 'movq \s '$0, \s '8 \[ '%rbx \]     \n
-#    \t 'movq \s '$0, \s '16 \[ '%rbx \]    \n
-#    \t 'movq \s '$0, \s '24 \[ '%rbx \]    \n
-# 
-#    '__before_main_argv:                   \n
-#    \t 'cmp \s '$0, \s '%rax               \n
-#    \t 'je \s '__before_main_end           \n
-#    \t 'pop \s '%r12                       \n #argv[i]
-#    \t 'mov \s '$0, \s '%r13               \n
-#    \t 'mov \s '$0, \s '%r14               \n
-#    \t 'mov \s '$0, \s '%r15               \n
-# 
-#    #close this (move S onto the heap)
-#    \t 'mov \s '$__s_section, \s '%rsi     \n # %rsi now points to root s
-#    \t 'mov \s '$__s_counter, \s '%r8      \n # %r8 now points to s counter
-#    \t 'mov \s '0\[ '%r8 \] , \s '%r10     \n # %r10 now hold value of cons counter
-#    \t 'add \s '%r10, \s '%rsi             \n # %rsi now points to top free cons
-#    \t 'add \s '$32, \s '%r10              \n # increment s counter
-#    \t 'mov \s '%r10, \s '0 \[ '%r8 \]     \n # overwrite new s counter
-#    \t 'mov \s '%r12, \s '0 \[ '%rsi \]    \n # set top.atom
-#    \t 'mov \s '%r13, \s '8 \[ '%rsi \]    \n # set top.head
-#    \t 'mov \s '%r14, \s '16 \[ '%rsi \]   \n # set top.tail
-#    \t 'mov \s '%r15, \s '24 \[ '%rsi \]   \n # set top.flags
-#    \t 'mov \s '%rsi, \s '%rdi             \n
-# 
-#    #rdi is a
-#    \t 'mov \s '$0, \s '%r12               \n
-#    \t 'mov \s '$0, \s '%r13               \n
-#    \t 'mov \s '$0, \s '%r14               \n
-#    \t 'mov \s '$0, \s '%r15               \n
-# 
-#    \t 'mov \s '$__s_section, \s '%rsi     \n # %rsi now points to root s
-#    \t 'mov \s '$__s_counter, \s '%r8      \n # %r8 now points to s counter
-#    \t 'mov \s '0\[ '%r8 \] , \s '%r10     \n # %r10 now hold value of cons counter
-#    \t 'add \s '%r10, \s '%rsi             \n # %rsi now points to top free cons
-#    \t 'add \s '$32, \s '%r10              \n # increment s counter
-#    \t 'mov \s '%r10, \s '0 \[ '%r8 \]     \n # overwrite new s counter
-#    \t 'mov \s '%r12, \s '0 \[ '%rsi \]    \n # set top.atom
-#    \t 'mov \s '%r13, \s '8 \[ '%rsi \]    \n # set top.head
-#    \t 'mov \s '%r14, \s '16 \[ '%rsi \]   \n # set top.tail
-#    \t 'mov \s '%r15, \s '24 \[ '%rsi \]   \n # set top.flags
-# 
-#    #rsi is clean closed ()
-#    \t 'mov \s '%rdi, \s '8 \[ '%rbx \]    \n
-#    \t 'mov \s '%rsi, \s '16 \[ '%rbx \]   \n
-#    \t 'mov \s '%rsi, \s '%rbx             \n
-#    #rbx is tail of argv
-#    \t 'dec \s '%rax                       \n
-#    \t 'jmp \s '__before_main_argv         \n
-#    '__before_main_end:                    \n
-# );
-# 
+ _data-header := λ.(
+    .data                               \n
+   'load_file_bsz:                      \n
+   \t .quad \s '1024                    \n
+  'load_file_buf:                      \n
+   \t .zero \s '1024                    \n
+   '__nil:                              \n
+   \t .zero \s '32                      \n
+   '__argv:                             \n
+   \t .zero \s '32                      \n
+   '__s_counter:                        \n
+   \t .zero \s '8                       \n
+   '__s_section:                        \n
+   \t .zero \s '536870912               \n
+   '__a_counter:                        \n
+   \t .zero \s '8                       \n
+   '__a_section:                        \n
+   \t .zero \s '536870912               \n
+   '__nil_literal:                      \n
+   \t .ascii \s " \[ \] "               \n
+   \t .zero \s 1                        \n
+   '__hex_buffer:                       \n
+   \t .ascii \s "0123456789abcdef"      \n
+   '__put64_buffer:                     \n
+   \t .ascii \s "0x"                    \n
+   '__put64_write_buffer:               \n
+   \t .ascii \s "0000000000000000 \s "  \n
+   \t .zero \s '1                       \n
+   '__newline:                          \n
+   \t .ascii \s " \\n "                 \n
+   '__lparen:                           \n
+   \t .ascii \s " \[ "                  \n
+   '__rparen:                           \n
+   \t .ascii \s " \] "                  \n
+   '__space:                            \n
+   \t .ascii \s " \s "                  \n
+   '__true:                             \n
+   \t .ascii \s "True"                  \n
+   \t .zero \s '1                       \n
+   '__digit:                            \n
+   \t '.zero \s '2                      \n
+   '__dump_i:                           \n
+   \t '.ascii \s '"0000000000000000"    \n
+   \t '.zero \s '1                      \n
+   '__err_fopen:                        \n
+   \t .ascii \s '"Could \s 'not \s 'open \s 'file."  \n
+   \t .zero \s '1                       \n
+ );
+ 
+ _exit-cleanup := λ.(
+    \t 'mov \s '$60, \s '%eax           \n # _exit system call
+    \t 'mov \s '$0, \s '%edi            \n # error code 0
+    \t 'syscall                         \n
+ );
+ 
+ _before-main := λ.(
+    # let argv = close ()
+    # let t = argv
+    # for a in argv:
+    #    t.tail = (a ())
+    #    t = t.tail
+    \t 'pop \s %rax                        \n #argc
+    \t 'mov \s '$__argv, \s '%rbx          \n
+    \t 'movq \s '$0, \s '0 \[ '%rbx \]     \n
+    \t 'movq \s '$0, \s '8 \[ '%rbx \]     \n
+    \t 'movq \s '$0, \s '16 \[ '%rbx \]    \n
+    \t 'movq \s '$0, \s '24 \[ '%rbx \]    \n
+ 
+    '__before_main_argv:                   \n
+    \t 'cmp \s '$0, \s '%rax               \n
+    \t 'je \s '__before_main_end           \n
+    \t 'pop \s '%r12                       \n #argv[i]
+    \t 'mov \s '$0, \s '%r13               \n
+    \t 'mov \s '$0, \s '%r14               \n
+    \t 'mov \s '$0, \s '%r15               \n
+ 
+    #close this (move S onto the heap)
+    \t 'mov \s '$__s_section, \s '%rsi     \n # %rsi now points to root s
+    \t 'mov \s '$__s_counter, \s '%r8      \n # %r8 now points to s counter
+    \t 'mov \s '0\[ '%r8 \] , \s '%r10     \n # %r10 now hold value of cons counter
+    \t 'add \s '%r10, \s '%rsi             \n # %rsi now points to top free cons
+    \t 'add \s '$32, \s '%r10              \n # increment s counter
+    \t 'mov \s '%r10, \s '0 \[ '%r8 \]     \n # overwrite new s counter
+    \t 'mov \s '%r12, \s '0 \[ '%rsi \]    \n # set top.atom
+    \t 'mov \s '%r13, \s '8 \[ '%rsi \]    \n # set top.head
+    \t 'mov \s '%r14, \s '16 \[ '%rsi \]   \n # set top.tail
+    \t 'mov \s '%r15, \s '24 \[ '%rsi \]   \n # set top.flags
+    \t 'mov \s '%rsi, \s '%rdi             \n
+ 
+    #rdi is a
+    \t 'mov \s '$0, \s '%r12               \n
+    \t 'mov \s '$0, \s '%r13               \n
+    \t 'mov \s '$0, \s '%r14               \n
+    \t 'mov \s '$0, \s '%r15               \n
+ 
+    \t 'mov \s '$__s_section, \s '%rsi     \n # %rsi now points to root s
+    \t 'mov \s '$__s_counter, \s '%r8      \n # %r8 now points to s counter
+    \t 'mov \s '0\[ '%r8 \] , \s '%r10     \n # %r10 now hold value of cons counter
+    \t 'add \s '%r10, \s '%rsi             \n # %rsi now points to top free cons
+    \t 'add \s '$32, \s '%r10              \n # increment s counter
+    \t 'mov \s '%r10, \s '0 \[ '%r8 \]     \n # overwrite new s counter
+    \t 'mov \s '%r12, \s '0 \[ '%rsi \]    \n # set top.atom
+    \t 'mov \s '%r13, \s '8 \[ '%rsi \]    \n # set top.head
+    \t 'mov \s '%r14, \s '16 \[ '%rsi \]   \n # set top.tail
+    \t 'mov \s '%r15, \s '24 \[ '%rsi \]   \n # set top.flags
+ 
+    #rsi is clean closed ()
+    \t 'mov \s '%rdi, \s '8 \[ '%rbx \]    \n
+    \t 'mov \s '%rsi, \s '16 \[ '%rbx \]   \n
+    \t 'mov \s '%rsi, \s '%rbx             \n
+    #rbx is tail of argv
+    \t 'dec \s '%rax                       \n
+    \t 'jmp \s '__before_main_argv         \n
+    '__before_main_end:                    \n
+ );
+ 
 # _program-header := λ.(
 #    '.global \s '_start                    \n
 #    '.text                                 \n
