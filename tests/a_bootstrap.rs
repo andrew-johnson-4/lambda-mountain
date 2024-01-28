@@ -55,6 +55,8 @@ fn run_parse(target: &str) -> (String,String) {
       println!("./bootstrap error code while compiling {}: {}", target, stderr);
    };
    let actual = String::from_utf8_lossy(&exit.stdout).to_string();
+   let expected = expected.trim().to_string();
+   let actual = actual.trim().to_string();
    (expected,actual)
 }
 
