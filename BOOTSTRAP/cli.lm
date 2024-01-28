@@ -490,7 +490,12 @@ tokenize := λtext. (tail(
    (if buffer (
       (set program (program (clone-rope buffer)))
    ) ())
-   program
+   (local forward_cons)
+   (while program (
+      (set forward_cons ( (tail program) forward_cons ))
+      (set program (head program))
+   ))
+   forward_cons
 ));
 
 is_variable := λv. (tail(
