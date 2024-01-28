@@ -221,57 +221,57 @@ parse-lambda := λtoks. (tail(
     ))
     r
  ));
-# get-global := λctx v. (tail(
-#    (local r)
-#    (while ctx (
-#       (match (tail ctx) (
-#          ()
-#          ( (Global(name body)) (
-#             if r () (
-#                if (eq(name v)) (
-#                   (set r (Global(name body)))
-#                ) ()
-#             )
-#          ))
-#       ))
-#       (set ctx (head ctx))
-#    ))
-#    r
-# ));
-# set-local := λctx v. (tail(
-#    (local r)
-#    (while ctx (
-#       (match (tail ctx) (
-#          ()
-#          ( (Local((Set l) lrefer)) (
-#             if r () (
-#                if (eq(l v)) (
-#                   (set r lrefer)
-#                ) ()
-#             )
-#          ))
-#          ( (Global(l body)) (
-#             if r () (
-#                if (eq(l v)) (
-#                   (set r (
-#                      \t 'mov \s '$ (label-case l) , \s %r8 \n
-#                      \t 'mov \s %r12 , \s '0 \[ %r8 \] \n
-#                      \t 'mov \s %r13 , \s '8 \[ %r8 \] \n
-#                      \t 'mov \s %r14 , \s '16 \[ %r8 \] \n
-#                      \t 'mov \s %r15 , \s '24 \[ %r8 \] \n
-#                   ))
-#                ) ()
-#             )
-#          ))
-#       ))
-#       (set ctx (head ctx))
-#    ))
-#    (if r () (
-#       (print-s (AssignToUndefinedLocal v))
-#    ))
-#    r
-# ));
-# 
+ get-global := λctx v. (tail(
+    (local r)
+    (while ctx (
+       (match (tail ctx) (
+          ()
+          ( (Global(name body)) (
+             if r () (
+                if (eq(name v)) (
+                   (set r (Global(name body)))
+                ) ()
+             )
+          ))
+       ))
+       (set ctx (head ctx))
+    ))
+    r
+ ));
+ set-local := λctx v. (tail(
+    (local r)
+    (while ctx (
+       (match (tail ctx) (
+          ()
+          ( (Local((Set l) lrefer)) (
+             if r () (
+                if (eq(l v)) (
+                   (set r lrefer)
+                ) ()
+             )
+          ))
+          ( (Global(l body)) (
+             if r () (
+                if (eq(l v)) (
+                  (set r (
+                      \t 'mov \s '$ (label-case l) , \s %r8 \n
+                      \t 'mov \s %r12 , \s '0 \[ %r8 \] \n
+                      \t 'mov \s %r13 , \s '8 \[ %r8 \] \n
+                      \t 'mov \s %r14 , \s '16 \[ %r8 \] \n
+                      \t 'mov \s %r15 , \s '24 \[ %r8 \] \n
+                   ))
+                ) ()
+             )
+          ))
+       ))
+       (set ctx (head ctx))
+    ))
+    (if r () (
+       (print-s (AssignToUndefinedLocal v))
+    ))
+    r
+ ));
+ 
 # parse-many-expressions := λtoks. (tail(
 #    (local er)
 #    (set er (parse-one-expression toks))
