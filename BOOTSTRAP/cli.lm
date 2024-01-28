@@ -50,8 +50,22 @@ main := (
       )))
    ))
    (if $stat (
-      (print-s (SIZE (i2s A_COUNTER) (i2s S_COUNTER) ))
+      (print-stat MAIN)
    ) ())
+);
+
+print-stat := λloc.(
+   (print-s \n )
+   (print-s loc )
+   (print-s \n )
+   (print-s 'A_COUNTER:)
+   (print-s \s)
+   (print-s (i2s A_COUNTER) )
+   (print-s \n )
+   (print-s 'S_COUNTER:)
+   (print-s \s)
+   (print-s (i2s S_COUNTER) )
+   (print-s \n )
 );
 
 $uuid := ();
@@ -120,6 +134,9 @@ parse-lambda := λtoks. (tail(
 ));
 
 parse-one-expression := λtoks. (tail(
+   (if $stat (
+      (print-stat PARSE_ONE_START)
+   ) ())
    (local remainder)
    (local is_lambda)
    (local expr)
@@ -181,6 +198,9 @@ parse-one-expression := λtoks. (tail(
       ))
    ))
    (if expr () (set expr Nil))
+   (if $stat (
+      (print-stat PARSE_ONE_END)
+   ) ())
    (if is_lambda
       ((Lambda (parse-lambda remainder)) ())
       (expr remainder)

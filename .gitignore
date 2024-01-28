@@ -9,4 +9,5 @@ a.out
 *.o
 *.s
 *.exe
+*.log
 bootstrap
