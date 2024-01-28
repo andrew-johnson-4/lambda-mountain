@@ -26,6 +26,38 @@ fn compile_bootstrap() {
    };
 }
 
+fn run_parse(target: &str) -> (String,String) {
+   let exit = Command::new("lambda_mountain")
+                      .stdout(std::process::Stdio::piped())
+                      .stderr(std::process::Stdio::piped())
+                      .arg("--parse")
+                      .arg(target)
+                      .spawn()
+                      .expect("failed to execute process")
+                      .wait_with_output()
+                      .expect("failed to wait for process");
+   if !exit.status.success() {
+      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
+      println!("./lambda_mountain error code while compiling {}: {}", target, stderr);
+   };
+   let expected = String::from_utf8_lossy(&exit.stdout).to_string();
+   let exit = Command::new("./bootstrap")
+                      .stdout(std::process::Stdio::piped())
+                      .stderr(std::process::Stdio::piped())
+                      .arg("--parse")
+                      .arg(target)
+                      .spawn()
+                      .expect("failed to execute process")
+                      .wait_with_output()
+                      .expect("failed to wait for process");
+   if !exit.status.success() {
+      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
+      println!("./bootstrap error code while compiling {}: {}", target, stderr);
+   };
+   let actual = String::from_utf8_lossy(&exit.stdout).to_string();
+   (expected,actual)
+}
+
 fn run_bootstrap(target: &str) -> String {
    rm("tmp.s");
    rm("tmp.o");
@@ -104,6 +136,23 @@ fn suite() {
    }
    for (path,stdout,actual) in &failures {
       eprintln!("TEST {} Expected: {}, Actual: {}", path, &stdout[..std::cmp::min(100,stdout.len())], &actual[..std::cmp::min(100,actual.len())]);
+   }
+   assert_eq!( failures.len(), 0 );
+}
+
+#[test]
+fn parseall() {
+   compile_bootstrap();
+   let mut failures = Vec::new();
+   for entry in glob("tests/lm/*.lm").unwrap() {
+      let path = entry.unwrap().display().to_string();
+      let (expected,actual) = run_parse(&path);
+      if expected != actual {
+         failures.push(( path, expected, actual ));
+      }
+   }
+   for (path,expected,actual) in &failures {
+      eprintln!("TEST {} Expected: {}, Actual: {}", path, &expected[..std::cmp::min(100,expected.len())], &actual[..std::cmp::min(100,actual.len())]);
    }
    assert_eq!( failures.len(), 0 );
 }

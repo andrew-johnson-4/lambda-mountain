@@ -7,6 +7,7 @@ main := (
    (local option)
    (local arg)
    (local config)
+   (local stat)
    (foreach-atom (tail argv) ((set arg $_) (if option
       (match option (
          ()
@@ -21,6 +22,7 @@ main := (
          (() ())
          (-o (set option SetTarget))
          (--parse (set mode Parse))
+         (--stat (set stat True))
          (--parse-expression (set mode ParseExpression))
          (--tokenize (set mode Tokenize))
          (fp (set inputs (fp inputs)))
@@ -46,7 +48,9 @@ main := (
          if $_ (print-s (tokenize (load-file $_))) ()
       )))
    ))
-   (print-s (SIZE (i2s A_COUNTER) (i2s S_COUNTER) ))
+   (if stat (
+      (print-s (SIZE (i2s A_COUNTER) (i2s S_COUNTER) ))
+   ) ())
 );
 
 $uuid := ();
