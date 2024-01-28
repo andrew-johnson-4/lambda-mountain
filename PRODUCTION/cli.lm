@@ -464,58 +464,58 @@ parse-lambda := λtoks. (tail(
     program
  ));
  
-# is_variable := λv. (tail(
-#    (local is_variable)
-#    (local passed_char)
-#    (foreach-char v (
-#       (local c)
-#       (set c $_)
-#       (if passed_char () (match c (
-#          ()
-#          ('$ ( (set is_variable True) (set passed_char True) ))
-#          ('_ ( (set is_variable True) (set passed_char True) ))
-#          ('a ( (set is_variable True) (set passed_char True) ))
-#          ('b ( (set is_variable True) (set passed_char True) ))
-#          ('c ( (set is_variable True) (set passed_char True) ))
-#          ('d ( (set is_variable True) (set passed_char True) ))
-#          ('e ( (set is_variable True) (set passed_char True) ))
-#          ('f ( (set is_variable True) (set passed_char True) ))
-#          ('g ( (set is_variable True) (set passed_char True) ))
-#          ('h ( (set is_variable True) (set passed_char True) ))
-#          ('i ( (set is_variable True) (set passed_char True) ))
-#          ('j ( (set is_variable True) (set passed_char True) ))
-#          ('k ( (set is_variable True) (set passed_char True) ))
-#          ('l ( (set is_variable True) (set passed_char True) ))
-#          ('m ( (set is_variable True) (set passed_char True) ))
-#          ('n ( (set is_variable True) (set passed_char True) ))
-#          ('o ( (set is_variable True) (set passed_char True) ))
-#          ('p ( (set is_variable True) (set passed_char True) ))
-#          ('q ( (set is_variable True) (set passed_char True) ))
-#          ('r ( (set is_variable True) (set passed_char True) ))
-#          ('s ( (set is_variable True) (set passed_char True) ))
-#          ('t ( (set is_variable True) (set passed_char True) ))
-#          ('u ( (set is_variable True) (set passed_char True) ))
-#          ('v ( (set is_variable True) (set passed_char True) ))
-#          ('w ( (set is_variable True) (set passed_char True) ))
-#          ('x ( (set is_variable True) (set passed_char True) ))
-#          ('y ( (set is_variable True) (set passed_char True) ))
-#          ('z ( (set is_variable True) (set passed_char True) ))
-#          (_ (set passed_char True))
-#       )))
-#    ))
-#    is_variable
-# ));
-# 
-# label-case := λk. (tail(
-#    (local nk)
-#    (foreach-char k (match $_ (
-#       ()
-#       (- (set nk (nk '_)))
-#       (c (set nk (nk (clone-rope c))))
-#    )))
-#    (clone-rope nk)
-# ));
-# 
+ is_variable := λv. (tail(
+    (local is_variable)
+    (local passed_char)
+    (foreach-char v (
+       (local c)
+       (set c $_)
+       (if passed_char () (match c (
+          ()
+          ('$ ( (set is_variable True) (set passed_char True) ))
+          ('_ ( (set is_variable True) (set passed_char True) ))
+          ('a ( (set is_variable True) (set passed_char True) ))
+          ('b ( (set is_variable True) (set passed_char True) ))
+          ('c ( (set is_variable True) (set passed_char True) ))
+          ('d ( (set is_variable True) (set passed_char True) ))
+          ('e ( (set is_variable True) (set passed_char True) ))
+          ('f ( (set is_variable True) (set passed_char True) ))
+          ('g ( (set is_variable True) (set passed_char True) ))
+          ('h ( (set is_variable True) (set passed_char True) ))
+          ('i ( (set is_variable True) (set passed_char True) ))
+          ('j ( (set is_variable True) (set passed_char True) ))
+          ('k ( (set is_variable True) (set passed_char True) ))
+          ('l ( (set is_variable True) (set passed_char True) ))
+          ('m ( (set is_variable True) (set passed_char True) ))
+          ('n ( (set is_variable True) (set passed_char True) ))
+         ('o ( (set is_variable True) (set passed_char True) ))
+         ('p ( (set is_variable True) (set passed_char True) ))
+          ('q ( (set is_variable True) (set passed_char True) ))
+          ('r ( (set is_variable True) (set passed_char True) ))
+          ('s ( (set is_variable True) (set passed_char True) ))
+          ('t ( (set is_variable True) (set passed_char True) ))
+          ('u ( (set is_variable True) (set passed_char True) ))
+          ('v ( (set is_variable True) (set passed_char True) ))
+          ('w ( (set is_variable True) (set passed_char True) ))
+          ('x ( (set is_variable True) (set passed_char True) ))
+          ('y ( (set is_variable True) (set passed_char True) ))
+          ('z ( (set is_variable True) (set passed_char True) ))
+          (_ (set passed_char True))
+       )))
+    ))
+    is_variable
+ ));
+ 
+ label-case := λk. (tail(
+    (local nk)
+    (foreach-char k (match $_ (
+       ()
+       (- (set nk (nk '_)))
+       (c (set nk (nk (clone-rope c))))
+    )))
+    (clone-rope nk)
+ ));
+ 
 # assemble := λconfig program. (
 #    (local target)
 #    (set target 'tmp.s)
