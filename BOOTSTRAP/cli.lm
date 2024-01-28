@@ -998,7 +998,6 @@ yield-cons := λctx l r offset used. (tail(
 
 #returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 compile-expr := λctx e offset used. (tail(
-   (print-s (Used used))
    (local x)
    (local e1)
    (local e1_frame)
@@ -1220,7 +1219,9 @@ compile-expr := λctx e offset used. (tail(
          (Expr( (e1_frame e2_frame e3_frame) prog (e1_unframe e2_unframe e3_unframe) (e1_text e2_text e3_text) (e1_data e2_data e3_data) ctx offset ))
       )))
       ( (App ((Variable fname) arg)) (tail(
-         if (is-builtin fname) (
+         ()
+         (if (is-builtin fname) (tail(
+            ()
             (if (eq(fname 'tail)) (tail(
                (set x (compile-expr(ctx arg offset Tail)))
                (set prog (get-prog x))
@@ -1231,7 +1232,7 @@ compile-expr := λctx e offset used. (tail(
                (set prog (prog (\t 'call \s (label-case fname) \n)))
                (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
             )))
-         ) (
+         )) (tail(
             ()
             (match (get-global(ctx fname)) (
                ()
@@ -1247,7 +1248,7 @@ compile-expr := λctx e offset used. (tail(
                   (yield-cons(ctx (Variable fname) arg offset))
                )))
             ))
-         )
+         )))
       )))
       ( (Literal l) (tail(
          ()
