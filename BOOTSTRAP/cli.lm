@@ -87,30 +87,34 @@ parse-lambda := λtoks. (tail(
    (set toks (tail er))
    (match lmb (
       ()
-      ((Literal \,) (
+      ((Literal \,) (tail(
          (set lmb (() (parse-many-expressions toks)))
          (set toks ())
-      ))
+         ()
+      )))
    ))
-   (while toks (
+   (while toks (tail(
       (set er (parse-one-expression toks))
       (match er (
          ()
-         (((Literal \,) r) (
+         (((Literal \,) r) (tail(
             (set lmb (lmb (parse-many-expressions r)))
             (set toks ())
-         ))
-         ((e ()) (
+            ()
+         )))
+         ((e ()) (tail(
             (set lmb (lmb e))
             (print-s (ExpectedLambdaRhs lmb))
             (set toks ())
-         ))
-         ((e r) (
+            ()
+         )))
+         ((e r) (tail(
             (set lmb (lmb e))
             (set toks r)
-         ))
+            ()
+         )))
       ))
-   ))
+   )))
    lmb
 ));
 
