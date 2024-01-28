@@ -1,5 +1,6 @@
 
 main := (
+   (print-s (SIZE (i2s A_COUNTER) (i2s S_COUNTER) ))
    (local mode)
    (set mode Compile)
    (local inputs)
@@ -46,6 +47,7 @@ main := (
          if $_ (print-s (tokenize (load-file $_))) ()
       )))
    ))
+   (print-s (SIZE (i2s A_COUNTER) (i2s S_COUNTER) ))
 );
 
 $uuid := ();

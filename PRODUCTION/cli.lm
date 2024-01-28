@@ -1,53 +1,54 @@
-# 
-# main := (
-#    (local mode)
-#    (set mode Compile)
-#    (local inputs)
-#    (local target)
-#    (local option)
-#    (local arg)
-#    (local config)
-#    (foreach-atom (tail argv) ((set arg $_) (if option
-#       (match option (
-#          ()
-#          (() ())
-#          (SetTarget (
-#             (set config (config (Target arg)))
-#             (set option ())
-#          ))
-#       ))
-#       (match arg (
-#          ()
-#          (() ())
-#          (-o (set option SetTarget))
-#          (--parse (set mode Parse))
-#          (--parse-expression (set mode ParseExpression))
-#          (--tokenize (set mode Tokenize))
-#          (fp (set inputs (fp inputs)))
-#       ))
-#    )))
-#    (match mode (
-#       ()
-#       (Compile (
-#          (foreach-atom inputs (
-#             (set arg $_)
-#             (if arg (
-#                (assemble (config (parse-program (tokenize (load-file arg)))))
-#             ) ())
-#          ))
-#       ))
-#       (Parse (foreach-atom inputs (
-#          if $_ (print-s (parse-program (tokenize (load-file $_)))) ()
-#       )))
-#       (ParseExpression (foreach-atom inputs (
-#          if $_ (print-s (parse-expression (tokenize (load-file $_)))) ()
-#       )))
-#       (Tokenize (foreach-atom inputs (
-#          if $_ (print-s (tokenize (load-file $_))) ()
-#       )))
-#    ))
-# );
-# 
+ 
+ main := (
+    (local mode)
+    (set mode Compile)
+    (local inputs)
+    (local target)
+    (local option)
+    (local arg)
+    (local config)
+    (foreach-atom (tail argv) ((set arg $_) (if option
+       (match option (
+          ()
+          (() ())
+          (SetTarget (
+             (set config (config (Target arg)))
+             (set option ())
+          ))
+       ))
+       (match arg (
+          ()
+          (() ())
+          (-o (set option SetTarget))
+          (--parse (set mode Parse))
+          (--parse-expression (set mode ParseExpression))
+          (--tokenize (set mode Tokenize))
+          (fp (set inputs (fp inputs)))
+       ))
+    )))
+    (match mode (
+       ()
+       (Compile (
+          (foreach-atom inputs (
+             (set arg $_)
+             (if arg (
+                (assemble (config (parse-program (tokenize (load-file arg)))))
+             ) ())
+          ))
+       ))
+       (Parse (foreach-atom inputs (
+          if $_ (print-s (parse-program (tokenize (load-file $_)))) ()
+       )))
+       (ParseExpression (foreach-atom inputs (
+          if $_ (print-s (parse-expression (tokenize (load-file $_)))) ()
+       )))
+       (Tokenize (foreach-atom inputs (
+          if $_ (print-s (tokenize (load-file $_))) ()
+       )))
+    ))
+ );
+
+ 
 # $uuid := ();
 # uuid := λ. (tail(
 #    (set $uuid (inc $uuid))

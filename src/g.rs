@@ -551,6 +551,14 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64, used: Util
          }
       }
    } else if head(&e).to_string() == "variable" &&
+             tail(&e).to_string() == "A_COUNTER" {
+      let atext = ctx_eval_soft(helpers_ctx, &variable("::a-counter"));
+      ( s_nil(), atext, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
+   } else if head(&e).to_string() == "variable" &&
+             tail(&e).to_string() == "S_COUNTER" {
+      let atext = ctx_eval_soft(helpers_ctx, &variable("::s-counter"));
+      ( s_nil(), atext, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
+   } else if head(&e).to_string() == "variable" &&
              tail(&e).to_string() == "argv" {
       // $_ is a noop expression and colloquially refers to 'this' expression
       let atext = ctx_eval_soft(helpers_ctx, &variable("::argv"));
