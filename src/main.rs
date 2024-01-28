@@ -7,6 +7,7 @@ fn main() {
    let mut target = "a.out".to_string();
    let mut option = "".to_string();
    let mut debug = false;
+   let mut mode = "compile".to_string();
    for arg in std::env::args().skip(1) {
       if option == "-o" {
          target = arg;
@@ -19,14 +20,20 @@ fn main() {
          println!("{}", s);
       } else if arg=="--debug" {
          debug = true;
+      } else if arg=="--parse" {
+         mode = "parse".to_string();
       } else if arg.starts_with("-") {
          option = arg;
       } else if arg.ends_with(".lm") {
          let mut file = File::open(&arg).unwrap();
          let mut file_contents = String::new();
          file.read_to_string(&mut file_contents).unwrap();
-         let s = parse_program(&file_contents);
-         compile(debug, &target, &s);
+         if mode == "parse" {
+            println!("{}", parse_program(&file_contents));
+         } else {
+            let s = parse_program(&file_contents);
+            compile(debug, &target, &s);
+         }
       }
    }
 }

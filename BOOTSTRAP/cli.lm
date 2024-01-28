@@ -1004,6 +1004,7 @@ yield-cons := λctx l r offset used. (tail(
          (set e2_data (get-data e2))
          (set ctx (get-pc e2))
          (set offset (get-offset e2))
+         (print-s (LR e1 e2))
          (Expr( (e1_frame e2_frame) (e1_prog e2_prog) (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))   
       )))
    ))

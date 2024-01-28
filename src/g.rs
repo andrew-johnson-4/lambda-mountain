@@ -534,7 +534,6 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64, used: Util
             (xframe, prog, xunframe, xtext, xdata, program_ctx.clone(), offset)
          }
       } else {
-         tail_safe = true;
          if used == Utilized::Used {
             let (fframe,fprog,funframe,ftext,fdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &f, offset, Utilized::Used);
             let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &x, offset, Utilized::Used);
@@ -544,6 +543,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64, used: Util
             ));
             (s_cons(fframe,xframe), prog, s_cons(funframe,xunframe), s_cons(ftext,xtext), s_cons(fdata,xdata), program_ctx, offset)
          } else {
+            tail_safe = true;
             let rused = if used==Utilized::Tail { Utilized::Used } else { Utilized::Unused };
             let (fframe,fprog,funframe,ftext,fdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &f, offset, Utilized::Unused);
             let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &x, offset, rused);
