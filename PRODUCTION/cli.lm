@@ -593,62 +593,62 @@ parse-lambda := λtoks. (tail(
     (write-file (target (clone-rope (output_p output_d))))
  );
  
-# is-builtin := λf. (match f (
-#    ()
-#    ('eq True)
-#    ('not True)
-#    ('head True)
-#    ('tail True)
-#    ('inc True)
-#    ('dec True)
-#    ('add True)
-#    ('mul True)
-#    ('div True)
-#    ('mod True)
-#    ('inv True)
-#    ('is-neg True)
-#    ('digit True)
-#    ('dump-i True)
-#    ('print-s True)
-#    ('print-i True)
-#    ('print-p True)
-#    ('print-p True)
-#    ('print-d True)
-#    ('clone-rope True)
-#    ('write-file True)
-#    ('load-file True)
-#    (_ ())
-# ));
-# 
-# get-frame := λe. (match e (
-#    ()
-#    ((Expr(f p u t d pc off)) f)
-# ));
-# get-prog := λe. (match e (
-#    ()
-#    ((Expr(f p u t d pc off)) p)
-# ));
-# get-unframe := λe. (match e (
-#    ()
-#    ((Expr(f p u t d pc off)) u)
-# ));
-# get-text := λe. (match e (
-#    ()
-#    ((Expr(f p u t d pc off)) t)
-# ));
-# get-data := λe. (match e (
-#    ()
-#    ((Expr(f p u t d pc off)) d)
-# ));
-# get-pc := λe. (match e (
-#    ()
-#    ((Expr(f p u t d pc off)) pc)
-# ));
-# get-offset := λe. (match e (
-#    ()
-#    ((Expr(f p u t d pc off)) off)
-# ));
-# 
+ is-builtin := λf. (match f (
+    ()
+    ('eq True)
+    ('not True)
+    ('head True)
+    ('tail True)
+    ('inc True)
+    ('dec True)
+    ('add True)
+    ('mul True)
+    ('div True)
+    ('mod True)
+    ('inv True)
+    ('is-neg True)
+    ('digit True)
+    ('dump-i True)
+    ('print-s True)
+    ('print-i True)
+    ('print-p True)
+    ('print-p True)
+    ('print-d True)
+    ('clone-rope True)
+    ('write-file True)
+    ('load-file True)
+    (_ ())
+ ));
+ 
+ get-frame := λe. (match e (
+    ()
+    ((Expr(f p u t d pc off)) f)
+ ));
+ get-prog := λe. (match e (
+    ()
+    ((Expr(f p u t d pc off)) p)
+ ));
+ get-unframe := λe. (match e (
+    ()
+    ((Expr(f p u t d pc off)) u)
+ ));
+get-text := λe. (match e (
+    ()
+    ((Expr(f p u t d pc off)) t)
+ ));
+ get-data := λe. (match e (
+    ()
+    ((Expr(f p u t d pc off)) d)
+ ));
+ get-pc := λe. (match e (
+    ()
+    ((Expr(f p u t d pc off)) pc)
+ ));
+ get-offset := λe. (match e (
+    ()
+    ((Expr(f p u t d pc off)) off)
+ ));
+ 
 # escape-sequences := λt. match t (
 #    ()
 #    ( () () )
