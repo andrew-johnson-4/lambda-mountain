@@ -1015,7 +1015,9 @@ compile-expr := λctx e offset used. (tail(
    (local e3_text)
    (local e3_data)
    (local prog)
-   (match e (
+   (local tail_safe)
+   (local return)
+   (set return (match e (
       ()
       ( (Variable '$_) (tail(
          ()
@@ -1031,6 +1033,7 @@ compile-expr := λctx e offset used. (tail(
          (set e1_data (get-data e1))
          (set ctx (get-pc e1))
          (set offset (get-offset e1))
+         (set tail_safe True)
          (Expr( e1_frame ((_yield-nil()) e1_prog) e1_unframe e1_text e1_data ctx offset ))
       )))
       ( (App( (App( (Variable 'set) (Variable vname) )) x )) (tail(
@@ -1045,6 +1048,7 @@ compile-expr := λctx e offset used. (tail(
          (set offset (get-offset e1))
          (set prog e1_prog)
          (set prog (prog (set-local(ctx vname))))
+         (set tail_safe True)
          (Expr( e1_frame prog e1_unframe e1_text e1_data ctx offset ))
       )))
       ( (App( (App( (Variable 'match) t )) p )) (tail(
@@ -1099,6 +1103,7 @@ compile-expr := λctx e offset used. (tail(
          (local foreach_text)
          (set foreach_text (yield-foreach-atom( foreach_atom_label foreach_atom_notcons foreach_atom_ignore e2_prog )))
          (set prog ( e1_prog \t 'call \s foreach_atom_label \n ))
+         (set tail_safe True)
          (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text foreach_text) (e1_data e2_data) ctx offset ))
       )))
       ( (App( (App( (Variable 'foreach-char) t )) d )) (tail(
@@ -1135,6 +1140,7 @@ compile-expr := λctx e offset used. (tail(
          (local foreach_text)
          (set foreach_text (yield-foreach-char( foreach_char_data foreach_char_head foreach_char_small foreach_char_end foreach_char_notcons foreach_char_apply e2_prog )))
          (set prog ( e1_prog \t 'call \s foreach_char_head \n ))
+         (set tail_safe True)
          (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text foreach_text) (e1_data e2_data foreach_data) ctx offset ))
       )))
       ( (App( (App( (Variable 'while) c )) d )) (tail(
@@ -1170,6 +1176,7 @@ compile-expr := λctx e offset used. (tail(
          (set prog (prog e2_prog))
          (set prog (prog (\t 'jmp \s label_while_start \n)))
          (set prog (prog (label_while_end ': \n)))
+         (set tail_safe True)
          (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))
       )))
       ( (App( (App( (App( (Variable 'if) c )) t )) f )) (tail(
@@ -1181,7 +1188,7 @@ compile-expr := λctx e offset used. (tail(
          (set e1_data (get-data e1))
          (set ctx (get-pc e1))
          (set offset (get-offset e1))
-         (set e2 (compile-expr(ctx t offset used)))
+         (set e2 (compile-expr(ctx t offset Used)))
          (set e2_frame (get-frame e2))
          (set e2_prog (get-prog e2))
          (set e2_unframe (get-unframe e2))
@@ -1189,7 +1196,7 @@ compile-expr := λctx e offset used. (tail(
          (set e2_data (get-data e2))
          (set ctx (get-pc e2))
          (set offset (get-offset e2))
-         (set e3 (compile-expr(ctx f offset used)))
+         (set e3 (compile-expr(ctx f offset Used)))
          (set e3_frame (get-frame e3))
          (set e3_prog (get-prog e3))
          (set e3_unframe (get-unframe e3))
@@ -1261,6 +1268,7 @@ compile-expr := λctx e offset used. (tail(
       )))
       ( (App (l r)) (tail(
          ()
+         (set tail_safe True)
          (yield-cons(ctx l r offset used))
       )))
       ( Nil (tail(
@@ -1268,6 +1276,7 @@ compile-expr := λctx e offset used. (tail(
          (set prog (prog ( \t 'mov \s '$0 , '%r13 \n )))
          (set prog (prog ( \t 'mov \s '$0 , '%r14 \n )))
          (set prog (prog ( \t 'mov \s '$0 , '%r15 \n )))
+         (set tail_safe True)
          (Expr( () prog () () () ctx offset ))
       )))
       ( (Variable vname) (tail(
@@ -1275,7 +1284,17 @@ compile-expr := λctx e offset used. (tail(
          (Expr( () prog () () () ctx offset ))
       )))
       (x (print-s (TODO x)) )
-   ))
+   )))
+   (if tail_safe return (tail(
+      ()
+      (if (eq(used Tail)) (tail(
+         (set prog (get-prog return))
+         (set prog (prog (\t 'call \s 'tail \n)))
+         (Expr( (get-frame return) prog (get-unframe return) (get-text return) (get-data return) (get-pc return) (get-offset return) ))
+      )) (
+         return
+      ))
+   )))
 ));
 
 _data-header := λ.(
