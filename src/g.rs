@@ -144,7 +144,7 @@ fn is_local(program_ctx: &S, s: &str) -> String {
    for (k,v) in kv_iter(program_ctx) {
    let k = k.to_string();
    if s==k {
-      if head(&v).to_string() == "local" {
+      if head(&v).to_string() == "Local" {
          return tail(&v).to_string();
       } else {
          return "".to_string();
