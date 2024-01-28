@@ -516,83 +516,83 @@ parse-lambda := λtoks. (tail(
     (clone-rope nk)
  ));
  
-# assemble := λconfig program. (
-#    (local target)
-#    (set target 'tmp.s)
-#    (while config (
-#       (match (tail config) (
-#          ()
-#          ((Target t) (set target t))
-#       ))
-#       (set config (head config))
-#    ))
-#    (local output_p)
-#    (local output_d)
-#    (local has_main)
-#    (set output_p (_program-header()))
-#    (set output_d (_data-header()))
-#    (local main-ctx)
-#    (set main-ctx program)
-#    (local e)
-#    (local e2)
-#    (local offset)
-#    (local inner-ctx)
-# 
-#    (while program (match program (
-#       ()
-#       ( (pc (Global ('main body))) (
-#          (set program pc)
-#          (set offset ())
-#          (set output_p (output_p ('main: \n)))
-#          (set output_p (output_p (_before-main())))
-#          (set output_p (output_p (_enter-function())))
-#          (set e (compile-expr(main-ctx body offset Unused)))
-#          (set output_p (output_p (get-frame e)))
-#          (set output_p (output_p (get-prog e)))
-#          (set output_p (output_p (get-unframe e)))
-#          (set output_p (output_p (_exit-cleanup())))
-#          (set output_p (output_p (get-text e)))
-#          (set output_d (output_d (get-data e)))
-#          (set has_main True)
-#       ))
-#       ( (pc (Global (fname body))) (
-#          (set program pc)
-#          (set offset ())
-#          (set inner-ctx main-ctx)
-#          (match body (
-#             ()
-#             ( Nil (
-#                (set output_d (output_d( (label-case fname) ': \n \t '.zero \s '32 \n )))
-#             ))
-#             ( (Lambda(lhs rhs)) (
-#                (set e (destructure-args(inner-ctx lhs offset)))
-#                (set offset (get-offset e))
-#                (set inner-ctx (get-pc e))
-#                (set e2 (compile-expr(inner-ctx rhs offset Used)))
-#                (set output_p (output_p ((label-case fname) ': \n)))
-#                (set output_p (output_p (_enter-function())))
-#                (set output_p (output_p (get-frame e)))
-#                (set output_p (output_p (get-frame e2)))
-#                (set output_p (output_p (get-prog e)))
-#                (set output_p (output_p (get-prog e2)))
-#                (set output_p (output_p (get-unframe e)))
-#                (set output_p (output_p (get-unframe e2)))
-#                (set output_p (output_p (_exit-function())))
-#                (set output_d (output_d (get-data e)))
-#                (set output_d (output_d (get-data e2)))
-#             ))
-#          ))
-#       ))
-#    )))
-# 
-#    (if has_main () (
-#       (set output_p (output_p ('main: \n)))
-#       (set output_p (output_p (_exit-cleanup())))
-#    ))
-# 
-#    (write-file (target (clone-rope (output_p output_d))))
-# );
-# 
+ assemble := λconfig program. (
+    (local target)
+    (set target 'tmp.s)
+    (while config (
+       (match (tail config) (
+          ()
+          ((Target t) (set target t))
+       ))
+       (set config (head config))
+    ))
+    (local output_p)
+    (local output_d)
+    (local has_main)
+    (set output_p (_program-header()))
+    (set output_d (_data-header()))
+    (local main-ctx)
+    (set main-ctx program)
+    (local e)
+    (local e2)
+    (local offset)
+    (local inner-ctx)
+ 
+    (while program (match program (
+       ()
+       ( (pc (Global ('main body))) (
+          (set program pc)
+          (set offset ())
+          (set output_p (output_p ('main: \n)))
+          (set output_p (output_p (_before-main())))
+          (set output_p (output_p (_enter-function())))
+          (set e (compile-expr(main-ctx body offset Unused)))
+          (set output_p (output_p (get-frame e)))
+          (set output_p (output_p (get-prog e)))
+          (set output_p (output_p (get-unframe e)))
+          (set output_p (output_p (_exit-cleanup())))
+          (set output_p (output_p (get-text e)))
+          (set output_d (output_d (get-data e)))
+          (set has_main True)
+       ))
+       ( (pc (Global (fname body))) (
+          (set program pc)
+          (set offset ())
+          (set inner-ctx main-ctx)
+          (match body (
+             ()
+             ( Nil (
+                (set output_d (output_d( (label-case fname) ': \n \t '.zero \s '32 \n )))
+             ))
+             ( (Lambda(lhs rhs)) (
+                (set e (destructure-args(inner-ctx lhs offset)))
+                (set offset (get-offset e))
+                (set inner-ctx (get-pc e))
+                (set e2 (compile-expr(inner-ctx rhs offset Used)))
+                (set output_p (output_p ((label-case fname) ': \n)))
+                (set output_p (output_p (_enter-function())))
+                (set output_p (output_p (get-frame e)))
+                (set output_p (output_p (get-frame e2)))
+                (set output_p (output_p (get-prog e)))
+                (set output_p (output_p (get-prog e2)))
+                (set output_p (output_p (get-unframe e)))
+                (set output_p (output_p (get-unframe e2)))
+                (set output_p (output_p (_exit-function())))
+                (set output_d (output_d (get-data e)))
+                (set output_d (output_d (get-data e2)))
+             ))
+          ))
+       ))
+    )))
+ 
+    (if has_main () (
+       (set output_p (output_p ('main: \n)))
+       (set output_p (output_p (_exit-cleanup())))
+    ))
+ 
+    (write-file (target (clone-rope (output_p output_d))))
+ );
+ 
 # is-builtin := λf. (match f (
 #    ()
 #    ('eq True)
