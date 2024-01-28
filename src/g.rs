@@ -132,7 +132,7 @@ fn is_free(program_ctx: &S, s: &str) -> bool {
    if s==k {
       return false;
    }}
-   for (k,v) in kv_iter(program_ctx) {
+   for (k,_v) in kv_iter(program_ctx) {
    let k = k.to_string();
    if s==k {
       return false;
