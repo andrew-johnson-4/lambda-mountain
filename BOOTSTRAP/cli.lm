@@ -235,9 +235,6 @@ get-global := λctx v. (tail(
       ))
       (set ctx (head ctx))
    ))
-   (if r () (
-      (print-s (ReferenceToUndefinedGlobal v))
-   ))
    r
 ));
 set-local := λctx v. (tail(
@@ -1245,7 +1242,7 @@ compile-expr := λctx e offset used. (tail(
                )))
                ( _ (tail(
                   ()
-                  (yield-cons(ctx (Variable fname) arg offset))
+                  (yield-cons(ctx (Variable fname) arg offset Used))
                )))
             ))
          )))
