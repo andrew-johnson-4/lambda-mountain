@@ -181,46 +181,46 @@ parse-lambda := λtoks. (tail(
     )
  ));
  
-# print-ctx := λctx. (
-#    while ctx (
-#       (print-s (tail ctx))
-#       (set ctx (head ctx))
-#    )
-# );
-# 
-# get-local := λctx v. (tail(
-#    (local r)
-#    (while ctx (
-#       (match (tail ctx) (
-#          ()
-#          ( (Local(l lrefer)) (
-#             if r () (
-#                if (eq(l v)) (
-#                   (set r lrefer)
-#                ) ()
-#             )
-#          ))
-#          ( (Global(l body)) (
-#             if r () (
-#                if (eq(l v)) (
-#                   (set r (
-#                      \t 'mov \s '$ (label-case l) , \s %r15 \n
-#                      \t 'mov \s '0 \[ %r15 \] , \s %r12 \n
-#                      \t 'mov \s '8 \[ %r15 \] , \s %r13 \n
-#                      \t 'mov \s '16 \[ %r15 \] , \s %r14 \n
-#                      \t 'mov \s '24 \[ %r15 \] , \s %r15 \n
-#                   ))
-#                ) ()
-#             )
-#          ))
-#       ))
-#       (set ctx (head ctx))
-#    ))
-#    (if r () (
-#       (print-s (ReferenceToUndefinedLocal v))
-#    ))
-#    r
-# ));
+ print-ctx := λctx. (
+    while ctx (
+       (print-s (tail ctx))
+       (set ctx (head ctx))
+    )
+ );
+ 
+ get-local := λctx v. (tail(
+    (local r)
+    (while ctx (
+       (match (tail ctx) (
+          ()
+          ( (Local(l lrefer)) (
+             if r () (
+                if (eq(l v)) (
+                   (set r lrefer)
+                ) ()
+             )
+          ))
+          ( (Global(l body)) (
+             if r () (
+                if (eq(l v)) (
+                   (set r (
+                      \t 'mov \s '$ (label-case l) , \s %r15 \n
+                      \t 'mov \s '0 \[ %r15 \] , \s %r12 \n
+                      \t 'mov \s '8 \[ %r15 \] , \s %r13 \n
+                      \t 'mov \s '16 \[ %r15 \] , \s %r14 \n
+                      \t 'mov \s '24 \[ %r15 \] , \s %r15 \n
+                   ))
+                ) ()
+             )
+          ))
+       ))
+       (set ctx (head ctx))
+    ))
+    (if r () (
+       (print-s (ReferenceToUndefinedLocal v))
+    ))
+    r
+ ));
 # get-global := λctx v. (tail(
 #    (local r)
 #    (while ctx (
