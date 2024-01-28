@@ -92,7 +92,7 @@ parse-lambda := λtoks. (tail(
    (match lmb (
       ()
       ((Literal \,) (
-         (set lmb (() (parse-many-expressions toks)))
+         (set lmb (Nil (parse-many-expressions toks)))
          (set toks ())
       ))
    ))
