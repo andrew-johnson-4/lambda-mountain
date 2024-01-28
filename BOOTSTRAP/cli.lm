@@ -1213,7 +1213,13 @@ compile-expr := λctx e offset used. (tail(
       )))
       ( (App ((Variable fname) arg)) (tail(
          if (is-builtin fname) (
-            (set x (compile-expr(ctx arg offset Used)))
+            (local tail_used)
+            (if (eq(fname 'tail)) (
+               (set tail_used Tail)
+            ) (
+               (set tail_used Used)
+            ))
+            (set x (compile-expr(ctx arg offset tail_used)))
             (set prog (get-prog x))
             (set prog (prog (\t 'call \s (label-case fname) \n)))
             (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
@@ -1249,6 +1255,7 @@ compile-expr := λctx e offset used. (tail(
       )))
       ( (App (l r)) (tail(
          ()
+         (print-s (TailUsed used))
          (yield-cons(ctx l r offset))
       )))
       ( Nil (tail(
