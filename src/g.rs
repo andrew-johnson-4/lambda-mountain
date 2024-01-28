@@ -118,7 +118,7 @@ fn label_case(s: &str) -> String {
    if s==k {
       return v.to_string();
    }}
-   format!("{}", s.replace("-","_"))
+   format!("{}", s.replace("-","_").replace("$","_I_"))
 }
 
 static mut UUID_COUNTER: usize = 0;
@@ -572,7 +572,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64, used: Util
       let vname = tail(&e).to_string();
       let local = is_local(program_ctx, &vname);
       if local == "" {
-         let prog = ctx_eval_soft(helpers_ctx, &app(variable("::get-global"), variable(&vname)) );
+         let prog = ctx_eval_soft(helpers_ctx, &app(variable("::get-global"), variable(&label_case(&vname))) );
          ( s_nil(), prog, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
       } else {
          ( s_nil(), s_atom(&local), s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )

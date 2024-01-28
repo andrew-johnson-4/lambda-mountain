@@ -1,4 +1,6 @@
 
+$stat := ();
+
 main := (
    (local mode)
    (set mode Compile)
@@ -7,7 +9,6 @@ main := (
    (local option)
    (local arg)
    (local config)
-   (local stat)
    (foreach-atom (tail argv) ((set arg $_) (if option
       (match option (
          ()
@@ -22,7 +23,7 @@ main := (
          (() ())
          (-o (set option SetTarget))
          (--parse (set mode Parse))
-         (--stat (set stat True))
+         (--stat (set $stat True))
          (--parse-expression (set mode ParseExpression))
          (--tokenize (set mode Tokenize))
          (fp (set inputs (fp inputs)))
@@ -48,7 +49,7 @@ main := (
          if $_ (print-s (tokenize (load-file $_))) ()
       )))
    ))
-   (if stat (
+   (if $stat (
       (print-s (SIZE (i2s A_COUNTER) (i2s S_COUNTER) ))
    ) ())
 );
