@@ -321,7 +321,7 @@ fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64)
 }
 
 //returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
-fn yield_patterns(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,S,S,S,S,i64) {
+fn yield_patterns(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64, used: Utilized) -> (S,S,S,S,S,S,i64) {
    if is_nil(p) {
       let clear_rsi = s_atom("\tmov $0, %rsi\n");
       ( s_nil(), clear_rsi, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
@@ -331,9 +331,9 @@ fn yield_patterns(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,
       let lr = tail(&tail(&tail(&p)));
       let lhs = head(&lr);
       let rhs = tail(&lr);
-      let (pframe,pprog,punframe,ptext,pdata,_inner_ctx,offset) = yield_patterns(helpers_ctx, program_ctx, &prev, offset);
+      let (pframe,pprog,punframe,ptext,pdata,_inner_ctx,offset) = yield_patterns(helpers_ctx, program_ctx, &prev, offset, used);
       let (lframe,lprog,lunframe,ltext,ldata,inner_ctx,offset) = destructure_pattern_lhs(helpers_ctx, &program_ctx, &lhs, offset);
-      let (rframe,rprog,runframe,rtext,rdata,_inner_ctx,offset) = compile_expr(helpers_ctx, &inner_ctx, &rhs, offset, Utilized::Used);
+      let (rframe,rprog,runframe,rtext,rdata,_inner_ctx,offset) = compile_expr(helpers_ctx, &inner_ctx, &rhs, offset, used);
       let label_skip = uuid();
       let prog = pprog;
       let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %rsi\n\tjne {}\n",label_skip)));
@@ -356,7 +356,7 @@ fn yield_patterns(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,
    }
 }
 
-#[derive(Debug,PartialEq,Eq)]
+#[derive(Debug,PartialEq,Eq,Copy,Clone)]
 enum Utilized {
   Used,
   Unused,
@@ -479,12 +479,13 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64, used: Util
                 head(&head(&tail(&head(&tail(&e))))).to_string() == "app" &&
                 head(&head(&tail(&head(&tail(&head(&tail(&e))))))).to_string() == "variable" &&
                 tail(&head(&tail(&head(&tail(&head(&tail(&e))))))).to_string() == "if" {         
+         tail_safe = true;
          let f = tail(&tail(&e));
          let t = tail(&tail(&head(&tail(&e))));
          let c = tail(&tail(&head(&tail(&head(&tail(&e))))));
          let (c_f,c_p,c_u,c_t,c_d,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &c, offset, Utilized::Used);
-         let (t_f,t_p,t_u,t_t,t_d,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &t, offset, Utilized::Used);
-         let (f_f,f_p,f_u,f_t,f_d,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &f, offset, Utilized::Used);
+         let (t_f,t_p,t_u,t_t,t_d,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &t, offset, used);
+         let (f_f,f_p,f_u,f_t,f_d,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &f, offset, used);
          let label_if_true = uuid();
          let label_if_end = uuid();
          let prog = c_p;
@@ -510,10 +511,11 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64, used: Util
                 head(&head(&tail(&e))).to_string() == "app" &&
                 head(&head(&tail(&head(&tail(&e))))).to_string() == "variable" &&
                 tail(&head(&tail(&head(&tail(&e))))).to_string() == "match" {
+         tail_safe = true;
          let p = tail(&tail(&e));
          let c = tail(&tail(&head(&tail(&e))));
          let (cframe,cprog,cunframe,ctext,cdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &c, offset, Utilized::Used);
-         let (pframe,pprog,punframe,ptext,pdata,program_ctx,offset) = yield_patterns(helpers_ctx, &program_ctx, &p, offset);
+         let (pframe,pprog,punframe,ptext,pdata,program_ctx,offset) = yield_patterns(helpers_ctx, &program_ctx, &p, offset, used);
          let label_skip = uuid();
          let prog = s_cons(cprog,pprog);
          let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %rsi\n\tjne {}\n",label_skip)));
