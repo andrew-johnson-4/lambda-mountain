@@ -518,10 +518,15 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64, used: Util
          head(&f).to_string() == "literal") &&
          !is_free(program_ctx, &tail(&f).to_string()) &&
          is_local(program_ctx, &tail(&f).to_string())=="" {
-         let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &x, offset, Utilized::Used);
-         let f_name = variable(&label_case( &tail(&f).to_string() ));
-         let prog = s_cons( xprog , s_cons( s_cons( variable("\tcall "), f_name ), variable("\n") ));
-         (xframe, prog, xunframe, xtext, xdata, program_ctx.clone(), offset)
+         let f_name = tail(&f).to_string();
+         if f_name == "tail" {
+            compile_expr(helpers_ctx, program_ctx, &x, offset, Utilized::Tail)
+         } else {
+            let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &x, offset, Utilized::Used);
+            let f_name = variable(&label_case( &tail(&f).to_string() ));
+            let prog = s_cons( xprog , s_cons( s_cons( variable("\tcall "), f_name ), variable("\n") ));
+            (xframe, prog, xunframe, xtext, xdata, program_ctx.clone(), offset)
+         }
       } else {
          let (fframe,fprog,funframe,ftext,fdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &f, offset, Utilized::Used);
          let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &x, offset, Utilized::Used);
