@@ -942,7 +942,7 @@ yield-patterns := λctx p offset. match p (
    ))
 );
 
-yield-cons := λctx l r offset. (tail(
+yield-cons := λctx l r offset used. (tail(
    (local e1)
    (local e1_frame)
    (local e1_prog)
@@ -973,19 +973,27 @@ yield-cons := λctx l r offset. (tail(
    (set ctx (get-pc e2))
    (set offset (get-offset e2))
 
-   (set prog (prog (e1_prog)))
-   (set prog (prog (_push-this())))
-   (set prog (prog (e2_prog)))
-   (set prog (prog (_close-this())))
-   (set prog (prog (\t 'mov \s '%rsi, \s '%rdi \n)))
-   (set prog (prog (_pop-this())))
-   (set prog (prog (_close-this())))
-   (set prog (prog (\t 'mov \s '$0, \s '%r12 \n)))
-   (set prog (prog (\t 'mov \s '%rsi, \s '%r13 \n)))
-   (set prog (prog (\t 'mov \s '%rdi, \s '%r14 \n)))
-   (set prog (prog (\t 'mov \s '$0, \s '%r15 \n)))
-
-   (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))
+   (match used (
+      ()
+      ( Used (tail(
+         (set prog (prog (e1_prog)))
+         (set prog (prog (_push-this())))
+         (set prog (prog (e2_prog)))
+         (set prog (prog (_close-this())))
+         (set prog (prog (\t 'mov \s '%rsi, \s '%rdi \n)))
+         (set prog (prog (_pop-this())))
+         (set prog (prog (_close-this())))
+         (set prog (prog (\t 'mov \s '$0, \s '%r12 \n)))
+         (set prog (prog (\t 'mov \s '%rsi, \s '%r13 \n)))
+         (set prog (prog (\t 'mov \s '%rdi, \s '%r14 \n)))
+         (set prog (prog (\t 'mov \s '$0, \s '%r15 \n)))
+         (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))
+      )))
+      ( _ (tail(
+         ()
+         (Expr( (e1_frame e2_frame) (e1_prog e2_prog) (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))   
+      )))
+   ))
 ));
 
 #returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
@@ -1213,16 +1221,16 @@ compile-expr := λctx e offset used. (tail(
       )))
       ( (App ((Variable fname) arg)) (tail(
          if (is-builtin fname) (
-            (local tail_used)
-            (if (eq(fname 'tail)) (
-               (set tail_used Tail)
-            ) (
-               (set tail_used Used)
-            ))
-            (set x (compile-expr(ctx arg offset tail_used)))
-            (set prog (get-prog x))
-            (set prog (prog (\t 'call \s (label-case fname) \n)))
-            (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
+            (if (eq(fname 'tail)) (tail(
+               (set x (compile-expr(ctx arg offset Tail)))
+               (set prog (get-prog x))
+               (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
+            )) (tail(
+               (set x (compile-expr(ctx arg offset Used)))
+               (set prog (get-prog x))
+               (set prog (prog (\t 'call \s (label-case fname) \n)))
+               (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
+            )))
          ) (
             ()
             (match (get-global(ctx fname)) (
@@ -1255,8 +1263,7 @@ compile-expr := λctx e offset used. (tail(
       )))
       ( (App (l r)) (tail(
          ()
-         (print-s (TailUsed used))
-         (yield-cons(ctx l r offset))
+         (yield-cons(ctx l r offset used))
       )))
       ( Nil (tail(
          (set prog (prog ( \t 'mov \s '$0 , '%r12 \n )))
