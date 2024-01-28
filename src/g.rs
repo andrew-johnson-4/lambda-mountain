@@ -550,11 +550,11 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64, used: Util
             (s_cons(fframe,xframe), s_cons(fprog, xprog), s_cons(funframe,xunframe), s_cons(ftext,xtext), s_cons(fdata,xdata), program_ctx, offset)
          }
       }
-   } else if head(&e).to_string() == "variable" &&
+   } else if head(&e).to_string() == "literal" &&
              tail(&e).to_string() == "A_COUNTER" {
       let atext = ctx_eval_soft(helpers_ctx, &variable("::a-counter"));
       ( s_nil(), atext, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
-   } else if head(&e).to_string() == "variable" &&
+   } else if head(&e).to_string() == "literal" &&
              tail(&e).to_string() == "S_COUNTER" {
       let atext = ctx_eval_soft(helpers_ctx, &variable("::s-counter"));
       ( s_nil(), atext, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )

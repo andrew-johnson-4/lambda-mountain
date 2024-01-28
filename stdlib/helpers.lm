@@ -477,7 +477,7 @@
 
 ::a-counter := (
    \t 'mov \s '$__a_counter, \s %r12  \n
-   \t 'mov \s 0 \[ %r12 \] , \s %r12  \n
+   \t 'mov \s '0 \[ %r12 \] , \s %r12 \n
    \t 'mov \s '$0, \s '%r13           \n
    \t 'mov \s '$0, \s '%r14           \n
    \t 'mov \s '$0, \s '%r15           \n
@@ -485,7 +485,7 @@
 
 ::s-counter := (
    \t 'mov \s '$__s_counter, \s %r12  \n
-   \t 'mov \s 0 \[ %r12 \] , \s %r12  \n
+   \t 'mov \s '0 \[ %r12 \] , \s %r12 \n
    \t 'mov \s '$0, \s '%r13           \n
    \t 'mov \s '$0, \s '%r14           \n
    \t 'mov \s '$0, \s '%r15           \n

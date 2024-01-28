@@ -1,6 +1,5 @@
 
 main := (
-   (print-s (SIZE (i2s A_COUNTER) (i2s S_COUNTER) ))
    (local mode)
    (set mode Compile)
    (local inputs)
@@ -71,6 +70,7 @@ i2s := λi. (tail(
       (set s ((clone-rope(digit r) s)))
       (set i (div(i ten)))
    ))
+   (if s () (set s 0))
    (clone-rope (sign s))
 ));
 
