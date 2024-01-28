@@ -463,6 +463,15 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64, used: Util
             offset
          )
       } else if head(&e).to_string()=="app" &&
+                head(&head(&tail(&e))).to_string() == "variable" &&
+                tail(&head(&tail(&e))).to_string() == "eq" {
+         let l = tail(&tail(&e));
+         let r = tail(&tail(&head(&tail(&e))));
+         let (l_f,l_p,l_u,l_t,l_d,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &l, offset, Utilized::Used);
+         let (r_f,r_p,r_u,r_t,r_d,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &r, offset, Utilized::Used);
+         let prog = ctx_eval_soft(helpers_ctx, &app( variable("::eq"), app( l_p, r_p ) ) );
+         ( s_cons(l_f,r_f), prog, s_cons(l_u,r_u), s_cons(l_t,r_t), s_cons(l_d,r_d), program_ctx, offset )
+      } else if head(&e).to_string()=="app" &&
                 head(&head(&tail(&e))).to_string() == "app" &&
                 head(&head(&tail(&head(&tail(&e))))).to_string() == "app" &&
                 head(&head(&tail(&head(&tail(&head(&tail(&e))))))).to_string() == "variable" &&

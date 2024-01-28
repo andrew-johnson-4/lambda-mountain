@@ -365,6 +365,15 @@
    \t 'ret \n
 );
 
+::eq := λ::l ::r.(
+   ::l
+   \t 'push \s '%r12                      \n
+   ::r
+   \t 'mov \s '%r12, \s '%rax             \n
+   \t 'pop \s '%rbx                       \n
+   \t 'call \s '_streq                    \n
+);
+
 # $this is the Rope to iterate over
 # ::foreach-call is a label to be called for each atom
 ::foreach-char := λ::foreach-data ::foreach-head ::foreach-small ::foreach-end ::foreach-notcons ::foreach-apply ::foreach-expr.(
