@@ -49,70 +49,70 @@
  );
 
  
-# $uuid := ();
-# uuid := λ. (tail(
-#    (set $uuid (inc $uuid))
-#    (clone-rope ('uuid_ (dump-i $uuid)))
-# ));
-# 
-# i2s := λi. (tail(
-#    (local ten)
-#    (set ten( inc(inc(inc(inc(inc( inc(inc(inc(inc(inc( ))))) ))))) ))
-#    (local sign)
-#    (local s)
-#    (local r)
-#    (if (is-neg i) (
-#       (set sign '-)
-#       (set i (inv i))
-#    ) ())
-#    (while i (
-#       (set r (mod(i ten)))
-#       (set s ((clone-rope(digit r) s)))
-#       (set i (div(i ten)))
-#    ))
-#    (clone-rope (sign s))
-# ));
-# 
-# tokenize-file := λpath. (
-#    tokenize (load-file path)
-# );
-# 
-# #returns (lhs rhs)
-# parse-lambda := λtoks. (tail(
-#    (local er)
-#    (set er (parse-one-expression toks))
-#    (local lmb)
-#    (set lmb (head er))
-#    (set toks (tail er))
-#    (match lmb (
-#       ()
-#       ((Literal \,) (
-#          (set lmb (() (parse-many-expressions toks)))
-#          (set toks ())
-#       ))
-#    ))
-#    (while toks (
-#       (set er (parse-one-expression toks))
-#       (match er (
-#          ()
-#          (((Literal \,) r) (
-#             (set lmb (lmb (parse-many-expressions r)))
-#             (set toks ())
-#          ))
-#          ((e ()) (
-#             (set lmb (lmb e))
-#             (print-s (ExpectedLambdaRhs lmb))
-#             (set toks ())
-#          ))
-#          ((e r) (
-#             (set lmb (lmb e))
-#             (set toks r)
-#          ))
-#       ))
-#    ))
-#    lmb
-# ));
-# 
+ $uuid := ();
+ uuid := λ. (tail(
+    (set $uuid (inc $uuid))
+    (clone-rope ('uuid_ (dump-i $uuid)))
+ ));
+ 
+ i2s := λi. (tail(
+    (local ten)
+    (set ten( inc(inc(inc(inc(inc( inc(inc(inc(inc(inc( ))))) ))))) ))
+    (local sign)
+    (local s)
+    (local r)
+    (if (is-neg i) (
+       (set sign '-)
+       (set i (inv i))
+    ) ())
+    (while i (
+       (set r (mod(i ten)))
+       (set s ((clone-rope(digit r) s)))
+       (set i (div(i ten)))
+    ))
+    (clone-rope (sign s))
+ ));
+ 
+ tokenize-file := λpath. (
+    tokenize (load-file path)
+ );
+ 
+#returns (lhs rhs)
+parse-lambda := λtoks. (tail(
+   (local er)
+   (set er (parse-one-expression toks))
+   (local lmb)
+   (set lmb (head er))
+   (set toks (tail er))
+   (match lmb (
+      ()
+      ((Literal \,) (
+         (set lmb (() (parse-many-expressions toks)))
+         (set toks ())
+      ))
+   ))
+   (while toks (
+      (set er (parse-one-expression toks))
+      (match er ( 
+        ()
+         (((Literal \,) r) (
+            (set lmb (lmb (parse-many-expressions r)))
+            (set toks ())
+         ))
+         ((e ()) (
+            (set lmb (lmb e))
+            (print-s (ExpectedLambdaRhs lmb))
+            (set toks ())
+         ))
+         ((e r) (
+            (set lmb (lmb e))
+            (set toks r)
+         ))
+      ))
+   ))
+   lmb
+));
+ 
 # parse-one-expression := λtoks. (tail(
 #    (local remainder)
 #    (local is_lambda)
