@@ -710,59 +710,59 @@ get-text := λe. (match e (
     ))
  ));
  
-# #returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
-# declare-local := λctx vname offset. (tail(
-#    (local frame_this)
-#    (set frame_this (_push-zero()))
-#    (local unframe_this)
-#    (set unframe_this (_unpush-this()))
-#    (local refer)
-#    (local eight)
-#    (set eight (
-#       inc(inc(inc(inc(inc(inc(inc(inc(
-#          ()
-#       ))))))))    
-#    ))
-#    (local sixteen)
-#    (set sixteen (mul( eight (inc(inc(()))) )))
-#    (local twentyfour)
-#    (set twentyfour ( mul( eight (inc(inc(inc(())))) ) ))
-#    (local thirtytwo)
-#    (set thirtytwo ( mul( eight (inc(inc(inc(inc(()))))) ) ))
-#    (local set_this)
-#    (set set_this (
-#       \t 'mov \s '%r12, \s (
-#          (i2s( (mul( (add( (mul( thirtytwo offset )) eight)) (dec(())) )) ))
-#       ) \[ '%rbp \] \n
-#       \t 'mov \s '%r13, \s (
-#          (i2s( (mul( (add( (mul( thirtytwo offset )) sixteen)) (dec(())) )) ))
-#       ) \[ '%rbp \] \n
-#       \t 'mov \s '%r14, \s (
-#          (i2s( (mul( (add( (mul( thirtytwo offset )) twentyfour)) (dec(())) )) ))
-#       ) \[ '%rbp \] \n
-#       \t 'mov \s '%r15, \s (
-#          (i2s( (mul( (add( (mul( thirtytwo offset )) thirtytwo)) (dec(())) )) ))
-#       ) \[ '%rbp \] \n
-#    ))
-#    (set refer (
-#       \t 'mov \s (
-#          (i2s( (mul( (add( (mul( thirtytwo offset )) eight)) (dec(())) )) ))
-#       ) \[ '%rbp \] , %r12 \n
-#       \t 'mov \s (
-#          (i2s( (mul( (add( (mul( thirtytwo offset )) sixteen)) (dec(())) )) ))
-#       ) \[ '%rbp \] , %r13 \n
-#       \t 'mov \s (
-#          (i2s( (mul( (add( (mul( thirtytwo offset )) twentyfour)) (dec(())) )) ))
-#       ) \[ '%rbp \] , %r14 \n
-#       \t 'mov \s (
-#          (i2s( (mul( (add( (mul( thirtytwo offset )) thirtytwo)) (dec(())) )) ))
-#       ) \[ '%rbp \] , %r15 \n
-#    ))
-#    (set ctx (ctx (Local(vname refer)) ))
-#    (set ctx (ctx (Local((Set vname) set_this)) ))
-#    (Expr(frame_this set_this unframe_this () () ctx (inc offset)))
-# ));
-# 
+ #returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
+ declare-local := λctx vname offset. (tail(
+    (local frame_this)
+    (set frame_this (_push-zero()))
+    (local unframe_this)
+    (set unframe_this (_unpush-this()))
+    (local refer)
+    (local eight)
+    (set eight (
+       inc(inc(inc(inc(inc(inc(inc(inc(
+          ()
+       ))))))))    
+    ))
+    (local sixteen)
+    (set sixteen (mul( eight (inc(inc(()))) )))
+    (local twentyfour)
+    (set twentyfour ( mul( eight (inc(inc(inc(())))) ) ))
+    (local thirtytwo)
+    (set thirtytwo ( mul( eight (inc(inc(inc(inc(()))))) ) ))
+    (local set_this)
+    (set set_this (
+       \t 'mov \s '%r12, \s (
+          (i2s( (mul( (add( (mul( thirtytwo offset )) eight)) (dec(())) )) ))
+       ) \[ '%rbp \] \n
+       \t 'mov \s '%r13, \s (
+          (i2s( (mul( (add( (mul( thirtytwo offset )) sixteen)) (dec(())) )) ))
+       ) \[ '%rbp \] \n
+       \t 'mov \s '%r14, \s (
+          (i2s( (mul( (add( (mul( thirtytwo offset )) twentyfour)) (dec(())) )) ))
+       ) \[ '%rbp \] \n
+       \t 'mov \s '%r15, \s (
+          (i2s( (mul( (add( (mul( thirtytwo offset )) thirtytwo)) (dec(())) )) ))
+       ) \[ '%rbp \] \n
+    ))
+    (set refer (
+       \t 'mov \s (
+          (i2s( (mul( (add( (mul( thirtytwo offset )) eight)) (dec(())) )) ))
+       ) \[ '%rbp \] , %r12 \n
+       \t 'mov \s (
+          (i2s( (mul( (add( (mul( thirtytwo offset )) sixteen)) (dec(())) )) ))
+       ) \[ '%rbp \] , %r13 \n
+       \t 'mov \s (
+          (i2s( (mul( (add( (mul( thirtytwo offset )) twentyfour)) (dec(())) )) ))
+       ) \[ '%rbp \] , %r14 \n
+       \t 'mov \s (
+          (i2s( (mul( (add( (mul( thirtytwo offset )) thirtytwo)) (dec(())) )) ))
+       ) \[ '%rbp \] , %r15 \n
+    ))
+    (set ctx (ctx (Local(vname refer)) ))
+    (set ctx (ctx (Local((Set vname) set_this)) ))
+    (Expr(frame_this set_this unframe_this () () ctx (inc offset)))
+ ));
+ 
 # #returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 # destructure-pattern-lhs := λctx lhs offset. (tail(
 #    (local e1)
