@@ -403,13 +403,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64, used: Util
          let foreach_notcons = s_atom(&uuid());
          let foreach_ignore = s_atom(&uuid());
          let (aframe,aprog,aunframe,atext,adata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &atom, offset, Utilized::Used);
-         let (eframe,eprog,eunframe,etext,edata,program_ctx,offset) = if head(&apply_expr).to_string()=="variable" {
-            let apply_label = tail(&apply_expr);
-            let apply_prog = s_atom(&format!("\tcall {}\n", label_case(&apply_label.to_string())));
-            (s_nil(), apply_prog, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset)
-         } else {
-            compile_expr(helpers_ctx, &program_ctx, &apply_expr, offset, Utilized::Unused)
-         };
+         let (eframe,eprog,eunframe,etext,edata,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &apply_expr, offset, Utilized::Unused);
          let ftext = ctx_eval_soft(helpers_ctx, &app(variable("::foreach-atom"),app(app(app(foreach_label.clone(),foreach_notcons),foreach_ignore),eprog.clone())));
          let prog = s_cons( aprog, s_atom(&format!("\tcall {}\n",foreach_label)) );
          ( s_cons(aframe,eframe), prog, s_cons(aunframe,eunframe), s_cons(s_cons(atext,ftext),etext), s_cons(adata,edata), program_ctx, offset )
@@ -427,13 +421,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64, used: Util
          let foreach_data = s_atom(&uuid());
          let foreach_apply = s_atom(&uuid());
          let (aframe,prog,aunframe,atext,adata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &atom, offset, Utilized::Used);
-         let (eframe,eprog,eunframe,etext,edata,program_ctx,offset) = if head(&apply_expr).to_string()=="variable" {
-            let apply_label = tail(&apply_expr);
-            let apply_prog = s_atom(&format!("\tcall {}\n", label_case(&apply_label.to_string())));
-            (s_nil(), apply_prog, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset)
-         } else {
-            compile_expr(helpers_ctx, &program_ctx, &apply_expr, offset, Utilized::Unused)
-         };
+         let (eframe,eprog,eunframe,etext,edata,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &apply_expr, offset, Utilized::Unused);
          let ftext = ctx_eval_soft(helpers_ctx, &app(variable("::foreach-char"),
             app(app(app(app(
                app(app(foreach_data.clone(),foreach_head.clone()),foreach_small.clone())
