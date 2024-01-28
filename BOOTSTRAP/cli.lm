@@ -125,60 +125,72 @@ parse-one-expression := λtoks. (tail(
    (local is_literal)
    (local is_grouped)
    (local grouped_tokens)
-   (foreach-atom toks (
+   (foreach-atom toks (tail(
       (local c)
       (set c $_)
-      (if expr (set remainder (remainder c)) (
-      (if is_grouped (
-         #grouped
-         (match c (
+      (if expr (tail (set remainder (remainder c)) ()) (tail(
+         (if is_grouped (tail(
+            #grouped
+            (match c (
+               ()
+               (() ())
+               ( \[ (tail(
+                  (set grouped_tokens (grouped_tokens \[))
+                  (set is_grouped (\[ is_grouped))
+                  ()
+               )))
+               ( \] (tail(
+                  (set is_grouped (tail is_grouped))
+                  (if is_grouped (tail(
+                     (set grouped_tokens (grouped_tokens \]))
+                     ()
+                  )) (tail(
+                     (set expr (parse-many-expressions grouped_tokens))
+                     (set grouped_tokens ())
+                     ()
+                  )))
+                  ()
+               )))
+               ( a (tail(
+                  (set grouped_tokens (grouped_tokens a))
+                  ()
+               )))
+            ))
             ()
-            (() ())
-            ( \[ (
-               (set grouped_tokens (grouped_tokens \[))
-               (set is_grouped (\[ is_grouped))
-            ))
-            ( \] (
-               (set is_grouped (tail is_grouped))
-               (if is_grouped (
-                  (set grouped_tokens (grouped_tokens \]))
-               ) (
-                  (set expr (parse-many-expressions grouped_tokens))
-                  (set grouped_tokens ())
-               ))
-            ))
-            ( a (
-               (set grouped_tokens (grouped_tokens a))
-            ))
-         ))
-      ) (
-         #not grouped
-         (match c (
-            ()
-            (() ())
-            ( \l ((set is_lambda True) (set expr INVALID)))
-            ( \' (set is_literal True))
-            ( \[ (
-               (set is_grouped (\[ is_grouped))
-            ))
-            ( \] (
-               (print-s DANGLING_PARENTHESES)
-            ))
-            ( a (
-               (if is_literal (
-                  (set expr (Literal a))
-                  (set is_literal ())
-               ) (
-                  (if (is_variable a)
-                     (set expr (Variable a))
+         )) (tail(
+            #not grouped
+            (match c (
+               ()
+               (() ())
+               ( \l (tail( (set is_lambda True) (set expr INVALID) () )))
+               ( \' (tail( (set is_literal True) () )))
+               ( \[ (tail(
+                  (set is_grouped (\[ is_grouped))
+                  ()
+               )))
+               ( \] (tail(
+                  (print-s DANGLING_PARENTHESES)
+                  ()
+               )))
+               ( a (tail(
+                  (if is_literal (tail(
                      (set expr (Literal a))
-                  )
-              ))
+                     (set is_literal ())
+                     ()
+                  )) (tail(
+                     (if (is_variable a)
+                        (tail( (set expr (Variable a)) () ))
+                        (tail( (set expr (Literal a)) () ))
+                     )
+                     ()
+                  )))
+                  ()
+               )))
             ))
-         ))
-      ))
-      ))
-   ))
+            ()
+         )))
+      )))
+   )))
    (if expr () (set expr Nil))
    (if is_lambda
       ((Lambda (parse-lambda remainder)) ())
