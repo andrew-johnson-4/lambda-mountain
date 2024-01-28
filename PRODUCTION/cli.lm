@@ -320,150 +320,150 @@ parse-lambda := λtoks. (tail(
     program
  ));
  
-# #returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
-# destructure-args := λctx e offset. (match e (
-#    ()
-#    ( () (tail(
-#       ()
-#       (Expr( () () () () () ctx offset ))
-#    )))
-#    ( (Variable n) (tail(
-#       ()
-#       (declare-local(ctx n offset))
-#    )))
-#    ( ( h t ) (tail(
-#       (local ta)
-#       (set ta (destructure-args(ctx t offset)))
-#       (set offset (get-offset ta))
-#       (set ctx (get-pc ta))
-#       (local ha)
-#       (set ha (destructure-args(ctx h offset)))
-#       (set offset (get-offset ha))
-#       (set ctx (get-pc ha))
-#       (local prog)
-#       (set prog (prog (_shadow-this()) ))
-#       (set prog (prog (\t 'call \s 'tail \n) ))
-#       (set prog (prog (get-prog ta) ))
-#       (set prog (prog (_unshadow-this()) ))
-#       (set prog (prog (\t 'call \s 'head \n) ))
-#       (set prog (prog (get-prog ha) ))
-#       (Expr(
-#          ( (get-frame ta) (get-frame ha) )
-#          prog
-#          ( (get-unframe ta) (get-unframe ha) )
-#          () () ctx offset
-#       ))
-#    )))
-#    ( _ (
-#       (print-s (InvalidFunctionParameters e))
-#    ))
-# ));
-# 
-# tokenize := λtext. (tail(
-#    (local program)
-#    (local buffer)
-#    (local in_comment)
-#    (local char)
-#    (foreach-char text ((set char $_) (match char (
-#       ()
-# 
-# #     These characters are special characters
-# #     They are removed during tokenization
-#       (\o (
-#          (if buffer (
-#             (set program (program (clone-rope buffer)))
-#             (set buffer ())
-#          ) ())
-#          (set in_comment True)
-#       ))
-#       (\n (
-#          (if buffer (
-#             (set program (program (clone-rope buffer)))
-#             (set buffer ())
-#          ) ())
-#          (set in_comment ())
-#       ))
-#       (\s (
-#          (if buffer (
-#             (set program (program (clone-rope buffer)))
-#             (set buffer ())
-#          ) ())
-#       ))
-#       (\t (
-#          (if buffer (
-#             (set program (program (clone-rope buffer)))
-#             (set buffer ())
-#          ) ())
-#       ))
-# 
-# #     These characters are special characters
-# #     They are isolated during tokenization
-#       (\[ (if in_comment () (
-#          (if buffer (
-#             (set program (program (clone-rope buffer)))
-#             (set buffer ())
-#          ) ())
-#          (set program (program \[))
-#       )))
-#       (\] (if in_comment () (
-#          (if buffer (
-#             (set program (program (clone-rope buffer)))
-#             (set buffer ())
-#          ) ())
-#          (set program (program \]))
-#       )))
-#       (' (if in_comment () (
-#          (if buffer (
-#             (set program (program (clone-rope buffer)))
-#             (set buffer ())
-#          ) ())
-#          (set program (program '))
-#       )))
-#       (\: (if in_comment () (
-#          (if buffer (
-#             (set program (program (clone-rope buffer)))
-#             (set buffer ())
-#          ) ())
-#          (set program (program \:))
-#       )))
-#       (': (if in_comment () (
-#          (if buffer (
-#             (set program (program (clone-rope buffer)))
-#             (set buffer ())
-#          ) ())
-#          (set program (program ':))
-#       )))
-#       (= (if in_comment () (
-#          (if buffer (
-#             (set program (program (clone-rope buffer)))
-#             (set buffer ())
-#          ) ())
-#          (set program (program =))
-#       )))
-#       (. (if in_comment () (
-#          (if buffer (
-#             (set program (program (clone-rope buffer)))
-#             (set buffer ())
-#          ) ())
-#          (set program (program .))
-#       )))
-# 
-#       (c (if in_comment () (
-#          (set buffer (
-#             buffer (clone-rope c)
-#          ))
-#          (if (eq(\l (clone-rope buffer))) (
-#             (set program (program (clone-rope buffer)))
-#             (set buffer ())
-#          ) ())
-#       )))
-#    ))))
-#    (if buffer (
-#       (set program (program (clone-rope buffer)))
-#    ) ())
-#    program
-# ));
-# 
+ #returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
+ destructure-args := λctx e offset. (match e (
+    ()
+    ( () (tail(
+       ()
+       (Expr( () () () () () ctx offset ))
+    )))
+    ( (Variable n) (tail(
+       ()
+       (declare-local(ctx n offset))
+    )))
+    ( ( h t ) (tail(
+       (local ta)
+       (set ta (destructure-args(ctx t offset)))
+       (set offset (get-offset ta))
+       (set ctx (get-pc ta))
+       (local ha)
+       (set ha (destructure-args(ctx h offset)))
+       (set offset (get-offset ha))
+       (set ctx (get-pc ha))
+       (local prog)
+       (set prog (prog (_shadow-this()) ))
+       (set prog (prog (\t 'call \s 'tail \n) ))
+       (set prog (prog (get-prog ta) ))
+       (set prog (prog (_unshadow-this()) ))
+       (set prog (prog (\t 'call \s 'head \n) ))
+       (set prog (prog (get-prog ha) ))
+       (Expr(
+          ( (get-frame ta) (get-frame ha) )
+          prog
+          ( (get-unframe ta) (get-unframe ha) )
+          () () ctx offset
+       ))
+    )))
+    ( _ (
+       (print-s (InvalidFunctionParameters e))
+    ))
+ ));
+ 
+ tokenize := λtext. (tail(
+    (local program)
+    (local buffer)
+    (local in_comment)
+    (local char)
+    (foreach-char text ((set char $_) (match char (
+       ()
+ 
+ #     These characters are special characters
+ #     They are removed during tokenization
+       (\o (
+          (if buffer (
+             (set program (program (clone-rope buffer)))
+             (set buffer ())
+          ) ())
+          (set in_comment True)
+       ))
+       (\n (
+          (if buffer (
+             (set program (program (clone-rope buffer)))
+             (set buffer ())
+          ) ())
+          (set in_comment ())
+       ))
+       (\s (
+          (if buffer (
+             (set program (program (clone-rope buffer)))
+             (set buffer ())
+          ) ())
+       ))
+       (\t (
+          (if buffer (
+             (set program (program (clone-rope buffer)))
+             (set buffer ())
+          ) ())
+       ))
+ 
+ #     These characters are special characters
+ #     They are isolated during tokenization
+       (\[ (if in_comment () (
+          (if buffer (
+             (set program (program (clone-rope buffer)))
+             (set buffer ())
+          ) ())
+          (set program (program \[))
+       )))
+       (\] (if in_comment () (
+          (if buffer (
+             (set program (program (clone-rope buffer)))
+             (set buffer ())
+          ) ())
+          (set program (program \]))
+       )))
+       (' (if in_comment () (
+          (if buffer (
+             (set program (program (clone-rope buffer)))
+             (set buffer ())
+          ) ())
+          (set program (program '))
+       )))
+       (\: (if in_comment () (
+          (if buffer (
+             (set program (program (clone-rope buffer)))
+             (set buffer ())
+          ) ())
+          (set program (program \:))
+       )))
+       (': (if in_comment () (
+          (if buffer (
+             (set program (program (clone-rope buffer)))
+             (set buffer ())
+          ) ())
+          (set program (program ':))
+       )))
+       (= (if in_comment () (
+          (if buffer (
+             (set program (program (clone-rope buffer)))
+             (set buffer ())
+          ) ())
+          (set program (program =))
+       )))
+       (. (if in_comment () (
+          (if buffer (
+             (set program (program (clone-rope buffer)))
+             (set buffer ())
+          ) ())
+          (set program (program .))
+       )))
+ 
+       (c (if in_comment () (
+          (set buffer (
+             buffer (clone-rope c)
+          ))
+          (if (eq(\l (clone-rope buffer))) (
+             (set program (program (clone-rope buffer)))
+             (set buffer ())
+          ) ())
+       )))
+    ))))
+    (if buffer (
+       (set program (program (clone-rope buffer)))
+    ) ())
+    program
+ ));
+ 
 # is_variable := λv. (tail(
 #    (local is_variable)
 #    (local passed_char)
