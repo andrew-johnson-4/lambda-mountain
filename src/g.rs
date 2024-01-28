@@ -356,7 +356,7 @@ fn yield_patterns(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,
    }
 }
 
-#[derive(Debug)]
+#[derive(Debug,PartialEq,Eq)]
 enum Utilized {
   Used,
   Unused,
@@ -366,19 +366,22 @@ enum Utilized {
 //returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64, used: Utilized) -> (S,S,S,S,S,S,i64) {
    let e = ctx_eval_soft(helpers_ctx, e);
-   if head(&e).to_string() == "app" {
+   let mut tail_safe = false;
+   let r = if head(&e).to_string() == "app" {
       let fx = tail(&e);
       let f = head(&fx);
       let x = tail(&fx);
       if head(&f).to_string() == "variable" &&
          tail(&f).to_string() == "local" &&
          head(&x).to_string() == "variable" {
+         tail_safe = true;
 	 let (f,_p,u,t,d,pc,offset) = declare_local(helpers_ctx, program_ctx, &tail(&x), offset);
          ( f, s_nil(), u, t, d, pc, offset )
       } else if head(&f).to_string()=="app" &&
                 head(&head(&tail(&f))).to_string() == "variable" &&
                 tail(&head(&tail(&f))).to_string() == "set" &&
                 head(&tail(&tail(&f))).to_string() == "variable" {
+         tail_safe = true;
          let lname = tail(&tail(&tail(&f))).to_string();
          let local = is_local(program_ctx, &format!("set {}", lname));
          if local == "" {
@@ -393,6 +396,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64, used: Util
                 head(&head(&tail(&e))).to_string() == "app" &&
                 head(&head(&tail(&head(&tail(&e))))).to_string() == "variable" &&
                 tail(&head(&tail(&head(&tail(&e))))).to_string() == "foreach-atom" {
+         tail_safe = true;
          let atom = tail(&tail(&head(&tail(&e)))); 
          let apply_expr = tail(&tail(&e));
          let foreach_label = s_atom(&uuid());
@@ -413,6 +417,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64, used: Util
                 head(&head(&tail(&e))).to_string() == "app" &&
                 head(&head(&tail(&head(&tail(&e))))).to_string() == "variable" &&
                 tail(&head(&tail(&head(&tail(&e))))).to_string() == "foreach-char" {
+         tail_safe = true;
          let atom = tail(&tail(&head(&tail(&e)))); 
          let apply_expr = tail(&tail(&e));
          let foreach_head = s_atom(&uuid());
@@ -441,6 +446,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64, used: Util
                 head(&head(&tail(&e))).to_string() == "app" &&
                 head(&head(&tail(&head(&tail(&e))))).to_string() == "variable" &&
                 tail(&head(&tail(&head(&tail(&e))))).to_string() == "while" {
+         tail_safe = true;
          let d = tail(&tail(&e));
          let c = tail(&tail(&head(&tail(&e))));
          let (c_f,c_p,c_u,c_t,c_d,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &c, offset, Utilized::Used);
@@ -528,13 +534,20 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64, used: Util
             (xframe, prog, xunframe, xtext, xdata, program_ctx.clone(), offset)
          }
       } else {
-         let (fframe,fprog,funframe,ftext,fdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &f, offset, Utilized::Used);
-         let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &x, offset, Utilized::Used);
-         let prog = ctx_eval_soft(helpers_ctx, &app(
-            variable("::yield-cons"),
-            app( fprog, xprog )
-         ));
-         (s_cons(fframe,xframe), prog, s_cons(funframe,xunframe), s_cons(ftext,xtext), s_cons(fdata,xdata), program_ctx, offset)
+         if used == Utilized::Used {
+            let (fframe,fprog,funframe,ftext,fdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &f, offset, Utilized::Used);
+            let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &x, offset, Utilized::Used);
+            let prog = ctx_eval_soft(helpers_ctx, &app(
+               variable("::yield-cons"),
+               app( fprog, xprog )
+            ));
+            (s_cons(fframe,xframe), prog, s_cons(funframe,xunframe), s_cons(ftext,xtext), s_cons(fdata,xdata), program_ctx, offset)
+         } else {
+            let rused = if used==Utilized::Tail { Utilized::Used } else { Utilized::Unused };
+            let (fframe,fprog,funframe,ftext,fdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &f, offset, Utilized::Unused);
+            let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &x, offset, rused);
+            (s_cons(fframe,xframe), s_cons(fprog, xprog), s_cons(funframe,xunframe), s_cons(ftext,xtext), s_cons(fdata,xdata), program_ctx, offset)
+         }
       }
    } else if head(&e).to_string() == "variable" &&
              tail(&e).to_string() == "argv" {
@@ -573,6 +586,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64, used: Util
       let prog = s_cons( prog, leave );
       ( s_nil(), prog, s_nil(), etext, edata, program_ctx, offset )
    } else if is_nil(&e) {
+      tail_safe = true;
       (
          s_nil(),
          ctx_eval_soft(helpers_ctx, &variable("::yield-nil")),
@@ -584,6 +598,13 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64, used: Util
       )
    } else {
       panic!("compile_expr unexpected term: {}", e);
+   };
+   if used == Utilized::Tail && !tail_safe {
+      let (frame,prog,unframe,text,data,ctx,offset) = r;
+      let prog = s_cons( prog, s_atom("\tcall tail\n") );
+      (frame, prog, unframe, text, data, ctx, offset)
+   } else {
+      r
    }
 }
 
