@@ -62,7 +62,7 @@ pub fn parse_expression(input: &str) -> S {
       } else { buf.push(c); }
    }
    if buf.len()>0 { terms.push(parse_one_expression(&buf)) }
-   if terms.len()==0 { return s_nil(); }
+   if terms.len()==0 { return nil(); }
    let mut f = terms[0].clone();
    for x in &terms[1..] {
       f = app( f, x.clone() );

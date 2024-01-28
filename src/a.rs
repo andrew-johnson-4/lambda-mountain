@@ -47,7 +47,7 @@ pub fn app(f: S, x: S) -> S {
 }
 
 pub fn nil() -> S {
-   s_nil()
+   s_atom("Nil")
 }
 
 pub fn list(s: &[S]) -> S {

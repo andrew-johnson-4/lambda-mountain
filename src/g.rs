@@ -22,7 +22,7 @@ fn flatten(output: &mut String, input: &S) {
       flatten( output, &tail(input) );
    } else if is_atom(input) {
       let l = input.to_string();
-      if l=="Lambda" || l=="Literal" || l=="Variable" || l=="App" || l=="Local" || l=="Type" {}
+      if l=="Nil" || l=="Lambda" || l=="Literal" || l=="Variable" || l=="App" || l=="Local" || l=="Type" {}
       else if l == "\\\\" {
          output.push_str("\\\\"); 
       } else if l == "\\o" {
@@ -218,7 +218,7 @@ fn declare_local(helpers_ctx: &S, program_ctx: &S, vname: &S, offset: i64) -> (S
 
 //returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,S,S,S,i64) {
-   if is_nil(e) {
+   if e.to_string()=="Nil" {
       ( s_nil(), s_nil(), s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
    } else if head(&e).to_string()=="Variable" {
       declare_local(helpers_ctx, program_ctx, &tail(&e), offset)
@@ -302,7 +302,7 @@ fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64)
          program_ctx,
          offset
       )
-   } else if is_nil(&p) {
+   } else if p.to_string()=="Nil" {
       let label_skip = uuid();
       let prog = s_atom("\tcmp $0, %r12\n");
       let prog = s_cons(prog, s_atom(&format!("\tjne {}\n",label_skip)));
@@ -322,7 +322,7 @@ fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64)
 
 //returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 fn yield_patterns(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64, used: Utilized) -> (S,S,S,S,S,S,i64) {
-   if is_nil(p) {
+   if p.to_string()=="Nil" {
       let clear_rsi = s_atom("\tmov $0, %rsi\n");
       ( s_nil(), clear_rsi, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
    } else if head(&p).to_string()=="App" &&
@@ -595,7 +595,7 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64, used: Util
       let prog = s_cons( prog, eunframe );
       let prog = s_cons( prog, leave );
       ( s_nil(), prog, s_nil(), etext, edata, program_ctx, offset )
-   } else if is_nil(&e) {
+   } else if e.to_string()=="Nil" {
       tail_safe = true;
       (
          s_nil(),
@@ -653,7 +653,7 @@ pub fn compile(debug: bool, cfg: &str, main_ctx: &S) {
    }
    let mut has_main = false;
    for (k,v) in kv_iter(&main_ctx) {
-   if is_nil(&v) {
+   if v.to_string()=="Nil" {
       let k = k.to_string();
       raw_data = s_cons(
          raw_data,
