@@ -20,7 +20,7 @@ pub fn eval_soft(s: &S) -> S {
 pub fn ctx_eval_soft(ctx: &S, s: &S) -> S {
    if !is_cons(s) {
       s.clone()
-   } else if head(&s).to_string()=="variable" {
+   } else if head(&s).to_string()=="Variable" {
       let k = tail(&s);
       let v = kv_lookup( ctx, &k, &s );
       if s != &v {
@@ -28,11 +28,11 @@ pub fn ctx_eval_soft(ctx: &S, s: &S) -> S {
       } else {
           v
       }
-   } else if head(&s).to_string()=="app" {
+   } else if head(&s).to_string()=="App" {
       let fx = tail(&s);
       let f = ctx_eval_soft(ctx, &head(&fx));
       let x = ctx_eval_soft(ctx, &tail(&fx));
-      if head(&f).to_string()=="lambda" {
+      if head(&f).to_string()=="Lambda" {
          let fl = head(&tail(&f));
          let fr = tail(&tail(&f));
          let mut inner_ctx = kv_ctx(ctx);

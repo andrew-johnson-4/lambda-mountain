@@ -36,7 +36,7 @@ impl std::fmt::Display for S_ {
       match self {
          S_::Nil => write!(f, "()"),
          S_::Atom(s) => write!(f, "{}", s),
-         S_::Cons(h,t) => write!(f, "({} . {})", h, t),
+         S_::Cons(h,t) => write!(f, "({} {})", h, t),
       }
    }
 }

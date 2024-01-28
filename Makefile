@@ -1,8 +1,8 @@
 
 test:
 	cargo install --path .
-	cargo test parseall
+	lambda_mountain --debug -o bootstrap BOOTSTRAP/cli.lm
 
 todo:
-#	lambda_mountain --debug -o bootstrap BOOTSTRAP/cli.lm
+#	cargo test parseall
 #	./bootstrap --parse PRODUCTION/cli.lm

@@ -15,31 +15,27 @@ use std::collections::HashMap;
 use crate::*;
 
 pub fn literal(s: &str) -> S {
-   s_cons( s_atom("literal"), s_atom(s) )
+   s_cons( s_atom("Literal"), s_atom(s) )
 }
 
 pub fn variable(s: &str) -> S {
-   s_cons( s_atom("variable"), s_atom(s) )
+   s_cons( s_atom("Variable"), s_atom(s) )
 }
 
 pub fn typ(s: &str) -> S {
-   s_cons( s_atom("type"), s_atom(s) )
+   s_cons( s_atom("Type"), s_atom(s) )
 }
 
 pub fn local(s: &str) -> S {
-   s_cons( s_atom("local"), s_atom(s) )
+   s_cons( s_atom("Local"), s_atom(s) )
 }
 
 pub fn lambda(l: S, r: S) -> S {
-   s_cons( s_atom("lambda"), s_cons(l,r) )
+   s_cons( s_atom("Lambda"), s_cons(l,r) )
 }
 
 pub fn app(f: S, x: S) -> S {
-   s_cons( s_atom("app"), s_cons(f,x) )
-}
-
-pub fn regex(r: &str) -> S {
-   s_cons( s_atom("regex"), s_atom(r) )
+   s_cons( s_atom("App"), s_cons(f,x) )
 }
 
 pub fn nil() -> S {
@@ -113,13 +109,13 @@ pub fn kv_s(ctx: &HashMap<String,S>) -> S {
 pub fn destructure(ctx: &mut HashMap<String,S>, pattern: S, value: S) -> bool {
    if pattern==value { return true; }
    if !is_cons(&pattern) { return false; }
-   if head(&pattern)==s_atom("variable") {
+   if head(&pattern)==s_atom("Variable") {
       let k = tail(&pattern).to_string();
       ctx.insert( k, value );
       return true;
    }
    if !is_cons(&value) { return false; }
-   if is_atom(&head(&pattern)) && head(&pattern).to_string()=="lambda" {
+   if is_atom(&head(&pattern)) && head(&pattern).to_string()=="Lambda" {
       return false;
    }
    if is_atom(&head(&pattern)) && head(&pattern).to_string()=="kv" &&
@@ -142,7 +138,7 @@ pub fn destructure(ctx: &mut HashMap<String,S>, pattern: S, value: S) -> bool {
 }
 fn restructure(ctx: &HashMap<String,S>, value: S) -> S {
    if !is_cons(&value) { return value; }
-   if head(&value)==s_atom("variable") {
+   if head(&value)==s_atom("Variable") {
       let k = tail(&value).to_string();
       return if let Some(v) = ctx.get(&k) { v.clone() }
       else { value };
