@@ -272,54 +272,54 @@ parse-lambda := λtoks. (tail(
     r
  ));
  
-# parse-many-expressions := λtoks. (tail(
-#    (local er)
-#    (set er (parse-one-expression toks))
-#    (local return)
-#    (set return (head er))
-#    (local remainder)
-#    (set remainder (tail er))
-#    (while remainder (
-#       (set er (parse-one-expression remainder))
-#       (set return (App (return (head er))))
-#       (set remainder (tail er))
-#    ) (head er))
-#    return
-# ));
-# 
-# parse-expression := λtoks. (parse-many-expressions toks);
-# 
-# parse-program := λtoks. (tail(
-#    (local program)
-#    (local key)
-#    (local rhs)
-#    (foreach-atom toks (
-#       (local a)
-#       (set a $_)
-#       (if (eq(a \:)) (
-#          (if key (
-#             (set program (program (Global (key (parse-many-expressions rhs)))))
-#             (set key ())
-#          ) ())
-#          (set rhs ())
-#       ) (
-#          (if a (set rhs (rhs a)) ())
-#          (match rhs (
-#             ()
-#             ( (((() k) ':) =) (
-#                (set key k)
-#                (set rhs ())
-#             ))
-#             ( _ () )
-#          ))
-#       ))
-#    ))
-#    (if key (
-#      (set program (program (Global (key (parse-many-expressions rhs)))))
-#    ) ())
-#    program
-# ));
-# 
+ parse-many-expressions := λtoks. (tail(
+    (local er)
+    (set er (parse-one-expression toks))
+    (local return)
+    (set return (head er))
+    (local remainder)
+    (set remainder (tail er))
+    (while remainder (
+       (set er (parse-one-expression remainder))
+       (set return (App (return (head er))))
+       (set remainder (tail er))
+    ) (head er))
+    return
+ ));
+ 
+ parse-expression := λtoks. (parse-many-expressions toks);
+ 
+ parse-program := λtoks. (tail(
+    (local program)
+    (local key)
+    (local rhs)
+    (foreach-atom toks (
+       (local a)
+       (set a $_)
+       (if (eq(a \:)) (
+          (if key (
+             (set program (program (Global (key (parse-many-expressions rhs)))))
+             (set key ())
+          ) ())
+          (set rhs ())
+       ) (
+          (if a (set rhs (rhs a)) ())
+          (match rhs (
+            ()
+             ( (((() k) ':) =) (
+                (set key k)
+                (set rhs ())
+             ))
+             ( _ () )
+          ))
+       ))
+   ))
+    (if key (
+      (set program (program (Global (key (parse-many-expressions rhs)))))
+    ) ())
+    program
+ ));
+ 
 # #returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 # destructure-args := λctx e offset. (match e (
 #    ()
