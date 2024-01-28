@@ -132,7 +132,7 @@ fn is_free(program_ctx: &S, s: &str) -> bool {
    if s==k {
       return false;
    }}
-   for (k,_v) in kv_iter(program_ctx) {
+   for (k,v) in kv_iter(program_ctx) {
    let k = k.to_string();
    if s==k {
       return false;
@@ -211,8 +211,8 @@ fn declare_local(helpers_ctx: &S, program_ctx: &S, vname: &S, offset: i64) -> (S
    ));
    let set_this = assign.clone();
    let assign_vname = s_atom(&format!("set {}",vname));
-   let program_ctx = kv_add( program_ctx, &vname, &refer );
-   let program_ctx = kv_add( &program_ctx, &assign_vname, &assign );
+   let program_ctx = kv_add( program_ctx, &ctx_local( vname.clone(), refer ) );
+   let program_ctx = kv_add( &program_ctx, &ctx_local( assign_vname.clone(), assign ) );
    (frame_this, set_this, unframe_this, s_nil(), s_nil(), program_ctx, offset+1)
 }
 
@@ -646,7 +646,7 @@ pub fn compile(debug: bool, cfg: &str, main_ctx: &S) {
             ctx_eval_soft(&helpers_ctx, &v),
          );
       } else {
-         main_ctx = kv_add(&main_ctx, &k, &v);
+         main_ctx = kv_add(&main_ctx, &ctx_global( k, v) );
       }
    }
    let mut has_main = false;
