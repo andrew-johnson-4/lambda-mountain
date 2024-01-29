@@ -7,7 +7,6 @@ Cargo.lock
 hello_world
 a.out
 *.o
-*.s
 *.exe
 *.log
 bootstrap

@@ -1,8 +1,8 @@
 fn main() {
-   std::process::Command::new("cp")
-      .args(&["src/main.rs", "src/bin/lm/main.rs"])
+   println!("cargo:rerun-if-changed=BOOTSTRAP/cli.s");
+   std::process::Command::new("as")
+      .args(&["-o","lm", "BOOTSTRAP/cli.s"])
       .status()
-      .expect("Copy main.rs failed to execute.");
-
+      .expect("as BOOTSTRAP/cli.s failed to execute.");
       ()
 }
