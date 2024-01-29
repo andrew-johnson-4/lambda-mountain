@@ -349,7 +349,7 @@ destructure-args := λctx e offset. (match e (
       ()
       (declare-local(ctx n offset))
    )))
-   ( ( h t ) (tail(
+   ( ( (App( h t )) ) (tail(
       (local ta)
       (set ta (destructure-args(ctx t offset)))
       (set offset (get-offset ta))
