@@ -99,9 +99,6 @@ tokenize-file := λpath. (
 
 #returns (lhs rhs)
 parse-lambda := λtoks. (tail(
-   (if $stat (
-      (print-stat PARSE_LAMBDA)
-   ) ())
    (local er)
    (set er (parse-one-expression toks))
    (local lmb)
@@ -137,9 +134,6 @@ parse-lambda := λtoks. (tail(
 ));
 
 parse-one-expression := λtoks. (tail(
-   (if $stat (
-      (print-stat PARSE_ONE)
-   ) ())
    (local remainder)
    (local expr)
    (match toks (
@@ -297,9 +291,6 @@ set-local := λctx v. (tail(
 ));
 
 parse-many-expressions := λtoks. (tail(
-   (if $stat (
-      (print-stat PARSE_MANY)
-   ) ())
    (local er)
    (set er (parse-one-expression toks))
    (local return)
