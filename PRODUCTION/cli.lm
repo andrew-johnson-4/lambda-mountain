@@ -593,7 +593,7 @@ assemble := λconfig program. (
          (match body (
             ()
             ( Nil (
-               (set output_d (output_d( (label-case fname) ': \n \t '.zero \s '32 \n )))
+               (set output_d (output_d( (label-case fname) ': \n \t '\,zero \s '32 \n )))
             ))
             ( (Lambda(lhs rhs)) (
                (set e (destructure-args(inner-ctx lhs offset)))
@@ -735,7 +735,7 @@ yield-atom := λctx a offset. (tail(
       )
       ()
       ()
-      (id ': \n \t '.ascii \s " (escape-sequences a) " \n \t .zero \s 1 \n)
+      (id ': \n \t '\,ascii \s " (escape-sequences a) " \n \t '\,zero \s 1 \n)
       ctx
       offset
    ))
@@ -1211,7 +1211,7 @@ compile-expr := λctx e offset used. (tail(
          (local foreach_char_apply)
          (set foreach_char_apply (uuid()))
          (local foreach_data)
-         (set foreach_data ( foreach_char_data ': \n \t '.zero \s '2 \n ))
+         (set foreach_data ( foreach_char_data ': \n \t '\,zero \s '2 \n ))
          (local foreach_text)
          (set foreach_text (yield-foreach-char( foreach_char_data foreach_char_head foreach_char_small foreach_char_end foreach_char_notcons foreach_char_apply e2_prog )))
          (set prog ( e1_prog \t 'call \s foreach_char_head \n ))
@@ -1373,52 +1373,52 @@ compile-expr := λctx e offset used. (tail(
 ));
 
 _data-header := λ.(
-   .data                               \n
+  '\,data                              \n
   'load_file_bsz:                      \n
-  \t .quad \s '1024                    \n
+  \t '\,quad \s '1024                  \n
   'load_file_buf:                      \n
-  \t .zero \s '1024                    \n
+  \t '\,zero \s '1024                  \n
   '__nil:                              \n
-  \t .zero \s '32                      \n
+  \t '\,zero \s '32                      \n
   '__argv:                             \n
-  \t .zero \s '32                      \n
+  \t '\,zero \s '32                    \n
   '__s_counter:                        \n
-  \t .zero \s '8                       \n
+  \t '\,zero \s '8                     \n
   '__s_section:                        \n
-  \t .zero \s '536870912               \n
+  \t '\,zero \s '536870912             \n
   '__a_counter:                        \n
-  \t .zero \s '8                       \n
+  \t '\,zero \s '8                     \n
   '__a_section:                        \n
-  \t .zero \s '536870912               \n
+  \t '\,zero \s '536870912             \n
   '__nil_literal:                      \n
-  \t .ascii \s " \[ \] "               \n
-  \t .zero \s 1                        \n
+  \t '\,ascii \s " \[ \] "             \n
+  \t '\,zero \s 1                      \n
   '__hex_buffer:                       \n
-  \t .ascii \s "0123456789abcdef"      \n
+  \t '\,ascii \s "0123456789abcdef"    \n
   '__put64_buffer:                     \n
-  \t .ascii \s "0x"                    \n
+  \t '\,ascii \s "0x"                  \n
   '__put64_write_buffer:               \n
-  \t .ascii \s "0000000000000000 \s "  \n
-  \t .zero \s '1                       \n
+  \t '\,ascii \s "0000000000000000 \s "  \n
+  \t '\,zero \s '1                     \n
   '__newline:                          \n
-  \t .ascii \s " \\n "                 \n
+  \t '\,ascii \s " \\n "               \n
   '__lparen:                           \n
-  \t .ascii \s " \[ "                  \n
+  \t '\,ascii \s " \[ "                \n
   '__rparen:                           \n
-  \t .ascii \s " \] "                  \n
+  \t '\,ascii \s " \] "                \n
   '__space:                            \n
-  \t .ascii \s " \s "                  \n
+  \t '\,ascii \s " \s "                \n
   '__true:                             \n
-  \t .ascii \s "True"                  \n
-  \t .zero \s '1                       \n
+  \t '\,ascii \s "True"                \n
+  \t '\,zero \s '1                     \n
   '__digit:                            \n
-  \t '.zero \s '2                      \n
+  \t '\,zero \s '2                     \n
   '__dump_i:                           \n
-  \t '.ascii \s '"0000000000000000"    \n
-  \t '.zero \s '1                      \n
+  \t '\,ascii \s '"0000000000000000"   \n
+  \t '\,zero \s '1                     \n
   '__err_fopen:                        \n
-  \t .ascii \s '"Could \s 'not \s 'open \s 'file."  \n
-  \t .zero \s '1                       \n
+  \t '\,ascii \s '"Could \s 'not \s 'open \s 'file."  \n
+  \t '\,zero \s '1                       \n
 );
 
 _exit-cleanup := λ.(
@@ -1489,8 +1489,8 @@ _before-main := λ.(
 );
 
 _program-header := λ.(
-   '.global \s '_start                    \n
-   '.text                                 \n
+   '\,global \s '_start                   \n
+   '\,text                                \n
    '_start:                               \n
    \t 'jmp \s 'main                       \n
 
@@ -1679,12 +1679,12 @@ _program-header := λ.(
    \t 'jmp \s 'dump_i_negative            \n
    'dump_i_positive:                      \n
    \t 'call \s 'dump_i_digits             \n
-   \t ret                                 \n
+   \t 'ret                                \n
    'dump_i_negative:                      \n
    \t 'neg \s '%r8                        \n
    \t 'call \s 'dump_i_digits             \n
    \t 'movb \s '$45, \s '0 \[ %r11 \]     \n
-   \t ret                                 \n
+   \t 'ret                                \n
    # if return value is positive then open was a success
 
    'dump_i_digits:                        \n
@@ -1736,7 +1736,7 @@ _program-header := λ.(
    \t 'rol \s '$4, \s '%r8                \n   # %r8[15]
    \t 'call \s 'put8                      \n
    \t 'mov \s '%cl, \s '15 \[ %r11 \]     \n
-   \t ret                                 \n
+   \t 'ret                                \n
 
    #move ascii representation of lower byte of %r8 into %cl
    'put8:                                 \n
