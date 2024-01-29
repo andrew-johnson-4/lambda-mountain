@@ -2,8 +2,7 @@
 test:
 	cargo install --path .
 	lambda_mountain --debug -o bootstrap BOOTSTRAP/cli.lm
-	./bootstrap --parse tests/lm/argv.lm
-#	cargo test parseall
+	cargo test parseall
 #	./bootstrap --parse --stat PRODUCTION/cli.lm
 
 count:
