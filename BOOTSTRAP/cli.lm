@@ -156,8 +156,37 @@ parse-one-expression := λtoks. (tail(
          (set toks ())
       ))
       ( ( '[ r ) (
-         (print-s TODO_PARENTHESES)
-         (set toks ())
+         (local depth)
+         (set depth 1)
+         (local nested)
+         (while depth (
+            (if r (
+               (local next)
+               (set next (head r))
+               (set r (tail r))
+               (match next (
+                  ()
+                  ( '[ (
+                     (set nested (nested next))
+                     (set depth (1 depth))
+                  ))
+                  ( '] (
+                     (set depth (tail depth))
+                     (if depth (
+                        (set nested (nested next))
+                     ) ())
+                  ))
+                  ( _ (
+                     (set nested (nested next))
+                  ))
+               ))
+            ) (
+               (print-s UNCLOSED_PARENTHESES)
+               (set depth ())
+            ))
+         ))
+         (set expr (parse-many-expressions (reverse-list nested)))
+         (set toks r)
       ))
       ( ( \' (i r) ) (
          (set toks ())
@@ -459,12 +488,16 @@ tokenize := λtext. (tail(
    (if buffer (
       (set program (program (clone-rope buffer)))
    ) ())
-   (local forward_cons)
-   (while program (
-      (set forward_cons ( (tail program) forward_cons ))
-      (set program (head program))
+   (reverse-list program)
+));
+
+reverse-list := λl. (tail(
+   (local r)
+   (while l (
+      (set r ( (tail l) r ))
+      (set l (head l))
    ))
-   forward_cons
+   r
 ));
 
 is_variable := λv. (tail(
