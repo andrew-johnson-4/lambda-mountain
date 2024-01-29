@@ -541,7 +541,7 @@ label-case := λk. (tail(
    (local nk)
    (foreach-char k (match $_ (
       ()
-      (- (set nk (nk '_)))
+      ('- (set nk (nk '_)))
       (c (set nk (nk (clone-rope c))))
    )))
    (clone-rope nk)
@@ -609,6 +609,8 @@ assemble := λconfig program. (
                (set output_p (output_p (get-unframe e)))
                (set output_p (output_p (get-unframe e2)))
                (set output_p (output_p (_exit-function())))
+               (set output_p (output_p (get-text e)))
+               (set output_p (output_p (get-text e2)))
                (set output_d (output_d (get-data e)))
                (set output_d (output_d (get-data e2)))
             ))
