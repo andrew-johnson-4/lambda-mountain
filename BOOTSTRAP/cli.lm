@@ -700,6 +700,10 @@ escape-sequences := λt. match t (
          (set c $_)
          (match c (
             ()
+            ( "
+               (set cs (cs \\ ")
+               (set is_escape ())
+            ))
             (\\ (
                (if is_escape (
                  (set cs ( cs \\ ))
@@ -708,11 +712,11 @@ escape-sequences := λt. match t (
             ))
             (_ (
                (if is_escape (
-                  if (eq (c ,)) (
-                     (set cs ( cs \, ))
-                  ) (
-                     (set cs (cs (clone-rope c)))
-                  )
+                  (match c (
+                     ()
+                     ( , (set cs (cs \,)))
+                     ( _ (set cs (cs (clone-rope c))))
+                  ))
                ) (set cs (cs (clone-rope c))))
                (set is_escape ())
             ))
