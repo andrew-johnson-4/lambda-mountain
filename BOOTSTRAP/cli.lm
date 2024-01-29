@@ -149,14 +149,14 @@ parse-one-expression := λtoks. (tail(
          (set remainder ())
       ))
       ( ( \l r ) (
-         (print-s (TLambda r))
+         (set expr (Lambda (parse-lambda r)))
          (set remainder ())
       ))
-      ( ( '] r ) (
+      ( ( \] r ) (
          (print-s DANGLING_PARENTHESES)
          (set remainder ())
       ))
-      ( ( '[ r ) (
+      ( ( \[ r ) (
          (local depth)
          (set depth 1)
          (local nested)
@@ -167,11 +167,11 @@ parse-one-expression := λtoks. (tail(
                (set r (tail r))
                (match next (
                   ()
-                  ( '[ (
+                  ( \[ (
                      (set nested (nested next))
                      (set depth (1 depth))
                   ))
-                  ( '] (
+                  ( \] (
                      (set depth (tail depth))
                      (if depth (
                         (set nested (nested next))
@@ -190,9 +190,8 @@ parse-one-expression := λtoks. (tail(
          (set remainder r)
       ))
       ( ( \' (i r) ) (
-         (set toks ())
          (set expr (Literal i))
-         (print-s (TLambda r))
+         (set remainder r)
       ))
       ( (a r) (
          (if (is_variable a) (
