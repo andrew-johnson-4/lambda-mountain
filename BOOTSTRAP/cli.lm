@@ -341,7 +341,7 @@ parse-program := λtoks. (tail(
 #returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 destructure-args := λctx e offset. (match e (
    ()
-   ( () (tail(
+   ( Nil (tail(
       ()
       (Expr( () () () () () ctx offset ))
    )))
