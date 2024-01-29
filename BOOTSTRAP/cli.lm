@@ -328,9 +328,12 @@ parse-program := λtoks. (tail(
    (local program)
    (local key)
    (local rhs)
+   (local a)
    (foreach-atom toks (
-      (local a)
       (set a $_)
+      (if $stat (
+         (print-s (PATOM a))
+      ) ())
       (if (eq(a \:)) (
          (if key (
             (set program (program (Global (key (parse-many-expressions (reverse-list rhs))))))
@@ -339,9 +342,6 @@ parse-program := λtoks. (tail(
          (set rhs ())
       ) (
          (if a (set rhs (rhs a)) ())
-         (if $stat (
-            (print-s (ASSIGN ':= rhs))
-         ) ())
          (match rhs (
             ()
             ( ( (() k) ':=) (
