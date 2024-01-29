@@ -117,46 +117,46 @@ fn bootsuite() {
       let path = entry.unwrap().display().to_string();
       let (actual,expected) = run_bootstrap("--tokenize",&path);
       if expected != actual {
-         failures.push(( path, expected, actual ));
+         failures.push(( "--tokenize", path, expected, actual ));
       }
    }
    for entry in glob("tests/lm/*.lm").unwrap() {
       let path = entry.unwrap().display().to_string();
       let (actual,expected) = run_bootstrap("--parse",&path);
       if expected != actual {
-         failures.push(( path, expected, actual ));
+         failures.push(( "--parse", path, expected, actual ));
       }
    }
    for entry in glob("tests/lm/*.lm").unwrap() {
       let path = entry.unwrap().display().to_string();
       let (actual,expected) = run_bootstrap("--compile",&path);
       if expected != actual {
-         failures.push(( path, expected, actual ));
+         failures.push(( "--compile", path, expected, actual ));
       }
    }
    for entry in glob("BOOTSTRAP/cli.lm").unwrap() {
       let path = entry.unwrap().display().to_string();
       let (actual,expected) = run_bootstrap("--tokenize",&path);
       if expected != actual {
-         failures.push(( path, expected, actual ));
+         failures.push(( "--tokenize", path, expected, actual ));
       }
    }
    for entry in glob("BOOTSTRAP/cli.lm").unwrap() {
       let path = entry.unwrap().display().to_string();
       let (actual,expected) = run_bootstrap("--parse",&path);
       if expected != actual {
-         failures.push(( path, expected, actual ));
+         failures.push(( "--parse", path, expected, actual ));
       }
    }
    for entry in glob("BOOTSTRAP/cli.lm").unwrap() {
       let path = entry.unwrap().display().to_string();
       let (actual,expected) = run_bootstrap("--compile",&path);
       if expected != actual {
-         failures.push(( path, expected, actual ));
+         failures.push(( "--compile", path, expected, actual ));
       }
    }
-   for (path,expected,actual) in &failures {
-      eprintln!("TEST {} Expected: {}, Actual: {}", path, &expected[..std::cmp::min(100,expected.len())], &actual[..std::cmp::min(100,actual.len())]);
+   for (mode,path,expected,actual) in &failures {
+      eprintln!("TEST {} {} Expected: {}, Actual: {}", mode, path, &expected[..std::cmp::min(100,expected.len())], &actual[..std::cmp::min(100,actual.len())]);
    }
    assert_eq!( failures.len(), 0 );
 }
