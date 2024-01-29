@@ -150,10 +150,11 @@ parse-one-expression := λtoks. (tail(
       ))
       ( ( \l r ) (
          (print-s (TLambda r))
+         (set remainder ())
       ))
       ( ( '] r ) (
          (print-s DANGLING_PARENTHESES)
-         (set toks ())
+         (set remainder ())
       ))
       ( ( '[ r ) (
          (local depth)
@@ -186,7 +187,7 @@ parse-one-expression := λtoks. (tail(
             ))
          ))
          (set expr (parse-many-expressions (reverse-list nested)))
-         (set toks r)
+         (set remainder r)
       ))
       ( ( \' (i r) ) (
          (set toks ())
@@ -325,7 +326,7 @@ parse-program := λtoks. (tail(
       (set a $_)
       (if (eq(a \:)) (
          (if key (
-            (set program (program (Global (key (parse-many-expressions rhs)))))
+            (set program (program (Global (key (parse-many-expressions (reverse-list rhs))))))
             (set key ())
          ) ())
          (set rhs ())
