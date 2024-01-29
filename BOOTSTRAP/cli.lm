@@ -147,7 +147,7 @@ parse-one-expression := λtoks. (tail(
          (set remainder ())
       ))
       ( ( \] r ) (
-         (print-s DANGLING_PARENTHESES)
+         (print-s (DANGLING_PARENTHESES toks))
          (set remainder ())
       ))
       ( ( \[ r ) (
@@ -181,6 +181,10 @@ parse-one-expression := λtoks. (tail(
             ))
          ))
          (set expr (parse-many-expressions (reverse-list nested)))
+         (set remainder r)
+      ))
+      ( ( \\ (\' r) ) (
+         (set expr (Literal \'))
          (set remainder r)
       ))
       ( ( \' (i r) ) (
