@@ -115,42 +115,42 @@ fn bootsuite() {
    let mut failures = Vec::new();
    for entry in glob("tests/lm/*.lm").unwrap() {
       let path = entry.unwrap().display().to_string();
-      let (actual,expected) = run_bootstrap("--tokenize",&path);
+      let (expected,actual) = run_bootstrap("--tokenize",&path);
       if expected != actual {
          failures.push(( "--tokenize", path, expected, actual ));
       }
    }
    for entry in glob("tests/lm/*.lm").unwrap() {
       let path = entry.unwrap().display().to_string();
-      let (actual,expected) = run_bootstrap("--parse",&path);
+      let (expected,actual) = run_bootstrap("--parse",&path);
       if expected != actual {
          failures.push(( "--parse", path, expected, actual ));
       }
    }
    for entry in glob("tests/lm/*.lm").unwrap() {
       let path = entry.unwrap().display().to_string();
-      let (actual,expected) = run_bootstrap("--compile",&path);
+      let (expected,actual) = run_bootstrap("--compile",&path);
       if expected != actual {
          failures.push(( "--compile", path, expected, actual ));
       }
    }
    for entry in glob("BOOTSTRAP/cli.lm").unwrap() {
       let path = entry.unwrap().display().to_string();
-      let (actual,expected) = run_bootstrap("--tokenize",&path);
+      let (expected,actual) = run_bootstrap("--tokenize",&path);
       if expected != actual {
          failures.push(( "--tokenize", path, expected, actual ));
       }
    }
    for entry in glob("BOOTSTRAP/cli.lm").unwrap() {
       let path = entry.unwrap().display().to_string();
-      let (actual,expected) = run_bootstrap("--parse",&path);
+      let (expected,actual) = run_bootstrap("--parse",&path);
       if expected != actual {
          failures.push(( "--parse", path, expected, actual ));
       }
    }
    for entry in glob("BOOTSTRAP/cli.lm").unwrap() {
       let path = entry.unwrap().display().to_string();
-      let (actual,expected) = run_bootstrap("--compile",&path);
+      let (expected,actual) = run_bootstrap("--compile",&path);
       if expected != actual {
          failures.push(( "--compile", path, expected, actual ));
       }
