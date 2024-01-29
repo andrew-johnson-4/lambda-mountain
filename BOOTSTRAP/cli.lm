@@ -685,7 +685,7 @@ escape-sequences := λt. match t (
    ( () () )
    ( \\: \: )
    ( \\o \o )
-   ( \\n (\\ n) )
+   ( \\n (\\ 'n) )
    ( \\t \t )
    ( \\s \s )
    ( \\l \l )
