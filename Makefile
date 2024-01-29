@@ -1,7 +1,7 @@
 
 test:
 	cargo install --path .
-	lambda_mountain -o bootstrap BOOTSTRAP/cli.lm
+	lambda_mountain --debug -o bootstrap BOOTSTRAP/cli.lm
 	./bootstrap -o lm.s BOOTSTRAP/cli.lm
 	as -o lm.o lm.s
 	ld -o lm lm.o
