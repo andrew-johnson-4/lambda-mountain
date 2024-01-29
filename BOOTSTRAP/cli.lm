@@ -1498,7 +1498,7 @@ _program-header := λ.(
    # not a call-convention function
    '_strlen:                              \n
    \t 'xor \s '%rbx, \s '%rbx             \n
-   \t '_strlen_loop:                      \n
+   '_strlen_loop:                         \n
    \t 'cmpb \s '$0, \s '0 \[ '%rax \]     \n
    \t 'jz \s '_strlen_exit                \n
    \t 'inc \s '%rax                       \n
