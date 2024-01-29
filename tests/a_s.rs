@@ -5,7 +5,7 @@ use lambda_mountain::*;
 fn s_equality() {
    assert_eq!( s_nil().to_string(), "()" );
    assert_eq!( s_atom("a").to_string(), "a" );
-   assert_eq!( s_cons(s_atom("a"),s_nil()).to_string(), "(a . ())" );
+   assert_eq!( s_cons(s_atom("a"),s_nil()).to_string(), "(a ())" );
    assert_eq!( head(&s_cons(s_atom("a"),s_nil())).to_string(), "a" );
    assert_eq!( tail(&s_cons(s_atom("a"),s_nil())).to_string(), "()" );
    assert_eq!( s_nil(), s_nil() );
