@@ -11,3 +11,4 @@ a.out
 *.log
 bootstrap
 bbootstrap
+bin/lm_raw
