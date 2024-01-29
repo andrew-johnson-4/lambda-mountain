@@ -131,7 +131,8 @@ fn run_bootstrap(target: &str) -> String {
    String::from_utf8_lossy(&exit.stdout).to_string()
 }
 
-fn suite() {
+#[test]
+fn bootsuite() {
    compile_bootstrap();
    let mut failures = Vec::new();
    for entry in glob("tests/lm/*.lm").unwrap() {
