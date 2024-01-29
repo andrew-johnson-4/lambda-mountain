@@ -2,9 +2,13 @@
 test:
 	cargo test bootsuite
 
-forward:
-	cargo install --path .
-	lambda_mountain --debug -o bootstrap BOOTSTRAP/cli.lm
-	./bootstrap -o bootstrap.s BOOTSTRAP/cli.lm
-	as -o bootstrap.o bootstrap.s
-	ld -o bbootstrap bootstrap.o
+build:
+	as -o lm_raw.o BOOTSTRAP/cli.s
+	ld -o lm lm_raw.o
+	rm lm_raw.o
+
+install:
+	as -o lm_raw.o BOOTSTRAP/cli.s
+	ld -o lm lm_raw.o
+	mv lm /usr/local/bin/
+	rm lm_raw.o
