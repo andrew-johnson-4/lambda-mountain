@@ -538,6 +538,7 @@ label-case := λk. (tail(
    (foreach-char k (match $_ (
       ()
       ('- (set nk (nk '_)))
+      ('$ (set nk (nk '_I_)))
       (c (set nk (nk (clone-rope c))))
    )))
    (clone-rope nk)
