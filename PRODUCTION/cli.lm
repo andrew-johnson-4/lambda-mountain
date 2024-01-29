@@ -549,7 +549,7 @@ label-case := λk. (tail(
 
 assemble := λconfig program. (
    (local target)
-   (set target 'tmp.s)
+   (set target 'tmp\,s)
    (while config (
       (match (tail config) (
          ()
