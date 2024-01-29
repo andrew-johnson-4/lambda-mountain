@@ -3,20 +3,20 @@ use lambda_mountain::*;
 
 #[test]
 fn expressions() {
-   assert_eq!( parse_expression("a").to_string(), "(variable . a)" );
-   assert_eq!( parse_expression("'a").to_string(), "(literal . a)" );
-   assert_eq!( parse_expression("Lambda").to_string(), "(literal . Lambda)" );
-   assert_eq!( parse_expression("a b").to_string(), "(app . ((variable . a) . (variable . b)))" );
-   assert_eq!( parse_expression("a b c").to_string(), "(app . ((app . ((variable . a) . (variable . b))) . (variable . c)))" );
-   assert_eq!( parse_expression("123").to_string(), "(literal . 123)" );
-   assert_eq!( parse_expression("λx.y").to_string(), "(lambda . ((variable . x) . (variable . y)))" );
-   assert_eq!( parse_expression("λx.y z").to_string(), "(lambda . ((variable . x) . (app . ((variable . y) . (variable . z)))))" );
-   assert_eq!( parse_expression("(λx.y) z").to_string(), "(app . ((lambda . ((variable . x) . (variable . y))) . (variable . z)))" );
-   assert_eq!( parse_expression("λx y.z").to_string(), "(lambda . ((app . ((variable . x) . (variable . y))) . (variable . z)))" );
-   assert_eq!( parse_expression("λx y z.z").to_string(), "(lambda . ((app . ((app . ((variable . x) . (variable . y))) . (variable . z))) . (variable . z)))" );
+   assert_eq!( parse_expression("a").to_string(), "(Variable a)" );
+   assert_eq!( parse_expression("'a").to_string(), "(Literal a)" );
+   assert_eq!( parse_expression("Lambda").to_string(), "(Literal Lambda)" );
+   assert_eq!( parse_expression("a b").to_string(), "(App ((Variable a) (Variable b)))" );
+   assert_eq!( parse_expression("a b c").to_string(), "(App ((App ((Variable a) (Variable b))) (Variable c)))" );
+   assert_eq!( parse_expression("123").to_string(), "(Literal 123)" );
+   assert_eq!( parse_expression("λx.y").to_string(), "(Lambda ((Variable x) (Variable y)))" );
+   assert_eq!( parse_expression("λx.y z").to_string(), "(Lambda ((Variable x) (App ((Variable y) (Variable z)))))" );
+   assert_eq!( parse_expression("(λx.y) z").to_string(), "(App ((Lambda ((Variable x) (Variable y))) (Variable z)))" );
+   assert_eq!( parse_expression("λx y.z").to_string(), "(Lambda ((App ((Variable x) (Variable y))) (Variable z)))" );
+   assert_eq!( parse_expression("λx y z.z").to_string(), "(Lambda ((App ((App ((Variable x) (Variable y))) (Variable z))) (Variable z)))" );
 }
 
 #[test]
 fn programs() {
-   assert_eq!( parse_program("a := b").to_string(), "(kv . ((a . (variable . b)) . ()))" );
+   assert_eq!( parse_program("a := b").to_string(), "(() (Global (a (Variable b))))" );
 }

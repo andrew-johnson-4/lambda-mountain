@@ -62,7 +62,7 @@ pub fn parse_expression(input: &str) -> S {
       } else { buf.push(c); }
    }
    if buf.len()>0 { terms.push(parse_one_expression(&buf)) }
-   if terms.len()==0 { return s_nil(); }
+   if terms.len()==0 { return nil(); }
    let mut f = terms[0].clone();
    for x in &terms[1..] {
       f = app( f, x.clone() );
@@ -76,7 +76,7 @@ pub fn parse_program(s: &str) -> S {
    let s = s.replace(r#"\)"#, r#" \rparen "#);
    let s = s.replace("(", " ( ");
    let s = s.replace(")", " ) ");
-   let mut kvs = Vec::new();
+   let mut kvs = s_nil();
    let mut new_s = String::new();
    for line in s.split("\n") {
       new_s += &(line.split("#").next().unwrap().trim().to_owned() + "\n");
@@ -85,9 +85,9 @@ pub fn parse_program(s: &str) -> S {
    for line in s.split(";") {
    if let Some((l,r)) = line.split_once(":=") {
       let l = l.trim();
-      kvs.push(( s_atom(l), parse_expression(r) ));
+      kvs = kv_add( &kvs, &ctx_global( s_atom(l), parse_expression(r) ) );
    }}
-   kv(&kvs)
+   kvs
 }
 
 pub fn parse_file(path: &str) -> S {

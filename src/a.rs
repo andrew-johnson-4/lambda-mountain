@@ -15,35 +15,39 @@ use std::collections::HashMap;
 use crate::*;
 
 pub fn literal(s: &str) -> S {
-   s_cons( s_atom("literal"), s_atom(s) )
+   s_cons( s_atom("Literal"), s_atom(s) )
 }
 
 pub fn variable(s: &str) -> S {
-   s_cons( s_atom("variable"), s_atom(s) )
+   s_cons( s_atom("Variable"), s_atom(s) )
 }
 
 pub fn typ(s: &str) -> S {
-   s_cons( s_atom("type"), s_atom(s) )
+   s_cons( s_atom("Type"), s_atom(s) )
 }
 
 pub fn local(s: &str) -> S {
-   s_cons( s_atom("local"), s_atom(s) )
+   s_cons( s_atom("Local"), s_atom(s) )
+}
+
+pub fn ctx_local(k: S, v: S) -> S {
+   s_cons( s_atom("Local"),  s_cons(k, v) )
+}
+
+pub fn ctx_global(k: S, v: S) -> S {
+   s_cons( s_atom("Global"),  s_cons(k, v) )
 }
 
 pub fn lambda(l: S, r: S) -> S {
-   s_cons( s_atom("lambda"), s_cons(l,r) )
+   s_cons( s_atom("Lambda"), s_cons(l,r) )
 }
 
 pub fn app(f: S, x: S) -> S {
-   s_cons( s_atom("app"), s_cons(f,x) )
-}
-
-pub fn regex(r: &str) -> S {
-   s_cons( s_atom("regex"), s_atom(r) )
+   s_cons( s_atom("App"), s_cons(f,x) )
 }
 
 pub fn nil() -> S {
-   s_nil()
+   s_atom("Nil")
 }
 
 pub fn list(s: &[S]) -> S {
@@ -54,40 +58,49 @@ pub fn list(s: &[S]) -> S {
    tail
 }
 
-pub fn kv(s: &[(S,S)]) -> S {
-   let mut tail = s_nil();
-   for (k,v) in s.iter().rev() {
-      tail = s_cons( s_cons(k.clone(),v.clone()), tail );
-   }
-   s_cons( s_atom("kv"), tail )
-}
-
 pub fn kv_iter(s: &S) -> Vec<(S,S)> {
    let mut kvs = Vec::new();
    let mut h = s.clone();
    while is_cons(&h) {
-      let kv = head(&h);
-      if is_cons(&kv) {
-         kvs.push(( head(&kv), tail(&kv) ));
+      let kv = tail(&h);
+      let tag = head(&kv).to_string();
+      if tag=="Local" || tag=="Global" {
+         let kv = tail(&kv);
+         let k = head(&kv);
+         let v = tail(&kv);
+         kvs.push( (k,v) );    
       }
-      h = tail(&h);
+      h = head(&h);
    }
    kvs
 }
 
 pub fn kv_merge(l: &S, r: &S) -> S {
-   let mut kvs = Vec::new();
-   for (k,v) in kv_iter(l) {
-      kvs.push(( k, v ));
+   let mut l = l.clone();
+   let mut r = r.clone();
+   let mut kvs = s_nil();
+   while !is_nil(&l) {
+      let kv = tail(&l);
+      l = head(&l);
+      kvs = kv_add( &kvs, &kv );
    }
-   for (k,v) in kv_iter(r) {
-      kvs.push(( k, v ));
+   while !is_nil(&r) {
+      let kv = tail(&r);
+      r = head(&r);
+      kvs = kv_add( &kvs, &kv );
    }
-   kv(&kvs)
+   kvs
 }
 
-pub fn kv_add(kv: &S, k: &S, v: &S) -> S {
-   s_cons( s_cons(k.clone(),v.clone()), kv.clone() )
+pub fn kv_add(root: &S, kv: &S) -> S {
+   s_cons( root.clone(), kv.clone() )
+}
+
+pub fn kv_lookup(ctx: &S, key: &S, default: &S) -> S {
+   for (k,v) in kv_iter(ctx) {
+      if k==*key { return v.clone(); }
+   }
+   default.clone()
 }
 
 pub fn kv_ctx(s: &S) -> HashMap<String,S> {
@@ -99,27 +112,28 @@ pub fn kv_ctx(s: &S) -> HashMap<String,S> {
    ctx
 }
 
-pub fn kv_lookup(ctx: &S, key: &S, default: &S) -> S {
-   for (k,v) in kv_iter(ctx) {
-      if k==*key { return v.clone(); }
-   }
-   default.clone()
-}
-
 pub fn kv_s(ctx: &HashMap<String,S>) -> S {
    kv(&ctx.iter().map(|(k,v)| (s_atom(&k),v.clone())).collect::<Vec<(S,S)>>())
+}
+
+pub fn kv(s: &[(S,S)]) -> S {
+   let mut root = s_nil();
+   for (k,v) in s.iter().rev() {
+      root = s_cons( root, ctx_local(k.clone(),v.clone()) );
+   }
+   root
 }
 
 pub fn destructure(ctx: &mut HashMap<String,S>, pattern: S, value: S) -> bool {
    if pattern==value { return true; }
    if !is_cons(&pattern) { return false; }
-   if head(&pattern)==s_atom("variable") {
+   if head(&pattern)==s_atom("Variable") {
       let k = tail(&pattern).to_string();
       ctx.insert( k, value );
       return true;
    }
    if !is_cons(&value) { return false; }
-   if is_atom(&head(&pattern)) && head(&pattern).to_string()=="lambda" {
+   if is_atom(&head(&pattern)) && head(&pattern).to_string()=="Lambda" {
       return false;
    }
    if is_atom(&head(&pattern)) && head(&pattern).to_string()=="kv" &&
@@ -142,7 +156,7 @@ pub fn destructure(ctx: &mut HashMap<String,S>, pattern: S, value: S) -> bool {
 }
 fn restructure(ctx: &HashMap<String,S>, value: S) -> S {
    if !is_cons(&value) { return value; }
-   if head(&value)==s_atom("variable") {
+   if head(&value)==s_atom("Variable") {
       let k = tail(&value).to_string();
       return if let Some(v) = ctx.get(&k) { v.clone() }
       else { value };

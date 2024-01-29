@@ -22,7 +22,7 @@ fn flatten(output: &mut String, input: &S) {
       flatten( output, &tail(input) );
    } else if is_atom(input) {
       let l = input.to_string();
-      if l=="lambda" || l=="literal" || l=="variable" || l=="app" || l=="local" || l=="type" {}
+      if l=="Nil" || l=="Lambda" || l=="Literal" || l=="Variable" || l=="App" || l=="Local" || l=="Type" {}
       else if l == "\\\\" {
          output.push_str("\\\\"); 
       } else if l == "\\o" {
@@ -118,7 +118,7 @@ fn label_case(s: &str) -> String {
    if s==k {
       return v.to_string();
    }}
-   format!("{}", s.replace("-","_"))
+   format!("{}", s.replace("-","_").replace("$","_I_"))
 }
 
 static mut UUID_COUNTER: usize = 0;
@@ -144,7 +144,7 @@ fn is_local(program_ctx: &S, s: &str) -> String {
    for (k,v) in kv_iter(program_ctx) {
    let k = k.to_string();
    if s==k {
-      if head(&v).to_string() == "local" {
+      if head(&v).to_string() == "Local" {
          return tail(&v).to_string();
       } else {
          return "".to_string();
@@ -211,24 +211,24 @@ fn declare_local(helpers_ctx: &S, program_ctx: &S, vname: &S, offset: i64) -> (S
    ));
    let set_this = assign.clone();
    let assign_vname = s_atom(&format!("set {}",vname));
-   let program_ctx = kv_add( program_ctx, &vname, &refer );
-   let program_ctx = kv_add( &program_ctx, &assign_vname, &assign );
+   let program_ctx = kv_add( program_ctx, &ctx_local( vname.clone(), refer ) );
+   let program_ctx = kv_add( &program_ctx, &ctx_local( assign_vname.clone(), assign ) );
    (frame_this, set_this, unframe_this, s_nil(), s_nil(), program_ctx, offset+1)
 }
 
 //returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,S,S,S,i64) {
-   if is_nil(e) {
+   if e.to_string()=="Nil" {
       ( s_nil(), s_nil(), s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
-   } else if head(&e).to_string()=="variable" {
+   } else if head(&e).to_string()=="Variable" {
       declare_local(helpers_ctx, program_ctx, &tail(&e), offset)
-   } else if head(&e).to_string()=="app" {
+   } else if head(&e).to_string()=="App" {
       let arg_head = head(&tail(&e));
       let arg_tail = tail(&tail(&e));
       let store_this = ctx_eval_soft(helpers_ctx, &variable("::shadow-this"));
       let restore_this = ctx_eval_soft(helpers_ctx, &variable("::unshadow-this"));
-      let (_frame,load_head,_unframe,_text,_data,_ctx,_) = compile_expr(helpers_ctx, program_ctx, &app(variable("head"),variable("$_")), offset );
-      let (_frame,load_tail,_unframe,_text,_data,_ctx,_) = compile_expr(helpers_ctx, program_ctx, &app(variable("tail"),variable("$_")), offset );
+      let (_frame,load_head,_unframe,_text,_data,_ctx,_) = compile_expr(helpers_ctx, program_ctx, &app(variable("head"),variable("$_")), offset, Utilized::Used );
+      let (_frame,load_tail,_unframe,_text,_data,_ctx,_) = compile_expr(helpers_ctx, program_ctx, &app(variable("tail"),variable("$_")), offset, Utilized::Used );
       let (frame_tail, prog_tail, unframe_tail, _text, _data, program_ctx, offset) = destructure_args(helpers_ctx, program_ctx, &arg_tail, offset);
       let (frame_head, prog_head, unframe_head, _text, _data, program_ctx, offset) = destructure_args(helpers_ctx, &program_ctx, &arg_head, offset);
       let prog = s_cons(store_this, load_tail);
@@ -246,16 +246,16 @@ fn destructure_args(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,
 
 //returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,S,S,S,S,i64) {
-   if head(&p).to_string() == "variable" &&
+   if head(&p).to_string() == "Variable" &&
       tail(&p).to_string() == "_" {
       let set_rsi = s_atom("\tmov $1, %rsi\n");
       ( s_nil(), set_rsi, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
-   } else if head(&p).to_string()=="variable" {
+   } else if head(&p).to_string()=="Variable" {
       let (lframe,lprog,lunframe,ltext,ldata,program_ctx,offset) = declare_local(helpers_ctx, program_ctx, &tail(&p), offset);
       let set_rsi = s_atom("\tmov $1, %rsi\n");
       let prog = s_cons(lprog, set_rsi);
       (lframe, prog, lunframe, ltext, ldata, program_ctx, offset)
-   } else if head(&p).to_string()=="literal" {
+   } else if head(&p).to_string()=="Literal" {
       let label_skip = uuid();
       let prog = ctx_eval_soft(helpers_ctx, &variable("::shadow-this"));
       let prog = s_cons(prog, s_atom("\tmov %r12, %rax\n"));
@@ -270,7 +270,7 @@ fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64)
       let prog = s_cons(prog, s_atom("\tmov $1, %rsi\n"));
       let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
       ( s_nil(), prog, s_nil(), atext, adata, program_ctx.clone(), offset )
-   } else if head(&p).to_string()=="app" {
+   } else if head(&p).to_string()=="App" {
       let label_skip = uuid();
       let l = head(&tail(&p));
       let r = tail(&tail(&p));
@@ -302,7 +302,7 @@ fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64)
          program_ctx,
          offset
       )
-   } else if is_nil(&p) {
+   } else if p.to_string()=="Nil" {
       let label_skip = uuid();
       let prog = s_atom("\tcmp $0, %r12\n");
       let prog = s_cons(prog, s_atom(&format!("\tjne {}\n",label_skip)));
@@ -321,19 +321,19 @@ fn destructure_pattern_lhs(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64)
 }
 
 //returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
-fn yield_patterns(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,S,S,S,S,i64) {
-   if is_nil(p) {
+fn yield_patterns(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64, used: Utilized) -> (S,S,S,S,S,S,i64) {
+   if p.to_string()=="Nil" {
       let clear_rsi = s_atom("\tmov $0, %rsi\n");
       ( s_nil(), clear_rsi, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
-   } else if head(&p).to_string()=="app" &&
-             head(&tail(&tail(&p))).to_string()=="app" {
+   } else if head(&p).to_string()=="App" &&
+             head(&tail(&tail(&p))).to_string()=="App" {
       let prev = head(&tail(&p));
       let lr = tail(&tail(&tail(&p)));
       let lhs = head(&lr);
       let rhs = tail(&lr);
-      let (pframe,pprog,punframe,ptext,pdata,_inner_ctx,offset) = yield_patterns(helpers_ctx, program_ctx, &prev, offset);
+      let (pframe,pprog,punframe,ptext,pdata,_inner_ctx,offset) = yield_patterns(helpers_ctx, program_ctx, &prev, offset, used);
       let (lframe,lprog,lunframe,ltext,ldata,inner_ctx,offset) = destructure_pattern_lhs(helpers_ctx, &program_ctx, &lhs, offset);
-      let (rframe,rprog,runframe,rtext,rdata,_inner_ctx,offset) = compile_expr(helpers_ctx, &inner_ctx, &rhs, offset);
+      let (rframe,rprog,runframe,rtext,rdata,_inner_ctx,offset) = compile_expr(helpers_ctx, &inner_ctx, &rhs, offset, used);
       let label_skip = uuid();
       let prog = pprog;
       let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %rsi\n\tjne {}\n",label_skip)));
@@ -356,56 +356,62 @@ fn yield_patterns(helpers_ctx: &S, program_ctx: &S, p: &S, offset: i64) -> (S,S,
    }
 }
 
+#[derive(Debug,PartialEq,Eq,Copy,Clone)]
+enum Utilized {
+  Used,
+  Unused,
+  Tail,
+}
+
 //returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
-fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,S,S,S,i64) {
+fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64, used: Utilized) -> (S,S,S,S,S,S,i64) {
    let e = ctx_eval_soft(helpers_ctx, e);
-   if head(&e).to_string() == "app" {
+   let mut tail_safe = false;
+   let r = if head(&e).to_string() == "App" {
       let fx = tail(&e);
       let f = head(&fx);
       let x = tail(&fx);
-      if head(&f).to_string() == "variable" &&
+      if head(&f).to_string() == "Variable" &&
          tail(&f).to_string() == "local" &&
-         head(&x).to_string() == "variable" {
+         head(&x).to_string() == "Variable" {
+         tail_safe = true;
 	 let (f,_p,u,t,d,pc,offset) = declare_local(helpers_ctx, program_ctx, &tail(&x), offset);
          ( f, s_nil(), u, t, d, pc, offset )
-      } else if head(&f).to_string()=="app" &&
-                head(&head(&tail(&f))).to_string() == "variable" &&
+      } else if head(&f).to_string()=="App" &&
+                head(&head(&tail(&f))).to_string() == "Variable" &&
                 tail(&head(&tail(&f))).to_string() == "set" &&
-                head(&tail(&tail(&f))).to_string() == "variable" {
+                head(&tail(&tail(&f))).to_string() == "Variable" {
+         tail_safe = true;
          let lname = tail(&tail(&tail(&f))).to_string();
          let local = is_local(program_ctx, &format!("set {}", lname));
          if local == "" {
-            let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &x, offset);
+            let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &x, offset, Utilized::Used);
             let prog = s_cons(xprog, ctx_eval_soft(helpers_ctx, &app(variable("::set-global"), variable(&label_case(&lname)) )) );
             ( xframe, prog, xunframe, xtext, xdata, program_ctx.clone(), offset )
          } else {
-            let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &x, offset);
+            let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &x, offset, Utilized::Used);
             ( xframe, s_cons(xprog, s_atom(&local)), xunframe, xtext, xdata, program_ctx.clone(), offset )
          }
-      } else if head(&e).to_string()=="app" &&
-                head(&head(&tail(&e))).to_string() == "app" &&
-                head(&head(&tail(&head(&tail(&e))))).to_string() == "variable" &&
+      } else if head(&e).to_string()=="App" &&
+                head(&head(&tail(&e))).to_string() == "App" &&
+                head(&head(&tail(&head(&tail(&e))))).to_string() == "Variable" &&
                 tail(&head(&tail(&head(&tail(&e))))).to_string() == "foreach-atom" {
+         tail_safe = true;
          let atom = tail(&tail(&head(&tail(&e)))); 
          let apply_expr = tail(&tail(&e));
          let foreach_label = s_atom(&uuid());
          let foreach_notcons = s_atom(&uuid());
          let foreach_ignore = s_atom(&uuid());
-         let (aframe,aprog,aunframe,atext,adata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &atom, offset);
-         let (eframe,eprog,eunframe,etext,edata,program_ctx,offset) = if head(&apply_expr).to_string()=="variable" {
-            let apply_label = tail(&apply_expr);
-            let apply_prog = s_atom(&format!("\tcall {}\n", label_case(&apply_label.to_string())));
-            (s_nil(), apply_prog, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset)
-         } else {
-            compile_expr(helpers_ctx, &program_ctx, &apply_expr, offset)
-         };
+         let (aframe,aprog,aunframe,atext,adata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &atom, offset, Utilized::Used);
+         let (eframe,eprog,eunframe,etext,edata,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &apply_expr, offset, Utilized::Unused);
          let ftext = ctx_eval_soft(helpers_ctx, &app(variable("::foreach-atom"),app(app(app(foreach_label.clone(),foreach_notcons),foreach_ignore),eprog.clone())));
          let prog = s_cons( aprog, s_atom(&format!("\tcall {}\n",foreach_label)) );
          ( s_cons(aframe,eframe), prog, s_cons(aunframe,eunframe), s_cons(s_cons(atext,ftext),etext), s_cons(adata,edata), program_ctx, offset )
-      } else if head(&e).to_string()=="app" &&
-                head(&head(&tail(&e))).to_string() == "app" &&
-                head(&head(&tail(&head(&tail(&e))))).to_string() == "variable" &&
+      } else if head(&e).to_string()=="App" &&
+                head(&head(&tail(&e))).to_string() == "App" &&
+                head(&head(&tail(&head(&tail(&e))))).to_string() == "Variable" &&
                 tail(&head(&tail(&head(&tail(&e))))).to_string() == "foreach-char" {
+         tail_safe = true;
          let atom = tail(&tail(&head(&tail(&e)))); 
          let apply_expr = tail(&tail(&e));
          let foreach_head = s_atom(&uuid());
@@ -414,14 +420,8 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          let foreach_notcons = s_atom(&uuid());
          let foreach_data = s_atom(&uuid());
          let foreach_apply = s_atom(&uuid());
-         let (aframe,prog,aunframe,atext,adata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &atom, offset);
-         let (eframe,eprog,eunframe,etext,edata,program_ctx,offset) = if head(&apply_expr).to_string()=="variable" {
-            let apply_label = tail(&apply_expr);
-            let apply_prog = s_atom(&format!("\tcall {}\n", label_case(&apply_label.to_string())));
-            (s_nil(), apply_prog, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset)
-         } else {
-            compile_expr(helpers_ctx, &program_ctx, &apply_expr, offset)
-         };
+         let (aframe,prog,aunframe,atext,adata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &atom, offset, Utilized::Used);
+         let (eframe,eprog,eunframe,etext,edata,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &apply_expr, offset, Utilized::Unused);
          let ftext = ctx_eval_soft(helpers_ctx, &app(variable("::foreach-char"),
             app(app(app(app(
                app(app(foreach_data.clone(),foreach_head.clone()),foreach_small.clone())
@@ -430,14 +430,15 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
          let fdata = ctx_eval_soft(helpers_ctx, &app(variable("::foreach-char-data"),foreach_data.clone()));
          let prog = s_cons( prog, s_atom(&format!("\tcall {}\n",foreach_head)) );
          ( s_cons(aframe,eframe), prog, s_cons(aunframe,eunframe), s_cons(s_cons(atext,ftext),etext), s_cons(s_cons(adata,fdata),edata), program_ctx, offset )
-      } else if head(&e).to_string()=="app" &&
-                head(&head(&tail(&e))).to_string() == "app" &&
-                head(&head(&tail(&head(&tail(&e))))).to_string() == "variable" &&
+      } else if head(&e).to_string()=="App" &&
+                head(&head(&tail(&e))).to_string() == "App" &&
+                head(&head(&tail(&head(&tail(&e))))).to_string() == "Variable" &&
                 tail(&head(&tail(&head(&tail(&e))))).to_string() == "while" {
+         tail_safe = true;
          let d = tail(&tail(&e));
          let c = tail(&tail(&head(&tail(&e))));
-         let (c_f,c_p,c_u,c_t,c_d,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &c, offset);
-         let (d_f,d_p,d_u,d_t,d_d,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &d, offset);
+         let (c_f,c_p,c_u,c_t,c_d,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &c, offset, Utilized::Used);
+         let (d_f,d_p,d_u,d_t,d_d,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &d, offset, Utilized::Unused);
          let label_w_start = uuid();
          let label_w_end = uuid();
          let prog = s_atom(&format!("{}:\n",label_w_start));
@@ -461,17 +462,29 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
             program_ctx,
             offset
          )
-      } else if head(&e).to_string()=="app" &&
-                head(&head(&tail(&e))).to_string() == "app" &&
-                head(&head(&tail(&head(&tail(&e))))).to_string() == "app" &&
-                head(&head(&tail(&head(&tail(&head(&tail(&e))))))).to_string() == "variable" &&
+      } else if head(&e).to_string()=="App" &&
+                head(&head(&tail(&e))).to_string() == "Variable" &&
+                tail(&head(&tail(&e))).to_string() == "eq" {
+         let lr = tail(&tail(&e));
+         assert!( head(&lr).to_string()=="App" );
+         let l = head(&tail(&lr));
+         let r = tail(&tail(&lr));
+         let (l_f,l_p,l_u,l_t,l_d,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &l, offset, Utilized::Used);
+         let (r_f,r_p,r_u,r_t,r_d,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &r, offset, Utilized::Used);
+         let prog = ctx_eval_soft(helpers_ctx, &app( variable("::eq"), app( l_p, r_p ) ) );
+         ( s_cons(l_f,r_f), prog, s_cons(l_u,r_u), s_cons(l_t,r_t), s_cons(l_d,r_d), program_ctx, offset )
+      } else if head(&e).to_string()=="App" &&
+                head(&head(&tail(&e))).to_string() == "App" &&
+                head(&head(&tail(&head(&tail(&e))))).to_string() == "App" &&
+                head(&head(&tail(&head(&tail(&head(&tail(&e))))))).to_string() == "Variable" &&
                 tail(&head(&tail(&head(&tail(&head(&tail(&e))))))).to_string() == "if" {         
+         tail_safe = true;
          let f = tail(&tail(&e));
          let t = tail(&tail(&head(&tail(&e))));
          let c = tail(&tail(&head(&tail(&head(&tail(&e))))));
-         let (c_f,c_p,c_u,c_t,c_d,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &c, offset);
-         let (t_f,t_p,t_u,t_t,t_d,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &t, offset);
-         let (f_f,f_p,f_u,f_t,f_d,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &f, offset);
+         let (c_f,c_p,c_u,c_t,c_d,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &c, offset, Utilized::Used);
+         let (t_f,t_p,t_u,t_t,t_d,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &t, offset, used);
+         let (f_f,f_p,f_u,f_t,f_d,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &f, offset, used);
          let label_if_true = uuid();
          let label_if_end = uuid();
          let prog = c_p;
@@ -493,62 +506,84 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
             program_ctx,
             offset
          )
-      } else if head(&e).to_string()=="app" &&
-                head(&head(&tail(&e))).to_string() == "app" &&
-                head(&head(&tail(&head(&tail(&e))))).to_string() == "variable" &&
+      } else if head(&e).to_string()=="App" &&
+                head(&head(&tail(&e))).to_string() == "App" &&
+                head(&head(&tail(&head(&tail(&e))))).to_string() == "Variable" &&
                 tail(&head(&tail(&head(&tail(&e))))).to_string() == "match" {
+         tail_safe = true;
          let p = tail(&tail(&e));
          let c = tail(&tail(&head(&tail(&e))));
-         let (cframe,cprog,cunframe,ctext,cdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &c, offset);
-         let (pframe,pprog,punframe,ptext,pdata,program_ctx,offset) = yield_patterns(helpers_ctx, &program_ctx, &p, offset);
+         let (cframe,cprog,cunframe,ctext,cdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &c, offset, Utilized::Used);
+         let (pframe,pprog,punframe,ptext,pdata,program_ctx,offset) = yield_patterns(helpers_ctx, &program_ctx, &p, offset, used);
          let label_skip = uuid();
          let prog = s_cons(cprog,pprog);
          let prog = s_cons(prog, s_atom(&format!("\tcmp $0, %rsi\n\tjne {}\n",label_skip)));
          let prog = s_cons(prog, ctx_eval_soft(helpers_ctx, &variable("::yield-nil")) );
          let prog = s_cons(prog, s_atom(&format!("{}:\n",label_skip)));
          ( s_cons(cframe,pframe), prog, s_cons(cunframe,punframe), s_cons(ctext,ptext), s_cons(cdata,pdata), program_ctx, offset )
-      } else if (head(&f).to_string() == "variable" ||
-         head(&f).to_string() == "literal") &&
+      } else if (head(&f).to_string() == "Variable" ||
+         head(&f).to_string() == "Literal") &&
          !is_free(program_ctx, &tail(&f).to_string()) &&
          is_local(program_ctx, &tail(&f).to_string())=="" {
-         let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &x, offset);
-         let f_name = variable(&label_case( &tail(&f).to_string() ));
-         let prog = s_cons( xprog , s_cons( s_cons( variable("\tcall "), f_name ), variable("\n") ));
-         (xframe, prog, xunframe, xtext, xdata, program_ctx.clone(), offset)
+         let f_name = tail(&f).to_string();
+         if f_name == "tail" {
+            compile_expr(helpers_ctx, program_ctx, &x, offset, Utilized::Tail)
+         } else {
+            let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &x, offset, Utilized::Used);
+            let f_name = variable(&label_case( &tail(&f).to_string() ));
+            let prog = s_cons( xprog , s_cons( s_cons( variable("\tcall "), f_name ), variable("\n") ));
+            (xframe, prog, xunframe, xtext, xdata, program_ctx.clone(), offset)
+         }
       } else {
-         let (fframe,fprog,funframe,ftext,fdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &f, offset);
-         let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &x, offset);
-         let prog = ctx_eval_soft(helpers_ctx, &app(
-            variable("::yield-cons"),
-            app( fprog, xprog )
-         ));
-         (s_cons(fframe,xframe), prog, s_cons(funframe,xunframe), s_cons(ftext,xtext), s_cons(fdata,xdata), program_ctx, offset)
+         if used == Utilized::Used {
+            let (fframe,fprog,funframe,ftext,fdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &f, offset, Utilized::Used);
+            let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &x, offset, Utilized::Used);
+            let prog = ctx_eval_soft(helpers_ctx, &app(
+               variable("::yield-cons"),
+               app( fprog, xprog )
+            ));
+            (s_cons(fframe,xframe), prog, s_cons(funframe,xunframe), s_cons(ftext,xtext), s_cons(fdata,xdata), program_ctx, offset)
+         } else {
+            tail_safe = true;
+            let rused = if used==Utilized::Tail { Utilized::Used } else { Utilized::Unused };
+            let (fframe,fprog,funframe,ftext,fdata,program_ctx,offset) = compile_expr(helpers_ctx, program_ctx, &f, offset, Utilized::Unused);
+            let (xframe,xprog,xunframe,xtext,xdata,program_ctx,offset) = compile_expr(helpers_ctx, &program_ctx, &x, offset, rused);
+            (s_cons(fframe,xframe), s_cons(fprog, xprog), s_cons(funframe,xunframe), s_cons(ftext,xtext), s_cons(fdata,xdata), program_ctx, offset)
+         }
       }
-   } else if head(&e).to_string() == "variable" &&
+   } else if head(&e).to_string() == "Literal" &&
+             tail(&e).to_string() == "A_COUNTER" {
+      let atext = ctx_eval_soft(helpers_ctx, &variable("::a-counter"));
+      ( s_nil(), atext, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
+   } else if head(&e).to_string() == "Literal" &&
+             tail(&e).to_string() == "S_COUNTER" {
+      let atext = ctx_eval_soft(helpers_ctx, &variable("::s-counter"));
+      ( s_nil(), atext, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
+   } else if head(&e).to_string() == "Variable" &&
              tail(&e).to_string() == "argv" {
       // $_ is a noop expression and colloquially refers to 'this' expression
       let atext = ctx_eval_soft(helpers_ctx, &variable("::argv"));
       ( s_nil(), atext, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
-   } else if head(&e).to_string() == "variable" &&
+   } else if head(&e).to_string() == "Variable" &&
              tail(&e).to_string() == "$_" {
       // $_ is a noop expression and colloquially refers to 'this' expression
       ( s_nil(), s_nil(), s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
-   } else if head(&e).to_string() == "variable" {
+   } else if head(&e).to_string() == "Variable" {
       let vname = tail(&e).to_string();
       let local = is_local(program_ctx, &vname);
       if local == "" {
-         let prog = ctx_eval_soft(helpers_ctx, &app(variable("::get-global"), variable(&vname)) );
+         let prog = ctx_eval_soft(helpers_ctx, &app(variable("::get-global"), variable(&label_case(&vname))) );
          ( s_nil(), prog, s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
       } else {
          ( s_nil(), s_atom(&local), s_nil(), s_nil(), s_nil(), program_ctx.clone(), offset )
       }
-   } else if head(&e).to_string() == "literal" {
+   } else if head(&e).to_string() == "Literal" {
       yield_atom(helpers_ctx, program_ctx, &tail(&e).to_string(), offset )
-   } else if head(&e).to_string() == "lambda" {
+   } else if head(&e).to_string() == "Lambda" {
       let args = head(&tail(&e));
       let body = tail(&tail(&e));
       let (frame_args,prog_args,unframe_args,_text,_data,program_ctx,offset) = destructure_args(helpers_ctx, program_ctx, &args, 0);
-      let (eframe,eprog,eunframe,etext,edata,program_ctx,_) = compile_expr(helpers_ctx, &program_ctx, &body, offset);
+      let (eframe,eprog,eunframe,etext,edata,program_ctx,_) = compile_expr(helpers_ctx, &program_ctx, &body, offset, Utilized::Used);
       let enter = ctx_eval_soft(helpers_ctx, &variable("::enter-function"));
       let leave = ctx_eval_soft(helpers_ctx, &variable("::leave-function"));
       let prog = enter;
@@ -560,7 +595,8 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
       let prog = s_cons( prog, eunframe );
       let prog = s_cons( prog, leave );
       ( s_nil(), prog, s_nil(), etext, edata, program_ctx, offset )
-   } else if is_nil(&e) {
+   } else if e.to_string()=="Nil" {
+      tail_safe = true;
       (
          s_nil(),
          ctx_eval_soft(helpers_ctx, &variable("::yield-nil")),
@@ -572,6 +608,13 @@ fn compile_expr(helpers_ctx: &S, program_ctx: &S, e: &S, offset: i64) -> (S,S,S,
       )
    } else {
       panic!("compile_expr unexpected term: {}", e);
+   };
+   if used == Utilized::Tail && !tail_safe {
+      let (frame,prog,unframe,text,data,ctx,offset) = r;
+      let prog = s_cons( prog, s_atom("\tcall tail\n") );
+      (frame, prog, unframe, text, data, ctx, offset)
+   } else {
+      r
    }
 }
 
@@ -605,12 +648,12 @@ pub fn compile(debug: bool, cfg: &str, main_ctx: &S) {
             ctx_eval_soft(&helpers_ctx, &v),
          );
       } else {
-         main_ctx = kv_add(&main_ctx, &k, &v);
+         main_ctx = kv_add(&main_ctx, &ctx_global( k, v) );
       }
    }
    let mut has_main = false;
    for (k,v) in kv_iter(&main_ctx) {
-   if is_nil(&v) {
+   if v.to_string()=="Nil" {
       let k = k.to_string();
       raw_data = s_cons(
          raw_data,
@@ -628,7 +671,7 @@ pub fn compile(debug: bool, cfg: &str, main_ctx: &S) {
          let enter = ctx_eval_soft(&helpers_ctx, &variable("::enter-function"));
          raw_program = s_cons( raw_program, start );
          raw_program = s_cons( raw_program, enter );
-         let (vframe,vprog,vunframe,vtext,vdata,_pc,_offset) = compile_expr(&helpers_ctx, &main_ctx, &v, 0);
+         let (vframe,vprog,vunframe,vtext,vdata,_pc,_offset) = compile_expr(&helpers_ctx, &main_ctx, &v, 0, Utilized::Unused);
          raw_program = s_cons( raw_program, vframe );
          raw_program = s_cons( raw_program, vprog );
          raw_program = s_cons( raw_program, vunframe );
@@ -648,7 +691,7 @@ pub fn compile(debug: bool, cfg: &str, main_ctx: &S) {
          raw_program = s_cons( raw_program, s_atom("\tret\n") );
          raw_data = s_cons(raw_data,vdata);
       } else {
-         let (vframe,vprog,vunframe,vtext,vdata,_pc,_offset) = compile_expr(&helpers_ctx, &main_ctx, &v, 0);
+         let (vframe,vprog,vunframe,vtext,vdata,_pc,_offset) = compile_expr(&helpers_ctx, &main_ctx, &v, 0, Utilized::Used);
          raw_program = s_cons( raw_program, vframe );
          raw_program = s_cons( raw_program, vprog );
          raw_program = s_cons( raw_program, vunframe );
