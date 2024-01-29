@@ -223676,8 +223676,8 @@ uuid_00000000000016bc:
 	pop %r8
 	pop %r8
 	pop %r8
-	mov $60, %eax
-	mov $0, %edi
+	mov $60, %rax
+	mov $0, %rdi
 	syscall
 uuid_0000000000001696:
 	cmp $0, %r13
@@ -235760,7 +235760,7 @@ uuid_0000000000000e98:
 	.ascii " "
 	.zero 1
 uuid_0000000000000e99:
-	.ascii "%eax"
+	.ascii "%rax"
 	.zero 1
 uuid_0000000000000e9a:
 	.ascii "\n"
@@ -235781,7 +235781,7 @@ uuid_0000000000000e9f:
 	.ascii " "
 	.zero 1
 uuid_0000000000000ea0:
-	.ascii "%edi"
+	.ascii "%rdi"
 	.zero 1
 uuid_0000000000000ea1:
 	.ascii "\n"

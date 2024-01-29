@@ -1452,8 +1452,8 @@ _data-header := λ.(
 );
 
 _exit-cleanup := λ.(
-   \t 'mov \s '$60, \s '%eax           \n # _exit system call
-   \t 'mov \s '$0, \s '%edi            \n # error code 0
+   \t 'mov \s '$60, \s '%rax           \n # _exit system call
+   \t 'mov \s '$0, \s '%rdi            \n # error code 0
    \t 'syscall                         \n
 );
 
