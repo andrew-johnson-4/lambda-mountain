@@ -716,7 +716,7 @@ escape-sequences := λt. match t (
                   (match c (
                      ()
                      ( , (set cs (cs \,)))
-                     ( _ (print-s( InvalidEscapeCharacter c )))
+                     ( _ (print-s( InvalidEscapeCharacter (c s) )))
                   ))
                ) (set cs (cs (clone-rope c))))
                (set is_escape ())
@@ -1456,7 +1456,7 @@ _before-main := λ.(
    #close this (move S onto the heap)
    \t 'mov \s '$__s_section, \s '%rsi     \n # %rsi now points to root s
    \t 'mov \s '$__s_counter, \s '%r8      \n # %r8 now points to s counter
-   \t 'mov \s '0\[ '%r8 \] , \s '%r10     \n # %r10 now hold value of cons counter
+   \t 'mov \s '0 \[ '%r8 \] , \s '%r10     \n # %r10 now hold value of cons counter
    \t 'add \s '%r10, \s '%rsi             \n # %rsi now points to top free cons
    \t 'add \s '$32, \s '%r10              \n # increment s counter
    \t 'mov \s '%r10, \s '0 \[ '%r8 \]     \n # overwrite new s counter
@@ -1474,7 +1474,7 @@ _before-main := λ.(
 
    \t 'mov \s '$__s_section, \s '%rsi     \n # %rsi now points to root s
    \t 'mov \s '$__s_counter, \s '%r8      \n # %r8 now points to s counter
-   \t 'mov \s '0\[ '%r8 \] , \s '%r10     \n # %r10 now hold value of cons counter
+   \t 'mov \s '0 \[ '%r8 \] , \s '%r10     \n # %r10 now hold value of cons counter
    \t 'add \s '%r10, \s '%rsi             \n # %rsi now points to top free cons
    \t 'add \s '$32, \s '%r10              \n # increment s counter
    \t 'mov \s '%r10, \s '0 \[ '%r8 \]     \n # overwrite new s counter
