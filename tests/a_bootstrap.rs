@@ -10,11 +10,42 @@ fn rm(p: &str) {
 
 fn compile_bootstrap() {
    rm("bootstrap");
-   let exit = Command::new("lambda_mountain")
+   rm("bootstrap.s");
+   rm("bootstrap.o");
+   rm("bbootstrap");
+   let exit = Command::new("as")
+                      .stdout(std::process::Stdio::piped())
+                      .stderr(std::process::Stdio::piped())
+                      .arg("-o")
+                      .arg("bootstrap.o")
+                      .arg("BOOTSTRAP/cli.s")
+                      .spawn()
+                      .expect("failed to execute process")
+                      .wait_with_output()
+                      .expect("failed to wait for process");
+   if !exit.status.success() {
+      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
+      panic!("as error code: {}", stderr);
+   };
+   let exit = Command::new("ld")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
                       .arg("-o")
                       .arg("bootstrap")
+                      .arg("bootstrap.o")
+                      .spawn()
+                      .expect("failed to execute process")
+                      .wait_with_output()
+                      .expect("failed to wait for process");
+   if !exit.status.success() {
+      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
+      panic!("ld error code: {}", stderr);
+   };
+   let exit = Command::new("./bootstrap")
+                      .stdout(std::process::Stdio::piped())
+                      .stderr(std::process::Stdio::piped())
+                      .arg("-o")
+                      .arg("bootstrap.s")
                       .arg("BOOTSTRAP/cli.lm")
                       .spawn()
                       .expect("failed to execute process")
@@ -22,139 +53,130 @@ fn compile_bootstrap() {
                       .expect("failed to wait for process");
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("lambda_mountain error code: {}", stderr);
-   };
-}
-
-fn run_parse(target: &str) -> (String,String) {
-   let exit = Command::new("lambda_mountain")
-                      .stdout(std::process::Stdio::piped())
-                      .stderr(std::process::Stdio::piped())
-                      .arg("--parse")
-                      .arg(target)
-                      .spawn()
-                      .expect("failed to execute process")
-                      .wait_with_output()
-                      .expect("failed to wait for process");
-   if !exit.status.success() {
-      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      println!("./lambda_mountain error code while compiling {}: {}", target, stderr);
-   };
-   let expected = String::from_utf8_lossy(&exit.stdout).to_string();
-   let exit = Command::new("./bootstrap")
-                      .stdout(std::process::Stdio::piped())
-                      .stderr(std::process::Stdio::piped())
-                      .arg("--parse")
-                      .arg(target)
-                      .spawn()
-                      .expect("failed to execute process")
-                      .wait_with_output()
-                      .expect("failed to wait for process");
-   if !exit.status.success() {
-      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      println!("./bootstrap error code while compiling {}: {}", target, stderr);
-   };
-   let actual = String::from_utf8_lossy(&exit.stdout).to_string();
-   let expected = expected.trim().to_string();
-   let actual = actual.trim().to_string();
-   (expected,actual)
-}
-
-fn run_bootstrap(target: &str) -> String {
-   rm("tmp.s");
-   rm("tmp.o");
-   rm("a.out");
-   let exit = Command::new("./bootstrap")
-                      .stdout(std::process::Stdio::piped())
-                      .stderr(std::process::Stdio::piped())
-                      .arg("-o")
-                      .arg("tmp.s")
-                      .arg(target)
-                      .spawn()
-                      .expect("failed to execute process")
-                      .wait_with_output()
-                      .expect("failed to wait for process");
-   if !exit.status.success() {
-      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      return format!("./bootstrap error code while compiling {}: {}", target, stderr);
+      panic!("bootstrap error code: {}", stderr);
    };
    let exit = Command::new("as")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
                       .arg("-o")
-                      .arg("tmp.o")
-                      .arg("tmp.s")
+                      .arg("bootstrap.o")
+                      .arg("bootstrap.s")
                       .spawn()
                       .expect("failed to execute process")
                       .wait_with_output()
                       .expect("failed to wait for process");
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      return format!("as error code while compiling {}: {}", target, stderr);
+      panic!("as error code: {}", stderr);
    };
    let exit = Command::new("ld")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
                       .arg("-o")
-                      .arg("a.out")
-                      .arg("tmp.o")
+                      .arg("bbootstrap")
+                      .arg("bootstrap.o")
                       .spawn()
                       .expect("failed to execute process")
                       .wait_with_output()
                       .expect("failed to wait for process");
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      return format!("ld error code while compiling {}: {}", target, stderr);
+      panic!("ld error code: {}", stderr);
    };
-   let exit = Command::new("./a.out")
+}
+
+fn run_bootstrap(mode:&str, target: &str) -> (String,String) {
+   rm("tmp1.s");
+   rm("tmp2.s");
+   let exit = Command::new("./bootstrap")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
+                      .arg(mode)
+                      .arg("-o")
+                      .arg("tmp1.s")
+                      .arg(target)
                       .spawn()
                       .expect("failed to execute process")
                       .wait_with_output()
                       .expect("failed to wait for process");
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      return format!("./a.out error code while running {}: {}", target, stderr);
+      panic!("./bootstrap error code while {} {}: {}", mode, target, stderr);
    };
-   String::from_utf8_lossy(&exit.stdout).to_string()
+   let expected = String::from_utf8_lossy(&exit.stdout).to_string();
+   let exit = Command::new("./bbootstrap")
+                      .stdout(std::process::Stdio::piped())
+                      .stderr(std::process::Stdio::piped())
+                      .arg(mode)
+                      .arg("-o")
+                      .arg("tmp2.s")
+                      .arg(target)
+                      .spawn()
+                      .expect("failed to execute process")
+                      .wait_with_output()
+                      .expect("failed to wait for process");
+   if !exit.status.success() {
+      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
+      panic!("./bbootstrap error code while {} {}: {}", mode, target, stderr);
+   };
+   let actual = String::from_utf8_lossy(&exit.stdout).to_string();
+   (expected, actual)
 }
 
 #[test]
-fn suite() {
+fn bootsuite() {
    compile_bootstrap();
    let mut failures = Vec::new();
    for entry in glob("tests/lm/*.lm").unwrap() {
       let path = entry.unwrap().display().to_string();
-      let stdout = path.clone() + ".out";
-      assert!(std::path::Path::new(&stdout).exists(),"Expected stdout not found: {}",stdout);
-      let stdout = std::fs::read_to_string(stdout).unwrap();
-      let stdout = stdout.trim().to_string();
-      let actual = run_bootstrap(&path);
-      let actual = actual.trim().to_string();
-      if stdout != actual {
-         failures.push(( path, stdout, actual ));
-      }
-   }
-   for (path,stdout,actual) in &failures {
-      eprintln!("TEST {} Expected: {}, Actual: {}", path, &stdout[..std::cmp::min(100,stdout.len())], &actual[..std::cmp::min(100,actual.len())]);
-   }
-   assert_eq!( failures.len(), 0 );
-}
-
-#[test]
-fn parseall() {
-   compile_bootstrap();
-   let mut failures = Vec::new();
-   for entry in glob("tests/lm/*.lm").unwrap() {
-      let path = entry.unwrap().display().to_string();
-      let (expected,actual) = run_parse(&path);
+      let (expected,actual) = run_bootstrap("--tokenize",&path);
       if expected != actual {
-         failures.push(( path, expected, actual ));
+         failures.push(( "--tokenize", path, expected, actual ));
       }
    }
-   for (path,expected,actual) in &failures {
-      eprintln!("TEST {} Expected: {}, Actual: {}", path, &expected[..std::cmp::min(100,expected.len())], &actual[..std::cmp::min(100,actual.len())]);
+   for entry in glob("tests/lm/*.lm").unwrap() {
+      let path = entry.unwrap().display().to_string();
+      let (expected,actual) = run_bootstrap("--parse",&path);
+      if expected != actual {
+         failures.push(( "--parse", path, expected, actual ));
+      }
+   }
+   for entry in glob("tests/lm/*.lm").unwrap() {
+      let path = entry.unwrap().display().to_string();
+      let (expected,actual) = run_bootstrap("--compile",&path);
+      if expected != actual {
+         failures.push(( "--compile", path, expected, actual ));
+      }
+   }
+   for entry in glob("BOOTSTRAP/cli.lm").unwrap() {
+      let path = entry.unwrap().display().to_string();
+      let (expected,actual) = run_bootstrap("--tokenize",&path);
+      if expected != actual {
+         failures.push(( "--tokenize", path, expected, actual ));
+      }
+   }
+   for entry in glob("BOOTSTRAP/cli.lm").unwrap() {
+      let path = entry.unwrap().display().to_string();
+      let (expected,actual) = run_bootstrap("--parse",&path);
+      if expected != actual {
+         failures.push(( "--parse", path, expected, actual ));
+      }
+   }
+   for entry in glob("BOOTSTRAP/cli.lm").unwrap() {
+      let path = entry.unwrap().display().to_string();
+      let (expected,actual) = run_bootstrap("--compile",&path);
+      if expected != actual {
+         failures.push(( "--compile", path, expected, actual ));
+      }
+   }
+   for (mode,path,expected,actual) in &failures {
+      eprintln!("TEST {} {} Expected: {}, Actual: {}", mode, path, &expected[..std::cmp::min(100,expected.len())], &actual[..std::cmp::min(100,actual.len())]);
    }
    assert_eq!( failures.len(), 0 );
+   rm("bootstrap");
+   rm("bootstrap.s");
+   rm("bootstrap.o");
+   rm("bbootstrap");
+   rm("tmp1.s");
+   rm("tmp2.s");
 }
