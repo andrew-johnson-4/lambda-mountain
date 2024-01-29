@@ -342,7 +342,7 @@ parse-program := λtoks. (tail(
       ))
    ))
    (if key (
-     (set program (program (Global (key (parse-many-expressions rhs)))))
+     (set program (program (Global (key (parse-many-expressions (reverse-list rhs))))))
    ) ())
    program
 ));
