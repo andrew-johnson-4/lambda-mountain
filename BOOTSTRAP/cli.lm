@@ -329,7 +329,7 @@ parse-program := λtoks. (tail(
          (if a (set rhs (rhs a)) ())
          (match rhs (
             ()
-            ( (((() k) ':) =) (
+            ( ((() k) ':=) (
                (set key k)
                (set rhs ())
             ))
@@ -448,20 +448,6 @@ tokenize := λtext. (tail(
             (set buffer ())
          ) ())
          (set program (program \:))
-      )))
-      (': (if in_comment () (
-         (if buffer (
-            (set program (program (clone-rope buffer)))
-            (set buffer ())
-         ) ())
-         (set program (program ':))
-      )))
-      (= (if in_comment () (
-         (if buffer (
-            (set program (program (clone-rope buffer)))
-            (set buffer ())
-         ) ())
-         (set program (program =))
       )))
       (. (if in_comment () (
          (if buffer (
