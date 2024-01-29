@@ -322,6 +322,9 @@ parse-many-expressions := λtoks. (tail(
 parse-expression := λtoks. (parse-many-expressions toks);
 
 parse-program := λtoks. (tail(
+   (if $stat (
+      (print-s (PARSE_PROGRAM toks))
+   ) ())
    (local program)
    (local key)
    (local rhs)
@@ -336,9 +339,12 @@ parse-program := λtoks. (tail(
          (set rhs ())
       ) (
          (if a (set rhs (rhs a)) ())
+         (if $stat (
+            (print-s (ASSIGN ':= rhs))
+         ) ())
          (match rhs (
             ()
-            ( ((() k) ':=) (
+            ( ( (() k) ':=) (
                (set key k)
                (set rhs ())
             ))
