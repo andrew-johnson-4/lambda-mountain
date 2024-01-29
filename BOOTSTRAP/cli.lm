@@ -1075,6 +1075,26 @@ compile-expr := λctx e offset used. (tail(
          ()
          (Expr( () () () () () ctx offset ))
       )))
+      ( (Literal A_COUNTER) (tail(
+         (set prog (
+            \t 'mov \s '$__a_counter, \s %r12  \n
+            \t 'mov \s '0 \[ %r12 \] , \s %r12 \n
+            \t 'mov \s '$0, \s '%r13           \n
+            \t 'mov \s '$0, \s '%r14           \n
+            \t 'mov \s '$0, \s '%r15           \n
+         ))
+         (Expr( () prog () () () ctx offset ))        
+      ))) 
+      ( (Literal S_COUNTER) (tail(
+         (set prog (
+            \t 'mov \s '$__s_counter, \s %r12  \n
+            \t 'mov \s '0 \[ %r12 \] , \s %r12 \n
+            \t 'mov \s '$0, \s '%r13           \n
+            \t 'mov \s '$0, \s '%r14           \n
+            \t 'mov \s '$0, \s '%r15           \n
+         ))
+         (Expr( () prog () () () ctx offset ))        
+      ))) 
       ( (App( (Variable 'eq) (App( l r )) )) (tail(
          (set e1 (compile-expr(ctx l offset Used)))
          (set e1_frame (get-frame e1))
