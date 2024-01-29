@@ -22,6 +22,7 @@ main := (
          ()
          (() ())
          (-o (set option SetTarget))
+         (--compile (set mode Compile))
          (--parse (set mode Parse))
          (--stat (set $stat True))
          (--parse-expression (set mode ParseExpression))
@@ -99,6 +100,9 @@ tokenize-file := λpath. (
 
 #returns (lhs rhs)
 parse-lambda := λtoks. (tail(
+   (if $stat (
+      (print-s (PARSE_LAMBDA toks))
+   ) ())
    (local er)
    (set er (parse-one-expression toks))
    (local lmb)
@@ -134,6 +138,9 @@ parse-lambda := λtoks. (tail(
 ));
 
 parse-one-expression := λtoks. (tail(
+   (if $stat (
+      (print-s (PARSE_ONE toks))
+   ) ())
    (local remainder)
    (local expr)
    (match toks (
@@ -192,7 +199,7 @@ parse-one-expression := λtoks. (tail(
          (set remainder r)
       ))
       ( (a r) (
-         (if (is_variable a) (
+         (if (is-variable a) (
             (set expr (Variable a))
          ) (
             (set expr (Literal a))
@@ -295,6 +302,9 @@ set-local := λctx v. (tail(
 ));
 
 parse-many-expressions := λtoks. (tail(
+   (if $stat (
+      (print-s (PARSE_MANY toks))
+   ) ())
    (local er)
    (set er (parse-one-expression toks))
    (local return)
@@ -312,12 +322,18 @@ parse-many-expressions := λtoks. (tail(
 parse-expression := λtoks. (parse-many-expressions toks);
 
 parse-program := λtoks. (tail(
+   (if $stat (
+      (print-s (PARSE_PROGRAM toks))
+   ) ())
    (local program)
    (local key)
    (local rhs)
+   (local a)
    (foreach-atom toks (
-      (local a)
       (set a $_)
+      (if $stat (
+         (print-s (PATOM a))
+      ) ())
       (if (eq(a \:)) (
          (if key (
             (set program (program (Global (key (parse-many-expressions (reverse-list rhs))))))
@@ -328,7 +344,7 @@ parse-program := λtoks. (tail(
          (if a (set rhs (rhs a)) ())
          (match rhs (
             ()
-            ( (((() k) ':) =) (
+            ( ( (() k) ':=) (
                (set key k)
                (set rhs ())
             ))
@@ -448,20 +464,6 @@ tokenize := λtext. (tail(
          ) ())
          (set program (program \:))
       )))
-      (': (if in_comment () (
-         (if buffer (
-            (set program (program (clone-rope buffer)))
-            (set buffer ())
-         ) ())
-         (set program (program ':))
-      )))
-      (= (if in_comment () (
-         (if buffer (
-            (set program (program (clone-rope buffer)))
-            (set buffer ())
-         ) ())
-         (set program (program =))
-      )))
       (. (if in_comment () (
          (if buffer (
             (set program (program (clone-rope buffer)))
@@ -495,53 +497,54 @@ reverse-list := λl. (tail(
    r
 ));
 
-is_variable := λv. (tail(
-   (local is_variable)
+is-variable := λv. (tail(
+   (local is_v)
    (local passed_char)
+   (local c)
    (foreach-char v (
-      (local c)
       (set c $_)
       (if passed_char () (match c (
          ()
-         ('$ ( (set is_variable True) (set passed_char True) ))
-         ('_ ( (set is_variable True) (set passed_char True) ))
-         ('a ( (set is_variable True) (set passed_char True) ))
-         ('b ( (set is_variable True) (set passed_char True) ))
-         ('c ( (set is_variable True) (set passed_char True) ))
-         ('d ( (set is_variable True) (set passed_char True) ))
-         ('e ( (set is_variable True) (set passed_char True) ))
-         ('f ( (set is_variable True) (set passed_char True) ))
-         ('g ( (set is_variable True) (set passed_char True) ))
-         ('h ( (set is_variable True) (set passed_char True) ))
-         ('i ( (set is_variable True) (set passed_char True) ))
-         ('j ( (set is_variable True) (set passed_char True) ))
-         ('k ( (set is_variable True) (set passed_char True) ))
-         ('l ( (set is_variable True) (set passed_char True) ))
-         ('m ( (set is_variable True) (set passed_char True) ))
-         ('n ( (set is_variable True) (set passed_char True) ))
-         ('o ( (set is_variable True) (set passed_char True) ))
-         ('p ( (set is_variable True) (set passed_char True) ))
-         ('q ( (set is_variable True) (set passed_char True) ))
-         ('r ( (set is_variable True) (set passed_char True) ))
-         ('s ( (set is_variable True) (set passed_char True) ))
-         ('t ( (set is_variable True) (set passed_char True) ))
-         ('u ( (set is_variable True) (set passed_char True) ))
-         ('v ( (set is_variable True) (set passed_char True) ))
-         ('w ( (set is_variable True) (set passed_char True) ))
-         ('x ( (set is_variable True) (set passed_char True) ))
-         ('y ( (set is_variable True) (set passed_char True) ))
-         ('z ( (set is_variable True) (set passed_char True) ))
+         ('$ ( (set is_v True) (set passed_char True) ))
+         ('_ ( (set is_v True) (set passed_char True) ))
+         ('a ( (set is_v True) (set passed_char True) ))
+         ('b ( (set is_v True) (set passed_char True) ))
+         ('c ( (set is_v True) (set passed_char True) ))
+         ('d ( (set is_v True) (set passed_char True) ))
+         ('e ( (set is_v True) (set passed_char True) ))
+         ('f ( (set is_v True) (set passed_char True) ))
+         ('g ( (set is_v True) (set passed_char True) ))
+         ('h ( (set is_v True) (set passed_char True) ))
+         ('i ( (set is_v True) (set passed_char True) ))
+         ('j ( (set is_v True) (set passed_char True) ))
+         ('k ( (set is_v True) (set passed_char True) ))
+         ('l ( (set is_v True) (set passed_char True) ))
+         ('m ( (set is_v True) (set passed_char True) ))
+         ('n ( (set is_v True) (set passed_char True) ))
+         ('o ( (set is_v True) (set passed_char True) ))
+         ('p ( (set is_v True) (set passed_char True) ))
+         ('q ( (set is_v True) (set passed_char True) ))
+         ('r ( (set is_v True) (set passed_char True) ))
+         ('s ( (set is_v True) (set passed_char True) ))
+         ('t ( (set is_v True) (set passed_char True) ))
+         ('u ( (set is_v True) (set passed_char True) ))
+         ('v ( (set is_v True) (set passed_char True) ))
+         ('w ( (set is_v True) (set passed_char True) ))
+         ('x ( (set is_v True) (set passed_char True) ))
+         ('y ( (set is_v True) (set passed_char True) ))
+         ('z ( (set is_v True) (set passed_char True) ))
          (_ (set passed_char True))
       )))
    ))
-   is_variable
+   is_v
 ));
 
 label-case := λk. (tail(
    (local nk)
    (foreach-char k (match $_ (
       ()
-      (- (set nk (nk '_)))
+      ('- (set nk (nk '_)))
+      ('$ (set nk (nk '_I_)))
       (c (set nk (nk (clone-rope c))))
    )))
    (clone-rope nk)
@@ -609,6 +612,8 @@ assemble := λconfig program. (
                (set output_p (output_p (get-unframe e)))
                (set output_p (output_p (get-unframe e2)))
                (set output_p (output_p (_exit-function())))
+               (set output_p (output_p (get-text e)))
+               (set output_p (output_p (get-text e2)))
                (set output_d (output_d (get-data e)))
                (set output_d (output_d (get-data e2)))
             ))
@@ -683,9 +688,10 @@ get-offset := λe. (match e (
 escape-sequences := λt. match t (
    ()
    ( () () )
+   ( \\ \\\\ )
    ( \\: \: )
    ( \\o \o )
-   ( \\n \n )
+   ( \\n (\\ 'n))
    ( \\t \t )
    ( \\s \s )
    ( \\l \l )
@@ -700,19 +706,23 @@ escape-sequences := λt. match t (
          (set c $_)
          (match c (
             ()
+            ( " (
+               (set cs (cs \\ "))
+               (set is_escape ())
+            ))
             (\\ (
                (if is_escape (
-                 (set cs ( cs \\ ))
+                 (set cs ( cs \\\\ ))
                  (set is_escape ())
                ) (set is_escape True))
             ))
             (_ (
                (if is_escape (
-                  if (eq (c ,)) (
-                     (set cs ( cs \, ))
-                  ) (
-                     (set cs (cs (clone-rope c)))
-                  )
+                  (match c (
+                     ()
+                     ( , (set cs (cs \,)))
+                     ( _ (print-s( InvalidEscapeCharacter (c s) )))
+                  ))
                ) (set cs (cs (clone-rope c))))
                (set is_escape ())
             ))
@@ -1071,6 +1081,26 @@ compile-expr := λctx e offset used. (tail(
          ()
          (Expr( () () () () () ctx offset ))
       )))
+      ( (Literal A_COUNTER) (tail(
+         (set prog (
+            \t 'mov \s '$__a_counter, \s %r12  \n
+            \t 'mov \s '0 \[ %r12 \] , \s %r12 \n
+            \t 'mov \s '$0, \s '%r13           \n
+            \t 'mov \s '$0, \s '%r14           \n
+            \t 'mov \s '$0, \s '%r15           \n
+         ))
+         (Expr( () prog () () () ctx offset ))        
+      ))) 
+      ( (Literal S_COUNTER) (tail(
+         (set prog (
+            \t 'mov \s '$__s_counter, \s %r12  \n
+            \t 'mov \s '0 \[ %r12 \] , \s %r12 \n
+            \t 'mov \s '$0, \s '%r13           \n
+            \t 'mov \s '$0, \s '%r14           \n
+            \t 'mov \s '$0, \s '%r15           \n
+         ))
+         (Expr( () prog () () () ctx offset ))        
+      ))) 
       ( (App( (Variable 'eq) (App( l r )) )) (tail(
          (set e1 (compile-expr(ctx l offset Used)))
          (set e1_frame (get-frame e1))
@@ -1451,7 +1481,7 @@ _before-main := λ.(
    #close this (move S onto the heap)
    \t 'mov \s '$__s_section, \s '%rsi     \n # %rsi now points to root s
    \t 'mov \s '$__s_counter, \s '%r8      \n # %r8 now points to s counter
-   \t 'mov \s '0\[ '%r8 \] , \s '%r10     \n # %r10 now hold value of cons counter
+   \t 'mov \s '0 \[ '%r8 \] , \s '%r10     \n # %r10 now hold value of cons counter
    \t 'add \s '%r10, \s '%rsi             \n # %rsi now points to top free cons
    \t 'add \s '$32, \s '%r10              \n # increment s counter
    \t 'mov \s '%r10, \s '0 \[ '%r8 \]     \n # overwrite new s counter
@@ -1469,7 +1499,7 @@ _before-main := λ.(
 
    \t 'mov \s '$__s_section, \s '%rsi     \n # %rsi now points to root s
    \t 'mov \s '$__s_counter, \s '%r8      \n # %r8 now points to s counter
-   \t 'mov \s '0\[ '%r8 \] , \s '%r10     \n # %r10 now hold value of cons counter
+   \t 'mov \s '0 \[ '%r8 \] , \s '%r10     \n # %r10 now hold value of cons counter
    \t 'add \s '%r10, \s '%rsi             \n # %rsi now points to top free cons
    \t 'add \s '$32, \s '%r10              \n # increment s counter
    \t 'mov \s '%r10, \s '0 \[ '%r8 \]     \n # overwrite new s counter
@@ -1498,7 +1528,7 @@ _program-header := λ.(
    # not a call-convention function
    '_strlen:                              \n
    \t 'xor \s '%rbx, \s '%rbx             \n
-   \t '_strlen_loop:                      \n
+   '_strlen_loop:                         \n
    \t 'cmpb \s '$0, \s '0 \[ '%rax \]     \n
    \t 'jz \s '_strlen_exit                \n
    \t 'inc \s '%rax                       \n
