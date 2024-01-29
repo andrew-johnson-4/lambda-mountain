@@ -71,12 +71,13 @@ fn compile_bootstrap() {
    };
 }
 
-fn run_bootstrap(target: &str) -> (String,String) {
+fn run_bootstrap(mode:&str, target: &str) -> (String,String) {
    rm("tmp1.s");
    rm("tmp2.s");
    let exit = Command::new("./bootstrap")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
+                      .arg(mode)
                       .arg("-o")
                       .arg("tmp1.s")
                       .arg(target)
@@ -86,12 +87,13 @@ fn run_bootstrap(target: &str) -> (String,String) {
                       .expect("failed to wait for process");
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("./bootstrap error code while compiling {}: {}", target, stderr);
+      panic!("./bootstrap error code while {} {}: {}", mode, target, stderr);
    };
    let expected = String::from_utf8_lossy(&exit.stdout).to_string();
    let exit = Command::new("./bbootstrap")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
+                      .arg(mode)
                       .arg("-o")
                       .arg("tmp2.s")
                       .arg(target)
@@ -101,7 +103,7 @@ fn run_bootstrap(target: &str) -> (String,String) {
                       .expect("failed to wait for process");
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("./bbootstrap error code while compiling {}: {}", target, stderr);
+      panic!("./bbootstrap error code while {} {}: {}", mode, target, stderr);
    };
    let actual = String::from_utf8_lossy(&exit.stdout).to_string();
    (expected, actual)
@@ -113,7 +115,42 @@ fn bootsuite() {
    let mut failures = Vec::new();
    for entry in glob("tests/lm/*.lm").unwrap() {
       let path = entry.unwrap().display().to_string();
-      let (actual,expected) = run_bootstrap(&path);
+      let (actual,expected) = run_bootstrap("--tokenize",&path);
+      if expected != actual {
+         failures.push(( path, expected, actual ));
+      }
+   }
+   for entry in glob("tests/lm/*.lm").unwrap() {
+      let path = entry.unwrap().display().to_string();
+      let (actual,expected) = run_bootstrap("--parse",&path);
+      if expected != actual {
+         failures.push(( path, expected, actual ));
+      }
+   }
+   for entry in glob("tests/lm/*.lm").unwrap() {
+      let path = entry.unwrap().display().to_string();
+      let (actual,expected) = run_bootstrap("--compile",&path);
+      if expected != actual {
+         failures.push(( path, expected, actual ));
+      }
+   }
+   for entry in glob("BOOTSTRAP/cli.lm").unwrap() {
+      let path = entry.unwrap().display().to_string();
+      let (actual,expected) = run_bootstrap("--tokenize",&path);
+      if expected != actual {
+         failures.push(( path, expected, actual ));
+      }
+   }
+   for entry in glob("BOOTSTRAP/cli.lm").unwrap() {
+      let path = entry.unwrap().display().to_string();
+      let (actual,expected) = run_bootstrap("--parse",&path);
+      if expected != actual {
+         failures.push(( path, expected, actual ));
+      }
+   }
+   for entry in glob("BOOTSTRAP/cli.lm").unwrap() {
+      let path = entry.unwrap().display().to_string();
+      let (actual,expected) = run_bootstrap("--compile",&path);
       if expected != actual {
          failures.push(( path, expected, actual ));
       }

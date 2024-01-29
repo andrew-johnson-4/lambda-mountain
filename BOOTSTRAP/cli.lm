@@ -22,6 +22,7 @@ main := (
          ()
          (() ())
          (-o (set option SetTarget))
+         (--compile (set mode Compile))
          (--parse (set mode Parse))
          (--stat (set $stat True))
          (--parse-expression (set mode ParseExpression))
