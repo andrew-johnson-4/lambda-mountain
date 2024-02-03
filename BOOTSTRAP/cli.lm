@@ -1519,10 +1519,8 @@ _before-main := λ.(
 );
 
 _program-header := λ.(
-   '\,global \s '_start                   \n
+   '\,global \s 'main                     \n
    '\,text                                \n
-   '_start:                               \n
-   \t 'jmp \s 'main                       \n
 
    # internal _strlen (%rax: *char) -> %rbx
    # not a call-convention function
