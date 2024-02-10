@@ -1,6 +1,6 @@
 
 test:
-	cargo test bootsuite
+	cargo test prodsuite
 
 build:
 	as -o lm_raw.o BOOTSTRAP/cli.s
