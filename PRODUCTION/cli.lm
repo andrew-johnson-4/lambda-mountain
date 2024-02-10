@@ -24,6 +24,7 @@ main := (
          (--parse (set mode Parse))
          (--parse-expression (set mode ParseExpression))
          (--tokenize (set mode Tokenize))
+         (--typecheck (set mode Typecheck))
          (fp (set inputs (fp inputs)))
       ))
    )))
@@ -31,6 +32,9 @@ main := (
       ()
       (Parse (foreach-atom inputs (
          if $_ (print-s (parse-program (tokenize (load-file $_)))) ()
+      )))
+      (Typecheck (foreach-atom inputs (
+         if $_ (print-s (typecheck (parse-program (tokenize (load-file $_))))) ()
       )))
       (ParseExpression (foreach-atom inputs (
          if $_ (print-s (parse-expression (tokenize (load-file $_)))) ()
@@ -44,6 +48,8 @@ main := (
 tokenize-file := λpath. (
    tokenize (load-file path)
 );
+
+typecheck := λprogram. program;
 
 #returns (lhs rhs)
 parse-lambda := λtoks. (tail(
