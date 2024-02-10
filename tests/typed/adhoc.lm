@@ -1,0 +1,7 @@
+
+type A S;
+type B (S S);
+
+f := λ(: b B). (.0 b);
+
+main := print-s (f (1 2));
