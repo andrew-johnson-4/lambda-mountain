@@ -173,11 +173,19 @@ parse-expression := λtoks. (parse-many-expressions toks);
 parse-program := λtoks. (tail(
    (local program)
    (local pme)
+   (local pme2)
    (while toks (
       match toks (
          ()
          ((\: remainder) (
             (set toks remainder)
+         ))
+         (('type remainder) (
+            (set pme (parse-one-expression remainder))
+            (set remainder (tail pme))
+            (set pme2 (parse-many-expressions remainder))
+            (set program ( program (Type( (head pme) (head pme2) )) ))
+            (set toks (tail pme2))
          ))
          ((key (:= remainder)) (
             (set pme (parse-many-expressions remainder))
