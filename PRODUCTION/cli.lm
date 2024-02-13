@@ -80,7 +80,7 @@ parse-lambda := λtoks. (tail(
             (set toks r)
          ))
       ))
-   ))
+   ))	
    lmb
 ));
 
@@ -93,7 +93,7 @@ parse-one-expression := λtoks. (tail(
    (local remainder)
    (local expr)
    (match toks (
-       ()
+      ()
       ( () (
          (set expr Nil)
          (set remainder ())
@@ -112,7 +112,7 @@ parse-one-expression := λtoks. (tail(
          (set remainder (tail pme))
       ))
       ( ( \\ (\' r) ) (
-         (set expr (Literal \'))
+         (set expr (Lit \'))
          (set remainder r)
       ))
       ( ( \' (i r) ) (
@@ -143,6 +143,7 @@ parse-many-expressions := λtoks. (tail(
             (set toks ())
          ))
          ((\] tl) (
+            (if expr () (set expr Nil))
             (set remainder tl)
             (set toks ())
          ))
