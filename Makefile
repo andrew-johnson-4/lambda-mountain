@@ -1,4 +1,10 @@
 
+p:
+	lm -o production.s PRODUCTION/cli.lm
+	as -o production.o production.s
+	ld -o production   production.o
+	./production --parse tests/lm/user_function_unsugared.lm
+
 prod:
 	cargo test prodsuite
 

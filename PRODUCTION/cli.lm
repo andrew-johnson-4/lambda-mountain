@@ -52,13 +52,14 @@ tokenize-file := λpath. (
 typecheck := λprogram. program;
 
 parse-lambda := λtoks. (tail(
+   (local remainder)
    (local pme)
    (set pme (parse-one-expression toks))
    (local lmb)
    (set lmb (head pme))
    (set toks (tail pme))
    (match lmb (
-       ()
+      ()
       ((Literal \,) (
          (set lmb (Nil (parse-many-expressions toks)))
          (set toks ())
@@ -69,7 +70,9 @@ parse-lambda := λtoks. (tail(
       (match pme (
          ()
          (((Literal \,) r) (
-            (set lmb (lmb (parse-many-expressions r)))
+            (set pme (parse-many-expressions r))
+            (set lmb (lmb (head pme)))
+            (set remainder (tail pme))
             (set toks ())
          ))
          ((e ()) (
@@ -81,7 +84,7 @@ parse-lambda := λtoks. (tail(
          ))
       ))
    ))	
-   lmb
+   (lmb remainder)
 ));
 
 unexpect := λt. print-s (UnexpectedToken t);
@@ -99,8 +102,9 @@ parse-one-expression := λtoks. (tail(
          (set remainder ())
       ))
       ( ( \l r ) (
-         (set expr (Lambda (parse-lambda r)))
-         (set remainder ())
+         (set pme (parse-lambda r))
+         (set expr (Lambda (head pme)))
+         (set remainder (tail pme))
       ))
       ( ( \] r ) (
          (unexpect (head toks))
@@ -169,6 +173,9 @@ parse-program := λtoks. (tail(
    (while toks (
       match toks (
          ()
+         ((\: remainder) (
+            (set toks remainder)
+         ))
          ((key (:= remainder)) (
             (set pme (parse-many-expressions remainder))
             (set program ( program (Global (key (head pme))) ))
