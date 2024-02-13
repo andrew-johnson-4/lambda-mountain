@@ -61,7 +61,9 @@ parse-lambda := λtoks. (tail(
    (match lmb (
       ()
       ((Literal \,) (
-         (set lmb (Nil (parse-many-expressions toks)))
+         (set pme (parse-many-expressions toks))
+         (set lmb (Nil (head pme)))
+         (set remainder (tail pme))
          (set toks ())
       ))
    ))
@@ -77,6 +79,7 @@ parse-lambda := λtoks. (tail(
          ))
          ((e ()) (
             (expect( \, toks ))
+            (set toks ())
          ))
          ((e r) (
             (set lmb (App (lmb e)))
@@ -143,7 +146,7 @@ parse-many-expressions := λtoks. (tail(
       (match toks (
          ()
          ((\: tl) (
-            (set remainder tl)
+            (set remainder toks)
             (set toks ())
          ))
          ((\] tl) (
@@ -183,7 +186,7 @@ parse-program := λtoks. (tail(
          ))
          (remainder (
             (set pme (parse-many-expressions remainder))
-            (set program ((head pme) program))
+            (set program (program (GExpr (head pme)) ))
             (set toks (tail pme))
          ))
       )
