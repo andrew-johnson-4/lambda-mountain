@@ -51,32 +51,29 @@ tokenize-file := λpath. (
 
 typecheck := λprogram. program;
 
-#returns (lhs rhs)
 parse-lambda := λtoks. (tail(
-   (local er)
-   (set er (parse-one-expression toks))
+   (local pme)
+   (set pme (parse-one-expression toks))
    (local lmb)
-   (set lmb (head er))
-   (set toks (tail er))
+   (set lmb (head pme))
+   (set toks (tail pme))
    (match lmb (
-      ()
+       ()
       ((Literal \,) (
          (set lmb (Nil (parse-many-expressions toks)))
          (set toks ())
       ))
    ))
    (while toks (
-      (set er (parse-one-expression toks))
-      (match er (
+      (set pme (parse-one-expression toks))
+      (match pme (
          ()
          (((Literal \,) r) (
             (set lmb (lmb (parse-many-expressions r)))
             (set toks ())
          ))
          ((e ()) (
-            (set lmb (lmb e))
-            (print-s (ExpectedLambdaRhs lmb))
-            (set toks ())
+            (expect( \, toks ))
          ))
          ((e r) (
             (set lmb (App (lmb e)))
@@ -87,11 +84,16 @@ parse-lambda := λtoks. (tail(
    lmb
 ));
 
+unexpect := λt. print-s (UnexpectedToken t);
+expect := λt ts. ();
+#expect := λt ts. if (eq( t (head ts) )) () (print-s (ExpectedToken t));
+
 parse-one-expression := λtoks. (tail(
+   (local pme)
    (local remainder)
    (local expr)
    (match toks (
-      ()
+       ()
       ( () (
          (set expr Nil)
          (set remainder ())
@@ -101,41 +103,13 @@ parse-one-expression := λtoks. (tail(
          (set remainder ())
       ))
       ( ( \] r ) (
-         (print-s (DANGLING_PARENTHESES toks))
-         (set remainder ())
+         (unexpect (head toks))
       ))
       ( ( \[ r ) (
-         (local depth)
-         (set depth 1)
-         (local nested)
-         (while depth (
-            (if r (
-               (local next)
-               (set next (head r))
-               (set r (tail r))
-               (match next (
-                  ()
-                  ( \[ (
-                     (set nested (nested next))
-                     (set depth (1 depth))
-                  ))
-                  ( \] (
-                     (set depth (tail depth))
-                     (if depth (
-                        (set nested (nested next))
-                     ) ())
-                  ))
-                  ( _ (
-                     (set nested (nested next))
-                  ))
-               ))
-            ) (
-               (print-s UNCLOSED_PARENTHESES)
-               (set depth ())
-            ))
-         ))
-         (set expr (parse-many-expressions (reverse-list nested)))
-         (set remainder r)
+         (set pme (parse-many-expressions r))
+         (expect( \] (tail pme) ))
+         (set expr (head pme))
+         (set remainder (tail pme))
       ))
       ( ( \\ (\' r) ) (
          (set expr (Literal \'))
@@ -158,50 +132,54 @@ parse-one-expression := λtoks. (tail(
 ));
 
 parse-many-expressions := λtoks. (tail(
-   (local er)
-   (set er (parse-one-expression toks))
-   (local return)
-   (set return (head er))
+   (local pme)
+   (local expr)
    (local remainder)
-   (set remainder (tail er))
-   (while remainder (
-      (set er (parse-one-expression remainder))
-      (set return (App (return (head er))))
-      (set remainder (tail er))
-   ) (head er))
-   return
+   (while toks (
+      (match toks (
+         ()
+         ((\: tl) (
+            (set remainder tl)
+            (set toks ())
+         ))
+         ((\] tl) (
+            (set remainder tl)
+            (set toks ())
+         ))
+         (_ (
+            (set pme (parse-one-expression toks))
+            (if expr (
+               (set expr (App( expr (head pme) )))
+            ) (
+               (set expr (head pme))
+            ))
+            (set toks (tail pme))
+         ))
+      ))
+   ))
+   (expr remainder)
 ));
 
 parse-expression := λtoks. (parse-many-expressions toks);
 
 parse-program := λtoks. (tail(
    (local program)
-   (local key)
-   (local rhs)
-   (local a)
-   (foreach-atom toks (
-      (set a $_)
-      (if (eq(a \:)) (
-         (if key (
-            (set program (program (Global (key (parse-many-expressions (reverse-list rhs))))))
-            (set key ())
-         ) ())
-         (set rhs ())
-      ) (
-         (if a (set rhs (rhs a)) ())
-         (match rhs (
-            ()
-            ( ( (() k) ':=) (
-               (set key k)
-               (set rhs ())
-            ))
-            ( _ () )
+   (local pme)
+   (while toks (
+      match toks (
+         ()
+         ((key (:= remainder)) (
+            (set pme (parse-many-expressions remainder))
+            (set program ( program (Global (key (head pme))) ))
+            (set toks (tail pme))
          ))
-      ))
+         (remainder (
+            (set pme (parse-many-expressions remainder))
+            (set program ((head pme) program))
+            (set toks (tail pme))
+         ))
+      )
    ))
-   (if key (
-     (set program (program (Global (key (parse-many-expressions (reverse-list rhs))))))
-   ) ())
    program
 ));
 

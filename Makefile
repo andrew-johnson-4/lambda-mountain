@@ -1,4 +1,7 @@
 
+prod:
+	cargo test prodsuite
+
 test:
 	cargo test testsuite
 
