@@ -136,6 +136,11 @@ infer-expr := λctx e. (
          ( (Literal _) (
             (ascript( e Atom ))
          ))
+         ( (App( l r )) (
+            (infer-expr( ctx l ))
+            (infer-expr( ctx r ))
+            (ascript( e Cons ))
+         ))
       )
    )
 );
