@@ -34,7 +34,7 @@ main := (
          if $_ (print-s (parse-program (tokenize (load-file $_)))) ()
       )))
       (Typecheck (foreach-atom inputs (
-         if $_ (print-s (typecheck (parse-program (tokenize (load-file $_))))) ()
+         if $_ (print-s (show-ascript (typecheck (parse-program (tokenize (load-file $_)))))) ()
       )))
       (ParseExpression (foreach-atom inputs (
          if $_ (print-s (parse-expression (tokenize (load-file $_)))) ()
@@ -45,6 +45,7 @@ main := (
    ))
 );
 
+type-context := ();
 types-have-changed := ();
 
 tokenize-file := λpath. (
@@ -52,17 +53,88 @@ tokenize-file := λpath. (
 );
 
 typecheck := λprogram. (tail(
-   (local tctx)
    (set types-have-changed True)
    (while types-have-changed (
       (set types-have-changed ())
-      (infer( tctx () program ))
+      (infer-prog program)
    ))
    program
 ));
 
-infer := λtctx ctx e. (
-   print-s Infer
+lookup-type := λterm. (tail(
+   (local tctx)
+   (set tctx type-context)
+   (local found)
+   (local ttt)
+   (while list (
+      (set ttt (head list))
+      (if (is( (head ttt) term )) (
+         (set found (tail ttt))
+         (set list ())
+      ) (
+         (set list (tail list))
+      ))
+   ))
+   found
+));
+
+ascript := λt tt. (
+   (set type-context ((t tt) type-context))
+   (set types-have-changed True)
+);
+
+show-ascript := λp. (tail(
+   (local term)
+   (set term (match p (
+      ()
+      ( () () )
+      ( Nil p )
+      ( (Variable _) p )
+      ( (Literal _) p )
+      ( (App( f x )) (
+         (App( (show-ascript f) (show-ascript x) ))
+      ))
+      ( (Lambda( lhs rhs )) (
+         (App( (show-ascript lhs) (show-ascript rhs) ))
+      ))
+      ( (prog (GExpr( g ))) (
+         ( (show-ascript prog) (GExpr( show-ascript g )) )
+      ))
+      ( (prog (Global( n v ))) (
+         ( (show-ascript prog) (Global( n (show-ascript v) )) )
+      ))
+      ( unknown (
+         print-s (UnknownTerm unknown)
+      ))
+   )))
+   (local type)
+   (set type (lookup-type p))
+   (if type (
+      (: term type)
+   ) (
+      term
+   ))
+));
+
+infer-prog := λp. (
+   (while p (
+      (infer-expr( () (tail p) ))
+      (set p (head p))
+   ))
+);
+
+infer-expr := λctx e. (
+   if (lookup-type e) () (
+      match e (
+         ()
+         ( (GExpr ge) (
+            (infer-expr ctx ge)
+         ))
+         ( Nil (
+            (ascript( e Nil ))
+         ))
+      )
+   )
 );
 
 parse-lambda := λtoks. (tail(
