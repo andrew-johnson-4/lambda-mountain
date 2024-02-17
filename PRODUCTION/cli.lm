@@ -45,11 +45,25 @@ main := (
    ))
 );
 
+types-have-changed := ();
+
 tokenize-file := λpath. (
    tokenize (load-file path)
 );
 
-typecheck := λprogram. program;
+typecheck := λprogram. (tail(
+   (local tctx)
+   (set types-have-changed True)
+   (while types-have-changed (
+      (set types-have-changed ())
+      (infer( tctx () program ))
+   ))
+   program
+));
+
+infer := λtctx ctx e. (
+   print-s Infer
+);
 
 parse-lambda := λtoks. (tail(
    (local remainder)
