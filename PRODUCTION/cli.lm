@@ -130,6 +130,12 @@ infer-expr := λctx e. (
          ( (GExpr ge) (
             (infer-expr( ctx ge ))
          ))
+#         ( (Global( n e )) (
+#            (infer-expr( ctx e ))
+#         ))
+         ( (Type( l ds )) (
+            print-s (Typedef( l ds ))
+         ))
          ( Nil (
             (ascript( e Nil ))
          ))

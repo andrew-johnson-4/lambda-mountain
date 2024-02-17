@@ -91,7 +91,9 @@ fn testsuite() {
       }
    }
    for (mode,path,expected,actual) in &failures {
-      eprintln!("TEST {} {} Expected: {}, Actual: {}", mode, path, &expected[..std::cmp::min(100,expected.len())], &actual[..std::cmp::min(100,actual.len())]);
+      eprintln!("TEST {} {}", mode, path);
+      eprintln!("Expected: {}", &expected[..std::cmp::min(400,expected.len())] );
+      eprintln!("Actual: {}", &actual[..std::cmp::min(400,actual.len())] );
    }
    assert_eq!( failures.len(), 0 );
    rm("production");
