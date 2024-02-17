@@ -236,16 +236,22 @@ dec:
 inv:
 	neg %r12
 	ret
-_is:
-	cmp %rax, %rbx
-	je _is_true
-	mov $0, %r12
+is:
+	cmp %r8, %r12
+	jne is_false
+	cmp %r9, %r13
+	jne is_false
+	cmp %r10, %r14
+	jne is_false
+	cmp %r11, %r15
+	jne is_false
+	mov $__true, %r12
 	mov $0, %r13
 	mov $0, %r14
 	mov $0, %r15
 	ret
-_is_true:
-	mov $__true, %r12
+is_false:
+	mov $0, %r12
 	mov $0, %r13
 	mov $0, %r14
 	mov $0, %r15
@@ -237048,7 +237054,7 @@ uuid_00000000000007f0:
 	.ascii "\n"
 	.zero 1
 uuid_00000000000007f1:
-	.ascii "_is:"
+	.ascii "is:"
 	.zero 1
 uuid_00000000000007f2:
 	.ascii "\n"
@@ -237084,7 +237090,7 @@ uuid_00000000000007fc:
 	.ascii " "
 	.zero 1
 uuid_00000000000007fd:
-	.ascii "_is_false"
+	.ascii "is_false"
 	.zero 1
 uuid_00000000000007fe:
 	.ascii "\n"
@@ -237120,7 +237126,7 @@ uuid_0000000000000808:
 	.ascii " "
 	.zero 1
 uuid_0000000000000809:
-	.ascii "_is_false"
+	.ascii "is_false"
 	.zero 1
 uuid_000000000000080a:
 	.ascii "\n"
@@ -237156,7 +237162,7 @@ uuid_0000000000000814:
 	.ascii " "
 	.zero 1
 uuid_0000000000000815:
-	.ascii "_is_false"
+	.ascii "is_false"
 	.zero 1
 uuid_0000000000000816:
 	.ascii "\n"
@@ -237192,7 +237198,7 @@ uuid_0000000000000820:
 	.ascii " "
 	.zero 1
 uuid_0000000000000821:
-	.ascii "_is_false"
+	.ascii "is_false"
 	.zero 1
 uuid_0000000000000822:
 	.ascii "\n"
@@ -237291,7 +237297,7 @@ uuid_0000000000000841:
 	.ascii "\n"
 	.zero 1
 uuid_0000000000000842:
-	.ascii "_is_true:"
+	.ascii "is_false:"
 	.zero 1
 uuid_0000000000000843:
 	.ascii "\n"
@@ -243549,7 +243555,7 @@ uuid_0000000000001086:
 	.ascii " "
 	.zero 1
 uuid_0000000000001087:
-	.ascii "_is"
+	.ascii "is"
 	.zero 1
 uuid_0000000000001088:
 	.ascii "\n"

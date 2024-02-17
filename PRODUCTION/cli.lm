@@ -121,7 +121,6 @@ infer-prog := λp. (
       (infer-expr( () (tail p) ))
       (set p (head p))
    ))
-   (print-s (TypeContext type-context))
 );
 
 infer-expr := λctx e. (

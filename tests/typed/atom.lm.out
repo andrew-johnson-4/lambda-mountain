@@ -1,1 +1,1 @@
-(() (: (GExpr A) Atom))
+(() (GExpr (: ((Literal A) Atom))))
