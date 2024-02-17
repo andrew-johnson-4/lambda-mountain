@@ -5,7 +5,6 @@ test:
 prod:
 	cargo test prodsuite
 
-
 build:
 	as -o lm_raw.o BOOTSTRAP/cli.s
 	ld -o lm lm_raw.o

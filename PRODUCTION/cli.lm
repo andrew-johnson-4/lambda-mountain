@@ -66,13 +66,13 @@ lookup-type := λterm. (tail(
    (set tctx type-context)
    (local found)
    (local ttt)
-   (while list (
-      (set ttt (head list))
+   (while tctx (
+      (set ttt (head tctx))
       (if (is( (head ttt) term )) (
          (set found (tail ttt))
-         (set list ())
+         (set tctx ())
       ) (
-         (set list (tail list))
+         (set tctx (tail tctx))
       ))
    ))
    found
@@ -110,7 +110,7 @@ show-ascript := λp. (tail(
    (local type)
    (set type (lookup-type p))
    (if type (
-      (: term type)
+      (:( term type ))
    ) (
       term
    ))
@@ -121,6 +121,7 @@ infer-prog := λp. (
       (infer-expr( () (tail p) ))
       (set p (head p))
    ))
+   (print-s (TypeContext type-context))
 );
 
 infer-expr := λctx e. (
@@ -128,10 +129,13 @@ infer-expr := λctx e. (
       match e (
          ()
          ( (GExpr ge) (
-            (infer-expr ctx ge)
+            (infer-expr( ctx ge ))
          ))
          ( Nil (
             (ascript( e Nil ))
+         ))
+         ( (Literal _) (
+            (ascript( e Atom ))
          ))
       )
    )
