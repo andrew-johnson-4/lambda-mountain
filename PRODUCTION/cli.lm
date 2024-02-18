@@ -133,17 +133,17 @@ infer-prog := λp. (
 
 infer-ctx := λctx e. (match e (
    ()
-   ( (Variable v) (
-      (ctx (v S))
-   ))
-   ( (App( ps (Variable v) )) (
-      ( (infer-ctx( ctx ps )) (v S))
-   ))
    ( (App( (App( (Literal :) (Variable v) )) tt )) (
       (ctx (v (typeof-ascript tt)))
    ))
    ( (App( ps (App( (App( (Literal :) (Variable v) )) tt )) )) (
       ( (infer-ctx( ctx ps )) (v (typeof-ascript tt)))
+   ))
+   ( (Variable v) (
+      (ctx (v S))
+   ))
+   ( (App( ps (Variable v) )) (
+      ( (infer-ctx( ctx ps )) (v S))
    ))
    ( u (
       print-s (UnknownLhs u)
@@ -167,21 +167,24 @@ typeof-ascript := λtt. (match tt (
    ( (Literal tname) (
       tname
    ))
+   ( (Variable tname) (
+      tname
+   ))
 ));
 
 typeof-lhs := λlhs. (match lhs (
    ()
-   ( (Variable v) (
-      S
-   ))
-   ( (App( ps (Variable v) )) (
-      (Cons( (typeof-lhs ps) S ))
-   ))
    ( (App( (App( (Literal :) (Variable v) )) tt )) (
       (typeof-ascript tt)
    ))
    ( (App( ps (App( (App( (Literal :) (Variable v) )) tt )) )) (
       (Cons( (typeof-lhs ps) (typeof-ascript tt) ))
+   ))
+   ( (Variable v) (
+      S
+   ))
+   ( (App( ps (Variable v) )) (
+      (Cons( (typeof-lhs ps) S ))
    ))
    ( u (
       print-s (UnknownLhs u)
