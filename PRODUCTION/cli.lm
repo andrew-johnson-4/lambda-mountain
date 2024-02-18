@@ -124,15 +124,16 @@ infer-prog := λp. (
 );
 
 infer-expr := λctx e. (
-   if (lookup-type e) () (
+   (if (lookup-type e) () (
       match e (
          ()
+         ( () () )
          ( (GExpr ge) (
             (infer-expr( ctx ge ))
          ))
-#         ( (Global( n e )) (
-#            (infer-expr( ctx e ))
-#         ))
+         ( (Global( gln gle )) (
+            (infer-expr( ctx gle ))
+         ))
          ( (Type( l ds )) (
             print-s (Typedef( l ds ))
          ))
@@ -147,8 +148,15 @@ infer-expr := λctx e. (
             (infer-expr( ctx r ))
             (ascript( e Cons ))
          ))
+         ( (Lambda( lhs rhs )) (
+            (ascript( e ? ))
+         ))
+         ( (Variable v) (
+            (ascript( e ? ))
+         ))
+         ( u (print-s (UnknownTerm u)) )
       )
-   )
+   ))
 );
 
 parse-lambda := λtoks. (tail(
