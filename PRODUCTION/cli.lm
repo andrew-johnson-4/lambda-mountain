@@ -45,6 +45,10 @@ main := (
    ))
 );
 
+#this is necessary to circumvent a bug with the bootstrap compiler trying to call globals as functions syntactically
+global := λvalue. value;
+fail := λmsg. print-s msg;
+
 type-definitions := ();
 type-context := ();
 types-have-changed := ();
@@ -124,9 +128,11 @@ show-ascript := λp. (tail(
    ))
 ));
 
+global-context := ();
+
 infer-prog := λp. (
    (while p (
-      (infer-expr( () (tail p) ))
+      (infer-expr( (global global-context) (tail p) ))
       (set p (head p))
    ))
 );
@@ -150,9 +156,29 @@ infer-ctx := λctx e. (match e (
    ))
 ));
 
+typeof-gvar := λv. (tail(
+   (local gctx)
+   (set gctx global-context)
+   (local tt)
+   (while gctx (
+      (match (tail gctx) (
+         ()
+         ( (Global( gn gt )) (
+            if (eq( v gn )) (
+               (set gctx ())
+               (set tt gt)
+            ) (
+               (set gctx (head gctx))
+            )
+         ))
+      ))
+   ))
+   tt
+));
+
 typeof-var := λctx v. (match ctx (
    ()
-   ( () () )
+   ( () (typeof-gvar v) )
    ( (cs (cv ct)) (
       if (eq( v cv )) (
          ct
@@ -201,6 +227,14 @@ infer-expr := λctx e. (
          ))
          ( (Global( gln gle )) (
             (infer-expr( ctx gle ))
+            (match (lookup-type gle) (
+               ()
+               ( () () )
+               ( glt (
+                  (set global-context ( (global global-context) (Global( gln glt )) ))
+                  (ascript( e ? ))
+               ))
+            ))
          ))
          ( (Type( l ds )) (
             (set type-definitions (e type-definitions))
@@ -215,7 +249,18 @@ infer-expr := λctx e. (
          ( (App( l r )) (
             (infer-expr( ctx l ))
             (infer-expr( ctx r ))
-            (ascript( e Cons ))
+            (match ( (lookup-type l) (lookup-type r) ) (
+               ()
+               ( (() _) () )
+               ( (_ ()) () )
+               ( ( (->(lt rt)) pt ) (
+                  (print-s (Apply lt rt pt))
+                  (ascript( e ? ))
+               ))
+               ( (lt rt) (
+                  (ascript( e (Cons(lt rt)) ))
+               ))
+            ))
          ))
          ( (Lambda( lhs rhs )) (
             (set ctx (infer-ctx( ctx lhs )))
