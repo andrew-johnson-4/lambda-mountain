@@ -228,8 +228,9 @@ unify-sub := λctx v. (match ctx (
       (set lv (unify-sub( ctxl v )))
       (local rv)
       (set rv (unify-sub( ctxr v )))
-      (if (is( lv v )) () (set v lv))
-      (if (is( rv v )) () (set v rv))
+      (if (is( lv v )) (
+         (if (is( rv v )) () (set v rv))
+      ) (set v lv))
       v
    )))
 ));
@@ -239,7 +240,9 @@ unify-ctx := λctx v. (match v (
    ( (vl vr) (
       ( (unify-ctx( ctx vl )) (unify-ctx( ctx vr )) )
    ))
-   ( _ (unify-sub( ctx v )))
+   ( _ (
+      (unify-sub( ctx v ))
+   ))
 ));
 
 unify-args := λlt rt. (match (lt rt) (
@@ -271,7 +274,10 @@ unify-args := λlt rt. (match (lt rt) (
          ))
       ))
    ))
-   (_ (fail (UnknownUnify lt rt)))
+   (_ (tail(
+      (fail (UnknownUnify lt rt))
+      ?
+   )))
 ));
 
 infer-expr := λctx e. (
