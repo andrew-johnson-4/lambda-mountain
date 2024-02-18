@@ -217,12 +217,40 @@ typeof-lhs := λlhs. (match lhs (
    ))
 ));
 
-unify-ctx := λctx v. (
+unify-ctx := λctx v. (tail(
+   (print-s (UnifyCtx ctx v))
    ?
-);
+));
 
 unify-args := λlt rt. (match (lt rt) (
    ()
+   ( ((lt1 rt1) (lt2 rt2)) (
+      (match ( (unify-args(lt1 lt2)) (unify-args(rt1 rt2)) ) (
+         ()
+         ( (() _) () )
+         ( (_ ()) () )
+         ( (lctx rctx) (lctx rctx) )
+      ))
+   ))
+   ( (a1 a2) (
+      (if (eq( a1 a2 )) (
+         Accept
+      ) (
+         (if (is-variable a1) (
+            (if (is-variable a2) (
+               Accept
+            ) (
+               (Bind( a1 a2 ))
+            ))
+         ) (
+            (if (is-variable a2) (
+               (Bind( a2 a1 ))
+            ) (
+               ()
+            ))
+         ))
+      ))
+   ))
    (_ (fail (UnknownUnify lt rt)))
 ));
 
@@ -263,7 +291,6 @@ infer-expr := λctx e. (
                ( (() _) () )
                ( (_ ()) () )
                ( ( (->(lt rt)) pt ) (
-                  (print-s (Apply lt rt pt))
                   (ascript( e (unify-ctx( (unify-args(lt pt)) rt )) ))
                ))
                ( (lt rt) (
