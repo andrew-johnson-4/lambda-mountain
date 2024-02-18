@@ -217,6 +217,15 @@ typeof-lhs := λlhs. (match lhs (
    ))
 ));
 
+unify-ctx := λctx v. (
+   ?
+);
+
+unify-args := λlt rt. (match (lt rt) (
+   ()
+   (_ (fail (UnknownUnify lt rt)))
+));
+
 infer-expr := λctx e. (
    (if (lookup-type e) () (
       match e (
@@ -255,7 +264,7 @@ infer-expr := λctx e. (
                ( (_ ()) () )
                ( ( (->(lt rt)) pt ) (
                   (print-s (Apply lt rt pt))
-                  (ascript( e ? ))
+                  (ascript( e (unify-ctx( (unify-args(lt pt)) rt )) ))
                ))
                ( (lt rt) (
                   (ascript( e (Cons(lt rt)) ))
