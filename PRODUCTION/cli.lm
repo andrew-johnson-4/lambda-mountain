@@ -217,9 +217,29 @@ typeof-lhs := λlhs. (match lhs (
    ))
 ));
 
-unify-ctx := λctx v. (tail(
-   (print-s (UnifyCtx ctx v))
-   ?
+unify-sub := λctx v. (match ctx (
+   ()
+   ( Accept v )
+   ( (Bind( s1 s2 )) (
+      if (eq( v s1 )) s2 v
+   ))
+   ( (ctxl ctxr) (tail(
+      (local lv)
+      (set lv (unify-sub( ctxl v )))
+      (local rv)
+      (set rv (unify-sub( ctxr v )))
+      (if (is( lv v )) () (set v lv))
+      (if (is( rv v )) () (set v rv))
+      v
+   )))
+));
+
+unify-ctx := λctx v. (match v (
+   ()
+   ( (vl vr) (
+      ( (unify-ctx( ctx vl )) (unify-ctx( ctx vr )) )
+   ))
+   ( _ (unify-sub( ctx v )))
 ));
 
 unify-args := λlt rt. (match (lt rt) (
