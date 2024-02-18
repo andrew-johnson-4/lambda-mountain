@@ -1,1 +1,1 @@
-()
+((() (Global (f (: ((App ((App ((App ((App ((Literal :) (Variable x))) (Variable tx))) (App ((App ((Literal :) (Variable y))) (Variable ty))))) (: ((Variable x) tx)))) (-> ((Cons (tx ty)) tx))))))) (GExpr (: ((App ((: ((Variable f) (-> ((Cons (tx ty)) tx)))) (: ((App ((: ((Literal 1) Atom)) (: ((Literal 2) Atom)))) (Cons (Atom Atom)))))) Atom))))

@@ -1,1 +1,1 @@
-(() (GExpr (: ((App ((: ((Literal 1) Atom)) (: ((Literal 2) Atom)))) Cons))))
+(() (GExpr (: ((App ((: ((Literal 1) Atom)) (: ((Literal 2) Atom)))) (Cons (Atom Atom))))))

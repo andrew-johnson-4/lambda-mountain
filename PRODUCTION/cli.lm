@@ -84,8 +84,10 @@ lookup-type := λterm. (tail(
 ));
 
 ascript := λt tt. (
-   (set type-context ((t tt) type-context))
-   (set types-have-changed True)
+   if tt (
+      (set type-context ((t tt) type-context))
+      (set types-have-changed True)
+   ) ()
 );
 
 show-ascript := λp. (tail(
