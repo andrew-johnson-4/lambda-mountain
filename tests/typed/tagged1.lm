@@ -1,0 +1,7 @@
+
+type A (Tag1 S S)
+     | (Tag2 S);
+
+f := λ(: a A). a;
+
+main := print-s (f (Tag2 3));

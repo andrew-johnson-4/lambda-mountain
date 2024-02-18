@@ -10,5 +10,10 @@ a.out
 *.exe
 *.log
 bootstrap
+bootstrap.s
+bootstrap.o
 bbootstrap
 bin/lm_raw
+production
+production.s
+production.o

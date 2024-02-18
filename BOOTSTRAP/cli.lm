@@ -1128,6 +1128,34 @@ compile-expr := λctx e offset used. (tail(
          ))
          (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))
       )))
+      ( (App( (Variable 'is) (App( l r )) )) (tail(
+         (set e1 (compile-expr(ctx l offset Used)))
+         (set e1_frame (get-frame e1))
+         (set e1_prog (get-prog e1))
+         (set e1_unframe (get-unframe e1))
+         (set e1_text (get-text e1))
+         (set e1_data (get-data e1))
+         (set ctx (get-pc e1))
+         (set offset (get-offset e1))
+         (set e2 (compile-expr(ctx r offset Used)))
+         (set e2_frame (get-frame e2))
+         (set e2_prog (get-prog e2))
+         (set e2_unframe (get-unframe e2))
+         (set e2_text (get-text e2))
+         (set e2_data (get-data e2))
+         (set ctx (get-pc e2))
+         (set offset (get-offset e2))
+         (set prog (
+            e1_prog
+            \t 'mov \s '%r12, %r8                  \n
+            \t 'mov \s '%r13, %r9                  \n
+            \t 'mov \s '%r14, %r10                 \n
+            \t 'mov \s '%r15, %r11                 \n
+            e2_prog
+            \t 'call \s 'is                        \n
+         ))
+         (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))
+      )))
       ( (App ((Variable 'local) (Variable fname))) (tail(
          ()
          (set e1 (declare-local(ctx fname offset)))
@@ -1519,8 +1547,11 @@ _before-main := λ.(
 );
 
 _program-header := λ.(
-   '\,global \s 'main                     \n
+   '\,global \s '_start                   \n
    '\,text                                \n
+
+   '_start:                               \n
+   \t 'jmp \s 'main                       \n
 
    # internal _strlen (%rax: *char) -> %rbx
    # not a call-convention function
@@ -1785,6 +1816,27 @@ _program-header := λ.(
 
    'inv:                                  \n
    \t 'neg \s '%r12                       \n
+   \t 'ret                                \n
+
+   'is:                                   \n
+   \t 'cmp \s '%r8, \s '%r12              \n
+   \t 'jne \s 'is_false                   \n
+   \t 'cmp \s '%r9, \s '%r13              \n
+   \t 'jne \s 'is_false                   \n
+   \t 'cmp \s '%r10, \s '%r14             \n
+   \t 'jne \s 'is_false                   \n
+   \t 'cmp \s '%r11, \s '%r15             \n
+   \t 'jne \s 'is_false                   \n
+   \t 'mov \s '$__true, \s '%r12          \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$0, \s '%r14               \n
+   \t 'mov \s '$0, \s '%r15               \n
+   \t 'ret                                \n
+   'is_false:                             \n
+   \t 'mov \s '$0, \s '%r12               \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$0, \s '%r14               \n
+   \t 'mov \s '$0, \s '%r15               \n
    \t 'ret                                \n
 
    'is_neg:                               \n
