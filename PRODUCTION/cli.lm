@@ -131,6 +131,25 @@ infer-prog := λp. (
    ))
 );
 
+infer-ctx := λctx e. (match e (
+   ()
+   ( (Variable v) (
+      (ctx (v S))
+   ))
+   ( (App( ps (Variable v) )) (
+      ( (infer-ctx( ctx ps )) (v S))
+   ))
+   ( (App( (App( (Literal :) (Variable v) )) tt )) (
+      (ctx (v tt))
+   ))
+   ( (App( ps (App( (App( (Literal :) (Variable v) )) tt )) )) (
+      ( (infer-ctx( ctx ps )) (v tt))
+   ))
+   ( u (
+      print-s (UnknownLhs u)
+   ))
+));
+
 infer-expr := λctx e. (
    (if (lookup-type e) () (
       match e (
@@ -158,6 +177,7 @@ infer-expr := λctx e. (
             (ascript( e Cons ))
          ))
          ( (Lambda( lhs rhs )) (
+            (set ctx (infer-ctx( ctx lhs )))
             (ascript( e ? ))
          ))
          ( (Variable v) (
