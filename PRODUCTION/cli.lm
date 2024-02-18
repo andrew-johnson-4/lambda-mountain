@@ -140,13 +140,32 @@ infer-ctx := λctx e. (match e (
       ( (infer-ctx( ctx ps )) (v S))
    ))
    ( (App( (App( (Literal :) (Variable v) )) tt )) (
-      (ctx (v tt))
+      (ctx (v (typeof-ascript tt)))
    ))
    ( (App( ps (App( (App( (Literal :) (Variable v) )) tt )) )) (
-      ( (infer-ctx( ctx ps )) (v tt))
+      ( (infer-ctx( ctx ps )) (v (typeof-ascript tt)))
    ))
    ( u (
       print-s (UnknownLhs u)
+   ))
+));
+
+typeof-var := λctx v. (match ctx (
+   ()
+   ( () () )
+   ( (cs (cv ct)) (
+      if (eq( v cv )) (
+         ct
+      ) (
+         (typeof-var( cs v ))
+      )
+   ))
+));
+
+typeof-ascript := λtt. (match tt (
+   ()
+   ( (Literal tname) (
+      tname
    ))
 ));
 
@@ -156,13 +175,13 @@ typeof-lhs := λlhs. (match lhs (
       S
    ))
    ( (App( ps (Variable v) )) (
-      ( (typeof-lhs ps) S )
+      (Cons( (typeof-lhs ps) S ))
    ))
    ( (App( (App( (Literal :) (Variable v) )) tt )) (
-      tt
+      (typeof-ascript tt)
    ))
    ( (App( ps (App( (App( (Literal :) (Variable v) )) tt )) )) (
-      ( (typeof-lhs ps) tt )
+      (Cons( (typeof-lhs ps) (typeof-ascript tt) ))
    ))
    ( u (
       print-s (UnknownLhs u)
@@ -207,7 +226,11 @@ infer-expr := λctx e. (
             ))
          ))
          ( (Variable v) (
-            (ascript( e ? ))
+            (match (typeof-var( ctx v )) (
+               ()
+               ( () () )
+               ( tt (ascript( e tt )) )
+            ))
          ))
          ( u (print-s (UnknownTerm u)) )
       )
