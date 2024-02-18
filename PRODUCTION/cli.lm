@@ -45,6 +45,7 @@ main := (
    ))
 );
 
+type-definitions := ();
 type-context := ();
 types-have-changed := ();
 
@@ -103,6 +104,9 @@ show-ascript := λp. (tail(
       ( (prog (Global( n v ))) (
          ( (show-ascript prog) (Global( n (show-ascript v) )) )
       ))
+      ( (prog (Type( tn td ))) (
+         ( (show-ascript prog) (Type( tn td )) )
+      ))
       ( unknown (
          print-s (UnknownTerm unknown)
       ))
@@ -110,7 +114,11 @@ show-ascript := λp. (tail(
    (local type)
    (set type (lookup-type p))
    (if type (
-      (:( term type ))
+      (if (eq( type ? )) (
+         term
+      ) ( 
+         (:( term type ))
+      ))
    ) (
       term
    ))
@@ -135,7 +143,8 @@ infer-expr := λctx e. (
             (infer-expr( ctx gle ))
          ))
          ( (Type( l ds )) (
-            print-s (Typedef( l ds ))
+            (set type-definitions (e type-definitions))
+            (ascript( e ? ))
          ))
          ( Nil (
             (ascript( e Nil ))
