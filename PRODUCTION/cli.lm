@@ -150,6 +150,25 @@ infer-ctx := λctx e. (match e (
    ))
 ));
 
+typeof-lhs := λlhs. (match lhs (
+   ()
+   ( (Variable v) (
+      S
+   ))
+   ( (App( ps (Variable v) )) (
+      ( (typeof-lhs ps) S )
+   ))
+   ( (App( (App( (Literal :) (Variable v) )) tt )) (
+      tt
+   ))
+   ( (App( ps (App( (App( (Literal :) (Variable v) )) tt )) )) (
+      ( (typeof-lhs ps) tt )
+   ))
+   ( u (
+      print-s (UnknownLhs u)
+   ))
+));
+
 infer-expr := λctx e. (
    (if (lookup-type e) () (
       match e (
@@ -178,7 +197,14 @@ infer-expr := λctx e. (
          ))
          ( (Lambda( lhs rhs )) (
             (set ctx (infer-ctx( ctx lhs )))
-            (ascript( e ? ))
+            (infer-expr( ctx rhs ))
+            (match (lookup-type rhs) (
+               ()
+               ( () () )
+               ( rt (
+                  (ascript( e (->( (typeof-lhs lhs) rt)) ))
+               ))
+            ))
          ))
          ( (Variable v) (
             (ascript( e ? ))
