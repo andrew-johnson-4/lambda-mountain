@@ -55,19 +55,83 @@ fn compile_production() {
       panic!("ld error code: {}", stderr);
    };
 }
+
 fn run_production(mode:&str, target: &str) -> String {
    let exit = Command::new("./production")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
                       .arg(mode)
-                      .arg("-o")
-                      .arg("tmp2.s")
                       .arg(target)
                       .spawn()
                       .expect("failed to execute process")
                       .wait_with_output()
                       .expect("failed to wait for process");
    let actual = String::from_utf8_lossy(&exit.stdout).to_string();
+   actual
+}
+
+fn run_compile_production(mode:&str, target: &str) -> String {
+   rm("tmp.s");
+   rm("tmp.o");
+   rm("tmp");
+   let exit = Command::new("./production")
+                      .stdout(std::process::Stdio::piped())
+                      .stderr(std::process::Stdio::piped())
+                      .arg(mode)
+                      .arg("-o")
+                      .arg("tmp.s")
+                      .arg(target)
+                      .spawn()
+                      .expect("failed to execute process")
+                      .wait_with_output()
+                      .expect("failed to wait for process");
+   if !exit.status.success() {
+      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
+      panic!("production error code: {}", stderr);
+   };
+   let exit = Command::new("as")
+                      .stdout(std::process::Stdio::piped())
+                      .stderr(std::process::Stdio::piped())
+                      .arg("-o")
+                      .arg("tmp.o")
+                      .arg("tmp.s")
+                      .spawn()
+                      .expect("failed to execute process")
+                      .wait_with_output()
+                      .expect("failed to wait for process");
+   if !exit.status.success() {
+      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
+      panic!("as error code: {}", stderr);
+   };
+   let exit = Command::new("ld")
+                      .stdout(std::process::Stdio::piped())
+                      .stderr(std::process::Stdio::piped())
+                      .arg("-o")
+                      .arg("tmp")
+                      .arg("tmp.o")
+                      .spawn()
+                      .expect("failed to execute process")
+                      .wait_with_output()
+                      .expect("failed to wait for process");
+   if !exit.status.success() {
+      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
+      panic!("ld error code: {}", stderr);
+   };
+   let exit = Command::new("./tmp")
+                      .stdout(std::process::Stdio::piped())
+                      .stderr(std::process::Stdio::piped())
+                      .spawn()
+                      .expect("failed to execute process")
+                      .wait_with_output()
+                      .expect("failed to wait for process");
+   if !exit.status.success() {
+      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
+      panic!("./tmp error code: {}", stderr);
+   };
+   let actual = String::from_utf8_lossy(&exit.stdout).to_string();
+   rm("tmp.s");
+   rm("tmp.o");
+   rm("tmp");
    actual
 }
 
@@ -91,7 +155,7 @@ fn testsuite() {
       let expected = std::fs::read_to_string(path.clone() + ".out")
                     .expect(&format!("Could not load expected output {}.out", path));
       let expected = expected.trim().to_string();
-      let actual = run_production("--compile", &path);
+      let actual = run_compile_production("--compile", &path);
       let actual = actual.trim().to_string();
       if expected != actual {
          failures.push(( "--compile", path, expected, actual ));

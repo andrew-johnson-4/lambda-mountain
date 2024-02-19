@@ -849,58 +849,48 @@ assemble := λprogram. (
 #);
 
 data-header := λ.(
-  '\,data                              \n
-  'load_file_bsz:                      \n
-  \t '\,quad \s '1024                  \n
-  'load_file_buf:                      \n
-  \t '\,zero \s '1024                  \n
-  '__nil:                              \n
-  \t '\,zero \s '32                    \n
-  '__argv:                             \n
-  \t '\,zero \s '32                    \n
-  '__s_counter:                        \n
-  \t '\,zero \s '8                     \n
-  '__s_section:                        \n
-  \t '\,zero \s '536870912             \n
-  '__a_counter:                        \n
-  \t '\,zero \s '8                     \n
-  '__a_section:                        \n
-  \t '\,zero \s '536870912             \n
-  '__nil_literal:                      \n
-  \t '\,ascii \s " \[ \] "             \n
-  \t '\,zero \s 1                      \n
-  '__hex_buffer:                       \n
-  \t '\,ascii \s "0123456789abcdef"    \n
-  '__put64_buffer:                     \n
-  \t '\,ascii \s "0x"                  \n
-  '__put64_write_buffer:               \n
-  \t '\,ascii \s "0000000000000000 \s "  \n
-  \t '\,zero \s '1                     \n
-  '__newline:                          \n
-  \t '\,ascii \s " \\n "               \n
-  '__lparen:                           \n
-  \t '\,ascii \s " \[ "                \n
-  '__rparen:                           \n
-  \t '\,ascii \s " \] "                \n
-  '__space:                            \n
-  \t '\,ascii \s " \s "                \n
-  '__true:                             \n
-  \t '\,ascii \s "True"                \n
-  \t '\,zero \s '1                     \n
-  '__digit:                            \n
-  \t '\,zero \s '2                     \n
-  '__dump_i:                           \n
-  \t '\,ascii \s '"0000000000000000"   \n
-  \t '\,zero \s '1                     \n
-  '__err_fopen:                        \n
+  '\,data                                 \n
+  'load_file_bsz:                         \n
+  \t '\,quad \s '1024                     \n
+  'load_file_buf:                         \n
+  \t '\,zero \s '1024                     \n
+  'argv:                                  \n
+  \t '\,zero \s '32                       \n
+  's_counter:                             \n
+  \t '\,zero \s '8                        \n
+  's_section:                             \n
+  \t '\,zero \s '536870912                \n
+  'a_counter:                             \n
+  \t '\,zero \s '8                        \n
+  'a_section:                             \n
+  \t '\,zero \s '536870912                \n
+  'nil_literal:                           \n
+  \t '\,ascii \s " \[ \] "                \n
+  \t '\,zero \s 1                         \n
+  'newline:                               \n
+  \t '\,ascii \s " \\n "                  \n
+  'lparen:                                \n
+  \t '\,ascii \s " \[ "                   \n
+  'rparen:                                \n
+  \t '\,ascii \s " \] "                   \n
+  'space:                                 \n
+  \t '\,ascii \s " \s "                   \n
+  'true:                                  \n
+  \t '\,ascii \s "True"                   \n
+  \t '\,zero \s '1                        \n
+  'digit:                                 \n
+  \t '\,zero \s '2                        \n
+  'dump_i:                                \n
+  \t '\,ascii \s '"0000000000000000"      \n
+  \t '\,zero \s '1                        \n
+  'err_fopen:                             \n
   \t '\,ascii \s '"Could \s 'not \s 'open \s 'file."  \n
-  \t '\,zero \s '1                       \n
+  \t '\,zero \s '1                        \n
 );
 
 program-header := λ.(
    '\,global \s '_start                   \n
    '\,text                                \n
-
    '_start:                               \n
    \t 'jmp \s 'main                       \n
 );
