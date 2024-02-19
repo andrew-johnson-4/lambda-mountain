@@ -166,12 +166,14 @@ typeof-gvar := λv. (tail(
       (match (tail gctx) (
          ()
          ( (Global( gn gt )) (
-            if (eq( v gn )) (
-               (set gctx ())
-               (set tt gt)
-            ) (
-               (set gctx (head gctx))
-            )
+            (if (eq( v gn )) (
+               (if tt (
+                  (set tt (And(tt gt)) )
+               ) (
+                  (set tt gt)
+               ))
+            ) ())
+            (set gctx (head gctx))
          ))
       ))
    ))
@@ -282,6 +284,18 @@ unify-args := λlt rt. (match (lt rt) (
    )))
 ));
 
+apply-plural := λmany pt. (match many(
+   ()
+   ( (And( t1 t2 )) (tail(
+      (local r)
+      (set r (apply-plural( t1 pt )))
+      (if r r (apply-plural( t2 pt )))
+   )))
+   ( (->(lt rt)) (
+      (unify-ctx( (unify-args(lt pt)) rt ))
+   ))
+));
+
 infer-expr := λctx e. (
    (if (lookup-type e) () (
       match e (
@@ -320,6 +334,9 @@ infer-expr := λctx e. (
                ( (_ ()) () )
                ( ( (->(lt rt)) pt ) (
                   (ascript( e (unify-ctx( (unify-args(lt pt)) rt )) ))
+               ))
+               ( ( (And(t1 t2)) pt ) (
+                  (ascript( e (apply-plural( (And(t1 t2)) pt )) ))
                ))
                ( (lt rt) (
                   (ascript( e (Cons(lt rt)) ))
