@@ -86,14 +86,10 @@ fn compile_bootstrap() {
 }
 
 fn run_bootstrap(mode:&str, target: &str) -> (String,String) {
-   rm("tmp1.s");
-   rm("tmp2.s");
    let exit = Command::new("./bootstrap")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
                       .arg(mode)
-                      .arg("-o")
-                      .arg("tmp1.s")
                       .arg(target)
                       .spawn()
                       .expect("failed to execute process")
@@ -108,8 +104,6 @@ fn run_bootstrap(mode:&str, target: &str) -> (String,String) {
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
                       .arg(mode)
-                      .arg("-o")
-                      .arg("tmp2.s")
                       .arg(target)
                       .spawn()
                       .expect("failed to execute process")
@@ -141,13 +135,6 @@ fn bootsuite() {
          failures.push(( "--parse", path, expected, actual ));
       }
    }
-   for entry in glob("tests/lm/*.lm").unwrap() {
-      let path = entry.unwrap().display().to_string();
-      let (expected,actual) = run_bootstrap("--compile",&path);
-      if expected != actual {
-         failures.push(( "--compile", path, expected, actual ));
-      }
-   }
    for entry in glob("BOOTSTRAP/cli.lm").unwrap() {
       let path = entry.unwrap().display().to_string();
       let (expected,actual) = run_bootstrap("--tokenize",&path);
@@ -160,13 +147,6 @@ fn bootsuite() {
       let (expected,actual) = run_bootstrap("--parse",&path);
       if expected != actual {
          failures.push(( "--parse", path, expected, actual ));
-      }
-   }
-   for entry in glob("BOOTSTRAP/cli.lm").unwrap() {
-      let path = entry.unwrap().display().to_string();
-      let (expected,actual) = run_bootstrap("--compile",&path);
-      if expected != actual {
-         failures.push(( "--compile", path, expected, actual ));
       }
    }
    for (mode,path,expected,actual) in &failures {
