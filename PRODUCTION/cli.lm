@@ -68,6 +68,12 @@ tokenize-file := λpath. (
 );
 
 typecheck := λprogram. (tail(
+   (local p)
+   (set p program)
+   (while p (
+      (infer-type-expr( (tail p) ))
+      (set p (head p))
+   ))
    (set types-have-changed True)
    (while types-have-changed (
       (set types-have-changed ())
@@ -333,14 +339,14 @@ infer-type-compound := λcompound. (match compound (
 infer-type-constructor := λname body. (match body (
    ()
    ( (Literal tag) (
-      (set type-constructors ((global type-constructors) (tag tag) ))
-      (set type-subtypes ((global type-subtypes) (tag (infer-type-compound name))))
+      (set type-constructors ( (global type-constructors) (tag tag) ))
+      (set type-subtypes ( (global type-subtypes) (tag (infer-type-compound name)) ))
    ))
    ( (App( (Literal tag) args )) (
       (local ctype)
-      (set ctype (tag (infer-type-compound args)))
-      (set type-constructors ((global type-constructors) (tag (->(ctype (tag ctype)))) ))
-      (set type-subtypes ((global type-subtypes) ((tag ctype) (infer-type-compound name))))
+      (set ctype (infer-type-compound args))
+      (set type-constructors ( (global type-constructors) (tag (->(ctype (tag ctype)))) ))
+      (set type-subtypes ( (global type-subtypes) ((tag ctype) (infer-type-compound name)) ))
    ))
 ));
 
@@ -353,6 +359,36 @@ infer-type-definition := λname def. (match def (
    ( body (
       (infer-type-constructor( name body ))
    ))
+));
+
+infer-constructor-type := λtag. (tail(
+   (local ctype)
+   (local constructors)
+   (set constructors type-constructors)
+   (while constructors (
+      (print-s ( SearchConstructors (tail(constructors)) ))
+      (if (eq( tag (head(tail(constructors)) )) (
+         (if ctype (
+            (set ctype (And( ctype (tail(tail(constructors))) )))
+         ) (
+            (set ctype (tail(tail(constructors))))
+         ))
+      ) ())
+      (set constructors (head constructors))
+   ))
+   (if ctype (
+      (print-s (ConstructorType tag ctype))
+   ) ())
+   ctype
+));
+
+infer-type-expr := λe. (match e (
+   ()
+   ( (Type( l ds )) (
+      (infer-type-definition( l ds ))
+      (ascript( e ? ))
+   ))
+   (_ ())
 ));
 
 infer-expr := λctx e. (
@@ -374,14 +410,13 @@ infer-expr := λctx e. (
                ))
             ))
          ))
-         ( (Type( l ds )) (
-            (infer-type-definition( l ds ))
-            (ascript( e ? ))
-         ))
+         ( (Type( l ds )) ())
          ( Nil (
             (ascript( e Nil ))
          ))
-         ( (Literal _) (
+         ( (Literal lit) (
+            (local ctype)
+            (set ctype (infer-constructor-type lit))
             (ascript( e Atom ))
          ))
          ( (App( l r )) (
