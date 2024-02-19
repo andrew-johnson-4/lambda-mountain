@@ -366,8 +366,7 @@ infer-constructor-type := λtag. (tail(
    (local constructors)
    (set constructors type-constructors)
    (while constructors (
-      (print-s ( SearchConstructors (tail(constructors)) ))
-      (if (eq( tag (head(tail(constructors)) )) (
+      (if (eq( tag (head(tail(constructors))) )) (
          (if ctype (
             (set ctype (And( ctype (tail(tail(constructors))) )))
          ) (
@@ -376,9 +375,6 @@ infer-constructor-type := λtag. (tail(
       ) ())
       (set constructors (head constructors))
    ))
-   (if ctype (
-      (print-s (ConstructorType tag ctype))
-   ) ())
    ctype
 ));
 
@@ -417,7 +413,11 @@ infer-expr := λctx e. (
          ( (Literal lit) (
             (local ctype)
             (set ctype (infer-constructor-type lit))
-            (ascript( e Atom ))
+            (if ctype (
+               (ascript( e (And( ctype Atom )) ))
+            ) (
+               (ascript( e Atom ))
+            ))
          ))
          ( (App( l r )) (
             (infer-expr( ctx l ))
