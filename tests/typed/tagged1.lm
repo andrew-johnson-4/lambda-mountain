@@ -1,5 +1,6 @@
 
 type A (Tag1( S S ))
-     | (Tag2( S ));
+     | (Tag2( S ))
+     | (Tag3( S S S ));
 
 (Tag2 3);

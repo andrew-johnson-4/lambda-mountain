@@ -323,6 +323,17 @@ apply-plural := λmany pt. (match many(
    ))
 ));
 
+infer-type-definition := λname def. (match def (
+   ()
+   ( (App( (App( tds (Literal |) )) body )) (
+      (infer-type-definition( name tds ))
+      (print-s (TypeDef name body))
+   ))
+   ( body (
+      print-s (TypeDef name body)
+   ))
+));
+
 infer-expr := λctx e. (
    (if (lookup-type e) () (
       match e (
@@ -343,7 +354,7 @@ infer-expr := λctx e. (
             ))
          ))
          ( (Type( l ds )) (
-            (set type-definitions (e type-definitions))
+            (infer-type-definition( l ds ))
             (ascript( e ? ))
          ))
          ( Nil (
