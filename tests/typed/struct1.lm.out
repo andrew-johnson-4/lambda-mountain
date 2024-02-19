@@ -1,1 +1,1 @@
-(1 2)
+((() (Type ((Literal A) (App ((Literal A) (App ((Literal S) (Literal S)))))))) (GExpr (: ((App ((: ((Literal A) (And ((-> ((Cons (S S)) (A (Cons (S S))))) Atom)))) (: ((App ((: ((Literal 1) Atom)) (: ((Literal 3) Atom)))) (Cons (Atom Atom)))))) (A (Cons (S S)))))))

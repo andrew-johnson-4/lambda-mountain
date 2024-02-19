@@ -1,7 +1,6 @@
 
-type A (Tag1 S S)
-     | (Tag2 S);
+type A Tag1
+     | (Tag2( S ))
+     | (Tag3( S S ));
 
-f := λ(: a A). a;
-
-main := print-s (f (Tag2 3));
+(Tag2 3);

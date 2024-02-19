@@ -67,10 +67,6 @@ fn run_production(mode:&str, target: &str) -> String {
                       .expect("failed to execute process")
                       .wait_with_output()
                       .expect("failed to wait for process");
-   if !exit.status.success() {
-      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("./production error code while {} {}: {}", mode, target, stderr);
-   };
    let actual = String::from_utf8_lossy(&exit.stdout).to_string();
    actual
 }

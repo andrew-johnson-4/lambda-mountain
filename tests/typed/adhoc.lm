@@ -1,7 +1,5 @@
 
-type A S;
-type B (S S);
+f := λ(: b Atom). b;
+f := λ(: b Nil). b;
 
-f := λ(: b B). (.0 b);
-
-main := print-s (f (1 2));
+f 1;

@@ -1,5 +1,14 @@
 
 main := (
+   (set type-subtypes 
+     (
+        (
+           (() (Atom S))
+           (Nil S)
+        )
+        ((Cons(S S)) S)
+     )
+   )
    (local mode)
    (set mode Compile)
    (local inputs)
@@ -45,8 +54,13 @@ main := (
    ))
 );
 
-type-definitions := ();
+#this is necessary to circumvent a bug with the bootstrap compiler trying to call globals as functions syntactically
+global := λvalue. value;
+fail := λmsg. (print-s msg) (exit 1);
+
 type-context := ();
+type-subtypes := ();
+type-constructors := ();
 types-have-changed := ();
 
 tokenize-file := λpath. (
@@ -54,6 +68,12 @@ tokenize-file := λpath. (
 );
 
 typecheck := λprogram. (tail(
+   (local p)
+   (set p program)
+   (while p (
+      (infer-type-expr( (tail p) ))
+      (set p (head p))
+   ))
    (set types-have-changed True)
    (while types-have-changed (
       (set types-have-changed ())
@@ -80,8 +100,10 @@ lookup-type := λterm. (tail(
 ));
 
 ascript := λt tt. (
-   (set type-context ((t tt) type-context))
-   (set types-have-changed True)
+   if tt (
+      (set type-context ((t tt) type-context))
+      (set types-have-changed True)
+   ) ()
 );
 
 show-ascript := λp. (tail(
@@ -108,7 +130,7 @@ show-ascript := λp. (tail(
          ( (show-ascript prog) (Type( tn td )) )
       ))
       ( unknown (
-         print-s (UnknownTerm unknown)
+         fail (UnknownTerm unknown)
       ))
    )))
    (local type)
@@ -124,35 +146,59 @@ show-ascript := λp. (tail(
    ))
 ));
 
+global-context := ();
+
 infer-prog := λp. (
    (while p (
-      (infer-expr( () (tail p) ))
+      (infer-expr( (global global-context) (tail p) ))
       (set p (head p))
    ))
 );
 
 infer-ctx := λctx e. (match e (
    ()
-   ( (Variable v) (
-      (ctx (v S))
-   ))
-   ( (App( ps (Variable v) )) (
-      ( (infer-ctx( ctx ps )) (v S))
-   ))
    ( (App( (App( (Literal :) (Variable v) )) tt )) (
       (ctx (v (typeof-ascript tt)))
    ))
    ( (App( ps (App( (App( (Literal :) (Variable v) )) tt )) )) (
       ( (infer-ctx( ctx ps )) (v (typeof-ascript tt)))
    ))
-   ( u (
-      print-s (UnknownLhs u)
+   ( (Variable v) (
+      (ctx (v S))
    ))
+   ( (App( ps (Variable v) )) (
+      ( (infer-ctx( ctx ps )) (v S))
+   ))
+   ( u (
+      fail (UnknownLhs u)
+   ))
+));
+
+typeof-gvar := λv. (tail(
+   (local gctx)
+   (set gctx global-context)
+   (local tt)
+   (while gctx (
+      (match (tail gctx) (
+         ()
+         ( (Global( gn gt )) (
+            (if (eq( v gn )) (
+               (if tt (
+                  (set tt (And(tt gt)) )
+               ) (
+                  (set tt gt)
+               ))
+            ) ())
+            (set gctx (head gctx))
+         ))
+      ))
+   ))
+   tt
 ));
 
 typeof-var := λctx v. (match ctx (
    ()
-   ( () () )
+   ( () (typeof-gvar v) )
    ( (cs (cv ct)) (
       if (eq( v cv )) (
          ct
@@ -167,25 +213,186 @@ typeof-ascript := λtt. (match tt (
    ( (Literal tname) (
       tname
    ))
+   ( (Variable tname) (
+      tname
+   ))
 ));
 
 typeof-lhs := λlhs. (match lhs (
    ()
-   ( (Variable v) (
-      S
-   ))
-   ( (App( ps (Variable v) )) (
-      (Cons( (typeof-lhs ps) S ))
-   ))
    ( (App( (App( (Literal :) (Variable v) )) tt )) (
       (typeof-ascript tt)
    ))
    ( (App( ps (App( (App( (Literal :) (Variable v) )) tt )) )) (
       (Cons( (typeof-lhs ps) (typeof-ascript tt) ))
    ))
-   ( u (
-      print-s (UnknownLhs u)
+   ( (Variable v) (
+      S
    ))
+   ( (App( ps (Variable v) )) (
+      (Cons( (typeof-lhs ps) S ))
+   ))
+   ( u (
+      fail (UnknownLhs u)
+   ))
+));
+
+unify-sub := λctx v. (match ctx (
+   ()
+   ( Accept v )
+   ( (Bind( s1 s2 )) (
+      if (eq( v s1 )) s2 v
+   ))
+   ( (ctxl ctxr) (tail(
+      (local lv)
+      (set lv (unify-sub( ctxl v )))
+      (local rv)
+      (set rv (unify-sub( ctxr v )))
+      (if (is( lv v )) (
+         (if (is( rv v )) () (set v rv))
+      ) (set v lv))
+      v
+   )))
+));
+
+unify-ctx := λctx v. (match v (
+   ()
+   ( (vl vr) (
+      ( (unify-ctx( ctx vl )) (unify-ctx( ctx vr )) )
+   ))
+   ( _ (
+      (unify-sub( ctx v ))
+   ))
+));
+
+unify-implies := λlt rt. (if (eq(lt rt)) True (tail(
+   (local accept)
+   (local subtypes)
+   (local st)
+   (set subtypes type-subtypes)
+   (while subtypes (
+      (set st (tail subtypes))
+      (if (eq( (head st) lt )) (
+         (if (eq( (tail st) rt )) (
+            (set accept True)
+         ) ())
+      ) ())
+      (set subtypes (head subtypes))
+   ))
+   accept
+)));
+
+unify-args := λlt rt. (match (lt rt) (
+   ()
+   ( ((lt1 rt1) (lt2 rt2)) (
+      (match ( (unify-args(lt1 lt2)) (unify-args(rt1 rt2)) ) (
+         ()
+         ( (() _) () )
+         ( (_ ()) () )
+         ( (lctx rctx) (lctx rctx) )
+      ))
+   ))
+   ( (a1 a2) (
+      (if (unify-implies( a2 a1 )) ( # argument type must imply parameter type
+         Accept
+      ) (
+         (if (is-variable a1) (
+            (if (is-variable a2) (
+               Accept
+            ) (
+               (Bind( a1 a2 ))
+            ))
+         ) (
+            (if (is-variable a2) (
+               (Bind( a2 a1 ))
+            ) (
+               ()
+            ))
+         ))
+      ))
+   ))
+   (_ (tail(
+      (fail (UnknownUnify lt rt))
+      ?
+   )))
+));
+
+apply-plural := λmany pt. (match many(
+   ()
+   ( (And( t1 t2 )) (tail(
+      (local r)
+      (set r (apply-plural( t1 pt )))
+      (if r r (apply-plural( t2 pt )))
+   )))
+   ( (->(lt rt)) (
+      (unify-ctx( (unify-args(lt pt)) rt ))
+   ))
+));
+
+safe-apply-plural := λterm many pt. (tail(
+   (local r)
+   (set r (apply-plural( many pt )))
+   (if r r (
+      fail (TypeError( InvalidArgument many pt ))
+   ))
+));
+
+infer-type-compound := λcompound. (match compound (
+   ()
+   ((Literal tt) tt)
+   ((App( lt rt )) (Cons( (infer-type-compound lt) (infer-type-compound rt) )))
+   (u (fail (UnknownTypeCompound u)))
+));
+
+infer-type-constructor := λname body. (match body (
+   ()
+   ( (Literal tag) (
+      (set type-constructors ( (global type-constructors) (tag tag) ))
+      (set type-subtypes ( (global type-subtypes) (tag (infer-type-compound name)) ))
+   ))
+   ( (App( (Literal tag) args )) (
+      (local ctype)
+      (set ctype (infer-type-compound args))
+      (set type-constructors ( (global type-constructors) (tag (->(ctype (tag ctype)))) ))
+      (set type-subtypes ( (global type-subtypes) ((tag ctype) (infer-type-compound name)) ))
+   ))
+));
+
+infer-type-definition := λname def. (match def (
+   ()
+   ( (App( (App( tds (Literal |) )) body )) (
+      (infer-type-definition( name tds ))
+      (infer-type-constructor( name body ))
+   ))
+   ( body (
+      (infer-type-constructor( name body ))
+   ))
+));
+
+infer-constructor-type := λtag. (tail(
+   (local ctype)
+   (local constructors)
+   (set constructors type-constructors)
+   (while constructors (
+      (if (eq( tag (head(tail(constructors))) )) (
+         (if ctype (
+            (set ctype (And( ctype (tail(tail(constructors))) )))
+         ) (
+            (set ctype (tail(tail(constructors))))
+         ))
+      ) ())
+      (set constructors (head constructors))
+   ))
+   ctype
+));
+
+infer-type-expr := λe. (match e (
+   ()
+   ( (Type( l ds )) (
+      (infer-type-definition( l ds ))
+      (ascript( e ? ))
+   ))
+   (_ ())
 ));
 
 infer-expr := λctx e. (
@@ -198,21 +405,45 @@ infer-expr := λctx e. (
          ))
          ( (Global( gln gle )) (
             (infer-expr( ctx gle ))
+            (match (lookup-type gle) (
+               ()
+               ( () () )
+               ( glt (
+                  (set global-context ( (global global-context) (Global( gln glt )) ))
+                  (ascript( e ? ))
+               ))
+            ))
          ))
-         ( (Type( l ds )) (
-            (set type-definitions (e type-definitions))
-            (ascript( e ? ))
-         ))
+         ( (Type( l ds )) ())
          ( Nil (
             (ascript( e Nil ))
          ))
-         ( (Literal _) (
-            (ascript( e Atom ))
+         ( (Literal lit) (
+            (local ctype)
+            (set ctype (infer-constructor-type lit))
+            (if ctype (
+               (ascript( e (And( ctype Atom )) ))
+            ) (
+               (ascript( e Atom ))
+            ))
          ))
          ( (App( l r )) (
             (infer-expr( ctx l ))
             (infer-expr( ctx r ))
-            (ascript( e Cons ))
+            (match ( (lookup-type l) (lookup-type r) ) (
+               ()
+               ( (() _) () )
+               ( (_ ()) () )
+               ( ( (->(lt rt)) pt ) (
+                  (ascript( e (safe-apply-plural( e (->(lt rt)) pt )) ))
+               ))
+               ( ( (And(t1 t2)) pt ) (
+                  (ascript( e (safe-apply-plural( e (And(t1 t2)) pt )) ))
+               ))
+               ( (lt rt) (
+                  (ascript( e (Cons(lt rt)) ))
+               ))
+            ))
          ))
          ( (Lambda( lhs rhs )) (
             (set ctx (infer-ctx( ctx lhs )))
@@ -232,7 +463,7 @@ infer-expr := λctx e. (
                ( tt (ascript( e tt )) )
             ))
          ))
-         ( u (print-s (UnknownTerm u)) )
+         ( u (fail (UnknownTerm u)) )
       )
    ))
 );
@@ -276,9 +507,9 @@ parse-lambda := λtoks. (tail(
    (lmb remainder)
 ));
 
-unexpect := λt. print-s (UnexpectedToken t);
+unexpect := λt. fail (UnexpectedToken t);
 expect := λt ts. ();
-#expect := λt ts. if (eq( t (head ts) )) () (print-s (ExpectedToken t));
+#expect := λt ts. if (eq( t (head ts) )) () (fail (ExpectedToken t));
 
 parse-one-expression := λtoks. (tail(
    (local pme)
