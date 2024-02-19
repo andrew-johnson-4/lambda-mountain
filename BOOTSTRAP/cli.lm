@@ -1101,15 +1101,15 @@ compile-expr := λctx e offset used. (tail(
          ))
          (Expr( () prog () () () ctx offset ))        
       ))) 
-#      ( (App( (Variable 'exit) (Literal no) )) (tail(
-#         (set tail_safe True)
-#         (set prog (
-#            \t 'mov \s '$60, \s '%rax          \n
-#            \t 'mov \s '$ no , \s '%rdi        \n
-#            \t 'syscall                        \n
-#         ))
-#         (Expr( () prog () () () ctx offset ))        
-#      )))
+      ( (App( (Variable 'exit) (Literal _) )) (tail(
+         (set tail_safe True)
+         (set prog (
+            \t 'mov \s '$60, \s '%rax          \n
+            \t 'mov \s '$1 , \s '%rdi          \n
+            \t 'syscall                        \n
+         ))
+         (Expr( () prog () () () ctx offset ))        
+      )))
       ( (App( (Variable 'eq) (App( l r )) )) (tail(
          (set e1 (compile-expr(ctx l offset Used)))
          (set e1_frame (get-frame e1))
