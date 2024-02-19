@@ -1,6 +1,4 @@
 
-type A (S S);
+type A (A( S S ));
 
-f := λ(: a A). (.0 a);
-
-main := print-s (f (A (1 2) 3));
+(A( (1 2) 3 ));
