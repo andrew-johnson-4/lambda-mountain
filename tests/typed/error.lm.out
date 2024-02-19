@@ -1,0 +1,1 @@
+(TypeError ((InvalidArgument (-> (Atom Atom))) Nil))

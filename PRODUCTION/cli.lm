@@ -56,7 +56,7 @@ main := (
 
 #this is necessary to circumvent a bug with the bootstrap compiler trying to call globals as functions syntactically
 global := λvalue. value;
-fail := λmsg. print-s msg;
+fail := λmsg. (print-s msg) (exit 1);
 
 type-context := ();
 type-subtypes := ();
@@ -130,7 +130,7 @@ show-ascript := λp. (tail(
          ( (show-ascript prog) (Type( tn td )) )
       ))
       ( unknown (
-         print-s (UnknownTerm unknown)
+         fail (UnknownTerm unknown)
       ))
    )))
    (local type)
@@ -170,7 +170,7 @@ infer-ctx := λctx e. (match e (
       ( (infer-ctx( ctx ps )) (v S))
    ))
    ( u (
-      print-s (UnknownLhs u)
+      fail (UnknownLhs u)
    ))
 ));
 
@@ -233,7 +233,7 @@ typeof-lhs := λlhs. (match lhs (
       (Cons( (typeof-lhs ps) S ))
    ))
    ( u (
-      print-s (UnknownLhs u)
+      fail (UnknownLhs u)
    ))
 ));
 
@@ -329,11 +329,19 @@ apply-plural := λmany pt. (match many(
    ))
 ));
 
+safe-apply-plural := λterm many pt. (tail(
+   (local r)
+   (set r (apply-plural( many pt )))
+   (if r r (
+      fail (TypeError( InvalidArgument many pt ))
+   ))
+));
+
 infer-type-compound := λcompound. (match compound (
    ()
    ((Literal tt) tt)
    ((App( lt rt )) (Cons( (infer-type-compound lt) (infer-type-compound rt) )))
-   (u (print-s (UnknownTypeCompound u)))
+   (u (fail (UnknownTypeCompound u)))
 ));
 
 infer-type-constructor := λname body. (match body (
@@ -427,10 +435,10 @@ infer-expr := λctx e. (
                ( (() _) () )
                ( (_ ()) () )
                ( ( (->(lt rt)) pt ) (
-                  (ascript( e (unify-ctx( (unify-args(lt pt)) rt )) ))
+                  (ascript( e (safe-apply-plural( e (->(lt rt)) pt )) ))
                ))
                ( ( (And(t1 t2)) pt ) (
-                  (ascript( e (apply-plural( (And(t1 t2)) pt )) ))
+                  (ascript( e (safe-apply-plural( e (And(t1 t2)) pt )) ))
                ))
                ( (lt rt) (
                   (ascript( e (Cons(lt rt)) ))
@@ -455,7 +463,7 @@ infer-expr := λctx e. (
                ( tt (ascript( e tt )) )
             ))
          ))
-         ( u (print-s (UnknownTerm u)) )
+         ( u (fail (UnknownTerm u)) )
       )
    ))
 );
@@ -499,9 +507,9 @@ parse-lambda := λtoks. (tail(
    (lmb remainder)
 ));
 
-unexpect := λt. print-s (UnexpectedToken t);
+unexpect := λt. fail (UnexpectedToken t);
 expect := λt ts. ();
-#expect := λt ts. if (eq( t (head ts) )) () (print-s (ExpectedToken t));
+#expect := λt ts. if (eq( t (head ts) )) () (fail (ExpectedToken t));
 
 parse-one-expression := λtoks. (tail(
    (local pme)
