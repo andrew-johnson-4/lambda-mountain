@@ -58,9 +58,9 @@ main := (
 global := λvalue. value;
 fail := λmsg. print-s msg;
 
-type-definitions := ();
 type-context := ();
 type-subtypes := ();
+type-constructors := ();
 types-have-changed := ();
 
 tokenize-file := λpath. (
@@ -323,14 +323,35 @@ apply-plural := λmany pt. (match many(
    ))
 ));
 
+infer-type-compound := λcompound. (match compound (
+   ()
+   ((Literal tt) tt)
+   ((App( lt rt )) (Cons( (infer-type-compound lt) (infer-type-compound rt) )))
+   (u (print-s (UnknownTypeCompound u)))
+));
+
+infer-type-constructor := λname body. (match body (
+   ()
+   ( (Literal tag) (
+      (set type-constructors ((global type-constructors) (tag tag) ))
+      (set type-subtypes ((global type-subtypes) (tag (infer-type-compound name))))
+   ))
+   ( (App( (Literal tag) args )) (
+      (local ctype)
+      (set ctype (tag (infer-type-compound args)))
+      (set type-constructors ((global type-constructors) (tag (->(ctype (tag ctype)))) ))
+      (set type-subtypes ((global type-subtypes) ((tag ctype) (infer-type-compound name))))
+   ))
+));
+
 infer-type-definition := λname def. (match def (
    ()
    ( (App( (App( tds (Literal |) )) body )) (
       (infer-type-definition( name tds ))
-      (print-s (TypeDef name body))
+      (infer-type-constructor( name body ))
    ))
    ( body (
-      print-s (TypeDef name body)
+      (infer-type-constructor( name body ))
    ))
 ));
 
