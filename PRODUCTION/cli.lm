@@ -42,7 +42,7 @@ main := (
       ()
       (Compile (
          (foreach-atom inputs (
-            if $_ (assemble (typecheck (parse-program (tokenize (load-file $_)))))
+            if $_ (assemble (typecheck (parse-program (tokenize (load-file $_))))) ()
          ))
       ))
       (Parse (foreach-atom inputs (
@@ -777,13 +777,19 @@ assemble := λprogram. (
       ))
       (set config (head config))
    ))
-   (print-s target)
+   (local has_main)
+   (local output_p)
+   (local output_d)
+   (set output_p (program-header()))
+   (set output_d (data-header()))
+
+   (if has_main () (
+      (set output_p (output_p ('main: \n)))
+      (set output_p (output_p (exit-cleanup())))
+   ))
+
+   (write-file (target (clone-rope (output_p output_d))))
 );
-#   (local output_p)
-#   (local output_d)
-#   (local has_main)
-#   (set output_p (_program-header()))
-#   (set output_d (_data-header()))
 #   (local main-ctx)
 #   (set main-ctx program)
 
@@ -840,10 +846,71 @@ assemble := λprogram. (
 #      ))
 #   )))
 #
-#   (if has_main () (
-#      (set output_p (output_p ('main: \n)))
-#      (set output_p (output_p (_exit-cleanup())))
-#   ))
-#
-#   (write-file (target (clone-rope (output_p output_d))))
 #);
+
+data-header := λ.(
+  '\,data                              \n
+  'load_file_bsz:                      \n
+  \t '\,quad \s '1024                  \n
+  'load_file_buf:                      \n
+  \t '\,zero \s '1024                  \n
+  '__nil:                              \n
+  \t '\,zero \s '32                    \n
+  '__argv:                             \n
+  \t '\,zero \s '32                    \n
+  '__s_counter:                        \n
+  \t '\,zero \s '8                     \n
+  '__s_section:                        \n
+  \t '\,zero \s '536870912             \n
+  '__a_counter:                        \n
+  \t '\,zero \s '8                     \n
+  '__a_section:                        \n
+  \t '\,zero \s '536870912             \n
+  '__nil_literal:                      \n
+  \t '\,ascii \s " \[ \] "             \n
+  \t '\,zero \s 1                      \n
+  '__hex_buffer:                       \n
+  \t '\,ascii \s "0123456789abcdef"    \n
+  '__put64_buffer:                     \n
+  \t '\,ascii \s "0x"                  \n
+  '__put64_write_buffer:               \n
+  \t '\,ascii \s "0000000000000000 \s "  \n
+  \t '\,zero \s '1                     \n
+  '__newline:                          \n
+  \t '\,ascii \s " \\n "               \n
+  '__lparen:                           \n
+  \t '\,ascii \s " \[ "                \n
+  '__rparen:                           \n
+  \t '\,ascii \s " \] "                \n
+  '__space:                            \n
+  \t '\,ascii \s " \s "                \n
+  '__true:                             \n
+  \t '\,ascii \s "True"                \n
+  \t '\,zero \s '1                     \n
+  '__digit:                            \n
+  \t '\,zero \s '2                     \n
+  '__dump_i:                           \n
+  \t '\,ascii \s '"0000000000000000"   \n
+  \t '\,zero \s '1                     \n
+  '__err_fopen:                        \n
+  \t '\,ascii \s '"Could \s 'not \s 'open \s 'file."  \n
+  \t '\,zero \s '1                       \n
+);
+
+program-header := λ.(
+   '\,global \s '_start                   \n
+   '\,text                                \n
+
+   '_start:                               \n
+   \t 'jmp \s 'main                       \n
+);
+
+exit-cleanup := λ. (system-call( '$60 '$0 '$0 '$0 ));
+
+system-call := λrax rdi rsi rdx. (
+   \t 'mov \s rax , \s '%rax           \n
+   \t 'mov \s rdi , \s '%rdi           \n
+   \t 'mov \s rsi , \s '%rsi           \n
+   \t 'mov \s rdx , \s '%rdx           \n
+   \t 'syscall                         \n
+);
