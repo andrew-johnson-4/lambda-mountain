@@ -39,6 +39,11 @@ main := (
    )))
    (match mode (
       ()
+      (Compile (
+         (foreach-atom inputs (
+            if $_ (assemble (typecheck (parse-program (tokenize (load-file $_)))))
+         ))
+      ))
       (Parse (foreach-atom inputs (
          if $_ (print-s (parse-program (tokenize (load-file $_)))) ()
       )))
@@ -760,3 +765,7 @@ is-variable := λv. (tail(
    ))
    is_v
 ));
+
+assemble := λprogram. (
+   print-s program
+);
