@@ -1,5 +1,14 @@
 
 main := (
+   (set type-subtypes 
+     (
+        (
+           (() (Atom S))
+           (Nil S)
+        )
+        ((Cons(S S)) S)
+     )
+   )
    (local mode)
    (set mode Compile)
    (local inputs)
@@ -51,6 +60,7 @@ fail := λmsg. print-s msg;
 
 type-definitions := ();
 type-context := ();
+type-subtypes := ();
 types-have-changed := ();
 
 tokenize-file := λpath. (
@@ -249,6 +259,23 @@ unify-ctx := λctx v. (match v (
    ))
 ));
 
+unify-implies := λlt rt. (if (eq(lt rt)) True (tail(
+   (local accept)
+   (local subtypes)
+   (local st)
+   (set subtypes type-subtypes)
+   (while subtypes (
+      (set st (tail subtypes))
+      (if (eq( (head st) lt )) (
+         (if (eq( (tail st) rt )) (
+            (set accept True)
+         ) ())
+      ) ())
+      (set subtypes (head subtypes))
+   ))
+   accept
+)));
+
 unify-args := λlt rt. (match (lt rt) (
    ()
    ( ((lt1 rt1) (lt2 rt2)) (
@@ -260,7 +287,7 @@ unify-args := λlt rt. (match (lt rt) (
       ))
    ))
    ( (a1 a2) (
-      (if (eq( a1 a2 )) (
+      (if (unify-implies( a2 a1 )) ( # argument type must imply parameter type
          Accept
       ) (
          (if (is-variable a1) (
