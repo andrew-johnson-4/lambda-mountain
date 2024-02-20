@@ -1251,6 +1251,80 @@ stdlib-functions := λ. (
 
    'clone_rope_end:                       \n
    \t 'ret                                \n
+
+   'is:                                   \n
+   \t 'cmp \s '%r8, \s '%r12              \n
+   \t 'jne \s 'return_nil                 \n
+   \t 'cmp \s '%r9, \s '%r13              \n
+   \t 'jne \s 'return_nil                 \n
+   \t 'mov \s '$true, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'ret                                \n
+
+   'is_neg:                               \n
+   \t 'cmp \s '$0, \s %r12                \n
+   \t 'jge \s 'return_nil                 \n
+   \t 'mov \s '$true, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'ret                                \n
+
+   'inc:                                  \n
+   \t 'inc \s '%r12                       \n
+   \t 'ret                                \n
+
+   'dec:                                  \n
+   \t 'dec \s '%r12                       \n
+   \t 'ret                                \n
+
+   'inv:                                  \n
+   \t 'neg \s '%r12                       \n
+   \t 'ret                                \n
+
+   'mul:                                  \n
+   \t 'cmp \s '$0, \s '%r12               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'mov \s '0 \[ '%r12 \] , '%rax      \n  
+   \t 'mov \s '0 \[ '%r13 \] , '%rbx      \n
+   \t 'imul \s '%rax, \s '%rbx            \n
+   \t 'mov \s '%rbx, \s '%r12             \n
+   \t 'ret                                \n
+
+   'add:                                  \n
+   \t 'cmp \s '$0, \s '%r12               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'mov \s '0 \[ '%r12 \] , '%rax      \n  
+   \t 'mov \s '0 \[ '%r13 \] , '%rbx      \n
+   \t 'add \s '%rax, \s '%rbx             \n
+   \t 'mov \s '%rbx, \s '%r12             \n
+   \t 'ret                                \n
+
+   'div:                                  \n
+   \t 'cmp \s '$0, \s '%r12               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'mov \s '0 \[ '%r12 \] , '%rax      \n #dividend
+   \t 'mov \s '$0, \s '%rdx               \n
+   \t 'mov \s '0 \[ '%r13 \] , '%rcx      \n #divisor
+   \t 'idiv \s '%rcx                      \n
+   \t 'mov \s '%rax, \s '%r12             \n
+   \t 'ret                                \n
+
+   'mod:                                  \n
+   \t 'cmp \s '$0, \s '%r12               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'mov \s '0 \[ '%r12 \] , '%rax      \n #dividend
+   \t 'mov \s '$0, \s '%rdx               \n
+   \t 'mov \s '0 \[ '%r13 \] , '%rcx      \n #divisor
+   \t 'idiv \s '%rcx                      \n
+   \t 'mov \s '%rdx, \s '%r12             \n
+   \t 'ret                                \n
 );
 
 push-this := λ.(
