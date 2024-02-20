@@ -806,6 +806,7 @@ assemble := λprogram. (
    )))
 
    (if main_e (
+      (set main_pd ( ((head main_pd) (enter-function())) (tail main_pd)) )
       (set main_pd (compile-append( main_pd global_ctx main_e )))
    ) ())
    (set main_pd ( ((head main_pd) (exit-cleanup())) (tail main_pd)) )
@@ -847,6 +848,69 @@ get-maybe-function := λctx n. (
    (fail (TODO GetMaybeFunction n))
 );
 
+get-local := λctx v. (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
+         ()
+         ( (Local(l lrefer)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r lrefer)
+               ) ()
+            )
+         ))
+         ( (Global(l body)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (
+                     \t 'mov \s '$ (label-case l) , \s %r15 \n
+                     \t 'mov \s '0 \[ %r15 \] , \s %r12     \n
+                     \t 'mov \s '8 \[ %r15 \] , \s %r13     \n
+                  ))
+               ) ()
+            )
+         ))
+      ))
+      (set ctx (head ctx))
+   ))
+   (if r () (
+      (fail (ReferenceToUndefinedVariable v))
+   ))
+   r
+));
+set-local := λctx v. (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
+         ()
+         ( (Local((Set l) lrefer)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r lrefer)
+               ) ()
+            )
+         ))
+         ( (Global(l body)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (
+                     \t 'mov \s '$ (label-case l) , \s %r8 \n
+                     \t 'mov \s %r12 , \s '0 \[ %r8 \] \n
+                     \t 'mov \s %r13 , \s '8 \[ %r8 \] \n
+                  ))
+               ) ()
+            )
+         ))
+      ))
+      (set ctx (head ctx))
+   ))
+   (if r () (
+      (fail (AssignToUndefinedVariable v))
+   ))
+   r
+));
+
 compile-expr := λctx e offset used. (tail(
    (local e1)
    (local e2)
@@ -865,6 +929,21 @@ compile-expr := λctx e offset used. (tail(
          (set prog (prog ( \t 'mov \s '0 \[ '%r8 \] , '%r12 \n )))
          (set prog (prog ( \t 'mov \s '8 \[ '%r8 \] , '%r13 \n )))
          (Expr( () prog () () () ctx offset ))
+      )))
+      ( (Variable vname) (tail(
+         ()
+         (Expr( () (get-local(ctx vname)) () () () ctx offset ))
+      )))
+      ( (App ((Variable 'local) (Variable fname))) (tail(
+         (set e1 (declare-local(ctx fname offset)))
+         (set tail_safe True)
+         (Expr( (get-frame e1) ((yield-nil()) (get-prog e1)) (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
+      )))
+      ( (App( (App( (Variable 'set) (Variable vname) )) x )) (tail(
+         (set e1 (compile-expr(ctx x offset Used)))
+         (set prog ((get-prog e1) (set-local(ctx vname))))
+         (set tail_safe True)
+         (Expr( (get-frame 1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
       )))
       ( (App( (App( (App( (Variable 'if) c )) t )) f )) (tail(
          (set e1 (compile-expr(ctx c offset Used)))
@@ -1447,14 +1526,40 @@ stdlib-functions := λ. (
    \t 'ret                                \n
 );
 
+enter-function := λ.(
+   \t 'push \s %rbp                       \n
+   \t 'mov \s %rsp, \s %rbp               \n
+);
+
+exit-function := λ.(
+   \t 'mov \s %rbp, \s %rsp               \n
+   \t 'pop \s %rbp                        \n
+   \t 'ret                                \n
+);
+
 push-this := λ.(
    \t 'push \s '%r12                      \n
    \t 'push \s '%r13                      \n
 );
 
+push-zero := λ.(
+   \t 'pushq \s '$0                       \n
+   \t 'pushq \s '$0                       \n
+);
+
+unpush-this := λ.(
+   \t 'pop \s '%r8                        \n
+   \t 'pop \s '%r8                        \n
+);
+
 pop-this := λ.(
    \t 'pop \s '%r13                       \n
    \t 'pop \s '%r12                       \n
+);
+
+yield-nil := λ. (
+   \t 'mov \s '$0, \s '%r12               \n
+   \t 'mov \s '$0, \s '%r13               \n
 );
 
 yield-cons := λctx l r offset used. (tail(
@@ -1557,3 +1662,58 @@ escape-sequences := λt. match t (
       (clone-rope cs)
    )))
 );
+
+declare-local := λctx vname offset. (tail(
+   (local frame_this)
+   (set frame_this (push-zero()))
+   (local unframe_this)
+   (set unframe_this (unpush-this()))
+   (local refer)
+   (local eight)
+   (set eight (
+      inc(inc(inc(inc(inc(inc(inc(inc(
+         ()
+      ))))))))
+   ))
+   (local sixteen)
+   (set sixteen (mul( eight (inc(inc(()))) )))
+   (local set_this)
+   (set set_this (
+      \t 'mov \s '%r12, \s (
+         (i2s( (mul( (add( (mul( sixteen offset )) eight)) (dec(())) )) ))
+      ) \[ '%rbp \] \n
+      \t 'mov \s '%r13, \s (
+         (i2s( (mul( (add( (mul( sixteen offset )) sixteen)) (dec(())) )) ))
+      ) \[ '%rbp \] \n
+   ))
+   (set refer (
+      \t 'mov \s (
+         (i2s( (mul( (add( (mul( sixteen offset )) eight)) (dec(())) )) ))
+      ) \[ '%rbp \] , %r12 \n
+      \t 'mov \s (
+         (i2s( (mul( (add( (mul( sixteen offset )) sixteen)) (dec(())) )) ))
+      ) \[ '%rbp \] , %r13 \n
+   ))
+   (set ctx (ctx (Local(vname refer)) ))
+   (set ctx (ctx (Local((Set vname) set_this)) ))
+   (Expr(frame_this set_this unframe_this () () ctx (inc offset)))
+));
+
+i2s := λi. (tail(
+   (local ten)
+   (set ten( inc(inc(inc(inc(inc( inc(inc(inc(inc(inc( ))))) ))))) ))
+   (local sign)
+   (local s)
+   (local r)
+   (if (is-neg i) (
+      (set sign '-)
+      (set i (inv i))
+   ) ())
+   (while i (
+      (set r (mod(i ten)))
+      (set s ((clone-rope(digit r) s)))
+      (set i (div(i ten)))
+   ))
+   (if s () (set s 0))
+   (clone-rope (sign s))
+));
