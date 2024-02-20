@@ -19,12 +19,6 @@ Actual: production error code:  on target tests/lm/foreach_char_e.lm
 TEST --compile tests/lm/globals.lm
 Expected: ()123ABC
 Actual: production error code:  on target tests/lm/globals.lm
-TEST --compile tests/lm/if_falsy.lm
-Expected: False
-Actual: production error code:  on target tests/lm/if_falsy.lm
-TEST --compile tests/lm/if_truthy.lm
-Expected: True
-Actual: production error code:  on target tests/lm/if_truthy.lm
 TEST --compile tests/lm/load_bigger_file.lm
 Expected: line 0
 line 1
