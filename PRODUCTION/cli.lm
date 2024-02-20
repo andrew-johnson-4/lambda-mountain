@@ -1628,7 +1628,7 @@ stdlib-functions := λ. (
    (system-call( '$1 '%r10 '%r12 '%r8 ))
 
    #close file
-   (system-call( '$3 '%r8 '$0 '$0 ))
+   (system-call( '$3 '%r10 '$0 '$0 ))
    \t 'mov \s '$0, \s '%r12               \n
    \t 'mov \s '$0, \s '%r13               \n
    \t 'ret                                \n
@@ -1650,7 +1650,7 @@ stdlib-functions := λ. (
    'load_file_contents:                   \n
    \t 'mov \s '$a_section, \s '%r8        \n
    \t 'mov \s '$a_counter, \s '%r10       \n
-   \t 'mov \s '0 \[ %r10 \] , \s '%r11    \n
+   \t 'mov \s '0 \[ '%r10 \] , \s '%r11   \n
    \t 'add \s '%r11, \s '%r8              \n
    \t 'mov \s '%r8, \s '%r9               \n
    \t 'mov \s '$0, \s '%r10               \n
@@ -1665,18 +1665,19 @@ stdlib-functions := λ. (
    \t 'cmp \s '$0, \s '%r10               \n
    \t 'je \s 'load_file_bufempty          \n
    \t 'movb \s '0 \[ %r11 \] , \s '%bl    \n
-   \t 'mov \s '%bl, \s '0 \[ %r9 \]       \n
+   \t 'mov \s '%bl, \s '0 \[ '%r9 \]      \n
    \t 'inc \s '%r9                        \n
    \t 'inc \s '%r11                       \n
    \t 'dec \s '%r10                       \n
    \t 'jmp \s 'load_file_loop             \n
 
-
    # read file
    'load_file_bufempty:                   \n
    \t 'push \s '%rax                      \n
+   \t 'mov \s '%rax, \s '%r10             \n
    \t 'mov \s '$load_file_bsz, \s '%rdx   \n
-   (system-call( '$0 '%rax '$load_file_buf ('0 \[ '%rdx \]) ))
+   \t 'mov \s '0 \[ '%rdx \] , \s '%rdx   \n
+   (system-call( '$0 '%r10 '$load_file_buf %rdx ))
    \t 'mov \s '%rax, \s '%r10             \n
    \t 'pop \s '%rax                       \n
    \t 'mov \s '$load_file_buf, \s '%r11   \n
