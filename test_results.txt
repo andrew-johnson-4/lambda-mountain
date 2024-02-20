@@ -19,9 +19,6 @@ ld: (.text+0xc6): undefined reference to `clone_rope'
 TEST --compile tests/lm/clone_rope3.lm
 Expected: (((() A) B) C)
 Actual: production error code:  on target tests/lm/clone_rope3.lm
-TEST --compile tests/lm/cons.lm
-Expected: ((123 ()) 456)
-Actual: (456 (() 123))
 TEST --compile tests/lm/digit.lm
 Expected: 2
 Actual: ld error code: ld: tmp.o: in function `before_main_end':
@@ -146,9 +143,6 @@ Actual: production error code:  on target tests/lm/foreach_char_e.lm
 TEST --compile tests/lm/globals.lm
 Expected: ()123ABC
 Actual: production error code:  on target tests/lm/globals.lm
-TEST --compile tests/lm/head.lm
-Expected: 123
-Actual: ()
 TEST --compile tests/lm/if_falsy.lm
 Expected: False
 Actual: production error code:  on target tests/lm/if_falsy.lm
