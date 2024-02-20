@@ -782,25 +782,26 @@ assemble := λprogram. (
    ))
 
    (local main_e)
-   (local main_p)
-   (set main_p (before-main()))
+   (local main_pd)
+   (set main_pd ( (before-main()) () ))
 
    (local output_pd)
    (set output_pd ( (program-header()) (data-header()) ))
 
+   (local global_ctx)
    (while program (match program (
       ()
       ( (pc (Global ('main body))) (
          (set main_e body)
+         (set program pc)
       ))
       ( (pc (GExpr e)) (
-         (fail (TODO CompileGExpr))
+         (set main_pd (compile-append( main_pd global_ctx e )))
+         (set program pc)
       ))
       ( (pc (Global (fname body))) (
          (fail (TODO CompileGlobal fname))
-#         (set program pc)
-#         (set offset ())
-#         (set inner-ctx main-ctx)
+         (set program pc)
 #         (match body (
 #            ()
 #            ( Nil (
@@ -830,16 +831,23 @@ assemble := λprogram. (
    )))
 
    (if main_e (
-      (fail (TODO CompileMainExpr))
+      (set output_pd (compile-append( output_pd global_ctx main_e )))
    ) ())
-   (set main_p (main_p (exit-cleanup())))
-   (set output_pd ( ((head output_pd) main_p) (tail output_pd) ))
+   (set main_pd ( ((head main_pd) (exit-cleanup())) (tail main_pd)) )
+   (set output_pd ( ((head output_pd) (head main_pd)) ((tail output_pd) (tail main_pd)) ))
 
    (write-file (target (clone-rope output_pd)))
 );
 
-#
-#);
+compile-expr := λctx e. (
+   (print-s (CompileExpr e))
+);
+
+compile-append := λoutput_pd gctx e. (tail(
+   (local e)
+   (set e (compile-expr( gctx e )))
+   output_pd
+));
 
 data-header := λ.(
   '\,data                                 \n
