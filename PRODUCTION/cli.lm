@@ -848,7 +848,9 @@ get-maybe-function := λctx n. (
 );
 
 compile-expr := λctx e offset used. (tail(
-   (local x)
+   (local e1)
+   (local e2)
+   (local e3)
    (local prog)
    (local tail_safe)
    (local return)
@@ -864,19 +866,47 @@ compile-expr := λctx e offset used. (tail(
          (set prog (prog ( \t 'mov \s '8 \[ '%r8 \] , '%r13 \n )))
          (Expr( () prog () () () ctx offset ))
       )))
+      ( (App( (App( (App( (Variable 'if) c )) t )) f )) (tail(
+         (set e1 (compile-expr(ctx c offset Used)))
+         (set e2 (compile-expr( (get-pc e1) t (get-offset e1) Used )))
+         (set e3 (compile-expr( (get-pc e2) f (get-offset e2) Used )))
+         (local label_if_true)
+         (set label_if_true (uuid()))
+         (local label_if_end)
+         (set label_if_end (uuid()))
+         (set prog (prog (get-prog e1)))
+         (set prog (prog ( \t 'cmp \s '$0, '%r12 \n )))
+         (set prog (prog ( \t 'jne \s label_if_true \n )))
+         (set prog (prog ( \t 'cmp \s '$0, '%r13 \n )))
+         (set prog (prog ( \t 'jne \s label_if_true \n )))
+         (set prog (prog ( \t 'cmp \s '$0, '%r14 \n )))
+         (set prog (prog ( \t 'jne \s label_if_true \n )))
+         (set prog (prog (get-prog e3)))
+         (set prog (prog ( \t 'jmp \s label_if_end \n )))
+         (set prog (prog ( label_if_true ': \n )))
+         (set prog (prog (get-prog e2)))
+         (set prog (prog ( label_if_end ': \n )))
+         (Expr(
+            ((get-frame e1) (get-frame e2) (get-frame e3))
+            prog
+            ((get-unframe e1) (get-unframe e2) (get-unframe e3))
+            ((get-text e1) (get-text e2) (get-text e3))
+            ((get-data e1) (get-data e2) (get-data e3))
+            (get-pc e3)
+            (get-offset e3)
+         ))
+      )))
       ( (App ((Variable fname) arg)) (tail(
          ()
          (if (is-builtin fname) (tail(
             ()
             (if (eq(fname 'tail)) (tail(
-               (set x (compile-expr(ctx arg offset Tail)))
-               (set prog (get-prog x))
-               (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
+               (set e1 (compile-expr(ctx arg offset Tail)))
+               (Expr( (get-frame e1) (get-prog e1) (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
             )) (tail(
-               (set x (compile-expr(ctx arg offset Used)))
-               (set prog (get-prog x))
-               (set prog (prog (\t 'call \s (label-case fname) \n)))
-               (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
+               (set e1 (compile-expr(ctx arg offset Used)))
+               (set prog ((get-prog e1) (\t 'call \s (label-case fname) \n)))
+               (Expr( (get-frame e1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
             )))
          )) (tail(
             ()
