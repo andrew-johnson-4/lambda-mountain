@@ -839,12 +839,61 @@ assemble := λprogram. (
    (write-file (target (clone-rope output_pd)))
 );
 
-compile-expr := λctx e. (
-   (print-s (CompileExpr e))
-);
+get-frame := λe. (match e (
+   ()
+   ((Expr(f p u t d pc off)) f)
+));
+get-prog := λe. (match e (
+   ()
+   ((Expr(f p u t d pc off)) p)
+));
+get-unframe := λe. (match e (
+   ()
+   ((Expr(f p u t d pc off)) u)
+));
+get-text := λe. (match e (
+   ()
+   ((Expr(f p u t d pc off)) t)
+));
+get-data := λe. (match e (
+   ()
+   ((Expr(f p u t d pc off)) d)
+));
+get-pc := λe. (match e (
+   ()
+   ((Expr(f p u t d pc off)) pc)
+));
+get-offset := λe. (match e (
+   ()
+   ((Expr(f p u t d pc off)) off)
+));
+
+compile-expr := λctx e offset used. (tail(
+   (local prog)
+   (local tail_safe)
+   (local return)
+   (set return (match e (
+      ()
+      ( (Variable '$_) (tail(
+         ()
+         (Expr( () () () () () ctx offset ))
+      )))
+      ( u (fail (UnrecognizedExpression u)) )
+   )))
+   (if tail_safe return (tail(
+      ()
+      (if (eq(used Tail)) (tail(
+         (set prog (get-prog return))
+         (set prog (prog (\t 'call \s 'tail \n)))
+         (Expr( (get-frame return) prog (get-unframe return) (get-text return) (get-data return) (get-pc return) (get-offset return) ))
+      )) (
+         return
+      ))
+   )))
+));
 
 compile-append := λoutput_pd gctx e. (tail(
-   (set e (compile-expr( gctx e )))
+   (set e (compile-expr( gctx e () Unused )))
    output_pd
 ));
 
