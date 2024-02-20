@@ -1112,22 +1112,16 @@ stdlib-functions := λ. (
 
    'head:                                 \n
    \t 'cmp \s '$0, \s '%r13               \n
-   \t 'je \s 'head_is_nil                 \n
+   \t 'je \s 'return_nil                  \n
    \t 'mov \s '8 \[ '%r12 \] , \s '%r13   \n
    \t 'mov \s '0 \[ '%r12 \] , \s '%r12   \n
-   \t 'ret                                \n
-   'head_is_nil:                          \n
-   \t 'mov \s '$0, \s '%r12               \n
    \t 'ret                                \n
 
    'tail:                                 \n
    \t 'cmp \s '$0, \s '%r13               \n
-   \t 'je \s 'head_is_nil                 \n
+   \t 'je \s 'return_nil                  \n
    \t 'mov \s '0 \[ '%r13 \] , \s '%r12   \n
    \t 'mov \s '8 \[ '%r13 \] , \s '%r13   \n
-   \t 'ret                                \n
-   'tail_is_nil:                          \n
-   \t 'mov \s '$0, \s '%r12               \n
    \t 'ret                                \n
 
    'strlen:                               \n
@@ -1140,6 +1134,63 @@ stdlib-functions := λ. (
    \t 'inc \s '%rax                       \n
    \t 'jmp \s 'strlen_loop                \n
    'strlen_exit:                          \n
+   \t 'ret                                \n
+
+   'streq:                                \n
+   'streq_loop:                           \n
+   \t 'cmp \s '$0, \s '%rax               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'cmp \s '$0, \s '%rbx               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'mov \s '0 \[ %rax \] , \s '%cl     \n
+   \t 'mov \s '0 \[ %rbx \] , \s '%dl     \n
+
+   \t 'cmp \s '%cl, \s '%dl               \n
+   \t 'jne \s 'return_nil                 \n
+   \t 'cmp \s '$0, \s '%cl                \n
+   \t 'je \s 'streq_true                  \n
+   \t 'inc \s '%rax                       \n
+   \t 'inc \s '%rbx                       \n
+   \t 'jmp \s 'streq_loop                 \n
+   'streq_true:                           \n
+   \t 'mov \s '$true, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'ret                                \n
+
+   'eq:                                   \n
+   \t 'cmp \s '$0, \s '%r12               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'mov \s '8 \[ '%r12 \] , \s '%rax   \n
+   \t 'cmp \s '$0, \s '%rax               \n
+   \t 'jne \s 'return_nil                 \n
+   \t 'mov \s '8 \[ '%r13 \] , \s '%rbx   \n
+   \t 'cmp \s '$0, \s '%rbx               \n
+   \t 'jne \s 'return_nil                 \n
+   \t 'mov \s '0 \[ '%r12 \] , \s '%rax   \n
+   \t 'cmp \s '$0, \s '%rax               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'mov \s '0 \[ '%r13 \] , \s '%rbx   \n
+   \t 'cmp \s '$0, \s '%rbx               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'call \s 'streq                     \n
+   \t 'ret                                \n
+
+   'return_nil:                           \n
+   \t 'mov \s '$0, \s '%r12               \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'ret                                \n
+
+   'not:                                  \n
+   \t 'cmp \s '$0, \s '%r12               \n
+   \t 'jne \s 'not_yield_nil              \n
+   \t 'mov \s '$true, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'ret                                \n
+   'not_yield_nil:                        \n
+   \t 'mov \s '$0, \s '%r12               \n
+   \t 'mov \s '$0, \s '%r13               \n
    \t 'ret                                \n
 );
 
