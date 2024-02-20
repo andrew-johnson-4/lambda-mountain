@@ -73,7 +73,7 @@ fn run_production(mode:&str, target: &str) -> String {
 fn run_compile_production(mode:&str, target: &str) -> String {
    rm("tmp.s");
    rm("tmp.o");
-   rm("tmp");
+   rm("a.out");
    let exit = Command::new("./production")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
@@ -107,7 +107,7 @@ fn run_compile_production(mode:&str, target: &str) -> String {
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
                       .arg("-o")
-                      .arg("tmp")
+                      .arg("a.out")
                       .arg("tmp.o")
                       .spawn()
                       .expect("failed to execute process")
@@ -117,7 +117,7 @@ fn run_compile_production(mode:&str, target: &str) -> String {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
       return format!("ld error code: {} on target {}", stderr, target);
    };
-   let exit = Command::new("./tmp")
+   let exit = Command::new("./a.out")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
                       .spawn()
@@ -126,12 +126,12 @@ fn run_compile_production(mode:&str, target: &str) -> String {
                       .expect("failed to wait for process");
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      return format!("./tmp error code: {} on target {}", stderr, target);
+      return format!("./a.out error code: {} on target {}", stderr, target);
    };
    let actual = String::from_utf8_lossy(&exit.stdout).to_string();
    rm("tmp.s");
    rm("tmp.o");
-   rm("tmp");
+   rm("a.out");
    actual
 }
 
