@@ -802,36 +802,11 @@ assemble := λprogram. (
       ( (pc (Global (fname body))) (
          (fail (TODO CompileGlobal fname))
          (set program pc)
-#         (match body (
-#            ()
-#            ( Nil (
-#               (set output_d (output_d( (label-case fname) ': \n \t '\,zero \s '32 \n )))
-#            ))
-#            ( (Lambda(lhs rhs)) (
-#               (set e (destructure-args(inner-ctx lhs offset)))
-#               (set offset (get-offset e))
-#               (set inner-ctx (get-pc e))
-#               (set e2 (compile-expr(inner-ctx rhs offset Used)))
-#               (set output_p (output_p ((label-case fname) ': \n)))
-#               (set output_p (output_p (_enter-function())))
-#               (set output_p (output_p (get-frame e)))
-#               (set output_p (output_p (get-frame e2)))
-#               (set output_p (output_p (get-prog e)))
-#               (set output_p (output_p (get-prog e2)))
-#               (set output_p (output_p (get-unframe e)))
-#               (set output_p (output_p (get-unframe e2)))
-#               (set output_p (output_p (_exit-function())))
-#               (set output_p (output_p (get-text e)))
-#               (set output_p (output_p (get-text e2)))
-#               (set output_d (output_d (get-data e)))
-#               (set output_d (output_d (get-data e2)))
-#            ))
-#         ))
       ))
    )))
 
    (if main_e (
-      (set output_pd (compile-append( output_pd global_ctx main_e )))
+      (set main_pd (compile-append( main_pd global_ctx main_e )))
    ) ())
    (set main_pd ( ((head main_pd) (exit-cleanup())) (tail main_pd)) )
    (set output_pd ( ((head output_pd) (head main_pd)) ((tail output_pd) (tail main_pd)) ))
@@ -868,7 +843,12 @@ get-offset := λe. (match e (
    ((Expr(f p u t d pc off)) off)
 ));
 
+get-maybe-function := λctx n. (
+   (fail (TODO GetMaybeFunction n))
+);
+
 compile-expr := λctx e offset used. (tail(
+   (local x)
    (local prog)
    (local tail_safe)
    (local return)
@@ -877,6 +857,44 @@ compile-expr := λctx e offset used. (tail(
       ( (Variable '$_) (tail(
          ()
          (Expr( () () () () () ctx offset ))
+      )))
+      ( (Variable 'argv) (tail(
+         (set prog (prog ( \t 'mov \s '$argv, \s '%r8 \n )))
+         (set prog (prog ( \t 'mov \s '0 \[ '%r8 \] , '%r12 \n )))
+         (set prog (prog ( \t 'mov \s '8 \[ '%r8 \] , '%r13 \n )))
+         (Expr( () prog () () () ctx offset ))
+      )))
+      ( (App ((Variable fname) arg)) (tail(
+         ()
+         (if (is-builtin fname) (tail(
+            ()
+            (if (eq(fname 'tail)) (tail(
+               (set x (compile-expr(ctx arg offset Tail)))
+               (set prog (get-prog x))
+               (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
+            )) (tail(
+               (set x (compile-expr(ctx arg offset Used)))
+               (set prog (get-prog x))
+               (set prog (prog (\t 'call \s (label-case fname) \n)))
+               (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
+            )))
+         )) (tail(
+            ()
+            (match (get-maybe-function(ctx fname)) (
+               ()
+#               ( (Global (f body)) (tail(
+#                  ()
+#                  (set x (compile-expr(ctx arg offset Used)))
+#                  (set prog (get-prog x))
+#                  (set prog (prog (\t 'call \s (label-case fname) \n)))
+#                  (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
+#               )))
+#               ( _ (tail(
+#                  ()
+#                  (yield-cons(ctx (Variable fname) arg offset Used))
+#               )))
+            ))
+         )))
       )))
       ( u (fail (UnrecognizedExpression u)) )
    )))
@@ -894,7 +912,8 @@ compile-expr := λctx e offset used. (tail(
 
 compile-append := λoutput_pd gctx e. (tail(
    (set e (compile-expr( gctx e () Unused )))
-   output_pd
+   ( ((head output_pd) (get-frame e) (get-prog e) (get-unframe e) (get-text e))
+     (tail output_pd) )
 ));
 
 data-header := λ.(
@@ -904,7 +923,7 @@ data-header := λ.(
   'load_file_buf:                         \n
   \t '\,zero \s '1024                     \n
   'argv:                                  \n
-  \t '\,zero \s '32                       \n
+  \t '\,zero \s '16                       \n
   's_counter:                             \n
   \t '\,zero \s '8                        \n
   's_section:                             \n
@@ -986,7 +1005,7 @@ before-main := λ.(
    \t 'dec \s '%rax                    \n #dec argc
    \t 'jmp \s 'before_main_argv        \n
 
-   'before_main_end:
+   'before_main_end:                   \n
 );
 
 allocate-heap-16 := λ. (
@@ -1004,3 +1023,41 @@ close := λe. (
    (\t 'mov \s '%r12, \s '0 \[ '%r8 \] \n)
    (\t 'mov \s '%r13, \s '8 \[ '%r8 \] \n)
 );
+
+is-builtin := λf. (match f (
+   ()
+   ('eq True)
+   ('not True)
+   ('head True)
+   ('tail True)
+   ('inc True)
+   ('dec True)
+   ('add True)
+   ('mul True)
+   ('div True)
+   ('mod True)
+   ('inv True)
+   ('is-neg True)
+   ('digit True)
+   ('dump-i True)
+   ('print-s True)
+   ('print-i True)
+   ('print-p True)
+   ('print-p True)
+   ('print-d True)
+   ('clone-rope True)
+   ('write-file True)
+   ('load-file True)
+   (_ ())
+));
+
+label-case := λk. (tail(
+   (local nk)
+   (foreach-char k (match $_ (
+      ()
+      ('- (set nk (nk '_)))
+      ('$ (set nk (nk '_I_)))
+      (c (set nk (nk (clone-rope c))))
+   )))
+   (clone-rope nk)
+));
