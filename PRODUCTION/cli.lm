@@ -1010,11 +1010,11 @@ before-main := λ.(
 
 allocate-heap-16 := λ. (
    \t 'mov \s '$s_section, \s '%r8           \n # %r8 now points to root s
-   \t 'mov \s '$s_counter, \s '%r9           \n # %r9 now points to s counter
-   \t 'mov \s '0 \[ '%r9 \] , \s '%r10       \n # %r10 now hold value of cons counter
+   \t 'mov \s '$s_counter, \s '%r11          \n # %r11 now points to s counter
+   \t 'mov \s '0 \[ '%r11 \] , \s '%r10      \n # %r10 now hold value of cons counter
    \t 'add \s '%r10, \s '%r8                 \n # %r8 now points to top free cons
    \t 'add \s '$16, \s '%r10                 \n # increment s counter
-   \t 'mov \s '%r10, \s '0 \[ %r9 \]         \n # overwrite new s counter
+   \t 'mov \s '%r10, \s '0 \[ %r11 \]        \n # overwrite new s counter
 );
 
 close := λe. (
