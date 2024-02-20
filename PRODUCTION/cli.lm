@@ -1609,6 +1609,93 @@ stdlib-functions := λ. (
    \t 'mov \s '%al, \s '0 \[ %r12 \]      \n
    \t 'mov \s '$0, \s %r13                \n
    \t 'ret                                \n
+
+   'write_file:                           \n
+   #open file
+   \t 'mov \s '0 \[ %r12 \] , \s '%rdi    \n # file name
+   \t 'pushq \s '0 \[ %r13 \]             \n # data to write
+   \t 'mov \s '$2, \s '%rax               \n # syscall open
+   \t 'mov \s '$577, \s %rsi              \n
+   \t 'mov \s '$420, \s '%rdx             \n # mode
+   \t 'syscall                            \n
+   \t 'mov \s '%rax, \s '%r8              \n # r8 now holds file descriptor
+
+   #write to file
+   \t 'pop \s '%rax                       \n
+   \t 'mov \s '%rax, \s '%r12             \n
+   \t 'mov \s '%r8, \s '%r10              \n # %r10 has file descriptor
+   \t 'call \s 'strlen                    \n
+   (system-call( '$1 '%r10 '%r12 '%r8 ))
+
+   #close file
+   (system-call( '$3 '%r8 '$0 '$0 ))
+   \t 'mov \s '$0, \s '%r12               \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'ret                                \n
+
+   'load_file:                            \n
+
+   # open file
+   (system-call( '$2 '%r12 '$0 '$0 ))
+   # file descriptor is in %rax
+
+   \t 'cmp \s '$0, \s '%rax               \n
+   # if return value is positive then open was a success
+   \t 'jge \s 'load_file_contents         \n
+
+   \t 'mov \s '$err_fopen, \s '%r12       \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'ret                                \n
+
+   'load_file_contents:                   \n
+   \t 'mov \s '$a_section, \s '%r8        \n
+   \t 'mov \s '$a_counter, \s '%r10       \n
+   \t 'mov \s '0 \[ %r10 \] , \s '%r11    \n
+   \t 'add \s '%r11, \s '%r8              \n
+   \t 'mov \s '%r8, \s '%r9               \n
+   \t 'mov \s '$0, \s '%r10               \n
+   \t 'mov \s '$load_file_buf, \s '%r11   \n
+   #r8 holds pointer to head of new data
+   #r9 holds pointer to tail of new data
+   #r10 holds amount of data on buffer currently
+   #r11 holds pointer to head of buffer
+
+   # move data from buffer into string
+   'load_file_loop:                       \n
+   \t 'cmp \s '$0, \s '%r10               \n
+   \t 'je \s 'load_file_bufempty          \n
+   \t 'movb \s '0 \[ %r11 \] , \s '%bl    \n
+   \t 'mov \s '%bl, \s '0 \[ %r9 \]       \n
+   \t 'inc \s '%r9                        \n
+   \t 'inc \s '%r11                       \n
+   \t 'dec \s '%r10                       \n
+   \t 'jmp \s 'load_file_loop             \n
+
+
+   # read file
+   'load_file_bufempty:                   \n
+   \t 'push \s '%rax                      \n
+   \t 'mov \s '$load_file_bsz, \s '%rdx   \n
+   (system-call( '$0 '%rax '$load_file_buf ('0 \[ '%rdx \]) ))
+   \t 'mov \s '%rax, \s '%r10             \n
+   \t 'pop \s '%rax                       \n
+   \t 'mov \s '$load_file_buf, \s '%r11   \n
+   \t 'cmp \s '$0, \s '%r10               \n
+   \t 'jne \s 'load_file_loop             \n
+
+   # close file
+   (system-call( '$3 '%rax '$0 '$0 ))
+
+   \t 'movb \s '$0, \s '0 \[ %r9 \]       \n
+   \t 'inc \s '%r9                        \n
+   \t 'sub \s '%r8, \s '%r9               \n
+   \t 'mov \s '$a_counter, \s '%r10       \n
+   \t 'mov \s '%r9, \s '0 \[ %r10 \]      \n
+   \t 'mov \s '%r8, \s '%r12              \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$0, \s '%r14               \n
+   \t 'mov \s '$0, \s '%r15               \n
+   \t 'ret                                \n
 );
 
 enter-function := λ.(
