@@ -809,7 +809,7 @@ assemble := λprogram. (
       (set main_pd (compile-append( main_pd global_ctx main_e )))
    ) ())
    (set main_pd ( ((head main_pd) (exit-cleanup())) (tail main_pd)) )
-   (set output_pd ( ((head output_pd) (head main_pd)) ((tail output_pd) (tail main_pd)) ))
+   (set output_pd ( ((head output_pd) (head main_pd) (stdlib-functions())) ((tail output_pd) (tail main_pd)) ))
 
    (write-file (target (clone-rope output_pd)))
 );
@@ -937,9 +937,9 @@ data-header := λ.(
   \t '\,zero \s 1                         \n
   'newline:                               \n
   \t '\,ascii \s " \\n "                  \n
-  'lparen:                                \n
+  'left_paren:                            \n
   \t '\,ascii \s " \[ "                   \n
-  'rparen:                                \n
+  'right_paren:                           \n
   \t '\,ascii \s " \] "                   \n
   'space:                                 \n
   \t '\,ascii \s " \s "                   \n
@@ -1061,3 +1061,80 @@ label-case := λk. (tail(
    )))
    (clone-rope nk)
 ));
+
+stdlib-functions := λ. (
+   'print_s:                           \n
+   # if .head is zero, then this is Nil
+   \t 'cmp \s '$0, \s '%r12            \n
+   \t 'je \s 'print_s_nil              \n
+
+   # if only .tail is zero, then this is an Atom
+   \t 'cmp \s '$0, \s '%r13            \n
+   \t 'je \s 'print_s_atom             \n
+
+   # if .head and .tail are non-zero, then this is a Cons
+   (system-call( '$1 '$1 '$left_paren '$1 ))
+   (push-this())
+   \t 'call \s 'head                   \n
+   \t 'call \s 'print_s                \n
+   (pop-this())
+   (system-call( '$1 '$1 '$space '$1 ))
+   (push-this())
+   \t 'call \s 'tail                   \n
+   \t 'call \s 'print_s                \n
+   (pop-this())
+   (system-call( '$1 '$1 '$right_paren '$1 ))
+   \t 'ret                             \n
+
+   'print_s_nil:                       \n
+   # nil is two bytes "()" located in the data section at $nil_literal
+   (system-call( '$1 '$1 '$nil_literal '$2 ))
+   \t 'ret                             \n
+
+   'print_s_atom:                      \n
+   \t 'call \s 'strlen                 \n # %r8 is string length of this atom
+   (system-call( '$1 '$1 '%r12 '%r8 )) \n
+   \t 'ret                             \n
+
+   'head:                                 \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s 'head_is_nil                 \n
+   \t 'mov \s '8 \[ '%r12 \] , \s '%r13   \n
+   \t 'mov \s '0 \[ '%r12 \] , \s '%r12   \n
+   \t 'ret                                \n
+   'head_is_nil:                          \n
+   \t 'mov \s '$0, \s '%r12               \n
+   \t 'ret                                \n
+
+   'tail:                                 \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s 'head_is_nil                 \n
+   \t 'mov \s '0 \[ '%r13 \] , \s '%r12   \n
+   \t 'mov \s '8 \[ '%r13 \] , \s '%r13   \n
+   \t 'ret                                \n
+   'tail_is_nil:                          \n
+   \t 'mov \s '$0, \s '%r12               \n
+   \t 'ret                                \n
+
+   'strlen:                               \n
+   \t 'xor \s '%r8, \s '%r8               \n
+   \t 'mov \s '%r12, \s '%rax             \n
+   'strlen_loop:                          \n
+   \t 'cmpb \s '$0, \s '0 \[ '%rax \]     \n
+   \t 'jz \s 'strlen_exit                 \n
+   \t 'inc \s '%r8                        \n
+   \t 'inc \s '%rax                       \n
+   \t 'jmp \s 'strlen_loop                \n
+   'strlen_exit:                          \n
+   \t 'ret                                \n
+);
+
+push-this := λ.(
+   \t 'push \s '%r12                      \n
+   \t 'push \s '%r13                      \n
+);
+
+pop-this := λ.(
+   \t 'pop \s '%r13                       \n
+   \t 'pop \s '%r12                       \n
+);
