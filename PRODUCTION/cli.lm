@@ -844,7 +844,6 @@ compile-expr := λctx e. (
 );
 
 compile-append := λoutput_pd gctx e. (tail(
-   (local e)
    (set e (compile-expr( gctx e )))
    output_pd
 ));
