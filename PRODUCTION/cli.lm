@@ -896,6 +896,20 @@ compile-expr := λctx e offset used. (tail(
             ))
          )))
       )))
+      ( (Literal l) (tail(
+         ()
+         (yield-atom (ctx l offset))
+      )))
+      ( Nil (tail(
+         (set prog (prog ( \t 'mov \s '$0 , '%r12 \n )))
+         (set prog (prog ( \t 'mov \s '$0 , '%r13 \n )))
+         (set tail_safe True)
+         (Expr( () prog () () () ctx offset ))
+      )))
+      ( (App (l r)) (tail(
+         (set tail_safe True)
+         (yield-cons(ctx l r offset used))
+      )))
       ( u (fail (UnrecognizedExpression u)) )
    )))
    (if tail_safe return (tail(
@@ -913,7 +927,7 @@ compile-expr := λctx e offset used. (tail(
 compile-append := λoutput_pd gctx e. (tail(
    (set e (compile-expr( gctx e () Unused )))
    ( ((head output_pd) (get-frame e) (get-prog e) (get-unframe e) (get-text e))
-     (tail output_pd) )
+     ((tail output_pd) (get-data e)) )
 ));
 
 data-header := λ.(
@@ -1137,4 +1151,105 @@ push-this := λ.(
 pop-this := λ.(
    \t 'pop \s '%r13                       \n
    \t 'pop \s '%r12                       \n
+);
+
+yield-cons := λctx l r offset used. (tail(
+   (local e1)
+   (local e2)
+   (local prog)
+   (local rused)
+   (match used (
+      ()
+      ( Used (tail(
+         (set e1 (compile-expr( ctx l offset Used )))
+         (set offset (get-offset e1))
+         (set e2 (compile-expr( (get-pc e1) r (get-offset e1) Used )))
+         (set offset (get-offset e2))
+         (set prog (prog (get-prog e1)))
+         (set prog (prog (push-this())))
+         (set prog (prog (get-prog e2)))
+         (set prog (prog (close())))
+         (set prog (prog (\t 'mov \s '%r8, \s '%r9 \n)))
+         (set prog (prog (pop-this())))
+         (set prog (prog (close())))
+         (set prog (prog (\t 'mov \s '%r9, \s '%r12 \n)))
+         (set prog (prog (\t 'mov \s '%r8, \s '%r13 \n)))
+         (Expr( ((get-frame e1) (get-frame e2)) prog ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
+      )))
+      ( _ (tail(
+         (set rused ( if (eq(used Tail)) Used Unused ))
+         (set e1 (compile-expr( ctx l offset Unused )))
+         (set e2 (compile-expr( (get-pc e1) r (get-offset e1) rused )))
+         (Expr( ((get-frame e1) (get-frame e2)) ((get-prog e1) (get-prog e2)) ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
+      )))
+   ))
+));
+
+yield-atom := λctx a offset. (tail(
+   (local id)
+   (set id (uuid()))
+   (Expr(
+      ()
+      (\t 'mov \s '$ id , \s '%r12 \n # $_.$1 = 0, .atom
+       \t 'mov \s '$0, \s '%r13    \n # $_.$2 = 0, .head
+      )
+      ()
+      ()
+      (id ': \n \t '\,ascii \s " (escape-sequences a) " \n \t '\,zero \s 1 \n)
+      ctx
+      offset
+   ))
+));
+
+$uuid := ();
+uuid := λ. (tail(
+   (set $uuid (inc $uuid))
+   (clone-rope ('uuid_ (dump-i $uuid)))
+));
+
+escape-sequences := λt. match t (
+   ()
+   ( () () )
+   ( \\ \\\\ )
+   ( \\: \: )
+   ( \\o \o )
+   ( \\n (\\ 'n))
+   ( \\t \t )
+   ( \\s \s )
+   ( \\l \l )
+   ( \\[ \[ )
+   ( \\] \] )
+   ( (l r) ( (escape-sequences l) (escape-sequences r) ) )
+   ( s (tail(
+      (local c)
+      (local cs)
+      (local is_escape)
+      (foreach-char s (
+         (set c $_)
+         (match c (
+            ()
+            ( " (
+               (set cs (cs \\ "))
+               (set is_escape ())
+            ))
+            (\\ (
+               (if is_escape (
+                 (set cs ( cs \\\\ ))
+                 (set is_escape ())
+               ) (set is_escape True))
+            ))
+            (_ (
+               (if is_escape (
+                  (match c (
+                     ()
+                     ( , (set cs (cs \,)))
+                     ( _ (print-s( InvalidEscapeCharacter (c s) )))
+                  ))
+               ) (set cs (cs (clone-rope c))))
+               (set is_escape ())
+            ))
+         ))
+      ))
+      (clone-rope cs)
+   )))
 );
