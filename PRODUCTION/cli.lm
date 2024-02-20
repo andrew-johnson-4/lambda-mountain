@@ -1086,6 +1086,29 @@ compile-expr := λctx e offset used. (tail(
          (set tail_safe True)
          (Expr( ((get-frame e1) (get-frame e2)) prog ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2) foreach_text) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
       )))
+      ( (App( (App( (Variable 'foreach-char) t )) d )) (tail(
+         (set e1 (compile-expr(ctx t offset Used)))
+         (set e2 (compile-expr((get-pc e1) d (get-offset e1) Unused)))
+         (local foreach_char_head)
+         (set foreach_char_head (uuid()))
+         (local foreach_char_small)
+         (set foreach_char_small (uuid()))
+         (local foreach_char_end)
+         (set foreach_char_end (uuid()))
+         (local foreach_char_notcons)
+         (set foreach_char_notcons (uuid()))
+         (local foreach_char_data)
+         (set foreach_char_data (uuid()))
+         (local foreach_char_apply)
+         (set foreach_char_apply (uuid()))
+         (local foreach_data)
+         (set foreach_data ( foreach_char_data ': \n \t '\,zero \s '2 \n ))
+         (local foreach_text)
+         (set foreach_text (yield-foreach-char( foreach_char_data foreach_char_head foreach_char_small foreach_char_end foreach_char_notcons foreach_char_apply (get-prog e2) )))
+         (set prog ( (get-prog e1) \t 'call \s foreach_char_head \n ))
+         (set tail_safe True)
+         (Expr( ((get-frame e1) (get-frame e2)) prog ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2) foreach_text) ((get-data e1) (get-data e2) foreach_data) (get-pc e2) (get-offset e2) ))
+      )))
       ( (App ((Variable fname) arg)) (tail(
          ()
          (if (is-builtin fname) (tail(
@@ -1997,5 +2020,60 @@ yield-foreach-atom := λforeach-head foreach-notcons foreach-ignore foreach-appl
    \t 'ret                                   \n
 
    foreach-ignore ':                         \n
+   \t 'ret                                   \n
+);
+
+yield-foreach-char := λforeach-data foreach-head foreach-small foreach-end foreach-notcons foreach-apply foreach-expr. (
+   #define label for this function
+   foreach-head ': \n
+
+   #if this is a cons, recurse
+   \t 'cmp \s '$0, \s %r13                   \n
+   \t 'je \s foreach-notcons                 \n
+   (push-this())
+   \t 'call \s 'head                         \n
+   \t 'call \s foreach-head                  \n
+   (pop-this())
+   (push-this())
+   \t 'call \s 'tail                         \n
+   \t 'call \s foreach-head                  \n
+   (pop-this())
+   \t 'ret                                   \n
+
+   #if not cons, apply
+   foreach-notcons ':                        \n
+   (push-this())
+
+   #if nil, apply and return
+   \t 'mov \s '%r12, \s '%r8                 \n
+   \t 'cmp \s '$0, \s '%r12                  \n
+   \t 'jne \s foreach-small                  \n
+   \t 'call \s foreach-apply                 \n
+   (pop-this())
+   \t 'ret                                   \n
+
+   #if atom, break into characters and apply
+   foreach-small ':                          \n
+   \t 'cmpb \s '$0, \s '0 \[ %r8 \]          \n
+   \t 'je \s foreach-end                     \n
+   \t 'push \s '%r8                          \n
+   \t 'mov \s '$ foreach-data , \s '%r12     \n
+   \t 'mov \s '$0, \s '%r13                  \n
+   \t 'mov \s '$0, \s '%r14                  \n
+   \t 'mov \s '$0, \s '%r15                  \n
+   \t 'movb \s '0 \[ %r8 \] , \s '%bl        \n
+   \t 'movb \s '%bl, \s '0 \[ %r12 \]        \n
+   \t 'movb \s '$0, \s '1 \[ %r12 \]         \n
+   \t 'call \s foreach-apply                 \n
+   \t 'pop \s '%r8                           \n
+   \t 'inc \s '%r8                           \n
+   \t 'jmp \s foreach-small                  \n
+
+   foreach-end ':                            \n
+   (pop-this())
+   \t 'ret                                   \n
+
+   foreach-apply ':                          \n
+   foreach-expr
    \t 'ret                                   \n
 );
