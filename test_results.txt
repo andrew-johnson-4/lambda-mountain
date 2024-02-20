@@ -1,43 +1,9 @@
-TEST --compile tests/lm/argv.lm
-Expected: (./a.out ())
-Actual: (./tmp ())
 TEST --compile tests/lm/assign.lm
 Expected: (((Assignment 123) abc) xyz)
 Actual: production error code:  on target tests/lm/assign.lm
 TEST --compile tests/lm/assign2.lm
 Expected: (((() 123) abc) xyz)
 Actual: production error code:  on target tests/lm/assign2.lm
-TEST --compile tests/lm/atom_comparison.lm
-Expected: ()
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0xfb): undefined reference to `eq'
- on target tests/lm/atom_comparison.lm
-TEST --compile tests/lm/atom_comparison_equal.lm
-Expected: True
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0xfb): undefined reference to `eq'
- on target tests/lm/atom_comparison_equal.lm
-TEST --compile tests/lm/atom_comparison_equal2.lm
-Expected: (True λ)
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0xfb): undefined reference to `eq'
- on target tests/lm/atom_comparison_equal2.lm
-TEST --compile tests/lm/atom_comparison_inequal.lm
-Expected: ()
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0xfb): undefined reference to `eq'
- on target tests/lm/atom_comparison_inequal.lm
-TEST --compile tests/lm/atom_comparison_not.lm
-Expected: True
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0x98): undefined reference to `not'
- on target tests/lm/atom_comparison_not.lm
-TEST --compile tests/lm/atom_comparison_notnot.lm
-Expected: ()
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0x98): undefined reference to `not'
-ld: (.text+0x9d): undefined reference to `not'
- on target tests/lm/atom_comparison_notnot.lm
 TEST --compile tests/lm/clone_rope.lm
 Expected: helloworld
 Actual: ld error code: ld: tmp.o: in function `before_main_end':
