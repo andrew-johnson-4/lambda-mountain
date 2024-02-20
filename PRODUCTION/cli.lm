@@ -960,7 +960,7 @@ data-header := λ.(
   'true:                                  \n
   \t '\,ascii \s "True"                   \n
   \t '\,zero \s '1                        \n
-  'digit:                                 \n
+  '__digit:                               \n
   \t '\,zero \s '2                        \n
   'hex_buffer:                            \n
   \t '\,ascii \s "0123456789abcdef"       \n
@@ -1042,6 +1042,7 @@ close := λe. (
 
 is-builtin := λf. (match f (
    ()
+   ('is True)
    ('eq True)
    ('not True)
    ('head True)
@@ -1405,6 +1406,14 @@ stdlib-functions := λ. (
    \t 'mov \s '$hex_buffer, '%r10         \n # %r10 is index into hex buffer
    \t 'add \s '%al, \s '%r10b             \n # %r10 is index into char in hex buffer
    \t 'mov \s '0 \[ %r10 \] , \s '%cl     \n # %cl is a hexadecimal char
+   \t 'ret                                \n
+
+   'digit:                                \n
+   \t 'mov \s '%r12, \s '%rax             \n
+   \t 'add \s '$48, \s %rax               \n
+   \t 'mov \s '$__digit, \s %r12          \n
+   \t 'mov \s '%al, \s '0 \[ %r12 \]      \n
+   \t 'mov \s '$0, \s %r13                \n
    \t 'ret                                \n
 );
 

@@ -4,115 +4,6 @@ Actual: production error code:  on target tests/lm/assign.lm
 TEST --compile tests/lm/assign2.lm
 Expected: (((() 123) abc) xyz)
 Actual: production error code:  on target tests/lm/assign2.lm
-TEST --compile tests/lm/digit.lm
-Expected: 2
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0x98): undefined reference to `inc'
-ld: (.text+0x9d): undefined reference to `inc'
- on target tests/lm/digit.lm
-TEST --compile tests/lm/dump_i.lm
-Expected: 0000000000000000
-Actual: ./tmp error code:  on target tests/lm/dump_i.lm
-TEST --compile tests/lm/dump_i1.lm
-Expected: 0000000000000001
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0x98): undefined reference to `inc'
- on target tests/lm/dump_i1.lm
-TEST --compile tests/lm/dump_i2.lm
-Expected: 0000000000000002
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0x98): undefined reference to `inc'
-ld: (.text+0x9d): undefined reference to `inc'
- on target tests/lm/dump_i2.lm
-TEST --compile tests/lm/dump_i8.lm
-Expected: 0000000000000018
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0x98): undefined reference to `inc'
-ld: (.text+0x9d): undefined reference to `inc'
-ld: (.text+0xa2): undefined reference to `inc'
-ld: (.text+0xa7): undefined reference to `inc'
-ld: (.text+0xac): undefined reference to `inc'
-ld: tmp.o:(.text+0xb1): more undefined references to `inc' follow
- on target tests/lm/dump_i8.lm
-TEST --compile tests/lm/dump_iadd.lm
-Expected: 0000000000000005
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0x98): undefined reference to `inc'
-ld: (.text+0x9d): undefined reference to `inc'
-ld: (.text+0xb4): undefined reference to `inc'
-ld: (.text+0xb9): undefined reference to `inc'
-ld: (.text+0xbe): undefined reference to `inc'
-ld: (.text+0x114): undefined reference to `add'
- on target tests/lm/dump_iadd.lm
-TEST --compile tests/lm/dump_iadd2.lm
-Expected: -000000000000001
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0x98): undefined reference to `inc'
-ld: (.text+0x9d): undefined reference to `inc'
-ld: (.text+0xb4): undefined reference to `dec'
-ld: (.text+0xb9): undefined reference to `dec'
-ld: (.text+0xbe): undefined reference to `dec'
-ld: (.text+0x114): undefined reference to `add'
- on target tests/lm/dump_iadd2.lm
-TEST --compile tests/lm/dump_idiv.lm
-Expected: 0000000000000002
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0x98): undefined reference to `inc'
-ld: (.text+0x9d): undefined reference to `inc'
-ld: (.text+0xa2): undefined reference to `inc'
-ld: (.text+0xa7): undefined reference to `inc'
-ld: (.text+0xac): undefined reference to `inc'
-ld: tmp.o:(.text+0xc3): more undefined references to `inc' follow
-ld: tmp.o: in function `before_main_end':
-(.te
-TEST --compile tests/lm/dump_iinv.lm
-Expected: -000000000000002
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0x98): undefined reference to `inc'
-ld: (.text+0x9d): undefined reference to `inc'
-ld: (.text+0xa2): undefined reference to `inv'
- on target tests/lm/dump_iinv.lm
-TEST --compile tests/lm/dump_iis_neg.lm
-Expected: 0000000000000000
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0x98): undefined reference to `inc'
-ld: (.text+0x9d): undefined reference to `inc'
-ld: (.text+0xa2): undefined reference to `is_neg'
- on target tests/lm/dump_iis_neg.lm
-TEST --compile tests/lm/dump_iis_neg2.lm
-Expected: 0000000000000001
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0x98): undefined reference to `dec'
-ld: (.text+0x9d): undefined reference to `dec'
-ld: (.text+0xa2): undefined reference to `is_neg'
- on target tests/lm/dump_iis_neg2.lm
-TEST --compile tests/lm/dump_imod.lm
-Expected: 0000000000000001
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0x98): undefined reference to `inc'
-ld: (.text+0x9d): undefined reference to `inc'
-ld: (.text+0xa2): undefined reference to `inc'
-ld: (.text+0xa7): undefined reference to `inc'
-ld: (.text+0xac): undefined reference to `inc'
-ld: tmp.o:(.text+0xc3): more undefined references to `inc' follow
-ld: tmp.o: in function `before_main_end':
-(.te
-TEST --compile tests/lm/dump_imul.lm
-Expected: 0000000000000006
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0x98): undefined reference to `inc'
-ld: (.text+0x9d): undefined reference to `inc'
-ld: (.text+0xb4): undefined reference to `inc'
-ld: (.text+0xb9): undefined reference to `inc'
-ld: (.text+0xbe): undefined reference to `inc'
-ld: (.text+0x114): undefined reference to `mul'
- on target tests/lm/dump_imul.lm
-TEST --compile tests/lm/dump_ineg.lm
-Expected: -000000000000002
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0x98): undefined reference to `dec'
-ld: (.text+0x9d): undefined reference to `dec'
- on target tests/lm/dump_ineg.lm
 TEST --compile tests/lm/foreach_atom.lm
 Expected: helloworld
 Actual: production error code:  on target tests/lm/foreach_atom.lm
@@ -134,12 +25,6 @@ Actual: production error code:  on target tests/lm/if_falsy.lm
 TEST --compile tests/lm/if_truthy.lm
 Expected: True
 Actual: production error code:  on target tests/lm/if_truthy.lm
-TEST --compile tests/lm/is1.lm
-Expected: ()
-Actual: production error code:  on target tests/lm/is1.lm
-TEST --compile tests/lm/is2.lm
-Expected: True
-Actual: production error code:  on target tests/lm/is2.lm
 TEST --compile tests/lm/load_bigger_file.lm
 Expected: line 0
 line 1
