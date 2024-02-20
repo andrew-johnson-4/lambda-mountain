@@ -783,7 +783,6 @@ assemble := λprogram. (
 
    (local main_e)
    (local main_pd)
-   (set main_pd ( (before-main()) () ))
 
    (local e1)
    (local e2)
@@ -855,12 +854,22 @@ assemble := λprogram. (
    )))
 
    (if main_e (
-      (set main_pd ( ((head main_pd) (enter-function())) (tail main_pd)) )
       (set main_pd (compile-append( main_pd global_ctx main_e )))
    ) ())
-   (set main_pd ( ((head main_pd) (exit-cleanup())) (tail main_pd)) )
-   (set output_pd ( ((head output_pd) (head main_pd) (stdlib-functions())) ((tail output_pd) (tail main_pd)) ))
-
+   (set output_pd (
+      (
+         (before-main())
+         (enter-function())
+         (get-frame main_pd)
+         (get-prog main_pd)
+         (get-unframe main_pd)
+         (exit-cleanup())
+         (get-text main_pd)
+         (head output_pd)
+         (stdlib-functions())
+      )
+      ((tail output_pd) (get-data main_pd))
+   ))
    (write-file (target (clone-rope output_pd)))
 );
 
@@ -1062,6 +1071,21 @@ compile-expr := λctx e offset used. (tail(
             (get-offset e3)
          ))
       )))
+      ( (App( (App( (Variable 'foreach-atom) t )) d )) (tail(
+         (set e1 (compile-expr(ctx t offset Used)))
+         (set e2 (compile-expr((get-pc e1) d (get-offset e1) Unused)))
+         (local foreach_atom_label)
+         (set foreach_atom_label (uuid()))
+         (local foreach_atom_notcons)
+         (set foreach_atom_notcons (uuid()))
+         (local foreach_atom_ignore)
+         (set foreach_atom_ignore (uuid()))
+         (local foreach_text)
+         (set foreach_text (yield-foreach-atom( foreach_atom_label foreach_atom_notcons foreach_atom_ignore (get-prog e2) )))
+         (set prog ( (get-prog e1) \t 'call \s foreach_atom_label \n ))
+         (set tail_safe True)
+         (Expr( ((get-frame e1) (get-frame e2)) prog ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2) foreach_text) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
+      )))
       ( (App ((Variable fname) arg)) (tail(
          ()
          (if (is-builtin fname) (tail(
@@ -1118,10 +1142,17 @@ compile-expr := λctx e offset used. (tail(
    )))
 ));
 
-compile-append := λoutput_pd gctx e. (tail(
-   (set e (compile-expr( gctx e () Unused )))
-   ( ((head output_pd) (get-frame e) (get-prog e) (get-unframe e) (get-text e))
-     ((tail output_pd) (get-data e)) )
+compile-append := λoutput_e gctx e. (tail(
+   (set e (compile-expr( gctx e (get-offset output_e) Unused )))
+   (Expr(
+      ((get-frame output_e) (get-frame e))
+      ((get-prog output_e) (get-prog e))
+      ((get-unframe output_e) (get-unframe e))
+      ((get-text output_e) (get-text e))
+      ((get-data output_e) (get-data e))
+      (get-pc e)
+      (get-offset e)
+   ))
 ));
 
 data-header := λ.(
@@ -1938,3 +1969,33 @@ destructure-args := λctx e offset. (match e (
       (fail (InvalidFunctionParameters e))
    ))
 ));
+
+yield-foreach-atom := λforeach-head foreach-notcons foreach-ignore foreach-apply. (
+   #define label for this function
+   foreach-head ':                           \n
+
+   #if this is a cons, recurse
+   \t 'cmp \s '$0, \s '%r13                  \n
+   \t 'je \s foreach-notcons                 \n
+   (push-this())
+   \t 'call \s 'head                         \n
+   \t 'call \s foreach-head                  \n
+   (pop-this())
+   (push-this())
+   \t 'call \s 'tail                         \n
+   \t 'call \s foreach-head                  \n
+   (pop-this())
+   \t 'ret                                   \n
+
+   #if not cons, apply
+   foreach-notcons ':                        \n
+   \t 'cmp \s '$0, \s '%r12                  \n
+   \t 'je \s foreach-ignore                  \n
+   (push-this())
+   foreach-apply
+   (pop-this())
+   \t 'ret                                   \n
+
+   foreach-ignore ':                         \n
+   \t 'ret                                   \n
+);
