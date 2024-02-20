@@ -785,10 +785,38 @@ assemble := λprogram. (
    (local main_pd)
    (set main_pd ( (before-main()) () ))
 
+   (local e1)
+   (local e2)
+
    (local output_pd)
    (set output_pd ( (program-header()) (data-header()) ))
 
    (local global_ctx)
+   (local preview_program)
+   (set preview_program program)
+   (while preview_program (match preview_program (
+      ()
+      ( (pc (Global ('main body))) (
+         (set preview_program pc)
+      ))
+      ( (pc (GExpr e)) (
+         (set preview_program pc)
+      ))
+      ( (pc (Global (fname body))) (
+         (match body (
+            ()
+            ( Nil (
+               (set output_pd ( (head output_pd) ((tail output_pd) (label-case fname) ': \n \t '\,zero \s '16 \n) ))
+               (set global_ctx (global_ctx (GlobalVariable fname)))
+            ))
+            ( (Lambda(lhs rhs)) (
+               (set global_ctx (global_ctx (GlobalFunction fname)))
+            ))
+         ))
+         (set preview_program pc)
+      ))
+   )))
+
    (while program (match program (
       ()
       ( (pc (Global ('main body))) (
@@ -800,7 +828,28 @@ assemble := λprogram. (
          (set program pc)
       ))
       ( (pc (Global (fname body))) (
-         (fail (TODO CompileGlobal fname))
+         (match body (
+            ()
+            ( Nil (
+            ))
+            ( (Lambda(lhs rhs)) (
+               (set e1 (destructure-args(global_ctx lhs ())))
+               (set e2 (compile-expr((get-pc e1) rhs (get-offset e1) Used)))
+               (set output_pd ( ((head output_pd) (label-case fname) ': \n) (tail output_pd) ))
+               (set output_pd ( ((head output_pd) (enter-function())) (tail output_pd) ))
+               (set output_pd ( ((head output_pd) (get-frame e1)) (tail output_pd) ))
+               (set output_pd ( ((head output_pd) (get-frame e2)) (tail output_pd) ))
+               (set output_pd ( ((head output_pd) (get-prog e1)) (tail output_pd) ))
+               (set output_pd ( ((head output_pd) (get-prog e2)) (tail output_pd) ))
+               (set output_pd ( ((head output_pd) (get-unframe e1)) (tail output_pd) ))
+               (set output_pd ( ((head output_pd) (get-unframe e2)) (tail output_pd) ))
+               (set output_pd ( ((head output_pd) (exit-function())) (tail output_pd) ))
+               (set output_pd ( ((head output_pd) (get-text e1)) (tail output_pd) ))
+               (set output_pd ( ((head output_pd) (get-text e2)) (tail output_pd) ))
+               (set output_pd ( (head output_pd) ((tail output_pd) (get-data e1)) ))
+               (set output_pd ( (head output_pd) ((tail output_pd) (get-data e2)) ))
+            ))
+         ))
          (set program pc)
       ))
    )))
@@ -844,9 +893,30 @@ get-offset := λe. (match e (
    ((Expr(f p u t d pc off)) off)
 ));
 
-get-maybe-function := λctx n. (
-   (fail (TODO GetMaybeFunction n))
-);
+get-maybe-function := λctx v. (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
+         ()
+         ( (GlobalFunction name) (
+            if r () (
+               if (eq(name v)) (
+                  (set r (GlobalFunction (label-case name)))
+               ) ()
+            )
+         ))
+         ( (GlobalVariable name) (
+            if r () (
+               if (eq(name v)) (
+                  (set r (GlobalVariable (label-case name)))
+               ) ()
+            )
+         ))
+      ))
+      (set ctx (head ctx))
+   ))
+   r
+));
 
 get-local := λctx v. (tail(
    (local r)
@@ -1008,17 +1078,15 @@ compile-expr := λctx e offset used. (tail(
             ()
             (match (get-maybe-function(ctx fname)) (
                ()
-#               ( (Global (f body)) (tail(
-#                  ()
-#                  (set x (compile-expr(ctx arg offset Used)))
-#                  (set prog (get-prog x))
-#                  (set prog (prog (\t 'call \s (label-case fname) \n)))
-#                  (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
-#               )))
-#               ( _ (tail(
-#                  ()
-#                  (yield-cons(ctx (Variable fname) arg offset Used))
-#               )))
+               ( (GlobalFunction mangledname) (tail(
+                  (set e1 (compile-expr(ctx arg offset Used)))
+                  (set prog ((get-prog e1) (\t 'call \s mangledname \n)))
+                  (Expr( (get-frame e1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
+               )))
+               ( v (tail(
+                  ()
+                  (yield-cons(ctx v arg offset Used))
+               )))
             ))
          )))
       )))
@@ -1574,6 +1642,16 @@ pop-this := λ.(
    \t 'pop \s '%r12                       \n
 );
 
+shadow-this := λ.(
+   \t 'mov \s '%r12, \s '%r8              \n
+   \t 'mov \s '%r13, \s '%r9              \n
+);
+
+unshadow-this := λ.(
+   \t 'mov \s '%r8, \s '%r12              \n
+   \t 'mov \s '%r9, \s '%r13              \n
+);
+
 yield-nil := λ. (
    \t 'mov \s '$0, \s '%r12               \n
    \t 'mov \s '$0, \s '%r13               \n
@@ -1733,4 +1811,42 @@ i2s := λi. (tail(
    ))
    (if s () (set s 0))
    (clone-rope (sign s))
+));
+
+destructure-args := λctx e offset. (match e (
+   ()
+   ( Nil (tail(
+      ()
+      (Expr( () () () () () ctx offset ))
+   )))
+   ( (Variable n) (tail(
+      ()
+      (declare-local(ctx n offset))
+   )))
+   ( ( (App( h t )) ) (tail(
+      (local ta)
+      (set ta (destructure-args(ctx t offset)))
+      (set offset (get-offset ta))
+      (set ctx (get-pc ta))
+      (local ha)
+      (set ha (destructure-args(ctx h offset)))
+      (set offset (get-offset ha))
+      (set ctx (get-pc ha))
+      (local prog)
+      (set prog (prog (shadow-this()) ))
+      (set prog (prog (\t 'call \s 'tail \n) ))
+      (set prog (prog (get-prog ta) ))
+      (set prog (prog (unshadow-this()) ))
+      (set prog (prog (\t 'call \s 'head \n) ))
+      (set prog (prog (get-prog ha) ))
+      (Expr(
+         ( (get-frame ta) (get-frame ha) )
+         prog
+         ( (get-unframe ta) (get-unframe ha) )
+         () () ctx offset
+      ))
+   )))
+   ( _ (
+      (fail (InvalidFunctionParameters e))
+   ))
 ));
