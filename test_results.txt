@@ -10,67 +10,6 @@ Actual: production error code:  on target tests/lm/foreach_char.lm
 TEST --compile tests/lm/foreach_char_e.lm
 Expected: h_e_l_l_o_w_o_r_l_d_
 Actual: production error code:  on target tests/lm/foreach_char_e.lm
-TEST --compile tests/lm/load_bigger_file.lm
-Expected: line 0
-line 1
-line 2
-line 3
-line 4
-line 5
-line 6
-line 7
-line 8
-line 9
-line 10
-line 11
-line 12
-line 13
-line 14
-line 15
-line 16
-line 17
-line 18
-line 19
-line 20
-line 21
-line 22
-line 23
-line 24
-line 25
-line 26
-line 27
-line 28
-line 29
-line 30
-line 31
-line 32
-line 33
-line 34
-line 35
-line 36
-line 37
-line 38
-line 39
-line 40
-line 41
-line 42
-line 43
-line 44
-line 45
-line 46
-line 47
-line 48
-line 49
-line 50
-li
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0x98): undefined reference to `load_file'
- on target tests/lm/load_bigger_file.lm
-TEST --compile tests/lm/load_file.lm
-Expected: helloworld
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0x98): undefined reference to `load_file'
- on target tests/lm/load_file.lm
 TEST --compile tests/lm/match0.lm
 Expected: ()
 Actual: production error code:  on target tests/lm/match0.lm
@@ -107,4 +46,3 @@ Actual: production error code:  on target tests/lm/match9.lm
 TEST --compile tests/lm/match_slash.lm
 Expected: 1
 Actual: production error code:  on target tests/lm/match_slash.lm
-TEST --compile tests/lm/write_file.lm
