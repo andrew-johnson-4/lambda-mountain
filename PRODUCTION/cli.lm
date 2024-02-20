@@ -930,7 +930,7 @@ get-local := λctx v. (tail(
                ) ()
             )
          ))
-         ( (Global(l body)) (
+         ( (GlobalVariable l) (
             if r () (
                if (eq(l v)) (
                   (set r (
@@ -961,7 +961,7 @@ set-local := λctx v. (tail(
                ) ()
             )
          ))
-         ( (Global(l body)) (
+         ( (GlobalVariable l) (
             if r () (
                if (eq(l v)) (
                   (set r (

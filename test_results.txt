@@ -10,9 +10,6 @@ Actual: production error code:  on target tests/lm/foreach_char.lm
 TEST --compile tests/lm/foreach_char_e.lm
 Expected: h_e_l_l_o_w_o_r_l_d_
 Actual: production error code:  on target tests/lm/foreach_char_e.lm
-TEST --compile tests/lm/globals.lm
-Expected: ()123ABC
-Actual: production error code:  on target tests/lm/globals.lm
 TEST --compile tests/lm/load_bigger_file.lm
 Expected: line 0
 line 1
@@ -110,19 +107,4 @@ Actual: production error code:  on target tests/lm/match9.lm
 TEST --compile tests/lm/match_slash.lm
 Expected: 1
 Actual: production error code:  on target tests/lm/match_slash.lm
-TEST --compile tests/lm/user_function_sugar1.lm
-Expected: 1
-Actual: production error code:  on target tests/lm/user_function_sugar1.lm
-TEST --compile tests/lm/user_function_sugar2.lm
-Expected: 2
-Actual: production error code:  on target tests/lm/user_function_sugar2.lm
-TEST --compile tests/lm/user_function_sugar3.lm
-Expected: 3
-Actual: production error code:  on target tests/lm/user_function_sugar3.lm
-TEST --compile tests/lm/user_function_unsugared.lm
-Expected: b
-Actual: production error code:  on target tests/lm/user_function_unsugared.lm
-TEST --compile tests/lm/uuid1.lm
-Expected: uuid_0000000000000001uuid_0000000000000002
-Actual: production error code:  on target tests/lm/uuid1.lm
 TEST --compile tests/lm/write_file.lm
