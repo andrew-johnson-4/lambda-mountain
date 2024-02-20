@@ -4,21 +4,6 @@ Actual: production error code:  on target tests/lm/assign.lm
 TEST --compile tests/lm/assign2.lm
 Expected: (((() 123) abc) xyz)
 Actual: production error code:  on target tests/lm/assign2.lm
-TEST --compile tests/lm/clone_rope.lm
-Expected: helloworld
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0x1c1): undefined reference to `clone_rope'
- on target tests/lm/clone_rope.lm
-TEST --compile tests/lm/clone_rope2.lm
-Expected: (A (B C))
-Actual: ld error code: ld: tmp.o: in function `before_main_end':
-(.text+0x98): undefined reference to `clone_rope'
-ld: (.text+0xaf): undefined reference to `clone_rope'
-ld: (.text+0xc6): undefined reference to `clone_rope'
- on target tests/lm/clone_rope2.lm
-TEST --compile tests/lm/clone_rope3.lm
-Expected: (((() A) B) C)
-Actual: production error code:  on target tests/lm/clone_rope3.lm
 TEST --compile tests/lm/digit.lm
 Expected: 2
 Actual: ld error code: ld: tmp.o: in function `before_main_end':
