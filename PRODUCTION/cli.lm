@@ -780,44 +780,24 @@ assemble := λprogram. (
       ))
       (set config (head config))
    ))
-   (local has_main)
-   (local output_p)
-   (local output_d)
-   (set output_p (program-header()))
-   (set output_d (data-header()))
 
-   (if has_main () (
-      (set output_p (output_p ('main: \n)))
-      (set output_p (output_p (exit-cleanup())))
-   ))
+   (local main_e)
+   (local main_p)
+   (set main_p (before-main()))
 
-   (write-file (target (clone-rope (output_p output_d))))
-);
-#   (local main-ctx)
-#   (set main-ctx program)
+   (local output_pd)
+   (set output_pd ( (program-header()) (data-header()) ))
 
-#   (local e)
-#   (local e2)
-#   (local offset)
-#   (local inner-ctx)
-#   (while program (match program (
-#      ()
-#      ( (pc (Global ('main body))) (
-#         (set program pc)
-#         (set offset ())
-#         (set output_p (output_p ('main: \n)))
-#         (set output_p (output_p (_before-main())))
-#         (set output_p (output_p (_enter-function())))
-#         (set e (compile-expr(main-ctx body offset Unused)))
-#         (set output_p (output_p (get-frame e)))
-#         (set output_p (output_p (get-prog e)))
-#         (set output_p (output_p (get-unframe e)))
-#         (set output_p (output_p (_exit-cleanup())))
-#         (set output_p (output_p (get-text e)))
-#         (set output_d (output_d (get-data e)))
-#         (set has_main True)
-#      ))
-#      ( (pc (Global (fname body))) (
+   (while program (match program (
+      ()
+      ( (pc (Global ('main body))) (
+         (set main_e body)
+      ))
+      ( (pc (GExpr e)) (
+         (fail (TODO CompileGExpr))
+      ))
+      ( (pc (Global (fname body))) (
+         (fail (TODO CompileGlobal fname))
 #         (set program pc)
 #         (set offset ())
 #         (set inner-ctx main-ctx)
@@ -846,8 +826,18 @@ assemble := λprogram. (
 #               (set output_d (output_d (get-data e2)))
 #            ))
 #         ))
-#      ))
-#   )))
+      ))
+   )))
+
+   (if main_e (
+      (fail (TODO CompileMainExpr))
+   ) ())
+   (set main_p (main_p (exit-cleanup())))
+   (set output_pd ( ((head output_pd) main_p) (tail output_pd) ))
+
+   (write-file (target (clone-rope output_pd)))
+);
+
 #
 #);
 
@@ -906,4 +896,55 @@ system-call := λrax rdi rsi rdx. (
    \t 'mov \s rsi , \s '%rsi           \n
    \t 'mov \s rdx , \s '%rdx           \n
    \t 'syscall                         \n
+);
+
+before-main := λ.(
+   # before_main_argv:
+   #    argv = ()
+   #    let t = argv
+   #    for a in argv:
+   #       t.tail = (a ())
+   #       t = t.tail
+
+   'main:                              \n
+   \t 'pop \s '%rax                    \n # put argc in %rax
+   \t 'mov \s '$argv, \s '%r9          \n
+   \t 'movq \s '$0, \s '0 \[ '%r9 \]   \n
+   \t 'movq \s '$0, \s '8 \[ '%r9 \]   \n
+
+   'before_main_argv:                  \n
+   \t 'cmp \s '$0, \s '%rax            \n
+   \t 'je \s 'before_main_end          \n
+
+   \t 'pop \s '%r12                    \n #this = argv[i]
+   \t 'mov \s '$0, \s '%r13            \n
+   (close())                              #r8 is argv[i]
+
+   \t 'mov \s '%r8, \s '0 \[ '%r9 \]   \n #set t.head = argv[i]
+   \t 'mov \s '$0, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13            \n
+   (close())
+   \t 'mov \s '%r8, \s '8 \[ '%r9 \]   \n #set t.tail = ()
+   \t 'mov \s '%r8, \s '%r9            \n #set t = t.tail
+
+   \t 'dec \s '%rax                    \n #dec argc
+   \t 'jmp \s 'before_main_argv        \n
+
+   'before_main_end:
+);
+
+allocate-heap-16 := λ. (
+   \t 'mov \s '$s_section, \s '%r8           \n # %r8 now points to root s
+   \t 'mov \s '$s_counter, \s '%r9           \n # %r9 now points to s counter
+   \t 'mov \s '0 \[ '%r9 \] , \s '%r10       \n # %r10 now hold value of cons counter
+   \t 'add \s '%r10, \s '%r8                 \n # %r8 now points to top free cons
+   \t 'add \s '$16, \s '%r10                 \n # increment s counter
+   \t 'mov \s '%r10, \s '0 \[ %r9 \]         \n # overwrite new s counter
+);
+
+close := λe. (
+   e
+   (allocate-heap-16 ())
+   (\t 'mov \s '%r12, \s '0 \[ '%r8 \] \n)
+   (\t 'mov \s '%r13, \s '8 \[ '%r8 \] \n)
 );
