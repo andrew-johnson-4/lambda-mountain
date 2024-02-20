@@ -1223,8 +1223,8 @@ yield-cons := λctx l r offset used. (tail(
          (set prog (prog (\t 'mov \s '%r8, \s '%r9 \n)))
          (set prog (prog (pop-this())))
          (set prog (prog (close())))
-         (set prog (prog (\t 'mov \s '%r9, \s '%r12 \n)))
-         (set prog (prog (\t 'mov \s '%r8, \s '%r13 \n)))
+         (set prog (prog (\t 'mov \s '%r8, \s '%r12 \n)))
+         (set prog (prog (\t 'mov \s '%r9, \s '%r13 \n)))
          (Expr( ((get-frame e1) (get-frame e2)) prog ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
       )))
       ( _ (tail(
