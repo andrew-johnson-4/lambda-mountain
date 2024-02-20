@@ -87,7 +87,7 @@ fn run_compile_production(mode:&str, target: &str) -> String {
                       .expect("failed to wait for process");
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("production error code: {}", stderr);
+      panic!("production error code: {} on target {}", stderr, target);
    };
    let exit = Command::new("as")
                       .stdout(std::process::Stdio::piped())
@@ -101,7 +101,7 @@ fn run_compile_production(mode:&str, target: &str) -> String {
                       .expect("failed to wait for process");
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("as error code: {}", stderr);
+      panic!("as error code: {} on target {}", stderr, target);
    };
    let exit = Command::new("ld")
                       .stdout(std::process::Stdio::piped())
@@ -115,7 +115,7 @@ fn run_compile_production(mode:&str, target: &str) -> String {
                       .expect("failed to wait for process");
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("ld error code: {}", stderr);
+      panic!("ld error code: {} on target {}", stderr, target);
    };
    let exit = Command::new("./tmp")
                       .stdout(std::process::Stdio::piped())
@@ -126,7 +126,7 @@ fn run_compile_production(mode:&str, target: &str) -> String {
                       .expect("failed to wait for process");
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("./tmp error code: {}", stderr);
+      panic!("./tmp error code: {} on target {}", stderr, target);
    };
    let actual = String::from_utf8_lossy(&exit.stdout).to_string();
    rm("tmp.s");
