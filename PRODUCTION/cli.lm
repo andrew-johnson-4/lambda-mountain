@@ -175,6 +175,9 @@ infer-ctx := λctx e. (match e (
    ( (App( ps (Variable v) )) (
       ( (infer-ctx( ctx ps )) (v S))
    ))
+   ( Nil (
+      ctx
+   ))
    ( u (
       fail (UnknownLhs u)
    ))
