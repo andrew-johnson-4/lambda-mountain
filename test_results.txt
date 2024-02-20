@@ -1,9 +1,3 @@
-TEST --compile tests/lm/assign.lm
-Expected: (((Assignment 123) abc) xyz)
-Actual: production error code:  on target tests/lm/assign.lm
-TEST --compile tests/lm/assign2.lm
-Expected: (((() 123) abc) xyz)
-Actual: production error code:  on target tests/lm/assign2.lm
 TEST --compile tests/lm/foreach_atom.lm
 Expected: helloworld
 Actual: production error code:  on target tests/lm/foreach_atom.lm
@@ -80,18 +74,6 @@ Expected: helloworld
 Actual: ld error code: ld: tmp.o: in function `before_main_end':
 (.text+0x98): undefined reference to `load_file'
  on target tests/lm/load_file.lm
-TEST --compile tests/lm/locals.lm
-Expected: ()
-Actual: production error code:  on target tests/lm/locals.lm
-TEST --compile tests/lm/locals2.lm
-Expected: 123
-Actual: production error code:  on target tests/lm/locals2.lm
-TEST --compile tests/lm/locals3.lm
-Expected: ()
-Actual: production error code:  on target tests/lm/locals3.lm
-TEST --compile tests/lm/locals4.lm
-Expected: ()
-Actual: production error code:  on target tests/lm/locals4.lm
 TEST --compile tests/lm/match0.lm
 Expected: ()
 Actual: production error code:  on target tests/lm/match0.lm
@@ -143,7 +125,4 @@ Actual: production error code:  on target tests/lm/user_function_unsugared.lm
 TEST --compile tests/lm/uuid1.lm
 Expected: uuid_0000000000000001uuid_0000000000000002
 Actual: production error code:  on target tests/lm/uuid1.lm
-TEST --compile tests/lm/while1.lm
-Expected: ((1 2) 3)(1 2)1
-Actual: production error code:  on target tests/lm/while1.lm
 TEST --compile tests/lm/write_file.lm
