@@ -962,7 +962,9 @@ data-header := λ.(
   \t '\,zero \s '1                        \n
   'digit:                                 \n
   \t '\,zero \s '2                        \n
-  'dump_i:                                \n
+  'hex_buffer:                            \n
+  \t '\,ascii \s "0123456789abcdef"       \n
+  '__dump_i:                              \n
   \t '\,ascii \s '"0000000000000000"      \n
   \t '\,zero \s '1                        \n
   'err_fopen:                             \n
@@ -1324,6 +1326,85 @@ stdlib-functions := λ. (
    \t 'mov \s '0 \[ '%r13 \] , '%rcx      \n #divisor
    \t 'idiv \s '%rcx                      \n
    \t 'mov \s '%rdx, \s '%r12             \n
+   \t 'ret                                \n
+
+   'dump_i:                               \n
+   \t 'mov \s '%r12, \s '%r8              \n
+   \t 'mov \s '$__dump_i, \s '%r12        \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$__dump_i, \s '%r11        \n
+   \t 'cmp \s '$0, \s '%r8                \n
+   \t 'jge \s 'dump_i_positive            \n
+   \t 'jmp \s 'dump_i_negative            \n
+   'dump_i_positive:                      \n
+   \t 'call \s 'dump_i_digits             \n
+   \t 'movb \s '$32, \s '0 \[ %r11 \]     \n
+   \t 'ret                                \n
+   'dump_i_negative:                      \n
+   \t 'neg \s '%r8                        \n
+   \t 'call \s 'dump_i_digits             \n
+   \t 'movb \s '$45, \s '0 \[ %r11 \]     \n
+   \t 'ret                                \n
+   # if return value is positive then open was a success
+
+   'dump_i_digits:                        \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[0]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '0 \[ %r11 \]      \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[1]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '1 \[ %r11 \]      \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[2]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '2 \[ %r11 \]      \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[3]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '3 \[ %r11 \]      \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[4]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '4 \[ %r11 \]      \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[5]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '5 \[ %r11 \]      \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[6]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '6 \[ %r11 \]      \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[7]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '7 \[ %r11 \]      \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[8]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '8 \[ %r11 \]      \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[9]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '9 \[ %r11 \]      \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[10]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '10 \[ %r11 \]     \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[11]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '11 \[ %r11 \]     \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[12]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '12 \[ %r11 \]     \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[13]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '13 \[ %r11 \]     \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[14]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '14 \[ %r11 \]     \n
+   \t 'rol \s '$4, \s '%r8                \n   # %r8[15]
+   \t 'call \s 'put8                      \n
+   \t 'mov \s '%cl, \s '15 \[ %r11 \]     \n
+   \t 'ret                                \n
+
+   #move ascii representation of lower byte of %r8 into %cl
+   'put8:                                 \n
+   \t 'mov \s '%r8b, \s '%al              \n # lower byte of %r11 goes into %rax
+   \t 'and \s '$0xf, \s '%al              \n # only show lower 4 bits
+   \t 'mov \s '$hex_buffer, '%r10         \n # %r10 is index into hex buffer
+   \t 'add \s '%al, \s '%r10b             \n # %r10 is index into char in hex buffer
+   \t 'mov \s '0 \[ %r10 \] , \s '%cl     \n # %cl is a hexadecimal char
    \t 'ret                                \n
 );
 
