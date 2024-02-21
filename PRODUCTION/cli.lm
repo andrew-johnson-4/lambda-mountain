@@ -1029,7 +1029,7 @@ compile-expr := λctx e offset used. (tail(
       ( (App( (App( (Variable 'set) (Variable vname) )) x )) (tail(
          (set e1 (compile-expr(ctx x offset Used)))
          (set prog ((get-prog e1) (set-local(ctx vname))))
-         (Expr( (get-frame 1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
+         (Expr( (get-frame e1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
       )))
       ( (App( (App( (Variable 'while) c )) d )) (tail(
          (set e1 (compile-expr(ctx c offset Used)))
@@ -1097,7 +1097,15 @@ compile-expr := λctx e offset used. (tail(
          (set prog (prog ( \t 'jne \s label_skip \n )))
          (set prog (prog (yield-nil())))
          (set prog (prog ( label_skip ': \n )))
-         (Expr( ((get-frame e1) (get-frame e2)) prog ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
+         (Expr(
+            ((get-frame e1) (get-frame e2))
+            prog
+            ((get-unframe e1) (get-unframe e2))
+            ((get-text e1) (get-text e2))
+            ((get-data e1) (get-data e2))
+            (get-pc e2)
+            (get-offset e2)
+         ))
       )))
       ( (App( (App( (Variable 'foreach-atom) t )) d )) (tail(
          (set e1 (compile-expr(ctx t offset Used)))
@@ -2170,7 +2178,15 @@ destructure-pattern-lhs := λctx lhs offset. (tail(
       )))
       ( (Variable v) (tail(
          (set e1 (declare-local(ctx v offset)))
-         (Expr( (get-frame e1) ((get-prog e1) \t 'mov \s '$1, \s %rsi \n) (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
+         (Expr(
+            (get-frame e1)
+            ((get-prog e1) \t 'mov \s '$1, \s %rsi \n)
+            (get-unframe e1)
+            (get-text e1)
+            (get-data e1)
+            (get-pc e1)
+            (get-offset e1)
+         ))
       )))
       ( (Literal l) (tail(
          (set e1 (yield-atom(ctx l offset)))
