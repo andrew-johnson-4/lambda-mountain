@@ -114,7 +114,6 @@ ascript := λt tt. (
 
 show-ascript := λp. (tail(
    (local term)
-   (print-s (Ascript p))
    (set term (match p (
       ()
       ( () () )
@@ -143,7 +142,6 @@ show-ascript := λp. (tail(
 #         fail (UnknownTerm unknown)
 #      ))
 #   )))
-#   (print-s (Term term))
 #   (local type)
 #   (set type (lookup-type p))
 #   (if type (
@@ -1924,7 +1922,7 @@ escape-sequences := λt. match t (
                   (match c (
                      ()
                      ( , (set cs (cs \,)))
-                     ( _ (print-s( InvalidEscapeCharacter (c s) )))
+                     ( _ (fail( InvalidEscapeCharacter (c s) )))
                   ))
                ) (set cs (cs (clone-rope c))))
                (set is_escape ())

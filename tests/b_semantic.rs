@@ -117,16 +117,18 @@ fn run_compile_production(mode:&str, target: &str) -> String {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
       return format!("ld error code: {} on target {}", stderr, target);
    };
-   let exit = Command::new("./a.out")
+   let exit = Command::new("timeout")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
+                      .arg("10")
+                      .arg("./a.out")
                       .spawn()
                       .expect("failed to execute process")
                       .wait_with_output()
                       .expect("failed to wait for process");
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      return format!("./a.out error code: {} on target {}", stderr, target);
+      return format!("timeout 10 ./a.out error code: {} on target {}", stderr, target);
    };
    let actual = String::from_utf8_lossy(&exit.stdout).to_string();
    rm("tmp.s");
