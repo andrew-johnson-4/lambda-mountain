@@ -114,42 +114,46 @@ ascript := λt tt. (
 
 show-ascript := λp. (tail(
    (local term)
-   (set term (match p (
-      ()
-      ( () () )
-      ( Nil p )
-      ( (Variable _) p )
-      ( (Literal _) p )
-      ( (App( f x )) (
-         (App( (show-ascript f) (show-ascript x) ))
-      ))
-      ( (Lambda( lhs rhs )) (
-         (App( (show-ascript lhs) (show-ascript rhs) ))
-      ))
-      ( (prog (GExpr( g ))) (
-         ( (show-ascript prog) (GExpr( show-ascript g )) )
-      ))
-      ( (prog (Global( n v ))) (
-         ( (show-ascript prog) (Global( n (show-ascript v) )) )
-      ))
-      ( (prog (Type( tn td ))) (
-         ( (show-ascript prog) (Type( tn td )) )
-      ))
-      ( unknown (
-         fail (UnknownTerm unknown)
-      ))
-   )))
-   (local type)
-   (set type (lookup-type p))
-   (if type (
-      (if (eq( type ? )) (
-         term
-      ) ( 
-         (:( term type ))
-      ))
-   ) (
-      term
-   ))
+   (set term p)
+#   (print-s (Ascript p))
+#   (print-s (Ascript p))
+#   (set term (match p (
+#      ()
+#      ( Nil p )
+#      ( (Variable _) p )
+#      ( (Literal _) p )
+#      ( (App( f x )) (
+#         (App( (show-ascript f) (show-ascript x) ))
+#      ))
+#      ( (Lambda( lhs rhs )) (
+#         (App( (show-ascript lhs) (show-ascript rhs) ))
+#      ))
+#      ( (prog (GExpr( g ))) (
+#         ( (show-ascript prog) (GExpr( show-ascript g )) )
+#      ))
+#      ( (prog (Global( n v ))) (
+#         ( (show-ascript prog) (Global( n (show-ascript v) )) )
+#      ))
+#      ( (prog (Type( tn td ))) (
+#         ( (show-ascript prog) (Type( tn td )) )
+#      ))
+#      ( unknown (
+#         fail (UnknownTerm unknown)
+#      ))
+#   )))
+#   (print-s (Term term))
+#   (local type)
+#   (set type (lookup-type p))
+#   (if type (
+#      (if (eq( type ? )) (
+#         term
+#      ) ( 
+#         (:( term type ))
+#      ))
+#   ) (
+#      term
+#   ))
+    term
 ));
 
 global-context := ();
@@ -1200,7 +1204,7 @@ compile-expr := λctx e offset used. (tail(
 ));
 
 compile-append := λoutput_e gctx e. (tail(
-   (set e (compile-expr( gctx e (get-offset output_e) Unused )))
+   (set e (compile-expr( gctx e (get-offset output_e) Used )))
    (Expr(
       ((get-frame output_e) (get-frame e))
       ((get-prog output_e) (get-prog e))
