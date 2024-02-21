@@ -1,20 +1,28 @@
 
-$stat := ();
+config := ();
 
 main := (
+   (set type-subtypes 
+     (
+        (
+           (() (Atom S))
+           (Nil S)
+        )
+        ((Cons(S S)) S)
+     )
+   )
    (local mode)
    (set mode Compile)
    (local inputs)
    (local target)
    (local option)
    (local arg)
-   (local config)
    (foreach-atom (tail argv) ((set arg $_) (if option
       (match option (
          ()
          (() ())
          (SetTarget (
-            (set config (config (Target arg)))
+            (set config ( (global config) (Target arg)))
             (set option ())
          ))
       ))
@@ -24,9 +32,9 @@ main := (
          (-o (set option SetTarget))
          (--compile (set mode Compile))
          (--parse (set mode Parse))
-         (--stat (set $stat True))
          (--parse-expression (set mode ParseExpression))
          (--tokenize (set mode Tokenize))
+         (--typecheck (set mode Typecheck))
          (fp (set inputs (fp inputs)))
       ))
    )))
@@ -34,14 +42,14 @@ main := (
       ()
       (Compile (
          (foreach-atom inputs (
-            (set arg $_)
-            (if arg (
-               (assemble (config (parse-program (tokenize (load-file arg)))))
-            ) ())
+            if $_ (assemble (parse-program (tokenize (load-file $_)))) ()
          ))
       ))
       (Parse (foreach-atom inputs (
          if $_ (print-s (parse-program (tokenize (load-file $_)))) ()
+      )))
+      (Typecheck (foreach-atom inputs (
+         if $_ (print-s (show-ascript (typecheck (parse-program (tokenize (load-file $_)))))) ()
       )))
       (ParseExpression (foreach-atom inputs (
          if $_ (print-s (parse-expression (tokenize (load-file $_)))) ()
@@ -50,82 +58,457 @@ main := (
          if $_ (print-s (tokenize (load-file $_))) ()
       )))
    ))
-   (if $stat (
-      (print-stat MAIN)
-   ) ())
 );
 
-print-stat := λloc.(
-   (print-s \n )
-   (print-s loc )
-   (print-s \n )
-   (print-s 'A_COUNTER:)
-   (print-s \s)
-   (print-s (i2s A_COUNTER) )
-   (print-s \n )
-   (print-s 'S_COUNTER:)
-   (print-s \s)
-   (print-s (i2s S_COUNTER) )
-   (print-s \n )
-);
+#this is necessary to circumvent a bug with the bootstrap compiler trying to call globals as functions syntactically
+global := λvalue. value;
+fail := λmsg. (print-s msg) (exit 1);
 
-$uuid := ();
-uuid := λ. (tail(
-   (set $uuid (inc $uuid))
-   (clone-rope ('uuid_ (dump-i $uuid)))
-));
-
-i2s := λi. (tail(
-   (local ten)
-   (set ten( inc(inc(inc(inc(inc( inc(inc(inc(inc(inc( ))))) ))))) ))
-   (local sign)
-   (local s)
-   (local r)
-   (if (is-neg i) (
-      (set sign '-)
-      (set i (inv i))
-   ) ())
-   (while i (
-      (set r (mod(i ten)))
-      (set s ((clone-rope(digit r) s)))
-      (set i (div(i ten)))
-   ))
-   (if s () (set s 0))
-   (clone-rope (sign s))
-));
+type-context := ();
+type-subtypes := ();
+type-constructors := ();
+types-have-changed := ();
 
 tokenize-file := λpath. (
    tokenize (load-file path)
 );
 
-#returns (lhs rhs)
+typecheck := λprogram. (tail(
+   (local p)
+   (set p program)
+   (while p (
+      (infer-type-expr( (tail p) ))
+      (set p (head p))
+   ))
+   (set types-have-changed True)
+   (while types-have-changed (
+      (set types-have-changed ())
+      (infer-prog program)
+   ))
+   program
+));
+
+lookup-type := λterm. (tail(
+   (local tctx)
+   (set tctx type-context)
+   (local found)
+   (local ttt)
+   (while tctx (
+      (set ttt (head tctx))
+      (if (is( (head ttt) term )) (
+         (set found (tail ttt))
+         (set tctx ())
+      ) (
+         (set tctx (tail tctx))
+      ))
+   ))
+   found
+));
+
+ascript := λt tt. (
+   if tt (
+      (set type-context ((t tt) type-context))
+      (set types-have-changed True)
+   ) ()
+);
+
+show-ascript := λp. (tail(
+   (local term)
+   (set term (match p (
+      ()
+      ( () () )
+      ( Nil p )
+      ( (Variable _) p )
+      ( (Literal _) p )
+      ( (App( f x )) (
+         (App( (show-ascript f) (show-ascript x) ))
+      ))
+      ( (Lambda( lhs rhs )) (
+         (Lambda( (show-ascript lhs) (show-ascript rhs) ))
+      ))
+      ( (prog (GExpr( g ))) (
+         ( (show-ascript prog) (GExpr( show-ascript g )) )
+      ))
+      ( (prog (Global( n v ))) (
+         ( (show-ascript prog) (Global( n (show-ascript v) )) )
+      ))
+      ( (prog (Type( tn td ))) (
+         ( (show-ascript prog) (Type( tn td )) )
+      ))
+      ( unknown (
+         fail (UnknownTerm unknown)
+      ))
+   )))
+
+   (local type)
+   (set type (lookup-type p))
+   (if type (
+      (if (eq( type ? )) (
+         term
+      ) ( 
+         (:( term type ))
+      ))
+   ) (
+      term
+   ))
+));
+
+global-context := ();
+
+infer-prog := λp. (
+   (while p (
+      (infer-expr( (global global-context) (tail p) ))
+      (set p (head p))
+   ))
+);
+
+infer-ctx := λctx e. (match e (
+   ()
+   ( (App( (App( (Literal :) (Variable v) )) tt )) (
+      (ctx (v (typeof-ascript tt)))
+   ))
+   ( (App( ps (App( (App( (Literal :) (Variable v) )) tt )) )) (
+      ( (infer-ctx( ctx ps )) (v (typeof-ascript tt)))
+   ))
+   ( (Variable v) (
+      (ctx (v S))
+   ))
+   ( (App( ps (Variable v) )) (
+      ( (infer-ctx( ctx ps )) (v S))
+   ))
+   ( Nil (
+      ctx
+   ))
+   ( u (
+      fail (UnknownLhs u)
+   ))
+));
+
+typeof-gvar := λv. (tail(
+   (local gctx)
+   (set gctx global-context)
+   (local tt)
+   (while gctx (
+      (match (tail gctx) (
+         ()
+         ( (Global( gn gt )) (
+            (if (eq( v gn )) (
+               (if tt (
+                  (set tt (And(tt gt)) )
+               ) (
+                  (set tt gt)
+               ))
+            ) ())
+            (set gctx (head gctx))
+         ))
+      ))
+   ))
+   tt
+));
+
+typeof-var := λctx v. (match ctx (
+   ()
+   ( () (typeof-gvar v) )
+   ( (cs (cv ct)) (
+      if (eq( v cv )) (
+         ct
+      ) (
+         (typeof-var( cs v ))
+      )
+   ))
+));
+
+typeof-ascript := λtt. (match tt (
+   ()
+   ( (Literal tname) (
+      tname
+   ))
+   ( (Variable tname) (
+      tname
+   ))
+));
+
+typeof-lhs := λlhs. (match lhs (
+   ()
+   ( (App( (App( (Literal :) (Variable v) )) tt )) (
+      (typeof-ascript tt)
+   ))
+   ( (App( ps (App( (App( (Literal :) (Variable v) )) tt )) )) (
+      (Cons( (typeof-lhs ps) (typeof-ascript tt) ))
+   ))
+   ( (Variable v) (
+      S
+   ))
+   ( (App( ps (Variable v) )) (
+      (Cons( (typeof-lhs ps) S ))
+   ))
+   ( Nil (
+      Nil
+   ))
+   ( u (
+      fail (UnknownLhs u)
+   ))
+));
+
+unify-sub := λctx v. (match ctx (
+   ()
+   ( Accept v )
+   ( (Bind( s1 s2 )) (
+      if (eq( v s1 )) s2 v
+   ))
+   ( (ctxl ctxr) (tail(
+      (local lv)
+      (set lv (unify-sub( ctxl v )))
+      (local rv)
+      (set rv (unify-sub( ctxr v )))
+      (if (is( lv v )) (
+         (if (is( rv v )) () (set v rv))
+      ) (set v lv))
+      v
+   )))
+));
+
+unify-ctx := λctx v. (match v (
+   ()
+   ( (vl vr) (
+      ( (unify-ctx( ctx vl )) (unify-ctx( ctx vr )) )
+   ))
+   ( _ (
+      (unify-sub( ctx v ))
+   ))
+));
+
+unify-implies := λlt rt. (if (eq(lt rt)) True (tail(
+   (local accept)
+   (local subtypes)
+   (local st)
+   (set subtypes type-subtypes)
+   (while subtypes (
+      (set st (tail subtypes))
+      (if (eq( (head st) lt )) (
+         (if (eq( (tail st) rt )) (
+            (set accept True)
+         ) ())
+      ) ())
+      (set subtypes (head subtypes))
+   ))
+   accept
+)));
+
+unify-args := λlt rt. (match (lt rt) (
+   ()
+   ( ((lt1 rt1) (lt2 rt2)) (
+      (match ( (unify-args(lt1 lt2)) (unify-args(rt1 rt2)) ) (
+         ()
+         ( (() _) () )
+         ( (_ ()) () )
+         ( (lctx rctx) (lctx rctx) )
+      ))
+   ))
+   ( (a1 a2) (
+      (if (unify-implies( a2 a1 )) ( # argument type must imply parameter type
+         Accept
+      ) (
+         (if (is-variable a1) (
+            (if (is-variable a2) (
+               Accept
+            ) (
+               (Bind( a1 a2 ))
+            ))
+         ) (
+            (if (is-variable a2) (
+               (Bind( a2 a1 ))
+            ) (
+               ()
+            ))
+         ))
+      ))
+   ))
+   (_ (tail(
+      (fail (UnknownUnify lt rt))
+      ?
+   )))
+));
+
+apply-plural := λmany pt. (match many(
+   ()
+   ( (And( t1 t2 )) (tail(
+      (local r)
+      (set r (apply-plural( t1 pt )))
+      (if r r (apply-plural( t2 pt )))
+   )))
+   ( (->(lt rt)) (
+      (unify-ctx( (unify-args(lt pt)) rt ))
+   ))
+));
+
+safe-apply-plural := λterm many pt. (tail(
+   (local r)
+   (set r (apply-plural( many pt )))
+   (if r r (
+      fail (TypeError( InvalidArgument many pt ))
+   ))
+));
+
+infer-type-compound := λcompound. (match compound (
+   ()
+   ((Literal tt) tt)
+   ((App( lt rt )) (Cons( (infer-type-compound lt) (infer-type-compound rt) )))
+   (u (fail (UnknownTypeCompound u)))
+));
+
+infer-type-constructor := λname body. (match body (
+   ()
+   ( (Literal tag) (
+      (set type-constructors ( (global type-constructors) (tag tag) ))
+      (set type-subtypes ( (global type-subtypes) (tag (infer-type-compound name)) ))
+   ))
+   ( (App( (Literal tag) args )) (
+      (local ctype)
+      (set ctype (infer-type-compound args))
+      (set type-constructors ( (global type-constructors) (tag (->(ctype (tag ctype)))) ))
+      (set type-subtypes ( (global type-subtypes) ((tag ctype) (infer-type-compound name)) ))
+   ))
+));
+
+infer-type-definition := λname def. (match def (
+   ()
+   ( (App( (App( tds (Literal |) )) body )) (
+      (infer-type-definition( name tds ))
+      (infer-type-constructor( name body ))
+   ))
+   ( body (
+      (infer-type-constructor( name body ))
+   ))
+));
+
+infer-constructor-type := λtag. (tail(
+   (local ctype)
+   (local constructors)
+   (set constructors type-constructors)
+   (while constructors (
+      (if (eq( tag (head(tail(constructors))) )) (
+         (if ctype (
+            (set ctype (And( ctype (tail(tail(constructors))) )))
+         ) (
+            (set ctype (tail(tail(constructors))))
+         ))
+      ) ())
+      (set constructors (head constructors))
+   ))
+   ctype
+));
+
+infer-type-expr := λe. (match e (
+   ()
+   ( (Type( l ds )) (
+      (infer-type-definition( l ds ))
+      (ascript( e ? ))
+   ))
+   (_ ())
+));
+
+infer-expr := λctx e. (
+   (if (lookup-type e) () (
+      match e (
+         ()
+         ( () () )
+         ( (GExpr ge) (
+            (infer-expr( ctx ge ))
+         ))
+         ( (Global( gln gle )) (
+            (infer-expr( ctx gle ))
+            (match (lookup-type gle) (
+               ()
+               ( () () )
+               ( glt (
+                  (set global-context ( (global global-context) (Global( gln glt )) ))
+                  (ascript( e ? ))
+               ))
+            ))
+         ))
+         ( (Type( l ds )) ())
+         ( Nil (
+            (ascript( e Nil ))
+         ))
+         ( (Literal lit) (
+            (local ctype)
+            (set ctype (infer-constructor-type lit))
+            (if ctype (
+               (ascript( e (And( ctype Atom )) ))
+            ) (
+               (ascript( e Atom ))
+            ))
+         ))
+         ( (App( l r )) (
+            (infer-expr( ctx l ))
+            (infer-expr( ctx r ))
+            (match ( (lookup-type l) (lookup-type r) ) (
+               ()
+               ( (() _) () )
+               ( (_ ()) () )
+               ( ( (->(lt rt)) pt ) (
+                  (ascript( e (safe-apply-plural( e (->(lt rt)) pt )) ))
+               ))
+               ( ( (And(t1 t2)) pt ) (
+                  (ascript( e (safe-apply-plural( e (And(t1 t2)) pt )) ))
+               ))
+               ( (lt rt) (
+                  (ascript( e (Cons(lt rt)) ))
+               ))
+            ))
+         ))
+         ( (Lambda( lhs rhs )) (
+            (set ctx (infer-ctx( ctx lhs )))
+            (infer-expr( ctx rhs ))
+            (match (lookup-type rhs) (
+               ()
+               ( () () )
+               ( rt (
+                  (ascript( e (->( (typeof-lhs lhs) rt)) ))
+               ))
+            ))
+         ))
+         ( (Variable v) (
+            (match (typeof-var( ctx v )) (
+               ()
+               ( () () )
+               ( tt (ascript( e tt )) )
+            ))
+         ))
+         ( u (fail (UnknownTerm u)) )
+      )
+   ))
+);
+
 parse-lambda := λtoks. (tail(
-   (if $stat (
-      (print-s (PARSE_LAMBDA toks))
-   ) ())
-   (local er)
-   (set er (parse-one-expression toks))
+   (local remainder)
+   (local pme)
+   (set pme (parse-one-expression toks))
    (local lmb)
-   (set lmb (head er))
-   (set toks (tail er))
+   (set lmb (head pme))
+   (set toks (tail pme))
    (match lmb (
       ()
       ((Literal \,) (
-         (set lmb (Nil (parse-many-expressions toks)))
+         (set pme (parse-many-expressions toks))
+         (set lmb (Nil (head pme)))
+         (set remainder (tail pme))
          (set toks ())
       ))
    ))
    (while toks (
-      (set er (parse-one-expression toks))
-      (match er (
+      (set pme (parse-one-expression toks))
+      (match pme (
          ()
          (((Literal \,) r) (
-            (set lmb (lmb (parse-many-expressions r)))
+            (set pme (parse-many-expressions r))
+            (set lmb (lmb (head pme)))
+            (set remainder (tail pme))
             (set toks ())
          ))
          ((e ()) (
-            (set lmb (lmb e))
-            (print-s (ExpectedLambdaRhs lmb))
+            (expect( \, toks ))
             (set toks ())
          ))
          ((e r) (
@@ -133,14 +516,16 @@ parse-lambda := λtoks. (tail(
             (set toks r)
          ))
       ))
-   ))
-   lmb
+   ))	
+   (lmb remainder)
 ));
 
+unexpect := λt. fail (UnexpectedToken t);
+expect := λt ts. ();
+#expect := λt ts. if (eq( t (head ts) )) () (fail (ExpectedToken t));
+
 parse-one-expression := λtoks. (tail(
-   (if $stat (
-      (print-s (PARSE_ONE toks))
-   ) ())
+   (local pme)
    (local remainder)
    (local expr)
    (match toks (
@@ -150,45 +535,18 @@ parse-one-expression := λtoks. (tail(
          (set remainder ())
       ))
       ( ( \l r ) (
-         (set expr (Lambda (parse-lambda r)))
-         (set remainder ())
+         (set pme (parse-lambda r))
+         (set expr (Lambda (head pme)))
+         (set remainder (tail pme))
       ))
       ( ( \] r ) (
-         (print-s (DANGLING_PARENTHESES toks))
-         (set remainder ())
+         (unexpect (head toks))
       ))
       ( ( \[ r ) (
-         (local depth)
-         (set depth 1)
-         (local nested)
-         (while depth (
-            (if r (
-               (local next)
-               (set next (head r))
-               (set r (tail r))
-               (match next (
-                  ()
-                  ( \[ (
-                     (set nested (nested next))
-                     (set depth (1 depth))
-                  ))
-                  ( \] (
-                     (set depth (tail depth))
-                     (if depth (
-                        (set nested (nested next))
-                     ) ())
-                  ))
-                  ( _ (
-                     (set nested (nested next))
-                  ))
-               ))
-            ) (
-               (print-s UNCLOSED_PARENTHESES)
-               (set depth ())
-            ))
-         ))
-         (set expr (parse-many-expressions (reverse-list nested)))
-         (set remainder r)
+         (set pme (parse-many-expressions r))
+         (expect( \] (tail pme) ))
+         (set expr (head pme))
+         (set remainder (tail pme))
       ))
       ( ( \\ (\' r) ) (
          (set expr (Literal \'))
@@ -210,191 +568,68 @@ parse-one-expression := λtoks. (tail(
    (expr remainder)
 ));
 
-print-ctx := λctx. (
-   while ctx (
-      (print-s (tail ctx))
-      (set ctx (head ctx))
-   )
-);
-
-get-local := λctx v. (tail(
-   (local r)
-   (while ctx (
-      (match (tail ctx) (
-         ()
-         ( (Local(l lrefer)) (
-            if r () (
-               if (eq(l v)) (
-                  (set r lrefer)
-               ) ()
-            )
-         ))
-         ( (Global(l body)) (
-            if r () (
-               if (eq(l v)) (
-                  (set r (
-                     \t 'mov \s '$ (label-case l) , \s %r15 \n
-                     \t 'mov \s '0 \[ %r15 \] , \s %r12 \n
-                     \t 'mov \s '8 \[ %r15 \] , \s %r13 \n
-                     \t 'mov \s '16 \[ %r15 \] , \s %r14 \n
-                     \t 'mov \s '24 \[ %r15 \] , \s %r15 \n
-                  ))
-               ) ()
-            )
-         ))
-      ))
-      (set ctx (head ctx))
-   ))
-   (if r () (
-      (print-s (ReferenceToUndefinedLocal v))
-   ))
-   r
-));
-get-global := λctx v. (tail(
-   (local r)
-   (while ctx (
-      (match (tail ctx) (
-         ()
-         ( (Global(name body)) (
-            if r () (
-               if (eq(name v)) (
-                  (set r (Global(name body)))
-               ) ()
-            )
-         ))
-      ))
-      (set ctx (head ctx))
-   ))
-   r
-));
-set-local := λctx v. (tail(
-   (local r)
-   (while ctx (
-      (match (tail ctx) (
-         ()
-         ( (Local((Set l) lrefer)) (
-            if r () (
-               if (eq(l v)) (
-                  (set r lrefer)
-               ) ()
-            )
-         ))
-         ( (Global(l body)) (
-            if r () (
-               if (eq(l v)) (
-                  (set r (
-                     \t 'mov \s '$ (label-case l) , \s %r8 \n
-                     \t 'mov \s %r12 , \s '0 \[ %r8 \] \n
-                     \t 'mov \s %r13 , \s '8 \[ %r8 \] \n
-                     \t 'mov \s %r14 , \s '16 \[ %r8 \] \n
-                     \t 'mov \s %r15 , \s '24 \[ %r8 \] \n
-                  ))
-               ) ()
-            )
-         ))
-      ))
-      (set ctx (head ctx))
-   ))
-   (if r () (
-      (print-s (AssignToUndefinedLocal v))
-   ))
-   r
-));
-
 parse-many-expressions := λtoks. (tail(
-   (if $stat (
-      (print-s (PARSE_MANY toks))
-   ) ())
-   (local er)
-   (set er (parse-one-expression toks))
-   (local return)
-   (set return (head er))
+   (local pme)
+   (local expr)
    (local remainder)
-   (set remainder (tail er))
-   (while remainder (
-      (set er (parse-one-expression remainder))
-      (set return (App (return (head er))))
-      (set remainder (tail er))
-   ) (head er))
-   return
+   (while toks (
+      (match toks (
+         ()
+         ((\: tl) (
+            (set remainder toks)
+            (set toks ())
+         ))
+         ((\] tl) (
+            (if expr () (set expr Nil))
+            (set remainder tl)
+            (set toks ())
+         ))
+         (_ (
+            (set pme (parse-one-expression toks))
+            (if expr (
+               (set expr (App( expr (head pme) )))
+            ) (
+               (set expr (head pme))
+            ))
+            (set toks (tail pme))
+         ))
+      ))
+   ))
+   (expr remainder)
 ));
 
 parse-expression := λtoks. (parse-many-expressions toks);
 
 parse-program := λtoks. (tail(
-   (if $stat (
-      (print-s (PARSE_PROGRAM toks))
-   ) ())
    (local program)
-   (local key)
-   (local rhs)
-   (local a)
-   (foreach-atom toks (
-      (set a $_)
-      (if $stat (
-         (print-s (PATOM a))
-      ) ())
-      (if (eq(a \:)) (
-         (if key (
-            (set program (program (Global (key (parse-many-expressions (reverse-list rhs))))))
-            (set key ())
-         ) ())
-         (set rhs ())
-      ) (
-         (if a (set rhs (rhs a)) ())
-         (match rhs (
-            ()
-            ( ( (() k) ':=) (
-               (set key k)
-               (set rhs ())
-            ))
-            ( _ () )
+   (local pme)
+   (local pme2)
+   (while toks (
+      match toks (
+         ()
+         ((\: remainder) (
+            (set toks remainder)
          ))
-      ))
+         (('type remainder) (
+            (set pme (parse-one-expression remainder))
+            (set remainder (tail pme))
+            (set pme2 (parse-many-expressions remainder))
+            (set program ( program (Type( (head pme) (head pme2) )) ))
+            (set toks (tail pme2))
+         ))
+         ((key (:= remainder)) (
+            (set pme (parse-many-expressions remainder))
+            (set program ( program (Global (key (head pme))) ))
+            (set toks (tail pme))
+         ))
+         (remainder (
+            (set pme (parse-many-expressions remainder))
+            (set program (program (GExpr (head pme)) ))
+            (set toks (tail pme))
+         ))
+      )
    ))
-   (if key (
-     (set program (program (Global (key (parse-many-expressions (reverse-list rhs))))))
-   ) ())
    program
-));
-
-#returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
-destructure-args := λctx e offset. (match e (
-   ()
-   ( Nil (tail(
-      ()
-      (Expr( () () () () () ctx offset ))
-   )))
-   ( (Variable n) (tail(
-      ()
-      (declare-local(ctx n offset))
-   )))
-   ( ( (App( h t )) ) (tail(
-      (local ta)
-      (set ta (destructure-args(ctx t offset)))
-      (set offset (get-offset ta))
-      (set ctx (get-pc ta))
-      (local ha)
-      (set ha (destructure-args(ctx h offset)))
-      (set offset (get-offset ha))
-      (set ctx (get-pc ha))
-      (local prog)
-      (set prog (prog (_shadow-this()) ))
-      (set prog (prog (\t 'call \s 'tail \n) ))
-      (set prog (prog (get-prog ta) ))
-      (set prog (prog (_unshadow-this()) ))
-      (set prog (prog (\t 'call \s 'head \n) ))
-      (set prog (prog (get-prog ha) ))
-      (Expr(
-         ( (get-frame ta) (get-frame ha) )
-         prog
-         ( (get-unframe ta) (get-unframe ha) )
-         () () ctx offset
-      ))
-   )))
-   ( _ (
-      (print-s (InvalidFunctionParameters e))
-   ))
 ));
 
 tokenize := λtext. (tail(
@@ -539,18 +774,7 @@ is-variable := λv. (tail(
    is_v
 ));
 
-label-case := λk. (tail(
-   (local nk)
-   (foreach-char k (match $_ (
-      ()
-      ('- (set nk (nk '_)))
-      ('$ (set nk (nk '_I_)))
-      (c (set nk (nk (clone-rope c))))
-   )))
-   (clone-rope nk)
-));
-
-assemble := λconfig program. (
+assemble := λprogram. (
    (local target)
    (set target 'tmp\,s)
    (while config (
@@ -560,101 +784,95 @@ assemble := λconfig program. (
       ))
       (set config (head config))
    ))
-   (local output_p)
-   (local output_d)
-   (local has_main)
-   (set output_p (_program-header()))
-   (set output_d (_data-header()))
-   (local main-ctx)
-   (set main-ctx program)
-   (local e)
+
+   (local main_e)
+   (local main_pd)
+
+   (local e1)
    (local e2)
-   (local offset)
-   (local inner-ctx)
+
+   (local output_pd)
+   (set output_pd ( (program-header()) (data-header()) ))
+
+   (local global_ctx)
+   (local preview_program)
+   (set preview_program program)
+   (while preview_program (match preview_program (
+      ()
+      ( (pc (Global ('main body))) (
+         (set preview_program pc)
+      ))
+      ( (pc (GExpr e)) (
+         (set preview_program pc)
+      ))
+      ( (pc (Global (fname body))) (
+         (match body (
+            ()
+            ( Nil (
+               (set output_pd ( (head output_pd) ((tail output_pd) (label-case fname) ': \n \t '\,zero \s '16 \n) ))
+               (set global_ctx (global_ctx (GlobalVariable fname)))
+            ))
+            ( (Lambda(lhs rhs)) (
+               (set global_ctx (global_ctx (GlobalFunction fname)))
+            ))
+         ))
+         (set preview_program pc)
+      ))
+   )))
 
    (while program (match program (
       ()
       ( (pc (Global ('main body))) (
+         (set main_e body)
          (set program pc)
-         (set offset ())
-         (set output_p (output_p ('main: \n)))
-         (set output_p (output_p (_before-main())))
-         (set output_p (output_p (_enter-function())))
-         (set e (compile-expr(main-ctx body offset Unused)))
-         (set output_p (output_p (get-frame e)))
-         (set output_p (output_p (get-prog e)))
-         (set output_p (output_p (get-unframe e)))
-         (set output_p (output_p (_exit-cleanup())))
-         (set output_p (output_p (get-text e)))
-         (set output_d (output_d (get-data e)))
-         (set has_main True)
+      ))
+      ( (pc (GExpr e)) (
+         (set main_pd (compile-append( main_pd global_ctx e )))
+         (set program pc)
       ))
       ( (pc (Global (fname body))) (
-         (set program pc)
-         (set offset ())
-         (set inner-ctx main-ctx)
          (match body (
             ()
             ( Nil (
-               (set output_d (output_d( (label-case fname) ': \n \t '\,zero \s '32 \n )))
             ))
             ( (Lambda(lhs rhs)) (
-               (set e (destructure-args(inner-ctx lhs offset)))
-               (set offset (get-offset e))
-               (set inner-ctx (get-pc e))
-               (set e2 (compile-expr(inner-ctx rhs offset Used)))
-               (set output_p (output_p ((label-case fname) ': \n)))
-               (set output_p (output_p (_enter-function())))
-               (set output_p (output_p (get-frame e)))
-               (set output_p (output_p (get-frame e2)))
-               (set output_p (output_p (get-prog e)))
-               (set output_p (output_p (get-prog e2)))
-               (set output_p (output_p (get-unframe e)))
-               (set output_p (output_p (get-unframe e2)))
-               (set output_p (output_p (_exit-function())))
-               (set output_p (output_p (get-text e)))
-               (set output_p (output_p (get-text e2)))
-               (set output_d (output_d (get-data e)))
-               (set output_d (output_d (get-data e2)))
+               (set e1 (destructure-args(global_ctx lhs ())))
+               (set e2 (compile-expr((get-pc e1) rhs (get-offset e1) Used)))
+               (set output_pd ( ((head output_pd) (label-case fname) ': \n) (tail output_pd) ))
+               (set output_pd ( ((head output_pd) (enter-function())) (tail output_pd) ))
+               (set output_pd ( ((head output_pd) (get-frame e1)) (tail output_pd) ))
+               (set output_pd ( ((head output_pd) (get-frame e2)) (tail output_pd) ))
+               (set output_pd ( ((head output_pd) (get-prog e1)) (tail output_pd) ))
+               (set output_pd ( ((head output_pd) (get-prog e2)) (tail output_pd) ))
+               (set output_pd ( ((head output_pd) (exit-function())) (tail output_pd) ))
+               (set output_pd ( ((head output_pd) (get-text e1)) (tail output_pd) ))
+               (set output_pd ( ((head output_pd) (get-text e2)) (tail output_pd) ))
+               (set output_pd ( (head output_pd) ((tail output_pd) (get-data e1)) ))
+               (set output_pd ( (head output_pd) ((tail output_pd) (get-data e2)) ))
             ))
          ))
+         (set program pc)
       ))
    )))
 
-   (if has_main () (
-      (set output_p (output_p ('main: \n)))
-      (set output_p (output_p (_exit-cleanup())))
+   (if main_e (
+      (set main_pd (compile-append( main_pd global_ctx main_e )))
+   ) ())
+   (set output_pd (
+      (
+         (head output_pd)
+         (before-main())
+         (enter-function())
+         (get-frame main_pd)
+         (get-prog main_pd)
+         (exit-cleanup())
+         (get-text main_pd)
+         (stdlib-functions())
+      )
+      ((tail output_pd) (get-data main_pd))
    ))
-
-   (write-file (target (clone-rope (output_p output_d))))
+   (write-file (target (clone-rope output_pd)))
 );
-
-is-builtin := λf. (match f (
-   ()
-   ('eq True)
-   ('not True)
-   ('head True)
-   ('tail True)
-   ('inc True)
-   ('dec True)
-   ('add True)
-   ('mul True)
-   ('div True)
-   ('mod True)
-   ('inv True)
-   ('is-neg True)
-   ('digit True)
-   ('dump-i True)
-   ('print-s True)
-   ('print-i True)
-   ('print-p True)
-   ('print-p True)
-   ('print-d True)
-   ('clone-rope True)
-   ('write-file True)
-   ('load-file True)
-   (_ ())
-));
 
 get-frame := λe. (match e (
    ()
@@ -685,393 +903,105 @@ get-offset := λe. (match e (
    ((Expr(f p u t d pc off)) off)
 ));
 
-escape-sequences := λt. match t (
-   ()
-   ( () () )
-   ( \\ \\\\ )
-   ( \\: \: )
-   ( \\o \o )
-   ( \\n (\\ 'n))
-   ( \\t \t )
-   ( \\s \s )
-   ( \\l \l )
-   ( \\[ \[ )
-   ( \\] \] )
-   ( (l r) ( (escape-sequences l) (escape-sequences r) ) )
-   ( s (tail(
-      (local c)
-      (local cs)
-      (local is_escape)
-      (foreach-char s (
-         (set c $_)
-         (match c (
-            ()
-            ( " (
-               (set cs (cs \\ "))
-               (set is_escape ())
-            ))
-            (\\ (
-               (if is_escape (
-                 (set cs ( cs \\\\ ))
-                 (set is_escape ())
-               ) (set is_escape True))
-            ))
-            (_ (
-               (if is_escape (
-                  (match c (
-                     ()
-                     ( , (set cs (cs \,)))
-                     ( _ (print-s( InvalidEscapeCharacter (c s) )))
-                  ))
-               ) (set cs (cs (clone-rope c))))
-               (set is_escape ())
-            ))
+get-maybe-function := λctx v. (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
+         ()
+         ( (Local(l lrefer)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (Variable l))
+               ) ()
+            )
+         ))
+         ( (GlobalFunction name) (
+            if r () (
+               if (eq(name v)) (
+                  (set r (GlobalFunction (label-case name)))
+               ) ()
+            )
+         ))
+         ( (GlobalVariable name) (
+            if r () (
+               if (eq(name v)) (
+                  (set r (GlobalVariable (label-case name)))
+               ) ()
+            )
          ))
       ))
-      (clone-rope cs)
-   )))
-);
-
-#returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
-yield-atom := λctx a offset. (tail(
-   (local id)
-   (set id (uuid()))
-   (Expr(
-      ()
-      (\t 'mov \s '$ id , \s '%r12 \n # $_.$1 = 0, .atom
-       \t 'mov \s '$0, \s '%r13    \n # $_.$2 = 0, .head
-       \t 'mov \s '$0, \s '%r14    \n # $_.$3 = 0, .tail
-       \t 'mov \s '$0, \s '%r15    \n # $_.$4 = 0, .flags
-      )
-      ()
-      ()
-      (id ': \n \t '\,ascii \s " (escape-sequences a) " \n \t '\,zero \s 1 \n)
-      ctx
-      offset
+      (set ctx (head ctx))
    ))
+   r
 ));
 
-#returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
-declare-local := λctx vname offset. (tail(
-   (local frame_this)
-   (set frame_this (_push-zero()))
-   (local unframe_this)
-   (set unframe_this (_unpush-this()))
-   (local refer)
-   (local eight)
-   (set eight (
-      inc(inc(inc(inc(inc(inc(inc(inc(
+get-local := λctx v. (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
          ()
-      ))))))))    
+         ( (Local(l lrefer)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r lrefer)
+               ) ()
+            )
+         ))
+         ( (GlobalVariable l) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (
+                     \t 'mov \s '$ (label-case l) , \s %r15 \n
+                     \t 'mov \s '0 \[ %r15 \] , \s %r12     \n
+                     \t 'mov \s '8 \[ %r15 \] , \s %r13     \n
+                  ))
+               ) ()
+            )
+         ))
+      ))
+      (set ctx (head ctx))
    ))
-   (local sixteen)
-   (set sixteen (mul( eight (inc(inc(()))) )))
-   (local twentyfour)
-   (set twentyfour ( mul( eight (inc(inc(inc(())))) ) ))
-   (local thirtytwo)
-   (set thirtytwo ( mul( eight (inc(inc(inc(inc(()))))) ) ))
-   (local set_this)
-   (set set_this (
-      \t 'mov \s '%r12, \s (
-         (i2s( (mul( (add( (mul( thirtytwo offset )) eight)) (dec(())) )) ))
-      ) \[ '%rbp \] \n
-      \t 'mov \s '%r13, \s (
-         (i2s( (mul( (add( (mul( thirtytwo offset )) sixteen)) (dec(())) )) ))
-      ) \[ '%rbp \] \n
-      \t 'mov \s '%r14, \s (
-         (i2s( (mul( (add( (mul( thirtytwo offset )) twentyfour)) (dec(())) )) ))
-      ) \[ '%rbp \] \n
-      \t 'mov \s '%r15, \s (
-         (i2s( (mul( (add( (mul( thirtytwo offset )) thirtytwo)) (dec(())) )) ))
-      ) \[ '%rbp \] \n
+   (if r () (
+      (fail (ReferenceToUndefinedVariable v))
    ))
-   (set refer (
-      \t 'mov \s (
-         (i2s( (mul( (add( (mul( thirtytwo offset )) eight)) (dec(())) )) ))
-      ) \[ '%rbp \] , %r12 \n
-      \t 'mov \s (
-         (i2s( (mul( (add( (mul( thirtytwo offset )) sixteen)) (dec(())) )) ))
-      ) \[ '%rbp \] , %r13 \n
-      \t 'mov \s (
-         (i2s( (mul( (add( (mul( thirtytwo offset )) twentyfour)) (dec(())) )) ))
-      ) \[ '%rbp \] , %r14 \n
-      \t 'mov \s (
-         (i2s( (mul( (add( (mul( thirtytwo offset )) thirtytwo)) (dec(())) )) ))
-      ) \[ '%rbp \] , %r15 \n
-   ))
-   (set ctx (ctx (Local(vname refer)) ))
-   (set ctx (ctx (Local((Set vname) set_this)) ))
-   (Expr(frame_this set_this unframe_this () () ctx (inc offset)))
+   r
 ));
-
-#returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
-destructure-pattern-lhs := λctx lhs offset. (tail(
-   (local e1)
-   (local e1_frame)
-   (local e1_prog)
-   (local e1_unframe)
-   (local e1_text)
-   (local e1_data)
-   (local e2)
-   (local e2_frame)
-   (local e2_prog)
-   (local e2_unframe)
-   (local e2_text)
-   (local e2_data)
-   (local prog)
-   (local label_skip)
-   (match lhs (
-      ()
-      ( (Variable '_) (tail(
+set-local := λctx v. (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
          ()
-         (Expr( () (\t 'mov \s '$1, \s %rsi \n) () () () ctx offset ))
-      )))
-      ( (Variable v) (tail(
-         (set e1 (declare-local(ctx v offset)))
-         (set e1_frame (get-frame e1))
-         (set e1_prog (get-prog e1))
-         (set e1_unframe (get-unframe e1))
-         (set e1_text (get-text e1))
-         (set e1_data (get-data e1))
-         (set ctx (get-pc e1))
-         (set offset (get-offset e1))
-         (Expr( e1_frame (e1_prog \t 'mov \s '$1, \s %rsi \n) e1_unframe e1_text e1_data ctx offset ))
-      )))
-      ( (Literal l) (tail(
-         (set e1 (yield-atom(ctx l offset)))
-         (set e1_frame (get-frame e1))
-         (set e1_prog (get-prog e1))
-         (set e1_unframe (get-unframe e1))
-         (set e1_text (get-text e1))
-         (set e1_data (get-data e1))
-         (set ctx (get-pc e1))
-         (set offset (get-offset e1))
-         (set label_skip (uuid()))
-         (set prog (prog (_push-this())))
-         (set prog (prog (\t 'mov \s %r12, \s %rax \n)))
-         (set prog (prog e1_prog))
-         (set prog (prog (\t 'mov \s %r12, \s %rbx \n)))
-         (set prog (prog (\t 'call \s '_streq \n)))
-         (set prog (prog (\t 'cmp \s '$0, \s %r12 \n)))
-         (set prog (prog (\t 'je \s label_skip \n)))
-         (set prog (prog (\t 'mov \s '$1, \s %rsi \n)))
-         (set prog (prog (label_skip ': \n)))
-         (set prog (prog (_pop-this())))
-         (Expr( e1_frame prog e1_unframe e1_text e1_data ctx offset ))
-      )))
-      ( Nil (tail(
-         (set label_skip (uuid()))
-         (set prog (prog (\t 'cmp \s '$0, \s %r12 \n)))
-         (set prog (prog (\t 'jne \s label_skip \n)))
-         (set prog (prog (\t 'cmp \s '$0, \s %r13 \n)))
-         (set prog (prog (\t 'jne \s label_skip \n)))
-         (set prog (prog (\t 'cmp \s '$0, \s %r14 \n)))
-         (set prog (prog (\t 'jne \s label_skip \n)))
-         (set prog (prog (\t 'mov \s '$1, \s %rsi \n)))
-         (set prog (prog (label_skip ': \n)))
-         (Expr( () prog () () () ctx offset ))
-      )))
-      ( (App( l r )) (tail(
-         (set e1 (destructure-pattern-lhs(ctx l offset)))
-         (set e1_frame (get-frame e1))
-         (set e1_prog (get-prog e1))
-         (set e1_unframe (get-unframe e1))
-         (set e1_text (get-text e1))
-         (set e1_data (get-data e1))
-         (set ctx (get-pc e1))
-         (set offset (get-offset e1))
-         (set e2 (destructure-pattern-lhs(ctx r offset)))
-         (set e2_frame (get-frame e2))
-         (set e2_prog (get-prog e2))
-         (set e2_unframe (get-unframe e2))
-         (set e2_text (get-text e2))
-         (set e2_data (get-data e2))
-         (set ctx (get-pc e2))
-         (set offset (get-offset e2))
-         (set label_skip (uuid()))
-         (set prog (prog (\t 'mov \s '$0, \s %rsi \n)))
-         (set prog (prog (_push-this())))
-         (set prog (prog (\t 'cmp \s '$0, \s %r13 \n)))
-         (set prog (prog (\t 'je \s label_skip \n)))
-         (set prog (prog (_head())))
-         (set prog (prog e1_prog))
-         (set prog (prog (_pop-this())))
-         (set prog (prog (_push-this())))
-         (set prog (prog (\t 'cmp \s '$0, \s %rsi \n)))
-         (set prog (prog (\t 'je \s label_skip \n)))
-         (set prog (prog (\t 'mov \s '$0, \s %rsi \n)))
-         (set prog (prog (\t 'cmp \s '$0, \s %r14 \n)))
-         (set prog (prog (\t 'je \s label_skip \n)))
-         (set prog (prog (_tail())))
-         (set prog (prog e2_prog))
-         (set prog (prog (label_skip ': \n)))
-         (set prog (prog (_pop-this())))
-         (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))
-      )))
-      (_ (print-s (UnexpectedPattern lhs)))
+         ( (Local((Set l) lrefer)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r lrefer)
+               ) ()
+            )
+         ))
+         ( (GlobalVariable l) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (
+                     \t 'mov \s '$ (label-case l) , \s %r8 \n
+                     \t 'mov \s %r12 , \s '0 \[ %r8 \] \n
+                     \t 'mov \s %r13 , \s '8 \[ %r8 \] \n
+                  ))
+               ) ()
+            )
+         ))
+      ))
+      (set ctx (head ctx))
    ))
+   (if r () (
+      (fail (AssignToUndefinedVariable v))
+   ))
+   r
 ));
 
-#returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
-yield-patterns := λctx p offset. match p (
-   ()
-   ( Nil (tail(
-      ()
-      (Expr( () (\t 'mov \s '$0, \s %rsi \n) () () () ctx offset ))
-   )))
-   ( (App( prev (App( lhs rhs )) )) (tail(
-      (local e1)
-      (local e1_frame)
-      (local e1_prog)
-      (local e1_unframe)
-      (local e1_text)
-      (local e1_data)
-      (local e2)
-      (local e2_frame)
-      (local e2_prog)
-      (local e2_unframe)
-      (local e2_text)
-      (local e2_data)
-      (local e3)
-      (local e3_frame)
-      (local e3_prog)
-      (local e3_unframe)
-      (local e3_text)
-      (local e3_data)
-      (local prog)
-      (set e1 (yield-patterns(ctx prev offset)))
-      (set e1_frame (get-frame e1))
-      (set e1_prog (get-prog e1))
-      (set e1_unframe (get-unframe e1))
-      (set e1_text (get-text e1))
-      (set e1_data (get-data e1))
-      (set ctx (get-pc e1))
-      (set offset (get-offset e1))
-      (set e2 (destructure-pattern-lhs(ctx lhs offset)))
-      (set e2_frame (get-frame e2))
-      (set e2_prog (get-prog e2))
-      (set e2_unframe (get-unframe e2))
-      (set e2_text (get-text e2))
-      (set e2_data (get-data e2))
-      (set ctx (get-pc e2))
-      (set offset (get-offset e2))
-      (set e3 (compile-expr(ctx rhs offset Used)))
-      (set e3_frame (get-frame e3))
-      (set e3_prog (get-prog e3))
-      (set e3_unframe (get-unframe e3))
-      (set e3_text (get-text e3))
-      (set e3_data (get-data e3))
-      (set ctx (get-pc e3))
-      (set offset (get-offset e3))
-      (local label_skip)
-      (set label_skip (uuid()))
-      (set prog (prog e1_prog))
-      (set prog (prog (\t 'cmp \s '$0, \s %rsi \n)))
-      (set prog (prog (\t 'jne \s label_skip \n)))
-      (set prog (prog e2_prog))
-      (set prog (prog (\t 'cmp \s '$0, \s %rsi \n)))
-      (set prog (prog (\t 'je \s label_skip \n)))
-      (set prog (prog e3_prog))
-      (set prog (prog (\t 'mov \s '$1, \s %rsi \n)))
-      (set prog (prog (label_skip ': \n)))
-      (Expr( (e1_frame e2_frame e3_frame) prog (e1_unframe e2_unframe e3_unframe) (e1_text e2_text e3_text) (e1_data e2_data e3_data) ctx offset ))
-   )))
-   ( _ (
-      (print-s (InvalidPatternsCase p))
-   ))
-);
-
-yield-cons := λctx l r offset used. (tail(
-   (local e1)
-   (local e1_frame)
-   (local e1_prog)
-   (local e1_unframe)
-   (local e1_text)
-   (local e1_data)
-   (local e2)
-   (local e2_frame)
-   (local e2_prog)
-   (local e2_unframe)
-   (local e2_text)
-   (local e2_data)
-   (local prog)
-   (match used (
-      ()
-      ( Used (tail(
-         (set e1 (compile-expr(ctx l offset Used)))
-         (set e1_frame (get-frame e1))
-         (set e1_prog (get-prog e1))
-         (set e1_unframe (get-unframe e1))
-         (set e1_text (get-text e1))
-         (set e1_data (get-data e1))
-         (set ctx (get-pc e1))
-         (set offset (get-offset e1))
-         (set e2 (compile-expr(ctx r offset Used)))
-         (set e2_frame (get-frame e2))
-         (set e2_prog (get-prog e2))
-         (set e2_unframe (get-unframe e2))
-         (set e2_text (get-text e2))
-         (set e2_data (get-data e2))
-         (set ctx (get-pc e2))
-         (set offset (get-offset e2))
-         (set prog (prog (e1_prog)))
-         (set prog (prog (_push-this())))
-         (set prog (prog (e2_prog)))
-         (set prog (prog (_close-this())))
-         (set prog (prog (\t 'mov \s '%rsi, \s '%rdi \n)))
-         (set prog (prog (_pop-this())))
-         (set prog (prog (_close-this())))
-         (set prog (prog (\t 'mov \s '$0, \s '%r12 \n)))
-         (set prog (prog (\t 'mov \s '%rsi, \s '%r13 \n)))
-         (set prog (prog (\t 'mov \s '%rdi, \s '%r14 \n)))
-         (set prog (prog (\t 'mov \s '$0, \s '%r15 \n)))
-         (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))
-      )))
-      ( _ (tail(
-         (local rused)
-         (set rused ( if (eq(used Tail)) Used Unused ))
-         (set e1 (compile-expr(ctx l offset Unused)))
-         (set e1_frame (get-frame e1))
-         (set e1_prog (get-prog e1))
-         (set e1_unframe (get-unframe e1))
-         (set e1_text (get-text e1))
-         (set e1_data (get-data e1))
-         (set ctx (get-pc e1))
-         (set offset (get-offset e1))
-         (set e2 (compile-expr(ctx r offset rused)))
-         (set e2_frame (get-frame e2))
-         (set e2_prog (get-prog e2))
-         (set e2_unframe (get-unframe e2))
-         (set e2_text (get-text e2))
-         (set e2_data (get-data e2))
-         (set ctx (get-pc e2))
-         (set offset (get-offset e2))
-         (Expr( (e1_frame e2_frame) (e1_prog e2_prog) (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))   
-      )))
-   ))
-));
-
-#returns (frame program, expression program, unframe program, text, data, new program_ctx, new offset)
 compile-expr := λctx e offset used. (tail(
-   (local x)
    (local e1)
-   (local e1_frame)
-   (local e1_prog)
-   (local e1_unframe)
-   (local e1_text)
-   (local e1_data)
    (local e2)
-   (local e2_frame)
-   (local e2_prog)
-   (local e2_unframe)
-   (local e2_text)
-   (local e2_data)
    (local e3)
-   (local e3_frame)
-   (local e3_prog)
-   (local e3_unframe)
-   (local e3_text)
-   (local e3_data)
    (local prog)
    (local tail_safe)
    (local return)
@@ -1081,26 +1011,42 @@ compile-expr := λctx e offset used. (tail(
          ()
          (Expr( () () () () () ctx offset ))
       )))
-      ( (Literal A_COUNTER) (tail(
-         (set prog (
-            \t 'mov \s '$__a_counter, \s %r12  \n
-            \t 'mov \s '0 \[ %r12 \] , \s %r12 \n
-            \t 'mov \s '$0, \s '%r13           \n
-            \t 'mov \s '$0, \s '%r14           \n
-            \t 'mov \s '$0, \s '%r15           \n
-         ))
-         (Expr( () prog () () () ctx offset ))        
-      ))) 
-      ( (Literal S_COUNTER) (tail(
-         (set prog (
-            \t 'mov \s '$__s_counter, \s %r12  \n
-            \t 'mov \s '0 \[ %r12 \] , \s %r12 \n
-            \t 'mov \s '$0, \s '%r13           \n
-            \t 'mov \s '$0, \s '%r14           \n
-            \t 'mov \s '$0, \s '%r15           \n
-         ))
-         (Expr( () prog () () () ctx offset ))        
-      ))) 
+      ( (Variable 'argv) (tail(
+         (set prog (prog ( \t 'mov \s '$argv, \s '%r8 \n )))
+         (set prog (prog ( \t 'mov \s '0 \[ '%r8 \] , '%r12 \n )))
+         (set prog (prog ( \t 'mov \s '8 \[ '%r8 \] , '%r13 \n )))
+         (Expr( () prog () () () ctx offset ))
+      )))
+      ( (Variable vname) (tail(
+         ()
+         (Expr( () (get-local(ctx vname)) () () () ctx offset ))
+      )))
+      ( (App ((Variable 'local) (Variable fname))) (tail(
+         (set e1 (declare-local(ctx fname offset)))
+         (Expr( (get-frame e1) ((yield-nil()) (get-prog e1)) (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
+      )))
+      ( (App( (App( (Variable 'set) (Variable vname) )) x )) (tail(
+         (set e1 (compile-expr(ctx x offset Used)))
+         (set prog ((get-prog e1) (set-local(ctx vname))))
+         (Expr( (get-frame e1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
+      )))
+      ( (App( (App( (Variable 'while) c )) d )) (tail(
+         (set e1 (compile-expr(ctx c offset Used)))
+         (set e2 (compile-expr((get-pc e1) d (get-offset e1) Unused)))
+         (local label_while_start)
+         (set label_while_start (uuid()))
+         (local label_while_end)
+         (set label_while_end (uuid()))
+         (set prog (prog (label_while_start ': \n)))
+         (set prog (prog (get-prog e1)))
+         (set prog (prog (\t 'cmp \s '$0, \s %r12 \n)))
+         (set prog (prog (\t 'je \s label_while_end \n)))
+         (set prog (prog (get-prog e2)))
+         (set prog (prog (\t 'jmp \s label_while_start \n)))
+         (set prog (prog (label_while_end ': \n)))
+         (set tail_safe True)
+         (Expr( ((get-frame e1) (get-frame e2)) prog ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
+      )))
       ( (App( (Variable 'exit) (Literal _) )) (tail(
          (set tail_safe True)
          (set prog (
@@ -1108,134 +1054,61 @@ compile-expr := λctx e offset used. (tail(
             \t 'mov \s '$1 , \s '%rdi          \n
             \t 'syscall                        \n
          ))
-         (Expr( () prog () () () ctx offset ))        
+         (Expr( () prog () () () ctx offset ))
       )))
-      ( (App( (Variable 'eq) (App( l r )) )) (tail(
-         (set e1 (compile-expr(ctx l offset Used)))
-         (set e1_frame (get-frame e1))
-         (set e1_prog (get-prog e1))
-         (set e1_unframe (get-unframe e1))
-         (set e1_text (get-text e1))
-         (set e1_data (get-data e1))
-         (set ctx (get-pc e1))
-         (set offset (get-offset e1))
-         (set e2 (compile-expr(ctx r offset Used)))
-         (set e2_frame (get-frame e2))
-         (set e2_prog (get-prog e2))
-         (set e2_unframe (get-unframe e2))
-         (set e2_text (get-text e2))
-         (set e2_data (get-data e2))
-         (set ctx (get-pc e2))
-         (set offset (get-offset e2))
-         (set prog (
-            e1_prog
-            \t 'push \s '%r12                      \n
-            e2_prog
-            \t 'mov \s '%r12, \s '%rax             \n
-            \t 'pop \s '%rbx                       \n
-            \t 'call \s '_streq                    \n
+      ( (App( (App( (App( (Variable 'if) c )) t )) f )) (tail(
+         (set e1 (compile-expr(ctx c offset Used)))
+         (set e2 (compile-expr( (get-pc e1) t (get-offset e1) Used )))
+         (set e3 (compile-expr( (get-pc e2) f (get-offset e2) Used )))
+         (local label_if_true)
+         (set label_if_true (uuid()))
+         (local label_if_end)
+         (set label_if_end (uuid()))
+         (set prog (prog (get-prog e1)))
+         (set prog (prog ( \t 'cmp \s '$0, '%r12 \n )))
+         (set prog (prog ( \t 'jne \s label_if_true \n )))
+         (set prog (prog ( \t 'cmp \s '$0, '%r13 \n )))
+         (set prog (prog ( \t 'jne \s label_if_true \n )))
+         (set prog (prog ( \t 'cmp \s '$0, '%r14 \n )))
+         (set prog (prog ( \t 'jne \s label_if_true \n )))
+         (set prog (prog (get-prog e3)))
+         (set prog (prog ( \t 'jmp \s label_if_end \n )))
+         (set prog (prog ( label_if_true ': \n )))
+         (set prog (prog (get-prog e2)))
+         (set prog (prog ( label_if_end ': \n )))
+         (Expr(
+            ((get-frame e1) (get-frame e2) (get-frame e3))
+            prog
+            ((get-unframe e1) (get-unframe e2) (get-unframe e3))
+            ((get-text e1) (get-text e2) (get-text e3))
+            ((get-data e1) (get-data e2) (get-data e3))
+            (get-pc e3)
+            (get-offset e3)
          ))
-         (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))
-      )))
-      ( (App( (Variable 'is) (App( l r )) )) (tail(
-         (set e1 (compile-expr(ctx l offset Used)))
-         (set e1_frame (get-frame e1))
-         (set e1_prog (get-prog e1))
-         (set e1_unframe (get-unframe e1))
-         (set e1_text (get-text e1))
-         (set e1_data (get-data e1))
-         (set ctx (get-pc e1))
-         (set offset (get-offset e1))
-         (set e2 (compile-expr(ctx r offset Used)))
-         (set e2_frame (get-frame e2))
-         (set e2_prog (get-prog e2))
-         (set e2_unframe (get-unframe e2))
-         (set e2_text (get-text e2))
-         (set e2_data (get-data e2))
-         (set ctx (get-pc e2))
-         (set offset (get-offset e2))
-         (set prog (
-            e1_prog
-            \t 'mov \s '%r12, %r8                  \n
-            \t 'mov \s '%r13, %r9                  \n
-            \t 'mov \s '%r14, %r10                 \n
-            \t 'mov \s '%r15, %r11                 \n
-            e2_prog
-            \t 'call \s 'is                        \n
-         ))
-         (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))
-      )))
-      ( (App ((Variable 'local) (Variable fname))) (tail(
-         ()
-         (set e1 (declare-local(ctx fname offset)))
-         (set e1_frame (get-frame e1))
-         (set e1_prog (get-prog e1))
-         (set e1_unframe (get-unframe e1))
-         (set e1_text (get-text e1))
-         (set e1_data (get-data e1))
-         (set ctx (get-pc e1))
-         (set offset (get-offset e1))
-         (set tail_safe True)
-         (Expr( e1_frame ((_yield-nil()) e1_prog) e1_unframe e1_text e1_data ctx offset ))
-      )))
-      ( (App( (App( (Variable 'set) (Variable vname) )) x )) (tail(
-         ()
-         (set e1 (compile-expr(ctx x offset Used)))
-         (set e1_frame (get-frame e1))
-         (set e1_prog (get-prog e1))
-         (set e1_unframe (get-unframe e1))
-         (set e1_text (get-text e1))
-         (set e1_data (get-data e1))
-         (set ctx (get-pc e1))
-         (set offset (get-offset e1))
-         (set prog e1_prog)
-         (set prog (prog (set-local(ctx vname))))
-         (set tail_safe True)
-         (Expr( e1_frame prog e1_unframe e1_text e1_data ctx offset ))
       )))
       ( (App( (App( (Variable 'match) t )) p )) (tail(
          (set e1 (compile-expr(ctx t offset Used)))
-         (set e1_frame (get-frame e1))
-         (set e1_prog (get-prog e1))
-         (set e1_unframe (get-unframe e1))
-         (set e1_text (get-text e1))
-         (set e1_data (get-data e1))
-         (set ctx (get-pc e1))
-         (set offset (get-offset e1))
-         (set e2 (yield-patterns(ctx p offset)))
-         (set e2_frame (get-frame e2))
-         (set e2_prog (get-prog e2))
-         (set e2_unframe (get-unframe e2))
-         (set e2_text (get-text e2))
-         (set e2_data (get-data e2))
-         (set ctx (get-pc e2))
-         (set offset (get-offset e2))
+         (set e2 (yield-patterns((get-pc e1) p (get-offset e1))))
          (local label_skip)
          (set label_skip (uuid()))
-         (set prog (e1_prog e2_prog))
+         (set prog ((get-prog e1) (get-prog e2)))
          (set prog (prog ( \t 'cmp \s '$0, \s %rsi \n )))
          (set prog (prog ( \t 'jne \s label_skip \n )))
-         (set prog (prog (_yield-nil())))
+         (set prog (prog (yield-nil())))
          (set prog (prog ( label_skip ': \n )))
-         (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))
+         (Expr(
+            ((get-frame e1) (get-frame e2))
+            prog
+            ((get-unframe e1) (get-unframe e2))
+            ((get-text e1) (get-text e2))
+            ((get-data e1) (get-data e2))
+            (get-pc e2)
+            (get-offset e2)
+         ))
       )))
       ( (App( (App( (Variable 'foreach-atom) t )) d )) (tail(
          (set e1 (compile-expr(ctx t offset Used)))
-         (set e1_frame (get-frame e1))
-         (set e1_prog (get-prog e1))
-         (set e1_unframe (get-unframe e1))
-         (set e1_text (get-text e1))
-         (set e1_data (get-data e1))
-         (set ctx (get-pc e1))
-         (set offset (get-offset e1))
-         (set e2 (compile-expr(ctx d offset Unused)))
-         (set e2_frame (get-frame e2))
-         (set e2_prog (get-prog e2))
-         (set e2_unframe (get-unframe e2))
-         (set e2_text (get-text e2))
-         (set e2_data (get-data e2))
-         (set ctx (get-pc e2))
-         (set offset (get-offset e2))
+         (set e2 (compile-expr((get-pc e1) d (get-offset e1) Unused)))
          (local foreach_atom_label)
          (set foreach_atom_label (uuid()))
          (local foreach_atom_notcons)
@@ -1243,28 +1116,14 @@ compile-expr := λctx e offset used. (tail(
          (local foreach_atom_ignore)
          (set foreach_atom_ignore (uuid()))
          (local foreach_text)
-         (set foreach_text (yield-foreach-atom( foreach_atom_label foreach_atom_notcons foreach_atom_ignore e2_prog )))
-         (set prog ( e1_prog \t 'call \s foreach_atom_label \n ))
+         (set foreach_text (yield-foreach-atom( foreach_atom_label foreach_atom_notcons foreach_atom_ignore (get-prog e2) )))
+         (set prog ( (get-prog e1) \t 'call \s foreach_atom_label \n ))
          (set tail_safe True)
-         (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text foreach_text) (e1_data e2_data) ctx offset ))
+         (Expr( ((get-frame e1) (get-frame e2)) prog ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2) foreach_text) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
       )))
       ( (App( (App( (Variable 'foreach-char) t )) d )) (tail(
          (set e1 (compile-expr(ctx t offset Used)))
-         (set e1_frame (get-frame e1))
-         (set e1_prog (get-prog e1))
-         (set e1_unframe (get-unframe e1))
-         (set e1_text (get-text e1))
-         (set e1_data (get-data e1))
-         (set ctx (get-pc e1))
-         (set offset (get-offset e1))
-         (set e2 (compile-expr(ctx d offset Unused)))
-         (set e2_frame (get-frame e2))
-         (set e2_prog (get-prog e2))
-         (set e2_unframe (get-unframe e2))
-         (set e2_text (get-text e2))
-         (set e2_data (get-data e2))
-         (set ctx (get-pc e2))
-         (set offset (get-offset e2))
+         (set e2 (compile-expr((get-pc e1) d (get-offset e1) Unused)))
          (local foreach_char_head)
          (set foreach_char_head (uuid()))
          (local foreach_char_small)
@@ -1280,118 +1139,38 @@ compile-expr := λctx e offset used. (tail(
          (local foreach_data)
          (set foreach_data ( foreach_char_data ': \n \t '\,zero \s '2 \n ))
          (local foreach_text)
-         (set foreach_text (yield-foreach-char( foreach_char_data foreach_char_head foreach_char_small foreach_char_end foreach_char_notcons foreach_char_apply e2_prog )))
-         (set prog ( e1_prog \t 'call \s foreach_char_head \n ))
+         (set foreach_text (yield-foreach-char( foreach_char_data foreach_char_head foreach_char_small foreach_char_end foreach_char_notcons foreach_char_apply (get-prog e2) )))
+         (set prog ( (get-prog e1) \t 'call \s foreach_char_head \n ))
          (set tail_safe True)
-         (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text foreach_text) (e1_data e2_data foreach_data) ctx offset ))
-      )))
-      ( (App( (App( (Variable 'while) c )) d )) (tail(
-         (set e1 (compile-expr(ctx c offset Used)))
-         (set e1_frame (get-frame e1))
-         (set e1_prog (get-prog e1))
-         (set e1_unframe (get-unframe e1))
-         (set e1_text (get-text e1))
-         (set e1_data (get-data e1))
-         (set ctx (get-pc e1))
-         (set offset (get-offset e1))
-         (set e2 (compile-expr(ctx d offset Unused)))
-         (set e2_frame (get-frame e2))
-         (set e2_prog (get-prog e2))
-         (set e2_unframe (get-unframe e2))
-         (set e2_text (get-text e2))
-         (set e2_data (get-data e2))
-         (set ctx (get-pc e2))
-         (set offset (get-offset e2))
-         (local label_while_start)
-         (set label_while_start (uuid()))
-         (local label_while_end)
-         (set label_while_end (uuid()))
-         (set prog (prog (label_while_start ': \n)))
-         (set prog (prog e1_prog))
-         (set prog (prog (\t 'mov \s '$0, \s %rax \n)))
-         (set prog (prog (\t 'add \s %r12, \s %rax \n)))
-         (set prog (prog (\t 'add \s %r13, \s %rax \n)))
-         (set prog (prog (\t 'add \s %r14, \s %rax \n)))
-         (set prog (prog (\t 'add \s %r15, \s %rax \n)))
-         (set prog (prog (\t 'cmp \s '$0, \s %rax \n)))
-         (set prog (prog (\t 'je \s label_while_end \n)))
-         (set prog (prog e2_prog))
-         (set prog (prog (\t 'jmp \s label_while_start \n)))
-         (set prog (prog (label_while_end ': \n)))
-         (set tail_safe True)
-         (Expr( (e1_frame e2_frame) prog (e1_unframe e2_unframe) (e1_text e2_text) (e1_data e2_data) ctx offset ))
-      )))
-      ( (App( (App( (App( (Variable 'if) c )) t )) f )) (tail(
-         (set e1 (compile-expr(ctx c offset Used)))
-         (set e1_frame (get-frame e1))
-         (set e1_prog (get-prog e1))
-         (set e1_unframe (get-unframe e1))
-         (set e1_text (get-text e1))
-         (set e1_data (get-data e1))
-         (set ctx (get-pc e1))
-         (set offset (get-offset e1))
-         (set e2 (compile-expr(ctx t offset Used)))
-         (set e2_frame (get-frame e2))
-         (set e2_prog (get-prog e2))
-         (set e2_unframe (get-unframe e2))
-         (set e2_text (get-text e2))
-         (set e2_data (get-data e2))
-         (set ctx (get-pc e2))
-         (set offset (get-offset e2))
-         (set e3 (compile-expr(ctx f offset Used)))
-         (set e3_frame (get-frame e3))
-         (set e3_prog (get-prog e3))
-         (set e3_unframe (get-unframe e3))
-         (set e3_text (get-text e3))
-         (set e3_data (get-data e3))
-         (set ctx (get-pc e3))
-         (set offset (get-offset e3))
-         (local label_if_true)
-         (set label_if_true (uuid()))
-         (local label_if_end)
-         (set label_if_end (uuid()))
-         (set prog (prog e1_prog))
-         (set prog (prog ( \t 'cmp \s '$0, '%r12 \n )))
-         (set prog (prog ( \t 'jne \s label_if_true \n )))
-         (set prog (prog ( \t 'cmp \s '$0, '%r13 \n )))
-         (set prog (prog ( \t 'jne \s label_if_true \n )))
-         (set prog (prog ( \t 'cmp \s '$0, '%r14 \n )))
-         (set prog (prog ( \t 'jne \s label_if_true \n )))
-         (set prog (prog e3_prog))
-         (set prog (prog ( \t 'jmp \s label_if_end \n )))
-         (set prog (prog ( label_if_true ': \n )))
-         (set prog (prog e2_prog))
-         (set prog (prog ( label_if_end ': \n )))
-         (Expr( (e1_frame e2_frame e3_frame) prog (e1_unframe e2_unframe e3_unframe) (e1_text e2_text e3_text) (e1_data e2_data e3_data) ctx offset ))
+         (Expr( ((get-frame e1) (get-frame e2)) prog ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2) foreach_text) ((get-data e1) (get-data e2) foreach_data) (get-pc e2) (get-offset e2) ))
       )))
       ( (App ((Variable fname) arg)) (tail(
          ()
          (if (is-builtin fname) (tail(
             ()
             (if (eq(fname 'tail)) (tail(
-               (set x (compile-expr(ctx arg offset Tail)))
-               (set prog (get-prog x))
-               (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
+               (set e1 (compile-expr(ctx arg offset Tail)))
+               (Expr( (get-frame e1) (get-prog e1) (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
             )) (tail(
-               (set x (compile-expr(ctx arg offset Used)))
-               (set prog (get-prog x))
-               (set prog (prog (\t 'call \s (label-case fname) \n)))
-               (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
+               (set e1 (compile-expr(ctx arg offset Used)))
+               (set prog ((get-prog e1) (\t 'call \s (label-case fname) \n)))
+               (Expr( (get-frame e1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
             )))
          )) (tail(
             ()
-            (match (get-global(ctx fname)) (
+            (match (get-maybe-function(ctx fname)) (
                ()
-               ( (Global (f body)) (tail(
-                  ()
-                  (set x (compile-expr(ctx arg offset Used)))
-                  (set prog (get-prog x))
-                  (set prog (prog (\t 'call \s (label-case fname) \n)))
-                  (Expr( (get-frame x) prog (get-unframe x) (get-text x) (get-data x) (get-pc x) (get-offset x) ))
+               ( (GlobalFunction mangledname) (tail(
+                  (set e1 (compile-expr(ctx arg offset Used)))
+                  (set prog ((get-prog e1) (\t 'call \s mangledname \n)))
+                  (Expr( (get-frame e1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
                )))
-               ( _ (tail(
+               ( () (
+                  (fail (ReferenceToUndefinedVariable fname))
+               ))
+               ( v (tail(
                   ()
-                  (yield-cons(ctx (Variable fname) arg offset Used))
+                  (yield-cons(ctx v arg offset Used))
                )))
             ))
          )))
@@ -1400,32 +1179,17 @@ compile-expr := λctx e offset used. (tail(
          ()
          (yield-atom (ctx l offset))
       )))
-      ( (Variable 'argv) (tail(
-         (set prog (prog ( \t 'mov \s '$__argv, \s '%rax \n )))
-         (set prog (prog ( \t 'mov \s '0 \[ '%rax \] , '%r12 \n )))
-         (set prog (prog ( \t 'mov \s '8 \[ '%rax \] , '%r13 \n )))
-         (set prog (prog ( \t 'mov \s '16 \[ '%rax \] , '%r14 \n )))
-         (set prog (prog ( \t 'mov \s '24 \[ '%rax \] , '%r15 \n )))
-         (Expr( () prog () () () ctx offset ))
-      )))
-      ( (App (l r)) (tail(
-         ()
-         (set tail_safe True)
-         (yield-cons(ctx l r offset used))
-      )))
       ( Nil (tail(
          (set prog (prog ( \t 'mov \s '$0 , '%r12 \n )))
          (set prog (prog ( \t 'mov \s '$0 , '%r13 \n )))
-         (set prog (prog ( \t 'mov \s '$0 , '%r14 \n )))
-         (set prog (prog ( \t 'mov \s '$0 , '%r15 \n )))
          (set tail_safe True)
          (Expr( () prog () () () ctx offset ))
       )))
-      ( (Variable vname) (tail(
-         (set prog (get-local(ctx vname)))
-         (Expr( () prog () () () ctx offset ))
+      ( (App (l r)) (tail(
+         (set tail_safe True)
+         (yield-cons(ctx l r offset used))
       )))
-      (x (print-s (TODO x)) )
+      ( u (fail (UnrecognizedExpression u)) )
    )))
    (if tail_safe return (tail(
       ()
@@ -1439,314 +1203,437 @@ compile-expr := λctx e offset used. (tail(
    )))
 ));
 
-_data-header := λ.(
-  '\,data                              \n
-  'load_file_bsz:                      \n
-  \t '\,quad \s '1024                  \n
-  'load_file_buf:                      \n
-  \t '\,zero \s '1024                  \n
-  '__nil:                              \n
-  \t '\,zero \s '32                      \n
-  '__argv:                             \n
-  \t '\,zero \s '32                    \n
-  '__s_counter:                        \n
-  \t '\,zero \s '8                     \n
-  '__s_section:                        \n
-  \t '\,zero \s '536870912             \n
-  '__a_counter:                        \n
-  \t '\,zero \s '8                     \n
-  '__a_section:                        \n
-  \t '\,zero \s '536870912             \n
-  '__nil_literal:                      \n
-  \t '\,ascii \s " \[ \] "             \n
-  \t '\,zero \s 1                      \n
-  '__hex_buffer:                       \n
-  \t '\,ascii \s "0123456789abcdef"    \n
-  '__put64_buffer:                     \n
-  \t '\,ascii \s "0x"                  \n
-  '__put64_write_buffer:               \n
-  \t '\,ascii \s "0000000000000000 \s "  \n
-  \t '\,zero \s '1                     \n
-  '__newline:                          \n
-  \t '\,ascii \s " \\n "               \n
-  '__lparen:                           \n
-  \t '\,ascii \s " \[ "                \n
-  '__rparen:                           \n
-  \t '\,ascii \s " \] "                \n
-  '__space:                            \n
-  \t '\,ascii \s " \s "                \n
-  '__true:                             \n
-  \t '\,ascii \s "True"                \n
-  \t '\,zero \s '1                     \n
-  '__digit:                            \n
-  \t '\,zero \s '2                     \n
-  '__dump_i:                           \n
-  \t '\,ascii \s '"0000000000000000"   \n
-  \t '\,zero \s '1                     \n
-  '__err_fopen:                        \n
+compile-append := λoutput_e gctx e. (tail(
+   (set e (compile-expr( gctx e (get-offset output_e) Used )))
+   (Expr(
+      ((get-frame output_e) (get-frame e))
+      ((get-prog output_e) (get-prog e))
+      ((get-unframe output_e) (get-unframe e))
+      ((get-text output_e) (get-text e))
+      ((get-data output_e) (get-data e))
+      (get-pc e)
+      (get-offset e)
+   ))
+));
+
+data-header := λ.(
+  '\,data                                 \n
+  'load_file_bsz:                         \n
+  \t '\,quad \s '1024                     \n
+  'load_file_buf:                         \n
+  \t '\,zero \s '1024                     \n
+  'argv:                                  \n
+  \t '\,zero \s '16                       \n
+  's_counter:                             \n
+  \t '\,zero \s '8                        \n
+  's_section:                             \n
+  \t '\,zero \s '536870912                \n
+  'a_counter:                             \n
+  \t '\,zero \s '8                        \n
+  'a_section:                             \n
+  \t '\,zero \s '536870912                \n
+  'nil_literal:                           \n
+  \t '\,ascii \s " \[ \] "                \n
+  \t '\,zero \s 1                         \n
+  'newline:                               \n
+  \t '\,ascii \s " \\n "                  \n
+  'left_paren:                            \n
+  \t '\,ascii \s " \[ "                   \n
+  'right_paren:                           \n
+  \t '\,ascii \s " \] "                   \n
+  'space:                                 \n
+  \t '\,ascii \s " \s "                   \n
+  'true:                                  \n
+  \t '\,ascii \s "True"                   \n
+  \t '\,zero \s '1                        \n
+  '__digit:                               \n
+  \t '\,zero \s '2                        \n
+  'hex_buffer:                            \n
+  \t '\,ascii \s "0123456789abcdef"       \n
+  '__dump_i:                              \n
+  \t '\,ascii \s '"0000000000000000"      \n
+  \t '\,zero \s '1                        \n
+  'err_fopen:                             \n
   \t '\,ascii \s '"Could \s 'not \s 'open \s 'file."  \n
-  \t '\,zero \s '1                       \n
+  \t '\,zero \s '1                        \n
 );
 
-_exit-cleanup := λ.(
-   \t 'mov \s '$60, \s '%rax           \n # _exit system call
-   \t 'mov \s '$0, \s '%rdi            \n # error code 0
+program-header := λ.(
+   '\,global \s '_start                   \n
+   '\,text                                \n
+   '_start:                               \n
+   \t 'jmp \s 'main                       \n
+);
+
+exit-cleanup := λ. (system-call( '$60 '$0 '$0 '$0 ));
+
+system-call := λrax rdi rsi rdx. (
+   \t 'mov \s rax , \s '%rax           \n
+   \t 'mov \s rdi , \s '%rdi           \n
+   \t 'mov \s rsi , \s '%rsi           \n
+   \t 'mov \s rdx , \s '%rdx           \n
    \t 'syscall                         \n
 );
 
-_before-main := λ.(
-   # let argv = close ()
-   # let t = argv
-   # for a in argv:
-   #    t.tail = (a ())
-   #    t = t.tail
-   \t 'pop \s %rax                        \n #argc
-   \t 'mov \s '$__argv, \s '%rbx          \n
-   \t 'movq \s '$0, \s '0 \[ '%rbx \]     \n
-   \t 'movq \s '$0, \s '8 \[ '%rbx \]     \n
-   \t 'movq \s '$0, \s '16 \[ '%rbx \]    \n
-   \t 'movq \s '$0, \s '24 \[ '%rbx \]    \n
+before-main := λ.(
+   # before_main_argv:
+   #    argv = ()
+   #    let t = argv
+   #    for a in argv:
+   #       t.tail = (a ())
+   #       t = t.tail
 
-   '__before_main_argv:                   \n
-   \t 'cmp \s '$0, \s '%rax               \n
-   \t 'je \s '__before_main_end           \n
-   \t 'pop \s '%r12                       \n #argv[i]
-   \t 'mov \s '$0, \s '%r13               \n
-   \t 'mov \s '$0, \s '%r14               \n
-   \t 'mov \s '$0, \s '%r15               \n
+   'main:                              \n
+   \t 'pop \s '%rax                    \n # put argc in %rax
+   \t 'mov \s '$argv, \s '%r9          \n
+   \t 'movq \s '$0, \s '0 \[ '%r9 \]   \n
+   \t 'movq \s '$0, \s '8 \[ '%r9 \]   \n
 
-   #close this (move S onto the heap)
-   \t 'mov \s '$__s_section, \s '%rsi     \n # %rsi now points to root s
-   \t 'mov \s '$__s_counter, \s '%r8      \n # %r8 now points to s counter
-   \t 'mov \s '0 \[ '%r8 \] , \s '%r10     \n # %r10 now hold value of cons counter
-   \t 'add \s '%r10, \s '%rsi             \n # %rsi now points to top free cons
-   \t 'add \s '$32, \s '%r10              \n # increment s counter
-   \t 'mov \s '%r10, \s '0 \[ '%r8 \]     \n # overwrite new s counter
-   \t 'mov \s '%r12, \s '0 \[ '%rsi \]    \n # set top.atom
-   \t 'mov \s '%r13, \s '8 \[ '%rsi \]    \n # set top.head
-   \t 'mov \s '%r14, \s '16 \[ '%rsi \]   \n # set top.tail
-   \t 'mov \s '%r15, \s '24 \[ '%rsi \]   \n # set top.flags
-   \t 'mov \s '%rsi, \s '%rdi             \n
+   'before_main_argv:                  \n
+   \t 'cmp \s '$0, \s '%rax            \n
+   \t 'je \s 'before_main_end          \n
 
-   #rdi is a
-   \t 'mov \s '$0, \s '%r12               \n
-   \t 'mov \s '$0, \s '%r13               \n
-   \t 'mov \s '$0, \s '%r14               \n
-   \t 'mov \s '$0, \s '%r15               \n
+   \t 'pop \s '%r12                    \n #this = argv[i]
+   \t 'mov \s '$0, \s '%r13            \n
+   (close())                              #r8 is argv[i]
 
-   \t 'mov \s '$__s_section, \s '%rsi     \n # %rsi now points to root s
-   \t 'mov \s '$__s_counter, \s '%r8      \n # %r8 now points to s counter
-   \t 'mov \s '0 \[ '%r8 \] , \s '%r10     \n # %r10 now hold value of cons counter
-   \t 'add \s '%r10, \s '%rsi             \n # %rsi now points to top free cons
-   \t 'add \s '$32, \s '%r10              \n # increment s counter
-   \t 'mov \s '%r10, \s '0 \[ '%r8 \]     \n # overwrite new s counter
-   \t 'mov \s '%r12, \s '0 \[ '%rsi \]    \n # set top.atom
-   \t 'mov \s '%r13, \s '8 \[ '%rsi \]    \n # set top.head
-   \t 'mov \s '%r14, \s '16 \[ '%rsi \]   \n # set top.tail
-   \t 'mov \s '%r15, \s '24 \[ '%rsi \]   \n # set top.flags
+   \t 'mov \s '%r8, \s '0 \[ '%r9 \]   \n #set t.head = argv[i]
+   \t 'mov \s '$0, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13            \n
+   (close())
+   \t 'mov \s '%r8, \s '8 \[ '%r9 \]   \n #set t.tail = ()
+   \t 'mov \s '%r8, \s '%r9            \n #set t = t.tail
 
-   #rsi is clean closed ()
-   \t 'mov \s '%rdi, \s '8 \[ '%rbx \]    \n
-   \t 'mov \s '%rsi, \s '16 \[ '%rbx \]   \n
-   \t 'mov \s '%rsi, \s '%rbx             \n
-   #rbx is tail of argv
-   \t 'dec \s '%rax                       \n
-   \t 'jmp \s '__before_main_argv         \n
-   '__before_main_end:                    \n
+   \t 'dec \s '%rax                    \n #dec argc
+   \t 'jmp \s 'before_main_argv        \n
+
+   'before_main_end:                   \n
 );
 
-_program-header := λ.(
-   '\,global \s '_start                   \n
-   '\,text                                \n
+allocate-heap-16 := λ. (
+   \t 'mov \s '$s_section, \s '%r8           \n # %r8 now points to root s
+   \t 'mov \s '$s_counter, \s '%r11          \n # %r11 now points to s counter
+   \t 'mov \s '0 \[ '%r11 \] , \s '%r10      \n # %r10 now hold value of cons counter
+   \t 'add \s '%r10, \s '%r8                 \n # %r8 now points to top free cons
+   \t 'add \s '$16, \s '%r10                 \n # increment s counter
+   \t 'mov \s '%r10, \s '0 \[ %r11 \]        \n # overwrite new s counter
+);
 
-   '_start:                               \n
-   \t 'jmp \s 'main                       \n
+close := λe. (
+   e
+   (allocate-heap-16 ())
+   (\t 'mov \s '%r12, \s '0 \[ '%r8 \] \n)
+   (\t 'mov \s '%r13, \s '8 \[ '%r8 \] \n)
+);
 
-   # internal _strlen (%rax: *char) -> %rbx
-   # not a call-convention function
-   '_strlen:                              \n
-   \t 'xor \s '%rbx, \s '%rbx             \n
-   '_strlen_loop:                         \n
-   \t 'cmpb \s '$0, \s '0 \[ '%rax \]     \n
-   \t 'jz \s '_strlen_exit                \n
-   \t 'inc \s '%rax                       \n
-   \t 'inc \s '%rbx                       \n
-   \t 'jmp \s '_strlen_loop               \n
-   '_strlen_exit:                         \n
-   \t 'ret                                \n
-   # result is stored in %rcx
+is-builtin := λf. (match f (
+   ()
+   ('is True)
+   ('eq True)
+   ('not True)
+   ('head True)
+   ('tail True)
+   ('inc True)
+   ('dec True)
+   ('add True)
+   ('mul True)
+   ('div True)
+   ('mod True)
+   ('inv True)
+   ('is-neg True)
+   ('digit True)
+   ('dump-i True)
+   ('print-s True)
+   ('print-i True)
+   ('print-p True)
+   ('print-p True)
+   ('print-d True)
+   ('clone-rope True)
+   ('write-file True)
+   ('load-file True)
+   (_ ())
+));
 
-   'digit:                                \n
-   \t 'mov \s '%r12, \s '%rax             \n
-   \t 'add \s '$48, \s %rax               \n
-   \t 'mov \s '$__digit, \s %r12          \n
-   \t 'mov \s '%al, \s '0 \[ %r12 \]      \n
-   \t 'mov \s '$0, \s %r13                \n
-   \t 'mov \s '$0, \s %r14                \n
-   \t 'mov \s '$0, \s %r15                \n
-   \t 'ret                                \n
+label-case := λk. (tail(
+   (local nk)
+   (foreach-char k (match $_ (
+      ()
+      ('- (set nk (nk '_)))
+      ('$ (set nk (nk '_I_)))
+      (c (set nk (nk (clone-rope c))))
+   )))
+   (clone-rope nk)
+));
 
-   'print_s:                              \n
+stdlib-functions := λ. (
+   'print_s:                           \n
+   # if .head is zero, then this is Nil
+   \t 'cmp \s '$0, \s '%r12            \n
+   \t 'je \s 'print_s_nil              \n
 
-   # if .atom != NULL 
-   '__print_this_atom:                    \n
-   \t 'cmp \s '$0, \s '%r12               \n
-   \t 'je \s '__print_this_cons           \n
-   \t 'mov \s '%r12, \s '%rax             \n
-   \t 'call \s '_strlen                   \n # %rbx is length of string
-   \t 'mov \s '%r12, \s '%rsi             \n # address of string to output
-   \t 'mov \s '%rbx, \s '%rdx             \n # length is %rcx
-   \t 'mov \s '$1, \s '%rax               \n # system call 1 is write
-   \t 'mov \s '$1, \s '%rdi               \n # file handle 1 is stdout
-   \t 'syscall                            \n # invoke operating system to do the write
-   \t 'ret                                \n
+   # if only .tail is zero, then this is an Atom
+   \t 'cmp \s '$0, \s '%r13            \n
+   \t 'je \s 'print_s_atom             \n
 
-   # if .head != NULL && .tail != NULL
-   '__print_this_cons:                    \n
-   \t 'cmp \s '$0, \s '%r13               \n
-   \t 'je \s '__print_this_nil            \n
-   \t 'cmp \s '$0, \s '%r14               \n
-   \t 'je \s '__print_this_nil            \n
-   \t 'push \s '%r14                      \n
-   \t 'push \s '%r13                      \n
-   #show lparen
-   \t 'mov \s '$1, \s '%rax               \n
-   \t 'mov \s '$1, \s '%rdi               \n
-   \t 'mov \s '$__lparen, \s '%rsi        \n
-   \t 'mov \s '$1, \s '%rdx               \n
-   \t 'syscall                            \n
-   #show head
-   \t 'pop \s '%r8                        \n
-   \t 'mov \s '0 \[ '%r8 \] , '%r12       \n
-   \t 'mov \s '8 \[ '%r8 \] , '%r13       \n
-   \t 'mov \s '16 \[ '%r8 \] , '%r14      \n
-   \t 'mov \s '24 \[ '%r8 \] , '%r15      \n
-   \t 'call \s 'print_s                   \n
-   #show space
-   \t 'mov \s '$1, \s '%rax               \n
-   \t 'mov \s '$1, \s '%rdi               \n
-   \t 'mov \s '$__space, \s '%rsi         \n
-   \t 'mov \s '$1, \s '%rdx               \n
-   \t 'syscall                            \n
-   #show tail
-   \t 'pop \s '%r8                        \n
-   \t 'mov \s '0 \[ '%r8 \] , '%r12       \n
-   \t 'mov \s '8 \[ '%r8 \] , '%r13       \n
-   \t 'mov \s '16 \[ '%r8 \] , '%r14      \n
-   \t 'mov \s '24 \[ '%r8 \] , '%r15      \n
-   \t 'call \s 'print_s                   \n
-   #show rparen
-   \t 'mov \s '$1, \s '%rax               \n
-   \t 'mov \s '$1, \s '%rdi               \n
-   \t 'mov \s '$__rparen, \s '%rsi        \n
-   \t 'mov \s '$1, \s '%rdx               \n
-   \t 'syscall                            \n
-   \t 'mov \s '$0, \s '%r12               \n
-   \t 'mov \s '$0, \s '%r13               \n
-   \t 'mov \s '$0, \s '%r14               \n
-   \t 'mov \s '$0, \s '%r15               \n
-   \t 'ret                                \n
+   # if .head and .tail are non-zero, then this is a Cons
+   (system-call( '$1 '$1 '$left_paren '$1 ))
+   (push-this())
+   \t 'call \s 'head                   \n
+   \t 'call \s 'print_s                \n
+   (pop-this())
+   (system-call( '$1 '$1 '$space '$1 ))
+   (push-this())
+   \t 'call \s 'tail                   \n
+   \t 'call \s 'print_s                \n
+   (pop-this())
+   (system-call( '$1 '$1 '$right_paren '$1 ))
+   \t 'ret                             \n
 
-   '__print_this_nil:                     \n
-   \t 'mov \s '$1, \s '%rax               \n # system call 1 is write
-   \t 'mov \s '$1, \s '%rdi               \n # file handle 1 is stdout
-   \t 'mov \s '$__nil_literal, \s '%rsi   \n # address of string to output
-   \t 'mov \s '$2, \s '%rdx               \n # nil is 2 bytes
-   \t 'syscall                            \n # invoke operating system to do the write
-   \t 'ret                                \n
+   'print_s_nil:                       \n
+   # nil is two bytes "()" located in the data section at $nil_literal
+   (system-call( '$1 '$1 '$nil_literal '$2 ))
+   \t 'ret                             \n
 
+   'print_s_atom:                      \n
+   \t 'call \s 'strlen                 \n # %r8 is string length of this atom
+   (system-call( '$1 '$1 '%r12 '%r8 )) \n
+   \t 'ret                             \n
 
    'head:                                 \n
    \t 'cmp \s '$0, \s '%r13               \n
-   \t 'je \s '__head_is_nil               \n
-   \t 'mov \s '0 \[ '%r13 \] ', '%r12     \n
-   \t 'mov \s '16 \[ '%r13 \] ', '%r14    \n
-   \t 'mov \s '24 \[ '%r13 \] ', '%r15    \n
-   \t 'mov \s '8 \[ '%r13 \] ', '%r13     \n
-   \t 'ret                                \n
-   '__head_is_nil:                        \n
-   \t 'mov \s '$0, \s %r12                \n
-   \t 'mov \s '$0, \s %r13                \n
-   \t 'mov \s '$0, \s %r14                \n
-   \t 'mov \s '$0, \s %r15                \n
+   \t 'je \s 'return_nil                  \n
+   \t 'mov \s '8 \[ '%r12 \] , \s '%r13   \n
+   \t 'mov \s '0 \[ '%r12 \] , \s '%r12   \n
    \t 'ret                                \n
 
    'tail:                                 \n
    \t 'cmp \s '$0, \s '%r13               \n
-   \t 'je \s '__tail_is_nil               \n
-   \t 'mov \s '0 \[ '%r14 \] ', '%r12     \n
-   \t 'mov \s '8 \[ '%r14 \] ', '%r13     \n
-   \t 'mov \s '24 \[ '%r14 \] ', '%r15    \n
-   \t 'mov \s '16 \[ '%r14 \] ', '%r14    \n
-   \t 'ret                                \n
-   '__tail_is_nil:                        \n
-   \t 'mov \s '$0, \s %r12                \n
-   \t 'mov \s '$0, \s %r13                \n
-   \t 'mov \s '$0, \s %r14                \n
-   \t 'mov \s '$0, \s %r15                \n
+   \t 'je \s 'return_nil                  \n
+   \t 'mov \s '0 \[ '%r13 \] , \s '%r12   \n
+   \t 'mov \s '8 \[ '%r13 \] , \s '%r13   \n
    \t 'ret                                \n
 
-   'not:                                  \n
-   \t 'cmp \s '$0, \s '%r12               \n
-   \t 'jne \s '__not_is_some              \n
-   \t 'cmp \s '$0, \s '%r13               \n
-   \t 'jne \s '__not_is_some              \n
-   \t 'cmp \s '$0, \s '%r14               \n
-   \t 'jne \s '__not_is_some              \n
-   \t 'mov \s '$__true, \s '%r12          \n
-   \t 'mov \s '$0, \s '%r13               \n
-   \t 'mov \s '$0, \s '%r14               \n
-   \t 'mov \s '$0, \s '%r15               \n
-   \t 'ret                                \n
-   '__not_is_some:                        \n
-   \t 'mov \s '$0, \s '%r12               \n
-   \t 'mov \s '$0, \s '%r13               \n
-   \t 'mov \s '$0, \s '%r14               \n
-   \t 'mov \s '$0, \s '%r15               \n
+   'strlen:                               \n
+   \t 'xor \s '%r8, \s '%r8               \n
+   \t 'mov \s '%r12, \s '%rax             \n
+   'strlen_loop:                          \n
+   \t 'cmpb \s '$0, \s '0 \[ '%rax \]     \n
+   \t 'jz \s 'strlen_exit                 \n
+   \t 'inc \s '%r8                        \n
+   \t 'inc \s '%rax                       \n
+   \t 'jmp \s 'strlen_loop                \n
+   'strlen_exit:                          \n
    \t 'ret                                \n
 
-   # _streq (%rax: *char, %rbx: *char)
-   '_streq:                               \n
-   '__streq_loop:                         \n
+   'streq:                                \n
+   'streq_loop:                           \n
    \t 'cmp \s '$0, \s '%rax               \n
-   \t 'je \s '__streq_false               \n
+   \t 'je \s 'return_nil                  \n
    \t 'cmp \s '$0, \s '%rbx               \n
-   \t 'je \s '__streq_false               \n
+   \t 'je \s 'return_nil                  \n
    \t 'mov \s '0 \[ %rax \] , \s '%cl     \n
    \t 'mov \s '0 \[ %rbx \] , \s '%dl     \n
 
    \t 'cmp \s '%cl, \s '%dl               \n
-   \t 'jne \s '__streq_false              \n
+   \t 'jne \s 'return_nil                 \n
    \t 'cmp \s '$0, \s '%cl                \n
-   \t 'je \s '__streq_true                \n
+   \t 'je \s 'streq_true                  \n
    \t 'inc \s '%rax                       \n
    \t 'inc \s '%rbx                       \n
-   \t 'jmp \s '__streq_loop               \n
-   '__streq_true:                         \n
-   \t 'mov \s '$__true, \s '%r12          \n
+   \t 'jmp \s 'streq_loop                 \n
+   'streq_true:                           \n
+   \t 'mov \s '$true, \s '%r12            \n
    \t 'mov \s '$0, \s '%r13               \n
-   \t 'mov \s '$0, \s '%r14               \n
-   \t 'mov \s '$0, \s '%r15               \n
    \t 'ret                                \n
-   '__streq_false:                        \n
+
+   'eq:                                   \n
+   \t 'cmp \s '$0, \s '%r12               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'mov \s '8 \[ '%r12 \] , \s '%rax   \n
+   \t 'cmp \s '$0, \s '%rax               \n
+   \t 'jne \s 'return_nil                 \n
+   \t 'mov \s '8 \[ '%r13 \] , \s '%rbx   \n
+   \t 'cmp \s '$0, \s '%rbx               \n
+   \t 'jne \s 'return_nil                 \n
+   \t 'mov \s '0 \[ '%r12 \] , \s '%rax   \n
+   \t 'cmp \s '$0, \s '%rax               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'mov \s '0 \[ '%r13 \] , \s '%rbx   \n
+   \t 'cmp \s '$0, \s '%rbx               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'call \s 'streq                     \n
+   \t 'ret                                \n
+
+   'return_nil:                           \n
    \t 'mov \s '$0, \s '%r12               \n
    \t 'mov \s '$0, \s '%r13               \n
-   \t 'mov \s '$0, \s '%r14               \n
-   \t 'mov \s '$0, \s '%r15               \n
+   \t 'ret                                \n
+
+   'not:                                  \n
+   \t 'cmp \s '$0, \s '%r12               \n
+   \t 'jne \s 'not_yield_nil              \n
+   \t 'mov \s '$true, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'ret                                \n
+   'not_yield_nil:                        \n
+   \t 'mov \s '$0, \s '%r12               \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'ret                                \n
+
+   'clone_rope:                           \n
+   \t 'mov \s '$a_section, \s '%r8        \n
+   \t 'mov \s '$a_counter, \s '%r10       \n
+   \t 'mov \s '0 \[ %r10 \] , \s '%r11    \n
+   \t 'add \s '%r11, \s '%r8              \n
+   \t 'mov \s '%r8, \s '%r9               \n
+   #r8 holds pointer to head of new data
+   #r9 holds pointer to tail of new data
+   \t 'call \s '__clone_rope              \n
+   \t 'movb \s '$0, \s '0 \[ %r9 \]       \n
+   \t 'inc \s '%r9                        \n
+   \t 'mov \s '$a_section, \s '%r10       \n
+   \t 'sub \s '%r10, \s '%r9              \n
+   \t 'mov \s '$a_counter, \s '%r10       \n
+   \t 'mov \s '%r9, \s '0 \[ %r10 \]      \n
+   \t 'mov \s '%r8, \s '%r12              \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'ret                                \n
+
+   '__clone_rope:                         \n
+   #if this is a cons, recurse
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s 'clone_rope_notcons          \n
+   \t 'push \s '%r12                      \n
+   \t 'push \s '%r13                      \n
+   \t 'mov \s '8 \[ %r12 \] , '%r13       \n
+   \t 'mov \s '0 \[ %r12 \] , '%r12       \n
+   \t 'call \s '__clone_rope              \n
+   \t 'pop \s '%r13                       \n
+   \t 'pop \s '%r12                       \n
+   \t 'mov \s '0 \[ %r13 \] , '%r12       \n
+   \t 'mov \s '8 \[ %r13 \] , '%r13       \n
+   \t 'push \s '%r12                      \n
+   \t 'push \s '%r13                      \n
+   \t 'call \s '__clone_rope              \n
+   \t 'pop \s '%r13                       \n
+   \t 'pop \s '%r12                       \n
+   \t 'jmp \s 'clone_rope_end             \n
+
+   #if not cons, concat
+   'clone_rope_notcons:                   \n
+
+   #if nil, return
+   \t 'cmp \s '$0, \s '%r12               \n
+   \t 'je \s 'clone_rope_end              \n
+
+   #if atom, break into characters and concat
+   'clone_rope_small:                     \n
+   \t 'cmpb \s '$0, \s '0 \[ %r12 \]      \n
+   \t 'je \s 'clone_rope_end              \n
+   \t 'movb \s '0 \[ %r12 \] , \s '%bl    \n
+   \t 'movb \s '%bl, \s '0 \[ %r9 \]      \n
+   \t 'inc \s '%r12                       \n
+   \t 'inc \s '%r9                        \n
+   \t 'jmp \s 'clone_rope_small           \n
+
+   'clone_rope_end:                       \n
+   \t 'ret                                \n
+
+   'is:                                   \n
+   \t 'cmp \s '$0, \s '%r12               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'mov \s '0 \[ '%r12 \] , \s '%r8    \n
+   \t 'mov \s '0 \[ '%r13 \] , \s '%r9    \n
+   \t 'cmp \s '%r8, \s '%r9               \n
+   \t 'jne \s 'return_nil                 \n
+   \t 'mov \s '8 \[ '%r12 \] , \s '%r8    \n
+   \t 'mov \s '8 \[ '%r13 \] , \s '%r9    \n
+   \t 'cmp \s '%r8, \s '%r9               \n
+   \t 'jne \s 'return_nil                 \n
+   \t 'mov \s '$true, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'ret                                \n
+
+   'is_neg:                               \n
+   \t 'cmp \s '$0, \s %r12                \n
+   \t 'jge \s 'return_nil                 \n
+   \t 'mov \s '$true, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'ret                                \n
+
+   'inc:                                  \n
+   \t 'inc \s '%r12                       \n
+   \t 'ret                                \n
+
+   'dec:                                  \n
+   \t 'dec \s '%r12                       \n
+   \t 'ret                                \n
+
+   'inv:                                  \n
+   \t 'neg \s '%r12                       \n
+   \t 'ret                                \n
+
+   'mul:                                  \n
+   \t 'cmp \s '$0, \s '%r12               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'mov \s '0 \[ '%r12 \] , '%rax      \n  
+   \t 'mov \s '0 \[ '%r13 \] , '%rbx      \n
+   \t 'imul \s '%rax, \s '%rbx            \n
+   \t 'mov \s '%rbx, \s '%r12             \n
+   \t 'ret                                \n
+
+   'add:                                  \n
+   \t 'cmp \s '$0, \s '%r12               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'mov \s '0 \[ '%r12 \] , '%rax      \n  
+   \t 'mov \s '0 \[ '%r13 \] , '%rbx      \n
+   \t 'add \s '%rax, \s '%rbx             \n
+   \t 'mov \s '%rbx, \s '%r12             \n
+   \t 'ret                                \n
+
+   'div:                                  \n
+   \t 'cmp \s '$0, \s '%r12               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'mov \s '0 \[ '%r12 \] , '%rax      \n #dividend
+   \t 'mov \s '$0, \s '%rdx               \n
+   \t 'mov \s '0 \[ '%r13 \] , '%rcx      \n #divisor
+   \t 'idiv \s '%rcx                      \n
+   \t 'mov \s '%rax, \s '%r12             \n
+   \t 'ret                                \n
+
+   'mod:                                  \n
+   \t 'cmp \s '$0, \s '%r12               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'mov \s '0 \[ '%r12 \] , '%rax      \n #dividend
+   \t 'mov \s '$0, \s '%rdx               \n
+   \t 'mov \s '0 \[ '%r13 \] , '%rcx      \n #divisor
+   \t 'idiv \s '%rcx                      \n
+   \t 'mov \s '%rdx, \s '%r12             \n
    \t 'ret                                \n
 
    'dump_i:                               \n
    \t 'mov \s '%r12, \s '%r8              \n
    \t 'mov \s '$__dump_i, \s '%r12        \n
    \t 'mov \s '$0, \s '%r13               \n
-   \t 'mov \s '$0, \s '%r14               \n
-   \t 'mov \s '$0, \s '%r15               \n
    \t 'mov \s '$__dump_i, \s '%r11        \n
    \t 'cmp \s '$0, \s '%r8                \n
    \t 'jge \s 'dump_i_positive            \n
    \t 'jmp \s 'dump_i_negative            \n
    'dump_i_positive:                      \n
    \t 'call \s 'dump_i_digits             \n
+   \t 'movb \s '$48, \s '0 \[ %r11 \]     \n
    \t 'ret                                \n
    'dump_i_negative:                      \n
    \t 'neg \s '%r8                        \n
@@ -1810,395 +1697,347 @@ _program-header := λ.(
    'put8:                                 \n
    \t 'mov \s '%r8b, \s '%al              \n # lower byte of %r11 goes into %rax
    \t 'and \s '$0xf, \s '%al              \n # only show lower 4 bits
-   \t 'mov \s '$__hex_buffer, '%r10       \n # %r10 is index into hex buffer
+   \t 'mov \s '$hex_buffer, '%r10         \n # %r10 is index into hex buffer
    \t 'add \s '%al, \s '%r10b             \n # %r10 is index into char in hex buffer
    \t 'mov \s '0 \[ %r10 \] , \s '%cl     \n # %cl is a hexadecimal char
    \t 'ret                                \n
 
-   'inc:                                  \n
-   \t 'inc \s '%r12                       \n
+   'digit:                                \n
+   \t 'mov \s '%r12, \s '%rax             \n
+   \t 'add \s '$48, \s %rax               \n
+   \t 'mov \s '$__digit, \s %r12          \n
+   \t 'mov \s '%al, \s '0 \[ %r12 \]      \n
+   \t 'mov \s '$0, \s %r13                \n
    \t 'ret                                \n
 
-   'dec:                                  \n
-   \t 'dec \s '%r12                       \n
-   \t 'ret                                \n
-
-   'inv:                                  \n
-   \t 'neg \s '%r12                       \n
-   \t 'ret                                \n
-
-   'is:                                   \n
-   \t 'cmp \s '%r8, \s '%r12              \n
-   \t 'jne \s 'is_false                   \n
-   \t 'cmp \s '%r9, \s '%r13              \n
-   \t 'jne \s 'is_false                   \n
-   \t 'cmp \s '%r10, \s '%r14             \n
-   \t 'jne \s 'is_false                   \n
-   \t 'cmp \s '%r11, \s '%r15             \n
-   \t 'jne \s 'is_false                   \n
-   \t 'mov \s '$__true, \s '%r12          \n
-   \t 'mov \s '$0, \s '%r13               \n
-   \t 'mov \s '$0, \s '%r14               \n
-   \t 'mov \s '$0, \s '%r15               \n
-   \t 'ret                                \n
-   'is_false:                             \n
-   \t 'mov \s '$0, \s '%r12               \n
-   \t 'mov \s '$0, \s '%r13               \n
-   \t 'mov \s '$0, \s '%r14               \n
-   \t 'mov \s '$0, \s '%r15               \n
-   \t 'ret                                \n
-
-   'is_neg:                               \n
-   \t 'cmp \s '$0, \s %r12                \n
-   \t 'jge \s 'is_neg_ispos               \n
-   \t 'mov \s '$1, \s '%r12               \n
-   \t 'mov \s '$0, \s '%r13               \n
-   \t 'mov \s '$0, \s '%r14               \n
-   \t 'mov \s '$0, \s '%r15               \n
-   \t 'ret                                \n
-   'is_neg_ispos:                         \n
-   \t 'mov \s '$0, \s '%r12               \n
-   \t 'mov \s '$0, \s '%r13               \n
-   \t 'mov \s '$0, \s '%r14               \n
-   \t 'mov \s '$0, \s '%r15               \n
-   \t 'ret                                \n
-
-   'mul:                                  \n
-   \t 'cmp \s '$0, \s '%r13               \n
-   \t 'je \s 'mul_err                     \n
-   \t 'cmp \s '$0, \s '%r14               \n
-   \t 'je \s 'mul_err                     \n
-   \t 'mov \s '0 \[ '%r13 \] , '%rax      \n  
-   \t 'mov \s '0 \[ '%r14 \] , '%rbx      \n
-   \t 'imul \s '%rax, \s '%rbx            \n
-   \t 'mov \s '%rbx, \s '%r12             \n
-   \t 'ret                                \n
-   'mul_err:                              \n
-   \t 'mov \s '$0, \s '%r12               \n
-   \t 'mov \s '$0, \s '%r13               \n
-   \t 'mov \s '$0, \s '%r14               \n
-   \t 'mov \s '$0, \s '%r15               \n
-   \t 'ret                                \n
-
-   'add:                                  \n
-   \t 'cmp \s '$0, \s '%r13               \n
-   \t 'je \s 'add_err                     \n
-   \t 'cmp \s '$0, \s '%r14               \n
-   \t 'je \s 'add_err                     \n
-   \t 'mov \s '0 \[ '%r13 \] , '%rax      \n  
-   \t 'mov \s '0 \[ '%r14 \] , '%rbx      \n
-   \t 'add \s '%rax, \s '%rbx             \n
-   \t 'mov \s '%rbx, \s '%r12             \n
-   \t 'ret                                \n
-   'add_err:                              \n
-   \t 'mov \s '$0, \s '%r12               \n
-   \t 'mov \s '$0, \s '%r13               \n
-   \t 'mov \s '$0, \s '%r14               \n
-   \t 'mov \s '$0, \s '%r15               \n
-   \t 'ret                                \n
-
-   'div:                                  \n
-   \t 'cmp \s '$0, \s '%r13               \n
-   \t 'je \s 'div_err                     \n
-   \t 'cmp \s '$0, \s '%r14               \n
-   \t 'je \s 'div_err                     \n
-   \t 'mov \s '0 \[ '%r13 \] , '%rax      \n #dividend
-   \t 'mov \s '$0, \s '%rdx               \n
-   \t 'mov \s '0 \[ '%r14 \] , '%rcx      \n #divisor
-   \t 'idiv \s '%rcx                      \n
-   \t 'mov \s '%rax, \s '%r12             \n
-   \t 'mov \s '$0, \s '%r13               \n
-   \t 'mov \s '$0, \s '%r14               \n
-   \t 'mov \s '$0, \s '%r15               \n
-   \t 'ret                                \n
-   'div_err:                              \n
-   \t 'mov \s '$0, \s '%r12               \n
-   \t 'mov \s '$0, \s '%r13               \n
-   \t 'mov \s '$0, \s '%r14               \n
-   \t 'mov \s '$0, \s '%r15               \n
-   \t 'ret                                \n
-
-   'mod:                                  \n
-   \t 'cmp \s '$0, \s '%r13               \n
-   \t 'je \s 'mod_err                     \n
-   \t 'cmp \s '$0, \s '%r14               \n
-   \t 'je \s 'mod_err                     \n
-   \t 'mov \s '0 \[ '%r13 \] , '%rax      \n #dividend
-   \t 'mov \s '$0, \s '%rdx               \n
-   \t 'mov \s '0 \[ '%r14 \] , '%rcx      \n #divisor
-   \t 'idiv \s '%rcx                      \n
-   \t 'mov \s '%rdx, \s '%r12             \n
-   \t 'ret                                \n
-   'mod_err:                              \n
-   \t 'mov \s '$0, \s '%r12               \n
-   \t 'mov \s '$0, \s '%r13               \n
-   \t 'mov \s '$0, \s '%r14               \n
-   \t 'mov \s '$0, \s '%r15               \n
-   \t 'ret                                \n
-
-   'clone_rope:                          \n
-   \t 'mov \s '$__a_section, \s '%r8     \n
-   \t 'mov \s '$__a_counter, \s '%r10    \n
-   \t 'mov \s '0 \[ %r10 \] , \s '%r11   \n
-   \t 'add \s '%r11, \s '%r8             \n
-   \t 'mov \s '%r8, \s '%r9              \n
-   #r8 holds pointer to head of new data
-   #r9 holds pointer to tail of new data
-   \t 'call \s '__clone_rope             \n
-   \t 'movb \s '$0, \s '0 \[ %r9 \]      \n
-   \t 'inc \s '%r9                       \n
-   \t 'mov \s '$__a_section, \s '%r10    \n
-   \t 'sub \s '%r10, \s '%r9             \n
-   \t 'mov \s '$__a_counter, \s '%r10    \n
-   \t 'mov \s '%r9, \s '0 \[ %r10 \]     \n
-   \t 'mov \s '%r8, \s '%r12             \n
-   \t 'mov \s '$0, \s '%r13              \n
-   \t 'mov \s '$0, \s '%r14              \n
-   \t 'mov \s '$0, \s '%r15              \n
-   \t 'ret                               \n
-
-   '__clone_rope:                        \n
-   #if this is a cons, recurse
-   \t 'cmp \s '$0, \s '%r13              \n
-   \t 'je \s 'clone_rope_notcons         \n
-   \t 'cmp \s '$0, \s '%r14              \n
-   \t 'je \s 'clone_rope_notcons         \n
-   \t 'push \s '%r12                     \n
-   \t 'push \s '%r13                     \n
-   \t 'push \s '%r14                     \n
-   \t 'push \s '%r15                     \n
-   \t 'mov \s '0 \[ %r13 \] , '%r12      \n
-   \t 'mov \s '16 \[ %r13 \] , '%r14     \n
-   \t 'mov \s '24 \[ %r13 \] , '%r15     \n
-   \t 'mov \s '8 \[ %r13 \] , '%r13      \n
-   \t 'call \s '__clone_rope             \n
-   \t 'pop \s '%r15                      \n
-   \t 'pop \s '%r14                      \n
-   \t 'pop \s '%r13                      \n
-   \t 'pop \s '%r12                      \n
-   \t 'mov \s '0 \[ %r14 \] , '%r12      \n
-   \t 'mov \s '24 \[ %r14 \] , '%r15     \n
-   \t 'mov \s '8 \[ %r14 \] , '%r13      \n
-   \t 'mov \s '16 \[ %r14 \] , '%r14     \n
-   \t 'push \s '%r12                     \n
-   \t 'push \s '%r13                     \n
-   \t 'push \s '%r14                     \n
-   \t 'push \s '%r15                     \n
-   \t 'call \s '__clone_rope             \n
-   \t 'pop \s '%r15                      \n
-   \t 'pop \s '%r14                      \n
-   \t 'pop \s '%r13                      \n
-   \t 'pop \s '%r12                      \n
-   \t 'jmp \s 'clone_rope_end            \n
-
-   #if not cons, concat
-   'clone_rope_notcons:                  \n
-
-   #if nil, return
-   \t 'cmp \s '$0, \s '%r12              \n
-   \t 'je \s 'clone_rope_end             \n
-
-   #if atom, break into characters and concat
-   'clone_rope_small:                    \n
-   \t 'cmpb \s '$0, \s '0 \[ %r12 \]     \n
-   \t 'je \s 'clone_rope_end             \n
-   \t 'movb \s '0 \[ %r12 \] , \s '%bl   \n
-   \t 'movb \s '%bl, \s '0 \[ %r9 \]     \n
-   \t 'inc \s '%r12                      \n
-   \t 'inc \s '%r9                       \n
-   \t 'jmp \s 'clone_rope_small          \n
-
-   'clone_rope_end:                      \n
-   \t 'ret                               \n
-
-   'write_file:                          \n
+   'write_file:                           \n
    #open file
-   \t 'mov \s '0 \[ %r13 \] , \s '%rdi   \n # file name
-   \t 'pushq \s '0 \[ %r14 \]            \n # data to write
-   \t 'mov \s '$2, \s '%rax              \n # syscall open
-   \t 'mov \s '$577, \s %rsi             \n
-   \t 'mov \s '$420, \s '%rdx            \n # mode
-   \t 'syscall                           \n
-   \t 'mov \s '%rax, \s '%r8             \n # r8 now holds file descriptor
+   \t 'mov \s '0 \[ %r12 \] , \s '%rdi    \n # file name
+   \t 'pushq \s '0 \[ %r13 \]             \n # data to write
+   \t 'mov \s '$2, \s '%rax               \n # syscall open
+   \t 'mov \s '$577, \s %rsi              \n
+   \t 'mov \s '$420, \s '%rdx             \n # mode
+   \t 'syscall                            \n
+   \t 'mov \s '%rax, \s '%r8              \n # r8 now holds file descriptor
 
    #write to file
-   \t 'pop \s '%rax                      \n
-   \t 'mov \s '%rax, \s '%r9             \n
-   \t 'call \s '_strlen                  \n
-   \t 'mov \s '%rbx, \s '%rdx            \n # length to write
-   \t 'mov \s '%r9, \s '%rsi             \n # data to write
-   \t 'mov \s '%r8, \s '%rdi             \n # file descriptor
-   \t 'mov \s '$1, \s '%rax              \n # 'write' system call
-   \t 'syscall                           \n
+   \t 'pop \s '%rax                       \n
+   \t 'mov \s '%rax, \s '%r12             \n
+   \t 'mov \s '%r8, \s '%r10              \n # %r10 has file descriptor
+   \t 'call \s 'strlen                    \n
+   (system-call( '$1 '%r10 '%r12 '%r8 ))
 
    #close file
-   \t 'mov \s '%r8, \s '%rdi             \n # file descriptor
-   \t 'mov \s '$3, \s '%rax              \n # close
-   \t 'syscall                           \n
-   \t 'ret                               \n
+   (system-call( '$3 '%r10 '$0 '$0 ))
+   \t 'mov \s '$0, \s '%r12               \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'ret                                \n
 
-   'load_file:                           \n
+   'load_file:                            \n
 
    # open file
-   \t 'mov \s '$2, \s '%rax              \n # syscall open
-   \t 'mov \s '%r12, \s '%rdi            \n # file name
-   \t 'mov \s '$0, \s '%rsi              \n # read-only mode
-   \t 'syscall                           \n
+   (system-call( '$2 '%r12 '$0 '$0 ))
    # file descriptor is in %rax
 
-   \t 'cmp \s '$0, \s '%rax              \n
+   \t 'cmp \s '$0, \s '%rax               \n
    # if return value is positive then open was a success
-   \t 'jge \s 'load_file_contents        \n
+   \t 'jge \s 'load_file_contents         \n
 
-   \t 'mov \s '$__err_fopen, \s '%r12    \n
-   \t 'mov \s '$0, \s '%r13              \n
-   \t 'mov \s '$0, \s '%r14              \n
-   \t 'mov \s '$0, \s '%r15              \n
-   \t 'ret                               \n
+   \t 'mov \s '$err_fopen, \s '%r12       \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'ret                                \n
 
-   'load_file_contents:                  \n
-   \t 'mov \s '$__a_section, \s '%r8     \n
-   \t 'mov \s '$__a_counter, \s '%r10    \n
-   \t 'mov \s '0 \[ %r10 \] , \s '%r11   \n
-   \t 'add \s '%r11, \s '%r8             \n
-   \t 'mov \s '%r8, \s '%r9              \n
-   \t 'mov \s '$0, \s '%r10              \n
-   \t 'mov \s '$load_file_buf, \s '%r11  \n
+   'load_file_contents:                   \n
+   \t 'mov \s '$a_section, \s '%r8        \n
+   \t 'mov \s '$a_counter, \s '%r10       \n
+   \t 'mov \s '0 \[ '%r10 \] , \s '%r11   \n
+   \t 'add \s '%r11, \s '%r8              \n
+   \t 'mov \s '%r8, \s '%r9               \n
+   \t 'mov \s '$0, \s '%r10               \n
+   \t 'mov \s '$load_file_buf, \s '%r11   \n
    #r8 holds pointer to head of new data
    #r9 holds pointer to tail of new data
    #r10 holds amount of data on buffer currently
    #r11 holds pointer to head of buffer
 
    # move data from buffer into string
-   'load_file_loop:                      \n
-   \t 'cmp \s '$0, \s '%r10              \n
-   \t 'je \s 'load_file_bufempty         \n
-   \t 'movb \s '0 \[ %r11 \] , \s '%bl   \n
-   \t 'mov \s '%bl, \s '0 \[ %r9 \]      \n
-   \t 'inc \s '%r9                       \n
-   \t 'inc \s '%r11                      \n
-   \t 'dec \s '%r10                      \n
-   \t 'jmp \s 'load_file_loop            \n
+   'load_file_loop:                       \n
+   \t 'cmp \s '$0, \s '%r10               \n
+   \t 'je \s 'load_file_bufempty          \n
+   \t 'movb \s '0 \[ %r11 \] , \s '%bl    \n
+   \t 'mov \s '%bl, \s '0 \[ '%r9 \]      \n
+   \t 'inc \s '%r9                        \n
+   \t 'inc \s '%r11                       \n
+   \t 'dec \s '%r10                       \n
+   \t 'jmp \s 'load_file_loop             \n
 
-      # read file
-   'load_file_bufempty:                  \n
-   \t 'push \s '%rax                     \n
-   \t 'mov \s '%rax, \s '%rdi            \n # file descriptor
-   \t 'mov \s '$0, \s '%rax              \n # read
-   \t 'mov \s '$load_file_buf, \s '%rsi  \n # buffer
-   \t 'mov \s '$load_file_bsz, \s '%rdx  \n
-   \t 'mov \s '0 \[ %rdx \] , \s '%rdx   \n # buffer size
-   \t 'syscall                           \n
-   \t 'mov \s '%rax, \s '%r10            \n
-   \t 'pop \s '%rax                      \n
-   \t 'mov \s '$load_file_buf, \s '%r11  \n
-   \t 'cmp \s '$0, \s '%r10              \n
-   \t 'jne \s 'load_file_loop            \n
+   # read file
+   'load_file_bufempty:                   \n
+   \t 'push \s '%rax                      \n
+   \t 'mov \s '%rax, \s '%r10             \n
+   \t 'mov \s '$load_file_bsz, \s '%rdx   \n
+   \t 'mov \s '0 \[ '%rdx \] , \s '%rdx   \n
+   (system-call( '$0 '%r10 '$load_file_buf %rdx ))
+   \t 'mov \s '%rax, \s '%r10             \n
+   \t 'pop \s '%rax                       \n
+   \t 'mov \s '$load_file_buf, \s '%r11   \n
+   \t 'cmp \s '$0, \s '%r10               \n
+   \t 'jne \s 'load_file_loop             \n
 
    # close file
-   \t 'mov \s '%rax, \s '%rdi            \n # file descriptor
-   \t 'mov \s '$3, \s '%rax              \n # close
-   \t 'syscall                   \n
+   (system-call( '$3 '%rax '$0 '$0 ))
 
-   \t 'movb \s '$0, \s '0 \[ %r9 \]      \n
-   \t 'inc \s '%r9                       \n
-   \t 'sub \s '%r8, \s '%r9              \n
-   \t 'mov \s '$__a_counter, \s '%r10    \n
-   \t 'mov \s '%r9, \s '0 \[ %r10 \]     \n
-   \t 'mov \s '%r8, \s '%r12             \n
-   \t 'mov \s '$0, \s '%r13              \n
-   \t 'mov \s '$0, \s '%r14              \n
-   \t 'mov \s '$0, \s '%r15              \n
-   \t 'ret                               \n
-
+   \t 'movb \s '$0, \s '0 \[ %r9 \]       \n
+   \t 'inc \s '%r9                        \n
+   \t 'sub \s '%r8, \s '%r9               \n
+   \t 'mov \s '$a_counter, \s '%r10       \n
+   \t 'mov \s '%r9, \s '0 \[ %r10 \]      \n
+   \t 'mov \s '%r8, \s '%r12              \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'mov \s '$0, \s '%r14               \n
+   \t 'mov \s '$0, \s '%r15               \n
+   \t 'ret                                \n
 );
 
-_push-this := λ.(
+inline-head := λ. (
+   \t 'mov \s '8 \[ '%r12 \] , \s '%r13   \n
+   \t 'mov \s '0 \[ '%r12 \] , \s '%r12   \n
+);
+
+inline-tail := λ. (
+   \t 'mov \s '0 \[ '%r13 \] , \s '%r12   \n
+   \t 'mov \s '8 \[ '%r13 \] , \s '%r13   \n
+);
+
+enter-function := λ.(
+   \t 'push \s %rbp                       \n
+   \t 'mov \s %rsp, \s %rbp               \n
+);
+
+exit-function := λ.(
+   \t 'mov \s %rbp, \s %rsp               \n
+   \t 'pop \s %rbp                        \n
+   \t 'ret                                \n
+);
+
+push-this := λ.(
    \t 'push \s '%r12                      \n
    \t 'push \s '%r13                      \n
-   \t 'push \s '%r14                      \n
-   \t 'push \s '%r15                      \n
 );
 
-_push-zero := λ.(
-   \t 'pushq \s '$0                       \n
-   \t 'pushq \s '$0                       \n
+push-zero := λ.(
    \t 'pushq \s '$0                       \n
    \t 'pushq \s '$0                       \n
 );
 
-_unpush-this := λ.(
-   \t 'pop \s '%r8                        \n
-   \t 'pop \s '%r8                        \n
+unpush-this := λ.(
    \t 'pop \s '%r8                        \n
    \t 'pop \s '%r8                        \n
 );
 
-_pop-this := λ.(
-   \t 'pop \s '%r15                       \n
-   \t 'pop \s '%r14                       \n
+pop-this := λ.(
    \t 'pop \s '%r13                       \n
    \t 'pop \s '%r12                       \n
 );
 
-_yield-nil := λ.(
+yield-nil := λ. (
    \t 'mov \s '$0, \s '%r12               \n
    \t 'mov \s '$0, \s '%r13               \n
-   \t 'mov \s '$0, \s '%r14               \n
-   \t 'mov \s '$0, \s '%r15               \n
 );
 
-_close-this := λ.(
-   # move this S onto the heap
-   # %rsi becomes pointer to new location
-   \t 'mov \s '$__s_section, \s '%rsi        \n # %rsi now points to root s
-   \t 'mov \s '$__s_counter, \s '%r8         \n # %r8 now points to s counter
-   \t 'mov \s '0 \[ %r8 \] , \s '%r10        \n # %r10 now hold value of cons counter
-   \t 'add \s '%r10, \s '%rsi                \n # %rsi now points to top free cons
-   \t 'add \s '$32, \s '%r10                 \n # increment s counter
-   \t 'mov \s '%r10, \s '0 \[ %r8 \]         \n # overwrite new s counter
-   \t 'mov \s '%r12, \s '0 \[ %rsi \]        \n # set top.atom
-   \t 'mov \s '%r13, \s '8 \[ %rsi \]        \n # set top.head
-   \t 'mov \s '%r14, \s '16 \[ %rsi \]       \n # set top.tail
-   \t 'mov \s '%r15, \s '24 \[ %rsi \]       \n # set top.flags
+yield-cons := λctx l r offset used. (tail(
+   (local e1)
+   (local e2)
+   (local prog)
+   (local rused)
+   (match used (
+      ()
+      ( Used (tail(
+         (set e1 (compile-expr( ctx l offset Used )))
+         (set offset (get-offset e1))
+         (set e2 (compile-expr( (get-pc e1) r (get-offset e1) Used )))
+         (set offset (get-offset e2))
+         (set prog (prog (get-prog e1)))
+         (set prog (prog (push-this())))
+         (set prog (prog (get-prog e2)))
+         (set prog (prog (close())))
+         (set prog (prog (\t 'mov \s '%r8, \s '%r9 \n)))
+         (set prog (prog (pop-this())))
+         (set prog (prog (close())))
+         (set prog (prog (\t 'mov \s '%r8, \s '%r12 \n)))
+         (set prog (prog (\t 'mov \s '%r9, \s '%r13 \n)))
+         (Expr( ((get-frame e1) (get-frame e2)) prog ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
+      )))
+      ( _ (tail(
+         (set rused ( if (eq(used Tail)) Used Unused ))
+         (set e1 (compile-expr( ctx l offset Unused )))
+         (set e2 (compile-expr( (get-pc e1) r (get-offset e1) rused )))
+         (Expr( ((get-frame e1) (get-frame e2)) ((get-prog e1) (get-prog e2)) ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
+      )))
+   ))
+));
+
+yield-atom := λctx a offset. (tail(
+   (local id)
+   (set id (uuid()))
+   (Expr(
+      ()
+      (\t 'mov \s '$ id , \s '%r12 \n # $_.$1 = 0, .atom
+       \t 'mov \s '$0, \s '%r13    \n # $_.$2 = 0, .head
+      )
+      ()
+      ()
+      (id ': \n \t '\,ascii \s " (escape-sequences a) " \n \t '\,zero \s 1 \n)
+      ctx
+      offset
+   ))
+));
+
+$uuid := ();
+uuid := λ. (tail(
+   (set $uuid (inc $uuid))
+   (clone-rope ('uuid_ (dump-i $uuid)))
+));
+
+escape-sequences := λt. match t (
+   ()
+   ( () () )
+   ( \\ \\\\ )
+   ( \\: \: )
+   ( \\o \o )
+   ( \\n (\\ 'n))
+   ( \\t \t )
+   ( \\s \s )
+   ( \\l \l )
+   ( \\[ \[ )
+   ( \\] \] )
+   ( (l r) ( (escape-sequences l) (escape-sequences r) ) )
+   ( s (tail(
+      (local c)
+      (local cs)
+      (local is_escape)
+      (foreach-char s (
+         (set c $_)
+         (match c (
+            ()
+            ( " (
+               (set cs (cs \\ "))
+               (set is_escape ())
+            ))
+            (\\ (
+               (if is_escape (
+                 (set cs ( cs \\\\ ))
+                 (set is_escape ())
+               ) (set is_escape True))
+            ))
+            (_ (
+               (if is_escape (
+                  (match c (
+                     ()
+                     ( , (set cs (cs \,)))
+                     ( _ (fail( InvalidEscapeCharacter (c s) )))
+                  ))
+               ) (set cs (cs (clone-rope c))))
+               (set is_escape ())
+            ))
+         ))
+      ))
+      (clone-rope cs)
+   )))
 );
 
-_head := λ.(
-   \t 'mov \s '0 \[ %r13 \] , \s '%r12       \n
-   \t 'mov \s '16 \[ %r13 \] , \s '%r14      \n
-   \t 'mov \s '24 \[ %r13 \] , \s '%r15      \n
-   \t 'mov \s '8 \[ %r13 \] , \s '%r13       \n
-);
-_tail := λ.(
-   \t 'mov \s '0 \[ %r14 \] , \s '%r12       \n
-   \t 'mov \s '24 \[ %r14 \] , \s '%r15      \n
-   \t 'mov \s '8 \[ %r14 \] , \s '%r13       \n
-   \t 'mov \s '16 \[ %r14 \] , \s '%r14      \n
-);
+declare-local := λctx vname offset. (tail(
+   (local frame_this)
+   (set frame_this (push-zero()))
+   (local unframe_this)
+   (set unframe_this (unpush-this()))
+   (local refer)
+   (local eight)
+   (set eight (
+      inc(inc(inc(inc(inc(inc(inc(inc(
+         ()
+      ))))))))
+   ))
+   (local sixteen)
+   (set sixteen (mul( eight (inc(inc(()))) )))
+   (local set_this)
+   (set set_this (
+      \t 'mov \s '%r12, \s (
+         (i2s( (mul( (add( (mul( sixteen offset )) eight)) (dec(())) )) ))
+      ) \[ '%rbp \] \n
+      \t 'mov \s '%r13, \s (
+         (i2s( (mul( (add( (mul( sixteen offset )) sixteen)) (dec(())) )) ))
+      ) \[ '%rbp \] \n
+   ))
+   (set refer (
+      \t 'mov \s (
+         (i2s( (mul( (add( (mul( sixteen offset )) eight)) (dec(())) )) ))
+      ) \[ '%rbp \] , %r12 \n
+      \t 'mov \s (
+         (i2s( (mul( (add( (mul( sixteen offset )) sixteen)) (dec(())) )) ))
+      ) \[ '%rbp \] , %r13 \n
+   ))
+   (set ctx (ctx (Local(vname refer)) ))
+   (set ctx (ctx (Local((Set vname) set_this)) ))
+   (Expr(frame_this set_this unframe_this () () ctx (inc offset)))
+));
 
-_enter-function := λ.(
-   \t 'push \s %rbp                          \n
-   \t 'mov \s %rsp, \s %rbp                  \n
-);
-_exit-function := λ.(
-   \t 'mov \s %rbp, \s %rsp                  \n
-   \t 'pop \s %rbp                           \n
-   \t 'ret                                   \n
-);
+i2s := λi. (tail(
+   (local ten)
+   (set ten( inc(inc(inc(inc(inc( inc(inc(inc(inc(inc( ))))) ))))) ))
+   (local sign)
+   (local s)
+   (local r)
+   (if (is-neg i) (
+      (set sign '-)
+      (set i (inv i))
+   ) ())
+   (while i (
+      (set r (mod(i ten)))
+      (set s ((clone-rope(digit r) s)))
+      (set i (div(i ten)))
+   ))
+   (if s () (set s 0))
+   (clone-rope (sign s))
+));
 
-_shadow-this := λ.(
-   \t 'mov \s '%r12, \s '%r8                 \n
-   \t 'mov \s '%r13, \s '%r9                 \n
-   \t 'mov \s '%r14, \s '%r10                \n
-   \t 'mov \s '%r15, \s '%r11                \n
-);
-
-_unshadow-this := λ.(
-   \t 'mov \s '%r8, \s '%r12                 \n
-   \t 'mov \s '%r9, \s '%r13                 \n
-   \t 'mov \s '%r10, \s '%r14                \n
-   \t 'mov \s '%r11, \s '%r15                \n
-);
+destructure-args := λctx e offset. (match e (
+   ()
+   ( Nil (tail(
+      ()
+      (Expr( () () () () () ctx offset ))
+   )))
+   ( (Variable n) (tail(
+      ()
+      (declare-local(ctx n offset))
+   )))
+   ( ( (App( h t )) ) (tail(
+      (local ta)
+      (set ta (destructure-args(ctx t offset)))
+      (set offset (get-offset ta))
+      (set ctx (get-pc ta))
+      (local ha)
+      (set ha (destructure-args(ctx h offset)))
+      (set offset (get-offset ha))
+      (set ctx (get-pc ha))
+      (local prog)
+      (set prog (prog (push-this()) ))
+      (set prog (prog (\t 'call \s 'tail \n) ))
+      (set prog (prog (get-prog ta) ))
+      (set prog (prog (pop-this()) ))
+      (set prog (prog (\t 'call \s 'head \n) ))
+      (set prog (prog (get-prog ha) ))
+      (Expr(
+         ( (get-frame ta) (get-frame ha) )
+         prog
+         ( (get-unframe ta) (get-unframe ha) )
+         () () ctx offset
+      ))
+   )))
+   ( _ (
+      (fail (InvalidFunctionParameters e))
+   ))
+));
 
 yield-foreach-atom := λforeach-head foreach-notcons foreach-ignore foreach-apply. (
    #define label for this function
@@ -2207,25 +2046,23 @@ yield-foreach-atom := λforeach-head foreach-notcons foreach-ignore foreach-appl
    #if this is a cons, recurse
    \t 'cmp \s '$0, \s '%r13                  \n
    \t 'je \s foreach-notcons                 \n
-   \t 'cmp \s '$0, \s '%r14                  \n
-   \t 'je \s foreach-notcons                 \n
-   (_push-this())
-   (_head())
+   (push-this())
+   \t 'call \s 'head                         \n
    \t 'call \s foreach-head                  \n
-   (_pop-this())
-   (_push-this())
-   (_tail())
+   (pop-this())
+   (push-this())
+   \t 'call \s 'tail                         \n
    \t 'call \s foreach-head                  \n
-   (_pop-this())
+   (pop-this())
    \t 'ret                                   \n
 
    #if not cons, apply
    foreach-notcons ':                        \n
    \t 'cmp \s '$0, \s '%r12                  \n
    \t 'je \s foreach-ignore                  \n
-   (_push-this())
+   (push-this())
    foreach-apply
-   (_pop-this())
+   (pop-this())
    \t 'ret                                   \n
 
    foreach-ignore ':                         \n
@@ -2239,28 +2076,26 @@ yield-foreach-char := λforeach-data foreach-head foreach-small foreach-end fore
    #if this is a cons, recurse
    \t 'cmp \s '$0, \s %r13                   \n
    \t 'je \s foreach-notcons                 \n
-   \t 'cmp \s '$0, \s '%r14                  \n
-   \t 'je \s foreach-notcons                 \n
-   (_push-this())
-   (_head())
+   (push-this())
+   \t 'call \s 'head                         \n
    \t 'call \s foreach-head                  \n
-   (_pop-this())
-   (_push-this())
-   (_tail())
+   (pop-this())
+   (push-this())
+   \t 'call \s 'tail                         \n
    \t 'call \s foreach-head                  \n
-   (_pop-this())
+   (pop-this())
    \t 'ret                                   \n
 
    #if not cons, apply
    foreach-notcons ':                        \n
-   (_push-this())
+   (push-this())
 
    #if nil, apply and return
    \t 'mov \s '%r12, \s '%r8                 \n
    \t 'cmp \s '$0, \s '%r12                  \n
    \t 'jne \s foreach-small                  \n
    \t 'call \s foreach-apply                 \n
-   (_pop-this())
+   (pop-this())
    \t 'ret                                   \n
 
    #if atom, break into characters and apply
@@ -2281,10 +2116,135 @@ yield-foreach-char := λforeach-data foreach-head foreach-small foreach-end fore
    \t 'jmp \s foreach-small                  \n
 
    foreach-end ':                            \n
-   (_pop-this())
+   (pop-this())
    \t 'ret                                   \n
 
    foreach-apply ':                          \n
    foreach-expr
    \t 'ret                                   \n
 );
+
+yield-patterns := λctx p offset. match p (
+   ()
+   ( Nil (tail(
+      ()
+      (Expr( () (\t 'mov \s '$0, \s %rsi \n) () () () ctx offset ))
+   )))
+   ( (App( prev (App( lhs rhs )) )) (tail(
+      (local e1)
+      (local e2)
+      (local e3)
+      (local prog)
+      (set e1 (yield-patterns(ctx prev offset)))
+      (set e2 (destructure-pattern-lhs((get-pc e1) lhs (get-offset e1))))
+      (set e3 (compile-expr((get-pc e2) rhs (get-offset e2) Used)))
+      (local label_skip)
+      (set label_skip (uuid()))
+      (set prog (prog (get-prog e1)))
+      (set prog (prog (\t 'cmp \s '$0, \s %rsi \n)))
+      (set prog (prog (\t 'jne \s label_skip \n)))
+      (set prog (prog (get-prog e2)))
+      (set prog (prog (\t 'cmp \s '$0, \s %rsi \n)))
+      (set prog (prog (\t 'je \s label_skip \n)))
+      (set prog (prog (get-prog e3)))
+      (set prog (prog (\t 'mov \s '$1, \s %rsi \n)))
+      (set prog (prog (label_skip ': \n)))
+      (Expr( 
+         ((get-frame e1) (get-frame e2) (get-frame e3))
+         prog
+         ((get-unframe e1) (get-unframe e2) (get-unframe e3))
+         ((get-text e1) (get-text e2) (get-text e3))
+         ((get-data e1) (get-data e2) (get-data e3))
+         ctx
+         (get-offset e3)
+      ))
+   )))
+   ( _ (
+      (fail (InvalidPatternsCase p))
+   ))
+);
+
+destructure-pattern-lhs := λctx lhs offset. (tail(
+   (local e1)
+   (local e2)
+   (local prog)
+   (local label_skip)
+   (match lhs (
+      ()
+      ( (Variable '_) (tail(
+         ()
+         (Expr( () (\t 'mov \s '$1, \s %rsi \n) () () () ctx offset ))
+      )))
+      ( (Variable v) (tail(
+         (set e1 (declare-local(ctx v offset)))
+         (Expr(
+            (get-frame e1)
+            ((get-prog e1) \t 'mov \s '$1, \s %rsi \n)
+            (get-unframe e1)
+            (get-text e1)
+            (get-data e1)
+            (get-pc e1)
+            (get-offset e1)
+         ))
+      )))
+      ( (Literal l) (tail(
+         (set e1 (yield-atom(ctx l offset)))
+         (set label_skip (uuid()))
+         (set prog (prog (push-this())))
+         (set prog (prog (\t 'cmp \s '$0, \s %r12 \n)))
+         (set prog (prog (\t 'je \s label_skip \n)))       
+         (set prog (prog (\t 'cmp \s '$0, \s %r13 \n)))
+         (set prog (prog (\t 'jne \s label_skip \n)))       
+         (set prog (prog (\t 'mov \s %r12, \s %rax \n)))
+         (set prog (prog (get-prog e1)))
+         (set prog (prog (\t 'mov \s %r12, \s %rbx \n)))
+         (set prog (prog (\t 'call \s 'streq \n)))
+         (set prog (prog (\t 'cmp \s '$0, \s %r12 \n)))
+         (set prog (prog (\t 'je \s label_skip \n)))
+         (set prog (prog (\t 'mov \s '$1, \s %rsi \n)))
+         (set prog (prog (label_skip ': \n)))
+         (set prog (prog (pop-this())))
+         (Expr( (get-frame e1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
+      )))
+      ( Nil (tail(
+         (set label_skip (uuid()))
+         (set prog (prog (\t 'cmp \s '$0, \s %r12 \n)))
+         (set prog (prog (\t 'jne \s label_skip \n)))
+         (set prog (prog (\t 'cmp \s '$0, \s %r13 \n)))
+         (set prog (prog (\t 'jne \s label_skip \n)))
+         (set prog (prog (\t 'mov \s '$1, \s %rsi \n)))
+         (set prog (prog (label_skip ': \n)))
+         (Expr( () prog () () () ctx offset ))
+      )))
+      ( (App( l r )) (tail(
+         (set e1 (destructure-pattern-lhs(ctx l offset)))
+         (set e2 (destructure-pattern-lhs((get-pc e1) r (get-offset e1))))
+         (set label_skip (uuid()))
+         (set prog (prog (\t 'mov \s '$0, \s %rsi \n)))
+         (set prog (prog (push-this())))
+         (set prog (prog (\t 'cmp \s '$0, \s %r13 \n)))
+         (set prog (prog (\t 'je \s label_skip \n)))
+         (set prog (prog (inline-head())))
+         (set prog (prog (get-prog e1)))
+         (set prog (prog (pop-this())))
+         (set prog (prog (push-this())))
+         (set prog (prog (\t 'cmp \s '$0, \s %rsi \n)))
+         (set prog (prog (\t 'je \s label_skip \n)))
+         (set prog (prog (\t 'mov \s '$0, \s %rsi \n)))
+         (set prog (prog (inline-tail())))
+         (set prog (prog (get-prog e2)))
+         (set prog (prog (label_skip ': \n)))
+         (set prog (prog (pop-this())))
+         (Expr( 
+            ((get-frame e1) (get-frame e2))
+            prog
+            ((get-unframe e1) (get-unframe e2))
+            ((get-text e1) (get-text e2))
+            ((get-data e1) (get-data e2))
+            (get-pc e2)
+            (get-offset e2)
+         ))
+      )))
+      (_ (fail (UnexpectedPattern lhs)))
+   ))
+));
