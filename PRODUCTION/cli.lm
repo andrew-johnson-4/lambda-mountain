@@ -1832,16 +1832,6 @@ pop-this := λ.(
    \t 'pop \s '%r12                       \n
 );
 
-shadow-this := λ.(
-   \t 'mov \s '%r12, \s '%r8              \n
-   \t 'mov \s '%r13, \s '%r9              \n
-);
-
-unshadow-this := λ.(
-   \t 'mov \s '%r8, \s '%r12              \n
-   \t 'mov \s '%r9, \s '%r13              \n
-);
-
 yield-nil := λ. (
    \t 'mov \s '$0, \s '%r12               \n
    \t 'mov \s '$0, \s '%r13               \n
@@ -2023,10 +2013,10 @@ destructure-args := λctx e offset. (match e (
       (set offset (get-offset ha))
       (set ctx (get-pc ha))
       (local prog)
-      (set prog (prog (shadow-this()) ))
+      (set prog (prog (push-this()) ))
       (set prog (prog (\t 'call \s 'tail \n) ))
       (set prog (prog (get-prog ta) ))
-      (set prog (prog (unshadow-this()) ))
+      (set prog (prog (pop-this()) ))
       (set prog (prog (\t 'call \s 'head \n) ))
       (set prog (prog (get-prog ha) ))
       (Expr(
