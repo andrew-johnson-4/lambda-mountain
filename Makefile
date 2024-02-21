@@ -1,9 +1,9 @@
 
 test-prod: prod
-	./production -o pp.s PRODUCTION/cli.lm
+	./production -o pp.s tests/lm/match13.lm
 	as -o pp.o pp.s
 	ld -o pp   pp.o
-	./pp --typecheck tests/lm/argv.lm
+	./pp
 
 test:
 	cargo test testsuite

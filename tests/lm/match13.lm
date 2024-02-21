@@ -1,5 +1,32 @@
 
-main := print-s (match (A(1 2)) (
-   ()
-   ( (A(a b)) (a b) )
+show-ascript := λp. (tail(
+   (local term)
+   (set term (match p (
+      ()
+      ( () () )
+      ( Nil p )
+      ( (Variable _) p )
+      ( (Literal _) p )
+      ( (App( f x )) (
+         (App( (show-ascript f) (show-ascript x) ))
+      ))
+      ( (Lambda( lhs rhs )) (
+         (Lambda( (show-ascript lhs) (show-ascript rhs) ))
+      ))
+      ( (prog (GExpr( g ))) (
+         ( (show-ascript prog) (GExpr( show-ascript g )) )
+      ))
+      ( (prog (Global( n v ))) (
+         ( (show-ascript prog) (Global( n (show-ascript v) )) )
+      ))
+      ( (prog (Type( tn td ))) (
+         ( (show-ascript prog) (Type( tn td )) )
+      ))
+      ( unknown (
+         (UnknownTerm unknown)
+      ))
+   )))
+    term
 ));
+
+main := print-s (show-ascript (() (Global ('main (App ((Variable 'print-s) (Variable 'argv)))))));
