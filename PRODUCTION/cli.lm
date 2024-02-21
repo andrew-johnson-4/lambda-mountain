@@ -241,6 +241,9 @@ typeof-lhs := λlhs. (match lhs (
    ( (App( ps (Variable v) )) (
       (Cons( (typeof-lhs ps) S ))
    ))
+   ( Nil (
+      Nil
+   ))
    ( u (
       fail (UnknownLhs u)
    ))
@@ -545,7 +548,7 @@ parse-one-expression := λtoks. (tail(
          (set remainder (tail pme))
       ))
       ( ( \\ (\' r) ) (
-         (set expr (Lit \'))
+         (set expr (Literal \'))
          (set remainder r)
       ))
       ( ( \' (i r) ) (
@@ -1047,6 +1050,15 @@ compile-expr := λctx e offset used. (tail(
          (set prog (prog (label_while_end ': \n)))
          (set tail_safe True)
          (Expr( ((get-frame e1) (get-frame e2)) prog ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
+      )))
+      ( (App( (Variable 'exit) (Literal _) )) (tail(
+         (set tail_safe True)
+         (set prog (
+            \t 'mov \s '$60, \s '%rax          \n
+            \t 'mov \s '$1 , \s '%rdi          \n
+            \t 'syscall                        \n
+         ))
+         (Expr( () prog () () () ctx offset ))
       )))
       ( (App( (App( (App( (Variable 'if) c )) t )) f )) (tail(
          (set e1 (compile-expr(ctx c offset Used)))
