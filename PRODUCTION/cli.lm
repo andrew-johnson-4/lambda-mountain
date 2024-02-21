@@ -114,26 +114,28 @@ ascript := λt tt. (
 
 show-ascript := λp. (tail(
    (local term)
-   (set term p)
-#   (print-s (Ascript p))
-#   (print-s (Ascript p))
-#   (set term (match p (
-#      ()
-#      ( Nil p )
-#      ( (Variable _) p )
-#      ( (Literal _) p )
-#      ( (App( f x )) (
-#         (App( (show-ascript f) (show-ascript x) ))
-#      ))
-#      ( (Lambda( lhs rhs )) (
-#         (App( (show-ascript lhs) (show-ascript rhs) ))
-#      ))
-#      ( (prog (GExpr( g ))) (
-#         ( (show-ascript prog) (GExpr( show-ascript g )) )
-#      ))
-#      ( (prog (Global( n v ))) (
-#         ( (show-ascript prog) (Global( n (show-ascript v) )) )
-#      ))
+   (print-s (Ascript p))
+   (set term (match p (
+      ()
+      ( () () )
+      ( Nil p )
+      ( (Variable _) p )
+      ( (Literal _) p )
+      ( (App( f x )) (
+         (App( (show-ascript f) (show-ascript x) ))
+      ))
+      ( (Lambda( lhs rhs )) (
+         (Lambda( (show-ascript lhs) (show-ascript rhs) ))
+      ))
+      ( (prog (GExpr( g ))) (
+         ( (show-ascript prog) (GExpr( show-ascript g )) )
+      ))
+      ( (prog (Global( n v ))) (
+         ( (show-ascript prog) (Global( n (show-ascript v) )) )
+      ))
+      (t t)
+   )))
+
 #      ( (prog (Type( tn td ))) (
 #         ( (show-ascript prog) (Type( tn td )) )
 #      ))
