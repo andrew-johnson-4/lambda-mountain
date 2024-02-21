@@ -113,6 +113,7 @@ ascript := λt tt. (
 );
 
 show-ascript := λp. (tail(
+   (print-s (ShowAscript p))
    (local term)
    (set term (match p (
       ()
@@ -132,16 +133,14 @@ show-ascript := λp. (tail(
       ( (prog (Global( n v ))) (
          ( (show-ascript prog) (Global( n (show-ascript v) )) )
       ))
-      (t t)
+      ( (prog (Type( tn td ))) (
+         ( (show-ascript prog) (Type( tn td )) )
+      ))
+      ( unknown (
+         fail (UnknownTerm unknown)
+      ))
    )))
 
-#      ( (prog (Type( tn td ))) (
-#         ( (show-ascript prog) (Type( tn td )) )
-#      ))
-#      ( unknown (
-#         fail (UnknownTerm unknown)
-#      ))
-#   )))
 #   (local type)
 #   (set type (lookup-type p))
 #   (if type (
@@ -1026,13 +1025,11 @@ compile-expr := λctx e offset used. (tail(
       )))
       ( (App ((Variable 'local) (Variable fname))) (tail(
          (set e1 (declare-local(ctx fname offset)))
-         (set tail_safe True)
          (Expr( (get-frame e1) ((yield-nil()) (get-prog e1)) (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
       )))
       ( (App( (App( (Variable 'set) (Variable vname) )) x )) (tail(
          (set e1 (compile-expr(ctx x offset Used)))
          (set prog ((get-prog e1) (set-local(ctx vname))))
-         (set tail_safe True)
          (Expr( (get-frame 1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
       )))
       ( (App( (App( (Variable 'while) c )) d )) (tail(

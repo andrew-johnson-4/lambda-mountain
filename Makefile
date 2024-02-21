@@ -1,9 +1,9 @@
 
 test-prod: prod
-	./production tests/lm/dump_iis_neg2.lm
-	as -o tmp.o tmp.s
-	ld -o tmp   tmp.o
-	./tmp
+	./production -o pp.s PRODUCTION/cli.lm
+	as -o pp.o pp.s
+	ld -o pp   pp.o
+	./pp --typecheck tests/lm/argv.lm
 
 test:
 	cargo test testsuite

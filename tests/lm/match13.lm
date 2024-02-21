@@ -1,0 +1,5 @@
+
+main := print-s (match (A(1 2)) (
+   ()
+   ( (A(a b)) (a b) )
+));
