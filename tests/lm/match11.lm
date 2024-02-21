@@ -1,0 +1,28 @@
+
+main := (print-s(
+   (match (() (Global( V S ))) (
+      ()
+      ( () () )
+      ( Nil Nil )
+      ( (Variable v2) (Variable v2) )
+      ( (Literal l2) (Literal l2) )
+      ( (App( f x )) (
+         (App( f x ))
+      ))
+      ( (Lambda( lhs rhs )) (
+         (App( lhs rhs ))
+      ))
+      ( (prog (GExpr( g ))) (
+         ( prog (GExpr( g )) )
+      ))
+      ( (prog (Global( n v ))) (
+         ( prog (Global( n v )) )
+      ))
+      ( (prog (Type( tn td ))) (
+         ( prog (Type( tn td )) )
+      ))
+      ( unknown (
+         fail (UnknownTerm unknown)
+      ))
+   ))
+));

@@ -1,4 +1,10 @@
 
+test-prod: prod
+	./production -o test.s PRODUCTION/cli.lm
+	as -o test.o test.s
+	ld -o test   test.o
+	./test --typecheck tests/lm/match11.lm
+
 test:
 	cargo test testsuite
 
