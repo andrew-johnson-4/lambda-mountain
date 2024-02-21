@@ -140,150 +140,18 @@ uuid_0000000000000004:
 	mov $1, %rsi
 uuid_0000000000000006:
 	cmp $0, %rsi
-	jne uuid_000000000000000d
-	mov $0, %rsi
-	push %r12
-	push %r13
-	cmp $0, %r13
-	je uuid_000000000000000b
-	mov 8(%r12), %r13
-	mov 0(%r12), %r12
+	jne uuid_0000000000000008
 	mov %r12, -72(%rbp)
 	mov %r13, -80(%rbp)
 	mov $1, %rsi
-	pop %r13
-	pop %r12
-	push %r12
-	push %r13
 	cmp $0, %rsi
-	je uuid_000000000000000b
-	mov $0, %rsi
-	mov 0(%r13), %r12
-	mov 8(%r13), %r13
-	mov $0, %rsi
-	push %r12
-	push %r13
-	cmp $0, %r13
-	je uuid_000000000000000a
-	mov 8(%r12), %r13
-	mov 0(%r12), %r12
-	push %r12
-	push %r13
-	cmp $0, %r12
 	je uuid_0000000000000008
-	cmp $0, %r13
-	jne uuid_0000000000000008
-	mov %r12, %rax
 	mov $uuid_0000000000000007, %r12
 	mov $0, %r13
-	mov %r12, %rbx
-	call streq
-	cmp $0, %r12
-	je uuid_0000000000000008
-	mov $1, %rsi
-uuid_0000000000000008:
-	pop %r13
-	pop %r12
-	pop %r13
-	pop %r12
 	push %r12
 	push %r13
-	cmp $0, %rsi
-	je uuid_000000000000000a
-	mov $0, %rsi
-	mov 0(%r13), %r12
-	mov 8(%r13), %r13
-	mov $0, %rsi
-	push %r12
-	push %r13
-	cmp $0, %r13
-	je uuid_0000000000000009
-	mov 8(%r12), %r13
-	mov 0(%r12), %r12
-	mov %r12, -88(%rbp)
-	mov %r13, -96(%rbp)
-	mov $1, %rsi
-	pop %r13
-	pop %r12
-	push %r12
-	push %r13
-	cmp $0, %rsi
-	je uuid_0000000000000009
-	mov $0, %rsi
-	mov 0(%r13), %r12
-	mov 8(%r13), %r13
-	mov %r12, -104(%rbp)
-	mov %r13, -112(%rbp)
-	mov $1, %rsi
-uuid_0000000000000009:
-	pop %r13
-	pop %r12
-uuid_000000000000000a:
-	pop %r13
-	pop %r12
-uuid_000000000000000b:
-	pop %r13
-	pop %r12
-	cmp $0, %rsi
-	je uuid_000000000000000d
 	mov -72(%rbp),%r12
 	mov -80(%rbp),%r13
-	call show_ascript
-	push %r12
-	push %r13
-	mov $uuid_000000000000000c, %r12
-	mov $0, %r13
-	push %r12
-	push %r13
-	mov -88(%rbp),%r12
-	mov -96(%rbp),%r13
-	push %r12
-	push %r13
-	mov -104(%rbp),%r12
-	mov -112(%rbp),%r13
-	call show_ascript
-	mov $s_section, %r8
-	mov $s_counter, %r11
-	mov 0(%r11), %r10
-	add %r10, %r8
-	add $16, %r10
-	mov %r10, 0(%r11)
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	mov %r8, %r9
-	pop %r13
-	pop %r12
-	mov $s_section, %r8
-	mov $s_counter, %r11
-	mov 0(%r11), %r10
-	add %r10, %r8
-	add $16, %r10
-	mov %r10, 0(%r11)
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	mov %r8, %r12
-	mov %r9, %r13
-	mov $s_section, %r8
-	mov $s_counter, %r11
-	mov 0(%r11), %r10
-	add %r10, %r8
-	add $16, %r10
-	mov %r10, 0(%r11)
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	mov %r8, %r9
-	pop %r13
-	pop %r12
-	mov $s_section, %r8
-	mov $s_counter, %r11
-	mov 0(%r11), %r10
-	add %r10, %r8
-	add $16, %r10
-	mov %r10, 0(%r11)
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	mov %r8, %r12
-	mov %r9, %r13
 	mov $s_section, %r8
 	mov $s_counter, %r11
 	mov 0(%r11), %r10
@@ -306,48 +174,12 @@ uuid_000000000000000b:
 	mov %r8, %r12
 	mov %r9, %r13
 	mov $1, %rsi
-uuid_000000000000000d:
+uuid_0000000000000008:
 	cmp $0, %rsi
-	jne uuid_000000000000000f
-	mov %r12, -120(%rbp)
-	mov %r13, -128(%rbp)
-	mov $1, %rsi
-	cmp $0, %rsi
-	je uuid_000000000000000f
-	mov $uuid_000000000000000e, %r12
-	mov $0, %r13
-	push %r12
-	push %r13
-	mov -120(%rbp),%r12
-	mov -128(%rbp),%r13
-	mov $s_section, %r8
-	mov $s_counter, %r11
-	mov 0(%r11), %r10
-	add %r10, %r8
-	add $16, %r10
-	mov %r10, 0(%r11)
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	mov %r8, %r9
-	pop %r13
-	pop %r12
-	mov $s_section, %r8
-	mov $s_counter, %r11
-	mov 0(%r11), %r10
-	add %r10, %r8
-	add $16, %r10
-	mov %r10, 0(%r11)
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	mov %r8, %r12
-	mov %r9, %r13
-	mov $1, %rsi
-uuid_000000000000000f:
-	cmp $0, %rsi
-	jne uuid_0000000000000010
+	jne uuid_0000000000000009
 	mov $0, %r12
 	mov $0, %r13
-uuid_0000000000000010:
+uuid_0000000000000009:
 	mov %r12, -24(%rbp)
 	mov %r13, -32(%rbp)
 	mov -24(%rbp),%r12
@@ -395,23 +227,23 @@ before_main_end:
 	mov $0,%r13
 	push %r12
 	push %r13
-	mov $uuid_0000000000000011, %r12
+	mov $uuid_000000000000000a, %r12
 	mov $0, %r13
 	push %r12
 	push %r13
-	mov $uuid_0000000000000012, %r12
+	mov $uuid_000000000000000b, %r12
 	mov $0, %r13
 	push %r12
 	push %r13
-	mov $uuid_0000000000000013, %r12
+	mov $uuid_000000000000000c, %r12
 	mov $0, %r13
 	push %r12
 	push %r13
-	mov $uuid_0000000000000014, %r12
+	mov $uuid_000000000000000d, %r12
 	mov $0, %r13
 	push %r12
 	push %r13
-	mov $uuid_0000000000000015, %r12
+	mov $uuid_000000000000000e, %r12
 	mov $0, %r13
 	mov $s_section, %r8
 	mov $s_counter, %r11
@@ -436,11 +268,11 @@ before_main_end:
 	mov %r9, %r13
 	push %r12
 	push %r13
-	mov $uuid_0000000000000016, %r12
+	mov $uuid_000000000000000f, %r12
 	mov $0, %r13
 	push %r12
 	push %r13
-	mov $uuid_0000000000000017, %r12
+	mov $uuid_0000000000000010, %r12
 	mov $0, %r13
 	mov $s_section, %r8
 	mov $s_counter, %r11
@@ -1029,32 +861,26 @@ uuid_0000000000000005:
 	.ascii "App"
 	.zero 1
 uuid_0000000000000007:
-	.ascii "Global"
-	.zero 1
-uuid_000000000000000c:
-	.ascii "Global"
-	.zero 1
-uuid_000000000000000e:
 	.ascii "UnknownTerm"
 	.zero 1
-uuid_0000000000000011:
+uuid_000000000000000a:
 	.ascii "Global"
 	.zero 1
-uuid_0000000000000012:
+uuid_000000000000000b:
 	.ascii "main"
 	.zero 1
-uuid_0000000000000013:
+uuid_000000000000000c:
 	.ascii "App"
 	.zero 1
-uuid_0000000000000014:
+uuid_000000000000000d:
 	.ascii "Variable"
 	.zero 1
-uuid_0000000000000015:
+uuid_000000000000000e:
 	.ascii "print-s"
 	.zero 1
-uuid_0000000000000016:
+uuid_000000000000000f:
 	.ascii "Variable"
 	.zero 1
-uuid_0000000000000017:
+uuid_0000000000000010:
 	.ascii "argv"
 	.zero 1
