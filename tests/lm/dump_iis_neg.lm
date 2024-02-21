@@ -1,6 +1,6 @@
 
 main := (
-   print-s (dump-i(is-neg(
+   print-s (is-neg(
       (inc (inc () ))
-   )))
+   ))
 );
