@@ -1,4 +1,9 @@
 
+test-dbg:
+	as -o pp.o pp.s
+	ld -o pp   pp.o
+	./pp
+
 test-prod: prod
 	./production -o pp.s tests/lm/match13.lm
 	as -o pp.o pp.s
