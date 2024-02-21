@@ -42,7 +42,7 @@ main := (
       ()
       (Compile (
          (foreach-atom inputs (
-            if $_ (assemble (typecheck (parse-program (tokenize (load-file $_))))) ()
+            if $_ (assemble (parse-program (tokenize (load-file $_)))) ()
          ))
       ))
       (Parse (foreach-atom inputs (

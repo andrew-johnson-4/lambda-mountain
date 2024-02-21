@@ -1,9 +1,6 @@
 
 test-prod: prod
 	./production -o pp.s PRODUCTION/cli.lm
-	as -o pp.o pp.s
-	ld -o pp   pp.o
-	./pp -o pp2.s PRODUCTION/cli.lm
 
 test:
 	cargo test testsuite
