@@ -1526,9 +1526,17 @@ stdlib-functions := λ. (
    \t 'ret                                \n
 
    'is:                                   \n
-   \t 'cmp \s '%r8, \s '%r12              \n
+   \t 'cmp \s '$0, \s '%r12               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'cmp \s '$0, \s '%r13               \n
+   \t 'je \s 'return_nil                  \n
+   \t 'mov \s '0 \[ '%r12 \] , \s '%r8    \n
+   \t 'mov \s '0 \[ '%r13 \] , \s '%r9    \n
+   \t 'cmp \s '%r8, \s '%r9               \n
    \t 'jne \s 'return_nil                 \n
-   \t 'cmp \s '%r9, \s '%r13              \n
+   \t 'mov \s '8 \[ '%r12 \] , \s '%r8    \n
+   \t 'mov \s '8 \[ '%r13 \] , \s '%r9    \n
+   \t 'cmp \s '%r8, \s '%r9               \n
    \t 'jne \s 'return_nil                 \n
    \t 'mov \s '$true, \s '%r12            \n
    \t 'mov \s '$0, \s '%r13               \n
@@ -1609,7 +1617,7 @@ stdlib-functions := λ. (
    \t 'jmp \s 'dump_i_negative            \n
    'dump_i_positive:                      \n
    \t 'call \s 'dump_i_digits             \n
-   \t 'movb \s '$32, \s '0 \[ %r11 \]     \n
+   \t 'movb \s '$48, \s '0 \[ %r11 \]     \n
    \t 'ret                                \n
    'dump_i_negative:                      \n
    \t 'neg \s '%r8                        \n
