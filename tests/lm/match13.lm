@@ -4,7 +4,6 @@ show-ascript := λp. (tail(
    (local term)
    (set term (match p (
       ()
-      ( () () )
       ( (App( f x )) (
          (App( (show-ascript f) (show-ascript x) ))
       ))
