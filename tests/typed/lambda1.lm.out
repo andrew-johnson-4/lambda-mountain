@@ -1,1 +1,1 @@
-(() (Global (f (: ((App ((App ((Variable x) (Variable y))) (: ((Variable x) S)))) (-> ((Cons (S S)) S)))))))
+(() (Global (f (: ((Lambda ((App ((Variable x) (Variable y))) (: ((Variable x) S)))) (-> ((Cons (S S)) S)))))))

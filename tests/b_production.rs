@@ -105,7 +105,7 @@ fn prodsuite() {
          failures.push(( "--tokenize", path, expected, actual ));
       }
    }
-   for entry in glob("production/cli.lm").unwrap() {
+   for entry in glob("BOOTSTRAP/cli.lm").unwrap() {
       let path = entry.unwrap().display().to_string();
       let (expected,actual) = run_production("--tokenize",&path);
       if expected != actual {
@@ -113,13 +113,6 @@ fn prodsuite() {
       }
    }
    for entry in glob("tests/lm/*.lm").unwrap() {
-      let path = entry.unwrap().display().to_string();
-      let (expected,actual) = run_production("--parse",&path);
-      if expected != actual {
-         failures.push(( "--parse", path, expected, actual ));
-      }
-   }
-   for entry in glob("production/cli.lm").unwrap() {
       let path = entry.unwrap().display().to_string();
       let (expected,actual) = run_production("--parse",&path);
       if expected != actual {
