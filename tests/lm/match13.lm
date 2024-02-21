@@ -1,6 +1,6 @@
 
+
 show-ascript := λp. (tail(
-   (print-s (ShowAscript p))
    (local term)
    (set term (match p (
       ()

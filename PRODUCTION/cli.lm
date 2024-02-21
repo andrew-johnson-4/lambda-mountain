@@ -2129,7 +2129,7 @@ yield-patterns := λctx p offset. match p (
       (local e3)
       (local prog)
       (set e1 (yield-patterns(ctx prev offset)))
-      (set e2 (destructure-pattern-lhs(ctx lhs (get-offset e1))))
+      (set e2 (destructure-pattern-lhs((get-pc e1) lhs (get-offset e1))))
       (set e3 (compile-expr((get-pc e2) rhs (get-offset e2) Used)))
       (local label_skip)
       (set label_skip (uuid()))
