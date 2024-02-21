@@ -907,6 +907,13 @@ get-maybe-function := λctx v. (tail(
    (while ctx (
       (match (tail ctx) (
          ()
+         ( (Local(l lrefer)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (Variable l))
+               ) ()
+            )
+         ))
          ( (GlobalFunction name) (
             if r () (
                if (eq(name v)) (
