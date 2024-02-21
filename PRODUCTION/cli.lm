@@ -140,18 +140,17 @@ show-ascript := λp. (tail(
       ))
    )))
 
-#   (local type)
-#   (set type (lookup-type p))
-#   (if type (
-#      (if (eq( type ? )) (
-#         term
-#      ) ( 
-#         (:( term type ))
-#      ))
-#   ) (
-#      term
-#   ))
-    term
+   (local type)
+   (set type (lookup-type p))
+   (if type (
+      (if (eq( type ? )) (
+         term
+      ) ( 
+         (:( term type ))
+      ))
+   ) (
+      term
+   ))
 ));
 
 global-context := ();

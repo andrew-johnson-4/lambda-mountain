@@ -1,14 +1,9 @@
 
-test-dbg:
-	as -o pp.o pp.s
-	ld -o pp   pp.o
-	./pp
-
 test-prod: prod
-	./production -o pp.s tests/lm/match13.lm
+	./production -o pp.s PRODUCTION/cli.lm
 	as -o pp.o pp.s
 	ld -o pp   pp.o
-	./pp
+	./pp -o pp2.s PRODUCTION/cli.lm
 
 test:
 	cargo test testsuite
