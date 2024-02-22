@@ -15,6 +15,8 @@ $$abstraction \quad \frac{\Gamma \vdash a:A \quad \Gamma \vdash b:B \quad \Gamma
 
 $$application \quad \frac{\Gamma \vdash f:(A \to B) + (C \to D) + (X \to Y) \quad \Gamma \vdash x:A + X \quad f(x)}{\Gamma \vdash f(x):B + Y}$$
 
+### Example Code
+
 Code is modelled after Lambda Calculus, so instructions look like this.
 
 ```
