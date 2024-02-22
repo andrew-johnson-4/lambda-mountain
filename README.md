@@ -15,5 +15,19 @@ $$abstraction \quad \frac{\Gamma \vdash a:A \quad \Gamma \vdash b:B \quad \Gamma
 
 $$application \quad \frac{\Gamma \vdash f:(A \to B) + (C \to D) + (X \to Y) \quad \Gamma \vdash x:A + X \quad f(x)}{\Gamma \vdash f(x):B + Y}$$
 
+Code is modelled after Lambda Calculus, so instructions look like this.
+
+```
+(mov 1 rax)
+(add rax rbx)
+```
+
+Instructions are not magic, they are defined as functions.
+
+```
+mov := λ(: src Imm64)(: tgt Reg64). (.text ..encode binary data..);
+mov := λ(: src Reg64)(: tgt Reg64). (.text ..encode binary data..);
+```
+
 <a href="https://github.com/andrew-johnson-4/-/wiki#mascot"> <img src="https://raw.githubusercontent.com/andrew-johnson-4/-/main/DOBY.jpg" height=200 title="Doby being a prototypical ass."> </a>
 
