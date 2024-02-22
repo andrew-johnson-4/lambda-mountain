@@ -31,5 +31,11 @@ mov := λ(: src Imm64)(: tgt Reg64). (.text ..encode binary data..);
 mov := λ(: src Reg64)(: tgt Reg64). (.text ..encode binary data..);
 ```
 
+Context such as stack frame, register allocation, etc. is maintained in a Monadic style with implicit variables to each function.
+
+```
+tinker := λ(implicit ctx FunctionContext)(: x x). (.. this function apparently wants to do something with the implicit context ..);
+```
+
 <a href="https://github.com/andrew-johnson-4/-/wiki#mascot"> <img src="https://raw.githubusercontent.com/andrew-johnson-4/-/main/DOBY.jpg" height=200 title="Doby being a prototypical ass."> </a>
 
