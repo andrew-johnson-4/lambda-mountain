@@ -14,8 +14,8 @@ There is also a [Bootstrap Book](https://github.com/andrew-johnson-4/BootstrapBo
 If we have several overloaded functions, we get to choose the best fit for any particular application.
 
 ```
-f := (: x X). x;
-f := (: y Y). y;
+f := λ(: x X). x;
+f := λ(: y Y). y;
 
 f (: x X)
 ```
@@ -25,8 +25,8 @@ In this example the function application does not “fit” the application that
 ```
 type X implies Y;
 
-f := (: x X). x;
-f := (: y Y). y;
+f := λ(: x X). x;
+f := λ(: y Y). y;
 
 f (: x X)
 ```
