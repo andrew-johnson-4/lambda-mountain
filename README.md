@@ -11,7 +11,7 @@ There is also a [Bootstrap Book](https://github.com/andrew-johnson-4/BootstrapBo
 
 ### What is Ad-Hoc Specialization?
 
-If we have several overloaded functions, then specialization lets us choose the best fit for any particular application.
+If we have several overloaded functions then specialization lets us choose the best fit for any particular application.
 
 ```
 f := λ(: x X). x;
