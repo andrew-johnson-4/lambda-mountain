@@ -35,7 +35,7 @@ Now both candidate functions “fit”, however X is a narrower type than Y. All
 
 ### How does Ad-Hoc Specialization Work?
 
-The language here is based on [System F](https://en.wikipedia.org/wiki/System_F) with the following inference rules added.
+The language here is based on [System F-sub](https://en.wikipedia.org/wiki/System_F) with the following inference rules added.
 
 $$abstraction \quad \frac{\Gamma \vdash a:A \quad \Gamma \vdash b:B \quad \Gamma \vdash x:X \quad \Gamma \vdash y:Y \quad λ⟨a.b⟩⟨x.y⟩}{\Gamma \vdash λ⟨a.b⟩⟨x.y⟩:(A \to B) + (X \to Y)}$$
 
