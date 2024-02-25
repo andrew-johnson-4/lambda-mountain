@@ -41,7 +41,9 @@ include-argv-hook := λ. if argv-main-hook () (set argv-main-hook (argv-main-hoo
 sbrk := λsize . (tail(
    (local extend)
    (set extend (uuid()))
-   (\t 'mov \s '$__current_break, \s '%rdi      \n
+   (\t 'push \s '%rdi                           \n
+    \t 'push \s '%rax                           \n
+    \t 'mov \s '$__current_break, \s '%rdi      \n
     \t 'mov \s '0 \[ '%rdi \] , \s '%r8         \n
     \t 'cmp \s '$0, \s '%r8                     \n
     \t 'jne \s extend                           \n
@@ -53,6 +55,8 @@ sbrk := λsize . (tail(
     \t 'syscall                                 \n
     \t 'mov \s '$__current_break, \s '%rdi      \n
     \t 'mov \s '%r8, \s '0 \[ '%rdi \]          \n
+    \t 'pop \s '%rax                            \n
+    \t 'pop \s '%rdi                            \n
     \t 'sub \s '$ size , \s '%r8                \n)
 ));
 
