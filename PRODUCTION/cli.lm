@@ -1,7 +1,36 @@
 
 config := ();
 parsed-program := ();
+global-text-section := ();
 global-data-section := ();
+
+argv-main-hook := ();
+include-argv-hook := λ. if argv-main-hook () (set argv-main-hook (argv-main-hook (
+   \t 'pop \s '%rax                    \n # put argc in %rax
+   \t 'mov \s '$argv, \s '%r9          \n
+   \t 'movq \s '$0, \s '0 \[ '%r9 \]   \n
+   \t 'movq \s '$0, \s '8 \[ '%r9 \]   \n
+
+   'before_main_argv:                  \n
+   \t 'cmp \s '$0, \s '%rax            \n
+   \t 'je \s 'before_main_end          \n
+
+   \t 'pop \s '%r12                    \n #this = argv[i]
+   \t 'mov \s '$0, \s '%r13            \n
+   (close())                              #r8 is argv[i]
+
+   \t 'mov \s '%r8, \s '0 \[ '%r9 \]   \n #set t.head = argv[i]
+   \t 'mov \s '$0, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13            \n
+   (close())
+   \t 'mov \s '%r8, \s '8 \[ '%r9 \]   \n #set t.tail = ()
+   \t 'mov \s '%r8, \s '%r9            \n #set t = t.tail
+
+   \t 'dec \s '%rax                    \n #dec argc
+   \t 'jmp \s 'before_main_argv        \n
+
+   'before_main_end:                   \n
+)));
 
 #import STDLIB/default-atom-allocator;
 allocate-cons-s-section := ();
@@ -17,12 +46,12 @@ allocate-cons := λ . (tail(
          \t '.zero \s '536870912    \n
       )))
    ))
-   (\t 'mov \s allocate-cons-s-section ', \s '%r8           \n # %r8 now points to root s
-    \t 'mov \s allocate-cons-s-counter ', \s '%r11          \n # %r11 now points to s counter
-    \t 'mov \s '0 \[ '%r11 \] , \s '%r10                    \n # %r10 now hold value of cons counter
-    \t 'add \s '%r10, \s '%r8                               \n # %r8 now points to top free cons
-    \t 'add \s '$16, \s '%r10                               \n # increment s counter
-    \t 'mov \s '%r10, \s '0 \[ %r11 \])                     \n # overwrite new s counter
+   (\t 'mov \s '$ allocate-cons-s-section ', \s '%r8           \n # %r8 now points to root s
+    \t 'mov \s '$ allocate-cons-s-counter ', \s '%r11          \n # %r11 now points to s counter
+    \t 'mov \s '0 \[ '%r11 \] , \s '%r10                       \n # %r10 now hold value of cons counter
+    \t 'add \s '%r10, \s '%r8                                  \n # %r8 now points to top free cons
+    \t 'add \s '$16, \s '%r10                                  \n # increment s counter
+    \t 'mov \s '%r10, \s '0 \[ %r11 \])                        \n # overwrite new s counter
 ));
 
 #import STDLIB/default-cons-allocator;
@@ -1038,6 +1067,7 @@ compile-expr := λctx e offset used . (tail(
          (Expr( () () () () () ctx offset ))
       )))
       ( (Variable 'argv) (tail(
+         (include-argv-hook())
          (set prog (prog ( \t 'mov \s '$argv, \s '%r8 \n )))
          (set prog (prog ( \t 'mov \s '0 \[ '%r8 \] , '%r12 \n )))
          (set prog (prog ( \t 'mov \s '8 \[ '%r8 \] , '%r13 \n )))
@@ -1251,46 +1281,46 @@ compile-append := λoutput_e gctx e . (tail(
 ));
 
 data-header := λ .(
-  '.data                                 \n
+  '.data                                  \n
   'load_file_bsz:                         \n
-  \t '.quad \s '1024                     \n
+  \t '.quad \s '1024                      \n
   'load_file_buf:                         \n
-  \t '.zero \s '1024                     \n
+  \t '.zero \s '1024                      \n
   'argv:                                  \n
-  \t '.zero \s '16                       \n
+  \t '.zero \s '16                        \n
   'a_counter:                             \n
-  \t '.zero \s '8                        \n
+  \t '.zero \s '8                         \n
   'a_section:                             \n
-  \t '.zero \s '536870912                \n
+  \t '.zero \s '536870912                 \n
   'nil_literal:                           \n
-  \t '.ascii \s " \[ \] "                \n
-  \t '.zero \s 1                         \n
+  \t '.ascii \s " \[ \] "                 \n
+  \t '.zero \s 1                          \n
   'newline:                               \n
-  \t '.ascii \s " \\n "                  \n
+  \t '.ascii \s " \\n "                   \n
   'left_paren:                            \n
-  \t '.ascii \s " \[ "                   \n
+  \t '.ascii \s " \[ "                    \n
   'right_paren:                           \n
-  \t '.ascii \s " \] "                   \n
+  \t '.ascii \s " \] "                    \n
   'space:                                 \n
-  \t '.ascii \s " \s "                   \n
+  \t '.ascii \s " \s "                    \n
   'true:                                  \n
-  \t '.ascii \s "True"                   \n
-  \t '.zero \s '1                        \n
+  \t '.ascii \s "True"                    \n
+  \t '.zero \s '1                         \n
   '__digit:                               \n
-  \t '.zero \s '2                        \n
+  \t '.zero \s '2                         \n
   'hex_buffer:                            \n
-  \t '.ascii \s "0123456789abcdef"       \n
+  \t '.ascii \s "0123456789abcdef"        \n
   '__dump_i:                              \n
-  \t '.ascii \s '"0000000000000000"      \n
-  \t '.zero \s '1                        \n
+  \t '.ascii \s '"0000000000000000"       \n
+  \t '.zero \s '1                         \n
   'err_fopen:                             \n
   \t '.ascii \s '"Could \s 'not \s 'open \s 'file."  \n
-  \t '.zero \s '1                        \n
+  \t '.zero \s '1                         \n
 );
 
 program-header := λ .(
-   '.global \s '_start                   \n
-   '.text                                \n
+   '.global \s '_start                    \n
+   '.text                                 \n
    '_start:                               \n
    \t 'jmp \s 'main                       \n
 );
@@ -1298,11 +1328,11 @@ program-header := λ .(
 exit-cleanup := λ . (system-call( '$60 '$0 '$0 '$0 ));
 
 system-call := λrax rdi rsi rdx . (
-   \t 'mov \s rax , \s '%rax           \n
-   \t 'mov \s rdi , \s '%rdi           \n
-   \t 'mov \s rsi , \s '%rsi           \n
-   \t 'mov \s rdx , \s '%rdx           \n
-   \t 'syscall                         \n
+   \t 'mov \s rax , \s '%rax              \n
+   \t 'mov \s rdi , \s '%rdi              \n
+   \t 'mov \s rsi , \s '%rsi              \n
+   \t 'mov \s rdx , \s '%rdx              \n
+   \t 'syscall                            \n
 );
 
 before-main := λ .(
@@ -1314,30 +1344,7 @@ before-main := λ .(
    #       t = t.tail
 
    'main:                              \n
-   \t 'pop \s '%rax                    \n # put argc in %rax
-   \t 'mov \s '$argv, \s '%r9          \n
-   \t 'movq \s '$0, \s '0 \[ '%r9 \]   \n
-   \t 'movq \s '$0, \s '8 \[ '%r9 \]   \n
-
-   'before_main_argv:                  \n
-   \t 'cmp \s '$0, \s '%rax            \n
-   \t 'je \s 'before_main_end          \n
-
-   \t 'pop \s '%r12                    \n #this = argv[i]
-   \t 'mov \s '$0, \s '%r13            \n
-   (close())                              #r8 is argv[i]
-
-   \t 'mov \s '%r8, \s '0 \[ '%r9 \]   \n #set t.head = argv[i]
-   \t 'mov \s '$0, \s '%r12            \n
-   \t 'mov \s '$0, \s '%r13            \n
-   (close())
-   \t 'mov \s '%r8, \s '8 \[ '%r9 \]   \n #set t.tail = ()
-   \t 'mov \s '%r8, \s '%r9            \n #set t = t.tail
-
-   \t 'dec \s '%rax                    \n #dec argc
-   \t 'jmp \s 'before_main_argv        \n
-
-   'before_main_end:                   \n
+   argv-main-hook
 );
 
 close := λe . (
