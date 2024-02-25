@@ -3,11 +3,12 @@ config := ();
 parsed-program := ();
 global-text-section := ();
 global-data-section := ();
-program-break := λ. (
-   'current_break:                     \n
-   \t '.zero \s '8                     \n
-   'program_break:                     \n
-);
+
+#program-break := λ. (
+#   '__current_break:                     \n
+#   \t '.zero \s '8                     \n
+#   '__program_break:                     \n
+#);
 
 #import STDLIB/default-argv-hook;
 argv-main-hook := ();
@@ -38,83 +39,68 @@ include-argv-hook := λ. if argv-main-hook () (set argv-main-hook (argv-main-hoo
    'before_main_end:                   \n
 )));
 
-sbrk := λsize . (tail(
-   (local extend)
-   (set extend (uuid()))
-   (\t 'mov \s '$current_break, \s '%rdi        \n
-    \t 'mov \s '0 \[ '%rdi \] , \s '%r8         \n
-    \t 'cmp \s '$0, \s '%r8                     \n
-    \t 'jne \s extend                           \n
-    \t 'mov \s '$program_break, \s '%r8         \n
-    extend ':                                   \n
-    \t 'add \s '$ size , \s '%r8                \n
-    \t 'mov \s '$12, \s '%rax                   \n  # system call brk
-    \t 'mov \s '%r8, \s '%rdi                   \n  # new requested brk
-    \t 'syscall                                 \n
-    \t 'mov \s '$current_break, \s '%rdi        \n
-    \t 'mov \s '%r8, \s '0 \[ '%rdi \]          \n
-    \t 'sub \s '$ size , \s '%r8                \n)
-));
+#sbrk := λsize . (tail(
+#   (local extend)
+#   (set extend (uuid()))
+#   (\t 'push \s '%rdi                           \n
+#    \t 'push \s '%rax                           \n
+#    \t 'mov \s '$__current_break, \s '%rdi      \n
+#    \t 'mov \s '0 \[ '%rdi \] , \s '%r8         \n
+#    \t 'cmp \s '$0, \s '%r8                     \n
+#    \t 'jne \s extend                           \n
+#    \t 'mov \s '$__program_break, \s '%r8       \n
+#    extend ':                                   \n
+#    \t 'add \s '$ size , \s '%r8                \n
+#    \t 'mov \s '$12, \s '%rax                   \n  # system call brk
+#    \t 'mov \s '%r8, \s '%rdi                   \n  # new requested brk
+#    \t 'syscall                                 \n
+#    \t 'mov \s '$__current_break, \s '%rdi      \n
+#    \t 'mov \s '%r8, \s '0 \[ '%rdi \]          \n
+#    \t 'pop \s '%rax                            \n
+#    \t 'pop \s '%rdi                            \n
+#    \t 'sub \s '$ size , \s '%r8                \n)
+#));
 
 #import STDLIB/default-atom-allocator;
-allocate-cons-s-pointer := ();
-allocate-cons-function-id := ();
+allocate-cons-s-section := ();
+allocate-cons-s-counter := ();
 allocate-cons := λ . (tail(
-   # it is save to use %r8, %r9, %r10, %r11 registers in this allocator
-   # new cons pointer goes in %r8 register
-   (if allocate-cons-s-pointer () (
-      (set allocate-cons-s-pointer (uuid()))
+   (if allocate-cons-s-section () (
+      (set allocate-cons-s-section (uuid()))
+      (set allocate-cons-s-counter (uuid()))
       (set global-data-section ( global-data-section (
-         allocate-cons-s-pointer ': \n
+         allocate-cons-s-counter ': \n
          \t '.zero \s '8            \n
-      )))
-      (local page-size)
-      (set page-size 1048576) # Pages are 1MB by default
-      (set allocate-cons-function-id (uuid()))
-      (local while_s_pointer)
-      (set while_s_pointer (uuid()))
-      (local while_s_pointer_end)
-      (set while_s_pointer_end (uuid()))
-      (local allocate_new_page)
-      (set allocate_new_page (uuid()))
-      (local allocate_inside_page)
-      (set allocate_inside_page (uuid()))
-      (local allocate_done)
-      (set allocate_done (uuid()))
-      # Page Layout (Zero Initialized is Well Initialized)
-      # next_page : *Page
-      # used_size : Int
-      # page_data : Cons[PageSize]
-      (set global-text-section ( global-text-section (
-         allocate-cons-function-id ':                               \n
-	 (sbrk 16)
-         \t 'ret                                                    \n
-#         \t 'mov \s '$ allocate-cons-s-pointer ', \s '%r8           \n  # %r8 is active page pointer **Page
-#         \t 'mov \s '0 \[ '%r8 \] , \s '%r9                         \n  # %r9 is active page value    *Page
-#         \t 'cmp \s '$0, \s '%r9                                    \n
-#         \t 'je \s allocate_new_page                                \n
-#         while_s_pointer ':                                         \n
-#         \t 'mov \s '0 \[ '%r9 \] , \s '%r10                        \n  # %r10 is next page value *Page
-#         \t 'cmp \s '$0, \s '%r10                                   \n
-#         \t 'je \s allocate_inside_page                             \n  # allocate inside page if we are at end of page list
-#         \t 'mov \s '%r9  , \s '%r8                                 \n  # set active page pointer **Page
-#         \t 'mov \s '%r10 , \s '%r9                                 \n  # set active page value    *Page
-#         \t 'jmp \s while_s_pointer                                 \n  # continue loop until end of page list
-#         allocate_new_page ':                                       \n
-#         \t 'push \s '%r8                                           \n
-#         (sbrk page-size)
-#         \t 'mov \s '%r8, \s '%r9                                   \n
-#         \t 'pop \s '%r8                                            \n
-#         \t 'mov \s '%r9, \s '0 \[ '%r8 \]                          \n  # write link to next page
-#         \t 'movq \s '$16, \s '0 \[ '%r9 \]                          \n  # increment used size by 1 Cons
-#         \t 'add \s '$16, \s '%r8                                   \n  # %r8 points to new Cons cell
-#         \t 'ret                                                    \n
-#         allocate_inside_page ':                                    \n
-#         \t 'ret                                                    \n
+         allocate-cons-s-section ': \n
+         \t '.zero \s '536870912    \n
       )))
    ))
-   ( \t 'call \s allocate-cons-function-id \n )
+   (\t 'push \s '%r10                                          \n
+    \t 'push \s '%r11                                          \n
+    \t 'mov \s '$ allocate-cons-s-section ', \s '%r8           \n  # %r8 now points to root s
+    \t 'mov \s '$ allocate-cons-s-counter ', \s '%r11          \n  # %r11 now points to s counter
+    \t 'mov \s '0 \[ '%r11 \] , \s '%r10                       \n  # %r10 now hold value of cons counter
+    \t 'add \s '%r10, \s '%r8                                  \n  # %r8 now points to top free cons
+    \t 'add \s '$16, \s '%r10                                  \n  # increment s counter
+    \t 'mov \s '%r10, \s '0 \[ %r11 \]                         \n
+    \t 'pop \s '%r11                                           \n
+    \t 'pop \s '%r10                                           \n
+   ) # overwrite new s counter
 ));
+
+#sbrk based cons allocation may still be problematic
+#allocate-cons-function-id := ();
+#allocate-cons := λ . (tail(
+#   (if allocate-cons-function-id () (
+#      (set allocate-cons-function-id (uuid()))
+#      (set global-text-section ( global-text-section (
+#         allocate-cons-function-id ':                               \n
+#	 (sbrk 16)
+#         \t 'ret                                                    \n
+#      )))
+#   ))
+#   ( \t 'call \s allocate-cons-function-id \n )
+#));
 
 #import STDLIB/default-cons-allocator;
 
@@ -131,48 +117,62 @@ main := (
    (local mode)
    (set mode Compile)
    (local inputs)
-   (local target)
-   (local option)
-   (local arg)
-   (foreach-atom (tail argv) ((set arg $_) (if option
-      (match option (
-         ()
-         (() ())
-         (SetTarget (
-            (set config ( config (Target arg)))
-            (set option ())
-         ))
+   (local args)
+   (set args (tail argv))
+   (while args (match args (
+      ()
+      ( (-o (tgt remainder)) (
+         (set config ( config (Target tgt)))
+         (set args remainder)
       ))
-      (match arg (
-         ()
-         (() ())
-         (-o (set option SetTarget))
-         (--compile (set mode Compile))
-         (--parse (set mode Parse))
-         (--parse-expression (set mode ParseExpression))
-         (--tokenize (set mode Tokenize))
-         (--typecheck (set mode Typecheck))
-         (fp (set inputs (fp inputs)))
+      ( (--compile remainder) (
+         (set mode Compile)
+         (set args remainder)
+      ))
+      ( (--parse remainder) (
+         (set mode Parse)
+         (set args remainder)
+      ))
+      ( (--parse-expression remainder) (
+         (set mode ParseExpression)
+         (set args remainder)
+      ))
+      ( (--tokenize remainder) (
+         (set mode Tokenize)
+         (set args remainder)
+      ))
+      ( (--typecheck remainder) (
+         (set mode Typecheck)
+         (set args remainder)
+      ))
+      ( (fp remainder) (
+         (set inputs (fp inputs))
+         (set args remainder)
       ))
    )))
-   (match mode (
+   (while inputs (match mode (
       ()
-      (Compile (foreach-atom inputs (
-         if $_ (parse-program (tokenize-file $_)) ()
-      )))
-      (Parse (foreach-atom inputs (
-         if $_ (parse-program (tokenize-file $_)) ()
-      )))
-      (Typecheck (foreach-atom inputs (
-         if $_ (parse-program (tokenize-file $_)) ()
-      )))
-      (ParseExpression (foreach-atom inputs (
-         if $_ (print-s (parse-expression (tokenize-file $_))) ()
-      )))
-      (Tokenize (foreach-atom inputs (
-         if $_ (print-s (tokenize-file $_)) ()
-      )))
-   ))
+      (Compile (
+         (parse-program (tokenize-file (head inputs)))
+         (set inputs (tail inputs))
+      ))
+      (Parse (
+         (parse-program (tokenize-file (head inputs)))
+         (set inputs (tail inputs))
+      ))
+      (Typecheck (
+         (parse-program (tokenize-file (head inputs)))
+         (set inputs (tail inputs))
+      ))
+      (ParseExpression (
+         (print-s (parse-expression (tokenize-file (head inputs))))
+         (set inputs (tail inputs))
+      ))
+      (Tokenize (
+         (print-s (tokenize-file (head inputs)))
+         (set inputs (tail inputs))
+      ))
+   )))
    (match mode (
       ()
       (Compile (assemble parsed-program))
@@ -181,7 +181,6 @@ main := (
    ))
 );
 
-#this is necessary to circumvent a bug with the bootstrap compiler trying to call globals as functions syntactically
 fail := λmsg . (print-s msg) (exit 1);
 
 type-context := ();
@@ -761,7 +760,9 @@ tokenize := λtext . (tail(
    (local buffer)
    (local in_comment)
    (local char)
+
    (foreach-char text ((set char $_) (match char (
+#   (while text ( (set char (head-string text)) (set text (tail-string text)) (match char (      
       ()
 
 #     These characters are special characters
@@ -914,6 +915,7 @@ assemble := λprogram . (
    (local global_ctx)
    (local preview_program)
    (set preview_program program)
+
    (while preview_program (match preview_program (
       ()
       ( (pc (Global ('main body))) (
@@ -975,6 +977,7 @@ assemble := λprogram . (
    (if main_e (
       (set main_pd (compile-append( main_pd global_ctx main_e )))
    ) ())
+
    (set output_pd (
       (
          (head output_pd)
@@ -987,8 +990,10 @@ assemble := λprogram . (
          global-text-section
          (stdlib-functions())
       )
-      ((tail output_pd) (get-data main_pd) global-data-section (program-break()))
+      ((tail output_pd) (get-data main_pd) global-data-section)
+#      ((tail output_pd) (get-data main_pd) global-data-section (program-break()))
    ))
+
    (write-file (target (clone-rope output_pd)))
 );
 
@@ -1225,21 +1230,6 @@ compile-expr := λctx e offset used . (tail(
             (get-offset e2)
          ))
       )))
-      ( (App( (App( (Variable 'foreach-atom) t )) d )) (tail(
-         (set e1 (compile-expr(ctx t offset Used)))
-         (set e2 (compile-expr((get-pc e1) d (get-offset e1) Unused)))
-         (local foreach_atom_label)
-         (set foreach_atom_label (uuid()))
-         (local foreach_atom_notcons)
-         (set foreach_atom_notcons (uuid()))
-         (local foreach_atom_ignore)
-         (set foreach_atom_ignore (uuid()))
-         (local foreach_text)
-         (set foreach_text (yield-foreach-atom( foreach_atom_label foreach_atom_notcons foreach_atom_ignore (get-prog e2) )))
-         (set prog ( (get-prog e1) \t 'call \s foreach_atom_label \n ))
-         (set tail_safe True)
-         (Expr( ((get-frame e1) (get-frame e2)) prog ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2) foreach_text) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
-      )))
       ( (App( (App( (Variable 'foreach-char) t )) d )) (tail(
          (set e1 (compile-expr(ctx t offset Used)))
          (set e2 (compile-expr((get-pc e1) d (get-offset e1) Unused)))
@@ -1373,6 +1363,8 @@ data-header := λ .(
   \t '.zero \s '2                         \n
   'hex_buffer:                            \n
   \t '.ascii \s "0123456789abcdef"        \n
+  '__mutable_char:                        \n
+  \t '.zero \s '2                         \n
   '__dump_i:                              \n
   \t '.ascii \s '"0000000000000000"       \n
   \t '.zero \s '1                         \n
@@ -1423,6 +1415,8 @@ is-builtin := λf . (match f (
    ('eq True)
    ('not True)
    ('head True)
+   ('head-string True)
+   ('tail-string True)
    ('tail True)
    ('inc True)
    ('dec True)
@@ -1489,6 +1483,28 @@ stdlib-functions := λ . (
    \t 'call \s 'strlen                 \n # %r8 is string length of this atom
    (system-call( '$1 '$1 '%r12 '%r8 )) \n
    \t 'ret                             \n
+
+   'head_string:                          \n
+   \t 'cmp \s '$0, \s %r13                \n
+   \t 'jne \s 'return_nil                 \n
+   \t 'cmp \s '$0, \s %r12                \n
+   \t 'je \s 'return_nil                  \n
+   \t 'cmpb \s '$0, \s '0 \[ '%r12 \]     \n
+   \t 'je \s 'return_nil                  \n
+   \t 'movb \s '0 \[ %r12 \] , \s '%bl    \n
+   \t 'mov \s '$__mutable_char, \s '%r12  \n
+   \t 'movb \s '%bl, \s '0 \[ %r12 \]     \n
+   \t 'ret                                \n
+
+   'tail_string:                          \n
+   \t 'cmp \s '$0, \s %r13                \n
+   \t 'jne \s 'return_nil                 \n
+   \t 'cmp \s '$0, \s %r12                \n
+   \t 'je \s 'return_nil                  \n
+   \t 'cmpb \s '$0, \s '0 \[ '%r12 \]     \n
+   \t 'je \s 'return_nil                  \n
+   \t 'inc \s '%r12                       \n
+   \t 'ret                                \n
 
    'head:                                 \n
    \t 'cmp \s '$0, \s '%r13               \n
@@ -2129,36 +2145,6 @@ destructure-args := λctx e offset . (match e (
       (fail (InvalidFunctionParameters e))
    ))
 ));
-
-yield-foreach-atom := λforeach-head foreach-notcons foreach-ignore foreach-apply . (
-   #define label for this function
-   foreach-head ':                           \n
-
-   #if this is a cons, recurse
-   \t 'cmp \s '$0, \s '%r13                  \n
-   \t 'je \s foreach-notcons                 \n
-   (push-this())
-   \t 'call \s 'head                         \n
-   \t 'call \s foreach-head                  \n
-   (pop-this())
-   (push-this())
-   \t 'call \s 'tail                         \n
-   \t 'call \s foreach-head                  \n
-   (pop-this())
-   \t 'ret                                   \n
-
-   #if not cons, apply
-   foreach-notcons ':                        \n
-   \t 'cmp \s '$0, \s '%r12                  \n
-   \t 'je \s foreach-ignore                  \n
-   (push-this())
-   foreach-apply
-   (pop-this())
-   \t 'ret                                   \n
-
-   foreach-ignore ':                         \n
-   \t 'ret                                   \n
-);
 
 yield-foreach-char := λforeach-data foreach-head foreach-small foreach-end foreach-notcons foreach-apply foreach-expr . (
    #define label for this function

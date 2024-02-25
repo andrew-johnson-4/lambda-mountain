@@ -1,12 +1,9 @@
 
-while:
-	./production tests/lm/argv.lm
-	as -o tmp.o tmp.s
-	ld -o tmp   tmp.o
-	./tmp
-
-test:
-	cargo test testsuite
+test: boot
+	./bootstrap -o production.s PRODUCTION/cli.lm
+	as -o production.o production.s
+	ld -o production   production.o
+	./production
 
 build:
 	as -o lm_raw.o BOOTSTRAP/cli.s
@@ -17,6 +14,11 @@ prod:
 	lm -o production.s PRODUCTION/cli.lm
 	as -o production.o production.s
 	ld -o production   production.o
+
+boot:
+	lm -o bootstrap.s BOOTSTRAP/cli.lm
+	as -o bootstrap.o bootstrap.s
+	ld -o bootstrap   bootstrap.o
 
 fresh:
 	lm -o BOOTSTRAP/cli.s BOOTSTRAP/cli.lm
