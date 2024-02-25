@@ -34,25 +34,28 @@ include-argv-hook := λ. if argv-main-hook () (set argv-main-hook (argv-main-hoo
 )));
 
 #import STDLIB/default-atom-allocator;
-allocate-cons-s-section := ();
-allocate-cons-s-counter := ();
+allocate-cons-s-pointer := ();
 allocate-cons := λ . (tail(
-   (if allocate-cons-s-section () (
-      (set allocate-cons-s-section (uuid()))
-      (set allocate-cons-s-counter (uuid()))
+   (if allocate-cons-s-pointer () (
+      (set allocate-cons-s-pointer (uuid()))
       (set global-data-section ( global-data-section (
-         allocate-cons-s-counter ': \n
+         allocate-cons-s-pointer ': \n
          \t '.zero \s '8            \n
-         allocate-cons-s-section ': \n
-         \t '.zero \s '536870912    \n
       )))
    ))
-   (\t 'mov \s '$ allocate-cons-s-section ', \s '%r8           \n  # %r8 now points to root s
-    \t 'mov \s '$ allocate-cons-s-counter ', \s '%r11          \n  # %r11 now points to s counter
-    \t 'mov \s '0 \[ '%r11 \] , \s '%r10                       \n  # %r10 now hold value of cons counter
-    \t 'add \s '%r10, \s '%r8                                  \n  # %r8 now points to top free cons
-    \t 'add \s '$16, \s '%r10                                  \n  # increment s counter
-    \t 'mov \s '%r10, \s '0 \[ %r11 \]                         \n) # overwrite new s counter
+   (local while_s_pointer)
+   (set while_s_pointer (uuid()))
+   (local while_s_pointer_end)
+   (set while_s_pointer_end (uuid()))
+   (local allocate_new_page)
+   (set allocate_new_page (uuid()))
+   (\t 'mov \s '$ allocate-cons-s-pointer ', \s '%r8           \n  # %r8 now points to root s page
+    while_s_pointer ':                                         \n
+    \t 'mov \s '0 \[ '%r8 \] , \s '%r9                         \n  # %r9 is pointer to first page or null
+    \t 'cmp \s '$0, \s '%r9                                    \n
+    \t 'je \s allocate_new_page                                \n
+    allocate_new_page ':                                       \n
+   )
 ));
 
 #import STDLIB/default-cons-allocator;
