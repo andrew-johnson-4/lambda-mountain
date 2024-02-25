@@ -5,12 +5,112 @@ cli-config                               := ();
 parse-parsed-program                     := ();
 assemble-text-section                    := ();
 assemble-data-section                    := ();
+typecheck-subtypes                       := ();
 
 # Static Global Initializers
 
+typecheck-init := λ. (
+   (set typecheck-subtypes 
+     (
+        (
+           (() (Atom S))
+           (Nil S)
+        )
+        ((Cons(S S)) S)
+     )
+   )
+   (local mode)
+);
+
 # Cli Entry Point
 
-main := ();
+main := (
+   (typecheck-init())
+
+   (local mode)
+   (set mode Compile)
+   (local inputs)
+   (local args)
+   (set args (tail argv))
+   (while args (match args (
+      ()
+      ( (-o (tgt remainder)) (
+         (set cli-config ( cli-config (Target tgt)))
+         (set args remainder)
+      ))
+      ( (--compile remainder) (
+         (set mode Compile)
+         (set args remainder)
+      ))
+      ( (--parse remainder) (
+         (set mode Parse)
+         (set args remainder)
+      ))
+      ( (--parse-expression remainder) (
+         (set mode ParseExpression)
+         (set args remainder)
+      ))
+      ( (--tokenize remainder) (
+         (set mode Tokenize)
+         (set args remainder)
+      ))
+      ( (--typecheck remainder) (
+         (set mode Typecheck)
+         (set args remainder)
+      ))
+      ( (fp remainder) (
+         (set inputs (fp inputs))
+         (set args remainder)
+      ))
+   )))
+   (while inputs (match mode (
+      ()
+      (Compile (
+         (parse-program (tokenize-file (head inputs)))
+         (set inputs (tail inputs))
+      ))
+      (Parse (
+         (parse-program (tokenize-file (head inputs)))
+         (set inputs (tail inputs))
+      ))
+      (Typecheck (
+         (parse-program (tokenize-file (head inputs)))
+         (set inputs (tail inputs))
+      ))
+      (ParseExpression (
+         (print-s (parse-expression (tokenize-file (head inputs))))
+         (set inputs (tail inputs))
+      ))
+      (Tokenize (
+         (print-s (tokenize-file (head inputs)))
+         (set inputs (tail inputs))
+      ))
+   )))
+   (match mode (
+      ()
+      (Compile (assemble parse-parsed-program))
+      (Parse (print-s parse-parsed-program))
+      (Typecheck (print-s (show-ascript (typecheck parse-parsed-program))))
+   ))
+);
+
+# Tokenizer 
+
+tokenize-file := λ. ();
+
+# Parser
+
+parse-program := λ. ();
+parse-expression := λ. ();
+
+# Typechecker
+
+typecheck := λ. ();
+show-ascript := λ. ();
+
+# Assembler
+
+assemble := λ. ();
 
 # Data Segments
 
