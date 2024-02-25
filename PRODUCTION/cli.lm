@@ -12,13 +12,13 @@ program-break := λ. (
 #import STDLIB/default-argv-hook;
 argv-main-hook := ();
 include-argv-hook := λ. if argv-main-hook () (set argv-main-hook (argv-main-hook (
-   \t 'pop \s '%rax                    \n # put argc in %rax
+   \t 'pop \s '%r10                    \n # put argc in %r10
    \t 'mov \s '$argv, \s '%r9          \n
    \t 'movq \s '$0, \s '0 \[ '%r9 \]   \n
    \t 'movq \s '$0, \s '8 \[ '%r9 \]   \n
 
    'before_main_argv:                  \n
-   \t 'cmp \s '$0, \s '%rax            \n
+   \t 'cmp \s '$0, \s '%r10            \n
    \t 'je \s 'before_main_end          \n
 
    \t 'pop \s '%r12                    \n #this = argv[i]
@@ -32,7 +32,7 @@ include-argv-hook := λ. if argv-main-hook () (set argv-main-hook (argv-main-hoo
    \t 'mov \s '%r8, \s '8 \[ '%r9 \]   \n #set t.tail = ()
    \t 'mov \s '%r8, \s '%r9            \n #set t = t.tail
 
-   \t 'dec \s '%rax                    \n #dec argc
+   \t 'dec \s '%r10                    \n #dec argc
    \t 'jmp \s 'before_main_argv        \n
 
    'before_main_end:                   \n

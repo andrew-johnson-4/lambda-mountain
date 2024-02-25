@@ -1,6 +1,6 @@
 
 while:
-	./production tests/lm/while1.lm
+	./production tests/lm/argv.lm
 	as -o tmp.o tmp.s
 	ld -o tmp   tmp.o
 	./tmp
