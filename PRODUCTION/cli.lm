@@ -4,7 +4,7 @@ parsed-program := ();
 global-text-section := ();
 global-data-section := ();
 program-break := λ. (
-   'program_break_counter:             \n
+   'current_break:                     \n
    \t '.zero \s '8                     \n
    'program_break:                     \n
 );
@@ -38,16 +38,23 @@ include-argv-hook := λ. if argv-main-hook () (set argv-main-hook (argv-main-hoo
    'before_main_end:                   \n
 )));
 
-sbrk := λsize . (
-   \t 'mov \s '$program_break, \s '%r8         \n
-   \t 'mov \s '$program_break_counter, \s '%r9 \n
-   \t 'mov \s '0 \[ '%r9 \] , \s '%r9          \n
-   \t 'add \s '%r9, \s '%r8                    \n
-   \t 'add \s '$ size , \s '%r8                \n  
-   \t 'mov \s '$12, \s '%rax                   \n  # system call brk
-   \t 'mov \s '%r8, \s '%rdi                   \n  # new requested brk
-   \t 'syscall                                 \n
-);
+sbrk := λsize . (tail(
+   (local extend)
+   (set extend (uuid()))
+   (\t 'mov \s '$current_break, \s '%r9         \n
+    \t 'mov \s '0 \[ '%r9 \] , \s '%r8          \n
+    \t 'cmp \s '$0, \s '%r8                     \n
+    \t 'jne \s extend                           \n
+    \t 'mov \s '$program_break, \s '%r8         \n
+    \t 'mov \s '%r8, \s '0 \[ '%r9 \]           \n
+    extend ':                                   \n
+    \t 'add \s '$ size , \s '%r8                \n
+    \t 'mov \s '$12, \s '%rax                   \n  # system call brk
+    \t 'mov \s '%r8, \s '%rdi                   \n  # new requested brk
+    \t 'syscall                                 \n
+    \t 'mov \s '%r8, \s '0 \[ '%r9 \]           \n
+    \t 'sub \s '$ size , \s '%r8                \n)
+));
 
 #import STDLIB/default-atom-allocator;
 allocate-cons-s-pointer := ();
