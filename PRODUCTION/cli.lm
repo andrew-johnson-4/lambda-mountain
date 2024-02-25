@@ -42,19 +42,19 @@ main := (
    (match mode (
       ()
       (Compile (foreach-atom inputs (
-         if $_ (parse-program (tokenize (load-file $_))) ()
+         if $_ (parse-program (tokenize-file $_)) ()
       )))
       (Parse (foreach-atom inputs (
-         if $_ (parse-program (tokenize (load-file $_))) ()
+         if $_ (parse-program (tokenize-file $_)) ()
       )))
       (Typecheck (foreach-atom inputs (
-         if $_ (parse-program (tokenize (load-file $_))) ()
+         if $_ (parse-program (tokenize-file $_)) ()
       )))
       (ParseExpression (foreach-atom inputs (
-         if $_ (print-s (parse-expression (tokenize (load-file $_)))) ()
+         if $_ (print-s (parse-expression (tokenize-file $_))) ()
       )))
       (Tokenize (foreach-atom inputs (
-         if $_ (print-s (tokenize (load-file $_))) ()
+         if $_ (print-s (tokenize-file $_)) ()
       )))
    ))
    (match mode (
@@ -620,6 +620,10 @@ parse-program := λtoks . (tail(
             (set pme2 (parse-many-expressions remainder))
             (set parsed-program ( parsed-program (Type( (head pme) (head pme2) )) ))
             (set toks (tail pme2))
+         ))
+         (('import (relative-path remainder)) (
+            (parse-program (tokenize-file relative-path))
+            (set toks remainder)
          ))
          ((key (:= remainder)) (
             (set pme (parse-many-expressions remainder))

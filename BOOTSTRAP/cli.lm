@@ -1,5 +1,6 @@
 
 config := ();
+parsed-program := ();
 
 main := (
    (set type-subtypes 
@@ -40,23 +41,27 @@ main := (
    )))
    (match mode (
       ()
-      (Compile (
-         (foreach-atom inputs (
-            if $_ (assemble (parse-program (tokenize (load-file $_)))) ()
-         ))
-      ))
+      (Compile (foreach-atom inputs (
+         if $_ (parse-program (tokenize-file $_)) ()
+      )))
       (Parse (foreach-atom inputs (
-         if $_ (print-s (parse-program (tokenize (load-file $_)))) ()
+         if $_ (parse-program (tokenize-file $_)) ()
       )))
       (Typecheck (foreach-atom inputs (
-         if $_ (print-s (show-ascript (typecheck (parse-program (tokenize (load-file $_)))))) ()
+         if $_ (parse-program (tokenize-file $_)) ()
       )))
       (ParseExpression (foreach-atom inputs (
-         if $_ (print-s (parse-expression (tokenize (load-file $_)))) ()
+         if $_ (print-s (parse-expression (tokenize-file $_))) ()
       )))
       (Tokenize (foreach-atom inputs (
-         if $_ (print-s (tokenize (load-file $_))) ()
+         if $_ (print-s (tokenize-file $_)) ()
       )))
+   ))
+   (match mode (
+      ()
+      (Compile (assemble parsed-program))
+      (Parse (print-s parsed-program))
+      (Typecheck (print-s (show-ascript parsed-program)))
    ))
 );
 
@@ -613,17 +618,21 @@ parse-program := λtoks . (tail(
             (set pme (parse-one-expression remainder))
             (set remainder (tail pme))
             (set pme2 (parse-many-expressions remainder))
-            (set program ( program (Type( (head pme) (head pme2) )) ))
+            (set parsed-program ( parsed-program (Type( (head pme) (head pme2) )) ))
             (set toks (tail pme2))
+         ))
+         (('import (relative-path remainder)) (
+            (parse-program (tokenize-file relative-path))
+            (set toks remainder)
          ))
          ((key (:= remainder)) (
             (set pme (parse-many-expressions remainder))
-            (set program ( program (Global (key (head pme))) ))
+            (set parsed-program ( parsed-program (Global (key (head pme))) ))
             (set toks (tail pme))
          ))
          (remainder (
             (set pme (parse-many-expressions remainder))
-            (set program (program (GExpr (head pme)) ))
+            (set parsed-program (parsed-program (GExpr (head pme)) ))
             (set toks (tail pme))
          ))
       )
