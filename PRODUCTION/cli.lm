@@ -3,10 +3,10 @@ config := ();
 parsed-program := ();
 global-text-section := ();
 global-data-section := ();
-program-break := (
-   'program-break-counter:             \n
-   '.zero \s '8                        \n
-   'program-break:                     \n
+program-break := λ. (
+   'program_break_counter:             \n
+   \t '.zero \s '8                     \n
+   'program_break:                     \n
 );
 
 #import STDLIB/default-argv-hook;
@@ -39,8 +39,8 @@ include-argv-hook := λ. if argv-main-hook () (set argv-main-hook (argv-main-hoo
 )));
 
 sbrk := λsize . (
-   \t 'mov \s '$program-break, \s '%r8         \n
-   \t 'mov \s '$program-break-counter, \s '%r9 \n
+   \t 'mov \s '$program_break, \s '%r8         \n
+   \t 'mov \s '$program_break_counter, \s '%r9 \n
    \t 'mov \s '0 \[ '%r9 \] , \s '%r9          \n
    \t 'add \s '%r9, \s '%r8                    \n
    \t 'add \s '$ size , \s '%r8                \n  
@@ -74,11 +74,12 @@ allocate-cons := λ . (tail(
       (set allocate_inside_page (uuid()))
       (local allocate_done)
       (set allocate_done (uuid()))
-      # Page Layout
+      # Page Layout (Zero Initialized is Well Initialized)
       # next_page : *Page
-      # tail_cons : *Cons
+      # used_size : Int
       # page_data : Cons[PageSize]
       (set global-text-section ( global-text-section (
+         allocate-cons-function-id ':                               \n
          \t 'mov \s '$ allocate-cons-s-pointer ', \s '%r8           \n  # %r8 is active page pointer **Page
          \t 'mov \s '0 \[ '%r8 \] , \s '%r9                         \n  # %r9 is active page value    *Page
          \t 'cmp \s '$0, \s '%r9                                    \n
@@ -87,12 +88,20 @@ allocate-cons := λ . (tail(
          \t 'mov \s '0 \[ '%r9 \] , \s '%r10                        \n  # %r10 is next page value *Page
          \t 'cmp \s '$0, \s '%r10                                   \n
          \t 'je \s allocate_inside_page                             \n  # allocate inside page if we are at end of page list
-         \t 'mov \s '0 \[ '%r10 \] , \s '%r9                        \n  # set active page
+         \t 'mov \s '%r9  , \s '%r8                                 \n  # set active page pointer **Page
+         \t 'mov \s '%r10 , \s '%r9                                 \n  # set active page value    *Page
          \t 'jmp \s while_s_pointer                                 \n  # continue loop until end of page list
          allocate_new_page ':                                       \n
+         \t 'push \s '%r8                                           \n
          (sbrk page-size)
-         \t ret                                                     \n
+         \t 'mov \s '%r8, \s '%r9                                   \n
+         \t 'pop \s '%r8                                            \n
+         \t 'mov \s '%r9, \s '0 \[ '%r8 \]                          \n  # write link to next page
+         \t 'movq \s '$16, \s '0 \[ '%r9 \]                          \n  # increment used size by 1 Cons
+         \t 'add \s '$16, \s '%r8                                   \n  # %r8 points to new Cons cell
+         \t 'ret                                                    \n
          allocate_inside_page ':                                    \n
+         \t 'ret                                                    \n
       )))
    ))
    ( \t 'call \s allocate-cons-function-id \n )
@@ -966,9 +975,10 @@ assemble := λprogram . (
          (get-prog main_pd)
          (exit-cleanup())
          (get-text main_pd)
+         global-text-section
          (stdlib-functions())
       )
-      ((tail output_pd) (get-data main_pd) global-data-section program-break)
+      ((tail output_pd) (get-data main_pd) global-data-section (program-break()))
    ))
    (write-file (target (clone-rope output_pd)))
 );
