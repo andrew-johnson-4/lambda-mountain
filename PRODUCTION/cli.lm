@@ -22,7 +22,7 @@ main := (
          ()
          (() ())
          (SetTarget (
-            (set config ( (global config) (Target arg)))
+            (set config ( config (Target arg)))
             (set option ())
          ))
       ))
@@ -61,7 +61,6 @@ main := (
 );
 
 #this is necessary to circumvent a bug with the bootstrap compiler trying to call globals as functions syntactically
-global := λvalue. value;
 fail := λmsg. (print-s msg) (exit 1);
 
 type-context := ();
@@ -157,7 +156,7 @@ global-context := ();
 
 infer-prog := λp. (
    (while p (
-      (infer-expr( (global global-context) (tail p) ))
+      (infer-expr( global-context (tail p) ))
       (set p (head p))
    ))
 );
@@ -360,14 +359,14 @@ infer-type-compound := λcompound. (match compound (
 infer-type-constructor := λname body. (match body (
    ()
    ( (Literal tag) (
-      (set type-constructors ( (global type-constructors) (tag tag) ))
-      (set type-subtypes ( (global type-subtypes) (tag (infer-type-compound name)) ))
+      (set type-constructors ( type-constructors (tag tag) ))
+      (set type-subtypes ( type-subtypes (tag (infer-type-compound name)) ))
    ))
    ( (App( (Literal tag) args )) (
       (local ctype)
       (set ctype (infer-type-compound args))
-      (set type-constructors ( (global type-constructors) (tag (->(ctype (tag ctype)))) ))
-      (set type-subtypes ( (global type-subtypes) ((tag ctype) (infer-type-compound name)) ))
+      (set type-constructors ( type-constructors (tag (->(ctype (tag ctype)))) ))
+      (set type-subtypes ( type-subtypes ((tag ctype) (infer-type-compound name)) ))
    ))
 ));
 
@@ -422,7 +421,7 @@ infer-expr := λctx e. (
                ()
                ( () () )
                ( glt (
-                  (set global-context ( (global global-context) (Global( gln glt )) ))
+                  (set global-context ( global-context (Global( gln glt )) ))
                   (ascript( e ? ))
                ))
             ))
@@ -982,9 +981,9 @@ set-local := λctx v. (tail(
             if r () (
                if (eq(l v)) (
                   (set r (
-                     \t 'mov \s '$ (label-case l) , \s %r8 \n
-                     \t 'mov \s %r12 , \s '0 \[ %r8 \] \n
-                     \t 'mov \s %r13 , \s '8 \[ %r8 \] \n
+                     \t 'mov \s '$ (label-case l) , \s %r15 \n
+                     \t 'mov \s %r12 , \s '0 \[ %r15 \] \n
+                     \t 'mov \s %r13 , \s '8 \[ %r15 \] \n
                   ))
                ) ()
             )
@@ -1188,6 +1187,14 @@ compile-expr := λctx e offset used. (tail(
       ( (App (l r)) (tail(
          (set tail_safe True)
          (yield-cons(ctx l r offset used))
+      )))
+      ( (GlobalVariable mangled-name) (tail(
+         (set prog (
+            \t 'mov \s '$ mangled-name , \s %r15   \n
+            \t 'mov \s '0 \[ %r15 \] , \s %r12     \n
+            \t 'mov \s '8 \[ %r15 \] , \s %r13     \n
+         ))
+         (Expr( () prog () () () ctx offset ))
       )))
       ( u (fail (UnrecognizedExpression u)) )
    )))
