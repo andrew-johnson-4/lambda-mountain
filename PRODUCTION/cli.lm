@@ -61,34 +61,12 @@ sbrk := λsize . (tail(
 ));
 
 #import STDLIB/default-atom-allocator;
-allocate-cons-s-pointer := ();
 allocate-cons-function-id := ();
 allocate-cons := λ . (tail(
    # it is save to use %r8, %r9, %r10, %r11 registers in this allocator
    # new cons pointer goes in %r8 register
-   (if allocate-cons-s-pointer () (
-      (set allocate-cons-s-pointer (uuid()))
-      (set global-data-section ( global-data-section (
-         allocate-cons-s-pointer ': \n
-         \t '.zero \s '8            \n
-      )))
-      (local page-size)
-      (set page-size 1048576) # Pages are 1MB by default
+   (if allocate-cons-function-id () (
       (set allocate-cons-function-id (uuid()))
-      (local while_s_pointer)
-      (set while_s_pointer (uuid()))
-      (local while_s_pointer_end)
-      (set while_s_pointer_end (uuid()))
-      (local allocate_new_page)
-      (set allocate_new_page (uuid()))
-      (local allocate_inside_page)
-      (set allocate_inside_page (uuid()))
-      (local allocate_done)
-      (set allocate_done (uuid()))
-      # Page Layout (Zero Initialized is Well Initialized)
-      # next_page : *Page
-      # used_size : Int
-      # page_data : Cons[PageSize]
       (set global-text-section ( global-text-section (
          allocate-cons-function-id ':                               \n
 	 (sbrk 16)
@@ -113,13 +91,12 @@ main := (
    (local mode)
    (set mode Compile)
    (local inputs)
-   (local target)
    (local args)
    (set args (tail argv))
    (while args (match args (
       ()
       ( (-o (tgt remainder)) (
-         (set target tgt)
+         (set config ( config (Target tgt)))
          (set args remainder)
       ))
       ( (--compile remainder) (
@@ -910,6 +887,7 @@ assemble := λprogram . (
    (local global_ctx)
    (local preview_program)
    (set preview_program program)
+
    (while preview_program (match preview_program (
       ()
       ( (pc (Global ('main body))) (
@@ -971,6 +949,7 @@ assemble := λprogram . (
    (if main_e (
       (set main_pd (compile-append( main_pd global_ctx main_e )))
    ) ())
+
    (set output_pd (
       (
          (head output_pd)
@@ -985,6 +964,7 @@ assemble := λprogram . (
       )
       ((tail output_pd) (get-data main_pd) global-data-section (program-break()))
    ))
+
    (write-file (target (clone-rope output_pd)))
 );
 
