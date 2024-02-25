@@ -3,6 +3,11 @@ config := ();
 parsed-program := ();
 global-text-section := ();
 global-data-section := ();
+program-break := (
+   'program-break-counter:             \n
+   '.zero \s '8                        \n
+   'program-break:                     \n
+);
 
 #import STDLIB/default-argv-hook;
 argv-main-hook := ();
@@ -33,6 +38,17 @@ include-argv-hook := λ. if argv-main-hook () (set argv-main-hook (argv-main-hoo
    'before_main_end:                   \n
 )));
 
+sbrk := λsize . (
+   \t 'mov \s '$program-break, \s '%r8         \n
+   \t 'mov \s '$program-break-counter, \s '%r9 \n
+   \t 'mov \s '0 \[ '%r9 \] , \s '%r9          \n
+   \t 'add \s '%r9, \s '%r8                    \n
+   \t 'add \s '$ size , \s '%r8                \n  
+   \t 'mov \s '$12, \s '%rax                   \n  # system call brk
+   \t 'mov \s '%r8, \s '%rdi                   \n  # new requested brk
+   \t 'syscall                                 \n
+);
+
 #import STDLIB/default-atom-allocator;
 allocate-cons-s-pointer := ();
 allocate-cons-function-id := ();
@@ -45,6 +61,8 @@ allocate-cons := λ . (tail(
          allocate-cons-s-pointer ': \n
          \t '.zero \s '8            \n
       )))
+      (local page-size)
+      (set page-size 1048576) # Pages are 1MB by default
       (set allocate-cons-function-id (uuid()))
       (local while_s_pointer)
       (set while_s_pointer (uuid()))
@@ -72,6 +90,8 @@ allocate-cons := λ . (tail(
          \t 'mov \s '0 \[ '%r10 \] , \s '%r9                        \n  # set active page
          \t 'jmp \s while_s_pointer                                 \n  # continue loop until end of page list
          allocate_new_page ':                                       \n
+         (sbrk page-size)
+         \t ret                                                     \n
          allocate_inside_page ':                                    \n
       )))
    ))
@@ -948,7 +968,7 @@ assemble := λprogram . (
          (get-text main_pd)
          (stdlib-functions())
       )
-      ((tail output_pd) (get-data main_pd) global-data-section)
+      ((tail output_pd) (get-data main_pd) global-data-section program-break)
    ))
    (write-file (target (clone-rope output_pd)))
 );
