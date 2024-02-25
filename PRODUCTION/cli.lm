@@ -61,18 +61,18 @@ main := (
 );
 
 #this is necessary to circumvent a bug with the bootstrap compiler trying to call globals as functions syntactically
-fail := λmsg. (print-s msg) (exit 1);
+fail := λmsg . (print-s msg) (exit 1);
 
 type-context := ();
 type-subtypes := ();
 type-constructors := ();
 types-have-changed := ();
 
-tokenize-file := λpath. (
+tokenize-file := λpath . (
    tokenize (load-file path)
 );
 
-typecheck := λprogram. (tail(
+typecheck := λprogram . (tail(
    (local p)
    (set p program)
    (while p (
@@ -87,7 +87,7 @@ typecheck := λprogram. (tail(
    program
 ));
 
-lookup-type := λterm. (tail(
+lookup-type := λterm . (tail(
    (local tctx)
    (set tctx type-context)
    (local found)
@@ -104,14 +104,14 @@ lookup-type := λterm. (tail(
    found
 ));
 
-ascript := λt tt. (
+ascript := λt tt . (
    if tt (
       (set type-context ((t tt) type-context))
       (set types-have-changed True)
    ) ()
 );
 
-show-ascript := λp. (tail(
+show-ascript := λp . (tail(
    (local term)
    (set term (match p (
       ()
@@ -154,14 +154,14 @@ show-ascript := λp. (tail(
 
 global-context := ();
 
-infer-prog := λp. (
+infer-prog := λp . (
    (while p (
       (infer-expr( global-context (tail p) ))
       (set p (head p))
    ))
 );
 
-infer-ctx := λctx e. (match e (
+infer-ctx := λctx e . (match e (
    ()
    ( (App( (App( (Literal :) (Variable v) )) tt )) (
       (ctx (v (typeof-ascript tt)))
@@ -183,7 +183,7 @@ infer-ctx := λctx e. (match e (
    ))
 ));
 
-typeof-gvar := λv. (tail(
+typeof-gvar := λv . (tail(
    (local gctx)
    (set gctx global-context)
    (local tt)
@@ -205,7 +205,7 @@ typeof-gvar := λv. (tail(
    tt
 ));
 
-typeof-var := λctx v. (match ctx (
+typeof-var := λctx v . (match ctx (
    ()
    ( () (typeof-gvar v) )
    ( (cs (cv ct)) (
@@ -217,7 +217,7 @@ typeof-var := λctx v. (match ctx (
    ))
 ));
 
-typeof-ascript := λtt. (match tt (
+typeof-ascript := λtt . (match tt (
    ()
    ( (Literal tname) (
       tname
@@ -227,7 +227,7 @@ typeof-ascript := λtt. (match tt (
    ))
 ));
 
-typeof-lhs := λlhs. (match lhs (
+typeof-lhs := λlhs . (match lhs (
    ()
    ( (App( (App( (Literal :) (Variable v) )) tt )) (
       (typeof-ascript tt)
@@ -249,7 +249,7 @@ typeof-lhs := λlhs. (match lhs (
    ))
 ));
 
-unify-sub := λctx v. (match ctx (
+unify-sub := λctx v . (match ctx (
    ()
    ( Accept v )
    ( (Bind( s1 s2 )) (
@@ -267,7 +267,7 @@ unify-sub := λctx v. (match ctx (
    )))
 ));
 
-unify-ctx := λctx v. (match v (
+unify-ctx := λctx v . (match v (
    ()
    ( (vl vr) (
       ( (unify-ctx( ctx vl )) (unify-ctx( ctx vr )) )
@@ -277,7 +277,7 @@ unify-ctx := λctx v. (match v (
    ))
 ));
 
-unify-implies := λlt rt. (if (eq(lt rt)) True (tail(
+unify-implies := λlt rt . (if (eq(lt rt)) True (tail(
    (local accept)
    (local subtypes)
    (local st)
@@ -294,7 +294,7 @@ unify-implies := λlt rt. (if (eq(lt rt)) True (tail(
    accept
 )));
 
-unify-args := λlt rt. (match (lt rt) (
+unify-args := λlt rt . (match (lt rt) (
    ()
    ( ((lt1 rt1) (lt2 rt2)) (
       (match ( (unify-args(lt1 lt2)) (unify-args(rt1 rt2)) ) (
@@ -329,7 +329,7 @@ unify-args := λlt rt. (match (lt rt) (
    )))
 ));
 
-apply-plural := λmany pt. (match many(
+apply-plural := λmany pt . (match many(
    ()
    ( (And( t1 t2 )) (tail(
       (local r)
@@ -341,7 +341,7 @@ apply-plural := λmany pt. (match many(
    ))
 ));
 
-safe-apply-plural := λterm many pt. (tail(
+safe-apply-plural := λterm many pt . (tail(
    (local r)
    (set r (apply-plural( many pt )))
    (if r r (
@@ -349,14 +349,14 @@ safe-apply-plural := λterm many pt. (tail(
    ))
 ));
 
-infer-type-compound := λcompound. (match compound (
+infer-type-compound := λcompound . (match compound (
    ()
    ((Literal tt) tt)
    ((App( lt rt )) (Cons( (infer-type-compound lt) (infer-type-compound rt) )))
    (u (fail (UnknownTypeCompound u)))
 ));
 
-infer-type-constructor := λname body. (match body (
+infer-type-constructor := λname body . (match body (
    ()
    ( (Literal tag) (
       (set type-constructors ( type-constructors (tag tag) ))
@@ -370,7 +370,7 @@ infer-type-constructor := λname body. (match body (
    ))
 ));
 
-infer-type-definition := λname def. (match def (
+infer-type-definition := λname def . (match def (
    ()
    ( (App( (App( tds (Literal |) )) body )) (
       (infer-type-definition( name tds ))
@@ -381,7 +381,7 @@ infer-type-definition := λname def. (match def (
    ))
 ));
 
-infer-constructor-type := λtag. (tail(
+infer-constructor-type := λtag . (tail(
    (local ctype)
    (local constructors)
    (set constructors type-constructors)
@@ -398,7 +398,7 @@ infer-constructor-type := λtag. (tail(
    ctype
 ));
 
-infer-type-expr := λe. (match e (
+infer-type-expr := λe . (match e (
    ()
    ( (Type( l ds )) (
       (infer-type-definition( l ds ))
@@ -407,7 +407,7 @@ infer-type-expr := λe. (match e (
    (_ ())
 ));
 
-infer-expr := λctx e. (
+infer-expr := λctx e . (
    (if (lookup-type e) () (
       match e (
          ()
@@ -480,7 +480,7 @@ infer-expr := λctx e. (
    ))
 );
 
-parse-lambda := λtoks. (tail(
+parse-lambda := λtoks . (tail(
    (local remainder)
    (local pme)
    (set pme (parse-one-expression toks))
@@ -519,11 +519,11 @@ parse-lambda := λtoks. (tail(
    (lmb remainder)
 ));
 
-unexpect := λt. fail (UnexpectedToken t);
-expect := λt ts. ();
-#expect := λt ts. if (eq( t (head ts) )) () (fail (ExpectedToken t));
+unexpect := λt . fail (UnexpectedToken t);
+expect := λt ts . ();
+#expect := λt ts . if (eq( t (head ts) )) () (fail (ExpectedToken t));
 
-parse-one-expression := λtoks. (tail(
+parse-one-expression := λtoks . (tail(
    (local pme)
    (local remainder)
    (local expr)
@@ -567,7 +567,7 @@ parse-one-expression := λtoks. (tail(
    (expr remainder)
 ));
 
-parse-many-expressions := λtoks. (tail(
+parse-many-expressions := λtoks . (tail(
    (local pme)
    (local expr)
    (local remainder)
@@ -597,9 +597,9 @@ parse-many-expressions := λtoks. (tail(
    (expr remainder)
 ));
 
-parse-expression := λtoks. (parse-many-expressions toks);
+parse-expression := λtoks . (parse-many-expressions toks);
 
-parse-program := λtoks. (tail(
+parse-program := λtoks . (tail(
    (local program)
    (local pme)
    (local pme2)
@@ -631,7 +631,7 @@ parse-program := λtoks. (tail(
    program
 ));
 
-tokenize := λtext. (tail(
+tokenize := λtext . (tail(
    (local program)
    (local buffer)
    (local in_comment)
@@ -698,13 +698,6 @@ tokenize := λtext. (tail(
          ) ())
          (set program (program \:))
       )))
-      (. (if in_comment () (
-         (if buffer (
-            (set program (program (clone-rope buffer)))
-            (set buffer ())
-         ) ())
-         (set program (program .))
-      )))
 
       (c (if in_comment () (
          (set buffer (
@@ -722,7 +715,7 @@ tokenize := λtext. (tail(
    (reverse-list program)
 ));
 
-reverse-list := λl. (tail(
+reverse-list := λl . (tail(
    (local r)
    (while l (
       (set r ( (tail l) r ))
@@ -731,7 +724,7 @@ reverse-list := λl. (tail(
    r
 ));
 
-is-variable := λv. (tail(
+is-variable := λv . (tail(
    (local is_v)
    (local passed_char)
    (local c)
@@ -773,7 +766,7 @@ is-variable := λv. (tail(
    is_v
 ));
 
-assemble := λprogram. (
+assemble := λprogram . (
    (local target)
    (set target 'tmp\,s)
    (while config (
@@ -873,36 +866,36 @@ assemble := λprogram. (
    (write-file (target (clone-rope output_pd)))
 );
 
-get-frame := λe. (match e (
+get-frame := λe . (match e (
    ()
    ((Expr(f p u t d pc off)) f)
 ));
-get-prog := λe. (match e (
+get-prog := λe . (match e (
    ()
    ((Expr(f p u t d pc off)) p)
 ));
-get-unframe := λe. (match e (
+get-unframe := λe . (match e (
    ()
    ((Expr(f p u t d pc off)) u)
 ));
-get-text := λe. (match e (
+get-text := λe . (match e (
    ()
    ((Expr(f p u t d pc off)) t)
 ));
-get-data := λe. (match e (
+get-data := λe . (match e (
    ()
    ((Expr(f p u t d pc off)) d)
 ));
-get-pc := λe. (match e (
+get-pc := λe . (match e (
    ()
    ((Expr(f p u t d pc off)) pc)
 ));
-get-offset := λe. (match e (
+get-offset := λe . (match e (
    ()
    ((Expr(f p u t d pc off)) off)
 ));
 
-get-maybe-function := λctx v. (tail(
+get-maybe-function := λctx v . (tail(
    (local r)
    (while ctx (
       (match (tail ctx) (
@@ -934,7 +927,7 @@ get-maybe-function := λctx v. (tail(
    r
 ));
 
-get-local := λctx v. (tail(
+get-local := λctx v . (tail(
    (local r)
    (while ctx (
       (match (tail ctx) (
@@ -965,7 +958,7 @@ get-local := λctx v. (tail(
    ))
    r
 ));
-set-local := λctx v. (tail(
+set-local := λctx v . (tail(
    (local r)
    (while ctx (
       (match (tail ctx) (
@@ -997,7 +990,7 @@ set-local := λctx v. (tail(
    r
 ));
 
-compile-expr := λctx e offset used. (tail(
+compile-expr := λctx e offset used . (tail(
    (local e1)
    (local e2)
    (local e3)
@@ -1210,7 +1203,7 @@ compile-expr := λctx e offset used. (tail(
    )))
 ));
 
-compile-append := λoutput_e gctx e. (tail(
+compile-append := λoutput_e gctx e . (tail(
    (set e (compile-expr( gctx e (get-offset output_e) Used )))
    (Expr(
       ((get-frame output_e) (get-frame e))
@@ -1223,7 +1216,7 @@ compile-append := λoutput_e gctx e. (tail(
    ))
 ));
 
-data-header := λ.(
+data-header := λ .(
   '\,data                                 \n
   'load_file_bsz:                         \n
   \t '\,quad \s '1024                     \n
@@ -1265,16 +1258,16 @@ data-header := λ.(
   \t '\,zero \s '1                        \n
 );
 
-program-header := λ.(
+program-header := λ .(
    '\,global \s '_start                   \n
    '\,text                                \n
    '_start:                               \n
    \t 'jmp \s 'main                       \n
 );
 
-exit-cleanup := λ. (system-call( '$60 '$0 '$0 '$0 ));
+exit-cleanup := λ . (system-call( '$60 '$0 '$0 '$0 ));
 
-system-call := λrax rdi rsi rdx. (
+system-call := λrax rdi rsi rdx . (
    \t 'mov \s rax , \s '%rax           \n
    \t 'mov \s rdi , \s '%rdi           \n
    \t 'mov \s rsi , \s '%rsi           \n
@@ -1282,7 +1275,7 @@ system-call := λrax rdi rsi rdx. (
    \t 'syscall                         \n
 );
 
-before-main := λ.(
+before-main := λ .(
    # before_main_argv:
    #    argv = ()
    #    let t = argv
@@ -1317,7 +1310,7 @@ before-main := λ.(
    'before_main_end:                   \n
 );
 
-allocate-heap-16 := λ. (
+allocate-heap-16 := λ . (
    \t 'mov \s '$s_section, \s '%r8           \n # %r8 now points to root s
    \t 'mov \s '$s_counter, \s '%r11          \n # %r11 now points to s counter
    \t 'mov \s '0 \[ '%r11 \] , \s '%r10      \n # %r10 now hold value of cons counter
@@ -1326,14 +1319,14 @@ allocate-heap-16 := λ. (
    \t 'mov \s '%r10, \s '0 \[ %r11 \]        \n # overwrite new s counter
 );
 
-close := λe. (
+close := λe . (
    e
    (allocate-heap-16 ())
    (\t 'mov \s '%r12, \s '0 \[ '%r8 \] \n)
    (\t 'mov \s '%r13, \s '8 \[ '%r8 \] \n)
 );
 
-is-builtin := λf. (match f (
+is-builtin := λf . (match f (
    ()
    ('is True)
    ('eq True)
@@ -1361,7 +1354,7 @@ is-builtin := λf. (match f (
    (_ ())
 ));
 
-label-case := λk. (tail(
+label-case := λk . (tail(
    (local nk)
    (foreach-char k (match $_ (
       ()
@@ -1372,7 +1365,7 @@ label-case := λk. (tail(
    (clone-rope nk)
 ));
 
-stdlib-functions := λ. (
+stdlib-functions := λ . (
    'print_s:                           \n
    # if .head is zero, then this is Nil
    \t 'cmp \s '$0, \s '%r12            \n
@@ -1806,53 +1799,53 @@ stdlib-functions := λ. (
    \t 'ret                                \n
 );
 
-inline-head := λ. (
+inline-head := λ . (
    \t 'mov \s '8 \[ '%r12 \] , \s '%r13   \n
    \t 'mov \s '0 \[ '%r12 \] , \s '%r12   \n
 );
 
-inline-tail := λ. (
+inline-tail := λ . (
    \t 'mov \s '0 \[ '%r13 \] , \s '%r12   \n
    \t 'mov \s '8 \[ '%r13 \] , \s '%r13   \n
 );
 
-enter-function := λ.(
+enter-function := λ .(
    \t 'push \s %rbp                       \n
    \t 'mov \s %rsp, \s %rbp               \n
 );
 
-exit-function := λ.(
+exit-function := λ .(
    \t 'mov \s %rbp, \s %rsp               \n
    \t 'pop \s %rbp                        \n
    \t 'ret                                \n
 );
 
-push-this := λ.(
+push-this := λ .(
    \t 'push \s '%r12                      \n
    \t 'push \s '%r13                      \n
 );
 
-push-zero := λ.(
+push-zero := λ .(
    \t 'pushq \s '$0                       \n
    \t 'pushq \s '$0                       \n
 );
 
-unpush-this := λ.(
+unpush-this := λ .(
    \t 'pop \s '%r8                        \n
    \t 'pop \s '%r8                        \n
 );
 
-pop-this := λ.(
+pop-this := λ .(
    \t 'pop \s '%r13                       \n
    \t 'pop \s '%r12                       \n
 );
 
-yield-nil := λ. (
+yield-nil := λ . (
    \t 'mov \s '$0, \s '%r12               \n
    \t 'mov \s '$0, \s '%r13               \n
 );
 
-yield-cons := λctx l r offset used. (tail(
+yield-cons := λctx l r offset used . (tail(
    (local e1)
    (local e2)
    (local prog)
@@ -1884,7 +1877,7 @@ yield-cons := λctx l r offset used. (tail(
    ))
 ));
 
-yield-atom := λctx a offset. (tail(
+yield-atom := λctx a offset . (tail(
    (local id)
    (set id (uuid()))
    (Expr(
@@ -1901,12 +1894,12 @@ yield-atom := λctx a offset. (tail(
 ));
 
 $uuid := ();
-uuid := λ. (tail(
+uuid := λ . (tail(
    (set $uuid (inc $uuid))
    (clone-rope ('uuid_ (dump-i $uuid)))
 ));
 
-escape-sequences := λt. match t (
+escape-sequences := λt . match t (
    ()
    ( () () )
    ( \\ \\\\ )
@@ -1953,7 +1946,7 @@ escape-sequences := λt. match t (
    )))
 );
 
-declare-local := λctx vname offset. (tail(
+declare-local := λctx vname offset . (tail(
    (local frame_this)
    (set frame_this (push-zero()))
    (local unframe_this)
@@ -1989,7 +1982,7 @@ declare-local := λctx vname offset. (tail(
    (Expr(frame_this set_this unframe_this () () ctx (inc offset)))
 ));
 
-i2s := λi. (tail(
+i2s := λi . (tail(
    (local ten)
    (set ten( inc(inc(inc(inc(inc( inc(inc(inc(inc(inc( ))))) ))))) ))
    (local sign)
@@ -2008,7 +2001,7 @@ i2s := λi. (tail(
    (clone-rope (sign s))
 ));
 
-destructure-args := λctx e offset. (match e (
+destructure-args := λctx e offset . (match e (
    ()
    ( Nil (tail(
       ()
@@ -2046,7 +2039,7 @@ destructure-args := λctx e offset. (match e (
    ))
 ));
 
-yield-foreach-atom := λforeach-head foreach-notcons foreach-ignore foreach-apply. (
+yield-foreach-atom := λforeach-head foreach-notcons foreach-ignore foreach-apply . (
    #define label for this function
    foreach-head ':                           \n
 
@@ -2076,7 +2069,7 @@ yield-foreach-atom := λforeach-head foreach-notcons foreach-ignore foreach-appl
    \t 'ret                                   \n
 );
 
-yield-foreach-char := λforeach-data foreach-head foreach-small foreach-end foreach-notcons foreach-apply foreach-expr. (
+yield-foreach-char := λforeach-data foreach-head foreach-small foreach-end foreach-notcons foreach-apply foreach-expr . (
    #define label for this function
    foreach-head ': \n
 
@@ -2131,7 +2124,7 @@ yield-foreach-char := λforeach-data foreach-head foreach-small foreach-end fore
    \t 'ret                                   \n
 );
 
-yield-patterns := λctx p offset. match p (
+yield-patterns := λctx p offset . match p (
    ()
    ( Nil (tail(
       ()
@@ -2171,7 +2164,7 @@ yield-patterns := λctx p offset. match p (
    ))
 );
 
-destructure-pattern-lhs := λctx lhs offset. (tail(
+destructure-pattern-lhs := λctx lhs offset . (tail(
    (local e1)
    (local e2)
    (local prog)
