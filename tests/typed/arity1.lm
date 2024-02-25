@@ -1,6 +1,6 @@
 
-f := λx. x;
-f := λx y. y;
-f := λx y z. z;
+f := λx . x;
+f := λx y . y;
+f := λx y z . z;
 
 f( 1 2 );

@@ -1,5 +1,5 @@
 
-my-lookup := λctx key. match ctx (
+my-lookup := λctx key . match ctx (
    ()
    ((ctxs k) (
       k

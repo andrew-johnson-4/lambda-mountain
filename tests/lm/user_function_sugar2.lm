@@ -1,5 +1,5 @@
 
-f := λx y z. y;
+f := λx y z . y;
 
 main := (
    print-s (f (1 2 3))

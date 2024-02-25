@@ -1,5 +1,5 @@
 
-print-space := λc. (
+print-space := λc . (
    (print-s c)
    (print-s '_)
 );
