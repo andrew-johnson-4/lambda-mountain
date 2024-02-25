@@ -126284,6 +126284,7 @@ uuid_00000000000013a7:
 	mov $parsed_program, %r15
 	mov 0(%r15), %r12
 	mov 8(%r15), %r13
+	call typecheck
 	call show_ascript
 	call print_s
 	mov $1, %rsi

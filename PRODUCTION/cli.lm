@@ -61,7 +61,7 @@ main := (
       ()
       (Compile (assemble parsed-program))
       (Parse (print-s parsed-program))
-      (Typecheck (print-s (show-ascript parsed-program)))
+      (Typecheck (print-s (show-ascript (typecheck parsed-program))))
    ))
 );
 
