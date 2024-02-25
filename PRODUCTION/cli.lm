@@ -114,47 +114,62 @@ main := (
    (set mode Compile)
    (local inputs)
    (local target)
-   (local option)
-   (local arg)
-   (foreach-atom (tail argv) ((set arg $_) (if option
-      (match option (
-         ()
-         (() ())
-         (SetTarget (
-            (set config ( config (Target arg)))
-            (set option ())
-         ))
+   (local args)
+   (set args (tail argv))
+   (while args (match args (
+      ()
+      ( (-o (tgt remainder)) (
+         (set target tgt)
+         (set args remainder)
       ))
-      (match arg (
-         ()
-         (() ())
-         (-o (set option SetTarget))
-         (--compile (set mode Compile))
-         (--parse (set mode Parse))
-         (--parse-expression (set mode ParseExpression))
-         (--tokenize (set mode Tokenize))
-         (--typecheck (set mode Typecheck))
-         (fp (set inputs (fp inputs)))
+      ( (--compile remainder) (
+         (set mode Compile)
+         (set args remainder)
+      ))
+      ( (--parse remainder) (
+         (set mode Parse)
+         (set args remainder)
+      ))
+      ( (--parse-expression remainder) (
+         (set mode ParseExpression)
+         (set args remainder)
+      ))
+      ( (--tokenize remainder) (
+         (set mode Tokenize)
+         (set args remainder)
+      ))
+      ( (--typecheck remainder) (
+         (set mode Typecheck)
+         (set args remainder)
+      ))
+      ( (fp remainder) (
+         (set inputs (fp inputs))
+         (set args remainder)
       ))
    )))
-   (match mode (
+   (while inputs (match mode (
       ()
-      (Compile (foreach-atom inputs (
-         if $_ (parse-program (tokenize-file $_)) ()
-      )))
-      (Parse (foreach-atom inputs (
-         if $_ (parse-program (tokenize-file $_)) ()
-      )))
-      (Typecheck (foreach-atom inputs (
-         if $_ (parse-program (tokenize-file $_)) ()
-      )))
-      (ParseExpression (foreach-atom inputs (
-         if $_ (print-s (parse-expression (tokenize-file $_))) ()
-      )))
-      (Tokenize (foreach-atom inputs (
-         if $_ (print-s (tokenize-file $_)) ()
-      )))
-   ))
+      (Compile (
+         (parse-program (tokenize-file (head inputs)))
+         (set inputs (tail inputs))
+      ))
+      (Parse (
+         (parse-program (tokenize-file (head inputs)))
+         (set inputs (tail inputs))
+      ))
+      (Typecheck (
+         (parse-program (tokenize-file (head inputs)))
+         (set inputs (tail inputs))
+      ))
+      (ParseExpression (
+         (print-s (parse-expression (tokenize-file (head inputs))))
+         (set inputs (tail inputs))
+      ))
+      (Tokenize (
+         (print-s (tokenize-file (head inputs)))
+         (set inputs (tail inputs))
+      ))
+   )))
    (match mode (
       ()
       (Compile (assemble parsed-program))
@@ -163,7 +178,6 @@ main := (
    ))
 );
 
-#this is necessary to circumvent a bug with the bootstrap compiler trying to call globals as functions syntactically
 fail := λmsg . (print-s msg) (exit 1);
 
 type-context := ();
@@ -1207,21 +1221,6 @@ compile-expr := λctx e offset used . (tail(
             (get-offset e2)
          ))
       )))
-      ( (App( (App( (Variable 'foreach-atom) t )) d )) (tail(
-         (set e1 (compile-expr(ctx t offset Used)))
-         (set e2 (compile-expr((get-pc e1) d (get-offset e1) Unused)))
-         (local foreach_atom_label)
-         (set foreach_atom_label (uuid()))
-         (local foreach_atom_notcons)
-         (set foreach_atom_notcons (uuid()))
-         (local foreach_atom_ignore)
-         (set foreach_atom_ignore (uuid()))
-         (local foreach_text)
-         (set foreach_text (yield-foreach-atom( foreach_atom_label foreach_atom_notcons foreach_atom_ignore (get-prog e2) )))
-         (set prog ( (get-prog e1) \t 'call \s foreach_atom_label \n ))
-         (set tail_safe True)
-         (Expr( ((get-frame e1) (get-frame e2)) prog ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2) foreach_text) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
-      )))
       ( (App( (App( (Variable 'foreach-char) t )) d )) (tail(
          (set e1 (compile-expr(ctx t offset Used)))
          (set e2 (compile-expr((get-pc e1) d (get-offset e1) Unused)))
@@ -2111,36 +2110,6 @@ destructure-args := λctx e offset . (match e (
       (fail (InvalidFunctionParameters e))
    ))
 ));
-
-yield-foreach-atom := λforeach-head foreach-notcons foreach-ignore foreach-apply . (
-   #define label for this function
-   foreach-head ':                           \n
-
-   #if this is a cons, recurse
-   \t 'cmp \s '$0, \s '%r13                  \n
-   \t 'je \s foreach-notcons                 \n
-   (push-this())
-   \t 'call \s 'head                         \n
-   \t 'call \s foreach-head                  \n
-   (pop-this())
-   (push-this())
-   \t 'call \s 'tail                         \n
-   \t 'call \s foreach-head                  \n
-   (pop-this())
-   \t 'ret                                   \n
-
-   #if not cons, apply
-   foreach-notcons ':                        \n
-   \t 'cmp \s '$0, \s '%r12                  \n
-   \t 'je \s foreach-ignore                  \n
-   (push-this())
-   foreach-apply
-   (pop-this())
-   \t 'ret                                   \n
-
-   foreach-ignore ':                         \n
-   \t 'ret                                   \n
-);
 
 yield-foreach-char := λforeach-data foreach-head foreach-small foreach-end foreach-notcons foreach-apply foreach-expr . (
    #define label for this function
