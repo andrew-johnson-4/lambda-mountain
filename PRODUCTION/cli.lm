@@ -4,6 +4,7 @@ parsed-program := ();
 global-text-section := ();
 global-data-section := ();
 
+#import STDLIB/default-argv-hook;
 argv-main-hook := ();
 include-argv-hook := λ. if argv-main-hook () (set argv-main-hook (argv-main-hook (
    \t 'pop \s '%rax                    \n # put argc in %rax
