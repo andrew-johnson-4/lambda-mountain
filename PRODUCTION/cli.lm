@@ -754,7 +754,9 @@ tokenize := λtext . (tail(
    (local buffer)
    (local in_comment)
    (local char)
+
    (foreach-char text ((set char $_) (match char (
+#   (while text ( (set char (head-string text)) (set text (tail-string text)) (match char (      
       ()
 
 #     These characters are special characters
