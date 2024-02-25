@@ -96,11 +96,100 @@ main := (
 
 # Tokenizer 
 
-tokenize-file := λ. ();
+tokenize-file := λpath . (
+   tokenize (load-file path)
+);
+
+tokenize := λtext . (tail(
+   (local program)
+   (local buffer)
+   (local in_comment)
+   (local char)
+
+   (while text ( (set char (head-string text)) (set text (tail-string text)) (match char (      
+      ()
+
+#     These characters are special characters
+#     They are removed during tokenization
+      (\o (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+         (set in_comment True)
+      ))
+      (\n (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+         (set in_comment ())
+      ))
+      (\s (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+      ))
+      (\t (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+      ))
+
+#     These characters are special characters
+#     They are isolated during tokenization
+      (\[ (if in_comment () (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+         (set program (program \[))
+      )))
+      (\] (if in_comment () (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+         (set program (program \]))
+      )))
+      (\' (if in_comment () (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+         (set program (program \'))
+      )))
+      (\: (if in_comment () (
+         (if buffer (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+         (set program (program \:))
+      )))
+
+      (c (if in_comment () (
+         (set buffer (
+            buffer (clone-rope c)
+         ))
+         (if (eq(\l (clone-rope buffer))) (
+            (set program (program (clone-rope buffer)))
+            (set buffer ())
+         ) ())
+      )))
+   ))))
+   (if buffer (
+      (set program (program (clone-rope buffer)))
+   ) ())
+   (reverse-list program)
+));
 
 # Parser
 
-parse-program := λ. ();
+parse-program := λ program . (
+   print-s program
+);
 parse-expression := λ. ();
 
 # Typechecker
@@ -111,6 +200,17 @@ show-ascript := λ. ();
 # Assembler
 
 assemble := λ. ();
+
+# Utility Functions
+
+reverse-list := λl . (tail(
+   (local r)
+   (while l (
+      (set r ( (tail l) r ))
+      (set l (head l))
+   ))
+   r
+));
 
 # Data Segments
 
