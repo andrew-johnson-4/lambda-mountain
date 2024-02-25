@@ -1,2 +1,60 @@
 
-main := ();
+# Static Globals
+cli-config              := ();
+typecheck-type-subtypes := ();
+
+# Static Globals Init
+typecheck-init := λ. (
+   (set typecheck-type-subtypes
+     (
+        (
+           (() (Atom S))
+           (Nil S)
+        )
+        ((Cons(S S)) S)
+     )
+   )
+);
+
+# CLI Entry Point
+main := (
+   (typecheck-init())
+
+   (local mode)
+   (set mode Compile)
+   (local inputs)
+   (local args)
+   (set args (tail argv))
+   (while args (match args (
+      ()
+      ( (-o (tgt remainder)) (
+         (set cli-config ( cli-config (Target tgt)))
+         (set args remainder)
+      ))
+      ( (--compile remainder) (
+         (set mode Compile)
+         (set args remainder)
+      ))
+      ( (--parse remainder) (
+         (set mode Parse)
+         (set args remainder)
+      ))
+      ( (--parse-expression remainder) (
+         (set mode ParseExpression)
+         (set args remainder)
+      ))
+      ( (--tokenize remainder) (
+         (set mode Tokenize)
+         (set args remainder)
+      ))
+      ( (--typecheck remainder) (
+         (set mode Typecheck)
+         (set args remainder)
+      ))
+      ( (fp remainder) (
+         (set inputs (fp inputs))
+         (set args remainder)
+      ))
+   )))
+);
+
