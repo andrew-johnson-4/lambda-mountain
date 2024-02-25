@@ -1,9 +1,14 @@
 
-test: boot
-	./bootstrap -o production.s PRODUCTION/cli.lm
+test:
+	lm -o production.s PRODUCTION/cli.lm
 	as -o production.o production.s
 	ld -o production   production.o
-	./production
+	./production -o production1.s PRODUCTION/cli.lm
+	as -o production1.o production1.s
+	ld -o production1   production1.o
+	./production1 -o production2.s PRODUCTION/cli.lm
+	as -o production2.o production2.s
+	ld -o production2   production2.o
 
 build:
 	as -o lm_raw.o BOOTSTRAP/cli.s
