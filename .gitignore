@@ -17,3 +17,4 @@ bin/lm_raw
 production
 production.s
 production.o
+tmp.s
