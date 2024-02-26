@@ -4,11 +4,11 @@ parsed-program := ();
 global-text-section := ();
 global-data-section := ();
 
-program-break := λ. (
-   '__current_break:                     \n
-   \t '.zero \s '8                     \n
-   '__program_break:                     \n
-);
+#program-break := λ. (
+#   '__current_break:                     \n
+#   \t '.zero \s '8                     \n
+#   '__program_break:                     \n
+#);
 
 #import STDLIB/default-argv-hook;
 argv-main-hook := ();
@@ -39,41 +39,68 @@ include-argv-hook := λ. if argv-main-hook () (set argv-main-hook (argv-main-hoo
    'before_main_end:                   \n
 )));
 
-sbrk := λsize . (tail(
-   (local extend)
-   (set extend (uuid()))
-   (\t 'push \s '%rdi                           \n
-    \t 'push \s '%rax                           \n
-    \t 'mov \s '$__current_break, \s '%rdi      \n
-    \t 'mov \s '0 \[ '%rdi \] , \s '%r8         \n
-    \t 'cmp \s '$0, \s '%r8                     \n
-    \t 'jne \s extend                           \n
-    \t 'mov \s '$__program_break, \s '%r8       \n
-    extend ':                                   \n
-    \t 'add \s '$ size , \s '%r8                \n
-    \t 'mov \s '$12, \s '%rax                   \n  # system call brk
-    \t 'mov \s '%r8, \s '%rdi                   \n  # new requested brk
-    \t 'syscall                                 \n
-    \t 'mov \s '$__current_break, \s '%rdi      \n
-    \t 'mov \s '%r8, \s '0 \[ '%rdi \]          \n
-    \t 'pop \s '%rax                            \n
-    \t 'pop \s '%rdi                            \n
-    \t 'sub \s '$ size , \s '%r8                \n)
-));
+#sbrk := λsize . (tail(
+#   (local extend)
+#   (set extend (uuid()))
+#   (\t 'push \s '%rdi                           \n
+#    \t 'push \s '%rax                           \n
+#    \t 'mov \s '$__current_break, \s '%rdi      \n
+#    \t 'mov \s '0 \[ '%rdi \] , \s '%r8         \n
+#    \t 'cmp \s '$0, \s '%r8                     \n
+#    \t 'jne \s extend                           \n
+#    \t 'mov \s '$__program_break, \s '%r8       \n
+#    extend ':                                   \n
+#    \t 'add \s '$ size , \s '%r8                \n
+#    \t 'mov \s '$12, \s '%rax                   \n  # system call brk
+#    \t 'mov \s '%r8, \s '%rdi                   \n  # new requested brk
+#    \t 'syscall                                 \n
+#    \t 'mov \s '$__current_break, \s '%rdi      \n
+#    \t 'mov \s '%r8, \s '0 \[ '%rdi \]          \n
+#    \t 'pop \s '%rax                            \n
+#    \t 'pop \s '%rdi                            \n
+#    \t 'sub \s '$ size , \s '%r8                \n)
+#));
 
 #import STDLIB/default-atom-allocator;
-allocate-cons-function-id := ();
+allocate-cons-s-section := ();
+allocate-cons-s-counter := ();
 allocate-cons := λ . (tail(
-   (if allocate-cons-function-id () (
-      (set allocate-cons-function-id (uuid()))
-      (set global-text-section ( global-text-section (
-         allocate-cons-function-id ':                               \n
-	 (sbrk 16)
-         \t 'ret                                                    \n
+   (if allocate-cons-s-section () (
+      (set allocate-cons-s-section (uuid()))
+      (set allocate-cons-s-counter (uuid()))
+      (set global-data-section ( global-data-section (
+         allocate-cons-s-counter ': \n
+         \t '.zero \s '8            \n
+         allocate-cons-s-section ': \n
+         \t '.zero \s '536870912    \n
       )))
    ))
-   ( \t 'call \s allocate-cons-function-id \n )
+   (\t 'push \s '%r10                                          \n
+    \t 'push \s '%r11                                          \n
+    \t 'mov \s '$ allocate-cons-s-section ', \s '%r8           \n  # %r8 now points to root s
+    \t 'mov \s '$ allocate-cons-s-counter ', \s '%r11          \n  # %r11 now points to s counter
+    \t 'mov \s '0 \[ '%r11 \] , \s '%r10                       \n  # %r10 now hold value of cons counter
+    \t 'add \s '%r10, \s '%r8                                  \n  # %r8 now points to top free cons
+    \t 'add \s '$16, \s '%r10                                  \n  # increment s counter
+    \t 'mov \s '%r10, \s '0 \[ %r11 \]                         \n
+    \t 'pop \s '%r11                                           \n
+    \t 'pop \s '%r10                                           \n
+   ) # overwrite new s counter
 ));
+
+#sbrk based cons allocation may still be problematic
+#allocate-cons-function-id := ();
+#allocate-cons := λ . (tail(
+#   (if allocate-cons-function-id () (
+#      (set allocate-cons-function-id (uuid()))
+#      (set global-text-section ( global-text-section (
+#         allocate-cons-function-id ':                               \n
+#	 (sbrk 16)
+#         \t 'ret                                                    \n
+#      )))
+#   ))
+#   ( \t 'call \s allocate-cons-function-id \n )
+#));
 
 #import STDLIB/default-cons-allocator;
 
@@ -963,7 +990,8 @@ assemble := λprogram . (
          global-text-section
          (stdlib-functions())
       )
-      ((tail output_pd) (get-data main_pd) global-data-section (program-break()))
+      ((tail output_pd) (get-data main_pd) global-data-section)
+#      ((tail output_pd) (get-data main_pd) global-data-section (program-break()))
    ))
 
    (write-file (target (clone-rope output_pd)))
