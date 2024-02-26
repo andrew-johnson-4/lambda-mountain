@@ -111,6 +111,7 @@ tokenize := λtext . (tail(
 
 #     These characters are special characters
 #     They are removed during tokenization
+      (() ())
       (\o (
          (if buffer (
             (set program (program (clone-rope buffer)))
@@ -187,10 +188,160 @@ tokenize := λtext . (tail(
 
 # Parser
 
-parse-program := λ program . (
-   print-s program
-);
-parse-expression := λ. ();
+parse-program := λtoks . (tail(
+   (local program)
+   (local pme)
+   (local pme2)
+   (while toks (
+      match toks (
+         ()
+         ((\: remainder) (
+            (set toks remainder)
+         ))
+         (('type remainder) (
+            (set pme (parse-one-expression remainder))
+            (set remainder (tail pme))
+            (set pme2 (parse-many-expressions remainder))
+            (set parse-parsed-program ( parse-parsed-program (Type( (head pme) (head pme2) )) ))
+            (set toks (tail pme2))
+         ))
+         (('import (relative-path remainder)) (
+            (parse-program (tokenize-file relative-path))
+            (set toks remainder)
+         ))
+         ((key (:= remainder)) (
+            (set pme (parse-many-expressions remainder))
+            (set parse-parsed-program ( parse-parsed-program (Global (key (head pme))) ))
+            (set toks (tail pme))
+         ))
+         (remainder (
+            (set pme (parse-many-expressions remainder))
+            (set parse-parsed-program (parse-parsed-program (GExpr (head pme)) ))
+            (set toks (tail pme))
+         ))
+      )
+   ))
+   program
+));
+
+parse-lambda := λtoks . (tail(
+   (local remainder)
+   (local pme)
+   (set pme (parse-one-expression toks))
+   (local lmb)
+   (set lmb (head pme))
+   (set toks (tail pme))
+   (match lmb (
+      ()
+      ((Literal .) (
+         (set pme (parse-many-expressions toks))
+         (set lmb (Nil (head pme)))
+         (set remainder (tail pme))
+         (set toks ())
+      ))
+   ))
+   (while toks (
+      (set pme (parse-one-expression toks))
+      (match pme (
+         ()
+         (((Literal .) r) (
+            (set pme (parse-many-expressions r))
+            (set lmb (lmb (head pme)))
+            (set remainder (tail pme))
+            (set toks ())
+         ))
+         ((e ()) (
+            (parse-expect( . toks ))
+            (set toks ())
+         ))
+         ((e r) (
+            (set lmb (App (lmb e)))
+            (set toks r)
+         ))
+      ))
+   ))	
+   (lmb remainder)
+));
+
+parse-unexpect := λt . fail (UnexpectedToken t);
+parse-expect := λt ts . ();
+#parse-expect := λt ts . if (eq( t (head ts) )) () (fail (ExpectedToken t));
+
+parse-one-expression := λtoks . (tail(
+   (local pme)
+   (local remainder)
+   (local expr)
+   (match toks (
+      ()
+      ( () (
+         (set expr Nil)
+         (set remainder ())
+      ))
+      ( ( \l r ) (
+         (set pme (parse-lambda r))
+         (set expr (Lambda (head pme)))
+         (set remainder (tail pme))
+      ))
+      ( ( \] r ) (
+         (parse-unexpect (head toks))
+      ))
+      ( ( \[ r ) (
+         (set pme (parse-many-expressions r))
+         (parse-expect( \] (tail pme) ))
+         (set expr (head pme))
+         (set remainder (tail pme))
+      ))
+      ( ( \\ (\' r) ) (
+         (set expr (Literal \'))
+         (set remainder r)
+      ))
+      ( ( \' (i r) ) (
+         (set expr (Literal i))
+         (set remainder r)
+      ))
+      ( (a r) (
+         (if (is-variable a) (
+            (set expr (Variable a))
+         ) (
+            (set expr (Literal a))
+         ))
+         (set remainder r)
+      ))
+   ))
+   (expr remainder)
+));
+
+parse-many-expressions := λtoks . (tail(
+   (local pme)
+   (local expr)
+   (local remainder)
+   (while toks (
+      (match toks (
+         ()
+         ((\: tl) (
+            (set remainder toks)
+            (set toks ())
+         ))
+         ((\] tl) (
+            (if expr () (set expr Nil))
+            (set remainder tl)
+            (set toks ())
+         ))
+         (_ (
+            (set pme (parse-one-expression toks))
+            (if expr (
+               (set expr (App( expr (head pme) )))
+            ) (
+               (set expr (head pme))
+            ))
+            (set toks (tail pme))
+         ))
+      ))
+   ))
+   (expr remainder)
+));
+
+parse-expression := λtoks . (parse-many-expressions toks);
 
 # Typechecker
 
@@ -199,9 +350,13 @@ show-ascript := λ. ();
 
 # Assembler
 
-assemble := λ. ();
+assemble := λprogram . (
+   print-s program
+);
 
 # Utility Functions
+
+fail := λmsg . (print-s msg) (exit 1);
 
 reverse-list := λl . (tail(
    (local r)
@@ -210,6 +365,38 @@ reverse-list := λl . (tail(
       (set l (head l))
    ))
    r
+));
+
+is-variable := λv . (match (head-string v) (
+   ()
+   ('$ True )
+   ('_ True )
+   ('a True )
+   ('b True )
+   ('c True )
+   ('d True )
+   ('e True )
+   ('f True )
+   ('g True )
+   ('h True )
+   ('i True )
+   ('j True )
+   ('k True )
+   ('l True )
+   ('m True )
+   ('n True )
+   ('o True )
+   ('p True )
+   ('q True )
+   ('r True )
+   ('s True )
+   ('t True )
+   ('u True )
+   ('v True )
+   ('w True )
+   ('x True )
+   ('y True )
+   ('z True )
 ));
 
 # Data Segments
