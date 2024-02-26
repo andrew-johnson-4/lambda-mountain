@@ -1,0 +1,149 @@
+TEST --compile tests/lm/argv.lm
+Expected: (./a.out ())
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/argv.lm
+TEST --compile tests/lm/argv2.lm
+Expected:
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/argv2.lm
+TEST --compile tests/lm/assign.lm
+Expected: (((Assignment 123) abc) xyz)
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/assign.lm
+TEST --compile tests/lm/assign2.lm
+Expected: (((() 123) abc) xyz)
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/assign2.lm
+TEST --compile tests/lm/atom_comparison.lm
+Expected: ()
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/atom_comparison.lm
+TEST --compile tests/lm/atom_comparison_equal.lm
+Expected: True
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/atom_comparison_equal.lm
+TEST --compile tests/lm/atom_comparison_equal2.lm
+Expected: (True λ)
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/atom_comparison_equal2.lm
+TEST --compile tests/lm/atom_comparison_inequal.lm
+Expected: ()
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/atom_comparison_inequal.lm
+TEST --compile tests/lm/clone_rope.lm
+Expected: helloworld
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/clone_rope.lm
+TEST --compile tests/lm/clone_rope2.lm
+Expected: (A (B C))
+Actual: (A A)
+TEST --compile tests/lm/clone_rope3.lm
+Expected: (((() A) B) C)
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/clone_rope3.lm
+TEST --compile tests/lm/cons.lm
+Expected: ((123 ()) 456)
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/cons.lm
+TEST --compile tests/lm/dump_iadd.lm
+Expected: 0000000000000005
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/dump_iadd.lm
+TEST --compile tests/lm/dump_iadd2.lm
+Expected: -000000000000001
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/dump_iadd2.lm
+TEST --compile tests/lm/dump_idiv.lm
+Expected: 0000000000000002
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/dump_idiv.lm
+TEST --compile tests/lm/dump_imod.lm
+Expected: 0000000000000001
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/dump_imod.lm
+TEST --compile tests/lm/dump_imul.lm
+Expected: 0000000000000006
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/dump_imul.lm
+TEST --compile tests/lm/foreach_char.lm
+Expected: h_e_l_l_o_w_o_r_l_d_
+Actual: production error code:  on target tests/lm/foreach_char.lm
+TEST --compile tests/lm/foreach_char_e.lm
+Expected: h_e_l_l_o_w_o_r_l_d_
+Actual: production error code:  on target tests/lm/foreach_char_e.lm
+TEST --compile tests/lm/globals.lm
+Expected: ()123ABC
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/globals.lm
+TEST --compile tests/lm/head.lm
+Expected: 123
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/head.lm
+TEST --compile tests/lm/is1.lm
+Expected: ()
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/is1.lm
+TEST --compile tests/lm/is2.lm
+Expected: True
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/is2.lm
+TEST --compile tests/lm/match11.lm
+Expected: (() (Global ((UnknownTerm S) (UnknownTerm V))))
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/match11.lm
+TEST --compile tests/lm/match4.lm
+Expected: (1 3)
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/match4.lm
+TEST --compile tests/lm/match5.lm
+Expected: 1
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/match5.lm
+TEST --compile tests/lm/match6.lm
+Expected: (1 2)
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/match6.lm
+TEST --compile tests/lm/match7.lm
+Expected: 1
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/match7.lm
+TEST --compile tests/lm/match8.lm
+Expected: (1 3)
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/match8.lm
+TEST --compile tests/lm/match9.lm
+Expected: (1 2)
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/match9.lm
+TEST --compile tests/lm/set_global.lm
+Expected: (() ())
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/set_global.lm
+TEST --compile tests/lm/user_function_sugar1.lm
+Expected: 1
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/user_function_sugar1.lm
+TEST --compile tests/lm/user_function_sugar2.lm
+Expected: 2
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/user_function_sugar2.lm
+TEST --compile tests/lm/user_function_sugar3.lm
+Expected: 3
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/user_function_sugar3.lm
+TEST --compile tests/lm/user_function_unsugared.lm
+Expected: b
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/user_function_unsugared.lm
+TEST --compile tests/lm/uuid1.lm
+Expected: uuid_0000000000000001uuid_0000000000000002
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/uuid1.lm
+TEST --compile tests/lm/while1.lm
+Expected: ((1 2) 3)(1 2)1
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/while1.lm
+TEST --compile tests/lm/write_file.lm
+Expected: hello_world
+Actual: timeout 10 ./a.out error code: timeout: the monitored command dumped core
+ on target tests/lm/write_file.lm
