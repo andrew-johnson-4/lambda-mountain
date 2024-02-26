@@ -1,9 +1,9 @@
 
 test-tail: prod
-	./production tests/lm/tail.lm
+	./production tests/lm/argv.lm
 	as -o tmp.o tmp.s
 	ld -o tmp   tmp.o
-	./tmp
+	timeout 10 ./tmp
 
 test:
 	lm -o production.s PRODUCTION/cli.lm
@@ -21,10 +21,14 @@ build:
 	ld -o lm lm_raw.o
 	rm lm_raw.o
 
-prod:
-	lm -o production.s PRODUCTION/cli.lm
+prod: bs
+	./bootstrap -o production.s PRODUCTION/cli.lm
 	as -o production.o production.s
 	ld -o production   production.o
+
+bs:
+	as -o bootstrap.o BOOTSTRAP/cli.s
+	ld -o bootstrap   bootstrap.o
 
 boot:
 	lm -o bootstrap.s BOOTSTRAP/cli.lm
