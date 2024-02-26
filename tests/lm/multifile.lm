@@ -13,42 +13,7 @@ main := (
    (local mode)
    (set mode Parse)
 
-   (set args ('tests/data/file1.txt ('tests/data/file2.txt ())))
-
-   (while args (match args (
-      ()
-      ( (-o (tgt remainder)) (
-         (set cli-config ( cli-config (Target tgt)))
-         (set args remainder)
-      ))
-      ( (--compile remainder) (
-         (set mode Compile)
-         (set args remainder)
-      ))
-      ( (--parse remainder) (
-         (set mode Parse)
-         (set args remainder)
-      ))
-      ( (--parse-expression remainder) (
-         (set mode ParseExpression)
-         (set args remainder)
-      ))
-      ( (--tokenize remainder) (
-         (set mode Tokenize)
-         (set args remainder)
-      ))
-      ( (--typecheck remainder) (
-         (set mode Typecheck)
-         (set args remainder)
-      ))
-      ( (fp remainder) (
-         (set inputs (fp inputs))
-         (set args remainder)
-      ))
-      ( u (
-         fail (UnexpectionCommand u)
-      ))
-   )))
+   (set inputs ('tests/data/file1.txt ('tests/data/file2.txt ())))
 
    (while inputs (match mode (
       ()
@@ -77,9 +42,12 @@ main := (
 
 # Tokenizer 
 
-tokenize-file := λpath . (
-   (tokenize (load-file path))
-);
+tokenize-file := λpath . (match path (
+   ()
+   (() ())
+   ((_ _) ())
+   (fp (tokenize (load-file fp)))
+));
 
 tokenize := λtext . (tail(
    (print-s (Tokenize text))

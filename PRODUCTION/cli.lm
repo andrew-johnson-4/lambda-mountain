@@ -112,9 +112,13 @@ main := (
 
 # Tokenizer 
 
-tokenize-file := λpath . (
-   (tokenize (load-file path))
-);
+tokenize-file := λpath . (match path (
+   ()
+   (() ())
+   ((_ _) ())
+   (fp (tokenize (load-file fp)))
+));
+
 
 tokenize := λtext . (tail(
    (local program)
