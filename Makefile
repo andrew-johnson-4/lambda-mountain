@@ -1,4 +1,14 @@
 
+mem: prod
+	./bootstrap tests/lm/manycons.lm
+	as -o tmp.o tmp.s
+	ld -o tmp   tmp.o
+	./tmp
+	./production tests/lm/manycons.lm
+	as -o tmp.o tmp.s
+	ld -o tmp   tmp.o
+	./tmp
+
 test: prod
 	./production -o production1.s PRODUCTION/cli.lm
 	as -o production1.o production1.s
