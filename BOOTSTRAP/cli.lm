@@ -1,111 +1,21 @@
 
-config := ();
-parsed-program := ();
-global-text-section := ();
-global-data-section := ();
+# Static Globals
 
-#program-break := λ. (
-#   '__current_break:                     \n
-#   \t '.zero \s '8                     \n
-#   '__program_break:                     \n
-#);
+cli-config                               := ();
+parse-parsed-program                     := ();
+typecheck-subtypes                       := ();
+typecheck-context                        := ();
+typecheck-constructors                   := ();
+typecheck-types-have-changed             := ();
+typecheck-global-context                 := ();
+assemble-text-section                    := ();
+assemble-data-section                    := ();
+compile-argv-hook                        := ();
 
-#import STDLIB/default-argv-hook;
-argv-main-hook := ();
-include-argv-hook := λ. if argv-main-hook () (set argv-main-hook (argv-main-hook (
-   \t 'pop \s '%r10                    \n # put argc in %r10
-   \t 'mov \s '$argv, \s '%r9          \n
-   \t 'movq \s '$0, \s '0 \[ '%r9 \]   \n
-   \t 'movq \s '$0, \s '8 \[ '%r9 \]   \n
+# Static Global Initializers
 
-   'before_main_argv:                  \n
-   \t 'cmp \s '$0, \s '%r10            \n
-   \t 'je \s 'before_main_end          \n
-
-   \t 'pop \s '%r12                    \n #this = argv[i]
-   \t 'mov \s '$0, \s '%r13            \n
-   (close())                              #r8 is argv[i]
-
-   \t 'mov \s '%r8, \s '0 \[ '%r9 \]   \n #set t.head = argv[i]
-   \t 'mov \s '$0, \s '%r12            \n
-   \t 'mov \s '$0, \s '%r13            \n
-   (close())
-   \t 'mov \s '%r8, \s '8 \[ '%r9 \]   \n #set t.tail = ()
-   \t 'mov \s '%r8, \s '%r9            \n #set t = t.tail
-
-   \t 'dec \s '%r10                    \n #dec argc
-   \t 'jmp \s 'before_main_argv        \n
-
-   'before_main_end:                   \n
-)));
-
-#sbrk := λsize . (tail(
-#   (local extend)
-#   (set extend (uuid()))
-#   (\t 'push \s '%rdi                           \n
-#    \t 'push \s '%rax                           \n
-#    \t 'mov \s '$__current_break, \s '%rdi      \n
-#    \t 'mov \s '0 \[ '%rdi \] , \s '%r8         \n
-#    \t 'cmp \s '$0, \s '%r8                     \n
-#    \t 'jne \s extend                           \n
-#    \t 'mov \s '$__program_break, \s '%r8       \n
-#    extend ':                                   \n
-#    \t 'add \s '$ size , \s '%r8                \n
-#    \t 'mov \s '$12, \s '%rax                   \n  # system call brk
-#    \t 'mov \s '%r8, \s '%rdi                   \n  # new requested brk
-#    \t 'syscall                                 \n
-#    \t 'mov \s '$__current_break, \s '%rdi      \n
-#    \t 'mov \s '%r8, \s '0 \[ '%rdi \]          \n
-#    \t 'pop \s '%rax                            \n
-#    \t 'pop \s '%rdi                            \n
-#    \t 'sub \s '$ size , \s '%r8                \n)
-#));
-
-#import STDLIB/default-atom-allocator;
-allocate-cons-s-section := ();
-allocate-cons-s-counter := ();
-allocate-cons := λ . (tail(
-   (if allocate-cons-s-section () (
-      (set allocate-cons-s-section (uuid()))
-      (set allocate-cons-s-counter (uuid()))
-      (set global-data-section ( global-data-section (
-         allocate-cons-s-counter ': \n
-         \t '.zero \s '8            \n
-         allocate-cons-s-section ': \n
-         \t '.zero \s '536870912    \n
-      )))
-   ))
-   (\t 'push \s '%r10                                          \n
-    \t 'push \s '%r11                                          \n
-    \t 'mov \s '$ allocate-cons-s-section ', \s '%r8           \n  # %r8 now points to root s
-    \t 'mov \s '$ allocate-cons-s-counter ', \s '%r11          \n  # %r11 now points to s counter
-    \t 'mov \s '0 \[ '%r11 \] , \s '%r10                       \n  # %r10 now hold value of cons counter
-    \t 'add \s '%r10, \s '%r8                                  \n  # %r8 now points to top free cons
-    \t 'add \s '$16, \s '%r10                                  \n  # increment s counter
-    \t 'mov \s '%r10, \s '0 \[ %r11 \]                         \n
-    \t 'pop \s '%r11                                           \n
-    \t 'pop \s '%r10                                           \n
-   ) # overwrite new s counter
-));
-
-#sbrk based cons allocation may still be problematic
-#allocate-cons-function-id := ();
-#allocate-cons := λ . (tail(
-#   (if allocate-cons-function-id () (
-#      (set allocate-cons-function-id (uuid()))
-#      (set global-text-section ( global-text-section (
-#         allocate-cons-function-id ':                               \n
-#	 (sbrk 16)
-#         \t 'ret                                                    \n
-#      )))
-#   ))
-#   ( \t 'call \s allocate-cons-function-id \n )
-#));
-
-#import STDLIB/default-cons-allocator;
-
-main := (
-   (set type-subtypes 
+typecheck-init := λ. (
+   (set typecheck-subtypes 
      (
         (
            (() (Atom S))
@@ -115,6 +25,14 @@ main := (
      )
    )
    (local mode)
+);
+
+# Cli Entry Point
+
+main := (
+   (typecheck-init())
+
+   (local mode)
    (set mode Compile)
    (local inputs)
    (local args)
@@ -122,7 +40,7 @@ main := (
    (while args (match args (
       ()
       ( (-o (tgt remainder)) (
-         (set config ( config (Target tgt)))
+         (set cli-config ( cli-config (Target tgt)))
          (set args remainder)
       ))
       ( (--compile remainder) (
@@ -175,585 +93,17 @@ main := (
    )))
    (match mode (
       ()
-      (Compile (assemble parsed-program))
-      (Parse (print-s parsed-program))
-      (Typecheck (print-s (show-ascript (typecheck parsed-program))))
+      (Compile (assemble parse-parsed-program))
+      (Parse (print-s parse-parsed-program))
+      (Typecheck (print-s (typecheck-show-ascript (typecheck parse-parsed-program))))
    ))
 );
 
-fail := λmsg . (print-s msg) (exit 1);
-
-type-context := ();
-type-subtypes := ();
-type-constructors := ();
-types-have-changed := ();
+# Tokenizer 
 
 tokenize-file := λpath . (
    tokenize (load-file path)
 );
-
-typecheck := λprogram . (tail(
-   (local p)
-   (set p program)
-   (while p (
-      (infer-type-expr( (tail p) ))
-      (set p (head p))
-   ))
-   (set types-have-changed True)
-   (while types-have-changed (
-      (set types-have-changed ())
-      (infer-prog program)
-   ))
-   program
-));
-
-lookup-type := λterm . (tail(
-   (local tctx)
-   (set tctx type-context)
-   (local found)
-   (local ttt)
-   (while tctx (
-      (set ttt (head tctx))
-      (if (is( (head ttt) term )) (
-         (set found (tail ttt))
-         (set tctx ())
-      ) (
-         (set tctx (tail tctx))
-      ))
-   ))
-   found
-));
-
-ascript := λt tt . (
-   if tt (
-      (set type-context ((t tt) type-context))
-      (set types-have-changed True)
-   ) ()
-);
-
-show-ascript := λp . (tail(
-   (local term)
-   (set term (match p (
-      ()
-      ( () () )
-      ( Nil p )
-      ( (Variable _) p )
-      ( (Literal _) p )
-      ( (App( f x )) (
-         (App( (show-ascript f) (show-ascript x) ))
-      ))
-      ( (Lambda( lhs rhs )) (
-         (Lambda( (show-ascript lhs) (show-ascript rhs) ))
-      ))
-      ( (prog (GExpr( g ))) (
-         ( (show-ascript prog) (GExpr( show-ascript g )) )
-      ))
-      ( (prog (Global( n v ))) (
-         ( (show-ascript prog) (Global( n (show-ascript v) )) )
-      ))
-      ( (prog (Type( tn td ))) (
-         ( (show-ascript prog) (Type( tn td )) )
-      ))
-      ( unknown (
-         fail (UnknownTerm unknown)
-      ))
-   )))
-
-   (local type)
-   (set type (lookup-type p))
-   (if type (
-      (if (eq( type ? )) (
-         term
-      ) ( 
-         (:( term type ))
-      ))
-   ) (
-      term
-   ))
-));
-
-global-context := ();
-
-infer-prog := λp . (
-   (while p (
-      (infer-expr( global-context (tail p) ))
-      (set p (head p))
-   ))
-);
-
-infer-ctx := λctx e . (match e (
-   ()
-   ( (App( (App( (Literal :) (Variable v) )) tt )) (
-      (ctx (v (typeof-ascript tt)))
-   ))
-   ( (App( ps (App( (App( (Literal :) (Variable v) )) tt )) )) (
-      ( (infer-ctx( ctx ps )) (v (typeof-ascript tt)))
-   ))
-   ( (Variable v) (
-      (ctx (v S))
-   ))
-   ( (App( ps (Variable v) )) (
-      ( (infer-ctx( ctx ps )) (v S))
-   ))
-   ( Nil (
-      ctx
-   ))
-   ( u (
-      fail (UnknownLhs u)
-   ))
-));
-
-typeof-gvar := λv . (tail(
-   (local gctx)
-   (set gctx global-context)
-   (local tt)
-   (while gctx (
-      (match (tail gctx) (
-         ()
-         ( (Global( gn gt )) (
-            (if (eq( v gn )) (
-               (if tt (
-                  (set tt (And(tt gt)) )
-               ) (
-                  (set tt gt)
-               ))
-            ) ())
-            (set gctx (head gctx))
-         ))
-      ))
-   ))
-   tt
-));
-
-typeof-var := λctx v . (match ctx (
-   ()
-   ( () (typeof-gvar v) )
-   ( (cs (cv ct)) (
-      if (eq( v cv )) (
-         ct
-      ) (
-         (typeof-var( cs v ))
-      )
-   ))
-));
-
-typeof-ascript := λtt . (match tt (
-   ()
-   ( (Literal tname) (
-      tname
-   ))
-   ( (Variable tname) (
-      tname
-   ))
-));
-
-typeof-lhs := λlhs . (match lhs (
-   ()
-   ( (App( (App( (Literal :) (Variable v) )) tt )) (
-      (typeof-ascript tt)
-   ))
-   ( (App( ps (App( (App( (Literal :) (Variable v) )) tt )) )) (
-      (Cons( (typeof-lhs ps) (typeof-ascript tt) ))
-   ))
-   ( (Variable v) (
-      S
-   ))
-   ( (App( ps (Variable v) )) (
-      (Cons( (typeof-lhs ps) S ))
-   ))
-   ( Nil (
-      Nil
-   ))
-   ( u (
-      fail (UnknownLhs u)
-   ))
-));
-
-unify-sub := λctx v . (match ctx (
-   ()
-   ( Accept v )
-   ( (Bind( s1 s2 )) (
-      if (eq( v s1 )) s2 v
-   ))
-   ( (ctxl ctxr) (tail(
-      (local lv)
-      (set lv (unify-sub( ctxl v )))
-      (local rv)
-      (set rv (unify-sub( ctxr v )))
-      (if (is( lv v )) (
-         (if (is( rv v )) () (set v rv))
-      ) (set v lv))
-      v
-   )))
-));
-
-unify-ctx := λctx v . (match v (
-   ()
-   ( (vl vr) (
-      ( (unify-ctx( ctx vl )) (unify-ctx( ctx vr )) )
-   ))
-   ( _ (
-      (unify-sub( ctx v ))
-   ))
-));
-
-unify-implies := λlt rt . (if (eq(lt rt)) True (tail(
-   (local accept)
-   (local subtypes)
-   (local st)
-   (set subtypes type-subtypes)
-   (while subtypes (
-      (set st (tail subtypes))
-      (if (eq( (head st) lt )) (
-         (if (eq( (tail st) rt )) (
-            (set accept True)
-         ) ())
-      ) ())
-      (set subtypes (head subtypes))
-   ))
-   accept
-)));
-
-unify-args := λlt rt . (match (lt rt) (
-   ()
-   ( ((lt1 rt1) (lt2 rt2)) (
-      (match ( (unify-args(lt1 lt2)) (unify-args(rt1 rt2)) ) (
-         ()
-         ( (() _) () )
-         ( (_ ()) () )
-         ( (lctx rctx) (lctx rctx) )
-      ))
-   ))
-   ( (a1 a2) (
-      (if (unify-implies( a2 a1 )) ( # argument type must imply parameter type
-         Accept
-      ) (
-         (if (is-variable a1) (
-            (if (is-variable a2) (
-               Accept
-            ) (
-               (Bind( a1 a2 ))
-            ))
-         ) (
-            (if (is-variable a2) (
-               (Bind( a2 a1 ))
-            ) (
-               ()
-            ))
-         ))
-      ))
-   ))
-   (_ (tail(
-      (fail (UnknownUnify lt rt))
-      ?
-   )))
-));
-
-apply-plural := λmany pt . (match many(
-   ()
-   ( (And( t1 t2 )) (tail(
-      (local r)
-      (set r (apply-plural( t1 pt )))
-      (if r r (apply-plural( t2 pt )))
-   )))
-   ( (->(lt rt)) (
-      (unify-ctx( (unify-args(lt pt)) rt ))
-   ))
-));
-
-safe-apply-plural := λterm many pt . (tail(
-   (local r)
-   (set r (apply-plural( many pt )))
-   (if r r (
-      fail (TypeError( InvalidArgument many pt ))
-   ))
-));
-
-infer-type-compound := λcompound . (match compound (
-   ()
-   ((Literal tt) tt)
-   ((App( lt rt )) (Cons( (infer-type-compound lt) (infer-type-compound rt) )))
-   (u (fail (UnknownTypeCompound u)))
-));
-
-infer-type-constructor := λname body . (match body (
-   ()
-   ( (Literal tag) (
-      (set type-constructors ( type-constructors (tag tag) ))
-      (set type-subtypes ( type-subtypes (tag (infer-type-compound name)) ))
-   ))
-   ( (App( (Literal tag) args )) (
-      (local ctype)
-      (set ctype (infer-type-compound args))
-      (set type-constructors ( type-constructors (tag (->(ctype (tag ctype)))) ))
-      (set type-subtypes ( type-subtypes ((tag ctype) (infer-type-compound name)) ))
-   ))
-));
-
-infer-type-definition := λname def . (match def (
-   ()
-   ( (App( (App( tds (Literal |) )) body )) (
-      (infer-type-definition( name tds ))
-      (infer-type-constructor( name body ))
-   ))
-   ( body (
-      (infer-type-constructor( name body ))
-   ))
-));
-
-infer-constructor-type := λtag . (tail(
-   (local ctype)
-   (local constructors)
-   (set constructors type-constructors)
-   (while constructors (
-      (if (eq( tag (head(tail(constructors))) )) (
-         (if ctype (
-            (set ctype (And( ctype (tail(tail(constructors))) )))
-         ) (
-            (set ctype (tail(tail(constructors))))
-         ))
-      ) ())
-      (set constructors (head constructors))
-   ))
-   ctype
-));
-
-infer-type-expr := λe . (match e (
-   ()
-   ( (Type( l ds )) (
-      (infer-type-definition( l ds ))
-      (ascript( e ? ))
-   ))
-   (_ ())
-));
-
-infer-expr := λctx e . (
-   (if (lookup-type e) () (
-      match e (
-         ()
-         ( () () )
-         ( (GExpr ge) (
-            (infer-expr( ctx ge ))
-         ))
-         ( (Global( gln gle )) (
-            (infer-expr( ctx gle ))
-            (match (lookup-type gle) (
-               ()
-               ( () () )
-               ( glt (
-                  (set global-context ( global-context (Global( gln glt )) ))
-                  (ascript( e ? ))
-               ))
-            ))
-         ))
-         ( (Type( l ds )) ())
-         ( Nil (
-            (ascript( e Nil ))
-         ))
-         ( (Literal lit) (
-            (local ctype)
-            (set ctype (infer-constructor-type lit))
-            (if ctype (
-               (ascript( e (And( ctype Atom )) ))
-            ) (
-               (ascript( e Atom ))
-            ))
-         ))
-         ( (App( l r )) (
-            (infer-expr( ctx l ))
-            (infer-expr( ctx r ))
-            (match ( (lookup-type l) (lookup-type r) ) (
-               ()
-               ( (() _) () )
-               ( (_ ()) () )
-               ( ( (->(lt rt)) pt ) (
-                  (ascript( e (safe-apply-plural( e (->(lt rt)) pt )) ))
-               ))
-               ( ( (And(t1 t2)) pt ) (
-                  (ascript( e (safe-apply-plural( e (And(t1 t2)) pt )) ))
-               ))
-               ( (lt rt) (
-                  (ascript( e (Cons(lt rt)) ))
-               ))
-            ))
-         ))
-         ( (Lambda( lhs rhs )) (
-            (set ctx (infer-ctx( ctx lhs )))
-            (infer-expr( ctx rhs ))
-            (match (lookup-type rhs) (
-               ()
-               ( () () )
-               ( rt (
-                  (ascript( e (->( (typeof-lhs lhs) rt)) ))
-               ))
-            ))
-         ))
-         ( (Variable v) (
-            (match (typeof-var( ctx v )) (
-               ()
-               ( () () )
-               ( tt (ascript( e tt )) )
-            ))
-         ))
-         ( u (fail (UnknownTerm u)) )
-      )
-   ))
-);
-
-parse-lambda := λtoks . (tail(
-   (local remainder)
-   (local pme)
-   (set pme (parse-one-expression toks))
-   (local lmb)
-   (set lmb (head pme))
-   (set toks (tail pme))
-   (match lmb (
-      ()
-      ((Literal .) (
-         (set pme (parse-many-expressions toks))
-         (set lmb (Nil (head pme)))
-         (set remainder (tail pme))
-         (set toks ())
-      ))
-   ))
-   (while toks (
-      (set pme (parse-one-expression toks))
-      (match pme (
-         ()
-         (((Literal .) r) (
-            (set pme (parse-many-expressions r))
-            (set lmb (lmb (head pme)))
-            (set remainder (tail pme))
-            (set toks ())
-         ))
-         ((e ()) (
-            (expect( . toks ))
-            (set toks ())
-         ))
-         ((e r) (
-            (set lmb (App (lmb e)))
-            (set toks r)
-         ))
-      ))
-   ))	
-   (lmb remainder)
-));
-
-unexpect := λt . fail (UnexpectedToken t);
-expect := λt ts . ();
-#expect := λt ts . if (eq( t (head ts) )) () (fail (ExpectedToken t));
-
-parse-one-expression := λtoks . (tail(
-   (local pme)
-   (local remainder)
-   (local expr)
-   (match toks (
-      ()
-      ( () (
-         (set expr Nil)
-         (set remainder ())
-      ))
-      ( ( \l r ) (
-         (set pme (parse-lambda r))
-         (set expr (Lambda (head pme)))
-         (set remainder (tail pme))
-      ))
-      ( ( \] r ) (
-         (unexpect (head toks))
-      ))
-      ( ( \[ r ) (
-         (set pme (parse-many-expressions r))
-         (expect( \] (tail pme) ))
-         (set expr (head pme))
-         (set remainder (tail pme))
-      ))
-      ( ( \\ (\' r) ) (
-         (set expr (Literal \'))
-         (set remainder r)
-      ))
-      ( ( \' (i r) ) (
-         (set expr (Literal i))
-         (set remainder r)
-      ))
-      ( (a r) (
-         (if (is-variable a) (
-            (set expr (Variable a))
-         ) (
-            (set expr (Literal a))
-         ))
-         (set remainder r)
-      ))
-   ))
-   (expr remainder)
-));
-
-parse-many-expressions := λtoks . (tail(
-   (local pme)
-   (local expr)
-   (local remainder)
-   (while toks (
-      (match toks (
-         ()
-         ((\: tl) (
-            (set remainder toks)
-            (set toks ())
-         ))
-         ((\] tl) (
-            (if expr () (set expr Nil))
-            (set remainder tl)
-            (set toks ())
-         ))
-         (_ (
-            (set pme (parse-one-expression toks))
-            (if expr (
-               (set expr (App( expr (head pme) )))
-            ) (
-               (set expr (head pme))
-            ))
-            (set toks (tail pme))
-         ))
-      ))
-   ))
-   (expr remainder)
-));
-
-parse-expression := λtoks . (parse-many-expressions toks);
-
-parse-program := λtoks . (tail(
-   (local program)
-   (local pme)
-   (local pme2)
-   (while toks (
-      match toks (
-         ()
-         ((\: remainder) (
-            (set toks remainder)
-         ))
-         (('type remainder) (
-            (set pme (parse-one-expression remainder))
-            (set remainder (tail pme))
-            (set pme2 (parse-many-expressions remainder))
-            (set parsed-program ( parsed-program (Type( (head pme) (head pme2) )) ))
-            (set toks (tail pme2))
-         ))
-         (('import (relative-path remainder)) (
-            (parse-program (tokenize-file relative-path))
-            (set toks remainder)
-         ))
-         ((key (:= remainder)) (
-            (set pme (parse-many-expressions remainder))
-            (set parsed-program ( parsed-program (Global (key (head pme))) ))
-            (set toks (tail pme))
-         ))
-         (remainder (
-            (set pme (parse-many-expressions remainder))
-            (set parsed-program (parsed-program (GExpr (head pme)) ))
-            (set toks (tail pme))
-         ))
-      )
-   ))
-   program
-));
 
 tokenize := λtext . (tail(
    (local program)
@@ -761,12 +111,12 @@ tokenize := λtext . (tail(
    (local in_comment)
    (local char)
 
-   (foreach-char text ((set char $_) (match char (
-#   (while text ( (set char (head-string text)) (set text (tail-string text)) (match char (      
+   (while text ( (set char (head-string text)) (set text (tail-string text)) (match char (      
       ()
 
 #     These characters are special characters
 #     They are removed during tokenization
+      (() ())
       (\o (
          (if buffer (
             (set program (program (clone-rope buffer)))
@@ -841,66 +191,582 @@ tokenize := λtext . (tail(
    (reverse-list program)
 ));
 
-reverse-list := λl . (tail(
-   (local r)
-   (while l (
-      (set r ( (tail l) r ))
-      (set l (head l))
+# Parser
+
+parse-program := λtoks . (tail(
+   (local program)
+   (local pme)
+   (local pme2)
+   (while toks (
+      match toks (
+         ()
+         ((\: remainder) (
+            (set toks remainder)
+         ))
+         (('type remainder) (
+            (set pme (parse-one-expression remainder))
+            (set remainder (tail pme))
+            (set pme2 (parse-many-expressions remainder))
+            (set parse-parsed-program ( parse-parsed-program (Type( (head pme) (head pme2) )) ))
+            (set toks (tail pme2))
+         ))
+         (('import (relative-path remainder)) (
+            (parse-program (tokenize-file relative-path))
+            (set toks remainder)
+         ))
+         ((key (:= remainder)) (
+            (set pme (parse-many-expressions remainder))
+            (set parse-parsed-program ( parse-parsed-program (Global (key (head pme))) ))
+            (set toks (tail pme))
+         ))
+         (remainder (
+            (set pme (parse-many-expressions remainder))
+            (set parse-parsed-program (parse-parsed-program (GExpr (head pme)) ))
+            (set toks (tail pme))
+         ))
+      )
    ))
-   r
+   program
 ));
 
-is-variable := λv . (tail(
-   (local is_v)
-   (local passed_char)
-   (local c)
-   (foreach-char v (
-      (set c $_)
-      (if passed_char () (match c (
-         ()
-         ('$ ( (set is_v True) (set passed_char True) ))
-         ('_ ( (set is_v True) (set passed_char True) ))
-         ('a ( (set is_v True) (set passed_char True) ))
-         ('b ( (set is_v True) (set passed_char True) ))
-         ('c ( (set is_v True) (set passed_char True) ))
-         ('d ( (set is_v True) (set passed_char True) ))
-         ('e ( (set is_v True) (set passed_char True) ))
-         ('f ( (set is_v True) (set passed_char True) ))
-         ('g ( (set is_v True) (set passed_char True) ))
-         ('h ( (set is_v True) (set passed_char True) ))
-         ('i ( (set is_v True) (set passed_char True) ))
-         ('j ( (set is_v True) (set passed_char True) ))
-         ('k ( (set is_v True) (set passed_char True) ))
-         ('l ( (set is_v True) (set passed_char True) ))
-         ('m ( (set is_v True) (set passed_char True) ))
-         ('n ( (set is_v True) (set passed_char True) ))
-         ('o ( (set is_v True) (set passed_char True) ))
-         ('p ( (set is_v True) (set passed_char True) ))
-         ('q ( (set is_v True) (set passed_char True) ))
-         ('r ( (set is_v True) (set passed_char True) ))
-         ('s ( (set is_v True) (set passed_char True) ))
-         ('t ( (set is_v True) (set passed_char True) ))
-         ('u ( (set is_v True) (set passed_char True) ))
-         ('v ( (set is_v True) (set passed_char True) ))
-         ('w ( (set is_v True) (set passed_char True) ))
-         ('x ( (set is_v True) (set passed_char True) ))
-         ('y ( (set is_v True) (set passed_char True) ))
-         ('z ( (set is_v True) (set passed_char True) ))
-         (_ (set passed_char True))
-      )))
+parse-lambda := λtoks . (tail(
+   (local remainder)
+   (local pme)
+   (set pme (parse-one-expression toks))
+   (local lmb)
+   (set lmb (head pme))
+   (set toks (tail pme))
+   (match lmb (
+      ()
+      ((Literal .) (
+         (set pme (parse-many-expressions toks))
+         (set lmb (Nil (head pme)))
+         (set remainder (tail pme))
+         (set toks ())
+      ))
    ))
-   is_v
+   (while toks (
+      (set pme (parse-one-expression toks))
+      (match pme (
+         ()
+         (((Literal .) r) (
+            (set pme (parse-many-expressions r))
+            (set lmb (lmb (head pme)))
+            (set remainder (tail pme))
+            (set toks ())
+         ))
+         ((e ()) (
+            (parse-expect( . toks ))
+            (set toks ())
+         ))
+         ((e r) (
+            (set lmb (App (lmb e)))
+            (set toks r)
+         ))
+      ))
+   ))	
+   (lmb remainder)
 ));
+
+parse-unexpect := λt . fail (UnexpectedToken t);
+parse-expect := λt ts . ();
+#parse-expect := λt ts . if (eq( t (head ts) )) () (fail (ExpectedToken t));
+
+parse-one-expression := λtoks . (tail(
+   (local pme)
+   (local remainder)
+   (local expr)
+   (match toks (
+      ()
+      ( () (
+         (set expr Nil)
+         (set remainder ())
+      ))
+      ( ( \l r ) (
+         (set pme (parse-lambda r))
+         (set expr (Lambda (head pme)))
+         (set remainder (tail pme))
+      ))
+      ( ( \] r ) (
+         (parse-unexpect (head toks))
+      ))
+      ( ( \[ r ) (
+         (set pme (parse-many-expressions r))
+         (parse-expect( \] (tail pme) ))
+         (set expr (head pme))
+         (set remainder (tail pme))
+      ))
+      ( ( \\ (\' r) ) (
+         (set expr (Literal \'))
+         (set remainder r)
+      ))
+      ( ( \' (i r) ) (
+         (set expr (Literal i))
+         (set remainder r)
+      ))
+      ( (a r) (
+         (if (is-variable a) (
+            (set expr (Variable a))
+         ) (
+            (set expr (Literal a))
+         ))
+         (set remainder r)
+      ))
+   ))
+   (expr remainder)
+));
+
+parse-many-expressions := λtoks . (tail(
+   (local pme)
+   (local expr)
+   (local remainder)
+   (while toks (
+      (match toks (
+         ()
+         ((\: tl) (
+            (set remainder toks)
+            (set toks ())
+         ))
+         ((\] tl) (
+            (if expr () (set expr Nil))
+            (set remainder tl)
+            (set toks ())
+         ))
+         (_ (
+            (set pme (parse-one-expression toks))
+            (if expr (
+               (set expr (App( expr (head pme) )))
+            ) (
+               (set expr (head pme))
+            ))
+            (set toks (tail pme))
+         ))
+      ))
+   ))
+   (expr remainder)
+));
+
+parse-expression := λtoks . (parse-many-expressions toks);
+
+# Typechecker
+
+typecheck := λprogram . (tail(
+   (local p)
+   (set p program)
+   (while p (
+      (typecheck-infer-type-expr( (tail p) ))
+      (set p (head p))
+   ))
+   (set typecheck-types-have-changed True)
+   (while typecheck-types-have-changed (
+      (set typecheck-types-have-changed ())
+      (typecheck-infer-prog program)
+   ))
+   program
+));
+
+typecheck-lookup-type := λterm . (tail(
+   (local tctx)
+   (set tctx typecheck-context)
+   (local found)
+   (local ttt)
+   (while tctx (
+      (set ttt (head tctx))
+      (if (is( (head ttt) term )) (
+         (set found (tail ttt))
+         (set tctx ())
+      ) (
+         (set tctx (tail tctx))
+      ))
+   ))
+   found
+));
+
+typecheck-ascript := λt tt . (
+   if tt (
+      (set typecheck-context ((t tt) typecheck-context))
+      (set typecheck-types-have-changed True)
+   ) ()
+);
+
+typecheck-show-ascript := λp . (tail(
+   (local term)
+   (set term (match p (
+      ()
+      ( () () )
+      ( Nil p )
+      ( (Variable _) p )
+      ( (Literal _) p )
+      ( (App( f x )) (
+         (App( (typecheck-show-ascript f) (typecheck-show-ascript x) ))
+      ))
+      ( (Lambda( lhs rhs )) (
+         (Lambda( (typecheck-show-ascript lhs) (typecheck-show-ascript rhs) ))
+      ))
+      ( (prog (GExpr( g ))) (
+         ( (typecheck-show-ascript prog) (GExpr( typecheck-show-ascript g )) )
+      ))
+      ( (prog (Global( n v ))) (
+         ( (typecheck-show-ascript prog) (Global( n (typecheck-show-ascript v) )) )
+      ))
+      ( (prog (Type( tn td ))) (
+         ( (typecheck-show-ascript prog) (Type( tn td )) )
+      ))
+      ( unknown (
+         fail (UnknownTerm unknown)
+      ))
+   )))
+
+   (local type)
+   (set type (typecheck-lookup-type p))
+   (if type (
+      (if (eq( type ? )) (
+         term
+      ) ( 
+         (:( term type ))
+      ))
+   ) (
+      term
+   ))
+));
+
+typecheck-infer-prog := λp . (
+   (while p (
+      (typecheck-infer-expr( typecheck-global-context (tail p) ))
+      (set p (head p))
+   ))
+);
+
+typecheck-infer-ctx := λctx e . (match e (
+   ()
+   ( (App( (App( (Literal :) (Variable v) )) tt )) (
+      (ctx (v (typecheck-typeof-ascript tt)))
+   ))
+   ( (App( ps (App( (App( (Literal :) (Variable v) )) tt )) )) (
+      ( (typecheck-infer-ctx( ctx ps )) (v (typecheck-typeof-ascript tt)))
+   ))
+   ( (Variable v) (
+      (ctx (v S))
+   ))
+   ( (App( ps (Variable v) )) (
+      ( (typecheck-infer-ctx( ctx ps )) (v S))
+   ))
+   ( Nil (
+      ctx
+   ))
+   ( u (
+      fail (UnknownLhs u)
+   ))
+));
+
+typecheck-typeof-gvar := λv . (tail(
+   (local gctx)
+   (set gctx typecheck-global-context)
+   (local tt)
+   (while gctx (
+      (match (tail gctx) (
+         ()
+         ( (Global( gn gt )) (
+            (if (eq( v gn )) (
+               (if tt (
+                  (set tt (And(tt gt)) )
+               ) (
+                  (set tt gt)
+               ))
+            ) ())
+            (set gctx (head gctx))
+         ))
+      ))
+   ))
+   tt
+));
+
+typecheck-typeof-var := λctx v . (match ctx (
+   ()
+   ( () (typecheck-typeof-gvar v) )
+   ( (cs (cv ct)) (
+      if (eq( v cv )) (
+         ct
+      ) (
+         (typecheck-typeof-var( cs v ))
+      )
+   ))
+));
+
+typecheck-typeof-ascript := λtt . (match tt (
+   ()
+   ( (Literal tname) (
+      tname
+   ))
+   ( (Variable tname) (
+      tname
+   ))
+));
+
+typecheck-typeof-lhs := λlhs . (match lhs (
+   ()
+   ( (App( (App( (Literal :) (Variable v) )) tt )) (
+      (typecheck-typeof-ascript tt)
+   ))
+   ( (App( ps (App( (App( (Literal :) (Variable v) )) tt )) )) (
+      (Cons( (typecheck-typeof-lhs ps) (typecheck-typeof-ascript tt) ))
+   ))
+   ( (Variable v) (
+      S
+   ))
+   ( (App( ps (Variable v) )) (
+      (Cons( (typecheck-typeof-lhs ps) S ))
+   ))
+   ( Nil (
+      Nil
+   ))
+   ( u (
+      fail (UnknownLhs u)
+   ))
+));
+
+typecheck-unify-sub := λctx v . (match ctx (
+   ()
+   ( Accept v )
+   ( (Bind( s1 s2 )) (
+      if (eq( v s1 )) s2 v
+   ))
+   ( (ctxl ctxr) (tail(
+      (local lv)
+      (set lv (typecheck-unify-sub( ctxl v )))
+      (local rv)
+      (set rv (typecheck-unify-sub( ctxr v )))
+      (if (is( lv v )) (
+         (if (is( rv v )) () (set v rv))
+      ) (set v lv))
+      v
+   )))
+));
+
+typecheck-unify-ctx := λctx v . (match v (
+   ()
+   ( (vl vr) (
+      ( (typecheck-unify-ctx( ctx vl )) (typecheck-unify-ctx( ctx vr )) )
+   ))
+   ( _ (
+      (typecheck-unify-sub( ctx v ))
+   ))
+));
+
+typecheck-unify-implies := λlt rt . (if (eq(lt rt)) True (tail(
+   (local accept)
+   (local subtypes)
+   (local st)
+   (set subtypes typecheck-subtypes)
+   (while subtypes (
+      (set st (tail subtypes))
+      (if (eq( (head st) lt )) (
+         (if (eq( (tail st) rt )) (
+            (set accept True)
+         ) ())
+      ) ())
+      (set subtypes (head subtypes))
+   ))
+   accept
+)));
+
+typecheck-unify-args := λlt rt . (match (lt rt) (
+   ()
+   ( ((lt1 rt1) (lt2 rt2)) (
+      (match ( (typecheck-unify-args(lt1 lt2)) (typecheck-unify-args(rt1 rt2)) ) (
+         ()
+         ( (() _) () )
+         ( (_ ()) () )
+         ( (lctx rctx) (lctx rctx) )
+      ))
+   ))
+   ( (a1 a2) (
+      (if (typecheck-unify-implies( a2 a1 )) ( # argument type must imply parameter type
+         Accept
+      ) (
+         (if (is-variable a1) (
+            (if (is-variable a2) (
+               Accept
+            ) (
+               (Bind( a1 a2 ))
+            ))
+         ) (
+            (if (is-variable a2) (
+               (Bind( a2 a1 ))
+            ) (
+               ()
+            ))
+         ))
+      ))
+   ))
+   (_ (tail(
+      (fail (UnknownUnify lt rt))
+      ?
+   )))
+));
+
+typecheck-apply-plural := λmany pt . (match many(
+   ()
+   ( (And( t1 t2 )) (tail(
+      (local r)
+      (set r (typecheck-apply-plural( t1 pt )))
+      (if r r (typecheck-apply-plural( t2 pt )))
+   )))
+   ( (->(lt rt)) (
+      (typecheck-unify-ctx( (typecheck-unify-args(lt pt)) rt ))
+   ))
+));
+
+typecheck-safe-apply-plural := λterm many pt . (tail(
+   (local r)
+   (set r (typecheck-apply-plural( many pt )))
+   (if r r (
+      fail (TypeError( InvalidArgument many pt ))
+   ))
+));
+
+typecheck-infer-type-compound := λcompound . (match compound (
+   ()
+   ((Literal tt) tt)
+   ((App( lt rt )) (Cons( (typecheck-infer-type-compound lt) (typecheck-infer-type-compound rt) )))
+   (u (fail (UnknownTypeCompound u)))
+));
+
+typecheck-infer-type-constructor := λname body . (match body (
+   ()
+   ( (Literal tag) (
+      (set typecheck-constructors ( typecheck-constructors (tag tag) ))
+      (set typecheck-subtypes ( typecheck-subtypes (tag (typecheck-infer-type-compound name)) ))
+   ))
+   ( (App( (Literal tag) args )) (
+      (local ctype)
+      (set ctype (typecheck-infer-type-compound args))
+      (set typecheck-constructors ( typecheck-constructors (tag (->(ctype (tag ctype)))) ))
+      (set typecheck-subtypes ( typecheck-subtypes ((tag ctype) (typecheck-infer-type-compound name)) ))
+   ))
+));
+
+typecheck-infer-type-definition := λname def . (match def (
+   ()
+   ( (App( (App( tds (Literal |) )) body )) (
+      (typecheck-infer-type-definition( name tds ))
+      (typecheck-infer-type-constructor( name body ))
+   ))
+   ( body (
+      (typecheck-infer-type-constructor( name body ))
+   ))
+));
+
+typecheck-infer-constructor-type := λtag . (tail(
+   (local ctype)
+   (local constructors)
+   (set constructors typecheck-constructors)
+   (while constructors (
+      (if (eq( tag (head(tail(constructors))) )) (
+         (if ctype (
+            (set ctype (And( ctype (tail(tail(constructors))) )))
+         ) (
+            (set ctype (tail(tail(constructors))))
+         ))
+      ) ())
+      (set constructors (head constructors))
+   ))
+   ctype
+));
+
+typecheck-infer-type-expr := λe . (match e (
+   ()
+   ( (Type( l ds )) (
+      (typecheck-infer-type-definition( l ds ))
+      (typecheck-ascript( e ? ))
+   ))
+   (_ ())
+));
+
+typecheck-infer-expr := λctx e . (
+   (if (typecheck-lookup-type e) () (
+      match e (
+         ()
+         ( () () )
+         ( (GExpr ge) (
+            (typecheck-infer-expr( ctx ge ))
+         ))
+         ( (Global( gln gle )) (
+            (typecheck-infer-expr( ctx gle ))
+            (match (typecheck-lookup-type gle) (
+               ()
+               ( () () )
+               ( glt (
+                  (set typecheck-global-context ( typecheck-global-context (Global( gln glt )) ))
+                  (typecheck-ascript( e ? ))
+               ))
+            ))
+         ))
+         ( (Type( l ds )) ())
+         ( Nil (
+            (typecheck-ascript( e Nil ))
+         ))
+         ( (Literal lit) (
+            (local ctype)
+            (set ctype (typecheck-infer-constructor-type lit))
+            (if ctype (
+               (typecheck-ascript( e (And( ctype Atom )) ))
+            ) (
+               (typecheck-ascript( e Atom ))
+            ))
+         ))
+         ( (App( l r )) (
+            (typecheck-infer-expr( ctx l ))
+            (typecheck-infer-expr( ctx r ))
+            (match ( (typecheck-lookup-type l) (typecheck-lookup-type r) ) (
+               ()
+               ( (() _) () )
+               ( (_ ()) () )
+               ( ( (->(lt rt)) pt ) (
+                  (typecheck-ascript( e (typecheck-safe-apply-plural( e (->(lt rt)) pt )) ))
+               ))
+               ( ( (And(t1 t2)) pt ) (
+                  (typecheck-ascript( e (typecheck-safe-apply-plural( e (And(t1 t2)) pt )) ))
+               ))
+               ( (lt rt) (
+                  (typecheck-ascript( e (Cons(lt rt)) ))
+               ))
+            ))
+         ))
+         ( (Lambda( lhs rhs )) (
+            (set ctx (typecheck-infer-ctx( ctx lhs )))
+            (typecheck-infer-expr( ctx rhs ))
+            (match (typecheck-lookup-type rhs) (
+               ()
+               ( () () )
+               ( rt (
+                  (typecheck-ascript( e (->( (typecheck-typeof-lhs lhs) rt)) ))
+               ))
+            ))
+         ))
+         ( (Variable v) (
+            (match (typecheck-typeof-var( ctx v )) (
+               ()
+               ( () () )
+               ( tt (typecheck-ascript( e tt )) )
+            ))
+         ))
+         ( u (fail (UnknownTerm u)) )
+      )
+   ))
+);
+
+# Assembler
 
 assemble := λprogram . (
    (local target)
    (set target 'tmp.s)
-   (while config (
-      (match (tail config) (
+   (while cli-config (
+      (match (tail cli-config) (
          ()
          ((Target t) (set target t))
       ))
-      (set config (head config))
+      (set cli-config (head cli-config))
    ))
 
    (local main_e)
@@ -910,7 +776,7 @@ assemble := λprogram . (
    (local e2)
 
    (local output_pd)
-   (set output_pd ( (program-header()) (data-header()) ))
+   (set output_pd ( (assemble-program-header()) (assemble-data-header()) ))
 
    (local global_ctx)
    (local preview_program)
@@ -918,24 +784,34 @@ assemble := λprogram . (
 
    (while preview_program (match preview_program (
       ()
-      ( (pc (Global ('main body))) (
-         (set preview_program pc)
+      ( (pc1 (Global ('main body))) (
+         (set preview_program pc1)
       ))
-      ( (pc (GExpr e)) (
-         (set preview_program pc)
+      ( (pc2 (GExpr e)) (
+         (set preview_program pc2)
       ))
-      ( (pc (Global (fname body))) (
+      ( (pc3 (Global (fname body))) (
          (match body (
             ()
             ( Nil (
-               (set output_pd ( (head output_pd) ((tail output_pd) (label-case fname) ': \n \t '.zero \s '16 \n) ))
+               (set output_pd (
+                  (head output_pd)
+                  (
+                     (tail output_pd)
+                     (label-case fname)
+                     ': \n \t '.zero \s '16 \n
+                  )
+               ))
                (set global_ctx (global_ctx (GlobalVariable fname)))
             ))
             ( (Lambda(lhs rhs)) (
                (set global_ctx (global_ctx (GlobalFunction fname)))
             ))
          ))
-         (set preview_program pc)
+         (set preview_program pc3)
+      ))
+      ( u (
+         (fail (UnexpectedProgram u))
       ))
    )))
 
@@ -987,138 +863,55 @@ assemble := λprogram . (
          (get-prog main_pd)
          (exit-cleanup())
          (get-text main_pd)
-         global-text-section
+         assemble-text-section
          (stdlib-functions())
       )
-      ((tail output_pd) (get-data main_pd) global-data-section)
-#      ((tail output_pd) (get-data main_pd) global-data-section (program-break()))
+      ((tail output_pd) (get-data main_pd) assemble-data-section (assemble-program-break()))
    ))
 
    (write-file (target (clone-rope output_pd)))
 );
 
-get-frame := λe . (match e (
-   ()
-   ((Expr(f p u t d pc off)) f)
-));
-get-prog := λe . (match e (
-   ()
-   ((Expr(f p u t d pc off)) p)
-));
-get-unframe := λe . (match e (
-   ()
-   ((Expr(f p u t d pc off)) u)
-));
-get-text := λe . (match e (
-   ()
-   ((Expr(f p u t d pc off)) t)
-));
-get-data := λe . (match e (
-   ()
-   ((Expr(f p u t d pc off)) d)
-));
-get-pc := λe . (match e (
-   ()
-   ((Expr(f p u t d pc off)) pc)
-));
-get-offset := λe . (match e (
-   ()
-   ((Expr(f p u t d pc off)) off)
-));
+# Compile Codegen
 
-get-maybe-function := λctx v . (tail(
-   (local r)
-   (while ctx (
-      (match (tail ctx) (
-         ()
-         ( (Local(l lrefer)) (
-            if r () (
-               if (eq(l v)) (
-                  (set r (Variable l))
-               ) ()
-            )
-         ))
-         ( (GlobalFunction name) (
-            if r () (
-               if (eq(name v)) (
-                  (set r (GlobalFunction (label-case name)))
-               ) ()
-            )
-         ))
-         ( (GlobalVariable name) (
-            if r () (
-               if (eq(name v)) (
-                  (set r (GlobalVariable (label-case name)))
-               ) ()
-            )
-         ))
-      ))
-      (set ctx (head ctx))
-   ))
-   r
-));
+compile-include-argv := λ. if compile-argv-hook () (set compile-argv-hook (compile-argv-hook (
+   \t 'pop \s '%r10                    \n # put argc in %r10
+   \t 'mov \s '$argv, \s '%r9          \n
+   \t 'movq \s '$0, \s '0 \[ '%r9 \]   \n
+   \t 'movq \s '$0, \s '8 \[ '%r9 \]   \n
 
-get-local := λctx v . (tail(
-   (local r)
-   (while ctx (
-      (match (tail ctx) (
-         ()
-         ( (Local(l lrefer)) (
-            if r () (
-               if (eq(l v)) (
-                  (set r lrefer)
-               ) ()
-            )
-         ))
-         ( (GlobalVariable l) (
-            if r () (
-               if (eq(l v)) (
-                  (set r (
-                     \t 'mov \s '$ (label-case l) , \s %r15 \n
-                     \t 'mov \s '0 \[ %r15 \] , \s %r12     \n
-                     \t 'mov \s '8 \[ %r15 \] , \s %r13     \n
-                  ))
-               ) ()
-            )
-         ))
-      ))
-      (set ctx (head ctx))
+   'before_main_argv:                  \n
+   \t 'cmp \s '$0, \s '%r10            \n
+   \t 'je \s 'before_main_end          \n
+
+   \t 'pop \s '%r12                    \n #this = argv[i]
+   \t 'mov \s '$0, \s '%r13            \n
+   (close())                              #r8 is argv[i]
+
+   \t 'mov \s '%r8, \s '0 \[ '%r9 \]   \n #set t.head = argv[i]
+   \t 'mov \s '$0, \s '%r12            \n
+   \t 'mov \s '$0, \s '%r13            \n
+   (close())
+   \t 'mov \s '%r8, \s '8 \[ '%r9 \]   \n #set t.tail = ()
+   \t 'mov \s '%r8, \s '%r9            \n #set t = t.tail
+
+   \t 'dec \s '%r10                    \n #dec argc
+   \t 'jmp \s 'before_main_argv        \n
+
+   'before_main_end:                   \n
+)));
+
+compile-append := λoutput_e gctx e . (tail(
+   (set e (compile-expr( gctx e (get-offset output_e) Used )))
+   (Expr(
+      ((get-frame output_e) (get-frame e))
+      ((get-prog output_e) (get-prog e))
+      ((get-unframe output_e) (get-unframe e))
+      ((get-text output_e) (get-text e))
+      ((get-data output_e) (get-data e))
+      (get-pc e)
+      (get-offset e)
    ))
-   (if r () (
-      (fail (ReferenceToUndefinedVariable v))
-   ))
-   r
-));
-set-local := λctx v . (tail(
-   (local r)
-   (while ctx (
-      (match (tail ctx) (
-         ()
-         ( (Local((Set l) lrefer)) (
-            if r () (
-               if (eq(l v)) (
-                  (set r lrefer)
-               ) ()
-            )
-         ))
-         ( (GlobalVariable l) (
-            if r () (
-               if (eq(l v)) (
-                  (set r (
-                     \t 'mov \s '$ (label-case l) , \s %r15 \n
-                     \t 'mov \s %r12 , \s '0 \[ %r15 \] \n
-                     \t 'mov \s %r13 , \s '8 \[ %r15 \] \n
-                  ))
-               ) ()
-            )
-         ))
-      ))
-      (set ctx (head ctx))
-   ))
-   (if r () (
-      (fail (AssignToUndefinedVariable v))
-   ))
-   r
 ));
 
 compile-expr := λctx e offset used . (tail(
@@ -1135,7 +928,7 @@ compile-expr := λctx e offset used . (tail(
          (Expr( () () () () () ctx offset ))
       )))
       ( (Variable 'argv) (tail(
-         (include-argv-hook())
+         (compile-include-argv())
          (set prog (prog ( \t 'mov \s '$argv, \s '%r8 \n )))
          (set prog (prog ( \t 'mov \s '0 \[ '%r8 \] , '%r12 \n )))
          (set prog (prog ( \t 'mov \s '8 \[ '%r8 \] , '%r13 \n )))
@@ -1230,29 +1023,6 @@ compile-expr := λctx e offset used . (tail(
             (get-offset e2)
          ))
       )))
-      ( (App( (App( (Variable 'foreach-char) t )) d )) (tail(
-         (set e1 (compile-expr(ctx t offset Used)))
-         (set e2 (compile-expr((get-pc e1) d (get-offset e1) Unused)))
-         (local foreach_char_head)
-         (set foreach_char_head (uuid()))
-         (local foreach_char_small)
-         (set foreach_char_small (uuid()))
-         (local foreach_char_end)
-         (set foreach_char_end (uuid()))
-         (local foreach_char_notcons)
-         (set foreach_char_notcons (uuid()))
-         (local foreach_char_data)
-         (set foreach_char_data (uuid()))
-         (local foreach_char_apply)
-         (set foreach_char_apply (uuid()))
-         (local foreach_data)
-         (set foreach_data ( foreach_char_data ': \n \t '.zero \s '2 \n ))
-         (local foreach_text)
-         (set foreach_text (yield-foreach-char( foreach_char_data foreach_char_head foreach_char_small foreach_char_end foreach_char_notcons foreach_char_apply (get-prog e2) )))
-         (set prog ( (get-prog e1) \t 'call \s foreach_char_head \n ))
-         (set tail_safe True)
-         (Expr( ((get-frame e1) (get-frame e2)) prog ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2) foreach_text) ((get-data e1) (get-data e2) foreach_data) (get-pc e2) (get-offset e2) ))
-      )))
       ( (App ((Variable fname) arg)) (tail(
          ()
          (if (is-builtin fname) (tail(
@@ -1320,20 +1090,299 @@ compile-expr := λctx e offset used . (tail(
    )))
 ));
 
-compile-append := λoutput_e gctx e . (tail(
-   (set e (compile-expr( gctx e (get-offset output_e) Used )))
-   (Expr(
-      ((get-frame output_e) (get-frame e))
-      ((get-prog output_e) (get-prog e))
-      ((get-unframe output_e) (get-unframe e))
-      ((get-text output_e) (get-text e))
-      ((get-data output_e) (get-data e))
-      (get-pc e)
-      (get-offset e)
+# Utility Functions
+
+fail := λmsg . (print-s msg) (exit 1);
+
+reverse-list := λl . (tail(
+   (local r)
+   (while l (
+      (set r ( (tail l) r ))
+      (set l (head l))
+   ))
+   r
+));
+
+label-case := λk . (tail(
+   (local nk)
+   (while k (match (head-string k) (
+      ()
+      (() ())
+      ('- (
+         (set nk (nk '_))
+         (set k (tail-string k))
+      ))
+      ('$ (
+         (set nk (nk '_I_))
+         (set k (tail-string k))
+      ))
+      (c (
+         (set nk (nk (clone-rope c)))
+         (set k (tail-string k))
+      ))
+   )))
+   (clone-rope nk)
+));
+
+is-variable := λv . (match (head-string v) (
+   ()
+   ('$ True )
+   ('_ True )
+   ('a True )
+   ('b True )
+   ('c True )
+   ('d True )
+   ('e True )
+   ('f True )
+   ('g True )
+   ('h True )
+   ('i True )
+   ('j True )
+   ('k True )
+   ('l True )
+   ('m True )
+   ('n True )
+   ('o True )
+   ('p True )
+   ('q True )
+   ('r True )
+   ('s True )
+   ('t True )
+   ('u True )
+   ('v True )
+   ('w True )
+   ('x True )
+   ('y True )
+   ('z True )
+));
+
+get-local := λctx v . (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
+         ()
+         ( (Local(l lrefer)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r lrefer)
+               ) ()
+            )
+         ))
+         ( (GlobalVariable l) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (
+                     \t 'mov \s '$ (label-case l) , \s %r15 \n
+                     \t 'mov \s '0 \[ %r15 \] , \s %r12     \n
+                     \t 'mov \s '8 \[ %r15 \] , \s %r13     \n
+                  ))
+               ) ()
+            )
+         ))
+      ))
+      (set ctx (head ctx))
+   ))
+   (if r () (
+      (fail (ReferenceToUndefinedVariable v))
+   ))
+   r
+));
+
+set-local := λctx v . (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
+         ()
+         ( (Local((Set l) lrefer)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r lrefer)
+               ) ()
+            )
+         ))
+         ( (GlobalVariable l) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (
+                     \t 'mov \s '$ (label-case l) , \s %r15 \n
+                     \t 'mov \s %r12 , \s '0 \[ %r15 \] \n
+                     \t 'mov \s %r13 , \s '8 \[ %r15 \] \n
+                  ))
+               ) ()
+            )
+         ))
+      ))
+      (set ctx (head ctx))
+   ))
+   (if r () (
+      (fail (AssignToUndefinedVariable v))
+   ))
+   r
+));
+
+get-frame := λe . (match e (
+   ()
+   ((Expr(f p u t d pc off)) f)
+));
+get-prog := λe . (match e (
+   ()
+   ((Expr(f p u t d pc off)) p)
+));
+get-unframe := λe . (match e (
+   ()
+   ((Expr(f p u t d pc off)) u)
+));
+get-text := λe . (match e (
+   ()
+   ((Expr(f p u t d pc off)) t)
+));
+get-data := λe . (match e (
+   ()
+   ((Expr(f p u t d pc off)) d)
+));
+get-pc := λe . (match e (
+   ()
+   ((Expr(f p u t d pc off)) pc)
+));
+get-offset := λe . (match e (
+   ()
+   ((Expr(f p u t d pc off)) off)
+));
+
+get-maybe-function := λctx v . (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
+         ()
+         ( (Local(l lrefer)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (Variable l))
+               ) ()
+            )
+         ))
+         ( (GlobalFunction name) (
+            if r () (
+               if (eq(name v)) (
+                  (set r (GlobalFunction (label-case name)))
+               ) ()
+            )
+         ))
+         ( (GlobalVariable name) (
+            if r () (
+               if (eq(name v)) (
+                  (set r (GlobalVariable (label-case name)))
+               ) ()
+            )
+         ))
+      ))
+      (set ctx (head ctx))
+   ))
+   r
+));
+
+declare-local := λctx vname offset . (tail(
+   (local frame_this)
+   (set frame_this (push-zero()))
+   (local unframe_this)
+   (set unframe_this (unpush-this()))
+   (local refer)
+   (local eight)
+   (set eight (
+      inc(inc(inc(inc(inc(inc(inc(inc(
+         ()
+      ))))))))
+   ))
+   (local sixteen)
+   (set sixteen (mul( eight (inc(inc(()))) )))
+   (local set_this)
+   (set set_this (
+      \t 'mov \s '%r12, \s (
+         (i2s( (mul( (add( (mul( sixteen offset )) eight)) (dec(())) )) ))
+      ) \[ '%rbp \] \n
+      \t 'mov \s '%r13, \s (
+         (i2s( (mul( (add( (mul( sixteen offset )) sixteen)) (dec(())) )) ))
+      ) \[ '%rbp \] \n
+   ))
+   (set refer (
+      \t 'mov \s (
+         (i2s( (mul( (add( (mul( sixteen offset )) eight)) (dec(())) )) ))
+      ) \[ '%rbp \] , %r12 \n
+      \t 'mov \s (
+         (i2s( (mul( (add( (mul( sixteen offset )) sixteen)) (dec(())) )) ))
+      ) \[ '%rbp \] , %r13 \n
+   ))
+   (set ctx (ctx (Local(vname refer)) ))
+   (set ctx (ctx (Local((Set vname) set_this)) ))
+   (Expr(frame_this set_this unframe_this () () ctx (inc offset)))
+));
+
+i2s := λi . (tail(
+   (local ten)
+   (set ten( inc(inc(inc(inc(inc( inc(inc(inc(inc(inc( ))))) ))))) ))
+   (local sign)
+   (local s)
+   (local r)
+   (if (is-neg i) (
+      (set sign '-)
+      (set i (inv i))
+   ) ())
+   (while i (
+      (set r (mod(i ten)))
+      (set s ((clone-rope(digit r) s)))
+      (set i (div(i ten)))
+   ))
+   (if s () (set s 0))
+   (clone-rope (sign s))
+));
+
+destructure-args := λctx e offset . (match e (
+   ()
+   ( Nil (tail(
+      ()
+      (Expr( () () () () () ctx offset ))
+   )))
+   ( (Variable n) (tail(
+      ()
+      (declare-local(ctx n offset))
+   )))
+   ( ( (App( h t )) ) (tail(
+      (local ta)
+      (set ta (destructure-args(ctx t offset)))
+      (set offset (get-offset ta))
+      (set ctx (get-pc ta))
+      (local ha)
+      (set ha (destructure-args(ctx h offset)))
+      (set offset (get-offset ha))
+      (set ctx (get-pc ha))
+      (local prog)
+      (set prog (prog (push-this()) ))
+      (set prog (prog (\t 'call \s 'tail \n) ))
+      (set prog (prog (get-prog ta) ))
+      (set prog (prog (pop-this()) ))
+      (set prog (prog (\t 'call \s 'head \n) ))
+      (set prog (prog (get-prog ha) ))
+      (Expr(
+         ( (get-frame ta) (get-frame ha) )
+         prog
+         ( (get-unframe ta) (get-unframe ha) )
+         () () ctx offset
+      ))
+   )))
+   ( _ (
+      (fail (InvalidFunctionParameters e))
    ))
 ));
 
-data-header := λ .(
+# Data Segments
+
+assemble-program-break := λ. (
+   '__current_break:                     \n
+   \t '.zero \s '8                       \n
+   '__program_break:                     \n
+);
+
+assemble-data-header := λ .(
   '.data                                  \n
   'load_file_bsz:                         \n
   \t '.quad \s '1024                      \n
@@ -1373,82 +1422,12 @@ data-header := λ .(
   \t '.zero \s '1                         \n
 );
 
-program-header := λ .(
+assemble-program-header := λ .(
    '.global \s '_start                    \n
    '.text                                 \n
    '_start:                               \n
    \t 'jmp \s 'main                       \n
 );
-
-exit-cleanup := λ . (system-call( '$60 '$0 '$0 '$0 ));
-
-system-call := λrax rdi rsi rdx . (
-   \t 'mov \s rax , \s '%rax              \n
-   \t 'mov \s rdi , \s '%rdi              \n
-   \t 'mov \s rsi , \s '%rsi              \n
-   \t 'mov \s rdx , \s '%rdx              \n
-   \t 'syscall                            \n
-);
-
-before-main := λ .(
-   # before_main_argv:
-   #    argv = ()
-   #    let t = argv
-   #    for a in argv:
-   #       t.tail = (a ())
-   #       t = t.tail
-
-   'main:                              \n
-   argv-main-hook
-);
-
-close := λe . (
-   e
-   (allocate-cons ())
-   (\t 'mov \s '%r12, \s '0 \[ '%r8 \] \n)
-   (\t 'mov \s '%r13, \s '8 \[ '%r8 \] \n)
-);
-
-is-builtin := λf . (match f (
-   ()
-   ('is True)
-   ('eq True)
-   ('not True)
-   ('head True)
-   ('head-string True)
-   ('tail-string True)
-   ('tail True)
-   ('inc True)
-   ('dec True)
-   ('add True)
-   ('mul True)
-   ('div True)
-   ('mod True)
-   ('inv True)
-   ('is-neg True)
-   ('digit True)
-   ('dump-i True)
-   ('print-s True)
-   ('print-i True)
-   ('print-p True)
-   ('print-p True)
-   ('print-d True)
-   ('clone-rope True)
-   ('write-file True)
-   ('load-file True)
-   (_ ())
-));
-
-label-case := λk . (tail(
-   (local nk)
-   (foreach-char k (match $_ (
-      ()
-      ('- (set nk (nk '_)))
-      ('$ (set nk (nk '_I_)))
-      (c (set nk (nk (clone-rope c))))
-   )))
-   (clone-rope nk)
-));
 
 stdlib-functions := λ . (
    'print_s:                           \n
@@ -2025,8 +2004,9 @@ escape-sequences := λt . match t (
       (local c)
       (local cs)
       (local is_escape)
-      (foreach-char s (
-         (set c $_)
+      (while s (
+         (set c (head-string s))
+         (set s (tail-string s))
          (match c (
             ()
             ( " (
@@ -2055,152 +2035,77 @@ escape-sequences := λt . match t (
    )))
 );
 
-declare-local := λctx vname offset . (tail(
-   (local frame_this)
-   (set frame_this (push-zero()))
-   (local unframe_this)
-   (set unframe_this (unpush-this()))
-   (local refer)
-   (local eight)
-   (set eight (
-      inc(inc(inc(inc(inc(inc(inc(inc(
-         ()
-      ))))))))
-   ))
-   (local sixteen)
-   (set sixteen (mul( eight (inc(inc(()))) )))
-   (local set_this)
-   (set set_this (
-      \t 'mov \s '%r12, \s (
-         (i2s( (mul( (add( (mul( sixteen offset )) eight)) (dec(())) )) ))
-      ) \[ '%rbp \] \n
-      \t 'mov \s '%r13, \s (
-         (i2s( (mul( (add( (mul( sixteen offset )) sixteen)) (dec(())) )) ))
-      ) \[ '%rbp \] \n
-   ))
-   (set refer (
-      \t 'mov \s (
-         (i2s( (mul( (add( (mul( sixteen offset )) eight)) (dec(())) )) ))
-      ) \[ '%rbp \] , %r12 \n
-      \t 'mov \s (
-         (i2s( (mul( (add( (mul( sixteen offset )) sixteen)) (dec(())) )) ))
-      ) \[ '%rbp \] , %r13 \n
-   ))
-   (set ctx (ctx (Local(vname refer)) ))
-   (set ctx (ctx (Local((Set vname) set_this)) ))
-   (Expr(frame_this set_this unframe_this () () ctx (inc offset)))
-));
+close := λe . (
+   e
+   (allocate-cons ())
+   (\t 'mov \s '%r12, \s '0 \[ '%r8 \] \n)
+   (\t 'mov \s '%r13, \s '8 \[ '%r8 \] \n)
+);
 
-i2s := λi . (tail(
-   (local ten)
-   (set ten( inc(inc(inc(inc(inc( inc(inc(inc(inc(inc( ))))) ))))) ))
-   (local sign)
-   (local s)
-   (local r)
-   (if (is-neg i) (
-      (set sign '-)
-      (set i (inv i))
-   ) ())
-   (while i (
-      (set r (mod(i ten)))
-      (set s ((clone-rope(digit r) s)))
-      (set i (div(i ten)))
-   ))
-   (if s () (set s 0))
-   (clone-rope (sign s))
-));
-
-destructure-args := λctx e offset . (match e (
+is-builtin := λf . (match f (
    ()
-   ( Nil (tail(
-      ()
-      (Expr( () () () () () ctx offset ))
-   )))
-   ( (Variable n) (tail(
-      ()
-      (declare-local(ctx n offset))
-   )))
-   ( ( (App( h t )) ) (tail(
-      (local ta)
-      (set ta (destructure-args(ctx t offset)))
-      (set offset (get-offset ta))
-      (set ctx (get-pc ta))
-      (local ha)
-      (set ha (destructure-args(ctx h offset)))
-      (set offset (get-offset ha))
-      (set ctx (get-pc ha))
-      (local prog)
-      (set prog (prog (push-this()) ))
-      (set prog (prog (\t 'call \s 'tail \n) ))
-      (set prog (prog (get-prog ta) ))
-      (set prog (prog (pop-this()) ))
-      (set prog (prog (\t 'call \s 'head \n) ))
-      (set prog (prog (get-prog ha) ))
-      (Expr(
-         ( (get-frame ta) (get-frame ha) )
-         prog
-         ( (get-unframe ta) (get-unframe ha) )
-         () () ctx offset
-      ))
-   )))
-   ( _ (
-      (fail (InvalidFunctionParameters e))
-   ))
+   ('is True)
+   ('eq True)
+   ('not True)
+   ('head True)
+   ('head-string True)
+   ('tail-string True)
+   ('tail True)
+   ('inc True)
+   ('dec True)
+   ('add True)
+   ('mul True)
+   ('div True)
+   ('mod True)
+   ('inv True)
+   ('is-neg True)
+   ('digit True)
+   ('dump-i True)
+   ('print-s True)
+   ('print-i True)
+   ('print-p True)
+   ('print-p True)
+   ('print-d True)
+   ('clone-rope True)
+   ('write-file True)
+   ('load-file True)
+   (_ ())
 ));
 
-yield-foreach-char := λforeach-data foreach-head foreach-small foreach-end foreach-notcons foreach-apply foreach-expr . (
-   #define label for this function
-   foreach-head ': \n
+#import STDLIB/default-atom-allocator;
 
-   #if this is a cons, recurse
-   \t 'cmp \s '$0, \s %r13                   \n
-   \t 'je \s foreach-notcons                 \n
-   (push-this())
-   \t 'call \s 'head                         \n
-   \t 'call \s foreach-head                  \n
-   (pop-this())
-   (push-this())
-   \t 'call \s 'tail                         \n
-   \t 'call \s foreach-head                  \n
-   (pop-this())
-   \t 'ret                                   \n
+allocate-cons-s-section := ();
+allocate-cons-s-counter := ();
+allocate-cons := λ . (tail(
+   (if allocate-cons-s-section () (
+      (set allocate-cons-s-section (uuid()))
+      (set allocate-cons-s-counter (uuid()))
+      (set assemble-data-section ( assemble-data-section (
+         allocate-cons-s-counter ': \n
+         \t '.zero \s '8            \n
+         allocate-cons-s-section ': \n
+         \t '.zero \s '536870912    \n
+      )))
+   ))
+   (\t 'push \s '%r10                                          \n
+    \t 'push \s '%r11                                          \n
+    \t 'mov \s '$ allocate-cons-s-section ', \s '%r8           \n  # %r8 now points to root s
+    \t 'mov \s '$ allocate-cons-s-counter ', \s '%r11          \n  # %r11 now points to s counter
+    \t 'mov \s '0 \[ '%r11 \] , \s '%r10                       \n  # %r10 now hold value of cons counter
+    \t 'add \s '%r10, \s '%r8                                  \n  # %r8 now points to top free cons
+    \t 'add \s '$16, \s '%r10                                  \n  # increment s counter
+    \t 'mov \s '%r10, \s '0 \[ %r11 \]                         \n
+    \t 'pop \s '%r11                                           \n
+    \t 'pop \s '%r10                                           \n
+   ) # overwrite new s counter
+));
 
-   #if not cons, apply
-   foreach-notcons ':                        \n
-   (push-this())
-
-   #if nil, apply and return
-   \t 'mov \s '%r12, \s '%r8                 \n
-   \t 'cmp \s '$0, \s '%r12                  \n
-   \t 'jne \s foreach-small                  \n
-   \t 'call \s foreach-apply                 \n
-   (pop-this())
-   \t 'ret                                   \n
-
-   #if atom, break into characters and apply
-   foreach-small ':                          \n
-   \t 'cmpb \s '$0, \s '0 \[ %r8 \]          \n
-   \t 'je \s foreach-end                     \n
-   \t 'push \s '%r8                          \n
-   \t 'mov \s '$ foreach-data , \s '%r12     \n
-   \t 'mov \s '$0, \s '%r13                  \n
-   \t 'mov \s '$0, \s '%r14                  \n
-   \t 'mov \s '$0, \s '%r15                  \n
-   \t 'movb \s '0 \[ %r8 \] , \s '%bl        \n
-   \t 'movb \s '%bl, \s '0 \[ %r12 \]        \n
-   \t 'movb \s '$0, \s '1 \[ %r12 \]         \n
-   \t 'call \s foreach-apply                 \n
-   \t 'pop \s '%r8                           \n
-   \t 'inc \s '%r8                           \n
-   \t 'jmp \s foreach-small                  \n
-
-   foreach-end ':                            \n
-   (pop-this())
-   \t 'ret                                   \n
-
-   foreach-apply ':                          \n
-   foreach-expr
-   \t 'ret                                   \n
+system-call := λrax rdi rsi rdx . (
+   \t 'mov \s rax , \s '%rax              \n
+   \t 'mov \s rdi , \s '%rdi              \n
+   \t 'mov \s rsi , \s '%rsi              \n
+   \t 'mov \s rdx , \s '%rdx              \n
+   \t 'syscall                            \n
 );
 
 yield-patterns := λctx p offset . match p (
@@ -2327,3 +2232,17 @@ destructure-pattern-lhs := λctx lhs offset . (tail(
       (_ (fail (UnexpectedPattern lhs)))
    ))
 ));
+
+before-main := λ .(
+   # before_main_argv:
+   #    argv = ()
+   #    let t = argv
+   #    for a in argv:
+   #       t.tail = (a ())
+   #       t = t.tail
+
+   'main:                              \n
+   compile-argv-hook
+);
+
+exit-cleanup := λ . (system-call( '$60 '$0 '$0 '$0 ));
