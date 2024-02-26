@@ -30,13 +30,19 @@ typecheck-init := λ. (
 # Cli Entry Point
 
 main := (
+   (print-s Main1)
    (typecheck-init())
+
+   (print-s Main2)
 
    (local mode)
    (set mode Compile)
    (local inputs)
    (local args)
    (set args (tail argv))
+
+   (print-s Main3)
+
    (while args (match args (
       ()
       ( (-o (tgt remainder)) (
@@ -68,6 +74,9 @@ main := (
          (set args remainder)
       ))
    )))
+
+   (print-s Main4)
+
    (while inputs (match mode (
       ()
       (Compile (
@@ -91,12 +100,17 @@ main := (
          (set inputs (tail inputs))
       ))
    )))
+
+   (print-s Main5)
+
    (match mode (
       ()
       (Compile (assemble parse-parsed-program))
       (Parse (print-s parse-parsed-program))
       (Typecheck (print-s (typecheck-show-ascript (typecheck parse-parsed-program))))
    ))
+
+   (print-s Main6)
 );
 
 # Tokenizer 

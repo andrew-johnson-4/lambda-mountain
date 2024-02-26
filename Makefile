@@ -1,11 +1,4 @@
 
-test-tail: prod
-#	./production tests/lm/argv.lm
-	./production tests/lm/cons.lm
-	as -o tmp.o tmp.s
-	ld -o tmp   tmp.o
-	timeout 10 ./tmp
-
 test:
 	lm -o production.s PRODUCTION/cli.lm
 	as -o production.o production.s
