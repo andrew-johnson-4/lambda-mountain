@@ -789,38 +789,42 @@ assemble := λprogram . (
    (set preview_program program)
 
    (print-s Assemble4)
+
+   (while preview_program (match preview_program (
+      ()
+      ( (pc1 (Global ('main body))) (
+         (set preview_program pc1)
+      ))
+      ( (pc2 (GExpr e)) (
+         (set preview_program pc2)
+      ))
+      ( (pc3 (Global (fname body))) (
+         (match body (
+            ()
+            ( Nil (
+               (set output_pd (
+                  (head output_pd)
+                  (
+                     (tail output_pd)
+                     (label-case fname)
+                     ': \n \t '.zero \s '16 \n
+                  )
+               ))
+               (set global_ctx (global_ctx (GlobalVariable fname)))
+            ))
+            ( (Lambda(lhs rhs)) (
+               (set global_ctx (global_ctx (GlobalFunction fname)))
+            ))
+         ))
+         (set preview_program pc3)
+      ))
+      ( u (
+         (fail (UnexpectedProgram u))
+      ))
+   )))
+   (print-s Assemble5)
 );
 
-#   (while preview_program (match preview_program (
-#      ()
-#      ( (pc1 (Global ('main body))) (
-#         (set preview_program pc1)
-#      ))
-#      ( (pc2 (GExpr e)) (
-#         (set preview_program pc2)
-#      ))
-#      ( (pc3 (Global (fname body))) (
-#          (set preview_program pc3)
-#      ))
-#         (match body (
-#            ()
-#            ( Nil (
-#               (set output_pd ( (head output_pd) ((tail output_pd) (label-case fname) ': \n \t '.zero \s '16 \n) ))
-#               (set global_ctx (global_ctx (GlobalVariable fname)))
-#            ))
-#            ( (Lambda(lhs rhs)) (
-#               (set global_ctx (global_ctx (GlobalFunction fname)))
-#            ))
-#         ))
-#         (set preview_program pc3)
-#      ))
-#      ( u (
-#         (fail (UnexpectedProgram u))
-#         (print-s Unreachable)
-#      ))
-#   )))
-
-#   (print-s Assemble5)
 
 #   (while program (match program (
 #      ()
