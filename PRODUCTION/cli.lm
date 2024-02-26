@@ -1402,7 +1402,10 @@ destructure-args := λctx e offset . (match e (
 # Data Segments
 
 assemble-program-break := λ. (
-   '__program_break:                     \n
+   # does .data need to be non-zero to work with brk?
+   '__program_placeholder:                \n
+   \t '.zero \s '16                       \n
+   '__program_break:                      \n
 );
 
 assemble-data-header := λ .(
