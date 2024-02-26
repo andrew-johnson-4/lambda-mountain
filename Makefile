@@ -1,5 +1,9 @@
 
 mem: prod
+	./bootstrap tests/lm/manycons.lm
+	as -o tmp.o tmp.s
+	ld -o tmp   tmp.o
+	./tmp
 	./production tests/lm/manycons.lm
 	as -o tmp.o tmp.s
 	ld -o tmp   tmp.o

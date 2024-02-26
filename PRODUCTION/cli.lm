@@ -2048,7 +2048,7 @@ escape-sequences := λt . match t (
 
 close := λe . (
    e
-   (allocate-cons ())
+   (dev-allocate-cons ())
    (\t 'mov \s '%r12, \s '0 \[ '%r8 \] \n)
    (\t 'mov \s '%r13, \s '8 \[ '%r8 \] \n)
 );
@@ -2084,11 +2084,6 @@ is-builtin := λf . (match f (
 ));
 
 #import STDLIB/default-atom-allocator;
-
-sbrk := λsize . (tail(
-   (
-   )
-));
 
 allocate-cons-function-id := ();
 dev-allocate-cons := λ . (tail(
