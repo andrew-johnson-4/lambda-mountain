@@ -789,96 +789,97 @@ assemble := λprogram . (
    (set preview_program program)
 
    (print-s Assemble4)
-
-   (while preview_program (match preview_program (
-      ()
-      ( (pc (Global ('main body))) (
-         (set preview_program pc)
-      ))
-      ( (pc (GExpr e)) (
-         (set preview_program pc)
-      ))
-      ( (pc (Global (fname body))) (
-         (match body (
-            ()
-            ( Nil (
-               (set output_pd ( (head output_pd) ((tail output_pd) (label-case fname) ': \n \t '.zero \s '16 \n) ))
-               (set global_ctx (global_ctx (GlobalVariable fname)))
-            ))
-            ( (Lambda(lhs rhs)) (
-               (set global_ctx (global_ctx (GlobalFunction fname)))
-            ))
-         ))
-         (set preview_program pc)
-      ))
-      ( (pc u) (
-         fail (UnexpectedProgram u)
-      ))
-      ( u (
-         fail (UnexpectedProgram u)
-      ))
-   )))
-
-   (print-s Assemble5)
-
-   (while program (match program (
-      ()
-      ( (pc (Global ('main body))) (
-         (set main_e body)
-         (set program pc)
-      ))
-      ( (pc (GExpr e)) (
-         (set main_pd (compile-append( main_pd global_ctx e )))
-         (set program pc)
-      ))
-      ( (pc (Global (fname body))) (
-         (match body (
-            ()
-            ( Nil (
-            ))
-            ( (Lambda(lhs rhs)) (
-               (set e1 (destructure-args(global_ctx lhs ())))
-               (set e2 (compile-expr((get-pc e1) rhs (get-offset e1) Used)))
-               (set output_pd ( ((head output_pd) (label-case fname) ': \n) (tail output_pd) ))
-               (set output_pd ( ((head output_pd) (enter-function())) (tail output_pd) ))
-               (set output_pd ( ((head output_pd) (get-frame e1)) (tail output_pd) ))
-               (set output_pd ( ((head output_pd) (get-frame e2)) (tail output_pd) ))
-               (set output_pd ( ((head output_pd) (get-prog e1)) (tail output_pd) ))
-               (set output_pd ( ((head output_pd) (get-prog e2)) (tail output_pd) ))
-               (set output_pd ( ((head output_pd) (exit-function())) (tail output_pd) ))
-               (set output_pd ( ((head output_pd) (get-text e1)) (tail output_pd) ))
-               (set output_pd ( ((head output_pd) (get-text e2)) (tail output_pd) ))
-               (set output_pd ( (head output_pd) ((tail output_pd) (get-data e1)) ))
-               (set output_pd ( (head output_pd) ((tail output_pd) (get-data e2)) ))
-            ))
-         ))
-         (set program pc)
-      ))
-   )))
-
-   (print-s Assemble6)
-
-   (if main_e (
-      (set main_pd (compile-append( main_pd global_ctx main_e )))
-   ) ())
-
-   (set output_pd (
-      (
-         (head output_pd)
-         (before-main())
-         (enter-function())
-         (get-frame main_pd)
-         (get-prog main_pd)
-         (exit-cleanup())
-         (get-text main_pd)
-         assemble-text-section
-         (stdlib-functions())
-      )
-      ((tail output_pd) (get-data main_pd) assemble-data-section (assemble-program-break()))
-   ))
-
-   (write-file (target (clone-rope output_pd)))
 );
+
+#   (while preview_program (match preview_program (
+#      ()
+#      ( (pc1 (Global ('main body))) (
+#         (set preview_program pc1)
+#      ))
+#      ( (pc2 (GExpr e)) (
+#         (set preview_program pc2)
+#      ))
+#      ( (pc3 (Global (fname body))) (
+#          (set preview_program pc3)
+#      ))
+#         (match body (
+#            ()
+#            ( Nil (
+#               (set output_pd ( (head output_pd) ((tail output_pd) (label-case fname) ': \n \t '.zero \s '16 \n) ))
+#               (set global_ctx (global_ctx (GlobalVariable fname)))
+#            ))
+#            ( (Lambda(lhs rhs)) (
+#               (set global_ctx (global_ctx (GlobalFunction fname)))
+#            ))
+#         ))
+#         (set preview_program pc3)
+#      ))
+#      ( u (
+#         (fail (UnexpectedProgram u))
+#         (print-s Unreachable)
+#      ))
+#   )))
+
+#   (print-s Assemble5)
+
+#   (while program (match program (
+#      ()
+#      ( (pc (Global ('main body))) (
+#         (set main_e body)
+#         (set program pc)
+#      ))
+#      ( (pc (GExpr e)) (
+#         (set main_pd (compile-append( main_pd global_ctx e )))
+#         (set program pc)
+#      ))
+#      ( (pc (Global (fname body))) (
+#         (match body (
+#            ()
+#            ( Nil (
+#            ))
+#            ( (Lambda(lhs rhs)) (
+#               (set e1 (destructure-args(global_ctx lhs ())))
+#               (set e2 (compile-expr((get-pc e1) rhs (get-offset e1) Used)))
+#               (set output_pd ( ((head output_pd) (label-case fname) ': \n) (tail output_pd) ))
+#               (set output_pd ( ((head output_pd) (enter-function())) (tail output_pd) ))
+#               (set output_pd ( ((head output_pd) (get-frame e1)) (tail output_pd) ))
+#               (set output_pd ( ((head output_pd) (get-frame e2)) (tail output_pd) ))
+#               (set output_pd ( ((head output_pd) (get-prog e1)) (tail output_pd) ))
+#               (set output_pd ( ((head output_pd) (get-prog e2)) (tail output_pd) ))
+#               (set output_pd ( ((head output_pd) (exit-function())) (tail output_pd) ))
+#               (set output_pd ( ((head output_pd) (get-text e1)) (tail output_pd) ))
+#               (set output_pd ( ((head output_pd) (get-text e2)) (tail output_pd) ))
+#               (set output_pd ( (head output_pd) ((tail output_pd) (get-data e1)) ))
+#               (set output_pd ( (head output_pd) ((tail output_pd) (get-data e2)) ))
+#            ))
+#         ))
+#         (set program pc)
+#      ))
+#   )))
+#
+#   (print-s Assemble6)
+#
+#   (if main_e (
+#      (set main_pd (compile-append( main_pd global_ctx main_e )))
+#   ) ())
+
+#   (set output_pd (
+#      (
+#         (head output_pd)
+#         (before-main())
+#         (enter-function())
+#         (get-frame main_pd)
+#         (get-prog main_pd)
+#         (exit-cleanup())
+#         (get-text main_pd)
+#         assemble-text-section
+#         (stdlib-functions())
+#      )
+#      ((tail output_pd) (get-data main_pd) assemble-data-section (assemble-program-break()))
+#   ))
+#
+#   (write-file (target (clone-rope output_pd)))
+#);
 
 # Compile Codegen
 
