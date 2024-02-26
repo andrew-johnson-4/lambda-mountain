@@ -1,4 +1,8 @@
 
+# Dependencies
+
+import STDLIB/default-cons-allocator.lm;
+
 # Static Globals
 
 cli-config                               := ();
@@ -1398,7 +1402,10 @@ destructure-args := λctx e offset . (match e (
 # Data Segments
 
 assemble-program-break := λ. (
-   '__program_break:                     \n
+   # does .data need to be non-zero to work with brk?
+   '__program_placeholder:                \n
+   \t '.zero \s '16                       \n
+   '__program_break:                      \n
 );
 
 assemble-data-header := λ .(
@@ -2078,34 +2085,6 @@ is-builtin := λf . (match f (
    ('write-file True)
    ('load-file True)
    (_ ())
-));
-
-#import STDLIB/default-atom-allocator;
-
-allocate-cons-s-section := ();
-allocate-cons-s-counter := ();
-allocate-cons := λ . (tail(
-   (if allocate-cons-s-section () (
-      (set allocate-cons-s-section (uuid()))
-      (set allocate-cons-s-counter (uuid()))
-      (set assemble-data-section ( assemble-data-section (
-         allocate-cons-s-counter ': \n
-         \t '.zero \s '8            \n
-         allocate-cons-s-section ': \n
-         \t '.zero \s '536870912    \n
-      )))
-   ))
-   (\t 'push \s '%r10                                          \n
-    \t 'push \s '%r11                                          \n
-    \t 'mov \s '$ allocate-cons-s-section ', \s '%r8           \n  # %r8 now points to root s
-    \t 'mov \s '$ allocate-cons-s-counter ', \s '%r11          \n  # %r11 now points to s counter
-    \t 'mov \s '0 \[ '%r11 \] , \s '%r10                       \n  # %r10 now hold value of cons counter
-    \t 'add \s '%r10, \s '%r8                                  \n  # %r8 now points to top free cons
-    \t 'add \s '$16, \s '%r10                                  \n  # increment s counter
-    \t 'mov \s '%r10, \s '0 \[ %r11 \]                         \n
-    \t 'pop \s '%r11                                           \n
-    \t 'pop \s '%r10                                           \n
-   ) # overwrite new s counter
 ));
 
 system-call := λrax rdi rsi rdx . (

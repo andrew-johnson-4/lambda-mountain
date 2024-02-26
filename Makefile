@@ -1,6 +1,6 @@
 
 mem: prod
-	./production tests/lm/multifile.lm
+	./production tests/lm/manycons.lm
 	as -o tmp.o tmp.s
 	ld -o tmp   tmp.o
 	./tmp
