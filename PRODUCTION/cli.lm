@@ -953,6 +953,12 @@ compile-expr := λctx e offset used . (tail(
          (set prog (prog ( \t 'mov \s '8 \[ '%r8 \] , '%r13 \n )))
          (Expr( () prog () () () ctx offset ))
       )))
+      ( (Variable 'a_counter) (tail(
+         (set prog (prog ( \t 'mov \s '$a_counter, \s '%r12 \n )))
+         (set prog (prog ( \t 'mov \s '0 \[ '%r12 \] , \s '%r12 \n )))
+         (set prog (prog ( \t 'mov \s '$0, \s '%r13 \n )))
+         (Expr( () prog () () () ctx offset ))
+      )))
       ( (Variable vname) (tail(
          ()
          (Expr( () (get-local(ctx vname)) () () () ctx offset ))
