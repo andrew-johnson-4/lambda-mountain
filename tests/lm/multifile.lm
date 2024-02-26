@@ -82,6 +82,7 @@ tokenize-file := λpath . (
 );
 
 tokenize := λtext . (tail(
+   (print-s (Tokenize text))
    (local program)
    (local buffer)
    (local in_comment)

@@ -1850,14 +1850,10 @@ stdlib-functions := λ . (
    \t 'mov \s '$a_section, \s '%r8        \n
    \t 'mov \s '$a_counter, \s '%r10       \n
    \t 'mov \s '0 \[ '%r10 \] , \s '%r11   \n
-   \t 'add \s '%r11, \s '%r8              \n
-   \t 'mov \s '%r8, \s '%r9               \n
-   \t 'mov \s '$0, \s '%r10               \n
-   \t 'mov \s '$load_file_buf, \s '%r11   \n
-   #r8 holds pointer to head of new data
-   #r9 holds pointer to tail of new data
-   #r10 holds amount of data on buffer currently
-   #r11 holds pointer to head of buffer
+   \t 'add \s '%r11, \s '%r8              \n # r8 holds pointer to head of new data
+   \t 'mov \s '%r8, \s '%r9               \n # r9 holds pointer to tail of new data
+   \t 'mov \s '$0, \s '%r10               \n # r10 holds amount of data on buffer currently
+   \t 'mov \s '$load_file_buf, \s '%r11   \n # r11 holds pointer to head of buffer
 
    # move data from buffer into string
    'load_file_loop:                       \n
@@ -1876,7 +1872,7 @@ stdlib-functions := λ . (
    \t 'mov \s '%rax, \s '%r10             \n
    \t 'mov \s '$load_file_bsz, \s '%rdx   \n
    \t 'mov \s '0 \[ '%rdx \] , \s '%rdx   \n
-   (system-call( '$0 '%r10 '$load_file_buf %rdx ))
+   (system-call( '$0 '%r10 '$load_file_buf () ))
    \t 'mov \s '%rax, \s '%r10             \n
    \t 'pop \s '%rax                       \n
    \t 'mov \s '$load_file_buf, \s '%r11   \n
@@ -2110,10 +2106,10 @@ allocate-cons := λ . (tail(
 ));
 
 system-call := λrax rdi rsi rdx . (
-   \t 'mov \s rax , \s '%rax              \n
-   \t 'mov \s rdi , \s '%rdi              \n
-   \t 'mov \s rsi , \s '%rsi              \n
-   \t 'mov \s rdx , \s '%rdx              \n
+   (if rax (\t 'mov \s rax , \s '%rax              \n) ())
+   (if rdi (\t 'mov \s rdi , \s '%rdi              \n) ())
+   (if rsi (\t 'mov \s rsi , \s '%rsi              \n) ())
+   (if rdx (\t 'mov \s rdx , \s '%rdx              \n) ())
    \t 'syscall                            \n
 );
 
