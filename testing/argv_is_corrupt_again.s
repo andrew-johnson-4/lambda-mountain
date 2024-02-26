@@ -1,3 +1,7 @@
+.global _start
+.text
+_start:
+	jmp main
 main:
 	pop %r10
 	mov $argv, %r9
@@ -24,8 +28,9 @@ before_main_argv:
 before_main_end:
 	push %rbp
 	mov %rsp, %rbp
-	mov $argv, %r12
-	mov $0, %r13
+	mov $argv, %r8
+	mov 0(%r8), %r12
+	mov 0(%r8), %r13
 	call print_s
 	pushq $0
 	pushq $0
@@ -1083,10 +1088,6 @@ uuid_00000000000013c1:
 	mov $0, %rsi
 	mov $0, %rdx
 	syscall
-.global _start
-.text
-_start:
-	jmp main
 exit_cleanup:
 	push %rbp
 	mov %rsp, %rbp
@@ -69996,7 +69997,6 @@ uuid_00000000000010c2:
 	push %r13
 	mov $0,%r12
 	mov $0,%r13
-	call assemble_program_header
 	push %r12
 	push %r13
 	mov $0,%r12
@@ -71957,7 +71957,23 @@ uuid_0000000000001110:
 	push %r13
 	mov $0,%r12
 	mov $0,%r13
+	call assemble_program_header
+	push %r12
+	push %r13
+	mov $0,%r12
+	mov $0,%r13
 	call before_main
+	call uuid_0000000000000004
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	mov %r8, %r9
+	pop %r13
+	pop %r12
+	call uuid_0000000000000004
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	mov %r8, %r12
+	mov %r9, %r13
 	push %r12
 	push %r13
 	mov $0,%r12

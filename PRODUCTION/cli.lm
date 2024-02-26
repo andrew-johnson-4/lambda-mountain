@@ -785,7 +785,7 @@ assemble := λprogram . (
    (local e2)
 
    (local output_pd)
-   (set output_pd ( (assemble-program-header()) (assemble-data-header()) ))
+   (set output_pd ( () (assemble-data-header()) ))
 
    (local global_ctx)
    (local preview_program)
@@ -865,6 +865,7 @@ assemble := λprogram . (
 
    (set output_pd (
       (
+         (assemble-program-header())
          (before-main())
          (enter-function())
          (get-frame main_pd)
