@@ -205,6 +205,7 @@ parse-program := λtoks . (tail(
          (set pme (parse-many-expressions remainder))
          (print-s (PME pme))
          (set parse-parsed-program (parse-parsed-program (GExpr (head pme)) ))
+         (print-s parse-parsed-program)
          (set toks (tail pme))
       ))
    )))

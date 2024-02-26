@@ -1297,8 +1297,6 @@ get-maybe-function := λctx v . (tail(
 declare-local := λctx vname offset . (tail(
    (local frame_this)
    (set frame_this (push-zero()))
-   (local unframe_this)
-   (set unframe_this (unpush-this()))
    (local refer)
    (local eight)
    (set eight (
@@ -1327,7 +1325,7 @@ declare-local := λctx vname offset . (tail(
    ))
    (set ctx (ctx (Local(vname refer)) ))
    (set ctx (ctx (Local((Set vname) set_this)) ))
-   (Expr(frame_this set_this unframe_this () () ctx (inc offset)))
+   (Expr(frame_this set_this () () () ctx (inc offset)))
 ));
 
 i2s := λi . (tail(
@@ -1921,11 +1919,6 @@ push-this := λ .(
 push-zero := λ .(
    \t 'pushq \s '$0                       \n
    \t 'pushq \s '$0                       \n
-);
-
-unpush-this := λ .(
-   \t 'pop \s '%r8                        \n
-   \t 'pop \s '%r8                        \n
 );
 
 pop-this := λ .(
