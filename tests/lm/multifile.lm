@@ -2,13 +2,16 @@
 main := (
    (print-s (dump-i a_counter))
    (print-s \n)
+
    (load-file (clone-rope A))
    (print-s (dump-i a_counter))
    (print-s \n)
 
+   (load-file 'tests/data/file1.txt)
    (print-s (dump-i a_counter))
    (print-s \n)
-   (load-file 'tests/data/file1.txt)
+
+   (load-file 'tests/data/5000.txt)
    (print-s (dump-i a_counter))
    (print-s \n)
 );
