@@ -10,22 +10,13 @@ main := (
    (local inputs)
    (set inputs ('tests/data/file1.txt ('tests/data/file2.txt ())))
 
-   (while inputs (
-      (parse-program (tokenize-file (head inputs)))
-      (set inputs (tail inputs))
-   ))
+   (parse-program  (tokenize (load-file 'tests/data/file1.txt)  ))
+   (parse-program  (tokenize (load-file 'tests/data/file2.txt)  ))
 
    (print-s parse-parsed-program))
 );
 
 # Tokenizer 
-
-tokenize-file := λpath . (match path (
-   ()
-   (() ())
-   ((_ _) ())
-   (fp (tokenize (clone-rope (load-file fp))))
-));
 
 tokenize := λtext . (tail(
    (print-s (Tokenize text))
