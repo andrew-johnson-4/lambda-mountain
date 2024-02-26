@@ -1,0 +1,5 @@
+
+main := (
+   (print-s (load-file 'tests/data/file1.txt))
+   (print-s (load-file 'tests/data/file2.txt))
+);
