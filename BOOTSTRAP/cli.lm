@@ -112,9 +112,13 @@ main := (
 
 # Tokenizer 
 
-tokenize-file := λpath . (
-   (tokenize (load-file path))
-);
+tokenize-file := λpath . (match path (
+   ()
+   (() ())
+   ((_ _) ())
+   (fp (tokenize (load-file fp)))
+));
+
 
 tokenize := λtext . (tail(
    (local program)
@@ -949,6 +953,12 @@ compile-expr := λctx e offset used . (tail(
          (set prog (prog ( \t 'mov \s '8 \[ '%r8 \] , '%r13 \n )))
          (Expr( () prog () () () ctx offset ))
       )))
+      ( (Variable 'a_counter) (tail(
+         (set prog (prog ( \t 'mov \s '$a_counter, \s '%r12 \n )))
+         (set prog (prog ( \t 'mov \s '0 \[ '%r12 \] , \s '%r12 \n )))
+         (set prog (prog ( \t 'mov \s '$0, \s '%r13 \n )))
+         (Expr( () prog () () () ctx offset ))
+      )))
       ( (Variable vname) (tail(
          ()
          (Expr( () (get-local(ctx vname)) () () () ctx offset ))
@@ -1297,8 +1307,6 @@ get-maybe-function := λctx v . (tail(
 declare-local := λctx vname offset . (tail(
    (local frame_this)
    (set frame_this (push-zero()))
-   (local unframe_this)
-   (set unframe_this (unpush-this()))
    (local refer)
    (local eight)
    (set eight (
@@ -1327,7 +1335,7 @@ declare-local := λctx vname offset . (tail(
    ))
    (set ctx (ctx (Local(vname refer)) ))
    (set ctx (ctx (Local((Set vname) set_this)) ))
-   (Expr(frame_this set_this unframe_this () () ctx (inc offset)))
+   (Expr(frame_this set_this () () () ctx (inc offset)))
 ));
 
 i2s := λi . (tail(
@@ -1849,15 +1857,11 @@ stdlib-functions := λ . (
    'load_file_contents:                   \n
    \t 'mov \s '$a_section, \s '%r8        \n
    \t 'mov \s '$a_counter, \s '%r10       \n
-   \t 'mov \s '0 \[ '%r10 \] , \s '%r11   \n
-   \t 'add \s '%r11, \s '%r8              \n
-   \t 'mov \s '%r8, \s '%r9               \n
-   \t 'mov \s '$0, \s '%r10               \n
-   \t 'mov \s '$load_file_buf, \s '%r11   \n
-   #r8 holds pointer to head of new data
-   #r9 holds pointer to tail of new data
-   #r10 holds amount of data on buffer currently
-   #r11 holds pointer to head of buffer
+   \t 'mov \s '0 \[ '%r10 \] , \s '%r12   \n # r12 holds a_counter
+   \t 'add \s '%r12, \s '%r8              \n # r8 holds pointer to head of new data
+   \t 'mov \s '%r8, \s '%r9               \n # r9 holds pointer to tail of new data
+   \t 'mov \s '$0, \s '%r10               \n # r10 holds amount of data on buffer currently
+   \t 'mov \s '$load_file_buf, \s '%r11   \n # r11 holds pointer to head of buffer
 
    # move data from buffer into string
    'load_file_loop:                       \n
@@ -1865,6 +1869,7 @@ stdlib-functions := λ . (
    \t 'je \s 'load_file_bufempty          \n
    \t 'movb \s '0 \[ %r11 \] , \s '%bl    \n
    \t 'mov \s '%bl, \s '0 \[ '%r9 \]      \n
+   \t 'inc \s '%r12                       \n
    \t 'inc \s '%r9                        \n
    \t 'inc \s '%r11                       \n
    \t 'dec \s '%r10                       \n
@@ -1876,7 +1881,7 @@ stdlib-functions := λ . (
    \t 'mov \s '%rax, \s '%r10             \n
    \t 'mov \s '$load_file_bsz, \s '%rdx   \n
    \t 'mov \s '0 \[ '%rdx \] , \s '%rdx   \n
-   (system-call( '$0 '%r10 '$load_file_buf %rdx ))
+   (system-call( '$0 '%r10 '$load_file_buf () ))
    \t 'mov \s '%rax, \s '%r10             \n
    \t 'pop \s '%rax                       \n
    \t 'mov \s '$load_file_buf, \s '%r11   \n
@@ -1887,10 +1892,9 @@ stdlib-functions := λ . (
    (system-call( '$3 '%rax '$0 '$0 ))
 
    \t 'movb \s '$0, \s '0 \[ %r9 \]       \n
-   \t 'inc \s '%r9                        \n
-   \t 'sub \s '%r8, \s '%r9               \n
+   \t 'inc \s '%r12                       \n
    \t 'mov \s '$a_counter, \s '%r10       \n
-   \t 'mov \s '%r9, \s '0 \[ %r10 \]      \n
+   \t 'mov \s '%r12, \s '0 \[ %r10 \]     \n
    \t 'mov \s '%r8, \s '%r12              \n
    \t 'mov \s '$0, \s '%r13               \n
    \t 'ret                                \n
@@ -1927,11 +1931,6 @@ push-zero := λ .(
    \t 'pushq \s '$0                       \n
 );
 
-unpush-this := λ .(
-   \t 'pop \s '%r8                        \n
-   \t 'pop \s '%r8                        \n
-);
-
 pop-this := λ .(
    \t 'pop \s '%r13                       \n
    \t 'pop \s '%r12                       \n
@@ -1958,11 +1957,11 @@ yield-cons := λctx l r offset used . (tail(
          (set prog (prog (push-this())))
          (set prog (prog (get-prog e2)))
          (set prog (prog (close())))
-         (set prog (prog (\t 'mov \s '%r8, \s '%r9 \n)))
          (set prog (prog (pop-this())))
+         (set prog (prog (\t 'push \s '%r8 \n)))
          (set prog (prog (close())))
          (set prog (prog (\t 'mov \s '%r8, \s '%r12 \n)))
-         (set prog (prog (\t 'mov \s '%r9, \s '%r13 \n)))
+         (set prog (prog (\t 'pop \s '%r13 \n)))
          (Expr( ((get-frame e1) (get-frame e2)) prog ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
       )))
       ( _ (tail(
@@ -2110,10 +2109,10 @@ allocate-cons := λ . (tail(
 ));
 
 system-call := λrax rdi rsi rdx . (
-   \t 'mov \s rax , \s '%rax              \n
-   \t 'mov \s rdi , \s '%rdi              \n
-   \t 'mov \s rsi , \s '%rsi              \n
-   \t 'mov \s rdx , \s '%rdx              \n
+   (if rax (\t 'mov \s rax , \s '%rax              \n) ())
+   (if rdi (\t 'mov \s rdi , \s '%rdi              \n) ())
+   (if rsi (\t 'mov \s rsi , \s '%rsi              \n) ())
+   (if rdx (\t 'mov \s rdx , \s '%rdx              \n) ())
    \t 'syscall                            \n
 );
 
