@@ -1,0 +1,19 @@
+
+
+f1 := λx . x x;
+f2 := λx . f1 (x x);
+f3 := λx . f2 (x x);
+f4 := λx . f3 (x x);
+f5 := λx . f4 (x x);
+f6 := λx . f5 (x x);
+f7 := λx . f6 (x x);
+f8 := λx . f7 (x x);
+f9 := λx . f8 (x x);
+f10 := λx . f9 (x x);
+f11 := λx . f10 (x x);
+f12 := λx . f11 (x x);
+f13 := λx . f12 (x x);
+f14 := λx . f13 (x x);
+
+
+main := f14 1;
