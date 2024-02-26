@@ -30,6 +30,7 @@ typecheck-init := λ. (
 # Cli Entry Point
 
 main := (
+   (print-s argv)
    (typecheck-init())
 
    (local mode)
