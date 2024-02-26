@@ -37,7 +37,10 @@ main := (
    (set mode Compile)
    (local inputs)
    (local args)
-   (set args (tail argv))
+   (set args argv)
+   (set args (tail args))
+
+   (print-s (Main1 args))
 
    (while args (match args (
       ()
@@ -69,7 +72,12 @@ main := (
          (set inputs (fp inputs))
          (set args remainder)
       ))
+      ( u (
+         fail (UnexpectionCommand u)
+      ))
    )))
+
+   (print-s Main2)
 
    (while inputs (match mode (
       ()
@@ -98,6 +106,8 @@ main := (
       ))
    )))
 
+   (print-s Main3)
+
    (match mode (
       ()
       (Compile (assemble parse-parsed-program))
@@ -113,6 +123,7 @@ tokenize-file := λpath . (
 );
 
 tokenize := λtext . (tail(
+   (print-s Tokenize)
    (local program)
    (local buffer)
    (local in_comment)
