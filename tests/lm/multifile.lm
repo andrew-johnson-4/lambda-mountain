@@ -8,36 +8,14 @@ parse-parsed-program                     := ();
 
 main := (
    (local inputs)
-   (local args)
-
-   (local mode)
-   (set mode Parse)
-
    (set inputs ('tests/data/file1.txt ('tests/data/file2.txt ())))
 
-   (while inputs (match mode (
-      ()
-      (Parse (
-         (parse-program (tokenize-file (head inputs)))
-         (set inputs (tail inputs))
-      ))
-      (ParseExpression (
-         (print-s (parse-expression (tokenize-file (head inputs))))
-         (set inputs (tail inputs))
-      ))
-      (Tokenize (
-         (print-s (tokenize-file (head inputs)))
-         (set inputs (tail inputs))
-      ))
-      (u (
-         (fail (UnknownMode u))
-      ))
-   )))
-
-   (match mode (
-      ()
-      (Parse (print-s parse-parsed-program))
+   (while inputs (
+      (parse-program (tokenize-file (head inputs)))
+      (set inputs (tail inputs))
    ))
+
+   (print-s parse-parsed-program))
 );
 
 # Tokenizer 
