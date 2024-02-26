@@ -1390,8 +1390,6 @@ destructure-args := λctx e offset . (match e (
 # Data Segments
 
 assemble-program-break := λ. (
-   '__current_break:                     \n
-   \t '.zero \s '8                       \n
    '__program_break:                     \n
 );
 
@@ -2084,61 +2082,6 @@ is-builtin := λf . (match f (
 ));
 
 #import STDLIB/default-atom-allocator;
-
-sbrk := λsize . (tail(
-   (
-   )
-));
-
-allocate-cons-function-id := ();
-dev-allocate-cons := λ . (tail(
-   (if allocate-cons-function-id () (
-      (local extend)
-      (set extend (uuid()))
-      (set allocate-cons-function-id (uuid()))
-      (set assemble-text-section ( assemble-text-section (
-         allocate-cons-function-id ':                \n
-         (enter-function())
-         \t 'push \s '%r9                            \n
-         \t 'push \s '%r10                           \n
-         \t 'push \s '%r11                           \n
-         \t 'push \s '%r12                           \n
-         \t 'push \s '%r13                           \n
-         \t 'push \s '%r14                           \n
-         \t 'push \s '%r15                           \n
-         \t 'push \s '%rsi                           \n
-         \t 'push \s '%rdi                           \n
-         \t 'push \s '%rax                           \n
-         \t 'push \s '%rbx                           \n
-         \t 'mov \s '$__current_break, \s '%rdi      \n
-         \t 'mov \s '0 \[ '%rdi \] , \s '%r8         \n
-         \t 'cmp \s '$0, \s '%r8                     \n
-         \t 'jne \s extend                           \n
-         \t 'mov \s '$__program_break, \s '%r8       \n
-         extend ':                                   \n
-         \t 'add \s '$16 , \s '%r8                   \n
-         \t 'mov \s '$12, \s '%rax                   \n  # system call brk
-         \t 'mov \s '%r8, \s '%rdi                   \n  # new requested brk
-         \t 'syscall                                 \n
-         \t 'mov \s '$__current_break, \s '%rdi      \n
-         \t 'mov \s '%r8, \s '0 \[ '%rdi \]          \n
-         \t 'sub \s '$16 , \s '%r8                   \n
-         \t 'pop \s '%rbx                            \n
-         \t 'pop \s '%rax                            \n
-         \t 'pop \s '%rdi                            \n
-         \t 'pop \s '%rsi                            \n
-         \t 'pop \s '%r15                            \n
-         \t 'pop \s '%r14                            \n
-         \t 'pop \s '%r13                            \n
-         \t 'pop \s '%r12                            \n
-         \t 'pop \s '%r11                            \n
-         \t 'pop \s '%r10                            \n
-         \t 'pop \s '%r9                             \n
-         (exit-function())
-      )))
-   ))
-   ( \t 'call \s allocate-cons-function-id \n )
-));
 
 allocate-cons-s-section := ();
 allocate-cons-s-counter := ();

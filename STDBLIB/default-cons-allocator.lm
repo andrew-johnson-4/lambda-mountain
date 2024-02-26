@@ -1,0 +1,51 @@
+
+allocate-cons-function-id := ();
+dev-allocate-cons := λ . (tail(
+   (if allocate-cons-function-id () (
+      (set allocate-cons-function-id (uuid()))
+
+      (local extend)
+      (set extend (uuid()))
+      (local increment)
+      (set increment (uuid()))
+      (local initialized)
+      (set initialized (uuid()))
+      (local exit-allocation)
+      (set exit-allocation (uuid()))
+
+      (local page-size)
+      (set page-size 1073741824)
+
+      (set assemble-data-section ( assemble-data-section (
+         '__current_break:                     \n
+         \t '.zero \s '8                       \n
+         '__sequent_break:                     \n
+         \t '.zero \s '8                       \n
+      )))
+
+      (set assemble-text-section ( assemble-text-section (
+         allocate-cons-function-id ':                \n
+         \t 'push \s '%r9                            \n
+         \t 'mov \s '$__current_break, \s '%rdi      \n
+         \t 'mov \s '0 \[ '%rdi \] , \s '%r8         \n
+         \t 'cmp \s '$0, \s '%r8                     \n
+         \t 'jne \s initialized                      \n
+         \t 'mov \s '$__program_break, \s '%r8       \n
+         \t 'mov \s '%r8, \s '0 \[ '%rdi \]          \n
+         \t 'add \s '$ page-size , \s '%r8           \n
+         \t 'mov \s '$12, \s '%rax                   \n  # system call brk
+         \t 'mov \s '%r8, \s '%rdi                   \n  # new requested brk
+         \t 'syscall                                 \n
+         initialized ':                              \n
+         \t 'mov \s '$__current_break, \s '%r8       \n
+         \t 'mov \s '0 \[ '%r8 \] , \s '%r8          \n
+         \t 'add \s '$16, \s '%r8                    \n
+         \t 'mov \s '$__current_break, \s '%r9       \n
+         \t 'mov \s '%r8, \s '0 \[ '%r9 \]           \n
+         \t 'sub \s '$16, \s '%r8                    \n
+         \t 'pop \s '%r9                             \n
+         \t 'ret                                     \n
+      )))
+   ))
+   ( \t 'call \s allocate-cons-function-id \n )
+));
