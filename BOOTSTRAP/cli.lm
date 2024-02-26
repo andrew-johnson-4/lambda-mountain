@@ -1504,6 +1504,8 @@ stdlib-functions := λ . (
    \t 'cmpb \s '$0, \s '0 \[ '%r12 \]     \n
    \t 'je \s 'return_nil                  \n
    \t 'inc \s '%r12                       \n
+   \t 'cmpb \s '$0, \s '0 \[ '%r12 \]     \n
+   \t 'je \s 'return_nil                  \n
    \t 'ret                                \n
 
    'head:                                 \n
