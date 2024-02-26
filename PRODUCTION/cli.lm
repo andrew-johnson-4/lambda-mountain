@@ -865,12 +865,12 @@ assemble := λprogram . (
 
    (set output_pd (
       (
-         (head output_pd)
          (before-main())
          (enter-function())
          (get-frame main_pd)
          (get-prog main_pd)
          (exit-cleanup())
+         (head output_pd)
          (get-text main_pd)
          assemble-text-section
          (stdlib-functions())
@@ -2131,7 +2131,7 @@ dev-allocate-cons := λ . (tail(
          (exit-function())
       )))
    ))
-   ( 'call \s allocate-cons-function-id \n )
+   ( \t 'call \s allocate-cons-function-id \n )
 ));
 
 allocate-cons-s-section := ();

@@ -1,8 +1,10 @@
 
-test:
-	lm -o production.s PRODUCTION/cli.lm
-	as -o production.o production.s
-	ld -o production   production.o
+argv:
+	as -o tmp.o testing/argv_is_corrupt_again.s
+	ld -o tmp tmp.o
+	./tmp
+
+test: prod
 	./production -o production1.s PRODUCTION/cli.lm
 	as -o production1.o production1.s
 	ld -o production1   production1.o
