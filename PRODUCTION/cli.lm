@@ -1892,6 +1892,7 @@ stdlib-functions := λ . (
    (system-call( '$3 '%rax '$0 '$0 ))
 
    \t 'movb \s '$0, \s '0 \[ %r9 \]       \n
+   \t 'inc \s '%r12                       \n
    \t 'mov \s '$a_counter, \s '%r10       \n
    \t 'mov \s '%r12, \s '0 \[ %r10 \]     \n
    \t 'mov \s '%r8, \s '%r12              \n
