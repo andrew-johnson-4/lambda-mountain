@@ -178,16 +178,21 @@ parse-program := λtoks . (tail(
    (local program)
    (local pme)
    (local pme2)
-   (while toks (match toks (
+   (match toks (
+#   (while toks (match toks (
       ()
-      (remainder (
+      (remainder (tail(
          (set pme (parse-many-expressions remainder))
          (print-s (PME pme))
-         (set parse-parsed-program (parse-parsed-program (GExpr (head pme)) ))
+         (local ge)
+         (set ge (Gexpr (head pme)))
+         (print-s ge)
+         (print-s (PP parse-parsed-program))
+         (set parse-parsed-program (parse-parsed-program ge))
          (print-s parse-parsed-program)
          (set toks (tail pme))
-      ))
-   )))
+      )))
+   ))
    program
 ));
 
