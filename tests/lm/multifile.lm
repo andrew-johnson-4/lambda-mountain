@@ -125,7 +125,6 @@ parse-program := λtoks . (tail(
    (local pme)
    (local pme2)
    (match toks (
-#   (while toks (match toks (
       ()
       (remainder (tail(
          (set pme (parse-many-expressions remainder))
@@ -142,48 +141,8 @@ parse-program := λtoks . (tail(
    program
 ));
 
-parse-lambda := λtoks . (tail(
-   (local remainder)
-   (local pme)
-   (set pme (parse-one-expression toks))
-   (local lmb)
-   (set lmb (head pme))
-   (set toks (tail pme))
-   (match lmb (
-      ()
-      ((Literal .) (
-         (set pme (parse-many-expressions toks))
-         (set lmb (Nil (head pme)))
-         (set remainder (tail pme))
-         (set toks ())
-      ))
-   ))
-   (while toks (
-      (set pme (parse-one-expression toks))
-      (match pme (
-         ()
-         (((Literal .) r) (
-            (set pme (parse-many-expressions r))
-            (set lmb (lmb (head pme)))
-            (set remainder (tail pme))
-            (set toks ())
-         ))
-         ((e ()) (
-            (parse-expect( . toks ))
-            (set toks ())
-         ))
-         ((e r) (
-            (set lmb (App (lmb e)))
-            (set toks r)
-         ))
-      ))
-   ))	
-   (lmb remainder)
-));
-
 parse-unexpect := λt . fail (UnexpectedToken t);
 parse-expect := λt ts . ();
-#parse-expect := λt ts . if (eq( t (head ts) )) () (fail (ExpectedToken t));
 
 parse-one-expression := λtoks . (tail(
    (local pme)
@@ -194,11 +153,6 @@ parse-one-expression := λtoks . (tail(
       ( () (
          (set expr Nil)
          (set remainder ())
-      ))
-      ( ( \l r ) (
-         (set pme (parse-lambda r))
-         (set expr (Lambda (head pme)))
-         (set remainder (tail pme))
       ))
       ( ( \] r ) (
          (parse-unexpect (head toks))
