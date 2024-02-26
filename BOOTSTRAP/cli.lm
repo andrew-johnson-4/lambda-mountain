@@ -30,13 +30,16 @@ typecheck-init := λ. (
 # Cli Entry Point
 
 main := (
+   (local inputs)
+   (local args)
+
    (typecheck-init())
 
    (local mode)
    (set mode Compile)
-   (local inputs)
-   (local args)
+
    (set args (tail argv))
+
    (while args (match args (
       ()
       ( (-o (tgt remainder)) (
@@ -67,7 +70,11 @@ main := (
          (set inputs (fp inputs))
          (set args remainder)
       ))
+      ( u (
+         fail (UnexpectionCommand u)
+      ))
    )))
+
    (while inputs (match mode (
       ()
       (Compile (
@@ -90,7 +97,11 @@ main := (
          (print-s (tokenize-file (head inputs)))
          (set inputs (tail inputs))
       ))
+      (u (
+         (fail (UnknownMode u))
+      ))
    )))
+
    (match mode (
       ()
       (Compile (assemble parse-parsed-program))
@@ -102,7 +113,7 @@ main := (
 # Tokenizer 
 
 tokenize-file := λpath . (
-   tokenize (load-file path)
+   (tokenize (load-file path))
 );
 
 tokenize := λtext . (tail(
@@ -111,12 +122,14 @@ tokenize := λtext . (tail(
    (local in_comment)
    (local char)
 
-   (while text ( (set char (head-string text)) (set text (tail-string text)) (match char (      
+   (while text (
+      (set char (head-string text))
+      (set text (tail-string text))
+   (match char (      
       ()
 
 #     These characters are special characters
 #     They are removed during tokenization
-      (() ())
       (\o (
          (if buffer (
             (set program (program (clone-rope buffer)))
@@ -188,6 +201,7 @@ tokenize := λtext . (tail(
    (if buffer (
       (set program (program (clone-rope buffer)))
    ) ())
+   (Tokenized program)
    (reverse-list program)
 ));
 
@@ -776,7 +790,7 @@ assemble := λprogram . (
    (local e2)
 
    (local output_pd)
-   (set output_pd ( (assemble-program-header()) (assemble-data-header()) ))
+   (set output_pd ( () (assemble-data-header()) ))
 
    (local global_ctx)
    (local preview_program)
@@ -856,12 +870,13 @@ assemble := λprogram . (
 
    (set output_pd (
       (
-         (head output_pd)
+         (assemble-program-header())
          (before-main())
          (enter-function())
          (get-frame main_pd)
          (get-prog main_pd)
          (exit-cleanup())
+         (head output_pd)
          (get-text main_pd)
          assemble-text-section
          (stdlib-functions())
@@ -986,8 +1001,6 @@ compile-expr := λctx e offset used . (tail(
          (set prog (prog ( \t 'jne \s label_if_true \n )))
          (set prog (prog ( \t 'cmp \s '$0, '%r13 \n )))
          (set prog (prog ( \t 'jne \s label_if_true \n )))
-         (set prog (prog ( \t 'cmp \s '$0, '%r14 \n )))
-         (set prog (prog ( \t 'jne \s label_if_true \n )))
          (set prog (prog (get-prog e3)))
          (set prog (prog ( \t 'jmp \s label_if_end \n )))
          (set prog (prog ( label_if_true ': \n )))
@@ -1009,7 +1022,7 @@ compile-expr := λctx e offset used . (tail(
          (local label_skip)
          (set label_skip (uuid()))
          (set prog ((get-prog e1) (get-prog e2)))
-         (set prog (prog ( \t 'cmp \s '$0, \s %rsi \n )))
+         (set prog (prog ( \t 'cmp \s '$0, \s %r14 \n )))
          (set prog (prog ( \t 'jne \s label_skip \n )))
          (set prog (prog (yield-nil())))
          (set prog (prog ( label_skip ': \n )))
@@ -1882,8 +1895,6 @@ stdlib-functions := λ . (
    \t 'mov \s '%r9, \s '0 \[ %r10 \]      \n
    \t 'mov \s '%r8, \s '%r12              \n
    \t 'mov \s '$0, \s '%r13               \n
-   \t 'mov \s '$0, \s '%r14               \n
-   \t 'mov \s '$0, \s '%r15               \n
    \t 'ret                                \n
 );
 
@@ -2074,6 +2085,61 @@ is-builtin := λf . (match f (
 
 #import STDLIB/default-atom-allocator;
 
+sbrk := λsize . (tail(
+   (
+   )
+));
+
+allocate-cons-function-id := ();
+dev-allocate-cons := λ . (tail(
+   (if allocate-cons-function-id () (
+      (local extend)
+      (set extend (uuid()))
+      (set allocate-cons-function-id (uuid()))
+      (set assemble-text-section ( assemble-text-section (
+         allocate-cons-function-id ':                \n
+         (enter-function())
+         \t 'push \s '%r9                            \n
+         \t 'push \s '%r10                           \n
+         \t 'push \s '%r11                           \n
+         \t 'push \s '%r12                           \n
+         \t 'push \s '%r13                           \n
+         \t 'push \s '%r14                           \n
+         \t 'push \s '%r15                           \n
+         \t 'push \s '%rsi                           \n
+         \t 'push \s '%rdi                           \n
+         \t 'push \s '%rax                           \n
+         \t 'push \s '%rbx                           \n
+         \t 'mov \s '$__current_break, \s '%rdi      \n
+         \t 'mov \s '0 \[ '%rdi \] , \s '%r8         \n
+         \t 'cmp \s '$0, \s '%r8                     \n
+         \t 'jne \s extend                           \n
+         \t 'mov \s '$__program_break, \s '%r8       \n
+         extend ':                                   \n
+         \t 'add \s '$16 , \s '%r8                   \n
+         \t 'mov \s '$12, \s '%rax                   \n  # system call brk
+         \t 'mov \s '%r8, \s '%rdi                   \n  # new requested brk
+         \t 'syscall                                 \n
+         \t 'mov \s '$__current_break, \s '%rdi      \n
+         \t 'mov \s '%r8, \s '0 \[ '%rdi \]          \n
+         \t 'sub \s '$16 , \s '%r8                   \n
+         \t 'pop \s '%rbx                            \n
+         \t 'pop \s '%rax                            \n
+         \t 'pop \s '%rdi                            \n
+         \t 'pop \s '%rsi                            \n
+         \t 'pop \s '%r15                            \n
+         \t 'pop \s '%r14                            \n
+         \t 'pop \s '%r13                            \n
+         \t 'pop \s '%r12                            \n
+         \t 'pop \s '%r11                            \n
+         \t 'pop \s '%r10                            \n
+         \t 'pop \s '%r9                             \n
+         (exit-function())
+      )))
+   ))
+   ( \t 'call \s allocate-cons-function-id \n )
+));
+
 allocate-cons-s-section := ();
 allocate-cons-s-counter := ();
 allocate-cons := λ . (tail(
@@ -2112,7 +2178,7 @@ yield-patterns := λctx p offset . match p (
    ()
    ( Nil (tail(
       ()
-      (Expr( () (\t 'mov \s '$0, \s %rsi \n) () () () ctx offset ))
+      (Expr( () (\t 'mov \s '$0, \s %r14 \n) () () () ctx offset ))
    )))
    ( (App( prev (App( lhs rhs )) )) (tail(
       (local e1)
@@ -2125,13 +2191,13 @@ yield-patterns := λctx p offset . match p (
       (local label_skip)
       (set label_skip (uuid()))
       (set prog (prog (get-prog e1)))
-      (set prog (prog (\t 'cmp \s '$0, \s %rsi \n)))
+      (set prog (prog (\t 'cmp \s '$0, \s %r14 \n)))
       (set prog (prog (\t 'jne \s label_skip \n)))
       (set prog (prog (get-prog e2)))
-      (set prog (prog (\t 'cmp \s '$0, \s %rsi \n)))
+      (set prog (prog (\t 'cmp \s '$0, \s %r14 \n)))
       (set prog (prog (\t 'je \s label_skip \n)))
       (set prog (prog (get-prog e3)))
-      (set prog (prog (\t 'mov \s '$1, \s %rsi \n)))
+      (set prog (prog (\t 'mov \s '$1, \s %r14 \n)))
       (set prog (prog (label_skip ': \n)))
       (Expr( 
          ((get-frame e1) (get-frame e2) (get-frame e3))
@@ -2157,13 +2223,13 @@ destructure-pattern-lhs := λctx lhs offset . (tail(
       ()
       ( (Variable '_) (tail(
          ()
-         (Expr( () (\t 'mov \s '$1, \s %rsi \n) () () () ctx offset ))
+         (Expr( () (\t 'mov \s '$1, \s %r14 \n) () () () ctx offset ))
       )))
       ( (Variable v) (tail(
          (set e1 (declare-local(ctx v offset)))
          (Expr(
             (get-frame e1)
-            ((get-prog e1) \t 'mov \s '$1, \s %rsi \n)
+            ((get-prog e1) \t 'mov \s '$1, \s %r14 \n)
             (get-unframe e1)
             (get-text e1)
             (get-data e1)
@@ -2185,7 +2251,7 @@ destructure-pattern-lhs := λctx lhs offset . (tail(
          (set prog (prog (\t 'call \s 'streq \n)))
          (set prog (prog (\t 'cmp \s '$0, \s %r12 \n)))
          (set prog (prog (\t 'je \s label_skip \n)))
-         (set prog (prog (\t 'mov \s '$1, \s %rsi \n)))
+         (set prog (prog (\t 'mov \s '$1, \s %r14 \n)))
          (set prog (prog (label_skip ': \n)))
          (set prog (prog (pop-this())))
          (Expr( (get-frame e1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
@@ -2196,7 +2262,7 @@ destructure-pattern-lhs := λctx lhs offset . (tail(
          (set prog (prog (\t 'jne \s label_skip \n)))
          (set prog (prog (\t 'cmp \s '$0, \s %r13 \n)))
          (set prog (prog (\t 'jne \s label_skip \n)))
-         (set prog (prog (\t 'mov \s '$1, \s %rsi \n)))
+         (set prog (prog (\t 'mov \s '$1, \s %r14 \n)))
          (set prog (prog (label_skip ': \n)))
          (Expr( () prog () () () ctx offset ))
       )))
@@ -2204,7 +2270,7 @@ destructure-pattern-lhs := λctx lhs offset . (tail(
          (set e1 (destructure-pattern-lhs(ctx l offset)))
          (set e2 (destructure-pattern-lhs((get-pc e1) r (get-offset e1))))
          (set label_skip (uuid()))
-         (set prog (prog (\t 'mov \s '$0, \s %rsi \n)))
+         (set prog (prog (\t 'mov \s '$0, \s %r14 \n)))
          (set prog (prog (push-this())))
          (set prog (prog (\t 'cmp \s '$0, \s %r13 \n)))
          (set prog (prog (\t 'je \s label_skip \n)))
@@ -2212,9 +2278,9 @@ destructure-pattern-lhs := λctx lhs offset . (tail(
          (set prog (prog (get-prog e1)))
          (set prog (prog (pop-this())))
          (set prog (prog (push-this())))
-         (set prog (prog (\t 'cmp \s '$0, \s %rsi \n)))
+         (set prog (prog (\t 'cmp \s '$0, \s %r14 \n)))
          (set prog (prog (\t 'je \s label_skip \n)))
-         (set prog (prog (\t 'mov \s '$0, \s %rsi \n)))
+         (set prog (prog (\t 'mov \s '$0, \s %r14 \n)))
          (set prog (prog (inline-tail())))
          (set prog (prog (get-prog e2)))
          (set prog (prog (label_skip ': \n)))

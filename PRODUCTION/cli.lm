@@ -30,17 +30,15 @@ typecheck-init := λ. (
 # Cli Entry Point
 
 main := (
-   (print-s argv)
+   (local inputs)
+   (local args)
+
    (typecheck-init())
 
    (local mode)
    (set mode Compile)
-   (local inputs)
-   (local args)
-   (set args argv)
-   (set args (tail args))
 
-   (print-s (Main1 args))
+   (set args (tail argv))
 
    (while args (match args (
       ()
@@ -77,8 +75,6 @@ main := (
       ))
    )))
 
-   (print-s Main2)
-
    (while inputs (match mode (
       ()
       (Compile (
@@ -106,8 +102,6 @@ main := (
       ))
    )))
 
-   (print-s Main3)
-
    (match mode (
       ()
       (Compile (assemble parse-parsed-program))
@@ -123,7 +117,6 @@ tokenize-file := λpath . (
 );
 
 tokenize := λtext . (tail(
-   (print-s Tokenize)
    (local program)
    (local buffer)
    (local in_comment)
@@ -2055,7 +2048,7 @@ escape-sequences := λt . match t (
 
 close := λe . (
    e
-   (dev-allocate-cons ())
+   (allocate-cons ())
    (\t 'mov \s '%r12, \s '0 \[ '%r8 \] \n)
    (\t 'mov \s '%r13, \s '8 \[ '%r8 \] \n)
 );
