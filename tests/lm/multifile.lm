@@ -180,27 +180,6 @@ parse-program := λtoks . (tail(
    (local pme2)
    (while toks (match toks (
       ()
-      ((\: remainder) (
-         (set toks remainder)
-      ))
-      (('type remainder) (
-#         (set pme (parse-one-expression remainder))
-#         (set remainder (tail pme))
-#         (set pme2 (parse-many-expressions remainder))
-#         (set parse-parsed-program ( parse-parsed-program (Type( (head pme) (head pme2) )) ))
-#         (set toks (tail pme2))
-         (set toks remainder)
-      ))
-      (('import (relative-path remainder)) (
-#         (parse-program (tokenize-file relative-path))
-         (set toks remainder)
-      ))
-      ((key (:= remainder)) (
-#         (set pme (parse-many-expressions remainder))
-#         (set parse-parsed-program ( parse-parsed-program (Global (key (head pme))) ))
-#         (set toks (tail pme))
-         (set toks remainder)
-      ))
       (remainder (
          (set pme (parse-many-expressions remainder))
          (print-s (PME pme))
