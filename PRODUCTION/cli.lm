@@ -2077,13 +2077,7 @@ is-builtin := λf . (match f (
 sbrk := λsize . (tail(
    (local extend)
    (set extend (uuid()))
-   (\t 'push \s '%rdi                           \n
-    \t 'push \s '%rax                           \n
-    \t 'push \s '%r8                            \n
-    \t 'push \s '%r9                            \n
-    \t 'push \s '%r10                           \n
-    \t 'push \s '%r11                           \n
-    \t 'mov \s '$__current_break, \s '%rdi      \n
+   (\t 'mov \s '$__current_break, \s '%rdi      \n
     \t 'mov \s '0 \[ '%rdi \] , \s '%r8         \n
     \t 'cmp \s '$0, \s '%r8                     \n
     \t 'jne \s extend                           \n
@@ -2095,14 +2089,7 @@ sbrk := λsize . (tail(
     \t 'syscall                                 \n
     \t 'mov \s '$__current_break, \s '%rdi      \n
     \t 'mov \s '%r8, \s '0 \[ '%rdi \]          \n
-    \t 'sub \s '$ size , \s '%r8                \n
-    \t 'pop \s '%r11                            \n
-    \t 'pop \s '%r10                            \n
-    \t 'pop \s '%r9                             \n
-    \t 'pop \s '%r8                             \n
-    \t 'pop \s '%rax                            \n
-    \t 'pop \s '%rdi                            \n
-   )
+    \t 'sub \s '$ size , \s '%r8                \n)
 ));
 
 allocate-cons := λ . (
