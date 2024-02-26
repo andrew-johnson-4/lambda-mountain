@@ -24,7 +24,7 @@ tokenize-file := λpath . (match path (
    ()
    (() ())
    ((_ _) ())
-   (fp (tokenize (load-file fp)))
+   (fp (tokenize (clone-rope (load-file fp))))
 ));
 
 tokenize := λtext . (tail(
