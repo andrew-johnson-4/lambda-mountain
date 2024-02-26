@@ -1,10 +1,10 @@
 
 mem: prod
-	./bootstrap tests/lm/load_2_files.lm
+	./bootstrap tests/lm/multifile.lm
 	as -o tmp.o tmp.s
 	ld -o tmp   tmp.o
 	./tmp
-	./production tests/lm/load_2_files.lm
+	./production tests/lm/multifile.lm
 	as -o tmp.o tmp.s
 	ld -o tmp   tmp.o
 	./tmp
