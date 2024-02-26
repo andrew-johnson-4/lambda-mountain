@@ -75,7 +75,7 @@ main := (
       ))
    )))
 
-   (print-s Main4)
+   (print-s (Main4 inputs mode))
 
    (while inputs (match mode (
       ()
@@ -99,6 +99,9 @@ main := (
          (print-s (tokenize-file (head inputs)))
          (set inputs (tail inputs))
       ))
+      (u (
+         (fail (UnknownMode u))
+      ))
    )))
 
    (print-s Main5)
@@ -116,10 +119,12 @@ main := (
 # Tokenizer 
 
 tokenize-file := λpath . (
-   tokenize (load-file path)
+   (tokenize (load-file path))
 );
 
 tokenize := λtext . (tail(
+   (print-s Tokenize)
+   (print-s (Tokenize text))
    (local program)
    (local buffer)
    (local in_comment)
@@ -130,7 +135,6 @@ tokenize := λtext . (tail(
 
 #     These characters are special characters
 #     They are removed during tokenization
-      (() ())
       (\o (
          (if buffer (
             (set program (program (clone-rope buffer)))
