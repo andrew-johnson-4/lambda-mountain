@@ -12,7 +12,8 @@ allocate-atom-count-prog := λ. (
      \t 'mov \s '$0, \s '%r13 \n )
 );
 
-allocate-atom-grow := λ size . (
+allocate-atom-grow-fid := ();
+allocate-atom-grow := λ size .(tail(
    # INPUT:
    #    r8 : base pointer
    #    r9 : tail pointer
@@ -20,5 +21,13 @@ allocate-atom-grow := λ size . (
    #    r8  : base pointer (possibly modified)
    #    r9  : tail pointer (possibly modified)
    #    r10 : nothing      (possibly modified)
-   \t 'mov \s size , \s '%r10             \n
-);
+   (if allocate-atom-grow-fid () (
+      (set allocate-atom-grow-fid (uuid()))
+      (set assemble-text-section ( assemble-text-section (
+         allocate-atom-grow-fid ':                \n
+         \t 'ret                                  \n
+      )))
+   ))
+   ( \t 'mov \s size , \s '%r10             \n
+     \t 'call \s allocate-atom-grow-fid     \n)
+));
