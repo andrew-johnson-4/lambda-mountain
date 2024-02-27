@@ -1974,7 +1974,7 @@ yield-atom := λctx a offset . (tail(
    (if id () (
       (set id (uuid()))
       (set data (id ': \n \t '.ascii \s " (escape-sequences a) " \n \t '.zero \s 1 \n))
-      (set yield-atom-cache ((data id) yield-atom-cache))
+      (set yield-atom-cache ((a id) yield-atom-cache))
    ))
    (Expr(
       ()
