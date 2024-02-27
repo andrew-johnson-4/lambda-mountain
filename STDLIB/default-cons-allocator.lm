@@ -1,6 +1,7 @@
 
 allocate-cons-function-id := ();
 allocate-cons := λ . (tail(
+   (print-s AllocateCons)
    (if allocate-cons-function-id () (
       (set allocate-cons-function-id (uuid()))
       (local initialized)

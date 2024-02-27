@@ -1,6 +1,6 @@
 
 mem: prod
-	./production tests/lm/clone_rope.lm
+	./production tests/lm/clone_rope4.lm
 	as -o tmp.o tmp.s
 	ld -o tmp   tmp.o
 	./tmp

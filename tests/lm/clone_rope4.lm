@@ -1,0 +1,2 @@
+
+main := print-s (clone-rope A);

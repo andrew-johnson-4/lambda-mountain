@@ -877,6 +877,8 @@ assemble := λprogram . (
       (set main_pd (compile-append( main_pd global_ctx main_e )))
    ) ())
 
+   (print-s (AssembleText assemble-text-section))
+
    (set output_pd (
       (
          (assemble-program-header())
