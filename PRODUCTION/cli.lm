@@ -877,8 +877,6 @@ assemble := λprogram . (
       (set main_pd (compile-append( main_pd global_ctx main_e )))
    ) ())
 
-   (print-s (AssembleText assemble-text-section))
-
    (set output_pd (
       (
          (assemble-program-header())
@@ -889,10 +887,13 @@ assemble := λprogram . (
          (exit-cleanup())
          (head output_pd)
          (get-text main_pd)
-         assemble-text-section
          (stdlib-functions())
       )
-      ((tail output_pd) (get-data main_pd) assemble-data-section)
+      ((tail output_pd) (get-data main_pd))
+   ))
+   (set output_pd (
+      ((head output_pd) assemble-text-section)
+      ((tail output_pd) assemble-data-section)
    ))
 
    (write-file (target (clone-rope output_pd)))
@@ -1593,6 +1594,7 @@ stdlib-functions := λ . (
    \t 'call \s '__clone_rope              \n
    (allocate-atom-grow '$1)
    \t 'movb \s '$0, \s '0 \[ %r9 \]       \n
+   \t 'inc \s '%r9                        \n
    \t 'mov \s '%r8, \s '%r12              \n
    \t 'mov \s '$0, \s '%r13               \n
    \t 'ret                                \n
@@ -1631,6 +1633,7 @@ stdlib-functions := λ . (
    (allocate-atom-grow '$1)
    \t 'movb \s '0 \[ %r12 \] , \s '%bl    \n
    \t 'movb \s '%bl, \s '0 \[ %r9 \]      \n
+   \t 'inc \s '%r9                        \n
    \t 'inc \s '%r12                       \n
    \t 'jmp \s '__clone_rope_small         \n
 
@@ -1857,6 +1860,7 @@ stdlib-functions := λ . (
    (allocate-atom-grow '$1)
    \t 'movb \s '0 \[ %r11 \] , \s '%bl    \n
    \t 'mov \s '%bl, \s '0 \[ '%r9 \]      \n
+   \t 'inc \s '%r9                        \n
    \t 'inc \s '%r12                       \n
    \t 'inc \s '%r11                       \n
    \t 'dec \s '%r10                       \n
@@ -1879,6 +1883,7 @@ stdlib-functions := λ . (
    (system-call( '$3 '%rax '$0 '$0 ))
    (allocate-atom-grow '$1)
    \t 'movb \s '$0, \s '0 \[ %r9 \]       \n
+   \t 'inc \s '%r9                        \n
    \t 'mov \s '%r8, \s '%r12              \n
    \t 'mov \s '$0, \s '%r13               \n
    \t 'ret                                \n

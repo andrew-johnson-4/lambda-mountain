@@ -38,8 +38,6 @@ allocate-atom-grow := λ size . (tail(
          \t '.zero \s '8                             \n
       )))
 
-      (print-s (DeclareGrow allocate-atom-grow-fid))
-
       (set assemble-text-section ( assemble-text-section (
          allocate-atom-grow-fid ':                   \n
          \t 'push \s '%r10                           \n
@@ -63,19 +61,19 @@ allocate-atom-grow := λ size . (tail(
          \t 'sub \s '$ page-size , \s '%r8           \n
          \t 'mov \s '%r8, \s '%r9                    \n
          initialized ':                              \n
-         \t 'add \s '$ size , \s '%r9                \n
+         \t 'add \s '%r11 , \s '%r9                  \n
          \t 'mov \s '$ assemble_atom_tail , \s '%r10 \n
          \t 'mov \s '%r9, \s '0 \[ '%r10 \]          \n
-         \t 'sub \s '$ size , \s '%r9                \n
+         \t 'sub \s '%r11 , \s '%r9                  \n
          \t 'pop \s '%rdi                            \n
          \t 'pop \s '%rax                            \n
          \t 'pop \s '%r10                            \n
          \t 'ret                                     \n
       )))
-
-      (print-s assemble-text-section)
-
    ))
 
-   (\t 'call \s allocate-atom-grow-fid               \n)
+   (\t 'push \s '%r11                                \n
+    \t 'mov \s size , '%r11                          \n
+    \t 'call \s allocate-atom-grow-fid               \n
+    \t 'pop \s '%r11                                 \n)
 ));
