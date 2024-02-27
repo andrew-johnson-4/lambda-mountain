@@ -1959,9 +1959,23 @@ yield-cons := λctx l r offset used . (tail(
    ))
 ));
 
+yield-atom-cache := ();
 yield-atom := λctx a offset . (tail(
+   (local cache)
+   (set cache yield-atom-cache)
    (local id)
-   (set id (uuid()))
+   (local data)
+   (while cache (
+      (if (eq( (head (head cache)) a )) (
+         (set id (tail (head cache)))
+      ) ())
+      (set cache (tail cache))
+   ))
+   (if id () (
+      (set id (uuid()))
+      (set data (id ': \n \t '.ascii \s " (escape-sequences a) " \n \t '.zero \s 1 \n))
+      (set yield-atom-cache ((data id) yield-atom-cache))
+   ))
    (Expr(
       ()
       (\t 'mov \s '$ id , \s '%r12 \n # $_.$1 = 0, .atom
@@ -1969,7 +1983,7 @@ yield-atom := λctx a offset . (tail(
       )
       ()
       ()
-      (id ': \n \t '.ascii \s " (escape-sequences a) " \n \t '.zero \s 1 \n)
+      data
       ctx
       offset
    ))
