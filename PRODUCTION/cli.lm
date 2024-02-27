@@ -958,9 +958,7 @@ compile-expr := λctx e offset used . (tail(
          (Expr( () prog () () () ctx offset ))
       )))
       ( (Variable 'a_counter) (tail(
-         (set prog (prog ( \t 'mov \s '$a_counter, \s '%r12 \n )))
-         (set prog (prog ( \t 'mov \s '0 \[ '%r12 \] , \s '%r12 \n )))
-         (set prog (prog ( \t 'mov \s '$0, \s '%r13 \n )))
+         (set prog (allocate-atom-count-prog()))
          (Expr( () prog () () () ctx offset ))
       )))
       ( (Variable vname) (tail(
@@ -1416,10 +1414,6 @@ assemble-data-header := λ .(
   \t '.zero \s '1024                      \n
   'argv:                                  \n
   \t '.zero \s '16                        \n
-  'a_counter:                             \n
-  \t '.zero \s '8                         \n
-  'a_section:                             \n
-  \t '.zero \s '536870912                 \n
   'nil_literal:                           \n
   \t '.ascii \s " \[ \] "                 \n
   \t '.zero \s 1                          \n

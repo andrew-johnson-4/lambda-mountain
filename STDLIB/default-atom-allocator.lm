@@ -1,0 +1,17 @@
+
+allocate-atom-counter := ();
+allocate-atom-getcounter := λ. (tail(
+   (if allocate-atom-counter () (
+      (set allocate-atom-counter (uuid()))
+   ))
+   allocate-atom-counter
+));
+allocate-atom-count-prog := λ. (
+   ( \t 'mov \s (allocate-atom-getcounter()) , \s '%r12 \n
+     \t 'mov \s '0 \[ '%r12 \] , \s '%r12 \n
+     \t 'mov \s '$0, \s '%r13 \n )
+);
+
+allocate-atom-grow := λ base size . (
+   fail Unimplemented
+);
