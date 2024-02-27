@@ -1,2 +1,2 @@
 
-main := print-s (is(A A));
+main := print-s (is( (1 2) (1 2) ));
