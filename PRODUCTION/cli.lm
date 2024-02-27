@@ -1590,7 +1590,7 @@ stdlib-functions := λ . (
    'clone_rope:                           \n
    \t 'mov \s '$0, \s '%r8                \n
    \t 'mov \s '$0, \s '%r9                \n
-   (allocate-atom-grow '$0)
+   (allocate-atom-grow '$1)
    \t 'call \s '__clone_rope              \n
    (allocate-atom-grow '$1)
    \t 'movb \s '$0, \s '0 \[ %r9 \]       \n
@@ -1847,7 +1847,7 @@ stdlib-functions := λ . (
    \t 'ret                                \n
 
    'load_file_contents:                   \n
-   (allocate-atom-grow '$0)
+   (allocate-atom-grow '$1)
    # r8 holds pointer to head of new data
    # r9 holds pointer to tail of new data
    \t 'mov \s '$0, \s '%r10               \n # r10 holds amount of data on buffer currently
@@ -1855,13 +1855,12 @@ stdlib-functions := λ . (
 
    # move data from buffer into string
    'load_file_loop:                       \n
+   (allocate-atom-grow '$1)
    \t 'cmp \s '$0, \s '%r10               \n
    \t 'je \s 'load_file_bufempty          \n
-   (allocate-atom-grow '$1)
    \t 'movb \s '0 \[ %r11 \] , \s '%bl    \n
    \t 'mov \s '%bl, \s '0 \[ '%r9 \]      \n
    \t 'inc \s '%r9                        \n
-   \t 'inc \s '%r12                       \n
    \t 'inc \s '%r11                       \n
    \t 'dec \s '%r10                       \n
    \t 'jmp \s 'load_file_loop             \n

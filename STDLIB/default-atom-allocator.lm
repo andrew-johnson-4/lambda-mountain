@@ -60,9 +60,10 @@ allocate-atom-grow := λ size . (tail(
          \t 'syscall                                 \n
          \t 'sub \s '$ page-size , \s '%r8           \n
          \t 'mov \s '%r8, \s '%r9                    \n
+         \t 'mov \s '%r9 , \s '%r10                  \n
          initialized ':                              \n
-         \t 'add \s '%r11 , \s '%r9                  \n
          \t 'mov \s '$ assemble_atom_tail , \s '%r10 \n
+         \t 'add \s '%r11 , \s '%r9                  \n
          \t 'mov \s '%r9, \s '0 \[ '%r10 \]          \n
          \t 'sub \s '%r11 , \s '%r9                  \n
          \t 'pop \s '%rdi                            \n
