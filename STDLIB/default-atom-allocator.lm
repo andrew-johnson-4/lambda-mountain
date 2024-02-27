@@ -45,6 +45,11 @@ allocate-atom-grow := λ size .(tail(
          \t 'push \s '%rdi                           \n
          \t 'cmp \s '$0, \s '%r8                     \n
          \t 'jne \s initialized                      \n
+         \t 'mov \s '$ assemble_atom_tail , \s '%r10 \n
+         \t 'mov \s '0 \[ '%r10 \] , \s '%r8         \n
+         \t 'mov \s '%r8, \s '%r9                    \n
+         \t 'cmp \s '$0, \s '%r8                     \n
+         \t 'jne \s initialized                      \n
          \t 'mov \s '$12, \s '%rax                   \n  # system call brk
          \t 'mov \s '$0, \s '%rdi                    \n  # sbrk(0)
          \t 'syscall                                 \n
@@ -66,5 +71,6 @@ allocate-atom-grow := λ size .(tail(
          \t 'ret                                     \n
       )))
    ))
+
    (\t 'call \s allocate-atom-grow-fid               \n)
 ));

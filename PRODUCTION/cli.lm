@@ -1842,11 +1842,9 @@ stdlib-functions := λ . (
    \t 'ret                                \n
 
    'load_file_contents:                   \n
-   \t 'mov \s '$a_section, \s '%r8        \n
-   \t 'mov \s '$a_counter, \s '%r10       \n
-   \t 'mov \s '0 \[ '%r10 \] , \s '%r12   \n # r12 holds a_counter
-   \t 'add \s '%r12, \s '%r8              \n # r8 holds pointer to head of new data
-   \t 'mov \s '%r8, \s '%r9               \n # r9 holds pointer to tail of new data
+   (allocate-atom-grow '$0)
+   # r8 holds pointer to head of new data
+   # r9 holds pointer to tail of new data
    \t 'mov \s '$0, \s '%r10               \n # r10 holds amount of data on buffer currently
    \t 'mov \s '$load_file_buf, \s '%r11   \n # r11 holds pointer to head of buffer
 
@@ -1854,10 +1852,10 @@ stdlib-functions := λ . (
    'load_file_loop:                       \n
    \t 'cmp \s '$0, \s '%r10               \n
    \t 'je \s 'load_file_bufempty          \n
+   (allocate-atom-grow '$1)
    \t 'movb \s '0 \[ %r11 \] , \s '%bl    \n
    \t 'mov \s '%bl, \s '0 \[ '%r9 \]      \n
    \t 'inc \s '%r12                       \n
-   \t 'inc \s '%r9                        \n
    \t 'inc \s '%r11                       \n
    \t 'dec \s '%r10                       \n
    \t 'jmp \s 'load_file_loop             \n
@@ -1877,11 +1875,8 @@ stdlib-functions := λ . (
 
    # close file
    (system-call( '$3 '%rax '$0 '$0 ))
-
+   (allocate-atom-grow '$1)
    \t 'movb \s '$0, \s '0 \[ %r9 \]       \n
-   \t 'inc \s '%r12                       \n
-   \t 'mov \s '$a_counter, \s '%r10       \n
-   \t 'mov \s '%r12, \s '0 \[ %r10 \]     \n
    \t 'mov \s '%r8, \s '%r12              \n
    \t 'mov \s '$0, \s '%r13               \n
    \t 'ret                                \n
