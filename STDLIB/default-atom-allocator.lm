@@ -12,6 +12,13 @@ allocate-atom-count-prog := λ. (
      \t 'mov \s '$0, \s '%r13 \n )
 );
 
-allocate-atom-grow := λ base size . (
-   fail Unimplemented
+allocate-atom-grow := λ size . (
+   # INPUT:
+   #    r8 : base pointer
+   #    r9 : tail pointer
+   # OUTPUT:
+   #    r8  : base pointer (possibly modified)
+   #    r9  : tail pointer (possibly modified)
+   #    r10 : nothing      (possibly modified)
+   \t 'mov \s size , \s '%r10             \n
 );
