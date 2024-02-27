@@ -890,7 +890,7 @@ assemble := λprogram . (
          assemble-text-section
          (stdlib-functions())
       )
-      ((tail output_pd) (get-data main_pd) assemble-data-section (assemble-program-break()))
+      ((tail output_pd) (get-data main_pd) assemble-data-section)
    ))
 
    (write-file (target (clone-rope output_pd)))
@@ -1399,13 +1399,6 @@ destructure-args := λctx e offset . (match e (
 ));
 
 # Data Segments
-
-assemble-program-break := λ. (
-   # does .data need to be non-zero to work with brk?
-   '__program_placeholder:                \n
-   \t '.zero \s '16                       \n
-   '__program_break:                      \n
-);
 
 assemble-data-header := λ .(
   '.data                                  \n
