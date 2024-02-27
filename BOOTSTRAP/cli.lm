@@ -2,6 +2,7 @@
 # Dependencies
 
 import STDLIB/default-cons-allocator.lm;
+import STDLIB/default-atom-allocator.lm;
 
 # Static Globals
 
@@ -886,10 +887,13 @@ assemble := λprogram . (
          (exit-cleanup())
          (head output_pd)
          (get-text main_pd)
-         assemble-text-section
          (stdlib-functions())
       )
-      ((tail output_pd) (get-data main_pd) assemble-data-section (assemble-program-break()))
+      ((tail output_pd) (get-data main_pd))
+   ))
+   (set output_pd (
+      ((head output_pd) assemble-text-section)
+      ((tail output_pd) assemble-data-section)
    ))
 
    (write-file (target (clone-rope output_pd)))
@@ -955,12 +959,6 @@ compile-expr := λctx e offset used . (tail(
          (set prog (prog ( \t 'mov \s '$argv, \s '%r8 \n )))
          (set prog (prog ( \t 'mov \s '0 \[ '%r8 \] , '%r12 \n )))
          (set prog (prog ( \t 'mov \s '8 \[ '%r8 \] , '%r13 \n )))
-         (Expr( () prog () () () ctx offset ))
-      )))
-      ( (Variable 'a_counter) (tail(
-         (set prog (prog ( \t 'mov \s '$a_counter, \s '%r12 \n )))
-         (set prog (prog ( \t 'mov \s '0 \[ '%r12 \] , \s '%r12 \n )))
-         (set prog (prog ( \t 'mov \s '$0, \s '%r13 \n )))
          (Expr( () prog () () () ctx offset ))
       )))
       ( (Variable vname) (tail(
@@ -1401,13 +1399,6 @@ destructure-args := λctx e offset . (match e (
 
 # Data Segments
 
-assemble-program-break := λ. (
-   # does .data need to be non-zero to work with brk?
-   '__program_placeholder:                \n
-   \t '.zero \s '16                       \n
-   '__program_break:                      \n
-);
-
 assemble-data-header := λ .(
   '.data                                  \n
   'load_file_bsz:                         \n
@@ -1416,10 +1407,6 @@ assemble-data-header := λ .(
   \t '.zero \s '1024                      \n
   'argv:                                  \n
   \t '.zero \s '16                        \n
-  'a_counter:                             \n
-  \t '.zero \s '8                         \n
-  'a_section:                             \n
-  \t '.zero \s '536870912                 \n
   'nil_literal:                           \n
   \t '.ascii \s " \[ \] "                 \n
   \t '.zero \s 1                          \n
@@ -1597,20 +1584,13 @@ stdlib-functions := λ . (
    \t 'ret                                \n
 
    'clone_rope:                           \n
-   \t 'mov \s '$a_section, \s '%r8        \n
-   \t 'mov \s '$a_counter, \s '%r10       \n
-   \t 'mov \s '0 \[ %r10 \] , \s '%r11    \n
-   \t 'add \s '%r11, \s '%r8              \n
-   \t 'mov \s '%r8, \s '%r9               \n
-   #r8 holds pointer to head of new data
-   #r9 holds pointer to tail of new data
+   \t 'mov \s '$0, \s '%r8                \n
+   \t 'mov \s '$0, \s '%r9                \n
+   (allocate-atom-grow '$0)
    \t 'call \s '__clone_rope              \n
+   (allocate-atom-grow '$1)
    \t 'movb \s '$0, \s '0 \[ %r9 \]       \n
    \t 'inc \s '%r9                        \n
-   \t 'mov \s '$a_section, \s '%r10       \n
-   \t 'sub \s '%r10, \s '%r9              \n
-   \t 'mov \s '$a_counter, \s '%r10       \n
-   \t 'mov \s '%r9, \s '0 \[ %r10 \]      \n
    \t 'mov \s '%r8, \s '%r12              \n
    \t 'mov \s '$0, \s '%r13               \n
    \t 'ret                                \n
@@ -1618,7 +1598,7 @@ stdlib-functions := λ . (
    '__clone_rope:                         \n
    #if this is a cons, recurse
    \t 'cmp \s '$0, \s '%r13               \n
-   \t 'je \s 'clone_rope_notcons          \n
+   \t 'je \s '__clone_rope_notcons        \n
    \t 'push \s '%r12                      \n
    \t 'push \s '%r13                      \n
    \t 'mov \s '8 \[ %r12 \] , '%r13       \n
@@ -1633,26 +1613,27 @@ stdlib-functions := λ . (
    \t 'call \s '__clone_rope              \n
    \t 'pop \s '%r13                       \n
    \t 'pop \s '%r12                       \n
-   \t 'jmp \s 'clone_rope_end             \n
+   \t 'jmp \s '__clone_rope_end           \n
 
    #if not cons, concat
-   'clone_rope_notcons:                   \n
+   '__clone_rope_notcons:                 \n
 
    #if nil, return
    \t 'cmp \s '$0, \s '%r12               \n
-   \t 'je \s 'clone_rope_end              \n
+   \t 'je \s '__clone_rope_end            \n
 
    #if atom, break into characters and concat
-   'clone_rope_small:                     \n
+   '__clone_rope_small:                   \n
    \t 'cmpb \s '$0, \s '0 \[ %r12 \]      \n
-   \t 'je \s 'clone_rope_end              \n
+   \t 'je \s '__clone_rope_end            \n
+   (allocate-atom-grow '$1)
    \t 'movb \s '0 \[ %r12 \] , \s '%bl    \n
    \t 'movb \s '%bl, \s '0 \[ %r9 \]      \n
-   \t 'inc \s '%r12                       \n
    \t 'inc \s '%r9                        \n
-   \t 'jmp \s 'clone_rope_small           \n
+   \t 'inc \s '%r12                       \n
+   \t 'jmp \s '__clone_rope_small         \n
 
-   'clone_rope_end:                       \n
+   '__clone_rope_end:                     \n
    \t 'ret                                \n
 
    'is:                                   \n
@@ -1862,11 +1843,11 @@ stdlib-functions := λ . (
    \t 'ret                                \n
 
    'load_file_contents:                   \n
-   \t 'mov \s '$a_section, \s '%r8        \n
-   \t 'mov \s '$a_counter, \s '%r10       \n
-   \t 'mov \s '0 \[ '%r10 \] , \s '%r12   \n # r12 holds a_counter
-   \t 'add \s '%r12, \s '%r8              \n # r8 holds pointer to head of new data
-   \t 'mov \s '%r8, \s '%r9               \n # r9 holds pointer to tail of new data
+   \t 'mov \s '$0, \s '%r8                \n
+   \t 'mov \s '$0, \s '%r9                \n
+   (allocate-atom-grow '$0)
+   # r8 holds pointer to head of new data
+   # r9 holds pointer to tail of new data
    \t 'mov \s '$0, \s '%r10               \n # r10 holds amount of data on buffer currently
    \t 'mov \s '$load_file_buf, \s '%r11   \n # r11 holds pointer to head of buffer
 
@@ -1874,9 +1855,9 @@ stdlib-functions := λ . (
    'load_file_loop:                       \n
    \t 'cmp \s '$0, \s '%r10               \n
    \t 'je \s 'load_file_bufempty          \n
+   (allocate-atom-grow '$1)
    \t 'movb \s '0 \[ %r11 \] , \s '%bl    \n
    \t 'mov \s '%bl, \s '0 \[ '%r9 \]      \n
-   \t 'inc \s '%r12                       \n
    \t 'inc \s '%r9                        \n
    \t 'inc \s '%r11                       \n
    \t 'dec \s '%r10                       \n
@@ -1897,11 +1878,9 @@ stdlib-functions := λ . (
 
    # close file
    (system-call( '$3 '%rax '$0 '$0 ))
-
+   (allocate-atom-grow '$1)
    \t 'movb \s '$0, \s '0 \[ %r9 \]       \n
-   \t 'inc \s '%r12                       \n
-   \t 'mov \s '$a_counter, \s '%r10       \n
-   \t 'mov \s '%r12, \s '0 \[ %r10 \]     \n
+   \t 'inc \s '%r9                        \n
    \t 'mov \s '%r8, \s '%r12              \n
    \t 'mov \s '$0, \s '%r13               \n
    \t 'ret                                \n

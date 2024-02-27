@@ -1,0 +1,80 @@
+
+allocate-atom-counter := ();
+allocate-atom-getcounter := λ. (tail(
+   (if allocate-atom-counter () (
+      (set allocate-atom-counter (uuid()))
+   ))
+   allocate-atom-counter
+));
+allocate-atom-count-prog := λ. (
+   ( \t 'mov \s (allocate-atom-getcounter()) , \s '%r12 \n
+     \t 'mov \s '0 \[ '%r12 \] , \s '%r12 \n
+     \t 'mov \s '$0, \s '%r13 \n )
+);
+
+allocate-atom-grow-fid := ();
+allocate-atom-grow := λ size . (tail(
+   # INPUT:
+   #    r8 : base pointer
+   #    r9 : tail pointer
+   # OUTPUT:
+   #    r8  : base pointer (possibly modified)
+   #    r9  : tail pointer (possibly modified)
+   #    r10 : nothing      (possibly modified)
+   (if allocate-atom-grow-fid () (
+      (set allocate-atom-grow-fid (uuid()))
+
+      (local page-size)
+      (set page-size 1073741824)
+
+      (local initialized)
+      (set initialized (uuid()))
+
+      (local assemble_atom_tail)
+      (set assemble_atom_tail (uuid()))
+
+      (set assemble-data-section ( assemble-data-section (
+         assemble_atom_tail ':                       \n
+         \t '.zero \s '8                             \n
+      )))
+
+      (set assemble-text-section ( assemble-text-section (
+         allocate-atom-grow-fid ':                   \n
+         \t 'push \s '%r10                           \n
+         \t 'push \s '%rax                           \n
+         \t 'push \s '%rdi                           \n
+         \t 'cmp \s '$0, \s '%r8                     \n
+         \t 'jne \s initialized                      \n
+         \t 'mov \s '$ assemble_atom_tail , \s '%r10 \n
+         \t 'mov \s '0 \[ '%r10 \] , \s '%r8         \n
+         \t 'mov \s '%r8, \s '%r9                    \n
+         \t 'cmp \s '$0, \s '%r8                     \n
+         \t 'jne \s initialized                      \n
+         \t 'mov \s '$12, \s '%rax                   \n  # system call brk
+         \t 'mov \s '$0, \s '%rdi                    \n  # sbrk(0)
+         \t 'syscall                                 \n
+         \t 'mov \s '%rax, '%r8                      \n
+         \t 'add \s '$ page-size , \s '%r8           \n
+         \t 'mov \s '$12, \s '%rax                   \n  # system call brk
+         \t 'mov \s '%r8, \s '%rdi                   \n  # new requested brk
+         \t 'syscall                                 \n
+         \t 'sub \s '$ page-size , \s '%r8           \n
+         \t 'mov \s '%r8, \s '%r9                    \n
+         \t 'mov \s '%r9 , \s '%r10                  \n
+         initialized ':                              \n
+         \t 'mov \s '$ assemble_atom_tail , \s '%r10 \n
+         \t 'add \s '%r11 , \s '%r9                  \n
+         \t 'mov \s '%r9, \s '0 \[ '%r10 \]          \n
+         \t 'sub \s '%r11 , \s '%r9                  \n
+         \t 'pop \s '%rdi                            \n
+         \t 'pop \s '%rax                            \n
+         \t 'pop \s '%r10                            \n
+         \t 'ret                                     \n
+      )))
+   ))
+
+   (\t 'push \s '%r11                                \n
+    \t 'mov \s size , '%r11                          \n
+    \t 'call \s allocate-atom-grow-fid               \n
+    \t 'pop \s '%r11                                 \n)
+));
