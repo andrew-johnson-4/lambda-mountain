@@ -961,10 +961,6 @@ compile-expr := λctx e offset used . (tail(
          (set prog (prog ( \t 'mov \s '8 \[ '%r8 \] , '%r13 \n )))
          (Expr( () prog () () () ctx offset ))
       )))
-      ( (Variable 'a_counter) (tail(
-         (set prog (allocate-atom-count-prog()))
-         (Expr( () prog () () () ctx offset ))
-      )))
       ( (Variable vname) (tail(
          ()
          (Expr( () (get-local(ctx vname)) () () () ctx offset ))
@@ -1847,6 +1843,8 @@ stdlib-functions := λ . (
    \t 'ret                                \n
 
    'load_file_contents:                   \n
+   \t 'mov \s '$0, \s '%r8                \n
+   \t 'mov \s '$0, \s '%r9                \n
    (allocate-atom-grow '$0)
    # r8 holds pointer to head of new data
    # r9 holds pointer to tail of new data
