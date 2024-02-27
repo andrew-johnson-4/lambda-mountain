@@ -2,6 +2,7 @@
 # Dependencies
 
 import STDLIB/default-cons-allocator.lm;
+import STDLIB/default-atom-allocator.lm;
 
 # Static Globals
 
@@ -1591,20 +1592,12 @@ stdlib-functions := λ . (
    \t 'ret                                \n
 
    'clone_rope:                           \n
-   \t 'mov \s '$a_section, \s '%r8        \n
-   \t 'mov \s '$a_counter, \s '%r10       \n
-   \t 'mov \s '0 \[ %r10 \] , \s '%r11    \n
-   \t 'add \s '%r11, \s '%r8              \n
-   \t 'mov \s '%r8, \s '%r9               \n
-   #r8 holds pointer to head of new data
-   #r9 holds pointer to tail of new data
+   \t 'mov \s '$0, \s '%r8                \n
+   \t 'mov \s '$0, \s '%r9                \n
+   (allocate-atom-grow '$0)
    \t 'call \s '__clone_rope              \n
+   (allocate-atom-grow '$1)
    \t 'movb \s '$0, \s '0 \[ %r9 \]       \n
-   \t 'inc \s '%r9                        \n
-   \t 'mov \s '$a_section, \s '%r10       \n
-   \t 'sub \s '%r10, \s '%r9              \n
-   \t 'mov \s '$a_counter, \s '%r10       \n
-   \t 'mov \s '%r9, \s '0 \[ %r10 \]      \n
    \t 'mov \s '%r8, \s '%r12              \n
    \t 'mov \s '$0, \s '%r13               \n
    \t 'ret                                \n
@@ -1612,7 +1605,7 @@ stdlib-functions := λ . (
    '__clone_rope:                         \n
    #if this is a cons, recurse
    \t 'cmp \s '$0, \s '%r13               \n
-   \t 'je \s 'clone_rope_notcons          \n
+   \t 'je \s '__clone_rope_notcons        \n
    \t 'push \s '%r12                      \n
    \t 'push \s '%r13                      \n
    \t 'mov \s '8 \[ %r12 \] , '%r13       \n
@@ -1627,26 +1620,26 @@ stdlib-functions := λ . (
    \t 'call \s '__clone_rope              \n
    \t 'pop \s '%r13                       \n
    \t 'pop \s '%r12                       \n
-   \t 'jmp \s 'clone_rope_end             \n
+   \t 'jmp \s '__clone_rope_end           \n
 
    #if not cons, concat
-   'clone_rope_notcons:                   \n
+   '__clone_rope_notcons:                 \n
 
    #if nil, return
    \t 'cmp \s '$0, \s '%r12               \n
-   \t 'je \s 'clone_rope_end              \n
+   \t 'je \s '__clone_rope_end            \n
 
    #if atom, break into characters and concat
-   'clone_rope_small:                     \n
+   '__clone_rope_small:                   \n
    \t 'cmpb \s '$0, \s '0 \[ %r12 \]      \n
-   \t 'je \s 'clone_rope_end              \n
+   \t 'je \s '__clone_rope_end            \n
+   (allocate-atom-grow '$1)
    \t 'movb \s '0 \[ %r12 \] , \s '%bl    \n
    \t 'movb \s '%bl, \s '0 \[ %r9 \]      \n
    \t 'inc \s '%r12                       \n
-   \t 'inc \s '%r9                        \n
-   \t 'jmp \s 'clone_rope_small           \n
+   \t 'jmp \s '__clone_rope_small         \n
 
-   'clone_rope_end:                       \n
+   '__clone_rope_end:                     \n
    \t 'ret                                \n
 
    'is:                                   \n
