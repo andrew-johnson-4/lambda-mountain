@@ -109,7 +109,7 @@ main := (
 
    (match mode (
       ()
-      (Compile (assemble parse-parsed-program))
+      (Compile (assemble (typecheck parse-parsed-program)))
       (Parse (print-s parse-parsed-program))
       (Typecheck (print-s (typecheck-show-ascript (typecheck parse-parsed-program))))
    ))
