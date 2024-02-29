@@ -728,6 +728,9 @@ typecheck-infer-expr := λctx e . (
          ( Nil (
             (typecheck-ascript( e Nil ))
          ))
+         ( (App( (App( (Literal :) (Literal _) )) tt )) (
+            (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
+         ))
          ( (Literal lit) (
             (local ctype)
             (set ctype (typecheck-infer-constructor-type lit))
@@ -1329,8 +1332,11 @@ get-maybe-function := λctx v arg . (tail(
             if r () (
                if (eq(name v)) (
                   (local f_type)
-                  (set f_type (typecheck-lookup-type body))
-                  (set r (GlobalFunction (mangle-global-function( name body ))))
+                  (set f_type (typecheck-lookup-type f_type))
+                  (print-s (LookupF name arg_type))
+                  (if (deep-eq( (head(tail f_type)) arg_type )) (
+                     (set r (GlobalFunction (mangle-global-function( name body ))))
+                  ) ())
                ) ()
             )
          ))
