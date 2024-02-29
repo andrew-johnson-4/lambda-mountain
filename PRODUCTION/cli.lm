@@ -1332,8 +1332,7 @@ get-maybe-function := λctx v arg . (tail(
             if r () (
                if (eq(name v)) (
                   (local f_type)
-                  (set f_type (typecheck-lookup-type f_type))
-                  (print-s (LookupF name arg_type))
+                  (set f_type (typecheck-lookup-type body))
                   (if (deep-eq( (head(tail f_type)) arg_type )) (
                      (set r (GlobalFunction (mangle-global-function( name body ))))
                   ) ())
