@@ -210,7 +210,6 @@ tokenize := λtext . (tail(
    (if buffer (
       (set program (program (clone-rope buffer)))
    ) ())
-   (Tokenized program)
    (reverse-list program)
 ));
 
