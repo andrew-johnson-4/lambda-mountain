@@ -1118,6 +1118,17 @@ compile-expr := λctx e offset used . (tail(
 
 fail := λmsg . (print-s msg) (exit 1);
 
+deep-eq := λl r . match (l r) (
+   ()
+   ( (() ()) True )
+   ( ((ll lr) (rl rr)) (
+      if (deep-eq( ll rl )) (
+         (deep-eq( lr rr ))
+      ) ()
+   ))
+   ( (la ra) (eq( la ra )) )
+);
+
 reverse-list := λl . (tail(
    (local r)
    (while l (
@@ -1301,6 +1312,8 @@ mangle-global-function := λname body . (
 );
 
 get-maybe-function := λctx v arg . (tail(
+   (local arg_type)
+   (set arg_type (typecheck-lookup-type arg))
    (local r)
    (while ctx (
       (match (tail ctx) (
@@ -1315,6 +1328,8 @@ get-maybe-function := λctx v arg . (tail(
          ( (GlobalFunction( name body )) (
             if r () (
                if (eq(name v)) (
+                  (local f_type)
+                  (set f_type (typecheck-lookup-type body))
                   (set r (GlobalFunction (mangle-global-function( name body ))))
                ) ()
             )
