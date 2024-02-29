@@ -1365,6 +1365,10 @@ destructure-args := λctx e offset . (match e (
       ()
       (Expr( () () () () () ctx offset ))
    )))
+   ( (App( (App( (Literal :) (Variable n) )) nt )) (tail(
+      ()
+      (declare-local(ctx n offset))
+   )))
    ( (Variable n) (tail(
       ()
       (declare-local(ctx n offset))
