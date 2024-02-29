@@ -73,7 +73,7 @@ fn compile_production() {
                       .expect("failed to wait for process");
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("lm error code: {}", stderr);
+      panic!("./bootstrap error code: {}", stderr);
    };
    let exit = Command::new("as")
                       .stdout(std::process::Stdio::piped())

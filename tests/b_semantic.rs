@@ -106,9 +106,11 @@ fn compile_production() {
 }
 
 fn run_production(mode:&str, target: &str) -> String {
-   let exit = Command::new("./production")
+   let exit = Command::new("timeout")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
+                      .arg("5")
+                      .arg("./production")
                       .arg(mode)
                       .arg(target)
                       .spawn()
@@ -123,9 +125,11 @@ fn run_compile_production(mode:&str, target: &str) -> String {
    rm("tmp.s");
    rm("tmp.o");
    rm("a.out");
-   let exit = Command::new("./production")
+   let exit = Command::new("timeout")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
+                      .arg("5")
+                      .arg("./production")
                       .arg(mode)
                       .arg("-o")
                       .arg("tmp.s")
@@ -136,7 +140,7 @@ fn run_compile_production(mode:&str, target: &str) -> String {
                       .expect("failed to wait for process");
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      return format!("production error code: {} on target {}", stderr, target);
+      return format!("timeout 5 ./production error code: {} on target {}", stderr, target);
    };
    let exit = Command::new("as")
                       .stdout(std::process::Stdio::piped())
@@ -169,7 +173,7 @@ fn run_compile_production(mode:&str, target: &str) -> String {
    let exit = Command::new("timeout")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
-                      .arg("10")
+                      .arg("5")
                       .arg("./a.out")
                       .spawn()
                       .expect("failed to execute process")
@@ -177,7 +181,7 @@ fn run_compile_production(mode:&str, target: &str) -> String {
                       .expect("failed to wait for process");
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      return format!("timeout 10 ./a.out error code: {} on target {}", stderr, target);
+      return format!("timeout 5 ./a.out error code: {} on target {}", stderr, target);
    };
    let actual = String::from_utf8_lossy(&exit.stdout).to_string();
    rm("tmp.s");
@@ -210,6 +214,17 @@ fn testsuite() {
       let actual = actual.trim().to_string();
       if expected != actual {
          failures.push(( "--compile", path, expected, actual ));
+      }
+   }
+   for entry in glob("tests/strict/*.lm").unwrap() {
+      let path = entry.unwrap().display().to_string();
+      let expected = std::fs::read_to_string(path.clone() + ".out")
+                    .expect(&format!("Could not load expected output {}.out", path));
+      let expected = expected.trim().to_string();
+      let actual = run_compile_production("--strict", &path);
+      let actual = actual.trim().to_string();
+      if expected != actual {
+         failures.push(( "--strict", path, expected, actual ));
       }
    }
    for (mode,path,expected,actual) in &failures {
