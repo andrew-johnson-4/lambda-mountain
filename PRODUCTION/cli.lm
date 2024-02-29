@@ -1061,7 +1061,7 @@ compile-expr := λctx e offset used . (tail(
             )))
          )) (tail(
             ()
-            (match (get-maybe-function(ctx fname)) (
+            (match (get-maybe-function(ctx fname arg)) (
                ()
                ( (GlobalFunction mangledname) (tail(
                   (set e1 (compile-expr(ctx arg offset Used)))
@@ -1300,7 +1300,7 @@ mangle-global-function := λname body . (
    (clone-rope (label-case ( name '_C_ (typecheck-lookup-type body) )))
 );
 
-get-maybe-function := λctx v . (tail(
+get-maybe-function := λctx v arg . (tail(
    (local r)
    (while ctx (
       (match (tail ctx) (
@@ -1423,7 +1423,7 @@ destructure-args := λctx e offset . (match e (
       ))
    )))
    ( _ (
-      (fail (InvalidFunctionParameters e))
+      (fail (InvalidFunctionParameters DidYouForgetToSeparateADotTokenInFunctionParam? e))
    ))
 ));
 
