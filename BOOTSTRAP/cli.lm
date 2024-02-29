@@ -55,6 +55,10 @@ main := (
          (set mode Compile)
          (set args remainder)
       ))
+      ( (--strict remainder) (
+         (set mode Strict)
+         (set args remainder)
+      ))
       ( (--parse remainder) (
          (set mode Parse)
          (set args remainder)
@@ -86,6 +90,10 @@ main := (
          (parse-program (tokenize-file (head inputs)))
          (set inputs (tail inputs))
       ))
+      (Strict (
+         (parse-program (tokenize-file (head inputs)))
+         (set inputs (tail inputs))
+      ))
       (Parse (
          (parse-program (tokenize-file (head inputs)))
          (set inputs (tail inputs))
@@ -110,6 +118,7 @@ main := (
    (match mode (
       ()
       (Compile (assemble parse-parsed-program))
+      (Strict (assemble (typecheck parse-parsed-program)))
       (Parse (print-s parse-parsed-program))
       (Typecheck (print-s (typecheck-show-ascript (typecheck parse-parsed-program))))
    ))
@@ -210,7 +219,6 @@ tokenize := λtext . (tail(
    (if buffer (
       (set program (program (clone-rope buffer)))
    ) ())
-   (Tokenized program)
    (reverse-list program)
 ));
 
@@ -729,6 +737,9 @@ typecheck-infer-expr := λctx e . (
          ( Nil (
             (typecheck-ascript( e Nil ))
          ))
+         ( (App( (App( (Literal :) (Literal _) )) tt )) (
+            (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
+         ))
          ( (Literal lit) (
             (local ctype)
             (set ctype (typecheck-infer-constructor-type lit))
@@ -828,7 +839,7 @@ assemble := λprogram . (
                (set global_ctx (global_ctx (GlobalVariable fname)))
             ))
             ( (Lambda(lhs rhs)) (
-               (set global_ctx (global_ctx (GlobalFunction fname)))
+               (set global_ctx (global_ctx (GlobalFunction( fname body ))))
             ))
          ))
          (set preview_program pc3)
@@ -856,7 +867,7 @@ assemble := λprogram . (
             ( (Lambda(lhs rhs)) (
                (set e1 (destructure-args(global_ctx lhs ())))
                (set e2 (compile-expr((get-pc e1) rhs (get-offset e1) Used)))
-               (set output_pd ( ((head output_pd) (label-case fname) ': \n) (tail output_pd) ))
+               (set output_pd ( ((head output_pd) (mangle-global-function( fname body )) ': \n) (tail output_pd) ))
                (set output_pd ( ((head output_pd) (enter-function())) (tail output_pd) ))
                (set output_pd ( ((head output_pd) (get-frame e1)) (tail output_pd) ))
                (set output_pd ( ((head output_pd) (get-frame e2)) (tail output_pd) ))
@@ -1062,7 +1073,7 @@ compile-expr := λctx e offset used . (tail(
             )))
          )) (tail(
             ()
-            (match (get-maybe-function(ctx fname)) (
+            (match (get-maybe-function(ctx fname arg)) (
                ()
                ( (GlobalFunction mangledname) (tail(
                   (set e1 (compile-expr(ctx arg offset Used)))
@@ -1119,6 +1130,17 @@ compile-expr := λctx e offset used . (tail(
 
 fail := λmsg . (print-s msg) (exit 1);
 
+deep-eq := λl r . match (l r) (
+   ()
+   ( (() ()) True )
+   ( ((ll lr) (rl rr)) (
+      if (deep-eq( ll rl )) (
+         (deep-eq( lr rr ))
+      ) ()
+   ))
+   ( (la ra) (eq( la ra )) )
+);
+
 reverse-list := λl . (tail(
    (local r)
    (while l (
@@ -1128,7 +1150,14 @@ reverse-list := λl . (tail(
    r
 ));
 
-label-case := λk . (tail(
+label-case := λk . (match k (
+   ()
+   (() ())
+   ((l r) ('_LP_ (label-case l) (label-case r) '_RP_))
+   (a (label-case-atom a))
+));
+
+label-case-atom := λk . (tail(
    (local nk)
    (while k (match (head-string k) (
       ()
@@ -1137,8 +1166,24 @@ label-case := λk . (tail(
          (set nk (nk '_))
          (set k (tail-string k))
       ))
+      ('< (
+         (set nk (nk '_LB_))
+         (set k (tail-string k))
+      ))
+      ('> (
+         (set nk (nk '_RB_))
+         (set k (tail-string k))
+      ))
+      (\[ (
+         (set nk (nk '_LP_))
+         (set k (tail-string k))
+      ))
+      (\] (
+         (set nk (nk '_RP_))
+         (set k (tail-string k))
+      ))
       ('$ (
-         (set nk (nk '_I_))
+         (set nk (nk '_DS_))
          (set k (tail-string k))
       ))
       (c (
@@ -1274,7 +1319,13 @@ get-offset := λe . (match e (
    ((Expr(f p u t d pc off)) off)
 ));
 
-get-maybe-function := λctx v . (tail(
+mangle-global-function := λname body . (
+   (clone-rope (label-case ( name '_C_ (typecheck-lookup-type body) )))
+);
+
+get-maybe-function := λctx v arg . (tail(
+   (local arg_type)
+   (set arg_type (typecheck-lookup-type arg))
    (local r)
    (while ctx (
       (match (tail ctx) (
@@ -1286,10 +1337,14 @@ get-maybe-function := λctx v . (tail(
                ) ()
             )
          ))
-         ( (GlobalFunction name) (
+         ( (GlobalFunction( name body )) (
             if r () (
                if (eq(name v)) (
-                  (set r (GlobalFunction (label-case name)))
+                  (local f_type)
+                  (set f_type (typecheck-lookup-type body))
+                  (if (deep-eq( (head(tail f_type)) arg_type )) (
+                     (set r (GlobalFunction (mangle-global-function( name body ))))
+                  ) ())
                ) ()
             )
          ))
@@ -1365,6 +1420,10 @@ destructure-args := λctx e offset . (match e (
       ()
       (Expr( () () () () () ctx offset ))
    )))
+   ( (App( (App( (Literal :) (Variable n) )) nt )) (tail(
+      ()
+      (declare-local(ctx n offset))
+   )))
    ( (Variable n) (tail(
       ()
       (declare-local(ctx n offset))
@@ -1393,7 +1452,7 @@ destructure-args := λctx e offset . (match e (
       ))
    )))
    ( _ (
-      (fail (InvalidFunctionParameters e))
+      (fail (InvalidFunctionParameters DidYouForgetToSeparateADotTokenInFunctionParam? e))
    ))
 ));
 

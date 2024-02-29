@@ -55,6 +55,10 @@ main := (
          (set mode Compile)
          (set args remainder)
       ))
+      ( (--strict remainder) (
+         (set mode Strict)
+         (set args remainder)
+      ))
       ( (--parse remainder) (
          (set mode Parse)
          (set args remainder)
@@ -86,6 +90,10 @@ main := (
          (parse-program (tokenize-file (head inputs)))
          (set inputs (tail inputs))
       ))
+      (Strict (
+         (parse-program (tokenize-file (head inputs)))
+         (set inputs (tail inputs))
+      ))
       (Parse (
          (parse-program (tokenize-file (head inputs)))
          (set inputs (tail inputs))
@@ -109,7 +117,8 @@ main := (
 
    (match mode (
       ()
-      (Compile (assemble (typecheck parse-parsed-program)))
+      (Compile (assemble parse-parsed-program))
+      (Strict (assemble (typecheck parse-parsed-program)))
       (Parse (print-s parse-parsed-program))
       (Typecheck (print-s (typecheck-show-ascript (typecheck parse-parsed-program))))
    ))

@@ -1,6 +1,6 @@
 
 mem: prod
-	./production tests/lm/specialization1.lm
+	./production tests/lm/user_function_sugar1.lm
 	as -o tmp.o tmp.s
 	ld -o tmp   tmp.o
 	./tmp
