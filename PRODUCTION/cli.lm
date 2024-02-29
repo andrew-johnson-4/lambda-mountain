@@ -856,7 +856,7 @@ assemble := λprogram . (
             ( (Lambda(lhs rhs)) (
                (set e1 (destructure-args(global_ctx lhs ())))
                (set e2 (compile-expr((get-pc e1) rhs (get-offset e1) Used)))
-               (set output_pd ( ((head output_pd) (label-case fname) ': \n) (tail output_pd) ))
+               (set output_pd ( ((head output_pd) (mangle-global-function( fname body )) ': \n) (tail output_pd) ))
                (set output_pd ( ((head output_pd) (enter-function())) (tail output_pd) ))
                (set output_pd ( ((head output_pd) (get-frame e1)) (tail output_pd) ))
                (set output_pd ( ((head output_pd) (get-frame e2)) (tail output_pd) ))
