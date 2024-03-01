@@ -226,7 +226,6 @@ tokenize := λtext . (tail(
 # Parser
 
 parse-program := λtoks . (tail(
-   (local program)
    (local pme)
    (local pme2)
    (while toks (
@@ -265,11 +264,52 @@ parse-program := λtoks . (tail(
          ))
       )
    ))
-   (parse-apply-macros program)
+   (set parse-parsed-program (parse-apply-macros parse-parsed-program))
+));
+
+merge-list := λl r . (tail(
+   (print-s (Merge l r))
+   ()
+));
+
+try-destructure-macro := λlhs e . (match (lhs e) (
+   ()
+   ( ( () () ) Accept )
+   ( ( (App(pl pr)) (App(el er)) ) (tail(
+      (print-s (Dest lhs e))
+      (merge-list(
+         (try-destructure-macro(pl el))
+         (try-destructure-macro(pr er))
+      ))
+   )))
+   ( ((Literal pl) (Literal el)) (tail(
+      (print-s (Dest lhs e))
+      (if (eq( pl el )) Accept ())
+   )))
+   ( ((Variable pv) e) (tail(
+      (print-s (Dest lhs e))
+      (Accept (KV( pv e )))
+   )))
+   ( u (
+      (fail (UnexpectedDestructure u))
+   ))
 ));
 
 parse-apply-macros := λprogram . (tail(
-   ()
+   (local macros)
+   (set macros parse-macros)
+   (while macros (match macros (
+      ()
+      ( (ms (Macro( lhs rhs ))) (
+         (print-s (TryMacro lhs program))
+         (local new)
+         (set new (try-destructure-macro( lhs program )))
+         (if new (
+            (print-s (AppliedMacro new))
+         ) ())
+         (set macros ms)
+      ))
+   )))
    program
 ));
 
