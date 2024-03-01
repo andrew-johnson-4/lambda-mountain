@@ -116,6 +116,8 @@ main := (
       ))
    )))
 
+   (print-s (Parsed parse-parsed-program))
+
    (match mode (
       ()
       (Compile (assemble parse-parsed-program))
@@ -294,8 +296,8 @@ substitute-macro-body := λkvs e . (match e (
    )))
    ( () () )
    ( (vl vr) (
-      (substitute-macro-body kvs vl)
-      (substitute-macro-body kvs vr)
+      (substitute-macro-body( kvs vl ))
+      (substitute-macro-body( kvs vr ))
    ))
    ( v v )
 ));
@@ -335,8 +337,6 @@ parse-apply-macros := λprogram . (tail(
          (set new (try-destructure-macro( lhs program )))
          (if new (
             (set program (substitute-macro-body( new rhs )))
-            (print-s AppliedMacro)(print-s \n)
-            (print-s program)(print-s \n)
          ) ())
          (set macros ms)
       ))
