@@ -278,16 +278,24 @@ merge-list := λl r . (tail( if l (
 try-destructure-macro := λlhs e . (match (lhs e) (
    ()
    ( ( () () ) Accept )
-   ( ( (App(pl pr)) (App(el er)) ) (
-      (merge-list(
-         (try-destructure-macro(pl el))
-         (try-destructure-macro(pr er))
-      ))
+   ( ( (App(pl pr)) (App(el er)) ) (tail(
+      (local ll)
+      (set ll (try-destructure-macro(pl el)))
+      (local rl)
+      (set rl (try-destructure-macro(pr er)))
+      (if ll (
+         (if rl (
+            (merge-list( ll rl ))
+         ) ())
+      ) ())
+   )))
+   ( ((Literal pl) (Variable el)) (
+      (if (eq( pl el )) Accept ())
    ))
    ( ((Literal pl) (Literal el)) (
       (if (eq( pl el )) Accept ())
    ))
-   ( ((Variable pv) e) (tail(
+   ( ((Variable pv) e) (
       (Accept (KV( pv e )))
    ))
 ));
