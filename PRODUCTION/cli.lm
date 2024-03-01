@@ -116,7 +116,9 @@ main := (
       ))
    )))
 
-   (print-s (Parsed parse-parsed-program))
+   (print-s ApplyMacros)   
+   (set parse-parsed-program (parse-apply-macros parse-parsed-program))
+   (print-s (AppliedMacros parse-parsed-program))
 
    (match mode (
       ()
@@ -266,7 +268,6 @@ parse-program := λtoks . (tail(
          ))
       )
    ))
-   (set parse-parsed-program (parse-apply-macros parse-parsed-program))
 ));
 
 merge-list := λl r . (tail( if l (
@@ -340,6 +341,7 @@ parse-apply-macros := λprogram . (tail(
          ) ())
          (set macros ms)
       ))
+      ( u (fail (UnrecognizedMacro u)))
    )))
    (match program (
       ()
