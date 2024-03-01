@@ -8,6 +8,7 @@ import STDLIB/default-atom-allocator.lm;
 
 cli-config                               := ();
 parse-parsed-program                     := ();
+parse-macros                             := ();
 typecheck-subtypes                       := ();
 typecheck-context                        := ();
 typecheck-constructors                   := ();
@@ -234,6 +235,13 @@ parse-program := λtoks . (tail(
          ((\: remainder) (
             (set toks remainder)
          ))
+         (('macro remainder) (
+            (set pme (parse-one-expression remainder))
+            (set remainder (tail pme))
+            (set pme2 (parse-one-expression remainder))
+            (set parse-macros (parse-macros (Macro( (head pme) (head pme2) )) ))
+            (set toks (tail pme2))
+         ))
          (('type remainder) (
             (set pme (parse-one-expression remainder))
             (set remainder (tail pme))
@@ -257,6 +265,11 @@ parse-program := λtoks . (tail(
          ))
       )
    ))
+   (parse-apply-macros program)
+));
+
+parse-apply-macros := λprogram . (tail(
+   ()
    program
 ));
 
