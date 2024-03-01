@@ -267,31 +267,28 @@ parse-program := λtoks . (tail(
    (set parse-parsed-program (parse-apply-macros parse-parsed-program))
 ));
 
-merge-list := λl r . (tail(
-   (print-s (Merge l r))
-   ()
-));
+merge-list := λl r . (tail( if l (
+   (while r (
+      (set l (l (tail r)))      
+      (set r (head r))
+   ))
+   l
+) r ));
 
 try-destructure-macro := λlhs e . (match (lhs e) (
    ()
    ( ( () () ) Accept )
-   ( ( (App(pl pr)) (App(el er)) ) (tail(
-      (print-s (Dest lhs e))
+   ( ( (App(pl pr)) (App(el er)) ) (
       (merge-list(
          (try-destructure-macro(pl el))
          (try-destructure-macro(pr er))
       ))
-   )))
-   ( ((Literal pl) (Literal el)) (tail(
-      (print-s (Dest lhs e))
+   ))
+   ( ((Literal pl) (Literal el)) (
       (if (eq( pl el )) Accept ())
-   )))
+   ))
    ( ((Variable pv) e) (tail(
-      (print-s (Dest lhs e))
       (Accept (KV( pv e )))
-   )))
-   ( u (
-      (fail (UnexpectedDestructure u))
    ))
 ));
 
@@ -301,16 +298,33 @@ parse-apply-macros := λprogram . (tail(
    (while macros (match macros (
       ()
       ( (ms (Macro( lhs rhs ))) (
-         (print-s (TryMacro lhs program))
          (local new)
          (set new (try-destructure-macro( lhs program )))
          (if new (
-            (print-s (AppliedMacro new))
+            (print-s AppliedMacro)(print-s \n)
+            (print-s lhs)(print-s \n)
+            (print-s program)(print-s \n)
          ) ())
          (set macros ms)
       ))
    )))
-   program
+   (match program (
+      ()
+      ( (p (Global( gn gb ))) (
+         (parse-apply-macros p)
+         (Global(
+            gn
+            (parse-apply-macros gb)
+         ))
+      ))
+      ( () () )
+      ( (App( l r )) (
+         (App( (parse-apply-macros l) (parse-apply-macros r) ))
+      ))
+      ( (Literal l) (Literal l) )
+      ( (Variable l) (Variable l) )
+      (u (fail (UnrecognizedProgramFragment u)))
+   ))
 ));
 
 parse-lambda := λtoks . (tail(
