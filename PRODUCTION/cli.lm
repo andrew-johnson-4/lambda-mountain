@@ -116,9 +116,7 @@ main := (
       ))
    )))
 
-   (print-s ApplyMacros)   
    (set parse-parsed-program (parse-apply-macros parse-parsed-program))
-   (print-s (AppliedMacros parse-parsed-program))
 
    (match mode (
       ()
@@ -284,6 +282,7 @@ substitute-macro-body := λkvs e . (match e (
       (while kvs (match kvs (
          ()
          ( (ks Accept) (set kvs ks) )
+         ( (ks ()) (set kvs ks) )
          ( (ks (KV(k v))) (
             (if (eq(n k)) (
                (set e v)
@@ -292,6 +291,7 @@ substitute-macro-body := λkvs e . (match e (
                (set kvs ks)
             ))
          ))
+         ( u (fail (UnrecognizedKVMacro kvs)))
       )))
       e
    )))
