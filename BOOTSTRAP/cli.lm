@@ -8,6 +8,7 @@ import STDLIB/default-atom-allocator.lm;
 
 cli-config                               := ();
 parse-parsed-program                     := ();
+parse-macros                             := ();
 typecheck-subtypes                       := ();
 typecheck-context                        := ();
 typecheck-constructors                   := ();
@@ -114,6 +115,8 @@ main := (
          (fail (UnknownMode u))
       ))
    )))
+
+   (set parse-parsed-program (parse-apply-macros parse-parsed-program))
 
    (match mode (
       ()
@@ -225,7 +228,6 @@ tokenize := λtext . (tail(
 # Parser
 
 parse-program := λtoks . (tail(
-   (local program)
    (local pme)
    (local pme2)
    (while toks (
@@ -233,6 +235,13 @@ parse-program := λtoks . (tail(
          ()
          ((\: remainder) (
             (set toks remainder)
+         ))
+         (('macro remainder) (
+            (set pme (parse-one-expression remainder))
+            (set remainder (tail pme))
+            (set pme2 (parse-one-expression remainder))
+            (set parse-macros (parse-macros (Macro( (head pme) (head pme2) )) ))
+            (set toks (tail pme2))
          ))
          (('type remainder) (
             (set pme (parse-one-expression remainder))
@@ -257,7 +266,92 @@ parse-program := λtoks . (tail(
          ))
       )
    ))
-   program
+));
+
+merge-list := λl r . (tail( if l (
+   (while r (
+      (set l (l (tail r)))      
+      (set r (head r))
+   ))
+   l
+) r ));
+
+substitute-macro-body := λkvs e . (match e (
+   ()
+   ((Variable n) (tail(
+      (while kvs (match kvs (
+         ()
+         ( (ks Accept) (set kvs ks) )
+         ( (ks ()) (set kvs ks) )
+         ( (ks (KV(k v))) (
+            (if (eq(n k)) (
+               (set e v)
+               (set kvs ())
+            ) (
+               (set kvs ks)
+            ))
+         ))
+         ( u (fail (UnrecognizedKVMacro kvs)))
+      )))
+      e
+   )))
+   ( () () )
+   ( (vl vr) (
+      (substitute-macro-body( kvs vl ))
+      (substitute-macro-body( kvs vr ))
+   ))
+   ( v v )
+));
+
+try-destructure-macro := λlhs e . (match (lhs e) (
+   ()
+   ( ( () () ) Accept )
+   ( ( (App(pl pr)) (App(el er)) ) (tail(
+      (local ll)
+      (set ll (try-destructure-macro(pl el)))
+      (local rl)
+      (set rl (try-destructure-macro(pr er)))
+      (if ll (
+         (if rl (
+            (merge-list( ll rl ))
+         ) ())
+      ) ())
+   )))
+   ( ((Literal pl) (Variable el)) (
+      (if (eq( pl el )) Accept ())
+   ))
+   ( ((Literal pl) (Literal el)) (
+      (if (eq( pl el )) Accept ())
+   ))
+   ( ((Variable pv) e) (
+      (Accept (KV( pv e )))
+   ))
+));
+
+parse-apply-macros := λprogram . (tail(
+   (local macros)
+   (set macros parse-macros)
+   (while macros (match macros (
+      ()
+      ( (ms (Macro( lhs rhs ))) (
+         (local new)
+         (set new (try-destructure-macro( lhs program )))
+         (if new (
+            (set program (substitute-macro-body( new rhs )))
+         ) ())
+         (set macros ms)
+      ))
+      ( u (fail (UnrecognizedMacro u)))
+   )))
+   (match program (
+      ()
+      ( (l r) (
+         (parse-apply-macros l)
+         (parse-apply-macros r)
+      ))
+      ( () () )
+      (u u)
+   ))
 ));
 
 parse-lambda := λtoks . (tail(
@@ -979,6 +1073,23 @@ compile-expr := λctx e offset used . (tail(
       ( (App ((Variable 'local) (Variable fname))) (tail(
          (set e1 (declare-local(ctx fname offset)))
          (Expr( (get-frame e1) ((yield-nil()) (get-prog e1)) (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
+      )))
+      ( (App( (Lambda( (Variable lhs) rhs )) bind )) (tail(
+         (print-s (Let lhs bind))
+         (set e1 (declare-local(ctx lhs offset)))
+         (set e2 (compile-expr((get-pc e1) bind (get-offset e1) Used)))
+         (set e3 (compile-expr((get-pc e2) rhs (get-offset e2) Used)))
+         (set prog ( prog (yield-nil()) (get-prog e1) ))
+         (set prog ( prog (get-prog e2) (set-local((get-pc e2) lhs)) ))
+         (set prog ( prog (get-prog e3) ))
+         (Expr(
+            ((get-frame e1) (get-frame e2) (get-frame e3))
+            prog
+            ((get-unframe e1) (get-unframe e2) (get-unframe e3))
+            ((get-text e1) (get-text e2) (get-text e3))
+            ((get-data e1) (get-data e2) (get-data e3))
+            (get-pc e3) (get-offset e3)
+         ))
       )))
       ( (App( (App( (Variable 'set) (Variable vname) )) x )) (tail(
          (set e1 (compile-expr(ctx x offset Used)))
