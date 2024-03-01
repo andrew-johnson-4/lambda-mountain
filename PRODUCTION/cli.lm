@@ -275,6 +275,31 @@ merge-list := λl r . (tail( if l (
    l
 ) r ));
 
+substitute-macro-body := λkvs e . (match e (
+   ()
+   ((Variable n) (tail(
+      (while kvs (match kvs (
+         ()
+         ( (ks Accept) (set kvs ks) )
+         ( (ks (KV(k v))) (
+            (if (eq(n k)) (
+               (set e v)
+               (set kvs ())
+            ) (
+               (set kvs ks)
+            ))
+         ))
+      )))
+      e
+   )))
+   ( () () )
+   ( (vl vr) (
+      (substitute-macro-body kvs vl)
+      (substitute-macro-body kvs vr)
+   ))
+   ( v v )
+));
+
 try-destructure-macro := λlhs e . (match (lhs e) (
    ()
    ( ( () () ) Accept )
@@ -309,8 +334,8 @@ parse-apply-macros := λprogram . (tail(
          (local new)
          (set new (try-destructure-macro( lhs program )))
          (if new (
+            (set program (substitute-macro-body( new rhs )))
             (print-s AppliedMacro)(print-s \n)
-            (print-s lhs)(print-s \n)
             (print-s program)(print-s \n)
          ) ())
          (set macros ms)
@@ -318,20 +343,12 @@ parse-apply-macros := λprogram . (tail(
    )))
    (match program (
       ()
-      ( (p (Global( gn gb ))) (
-         (parse-apply-macros p)
-         (Global(
-            gn
-            (parse-apply-macros gb)
-         ))
+      ( (l r) (
+         (parse-apply-macros l)
+         (parse-apply-macros r)
       ))
       ( () () )
-      ( (App( l r )) (
-         (App( (parse-apply-macros l) (parse-apply-macros r) ))
-      ))
-      ( (Literal l) (Literal l) )
-      ( (Variable l) (Variable l) )
-      (u (fail (UnrecognizedProgramFragment u)))
+      (u u)
    ))
 ));
 
