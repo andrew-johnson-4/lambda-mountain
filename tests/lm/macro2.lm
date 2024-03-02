@@ -9,8 +9,8 @@ macro ('my-match t ps) (
    (my-match-pats( term matched return ps ))
    (uuid return)
 );
-macro ('my-match-pats term matched return ()) ();
-macro ('my-match-pats term matched return (ps (lhs rhs))) (
+macro ('my-match-pats( term matched return () )) ();
+macro ('my-match-pats( term matched return (ps (lhs rhs)) )) (
    (my-match-pats( term matched return ps ))
    (if matched () (
       (set matched True)
@@ -20,24 +20,24 @@ macro ('my-match-pats term matched return (ps (lhs rhs))) (
       ) ())
    ))
 );
-macro ('my-match-destructure term matched return ()) (
+macro ('my-match-destructure( term matched return () )) (
    (if matched (
       (if term (
          (set matched ())
       ) ())
    ) ())
 );
-macro ('my-match-destructure term matched return (:Literal: l)) (
+macro ('my-match-destructure( term matched return (:Literal: l) )) (
    (if matched (
       (if (eq( term l )) () (
          (set matched ())
       ))
    ) ())
 );
-macro ('my-match-destructure term matched return (:Variable: v)) (
+macro ('my-match-destructure( term matched return (:Variable: v) )) (
    (let v term)
 );
-macro ('my-match-destructure term matched return (l r)) (
+macro ('my-match-destructure( term matched return (l r) )) (
    (let (uuid x) term)
    (set term (head (uuid x)))
    (my-match-destructure( term matched return l ))
