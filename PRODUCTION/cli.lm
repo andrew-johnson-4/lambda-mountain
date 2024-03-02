@@ -118,6 +118,7 @@ main := (
    )))
 
    (set parse-parsed-program (parse-apply-macros parse-parsed-program))
+   (print-s (Parsed parse-parsed-program))(print-s \n)
 
    (match mode (
       ()
@@ -339,6 +340,8 @@ parse-apply-macros := λprogram . (tail(
          (local new)
          (set new (try-destructure-macro( lhs program )))
          (if new (
+            (print-s (MatchP lhs))(print-s \n)
+            (print-s (MatchR program))(print-s \n)
             (set program (substitute-macro-body( new rhs )))
             (set program (parse-apply-macros program))
          ) ())

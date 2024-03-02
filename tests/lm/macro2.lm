@@ -48,5 +48,6 @@ macro ('my-match-destructure (l r)) (
 
 main := print-s (my-match (1 (() 2)) (
    ()
+   ( 1 2 )
    ( (1 (() x)) (x x))
 )); 
