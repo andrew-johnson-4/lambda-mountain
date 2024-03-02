@@ -1,0 +1,7 @@
+
+macro ('my-match x) ();
+
+main := print-s (my-match (1 (() 2)) (
+   ()
+   ( (1 (() x)) (x x))
+)); 
