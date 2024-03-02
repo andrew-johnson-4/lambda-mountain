@@ -387,6 +387,10 @@ parse-apply-macros := λprogram . (tail(
          (local new)
          (set new (try-destructure-macro( lhs program )))
          (if new (
+            (print-s (MatchDestL lhs))(print-s \n)
+            (print-s (MatchDestR program))(print-s \n)
+            (print-s (Substitute new))(print-s \n)
+            (print-s (SubstituteIn rhs))(print-s \n)
             (set program (substitute-macro-body( new rhs )))
             (set program (parse-apply-macros program))
          ) ())
