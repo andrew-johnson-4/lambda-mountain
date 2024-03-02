@@ -1,5 +1,23 @@
 
-macro ('my-match x) ();
+macro ('my-match t ps) (
+   (let my-match-term t)
+   (let my-match-matched ())
+   (let my-match-return ())
+   (my-match-pats ps)
+   my-match-return
+);
+macro ('my-match-pats ()) ();
+macro ('my-match-pats (ps (lhs rhs))) (
+   (my-match-pats ps)
+   (if my-match-matched () (
+      (my-match-destructure lhs)
+      (if my-match-matched (
+         (set my-match-return rhs)
+      ) ())
+   ))
+);
+macro ('my-match-destructure lhs) (
+);
 
 main := print-s (my-match (1 (() 2)) (
    ()
