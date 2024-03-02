@@ -118,7 +118,6 @@ main := (
    )))
 
    (set parse-parsed-program (parse-apply-macros parse-parsed-program))
-   (print-s (Parsed parse-parsed-program))(print-s \n)
 
    (match mode (
       ()
@@ -308,7 +307,7 @@ substitute-macro-body := λkvs e . (match e (
 
 try-destructure-macro := λlhs e . (match (lhs e) (
    ()
-   ( ( () () ) Accept )
+   ( ( Nil Nil ) Accept )
    ( ( (App(pl pr)) (App(el er)) ) (tail(
       (local ll)
       (set ll (try-destructure-macro(pl el)))
@@ -340,8 +339,6 @@ parse-apply-macros := λprogram . (tail(
          (local new)
          (set new (try-destructure-macro( lhs program )))
          (if new (
-            (print-s (MatchP lhs))(print-s \n)
-            (print-s (MatchR program))(print-s \n)
             (set program (substitute-macro-body( new rhs )))
             (set program (parse-apply-macros program))
          ) ())
