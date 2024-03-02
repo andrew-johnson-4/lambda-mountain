@@ -118,6 +118,7 @@ main := (
    )))
 
    (set parse-parsed-program (parse-apply-macros parse-parsed-program))
+   (print-s parse-parsed-program)
 
    (match mode (
       ()
@@ -336,7 +337,48 @@ try-destructure-macro := λlhs e . (match (lhs e) (
    ))
 ));
 
+parse-macro-substitute-uuids := λids program . (match program (
+   ()
+   ( () (ids ()) )
+   ( (App( (Variable 'uuid) (Variable x) )) (tail(
+      (local id)
+      (local xids)
+      (set xids ids)
+      (while xids (
+         (match xids (
+            ()
+            ( (xs (Bind( bx bid ))) (
+               (if (eq( bx x )) (
+                  (set id bid)
+                  (set xids ())
+               ) (
+                  (set xids xs)
+               ))
+            ))
+         ))
+      ))
+      (if id () (
+         (set id (uuid()))
+         (set ids (ids (Bind( x id )) ))
+      ))
+      (ids (Variable id))
+   )))
+   ( (l r) (tail(
+      (local s)
+      (set s (parse-macro-substitute-uuids( ids l )))
+      (set l (tail s))
+      (set ids (head s))
+      (set s (parse-macro-substitute-uuids( ids r )))
+      (set r (tail s))
+      (set ids (head s))
+      (ids (l r))
+   )))
+   ( a (ids a) )
+));
+
 parse-apply-macros := λprogram . (tail(
+   (local ids)
+   (set program (tail(parse-macro-substitute-uuids( () program ))))
    (local macros)
    (set macros parse-macros)
    (while macros (match macros (
