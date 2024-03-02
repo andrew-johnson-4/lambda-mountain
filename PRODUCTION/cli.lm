@@ -1,7 +1,6 @@
 
 # Dependencies
 
-import STDLIB/default-rules.lm;
 import STDLIB/default-cons-allocator.lm;
 import STDLIB/default-atom-allocator.lm;
 
