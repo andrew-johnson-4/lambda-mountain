@@ -77290,8 +77290,6 @@ uuid_0000000000000531:
 	mov $0, %r13
 	mov %r12, -88(%rbp)
 	mov %r13, -96(%rbp)
-	push %r12
-	push %r13
 	mov -56(%rbp),%r12
 	mov -64(%rbp),%r13
 	push %r12
@@ -77312,19 +77310,6 @@ uuid_0000000000000531:
 	call _LP__LP_try_destructure_macro_C__RP__RP_
 	mov %r12, -88(%rbp)
 	mov %r13, -96(%rbp)
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	pop %r13
-	pop %r12
-	push %r8
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	mov %r8, %r12
-	pop %r13
-	push %r12
-	push %r13
 	mov -88(%rbp),%r12
 	mov -96(%rbp),%r13
 	cmp $0,%r12
@@ -77355,8 +77340,6 @@ uuid_0000000000000532:
 	call _LP__LP_substitute_macro_body_C__RP__RP_
 	mov %r12, -8(%rbp)
 	mov %r13, -16(%rbp)
-	push %r12
-	push %r13
 	mov $0,%r12
 	mov $0,%r13
 	push %r12
@@ -77393,64 +77376,16 @@ uuid_0000000000000532:
 	call _LP__LP_parse_macro_substitute_uuids_C__RP__RP_
 	mov %r12, -8(%rbp)
 	mov %r13, -16(%rbp)
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	pop %r13
-	pop %r12
-	push %r8
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	mov %r8, %r12
-	pop %r13
-	push %r12
-	push %r13
 	mov -8(%rbp),%r12
 	mov -16(%rbp),%r13
 	call _LP__LP_parse_apply_macros_C__RP__RP_
 	mov %r12, -8(%rbp)
 	mov %r13, -16(%rbp)
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	pop %r13
-	pop %r12
-	push %r8
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	mov %r8, %r12
-	pop %r13
 uuid_0000000000000533:
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	pop %r13
-	pop %r12
-	push %r8
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	mov %r8, %r12
-	pop %r13
-	push %r12
-	push %r13
 	mov -40(%rbp),%r12
 	mov -48(%rbp),%r13
 	mov %r12, -24(%rbp)
 	mov %r13, -32(%rbp)
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	pop %r13
-	pop %r12
-	push %r8
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	mov %r8, %r12
-	pop %r13
 	mov $1, %r14
 uuid_0000000000000534:
 	cmp $0, %r14
