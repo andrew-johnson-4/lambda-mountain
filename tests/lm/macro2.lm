@@ -3,47 +3,47 @@ macro ( ('let x y) )
       ( (λ x . ()) y );
 
 macro ('my-match t ps) (
-   (let my-match-term t)
-   (let my-match-matched ())
-   (let my-match-return ())
-   (my-match-pats ps)
-   my-match-return
+   (let (uuid term) t)
+   (let (uuid matched) ())
+   (let (uuid return) ())
+   (my-match-pats( term matched return ps ))
+   (uuid return)
 );
-macro ('my-match-pats ()) ();
-macro ('my-match-pats (ps (lhs rhs))) (
-   (my-match-pats ps)
-   (if my-match-matched () (
-      (set my-match-matched True)
-      (my-match-destructure lhs)
-      (if my-match-matched (
-         (set my-match-return rhs)
+macro ('my-match-pats term matched return ()) ();
+macro ('my-match-pats term matched return (ps (lhs rhs))) (
+   (my-match-pats( term matched return ps ))
+   (if matched () (
+      (set matched True)
+      (my-match-destructure( term matched return lhs ))
+      (if matched (
+         (set return rhs)
       ) ())
    ))
 );
-macro ('my-match-destructure ()) (
-   (if my-match-matched (
-      (if my-match-term (
-         (set my-match-matched ())
+macro ('my-match-destructure term matched return ()) (
+   (if matched (
+      (if term (
+         (set matched ())
       ) ())
    ) ())
 );
-macro ('my-match-destructure (:Literal: l)) (
-   (if my-match-matched (
-      (if (eq( my-match-term l )) () (
-         (set my-match-matched ())
+macro ('my-match-destructure term matched return (:Literal: l)) (
+   (if matched (
+      (if (eq( term l )) () (
+         (set matched ())
       ))
    ) ())
 );
-macro ('my-match-destructure (:Variable: v)) (
-   (let v my-match-term)
+macro ('my-match-destructure term matched return (:Variable: v)) (
+   (let v term)
 );
-macro ('my-match-destructure (l r)) (
-   (let (uuid x) my-match-term)
-   (set my-match-term (head (uuid x)))
-   (my-match-destructure l)
-   (set my-match-term (tail (uuid x)))
-   (my-match-destructure r)
-   (set my-match-term (uuid x))
+macro ('my-match-destructure term matched return (l r)) (
+   (let (uuid x) term)
+   (set term (head (uuid x)))
+   (my-match-destructure( term matched return l ))
+   (set term (tail (uuid x)))
+   (my-match-destructure( term matched return r ))
+   (set term (uuid x))
 );
 
 main := print-s (my-match (1 (() 2)) (
