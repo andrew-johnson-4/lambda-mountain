@@ -8,7 +8,7 @@ recip: prod
 	ld -o recip   recip.o
 
 mem: prod
-	./production tests/lm/macro2.lm
+	./production tests/lm/macro4.lm
 	as -o tmp.o tmp.s
 	ld -o tmp   tmp.o
 	./tmp
