@@ -1,4 +1,7 @@
 
+macro ( ('let x y) z )
+      ( (λ x . z) y );
+
 macro ('my-match t ps) (
    (let my-match-term t)
    (let my-match-matched ())

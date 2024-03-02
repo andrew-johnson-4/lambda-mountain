@@ -1,6 +1,7 @@
 
 # Dependencies
 
+import STDLIB/default-rules.lm;
 import STDLIB/default-cons-allocator.lm;
 import STDLIB/default-atom-allocator.lm;
 
@@ -281,6 +282,7 @@ substitute-macro-body := λkvs e . (match e (
    ((Variable n) (tail(
       (while kvs (match kvs (
          ()
+         ( Accept (set kvs ()) )
          ( (ks Accept) (set kvs ks) )
          ( (ks ()) (set kvs ks) )
          ( (ks (KV(k v))) (
@@ -337,7 +339,11 @@ parse-apply-macros := λprogram . (tail(
          (local new)
          (set new (try-destructure-macro( lhs program )))
          (if new (
+            (print-s (MatchMacro lhs))(print-s \n)
+            (print-s (BeforeMacro program))(print-s \n)
             (set program (substitute-macro-body( new rhs )))
+            (set program (parse-apply-macros program))
+            (print-s (AfterMacro program))(print-s \n)
          ) ())
          (set macros ms)
       ))
@@ -1075,7 +1081,6 @@ compile-expr := λctx e offset used . (tail(
          (Expr( (get-frame e1) ((yield-nil()) (get-prog e1)) (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
       )))
       ( (App( (Lambda( (Variable lhs) rhs )) bind )) (tail(
-         (print-s (Let lhs bind))
          (set e1 (declare-local(ctx lhs offset)))
          (set e2 (compile-expr((get-pc e1) bind (get-offset e1) Used)))
          (set e3 (compile-expr((get-pc e2) rhs (get-offset e2) Used)))
