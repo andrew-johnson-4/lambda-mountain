@@ -281,6 +281,7 @@ substitute-macro-body := λkvs e . (match e (
    ((Variable n) (tail(
       (while kvs (match kvs (
          ()
+         ( Accept (set kvs ()) )
          ( (ks Accept) (set kvs ks) )
          ( (ks ()) (set kvs ks) )
          ( (ks (KV(k v))) (
@@ -305,7 +306,7 @@ substitute-macro-body := λkvs e . (match e (
 
 try-destructure-macro := λlhs e . (match (lhs e) (
    ()
-   ( ( () () ) Accept )
+   ( ( Nil Nil ) Accept )
    ( ( (App(pl pr)) (App(el er)) ) (tail(
       (local ll)
       (set ll (try-destructure-macro(pl el)))
@@ -323,9 +324,48 @@ try-destructure-macro := λlhs e . (match (lhs e) (
    ( ((Literal pl) (Literal el)) (
       (if (eq( pl el )) Accept ())
    ))
+   ( ( (App( (Literal :Literal:) (Variable pv) )) (Literal el)) (
+      (Accept (KV( pv e )))
+   ))
+   ( ( (App( (Literal :Variable:) (Variable pv) )) (Variable el)) (
+      (Accept (KV( pv e )))
+   ))
    ( ((Variable pv) e) (
       (Accept (KV( pv e )))
    ))
+));
+
+parse-macro-yield-uuids := λids program . (match program (
+   ()
+   ( (App( (Variable 'uuid) (Variable x) )) (
+      (ids ( x (Variable (uuid())) ))
+   ))
+   ( (l r) (
+      (parse-macro-yield-uuids( (parse-macro-yield-uuids( ids l )) r ))
+   ))
+   ( u ids )
+));
+
+parse-macro-substitute-uuids := λids program . (match program (
+   ()
+   ( (App( (Variable 'uuid) (Variable x) )) (tail(
+      (local id)
+      (set id program)
+      (while ids (
+         (local bind)
+         (set bind (tail ids))
+         (set ids (head ids))
+         (if (eq( (head bind) x )) (
+            (set id (tail bind))
+         ) ())
+      ))
+      id
+   )))
+   ( (l r) (
+      (parse-macro-substitute-uuids( ids l ))
+      (parse-macro-substitute-uuids( ids r ))
+   ))
+   ( a a )
 ));
 
 parse-apply-macros := λprogram . (tail(
@@ -338,6 +378,11 @@ parse-apply-macros := λprogram . (tail(
          (set new (try-destructure-macro( lhs program )))
          (if new (
             (set program (substitute-macro-body( new rhs )))
+            (set program (parse-macro-substitute-uuids (
+               (parse-macro-yield-uuids( () program ))
+               program
+            )))
+            (set program (parse-apply-macros program))
          ) ())
          (set macros ms)
       ))
@@ -1075,7 +1120,6 @@ compile-expr := λctx e offset used . (tail(
          (Expr( (get-frame e1) ((yield-nil()) (get-prog e1)) (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
       )))
       ( (App( (Lambda( (Variable lhs) rhs )) bind )) (tail(
-         (print-s (Let lhs bind))
          (set e1 (declare-local(ctx lhs offset)))
          (set e2 (compile-expr((get-pc e1) bind (get-offset e1) Used)))
          (set e3 (compile-expr((get-pc e2) rhs (get-offset e2) Used)))
