@@ -325,6 +325,12 @@ try-destructure-macro := λlhs e . (match (lhs e) (
    ( ((Literal pl) (Literal el)) (
       (if (eq( pl el )) Accept ())
    ))
+   ( ( (App( (Literal :Literal:) (Variable pv) )) (Literal el)) (
+      (Accept (KV( pv e )))
+   ))
+   ( ( (App( (Literal :Variable:) (Variable pv) )) (Variable el)) (
+      (Accept (KV( pv e )))
+   ))
    ( ((Variable pv) e) (
       (Accept (KV( pv e )))
    ))

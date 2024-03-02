@@ -27,14 +27,14 @@ macro ('my-match-destructure ()) (
       ) ())
    ) ())
 );
-macro ('my-match-destructure (Literal l)) (
+macro ('my-match-destructure (:Literal: l)) (
    (if my-match-matched (
       (if (eq( my-match-term l )) () (
          (set my-match-matched ())
       ))
    ) ())
 );
-macro ('my-match-destructure (Variable v)) (
+macro ('my-match-destructure (:Variable: v)) (
    (let v my-match-term)
 );
 macro ('my-match-destructure (l r)) (
