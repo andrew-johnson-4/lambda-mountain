@@ -1,6 +1,6 @@
 
-macro ( ('let x y) z )
-      ( (λ x . z) y );
+macro ( ('let x y) )
+      ( (λ x . ()) y );
 
 macro ('my-match t ps) (
    (let my-match-term t)

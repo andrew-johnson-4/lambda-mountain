@@ -339,11 +339,8 @@ parse-apply-macros := λprogram . (tail(
          (local new)
          (set new (try-destructure-macro( lhs program )))
          (if new (
-            (print-s (MatchMacro lhs))(print-s \n)
-            (print-s (BeforeMacro program))(print-s \n)
             (set program (substitute-macro-body( new rhs )))
             (set program (parse-apply-macros program))
-            (print-s (AfterMacro program))(print-s \n)
          ) ())
          (set macros ms)
       ))
