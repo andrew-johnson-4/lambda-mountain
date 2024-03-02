@@ -335,47 +335,44 @@ try-destructure-macro := λlhs e . (match (lhs e) (
    ))
 ));
 
+parse-macro-yield-uuids := λids program . (match program (
+   ()
+   ( (App( (Variable 'uuid) (Variable x) )) (
+      (ids ( x (Variable (uuid())) ))
+   ))
+   ( (l r) (
+      (parse-macro-yield-uuids( (parse-macro-yield-uuids( ids l )) r ))
+   ))
+   ( u ids )
+));
+
 parse-macro-substitute-uuids := λids program . (match program (
    ()
-   ( () (ids ()) )
    ( (App( (Variable 'uuid) (Variable x) )) (tail(
       (local id)
-      (local xids)
-      (set xids ids)
-      (while xids (
-         (match xids (
-            ()
-            ( (xs (Bind( bx bid ))) (
-               (if (eq( bx x )) (
-                  (set id bid)
-                  (set xids ())
-               ) (
-                  (set xids xs)
-               ))
-            ))
-         ))
+      (set id program)
+      (while ids (
+         (local bind)
+         (set bind (tail ids))
+         (set ids (head ids))
+         (if (eq( (head bind) x )) (
+            (set id (tail bind))
+         ) ())
       ))
-      (if id () (
-         (set id (uuid()))
-         (set ids (ids (Bind( x id )) ))
-      ))
-      (ids (Variable id))
+      id
    )))
-   ( (l r) (tail(
-      (local s)
-      (set s (parse-macro-substitute-uuids( ids l )))
-      (set l (tail s))
-      (set ids (head s))
-      (set s (parse-macro-substitute-uuids( ids r )))
-      (set r (tail s))
-      (set ids (head s))
-      (ids (l r))
-   )))
-   ( a (ids a) )
+   ( (l r) (
+      (parse-macro-substitute-uuids( ids l ))
+      (parse-macro-substitute-uuids( ids r ))
+   ))
+   ( a a )
 ));
 
 parse-apply-macros := λprogram . (tail(
-   #(set program (tail(parse-macro-substitute-uuids( () program ))))
+   (set program (parse-macro-substitute-uuids(
+      (parse-macro-yield-uuids( () program ))
+      program
+   )))
    (local macros)
    (set macros parse-macros)
    (while macros (match macros (
