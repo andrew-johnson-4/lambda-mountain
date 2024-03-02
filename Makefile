@@ -1,6 +1,6 @@
 
 recip: prod
-	./production -o macros.s STDLIB/default-rules.lm PRODUCTION/cli.lm
+	./production -o macros.s STDLIB/default-rules.lm DEV/cli.lm
 	as -o macros.o macros.s
 	ld -o macros  macros.o
 	./macros -o recip.s PRODUCTION/cli.lm
