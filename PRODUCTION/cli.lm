@@ -369,12 +369,6 @@ parse-macro-substitute-uuids := λids program . (match program (
 ));
 
 parse-apply-macros := λprogram . (tail(
-   (print-s (ApplyMacro))(print-s \n)
-   (set program (parse-macro-substitute-uuids(
-      (parse-macro-yield-uuids( () program ))
-      program
-   )))
-   (print-s (ApplyMacro2))(print-s \n)
    (local macros)
    (set macros parse-macros)
    (while macros (match macros (
@@ -384,6 +378,10 @@ parse-apply-macros := λprogram . (tail(
          (set new (try-destructure-macro( lhs program )))
          (if new (
             (set program (substitute-macro-body( new rhs )))
+            (set program (parse-macro-substitute-uuids (
+               (parse-macro-yield-uuids( () program ))
+               program
+            )))
             (set program (parse-apply-macros program))
          ) ())
          (set macros ms)
