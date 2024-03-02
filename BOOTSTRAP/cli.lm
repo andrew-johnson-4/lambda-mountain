@@ -1075,7 +1075,6 @@ compile-expr := λctx e offset used . (tail(
          (Expr( (get-frame e1) ((yield-nil()) (get-prog e1)) (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
       )))
       ( (App( (Lambda( (Variable lhs) rhs )) bind )) (tail(
-         (print-s (Let lhs bind))
          (set e1 (declare-local(ctx lhs offset)))
          (set e2 (compile-expr((get-pc e1) bind (get-offset e1) Used)))
          (set e3 (compile-expr((get-pc e2) rhs (get-offset e2) Used)))

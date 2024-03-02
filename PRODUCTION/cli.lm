@@ -375,8 +375,7 @@ parse-macro-substitute-uuids := λids program . (match program (
 ));
 
 parse-apply-macros := λprogram . (tail(
-   (local ids)
-   (set program (tail(parse-macro-substitute-uuids( () program ))))
+   #(set program (tail(parse-macro-substitute-uuids( () program ))))
    (local macros)
    (set macros parse-macros)
    (while macros (match macros (
