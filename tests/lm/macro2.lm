@@ -10,13 +10,37 @@ macro ('my-match-pats ()) ();
 macro ('my-match-pats (ps (lhs rhs))) (
    (my-match-pats ps)
    (if my-match-matched () (
+      (set my-match-matched True)
       (my-match-destructure lhs)
       (if my-match-matched (
          (set my-match-return rhs)
       ) ())
    ))
 );
-macro ('my-match-destructure lhs) (
+macro ('my-match-destructure ()) (
+   (if my-match-matched (
+      (if my-match-term (
+         (set my-match-matched ())
+      ) ())
+   ) ())
+);
+macro ('my-match-destructure (Literal l)) (
+   (if my-match-matched (
+      (if (eq( my-match-term l )) () (
+         (set my-match-matched ())
+      ))
+   ) ())
+);
+macro ('my-match-destructure (Variable v)) (
+   (let v my-match-term)
+);
+macro ('my-match-destructure (l r)) (
+   (let (uuid x) my-match-term)
+   (set my-match-term (head (uuid x)))
+   (my-match-destructure l)
+   (set my-match-term (tail (uuid x)))
+   (my-match-destructure r)
+   (set my-match-term (uuid x))
 );
 
 main := print-s (my-match (1 (() 2)) (
