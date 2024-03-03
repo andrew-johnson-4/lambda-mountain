@@ -1,10 +1,4 @@
 
-mem: prod
-	./production tests/lm/macro5.lm
-	as -o tmp.o tmp.s
-	ld -o tmp   tmp.o
-	./tmp
-
 recip: prod
 	./production -o macros.s STDLIB/default-rules.lm PRODUCTION/cli.lm
 	as -o macros.o macros.s
