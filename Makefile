@@ -1,16 +1,4 @@
 
-recip: prod
-	./production -o macros.s --parse STDLIB/default-rules.lm PRODUCTION/cli.lm
-	as -o macros.o macros.s
-	ld -o macros  macros.o
-	./macros
-	./macros -o recip.s PRODUCTION/cli.lm
-	as -o recip.o recip.s
-	ld -o recip   recip.o
-
-dev: prod
-	./production tests/lm/macro6.lm
-
 test: prod
 	./production -o production1.s PRODUCTION/cli.lm
 	as -o production1.o production1.s

@@ -44,9 +44,6 @@ main := (
    (local mode)
    (set mode Compile)
 
-   (local macros_enabled)
-   (set macros_enabled True)
-
    (set args (tail argv))
 
    (while args (match args (
@@ -61,10 +58,6 @@ main := (
       ))
       ( (--strict remainder) (
          (set mode Strict)
-         (set args remainder)
-      ))
-      ( (--nomacro remainder) (
-         (set macros_enabled ())
          (set args remainder)
       ))
       ( (--parse remainder) (
@@ -123,9 +116,7 @@ main := (
       ))
    )))
 
-   (if macros_enabled (
-      (set parse-parsed-program (parse-apply-macros parse-parsed-program))
-   ) ())
+   (set parse-parsed-program (parse-apply-macros parse-parsed-program))
 
    (match mode (
       ()
@@ -386,23 +377,18 @@ parse-apply-macros := λprogram . (tail(
          (local new)
          (set new (try-destructure-macro( lhs program )))
          (if new (tail(
-            (print-s (MatchedMacro lhs))(print-s \n)
-            (print-s (MatchedProgram program))(print-s \n)
             (set program (substitute-macro-body( new rhs )))
             (set program (parse-macro-substitute-uuids (
                (parse-macro-yield-uuids( () program ))
                program
             )))
-            (print-s (ProducedMacro program))(print-s \n)
             (set program (parse-apply-macros program))
-            (set macros ms)
-         )) (
-            (set macros ms)
-         ))
+         )) ())
+         (set macros ms)
       )))
       ( u (fail (UnrecognizedMacro u)))
    )))
-   (set program (match program (
+   (match program (
       ()
       ( (l r) (
          (parse-apply-macros l)
@@ -410,8 +396,7 @@ parse-apply-macros := λprogram . (tail(
       ))
       ( () () )
       (u u)
-   )))
-   program
+   ))
 ));
 
 parse-lambda := λtoks . (tail(
@@ -1209,6 +1194,26 @@ compile-expr := λctx e offset used . (tail(
             (get-offset e3)
          ))
       )))
+      ( (App( (App( (Variable 'match) t )) p )) (tail(
+         (set e1 (compile-expr(ctx t offset Used)))
+         (set e2 (yield-patterns((get-pc e1) p (get-offset e1))))
+         (local label_skip)
+         (set label_skip (uuid()))
+         (set prog ((get-prog e1) (get-prog e2)))
+         (set prog (prog ( \t 'cmp \s '$0, \s %r14 \n )))
+         (set prog (prog ( \t 'jne \s label_skip \n )))
+         (set prog (prog (yield-nil())))
+         (set prog (prog ( label_skip ': \n )))
+         (Expr(
+            ((get-frame e1) (get-frame e2))
+            prog
+            ((get-unframe e1) (get-unframe e2))
+            ((get-text e1) (get-text e2))
+            ((get-data e1) (get-data e2))
+            (get-pc e2)
+            (get-offset e2)
+         ))
+      )))
       ( (App ((Variable fname) arg)) (tail(
          ()
          (if (is-builtin fname) (tail(
@@ -1685,18 +1690,6 @@ stdlib-functions := λ . (
    (system-call( '$1 '$1 '%r12 '%r8 )) \n
    \t 'ret                             \n
 
-   'head_string:                          \n
-   \t 'cmp \s '$0, \s %r13                \n
-   \t 'jne \s 'return_nil                 \n
-   \t 'cmp \s '$0, \s %r12                \n
-   \t 'je \s 'return_nil                  \n
-   \t 'cmpb \s '$0, \s '0 \[ '%r12 \]     \n
-   \t 'je \s 'return_nil                  \n
-   \t 'movb \s '0 \[ %r12 \] , \s '%bl    \n
-   \t 'mov \s '$__mutable_char, \s '%r12  \n
-   \t 'movb \s '%bl, \s '0 \[ %r12 \]     \n
-   \t 'ret                                \n
-
    'is_atom:                              \n
    \t 'cmp \s '$0, '%r12                  \n
    \t 'je \s 'return_nil                  \n
@@ -1710,6 +1703,18 @@ stdlib-functions := λ . (
    \t 'cmp \s '$0, '%r13                  \n
    \t 'je \s 'return_nil                  \n
    \t 'jmp \s 'return_true                \n
+
+   'head_string:                          \n
+   \t 'cmp \s '$0, \s %r13                \n
+   \t 'jne \s 'return_nil                 \n
+   \t 'cmp \s '$0, \s %r12                \n
+   \t 'je \s 'return_nil                  \n
+   \t 'cmpb \s '$0, \s '0 \[ '%r12 \]     \n
+   \t 'je \s 'return_nil                  \n
+   \t 'movb \s '0 \[ %r12 \] , \s '%bl    \n
+   \t 'mov \s '$__mutable_char, \s '%r12  \n
+   \t 'movb \s '%bl, \s '0 \[ %r12 \]     \n
+   \t 'ret                                \n
 
    'tail_string:                          \n
    \t 'cmp \s '$0, \s %r13                \n
@@ -2281,14 +2286,14 @@ close := λe . (
 is-builtin := λf . (match f (
    ()
    ('is True)
+   ('is-atom True)
+   ('is-cons True)
    ('eq True)
    ('not True)
    ('head True)
    ('head-string True)
    ('tail-string True)
    ('tail True)
-   ('is-atom True)
-   ('is-cons True)
    ('inc True)
    ('dec True)
    ('add True)
@@ -2317,6 +2322,131 @@ system-call := λrax rdi rsi rdx . (
    (if rdx (\t 'mov \s rdx , \s '%rdx              \n) ())
    \t 'syscall                            \n
 );
+
+yield-patterns := λctx p offset . match p (
+   ()
+   ( Nil (tail(
+      ()
+      (Expr( () (\t 'mov \s '$0, \s %r14 \n) () () () ctx offset ))
+   )))
+   ( (App( prev (App( lhs rhs )) )) (tail(
+      (local e1)
+      (local e2)
+      (local e3)
+      (local prog)
+      (set e1 (yield-patterns(ctx prev offset)))
+      (set e2 (destructure-pattern-lhs((get-pc e1) lhs (get-offset e1))))
+      (set e3 (compile-expr((get-pc e2) rhs (get-offset e2) Used)))
+      (local label_skip)
+      (set label_skip (uuid()))
+      (set prog (prog (get-prog e1)))
+      (set prog (prog (\t 'cmp \s '$0, \s %r14 \n)))
+      (set prog (prog (\t 'jne \s label_skip \n)))
+      (set prog (prog (get-prog e2)))
+      (set prog (prog (\t 'cmp \s '$0, \s %r14 \n)))
+      (set prog (prog (\t 'je \s label_skip \n)))
+      (set prog (prog (get-prog e3)))
+      (set prog (prog (\t 'mov \s '$1, \s %r14 \n)))
+      (set prog (prog (label_skip ': \n)))
+      (Expr( 
+         ((get-frame e1) (get-frame e2) (get-frame e3))
+         prog
+         ((get-unframe e1) (get-unframe e2) (get-unframe e3))
+         ((get-text e1) (get-text e2) (get-text e3))
+         ((get-data e1) (get-data e2) (get-data e3))
+         ctx
+         (get-offset e3)
+      ))
+   )))
+   ( _ (
+      (fail (InvalidPatternsCase p))
+   ))
+);
+
+destructure-pattern-lhs := λctx lhs offset . (tail(
+   (local e1)
+   (local e2)
+   (local prog)
+   (local label_skip)
+   (match lhs (
+      ()
+      ( (Variable '_) (tail(
+         ()
+         (Expr( () (\t 'mov \s '$1, \s %r14 \n) () () () ctx offset ))
+      )))
+      ( (Variable v) (tail(
+         (set e1 (declare-local(ctx v offset)))
+         (Expr(
+            (get-frame e1)
+            ((get-prog e1) \t 'mov \s '$1, \s %r14 \n)
+            (get-unframe e1)
+            (get-text e1)
+            (get-data e1)
+            (get-pc e1)
+            (get-offset e1)
+         ))
+      )))
+      ( (Literal l) (tail(
+         (set e1 (yield-atom(ctx l offset)))
+         (set label_skip (uuid()))
+         (set prog (prog (push-this())))
+         (set prog (prog (\t 'cmp \s '$0, \s %r12 \n)))
+         (set prog (prog (\t 'je \s label_skip \n)))       
+         (set prog (prog (\t 'cmp \s '$0, \s %r13 \n)))
+         (set prog (prog (\t 'jne \s label_skip \n)))       
+         (set prog (prog (\t 'mov \s %r12, \s %rax \n)))
+         (set prog (prog (get-prog e1)))
+         (set prog (prog (\t 'mov \s %r12, \s %rbx \n)))
+         (set prog (prog (\t 'call \s 'streq \n)))
+         (set prog (prog (\t 'cmp \s '$0, \s %r12 \n)))
+         (set prog (prog (\t 'je \s label_skip \n)))
+         (set prog (prog (\t 'mov \s '$1, \s %r14 \n)))
+         (set prog (prog (label_skip ': \n)))
+         (set prog (prog (pop-this())))
+         (Expr( (get-frame e1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
+      )))
+      ( Nil (tail(
+         (set label_skip (uuid()))
+         (set prog (prog (\t 'cmp \s '$0, \s %r12 \n)))
+         (set prog (prog (\t 'jne \s label_skip \n)))
+         (set prog (prog (\t 'cmp \s '$0, \s %r13 \n)))
+         (set prog (prog (\t 'jne \s label_skip \n)))
+         (set prog (prog (\t 'mov \s '$1, \s %r14 \n)))
+         (set prog (prog (label_skip ': \n)))
+         (Expr( () prog () () () ctx offset ))
+      )))
+      ( (App( l r )) (tail(
+         (set e1 (destructure-pattern-lhs(ctx l offset)))
+         (set e2 (destructure-pattern-lhs((get-pc e1) r (get-offset e1))))
+         (set label_skip (uuid()))
+         (set prog (prog (\t 'mov \s '$0, \s %r14 \n)))
+         (set prog (prog (push-this())))
+         (set prog (prog (\t 'cmp \s '$0, \s %r13 \n)))
+         (set prog (prog (\t 'je \s label_skip \n)))
+         (set prog (prog (inline-head())))
+         (set prog (prog (get-prog e1)))
+         (set prog (prog (pop-this())))
+         (set prog (prog (push-this())))
+         (set prog (prog (\t 'cmp \s '$0, \s %r14 \n)))
+         (set prog (prog (\t 'je \s label_skip \n)))
+         (set prog (prog (\t 'mov \s '$0, \s %r14 \n)))
+         (set prog (prog (inline-tail())))
+         (set prog (prog (get-prog e2)))
+         (set prog (prog (label_skip ': \n)))
+         (set prog (prog (pop-this())))
+         (Expr( 
+            ((get-frame e1) (get-frame e2))
+            prog
+            ((get-unframe e1) (get-unframe e2))
+            ((get-text e1) (get-text e2))
+            ((get-data e1) (get-data e2))
+            (get-pc e2)
+            (get-offset e2)
+         ))
+      )))
+      (_ (fail (UnexpectedPattern lhs)))
+   ))
+));
 
 before-main := λ .(
    # before_main_argv:
