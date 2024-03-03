@@ -1702,6 +1702,20 @@ stdlib-functions := λ . (
    \t 'movb \s '%bl, \s '0 \[ %r12 \]     \n
    \t 'ret                                \n
 
+   'is_atom:                              \n
+   \t 'cmp \s '$0, '%r12                  \n
+   \t 'je \s 'return_nil                  \n
+   \t 'cmp \s '$0, '%r13                  \n
+   \t 'jne \s 'return_nil                 \n
+   \t 'jmp \s 'return_true                \n
+
+   'is_cons:                              \n
+   \t 'cmp \s '$0, '%r12                  \n
+   \t 'je \s 'return_nil                  \n
+   \t 'cmp \s '$0, '%r13                  \n
+   \t 'je \s 'return_nil                  \n
+   \t 'jmp \s 'return_true                \n
+
    'tail_string:                          \n
    \t 'cmp \s '$0, \s %r13                \n
    \t 'jne \s 'return_nil                 \n
@@ -1783,6 +1797,11 @@ stdlib-functions := λ . (
 
    'return_nil:                           \n
    \t 'mov \s '$0, \s '%r12               \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'ret                                \n
+
+   'return_true:                          \n
+   \t 'mov \s '$true, \s '%r12            \n
    \t 'mov \s '$0, \s '%r13               \n
    \t 'ret                                \n
 
@@ -2273,6 +2292,8 @@ is-builtin := λf . (match f (
    ('head-string True)
    ('tail-string True)
    ('tail True)
+   ('is-atom True)
+   ('is-cons True)
    ('inc True)
    ('dec True)
    ('add True)

@@ -6,7 +6,7 @@ mem: prod
 	./tmp
 
 recip: prod
-	./production -o macros.s STDLIB/default-rules.lm DEV/cli.lm
+	./production -o macros.s STDLIB/default-rules.lm PRODUCTION/cli.lm
 	as -o macros.o macros.s
 	ld -o macros  macros.o
 	./macros
