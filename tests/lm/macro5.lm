@@ -6,4 +6,4 @@ f := λx . match x (
    ((l r) ((f l) (f r))
 );
 
-main := f ();
+main := print-s( f () );

@@ -38,10 +38,16 @@ macro ('match-destructure( term matched return (:Variable: v) )) (
    (let v term)
 );
 macro ('match-destructure( term matched return (l r) )) (
-   (let (uuid x) term)
-   (set term (head (uuid x)))
-   (match-destructure( term matched return l ))
-   (set term (tail (uuid x)))
-   (match-destructure( term matched return r ))
-   (set term (uuid x))
+   (if matched (
+      (if term (
+         (let (uuid x) term)
+         (set term (head (uuid x)))
+         (match-destructure( term matched return l ))
+         (set term (tail (uuid x)))
+         (match-destructure( term matched return r ))
+         (set term (uuid x))
+      ) (
+         (set matched ())
+      ))
+   ) ())
 );
