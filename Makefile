@@ -1,17 +1,18 @@
 
+mem: prod
+	./production tests/lm/macro5.lm
+	as -o tmp.o tmp.s
+	ld -o tmp   tmp.o
+	./tmp
+
 recip: prod
 	./production -o macros.s STDLIB/default-rules.lm DEV/cli.lm
 	as -o macros.o macros.s
 	ld -o macros  macros.o
+	./macros
 	./macros -o recip.s PRODUCTION/cli.lm
 	as -o recip.o recip.s
 	ld -o recip   recip.o
-
-mem: prod
-	./production tests/lm/macro4.lm
-	as -o tmp.o tmp.s
-	ld -o tmp   tmp.o
-	./tmp
 
 test: prod
 	./production -o production1.s PRODUCTION/cli.lm
