@@ -8,6 +8,9 @@ recip: prod
 	as -o recip.o recip.s
 	ld -o recip   recip.o
 
+dev: prod
+	./production tests/lm/macro6.lm
+
 test: prod
 	./production -o production1.s PRODUCTION/cli.lm
 	as -o production1.o production1.s
