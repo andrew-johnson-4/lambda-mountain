@@ -133,6 +133,7 @@ fn run_compile_production(mode:&str, target: &str) -> String {
                       .arg(mode)
                       .arg("-o")
                       .arg("tmp.s")
+                      .arg("STDLIB/default-rules.lm")
                       .arg(target)
                       .spawn()
                       .expect("failed to execute process")
