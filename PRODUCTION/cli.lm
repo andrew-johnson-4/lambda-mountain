@@ -378,6 +378,7 @@ parse-macro-substitute-uuids := λids program . (match program (
 ));
 
 parse-apply-macros := λprogram . (tail(
+   (print-s (ParseApplyMacros program))(print-s \n)
    (local macros)
    (set macros parse-macros)
    (while macros (match macros (
@@ -397,7 +398,7 @@ parse-apply-macros := λprogram . (tail(
       )))
       ( u (fail (UnrecognizedMacro u)))
    )))
-   (match program (
+   (set program (match program (
       ()
       ( (l r) (
          (parse-apply-macros l)
@@ -405,7 +406,9 @@ parse-apply-macros := λprogram . (tail(
       ))
       ( () () )
       (u u)
-   ))
+   )))
+   (print-s (ParseAppliedMacro program))(print-s \n)
+   program
 ));
 
 parse-lambda := λtoks . (tail(
