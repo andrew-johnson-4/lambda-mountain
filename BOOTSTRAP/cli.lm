@@ -351,14 +351,14 @@ parse-macro-substitute-uuids := λids program . (match program (
    ( (App( (Variable 'uuid) (Variable x) )) (tail(
       (local id)
       (set id program)
-      (while ids (
+      (while ids (tail(
          (local bind)
          (set bind (tail ids))
          (set ids (head ids))
          (if (eq( (head bind) x )) (
             (set id (tail bind))
          ) ())
-      ))
+      )))
       id
    )))
    ( (l r) (
@@ -373,19 +373,19 @@ parse-apply-macros := λprogram . (tail(
    (set macros parse-macros)
    (while macros (match macros (
       ()
-      ( (ms (Macro( lhs rhs ))) (
+      ( (ms (Macro( lhs rhs ))) (tail(
          (local new)
          (set new (try-destructure-macro( lhs program )))
-         (if new (
+         (if new (tail(
             (set program (substitute-macro-body( new rhs )))
             (set program (parse-macro-substitute-uuids (
                (parse-macro-yield-uuids( () program ))
                program
             )))
             (set program (parse-apply-macros program))
-         ) ())
+         )) ())
          (set macros ms)
-      ))
+      )))
       ( u (fail (UnrecognizedMacro u)))
    )))
    (match program (
@@ -1690,6 +1690,20 @@ stdlib-functions := λ . (
    (system-call( '$1 '$1 '%r12 '%r8 )) \n
    \t 'ret                             \n
 
+   'is_atom:                              \n
+   \t 'cmp \s '$0, '%r12                  \n
+   \t 'je \s 'return_nil                  \n
+   \t 'cmp \s '$0, '%r13                  \n
+   \t 'jne \s 'return_nil                 \n
+   \t 'jmp \s 'return_true                \n
+
+   'is_cons:                              \n
+   \t 'cmp \s '$0, '%r12                  \n
+   \t 'je \s 'return_nil                  \n
+   \t 'cmp \s '$0, '%r13                  \n
+   \t 'je \s 'return_nil                  \n
+   \t 'jmp \s 'return_true                \n
+
    'head_string:                          \n
    \t 'cmp \s '$0, \s %r13                \n
    \t 'jne \s 'return_nil                 \n
@@ -1783,6 +1797,11 @@ stdlib-functions := λ . (
 
    'return_nil:                           \n
    \t 'mov \s '$0, \s '%r12               \n
+   \t 'mov \s '$0, \s '%r13               \n
+   \t 'ret                                \n
+
+   'return_true:                          \n
+   \t 'mov \s '$true, \s '%r12            \n
    \t 'mov \s '$0, \s '%r13               \n
    \t 'ret                                \n
 
@@ -2267,6 +2286,8 @@ close := λe . (
 is-builtin := λf . (match f (
    ()
    ('is True)
+   ('is-atom True)
+   ('is-cons True)
    ('eq True)
    ('not True)
    ('head True)

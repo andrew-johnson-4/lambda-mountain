@@ -29,7 +29,11 @@ macro ('match-destructure( term matched return () )) (
 );
 macro ('match-destructure( term matched return (:Literal: l) )) (
    (if matched (
-      (if (eq( term l )) () (
+      (if (is-atom term) (
+         (if (eq( term l )) () (
+            (set matched ())
+         ))
+      ) (
          (set matched ())
       ))
    ) ())
@@ -38,10 +42,16 @@ macro ('match-destructure( term matched return (:Variable: v) )) (
    (let v term)
 );
 macro ('match-destructure( term matched return (l r) )) (
-   (let (uuid x) term)
-   (set term (head (uuid x)))
-   (match-destructure( term matched return l ))
-   (set term (tail (uuid x)))
-   (match-destructure( term matched return r ))
-   (set term (uuid x))
+   (if matched (
+      (if (is-cons term) (
+         (let (uuid x) term)
+         (set term (head (uuid x)))
+         (match-destructure( term matched return l ))
+         (set term (tail (uuid x)))
+         (match-destructure( term matched return r ))
+         (set term (uuid x))
+      ) (
+         (set matched ())
+      ))
+   ) ())
 );
