@@ -66,6 +66,7 @@ main := (
          (set args remainder)
       ))
       ( (--nostd remainder) (
+         (set mode Strict)
          (set config-nostd True)
          (set args remainder)
       ))
