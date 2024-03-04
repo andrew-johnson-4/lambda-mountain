@@ -1,9 +1,7 @@
 # [Lambda Mountain](https://github.com/andrew-johnson-4/-/wiki)
 
 λ☶ (pronounced Lambda Mountain) is a compiler backend.
-It is a typed fragment assembler,
-which means it could generate machine code,
-but right now the only backend targets GNU Assembler.
+It is a typed fragment assembler which means it generates machine object files or GNU Assembly.
 
 More information is available on the [λ☶ Wiki](https://github.com/andrew-johnson-4/-/wiki).
 
