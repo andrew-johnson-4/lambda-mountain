@@ -742,22 +742,29 @@ typecheck-unify-ctx := λctx v . (match v (
    ))
 ));
 
-typecheck-unify-implies := λlt rt . (if (eq(lt rt)) True (tail(
-   (local accept)
-   (local subtypes)
-   (local st)
-   (set subtypes typecheck-subtypes)
-   (while subtypes (
-      (set st (tail subtypes))
-      (if (eq( (head st) lt )) (
-         (if (eq( (tail st) rt )) (
-            (set accept True)
-         ) ())
-      ) ())
-      (set subtypes (head subtypes))
+typecheck-unify-implies := λlt rt . (if (eq(lt rt)) True (match lt (
+   ()
+   ( (And( lt1 lt2 )) (
+      (if (typecheck-unify-implies( lt1 rt )) True (
+         (typecheck-unify-implies( lt2 rt ))
+      ))
    ))
-   (print-s (UnifyImplies? lt rt accept))(print-s \n)
-   accept
+   ( lt1 (tail(
+      (local accept)
+      (local subtypes)
+      (local st)
+      (set subtypes typecheck-subtypes)
+      (while subtypes (
+         (set st (tail subtypes))
+         (if (eq( (head st) lt1 )) (
+            (if (eq( (tail st) rt )) (
+               (set accept True)
+            ) ())
+         ) ())
+         (set subtypes (head subtypes))
+      ))
+      accept
+   )))
 )));
 
 typecheck-unify-args := λlt rt . (match (lt rt) (
@@ -1282,6 +1289,10 @@ compile-expr := λctx e offset used . (tail(
                   (set prog ((get-prog e1) (\t 'call \s mangledname \n)))
                   (Expr( (get-frame e1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
                )))
+               ( (Fragment( (Variable _) body )) (tail(
+                  ()
+                  (fail (TODOFragment body))
+               )))
                ( () (
                   (fail (ReferenceToUndefinedVariable fname (typecheck-lookup-type arg)))
                ))
@@ -1546,9 +1557,8 @@ get-maybe-function := λctx v arg . (tail(
                   (set frag_type (typecheck-lookup-type body))
                   (local match_type)
                   (set match_type (typecheck-apply-plural( frag_type arg_type )))
-                  (print-s (TryFunctionLike name arg_type frag_type match_type))(print-s \n)
                   (if match_type (
-                     (fail (AcceptFunctionLike name arg_type frag_type match_type))
+                     (set r (Fragment( (Variable name) body )))
                   ) ())
                ) ()
             )
