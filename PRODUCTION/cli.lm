@@ -1044,7 +1044,7 @@ assemble := λprogram . (
          (get-text main_pd)
          (if config-nostd () (stdlib-functions()))
       )
-      ((tail output_pd) (get-data main_pd))
+      ((if config-nostd () (stdlib-data())) (tail output_pd) (get-data main_pd))
    ))
    (set output_pd (
       ((head output_pd) assemble-text-section)
@@ -1620,6 +1620,9 @@ destructure-args := λctx e offset . (match e (
 
 assemble-data-header := λ .(
   '.data                                  \n
+);
+
+stdlib-data := λ .(
   'load_file_bsz:                         \n
   \t '.quad \s '1024                      \n
   'load_file_buf:                         \n
