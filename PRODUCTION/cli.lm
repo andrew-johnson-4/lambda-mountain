@@ -1003,7 +1003,8 @@ assemble := λprogram . (
          ))
          (set preview_program pc3)
       ))
-      ( (prog (Fragment( _ _ ))) (
+      ( (prog (Fragment( fname fbody ))) (
+         (set global_ctx (global_ctx (Fragment( fname fbody )) ))
          (set preview_program prog)
       ))
       ( (prog (Type( _ _ ))) (
@@ -1524,6 +1525,13 @@ get-maybe-function := λctx v arg . (tail(
             if r () (
                if (eq(l v)) (
                   (set r (Variable l))
+               ) ()
+            )
+         ))
+         ( (Fragment( (Variable name) body )) (
+            if r () (
+               if (eq(name v)) (
+                  (fail (FoundFunctionLike name))
                ) ()
             )
          ))
