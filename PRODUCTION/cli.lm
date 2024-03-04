@@ -1242,7 +1242,7 @@ compile-expr := λctx e offset used . (tail(
                   (Expr( (get-frame e1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
                )))
                ( () (
-                  (fail (ReferenceToUndefinedVariable fname))
+                  (fail (ReferenceToUndefinedVariable fname (typecheck-lookup-type arg)))
                ))
                ( v (tail(
                   ()
