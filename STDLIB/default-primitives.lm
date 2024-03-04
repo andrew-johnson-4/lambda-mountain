@@ -1,0 +1,18 @@
+
+type U8;
+type U16;
+type U32;
+type U64;
+type I8;
+type I16;
+type I32;
+type I64;
+
+literal U8 := λ(: a Atom). (.text a);
+literal U16 := λ(: a Atom). (.text a);
+literal U32 := λ(: a Atom). (.text a);
+literal U64 := λ(: a Atom). (.text a);
+literal I8 := λ(: a Atom). (.text a);
+literal I16 := λ(: a Atom). (.text a);
+literal I32 := λ(: a Atom). (.text a);
+literal I64 := λ(: a Atom). (.text a);
