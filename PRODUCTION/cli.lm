@@ -756,6 +756,7 @@ typecheck-unify-implies := λlt rt . (if (eq(lt rt)) True (tail(
       ) ())
       (set subtypes (head subtypes))
    ))
+   (print-s (UnifyImplies? lt rt accept))(print-s \n)
    accept
 )));
 
@@ -804,6 +805,7 @@ typecheck-apply-plural := λmany pt . (match many(
    ( (->(lt rt)) (
       (typecheck-unify-ctx( (typecheck-unify-args(lt pt)) rt ))
    ))
+   ( u (fail (ApplicationIsNotAFunction many pt)))
 ));
 
 typecheck-safe-apply-plural := λterm many pt . (tail(
@@ -1543,7 +1545,7 @@ get-maybe-function := λctx v arg . (tail(
                   (local frag_type)
                   (set frag_type (typecheck-lookup-type body))
                   (local match_type)
-                  (set match_type (typecheck-apply-plural( arg frag_type arg_type )))
+                  (set match_type (typecheck-apply-plural( frag_type arg_type )))
                   (print-s (TryFunctionLike name arg_type frag_type match_type))(print-s \n)
                   (if match_type (
                      (fail (AcceptFunctionLike name arg_type frag_type match_type))
