@@ -6,6 +6,7 @@ import STDLIB/default-atom-allocator.lm;
 
 # Static Globals
 
+config-nostd                             := ();
 cli-config                               := ();
 parse-parsed-program                     := ();
 parse-macros                             := ();
@@ -62,6 +63,10 @@ main := (
       ))
       ( (--parse remainder) (
          (set mode Parse)
+         (set args remainder)
+      ))
+      ( (--nostd remainder) (
+         (set config-nostd True)
          (set args remainder)
       ))
       ( (--parse-expression remainder) (
@@ -1037,7 +1042,7 @@ assemble := λprogram . (
          (exit-cleanup())
          (head output_pd)
          (get-text main_pd)
-         (stdlib-functions())
+         (if config-nostd () (stdlib-functions()))
       )
       ((tail output_pd) (get-data main_pd))
    ))

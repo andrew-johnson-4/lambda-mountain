@@ -1,4 +1,7 @@
 
+nostd: prod
+	./production -o tmp.s tests/nostd/ints.lm
+
 test: prod
 	./production -o production1.s PRODUCTION/cli.lm
 	as -o production1.o production1.s
