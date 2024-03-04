@@ -595,6 +595,12 @@ typecheck-show-ascript := λp . (tail(
       ( (prog (Type( tn td ))) (
          ( (typecheck-show-ascript prog) (Type( tn td )) )
       ))
+      ( (prog (Fragment( (Variable fragf) body ))) (
+         (fail (DefineFragment fragf))
+      ))
+      ( (prog (Fragment( typf body ))) (
+         (fail (DefineFragment typf))
+      ))
       ( unknown (
          fail (UnknownTerm unknown)
       ))
@@ -886,6 +892,7 @@ typecheck-infer-expr := λctx e . (
             ))
          ))
          ( (Type( l ds )) ())
+         ( (Fragment( _ _ )) ())
          ( Nil (
             (typecheck-ascript( e Nil ))
          ))
@@ -996,8 +1003,14 @@ assemble := λprogram . (
          ))
          (set preview_program pc3)
       ))
+      ( (prog (Fragment( _ _ ))) (
+         (set preview_program prog)
+      ))
+      ( (prog (Type( _ _ ))) (
+         (set preview_program prog)
+      ))
       ( u (
-         (fail (UnexpectedProgram u))
+         (fail (UnexpectedProgram (tail u)))
       ))
    )))
 
