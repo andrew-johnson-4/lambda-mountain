@@ -1542,7 +1542,12 @@ get-maybe-function := λctx v arg . (tail(
                if (eq(name v)) (
                   (local frag_type)
                   (set frag_type (typecheck-lookup-type body))
-                  (fail (FoundFunctionLike name arg_type frag_type))
+                  (local match_type)
+                  (set match_type (typecheck-apply-plural( arg frag_type arg_type )))
+                  (print-s (TryFunctionLike name arg_type frag_type match_type))(print-s \n)
+                  (if match_type (
+                     (fail (AcceptFunctionLike name arg_type frag_type match_type))
+                  ) ())
                ) ()
             )
          ))

@@ -6,3 +6,6 @@ type Reg64 RAX | RBX | RCX | RDX | RSI | RDI | RBP | RSP | R8  | R9  | R10  | R1
 
 fragment Reg8 := λ(: r Reg8). (Text( r ));
 fragment mov := λ(: imm U8)(: dst Reg8). (Text( \t 'mov \s '$ imm , \s % dst \n ));
+fragment mov := λ(: imm U16)(: dst Reg16). (Text( \t 'mov \s '$ imm , \s % dst \n ));
+fragment mov := λ(: imm U32)(: dst Reg32). (Text( \t 'mov \s '$ imm , \s % dst \n ));
+fragment mov := λ(: imm U64)(: dst Reg64). (Text( \t 'mov \s '$ imm , \s % dst \n ));
