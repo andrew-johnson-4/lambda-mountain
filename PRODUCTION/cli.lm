@@ -892,7 +892,16 @@ typecheck-infer-expr := λctx e . (
             ))
          ))
          ( (Type( l ds )) ())
-         ( (Fragment( _ _ )) ())
+         ( (Fragment( fln fle )) (
+            (if (typecheck-lookup-type fle) () (
+               (match fle (
+                  ()
+                  ( (Lambda( lhs rhs )) (
+                     (typecheck-ascript( fle (->( (typecheck-typeof-lhs lhs) Fragment)) ))
+                  ))
+               ))
+            ))
+         ))
          ( Nil (
             (typecheck-ascript( e Nil ))
          ))
@@ -1531,7 +1540,9 @@ get-maybe-function := λctx v arg . (tail(
          ( (Fragment( (Variable name) body )) (
             if r () (
                if (eq(name v)) (
-                  (fail (FoundFunctionLike name))
+                  (local frag_type)
+                  (set frag_type (typecheck-lookup-type body))
+                  (fail (FoundFunctionLike name arg_type frag_type))
                ) ()
             )
          ))
