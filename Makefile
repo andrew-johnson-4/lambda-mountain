@@ -1,6 +1,6 @@
 
 nostd: prod
-	./production --nostd -o tmp.s tests/nostd/ints.lm
+	./production --nostd -o tmp.s STDLIB/* tests/nostd/ints.lm
 
 test: prod
 	./production -o production1.s PRODUCTION/cli.lm

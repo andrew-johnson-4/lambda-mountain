@@ -249,6 +249,15 @@ parse-program := λtoks . (tail(
             (set parse-macros (parse-macros (Macro( (head pme) (head pme2) )) ))
             (set toks (tail pme2))
          ))
+         (('fragment remainder) (
+            (set pme (parse-one-expression remainder))
+            (set remainder (tail pme))
+            (parse-expect( := remainder ))
+            (set remainder (tail remainder))
+            (set pme2 (parse-many-expressions remainder))
+            (set parse-parsed-program ( parse-parsed-program (Fragment( (head pme) (head pme2) )) ))
+            (set toks (tail pme2))
+         ))
          (('type remainder) (
             (set pme (parse-one-expression remainder))
             (set remainder (tail pme))
@@ -445,8 +454,7 @@ parse-lambda := λtoks . (tail(
 ));
 
 parse-unexpect := λt . fail (UnexpectedToken t);
-parse-expect := λt ts . ();
-#parse-expect := λt ts . if (eq( t (head ts) )) () (fail (ExpectedToken t));
+parse-expect := λt ts . (if (eq( t (head ts) )) () (fail (ExpectedToken t)));
 
 parse-one-expression := λtoks . (tail(
    (local pme)
@@ -468,7 +476,6 @@ parse-one-expression := λtoks . (tail(
       ))
       ( ( \[ r ) (
          (set pme (parse-many-expressions r))
-         (parse-expect( \] (tail pme) ))
          (set expr (head pme))
          (set remainder (tail pme))
       ))
