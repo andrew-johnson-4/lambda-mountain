@@ -969,9 +969,22 @@ typecheck-infer-expr := λctx e . (
 
 # Assembler
 
-assemble-apply-fragment := λarrow args . (
-   fail (AssembleApplyFragment arrow args)
-);
+assemble-destructure-fragment := λctx lmb args offset . (match lmb (
+   ()
+   # fragment annotations are required
+   ( (Lambda( (App( rst (App( (App( (Literal :) (Variable v) )) _ )) )) body )) (
+      (fail (Destructure v args))
+   ))
+   ( () () )
+   ( (Lambda( u _ )) (fail (UnrecgonizedDestructureFragment u)))
+   ( u (fail (UnrecgonizedDestructureFragment u)))
+));
+
+assemble-apply-fragment := λctx arrow args offset . (tail(
+   (local ctx)
+   (set ctx (assemble-destructure-fragment( ctx arrow args offset )))
+   (fail (AssembleApplyFragment ctx))
+));
 
 assemble := λprogram . (
    (local target)
@@ -1294,7 +1307,7 @@ compile-expr := λctx e offset used . (tail(
                   (Expr( (get-frame e1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
                )))
                ( (Fragment( (Variable _) body )) (
-                  (assemble-apply-fragment( body arg ))
+                  (assemble-apply-fragment( ctx body arg offset ))
                ))
                ( () (
                   (fail (ReferenceToUndefinedVariable fname (typecheck-lookup-type arg)))
