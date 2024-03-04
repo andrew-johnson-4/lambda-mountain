@@ -1047,6 +1047,15 @@ assemble := λprogram . (
          ))
          (set program pc)
       ))
+      ( (pc (Fragment( _ _ ))) (
+         (set program pc)
+      ))
+      ( (pc (Type( _ _ ))) (
+         (set program pc)
+      ))
+      ( u (
+         (fail (UnexpectedProgram (tail u)))
+      ))
    )))
 
    (if main_e (
