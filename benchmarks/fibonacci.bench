@@ -6,6 +6,8 @@ arg: 10
 arg: 15
 arg: 20
 arg: 25
+arg: 30
+arg: 35
 run: rm -f $basename.s $basename.o $basenaml.lm.exe
 run: lm -o $basename.s $basename.lm
 run: as -o $basename.o $basename.s
@@ -19,6 +21,8 @@ arg: 10
 arg: 15
 arg: 20
 arg: 25
+arg: 30
+arg: 35
 run: rm -f $basenaml.ml.exe
 run: ocamlopt -o $basename.ml.exe $basename.ml
 run: ./$basename.ml.exe
