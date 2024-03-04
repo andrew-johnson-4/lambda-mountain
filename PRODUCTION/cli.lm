@@ -969,6 +969,10 @@ typecheck-infer-expr := λctx e . (
 
 # Assembler
 
+assemble-apply-fragment := λarrow args . (
+   fail (AssembleApplyFragment arrow args)
+);
+
 assemble := λprogram . (
    (local target)
    (set target 'tmp.s)
@@ -1289,10 +1293,9 @@ compile-expr := λctx e offset used . (tail(
                   (set prog ((get-prog e1) (\t 'call \s mangledname \n)))
                   (Expr( (get-frame e1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
                )))
-               ( (Fragment( (Variable _) body )) (tail(
-                  ()
-                  (fail (TODOFragment body))
-               )))
+               ( (Fragment( (Variable _) body )) (
+                  (assemble-apply-fragment( body arg ))
+               ))
                ( () (
                   (fail (ReferenceToUndefinedVariable fname (typecheck-lookup-type arg)))
                ))
