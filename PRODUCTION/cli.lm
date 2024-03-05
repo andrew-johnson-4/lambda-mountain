@@ -67,7 +67,7 @@ main := (
          (set args remainder)
       ))
       ( (--nostd remainder) (
-         (set mode Strict)
+         (set config-strict True)
          (set config-nostd True)
          (set args remainder)
       ))
@@ -564,6 +564,7 @@ typecheck-lookup-type := λterm . (tail(
 
 typecheck-ascript := λt tt . (
    if tt (
+      (print-s (Ascript t tt))(print-s \n)
       (set typecheck-context ((t tt) typecheck-context))
       (set typecheck-types-have-changed True)
    ) ()
@@ -1421,7 +1422,7 @@ compile-expr := λctx e offset used . (tail(
                ))
                ( v (tail(
                   ()
-                  (yield-cons(ctx v arg offset Used))
+                  (yield-cons(ctx v arg e offset Used))
                )))
             ))
          )))
@@ -1438,7 +1439,7 @@ compile-expr := λctx e offset used . (tail(
       )))
       ( (App (l r)) (tail(
          (set tail_safe True)
-         (yield-cons(ctx l r offset used))
+         (yield-cons(ctx l r e offset used))
       )))
       ( (GlobalVariable mangled-name) (tail(
          (set prog (
@@ -2375,7 +2376,19 @@ yield-nil := λ . (
    \t 'mov \s '$0, \s '%r13               \n
 );
 
-yield-cons := λctx l r offset used . (tail(
+yield-cons := λctx l r ce offset used . (tail(
+   (if config-strict (
+      (local typel)
+      (set typel (typecheck-lookup-type l))
+      (local typer)
+      (set typer (typecheck-lookup-type r))
+      (local typece)
+      (set typece (typecheck-lookup-type ce))
+      (print-s (ConsL l))(print-s \n)
+      (print-s (ConsR r))(print-s \n)
+      (print-s (ConsCE ce))(print-s \n)
+      (fail (InvalidConsType typel typer typece))
+   ) ())
    (local e1)
    (local e2)
    (local prog)
