@@ -1030,11 +1030,10 @@ assemble-apply-fragment := λctx arrow args offset . (tail(
    (local text)
    (local data)
    (local prog_subs)
-   (print-s (RC rc))
    (while rc (
       (local rce)
       (set rce (tail (tail rc)))
-      (print-s rce)(print-s \n)
+      (print-s (get-prog rce))(print-s \n)
       (set frame (frame (get-frame (tail rce)))
       (set unframe (unframe (get-unframe (tail rce)))
       (set text (text (get-text (tail rce)))
@@ -1249,6 +1248,7 @@ compile-expr := λctx e offset used . (tail(
          (Expr( () (get-local(ctx vname)) () () () ctx offset ))
       )))
       ( (App( (App( (Literal :) (Literal lval) )) (Literal ltype) )) (tail(
+         ()
          (match (get-maybe-literal(ctx ltype)) (
             ()
             ( (Fragment( fname body )) (
