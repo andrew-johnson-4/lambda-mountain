@@ -1044,7 +1044,9 @@ assemble-apply-fragment := λctx arrow args offset . (tail(
       )))
       (set rc (head rc))
    ))
-   (fail( TODOAssembleApplyFragment prog_subs ))
+   (print-s( AssembleApplyFragment ProgSubs prog_subs ))(print-s \n)
+   (print-s( AssembleApplyFragment ProgSubs arrow ))(print-s \n)
+   (fail TODO)
 ));
 
 assemble := λprogram . (
