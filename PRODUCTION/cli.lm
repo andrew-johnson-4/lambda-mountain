@@ -874,15 +874,7 @@ typecheck-safe-apply-plural := λterm many pt . (tail(
 typecheck-infer-type-compound := λcompound . (match compound (
    ()
    ((Literal tt) tt)
-   ((App( lt rt )) (tail(
-      (print-s (InferCompoundL lt))(print-s \n)
-      (print-s (InferCompoundR rt))(print-s \n)
-      (match ( (typecheck-infer-type-compound lt) (typecheck-infer-type-compound rt) ) (
-         ()
-         ( (Fragment Fragment) Fragment )
-         ( (clt crt) (Cons( clt crt )) )
-      ))
-   )))
+   ((App( lt rt )) (Cons( (typecheck-infer-type-compound lt) (typecheck-infer-type-compound rt) )) )
    (u (fail (UnknownTypeCompound u)))
 ));
 
@@ -1002,6 +994,9 @@ typecheck-infer-expr := λctx e . (
                ))
                ( ( (And(t1 t2)) pt ) (
                   (typecheck-ascript( e (typecheck-safe-apply-plural( e (And(t1 t2)) pt )) ))
+               ))
+               ( (Fragment Fragment) (
+                  (typecheck-ascript( e Fragment ))
                ))
                ( (lt rt) (
                   (typecheck-ascript( e (Cons(lt rt)) ))
@@ -2450,9 +2445,6 @@ yield-cons := λctx l r ce offset used . (tail(
       (set typer (typecheck-lookup-type r))
       (local typece)
       (set typece (typecheck-lookup-type ce))
-      (print-s (ConsL l))(print-s \n)
-      (print-s (ConsR r))(print-s \n)
-      (print-s (ConsCE ce))(print-s \n)
       (fail (InvalidConsType typel typer typece))
    ) ())
    (local e1)
