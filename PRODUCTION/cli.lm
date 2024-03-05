@@ -582,8 +582,8 @@ typecheck-assert-expr := λe . (
          (typecheck-assert-one( e ))
       ))
       ( (App( l r )) (
-         (typecheck-assert-expr( l ))
          (typecheck-assert-expr( r ))
+         (typecheck-assert-expr( l ))
          (typecheck-assert-one( e ))
       ))
       ( (Lambda( lhs rhs )) (
