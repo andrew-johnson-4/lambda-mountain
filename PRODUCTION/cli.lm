@@ -1010,7 +1010,13 @@ assemble-substitute-fragment := λsubs frag . (match frag (
             (set subs (head subs))
          ))
       ))
-      v
+      (match v (
+         ()
+         (\\s \s)
+         (\\t \t)
+         (\\n \n)
+         (u u)
+      ))
    )))
    ( (App( l r )) (
       (assemble-substitute-fragment( subs l ))
@@ -2454,6 +2460,7 @@ escape-sequences := λt . match t (
    ( \\] \] )
    ( (l r) ( (escape-sequences l) (escape-sequences r) ) )
    ( s (tail(
+      (print-s (Escape s))(print-s \n)
       (local c)
       (local cs)
       (local is_escape)
