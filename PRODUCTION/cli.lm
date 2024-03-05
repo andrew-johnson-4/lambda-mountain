@@ -989,6 +989,27 @@ assemble-destructure-fragment := λctx lmb args offset . (match lmb (
    ( u (fail (UnrecgonizedDestructureFragment u)))
 ));
 
+assemble-substitute-fragment := λsubs frag . (
+   fail (Substitute subs frag)
+);
+
+assemble-apply-literal := λctx arrow args offset . (match arrow (
+   ()
+   ( (Lambda( (App( (App( (Literal :) (Variable bind) )) ltype )) rhs )) (
+      (match args (
+         ()
+         ( (App( (App( (Literal :) (Literal val) )) vtype )) (
+            (assemble-substitute-fragment(
+               (() (bind val))
+               rhs
+            ))
+         ))
+         ( u (fail (UnknownLiteral u)) )
+      ))
+   ))
+   ( u (fail (UnknownApplyLiteral u)) )
+));
+
 assemble-apply-fragment := λctx arrow args offset . (tail(
    (local rc)
    (set rc (assemble-destructure-fragment( ctx arrow args offset )))
@@ -1199,7 +1220,7 @@ compile-expr := λctx e offset used . (tail(
          (match (get-maybe-literal(ctx ltype)) (
             ()
             ( (Fragment( fname body )) (
-               (fail( GetLiteral lval ltype ))
+               (assemble-apply-literal( ctx body e offset ))
             ))
             ( u (
                (fail( UndefinedLiteralType ltype u ))
