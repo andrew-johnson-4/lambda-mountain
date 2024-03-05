@@ -542,8 +542,60 @@ typecheck := λprogram . (tail(
       (set typecheck-types-have-changed ())
       (typecheck-infer-prog program)
    ))
+   (typecheck-assert-complete program)
    program
 ));
+
+typecheck-assert-complete := λp . (
+   (while p (
+      (typecheck-assert-expr( (tail p) ))
+      (set p (head p))
+   ))
+);
+
+typecheck-assert-one := λe . (
+   (if (typecheck-lookup-type e) () (
+      fail (UnableToInferTypeOfExpression e)
+   ))
+);
+
+typecheck-assert-expr := λe . (
+   (print-s (AssertExpr e))(print-s \n)
+   (match e (
+      ()
+      ( () () )
+      ( (GExpr ge) (
+         (typecheck-assert-expr( ge ))
+      ))
+      ( (Global( gln gle )) (
+         (typecheck-assert-expr( gle ))
+      ))
+      ( (Type( l ds )) ())
+      ( (Fragment( fln fle )) ())
+      ( Nil (
+         (typecheck-assert-one( e ))
+      ))
+      ( (App( (App( (Literal :) (Literal _) )) tt )) (
+         (typecheck-assert-one( e ))
+      ))
+      ( (Literal lit) (
+         (typecheck-assert-one( e ))
+      ))
+      ( (App( l r )) (
+         (typecheck-assert-expr( l ))
+         (typecheck-assert-expr( r ))
+         (typecheck-assert-one( e ))
+      ))
+      ( (Lambda( lhs rhs )) (
+         (typecheck-assert-expr( rhs ))
+         (typecheck-assert-one( e ))
+      ))
+      ( (Variable v) (
+         (typecheck-assert-one( e ))
+      ))
+      ( u (fail (UnknownAssertTyped u)) )
+   ))
+);
 
 typecheck-lookup-type := λterm . (tail(
    (local tctx)
