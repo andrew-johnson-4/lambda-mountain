@@ -7,4 +7,7 @@
 #   )
 #);
 
-main := mov( (: 5 U64) (: RAX Reg64) );
+main := (
+   (mov( (: 5 U64) (: RAX Reg64) ))
+   (mov( (: RAX Reg64) (: RBX Reg64) ))
+);
