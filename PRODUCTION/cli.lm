@@ -1102,7 +1102,7 @@ assemble := λprogram . (
    (local e2)
 
    (local output_pd)
-   (set output_pd ( () (assemble-data-header()) ))
+   (set output_pd ( () () ))
 
    (local global_ctx)
    (local preview_program)
@@ -1212,7 +1212,7 @@ assemble := λprogram . (
    ))
    (set output_pd (
       ((head output_pd) assemble-text-section)
-      ((tail output_pd) assemble-data-section)
+      ((assemble-data-header()) (tail output_pd) assemble-data-section)
    ))
 
    (write-file (target (clone-rope output_pd)))
