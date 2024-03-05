@@ -1028,11 +1028,28 @@ typecheck-infer-expr := λctx e . (
 
 # Assembler
 
+compile-fragment := λctx e args offset . (match e (
+   ()
+   ( (App( (App( (Literal :) (Literal lval) )) (Literal ltype) )) (tail(
+      ()
+      (match (get-maybe-literal(ctx ltype)) (
+         ()
+         ( (Fragment( fname body )) (
+            (assemble-apply-literal( ctx body e offset ))
+         ))
+         ( u (
+            (fail( UndefinedLiteralType ltype u ))
+         ))
+      ))
+   )))
+   ( u (fail (UnknownFragment e)))
+);
+
 assemble-destructure-fragment := λctx lmb args offset . (match lmb (
    ()
    # fragment annotations are required
    ( (Lambda( (App( (App( (Literal :) (Variable v) )) _ )) body )) (tail(
-      (set args (compile-expr( ctx args offset Used )))
+      (set args (compile-fragment( ctx args offset Used )))
       (() (v args))
    )))
    ( (Lambda( (App( rst (App( (App( (Literal :) (Variable v) )) _ )) )) body )) (tail(
@@ -1040,7 +1057,7 @@ assemble-destructure-fragment := λctx lmb args offset . (match lmb (
       (set ds (assemble-destructure-fragment(
          ctx (Lambda( rst body )) (head (tail args)) offset
       )))
-      (set args (compile-expr( ctx (tail (tail args)) offset Used )))
+      (set args (compile-fragment( ctx (tail (tail args)) offset Used )))
       (ds (v args))
    )))
    ( () () )
@@ -1345,15 +1362,7 @@ compile-expr := λctx e offset used . (tail(
       )))
       ( (App( (App( (Literal :) (Literal lval) )) (Literal ltype) )) (tail(
          ()
-         (match (get-maybe-literal(ctx ltype)) (
-            ()
-            ( (Fragment( fname body )) (
-               (assemble-apply-literal( ctx body e offset ))
-            ))
-            ( u (
-               (fail( UndefinedLiteralType ltype u ))
-            ))
-         ))
+         (fail (TODO CompileExpressionLiteral e))
       )))
       ( (App ((Variable 'local) (Variable fname))) (tail(
          (set e1 (declare-local(ctx fname offset)))
