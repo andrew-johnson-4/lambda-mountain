@@ -1,0 +1,15 @@
+
+type Reg8  AL  | BL  | CL  | DL  | SIL | DIL | BPL | SPL | R8B | R9B | R10B | R11B | R12B | R13B | R14B | R15B;
+type Reg16 AX  | BX  | CX  | DX  | SI  | DI  | BP  | SP  | R8W | R9W | R10W | R11W | R12W | R13W | R14W | R15W;
+type Reg32 EAX | EBX | ECX | EDX | ESI | EDI | EBP | ESP | R8D | R9D | R10D | R11D | R12D | R13D | R14D | R15D;
+type Reg64 RAX | RBX | RCX | RDX | RSI | RDI | RBP | RSP | R8  | R9  | R10  | R11  | R12  | R13  | R14  | R15;
+
+fragment Reg8 := λ(: r Reg8). r;
+fragment Reg16 := λ(: r Reg16). r;
+fragment Reg32 := λ(: r Reg32). r;
+fragment Reg64 := λ(: r Reg64). r;
+
+fragment mov := λ(: imm U8)(: dst Reg8). ( \t 'mov \s '$ imm , \s % dst \n );
+fragment mov := λ(: imm U16)(: dst Reg16). ( \t 'mov \s '$ imm , \s % dst \n );
+fragment mov := λ(: imm U32)(: dst Reg32). ( \t 'mov \s '$ imm , \s % dst \n );
+fragment mov := λ(: imm U64)(: dst Reg64). ( \t 'mov \s '$ imm , \s % dst \n );

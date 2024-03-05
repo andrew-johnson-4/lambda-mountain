@@ -19,3 +19,8 @@ production.s
 production.o
 tmp.s
 tmp
+*.cmx
+*.cmi
+benchmarks/*.s
+benchmarks/*.o
+*.exe
