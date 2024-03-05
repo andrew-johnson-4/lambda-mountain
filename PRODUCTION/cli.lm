@@ -7,6 +7,7 @@ import STDLIB/default-atom-allocator.lm;
 # Static Globals
 
 config-nostd                             := ();
+config-strict                            := ();
 cli-config                               := ();
 parse-parsed-program                     := ();
 parse-macros                             := ();
@@ -58,7 +59,7 @@ main := (
          (set args remainder)
       ))
       ( (--strict remainder) (
-         (set mode Strict)
+         (set config-strict True)
          (set args remainder)
       ))
       ( (--parse remainder) (
@@ -97,10 +98,6 @@ main := (
          (parse-program (tokenize-file (head inputs)))
          (set inputs (tail inputs))
       ))
-      (Strict (
-         (parse-program (tokenize-file (head inputs)))
-         (set inputs (tail inputs))
-      ))
       (Parse (
          (parse-program (tokenize-file (head inputs)))
          (set inputs (tail inputs))
@@ -123,11 +120,11 @@ main := (
    )))
 
    (set parse-parsed-program (parse-apply-macros parse-parsed-program))
+   (if config-strict (typecheck parse-parsed-program) ())
 
    (match mode (
       ()
       (Compile (assemble parse-parsed-program))
-      (Strict (assemble (typecheck parse-parsed-program)))
       (Parse (print-s parse-parsed-program))
       (Typecheck (print-s (typecheck-show-ascript (typecheck parse-parsed-program))))
    ))
