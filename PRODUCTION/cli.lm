@@ -990,8 +990,8 @@ assemble-destructure-fragment := λctx lmb args offset . (match lmb (
 ));
 
 assemble-apply-fragment := λctx arrow args offset . (tail(
-   (local ctx)
-   (set ctx (assemble-destructure-fragment( ctx arrow args offset )))
+   (local rc)
+   (set rc (assemble-destructure-fragment( ctx arrow args offset )))
    (fail (AssembleApplyFragment ctx))
 ));
 
@@ -1195,8 +1195,16 @@ compile-expr := λctx e offset used . (tail(
          ()
          (Expr( () (get-local(ctx vname)) () () () ctx offset ))
       )))
-      ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
-         (fail (TODOCompileLiteral lval ltype))
+      ( (App( (App( (Literal :) (Literal lval) )) (Literal ltype) )) (tail(
+         (match (get-maybe-literal(ctx ltype)) (
+            ()
+            ( (Fragment( fname body )) (
+               (fail( GetLiteral lval ltype ))
+            ))
+            ( u (
+               (fail( UndefinedLiteralType ltype u ))
+            ))
+         ))
       )))
       ( (App ((Variable 'local) (Variable fname))) (tail(
          (set e1 (declare-local(ctx fname offset)))
@@ -1563,6 +1571,24 @@ get-offset := λe . (match e (
 mangle-global-function := λname body . (
    (clone-rope (label-case ( name '_C_ (typecheck-lookup-type body) )))
 );
+
+get-maybe-literal := λctx arg_type . (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
+         ()
+         ( (Fragment( (Literal name) body )) (
+            (if r () (
+               (if (eq(name arg_type)) (
+                  (set r (Fragment( (Literal name) body )))
+               ) ())
+            ))
+         ))
+      ))
+      (set ctx (head ctx))
+   ))
+   r
+));
 
 get-maybe-function := λctx v arg . (tail(
    (local arg_type)
