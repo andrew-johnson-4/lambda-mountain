@@ -972,9 +972,18 @@ typecheck-infer-expr := λctx e . (
 assemble-destructure-fragment := λctx lmb args offset . (match lmb (
    ()
    # fragment annotations are required
-   ( (Lambda( (App( rst (App( (App( (Literal :) (Variable v) )) _ )) )) body )) (
-      (fail (Destructure v args))
+   ( (Lambda( (App( (App( (Literal :) (Variable v) )) _ )) body )) (
+      (set args (compile-expr( ctx args offset Used )))
+      (() (v args))
    ))
+   ( (Lambda( (App( rst (App( (App( (Literal :) (Variable v) )) _ )) )) body )) (tail(
+      (local ds)
+      (set ds (assemble-destructure-fragment(
+         ctx (Lambda( rst body )) (head (tail args)) offset
+      )))
+      (set args (compile-expr( ctx (tail (tail args)) offset Used )))
+      (ds (v args))
+   )))
    ( () () )
    ( (Lambda( u _ )) (fail (UnrecgonizedDestructureFragment u)))
    ( u (fail (UnrecgonizedDestructureFragment u)))
@@ -1185,6 +1194,9 @@ compile-expr := λctx e offset used . (tail(
       ( (Variable vname) (tail(
          ()
          (Expr( () (get-local(ctx vname)) () () () ctx offset ))
+      )))
+      ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
+         (fail (TODOCompileLiteral lval ltype))
       )))
       ( (App ((Variable 'local) (Variable fname))) (tail(
          (set e1 (declare-local(ctx fname offset)))
