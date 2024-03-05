@@ -1,4 +1,10 @@
 
+test1: prod
+	./production -o tmp.s tests/lm/dump_i.lm
+	as tmp.s -o tmp.o
+	ld tmp.o -o tmp
+	./tmp
+
 nostd: prod
 	./production --typecheck --nostd -o tmp.s STDLIB/default-instruction-set.lm STDLIB/default-primitives.lm tests/nostd/ints.lm
 
