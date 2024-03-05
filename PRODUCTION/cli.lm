@@ -560,7 +560,6 @@ typecheck-assert-one := λe . (
 );
 
 typecheck-assert-expr := λe . (
-   (print-s (AssertExpr e))(print-s \n)
    (match e (
       ()
       ( () () )
@@ -616,7 +615,6 @@ typecheck-lookup-type := λterm . (tail(
 
 typecheck-ascript := λt tt . (
    if tt (
-      (print-s (Ascript t tt))(print-s \n)
       (set typecheck-context ((t tt) typecheck-context))
       (set typecheck-types-have-changed True)
    ) ()
@@ -876,7 +874,15 @@ typecheck-safe-apply-plural := λterm many pt . (tail(
 typecheck-infer-type-compound := λcompound . (match compound (
    ()
    ((Literal tt) tt)
-   ((App( lt rt )) (Cons( (typecheck-infer-type-compound lt) (typecheck-infer-type-compound rt) )))
+   ((App( lt rt )) (tail(
+      (print-s (InferCompoundL lt))(print-s \n)
+      (print-s (InferCompoundR rt))(print-s \n)
+      (match ( (typecheck-infer-type-compound lt) (typecheck-infer-type-compound rt) ) (
+         ()
+         ( (Fragment Fragment) Fragment )
+         ( (clt crt) (Cons( clt crt )) )
+      ))
+   )))
    (u (fail (UnknownTypeCompound u)))
 ));
 
@@ -956,7 +962,15 @@ typecheck-infer-expr := λctx e . (
                (match fle (
                   ()
                   ( (Lambda( lhs rhs )) (
-                     (typecheck-ascript( fle (->( (typecheck-typeof-lhs lhs) Fragment)) ))
+                     (local flt)
+                     (set flt (->( (typecheck-typeof-lhs lhs) Fragment )) )
+                     (typecheck-ascript( fle flt ))
+                     (match fln (
+                        ()
+                        ( (Variable flnv) (
+                           (set typecheck-global-context ( typecheck-global-context (Global( flnv flt )) ))
+                        ))
+                     ))
                   ))
                ))
             ))
