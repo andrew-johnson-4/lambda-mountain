@@ -1025,7 +1025,27 @@ assemble-apply-literal := λctx arrow args offset . (match arrow (
 assemble-apply-fragment := λctx arrow args offset . (tail(
    (local rc)
    (set rc (assemble-destructure-fragment( ctx arrow args offset )))
-   (fail( TODOAssembleApplyFragment rc ))
+   (local frame)
+   (local unframe)
+   (local text)
+   (local data)
+   (local prog_subs)
+   (print-s (RC rc))
+   (while rc (
+      (local rce)
+      (set rce (tail (tail rc)))
+      (print-s rce)(print-s \n)
+      (set frame (frame (get-frame (tail rce)))
+      (set unframe (unframe (get-unframe (tail rce)))
+      (set text (text (get-text (tail rce)))
+      (set data (data (get-data (tail rce)))
+      (set prog_subs (prog_subs (
+         (head (tail rc))
+         (get-prog rce)
+      )))
+      (set rc (head rc))
+   ))
+   (fail( TODOAssembleApplyFragment prog_subs ))
 ));
 
 assemble := λprogram . (
@@ -1205,7 +1225,6 @@ compile-append := λoutput_e gctx e . (tail(
 ));
 
 compile-expr := λctx e offset used . (tail(
-   (print-s( CompileExpr e ))(print-s \n)
    (local e1)
    (local e2)
    (local e3)
