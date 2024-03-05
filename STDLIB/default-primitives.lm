@@ -9,20 +9,20 @@ type I32;
 type I64;
 
 # Give Fragments Nominal Trust for now
-fragment U8 := λ(: a Atom). (Text a);
-fragment U16 := λ(: a Atom). (Text a);
-fragment U32 := λ(: a Atom). (Text a);
-fragment U64 := λ(: a Atom). (Text a);
-fragment I8 := λ(: a Atom). (Text a);
-fragment I16 := λ(: a Atom). (Text a);
-fragment I32 := λ(: a Atom). (Text a);
-fragment I64 := λ(: a Atom). (Text a);
+fragment U8 := λ(: a Atom). ( a);
+fragment U16 := λ(: a Atom). ( a);
+fragment U32 := λ(: a Atom). ( a);
+fragment U64 := λ(: a Atom). ( a);
+fragment I8 := λ(: a Atom). ( a);
+fragment I16 := λ(: a Atom). ( a);
+fragment I32 := λ(: a Atom). ( a);
+fragment I64 := λ(: a Atom). ( a);
 
-fragment R8 := λ(: a U8). (Text a);
-fragment R16 := λ(: a U16). (Text a);
-fragment R32 := λ(: a U32). (Text a);
-fragment R64 := λ(: a U64). (Text a);
-fragment R8 := λ(: a I8). (Text a);
-fragment R16 := λ(: a I16). (Text a);
-fragment R32 := λ(: a I32). (Text a);
-fragment R64 := λ(: a I64). (Text a);
+fragment R8 := λ(: a U8). ( a);
+fragment R16 := λ(: a U16). ( a);
+fragment R32 := λ(: a U32). ( a);
+fragment R64 := λ(: a U64). ( a);
+fragment R8 := λ(: a I8). ( a);
+fragment R16 := λ(: a I16). ( a);
+fragment R32 := λ(: a I32). ( a);
+fragment R64 := λ(: a I64). ( a);
