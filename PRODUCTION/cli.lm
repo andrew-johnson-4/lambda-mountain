@@ -992,8 +992,26 @@ assemble-destructure-fragment := λctx lmb args offset . (match lmb (
 assemble-substitute-fragment := λsubs frag . (match frag (
    ()
    ( () () )
-   ( (Variable v) v)
-   ( (Literal v) v)
+   ( (Variable v) (tail(
+      (while subs (
+         (if (eq( v (head (tail subs)) )) (
+            (set v (tail (tail subs)))
+         ) (
+            (set subs (head subs))
+         ))
+      ))
+      v
+   )))
+   ( (Literal v) (tail(
+      (while subs (
+         (if (eq( v (head (tail subs)) )) (
+            (set v (tail (tail subs)))
+         ) (
+            (set subs (head subs))
+         ))
+      ))
+      v
+   )))
    ( (App( l r )) (
       (assemble-substitute-fragment( subs l ))
       (assemble-substitute-fragment( subs r ))
