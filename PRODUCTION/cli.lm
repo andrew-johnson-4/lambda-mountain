@@ -1063,9 +1063,19 @@ assemble-apply-fragment := λctx arrow args offset . (tail(
       )))
       (set rc (head rc))
    ))
-   (print-s( AssembleApplyFragment ProgSubs prog_subs ))(print-s \n)
-   (print-s( AssembleApplyFragment Arrow arrow ))(print-s \n)
-   (fail TODO)
+   (set rc (match arrow (
+      ()
+      ( (Lambda( lhs rhs )) (Expr(
+         frame
+         (assemble-substitute-fragment( prog_subs rhs ))
+         unframe
+         text
+         data
+         ctx
+         offset
+      )))
+   )))
+   rc
 ));
 
 assemble := λprogram . (
