@@ -1043,12 +1043,14 @@ assemble-apply-literal := λctx arrow args offset . (match arrow (
 assemble-apply-fragment := λctx arrow args offset . (tail(
    (local rc)
    (set rc (assemble-destructure-fragment( ctx arrow args offset )))
+   (print-s (START rc))(print-s \n)
    (local frame)
    (local unframe)
    (local text)
    (local data)
    (local prog_subs)
    (while rc (
+      (print-s (RC (tail rc)))(print-s \n)
       (local rce)
       (set rce (tail (tail rc)))
       (print-s (get-prog rce))(print-s \n)
@@ -1063,7 +1065,7 @@ assemble-apply-fragment := λctx arrow args offset . (tail(
       (set rc (head rc))
    ))
    (print-s( AssembleApplyFragment ProgSubs prog_subs ))(print-s \n)
-   (print-s( AssembleApplyFragment ProgSubs arrow ))(print-s \n)
+   (print-s( AssembleApplyFragment Arrow arrow ))(print-s \n)
    (fail TODO)
 ));
 
