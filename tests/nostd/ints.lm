@@ -7,4 +7,4 @@
 #   )
 #);
 
-main := mov( (: 5 U64) RAX );
+main := mov( (: 5 U64) (: RAX Reg64) );
