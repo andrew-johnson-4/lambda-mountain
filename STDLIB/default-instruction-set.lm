@@ -13,3 +13,12 @@ fragment mov := λ(: imm U8)(: dst Reg8). ( \t 'mov \s '$ imm , \s % dst \n );
 fragment mov := λ(: imm U16)(: dst Reg16). ( \t 'mov \s '$ imm , \s % dst \n );
 fragment mov := λ(: imm U32)(: dst Reg32). ( \t 'mov \s '$ imm , \s % dst \n );
 fragment mov := λ(: imm U64)(: dst Reg64). ( \t 'mov \s '$ imm , \s % dst \n );
+fragment mov := λ(: imm I8)(: dst Reg8). ( \t 'mov \s '$ imm , \s % dst \n );
+fragment mov := λ(: imm I16)(: dst Reg16). ( \t 'mov \s '$ imm , \s % dst \n );
+fragment mov := λ(: imm I32)(: dst Reg32). ( \t 'mov \s '$ imm , \s % dst \n );
+fragment mov := λ(: imm I64)(: dst Reg64). ( \t 'mov \s '$ imm , \s % dst \n );
+
+fragment mov := λ(: src Reg8)(: dst Reg8). ( \t 'mov \s '% src , \s % dst \n );
+fragment mov := λ(: src Reg16)(: dst Reg16). ( \t 'mov \s '% src , \s % dst \n );
+fragment mov := λ(: src Reg32)(: dst Reg32). ( \t 'mov \s '% src , \s % dst \n );
+fragment mov := λ(: src Reg64)(: dst Reg64). ( \t 'mov \s '% src , \s % dst \n );

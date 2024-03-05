@@ -7,6 +7,7 @@ import STDLIB/default-atom-allocator.lm;
 # Static Globals
 
 config-nostd                             := ();
+config-strict                            := ();
 cli-config                               := ();
 parse-parsed-program                     := ();
 parse-macros                             := ();
@@ -58,7 +59,7 @@ main := (
          (set args remainder)
       ))
       ( (--strict remainder) (
-         (set mode Strict)
+         (set config-strict True)
          (set args remainder)
       ))
       ( (--parse remainder) (
@@ -66,7 +67,7 @@ main := (
          (set args remainder)
       ))
       ( (--nostd remainder) (
-         (set mode Strict)
+         (set config-strict True)
          (set config-nostd True)
          (set args remainder)
       ))
@@ -97,10 +98,6 @@ main := (
          (parse-program (tokenize-file (head inputs)))
          (set inputs (tail inputs))
       ))
-      (Strict (
-         (parse-program (tokenize-file (head inputs)))
-         (set inputs (tail inputs))
-      ))
       (Parse (
          (parse-program (tokenize-file (head inputs)))
          (set inputs (tail inputs))
@@ -123,11 +120,11 @@ main := (
    )))
 
    (set parse-parsed-program (parse-apply-macros parse-parsed-program))
+   (if config-strict (typecheck parse-parsed-program) ())
 
    (match mode (
       ()
       (Compile (assemble parse-parsed-program))
-      (Strict (assemble (typecheck parse-parsed-program)))
       (Parse (print-s parse-parsed-program))
       (Typecheck (print-s (typecheck-show-ascript (typecheck parse-parsed-program))))
    ))
@@ -545,8 +542,59 @@ typecheck := λprogram . (tail(
       (set typecheck-types-have-changed ())
       (typecheck-infer-prog program)
    ))
+   (typecheck-assert-complete program)
    program
 ));
+
+typecheck-assert-complete := λp . (
+   (while p (
+      (typecheck-assert-expr( (tail p) ))
+      (set p (head p))
+   ))
+);
+
+typecheck-assert-one := λe . (
+   (if (typecheck-lookup-type e) () (
+      fail (UnableToInferTypeOfExpression e)
+   ))
+);
+
+typecheck-assert-expr := λe . (
+   (match e (
+      ()
+      ( () () )
+      ( (GExpr ge) (
+         (typecheck-assert-expr( ge ))
+      ))
+      ( (Global( gln gle )) (
+         (typecheck-assert-expr( gle ))
+      ))
+      ( (Type( l ds )) ())
+      ( (Fragment( fln fle )) ())
+      ( Nil (
+         (typecheck-assert-one( e ))
+      ))
+      ( (App( (App( (Literal :) (Literal _) )) tt )) (
+         (typecheck-assert-one( e ))
+      ))
+      ( (Literal lit) (
+         (typecheck-assert-one( e ))
+      ))
+      ( (App( l r )) (
+         (typecheck-assert-expr( r ))
+         (typecheck-assert-expr( l ))
+         (typecheck-assert-one( e ))
+      ))
+      ( (Lambda( lhs rhs )) (
+         (typecheck-assert-expr( rhs ))
+         (typecheck-assert-one( e ))
+      ))
+      ( (Variable v) (
+         (typecheck-assert-one( e ))
+      ))
+      ( u (fail (UnknownAssertTyped u)) )
+   ))
+);
 
 typecheck-lookup-type := λterm . (tail(
    (local tctx)
@@ -826,7 +874,7 @@ typecheck-safe-apply-plural := λterm many pt . (tail(
 typecheck-infer-type-compound := λcompound . (match compound (
    ()
    ((Literal tt) tt)
-   ((App( lt rt )) (Cons( (typecheck-infer-type-compound lt) (typecheck-infer-type-compound rt) )))
+   ((App( lt rt )) (Cons( (typecheck-infer-type-compound lt) (typecheck-infer-type-compound rt) )) )
    (u (fail (UnknownTypeCompound u)))
 ));
 
@@ -906,7 +954,15 @@ typecheck-infer-expr := λctx e . (
                (match fle (
                   ()
                   ( (Lambda( lhs rhs )) (
-                     (typecheck-ascript( fle (->( (typecheck-typeof-lhs lhs) Fragment)) ))
+                     (local flt)
+                     (set flt (->( (typecheck-typeof-lhs lhs) Fragment )) )
+                     (typecheck-ascript( fle flt ))
+                     (match fln (
+                        ()
+                        ( (Variable flnv) (
+                           (set typecheck-global-context ( typecheck-global-context (Global( flnv flt )) ))
+                        ))
+                     ))
                   ))
                ))
             ))
@@ -938,6 +994,9 @@ typecheck-infer-expr := λctx e . (
                ))
                ( ( (And(t1 t2)) pt ) (
                   (typecheck-ascript( e (typecheck-safe-apply-plural( e (And(t1 t2)) pt )) ))
+               ))
+               ( (Fragment Fragment) (
+                  (typecheck-ascript( e Fragment ))
                ))
                ( (lt rt) (
                   (typecheck-ascript( e (Cons(lt rt)) ))
@@ -1424,7 +1483,7 @@ compile-expr := λctx e offset used . (tail(
                ))
                ( v (tail(
                   ()
-                  (yield-cons(ctx v arg offset Used))
+                  (yield-cons(ctx v arg e offset Used))
                )))
             ))
          )))
@@ -1441,7 +1500,7 @@ compile-expr := λctx e offset used . (tail(
       )))
       ( (App (l r)) (tail(
          (set tail_safe True)
-         (yield-cons(ctx l r offset used))
+         (yield-cons(ctx l r e offset used))
       )))
       ( (GlobalVariable mangled-name) (tail(
          (set prog (
@@ -2378,7 +2437,7 @@ yield-nil := λ . (
    \t 'mov \s '$0, \s '%r13               \n
 );
 
-yield-cons := λctx l r offset used . (tail(
+yield-cons-s := λctx l r ce offset used . (tail(
    (local e1)
    (local e2)
    (local prog)
@@ -2407,6 +2466,30 @@ yield-cons := λctx l r offset used . (tail(
          (set e2 (compile-expr( (get-pc e1) r (get-offset e1) rused )))
          (Expr( ((get-frame e1) (get-frame e2)) ((get-prog e1) (get-prog e2)) ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
       )))
+   ))
+));
+
+yield-cons := λctx l r ce offset used . (tail(
+   (local e1)
+   (local e2)
+   (if config-strict (tail(
+      (local typel)
+      (set typel (typecheck-lookup-type l))
+      (local typer)
+      (set typer (typecheck-lookup-type r))
+      (local typece)
+      (set typece (typecheck-lookup-type ce))
+      (match (typel typer typece) (
+         ()
+         ( (Fragment Fragment Fragment) (tail(
+            (set e1 (compile-expr( ctx l offset Used )))
+            (set e2 (compile-expr( (get-pc e1) r (get-offset e1) Used )))
+            (Expr( ((get-frame e1) (get-frame e2)) ((get-prog e1) (get-prog e2)) ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
+         )))
+         ( (_ _ _) (yield-cons-s( ctx l r ce offset used )) )
+      ))
+   )) (
+      (yield-cons-s( ctx l r ce offset used ))
    ))
 ));
 
