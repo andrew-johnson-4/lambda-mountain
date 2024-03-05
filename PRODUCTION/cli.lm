@@ -2460,7 +2460,6 @@ escape-sequences := λt . match t (
    ( \\] \] )
    ( (l r) ( (escape-sequences l) (escape-sequences r) ) )
    ( s (tail(
-      (print-s (Escape s))(print-s \n)
       (local c)
       (local cs)
       (local is_escape)
