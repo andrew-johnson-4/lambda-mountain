@@ -1356,7 +1356,26 @@ define-calling-convention-s := λ ctx fname lmb . (tail(
 ));
 
 define-calling-convention-stack := λ ctx fname lmb . (tail(
-   (fail (TODO CallingConventionStack))
+   ()
+   (match lmb (
+      ()
+      ( (Lambda( lhs rhs )) (tail(
+         (local e1)
+         (local e2)
+         (local text)
+         (print-s (TODO Destructure Stack))
+         (set e2 (compile-expr((get-pc e1) rhs (get-offset e1) Used)))
+         (set text ( text (mangle-global-function( fname lmb )) ': \n ))
+         (set text ( text (enter-function()) ))
+         (set text ( text (get-frame e1) (get-frame e2) ))
+         (set text ( text (get-prog e1) (get-prog e2) ))
+         (set text ( text (exit-function()) ))
+         (set text ( text (get-text e1) (get-text e2) ))
+         (Expr(
+            () () () text ( (get-data e1) (get-data e2) ) () ()
+         ))
+      )))
+   ))
 ));
 
 apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
