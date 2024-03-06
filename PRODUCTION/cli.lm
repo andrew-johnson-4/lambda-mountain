@@ -1491,7 +1491,11 @@ compile-expr := λctx e offset used . (tail(
       )))
       ( (Variable vname) (tail(
          ()
-         (Expr( () (get-local(ctx vname)) () () () ctx offset ))
+         (if config-strict (
+            (fail (TODO LookupLocalVariable vname))
+         ) (
+            (Expr( () (get-local(ctx vname)) () () () ctx offset ))
+         ))
       )))
       ( (App( (App( (Literal :) (Literal lval) )) (Literal ltype) )) (tail(
          ()
