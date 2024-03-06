@@ -1,6 +1,6 @@
 
 nostd: prod
-	./production tests/lm/while1.lm
+	./production --nostd -o tmp.s STDLIB/default-instruction-set.lm STDLIB/default-primitives.lm tests/nostd/ints.lm
 
 test: prod
 	./production -o production1.s PRODUCTION/cli.lm

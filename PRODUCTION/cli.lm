@@ -1338,6 +1338,15 @@ compile-append := λoutput_e gctx e . (tail(
 
 apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
    ()
+   (match (typecheck-lookup-type arg) (
+      ()
+      ( (Cons( t1 t2 )) (
+         (print-s (Push2 t1 t2))
+      ))
+      ( t1 (
+         (print-s (Push1 t1))
+      ))
+   ))
    (fail (TODO CallingConventionStack))
 ));
 
