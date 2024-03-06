@@ -1336,11 +1336,12 @@ compile-append := λoutput_e gctx e . (tail(
    ))
 ));
 
-apply-calling-convention-stack := λ ctx e fname arg offset used . (
-   fail (TODO CallingConventionStack)
-);
+apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
+   ()
+   (fail (TODO CallingConventionStack))
+));
 
-apply-calling-convention-s := λ ctx e fname arg offset used . (
+apply-calling-convention-s := λ ctx e fname arg offset used . (tail(
    (local e1)
    (local prog)
    (if (is-builtin fname) (tail(
@@ -1374,7 +1375,7 @@ apply-calling-convention-s := λ ctx e fname arg offset used . (
          )))
       ))
    )))
-);
+));
 
 
 compile-expr := λctx e offset used . (tail(
