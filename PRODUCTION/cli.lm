@@ -1341,13 +1341,38 @@ apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
    (match (typecheck-lookup-type arg) (
       ()
       ( (Cons( t1 t2 )) (
-         (print-s (Push2 t1 t2))
+         (match arg (
+            ()
+            ( (App( e1 e2 )) (
+               (set e1 (apply-calling-convention-stack( ctx e fname e1 offset used )))
+               (set e2 (apply-calling-convention-stack( (get-pc e1) e fname e1 (get-offset e2) used )))
+               (Expr(
+                  ((get-frame e1) (get-frame e1))
+                  ((get-prog e1) (get-prog e1))
+                  ((get-unframe e1) (get-unframe e1))
+                  ((get-text e1) (get-text e1))
+                  ((get-data e1) (get-data e1))
+                  (get-pc e2)
+                  (get-offset e2)
+               ))
+            ))
+            ( v (
+               (fail (InvalidParameter fname arg))
+            ))
+         ))
       ))
       ( t1 (
-         (print-s (Push1 t1))
+         (match (get-maybe-function(ctx 'push arg)) (
+            ()
+            ( (Fragment( (Variable _) body )) (
+               (assemble-apply-fragment( ctx body arg offset ))
+            ))
+            ( v (
+               (fail (ReferenceToUndefinedVariable 'push (typecheck-lookup-type arg)))
+            ))
+         ))
       ))
    ))
-   (fail (TODO CallingConventionStack))
 ));
 
 apply-calling-convention-s := λ ctx e fname arg offset used . (tail(
