@@ -1029,6 +1029,18 @@ typecheck-infer-expr := λctx e . (
 
 compile-fragment := λctx e offset used . (match e (
    ()
+   ( (App( (Variable op) arg )) (tail(
+      ()
+      (match (get-maybe-function(ctx op (typecheck-lookup-type arg))) (
+         ()
+         ( (Fragment( (Variable _) body )) (
+            (assemble-apply-fragment( ctx body arg offset ))
+         ))
+         ( v (
+            (fail (ReferenceToUndefinedOperator op (typecheck-lookup-type arg)))
+         ))
+      ))
+   )))
    ( (App( (App( (Literal :) (Literal lval) )) (Literal ltype) )) (tail(
       ()
       (match (get-maybe-literal(ctx ltype)) (
@@ -1561,7 +1573,7 @@ compile-expr := λctx e offset used . (tail(
       )))
       ( (App( (Variable 'asm!) asm_expr )) (tail(
          (set prog (compile-fragment( ctx asm_expr offset used )))
-         (Expr( () prog () () () ctx offset ))
+         (Expr( () (get-prog prog) () () () ctx offset ))
       )))
       ( (App( (App( (Literal :) (Literal lval) )) (Literal ltype) )) (tail(
          ()
