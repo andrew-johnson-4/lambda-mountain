@@ -559,7 +559,6 @@ typecheck-assert-one := λe . (
 );
 
 typecheck-assert-expr := λe . (tail(
-   (print-s (AssertExpr e))(print-s \n)
    (match e (
       ()
       ( () () )
@@ -641,7 +640,7 @@ typecheck-show-ascript := λp . (tail(
          ( (typecheck-show-ascript prog) (Global( n (typecheck-show-ascript v) )) )
       ))
       ( (prog (Type( tn td ))) (
-         (typecheck-show-ascript prog)
+         ((typecheck-show-ascript prog) (Type( tn td )))
       ))
       ( (prog (Fragment( (Variable fragf) body ))) (
          (typecheck-show-ascript prog)
@@ -1028,7 +1027,7 @@ typecheck-infer-expr := λctx e . (
 
 # Assembler
 
-compile-fragment := λctx e args offset . (match e (
+compile-fragment := λctx e offset used . (match e (
    ()
    ( (App( (App( (Literal :) (Literal lval) )) (Literal ltype) )) (tail(
       ()
@@ -1561,7 +1560,8 @@ compile-expr := λctx e offset used . (tail(
          ))
       )))
       ( (App( (Variable 'asm!) asm_expr )) (tail(
-         (fail (TODO 'asm))
+         (set prog (compile-fragment( ctx asm_expr offset used )))
+         (Expr( () prog () () () ctx offset ))
       )))
       ( (App( (App( (Literal :) (Literal lval) )) (Literal ltype) )) (tail(
          ()
