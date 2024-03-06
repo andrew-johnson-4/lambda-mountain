@@ -22,3 +22,16 @@ fragment mov := λ(: src Reg8)(: dst Reg8). ( \t 'mov \s '% src , \s % dst \n );
 fragment mov := λ(: src Reg16)(: dst Reg16). ( \t 'mov \s '% src , \s % dst \n );
 fragment mov := λ(: src Reg32)(: dst Reg32). ( \t 'mov \s '% src , \s % dst \n );
 fragment mov := λ(: src Reg64)(: dst Reg64). ( \t 'mov \s '% src , \s % dst \n );
+
+fragment push := λ(: imm U8). ( \t 'pushb \s '$ imm \n );
+fragment push := λ(: imm U16). ( \t 'pushw \s '$ imm \n );
+fragment push := λ(: imm U32). ( \t 'pushs \s '$ imm \n );
+fragment push := λ(: imm U64). ( \t 'pushq \s '$ imm \n );
+fragment push := λ(: imm I8). ( \t 'pushb \s '$ imm \n );
+fragment push := λ(: imm I16). ( \t 'pushw \s '$ imm \n );
+fragment push := λ(: imm I32). ( \t 'pushs \s '$ imm \n );
+fragment push := λ(: imm I64). ( \t 'pushq \s '$ imm \n );
+fragment push := λ(: r Reg8). ( \t 'pushb \s '% r \n );
+fragment push := λ(: r Reg16). ( \t 'pushw \s '% r \n );
+fragment push := λ(: r Reg32). ( \t 'pushs \s '% r \n );
+fragment push := λ(: r Reg64). ( \t 'pushq \s '% r \n );
