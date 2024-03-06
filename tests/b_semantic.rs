@@ -125,7 +125,23 @@ fn run_compile_production(mode:&str, target: &str) -> String {
    rm("tmp.s");
    rm("tmp.o");
    rm("a.out");
-   let exit = Command::new("timeout")
+   
+   let exit = if mode=="--compile" {
+               Command::new("timeout")
+                      .stdout(std::process::Stdio::piped())
+                      .stderr(std::process::Stdio::piped())
+                      .arg("5")
+                      .arg("./production")
+                      .arg(mode)
+                      .arg("-o")
+                      .arg("tmp.s")
+                      .arg(target)
+                      .spawn()
+                      .expect("failed to execute process")
+                      .wait_with_output()
+                      .expect("failed to wait for process")
+   } else {
+               Command::new("timeout")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
                       .arg("5")
@@ -140,7 +156,8 @@ fn run_compile_production(mode:&str, target: &str) -> String {
                       .spawn()
                       .expect("failed to execute process")
                       .wait_with_output()
-                      .expect("failed to wait for process");
+                      .expect("failed to wait for process")
+   };
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
       return format!("timeout 5 ./production error code: {} on target {}", stderr, target);

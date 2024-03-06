@@ -1,13 +1,9 @@
 
-#fib := λ(: x U64). (
+fib := λ(: x U64). x;
 #   if (== x (: 0 U64)) (: 1 U64)
 #   ( if (== x (: 1 U64))
 #     (: 1 U64)
 #     ( (fib (- x (: 1 U64))) (fib (- x (: 2 U64))) )
 #   )
-#);
 
-main := (
-   (mov( (: 5 U64) (: RAX Reg64) ))
-   (mov( (: RAX Reg64) (: RBX Reg64) ))
-);
+main := fib( (: 5 U64) );
