@@ -718,7 +718,7 @@ typecheck-typeof-gvar := λv . (tail(
    tt
 ));
 
-typecheck-typeof-var := λctx v . (match ctx (
+typecheck-typeof-var := λctx v . if (eq( 'asm! v )) (->(Fragment Fragment)) (match ctx (
    ()
    ( () (typecheck-typeof-gvar v) )
    ( (cs (cv ct)) (
@@ -1554,6 +1554,9 @@ compile-expr := λctx e offset used . (tail(
          ) (
             (Expr( () (get-local(ctx vname)) () () () ctx offset ))
          ))
+      )))
+      ( (App( (Variable 'asm!) asm_expr )) (tail(
+         (fail (TODO 'asm))
       )))
       ( (App( (App( (Literal :) (Literal lval) )) (Literal ltype) )) (tail(
          ()
