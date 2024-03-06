@@ -1088,6 +1088,8 @@ assemble-substitute-fragment := λsubs frag . (match frag (
       ))
       (match v (
          ()
+         (\\[ \[)
+         (\\] \])
          (\\s \s)
          (\\t \t)
          (\\n \n)
@@ -1819,19 +1821,36 @@ get-local := λctx v . (tail(
                   (local size)
                   (set size (i2s (define-sizeof-type ltype)))
                   # register allocation = %r12, %r13 only for now
+                  (local dst)
                   (match size (
                      ()
-                     (8 (fail (TODO 'get 'into R12B)))
-                     (16 (fail (TODO 'get 'into R12W)))
-                     (32 (fail (TODO 'get 'into R12D)))
-                     (64 (fail (TODO 'get 'into R12)))
+                     (1 (set dst ( R12B Reg8 )))
+                     (2 (set dst ( R12W Reg16 )))
+                     (4 (set dst ( R12D Reg32 )))
+                     (8 (set dst ( R12 Reg64 )))
                      (u (fail (InvalidStackVariableSize u)))
                   ))
-                  (fail (TODO GetStackVariable l offset ltype))
+                  (local arg_type)
+                  (set arg_type (Cons( Offset (tail dst) )))
+                  (match (get-maybe-function( ctx 'get arg_type )) (
+                     ()
+                     ( (Fragment( fname body )) (tail(
+                        (local arg)
+                        (set arg (
+                           (App(
+                               (App( (App( (Literal :) (Literal offset) )) (Literal Offset) ))
+                               (App( (App( (Literal :) (Literal (head dst)) )) (Literal (tail dst)) ))
+                           ))
+                        ))
+                        (set r (get-prog (assemble-apply-fragment( ctx body arg () ))))
+                     )))
+                     (u (fail (UndefinedStackGetter 'get arg_type u)))
+                  ))
                ) ()
             )
          ))
          ( (GlobalFunction( _ _ )) () )
+         ( (Fragment( _ _ )) () )
          ( u (
             (fail (InvalidLocal u))
          ))
