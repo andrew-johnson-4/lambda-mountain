@@ -1434,11 +1434,10 @@ define-calling-convention-stack := λ ctx fname lmb . (tail(
 
 apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
    (local e1)
-   (set e1 (destructure-calling-convention-stack( ctx e fname arg offset used )))
    (match (get-maybe-function(ctx fname (typecheck-lookup-type arg))) (
       ()
       ( (GlobalFunction mangledname) (tail(
-         ()
+         (set e1 (destructure-calling-convention-stack( ctx e fname arg offset used )))
          (Expr(
             (get-frame e1)
             ( (enter-function()) (get-prog e1) (\t 'call \s mangledname \n)
@@ -1447,7 +1446,7 @@ apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
             (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1)
          ))
       )))
-      ( u (UnexpectedFunctionCall fname arg) )
+      ( u (fail (UnexpectedFunctionCall fname u)) )
    ))
 ));
 
@@ -2016,6 +2015,13 @@ get-maybe-function := λctx v arg_type . (tail(
             if r () (
                if (eq(name v)) (
                   (set r (GlobalVariable (label-case name)))
+               ) ()
+            )
+         ))
+         ( (StackVariable(name offset type)) (
+            if r () (
+               if (eq(name v)) (
+                  (set r (StackVariable( name offset type )))
                ) ()
             )
          ))
