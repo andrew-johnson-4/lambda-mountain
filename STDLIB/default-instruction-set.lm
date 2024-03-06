@@ -35,3 +35,8 @@ fragment push := λ(: r Reg8). ( \t 'pushb \s '% r \n );
 fragment push := λ(: r Reg16). ( \t 'pushw \s '% r \n );
 fragment push := λ(: r Reg32). ( \t 'pushs \s '% r \n );
 fragment push := λ(: r Reg64). ( \t 'pushq \s '% r \n );
+
+fragment get := λ(: src Offset)(: dst Reg8). ( \t 'mov \s src \[ %rbp \] , \s % dst \n );
+fragment get := λ(: src Offset)(: dst Reg16). ( \t 'mov \s src \[ %rbp \] , \s % dst \n );
+fragment get := λ(: src Offset)(: dst Reg32). ( \t 'mov \s src \[ %rbp \] , \s % dst \n );
+fragment get := λ(: src Offset)(: dst Reg64). ( \t 'mov \s src \[ %rbp \] , \s % dst \n );
