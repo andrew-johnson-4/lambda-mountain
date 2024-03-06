@@ -576,6 +576,10 @@ typecheck-assert-expr := λe . (tail(
       ( (App( (App( (Literal :) (Literal _) )) tt )) (
          (typecheck-assert-one( e ))
       ))
+      ( (App( (App( (Literal :) te )) tt )) (
+         (typecheck-assert-expr( te ))
+         (typecheck-assert-one( e ))
+      ))
       ( (App( (App( (Variable v) ve )) tt )) (
          (typecheck-assert-expr( ve ))
          (typecheck-assert-one( e ))
