@@ -1240,19 +1240,15 @@ assemble := λprogram . (
             ( Nil (
             ))
             ( (Lambda(lhs rhs)) (
-               (set e1 (destructure-args(global_ctx lhs ())))
-               (set e2 (compile-expr((get-pc e1) rhs (get-offset e1) Used)))
-               (set output_pd ( ((head output_pd) (mangle-global-function( fname body )) ': \n) (tail output_pd) ))
-               (set output_pd ( ((head output_pd) (enter-function())) (tail output_pd) ))
-               (set output_pd ( ((head output_pd) (get-frame e1)) (tail output_pd) ))
-               (set output_pd ( ((head output_pd) (get-frame e2)) (tail output_pd) ))
-               (set output_pd ( ((head output_pd) (get-prog e1)) (tail output_pd) ))
-               (set output_pd ( ((head output_pd) (get-prog e2)) (tail output_pd) ))
-               (set output_pd ( ((head output_pd) (exit-function())) (tail output_pd) ))
-               (set output_pd ( ((head output_pd) (get-text e1)) (tail output_pd) ))
-               (set output_pd ( ((head output_pd) (get-text e2)) (tail output_pd) ))
-               (set output_pd ( (head output_pd) ((tail output_pd) (get-data e1)) ))
-               (set output_pd ( (head output_pd) ((tail output_pd) (get-data e2)) ))
+               (if config-strict (
+                  (set e1 (define-calling-convention-stack( global_ctx fname body )))
+               ) (
+                  (set e1 (define-calling-convention-s( global_ctx fname body )))
+               ))
+               (set output_pd (
+                  ( (head output_pd) (get-text e1) )
+                  ( (tail output_pd) (get-data e1) )
+               ))
             ))
          ))
          (set program pc)
@@ -1334,6 +1330,32 @@ compile-append := λoutput_e gctx e . (tail(
       (get-pc e)
       (get-offset e)
    ))
+));
+
+define-calling-convention-s := λ ctx fname lmb . (tail(
+   (match lmb (
+      ()
+      ( (Lambda( lhs rhs )) (tail(
+         (local e1)
+         (local e2)
+         (local text)
+         (set e1 (destructure-args(ctx lhs ())))
+         (set e2 (compile-expr((get-pc e1) rhs (get-offset e1) Used)))
+         (set text ( text (mangle-global-function( fname lmb )) ': \n ))
+         (set text ( text (enter-function()) ))
+         (set text ( text (get-frame e1) (get-frame e2) ))
+         (set text ( text (get-prog e1) (get-prog e2) ))
+         (set text ( text (exit-function()) ))
+         (set text ( text (get-text e1) (get-text e2) ))
+         (Expr(
+            () () () text ( (get-data e1) (get-data e2) ) () ()
+         ))
+      )))
+   ))
+));
+
+define-calling-convention-stack := λ ctx fname lmb . (tail(
+   (fail (TODO CallingConventionStack))
 ));
 
 apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
