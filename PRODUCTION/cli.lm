@@ -1333,6 +1333,7 @@ compile-append := λoutput_e gctx e . (tail(
 ));
 
 define-calling-convention-s := λ ctx fname lmb . (tail(
+   ()
    (match lmb (
       ()
       ( (Lambda( lhs rhs )) (tail(
