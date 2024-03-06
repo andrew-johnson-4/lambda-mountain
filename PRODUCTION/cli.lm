@@ -1354,6 +1354,45 @@ define-calling-convention-s := λ ctx fname lmb . (tail(
    ))
 ));
 
+define-sizeof-type := λ tt . (tail(
+   (local eight)
+   (set eight (inc(inc(inc(inc
+              (inc(inc(inc(inc ()
+              )))) )))) )
+   (match tt (
+      ()
+      (I8 (inc()) )
+      (U8 (inc()) )
+      (I16 (inc(inc())) )
+      (U16 (inc(inc())) )
+      (I32 (inc(inc(inc(inc())))) )
+      (U32 (inc(inc(inc(inc())))) )
+      (I64 eight )
+      (U64 eight )
+      (u (fail (UnknownSizeof tt)))
+   ))
+));
+
+define-calling-convention-stack-destructure-args := λ ctx lhs offset . (match lhs (
+   ()
+   ( (App( (App( (Literal :) (Variable lname) )) ltype )) (tail(
+      (set ltype (typecheck-infer-type-compound ltype))
+      (local size)
+      (set size (define-sizeof-type ltype))
+      (set size (add( offset (mul( (dec()) size )) )) )
+      (ctx (StackVariable( lname (i2s size) ltype )))
+   )))
+   ( (App( more (App( (App( (Literal :) (Variable lname) )) ltype )) )) (tail(
+      (set ltype (typecheck-infer-type-compound ltype))
+      (local size)
+      (set size (define-sizeof-type ltype))
+      (set size (add( offset (mul( (dec()) size )) )) )
+      (set ctx (define-calling-convention-stack-destructure-args( ctx more size )))
+      (ctx (StackVariable( lname (i2s size) ltype )))
+   )))
+   ( u (fail (UnknownStackArg lhs)))
+));
+
 define-calling-convention-stack := λ ctx fname lmb . (tail(
    ()
    (match lmb (
@@ -1362,7 +1401,8 @@ define-calling-convention-stack := λ ctx fname lmb . (tail(
          (local e1)
          (local e2)
          (local text)
-         (print-s (TODO Destructure Stack))
+         (set ctx (define-calling-convention-stack-destructure-args( ctx lhs () )))
+         (print-s (Stack ctx))(print-s \n)
          (set e2 (compile-expr((get-pc e1) rhs (get-offset e1) Used)))
          (set text ( text (mangle-global-function( fname lmb )) ': \n ))
          (set text ( text (get-frame e1) (get-frame e2) ))
