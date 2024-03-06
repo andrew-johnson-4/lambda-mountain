@@ -555,7 +555,8 @@ typecheck-assert-complete := λp . (
 
 typecheck-assert-one := λe . (
    (if (typecheck-lookup-type e) () (
-      fail (UnableToInferTypeOfExpression e)
+      (print-s (typecheck-show-ascript parse-parsed-program))(print-s \n)
+      (fail (UnableToInferTypeOfExpression e))
    ))
 );
 
@@ -641,13 +642,13 @@ typecheck-show-ascript := λp . (tail(
          ( (typecheck-show-ascript prog) (Global( n (typecheck-show-ascript v) )) )
       ))
       ( (prog (Type( tn td ))) (
-         ( (typecheck-show-ascript prog) (Type( tn td )) )
+         (typecheck-show-ascript prog)
       ))
       ( (prog (Fragment( (Variable fragf) body ))) (
-         (fail (DefineFragment fragf))
+         (typecheck-show-ascript prog)
       ))
       ( (prog (Fragment( typf body ))) (
-         (fail (DefineFragment typf))
+         (typecheck-show-ascript prog)
       ))
       ( unknown (
          fail (UnknownTerm unknown)
