@@ -546,12 +546,10 @@ typecheck := λprogram . (tail(
    program
 ));
 
-typecheck-assert-complete := λp . (
-   (while p (
-      (typecheck-assert-expr( (tail p) ))
-      (set p (head p))
-   ))
-);
+typecheck-assert-complete := λp . (if p (
+   (typecheck-assert-complete( head p ))
+   (typecheck-assert-expr( tail p ))
+) ());
 
 typecheck-assert-one := λe . (
    (if (typecheck-lookup-type e) () (
@@ -560,7 +558,8 @@ typecheck-assert-one := λe . (
    ))
 );
 
-typecheck-assert-expr := λe . (
+typecheck-assert-expr := λe . (tail(
+   (print-s (AssertExpr e))(print-s \n)
    (match e (
       ()
       ( () () )
@@ -595,7 +594,7 @@ typecheck-assert-expr := λe . (
       ))
       ( u (fail (UnknownAssertTyped u)) )
    ))
-);
+));
 
 typecheck-lookup-type := λterm . (tail(
    (local tctx)
