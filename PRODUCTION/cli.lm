@@ -1398,19 +1398,17 @@ define-calling-convention-stack := λ ctx fname lmb . (tail(
    (match lmb (
       ()
       ( (Lambda( lhs rhs )) (tail(
-         (local e1)
          (local e2)
          (local text)
          (set ctx (define-calling-convention-stack-destructure-args( ctx lhs () )))
-         (print-s (Stack ctx))(print-s \n)
-         (set e2 (compile-expr((get-pc e1) rhs (get-offset e1) Used)))
+         (set e2 (compile-expr(ctx rhs () Used)))
          (set text ( text (mangle-global-function( fname lmb )) ': \n ))
-         (set text ( text (get-frame e1) (get-frame e2) ))
-         (set text ( text (get-prog e1) (get-prog e2) ))
+         (set text ( text (get-frame e2) ))
+         (set text ( text (get-prog e2) ))
          (set text ( text (exit-function()) ))
-         (set text ( text (get-text e1) (get-text e2) ))
+         (set text ( text (get-text e2) ))
          (Expr(
-            () () () text ( (get-data e1) (get-data e2) ) () ()
+            () () () text ( (get-data e2) ) () ()
          ))
       )))
    ))
@@ -1532,7 +1530,7 @@ compile-expr := λctx e offset used . (tail(
       ( (Variable vname) (tail(
          ()
          (if config-strict (
-            (fail (TODO LookupLocalVariable vname))
+            (Expr( () (get-local(ctx vname)) () () () ctx offset ))
          ) (
             (Expr( () (get-local(ctx vname)) () () () ctx offset ))
          ))
@@ -1813,6 +1811,16 @@ get-local := λctx v . (tail(
                   ))
                ) ()
             )
+         ))
+         ( (StackVariable( l offset ltype )) (
+            if r () (
+               if (eq(l v)) (
+                  (fail (TODO GetStackVariable l offset ltype))
+               ) ()
+            )
+         ))
+         ( u (
+            (fail (InvalidLocal u))
          ))
       ))
       (set ctx (head ctx))
