@@ -554,7 +554,7 @@ typecheck-assert-complete := λp . (if p (
 typecheck-assert-one := λe . (
    (if (typecheck-lookup-type e) () (
       (print-s (typecheck-show-ascript parse-parsed-program))(print-s \n)
-      (fail (UnableToInferTypeOfExpression e))
+      (fail (UnableToInferTypeOfExpression (typecheck-show-ascript e)))
    ))
 );
 
@@ -574,6 +574,10 @@ typecheck-assert-expr := λe . (tail(
          (typecheck-assert-one( e ))
       ))
       ( (App( (App( (Literal :) (Literal _) )) tt )) (
+         (typecheck-assert-one( e ))
+      ))
+      ( (App( (App( (Variable v) ve )) tt )) (
+         (typecheck-assert-expr( ve ))
          (typecheck-assert-one( e ))
       ))
       ( (Literal lit) (
@@ -971,6 +975,12 @@ typecheck-infer-expr := λctx e . (
          ))
          ( (App( (App( (Literal :) (Literal _) )) tt )) (
             (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
+         ))
+         ( (App( (App( (Variable 'as) ast )) ett )) (
+            (typecheck-infer-expr( ctx ast ))
+            (if (typecheck-lookup-type ast) (
+               (typecheck-ascript( e (typecheck-infer-type-compound ett) ))
+            ) ())
          ))
          ( (Literal lit) (
             (local ctype)
