@@ -657,7 +657,7 @@ typecheck-show-ascript := λp . (tail(
    (local type)
    (set type (typecheck-lookup-type p))
    (if type (
-      (if (eq( type ? )) (
+      (if (eq( type '? )) (
          term
       ) ( 
          (:( term type ))
@@ -846,7 +846,7 @@ typecheck-unify-args := λlt rt . (match (lt rt) (
    ))
    (_ (tail(
       (fail (UnknownUnify lt rt))
-      ?
+      '?
    )))
 ));
 
@@ -924,7 +924,7 @@ typecheck-infer-type-expr := λe . (match e (
    ()
    ( (Type( l ds )) (
       (typecheck-infer-type-definition( l ds ))
-      (typecheck-ascript( e ? ))
+      (typecheck-ascript( e '? ))
    ))
    (_ ())
 ));
@@ -944,7 +944,7 @@ typecheck-infer-expr := λctx e . (
                ( () () )
                ( glt (
                   (set typecheck-global-context ( typecheck-global-context (Global( gln glt )) ))
-                  (typecheck-ascript( e ? ))
+                  (typecheck-ascript( e '? ))
                ))
             ))
          ))
@@ -1779,7 +1779,12 @@ label-case-atom := λk . (tail(
 
 is-variable := λv . (match (head-string v) (
    ()
-   ('% True )
+   ('@ True )
+   ('? True )
+   ('! True )
+   ('= True )
+   ('> True )
+   ('< True )
    ('/ True )
    ('* True )
    ('+ True )
