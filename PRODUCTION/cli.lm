@@ -1343,7 +1343,6 @@ define-calling-convention-s := λ ctx fname lmb . (tail(
          (set e1 (destructure-args(ctx lhs ())))
          (set e2 (compile-expr((get-pc e1) rhs (get-offset e1) Used)))
          (set text ( text (mangle-global-function( fname lmb )) ': \n ))
-         (set text ( text (enter-function()) ))
          (set text ( text (get-frame e1) (get-frame e2) ))
          (set text ( text (get-prog e1) (get-prog e2) ))
          (set text ( text (exit-function()) ))
@@ -1366,7 +1365,6 @@ define-calling-convention-stack := λ ctx fname lmb . (tail(
          (print-s (TODO Destructure Stack))
          (set e2 (compile-expr((get-pc e1) rhs (get-offset e1) Used)))
          (set text ( text (mangle-global-function( fname lmb )) ': \n ))
-         (set text ( text (enter-function()) ))
          (set text ( text (get-frame e1) (get-frame e2) ))
          (set text ( text (get-prog e1) (get-prog e2) ))
          (set text ( text (exit-function()) ))
@@ -1379,15 +1377,32 @@ define-calling-convention-stack := λ ctx fname lmb . (tail(
 ));
 
 apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
+   (local e1)
+   (set e1 (destructure-calling-convention-stack( ctx e fname arg offset used )))
+   (match (get-maybe-function(ctx fname arg)) (
+      ()
+      ( (GlobalFunction mangledname) (tail(
+         ()
+         (Expr(
+            (get-frame e1)
+            ( (enter-function()) (get-prog e1) (\t 'call \s mangledname \n) )
+            (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1)
+         ))
+      )))
+      ( u (UnexpectedFunctionCall fname arg) )
+   ))
+));
+
+destructure-calling-convention-stack := λ ctx e fname arg offset used . (tail(
    ()
    (match (typecheck-lookup-type arg) (
       ()
       ( (Cons( t1 t2 )) (
          (match arg (
             ()
-            ( (App( e1 e2 )) (
-               (set e1 (apply-calling-convention-stack( ctx e fname e1 offset used )))
-               (set e2 (apply-calling-convention-stack( (get-pc e1) e fname e1 (get-offset e2) used )))
+            ( (App( e1 e2 )) (tail(
+               (set e1 (destructure-calling-convention-stack( ctx e fname e1 offset used )))
+               (set e2 (destructure-calling-convention-stack( (get-pc e1) e fname e1 (get-offset e2) used )))
                (Expr(
                   ((get-frame e1) (get-frame e1))
                   ((get-prog e1) (get-prog e1))
@@ -1397,7 +1412,7 @@ apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
                   (get-pc e2)
                   (get-offset e2)
                ))
-            ))
+            )))
             ( v (
                (fail (InvalidParameter fname arg))
             ))
