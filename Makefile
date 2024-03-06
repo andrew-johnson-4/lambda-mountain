@@ -1,6 +1,6 @@
 
 t1: prod
-	./production tests/lm/match11.lm
+	./production tests/lm/user_function_unsugared.lm
 	as -o tmp.o tmp.s
 	ld -o tmp tmp.o
 	./tmp

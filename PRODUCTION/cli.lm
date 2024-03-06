@@ -1343,6 +1343,7 @@ define-calling-convention-s := λ ctx fname lmb . (tail(
          (set e1 (destructure-args(ctx lhs ())))
          (set e2 (compile-expr((get-pc e1) rhs (get-offset e1) Used)))
          (set text ( text (mangle-global-function( fname lmb )) ': \n ))
+         (set text ( text (enter-function()) ))
          (set text ( text (get-frame e1) (get-frame e2) ))
          (set text ( text (get-prog e1) (get-prog e2) ))
          (set text ( text (exit-function()) ))
