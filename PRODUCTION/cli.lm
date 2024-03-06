@@ -1815,6 +1815,17 @@ get-local := λctx v . (tail(
          ( (StackVariable( l offset ltype )) (
             if r () (
                if (eq(l v)) (
+                  (local size)
+                  (set size (i2s (define-sizeof-type ltype)))
+                  # register allocation = %r12, %r13 only for now
+                  (match size (
+                     ()
+                     (8 (fail (TODO 'get 'into R12B)))
+                     (16 (fail (TODO 'get 'into R12W)))
+                     (32 (fail (TODO 'get 'into R12D)))
+                     (64 (fail (TODO 'get 'into R12)))
+                     (u (fail (InvalidStackVariableSize u)))
+                  ))
                   (fail (TODO GetStackVariable l offset ltype))
                ) ()
             )
