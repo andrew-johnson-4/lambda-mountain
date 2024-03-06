@@ -1446,7 +1446,13 @@ apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
             (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1)
          ))
       )))
-      ( u (fail (UnexpectedFunctionCall fname u)) )
+      ( l (tail(
+         (set e1 (compile-expr( ctx arg offset used )))
+         (set l (get-local( ctx fname )))
+         (if l () (fail (UnknownFunctionLocal fname)))
+         (Expr( (get-frame e1) (l (get-prog e1)) (get-unframe e1) (get-text e1) (get-data e1) ctx offset ))
+      )))
+      ( () (fail (UnknownFunctionCall fname)) )
    ))
 ));
 
