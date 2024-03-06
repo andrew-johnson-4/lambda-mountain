@@ -616,11 +616,41 @@ typecheck-lookup-type := λterm . (tail(
    found
 ));
 
+typecheck-deep-eq := λt1 t2 . if (is( t1 t2 )) True (match (t1 t2) (
+   ()
+   ( (() ()) True )
+   ( (Fragment _) True )
+   ( (_ Fragment) True )
+   ( ( (And(l1 l2)) (And(r1 r2)) ) True )
+   ( ( (And(l1 l2)) r ) (
+      if (typecheck-deep-eq(l1 r)) True
+         (typecheck-deep-eq(l2 r))
+   ))
+   ( ( l (And(r1 r2)) ) (
+      if (typecheck-deep-eq(l r1)) True
+         (typecheck-deep-eq(l r2))
+   ))
+   ( ((l1 l2) (r1 r2)) (
+      if (typecheck-deep-eq(l1 r1))
+         (typecheck-deep-eq(l2 r2))
+         ()
+   ))
+   ( (l r) (eq( l r )) )
+));
+
 typecheck-ascript := λt tt . (
-   if tt (
-      (set typecheck-context ((t tt) typecheck-context))
-      (set typecheck-types-have-changed True)
-   ) ()
+   if tt (tail(
+      (local lt)
+      (set lt (typecheck-lookup-type t))
+      (if lt (
+         (if (typecheck-deep-eq( lt tt )) () (
+            fail (TypeAscriptionInequality lt tt)
+         ))
+      ) (
+         (set typecheck-context ((t tt) typecheck-context))
+         (set typecheck-types-have-changed True)
+      ))
+   )) ()
 );
 
 typecheck-show-ascript := λp . (tail(
@@ -933,7 +963,6 @@ typecheck-infer-type-expr := λe . (match e (
 ));
 
 typecheck-infer-expr := λctx e . (
-   (if (typecheck-lookup-type e) () (
       match e (
          ()
          ( () () )
@@ -953,7 +982,6 @@ typecheck-infer-expr := λctx e . (
          ))
          ( (Type( l ds )) ())
          ( (Fragment( fln fle )) (
-            (if (typecheck-lookup-type fle) () (
                (match fle (
                   ()
                   ( (Lambda( lhs rhs )) (
@@ -968,7 +996,6 @@ typecheck-infer-expr := λctx e . (
                      ))
                   ))
                ))
-            ))
          ))
          ( Nil (
             (typecheck-ascript( e Nil ))
@@ -976,11 +1003,14 @@ typecheck-infer-expr := λctx e . (
          ( (App( (App( (Literal :) (Literal _) )) tt )) (
             (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
          ))
+         ( (App( (App( (Literal :) asc )) tt )) (
+            (typecheck-infer-expr( ctx asc ))
+            (typecheck-ascript( asc (typecheck-infer-type-compound tt) ))
+            (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
+         ))
          ( (App( (App( (Variable 'as) ast )) ett )) (
             (typecheck-infer-expr( ctx ast ))
-            (if (typecheck-lookup-type ast) (
-               (typecheck-ascript( e (typecheck-infer-type-compound ett) ))
-            ) ())
+            (typecheck-ascript( e (typecheck-infer-type-compound ett) ))
          ))
          ( (Literal lit) (
             (local ctype)
@@ -1004,7 +1034,10 @@ typecheck-infer-expr := λctx e . (
                ( ( (And(t1 t2)) pt ) (
                   (typecheck-ascript( e (typecheck-safe-apply-plural( e (And(t1 t2)) pt )) ))
                ))
-               ( (Fragment Fragment) (
+               ( (Fragment _) (
+                  (typecheck-ascript( e Fragment ))
+               ))
+               ( (_ Fragment) (
                   (typecheck-ascript( e Fragment ))
                ))
                ( (lt rt) (
@@ -1032,7 +1065,6 @@ typecheck-infer-expr := λctx e . (
          ))
          ( u (fail (UnknownTerm u)) )
       )
-   ))
 );
 
 # Assembler
