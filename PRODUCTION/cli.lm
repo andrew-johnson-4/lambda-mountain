@@ -1336,6 +1336,47 @@ compile-append := λoutput_e gctx e . (tail(
    ))
 ));
 
+apply-calling-convention-stack := λ ctx e fname arg offset used . (
+   fail (TODO CallingConventionStack)
+);
+
+apply-calling-convention-s := λ ctx e fname arg offset used . (
+   (local e1)
+   (local prog)
+   (if (is-builtin fname) (tail(
+      ()
+      (if (eq(fname 'tail)) (tail(
+         (set e1 (compile-expr(ctx arg offset Tail)))
+         (Expr( (get-frame e1) (get-prog e1) (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
+      )) (tail(
+         (set e1 (compile-expr(ctx arg offset Used)))
+         (set prog ((get-prog e1) (\t 'call \s (label-case fname) \n)))
+         (Expr( (get-frame e1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
+      )))
+   )) (tail(
+      ()
+      (match (get-maybe-function(ctx fname arg)) (
+         ()
+         ( (GlobalFunction mangledname) (tail(
+            (set e1 (compile-expr(ctx arg offset Used)))
+            (set prog ((get-prog e1) (\t 'call \s mangledname \n)))
+            (Expr( (get-frame e1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
+         )))
+         ( (Fragment( (Variable _) body )) (
+            (assemble-apply-fragment( ctx body arg offset ))
+         ))
+         ( () (
+            (fail (ReferenceToUndefinedVariable fname (typecheck-lookup-type arg)))
+         ))
+         ( v (tail(
+            ()
+            (yield-cons(ctx v arg e offset Used))
+         )))
+      ))
+   )))
+);
+
+
 compile-expr := λctx e offset used . (tail(
    (local e1)
    (local e2)
@@ -1469,39 +1510,10 @@ compile-expr := λctx e offset used . (tail(
       ( (App ((Variable fname) arg)) (tail(
          ()
          (if config-strict (
-            fail (TODO CompileAppStrict fname)
-         ) ())
-         (if (is-builtin fname) (tail(
-            ()
-            (if (eq(fname 'tail)) (tail(
-               (set e1 (compile-expr(ctx arg offset Tail)))
-               (Expr( (get-frame e1) (get-prog e1) (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
-            )) (tail(
-               (set e1 (compile-expr(ctx arg offset Used)))
-               (set prog ((get-prog e1) (\t 'call \s (label-case fname) \n)))
-               (Expr( (get-frame e1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
-            )))
-         )) (tail(
-            ()
-            (match (get-maybe-function(ctx fname arg)) (
-               ()
-               ( (GlobalFunction mangledname) (tail(
-                  (set e1 (compile-expr(ctx arg offset Used)))
-                  (set prog ((get-prog e1) (\t 'call \s mangledname \n)))
-                  (Expr( (get-frame e1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
-               )))
-               ( (Fragment( (Variable _) body )) (
-                  (assemble-apply-fragment( ctx body arg offset ))
-               ))
-               ( () (
-                  (fail (ReferenceToUndefinedVariable fname (typecheck-lookup-type arg)))
-               ))
-               ( v (tail(
-                  ()
-                  (yield-cons(ctx v arg e offset Used))
-               )))
-            ))
-         )))
+            (apply-calling-convention-stack( ctx e fname arg offset used ))
+         ) (
+            (apply-calling-convention-s( ctx e fname arg offset used ))
+         ))
       )))
       ( (Literal l) (tail(
          ()
