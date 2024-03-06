@@ -1,4 +1,10 @@
 
+t1: prod
+	./production tests/lm/match11.lm
+	as -o tmp.o tmp.s
+	ld -o tmp tmp.o
+	./tmp
+
 nostd: prod
 	./production --nostd -o tmp.s STDLIB/default-instruction-set.lm STDLIB/default-primitives.lm tests/nostd/ints.lm
 

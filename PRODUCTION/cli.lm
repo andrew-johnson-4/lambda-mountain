@@ -1417,7 +1417,7 @@ define-calling-convention-stack := λ ctx fname lmb . (tail(
 apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
    (local e1)
    (set e1 (destructure-calling-convention-stack( ctx e fname arg offset used )))
-   (match (get-maybe-function(ctx fname arg)) (
+   (match (get-maybe-function(ctx fname (typecheck-lookup-type arg))) (
       ()
       ( (GlobalFunction mangledname) (tail(
          ()
@@ -1457,7 +1457,7 @@ destructure-calling-convention-stack := λ ctx e fname arg offset used . (tail(
          ))
       ))
       ( t1 (
-         (match (get-maybe-function(ctx 'push arg)) (
+         (match (get-maybe-function(ctx 'push (typecheck-lookup-type arg))) (
             ()
             ( (Fragment( (Variable _) body )) (
                (assemble-apply-fragment( ctx body arg offset ))
@@ -1485,7 +1485,7 @@ apply-calling-convention-s := λ ctx e fname arg offset used . (tail(
       )))
    )) (tail(
       ()
-      (match (get-maybe-function(ctx fname arg)) (
+      (match (get-maybe-function(ctx fname (typecheck-lookup-type arg))) (
          ()
          ( (GlobalFunction mangledname) (tail(
             (set e1 (compile-expr(ctx arg offset Used)))
@@ -1830,6 +1830,7 @@ get-local := λctx v . (tail(
                ) ()
             )
          ))
+         ( (GlobalFunction( _ _ )) () )
          ( u (
             (fail (InvalidLocal u))
          ))
@@ -1925,9 +1926,7 @@ get-maybe-literal := λctx arg_type . (tail(
    r
 ));
 
-get-maybe-function := λctx v arg . (tail(
-   (local arg_type)
-   (set arg_type (typecheck-lookup-type arg))
+get-maybe-function := λctx v arg_type . (tail(
    (local r)
    (while ctx (
       (match (tail ctx) (
