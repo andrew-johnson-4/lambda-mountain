@@ -1613,7 +1613,7 @@ reverse-list := λl . (tail(
 label-case := λk . (match k (
    ()
    (() ())
-   ((l r) ('_LP_ (label-case l) (label-case r) '_RP_))
+   ((l r) ('_ (label-case l) (label-case r) '_))
    (a (label-case-atom a))
 ));
 
@@ -1624,6 +1624,10 @@ label-case-atom := λk . (tail(
       (() ())
       ('- (
          (set nk (nk '_))
+         (set k (tail-string k))
+      ))
+      (': (
+         (set nk (nk '_C_))
          (set k (tail-string k))
       ))
       ('< (
@@ -1780,7 +1784,7 @@ get-offset := λe . (match e (
 ));
 
 mangle-global-function := λname body . (
-   (clone-rope (label-case ( name '_C_ (typecheck-lookup-type body) )))
+   (clone-rope (label-case ( name : (typecheck-lookup-type body) )))
 );
 
 get-maybe-literal := λctx arg_type . (tail(
