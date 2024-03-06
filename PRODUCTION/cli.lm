@@ -2010,6 +2010,56 @@ i2s := λi . (tail(
    (clone-rope (sign s))
 ));
 
+s2i := λs . (tail(
+   (local i)
+   (local is_neg)
+   (local one)
+   (local two)
+   (local three)
+   (local four)
+   (local five)
+   (local six)
+   (local seven)
+   (local eight)
+   (local nine)
+   (local ten)
+   (set one( inc() ))
+   (set two( inc(inc( )) ))
+   (set three( inc(inc(inc( ))) ))
+   (set four( inc(inc(inc(inc( )))) ))
+   (set five( inc(inc(inc(inc(inc( ))))) ))
+   (set six( inc( inc(inc(inc(inc(inc( ))))) ) ))
+   (set seven( inc(inc( inc(inc(inc(inc(inc( ))))) )) ))
+   (set eight( inc(inc(inc( inc(inc(inc(inc(inc( ))))) ))) ))
+   (set nine( inc(inc(inc(inc( inc(inc(inc(inc(inc( ))))) )))) ))
+   (set ten( inc(inc(inc(inc(inc( inc(inc(inc(inc(inc( ))))) ))))) ))
+   (if (eq( (head-string s) '- )) (
+      (set is_neg True)
+      (set s (tail-string s))
+   ) ())
+   (while s (
+      (set i (mul( i ten )))
+      (match (head-string s) (
+         ()
+         ('0 ())
+         ('1 (set i (add( i one )))) 
+         ('2 (set i (add( i two )))) 
+         ('3 (set i (add( i three )))) 
+         ('4 (set i (add( i four )))) 
+         ('5 (set i (add( i five )))) 
+         ('6 (set i (add( i six )))) 
+         ('7 (set i (add( i seven )))) 
+         ('8 (set i (add( i eight ))))          
+         ('9 (set i (add( i nine ))))          
+         (u (fail (InvalidDigit u)))
+      ))
+      (set s (tail-string s))
+   ))
+   (if is_neg (
+      (mul( (dec()) i ))
+   ) i )
+));
+
 destructure-args := λctx e offset . (match e (
    ()
    ( Nil (tail(
