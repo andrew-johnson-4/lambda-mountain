@@ -30,11 +30,8 @@ main := (
    (asm!( (mul( (: R9 Reg64) )) ))
    (asm!( (sub( (: 48 U64) (: R10 Reg64) )) ))
    (asm!( (add( (: R10 Reg64) (: RAX Reg64) )) ))
-   (asm!( (dec( (: R8 Reg64) )) ))
+   (asm!( (inc( (: R8 Reg64) )) ))
    (asm!( (jmp( argv )) ))
    (label begin)
-   (asm!( (mov( (: RAX Reg64) (: RDI Reg64) )) ))
-   (asm!( (mov( (: 60 U64) (: RAX Reg64) )) ))
-   (asm!( (syscall()) ))
    (fib( (as (: RAX Reg64) U64) ))
 );
