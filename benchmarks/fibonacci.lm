@@ -13,4 +13,10 @@ fib := λ(: x U64). (: (
    (label low)
 ) U64);
 
-main := fib( (: 35 U64) );
+main := (
+   (asm!( (pop( (: R12 Reg64) )) ))
+   (asm!( (pop( (: R12 Reg64) )) ))
+   (asm!( (pop( (: R12 Reg64) )) ))
+   (asm!( (deref( (: R12 Reg64) (: R8B Reg8) )) ))
+   (fib( (: 35 U64) ))
+);
