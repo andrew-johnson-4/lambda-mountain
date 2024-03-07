@@ -13,4 +13,4 @@ fib := λ(: x U64). (: (
    (label low)
 ) U64);
 
-main := fib( (: 5 U64) );
+main := fib( (: 35 U64) );

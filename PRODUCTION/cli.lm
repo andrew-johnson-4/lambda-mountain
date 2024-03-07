@@ -1012,6 +1012,9 @@ typecheck-infer-expr := λctx e . (tail(
          (set ctx ( ctx (lname Label) ))
          (typecheck-ascript( e Fragment ))
       ))
+      ( (App( (Variable 'label) (Variable lname) )) (
+         (typecheck-ascript( e Fragment ))
+      ))
       ( (App( (App( (Literal ':) (Literal _) )) tt )) (
          (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
       ))
@@ -1674,7 +1677,7 @@ compile-expr := λctx e offset used . (tail(
       )))
       ( (App ((Variable 'label) (Variable lname))) (tail(
          ()
-         (set e1 (compile-fragment( ctx (Variable lname) offset used )))
+         (set e1 (compile-fragment( ctx e offset used )))
          e1
       )))
       ( (App ((Variable 'gensym-label) (Variable fname))) (tail(
