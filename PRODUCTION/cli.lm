@@ -1075,6 +1075,9 @@ typecheck-infer-expr := λctx e . (
 
 compile-fragment := λctx e offset used . (match e (
    ()
+   ( (App( (App( (Variable 'as) inner_e )) _ )) (
+      (compile-fragment( ctx inner_e offset used ))
+   ))
    ( (App( (Variable op) arg )) (tail(
       ()
       (match (get-maybe-function(ctx op (typecheck-lookup-type arg))) (
@@ -1513,6 +1516,32 @@ apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
    ))
 ));
 
+destructure-push-stack := λ ctx arg offset . (match arg (
+   ()
+   ( (App( (App( (Variable 'as) inner_arg )) tt )) (
+      (match (get-maybe-function(ctx 'push (typecheck-lookup-type inner_arg))) (
+         ()
+         ( (Fragment( (Variable _) body )) (
+            (assemble-apply-fragment( ctx body arg offset ))
+         ))
+         ( v (
+            (fail (ReferenceToUndefinedVariable 'push (typecheck-lookup-type arg)))
+         ))
+      ))
+   ))
+   ( _ (
+      (match (get-maybe-function(ctx 'push (typecheck-lookup-type arg))) (
+         ()
+         ( (Fragment( (Variable _) body )) (
+            (assemble-apply-fragment( ctx body arg offset ))
+         ))
+         ( v (
+            (fail (ReferenceToUndefinedVariable 'push (typecheck-lookup-type arg)))
+         ))
+      ))
+   ))
+));
+
 destructure-calling-convention-stack := λ ctx e fname arg offset used . (tail(
    ()
    (match (typecheck-lookup-type arg) (
@@ -1538,17 +1567,7 @@ destructure-calling-convention-stack := λ ctx e fname arg offset used . (tail(
             ))
          ))
       ))
-      ( t1 (
-         (match (get-maybe-function(ctx 'push (typecheck-lookup-type arg))) (
-            ()
-            ( (Fragment( (Variable _) body )) (
-               (assemble-apply-fragment( ctx body arg offset ))
-            ))
-            ( v (
-               (fail (ReferenceToUndefinedVariable 'push (typecheck-lookup-type arg)))
-            ))
-         ))
-      ))
+      ( t1 (destructure-push-stack( ctx arg offset )) )
    ))
 ));
 
@@ -1620,6 +1639,10 @@ compile-expr := λctx e offset used . (tail(
       ( (App( (Variable 'asm!) asm_expr )) (tail(
          (set prog (compile-fragment( ctx asm_expr offset used )))
          (Expr( () (get-prog prog) () () () ctx offset ))
+      )))
+      ( (App( (App( (Variable 'as) inner_expr )) _tt )) (tail(
+         ()
+         (compile-expr( ctx inner_expr offset used ))
       )))
       ( (App( (App( (Literal :) (Literal lval) )) (Literal ltype) )) (tail(
          ()
@@ -2825,6 +2848,9 @@ yield-cons-s := λctx l r ce offset used . (tail(
 ));
 
 yield-cons := λctx l r ce offset used . (tail(
+   (print-s (YieldConsl l))(print-s \n)
+   (print-s (YieldConsR r))(print-s \n)
+   (print-s (YieldConsCE ce))(print-s \n)
    (local e1)
    (local e2)
    (if config-strict (tail(
@@ -2836,12 +2862,19 @@ yield-cons := λctx l r ce offset used . (tail(
       (set typece (typecheck-lookup-type ce))
       (match (typel typer typece) (
          ()
-         ( (Fragment Fragment Fragment) (tail(
+         ( (_ Fragment Fragment) (tail(
             (set e1 (compile-expr( ctx l offset Used )))
             (set e2 (compile-expr( (get-pc e1) r (get-offset e1) Used )))
             (Expr( ((get-frame e1) (get-frame e2)) ((get-prog e1) (get-prog e2)) ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
          )))
-         ( (_ _ _) (yield-cons-s( ctx l r ce offset used )) )
+         ( (Fragment _ Fragment) (tail(
+            (set e1 (compile-expr( ctx l offset Used )))
+            (set e2 (compile-expr( (get-pc e1) r (get-offset e1) Used )))
+            (Expr( ((get-frame e1) (get-frame e2)) ((get-prog e1) (get-prog e2)) ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
+         )))
+         ( (_ _ _) (tail(
+            (yield-cons-s( ctx l r ce offset used ))
+         )))
       ))
    )) (
       (yield-cons-s( ctx l r ce offset used ))
