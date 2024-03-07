@@ -718,10 +718,10 @@ typecheck-infer-prog := λp . (
 typecheck-infer-ctx := λctx e . (match e (
    ()
    ( (App( (App( (Literal :) (Variable v) )) tt )) (
-      (ctx (v (typecheck-typeof-ascript tt)))
+      (ctx (v (typecheck-infer-type-compound tt)))
    ))
    ( (App( ps (App( (App( (Literal :) (Variable v) )) tt )) )) (
-      ( (typecheck-infer-ctx( ctx ps )) (v (typecheck-typeof-ascript tt)))
+      ( (typecheck-infer-ctx( ctx ps )) (v (typecheck-infer-type-compound tt)))
    ))
    ( (Variable v) (
       (ctx (v S))
@@ -771,23 +771,13 @@ typecheck-typeof-var := λctx v . if (eq( 'asm! v )) ('->(Fragment Fragment)) (m
    ))
 ));
 
-typecheck-typeof-ascript := λtt . (match tt (
-   ()
-   ( (Literal tname) (
-      tname
-   ))
-   ( (Variable tname) (
-      tname
-   ))
-));
-
 typecheck-typeof-lhs := λlhs . (match lhs (
    ()
    ( (App( (App( (Literal :) (Variable v) )) tt )) (
-      (typecheck-typeof-ascript tt)
+      (typecheck-infer-type-compound tt)
    ))
    ( (App( ps (App( (App( (Literal :) (Variable v) )) tt )) )) (
-      (Cons( (typecheck-typeof-lhs ps) (typecheck-typeof-ascript tt) ))
+      (Cons( (typecheck-typeof-lhs ps) (typecheck-infer-type-compound tt) ))
    ))
    ( (Variable v) (
       S
@@ -915,6 +905,8 @@ typecheck-safe-apply-plural := λterm many pt . (tail(
 typecheck-infer-type-compound := λcompound . (match compound (
    ()
    ((Literal tt) tt)
+   ((Variable tt) tt)
+   ((App( (Literal lt) rt )) ( lt (typecheck-infer-type-compound rt) ) )
    ((App( lt rt )) (Cons( (typecheck-infer-type-compound lt) (typecheck-infer-type-compound rt) )) )
    (u (fail (UnknownTypeCompound u)))
 ));
