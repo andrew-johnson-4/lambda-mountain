@@ -38,6 +38,11 @@ fragment push := λ(: r Reg16). ( \t 'pushw \s '% r \n );
 fragment push := λ(: r Reg32). ( \t 'pushs \s '% r \n );
 fragment push := λ(: r Reg64). ( \t 'pushq \s '% r \n );
 
+fragment pop := λ(: r Reg8). ( \t 'popb \s '% r \n );
+fragment pop := λ(: r Reg16). ( \t 'popw \s '% r \n );
+fragment pop := λ(: r Reg32). ( \t 'pops \s '% r \n );
+fragment pop := λ(: r Reg64). ( \t 'popq \s '% r \n );
+
 fragment get := λ(: src Offset)(: dst Reg8). ( \t 'mov \s src \[ '%rbp \] , \s '% dst \n );
 fragment get := λ(: src Offset)(: dst Reg16). ( \t 'mov \s src \[ '%rbp \] , \s '% dst \n );
 fragment get := λ(: src Offset)(: dst Reg32). ( \t 'mov \s src \[ '%rbp \] , \s '% dst \n );
@@ -82,12 +87,12 @@ fragment cmp := λ(: l Reg16)(: dst Reg16). ( \t 'cmp \s '% l \s , \s '% dst \n 
 fragment cmp := λ(: l Reg32)(: dst Reg32). ( \t 'cmp \s '% l \s , \s '% dst \n );
 fragment cmp := λ(: l Reg64)(: dst Reg64). ( \t 'cmp \s '% l \s , \s '% dst \n );
 
-fragment jmp := λ(: lbl Label). ( \t 'jmp \s '$ lbl \n );
-fragment je := λ(: lbl Label). ( \t 'je \s '$ lbl \n );
-fragment jne := λ(: lbl Label). ( \t 'jne \s '$ lbl \n );
-fragment jz := λ(: lbl Label). ( \t 'jz \s '$ lbl \n );
-fragment jnz := λ(: lbl Label). ( \t 'jne \s '$ lbl \n );
-fragment jlt := λ(: lbl Label). ( \t 'jlt \s '$ lbl \n );
-fragment jle := λ(: lbl Label). ( \t 'jle \s '$ lbl \n );
-fragment jgt := λ(: lbl Label). ( \t 'jgt \s '$ lbl \n );
-fragment jge := λ(: lbl Label). ( \t 'jge \s '$ lbl \n );
+fragment jmp := λ(: lbl Label). ( \t 'jmp \s lbl \n );
+fragment je := λ(: lbl Label). ( \t 'je \s lbl \n );
+fragment jne := λ(: lbl Label). ( \t 'jne \s lbl \n );
+fragment jz := λ(: lbl Label). ( \t 'jz \s lbl \n );
+fragment jnz := λ(: lbl Label). ( \t 'jne \s lbl \n );
+fragment jlt := λ(: lbl Label). ( \t 'jlt \s lbl \n );
+fragment jle := λ(: lbl Label). ( \t 'jle \s lbl \n );
+fragment jgt := λ(: lbl Label). ( \t 'jgt \s lbl \n );
+fragment jge := λ(: lbl Label). ( \t 'jge \s lbl \n );
