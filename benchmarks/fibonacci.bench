@@ -9,7 +9,7 @@ arg: 25
 arg: 30
 arg: 35
 run: rm -f $basename.s $basename.o $basenaml.lm.exe
-run: lm -o $basename.s $basename.lm
+run: lm --nostd -o $basename.s STDLIB/default-instruction-set.lm STDLIB/default-primitives.lm $basename.lm
 run: as -o $basename.o $basename.s
 run: ld -o $basename.lm.exe $basename.o
 run: ./$basename.lm.exe
