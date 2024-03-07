@@ -1106,6 +1106,7 @@ compile-fragment := λctx e offset used . (match e (
          ))
       ))
    )))
+   ( (Variable v) (get-fragment-local( ctx v offset )) )
    ( u (fail (UnknownFragment e)))
 );
 
@@ -2066,6 +2067,30 @@ get-maybe-literal := λctx arg_type . (tail(
          ))
       ))
       (set ctx (head ctx))
+   ))
+   r
+));
+
+get-fragment-local := λctx v offset . (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
+         ()
+         ( (Label(l uid)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (Expr(
+                     () uid () () () ctx offset
+                  )))
+               ) ()
+            )
+         ))
+         ( _ () )
+      ))
+      (set ctx (head ctx))
+   ))
+   (if r () (
+      (fail (ReferenceToUndefinedVariable v))
    ))
    r
 ));
