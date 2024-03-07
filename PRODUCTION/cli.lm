@@ -708,7 +708,7 @@ typecheck-show-ascript := λp . (tail(
 
 typecheck-infer-prog := λp . (
    (while p (
-      (typecheck-infer-expr( typecheck-global-context (tail p) ))
+      (typecheck-infer-expr( () (tail p) ))
       (set p (head p))
    ))
 );
@@ -1006,13 +1006,13 @@ typecheck-infer-expr := λctx e . (tail(
       ( Nil (
          (typecheck-ascript( e Nil ))
       ))
-      ( (App( (Variable gensym-label) (Variable lname) )) (
+      ( (App( (Variable 'gensym-label) (Variable lname) )) (
          (set ctx ( ctx (lname Label) ))
       ))
-      ( (App( (App( (Literal :) (Literal _) )) tt )) (
+      ( (App( (App( (Literal ':) (Literal _) )) tt )) (
          (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
       ))
-      ( (App( (App( (Literal :) asc )) tt )) (
+      ( (App( (App( (Literal ':) asc )) tt )) (
          (typecheck-infer-expr( ctx asc ))
          (typecheck-ascript( asc (typecheck-infer-type-compound tt) ))
          (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
@@ -1032,7 +1032,7 @@ typecheck-infer-expr := λctx e . (tail(
       ))
       ( (App( l r )) (tail(
          (set ctx (typecheck-infer-expr( ctx l )))
-         (typecheck-infer-expr( ctx r ))
+         (set ctx (typecheck-infer-expr( ctx r )))
          (match ( (typecheck-lookup-type l) (typecheck-lookup-type r) ) (
             ()
             ( (() _) () )
@@ -1054,7 +1054,7 @@ typecheck-infer-expr := λctx e . (tail(
             ))
          ))
       )))
-      ( (Lambda( lhs rhs )) (
+      ( (Lambda( lhs rhs )) (tail(
          (set ctx (typecheck-infer-ctx( ctx lhs )))
          (typecheck-infer-expr( ctx rhs ))
          (match (typecheck-lookup-type rhs) (
@@ -1064,17 +1064,14 @@ typecheck-infer-expr := λctx e . (tail(
                (typecheck-ascript( e ('->( (typecheck-typeof-lhs lhs) rt)) ))
             ))
          ))
-      ))
-      ( (Variable v) (tail(
-         (if (eq( v 'low )) (
-            (print-s (Var v ctx))
-         ) ())
+      )))
+      ( (Variable v) (
          (match (typecheck-typeof-var( ctx v )) (
             ()
             ( () () )
             ( tt (typecheck-ascript( e tt )) )
          ))
-      )))
+      ))
       ( u (fail (UnknownTerm u)) )
    ))
    ctx
