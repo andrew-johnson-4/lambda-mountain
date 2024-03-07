@@ -68,3 +68,16 @@ fragment add := λ(: l Reg8)(: dst Reg8). ( \t 'add \s '% l \s , \s '% dst \n );
 fragment add := λ(: l Reg16)(: dst Reg16). ( \t 'add \s '% l \s , \s '% dst \n );
 fragment add := λ(: l Reg32)(: dst Reg32). ( \t 'add \s '% l \s , \s '% dst \n );
 fragment add := λ(: l Reg64)(: dst Reg64). ( \t 'add \s '% l \s , \s '% dst \n );
+
+fragment cmp := λ(: imm U8)(: dst Reg8). ( \t 'cmp \s '$ imm \s , \s '% dst \n );
+fragment cmp := λ(: imm U16)(: dst Reg16). ( \t 'cmp \s '$ imm \s , \s '% dst \n );
+fragment cmp := λ(: imm U32)(: dst Reg32). ( \t 'cmp \s '$ imm \s , \s '% dst \n );
+fragment cmp := λ(: imm U64)(: dst Reg64). ( \t 'cmp \s '$ imm \s , \s '% dst \n );
+fragment cmp := λ(: imm I8)(: dst Reg8). ( \t 'cmp \s '$ imm \s , \s '% dst \n );
+fragment cmp := λ(: imm I16)(: dst Reg16). ( \t 'cmp \s '$ imm \s , \s '% dst \n );
+fragment cmp := λ(: imm I32)(: dst Reg32). ( \t 'cmp \s '$ imm \s , \s '% dst \n );
+fragment cmp := λ(: imm I64)(: dst Reg64). ( \t 'cmp \s '$ imm \s , \s '% dst \n );
+fragment cmp := λ(: l Reg8)(: dst Reg8). ( \t 'cmp \s '% l \s , \s '% dst \n );
+fragment cmp := λ(: l Reg16)(: dst Reg16). ( \t 'cmp \s '% l \s , \s '% dst \n );
+fragment cmp := λ(: l Reg32)(: dst Reg32). ( \t 'cmp \s '% l \s , \s '% dst \n );
+fragment cmp := λ(: l Reg64)(: dst Reg64). ( \t 'cmp \s '% l \s , \s '% dst \n );

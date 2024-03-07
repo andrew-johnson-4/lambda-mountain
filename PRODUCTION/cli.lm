@@ -573,6 +573,8 @@ typecheck-assert-expr := λe . (tail(
       ( Nil (
          (typecheck-assert-one( e ))
       ))
+      ( (App( (Variable 'gensym-label) _ )) (
+      ))
       ( (App( (App( (Literal :) (Literal _) )) tt )) (
          (typecheck-assert-one( e ))
       ))
@@ -1003,6 +1005,10 @@ typecheck-infer-expr := λctx e . (
          ))
          ( Nil (
             (typecheck-ascript( e Nil ))
+         ))
+         ( (App( (Variable gensym-label) (Variable lname) )) (
+            (set ctx ( ctx (lname Label) ))
+            (typecheck-ascript( e Label ))
          ))
          ( (App( (App( (Literal :) (Literal _) )) tt )) (
             (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
@@ -1651,6 +1657,10 @@ compile-expr := λctx e offset used . (tail(
       ( (App ((Variable 'local) (Variable fname))) (tail(
          (set e1 (declare-local(ctx fname offset)))
          (Expr( (get-frame e1) ((yield-nil()) (get-prog e1)) (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
+      )))
+      ( (App ((Variable 'gensym-label) (Variable fname))) (tail(
+         (set ctx (ctx (Label( fname (uuid()) )) ))
+         (Expr( () () () () () ctx offset ))
       )))
       ( (App( (Lambda( (Variable lhs) rhs )) bind )) (tail(
          (if config-strict (
