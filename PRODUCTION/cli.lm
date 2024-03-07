@@ -968,8 +968,8 @@ typecheck-infer-type-expr := λe . (match e (
    (_ ())
 ));
 
-typecheck-infer-expr := λctx e . (
-      match e (
+typecheck-infer-expr := λctx e . (tail(
+      (match e (
          ()
          ( () () )
          ( (GExpr ge) (
@@ -986,29 +986,28 @@ typecheck-infer-expr := λctx e . (
                ))
             ))
          ))
-         ( (Type( l ds )) ())
+         ( (Type( l ds )) () )
          ( (Fragment( fln fle )) (
-               (match fle (
-                  ()
-                  ( (Lambda( lhs rhs )) (
-                     (local flt)
-                     (set flt ('->( (typecheck-typeof-lhs lhs) Fragment )) )
-                     (typecheck-ascript( fle flt ))
-                     (match fln (
-                        ()
-                        ( (Variable flnv) (
-                           (set typecheck-global-context ( typecheck-global-context (Global( flnv flt )) ))
-                        ))
+            (match fle (
+               ()
+               ( (Lambda( lhs rhs )) (
+                  (local flt)
+                  (set flt ('->( (typecheck-typeof-lhs lhs) Fragment )) )
+                  (typecheck-ascript( fle flt ))
+                  (match fln (
+                     ()
+                     ( (Variable flnv) (
+                        (set typecheck-global-context ( typecheck-global-context (Global( flnv flt )) ))
                      ))
                   ))
                ))
+            ))
          ))
          ( Nil (
             (typecheck-ascript( e Nil ))
          ))
          ( (App( (Variable gensym-label) (Variable lname) )) (
             (set ctx ( ctx (lname Label) ))
-            (typecheck-ascript( e Label ))
          ))
          ( (App( (App( (Literal :) (Literal _) )) tt )) (
             (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
@@ -1032,7 +1031,7 @@ typecheck-infer-expr := λctx e . (
             ))
          ))
          ( (App( l r )) (
-            (typecheck-infer-expr( ctx l ))
+            (set ctx (typecheck-infer-expr( ctx l )))
             (typecheck-infer-expr( ctx r ))
             (match ( (typecheck-lookup-type l) (typecheck-lookup-type r) ) (
                ()
@@ -1066,16 +1065,20 @@ typecheck-infer-expr := λctx e . (
                ))
             ))
          ))
-         ( (Variable v) (
+         ( (Variable v) (tail(
+            (if (eq( v 'low )) (
+               (print-s (Var v ctx))
+            ) ())
             (match (typecheck-typeof-var( ctx v )) (
                ()
                ( () () )
                ( tt (typecheck-ascript( e tt )) )
             ))
-         ))
+         )))
          ( u (fail (UnknownTerm u)) )
-      )
-);
+      ))
+   ctx
+));
 
 # Assembler
 
@@ -1088,9 +1091,10 @@ compile-fragment := λctx e offset used . (match e (
       ()
       (match (get-maybe-function(ctx op (typecheck-lookup-type arg))) (
          ()
-         ( (Fragment( (Variable _) body )) (
+         ( (Fragment( (Variable _) body )) (tail(
+            ()
             (assemble-apply-fragment( ctx body arg offset ))
-         ))
+         )))
          ( v (
             (fail (ReferenceToUndefinedOperator op (typecheck-lookup-type arg)))
          ))
