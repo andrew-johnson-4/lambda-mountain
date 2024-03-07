@@ -1522,7 +1522,7 @@ destructure-push-stack := λ ctx arg offset . (match arg (
       (match (get-maybe-function(ctx 'push (typecheck-lookup-type inner_arg))) (
          ()
          ( (Fragment( (Variable _) body )) (
-            (assemble-apply-fragment( ctx body arg offset ))
+            (assemble-apply-fragment( ctx body inner_arg offset ))
          ))
          ( v (
             (fail (ReferenceToUndefinedVariable 'push (typecheck-lookup-type arg)))
@@ -1640,13 +1640,13 @@ compile-expr := λctx e offset used . (tail(
          (set prog (compile-fragment( ctx asm_expr offset used )))
          (Expr( () (get-prog prog) () () () ctx offset ))
       )))
-      ( (App( (App( (Variable 'as) inner_expr )) _tt )) (tail(
-         ()
-         (compile-expr( ctx inner_expr offset used ))
-      )))
       ( (App( (App( (Literal :) (Literal lval) )) (Literal ltype) )) (tail(
          ()
          (fail (TODO CompileExpressionLiteral e))
+      )))
+      ( (App( (App( (Literal :) inner_expr )) (Literal ltype) )) (tail(
+         ()
+         (compile-expr( ctx inner_expr offset used ))
       )))
       ( (App ((Variable 'local) (Variable fname))) (tail(
          (set e1 (declare-local(ctx fname offset)))
@@ -2848,9 +2848,9 @@ yield-cons-s := λctx l r ce offset used . (tail(
 ));
 
 yield-cons := λctx l r ce offset used . (tail(
-   (print-s (YieldConsl l))(print-s \n)
-   (print-s (YieldConsR r))(print-s \n)
-   (print-s (YieldConsCE ce))(print-s \n)
+   (print-s (YieldConsl (typecheck-lookup-type l) l))(print-s \n)
+   (print-s (YieldConsR (typecheck-lookup-type r) r))(print-s \n)
+   (print-s (YieldConsCE (typecheck-lookup-type ce) ce))(print-s \n)
    (local e1)
    (local e2)
    (if config-strict (tail(
