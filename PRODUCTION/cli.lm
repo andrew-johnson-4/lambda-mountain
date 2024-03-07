@@ -755,7 +755,7 @@ typecheck-typeof-gvar := λv . (tail(
    tt
 ));
 
-typecheck-typeof-var := λctx v . if (eq( 'asm! v )) (->(Fragment Fragment)) (match ctx (
+typecheck-typeof-var := λctx v . if (eq( 'asm! v )) ('->(Fragment Fragment)) (match ctx (
    ()
    ( () (typecheck-typeof-gvar v) )
    ( (cs (cv ct)) (
@@ -894,7 +894,7 @@ typecheck-apply-plural := λmany pt . (match many(
       (set r (typecheck-apply-plural( t1 pt )))
       (if r r (typecheck-apply-plural( t2 pt )))
    )))
-   ( (->(lt rt)) (
+   ( ('->(lt rt)) (
       (typecheck-unify-ctx( (typecheck-unify-args(lt pt)) rt ))
    ))
    ( u (fail (ApplicationIsNotAFunction many pt)))
@@ -924,7 +924,7 @@ typecheck-infer-type-constructor := λname body . (match body (
    ( (App( (Literal tag) args )) (
       (local ctype)
       (set ctype (typecheck-infer-type-compound args))
-      (set typecheck-constructors ( typecheck-constructors (tag (->(ctype (tag ctype)))) ))
+      (set typecheck-constructors ( typecheck-constructors (tag ('->(ctype (tag ctype)))) ))
       (set typecheck-subtypes ( typecheck-subtypes ((tag ctype) (typecheck-infer-type-compound name)) ))
    ))
 ));
@@ -990,7 +990,7 @@ typecheck-infer-expr := λctx e . (
                   ()
                   ( (Lambda( lhs rhs )) (
                      (local flt)
-                     (set flt (->( (typecheck-typeof-lhs lhs) Fragment )) )
+                     (set flt ('->( (typecheck-typeof-lhs lhs) Fragment )) )
                      (typecheck-ascript( fle flt ))
                      (match fln (
                         ()
@@ -1032,8 +1032,8 @@ typecheck-infer-expr := λctx e . (
                ()
                ( (() _) () )
                ( (_ ()) () )
-               ( ( (->(lt rt)) pt ) (
-                  (typecheck-ascript( e (typecheck-safe-apply-plural( e (->(lt rt)) pt )) ))
+               ( ( ('->(lt rt)) pt ) (
+                  (typecheck-ascript( e (typecheck-safe-apply-plural( e ('->(lt rt)) pt )) ))
                ))
                ( ( (And(t1 t2)) pt ) (
                   (typecheck-ascript( e (typecheck-safe-apply-plural( e (And(t1 t2)) pt )) ))
@@ -1056,7 +1056,7 @@ typecheck-infer-expr := λctx e . (
                ()
                ( () () )
                ( rt (
-                  (typecheck-ascript( e (->( (typecheck-typeof-lhs lhs) rt)) ))
+                  (typecheck-ascript( e ('->( (typecheck-typeof-lhs lhs) rt)) ))
                ))
             ))
          ))
