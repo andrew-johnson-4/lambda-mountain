@@ -10,7 +10,7 @@ fib := λ(: x U64). (: (
    (asm!( (pop( (: R12 Reg64) )) ))
    (asm!( (sub( (: 1 U64) (: R12 Reg64) )) ))
    (fib (as (: R12 Reg64) U64) )
-#   (label low)
+   (label low)
 ) U64);
 
 main := fib( (: 5 U64) );

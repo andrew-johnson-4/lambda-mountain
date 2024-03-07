@@ -575,6 +575,8 @@ typecheck-assert-expr := λe . (tail(
       ))
       ( (App( (Variable 'gensym-label) _ )) (
       ))
+      ( (App( (Variable 'label) (Variable l) )) (
+      ))
       ( (App( (App( (Literal :) (Literal _) )) tt )) (
          (typecheck-assert-one( e ))
       ))
@@ -1085,6 +1087,12 @@ compile-fragment := λctx e offset used . (match e (
    ( (App( (App( (Variable 'as) inner_e )) _ )) (
       (compile-fragment( ctx inner_e offset used ))
    ))
+   ( (App( (Variable 'label) (Variable lname) )) (tail(
+      (set e (get-fragment-local( ctx lname offset )))
+      (Expr(
+         () ( (get-prog e) ': \n ) () () () ctx offset
+      ))
+   )))
    ( (App( (Variable op) arg )) (tail(
       ()
       (match (get-maybe-function(ctx op (typecheck-lookup-type arg))) (
@@ -1660,6 +1668,10 @@ compile-expr := λctx e offset used . (tail(
       ( (App ((Variable 'local) (Variable fname))) (tail(
          (set e1 (declare-local(ctx fname offset)))
          (Expr( (get-frame e1) ((yield-nil()) (get-prog e1)) (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
+      )))
+      ( (App ((Variable 'label) (Variable lname))) (tail(
+         ()
+         (compile-fragment( ctx e offset used ))
       )))
       ( (App ((Variable 'gensym-label) (Variable fname))) (tail(
          (set ctx (ctx (Label( fname (uuid()) )) ))
