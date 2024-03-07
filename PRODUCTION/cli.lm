@@ -262,6 +262,13 @@ parse-program := λtoks . (tail(
             (set parse-parsed-program ( parse-parsed-program (Type( (head pme) (head pme2) )) ))
             (set toks (tail pme2))
          ))
+         (('size remainder) (
+            (set pme (parse-one-expression remainder))
+            (set remainder (tail pme))
+            (set pme2 (parse-one-expression remainder))
+            (set parse-parsed-program ( parse-parsed-program (Size( (head pme) (head pme2) )) ))
+            (set toks (tail pme2))
+         ))
          (('import (relative-path remainder)) (
             (parse-program (tokenize-file relative-path))
             (set toks remainder)
@@ -603,6 +610,8 @@ typecheck-assert-expr := λe . (tail(
       ( (Variable v) (
          (typecheck-assert-one( e ))
       ))
+      ( (Size( typf sizf )) (
+      ))
       ( u (fail (UnknownAssertTyped u)) )
    ))
 ));
@@ -688,6 +697,9 @@ typecheck-show-ascript := λp . (tail(
          (typecheck-show-ascript prog)
       ))
       ( (prog (Fragment( typf body ))) (
+         (typecheck-show-ascript prog)
+      ))
+      ( (prog (Size( typf sizf ))) (
          (typecheck-show-ascript prog)
       ))
       ( unknown (
@@ -1001,7 +1013,7 @@ typecheck-infer-expr := λctx e . (tail(
          (typecheck-ascript( e Nil ))
       ))
       ( (App( (Variable 'gensym-label) (Variable lname) )) (
-         (set ctx ( ctx (lname Label) ))
+         (set ctx ( ctx (lname (Fragment Label)) ))
          (typecheck-ascript( e Fragment ))
       ))
       ( (App( (Variable 'label) (Variable lname) )) (
@@ -1069,6 +1081,8 @@ typecheck-infer-expr := λctx e . (tail(
             ( () () )
             ( tt (typecheck-ascript( e tt )) )
          ))
+      ))
+      ( (Size( typf sizf )) (
       ))
       ( u (fail (UnknownTerm u)) )
    ))
@@ -1299,6 +1313,9 @@ assemble := λprogram . (
       ( (prog (Type( _ _ ))) (
          (set preview_program prog)
       ))
+      ( (prog (Size( _ _ ))) (
+         (set preview_program prog)
+      ))
       ( u (
          (fail (UnexpectedProgram (tail u)))
       ))
@@ -1337,6 +1354,9 @@ assemble := λprogram . (
          (set program pc)
       ))
       ( (pc (Type( _ _ ))) (
+         (set program pc)
+      ))
+      ( (pc (Size( _ _ ))) (
          (set program pc)
       ))
       ( u (

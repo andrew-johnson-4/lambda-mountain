@@ -2,14 +2,8 @@
 fib := λ(: x U64). (: (
    x # put result into %r12
    (gensym-label low)
-   (asm!( (cmp( (: 1 U64) (: R12 Reg64) )) ))
-   (asm!( (jle( low )) ))
-   (asm!( (sub( (: 1 U64) (: R12 Reg64) )) ))
-   (asm!( (push( (: R12 Reg64) )) ))
-   (fib (as (: R12 Reg64) U64) )
-   (asm!( (pop( (: R12 Reg64) )) ))
-   (asm!( (sub( (: 1 U64) (: R12 Reg64) )) ))
-   (fib (as (: R12 Reg64) U64) )
+   (cmp( (: 1 (Fragment U64)) (: R12 (Fragment Reg64)) ))
+   (jle( low ))
    (label low)
 ) U64);
 
