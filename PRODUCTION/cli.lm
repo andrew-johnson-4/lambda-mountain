@@ -1143,6 +1143,9 @@ assemble-destructure-fragment := λctx lmb args offset . (match lmb (
       (set args (compile-fragment( ctx (tail (tail args)) offset Used )))
       (ds (v args))
    )))
+   ( (Lambda( Nil _ )) (
+      ()
+   ))
    ( () () )
    ( (Lambda( u _ )) (fail (UnrecgonizedDestructureFragment u)))
    ( u (fail (UnrecgonizedDestructureFragment u)))

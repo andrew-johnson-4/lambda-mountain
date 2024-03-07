@@ -13,4 +13,25 @@ fib := λ(: x U64). (: (
    (label low)
 ) U64);
 
-main := fib( (: 35 U64) );
+main := (
+   (asm!( (pop( (: R8 Reg64) )) ))
+   (asm!( (pop( (: R8 Reg64) )) ))
+   (asm!( (pop( (: R8 Reg64) )) ))
+   (asm!( (pop( (: R8 Reg64) )) ))
+   (asm!( (mov( (: 0 U64) (: RAX Reg64) )) ))
+   (asm!( (mov( (: 10 U64) (: R9 Reg64) )) ))
+   (gensym-label argv)
+   (gensym-label begin)
+   (label argv)
+   (asm!( (mov( (: 0 U64) (: R10 Reg64) )) ))
+   (asm!( (deref( (: R8 Reg64) (: R10B Reg8) )) ))
+   (asm!( (cmp( (: 0 U8) (: R10B Reg8) )) ))
+   (asm!( (je( begin )) ))
+   (asm!( (mul( (: R9 Reg64) )) ))
+   (asm!( (sub( (: 48 U64) (: R10 Reg64) )) ))
+   (asm!( (add( (: R10 Reg64) (: RAX Reg64) )) ))
+   (asm!( (inc( (: R8 Reg64) )) ))
+   (asm!( (jmp( argv )) ))
+   (label begin)
+   (fib( (as (: RAX Reg64) U64) ))
+);

@@ -96,8 +96,8 @@ n
 50
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="1015,712 1015,717 "/>
-<polyline fill="none" opacity="0.9" stroke="#E6194B" stroke-width="3" points="68,585 162,592 257,592 352,592 446,592 541,548 636,453 730,340 "/>
-<polyline fill="none" opacity="0.9" stroke="#3CB44B" stroke-width="3" points="68,585 162,592 257,592 352,592 446,601 541,592 636,573 730,500 "/>
+<polyline fill="none" opacity="0.9" stroke="#E6194B" stroke-width="3" points="68,645 162,645 257,678 352,601 446,678 541,678 636,592 730,486 825,373 920,258 "/>
+<polyline fill="none" opacity="0.9" stroke="#3CB44B" stroke-width="3" points="68,585 162,592 257,601 352,592 446,601 541,592 636,573 730,499 825,390 920,276 "/>
 <rect x="874" y="358" width="137" height="44" opacity="1" fill="none" stroke="#000000"/>
 <text x="914" y="368" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
 Lambda Mountain
