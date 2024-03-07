@@ -1536,13 +1536,18 @@ apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
             (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1)
          ))
       )))
-      ( l (tail(
+      ( (Fragment( vname body )) (tail(
+         ()
+         (assemble-apply-fragment( ctx body arg offset ))
+      )))
+      ( (StackVariable _) (tail(
          (set e1 (compile-expr( ctx arg offset used )))
+         (local l)
          (set l (get-local( ctx fname )))
          (if l () (fail (UnknownFunctionLocal fname)))
          (Expr( (get-frame e1) (l (get-prog e1)) (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
       )))
-      ( () (fail (UnknownFunctionCall fname)) )
+      ( l (fail (UnknownFunctionCall fname l)) )
    ))
 ));
 
