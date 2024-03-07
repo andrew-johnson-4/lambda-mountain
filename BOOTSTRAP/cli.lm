@@ -573,15 +573,19 @@ typecheck-assert-expr := λe . (tail(
       ( Nil (
          (typecheck-assert-one( e ))
       ))
+      ( (App( (Variable 'gensym-label) _ )) (
+      ))
+      ( (App( (Variable 'label) (Variable l) )) (
+      ))
       ( (App( (App( (Literal :) (Literal _) )) tt )) (
+         (typecheck-assert-one( e ))
+      ))
+      ( (App( (App( (Variable 'as) te )) tt )) (
+         (typecheck-assert-expr( te ))
          (typecheck-assert-one( e ))
       ))
       ( (App( (App( (Literal :) te )) tt )) (
          (typecheck-assert-expr( te ))
-         (typecheck-assert-one( e ))
-      ))
-      ( (App( (App( (Variable v) ve )) tt )) (
-         (typecheck-assert-expr( ve ))
          (typecheck-assert-one( e ))
       ))
       ( (Literal lit) (
@@ -706,7 +710,7 @@ typecheck-show-ascript := λp . (tail(
 
 typecheck-infer-prog := λp . (
    (while p (
-      (typecheck-infer-expr( typecheck-global-context (tail p) ))
+      (typecheck-infer-expr( () (tail p) ))
       (set p (head p))
    ))
 );
@@ -966,110 +970,118 @@ typecheck-infer-type-expr := λe . (match e (
    (_ ())
 ));
 
-typecheck-infer-expr := λctx e . (
-      match e (
-         ()
-         ( () () )
-         ( (GExpr ge) (
-            (typecheck-infer-expr( ctx ge ))
-         ))
-         ( (Global( gln gle )) (
-            (typecheck-infer-expr( ctx gle ))
-            (match (typecheck-lookup-type gle) (
-               ()
-               ( () () )
-               ( glt (
-                  (set typecheck-global-context ( typecheck-global-context (Global( gln glt )) ))
-                  (typecheck-ascript( e '? ))
-               ))
+typecheck-infer-expr := λctx e . (tail(
+   (match e (
+      ()
+      ( () () )
+      ( (GExpr ge) (
+         (typecheck-infer-expr( ctx ge ))
+      ))
+      ( (Global( gln gle )) (
+         (typecheck-infer-expr( ctx gle ))
+         (match (typecheck-lookup-type gle) (
+            ()
+            ( () () )
+            ( glt (
+               (set typecheck-global-context ( typecheck-global-context (Global( gln glt )) ))
+               (typecheck-ascript( e '? ))
             ))
          ))
-         ( (Type( l ds )) ())
-         ( (Fragment( fln fle )) (
-               (match fle (
+      ))
+      ( (Type( l ds )) () )
+      ( (Fragment( fln fle )) (
+         (match fle (
+            ()
+            ( (Lambda( lhs rhs )) (
+               (local flt)
+               (set flt ('->( (typecheck-typeof-lhs lhs) Fragment )) )
+               (typecheck-ascript( fle flt ))
+               (match fln (
                   ()
-                  ( (Lambda( lhs rhs )) (
-                     (local flt)
-                     (set flt ('->( (typecheck-typeof-lhs lhs) Fragment )) )
-                     (typecheck-ascript( fle flt ))
-                     (match fln (
-                        ()
-                        ( (Variable flnv) (
-                           (set typecheck-global-context ( typecheck-global-context (Global( flnv flt )) ))
-                        ))
-                     ))
+                  ( (Variable flnv) (
+                     (set typecheck-global-context ( typecheck-global-context (Global( flnv flt )) ))
                   ))
                ))
-         ))
-         ( Nil (
-            (typecheck-ascript( e Nil ))
-         ))
-         ( (App( (App( (Literal :) (Literal _) )) tt )) (
-            (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
-         ))
-         ( (App( (App( (Literal :) asc )) tt )) (
-            (typecheck-infer-expr( ctx asc ))
-            (typecheck-ascript( asc (typecheck-infer-type-compound tt) ))
-            (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
-         ))
-         ( (App( (App( (Variable 'as) ast )) ett )) (
-            (typecheck-infer-expr( ctx ast ))
-            (typecheck-ascript( e (typecheck-infer-type-compound ett) ))
-         ))
-         ( (Literal lit) (
-            (local ctype)
-            (set ctype (typecheck-infer-constructor-type lit))
-            (if ctype (
-               (typecheck-ascript( e (And( ctype Atom )) ))
-            ) (
-               (typecheck-ascript( e Atom ))
             ))
          ))
-         ( (App( l r )) (
-            (typecheck-infer-expr( ctx l ))
-            (typecheck-infer-expr( ctx r ))
-            (match ( (typecheck-lookup-type l) (typecheck-lookup-type r) ) (
-               ()
-               ( (() _) () )
-               ( (_ ()) () )
-               ( ( ('->(lt rt)) pt ) (
-                  (typecheck-ascript( e (typecheck-safe-apply-plural( e ('->(lt rt)) pt )) ))
-               ))
-               ( ( (And(t1 t2)) pt ) (
-                  (typecheck-ascript( e (typecheck-safe-apply-plural( e (And(t1 t2)) pt )) ))
-               ))
-               ( (Fragment _) (
-                  (typecheck-ascript( e Fragment ))
-               ))
-               ( (_ Fragment) (
-                  (typecheck-ascript( e Fragment ))
-               ))
-               ( (lt rt) (
-                  (typecheck-ascript( e (Cons(lt rt)) ))
-               ))
+      ))
+      ( Nil (
+         (typecheck-ascript( e Nil ))
+      ))
+      ( (App( (Variable 'gensym-label) (Variable lname) )) (
+         (set ctx ( ctx (lname Label) ))
+         (typecheck-ascript( e Fragment ))
+      ))
+      ( (App( (Variable 'label) (Variable lname) )) (
+         (typecheck-ascript( e Fragment ))
+      ))
+      ( (App( (App( (Literal ':) (Literal _) )) tt )) (
+         (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
+      ))
+      ( (App( (App( (Literal ':) asc )) tt )) (
+         (typecheck-infer-expr( ctx asc ))
+         (typecheck-ascript( asc (typecheck-infer-type-compound tt) ))
+         (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
+      ))
+      ( (App( (App( (Variable 'as) ast )) ett )) (
+         (typecheck-infer-expr( ctx ast ))
+         (typecheck-ascript( e (typecheck-infer-type-compound ett) ))
+      ))
+      ( (Literal lit) (
+         (local ctype)
+         (set ctype (typecheck-infer-constructor-type lit))
+         (if ctype (
+            (typecheck-ascript( e (And( ctype Atom )) ))
+         ) (
+            (typecheck-ascript( e Atom ))
+         ))
+      ))
+      ( (App( l r )) (tail(
+         (set ctx (typecheck-infer-expr( ctx l )))
+         (set ctx (typecheck-infer-expr( ctx r )))
+         (match ( (typecheck-lookup-type l) (typecheck-lookup-type r) ) (
+            ()
+            ( (() _) () )
+            ( (_ ()) () )
+            ( ( ('->(lt rt)) pt ) (
+               (typecheck-ascript( e (typecheck-safe-apply-plural( e ('->(lt rt)) pt )) ))
+            ))
+            ( ( (And(t1 t2)) pt ) (
+               (typecheck-ascript( e (typecheck-safe-apply-plural( e (And(t1 t2)) pt )) ))
+            ))
+            ( (Fragment rt) (
+               (typecheck-ascript( e rt ))
+            ))
+            ( (_ Fragment) (
+               (typecheck-ascript( e Fragment ))
+            ))
+            ( (lt rt) (
+               (typecheck-ascript( e (Cons(lt rt)) ))
             ))
          ))
-         ( (Lambda( lhs rhs )) (
-            (set ctx (typecheck-infer-ctx( ctx lhs )))
-            (typecheck-infer-expr( ctx rhs ))
-            (match (typecheck-lookup-type rhs) (
-               ()
-               ( () () )
-               ( rt (
-                  (typecheck-ascript( e ('->( (typecheck-typeof-lhs lhs) rt)) ))
-               ))
+      )))
+      ( (Lambda( lhs rhs )) (tail(
+         (set ctx (typecheck-infer-ctx( ctx lhs )))
+         (typecheck-infer-expr( ctx rhs ))
+         (match (typecheck-lookup-type rhs) (
+            ()
+            ( () () )
+            ( rt (
+               (typecheck-ascript( e ('->( (typecheck-typeof-lhs lhs) rt)) ))
             ))
          ))
-         ( (Variable v) (
-            (match (typecheck-typeof-var( ctx v )) (
-               ()
-               ( () () )
-               ( tt (typecheck-ascript( e tt )) )
-            ))
+      )))
+      ( (Variable v) (
+         (match (typecheck-typeof-var( ctx v )) (
+            ()
+            ( () () )
+            ( tt (typecheck-ascript( e tt )) )
          ))
-         ( u (fail (UnknownTerm u)) )
-      )
-);
+      ))
+      ( u (fail (UnknownTerm u)) )
+   ))
+   ctx
+));
 
 # Assembler
 
@@ -1078,13 +1090,20 @@ compile-fragment := λctx e offset used . (match e (
    ( (App( (App( (Variable 'as) inner_e )) _ )) (
       (compile-fragment( ctx inner_e offset used ))
    ))
+   ( (App( (Variable 'label) (Variable lname) )) (tail(
+      (set e (get-fragment-local( ctx lname offset )))
+      (Expr(
+         () ( (get-prog e) ': \n ) () () () ctx offset
+      ))
+   )))
    ( (App( (Variable op) arg )) (tail(
       ()
       (match (get-maybe-function(ctx op (typecheck-lookup-type arg))) (
          ()
-         ( (Fragment( (Variable _) body )) (
+         ( (Fragment( (Variable _) body )) (tail(
+            ()
             (assemble-apply-fragment( ctx body arg offset ))
-         ))
+         )))
          ( v (
             (fail (ReferenceToUndefinedOperator op (typecheck-lookup-type arg)))
          ))
@@ -1101,6 +1120,10 @@ compile-fragment := λctx e offset used . (match e (
             (fail( UndefinedLiteralType ltype u ))
          ))
       ))
+   )))
+   ( (Variable v) (tail(
+      ()
+      (get-fragment-local( ctx v offset ))
    )))
    ( u (fail (UnknownFragment e)))
 );
@@ -1510,7 +1533,7 @@ apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
          (set e1 (compile-expr( ctx arg offset used )))
          (set l (get-local( ctx fname )))
          (if l () (fail (UnknownFunctionLocal fname)))
-         (Expr( (get-frame e1) (l (get-prog e1)) (get-unframe e1) (get-text e1) (get-data e1) ctx offset ))
+         (Expr( (get-frame e1) (l (get-prog e1)) (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
       )))
       ( () (fail (UnknownFunctionCall fname)) )
    ))
@@ -1651,6 +1674,15 @@ compile-expr := λctx e offset used . (tail(
       ( (App ((Variable 'local) (Variable fname))) (tail(
          (set e1 (declare-local(ctx fname offset)))
          (Expr( (get-frame e1) ((yield-nil()) (get-prog e1)) (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
+      )))
+      ( (App ((Variable 'label) (Variable lname))) (tail(
+         ()
+         (set e1 (compile-fragment( ctx e offset used )))
+         e1
+      )))
+      ( (App ((Variable 'gensym-label) (Variable fname))) (tail(
+         (set ctx (ctx (Label( fname (uuid()) )) ))
+         (Expr( () () () () () ctx offset ))
       )))
       ( (App( (Lambda( (Variable lhs) rhs )) bind )) (tail(
          (if config-strict (
@@ -2058,6 +2090,30 @@ get-maybe-literal := λctx arg_type . (tail(
          ))
       ))
       (set ctx (head ctx))
+   ))
+   r
+));
+
+get-fragment-local := λctx v offset . (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
+         ()
+         ( (Label(l uid)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (Expr(
+                     () uid () () () ctx offset
+                  )))
+               ) ()
+            )
+         ))
+         ( _ () )
+      ))
+      (set ctx (head ctx))
+   ))
+   (if r () (
+      (fail (ReferenceToUndefinedFragmentVariable v))
    ))
    r
 ));
@@ -2870,6 +2926,7 @@ yield-cons := λctx l r ce offset used . (tail(
             (Expr( ((get-frame e1) (get-frame e2)) ((get-prog e1) (get-prog e2)) ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
          )))
          ( (_ _ _) (tail(
+            ()
             (yield-cons-s( ctx l r ce offset used ))
          )))
       ))
