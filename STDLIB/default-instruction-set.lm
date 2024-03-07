@@ -52,10 +52,10 @@ fragment inc := λ(: r (Fragment Reg16)). ( \t 'inc \s '% r \n );
 fragment inc := λ(: r (Fragment Reg32)). ( \t 'inc \s '% r \n );
 fragment inc := λ(: r (Fragment Reg64)). ( \t 'inc \s '% r \n );
 
-fragment get := λ(: src Offset)(: dst (Fragment Reg8)). ( \t 'mov \s src \[ '%rbp \] , \s '% dst \n );
-fragment get := λ(: src Offset)(: dst (Fragment Reg16)). ( \t 'mov \s src \[ '%rbp \] , \s '% dst \n );
-fragment get := λ(: src Offset)(: dst (Fragment Reg32)). ( \t 'mov \s src \[ '%rbp \] , \s '% dst \n );
-fragment get := λ(: src Offset)(: dst (Fragment Reg64)). ( \t 'mov \s src \[ '%rbp \] , \s '% dst \n );
+fragment get := λ(: src (Fragment Offset))(: dst (Fragment Reg8)). ( \t 'mov \s src \[ '%rbp \] , \s '% dst \n );
+fragment get := λ(: src (Fragment Offset))(: dst (Fragment Reg16)). ( \t 'mov \s src \[ '%rbp \] , \s '% dst \n );
+fragment get := λ(: src (Fragment Offset))(: dst (Fragment Reg32)). ( \t 'mov \s src \[ '%rbp \] , \s '% dst \n );
+fragment get := λ(: src (Fragment Offset))(: dst (Fragment Reg64)). ( \t 'mov \s src \[ '%rbp \] , \s '% dst \n );
 
 fragment sub := λ(: imm (Fragment U8))(: dst (Fragment Reg8)). ( \t 'sub \s $ imm \s , \s '% dst \n );
 fragment sub := λ(: imm (Fragment U16))(: dst (Fragment Reg16)). ( \t 'sub \s $ imm \s , \s '% dst \n );

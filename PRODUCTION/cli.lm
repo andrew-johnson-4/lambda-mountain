@@ -1115,17 +1115,9 @@ compile-fragment := λctx e offset used . (match e (
          ))
       ))
    )))
-   ( (App( (App( (Literal :) (Literal lval) )) (Literal ltype) )) (tail(
-      ()
-      (match (get-maybe-literal(ctx ltype)) (
-         ()
-         ( (Fragment( fname body )) (
-            (assemble-apply-literal( ctx body e offset ))
-         ))
-         ( u (
-            (fail( UndefinedLiteralType ltype u ))
-         ))
-      ))
+   ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
+      (set ltype (typecheck-infer-type-compound ltype))
+      (Expr( () lval () () () ctx offset ))
    )))
    ( (Variable v) (tail(
       ()
@@ -1674,10 +1666,6 @@ compile-expr := λctx e offset used . (tail(
             (Expr( () (get-local(ctx vname)) () () () ctx offset ))
          ))
       )))
-      ( (App( (Variable 'asm!) asm_expr )) (tail(
-         (set prog (compile-fragment( ctx asm_expr offset used )))
-         (Expr( () (get-prog prog) () () () ctx offset ))
-      )))
       ( (App( (App( (Literal :) (Literal lval) )) (Literal ltype) )) (tail(
          ()
          (fail (TODO CompileExpressionLiteral e))
@@ -1987,21 +1975,23 @@ get-local := λctx v . (tail(
                   (local dst)
                   (match size (
                      ()
-                     (1 (set dst ( R12B Reg8 )))
-                     (2 (set dst ( R12W Reg16 )))
-                     (4 (set dst ( R12D Reg32 )))
-                     (8 (set dst ( R12 Reg64 )))
+                     (1 (set dst ( R12B (Fragment Reg8) )))
+                     (2 (set dst ( R12W (Fragment Reg16) )))
+                     (4 (set dst ( R12D (Fragment Reg32) )))
+                     (8 (set dst ( R12 (Fragment Reg64) )))
                      (u (fail (InvalidStackVariableSize u)))
                   ))
                   (local arg_type)
-                  (set arg_type (Cons( Offset (tail dst) )))
+                  (set arg_type (Cons( (Fragment Offset) (tail dst) )))
                   (match (get-maybe-function( ctx 'get arg_type )) (
                      ()
                      ( (Fragment( fname body )) (tail(
                         (local arg)
                         (set arg (
                            (App(
-                               (App( (App( (Literal :) (Literal offset) )) (Literal Offset) ))
+                               (App( (App( (Literal :) (Literal offset) ))
+                                  (App( (Literal Fragment) (Literal Offset) ))
+                               ))
                                (App( (App( (Literal :) (Literal (head dst)) )) (Literal (tail dst)) ))
                            ))
                         ))
@@ -2014,6 +2004,13 @@ get-local := λctx v . (tail(
          ))
          ( (GlobalFunction( _ _ )) () )
          ( (Fragment( _ _ )) () )
+         ( (Label( l luid )) (
+            if r () (
+               if (eq(l v)) (
+                  (set r luid)
+               ) ()
+            )
+         ) )
          ( u (
             (fail (InvalidLocal u))
          ))
@@ -2090,24 +2087,6 @@ get-offset := λe . (match e (
 mangle-global-function := λname body . (
    (clone-rope (label-case ( name : (typecheck-lookup-type body) )))
 );
-
-get-maybe-literal := λctx arg_type . (tail(
-   (local r)
-   (while ctx (
-      (match (tail ctx) (
-         ()
-         ( (Fragment( (Literal name) body )) (
-            (if r () (
-               (if (eq(name arg_type)) (
-                  (set r (Fragment( (Literal name) body )))
-               ) ())
-            ))
-         ))
-      ))
-      (set ctx (head ctx))
-   ))
-   r
-));
 
 get-fragment-local := λctx v offset . (tail(
    (local r)
