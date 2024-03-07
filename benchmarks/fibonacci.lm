@@ -17,6 +17,7 @@ main := (
    (asm!( (pop( (: R8 Reg64) )) ))
    (asm!( (pop( (: R8 Reg64) )) ))
    (asm!( (pop( (: R8 Reg64) )) ))
+   (asm!( (pop( (: R8 Reg64) )) ))
    (asm!( (mov( (: 0 U64) (: RAX Reg64) )) ))
    (asm!( (mov( (: 10 U64) (: R9 Reg64) )) ))
    (gensym-label argv)
@@ -32,5 +33,8 @@ main := (
    (asm!( (dec( (: R8 Reg64) )) ))
    (asm!( (jmp( argv )) ))
    (label begin)
-   (fib( (as (: R9 Reg64) U64) ))
+   (asm!( (mov( (: RAX Reg64) (: RDI Reg64) )) ))
+   (asm!( (mov( (: 60 U64) (: RAX Reg64) )) ))
+   (asm!( (syscall()) ))
+   (fib( (as (: RAX Reg64) U64) ))
 );
