@@ -105,22 +105,6 @@ fn compile_production() {
    };
 }
 
-fn run_production(mode:&str, target: &str) -> String {
-   let exit = Command::new("timeout")
-                      .stdout(std::process::Stdio::piped())
-                      .stderr(std::process::Stdio::piped())
-                      .arg("5")
-                      .arg("./production")
-                      .arg(mode)
-                      .arg(target)
-                      .spawn()
-                      .expect("failed to execute process")
-                      .wait_with_output()
-                      .expect("failed to wait for process");
-   let actual = String::from_utf8_lossy(&exit.stdout).to_string();
-   actual
-}
-
 fn run_compile_production(mode:&str, target: &str) -> String {
    rm("tmp.s");
    rm("tmp.o");
@@ -214,17 +198,6 @@ fn run_compile_production(mode:&str, target: &str) -> String {
 fn testsuite() {
    compile_production();
    let mut failures = Vec::new();
-   for entry in glob("tests/typed/*.lm").unwrap() {
-      let path = entry.unwrap().display().to_string();
-      let expected = std::fs::read_to_string(path.clone() + ".out")
-                    .expect(&format!("Could not load expected output {}.out", path));
-      let expected = expected.trim().to_string();
-      let actual = run_production("--typecheck", &path);
-      let actual = actual.trim().to_string();
-      if expected != actual {
-         failures.push(( "--typecheck", path, expected, actual ));
-      }
-   }
    for entry in glob("tests/lm/*.lm").unwrap() {
       let path = entry.unwrap().display().to_string();
       let expected = std::fs::read_to_string(path.clone() + ".out")

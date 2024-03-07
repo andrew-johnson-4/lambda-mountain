@@ -7,4 +7,4 @@ fib := λ(: x U64). (: (
    (label low)
 ) U64);
 
-main := fib( (: 35 U64) );
+main := fib( (as (: 35 (Fragment U64)) U64) );
