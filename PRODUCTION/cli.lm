@@ -50,36 +50,36 @@ main := (
 
    (while args (match args (
       ()
-      ( (-o (tgt remainder)) (
+      ( ('-o (tgt remainder)) (
          (set cli-config ( cli-config (Target tgt)))
          (set args remainder)
       ))
-      ( (--compile remainder) (
+      ( ('--compile remainder) (
          (set mode Compile)
          (set args remainder)
       ))
-      ( (--strict remainder) (
+      ( ('--strict remainder) (
          (set config-strict True)
          (set args remainder)
       ))
-      ( (--parse remainder) (
+      ( ('--parse remainder) (
          (set mode Parse)
          (set args remainder)
       ))
-      ( (--nostd remainder) (
+      ( ('--nostd remainder) (
          (set config-strict True)
          (set config-nostd True)
          (set args remainder)
       ))
-      ( (--parse-expression remainder) (
+      ( ('--parse-expression remainder) (
          (set mode ParseExpression)
          (set args remainder)
       ))
-      ( (--tokenize remainder) (
+      ( ('--tokenize remainder) (
          (set mode Tokenize)
          (set args remainder)
       ))
-      ( (--typecheck remainder) (
+      ( ('--typecheck remainder) (
          (set mode Typecheck)
          (set args remainder)
       ))
