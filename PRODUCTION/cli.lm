@@ -2848,9 +2848,6 @@ yield-cons-s := λctx l r ce offset used . (tail(
 ));
 
 yield-cons := λctx l r ce offset used . (tail(
-   (print-s (YieldConsl (typecheck-lookup-type l) l))(print-s \n)
-   (print-s (YieldConsR (typecheck-lookup-type r) r))(print-s \n)
-   (print-s (YieldConsCE (typecheck-lookup-type ce) ce))(print-s \n)
    (local e1)
    (local e2)
    (if config-strict (tail(
@@ -2862,12 +2859,12 @@ yield-cons := λctx l r ce offset used . (tail(
       (set typece (typecheck-lookup-type ce))
       (match (typel typer typece) (
          ()
-         ( (_ Fragment Fragment) (tail(
+         ( (_ Fragment _) (tail(
             (set e1 (compile-expr( ctx l offset Used )))
             (set e2 (compile-expr( (get-pc e1) r (get-offset e1) Used )))
             (Expr( ((get-frame e1) (get-frame e2)) ((get-prog e1) (get-prog e2)) ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
          )))
-         ( (Fragment _ Fragment) (tail(
+         ( (Fragment _ _) (tail(
             (set e1 (compile-expr( ctx l offset Used )))
             (set e2 (compile-expr( (get-pc e1) r (get-offset e1) Used )))
             (Expr( ((get-frame e1) (get-frame e2)) ((get-prog e1) (get-prog e2)) ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
