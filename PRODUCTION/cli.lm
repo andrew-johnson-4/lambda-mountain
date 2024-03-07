@@ -1118,7 +1118,10 @@ compile-fragment := λctx e offset used . (match e (
          ))
       ))
    )))
-   ( (Variable v) (get-fragment-local( ctx v offset )) )
+   ( (Variable v) (tail(
+      ()
+      (get-fragment-local( ctx v offset ))
+   )))
    ( u (fail (UnknownFragment e)))
 );
 
@@ -1527,7 +1530,7 @@ apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
          (set e1 (compile-expr( ctx arg offset used )))
          (set l (get-local( ctx fname )))
          (if l () (fail (UnknownFunctionLocal fname)))
-         (Expr( (get-frame e1) (l (get-prog e1)) (get-unframe e1) (get-text e1) (get-data e1) ctx offset ))
+         (Expr( (get-frame e1) (l (get-prog e1)) (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
       )))
       ( () (fail (UnknownFunctionCall fname)) )
    ))
@@ -1671,7 +1674,8 @@ compile-expr := λctx e offset used . (tail(
       )))
       ( (App ((Variable 'label) (Variable lname))) (tail(
          ()
-         (compile-fragment( ctx e offset used ))
+         (set e1 (compile-fragment( ctx (Variable lname) offset used )))
+         e1
       )))
       ( (App ((Variable 'gensym-label) (Variable fname))) (tail(
          (set ctx (ctx (Label( fname (uuid()) )) ))
@@ -2106,7 +2110,7 @@ get-fragment-local := λctx v offset . (tail(
       (set ctx (head ctx))
    ))
    (if r () (
-      (fail (ReferenceToUndefinedVariable v))
+      (fail (ReferenceToUndefinedFragmentVariable v))
    ))
    r
 ));
@@ -2919,6 +2923,7 @@ yield-cons := λctx l r ce offset used . (tail(
             (Expr( ((get-frame e1) (get-frame e2)) ((get-prog e1) (get-prog e2)) ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
          )))
          ( (_ _ _) (tail(
+            ()
             (yield-cons-s( ctx l r ce offset used ))
          )))
       ))

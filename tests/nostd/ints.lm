@@ -1,6 +1,6 @@
 
 fib := λ(: x U64). (: (
-#   x # put result into %r12
+   x # put result into %r12
    (gensym-label low)
    (asm!( (cmp( (: 1 U64) (: R12 Reg64) )) ))
    (asm!( (jle( low )) ))
