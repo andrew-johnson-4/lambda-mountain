@@ -582,10 +582,6 @@ typecheck-assert-expr := λe . (tail(
          (typecheck-assert-expr( te ))
          (typecheck-assert-one( e ))
       ))
-      ( (App( (App( (Variable v) ve )) tt )) (
-         (typecheck-assert-expr( ve ))
-         (typecheck-assert-one( e ))
-      ))
       ( (Literal lit) (
          (typecheck-assert-one( e ))
       ))
@@ -1008,6 +1004,7 @@ typecheck-infer-expr := λctx e . (tail(
       ))
       ( (App( (Variable 'gensym-label) (Variable lname) )) (
          (set ctx ( ctx (lname Label) ))
+         (typecheck-ascript( e Fragment ))
       ))
       ( (App( (App( (Literal ':) (Literal _) )) tt )) (
          (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
@@ -1043,8 +1040,8 @@ typecheck-infer-expr := λctx e . (tail(
             ( ( (And(t1 t2)) pt ) (
                (typecheck-ascript( e (typecheck-safe-apply-plural( e (And(t1 t2)) pt )) ))
             ))
-            ( (Fragment _) (
-               (typecheck-ascript( e Fragment ))
+            ( (Fragment rt) (
+               (typecheck-ascript( e rt ))
             ))
             ( (_ Fragment) (
                (typecheck-ascript( e Fragment ))
