@@ -12,6 +12,10 @@ More information is available on the [λ☶ Wiki](https://github.com/andrew-john
 
 There is also a [Bootstrap Book](https://github.com/andrew-johnson-4/BootstrapBook) that explains the compiler internals in great detail.
 
+### Performance
+
+![Calculating the Fibonacci Sequence](https://raw.githubusercontent.com/andrew-johnson-4/-/master/benchmarks/fibonacci.svg)
+
 ### What is Ad-Hoc Specialization?
 
 If we have several overloaded functions then specialization lets us choose the best fit for any particular application.
