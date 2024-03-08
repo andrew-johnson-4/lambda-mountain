@@ -11,6 +11,7 @@ config-strict                            := ();
 cli-config                               := ();
 parse-parsed-program                     := ();
 parse-macros                             := ();
+parse-suffix                             := ();
 typecheck-subtypes                       := ();
 typecheck-context                        := ();
 typecheck-constructors                   := ();
@@ -262,6 +263,10 @@ parse-program := λtoks . (tail(
             (set parse-parsed-program ( parse-parsed-program (Type( (head pme) (head pme2) )) ))
             (set toks (tail pme2))
          ))
+         (('atom ('suffix (atype (suffix remainder)))) (
+            (set parse-suffix (parse-suffix (atype suffix)))
+            (set toks remainder)
+         ))
          (('size remainder) (
             (set pme (parse-one-expression remainder))
             (set remainder (tail pme))
@@ -387,35 +392,84 @@ parse-macro-substitute-uuids := λids program . (match program (
    ( a a )
 ));
 
-parse-apply-macros := λprogram . (tail(
-   (local macros)
-   (set macros parse-macros)
-   (while macros (match macros (
-      ()
-      ( (ms (Macro( lhs rhs ))) (tail(
-         (local new)
-         (set new (try-destructure-macro( lhs program )))
-         (if new (tail(
-            (set program (substitute-macro-body( new rhs )))
-            (set program (parse-macro-substitute-uuids (
-               (parse-macro-yield-uuids( () program ))
-               program
-            )))
-            (set program (parse-apply-macros program))
-         )) ())
-         (set macros ms)
-      )))
-      ( u (fail (UnrecognizedMacro u)))
-   )))
-   (match program (
-      ()
-      ( (l r) (
-         (parse-apply-macros l)
-         (parse-apply-macros r)
-      ))
-      ( () () )
-      (u u)
+is-suffix := λs suff . (tail(
+   (local match)
+   (while s (
+      (if (eq( s suff )) (set match True) ())
+      (set s (tail-string s))
    ))
+   match
+));
+
+remove-suffix := λs suff . (tail(
+   (local prefix)
+   (while s (
+      (if (eq( s suff )) (
+         (set s ())
+      ) (
+         (set prefix (prefix (clone-rope (head-string s))))
+         (set s (tail-string s))
+      ))
+   ))
+   (clone-rope prefix)
+));
+
+parse-apply-macros := λprogram . (match program (
+   ()
+   ( (Literal l) (tail(
+      (local suffixes)
+      (set suffixes parse-suffix)
+      (while suffixes (tail(
+         (local sfx)
+         (set sfx (tail (tail suffixes)) )
+         (if (is-suffix( l sfx )) (
+            (set program (
+               (App(
+                  (App(
+                     (Literal ':) 
+                     (Literal (remove-suffix( l sfx )))
+                  ))
+                  (App(
+                     (Literal Fragment)
+                     (Literal (head (tail suffixes)))
+                  ))
+               ))
+            ))
+         ) ())
+         (set suffixes (head suffixes))
+      )))
+      program
+   )))
+   ( _ (tail(
+      (local macros)
+      (set macros parse-macros)
+      (while macros (match macros (
+         ()
+         ( (ms (Macro( lhs rhs ))) (tail(
+            (local new)
+            (set new (try-destructure-macro( lhs program )))
+            (if new (tail(
+               (set program (substitute-macro-body( new rhs )))
+               (set program (parse-macro-substitute-uuids (
+                  (parse-macro-yield-uuids( () program ))
+                  program
+               )))
+               (set program (parse-apply-macros program))
+            )) ())
+            (set macros ms)
+         )))
+         ( u (fail (UnrecognizedMacro u)))
+      )))
+      (match program (
+         ()
+         ( (l r) (
+            (parse-apply-macros l)
+            (parse-apply-macros r)
+         ))
+         ( () () )
+         (u u)
+      ))
+   )))
 ));
 
 parse-lambda := λtoks . (tail(
@@ -1671,7 +1725,7 @@ compile-expr := λctx e offset used . (tail(
             (Expr( () (get-local(ctx vname)) () () () ctx offset ))
          ))
       )))
-      ( (App( (App( (Literal :) (Literal lval) )) (Literal ltype) )) (tail(
+      ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
          ()
          (fail (TODO CompileExpressionLiteral e))
       )))
