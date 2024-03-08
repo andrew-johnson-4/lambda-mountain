@@ -441,7 +441,7 @@ parse-apply-macros := λprogram . (match program (
                      (Literal (remove-suffix( l sfx )))
                   ))
                   (App(
-                     (Literal Fragment)
+                     (Literal Constant)
                      (Literal (head (tail suffixes)))
                   ))
                ))
@@ -1098,7 +1098,7 @@ typecheck-infer-expr := λctx e . (tail(
          (typecheck-ascript( e Nil ))
       ))
       ( (App( (Variable 'gensym-label) (Variable lname) )) (
-         (set ctx ( ctx (lname (Fragment Label)) ))
+         (set ctx ( ctx (lname (Constant Label)) ))
          (typecheck-ascript( e Fragment ))
       ))
       ( (App( (Variable 'label) (Variable lname) )) (
@@ -2065,14 +2065,14 @@ get-local := λctx v . (tail(
                   (local dst)
                   (match size (
                      ()
-                     (1 (set dst ( R12B (Fragment Reg8) )))
-                     (2 (set dst ( R12W (Fragment Reg16) )))
-                     (4 (set dst ( R12D (Fragment Reg32) )))
-                     (8 (set dst ( R12 (Fragment Reg64) )))
+                     (1 (set dst ( R12B (Constant Reg8) )))
+                     (2 (set dst ( R12W (Constant Reg16) )))
+                     (4 (set dst ( R12D (Constant Reg32) )))
+                     (8 (set dst ( R12 (Constant Reg64) )))
                      (u (fail (InvalidStackVariableSize u)))
                   ))
                   (local arg_type)
-                  (set arg_type (Cons( (Fragment Offset) (tail dst) )))
+                  (set arg_type (Cons( (Constant Offset) (tail dst) )))
                   (match (get-maybe-function( ctx 'get arg_type )) (
                      ()
                      ( (Fragment( fname body )) (tail(
@@ -2080,7 +2080,7 @@ get-local := λctx v . (tail(
                         (set arg (
                            (App(
                                (App( (App( (Literal :) (Literal offset) ))
-                                  (App( (Literal Fragment) (Literal Offset) ))
+                                  (App( (Literal Constant) (Literal Offset) ))
                                ))
                                (App( (App( (Literal :) (Literal (head dst)) )) (Literal (tail dst)) ))
                            ))

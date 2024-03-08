@@ -2,9 +2,9 @@
 fib := λ(: x U64). (: (
    x # put result into %r12
    (gensym-label low)
-   (cmp( (: 1 (Fragment U64)) (: R12 (Fragment Reg64)) ))
+   (cmp( (: 1 (Constant U64)) (: R12 (Constant Reg64)) ))
    (jle( low ))
    (label low)
 ) U64);
 
-main := fib( (as (: 35 (Fragment U64)) U64) );
+main := fib( 35u64 );

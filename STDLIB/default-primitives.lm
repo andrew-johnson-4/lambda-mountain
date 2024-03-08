@@ -1,31 +1,12 @@
 
-type U8;  size U8 1;  atom suffix U8  u8;  accept as (Fragment U8)  U8;  accept as (StackVariable U8)  U8;
-type U16; size U16 2; atom suffix U16 u16; accept as (Fragment U16) U16; accept as (StackVariable U16) U16;
-type U32; size U32 4; atom suffix U32 u32; accept as (Fragment U32) U32; accept as (StackVariable U32) U32;
-type U64; size U64 8; atom suffix U64 u64; accept as (Fragment U64) U64; accept as (StackVariable U64) U64;
-type I8;  size I8 1;  atom suffix I8  i8;  accept as (Fragment I8)  I8;  accept as (StackVariable I8)  I8;
-type I16; size I16 2; atom suffix I16 i16; accept as (Fragment I16) I16; accept as (StackVariable I16) I16;
-type I32; size I32 4; atom suffix I32 i32; accept as (Fragment I32) I32; accept as (StackVariable I32) I32;
-type I64; size I64 8; atom suffix I64 i64; accept as (Fragment I64) I64; accept as (StackVariable I64) I64;
-
-# Give Fragments Nominal Trust for now
-fragment U8 := λ(: a Atom). ( a);
-fragment U16 := λ(: a Atom). ( a);
-fragment U32 := λ(: a Atom). ( a);
-fragment U64 := λ(: a Atom). ( a);
-fragment I8 := λ(: a Atom). ( a);
-fragment I16 := λ(: a Atom). ( a);
-fragment I32 := λ(: a Atom). ( a);
-fragment I64 := λ(: a Atom). ( a);
-
-fragment R8 := λ(: a U8). ( a);
-fragment R16 := λ(: a U16). ( a);
-fragment R32 := λ(: a U32). ( a);
-fragment R64 := λ(: a U64). ( a);
-fragment R8 := λ(: a I8). ( a);
-fragment R16 := λ(: a I16). ( a);
-fragment R32 := λ(: a I32). ( a);
-fragment R64 := λ(: a I64). ( a);
+type U8;  size U8 1;  atom suffix U8  u8;  accept as (Constant U8)  U8;  accept as (StackVariable U8)  U8;
+type U16; size U16 2; atom suffix U16 u16; accept as (Constant U16) U16; accept as (StackVariable U16) U16;
+type U32; size U32 4; atom suffix U32 u32; accept as (Constant U32) U32; accept as (StackVariable U32) U32;
+type U64; size U64 8; atom suffix U64 u64; accept as (Constant U64) U64; accept as (StackVariable U64) U64;
+type I8;  size I8 1;  atom suffix I8  i8;  accept as (Constant I8)  I8;  accept as (StackVariable I8)  I8;
+type I16; size I16 2; atom suffix I16 i16; accept as (Constant I16) I16; accept as (StackVariable I16) I16;
+type I32; size I32 4; atom suffix I32 i32; accept as (Constant I32) I32; accept as (StackVariable I32) I32;
+type I64; size I64 8; atom suffix I64 i64; accept as (Constant I64) I64; accept as (StackVariable I64) I64;
 
 fragment + := λ(: l (StackOffset U8))(: r (Constant U8)). (\t 'mov \s l \[ '%rbp \] , \s '%r12 \n \t 'add \s '$ r , \s '%r12 \n );
 fragment + := λ(: l (StackOffset U16))(: r (Constant U16)). (\t 'mov \s l \[ '%rbp \] , \s '%r12 \n \t 'add \s '$ r , \s '%r12 \n );
