@@ -38,7 +38,21 @@ f := λ(: y Y). y;
 f (: x X)
 ```
 
-Now both candidate functions “fit”, however X is a narrower type than Y. All X are Y, but not all Y are X. In this case we say that X is a “better fit” than Y.
+Now both candidate functions “fit”, however X is a narrower type than Y.
+All X are Y, but not all Y are X.
+In this case we say that X is a “better fit” than Y.
+
+```
+f := λ(: x X). form 1;
+f := λ(: x X). form 2;
+
+f (: x X)
+```
+
+In this example both candidate functions “fit” AND are equivalent.
+In this case we apply *metrics* to determine the best fit.
+A metric is an order that can be applied to term/type pairs to determine which is a “better fit” in non-semantic cases.
+Metrics are very useful when there exists multiple equivalent forms of code representation that have different performance characteristics.
 
 ### How does Ad-Hoc Specialization Work?
 
