@@ -11,7 +11,9 @@ config-strict                            := ();
 cli-config                               := ();
 parse-parsed-program                     := ();
 parse-macros                             := ();
+parse-suffix                             := ();
 typecheck-subtypes                       := ();
+typecheck-accept-as                      := ();
 typecheck-context                        := ();
 typecheck-constructors                   := ();
 typecheck-types-have-changed             := ();
@@ -262,6 +264,20 @@ parse-program := λtoks . (tail(
             (set parse-parsed-program ( parse-parsed-program (Type( (head pme) (head pme2) )) ))
             (set toks (tail pme2))
          ))
+         (('accept ('as remainder)) (
+            (set pme (parse-one-expression remainder))
+            (set remainder (tail pme))
+            (set pme2 (parse-many-expressions remainder))
+            (set typecheck-accept-as ( typecheck-accept-as (
+               (typecheck-infer-type-compound (head pme))
+               (typecheck-infer-type-compound (head pme2))
+            )))
+            (set toks (tail pme2))
+         ))
+         (('atom ('suffix (atype (suffix remainder)))) (
+            (set parse-suffix (parse-suffix (atype suffix)))
+            (set toks remainder)
+         ))
          (('size remainder) (
             (set pme (parse-one-expression remainder))
             (set remainder (tail pme))
@@ -387,35 +403,84 @@ parse-macro-substitute-uuids := λids program . (match program (
    ( a a )
 ));
 
-parse-apply-macros := λprogram . (tail(
-   (local macros)
-   (set macros parse-macros)
-   (while macros (match macros (
-      ()
-      ( (ms (Macro( lhs rhs ))) (tail(
-         (local new)
-         (set new (try-destructure-macro( lhs program )))
-         (if new (tail(
-            (set program (substitute-macro-body( new rhs )))
-            (set program (parse-macro-substitute-uuids (
-               (parse-macro-yield-uuids( () program ))
-               program
-            )))
-            (set program (parse-apply-macros program))
-         )) ())
-         (set macros ms)
-      )))
-      ( u (fail (UnrecognizedMacro u)))
-   )))
-   (match program (
-      ()
-      ( (l r) (
-         (parse-apply-macros l)
-         (parse-apply-macros r)
-      ))
-      ( () () )
-      (u u)
+is-suffix := λs suff . (tail(
+   (local match)
+   (while s (
+      (if (eq( s suff )) (set match True) ())
+      (set s (tail-string s))
    ))
+   match
+));
+
+remove-suffix := λs suff . (tail(
+   (local prefix)
+   (while s (
+      (if (eq( s suff )) (
+         (set s ())
+      ) (
+         (set prefix (prefix (clone-rope (head-string s))))
+         (set s (tail-string s))
+      ))
+   ))
+   (clone-rope prefix)
+));
+
+parse-apply-macros := λprogram . (match program (
+   ()
+   ( (Literal l) (tail(
+      (local suffixes)
+      (set suffixes parse-suffix)
+      (while suffixes (tail(
+         (local sfx)
+         (set sfx (tail (tail suffixes)) )
+         (if (is-suffix( l sfx )) (
+            (set program (
+               (App(
+                  (App(
+                     (Literal ':) 
+                     (Literal (remove-suffix( l sfx )))
+                  ))
+                  (App(
+                     (Literal Fragment)
+                     (Literal (head (tail suffixes)))
+                  ))
+               ))
+            ))
+         ) ())
+         (set suffixes (head suffixes))
+      )))
+      program
+   )))
+   ( _ (tail(
+      (local macros)
+      (set macros parse-macros)
+      (while macros (match macros (
+         ()
+         ( (ms (Macro( lhs rhs ))) (tail(
+            (local new)
+            (set new (try-destructure-macro( lhs program )))
+            (if new (tail(
+               (set program (substitute-macro-body( new rhs )))
+               (set program (parse-macro-substitute-uuids (
+                  (parse-macro-yield-uuids( () program ))
+                  program
+               )))
+               (set program (parse-apply-macros program))
+            )) ())
+            (set macros ms)
+         )))
+         ( u (fail (UnrecognizedMacro u)))
+      )))
+      (match program (
+         ()
+         ( (l r) (
+            (parse-apply-macros l)
+            (parse-apply-macros r)
+         ))
+         ( () () )
+         (u u)
+      ))
+   )))
 ));
 
 parse-lambda := λtoks . (tail(
@@ -858,7 +923,26 @@ typecheck-unify-implies := λlt rt . (if (eq(lt rt)) True (match lt (
    )))
 )));
 
-typecheck-unify-args := λlt rt . (match (lt rt) (
+typecheck-unify-args := λlt rt . (tail(
+   (local match)
+   (local accept-as)
+   (set accept-as typecheck-accept-as)
+   (while accept-as (
+      (if match () (
+         (if (deep-eq( (head (tail accept-as)) rt )) (
+            (set match (typecheck-unify-args-inner( lt (tail (tail accept-as)) )))
+         ) ())
+      ))
+      (set accept-as (head accept-as))
+   ))
+   (if match (
+      match
+   ) (
+      (typecheck-unify-args-inner( lt rt ))
+   ))
+));
+
+typecheck-unify-args-inner := λlt rt . (match (lt rt) (
    ()
    ( ((lt1 rt1) (lt2 rt2)) (
       (match ( (typecheck-unify-args(lt1 lt2)) (typecheck-unify-args(rt1 rt2)) ) (
@@ -900,9 +984,10 @@ typecheck-apply-plural := λmany pt . (match many(
       (set r (typecheck-apply-plural( t1 pt )))
       (if r r (typecheck-apply-plural( t2 pt )))
    )))
-   ( ('->(lt rt)) (
+   ( ('->(lt rt)) (tail(
+      ()
       (typecheck-unify-ctx( (typecheck-unify-args(lt pt)) rt ))
-   ))
+   )))
    ( u (fail (ApplicationIsNotAFunction many pt)))
 ));
 
@@ -1671,7 +1756,7 @@ compile-expr := λctx e offset used . (tail(
             (Expr( () (get-local(ctx vname)) () () () ctx offset ))
          ))
       )))
-      ( (App( (App( (Literal :) (Literal lval) )) (Literal ltype) )) (tail(
+      ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
          ()
          (fail (TODO CompileExpressionLiteral e))
       )))
@@ -2129,30 +2214,34 @@ get-maybe-function := λctx v arg_type . (tail(
                ) ()
             )
          ))
-         ( (Fragment( (Variable name) body )) (
-            if r () (
+         ( (Fragment( (Variable name) body )) (tail(
+            ()
+            (if r () (
                if (eq(name v)) (
-                  (local frag_type)
-                  (set frag_type (typecheck-lookup-type body))
-                  (local match_type)
-                  (set match_type (typecheck-apply-plural( frag_type arg_type )))
-                  (if match_type (
+                  (if config-strict (
+                     (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
+                        (set r (Fragment( (Variable name) body )))
+                     ) ())
+                  ) (
                      (set r (Fragment( (Variable name) body )))
-                  ) ())
+                  ))
                ) ()
-            )
-         ))
-         ( (GlobalFunction( name body )) (
-            if r () (
+            ))
+         )))
+         ( (GlobalFunction( name body )) (tail(
+            ()
+            (if r () (
                if (eq(name v)) (
-                  (local f_type)
-                  (set f_type (typecheck-lookup-type body))
-                  (if (deep-eq( (head(tail f_type)) arg_type )) (
+                  (if config-strict (
+                     (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
+                        (set r (GlobalFunction (mangle-global-function( name body ))))
+                     ) ())
+                  ) (
                      (set r (GlobalFunction (mangle-global-function( name body ))))
-                  ) ())
+                  ))
                ) ()
-            )
-         ))
+            ))
+         )))
          ( (GlobalVariable name) (
             if r () (
                if (eq(name v)) (

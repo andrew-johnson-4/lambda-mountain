@@ -1,6 +1,7 @@
 
 nostd: prod
-	./production --nostd -o tmp.s STDLIB/default-instruction-set.lm STDLIB/default-primitives.lm tests/nostd/ints.lm
+	./production -o tmp.s tests/lm/user_function_unsugared.lm
+#	./production --nostd -o tmp.s STDLIB/default-instruction-set.lm STDLIB/default-primitives.lm tests/nostd/normal_fib.lm
 	as -o tmp.o tmp.s
 	ld -o tmp tmp.o
 	./tmp
