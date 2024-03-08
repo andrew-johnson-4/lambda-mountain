@@ -965,9 +965,10 @@ typecheck-apply-plural := λmany pt . (match many(
       (set r (typecheck-apply-plural( t1 pt )))
       (if r r (typecheck-apply-plural( t2 pt )))
    )))
-   ( ('->(lt rt)) (
+   ( ('->(lt rt)) (tail(
+      (print-s (TypecheckApply lt pt))(print-s \n)
       (typecheck-unify-ctx( (typecheck-unify-args(lt pt)) rt ))
-   ))
+   )))
    ( u (fail (ApplicationIsNotAFunction many pt)))
 ));
 
@@ -2197,11 +2198,7 @@ get-maybe-function := λctx v arg_type . (tail(
          ( (Fragment( (Variable name) body )) (
             if r () (
                if (eq(name v)) (
-                  (local frag_type)
-                  (set frag_type (typecheck-lookup-type body))
-                  (local match_type)
-                  (set match_type (typecheck-apply-plural( frag_type arg_type )))
-                  (if match_type (
+                  (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
                      (set r (Fragment( (Variable name) body )))
                   ) ())
                ) ()
@@ -2210,9 +2207,7 @@ get-maybe-function := λctx v arg_type . (tail(
          ( (GlobalFunction( name body )) (
             if r () (
                if (eq(name v)) (
-                  (local f_type)
-                  (set f_type (typecheck-lookup-type body))
-                  (if (deep-eq( (head(tail f_type)) arg_type )) (
+                  (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
                      (set r (GlobalFunction (mangle-global-function( name body ))))
                   ) ())
                ) ()
