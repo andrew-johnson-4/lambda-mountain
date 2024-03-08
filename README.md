@@ -29,6 +29,8 @@ f (: x X)
 
 In this example the function application does not “fit” the application that expects a Y type argument, so there is only one possible candidate function.
 
+---
+
 ```
 type X implies Y;
 
@@ -41,6 +43,8 @@ f (: x X)
 Now both candidate functions “fit”, however X is a narrower type than Y.
 All X are Y, but not all Y are X.
 In this case we say that X is a “better fit” than Y.
+
+---
 
 ```
 f := λ(: x X). form 1;
