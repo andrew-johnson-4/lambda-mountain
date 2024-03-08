@@ -13,6 +13,7 @@ parse-parsed-program                     := ();
 parse-macros                             := ();
 parse-suffix                             := ();
 typecheck-subtypes                       := ();
+typecheck-accept-as                      := ();
 typecheck-context                        := ();
 typecheck-constructors                   := ();
 typecheck-types-have-changed             := ();
@@ -261,6 +262,16 @@ parse-program := λtoks . (tail(
             (set remainder (tail pme))
             (set pme2 (parse-many-expressions remainder))
             (set parse-parsed-program ( parse-parsed-program (Type( (head pme) (head pme2) )) ))
+            (set toks (tail pme2))
+         ))
+         (('accept ('as remainder)) (
+            (set pme (parse-one-expression remainder))
+            (set remainder (tail pme))
+            (set pme2 (parse-many-expressions remainder))
+            (set typecheck-accept-as ( typecheck-accept-as (
+               (typecheck-infer-type-compound (head pme))
+               (typecheck-infer-type-compound (head pme2))
+            )))
             (set toks (tail pme2))
          ))
          (('atom ('suffix (atype (suffix remainder)))) (

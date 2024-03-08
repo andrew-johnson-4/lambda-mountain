@@ -1,12 +1,12 @@
 
-type U8;  size U8 1;  atom suffix U8  u8;
-type U16; size U16 2; atom suffix U16 u16;
-type U32; size U32 4; atom suffix U32 u32;
-type U64; size U64 8; atom suffix U64 u64;
-type I8;  size I8 1;  atom suffix I8  i8;
-type I16; size I16 2; atom suffix I16 i16;
-type I32; size I32 4; atom suffix I32 i32;
-type I64; size I64 8; atom suffix I64 i64;
+type U8;  size U8 1;  atom suffix U8  u8;  accept as (Fragment U8)  U8;
+type U16; size U16 2; atom suffix U16 u16; accept as (Fragment U16) U16;
+type U32; size U32 4; atom suffix U32 u32; accept as (Fragment U32) U32;
+type U64; size U64 8; atom suffix U64 u64; accept as (Fragment U64) U64;
+type I8;  size I8 1;  atom suffix I8  i8;  accept as (Fragment I8)  I8;
+type I16; size I16 2; atom suffix I16 i16; accept as (Fragment I16) I16;
+type I32; size I32 4; atom suffix I32 i32; accept as (Fragment I32) I32;
+type I64; size I64 8; atom suffix I64 i64; accept as (Fragment I64) I64;
 
 # Give Fragments Nominal Trust for now
 fragment U8 := λ(: a Atom). ( a);
