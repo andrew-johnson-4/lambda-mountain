@@ -2214,24 +2214,34 @@ get-maybe-function := λctx v arg_type . (tail(
                ) ()
             )
          ))
-         ( (Fragment( (Variable name) body )) (
-            if r () (
+         ( (Fragment( (Variable name) body )) (tail(
+            ()
+            (if r () (
                if (eq(name v)) (
-                  (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
+                  (if config-strict (
+                     (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
+                        (set r (Fragment( (Variable name) body )))
+                     ) ())
+                  ) (
                      (set r (Fragment( (Variable name) body )))
-                  ) ())
+                  ))
                ) ()
-            )
-         ))
-         ( (GlobalFunction( name body )) (
-            if r () (
+            ))
+         )))
+         ( (GlobalFunction( name body )) (tail(
+            ()
+            (if r () (
                if (eq(name v)) (
-                  (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
+                  (if config-strict (
+                     (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
+                        (set r (GlobalFunction (mangle-global-function( name body ))))
+                     ) ())
+                  ) (
                      (set r (GlobalFunction (mangle-global-function( name body ))))
-                  ) ())
+                  ))
                ) ()
-            )
-         ))
+            ))
+         )))
          ( (GlobalVariable name) (
             if r () (
                if (eq(name v)) (
