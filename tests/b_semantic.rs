@@ -40,20 +40,6 @@ fn compile_bootstrap() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
       panic!("ld error code: {}", stderr);
    };
-   let exit = Command::new("./bootstrap")
-                      .stdout(std::process::Stdio::piped())
-                      .stderr(std::process::Stdio::piped())
-                      .arg("-o")
-                      .arg("bootstrap.s")
-                      .arg("BOOTSTRAP/cli.lm")
-                      .spawn()
-                      .expect("failed to execute process")
-                      .wait_with_output()
-                      .expect("failed to wait for process");
-   if !exit.status.success() {
-      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("bootstrap error code: {}", stderr);
-   };
 }
 
 fn compile_production() {
