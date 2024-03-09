@@ -19,8 +19,6 @@ import PRODUCTION/assemble.lm;
 config-nostd                             := ();
 config-strict                            := ();
 cli-config                               := ();
-assemble-text-section                    := ();
-assemble-data-section                    := ();
 compile-argv-hook                        := ();
 
 # Cli Entry Point
@@ -305,8 +303,6 @@ remove-suffix := λs suff . (tail(
    (clone-rope prefix)
 ));
 
-# Assembler
-
 compile-fragment := λctx e offset used . (match e (
    ()
    ( (App( (App( (Variable 'as) inner_e )) _ )) (
@@ -343,262 +339,6 @@ compile-fragment := λctx e offset used . (match e (
       (Expr( () val () () () ctx offset ))
    ))
    ( u (fail (UnknownFragment e)))
-);
-
-assemble-destructure-fragment := λctx lmb args offset . (match lmb (
-   ()
-   # fragment annotations are required
-   ( (Lambda( (App( (App( (Literal :) (Variable v) )) _ )) body )) (tail(
-      (set args (compile-fragment( ctx args offset Used )))
-      (() (v args))
-   )))
-   ( (Lambda( (App( rst (App( (App( (Literal :) (Variable v) )) _ )) )) body )) (tail(
-      (local ds)
-      (set ds (assemble-destructure-fragment(
-         ctx (Lambda( rst body )) (head (tail args)) offset
-      )))
-      (set args (compile-fragment( ctx (tail (tail args)) offset Used )))
-      (ds (v args))
-   )))
-   ( (Lambda( Nil _ )) (
-      ()
-   ))
-   ( () () )
-   ( (Lambda( u _ )) (fail (UnrecgonizedDestructureFragment u)))
-   ( u (fail (UnrecgonizedDestructureFragment u)))
-));
-
-assemble-substitute-fragment := λsubs frag . (match frag (
-   ()
-   ( () () )
-   ( (Variable v) (tail(
-      (while subs (
-         (if (eq( v (head (tail subs)) )) (
-            (set v (tail (tail subs)))
-         ) (
-            (set subs (head subs))
-         ))
-      ))
-      v
-   )))
-   ( (Literal v) (tail(
-      (while subs (
-         (if (eq( v (head (tail subs)) )) (
-            (set v (tail (tail subs)))
-         ) (
-            (set subs (head subs))
-         ))
-      ))
-      (match v (
-         ()
-         (\\[ \[)
-         (\\] \])
-         (\\s \s)
-         (\\t \t)
-         (\\n \n)
-         (u u)
-      ))
-   )))
-   ( (App( l r )) (
-      (assemble-substitute-fragment( subs l ))
-      (assemble-substitute-fragment( subs r ))
-   ))
-   ( u (fail (UnknownFragmentSubstitution u)))
-));
-
-assemble-apply-literal := λctx arrow args offset . (match arrow (
-   ()
-   ( (Lambda( (App( (App( (Literal :) (Variable bind) )) ltype )) rhs )) (
-      (match args (
-         ()
-         ( (App( (App( (Literal :) (Literal val) )) vtype )) (
-            (Expr(
-               ()
-               (assemble-substitute-fragment(
-                  (() (bind val))
-                  rhs
-               ))
-               () () () ctx offset
-            ))
-         ))
-         ( u (fail (UnknownLiteral u)) )
-      ))
-   ))
-   ( u (fail (UnknownApplyLiteral u)) )
-));
-
-assemble-apply-fragment := λctx arrow args offset . (tail(
-   (local rc)
-   (set rc (assemble-destructure-fragment( ctx arrow args offset )))
-   (local frame)
-   (local unframe)
-   (local text)
-   (local data)
-   (local prog_subs)
-   (while rc (
-      (local rce)
-      (local rck)
-      (set rck (head (tail rc)))
-      (set rce (tail (tail rc)))
-      (set frame (frame (get-frame (tail rce))))
-      (set unframe (unframe (get-unframe (tail rce))))
-      (set text (text (get-text (tail rce))))
-      (set data (data (get-data (tail rce))))
-      (set prog_subs (prog_subs (
-         (head (tail rc))
-         (get-prog rce)
-      )))
-      (set rc (head rc))
-   ))
-   (set rc (match arrow (
-      ()
-      ( (Lambda( lhs rhs )) (Expr(
-         frame
-         (assemble-substitute-fragment( prog_subs rhs ))
-         unframe
-         text
-         data
-         ctx
-         offset
-      )))
-   )))
-   rc
-));
-
-assemble := λprogram . (
-   (local target)
-   (set target 'tmp.s)
-   (while cli-config (
-      (match (tail cli-config) (
-         ()
-         ((Target t) (set target t))
-      ))
-      (set cli-config (head cli-config))
-   ))
-
-   (local main_e)
-   (local main_pd)
-
-   (local e1)
-   (local e2)
-
-   (local output_pd)
-   (set output_pd ( () () ))
-
-   (local global_ctx)
-   (local preview_program)
-   (set preview_program program)
-
-   (while preview_program (match preview_program (
-      ()
-      ( (pc1 (Global ('main body))) (
-         (set preview_program pc1)
-      ))
-      ( (pc2 (GExpr e)) (
-         (set preview_program pc2)
-      ))
-      ( (pc3 (Global (fname body))) (
-         (match body (
-            ()
-            ( Nil (
-               (set output_pd (
-                  (head output_pd)
-                  (
-                     (tail output_pd)
-                     (label-case fname)
-                     ': \n \t '.zero \s '16 \n
-                  )
-               ))
-               (set global_ctx (global_ctx (GlobalVariable fname)))
-            ))
-            ( (Lambda(lhs rhs)) (
-               (set global_ctx (global_ctx (GlobalFunction( fname body ))))
-            ))
-         ))
-         (set preview_program pc3)
-      ))
-      ( (prog (Fragment( fname fbody ))) (
-         (set global_ctx (global_ctx (Fragment( fname fbody )) ))
-         (set preview_program prog)
-      ))
-      ( (prog (Type( _ _ ))) (
-         (set preview_program prog)
-      ))
-      ( (prog (Size( _ _ ))) (
-         (set preview_program prog)
-      ))
-      ( u (
-         (fail (UnexpectedProgram (tail u)))
-      ))
-   )))
-
-   (while program (match program (
-      ()
-      ( (pc (Global ('main body))) (
-         (set main_e body)
-         (set program pc)
-      ))
-      ( (pc (GExpr e)) (
-         (set main_pd (compile-append( main_pd global_ctx e )))
-         (set program pc)
-      ))
-      ( (pc (Global (fname body))) (
-         (match body (
-            ()
-            ( Nil (
-            ))
-            ( (Lambda(lhs rhs)) (
-               (if config-strict (
-                  (set e1 (define-calling-convention-stack( global_ctx fname body )))
-               ) (
-                  (set e1 (define-calling-convention-s( global_ctx fname body )))
-               ))
-               (set output_pd (
-                  ( (head output_pd) (get-text e1) )
-                  ( (tail output_pd) (get-data e1) )
-               ))
-            ))
-         ))
-         (set program pc)
-      ))
-      ( (pc (Fragment( _ _ ))) (
-         (set program pc)
-      ))
-      ( (pc (Type( _ _ ))) (
-         (set program pc)
-      ))
-      ( (pc (Size( _ _ ))) (
-         (set program pc)
-      ))
-      ( u (
-         (fail (UnexpectedProgram (tail u)))
-      ))
-   )))
-
-   (if main_e (
-      (set main_pd (compile-append( main_pd global_ctx main_e )))
-   ) ())
-
-   (set output_pd (
-      (
-         (assemble-program-header())
-         (before-main())
-         (enter-function())
-         (get-frame main_pd)
-         (get-prog main_pd)
-         (exit-cleanup())
-         (head output_pd)
-         (get-text main_pd)
-         (if config-nostd () (stdlib-functions()))
-      )
-      ((if config-nostd () (stdlib-data())) (tail output_pd) (get-data main_pd))
-   ))
-   (set output_pd (
-      ((head output_pd) assemble-text-section)
-      ((assemble-data-header()) (tail output_pd) assemble-data-section)
-   ))
-
-   (write-file (target (clone-rope output_pd)))
 );
 
 # Compile Codegen
@@ -1552,10 +1292,6 @@ destructure-args := λctx e offset . (match e (
 
 # Data Segments
 
-assemble-data-header := λ .(
-  '.data                                  \n
-);
-
 stdlib-data := λ .(
   'load_file_bsz:                         \n
   \t '.quad \s '1024                      \n
@@ -1589,13 +1325,6 @@ stdlib-data := λ .(
   'err_fopen:                             \n
   \t '.ascii \s '"Could \s 'not \s 'open \s 'file."  \n
   \t '.zero \s '1                         \n
-);
-
-assemble-program-header := λ .(
-   '.global \s '_start                    \n
-   '.text                                 \n
-   '_start:                               \n
-   \t 'jmp \s 'main                       \n
 );
 
 stdlib-functions := λ . (
