@@ -272,3 +272,773 @@ compile-expr := λctx e offset used . (tail(
    )))
 ));
 
+define-calling-convention-s := λ ctx fname lmb . (tail(
+   ()
+   (match lmb (
+      ()
+      ( (Lambda( lhs rhs )) (tail(
+         (local e1)
+         (local e2)
+         (local text)
+         (set e1 (destructure-args(ctx lhs ())))
+         (set e2 (compile-expr((get-pc e1) rhs (get-offset e1) Used)))
+         (set text ( text (mangle-global-function( fname lmb )) ': \n ))
+         (set text ( text (enter-function()) ))
+         (set text ( text (get-frame e1) (get-frame e2) ))
+         (set text ( text (get-prog e1) (get-prog e2) ))
+         (set text ( text (exit-function()) ))
+         (set text ( text (get-text e1) (get-text e2) ))
+         (Expr(
+            () () () text ( (get-data e1) (get-data e2) ) () ()
+         ))
+      )))
+   ))
+));
+
+define-sizeof-type := λ tt . (tail(
+   (local eight)
+   (set eight (inc(inc(inc(inc
+              (inc(inc(inc(inc ()
+              )))) )))) )
+   (match tt (
+      ()
+      (I8 (inc()) )
+      (U8 (inc()) )
+      (I16 (inc(inc())) )
+      (U16 (inc(inc())) )
+      (I32 (inc(inc(inc(inc())))) )
+      (U32 (inc(inc(inc(inc())))) )
+      (I64 eight )
+      (U64 eight )
+      (u (fail (UnknownSizeof tt)))
+   ))
+));
+
+define-calling-convention-stack-destructure-args := λ ctx lhs offset . (match lhs (
+   ()
+   ( (App( (App( (Literal :) (Variable lname) )) ltype )) (tail(
+      (set ltype (typecheck-infer-type-compound ltype))
+      (local size)
+      (set size (define-sizeof-type ltype))
+      (local new_offset)
+      (set new_offset (add( offset (define-sizeof-type ltype) )) )
+      (Expr(
+         () () () () ()
+         ( ctx (StackVariable(
+            lname (i2s (add( offset (mul( (dec()) size )) )) ) ltype
+         )) )
+         (i2s new_offset)
+      ))
+   )))
+   ( (App( more (App( (App( (Literal :) (Variable lname) )) ltype )) )) (tail(
+      (set ltype (typecheck-infer-type-compound ltype))
+      (local size)
+      (set size (define-sizeof-type ltype))
+      (local new_offset)
+      (set new_offset (add( offset (mul( (dec()) (define-sizeof-type ltype) )) )) )
+      (set ctx (define-calling-convention-stack-destructure-args( ctx more new_offset )))
+      (Expr(
+         () () () () ()
+         ( (get-pc ctx) (StackVariable(
+            lname (i2s (add( offset (mul( (dec()) size )) )) ) ltype
+         )) )
+         (get-offset ctx)
+      ))
+   )))
+   ( u (fail (UnknownStackArg lhs)))
+));
+
+define-calling-convention-stack := λ ctx fname lmb . (tail(
+   ()
+   (match lmb (
+      ()
+      ( (Lambda( lhs rhs )) (tail(
+         (local e1)
+         (local e2)
+         (local text)
+         (set e1 (define-calling-convention-stack-destructure-args( ctx lhs () )))
+         (set e2 (compile-expr( (get-pc e1) rhs (get-offset e1) Used)))
+         (set text ( text (mangle-global-function( fname lmb )) ': \n ))
+         (set text ( text (get-frame e2) ))
+         (set text ( text (get-prog e2) ))
+         (set text ( text (\t 'ret \n) ))
+         (set text ( text (get-text e2) ))
+         (Expr(
+            () () () text ( (get-data e2) ) () ()
+         ))
+      )))
+   ))
+));
+
+apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
+   (local e1)
+   (match (get-maybe-function(ctx fname (typecheck-lookup-type arg))) (
+      ()
+      ( (GlobalFunction mangledname) (tail(
+         (set e1 (destructure-calling-convention-stack( ctx e fname arg offset used )))
+         (Expr(
+            (get-frame e1)
+            ( (enter-function()) (get-prog e1) (\t 'call \s mangledname \n)
+              (\t 'mov \s '%rbp, \s '%rsp               \n
+               \t 'pop \s '%rbp                        \n) )
+            (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1)
+         ))
+      )))
+      ( (Fragment( vname body )) (tail(
+         ()
+         (assemble-apply-fragment( ctx body arg offset ))
+      )))
+      ( (StackVariable _) (tail(
+         (set e1 (compile-expr( ctx arg offset used )))
+         (local l)
+         (set l (get-local( ctx fname )))
+         (if l () (fail (UnknownFunctionLocal fname)))
+         (Expr( (get-frame e1) (l (get-prog e1)) (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
+      )))
+      ( l (fail (UnknownFunctionCall fname l)) )
+   ))
+));
+
+destructure-push-stack := λ ctx arg offset . (match arg (
+   ()
+   ( (App( (App( (Variable 'as) inner_arg )) tt )) (
+      (match (get-maybe-function(ctx 'push (typecheck-lookup-type inner_arg))) (
+         ()
+         ( (Fragment( (Variable _) body )) (
+            (assemble-apply-fragment( ctx body inner_arg offset ))
+         ))
+         ( v (
+            (fail (ReferenceToUndefinedVariable 'push (typecheck-lookup-type arg)))
+         ))
+      ))
+   ))
+   ( _ (
+      (match (get-maybe-function(ctx 'push (typecheck-lookup-type arg))) (
+         ()
+         ( (Fragment( (Variable _) body )) (
+            (assemble-apply-fragment( ctx body arg offset ))
+         ))
+         ( v (
+            (fail (ReferenceToUndefinedVariable 'push (typecheck-lookup-type arg)))
+         ))
+      ))
+   ))
+));
+
+destructure-calling-convention-stack := λ ctx e fname arg offset used . (tail(
+   ()
+   (match (typecheck-lookup-type arg) (
+      ()
+      ( (Cons( t1 t2 )) (
+         (match arg (
+            ()
+            ( (App( e1 e2 )) (tail(
+               (set e1 (destructure-calling-convention-stack( ctx e fname e1 offset used )))
+               (set e2 (destructure-calling-convention-stack( (get-pc e1) e fname e1 (get-offset e2) used )))
+               (Expr(
+                  ((get-frame e1) (get-frame e1))
+                  ((get-prog e1) (get-prog e1))
+                  ((get-unframe e1) (get-unframe e1))
+                  ((get-text e1) (get-text e1))
+                  ((get-data e1) (get-data e1))
+                  (get-pc e2)
+                  (get-offset e2)
+               ))
+            )))
+            ( v (
+               (fail (InvalidParameter fname arg))
+            ))
+         ))
+      ))
+      ( t1 (destructure-push-stack( ctx arg offset )) )
+   ))
+));
+
+apply-calling-convention-s := λ ctx e fname arg offset used . (tail(
+   (local e1)
+   (local prog)
+   (if (is-builtin fname) (tail(
+      ()
+      (if (eq(fname 'tail)) (tail(
+         (set e1 (compile-expr(ctx arg offset Tail)))
+         (Expr( (get-frame e1) (get-prog e1) (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
+      )) (tail(
+         (set e1 (compile-expr(ctx arg offset Used)))
+         (set prog ((get-prog e1) (\t 'call \s (label-case fname) \n)))
+         (Expr( (get-frame e1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
+      )))
+   )) (tail(
+      ()
+      (match (get-maybe-function(ctx fname (typecheck-lookup-type arg))) (
+         ()
+         ( (GlobalFunction mangledname) (tail(
+            (set e1 (compile-expr(ctx arg offset Used)))
+            (set prog ((get-prog e1) (\t 'call \s mangledname \n)))
+            (Expr( (get-frame e1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
+         )))
+         ( (Fragment( (Variable _) body )) (
+            (assemble-apply-fragment( ctx body arg offset ))
+         ))
+         ( () (
+            (fail (ReferenceToUndefinedVariable fname (typecheck-lookup-type arg)))
+         ))
+         ( v (tail(
+            ()
+            (yield-cons(ctx v arg e offset Used))
+         )))
+      ))
+   )))
+));
+
+get-local := λctx v . (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
+         ()
+         ( (Local(l lrefer)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r lrefer)
+               ) ()
+            )
+         ))
+         ( (GlobalVariable l) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (
+                     \t 'mov \s '$ (label-case l) , \s '%r15 \n
+                     \t 'mov \s '0 \[ '%r15 \] , \s '%r12     \n
+                     \t 'mov \s '8 \[ '%r15 \] , \s '%r13     \n
+                  ))
+               ) ()
+            )
+         ))
+         ( (StackVariable( l offset ltype )) (
+            if r () (
+               if (eq(l v)) (
+                  (local size)
+                  (set size (i2s (define-sizeof-type ltype)))
+                  # register allocation = '%r12, '%r13 only for now
+                  (local dst)
+                  (match size (
+                     ()
+                     (1 (set dst ( R12B (Constant Reg8) )))
+                     (2 (set dst ( R12W (Constant Reg16) )))
+                     (4 (set dst ( R12D (Constant Reg32) )))
+                     (8 (set dst ( R12 (Constant Reg64) )))
+                     (u (fail (InvalidStackVariableSize u)))
+                  ))
+                  (local arg_type)
+                  (set arg_type (Cons( (Constant Offset) (tail dst) )))
+                  (match (get-maybe-function( ctx 'get arg_type )) (
+                     ()
+                     ( (Fragment( fname body )) (tail(
+                        (local arg)
+                        (set arg (
+                           (App(
+                               (App( (App( (Literal :) (Literal offset) ))
+                                  (App( (Literal Constant) (Literal Offset) ))
+                               ))
+                               (App( (App( (Literal :) (Literal (head dst)) )) (Literal (tail dst)) ))
+                           ))
+                        ))
+                        (set r (get-prog (assemble-apply-fragment( ctx body arg () ))))
+                     )))
+                     (u (fail (UndefinedStackGetter 'get arg_type u)))
+                  ))
+               ) ()
+            )
+         ))
+         ( (GlobalFunction( _ _ )) () )
+         ( (Fragment( _ _ )) () )
+         ( (Label( l luid )) (
+            if r () (
+               if (eq(l v)) (
+                  (set r luid)
+               ) ()
+            )
+         ) )
+         ( u (
+            (fail (InvalidLocal u))
+         ))
+      ))
+      (set ctx (head ctx))
+   ))
+   (if r () (
+      (fail (ReferenceToUndefinedVariable v))
+   ))
+   r
+));
+
+set-local := λctx v . (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
+         ()
+         ( (Local((Set l) lrefer)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r lrefer)
+               ) ()
+            )
+         ))
+         ( (GlobalVariable l) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (
+                     \t 'mov \s '$ (label-case l) , \s '%r15 \n
+                     \t 'mov \s '%r12 , \s '0 \[ '%r15 \] \n
+                     \t 'mov \s '%r13 , \s '8 \[ '%r15 \] \n
+                  ))
+               ) ()
+            )
+         ))
+      ))
+      (set ctx (head ctx))
+   ))
+   (if r () (
+      (fail (AssignToUndefinedVariable v))
+   ))
+   r
+));
+
+mangle-global-function := λname body . (
+   (clone-rope (label-case ( name : (typecheck-lookup-type body) )))
+);
+
+get-fragment-local := λctx v offset . (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
+         ()
+         ( (Label(l uid)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (Expr(
+                     () uid () () () ctx offset
+                  )))
+               ) ()
+            )
+         ))
+         ( (StackVariable(l loffset ltype)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (Expr(
+                     () loffset () () () ctx offset
+                  )))
+               ) ()
+            )
+         ))
+         ( _ () )
+      ))
+      (set ctx (head ctx))
+   ))
+   (if r () (
+      (fail (ReferenceToUndefinedFragmentVariable v))
+   ))
+   r
+));
+
+get-maybe-function := λctx v arg_type . (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
+         ()
+         ( (Local(l lrefer)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (Variable l))
+               ) ()
+            )
+         ))
+         ( (Fragment( (Variable name) body )) (tail(
+            ()
+            (if r () (
+               if (eq(name v)) (
+                  (if config-strict (
+                     (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
+                        (set r (Fragment( (Variable name) body )))
+                     ) ())
+                  ) (
+                     (set r (Fragment( (Variable name) body )))
+                  ))
+               ) ()
+            ))
+         )))
+         ( (GlobalFunction( name body )) (tail(
+            ()
+            (if r () (
+               if (eq(name v)) (
+                  (if config-strict (
+                     (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
+                        (set r (GlobalFunction (mangle-global-function( name body ))))
+                     ) ())
+                  ) (
+                     (set r (GlobalFunction (mangle-global-function( name body ))))
+                  ))
+               ) ()
+            ))
+         )))
+         ( (GlobalVariable name) (
+            if r () (
+               if (eq(name v)) (
+                  (set r (GlobalVariable (label-case name)))
+               ) ()
+            )
+         ))
+         ( (StackVariable(name offset type)) (
+            if r () (
+               if (eq(name v)) (
+                  (set r (StackVariable( name offset type )))
+               ) ()
+            )
+         ))
+      ))
+      (set ctx (head ctx))
+   ))
+   r
+));
+
+declare-local := λctx vname offset . (tail(
+   (local frame_this)
+   (set frame_this (push-zero()))
+   (local refer)
+   (local eight)
+   (set eight (
+      inc(inc(inc(inc(inc(inc(inc(inc(
+         ()
+      ))))))))
+   ))
+   (local sixteen)
+   (set sixteen (mul( eight (inc(inc(()))) )))
+   (local set_this)
+   (set set_this (
+      \t 'mov \s '%r12, \s (
+         (i2s( (mul( (add( (mul( sixteen offset )) eight)) (dec(())) )) ))
+      ) \[ '%rbp \] \n
+      \t 'mov \s '%r13, \s (
+         (i2s( (mul( (add( (mul( sixteen offset )) sixteen)) (dec(())) )) ))
+      ) \[ '%rbp \] \n
+   ))
+   (set refer (
+      \t 'mov \s (
+         (i2s( (mul( (add( (mul( sixteen offset )) eight)) (dec(())) )) ))
+      ) \[ '%rbp \] , '%r12 \n
+      \t 'mov \s (
+         (i2s( (mul( (add( (mul( sixteen offset )) sixteen)) (dec(())) )) ))
+      ) \[ '%rbp \] , '%r13 \n
+   ))
+   (set ctx (ctx (Local(vname refer)) ))
+   (set ctx (ctx (Local((Set vname) set_this)) ))
+   (Expr(frame_this set_this () () () ctx (inc offset)))
+));
+
+destructure-args := λctx e offset . (match e (
+   ()
+   ( Nil (tail(
+      ()
+      (Expr( () () () () () ctx offset ))
+   )))
+   ( (App( (App( (Literal :) (Variable n) )) nt )) (tail(
+      ()
+      (declare-local(ctx n offset))
+   )))
+   ( (Variable n) (tail(
+      ()
+      (declare-local(ctx n offset))
+   )))
+   ( ( (App( h t )) ) (tail(
+      (local ta)
+      (set ta (destructure-args(ctx t offset)))
+      (set offset (get-offset ta))
+      (set ctx (get-pc ta))
+      (local ha)
+      (set ha (destructure-args(ctx h offset)))
+      (set offset (get-offset ha))
+      (set ctx (get-pc ha))
+      (local prog)
+      (set prog (prog (push-this()) ))
+      (set prog (prog (\t 'call \s 'tail \n) ))
+      (set prog (prog (get-prog ta) ))
+      (set prog (prog (pop-this()) ))
+      (set prog (prog (\t 'call \s 'head \n) ))
+      (set prog (prog (get-prog ha) ))
+      (Expr(
+         ( (get-frame ta) (get-frame ha) )
+         prog
+         ( (get-unframe ta) (get-unframe ha) )
+         () () ctx offset
+      ))
+   )))
+   ( _ (
+      (fail (InvalidFunctionParameters DidYouForgetToSeparateADotTokenInFunctionParam? e))
+   ))
+));
+
+yield-cons-s := λctx l r ce offset used . (tail(
+   (local e1)
+   (local e2)
+   (local prog)
+   (local rused)
+   (match used (
+      ()
+      ( Used (tail(
+         (set e1 (compile-expr( ctx l offset Used )))
+         (set offset (get-offset e1))
+         (set e2 (compile-expr( (get-pc e1) r (get-offset e1) Used )))
+         (set offset (get-offset e2))
+         (set prog (prog (get-prog e1)))
+         (set prog (prog (push-this())))
+         (set prog (prog (get-prog e2)))
+         (set prog (prog (close())))
+         (set prog (prog (pop-this())))
+         (set prog (prog (\t 'push \s '%r8 \n)))
+         (set prog (prog (close())))
+         (set prog (prog (\t 'mov \s '%r8, \s '%r12 \n)))
+         (set prog (prog (\t 'pop \s '%r13 \n)))
+         (Expr( ((get-frame e1) (get-frame e2)) prog ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
+      )))
+      ( _ (tail(
+         (set rused ( if (eq(used Tail)) Used Unused ))
+         (set e1 (compile-expr( ctx l offset Unused )))
+         (set e2 (compile-expr( (get-pc e1) r (get-offset e1) rused )))
+         (Expr( ((get-frame e1) (get-frame e2)) ((get-prog e1) (get-prog e2)) ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
+      )))
+   ))
+));
+
+yield-cons := λctx l r ce offset used . (tail(
+   (local e1)
+   (local e2)
+   (if config-strict (tail(
+      (local typel)
+      (set typel (typecheck-lookup-type l))
+      (local typer)
+      (set typer (typecheck-lookup-type r))
+      (local typece)
+      (set typece (typecheck-lookup-type ce))
+      (match (typel typer typece) (
+         ()
+         ( (_ Fragment _) (tail(
+            (set e1 (compile-expr( ctx l offset Used )))
+            (set e2 (compile-expr( (get-pc e1) r (get-offset e1) Used )))
+            (Expr( ((get-frame e1) (get-frame e2)) ((get-prog e1) (get-prog e2)) ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
+         )))
+         ( (Fragment _ _) (tail(
+            (set e1 (compile-expr( ctx l offset Used )))
+            (set e2 (compile-expr( (get-pc e1) r (get-offset e1) Used )))
+            (Expr( ((get-frame e1) (get-frame e2)) ((get-prog e1) (get-prog e2)) ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
+         )))
+         ( (_ _ _) (tail(
+            ()
+            (yield-cons-s( ctx l r ce offset used ))
+         )))
+      ))
+   )) (
+      (yield-cons-s( ctx l r ce offset used ))
+   ))
+));
+
+yield-atom-cache := ();
+yield-atom := λctx a offset . (tail(
+   (local cache)
+   (set cache yield-atom-cache)
+   (local id)
+   (local data)
+   (while cache (
+      (if (eq( (head (head cache)) a )) (
+         (set id (tail (head cache)))
+      ) ())
+      (set cache (tail cache))
+   ))
+   (if id () (
+      (set id (uuid()))
+      (set data (id ': \n \t '.ascii \s " (escape-sequences a) " \n \t '.zero \s 1 \n))
+      (set yield-atom-cache ((a id) yield-atom-cache))
+   ))
+   (Expr(
+      ()
+      (\t 'mov \s '$ id , \s '%r12 \n # $_.$1 = 0, .atom
+       \t 'mov \s '$0, \s '%r13    \n # $_.$2 = 0, .head
+      )
+      ()
+      ()
+      data
+      ctx
+      offset
+   ))
+));
+
+escape-sequences := λt . match t (
+   ()
+   ( () () )
+   ( \\ \\\\ )
+   ( \\: \: )
+   ( \\o \o )
+   ( \\n (\\ 'n))
+   ( \\t \t )
+   ( \\s \s )
+   ( \\l \l )
+   ( \\[ \[ )
+   ( \\] \] )
+   ( (l r) ( (escape-sequences l) (escape-sequences r) ) )
+   ( s (tail(
+      (local c)
+      (local cs)
+      (local is_escape)
+      (while s (
+         (set c (head-string s))
+         (set s (tail-string s))
+         (match c (
+            ()
+            ( " (
+               (set cs (cs \\ "))
+               (set is_escape ())
+            ))
+            (\\ (
+               (if is_escape (
+                 (set cs ( cs \\\\ ))
+                 (set is_escape ())
+               ) (set is_escape True))
+            ))
+            (_ (
+               (if is_escape (
+                  (match c (
+                     ()
+                     ( , (set cs (cs .)))
+                     ( _ (fail( InvalidEscapeCharacter (c s) )))
+                  ))
+               ) (set cs (cs (clone-rope c))))
+               (set is_escape ())
+            ))
+         ))
+      ))
+      (clone-rope cs)
+   )))
+);
+
+yield-patterns := λctx p offset . match p (
+   ()
+   ( Nil (tail(
+      ()
+      (Expr( () (\t 'mov \s '$0, \s '%r14 \n) () () () ctx offset ))
+   )))
+   ( (App( prev (App( lhs rhs )) )) (tail(
+      (local e1)
+      (local e2)
+      (local e3)
+      (local prog)
+      (set e1 (yield-patterns(ctx prev offset)))
+      (set e2 (destructure-pattern-lhs((get-pc e1) lhs (get-offset e1))))
+      (set e3 (compile-expr((get-pc e2) rhs (get-offset e2) Used)))
+      (local label_skip)
+      (set label_skip (uuid()))
+      (set prog (prog (get-prog e1)))
+      (set prog (prog (\t 'cmp \s '$0, \s '%r14 \n)))
+      (set prog (prog (\t 'jne \s label_skip \n)))
+      (set prog (prog (get-prog e2)))
+      (set prog (prog (\t 'cmp \s '$0, \s '%r14 \n)))
+      (set prog (prog (\t 'je \s label_skip \n)))
+      (set prog (prog (get-prog e3)))
+      (set prog (prog (\t 'mov \s '$1, \s '%r14 \n)))
+      (set prog (prog (label_skip ': \n)))
+      (Expr( 
+         ((get-frame e1) (get-frame e2) (get-frame e3))
+         prog
+         ((get-unframe e1) (get-unframe e2) (get-unframe e3))
+         ((get-text e1) (get-text e2) (get-text e3))
+         ((get-data e1) (get-data e2) (get-data e3))
+         ctx
+         (get-offset e3)
+      ))
+   )))
+   ( _ (
+      (fail (InvalidPatternsCase p))
+   ))
+);
+
+destructure-pattern-lhs := λctx lhs offset . (tail(
+   (local e1)
+   (local e2)
+   (local prog)
+   (local label_skip)
+   (match lhs (
+      ()
+      ( (Variable '_) (tail(
+         ()
+         (Expr( () (\t 'mov \s '$1, \s '%r14 \n) () () () ctx offset ))
+      )))
+      ( (Variable v) (tail(
+         (set e1 (declare-local(ctx v offset)))
+         (Expr(
+            (get-frame e1)
+            ((get-prog e1) \t 'mov \s '$1, \s '%r14 \n)
+            (get-unframe e1)
+            (get-text e1)
+            (get-data e1)
+            (get-pc e1)
+            (get-offset e1)
+         ))
+      )))
+      ( (Literal l) (tail(
+         (set e1 (yield-atom(ctx l offset)))
+         (set label_skip (uuid()))
+         (set prog (prog (push-this())))
+         (set prog (prog (\t 'cmp \s '$0, \s '%r12 \n)))
+         (set prog (prog (\t 'je \s label_skip \n)))       
+         (set prog (prog (\t 'cmp \s '$0, \s '%r13 \n)))
+         (set prog (prog (\t 'jne \s label_skip \n)))       
+         (set prog (prog (\t 'mov \s '%r12, \s '%rax \n)))
+         (set prog (prog (get-prog e1)))
+         (set prog (prog (\t 'mov \s '%r12, \s '%rbx \n)))
+         (set prog (prog (\t 'call \s 'streq \n)))
+         (set prog (prog (\t 'cmp \s '$0, \s '%r12 \n)))
+         (set prog (prog (\t 'je \s label_skip \n)))
+         (set prog (prog (\t 'mov \s '$1, \s '%r14 \n)))
+         (set prog (prog (label_skip ': \n)))
+         (set prog (prog (pop-this())))
+         (Expr( (get-frame e1) prog (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
+      )))
+      ( Nil (tail(
+         (set label_skip (uuid()))
+         (set prog (prog (\t 'cmp \s '$0, \s '%r12 \n)))
+         (set prog (prog (\t 'jne \s label_skip \n)))
+         (set prog (prog (\t 'cmp \s '$0, \s '%r13 \n)))
+         (set prog (prog (\t 'jne \s label_skip \n)))
+         (set prog (prog (\t 'mov \s '$1, \s '%r14 \n)))
+         (set prog (prog (label_skip ': \n)))
+         (Expr( () prog () () () ctx offset ))
+      )))
+      ( (App( l r )) (tail(
+         (set e1 (destructure-pattern-lhs(ctx l offset)))
+         (set e2 (destructure-pattern-lhs((get-pc e1) r (get-offset e1))))
+         (set label_skip (uuid()))
+         (set prog (prog (\t 'mov \s '$0, \s '%r14 \n)))
+         (set prog (prog (push-this())))
+         (set prog (prog (\t 'cmp \s '$0, \s '%r13 \n)))
+         (set prog (prog (\t 'je \s label_skip \n)))
+         (set prog (prog (inline-head())))
+         (set prog (prog (get-prog e1)))
+         (set prog (prog (pop-this())))
+         (set prog (prog (push-this())))
+         (set prog (prog (\t 'cmp \s '$0, \s '%r14 \n)))
+         (set prog (prog (\t 'je \s label_skip \n)))
+         (set prog (prog (\t 'mov \s '$0, \s '%r14 \n)))
+         (set prog (prog (inline-tail())))
+         (set prog (prog (get-prog e2)))
+         (set prog (prog (label_skip ': \n)))
+         (set prog (prog (pop-this())))
+         (Expr( 
+            ((get-frame e1) (get-frame e2))
+            prog
+            ((get-unframe e1) (get-unframe e2))
+            ((get-text e1) (get-text e2))
+            ((get-data e1) (get-data e2))
+            (get-pc e2)
+            (get-offset e2)
+         ))
+      )))
+      (_ (fail (UnexpectedPattern lhs)))
+   ))
+));
+
