@@ -446,35 +446,6 @@ set-local := λctx v . (tail(
    r
 ));
 
-get-frame := λe . (match e (
-   ()
-   ((Expr(f p u t d pc off)) f)
-));
-get-prog := λe . (match e (
-   ()
-   ((Expr(f p u t d pc off)) p)
-));
-get-unframe := λe . (match e (
-   ()
-   ((Expr(f p u t d pc off)) u)
-));
-get-text := λe . (match e (
-   ()
-   ((Expr(f p u t d pc off)) t)
-));
-get-data := λe . (match e (
-   ()
-   ((Expr(f p u t d pc off)) d)
-));
-get-pc := λe . (match e (
-   ()
-   ((Expr(f p u t d pc off)) pc)
-));
-get-offset := λe . (match e (
-   ()
-   ((Expr(f p u t d pc off)) off)
-));
-
 mangle-global-function := λname body . (
    (clone-rope (label-case ( name : (typecheck-lookup-type body) )))
 );
