@@ -45,3 +45,18 @@ arg: 45
 run: rm -f $basenaml.c.exe
 run: gcc -o $basename.c.exe $basename.c
 run: ./$basename.c.exe
+
+label: Rust
+arg: 0
+arg: 5
+arg: 10
+arg: 15
+arg: 20
+arg: 25
+arg: 30
+arg: 35
+arg: 40
+arg: 45
+run: rm -f $basenaml.rs.exe
+run: rustc -o $basename.rs.exe $basename.rs
+run: ./$basename.rs.exe
