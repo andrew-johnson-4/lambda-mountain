@@ -841,7 +841,7 @@ typecheck-typeof-var := λctx v . if (eq( 'asm! v )) ('->(Fragment Fragment)) (m
    ( () (typecheck-typeof-gvar v) )
    ( (cs (cv ct)) (
       if (eq( v cv )) (
-         ct
+         (LocalVariable ct)
       ) (
          (typecheck-typeof-var( cs v ))
       )
