@@ -115,65 +115,6 @@ main := (
    ))
 );
 
-substitute-macro-body := λkvs e . (match e (
-   ()
-   ((Variable n) (tail(
-      (while kvs (match kvs (
-         ()
-         ( Accept (set kvs ()) )
-         ( (ks Accept) (set kvs ks) )
-         ( (ks ()) (set kvs ks) )
-         ( (ks (KV(k v))) (
-            (if (eq(n k)) (
-               (set e v)
-               (set kvs ())
-            ) (
-               (set kvs ks)
-            ))
-         ))
-         ( u (fail (UnrecognizedKVMacro kvs)))
-      )))
-      e
-   )))
-   ( () () )
-   ( (vl vr) (
-      (substitute-macro-body( kvs vl ))
-      (substitute-macro-body( kvs vr ))
-   ))
-   ( v v )
-));
-
-try-destructure-macro := λlhs e . (match (lhs e) (
-   ()
-   ( ( Nil Nil ) Accept )
-   ( ( (App(pl pr)) (App(el er)) ) (tail(
-      (local ll)
-      (set ll (try-destructure-macro(pl el)))
-      (local rl)
-      (set rl (try-destructure-macro(pr er)))
-      (if ll (
-         (if rl (
-            (merge-list( ll rl ))
-         ) ())
-      ) ())
-   )))
-   ( ((Literal pl) (Variable el)) (
-      (if (eq( pl el )) Accept ())
-   ))
-   ( ((Literal pl) (Literal el)) (
-      (if (eq( pl el )) Accept ())
-   ))
-   ( ( (App( (Literal :Literal:) (Variable pv) )) (Literal el)) (
-      (Accept (KV( pv e )))
-   ))
-   ( ( (App( (Literal :Variable:) (Variable pv) )) (Variable el)) (
-      (Accept (KV( pv e )))
-   ))
-   ( ((Variable pv) e) (
-      (Accept (KV( pv e )))
-   ))
-));
-
 define-calling-convention-s := λ ctx fname lmb . (tail(
    ()
    (match lmb (
