@@ -1011,14 +1011,14 @@ typecheck-infer-type-compound := λcompound . (match compound (
 typecheck-infer-type-constructor := λname body . (match body (
    ()
    ( (Literal tag) (
-      (set typecheck-constructors ( typecheck-constructors (tag tag) ))
-      (set typecheck-subtypes ( typecheck-subtypes (tag (typecheck-infer-type-compound name)) ))
+      (set typecheck-constructors ( typecheck-constructors (tag (typecheck-infer-type-compound name)) ))
    ))
    ( (App( (Literal tag) args )) (
-      (local ctype)
-      (set ctype (typecheck-infer-type-compound args))
-      (set typecheck-constructors ( typecheck-constructors (tag ('->(ctype (tag ctype)))) ))
-      (set typecheck-subtypes ( typecheck-subtypes ((tag ctype) (typecheck-infer-type-compound name)) ))
+      (fail (TODO LiteralTagConstructors tag))
+#      (local ctype)
+#      (set ctype (typecheck-infer-type-compound args))
+#      (set typecheck-constructors ( typecheck-constructors (tag ('->(ctype (tag ctype)))) ))
+#      (set typecheck-subtypes ( typecheck-subtypes ((tag ctype) (typecheck-infer-type-compound name)) ))
    ))
 ));
 
@@ -1120,7 +1120,7 @@ typecheck-infer-expr := λctx e . (tail(
          (local ctype)
          (set ctype (typecheck-infer-constructor-type lit))
          (if ctype (
-            (typecheck-ascript( e (And( ctype Atom )) ))
+            (typecheck-ascript( e (Constant ctype) ))
          ) (
             (typecheck-ascript( e Atom ))
          ))
