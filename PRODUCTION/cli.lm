@@ -795,10 +795,10 @@ typecheck-infer-prog := λp . (
 typecheck-infer-ctx := λctx e . (match e (
    ()
    ( (App( (App( (Literal :) (Variable v) )) tt )) (
-      (ctx (v (typecheck-infer-type-compound tt)))
+      (ctx (v (LocalVariable (typecheck-infer-type-compound tt))))
    ))
    ( (App( ps (App( (App( (Literal :) (Variable v) )) tt )) )) (
-      ( (typecheck-infer-ctx( ctx ps )) (v (typecheck-infer-type-compound tt)))
+      ( (typecheck-infer-ctx( ctx ps )) (v (LocalVariable (typecheck-infer-type-compound tt))))
    ))
    ( (Variable v) (
       (ctx (v S))
@@ -841,7 +841,7 @@ typecheck-typeof-var := λctx v . if (eq( 'asm! v )) ('->(Fragment Fragment)) (m
    ( () (typecheck-typeof-gvar v) )
    ( (cs (cv ct)) (
       if (eq( v cv )) (
-         (LocalVariable ct)
+         ct
       ) (
          (typecheck-typeof-var( cs v ))
       )
@@ -2188,6 +2188,15 @@ get-fragment-local := λctx v offset . (tail(
                if (eq(l v)) (
                   (set r (Expr(
                      () uid () () () ctx offset
+                  )))
+               ) ()
+            )
+         ))
+         ( (StackVariable(l loffset ltype)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (Expr(
+                     () loffset () () () ctx offset
                   )))
                ) ()
             )
