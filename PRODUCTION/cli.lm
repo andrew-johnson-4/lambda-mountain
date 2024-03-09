@@ -1208,6 +1208,9 @@ compile-fragment := λctx e offset used . (match e (
       ()
       (get-fragment-local( ctx v offset ))
    )))
+   ( (Literal val) (
+      (Expr( () val () () () ctx offset ))
+   ))
    ( u (fail (UnknownFragment e)))
 );
 

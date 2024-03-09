@@ -4,7 +4,7 @@ nostd: prod
 #	./production --nostd -o tmp.s STDLIB/default-instruction-set.lm STDLIB/default-primitives.lm tests/nostd/normal_fib.lm
 	as -o tmp.o tmp.s
 	ld -o tmp tmp.o
-	./tmp
+	./tmp 5
 
 test: prod
 	./production -o production1.s PRODUCTION/cli.lm
