@@ -4,6 +4,14 @@
 import STDLIB/default-cons-allocator.lm;
 import STDLIB/default-atom-allocator.lm;
 
+import PRODUCTION/tokenize.lm;
+import PRODUCTION/parse.lm;
+import PRODUCTION/preprocess.lm;
+import PRODUCTION/typecheck.lm;
+import PRODUCTION/codegen-dynamic.lm;
+import PRODUCTION/codegen-strict.lm;
+import PRODUCTION/assemble.lm;
+
 # Static Globals
 
 config-nostd                             := ();
