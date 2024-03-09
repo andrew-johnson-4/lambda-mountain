@@ -1,12 +1,12 @@
 
-type U8;  size U8 1;  atom suffix U8  u8;  accept as (Constant U8)  U8;  accept as (LocalVariable U8)  U8;
-type U16; size U16 2; atom suffix U16 u16; accept as (Constant U16) U16; accept as (LocalVariable U16) U16;
-type U32; size U32 4; atom suffix U32 u32; accept as (Constant U32) U32; accept as (LocalVariable U32) U32;
-type U64; size U64 8; atom suffix U64 u64; accept as (Constant U64) U64; accept as (LocalVariable U64) U64;
-type I8;  size I8 1;  atom suffix I8  i8;  accept as (Constant I8)  I8;  accept as (LocalVariable I8)  I8;
-type I16; size I16 2; atom suffix I16 i16; accept as (Constant I16) I16; accept as (LocalVariable I16) I16;
-type I32; size I32 4; atom suffix I32 i32; accept as (Constant I32) I32; accept as (LocalVariable I32) I32;
-type I64; size I64 8; atom suffix I64 i64; accept as (Constant I64) I64; accept as (LocalVariable I64) I64;
+type U8;  size U8 1;  atom suffix U8  u8;  accept as (Constant U8)  U8;  accept as (LocalVariable U8)  U8;  accept as (Constant Reg8)  U8;
+type U16; size U16 2; atom suffix U16 u16; accept as (Constant U16) U16; accept as (LocalVariable U16) U16; accept as (Constant Reg16) U16;
+type U32; size U32 4; atom suffix U32 u32; accept as (Constant U32) U32; accept as (LocalVariable U32) U32; accept as (Constant Reg32) U32;
+type U64; size U64 8; atom suffix U64 u64; accept as (Constant U64) U64; accept as (LocalVariable U64) U64; accept as (Constant Reg64) U64;
+type I8;  size I8 1;  atom suffix I8  i8;  accept as (Constant I8)  I8;  accept as (LocalVariable I8)  I8;  accept as (Constant Reg8)  U8;
+type I16; size I16 2; atom suffix I16 i16; accept as (Constant I16) I16; accept as (LocalVariable I16) I16; accept as (Constant Reg16) U16;
+type I32; size I32 4; atom suffix I32 i32; accept as (Constant I32) I32; accept as (LocalVariable I32) I32; accept as (Constant Reg32) U32;
+type I64; size I64 8; atom suffix I64 i64; accept as (Constant I64) I64; accept as (LocalVariable I64) I64; accept as (Constant Reg64) U64;
 
 fragment + := λ(: l (LocalVariable U8))(: r (Constant U8)). (\t 'mov \s l \[ '%rbp \] , \s '%r12 \n \t 'add \s '$ r , \s '%r12 \n );
 fragment + := λ(: l (LocalVariable U16))(: r (Constant U16)). (\t 'mov \s l \[ '%rbp \] , \s '%r12 \n \t 'add \s '$ r , \s '%r12 \n );

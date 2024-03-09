@@ -2,14 +2,14 @@
 fib := λ(: x U64). (: (
    x # put result into %r12
    (gensym-label low)
-#   (cmp( 1u64 R12 )) ))
-#   (jle( low ))
-#   (sub( 1u64 R12 ))
-#   (push( R12 ))
-#   (fib R12 )
-#   (pop( R12 ))
-#   (sub( 1u64 R12 ))
-#   (fib R12 )
+   (cmp( 1u64 R12 ))
+   (jle( low ))
+   (sub( 1u64 R12 ))
+   (push( R12 ))
+   (fib R12)
+   (pop( R12 ))
+   (sub( 1u64 R12 ))
+   (fib R12)
    (label low)
 ) U64);
 
@@ -33,5 +33,5 @@ main := (
    (inc( R8 ))
    (jmp( argv ))
    (label begin)
-#   (fib( RAX ))
+   (fib( RAX ))
 );
