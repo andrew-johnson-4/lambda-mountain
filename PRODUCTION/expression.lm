@@ -1,33 +1,4 @@
 
-get-frame := λe . (match e (
-   ()
-   ((Expr(f p u t d pc off)) f)
-));
-get-prog := λe . (match e (
-   ()
-   ((Expr(f p u t d pc off)) p)
-));
-get-unframe := λe . (match e (
-   ()
-   ((Expr(f p u t d pc off)) u)
-));
-get-text := λe . (match e (
-   ()
-   ((Expr(f p u t d pc off)) t)
-));
-get-data := λe . (match e (
-   ()
-   ((Expr(f p u t d pc off)) d)
-));
-get-pc := λe . (match e (
-   ()
-   ((Expr(f p u t d pc off)) pc)
-));
-get-offset := λe . (match e (
-   ()
-   ((Expr(f p u t d pc off)) off)
-));
-
 expr::new := λ . ();
 expr::set-expr := λe x . (
    (StrictExpr(
@@ -43,22 +14,27 @@ expr::set-expr := λe x . (
 );
 expr::get-frame := λe . (match e (
    ()
+   ((Expr(f p u t d pc off)) f)
    ((StrictExpr(f u t d p e c o)) f)
 ));
 expr::get-unframe := λe . (match e (
    ()
+   ((Expr(f p u t d pc off)) u)
    ((StrictExpr(f u t d p e c o)) u)
 ));
 expr::get-text := λe . (match e (
    ()
+   ((Expr(f p u t d pc off)) t)
    ((StrictExpr(f u t d p e c o)) t)
 ));
 expr::get-data := λe . (match e (
    ()
+   ((Expr(f p u t d pc off)) d)
    ((StrictExpr(f u t d p e c o)) d)
 ));
 expr::get-prog := λe . (match e (
    ()
+   ((Expr(f p u t d pc off)) p)
    ((StrictExpr(f u t d p e c o)) p)
 ));
 expr::get-expr := λe . (match e (
@@ -67,9 +43,11 @@ expr::get-expr := λe . (match e (
 ));
 expr::get-context := λe . (match e (
    ()
+   ((Expr(f p u t d pc off)) pc)
    ((StrictExpr(f u t d p e c o)) c)
 ));
 expr::get-offset := λe . (match e (
    ()
+   ((Expr(f p u t d pc off)) off)
    ((StrictExpr(f u t d p e c o)) o)
 ));
