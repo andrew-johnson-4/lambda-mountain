@@ -1,7 +1,16 @@
 
 compile-expr-strict := λctx e offset used . (tail(
+   (local e1)
    (match e (
       ()
+      ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
+         (set e1 (expr::set-expr(
+            (expr::new ())
+            lval
+         )))
+         (print-s (NewStrict e1))
+         e1
+      )))
       ( (App ((Variable fname) arg)) (tail(
          ()
          (apply-calling-convention-s( ctx e fname arg offset used ))

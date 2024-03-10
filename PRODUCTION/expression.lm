@@ -28,3 +28,48 @@ get-offset := λe . (match e (
    ((Expr(f p u t d pc off)) off)
 ));
 
+expr::new := λ . ();
+expr::set-expr := λe x . (
+   (StrictExpr(
+      (expr::get-frame e)
+      (expr::get-unframe e)
+      (expr::get-text e)
+      (expr::get-data e)
+      (expr::get-prog e)
+      (expr::get-expr e)
+      (expr::get-context e)
+      (expr::get-offset e)
+   ))
+);
+expr::get-frame := λe . (match e (
+   ()
+   ((StrictExpr(f u t d p e c o)) f)
+));
+expr::get-unframe := λe . (match e (
+   ()
+   ((StrictExpr(f u t d p e c o)) u)
+));
+expr::get-text := λe . (match e (
+   ()
+   ((StrictExpr(f u t d p e c o)) t)
+));
+expr::get-data := λe . (match e (
+   ()
+   ((StrictExpr(f u t d p e c o)) d)
+));
+expr::get-prog := λe . (match e (
+   ()
+   ((StrictExpr(f u t d p e c o)) p)
+));
+expr::get-expr := λe . (match e (
+   ()
+   ((StrictExpr(f u t d p e c o)) f)
+));
+expr::get-context := λe . (match e (
+   ()
+   ((StrictExpr(f u t d p e c o)) c)
+));
+expr::get-offset := λe . (match e (
+   ()
+   ((StrictExpr(f u t d p e c o)) o)
+));
