@@ -58,17 +58,52 @@ try-destructure-macro := λlhs e . (match (lhs e) (
    ))
 ));
 
-preprocess-destructure-type := λtt . (
-   fail (DestructureType tt)
+preprocess-destructure-type-atom := λtt . (
+   (if (is-variable tt) (
+      (Variable tt)
+   ) (
+      (Literal tt)
+   ))
 );
+
+preprocess-type-and := λl r . (
+   (App(
+      (Literal And)
+      (App( l r ))
+   ))
+);
+
+preprocess-destructure-type := λtt . (tail(
+   (local buff)
+   (local compound)
+   (while tt (
+      (if (eq( '+ (head-string tt) )) (
+         (if compound (
+            (set compound (preprocess-type-and( compound (preprocess-destructure-type-atom (clone-rope buff)) )) )
+            (set buff ())
+         ) (
+            (set compound (preprocess-destructure-type-atom (clone-rope buff)))
+            (set buff ())
+         ))
+      ) (
+         (set buff (buff (clone-rope (head-string tt)) ))
+      ))
+      (set tt (tail-string tt))
+   ))
+   (if compound (
+      (preprocess-type-and( compound (preprocess-destructure-type-atom (clone-rope buff)) ))
+   ) (
+      (preprocess-destructure-type-atom (clone-rope buff))
+   ))
+));
 
 preprocess-apply-macros := λprogram . (match program (
    ()
    ( (App( (App( (Literal :) (Variable mvar) )) (Literal mtype) )) (
-     (App( (App( (Literal :) (Variabel mvar) )) (preprocess-destructure-type mtype) ))
+     (App( (App( (Literal :) (Variable mvar) )) (preprocess-destructure-type mtype) ))
    ))
    ( (App( (App( (Literal :) (Variable mvar) )) (Variable mtype) )) (
-     (App( (App( (Literal :) (Variabel mvar) )) (preprocess-destructure-type mtype) ))
+     (App( (App( (Literal :) (Variable mvar) )) (preprocess-destructure-type mtype) ))
    ))
    ( (Literal l) (tail(
       (local suffixes)
