@@ -58,8 +58,18 @@ try-destructure-macro := λlhs e . (match (lhs e) (
    ))
 ));
 
+preprocess-destructure-type := λtt . (
+   fail (DestructureType tt)
+);
+
 preprocess-apply-macros := λprogram . (match program (
    ()
+   ( (App( (App( (Literal :) (Variable mvar) )) (Literal mtype) )) (
+     (App( (App( (Literal :) (Variabel mvar) )) (preprocess-destructure-type mtype) ))
+   ))
+   ( (App( (App( (Literal :) (Variable mvar) )) (Variable mtype) )) (
+     (App( (App( (Literal :) (Variabel mvar) )) (preprocess-destructure-type mtype) ))
+   ))
    ( (Literal l) (tail(
       (local suffixes)
       (set suffixes parse-suffix)
