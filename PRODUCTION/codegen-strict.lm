@@ -1,6 +1,13 @@
 
 compile-expr-strict := λctx e offset used . (tail(
-   fail (TODO CompileStrict e)
+   (match e (
+      ()
+      ( (App ((Variable fname) arg)) (tail(
+         ()
+         (apply-calling-convention-s( ctx e fname arg offset used ))
+      )))
+      ( _ (fail (TODO CompileStrict e)))
+   ))
 ));
 
 apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
