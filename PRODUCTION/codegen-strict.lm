@@ -1,0 +1,4 @@
+
+compile-expr-strict := λctx e offset used . (tail(
+   fail (TODO CompileStrict)
+));

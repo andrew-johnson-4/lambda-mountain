@@ -81,7 +81,12 @@ compile-append := λoutput_e gctx e . (tail(
    ))
 ));
 
-compile-expr := λctx e offset used . (tail(
+compile-expr := λctx e offset used . (
+   if config-strict (compile-expr-strict( ctx e offset used ))
+                    (compile-expr-dynamic( ctx e offset used ))
+);
+
+compile-expr-dynamic := λctx e offset used . (tail(
    (local e1)
    (local e2)
    (local e3)
@@ -103,11 +108,7 @@ compile-expr := λctx e offset used . (tail(
       )))
       ( (Variable vname) (tail(
          ()
-         (if config-strict (
-            (Expr( () (get-local(ctx vname)) () () () ctx offset ))
-         ) (
-            (Expr( () (get-local(ctx vname)) () () () ctx offset ))
-         ))
+         (Expr( () (get-local(ctx vname)) () () () ctx offset ))
       )))
       ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
          ()
@@ -131,9 +132,6 @@ compile-expr := λctx e offset used . (tail(
          (Expr( () () () () () ctx offset ))
       )))
       ( (App( (Lambda( (Variable lhs) rhs )) bind )) (tail(
-         (if config-strict (
-            fail (TODO CompileLambdaStrict)
-         ) ())
          (set e1 (declare-local(ctx lhs offset)))
          (set e2 (compile-expr((get-pc e1) bind (get-offset e1) Used)))
          (set e3 (compile-expr((get-pc e2) rhs (get-offset e2) Used)))
@@ -230,11 +228,7 @@ compile-expr := λctx e offset used . (tail(
       )))
       ( (App ((Variable fname) arg)) (tail(
          ()
-         (if config-strict (
-            (apply-calling-convention-stack( ctx e fname arg offset used ))
-         ) (
-            (apply-calling-convention-s( ctx e fname arg offset used ))
-         ))
+         (apply-calling-convention-s( ctx e fname arg offset used ))
       )))
       ( (Literal l) (tail(
          ()
@@ -655,13 +649,7 @@ get-maybe-function := λctx v arg_type . (tail(
             ()
             (if r () (
                if (eq(name v)) (
-                  (if config-strict (
-                     (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
-                        (set r (Fragment( (Variable name) body )))
-                     ) ())
-                  ) (
-                     (set r (Fragment( (Variable name) body )))
-                  ))
+                  (set r (Fragment( (Variable name) body )))
                ) ()
             ))
          )))
@@ -669,13 +657,7 @@ get-maybe-function := λctx v arg_type . (tail(
             ()
             (if r () (
                if (eq(name v)) (
-                  (if config-strict (
-                     (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
-                        (set r (GlobalFunction (mangle-global-function( name body ))))
-                     ) ())
-                  ) (
-                     (set r (GlobalFunction (mangle-global-function( name body ))))
-                  ))
+                  (set r (GlobalFunction (mangle-global-function( name body ))))
                ) ()
             ))
          )))
@@ -810,33 +792,7 @@ yield-cons-s := λctx l r ce offset used . (tail(
 yield-cons := λctx l r ce offset used . (tail(
    (local e1)
    (local e2)
-   (if config-strict (tail(
-      (local typel)
-      (set typel (typecheck-lookup-type l))
-      (local typer)
-      (set typer (typecheck-lookup-type r))
-      (local typece)
-      (set typece (typecheck-lookup-type ce))
-      (match (typel typer typece) (
-         ()
-         ( (_ Fragment _) (tail(
-            (set e1 (compile-expr( ctx l offset Used )))
-            (set e2 (compile-expr( (get-pc e1) r (get-offset e1) Used )))
-            (Expr( ((get-frame e1) (get-frame e2)) ((get-prog e1) (get-prog e2)) ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
-         )))
-         ( (Fragment _ _) (tail(
-            (set e1 (compile-expr( ctx l offset Used )))
-            (set e2 (compile-expr( (get-pc e1) r (get-offset e1) Used )))
-            (Expr( ((get-frame e1) (get-frame e2)) ((get-prog e1) (get-prog e2)) ((get-unframe e1) (get-unframe e2)) ((get-text e1) (get-text e2)) ((get-data e1) (get-data e2)) (get-pc e2) (get-offset e2) ))
-         )))
-         ( (_ _ _) (tail(
-            ()
-            (yield-cons-s( ctx l r ce offset used ))
-         )))
-      ))
-   )) (
-      (yield-cons-s( ctx l r ce offset used ))
-   ))
+   (yield-cons-s( ctx l r ce offset used ))
 ));
 
 yield-atom-cache := ();
