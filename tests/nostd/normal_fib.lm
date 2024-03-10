@@ -4,9 +4,9 @@
 
 #main := print (fib 35u64)
 
-#fib := λ(: x U64). (
+fib := λ(: x U64). (
 #   (+ (fib (- x 1)) (fib (- x 2)))
-#);
+   (-( x 1u64 ))
+);
 
-#main := fib 35u64;
-main := + (1u64 2u64);
+main := fib 35u64;
