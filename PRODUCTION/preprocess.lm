@@ -119,8 +119,11 @@ preprocess-apply-macros := λprogram . (match program (
                      (Literal (remove-suffix( l sfx )))
                   ))
                   (App(
-                     (Literal Constant)
-                     (Literal (head (tail suffixes)))
+                     (Literal And)
+                     (App(
+                        (Literal Constant)
+                        (Literal (head (tail suffixes)))
+                     ))
                   ))
                ))
             ))

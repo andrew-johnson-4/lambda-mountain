@@ -515,7 +515,7 @@ typecheck-infer-expr := λctx e . (tail(
          (typecheck-ascript( e Nil ))
       ))
       ( (App( (Variable 'gensym-label) (Variable lname) )) (
-         (set ctx ( ctx (lname (Constant Label)) ))
+         (set ctx ( ctx (lname (And( Constant Label ))) ))
          (typecheck-ascript( e Fragment ))
       ))
       ( (App( (Variable 'label) (Variable lname) )) (
@@ -537,7 +537,7 @@ typecheck-infer-expr := λctx e . (tail(
          (local ctype)
          (set ctype (typecheck-infer-constructor-type lit))
          (if ctype (
-            (typecheck-ascript( e (Constant ctype) ))
+            (typecheck-ascript( e (And( Constant ctype )) ))
          ) (
             (typecheck-ascript( e Atom ))
          ))

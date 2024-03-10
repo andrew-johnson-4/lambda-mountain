@@ -17,6 +17,8 @@ fragment + := λ(: l LocalVariable+I16)(: r Constant+I16). (\t 'mov \s l \[ '%rb
 fragment + := λ(: l LocalVariable+I32)(: r Constant+I32). (\t 'mov \s l \[ '%rbp \] , \s '%r12 \n \t 'add \s '$ r , \s '%r12 \n );
 fragment + := λ(: l LocalVariable+I64)(: r Constant+I64). (\t 'mov \s l \[ '%rbp \] , \s '%r12 \n \t 'add \s '$ r , \s '%r12 \n );
 
+fragment + := λ(: l Constant+U64)(: r Constant+U64). ( TODO Constant Folding );
+
 fragment - := λ(: l LocalVariable+U8)(: r Constant+U8). (\t 'mov \s l \[ '%rbp \] , \s '%r12 \n \t 'sub \s '$ r , \s '%r12 \n );
 fragment - := λ(: l LocalVariable+U16)(: r Constant+U16). (\t 'mov \s l \[ '%rbp \] , \s '%r12 \n \t 'sub \s '$ r , \s '%r12 \n );
 fragment - := λ(: l LocalVariable+U32)(: r Constant+U32). (\t 'mov \s l \[ '%rbp \] , \s '%r12 \n \t 'sub \s '$ r , \s '%r12 \n );

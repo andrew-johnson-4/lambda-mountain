@@ -522,14 +522,14 @@ get-local := λctx v . (tail(
                   (local dst)
                   (match size (
                      ()
-                     (1 (set dst ( R12B (Constant Reg8) )))
-                     (2 (set dst ( R12W (Constant Reg16) )))
-                     (4 (set dst ( R12D (Constant Reg32) )))
-                     (8 (set dst ( R12 (Constant Reg64) )))
+                     (1 (set dst ( R12B (And( Constant Reg8 )) )))
+                     (2 (set dst ( R12W (And( Constant Reg16 )) )))
+                     (4 (set dst ( R12D (And( Constant Reg32 )) )))
+                     (8 (set dst ( R12 (And( Constant Reg64 )) )))
                      (u (fail (InvalidStackVariableSize u)))
                   ))
                   (local arg_type)
-                  (set arg_type (Cons( (Constant Offset) (tail dst) )))
+                  (set arg_type (Cons( (And( Constant Offset )) (tail dst) )))
                   (match (get-maybe-function( ctx 'get arg_type )) (
                      ()
                      ( (Fragment( fname body )) (tail(
