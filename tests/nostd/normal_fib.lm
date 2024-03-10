@@ -1,12 +1,12 @@
-
 #fib := λ(: x U64). (
 #   if (< x 2) 1
 #);
 
 #main := print (fib 35u64)
 
-fib := λ(: x U64). (
-   (+ (fib (- x 1)) (fib (- x 2)))
-);
+#fib := λ(: x U64). (
+#   (+ (fib (- x 1)) (fib (- x 2)))
+#);
 
-main := fib 35u64;
+#main := fib 35u64;
+main := + (1u64 2u64);
