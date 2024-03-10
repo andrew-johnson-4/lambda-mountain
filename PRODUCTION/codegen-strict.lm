@@ -1,4 +1,144 @@
 
 compile-expr-strict := λctx e offset used . (tail(
-   fail (TODO CompileStrict)
+   fail (TODO CompileStrict e)
+));
+
+apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
+   (local e1)
+   (match (get-maybe-function(ctx fname (typecheck-lookup-type arg))) (
+      ()
+      ( (GlobalFunction mangledname) (tail(
+         (set e1 (destructure-calling-convention-stack( ctx e fname arg offset used )))
+         (Expr(
+            (get-frame e1)
+            ( (enter-function()) (get-prog e1) (\t 'call \s mangledname \n)
+              (\t 'mov \s '%rbp, \s '%rsp               \n
+               \t 'pop \s '%rbp                        \n) )
+            (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1)
+         ))
+      )))
+      ( (Fragment( vname body )) (tail(
+         ()
+         (assemble-apply-fragment( ctx body arg offset ))
+      )))
+      ( (StackVariable _) (tail(
+         (set e1 (compile-expr( ctx arg offset used )))
+         (local l)
+         (set l (get-local( ctx fname )))
+         (if l () (fail (UnknownFunctionLocal fname)))
+         (Expr( (get-frame e1) (l (get-prog e1)) (get-unframe e1) (get-text e1) (get-data e1) (get-pc e1) (get-offset e1) ))
+      )))
+      ( l (fail (UnknownFunctionCall fname l)) )
+   ))
+));
+
+define-calling-convention-stack := λ ctx fname lmb . (tail(
+   ()
+   (match lmb (
+      ()
+      ( (Lambda( lhs rhs )) (tail(
+         (local e1)
+         (local e2)
+         (local text)
+         (set e1 (define-calling-convention-stack-destructure-args( ctx lhs () )))
+         (set e2 (compile-expr( (get-pc e1) rhs (get-offset e1) Used)))
+         (set text ( text (mangle-global-function( fname lmb )) ': \n ))
+         (set text ( text (get-frame e2) ))
+         (set text ( text (get-prog e2) ))
+         (set text ( text (\t 'ret \n) ))
+         (set text ( text (get-text e2) ))
+         (Expr(
+            () () () text ( (get-data e2) ) () ()
+         ))
+      )))
+   ))
+));
+
+destructure-push-stack := λ ctx arg offset . (match arg (
+   ()
+   ( (App( (App( (Variable 'as) inner_arg )) tt )) (
+      (match (get-maybe-function(ctx 'push (typecheck-lookup-type inner_arg))) (
+         ()
+         ( (Fragment( (Variable _) body )) (
+            (assemble-apply-fragment( ctx body inner_arg offset ))
+         ))
+         ( v (
+            (fail (ReferenceToUndefinedVariable 'push (typecheck-lookup-type arg)))
+         ))
+      ))
+   ))
+   ( _ (
+      (match (get-maybe-function(ctx 'push (typecheck-lookup-type arg))) (
+         ()
+         ( (Fragment( (Variable _) body )) (
+            (assemble-apply-fragment( ctx body arg offset ))
+         ))
+         ( v (
+            (fail (ReferenceToUndefinedVariable 'push (typecheck-lookup-type arg)))
+         ))
+      ))
+   ))
+));
+
+destructure-calling-convention-stack := λ ctx e fname arg offset used . (tail(
+   ()
+   (match (typecheck-lookup-type arg) (
+      ()
+      ( (Cons( t1 t2 )) (
+         (match arg (
+            ()
+            ( (App( e1 e2 )) (tail(
+               (set e1 (destructure-calling-convention-stack( ctx e fname e1 offset used )))
+               (set e2 (destructure-calling-convention-stack( (get-pc e1) e fname e1 (get-offset e2) used )))
+               (Expr(
+                  ((get-frame e1) (get-frame e1))
+                  ((get-prog e1) (get-prog e1))
+                  ((get-unframe e1) (get-unframe e1))
+                  ((get-text e1) (get-text e1))
+                  ((get-data e1) (get-data e1))
+                  (get-pc e2)
+                  (get-offset e2)
+               ))
+            )))
+            ( v (
+               (fail (InvalidParameter fname arg))
+            ))
+         ))
+      ))
+      ( t1 (destructure-push-stack( ctx arg offset )) )
+   ))
+));
+
+define-calling-convention-stack-destructure-args := λ ctx lhs offset . (match lhs (
+   ()
+   ( (App( (App( (Literal :) (Variable lname) )) ltype )) (tail(
+      (set ltype (typecheck-infer-type-compound ltype))
+      (local size)
+      (set size (define-sizeof-type ltype))
+      (local new_offset)
+      (set new_offset (add( offset (define-sizeof-type ltype) )) )
+      (Expr(
+         () () () () ()
+         ( ctx (StackVariable(
+            lname (i2s (add( offset (mul( (dec()) size )) )) ) ltype
+         )) )
+         (i2s new_offset)
+      ))
+   )))
+   ( (App( more (App( (App( (Literal :) (Variable lname) )) ltype )) )) (tail(
+      (set ltype (typecheck-infer-type-compound ltype))
+      (local size)
+      (set size (define-sizeof-type ltype))
+      (local new_offset)
+      (set new_offset (add( offset (mul( (dec()) (define-sizeof-type ltype) )) )) )
+      (set ctx (define-calling-convention-stack-destructure-args( ctx more new_offset )))
+      (Expr(
+         () () () () ()
+         ( (get-pc ctx) (StackVariable(
+            lname (i2s (add( offset (mul( (dec()) size )) )) ) ltype
+         )) )
+         (get-offset ctx)
+      ))
+   )))
+   ( u (fail (UnknownStackArg lhs)))
 ));
