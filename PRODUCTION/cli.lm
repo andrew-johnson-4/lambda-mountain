@@ -105,7 +105,7 @@ main := (
       ))
    )))
 
-   (set parse-parsed-program (parse-apply-macros parse-parsed-program))
+   (set parse-parsed-program (preprocess-apply-macros parse-parsed-program))
    (if config-strict (typecheck parse-parsed-program) ())
 
    (match mode (

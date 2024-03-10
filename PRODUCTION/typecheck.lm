@@ -212,10 +212,10 @@ typecheck-infer-prog := λp . (
 typecheck-infer-ctx := λctx e . (match e (
    ()
    ( (App( (App( (Literal :) (Variable v) )) tt )) (
-      (ctx (v (LocalVariable (typecheck-infer-type-compound tt))))
+      (ctx (v (And( LocalVariable (typecheck-infer-type-compound tt) )) ))
    ))
    ( (App( ps (App( (App( (Literal :) (Variable v) )) tt )) )) (
-      ( (typecheck-infer-ctx( ctx ps )) (v (LocalVariable (typecheck-infer-type-compound tt))))
+      ( (typecheck-infer-ctx( ctx ps )) (v (And( LocalVariable (typecheck-infer-type-compound tt) )) ))
    ))
    ( (Variable v) (
       (ctx (v S))
@@ -515,7 +515,7 @@ typecheck-infer-expr := λctx e . (tail(
          (typecheck-ascript( e Nil ))
       ))
       ( (App( (Variable 'gensym-label) (Variable lname) )) (
-         (set ctx ( ctx (lname (Constant Label)) ))
+         (set ctx ( ctx (lname (And( Constant Label ))) ))
          (typecheck-ascript( e Fragment ))
       ))
       ( (App( (Variable 'label) (Variable lname) )) (
@@ -537,7 +537,7 @@ typecheck-infer-expr := λctx e . (tail(
          (local ctype)
          (set ctype (typecheck-infer-constructor-type lit))
          (if ctype (
-            (typecheck-ascript( e (Constant ctype) ))
+            (typecheck-ascript( e (And( Constant ctype )) ))
          ) (
             (typecheck-ascript( e Atom ))
          ))
@@ -552,8 +552,11 @@ typecheck-infer-expr := λctx e . (tail(
             ( ( ('->(lt rt)) pt ) (
                (typecheck-ascript( e (typecheck-safe-apply-plural( e ('->(lt rt)) pt )) ))
             ))
-            ( ( (And(t1 t2)) pt ) (
-               (typecheck-ascript( e (typecheck-safe-apply-plural( e (And(t1 t2)) pt )) ))
+            ( ( (And(t1 ('->(lt rt)))) pt ) (
+               (typecheck-ascript( e (typecheck-safe-apply-plural( e (And(t1 ('->(lt rt)))) pt )) ))
+            ))
+            ( ( (And(('->(lt rt)) t2)) pt ) (
+               (typecheck-ascript( e (typecheck-safe-apply-plural( e (And(('->(lt rt)) t2)) pt )) ))
             ))
             ( (Fragment rt) (
                (typecheck-ascript( e rt ))
