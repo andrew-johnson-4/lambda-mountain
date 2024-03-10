@@ -543,6 +543,8 @@ typecheck-infer-expr := λctx e . (tail(
          ))
       ))
       ( (App( l r )) (tail(
+         (print-s (AppL l))(print-s \n)
+         (print-s (AppR r))(print-s \n)
          (set ctx (typecheck-infer-expr( ctx l )))
          (set ctx (typecheck-infer-expr( ctx r )))
          (match ( (typecheck-lookup-type l) (typecheck-lookup-type r) ) (
@@ -552,8 +554,11 @@ typecheck-infer-expr := λctx e . (tail(
             ( ( ('->(lt rt)) pt ) (
                (typecheck-ascript( e (typecheck-safe-apply-plural( e ('->(lt rt)) pt )) ))
             ))
-            ( ( (And(t1 t2)) pt ) (
-               (typecheck-ascript( e (typecheck-safe-apply-plural( e (And(t1 t2)) pt )) ))
+            ( ( (And(t1 ('->(lt rt)))) pt ) (
+               (typecheck-ascript( e (typecheck-safe-apply-plural( e (And(t1 ('->(lt rt)))) pt )) ))
+            ))
+            ( ( (And(('->(lt rt)) t2)) pt ) (
+               (typecheck-ascript( e (typecheck-safe-apply-plural( e (And(('->(lt rt)) t2)) pt )) ))
             ))
             ( (Fragment rt) (
                (typecheck-ascript( e rt ))
