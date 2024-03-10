@@ -58,3 +58,60 @@ try-destructure-macro := λlhs e . (match (lhs e) (
    ))
 ));
 
+preprocess-apply-macros := λprogram . (match program (
+   ()
+   ( (Literal l) (tail(
+      (local suffixes)
+      (set suffixes parse-suffix)
+      (while suffixes (tail(
+         (local sfx)
+         (set sfx (tail (tail suffixes)) )
+         (if (is-suffix( l sfx )) (
+            (set program (
+               (App(
+                  (App(
+                     (Literal ':)
+                     (Literal (remove-suffix( l sfx )))
+                  ))
+                  (App(
+                     (Literal Constant)
+                     (Literal (head (tail suffixes)))
+                  ))
+               ))
+            ))
+         ) ())
+         (set suffixes (head suffixes))
+      )))
+      program
+   )))
+   ( _ (tail(
+      (local macros)
+      (set macros parse-macros)
+      (while macros (match macros (
+         ()
+         ( (ms (Macro( lhs rhs ))) (tail(
+            (local new)
+            (set new (try-destructure-macro( lhs program )))
+            (if new (tail(
+               (set program (substitute-macro-body( new rhs )))
+               (set program (parse-macro-substitute-uuids (
+                  (parse-macro-yield-uuids( () program ))
+                  program
+               )))
+               (set program (preprocess-apply-macros program))
+            )) ())
+            (set macros ms)
+         )))
+         ( u (fail (UnrecognizedMacro u)))
+      )))
+      (match program (
+         ()
+         ( (l r) (
+            (preprocess-apply-macros l)
+            (preprocess-apply-macros r)
+         ))
+         ( () () )
+         (u u)
+      ))
+   )))
+));
