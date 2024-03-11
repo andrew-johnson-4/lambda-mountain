@@ -25,16 +25,58 @@ assemble-destructure-fragment := λctx lmb args offset . (match lmb (
    ( u (fail (UnrecgonizedDestructureFragment u)))
 ));
 
-assemble-substitute-fragment := λsubs frag . (match frag (
+assemble-substitute-fragment := λsubs frag e . (match frag (
+   ()
+   ( (App( (App( (Literal ':) fe )) ft )) (
+      (assemble-substitute-fragment( subs fe e ))
+   ))
+   ( (App( (Literal '.program) f )) (
+      (expr::set-prog( e (
+         (assemble-substitute-fragment-mode( subs Program f ))
+      )))
+   ))
+   ( (App( inner (App( (Literal '.program) f )) )) (
+      (assemble-substitute-fragment(
+         subs inner
+         (expr::set-prog( e (
+            (assemble-substitute-fragment-mode( subs Program f ))
+         )))
+      ))
+   ))
+   ( (App( (Literal '.expression) f )) (
+      (expr::set-prog( e (
+         (assemble-substitute-fragment-mode( subs Expression f ))
+      )))
+   ))
+   ( (App( inner (App( (Literal '.expression) f )) )) (
+      (assemble-substitute-fragment(
+         subs inner
+         (expr::set-prog( e (
+            (assemble-substitute-fragment-mode( subs Expression f ))
+         )))
+      ))
+   ))
+   ( u (fail (UnknownFragment frag)))
+));
+
+assemble-substitute-fragment-mode := λsubs mode frag . (match frag (
    ()
    ( () () )
    ( (Variable v) (tail(
       (while subs (
          (if (eq( v (head (tail subs)) )) (
-            (set v (tail (tail subs)))
-         ) (
-            (set subs (head subs))
-         ))
+            (match mode (
+               ()
+               (Expression (
+                  (set v (expr::get-expr (tail (tail subs))))
+               ))
+               (Program (
+                  (set v (expr::get-prog (tail (tail subs))))
+               ))
+               (m (fail (UnexpectedSubstitionMode m)))
+            ))
+         ) ())
+         (set subs (head subs))
       ))
       v
    )))
@@ -57,8 +99,8 @@ assemble-substitute-fragment := λsubs frag . (match frag (
       ))
    )))
    ( (App( l r )) (
-      (assemble-substitute-fragment( subs l ))
-      (assemble-substitute-fragment( subs r ))
+      (assemble-substitute-fragment-mode( subs mode l ))
+      (assemble-substitute-fragment-mode( subs mode r ))
    ))
    ( u (fail (UnknownFragmentSubstitution u)))
 ));
@@ -69,14 +111,12 @@ assemble-apply-literal := λctx arrow args offset . (match arrow (
       (match args (
          ()
          ( (App( (App( (Literal :) (Literal val) )) vtype )) (
-            (Expr(
-               ()
-               (assemble-substitute-fragment(
-                  (() (bind val))
-                  rhs
-               ))
-               () () () ctx offset
-            ))
+            fail (ApplyLiteral val vtype)
+            #(local result)
+            #(set result (assemble-substitute-fragment( rc rhs (expr::new()) ))
+            #(set result (expr::set-context result ctx))
+            #(set result (expr::set-offset result offset))
+            #result
          ))
          ( u (fail (UnknownLiteral u)) )
       ))
@@ -87,39 +127,16 @@ assemble-apply-literal := λctx arrow args offset . (match arrow (
 assemble-apply-fragment := λctx arrow args offset . (tail(
    (local rc)
    (set rc (assemble-destructure-fragment( ctx arrow args offset )))
-   (local frame)
-   (local unframe)
-   (local text)
-   (local data)
-   (local prog_subs)
-   (while rc (
-      (local rce)
-      (local rck)
-      (set rck (head (tail rc)))
-      (set rce (tail (tail rc)))
-      (set frame (frame (get-frame (tail rce))))
-      (set unframe (unframe (get-unframe (tail rce))))
-      (set text (text (get-text (tail rce))))
-      (set data (data (get-data (tail rce))))
-      (set prog_subs (prog_subs (
-         (head (tail rc))
-         (get-prog rce)
-      )))
-      (set rc (head rc))
-   ))
-   (set rc (match arrow (
+   (local result)
+   (match arrow (
       ()
-      ( (Lambda( lhs rhs )) (Expr(
-         frame
-         (assemble-substitute-fragment( prog_subs rhs ))
-         unframe
-         text
-         data
-         ctx
-         offset
-      )))
-   )))
-   rc
+      ( (Lambda( lhs rhs )) (
+         (set result (assemble-substitute-fragment( rc rhs (expr::new()) )))
+         (set result (expr::set-context( result ctx )))
+         (set result (expr::set-offset( result offset )))
+      ))
+   ))
+   result
 ));
 
 assemble := λprogram . (
@@ -211,8 +228,8 @@ assemble := λprogram . (
                   (set e1 (define-calling-convention-s( global_ctx fname body )))
                ))
                (set output_pd (
-                  ( (head output_pd) (get-text e1) )
-                  ( (tail output_pd) (get-data e1) )
+                  ( (head output_pd) (expr::get-text e1) )
+                  ( (tail output_pd) (expr::get-data e1) )
                ))
             ))
          ))
@@ -241,14 +258,14 @@ assemble := λprogram . (
          (assemble-program-header())
          (before-main())
          (enter-function())
-         (get-frame main_pd)
-         (get-prog main_pd)
+         (expr::get-frame main_pd)
+         (expr::get-prog main_pd)
          (exit-cleanup())
          (head output_pd)
-         (get-text main_pd)
+         (expr::get-text main_pd)
          (if config-nostd () (stdlib-functions()))
       )
-      ((if config-nostd () (stdlib-data())) (tail output_pd) (get-data main_pd))
+      ((if config-nostd () (stdlib-data())) (tail output_pd) (expr::get-data main_pd))
    ))
    (set output_pd (
       ((head output_pd) assemble-text-section)
