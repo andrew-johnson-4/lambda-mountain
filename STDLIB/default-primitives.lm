@@ -15,15 +15,15 @@ fragment + := λ(: l LocalVariable+U8)(: r Constant+U8). (: (
 fragment + := λ(: l LocalVariable+U16)(: r Constant+U16). (: (
    (.program( \t 'mov \s l \[ '%rbp \] , \s '%r12w \n \t 'add \s '$ r , \s '%r12w \n ))
    (.expression( 'r12w ))
-) Reg8+U8);
+) Reg16+U16);
 fragment + := λ(: l LocalVariable+U32)(: r Constant+U32). (: (
    (.program( \t 'mov \s l \[ '%rbp \] , \s '%r12d \n \t 'add \s '$ r , \s '%r12d \n ))
    (.expression( 'r12d ))
-) Reg8+U8);
+) Reg32+U32);
 fragment + := λ(: l LocalVariable+U64)(: r Constant+U64). (: (
    (.program( \t 'mov \s l \[ '%rbp \] , \s '%r12 \n \t 'add \s '$ r , \s '%r12 \n ))
    (.expression( 'r12 ))
-) Reg8+U8);
+) Reg64+U64);
 
 fragment - := λ(: l LocalVariable+U8)(: r Constant+U8). (: (
    (.program( \t 'mov \s l \[ '%rbp \] , \s '%r12b \n \t 'sub \s '$ r , \s '%r12b \n ))
@@ -32,13 +32,13 @@ fragment - := λ(: l LocalVariable+U8)(: r Constant+U8). (: (
 fragment - := λ(: l LocalVariable+U16)(: r Constant+U16). (: (
    (.program( \t 'mov \s l \[ '%rbp \] , \s '%r12w \n \t 'sub \s '$ r , \s '%r12w \n ))
    (.expression( 'r12w ))
-) Reg8+U8);
+) Reg16+U16);
 fragment - := λ(: l LocalVariable+U32)(: r Constant+U32). (: (
    (.program( \t 'mov \s l \[ '%rbp \] , \s '%r12d \n \t 'sub \s '$ r , \s '%r12d \n ))
    (.expression( 'r12d ))
-) Reg8+U8);
+) Reg32+U32);
 fragment - := λ(: l LocalVariable+U64)(: r Constant+U64). (: (
    (.program( \t 'mov \s l \[ '%rbp \] , \s '%r12 \n \t 'sub \s '$ r , \s '%r12 \n ))
    (.expression( 'r12 ))
-) Reg8+U8);
+) Reg64+U64);
 

@@ -4,17 +4,22 @@ compile-expr-strict := λctx e offset used . (tail(
    (match e (
       ()
       ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
-         (set e1 (expr::set-expr(
-            (expr::new ())
-            lval
-         )))
-         (print-s (NewStrict e1))
+         (set e1 (expr::set-expr( (expr::new ()) lval )))
+         (set e1 (expr::set-context( e1 ctx )))
+         (set e1 (expr::set-offset( e1 offset )))
          e1
       )))
       ( (App ((Variable fname) arg)) (tail(
          ()
-         (apply-calling-convention-s( ctx e fname arg offset used ))
+         (set e (apply-calling-convention-stack( ctx e fname arg offset used )))
+         e
       )))
+      ( Nil (
+         (set e1 (expr::new()) )
+         (set e1 (expr::set-context( e1 ctx )))
+         (set e1 (expr::set-offset( e1 offset )))
+         e1
+      ))
       ( _ (fail (TODO CompileStrict e)))
    ))
 ));
@@ -35,9 +40,10 @@ apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
       )))
       ( (Fragment( vname body )) (tail(
          ()
-         (assemble-apply-fragment( ctx body arg offset ))
+         (set e (assemble-apply-fragment( ctx body arg offset )))
+         e
       )))
-      ( (StackVariable _) (tail(
+      ( (StackVariable vname) (tail(
          (set e1 (compile-expr( ctx arg offset used )))
          (local l)
          (set l (get-local( ctx fname )))
@@ -106,7 +112,6 @@ destructure-calling-convention-stack := λ ctx e fname arg offset used . (tail(
             ( (App( e1 e2 )) (tail(
                (set e1 (destructure-calling-convention-stack( ctx e fname e1 offset used )))
                (set e2 (destructure-calling-convention-stack( (expr::get-context e1) e fname e1 (expr::get-offset e2) used )))
-               (print-s (Applied e1 e1))(print-s \n)
                (Expr(
                   ((expr::get-frame e1) (expr::get-frame e1))
                   ((expr::get-prog e1) (expr::get-prog e1))

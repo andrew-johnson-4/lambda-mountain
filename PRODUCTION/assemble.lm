@@ -63,7 +63,6 @@ assemble-substitute-fragment-mode := λsubs mode frag . (match frag (
    ()
    ( () () )
    ( (Variable v) (tail(
-      (print-s (Sub v mode))(print-s \n)
       (while subs (
          (if (eq( v (head (tail subs)) )) (
             (match mode (
@@ -79,7 +78,6 @@ assemble-substitute-fragment-mode := λsubs mode frag . (match frag (
          ) ())
          (set subs (head subs))
       ))
-      (print-s (SubstitutionResult v))(print-s \n)
       v
    )))
    ( (Literal v) (tail(
@@ -133,7 +131,7 @@ assemble-apply-fragment := λctx arrow args offset . (tail(
    (match arrow (
       ()
       ( (Lambda( lhs rhs )) (
-         (set result (assemble-substitute-fragment( rc rhs (expr::new()) ))
+         (set result (assemble-substitute-fragment( rc rhs (expr::new()) )))
          (set result (expr::set-context( result ctx )))
          (set result (expr::set-offset( result offset )))
       ))
