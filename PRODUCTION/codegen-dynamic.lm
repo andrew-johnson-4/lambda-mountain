@@ -436,7 +436,13 @@ get-maybe-function := λctx v arg_type . (tail(
             ()
             (if r () (
                if (eq(name v)) (
-                  (set r (Fragment( (Variable name) body )))
+                  (if config-strict (
+                     (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
+                        (set r (Fragment( (Variable name) body )))
+                     ) ())
+                  ) (
+                     (set r (Fragment( (Variable name) body )))
+                  ))
                ) ()
             ))
          )))
@@ -444,7 +450,13 @@ get-maybe-function := λctx v arg_type . (tail(
             ()
             (if r () (
                if (eq(name v)) (
-                  (set r (GlobalFunction (mangle-global-function( name body ))))
+                  (if config-strict (
+                     (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
+                        (set r (GlobalFunction (mangle-global-function( name body ))))
+                     ) ())
+                  ) (
+                     (set r (GlobalFunction (mangle-global-function( name body ))))
+                  ))
                ) ()
             ))
          )))
