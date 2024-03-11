@@ -166,9 +166,9 @@ compile-fragment := λctx e offset used . (match e (
    ))
    ( (App( (Variable 'label) (Variable lname) )) (tail(
       (set e (get-fragment-local( ctx lname offset )))
-      (set e (expr::set-prog (expr::new()) ((expr::get-prog e) ': \n) ))
-      (set e (expr::set-context e ctx))
-      (set e (expr::set-offset e offset))
+      (set e (expr::set-prog( (expr::new()) ((expr::get-prog e) ': \n) )))
+      (set e (expr::set-context( e ctx )))
+      (set e (expr::set-offset( e offset )))
       e
    )))
    ( (App( (Variable op) arg )) (tail(
@@ -186,9 +186,9 @@ compile-fragment := λctx e offset used . (match e (
    )))
    ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
       (set ltype (typecheck-infer-type-compound ltype))
-      (set e (expr::set-prog (expr::new()) lval ))
-      (set e (expr::set-context e ctx))
-      (set e (expr::set-offset e offset))
+      (set e (expr::set-prog( (expr::new()) lval )))
+      (set e (expr::set-context( e ctx )))
+      (set e (expr::set-offset( e offset )))
       e
    )))
    ( (Variable v) (tail(
@@ -196,9 +196,9 @@ compile-fragment := λctx e offset used . (match e (
       (get-fragment-local( ctx v offset ))
    )))
    ( (Literal val) (
-      (set e (expr::set-prog (expr::new()) val ))
-      (set e (expr::set-context e ctx))
-      (set e (expr::set-offset e offset))
+      (set e (expr::set-prog( (expr::new()) val )))
+      (set e (expr::set-context( e ctx )))
+      (set e (expr::set-offset( e offset )))
       e
    ))
    ( u (fail (UnknownFragment e)))
