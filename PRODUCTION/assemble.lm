@@ -7,7 +7,6 @@ assemble-destructure-fragment := λctx lmb args offset . (match lmb (
    # fragment annotations are required
    ( (Lambda( (App( (App( (Literal :) (Variable v) )) _ )) body )) (tail(
       (set args (compile-fragment( ctx args offset Used )))
-      (print-s (CompileFragment v args))
       (() (v args))
    )))
    ( (Lambda( (App( rst (App( (App( (Literal :) (Variable v) )) _ )) )) body )) (tail(
@@ -26,7 +25,27 @@ assemble-destructure-fragment := λctx lmb args offset . (match lmb (
    ( u (fail (UnrecgonizedDestructureFragment u)))
 ));
 
-assemble-substitute-fragment := λsubs frag . (match frag (
+assemble-substitute-fragment := λsubs frag e . (match frag (
+   ()
+   ( (App( (App( (Literal ':) fe )) ft )) (
+      (assemble-substitute-fragment( subs fe e ))
+   ))
+   ( (App( (Literal '.program) f )) (
+      (fail (TODO Program1))
+   ))
+   ( (App( inner (App( (Literal '.program) f )) )) (
+      (fail (TODO Program2))
+   ))
+   ( (App( (Literal '.expression) f )) (
+      (fail (TODO Expression1))
+   ))
+   ( (App( inner (App( (Literal '.expression) f )) )) (
+      (fail (TODO Expression2))
+   ))
+   ( u (fail (UnknownFragment frag)))
+));
+
+assemble-substitute-fragment-mode := λsubs mode frag . (match frag (
    ()
    ( () () )
    ( (Variable v) (tail(
@@ -88,37 +107,15 @@ assemble-apply-literal := λctx arrow args offset . (match arrow (
 assemble-apply-fragment := λctx arrow args offset . (tail(
    (local rc)
    (set rc (assemble-destructure-fragment( ctx arrow args offset )))
-   (local frame)
-   (local unframe)
-   (local text)
-   (local data)
-   (local prog_subs)
-   (while rc (
-      (local rce)
-      (local rck)
-      (set rck (head (tail rc)))
-      (set rce (tail (tail rc)))
-      (set frame (frame (expr::get-frame (tail rce))))
-      (set unframe (unframe (expr::get-unframe (tail rce))))
-      (set text (text (expr::get-text (tail rce))))
-      (set data (data (expr::get-data (tail rce))))
-      (set prog_subs (prog_subs (
-         (head (tail rc))
-         (expr::get-prog rce)
-      )))
-      (set rc (head rc))
-   ))
+   (local result)
    (set rc (match arrow (
       ()
-      ( (Lambda( lhs rhs )) (Expr(
-         frame
-         (assemble-substitute-fragment( prog_subs rhs ))
-         unframe
-         text
-         data
-         ctx
-         offset
-      )))
+      ( (Lambda( lhs rhs )) (
+         (set result (assemble-substitute-fragment( rc rhs (expr::new()) ))
+         (set result (expr::set-context result ctx))
+         (set result (expr::set-offset result offset))
+         result
+      ))
    )))
    rc
 ));
