@@ -106,6 +106,7 @@ destructure-calling-convention-stack := λ ctx e fname arg offset used . (tail(
             ( (App( e1 e2 )) (tail(
                (set e1 (destructure-calling-convention-stack( ctx e fname e1 offset used )))
                (set e2 (destructure-calling-convention-stack( (expr::get-context e1) e fname e1 (expr::get-offset e2) used )))
+               (print-s (Applied e1 e1))(print-s \n)
                (Expr(
                   ((expr::get-frame e1) (expr::get-frame e1))
                   ((expr::get-prog e1) (expr::get-prog e1))
@@ -212,9 +213,9 @@ get-fragment-local := λctx v offset . (tail(
          ( (Label(l uid)) (
             if r () (
                if (eq(l v)) (
-                  (set r (expr::set-prog (expr::new()) uid ))
-                  (set r (expr::set-context r ctx))
-                  (set r (expr::set-offset r offset))
+                  (set r (expr::set-prog( (expr::new()) uid )))
+                  (set r (expr::set-context( r ctx )))
+                  (set r (expr::set-offset( r offset )))
                   r
                ) ()
             )
@@ -222,9 +223,9 @@ get-fragment-local := λctx v offset . (tail(
          ( (StackVariable(l loffset ltype)) (
             if r () (
                if (eq(l v)) (
-                  (set r (expr::set-prog (expr::new()) loffset ))
-                  (set r (expr::set-context r ctx))
-                  (set r (expr::set-offset r offset))
+                  (set r (expr::set-prog( (expr::new()) loffset )))
+                  (set r (expr::set-context( r ctx )))
+                  (set r (expr::set-offset( r offset )))
                   r
                ) ()
             )
