@@ -158,3 +158,83 @@ define-calling-convention-stack-destructure-args := λ ctx lhs offset . (match l
    )))
    ( u (fail (UnknownStackArg lhs)))
 ));
+
+compile-fragment := λctx e offset used . (match e (
+   ()
+   ( (App( (App( (Variable 'as) inner_e )) _ )) (
+      (compile-fragment( ctx inner_e offset used ))
+   ))
+   ( (App( (Variable 'label) (Variable lname) )) (tail(
+      (set e (get-fragment-local( ctx lname offset )))
+      (set e (expr::set-prog (expr::new()) ((expr::get-prog e) ': \n) ))
+      (set e (expr::set-context e ctx))
+      (set e (expr::set-offset e offset))
+      e
+   )))
+   ( (App( (Variable op) arg )) (tail(
+      ()
+      (match (get-maybe-function(ctx op (typecheck-lookup-type arg))) (
+         ()
+         ( (Fragment( (Variable _) body )) (tail(
+            ()
+            (assemble-apply-fragment( ctx body arg offset ))
+         )))
+         ( v (
+            (fail (ReferenceToUndefinedOperator op (typecheck-lookup-type arg)))
+         ))
+      ))
+   )))
+   ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
+      (set ltype (typecheck-infer-type-compound ltype))
+      (set e (expr::set-prog (expr::new()) lval ))
+      (set e (expr::set-context e ctx))
+      (set e (expr::set-offset e offset))
+      e
+   )))
+   ( (Variable v) (tail(
+      ()
+      (get-fragment-local( ctx v offset ))
+   )))
+   ( (Literal val) (
+      (set e (expr::set-prog (expr::new()) val ))
+      (set e (expr::set-context e ctx))
+      (set e (expr::set-offset e offset))
+      e
+   ))
+   ( u (fail (UnknownFragment e)))
+);
+
+get-fragment-local := λctx v offset . (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
+         ()
+         ( (Label(l uid)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (expr::set-prog (expr::new()) uid ))
+                  (set r (expr::set-context r ctx))
+                  (set r (expr::set-offset r offset))
+                  r
+               ) ()
+            )
+         ))
+         ( (StackVariable(l loffset ltype)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (expr::set-prog (expr::new()) loffset ))
+                  (set r (expr::set-context r ctx))
+                  (set r (expr::set-offset r offset))
+                  r
+               ) ()
+            )
+         ))
+         ( _ () )
+      ))
+      (set ctx (head ctx))
+   ))
+   (if r () (
+      (fail (ReferenceToUndefinedFragmentVariable v))
+   ))
+   r
+));

@@ -1,46 +1,6 @@
 
 compile-argv-hook                        := ();
 
-compile-fragment := λctx e offset used . (match e (
-   ()
-   ( (App( (App( (Variable 'as) inner_e )) _ )) (
-      (compile-fragment( ctx inner_e offset used ))
-   ))
-   ( (App( (Variable 'label) (Variable lname) )) (tail(
-      (set e (get-fragment-local( ctx lname offset )))
-      (Expr(
-         () ( (expr::get-prog e) ': \n ) () () () ctx offset
-      ))
-   )))
-   ( (App( (Variable op) arg )) (tail(
-      ()
-      (match (get-maybe-function(ctx op (typecheck-lookup-type arg))) (
-         ()
-         ( (Fragment( (Variable _) body )) (tail(
-            ()
-            (assemble-apply-fragment( ctx body arg offset ))
-         )))
-         ( v (
-            (fail (ReferenceToUndefinedOperator op (typecheck-lookup-type arg)))
-         ))
-      ))
-   )))
-   ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
-      (set ltype (typecheck-infer-type-compound ltype))
-      (Expr( () lval () () () ctx offset ))
-   )))
-   ( (Variable v) (tail(
-      ()
-      (get-fragment-local( ctx v offset ))
-   )))
-   ( (Literal val) (
-      (Expr( () val () () () ctx offset ))
-   ))
-   ( u (fail (UnknownFragment e)))
-);
-
-# Compile Codegen
-
 compile-include-argv := λ. if compile-argv-hook () (set compile-argv-hook (compile-argv-hook (
    \t 'pop \s '%r10                    \n # put argc in '%r10
    \t 'mov \s '$argv, \s '%r9          \n
@@ -459,39 +419,6 @@ set-local := λctx v . (tail(
 mangle-global-function := λname body . (
    (clone-rope (label-case ( name : (typecheck-lookup-type body) )))
 );
-
-get-fragment-local := λctx v offset . (tail(
-   (local r)
-   (while ctx (
-      (match (tail ctx) (
-         ()
-         ( (Label(l uid)) (
-            if r () (
-               if (eq(l v)) (
-                  (set r (Expr(
-                     () uid () () () ctx offset
-                  )))
-               ) ()
-            )
-         ))
-         ( (StackVariable(l loffset ltype)) (
-            if r () (
-               if (eq(l v)) (
-                  (set r (Expr(
-                     () loffset () () () ctx offset
-                  )))
-               ) ()
-            )
-         ))
-         ( _ () )
-      ))
-      (set ctx (head ctx))
-   ))
-   (if r () (
-      (fail (ReferenceToUndefinedFragmentVariable v))
-   ))
-   r
-));
 
 get-maybe-function := λctx v arg_type . (tail(
    (local r)
