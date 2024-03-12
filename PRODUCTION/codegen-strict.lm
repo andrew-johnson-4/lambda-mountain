@@ -5,17 +5,16 @@ compile-expr-strict := λctx e offset used . (tail(
       ()
       (Return (
          (set e1 (compile-expr-strict( ctx e offset Used )))
-         (print-s (Return (typecheck-lookup-type e)))
-         (fail (TODO Return))
-#         (match (get-maybe-function(ctx 'push (typecheck-lookup-type e))) (
-#            ()
-#            ( (Fragment( (Variable _) body )) (
-#               (fail (ApplyFragmentCall ))
-#            ))
-#            ( v (
-#               (fail (ReferenceToUndefinedVariable fname (typecheck-lookup-type e)))
-#            ))
-#         ))
+         (match (get-maybe-function(ctx 'push (typecheck-lookup-type e))) (
+            ()
+            ( (Fragment( (Variable _) body )) (
+               (print-s (Return (typecheck-lookup-type e)))
+               (fail (ApplyFragmentCall body))
+            ))
+            ( v (
+               (fail (ReferenceToUndefinedVariable 'push (typecheck-lookup-type e)))
+            ))
+         ))
       ))
       (_ (
          (match e (
@@ -41,9 +40,6 @@ compile-expr-strict := λctx e offset used . (tail(
       ))
    ))
 ));
-
-apply-fragment-call := λctx fname arg . (
-);
 
 apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
    (local e1)
