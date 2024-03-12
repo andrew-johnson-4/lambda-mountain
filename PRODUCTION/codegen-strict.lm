@@ -1,6 +1,7 @@
 
 compile-expr-strict := λctx e offset used . (tail(
    (local e1)
+   (local e2)
    (match used (
       ()
       (Return (tail(
@@ -8,8 +9,10 @@ compile-expr-strict := λctx e offset used . (tail(
          (match (get-maybe-function(ctx 'push (typecheck-lookup-type e))) (
             ()
             ( (Fragment( (Variable _) body )) (tail(
-               (set e1 (assemble-apply-fragment( ctx body e1 offset )))
-               e1
+               (set e2 (assemble-apply-fragment( ctx body e1 offset )))
+               (expr::set-prog( e2 ()
+                  ((expr::get-prog e1) (expr::get-prog e2))
+               ))
             )))
             ( v (
                (fail (ReferenceToUndefinedVariable 'push (typecheck-lookup-type e)))
@@ -43,14 +46,26 @@ compile-expr-strict := λctx e offset used . (tail(
 
 apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
    (local e1)
+   (local e2)
    (match (get-maybe-function(ctx fname (typecheck-lookup-type arg))) (
       ()
       ( (GlobalFunction mangledname) (tail(
          (set e1 (destructure-calling-convention-stack( ctx e fname arg offset used )))
+         (print-s (E1 e1))(print-s \n)
+         (match (get-maybe-function(ctx 'pop (typecheck-lookup-type e))) (
+            ()
+            ( (Fragment( (Variable _) body )) (tail(
+               (set e2 (assemble-apply-fragment( ctx body e1 offset )))
+            )))
+            ( v (
+               (fail (ReferenceToUndefinedVariable 'pop (typecheck-lookup-type e)))
+            ))
+         ))
          (Expr(
             (expr::get-frame e1)
             ( (enter-function()) (expr::get-prog e1) (\t 'call \s mangledname \n)
-              (\t 'mov \s '%rbp, \s '%rsp               \n
+              (expr::get-prog e2)
+              (\t 'mov \s '%rbp, \s '%rsp              \n
                \t 'pop \s '%rbp                        \n) )
             (expr::get-unframe e1) (expr::get-text e1) (expr::get-data e1) (expr::get-context e1) (expr::get-offset e1)
          ))
