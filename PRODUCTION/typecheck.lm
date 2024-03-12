@@ -305,12 +305,14 @@ typecheck-unify-sub := λctx v . (match ctx (
 
 typecheck-unify-ctx := λctx v . (match v (
    ()
-   ( (vl vr) (
-      ( (typecheck-unify-ctx( ctx vl )) (typecheck-unify-ctx( ctx vr )) )
-   ))
-   ( _ (
-      (typecheck-unify-sub( ctx v ))
-   ))
+   ( (vl vr) (tail(
+      (set v ( (typecheck-unify-ctx( ctx vl )) (typecheck-unify-ctx( ctx vr )) ))
+      v
+   )))
+   ( _ (tail(
+      (set v (typecheck-unify-sub( ctx v )))
+      v
+   )))
 ));
 
 typecheck-unify-implies := λlt rt . (if (eq(lt rt)) True (match lt (
@@ -350,11 +352,13 @@ typecheck-unify-args := λlt rt . (tail(
       ))
       (set accept-as (head accept-as))
    ))
-   (if match (
+   (local result)
+   (set result (if match (
       match
    ) (
       (typecheck-unify-args-inner( lt rt ))
-   ))
+   )))
+   result
 ));
 
 typecheck-unify-args-inner := λlt rt . (match (lt rt) (
@@ -412,21 +416,23 @@ typecheck-unify-args-inner := λlt rt . (match (lt rt) (
 typecheck-apply-plural := λmany pt . (match many(
    ()
    ( (And( t1 t2 )) (tail(
-      (print-s (ApplyPlural many pt))(print-s \n)
       (local r)
       (set r (typecheck-apply-plural( t1 pt )))
       (if r r (typecheck-apply-plural( t2 pt )))
    )))
    ( ('->(lt rt)) (tail(
-      (print-s (ApplyPlural many pt))(print-s \n)
-      ()
-      (typecheck-unify-ctx( (typecheck-unify-args(lt pt)) rt ))
+      (local result)
+      (local ctx)
+      (set ctx (typecheck-unify-args(lt pt)))
+      (if ctx (
+         (set result (typecheck-unify-ctx( ctx rt )))
+      ) ())
+      result
    )))
    ( u (fail (ApplicationIsNotAFunction many pt)))
 ));
 
 typecheck-safe-apply-plural := λterm many pt . (tail(
-   (print-s (ApplySafePlural many pt))(print-s \n)
    (local r)
    (set r (typecheck-apply-plural( many pt )))
    (if r r (
@@ -541,11 +547,9 @@ typecheck-infer-expr := λctx e . (tail(
          (typecheck-ascript( e Fragment ))
       ))
       ( (App( (App( (Literal ':) (Literal _) )) tt )) (
-         (print-s (Compound (typecheck-infer-type-compound tt)))(print-s \n)
          (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
       ))
       ( (App( (App( (Literal ':) asc )) tt )) (
-         (print-s (Compound (typecheck-infer-type-compound tt)))(print-s \n)
          (typecheck-infer-expr( ctx asc ))
          (typecheck-ascript( asc (typecheck-infer-type-compound tt) ))
          (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
@@ -566,8 +570,6 @@ typecheck-infer-expr := λctx e . (tail(
       ( (App( l r )) (tail(
          (set ctx (typecheck-infer-expr( ctx l )))
          (set ctx (typecheck-infer-expr( ctx r )))
-         (print-s (ApplyL (typecheck-lookup-type l)))(print-s \n)
-         (print-s (ApplyR (typecheck-lookup-type l)))(print-s \n)
          (match ( (typecheck-lookup-type l) (typecheck-lookup-type r) ) (
             ()
             ( (() _) () )
