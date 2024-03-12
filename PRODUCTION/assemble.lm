@@ -44,14 +44,14 @@ assemble-substitute-fragment := λsubs frag e . (match frag (
       ))
    ))
    ( (App( (Literal '.expression) f )) (
-      (expr::set-prog( e (
+      (expr::set-expr( e (
          (assemble-substitute-fragment-mode( subs Expression f ))
       )))
    ))
    ( (App( inner (App( (Literal '.expression) f )) )) (
       (assemble-substitute-fragment(
          subs inner
-         (expr::set-prog( e (
+         (expr::set-expr( e (
             (assemble-substitute-fragment-mode( subs Expression f ))
          )))
       ))
@@ -62,6 +62,24 @@ assemble-substitute-fragment := λsubs frag e . (match frag (
 assemble-substitute-fragment-mode := λsubs mode frag . (match frag (
    ()
    ( () () )
+   ( (App( (Literal '.expression) (Variable v) )) (tail(
+      (while subs (
+         (if (eq( v (head (tail subs)) )) (
+            (set v (expr::get-expr (tail (tail subs))))
+         ) ())
+         (set subs (head subs))
+      ))
+      v
+   )))
+   ( (App( (Literal '.program) (Variable v) )) (tail(
+      (while subs (
+         (if (eq( v (head (tail subs)) )) (
+            (set v (expr::get-prog (tail (tail subs))))
+         ) ())
+         (set subs (head subs))
+      ))
+      v
+   )))
    ( (Variable v) (tail(
       (while subs (
          (if (eq( v (head (tail subs)) )) (

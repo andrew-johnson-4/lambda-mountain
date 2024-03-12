@@ -1,5 +1,5 @@
 
-expr::new := λ . ();
+expr::new := λ . (StrictExpr(() () () () () () () ()));
 expr::get-frame := λe . (match e (
    ()
    ((Expr(f p u t d pc off)) f)
@@ -27,7 +27,7 @@ expr::get-prog := λe . (match e (
 ));
 expr::get-expr := λe . (match e (
    ()
-   ((StrictExpr(f u t d p e c o)) f)
+   ((StrictExpr(f u t d p e c o)) e)
 ));
 expr::get-context := λe . (match e (
    ()

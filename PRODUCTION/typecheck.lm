@@ -118,8 +118,6 @@ typecheck-lookup-type := λterm . (tail(
 typecheck-deep-eq := λt1 t2 . if (is( t1 t2 )) True (match (t1 t2) (
    ()
    ( (() ()) True )
-   ( (Fragment _) True )
-   ( (_ Fragment) True )
    ( ( (And(l1 l2)) (And(r1 r2)) ) True )
    ( ( (And(l1 l2)) r ) (
       if (typecheck-deep-eq(l1 r)) True
@@ -138,7 +136,7 @@ typecheck-deep-eq := λt1 t2 . if (is( t1 t2 )) True (match (t1 t2) (
 ));
 
 typecheck-ascript := λt tt . (
-   if tt (tail(
+   (if tt (tail(
       (local lt)
       (set lt (typecheck-lookup-type t))
       (if lt (
@@ -149,7 +147,7 @@ typecheck-ascript := λt tt . (
          (set typecheck-context ((t tt) typecheck-context))
          (set typecheck-types-have-changed True)
       ))
-   )) ()
+   )) ())
 );
 
 typecheck-show-ascript := λp . (tail(
@@ -253,7 +251,7 @@ typecheck-typeof-gvar := λv . (tail(
    tt
 ));
 
-typecheck-typeof-var := λctx v . if (eq( 'asm! v )) ('->(Fragment Fragment)) (match ctx (
+typecheck-typeof-var := λctx v . (match ctx (
    ()
    ( () (typecheck-typeof-gvar v) )
    ( (cs (cv ct)) (
@@ -307,12 +305,14 @@ typecheck-unify-sub := λctx v . (match ctx (
 
 typecheck-unify-ctx := λctx v . (match v (
    ()
-   ( (vl vr) (
-      ( (typecheck-unify-ctx( ctx vl )) (typecheck-unify-ctx( ctx vr )) )
-   ))
-   ( _ (
-      (typecheck-unify-sub( ctx v ))
-   ))
+   ( (vl vr) (tail(
+      (set v ( (typecheck-unify-ctx( ctx vl )) (typecheck-unify-ctx( ctx vr )) ))
+      v
+   )))
+   ( _ (tail(
+      (set v (typecheck-unify-sub( ctx v )))
+      v
+   )))
 ));
 
 typecheck-unify-implies := λlt rt . (if (eq(lt rt)) True (match lt (
@@ -352,15 +352,34 @@ typecheck-unify-args := λlt rt . (tail(
       ))
       (set accept-as (head accept-as))
    ))
-   (if match (
+   (local result)
+   (set result (if match (
       match
    ) (
       (typecheck-unify-args-inner( lt rt ))
-   ))
+   )))
+   result
 ));
 
 typecheck-unify-args-inner := λlt rt . (match (lt rt) (
    ()
+#   ( ( (And(lt1 rt1)) a2 ) (
+#      (match ( (typecheck-unify-args(lt1 a2)) (typecheck-unify-args(rt1 a2)) ) (
+#         ()
+#         ( (() _) () )
+#         ( (_ ()) () )
+#         ( (lctx rctx) (lctx rctx) )
+#      ))
+#   ))
+#   ( ( a1 (And(lt2 rt2)) ) (
+#      (match ( (typecheck-unify-args(a1 lt2)) (typecheck-unify-args(a1 rt2)) ) (
+#         ()
+#         ( (() ()) () )
+#         ( (() rctx) rctx )
+#         ( (lctx ()) lctx )
+#         ( (lctx rctx) (lctx rctx) )
+#      ))
+#   ))
    ( ((lt1 rt1) (lt2 rt2)) (
       (match ( (typecheck-unify-args(lt1 lt2)) (typecheck-unify-args(rt1 rt2)) ) (
          ()
@@ -402,8 +421,13 @@ typecheck-apply-plural := λmany pt . (match many(
       (if r r (typecheck-apply-plural( t2 pt )))
    )))
    ( ('->(lt rt)) (tail(
-      ()
-      (typecheck-unify-ctx( (typecheck-unify-args(lt pt)) rt ))
+      (local result)
+      (local ctx)
+      (set ctx (typecheck-unify-args(lt pt)))
+      (if ctx (
+         (set result (typecheck-unify-ctx( ctx rt )))
+      ) ())
+      result
    )))
    ( u (fail (ApplicationIsNotAFunction many pt)))
 ));
@@ -498,9 +522,10 @@ typecheck-infer-expr := λctx e . (tail(
       ( (Fragment( fln fle )) (
          (match fle (
             ()
-            ( (Lambda( lhs rhs )) (
+            ( (Lambda( lhs (App( (App( (Literal ':) rhs )) rhst )) )) (
+               (set rhst (typecheck-infer-type-compound rhst))
                (local flt)
-               (set flt ('->( (typecheck-typeof-lhs lhs) Fragment )) )
+               (set flt ('->( (typecheck-typeof-lhs lhs) rhst )) )
                (typecheck-ascript( fle flt ))
                (match fln (
                   ()
