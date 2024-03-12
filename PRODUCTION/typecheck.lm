@@ -339,6 +339,7 @@ typecheck-unify-implies := λlt rt . (if (eq(lt rt)) True (match lt (
 )));
 
 typecheck-unify-args := λlt rt . (tail(
+   (print-s (UnifyArgs lt rt))(print-s \n)
    (local match)
    (local accept-as)
    (set accept-as typecheck-accept-as)
@@ -359,6 +360,23 @@ typecheck-unify-args := λlt rt . (tail(
 
 typecheck-unify-args-inner := λlt rt . (match (lt rt) (
    ()
+   ( ( (And(lt1 rt1)) a2 ) (
+      (match ( (typecheck-unify-args(lt1 a2)) (typecheck-unify-args(rt1 a2)) ) (
+         ()
+         ( (() _) () )
+         ( (_ ()) () )
+         ( (lctx rctx) (lctx rctx) )
+      ))
+   ))
+   ( ( a1 (And(lt2 rt2)) ) (
+      (match ( (typecheck-unify-args(a1 lt2)) (typecheck-unify-args(a1 rt2)) ) (
+         ()
+         ( (() ()) () )
+         ( (() rctx) rctx )
+         ( (lctx ()) lctx )
+         ( (lctx rctx) (lctx rctx) )
+      ))
+   ))
    ( ((lt1 rt1) (lt2 rt2)) (
       (match ( (typecheck-unify-args(lt1 lt2)) (typecheck-unify-args(rt1 rt2)) ) (
          ()
