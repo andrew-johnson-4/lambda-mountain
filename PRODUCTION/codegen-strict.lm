@@ -3,19 +3,19 @@ compile-expr-strict := λctx e offset used . (tail(
    (local e1)
    (match used (
       ()
-      (Return (
+      (Return (tail(
          (set e1 (compile-expr-strict( ctx e offset Used )))
          (match (get-maybe-function(ctx 'push (typecheck-lookup-type e))) (
             ()
-            ( (Fragment( (Variable _) body )) (
-               (print-s (Return (typecheck-lookup-type e)))
-               (fail (ApplyFragmentCall body))
-            ))
+            ( (Fragment( (Variable _) body )) (tail(
+               (set e1 (assemble-apply-fragment( ctx body e1 offset )))
+               e1
+            )))
             ( v (
                (fail (ReferenceToUndefinedVariable 'push (typecheck-lookup-type e)))
             ))
          ))
-      ))
+      )))
       (_ (
          (match e (
             ()
@@ -184,6 +184,7 @@ define-calling-convention-stack-destructure-args := λ ctx lhs offset . (match l
 
 compile-fragment := λctx e offset used . (match e (
    ()
+   ( (StrictExpr _) e )
    ( (App( (App( (Variable 'as) inner_e )) _ )) (
       (compile-fragment( ctx inner_e offset used ))
    ))
