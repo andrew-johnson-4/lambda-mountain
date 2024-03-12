@@ -15,8 +15,8 @@ fragment push := λ(: l Constant+I16). (: (.program( \t 'pushw \t '$ l \n)) Nil)
 fragment push := λ(: l Constant+I32). (: (.program( \t 'pushs \t '$ l \n)) Nil);
 fragment push := λ(: l Constant+I64). (: (.program( \t 'pushq \t '$ l \n)) Nil);
 
-fragment push := λ(: l Reg8). (: (.program( \t 'pushb \t '% (.expression l) \n)) Nil);
-fragment push := λ(: l Reg16). (: (.program( \t 'pushw \t '% (.expression l) \n)) Nil);
-fragment push := λ(: l Reg32). (: (.program( \t 'pushs \t '% (.expression l) \n)) Nil);
-fragment push := λ(: l Reg64). (: (.program( \t 'pushq \t '% (.expression l) \n)) Nil);
+fragment push := λ(: l Reg8). (: (.program( (.program l) \t 'pushb \t '% (.expression l) \n)) Nil);
+fragment push := λ(: l Reg16). (: (.program( (.program l) \t 'pushw \t '% (.expression l) \n)) Nil);
+fragment push := λ(: l Reg32). (: (.program( (.program l) \t 'pushs \t '% (.expression l) \n)) Nil);
+fragment push := λ(: l Reg64). (: (.program( (.program l) \t 'pushq \t '% (.expression l) \n)) Nil);
 
