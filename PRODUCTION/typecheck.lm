@@ -118,8 +118,6 @@ typecheck-lookup-type := λterm . (tail(
 typecheck-deep-eq := λt1 t2 . if (is( t1 t2 )) True (match (t1 t2) (
    ()
    ( (() ()) True )
-   ( (Fragment _) True )
-   ( (_ Fragment) True )
    ( ( (And(l1 l2)) (And(r1 r2)) ) True )
    ( ( (And(l1 l2)) r ) (
       if (typecheck-deep-eq(l1 r)) True
@@ -138,7 +136,7 @@ typecheck-deep-eq := λt1 t2 . if (is( t1 t2 )) True (match (t1 t2) (
 ));
 
 typecheck-ascript := λt tt . (
-   if tt (tail(
+   (if tt (tail(
       (local lt)
       (set lt (typecheck-lookup-type t))
       (if lt (
@@ -149,7 +147,7 @@ typecheck-ascript := λt tt . (
          (set typecheck-context ((t tt) typecheck-context))
          (set typecheck-types-have-changed True)
       ))
-   )) ()
+   )) ())
 );
 
 typecheck-show-ascript := λp . (tail(
@@ -253,7 +251,7 @@ typecheck-typeof-gvar := λv . (tail(
    tt
 ));
 
-typecheck-typeof-var := λctx v . if (eq( 'asm! v )) ('->(Fragment Fragment)) (match ctx (
+typecheck-typeof-var := λctx v . (match ctx (
    ()
    ( () (typecheck-typeof-gvar v) )
    ( (cs (cv ct)) (
@@ -498,9 +496,10 @@ typecheck-infer-expr := λctx e . (tail(
       ( (Fragment( fln fle )) (
          (match fle (
             ()
-            ( (Lambda( lhs rhs )) (
+            ( (Lambda( lhs (App( (App( (Literal ':) rhs )) rhst )) )) (
+               (set rhst (typecheck-infer-type-compound rhst))
                (local flt)
-               (set flt ('->( (typecheck-typeof-lhs lhs) Fragment )) )
+               (set flt ('->( (typecheck-typeof-lhs lhs) rhst )) )
                (typecheck-ascript( fle flt ))
                (match fln (
                   ()
