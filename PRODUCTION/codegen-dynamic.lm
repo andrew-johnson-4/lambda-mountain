@@ -421,6 +421,7 @@ mangle-global-function := λname body . (
 );
 
 get-maybe-function := λctx v arg_type . (tail(
+   (print-s (GetMaybeFunction arg_type))(print-s \n)
    (local r)
    (while ctx (
       (match (tail ctx) (

@@ -5,6 +5,7 @@ compile-expr-strict := λctx e offset used . (tail(
       ()
       (Return (
          (set e1 (compile-expr-strict( ctx e offset Used )))
+         (print-s (LookupType (typecheck-lookup-type e) e))(print-s \n)
          (match (get-maybe-function(ctx 'push (typecheck-lookup-type e))) (
             ()
             ( (Fragment( (Variable _) body )) (
