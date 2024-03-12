@@ -3,44 +3,46 @@ compile-expr-strict := λctx e offset used . (tail(
    (local e1)
    (match used (
       ()
-      (Used ())
-      (Unused ())
-      (Tail ())
-      (Return (fail (TODO Return)))
-   ))
-   (match e (
-      ()
-      ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
-         (set e1 (expr::set-expr( (expr::new ()) lval )))
-         (set e1 (expr::set-context( e1 ctx )))
-         (set e1 (expr::set-offset( e1 offset )))
-         e1
-      )))
-      ( (App ((Variable fname) arg)) (tail(
-         ()
-         (set e1 (apply-calling-convention-stack( ctx e fname arg offset used )))
-         e1
-      )))
-      ( Nil (
-         (set e1 (expr::new()) )
-         (set e1 (expr::set-context( e1 ctx )))
-         (set e1 (expr::set-offset( e1 offset )))
-         e1
+      (Return (
+         (set e1 (compile-expr-strict( ctx e offset Used )))
+         (print-s (Return (typecheck-lookup-type e)))
+         (fail (TODO Return))
+#         (match (get-maybe-function(ctx 'push (typecheck-lookup-type e))) (
+#            ()
+#            ( (Fragment( (Variable _) body )) (
+#               (fail (ApplyFragmentCall ))
+#            ))
+#            ( v (
+#               (fail (ReferenceToUndefinedVariable fname (typecheck-lookup-type e)))
+#            ))
+#         ))
       ))
-      ( _ (fail (TODO CompileStrict e)))
+      (_ (
+         (match e (
+            ()
+            ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
+               (set e1 (expr::set-expr( (expr::new ()) lval )))
+               (set e1 (expr::set-context( e1 ctx )))
+               (set e1 (expr::set-offset( e1 offset )))
+               e1
+            )))
+            ( (App ((Variable fname) arg)) (tail(
+               (set e1 (apply-calling-convention-stack( ctx e fname arg offset used )))
+               e1
+            )))
+            ( Nil (
+               (set e1 (expr::new()) )
+               (set e1 (expr::set-context( e1 ctx )))
+               (set e1 (expr::set-offset( e1 offset )))
+               e1
+            ))
+            ( _ (fail (TODO CompileStrict e)))
+         ))
+      ))
    ))
 ));
 
 apply-fragment-call := λctx fname arg . (
-   (match (get-maybe-function(ctx fname (typecheck-lookup-type arg))) (
-      ()
-      ( (Fragment( (Variable _) body )) (
-         (fail (ApplyFragmentCall ))
-      ))
-      ( v (
-         (fail (ReferenceToUndefinedVariable fname (typecheck-lookup-type arg)))
-      ))
-   ))
 );
 
 apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
