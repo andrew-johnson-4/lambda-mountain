@@ -1,6 +1,13 @@
 
 compile-expr-strict := λctx e offset used . (tail(
    (local e1)
+   (match used (
+      ()
+      (Used ())
+      (Unused ())
+      (Tail ())
+      (Return (fail (TODO Return)))
+   ))
    (match e (
       ()
       ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
@@ -11,8 +18,8 @@ compile-expr-strict := λctx e offset used . (tail(
       )))
       ( (App ((Variable fname) arg)) (tail(
          ()
-         (set e (apply-calling-convention-stack( ctx e fname arg offset used )))
-         e
+         (set e1 (apply-calling-convention-stack( ctx e fname arg offset used )))
+         e1
       )))
       ( Nil (
          (set e1 (expr::new()) )
@@ -23,6 +30,18 @@ compile-expr-strict := λctx e offset used . (tail(
       ( _ (fail (TODO CompileStrict e)))
    ))
 ));
+
+apply-fragment-call := λctx fname arg . (
+   (match (get-maybe-function(ctx fname (typecheck-lookup-type arg))) (
+      ()
+      ( (Fragment( (Variable _) body )) (
+         (fail (ApplyFragmentCall ))
+      ))
+      ( v (
+         (fail (ReferenceToUndefinedVariable fname (typecheck-lookup-type arg)))
+      ))
+   ))
+);
 
 apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
    (local e1)
@@ -63,7 +82,7 @@ define-calling-convention-stack := λ ctx fname lmb . (tail(
          (local e2)
          (local text)
          (set e1 (define-calling-convention-stack-destructure-args( ctx lhs () )))
-         (set e2 (compile-expr( (expr::get-context e1) rhs (expr::get-offset e1) Used)))
+         (set e2 (compile-expr( (expr::get-context e1) rhs (expr::get-offset e1) Return)))
          (set text ( text (mangle-global-function( fname lmb )) ': \n ))
          (set text ( text (expr::get-frame e2) ))
          (set text ( text (expr::get-prog e2) ))
