@@ -80,6 +80,11 @@ typecheck-assert-expr := λe . (tail(
       ( (Literal lit) (
          (typecheck-assert-one( e ))
       ))
+      ( (App( (Variable 'tail) (App( l r )) )) (tail(
+         (typecheck-assert-expr( r ))
+         (typecheck-assert-expr( l ))
+         (typecheck-assert-one( e ))
+      )))
       ( (App( l r )) (
          (typecheck-assert-expr( r ))
          (typecheck-assert-expr( l ))
@@ -567,6 +572,13 @@ typecheck-infer-expr := λctx e used . (tail(
             (typecheck-ascript( e Atom ))
          ))
       ))
+      ( (App( (Variable 'tail) (App( l r )) )) (tail(
+         (set ctx (typecheck-infer-expr( ctx l used )))
+         (set ctx (typecheck-infer-expr( ctx r used )))
+         (if (typecheck-lookup-type r) (
+            (typecheck-ascript( e (typecheck-lookup-type r) ))
+         ) ())
+      )))
       ( (App( l r )) (tail(
          (set ctx (typecheck-infer-expr( ctx l used )))
          (set ctx (typecheck-infer-expr( ctx r used )))
