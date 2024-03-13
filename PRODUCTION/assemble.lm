@@ -130,7 +130,6 @@ assemble-apply-fragment := λctx arrow args offset . (tail(
    (local rc)
    (set rc (assemble-destructure-fragment( ctx arrow args offset )))
    (local result)
-   (print-s (AssembleFragment rc))(print-s \n)
    (match arrow (
       ()
       ( (Lambda( lhs rhs )) (

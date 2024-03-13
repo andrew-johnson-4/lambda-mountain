@@ -24,7 +24,7 @@ compile-expr-strict := λctx e offset used . (tail(
             ()
             ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
                (set e1 (expr::set-expr( (expr::new ()) lval )))
-               (set e1 (expr::set-prog( e2 lval )))
+               (set e1 (expr::set-prog( e1 lval )))
                (set e1 (expr::set-context( e1 ctx )))
                (set e1 (expr::set-offset( e1 offset )))
                e1
@@ -102,7 +102,7 @@ define-calling-convention-stack := λ ctx fname lmb . (tail(
          (local e2)
          (local text)
          (set e1 (define-calling-convention-stack-destructure-args( ctx lhs () )))
-         (set e2 (compile-expr( (expr::get-context e1) rhs (expr::get-offset e1) Return)))
+         (set e2 (compile-expr-strict( (expr::get-context e1) rhs (expr::get-offset e1) Return)))
          (set text ( text (mangle-global-function( fname lmb )) ': \n ))
          (set text ( text (expr::get-frame e2) ))
          (set text ( text (expr::get-prog e2) ))
@@ -231,7 +231,6 @@ compile-fragment := λctx e offset used . (match e (
       ))
    )))
    ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
-      (print-s (NewLiteral lval ltype))(print-s \n)
       (set ltype (typecheck-infer-type-compound ltype))
       (set e (expr::set-prog( (expr::new()) lval )))
       (set e (expr::set-expr( e lval )))
@@ -243,13 +242,13 @@ compile-fragment := λctx e offset used . (match e (
       ()
       (get-fragment-local( ctx v offset ))
    )))
-   ( (Literal val) (
+   ( (Literal val) (tail(
       (set e (expr::set-prog( (expr::new()) val )))
       (set e (expr::set-expr( e val )))
       (set e (expr::set-context( e ctx )))
       (set e (expr::set-offset( e offset )))
       e
-   ))
+   )))
    ( u (fail (UnknownFragment e)))
 );
 
