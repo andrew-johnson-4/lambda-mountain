@@ -1,9 +1,9 @@
 
 nostd: prod
-	./production --nostd -o tmp.s STDLIB/default-instruction-set.lm STDLIB/default-primitives.lm tests/nostd/normal_fib.lm
-	as -o tmp.o tmp.s
+#	./production --nostd -o tmp.s STDLIB/default-instruction-set.lm STDLIB/default-primitives.lm tests/nostd/normal_fib.lm
+	as -o tmp.o scratch_area/sfz_example.s
 	ld -o tmp tmp.o
-	./tmp 5
+	./tmp && echo $?
 
 test: prod
 	./production -o production1.s PRODUCTION/cli.lm
