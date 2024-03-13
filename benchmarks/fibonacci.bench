@@ -1,21 +1,4 @@
 
-label: Lambda Mountain
-arg: 0
-arg: 5
-arg: 10
-arg: 15
-arg: 20
-arg: 25
-arg: 30
-arg: 35
-arg: 40
-arg: 45
-run: rm -f $basename.s $basename.o $basenaml.lm.exe
-run: lm --nostd -o $basename.s STDLIB/default-instruction-set.lm STDLIB/default-primitives.lm $basename.lm
-run: as -o $basename.o $basename.s
-run: ld -o $basename.lm.exe $basename.o
-run: ./$basename.lm.exe
-
 label: OCaml
 arg: 0
 arg: 5
@@ -60,3 +43,19 @@ arg: 45
 run: rm -f $basenaml.rs.exe
 run: rustc -o $basename.rs.exe $basename.rs
 run: ./$basename.rs.exe
+
+label: SFZ (Lambda Mountain)
+arg: 0
+arg: 5
+arg: 10
+arg: 15
+arg: 20
+arg: 25
+arg: 30
+arg: 35
+arg: 40
+arg: 45
+run: rm -f $basename.sfz.*
+run: as $basename.s.sfz -o $basename.sfz.o
+run: ld $basename.sfz.o -o $basename.sfz.exe
+run: ./$basename.sfz.exe

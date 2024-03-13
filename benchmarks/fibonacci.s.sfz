@@ -3,7 +3,22 @@
 _start:
 	jmp main
 main:
-	mov $45, %rax
+	pop %r8
+	pop %r8
+	pop %r8
+	mov $0, %rax
+	mov $10, %r9
+argv:
+	mov $0, %r10
+	mov 0(%r8), %r10b
+	cmp $0, %r10b
+	je begin
+	mul %r9
+	sub $48, %r10
+	add %r10, %rax
+	inc %r8
+	jmp argv
+begin:
 	call fib_left_oriented
 	mov $60, %rax
 	mov $0, %rdi
