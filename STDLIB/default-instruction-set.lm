@@ -21,3 +21,5 @@ fragment cdecl::return := λ(: l Reg16). (: (  (.program( \t 'mov \t '% (.expres
 fragment cdecl::return := λ(: l Reg32). (: (  (.program( \t 'mov \t '% (.expression l) , '%eax \n))  (.expression 'eax)  ) Nil);
 fragment cdecl::return := λ(: l Reg64). (: (  (.program( \t 'mov \t '% (.expression l) , '%rax \n))  (.expression 'rax)  ) Nil);
 
+fragment mov := λ(: src LocalVariable+U64)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n)) ) Nil);
+fragment mov := λ(: src LocalVariable+I64)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n)) ) Nil);

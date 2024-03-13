@@ -28,6 +28,10 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e1 (expr::set-offset( e1 offset )))
                e1
             )))
+            ( (App( (App( (Literal :) lval )) ltype )) (tail(
+               (set e1 (compile-expr-strict( ctx lval offset Unused )))
+               e1
+            )))
             ( (App ((Variable fname) arg)) (tail(
                (set e1 (apply-calling-convention-stack( ctx e fname arg offset used )))
                e1
@@ -40,7 +44,7 @@ compile-expr-strict := λctx e offset used . (tail(
             )))
             ( (App (l r)) (tail(
                (if (eq( used Used )) (
-                  (fail (TODO Return Strict Cons))
+                  (fail (TODO Return Strict Cons e))
                ) (
                   (set e1 (compile-expr-strict( ctx l offset Unused )))
                   (set e2 (compile-expr-strict( (expr::get-context e1) r (expr::get-offset e1) Used )))

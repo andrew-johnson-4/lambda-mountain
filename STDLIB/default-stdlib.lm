@@ -1,3 +1,7 @@
 
-print := λ(: x U64). ();
-print := λ(: x I64). ();
+print := λ(: x U64). (: (
+   (mov( x R12 ))
+) Nil);
+print := λ(: x I64). (: (
+   (mov( x R12 ))
+) Nil);
