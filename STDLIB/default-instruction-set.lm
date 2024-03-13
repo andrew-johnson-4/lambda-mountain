@@ -23,3 +23,10 @@ fragment cdecl::return := λ(: l Reg64). (: (  (.program( \t 'mov \t '% (.expres
 
 fragment mov := λ(: src LocalVariable+U64)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n)) ) Nil);
 fragment mov := λ(: src LocalVariable+I64)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n)) ) Nil);
+
+fragment cmp := λ(: imm Constant+U64)(: r Constant+Reg64). (: (.program( \t 'cmp \s '$ imm , (.expression r) \n )) Nil);
+fragment cmp := λ(: r Constant+Reg64)(: imm Constant+U64). (: (.program( \t 'cmp \s (.expression r), '$ imm \n )) Nil);
+fragment cmp := λ(: imm Constant+I64)(: r Constant+Reg64). (: (.program( \t 'cmp \s '$ imm , (.expression r) \n )) Nil);
+fragment cmp := λ(: r Constant+Reg64)(: imm Constant+I64). (: (.program( \t 'cmp \s (.expression r), '$ imm \n )) Nil);
+
+fragment jge := λ(: dst Label). (: (.program( \t 'jge \s (.expression dst) \n )) Nil);
