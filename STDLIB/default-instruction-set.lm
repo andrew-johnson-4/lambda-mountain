@@ -15,6 +15,7 @@ fragment push := λ(: l Constant+I16). (: ( (.program( \t 'pushw \t '$ l \n)) (.
 fragment push := λ(: l Constant+I32). (: ( (.program( \t 'pushs \t '$ l \n)) (.expression r12d) ) Nil);
 fragment push := λ(: l Constant+I64). (: ( (.program( \t 'pushq \t '$ l \n)) (.expression r12 ) ) Nil);
 
+fragment cdecl::return := λ(: l Nil). (: () Nil);
 fragment cdecl::return := λ(: l Reg8). (: (  (.program( \t 'mov \t '% (.expression l) , '%al \n))  (.expression 'al)  ) Nil);
 fragment cdecl::return := λ(: l Reg16). (: (  (.program( \t 'mov \t '% (.expression l) , '%ax \n))  (.expression 'ax)  ) Nil);
 fragment cdecl::return := λ(: l Reg32). (: (  (.program( \t 'mov \t '% (.expression l) , '%eax \n))  (.expression 'eax)  ) Nil);

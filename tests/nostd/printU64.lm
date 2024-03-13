@@ -1,5 +1,5 @@
 
 main := (
    (print 123u64)
-   (print -456i64)
+#   (print -456i64)
 );

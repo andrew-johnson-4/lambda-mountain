@@ -56,7 +56,7 @@ assemble-substitute-fragment := λsubs frag e . (match frag (
          )))
       ))
    ))
-   ( u (fail (UnknownFragment frag)))
+   ( u (fail (UnknownSubstituteFragment frag)))
 ));
 
 assemble-substitute-fragment-mode := λsubs mode frag . (match frag (

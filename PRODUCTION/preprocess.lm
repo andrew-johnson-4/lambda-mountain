@@ -132,6 +132,33 @@ preprocess-apply-macros := λprogram . (match program (
       )))
       program
    )))
+   ( (Variable l) (tail(
+      (local suffixes)
+      (set suffixes parse-suffix)
+      (while suffixes (tail(
+         (local sfx)
+         (set sfx (tail (tail suffixes)) )
+         (if (is-suffix( l sfx )) (
+            (set program (
+               (App(
+                  (App(
+                     (Literal ':)
+                     (Literal (remove-suffix( l sfx )))
+                  ))
+                  (App(
+                     (Literal And)
+                     (App(
+                        (Literal Constant)
+                        (Literal (head (tail suffixes)))
+                     ))
+                  ))
+               ))
+            ))
+         ) ())
+         (set suffixes (head suffixes))
+      )))
+      program
+   )))
    ( _ (tail(
       (local macros)
       (set macros parse-macros)
