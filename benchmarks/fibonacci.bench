@@ -26,7 +26,7 @@ arg: 35
 arg: 40
 arg: 45
 run: rm -f $basenaml.c.exe
-run: gcc -o $basename.c.exe $basename.c
+run: gcc -O2 -o $basename.c.exe $basename.c
 run: ./$basename.c.exe
 
 label: Rust
@@ -41,7 +41,7 @@ arg: 35
 arg: 40
 arg: 45
 run: rm -f $basenaml.rs.exe
-run: rustc -o $basename.rs.exe $basename.rs
+run: rustc -O -o $basename.rs.exe $basename.rs
 run: ./$basename.rs.exe
 
 label: SFZ (Lambda Mountain)
