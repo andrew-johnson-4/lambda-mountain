@@ -100,10 +100,10 @@ preprocess-destructure-type := λtt . (tail(
 preprocess-apply-macros := λprogram . (match program (
    ()
    ( (App( (App( (Literal :) mvar )) (Literal mtype) )) (
-     (App( (App( (Literal :) mvar )) (preprocess-destructure-type mtype) ))
+     (App( (App( (Literal :) (preprocess-apply-macros mvar) )) (preprocess-destructure-type mtype) ))
    ))
    ( (App( (App( (Literal :) mvar )) (Variable mtype) )) (
-     (App( (App( (Literal :) mvar )) (preprocess-destructure-type mtype) ))
+     (App( (App( (Literal :) (preprocess-apply-macros mvar) )) (preprocess-destructure-type mtype) ))
    ))
    ( (Literal l) (tail(
       (local suffixes)

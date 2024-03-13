@@ -4,8 +4,8 @@ print := λ(: x U64). (: (
 ) Nil);
 print := λ(: x I64). (: (
 #   (gensym-label unsigned)
-   (mov( x R15 ))
-   (cmp( R15 0i64 ))
+#   (mov( x R15 ))
+   (cmp( 0i64 R15 ))
 #   (jge( unsigned ))
 #   (label unsigned)
 ) Nil);
