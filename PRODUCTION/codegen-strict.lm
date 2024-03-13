@@ -32,12 +32,12 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e1 (apply-calling-convention-stack( ctx e fname arg offset used )))
                e1
             )))
-            ( Nil (
+            ( Nil (tail(
                (set e1 (expr::new()) )
                (set e1 (expr::set-context( e1 ctx )))
                (set e1 (expr::set-offset( e1 offset )))
                e1
-            ))
+            )))
             ( _ (fail (TODO CompileStrict e)))
          ))
       ))
