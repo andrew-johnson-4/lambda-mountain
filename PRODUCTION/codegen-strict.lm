@@ -38,6 +38,15 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e1 (expr::set-offset( e1 offset )))
                e1
             )))
+            ( (App (l r)) (tail(
+               (if (eq( used Used )) (
+                  (fail (TODO Return Strict Cons))
+               ) (
+                  (set e1 (compile-expr-strict( ctx l offset Unused )))
+                  (set e2 (compile-expr-strict( (expr::get-context e1) r (expr::get-offset e1) Used )))
+                  (fail (TODO Merge))
+               ))
+            )))
             ( _ (fail (TODO CompileStrict e)))
          ))
       ))

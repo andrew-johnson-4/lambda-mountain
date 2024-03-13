@@ -29,7 +29,7 @@ compile-include-argv := λ. if compile-argv-hook () (set compile-argv-hook (comp
 )));
 
 compile-append := λoutput_e gctx e . (tail(
-   (set e (compile-expr( gctx e (expr::get-offset output_e) Used )))
+   (set e (compile-expr( gctx e (expr::get-offset output_e) Unused )))
    (Expr(
       ((expr::get-frame output_e) (expr::get-frame e))
       ((expr::get-prog output_e) (expr::get-prog e))
