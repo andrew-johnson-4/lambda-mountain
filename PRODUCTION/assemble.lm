@@ -126,25 +126,6 @@ assemble-substitute-fragment-mode := λsubs mode frag . (match frag (
    ( u (fail (UnknownFragmentSubstitution u)))
 ));
 
-assemble-apply-literal := λctx arrow args offset . (match arrow (
-   ()
-   ( (Lambda( (App( (App( (Literal :) (Variable bind) )) ltype )) rhs )) (
-      (match args (
-         ()
-         ( (App( (App( (Literal :) (Literal val) )) vtype )) (
-            fail (ApplyLiteral val vtype)
-            #(local result)
-            #(set result (assemble-substitute-fragment( rc rhs (expr::new()) ))
-            #(set result (expr::set-context result ctx))
-            #(set result (expr::set-offset result offset))
-            #result
-         ))
-         ( u (fail (UnknownLiteral u)) )
-      ))
-   ))
-   ( u (fail (UnknownApplyLiteral u)) )
-));
-
 assemble-apply-fragment := λctx arrow args offset . (tail(
    (local rc)
    (set rc (assemble-destructure-fragment( ctx arrow args offset )))

@@ -231,6 +231,7 @@ compile-fragment := λctx e offset used . (match e (
       ))
    )))
    ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
+      (print-s (NewLiteral lval ltype))(print-s \n)
       (set ltype (typecheck-infer-type-compound ltype))
       (set e (expr::set-prog( (expr::new()) lval )))
       (set e (expr::set-expr( e lval )))
