@@ -122,6 +122,7 @@ fn run_compile_production(mode:&str, target: &str) -> String {
                       .arg("STDLIB/default-rules.lm")
                       .arg("STDLIB/default-instruction-set.lm")
                       .arg("STDLIB/default-primitives.lm")
+                      .arg("STDLIB/default-stdlib.lm")
                       .arg(target)
                       .spawn()
                       .expect("failed to execute process")

@@ -27,6 +27,9 @@ assemble-destructure-fragment := λctx lmb args offset . (match lmb (
 
 assemble-substitute-fragment := λsubs frag e . (match frag (
    ()
+   ( Nil (
+      (expr::new())
+   ))
    ( (App( (App( (Literal ':) fe )) ft )) (
       (assemble-substitute-fragment( subs fe e ))
    ))
@@ -56,7 +59,7 @@ assemble-substitute-fragment := λsubs frag e . (match frag (
          )))
       ))
    ))
-   ( u (fail (UnknownFragment frag)))
+   ( u (fail (UnknownSubstituteFragment frag)))
 ));
 
 assemble-substitute-fragment-mode := λsubs mode frag . (match frag (
@@ -121,25 +124,6 @@ assemble-substitute-fragment-mode := λsubs mode frag . (match frag (
       (assemble-substitute-fragment-mode( subs mode r ))
    ))
    ( u (fail (UnknownFragmentSubstitution u)))
-));
-
-assemble-apply-literal := λctx arrow args offset . (match arrow (
-   ()
-   ( (Lambda( (App( (App( (Literal :) (Variable bind) )) ltype )) rhs )) (
-      (match args (
-         ()
-         ( (App( (App( (Literal :) (Literal val) )) vtype )) (
-            fail (ApplyLiteral val vtype)
-            #(local result)
-            #(set result (assemble-substitute-fragment( rc rhs (expr::new()) ))
-            #(set result (expr::set-context result ctx))
-            #(set result (expr::set-offset result offset))
-            #result
-         ))
-         ( u (fail (UnknownLiteral u)) )
-      ))
-   ))
-   ( u (fail (UnknownApplyLiteral u)) )
 ));
 
 assemble-apply-fragment := λctx arrow args offset . (tail(

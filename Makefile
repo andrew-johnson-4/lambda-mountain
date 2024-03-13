@@ -1,7 +1,7 @@
 
 nostd: prod
-#	./production --nostd -o tmp.s STDLIB/default-instruction-set.lm STDLIB/default-primitives.lm tests/nostd/normal_fib.lm
-	as -o tmp.o scratch_area/sfz_example.s
+	./production --nostd -o tmp.s STDLIB/default-instruction-set.lm STDLIB/default-primitives.lm STDLIB/default-stdlib.lm tests/nostd/printU64.lm
+	as -o tmp.o tmp.s
 	ld -o tmp tmp.o
 	./tmp && echo $?
 

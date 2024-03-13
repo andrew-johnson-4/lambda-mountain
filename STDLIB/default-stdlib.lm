@@ -1,0 +1,11 @@
+
+print := λ(: x U64). (: (
+   (mov( x R15 ))
+) Nil);
+print := λ(: x I64). (: (tail(
+   (gensym-label unsigned)
+   (mov( x R15 ))
+   (cmp( 0i64 R15 ))
+#   (jge( unsigned ))
+#   (label unsigned)
+)) Nil);

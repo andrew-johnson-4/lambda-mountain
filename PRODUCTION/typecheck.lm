@@ -80,6 +80,11 @@ typecheck-assert-expr := λe . (tail(
       ( (Literal lit) (
          (typecheck-assert-one( e ))
       ))
+      ( (App( (Variable 'tail) (App( l r )) )) (tail(
+         (typecheck-assert-expr( r ))
+         (typecheck-assert-expr( l ))
+         (typecheck-assert-one( e ))
+      )))
       ( (App( l r )) (
          (typecheck-assert-expr( r ))
          (typecheck-assert-expr( l ))
@@ -202,7 +207,7 @@ typecheck-show-ascript := λp . (tail(
 
 typecheck-infer-prog := λp . (
    (while p (
-      (typecheck-infer-expr( () (tail p) ))
+      (typecheck-infer-expr( () (tail p) Used ))
       (set p (head p))
    ))
 );
@@ -500,15 +505,15 @@ typecheck-infer-type-expr := λe . (match e (
    (_ ())
 ));
 
-typecheck-infer-expr := λctx e . (tail(
+typecheck-infer-expr := λctx e used . (tail(
    (match e (
       ()
       ( () () )
       ( (GExpr ge) (
-         (typecheck-infer-expr( ctx ge ))
+         (typecheck-infer-expr( ctx ge Unused ))
       ))
       ( (Global( gln gle )) (
-         (typecheck-infer-expr( ctx gle ))
+         (typecheck-infer-expr( ctx gle Used ))
          (match (typecheck-lookup-type gle) (
             ()
             ( () () )
@@ -550,12 +555,12 @@ typecheck-infer-expr := λctx e . (tail(
          (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
       ))
       ( (App( (App( (Literal ':) asc )) tt )) (
-         (typecheck-infer-expr( ctx asc ))
+         (typecheck-infer-expr( ctx asc used ))
          (typecheck-ascript( asc (typecheck-infer-type-compound tt) ))
          (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
       ))
       ( (App( (App( (Variable 'as) ast )) ett )) (
-         (typecheck-infer-expr( ctx ast ))
+         (typecheck-infer-expr( ctx ast used ))
          (typecheck-ascript( e (typecheck-infer-type-compound ett) ))
       ))
       ( (Literal lit) (
@@ -567,9 +572,16 @@ typecheck-infer-expr := λctx e . (tail(
             (typecheck-ascript( e Atom ))
          ))
       ))
+      ( (App( (Variable 'tail) (App( l r )) )) (tail(
+         (set ctx (typecheck-infer-expr( ctx l used )))
+         (set ctx (typecheck-infer-expr( ctx r used )))
+         (if (typecheck-lookup-type r) (
+            (typecheck-ascript( e (typecheck-lookup-type r) ))
+         ) ())
+      )))
       ( (App( l r )) (tail(
-         (set ctx (typecheck-infer-expr( ctx l )))
-         (set ctx (typecheck-infer-expr( ctx r )))
+         (set ctx (typecheck-infer-expr( ctx l used )))
+         (set ctx (typecheck-infer-expr( ctx r used )))
          (match ( (typecheck-lookup-type l) (typecheck-lookup-type r) ) (
             ()
             ( (() _) () )
@@ -596,7 +608,7 @@ typecheck-infer-expr := λctx e . (tail(
       )))
       ( (Lambda( lhs rhs )) (tail(
          (set ctx (typecheck-infer-ctx( ctx lhs )))
-         (typecheck-infer-expr( ctx rhs ))
+         (typecheck-infer-expr( ctx rhs Used ))
          (match (typecheck-lookup-type rhs) (
             ()
             ( () () )
