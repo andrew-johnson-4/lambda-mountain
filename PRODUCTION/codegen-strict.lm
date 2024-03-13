@@ -24,6 +24,7 @@ compile-expr-strict := λctx e offset used . (tail(
             ()
             ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
                (set e1 (expr::set-expr( (expr::new ()) lval )))
+               (set e1 (expr::set-prog( e2 lval )))
                (set e1 (expr::set-context( e1 ctx )))
                (set e1 (expr::set-offset( e1 offset )))
                e1
@@ -82,7 +83,7 @@ apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
          e
       )))
       ( (StackVariable vname) (tail(
-         (set e1 (compile-expr( ctx arg offset used )))
+         (set e1 (compile-expr-strict( ctx arg offset used )))
          (local l)
          (set l (get-local( ctx fname )))
          (if l () (fail (UnknownFunctionLocal fname)))
@@ -232,6 +233,7 @@ compile-fragment := λctx e offset used . (match e (
    ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
       (set ltype (typecheck-infer-type-compound ltype))
       (set e (expr::set-prog( (expr::new()) lval )))
+      (set e (expr::set-expr( e lval )))
       (set e (expr::set-context( e ctx )))
       (set e (expr::set-offset( e offset )))
       e
@@ -242,6 +244,7 @@ compile-fragment := λctx e offset used . (match e (
    )))
    ( (Literal val) (
       (set e (expr::set-prog( (expr::new()) val )))
+      (set e (expr::set-expr( e val )))
       (set e (expr::set-context( e ctx )))
       (set e (expr::set-offset( e offset )))
       e
@@ -258,6 +261,7 @@ get-fragment-local := λctx v offset . (tail(
             if r () (
                if (eq(l v)) (
                   (set r (expr::set-prog( (expr::new()) uid )))
+                  (set r (expr::set-expr( r uid )))
                   (set r (expr::set-context( r ctx )))
                   (set r (expr::set-offset( r offset )))
                   r
@@ -268,6 +272,7 @@ get-fragment-local := λctx v offset . (tail(
             if r () (
                if (eq(l v)) (
                   (set r (expr::set-prog( (expr::new()) loffset )))
+                  (set r (expr::set-expr( r loffset )))
                   (set r (expr::set-context( r ctx )))
                   (set r (expr::set-offset( r offset )))
                   r
