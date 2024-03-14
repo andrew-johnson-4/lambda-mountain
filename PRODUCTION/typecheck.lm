@@ -652,6 +652,13 @@ typecheck-infer-expr := λctx e used . (tail(
 
 typecheck-sizeof := λtt . (match tt (
    ()
+   ( (And( lt rt )) (tail(
+      (local sz)
+      (set sz (typecheck-sizeof lt))
+      (if sz () (set sz (typecheck-sizeof rt)))
+      (if sz () (fail (UnknownSize tt)))
+      sz
+   )))
    ( (_ _) (fail (TODO Sizeof tt)))
    ( () (fail (TODO Sizeof tt)))
    ( _ (tail(
