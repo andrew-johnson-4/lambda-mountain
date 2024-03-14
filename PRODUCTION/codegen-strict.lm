@@ -2,6 +2,7 @@
 compile-expr-strict := λctx e offset used . (tail(
    (local e1)
    (local e2)
+   (local e3)
    (match used (
       ()
       (Return (tail(
@@ -45,6 +46,18 @@ compile-expr-strict := λctx e offset used . (tail(
                (set offset (i2s (add( (s2i offset) (s2i sz) )) )) 
                (set e1 (expr::set-context( e1 ctx )))
                (set e1 (expr::set-offset( e1 offset )))
+               (set e2 (compile-expr-strict( ctx rhs offset Used )))
+               (match (get-maybe-function( ctx 'mov (Cons( (typecheck-lookup-type rhs) LocalVariable )) )) (
+                  ()
+                  ( (Fragment( (Variable _) body )) (
+                      (print-s (ApplyFragment( rhs )))(print-s \n)
+                      (set e3 (assemble-apply-fragment( ctx body rhs offset )))
+                  ))
+                  ( v (
+                     (fail (ReferenceToUndefinedVariable 'mov (Cons( LocalVariable (typecheck-lookup-type rhs) )) ))
+                  ))
+               ))
+           
                e1
             )))
             ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
