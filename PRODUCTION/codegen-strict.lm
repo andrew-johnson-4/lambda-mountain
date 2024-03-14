@@ -22,6 +22,11 @@ compile-expr-strict := λctx e offset used . (tail(
       (_ (
          (match e (
             ()
+            ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
+               (local sz)
+               (set sz (strict-sizeof (typecheck-lookup-type rhs)))
+               (fail BindL)
+            )))
             ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
                (set e1 (expr::set-expr( (expr::new ()) lval )))
                (set e1 (expr::set-prog( e1 lval )))
@@ -81,6 +86,10 @@ compile-expr-strict := λctx e offset used . (tail(
          ))
       ))
    ))
+));
+
+strict-sizeof := λ tt . (tail(
+   fail (Sizeof tt)
 ));
 
 apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(

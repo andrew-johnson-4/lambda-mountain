@@ -5,6 +5,7 @@ typecheck-context                        := ();
 typecheck-constructors                   := ();
 typecheck-types-have-changed             := ();
 typecheck-global-context                 := ();
+typecheck-size                           := ();
 
 typecheck-init := λ. (
    (set typecheck-subtypes 
@@ -639,6 +640,10 @@ typecheck-infer-expr := λctx e used . (tail(
          ))
       ))
       ( (Size( typf sizf )) (
+         (if (typecheck-lookup-type e) () (
+            (set typecheck-size ( typecheck-size ( (typecheck-infer-type-compound typf) (typecheck-infer-type-compound sizf) ) ))
+         ))
+         (typecheck-ascript( e Nil ))
       ))
       ( u (fail (UnknownTerm u)) )
    ))
