@@ -6,7 +6,7 @@ print := λ(: x U64). (: (tail(
 )) Nil);
 
 print := λ(: x I64). (: (tail(
-   (let cs (: \0 U8))
+   (let cs (: 0 U8))
    (gensym-label unsigned)
    (mov( x R15 ))
    (cmp( 0i64 R15 ))
