@@ -546,10 +546,10 @@ typecheck-infer-expr := λctx e used . (tail(
       ))
       ( (App( (Variable 'gensym-label) (Variable lname) )) (
          (set ctx ( ctx (lname (And( Constant Label ))) ))
-         (typecheck-ascript( e Fragment ))
+         (typecheck-ascript( e Nil ))
       ))
       ( (App( (Variable 'label) (Variable lname) )) (
-         (typecheck-ascript( e Fragment ))
+         (typecheck-ascript( e Nil ))
       ))
       ( (App( (App( (Literal ':) (Literal _) )) tt )) (
          (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
