@@ -50,15 +50,19 @@ compile-expr-strict := λctx e offset used . (tail(
                (match (get-maybe-function( ctx 'mov (Cons( (typecheck-lookup-type rhs) LocalVariable )) )) (
                   ()
                   ( (Fragment( (Variable _) body )) (
-                      (print-s (ApplyFragment( rhs )))(print-s \n)
-                      (set e3 (assemble-apply-fragment( ctx body rhs offset )))
+                      (set e3 (assemble-apply-fragment( ctx body (App( e2 (Variable lname) )) offset )))
                   ))
                   ( v (
                      (fail (ReferenceToUndefinedVariable 'mov (Cons( LocalVariable (typecheck-lookup-type rhs) )) ))
                   ))
                ))
-           
-               e1
+               (set e3 (expr::set-frame( e3 (  (expr::get-frame e1) (expr::get-frame e2) (expr::get-frame e3) ))))
+               (set e3 (expr::set-unframe( e3 (  (expr::get-unframe e1) (expr::get-unframe e2) (expr::get-unframe e3) ))))
+               (set e3 (expr::set-text( e3 (  (expr::get-text e1) (expr::get-text e2) (expr::get-text e3) ))))
+               (set e3 (expr::set-data( e3 (  (expr::get-data e1) (expr::get-data e2) (expr::get-data e3) ))))
+               (set e3 (expr::set-prog( e3 (  (expr::get-prog e1) (expr::get-prog e2) (expr::get-prog e3) ))))
+               (set e3 (expr::set-data( e3 (  (expr::get-data e1) (expr::get-data e2) (expr::get-data e3) ))))
+               e3
             )))
             ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
                (set e1 (expr::set-expr( (expr::new ()) lval )))
