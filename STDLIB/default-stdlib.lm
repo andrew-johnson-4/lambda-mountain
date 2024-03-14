@@ -1,7 +1,9 @@
 
-print := λ(: x U64). (: (
+print := λ(: x U64). (: (tail(
+   (gensym-label unsigned)
    (mov( x R15 ))
-) Nil);
+   (label unsigned)
+)) Nil);
 
 print := λ(: x I64). (: (tail(
    (gensym-label unsigned)
