@@ -73,8 +73,5 @@ AND compile the code down to machine code transparently.
 There are no hidden layers in the compiler.
 The programmer gets to inspect and verify *every single transformation down to individual instructions*.
 
-The *no hidden layers* principle is used all the way down to the System F level of abstraction.
-As proof of this, let bindings and pattern matching are *libraries* not instrinsics.
-
 <a href="https://github.com/andrew-johnson-4/-/wiki#mascot"> <img src="https://raw.githubusercontent.com/andrew-johnson-4/-/main/DOBY.jpg" height=200 title="Doby being a prototypical ass."> </a>
 
