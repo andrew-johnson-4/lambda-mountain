@@ -66,7 +66,6 @@ compile-expr-strict := λctx e offset used . (tail(
             )))
             ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
                (set e1 (expr::set-expr( (expr::new ()) lval )))
-               (set e1 (expr::set-prog( e1 lval )))
                (set e1 (expr::set-context( e1 ctx )))
                (set e1 (expr::set-offset( e1 offset )))
                e1
@@ -295,8 +294,7 @@ compile-fragment := λctx e offset used . (match e (
    )))
    ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
       (set ltype (typecheck-infer-type-compound ltype))
-      (set e (expr::set-prog( (expr::new()) lval )))
-      (set e (expr::set-expr( e lval )))
+      (set e (expr::set-expr( (expr::new()) lval )))
       (set e (expr::set-context( e ctx )))
       (set e (expr::set-offset( e offset )))
       e
@@ -306,8 +304,7 @@ compile-fragment := λctx e offset used . (match e (
       (get-fragment-local( ctx v offset ))
    )))
    ( (Literal val) (tail(
-      (set e (expr::set-prog( (expr::new()) val )))
-      (set e (expr::set-expr( e val )))
+      (set e (expr::set-expr( (expr::new()) val )))
       (set e (expr::set-context( e ctx )))
       (set e (expr::set-offset( e offset )))
       e
