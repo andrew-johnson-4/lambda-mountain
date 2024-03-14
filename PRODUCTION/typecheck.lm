@@ -5,6 +5,7 @@ typecheck-context                        := ();
 typecheck-constructors                   := ();
 typecheck-types-have-changed             := ();
 typecheck-global-context                 := ();
+typecheck-size                           := ();
 
 typecheck-init := λ. (
    (set typecheck-subtypes 
@@ -60,6 +61,10 @@ typecheck-assert-expr := λe . (tail(
       ( (Type( l ds )) ())
       ( (Fragment( fln fle )) ())
       ( Nil (
+         (typecheck-assert-one( e ))
+      ))
+      ( (App( (Lambda( (Variable lname) Nil )) rhs )) (
+         (typecheck-assert-expr( rhs ))
          (typecheck-assert-one( e ))
       ))
       ( (App( (Variable 'gensym-label) _ )) (
@@ -546,10 +551,10 @@ typecheck-infer-expr := λctx e used . (tail(
       ))
       ( (App( (Variable 'gensym-label) (Variable lname) )) (
          (set ctx ( ctx (lname (And( Constant Label ))) ))
-         (typecheck-ascript( e Fragment ))
+         (typecheck-ascript( e Nil ))
       ))
       ( (App( (Variable 'label) (Variable lname) )) (
-         (typecheck-ascript( e Fragment ))
+         (typecheck-ascript( e Nil ))
       ))
       ( (App( (App( (Literal ':) (Literal _) )) tt )) (
          (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
@@ -578,6 +583,16 @@ typecheck-infer-expr := λctx e used . (tail(
          (if (typecheck-lookup-type r) (
             (typecheck-ascript( e (typecheck-lookup-type r) ))
          ) ())
+      )))
+      ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
+         (set ctx (typecheck-infer-expr( ctx rhs Used )))
+         (if (typecheck-lookup-type rhs) (
+            (set ctx ( ctx (lname (typecheck-lookup-type rhs)) ))
+         ) (
+            (set ctx ( ctx (lname ()) ))
+         ))
+         (typecheck-ascript( e Nil ))
+         ctx
       )))
       ( (App( l r )) (tail(
          (set ctx (typecheck-infer-expr( ctx l used )))
@@ -625,9 +640,37 @@ typecheck-infer-expr := λctx e used . (tail(
          ))
       ))
       ( (Size( typf sizf )) (
+         (if (typecheck-lookup-type e) () (
+            (set typecheck-size ( typecheck-size ( (typecheck-infer-type-compound typf) (typecheck-infer-type-compound sizf) ) ))
+         ))
+         (typecheck-ascript( e Nil ))
       ))
       ( u (fail (UnknownTerm u)) )
    ))
    ctx
 ));
 
+typecheck-sizeof := λtt . (match tt (
+   ()
+   ( (And( lt rt )) (tail(
+      (local sz)
+      (set sz (typecheck-sizeof lt))
+      (if sz () (set sz (typecheck-sizeof rt)))
+      (if sz () (fail (UnknownSize tt)))
+      sz
+   )))
+   ( (_ _) (fail (TODO Sizeof tt)))
+   ( () (fail (TODO Sizeof tt)))
+   ( _ (tail(
+      (local sz)
+      (local sizes)
+      (set sizes typecheck-size)
+      (while sizes (
+         (if (eq( (head (tail sizes)) tt )) (
+            (set sz (tail (tail sizes)))
+         ) ())
+         (set sizes (head sizes))
+      ))
+      sz
+   )))
+));

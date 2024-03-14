@@ -2,6 +2,7 @@
 compile-expr-strict := λctx e offset used . (tail(
    (local e1)
    (local e2)
+   (local e3)
    (match used (
       ()
       (Return (tail(
@@ -10,9 +11,22 @@ compile-expr-strict := λctx e offset used . (tail(
             ()
             ( (Fragment( (Variable _) body )) (tail(
                (set e2 (assemble-apply-fragment( ctx body e1 offset )))
-               (expr::set-prog( e2
+               (set e2 (expr::set-prog( e2
                   ((expr::get-prog e1) (expr::get-prog e2))
-               ))
+               )))
+               (set e2 (expr::set-frame( e2
+                  ((expr::get-frame e1) (expr::get-frame e2))
+               )))
+               (set e2 (expr::set-unframe( e2
+                  ((expr::get-unframe e1) (expr::get-unframe e2))
+               )))
+               (set e2 (expr::set-text( e2
+                  ((expr::get-text e1) (expr::get-text e2))
+               )))
+               (set e2 (expr::set-data( e2
+                  ((expr::get-data e1) (expr::get-data e2))
+               )))
+               e2
             )))
             ( v (
                (fail (ReferenceToUndefinedVariable 'cdecl::return (typecheck-lookup-type e)))
@@ -22,15 +36,46 @@ compile-expr-strict := λctx e offset used . (tail(
       (_ (
          (match e (
             ()
+            ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
+               (local sz)
+               (set sz (typecheck-sizeof (typecheck-lookup-type rhs)))
+               (set ctx (ctx (StackVariable( lname offset (typecheck-lookup-type rhs) )) ))
+               (set e1 (expr::new()) )
+               (set e1 (expr::set-frame( e1 ( \t 'sub \s '$ sz , \s '%rsp \n ) )))
+               (set e1 (expr::set-unframe( e1 ( \t 'add \s '$ sz , \s '%rsp \n ) )))
+               (set offset (i2s (add( (s2i offset) (s2i sz) )) )) 
+               (set e1 (expr::set-context( e1 ctx )))
+               (set e1 (expr::set-offset( e1 offset )))
+               (set e2 (compile-expr-strict( ctx rhs offset Used )))
+               (match (get-maybe-function( ctx 'mov (Cons( (typecheck-lookup-type rhs) LocalVariable )) )) (
+                  ()
+                  ( (Fragment( (Variable _) body )) (
+                      (set e3 (assemble-apply-fragment( ctx body (App( e2 (Variable lname) )) offset )))
+                  ))
+                  ( v (
+                     (fail (ReferenceToUndefinedVariable 'mov (Cons( LocalVariable (typecheck-lookup-type rhs) )) ))
+                  ))
+               ))
+               (set e3 (expr::set-frame( e3 (  (expr::get-frame e1) (expr::get-frame e2) (expr::get-frame e3) ))))
+               (set e3 (expr::set-unframe( e3 (  (expr::get-unframe e1) (expr::get-unframe e2) (expr::get-unframe e3) ))))
+               (set e3 (expr::set-text( e3 (  (expr::get-text e1) (expr::get-text e2) (expr::get-text e3) ))))
+               (set e3 (expr::set-data( e3 (  (expr::get-data e1) (expr::get-data e2) (expr::get-data e3) ))))
+               (set e3 (expr::set-prog( e3 (  (expr::get-prog e1) (expr::get-prog e2) (expr::get-prog e3) ))))
+               (set e3 (expr::set-data( e3 (  (expr::get-data e1) (expr::get-data e2) (expr::get-data e3) ))))
+               e3
+            )))
             ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
                (set e1 (expr::set-expr( (expr::new ()) lval )))
-               (set e1 (expr::set-prog( e1 lval )))
                (set e1 (expr::set-context( e1 ctx )))
                (set e1 (expr::set-offset( e1 offset )))
                e1
             )))
             ( (App( (App( (Literal :) lval )) ltype )) (tail(
                (set e1 (compile-expr-strict( ctx lval offset Unused )))
+               e1
+            )))
+            ( (App( (Variable 'label) (Variable lname) )) (tail(
+               (set e1 (compile-fragment( ctx e offset used )))
                e1
             )))
             ( (App( (Variable 'tail) (App( l r )) )) (tail(
@@ -43,7 +88,8 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e2 (expr::set-prog( e2 (  (expr::get-prog e1) (expr::get-prog e2)  ))))
                e2
             )))
-            ( (App ((Variable 'gensym-label) arg)) (tail(
+            ( (App ((Variable 'gensym-label) (Variable arg))) (tail(
+               (set ctx (ctx (Label( arg (uuid()) )) ))
                (set e1 (expr::set-context( (expr::new()) ctx )))
                (set e1 (expr::set-offset( e1 offset )))
                e1
@@ -121,6 +167,7 @@ define-calling-convention-stack := λ ctx fname lmb . (tail(
          (set text ( text (mangle-global-function( fname lmb )) ': \n ))
          (set text ( text (expr::get-frame e2) ))
          (set text ( text (expr::get-prog e2) ))
+         (set text ( text (expr::get-unframe e2) ))
          (set text ( text (\t 'ret \n) ))
          (set text ( text (expr::get-text e2) ))
          (Expr(
@@ -247,8 +294,7 @@ compile-fragment := λctx e offset used . (match e (
    )))
    ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
       (set ltype (typecheck-infer-type-compound ltype))
-      (set e (expr::set-prog( (expr::new()) lval )))
-      (set e (expr::set-expr( e lval )))
+      (set e (expr::set-expr( (expr::new()) lval )))
       (set e (expr::set-context( e ctx )))
       (set e (expr::set-offset( e offset )))
       e
@@ -258,8 +304,7 @@ compile-fragment := λctx e offset used . (match e (
       (get-fragment-local( ctx v offset ))
    )))
    ( (Literal val) (tail(
-      (set e (expr::set-prog( (expr::new()) val )))
-      (set e (expr::set-expr( e val )))
+      (set e (expr::set-expr( (expr::new()) val )))
       (set e (expr::set-context( e ctx )))
       (set e (expr::set-offset( e offset )))
       e
