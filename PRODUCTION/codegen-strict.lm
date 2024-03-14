@@ -25,7 +25,13 @@ compile-expr-strict := λctx e offset used . (tail(
             ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
                (local sz)
                (set sz (typecheck-sizeof (typecheck-lookup-type rhs)))
-               (fail (BindL sz))
+               (set ctx (ctx (StackVariable( lname offset (typecheck-lookup-type rhs) )) ))
+               (set e1 (expr::new()) )
+               (set e1 (expr::set-frame( e1 ( \t 'sub \s '$ sz , \s '%rsp \n ) )))
+               (set offset (i2s (add( (s2i offset) (s2i sz) )) )) 
+               (set e1 (expr::set-context( e1 ctx )))
+               (set e1 (expr::set-offset( e1 offset )))
+               e1
             )))
             ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
                (set e1 (expr::set-expr( (expr::new ()) lval )))
