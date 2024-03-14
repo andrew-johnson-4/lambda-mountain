@@ -62,6 +62,10 @@ typecheck-assert-expr := λe . (tail(
       ( Nil (
          (typecheck-assert-one( e ))
       ))
+      ( (App( (Lambda( (Variable lname) Nil )) rhs )) (
+         (typecheck-assert-expr( rhs ))
+         (typecheck-assert-one( e ))
+      ))
       ( (App( (Variable 'gensym-label) _ )) (
       ))
       ( (App( (Variable 'label) (Variable l) )) (
@@ -578,6 +582,16 @@ typecheck-infer-expr := λctx e used . (tail(
          (if (typecheck-lookup-type r) (
             (typecheck-ascript( e (typecheck-lookup-type r) ))
          ) ())
+      )))
+      ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
+         (set ctx (typecheck-infer-expr( ctx rhs Used )))
+         (if (typecheck-lookup-type rhs) (
+            (set ctx ( ctx (lname (typecheck-lookup-type rhs)) ))
+         ) (
+            (set ctx ( ctx (lname ()) ))
+         ))
+         (typecheck-ascript( e Nil ))
+         ctx
       )))
       ( (App( l r )) (tail(
          (set ctx (typecheck-infer-expr( ctx l used )))
