@@ -20,6 +20,7 @@ fragment & := λ(: src LocalVariable). (: ( (.program( \t 'mov \t '%rbp , \s '%r
 fragment mov := λ(: src LocalVariable)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n)) ) Nil);
 fragment mov := λ(: src LocalVariable)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n)) ) Nil);
 fragment mov := λ(: src Constant+U64)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t '$ (.expression src) , \s '% (.expression dst) \n)) ) Nil);
+fragment mov := λ(: src Reg64)(: dst Reg64). (: ( (.program( \t 'mov \t '% (.expression src) , \s '% (.expression dst) \n)) ) Nil);
 
 fragment mov := λ(: src Constant+U8)(: dst LocalVariable). (: (.program( \t 'movb \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
 
