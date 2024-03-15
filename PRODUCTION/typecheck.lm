@@ -128,6 +128,14 @@ typecheck-lookup-type := λterm . (tail(
 typecheck-deep-eq := λt1 t2 . if (is( t1 t2 )) True (match (t1 t2) (
    ()
    ( (() ()) True )
+   ( ( l (Array( bt 1 )) ) (
+      (typecheck-deep-eq( l bt ))
+   ))
+   ( ( (Cons(l1 l2)) (Array( bt sz )) ) (
+      (if (typecheck-deep-eq( l2 bt ))
+         (typecheck-deep-eq( l1 (Array( bt (i2s(dec(s2i sz))) )) ))
+         ())
+   ))
    ( ( (And(l1 l2)) (And(r1 r2)) ) True )
    ( ( (And(l1 l2)) r ) (
       if (typecheck-deep-eq(l1 r)) True
