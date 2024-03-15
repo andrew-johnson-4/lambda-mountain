@@ -14,6 +14,7 @@ print := λ(: x I64). (: (tail(
    (label unsigned)
    (mov( 1u64 RAX )) # write
    (mov( 1u64 RDI )) # stdout
+   (& cs)
 #   (mov( 1u64 RSI )) # char*
    (mov( 1u64 RDX )) # length
    (syscall())
