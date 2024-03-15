@@ -77,6 +77,25 @@ preprocess-destructure-type := λtt . (tail(
    (local buff)
    (local compound)
    (while tt (
+      (if (eq( '[ (head-string tt) )) (
+         (if buff (
+            (set compound (preprocess-destructure-type-atom (clone-rope buff)))
+         ) ())
+         (set buff ())
+         (set tt (tail-string tt))
+         (while tt (
+            (if (eq( '] (head-string tt) )) (
+               (set compound (App(
+                  (Literal Array)
+                  (App( compound (preprocess-destructure-type (clone-rope buff)) ))
+               )))
+               (set buff ())
+            ) (
+               (set buff (buff (clone-rope (head-string tt))))
+            ))
+            (set tt (tail-string tt))
+         ))
+      ))
       (if (eq( '+ (head-string tt) )) (
          (if compound (
             (set compound (preprocess-type-and( compound (preprocess-destructure-type-atom (clone-rope buff)) )) )
@@ -91,7 +110,9 @@ preprocess-destructure-type := λtt . (tail(
       (set tt (tail-string tt))
    ))
    (if compound (
-      (preprocess-type-and( compound (preprocess-destructure-type-atom (clone-rope buff)) ))
+      (if buff (
+         (preprocess-type-and( compound (preprocess-destructure-type-atom (clone-rope buff)) ))
+      ) compound )
    ) (
       (preprocess-destructure-type-atom (clone-rope buff))
    ))
