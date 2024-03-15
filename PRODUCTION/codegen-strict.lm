@@ -40,7 +40,7 @@ compile-expr-strict := λctx e offset used . (tail(
             ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
                (local sz)
                (set sz (typecheck-sizeof (typecheck-lookup-type rhs)))
-               (set ctx (ctx (StackVariable( lname offset (typecheck-lookup-type rhs) )) ))
+               (set ctx (ctx (StackVariable( lname (clone-rope('- offset)) (typecheck-lookup-type rhs) )) ))
                (set e1 (expr::new()) )
                (set e1 (expr::set-frame( e1 ( \t 'sub \s '$ sz , \s '%rsp \n ) )))
                (set e1 (expr::set-unframe( e1 ( \t 'add \s '$ sz , \s '%rsp \n ) )))
@@ -61,7 +61,7 @@ compile-expr-strict := λctx e offset used . (tail(
                               (local sv4)
                               (set sv4 (get-fragment-local( ctx lname offset )))
                               (local svoffset)
-                              (set svoffset (i2s (add( bti (s2i (expr::get-expr sv4)) )) ))
+                              (set svoffset (i2s (add( bti (s2i(expr::get-expr sv4)) )) ))
                               (set sv4 (expr::set-expr( sv4 svoffset )))
                               (set e4 (assemble-apply-fragment( ctx body (App( e2 sv4 )) offset )))
                               (set e3 (expr::set-frame( e3 (  (expr::get-frame e3) (expr::get-frame e4) ))))
@@ -72,7 +72,7 @@ compile-expr-strict := λctx e offset used . (tail(
                               (set e3 (expr::set-data( e3 (  (expr::get-data e3) (expr::get-data e4) ))))
                               (set e3 (expr::set-context( e3 ctx )))
                               (set e3 (expr::set-offset( e3 offset )))
-                              (set bti (inc bti))
+                              (set bti (dec bti))
                            ))
                            ( v (
                               (fail (ReferenceToUndefinedVariable 'mov (Cons( (And( Constant bt )) LocalVariable )) ))
