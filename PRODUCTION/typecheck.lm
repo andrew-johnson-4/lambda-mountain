@@ -660,6 +660,12 @@ typecheck-infer-expr := λctx e used . (tail(
 
 typecheck-sizeof := λtt . (match tt (
    ()
+   ( (Array( bt sz )) (
+      (i2s(mul(
+         (s2i (typecheck-sizeof bt))
+         (s2i sz)
+      )))
+   ))
    ( (And( lt rt )) (tail(
       (local sz)
       (set sz (typecheck-sizeof lt))
