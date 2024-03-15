@@ -1,15 +1,15 @@
 
 print := λ(: x U64). (: (tail(
    (gensym-label unsigned)
-   (mov( x R15 ))
+#   (mov( x R15 ))
    (label unsigned)
 )) Nil);
 
 print := λ(: x I64). (: (tail(
    (let cs (: ( 0u8 0u8 ) U8[2] ))
    (gensym-label unsigned)
-   (mov( x R15 ))
-   (cmp( 0i64 R15 ))
-   (jge( unsigned ))
+#   (mov( x R15 ))
+#   (cmp( 0i64 R15 ))
+#   (jge( unsigned ))
    (label unsigned)
 )) Nil);

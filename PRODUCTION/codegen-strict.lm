@@ -48,7 +48,6 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e1 (expr::set-context( e1 ctx )))
                (set e1 (expr::set-offset( e1 offset )))
                (set e2 (compile-expr-strict( ctx rhs offset Used )))
-               (print-s (Check1))(print-s \n)
                (match (typecheck-lookup-type rhs) (
                   ()
                   ( (Array( bt btsz )) (tail(
@@ -91,14 +90,12 @@ compile-expr-strict := λctx e offset used . (tail(
                      ))
                   ))
                ))
-               (print-s (Check2))(print-s \n)
                (set e3 (expr::set-frame( e3 (  (expr::get-frame e1) (expr::get-frame e2) (expr::get-frame e3) ))))
                (set e3 (expr::set-unframe( e3 (  (expr::get-unframe e1) (expr::get-unframe e2) (expr::get-unframe e3) ))))
                (set e3 (expr::set-text( e3 (  (expr::get-text e1) (expr::get-text e2) (expr::get-text e3) ))))
                (set e3 (expr::set-data( e3 (  (expr::get-data e1) (expr::get-data e2) (expr::get-data e3) ))))
                (set e3 (expr::set-prog( e3 (  (expr::get-prog e1) (expr::get-prog e2) (expr::get-prog e3) ))))
                (set e3 (expr::set-data( e3 (  (expr::get-data e1) (expr::get-data e2) (expr::get-data e3) ))))
-               (print-s (Check3 e3))(print-s \n)
                e3
             )))
             ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
