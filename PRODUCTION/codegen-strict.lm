@@ -70,6 +70,8 @@ compile-expr-strict := λctx e offset used . (tail(
                               (set e3 (expr::set-data( e3 (  (expr::get-data e3) (expr::get-data e4) ))))
                               (set e3 (expr::set-prog( e3 (  (expr::get-prog e3) (expr::get-prog e4) ))))
                               (set e3 (expr::set-data( e3 (  (expr::get-data e3) (expr::get-data e4) ))))
+                              (set e3 (expr::set-context( e3 ctx )))
+                              (set e3 (expr::set-offset( e3 offset )))
                               (set bti (inc bti))
                            ))
                            ( v (
