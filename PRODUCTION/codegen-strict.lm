@@ -3,6 +3,7 @@ compile-expr-strict := λctx e offset used . (tail(
    (local e1)
    (local e2)
    (local e3)
+   (local e4)
    (match used (
       ()
       (Return (tail(
@@ -47,13 +48,46 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e1 (expr::set-context( e1 ctx )))
                (set e1 (expr::set-offset( e1 offset )))
                (set e2 (compile-expr-strict( ctx rhs offset Used )))
-               (match (get-maybe-function( ctx 'mov (Cons( (typecheck-lookup-type rhs) LocalVariable )) )) (
+               (match (typecheck-lookup-type rhs) (
                   ()
-                  ( (Fragment( (Variable _) body )) (
-                      (set e3 (assemble-apply-fragment( ctx body (App( e2 (Variable lname) )) offset )))
-                  ))
-                  ( v (
-                     (fail (ReferenceToUndefinedVariable 'mov (Cons( LocalVariable (typecheck-lookup-type rhs) )) ))
+                  ( (Array( bt btsz )) (tail(
+                     (local bti)
+                     (set btsz (s2i btsz))
+                     (set e3 (expr::new()))
+                     (while btsz (
+                        (match (get-maybe-function( ctx 'mov (Cons( (And( Constant bt )) LocalVariable )) )) (
+                           ()
+                           ( (Fragment( (Variable _) body )) (
+                              (local sv4)
+                              (set sv4 (get-fragment-local( ctx lname offset )))
+                              (local svoffset)
+                              (set svoffset (i2s (add( bti (s2i (expr::get-expr sv4)) )) ))
+                              (set sv4 (expr::set-expr( sv4 svoffset )))
+                              (set e4 (assemble-apply-fragment( ctx body (App( e2 sv4 )) offset )))
+                              (set e3 (expr::set-frame( e3 (  (expr::get-frame e3) (expr::get-frame e4) ))))
+                              (set e3 (expr::set-unframe( e3 (  (expr::get-unframe e3) (expr::get-unframe e4) ))))
+                              (set e3 (expr::set-text( e3 (  (expr::get-text e3) (expr::get-text e4) ))))
+                              (set e3 (expr::set-data( e3 (  (expr::get-data e3) (expr::get-data e4) ))))
+                              (set e3 (expr::set-prog( e3 (  (expr::get-prog e3) (expr::get-prog e4) ))))
+                              (set e3 (expr::set-data( e3 (  (expr::get-data e3) (expr::get-data e4) ))))
+                              (set bti (inc bti))
+                           ))
+                           ( v (
+                              (fail (ReferenceToUndefinedVariable 'mov (Cons( (And( Constant bt )) LocalVariable )) ))
+                           ))
+                        ))
+                        (set btsz (dec btsz))
+                     ))
+                  ))) (_ (
+                     (match (get-maybe-function( ctx 'mov (Cons( (typecheck-lookup-type rhs) LocalVariable )) )) (
+                        ()
+                        ( (Fragment( (Variable _) body )) (
+                            (set e3 (assemble-apply-fragment( ctx body (App( e2 (Variable lname) )) offset )))
+                        ))
+                        ( v (
+                           (fail (ReferenceToUndefinedVariable 'mov (Cons( (typecheck-lookup-type rhs) LocalVariable )) ))
+                        ))
+                     ))
                   ))
                ))
                (set e3 (expr::set-frame( e3 (  (expr::get-frame e1) (expr::get-frame e2) (expr::get-frame e3) ))))
