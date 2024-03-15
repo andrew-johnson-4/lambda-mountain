@@ -12,4 +12,9 @@ print := λ(: x I64). (: (tail(
    (cmp( 0i64 R15 ))
    (jge( unsigned ))
    (label unsigned)
+   (mov( 1u64 RAX )) # write
+   (mov( 1u64 RDI )) # stdout
+#   (mov( 1u64 RSI )) # char*
+   (mov( 1u64 RDX )) # length
+   (syscall())
 )) Nil);
