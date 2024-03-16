@@ -33,6 +33,13 @@ fragment jne := λ(: dst Label). (: (.program( \t 'jne \s (.expression dst) \n )
 
 fragment neg := λ(: l Reg64). (: (.program( \t 'neg \s '% (.expression l) \n )) Nil);
 
+fragment inc := λ(: l Reg64). (: (.program( \t 'inc \s '% (.expression l) \n )) Nil);
+
+fragment dec := λ(: l Reg64). (: (.program( \t 'dec \s '% (.expression l) \n )) Nil);
+
 fragment div := λ(: l Reg64). (: (.program( \t 'div \s '% (.expression l) \n )) Nil);
 
 fragment add := λ(: src Constant+U8)(: dst LocalVariable). (: (.program( \t 'addb \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
+
+fragment push := λ(: l Reg64). (: (.program( \t 'push \s '% (.expression l) \n )) Nil);
+fragment pop := λ(: l Reg64). (: (.program( \t 'pop \s '% (.expression l) \n )) Nil);

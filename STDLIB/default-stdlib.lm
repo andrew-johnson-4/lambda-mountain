@@ -1,14 +1,41 @@
 
 print := λ(: x U64). (: (tail(
+   (let cs 0u8)
    (gensym-label unsigned)
+   (gensym-label pdigits)
    (mov( x R15 ))
+
    (label unsigned)
+   (mov( R15 RAX ))
+   (mov( 0u64 RDX ))
+   (mov( 10u64 RCX ))
+   (div( RCX ))
+   (push( RDX ))
+   (inc( R14 ))
+   (mov( RAX R15 ))
+   (cmp( 0u64 R15 ))
+   (jne( unsigned ))
+
+   (label pdigits)
+   (pop( RDX ))
+   (mov( DL cs ))
+   (add( 48u8 cs ))
+   (dec( R14 ))
+   (mov( 1u64 RAX )) # write
+   (mov( 1u64 RDI )) # stdout
+   (mov( (& cs) RSI )) # data
+   (mov( 1u64 RDX )) # length
+   (syscall())
+   (cmp( 0u64 R14 ))
+   (jne( pdigits ))
 )) Nil);
 
 print := λ(: x I64). (: (tail(
    (let cs 0u8)
    (gensym-label unsigned)
+   (gensym-label pdigits)
    (mov( x R15 ))
+   (mov( 0u64 R14 ))
    (cmp( 0i64 R15 ))
    (jge( unsigned ))
    (neg( R15 ))
@@ -18,19 +45,28 @@ print := λ(: x I64). (: (tail(
    (mov( (& cs) RSI )) # data
    (mov( 1u64 RDX )) # length
    (syscall())
+
    (label unsigned)
    (mov( R15 RAX ))
    (mov( 0u64 RDX ))
    (mov( 10u64 RCX ))
    (div( RCX ))
+   (push( RDX ))
+   (inc( R14 ))
+   (mov( RAX R15 ))
+   (cmp( 0u64 R15 ))
+   (jne( unsigned ))
+
+   (label pdigits)
+   (pop( RDX ))
    (mov( DL cs ))
    (add( 48u8 cs ))
-   (mov( RAX R15 ))
+   (dec( R14 ))
    (mov( 1u64 RAX )) # write
    (mov( 1u64 RDI )) # stdout
    (mov( (& cs) RSI )) # data
    (mov( 1u64 RDX )) # length
    (syscall())
-   (cmp( 0u64 R15 ))
-   (jne( unsigned ))
+   (cmp( 0u64 R14 ))
+   (jne( pdigits ))
 )) Nil);
