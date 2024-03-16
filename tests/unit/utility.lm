@@ -30,3 +30,8 @@ import PRODUCTION/utility.lm;
 (assert-typeof( ((() (1 ()) ) (2 ()) ) List<[Atom,Nil]> ));
 (assert-not-typeof( ((() (1 ()) ) (2 ()) ) List<[Nil,Nil]> ));
 (assert-not-typeof( ((() (1 ()) ) (2 ()) ) List<[Atom,Atom]> ));
+
+(assert-typeof( () List<List<Atom>> ));
+(assert-typeof( ( () (() '1) ) List<List<Atom>> ));
+(assert-not-typeof( ( () (() '1) ) List<List<Nil>> ));
+(assert-not-typeof( ( () (() '1) ) List<Atom> ));
