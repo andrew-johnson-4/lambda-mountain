@@ -368,7 +368,7 @@ get-fragment-local := λctx v offset . (tail(
          ( (StackVariable(l loffset ltype)) (
             if r () (
                if (eq(l v)) (
-                  (set r (expr::set-prog( (expr::new()) loffset )))
+                  (set r (expr::new()) )
                   (set r (expr::set-expr( r loffset )))
                   (set r (expr::set-context( r ctx )))
                   (set r (expr::set-offset( r offset )))

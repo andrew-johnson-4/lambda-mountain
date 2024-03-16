@@ -35,6 +35,7 @@ assemble-substitute-fragment := λsubs frag e . (match frag (
    ))
    ( (App( (Literal '.program) f )) (
       (expr::set-prog( e (
+         (expr::get-prog e)
          (assemble-substitute-fragment-mode( subs Program f ))
       )))
    ))
@@ -42,6 +43,7 @@ assemble-substitute-fragment := λsubs frag e . (match frag (
       (assemble-substitute-fragment(
          subs inner
          (expr::set-prog( e (
+            (expr::get-prog e)
             (assemble-substitute-fragment-mode( subs Program f ))
          )))
       ))
@@ -134,24 +136,19 @@ assemble-apply-fragment := λctx arrow args offset . (tail(
    (local rc1)
    (set rc1 rc)
    (while rc1 (
-      (print-s (Rc (head (tail rc1))))
-      (print-s (expr::get-prog (tail (tail rc1))))(print-s \n)
       (set base (expr::set-prog (
          base
          ( (expr::get-prog base) (expr::get-prog (tail (tail rc1))) )
       )))
-      (print-s (NewBase (expr::get-prog base)))
       (set rc1 (head rc1))
    ))
    (local result)
    (match arrow (
       ()
       ( (Lambda( lhs rhs )) (
-         (print-s (Base (expr::get-prog base)))(print-s \n)
          (set result (assemble-substitute-fragment( rc rhs base )))
          (set result (expr::set-context( result ctx )))
          (set result (expr::set-offset( result offset )))
-         (print-s (Result (expr::get-prog result)))(print-s \n)
       ))
    ))
    result
