@@ -25,7 +25,7 @@ compile-expr-strict := λctx e offset used . (tail(
             ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
                (local sz)
                (set sz (typecheck-sizeof (typecheck-lookup-type rhs)))
-               (set ctx (ctx (StackVariable( lname offset (typecheck-lookup-type rhs) )) ))
+               (set ctx (ctx (StackVariable( lname (i2s(add( (s2i offset) (inv(s2i sz)) ))) (typecheck-lookup-type rhs) )) ))
                (set e1 (expr::new()) )
                (set e1 (expr::set-frame( e1 ( \t 'sub \s '$ sz , \s '%rsp \n ) )))
                (set e1 (expr::set-unframe( e1 ( \t 'add \s '$ sz , \s '%rsp \n ) )))
@@ -35,8 +35,9 @@ compile-expr-strict := λctx e offset used . (tail(
                (match (typecheck-lookup-type rhs) (
                   ()
                   ( (Array( bt btsz )) (tail(
-                     (local bti)
                      (set btsz (s2i btsz))
+                     (local bti)
+                     (set bti (dec btsz))
                      (set e3 (expr::new()))
                      (match rhs (
                         ()
@@ -48,7 +49,6 @@ compile-expr-strict := λctx e offset used . (tail(
                         (match (get-maybe-function( ctx 'mov (Cons( (And( Constant bt )) LocalVariable )) )) (
                            ()
                            ( (Fragment( (Variable _) body )) (
-                              (set bti (dec bti))
                               (local sv4)
                               (set sv4 (get-fragment-local( ctx lname offset )))
                               (local svoffset)
@@ -77,6 +77,7 @@ compile-expr-strict := λctx e offset used . (tail(
                               (fail (ReferenceToUndefinedVariable 'mov (Cons( (And( Constant bt )) LocalVariable )) ))
                            ))
                         ))
+                        (set bti (dec bti))
                         (set btsz (dec btsz))
                      ))
                      (set e2 (expr::new()))
@@ -99,7 +100,6 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e3 (expr::set-data( e3 (  (expr::get-data e1) (expr::get-data e2) (expr::get-data e3) ))))
                (set e3 (expr::set-prog( e3 (  (expr::get-prog e1) (expr::get-prog e2) (expr::get-prog e3) ))))
                (set e3 (expr::set-data( e3 (  (expr::get-data e1) (expr::get-data e2) (expr::get-data e3) ))))
-               (print-s (LocalDec (expr::get-frame e1)))(print-s \n)
                e3
             )))
             ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
