@@ -88,7 +88,60 @@ fn compile_compiler() {
 }
 
 fn run_unit(unit: &str) {
-   println!( "Run Unit {}", unit )
+   let exit = Command::new("./production")
+                      .stdout(std::process::Stdio::piped())
+                      .stderr(std::process::Stdio::piped())
+                      .arg("-o")
+                      .arg("unit.s")
+                      .arg(unit)
+                      .arg("PRODUCTION/utility.lm")
+                      .spawn()
+                      .expect("failed to execute process")
+                      .wait_with_output()
+                      .expect("failed to wait for process");
+   if !exit.status.success() {
+      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
+      panic!("./production error code: {}", stderr);
+   };
+   let exit = Command::new("as")
+                      .stdout(std::process::Stdio::piped())
+                      .stderr(std::process::Stdio::piped())
+                      .arg("-o")
+                      .arg("unit.o")
+                      .arg("unit.s")
+                      .spawn()
+                      .expect("failed to execute process")
+                      .wait_with_output()
+                      .expect("failed to wait for process");
+   if !exit.status.success() {
+      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
+      panic!("as error code: {}", stderr);
+   };
+   let exit = Command::new("ld")
+                      .stdout(std::process::Stdio::piped())
+                      .stderr(std::process::Stdio::piped())
+                      .arg("-o")
+                      .arg("unit")
+                      .arg("unit.o")
+                      .spawn()
+                      .expect("failed to execute process")
+                      .wait_with_output()
+                      .expect("failed to wait for process");
+   if !exit.status.success() {
+      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
+      panic!("ld error code: {}", stderr);
+   };
+   let exit = Command::new("./unit")
+                      .stdout(std::process::Stdio::piped())
+                      .stderr(std::process::Stdio::piped())
+                      .spawn()
+                      .expect("failed to execute process")
+                      .wait_with_output()
+                      .expect("failed to wait for process");
+   if !exit.status.success() {
+      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
+      panic!("./unit error code:\n{}", stderr);
+   };
 }
 
 #[test]
