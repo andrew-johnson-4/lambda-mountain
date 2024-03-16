@@ -112,6 +112,8 @@ is-variable := λv . (match (head-string v) (
    ('+ True )
    ('- True )
    ('$ True )
+   ('& True )
+   ('| True )
    ('_ True )
    ('a True )
    ('b True )

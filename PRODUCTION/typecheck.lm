@@ -479,11 +479,13 @@ typecheck-infer-type-constructor := λname body . (match body (
 #      (set typecheck-constructors ( typecheck-constructors (tag ('->(ctype (tag ctype)))) ))
 #      (set typecheck-subtypes ( typecheck-subtypes ((tag ctype) (typecheck-infer-type-compound name)) ))
    ))
+   ( () () )
+   ( u ( fail (UnknownTypeConstructor u)))
 ));
 
 typecheck-infer-type-definition := λname def . (match def (
    ()
-   ( (App( (App( tds (Literal |) )) body )) (
+   ( (App( (App( tds (Variable '|) )) body )) (
       (typecheck-infer-type-definition( name tds ))
       (typecheck-infer-type-constructor( name body ))
    ))
@@ -595,7 +597,7 @@ typecheck-infer-expr := λctx e used . (tail(
       ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
          (set ctx (typecheck-infer-expr( ctx rhs Used )))
          (if (typecheck-lookup-type rhs) (
-            (set ctx ( ctx (lname (typecheck-lookup-type rhs)) ))
+            (set ctx ( ctx (lname (And( LocalVariable (typecheck-lookup-type rhs) )) ) ))
          ) (
             (set ctx ( ctx (lname ()) ))
          ))

@@ -466,13 +466,9 @@ declare-local := λctx vname offset . (tail(
    (set frame_this (push-zero()))
    (local refer)
    (local eight)
-   (set eight (
-      inc(inc(inc(inc(inc(inc(inc(inc(
-         ()
-      ))))))))
-   ))
+   (set eight (s2i 8))
    (local sixteen)
-   (set sixteen (mul( eight (inc(inc(()))) )))
+   (set sixteen (s2i 16))
    (local set_this)
    (set set_this (
       \t 'mov \s '%r12, \s (

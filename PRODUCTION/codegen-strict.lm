@@ -12,21 +12,6 @@ compile-expr-strict := λctx e offset used . (tail(
             ()
             ( (Fragment( (Variable _) body )) (tail(
                (set e2 (assemble-apply-fragment( ctx body e1 offset )))
-               (set e2 (expr::set-prog( e2
-                  ((expr::get-prog e1) (expr::get-prog e2))
-               )))
-               (set e2 (expr::set-frame( e2
-                  ((expr::get-frame e1) (expr::get-frame e2))
-               )))
-               (set e2 (expr::set-unframe( e2
-                  ((expr::get-unframe e1) (expr::get-unframe e2))
-               )))
-               (set e2 (expr::set-text( e2
-                  ((expr::get-text e1) (expr::get-text e2))
-               )))
-               (set e2 (expr::set-data( e2
-                  ((expr::get-data e1) (expr::get-data e2))
-               )))
                e2
             )))
             ( v (
@@ -40,37 +25,51 @@ compile-expr-strict := λctx e offset used . (tail(
             ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
                (local sz)
                (set sz (typecheck-sizeof (typecheck-lookup-type rhs)))
-               (set ctx (ctx (StackVariable( lname offset (typecheck-lookup-type rhs) )) ))
+               (set ctx (ctx (StackVariable( lname (i2s(add( (s2i offset) (inv(s2i sz)) ))) (typecheck-lookup-type rhs) )) ))
                (set e1 (expr::new()) )
                (set e1 (expr::set-frame( e1 ( \t 'sub \s '$ sz , \s '%rsp \n ) )))
                (set e1 (expr::set-unframe( e1 ( \t 'add \s '$ sz , \s '%rsp \n ) )))
                (set offset (i2s (add( (s2i offset) (s2i sz) )) )) 
                (set e1 (expr::set-context( e1 ctx )))
                (set e1 (expr::set-offset( e1 offset )))
-               (set e2 (compile-expr-strict( ctx rhs offset Used )))
                (match (typecheck-lookup-type rhs) (
                   ()
                   ( (Array( bt btsz )) (tail(
-                     (local bti)
                      (set btsz (s2i btsz))
+                     (local bti)
+                     (set bti (dec btsz))
                      (set e3 (expr::new()))
+                     (match rhs (
+                        ()
+                        ( (App( (App( (Literal ':) inner_rhs )) _ )) (tail(
+                           (set rhs inner_rhs)
+                        )))
+                     ))
                      (while btsz (
                         (match (get-maybe-function( ctx 'mov (Cons( (And( Constant bt )) LocalVariable )) )) (
                            ()
                            ( (Fragment( (Variable _) body )) (
-                              (set bti (dec bti))
                               (local sv4)
                               (set sv4 (get-fragment-local( ctx lname offset )))
                               (local svoffset)
+                              (match ((i2s btsz) rhs) (
+                                 ()
+                                 ( (1 _) (tail(
+                                    (set e2 (compile-expr-strict( ctx rhs offset Used )))
+                                 )))
+                                 ( (_ (App( baserhs singlerhs )) ) (tail(
+                                    (set rhs baserhs)
+                                    (set e2 (compile-expr-strict( ctx singlerhs offset Used )))
+                                 )))
+                              ))
                               (set svoffset (i2s (add( bti (s2i(expr::get-expr sv4)) )) ))
                               (set sv4 (expr::set-expr( sv4 svoffset )))
                               (set e4 (assemble-apply-fragment( ctx body (App( e2 sv4 )) offset )))
-                              (set e3 (expr::set-frame( e3 (  (expr::get-frame e3) (expr::get-frame e4) ))))
-                              (set e3 (expr::set-unframe( e3 (  (expr::get-unframe e3) (expr::get-unframe e4) ))))
-                              (set e3 (expr::set-text( e3 (  (expr::get-text e3) (expr::get-text e4) ))))
-                              (set e3 (expr::set-data( e3 (  (expr::get-data e3) (expr::get-data e4) ))))
-                              (set e3 (expr::set-prog( e3 (  (expr::get-prog e3) (expr::get-prog e4) ))))
-                              (set e3 (expr::set-data( e3 (  (expr::get-data e3) (expr::get-data e4) ))))
+                              (set e3 (expr::set-frame( e3 (  (expr::get-frame e2) (expr::get-frame e3) (expr::get-frame e4) ))))
+                              (set e3 (expr::set-unframe( e3 (  (expr::get-unframe e2) (expr::get-unframe e3) (expr::get-unframe e4) ))))
+                              (set e3 (expr::set-text( e3 (  (expr::get-text e2) (expr::get-text e3) (expr::get-text e4) ))))
+                              (set e3 (expr::set-data( e3 (  (expr::get-data e2) (expr::get-data e3) (expr::get-data e4) ))))
+                              (set e3 (expr::set-prog( e3 (  (expr::get-prog e2) (expr::get-prog e3) (expr::get-prog e4) ))))
                               (set e3 (expr::set-context( e3 ctx )))
                               (set e3 (expr::set-offset( e3 offset )))
                            ))
@@ -78,9 +77,12 @@ compile-expr-strict := λctx e offset used . (tail(
                               (fail (ReferenceToUndefinedVariable 'mov (Cons( (And( Constant bt )) LocalVariable )) ))
                            ))
                         ))
+                        (set bti (dec bti))
                         (set btsz (dec btsz))
                      ))
+                     (set e2 (expr::new()))
                   ))) (_ (
+                     (set e2 (compile-expr-strict( ctx rhs offset Used )))
                      (match (get-maybe-function( ctx 'mov (Cons( (typecheck-lookup-type rhs) LocalVariable )) )) (
                         ()
                         ( (Fragment( (Variable _) body )) (
@@ -199,7 +201,10 @@ define-calling-convention-stack := λ ctx fname lmb . (tail(
          (local e2)
          (local text)
          (set e1 (define-calling-convention-stack-destructure-args( ctx lhs () )))
-         (set e2 (compile-expr-strict( (expr::get-context e1) rhs (expr::get-offset e1) Return)))
+         (local stack_offset)
+         (set stack_offset (expr::get-offset e1))
+         (set stack_offset (i2s(add( (s2i(stack_offset)) (s2i '-8) ))) )
+         (set e2 (compile-expr-strict( (expr::get-context e1) rhs stack_offset Return)))
          (set text ( text (mangle-global-function( fname lmb )) ': \n ))
          (set text ( text (expr::get-frame e2) ))
          (set text ( text (expr::get-prog e2) ))
@@ -367,7 +372,7 @@ get-fragment-local := λctx v offset . (tail(
          ( (StackVariable(l loffset ltype)) (
             if r () (
                if (eq(l v)) (
-                  (set r (expr::set-prog( (expr::new()) loffset )))
+                  (set r (expr::new()) )
                   (set r (expr::set-expr( r loffset )))
                   (set r (expr::set-context( r ctx )))
                   (set r (expr::set-offset( r offset )))

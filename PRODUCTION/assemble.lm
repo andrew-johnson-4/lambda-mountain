@@ -28,13 +28,14 @@ assemble-destructure-fragment := λctx lmb args offset . (match lmb (
 assemble-substitute-fragment := λsubs frag e . (match frag (
    ()
    ( Nil (
-      (expr::new())
+      e
    ))
    ( (App( (App( (Literal ':) fe )) ft )) (
       (assemble-substitute-fragment( subs fe e ))
    ))
    ( (App( (Literal '.program) f )) (
       (expr::set-prog( e (
+         (expr::get-prog e)
          (assemble-substitute-fragment-mode( subs Program f ))
       )))
    ))
@@ -42,6 +43,7 @@ assemble-substitute-fragment := λsubs frag e . (match frag (
       (assemble-substitute-fragment(
          subs inner
          (expr::set-prog( e (
+            (expr::get-prog e)
             (assemble-substitute-fragment-mode( subs Program f ))
          )))
       ))
@@ -129,11 +131,38 @@ assemble-substitute-fragment-mode := λsubs mode frag . (match frag (
 assemble-apply-fragment := λctx arrow args offset . (tail(
    (local rc)
    (set rc (assemble-destructure-fragment( ctx arrow args offset )))
+   (local base)
+   (set base (expr::new()))
+   (local rc1)
+   (set rc1 rc)
+   (while rc1 (
+      (set base (expr::set-prog (
+         base
+         ( (expr::get-prog base) (expr::get-prog (tail (tail rc1))) )
+      )))
+      (set base (expr::set-data (
+         base
+         ( (expr::get-data base) (expr::get-data (tail (tail rc1))) )
+      )))
+      (set base (expr::set-text (
+         base
+         ( (expr::get-text base) (expr::get-text (tail (tail rc1))) )
+      )))
+      (set base (expr::set-frame (
+         base
+         ( (expr::get-frame base) (expr::get-frame (tail (tail rc1))) )
+      )))
+      (set base (expr::set-unframe (
+         base
+         ( (expr::get-unframe base) (expr::get-unframe (tail (tail rc1))) )
+      )))
+      (set rc1 (head rc1))
+   ))
    (local result)
    (match arrow (
       ()
       ( (Lambda( lhs rhs )) (
-         (set result (assemble-substitute-fragment( rc rhs (expr::new()) )))
+         (set result (assemble-substitute-fragment( rc rhs base )))
          (set result (expr::set-context( result ctx )))
          (set result (expr::set-offset( result offset )))
       ))
