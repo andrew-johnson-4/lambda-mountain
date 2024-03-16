@@ -169,7 +169,7 @@ apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
       ( (GlobalFunction mangledname) (tail(
          (set e1 (destructure-calling-convention-stack( ctx e fname arg offset used )))
          (expr::set-prog( e1 (
-            (enter-function()) (expr::get-prog e1) (\t 'call \s mangledname \n)
+            (expr::get-prog e1) (enter-function()) (\t 'call \s mangledname \n)
               (\t 'mov \s '%rbp, \s '%rsp              \n
                \t 'pop \s '%rbp                        \n)
          )))
@@ -218,17 +218,6 @@ define-calling-convention-stack := λ ctx fname lmb . (tail(
 
 destructure-push-stack := λ ctx arg offset . (match arg (
    ()
-   ( (App( (App( (Variable 'as) inner_arg )) tt )) (
-      (match (get-maybe-function(ctx 'push (typecheck-lookup-type inner_arg))) (
-         ()
-         ( (Fragment( (Variable _) body )) (
-            (assemble-apply-fragment( ctx body inner_arg offset ))
-         ))
-         ( v (
-            (fail (ReferenceToUndefinedVariable 'push (typecheck-lookup-type arg)))
-         ))
-      ))
-   ))
    ( _ (
       (match (get-maybe-function(ctx 'push (typecheck-lookup-type arg))) (
          ()
@@ -252,15 +241,33 @@ destructure-calling-convention-stack := λ ctx e fname arg offset used . (tail(
             ( (App( e1 e2 )) (tail(
                (set e1 (destructure-calling-convention-stack( ctx e fname e1 offset used )))
                (set e2 (destructure-calling-convention-stack( (expr::get-context e1) e fname e1 (expr::get-offset e2) used )))
-               (Expr(
-                  ((expr::get-frame e1) (expr::get-frame e1))
-                  ((expr::get-prog e1) (expr::get-prog e1))
-                  ((expr::get-unframe e1) (expr::get-unframe e1))
-                  ((expr::get-text e1) (expr::get-text e1))
-                  ((expr::get-data e1) (expr::get-data e1))
+               (local e3)
+               (set e3 (expr::new()))
+               (set e3 (expr::set-frame (
+                  (expr::get-frame e1) (expr::get-frame e2)
+               )))
+               (set e3 (expr::set-unframe (
+                  (expr::get-unframe e1) (expr::get-unframe e2)
+               )))
+               (set e3 (expr::set-prog (
+                  (expr::get-prog e1) (expr::get-prog e2)
+               )))
+               (set e3 (expr::set-expr (
+                  (expr::get-expr e1) (expr::get-expr e2)
+               )))
+               (set e3 (expr::set-text (
+                  (expr::get-text e1) (expr::get-text e2)
+               )))
+               (set e3 (expr::set-data (
+                  (expr::get-data e1) (expr::get-data e2)
+               )))
+               (set e3 (expr::set-context (
                   (expr::get-context e2)
+               )))
+               (set e3 (expr::set-offset (
                   (expr::get-offset e2)
-               ))
+               )))
+               e3
             )))
             ( v (
                (fail (InvalidParameter fname arg))
