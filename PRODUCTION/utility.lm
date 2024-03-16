@@ -284,5 +284,7 @@ is-typeof := λ term tt . (match tt (
    ( Nil (not term) )
    ( Atom (is-atom term) )
    ( Cons (is-cons term) )
-   (_ (fail (UnknownTypeofType tt)))
+   ( (l r) (fail (UnknownTypeofType tt)))
+   ( () (fail (UnknownTypeofType tt)))
+   ( label (eq( (head term) label )) )
 ));

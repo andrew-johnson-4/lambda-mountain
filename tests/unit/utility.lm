@@ -14,3 +14,8 @@ import PRODUCTION/utility.lm;
 (assert-typeof( (1 2) Cons ));
 (assert-not-typeof( 1 Cons ));
 (assert-not-typeof( () Cons ));
+
+(assert-typeof( (StrictExpr ()) StrictExpr ));
+(assert-not-typeof( (StrictExpr ()) Expr ));
+(assert-not-typeof( (StrictExpr ()) Nil ));
+(assert-not-typeof( (StrictExpr ()) Atom ));
