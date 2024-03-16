@@ -4,6 +4,7 @@ import PRODUCTION/utility.lm;
 (assert-eq( True True ));
 
 (assert-eq( (parse-typeof Nil) Nil ));
+(assert-eq( (parse-typeof Nil) Nil ));
 (assert-eq( (parse-typeof Atom) Atom ));
 (assert-eq( (parse-typeof List<Atom>) (List Atom) ));
 (assert-eq( (parse-typeof List<List<Atom>>) (List (List Atom)) ));

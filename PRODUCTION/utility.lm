@@ -295,6 +295,7 @@ parse-parameter-typeof := λ tt . (tail(
          )))
          ('> (
             (if depth (
+               (set inner (inner '>))
                (set depth (dec depth))
             ) (
                (assert-eq( () (tail-string tt) ))
@@ -322,6 +323,7 @@ parse-tuple-typeof := λ tt . (tail(
          )))
          ('] (
             (if depth (
+               (set inner (inner ']))
                (set depth (dec depth))
             ) (
                (assert-eq( () (tail-string tt) ))
@@ -352,13 +354,28 @@ parse-tuple-typeof := λ tt . (tail(
    base
 ));
 
+parse-typeof-cache := ();
 parse-typeof := λ tt . (tail(
+   (local origin_tt)
+   (set origin_tt tt)
    (local buff)
    (local base)
    (if (is-cons tt) (
       (set base tt)
       (set tt ())
    ) ())
+   (local cache)
+   (local cache_hit)
+   (set cache parse-typeof-cache)
+   (while cache (
+      (if (eq( (head (tail cache)) origin_tt )) (
+         (set base (tail (tail cache)))
+         (print-s (CacheHit tt base))(print-s \n)
+         (set cache ())
+         (set cache_hit True)
+      ) ())
+      (set cache (tail cache))
+   ))
    (while tt (
       (match (head-string tt) (
          ()
@@ -374,7 +391,12 @@ parse-typeof := λ tt . (tail(
       ))
       (set tt (tail-string tt))
    ))
-   (if base base (clone-rope buff))
+   (set base (if base base (clone-rope buff)))
+   (if cache_hit () (
+      (print-s (SetCache origin_tt base))(print-s \n)
+      (set parse-typeof-cache (parse-typeof-cache (origin_tt base)))
+   ))
+   base
 ));
 
 is-typeof := λ term tt . (match tt (
