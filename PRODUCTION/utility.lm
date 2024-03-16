@@ -299,6 +299,10 @@ parse-parameter-typeof := λ tt . (tail(
 parse-typeof := λ tt . (tail(
    (local buff)
    (local base)
+   (if (is-cons tt) (
+      (set base tt)
+      (set tt ())
+   ) ())
    (while tt (
       (match (head-string tt) (
          ()
@@ -322,7 +326,7 @@ is-typeof := λ term tt . (match tt (
    ( (List te) (
       (if (is-cons term) (
          (if (is-typeof( (tail term) te )) (
-            (is-typeof( (head term) te ))
+            (is-typeof( (head term) tt ))
          ) ())
       ) (
          (not term)
