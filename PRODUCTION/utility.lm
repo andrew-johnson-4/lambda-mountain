@@ -285,10 +285,21 @@ parse-parameter-typeof := λ tt . (tail(
    (assert-eq( '< (head-string tt) ))
    (set tt (tail-string tt))
    (local inner)
+   (local depth)
    (while tt (
       (match (head-string tt) (
          ()
-         ('> ( (assert-eq( () (tail-string tt) )) ))
+         ('< (tail(
+            (set inner (inner '[))
+            (set depth (inc depth))
+         )))
+         ('> (
+            (if depth (
+               (set depth (dec depth))
+            ) (
+               (assert-eq( () (tail-string tt) ))
+            ))
+         ))
          (c (set inner (inner (clone-rope c)) ))
       ))
       (set tt (tail-string tt))
@@ -301,10 +312,21 @@ parse-tuple-typeof := λ tt . (tail(
    (set tt (tail-string tt))
    (local inner)
    (local base)
+   (local depth)
    (while tt (
       (match (head-string tt) (
          ()
-         ('] ( (assert-eq( () (tail-string tt) )) ))
+         ('[ (tail(
+            (set inner (inner '[))
+            (set depth (inc depth))
+         )))
+         ('] (
+            (if depth (
+               (set depth (dec depth))
+            ) (
+               (assert-eq( () (tail-string tt) ))
+            ))
+         ))
          (', (tail(
             (set inner (parse-typeof (clone-rope inner) ))
             (if base (
