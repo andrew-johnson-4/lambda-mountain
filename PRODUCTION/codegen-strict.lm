@@ -12,21 +12,6 @@ compile-expr-strict := λctx e offset used . (tail(
             ()
             ( (Fragment( (Variable _) body )) (tail(
                (set e2 (assemble-apply-fragment( ctx body e1 offset )))
-               (set e2 (expr::set-prog( e2
-                  ((expr::get-prog e1) (expr::get-prog e2))
-               )))
-               (set e2 (expr::set-frame( e2
-                  ((expr::get-frame e1) (expr::get-frame e2))
-               )))
-               (set e2 (expr::set-unframe( e2
-                  ((expr::get-unframe e1) (expr::get-unframe e2))
-               )))
-               (set e2 (expr::set-text( e2
-                  ((expr::get-text e1) (expr::get-text e2))
-               )))
-               (set e2 (expr::set-data( e2
-                  ((expr::get-data e1) (expr::get-data e2))
-               )))
                e2
             )))
             ( v (
