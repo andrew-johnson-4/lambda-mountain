@@ -168,13 +168,11 @@ apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
       ()
       ( (GlobalFunction mangledname) (tail(
          (set e1 (destructure-calling-convention-stack( ctx e fname arg offset used )))
-         (Expr(
-            (expr::get-frame e1)
-            ( (enter-function()) (expr::get-prog e1) (\t 'call \s mangledname \n)
+         (expr::set-prog( e1 (
+            (enter-function()) (expr::get-prog e1) (\t 'call \s mangledname \n)
               (\t 'mov \s '%rbp, \s '%rsp              \n
-               \t 'pop \s '%rbp                        \n) )
-            (expr::get-unframe e1) (expr::get-text e1) (expr::get-data e1) (expr::get-context e1) (expr::get-offset e1)
-         ))
+               \t 'pop \s '%rbp                        \n)
+         )))
       )))
       ( (Fragment( vname body )) (tail(
          ()
@@ -186,7 +184,7 @@ apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
          (local l)
          (set l (get-local( ctx fname )))
          (if l () (fail (UnknownFunctionLocal fname)))
-         (Expr( (expr::get-frame e1) (l (expr::get-prog e1)) (expr::get-unframe e1) (expr::get-text e1) (expr::get-data e1) (expr::get-context e1) (expr::get-offset e1) ))
+         (expr::set-prog( e1 ( l (expr::get-prog e1) )))
       )))
       ( l (fail (UnknownFunctionCall fname l)) )
    ))
