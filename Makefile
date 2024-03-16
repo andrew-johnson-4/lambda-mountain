@@ -1,5 +1,5 @@
 
-unit:
+unit-tests:
 	cargo test unit_test_suite -- --nocapture
 
 nostd: prod

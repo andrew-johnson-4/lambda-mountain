@@ -139,8 +139,9 @@ fn run_unit(unit: &str) {
                       .wait_with_output()
                       .expect("failed to wait for process");
    if !exit.status.success() {
+      let stdout = String::from_utf8_lossy(&exit.stdout).to_string();
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("./unit error code:\n{}", stderr);
+      panic!("./unit error code:\n{}{}", stdout, stderr);
    };
 }
 

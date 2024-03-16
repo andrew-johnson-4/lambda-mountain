@@ -249,3 +249,14 @@ is-builtin := λf . (match f (
    ('load-file True)
    (_ ())
 ));
+
+
+
+assert-eq := λ msg l r . (
+   (if (deep-eq( l r)) () (
+      (print-s AssertNotEqual)(print-s \n)
+      (print-s \t)(print-s l)(print-s \n)
+      (print-s \t)(print-s r)(print-s \n)
+      (print-s \t)(fail msg)
+   ))
+));

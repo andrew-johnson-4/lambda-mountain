@@ -1,2 +1,2 @@
 
-(fail TestFail);
+(assert-eq( IntentionalFailure True False ));
