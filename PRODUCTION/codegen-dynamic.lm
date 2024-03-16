@@ -42,7 +42,7 @@ compile-append := λoutput_e gctx e . (tail(
 ));
 
 compile-expr := λctx e offset used . (
-   if config-strict (compile-expr-strict( ctx e offset used ))
+   if config-strict (compile-expr-strict( ctx e (if offset offset 0) used ))
                     (compile-expr-dynamic( ctx e offset used ))
 );
 

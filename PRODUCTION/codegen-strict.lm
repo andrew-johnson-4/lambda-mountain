@@ -1,7 +1,7 @@
 
 compile-expr-strict := λctx e offset used . (tail(
-   (assert-typeof( 'compile-expr-strict offset Atom ))
-   (assert-typeof( 'compile-expr-strict used Atom ))
+   (assert-typeof( 'compile-expr-strict::offset offset Atom ))
+   (assert-typeof( 'compile-expr-strict::used used Atom ))
    (expr::new())
 ));
 
@@ -215,9 +215,11 @@ define-calling-convention-stack := λ ctx fname lmb . (tail(
          (set text ( text (expr::get-unframe e2) ))
          (set text ( text (\t 'ret \n) ))
          (set text ( text (expr::get-text e2) ))
-         (Expr(
-            () () () text ( (expr::get-data e2) ) () ()
-         ))
+         (local return)
+         (set return (expr::new()))
+         (set return (expr::set-text( return text )))
+         (set return (expr::set-data( return (expr::get-data e2) )))
+         return
       )))
    ))
 ));
@@ -298,13 +300,13 @@ define-calling-convention-stack-destructure-args := λ ctx lhs offset . (match l
       (set size (typecheck-sizeof ltype))
       (local new_offset)
       (set new_offset (add( offset (inv(s2i size)) )) )
-      (Expr(
-         () () () () ()
-         ( ctx (StackVariable(
-            lname (i2s new_offset) ltype
-         )) )
-         (i2s new_offset)
-      ))
+      (local return)
+      (set return (expr::new()))
+      (set return (expr::set-context( return 
+         ( ctx (StackVariable( lname (i2s new_offset) ltype )) )
+      )))
+      (set return (expr::set-offset( return (i2s new_offset) )))
+      return
    )))
    ( (App( more (App( (App( (Literal :) (Variable lname) )) ltype )) )) (tail(
       (set ltype (typecheck-infer-type-compound ltype))
@@ -313,13 +315,13 @@ define-calling-convention-stack-destructure-args := λ ctx lhs offset . (match l
       (local new_offset)
       (set new_offset (add( offset (inv(s2i size)) )) )
       (set ctx (define-calling-convention-stack-destructure-args( ctx more new_offset )))
-      (Expr(
-         () () () () ()
-         ( (expr::get-context ctx) (StackVariable(
-            lname (i2s new_offset) ltype
-         )) )
-         (expr::get-offset ctx)
-      ))
+      (local return)
+      (set return (expr::new()))
+      (set return (expr::set-context( return 
+         ( ctx (StackVariable( lname (i2s new_offset) ltype )) )
+      )))
+      (set return (expr::set-offset( return (i2s new_offset) )))
+      return
    )))
    ( u (fail (UnknownStackArg lhs)))
 ));
