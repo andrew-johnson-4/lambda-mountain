@@ -28,3 +28,5 @@ fragment cmp := λ(: imm Constant+U64)(: r Constant+Reg64). (: (.program( \t 'cm
 fragment cmp := λ(: imm Constant+I64)(: r Constant+Reg64). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
 
 fragment jge := λ(: dst Label). (: (.program( \t 'jge \s (.expression dst) \n )) Nil);
+
+fragment neg := λ(: l Reg64). (: (.program( \t 'neg \s '% (.expression l) \n )) Nil);
