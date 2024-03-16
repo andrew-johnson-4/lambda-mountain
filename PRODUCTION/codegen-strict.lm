@@ -1,5 +1,7 @@
 
 compile-expr-strict := λctx e offset used . (tail(
+   (assert-typeof( 'compile-expr-strict offset Atom ))
+   (assert-typeof( 'compile-expr-strict used Atom ))
    (expr::new())
 ));
 

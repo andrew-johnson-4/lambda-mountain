@@ -252,29 +252,29 @@ is-builtin := λf . (match f (
 
 
 
-assert-eq := λ l r . (
+assert-eq := λ loc l r . (
    (if (deep-eq( l r )) () (
-      (print-s FailedAssertEqual)(print-s \n)
+      (print-s FailedAssertEqual)(print-s \s)(print-s 'in)(print-s \s)(print-s loc)(print-s \n)
       (print-s \t)(print-s l)(print-s \n)
       (print-s \t)(print-s r)(print-s \n)
       (exit 1)
    ))
 ));
 
-assert-typeof := λ term tt . (tail(
+assert-typeof := λ loc term tt . (tail(
    (set tt (parse-typeof tt))
    (if (is-typeof( term tt )) () (
-      (print-s FailedAssertTypeof)(print-s \n)
+      (print-s FailedAssertTypeof)(print-s \s)(print-s 'in)(print-s \s)(print-s loc)(print-s \n)
       (print-s \t)(print-s tt)(print-s \n)
       (print-s \t)(print-s term)(print-s \n)
       (exit 1)
    ))
 ));
 
-assert-not-typeof := λ term tt . (tail(
+assert-not-typeof := λ loc term tt . (tail(
    (set tt (parse-typeof tt))
    (if (is-typeof( term tt )) (
-      (print-s FailedAssertNotTypeof)(print-s \n)
+      (print-s FailedAssertNotTypeof)(print-s \s)(print-s 'in)(print-s \s)(print-s loc)(print-s \n)
       (print-s \t)(print-s tt)(print-s \n)
       (print-s \t)(print-s term)(print-s \n)
       (exit 1)
@@ -282,7 +282,7 @@ assert-not-typeof := λ term tt . (tail(
 ));
 
 parse-parameter-typeof := λ tt . (tail(
-   (assert-eq( '< (head-string tt) ))
+   (assert-eq( 'parse-parameter-typeof '< (head-string tt) ))
    (set tt (tail-string tt))
    (local inner)
    (local depth)
@@ -298,7 +298,7 @@ parse-parameter-typeof := λ tt . (tail(
                (set inner (inner '>))
                (set depth (dec depth))
             ) (
-               (assert-eq( () (tail-string tt) ))
+               (assert-eq( 'parse-parameter-typeof () (tail-string tt) ))
             ))
          ))
          (c (set inner (inner (clone-rope c)) ))
@@ -309,7 +309,7 @@ parse-parameter-typeof := λ tt . (tail(
 ));
 
 parse-tuple-typeof := λ tt . (tail(
-   (assert-eq( '[ (head-string tt) ))
+   (assert-eq( 'parse-tuple-typeof '[ (head-string tt) ))
    (set tt (tail-string tt))
    (local inner)
    (local base)
@@ -326,7 +326,7 @@ parse-tuple-typeof := λ tt . (tail(
                (set inner (inner ']))
                (set depth (dec depth))
             ) (
-               (assert-eq( () (tail-string tt) ))
+               (assert-eq( 'parse-tuple-typeof () (tail-string tt) ))
             ))
          ))
          (', (tail(
