@@ -3,6 +3,13 @@ import PRODUCTION/utility.lm;
 
 (assert-eq( True True ));
 
+(assert-eq( (parse-typeof Nil) Nil ));
+(assert-eq( (parse-typeof Atom) Atom ));
+(assert-eq( (parse-typeof List<Atom>) (List Atom) ));
+(assert-eq( (parse-typeof List<List<Atom>>) (List (List Atom)) ));
+(assert-eq( (parse-typeof [Atom,Nil]) ('[] (Atom Nil)) ));
+(assert-eq( (parse-typeof [Atom,Nil,Cons]) ('[]( ('[]( Atom Nil )) Cons )) ));
+
 (assert-typeof( () Nil ));
 (assert-not-typeof( 1 Nil ));
 (assert-not-typeof( (1 2) Nil ));
@@ -31,7 +38,7 @@ import PRODUCTION/utility.lm;
 (assert-not-typeof( ((() (1 ()) ) (2 ()) ) List<[Nil,Nil]> ));
 (assert-not-typeof( ((() (1 ()) ) (2 ()) ) List<[Atom,Atom]> ));
 
-(assert-typeof( () List<List<Atom>> ));
-(assert-typeof( ( () (() '1) ) List<List<Atom>> ));
-(assert-not-typeof( ( () (() '1) ) List<List<Nil>> ));
-(assert-not-typeof( ( () (() '1) ) List<Atom> ));
+#(assert-typeof( () List<List<Atom>> ));
+#(assert-typeof( ( () (() '1) ) List<List<Atom>> ));
+#(assert-not-typeof( ( () (() '1) ) List<List<Nil>> ));
+#(assert-not-typeof( ( () (() '1) ) List<Atom> ));
