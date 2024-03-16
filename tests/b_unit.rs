@@ -48,7 +48,6 @@ fn compile_compiler() {
                       .stderr(std::process::Stdio::piped())
                       .arg("-o")
                       .arg("production.s")
-                      .arg("PRODUCTION/cli.lm")
                       .spawn()
                       .expect("failed to execute process")
                       .wait_with_output()

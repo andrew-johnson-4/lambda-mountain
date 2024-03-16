@@ -1,2 +1,4 @@
 
-(assert-eq( IntentionalFailure True False ));
+import PRODUCTION/utility.lm;
+
+(assert-eq( LiteralEquality True True ));
