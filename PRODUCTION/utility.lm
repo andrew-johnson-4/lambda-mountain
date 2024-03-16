@@ -296,6 +296,36 @@ parse-parameter-typeof := λ tt . (tail(
    (parse-typeof (clone-rope inner))
 ));
 
+parse-tuple-typeof := λ tt . (tail(
+   (assert-eq( '[ (head-string tt) ))
+   (set tt (tail-string tt))
+   (local inner)
+   (local base)
+   (while tt (
+      (match (head-string tt) (
+         ()
+         ('] ( (assert-eq( () (tail-string tt) )) ))
+         (', (tail(
+            (set inner (parse-typeof (clone-rope inner) ))
+            (if base (
+               (set base ('[] ( base inner )))
+            ) (
+               (set base inner)
+            ))
+            (set inner ())
+         )))
+         (c (set inner (inner (clone-rope c)) ))
+      ))
+      (set tt (tail-string tt))
+   ))
+   (if base (
+      (set base ('[] ( base (parse-typeof (clone-rope inner )) )))
+   ) (
+      (set base (parse-typeof (clone-rope inner)))
+   ))
+   base
+));
+
 parse-typeof := λ tt . (tail(
    (local buff)
    (local base)
@@ -306,7 +336,10 @@ parse-typeof := λ tt . (tail(
    (while tt (
       (match (head-string tt) (
          ()
-         ('[ (fail (TODO Array Typeof tt)))
+         ('[ (
+            (set base ( (clone-rope buff) (parse-tuple-typeof tt) ))
+            (set tt ())
+         ))
          ('< (
             (set base ( (clone-rope buff) (parse-parameter-typeof tt) ))
             (set tt ())
