@@ -19,9 +19,18 @@ print := λ(: x I64). (: (tail(
    (mov( 1u64 RDX )) # length
    (syscall())
    (label unsigned)
-#   (mov( 1u64 RAX )) # write
-#   (mov( 1u64 RDI )) # stdout
-#   (mov( (& cs) RSI )) # data
-#   (mov( 2u64 RDX )) # length
-#   (syscall())
+   (mov( R15 RAX ))
+   (mov( 0u64 RDX ))
+   (mov( 10u64 RCX ))
+   (div( RCX ))
+   (mov( DL cs ))
+   (add( 48u8 cs ))
+   (mov( RAX R15 ))
+   (mov( 1u64 RAX )) # write
+   (mov( 1u64 RDI )) # stdout
+   (mov( (& cs) RSI )) # data
+   (mov( 1u64 RDX )) # length
+   (syscall())
+   (cmp( 0u64 R15 ))
+   (jne( unsigned ))
 )) Nil);

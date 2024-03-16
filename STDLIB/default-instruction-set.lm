@@ -23,10 +23,16 @@ fragment mov := λ(: src Constant+U64)(: dst Constant+Reg64). (: ( (.program( \t
 fragment mov := λ(: src Reg64)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t '% (.expression src) , \s '% (.expression dst) \n)) ) Nil);
 
 fragment mov := λ(: src Constant+U8)(: dst LocalVariable). (: (.program( \t 'movb \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
+fragment mov := λ(: src Reg8)(: dst LocalVariable). (: (.program( \t 'movb \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
 
 fragment cmp := λ(: imm Constant+U64)(: r Constant+Reg64). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
 fragment cmp := λ(: imm Constant+I64)(: r Constant+Reg64). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
 
 fragment jge := λ(: dst Label). (: (.program( \t 'jge \s (.expression dst) \n )) Nil);
+fragment jne := λ(: dst Label). (: (.program( \t 'jne \s (.expression dst) \n )) Nil);
 
 fragment neg := λ(: l Reg64). (: (.program( \t 'neg \s '% (.expression l) \n )) Nil);
+
+fragment div := λ(: l Reg64). (: (.program( \t 'div \s '% (.expression l) \n )) Nil);
+
+fragment add := λ(: src Constant+U8)(: dst LocalVariable). (: (.program( \t 'addb \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
