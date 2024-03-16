@@ -38,3 +38,41 @@ fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
    ( u (fail (UnknownFragmentSubstitution u)))
 ));
 
+fragment-apply-context := λctx fragment-rhs e . (match fragment-rhs (
+   ()
+   ( Nil (
+      e
+   ))
+   ( (App( (App( (Literal ':) fe )) ft )) (
+      (fragment-apply-context( ctx fe e ))
+   ))
+   ( (App( (Literal '.program) f )) (
+      (expr::set-prog( e (
+         (expr::get-prog e)
+         (fragment-substitute-context( ctx f ))
+      )))
+   ))
+   ( (App( inner (App( (Literal '.program) f )) )) (
+      (fragment-apply-context(
+         ctx inner
+         (expr::set-prog( e (
+            (expr::get-prog e)
+            (fragment-substitute-context( ctx f ))
+         )))
+      ))
+   ))
+   ( (App( (Literal '.expression) f )) (
+      (expr::set-expr( e (
+         (fragment-substitute-context( ctx f ))
+      )))
+   ))
+   ( (App( inner (App( (Literal '.expression) f )) )) (
+      (fragment-substitute-context(
+         ctx inner
+         (expr::set-expr( e (
+            (fragment-substitute-context( ctx f ))
+         )))
+      ))
+   ))
+   ( u (fail (UnknownSubstituteFragment fragment-rhs)))
+));
