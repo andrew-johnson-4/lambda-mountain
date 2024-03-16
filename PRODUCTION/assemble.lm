@@ -140,6 +140,22 @@ assemble-apply-fragment := λctx arrow args offset . (tail(
          base
          ( (expr::get-prog base) (expr::get-prog (tail (tail rc1))) )
       )))
+      (set base (expr::set-data (
+         base
+         ( (expr::get-data base) (expr::get-data (tail (tail rc1))) )
+      )))
+      (set base (expr::set-text (
+         base
+         ( (expr::get-text base) (expr::get-text (tail (tail rc1))) )
+      )))
+      (set base (expr::set-frame (
+         base
+         ( (expr::get-frame base) (expr::get-frame (tail (tail rc1))) )
+      )))
+      (set base (expr::set-unframe (
+         base
+         ( (expr::get-unframe base) (expr::get-unframe (tail (tail rc1))) )
+      )))
       (set rc1 (head rc1))
    ))
    (local result)

@@ -99,6 +99,7 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e3 (expr::set-data( e3 (  (expr::get-data e1) (expr::get-data e2) (expr::get-data e3) ))))
                (set e3 (expr::set-prog( e3 (  (expr::get-prog e1) (expr::get-prog e2) (expr::get-prog e3) ))))
                (set e3 (expr::set-data( e3 (  (expr::get-data e1) (expr::get-data e2) (expr::get-data e3) ))))
+               (print-s (LocalDec (expr::get-frame e1)))(print-s \n)
                e3
             )))
             ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
