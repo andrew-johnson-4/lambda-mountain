@@ -48,6 +48,7 @@ fn compile_compiler() {
                       .stderr(std::process::Stdio::piped())
                       .arg("-o")
                       .arg("production.s")
+                      .arg("PRODUCTION/cli.lm")
                       .spawn()
                       .expect("failed to execute process")
                       .wait_with_output()
@@ -87,13 +88,13 @@ fn compile_compiler() {
 }
 
 fn run_unit(unit: &str) {
+   println!("Run unit test {}", unit);
    let exit = Command::new("./production")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
                       .arg("-o")
                       .arg("unit.s")
                       .arg(unit)
-                      .arg("PRODUCTION/utility.lm")
                       .spawn()
                       .expect("failed to execute process")
                       .wait_with_output()
