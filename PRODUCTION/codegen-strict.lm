@@ -1,5 +1,9 @@
 
 compile-expr-strict := λctx e offset used . (tail(
+   (expr::new())
+));
+
+-compile-expr-strict := λctx e offset used . (tail(
    (local e1)
    (local e2)
    (local e3)
