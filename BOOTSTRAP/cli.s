@@ -46862,22 +46862,6 @@ uuid_0000000000000204:
 	mov $0,%r12
 	mov $0,%r13
 	call __expr_C__C_new_C___
-	push %r12
-	push %r13
-	mov -88(%rbp),%r12
-	mov -96(%rbp),%r13
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	pop %r13
-	pop %r12
-	push %r8
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	mov %r8, %r12
-	pop %r13
-	call __expr_C__C_set_prog_C___
 	mov %r12, -56(%rbp)
 	mov %r13, -64(%rbp)
 	push %r12
@@ -47824,7 +47808,7 @@ uuid_0000000000000231:
 	push %r13
 	mov -40(%rbp),%r12
 	mov -48(%rbp),%r13
-	call __expr_C__C_get_prog_C___
+	call __expr_C__C_get_expr_C___
 	push %r12
 	push %r13
 	mov $uuid_00000000000000f6, %r12
