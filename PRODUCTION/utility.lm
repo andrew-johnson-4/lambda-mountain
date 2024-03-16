@@ -261,25 +261,58 @@ assert-eq := λ l r . (
    ))
 ));
 
-assert-typeof := λ term tt . (
-   (if (is-typeof( term (parse-typeof tt) )) () (
+assert-typeof := λ term tt . (tail(
+   (set tt (parse-typeof tt))
+   (if (is-typeof( term tt )) () (
       (print-s FailedAssertTypeof)(print-s \n)
       (print-s \t)(print-s tt)(print-s \n)
       (print-s \t)(print-s term)(print-s \n)
       (exit 1)
    ))
-);
+));
 
-assert-not-typeof := λ term tt . (
-   (if (is-typeof( term (parse-typeof tt) )) (
+assert-not-typeof := λ term tt . (tail(
+   (set tt (parse-typeof tt))
+   (if (is-typeof( term tt )) (
       (print-s FailedAssertNotTypeof)(print-s \n)
       (print-s \t)(print-s tt)(print-s \n)
       (print-s \t)(print-s term)(print-s \n)
       (exit 1)
    ) ())
-);
+));
 
-parse-typeof := λ tt . tt;
+parse-parameter-typeof := λ tt . (tail(
+   (assert-eq( '< (head-string tt) ))
+   (set tt (tail-string tt))
+   (local inner)
+   (while tt (
+      (match (head-string tt) (
+         ()
+         ('> ( (assert-eq( () (tail-string tt) )) ))
+         (c (set inner (inner (clone-rope c)) ))
+      ))
+      (set tt (tail-string tt))
+   ))
+   (parse-typeof (clone-rope inner))
+));
+
+parse-typeof := λ tt . (tail(
+   (local buff)
+   (local base)
+   (while tt (
+      (match (head-string tt) (
+         ()
+         ('[ (fail (TODO Array Typeof tt)))
+         ('< (
+            (set base ( (clone-rope buff) (parse-parameter-typeof tt) ))
+            (set tt ())
+         ))
+         (c (set buff (buff (clone-rope c)) ))
+      ))
+      (set tt (tail-string tt))
+   ))
+   (if base base (clone-rope buff))
+));
 
 is-typeof := λ term tt . (match tt (
    ()
