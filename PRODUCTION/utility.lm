@@ -290,7 +290,7 @@ parse-parameter-typeof := λ tt . (tail(
       (match (head-string tt) (
          ()
          ('< (tail(
-            (set inner (inner '[))
+            (set inner (inner '<))
             (set depth (inc depth))
          )))
          ('> (
@@ -328,13 +328,17 @@ parse-tuple-typeof := λ tt . (tail(
             ))
          ))
          (', (tail(
-            (set inner (parse-typeof (clone-rope inner) ))
-            (if base (
-               (set base ('[] ( base inner )))
+            (if depth (
+               (set inner (inner ',))
             ) (
-               (set base inner)
+               (set inner (parse-typeof (clone-rope inner) ))
+               (if base (
+                  (set base ('[] ( base inner )))
+               ) (
+                  (set base inner)
+               ))
+               (set inner ())
             ))
-            (set inner ())
          )))
          (c (set inner (inner (clone-rope c)) ))
       ))
