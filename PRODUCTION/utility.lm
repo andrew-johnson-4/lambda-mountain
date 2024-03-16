@@ -252,11 +252,153 @@ is-builtin := λf . (match f (
 
 
 
-assert-eq := λ msg l r . (
-   (if (deep-eq( l r)) () (
-      (print-s AssertNotEqual)(print-s \n)
+assert-eq := λ l r . (
+   (if (deep-eq( l r )) () (
+      (print-s FailedAssertEqual)(print-s \n)
       (print-s \t)(print-s l)(print-s \n)
       (print-s \t)(print-s r)(print-s \n)
-      (print-s \t)(fail msg)
+      (exit 1)
    ))
+));
+
+assert-typeof := λ term tt . (tail(
+   (set tt (parse-typeof tt))
+   (if (is-typeof( term tt )) () (
+      (print-s FailedAssertTypeof)(print-s \n)
+      (print-s \t)(print-s tt)(print-s \n)
+      (print-s \t)(print-s term)(print-s \n)
+      (exit 1)
+   ))
+));
+
+assert-not-typeof := λ term tt . (tail(
+   (set tt (parse-typeof tt))
+   (if (is-typeof( term tt )) (
+      (print-s FailedAssertNotTypeof)(print-s \n)
+      (print-s \t)(print-s tt)(print-s \n)
+      (print-s \t)(print-s term)(print-s \n)
+      (exit 1)
+   ) ())
+));
+
+parse-parameter-typeof := λ tt . (tail(
+   (assert-eq( '< (head-string tt) ))
+   (set tt (tail-string tt))
+   (local inner)
+   (local depth)
+   (while tt (
+      (match (head-string tt) (
+         ()
+         ('< (tail(
+            (set inner (inner '<))
+            (set depth (inc depth))
+         )))
+         ('> (
+            (if depth (
+               (set depth (dec depth))
+            ) (
+               (assert-eq( () (tail-string tt) ))
+            ))
+         ))
+         (c (set inner (inner (clone-rope c)) ))
+      ))
+      (set tt (tail-string tt))
+   ))
+   (parse-typeof (clone-rope inner))
+));
+
+parse-tuple-typeof := λ tt . (tail(
+   (assert-eq( '[ (head-string tt) ))
+   (set tt (tail-string tt))
+   (local inner)
+   (local base)
+   (local depth)
+   (while tt (
+      (match (head-string tt) (
+         ()
+         ('[ (tail(
+            (set inner (inner '[))
+            (set depth (inc depth))
+         )))
+         ('] (
+            (if depth (
+               (set depth (dec depth))
+            ) (
+               (assert-eq( () (tail-string tt) ))
+            ))
+         ))
+         (', (tail(
+            (if depth (
+               (set inner (inner ',))
+            ) (
+               (set inner (parse-typeof (clone-rope inner) ))
+               (if base (
+                  (set base ('[] ( base inner )))
+               ) (
+                  (set base inner)
+               ))
+               (set inner ())
+            ))
+         )))
+         (c (set inner (inner (clone-rope c)) ))
+      ))
+      (set tt (tail-string tt))
+   ))
+   (if base (
+      (set base ('[] ( base (parse-typeof (clone-rope inner )) )))
+   ) (
+      (set base (parse-typeof (clone-rope inner)))
+   ))
+   base
+));
+
+parse-typeof := λ tt . (tail(
+   (local buff)
+   (local base)
+   (if (is-cons tt) (
+      (set base tt)
+      (set tt ())
+   ) ())
+   (while tt (
+      (match (head-string tt) (
+         ()
+         ('[ (
+            (set base (parse-tuple-typeof tt))
+            (set tt ())
+         ))
+         ('< (
+            (set base ( (clone-rope buff) (parse-parameter-typeof tt) ))
+            (set tt ())
+         ))
+         (c (set buff (buff (clone-rope c)) ))
+      ))
+      (set tt (tail-string tt))
+   ))
+   (if base base (clone-rope buff))
+));
+
+is-typeof := λ term tt . (match tt (
+   ()
+   ( Nil (not term) )
+   ( Atom (is-atom term) )
+   ( Cons (is-cons term) )
+   ( (List te) (
+      (if (is-cons term) (
+         (if (is-typeof( (tail term) te )) (
+            (is-typeof( (head term) tt ))
+         ) ())
+      ) (
+         (not term)
+      ))
+   ))
+   ( ('[] ( lt rt )) (
+     (if (is-cons term) (
+        (if (is-typeof( (head term) lt )) (
+           (is-typeof( (tail term) rt ))
+        ) ())
+     ) ())
+   ))
+   ( (l r) (fail (UnknownTypeofType tt)))
+   ( () (fail (UnknownTypeofType tt)))
+   ( label (eq( (head term) label )) )
 ));
