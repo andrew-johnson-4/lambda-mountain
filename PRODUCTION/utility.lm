@@ -279,5 +279,10 @@ assert-not-typeof := λ term tt . (
    ) ())
 );
 
-is-typeof := λ term tt . (
-);
+is-typeof := λ term tt . (match tt (
+   ()
+   ( Nil (not term) )
+   ( Atom (is-atom term) )
+   ( Cons (is-cons term) )
+   (_ (fail (UnknownTypeofType tt)))
+));
