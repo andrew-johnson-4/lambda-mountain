@@ -262,7 +262,7 @@ assert-eq := λ l r . (
 ));
 
 assert-typeof := λ term tt . (
-   (if (is-typeof( term tt )) () (
+   (if (is-typeof( term (parse-typeof tt) )) () (
       (print-s FailedAssertTypeof)(print-s \n)
       (print-s \t)(print-s tt)(print-s \n)
       (print-s \t)(print-s term)(print-s \n)
@@ -271,7 +271,7 @@ assert-typeof := λ term tt . (
 );
 
 assert-not-typeof := λ term tt . (
-   (if (is-typeof( term tt )) (
+   (if (is-typeof( term (parse-typeof tt) )) (
       (print-s FailedAssertNotTypeof)(print-s \n)
       (print-s \t)(print-s tt)(print-s \n)
       (print-s \t)(print-s term)(print-s \n)
@@ -279,11 +279,22 @@ assert-not-typeof := λ term tt . (
    ) ())
 );
 
+parse-typeof := λ tt . tt;
+
 is-typeof := λ term tt . (match tt (
    ()
    ( Nil (not term) )
    ( Atom (is-atom term) )
    ( Cons (is-cons term) )
+   ( (List te) (
+      (if (is-cons term) (
+         (if (is-typeof( (tail term) te )) (
+            (is-typeof( (head term) te ))
+         ) ())
+      ) (
+         (not term)
+      ))
+   ))
    ( (l r) (fail (UnknownTypeofType tt)))
    ( () (fail (UnknownTypeofType tt)))
    ( label (eq( (head term) label )) )

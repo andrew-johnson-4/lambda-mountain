@@ -19,3 +19,9 @@ import PRODUCTION/utility.lm;
 (assert-not-typeof( (StrictExpr ()) Expr ));
 (assert-not-typeof( (StrictExpr ()) Nil ));
 (assert-not-typeof( (StrictExpr ()) Atom ));
+
+(assert-typeof( () (List Atom) ));
+(assert-typeof( () List<Atom> ));
+(assert-typeof( ((() 1) 2) List<Atom> ));
+(assert-not-typeof( ((() 1) 2) List<Cons> ));
+(assert-not-typeof( ((() 1) 2) List<Nil> ));
