@@ -19,6 +19,8 @@ production.s
 production.o
 tmp.s
 tmp
+unit
+unit.s
 *.cmx
 *.cmi
 benchmarks/*.s

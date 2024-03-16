@@ -1,0 +1,78 @@
+
+fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
+   ()
+   ( () () )
+   ( (App( (Literal '.expression) (Variable v) )) (tail(
+      (while ctx (
+         (if (eq( v (head (tail ctx)) )) (
+            (set v (expr::get-expr (tail (tail ctx))))
+         ) ())
+         (set ctx (head ctx))
+      ))
+      v
+   )))
+   ( (App( (Literal '.program) (Variable v) )) (tail(
+      (while ctx (
+         (if (eq( v (head (tail ctx)) )) (
+            (set v (expr::get-prog (tail (tail ctx))))
+         ) ())
+         (set ctx (head ctx))
+      ))
+      v
+   )))
+   ( (Literal v) (
+      (match v (
+         ()
+         (\\[ \[)
+         (\\] \])
+         (\\s \s)
+         (\\t \t)
+         (\\n \n)
+         (u u)
+      ))
+   ))
+   ( (App( l r )) (
+      (fragment-substitute-context( ctx l ))
+      (fragment-substitute-context( ctx r ))
+   ))
+   ( u (fail (UnknownFragmentSubstitution u)))
+));
+
+fragment-apply-context := λctx fragment-rhs e . (match fragment-rhs (
+   ()
+   ( Nil (
+      e
+   ))
+   ( (App( (App( (Literal ':) fe )) ft )) (
+      (fragment-apply-context( ctx fe e ))
+   ))
+   ( (App( (Literal '.program) f )) (
+      (expr::set-prog( e (
+         (expr::get-prog e)
+         (fragment-substitute-context( ctx f ))
+      )))
+   ))
+   ( (App( inner (App( (Literal '.program) f )) )) (
+      (fragment-apply-context(
+         ctx inner
+         (expr::set-prog( e (
+            (expr::get-prog e)
+            (fragment-substitute-context( ctx f ))
+         )))
+      ))
+   ))
+   ( (App( (Literal '.expression) f )) (
+      (expr::set-expr( e (
+         (fragment-substitute-context( ctx f ))
+      )))
+   ))
+   ( (App( inner (App( (Literal '.expression) f )) )) (
+      (fragment-substitute-context(
+         ctx inner
+         (expr::set-expr( e (
+            (fragment-substitute-context( ctx f ))
+         )))
+      ))
+   ))
+   ( u (fail (UnknownSubstituteFragment fragment-rhs)))
+));

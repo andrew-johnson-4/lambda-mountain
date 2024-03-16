@@ -1,4 +1,7 @@
 
+unit-tests:
+	cargo test unit_test_suite -- --nocapture
+
 nostd: prod
 	./production --nostd -o tmp.s STDLIB/default-instruction-set.lm STDLIB/default-primitives.lm STDLIB/default-stdlib.lm STDLIB/default-rules.lm tests/nostd/normal_fib.lm
 	as -o tmp.o tmp.s

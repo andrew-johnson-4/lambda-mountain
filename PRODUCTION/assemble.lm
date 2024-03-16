@@ -25,109 +25,6 @@ assemble-destructure-fragment := λctx lmb args offset . (match lmb (
    ( u (fail (UnrecgonizedDestructureFragment u)))
 ));
 
-assemble-substitute-fragment := λsubs frag e . (match frag (
-   ()
-   ( Nil (
-      e
-   ))
-   ( (App( (App( (Literal ':) fe )) ft )) (
-      (assemble-substitute-fragment( subs fe e ))
-   ))
-   ( (App( (Literal '.program) f )) (
-      (expr::set-prog( e (
-         (expr::get-prog e)
-         (assemble-substitute-fragment-mode( subs Program f ))
-      )))
-   ))
-   ( (App( inner (App( (Literal '.program) f )) )) (
-      (assemble-substitute-fragment(
-         subs inner
-         (expr::set-prog( e (
-            (expr::get-prog e)
-            (assemble-substitute-fragment-mode( subs Program f ))
-         )))
-      ))
-   ))
-   ( (App( (Literal '.expression) f )) (
-      (expr::set-expr( e (
-         (assemble-substitute-fragment-mode( subs Expression f ))
-      )))
-   ))
-   ( (App( inner (App( (Literal '.expression) f )) )) (
-      (assemble-substitute-fragment(
-         subs inner
-         (expr::set-expr( e (
-            (assemble-substitute-fragment-mode( subs Expression f ))
-         )))
-      ))
-   ))
-   ( u (fail (UnknownSubstituteFragment frag)))
-));
-
-assemble-substitute-fragment-mode := λsubs mode frag . (match frag (
-   ()
-   ( () () )
-   ( (App( (Literal '.expression) (Variable v) )) (tail(
-      (while subs (
-         (if (eq( v (head (tail subs)) )) (
-            (set v (expr::get-expr (tail (tail subs))))
-         ) ())
-         (set subs (head subs))
-      ))
-      v
-   )))
-   ( (App( (Literal '.program) (Variable v) )) (tail(
-      (while subs (
-         (if (eq( v (head (tail subs)) )) (
-            (set v (expr::get-prog (tail (tail subs))))
-         ) ())
-         (set subs (head subs))
-      ))
-      v
-   )))
-   ( (Variable v) (tail(
-      (while subs (
-         (if (eq( v (head (tail subs)) )) (
-            (match mode (
-               ()
-               (Expression (
-                  (set v (expr::get-expr (tail (tail subs))))
-               ))
-               (Program (
-                  (set v (expr::get-prog (tail (tail subs))))
-               ))
-               (m (fail (UnexpectedSubstitionMode m)))
-            ))
-         ) ())
-         (set subs (head subs))
-      ))
-      v
-   )))
-   ( (Literal v) (tail(
-      (while subs (
-         (if (eq( v (head (tail subs)) )) (
-            (set v (tail (tail subs)))
-         ) (
-            (set subs (head subs))
-         ))
-      ))
-      (match v (
-         ()
-         (\\[ \[)
-         (\\] \])
-         (\\s \s)
-         (\\t \t)
-         (\\n \n)
-         (u u)
-      ))
-   )))
-   ( (App( l r )) (
-      (assemble-substitute-fragment-mode( subs mode l ))
-      (assemble-substitute-fragment-mode( subs mode r ))
-   ))
-   ( u (fail (UnknownFragmentSubstitution u)))
-));
-
 assemble-apply-fragment := λctx arrow args offset . (tail(
    (local rc)
    (set rc (assemble-destructure-fragment( ctx arrow args offset )))
@@ -162,7 +59,7 @@ assemble-apply-fragment := λctx arrow args offset . (tail(
    (match arrow (
       ()
       ( (Lambda( lhs rhs )) (
-         (set result (assemble-substitute-fragment( rc rhs base )))
+         (set result (fragment-apply-context( rc rhs base )))
          (set result (expr::set-context( result ctx )))
          (set result (expr::set-offset( result offset )))
       ))
