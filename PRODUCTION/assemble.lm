@@ -129,11 +129,26 @@ assemble-substitute-fragment-mode := λsubs mode frag . (match frag (
 assemble-apply-fragment := λctx arrow args offset . (tail(
    (local rc)
    (set rc (assemble-destructure-fragment( ctx arrow args offset )))
+   (local base)
+   (set base (expr::new()))
+   (local rc1)
+   (set rc1 rc)
+   (while rc1 (
+      (print-s (Rc (head (tail rc1))))
+      (print-s (expr::get-prog (tail (tail rc1))))(print-s \n)
+      (set base (expr::set-prog (
+         base
+         ( (expr::get-prog base) (expr::get-prog (tail (tail rc1))) )
+      )))
+      (print-s (NewBase (expr::get-prog base)))
+      (set rc1 (head rc1))
+   ))
    (local result)
    (match arrow (
       ()
       ( (Lambda( lhs rhs )) (
-         (set result (assemble-substitute-fragment( rc rhs (expr::new()) )))
+         (print-s (Base (expr::get-prog base)))(print-s \n)
+         (set result (assemble-substitute-fragment( rc rhs base )))
          (set result (expr::set-context( result ctx )))
          (set result (expr::set-offset( result offset )))
       ))

@@ -7,14 +7,14 @@ print := λ(: x U64). (: (tail(
 
 print := λ(: x I64). (: (tail(
    (let cs (: ( 48u8 49u8 ) U8[2] ))
-   (gensym-label unsigned)
-   (mov( x R15 ))
-   (cmp( 0i64 R15 ))
-   (jge( unsigned ))
-   (label unsigned)
-   (mov( 1u64 RAX )) # write
-   (mov( 1u64 RDI )) # stdout
+#   (gensym-label unsigned)
+#   (mov( x R15 ))
+#   (cmp( 0i64 R15 ))
+#   (jge( unsigned ))
+#   (label unsigned)
+#   (mov( 1u64 RAX )) # write
+#   (mov( 1u64 RDI )) # stdout
    (mov( (& cs) RSI ))
-   (mov( 2u64 RDX )) # length
-   (syscall())
+#   (mov( 2u64 RDX )) # length
+#   (syscall())
 )) Nil);
