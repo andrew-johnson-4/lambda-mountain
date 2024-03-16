@@ -1,6 +1,16 @@
 
 import PRODUCTION/utility.lm;
 
-(assert-eq( LiteralEquality True True ));
+(assert-eq( True True ));
 
-(assert-typeof( 'a String ));
+(assert-typeof( () Nil ));
+(assert-not-typeof( 1 Nil ));
+(assert-not-typeof( (1 2) Nil ));
+
+(assert-typeof( 1 Atom ));
+(assert-not-typeof( () Atom ));
+(assert-not-typeof( (1 2) Atom ));
+
+(assert-typeof( (1 2) Cons ));
+(assert-not-typeof( 1 Cons ));
+(assert-not-typeof( () Cons ));

@@ -252,15 +252,32 @@ is-builtin := λf . (match f (
 
 
 
-assert-eq := λ msg l r . (
-   (if (deep-eq( l r)) () (
-      (print-s AssertNotEqual)(print-s \n)
+assert-eq := λ l r . (
+   (if (deep-eq( l r )) () (
+      (print-s FailedAssertEqual)(print-s \n)
       (print-s \t)(print-s l)(print-s \n)
       (print-s \t)(print-s r)(print-s \n)
-      (print-s \t)(fail msg)
+      (exit 1)
    ))
 ));
 
 assert-typeof := λ term tt . (
-   (fail (TODO Typeof tt))
+   (if (is-typeof( term tt )) () (
+      (print-s FailedAssertTypeof)(print-s \n)
+      (print-s \t)(print-s tt)(print-s \n)
+      (print-s \t)(print-s term)(print-s \n)
+      (exit 1)
+   ))
+);
+
+assert-not-typeof := λ term tt . (
+   (if (is-typeof( term tt )) (
+      (print-s FailedAssertNotTypeof)(print-s \n)
+      (print-s \t)(print-s tt)(print-s \n)
+      (print-s \t)(print-s term)(print-s \n)
+      (exit 1)
+   ) ())
+);
+
+is-typeof := λ term tt . (
 );
