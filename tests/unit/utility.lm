@@ -25,3 +25,8 @@ import PRODUCTION/utility.lm;
 (assert-typeof( ((() 1) 2) List<Atom> ));
 (assert-not-typeof( ((() 1) 2) List<Cons> ));
 (assert-not-typeof( ((() 1) 2) List<Nil> ));
+
+(assert-typeof( () List<[Atom,Nil]> ));
+(assert-typeof( ((() (1 ()) ) (2 ()) ) List<[Atom,Nil]> ));
+(assert-typeof( ((() (1 ()) ) (2 ()) ) List<[Nil,Nil]> ));
+(assert-typeof( ((() (1 ()) ) (2 ()) ) List<[Atom,Atom]> ));
