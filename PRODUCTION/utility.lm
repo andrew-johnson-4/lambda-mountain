@@ -337,7 +337,7 @@ parse-typeof := λ tt . (tail(
       (match (head-string tt) (
          ()
          ('[ (
-            (set base ( (clone-rope buff) (parse-tuple-typeof tt) ))
+            (set base (parse-tuple-typeof tt))
             (set tt ())
          ))
          ('< (
@@ -364,6 +364,13 @@ is-typeof := λ term tt . (match tt (
       ) (
          (not term)
       ))
+   ))
+   ( ('[] ( lt rt )) (
+     (if (is-cons term) (
+        (if (is-typeof( (head term) lt )) (
+           (is-typeof( (tail term) rt ))
+        ) ())
+     ) ())
    ))
    ( (l r) (fail (UnknownTypeofType tt)))
    ( () (fail (UnknownTypeofType tt)))
