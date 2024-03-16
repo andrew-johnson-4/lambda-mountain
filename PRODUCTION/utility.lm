@@ -260,3 +260,7 @@ assert-eq := λ msg l r . (
       (print-s \t)(fail msg)
    ))
 ));
+
+assert-typeof := λ term tt . (
+   (fail (TODO Typeof tt))
+);

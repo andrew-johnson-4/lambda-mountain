@@ -2,3 +2,5 @@
 import PRODUCTION/utility.lm;
 
 (assert-eq( LiteralEquality True True ));
+
+(assert-typeof( 'a String ));
