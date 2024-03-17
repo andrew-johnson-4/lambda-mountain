@@ -12,6 +12,7 @@ import PRODUCTION/typecheck.lm;
 import PRODUCTION/expression.lm;
 import PRODUCTION/codegen-dynamic.lm;
 import PRODUCTION/codegen-strict.lm;
+import PRODUCTION/stack.lm;
 import PRODUCTION/fragment.lm;
 import PRODUCTION/assemble.lm;
 import PRODUCTION/data.lm;

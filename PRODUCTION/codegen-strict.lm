@@ -122,7 +122,7 @@ compile-expr-strict := λctx e offset used . (tail(
                e1
             )))
             ( (App ((Variable fname) arg)) (tail(
-               (set e1 (apply-calling-convention-stack( ctx e fname arg offset used )))
+               (set e1 (stack-call( ctx fname arg offset )))
                e1
             )))
             ( Nil (tail(
