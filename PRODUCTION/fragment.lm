@@ -100,6 +100,7 @@ fragment-apply-direct := λ fragment function-args e-proto . (tail(
       ( (Fragment( _ (Lambda( lhs rhs )) )) (tail(
          (local fctx)
          (set fctx (fragment-destructure-lhs( () lhs function-args )))
+         (assert-typeof( 'fragment-apply-direct::fctx fctx List<StrictExpr> ))
          (local e-seed)
          (set e-seed (expr::new()))
          (set e-seed (expr::set-offset( e-seed (expr::get-offset e-proto) )))
@@ -111,6 +112,7 @@ fragment-apply-direct := λ fragment function-args e-proto . (tail(
 ));
 
 fragment-destructure-lhs := λ ctx lhs args . (tail(
+   (assert-typeof( 'fragment-destructure-lhs::ctx args List<StrictExpr> ))
    (assert-typeof( 'fragment-destructure-lhs::args args List<StrictExpr> ))
    (assert-not-typeof( 'fragment-destructure-lhs::args args Nil ))
    (match lhs (
