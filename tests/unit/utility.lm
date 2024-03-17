@@ -48,3 +48,7 @@ import PRODUCTION/utility.lm;
 
 (assert-typeof( 'tests/unit/utility.lm ( (1 2) () ) [Atom,Atom,Nil] ));
 (assert-not-typeof( 'tests/unit/utility.lm ( (1 2) () ) [Atom,Nil,Nil] ));
+
+(assert-typeof( 'tests/unit/utility.lm 1 Or<[Atom,Nil]> ));
+(assert-typeof( 'tests/unit/utility.lm () Or<[Atom,Nil]> ));
+(assert-not-typeof( 'tests/unit/utility.lm (1 2) Or<[Atom,Nil]> ));
