@@ -27,54 +27,55 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e1 (expr::set-offset( e1 offset )))
                (match (typecheck-lookup-type rhs) (
                   ()
-                  ( (Array( bt btsz )) (tail(
-                     (set btsz (s2i btsz))
-                     (local bti)
-                     (set bti (dec btsz))
-                     (set e3 (expr::new()))
-                     (match rhs (
-                        ()
-                        ( (App( (App( (Literal ':) inner_rhs )) _ )) (tail(
-                           (set rhs inner_rhs)
-                        )))
-                     ))
-                     (while btsz (
-                        (match (get-maybe-function( ctx 'mov (Cons( (And( Constant bt )) LocalVariable )) )) (
-                           ()
-                           ( (Fragment( (Variable _) body )) (
-                              (local sv4)
-                              (set sv4 (fragment-get-local( ctx lname offset )))
-                              (local svoffset)
-                              (match ((i2s btsz) rhs) (
-                                 ()
-                                 ( (1 _) (tail(
-                                    (set e2 (compile-expr-strict( ctx rhs offset Used )))
-                                 )))
-                                 ( (_ (App( baserhs singlerhs )) ) (tail(
-                                    (set rhs baserhs)
-                                    (set e2 (compile-expr-strict( ctx singlerhs offset Used )))
-                                 )))
-                              ))
-                              (set svoffset (i2s (add( bti (s2i(expr::get-expr sv4)) )) ))
-                              (set sv4 (expr::set-expr( sv4 svoffset )))
-                              (fail (TODO AssembleApplyFragment 1)) 
-                              #(set e4 (assemble-apply-fragment( ctx body (App( e2 sv4 )) offset )))
-                              (set e3 (expr::set-frame( e3 (  (expr::get-frame e2) (expr::get-frame e3) (expr::get-frame e4) ))))
-                              (set e3 (expr::set-unframe( e3 (  (expr::get-unframe e2) (expr::get-unframe e3) (expr::get-unframe e4) ))))
-                              (set e3 (expr::set-text( e3 (  (expr::get-text e2) (expr::get-text e3) (expr::get-text e4) ))))
-                              (set e3 (expr::set-data( e3 (  (expr::get-data e2) (expr::get-data e3) (expr::get-data e4) ))))
-                              (set e3 (expr::set-prog( e3 (  (expr::get-prog e2) (expr::get-prog e3) (expr::get-prog e4) ))))
-                              (set e3 (expr::set-context( e3 ctx )))
-                              (set e3 (expr::set-offset( e3 offset )))
-                           ))
-                           ( v (
-                              (fail (ReferenceToUndefinedVariable 'mov (Cons( (And( Constant bt )) LocalVariable )) ))
-                           ))
-                        ))
-                        (set bti (dec bti))
-                        (set btsz (dec btsz))
-                     ))
-                     (set e2 (expr::new()))
+                  ( (Cons( lt rt )) (tail(
+                      (fail (Init Array rhs))
+#                     (set btsz (s2i btsz))
+#                     (local bti)
+#                     (set bti (dec btsz))
+#                     (set e3 (expr::new()))
+#                     (match rhs (
+#                        ()
+#                        ( (App( (App( (Literal ':) inner_rhs )) _ )) (tail(
+#                           (set rhs inner_rhs)
+#                        )))
+#                     ))
+#                     (while btsz (
+#                        (match (get-maybe-function( ctx 'mov (Cons( (And( Constant bt )) LocalVariable )) )) (
+#                           ()
+#                           ( (Fragment( (Variable _) body )) (
+#                              (local sv4)
+#                              (set sv4 (fragment-get-local( ctx lname offset )))
+#                              (local svoffset)
+#                              (match ((i2s btsz) rhs) (
+#                                 ()
+#                                 ( (1 _) (tail(
+#                                    (set e2 (compile-expr-strict( ctx rhs offset Used )))
+#                                 )))
+#                                 ( (_ (App( baserhs singlerhs )) ) (tail(
+#                                    (set rhs baserhs)
+#                                    (set e2 (compile-expr-strict( ctx singlerhs offset Used )))
+#                                 )))
+#                              ))
+#                              (set svoffset (i2s (add( bti (s2i(expr::get-expr sv4)) )) ))
+#                              (set sv4 (expr::set-expr( sv4 svoffset )))
+#                              (fail (TODO AssembleApplyFragment 1)) 
+#                              #(set e4 (assemble-apply-fragment( ctx body (App( e2 sv4 )) offset )))
+#                              (set e3 (expr::set-frame( e3 (  (expr::get-frame e2) (expr::get-frame e3) (expr::get-frame e4) ))))
+#                              (set e3 (expr::set-unframe( e3 (  (expr::get-unframe e2) (expr::get-unframe e3) (expr::get-unframe e4) ))))
+#                              (set e3 (expr::set-text( e3 (  (expr::get-text e2) (expr::get-text e3) (expr::get-text e4) ))))
+#                              (set e3 (expr::set-data( e3 (  (expr::get-data e2) (expr::get-data e3) (expr::get-data e4) ))))
+#                              (set e3 (expr::set-prog( e3 (  (expr::get-prog e2) (expr::get-prog e3) (expr::get-prog e4) ))))
+#                              (set e3 (expr::set-context( e3 ctx )))
+#                              (set e3 (expr::set-offset( e3 offset )))
+#                           ))
+#                           ( v (
+#                              (fail (ReferenceToUndefinedVariable 'mov (Cons( (And( Constant bt )) LocalVariable )) ))
+#                           ))
+#                        ))
+#                        (set bti (dec bti))
+#                        (set btsz (dec btsz))
+#                     ))
+#                     (set e2 (expr::new()))
                   ))) (_ (tail(
                      (local edst)
                      (set edst (expr::new()))

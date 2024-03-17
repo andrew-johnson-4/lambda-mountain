@@ -675,6 +675,12 @@ typecheck-sizeof := λtt . (match tt (
       (if sz () (fail (UnknownSize tt)))
       sz
    )))
+   ( (Cons( lt rt )) (
+      (i2s(add(
+         (s2i(typecheck-sizeof( lt )))
+         (s2i(typecheck-sizeof( rt )))
+      )))
+   ))
    ( (_ _) (fail (TODO Sizeof tt)))
    ( () (fail (TODO Sizeof tt)))
    ( _ (tail(
