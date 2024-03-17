@@ -106,10 +106,6 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e1 (compile-expr-strict( ctx lval offset Unused )))
                e1
             )))
-            ( (App( (Variable 'label) (Variable lname) )) (tail(
-               (set e1 (compile-fragment( ctx e offset used )))
-               e1
-            )))
             ( (App( (Variable 'tail) (App( l r )) )) (tail(
                (set e1 (compile-expr-strict( ctx l offset Unused )))
                (set e2 (compile-expr-strict( (expr::get-context e1) r (expr::get-offset e1) Used )))
@@ -159,115 +155,6 @@ compile-expr-strict := λctx e offset used . (tail(
       ))
    ))
 ));
-
-define-calling-convention-stack := λ ctx fname lmb . (tail(
-   ()
-   (match lmb (
-      ()
-      ( (Lambda( lhs rhs )) (tail(
-         (local e1)
-         (local e2)
-         (local text)
-         (set e1 (define-calling-convention-stack-destructure-args( ctx lhs () )))
-         (local stack_offset)
-         (set stack_offset (expr::get-offset e1))
-         (set stack_offset (i2s(add( (s2i(stack_offset)) (s2i '-8) ))) )
-         (set e2 (compile-expr-strict( (expr::get-context e1) rhs stack_offset Return)))
-         (set text ( text (mangle-global-function( fname lmb )) ': \n ))
-         (set text ( text (expr::get-frame e2) ))
-         (set text ( text (expr::get-prog e2) ))
-         (set text ( text (expr::get-unframe e2) ))
-         (set text ( text (\t 'ret \n) ))
-         (set text ( text (expr::get-text e2) ))
-         (local return)
-         (set return (expr::new()))
-         (set return (expr::set-text( return text )))
-         (set return (expr::set-data( return (expr::get-data e2) )))
-         return
-      )))
-   ))
-));
-
-define-calling-convention-stack-destructure-args := λ ctx lhs offset . (match lhs (
-   ()
-   ( (App( (App( (Literal :) (Variable lname) )) ltype )) (tail(
-      (set ltype (typecheck-infer-type-compound ltype))
-      (local size)
-      (set size (typecheck-sizeof ltype))
-      (local new_offset)
-      (set new_offset (add( offset (inv(s2i size)) )) )
-      (local return)
-      (set return (expr::new()))
-      (set return (expr::set-context( return 
-         ( ctx (StackVariable( lname (i2s new_offset) ltype )) )
-      )))
-      (set return (expr::set-offset( return (i2s new_offset) )))
-      return
-   )))
-   ( (App( more (App( (App( (Literal :) (Variable lname) )) ltype )) )) (tail(
-      (set ltype (typecheck-infer-type-compound ltype))
-      (local size)
-      (set size (typecheck-sizeof ltype))
-      (local new_offset)
-      (set new_offset (add( offset (inv(s2i size)) )) )
-      (set ctx (define-calling-convention-stack-destructure-args( ctx more new_offset )))
-      (local return)
-      (set return (expr::new()))
-      (set return (expr::set-context( return 
-         ( ctx (StackVariable( lname (i2s new_offset) ltype )) )
-      )))
-      (set return (expr::set-offset( return (i2s new_offset) )))
-      return
-   )))
-   ( u (fail (UnknownStackArg lhs)))
-));
-
-compile-fragment := λctx e offset used . (match e (
-   ()
-   ( (StrictExpr _) e )
-   ( (App( (App( (Variable 'as) inner_e )) _ )) (
-      (compile-fragment( ctx inner_e offset used ))
-   ))
-   ( (App( (Variable 'label) (Variable lname) )) (tail(
-      (set e (fragment-get-local( ctx lname offset )))
-      (set e (expr::set-prog( (expr::new()) ((expr::get-expr e) ': \n) )))
-      (set e (expr::set-context( e ctx )))
-      (set e (expr::set-offset( e offset )))
-      e
-   )))
-   ( (App( (Variable op) arg )) (tail(
-      ()
-      (match (get-maybe-function(ctx op (typecheck-lookup-type arg))) (
-         ()
-         ( (Fragment( (Variable _) body )) (tail(
-            ()
-            (fail (TODO AssembleApplyFragment 5)) 
-            #(assemble-apply-fragment( ctx body arg offset ))
-         )))
-         ( v (
-            (fail (ReferenceToUndefinedOperator op (typecheck-lookup-type arg)))
-         ))
-      ))
-   )))
-   ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
-      (set ltype (typecheck-infer-type-compound ltype))
-      (set e (expr::set-expr( (expr::new()) lval )))
-      (set e (expr::set-context( e ctx )))
-      (set e (expr::set-offset( e offset )))
-      e
-   )))
-   ( (Variable v) (tail(
-      ()
-      (fragment-get-local( ctx v offset ))
-   )))
-   ( (Literal val) (tail(
-      (set e (expr::set-expr( (expr::new()) val )))
-      (set e (expr::set-context( e ctx )))
-      (set e (expr::set-offset( e offset )))
-      e
-   )))
-   ( u (fail (UnknownFragment e)))
-);
 
 get-strict-function := λctx v arg_type . (tail(
    (local r)

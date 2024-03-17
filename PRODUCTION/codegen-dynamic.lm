@@ -82,11 +82,6 @@ compile-expr-dynamic := λctx e offset used . (tail(
          (set e1 (declare-local(ctx fname offset)))
          (Expr( (expr::get-frame e1) ((yield-nil()) (expr::get-prog e1)) (expr::get-unframe e1) (expr::get-text e1) (expr::get-data e1) (expr::get-context e1) (expr::get-offset e1) ))
       )))
-      ( (App ((Variable 'label) (Variable lname))) (tail(
-         ()
-         (set e1 (compile-fragment( ctx e offset used )))
-         e1
-      )))
       ( (App ((Variable 'gensym-label) (Variable fname))) (tail(
          (set ctx (ctx (Label( fname (uuid()) )) ))
          (Expr( () () () () () ctx offset ))
