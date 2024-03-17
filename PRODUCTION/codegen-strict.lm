@@ -88,11 +88,12 @@ compile-expr-strict := λctx e offset used . (tail(
                      (set e1 (compile-expr-strict( ctx rhs offset Used )))
                      (set e2 (expr::new()))
                      (set e2 (expr::set-expr( e2 sv-offset )))
+                     (set e2 (expr::set-context( e2 ctx )))
+                     (set e2 (expr::set-offset( e2 offset )))
                      (set e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup-type rhs) LocalVariable )) ((() e1) e2) e2 )))
                   )))
                   ( u (fail( UnexpectedAssignmentLhs lhs u )))
                ))
-               (print-s (Set e3))(print-s \n)
                e3
             )))
             ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
