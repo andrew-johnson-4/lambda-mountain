@@ -1,5 +1,5 @@
 
-expr::new := λ . (StrictExpr(() () () () () () () ()));
+expr::new := λ . (StrictExpr(() () () () () () () 0));
 expr::get-frame := λe . (match e (
    ()
    ((Expr(f p u t d pc off)) f)
@@ -36,8 +36,8 @@ expr::get-context := λe . (match e (
 ));
 expr::get-offset := λe . (match e (
    ()
-   ((Expr(f p u t d pc off)) off)
-   ((StrictExpr(f u t d p e c o)) o)
+   ((Expr(f p u t d pc off)) off )
+   ((StrictExpr(f u t d p e c o)) o )
 ));
 expr::set-frame := λe x . (
    (StrictExpr(

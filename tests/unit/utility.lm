@@ -1,49 +1,50 @@
 
 import PRODUCTION/utility.lm;
 
-(assert-eq( True True ));
+(assert-eq( 'tests/unit/utility.lm True True ));
 
-(assert-eq( (parse-typeof Nil) Nil ));
-(assert-eq( (parse-typeof Atom) Atom ));
-(assert-eq( (parse-typeof List<Atom>) (List Atom) ));
-(assert-eq( (parse-typeof List<List<Atom>>) (List (List Atom)) ));
-(assert-eq( (parse-typeof [Atom,Nil]) ('[] (Atom Nil)) ));
-(assert-eq( (parse-typeof [Atom,Nil,Cons]) ([] (([] (Atom Nil)) Cons)) ));
+(assert-eq( 'tests/unit/utility.lm (parse-typeof Nil) Nil ));
+(assert-eq( 'tests/unit/utility.lm (parse-typeof Nil) Nil ));
+(assert-eq( 'tests/unit/utility.lm (parse-typeof Atom) Atom ));
+(assert-eq( 'tests/unit/utility.lm (parse-typeof List<Atom>) (List Atom) ));
+(assert-eq( 'tests/unit/utility.lm (parse-typeof List<List<Atom>>) (List (List Atom)) ));
+(assert-eq( 'tests/unit/utility.lm (parse-typeof [Atom,Nil]) ('[] (Atom Nil)) ));
+(assert-eq( 'tests/unit/utility.lm (parse-typeof [Atom,Nil,Cons]) ([] (([] (Atom Nil)) Cons)) ));
 
-(assert-eq( (parse-typeof [Atom,List<[Cons,Nil]>]) ([] (Atom (List ([] (Cons Nil))))) ));
+(assert-eq( 'tests/unit/utility.lm (parse-typeof [Atom,List<[Cons,Nil]>]) ([] (Atom (List ([] (Cons Nil))))) ));
 
-(assert-typeof( () Nil ));
-(assert-not-typeof( 1 Nil ));
-(assert-not-typeof( (1 2) Nil ));
+(assert-typeof( 'tests/unit/utility.lm () Nil ));
+(assert-not-typeof( 'tests/unit/utility.lm 1 Nil ));
+(assert-not-typeof( 'tests/unit/utility.lm (1 2) Nil ));
 
-(assert-typeof( 1 Atom ));
-(assert-not-typeof( () Atom ));
-(assert-not-typeof( (1 2) Atom ));
+(assert-typeof( 'tests/unit/utility.lm 1 Atom ));
+(assert-not-typeof( 'tests/unit/utility.lm () Atom ));
+(assert-not-typeof( 'tests/unit/utility.lm (1 2) Atom ));
 
-(assert-typeof( (1 2) Cons ));
-(assert-not-typeof( 1 Cons ));
-(assert-not-typeof( () Cons ));
+(assert-typeof( 'tests/unit/utility.lm (1 2) Cons ));
+(assert-not-typeof( 'tests/unit/utility.lm 1 Cons ));
+(assert-not-typeof( 'tests/unit/utility.lm () Cons ));
 
-(assert-typeof( (StrictExpr ()) StrictExpr ));
-(assert-not-typeof( (StrictExpr ()) Expr ));
-(assert-not-typeof( (StrictExpr ()) Nil ));
-(assert-not-typeof( (StrictExpr ()) Atom ));
+(assert-typeof( 'tests/unit/utility.lm (StrictExpr ()) StrictExpr ));
+(assert-not-typeof( 'tests/unit/utility.lm (StrictExpr ()) Expr ));
+(assert-not-typeof( 'tests/unit/utility.lm (StrictExpr ()) Nil ));
+(assert-not-typeof( 'tests/unit/utility.lm (StrictExpr ()) Atom ));
 
-(assert-typeof( () (List Atom) ));
-(assert-typeof( () List<Atom> ));
-(assert-typeof( ((() 1) 2) List<Atom> ));
-(assert-not-typeof( ((() 1) 2) List<Cons> ));
-(assert-not-typeof( ((() 1) 2) List<Nil> ));
+(assert-typeof( 'tests/unit/utility.lm () (List Atom) ));
+(assert-typeof( 'tests/unit/utility.lm () List<Atom> ));
+(assert-typeof( 'tests/unit/utility.lm ((() 1) 2) List<Atom> ));
+(assert-not-typeof( 'tests/unit/utility.lm ((() 1) 2) List<Cons> ));
+(assert-not-typeof( 'tests/unit/utility.lm ((() 1) 2) List<Nil> ));
 
-(assert-typeof( () List<[Atom,Nil]> ));
-(assert-typeof( ((() (1 ()) ) (2 ()) ) List<[Atom,Nil]> ));
-(assert-not-typeof( ((() (1 ()) ) (2 ()) ) List<[Nil,Nil]> ));
-(assert-not-typeof( ((() (1 ()) ) (2 ()) ) List<[Atom,Atom]> ));
+(assert-typeof( 'tests/unit/utility.lm () List<[Atom,Nil]> ));
+(assert-typeof( 'tests/unit/utility.lm ((() (1 ()) ) (2 ()) ) List<[Atom,Nil]> ));
+(assert-not-typeof( 'tests/unit/utility.lm ((() (1 ()) ) (2 ()) ) List<[Nil,Nil]> ));
+(assert-not-typeof( 'tests/unit/utility.lm ((() (1 ()) ) (2 ()) ) List<[Atom,Atom]> ));
 
-(assert-typeof( () List<List<Atom>> ));
-(assert-typeof( ( () (() '1) ) List<List<Atom>> ));
-(assert-not-typeof( ( () (() '1) ) List<List<Nil>> ));
-(assert-not-typeof( ( () (() '1) ) List<Atom> ));
+(assert-typeof( 'tests/unit/utility.lm () List<List<Atom>> ));
+(assert-typeof( 'tests/unit/utility.lm ( () (() '1) ) List<List<Atom>> ));
+(assert-not-typeof( 'tests/unit/utility.lm ( () (() '1) ) List<List<Nil>> ));
+(assert-not-typeof( 'tests/unit/utility.lm ( () (() '1) ) List<Atom> ));
 
-(assert-typeof( ( (1 2) () ) [Atom,Atom,Nil] ));
-(assert-not-typeof( ( (1 2) () ) [Atom,Nil,Nil] ));
+(assert-typeof( 'tests/unit/utility.lm ( (1 2) () ) [Atom,Atom,Nil] ));
+(assert-not-typeof( 'tests/unit/utility.lm ( (1 2) () ) [Atom,Nil,Nil] ));

@@ -42,7 +42,7 @@ compile-append := λoutput_e gctx e . (tail(
 ));
 
 compile-expr := λctx e offset used . (
-   if config-strict (compile-expr-strict( ctx e offset used ))
+   if config-strict (compile-expr-strict( ctx e (if offset offset 0) used ))
                     (compile-expr-dynamic( ctx e offset used ))
 );
 
@@ -271,9 +271,6 @@ apply-calling-convention-s := λ ctx e fname arg offset used . (tail(
             (set prog ((expr::get-prog e1) (\t 'call \s mangledname \n)))
             (Expr( (expr::get-frame e1) prog (expr::get-unframe e1) (expr::get-text e1) (expr::get-data e1) (expr::get-context e1) (expr::get-offset e1) ))
          )))
-         ( (Fragment( (Variable _) body )) (
-            (assemble-apply-fragment( ctx body arg offset ))
-         ))
          ( () (
             (fail (ReferenceToUndefinedVariable fname (typecheck-lookup-type arg)))
          ))
@@ -308,44 +305,7 @@ get-local := λctx v . (tail(
                ) ()
             )
          ))
-         ( (StackVariable( l offset ltype )) (
-            if r () (
-               if (eq(l v)) (
-                  (local size)
-                  (set size (typecheck-sizeof ltype))
-                  # register allocation = '%r12, '%r13 only for now
-                  (local dst)
-                  (match size (
-                     ()
-                     (1 (set dst ( R12B (And( Constant Reg8 )) )))
-                     (2 (set dst ( R12W (And( Constant Reg16 )) )))
-                     (4 (set dst ( R12D (And( Constant Reg32 )) )))
-                     (8 (set dst ( R12 (And( Constant Reg64 )) )))
-                     (u (fail (InvalidStackVariableSize u)))
-                  ))
-                  (local arg_type)
-                  (set arg_type (Cons( (And( Constant Offset )) (tail dst) )))
-                  (match (get-maybe-function( ctx 'get arg_type )) (
-                     ()
-                     ( (Fragment( fname body )) (tail(
-                        (local arg)
-                        (set arg (
-                           (App(
-                               (App( (App( (Literal :) (Literal offset) ))
-                                  (App( (Literal Constant) (Literal Offset) ))
-                               ))
-                               (App( (App( (Literal :) (Literal (head dst)) )) (Literal (tail dst)) ))
-                           ))
-                        ))
-                        (set r (expr::get-prog (assemble-apply-fragment( ctx body arg () ))))
-                     )))
-                     (u (fail (UndefinedStackGetter 'get arg_type u)))
-                  ))
-               ) ()
-            )
-         ))
          ( (GlobalFunction( _ _ )) () )
-         ( (Fragment( _ _ )) () )
          ( (Label( l luid )) (
             if r () (
                if (eq(l v)) (
