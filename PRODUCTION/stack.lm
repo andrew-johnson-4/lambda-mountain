@@ -20,7 +20,7 @@ stack-call := λ ctx function-name function-args offset . (tail(
          (set e1 (expr::set-offset( e1 (expr::get-offset offset) )))
          (set e1 (expr::set-context( e1 (expr::get-context offset) )))
          (local args)
-         (set args (stack-destructure-args( ctx function-args offset () )))
+         (set args (stack-destructure-args( ctx function-args offset Fragment )))
          (fail (ApplyStackCall args))
 #         (fragment-apply-direct(
 #            (get-strict-function( ctx fname (typecheck-lookup-type arg) ))
@@ -31,6 +31,22 @@ stack-call := λ ctx function-name function-args offset . (tail(
    ))
 ));
 
-stack-destructure-args := λ ctx function-args offset expr-list . (tail(
-   (fail (Destructure function-args))
+stack-destructure-args := λ ctx function-args offset arg-mode . (tail(
+   (assert-typeof( 'stack-destructure-args::arg-mode arg-mode Atom ))
+   (match ( function-args (typecheck-lookup-type function-args) arg-mode ) (
+      ()
+      ( ( (App( fl fr )) (Cons( tl tr )) Fragment ) (tail(
+         (local inner-e)
+         (set inner-e (stack-destructure-args( ctx fl offset Fragment )))
+         (local outer-e)
+         (set outer-e (compile-expr-strict( ctx fr offset Used )))
+         (inner-e outer-e)
+      )))
+      ( ( fa tt Fragment ) (tail(
+         (local outer-e)
+         (set outer-e (compile-expr-strict( ctx fa offset Used )))
+         (() outer-e)
+      )))
+      ( u (fail ('stack-destructure-args u )))
+   ))
 ));
