@@ -2,6 +2,7 @@
 compile-expr-strict := λctx e offset used . (tail(
    (assert-typeof( 'compile-expr-strict::offset offset Atom ))
    (assert-typeof( 'compile-expr-strict::used used Atom ))
+   (print-s ( CompileExpr used e ))(print-s \n)
    (local e1)
    (local e2)
    (local e3)
@@ -388,6 +389,42 @@ get-fragment-local := λctx v offset . (tail(
    ))
    (if r () (
       (fail (ReferenceToUndefinedFragmentVariable v))
+   ))
+   r
+));
+
+get-strict-function := λctx v arg_type . (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
+         ()
+         ( (Fragment( (Variable name) body )) (tail(
+            ()
+            (if r () (
+               if (eq(name v)) (
+                  (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
+                     (set r (Fragment( (Variable name) body )))
+                  ) ())
+               ) ()
+            ))
+         )))
+         ( (GlobalVariable name) (
+            if r () (
+               if (eq(name v)) (
+                  (set r (GlobalVariable (label-case name)))
+               ) ()
+            )
+         ))
+         ( (StackVariable(name offset type)) (
+            if r () (
+               if (eq(name v)) (
+                  (set r (StackVariable( name offset type )))
+               ) ()
+            )
+         ))
+         ( u (fail( UnknownStrictFunction u )))
+      ))
+      (set ctx (head ctx))
    ))
    r
 ));

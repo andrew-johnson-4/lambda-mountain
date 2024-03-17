@@ -81,5 +81,11 @@ fragment-apply-context := λctx fragment-rhs e . (match fragment-rhs (
 fragment-apply := λ ctx function-name function-type function-args . (tail(
    (assert-typeof( 'fragment-apply::function-name function-name Atom ))
    (assert-typeof( 'fragment-apply::function-args function-args List<StrictExpr> ))
-   (fail (TODO FragmentApply function-name function-type))
+   (match (get-strict-function( ctx function-name function-type )) (
+      ()
+      ( (Fragment( _ fbody )) (
+         (fail (TODO FragmentApply function-name function-type fbody))
+      ))
+      ( u (fail (UnknownStrictFunction function-name function-type)))
+   ))
 ));
