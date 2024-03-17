@@ -171,6 +171,16 @@ get-strict-function := λctx v arg_type . (tail(
                ) ()
             ))
          )))
+         ( (GlobalFunction( name body )) (tail(
+            ()
+            (if r () (
+               if (eq(name v)) (
+                  (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
+                     (set r (Fragment( (Variable name) body )))
+                  ) ())
+               ) ()
+            ))
+         )))
          ( (GlobalVariable name) (
             if r () (
                if (eq(name v)) (
