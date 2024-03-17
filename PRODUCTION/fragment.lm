@@ -38,48 +38,151 @@ fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
    ( u (fail (UnknownFragmentSubstitution u)))
 ));
 
-fragment-apply-context := λctx fragment-rhs e . (match fragment-rhs (
-   ()
-   ( Nil (
-      e
-   ))
-   ( (App( (App( (Literal ':) fe )) ft )) (
-      (fragment-apply-context( ctx fe e ))
-   ))
-   ( (App( (Literal '.program) f )) (
-      (expr::set-prog( e (
-         (expr::get-prog e)
-         (fragment-substitute-context( ctx f ))
-      )))
-   ))
-   ( (App( inner (App( (Literal '.program) f )) )) (
-      (fragment-apply-context(
-         ctx inner
+fragment-apply-context := λctx fragment-rhs e . (tail(
+   (assert-typeof( 'fragment-apply-context::ctx ctx List<[Atom,StrictExpr]> ))
+   (assert-typeof( 'fragment-apply-context::e e StrictExpr ))
+   (match fragment-rhs (
+      ()
+      ( Nil (
+         e
+      ))
+      ( (App( (App( (Literal ':) fe )) ft )) (
+         (fragment-apply-context( ctx fe e ))
+      ))
+      ( (App( (Literal '.program) f )) (
          (expr::set-prog( e (
             (expr::get-prog e)
             (fragment-substitute-context( ctx f ))
          )))
       ))
-   ))
-   ( (App( (Literal '.expression) f )) (
-      (expr::set-expr( e (
-         (fragment-substitute-context( ctx f ))
-      )))
-   ))
-   ( (App( inner (App( (Literal '.expression) f )) )) (
-      (fragment-substitute-context(
-         ctx inner
+      ( (App( inner (App( (Literal '.program) f )) )) (
+         (fragment-apply-context(
+            ctx inner
+            (expr::set-prog( e (
+               (expr::get-prog e)
+               (fragment-substitute-context( ctx f ))
+            )))
+         ))
+      ))
+      ( (App( (Literal '.expression) f )) (
          (expr::set-expr( e (
             (fragment-substitute-context( ctx f ))
          )))
       ))
+      ( (App( inner (App( (Literal '.expression) f )) )) (
+         (fragment-apply-context(
+            ctx inner
+            (expr::set-expr( e (
+               (fragment-substitute-context( ctx f ))
+            )))
+         ))
+      ))
+      ( u (fail (UnknownSubstituteFragment fragment-rhs)))
    ))
-   ( u (fail (UnknownSubstituteFragment fragment-rhs)))
 ));
 
-# ( [(Atom,StrictExpr)], Atom, Type, [StrictExpr] ) -> StrictExpr
-fragment-apply := λ ctx function-name function-type function-args . (tail(
+fragment-apply := λ ctx function-name function-type function-args e-proto . (tail(
+   (assert-typeof( 'fragment-apply::e-proto e-proto StrictExpr ))
    (assert-typeof( 'fragment-apply::function-name function-name Atom ))
    (assert-typeof( 'fragment-apply::function-args function-args List<StrictExpr> ))
-   (fail (TODO FragmentApply function-name function-type))
+   (fragment-apply-direct(
+      (get-strict-function( ctx function-name function-type ))
+      function-args e-proto
+   ))
+));
+
+fragment-chain := λ fragment-ctx e . (tail(
+   (assert-typeof( 'fragment-chain::fragment-ctx fragment-ctx List<[Atom,StrictExpr]> ))
+   (assert-typeof( 'fragment-chain::e e StrictExpr ))
+   (while fragment-ctx (tail(
+      (set e (expr::chain( (tail(tail fragment-ctx)) e )))
+      (set fragment-ctx (head fragment-ctx))
+   )))
+   e
+));
+
+fragment-apply-direct := λ fragment function-args e-proto . (tail(
+   (assert-typeof( 'fragment-apply-direct::fragment fragment Fragment ))
+   (assert-typeof( 'fragment-apply-direct::function-args function-args List<StrictExpr> ))
+   (assert-typeof( 'fragment-apply-direct::e-proto e-proto StrictExpr ))
+   (match fragment (
+      ()
+      ( (Fragment( _ (Lambda( lhs rhs )) )) (tail(
+         (local fctx)
+         (set fctx (fragment-destructure-lhs( () lhs function-args )))
+         (assert-typeof( 'fragment-apply-direct::fctx fctx List<[Atom,StrictExpr]> ))
+         (local e-seed)
+         (set e-seed (expr::new()))
+         (set e-seed (expr::set-offset( e-seed (expr::get-offset e-proto) )))
+         (set e-seed (expr::set-context( e-seed (expr::get-context e-proto) )))
+         (local e-return)
+         (set e-return (fragment-apply-context( fctx rhs e-seed )))
+         (set e-return (fragment-chain( fctx e-return )))
+         e-return
+      )))
+      ( u (fail (InvalidFragment fragment)))
+   ))
+));
+
+fragment-destructure-lhs := λ ctx lhs args . (tail(
+   (assert-typeof( 'fragment-destructure-lhs::ctx ctx List<[Atom,StrictExpr]> ))
+   (assert-typeof( 'fragment-destructure-lhs::args args List<StrictExpr> ))
+   (assert-not-typeof( 'fragment-destructure-lhs::args args Nil ))
+   (local return)
+   (set return (match lhs (
+      ()
+      ( Nil (tail(
+         (set ctx ())
+         ctx
+      )))
+      ( (App( (App( (Literal ':) (Variable vname) )) vtype )) (tail(
+         (set ctx ( ctx (vname (tail args)) ))
+         ctx
+      )))
+      ( (App( inner (App( (App( (Literal ':) (Variable vname) )) vtype )) )) (tail(
+         (set ctx ( ctx (vname (tail args)) ))
+         (set ctx (fragment-destructure-lhs( ctx inner (head args) )))
+         ctx
+      )))
+      ( u (fail (PatternDefaultCase 'fragment-destructure-lhs u)))
+   )))
+   (assert-typeof( 'fragment-destructure-lhs::return return List<[Atom,StrictExpr]> ))
+   return
+));
+
+fragment-get-local := λctx v offset . (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
+         ()
+         ( (Label(l uid)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (expr::new()) )
+                  (set r (expr::set-expr( r uid )))
+                  (set r (expr::set-context( r ctx )))
+                  (set r (expr::set-offset( r offset )))
+                  r
+               ) ()
+            )
+         ))
+         ( (StackVariable(l loffset ltype)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (expr::new()) )
+                  (set r (expr::set-expr( r loffset )))
+                  (set r (expr::set-context( r ctx )))
+                  (set r (expr::set-offset( r offset )))
+                  r
+               ) ()
+            )
+         ))
+         ( _ () )
+      ))
+      (set ctx (head ctx))
+   ))
+   (if r () (
+      (fail (ReferenceToUndefinedFragmentVariable v))
+   ))
+   r
 ));

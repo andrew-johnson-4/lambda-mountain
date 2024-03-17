@@ -13,7 +13,7 @@ tokenize := λtext . (tail(
    (local in_comment)
    (local char)
 
-   (while text (
+   (while (head-string text) (
       (set char (head-string text))
       (set text (tail-string text))
    (match char (      

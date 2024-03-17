@@ -1,0 +1,51 @@
+
+
+stack-call := λ ctx function-name function-args offset . (tail(
+   (assert-typeof( 'stack-call::function-name function-name Atom ))
+   (assert-typeof( 'stack-call::offset offset Atom ))
+   (match (get-strict-function(ctx function-name (typecheck-lookup-type function-args))) (
+      ()
+      ( (GlobalFunction mangledname) (tail(
+         (fail (TODO Call Global))
+         #(set e1 (destructure-calling-convention-stack( ctx e fname arg offset used )))
+         #(expr::set-prog( e1 (
+         #   (expr::get-prog e1) (enter-function()) (expr::get-expr e1) (\t 'call \s mangledname \n)
+         #     (\t 'mov \s '%rbp, \s '%rsp              \n
+         #      \t 'pop \s '%rbp                        \n)
+         #)))
+      )))
+      ( (Fragment( vname body )) (tail(
+         (local e1)
+         (set e1 (expr::new()))
+         (set e1 (expr::set-offset( e1 offset )))
+         (set e1 (expr::set-context( e1 ctx )))
+         (local args)
+         (set args (stack-destructure-args( ctx function-args offset Fragment )))
+         (fragment-apply-direct(
+            (get-strict-function( ctx function-name (typecheck-lookup-type function-args) ))
+            args e1
+         ))
+      )))
+      ( l (fail (UnknownFunctionCall function-name l)) )
+   ))
+));
+
+stack-destructure-args := λ ctx function-args offset arg-mode . (tail(
+   (assert-typeof( 'stack-destructure-args::arg-mode arg-mode Atom ))
+   (match ( function-args (typecheck-lookup-type function-args) arg-mode ) (
+      ()
+      ( ( (App( fl fr )) (Cons( tl tr )) Fragment ) (tail(
+         (local inner-e)
+         (set inner-e (stack-destructure-args( ctx fl offset Fragment )))
+         (local outer-e)
+         (set outer-e (compile-expr-strict( ctx fr offset Used )))
+         (inner-e outer-e)
+      )))
+      ( ( fa tt Fragment ) (tail(
+         (local outer-e)
+         (set outer-e (compile-expr-strict( ctx fa offset Used )))
+         (() outer-e)
+      )))
+      ( u (fail ('stack-destructure-args u )))
+   ))
+));

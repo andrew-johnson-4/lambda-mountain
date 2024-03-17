@@ -146,6 +146,7 @@ assemble := λprogram . (
          (enter-function())
          (expr::get-frame main_pd)
          (expr::get-prog main_pd)
+         (expr::get-unframe main_pd)
          (exit-cleanup())
          (head output_pd)
          (expr::get-text main_pd)

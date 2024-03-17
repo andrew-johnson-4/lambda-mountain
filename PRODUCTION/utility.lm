@@ -393,6 +393,11 @@ is-typeof := λ term tt . (match tt (
          (not term)
       ))
    ))
+   ( (Or( ('[]( lt rt )) )) (
+      (if (is-typeof( term lt )) True (
+          (is-typeof( term rt ))
+      ))
+   ))
    ( ('[] ( lt rt )) (
      (if (is-cons term) (
         (if (is-typeof( (head term) lt )) (
