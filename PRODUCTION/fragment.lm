@@ -89,8 +89,8 @@ fragment-apply := λ ctx function-name function-type function-args e-proto . (ta
 
 fragment-apply-direct := λ fragment function-args e-proto . (tail(
    (assert-typeof( 'fragment-apply-direct::fragment fragment Fragment ))
-   (assert-typeof( 'fragment-apply-direct::e-proto e-proto StrictExpr ))
    (assert-typeof( 'fragment-apply-direct::function-args function-args List<StrictExpr> ))
+   (assert-typeof( 'fragment-apply-direct::e-proto e-proto StrictExpr ))
    (match fragment (
       ()
       ( (Fragment( _ (Lambda( lhs rhs )) )) (tail(

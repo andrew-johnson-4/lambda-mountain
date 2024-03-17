@@ -97,6 +97,12 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e1 (expr::set-offset( e1 offset )))
                e1
             )))
+            ( (Literal lval) (tail(
+               (set e1 (expr::set-expr( (expr::new ()) lval )))
+               (set e1 (expr::set-context( e1 ctx )))
+               (set e1 (expr::set-offset( e1 offset )))
+               e1
+            )))
             ( (App( (App( (Literal :) lval )) ltype )) (tail(
                (set e1 (compile-expr-strict( ctx lval offset Unused )))
                e1
