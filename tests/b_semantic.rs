@@ -91,7 +91,7 @@ fn compile_production() {
    };
 }
 
-fn run_compile_production(mode:&str, target: &str) -> String {
+fn run_compile_production(mode:&str, target: &str, stdlib: bool) -> String {
    rm("tmp.s");
    rm("tmp.o");
    rm("a.out");
@@ -111,6 +111,7 @@ fn run_compile_production(mode:&str, target: &str) -> String {
                       .wait_with_output()
                       .expect("failed to wait for process")
    } else {
+      if stdlib {
                Command::new("timeout")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
@@ -127,6 +128,25 @@ fn run_compile_production(mode:&str, target: &str) -> String {
                       .expect("failed to execute process")
                       .wait_with_output()
                       .expect("failed to wait for process")
+      } else {
+               Command::new("timeout")
+                      .stdout(std::process::Stdio::piped())
+                      .stderr(std::process::Stdio::piped())
+                      .arg("5")
+                      .arg("./production")
+                      .arg(mode)
+                      .arg("-o")
+                      .arg("tmp.s")
+                      .arg("STDLIB/default-rules.lm")
+                      .arg("STDLIB/default-instruction-set.lm")
+                      .arg("STDLIB/default-primitives.lm")
+                      .arg("STDLIB/default-stdlib.lm")
+                      .arg(target)
+                      .spawn()
+                      .expect("failed to execute process")
+                      .wait_with_output()
+                      .expect("failed to wait for process")
+      }
    };
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
@@ -189,7 +209,7 @@ fn testsuite() {
       let expected = std::fs::read_to_string(path.clone() + ".out")
                     .expect(&format!("Could not load expected output {}.out", path));
       let expected = expected.trim().to_string();
-      let actual = run_compile_production("--compile", &path);
+      let actual = run_compile_production("--compile", &path, false);
       let actual = actual.trim().to_string();
       if expected != actual {
          failures.push(( "--compile", path, expected, actual ));
@@ -200,7 +220,18 @@ fn testsuite() {
       let expected = std::fs::read_to_string(path.clone() + ".out")
                     .expect(&format!("Could not load expected output {}.out", path));
       let expected = expected.trim().to_string();
-      let actual = run_compile_production("--nostd", &path);
+      let actual = run_compile_production("--nostd", &path, false);
+      let actual = actual.trim().to_string();
+      if expected != actual {
+         failures.push(( "--nostd", path, expected, actual ));
+      }
+   }
+   for entry in glob("tests/strict/*.lm").unwrap() {
+      let path = entry.unwrap().display().to_string();
+      let expected = std::fs::read_to_string(path.clone() + ".out")
+                    .expect(&format!("Could not load expected output {}.out", path));
+      let expected = expected.trim().to_string();
+      let actual = run_compile_production("--nostd", &path, true);
       let actual = actual.trim().to_string();
       if expected != actual {
          failures.push(( "--nostd", path, expected, actual ));
