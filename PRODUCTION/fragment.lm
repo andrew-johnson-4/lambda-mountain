@@ -78,7 +78,8 @@ fragment-apply-context := λctx fragment-rhs e . (match fragment-rhs (
 ));
 
 # ( [(Atom,StrictExpr)], Atom, Type, [StrictExpr] ) -> StrictExpr
-fragment-apply := λ ctx function-name function-type function-args . (tail(
+fragment-apply := λ ctx function-name function-type function-args e-proto . (tail(
+   (assert-typeof( 'fragment-apply::e-proto e-proto StrictExpr ))
    (assert-typeof( 'fragment-apply::function-name function-name Atom ))
    (assert-typeof( 'fragment-apply::function-args function-args List<StrictExpr> ))
    (match (get-strict-function( ctx function-name function-type )) (
@@ -86,7 +87,11 @@ fragment-apply := λ ctx function-name function-type function-args . (tail(
       ( (Fragment( _ (Lambda( lhs rhs )) )) (
          (local fctx)
          (set fctx (fragment-destructure-lhs( () lhs function-args )))
-         (fail (TODO FragmentApply function-name function-type lhs ))
+         (local e-seed)
+         (set e-seed (expr::new()))
+         (set e-seed (expr::set-offset( e-seed (expr::get-offset e-proto) )))
+         (set e-seed (expr::set-context( e-seed (expr::get-context e-proto) )))
+         (fragment-apply-context( fctx rhs e-seed ))
       ))
       ( u (fail (UnknownStrictFunction function-name function-type)))
    ))

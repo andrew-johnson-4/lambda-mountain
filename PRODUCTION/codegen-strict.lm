@@ -10,7 +10,7 @@ compile-expr-strict := λctx e offset used . (tail(
       ()
       (Return (tail(
          (set e1 (compile-expr-strict( ctx e offset Used )))
-         (fragment-apply( ctx 'cdecl::return (typecheck-lookup-type e) e1 ))
+         (fragment-apply( ctx 'cdecl::return (typecheck-lookup-type e) e1 e1 ))
       )))
       (_ (
          (match e (
@@ -76,8 +76,11 @@ compile-expr-strict := λctx e offset used . (tail(
                      ))
                      (set e2 (expr::new()))
                   ))) (_ (
+                     (local edst)
+                     (set edst (expr::new()))
+                     (set edst (expr::set-expr( edst offset )))
                      (set e2 (compile-expr-strict( ctx rhs offset Used )))
-                     (fragment-apply( ctx 'mov (Cons( (typecheck-lookup-type rhs) LocalVariable )) (() e2) ))
+                     (fragment-apply( ctx 'mov (Cons( (typecheck-lookup-type rhs) LocalVariable )) ((() e2) edst) e2 ))
                   ))
                ))
                (set e3 (expr::set-frame( e3 (  (expr::get-frame e1) (expr::get-frame e2) (expr::get-frame e3) ))))
