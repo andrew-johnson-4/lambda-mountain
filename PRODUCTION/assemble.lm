@@ -25,48 +25,6 @@ assemble-destructure-fragment := λctx lmb args offset . (match lmb (
    ( u (fail (UnrecgonizedDestructureFragment u)))
 ));
 
-assemble-apply-fragment := λctx arrow args offset . (tail(
-   (local rc)
-   (set rc (assemble-destructure-fragment( ctx arrow args offset )))
-   (local base)
-   (set base (expr::new()))
-   (local rc1)
-   (set rc1 rc)
-   (while rc1 (
-      (set base (expr::set-prog (
-         base
-         ( (expr::get-prog base) (expr::get-prog (tail (tail rc1))) )
-      )))
-      (set base (expr::set-data (
-         base
-         ( (expr::get-data base) (expr::get-data (tail (tail rc1))) )
-      )))
-      (set base (expr::set-text (
-         base
-         ( (expr::get-text base) (expr::get-text (tail (tail rc1))) )
-      )))
-      (set base (expr::set-frame (
-         base
-         ( (expr::get-frame base) (expr::get-frame (tail (tail rc1))) )
-      )))
-      (set base (expr::set-unframe (
-         base
-         ( (expr::get-unframe base) (expr::get-unframe (tail (tail rc1))) )
-      )))
-      (set rc1 (head rc1))
-   ))
-   (local result)
-   (match arrow (
-      ()
-      ( (Lambda( lhs rhs )) (
-         (set result (fragment-apply-context( rc rhs base )))
-         (set result (expr::set-context( result ctx )))
-         (set result (expr::set-offset( result offset )))
-      ))
-   ))
-   result
-));
-
 assemble := λprogram . (
    (local target)
    (set target 'tmp.s)

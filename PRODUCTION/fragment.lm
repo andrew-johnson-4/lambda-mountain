@@ -78,7 +78,8 @@ fragment-apply-context := λctx fragment-rhs e . (match fragment-rhs (
 ));
 
 # ( [(String,StrictExpr)], String, Type, [StrictExpr] ) -> StrictExpr
-fragment-apply := λctx function-name function-type function-args . (tail(
-   (assert-typeof( ctx List<[Atom,StrictExpr]> ))
+fragment-apply := λ function-name function-type function-args . (tail(
+   (assert-typeof( 'fragment-apply::function-name function-name String ))
+   (assert-typeof( 'fragment-apply::function-args function-args List<StrictExpr> ))
    (fail (TODO FragmentApply function-name function-type))
 ));

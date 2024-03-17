@@ -10,16 +10,7 @@ compile-expr-strict := λctx e offset used . (tail(
       ()
       (Return (tail(
          (set e1 (compile-expr-strict( ctx e offset Used )))
-         (match (get-maybe-function(ctx 'cdecl::return (typecheck-lookup-type e))) (
-            ()
-            ( (Fragment( (Variable _) body )) (tail(
-               (set e2 (assemble-apply-fragment( ctx body e1 offset )))
-               e2
-            )))
-            ( v (
-               (fail (ReferenceToUndefinedVariable 'cdecl::return (typecheck-lookup-type e)))
-            ))
-         ))
+         (fragment-apply( 'cdecl::return (typecheck-lookup-type e) e1 ))
       )))
       (_ (
          (match e (
@@ -66,7 +57,8 @@ compile-expr-strict := λctx e offset used . (tail(
                               ))
                               (set svoffset (i2s (add( bti (s2i(expr::get-expr sv4)) )) ))
                               (set sv4 (expr::set-expr( sv4 svoffset )))
-                              (set e4 (assemble-apply-fragment( ctx body (App( e2 sv4 )) offset )))
+                              (fail (TODO AssembleApplyFragment 1)) 
+                              #(set e4 (assemble-apply-fragment( ctx body (App( e2 sv4 )) offset )))
                               (set e3 (expr::set-frame( e3 (  (expr::get-frame e2) (expr::get-frame e3) (expr::get-frame e4) ))))
                               (set e3 (expr::set-unframe( e3 (  (expr::get-unframe e2) (expr::get-unframe e3) (expr::get-unframe e4) ))))
                               (set e3 (expr::set-text( e3 (  (expr::get-text e2) (expr::get-text e3) (expr::get-text e4) ))))
@@ -88,7 +80,8 @@ compile-expr-strict := λctx e offset used . (tail(
                      (match (get-maybe-function( ctx 'mov (Cons( (typecheck-lookup-type rhs) LocalVariable )) )) (
                         ()
                         ( (Fragment( (Variable _) body )) (
-                            (set e3 (assemble-apply-fragment( ctx body (App( e2 (Variable lname) )) offset )))
+                            (fail (TODO AssembleApplyFragment 2)) 
+                            #(set e3 (assemble-apply-fragment( ctx body (App( e2 (Variable lname) )) offset )))
                         ))
                         ( v (
                            (fail (ReferenceToUndefinedVariable 'mov (Cons( (typecheck-lookup-type rhs) LocalVariable )) ))
@@ -178,7 +171,8 @@ apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
       )))
       ( (Fragment( vname body )) (tail(
          ()
-         (set e (assemble-apply-fragment( ctx body arg offset )))
+         (fail (TODO AssembleApplyFragment 3)) 
+         #(set e (assemble-apply-fragment( ctx body arg offset )))
          e
       )))
       ( (StackVariable vname) (tail(
@@ -230,7 +224,8 @@ destructure-push-stack := λ ctx arg offset . (match arg (
             (set e1 (compile-expr-strict( ctx arg offset Used )))
             (local e2)
             (set e2 (expr::set-expr( (expr::new()) (expr::get-expr e1) )))
-            (set e2 (assemble-apply-fragment( ctx body e2 offset )))
+            (fail (TODO AssembleApplyFragment 4)) 
+            #(set e2 (assemble-apply-fragment( ctx body e2 offset )))
             (set e1 (expr::set-expr( e1 (expr::get-prog e2) )))
             e1
          )))
@@ -341,7 +336,8 @@ compile-fragment := λctx e offset used . (match e (
          ()
          ( (Fragment( (Variable _) body )) (tail(
             ()
-            (assemble-apply-fragment( ctx body arg offset ))
+            (fail (TODO AssembleApplyFragment 5)) 
+            #(assemble-apply-fragment( ctx body arg offset ))
          )))
          ( v (
             (fail (ReferenceToUndefinedOperator op (typecheck-lookup-type arg)))
