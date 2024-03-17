@@ -38,43 +38,47 @@ fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
    ( u (fail (UnknownFragmentSubstitution u)))
 ));
 
-fragment-apply-context := λctx fragment-rhs e . (match fragment-rhs (
-   ()
-   ( Nil (
-      e
-   ))
-   ( (App( (App( (Literal ':) fe )) ft )) (
-      (fragment-apply-context( ctx fe e ))
-   ))
-   ( (App( (Literal '.program) f )) (
-      (expr::set-prog( e (
-         (expr::get-prog e)
-         (fragment-substitute-context( ctx f ))
-      )))
-   ))
-   ( (App( inner (App( (Literal '.program) f )) )) (
-      (fragment-apply-context(
-         ctx inner
+fragment-apply-context := λctx fragment-rhs e . (tail(
+   (assert-typeof( 'fragment-apply-context::ctx ctx List<StrictExpr> ))
+   (assert-typeof( 'fragment-apply-context::e e StrictExpr ))
+   (match fragment-rhs (
+      ()
+      ( Nil (
+         e
+      ))
+      ( (App( (App( (Literal ':) fe )) ft )) (
+         (fragment-apply-context( ctx fe e ))
+      ))
+      ( (App( (Literal '.program) f )) (
          (expr::set-prog( e (
             (expr::get-prog e)
             (fragment-substitute-context( ctx f ))
          )))
       ))
-   ))
-   ( (App( (Literal '.expression) f )) (
-      (expr::set-expr( e (
-         (fragment-substitute-context( ctx f ))
-      )))
-   ))
-   ( (App( inner (App( (Literal '.expression) f )) )) (
-      (fragment-substitute-context(
-         ctx inner
+      ( (App( inner (App( (Literal '.program) f )) )) (
+         (fragment-apply-context(
+            ctx inner
+            (expr::set-prog( e (
+               (expr::get-prog e)
+               (fragment-substitute-context( ctx f ))
+            )))
+         ))
+      ))
+      ( (App( (Literal '.expression) f )) (
          (expr::set-expr( e (
             (fragment-substitute-context( ctx f ))
          )))
       ))
+      ( (App( inner (App( (Literal '.expression) f )) )) (
+         (fragment-substitute-context(
+            ctx inner
+            (expr::set-expr( e (
+               (fragment-substitute-context( ctx f ))
+            )))
+         ))
+      ))
+      ( u (fail (UnknownSubstituteFragment fragment-rhs)))
    ))
-   ( u (fail (UnknownSubstituteFragment fragment-rhs)))
 ));
 
 fragment-apply := λ ctx function-name function-type function-args e-proto . (tail(
@@ -125,4 +129,41 @@ fragment-destructure-lhs := λ ctx lhs args . (tail(
       )))
       ( u (fail (PatternDefaultCase 'fragment-destructure-lhs u)))
    ))
+));
+
+fragment-get-local := λctx v offset . (tail(
+   (local r)
+   (while ctx (
+      (match (tail ctx) (
+         ()
+         ( (Label(l uid)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (expr::new()) )
+                  (set r (expr::set-expr( r uid )))
+                  (set r (expr::set-context( r ctx )))
+                  (set r (expr::set-offset( r offset )))
+                  r
+               ) ()
+            )
+         ))
+         ( (StackVariable(l loffset ltype)) (
+            if r () (
+               if (eq(l v)) (
+                  (set r (expr::new()) )
+                  (set r (expr::set-expr( r loffset )))
+                  (set r (expr::set-context( r ctx )))
+                  (set r (expr::set-offset( r offset )))
+                  r
+               ) ()
+            )
+         ))
+         ( _ () )
+      ))
+      (set ctx (head ctx))
+   ))
+   (if r () (
+      (fail (ReferenceToUndefinedFragmentVariable v))
+   ))
+   r
 ));

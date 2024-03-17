@@ -43,7 +43,7 @@ compile-expr-strict := λctx e offset used . (tail(
                            ()
                            ( (Fragment( (Variable _) body )) (
                               (local sv4)
-                              (set sv4 (get-fragment-local( ctx lname offset )))
+                              (set sv4 (fragment-get-local( ctx lname offset )))
                               (local svoffset)
                               (match ((i2s btsz) rhs) (
                                  ()
@@ -137,6 +137,10 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e1 (expr::set-offset( e1 offset )))
                e1
             )))
+            ( (Variable v) (tail(
+               (set e1 (fragment-get-local( ctx v offset )))
+               e1
+            )))
             ( (App (l r)) (tail(
                (if (eq( used Used )) (
                   (fail (TODO Return Strict Cons e))
@@ -226,7 +230,7 @@ compile-fragment := λctx e offset used . (match e (
       (compile-fragment( ctx inner_e offset used ))
    ))
    ( (App( (Variable 'label) (Variable lname) )) (tail(
-      (set e (get-fragment-local( ctx lname offset )))
+      (set e (fragment-get-local( ctx lname offset )))
       (set e (expr::set-prog( (expr::new()) ((expr::get-expr e) ': \n) )))
       (set e (expr::set-context( e ctx )))
       (set e (expr::set-offset( e offset )))
@@ -255,7 +259,7 @@ compile-fragment := λctx e offset used . (match e (
    )))
    ( (Variable v) (tail(
       ()
-      (get-fragment-local( ctx v offset ))
+      (fragment-get-local( ctx v offset ))
    )))
    ( (Literal val) (tail(
       (set e (expr::set-expr( (expr::new()) val )))
@@ -265,43 +269,6 @@ compile-fragment := λctx e offset used . (match e (
    )))
    ( u (fail (UnknownFragment e)))
 );
-
-get-fragment-local := λctx v offset . (tail(
-   (local r)
-   (while ctx (
-      (match (tail ctx) (
-         ()
-         ( (Label(l uid)) (
-            if r () (
-               if (eq(l v)) (
-                  (set r (expr::new()) )
-                  (set r (expr::set-expr( r uid )))
-                  (set r (expr::set-context( r ctx )))
-                  (set r (expr::set-offset( r offset )))
-                  r
-               ) ()
-            )
-         ))
-         ( (StackVariable(l loffset ltype)) (
-            if r () (
-               if (eq(l v)) (
-                  (set r (expr::new()) )
-                  (set r (expr::set-expr( r loffset )))
-                  (set r (expr::set-context( r ctx )))
-                  (set r (expr::set-offset( r offset )))
-                  r
-               ) ()
-            )
-         ))
-         ( _ () )
-      ))
-      (set ctx (head ctx))
-   ))
-   (if r () (
-      (fail (ReferenceToUndefinedFragmentVariable v))
-   ))
-   r
-));
 
 get-strict-function := λctx v arg_type . (tail(
    (local r)

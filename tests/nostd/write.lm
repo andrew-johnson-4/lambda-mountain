@@ -3,7 +3,7 @@ main := (
    (let cs 108u8)
    (mov( 1u64 RAX )) # write
    (mov( 1u64 RDI )) # stdout
-#   (mov( (& cs) RSI )) # data
+   (mov( (& cs) RSI )) # data
    (mov( 1u64 RDX )) # length
    (syscall())
 );
