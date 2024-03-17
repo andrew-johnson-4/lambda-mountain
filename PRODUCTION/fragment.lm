@@ -83,9 +83,28 @@ fragment-apply := λ ctx function-name function-type function-args . (tail(
    (assert-typeof( 'fragment-apply::function-args function-args List<StrictExpr> ))
    (match (get-strict-function( ctx function-name function-type )) (
       ()
-      ( (Fragment( _ fbody )) (
-         (fail (TODO FragmentApply function-name function-type fbody))
+      ( (Fragment( _ (Lambda( lhs rhs )) )) (
+         (local fctx)
+         (set fctx (fragment-destructure-lhs( () lhs function-args )))
+         (fail (TODO FragmentApply function-name function-type lhs ))
       ))
       ( u (fail (UnknownStrictFunction function-name function-type)))
+   ))
+));
+
+fragment-destructure-lhs := λ ctx lhs args . (tail(
+   (assert-typeof( 'fragment-destructure-lhs::args args List<StrictExpr> ))
+   (assert-not-typeof( 'fragment-destructure-lhs::args args Nil ))
+   (match lhs (
+      ()
+      ( (App( (App( (Literal ':) (Variable vname) )) vtype )) (tail(
+         (set ctx ( ctx (vname (tail args)) ))
+         ctx
+      )))
+      ( (App( inner (App( (App( (Literal ':) (Variable vname) )) vtype )) )) (tail(
+         (set ctx ( ctx (vname (tail args)) ))
+         (fragment-destructure-lhs( ctx inner (head args) ))
+      )))
+      ( u (fail (PatternDefaultCase 'fragment-destructure-lhs u)))
    ))
 ));
