@@ -111,6 +111,10 @@ fragment-destructure-lhs := λ ctx lhs args . (tail(
    (assert-not-typeof( 'fragment-destructure-lhs::args args Nil ))
    (match lhs (
       ()
+      ( Nil (tail(
+         (set ctx ())
+         ctx
+      )))
       ( (App( (App( (Literal ':) (Variable vname) )) vtype )) (tail(
          (set ctx ( ctx (vname (tail args)) ))
          ctx

@@ -17,8 +17,8 @@ stack-call := λ ctx function-name function-args offset . (tail(
       ( (Fragment( vname body )) (tail(
          (local e1)
          (set e1 (expr::new()))
-         (set e1 (expr::set-offset( e1 (expr::get-offset offset) )))
-         (set e1 (expr::set-context( e1 (expr::get-context offset) )))
+         (set e1 (expr::set-offset( e1 offset )))
+         (set e1 (expr::set-context( e1 ctx )))
          (local args)
          (set args (stack-destructure-args( ctx function-args offset Fragment )))
          (fragment-apply-direct(
