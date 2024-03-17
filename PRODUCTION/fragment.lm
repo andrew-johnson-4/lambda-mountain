@@ -2,7 +2,6 @@
 fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
    ()
    ( () () )
-   ( (StrictExpr _) fragment-rhs )
    ( (App( (Literal '.expression) (Variable v) )) (tail(
       (while ctx (
          (if (eq( v (head (tail ctx)) )) (
@@ -71,7 +70,7 @@ fragment-apply-context := λctx fragment-rhs e . (tail(
          )))
       ))
       ( (App( inner (App( (Literal '.expression) f )) )) (
-         (fragment-substitute-context(
+         (fragment-apply-context(
             ctx inner
             (expr::set-expr( e (
                (fragment-substitute-context( ctx f ))
@@ -96,7 +95,6 @@ fragment-chain := λ fragment-ctx e . (tail(
    (assert-typeof( 'fragment-chain::fragment-ctx fragment-ctx List<[Atom,StrictExpr]> ))
    (assert-typeof( 'fragment-chain::e e StrictExpr ))
    (while fragment-ctx (tail(
-      (print-s (ChainProg (expr::get-prog (tail(tail( fragment-ctx ))) )))(print-s \n)
       (set e (expr::set-prog(
          e ( (expr::get-prog e) (expr::get-prog (tail(tail( fragment-ctx )))) )
       )))
