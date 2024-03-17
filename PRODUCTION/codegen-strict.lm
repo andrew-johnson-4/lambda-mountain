@@ -10,7 +10,7 @@ compile-expr-strict := λctx e offset used . (tail(
       ()
       (Return (tail(
          (set e1 (compile-expr-strict( ctx e offset Used )))
-         (fragment-apply( ctx 'cdecl::return (typecheck-lookup-type e) e1 e1 ))
+         (fragment-apply( ctx 'cdecl::return (typecheck-lookup-type e) (() e1) e1 ))
       )))
       (_ (
          (match e (

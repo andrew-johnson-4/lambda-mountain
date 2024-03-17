@@ -85,10 +85,15 @@ fragment-apply := λ ctx function-name function-type function-args e-proto . (ta
    (assert-typeof( 'fragment-apply::e-proto e-proto StrictExpr ))
    (assert-typeof( 'fragment-apply::function-name function-name Atom ))
    (assert-typeof( 'fragment-apply::function-args function-args List<StrictExpr> ))
-   (fragment-apply-direct(
-      (get-strict-function( ctx function-name function-type ))
-      function-args e-proto
+   (local arrow)
+   (set arrow (get-strict-function( ctx function-name function-type )))
+   (if arrow () (
+      (print-s NoSuchFragment)(print-s \s)
+      (print-s function-name)(print-s \s)
+      (print-s function-type)(print-s \n)
+      (exit 1)
    ))
+   (fragment-apply-direct( arrow function-args e-proto ))
 ));
 
 fragment-chain := λ fragment-ctx e . (tail(
