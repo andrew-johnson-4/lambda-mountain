@@ -84,7 +84,7 @@ fragment-apply := λ ctx function-name function-type function-args e-proto . (ta
    (assert-typeof( 'fragment-apply::function-args function-args List<StrictExpr> ))
    (match (get-strict-function( ctx function-name function-type )) (
       ()
-      ( (Fragment( _ (Lambda( lhs rhs )) )) (
+      ( (Fragment( _ (Lambda( lhs rhs )) )) (tail(
          (local fctx)
          (set fctx (fragment-destructure-lhs( () lhs function-args )))
          (local e-seed)
@@ -92,7 +92,7 @@ fragment-apply := λ ctx function-name function-type function-args e-proto . (ta
          (set e-seed (expr::set-offset( e-seed (expr::get-offset e-proto) )))
          (set e-seed (expr::set-context( e-seed (expr::get-context e-proto) )))
          (fragment-apply-context( fctx rhs e-seed ))
-      ))
+      )))
       ( u (fail (UnknownStrictFunction function-name function-type)))
    ))
 ));

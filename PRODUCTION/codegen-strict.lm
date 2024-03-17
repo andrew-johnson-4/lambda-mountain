@@ -75,13 +75,13 @@ compile-expr-strict := λctx e offset used . (tail(
                         (set btsz (dec btsz))
                      ))
                      (set e2 (expr::new()))
-                  ))) (_ (
+                  ))) (_ (tail(
                      (local edst)
                      (set edst (expr::new()))
                      (set edst (expr::set-expr( edst offset )))
                      (set e2 (compile-expr-strict( ctx rhs offset Used )))
-                     (fragment-apply( ctx 'mov (Cons( (typecheck-lookup-type rhs) LocalVariable )) ((() e2) edst) e2 ))
-                  ))
+                     (set e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup-type rhs) LocalVariable )) ((() e2) edst) e2 )))
+                  )))
                ))
                (set e3 (expr::set-frame( e3 (  (expr::get-frame e1) (expr::get-frame e2) (expr::get-frame e3) ))))
                (set e3 (expr::set-unframe( e3 (  (expr::get-unframe e1) (expr::get-unframe e2) (expr::get-unframe e3) ))))
