@@ -3,11 +3,15 @@
 stack-call := λ ctx function-name function-args offset . (tail(
    (assert-typeof( 'stack-call::function-name function-name Atom ))
    (assert-typeof( 'stack-call::offset offset Atom ))
+   (print-s (StackCall function-name))(print-s \n)
+   (local e1)
    (match (get-strict-function(ctx function-name (typecheck-lookup-type function-args))) (
       ()
       ( (GlobalFunction mangledname) (tail(
+         (local e-args)
+         (set e-args (stack-call-destructure-args( ctx function-args offset )))
+         (assert-typeof( 'stack-call::e-args e-args List<StrictExpr> ))
          (fail (TODO Call Global))
-         #(set e1 (destructure-calling-convention-stack( ctx e fname arg offset used )))
          #(expr::set-prog( e1 (
          #   (expr::get-prog e1) (enter-function()) (expr::get-expr e1) (\t 'call \s mangledname \n)
          #     (\t 'mov \s '%rbp, \s '%rsp              \n
@@ -15,7 +19,6 @@ stack-call := λ ctx function-name function-args offset . (tail(
          #)))
       )))
       ( (Fragment( vname body )) (tail(
-         (local e1)
          (set e1 (expr::new()))
          (set e1 (expr::set-offset( e1 offset )))
          (set e1 (expr::set-context( e1 ctx )))
@@ -29,6 +32,14 @@ stack-call := λ ctx function-name function-args offset . (tail(
       ( l (fail (UnknownFunctionCall function-name l)) )
    ))
 ));
+
+stack-call-destructure-args := λ ctx e-args offset . (
+   # program (Evaluate to Register)
+   # frame (Add Size of Local Variable)
+   # expr    (mov to stack)
+   # unframe (Sub Size of Local Variable)
+   fail (TODO Destructure Args e-args)
+);
 
 stack-destructure-args := λ ctx function-args offset arg-mode . (tail(
    (assert-typeof( 'stack-destructure-args::arg-mode arg-mode Atom ))
