@@ -80,15 +80,20 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e3 (expr::set-data( e3 (  (expr::get-data e1) (expr::get-data e2) (expr::get-data e3) ))))
                e3
             )))
-            ( (App( (App( (Variable 'set) (Variable lhs) )) rhs )) (tail(
-               ()
-               (match (get-strict-function( ctx lhs (typecheck-lookup-type rhs))) (
+            ( (App( (App( (Variable 'set) lhs )) rhs )) (tail(
+               (assert-eq( 'compile-expr-strict::set (head lhs) Variable ))
+               (match (get-strict-function( ctx (tail lhs) (typecheck-lookup-type rhs))) (
                   ()
-                  ( (StackVariable sv) (tail(
-                     (fail( AssignSV lhs sv ))
+                  ( (StackVariable( sv-name sv-offset sv-type )) (tail(
+                     (set e1 (compile-expr-strict( ctx rhs offset Used )))
+                     (set e2 (expr::new()))
+                     (set e2 (expr::set-expr( e2 sv-offset )))
+                     (set e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup-type rhs) LocalVariable )) ((() e1) e2) e2 )))
                   )))
                   ( u (fail( UnexpectedAssignmentLhs lhs u )))
                ))
+               (print-s (Set e3))(print-s \n)
+               e3
             )))
             ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
                (set e1 (expr::set-expr( (expr::new ()) lval )))

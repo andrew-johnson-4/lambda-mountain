@@ -10,7 +10,7 @@ fib := λ(: x U8). (
 
 main := (
    (let cs 108u8)
-   (set cs (fib 10u8))
+#   (set cs (fib 10u8))
    (mov( 1u64 RAX )) # write
    (mov( 1u64 RDI )) # stdout
    (mov( (& cs) RSI )) # data
