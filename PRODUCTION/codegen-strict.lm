@@ -152,8 +152,9 @@ compile-expr-strict := λctx e offset used . (tail(
 ));
 
 apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
+   (assert-typeof( 'apply-calling-convention-stack::e e StrictExpr ))
    (local e1)
-   (match (get-maybe-function(ctx fname (typecheck-lookup-type arg))) (
+   (match (get-strict-function(ctx fname (typecheck-lookup-type arg))) (
       ()
       ( (GlobalFunction mangledname) (tail(
          (set e1 (destructure-calling-convention-stack( ctx e fname arg offset used )))
@@ -165,9 +166,14 @@ apply-calling-convention-stack := λ ctx e fname arg offset used . (tail(
       )))
       ( (Fragment( vname body )) (tail(
          ()
-         (fail (TODO AssembleApplyFragment 3)) 
-         #(set e (assemble-apply-fragment( ctx body arg offset )))
-         e
+         (fail (TODO Call Stack))
+#         (set e1 (expr::new()))
+#         (set e1 (expr::set-offset( e1 (expr::get-offset e) )))
+#         (set e1 (expr::set-context( e1 (expr::get-context e) )))
+#         (fragment-apply-direct(
+#            (get-strict-function( ctx fname (typecheck-lookup-type arg) ))
+#            arg e1
+#         ))
       )))
       ( (StackVariable vname) (tail(
          (set e1 (compile-expr-strict( ctx arg offset used )))
