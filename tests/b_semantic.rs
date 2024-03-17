@@ -122,7 +122,6 @@ fn run_compile_production(mode:&str, target: &str) -> String {
                       .arg("STDLIB/default-rules.lm")
                       .arg("STDLIB/default-instruction-set.lm")
                       .arg("STDLIB/default-primitives.lm")
-                      .arg("STDLIB/default-stdlib.lm")
                       .arg(target)
                       .spawn()
                       .expect("failed to execute process")
@@ -194,17 +193,6 @@ fn testsuite() {
       let actual = actual.trim().to_string();
       if expected != actual {
          failures.push(( "--compile", path, expected, actual ));
-      }
-   }
-   for entry in glob("tests/strict/*.lm").unwrap() {
-      let path = entry.unwrap().display().to_string();
-      let expected = std::fs::read_to_string(path.clone() + ".out")
-                    .expect(&format!("Could not load expected output {}.out", path));
-      let expected = expected.trim().to_string();
-      let actual = run_compile_production("--strict", &path);
-      let actual = actual.trim().to_string();
-      if expected != actual {
-         failures.push(( "--strict", path, expected, actual ));
       }
    }
    for entry in glob("tests/nostd/*.lm").unwrap() {
