@@ -95,21 +95,7 @@ fragment-chain := λ fragment-ctx e . (tail(
    (assert-typeof( 'fragment-chain::fragment-ctx fragment-ctx List<[Atom,StrictExpr]> ))
    (assert-typeof( 'fragment-chain::e e StrictExpr ))
    (while fragment-ctx (tail(
-      (set e (expr::set-prog(
-         e ( (expr::get-prog e) (expr::get-prog (tail(tail( fragment-ctx )))) )
-      )))
-      (set e (expr::set-data(
-         e ( (expr::get-data e) (expr::get-data (tail(tail( fragment-ctx )))) )
-      )))
-      (set e (expr::set-text(
-         e ( (expr::get-text e) (expr::get-text (tail(tail( fragment-ctx )))) )
-      )))
-      (set e (expr::set-frame(
-         e ( (expr::get-frame e) (expr::get-frame (tail(tail( fragment-ctx )))) )
-      )))
-      (set e (expr::set-unframe(
-         e ( (expr::get-unframe e) (expr::get-unframe (tail(tail( fragment-ctx )))) )
-      )))
+      (set e (expr::chain( (tail(tail fragment-ctx)) e )))
       (set fragment-ctx (head fragment-ctx))
    )))
    e
