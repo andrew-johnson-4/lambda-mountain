@@ -22,7 +22,7 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e1 (expr::new()) )
                (set e1 (expr::set-frame( e1 ( \t 'sub \s '$ sz , \s '%rsp \n ) )))
                (set e1 (expr::set-unframe( e1 ( \t 'add \s '$ sz , \s '%rsp \n ) )))
-               (set offset (i2s (add( (s2i offset) (s2i sz) )) )) 
+               (set offset (i2s (add( (s2i offset) (inv(s2i sz)) )) )) 
                (set e1 (expr::set-context( e1 ctx )))
                (set e1 (expr::set-offset( e1 offset )))
                (match (typecheck-lookup-type rhs) (
