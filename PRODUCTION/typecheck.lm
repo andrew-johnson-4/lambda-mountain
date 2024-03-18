@@ -629,7 +629,7 @@ typecheck-infer-expr := λctx e used . (tail(
             ()
             ( () () )
             ( rt (
-               (typecheck-ascript( e ('->( (typecheck-typeof-lhs lhs) rt)) ))
+               (typecheck-ascript( e ('->( (typecheck-typeof-lhs lhs) (typecheck-as-return rt) )) ))
             ))
          ))
       )))
@@ -686,6 +686,28 @@ typecheck-sizeof := λtt . (match tt (
       ))
       sz
    )))
+));
+
+typecheck-not-constant := λtt . (match tt (
+   ()
+   ( (And( Constant rt )) (typecheck-not-constant rt) )
+   ( (And( lt Constant )) (typecheck-not-constant lt) )
+   ( (And( lt rt )) (And(
+      (typecheck-not-constant lt)
+      (typecheck-not-constant rt)
+   )))
+   ( _ tt )
+));
+
+typecheck-as-return := λrt . (tail(
+   (set rt (typecheck-not-constant rt))
+   (match (typecheck-sizeof rt) (
+      ()
+      (1 (And( Reg8 rt )))
+      (2 (And( Reg16 rt )))
+      (4 (And( Reg32 rt )))
+      (8 (And( Reg64 rt )))
+   ))
 ));
 
 typecheck-rvalue := λtt . (match tt (
