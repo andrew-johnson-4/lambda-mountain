@@ -176,6 +176,8 @@ compile-expr-strict := λctx e offset used . (tail(
 ));
 
 get-strict-function := λctx v arg_type . (tail(
+   (assert-typeof( 'get-strict-function::ctx ctx List<Or<[Or<[Or<[Or<[Label,StackVariable]>,GlobalVariable]>,GlobalFunction]>,Fragment]>> ))
+   (assert-typeof( 'get-strict-function::v v Atom ))
    (local r)
    (while ctx (
       (match (tail ctx) (

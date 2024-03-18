@@ -8,6 +8,15 @@ type I16; size I16 2; atom suffix I16 i16;
 type I32; size I32 4; atom suffix I32 i32;
 type I64; size I64 8; atom suffix I64 i64;
 
+fragment + := λ(: l LocalVariable+U8)(: r LocalVariable+U8). (: (
+   (.program(
+      \t 'mov \s (.expression l) \[ '%rbp \] , \s '%al \n
+      \t 'mov \s (.expression r) \[ '%rbp \] , \s '%r12b \n
+      \t 'add \s '%al , \s '%r12b \n
+   ))
+   (.expression( 'r12b ))
+) Reg8+U8);
+
 fragment + := λ(: l LocalVariable+U8)(: r Constant+U8). (: (
    (.program( \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r12b \n \t 'add \s '$ (.expression r) , \s '%r12b \n ))
    (.expression( 'r12b ))
