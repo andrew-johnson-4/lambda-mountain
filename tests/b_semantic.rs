@@ -234,13 +234,13 @@ fn testsuite() {
       let actual = run_compile_production("--nostd", &path, true);
       let actual = actual.trim().to_string();
       if expected != actual {
-         failures.push(( "--nostd", path, expected, actual ));
+         failures.push(( "--strict", path, expected, actual ));
       }
    }
    for (mode,path,expected,actual) in &failures {
       eprintln!("TEST {} {}", mode, path);
-      eprintln!("Expected: {}", &expected[..std::cmp::min(400,expected.len())] );
-      eprintln!("Actual: {}", &actual[..std::cmp::min(400,actual.len())] );
+      eprintln!("Expected: '{}'", &expected[..std::cmp::min(400,expected.len())] );
+      eprintln!("Actual: '{}'", &actual[..std::cmp::min(400,actual.len())] );
    }
    assert_eq!( failures.len(), 0 );
    rm("production");

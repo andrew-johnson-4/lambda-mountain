@@ -14,13 +14,16 @@ stack-call := λ ctx function-name function-args offset . (tail(
          (set e-call (expr::new()))
          (local copy-bytes)
          (local copy-offset)
-         (set copy-offset (s2i (expr::get-expr e-args)))
+         (set copy-offset (s2i(expr::get-expr e-args)))
+         (local src-offset)
+         (set src-offset (s2i 8))
          (while copy-offset (
             (set copy-bytes ( copy-bytes
-               \t 'mov \s (i2s(inv(add( (s2i 8) copy-offset )))) \[ '%rbp \] , \s '%al \n
-               \t 'mov \s '%al , \s (i2s(inv( copy-offset ))) \[ '%rbp \] \n
+               \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%al \n
+               \t 'mov \s '%al , \s (i2s(inv copy-offset )) \[ '%rbp \] \n
             ))
             (set copy-offset (dec copy-offset))
+            (set src-offset (inc src-offset))
          ))
          (set e-call (expr::set-prog( e-call (
             (expr::get-frame e-args)
@@ -43,6 +46,8 @@ stack-call := λ ctx function-name function-args offset . (tail(
                ( 8 'rax )
             ))
          ))))
+         (set e-call (expr::set-context( e-call ctx )))
+         (set e-call (expr::set-offset( e-call offset )))
          e-call
       )))
       ( (Fragment( vname body )) (tail(
@@ -56,7 +61,7 @@ stack-call := λ ctx function-name function-args offset . (tail(
             args e1
          ))
       )))
-      ( l (fail (UnknownFunctionCall function-name l)) )
+      ( l (fail (UnknownFunctionCall function-name (typecheck-lookup-type function-args) l)) )
    ))
 ));
 
@@ -72,13 +77,14 @@ stack-call-destructure-args := λ ctx e-args offset args-size . (tail(
             ()
             ( (App( inner outer )) (tail(
                (set e1 (stack-call-push-arg( ctx outer offset args-size )))
-               (set e2 (stack-call-push-arg( (expr::get-context e1) e-args (expr::get-offset e1) (expr::get-expr e1) )))
+               (set e2 (stack-call-destructure-args( (expr::get-context e1) inner (expr::get-offset e1) (expr::get-expr e1) )))
                (expr::chain( e1 e2 ))
             )))
             ( u (fail (InvalidArgs e-args)))
          ))
       )))
       ( tt (tail(
+         ()
          (stack-call-push-arg( ctx e-args offset args-size ))
       )))
    ))
@@ -112,9 +118,12 @@ stack-call-push-arg := λ ctx e-arg offset args-size . (tail(
    (set e2 (expr::new()))
    (set e2 (expr::set-expr( e2 new-offset )))
    (set e2 (expr::set-context( e2 ctx )))
-   (set e2 (expr::set-offset( e2 offset )))
+   (set e2 (expr::set-offset( e2 new-offset )))
 
-   (set e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup-type e-arg) LocalVariable )) ((() e1) e2) e2 ))))
+   (set e3 (fragment-apply(
+      ctx 'mov (Cons( (typecheck-lookup-type e-arg) LocalVariable ))
+      ((() e1) e2) e2
+   )))
 
    (set e3 (expr::set-frame( e3 ((expr::get-frame e3) frame) )))
    (set e3 (expr::set-unframe( e3 ((expr::get-unframe e3) unframe) )))
@@ -173,7 +182,7 @@ stack-define := λ ctx fname lmb . (tail(
 stack-define-destructure := λ ctx lhs offset . (match lhs (
    ()
    ( (App( (App( (Literal :) (Variable lname) )) ltype )) (tail(
-      (set ltype (typecheck-infer-type-compound ltype))
+      (set ltype (typecheck-infer-type-compound ltype) )
       (local size)
       (set size (typecheck-sizeof ltype))
       (local new_offset)
@@ -187,16 +196,17 @@ stack-define-destructure := λ ctx lhs offset . (match lhs (
       return
    )))
    ( (App( more (App( (App( (Literal :) (Variable lname) )) ltype )) )) (tail(
-      (set ltype (typecheck-infer-type-compound ltype))
+      (set ltype (typecheck-infer-type-compound ltype) )
       (local size)
       (set size (typecheck-sizeof ltype))
       (local new_offset)
       (set new_offset (add( offset (inv(s2i size)) )) )
-      (set ctx (stack-define-destructure( ctx more new_offset )))
+      (local more-e)
+      (set more-e (stack-define-destructure( ctx more new_offset )))
       (local return)
       (set return (expr::new()))
       (set return (expr::set-context( return
-         ( ctx (StackVariable( lname (i2s new_offset) ltype )) )
+         ( (expr::get-context more-e) (StackVariable( lname (i2s new_offset) ltype )) )
       )))
       (set return (expr::set-offset( return (i2s new_offset) )))
       return

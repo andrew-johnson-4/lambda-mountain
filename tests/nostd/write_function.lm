@@ -1,11 +1,6 @@
 
 fib := λ(: x U8). (
    123u8
-#   if (<= x 2u8) 1
-#   (+(
-#      (fib( (-( x 1u8 )) ))
-#      (fib( (-( x 2u8 )) ))
-#   ))
 );
 
 main := (
@@ -14,6 +9,6 @@ main := (
    (mov( 1u64 RAX )) # write
    (mov( 1u64 RDI )) # stdout
    (mov( (& cs) RSI )) # data
-   (mov( 2u64 RDX )) # length
+   (mov( 1u64 RDX )) # length
    (syscall())
 );

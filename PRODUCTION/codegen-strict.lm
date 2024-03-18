@@ -10,7 +10,15 @@ compile-expr-strict := λctx e offset used . (tail(
       ()
       (Return (tail(
          (set e1 (compile-expr-strict( ctx e offset Used )))
-         (fragment-apply( ctx 'cdecl::return (typecheck-lookup-type e) (() e1) e1 ))
+         (match e (
+            ()
+            ( (App( (App( (Literal ':) re )) rtype )) (
+               (fragment-apply( ctx 'cdecl::return (typecheck-lookup-type re) (() e1) e1 ))
+            ))
+            ( re (
+               (fragment-apply( ctx 'cdecl::return (typecheck-lookup-type e) (() e1) e1 ))
+            ))
+         ))
       )))
       (_ (
          (match e (
@@ -80,6 +88,19 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e3 (expr::set-data( e3 (  (expr::get-data e1) (expr::get-data e2) (expr::get-data e3) ))))
                e3
             )))
+            ( (App( (Variable 'label) (Variable label-name) )) (
+               (match (get-strict-function( ctx label-name Label )) (
+                  ()
+                  ( (Label( lname lid )) (tail(
+                     (set e2 (expr::new()))
+                     (set e2 (expr::set-prog( e2 ( lid ': \n ) )))
+                     (set e2 (expr::set-context( e2 ctx )))
+                     (set e2 (expr::set-offset( e2 offset )))
+                     e2
+                  )))
+                  ( u (ExpectedLabel u))
+               ))
+            ))
             ( (App( (App( (Variable 'set) lhs )) rhs )) (tail(
                (assert-eq( 'compile-expr-strict::set (head lhs) Variable ))
                (match (get-strict-function( ctx (tail lhs) (typecheck-lookup-type rhs))) (
@@ -144,7 +165,7 @@ compile-expr-strict := λctx e offset used . (tail(
             )))
             ( (App (l r)) (tail(
                (if (eq( used Used )) (
-                  (fail (TODO Return Strict Cons e))
+                  (fail (TODO Gradual Type A Cons))
                ) (
                   (set e1 (compile-expr-strict( ctx l offset Unused )))
                   (set e2 (compile-expr-strict( (expr::get-context e1) r (expr::get-offset e1) Used )))
@@ -163,6 +184,8 @@ compile-expr-strict := λctx e offset used . (tail(
 ));
 
 get-strict-function := λctx v arg_type . (tail(
+   (assert-typeof( 'get-strict-function::ctx ctx List<Or<[Or<[Or<[Or<[Label,StackVariable]>,GlobalVariable]>,GlobalFunction]>,Fragment]>> ))
+   (assert-typeof( 'get-strict-function::v v Atom ))
    (local r)
    (while ctx (
       (match (tail ctx) (
@@ -198,6 +221,13 @@ get-strict-function := λctx v arg_type . (tail(
             if r () (
                if (eq(name v)) (
                   (set r (StackVariable( name offset type )))
+               ) ()
+            )
+         ))
+         ( (Label(name lid)) (
+            if r () (
+               if (eq(name v)) (
+                  (set r (Label( name lid )))
                ) ()
             )
          ))
