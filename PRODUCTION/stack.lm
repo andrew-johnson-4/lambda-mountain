@@ -43,6 +43,8 @@ stack-call := λ ctx function-name function-args offset . (tail(
                ( 8 'rax )
             ))
          ))))
+         (set e-call (expr::set-context( e-call ctx )))
+         (set e-call (expr::set-offset( e-call offset )))
          e-call
       )))
       ( (Fragment( vname body )) (tail(
@@ -56,7 +58,7 @@ stack-call := λ ctx function-name function-args offset . (tail(
             args e1
          ))
       )))
-      ( l (fail (UnknownFunctionCall function-name l)) )
+      ( l (fail (UnknownFunctionCall function-name (typecheck-lookup-type function-args) l)) )
    ))
 ));
 
