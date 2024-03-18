@@ -18,6 +18,10 @@ fragment cdecl::return := λ(: l Constant+U8). (: (  (.program( \t 'mov \t '$ (.
 fragment cdecl::return := λ(: l Constant+U16). (: (  (.program( \t 'mov \t '$ (.expression l) , '%ax \n))  (.expression 'ax)  ) Nil);
 fragment cdecl::return := λ(: l Constant+U32). (: (  (.program( \t 'mov \t '$ (.expression l) , '%eax \n))  (.expression 'eax)  ) Nil);
 fragment cdecl::return := λ(: l Constant+U64). (: (  (.program( \t 'mov \t '$ (.expression l) , '%rax \n))  (.expression 'rax)  ) Nil);
+fragment cdecl::return := λ(: l LocalVariable+U8). (: (  (.program( \t 'mov \t (.expression l) \[ '%rbp \] , '%al \n))  (.expression 'al)  ) Nil);
+fragment cdecl::return := λ(: l LocalVariable+U16). (: (  (.program( \t 'mov \t (.expression l) \[ '%rbp \] , '%ax \n))  (.expression 'ax)  ) Nil);
+fragment cdecl::return := λ(: l LocalVariable+U32). (: (  (.program( \t 'mov \t (.expression l) \[ '%rbp \] , '%eax \n))  (.expression 'eax)  ) Nil);
+fragment cdecl::return := λ(: l LocalVariable+U64). (: (  (.program( \t 'mov \t (.expression l) \[ '%rbp \] , '%rax \n))  (.expression 'rax)  ) Nil);
 
 fragment & := λ(: src LocalVariable). (: ( (.program( \t 'mov \t '%rbp , \s '%r12 \n \t 'add \s '$ (.expression src) , \s '%r12 \n) (.expression( 'r12 ))) ) Reg64);
 

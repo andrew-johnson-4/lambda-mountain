@@ -152,10 +152,12 @@ stack-define := λ ctx fname lmb . (tail(
    (match lmb (
       ()
       ( (Lambda( lhs rhs )) (tail(
+         (print-s (Define fname))(print-s \n)
          (local e1)
          (local e2)
          (local text)
          (set e1 (stack-define-destructure( ctx lhs () )))
+         (print-s (DefineDest e1))(print-s \n)
          (local stack_offset)
          (set stack_offset (expr::get-offset e1))
          (set stack_offset (i2s(add( (s2i(stack_offset)) (s2i '-8) ))) )
@@ -170,6 +172,7 @@ stack-define := λ ctx fname lmb . (tail(
          (set return (expr::new()))
          (set return (expr::set-text( return text )))
          (set return (expr::set-data( return (expr::get-data e2) )))
+         (print-s (Defined fname))(print-s \n)
          return
       )))
    ))
@@ -197,11 +200,12 @@ stack-define-destructure := λ ctx lhs offset . (match lhs (
       (set size (typecheck-sizeof ltype))
       (local new_offset)
       (set new_offset (add( offset (inv(s2i size)) )) )
-      (set ctx (stack-define-destructure( ctx more new_offset )))
+      (local more-e)
+      (set more-e (stack-define-destructure( ctx more new_offset )))
       (local return)
       (set return (expr::new()))
       (set return (expr::set-context( return
-         ( ctx (StackVariable( lname (i2s new_offset) ltype )) )
+         ( (expr::get-context more-e) (StackVariable( lname (i2s new_offset) ltype )) )
       )))
       (set return (expr::set-offset( return (i2s new_offset) )))
       return

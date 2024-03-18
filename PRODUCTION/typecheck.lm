@@ -277,9 +277,10 @@ typecheck-typeof-var := λctx v . (match ctx (
    ()
    ( () (typecheck-typeof-gvar v) )
    ( (cs (cv ct)) (
-      if (eq( v cv )) (
+      if (eq( v cv )) (tail(
+         (print-s (TypeofVar v ct))(print-s \n)
          ct
-      ) (
+      )) (
          (typecheck-typeof-var( cs v ))
       )
    ))
@@ -588,7 +589,7 @@ typecheck-infer-expr := λctx e used . (tail(
       ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
          (set ctx (typecheck-infer-expr( ctx rhs Used )))
          (if (typecheck-lookup-type rhs) (
-            (set ctx ( ctx (lname (And( LocalVariable (typecheck-lookup-type rhs) )) ) ))
+            (set ctx ( ctx (lname (And( LocalVariable (typecheck-not-representation (typecheck-lookup-type rhs)) )) ) ))
          ) (
             (set ctx ( ctx (lname ()) ))
          ))
@@ -689,19 +690,27 @@ typecheck-sizeof := λtt . (match tt (
    )))
 ));
 
-typecheck-not-constant := λtt . (match tt (
+typecheck-not-representation := λtt . (match tt (
    ()
-   ( (And( Constant rt )) (typecheck-not-constant rt) )
-   ( (And( lt Constant )) (typecheck-not-constant lt) )
+   ( (And( Constant rt )) (typecheck-not-representation rt) )
+   ( (And( lt Constant )) (typecheck-not-representation lt) )
+   ( (And( Reg8 rt )) (typecheck-not-representation rt) )
+   ( (And( lt Reg8 )) (typecheck-not-representation lt) )
+   ( (And( Reg16 rt )) (typecheck-not-representation rt) )
+   ( (And( lt Reg16 )) (typecheck-not-representation lt) )
+   ( (And( Reg32 rt )) (typecheck-not-representation rt) )
+   ( (And( lt Reg32 )) (typecheck-not-representation lt) )
+   ( (And( Reg64 rt )) (typecheck-not-representation rt) )
+   ( (And( lt Reg64 )) (typecheck-not-representation lt) )
    ( (And( lt rt )) (And(
-      (typecheck-not-constant lt)
-      (typecheck-not-constant rt)
+      (typecheck-not-representation lt)
+      (typecheck-not-representation rt)
    )))
    ( _ tt )
 ));
 
 typecheck-as-return := λrt . (tail(
-   (set rt (typecheck-not-constant rt))
+   (set rt (typecheck-not-representation rt))
    (match (typecheck-sizeof rt) (
       ()
       (0 rt)
