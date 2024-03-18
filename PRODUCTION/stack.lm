@@ -7,16 +7,22 @@ stack-call := λ ctx function-name function-args offset . (tail(
    (local e1)
    (match (get-strict-function(ctx function-name (typecheck-lookup-type function-args))) (
       ()
-      ( (GlobalFunction mangledname) (tail(
+      ( (GlobalFunction( fname body )) (tail(
          (local e-args)
          (set e-args (stack-call-destructure-args( ctx function-args offset 0 )))
          (assert-typeof( 'stack-call::e-args e-args StrictExpr ))
-         (fail (TODO Call Global e-args))
-         #(expr::set-prog( e1 (
-         #   (expr::get-prog e1) (enter-function()) (expr::get-expr e1) (\t 'call \s mangledname \n)
-         #     (\t 'mov \s '%rbp, \s '%rsp              \n
-         #      \t 'pop \s '%rbp                        \n)
-         #)))
+         (local e-call)
+         (set e-call (expr::new()))
+         (set e-call (expr::set-prog( e-call (
+            (expr::get-frame e-args)
+            (expr::get-prog e-args)
+            (enter-function())
+            (\t 'call \s (mangle-global-function( fname body )) \n)
+            (\t 'mov \s '%rbp, \s '%rsp              \n
+             \t 'pop \s '%rbp                        \n)
+            (expr::get-unframe e-args)
+         ))))
+         (fail (expr::get-prog e-call))
       )))
       ( (Fragment( vname body )) (tail(
          (set e1 (expr::new()))

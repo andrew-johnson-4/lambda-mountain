@@ -352,10 +352,6 @@ set-local := λctx v . (tail(
    r
 ));
 
-mangle-global-function := λname body . (
-   (clone-rope (label-case ( name : (typecheck-lookup-type body) )))
-);
-
 get-maybe-function := λctx v arg_type . (tail(
    (local r)
    (while ctx (
