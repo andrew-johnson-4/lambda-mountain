@@ -234,7 +234,7 @@ fn testsuite() {
       let actual = run_compile_production("--nostd", &path, true);
       let actual = actual.trim().to_string();
       if expected != actual {
-         failures.push(( "--nostd", path, expected, actual ));
+         failures.push(( "--strict", path, expected, actual ));
       }
    }
    for (mode,path,expected,actual) in &failures {
