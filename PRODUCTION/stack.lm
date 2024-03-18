@@ -10,8 +10,8 @@ stack-call := λ ctx function-name function-args offset . (tail(
       ( (GlobalFunction mangledname) (tail(
          (local e-args)
          (set e-args (stack-call-destructure-args( ctx function-args offset 0 )))
-         (assert-typeof( 'stack-call::e-args e-args List<StrictExpr> ))
-         (fail (TODO Call Global))
+         (assert-typeof( 'stack-call::e-args e-args StrictExpr ))
+         (fail (TODO Call Global e-args))
          #(expr::set-prog( e1 (
          #   (expr::get-prog e1) (enter-function()) (expr::get-expr e1) (\t 'call \s mangledname \n)
          #     (\t 'mov \s '%rbp, \s '%rsp              \n
@@ -46,7 +46,7 @@ stack-call-destructure-args := λ ctx e-args offset args-size . (tail(
             ( (App( inner outer )) (tail(
                (set e1 (stack-call-push-arg( ctx outer offset args-size )))
                (set e2 (stack-call-push-arg( (expr::get-context e1) e-args (expr::get-offset e1) (expr::get-expr e1) )))
-               (expr::chain( e1 e2 )
+               (expr::chain( e1 e2 ))
             )))
             ( u (fail (InvalidArgs e-args)))
          ))
@@ -72,22 +72,27 @@ stack-call-push-arg := λ ctx e-arg offset args-size . (tail(
    (set et (typecheck-lookup-type e-arg))
    (local e-sz)
    (set e-sz (typecheck-sizeof et))
-
-   (local frame)
-   (set frame ( \t 'sub \s '$ sz , \s '%rsp \n ))
-   (local unframe)
-   (set unframe ( \t 'add \s '$ sz , \s '%rsp \n ))
-
-   (set e1 (compile-expr-strict( ctx e-arg offset Used )))
+   (set args-size (i2s(add( (s2i args-size) (s2i e-sz) ))) )
    (local new-offset)
    (set new-offset(  (i2s(add( (s2i offset) (inv(s2i( e-sz ))) ))) ))
+
+   (local frame)
+   (set frame ( \t 'sub \s '$ e-sz , \s '%rsp \n ))
+   (local unframe)
+   (set unframe ( \t 'add \s '$ e-sz , \s '%rsp \n ))
+
+   (set e1 (compile-expr-strict( ctx e-arg new-offset Used )))
    (set e2 (expr::new()))
    (set e2 (expr::set-expr( e2 new-offset )))
    (set e2 (expr::set-context( e2 ctx )))
    (set e2 (expr::set-offset( e2 offset )))
 
    (set e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup-type e-arg) LocalVariable )) ((() e1) e2) e2 ))))
-   (fail ('mov e3))
+
+   (set e3 (expr::set-frame( e3 ((expr::get-frame e3) frame) )))
+   (set e3 (expr::set-unframe( e3 ((expr::get-unframe e3) unframe) )))
+   (set e3 (expr::set-expr( e3 args-size )))
+   e3
 ));
 
 stack-destructure-args := λ ctx function-args offset arg-mode . (tail(
