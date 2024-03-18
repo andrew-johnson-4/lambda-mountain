@@ -71,6 +71,10 @@ typecheck-assert-expr := λe . (tail(
       ))
       ( (App( (Variable 'label) (Variable l) )) (
       ))
+      ( (App( (App( (Variable 'set) (Variable lhs) )) rhs )) (
+         (typecheck-assert-expr( rhs ))
+         (typecheck-assert-one( e ))
+      ))
       ( (App( (App( (Literal :) (Literal _) )) tt )) (
          (typecheck-assert-one( e ))
       ))
@@ -381,23 +385,6 @@ typecheck-unify-args := λlt rt . (tail(
 
 typecheck-unify-args-inner := λlt rt . (match (lt rt) (
    ()
-#   ( ( (And(lt1 rt1)) a2 ) (
-#      (match ( (typecheck-unify-args(lt1 a2)) (typecheck-unify-args(rt1 a2)) ) (
-#         ()
-#         ( (() _) () )
-#         ( (_ ()) () )
-#         ( (lctx rctx) (lctx rctx) )
-#      ))
-#   ))
-#   ( ( a1 (And(lt2 rt2)) ) (
-#      (match ( (typecheck-unify-args(a1 lt2)) (typecheck-unify-args(a1 rt2)) ) (
-#         ()
-#         ( (() ()) () )
-#         ( (() rctx) rctx )
-#         ( (lctx ()) lctx )
-#         ( (lctx rctx) (lctx rctx) )
-#      ))
-#   ))
    ( ((lt1 rt1) (lt2 rt2)) (
       (match ( (typecheck-unify-args(lt1 lt2)) (typecheck-unify-args(rt1 rt2)) ) (
          ()
@@ -587,6 +574,10 @@ typecheck-infer-expr := λctx e used . (tail(
             (typecheck-ascript( e Atom ))
          ))
       ))
+      ( (App( (App( (Variable 'set) (Variable lhs) )) rhs )) (tail(
+         (typecheck-infer-expr( ctx rhs Used ))
+         (typecheck-ascript( e (typecheck-typeof-var( ctx lhs )) ))
+      )))
       ( (App( (Variable 'tail) (App( l r )) )) (tail(
          (set ctx (typecheck-infer-expr( ctx l used )))
          (set ctx (typecheck-infer-expr( ctx r used )))
@@ -638,7 +629,7 @@ typecheck-infer-expr := λctx e used . (tail(
             ()
             ( () () )
             ( rt (
-               (typecheck-ascript( e ('->( (typecheck-typeof-lhs lhs) rt)) ))
+               (typecheck-ascript( e ('->( (typecheck-typeof-lhs lhs) (typecheck-as-return rt) )) ))
             ))
          ))
       )))
@@ -695,4 +686,32 @@ typecheck-sizeof := λtt . (match tt (
       ))
       sz
    )))
+));
+
+typecheck-not-constant := λtt . (match tt (
+   ()
+   ( (And( Constant rt )) (typecheck-not-constant rt) )
+   ( (And( lt Constant )) (typecheck-not-constant lt) )
+   ( (And( lt rt )) (And(
+      (typecheck-not-constant lt)
+      (typecheck-not-constant rt)
+   )))
+   ( _ tt )
+));
+
+typecheck-as-return := λrt . (tail(
+   (set rt (typecheck-not-constant rt))
+   (match (typecheck-sizeof rt) (
+      ()
+      (1 (And( Reg8 rt )))
+      (2 (And( Reg16 rt )))
+      (4 (And( Reg32 rt )))
+      (8 (And( Reg64 rt )))
+   ))
+));
+
+typecheck-rvalue := λtt . (match tt (
+   ()
+   ( (->( _ rt )) rt )
+   ( _ (fail( 'typecheck-rvalue 'expected 'arrow tt )))
 ));

@@ -2,29 +2,6 @@
 assemble-text-section                    := ();
 assemble-data-section                    := ();
 
-assemble-destructure-fragment := λctx lmb args offset . (match lmb (
-   ()
-   # fragment annotations are required
-   ( (Lambda( (App( (App( (Literal :) (Variable v) )) _ )) body )) (tail(
-      (set args (compile-fragment( ctx args offset Used )))
-      (() (v args))
-   )))
-   ( (Lambda( (App( rst (App( (App( (Literal :) (Variable v) )) _ )) )) body )) (tail(
-      (local ds)
-      (set ds (assemble-destructure-fragment(
-         ctx (Lambda( rst body )) (head (tail args)) offset
-      )))
-      (set args (compile-fragment( ctx (tail (tail args)) offset Used )))
-      (ds (v args))
-   )))
-   ( (Lambda( Nil _ )) (
-      ()
-   ))
-   ( () () )
-   ( (Lambda( u _ )) (fail (UnrecgonizedDestructureFragment u)))
-   ( u (fail (UnrecgonizedDestructureFragment u)))
-));
-
 assemble := λprogram . (
    (local target)
    (set target 'tmp.s)
@@ -109,7 +86,7 @@ assemble := λprogram . (
             ))
             ( (Lambda(lhs rhs)) (
                (if config-strict (
-                  (set e1 (define-calling-convention-stack( global_ctx fname body )))
+                  (set e1 (stack-define( global_ctx fname body )))
                ) (
                   (set e1 (define-calling-convention-s( global_ctx fname body )))
                ))

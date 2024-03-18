@@ -3,19 +3,49 @@
 stack-call := λ ctx function-name function-args offset . (tail(
    (assert-typeof( 'stack-call::function-name function-name Atom ))
    (assert-typeof( 'stack-call::offset offset Atom ))
+   (local e1)
    (match (get-strict-function(ctx function-name (typecheck-lookup-type function-args))) (
       ()
-      ( (GlobalFunction mangledname) (tail(
-         (fail (TODO Call Global))
-         #(set e1 (destructure-calling-convention-stack( ctx e fname arg offset used )))
-         #(expr::set-prog( e1 (
-         #   (expr::get-prog e1) (enter-function()) (expr::get-expr e1) (\t 'call \s mangledname \n)
-         #     (\t 'mov \s '%rbp, \s '%rsp              \n
-         #      \t 'pop \s '%rbp                        \n)
-         #)))
+      ( (GlobalFunction( fname body )) (tail(
+         (local e-args)
+         (set e-args (stack-call-destructure-args( ctx function-args offset 0 )))
+         (assert-typeof( 'stack-call::e-args e-args StrictExpr ))
+         (local e-call)
+         (set e-call (expr::new()))
+         (local copy-bytes)
+         (local copy-offset)
+         (set copy-offset (s2i (expr::get-expr e-args)))
+         (while copy-offset (
+            (set copy-bytes ( copy-bytes
+               \t 'mov \s (i2s(inv(add( (s2i 8) copy-offset )))) \[ '%rbp \] , \s '%al \n
+               \t 'mov \s '%al , \s (i2s(inv( copy-offset ))) \[ '%rbp \] \n
+            ))
+            (set copy-offset (dec copy-offset))
+         ))
+         (set e-call (expr::set-prog( e-call (
+            (expr::get-frame e-args)
+            (expr::get-prog e-args)
+            (enter-function())
+            ( \t 'sub \s '$ (expr::get-expr e-args) , \s '%rsp \n )
+            copy-bytes
+            (\t 'call \s (mangle-global-function( fname body )) \n)
+            ( \t 'add \s '$ (expr::get-expr e-args) , \s '%rsp \n )
+            (\t 'mov \s '%rbp, \s '%rsp              \n
+             \t 'pop \s '%rbp                        \n)
+            (expr::get-unframe e-args)
+         ))))
+         (set e-call (expr::set-expr( e-call (
+            (match (typecheck-sizeof (typecheck-rvalue (typecheck-lookup-type body))) (
+               ()
+               ( 1 'al )
+               ( 2 'ax )
+               ( 4 'eax )
+               ( 8 'rax )
+            ))
+         ))))
+         e-call
       )))
       ( (Fragment( vname body )) (tail(
-         (local e1)
          (set e1 (expr::new()))
          (set e1 (expr::set-offset( e1 offset )))
          (set e1 (expr::set-context( e1 ctx )))
@@ -28,6 +58,68 @@ stack-call := λ ctx function-name function-args offset . (tail(
       )))
       ( l (fail (UnknownFunctionCall function-name l)) )
    ))
+));
+
+stack-call-destructure-args := λ ctx e-args offset args-size . (tail(
+   (assert-typeof( 'stack-call-destructure-args::offset offset Atom ))
+   (assert-typeof( 'stack-call-destructure-args::args-size args-size Atom ))  
+   (match (typecheck-lookup-type e-args) (
+      ()
+      ( (Cons( lt rt )) (tail(
+         (local e1)
+         (local e2)
+         (match e-args (
+            ()
+            ( (App( inner outer )) (tail(
+               (set e1 (stack-call-push-arg( ctx outer offset args-size )))
+               (set e2 (stack-call-push-arg( (expr::get-context e1) e-args (expr::get-offset e1) (expr::get-expr e1) )))
+               (expr::chain( e1 e2 ))
+            )))
+            ( u (fail (InvalidArgs e-args)))
+         ))
+      )))
+      ( tt (tail(
+         (stack-call-push-arg( ctx e-args offset args-size ))
+      )))
+   ))
+   # Returns StrictExpr:
+   #    frame (Add Size of Local Variable)
+   #    program (evaluate args)
+   #    unframe (Sub Size of Local Variable)
+   #    expr (size of arguments)
+));
+
+stack-call-push-arg := λ ctx e-arg offset args-size . (tail(
+   (assert-typeof( 'stack-call-push-arg::offset offset Atom ))
+   (assert-typeof( 'stack-call-push-arg::args-size args-size Atom ))
+   (local e1)
+   (local e2)
+   (local e3)
+   (local et)
+   (set et (typecheck-lookup-type e-arg))
+   (local e-sz)
+   (set e-sz (typecheck-sizeof et))
+   (set args-size (i2s(add( (s2i args-size) (s2i e-sz) ))) )
+   (local new-offset)
+   (set new-offset(  (i2s(add( (s2i offset) (inv(s2i( e-sz ))) ))) ))
+
+   (local frame)
+   (set frame ( \t 'sub \s '$ e-sz , \s '%rsp \n ))
+   (local unframe)
+   (set unframe ( \t 'add \s '$ e-sz , \s '%rsp \n ))
+
+   (set e1 (compile-expr-strict( ctx e-arg new-offset Used )))
+   (set e2 (expr::new()))
+   (set e2 (expr::set-expr( e2 new-offset )))
+   (set e2 (expr::set-context( e2 ctx )))
+   (set e2 (expr::set-offset( e2 offset )))
+
+   (set e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup-type e-arg) LocalVariable )) ((() e1) e2) e2 ))))
+
+   (set e3 (expr::set-frame( e3 ((expr::get-frame e3) frame) )))
+   (set e3 (expr::set-unframe( e3 ((expr::get-unframe e3) unframe) )))
+   (set e3 (expr::set-expr( e3 args-size )))
+   e3
 ));
 
 stack-destructure-args := λ ctx function-args offset arg-mode . (tail(
@@ -48,4 +140,66 @@ stack-destructure-args := λ ctx function-args offset arg-mode . (tail(
       )))
       ( u (fail ('stack-destructure-args u )))
    ))
+));
+
+stack-define := λ ctx fname lmb . (tail(
+   ()
+   (match lmb (
+      ()
+      ( (Lambda( lhs rhs )) (tail(
+         (local e1)
+         (local e2)
+         (local text)
+         (set e1 (stack-define-destructure( ctx lhs () )))
+         (local stack_offset)
+         (set stack_offset (expr::get-offset e1))
+         (set stack_offset (i2s(add( (s2i(stack_offset)) (s2i '-8) ))) )
+         (set e2 (compile-expr-strict( (expr::get-context e1) rhs stack_offset Return)))
+         (set text ( text (mangle-global-function( fname lmb )) ': \n ))
+         (set text ( text (expr::get-frame e2) ))
+         (set text ( text (expr::get-prog e2) ))
+         (set text ( text (expr::get-unframe e2) ))
+         (set text ( text (\t 'ret \n) ))
+         (set text ( text (expr::get-text e2) ))
+         (local return)
+         (set return (expr::new()))
+         (set return (expr::set-text( return text )))
+         (set return (expr::set-data( return (expr::get-data e2) )))
+         return
+      )))
+   ))
+));
+
+stack-define-destructure := λ ctx lhs offset . (match lhs (
+   ()
+   ( (App( (App( (Literal :) (Variable lname) )) ltype )) (tail(
+      (set ltype (typecheck-infer-type-compound ltype))
+      (local size)
+      (set size (typecheck-sizeof ltype))
+      (local new_offset)
+      (set new_offset (add( offset (inv(s2i size)) )) )
+      (local return)
+      (set return (expr::new()))
+      (set return (expr::set-context( return
+         ( ctx (StackVariable( lname (i2s new_offset) ltype )) )
+      )))
+      (set return (expr::set-offset( return (i2s new_offset) )))
+      return
+   )))
+   ( (App( more (App( (App( (Literal :) (Variable lname) )) ltype )) )) (tail(
+      (set ltype (typecheck-infer-type-compound ltype))
+      (local size)
+      (set size (typecheck-sizeof ltype))
+      (local new_offset)
+      (set new_offset (add( offset (inv(s2i size)) )) )
+      (set ctx (stack-define-destructure( ctx more new_offset )))
+      (local return)
+      (set return (expr::new()))
+      (set return (expr::set-context( return
+         ( ctx (StackVariable( lname (i2s new_offset) ltype )) )
+      )))
+      (set return (expr::set-offset( return (i2s new_offset) )))
+      return
+   )))
+   ( u (fail (UnknownStackArg lhs)))
 ));
