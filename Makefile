@@ -1,6 +1,6 @@
 
 nostd: prod
-	./production --nostd -o tmp.s STDLIB/default-instruction-set.lm STDLIB/default-primitives.lm STDLIB/default-rules.lm STDLIB/default-stdlib.lm tests/strict/printU64.lm
+	./production --nostd -o tmp.s STDLIB/default-instruction-set.lm STDLIB/default-primitives.lm STDLIB/default-rules.lm STDLIB/default-stdlib.lm tests/nostd/write_function.lm
 	as -o tmp.o tmp.s
 	ld -o tmp tmp.o
 	./tmp && echo $?
