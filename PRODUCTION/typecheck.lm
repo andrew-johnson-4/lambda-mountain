@@ -653,6 +653,7 @@ typecheck-infer-expr := λctx e used . (tail(
 
 typecheck-sizeof := λtt . (match tt (
    ()
+   ( Nil 0 )
    ( (Array( bt sz )) (
       (i2s(mul(
          (s2i (typecheck-sizeof bt))
@@ -703,6 +704,7 @@ typecheck-as-return := λrt . (tail(
    (set rt (typecheck-not-constant rt))
    (match (typecheck-sizeof rt) (
       ()
+      (0 rt)
       (1 (And( Reg8 rt )))
       (2 (And( Reg16 rt )))
       (4 (And( Reg32 rt )))
