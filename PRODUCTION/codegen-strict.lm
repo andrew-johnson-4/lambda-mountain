@@ -165,7 +165,7 @@ compile-expr-strict := λctx e offset used . (tail(
             )))
             ( (App (l r)) (tail(
                (if (eq( used Used )) (
-                  (fail (TODO Return Strict Cons e))
+                  (fail (TODO Gradual Type A Cons))
                ) (
                   (set e1 (compile-expr-strict( ctx l offset Unused )))
                   (set e2 (compile-expr-strict( (expr::get-context e1) r (expr::get-offset e1) Used )))

@@ -77,7 +77,7 @@ stack-call-destructure-args := λ ctx e-args offset args-size . (tail(
             ()
             ( (App( inner outer )) (tail(
                (set e1 (stack-call-push-arg( ctx outer offset args-size )))
-               (set e2 (stack-call-push-arg( (expr::get-context e1) e-args (expr::get-offset e1) (expr::get-expr e1) )))
+               (set e2 (stack-call-destructure-args( (expr::get-context e1) inner (expr::get-offset e1) (expr::get-expr e1) )))
                (expr::chain( e1 e2 ))
             )))
             ( u (fail (InvalidArgs e-args)))
