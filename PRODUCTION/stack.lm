@@ -34,6 +34,15 @@ stack-call := λ ctx function-name function-args offset . (tail(
              \t 'pop \s '%rbp                        \n)
             (expr::get-unframe e-args)
          ))))
+         (set e-call (expr::set-expr( e-call (
+            (match (typecheck-sizeof (typecheck-rvalue (typecheck-lookup-type body))) (
+               ()
+               ( 1 'al )
+               ( 2 'ax )
+               ( 4 'eax )
+               ( 8 'rax )
+            ))
+         ))))
          e-call
       )))
       ( (Fragment( vname body )) (tail(

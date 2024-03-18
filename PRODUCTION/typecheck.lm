@@ -704,3 +704,9 @@ typecheck-sizeof := λtt . (match tt (
       sz
    )))
 ));
+
+typecheck-rvalue := λtt . (match tt (
+   ()
+   ( (->( _ rt )) rt )
+   ( _ (fail( 'typecheck-rvalue 'expected 'arrow tt )))
+));
