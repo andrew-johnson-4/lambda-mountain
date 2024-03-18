@@ -30,6 +30,11 @@ fragment mov := λ(: src Constant+U8)(: dst LocalVariable). (: (.program( \t 'mo
 fragment mov := λ(: src Constant+U16)(: dst LocalVariable). (: (.program( \t 'movw \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
 fragment mov := λ(: src Constant+U32)(: dst LocalVariable). (: (.program( \t 'movs \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
 fragment mov := λ(: src Constant+U64)(: dst LocalVariable). (: (.program( \t 'movq \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
+fragment mov := λ(: src Constant+I8)(: dst LocalVariable). (: (.program( \t 'movb \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
+fragment mov := λ(: src Constant+I16)(: dst LocalVariable). (: (.program( \t 'movw \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
+fragment mov := λ(: src Constant+I32)(: dst LocalVariable). (: (.program( \t 'movs \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
+fragment mov := λ(: src Constant+I64)(: dst LocalVariable). (: (.program( \t 'movq \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
+
 fragment mov := λ(: src Reg8)(: dst LocalVariable). (: (.program( \t 'movb \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
 
 fragment cmp := λ(: imm Constant+U64)(: r Constant+Reg64). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
