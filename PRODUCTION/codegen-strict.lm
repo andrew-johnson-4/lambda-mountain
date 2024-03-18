@@ -80,6 +80,19 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e3 (expr::set-data( e3 (  (expr::get-data e1) (expr::get-data e2) (expr::get-data e3) ))))
                e3
             )))
+            ( (App( (Variable 'label) (Variable label-name) )) (
+               (match (get-strict-function( ctx label-name Label )) (
+                  ()
+                  ( (Label( lname lid )) (tail(
+                     (set e2 (expr::new()))
+                     (set e2 (expr::set-prog( e2 ( lid ': \n ) )))
+                     (set e2 (expr::set-context( e2 ctx )))
+                     (set e2 (expr::set-offset( e2 offset )))
+                     e2
+                  )))
+                  ( u (ExpectedLabel u))
+               ))
+            ))
             ( (App( (App( (Variable 'set) lhs )) rhs )) (tail(
                (assert-eq( 'compile-expr-strict::set (head lhs) Variable ))
                (match (get-strict-function( ctx (tail lhs) (typecheck-lookup-type rhs))) (
@@ -198,6 +211,13 @@ get-strict-function := λctx v arg_type . (tail(
             if r () (
                if (eq(name v)) (
                   (set r (StackVariable( name offset type )))
+               ) ()
+            )
+         ))
+         ( (Label(name lid)) (
+            if r () (
+               if (eq(name v)) (
+                  (set r (Label( name lid )))
                ) ()
             )
          ))
