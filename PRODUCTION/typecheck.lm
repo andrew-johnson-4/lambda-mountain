@@ -277,10 +277,9 @@ typecheck-typeof-var := λctx v . (match ctx (
    ()
    ( () (typecheck-typeof-gvar v) )
    ( (cs (cv ct)) (
-      if (eq( v cv )) (tail(
-         (print-s (TypeofVar v ct))(print-s \n)
+      if (eq( v cv )) (
          ct
-      )) (
+      ) (
          (typecheck-typeof-var( cs v ))
       )
    ))
