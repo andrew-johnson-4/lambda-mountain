@@ -159,3 +159,19 @@ expr::chain := λ e1 e2 . (tail(
    (set e1 (expr::set-context( e1 (expr::get-context e2) )))
    e1
 ));
+
+expr::print := λ e . (tail(
+   (print-s Expr)(print-s \n)
+   (print-s 'offset:)(print-s \n)
+   (print-s \t)(print-s (expr::get-offset e))(print-s \n)
+   (print-s 'expr:)(print-s \n)
+   (print-s \t)(print-s (expr::get-expr e))(print-s \n)
+   (print-s 'text:)(print-s \n)
+   (print-s \t)(print-s (expr::get-text e))(print-s \n)
+   (print-s 'data:)(print-s \n)
+   (print-s \t)(print-s (expr::get-data e))(print-s \n)
+   (print-s 'frame:)(print-s \n)
+   (print-s \t)(print-s (expr::get-frame e))(print-s \n)
+   (print-s 'unframe:)(print-s \n)
+   (print-s \t)(print-s (expr::get-unframe e))(print-s \n)
+));

@@ -83,9 +83,10 @@ stack-call-destructure-args := λ ctx e-args offset args-size . (tail(
             ( u (fail (InvalidArgs e-args)))
          ))
       )))
-      ( tt (
+      ( tt (tail(
+         ()
          (stack-call-push-arg( ctx e-args offset args-size ))
-      ))
+      )))
    ))
    # Returns StrictExpr:
    #    frame (Add Size of Local Variable)
@@ -119,7 +120,10 @@ stack-call-push-arg := λ ctx e-arg offset args-size . (tail(
    (set e2 (expr::set-context( e2 ctx )))
    (set e2 (expr::set-offset( e2 offset )))
 
-   (set e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup-type e-arg) LocalVariable )) ((() e1) e2) e2 ))))
+   (set e3 (fragment-apply(
+      ctx 'mov (Cons( (typecheck-lookup-type e-arg) LocalVariable ))
+      ((() e1) e2) e2
+   )))
 
    (set e3 (expr::set-frame( e3 ((expr::get-frame e3) frame) )))
    (set e3 (expr::set-unframe( e3 ((expr::get-unframe e3) unframe) )))
