@@ -726,3 +726,7 @@ typecheck-rvalue := λtt . (match tt (
    ( (->( _ rt )) rt )
    ( _ (fail( 'typecheck-rvalue 'expected 'arrow tt )))
 ));
+
+mangle-global-function := λname body . (
+   (clone-rope (label-case ( name : (typecheck-lookup-type body) )))
+);

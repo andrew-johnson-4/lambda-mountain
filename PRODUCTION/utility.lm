@@ -409,7 +409,3 @@ is-typeof := λ term tt . (match tt (
    ( () (fail (UnknownTypeofType tt)))
    ( label (eq( (head term) label )) )
 ));
-
-mangle-global-function := λname body . (
-   (clone-rope (label-case ( name : (typecheck-lookup-type body) )))
-);
