@@ -9,7 +9,7 @@ stack-call := λ ctx function-name function-args offset . (tail(
       ()
       ( (GlobalFunction mangledname) (tail(
          (local e-args)
-         (set e-args (stack-call-destructure-args( ctx function-args offset )))
+         (set e-args (stack-call-destructure-args( ctx function-args offset 0 )))
          (assert-typeof( 'stack-call::e-args e-args List<StrictExpr> ))
          (fail (TODO Call Global))
          #(expr::set-prog( e1 (
@@ -33,13 +33,48 @@ stack-call := λ ctx function-name function-args offset . (tail(
    ))
 ));
 
-stack-call-destructure-args := λ ctx e-args offset . (
-   # program (Evaluate to Register)
-   # frame (Add Size of Local Variable)
-   # expr    (mov to stack)
-   # unframe (Sub Size of Local Variable)
-   fail (TODO Destructure Args e-args)
-);
+stack-call-destructure-args := λ ctx e-args offset relative-offset . (tail(
+   # frame (Add Size of Local Variable & evaluate args)
+   # program (duplicate locals to new stack frame)
+   # unframe (Sub Size of Local Variable) (this gets called twice)
+   (match (typecheck-lookup-type e-args) (
+      ()
+      ( (Cons( lt rt )) (tail(
+         fail (TODO Destructure lt rt)
+      )))
+      ( tt (tail(
+         (stack-call-push-arg( ctx e-args offset relative-offset ))
+      )))
+   ))
+));
+
+stack-call-push-arg := λ ctx e-arg offset relative-offset . (tail(
+   (assert-typeof( 'stack-call-push-arg::offset offset Atom ))
+   (assert-typeof( 'stack-call-push-arg::relative-offset relative-offset Atom ))
+   (local e1)
+   (local e2)
+   (local e3)
+   (local et)
+   (set et (typecheck-lookup-type e-arg))
+   (local e-sz)
+   (set e-sz (typecheck-sizeof et))
+
+   (local frame)
+   (set frame ( \t 'sub \s '$ sz , \s '%rsp \n ))
+   (local unframe)
+   (set unframe ( \t 'add \s '$ sz , \s '%rsp \n ))
+
+   (set e1 (compile-expr-strict( ctx e-arg offset Used )))
+   (local new-offset)
+   (set new-offset(  (i2s(add( (s2i offset) (inv(s2i( e-sz ))) ))) ))
+   (set e2 (expr::new()))
+   (set e2 (expr::set-expr( e2 new-offset )))
+   (set e2 (expr::set-context( e2 ctx )))
+   (set e2 (expr::set-offset( e2 offset )))
+
+   (set e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup-type e-arg) LocalVariable )) ((() e1) e2) e2 ))))
+   (fail ('mov e3))
+));
 
 stack-destructure-args := λ ctx function-args offset arg-mode . (tail(
    (assert-typeof( 'stack-destructure-args::arg-mode arg-mode Atom ))
