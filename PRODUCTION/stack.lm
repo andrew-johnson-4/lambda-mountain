@@ -152,12 +152,10 @@ stack-define := λ ctx fname lmb . (tail(
    (match lmb (
       ()
       ( (Lambda( lhs rhs )) (tail(
-         (print-s (Define fname))(print-s \n)
          (local e1)
          (local e2)
          (local text)
          (set e1 (stack-define-destructure( ctx lhs () )))
-         (print-s (DefineDest e1))(print-s \n)
          (local stack_offset)
          (set stack_offset (expr::get-offset e1))
          (set stack_offset (i2s(add( (s2i(stack_offset)) (s2i '-8) ))) )
@@ -172,7 +170,6 @@ stack-define := λ ctx fname lmb . (tail(
          (set return (expr::new()))
          (set return (expr::set-text( return text )))
          (set return (expr::set-data( return (expr::get-data e2) )))
-         (print-s (Defined fname))(print-s \n)
          return
       )))
    ))
@@ -181,7 +178,7 @@ stack-define := λ ctx fname lmb . (tail(
 stack-define-destructure := λ ctx lhs offset . (match lhs (
    ()
    ( (App( (App( (Literal :) (Variable lname) )) ltype )) (tail(
-      (set ltype (typecheck-infer-type-compound ltype))
+      (set ltype (typecheck-infer-type-compound ltype) )
       (local size)
       (set size (typecheck-sizeof ltype))
       (local new_offset)
@@ -195,7 +192,7 @@ stack-define-destructure := λ ctx lhs offset . (match lhs (
       return
    )))
    ( (App( more (App( (App( (Literal :) (Variable lname) )) ltype )) )) (tail(
-      (set ltype (typecheck-infer-type-compound ltype))
+      (set ltype (typecheck-infer-type-compound ltype) )
       (local size)
       (set size (typecheck-sizeof ltype))
       (local new_offset)
