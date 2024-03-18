@@ -1,15 +1,14 @@
 
 fib := λ(: x U8)(: y U8). (: (
-   y
-#   (+( x y ))
+   x
 ) U8);
 
 main := (
    (let cs 0u8)
-   (set cs (fib( 10u8 106u8 )))
+   (set cs (fib( 103u8 106u8 )))
    (mov( 1u64 RAX )) # write
    (mov( 1u64 RDI )) # stdout
    (mov( (& cs) RSI )) # data
-   (mov( 2u64 RDX )) # length
+   (mov( 1u64 RDX )) # length
    (syscall())
 );

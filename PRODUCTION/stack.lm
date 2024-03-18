@@ -118,7 +118,7 @@ stack-call-push-arg := λ ctx e-arg offset args-size . (tail(
    (set e2 (expr::new()))
    (set e2 (expr::set-expr( e2 new-offset )))
    (set e2 (expr::set-context( e2 ctx )))
-   (set e2 (expr::set-offset( e2 offset )))
+   (set e2 (expr::set-offset( e2 new-offset )))
 
    (set e3 (fragment-apply(
       ctx 'mov (Cons( (typecheck-lookup-type e-arg) LocalVariable ))
