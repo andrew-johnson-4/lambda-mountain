@@ -68,7 +68,7 @@ stack-call := λ ctx function-name function-args offset . (tail(
 stack-call-destructure-args := λ ctx e-args offset args-size . (tail(
    (assert-typeof( 'stack-call-destructure-args::offset offset Atom ))
    (assert-typeof( 'stack-call-destructure-args::args-size args-size Atom ))  
-   (match (typecheck-lookup-type e-args) (
+   (match (typecheck-slot( (typecheck-lookup-type e-args) Cons )) (
       ()
       ( (Cons( lt rt )) (tail(
          (local e1)
@@ -133,7 +133,7 @@ stack-call-push-arg := λ ctx e-arg offset args-size . (tail(
 
 stack-destructure-args := λ ctx function-args offset arg-mode . (tail(
    (assert-typeof( 'stack-destructure-args::arg-mode arg-mode Atom ))
-   (match ( function-args (typecheck-lookup-type function-args) arg-mode ) (
+   (match ( function-args (typecheck-slot( (typecheck-lookup-type function-args) Cons )) arg-mode ) (
       ()
       ( ( (App( fl fr )) (Cons( tl tr )) Fragment ) (tail(
          (local inner-e)

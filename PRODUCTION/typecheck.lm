@@ -728,6 +728,24 @@ typecheck-as-return := λrt . (tail(
    ))
 ));
 
+typecheck-slot := λtt tag . (tail(
+   (local return)
+   (set return (match tt (
+      ()
+      ( (And( lt rt )) (tail(
+         (local lts)
+         (set lts (typecheck-slot( lt tag )))
+         (if lts lts (typecheck-slot( rt tag )))
+      )))
+      ( ( (_ _) _ ) () )
+      ( ( t r ) (
+         if (eq( t tag )) tt ()
+      ))
+      ( _ () )
+   )))
+   return
+));
+
 typecheck-rvalue := λtt . (match tt (
    ()
    ( (->( _ rt )) rt )
