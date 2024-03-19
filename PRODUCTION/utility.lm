@@ -101,6 +101,7 @@ label-case-atom := λk . (tail(
 
 is-variable := λv . (match (head-string v) (
    ()
+   ('. ( if (eq( v '. )) () True ))
    ('@ True )
    ('? True )
    ('! True )
@@ -408,4 +409,24 @@ is-typeof := λ term tt . (match tt (
    ( (l r) (fail (UnknownTypeofType tt)))
    ( () (fail (UnknownTypeofType tt)))
    ( label (eq( (head term) label )) )
+));
+
+max := λ l r . (tail(
+   (local li)
+   (set li (s2i l))
+   (local ri)
+   (set ri (s2i r))
+   (local return)
+   (while (not return) (
+      (if (not li) (
+        (set return r)
+      ) (
+         (if (not ri) (
+            (set return l)
+         ) ())
+      ))
+      (set li (dec li))
+      (set ri (dec ri))
+   ))
+   l
 ));

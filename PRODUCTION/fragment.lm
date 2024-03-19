@@ -2,7 +2,7 @@
 fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
    ()
    ( () () )
-   ( (App( (Literal '.expression) (Variable v) )) (tail(
+   ( (App( (Variable '.expression) (Variable v) )) (tail(
       (while ctx (
          (if (eq( v (head (tail ctx)) )) (
             (set v (expr::get-expr (tail (tail ctx))))
@@ -11,7 +11,7 @@ fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
       ))
       v
    )))
-   ( (App( (Literal '.program) (Variable v) )) (tail(
+   ( (App( (Variable '.program) (Variable v) )) (tail(
       (while ctx (
          (if (eq( v (head (tail ctx)) )) (
             (set v (expr::get-prog (tail (tail ctx))))
@@ -35,7 +35,11 @@ fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
       (fragment-substitute-context( ctx l ))
       (fragment-substitute-context( ctx r ))
    ))
-   ( u (fail (UnknownFragmentSubstitution u)))
+   ( (l r) (
+      (fragment-substitute-context( ctx l ))
+      (fragment-substitute-context( ctx r ))
+   ))
+   ( u u )
 ));
 
 fragment-apply-context := λctx fragment-rhs e . (tail(
@@ -49,13 +53,13 @@ fragment-apply-context := λctx fragment-rhs e . (tail(
       ( (App( (App( (Literal ':) fe )) ft )) (
          (fragment-apply-context( ctx fe e ))
       ))
-      ( (App( (Literal '.program) f )) (
+      ( (App( (Variable '.program) f )) (
          (expr::set-prog( e (
             (expr::get-prog e)
             (fragment-substitute-context( ctx f ))
          )))
       ))
-      ( (App( inner (App( (Literal '.program) f )) )) (
+      ( (App( inner (App( (Variable '.program) f )) )) (
          (fragment-apply-context(
             ctx inner
             (expr::set-prog( e (
@@ -64,12 +68,12 @@ fragment-apply-context := λctx fragment-rhs e . (tail(
             )))
          ))
       ))
-      ( (App( (Literal '.expression) f )) (
+      ( (App( (Variable '.expression) f )) (
          (expr::set-expr( e (
             (fragment-substitute-context( ctx f ))
          )))
       ))
-      ( (App( inner (App( (Literal '.expression) f )) )) (
+      ( (App( inner (App( (Variable '.expression) f )) )) (
          (fragment-apply-context(
             ctx inner
             (expr::set-expr( e (

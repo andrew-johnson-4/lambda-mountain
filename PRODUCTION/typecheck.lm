@@ -271,9 +271,9 @@ typecheck-typeof-gvar := λv . (tail(
                   (set tt gt)
                ))
             ) ())
-            (set gctx (head gctx))
          ))
       ))
+      (set gctx (head gctx))
    ))
    tt
 ));
@@ -449,7 +449,22 @@ typecheck-safe-apply-plural := λterm many pt . (tail(
    (local r)
    (set r (typecheck-apply-plural( many pt )))
    (if r r (
-      fail (TypeError( InvalidArgument many pt ))
+      (print-s TypeError)(print-s \s)(print-s InvalidArgument)(print-s \n)
+      (print-s Argument:)(print-s \n)
+      (print-s \t)(print-s pt)(print-s \n)
+      (print-s Candidates:)(print-s \n)
+      (while many (match many (
+         ()
+         ( (And( lmt rmt )) (tail(
+            (print-s \t)(print-s rmt)(print-s \n)
+            (set many lmt)
+         )))
+         ( mt (tail(
+            (print-s \t)(print-s mt)(print-s \n)
+            (set many ())
+         )))
+      )))
+      (exit 1)
    ))
 ));
 
@@ -462,11 +477,13 @@ typecheck-infer-type-compound := λcompound . (match compound (
    (u (fail (UnknownTypeCompound u)))
 ));
 
-typecheck-infer-type-constructor := λname body . (match body (
+typecheck-infer-type-constructor := λbase-type body . (match body (
    ()
-   ( (Literal tag) (
-      (set typecheck-constructors ( typecheck-constructors (tag (typecheck-infer-type-compound name)) ))
-   ))
+   ( (Literal tag) (tail(
+      #typecheck-global-context
+      (set typecheck-constructors ( typecheck-constructors (tag base-type) ))
+      1
+   )))
    ( (App( (Literal tag) args )) (
       (fail (TODO LiteralTagConstructors tag))
 #      (local ctype)
@@ -474,18 +491,18 @@ typecheck-infer-type-constructor := λname body . (match body (
 #      (set typecheck-constructors ( typecheck-constructors (tag ('->(ctype (tag ctype)))) ))
 #      (set typecheck-subtypes ( typecheck-subtypes ((tag ctype) (typecheck-infer-type-compound name)) ))
    ))
-   ( () () )
+   ( () 0 )
    ( u ( fail (UnknownTypeConstructor u)))
 ));
 
-typecheck-infer-type-definition := λname def . (match def (
+typecheck-infer-type-definition := λbase-type def . (match def (
    ()
-   ( (App( (App( tds (Variable '|) )) body )) (
-      (typecheck-infer-type-definition( name tds ))
-      (typecheck-infer-type-constructor( name body ))
-   ))
+   ( (App( (App( tds (Variable '|) )) body )) (max(
+      (typecheck-infer-type-definition( base-type tds ))
+      (typecheck-infer-type-constructor( base-type body ))
+   )))
    ( body (
-      (typecheck-infer-type-constructor( name body ))
+      (typecheck-infer-type-constructor( base-type body ))
    ))
 ));
 
@@ -506,10 +523,35 @@ typecheck-infer-constructor-type := λtag . (tail(
    ctype
 ));
 
+typecheck-set-size := λ tt sz . (if sz (tail(
+   (local sizes)
+   (local has-size)
+   (while sizes (
+      (if (deep-eq( (head (tail sizes)) tt )) (
+         (set has-size True)
+      ) ())
+      (set sizes (head sizes))
+   ))
+   (if has-size () (
+      (if (eq( sz Unsized )) (
+         (set typecheck-size ( typecheck-size ( tt () )))
+      ) (
+         (set typecheck-size ( typecheck-size ( tt sz )))
+      ))
+   ))
+)) ());
+
 typecheck-infer-type-expr := λe . (match e (
    ()
    ( (Type( l ds )) (
-      (typecheck-infer-type-definition( l ds ))
+      (local base-type)
+      (set base-type (typecheck-infer-type-compound l))
+      (set typecheck-global-context ( typecheck-global-context (
+         (Global( '.0 ('->( base-type U64 )) ))
+      )))
+      (local sz)
+      (set sz (typecheck-infer-type-definition( base-type ds )))
+      (typecheck-set-size( base-type sz ))
       (typecheck-ascript( e '? ))
    ))
    (_ ())
@@ -533,7 +575,7 @@ typecheck-infer-expr := λctx e used . (tail(
             ))
          ))
       ))
-      ( (Type( l ds )) () )
+      ( (Type( l ds )) ())
       ( (Fragment( fln fle )) (
          (match fle (
             ()
@@ -580,6 +622,7 @@ typecheck-infer-expr := λctx e used . (tail(
          (if ctype (
             (typecheck-ascript( e (And( Constant ctype )) ))
          ) (
+            (print-s (AscriptedGradual e))(print-s \n)
             (typecheck-ascript( e Atom ))
          ))
       ))
@@ -651,7 +694,7 @@ typecheck-infer-expr := λctx e used . (tail(
       ))
       ( (Size( typf sizf )) (
          (if (typecheck-lookup-type e) () (
-            (set typecheck-size ( typecheck-size ( (typecheck-infer-type-compound typf) (typecheck-infer-type-compound sizf) ) ))
+            (typecheck-set-size( (typecheck-infer-type-compound typf) (typecheck-infer-type-compound sizf) ))
          ))
          (typecheck-ascript( e Nil ))
       ))

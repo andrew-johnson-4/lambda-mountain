@@ -26,6 +26,9 @@ compile-expr-strict := λctx e offset used . (tail(
             ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
                (local sz)
                (set sz (typecheck-sizeof (typecheck-lookup-type rhs)))
+               (if sz () (
+                  (fail (NoSizeOf (typecheck-lookup-type rhs)))
+               ))
                (set ctx (ctx (StackVariable( lname (i2s(add( (s2i offset) (inv(s2i sz)) ))) (typecheck-lookup-type rhs) )) ))
                (set e1 (expr::new()) )
                (set e1 (expr::set-frame( e1 ( \t 'sub \s '$ sz , \s '%rsp \n ) )))
@@ -236,4 +239,55 @@ get-strict-function := λctx v arg_type . (tail(
       (set ctx (head ctx))
    ))
    r
+));
+
+strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
+   (match type-body (
+      ()
+      ( (Literal enum-case) (tail(
+         #define 'mov initializer
+         (local body)
+         (set body (Lambda(
+            (App(
+               (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
+               (App( (App( (Literal ':) (Variable 'dst) )) (Literal LocalVariable) ))
+            ))
+            (App( (Variable '.program) (
+               \t 'movq \s '$ case-number ', \s
+               (App( (Variable '.expression) (Variable 'dst) )) \s
+               \[ '%rbp \] \n
+            )))
+         )))
+         (typecheck-ascript( body ('->(
+            (Cons( (And( Constant base-type )) LocalVariable ))
+            Nil
+         ))))
+         (set ctx (ctx (
+            (Fragment( (Variable 'mov) body ))
+         )))
+      )))
+      ( () () )
+      ( u (tail(
+         (fail ('strict-codegen-type-case u))
+      )))
+   ))
+   ctx
+));
+
+strict-codegen-type := λ ctx type-name type-body case-number . (match type-body (
+   ()
+   ( (App( (App( tds (Variable '|) )) body )) (tail(
+      (local base-type)
+      (set base-type (typecheck-infer-type-compound type-name))
+      (local next-case-number)
+      (set next-case-number (i2s(inc(s2i( case-number )))))
+      (set ctx (strict-codegen-type( ctx type-name tds next-case-number )))
+      (strict-codegen-type-case( ctx base-type body case-number ))
+   )))
+   ( body (tail(
+      (local base-type)
+      (set base-type (typecheck-infer-type-compound type-name))
+      (strict-codegen-type-case( ctx base-type type-body case-number ))
+   )))
+   (print-s (CodegenType type-name type-body))(print-s \n)
 ));
