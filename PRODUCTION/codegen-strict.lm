@@ -238,7 +238,32 @@ get-strict-function := λctx v arg_type . (tail(
    r
 ));
 
-strict-codegen-type := λ ctx type-name type-body . (tail(
-   (print-s (CodegenType type-name type-body))(print-s \n)
+strict-codegen-type-case := λ ctx base-type type-body . (tail(
+   (match type-body (
+      ()
+      ( (Literal enum-case) (tail(
+         (print-s( CodegenBase base-type enum-case ))(print-s \n)
+      )))
+      ( () () )
+      ( u (tail(
+         (fail ('strict-codegen-type-case u))
+      )))
+   ))
    ctx
+));
+
+strict-codegen-type := λ ctx type-name type-body . (match type-body (
+   ()
+   ( (App( (App( tds (Variable '|) )) body )) (tail(
+      (local base-type)
+      (set base-type (typecheck-infer-type-compound type-name))
+      (set ctx (strict-codegen-type( ctx type-name tds )))
+      (strict-codegen-type-case( ctx base-type body ))
+   )))
+   ( body (tail(
+      (local base-type)
+      (set base-type (typecheck-infer-type-compound type-name))
+      (strict-codegen-type-case( ctx base-type type-body ))
+   )))
+   (print-s (CodegenType type-name type-body))(print-s \n)
 ));
