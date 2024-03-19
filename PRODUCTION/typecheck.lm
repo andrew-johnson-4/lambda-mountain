@@ -500,7 +500,7 @@ typecheck-infer-type-definition := λbase-type def . (match def (
    ( (App( (App( tds (Variable '|) )) body )) (max(
       (typecheck-infer-type-definition( base-type tds ))
       (typecheck-infer-type-constructor( base-type body ))
-   ))
+   )))
    ( body (
       (typecheck-infer-type-constructor( base-type body ))
    ))
@@ -524,7 +524,6 @@ typecheck-infer-constructor-type := λtag . (tail(
 ));
 
 typecheck-set-size := λ tt sz . (if sz (tail(
-   (print-s (TypecheckSetSize tt sz))(print-s \n)
    (local sizes)
    (local has-size)
    (while sizes (
@@ -623,6 +622,7 @@ typecheck-infer-expr := λctx e used . (tail(
          (if ctype (
             (typecheck-ascript( e (And( Constant ctype )) ))
          ) (
+            (print-s (AscriptedGradual e))(print-s \n)
             (typecheck-ascript( e Atom ))
          ))
       ))

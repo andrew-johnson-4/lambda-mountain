@@ -413,13 +413,20 @@ is-typeof := λ term tt . (match tt (
 
 max := λ l r . (tail(
    (local li)
-   (set li (i2s l))
+   (set li (s2i l))
    (local ri)
-   (set ri (i2s r))
+   (set ri (s2i r))
    (local return)
    (while (not return) (
-      (print-s (L (i2s l)))(print-s \n)
-      (print-s (R (i2s r)))(print-s \n)
+      (if (not li) (
+        (set return r)
+      ) (
+         (if (not ri) (
+            (set return l)
+         ) ())
+      ))
+      (set li (dec li))
+      (set ri (dec ri))
    ))
    l
 ));
