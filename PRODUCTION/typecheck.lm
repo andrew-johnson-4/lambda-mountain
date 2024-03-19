@@ -467,6 +467,7 @@ typecheck-infer-type-constructor := λbase-type body . (match body (
    ( (Literal tag) (tail(
       #typecheck-global-context
       (set typecheck-constructors ( typecheck-constructors (tag base-type) ))
+      1
    )))
    ( (App( (Literal tag) args )) (
       (fail (TODO LiteralTagConstructors tag))
@@ -475,21 +476,19 @@ typecheck-infer-type-constructor := λbase-type body . (match body (
 #      (set typecheck-constructors ( typecheck-constructors (tag ('->(ctype (tag ctype)))) ))
 #      (set typecheck-subtypes ( typecheck-subtypes ((tag ctype) (typecheck-infer-type-compound name)) ))
    ))
-   ( () () )
+   ( () 0 )
    ( u ( fail (UnknownTypeConstructor u)))
 ));
 
 typecheck-infer-type-definition := λbase-type def . (match def (
    ()
-   ( (App( (App( tds (Variable '|) )) body )) (tail(
+   ( (App( (App( tds (Variable '|) )) body )) (max(
       (typecheck-infer-type-definition( base-type tds ))
       (typecheck-infer-type-constructor( base-type body ))
-      1
-   )))
-   ( body (tail(
+   ))
+   ( body (
       (typecheck-infer-type-constructor( base-type body ))
-      1
-   )))
+   ))
 ));
 
 typecheck-infer-constructor-type := λtag . (tail(
@@ -509,6 +508,25 @@ typecheck-infer-constructor-type := λtag . (tail(
    ctype
 ));
 
+typecheck-set-size := λ tt sz . (if sz (tail(
+   (print-s (TypecheckSetSize tt sz))(print-s \n)
+   (local sizes)
+   (local has-size)
+   (while sizes (
+      (if (deep-eq( (head (tail sizes)) tt )) (
+         (set has-size True)
+      ) ())
+      (set sizes (head sizes))
+   ))
+   (if has-size () (
+      (if (eq( sz Unsized )) (
+         (set typecheck-size ( typecheck-size ( tt () )))
+      ) (
+         (set typecheck-size ( typecheck-size ( tt sz )))
+      ))
+   ))
+)) ());
+
 typecheck-infer-type-expr := λe . (match e (
    ()
    ( (Type( l ds )) (
@@ -519,7 +537,7 @@ typecheck-infer-type-expr := λe . (match e (
       )))
       (local sz)
       (set sz (typecheck-infer-type-definition( base-type ds )))
-      (set typecheck-size ( typecheck-size ( base-type sz ) ))
+      (typecheck-set-size( base-type sz ))
       (typecheck-ascript( e '? ))
    ))
    (_ ())
@@ -661,7 +679,7 @@ typecheck-infer-expr := λctx e used . (tail(
       ))
       ( (Size( typf sizf )) (
          (if (typecheck-lookup-type e) () (
-            (set typecheck-size ( typecheck-size ( (typecheck-infer-type-compound typf) (typecheck-infer-type-compound sizf) ) ))
+            (typecheck-set-size( (typecheck-infer-type-compound typf) (typecheck-infer-type-compound sizf) ))
          ))
          (typecheck-ascript( e Nil ))
       ))

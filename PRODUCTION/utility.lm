@@ -410,3 +410,16 @@ is-typeof := λ term tt . (match tt (
    ( () (fail (UnknownTypeofType tt)))
    ( label (eq( (head term) label )) )
 ));
+
+max := λ l r . (tail(
+   (local li)
+   (set li (i2s l))
+   (local ri)
+   (set ri (i2s r))
+   (local return)
+   (while (not return) (
+      (print-s (L (i2s l)))(print-s \n)
+      (print-s (R (i2s r)))(print-s \n)
+   ))
+   l
+));
