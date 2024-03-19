@@ -2,7 +2,7 @@
 type E CaseOne | CaseTwo | CaseThree;
 
 main := (
-#   (let x CaseOne)
+   (let x CaseOne)
    ()
 #   (let y CaseTwo)
 #   (let z CaseThree)
