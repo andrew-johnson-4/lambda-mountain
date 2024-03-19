@@ -480,9 +480,8 @@ typecheck-infer-type-compound := λcompound . (match compound (
 typecheck-infer-type-constructor := λbase-type body . (match body (
    ()
    ( (Literal tag) (tail(
-      #typecheck-global-context
       (set typecheck-constructors ( typecheck-constructors (tag base-type) ))
-      1
+      8
    )))
    ( (App( (Literal tag) args )) (
       (fail (TODO LiteralTagConstructors tag))
