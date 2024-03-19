@@ -27,8 +27,10 @@ typecheck := λprogram . (tail(
       (typecheck-infer-type-expr( (tail p) ))
       (set p (head p))
    ))
+   (print-s (Inferred))(print-s \n)
    (set typecheck-types-have-changed True)
    (while typecheck-types-have-changed (
+      (print-s (IterateTypecheck))(print-s \n)
       (set typecheck-types-have-changed ())
       (typecheck-infer-prog program)
    ))
@@ -229,6 +231,7 @@ typecheck-show-ascript := λp . (tail(
 
 typecheck-infer-prog := λp . (
    (while p (
+      (print-s (InferProg (tail p)))(print-s \n)
       (typecheck-infer-expr( () (tail p) Used ))
       (set p (head p))
    ))
@@ -514,8 +517,19 @@ typecheck-infer-type-expr := λe . (match e (
       (local base-type)
       (set base-type (typecheck-infer-type-compound l))
       (print-s (TypeTagField0Tag base-type))(print-s \n)
-      #typecheck-global-context
-
+      (set typecheck-global-context ( typecheck-global-context (
+         (Fragment( '.0 (Lambda( 
+            (App(
+               (App( (Literal ':) (Variable 'base) ))
+               (App( (Literal And) (App(
+                  (Literal LocalVariable)
+                  l
+               ))))
+            ))
+            (Literal TODOGetOffset)
+         ))))
+      )))
+      (print-s (AddIndexer (tail typecheck-global-context)))(print-s \n)
       (typecheck-infer-type-definition( base-type ds ))
       (typecheck-ascript( e '? ))
    ))
