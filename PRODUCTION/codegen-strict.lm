@@ -259,7 +259,7 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
             )))
          )))
          (typecheck-ascript( body ('->(
-            (Cons( (And( Constant base-type )) LocalVariable ))
+            (Cons( (And( enum-case base-type )) LocalVariable ))
             Nil
          ))))
          (set ctx (ctx (
@@ -289,5 +289,4 @@ strict-codegen-type := λ ctx type-name type-body case-number . (match type-body
       (set base-type (typecheck-infer-type-compound type-name))
       (strict-codegen-type-case( ctx base-type type-body case-number ))
    )))
-   (print-s (CodegenType type-name type-body))(print-s \n)
 ));
