@@ -82,7 +82,7 @@ However, by providing type annotations on all overloaded functions it becomes de
 * Plural Types (Types behave more like logical predicates)
 * Higher Order Functions (Functional Programming)
 * Parametric Polymorphism (Generic Programming)
-* Subtyping (Class Hierarchies)
+* Subtyping (Object Hierarchies)
 * Ad-Hoc Polymorphism (Function Hierarchies)
 
 <a href="https://github.com/andrew-johnson-4/-/wiki#mascot"> <img src="https://raw.githubusercontent.com/andrew-johnson-4/-/main/DOBY.jpg" height=200 title="Doby being a prototypical ass."> </a>
