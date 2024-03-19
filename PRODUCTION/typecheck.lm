@@ -449,7 +449,22 @@ typecheck-safe-apply-plural := λterm many pt . (tail(
    (local r)
    (set r (typecheck-apply-plural( many pt )))
    (if r r (
-      fail (TypeError( InvalidArgument many pt ))
+      (print-s TypeError)(print-s \s)(print-s InvalidArgument)(print-s \n)
+      (print-s Argument:)(print-s \n)
+      (print-s \t)(print-s pt)(print-s \n)
+      (print-s Candidates:)(print-s \n)
+      (while many (match many (
+         ()
+         ( (And( lmt rmt )) (tail(
+            (print-s \t)(print-s rmt)(print-s \n)
+            (set many lmt)
+         )))
+         ( mt (tail(
+            (print-s \t)(print-s mt)(print-s \n)
+            (set many ())
+         )))
+      )))
+      (exit 1)
    ))
 ));
 
