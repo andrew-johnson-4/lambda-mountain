@@ -58,7 +58,8 @@ assemble := λprogram . (
          (set global_ctx (global_ctx (Fragment( fname fbody )) ))
          (set preview_program prog)
       ))
-      ( (prog (Type( _ _ ))) (
+      ( (prog (Type( tn tb ))) (
+         (set global_ctx (strict-codegen-type( global_ctx tn tb )))
          (set preview_program prog)
       ))
       ( (prog (Size( _ _ ))) (

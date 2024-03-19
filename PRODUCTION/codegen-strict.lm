@@ -1,6 +1,5 @@
 
 compile-expr-strict := λctx e offset used . (tail(
-   (print-s (CompileExpr e))(print-s \n)
    (assert-typeof( 'compile-expr-strict::offset offset Atom ))
    (assert-typeof( 'compile-expr-strict::used used Atom ))
    (local e1)
@@ -237,4 +236,9 @@ get-strict-function := λctx v arg_type . (tail(
       (set ctx (head ctx))
    ))
    r
+));
+
+strict-codegen-type := λ ctx type-name type-body . (tail(
+   (print-s (CodegenType type-name type-body))(print-s \n)
+   ctx
 ));
