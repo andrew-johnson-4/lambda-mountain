@@ -166,6 +166,11 @@ typecheck-ascript := λt tt . (
             fail (TypeAscriptionInequality lt tt)
          ))
       ) (
+         (local size)
+         (set size (typecheck-sizeof tt))
+         (if size (
+            (set tt (And( tt (Sized size) )))
+         ) ())
          (set typecheck-context ((t tt) typecheck-context))
          (set typecheck-types-have-changed True)
       ))
@@ -362,29 +367,32 @@ typecheck-unify-implies := λlt rt . (if (eq(lt rt)) True (match lt (
    )))
 )));
 
+# rt must imply lt, rt is realized, lt is expected
 typecheck-unify-args := λlt rt . (tail(
-   (local match)
-   (local accept-as)
-   (set accept-as typecheck-accept-as)
-   (while accept-as (
-      (if match () (
-         (if (deep-eq( (head (tail accept-as)) rt )) (
-            (set match (typecheck-unify-args-inner( lt (tail (tail accept-as)) )))
-         ) ())
-      ))
-      (set accept-as (head accept-as))
-   ))
    (local result)
-   (set result (if match (
-      match
-   ) (
-      (typecheck-unify-args-inner( lt rt ))
-   )))
+   (set result (typecheck-unify-args-inner( lt rt )))
    result
 ));
 
 typecheck-unify-args-inner := λlt rt . (match (lt rt) (
    ()
+   ( ( (And( lt1 lt2 )) rt ) (
+      (match ( (typecheck-unify-args(lt1 rt)) (typecheck-unify-args(lt2 rt)) ) (
+         ()
+         ( (() _) () )
+         ( (_ ()) () )
+         ( (lctx rctx) (lctx rctx) )
+      ))
+   ))
+   ( ( lt (And( rt1 rt2 )) ) (
+      (match ( (typecheck-unify-args(lt rt1)) (typecheck-unify-args(lt rt2)) ) (
+         ()
+         ( (() ()) () )
+         ( (() ctx) ctx )
+         ( (ctx ()) ctx )
+         ( (lctx rctx) (lctx rctx) )
+      ))
+   ))
    ( ((lt1 rt1) (lt2 rt2)) (
       (match ( (typecheck-unify-args(lt1 lt2)) (typecheck-unify-args(rt1 rt2)) ) (
          ()
@@ -665,7 +673,6 @@ typecheck-sizeof := λtt . (match tt (
       (local sz)
       (set sz (typecheck-sizeof lt))
       (if sz () (set sz (typecheck-sizeof rt)))
-      (if sz () (fail (UnknownSize tt)))
       sz
    )))
    ( (Cons( lt rt )) (
@@ -674,8 +681,8 @@ typecheck-sizeof := λtt . (match tt (
          (s2i(typecheck-sizeof( rt )))
       )))
    ))
-   ( (_ _) (fail (TODO Sizeof tt)))
-   ( () (fail (TODO Sizeof tt)))
+   ( (_ _) ())
+   ( () ())
    ( _ (tail(
       (local sz)
       (local sizes)
@@ -719,6 +726,24 @@ typecheck-as-return := λrt . (tail(
       (4 (And( Reg32 rt )))
       (8 (And( Reg64 rt )))
    ))
+));
+
+typecheck-slot := λtt tag . (tail(
+   (local return)
+   (set return (match tt (
+      ()
+      ( (And( lt rt )) (tail(
+         (local lts)
+         (set lts (typecheck-slot( lt tag )))
+         (if lts lts (typecheck-slot( rt tag )))
+      )))
+      ( ( (_ _) _ ) () )
+      ( ( t r ) (
+         if (eq( t tag )) tt ()
+      ))
+      ( _ () )
+   )))
+   return
 ));
 
 typecheck-rvalue := λtt . (match tt (
