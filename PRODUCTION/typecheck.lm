@@ -166,6 +166,11 @@ typecheck-ascript := λt tt . (
             fail (TypeAscriptionInequality lt tt)
          ))
       ) (
+         (local size)
+         (set size (typecheck-sizeof tt))
+         (if size (
+            (set tt (And( tt (Sized size) )))
+         ) ())
          (set typecheck-context ((t tt) typecheck-context))
          (set typecheck-types-have-changed True)
       ))
@@ -665,7 +670,6 @@ typecheck-sizeof := λtt . (match tt (
       (local sz)
       (set sz (typecheck-sizeof lt))
       (if sz () (set sz (typecheck-sizeof rt)))
-      (if sz () (fail (UnknownSize tt)))
       sz
    )))
    ( (Cons( lt rt )) (
@@ -674,8 +678,8 @@ typecheck-sizeof := λtt . (match tt (
          (s2i(typecheck-sizeof( rt )))
       )))
    ))
-   ( (_ _) (fail (TODO Sizeof tt)))
-   ( () (fail (TODO Sizeof tt)))
+   ( (_ _) ())
+   ( () ())
    ( _ (tail(
       (local sz)
       (local sizes)
