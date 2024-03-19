@@ -35,7 +35,11 @@ fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
       (fragment-substitute-context( ctx l ))
       (fragment-substitute-context( ctx r ))
    ))
-   ( u (fail (UnknownFragmentSubstitution u)))
+   ( (l r) (
+      (fragment-substitute-context( ctx l ))
+      (fragment-substitute-context( ctx r ))
+   ))
+   ( u u )
 ));
 
 fragment-apply-context := λctx fragment-rhs e . (tail(
