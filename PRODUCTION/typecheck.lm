@@ -27,10 +27,8 @@ typecheck := λprogram . (tail(
       (typecheck-infer-type-expr( (tail p) ))
       (set p (head p))
    ))
-   (print-s (Inferred))(print-s \n)
    (set typecheck-types-have-changed True)
    (while typecheck-types-have-changed (
-      (print-s (IterateTypecheck))(print-s \n)
       (set typecheck-types-have-changed ())
       (typecheck-infer-prog program)
    ))
@@ -231,7 +229,6 @@ typecheck-show-ascript := λp . (tail(
 
 typecheck-infer-prog := λp . (
    (while p (
-      (print-s (InferProg (tail p)))(print-s \n)
       (typecheck-infer-expr( () (tail p) Used ))
       (set p (head p))
    ))
@@ -274,9 +271,9 @@ typecheck-typeof-gvar := λv . (tail(
                   (set tt gt)
                ))
             ) ())
-            (set gctx (head gctx))
          ))
       ))
+      (set gctx (head gctx))
    ))
    tt
 ));
@@ -468,7 +465,6 @@ typecheck-infer-type-compound := λcompound . (match compound (
 typecheck-infer-type-constructor := λbase-type body . (match body (
    ()
    ( (Literal tag) (tail(
-      (print-s (TypeConstructor base-type tag))(print-s \n)
       #typecheck-global-context
       (set typecheck-constructors ( typecheck-constructors (tag base-type) ))
    )))
@@ -516,20 +512,9 @@ typecheck-infer-type-expr := λe . (match e (
    ( (Type( l ds )) (
       (local base-type)
       (set base-type (typecheck-infer-type-compound l))
-      (print-s (TypeTagField0Tag base-type))(print-s \n)
       (set typecheck-global-context ( typecheck-global-context (
-         (Fragment( '.0 (Lambda( 
-            (App(
-               (App( (Literal ':) (Variable 'base) ))
-               (App( (Literal And) (App(
-                  (Literal LocalVariable)
-                  l
-               ))))
-            ))
-            (Literal TODOGetOffset)
-         ))))
+         (Global( '.0 ('->( base-type U64 )) ))
       )))
-      (print-s (AddIndexer (tail typecheck-global-context)))(print-s \n)
       (typecheck-infer-type-definition( base-type ds ))
       (typecheck-ascript( e '? ))
    ))
