@@ -243,6 +243,20 @@ strict-codegen-type-case := λ ctx base-type type-body . (tail(
       ()
       ( (Literal enum-case) (tail(
          (print-s( CodegenBase base-type enum-case ))(print-s \n)
+
+         #define 'mov initializer
+         (local body)
+         (set body (
+            TODO 'mov 'body 'into 'local-variable
+         ))
+         (typecheck-ascript( body ('->(
+            (Cons( (And( Constant base-type )) LocalVariable ))
+            Nil
+         ))))
+         (set ctx (ctx (
+            (Fragment( (Variable 'mov) body ))
+         )))
+
       )))
       ( () () )
       ( u (tail(
