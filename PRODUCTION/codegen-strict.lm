@@ -30,7 +30,7 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e1 (expr::new()) )
                (set e1 (expr::set-frame( e1 ( \t 'sub \s '$ sz , \s '%rsp \n ) )))
                (set e1 (expr::set-unframe( e1 ( \t 'add \s '$ sz , \s '%rsp \n ) )))
-               (match (typecheck-lookup-type rhs) (
+               (match (typecheck-slot( (typecheck-lookup-type rhs) Cons )) (
                   ()
                   ( (Cons( lt rt )) (tail(
                      (set e2 (expr::new()) )
@@ -40,7 +40,7 @@ compile-expr-strict := λctx e offset used . (tail(
                      (while at (
                         (local next-e2)
                         (local next-e3)
-                        (match at (
+                        (match (typecheck-slot( at Cons )) (
                            ()
                            ( (Cons( lt rt )) (tail(
                               (match rhs (
@@ -165,7 +165,6 @@ compile-expr-strict := λctx e offset used . (tail(
             )))
             ( (App (l r)) (tail(
                (if (eq( used Used )) (
-                  (print-s (typecheck-lookup-type e))(print-s \n)
                   (fail (TODO Gradual Type A Cons e))
                ) (
                   (set e1 (compile-expr-strict( ctx l offset Unused )))
