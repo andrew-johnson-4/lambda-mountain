@@ -481,13 +481,15 @@ typecheck-infer-type-constructor := λbase-type body . (match body (
 
 typecheck-infer-type-definition := λbase-type def . (match def (
    ()
-   ( (App( (App( tds (Variable '|) )) body )) (
+   ( (App( (App( tds (Variable '|) )) body )) (tail(
       (typecheck-infer-type-definition( base-type tds ))
       (typecheck-infer-type-constructor( base-type body ))
-   ))
-   ( body (
+      1
+   )))
+   ( body (tail(
       (typecheck-infer-type-constructor( base-type body ))
-   ))
+      1
+   )))
 ));
 
 typecheck-infer-constructor-type := λtag . (tail(
@@ -515,7 +517,9 @@ typecheck-infer-type-expr := λe . (match e (
       (set typecheck-global-context ( typecheck-global-context (
          (Global( '.0 ('->( base-type U64 )) ))
       )))
-      (typecheck-infer-type-definition( base-type ds ))
+      (local sz)
+      (set sz (typecheck-infer-type-definition( base-type ds )))
+      (set typecheck-size ( typecheck-size ( base-type sz ) ))
       (typecheck-ascript( e '? ))
    ))
    (_ ())

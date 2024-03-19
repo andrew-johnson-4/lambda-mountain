@@ -26,6 +26,9 @@ compile-expr-strict := λctx e offset used . (tail(
             ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
                (local sz)
                (set sz (typecheck-sizeof (typecheck-lookup-type rhs)))
+               (if sz () (
+                  (fail (NoSizeOf (typecheck-lookup-type rhs)))
+               ))
                (set ctx (ctx (StackVariable( lname (i2s(add( (s2i offset) (inv(s2i sz)) ))) (typecheck-lookup-type rhs) )) ))
                (set e1 (expr::new()) )
                (set e1 (expr::set-frame( e1 ( \t 'sub \s '$ sz , \s '%rsp \n ) )))
@@ -242,8 +245,6 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
    (match type-body (
       ()
       ( (Literal enum-case) (tail(
-         (print-s( CodegenBase base-type enum-case ))(print-s \n)
-
          #define 'mov initializer
          (local body)
          (set body (Lambda(
@@ -252,7 +253,7 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
                (App( (App( (Literal ':) (Variable 'dst) )) (Literal LocalVariable) ))
             ))
             (App( (Variable '.program) (
-               \t 'mov \s '$ case-number ', \s
+               \t 'movq \s '$ case-number ', \s
                (App( (Variable '.expression) (Variable 'dst) )) \s
                \[ '%rbp \] \n
             )))
