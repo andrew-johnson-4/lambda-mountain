@@ -59,7 +59,7 @@ assemble := λprogram . (
          (set preview_program prog)
       ))
       ( (prog (Type( tn tb ))) (
-         (set global_ctx (strict-codegen-type( global_ctx tn tb )))
+         (set global_ctx (strict-codegen-type( global_ctx tn tb 0 )))
          (set preview_program prog)
       ))
       ( (prog (Size( _ _ ))) (
