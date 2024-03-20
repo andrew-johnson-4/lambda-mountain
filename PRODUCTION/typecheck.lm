@@ -25,6 +25,11 @@ typecheck := λprogram . (tail(
    (local p)
    (set p program)
    (while p (
+      (typecheck-scan-sizes( (tail p) ))
+      (set p (head p))
+   ))
+   (set p program)
+   (while p (
       (typecheck-infer-type-expr( (tail p) ))
       (set p (head p))
    ))
@@ -484,13 +489,14 @@ typecheck-infer-type-constructor := λbase-type body . (match body (
       (set typecheck-constructors ( typecheck-constructors (tag base-type) ))
       8
    )))
-   ( (App( (Literal tag) args )) (
-      (fail (TODO LiteralTagConstructors tag))
-#      (local ctype)
-#      (set ctype (typecheck-infer-type-compound args))
-#      (set typecheck-constructors ( typecheck-constructors (tag ('->(ctype (tag ctype)))) ))
-#      (set typecheck-subtypes ( typecheck-subtypes ((tag ctype) (typecheck-infer-type-compound name)) ))
-   ))
+   ( (App( (Literal tag) args )) (tail(
+      (local ctype)
+      (set ctype (typecheck-infer-type-compound args))
+      (set typecheck-constructors ( typecheck-constructors (tag ('->(ctype (And( base-type tag )) ))) ))
+      (local size)
+      (set size (i2s(add( (s2i 8) (s2i( typecheck-sizeof ctype )) ))) )
+      size
+   )))
    ( () 0 )
    ( u ( fail (UnknownTypeConstructor u)))
 ));
@@ -694,15 +700,20 @@ typecheck-infer-expr := λctx e used . (tail(
          ))
       ))
       ( (Size( typf sizf )) (
-         (if (typecheck-lookup-type e) () (
-            (set typf (typecheck-infer-type-compound typf))
-            (typecheck-set-size( typf (typecheck-infer-type-compound sizf) ))
-         ))
          (typecheck-ascript( e Nil ))
       ))
       ( u (fail (UnknownTerm u)) )
    ))
    ctx
+));
+
+typecheck-scan-sizes := λterm . (match term (
+   ()
+   ( (Size( typf sizf )) (tail(
+      (set typf (typecheck-infer-type-compound typf))
+      (typecheck-set-size( typf (typecheck-infer-type-compound sizf) ))
+   )))
+   ( _ () )
 ));
 
 typecheck-sizeof := λtt . (match tt (
