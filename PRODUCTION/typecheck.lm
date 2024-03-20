@@ -478,6 +478,7 @@ typecheck-infer-type-compound := λcompound . (match compound (
    ()
    ((Literal tt) tt)
    ((Variable tt) tt)
+   ((App( (App( lt (Literal ',) )) rt )) (Cons( (typecheck-infer-type-compound lt) (typecheck-infer-type-compound rt) )) )
    ((App( (Literal lt) rt )) ( lt (typecheck-infer-type-compound rt) ) )
    ((App( lt rt )) (Cons( (typecheck-infer-type-compound lt) (typecheck-infer-type-compound rt) )) )
    (u (fail (UnknownTypeCompound u)))

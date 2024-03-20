@@ -1,5 +1,5 @@
 
-type LR (Left( U8 U16 U32 U64 )) | (Right( I64 I32 I16 I8 ));
+type LR (Left( U8 , U16 , U32 , U64 )) | (Right( I64 , I32 , I16 , I8 ));
 
 main := (
    (let l (Left( 1u8 2u16 3u32 4u64 )))
