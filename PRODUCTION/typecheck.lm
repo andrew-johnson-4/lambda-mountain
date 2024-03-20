@@ -448,7 +448,7 @@ typecheck-apply-plural := λmany pt . (match many(
       ) ())
       result
    )))
-   ( u (fail (ApplicationIsNotAFunction many pt)))
+   ( u ())
 ));
 
 typecheck-safe-apply-plural := λterm many pt . (tail(
@@ -658,24 +658,12 @@ typecheck-infer-expr := λctx e used . (tail(
       ( (App( l r )) (tail(
          (set ctx (typecheck-infer-expr( ctx l used )))
          (set ctx (typecheck-infer-expr( ctx r used )))
-         (match ( (typecheck-lookup-type l) (typecheck-lookup-type r) ) (
+         (match ( (typecheck-slot( (typecheck-lookup-type l) '-> )) (typecheck-lookup-type r) ) (
             ()
             ( (() _) () )
             ( (_ ()) () )
             ( ( ('->(lt rt)) pt ) (
-               (typecheck-ascript( e (typecheck-safe-apply-plural( e ('->(lt rt)) pt )) ))
-            ))
-            ( ( (And(t1 ('->(lt rt)))) pt ) (
-               (typecheck-ascript( e (typecheck-safe-apply-plural( e (And(t1 ('->(lt rt)))) pt )) ))
-            ))
-            ( ( (And(('->(lt rt)) t2)) pt ) (
-               (typecheck-ascript( e (typecheck-safe-apply-plural( e (And(('->(lt rt)) t2)) pt )) ))
-            ))
-            ( (Fragment rt) (
-               (typecheck-ascript( e rt ))
-            ))
-            ( (_ Fragment) (
-               (typecheck-ascript( e Fragment ))
+               (typecheck-ascript( e (typecheck-safe-apply-plural( e (typecheck-lookup-type l) pt )) ))
             ))
             ( (lt rt) (
                (typecheck-ascript( e (Cons(lt rt)) ))
