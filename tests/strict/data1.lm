@@ -6,7 +6,6 @@ main := (
    (let y CaseTwo)
    (let z CaseThree)
    (print (.0 x))
-   ()
-#   (print (.0 y))
-#   (print (.0 z))
+   (print (.0 y))
+   (print (.0 z))
 );
