@@ -551,7 +551,7 @@ typecheck-infer-type-expr := λe . (match e (
       )))
       (local sz)
       (set sz (typecheck-infer-type-definition( base-type ds )))
-      (if (eq( sz '0 )) () (
+      (if (typecheck-is-fragment base-type) () (
          (typecheck-set-size( base-type sz ))
       ))
       (typecheck-ascript( e '? ))
@@ -695,7 +695,8 @@ typecheck-infer-expr := λctx e used . (tail(
       ))
       ( (Size( typf sizf )) (
          (if (typecheck-lookup-type e) () (
-            (typecheck-set-size( (typecheck-infer-type-compound typf) (typecheck-infer-type-compound sizf) ))
+            (set typf (typecheck-infer-type-compound typf))
+            (typecheck-set-size( typf (typecheck-infer-type-compound sizf) ))
          ))
          (typecheck-ascript( e Nil ))
       ))
