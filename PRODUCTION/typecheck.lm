@@ -6,6 +6,7 @@ typecheck-constructors                   := ();
 typecheck-types-have-changed             := ();
 typecheck-global-context                 := ();
 typecheck-size                           := ();
+typecheck-fragment-types                 := ();
 
 typecheck-init := λ. (
    (set typecheck-subtypes 
@@ -798,3 +799,16 @@ typecheck-rvalue := λtt . (match tt (
 mangle-global-function := λname body . (
    (clone-rope (label-case ( name : (typecheck-lookup-type body) )))
 );
+
+typecheck-is-fragment := λtt . (tail(
+   (local is-fragment)
+   (local fragment-types)
+   (set fragment-types typecheck-fragment-types)
+   (while fragment-types (
+      (if (deep-eq( tt (tail fragment-types) )) (
+         (set is-fragment True)
+      ) ())
+      (set fragment-types (head fragment-types))
+   ))
+   is-fragment
+));
