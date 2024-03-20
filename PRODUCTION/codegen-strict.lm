@@ -246,6 +246,11 @@ get-strict-function := λctx v arg_type . (tail(
 strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
    (if (typecheck-is-fragment base-type) () (match type-body (
       ()
+      ( (App( (Literal enum-case) args )) (tail(
+         (local args_type)
+         (set args_type (typecheck-infer-type-compound args))
+         (fail (TODO Codegen Literal enum-case args_type))
+      )))
       ( (Literal enum-case) (tail(
          #define 'mov initializer
          (local body)
