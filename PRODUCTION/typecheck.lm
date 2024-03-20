@@ -546,7 +546,7 @@ typecheck-infer-type-expr := λe . (match e (
       (local base-type)
       (set base-type (typecheck-infer-type-compound l))
       (set typecheck-global-context ( typecheck-global-context (
-         (Global( '.0 ('->( base-type U64 )) ))
+         (Global( '.0 ('->( base-type (And( U64 Reg64 )) )) ))
       )))
       (local sz)
       (set sz (typecheck-infer-type-definition( base-type ds )))
