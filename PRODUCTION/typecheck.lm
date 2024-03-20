@@ -775,12 +775,18 @@ typecheck-as-return := λrt . (tail(
 
 typecheck-slot := λtt tag . (tail(
    (local return)
+   (set return (typecheck-slot-inner( tt tag )))
+   (if return return tt)
+));
+
+typecheck-slot-inner := λtt tag . (tail(
+   (local return)
    (set return (match tt (
       ()
       ( (And( lt rt )) (tail(
          (local lts)
-         (set lts (typecheck-slot( lt tag )))
-         (if lts lts (typecheck-slot( rt tag )))
+         (set lts (typecheck-slot-inner( lt tag )))
+         (if lts lts (typecheck-slot-inner( rt tag )))
       )))
       ( ( (_ _) _ ) () )
       ( ( t r ) (
