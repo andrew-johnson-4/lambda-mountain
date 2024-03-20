@@ -29,10 +29,14 @@ stack-call := λ ctx function-name function-args offset . (tail(
             (expr::get-frame e-args)
             (expr::get-prog e-args)
             (enter-function())
-            ( \t 'sub \s '$ (expr::get-expr e-args) , \s '%rsp \n )
+            (if (eq( (expr::get-expr e-args) 0 )) () (
+               ( \t 'sub \s '$ (expr::get-expr e-args) , \s '%rsp \n )
+            ))
             copy-bytes
             (\t 'call \s (mangle-global-function( fname body )) \n)
-            ( \t 'add \s '$ (expr::get-expr e-args) , \s '%rsp \n )
+            (if (eq( (expr::get-expr e-args) 0 )) () (
+               ( \t 'add \s '$ (expr::get-expr e-args) , \s '%rsp \n )
+            ))
             (\t 'mov \s '%rbp, \s '%rsp              \n
              \t 'pop \s '%rbp                        \n)
             (expr::get-unframe e-args)
