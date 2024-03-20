@@ -38,6 +38,7 @@ compile-expr-strict := λctx e offset used . (tail(
                (match (typecheck-slot( (typecheck-lookup-type rhs) Cons )) (
                   ()
                   ( (Cons( lt rt )) (tail(
+                     (print-s (LetBind lname (typecheck-lookup-type rhs)))(print-s \n)
                      (set e2 (expr::new()) )
                      (set e3 (expr::new()) )
                      (local at)
@@ -77,6 +78,7 @@ compile-expr-strict := λctx e offset used . (tail(
                         (set e3 (expr::chain( e3 next-e3 )))
                      ))
                   ))) (_ (tail(
+                     (print-s (LetBind lname (typecheck-lookup-type rhs)))(print-s \n)
                      (set offset (i2s (add( (s2i offset) (inv(s2i sz)) )) )) 
                      (local edst)
                      (set edst (expr::new()))
@@ -155,6 +157,7 @@ compile-expr-strict := λctx e offset used . (tail(
                e1
             )))
             ( (App ((Variable fname) arg)) (tail(
+               (print-s (StackCall fname (typecheck-lookup-type arg)))(print-s \n)
                (set e1 (stack-call( ctx fname arg offset )))
                e1
             )))
@@ -249,7 +252,27 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
       ( (App( (Literal enum-case) args )) (tail(
          (local args_type)
          (set args_type (typecheck-infer-type-compound args))
-         (fail (TODO Codegen Literal enum-case args_type))
+
+         (local body)
+         (set body (Lambda(
+            (App(
+               (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
+               (App( (App( (Literal ':) (Variable 'dst) )) (Literal LocalVariable) ))
+            ))
+            (App( (Variable '.program) (
+               \t 'movq \s '$ case-number ', \s
+               (App( (Variable '.expression) (Variable 'dst) )) \s
+               \[ '%rbp \] \n
+            )))
+         )))
+         (typecheck-ascript( body ('->(
+            (Cons( (And( enum-case base-type )) LocalVariable ))
+            Nil
+         ))))
+         (set ctx (ctx (
+            (Fragment( (Variable 'mov) body ))
+         )))
+
       )))
       ( (Literal enum-case) (tail(
          #define 'mov initializer
