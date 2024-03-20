@@ -31,8 +31,10 @@ compile-expr-strict := λctx e offset used . (tail(
                ))
                (set ctx (ctx (StackVariable( lname (i2s(add( (s2i offset) (inv(s2i sz)) ))) (typecheck-lookup-type rhs) )) ))
                (set e1 (expr::new()) )
-               (set e1 (expr::set-frame( e1 ( \t 'sub \s '$ sz , \s '%rsp \n ) )))
-               (set e1 (expr::set-unframe( e1 ( \t 'add \s '$ sz , \s '%rsp \n ) )))
+               (if (eq( sz '0 )) () (
+                  (set e1 (expr::set-frame( e1 ( \t 'sub \s '$ sz , \s '%rsp \n ) )))
+                  (set e1 (expr::set-unframe( e1 ( \t 'add \s '$ sz , \s '%rsp \n ) )))
+               ))
                (match (typecheck-slot( (typecheck-lookup-type rhs) Cons )) (
                   ()
                   ( (Cons( lt rt )) (tail(
@@ -242,7 +244,7 @@ get-strict-function := λctx v arg_type . (tail(
 ));
 
 strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
-   (match type-body (
+   (if (typecheck-is-fragment base-type) () (match type-body (
       ()
       ( (Literal enum-case) (tail(
          #define 'mov initializer
@@ -265,12 +267,34 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
          (set ctx (ctx (
             (Fragment( (Variable 'mov) body ))
          )))
+
+         #define '.0 accessor
+         (set body (Lambda(
+            (App( (App( (Literal ':) (Variable 'src) )) (Literal LocalVariable) ))
+            (App(
+               (App( (Variable '.program) (
+                  \t 'movq \s (App( (Variable '.expression) (Variable 'src) )) \s \[ '%rbp \] ,
+                  \s '%r15 \n
+               )))
+               (App( (Variable '.expression) (
+                  'r15
+               )))
+            ))
+         )))
+         (typecheck-ascript( body ('->(
+            (And( base-type LocalVariable ))
+            Reg64
+         ))))
+         (set ctx (ctx (
+            (Fragment( (Variable '.0) body ))
+         )))
+
       )))
       ( () () )
       ( u (tail(
          (fail ('strict-codegen-type-case u))
       )))
-   ))
+   )))
    ctx
 ));
 

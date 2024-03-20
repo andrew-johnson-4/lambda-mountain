@@ -29,10 +29,14 @@ stack-call := λ ctx function-name function-args offset . (tail(
             (expr::get-frame e-args)
             (expr::get-prog e-args)
             (enter-function())
-            ( \t 'sub \s '$ (expr::get-expr e-args) , \s '%rsp \n )
+            (if (eq( (expr::get-expr e-args) 0 )) () (
+               ( \t 'sub \s '$ (expr::get-expr e-args) , \s '%rsp \n )
+            ))
             copy-bytes
             (\t 'call \s (mangle-global-function( fname body )) \n)
-            ( \t 'add \s '$ (expr::get-expr e-args) , \s '%rsp \n )
+            (if (eq( (expr::get-expr e-args) 0 )) () (
+               ( \t 'add \s '$ (expr::get-expr e-args) , \s '%rsp \n )
+            ))
             (\t 'mov \s '%rbp, \s '%rsp              \n
              \t 'pop \s '%rbp                        \n)
             (expr::get-unframe e-args)
@@ -110,9 +114,11 @@ stack-call-push-arg := λ ctx e-arg offset args-size . (tail(
    (set new-offset(  (i2s(add( (s2i offset) (inv(s2i( e-sz ))) ))) ))
 
    (local frame)
-   (set frame ( \t 'sub \s '$ e-sz , \s '%rsp \n ))
    (local unframe)
-   (set unframe ( \t 'add \s '$ e-sz , \s '%rsp \n ))
+   (if (eq( e-sz '0 )) () (
+      (set frame ( \t 'sub \s '$ e-sz , \s '%rsp \n ))
+      (set unframe ( \t 'add \s '$ e-sz , \s '%rsp \n ))
+   ))
 
    (set e1 (compile-expr-strict( ctx e-arg new-offset Used )))
    (set e2 (expr::new()))

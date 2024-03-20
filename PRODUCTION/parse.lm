@@ -19,6 +19,16 @@ parse-program := λtoks . (tail(
             (set parse-macros (parse-macros (Macro( (head pme) (head pme2) )) ))
             (set toks (tail pme2))
          ))
+         (('fragment ('type remainder)) (
+            (set pme (parse-one-expression remainder))
+            (set remainder (tail pme))
+            (set pme2 (parse-many-expressions remainder))
+            (set parse-parsed-program ( parse-parsed-program (Type( (head pme) (head pme2) )) ))
+            (set typecheck-fragment-types ( typecheck-fragment-types
+               (typecheck-infer-type-compound (head pme))
+            ))
+            (set toks (tail pme2))
+         ))
          (('fragment remainder) (
             (set pme (parse-one-expression remainder))
             (set remainder (tail pme))

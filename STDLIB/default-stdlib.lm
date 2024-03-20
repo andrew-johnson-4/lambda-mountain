@@ -4,6 +4,7 @@ print := λ(: x U64). (: (tail(
    (gensym-label unsigned)
    (gensym-label pdigits)
    (mov( x R15 ))
+   (mov( 0u64 R14 ))
 
    (label unsigned)
    (mov( R15 RAX ))

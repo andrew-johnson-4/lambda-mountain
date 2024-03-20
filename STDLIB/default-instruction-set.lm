@@ -1,8 +1,8 @@
 
-type Reg8  AL  | BL  | CL  | DL  | SIL | DIL | BPL | SPL | R8B | R9B | R10B | R11B | R12B | R13B | R14B | R15B; size Reg8 Unsized;
-type Reg16 AX  | BX  | CX  | DX  | SI  | DI  | BP  | SP  | R8W | R9W | R10W | R11W | R12W | R13W | R14W | R15W; size Reg16 Unsized;
-type Reg32 EAX | EBX | ECX | EDX | ESI | EDI | EBP | ESP | R8D | R9D | R10D | R11D | R12D | R13D | R14D | R15D; size Reg32 Unsized;
-type Reg64 RAX | RBX | RCX | RDX | RSI | RDI | RBP | RSP | R8  | R9  | R10  | R11  | R12  | R13  | R14  | R15;  size Reg64 Unsized;
+fragment type Reg8  AL  | BL  | CL  | DL  | SIL | DIL | BPL | SPL | R8B | R9B | R10B | R11B | R12B | R13B | R14B | R15B; size Reg8 1;
+fragment type Reg16 AX  | BX  | CX  | DX  | SI  | DI  | BP  | SP  | R8W | R9W | R10W | R11W | R12W | R13W | R14W | R15W; size Reg16 2;
+fragment type Reg32 EAX | EBX | ECX | EDX | ESI | EDI | EBP | ESP | R8D | R9D | R10D | R11D | R12D | R13D | R14D | R15D; size Reg32 4;
+fragment type Reg64 RAX | RBX | RCX | RDX | RSI | RDI | RBP | RSP | R8  | R9  | R10  | R11  | R12  | R13  | R14  | R15;  size Reg64 8;
 
 fragment syscall := λ. (: (.program( \t 'syscall \n )) Nil);
 
@@ -40,6 +40,9 @@ fragment mov := λ(: src Constant+I32)(: dst LocalVariable). (: (.program( \t 'm
 fragment mov := λ(: src Constant+I64)(: dst LocalVariable). (: (.program( \t 'movq \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
 
 fragment mov := λ(: src Reg8)(: dst LocalVariable). (: (.program( \t 'movb \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
+fragment mov := λ(: src Reg16)(: dst LocalVariable). (: (.program( \t 'movw \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
+fragment mov := λ(: src Reg32)(: dst LocalVariable). (: (.program( \t 'movs \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
+fragment mov := λ(: src Reg64)(: dst LocalVariable). (: (.program( \t 'movq \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
 
 fragment cmp := λ(: imm Constant+U64)(: r Constant+Reg64). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
 fragment cmp := λ(: imm Constant+I64)(: r Constant+Reg64). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);

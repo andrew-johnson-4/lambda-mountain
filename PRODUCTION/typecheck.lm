@@ -6,6 +6,7 @@ typecheck-constructors                   := ();
 typecheck-types-have-changed             := ();
 typecheck-global-context                 := ();
 typecheck-size                           := ();
+typecheck-fragment-types                 := ();
 
 typecheck-init := λ. (
    (set typecheck-subtypes 
@@ -546,11 +547,13 @@ typecheck-infer-type-expr := λe . (match e (
       (local base-type)
       (set base-type (typecheck-infer-type-compound l))
       (set typecheck-global-context ( typecheck-global-context (
-         (Global( '.0 ('->( base-type U64 )) ))
+         (Global( '.0 ('->( base-type (And( U64 Reg64 )) )) ))
       )))
       (local sz)
       (set sz (typecheck-infer-type-definition( base-type ds )))
-      (typecheck-set-size( base-type sz ))
+      (if (eq( sz '0 )) () (
+         (typecheck-set-size( base-type sz ))
+      ))
       (typecheck-ascript( e '? ))
    ))
    (_ ())
@@ -621,7 +624,6 @@ typecheck-infer-expr := λctx e used . (tail(
          (if ctype (
             (typecheck-ascript( e (And( Constant (And( lit ctype )) )) ))
          ) (
-            (print-s (AscriptedGradual e))(print-s \n)
             (typecheck-ascript( e Atom ))
          ))
       ))
@@ -797,3 +799,16 @@ typecheck-rvalue := λtt . (match tt (
 mangle-global-function := λname body . (
    (clone-rope (label-case ( name : (typecheck-lookup-type body) )))
 );
+
+typecheck-is-fragment := λtt . (tail(
+   (local is-fragment)
+   (local fragment-types)
+   (set fragment-types typecheck-fragment-types)
+   (while fragment-types (
+      (if (deep-eq( tt (tail fragment-types) )) (
+         (set is-fragment True)
+      ) ())
+      (set fragment-types (head fragment-types))
+   ))
+   is-fragment
+));
