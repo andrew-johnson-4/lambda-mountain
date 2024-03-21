@@ -1,35 +1,148 @@
 
-merge-list := λl r . (tail( if l (
-   (while r (
-      (set l (l (tail r)))      
-      (set r (head r))
-   ))
-   l
-) r ));
+fail := λmsg . (print-s msg) (exit 1);
 
-is-suffix := λs suff . (tail(
-   (local match)
+label-case := λk . (match k (
+   ()
+   (() ())
+   ((l r) ('_ (label-case l) (label-case r) '_))
+   (a (label-case-atom a))
+));
+
+assert-eq := λ loc l r . (
+   (if (deep-eq( l r )) () (
+      (print-s FailedAssertEqual)(print-s \s)(print-s 'in)(print-s \s)(print-s loc)(print-s \n)
+      (print-s \t)(print-s l)(print-s \n)
+      (print-s \t)(print-s r)(print-s \n)
+      (exit 1)
+   ))
+));
+
+assert-typeof := λ loc term tt . (tail(
+   (set tt (parse-typeof tt))
+   (if (is-typeof( term tt )) () (
+      (print-s FailedAssertTypeof)(print-s \s)(print-s 'in)(print-s \s)(print-s loc)(print-s \n)
+      (print-s \t)(print-s tt)(print-s \n)
+      (print-s \t)(print-s term)(print-s \n)
+      (exit 1)
+   ))
+));
+
+assert-not-typeof := λ loc term tt . (tail(
+   (set tt (parse-typeof tt))
+   (if (is-typeof( term tt )) (
+      (print-s FailedAssertNotTypeof)(print-s \s)(print-s 'in)(print-s \s)(print-s loc)(print-s \n)
+      (print-s \t)(print-s tt)(print-s \n)
+      (print-s \t)(print-s term)(print-s \n)
+      (exit 1)
+   ) ())
+));
+
+s2i := λs . (tail(
+   (local i)
+   (local is_neg)
+   (local one)
+   (local two)
+   (local three)
+   (local four)
+   (local five)
+   (local six)
+   (local seven)
+   (local eight)
+   (local nine)
+   (local ten)
+   (set one( inc() ))
+   (set two( inc(inc( )) ))
+   (set three( inc(inc(inc( ))) ))
+   (set four( inc(inc(inc(inc( )))) ))
+   (set five( inc(inc(inc(inc(inc( ))))) ))
+   (set six( inc( inc(inc(inc(inc(inc( ))))) ) ))
+   (set seven( inc(inc( inc(inc(inc(inc(inc( ))))) )) ))
+   (set eight( inc(inc(inc( inc(inc(inc(inc(inc( ))))) ))) ))
+   (set nine( inc(inc(inc(inc( inc(inc(inc(inc(inc( ))))) )))) ))
+   (set ten( inc(inc(inc(inc(inc( inc(inc(inc(inc(inc( ))))) ))))) ))
+   (if (eq( (head-string s) '- )) (
+      (set is_neg True)
+      (set s (tail-string s))
+   ) ())
    (while s (
-      (if (eq( s suff )) (set match True) ())
+      (set i (mul( i ten )))
+      (match (head-string s) (
+         ()
+         ('0 ())
+         ('1 (set i (add( i one ))))
+         ('2 (set i (add( i two ))))
+         ('3 (set i (add( i three ))))
+         ('4 (set i (add( i four ))))
+         ('5 (set i (add( i five ))))
+         ('6 (set i (add( i six ))))
+         ('7 (set i (add( i seven ))))
+         ('8 (set i (add( i eight ))))
+         ('9 (set i (add( i nine ))))
+         (u (fail (InvalidDigit u)))
+      ))
       (set s (tail-string s))
    ))
-   match
+   (if is_neg (
+      (mul( (dec()) i ))
+   ) i )
 ));
 
-remove-suffix := λs suff . (tail(
-   (local prefix)
-   (while s (
-      (if (eq( s suff )) (
-         (set s ())
-      ) (
-         (set prefix (prefix (clone-rope (head-string s))))
-         (set s (tail-string s))
-      ))
+i2s := λi . (tail(
+   (local ten)
+   (set ten( inc(inc(inc(inc(inc( inc(inc(inc(inc(inc( ))))) ))))) ))
+   (local sign)
+   (local s)
+   (local r)
+   (if (is-neg i) (
+      (set sign '-)
+      (set i (inv i))
+   ) ())
+   (while i (
+      (set r (mod(i ten)))
+      (set s ((clone-rope(digit r) s)))
+      (set i (div(i ten)))
    ))
-   (clone-rope prefix)
+   (if s () (set s 0))
+   (clone-rope (sign s))
 ));
 
-fail := λmsg . (print-s msg) (exit 1);
+uuid-counter := ();
+uuid := λ . (tail(
+   (set uuid-counter (inc uuid-counter))
+   (clone-rope ('uuid_ (dump-i uuid-counter)))
+));
+
+is-builtin := λf . (match f (
+   ()
+   ('is True)
+   ('is-atom True)
+   ('is-cons True)
+   ('eq True)
+   ('not True)
+   ('head True)
+   ('head-string True)
+   ('tail-string True)
+   ('tail True)
+   ('inc True)
+   ('dec True)
+   ('add True)
+   ('mul True)
+   ('div True)
+   ('mod True)
+   ('inv True)
+   ('is-neg True)
+   ('digit True)
+   ('dump-i True)
+   ('print-s True)
+   ('print-i True)
+   ('print-p True)
+   ('print-p True)
+   ('print-d True)
+   ('clone-rope True)
+   ('write-file True)
+   ('load-file True)
+   (_ ())
+));
 
 deep-eq := λl r . match (l r) (
    ()
@@ -42,61 +155,24 @@ deep-eq := λl r . match (l r) (
    ( (la ra) (eq( la ra )) )
 );
 
-reverse-list := λl . (tail(
-   (local r)
-   (while l (
-      (set r ( (tail l) r ))
-      (set l (head l))
+max := λ l r . (tail(
+   (local li)
+   (set li (s2i l))
+   (local ri)
+   (set ri (s2i r))
+   (local return)
+   (while (not return) (
+      (if (not li) (
+        (set return r)
+      ) (
+         (if (not ri) (
+            (set return l)
+         ) ())
+      ))
+      (set li (dec li))
+      (set ri (dec ri))
    ))
-   r
-));
-
-label-case := λk . (match k (
-   ()
-   (() ())
-   ((l r) ('_ (label-case l) (label-case r) '_))
-   (a (label-case-atom a))
-));
-
-label-case-atom := λk . (tail(
-   (local nk)
-   (while k (match (head-string k) (
-      ()
-      (() ())
-      ('- (
-         (set nk (nk '_))
-         (set k (tail-string k))
-      ))
-      (': (
-         (set nk (nk '_C_))
-         (set k (tail-string k))
-      ))
-      ('< (
-         (set nk (nk '_LB_))
-         (set k (tail-string k))
-      ))
-      ('> (
-         (set nk (nk '_RB_))
-         (set k (tail-string k))
-      ))
-      (\[ (
-         (set nk (nk '_LP_))
-         (set k (tail-string k))
-      ))
-      (\] (
-         (set nk (nk '_RP_))
-         (set k (tail-string k))
-      ))
-      ('$ (
-         (set nk (nk '_DS_))
-         (set k (tail-string k))
-      ))
-      (c (
-         (set nk (nk (clone-rope c)))
-         (set k (tail-string k))
-      ))
-   )))
-   (clone-rope nk)
+   l
 ));
 
 is-variable := λv . (match (head-string v) (
@@ -144,169 +220,43 @@ is-variable := λv . (match (head-string v) (
    ('z True )
 ));
 
-i2s := λi . (tail(
-   (local ten)
-   (set ten( inc(inc(inc(inc(inc( inc(inc(inc(inc(inc( ))))) ))))) ))
-   (local sign)
-   (local s)
-   (local r)
-   (if (is-neg i) (
-      (set sign '-)
-      (set i (inv i))
-   ) ())
-   (while i (
-      (set r (mod(i ten)))
-      (set s ((clone-rope(digit r) s)))
-      (set i (div(i ten)))
+merge-list := λl r . (tail( if l (
+   (while r (
+      (set l (l (tail r)))
+      (set r (head r))
    ))
-   (if s () (set s 0))
-   (clone-rope (sign s))
-));
+   l
+) r ));
 
-s2i := λs . (tail(
-   (local i)
-   (local is_neg)
-   (local one)
-   (local two)
-   (local three)
-   (local four)
-   (local five)
-   (local six)
-   (local seven)
-   (local eight)
-   (local nine)
-   (local ten)
-   (set one( inc() ))
-   (set two( inc(inc( )) ))
-   (set three( inc(inc(inc( ))) ))
-   (set four( inc(inc(inc(inc( )))) ))
-   (set five( inc(inc(inc(inc(inc( ))))) ))
-   (set six( inc( inc(inc(inc(inc(inc( ))))) ) ))
-   (set seven( inc(inc( inc(inc(inc(inc(inc( ))))) )) ))
-   (set eight( inc(inc(inc( inc(inc(inc(inc(inc( ))))) ))) ))
-   (set nine( inc(inc(inc(inc( inc(inc(inc(inc(inc( ))))) )))) ))
-   (set ten( inc(inc(inc(inc(inc( inc(inc(inc(inc(inc( ))))) ))))) ))
-   (if (eq( (head-string s) '- )) (
-      (set is_neg True)
-      (set s (tail-string s))
-   ) ())
+is-suffix := λs suff . (tail(
+   (local match)
    (while s (
-      (set i (mul( i ten )))
-      (match (head-string s) (
-         ()
-         ('0 ())
-         ('1 (set i (add( i one )))) 
-         ('2 (set i (add( i two )))) 
-         ('3 (set i (add( i three )))) 
-         ('4 (set i (add( i four )))) 
-         ('5 (set i (add( i five )))) 
-         ('6 (set i (add( i six )))) 
-         ('7 (set i (add( i seven )))) 
-         ('8 (set i (add( i eight ))))          
-         ('9 (set i (add( i nine ))))          
-         (u (fail (InvalidDigit u)))
-      ))
+      (if (eq( s suff )) (set match True) ())
       (set s (tail-string s))
    ))
-   (if is_neg (
-      (mul( (dec()) i ))
-   ) i )
+   match
 ));
 
-uuid-counter := ();
-uuid := λ . (tail(
-   (set uuid-counter (inc uuid-counter))
-   (clone-rope ('uuid_ (dump-i uuid-counter)))
-));
-
-is-builtin := λf . (match f (
-   ()
-   ('is True)
-   ('is-atom True)
-   ('is-cons True)
-   ('eq True)
-   ('not True)
-   ('head True)
-   ('head-string True)
-   ('tail-string True)
-   ('tail True)
-   ('inc True)
-   ('dec True)
-   ('add True)
-   ('mul True)
-   ('div True)
-   ('mod True)
-   ('inv True)
-   ('is-neg True)
-   ('digit True)
-   ('dump-i True)
-   ('print-s True)
-   ('print-i True)
-   ('print-p True)
-   ('print-p True)
-   ('print-d True)
-   ('clone-rope True)
-   ('write-file True)
-   ('load-file True)
-   (_ ())
-));
-
-
-
-assert-eq := λ loc l r . (
-   (if (deep-eq( l r )) () (
-      (print-s FailedAssertEqual)(print-s \s)(print-s 'in)(print-s \s)(print-s loc)(print-s \n)
-      (print-s \t)(print-s l)(print-s \n)
-      (print-s \t)(print-s r)(print-s \n)
-      (exit 1)
-   ))
-));
-
-assert-typeof := λ loc term tt . (tail(
-   (set tt (parse-typeof tt))
-   (if (is-typeof( term tt )) () (
-      (print-s FailedAssertTypeof)(print-s \s)(print-s 'in)(print-s \s)(print-s loc)(print-s \n)
-      (print-s \t)(print-s tt)(print-s \n)
-      (print-s \t)(print-s term)(print-s \n)
-      (exit 1)
-   ))
-));
-
-assert-not-typeof := λ loc term tt . (tail(
-   (set tt (parse-typeof tt))
-   (if (is-typeof( term tt )) (
-      (print-s FailedAssertNotTypeof)(print-s \s)(print-s 'in)(print-s \s)(print-s loc)(print-s \n)
-      (print-s \t)(print-s tt)(print-s \n)
-      (print-s \t)(print-s term)(print-s \n)
-      (exit 1)
-   ) ())
-));
-
-parse-parameter-typeof := λ tt . (tail(
-   (assert-eq( 'parse-parameter-typeof '< (head-string tt) ))
-   (set tt (tail-string tt))
-   (local inner)
-   (local depth)
-   (while tt (
-      (match (head-string tt) (
-         ()
-         ('< (tail(
-            (set inner (inner '<))
-            (set depth (inc depth))
-         )))
-         ('> (
-            (if depth (
-               (set inner (inner '>))
-               (set depth (dec depth))
-            ) (
-               (assert-eq( 'parse-parameter-typeof () (tail-string tt) ))
-            ))
-         ))
-         (c (set inner (inner (clone-rope c)) ))
+remove-suffix := λs suff . (tail(
+   (local prefix)
+   (while s (
+      (if (eq( s suff )) (
+         (set s ())
+      ) (
+         (set prefix (prefix (clone-rope (head-string s))))
+         (set s (tail-string s))
       ))
-      (set tt (tail-string tt))
    ))
-   (parse-typeof (clone-rope inner))
+   (clone-rope prefix)
+));
+
+reverse-list := λl . (tail(
+   (local r)
+   (while l (
+      (set r ( (tail l) r ))
+      (set l (head l))
+   ))
+   r
 ));
 
 parse-tuple-typeof := λ tt . (tail(
@@ -380,6 +330,33 @@ parse-typeof := λ tt . (tail(
    (if base base (clone-rope buff))
 ));
 
+parse-parameter-typeof := λ tt . (tail(
+   (assert-eq( 'parse-parameter-typeof '< (head-string tt) ))
+   (set tt (tail-string tt))
+   (local inner)
+   (local depth)
+   (while tt (
+      (match (head-string tt) (
+         ()
+         ('< (tail(
+            (set inner (inner '<))
+            (set depth (inc depth))
+         )))
+         ('> (
+            (if depth (
+               (set inner (inner '>))
+               (set depth (dec depth))
+            ) (
+               (assert-eq( 'parse-parameter-typeof () (tail-string tt) ))
+            ))
+         ))
+         (c (set inner (inner (clone-rope c)) ))
+      ))
+      (set tt (tail-string tt))
+   ))
+   (parse-typeof (clone-rope inner))
+));
+
 is-typeof := λ term tt . (match tt (
    ()
    ( Nil (if (eq( term Nil )) True (not term)) )
@@ -411,22 +388,44 @@ is-typeof := λ term tt . (match tt (
    ( label (eq( (head term) label )) )
 ));
 
-max := λ l r . (tail(
-   (local li)
-   (set li (s2i l))
-   (local ri)
-   (set ri (s2i r))
-   (local return)
-   (while (not return) (
-      (if (not li) (
-        (set return r)
-      ) (
-         (if (not ri) (
-            (set return l)
-         ) ())
-      ))
-      (set li (dec li))
-      (set ri (dec ri))
-   ))
-   l
-));
+label-case-atom := λk .
+((((;
+
+#   (local nk)
+#   (while k (match (head-string k) (
+#      ()
+#      (() ())
+#      ('- (
+#         (set nk (nk '_))
+#         (set k (tail-string k))
+#      ))
+#      (': (
+#         (set nk (nk '_C_))
+#         (set k (tail-string k))
+#      ))
+#      ('< (
+#         (set nk (nk '_LB_))
+#         (set k (tail-string k))
+#      ))
+#      ('> (
+#         (set nk (nk '_RB_))
+#         (set k (tail-string k))
+#      ))
+#      (\[ (
+#         (set nk (nk '_LP_))
+#         (set k (tail-string k))
+#      ))
+#      (\] (
+#         (set nk (nk '_RP_))
+#         (set k (tail-string k))
+#      ))
+#      ('$ (
+#         (set nk (nk '_DS_))
+#         (set k (tail-string k))
+#      ))
+#      (c (
+#         (set nk (nk (clone-rope c)))
+#         (set k (tail-string k))
+#      ))
+#   )))
+#   (clone-rope nk)

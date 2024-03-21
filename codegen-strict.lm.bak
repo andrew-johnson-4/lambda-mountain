@@ -1,0 +1,335 @@
+
+compile-expr-strict := λctx e offset used . (tail(
+   (print-s (CompileStrict e))(print-s \n)
+   (assert-typeof( 'compile-expr-strict::ctx ctx Context ))
+   (assert-typeof( 'compile-expr-strict::e e Or<[Or<[Or<[App,Nil]>,Variable]>,Literal]> ))
+   (assert-typeof( 'compile-expr-strict::offset offset Atom ))
+   (assert-typeof( 'compile-expr-strict::used used Atom ))
+   (local e1)
+   (local e2)
+   (local e3)
+   (local e4)
+   (match used (
+      ()
+      (Return (tail(
+         (set e1 (compile-expr-strict( ctx e offset Used )))
+         (match e (
+            ()
+            ( (App( (App( (Literal ':) re )) rtype )) (
+               (fragment-apply( ctx 'cdecl::return (typecheck-lookup-type re) (() e1) e1 ))
+            ))
+            ( re (
+               (fragment-apply( ctx 'cdecl::return (typecheck-lookup-type e) (() e1) e1 ))
+            ))
+         ))
+      )))
+      (_ (
+         (match e (
+            ()
+            ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
+               (local sz)
+               (set sz (typecheck-sizeof (typecheck-lookup-type rhs)))
+               (if sz () (
+                  (fail (NoSizeOf (typecheck-lookup-type rhs)))
+               ))
+               (set ctx (context::bind( ctx lname
+                  (typecheck-ascript(
+                     (StackVariable( (i2s(add( (s2i offset) (inv(s2i sz)) ))) ))
+                     (typecheck-lookup-type rhs)
+                  ))
+               )))
+               (set e1 (expr::new()) )
+               (if (eq( sz '0 )) () (
+                  (set e1 (expr::set-frame( e1 ( \t 'sub \s '$ sz , \s '%rsp \n ) )))
+                  (set e1 (expr::set-unframe( e1 ( \t 'add \s '$ sz , \s '%rsp \n ) )))
+               ))
+               (match (typecheck-slot( (typecheck-lookup-type rhs) Cons )) (
+                  ()
+                  ( (Cons( lt rt )) (tail(
+                     (set e2 (expr::new()) )
+                     (set e3 (expr::new()) )
+                     (local at)
+                     (set at (typecheck-lookup-type rhs))
+                     (while at (
+                        (local next-e2)
+                        (local next-e3)
+                        (match (typecheck-slot( at Cons )) (
+                           ()
+                           ( (Cons( lt rt )) (tail(
+                              (match rhs (
+                                 ()
+                                 ( (App( inner outer )) (tail(
+                                    (set offset (i2s (add( (s2i offset) (inv(s2i(typecheck-sizeof rt))) )) )) 
+                                    (local edst)
+                                    (set edst (expr::new()))
+                                    (set edst (expr::set-expr( edst offset )))
+                                    (set next-e2 (compile-expr-strict( ctx outer offset Used )))
+                                    (set next-e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup-type outer) LocalVariable )) ((() next-e2) edst) next-e2 )))
+                                    (set rhs inner)
+                                 )))
+                                 ( u (fail( 'compile-expr-strict::ArrayIndexAssign u )))
+                              ))
+                              (set at lt)
+                           )))
+                           ( rt (tail(
+                              (set offset (i2s (add( (s2i offset) (inv(s2i(typecheck-sizeof rt))) )) )) 
+                              (local edst)
+                              (set edst (expr::new()))
+                              (set edst (expr::set-expr( edst offset )))
+                              (set next-e2 (compile-expr-strict( ctx rhs offset Used )))
+                              (set next-e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup-type rhs) LocalVariable )) ((() next-e2) edst) next-e2 )))
+                              (set at ())
+                           )))
+                        ))
+                        (set e2 (expr::chain( e2 next-e2 )))
+                        (set e3 (expr::chain( e3 next-e3 )))
+                     ))
+                  ))) (_ (tail(
+                     (set offset (i2s (add( (s2i offset) (inv(s2i sz)) )) )) 
+                     (local edst)
+                     (set edst (expr::new()))
+                     (set edst (expr::set-expr( edst offset )))
+                     (set e2 (compile-expr-strict( ctx rhs offset Used )))
+                     (print-s (DeclareLocalE2 rhs (expr::get-prog e2)))(print-s \n)
+                     (set e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup-type rhs) LocalVariable )) ((() e2) edst) e2 )))
+                     (print-s (DeclareLocalE3 (expr::get-prog e3)))(print-s \n)
+                  )))
+               ))
+               (set e3 (expr::set-frame( e3 (  (expr::get-frame e1) (expr::get-frame e2) (expr::get-frame e3) ))))
+               (set e3 (expr::set-unframe( e3 (  (expr::get-unframe e1) (expr::get-unframe e2) (expr::get-unframe e3) ))))
+               (set e3 (expr::set-text( e3 (  (expr::get-text e1) (expr::get-text e2) (expr::get-text e3) ))))
+               (set e3 (expr::set-data( e3 (  (expr::get-data e1) (expr::get-data e2) (expr::get-data e3) ))))
+               (set e3 (expr::set-prog( e3 (  (expr::get-prog e1) (expr::get-prog e2) (expr::get-prog e3) ))))
+               (set e3 (expr::set-data( e3 (  (expr::get-data e1) (expr::get-data e2) (expr::get-data e3) ))))
+               e3
+            )))
+            ( (App( (Variable 'label) (Variable label-name) )) (
+               (match (get-strict-function( ctx label-name Label )) (
+                  ()
+                  ( (Label( lid )) (tail(
+                     (set e2 (expr::new()))
+                     (set e2 (expr::set-prog( e2 ( lid ': \n ) )))
+                     (set e2 (expr::set-context( e2 ctx )))
+                     (set e2 (expr::set-offset( e2 offset )))
+                     e2
+                  )))
+                  ( u (ExpectedLabel u))
+               ))
+            ))
+            ( (App( (App( (Variable 'set) lhs )) rhs )) (tail(
+               (assert-eq( 'compile-expr-strict::set (head lhs) Variable ))
+               (match (get-strict-function( ctx (tail lhs) (typecheck-lookup-type rhs))) (
+                  ()
+                  ( (StackVariable( sv-offset )) (tail(
+                     (set e1 (compile-expr-strict( ctx rhs offset Used )))
+                     (set e2 (expr::new()))
+                     (set e2 (expr::set-expr( e2 sv-offset )))
+                     (set e2 (expr::set-context( e2 ctx )))
+                     (set e2 (expr::set-offset( e2 offset )))
+                     (set e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup-type rhs) LocalVariable )) ((() e1) e2) e2 )))
+                  )))
+                  ( u (fail( UnexpectedAssignmentLhs lhs u )))
+               ))
+               e3
+            )))
+            ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
+               (set e1 (expr::set-expr( (expr::new ()) lval )))
+               (set e1 (expr::set-context( e1 ctx )))
+               (set e1 (expr::set-offset( e1 offset )))
+               e1
+            )))
+            ( (Literal lval) (tail(
+               (set e1 (expr::set-expr( (expr::new ()) lval )))
+               (set e1 (expr::set-context( e1 ctx )))
+               (set e1 (expr::set-offset( e1 offset )))
+               e1
+            )))
+            ( (App( (App( (Literal :) lval )) ltype )) (tail(
+               (set e1 (compile-expr-strict( ctx lval offset Unused )))
+               e1
+            )))
+            ( (App( (Variable 'tail) (App( l r )) )) (tail(
+               (set e1 (compile-expr-strict( ctx l offset Unused )))
+               (set e2 (compile-expr-strict( (expr::get-context e1) r (expr::get-offset e1) Used )))
+               (set e2 (expr::set-frame( e2 (  (expr::get-frame e1) (expr::get-frame e2)  ))))
+               (set e2 (expr::set-unframe( e2 (  (expr::get-unframe e1) (expr::get-unframe e2)  ))))
+               (set e2 (expr::set-text( e2 (  (expr::get-text e1) (expr::get-text e2)  ))))
+               (set e2 (expr::set-data( e2 (  (expr::get-data e1) (expr::get-data e2)  ))))
+               (set e2 (expr::set-prog( e2 (  (expr::get-prog e1) (expr::get-prog e2)  ))))
+               e2
+            )))
+            ( (App ((Variable 'gensym-label) (Variable arg))) (tail(
+               (set ctx (context::bind( ctx arg
+                  (typecheck-ascript( (Label (uuid())) Label ))
+               )))
+               (set e1 (expr::set-context( (expr::new()) ctx )))
+               (set e1 (expr::set-offset( e1 offset )))
+               e1
+            )))
+            ( Nil (tail(
+               (set e1 (expr::new()) )
+               (set e1 (expr::set-context( e1 ctx )))
+               (set e1 (expr::set-offset( e1 offset )))
+               e1
+            )))
+            ( (Variable v) (tail(
+               (set e1 (fragment-get-local( ctx v offset )))
+               e1
+            )))
+            ( (App (l r)) (tail(
+               (local result)
+               (set result (match (typecheck-slot( (typecheck-lookup-type l) '-> )) (
+                  ()
+                  ( ('-> _) (match l (
+                     ()
+                     ( (Variable fname) (tail(
+                        (set e1 (stack-call( ctx fname r offset )))
+                        e1
+                     )))
+                     ( (Literal tag) (tail(
+                        (print-s (LetBind tag (typecheck-lookup-type r)))(print-s \n)
+                        (print-s (This Will Be Sent To 'mov Src[This] Dst[LocalVariable] ))(print-s \n)
+                        (fail (TODO Call Constructor tag))
+                     )))
+                     ( u (tail(
+                        (fail (ComplexFunctionConjugatesNotSupportedYet e))
+                     )))
+                  )))
+                  ( _ (
+                     (if (eq( used Used )) (
+                        (fail (Attempt To Create Untyped Cons Cell In Strict Mode))
+                     ) (tail(
+                        (set e1 (compile-expr-strict( ctx l offset Unused )))
+                        (set e2 (compile-expr-strict( (expr::get-context e1) r (expr::get-offset e1) Used )))
+                        (set e2 (expr::set-frame( e2 (  (expr::get-frame e1) (expr::get-frame e2)  ))))
+                        (set e2 (expr::set-unframe( e2 (  (expr::get-unframe e1) (expr::get-unframe e2)  ))))
+                        (set e2 (expr::set-text( e2 (  (expr::get-text e1) (expr::get-text e2)  ))))
+                        (set e2 (expr::set-data( e2 (  (expr::get-data e1) (expr::get-data e2)  ))))
+                        (set e2 (expr::set-prog( e2 (  (expr::get-prog e1) (expr::get-prog e2)  ))))
+                        e2
+                     )))
+                  ))
+               )))
+               result
+            )))
+            ( _ (fail (TODO CompileStrict e)))
+         ))
+      ))
+   ))
+));
+
+get-strict-function := λctx v arg_type . (tail(
+   (assert-typeof( 'get-strict-function::ctx ctx Context ))
+   (assert-typeof( 'get-strict-function::v v Atom ))
+   (match (context::lookup( ctx v arg_type )) (
+      ()
+      ( (Fragment( body )) (
+         (Fragment body)
+      ))
+      ( (GlobalFunction( body )) (
+         (GlobalFunction body)
+      ))
+      ( (GlobalVariable( body )) (
+         (GlobalVariable (label-case v))
+      ))
+      ( (Label lid) (
+         (Label lid)
+      ))
+      ( (StackVariable sv-offset) (
+         (StackVariable sv-offset)
+      ))
+      ( u (fail( UnknownStrictFunction v arg_type u )))
+   ))
+));
+
+strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
+   (assert-typeof( 'strict-codegen-type-case::ctx ctx Context ))
+   (if (typecheck-is-fragment base-type) () (match type-body (
+      ()
+      ( (App( (Literal enum-case) args )) (tail(
+         (local args_type)
+         (set args_type (typecheck-infer-type-compound args))
+
+         (local body)
+         (set body (Lambda(
+            (App(
+               (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
+               (App( (App( (Literal ':) (Variable 'dst) )) (Literal LocalVariable) ))
+            ))
+            (App( (Variable '.program) (
+               \t 'movq \s '$ case-number ', \s
+               (App( (Variable '.expression) (Variable 'dst) )) \s
+               \[ '%rbp \] \n
+            )))
+         )))
+         (typecheck-ascript( body ('->(
+            (Cons( (And( enum-case base-type )) LocalVariable ))
+            Nil
+         ))))
+         (set ctx (context::bind( ctx 'mov (Fragment( body )) )))
+      )))
+      ( (Literal enum-case) (tail(
+         #define 'mov initializer
+         (local body)
+         (set body (Lambda(
+            (App(
+               (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
+               (App( (App( (Literal ':) (Variable 'dst) )) (Literal LocalVariable) ))
+            ))
+            (App( (Variable '.program) (
+               \t 'movq \s '$ case-number ', \s
+               (App( (Variable '.expression) (Variable 'dst) )) \s
+               \[ '%rbp \] \n
+            )))
+         )))
+         (typecheck-ascript( body ('->(
+            (Cons( (And( enum-case base-type )) LocalVariable ))
+            Nil
+         ))))
+         (set ctx (context::bind( ctx 'mov (Fragment( body )) )))
+
+         #define '.0 accessor
+         (set body (Lambda(
+            (App( (App( (Literal ':) (Variable 'src) )) (Literal LocalVariable) ))
+            (App(
+               (App( (Variable '.program) (
+                  \t 'movq \s (App( (Variable '.expression) (Variable 'src) )) \s \[ '%rbp \] ,
+                  \s '%r15 \n
+               )))
+               (App( (Variable '.expression) (
+                  'r15
+               )))
+            ))
+         )))
+         (typecheck-ascript( body ('->(
+            (And( base-type LocalVariable ))
+            Reg64
+         ))))
+         (set ctx (context::bind( ctx '0 (Fragment( body )) )))
+
+      )))
+      ( () () )
+      ( u (tail(
+         (fail ('strict-codegen-type-case u))
+      )))
+   )))
+   (assert-typeof( 'strict-codegen-type-case::ctx ctx Context ))
+   ctx
+));
+
+strict-codegen-type := λ ctx type-name type-body case-number . (match type-body (
+   ()
+   ( (App( (App( tds (Variable '|) )) body )) (tail(
+      (local base-type)
+      (set base-type (typecheck-infer-type-compound type-name))
+      (local next-case-number)
+      (set next-case-number (i2s(inc(s2i( case-number )))))
+      (set ctx (strict-codegen-type( ctx type-name tds next-case-number )))
+      (strict-codegen-type-case( ctx base-type body case-number ))
+   )))
+   ( body (tail(
+      (local base-type)
+      (set base-type (typecheck-infer-type-compound type-name))
+      (strict-codegen-type-case( ctx base-type type-body case-number ))
+   )))
+));
