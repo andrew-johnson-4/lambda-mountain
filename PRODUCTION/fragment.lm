@@ -100,7 +100,10 @@ fragment-apply := λ ctx function-name function-type function-args e-proto . (ta
       (print-s function-type)(print-s \n)
       (exit 1)
    ))
-   (fragment-apply-direct( arrow function-args e-proto ))
+   (local return)
+   (set return (fragment-apply-direct( arrow function-args e-proto )))
+   (assert-typeof( 'fragment-apply::return return StrictExpr ))
+   return
 ));
 
 fragment-chain := λ fragment-ctx e . (tail(
@@ -175,15 +178,15 @@ fragment-get-local := λctx v offset . (tail(
          (set r (expr::set-expr( r uid )))
          (set r (expr::set-context( r ctx )))
          (set r (expr::set-offset( r offset )))
-         r
       )))
       ( (StackVariable( loffset )) (tail(
          (set r (expr::new()) )
          (set r (expr::set-expr( r loffset )))
          (set r (expr::set-context( r ctx )))
          (set r (expr::set-offset( r offset )))
-         r
       )))
       ( u (fail (InvalidFragmentLocal v u)))
    ))
+   (assert-typeof( 'fragment-get-local::return r Expr ))
+   r
 ));

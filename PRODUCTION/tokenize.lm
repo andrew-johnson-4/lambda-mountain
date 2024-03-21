@@ -59,6 +59,7 @@ tokenize := λtext . (tail(
             (set program (program (clone-rope buffer)))
             (set buffer ())
          ) ())
+
          (set parens-counter (inc parens-counter))
          (set program (program \[))
       )))
@@ -67,6 +68,7 @@ tokenize := λtext . (tail(
             (set program (program (clone-rope buffer)))
             (set buffer ())
          ) ())
+
          (set parens-counter (dec parens-counter))
          (set program (program \]))
       )))
@@ -98,6 +100,7 @@ tokenize := λtext . (tail(
    (if buffer (
       (set program (program (clone-rope buffer)))
    ) ())
+
    (if parens-counter (
       (fail (Hanging Parens In File currently-tokenizing-file))
    ) ())
