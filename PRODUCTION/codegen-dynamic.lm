@@ -47,6 +47,7 @@ compile-expr := λctx e offset used . (
 );
 
 compile-expr-dynamic := λctx e offset used . (tail(
+   (assert-typeof( 'compile-expr-dynamic::ctx ctx Context ))
    (local e1)
    (local e2)
    (local e3)

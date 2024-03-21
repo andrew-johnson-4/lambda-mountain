@@ -1,0 +1,28 @@
+
+context::new := λ . (
+   (Context(
+      ()
+      0
+   ))
+);
+
+context::lookup := λ ctx key key-type . (tail(
+   fail (TODO 'context::lookup)
+));
+
+context::bind := λ ctx key term . (match ctx (
+   ()
+   ( (Context( old-ctx offset )) (
+      (Context( (old-ctx (key term)) offset ))
+   ))
+));
+
+context::get-offset := λ ctx . (match ctx (
+   ()
+   ( (Context( _ offset )) offset )
+));
+
+context::set-offset := λ ctx offset . (match ctx (
+   ()
+   ( (Context( bindings _ )) (Context( bindings offset )) )
+));
