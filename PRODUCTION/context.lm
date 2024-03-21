@@ -12,13 +12,17 @@ context::lookup := λ ctx key key-type . (tail(
    (local return)
    (while bindings (
       (if (eq( key (head(tail bindings)) )) (
-         (if key-type (
+         (if key-type (tail(
             (local body)
             (set body (tail(tail bindings)))
-            (if (typecheck-apply-plural( (typecheck-lookup-type body) key-type )) (
+            (if (deep-eq( (typecheck-lookup-type body) key-type )) (
                (set return body)
-            ) ())
-         ) (
+            ) (
+               (if (typecheck-apply-plural( (typecheck-lookup-type body) key-type )) (
+                  (set return body)
+               ) ())
+            ))
+         )) (
             (set return (tail(tail bindings)))
          ))
       ) ())
@@ -29,9 +33,10 @@ context::lookup := λ ctx key key-type . (tail(
 
 context::bind := λ ctx key term . (match ctx (
    ()
-   ( (Context( old-ctx offset )) (
+   ( (Context( old-ctx offset )) (tail(
+      ()
       (Context( (old-ctx (key term)) offset ))
-   ))
+   )))
 ));
 
 context::get-bindings := λ ctx . (match ctx (

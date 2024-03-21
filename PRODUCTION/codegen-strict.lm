@@ -156,7 +156,9 @@ compile-expr-strict := λctx e offset used . (tail(
                e2
             )))
             ( (App ((Variable 'gensym-label) (Variable arg))) (tail(
-               (set ctx (context::bind( ctx arg (Label (uuid())) )))
+               (set ctx (context::bind( ctx arg
+                  (typecheck-ascript( (Label (uuid())) Label ))
+               )))
                (set e1 (expr::set-context( (expr::new()) ctx )))
                (set e1 (expr::set-offset( e1 offset )))
                e1

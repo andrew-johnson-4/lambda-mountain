@@ -45,7 +45,8 @@ fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
 fragment-apply-context := λctx fragment-rhs e . (tail(
    (assert-typeof( 'fragment-apply-context::ctx ctx List<[Atom,StrictExpr]> ))
    (assert-typeof( 'fragment-apply-context::e e StrictExpr ))
-   (match fragment-rhs (
+   (local return)
+   (set return (match fragment-rhs (
       ()
       ( Nil (
          e
@@ -82,7 +83,9 @@ fragment-apply-context := λctx fragment-rhs e . (tail(
          ))
       ))
       ( u (fail (UnknownSubstituteFragment fragment-rhs)))
-   ))
+   )))
+   (assert-typeof( 'fragment-apply-context::return return StrictExpr ))
+   return
 ));
 
 fragment-apply := λ ctx function-name function-type function-args e-proto . (tail(
@@ -127,6 +130,7 @@ fragment-apply-direct := λ fragment function-args e-proto . (tail(
          (local e-return)
          (set e-return (fragment-apply-context( fctx rhs e-seed )))
          (set e-return (fragment-chain( fctx e-return )))
+         (assert-typeof( 'fragment-apply-direct::return e-return StrictExpr ))
          e-return
       )))
       ( u (fail (InvalidFragment fragment)))
