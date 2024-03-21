@@ -154,10 +154,6 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e1 (expr::set-offset( e1 offset )))
                e1
             )))
-            ( (App ((Variable fname) arg)) (tail(
-               (set e1 (stack-call( ctx fname arg offset )))
-               e1
-            )))
             ( Nil (tail(
                (set e1 (expr::new()) )
                (set e1 (expr::set-context( e1 ctx )))
@@ -169,18 +165,40 @@ compile-expr-strict := λctx e offset used . (tail(
                e1
             )))
             ( (App (l r)) (tail(
-               (if (eq( used Used )) (
-                  (fail (TODO Gradual Type A Cons e))
-               ) (
-                  (set e1 (compile-expr-strict( ctx l offset Unused )))
-                  (set e2 (compile-expr-strict( (expr::get-context e1) r (expr::get-offset e1) Used )))
-                  (set e2 (expr::set-frame( e2 (  (expr::get-frame e1) (expr::get-frame e2)  ))))
-                  (set e2 (expr::set-unframe( e2 (  (expr::get-unframe e1) (expr::get-unframe e2)  ))))
-                  (set e2 (expr::set-text( e2 (  (expr::get-text e1) (expr::get-text e2)  ))))
-                  (set e2 (expr::set-data( e2 (  (expr::get-data e1) (expr::get-data e2)  ))))
-                  (set e2 (expr::set-prog( e2 (  (expr::get-prog e1) (expr::get-prog e2)  ))))
-                  e2
-               ))
+               (local result)
+               (set result (match (typecheck-slot( (typecheck-lookup-type l) '-> )) (
+                  ()
+                  ( ('-> _) (match l (
+                     ()
+                     ( (Variable fname) (tail(
+                        (set e1 (stack-call( ctx fname r offset )))
+                        e1
+                     )))
+                     ( (Literal tag) (tail(
+                        (print-s (LetBind tag (typecheck-lookup-type r)))(print-s \n)
+                        (print-s (This Will Be Sent To 'mov Src[This] Dst[LocalVariable] ))(print-s \n)
+                        (fail (TODO Call Constructor tag))
+                     )))
+                     ( u (tail(
+                        (fail (ComplexFunctionConjugatesNotSupportedYet e))
+                     )))
+                  )))
+                  ( _ (
+                     (if (eq( used Used )) (
+                        (fail (Attempt To Create Untyped Cons Cell In Strict Mode))
+                     ) (tail(
+                        (set e1 (compile-expr-strict( ctx l offset Unused )))
+                        (set e2 (compile-expr-strict( (expr::get-context e1) r (expr::get-offset e1) Used )))
+                        (set e2 (expr::set-frame( e2 (  (expr::get-frame e1) (expr::get-frame e2)  ))))
+                        (set e2 (expr::set-unframe( e2 (  (expr::get-unframe e1) (expr::get-unframe e2)  ))))
+                        (set e2 (expr::set-text( e2 (  (expr::get-text e1) (expr::get-text e2)  ))))
+                        (set e2 (expr::set-data( e2 (  (expr::get-data e1) (expr::get-data e2)  ))))
+                        (set e2 (expr::set-prog( e2 (  (expr::get-prog e1) (expr::get-prog e2)  ))))
+                        e2
+                     )))
+                  ))
+               )))
+               result
             )))
             ( _ (fail (TODO CompileStrict e)))
          ))
@@ -246,6 +264,31 @@ get-strict-function := λctx v arg_type . (tail(
 strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
    (if (typecheck-is-fragment base-type) () (match type-body (
       ()
+      ( (App( (Literal enum-case) args )) (tail(
+         (local args_type)
+         (set args_type (typecheck-infer-type-compound args))
+
+         (local body)
+         (set body (Lambda(
+            (App(
+               (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
+               (App( (App( (Literal ':) (Variable 'dst) )) (Literal LocalVariable) ))
+            ))
+            (App( (Variable '.program) (
+               \t 'movq \s '$ case-number ', \s
+               (App( (Variable '.expression) (Variable 'dst) )) \s
+               \[ '%rbp \] \n
+            )))
+         )))
+         (typecheck-ascript( body ('->(
+            (Cons( (And( enum-case base-type )) LocalVariable ))
+            Nil
+         ))))
+         (set ctx (ctx (
+            (Fragment( (Variable 'mov) body ))
+         )))
+
+      )))
       ( (Literal enum-case) (tail(
          #define 'mov initializer
          (local body)

@@ -1,6 +1,5 @@
 
 typecheck-subtypes                       := ();
-typecheck-accept-as                      := ();
 typecheck-context                        := ();
 typecheck-constructors                   := ();
 typecheck-types-have-changed             := ();
@@ -107,8 +106,6 @@ typecheck-assert-expr := λe . (tail(
       ( (Variable v) (
          (typecheck-assert-one( e ))
       ))
-      ( (Size( typf sizf )) (
-      ))
       ( u (fail (UnknownAssertTyped u)) )
    ))
 ));
@@ -205,9 +202,6 @@ typecheck-show-ascript := λp . (tail(
          (typecheck-show-ascript prog)
       ))
       ( (prog (Fragment( typf body ))) (
-         (typecheck-show-ascript prog)
-      ))
-      ( (prog (Size( typf sizf ))) (
          (typecheck-show-ascript prog)
       ))
       ( unknown (
@@ -443,7 +437,7 @@ typecheck-apply-plural := λmany pt . (match many(
       ) ())
       result
    )))
-   ( u (fail (ApplicationIsNotAFunction many pt)))
+   ( u ())
 ));
 
 typecheck-safe-apply-plural := λterm many pt . (tail(
@@ -473,6 +467,7 @@ typecheck-infer-type-compound := λcompound . (match compound (
    ()
    ((Literal tt) tt)
    ((Variable tt) tt)
+   ((App( (App( lt (Literal ',) )) rt )) (Cons( (typecheck-infer-type-compound lt) (typecheck-infer-type-compound rt) )) )
    ((App( (Literal lt) rt )) ( lt (typecheck-infer-type-compound rt) ) )
    ((App( lt rt )) (Cons( (typecheck-infer-type-compound lt) (typecheck-infer-type-compound rt) )) )
    (u (fail (UnknownTypeCompound u)))
@@ -484,13 +479,14 @@ typecheck-infer-type-constructor := λbase-type body . (match body (
       (set typecheck-constructors ( typecheck-constructors (tag base-type) ))
       8
    )))
-   ( (App( (Literal tag) args )) (
-      (fail (TODO LiteralTagConstructors tag))
-#      (local ctype)
-#      (set ctype (typecheck-infer-type-compound args))
-#      (set typecheck-constructors ( typecheck-constructors (tag ('->(ctype (tag ctype)))) ))
-#      (set typecheck-subtypes ( typecheck-subtypes ((tag ctype) (typecheck-infer-type-compound name)) ))
-   ))
+   ( (App( (Literal tag) args )) (tail(
+      (local ctype)
+      (set ctype (typecheck-infer-type-compound args))
+      (set typecheck-constructors ( typecheck-constructors (tag ('->(ctype (And( base-type tag )) ))) ))
+      (local size)
+      (set size (i2s(add( (s2i 8) (s2i( typecheck-sizeof ctype )) ))) )
+      size
+   )))
    ( () 0 )
    ( u ( fail (UnknownTypeConstructor u)))
 ));
@@ -651,24 +647,12 @@ typecheck-infer-expr := λctx e used . (tail(
       ( (App( l r )) (tail(
          (set ctx (typecheck-infer-expr( ctx l used )))
          (set ctx (typecheck-infer-expr( ctx r used )))
-         (match ( (typecheck-lookup-type l) (typecheck-lookup-type r) ) (
+         (match ( (typecheck-slot( (typecheck-lookup-type l) '-> )) (typecheck-lookup-type r) ) (
             ()
             ( (() _) () )
             ( (_ ()) () )
             ( ( ('->(lt rt)) pt ) (
-               (typecheck-ascript( e (typecheck-safe-apply-plural( e ('->(lt rt)) pt )) ))
-            ))
-            ( ( (And(t1 ('->(lt rt)))) pt ) (
-               (typecheck-ascript( e (typecheck-safe-apply-plural( e (And(t1 ('->(lt rt)))) pt )) ))
-            ))
-            ( ( (And(('->(lt rt)) t2)) pt ) (
-               (typecheck-ascript( e (typecheck-safe-apply-plural( e (And(('->(lt rt)) t2)) pt )) ))
-            ))
-            ( (Fragment rt) (
-               (typecheck-ascript( e rt ))
-            ))
-            ( (_ Fragment) (
-               (typecheck-ascript( e Fragment ))
+               (typecheck-ascript( e (typecheck-safe-apply-plural( e (typecheck-lookup-type l) pt )) ))
             ))
             ( (lt rt) (
                (typecheck-ascript( e (Cons(lt rt)) ))
@@ -692,13 +676,6 @@ typecheck-infer-expr := λctx e used . (tail(
             ( () () )
             ( tt (typecheck-ascript( e tt )) )
          ))
-      ))
-      ( (Size( typf sizf )) (
-         (if (typecheck-lookup-type e) () (
-            (set typf (typecheck-infer-type-compound typf))
-            (typecheck-set-size( typf (typecheck-infer-type-compound sizf) ))
-         ))
-         (typecheck-ascript( e Nil ))
       ))
       ( u (fail (UnknownTerm u)) )
    ))
