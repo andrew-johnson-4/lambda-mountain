@@ -59,7 +59,7 @@ assemble := λprogram . (
          ))
          (set preview_program pc3)
       ))
-      ( (prog (Fragment( fname fbody ))) (
+      ( (prog (Fragment( (Variable fname) fbody ))) (
          (set global_ctx (context::bind( global_ctx fname
             (typecheck-ascript( (Fragment fbody) (typecheck-lookup-type fbody) ))
          )))

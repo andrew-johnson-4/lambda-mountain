@@ -116,7 +116,7 @@ fragment-apply-direct := λ fragment function-args e-proto . (tail(
    (assert-typeof( 'fragment-apply-direct::e-proto e-proto StrictExpr ))
    (match fragment (
       ()
-      ( (Fragment( _ (Lambda( lhs rhs )) )) (tail(
+      ( (Fragment( (Lambda( lhs rhs )) )) (tail(
          (local fctx)
          (set fctx (fragment-destructure-lhs( () lhs function-args )))
          (assert-typeof( 'fragment-apply-direct::fctx fctx List<[Atom,StrictExpr]> ))
@@ -160,38 +160,26 @@ fragment-destructure-lhs := λ ctx lhs args . (tail(
 ));
 
 fragment-get-local := λctx v offset . (tail(
+   (assert-typeof( 'fragment-get-local::ctx ctx Context ))
+   (assert-typeof( 'fragment-get-local::v v Atom ))
+   (assert-typeof( 'fragment-get-local::offset offset Atom ))
    (local r)
-   (while ctx (
-      (match (tail ctx) (
-         ()
-         ( (Label(l uid)) (
-            if r () (
-               if (eq(l v)) (
-                  (set r (expr::new()) )
-                  (set r (expr::set-expr( r uid )))
-                  (set r (expr::set-context( r ctx )))
-                  (set r (expr::set-offset( r offset )))
-                  r
-               ) ()
-            )
-         ))
-         ( (StackVariable(l loffset ltype)) (
-            if r () (
-               if (eq(l v)) (
-                  (set r (expr::new()) )
-                  (set r (expr::set-expr( r loffset )))
-                  (set r (expr::set-context( r ctx )))
-                  (set r (expr::set-offset( r offset )))
-                  r
-               ) ()
-            )
-         ))
-         ( _ () )
-      ))
-      (set ctx (head ctx))
+   (match (context::lookup( ctx v () )) (
+      ()
+      ( (Label( uid )) (tail(
+         (set r (expr::new()) )
+         (set r (expr::set-expr( r uid )))
+         (set r (expr::set-context( r ctx )))
+         (set r (expr::set-offset( r offset )))
+         r
+      )))
+      ( (StackVariable( loffset )) (tail(
+         (set r (expr::new()) )
+         (set r (expr::set-expr( r loffset )))
+         (set r (expr::set-context( r ctx )))
+         (set r (expr::set-offset( r offset )))
+         r
+      )))
+      ( u (fail (InvalidFragmentLocal v u)))
    ))
-   (if r () (
-      (fail (ReferenceToUndefinedFragmentVariable v))
-   ))
-   r
 ));
