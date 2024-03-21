@@ -334,6 +334,9 @@ get-maybe-function := λctx v arg_type . (
       ( (GlobalFunction( body )) (
          (GlobalFunction( (mangle-global-function( v body )) ))
       ))
+      ( (GlobalVariable( body )) (
+         (GlobalVariable( label-case v ))
+      ))
       (u (fail (UnexpectedFunction v u)))
    ))
 );
