@@ -3,15 +3,19 @@ tokenize-file := λpath . (match path (
    ()
    (() ())
    ((_ _) ())
-   (fp (tokenize (load-file fp)))
+   (fp (tail(
+      (set currently-tokenizing-file path)
+      (tokenize (load-file fp))
+   )))
 ));
 
-
+currently-tokenizing-file := ();
 tokenize := λtext . (tail(
    (local program)
    (local buffer)
    (local in_comment)
    (local char)
+   (local parens-counter)
 
    (while (head-string text) (
       (set char (head-string text))
@@ -55,6 +59,7 @@ tokenize := λtext . (tail(
             (set program (program (clone-rope buffer)))
             (set buffer ())
          ) ())
+         (set parens-counter (inc parens-counter))
          (set program (program \[))
       )))
       (\] (if in_comment () (
@@ -62,6 +67,7 @@ tokenize := λtext . (tail(
             (set program (program (clone-rope buffer)))
             (set buffer ())
          ) ())
+         (set parens-counter (dec parens-counter))
          (set program (program \]))
       )))
       (\' (if in_comment () (
@@ -91,6 +97,9 @@ tokenize := λtext . (tail(
    ))))
    (if buffer (
       (set program (program (clone-rope buffer)))
+   ) ())
+   (if parens-counter (
+      (fail (Hanging Parens In File currently-tokenizing-file))
    ) ())
    (reverse-list program)
 ));
