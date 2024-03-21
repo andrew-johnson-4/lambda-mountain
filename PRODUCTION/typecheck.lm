@@ -155,7 +155,7 @@ typecheck-deep-eq := λt1 t2 . if (is( t1 t2 )) True (match (t1 t2) (
    ( (l r) (eq( l r )) )
 ));
 
-typecheck-ascript := λt tt . (
+typecheck-ascript := λt tt . (tail(
    (if tt (tail(
       (local lt)
       (set lt (typecheck-lookup-type t))
@@ -173,7 +173,8 @@ typecheck-ascript := λt tt . (
          (set typecheck-types-have-changed True)
       ))
    )) ())
-);
+   t
+));
 
 typecheck-show-ascript := λp . (tail(
    (local term)

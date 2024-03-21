@@ -1,5 +1,6 @@
 
 compile-expr-strict := λctx e offset used . (tail(
+   (print-s (CompileStrict e))(print-s \n)
    (assert-typeof( 'compile-expr-strict::ctx ctx Context ))
    (assert-typeof( 'compile-expr-strict::e e Or<[Or<[Or<[App,Nil]>,Variable]>,Literal]> ))
    (assert-typeof( 'compile-expr-strict::offset offset Atom ))
@@ -31,7 +32,12 @@ compile-expr-strict := λctx e offset used . (tail(
                (if sz () (
                   (fail (NoSizeOf (typecheck-lookup-type rhs)))
                ))
-               (set ctx (ctx (StackVariable( lname (i2s(add( (s2i offset) (inv(s2i sz)) ))) (typecheck-lookup-type rhs) )) ))
+               (set ctx (context::bind( ctx lname
+                  (typecheck-ascript(
+                     (StackVariable( lname (i2s(add( (s2i offset) (inv(s2i sz)) ))) ))
+                     (typecheck-lookup-type rhs)
+                  ))
+               )))
                (set e1 (expr::new()) )
                (if (eq( sz '0 )) () (
                   (set e1 (expr::set-frame( e1 ( \t 'sub \s '$ sz , \s '%rsp \n ) )))
@@ -61,7 +67,7 @@ compile-expr-strict := λctx e offset used . (tail(
                                     (set next-e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup-type outer) LocalVariable )) ((() next-e2) edst) next-e2 )))
                                     (set rhs inner)
                                  )))
-                                 ( u (fail( 'compile-strict::ArrayIndexAssign u )))
+                                 ( u (fail( 'compile-expr-strict::ArrayIndexAssign u )))
                               ))
                               (set at lt)
                            )))
@@ -151,7 +157,7 @@ compile-expr-strict := λctx e offset used . (tail(
                e2
             )))
             ( (App ((Variable 'gensym-label) (Variable arg))) (tail(
-               (set ctx (ctx (Label( arg (uuid()) )) ))
+               (set ctx (context::bind( ctx arg (Label (uuid())) )))
                (set e1 (expr::set-context( (expr::new()) ctx )))
                (set e1 (expr::set-offset( e1 offset )))
                e1
@@ -209,6 +215,7 @@ compile-expr-strict := λctx e offset used . (tail(
 ));
 
 get-strict-function := λctx v arg_type . (tail(
+   (fail (Lookup v))(print-s \n)
    (assert-typeof( 'get-strict-function::ctx ctx List<Or<[Or<[Or<[Or<[Label,StackVariable]>,GlobalVariable]>,GlobalFunction]>,Fragment]>> ))
    (assert-typeof( 'get-strict-function::v v Atom ))
    (local r)
@@ -264,6 +271,7 @@ get-strict-function := λctx v arg_type . (tail(
 ));
 
 strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
+   (assert-typeof( 'strict-codegen-type-case::ctx ctx Context ))
    (if (typecheck-is-fragment base-type) () (match type-body (
       ()
       ( (App( (Literal enum-case) args )) (tail(
@@ -286,10 +294,7 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
             (Cons( (And( enum-case base-type )) LocalVariable ))
             Nil
          ))))
-         (set ctx (ctx (
-            (Fragment( (Variable 'mov) body ))
-         )))
-
+         (set ctx (context::bind( ctx 'mov (Fragment( body )) )))
       )))
       ( (Literal enum-case) (tail(
          #define 'mov initializer
@@ -309,9 +314,7 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
             (Cons( (And( enum-case base-type )) LocalVariable ))
             Nil
          ))))
-         (set ctx (ctx (
-            (Fragment( (Variable 'mov) body ))
-         )))
+         (set ctx (context::bind( ctx 'mov (Fragment( body )) )))
 
          #define '.0 accessor
          (set body (Lambda(
@@ -330,9 +333,7 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
             (And( base-type LocalVariable ))
             Reg64
          ))))
-         (set ctx (ctx (
-            (Fragment( (Variable '.0) body ))
-         )))
+         (set ctx (context::bind( ctx '0 (Fragment( body )) )))
 
       )))
       ( () () )
@@ -340,6 +341,7 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
          (fail ('strict-codegen-type-case u))
       )))
    )))
+   (assert-typeof( 'strict-codegen-type-case::ctx ctx Context ))
    ctx
 ));
 
