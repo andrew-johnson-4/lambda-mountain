@@ -41,12 +41,14 @@ compile-append := λoutput_e gctx e . (tail(
    ))
 ));
 
-compile-expr := λctx e offset used . (
-   if config-strict (compile-expr-strict( ctx e (if offset offset 0) used ))
-                    (compile-expr-dynamic( ctx e offset used ))
-);
+compile-expr := λctx e offset used . (tail(
+   (assert-typeof( 'compile-expr-dynamic::ctx ctx Context ))
+   (if config-strict (compile-expr-strict( ctx e (if offset offset 0) used ))
+                     (compile-expr-dynamic( ctx e offset used )))
+));
 
 compile-expr-dynamic := λctx e offset used . (tail(
+   (print-s (CompileExprDynamic e))(print-s \n)
    (assert-typeof( 'compile-expr-dynamic::ctx ctx Context ))
    (local e1)
    (local e2)
@@ -279,6 +281,7 @@ apply-calling-convention-s := λ ctx e fname arg offset used . (tail(
 ));
 
 get-local := λctx v . (tail(
+   (print-s (GetLocal ctx v))(print-s \n)
    (local r)
    (while ctx (
       (match (tail ctx) (
@@ -322,35 +325,23 @@ get-local := λctx v . (tail(
 ));
 
 set-local := λctx v . (tail(
-   (local r)
-   (while ctx (
-      (match (tail ctx) (
-         ()
-         ( (Local((Set l) lrefer)) (
-            if r () (
-               if (eq(l v)) (
-                  (set r lrefer)
-               ) ()
-            )
-         ))
-         ( (GlobalVariable l) (
-            if r () (
-               if (eq(l v)) (
-                  (set r (
-                     \t 'mov \s '$ (label-case l) , \s '%r15 \n
-                     \t 'mov \s '%r12 , \s '0 \[ '%r15 \] \n
-                     \t 'mov \s '%r13 , \s '8 \[ '%r15 \] \n
-                  ))
-               ) ()
-            )
-         ))
+   (print-s (SetLocal ctx v))(print-s \n)
+   (match (context::lookup( ctx v () )) (
+      ()
+      ( (Local( getter setter )) (
+         setter
       ))
-      (set ctx (head ctx))
+      ( (GlobalVariable( l )) (
+         (
+            \t 'mov \s '$ (label-case l) , \s '%r15 \n
+            \t 'mov \s '%r12 , \s '0 \[ '%r15 \] \n
+            \t 'mov \s '%r13 , \s '8 \[ '%r15 \] \n
+         )
+      ))
+      ( () (
+         fail (AssignToUndefinedVariable v)
+      ))
    ))
-   (if r () (
-      (fail (AssignToUndefinedVariable v))
-   ))
-   r
 ));
 
 get-maybe-function := λctx v arg_type . (tail(
@@ -438,8 +429,7 @@ declare-local := λctx vname offset . (tail(
          (i2s( (mul( (add( (mul( sixteen offset )) sixteen)) (dec(())) )) ))
       ) \[ '%rbp \] , '%r13 \n
    ))
-   (set ctx (ctx (Local(vname refer)) ))
-   (set ctx (ctx (Local((Set vname) set_this)) ))
+   (set ctx (context::bind( ctx vname (Local( refer set_this )) )))
    (Expr(frame_this set_this () () () ctx (inc offset)))
 ));
 
