@@ -38,7 +38,6 @@ compile-expr-strict := λctx e offset used . (tail(
                (match (typecheck-slot( (typecheck-lookup-type rhs) Cons )) (
                   ()
                   ( (Cons( lt rt )) (tail(
-                     (print-s (LetBind lname (typecheck-lookup-type rhs)))(print-s \n)
                      (set e2 (expr::new()) )
                      (set e3 (expr::new()) )
                      (local at)
@@ -78,7 +77,6 @@ compile-expr-strict := λctx e offset used . (tail(
                         (set e3 (expr::chain( e3 next-e3 )))
                      ))
                   ))) (_ (tail(
-                     (print-s (LetBind lname (typecheck-lookup-type rhs)))(print-s \n)
                      (set offset (i2s (add( (s2i offset) (inv(s2i sz)) )) )) 
                      (local edst)
                      (set edst (expr::new()))
@@ -177,6 +175,7 @@ compile-expr-strict := λctx e offset used . (tail(
                         e1
                      )))
                      ( (Literal tag) (tail(
+                        (print-s (LetBind tag (typecheck-lookup-type r)))(print-s \n)
                         (fail (TODO Call Constructor tag))
                      )))
                      ( u (tail(
