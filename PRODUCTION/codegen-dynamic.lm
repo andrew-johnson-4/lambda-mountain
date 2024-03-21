@@ -48,7 +48,6 @@ compile-expr := λctx e offset used . (tail(
 ));
 
 compile-expr-dynamic := λctx e offset used . (tail(
-   (print-s (CompileExprDynamic e))(print-s \n)
    (assert-typeof( 'compile-expr-dynamic::ctx ctx Context ))
    (local e1)
    (local e2)
@@ -281,51 +280,30 @@ apply-calling-convention-s := λ ctx e fname arg offset used . (tail(
 ));
 
 get-local := λctx v . (tail(
-   (print-s (GetLocal ctx v))(print-s \n)
-   (local r)
-   (while ctx (
-      (match (tail ctx) (
-         ()
-         ( (Local(l lrefer)) (
-            if r () (
-               if (eq(l v)) (
-                  (set r lrefer)
-               ) ()
-            )
-         ))
-         ( (GlobalVariable l) (
-            if r () (
-               if (eq(l v)) (
-                  (set r (
-                     \t 'mov \s '$ (label-case l) , \s '%r15 \n
-                     \t 'mov \s '0 \[ '%r15 \] , \s '%r12     \n
-                     \t 'mov \s '8 \[ '%r15 \] , \s '%r13     \n
-                  ))
-               ) ()
-            )
-         ))
-         ( (GlobalFunction( _ _ )) () )
-         ( (Label( l luid )) (
-            if r () (
-               if (eq(l v)) (
-                  (set r luid)
-               ) ()
-            )
-         ) )
-         ( u (
-            (fail (InvalidLocal u))
-         ))
+   ()
+   (match (context::lookup( ctx v () )) (
+      ()
+      ( (Local( getter setter )) (
+         getter
       ))
-      (set ctx (head ctx))
+      ( (GlobalVariable( l )) (
+         (
+            \t 'mov \s '$ (label-case l) , \s '%r15 \n
+            \t 'mov \s '0 \[ '%r15 \] , \s '%r12     \n
+            \t 'mov \s '8 \[ '%r15 \] , \s '%r13     \n
+         )
+      ))
+      ( () (
+         fail (ReferenceToUndefinedVariable v)
+      ))
+      ( u (
+         fail (UnexpectedLocal u)
+      ))
    ))
-   (if r () (
-      (fail (ReferenceToUndefinedVariable v))
-   ))
-   r
 ));
 
 set-local := λctx v . (tail(
-   (print-s (SetLocal ctx v))(print-s \n)
+   ()
    (match (context::lookup( ctx v () )) (
       ()
       ( (Local( getter setter )) (

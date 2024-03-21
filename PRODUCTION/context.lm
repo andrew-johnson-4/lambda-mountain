@@ -20,7 +20,6 @@ context::lookup := λ ctx key key-type . (tail(
       ) ())
       (set bindings (head bindings))
    ))
-   (print-s (Lookup key return))(print-s \n)
    return
 ));
 
