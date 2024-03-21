@@ -5,6 +5,7 @@ import STDLIB/default-cons-allocator.lm;
 import STDLIB/default-atom-allocator.lm;
 
 import PRODUCTION/utility.lm;
+import PRODUCTION/context.lm;
 import PRODUCTION/tokenize.lm;
 import PRODUCTION/parse.lm;
 import PRODUCTION/preprocess.lm;

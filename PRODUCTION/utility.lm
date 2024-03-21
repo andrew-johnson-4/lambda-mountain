@@ -382,7 +382,7 @@ parse-typeof := λ tt . (tail(
 
 is-typeof := λ term tt . (match tt (
    ()
-   ( Nil (not term) )
+   ( Nil (if (eq( term Nil )) True (not term)) )
    ( Atom (is-atom term) )
    ( Cons (is-cons term) )
    ( (List te) (

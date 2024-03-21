@@ -1,0 +1,46 @@
+
+context::new := λ . (
+   (Context(
+      ()
+      0
+   ))
+);
+
+context::lookup := λ ctx key key-type . (tail(
+   (local bindings)
+   (set bindings (context::get-bindings ctx))
+   (local return)
+   (while bindings (
+      (if (eq( key (head(tail bindings)) )) (
+         (if key-type (
+            (fail (TODO Check Lookup Type key-type))
+         ) (
+            (set return (tail(tail bindings)))
+         ))
+      ) ())
+      (set bindings (head bindings))
+   ))
+   return
+));
+
+context::bind := λ ctx key term . (match ctx (
+   ()
+   ( (Context( old-ctx offset )) (
+      (Context( (old-ctx (key term)) offset ))
+   ))
+));
+
+context::get-bindings := λ ctx . (match ctx (
+   ()
+   ( (Context( bindings _ )) bindings )
+));
+
+context::get-offset := λ ctx . (match ctx (
+   ()
+   ( (Context( _ offset )) offset )
+));
+
+context::set-offset := λ ctx offset . (match ctx (
+   ()
+   ( (Context( bindings _ )) (Context( bindings offset )) )
+));

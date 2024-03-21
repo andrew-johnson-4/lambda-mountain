@@ -41,12 +41,14 @@ compile-append := λoutput_e gctx e . (tail(
    ))
 ));
 
-compile-expr := λctx e offset used . (
-   if config-strict (compile-expr-strict( ctx e (if offset offset 0) used ))
-                    (compile-expr-dynamic( ctx e offset used ))
-);
+compile-expr := λctx e offset used . (tail(
+   (assert-typeof( 'compile-expr-dynamic::ctx ctx Context ))
+   (if config-strict (compile-expr-strict( ctx e (if offset offset 0) used ))
+                     (compile-expr-dynamic( ctx e offset used )))
+));
 
 compile-expr-dynamic := λctx e offset used . (tail(
+   (assert-typeof( 'compile-expr-dynamic::ctx ctx Context ))
    (local e1)
    (local e2)
    (local e3)
@@ -83,7 +85,7 @@ compile-expr-dynamic := λctx e offset used . (tail(
          (Expr( (expr::get-frame e1) ((yield-nil()) (expr::get-prog e1)) (expr::get-unframe e1) (expr::get-text e1) (expr::get-data e1) (expr::get-context e1) (expr::get-offset e1) ))
       )))
       ( (App ((Variable 'gensym-label) (Variable fname))) (tail(
-         (set ctx (ctx (Label( fname (uuid()) )) ))
+         (set ctx (context::bind( ctx fname (Label (uuid())) )))
          (Expr( () () () () () ctx offset ))
       )))
       ( (App( (Lambda( (Variable lhs) rhs )) bind )) (tail(
@@ -278,139 +280,66 @@ apply-calling-convention-s := λ ctx e fname arg offset used . (tail(
 ));
 
 get-local := λctx v . (tail(
-   (local r)
-   (while ctx (
-      (match (tail ctx) (
-         ()
-         ( (Local(l lrefer)) (
-            if r () (
-               if (eq(l v)) (
-                  (set r lrefer)
-               ) ()
-            )
-         ))
-         ( (GlobalVariable l) (
-            if r () (
-               if (eq(l v)) (
-                  (set r (
-                     \t 'mov \s '$ (label-case l) , \s '%r15 \n
-                     \t 'mov \s '0 \[ '%r15 \] , \s '%r12     \n
-                     \t 'mov \s '8 \[ '%r15 \] , \s '%r13     \n
-                  ))
-               ) ()
-            )
-         ))
-         ( (GlobalFunction( _ _ )) () )
-         ( (Label( l luid )) (
-            if r () (
-               if (eq(l v)) (
-                  (set r luid)
-               ) ()
-            )
-         ) )
-         ( u (
-            (fail (InvalidLocal u))
-         ))
+   ()
+   (match (context::lookup( ctx v () )) (
+      ()
+      ( (Local( getter setter )) (
+         getter
       ))
-      (set ctx (head ctx))
+      ( (GlobalVariable( body )) (
+         (
+            \t 'mov \s '$ (label-case v) , \s '%r15 \n
+            \t 'mov \s '0 \[ '%r15 \] , \s '%r12     \n
+            \t 'mov \s '8 \[ '%r15 \] , \s '%r13     \n
+         )
+      ))
+      ( () (
+         fail (ReferenceToUndefinedVariable v)
+      ))
+      ( u (
+         fail (UnexpectedLocal u)
+      ))
    ))
-   (if r () (
-      (fail (ReferenceToUndefinedVariable v))
-   ))
-   r
 ));
 
 set-local := λctx v . (tail(
-   (local r)
-   (while ctx (
-      (match (tail ctx) (
-         ()
-         ( (Local((Set l) lrefer)) (
-            if r () (
-               if (eq(l v)) (
-                  (set r lrefer)
-               ) ()
-            )
-         ))
-         ( (GlobalVariable l) (
-            if r () (
-               if (eq(l v)) (
-                  (set r (
-                     \t 'mov \s '$ (label-case l) , \s '%r15 \n
-                     \t 'mov \s '%r12 , \s '0 \[ '%r15 \] \n
-                     \t 'mov \s '%r13 , \s '8 \[ '%r15 \] \n
-                  ))
-               ) ()
-            )
-         ))
+   ()
+   (match (context::lookup( ctx v () )) (
+      ()
+      ( (Local( getter setter )) (
+         setter
       ))
-      (set ctx (head ctx))
+      ( (GlobalVariable( body )) (
+         (
+            \t 'mov \s '$ (label-case v) , \s '%r15 \n
+            \t 'mov \s '%r12 , \s '0 \[ '%r15 \] \n
+            \t 'mov \s '%r13 , \s '8 \[ '%r15 \] \n
+         )
+      ))
+      ( () (
+         fail (AssignToUndefinedVariable v)
+      ))
+      ( u (
+         fail (UnexpectedLocal u)
+      ))
    ))
-   (if r () (
-      (fail (AssignToUndefinedVariable v))
-   ))
-   r
 ));
 
-get-maybe-function := λctx v arg_type . (tail(
-   (local r)
-   (while ctx (
-      (match (tail ctx) (
-         ()
-         ( (Local(l lrefer)) (
-            if r () (
-               if (eq(l v)) (
-                  (set r (Variable l))
-               ) ()
-            )
-         ))
-         ( (Fragment( (Variable name) body )) (tail(
-            ()
-            (if r () (
-               if (eq(name v)) (
-                  (if config-strict (
-                     (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
-                        (set r (Fragment( (Variable name) body )))
-                     ) ())
-                  ) (
-                     (set r (Fragment( (Variable name) body )))
-                  ))
-               ) ()
-            ))
-         )))
-         ( (GlobalFunction( name body )) (tail(
-            ()
-            (if r () (
-               if (eq(name v)) (
-                  (if config-strict (
-                     (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
-                        (set r (GlobalFunction (mangle-global-function( name body ))))
-                     ) ())
-                  ) (
-                     (set r (GlobalFunction (mangle-global-function( name body ))))
-                  ))
-               ) ()
-            ))
-         )))
-         ( (GlobalVariable name) (
-            if r () (
-               if (eq(name v)) (
-                  (set r (GlobalVariable (label-case name)))
-               ) ()
-            )
-         ))
-         ( (StackVariable(name offset type)) (
-            if r () (
-               if (eq(name v)) (
-                  (set r (StackVariable( name offset type )))
-               ) ()
-            )
-         ))
+get-maybe-function := λctx v arg_type . (
+   (match (context::lookup( ctx v () )) (
+      ()
+      ( (Local(getter setter)) (
+         (Variable v)
       ))
-      (set ctx (head ctx))
+      ( (GlobalFunction( body )) (
+         (GlobalFunction( (mangle-global-function( v body )) ))
+      ))
+      ( (GlobalVariable( body )) (
+         (GlobalVariable( label-case v ))
+      ))
+      (u (fail (UnexpectedFunction v u)))
    ))
-   r
-));
+);
 
 declare-local := λctx vname offset . (tail(
    (local frame_this)
@@ -437,8 +366,7 @@ declare-local := λctx vname offset . (tail(
          (i2s( (mul( (add( (mul( sixteen offset )) sixteen)) (dec(())) )) ))
       ) \[ '%rbp \] , '%r13 \n
    ))
-   (set ctx (ctx (Local(vname refer)) ))
-   (set ctx (ctx (Local((Set vname) set_this)) ))
+   (set ctx (context::bind( ctx vname (Local( refer set_this )) )))
    (Expr(frame_this set_this () () () ctx (inc offset)))
 ));
 
