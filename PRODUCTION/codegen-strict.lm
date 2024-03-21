@@ -176,6 +176,7 @@ compile-expr-strict := λctx e offset used . (tail(
                      )))
                      ( (Literal tag) (tail(
                         (print-s (LetBind tag (typecheck-lookup-type r)))(print-s \n)
+                        (print-s (This Will Be Sent To 'mov Src[This] Dst[LocalVariable] ))(print-s \n)
                         (fail (TODO Call Constructor tag))
                      )))
                      ( u (tail(
