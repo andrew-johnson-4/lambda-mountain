@@ -23,6 +23,7 @@ assemble := λprogram . (
    (set output_pd ( () () ))
 
    (local global_ctx)
+   (set global_ctx (context::new()))
    (local preview_program)
    (set preview_program program)
 
@@ -46,20 +47,20 @@ assemble := λprogram . (
                      ': \n \t '.zero \s '16 \n
                   )
                ))
-               (set global_ctx (global_ctx (GlobalVariable fname)))
+               (set global_ctx (context::bind( global_ctx fname (GlobalVariable body) )) )
             ))
             ( (Lambda(lhs rhs)) (
-               (set global_ctx (global_ctx (GlobalFunction( fname body ))))
+               (set global_ctx (context::bind( global_ctx fname (GlobalFunction body) )) )
             ))
          ))
          (set preview_program pc3)
       ))
       ( (prog (Fragment( fname fbody ))) (
-         (set global_ctx (global_ctx (Fragment( fname fbody )) ))
+         (set global_ctx (context::bind( global_ctx fname (Fragment fbody) )) )
          (set preview_program prog)
       ))
       ( (prog (Type( tn tb ))) (
-         (set global_ctx (strict-codegen-type( global_ctx tn tb 0 )))
+         (set global_ctx (strict-codegen-type( global_ctx tn tb 0 )) )
          (set preview_program prog)
       ))
       ( (prog (Size( _ _ ))) (
