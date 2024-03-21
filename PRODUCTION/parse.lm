@@ -63,7 +63,7 @@ parse-program := λtoks . (tail(
             (set pme (parse-one-expression remainder))
             (set remainder (tail pme))
             (set pme2 (parse-one-expression remainder))
-            (set parse-parsed-program ( parse-parsed-program (Size( (head pme) (head pme2) )) ))
+            (typecheck-set-size( (typecheck-infer-type-compound (head pme)) (typecheck-infer-type-compound (head pme2)) ))
             (set toks (tail pme2))
          ))
          (('import (relative-path remainder)) (

@@ -25,11 +25,6 @@ typecheck := λprogram . (tail(
    (local p)
    (set p program)
    (while p (
-      (typecheck-scan-sizes( (tail p) ))
-      (set p (head p))
-   ))
-   (set p program)
-   (while p (
       (typecheck-infer-type-expr( (tail p) ))
       (set p (head p))
    ))
@@ -111,8 +106,6 @@ typecheck-assert-expr := λe . (tail(
       ))
       ( (Variable v) (
          (typecheck-assert-one( e ))
-      ))
-      ( (Size( typf sizf )) (
       ))
       ( u (fail (UnknownAssertTyped u)) )
    ))
@@ -210,9 +203,6 @@ typecheck-show-ascript := λp . (tail(
          (typecheck-show-ascript prog)
       ))
       ( (prog (Fragment( typf body ))) (
-         (typecheck-show-ascript prog)
-      ))
-      ( (prog (Size( typf sizf ))) (
          (typecheck-show-ascript prog)
       ))
       ( unknown (
@@ -688,21 +678,9 @@ typecheck-infer-expr := λctx e used . (tail(
             ( tt (typecheck-ascript( e tt )) )
          ))
       ))
-      ( (Size( typf sizf )) (
-         (typecheck-ascript( e Nil ))
-      ))
       ( u (fail (UnknownTerm u)) )
    ))
    ctx
-));
-
-typecheck-scan-sizes := λterm . (match term (
-   ()
-   ( (Size( typf sizf )) (tail(
-      (set typf (typecheck-infer-type-compound typf))
-      (typecheck-set-size( typf (typecheck-infer-type-compound sizf) ))
-   )))
-   ( _ () )
 ));
 
 typecheck-sizeof := λtt . (match tt (
