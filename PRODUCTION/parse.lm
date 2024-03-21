@@ -45,16 +45,6 @@ parse-program := λtoks . (tail(
             (set parse-parsed-program ( parse-parsed-program (Type( (head pme) (head pme2) )) ))
             (set toks (tail pme2))
          ))
-         (('accept ('as remainder)) (
-            (set pme (parse-one-expression remainder))
-            (set remainder (tail pme))
-            (set pme2 (parse-many-expressions remainder))
-            (set typecheck-accept-as ( typecheck-accept-as (
-               (typecheck-infer-type-compound (head pme))
-               (typecheck-infer-type-compound (head pme2))
-            )))
-            (set toks (tail pme2))
-         ))
          (('atom ('suffix (atype (suffix remainder)))) (
             (set parse-suffix (parse-suffix (atype suffix)))
             (set toks remainder)

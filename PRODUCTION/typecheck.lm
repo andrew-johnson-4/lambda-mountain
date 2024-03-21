@@ -1,6 +1,5 @@
 
 typecheck-subtypes                       := ();
-typecheck-accept-as                      := ();
 typecheck-context                        := ();
 typecheck-constructors                   := ();
 typecheck-types-have-changed             := ();
