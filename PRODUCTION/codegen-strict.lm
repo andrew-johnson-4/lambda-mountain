@@ -1,5 +1,7 @@
 
 compile-expr-strict := λctx e offset used . (tail(
+   (assert-typeof( 'compile-expr-strict::ctx ctx Context ))
+   (assert-typeof( 'compile-expr-strict::e e Or<[Or<[Or<[App,Nil]>,Variable]>,Literal]> ))
    (assert-typeof( 'compile-expr-strict::offset offset Atom ))
    (assert-typeof( 'compile-expr-strict::used used Atom ))
    (local e1)
