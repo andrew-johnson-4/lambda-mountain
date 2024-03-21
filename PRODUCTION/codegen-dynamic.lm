@@ -85,7 +85,7 @@ compile-expr-dynamic := λctx e offset used . (tail(
          (Expr( (expr::get-frame e1) ((yield-nil()) (expr::get-prog e1)) (expr::get-unframe e1) (expr::get-text e1) (expr::get-data e1) (expr::get-context e1) (expr::get-offset e1) ))
       )))
       ( (App ((Variable 'gensym-label) (Variable fname))) (tail(
-         (set ctx (ctx (Label( fname (uuid()) )) ))
+         (set ctx (context::bind( ctx fname (Label (uuid())) )))
          (Expr( () () () () () ctx offset ))
       )))
       ( (App( (Lambda( (Variable lhs) rhs )) bind )) (tail(
@@ -319,68 +319,21 @@ set-local := λctx v . (tail(
       ( () (
          fail (AssignToUndefinedVariable v)
       ))
+      ( u (
+         fail (UnexpectedLocal u)
+      ))
    ))
 ));
 
-get-maybe-function := λctx v arg_type . (tail(
-   (local r)
-   (while ctx (
-      (match (tail ctx) (
-         ()
-         ( (Local(l lrefer)) (
-            if r () (
-               if (eq(l v)) (
-                  (set r (Variable l))
-               ) ()
-            )
-         ))
-         ( (Fragment( (Variable name) body )) (tail(
-            ()
-            (if r () (
-               if (eq(name v)) (
-                  (if config-strict (
-                     (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
-                        (set r (Fragment( (Variable name) body )))
-                     ) ())
-                  ) (
-                     (set r (Fragment( (Variable name) body )))
-                  ))
-               ) ()
-            ))
-         )))
-         ( (GlobalFunction( name body )) (tail(
-            ()
-            (if r () (
-               if (eq(name v)) (
-                  (if config-strict (
-                     (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
-                        (set r (GlobalFunction (mangle-global-function( name body ))))
-                     ) ())
-                  ) (
-                     (set r (GlobalFunction (mangle-global-function( name body ))))
-                  ))
-               ) ()
-            ))
-         )))
-         ( (GlobalVariable name) (
-            if r () (
-               if (eq(name v)) (
-                  (set r (GlobalVariable (label-case name)))
-               ) ()
-            )
-         ))
-         ( (StackVariable(name offset type)) (
-            if r () (
-               if (eq(name v)) (
-                  (set r (StackVariable( name offset type )))
-               ) ()
-            )
-         ))
+get-maybe-function := λctx v arg_type . (
+   (match (context::lookup( ctx v () )) (
+      ()
+      ( (Local(getter setter)) (
+         (Variable v)
       ))
-      (set ctx (head ctx))
+      (u (fail (UnexpectedFunction v u)))
    ))
-   r
-));
+);
 
 declare-local := λctx vname offset . (tail(
    (local frame_this)
