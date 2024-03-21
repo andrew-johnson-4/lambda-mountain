@@ -1,6 +1,5 @@
 
 compile-expr-strict := λctx e offset used . (tail(
-   (print-s (CompileStrict e))(print-s \n)
    (assert-typeof( 'compile-expr-strict::ctx ctx Context ))
    (assert-typeof( 'compile-expr-strict::e e Or<[Or<[Or<[App,Nil]>,Variable]>,Literal]> ))
    (assert-typeof( 'compile-expr-strict::offset offset Atom ))
@@ -215,59 +214,25 @@ compile-expr-strict := λctx e offset used . (tail(
 ));
 
 get-strict-function := λctx v arg_type . (tail(
-   (fail (Lookup v))(print-s \n)
-   (assert-typeof( 'get-strict-function::ctx ctx List<Or<[Or<[Or<[Or<[Label,StackVariable]>,GlobalVariable]>,GlobalFunction]>,Fragment]>> ))
+   (assert-typeof( 'get-strict-function::ctx ctx Context ))
    (assert-typeof( 'get-strict-function::v v Atom ))
-   (local r)
-   (while ctx (
-      (match (tail ctx) (
-         ()
-         ( (Fragment( (Variable name) body )) (tail(
-            ()
-            (if r () (
-               if (eq(name v)) (
-                  (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
-                     (set r (Fragment( (Variable name) body )))
-                  ) ())
-               ) ()
-            ))
-         )))
-         ( (GlobalFunction( name body )) (tail(
-            ()
-            (if r () (
-               if (eq(name v)) (
-                  (if (typecheck-apply-plural( (typecheck-lookup-type body) arg_type )) (
-                     (set r (GlobalFunction( name body )))
-                  ) ())
-               ) ()
-            ))
-         )))
-         ( (GlobalVariable name) (
-            if r () (
-               if (eq(name v)) (
-                  (set r (GlobalVariable (label-case name)))
-               ) ()
-            )
-         ))
-         ( (StackVariable(name offset type)) (
-            if r () (
-               if (eq(name v)) (
-                  (set r (StackVariable( name offset type )))
-               ) ()
-            )
-         ))
-         ( (Label(name lid)) (
-            if r () (
-               if (eq(name v)) (
-                  (set r (Label( name lid )))
-               ) ()
-            )
-         ))
-         ( u (fail( UnknownStrictFunction u )))
+   (match (context::lookup( ctx v arg_type )) (
+      ()
+      ( (Fragment( body )) (
+         (Fragment body)
       ))
-      (set ctx (head ctx))
+      ( (GlobalFunction( body )) (
+         (GlobalFunction body)
+      ))
+      ( (GlobalVariable( body )) (
+         (GlobalVariable (label-case v))
+      ))
+      ( (Label lid) (
+         (Label lid)
+      ))
+      # StackVariable name offset type
+      ( u (fail( UnknownStrictFunction v arg_type u )))
    ))
-   r
 ));
 
 strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(

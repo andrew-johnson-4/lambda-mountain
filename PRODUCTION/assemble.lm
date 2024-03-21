@@ -47,16 +47,22 @@ assemble := λprogram . (
                      ': \n \t '.zero \s '16 \n
                   )
                ))
-               (set global_ctx (context::bind( global_ctx fname (GlobalVariable body) )) )
+               (set global_ctx (context::bind( global_ctx fname
+                  (typecheck-ascript( (GlobalVariable body) (typecheck-lookup-type body) ))
+               )))
             ))
             ( (Lambda(lhs rhs)) (
-               (set global_ctx (context::bind( global_ctx fname (GlobalFunction body) )) )
+               (set global_ctx (context::bind( global_ctx fname
+                  (typecheck-ascript( (GlobalFunction body) (typecheck-lookup-type body) ))
+               )))
             ))
          ))
          (set preview_program pc3)
       ))
       ( (prog (Fragment( fname fbody ))) (
-         (set global_ctx (context::bind( global_ctx fname (Fragment fbody) )) )
+         (set global_ctx (context::bind( global_ctx fname
+            (typecheck-ascript( (Fragment fbody) (typecheck-lookup-type fbody) ))
+         )))
          (set preview_program prog)
       ))
       ( (prog (Type( tn tb ))) (
