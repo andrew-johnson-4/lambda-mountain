@@ -286,9 +286,9 @@ get-local := λctx v . (tail(
       ( (Local( getter setter )) (
          getter
       ))
-      ( (GlobalVariable( l )) (
+      ( (GlobalVariable( body )) (
          (
-            \t 'mov \s '$ (label-case l) , \s '%r15 \n
+            \t 'mov \s '$ (label-case v) , \s '%r15 \n
             \t 'mov \s '0 \[ '%r15 \] , \s '%r12     \n
             \t 'mov \s '8 \[ '%r15 \] , \s '%r13     \n
          )
@@ -309,9 +309,9 @@ set-local := λctx v . (tail(
       ( (Local( getter setter )) (
          setter
       ))
-      ( (GlobalVariable( l )) (
+      ( (GlobalVariable( body )) (
          (
-            \t 'mov \s '$ (label-case l) , \s '%r15 \n
+            \t 'mov \s '$ (label-case v) , \s '%r15 \n
             \t 'mov \s '%r12 , \s '0 \[ '%r15 \] \n
             \t 'mov \s '%r13 , \s '8 \[ '%r15 \] \n
          )
@@ -330,6 +330,9 @@ get-maybe-function := λctx v arg_type . (
       ()
       ( (Local(getter setter)) (
          (Variable v)
+      ))
+      ( (GlobalFunction( body )) (
+         (GlobalFunction( (mangle-global-function( v body )) ))
       ))
       (u (fail (UnexpectedFunction v u)))
    ))
