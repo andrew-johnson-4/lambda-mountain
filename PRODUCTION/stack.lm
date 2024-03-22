@@ -216,6 +216,7 @@ stack-define-destructure := λ ctx lhs offset . (match lhs (
       )))
       (local return)
       (set return (expr::new()))
+      (set return (expr::set-context( return ctx )))
       (set return (expr::set-offset( return (i2s new_offset) )))
       return
    )))

@@ -17,19 +17,22 @@ context::lookup := λ ctx key key-type . (tail(
             (set body (tail(tail bindings)))
             (local body-type)
             (set body-type (typecheck-lookup-type body))
-            (if (not(eq( '-> (head(typecheck-slot( body-type '-> ))) ))) (
+            (if (not(eq( '-> (head(typecheck-slot( body-type '-> ))) ))) (tail(
                (set return body)
-            ) (
-               (if (typecheck-apply-plural( body-type key-type )) (
+               (set bindings ())
+            )) (
+               (if (typecheck-apply-plural( body-type key-type )) (tail(
                   (set return body)
-               ) ())
+                  (set bindings ())
+               )) ())
             ))
-         )) (
+         )) (tail(
             (set return (tail(tail bindings)))
-         ))
-      ) ())
+            (set bindings ())
+         )))
+      ) ()
       (set bindings (head bindings))
-   ))
+   )))
    return
 ));
 
