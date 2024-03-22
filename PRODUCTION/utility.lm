@@ -58,7 +58,7 @@ uuid := λ . (tail(
 ));
 
 assert-not-typeof := λ loc term tt . (tail(
-   (set tt (parse-typeof tt))
+   (set tt (parse-type tt))
    (if (is-typeof( term tt )) (
       (print-s FailedAssertNotTypeof)(print-s \s)(print-s 'in)(print-s \s)(print-s loc)(print-s \n)
       (print-s \t)(print-s tt)(print-s \n)
@@ -231,104 +231,6 @@ reverse-list := λl . (tail(
    r
 ));
 
-parse-tuple-typeof := λ tt . (tail(
-   (assert-eq( 'parse-tuple-typeof '[ (head-string tt) ))
-   (set tt (tail-string tt))
-   (local inner)
-   (local base)
-   (local depth)
-   (while tt (
-      (match (head-string tt) (
-         ()
-         ('[ (tail(
-            (set inner (inner '[))
-            (set depth (inc depth))
-         )))
-         ('] (
-            (if depth (
-               (set inner (inner ']))
-               (set depth (dec depth))
-            ) (
-               (assert-eq( 'parse-tuple-typeof () (tail-string tt) ))
-            ))
-         ))
-         (', (tail(
-            (if depth (
-               (set inner (inner ',))
-            ) (
-               (set inner (parse-typeof (clone-rope inner) ))
-               (if base (
-                  (set base ('[] ( base inner )))
-               ) (
-                  (set base inner)
-               ))
-               (set inner ())
-            ))
-         )))
-         (c (set inner (inner (clone-rope c)) ))
-      ))
-      (set tt (tail-string tt))
-   ))
-   (if base (
-      (set base ('[] ( base (parse-typeof (clone-rope inner )) )))
-   ) (
-      (set base (parse-typeof (clone-rope inner)))
-   ))
-   base
-));
-
-parse-typeof := λ tt . (tail(
-   (local buff)
-   (local base)
-   (if (is-cons tt) (
-      (set base tt)
-      (set tt ())
-   ) ())
-   (while tt (
-      (match (head-string tt) (
-         ()
-         ('[ (tail(
-            (set base (parse-tuple-typeof tt))
-            (set tt ())
-         )))
-         ('< (tail(
-            (set base ( (clone-rope buff) (parse-parameter-typeof tt) ))
-            (set tt ())
-         )))
-         (c (set buff (buff (clone-rope c)) ))
-      ))
-      (set tt (tail-string tt))
-   ))
-   (if base base (clone-rope buff))
-));
-
-parse-parameter-typeof := λ tt . (tail(
-   (assert-eq( 'parse-parameter-typeof '< (head-string tt) ))
-   (set tt (tail-string tt))
-   (local inner)
-   (local depth)
-   (while tt (
-      (match (head-string tt) (
-         ()
-         ('< (tail(
-            (set inner (inner '<))
-            (set depth (inc depth))
-         )))
-         ('> (
-            (if depth (
-               (set inner (inner '>))
-               (set depth (dec depth))
-            ) (
-               (assert-eq( 'parse-parameter-typeof () (tail-string tt) ))
-            ))
-         ))
-         (c (set inner (inner (clone-rope c)) ))
-      ))
-      (set tt (tail-string tt))
-   ))
-   (parse-typeof (clone-rope inner))
-));
-
 is-typeof := λ term tt . (match tt (
    ()
    ( Nil (if (eq( term Nil )) True (not term)) )
@@ -361,7 +263,7 @@ is-typeof := λ term tt . (match tt (
 ));
 
 assert-typeof := λ loc term tt . (tail(
-   (set tt (parse-typeof tt))
+   (set tt (parse-type tt))
    (if (is-typeof( term tt )) () (
       (print-s FailedAssertTypeof)(print-s \s)(print-s 'in)(print-s \s)(print-s loc)(print-s \n)
       (print-s \t)(print-s tt)(print-s \n)
