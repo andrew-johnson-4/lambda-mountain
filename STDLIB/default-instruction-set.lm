@@ -6,8 +6,8 @@ fragment type Reg64 RAX | RBX | RCX | RDX | RSI | RDI | RBP | RSP | R8  | R9  | 
 
 fragment syscall := λ. (: (.program( \t 'syscall \n )) Nil);
 
-fragment push := λ(: l Constant+U64). (: ( (.program( \t 'pushq \t '$ (.expression l) \n)) ) Nil);
-fragment push := λ(: l Constant+I64). (: ( (.program( \t 'pushq \t '$ (.expression l) \n)) ) Nil);
+fragment push := λ(: l Constant+U64). (: ( (.program( \t 'pushq \s '$ (.expression l) \n)) ) Nil);
+fragment push := λ(: l Constant+I64). (: ( (.program( \t 'pushq \s '$ (.expression l) \n)) ) Nil);
 
 fragment cdecl::return := λ(: l Nil). (: () Nil);
 fragment cdecl::return := λ(: l Reg8). (: (  (.program( \t 'mov \t '% (.expression l) , '%al \n))  (.expression 'al)  ) Nil);

@@ -17,8 +17,14 @@ compile-push-rvalue := λctx e offset . (tail(
       ))
       ( lt (tail(
          (set e1 (compile-expr-strict( ctx e offset Used )))
-         (set e2 (fragment-apply( ctx 'push lt (() e1) e1 )))
-         (expr::chain( e1 e2 ))
+         (match (typecheck-slot( (expr::get-type e1) StackValue )) (
+            ()
+            ( StackVariable e1 )
+            ( _ (tail(
+               (set e2 (fragment-apply( ctx 'push lt (() e1) e1 )))
+               (expr::chain( e1 e2 ))
+            )))
+         ))
       )))
    ))
 ));
@@ -152,6 +158,7 @@ compile-expr-strict := λctx e offset used . (tail(
                      ( (Literal tag) (tail(
                         (set e1 (compile-push-rvalue( ctx r offset )))
                         (set e2 (fragment-apply( ctx 'push (And( (typecheck-lookup e) DontChain)) (() e1) e1 )))
+                        (set e2 (expr::set-type( e2 StackVariable )))
                         e2
                      )))
                      ( u (tail(
