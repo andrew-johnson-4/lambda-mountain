@@ -150,9 +150,9 @@ compile-expr-strict := λctx e offset used . (tail(
                         e1
                      )))
                      ( (Literal tag) (tail(
-                        (print-s (LetBind tag (typecheck-lookup r)))(print-s \n)
-                        (print-s (This Will Be Sent To 'mov Src[This] Dst[LocalVariable] ))(print-s \n)
-                        (fail (TODO Call Constructor tag))
+                        (set e1 (compile-expr-strict( ctx r offset Used )))
+                        (set e2 (fragment-apply( ctx 'push (typecheck-lookup r) (() e1) e1 )))
+                        (expr::chain( e1 e2 ))
                      )))
                      ( u (tail(
                         (fail (ComplexFunctionConjugatesNotSupportedYet e))
