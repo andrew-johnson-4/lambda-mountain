@@ -2,7 +2,6 @@
 compile-push-rvalue := λctx e offset . (tail(
    (local e1)
    (local e2)
-   (local e3)
    (match (typecheck-slot( (typecheck-lookup e) Cons )) (
       ()
       ( (Cons( lt rt )) (
@@ -10,9 +9,8 @@ compile-push-rvalue := λctx e offset . (tail(
             ()
             ( (App( le re )) (tail(
                (set e1 (compile-push-rvalue( ctx le offset )))
-               (set e2 (compile-expr-strict( ctx re offset Used )))
-               (set e3 (fragment-apply( ctx 'push lt (() e2) e2 )))
-               (expr::chain( (expr::chain( e1 e2 )) e3 ))
+               (set e2 (compile-push-rvalue( ctx re offset )))
+               (expr::chain( e1 e2 ))
             )))
             ( u (fail (UnexpectedRvalue e)))
          ))
