@@ -25,6 +25,13 @@ fragment cdecl::return := λ(: l LocalVariable+U64). (: (  (.program( \t 'mov \t
 
 fragment & := λ(: src LocalVariable). (: ( (.program( \t 'mov \t '%rbp , \s '%r12 \n \t 'add \s '$ (.expression src) , \s '%r12 \n) (.expression( 'r12 ))) ) Reg64);
 
+mov := λ(: src LocalVariable+Sized<size>)(: dst LocalVariable+Sized<size>). (
+   (.program ( for word-offset in (range( 0 (div( size 8 )) )) (
+      \t 'movq \s (+ (mul( word-offset 8 )) (.expression src)) \[ '%rbp \] , \s '%rax \n
+      \t 'movq \s '%rax , \s (+ (mul( word-offset 8 )) (.expression dst)) \[ '%rbp \] \n      
+   )))
+);
+
 fragment mov := λ(: src LocalVariable)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n)) ) Nil);
 fragment mov := λ(: src LocalVariable)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n)) ) Nil);
 fragment mov := λ(: src Constant+U64)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t '$ (.expression src) , \s '% (.expression dst) \n)) ) Nil);
