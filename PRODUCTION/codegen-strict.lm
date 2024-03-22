@@ -57,7 +57,7 @@ compile-expr-strict := λctx e offset used . (tail(
             ( (App( (Variable 'label) (Variable label-name) )) (
                (match (get-strict-function( ctx label-name Label )) (
                   ()
-                  ( (Label( lname lid )) (tail(
+                  ( (Label( lid )) (tail(
                      (set e2 (expr::new()))
                      (set e2 (expr::set-prog( e2 ( lid ': \n ) )))
                      (set e2 (expr::set-context( e2 ctx )))
@@ -110,7 +110,9 @@ compile-expr-strict := λctx e offset used . (tail(
                e2
             )))
             ( (App ((Variable 'gensym-label) (Variable arg))) (tail(
-               (set ctx (ctx (Label( arg (uuid()) )) ))
+               (set ctx (context::bind( ctx arg
+                  (typecheck-ascript( (Label( (uuid()) )) Label ))
+               )))
                (set e1 (expr::set-context( (expr::new()) ctx )))
                (set e1 (expr::set-offset( e1 offset )))
                e1
