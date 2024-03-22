@@ -215,7 +215,7 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
          (set args_type (typecheck-infer-type-compound args))
 
          (local body)
-         (set body (Lambda(
+         (set body (Fragment (Lambda(
             (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
             (App( (Variable '.program) (
                \t 'pushq \s '$ case-number \n
@@ -223,30 +223,30 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
                   (App( (Variable 'push) (Variable 'src) ))
                ))
             )))
-         )))
+         ))))
          (typecheck-ascript( body ('->(
             (Cons( (And( enum-case base-type )) LocalVariable ))
             Nil
          ))))
-         (set ctx (context::bind( ctx 'mov (Fragment( body )) )))
+         (set ctx (context::bind( ctx 'mov body )))
       )))
       ( (Literal enum-case) (tail(
          #define 'mov initializer
          (local body)
-         (set body (Lambda(
+         (set body (Fragment (Lambda(
             (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
             (App( (Variable '.program) (
                \t 'pushq \s '$ case-number \n
             )))
-         )))
+         ))))
          (typecheck-ascript( body ('->(
             (And( enum-case base-type ))
             StackVariable
          ))))
-         (set ctx (context::bind( ctx 'push (Fragment( body )) )))
+         (set ctx (context::bind( ctx 'push body )))
 
          #define '.0 accessor
-         (set body (Lambda(
+         (set body (Fragment (Lambda(
             (App( (App( (Literal ':) (Variable 'src) )) (Literal LocalVariable) ))
             (App(
                (App( (Variable '.program) (
@@ -257,12 +257,12 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
                   'r15
                )))
             ))
-         )))
+         ))))
          (typecheck-ascript( body ('->(
             (And( base-type LocalVariable ))
             Reg64
          ))))
-         (set ctx (context::bind( ctx '0 (Fragment( body )) )))
+         (set ctx (context::bind( ctx '0 body )))
 
       )))
       ( () () )
