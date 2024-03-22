@@ -1,4 +1,28 @@
 
+compile-push-rvalue := λctx e offset . (tail(
+   (local e1)
+   (local e2)
+   (match (typecheck-slot( (typecheck-lookup e) Cons )) (
+      ()
+      ( (Cons( lt rt )) (
+         (match e (
+            ()
+            ( (App( le re )) (tail(
+               (set e1 (compile-push-rvalue( ctx le offset )))
+               (set e2 (compile-push-rvalue( ctx re offset )))
+               (expr::chain( e1 e2 ))
+            )))
+            ( u (fail (UnexpectedRvalue e)))
+         ))
+      ))
+      ( lt (tail(
+         (set e1 (compile-expr-strict( ctx e offset Used )))
+         (set e2 (fragment-apply( ctx 'push lt (() e1) e1 )))
+         (expr::chain( e1 e2 ))
+      )))
+   ))
+));
+
 compile-expr-strict := λctx e offset used . (tail(
    (assert-typeof( 'compile-expr-strict::ctx ctx Context ))
    (assert-typeof( 'compile-expr-strict::e e Or<[Or<[Or<[App,Nil]>,Variable]>,Literal]> ))
@@ -27,32 +51,20 @@ compile-expr-strict := λctx e offset used . (tail(
             ()
             ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
                (local sz)
-               (set sz (typecheck-sizeof (typecheck-lookup rhs)))
+               (set sz (max( 8 (typecheck-sizeof (typecheck-lookup rhs)) )))
                (if sz () (
                   (fail (NoSizeOf (typecheck-lookup rhs)))
                ))
                (set offset (i2s (add( (s2i offset) (inv(s2i sz)) )) )) 
-               (set ctx (context::bind( ctx lname
-                  (typecheck-ascript( (StackVariable offset) (typecheck-lookup rhs) ))
-               )))
-               (set e1 (expr::new()) )
+               (set e1 (compile-push-rvalue( ctx rhs offset )))
                (if (eq( sz '0 )) () (
-                  (set e1 (expr::set-frame( e1 ( \t 'sub \s '$ sz , \s '%rsp \n ) )))
-                  (set e1 (expr::set-unframe( e1 ( \t 'add \s '$ sz , \s '%rsp \n ) )))
+                  (set e1 (expr::set-unframe( e1 ( (expr::get-unframe e1) \t 'add \s '$ sz , \s '%rsp \n ) )))
                ))
-               (local edst)
-               (set edst (expr::new()))
-               (set edst (expr::set-expr( edst offset )))
-               (set e2 (compile-expr-strict( ctx rhs offset Used )))
-               (set e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup rhs) LocalVariable )) ((() e2) edst) e2 )))
-
-               (set e3 (expr::set-frame( e3 (  (expr::get-frame e1) (expr::get-frame e2) (expr::get-frame e3) ))))
-               (set e3 (expr::set-unframe( e3 (  (expr::get-unframe e1) (expr::get-unframe e2) (expr::get-unframe e3) ))))
-               (set e3 (expr::set-text( e3 (  (expr::get-text e1) (expr::get-text e2) (expr::get-text e3) ))))
-               (set e3 (expr::set-data( e3 (  (expr::get-data e1) (expr::get-data e2) (expr::get-data e3) ))))
-               (set e3 (expr::set-prog( e3 (  (expr::get-prog e1) (expr::get-prog e2) (expr::get-prog e3) ))))
-               (set e3 (expr::set-data( e3 (  (expr::get-data e1) (expr::get-data e2) (expr::get-data e3) ))))
-               e3
+               (set ctx (context::bind( (expr::get-context e1) lname
+                  (typecheck-ascript( (LocalVariable offset) (typecheck-lookup rhs) ))
+               )))
+               (set e1 (expr::set-context( e1 ctx )))
+               e1
             )))
             ( (App( (Variable 'label) (Variable label-name) )) (
                (match (get-strict-function( ctx label-name Label )) (
@@ -71,7 +83,7 @@ compile-expr-strict := λctx e offset used . (tail(
                (assert-eq( 'compile-expr-strict::set (head lhs) Variable ))
                (match (get-strict-function( ctx (tail lhs) (typecheck-lookup rhs))) (
                   ()
-                  ( (StackVariable( sv-offset )) (tail(
+                  ( (LocalVariable( sv-offset )) (tail(
                      (set e1 (compile-expr-strict( ctx rhs offset Used )))
                      (set e2 (expr::new()))
                      (set e2 (expr::set-expr( e2 sv-offset )))
@@ -186,9 +198,10 @@ get-strict-function := λctx v arg_type . (tail(
       ( (Label lid) (
          (Label lid)
       ))
-      ( (StackVariable sv-offset) (
-         (StackVariable sv-offset)
+      ( (LocalVariable sv-offset) (
+         (LocalVariable sv-offset)
       ))
+      ( () (fail( UndefinedSymbol v arg_type )))
       ( u (fail( UnknownStrictFunction v arg_type u )))
    ))
 ));

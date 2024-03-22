@@ -335,3 +335,101 @@ label-case-atom := λk . (tail(
 mangle-identifier := λname tt . (
    (clone-rope (label-case ( name : tt )))
 );
+
+parse-type := λ tt . (tail(
+   (local buff)
+   (local base)
+   (if (is-cons tt) (
+      (set base tt)
+      (set tt ())
+   ) ())
+   (while tt (
+      (match (head-string tt) (
+         ()
+         ('[ (tail(
+            (set base (parse-tuple-type tt))
+            (set tt ())
+         )))
+         ('< (tail(
+            (set base ( (clone-rope buff) (parse-parameter-type tt) ))
+            (set tt ())
+         )))
+         (c (set buff (buff (clone-rope c)) ))
+      ))
+      (set tt (tail-string tt))
+   ))
+   (if base base (clone-rope buff))
+));
+
+parse-parameter-type := λ tt . (tail(
+   (assert-eq( 'parse-parameter-type '< (head-string tt) ))
+   (set tt (tail-string tt))
+   (local inner)
+   (local depth)
+   (while tt (
+      (match (head-string tt) (
+         ()
+         ('< (tail(
+            (set inner (inner '<))
+            (set depth (inc depth))
+         )))
+         ('> (
+            (if depth (
+               (set inner (inner '>))
+               (set depth (dec depth))
+            ) (
+               (assert-eq( 'parse-parameter-type () (tail-string tt) ))
+            ))
+         ))
+         (c (set inner (inner (clone-rope c)) ))
+      ))
+      (set tt (tail-string tt))
+   ))
+   (parse-type (clone-rope inner))
+));
+
+parse-tuple-type := λ tt . (tail(
+   (assert-eq( 'parse-tuple-type '[ (head-string tt) ))
+   (set tt (tail-string tt))
+   (local inner)
+   (local base)
+   (local depth)
+   (while tt (
+      (match (head-string tt) (
+         ()
+         ('[ (tail(
+            (set inner (inner '[))
+            (set depth (inc depth))
+         )))
+         ('] (
+            (if depth (
+               (set inner (inner ']))
+               (set depth (dec depth))
+            ) (
+               (assert-eq( 'parse-tuple-type () (tail-string tt) ))
+            ))
+         ))
+         (', (tail(
+            (if depth (
+               (set inner (inner ',))
+            ) (
+               (set inner (parse-type (clone-rope inner) ))
+               (if base (
+                  (set base ('[] ( base inner )))
+               ) (
+                  (set base inner)
+               ))
+               (set inner ())
+            ))
+         )))
+         (c (set inner (inner (clone-rope c)) ))
+      ))
+      (set tt (tail-string tt))
+   ))
+   (if base (
+      (set base ('[] ( base (parse-type (clone-rope inner )) )))
+   ) (
+      (set base (parse-type (clone-rope inner)))
+   ))
+   base
+));

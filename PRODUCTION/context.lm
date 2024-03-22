@@ -17,7 +17,12 @@ context::lookup := λ ctx key key-type . (tail(
             (set body (tail(tail bindings)))
             (local body-type)
             (set body-type (typecheck-lookup body))
+            (if (not body-type) (
+               (fail (UntypedBinding body))
+            ) ())
             (if (not(eq( '-> (head(typecheck-slot( body-type '-> ))) ))) (tail(
+               (print-s( Found key key-type ))(print-s \n)
+               (print-s( BodyType body-type ))(print-s \n)
                (set return body)
                (set bindings ())
             )) (
