@@ -48,12 +48,12 @@ assemble := λprogram . (
                   )
                ))
                (set global_ctx (context::bind( global_ctx fname
-                  (typecheck-ascript( (GlobalVariable body) (typecheck-lookup-type body) ))
+                  (typecheck-ascript( (GlobalVariable body) (typecheck-lookup body) ))
                )))
             ))
             ( (Lambda(lhs rhs)) (
                (set global_ctx (context::bind( global_ctx fname
-                  (typecheck-ascript( (GlobalFunction body) (typecheck-lookup-type body) ))
+                  (typecheck-ascript( (GlobalFunction body) (typecheck-lookup body) ))
                )))
             ))
          ))
@@ -61,7 +61,7 @@ assemble := λprogram . (
       ))
       ( (prog (Fragment( (Variable fname) fbody ))) (
          (set global_ctx (context::bind( global_ctx fname
-            (typecheck-ascript( (Fragment fbody) (typecheck-lookup-type fbody) ))
+            (typecheck-ascript( (Fragment fbody) (typecheck-lookup fbody) ))
          )))
          (set preview_program prog)
       ))

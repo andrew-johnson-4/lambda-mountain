@@ -15,10 +15,10 @@ compile-expr-strict := λctx e offset used . (tail(
          (match e (
             ()
             ( (App( (App( (Literal ':) re )) rtype )) (
-               (fragment-apply( ctx 'cdecl::return (typecheck-lookup-type re) (() e1) e1 ))
+               (fragment-apply( ctx 'cdecl::return (typecheck-lookup re) (() e1) e1 ))
             ))
             ( re (
-               (fragment-apply( ctx 'cdecl::return (typecheck-lookup-type e) (() e1) e1 ))
+               (fragment-apply( ctx 'cdecl::return (typecheck-lookup e) (() e1) e1 ))
             ))
          ))
       )))
@@ -27,13 +27,13 @@ compile-expr-strict := λctx e offset used . (tail(
             ()
             ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
                (local sz)
-               (set sz (typecheck-sizeof (typecheck-lookup-type rhs)))
+               (set sz (typecheck-sizeof (typecheck-lookup rhs)))
                (if sz () (
-                  (fail (NoSizeOf (typecheck-lookup-type rhs)))
+                  (fail (NoSizeOf (typecheck-lookup rhs)))
                ))
                (set offset (i2s (add( (s2i offset) (inv(s2i sz)) )) )) 
                (set ctx (context::bind( ctx lname
-                  (typecheck-ascript( (StackVariable offset) (typecheck-lookup-type rhs) ))
+                  (typecheck-ascript( (StackVariable offset) (typecheck-lookup rhs) ))
                )))
                (set e1 (expr::new()) )
                (if (eq( sz '0 )) () (
@@ -44,7 +44,7 @@ compile-expr-strict := λctx e offset used . (tail(
                (set edst (expr::new()))
                (set edst (expr::set-expr( edst offset )))
                (set e2 (compile-expr-strict( ctx rhs offset Used )))
-               (set e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup-type rhs) LocalVariable )) ((() e2) edst) e2 )))
+               (set e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup rhs) LocalVariable )) ((() e2) edst) e2 )))
 
                (set e3 (expr::set-frame( e3 (  (expr::get-frame e1) (expr::get-frame e2) (expr::get-frame e3) ))))
                (set e3 (expr::set-unframe( e3 (  (expr::get-unframe e1) (expr::get-unframe e2) (expr::get-unframe e3) ))))
@@ -69,7 +69,7 @@ compile-expr-strict := λctx e offset used . (tail(
             ))
             ( (App( (App( (Variable 'set) lhs )) rhs )) (tail(
                (assert-eq( 'compile-expr-strict::set (head lhs) Variable ))
-               (match (get-strict-function( ctx (tail lhs) (typecheck-lookup-type rhs))) (
+               (match (get-strict-function( ctx (tail lhs) (typecheck-lookup rhs))) (
                   ()
                   ( (StackVariable( sv-offset )) (tail(
                      (set e1 (compile-expr-strict( ctx rhs offset Used )))
@@ -77,7 +77,7 @@ compile-expr-strict := λctx e offset used . (tail(
                      (set e2 (expr::set-expr( e2 sv-offset )))
                      (set e2 (expr::set-context( e2 ctx )))
                      (set e2 (expr::set-offset( e2 offset )))
-                     (set e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup-type rhs) LocalVariable )) ((() e1) e2) e2 )))
+                     (set e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup rhs) LocalVariable )) ((() e1) e2) e2 )))
                   )))
                   ( u (fail( UnexpectedAssignmentLhs lhs u )))
                ))
@@ -129,7 +129,7 @@ compile-expr-strict := λctx e offset used . (tail(
             )))
             ( (App (l r)) (tail(
                (local result)
-               (set result (match (typecheck-slot( (typecheck-lookup-type l) '-> )) (
+               (set result (match (typecheck-slot( (typecheck-lookup l) '-> )) (
                   ()
                   ( ('-> _) (match l (
                      ()
@@ -138,7 +138,7 @@ compile-expr-strict := λctx e offset used . (tail(
                         e1
                      )))
                      ( (Literal tag) (tail(
-                        (print-s (LetBind tag (typecheck-lookup-type r)))(print-s \n)
+                        (print-s (LetBind tag (typecheck-lookup r)))(print-s \n)
                         (print-s (This Will Be Sent To 'mov Src[This] Dst[LocalVariable] ))(print-s \n)
                         (fail (TODO Call Constructor tag))
                      )))

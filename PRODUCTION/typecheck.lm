@@ -42,7 +42,7 @@ typecheck-assert-complete := λp . (if p (
 ) ());
 
 typecheck-assert-one := λe . (
-   (if (typecheck-lookup-type e) () (
+   (if (typecheck-lookup e) () (
       (print-s (typecheck-show-ascript parse-parsed-program))(print-s \n)
       (fail (UnableToInferTypeOfExpression (typecheck-show-ascript e)))
    ))
@@ -110,7 +110,7 @@ typecheck-assert-expr := λe . (tail(
    ))
 ));
 
-typecheck-lookup-type := λterm . (tail(
+typecheck-lookup := λterm . (tail(
    (local tctx)
    (set tctx typecheck-context)
    (local found)
@@ -158,7 +158,7 @@ typecheck-deep-eq := λt1 t2 . if (is( t1 t2 )) True (match (t1 t2) (
 typecheck-ascript := λt tt . (tail(
    (if tt (tail(
       (local lt)
-      (set lt (typecheck-lookup-type t))
+      (set lt (typecheck-lookup t))
       (if lt (
          (if (typecheck-deep-eq( lt tt )) () (
             fail (TypeAscriptionInequality lt tt)
@@ -211,7 +211,7 @@ typecheck-show-ascript := λp . (tail(
    )))
 
    (local type)
-   (set type (typecheck-lookup-type p))
+   (set type (typecheck-lookup p))
    (if type (
       (if (eq( type '? )) (
          term
@@ -565,7 +565,7 @@ typecheck-infer-expr := λctx e used . (tail(
       ))
       ( (Global( gln gle )) (
          (typecheck-infer-expr( ctx gle Used ))
-         (match (typecheck-lookup-type gle) (
+         (match (typecheck-lookup gle) (
             ()
             ( () () )
             ( glt (
@@ -631,14 +631,14 @@ typecheck-infer-expr := λctx e used . (tail(
       ( (App( (Variable 'tail) (App( l r )) )) (tail(
          (set ctx (typecheck-infer-expr( ctx l used )))
          (set ctx (typecheck-infer-expr( ctx r used )))
-         (if (typecheck-lookup-type r) (
-            (typecheck-ascript( e (typecheck-lookup-type r) ))
+         (if (typecheck-lookup r) (
+            (typecheck-ascript( e (typecheck-lookup r) ))
          ) ())
       )))
       ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
          (set ctx (typecheck-infer-expr( ctx rhs Used )))
-         (if (typecheck-lookup-type rhs) (
-            (set ctx ( ctx (lname (And( LocalVariable (typecheck-not-representation (typecheck-lookup-type rhs)) )) ) ))
+         (if (typecheck-lookup rhs) (
+            (set ctx ( ctx (lname (And( LocalVariable (typecheck-not-representation (typecheck-lookup rhs)) )) ) ))
          ) (
             (set ctx ( ctx (lname ()) ))
          ))
@@ -648,12 +648,12 @@ typecheck-infer-expr := λctx e used . (tail(
       ( (App( l r )) (tail(
          (set ctx (typecheck-infer-expr( ctx l used )))
          (set ctx (typecheck-infer-expr( ctx r used )))
-         (match ( (typecheck-slot( (typecheck-lookup-type l) '-> )) (typecheck-lookup-type r) ) (
+         (match ( (typecheck-slot( (typecheck-lookup l) '-> )) (typecheck-lookup r) ) (
             ()
             ( (() _) () )
             ( (_ ()) () )
             ( ( ('->(lt rt)) pt ) (
-               (typecheck-ascript( e (typecheck-safe-apply-plural( e (typecheck-lookup-type l) pt )) ))
+               (typecheck-ascript( e (typecheck-safe-apply-plural( e (typecheck-lookup l) pt )) ))
             ))
             ( (lt rt) (
                (typecheck-ascript( e (Cons(lt rt)) ))
@@ -663,7 +663,7 @@ typecheck-infer-expr := λctx e used . (tail(
       ( (Lambda( lhs rhs )) (tail(
          (set ctx (typecheck-infer-ctx( ctx lhs )))
          (typecheck-infer-expr( ctx rhs Used ))
-         (match (typecheck-lookup-type rhs) (
+         (match (typecheck-lookup rhs) (
             ()
             ( () () )
             ( rt (
@@ -782,7 +782,7 @@ typecheck-rvalue := λtt . (match tt (
 ));
 
 mangle-global-function := λname body . (
-   (clone-rope (label-case ( name : (typecheck-lookup-type body) )))
+   (clone-rope (label-case ( name : (typecheck-lookup body) )))
 );
 
 typecheck-is-fragment := λtt . (tail(

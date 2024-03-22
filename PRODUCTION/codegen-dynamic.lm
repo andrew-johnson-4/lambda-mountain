@@ -261,7 +261,7 @@ apply-calling-convention-s := λ ctx e fname arg offset used . (tail(
       )))
    )) (tail(
       ()
-      (match (get-maybe-function(ctx fname (typecheck-lookup-type arg))) (
+      (match (get-maybe-function(ctx fname (typecheck-lookup arg))) (
          ()
          ( (GlobalFunction mangledname) (tail(
             (set e1 (compile-expr(ctx arg offset Used)))
@@ -269,7 +269,7 @@ apply-calling-convention-s := λ ctx e fname arg offset used . (tail(
             (Expr( (expr::get-frame e1) prog (expr::get-unframe e1) (expr::get-text e1) (expr::get-data e1) (expr::get-context e1) (expr::get-offset e1) ))
          )))
          ( () (
-            (fail (ReferenceToUndefinedVariable fname (typecheck-lookup-type arg)))
+            (fail (ReferenceToUndefinedVariable fname (typecheck-lookup arg)))
          ))
          ( v (tail(
             ()
