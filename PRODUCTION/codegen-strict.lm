@@ -234,6 +234,30 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
             Nil
          ))))
          (set ctx (context::bind( ctx 'push body )))
+
+         (local sz)
+         (set sz (typecheck-sizeof base-type))
+         (local field-offset)
+         (set field-offset (i2s(add( (s2i sz) (s2i '-8) ))))
+         #define '.0 accessor
+         (set body (Fragment (Lambda(
+            (App( (App( (Literal ':) (Variable 'src) )) (Literal LocalVariable) ))
+            (App(
+               (App( (Variable '.program) (
+                  \t 'movq \s ('+( ('.expression 'src) field-offset )) \s \[ '%rbp \] ,
+                  \s '%r15 \n
+               )))
+               (App( (Variable '.expression) (
+                  'r15
+               )))
+            ))
+         ))))
+         (typecheck-ascript( body ('->(
+            (And( base-type LocalVariable ))
+            Reg64
+         ))))
+         (set ctx (context::bind( ctx '.0 body )))
+
       )))
       ( (Literal enum-case) (tail(
          #define 'mov initializer

@@ -2,6 +2,20 @@
 fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
    ()
    ( () () )
+   ( ('+( l r )) (tail(
+      (set l (fragment-substitute-context( ctx l )))
+      (set r (fragment-substitute-context( ctx r )))
+      (i2s(add( (s2i l) (s2i r) )))
+   )))
+   ( ('.expression v ) (tail(
+      (while ctx (
+         (if (eq( v (head (tail ctx)) )) (
+            (set v (expr::get-expr (tail (tail ctx))))
+         ) ())
+         (set ctx (head ctx))
+      ))
+      v
+   )))
    ( (App( (Variable '.expression) (Variable v) )) (tail(
       (while ctx (
          (if (eq( v (head (tail ctx)) )) (
