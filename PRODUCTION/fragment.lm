@@ -100,8 +100,13 @@ fragment-apply := λ ctx function-name function-type function-args e-proto . (ta
       (print-s function-type)(print-s \n)
       (exit 1)
    ))
+   (local dont-chain)
+   (match (typecheck-slot( function-type DontChain )) (
+      ()
+      ( DontChain (set dont-chain DontChain))
+   ))
    (local return)
-   (set return (fragment-apply-direct( arrow function-args e-proto )))
+   (set return (fragment-apply-direct( arrow function-args e-proto dont-chain )))
    (assert-typeof( 'fragment-apply::return return StrictExpr ))
    return
 ));
@@ -116,7 +121,7 @@ fragment-chain := λ fragment-ctx e . (tail(
    e
 ));
 
-fragment-apply-direct := λ fragment function-args e-proto . (tail(
+fragment-apply-direct := λ fragment function-args e-proto dont-chain . (tail(
    (assert-typeof( 'fragment-apply-direct::fragment fragment Fragment ))
    (assert-typeof( 'fragment-apply-direct::function-args function-args List<StrictExpr> ))
    (assert-typeof( 'fragment-apply-direct::e-proto e-proto StrictExpr ))
@@ -132,7 +137,9 @@ fragment-apply-direct := λ fragment function-args e-proto . (tail(
          (set e-seed (expr::set-context( e-seed (expr::get-context e-proto) )))
          (local e-return)
          (set e-return (fragment-apply-context( fctx rhs e-seed )))
-         (set e-return (fragment-chain( fctx e-return )))
+         (if dont-chain () (
+            (set e-return (fragment-chain( fctx e-return )))
+         ))
          (assert-typeof( 'fragment-apply-direct::return e-return StrictExpr ))
          e-return
       )))

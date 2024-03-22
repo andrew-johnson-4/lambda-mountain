@@ -770,7 +770,8 @@ typecheck-slot-inner := λtt tag . (tail(
       ( ( t r ) (
          if (eq( t tag )) tt ()
       ))
-      ( _ () )
+      ( () () )
+      ( t1 (if (eq( tag t1 )) tag () ))
    )))
    return
 ));
