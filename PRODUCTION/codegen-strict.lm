@@ -150,8 +150,8 @@ compile-expr-strict := λctx e offset used . (tail(
                         e1
                      )))
                      ( (Literal tag) (tail(
-                        (set e1 (compile-expr-strict( ctx r offset Used )))
-                        (set e2 (fragment-apply( ctx 'push (typecheck-lookup r) (() e1) e1 )))
+                        (set e1 (compile-push-rvalue( ctx r offset )))
+                        (set e2 (fragment-apply( ctx 'push (typecheck-lookup e) (() e1) e1 )))
                         (expr::chain( e1 e2 ))
                      )))
                      ( u (tail(
@@ -160,7 +160,7 @@ compile-expr-strict := λctx e offset used . (tail(
                   )))
                   ( _ (
                      (if (eq( used Used )) (
-                        (fail (Attempt To Create Untyped Cons Cell In Strict Mode))
+                        (fail( Raw Cons Cells Are Not Permitted In Strict Mode ))
                      ) (tail(
                         (set e1 (compile-expr-strict( ctx l offset Unused )))
                         (set e2 (compile-expr-strict( (expr::get-context e1) r (expr::get-offset e1) Used )))
@@ -219,16 +219,14 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
             (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
             (App( (Variable '.program) (
                \t 'pushq \s '$ case-number \n
-               (App( (Variable 'apply)
-                  (App( (Variable 'push) (Variable 'src) ))
-               ))
+               (App( (Variable '.program) (Variable 'src) ))
             )))
          ))))
          (typecheck-ascript( body ('->(
-            (Cons( (And( enum-case base-type )) LocalVariable ))
+            (And( enum-case base-type ))
             Nil
          ))))
-         (set ctx (context::bind( ctx 'mov body )))
+         (set ctx (context::bind( ctx 'push body )))
       )))
       ( (Literal enum-case) (tail(
          #define 'mov initializer
