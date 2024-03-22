@@ -196,7 +196,7 @@ stack-define-destructure := λ ctx lhs offset . (match lhs (
       (set new_offset (add( offset (inv(s2i size)) )) )
       (local return)
       (set ctx (context::bind( ctx lname
-         (typecheck-ascript( (StackVariable (i2s new_offset)) ltype ))
+         (typecheck-ascript( (LocalVariable (i2s new_offset)) ltype ))
       )))
       (set return (expr::new()))
       (set return (expr::set-context( return ctx )))
@@ -212,7 +212,7 @@ stack-define-destructure := λ ctx lhs offset . (match lhs (
       (local more-e)
       (set more-e (stack-define-destructure( ctx more new_offset )))
       (set ctx (context::bind( (expr::get-context more-e) lname
-         (typecheck-ascript( (StackVariable (i2s new_offset)) ltype ))
+         (typecheck-ascript( (LocalVariable (i2s new_offset)) ltype ))
       )))
       (local return)
       (set return (expr::new()))

@@ -179,7 +179,7 @@ fragment-get-local := λctx v offset . (tail(
          (set r (expr::set-context( r ctx )))
          (set r (expr::set-offset( r offset )))
       )))
-      ( (StackVariable( loffset )) (tail(
+      ( (LocalVariable( loffset )) (tail(
          (set r (expr::new()) )
          (set r (expr::set-expr( r loffset )))
          (set r (expr::set-context( r ctx )))

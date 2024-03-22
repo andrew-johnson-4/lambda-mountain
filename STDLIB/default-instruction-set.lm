@@ -26,22 +26,22 @@ fragment cdecl::return := λ(: l LocalVariable+U64). (: (  (.program( \t 'mov \t
 fragment & := λ(: src LocalVariable). (: ( (.program( \t 'mov \t '%rbp , \s '%r12 \n \t 'add \s '$ (.expression src) , \s '%r12 \n) (.expression( 'r12 ))) ) Reg64);
 
 # Generic 'mov Semantics
-mov := λ(: src LocalVariable+Sized<size>)(: dst LocalVariable+Sized<size>). (
+fragment mov := λ(: src LocalVariable+Sized<size>)(: dst LocalVariable+Sized<size>). (: (
    (.program ( for word-offset in (range( 0 (/( size 8 )) )) (
       \t 'movq \s (+( (.expression src) (*( word-offset 8 )) )) \[ '%rbp \] , \s '%rax \n
       \t 'movq \s '%rax , \s (+( (.expression dst) (*( word-offset 8 )) )) \[ '%rbp \] \n      
    )))
-);
-push := λ(: src LocalVariable+Sized<size>). (
+) Nil);
+fragment push := λ(: src LocalVariable+Sized<size>). (: (
    (.program ( for word-offset in (range( 0 (/( size 8 )) )) (
       \t 'pushq \s (+( (.expression src) (*( word-offset 8 )) )) \[ '%rbp \] \n
    )))
-);
-pop := λ(: src LocalVariable+Sized<size>). (
+) Nil);
+fragment pop := λ(: src LocalVariable+Sized<size>). (: (
    (.program ( for word-offset in (range( 1 (+( (/( size 8 )) 1 )) )) (
       \t 'popq \s (-( (.expression src) (*( word-offset 8 )) )) \[ '%rbp \] \n
    )))
-);
+) Nil);
 
 fragment mov := λ(: src LocalVariable)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n)) ) Nil);
 fragment mov := λ(: src LocalVariable)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n)) ) Nil);
