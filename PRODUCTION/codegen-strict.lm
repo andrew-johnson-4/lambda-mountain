@@ -216,14 +216,12 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
 
          (local body)
          (set body (Lambda(
-            (App(
-               (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
-               (App( (App( (Literal ':) (Variable 'dst) )) (Literal LocalVariable) ))
-            ))
+            (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
             (App( (Variable '.program) (
-               \t 'movq \s '$ case-number ', \s
-               (App( (Variable '.expression) (Variable 'dst) )) \s
-               \[ '%rbp \] \n
+               \t 'pushq \s '$ case-number \n
+               (App( (Variable 'apply)
+                  (App( (Variable 'push) (Variable 'src) ))
+               ))
             )))
          )))
          (typecheck-ascript( body ('->(
@@ -236,21 +234,16 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
          #define 'mov initializer
          (local body)
          (set body (Lambda(
-            (App(
-               (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
-               (App( (App( (Literal ':) (Variable 'dst) )) (Literal LocalVariable) ))
-            ))
+            (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
             (App( (Variable '.program) (
-               \t 'movq \s '$ case-number ', \s
-               (App( (Variable '.expression) (Variable 'dst) )) \s
-               \[ '%rbp \] \n
+               \t 'pushq \s '$ case-number \n
             )))
          )))
          (typecheck-ascript( body ('->(
-            (Cons( (And( enum-case base-type )) LocalVariable ))
-            Nil
+            (And( enum-case base-type ))
+            StackVariable
          ))))
-         (set ctx (context::bind( ctx 'mov (Fragment( body )) )))
+         (set ctx (context::bind( ctx 'push (Fragment( body )) )))
 
          #define '.0 accessor
          (set body (Lambda(
