@@ -331,3 +331,7 @@ label-case-atom := λk . (tail(
    )))
    (clone-rope nk)
 ));
+
+mangle-identifier := λname tt . (
+   (clone-rope (label-case ( name : tt )))
+);

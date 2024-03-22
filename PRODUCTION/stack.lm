@@ -34,7 +34,7 @@ stack-call := λ ctx function-name function-args offset . (tail(
                ( \t 'sub \s '$ (expr::get-expr e-args) , \s '%rsp \n )
             ))
             copy-bytes
-            (\t 'call \s (mangle-global-function( function-name body )) \n)
+            (\t 'call \s (mangle-identifier( function-name (typecheck-lookup body) )) \n)
             (if (eq( (expr::get-expr e-args) 0 )) () (
                ( \t 'add \s '$ (expr::get-expr e-args) , \s '%rsp \n )
             ))
@@ -171,7 +171,7 @@ stack-define := λ ctx fname lmb . (tail(
          (set stack_offset (expr::get-offset e1))
          (set stack_offset (i2s(add( (s2i(stack_offset)) (s2i '-8) ))) )
          (set e2 (compile-expr-strict( (expr::get-context e1) rhs stack_offset Return)))
-         (set text ( text (mangle-global-function( fname lmb )) ': \n ))
+         (set text ( text (mangle-identifier( fname (typecheck-lookup lmb) )) ': \n ))
          (set text ( text (expr::get-frame e2) ))
          (set text ( text (expr::get-prog e2) ))
          (set text ( text (expr::get-unframe e2) ))

@@ -781,10 +781,6 @@ typecheck-rvalue := λtt . (match tt (
    ( _ (fail( 'typecheck-rvalue 'expected 'arrow tt )))
 ));
 
-mangle-global-function := λname body . (
-   (clone-rope (label-case ( name : (typecheck-lookup body) )))
-);
-
 typecheck-is-fragment := λtt . (tail(
    (local is-fragment)
    (local fragment-types)

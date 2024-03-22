@@ -233,7 +233,7 @@ define-calling-convention-s := λ ctx fname lmb . (tail(
          (local text)
          (set e1 (destructure-args(ctx lhs ())))
          (set e2 (compile-expr((expr::get-context e1) rhs (expr::get-offset e1) Used)))
-         (set text ( text (mangle-global-function( fname lmb )) ': \n ))
+         (set text ( text (mangle-identifier( fname (typecheck-lookup lmb) )) ': \n ))
          (set text ( text (enter-function()) ))
          (set text ( text (expr::get-frame e1) (expr::get-frame e2) ))
          (set text ( text (expr::get-prog e1) (expr::get-prog e2) ))
@@ -332,7 +332,7 @@ get-maybe-function := λctx v arg_type . (
          (Variable v)
       ))
       ( (GlobalFunction( body )) (
-         (GlobalFunction( (mangle-global-function( v body )) ))
+         (GlobalFunction( (mangle-identifier( v (typecheck-lookup body) )) ))
       ))
       ( (GlobalVariable( body )) (
          (GlobalVariable( label-case v ))
