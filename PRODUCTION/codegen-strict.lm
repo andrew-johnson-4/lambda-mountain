@@ -262,7 +262,7 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
             (And( base-type LocalVariable ))
             Reg64
          ))))
-         (set ctx (context::bind( ctx '0 body )))
+         (set ctx (context::bind( ctx '.0 body )))
 
       )))
       ( () () )
