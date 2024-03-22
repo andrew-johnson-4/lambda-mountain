@@ -187,6 +187,6 @@ fragment-get-local := λctx v offset . (tail(
       )))
       ( u (fail (InvalidFragmentLocal v u)))
    ))
-   (assert-typeof( 'fragment-get-local::return r Expr ))
+   (assert-typeof( 'fragment-get-local::return r StrictExpr ))
    r
 ));

@@ -61,7 +61,6 @@ stack-call := λ ctx function-name function-args offset . (tail(
          (set e1 (expr::set-context( e1 ctx )))
          (local args)
          (set args (stack-destructure-args( ctx function-args offset Fragment )))
-         (print-s (StackApplyFragment))(print-s \n)
          (fragment-apply-direct(
             (get-strict-function( ctx function-name (typecheck-lookup-type function-args) ))
             args e1
@@ -128,7 +127,6 @@ stack-call-push-arg := λ ctx e-arg offset args-size . (tail(
    (set e2 (expr::set-context( e2 ctx )))
    (set e2 (expr::set-offset( e2 new-offset )))
 
-   (print-s (StackApplyFragment2))(print-s \n)
    (set e3 (fragment-apply(
       ctx 'mov (Cons( (typecheck-lookup-type e-arg) LocalVariable ))
       ((() e1) e2) e2
