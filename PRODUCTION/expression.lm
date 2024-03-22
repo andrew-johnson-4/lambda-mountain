@@ -27,7 +27,7 @@ expr::get-prog := λe . (match e (
 ));
 expr::get-expr := λe . (match e (
    ()
-   ((StrictExpr(f u t d p e c o)) e)
+   ((StrictExpr(f u t d p x c o)) x)
 ));
 expr::get-context := λe . (match e (
    ()
