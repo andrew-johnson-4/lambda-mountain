@@ -71,7 +71,7 @@ compile-expr-strict := λctx e offset used . (tail(
                (assert-eq( 'compile-expr-strict::set (head lhs) Variable ))
                (match (get-strict-function( ctx (tail lhs) (typecheck-lookup-type rhs))) (
                   ()
-                  ( (StackVariable( sv-name sv-offset sv-type )) (tail(
+                  ( (StackVariable( sv-offset )) (tail(
                      (set e1 (compile-expr-strict( ctx rhs offset Used )))
                      (set e2 (expr::new()))
                      (set e2 (expr::set-expr( e2 sv-offset )))

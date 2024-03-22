@@ -7,7 +7,7 @@ stack-call := λ ctx function-name function-args offset . (tail(
    (local e1)
    (match (get-strict-function(ctx function-name (typecheck-lookup-type function-args))) (
       ()
-      ( (GlobalFunction( fname body )) (tail(
+      ( (GlobalFunction( body )) (tail(
          (local e-args)
          (set e-args (stack-call-destructure-args( ctx function-args offset 0 )))
          (assert-typeof( 'stack-call::e-args e-args StrictExpr ))
@@ -34,7 +34,7 @@ stack-call := λ ctx function-name function-args offset . (tail(
                ( \t 'sub \s '$ (expr::get-expr e-args) , \s '%rsp \n )
             ))
             copy-bytes
-            (\t 'call \s (mangle-global-function( fname body )) \n)
+            (\t 'call \s (mangle-global-function( function-name body )) \n)
             (if (eq( (expr::get-expr e-args) 0 )) () (
                ( \t 'add \s '$ (expr::get-expr e-args) , \s '%rsp \n )
             ))

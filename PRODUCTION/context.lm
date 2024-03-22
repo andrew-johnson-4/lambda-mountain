@@ -15,10 +15,12 @@ context::lookup := λ ctx key key-type . (tail(
          (if key-type (tail(
             (local body)
             (set body (tail(tail bindings)))
-            (if (deep-eq( (typecheck-lookup-type body) key-type )) (
+            (local body-type)
+            (set body-type (typecheck-lookup-type body))
+            (if (not(eq( '-> (head(typecheck-slot( body-type '-> ))) ))) (
                (set return body)
             ) (
-               (if (typecheck-apply-plural( (typecheck-lookup-type body) key-type )) (
+               (if (typecheck-apply-plural( body-type key-type )) (
                   (set return body)
                ) ())
             ))
