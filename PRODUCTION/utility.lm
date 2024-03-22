@@ -134,7 +134,7 @@ max := λ l r . (tail(
       (set li (dec li))
       (set ri (dec ri))
    ))
-   l
+   return
 ));
 
 assert-eq := λ loc l r . (

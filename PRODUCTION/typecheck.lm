@@ -700,8 +700,8 @@ typecheck-sizeof := λtt . (match tt (
    )))
    ( (Cons( lt rt )) (
       (i2s(add(
-         (s2i(typecheck-sizeof( lt )))
-         (s2i(typecheck-sizeof( rt )))
+         (s2i(max( 8 (typecheck-sizeof( lt )) )))
+         (s2i(max( 8 (typecheck-sizeof( rt )) )))
       )))
    ))
    ( (_ _) ())
