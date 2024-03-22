@@ -57,6 +57,15 @@ fragment mov := λ(: src Constant+I16)(: dst LocalVariable). (: (.program( \t 'm
 fragment mov := λ(: src Constant+I32)(: dst LocalVariable). (: (.program( \t 'movs \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
 fragment mov := λ(: src Constant+I64)(: dst LocalVariable). (: (.program( \t 'movq \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
 
+fragment push := λ(: src Constant+U8). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
+fragment push := λ(: src Constant+U16). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
+fragment push := λ(: src Constant+U32). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
+fragment push := λ(: src Constant+U64). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
+fragment push := λ(: src Constant+I8). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
+fragment push := λ(: src Constant+I16). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
+fragment push := λ(: src Constant+I32). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
+fragment push := λ(: src Constant+I64). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
+
 fragment mov := λ(: src Reg8)(: dst LocalVariable). (: (.program( \t 'movb \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
 fragment mov := λ(: src Reg16)(: dst LocalVariable). (: (.program( \t 'movw \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
 fragment mov := λ(: src Reg32)(: dst LocalVariable). (: (.program( \t 'movs \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);

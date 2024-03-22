@@ -51,7 +51,7 @@ compile-expr-strict := λctx e offset used . (tail(
             ()
             ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
                (local sz)
-               (set sz (typecheck-sizeof (typecheck-lookup rhs)))
+               (set sz (max( 8 (typecheck-sizeof (typecheck-lookup rhs)) )))
                (if sz () (
                   (fail (NoSizeOf (typecheck-lookup rhs)))
                ))
