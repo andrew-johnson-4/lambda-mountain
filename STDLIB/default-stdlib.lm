@@ -30,12 +30,6 @@ print := λ(: x U64). (: (tail(
    (cmp( 0u64 R14 ))
    (jne( pdigits ))
 )) Nil);
-print := λ(: x U32). (: (tail(
-   (mov( 0u64 R15 ))
-   (mov( x R15D ))
-   ()
-#   (print( R15 ))
-)) Nil);
 
 print := λ(: x I64). (: (tail(
    (let cs 0u8)
@@ -76,4 +70,16 @@ print := λ(: x I64). (: (tail(
    (syscall())
    (cmp( 0u64 R14 ))
    (jne( pdigits ))
+)) Nil);
+
+print := λ(: x U32). (: (tail(
+   (mov( 0u64 R15 ))
+   (mov( x R15D ))
+   (print( (: R15 Reg64+U64) ))
+)) Nil);
+
+print := λ(: x U16). (: (tail(
+   (mov( 0u64 R15 ))
+   (mov( x R15W ))
+   (print( (: R15 Reg64+U64) ))
 )) Nil);

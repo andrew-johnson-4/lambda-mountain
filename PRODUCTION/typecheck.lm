@@ -580,8 +580,23 @@ typecheck-infer-type-expr := λe . (match e (
          ))
       ))
    ))
+   ( (Global( gln (Lambda( glp (App( (App( (Literal ':) _ )) rtype )) )) )) (tail(
+      (fail (TODO Quick Lambda))
+     # (set typecheck-global-context ( typecheck-global-context (Global( gln glt )) ))
+   )))
+   ( (Fragment( fln (Lambda( flp (App( (App( (Literal ':) _ )) rtype )) )) )) (tail(
+      (fail (TODO Quick Fragment))
+   )))
+   ( (Global( gln (Lambda( _ _ )) )) (tail(
+      (fail (Global Functions Must Be Annotated))
+   )))
+   ( (Fragment( gln (Lambda( _ _ )) )) (tail(
+      (fail (Global Fragments Must Be Annotated))
+   )))
    (_ ())
 ));
+
+
 
 typecheck-annotate-accessors := λ base-type tag fields-type . (tail(
    (set fields-type (Cons( fields-type U64 )))
@@ -613,33 +628,9 @@ typecheck-infer-expr := λctx e used . (tail(
       ))
       ( (Global( gln gle )) (
          (typecheck-infer-expr( ctx gle Used ))
-         (match (typecheck-lookup gle) (
-            ()
-            ( () () )
-            ( glt (
-               (set typecheck-global-context ( typecheck-global-context (Global( gln glt )) ))
-               (typecheck-ascript( e '? ))
-            ))
-         ))
       ))
       ( (Type( l ds )) ())
-      ( (Fragment( fln fle )) (
-         (match fle (
-            ()
-            ( (Lambda( lhs (App( (App( (Literal ':) rhs )) rhst )) )) (
-               (set rhst (typecheck-infer-type-compound rhst))
-               (local flt)
-               (set flt ('->( (typecheck-typeof-lhs lhs) rhst )) )
-               (typecheck-ascript( fle flt ))
-               (match fln (
-                  ()
-                  ( (Variable flnv) (
-                     (set typecheck-global-context ( typecheck-global-context (Global( flnv flt )) ))
-                  ))
-               ))
-            ))
-         ))
-      ))
+      ( (Fragment( fln fle )) ())
       ( Nil (
          (typecheck-ascript( e Nil ))
       ))
