@@ -611,6 +611,9 @@ typecheck-annotate-accessors := λ base-type tag fields-type . (tail(
    (while fields-type (match fields-type (
       ()
       ( (Cons( lt rt )) (tail(
+         (if field-number () (
+            (set base-type tag)
+         ))
          (set typecheck-global-context ( typecheck-global-context (
             (Global( (clone-rope( '. (i2s field-number) )) ('->( base-type (And( rt (typecheck-repr rt) )) )) ))
          )))
@@ -618,6 +621,9 @@ typecheck-annotate-accessors := λ base-type tag fields-type . (tail(
          (set fields-type lt)
       )))
       ( tt (tail(
+         (if field-number () (
+            (set base-type tag)
+         ))
          (set typecheck-global-context ( typecheck-global-context (
             (Global( (clone-rope( '. (i2s field-number) )) ('->( base-type (And( tt (typecheck-repr tt) )) )) ))
          )))

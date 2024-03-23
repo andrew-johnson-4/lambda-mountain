@@ -9,9 +9,9 @@ main := (
    (print (.2 l))
    (print (.3 l))
    (print (.4 l))
-#   (print (.0 r))
-#   (print (.1 r))
-#   (print (.2 r))
+   (print (.0 r))
+   (print (.1 r))
+   (print (.2 r))
 #   (print (.3 r))
 #   (print (.4 r))
 );

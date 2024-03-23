@@ -242,7 +242,10 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
             ()
             ( (Cons( lt rt )) (tail(
                (set ctx (strict-bind-accessors( ctx enum-case rt field-offset field-number )))
-               (set field-offset (i2s(add( (s2i field-offset) (s2i(typecheck-sizeof rt)) ))))
+               (set field-offset (i2s(add(
+                  (s2i field-offset)
+                  (s2i(max( 8 (typecheck-sizeof rt) )))
+               ))))
                (set field-number (inc field-number))
                (set args_type lt)
             )))
