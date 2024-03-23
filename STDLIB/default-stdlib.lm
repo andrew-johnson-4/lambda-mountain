@@ -71,3 +71,39 @@ print := λ(: x I64). (: (tail(
    (cmp( 0u64 R14 ))
    (jne( pdigits ))
 )) Nil);
+
+print := λ(: x U32). (: (tail(
+   (mov( 0u64 R15 ))
+   (mov( x R15D ))
+   (print( (: R15 Reg64+U64) ))
+)) Nil);
+
+print := λ(: x U16). (: (tail(
+   (mov( 0u64 R15 ))
+   (mov( x R15W ))
+   (print( (: R15 Reg64+U64) ))
+)) Nil);
+
+print := λ(: x U8). (: (tail(
+   (mov( 0u64 R15 ))
+   (mov( x R15B ))
+   (print( (: R15 Reg64+U64) ))
+)) Nil);
+
+print := λ(: x I32). (: (tail(
+   (mov( 0u64 R15 ))
+   (mov( x R15D ))
+   (print( (: R15 Reg64+I64) ))
+)) Nil);
+
+print := λ(: x I16). (: (tail(
+   (mov( 0u64 R15 ))
+   (mov( x R15W ))
+   (print( (: R15 Reg64+I64) ))
+)) Nil);
+
+print := λ(: x I8). (: (tail(
+   (mov( 0u64 R15 ))
+   (mov( x R15B ))
+   (print( (: R15 Reg64+I64) ))
+)) Nil);

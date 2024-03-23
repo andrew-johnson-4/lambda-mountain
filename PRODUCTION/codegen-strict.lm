@@ -17,8 +17,14 @@ compile-push-rvalue := λctx e offset . (tail(
       ))
       ( lt (tail(
          (set e1 (compile-expr-strict( ctx e offset Used )))
-         (set e2 (fragment-apply( ctx 'push lt (() e1) e1 )))
-         (expr::chain( e1 e2 ))
+         (match (typecheck-slot( (expr::get-type e1) StackValue )) (
+            ()
+            ( StackVariable e1 )
+            ( _ (tail(
+               (set e2 (fragment-apply( ctx 'push lt (() e1) e1 )))
+               (expr::chain( e1 e2 ))
+            )))
+         ))
       )))
    ))
 ));
@@ -150,9 +156,10 @@ compile-expr-strict := λctx e offset used . (tail(
                         e1
                      )))
                      ( (Literal tag) (tail(
-                        (print-s (LetBind tag (typecheck-lookup r)))(print-s \n)
-                        (print-s (This Will Be Sent To 'mov Src[This] Dst[LocalVariable] ))(print-s \n)
-                        (fail (TODO Call Constructor tag))
+                        (set e1 (compile-push-rvalue( ctx r offset )))
+                        (set e2 (fragment-apply( ctx 'push (And( (typecheck-lookup e) DontChain)) (() e1) e1 )))
+                        (set e2 (expr::set-type( e2 StackVariable )))
+                        e2
                      )))
                      ( u (tail(
                         (fail (ComplexFunctionConjugatesNotSupportedYet e))
@@ -160,7 +167,7 @@ compile-expr-strict := λctx e offset used . (tail(
                   )))
                   ( _ (
                      (if (eq( used Used )) (
-                        (fail (Attempt To Create Untyped Cons Cell In Strict Mode))
+                        (fail( Raw Cons Cells Are Not Permitted In Strict Mode ))
                      ) (tail(
                         (set e1 (compile-expr-strict( ctx l offset Unused )))
                         (set e2 (compile-expr-strict( (expr::get-context e1) r (expr::get-offset e1) Used )))
@@ -215,45 +222,53 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
          (set args_type (typecheck-infer-type-compound args))
 
          (local body)
-         (set body (Lambda(
-            (App(
-               (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
-               (App( (App( (Literal ':) (Variable 'dst) )) (Literal LocalVariable) ))
-            ))
+         (set body (Fragment (Lambda(
+            (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
             (App( (Variable '.program) (
-               \t 'movq \s '$ case-number ', \s
-               (App( (Variable '.expression) (Variable 'dst) )) \s
-               \[ '%rbp \] \n
+               (App( (Variable '.program) (Variable 'src) ))
+               \t 'pushq \s '$ case-number \n
             )))
-         )))
+         ))))
          (typecheck-ascript( body ('->(
-            (Cons( (And( enum-case base-type )) LocalVariable ))
+            (And( enum-case base-type ))
             Nil
          ))))
-         (set ctx (context::bind( ctx 'mov (Fragment( body )) )))
+         (set ctx (context::bind( ctx 'push body )))
+
+         (set args_type (Cons( args_type U64 )))
+         (local field-offset)
+         (local field-number)
+         (while args_type (match args_type (
+            ()
+            ( (Cons( lt rt )) (tail(
+               (set ctx (strict-bind-accessors( ctx enum-case rt field-offset field-number )))
+               (set field-offset (i2s(add( (s2i field-offset) (s2i(typecheck-sizeof rt)) ))))
+               (set field-number (inc field-number))
+               (set args_type lt)
+            )))
+            ( tt (tail(
+               (set ctx (strict-bind-accessors( ctx enum-case tt field-offset field-number )))
+               (set args_type ())
+            )))
+         )))
       )))
       ( (Literal enum-case) (tail(
-         #define 'mov initializer
+         #define 'push initializer
          (local body)
-         (set body (Lambda(
-            (App(
-               (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
-               (App( (App( (Literal ':) (Variable 'dst) )) (Literal LocalVariable) ))
-            ))
+         (set body (Fragment (Lambda(
+            (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
             (App( (Variable '.program) (
-               \t 'movq \s '$ case-number ', \s
-               (App( (Variable '.expression) (Variable 'dst) )) \s
-               \[ '%rbp \] \n
+               \t 'pushq \s '$ case-number \n
             )))
-         )))
-         (typecheck-ascript( body ('->(
-            (Cons( (And( enum-case base-type )) LocalVariable ))
-            Nil
          ))))
-         (set ctx (context::bind( ctx 'mov (Fragment( body )) )))
+         (typecheck-ascript( body ('->(
+            (And( enum-case base-type ))
+            StackVariable
+         ))))
+         (set ctx (context::bind( ctx 'push body )))
 
          #define '.0 accessor
-         (set body (Lambda(
+         (set body (Fragment (Lambda(
             (App( (App( (Literal ':) (Variable 'src) )) (Literal LocalVariable) ))
             (App(
                (App( (Variable '.program) (
@@ -264,12 +279,12 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
                   'r15
                )))
             ))
-         )))
+         ))))
          (typecheck-ascript( body ('->(
             (And( base-type LocalVariable ))
             Reg64
          ))))
-         (set ctx (context::bind( ctx '0 (Fragment( body )) )))
+         (set ctx (context::bind( ctx '.0 body )))
 
       )))
       ( () () )
@@ -296,4 +311,55 @@ strict-codegen-type := λ ctx type-name type-body case-number . (match type-body
       (set base-type (typecheck-infer-type-compound type-name))
       (strict-codegen-type-case( ctx base-type type-body case-number ))
    )))
+));
+
+strict-bind-accessors := λ ctx base-type src-type field-offset field-number . (tail(
+   (local body)
+   (local register-name)
+   (local mov-name)
+   (local return-type)
+   (match (typecheck-sizeof src-type) (
+      ()
+      (1 (tail(
+         (set register-name 'r15b)
+         (set return-type 'Reg8)
+      )))
+      (2 (tail(
+         (set register-name 'r15w)
+         (set return-type 'Reg16)
+      )))
+      (4 (tail(
+         (set register-name 'r15d)
+         (set return-type 'Reg32)
+      )))
+      (8 (tail(
+         (set register-name 'r15)
+         (set return-type 'Reg64)
+      )))
+      (_ (tail(
+         (set return-type ())
+      )))
+   ))
+   (if return-type (
+      (set body (Fragment (Lambda(
+         (App( (App( (Literal ':) (Variable 'src) )) (Literal LocalVariable) ))
+         (App(
+            (App( (Variable '.program) (
+               \t 'movq \s ('+( ('.expression 'src) field-offset )) \s \[ '%rbp \] ,
+               \s '%r15 \n
+            )))
+            (App( (Variable '.expression) (
+               register-name
+            )))
+         ))
+      ))))
+      (typecheck-ascript( body ('->(
+         (And( base-type LocalVariable ))
+         return-type
+      ))))
+      (set ctx (context::bind( ctx (clone-rope( '. (i2s field-number) )) body )))
+   ) (
+      (fail (TODO Complex Field Types))
+   ))
+   ctx
 ));

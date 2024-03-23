@@ -63,7 +63,7 @@ stack-call := λ ctx function-name function-args offset . (tail(
          (set args (stack-destructure-args( ctx function-args offset Fragment )))
          (fragment-apply-direct(
             (get-strict-function( ctx function-name (typecheck-lookup function-args) ))
-            args e1
+            args e1 ()
          ))
       )))
       ( l (fail (UnknownFunctionCall function-name (typecheck-lookup function-args) l)) )

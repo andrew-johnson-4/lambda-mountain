@@ -538,22 +538,92 @@ typecheck-set-size := λ tt sz . (if sz (tail(
    ))
 )) ());
 
+typecheck-repr := λsz . (match (typecheck-sizeof sz) (
+   ()
+   ( 1 Reg8 )
+   ( 2 Reg16 )
+   ( 4 Reg32 )
+   ( 8 Reg64 )
+   ( 16 LocalVariable )
+));
+
 typecheck-infer-type-expr := λe . (match e (
    ()
    ( (Type( l ds )) (
       (local base-type)
       (set base-type (typecheck-infer-type-compound l))
-      (set typecheck-global-context ( typecheck-global-context (
-         (Global( '.0 ('->( base-type (And( U64 Reg64 )) )) ))
-      )))
       (local sz)
       (set sz (typecheck-infer-type-definition( base-type ds )))
       (if (typecheck-is-fragment base-type) () (
          (typecheck-set-size( base-type sz ))
       ))
       (typecheck-ascript( e '? ))
+
+      (if (typecheck-is-fragment base-type) () (
+         (local constructors)
+         (set constructors typecheck-constructors)
+         (while constructors (
+            (match (tail constructors) (
+               ()
+               ( (tag ('->(ctype (And( my-type tag )) ))) (tail(
+                  (if (deep-eq( my-type base-type )) (
+                     (typecheck-annotate-accessors( base-type tag ctype ))
+                  ) ())
+               )))
+               ( (tag my-type) (tail(
+                  (if (deep-eq( my-type base-type )) (
+                     (typecheck-annotate-accessors( base-type tag () ))
+                  ) ())
+               )))
+            ))
+            (set constructors (head constructors))
+         ))
+      ))
    ))
+   ( (Global( gln (Lambda( glp (App( (App( (Literal ':) _ )) rtype )) )) )) (tail(
+      (local lt)
+      (set lt (typecheck-typeof-lhs glp))
+      (local rt)
+      (set rt (typecheck-infer-type-compound rtype))
+      (set typecheck-global-context ( typecheck-global-context (Global( gln ('->( lt rt )) )) ))
+   )))
+   ( (Fragment( (Variable fln) (Lambda( flp (App( (App( (Literal ':) _ )) rtype )) )) )) (tail(
+      (local lt)
+      (set lt (typecheck-typeof-lhs flp))
+      (local rt)
+      (set rt (typecheck-infer-type-compound rtype))
+      (set typecheck-global-context ( typecheck-global-context (Global( fln ('->( lt rt )) )) ))
+   )))
+   ( (Global( gln (Lambda( _ _ )) )) (tail(
+      (fail (Global Functions Must Be Annotated gln))
+   )))
+   ( (Fragment( (Variable gln) (Lambda( _ _ )) )) (tail(
+      (fail (Global Fragments Must Be Annotated gln))
+   )))
    (_ ())
+));
+
+
+
+typecheck-annotate-accessors := λ base-type tag fields-type . (tail(
+   (set fields-type (Cons( fields-type U64 )))
+   (local field-number)
+   (while fields-type (match fields-type (
+      ()
+      ( (Cons( lt rt )) (tail(
+         (set typecheck-global-context ( typecheck-global-context (
+            (Global( (clone-rope( '. (i2s field-number) )) ('->( base-type (And( rt (typecheck-repr rt) )) )) ))
+         )))
+         (set field-number (inc field-number))
+         (set fields-type lt)
+      )))
+      ( tt (tail(
+         (set typecheck-global-context ( typecheck-global-context (
+            (Global( (clone-rope( '. (i2s field-number) )) ('->( base-type (And( tt (typecheck-repr tt) )) )) ))
+         )))
+         (set fields-type ())
+      )))
+   )))
 ));
 
 typecheck-infer-expr := λctx e used . (tail(
@@ -563,18 +633,11 @@ typecheck-infer-expr := λctx e used . (tail(
       ( (GExpr ge) (
          (typecheck-infer-expr( ctx ge Unused ))
       ))
+      ( (Type( l ds )) ())
       ( (Global( gln gle )) (
          (typecheck-infer-expr( ctx gle Used ))
-         (match (typecheck-lookup gle) (
-            ()
-            ( () () )
-            ( glt (
-               (set typecheck-global-context ( typecheck-global-context (Global( gln glt )) ))
-               (typecheck-ascript( e '? ))
-            ))
-         ))
+         (typecheck-ascript( e '? ))
       ))
-      ( (Type( l ds )) ())
       ( (Fragment( fln fle )) (
          (match fle (
             ()
@@ -583,12 +646,6 @@ typecheck-infer-expr := λctx e used . (tail(
                (local flt)
                (set flt ('->( (typecheck-typeof-lhs lhs) rhst )) )
                (typecheck-ascript( fle flt ))
-               (match fln (
-                  ()
-                  ( (Variable flnv) (
-                     (set typecheck-global-context ( typecheck-global-context (Global( flnv flt )) ))
-                  ))
-               ))
             ))
          ))
       ))
@@ -700,8 +757,8 @@ typecheck-sizeof := λtt . (match tt (
    )))
    ( (Cons( lt rt )) (
       (i2s(add(
-         (s2i(typecheck-sizeof( lt )))
-         (s2i(typecheck-sizeof( rt )))
+         (s2i(max( 8 (typecheck-sizeof( lt )) )))
+         (s2i(max( 8 (typecheck-sizeof( rt )) )))
       )))
    ))
    ( (_ _) ())
@@ -770,7 +827,8 @@ typecheck-slot-inner := λtt tag . (tail(
       ( ( t r ) (
          if (eq( t tag )) tt ()
       ))
-      ( _ () )
+      ( () () )
+      ( t1 (if (eq( tag t1 )) tag () ))
    )))
    return
 ));
