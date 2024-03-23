@@ -241,19 +241,19 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
          (while args_type (match args_type (
             ()
             ( (Cons( lt rt )) (tail(
-               (set ctx (strict-bind-accessors( ctx base-type rt field-offset field-number )))
+               (set ctx (strict-bind-accessors( ctx enum-case rt field-offset field-number )))
                (set field-offset (i2s(add( (s2i field-offset) (s2i(typecheck-sizeof rt)) ))))
                (set field-number (inc field-number))
                (set args_type lt)
             )))
             ( tt (tail(
-               (set ctx (strict-bind-accessors( ctx base-type tt field-offset field-number )))
+               (set ctx (strict-bind-accessors( ctx enum-case tt field-offset field-number )))
                (set args_type ())
             )))
          )))
       )))
       ( (Literal enum-case) (tail(
-         #define 'mov initializer
+         #define 'push initializer
          (local body)
          (set body (Fragment (Lambda(
             (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
@@ -314,28 +314,32 @@ strict-codegen-type := λ ctx type-name type-body case-number . (match type-body
 ));
 
 strict-bind-accessors := λ ctx base-type src-type field-offset field-number . (tail(
+   (print-s (Access base-type src-type (i2s field-number)))(print-s \n)
    (local body)
    (local register-name)
+   (local mov-name)
    (local return-type)
    (match (typecheck-sizeof src-type) (
       ()
       (1 (tail(
-         (set register-name 'r15)
-         (set return-type 'Reg64)
+         (set register-name 'r15b)
+         (set return-type 'Reg8)
       )))
       (2 (tail(
-         (set register-name 'r15)
-         (set return-type 'Reg64)
+         (set register-name 'r15w)
+         (set return-type 'Reg16)
       )))
       (4 (tail(
-         (set register-name 'r15)
-         (set return-type 'Reg64)
+         (set register-name 'r15d)
+         (set return-type 'Reg32)
       )))
       (8 (tail(
          (set register-name 'r15)
          (set return-type 'Reg64)
       )))
-      (_ (tail()) )
+      (_ (tail(
+         (set return-type ())
+      )))
    ))
    (if return-type (
       (set body (Fragment (Lambda(
