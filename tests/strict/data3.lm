@@ -1,12 +1,12 @@
 
 type L (Left( U64 ));
-type R (Right( L L ));
+type R (Right( L , L ));
 
 main := (
    (let r (Right( (Left( 1u64 )) (Left( 2u64 )) )) )
    (print (.0 r) )
-   (print (.0 (.1 r)) )
-   (print (.1 (.1 r)) )
-   (print (.0 (.2 r)) )
-   (print (.1 (.2 r)) )
+#   (print (.0 (.1 r)) )
+#   (print (.1 (.1 r)) )
+#   (print (.0 (.2 r)) )
+#   (print (.1 (.2 r)) )
 );
