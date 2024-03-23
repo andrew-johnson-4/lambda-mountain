@@ -218,13 +218,27 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
    (if (typecheck-is-fragment base-type) () (match type-body (
       ()
       ( (App( (Literal enum-case) args )) (tail(
-         (local args_type)
-         (set args_type (typecheck-infer-type-compound args))
+         (local args-type)
+         (set args-type (typecheck-infer-type-compound args))
+         (set args-type (Cons( args-type U64 )))
+
+         # .0  (-48 + 0)
+         #   \t 'movq \s ('+( ('.expression 'src) field-offset )) \s \[ '%rbp \] ,
+
+         (local taggeds-size)
+         (set taggeds-size (typecheck-sizeof base-type))
+         (local case-size)
+         (set case-size (typecheck-sizeof args-type))
+         (local case-padding)
+         (set case-padding (i2s(add( (s2i taggeds-size) (inv(s2i( case-size ))) ))))
 
          (local body)
          (set body (Fragment (Lambda(
             (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
             (App( (Variable '.program) (
+               (if (eq( case-padding 0 )) () (
+                  \t 'sub \s '$ case-padding , \s '%rsp \n
+               ))
                (App( (Variable '.program) (Variable 'src) ))
                \t 'pushq \s '$ case-number \n
             )))
@@ -235,10 +249,10 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
          ))))
          (set ctx (context::bind( ctx 'push body )))
 
-         (set args_type (Cons( args_type U64 )))
+
          (local field-offset)
          (local field-number)
-         (while args_type (match args_type (
+         (while args-type (match args-type (
             ()
             ( (Cons( lt rt )) (tail(
                (set ctx (strict-bind-accessors( ctx enum-case rt field-offset field-number )))
@@ -247,11 +261,11 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
                   (s2i(max( 8 (typecheck-sizeof rt) )))
                ))))
                (set field-number (inc field-number))
-               (set args_type lt)
+               (set args-type lt)
             )))
             ( tt (tail(
                (set ctx (strict-bind-accessors( ctx enum-case tt field-offset field-number )))
-               (set args_type ())
+               (set args-type ())
             )))
          )))
       )))

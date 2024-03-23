@@ -769,7 +769,11 @@ typecheck-sizeof := λtt . (match tt (
          (s2i(max( 8 (typecheck-sizeof( rt )) )))
       )))
    ))
-   ( (_ _) ())
+   ( ('->( lt rt )) (
+      0
+   ))
+   ( (Sized sz) sz )
+   ( (lt rt) (fail (UnexpectedSizeof tt)))
    ( () ())
    ( _ (tail(
       (local sz)
