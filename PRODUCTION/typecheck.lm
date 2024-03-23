@@ -538,23 +538,76 @@ typecheck-set-size := λ tt sz . (if sz (tail(
    ))
 )) ());
 
+typecheck-repr := λsz . (match (typecheck-sizeof sz) (
+   ()
+   ( 1 Reg8 )
+   ( 2 Reg16 )
+   ( 4 Reg32 )
+   ( 8 Reg64 )
+   ( 16 LocalVariable )
+));
+
 typecheck-infer-type-expr := λe . (match e (
    ()
    ( (Type( l ds )) (
       (local base-type)
       (set base-type (typecheck-infer-type-compound l))
-      (set typecheck-global-context ( typecheck-global-context (
-         (Global( '.0 ('->( base-type (And( U64 Reg64 )) )) ))
-      )))
       (local sz)
       (set sz (typecheck-infer-type-definition( base-type ds )))
       (if (typecheck-is-fragment base-type) () (
          (typecheck-set-size( base-type sz ))
       ))
       (typecheck-ascript( e '? ))
+
+      (if (typecheck-is-fragment base-type) () (
+         (local constructors)
+         (set constructors typecheck-constructors)
+         (while constructors (
+            (match (tail constructors) (
+               ()
+               ( (tag ('->(ctype (And( my-type tag )) ))) (tail(
+                  (if (deep-eq( my-type base-type )) (
+                     (typecheck-annotate-accessors( tag ctype ))
+                  ) ())
+               )))
+               ( (tag my-type) (tail(
+                  (if (deep-eq( my-type base-type )) (
+                     (typecheck-annotate-accessors( tag () ))
+                  ) ())
+               )))
+            ))
+            (set constructors (head constructors))
+         ))
+      ))
    ))
    (_ ())
 ));
+
+typecheck-annotate-accessors := λ tag arg-types . (
+   (print-s (Annotate tag arg-types))(print-s \n)
+   (fail TODO)
+#      (while fields-type (match fields-type (
+#         ()
+#         ( (Cons( lt rt )) (tail(
+#            (set typecheck-global-context ( typecheck-global-context (
+#               (Global( (clone-rope( '. (i2s field-number) )) ('->( base-type (And( rt (typecheck-repr rt) )) )) ))
+#            )))
+#            (print-s (Bound (tail typecheck-global-context)))(print-s \n)
+#            (set field-number (inc field-number))
+#            (set fields-type lt)
+#            (print-s (Fields fields-type))
+#         )))
+#         ( tt (tail(
+#            (set typecheck-global-context ( typecheck-global-context (
+#               (Global( (clone-rope( '. (i2s field-number) )) ('->( base-type (And( tt (typecheck-repr tt) )) )) ))
+#            )))
+#            (print-s (Bound (tail typecheck-global-context)))(print-s \n)
+#            (print-s (Fields fields-type))
+#            (set fields-type ())
+#         )))
+#      )))
+
+);
 
 typecheck-infer-expr := λctx e used . (tail(
    (match e (
