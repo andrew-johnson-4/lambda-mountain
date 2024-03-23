@@ -85,6 +85,10 @@ fragment cmp := λ(: imm Constant+I16)(: r Constant+Reg16). (: (.program( \t 'cm
 fragment cmp := λ(: imm Constant+U8)(: r Constant+Reg8). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
 fragment cmp := λ(: imm Constant+I8)(: r Constant+Reg8). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
 
+fragment movsx := λ(: src Constant+Reg8)(: dst Constant+Reg64). (: (.program( \t 'movsx \s '% (.expression src) , '% (.expression dst) \n )) Nil);
+fragment movsx := λ(: src Constant+Reg16)(: dst Constant+Reg64). (: (.program( \t 'movsx \s '% (.expression src) , '% (.expression dst) \n )) Nil);
+fragment movsx := λ(: src Constant+Reg32)(: dst Constant+Reg64). (: (.program( \t 'movsx \s '% (.expression src) , '% (.expression dst) \n )) Nil);
+
 fragment jg := λ(: dst Label). (: (.program( \t 'jg \s (.expression dst) \n )) Nil);
 fragment jge := λ(: dst Label). (: (.program( \t 'jge \s (.expression dst) \n )) Nil);
 fragment jl := λ(: dst Label). (: (.program( \t 'jl \s (.expression dst) \n )) Nil);

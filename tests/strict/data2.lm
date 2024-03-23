@@ -12,6 +12,6 @@ main := (
    (print (.0 r))
    (print (.1 r))
    (print (.2 r))
-#   (print (.3 r))
-#   (print (.4 r))
+   (print (.3 r))
+   (print (.4 r))
 );

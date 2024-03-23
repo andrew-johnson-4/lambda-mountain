@@ -94,10 +94,7 @@ print := λ(: x I32). (: (tail(
    (gensym-label unsigned)
    (mov( 0u64 R15 ))
    (mov( x R15D ))
-   (cmp( 0i32 R15D ))
-   (jge( unsigned ))
-   (neg( R15 ))
-   (label unsigned)
+   (movsx( R15D R15 ))
    (print( (: R15 Reg64+I64) ))
 )) Nil);
 
@@ -105,10 +102,7 @@ print := λ(: x I16). (: (tail(
    (gensym-label unsigned)
    (mov( 0u64 R15 ))
    (mov( x R15W ))
-   (cmp( 0i16 R15W ))
-   (jge( unsigned ))
-   (neg( R15 ))
-   (label unsigned)
+   (movsx( R15W R15 ))
    (print( (: R15 Reg64+I64) ))
 )) Nil);
 
@@ -116,9 +110,6 @@ print := λ(: x I8). (: (tail(
    (gensym-label unsigned)
    (mov( 0u64 R15 ))
    (mov( x R15B ))
-   (cmp( 0i8 R15B ))
-   (jge( unsigned ))
-   (neg( R15 ))
-   (label unsigned)
+   (movsx( R15B R15 ))
    (print( (: R15 Reg64+I64) ))
 )) Nil);
