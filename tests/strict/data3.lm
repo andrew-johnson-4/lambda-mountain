@@ -1,6 +1,6 @@
 
 type L (Left( U64 ));
-type R (Right( Left Left ));
+type R (Right( L L ));
 
 main := (
    (let r (Right( (Left( 1u64 )) (Left( 2u64 )) )) )
