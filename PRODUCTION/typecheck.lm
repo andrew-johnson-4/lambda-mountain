@@ -155,8 +155,21 @@ typecheck-deep-eq := λt1 t2 . if (is( t1 t2 )) True (match (t1 t2) (
    ( (l r) (eq( l r )) )
 ));
 
+typecheck-assert-not-nil := λt whole-tt tt . (match tt (
+   ()
+   ( (lt rt) (tail(
+      (typecheck-assert-not-nil( t whole-tt lt ))
+      (typecheck-assert-not-nil( t whole-tt rt ))
+   )))
+   ( () (tail(
+      (fail (Type Was Nil whole-tt t))
+   )))
+   ( _ ())
+));
+
 typecheck-ascript := λt tt . (tail(
    (if tt (tail(
+      (typecheck-assert-not-nil( t tt tt ))
       (local lt)
       (set lt (typecheck-lookup t))
       (if lt (
@@ -546,7 +559,7 @@ typecheck-repr := λsz . (match (typecheck-sizeof sz) (
    ( 2 Reg16 )
    ( 4 Reg32 )
    ( 8 Reg64 )
-   ( 16 LocalVariable )
+   ( _ LocalVariable)
 ));
 
 typecheck-infer-type-expr := λe . (match e (
