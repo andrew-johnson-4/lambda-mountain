@@ -567,12 +567,12 @@ typecheck-infer-type-expr := λe . (match e (
                ()
                ( (tag ('->(ctype (And( my-type tag )) ))) (tail(
                   (if (deep-eq( my-type base-type )) (
-                     (typecheck-annotate-accessors( tag ctype ))
+                     (typecheck-annotate-accessors( base-type tag ctype ))
                   ) ())
                )))
                ( (tag my-type) (tail(
                   (if (deep-eq( my-type base-type )) (
-                     (typecheck-annotate-accessors( tag () ))
+                     (typecheck-annotate-accessors( base-type tag () ))
                   ) ())
                )))
             ))
@@ -583,31 +583,26 @@ typecheck-infer-type-expr := λe . (match e (
    (_ ())
 ));
 
-typecheck-annotate-accessors := λ tag arg-types . (
-   (print-s (Annotate tag arg-types))(print-s \n)
-   (fail TODO)
-#      (while fields-type (match fields-type (
-#         ()
-#         ( (Cons( lt rt )) (tail(
-#            (set typecheck-global-context ( typecheck-global-context (
-#               (Global( (clone-rope( '. (i2s field-number) )) ('->( base-type (And( rt (typecheck-repr rt) )) )) ))
-#            )))
-#            (print-s (Bound (tail typecheck-global-context)))(print-s \n)
-#            (set field-number (inc field-number))
-#            (set fields-type lt)
-#            (print-s (Fields fields-type))
-#         )))
-#         ( tt (tail(
-#            (set typecheck-global-context ( typecheck-global-context (
-#               (Global( (clone-rope( '. (i2s field-number) )) ('->( base-type (And( tt (typecheck-repr tt) )) )) ))
-#            )))
-#            (print-s (Bound (tail typecheck-global-context)))(print-s \n)
-#            (print-s (Fields fields-type))
-#            (set fields-type ())
-#         )))
-#      )))
-
-);
+typecheck-annotate-accessors := λ base-type tag fields-type . (tail(
+   (set fields-type (Cons( fields-type U64 )))
+   (local field-number)
+   (while fields-type (match fields-type (
+      ()
+      ( (Cons( lt rt )) (tail(
+         (set typecheck-global-context ( typecheck-global-context (
+            (Global( (clone-rope( '. (i2s field-number) )) ('->( base-type (And( rt (typecheck-repr rt) )) )) ))
+         )))
+         (set field-number (inc field-number))
+         (set fields-type lt)
+      )))
+      ( tt (tail(
+         (set typecheck-global-context ( typecheck-global-context (
+            (Global( (clone-rope( '. (i2s field-number) )) ('->( base-type (And( tt (typecheck-repr tt) )) )) ))
+         )))
+         (set fields-type ())
+      )))
+   )))
+));
 
 typecheck-infer-expr := λctx e used . (tail(
    (match e (
