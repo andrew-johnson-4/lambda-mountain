@@ -32,8 +32,8 @@ print := λ(: x U64). (: (tail(
 )) Nil);
 print := λ(: x U32). (: (tail(
    (mov( 0u64 R15 ))
+   (mov( x R15D ))
    ()
-#   (mov( x R15d ))
 #   (print( R15 ))
 )) Nil);
 
