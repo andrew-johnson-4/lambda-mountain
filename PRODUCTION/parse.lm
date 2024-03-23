@@ -62,7 +62,7 @@ parse-program := λtoks . (tail(
          ))
          ((key (:= remainder)) (
             (set pme (parse-many-expressions remainder))
-            (set parse-parsed-program ( parse-parsed-program (Global (key (head pme))) ))
+            (set parse-parsed-program ( parse-parsed-program (Global ( key (head pme))) ))
             (set toks (tail pme))
          ))
          (remainder (

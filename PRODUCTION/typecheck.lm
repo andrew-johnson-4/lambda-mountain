@@ -581,17 +581,24 @@ typecheck-infer-type-expr := λe . (match e (
       ))
    ))
    ( (Global( gln (Lambda( glp (App( (App( (Literal ':) _ )) rtype )) )) )) (tail(
-      (fail (TODO Quick Lambda))
-     # (set typecheck-global-context ( typecheck-global-context (Global( gln glt )) ))
+      (local lt)
+      (set lt (typecheck-typeof-lhs glp))
+      (local rt)
+      (set rt (typecheck-infer-type-compound rtype))
+      (set typecheck-global-context ( typecheck-global-context (Global( gln ('->( lt rt )) )) ))
    )))
-   ( (Fragment( fln (Lambda( flp (App( (App( (Literal ':) _ )) rtype )) )) )) (tail(
-      (fail (TODO Quick Fragment))
+   ( (Fragment( (Variable fln) (Lambda( flp (App( (App( (Literal ':) _ )) rtype )) )) )) (tail(
+      (local lt)
+      (set lt (typecheck-typeof-lhs flp))
+      (local rt)
+      (set rt (typecheck-infer-type-compound rtype))
+      (set typecheck-global-context ( typecheck-global-context (Global( fln ('->( lt rt )) )) ))
    )))
    ( (Global( gln (Lambda( _ _ )) )) (tail(
-      (fail (Global Functions Must Be Annotated))
+      (fail (Global Functions Must Be Annotated gln))
    )))
-   ( (Fragment( gln (Lambda( _ _ )) )) (tail(
-      (fail (Global Fragments Must Be Annotated))
+   ( (Fragment( (Variable gln) (Lambda( _ _ )) )) (tail(
+      (fail (Global Fragments Must Be Annotated gln))
    )))
    (_ ())
 ));
@@ -626,11 +633,22 @@ typecheck-infer-expr := λctx e used . (tail(
       ( (GExpr ge) (
          (typecheck-infer-expr( ctx ge Unused ))
       ))
+      ( (Type( l ds )) ())
       ( (Global( gln gle )) (
          (typecheck-infer-expr( ctx gle Used ))
+         (typecheck-ascript( e '? ))
       ))
-      ( (Type( l ds )) ())
-      ( (Fragment( fln fle )) ())
+      ( (Fragment( fln fle )) (
+         (match fle (
+            ()
+            ( (Lambda( lhs (App( (App( (Literal ':) rhs )) rhst )) )) (
+               (set rhst (typecheck-infer-type-compound rhst))
+               (local flt)
+               (set flt ('->( (typecheck-typeof-lhs lhs) rhst )) )
+               (typecheck-ascript( fle flt ))
+            ))
+         ))
+      ))
       ( Nil (
          (typecheck-ascript( e Nil ))
       ))
