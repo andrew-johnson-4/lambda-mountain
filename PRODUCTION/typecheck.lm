@@ -774,7 +774,7 @@ typecheck-sizeof := λtt . (match tt (
    ( (lt rt) (fail (UnexpectedSizeof tt)))
    ( () ())
    ( _ (
-      (if (typecheck-is-indirect( tt () )) (tail(
+      (if (typecheck-is-cyclical( tt () )) (tail(
          ()
          8
       )) (tail(
@@ -867,12 +867,12 @@ typecheck-is-fragment := λtt . (tail(
    is-fragment
 ));
 
-typecheck-is-indirect := λ tt descent . (tail(
+typecheck-is-cyclical := λ tt descent . (tail(
    ()
    (match descent (
       ()
       ( () (tail(
-         (local indirect)
+         (local cyclical)
          (local constructors)
          (set constructors typecheck-constructors)
          (while constructors (
@@ -880,22 +880,22 @@ typecheck-is-indirect := λ tt descent . (tail(
                ()
                ( (case ('->( args (And( base-type case_ )) ))) (
                   (if (eq( base-type tt )) (
-                     (if (typecheck-is-indirect( tt args )) (
-                        (set indirect True)
+                     (if (typecheck-is-cyclical( tt args )) (
+                        (set cyclical True)
                      ) ())
                   ) ())
                ))
             ))
             (set constructors (head constructors))
          ))
-         indirect
+         cyclical
       )))
       ( (lt rt) (
-         if (typecheck-is-indirect( tt lt )) True
-            (typecheck-is-indirect( tt rt ))
+         if (typecheck-is-cyclical( tt lt )) True
+            (typecheck-is-cyclical( tt rt ))
       ))
       ( _ (if (eq( tt descent )) True (tail(
-         (local indirect)
+         (local cyclical)
          (local constructors)
          (set constructors typecheck-constructors)
          (while constructors (
@@ -903,15 +903,15 @@ typecheck-is-indirect := λ tt descent . (tail(
                ()
                ( (case ('->( args (And( base-type case_ )) ))) (
                   (if (eq( base-type descent )) (
-                     (if (typecheck-is-indirect( tt args )) (
-                        (set indirect True)
+                     (if (typecheck-is-cyclical( tt args )) (
+                        (set cyclical True)
                      ) ())
                   ) ())
                ))
             ))
             (set constructors (head constructors))
          ))
-         indirect
+         cyclical
       ))))
    ))
 ));
