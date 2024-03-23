@@ -460,6 +460,8 @@ typecheck-safe-apply-plural := λterm many pt . (tail(
             (set many ())
          )))
       )))
+      (print-s Term:)(print-s \n)
+      (print-s \t)(print-s term)(print-s \n)
       (exit 1)
    ))
 ));
@@ -584,7 +586,7 @@ typecheck-infer-type-expr := λe . (match e (
       (local lt)
       (set lt (typecheck-typeof-lhs glp))
       (local rt)
-      (set rt (typecheck-infer-type-compound rtype))
+      (set rt (typecheck-as-return (typecheck-infer-type-compound rtype)))
       (set typecheck-global-context ( typecheck-global-context (Global( gln ('->( lt rt )) )) ))
    )))
    ( (Fragment( (Variable fln) (Lambda( flp (App( (App( (Literal ':) _ )) rtype )) )) )) (tail(

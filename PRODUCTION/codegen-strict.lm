@@ -319,7 +319,6 @@ strict-codegen-type := λ ctx type-name type-body case-number . (match type-body
 strict-bind-accessors := λ ctx base-type src-type field-offset field-number . (tail(
    (local body)
    (local register-name)
-   (local mov-name)
    (local return-type)
    (match (typecheck-sizeof src-type) (
       ()
