@@ -57,6 +57,39 @@ fragment mov := λ(: src Constant+I16)(: dst LocalVariable). (: (.program( \t 'm
 fragment mov := λ(: src Constant+I32)(: dst LocalVariable). (: (.program( \t 'movl \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
 fragment mov := λ(: src Constant+I64)(: dst LocalVariable). (: (.program( \t 'movq \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
 
+fragment mov := λ(: src Constant+U8)(: dst GlobalVariable). (: (.program(
+   \t 'mov \s '$ (.expression dst) , \s '%r15 \n
+   \t 'movb \s '$ (.expression src) , \s '0 \[ '%r15 \] \n
+)) Nil);
+fragment mov := λ(: src Constant+U16)(: dst GlobalVariable). (: (.program(
+   \t 'mov \s '$ (.expression dst) , \s '%r15 \n
+   \t 'movw \s '$ (.expression src) , \s '0 \[ '%r15 \] \n
+)) Nil);
+fragment mov := λ(: src Constant+U32)(: dst GlobalVariable). (: (.program(
+   \t 'mov \s '$ (.expression dst) , \s '%r15 \n
+   \t 'movl \s '$ (.expression src) , \s '0 \[ '%r15 \] \n
+)) Nil);
+fragment mov := λ(: src Constant+U64)(: dst GlobalVariable). (: (.program(
+   \t 'mov \s '$ (.expression dst) , \s '%r15 \n
+   \t 'movq \s '$ (.expression src) , \s '0 \[ '%r15 \] \n
+)) Nil);
+fragment mov := λ(: src Constant+I8)(: dst GlobalVariable). (: (.program(
+   \t 'mov \s '$ (.expression dst) , \s '%r15 \n
+   \t 'movb \s '$ (.expression src) , \s '0 \[ '%r15 \] \n
+)) Nil);
+fragment mov := λ(: src Constant+I16)(: dst GlobalVariable). (: (.program(
+   \t 'mov \s '$ (.expression dst) , \s '%r15 \n
+   \t 'movw \s '$ (.expression src) , \s '0 \[ '%r15 \] \n
+)) Nil);
+fragment mov := λ(: src Constant+I32)(: dst GlobalVariable). (: (.program(
+   \t 'mov \s '$ (.expression dst) , \s '%r15 \n
+   \t 'movl \s '$ (.expression src) , \s '0 \[ '%r15 \] \n
+)) Nil);
+fragment mov := λ(: src Constant+I64)(: dst GlobalVariable). (: (.program(
+   \t 'mov \s '$ (.expression dst) , \s '%r15 \n
+   \t 'movq \s '$ (.expression src) , \s '0 \[ '%r15 \] \n
+)) Nil);
+
 fragment push := λ(: src Constant+U8). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
 fragment push := λ(: src Constant+U16). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
 fragment push := λ(: src Constant+U32). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
