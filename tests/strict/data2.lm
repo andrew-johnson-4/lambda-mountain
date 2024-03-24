@@ -1,4 +1,9 @@
 
+import STDLIB/default-instruction-set.lm;
+import STDLIB/default-primitives.lm;
+import STDLIB/default-stdlib.lm;
+import STDLIB/default-rules.lm;
+
 type LR (Left( U8 , U16 , U32 , U64 )) | (Right( I64 , I64 , I32 , I16 , I8 ));
 
 main := (

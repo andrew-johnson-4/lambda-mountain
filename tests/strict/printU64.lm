@@ -1,4 +1,9 @@
 
+import STDLIB/default-instruction-set.lm;
+import STDLIB/default-primitives.lm;
+import STDLIB/default-stdlib.lm;
+import STDLIB/default-rules.lm;
+
 main := (
    (print 123u64)
    (print -456i64)

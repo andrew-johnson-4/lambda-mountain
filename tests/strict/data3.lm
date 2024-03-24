@@ -1,4 +1,9 @@
 
+import STDLIB/default-instruction-set.lm;
+import STDLIB/default-primitives.lm;
+import STDLIB/default-stdlib.lm;
+import STDLIB/default-rules.lm;
+
 type L (L( U64 ));
 type R (R( L , L ));
 
