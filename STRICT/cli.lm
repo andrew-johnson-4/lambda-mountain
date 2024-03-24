@@ -6,7 +6,7 @@ import STDLIB/default-stdlib.lm;
 
 import STRICT/utility.lm;
 
-config-strict            := (: False U8);
+config-strict            := 0u8;
 
 main := (
    print config-strict
