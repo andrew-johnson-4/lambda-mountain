@@ -784,6 +784,7 @@ typecheck-sizeof := λtt . (match tt (
       )))
    ))
    ( (And( lt rt )) (tail(
+      (print-s (And lt rt))(print-s \n)
       (local sz)
       (set sz (typecheck-sizeof lt))
       (if sz () (set sz (typecheck-sizeof rt)))

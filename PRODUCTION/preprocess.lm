@@ -79,10 +79,23 @@ preprocess-destructure-type := λtt . (
 
 preprocess-restructure-type := λtt . (match tt (
    ()
-   ( (tag lts) (
+   ( (And( lt rt )) (
       (App(
-         (Literal tag)
-         (preprocess-restructure-type lts)
+         (Literal And)
+         (App(
+            (preprocess-restructure-type lt)
+            (preprocess-restructure-type rt)
+         ))
+      ))
+   ))
+   ( (tag lts) (
+      (if (is-atom tag) (
+         (App(
+            (Literal tag)
+            (preprocess-restructure-type lts)
+         ))
+      ) (
+         (fail (InvalidRestructureType tag lts))
       ))
    ))
    ( () (fail (InvalidRestructureType ())))
@@ -106,6 +119,8 @@ preprocess-apply-macros := λprogram . (match program (
    ( (Literal l) (tail(
       (local suffixes)
       (set suffixes parse-suffix)
+      (local literal-type)
+      (set literal-type (preprocess-restructure-type(parse-type(clone-rope((Constant+Literal+ (head(tail( suffixes ))) ))))) )
       (while suffixes (tail(
          (local sfx)
          (set sfx (tail (tail suffixes)) )
@@ -116,13 +131,7 @@ preprocess-apply-macros := λprogram . (match program (
                      (Literal ':)
                      (Literal (remove-suffix( l sfx )))
                   ))
-                  (App(
-                     (Literal And)
-                     (App(
-                        (Literal Constant)
-                        (Literal (head (tail suffixes)))
-                     ))
-                  ))
+                  literal-type
                ))
             ))
          ) ())
