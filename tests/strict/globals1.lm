@@ -1,0 +1,11 @@
+
+import STDLIB/default-instruction-set.lm;
+import STDLIB/default-primitives.lm;
+import STDLIB/default-stdlib.lm;
+import STDLIB/default-rules.lm;
+
+global-integer := 123u32;
+
+main := (
+   print global-integer
+);
