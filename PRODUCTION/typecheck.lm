@@ -155,8 +155,21 @@ typecheck-deep-eq := λt1 t2 . if (is( t1 t2 )) True (match (t1 t2) (
    ( (l r) (eq( l r )) )
 ));
 
+typecheck-assert-not-nil := λt whole-tt tt . (match tt (
+   ()
+   ( (lt rt) (tail(
+      (typecheck-assert-not-nil( t whole-tt lt ))
+      (typecheck-assert-not-nil( t whole-tt rt ))
+   )))
+   ( () (tail(
+      (fail (Type Was Nil whole-tt t))
+   )))
+   ( _ ())
+));
+
 typecheck-ascript := λt tt . (tail(
    (if tt (tail(
+      (typecheck-assert-not-nil( t tt tt ))
       (local lt)
       (set lt (typecheck-lookup t))
       (if lt (
@@ -546,7 +559,7 @@ typecheck-repr := λsz . (match (typecheck-sizeof sz) (
    ( 2 Reg16 )
    ( 4 Reg32 )
    ( 8 Reg64 )
-   ( 16 LocalVariable )
+   ( _ LocalVariable)
 ));
 
 typecheck-infer-type-expr := λe . (match e (
@@ -773,18 +786,23 @@ typecheck-sizeof := λtt . (match tt (
    ( ('->(_ _)) () )
    ( (lt rt) (fail (UnexpectedSizeof tt)))
    ( () ())
-   ( _ (tail(
-      (local sz)
-      (local sizes)
-      (set sizes typecheck-size)
-      (while sizes (
-         (if (eq( (head (tail sizes)) tt )) (
-            (set sz (tail (tail sizes)))
-         ) ())
-         (set sizes (head sizes))
-      ))
-      sz
-   )))
+   ( _ (
+      (if (typecheck-is-cyclical( tt () )) (tail(
+         ()
+         8
+      )) (tail(
+         (local sz)
+         (local sizes)
+         (set sizes typecheck-size)
+         (while sizes (
+            (if (eq( (head (tail sizes)) tt )) (
+               (set sz (tail (tail sizes)))
+            ) ())
+            (set sizes (head sizes))
+         ))
+         sz
+      )))
+   ))
 ));
 
 typecheck-not-representation := λtt . (match tt (
@@ -860,4 +878,53 @@ typecheck-is-fragment := λtt . (tail(
       (set fragment-types (head fragment-types))
    ))
    is-fragment
+));
+
+typecheck-is-cyclical := λ tt descent . (tail(
+   ()
+   (match descent (
+      ()
+      ( () (tail(
+         (local cyclical)
+         (local constructors)
+         (set constructors typecheck-constructors)
+         (while constructors (
+            (match (tail constructors) (
+               ()
+               ( (case ('->( args (And( base-type case_ )) ))) (
+                  (if (eq( base-type tt )) (
+                     (if (typecheck-is-cyclical( tt args )) (
+                        (set cyclical True)
+                     ) ())
+                  ) ())
+               ))
+            ))
+            (set constructors (head constructors))
+         ))
+         cyclical
+      )))
+      ( (lt rt) (
+         if (typecheck-is-cyclical( tt lt )) True
+            (typecheck-is-cyclical( tt rt ))
+      ))
+      ( _ (if (eq( tt descent )) True (tail(
+         (local cyclical)
+         (local constructors)
+         (set constructors typecheck-constructors)
+         (while constructors (
+            (match (tail constructors) (
+               ()
+               ( (case ('->( args (And( base-type case_ )) ))) (
+                  (if (eq( base-type descent )) (
+                     (if (typecheck-is-cyclical( tt args )) (
+                        (set cyclical True)
+                     ) ())
+                  ) ())
+               ))
+            ))
+            (set constructors (head constructors))
+         ))
+         cyclical
+      ))))
+   ))
 ));
