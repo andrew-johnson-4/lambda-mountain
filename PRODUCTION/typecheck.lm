@@ -615,6 +615,10 @@ typecheck-infer-type-expr := λe . (match e (
    ( (Fragment( (Variable gln) (Lambda( _ _ )) )) (tail(
       (fail (Global Fragments Must Be Annotated gln))
    )))
+   ( (Global( gln (App( (App( (Literal ':) _ )) tt )) )) (tail(
+      (set tt (typecheck-infer-type-compound tt))
+      (set typecheck-global-context ( typecheck-global-context (Global( gln tt )) ))
+   )))
    (_ ())
 ));
 

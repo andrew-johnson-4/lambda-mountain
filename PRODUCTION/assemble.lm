@@ -38,7 +38,7 @@ assemble := λprogram . (
       ( (pc3 (Global (fname body))) (
          (match body (
             ()
-            ( Nil (
+            ( Nil (tail(
                (set output_pd (
                   (head output_pd)
                   (
@@ -50,12 +50,29 @@ assemble := λprogram . (
                (set global_ctx (context::bind( global_ctx fname
                   (typecheck-ascript( (GlobalVariable body) (typecheck-lookup body) ))
                )))
-            ))
-            ( (Lambda(lhs rhs)) (
+            )))
+            ( (Lambda(lhs rhs)) (tail(
                (set global_ctx (context::bind( global_ctx fname
                   (typecheck-ascript( (GlobalFunction body) (typecheck-lookup body) ))
                )))
-            ))
+            )))
+            ( (App( (App( (Literal ':) _ )) body-type )) (tail(
+               (local mtype)
+               (set mtype (typecheck-lookup body))
+               (local mname)
+               (set mname (mangle-identifier( fname mtype )))
+               (set output_pd (
+                  (head output_pd)
+                  (
+                     (tail output_pd)
+                     mname
+                     ': \n \t '.zero \s (typecheck-sizeof mtype) \n
+                  )
+               ))
+               (set global_ctx (context::bind( global_ctx fname
+                  (typecheck-ascript( (GlobalVariable mname) mtype ))
+               )))
+            )))
          ))
          (set preview_program pc3)
       ))
