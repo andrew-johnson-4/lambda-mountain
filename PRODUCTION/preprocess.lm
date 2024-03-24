@@ -73,48 +73,25 @@ preprocess-type-and := λl r . (
    ))
 );
 
-preprocess-destructure-type := λtt . (tail(
-   (local buff)
-   (local compound)
-   (while tt (
-      (if (eq( '[ (head-string tt) )) (
-         (if buff (
-            (set compound (preprocess-destructure-type-atom (clone-rope buff)))
-         ) ())
-         (set buff ())
-         (set tt (tail-string tt))
-         (while tt (
-            (if (eq( '] (head-string tt) )) (
-               (set compound (App(
-                  (Literal Array)
-                  (App( compound (preprocess-destructure-type (clone-rope buff)) ))
-               )))
-               (set buff ())
-            ) (
-               (set buff (buff (clone-rope (head-string tt))))
-            ))
-            (set tt (tail-string tt))
-         ))
+preprocess-destructure-type := λtt . (
+   (preprocess-restructure-type( parse-type tt ))
+);
+
+preprocess-restructure-type := λtt . (match tt (
+   ()
+   ( (tag lts) (
+      (App(
+         (Literal tag)
+         (preprocess-restructure-type lts)
       ))
-      (if (eq( '+ (head-string tt) )) (
-         (if compound (
-            (set compound (preprocess-type-and( compound (preprocess-destructure-type-atom (clone-rope buff)) )) )
-            (set buff ())
-         ) (
-            (set compound (preprocess-destructure-type-atom (clone-rope buff)))
-            (set buff ())
-         ))
-      ) (
-         (set buff (buff (clone-rope (head-string tt)) ))
-      ))
-      (set tt (tail-string tt))
    ))
-   (if compound (
-      (if buff (
-         (preprocess-type-and( compound (preprocess-destructure-type-atom (clone-rope buff)) ))
-      ) compound )
-   ) (
-      (preprocess-destructure-type-atom (clone-rope buff))
+   ( () (fail (InvalidRestructureType ())))
+   ( tag-or-variable (
+      (if (is-variable tag-or-variable) (
+         (Variable tag-or-variable)
+      ) (
+         (Literal tag-or-variable)
+      ))
    ))
 ));
 

@@ -617,6 +617,7 @@ typecheck-infer-type-expr := λe . (match e (
    )))
    ( (Global( gln (App( (App( (Literal ':) _ )) tt )) )) (tail(
       (set tt (typecheck-infer-type-compound tt))
+      (set tt (And( (typecheck-not-representation tt) GlobalVariable )))
       (set typecheck-global-context ( typecheck-global-context (Global( gln tt )) ))
    )))
    (_ ())
@@ -813,6 +814,10 @@ typecheck-not-representation := λtt . (match tt (
    ()
    ( (And( Constant rt )) (typecheck-not-representation rt) )
    ( (And( lt Constant )) (typecheck-not-representation lt) )
+   ( (And( LocalVariable rt )) (typecheck-not-representation rt) )
+   ( (And( lt LocalVariable )) (typecheck-not-representation lt) )
+   ( (And( GlobalVariable rt )) (typecheck-not-representation rt) )
+   ( (And( lt GlobalVariable )) (typecheck-not-representation lt) )
    ( (And( Reg8 rt )) (typecheck-not-representation rt) )
    ( (And( lt Reg8 )) (typecheck-not-representation lt) )
    ( (And( Reg16 rt )) (typecheck-not-representation rt) )
