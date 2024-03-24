@@ -1,0 +1,11 @@
+
+import STDLIB/default-instruction-set.lm;
+import STDLIB/default-primitives.lm;
+import STDLIB/default-rules.lm;
+import STDLIB/default-stdlib.lm;
+
+import STRICT/utility.lm;
+
+main := (
+   print 123u64
+);
