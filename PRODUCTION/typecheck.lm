@@ -945,3 +945,24 @@ typecheck-is-cyclical := λ tt descent . (tail(
       ))))
    ))
 ));
+
+typecheck-datatype := λtt . (match tt (
+   ()
+   ( () () )
+   ( (And( lt rt )) (
+      if (typecheck-datatype lt) (typecheck-datatype lt) (typecheck-datatype rt)
+   ))
+   ( (_ _) () )
+   ( _ (match tt (
+      ()
+      (I8 I8)
+      (I16 I16)
+      (I32 I32)
+      (I64 I64)
+      (U8 U8)
+      (U16 U16)
+      (U32 U32)
+      (U64 U64)
+      (_ ())
+   )))
+));

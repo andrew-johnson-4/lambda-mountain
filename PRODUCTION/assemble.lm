@@ -56,7 +56,7 @@ assemble := λprogram . (
                   (typecheck-ascript( (GlobalFunction body) (typecheck-lookup body) ))
                )))
             )))
-            ( (App( (App( (Literal ':) _ )) body-type )) (tail(
+            ( (App( (App( (Literal ':) body-initial )) body-type )) (tail(
                (local mtype)
                (set mtype (typecheck-lookup body))
                (local mname)
@@ -65,8 +65,8 @@ assemble := λprogram . (
                   (head output_pd)
                   (
                      (tail output_pd)
-                     mname
-                     ': \n \t '.zero \s (typecheck-sizeof mtype) \n
+                     mname ': \n
+                     (assemble-initialize-data( body-initial mtype ))
                   )
                ))
                (set global_ctx (context::bind( global_ctx fname
@@ -162,6 +162,27 @@ assemble := λprogram . (
    ))
 
    (write-file (target (clone-rope output_pd)))
+);
+
+assemble-initialize-data := λ e tt . (
+   (match e (
+      ()
+      ( (Literal v) (match (typecheck-datatype tt) (
+         ()
+         (I8 ( \t '.byte \s v \n ))
+         (U8 ( \t '.byte \s v \n ))
+         (I16 ( \t '.2byte \s v \n ))
+         (U16 ( \t '.2byte \s v \n ))
+         (I32 ( \t '.4byte \s v \n ))
+         (U32 ( \t '.4byte \s v \n ))
+         (I64 ( \t '.8byte \s v \n ))
+         (U64 ( \t '.8byte \s v \n ))
+         (_ ( \t '.zero \s (typecheck-sizeof tt) \n ))
+      )))
+      ( _ (
+         \t '.zero \s (typecheck-sizeof tt) \n
+      ))
+   ))
 );
 
 assemble-data-header := λ .(
