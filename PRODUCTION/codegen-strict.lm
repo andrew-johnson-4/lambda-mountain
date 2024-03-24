@@ -222,9 +222,6 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
          (set args-type (typecheck-infer-type-compound args))
          (set args-type (Cons( args-type U64 )))
 
-         # .0  (-48 + 0)
-         #   \t 'movq \s ('+( ('.expression 'src) field-offset )) \s \[ '%rbp \] ,
-
          (local taggeds-size)
          (set taggeds-size (typecheck-sizeof base-type))
          (local case-size)
