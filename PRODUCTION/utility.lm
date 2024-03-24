@@ -342,9 +342,9 @@ parse-type := λ tt . (tail(
    (while tt (
       (if (eq( (head-string tt) '+ )) (
          (if base-type (
-            (And( base-type (parse-single-type (clone-rope buff)) ))
+            (set base-type (And( base-type (parse-single-type (clone-rope buff)) )))
          ) (
-            (parse-single-type (clone-rope buff))
+            (set base-type (parse-single-type (clone-rope buff)))
          ))
          (set buff ())
       ) (
