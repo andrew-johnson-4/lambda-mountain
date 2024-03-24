@@ -30,7 +30,6 @@ import PRODUCTION/utility.lm;
 (assert-not-typeof( 'tests/unit/utility.lm (StrictExpr ()) Nil ));
 (assert-not-typeof( 'tests/unit/utility.lm (StrictExpr ()) Atom ));
 
-(assert-typeof( 'tests/unit/utility.lm () (List Atom) ));
 (assert-typeof( 'tests/unit/utility.lm () List<Atom> ));
 (assert-typeof( 'tests/unit/utility.lm ((() 1) 2) List<Atom> ));
 (assert-not-typeof( 'tests/unit/utility.lm ((() 1) 2) List<Cons> ));

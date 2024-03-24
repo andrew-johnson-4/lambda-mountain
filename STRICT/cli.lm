@@ -1,10 +1,13 @@
 
 import STDLIB/default-instruction-set.lm;
 import STDLIB/default-primitives.lm;
-import STDLIB/default-stdlib.lm;
 import STDLIB/default-rules.lm;
+import STDLIB/default-stdlib.lm;
+
+import STRICT/utility.lm;
+
+config-strict            := (: False U8);
 
 main := (
-   (print 123u64)
-   (print -456i64)
+   print config-strict
 );

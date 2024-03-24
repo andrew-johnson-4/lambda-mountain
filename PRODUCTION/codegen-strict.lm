@@ -97,6 +97,14 @@ compile-expr-strict := λctx e offset used . (tail(
                      (set e2 (expr::set-offset( e2 offset )))
                      (set e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup rhs) LocalVariable )) ((() e1) e2) e2 )))
                   )))
+                  ( (GlobalVariable( uid )) (tail(
+                     (set e1 (compile-expr-strict( ctx rhs offset Used )))
+                     (set e2 (expr::new()))
+                     (set e2 (expr::set-expr( e2 uid )))
+                     (set e2 (expr::set-context( e2 ctx )))
+                     (set e2 (expr::set-offset( e2 offset )))
+                     (set e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup rhs) GlobalVariable )) ((() e1) e2) e2 )))
+                  )))
                   ( u (fail( UnexpectedAssignmentLhs lhs u )))
                ))
                e3
@@ -200,7 +208,7 @@ get-strict-function := λctx v arg_type . (tail(
          (GlobalFunction body)
       ))
       ( (GlobalVariable( body )) (
-         (GlobalVariable (label-case v))
+         (GlobalVariable body)
       ))
       ( (Label lid) (
          (Label lid)
