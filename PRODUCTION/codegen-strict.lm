@@ -375,7 +375,17 @@ strict-bind-accessors := λ ctx base-type src-type field-offset field-number . (
       ))))
       (set ctx (context::bind( ctx (clone-rope( '. (i2s field-number) )) body )))
    ) (
-      (fail (TODO Complex Field Types))
+      (set body (Fragment (Lambda(
+         (App( (App( (Literal ':) (Variable 'src) )) (Literal LocalVariable) ))
+         (App( (Variable '.expression) (
+            ('+( ('.expression 'src) field-offset ))
+         )))
+      ))))
+      (typecheck-ascript( body ('->(
+         (And( base-type LocalVariable ))
+         LocalVariable
+      ))))
+      (set ctx (context::bind( ctx (clone-rope( '. (i2s field-number) )) body )))
    ))
    ctx
 ));

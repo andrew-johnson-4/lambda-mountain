@@ -8,11 +8,15 @@ fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
       (i2s(add( (s2i l) (s2i r) )))
    )))
    ( ('.expression v ) (tail(
-      (while ctx (
-         (if (eq( v (head (tail ctx)) )) (
-            (set v (expr::get-expr (tail (tail ctx))))
-         ) ())
-         (set ctx (head ctx))
+      (if (is-atom v) (
+         (while ctx (
+            (if (eq( v (head (tail ctx)) )) (
+               (set v (expr::get-expr (tail (tail ctx))))
+            ) ())
+            (set ctx (head ctx))
+         ))
+      ) (
+         (set v (fragment-substitute-context( ctx v )))
       ))
       v
    )))
