@@ -8,6 +8,9 @@ import STRICT/utility.lm;
 
 config-strict            := 0u8;
 
-main := (
+type CompileMode Tokenize | Parse | Compile;
+config-mode              := Compile;
+
+main := λ(: argc U64)(: argv U8[][]).(
    print config-strict
 );
