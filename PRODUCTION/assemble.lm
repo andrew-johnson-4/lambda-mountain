@@ -29,6 +29,12 @@ assemble := λprogram . (
 
    (while preview_program (match preview_program (
       ()
+      ( (pc1 (Global ('main (
+            (Lambda( lhs rhs ))
+         )))) (
+         (fail MAIN)
+         (set preview_program pc1)
+      ))
       ( (pc1 (Global ('main body))) (
          (set preview_program pc1)
       ))
@@ -187,6 +193,13 @@ assemble-initialize-data := λ e tt . (
 
 assemble-data-header := λ .(
   '.data                                  \n
+);
+
+assemble-argv-header := λ .(
+  'argc:                                  \n
+  \t '.zero 8                             \n
+  'argv:                                  \n
+  \t '.zero 8192                          \n
 );
 
 assemble-program-header := λ .(
