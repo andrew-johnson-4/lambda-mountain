@@ -58,21 +58,6 @@ try-destructure-macro := λlhs e . (match (lhs e) (
    ))
 ));
 
-preprocess-destructure-type-atom := λtt . (
-   (if (is-variable tt) (
-      (Variable tt)
-   ) (
-      (Literal tt)
-   ))
-);
-
-preprocess-type-and := λl r . (
-   (App(
-      (Literal And)
-      (App( l r ))
-   ))
-);
-
 preprocess-destructure-type := λtt . (
    (preprocess-restructure-type( parse-type tt ))
 );
