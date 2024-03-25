@@ -58,31 +58,29 @@ try-destructure-macro := λlhs e . (match (lhs e) (
    ))
 ));
 
-preprocess-destructure-type-atom := λtt . (
-   (if (is-variable tt) (
-      (Variable tt)
-   ) (
-      (Literal tt)
-   ))
-);
-
-preprocess-type-and := λl r . (
-   (App(
-      (Literal And)
-      (App( l r ))
-   ))
-);
-
 preprocess-destructure-type := λtt . (
    (preprocess-restructure-type( parse-type tt ))
 );
 
 preprocess-restructure-type := λtt . (match tt (
    ()
-   ( (tag lts) (
+   ( (And( lt rt )) (
       (App(
-         (Literal tag)
-         (preprocess-restructure-type lts)
+         (Literal And)
+         (App(
+            (preprocess-restructure-type lt)
+            (preprocess-restructure-type rt)
+         ))
+      ))
+   ))
+   ( (tag lts) (
+      (if (is-atom tag) (
+         (App(
+            (Literal tag)
+            (preprocess-restructure-type lts)
+         ))
+      ) (
+         (fail (InvalidRestructureType tag lts))
       ))
    ))
    ( () (fail (InvalidRestructureType ())))
@@ -109,23 +107,19 @@ preprocess-apply-macros := λprogram . (match program (
       (while suffixes (tail(
          (local sfx)
          (set sfx (tail (tail suffixes)) )
-         (if (is-suffix( l sfx )) (
+         (if (is-suffix( l sfx )) (tail(
+            (local literal-type)
+            (set literal-type (preprocess-restructure-type(parse-type(clone-rope((Constant+Literal+ (head(tail( suffixes ))) ))))) )
             (set program (
                (App(
                   (App(
                      (Literal ':)
                      (Literal (remove-suffix( l sfx )))
                   ))
-                  (App(
-                     (Literal And)
-                     (App(
-                        (Literal Constant)
-                        (Literal (head (tail suffixes)))
-                     ))
-                  ))
+                  literal-type
                ))
             ))
-         ) ())
+         )) ())
          (set suffixes (head suffixes))
       )))
       program
@@ -136,23 +130,19 @@ preprocess-apply-macros := λprogram . (match program (
       (while suffixes (tail(
          (local sfx)
          (set sfx (tail (tail suffixes)) )
-         (if (is-suffix( l sfx )) (
+         (if (is-suffix( l sfx )) (tail(
+            (local literal-type)
+            (set literal-type (preprocess-restructure-type(parse-type(clone-rope((Constant+Literal+ (head(tail( suffixes ))) ))))) )
             (set program (
                (App(
                   (App(
                      (Literal ':)
                      (Literal (remove-suffix( l sfx )))
                   ))
-                  (App(
-                     (Literal And)
-                     (App(
-                        (Literal Constant)
-                        (Literal (head (tail suffixes)))
-                     ))
-                  ))
+                  literal-type
                ))
             ))
-         ) ())
+         )) ())
          (set suffixes (head suffixes))
       )))
       program
