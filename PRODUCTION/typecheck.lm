@@ -604,6 +604,9 @@ typecheck-infer-type-expr := λe . (match e (
          ))
       ))
    ))
+   ( (Global( 'main (Lambda( _ _ )) )) (tail(
+      (fail (Typecheck Main))
+   )))
    ( (Global( gln (Lambda( glp (App( (App( (Literal ':) _ )) rtype )) )) )) (tail(
       (local lt)
       (set lt (typecheck-typeof-lhs glp))
@@ -618,9 +621,6 @@ typecheck-infer-type-expr := λe . (match e (
       (local rt)
       (set rt (typecheck-infer-type-compound rtype))
       (set typecheck-global-context ( typecheck-global-context (Global( fln ('->( lt rt )) )) ))
-   )))
-   ( (Global( gln (Lambda( _ _ )) )) (tail(
-      (fail (Global Functions Must Be Annotated gln))
    )))
    ( (Fragment( (Variable gln) (Lambda( _ _ )) )) (tail(
       (fail (Global Fragments Must Be Annotated gln))
