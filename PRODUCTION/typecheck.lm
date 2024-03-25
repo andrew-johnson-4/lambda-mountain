@@ -55,6 +55,9 @@ typecheck-assert-expr := λe . (tail(
       ( (GExpr ge) (
          (typecheck-assert-expr( ge ))
       ))
+      ( (Global( 'main (Lambda( lhs rhs )) )) (
+         (typecheck-assert-expr( rhs ))
+      ))
       ( (Global( gln gle )) (
          (typecheck-assert-expr( gle ))
       ))
@@ -130,14 +133,6 @@ typecheck-lookup := λterm . (tail(
 typecheck-deep-eq := λt1 t2 . if (is( t1 t2 )) True (match (t1 t2) (
    ()
    ( (() ()) True )
-   ( ( l (Array( bt 1 )) ) (
-      (typecheck-deep-eq( l bt ))
-   ))
-   ( ( (Cons(l1 l2)) (Array( bt sz )) ) (
-      (if (typecheck-deep-eq( l2 bt ))
-         (typecheck-deep-eq( l1 (Array( bt (i2s(dec(s2i sz))) )) ))
-         ())
-   ))
    ( ( (And(l1 l2)) (And(r1 r2)) ) True )
    ( ( (And(l1 l2)) r ) (
       if (typecheck-deep-eq(l1 r)) True
@@ -604,6 +599,10 @@ typecheck-infer-type-expr := λe . (match e (
          ))
       ))
    ))
+   ( (Global( 'main (Lambda( _ _ )) )) (tail(
+      (set typecheck-global-context ( typecheck-global-context (Global( 'argc (parse-type 'U64+GlobalVariable) )) ))
+      (set typecheck-global-context ( typecheck-global-context (Global( 'argv (parse-type 'U8[?][?]) )) ))
+   )))
    ( (Global( gln (Lambda( glp (App( (App( (Literal ':) _ )) rtype )) )) )) (tail(
       (local lt)
       (set lt (typecheck-typeof-lhs glp))
@@ -618,9 +617,6 @@ typecheck-infer-type-expr := λe . (match e (
       (local rt)
       (set rt (typecheck-infer-type-compound rtype))
       (set typecheck-global-context ( typecheck-global-context (Global( fln ('->( lt rt )) )) ))
-   )))
-   ( (Global( gln (Lambda( _ _ )) )) (tail(
-      (fail (Global Functions Must Be Annotated gln))
    )))
    ( (Fragment( (Variable gln) (Lambda( _ _ )) )) (tail(
       (fail (Global Fragments Must Be Annotated gln))
@@ -671,6 +667,9 @@ typecheck-infer-expr := λctx e used . (tail(
          (typecheck-infer-expr( ctx ge Unused ))
       ))
       ( (Type( l ds )) ())
+      ( (Global( 'main (Lambda( lhs rhs )) )) (
+         (typecheck-infer-expr( ctx rhs Used ))
+      ))
       ( (Global( gln gle )) (
          (typecheck-ascript( gle (typecheck-lookup e) ))
          (typecheck-infer-expr( ctx gle Used ))
@@ -780,6 +779,7 @@ typecheck-infer-expr := λctx e used . (tail(
 typecheck-sizeof := λtt . (match tt (
    ()
    ( Nil 0 )
+   ( (Array( bt '? )) 8 )
    ( (Array( bt sz )) (
       (i2s(mul(
          (s2i (typecheck-sizeof bt))

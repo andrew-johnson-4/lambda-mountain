@@ -492,15 +492,11 @@ parse-type-tuple := λ tt . (tail(
 parse-type-single := λ tt . (tail(
    (local buff)
    (local base)
-   (if (is-cons tt) (
-      (set base tt)
-      (set tt ())
-   ) ())
    (while tt (
       (match (head-string tt) (
          ()
          ('[ (tail(
-            (if base (
+            (if buff (
                (set base (parse-type-suffix( (clone-rope buff) tt )))
             ) (
                (set base (parse-type-tuple tt))

@@ -1,6 +1,7 @@
 
 assemble-text-section                    := ();
 assemble-data-section                    := ();
+assemble-argv-referenced                 := ();
 
 assemble := λprogram . (
    (local target)
@@ -29,11 +30,17 @@ assemble := λprogram . (
 
    (while preview_program (match preview_program (
       ()
-      ( (pc1 (Global ('main (
+      ( (pc (Global ('main (
             (Lambda( lhs rhs ))
          )))) (
-         (fail MAIN)
-         (set preview_program pc1)
+         (set global_ctx (context::bind( global_ctx 'argc
+            (typecheck-ascript( (GlobalVariable 'argc) (parse-type 'U64+GlobalVariable) ))
+         )))
+         (set global_ctx (context::bind( global_ctx 'argv
+            (typecheck-ascript( (GlobalVariable 'argv) (parse-type 'U8[?][?]+GlobalVariable) ))
+         )))
+         (set assemble-argv-referenced True)
+         (set preview_program pc)
       ))
       ( (pc1 (Global ('main body))) (
          (set preview_program pc1)
@@ -102,6 +109,12 @@ assemble := λprogram . (
 
    (while program (match program (
       ()
+      ( (pc (Global ('main (
+            (Lambda( lhs rhs ))
+         )))) (
+         (set main_e rhs)
+         (set program pc)
+      ))
       ( (pc (Global ('main body))) (
          (set main_e body)
          (set program pc)
@@ -151,6 +164,7 @@ assemble := λprogram . (
       (
          (assemble-program-header())
          (before-main())
+         (if assemble-argv-referenced (assemble-argv-prog-header()) ())
          (enter-function())
          (expr::get-frame main_pd)
          (expr::get-prog main_pd)
@@ -160,7 +174,10 @@ assemble := λprogram . (
          (expr::get-text main_pd)
          (if config-nostd () (stdlib-functions()))
       )
-      ((if config-nostd () (stdlib-data())) (tail output_pd) (expr::get-data main_pd))
+      ( (if config-nostd () (stdlib-data()))
+        (tail output_pd) (expr::get-data main_pd)
+        (if assemble-argv-referenced (assemble-argv-data-header()) ())
+      )
    ))
    (set output_pd (
       ((head output_pd) assemble-text-section)
@@ -195,11 +212,26 @@ assemble-data-header := λ .(
   '.data                                  \n
 );
 
-assemble-argv-header := λ .(
+assemble-argv-data-header := λ .(
   'argc:                                  \n
-  \t '.zero 8                             \n
+  \t '.zero \s 8                          \n
   'argv:                                  \n
-  \t '.zero 8192                          \n
+  \t '.zero \s 8192                       \n
+);
+assemble-argv-prog-header := λ .(
+  \t 'pop \s '%r15                        \n
+  \t 'mov \s '$argc , \s '%r14            \n
+  \t 'mov \s '%r15 , \s '0 \[ '%r14 \]    \n
+  \t 'mov \s '$argv , \s '%r14            \n
+  'argv_populate_loop_begin:              \n
+  \t 'cmp \s '$0 , \s '%r15               \n
+  \t 'je \s 'argv_populate_loop_end       \n
+  \t 'pop \s '%r13                        \n
+  \t 'mov \s '%r13 , \s '0 \[ '%r14 \]    \n
+  \t 'add \s '$8 , \s '%r14               \n
+  \t 'dec \s '%r15                        \n
+  \t 'jmp \s 'argv_populate_loop_begin    \n
+  'argv_populate_loop_end:                \n
 );
 
 assemble-program-header := λ .(
