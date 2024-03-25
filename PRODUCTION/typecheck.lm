@@ -55,6 +55,9 @@ typecheck-assert-expr := λe . (tail(
       ( (GExpr ge) (
          (typecheck-assert-expr( ge ))
       ))
+      ( (Global( 'main (Lambda( lhs rhs )) )) (
+         (typecheck-assert-expr( rhs ))
+      ))
       ( (Global( gln gle )) (
          (typecheck-assert-expr( gle ))
       ))
@@ -671,6 +674,9 @@ typecheck-infer-expr := λctx e used . (tail(
          (typecheck-infer-expr( ctx ge Unused ))
       ))
       ( (Type( l ds )) ())
+      ( (Global( 'main (Lambda( lhs rhs )) )) (
+         (typecheck-infer-expr( ctx rhs Used ))
+      ))
       ( (Global( gln gle )) (
          (typecheck-ascript( gle (typecheck-lookup e) ))
          (typecheck-infer-expr( ctx gle Used ))

@@ -42,7 +42,6 @@ context::lookup := λ ctx key key-type . (tail(
 context::bind := λ ctx key term . (match ctx (
    ()
    ( (Context( old-ctx offset )) (tail(
-      (print-s (Bind key (typecheck-lookup term)))(print-s \n)
       ()
       (Context( (old-ctx (key term)) offset ))
    )))
