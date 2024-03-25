@@ -14,14 +14,14 @@ fragment > := λ(: l GlobalVariable+U64)(: r Constant+U64). (: (
       \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
       \t 'cmp \s '%r15 , '$ (.expression r) \n
    ))
-   (.expr( 'ja ))
+   (.expression( 'ja ))
 ) BranchConditional);
 fragment > := λ(: l LocalVariable+U64)(: r Constant+U64). (: (
    (.program (
       \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
       \t 'cmp \s '%r15 , '$ (.expression r) \n
    ))
-   (.expr( 'ja ))
+   (.expression( 'ja ))
 ) BranchConditional);
 
 fragment + := λ(: l LocalVariable+U8)(: r LocalVariable+U8). (: (

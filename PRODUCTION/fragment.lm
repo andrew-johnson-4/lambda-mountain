@@ -145,7 +145,10 @@ fragment-apply-direct := λ fragment function-args e-proto dont-chain . (tail(
    (assert-typeof( 'fragment-apply-direct::e-proto e-proto StrictExpr ))
    (match fragment (
       ()
-      ( (Fragment( (Lambda( lhs rhs )) )) (tail(
+      ( (Fragment( (Lambda( lhs
+           (App( (App( (Literal ':) rhs )) rtype ))
+        )) )) (tail(
+         (set rtype (typecheck-infer-type-compound rtype))
          (local fctx)
          (set fctx (fragment-destructure-lhs( () lhs function-args )))
          (assert-typeof( 'fragment-apply-direct::fctx fctx List<[Atom,StrictExpr]> ))
@@ -159,6 +162,7 @@ fragment-apply-direct := λ fragment function-args e-proto dont-chain . (tail(
             (set e-return (fragment-chain( fctx e-return )))
          ))
          (assert-typeof( 'fragment-apply-direct::return e-return StrictExpr ))
+         (set e-return (expr::set-type( e-return rtype )))
          e-return
       )))
       ( u (fail (InvalidFragment fragment)))
