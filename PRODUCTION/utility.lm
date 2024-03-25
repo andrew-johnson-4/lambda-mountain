@@ -441,6 +441,54 @@ parse-type-suffix := λ base suffix . (tail(
    base
 ));
 
+parse-type-tuple := λ tt . (tail(
+   (assert-eq( 'parse-type-tuple::tt::head '[ (head-string tt) ))
+   (local depth)
+   (local base)
+   (local buff)
+   (while tt (match (head-string tt) (
+      ()
+      ( '[ (tail(
+         (if depth (
+            (set buff (buff '[))
+         ) ())
+         (set depth (inc depth))
+         (set tt (tail-string tt))
+      )))
+      ( '] (tail(
+         (set depth (dec depth))
+         (if depth (
+            (set buff (buff ']))
+         ) (
+            (if base (
+               (set base ('[]( base (parse-type (clone-rope buff)) )))
+            ) (
+               (set base (parse-type (clone-rope buff)))
+            ))            
+         ))
+         (set tt (tail-string tt))
+      )))
+      ( ', (tail(
+         (if (dec depth) (
+            (set buff (buff ',))
+         ) (
+            (if base (
+               (set base ('[]( base (parse-type (clone-rope buff)) )))
+            ) (
+               (set base (parse-type (clone-rope buff)))
+            ))
+            (set buff ())
+         ))
+         (set tt (tail-string tt))
+      )))
+      ( c (tail(
+         (set buff (buff (clone-rope c)))
+         (set tt (tail-string tt))
+      )))
+   )))
+   base
+));
+
 parse-type-single := λ tt . (tail(
    (local buff)
    (local base)
@@ -452,7 +500,11 @@ parse-type-single := λ tt . (tail(
       (match (head-string tt) (
          ()
          ('[ (tail(
-            (set base (parse-type-suffix( (clone-rope buff) tt )))
+            (if base (
+               (set base (parse-type-suffix( (clone-rope buff) tt )))
+            ) (
+               (set base (parse-type-tuple tt))
+            ))
             (set tt ())
          )))
          ('< (tail(
