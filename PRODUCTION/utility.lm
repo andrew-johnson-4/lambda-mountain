@@ -339,16 +339,28 @@ mangle-identifier := λname tt . (
 parse-type := λ tt . (tail(
    (local buff)
    (local base-type)
+   (local depth)
    (while tt (
-      (if (eq( (head-string tt) '+ )) (
-         (if base-type (
-            (set base-type (And( base-type (parse-single-type (clone-rope buff)) )))
-         ) (
-            (set base-type (parse-single-type (clone-rope buff)))
-         ))
-         (set buff ())
+      (match (head-string tt) (
+         ()
+         ('< (set depth (inc depth)))
+         ('[ (set depth (inc depth)))
+         ('> (set depth (dec depth)))
+         ('] (set depth (dec depth)))
+      ))
+      (if depth (
+         (set buff (buff (clone-rope (head-string tt))))
       ) (
-         (set buff (buff (clone-rope (head-string tt)) ))
+         (if (eq( (head-string tt) '+ )) (
+            (if base-type (
+               (set base-type (And( base-type (parse-single-type (clone-rope buff)) )))
+            ) (
+               (set base-type (parse-single-type (clone-rope buff)))
+            ))
+            (set buff ())
+         ) (
+            (set buff (buff (clone-rope (head-string tt))))
+         ))
       ))
       (set tt (tail-string tt))
    ))
@@ -359,110 +371,93 @@ parse-type := λ tt . (tail(
    ))
 ));
 
-parse-array-type := λ base suffix . (tail(
-   (fail (Array base suffix))
-));
+#parse-suffix := λ base suffix . (tail(
+#   (assert-typeof( 'parse-array-type::suffix suffix Atom ))
+#   (local depth)
+#   (local buff)
+#   (local mode)
+#   (while suffix (match (head-string suffix) (
+#      ()
+#      ( '[ (tail(
+#         (set depth (inc depth))
+#         (set suffix (tail-string suffix))
+#         (if depth (
+#            (set buff (buff '[ ))
+#         ) (
+#            (set mode '[)
+#         ))
+#      )))
+#      ( '< (tail(
+#         (set depth (inc depth))
+#         (set suffix (tail-string suffix))
+#         (if depth (
+#            (set buff (buff '< ))
+#         ) (
+#            (set mode '<)
+#         ))
+#      )))
+#      ( '] (tail(
+#         (set depth (dec depth))
+#         (set suffix (tail-string suffix))
+#         (if depth (
+#            (set buff (buff '] ))
+#         ) (
+#            (assert-eq( 'parse-suffix::mode '[ mode ))
+#            (if buff (
+#               (set base (Array( base
+#                  (parse-type( clone-rope buff ))
+#               )))
+#            ) (
+#               (set base (Array( base '? )))
+#            ))
+#            (set buff ())
+#            (set mode ())
+#         ))
+#      )))
+#      ( '> (tail(
+#         (set depth (dec depth))
+#         (set suffix (tail-string suffix))
+#         (if depth (
+#            (set buff (buff '> ))
+#         ) (
+#            (assert-eq( 'parse-suffix::mode '< mode ))
+#            (if buff (
+#               (set base (
+#                  base (parse-type( clone-rope buff ))
+#               )))
+#            ) (
+#               (set base (base '? ))
+#            ))
+#            (set buff ())
+#            (set mode ())
+#         ))
+#      )))
+#   )))
+#   base
+#));
 
-parse-single-type := λ tt . (tail(
-   (local buff)
-   (local base)
-   (if (is-cons tt) (
-      (set base tt)
-      (set tt ())
-   ) ())
-   (while tt (
-      (match (head-string tt) (
-         ()
-         ('[ (tail(
-            (if buff (
-               (set base (clone-rope buff))
-               (set base (parse-array-type( base tt )))
-               (set tt ())
-            ) (
-               (set base (parse-tuple-type tt))
-               (set tt ())
-            ))
-         )))
-         ('< (tail(
-            (set base ( (clone-rope buff) (parse-parameter-type tt) ))
-            (set tt ())
-         )))
-         (c (set buff (buff (clone-rope c)) ))
-      ))
-      (set tt (tail-string tt))
-   ))
-   (if base base (clone-rope buff))
-));
+#parse-single-type := λ tt . (tail(
+#   (local buff)
+#   (local base)
+#   (if (is-cons tt) (
+#      (set base tt)
+#      (set tt ())
+#   ) ())
+#   (while tt (
+#      (match (head-string tt) (
+#         ()
+#         ('[ (tail(
+#            (set base (parse-suffix( (clone-rope buff) tt )))
+#            (set tt ())
+#         )))
+#         ('< (tail(
+#            (set base (parse-suffix( (clone-rope buff) tt )))
+#            (set tt ())
+#         )))
+#         (c (set buff (buff (clone-rope c)) ))
+#      ))
+#      (set tt (tail-string tt))
+#   ))
+#   (if base base (clone-rope buff))
+#));
 
-parse-parameter-type := λ tt . (tail(
-   (assert-eq( 'parse-parameter-type '< (head-string tt) ))
-   (set tt (tail-string tt))
-   (local inner)
-   (local depth)
-   (while tt (
-      (match (head-string tt) (
-         ()
-         ('< (tail(
-            (set inner (inner '<))
-            (set depth (inc depth))
-         )))
-         ('> (
-            (if depth (
-               (set inner (inner '>))
-               (set depth (dec depth))
-            ) (
-               (assert-eq( 'parse-parameter-type () (tail-string tt) ))
-            ))
-         ))
-         (c (set inner (inner (clone-rope c)) ))
-      ))
-      (set tt (tail-string tt))
-   ))
-   (parse-type (clone-rope inner))
-));
-
-parse-tuple-type := λ tt . (tail(
-   (assert-eq( 'parse-tuple-type '[ (head-string tt) ))
-   (set tt (tail-string tt))
-   (local inner)
-   (local base)
-   (local depth)
-   (while tt (
-      (match (head-string tt) (
-         ()
-         ('[ (tail(
-            (set inner (inner '[))
-            (set depth (inc depth))
-         )))
-         ('] (
-            (if depth (
-               (set inner (inner ']))
-               (set depth (dec depth))
-            ) (
-               (assert-eq( 'parse-tuple-type () (tail-string tt) ))
-            ))
-         ))
-         (', (tail(
-            (if depth (
-               (set inner (inner ',))
-            ) (
-               (set inner (parse-type (clone-rope inner) ))
-               (if base (
-                  (set base ('[] ( base inner )))
-               ) (
-                  (set base inner)
-               ))
-               (set inner ())
-            ))
-         )))
-         (c (set inner (inner (clone-rope c)) ))
-      ))
-      (set tt (tail-string tt))
-   ))
-   (if base (
-      (set base ('[] ( base (parse-type (clone-rope inner )) )))
-   ) (
-      (set base (parse-type (clone-rope inner)))
-   ))
-   base
-));
