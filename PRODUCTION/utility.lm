@@ -359,6 +359,10 @@ parse-type := λ tt . (tail(
    ))
 ));
 
+parse-array-type := λ base suffix . (tail(
+   (fail (Array base suffix))
+));
+
 parse-single-type := λ tt . (tail(
    (local buff)
    (local base)
@@ -370,8 +374,14 @@ parse-single-type := λ tt . (tail(
       (match (head-string tt) (
          ()
          ('[ (tail(
-            (set base (parse-tuple-type tt))
-            (set tt ())
+            (if buff (
+               (set base (clone-rope buff))
+               (set base (parse-array-type( base tt )))
+               (set tt ())
+            ) (
+               (set base (parse-tuple-type tt))
+               (set tt ())
+            ))
          )))
          ('< (tail(
             (set base ( (clone-rope buff) (parse-parameter-type tt) ))
