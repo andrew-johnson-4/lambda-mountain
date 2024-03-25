@@ -11,6 +11,7 @@ config-strict            := 0u8;
 type CompileMode Tokenize | Parse | Compile;
 config-mode              := Compile;
 
-main := λ(: argc U64)(: argv U8[][]).(
-   print argc
-);
+main := λ(: argc U64)(: argv U8[][]).(tail(
+   (print argc)
+   (print (argv as U64))
+));

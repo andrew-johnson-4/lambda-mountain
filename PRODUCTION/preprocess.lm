@@ -73,6 +73,15 @@ preprocess-restructure-type := λtt . (match tt (
          ))
       ))
    ))
+   ( (Array( lt rt )) (
+      (App(
+         (Literal Array)
+         (App(
+            (preprocess-restructure-type lt)
+            (preprocess-restructure-type rt)
+         ))
+      ))
+   ))
    ( (tag lts) (
       (if (is-atom tag) (
          (App(

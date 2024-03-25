@@ -136,11 +136,6 @@ typecheck-deep-eq := λt1 t2 . if (is( t1 t2 )) True (match (t1 t2) (
    ( ( l (Array( bt 1 )) ) (
       (typecheck-deep-eq( l bt ))
    ))
-   ( ( (Cons(l1 l2)) (Array( bt sz )) ) (
-      (if (typecheck-deep-eq( l2 bt ))
-         (typecheck-deep-eq( l1 (Array( bt (i2s(dec(s2i sz))) )) ))
-         ())
-   ))
    ( ( (And(l1 l2)) (And(r1 r2)) ) True )
    ( ( (And(l1 l2)) r ) (
       if (typecheck-deep-eq(l1 r)) True
@@ -609,6 +604,7 @@ typecheck-infer-type-expr := λe . (match e (
    ))
    ( (Global( 'main (Lambda( _ _ )) )) (tail(
       (set typecheck-global-context ( typecheck-global-context (Global( 'argc (parse-type 'U64+GlobalVariable) )) ))
+      (set typecheck-global-context ( typecheck-global-context (Global( 'argv (parse-type 'U8[?][?]) )) ))
    )))
    ( (Global( gln (Lambda( glp (App( (App( (Literal ':) _ )) rtype )) )) )) (tail(
       (local lt)
