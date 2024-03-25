@@ -161,6 +161,7 @@ assemble := λprogram . (
       (
          (assemble-program-header())
          (before-main())
+         (if assemble-argv-referenced (assemble-argv-prog-header()) ())
          (enter-function())
          (expr::get-frame main_pd)
          (expr::get-prog main_pd)
@@ -172,7 +173,7 @@ assemble := λprogram . (
       )
       ( (if config-nostd () (stdlib-data()))
         (tail output_pd) (expr::get-data main_pd)
-        (if assemble-argv-referenced (assemble-argv-header()) ())
+        (if assemble-argv-referenced (assemble-argv-data-header()) ())
       )
    ))
    (set output_pd (
@@ -208,11 +209,16 @@ assemble-data-header := λ .(
   '.data                                  \n
 );
 
-assemble-argv-header := λ .(
+assemble-argv-data-header := λ .(
   'argc:                                  \n
   \t '.zero \s 8                          \n
   'argv:                                  \n
   \t '.zero \s 8192                       \n
+);
+assemble-argv-prog-header := λ .(
+  \t 'mov \s '$argc , \s '%r15            \n
+  \t 'pop \s '%r14                        \n
+  \t 'mov \s '%r14 , \s '0 \[ '%r15 \]    \n
 );
 
 assemble-program-header := λ .(
