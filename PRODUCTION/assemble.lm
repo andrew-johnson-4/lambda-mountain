@@ -219,9 +219,19 @@ assemble-argv-data-header := λ .(
   \t '.zero \s 8192                       \n
 );
 assemble-argv-prog-header := λ .(
-  \t 'mov \s '$argc , \s '%r15            \n
-  \t 'pop \s '%r14                        \n
-  \t 'mov \s '%r14 , \s '0 \[ '%r15 \]    \n
+  \t 'pop \s '%r15                        \n
+  \t 'mov \s '$argc , \s '%r14            \n
+  \t 'mov \s '%r15 , \s '0 \[ '%r14 \]    \n
+  \t 'mov \s '$argv , \s '%r14            \n
+  'argv_populate_loop_begin:              \n
+  \t 'cmp \s '$0 , \s '%r15               \n
+  \t 'je \s 'argv_populate_loop_end       \n
+  \t 'pop \s '%r13                        \n
+  \t 'mov \s '%r13 , \s '0 \[ '%r14 \]    \n
+  \t 'add \s '$8 , \s '%r14               \n
+  \t 'dec \s '%r15                        \n
+  \t 'jmp \s 'argv_populate_loop_begin    \n
+  'argv_populate_loop_end:                \n
 );
 
 assemble-program-header := λ .(
