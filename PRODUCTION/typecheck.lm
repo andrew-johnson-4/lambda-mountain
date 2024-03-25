@@ -74,11 +74,11 @@ typecheck-assert-expr := λe . (tail(
       ))
       ( (App( (Variable 'label) (Variable l) )) (
       ))
-      ( (App( (App( (Variable 'while) cond )) body )) (tail(
+      ( (App( (App( (Variable 'while) cond )) body )) (
          (typecheck-assert-expr( cond ))
          (typecheck-assert-expr( body ))
          (typecheck-assert-one( e ))
-      )))
+      ))
       ( (App( (App( (Variable 'set) (Variable lhs) )) rhs )) (
          (typecheck-assert-expr( rhs ))
          (typecheck-assert-one( e ))
@@ -705,10 +705,6 @@ typecheck-infer-expr := λctx e used . (tail(
          (typecheck-ascript( asc (typecheck-infer-type-compound tt) ))
          (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
       ))
-      ( (App( (App( (Variable 'as) ast )) ett )) (
-         (typecheck-infer-expr( ctx ast used ))
-         (typecheck-ascript( e (typecheck-infer-type-compound ett) ))
-      ))
       ( (Literal lit) (
          (local ctype)
          (set ctype (typecheck-infer-constructor-type lit))
@@ -728,7 +724,7 @@ typecheck-infer-expr := λctx e used . (tail(
          (typecheck-ascript( e Nil ))
       ))
       ( (App( (Variable 'tail) (App( l r )) )) (tail(
-         (set ctx (typecheck-infer-expr( ctx l used )))
+         (set ctx (typecheck-infer-expr( ctx l Unused )))
          (set ctx (typecheck-infer-expr( ctx r used )))
          (if (typecheck-lookup r) (
             (typecheck-ascript( e (typecheck-lookup r) ))
