@@ -13,5 +13,5 @@ config-mode              := Compile;
 
 main := λ(: argc U64)(: argv U8[][]).(tail(
    (print argc)
-   (print (argv as U64))
+   (print (: argv U64+GlobalVariable))
 ));

@@ -36,6 +36,9 @@ assemble := λprogram . (
          (set global_ctx (context::bind( global_ctx 'argc
             (typecheck-ascript( (GlobalVariable 'argc) (parse-type 'U64+GlobalVariable) ))
          )))
+         (set global_ctx (context::bind( global_ctx 'argv
+            (typecheck-ascript( (GlobalVariable 'argv) (parse-type 'U8[?][?]+GlobalVariable) ))
+         )))
          (set assemble-argv-referenced True)
          (set preview_program pc)
       ))
