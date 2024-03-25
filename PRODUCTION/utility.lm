@@ -337,7 +337,6 @@ mangle-identifier := λname tt . (
 );
 
 parse-type := λ tt . (tail(
-   (print-s (ParseType tt))(print-s \n)
    (local buff)
    (local base-type)
    (local depth)
@@ -365,7 +364,6 @@ parse-type := λ tt . (tail(
       ))
       (set tt (tail-string tt))
    ))
-   (print-s (Buff buff))(print-s \n)
    (if base-type (
       (And( base-type (parse-type-single (clone-rope buff)) ))
    ) (
@@ -374,7 +372,6 @@ parse-type := λ tt . (tail(
 ));
 
 parse-type-suffix := λ base suffix . (tail(
-   (print-s (Suffix suffix))(print-s \n)
    (assert-typeof( 'parse-array-type::suffix suffix Atom ))
    (local depth)
    (local buff)
@@ -441,7 +438,6 @@ parse-type-suffix := λ base suffix . (tail(
       )))
    )))
    (assert-eq( 'parse-type-suffix::buff buff () ))
-   (print-s (Suffixd base))(print-s \n)
    base
 ));
 
@@ -494,7 +490,6 @@ parse-type-tuple := λ tt . (tail(
 ));
 
 parse-type-single := λ tt . (tail(
-   (print-s (ParseSingle tt))(print-s \n)
    (local buff)
    (local base)
    (while tt (
