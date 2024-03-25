@@ -8,6 +8,22 @@ fragment type I16; size I16 2; atom suffix I16 i16;
 fragment type I32; size I32 4; atom suffix I32 i32;
 fragment type I64; size I64 8; atom suffix I64 i64;
 
+fragment > := λ(: l GlobalVariable+U64)(: r Constant+U64). (: (
+   (.program (
+      \t 'mov \s '$ (.expression l) , \s '%r15 \n
+      \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
+      \t 'cmp \s '%r15 , '$ (.expression r) \n
+   ))
+   (.expr( 'ja ))
+) BranchConditional);
+fragment > := λ(: l LocalVariable+U64)(: r Constant+U64). (: (
+   (.program (
+      \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
+      \t 'cmp \s '%r15 , '$ (.expression r) \n
+   ))
+   (.expr( 'ja ))
+) BranchConditional);
+
 fragment + := λ(: l LocalVariable+U8)(: r LocalVariable+U8). (: (
    (.program(
       \t 'mov \s (.expression l) \[ '%rbp \] , \s '%al \n

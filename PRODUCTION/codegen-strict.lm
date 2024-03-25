@@ -72,6 +72,9 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e1 (expr::set-context( e1 ctx )))
                e1
             )))
+            ( (App( (Variable 'while) cond body )) (tail(
+               (fail While)
+            )))
             ( (App( (Variable 'label) (Variable label-name) )) (
                (match (get-strict-function( ctx label-name Label )) (
                   ()
