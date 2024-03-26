@@ -1,7 +1,10 @@
 
 print := λ(: x Array<U8,?>). (: (tail(
-   ()
-   ()
+   (mov( 1u64 RAX )) # write
+   (mov( 1u64 RDI )) # stdout
+   (mov( x RSI )) # data
+   (mov( 3u64 RDX )) # stdout
+   (syscall())
 )) Nil);
 
 print := λ(: x U64). (: (tail(

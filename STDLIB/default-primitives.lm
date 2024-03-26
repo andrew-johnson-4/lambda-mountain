@@ -15,6 +15,17 @@ fragment [] := λ(: l GlobalVariable+Array<x,?>)(: r GlobalVariable+U64). (: (
       \t 'mov \s '0 \[ '%r14 \] , \s '%r14 \n
       \t 'shl \s '$3 , \s '%r14 \n
       \t 'add \s '%r14 , \s '%r15 \n
+      \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
+   ))
+   (.expression( 'r15 ))
+) x+Reg64);
+fragment [] := λ(: l GlobalVariable+Array<x,?>)(: r Constant+U64). (: (
+   (.program (
+      \t 'mov \s '$ (.expression l) , \s '%r15 \n
+      \t 'mov \s '$ (.expression r) , \s '%r14 \n
+      \t 'shl \s '$3 , \s '%r14 \n
+      \t 'add \s '%r14 , \s '%r15 \n
+      \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
    ))
    (.expression( 'r15 ))
 ) x+Reg64);

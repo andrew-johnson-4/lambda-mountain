@@ -14,7 +14,7 @@ config-mode              := Compile;
 main := λ(: argc U64)(: argv U8[][]).(tail(
    ()
    (while (>( argc 0u64 )) (
-      (print ([]( argv argc )))
+      (print ([]( argv 0u64 )))
       (set argc (-( argc 1u64 )))
    ))
 ));
