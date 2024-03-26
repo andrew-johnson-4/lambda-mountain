@@ -1,4 +1,23 @@
 
+print := λ(: x Array<U8,?>). (: (tail(
+   (mov( x R15 ))
+   (mov( 0u64 RDX )) # data length
+   (gensym-label begin-count)
+   (gensym-label end-count)
+   (label begin-count)
+   (deref( R15 R14B ))
+   (cmp( 0u8 R14B ))
+   (je( end-count ))
+   (inc( RDX ))
+   (inc( R15 ))
+   (jmp( begin-count ))
+   (label end-count)
+   (mov( 1u64 RAX )) # write
+   (mov( 1u64 RDI )) # stdout
+   (mov( x RSI )) # data
+   (syscall())
+)) Nil);
+
 print := λ(: x U64). (: (tail(
    (let cs 0u8)
    (gensym-label unsigned)

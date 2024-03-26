@@ -1,6 +1,6 @@
 
 nostd: prod
-	./production --nostd -o tmp.s STRICT/cli.lm
+	./production -o tmp.s tests/unit/utility.lm
 	as -o tmp.o tmp.s
 	ld -o tmp tmp.o
 	./tmp && echo $?

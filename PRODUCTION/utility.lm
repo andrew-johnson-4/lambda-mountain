@@ -151,6 +151,7 @@ is-variable := λv . (match (head-string v) (
    ()
    ('. ( if (eq( v '. )) () True ))
    ('@ True )
+   ('[ True )
    ('? True )
    ('! True )
    ('= True )
@@ -300,6 +301,10 @@ label-case-atom := λk . (tail(
          (set nk (nk '_))
          (set k (tail-string k))
       ))
+      ('? (
+         (set nk (nk '_Q_))
+         (set k (tail-string k))
+      ))
       (': (
          (set nk (nk '_C_))
          (set k (tail-string k))
@@ -364,11 +369,12 @@ parse-type := λ tt . (tail(
       ))
       (set tt (tail-string tt))
    ))
-   (if base-type (
+   (set base-type (if base-type (
       (And( base-type (parse-type-single (clone-rope buff)) ))
    ) (
       (parse-type-single (clone-rope buff))
-   ))
+   )))
+   base-type
 ));
 
 parse-type-suffix := λ base suffix . (tail(
@@ -423,7 +429,7 @@ parse-type-suffix := λ base suffix . (tail(
             (assert-eq( 'parse-suffix::mode '< mode ))
             (if buff (
                (set base (
-                  base (parse-type( clone-rope buff ))
+                  base (parse-type-comma-sep( clone-rope buff ))
                ))
             ) (
                (set base (base '? ))
@@ -438,6 +444,47 @@ parse-type-suffix := λ base suffix . (tail(
       )))
    )))
    (assert-eq( 'parse-type-suffix::buff buff () ))
+   base
+));
+
+parse-type-comma-sep := λ tt . (tail(
+   (local buff)
+   (local base)
+   (local depth)
+   (while tt (
+      (match (head-string tt) (
+         ()
+         ('< (set depth (inc depth)))
+         ('[ (set depth (inc depth)))
+         ('> (set depth (dec depth)))
+         ('] (set depth (dec depth)))
+      ))
+      (match (head-string tt) (
+         ()
+         (', (tail(
+            (if depth (
+               (set buff (buff ',))
+            ) (
+               (if base (
+                  (set base (base (parse-type (clone-rope buff))))
+               ) (
+                  (set base (parse-type (clone-rope buff)))
+               ))
+               (set buff ())
+            ))
+            (set tt (tail-string tt))
+         )))
+         (c (tail(
+            (set buff (buff (clone-rope c)))
+            (set tt (tail-string tt))
+         )))
+      ))
+   ))
+   (if base (
+      (set base (base (parse-type (clone-rope buff))))
+   ) (
+      (set base (parse-type (clone-rope buff)))
+   ))
    base
 ));
 

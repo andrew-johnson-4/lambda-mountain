@@ -112,6 +112,8 @@ fragment mov := λ(: src LocalVariable)(: dst Reg16). (: (.program( \t 'mov \s (
 fragment mov := λ(: src LocalVariable)(: dst Reg32). (: (.program( \t 'mov \s (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n )) Nil);
 fragment mov := λ(: src LocalVariable)(: dst Reg64). (: (.program( \t 'mov \s (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n )) Nil);
 
+fragment deref := λ(: src Reg64)(: dst Reg8). (: (.program( \t 'mov \s '0 \[ '% (.expression src) \] , \s '% (.expression dst) \n )) Nil);
+
 fragment cmp := λ(: imm Constant+Literal+Sized<8>)(: r Constant+Reg64). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
 fragment cmp := λ(: imm Constant+Literal+Sized<4>)(: r Constant+Reg32). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
 fragment cmp := λ(: imm Constant+Literal+Sized<2>)(: r Constant+Reg16). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
@@ -125,7 +127,9 @@ fragment jg := λ(: dst Label). (: (.program( \t 'jg \s (.expression dst) \n )) 
 fragment jge := λ(: dst Label). (: (.program( \t 'jge \s (.expression dst) \n )) Nil);
 fragment jl := λ(: dst Label). (: (.program( \t 'jl \s (.expression dst) \n )) Nil);
 fragment jle := λ(: dst Label). (: (.program( \t 'jle \s (.expression dst) \n )) Nil);
+fragment je := λ(: dst Label). (: (.program( \t 'je \s (.expression dst) \n )) Nil);
 fragment jne := λ(: dst Label). (: (.program( \t 'jne \s (.expression dst) \n )) Nil);
+fragment jmp := λ(: dst Label). (: (.program( \t 'jmp \s (.expression dst) \n )) Nil);
 
 fragment neg := λ(: l Reg64). (: (.program( \t 'neg \s '% (.expression l) \n )) Nil);
 

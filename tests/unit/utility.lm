@@ -8,10 +8,10 @@ import PRODUCTION/utility.lm;
 (assert-eq( 'tests/unit/utility.lm (parse-type Atom) Atom ));
 (assert-eq( 'tests/unit/utility.lm (parse-type List<Atom>) (List Atom) ));
 (assert-eq( 'tests/unit/utility.lm (parse-type List<List<Atom>>) (List (List Atom)) ));
-(assert-eq( 'tests/unit/utility.lm (parse-type [Atom,Nil]) ('[] (Atom Nil)) ));
-(assert-eq( 'tests/unit/utility.lm (parse-type [Atom,Nil,Cons]) ([] (([] (Atom Nil)) Cons)) ));
+(assert-eq( 'tests/unit/utility.lm (parse-type '[Atom,Nil]) ('[] (Atom Nil)) ));
+(assert-eq( 'tests/unit/utility.lm (parse-type '[Atom,Nil,Cons]) ('[] (('[] (Atom Nil)) Cons)) ));
 
-(assert-eq( 'tests/unit/utility.lm (parse-type [Atom,List<[Cons,Nil]>]) ([] (Atom (List ([] (Cons Nil))))) ));
+(assert-eq( 'tests/unit/utility.lm (parse-type '[Atom,List<[Cons,Nil]>]) ('[] (Atom (List ('[] (Cons Nil))))) ));
 
 (assert-typeof( 'tests/unit/utility.lm () Nil ));
 (assert-not-typeof( 'tests/unit/utility.lm 1 Nil ));
@@ -45,8 +45,8 @@ import PRODUCTION/utility.lm;
 (assert-not-typeof( 'tests/unit/utility.lm ( () (() '1) ) List<List<Nil>> ));
 (assert-not-typeof( 'tests/unit/utility.lm ( () (() '1) ) List<Atom> ));
 
-(assert-typeof( 'tests/unit/utility.lm ( (1 2) () ) [Atom,Atom,Nil] ));
-(assert-not-typeof( 'tests/unit/utility.lm ( (1 2) () ) [Atom,Nil,Nil] ));
+(assert-typeof( 'tests/unit/utility.lm ( (1 2) () ) '[Atom,Atom,Nil] ));
+(assert-not-typeof( 'tests/unit/utility.lm ( (1 2) () ) '[Atom,Nil,Nil] ));
 
 (assert-typeof( 'tests/unit/utility.lm 1 Or<[Atom,Nil]> ));
 (assert-typeof( 'tests/unit/utility.lm () Or<[Atom,Nil]> ));
