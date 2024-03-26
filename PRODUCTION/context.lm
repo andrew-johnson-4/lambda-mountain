@@ -25,6 +25,11 @@ context::lookup := λ ctx key key-type . (tail(
                (set bindings ())
             )) (
                (if (typecheck-apply-plural( body-type key-type )) (tail(
+                  (if (eq( key '[] )) (
+                     (print-s (Match key))(print-s \n)
+                     (print-s (MatchArgs key-type))(print-s \n)
+                     (print-s (MatchArrow body-type))(print-s \n)
+                  ) ())
                   (set return body)
                   (set bindings ())
                )) ())
