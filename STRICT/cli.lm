@@ -15,6 +15,10 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
    ()
    (print argc)
    (while (>( argc 0u64 )) (
-      (print argc)
+      (if (>( argc 0u64 )) (
+         (print 123u64)
+      ) (
+         (print 456u64)
+      ))
    ))
 ));
