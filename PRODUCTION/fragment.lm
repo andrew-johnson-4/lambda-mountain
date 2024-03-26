@@ -165,6 +165,22 @@ fragment-apply-direct := λ fragment function-args e-proto dont-chain . (tail(
          (set e-return (expr::set-type( e-return rtype )))
          e-return
       )))
+      ( (Fragment( (Lambda( lhs rhs )) )) (tail(
+         (local fctx)
+         (set fctx (fragment-destructure-lhs( () lhs function-args )))
+         (assert-typeof( 'fragment-apply-direct::fctx fctx List<[Atom,StrictExpr]> ))
+         (local e-seed)
+         (set e-seed (expr::new()))
+         (set e-seed (expr::set-offset( e-seed (expr::get-offset e-proto) )))
+         (set e-seed (expr::set-context( e-seed (expr::get-context e-proto) )))
+         (local e-return)
+         (set e-return (fragment-apply-context( fctx rhs e-seed )))
+         (if dont-chain () (
+            (set e-return (fragment-chain( fctx e-return )))
+         ))
+         (assert-typeof( 'fragment-apply-direct::return e-return StrictExpr ))
+         e-return
+      )))
       ( u (fail (InvalidFragment fragment)))
    ))
 ));
