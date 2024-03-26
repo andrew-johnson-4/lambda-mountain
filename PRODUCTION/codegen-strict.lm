@@ -72,6 +72,29 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e1 (expr::set-context( e1 ctx )))
                e1
             )))
+            ( (App( (App( (Variable 'while) cond )) body )) (tail(
+               (set e1 (compile-expr-strict( ctx cond offset Used )))
+               (set e2 (compile-expr-strict( ctx body offset Unused )))
+               (assert-eq( 'strict-compile-expr::while::ConditionMustBeBranchConditional (expr::get-type e1) BranchConditional ))
+               (set e3 (expr::chain( e1 e2 )))
+               (local label-begin-loop)
+               (set label-begin-loop (uuid()))
+               (local label-do-loop)
+               (set label-do-loop (uuid()))
+               (local label-end-loop)
+               (set label-end-loop (uuid()))
+               (set e3 (expr::set-prog( e3 (
+                  label-begin-loop ': \n
+                  (expr::get-prog e1)
+                  \t (expr::get-expr e1) \s label-do-loop \n
+                  \t 'jmp \s label-end-loop \n
+                  label-do-loop ': \n
+                  (expr::get-prog e2)
+                  \t 'jmp \s label-begin-loop \n
+                  label-end-loop ': \n                  
+               ))))
+               e3
+            )))
             ( (App( (Variable 'label) (Variable label-name) )) (
                (match (get-strict-function( ctx label-name Label )) (
                   ()
