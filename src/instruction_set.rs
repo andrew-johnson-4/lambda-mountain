@@ -11,6 +11,7 @@ pub trait Literal {}
 pub trait Register {}
 pub trait LocalVariable {}
 pub trait GlobalVariable {}
+pub trait StackVariable {}
 pub trait Sized<const N: usize> {}
 
 struct Nil {}
@@ -177,6 +178,18 @@ pub fn jecxz(_dst: impl Constant + Fragment + Label) -> impl Fragment {
    Nil {}
 }
 
+/// Move with sign extend
+pub fn movsx1(_src: impl Constant + Fragment + Register + Sized<1>, _dst: impl Constant + Fragment + Register + Sized<8>) -> impl Fragment {
+   Nil {}
+}
+/// Move with sign extend
+pub fn movsx2(_src: impl Constant + Fragment + Register + Sized<2>, _dst: impl Constant + Fragment + Register + Sized<8>) -> impl Fragment {
+   Nil {}
+}
+/// Move with sign extend
+pub fn movsx4(_src: impl Constant + Fragment + Register + Sized<4>, _dst: impl Constant + Fragment + Register + Sized<8>) -> impl Fragment {
+   Nil {}
+}
 
 pub fn push1(_src: impl Constant + Fragment + Sized<1>) -> impl Fragment {
    Nil {}
@@ -227,6 +240,18 @@ pub fn mov4cg(_src: impl Constant + Literal + Fragment + Sized<4>, _dst: impl Co
 pub fn mov8cg(_src: impl Constant + Literal + Fragment + Sized<8>, _dst: impl Constant + GlobalVariable + Fragment + Sized<8>) -> impl Fragment {
    Nil {}
 }
+pub fn mov1cs(_src: impl Constant + Literal + Fragment + Sized<1>, _dst: impl Constant + StackVariable + Fragment + Sized<1>) -> impl Fragment {
+   Nil {}
+}
+pub fn mov2cs(_src: impl Constant + Literal + Fragment + Sized<2>, _dst: impl Constant + StackVariable + Fragment + Sized<2>) -> impl Fragment {
+   Nil {}
+}
+pub fn mov4cs(_src: impl Constant + Literal + Fragment + Sized<4>, _dst: impl Constant + StackVariable + Fragment + Sized<4>) -> impl Fragment {
+   Nil {}
+}
+pub fn mov8cs(_src: impl Constant + Literal + Fragment + Sized<8>, _dst: impl Constant + StackVariable + Fragment + Sized<8>) -> impl Fragment {
+   Nil {}
+}
 
 
 pub fn mov1lr(_src: impl Constant + LocalVariable + Fragment + Sized<1>, _dst: impl Constant + Register + Fragment + Sized<1>) -> impl Fragment {
@@ -265,6 +290,18 @@ pub fn mov4lg(_src: impl Constant + LocalVariable + Fragment + Sized<4>, _dst: i
 pub fn mov8lg(_src: impl Constant + LocalVariable + Fragment + Sized<8>, _dst: impl Constant + GlobalVariable + Fragment + Sized<8>) -> impl Fragment {
    Nil {}
 }
+pub fn mov1ls(_src: impl Constant + LocalVariable + Fragment + Sized<1>, _dst: impl Constant + StackVariable + Fragment + Sized<1>) -> impl Fragment {
+   Nil {}
+}
+pub fn mov2ls(_src: impl Constant + LocalVariable + Fragment + Sized<2>, _dst: impl Constant + StackVariable + Fragment + Sized<2>) -> impl Fragment {
+   Nil {}
+}
+pub fn mov4ls(_src: impl Constant + LocalVariable + Fragment + Sized<4>, _dst: impl Constant + StackVariable + Fragment + Sized<4>) -> impl Fragment {
+   Nil {}
+}
+pub fn mov8ls(_src: impl Constant + LocalVariable + Fragment + Sized<8>, _dst: impl Constant + StackVariable + Fragment + Sized<8>) -> impl Fragment {
+   Nil {}
+}
 
 
 pub fn mov1gr(_src: impl Constant + GlobalVariable + Fragment + Sized<1>, _dst: impl Constant + Register + Fragment + Sized<1>) -> impl Fragment {
@@ -301,6 +338,18 @@ pub fn mov4gg(_src: impl Constant + GlobalVariable + Fragment + Sized<4>, _dst: 
    Nil {}
 }
 pub fn mov8gg(_src: impl Constant + GlobalVariable + Fragment + Sized<8>, _dst: impl Constant + GlobalVariable + Fragment + Sized<8>) -> impl Fragment {
+   Nil {}
+}
+pub fn mov1gs(_src: impl Constant + GlobalVariable + Fragment + Sized<1>, _dst: impl Constant + StackVariable + Fragment + Sized<1>) -> impl Fragment {
+   Nil {}
+}
+pub fn mov2gs(_src: impl Constant + GlobalVariable + Fragment + Sized<2>, _dst: impl Constant + StackVariable + Fragment + Sized<2>) -> impl Fragment {
+   Nil {}
+}
+pub fn mov4gs(_src: impl Constant + GlobalVariable + Fragment + Sized<4>, _dst: impl Constant + StackVariable + Fragment + Sized<4>) -> impl Fragment {
+   Nil {}
+}
+pub fn mov8gs(_src: impl Constant + GlobalVariable + Fragment + Sized<8>, _dst: impl Constant + StackVariable + Fragment + Sized<8>) -> impl Fragment {
    Nil {}
 }
 
