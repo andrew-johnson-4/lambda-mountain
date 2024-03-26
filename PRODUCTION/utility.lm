@@ -151,6 +151,7 @@ is-variable := λv . (match (head-string v) (
    ()
    ('. ( if (eq( v '. )) () True ))
    ('@ True )
+   ('[ True )
    ('? True )
    ('! True )
    ('= True )

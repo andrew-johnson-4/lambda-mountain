@@ -8,6 +8,13 @@ fragment type I16; size I16 2; atom suffix I16 i16;
 fragment type I32; size I32 4; atom suffix I32 i32;
 fragment type I64; size I64 8; atom suffix I64 i64;
 
+fragment [] := λ(: l Array<x,?>)(: r GlobalVariable+U64). (: (
+   (.program (
+      TODO
+   ))
+   (.expression( 'ja ))
+) x);
+
 fragment > := λ(: l GlobalVariable+U64)(: r Constant+U64). (: (
    (.program (
       \t 'mov \s '$ (.expression l) , \s '%r15 \n
