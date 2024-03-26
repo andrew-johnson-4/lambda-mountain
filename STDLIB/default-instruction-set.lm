@@ -80,6 +80,12 @@ fragment mov := λ(: src Reg16)(: dst LocalVariable). (: (.program( \t 'mov \s '
 fragment mov := λ(: src Reg32)(: dst LocalVariable). (: (.program( \t 'mov \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
 fragment mov := λ(: src Reg64)(: dst LocalVariable). (: (.program( \t 'mov \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
 
+fragment mov := λ(: src Reg64)(: dst GlobalVariable). (: (.program(
+   \t 'mov \s '% (.expression src) , \s '%r15 \n
+   \t 'mov \s '$ (.expression dst) , \s '%r14 \n
+   \t 'mov \s '%r15 , \s '0 \[ '%r14 \] \n
+)) Nil);
+
 fragment mov := λ(: src GlobalVariable+Sized<1>)(: dst LocalVariable). (: (.program(
    \t 'mov \s '$ (.expression src) , \s '%r15 \n
    \t 'mov \s '0 \[ '%r15 \] , \s '%r15b \n
