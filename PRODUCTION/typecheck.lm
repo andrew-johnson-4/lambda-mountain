@@ -615,7 +615,7 @@ typecheck-infer-type-expr := λe . (match e (
    ))
    ( (Global( 'main (Lambda( _ _ )) )) (tail(
       (set typecheck-global-context ( typecheck-global-context (Global( 'argc (parse-type 'U64+GlobalVariable) )) ))
-      (set typecheck-global-context ( typecheck-global-context (Global( 'argv (parse-type 'U8[?][?]) )) ))
+      (set typecheck-global-context ( typecheck-global-context (Global( 'argv (parse-type 'U8[?][?]+GlobalVariable) )) ))
    )))
    ( (Global( gln (Lambda( glp (App( (App( (Literal ':) _ )) rtype )) )) )) (tail(
       (local lt)
