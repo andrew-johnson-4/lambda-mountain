@@ -1,4 +1,9 @@
 
+print := λ(: x Array<U8,?>). (: (tail(
+   ()
+   ()
+)) Nil);
+
 print := λ(: x U64). (: (tail(
    (let cs 0u8)
    (gensym-label unsigned)
