@@ -1,9 +1,20 @@
 
 print := λ(: x Array<U8,?>). (: (tail(
+   (mov( x R15 ))
+   (mov( 0u64 RDX )) # data length
+   (gensym-label begin-count)
+   (gensym-label end-count)
+   (label begin-count)
+   (deref( R15 R14B ))
+   (cmp( 0u8 R14B ))
+   (je( end-count ))
+   (inc( RDX ))
+   (inc( R15 ))
+   (jmp( begin-count ))
+   (label end-count)
    (mov( 1u64 RAX )) # write
    (mov( 1u64 RDI )) # stdout
    (mov( x RSI )) # data
-   (mov( 3u64 RDX )) # stdout
    (syscall())
 )) Nil);
 
