@@ -112,7 +112,7 @@ fragment mov := λ(: src LocalVariable)(: dst Reg16). (: (.program( \t 'mov \s (
 fragment mov := λ(: src LocalVariable)(: dst Reg32). (: (.program( \t 'mov \s (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n )) Nil);
 fragment mov := λ(: src LocalVariable)(: dst Reg64). (: (.program( \t 'mov \s (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n )) Nil);
 
-fragment deref := λ(: src Reg64)(: dst Reg8). (: (.program( \t 'mov \s '0 \[ '% (.expression src) \] , \s '% (.expression dst) \n )) Nil);
+fragment mov := λ(: offset Constant)(: src Reg64)(: dst Reg8). (: (.program( \t 'mov \s (.expression offset) \[ '% (.expression src) \] , \s '% (.expression dst) \n )) Nil);
 
 fragment cmp := λ(: imm Constant+Literal+Sized<8>)(: r Constant+Reg64). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
 fragment cmp := λ(: imm Constant+Literal+Sized<4>)(: r Constant+Reg32). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);

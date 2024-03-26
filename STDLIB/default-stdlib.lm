@@ -5,7 +5,7 @@ print := λ(: x Array<U8,?>). (: (tail(
    (gensym-label begin-count)
    (gensym-label end-count)
    (label begin-count)
-   (deref( R15 R14B ))
+   (mov( 0u64 R15 R14B ))
    (cmp( 0u8 R14B ))
    (je( end-count ))
    (inc( RDX ))
