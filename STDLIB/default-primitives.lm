@@ -66,4 +66,12 @@ fragment - := λ(: l LocalVariable+U64)(: r Constant+U64). (: (
    (.program( \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r12 \n \t 'sub \s '$ (.expression r) , \s '%r12 \n ))
    (.expression( 'r12 ))
 ) Reg64+U64);
+fragment - := λ(: l GlobalVariable+U64)(: r Constant+U64). (: (
+   (.program(
+      \t 'mov \s '$ (.expression l) , \s '%r15 \n
+      \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
+      \t 'sub \s '$ (.expression r) , \s '%r15 \n
+   ))
+   (.expression( 'r15 ))
+) Reg64+U64);
 
