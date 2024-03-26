@@ -487,17 +487,24 @@ typecheck-safe-apply-plural := λterm many pt . (tail(
    ))
 ));
 
-typecheck-infer-type-compound := λcompound . (match compound (
-   ()
-   ((Literal tt) tt)
-   ((Variable tt) tt)
-   ( (App( (Literal And) (App( lt rt )) )) (
-      (And( (typecheck-infer-type-compound lt) (typecheck-infer-type-compound rt) ))
-   ))
-   ((App( (App( lt (Literal ',) )) rt )) (Cons( (typecheck-infer-type-compound lt) (typecheck-infer-type-compound rt) )) )
-   ((App( (Literal lt) rt )) ( lt (typecheck-infer-type-compound rt) ) )
-   ((App( lt rt )) (Cons( (typecheck-infer-type-compound lt) (typecheck-infer-type-compound rt) )) )
-   (u (fail (UnknownTypeCompound u)))
+typecheck-infer-type-compound := λcompound . (tail(
+   (local result)
+   (set result (match compound (
+      ()
+      ((Literal tt) tt)
+      ((Variable tt) tt)
+      ( (App( (Literal And) (App( lt rt )) )) (
+         (And( (typecheck-infer-type-compound lt) (typecheck-infer-type-compound rt) ))
+      ))
+      ( (App( (Literal Array) (App( lt rt )) )) (
+         (Array( (typecheck-infer-type-compound lt) (typecheck-infer-type-compound rt) ))
+      ))
+      ((App( (App( lt (Literal ',) )) rt )) (Cons( (typecheck-infer-type-compound lt) (typecheck-infer-type-compound rt) )) )
+      ((App( (Literal lt) rt )) ( lt (typecheck-infer-type-compound rt) ) )
+      ((App( lt rt )) (Cons( (typecheck-infer-type-compound lt) (typecheck-infer-type-compound rt) )) )
+      (u (fail (UnknownTypeCompound u)))
+   )))
+   result
 ));
 
 typecheck-infer-type-constructor := λbase-type body . (match body (

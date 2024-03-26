@@ -370,7 +370,6 @@ parse-type := λ tt . (tail(
    ) (
       (parse-type-single (clone-rope buff))
    )))
-   (print-s (Parsed base-type))(print-s \n)
    base-type
 ));
 
@@ -447,22 +446,36 @@ parse-type-suffix := λ base suffix . (tail(
 parse-type-comma-sep := λ tt . (tail(
    (local buff)
    (local base)
-   (while tt (match (head-string tt) (
-      ()
-      (', (tail(
-         (if base (
-            (set base (base (parse-type (clone-rope buff))))
-         ) (
-            (set base (parse-type (clone-rope buff)))
-         ))
-         (set buff ())
-         (set tt (tail-string tt))
-      )))
-      (c (tail(
-         (set buff (buff (clone-rope c)))
-         (set tt (tail-string tt))
-      )))
-   )))
+   (local depth)
+   (while tt (
+      (match (head-string tt) (
+         ()
+         ('< (set depth (inc depth)))
+         ('[ (set depth (inc depth)))
+         ('> (set depth (dec depth)))
+         ('] (set depth (dec depth)))
+      ))
+      (match (head-string tt) (
+         ()
+         (', (tail(
+            (if depth (
+               (set buff (buff ',))
+            ) (
+               (if base (
+                  (set base (base (parse-type (clone-rope buff))))
+               ) (
+                  (set base (parse-type (clone-rope buff)))
+               ))
+               (set buff ())
+            ))
+            (set tt (tail-string tt))
+         )))
+         (c (tail(
+            (set buff (buff (clone-rope c)))
+            (set tt (tail-string tt))
+         )))
+      ))
+   ))
    (if base (
       (set base (base (parse-type (clone-rope buff))))
    ) (
