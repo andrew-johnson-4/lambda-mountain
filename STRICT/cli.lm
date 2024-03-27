@@ -12,9 +12,9 @@ type CompileMode Tokenize | Parse | Compile;
 config-mode              := Compile;
 
 main := λ(: argc U64)(: argv U8[][]).(tail(
-   ()
-   (while (>( argc 0u64 )) (
-      (print ([]( argv 0u64 )))
-      (set argc (-( argc 1u64 )))
+   (let argi 0u64)
+   (while (<( argi argc )) (
+      (print ([]( argv argi )))
+      (set argi (+( argi 1u64 )))
    ))
 ));
