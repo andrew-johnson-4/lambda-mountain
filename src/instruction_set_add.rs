@@ -13,17 +13,17 @@ pub fn add4cc(_src: impl Constant + Literal + Fragment + Sized<4>, _dst: impl Co
 pub fn add8cc(_src: impl Constant + Literal + Fragment + Sized<8>, _dst: impl Constant + Literal + Fragment + Sized<8>) -> impl Fragment + Program {
    Nil {}
 }
-pub fn add1cr(_src: impl Constant + Literal + Fragment + Sized<1>, _dst: impl Constant + Register + Fragment + Sized<1>) -> impl Fragment + Program {
-   Nil {}
+pub fn add1cr(src: impl Constant + Literal + Fragment + Sized<1>, dst: impl Constant + Register + Fragment + Sized<1>) -> impl Fragment + Program {
+   ProgramFragment { program: format!("\tadd ${}, %{}\n", src.literal_value(), dst.register_name()) }
 }
-pub fn add2cr(_src: impl Constant + Literal + Fragment + Sized<2>, _dst: impl Constant + Register + Fragment + Sized<2>) -> impl Fragment + Program {
-   Nil {}
+pub fn add2cr(src: impl Constant + Literal + Fragment + Sized<2>, dst: impl Constant + Register + Fragment + Sized<2>) -> impl Fragment + Program {
+   ProgramFragment { program: format!("\tadd ${}, %{}\n", src.literal_value(), dst.register_name()) }
 }
-pub fn add4cr(_src: impl Constant + Literal + Fragment + Sized<4>, _dst: impl Constant + Register + Fragment + Sized<4>) -> impl Fragment + Program {
-   Nil {}
+pub fn add4cr(src: impl Constant + Literal + Fragment + Sized<4>, dst: impl Constant + Register + Fragment + Sized<4>) -> impl Fragment + Program {
+   ProgramFragment { program: format!("\tadd ${}, %{}\n", src.literal_value(), dst.register_name()) }
 }
-pub fn add8cr(_src: impl Constant + Literal + Fragment + Sized<8>, _dst: impl Constant + Register + Fragment + Sized<8>) -> impl Fragment + Program {
-   Nil {}
+pub fn add8cr(src: impl Constant + Literal + Fragment + Sized<8>, dst: impl Constant + Register + Fragment + Sized<8>) -> impl Fragment + Program {
+   ProgramFragment { program: format!("\tadd ${}, %{}\n", src.literal_value(), dst.register_name()) }
 }
 pub fn add1cg(_src: impl Constant + Literal + Fragment + Sized<1>, _dst: impl Constant + GlobalVariable + Fragment + Sized<1>) -> impl Fragment + Program {
    Nil {}
@@ -75,17 +75,17 @@ pub fn add4rc(_src: impl Constant + Register + Fragment + Sized<4>, _dst: impl C
 pub fn add8rc(_src: impl Constant + Register + Fragment + Sized<8>, _dst: impl Constant + Literal + Fragment + Sized<8>) -> impl Fragment + Program {
    Nil {}
 }
-pub fn add1rr(_src: impl Constant + Register + Fragment + Sized<1>, _dst: impl Constant + Register + Fragment + Sized<1>) -> impl Fragment + Program {
-   Nil {}
+pub fn add1rr(src: impl Constant + Register + Fragment + Sized<1>, dst: impl Constant + Register + Fragment + Sized<1>) -> impl Fragment + Program {
+   ProgramFragment { program: format!("\tadd %{}, %{}\n", src.register_name(), dst.register_name()) }
 }
-pub fn add2rr(_src: impl Constant + Register + Fragment + Sized<2>, _dst: impl Constant + Register + Fragment + Sized<2>) -> impl Fragment + Program {
-   Nil {}
+pub fn add2rr(src: impl Constant + Register + Fragment + Sized<2>, dst: impl Constant + Register + Fragment + Sized<2>) -> impl Fragment + Program {
+   ProgramFragment { program: format!("\tadd %{}, %{}\n", src.register_name(), dst.register_name()) }
 }
-pub fn add4rr(_src: impl Constant + Register + Fragment + Sized<4>, _dst: impl Constant + Register + Fragment + Sized<4>) -> impl Fragment + Program {
-   Nil {}
+pub fn add4rr(src: impl Constant + Register + Fragment + Sized<4>, dst: impl Constant + Register + Fragment + Sized<4>) -> impl Fragment + Program {
+   ProgramFragment { program: format!("\tadd %{}, %{}\n", src.register_name(), dst.register_name()) }
 }
-pub fn add8rr(_src: impl Constant + Register + Fragment + Sized<8>, _dst: impl Constant + Register + Fragment + Sized<8>) -> impl Fragment + Program {
-   Nil {}
+pub fn add8rr(src: impl Constant + Register + Fragment + Sized<8>, dst: impl Constant + Register + Fragment + Sized<8>) -> impl Fragment + Program {
+   ProgramFragment { program: format!("\tadd %{}, %{}\n", src.register_name(), dst.register_name()) }
 }
 pub fn add1rg(_src: impl Constant + Register + Fragment + Sized<1>, _dst: impl Constant + GlobalVariable + Fragment + Sized<1>) -> impl Fragment + Program {
    Nil {}
