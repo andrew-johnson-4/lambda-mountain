@@ -11,22 +11,26 @@ pub enum FragmentType {
 }
 
 pub trait Fragment {}
-pub trait Program { fn program() -> String; }
-pub trait Text { fn text() -> String; }
-pub trait Data { fn data() -> String; }
-pub trait Frame { fn frame() -> String; }
-pub trait Unframe { fn unframe() -> String; }
-pub trait Type { fn fragment_type() -> FragmentType; }
-pub trait Label { fn label_id() -> String; }
-pub trait FrameSize { fn frame_size() -> usize; }
+pub trait Program { fn program(&self) -> String; }
+pub trait Text { fn text(&self) -> String; }
+pub trait Data { fn data(&self) -> String; }
+pub trait Frame { fn frame(&self) -> String; }
+pub trait Unframe { fn unframe(&self) -> String; }
+pub trait Type { fn fragment_type(&self) -> FragmentType; }
+pub trait Label { fn label_id(&self) -> String; }
+pub trait FrameSize { fn frame_size(&self) -> usize; }
 pub trait Constant {}
-pub trait Literal { fn literal_value() -> String; }
-pub trait Register { fn register_name() -> String; }
-pub trait LocalVariable { fn offset_from_base_pointer() -> usize; }
-pub trait GlobalVariable { fn global_variable_identifier() -> String; }
-pub trait StackVariable { fn offset_from_stack_pointer() -> usize; }
+pub trait Literal { fn literal_value(&self) -> String; }
+pub trait Register { fn register_name(&self) -> String; }
+pub trait LocalVariable { fn offset_from_base_pointer(&self) -> usize; }
+pub trait GlobalVariable { fn global_variable_identifier(&self) -> String; }
+pub trait StackVariable { fn offset_from_stack_pointer(&self) -> usize; }
 pub trait Sized<const N: usize> {}
 
 pub struct Nil {}
 impl Fragment for Nil {}
-impl Program for Nil { fn program() -> String { return "".to_string(); } }
+impl Program for Nil { fn program(&self) -> String { return "".to_string(); } }
+
+pub struct ProgramFragment { pub program: String }
+impl Fragment for ProgramFragment {}
+impl Program for ProgramFragment { fn program(&self) -> String { return self.program.clone(); } }
