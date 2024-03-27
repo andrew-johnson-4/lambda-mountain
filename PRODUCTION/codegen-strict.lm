@@ -156,10 +156,20 @@ compile-expr-strict := λctx e offset used . (tail(
                e3
             )))
             ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
-               (set e1 (expr::set-expr( (expr::new ()) lval )))
-               (set e1 (expr::set-context( e1 ctx )))
-               (set e1 (expr::set-offset( e1 offset )))
-               e1
+               ()
+               (match (typecheck-infer-type-compound ltype) (
+                  ()
+                  ( (Array( U8 ? )) (tail(
+                     (fail (StringLiteral lval))
+                  )))
+                  ( _ (tail(
+                     (print-s ltype)(print-s \n)
+                     (set e1 (expr::set-expr( (expr::new ()) lval )))
+                     (set e1 (expr::set-context( e1 ctx )))
+                     (set e1 (expr::set-offset( e1 offset )))
+                     e1
+                  )))
+               ))
             )))
             ( (Literal lval) (tail(
                (set e1 (expr::set-expr( (expr::new ()) lval )))
