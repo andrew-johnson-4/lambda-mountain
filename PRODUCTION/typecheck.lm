@@ -813,6 +813,7 @@ typecheck-sizeof := λtt . (match tt (
    ( _ (
       (if (typecheck-is-cyclical( tt () )) (tail(
          ()
+         (print-s (IsCyclical tt))(print-s \n)
          8
       )) (tail(
          (local sz)
