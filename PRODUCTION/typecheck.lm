@@ -639,7 +639,6 @@ typecheck-annotate-accessors := λ base-type tag fields-type . (tail(
    (while fields-type (match fields-type (
       ()
       ( (Cons( lt rt )) (tail(
-         (print-s (Access base-type (i2s field-number)))(print-s \n)
          (if field-number () (
             (set base-type tag)
          ))
@@ -650,7 +649,6 @@ typecheck-annotate-accessors := λ base-type tag fields-type . (tail(
          (set fields-type lt)
       )))
       ( tt (tail(
-         (print-s (Access base-type (i2s field-number)))(print-s \n)
          (if field-number () (
             (set base-type tag)
          ))
@@ -815,7 +813,6 @@ typecheck-sizeof := λtt . (match tt (
    ( _ (
       (if (typecheck-is-cyclical( tt () )) (tail(
          ()
-         (print-s (IsCyclical tt))(print-s \n)
          8
       )) (tail(
          (local sz)

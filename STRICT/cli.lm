@@ -13,7 +13,7 @@ config-mode              := Compile;
 
 main := λ(: argc U64)(: argv U8[][]).(tail(
    (let argi 0u64)
-   (let input Nil)
+   (let input SNil)
    (while (<( argi argc )) (
       (print (: '--tokenize U8[]))
       (print input)
