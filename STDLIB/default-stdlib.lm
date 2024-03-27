@@ -132,3 +132,8 @@ print := λ(: x I8). (: (tail(
    (movsx( R15B R15 ))
    (print( (: R15 Reg64+I64) ))
 )) Nil);
+
+== := λ(: l U8[])(: r U8[]). (: (tail(
+   123u8
+   123u8
+)) U8);
