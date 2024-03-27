@@ -710,8 +710,8 @@ typecheck-infer-expr := λctx e used . (tail(
          (typecheck-ascript( e Nil ))
       ))
       ( (App( (App( (Literal ':) (Literal _) )) tt )) (
-         (typecheck-ascript( (tail (tail (head (tail e)))) (typecheck-infer-type-compound tt) ))
-         (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
+         (typecheck-ascript( (tail (tail (head (tail e)))) (And( Constant (typecheck-infer-type-compound tt) )) ))
+         (typecheck-ascript( e (And( Constant (typecheck-infer-type-compound tt) )) ))
       ))
       ( (App( (App( (Literal ':) asc )) tt )) (
          (typecheck-infer-expr( ctx asc used ))

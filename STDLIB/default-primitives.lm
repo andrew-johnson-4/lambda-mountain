@@ -19,6 +19,16 @@ fragment [] := λ(: l GlobalVariable+Array<x,?>)(: r GlobalVariable+U64). (: (
    ))
    (.expression( 'r15 ))
 ) x+Reg64);
+fragment [] := λ(: l GlobalVariable+Array<x,?>)(: r LocalVariable+U64). (: (
+   (.program (
+      \t 'mov \s '$ (.expression l) , \s '%r15 \n
+      \t 'mov \s (.expression r) \[ '%rbp \] , \s '%r14 \n
+      \t 'shl \s '$3 , \s '%r14 \n
+      \t 'add \s '%r14 , \s '%r15 \n
+      \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
+   ))
+   (.expression( 'r15 ))
+) x+Reg64);
 fragment [] := λ(: l GlobalVariable+Array<x,?>)(: r Constant+U64). (: (
    (.program (
       \t 'mov \s '$ (.expression l) , \s '%r15 \n
@@ -44,6 +54,31 @@ fragment > := λ(: l LocalVariable+U64)(: r Constant+U64). (: (
       \t 'cmp \s '$ (.expression r) , '%r15 \n
    ))
    (.expression( 'ja ))
+) BranchConditional);
+
+fragment < := λ(: l GlobalVariable+U64)(: r Constant+U64). (: (
+   (.program (
+      \t 'mov \s '$ (.expression l) , \s '%r15 \n
+      \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
+      \t 'cmp \s '$ (.expression r) , '%r15 \n
+   ))
+   (.expression( 'jb ))
+) BranchConditional);
+fragment < := λ(: l LocalVariable+U64)(: r Constant+U64). (: (
+   (.program (
+      \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
+      \t 'cmp \s '$ (.expression r) , '%r15 \n
+   ))
+   (.expression( 'jb ))
+) BranchConditional);
+fragment < := λ(: l LocalVariable+U64)(: r GlobalVariable+U64). (: (
+   (.program (
+      \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
+      \t 'mov \s '$ (.expression r) , \s '%r14 \n
+      \t 'mov \s '0 \[ '%r14 \] , \s '%r14 \n
+      \t 'cmp \s '%r14 , '%r15 \n
+   ))
+   (.expression( 'jb ))
 ) BranchConditional);
 
 fragment + := λ(: l LocalVariable+U8)(: r LocalVariable+U8). (: (

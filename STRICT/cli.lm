@@ -12,9 +12,20 @@ type CompileMode Tokenize | Parse | Compile;
 config-mode              := Compile;
 
 main := λ(: argc U64)(: argv U8[][]).(tail(
-   ()
-   (while (>( argc 0u64 )) (
-      (print ([]( argv 0u64 )))
-      (set argc (-( argc 1u64 )))
+   (let argi 0u64)
+   (while (<( argi argc )) (
+      (print (: '--tokenize U8[]))
+      (print (: '--tokenize U8[]))
+#      (print (==( ([]( argv argi )) (: '--tokenize U8[]) )) )
+#             if set_target { config_target().lock().unwrap().set(arg); }
+#      else if arg=="--tokenize" {unsafe{ CONFIG_MODE = CompileMode::Tokenize; }}
+#      else if arg=="--parse" {unsafe{ CONFIG_MODE = CompileMode::Parse; }}
+#      else if arg=="--typecheck" {unsafe{ CONFIG_MODE = CompileMode::Typecheck; }}
+#      else if arg=="--compile" {unsafe{ CONFIG_MODE = CompileMode::Compile; }}
+#      else if arg=="--strict" {unsafe{ CONFIG_STRICT = true; }}
+#      else if arg=="--gradual" {unsafe{ CONFIG_STRICT = false; }}
+#      else if arg=="--noprep" {unsafe{ CONFIG_PREPROCESS = false; }}
+#      else if arg=="-o" { set_target = true; }
+      (set argi (+( argi 1u64 )))
    ))
 ));
