@@ -13,9 +13,10 @@ config-mode              := Compile;
 
 main := λ(: argc U64)(: argv U8[][]).(tail(
    (let argi 0u64)
+   (let input Nil)
    (while (<( argi argc )) (
       (print (: '--tokenize U8[]))
-      (print (: '--tokenize U8[]))
+      (print input)
 #      (print (==( ([]( argv argi )) (: '--tokenize U8[]) )) )
 #             if set_target { config_target().lock().unwrap().set(arg); }
 #      else if arg=="--tokenize" {unsafe{ CONFIG_MODE = CompileMode::Tokenize; }}

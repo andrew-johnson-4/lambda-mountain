@@ -3,6 +3,18 @@ type S (Nil)
      | (Atom( u8[] ))
      | (Cons( S[] , S[] ));
 
+print := λ(: x S). (: (tail(
+   (if (==( (.0 x) 0u64 )) (
+      print (: 'Cons.. U8[])
+   ) (
+      (if (==( (.0 x) 1u64 )) (
+         print (: 'Atom.. U8[])
+      ) (
+         print (: 'Nil U8[])
+      ))
+   ))
+)) Nil);
+
 print := λ(: x Array<U8,?>). (: (tail(
    (mov( x R15 ))
    (mov( 0u64 RDX )) # data length
