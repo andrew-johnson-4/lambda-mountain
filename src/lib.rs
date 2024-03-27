@@ -1,6 +1,10 @@
 
+mod ast; pub use ast::*;
 mod tokenize; pub use tokenize::*;
 mod parse; pub use parse::*;
+mod preprocess; pub use preprocess::*;
+mod typecheck; pub use typecheck::*;
+mod assemble; pub use assemble::*;
 
 mod instruction_set; pub use instruction_set::*;
 mod instruction_set_jmp; pub use instruction_set_jmp::*;

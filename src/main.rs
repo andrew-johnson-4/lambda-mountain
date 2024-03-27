@@ -6,6 +6,8 @@ use lambda_mountain::*;
 
 static mut CONFIG_MODE: CompileMode = CompileMode::Compile;
 static mut CONFIG_STRICT: bool = true;
+static mut CONFIG_PREPROCESS: bool = true;
+static mut PARSED_PROGRAM: Option<AST> = None;
 
 fn main() {
    let mut inputs = Vec::new();
@@ -19,6 +21,7 @@ fn main() {
       else if arg=="--compile" {unsafe{ CONFIG_MODE = CompileMode::Compile; }}
       else if arg=="--strict" {unsafe{ CONFIG_STRICT = true; }}
       else if arg=="--gradual" {unsafe{ CONFIG_STRICT = false; }}
+      else if arg=="--noprep" {unsafe{ CONFIG_PREPROCESS = false; }}
       else if arg=="-o" { set_target = true; }
       else { inputs.push(arg); }
    }
@@ -28,7 +31,20 @@ fn main() {
       CompileMode::Parse => { parse_program(tokenize_file(&input)); }
       CompileMode::Typecheck => { parse_program(tokenize_file(&input)); }
       CompileMode::Tokenize => { tokenize_file(&input).print(); }
+      _ => {}
    }}}
 
-   println!("output: {}", target);
+   unsafe { if CONFIG_PREPROCESS {
+      PARSED_PROGRAM = Some(preprocess(PARSED_PROGRAM.clone().expect("PARSED_PROGRAM was Corrupt")));
+   }}
+   unsafe { if CONFIG_STRICT {
+      typecheck(PARSED_PROGRAM.clone().expect("PARSED_PROGRAM was Corrupt"));
+   }}
+
+   unsafe { match CONFIG_MODE {
+      CompileMode::Compile => { assemble(PARSED_PROGRAM.clone().expect("PARSED_PROGRAM was Corrupt")); }
+      CompileMode::Parse => { PARSED_PROGRAM.clone().expect("PARSED_PROGRAM was Corrupt").print(); }
+      CompileMode::Typecheck => { PARSED_PROGRAM.clone().expect("PARSED_PROGRAM was Corrupt").print_ascripted(); }
+      _ => {}
+   }}
 }
