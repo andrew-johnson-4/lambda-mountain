@@ -5,13 +5,13 @@ pub enum Reg32 { EAX, EBX, ECX, EDX, ESI, EDI, EBP, ESP, R8D, R9D, R10D, R11D, R
 pub enum Reg64 { RAX, RBX, RCX, RDX, RSI, RDI, RBP, RSP, R8, R9, R10, R11, R12, R13, R14, R15 }
 
 pub trait Fragment {}
-pub trait Label {}
+pub trait Label { fn label_id() -> String; }
 pub trait Constant {}
-pub trait Literal {}
-pub trait Register {}
-pub trait LocalVariable {}
-pub trait GlobalVariable {}
-pub trait StackVariable {}
+pub trait Literal { fn literal_value() -> String; }
+pub trait Register { fn register_name() -> String; }
+pub trait LocalVariable { fn offset_from_base_pointer() -> usize; }
+pub trait GlobalVariable { fn global_variable_identifier() -> String; }
+pub trait StackVariable { fn offset_from_stack_pointer() -> usize; }
 pub trait Sized<const N: usize> {}
 
 pub struct Nil {}
