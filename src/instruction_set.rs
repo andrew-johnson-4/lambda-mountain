@@ -11,6 +11,7 @@ pub enum FragmentType {
 }
 
 pub trait Fragment {}
+pub trait Program { fn program() -> String; }
 pub trait Text { fn text() -> String; }
 pub trait Data { fn data() -> String; }
 pub trait Frame { fn frame() -> String; }
@@ -28,4 +29,4 @@ pub trait Sized<const N: usize> {}
 
 pub struct Nil {}
 impl Fragment for Nil {}
-
+impl Program for Nil { fn program() -> String { return "".to_string(); } }
