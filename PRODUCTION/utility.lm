@@ -565,3 +565,25 @@ parse-type-single := λ tt . (tail(
    (if base base (clone-rope buff))
 ));
 
+escape-literal-char := λc . match c (
+   ()
+   ( '\\ '\\\\ )
+   ( '\\: '\: )
+   ( '\\o '\o )
+   ( '\\n (\\ 'n))
+   ( '\\t '\t )
+   ( '\\s '\s )
+   ( '\\l '\l )
+   ( '\\[ '\[ )
+   ( '\\] '\] )
+   ( c (clone-rope c) )
+);
+
+escape-literal := λs . (tail(
+   (local buff)
+   (while s (
+      (set buff (buff (escape-literal-char (head-string s))))
+      (set s (tail-string s))
+   ))
+   (clone-rope buff)
+));
