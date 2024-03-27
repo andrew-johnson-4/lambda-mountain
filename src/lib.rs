@@ -1,4 +1,6 @@
 
+#![feature(return_position_impl_trait_in_trait)]
+
 mod ast; pub use ast::*;
 mod tokenize; pub use tokenize::*;
 mod parse; pub use parse::*;

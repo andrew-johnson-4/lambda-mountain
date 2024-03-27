@@ -10,7 +10,17 @@ pub enum FragmentType {
    Arrow(Box<FragmentType>,Box<FragmentType>),
 }
 
-pub trait Fragment {}
+//Rust can't infer the return type of panic! in this case so unreachable code is necessary to compile
+#[allow(unreachable_code)]
+pub trait Fragment {
+   fn fragment_type(&self) -> FragmentType { panic!("Fragment is untyped") }
+   fn as_literal(&self) -> impl Fragment + Constant + Literal { panic!("Fragment is not a constant literal"); Nil {} }
+   fn as_register(&self) -> impl Fragment + Constant + Register { panic!("Fragment is not a constant register"); Nil {} }
+   fn as_global_variable(&self) -> impl Fragment + Constant + GlobalVariable { panic!("Fragment is not a constant global variable"); Nil {} }
+   fn as_local_variable(&self) -> impl Fragment + Constant + LocalVariable { panic!("Fragment is not a constant local variable"); Nil {} }
+   fn as_stack_variable(&self) -> impl Fragment + Constant + StackVariable { panic!("Fragment is not a constant stack variable"); Nil {} }
+}
+
 pub trait Program { fn program(&self) -> String; }
 pub trait Text { fn text(&self) -> String; }
 pub trait Data { fn data(&self) -> String; }
@@ -22,14 +32,21 @@ pub trait FrameSize { fn frame_size(&self) -> usize; }
 pub trait Constant {}
 pub trait Literal { fn literal_value(&self) -> String; }
 pub trait Register { fn register_name(&self) -> String; }
-pub trait LocalVariable { fn offset_from_base_pointer(&self) -> usize; }
+pub trait LocalVariable { fn offset_from_base_pointer(&self) -> i64; }
 pub trait GlobalVariable { fn global_variable_identifier(&self) -> String; }
-pub trait StackVariable { fn offset_from_stack_pointer(&self) -> usize; }
+pub trait StackVariable { fn offset_from_stack_pointer(&self) -> i64; }
 pub trait Sized<const N: usize> {}
 
 pub struct Nil {}
 impl Fragment for Nil {}
-impl Program for Nil { fn program(&self) -> String { return "".to_string(); } }
+impl Program for Nil { fn program(&self) -> String { panic!("Nil::Program") } }
+impl Literal for Nil { fn literal_value(&self) -> String { panic!("Nil::Literal") } }
+impl Label for Nil { fn label_id(&self) -> String { panic!("Nil::Label") } }
+impl Register for Nil { fn register_name(&self) -> String { panic!("Nil::Register") } }
+impl GlobalVariable for Nil { fn global_variable_identifier(&self) -> String { panic!("Nil::GlobalVariable") } }
+impl LocalVariable for Nil { fn offset_from_base_pointer(&self) -> i64 { panic!("Nil::LocalVariable") } }
+impl StackVariable for Nil { fn offset_from_stack_pointer(&self) -> i64 { panic!("Nil::StackVariable") } }
+impl Constant for Nil { }
 
 pub struct ProgramFragment { pub program: String }
 impl Fragment for ProgramFragment {}
