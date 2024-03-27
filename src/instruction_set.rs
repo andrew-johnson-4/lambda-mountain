@@ -35,6 +35,7 @@ pub trait Register { fn register_name(&self) -> String; }
 pub trait LocalVariable { fn offset_from_base_pointer(&self) -> i64; }
 pub trait GlobalVariable { fn global_variable_identifier(&self) -> String; }
 pub trait StackVariable { fn offset_from_stack_pointer(&self) -> i64; }
+pub trait ConditionalJump { fn jump(&self, label_id: String) -> String; }
 pub trait Sized<const N: usize> {}
 
 pub struct Nil {}
