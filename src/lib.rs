@@ -1,4 +1,7 @@
 
+mod tokenize; pub use tokenize::*;
+mod parse; pub use parse::*;
+
 mod instruction_set; pub use instruction_set::*;
 mod instruction_set_jmp; pub use instruction_set_jmp::*;
 mod instruction_set_mov; pub use instruction_set_mov::*;

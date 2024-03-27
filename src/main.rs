@@ -22,5 +22,13 @@ fn main() {
       else if arg=="-o" { set_target = true; }
       else { inputs.push(arg); }
    }
+
+   for input in inputs { unsafe { match CONFIG_MODE {
+      CompileMode::Compile => { parse_program(tokenize_file(&input)); }
+      CompileMode::Parse => { parse_program(tokenize_file(&input)); }
+      CompileMode::Typecheck => { parse_program(tokenize_file(&input)); }
+      CompileMode::Tokenize => { tokenize_file(&input).print(); }
+   }}}
+
    println!("output: {}", target);
 }
