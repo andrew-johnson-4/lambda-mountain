@@ -1,4 +1,6 @@
 
+use std::sync::{Mutex, OnceLock};
+use std::cell::Cell;
 
 enum CompileMode { Tokenize, Parse, Typecheck, Compile }
 
@@ -8,13 +10,17 @@ static mut CONFIG_MODE: CompileMode = CompileMode::Compile;
 static mut CONFIG_STRICT: bool = true;
 static mut CONFIG_PREPROCESS: bool = true;
 static mut PARSED_PROGRAM: Option<AST> = None;
+static CONFIG_TARGET: OnceLock<Mutex<Cell<String>>> = OnceLock::new();
+
+fn config_target<'a>() -> &'a Mutex<Cell<String>> {
+   CONFIG_TARGET.get_or_init(|| Mutex::new(Cell::new("tmp.s".to_string())))
+}
 
 fn main() {
    let mut inputs = Vec::new();
-   let mut target = "tmp.s".to_string();
    let mut set_target = false;
    for arg in std::env::args() {
-      if set_target { target = arg.to_string(); }
+      if set_target { config_target().lock().unwrap().set(arg); }
       else if arg=="--tokenize" {unsafe{ CONFIG_MODE = CompileMode::Tokenize; }}
       else if arg=="--parse" {unsafe{ CONFIG_MODE = CompileMode::Parse; }}
       else if arg=="--typecheck" {unsafe{ CONFIG_MODE = CompileMode::Typecheck; }}
@@ -31,7 +37,6 @@ fn main() {
       CompileMode::Parse => { parse_program(tokenize_file(&input)); }
       CompileMode::Typecheck => { parse_program(tokenize_file(&input)); }
       CompileMode::Tokenize => { tokenize_file(&input).print(); }
-      _ => {}
    }}}
 
    unsafe { if CONFIG_PREPROCESS {

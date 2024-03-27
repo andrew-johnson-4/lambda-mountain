@@ -1,6 +1,8 @@
 
 #[derive(Clone)]
-pub enum AST {}
+pub enum AST {
+   Nil
+}
 
 impl AST {
    pub fn print(&self) {}
