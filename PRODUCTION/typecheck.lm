@@ -7,19 +7,6 @@ typecheck-global-context                 := ();
 typecheck-size                           := ();
 typecheck-fragment-types                 := ();
 
-typecheck-init := λ. (
-   (set typecheck-subtypes 
-     (
-        (
-           (() (Atom S))
-           (Nil S)
-        )
-        ((Cons(S S)) S)
-     )
-   )
-   (local mode)
-);
-
 typecheck := λprogram . (tail(
    (local p)
    (set p program)

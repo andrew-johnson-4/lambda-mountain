@@ -30,8 +30,6 @@ main := (
    (local inputs)
    (local args)
 
-   (typecheck-init())
-
    (local mode)
    (set mode Compile)
 
