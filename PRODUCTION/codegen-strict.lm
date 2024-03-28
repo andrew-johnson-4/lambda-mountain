@@ -137,18 +137,22 @@ compile-expr-strict := λctx e offset used . (tail(
                   ()
                   ( (LocalVariable( sv-offset )) (tail(
                      (set e1 (compile-expr-strict( ctx rhs offset Used )))
+                     (set e1 (expr::set-type( e1 (typecheck-lookup rhs) )))
                      (set e2 (expr::new()))
                      (set e2 (expr::set-expr( e2 sv-offset )))
                      (set e2 (expr::set-context( e2 ctx )))
                      (set e2 (expr::set-offset( e2 offset )))
+                     (set e2 (expr::set-type( e2 (typecheck-lookup lhs) )))
                      (set e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup rhs) LocalVariable )) ((() e1) e2) e2 )))
                   )))
                   ( (GlobalVariable( uid )) (tail(
                      (set e1 (compile-expr-strict( ctx rhs offset Used )))
+                     (set e1 (expr::set-type( e1 (typecheck-lookup rhs) )))
                      (set e2 (expr::new()))
                      (set e2 (expr::set-expr( e2 uid )))
                      (set e2 (expr::set-context( e2 ctx )))
                      (set e2 (expr::set-offset( e2 offset )))
+                     (set e2 (expr::set-type( e2 (typecheck-lookup lhs) )))
                      (set e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup rhs) GlobalVariable )) ((() e1) e2) e2 )))
                   )))
                   ( u (fail( UnexpectedAssignmentLhs lhs u )))
@@ -156,16 +160,13 @@ compile-expr-strict := λctx e offset used . (tail(
                e3
             )))
             ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
-               (match (typecheck-infer-type-compound ltype) (
-                  ()
-                  ( (Array( U8 ? )) (tail(
-                     (local uid)
-                     (set uid (strict-declare-cstring( lval )))
-                     (set e1 (expr::set-expr( (expr::new ()) uid )))
-                  )))
-                  ( _ (tail(
-                     (set e1 (expr::set-expr( (expr::new ()) lval )))
-                  )))
+               (set ltype (typecheck-infer-type-compound ltype))
+               (if (typecheck-unify-args( (Array( U8 '? )) ltype )) (
+                  (local uid)
+                  (set uid (strict-declare-cstring( lval )))
+                  (set e1 (expr::set-expr( (expr::new ()) uid )))
+               ) (
+                  (set e1 (expr::set-expr( (expr::new ()) lval )))
                ))
                (set e1 (expr::set-context( e1 ctx )))
                (set e1 (expr::set-offset( e1 offset )))
@@ -356,11 +357,22 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
          )))
       )))
       ( (Literal enum-case) (tail(
+
+         (local taggeds-size)
+         (set taggeds-size (typecheck-sizeof base-type))
+         (local case-size)
+         (set case-size 8)
+         (local case-padding)
+         (set case-padding (i2s(add( (s2i taggeds-size) (inv(s2i( case-size ))) ))))
+
          #define 'push initializer
          (local body)
          (set body (Fragment (Lambda(
             (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
             (App( (Variable '.program) (
+               (if (eq( case-padding 0 )) () (
+                  \t 'sub \s '$ case-padding , \s '%rsp \n
+               ))
                \t 'pushq \s '$ case-number \n
             )))
          ))))

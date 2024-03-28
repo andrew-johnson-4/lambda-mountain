@@ -193,13 +193,21 @@ is-variable := λv . (match (head-string v) (
    ('z True )
 ));
 
-merge-list := λl r . (tail( if l (
+merge-list := λl r . (tail(if l (
    (while r (
       (set l (l (tail r)))
       (set r (head r))
    ))
    l
 ) r ));
+
+merge-safe-list := λl r . (if l (
+   (while r (
+      (set l (l (tail r)))
+      (set r (head r))
+   ))
+   l
+) r );
 
 is-suffix := λs suff . (tail(
    (local match)

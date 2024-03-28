@@ -122,10 +122,12 @@ stack-call-push-arg := λ ctx e-arg offset args-size . (tail(
    ))
 
    (set e1 (compile-expr-strict( ctx e-arg new-offset Used )))
+   (set e1 (expr::set-type( e1 (typecheck-lookup e-arg))))
    (set e2 (expr::new()))
    (set e2 (expr::set-expr( e2 new-offset )))
    (set e2 (expr::set-context( e2 ctx )))
    (set e2 (expr::set-offset( e2 new-offset )))
+   (set e2 (expr::set-type( e2 (And( LocalVariable (Sized e-sz) )) )))
 
    (set e3 (fragment-apply(
       ctx 'mov (Cons( (typecheck-lookup e-arg) (And( LocalVariable (Sized e-sz) )) ))
@@ -147,11 +149,13 @@ stack-destructure-args := λ ctx function-args offset arg-mode . (tail(
          (set inner-e (stack-destructure-args( ctx fl offset Fragment )))
          (local outer-e)
          (set outer-e (compile-expr-strict( ctx fr offset Used )))
+         (set outer-e (expr::set-type( outer-e (typecheck-lookup fr))))
          (inner-e outer-e)
       )))
       ( ( fa tt Fragment ) (tail(
          (local outer-e)
          (set outer-e (compile-expr-strict( ctx fa offset Used )))
+         (set outer-e (expr::set-type( outer-e (typecheck-lookup fa))))
          (() outer-e)
       )))
       ( u (fail ('stack-destructure-args u )))
