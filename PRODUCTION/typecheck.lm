@@ -844,6 +844,7 @@ typecheck-sizeof := λtt . (match tt (
    ( () () )
    ( _ (
       (if (typecheck-is-cyclical( tt () )) (tail(
+         (print-s (IsCyclical tt))(print-s \n)
          ()
          8
       )) (tail(
@@ -972,6 +973,7 @@ typecheck-is-cyclical := λ tt descent . (tail(
          ))
          cyclical
       )))
+      ( (Array( _ '? )) () )
       ( (lt rt) (
          if (typecheck-is-cyclical( tt lt )) True
             (typecheck-is-cyclical( tt rt ))
