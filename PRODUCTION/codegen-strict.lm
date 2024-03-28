@@ -357,11 +357,22 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
          )))
       )))
       ( (Literal enum-case) (tail(
+
+         (local taggeds-size)
+         (set taggeds-size (typecheck-sizeof base-type))
+         (local case-size)
+         (set case-size 8)
+         (local case-padding)
+         (set case-padding (i2s(add( (s2i taggeds-size) (inv(s2i( case-size ))) ))))
+
          #define 'push initializer
          (local body)
          (set body (Fragment (Lambda(
             (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
             (App( (Variable '.program) (
+               (if (eq( case-padding 0 )) () (
+                  \t 'sub \s '$ case-padding , \s '%rsp \n
+               ))
                \t 'pushq \s '$ case-number \n
             )))
          ))))
