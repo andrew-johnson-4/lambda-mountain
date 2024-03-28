@@ -10,9 +10,15 @@ typecheck-fragment-types                 := ();
 typecheck := λprogram . (tail(
    (local p)
    (set p program)
+   (local ordered-type-exprs)
+   (set ordered-type-exprs ())
    (while p (
-      (typecheck-infer-type-expr( (tail p) ))
+      (set ordered-type-exprs (ordered-type-exprs (tail p)))
       (set p (head p))
+   ))
+   (while ordered-type-exprs (
+      (typecheck-infer-type-expr( (tail ordered-type-exprs) ))
+      (set ordered-type-exprs (head ordered-type-exprs))
    ))
    (set typecheck-types-have-changed True)
    (while typecheck-types-have-changed (
@@ -76,10 +82,14 @@ typecheck-assert-expr := λe . (tail(
          (typecheck-assert-expr( rhs ))
          (typecheck-assert-one( e ))
       ))
-      ( (App( (App( (Literal :) (Literal _) )) tt )) (
+      ( (App( (App( (Literal ':) (Literal _) )) tt )) (
          (typecheck-assert-one( e ))
       ))
-      ( (App( (App( (Literal :) te )) tt )) (
+      ( (App( (App( (Literal ':) te )) tt )) (
+         (typecheck-assert-expr( te ))
+         (typecheck-assert-one( e ))
+      ))
+      ( (App( (App( (Variable 'as) te )) tt )) (
          (typecheck-assert-expr( te ))
          (typecheck-assert-one( e ))
       ))
@@ -478,8 +488,8 @@ typecheck-infer-type-compound := λcompound . (tail(
    (local result)
    (set result (match compound (
       ()
-      ((Literal tt) tt)
-      ((Variable tt) tt)
+      ((Literal tt) (parse-type tt))
+      ((Variable tt) (parse-type tt))
       ( (App( (Literal And) (App( lt rt )) )) (
          (And( (typecheck-infer-type-compound lt) (typecheck-infer-type-compound rt) ))
       ))
@@ -579,25 +589,29 @@ typecheck-infer-type-expr := λe . (match e (
       ))
       (typecheck-ascript( e '? ))
 
-      (if (typecheck-is-fragment base-type) () (
-         (local constructors)
-         (set constructors typecheck-constructors)
-         (while constructors (
-            (match (tail constructors) (
-               ()
-               ( (tag ('->(ctype (And( my-type tag )) ))) (tail(
-                  (if (deep-eq( my-type base-type )) (
+      (local constructors)
+      (set constructors typecheck-constructors)
+      (while constructors (
+         (match (tail constructors) (
+            ()
+            ( (tag ('->(ctype (And( my-type tag )) ))) (tail(
+               (if (deep-eq( my-type base-type )) (
+                  (typecheck-set-size( tag sz ))
+                  (if (typecheck-is-fragment base-type) () (
                      (typecheck-annotate-accessors( base-type tag ctype ))
-                  ) ())
-               )))
-               ( (tag my-type) (tail(
-                  (if (deep-eq( my-type base-type )) (
+                  ))
+               ) ())
+            )))
+            ( (tag my-type) (tail(
+               (if (deep-eq( my-type base-type )) (
+                  (typecheck-set-size( tag sz ))
+                  (if (typecheck-is-fragment base-type) () (
                      (typecheck-annotate-accessors( base-type tag () ))
-                  ) ())
-               )))
-            ))
-            (set constructors (head constructors))
+                  ))
+               ) ())
+            )))
          ))
+         (set constructors (head constructors))
       ))
    ))
    ( (Global( 'main (Lambda( _ _ )) )) (tail(
@@ -639,9 +653,9 @@ typecheck-annotate-accessors := λ base-type tag fields-type . (tail(
    (while fields-type (match fields-type (
       ()
       ( (Cons( lt rt )) (tail(
-         (if field-number () (
+         (if field-number (
             (set base-type tag)
-         ))
+         ) ())
          (set typecheck-global-context ( typecheck-global-context (
             (Global( (clone-rope( '. (i2s field-number) )) ('->( base-type (And( rt (typecheck-repr rt) )) )) ))
          )))
@@ -649,9 +663,9 @@ typecheck-annotate-accessors := λ base-type tag fields-type . (tail(
          (set fields-type lt)
       )))
       ( tt (tail(
-         (if field-number () (
+         (if field-number (
             (set base-type tag)
-         ))
+         ) ())
          (set typecheck-global-context ( typecheck-global-context (
             (Global( (clone-rope( '. (i2s field-number) )) ('->( base-type (And( tt (typecheck-repr tt) )) )) ))
          )))
@@ -704,6 +718,16 @@ typecheck-infer-expr := λctx e used . (tail(
          (typecheck-infer-expr( ctx asc used ))
          (typecheck-ascript( asc (typecheck-infer-type-compound tt) ))
          (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
+      ))
+      ( (App( (App( (Variable 'as) asc )) tt )) (
+         (typecheck-infer-expr( ctx asc used ))
+         (local asc_t)
+         (set asc_t (typecheck-lookup asc))
+         (if asc_t (
+            (typecheck-ascript( e
+               (typecheck-and( asc_t (typecheck-infer-type-compound tt) ))
+            ))
+         ) ())
       ))
       ( (Literal lit) (
          (local ctype)
@@ -787,6 +811,14 @@ typecheck-infer-expr := λctx e used . (tail(
 typecheck-sizeof := λtt . (match tt (
    ()
    ( Nil 0 )
+   ( '? () )
+   ( 'Label () )
+   ( 'Literal () )
+   ( 'Constant () )
+   ( 'LocalVariable () )
+   ( 'GlobalVariable () )
+   ( 'StackVariable () )
+   ( 'BranchConditional () )
    ( (Array( bt '? )) 8 )
    ( (Array( bt sz )) (
       (i2s(mul(
@@ -809,7 +841,7 @@ typecheck-sizeof := λtt . (match tt (
    ( (Sized sz) sz )
    ( ('->(_ _)) () )
    ( (lt rt) (fail (UnexpectedSizeof tt)))
-   ( () ())
+   ( () () )
    ( _ (
       (if (typecheck-is-cyclical( tt () )) (tail(
          ()
@@ -824,8 +856,12 @@ typecheck-sizeof := λtt . (match tt (
             ) ())
             (set sizes (head sizes))
          ))
+         (if sz () (
+            (fail (UnableToDetermineSizeof tt ))
+         ))
          sz
       )))
+
    ))
 ));
 
@@ -850,6 +886,11 @@ typecheck-not-representation := λtt . (match tt (
       (typecheck-not-representation rt)
    )))
    ( _ tt )
+));
+
+typecheck-and := λlt rt . (tail(
+   ()
+   (And( lt rt ))
 ));
 
 typecheck-as-return := λrt . (tail(
