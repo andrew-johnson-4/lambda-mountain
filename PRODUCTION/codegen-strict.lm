@@ -236,7 +236,7 @@ compile-expr-strict := λctx e offset used . (tail(
                   )))
                   ( _ (
                      (if (eq( used Used )) (
-                        (fail( Raw Cons Cells Are Not Permitted In Strict Mode ))
+                        (fail( Raw Cons Cells Are Not Permitted In Strict Mode \n e ))
                      ) (tail(
                         (set e1 (compile-expr-strict( ctx l offset Unused )))
                         (set e2 (compile-expr-strict( (expr::get-context e1) r (expr::get-offset e1) Used )))

@@ -4,6 +4,11 @@ type S (SNil)
      | (SCons( S[] , S[] ))
      | (SPointer( ?[] ));
 
+close := λ(: x S). (: (tail(
+   ()
+   (as 0u64 S[])
+)) S[]);
+
 print := λ(: x S). (: (tail(
    (if (==( (.0 x) 3u64 )) (
       (print '\[\]_s)
@@ -11,9 +16,13 @@ print := λ(: x S). (: (tail(
       (if (==( (.0 x) 2u64 )) (
          (print (.1 (as x SAtom)))
       ) (
-         (if (==( (.0 x) 1u64 )) (
-            (print 'TODO-Cons_s)
-         ) (tail(
+         (if (==( (.0 x) 1u64 )) (tail(
+            (print '\[_s)
+            (print (as (.1 (as x SCons)) U64))
+            (print '\s_s)
+            (print (as (.2 (as x SCons)) U64))
+            (print '\]_s)
+         )) (tail(
             (print '[_s)
             (print (as (.1 (as x SPointer)) U64))
             (print ']_s)
