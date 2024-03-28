@@ -108,6 +108,23 @@ fragment + := λ(: l LocalVariable+U64)(: r Constant+U64). (: (
    (.expression( 'r12 ))
 ) Reg64+U64);
 
+fragment + := λ(: l GlobalVariable+U64)(: r Literal+Constant+U64). (: (
+   (.program( \t 'mov \s '$ (.expression l) , \s '%r15 \n \t 'mov \s '0 \[ '%r15 \] , '%r15 \n \t 'add \s '$ (.expression r) , \s '%r15 \n ))
+   (.expression( 'r15 ))
+) Reg64+U64);
+fragment + := λ(: l Literal+Constant+U64)(: r GlobalVariable+U64). (: (
+   (.program( \t 'mov \s '$ (.expression r) , \s '%r15 \n \t 'mov \s '0 \[ '%r15 \] , '%r15 \n \t 'add \s '$ (.expression l) , \s '%r15 \n ))
+   (.expression( 'r15 ))
+) Reg64+U64);
+
+fragment + := λ(: l GlobalVariable+U64)(: r LocalVariable+U64). (: (
+   (.program( \t 'mov \s '$ (.expression l) , \s '%r15 \n
+              \t 'mov \s '0 \[ '%r15 \] , '%r15 \n
+              \t 'mov \s (.expression r) \[ '%rbp \] , '%r14 \n
+              \t 'add \s '%r14 , \s '%r15 \n ))
+   (.expression( 'r15 ))
+) Reg64+U64);
+
 fragment - := λ(: l LocalVariable+U8)(: r Constant+U8). (: (
    (.program( \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r12b \n \t 'sub \s '$ (.expression r) , \s '%r12b \n ))
    (.expression( 'r12b ))

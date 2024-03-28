@@ -189,7 +189,6 @@ malloc := λ (: sz U64) . (: (tail(
       (syscall())
    )) ())
    (let curr cons-page-tail)
-#   (cons-page-tail (+ cons-page-tail sz))
-#   (as curr ?[])
-   (as 0u64 ?[])
+   (set cons-page-tail (+( cons-page-tail sz )))
+   (as curr ?[])
 )) ?[]);
