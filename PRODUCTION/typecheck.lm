@@ -914,6 +914,7 @@ typecheck-modifiers := λtt . (match tt (
    ( Reg16 tt )
    ( Reg32 tt )
    ( Reg64 tt )
+   ( (Sized _) tt )
    ( _ () )
 ));
 

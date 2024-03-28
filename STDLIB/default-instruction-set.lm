@@ -38,6 +38,15 @@ fragment mov := λ(: src LocalVariable+Sized<size>)(: dst LocalVariable+Sized<si
       )) \[ '%rbp \] \n      
    )))
 ) Nil);
+fragment push := λ(: src GlobalVariable+Sized<size>). (: (
+   (.program (
+      (\t 'mov \s '$ (.expression src) , \s '%r15 \n)
+      (for word-offset in (range( 0 (/( size 8 )) )) (
+#         \t 'pushq \s '0 \[ '%r15 \] \n
+#         \t 'add \s '$8 , \s '%r15 \n
+      ))
+   ))
+) Nil);
 fragment push := λ(: src LocalVariable+Sized<size>). (: (
    (.program ( for word-offset in (range( 0 (/( size 8 )) )) (
       \t 'pushq \s (+( (.expression src) (*( word-offset 8 )) )) \[ '%rbp \] \n

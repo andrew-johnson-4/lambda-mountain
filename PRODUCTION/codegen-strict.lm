@@ -34,6 +34,7 @@ compile-expr-strict := λctx e offset used . (tail(
    (assert-typeof( 'compile-expr-strict::e e Or<[Or<[Or<[App,Nil]>,Variable]>,Literal]> ))
    (assert-typeof( 'compile-expr-strict::offset offset Atom ))
    (assert-typeof( 'compile-expr-strict::used used Atom ))
+   (print-s (CompileStrict e))(print-s \n)
    (local e1)
    (local e2)
    (local e3)
@@ -180,10 +181,12 @@ compile-expr-strict := λctx e offset used . (tail(
             )))
             ( (App( (App( (Literal ':) lval )) ltype )) (tail(
                (set e1 (compile-expr-strict( ctx lval offset Unused )))
+               (set e1 (expr::set-type( e1 (typecheck-lookup e) )))
                e1
             )))
             ( (App( (App( (Variable 'as) lval )) ltype )) (tail(
                (set e1 (compile-expr-strict( ctx lval offset Unused )))
+               (set e1 (expr::set-type( e1 (typecheck-lookup e) )))
                e1
             )))
             ( (App( (Variable 'tail) (App( l r )) )) (tail(
@@ -212,6 +215,7 @@ compile-expr-strict := λctx e offset used . (tail(
             )))
             ( (Variable v) (tail(
                (set e1 (fragment-get-local( ctx v offset )))
+               (set e1 (expr::set-type( e1 (typecheck-lookup e) )))
                e1
             )))
             ( (App (l r)) (tail(
