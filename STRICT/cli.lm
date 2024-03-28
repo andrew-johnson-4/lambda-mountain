@@ -13,8 +13,7 @@ config-mode              := Compile;
 
 main := λ(: argc U64)(: argv U8[][]).(tail(
 #   (let argi 0u64)
-   (let input SNil)
-#   (let input (SAtom( 'test_s )))
+   (let input (SPointer( as 'test_s ?[] )))
 #   (while (<( argi argc )) (
        (print input)
 #      (if (==( ([]( argv argi )) '--tokenize_s )) (
