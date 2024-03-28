@@ -2,10 +2,43 @@
 fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
    ()
    ( () () )
+   ( (Variable( v )) (tail(
+      (while ctx (
+         (if (eq( v (head (tail ctx)) )) (
+            (set v (expr::get-expr (tail (tail ctx))))
+         ) ())
+         (set ctx (head ctx))
+      ))
+      v
+   )))
    ( ('+( l r )) (tail(
       (set l (fragment-substitute-context( ctx l )))
       (set r (fragment-substitute-context( ctx r )))
       (i2s(add( (s2i l) (s2i r) )))
+   )))
+   ( (App( (Variable '+) (App( l r )) )) (tail(
+      (set l (fragment-substitute-context( ctx l )))
+      (set r (fragment-substitute-context( ctx r )))
+      (i2s(add( (s2i l) (s2i r) )))
+   )))
+   ( ('/( l r )) (tail(
+      (set l (fragment-substitute-context( ctx l )))
+      (set r (fragment-substitute-context( ctx r )))
+      (i2s(div( (s2i l) (s2i r) )))
+   )))
+   ( (App( (Variable '/) (App( l r )) )) (tail(
+      (set l (fragment-substitute-context( ctx l )))
+      (set r (fragment-substitute-context( ctx r )))
+      (print-s (L l))(print-s \n)
+      (print-s (R r))(print-s \n)
+      (i2s(div( (s2i l) (s2i r) )))
+   )))
+   ( (App( (Variable 'range) (App( low high )) )) (tail(
+      (print-s (Range Low low))(print-s \n)
+      (print-s (Range High high))(print-s \n)
+      (set low (fragment-substitute-context( ctx low )))
+      (set high (fragment-substitute-context( ctx high )))
+      (fail (Range low high))
    )))
    ( (App(
         (App(
@@ -21,6 +54,7 @@ fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
         body
      )) (tail(
       (local result)
+      (set iterator (fragment-substitute-context( ctx iterator )))
       (fail (For v iterator body))
    )))
    ( ('.expression v ) (tail(
