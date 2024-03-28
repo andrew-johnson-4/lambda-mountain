@@ -299,7 +299,7 @@ fragment-destructure-lhs := λ ctx lhs args . (tail(
          (local ctype)
          (set ctype (typecheck-infer-type-compound vtype))
          (local tctx)
-         (set tctx (typecheck-unify-args( (expr::get-type (tail args)) ctype )))
+         (set tctx (typecheck-unify-args( ctype (expr::get-type (tail args)) )))
          (set ctx (fragment-bind-types( ctx tctx )))
          (set ctx ( ctx (vname (tail args)) ))
          ctx
@@ -308,7 +308,7 @@ fragment-destructure-lhs := λ ctx lhs args . (tail(
          (local ctype)
          (set ctype (typecheck-infer-type-compound vtype))
          (local tctx)
-         (set tctx (typecheck-unify-args( (expr::get-type (tail args)) ctype )))
+         (set tctx (typecheck-unify-args( ctype (expr::get-type (tail args)) )))
          (set ctx (fragment-bind-types( ctx tctx )))
          (set ctx ( ctx (vname (tail args)) ))
          (set ctx (fragment-destructure-lhs( ctx inner (head args) )))

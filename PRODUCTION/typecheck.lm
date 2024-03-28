@@ -725,7 +725,7 @@ typecheck-infer-expr := λctx e used . (tail(
          (set asc_t (typecheck-lookup asc))
          (if asc_t (
             (typecheck-ascript( e
-               (typecheck-and( asc_t (typecheck-infer-type-compound tt) ))
+               (typecheck-as( asc_t (typecheck-infer-type-compound tt) ))
             ))
          ) ())
       ))
@@ -885,9 +885,37 @@ typecheck-not-representation := λtt . (match tt (
    ( _ tt )
 ));
 
-typecheck-and := λlt rt . (tail(
+typecheck-as := λlt rt . (tail(
+   (set lt (typecheck-modifiers( lt )))
+   (if lt (
+      (And( lt rt ))
+   ) rt )
+));
+typecheck-modifiers := λtt . (match tt (
    ()
-   (And( lt rt ))
+   ( (And( lt rt )) (tail(
+      (set lt (typecheck-modifiers lt))
+      (set rt (typecheck-modifiers rt))
+      (match (lt rt) (
+         ()
+         ( (() ()) () )
+         ( (() rt) rt )
+         ( (lt ()) lt )
+         ( (lt rt) (And( lt rt )) )
+      ))
+   )))
+   ( LocalVariable tt )
+   ( GlobalVariable tt )
+   ( StackVariable tt )
+   ( Constant tt )
+   ( Literal tt )
+   ( Label tt )
+   ( Reg8 tt )
+   ( Reg16 tt )
+   ( Reg32 tt )
+   ( Reg64 tt )
+   ( (Sized _) tt )
+   ( _ () )
 ));
 
 typecheck-as-return := λrt . (tail(

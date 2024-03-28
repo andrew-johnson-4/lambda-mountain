@@ -180,10 +180,12 @@ compile-expr-strict := λctx e offset used . (tail(
             )))
             ( (App( (App( (Literal ':) lval )) ltype )) (tail(
                (set e1 (compile-expr-strict( ctx lval offset Unused )))
+               (set e1 (expr::set-type( e1 (typecheck-lookup e) )))
                e1
             )))
             ( (App( (App( (Variable 'as) lval )) ltype )) (tail(
                (set e1 (compile-expr-strict( ctx lval offset Unused )))
+               (set e1 (expr::set-type( e1 (typecheck-lookup e) )))
                e1
             )))
             ( (App( (Variable 'tail) (App( l r )) )) (tail(
@@ -212,6 +214,7 @@ compile-expr-strict := λctx e offset used . (tail(
             )))
             ( (Variable v) (tail(
                (set e1 (fragment-get-local( ctx v offset )))
+               (set e1 (expr::set-type( e1 (typecheck-lookup e) )))
                e1
             )))
             ( (App (l r)) (tail(
@@ -236,7 +239,7 @@ compile-expr-strict := λctx e offset used . (tail(
                   )))
                   ( _ (
                      (if (eq( used Used )) (
-                        (fail( Raw Cons Cells Are Not Permitted In Strict Mode ))
+                        (fail( Raw Cons Cells Are Not Permitted In Strict Mode \n e ))
                      ) (tail(
                         (set e1 (compile-expr-strict( ctx l offset Unused )))
                         (set e2 (compile-expr-strict( (expr::get-context e1) r (expr::get-offset e1) Used )))
