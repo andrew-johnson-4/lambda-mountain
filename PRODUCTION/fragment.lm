@@ -21,6 +21,16 @@ fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
       (set r (fragment-substitute-context( ctx r )))
       (i2s(add( (s2i l) (s2i r) )))
    )))
+   ( ('*( l r )) (tail(
+      (set l (fragment-substitute-context( ctx l )))
+      (set r (fragment-substitute-context( ctx r )))
+      (i2s(mul( (s2i l) (s2i r) )))
+   )))
+   ( (App( (Variable '*) (App( l r )) )) (tail(
+      (set l (fragment-substitute-context( ctx l )))
+      (set r (fragment-substitute-context( ctx r )))
+      (i2s(mul( (s2i l) (s2i r) )))
+   )))
    ( ('/( l r )) (tail(
       (set l (fragment-substitute-context( ctx l )))
       (set r (fragment-substitute-context( ctx r )))
@@ -34,7 +44,12 @@ fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
    ( (App( (Variable 'range) (App( low high )) )) (tail(
       (set low (fragment-substitute-context( ctx low )))
       (set high (fragment-substitute-context( ctx high )))
-      (fail (Range low high))
+      (local return)
+      (while (not(eq( low high ))) (
+         (set return (return low))
+         (set low (i2s(inc(s2i( low )))) )
+      ))
+      (reverse-list return)
    )))
    ( (App(
         (App(
@@ -51,7 +66,20 @@ fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
      )) (tail(
       (local result)
       (set iterator (fragment-substitute-context( ctx iterator )))
-      (fail (For v iterator body))
+      (while iterator (
+         (local inner-e)
+         (set inner-e (expr::new()))
+         (set inner-e (expr::set-expr( inner-e (head iterator) )))
+         (local inner-ctx)
+         (set inner-ctx (ctx (
+            (v inner-e)
+         )))
+         (set result (result (
+            (fragment-substitute-context( inner-ctx body ))
+         )))
+         (set iterator (tail iterator))
+      ))
+      result
    )))
    ( ('.expression v ) (tail(
       (if (is-atom v) (
