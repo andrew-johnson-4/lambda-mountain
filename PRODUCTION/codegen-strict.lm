@@ -160,16 +160,13 @@ compile-expr-strict := λctx e offset used . (tail(
                e3
             )))
             ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
-               (match (typecheck-infer-type-compound ltype) (
-                  ()
-                  ( (Array( U8 ? )) (tail(
-                     (local uid)
-                     (set uid (strict-declare-cstring( lval )))
-                     (set e1 (expr::set-expr( (expr::new ()) uid )))
-                  )))
-                  ( _ (tail(
-                     (set e1 (expr::set-expr( (expr::new ()) lval )))
-                  )))
+               (set ltype (typecheck-infer-type-compound ltype))
+               (if (typecheck-unify-args( (Array( U8 '? )) ltype )) (
+                  (local uid)
+                  (set uid (strict-declare-cstring( lval )))
+                  (set e1 (expr::set-expr( (expr::new ()) uid )))
+               ) (
+                  (set e1 (expr::set-expr( (expr::new ()) lval )))
                ))
                (set e1 (expr::set-context( e1 ctx )))
                (set e1 (expr::set-offset( e1 offset )))
