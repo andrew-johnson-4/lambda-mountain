@@ -586,12 +586,36 @@ escape-literal-char := λc . match c (
    ( '\\] '\] )
    ( c (clone-rope c) )
 );
-
+escape-escape-char := λc . match c (
+   ()
+   ( '[ '\[ )
+   ( '] '\] )
+   ( '\\ '\\\\ )
+   ( ': '\: )
+   ( 'o '\o )
+   ( 'n (\\ 'n))
+   ( 't '\t )
+   ( 's '\s )
+   ( 'l '\l )
+   ( _ () )
+);
 escape-literal := λs . (tail(
    (local buff)
    (while s (
-      (set buff (buff (escape-literal-char (head-string s))))
-      (set s (tail-string s))
+      (if (eq( (head-string s) '\ )) (
+         (local e)
+         (set e (escape-escape-char( (head-string(tail-string( s ))) )))
+         (if e (
+            (set buff (buff e))
+            (set s (tail-string(tail-string s)))
+         ) (
+            (set buff (buff (escape-literal-char (head-string s))))
+            (set s (tail-string s))
+         ))
+      ) (
+         (set buff (buff (escape-literal-char (head-string s))))
+         (set s (tail-string s))
+      ))
    ))
    (clone-rope buff)
 ));
