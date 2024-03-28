@@ -173,32 +173,23 @@ print := λ(: x I8). (: (tail(
 
 cons-page-tail := 0u64;
 malloc := λ (: sz U64) . (: (tail(
-   (if (==( cons-page-tail 0u64 )) (
-      (print 'MALLOC_s)
-   ) ())
+   (if (==( cons-page-tail 0u64 )) (tail(
+      (mov( 12u64 RAX ))
+      (mov( 0u64 RDI ))
+      (syscall())
+      (mov( RAX R8 )) #current page break in R8
+      (set cons-page-tail (as R8 U64))
+      # 4 GB
+      (add( 1073741824u64 R8 ))
+      (add( 1073741824u64 R8 ))
+      (add( 1073741824u64 R8 ))
+      (add( 1073741824u64 R8 ))
+      (mov( 12u64 RAX ))
+      (mov( R8 RDI ))
+      (syscall())
+   )) ())
+   (let curr cons-page-tail)
+#   (cons-page-tail (+ cons-page-tail sz))
+#   (as curr ?[])
    (as 0u64 ?[])
 )) ?[]);
-
-#      (set assemble-text-section ( assemble-text-section (
-#         allocate-cons-function-id ':                \n
-#         \t 'mov \s '$ assemble_cons_tail , \s '%rdi \n
-#         \t 'mov \s '0 \[ '%rdi \] , \s '%r8         \n
-#         \t 'cmp \s '$0, \s '%r8                     \n
-#         \t 'jne \s initialized                      \n
-#         \t 'mov \s '$12, \s '%rax                   \n  # system call brk
-#         \t 'mov \s '$0, \s '%rdi                    \n  # sbrk(0)
-#         \t 'syscall                                 \n
-#         \t 'mov \s '%rax, '%r8                      \n
-#         \t 'add \s '$ page-size , \s '%r8           \n
-#         \t 'mov \s '$12, \s '%rax                   \n  # system call brk
-#         \t 'mov \s '%r8, \s '%rdi                   \n  # new requested brk
-#         \t 'syscall                                 \n
-#         \t 'sub \s '$ page-size , \s '%r8           \n
-#         initialized ':                              \n
-#         \t 'add \s '$16, \s '%r8                    \n
-#         \t 'mov \s '$ assemble_cons_tail , \s '%r9  \n
-#         \t 'mov \s '%r8, \s '0 \[ '%r9 \]           \n
-#         \t 'sub \s '$16, \s '%r8                    \n
-#         \t 'pop \s '%rdi                            \n
-#         \t 'pop \s '%rax                            \n
-#         \t 'pop \s '%r9                             \n
