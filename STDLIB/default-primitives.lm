@@ -133,3 +133,22 @@ fragment - := λ(: l GlobalVariable+U64)(: r Constant+U64). (: (
    (.expression( 'r15 ))
 ) Reg64+U64);
 
+fragment == := λ(: l U64+Reg64)(: r U64+Reg64). (: (
+   (.program (
+      \t 'cmp \s '% (.expression l) , '% (.expression r) \n
+   ))
+   (.expression( 'je ))
+) BranchConditional);
+fragment == := λ(: l U64+Reg64)(: r U64+Literal+Constant). (: (
+   (.program (
+      \t 'cmp \s '$ (.expression r) , '% (.expression l) \n
+   ))
+   (.expression( 'je ))
+) BranchConditional);
+fragment == := λ(: l U64+Literal+Constant)(: r U64+Reg64). (: (
+   (.program (
+      \t 'cmp \s '$ (.expression l) , '% (.expression r) \n
+   ))
+   (.expression( 'je ))
+) BranchConditional);
+

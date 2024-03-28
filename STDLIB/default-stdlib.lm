@@ -5,10 +5,10 @@ type S (SNil)
      | (SPointer( ?[] ));
 
 print := λ(: x S). (: (tail(
+   (if (==( (.0 x) 3u64 )) (
+      (print '\[\]_s)
+   ) ())
    ()
-   ()
-#   (if (==( (.0 x) 0u64 )) (
-#      print (: 'Cons.. U8[])
 #   ) (
 #      (if (==( (.0 x) 1u64 )) (
 #         print (: 'Atom.. U8[])
