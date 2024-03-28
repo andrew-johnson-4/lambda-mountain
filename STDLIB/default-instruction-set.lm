@@ -42,8 +42,8 @@ fragment push := λ(: src GlobalVariable+Sized<size>). (: (
    (.program (
       (\t 'mov \s '$ (.expression src) , \s '%r15 \n)
       (for word-offset in (range( 0 (/( size 8 )) )) (
-#         \t 'pushq \s '0 \[ '%r15 \] \n
-#         \t 'add \s '$8 , \s '%r15 \n
+         \t 'pushq \s '0 \[ '%r15 \] \n
+         \t 'add \s '$8 , \s '%r15 \n
       ))
    ))
 ) Nil);
