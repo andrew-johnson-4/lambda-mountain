@@ -1,16 +1,10 @@
 
 fib := λ(: x U64). (: (
-   x # put result into %r12
-   (gensym-label low)
-   (cmp( 1u64 R12 ))
-   (jle( low ))
-   (sub( 1u64 R12 ))
-   (push( R12 ))
-   (fib R12)
-   (pop( R12 ))
-   (sub( 1u64 R12 ))
-   (fib R12)
-   (label low)
+   if (<( x 2u64 )) 1u64
+   (+(
+      (fib(- x 1u64))
+      (fib(- x 2u64))
+   ))
 ) U64);
 
 main := (
