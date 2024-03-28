@@ -1,7 +1,8 @@
 
 type S (SNil)
      | (SAtom( u8[] ))
-     | (SCons( S[] , S[] ));
+     | (SCons( S[] , S[] ))
+     | (SPointer( ?[] ));
 
 print := λ(: x S). (: (tail(
    ()
