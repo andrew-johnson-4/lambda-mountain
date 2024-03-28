@@ -21,8 +21,8 @@ compile-push-rvalue := λctx e offset . (tail(
             ()
             ( StackVariable e1 )
             ( _ (tail(
-               (set e2 (fragment-apply( ctx 'push lt (() e1) e1 )))
-               (expr::chain( e1 e2 ))
+               ()
+               (fragment-apply( ctx 'push lt (() e1) e1 ))
             )))
          ))
       )))
