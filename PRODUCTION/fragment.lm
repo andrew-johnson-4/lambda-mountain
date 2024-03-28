@@ -247,10 +247,18 @@ fragment-destructure-lhs := λ ctx lhs args . (tail(
          ctx
       )))
       ( (App( (App( (Literal ':) (Variable vname) )) vtype )) (tail(
+         (local ctype)
+         (set ctype (typecheck-infer-type-compound vtype))
+         (print-s (Vtype ctype))(print-s \n)
+         (print-s (Stype (expr::get-type (tail args))))(print-s \n)
          (set ctx ( ctx (vname (tail args)) ))
          ctx
       )))
       ( (App( inner (App( (App( (Literal ':) (Variable vname) )) vtype )) )) (tail(
+         (local ctype)
+         (set ctype (typecheck-infer-type-compound vtype))
+         (print-s (Vtype ctype))(print-s \n)
+         (print-s (Stype (expr::get-type (tail args))))(print-s \n)
          (set ctx ( ctx (vname (tail args)) ))
          (set ctx (fragment-destructure-lhs( ctx inner (head args) )))
          ctx

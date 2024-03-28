@@ -147,11 +147,13 @@ stack-destructure-args := λ ctx function-args offset arg-mode . (tail(
          (set inner-e (stack-destructure-args( ctx fl offset Fragment )))
          (local outer-e)
          (set outer-e (compile-expr-strict( ctx fr offset Used )))
+         (set outer-e (expr::set-type( outer-e (typecheck-lookup fr))))
          (inner-e outer-e)
       )))
       ( ( fa tt Fragment ) (tail(
          (local outer-e)
          (set outer-e (compile-expr-strict( ctx fa offset Used )))
+         (set outer-e (expr::set-type( outer-e (typecheck-lookup fa))))
          (() outer-e)
       )))
       ( u (fail ('stack-destructure-args u )))
