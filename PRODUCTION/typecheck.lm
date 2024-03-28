@@ -482,8 +482,8 @@ typecheck-infer-type-compound := λcompound . (tail(
    (local result)
    (set result (match compound (
       ()
-      ((Literal tt) tt)
-      ((Variable tt) tt)
+      ((Literal tt) (parse-type tt))
+      ((Variable tt) (parse-type tt))
       ( (App( (Literal And) (App( lt rt )) )) (
          (And( (typecheck-infer-type-compound lt) (typecheck-infer-type-compound rt) ))
       ))
@@ -801,6 +801,9 @@ typecheck-infer-expr := λctx e used . (tail(
 typecheck-sizeof := λtt . (match tt (
    ()
    ( Nil 0 )
+   ( '? () )
+   ( 'Literal () )
+   ( 'Constant () )
    ( (Array( bt '? )) 8 )
    ( (Array( bt sz )) (
       (i2s(mul(
@@ -837,6 +840,9 @@ typecheck-sizeof := λtt . (match tt (
                (set sz (tail (tail sizes)))
             ) ())
             (set sizes (head sizes))
+         ))
+         (if sz () (
+            (fail (UnableToDetermineSizeof tt ))
          ))
          sz
       )))

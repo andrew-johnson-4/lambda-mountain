@@ -114,6 +114,8 @@ stack-call-push-arg := λ ctx e-arg offset args-size . (tail(
    (local new-offset)
    (set new-offset(  (i2s(add( (s2i offset) (inv(s2i( e-sz ))) ))) ))
 
+   (print-s (ESZ e-sz et))(print-s \n)
+
    (local frame)
    (local unframe)
    (if (eq( e-sz '0 )) () (

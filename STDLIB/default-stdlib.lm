@@ -1,6 +1,6 @@
 
 type S (SNil)
-     | (SAtom( u8[] ))
+     | (SAtom( U8[] ))
      | (SCons( S[] , S[] ))
      | (SPointer( ?[] ));
 
