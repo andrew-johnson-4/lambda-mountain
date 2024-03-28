@@ -7,15 +7,14 @@ type S (SNil)
 print := λ(: x S). (: (tail(
    (if (==( (.0 x) 3u64 )) (
       (print '\[\]_s)
-   ) ())
+   ) (
+      (if (==( (.0 x) 2u64 )) (
+         (print (.1 (as x SAtom)))
+      ) (
+         (print 'TODO-print-S_s)
+      ))
+   ))
    ()
-#   ) (
-#      (if (==( (.0 x) 1u64 )) (
-#         print (: 'Atom.. U8[])
-#      ) (
-#         print (: 'Nil U8[])
-#      ))
-#   ))
 )) Nil);
 
 print := λ(: x Array<U8,?>). (: (tail(

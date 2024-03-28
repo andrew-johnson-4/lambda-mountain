@@ -76,10 +76,14 @@ typecheck-assert-expr := λe . (tail(
          (typecheck-assert-expr( rhs ))
          (typecheck-assert-one( e ))
       ))
-      ( (App( (App( (Literal :) (Literal _) )) tt )) (
+      ( (App( (App( (Literal ':) (Literal _) )) tt )) (
          (typecheck-assert-one( e ))
       ))
-      ( (App( (App( (Literal :) te )) tt )) (
+      ( (App( (App( (Literal ':) te )) tt )) (
+         (typecheck-assert-expr( te ))
+         (typecheck-assert-one( e ))
+      ))
+      ( (App( (App( (Variable 'as) te )) tt )) (
          (typecheck-assert-expr( te ))
          (typecheck-assert-one( e ))
       ))
@@ -705,6 +709,16 @@ typecheck-infer-expr := λctx e used . (tail(
          (typecheck-ascript( asc (typecheck-infer-type-compound tt) ))
          (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
       ))
+      ( (App( (App( (Variable 'as) asc )) tt )) (
+         (typecheck-infer-expr( ctx asc used ))
+         (local asc_t)
+         (set asc_t (typecheck-lookup asc))
+         (if asc_t (
+            (typecheck-ascript( e
+               (typecheck-and( asc_t (typecheck-infer-type-compound tt) ))
+            ))
+         ) ())
+      ))
       ( (Literal lit) (
          (local ctype)
          (set ctype (typecheck-infer-constructor-type lit))
@@ -850,6 +864,11 @@ typecheck-not-representation := λtt . (match tt (
       (typecheck-not-representation rt)
    )))
    ( _ tt )
+));
+
+typecheck-and := λlt rt . (tail(
+   ()
+   (And( lt rt ))
 ));
 
 typecheck-as-return := λrt . (tail(
