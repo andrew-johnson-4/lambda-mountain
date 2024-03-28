@@ -583,25 +583,29 @@ typecheck-infer-type-expr := λe . (match e (
       ))
       (typecheck-ascript( e '? ))
 
-      (if (typecheck-is-fragment base-type) () (
-         (local constructors)
-         (set constructors typecheck-constructors)
-         (while constructors (
-            (match (tail constructors) (
-               ()
-               ( (tag ('->(ctype (And( my-type tag )) ))) (tail(
-                  (if (deep-eq( my-type base-type )) (
+      (local constructors)
+      (set constructors typecheck-constructors)
+      (while constructors (
+         (match (tail constructors) (
+            ()
+            ( (tag ('->(ctype (And( my-type tag )) ))) (tail(
+               (if (deep-eq( my-type base-type )) (
+                  (typecheck-set-size( tag sz ))
+                  (if (typecheck-is-fragment base-type) () (
                      (typecheck-annotate-accessors( base-type tag ctype ))
-                  ) ())
-               )))
-               ( (tag my-type) (tail(
-                  (if (deep-eq( my-type base-type )) (
+                  ))
+               ) ())
+            )))
+            ( (tag my-type) (tail(
+               (if (deep-eq( my-type base-type )) (
+                  (typecheck-set-size( tag sz ))
+                  (if (typecheck-is-fragment base-type) () (
                      (typecheck-annotate-accessors( base-type tag () ))
-                  ) ())
-               )))
-            ))
-            (set constructors (head constructors))
+                  ))
+               ) ())
+            )))
          ))
+         (set constructors (head constructors))
       ))
    ))
    ( (Global( 'main (Lambda( _ _ )) )) (tail(
@@ -802,8 +806,13 @@ typecheck-sizeof := λtt . (match tt (
    ()
    ( Nil 0 )
    ( '? () )
+   ( 'Label () )
    ( 'Literal () )
    ( 'Constant () )
+   ( 'LocalVariable () )
+   ( 'GlobalVariable () )
+   ( 'StackVariable () )
+   ( 'BranchConditional () )
    ( (Array( bt '? )) 8 )
    ( (Array( bt sz )) (
       (i2s(mul(
