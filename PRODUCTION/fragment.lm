@@ -11,6 +11,14 @@ fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
       ))
       v
    )))
+   ( ('inv( x )) (tail(
+      (set x (fragment-substitute-context( ctx x )))
+      (i2s(inv( (s2i x) )))
+   )))
+   ( (App( (Variable 'inv) x )) (tail(
+      (set x (fragment-substitute-context( ctx x )))
+      (i2s(inv( (s2i x) )))
+   )))
    ( ('+( l r )) (tail(
       (set l (fragment-substitute-context( ctx l )))
       (set r (fragment-substitute-context( ctx r )))
