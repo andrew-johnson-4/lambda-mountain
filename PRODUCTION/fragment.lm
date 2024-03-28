@@ -7,6 +7,22 @@ fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
       (set r (fragment-substitute-context( ctx r )))
       (i2s(add( (s2i l) (s2i r) )))
    )))
+   ( (App(
+        (App(
+           (App(
+              (App(
+                 (Variable 'for)
+                 (Variable v)
+              ))
+              (Variable 'in)
+           ))
+           iterator
+        ))
+        body
+     )) (tail(
+      (local result)
+      (fail (For v iterator body))
+   )))
    ( ('.expression v ) (tail(
       (if (is-atom v) (
          (while ctx (
