@@ -835,7 +835,7 @@ typecheck-sizeof := λtt . (match tt (
    ( (Sized sz) sz )
    ( ('->(_ _)) () )
    ( (lt rt) (fail (UnexpectedSizeof tt)))
-   ( () ())
+   ( () () )
    ( _ (
       (if (typecheck-is-cyclical( tt () )) (tail(
          ()
@@ -855,6 +855,7 @@ typecheck-sizeof := λtt . (match tt (
          ))
          sz
       )))
+
    ))
 ));
 
