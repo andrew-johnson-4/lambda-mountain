@@ -63,13 +63,7 @@ fragment mov := λ(: src LocalVariable+Sized<size>)(: index Literal+Constant)(: 
       (\t 'mov \s (.expression dst) \[ '%rbp \] , \s '%r14 \n)
       (for word-offset in (range( 0 (/( size 8 )) )) (
          \t 'movq \s (+( (.expression src) (*( word-offset 8 )) )) \[ '%rbp \] , \s '%r15 \n
-         \t 'movq \s '%r15 , \s (+(
-            (.expression dst)
-            (+(
-               (+( size -8 ))
-               (inv( (*( word-offset 8 )) ))
-            ))
-         )) \[ '%r14 \] \n      
+         \t 'movq \s '%r15 , \s (*( word-offset 8 )) \[ '%r14 \] \n
       ))
    ))
 ) Nil);
