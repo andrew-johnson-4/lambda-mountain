@@ -10,9 +10,15 @@ typecheck-fragment-types                 := ();
 typecheck := λprogram . (tail(
    (local p)
    (set p program)
+   (local ordered-type-exprs)
+   (set ordered-type-exprs ())
    (while p (
-      (typecheck-infer-type-expr( (tail p) ))
+      (set ordered-type-exprs (ordered-type-exprs (tail p)))
       (set p (head p))
+   ))
+   (while ordered-type-exprs (
+      (typecheck-infer-type-expr( (tail ordered-type-exprs) ))
+      (set ordered-type-exprs (head ordered-type-exprs))
    ))
    (set typecheck-types-have-changed True)
    (while typecheck-types-have-changed (
