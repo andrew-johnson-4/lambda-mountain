@@ -29,13 +29,9 @@ fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
    ( (App( (Variable '/) (App( l r )) )) (tail(
       (set l (fragment-substitute-context( ctx l )))
       (set r (fragment-substitute-context( ctx r )))
-      (print-s (L l))(print-s \n)
-      (print-s (R r))(print-s \n)
       (i2s(div( (s2i l) (s2i r) )))
    )))
    ( (App( (Variable 'range) (App( low high )) )) (tail(
-      (print-s (Range Low low))(print-s \n)
-      (print-s (Range High high))(print-s \n)
       (set low (fragment-substitute-context( ctx low )))
       (set high (fragment-substitute-context( ctx high )))
       (fail (Range low high))
@@ -235,6 +231,23 @@ fragment-apply-direct := λ fragment function-args e-proto dont-chain . (tail(
    ))
 ));
 
+fragment-bind-types := λctx tctx . (match tctx (
+   ()
+   ( (Bind( k v )) (tail(
+      (local e)
+      (set e (expr::new()))
+      (set e (expr::set-expr( e v )))
+      (ctx (k e))
+   )))
+   ( () ctx )
+   ( Accept ctx )
+   ( (l r) (tail(
+      (set ctx (fragment-bind-types( ctx l )))
+      (set ctx (fragment-bind-types( ctx r )))
+      ctx
+   )))
+));
+
 fragment-destructure-lhs := λ ctx lhs args . (tail(
    (assert-typeof( 'fragment-destructure-lhs::ctx ctx List<[Atom,StrictExpr]> ))
    (assert-typeof( 'fragment-destructure-lhs::args args List<StrictExpr> ))
@@ -249,16 +262,18 @@ fragment-destructure-lhs := λ ctx lhs args . (tail(
       ( (App( (App( (Literal ':) (Variable vname) )) vtype )) (tail(
          (local ctype)
          (set ctype (typecheck-infer-type-compound vtype))
-         (print-s (Vtype ctype))(print-s \n)
-         (print-s (Stype (expr::get-type (tail args))))(print-s \n)
+         (local tctx)
+         (set tctx (typecheck-unify-args( (expr::get-type (tail args)) ctype )))
+         (set ctx (fragment-bind-types( ctx tctx )))
          (set ctx ( ctx (vname (tail args)) ))
          ctx
       )))
       ( (App( inner (App( (App( (Literal ':) (Variable vname) )) vtype )) )) (tail(
          (local ctype)
          (set ctype (typecheck-infer-type-compound vtype))
-         (print-s (Vtype ctype))(print-s \n)
-         (print-s (Stype (expr::get-type (tail args))))(print-s \n)
+         (local tctx)
+         (set tctx (typecheck-unify-args( (expr::get-type (tail args)) ctype )))
+         (set ctx (fragment-bind-types( ctx tctx )))
          (set ctx ( ctx (vname (tail args)) ))
          (set ctx (fragment-destructure-lhs( ctx inner (head args) )))
          ctx
