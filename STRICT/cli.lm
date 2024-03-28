@@ -20,11 +20,6 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
       (close( input_r ))
    )))
    (print input)
-   (print (as (malloc 24u64) U64))
-   (print ',_s)
-   (print (as (malloc 24u64) U64))
-   (print ',_s)
-   (print (as (malloc 24u64) U64))
 #   (while (<( argi argc )) (
 #      (if (==( ([]( argv argi )) '--tokenize_s )) (
 #         (print '--tokenize_s)

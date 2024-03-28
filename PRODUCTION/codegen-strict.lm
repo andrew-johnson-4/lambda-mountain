@@ -172,6 +172,14 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e1 (expr::set-offset( e1 offset )))
                e1
             )))
+            ( (App( (Variable 'sizeof) (Literal ltype) )) (tail(
+               (set ltype (parse-type ltype))
+               (set e1 (expr::set-expr( (expr::new ()) (typecheck-sizeof ltype) )))
+               (set e1 (expr::set-context( e1 ctx )))
+               (set e1 (expr::set-offset( e1 offset )))
+               (set e1 (expr::set-type( e1 ltype )))
+               e1
+            )))
             ( (Literal lval) (tail(
                (set e1 (expr::set-expr( (expr::new ()) lval )))
                (set e1 (expr::set-context( e1 ctx )))
