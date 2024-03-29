@@ -5,8 +5,9 @@ type S (SNil)
      | (SPointer( ?[] ));
 
 close := λ(: x S). (: (tail(
-   (mov( (malloc(sizeof S)) R15 ))
-   (as R15 S[])
+   (mov( (malloc(sizeof S)) R8 ))
+   (mov( x 0u64 (as R8 S[]) ))
+   (as R8 S[])
 )) S[]);
 
 print := λ(: x S). (: (tail(
