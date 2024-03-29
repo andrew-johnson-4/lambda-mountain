@@ -1,6 +1,7 @@
 
 import STDLIB/default-instruction-set.lm;
 import STDLIB/default-primitives.lm;
+import STDLIB/default-rules.lm;
 
 type S (SNil)
      | (SAtom( U8[] ))
@@ -12,6 +13,10 @@ close := λ(: x S). (: (tail(
       (malloc(sizeof S))
       S[]
    ))
-   (mov( x 0u64 dst ))
-   dst
+   (as dst S[])
 )) S[]);
+
+malloc := λ (: sz U64) . (: (tail(
+   ()
+   (as 0u64 '?[])
+)) '?[]);
