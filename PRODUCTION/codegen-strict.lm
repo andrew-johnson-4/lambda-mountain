@@ -21,8 +21,8 @@ compile-push-rvalue := λctx e offset . (tail(
             ()
             ( StackVariable e1 )
             ( _ (tail(
-               (set e2 (fragment-apply( ctx 'push lt (() e1) e1 )))
-               (expr::chain( e1 e2 ))
+               ()
+               (fragment-apply( ctx 'push lt (() e1) e1 ))
             )))
          ))
       )))
@@ -172,6 +172,14 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e1 (expr::set-offset( e1 offset )))
                e1
             )))
+            ( (App( (Variable 'sizeof) (Literal ltype) )) (tail(
+               (set ltype (parse-type ltype))
+               (set e1 (expr::set-expr( (expr::new ()) (typecheck-sizeof ltype) )))
+               (set e1 (expr::set-context( e1 ctx )))
+               (set e1 (expr::set-offset( e1 offset )))
+               (set e1 (expr::set-type( e1 ltype )))
+               e1
+            )))
             ( (Literal lval) (tail(
                (set e1 (expr::set-expr( (expr::new ()) lval )))
                (set e1 (expr::set-context( e1 ctx )))
@@ -179,12 +187,12 @@ compile-expr-strict := λctx e offset used . (tail(
                e1
             )))
             ( (App( (App( (Literal ':) lval )) ltype )) (tail(
-               (set e1 (compile-expr-strict( ctx lval offset Unused )))
+               (set e1 (compile-expr-strict( ctx lval offset Used )))
                (set e1 (expr::set-type( e1 (typecheck-lookup e) )))
                e1
             )))
             ( (App( (App( (Variable 'as) lval )) ltype )) (tail(
-               (set e1 (compile-expr-strict( ctx lval offset Unused )))
+               (set e1 (compile-expr-strict( ctx lval offset Used )))
                (set e1 (expr::set-type( e1 (typecheck-lookup e) )))
                e1
             )))

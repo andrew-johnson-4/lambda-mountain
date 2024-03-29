@@ -85,6 +85,9 @@ typecheck-assert-expr := λe . (tail(
       ( (App( (App( (Literal ':) (Literal _) )) tt )) (
          (typecheck-assert-one( e ))
       ))
+      ( (App( (Variable 'sizeof) (Literal tt) )) (
+         (typecheck-assert-one( e ))
+      ))
       ( (App( (App( (Literal ':) te )) tt )) (
          (typecheck-assert-expr( te ))
          (typecheck-assert-one( e ))
@@ -742,6 +745,9 @@ typecheck-infer-expr := λctx e used . (tail(
          (typecheck-infer-expr( ctx rhs Used ))
          (typecheck-ascript( e (typecheck-typeof-var( ctx lhs )) ))
       )))
+      ( (App( (Variable 'sizeof) (Literal tt) )) (tail(
+         (typecheck-ascript( e (parse-type( U64+Literal+Constant )) ))
+      )))
       ( (App( (App( (App( (Variable 'if) cond )) t )) f )) (tail(
          (typecheck-infer-expr( ctx cond Used ))
          (typecheck-infer-expr( ctx t Used ))
@@ -808,7 +814,12 @@ typecheck-infer-expr := λctx e used . (tail(
    ctx
 ));
 
-typecheck-sizeof := λtt . (match tt (
+typecheck-sizeof := λtt . (tail(
+   (local sz)
+   (set sz (typecheck-sizeof-impl tt))
+   sz
+));
+typecheck-sizeof-impl := λtt . (match tt (
    ()
    ( Nil 0 )
    ( '? () )
@@ -927,6 +938,7 @@ typecheck-as-return := λrt . (tail(
       (2 (And( Reg16 rt )))
       (4 (And( Reg32 rt )))
       (8 (And( Reg64 rt )))
+      (_ (And( LocalVariable rt )))
    ))
 ));
 
