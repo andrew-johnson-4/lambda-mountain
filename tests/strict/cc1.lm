@@ -1,0 +1,14 @@
+
+import STDLIB/default-instruction-set.lm;
+import STDLIB/default-primitives.lm;
+import STDLIB/default-rules.lm;
+import STDLIB/default-stdlib.lm;
+
+echo := λ(: x U64). (: (
+   x
+) U64);
+
+main := (
+   (let x (echo 123u64))
+   (print x)
+);
