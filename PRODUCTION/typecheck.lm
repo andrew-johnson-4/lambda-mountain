@@ -938,6 +938,7 @@ typecheck-as-return := λrt . (tail(
       (2 (And( Reg16 rt )))
       (4 (And( Reg32 rt )))
       (8 (And( Reg64 rt )))
+      (_ (And( LocalVariable rt )))
    ))
 ));
 

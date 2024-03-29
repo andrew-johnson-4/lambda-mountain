@@ -10,6 +10,11 @@ close := λ(: x S). (: (tail(
    (as R8 S[])
 )) S[]);
 
+open := λ(: x S[]). (: (tail(
+   ()
+   SNil
+)) S);
+
 print := λ(: x S). (: (tail(
    (if (==( (.0 x) 3u64 )) (
       (print '\[\]_s)
@@ -19,9 +24,9 @@ print := λ(: x S). (: (tail(
       ) (
          (if (==( (.0 x) 1u64 )) (tail(
             (print '\[_s)
-            (print (as (.1 (as x SCons)) U64))
+            (print (open (.1 (as x SCons))))
             (print '\s_s)
-            (print (as (.2 (as x SCons)) U64))
+            (print (open (.2 (as x SCons))))
             (print '\]_s)
          )) (tail(
             (print '[_s)
