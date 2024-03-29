@@ -5,10 +5,10 @@ type S (SNil)
      | (SPointer( ?[] ));
 
 close := λ(: x S). (: (tail(
-   (let dst (as
+   (malloc(sizeof S))
+   (let dst (as 
       (malloc(sizeof S))
-      S[]
-   ))
+   S[]))
    (mov( x 0u64 dst ))
    dst
 )) S[]);
@@ -177,9 +177,6 @@ print := λ(: x I8). (: (tail(
 
 cons-page-tail := 0u64;
 malloc := λ (: sz U64) . (: (tail(
-   (print 'Size\s_s)
-   (print sz)
-   (print '\n_s)
    (if (==( cons-page-tail 0u64 )) (tail(
       (mov( 12u64 RAX ))
       (mov( 0u64 RDI ))
@@ -199,11 +196,5 @@ malloc := λ (: sz U64) . (: (tail(
    (mov( cons-page-tail R8 ))
    (add( sz R8 ))
    (set cons-page-tail (as R8 U64))
-   (print 'PageTail_s)
-   (print cons-page-tail)
-   (print '\n_s)
-   (print 'Curr_s)
-   (print curr)
-   (print '\n_s)
    (as curr ?[])
 )) ?[]);
