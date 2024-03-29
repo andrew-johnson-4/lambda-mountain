@@ -14,11 +14,17 @@ config-mode              := Compile;
 main := λ(: argc U64)(: argv U8[][]).(tail(
 #   (let argi 0u64)
    (let input_l (SAtom( 'an-atom_s )))
-   (let input_r (SPointer( as 'test_s ?[] )))
-   (let close_l (close( input_l )))
-   (let close_r (close( input_r )))
-   (let input (SCons( close_l close_r )))
-   (print input)
+   (let input_o SNil)
+   (let close_l 0u64)
+   (push (close( input_l )))
+   (pop( close_l ))
+   (mov( close_l R8 ))
+   (mov( (as R8 S[]) 0u64 input_o ))
+   (print input_o)
+#   (push (close( input_r )))
+#   (pop( close_r ))
+#   (let input (SCons( (as close_l S[]) (as close_r S[]) )))
+#   (print input)
 #   (while (<( argi argc )) (
 #      (if (==( ([]( argv argi )) '--tokenize_s )) (
 #         (print '--tokenize_s)
