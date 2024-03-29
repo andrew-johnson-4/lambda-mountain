@@ -1,16 +1,14 @@
 
-use STDLIB/default-instruction-set.lm;
-use STDLIB/default-primitives.lm;
-use STDLIB/default-rules.lm;
+import STDLIB/default-instruction-set.lm;
+import STDLIB/default-primitives.lm;
+import STDLIB/default-rules.lm;
+import STDLIB/default-stdlib.lm;
 
-type B (B( U64 ));
-type A (A( B B ));
+echo := λ(: x U64). (: (
+   x
+) U64);
 
 main := (
-   (let x (A( (B 123u64) (B 456u64) )))
-   (print (.0 x))
-   (print (.0 (.1 x)))
-   (print (.1 (.1 x)))
-   (print (.0 (.2 x)))
-   (print (.1 (.2 x)))
+   (let x (echo 123u64))
+   (print x)
 );
