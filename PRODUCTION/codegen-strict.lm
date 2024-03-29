@@ -34,6 +34,8 @@ compile-expr-strict := λctx e offset used . (tail(
    (assert-typeof( 'compile-expr-strict::e e Or<[Or<[Or<[App,Nil]>,Variable]>,Literal]> ))
    (assert-typeof( 'compile-expr-strict::offset offset Atom ))
    (assert-typeof( 'compile-expr-strict::used used Atom ))
+   (print-s (E e))(print-s \n)
+   (print-s (Offset offset))(print-s \n)
    (local e1)
    (local e2)
    (local e3)
@@ -56,12 +58,16 @@ compile-expr-strict := λctx e offset used . (tail(
          (match e (
             ()
             ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
+               (print-s (Let e))(print-s \n)
                (local sz)
                (set sz (max( 8 (typecheck-sizeof (typecheck-lookup rhs)) )))
+               (print-s (Size sz))(print-s \n)
                (if sz () (
                   (fail (NoSizeOf (typecheck-lookup rhs)))
                ))
+               (print-s (Offset offset))(print-s \n)
                (set offset (i2s (add( (s2i offset) (inv(s2i sz)) )) )) 
+               (print-s (NewOffset offset))(print-s \n)
                (set e1 (compile-push-rvalue( ctx rhs offset )))
                (if (eq( sz '0 )) () (
                   (set e1 (expr::set-unframe( e1 ( (expr::get-unframe e1) \t 'add \s '$ sz , \s '%rsp \n ) )))

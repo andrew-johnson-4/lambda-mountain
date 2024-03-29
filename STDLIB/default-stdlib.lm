@@ -177,6 +177,9 @@ print := λ(: x I8). (: (tail(
 
 cons-page-tail := 0u64;
 malloc := λ (: sz U64) . (: (tail(
+   (print 'Size\s_s)
+   (print sz)
+   (print '\n_s)
    (if (==( cons-page-tail 0u64 )) (tail(
       (mov( 12u64 RAX ))
       (mov( 0u64 RDI ))

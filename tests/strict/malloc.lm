@@ -1,0 +1,17 @@
+
+import STDLIB/default-instruction-set.lm;
+import STDLIB/default-primitives.lm;
+
+type S (SNil)
+     | (SAtom( U8[] ))
+     | (SCons( S[] , S[] ))
+     | (SPointer( ?[] ));
+
+close := λ(: x S). (: (tail(
+   (let dst (as
+      (malloc(sizeof S))
+      S[]
+   ))
+   (mov( x 0u64 dst ))
+   dst
+)) S[]);
