@@ -1,0 +1,16 @@
+
+use STDLIB/default-instruction-set.lm;
+use STDLIB/default-primitives.lm;
+use STDLIB/default-rules.lm;
+
+type B (B( U64 ));
+type A (A( B B ));
+
+main := (
+   (let x (A( (B 123u64) (B 456u64) )))
+   (print (.0 x))
+   (print (.0 (.1 x)))
+   (print (.1 (.1 x)))
+   (print (.0 (.2 x)))
+   (print (.1 (.2 x)))
+);
