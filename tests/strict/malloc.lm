@@ -9,6 +9,7 @@ type S (SNil)
      | (SPointer( ?[] ));
 
 close := λ(: x S). (: (tail(
+   ()
    (let dst (as
       (malloc(sizeof S))
       S[]

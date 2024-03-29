@@ -814,7 +814,12 @@ typecheck-infer-expr := λctx e used . (tail(
    ctx
 ));
 
-typecheck-sizeof := λtt . (match tt (
+typecheck-sizeof := λtt . (tail(
+   (local sz)
+   (set sz (typecheck-sizeof-impl tt))
+   sz
+));
+typecheck-sizeof-impl := λtt . (match tt (
    ()
    ( Nil 0 )
    ( '? () )
