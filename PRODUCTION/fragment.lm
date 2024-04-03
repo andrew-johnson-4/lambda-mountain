@@ -2,6 +2,8 @@
 fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
    ()
    ( () () )
+   ( (Variable Dontchain) () )
+   ( DontChain () )
    ( (Variable( v )) (tail(
       (while ctx (
          (if (eq( v (head (tail ctx)) )) (
@@ -208,6 +210,16 @@ fragment-apply-context := λctx fragment-rhs e . (tail(
    return
 ));
 
+fragment-is-dont-chain := λ f . (match f (
+   ()
+   ( DontChain DontChain )
+   ( (l r) (
+      if (fragment-is-dont-chain l) DontChain
+         (fragment-is-dont-chain r)
+   ))
+   ( _ () )
+));
+
 fragment-apply := λ ctx function-name function-type function-args e-proto . (tail(
    (assert-typeof( 'fragment-apply::e-proto e-proto StrictExpr ))
    (assert-typeof( 'fragment-apply::function-name function-name Atom ))
@@ -225,6 +237,9 @@ fragment-apply := λ ctx function-name function-type function-args e-proto . (ta
       ()
       ( DontChain (set dont-chain DontChain))
    ))
+   (if (fragment-is-dont-chain arrow) (
+      (set dont-chain DontChain)
+   ) ())
    (local return)
    (set return (fragment-apply-direct( arrow function-args e-proto dont-chain )))
    (assert-typeof( 'fragment-apply::return return StrictExpr ))

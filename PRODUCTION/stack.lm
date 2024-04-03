@@ -131,7 +131,7 @@ stack-call-push-arg := λ ctx e-arg offset args-size . (tail(
    (set e1 (expr::set-type( e1 (typecheck-lookup e-arg))))
 
    (set e2 (fragment-apply(
-      ctx 'push (And( (typecheck-lookup e-arg) DontChain ))
+      ctx 'push (typecheck-lookup e-arg)
       (() e1) e1
    )))
 
