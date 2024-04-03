@@ -45,13 +45,14 @@ stack-call := λ ctx function-name function-args offset . (tail(
             )))
             ( copy-size (tail(
                (set copy-size (s2i copy-size))
+               (set copy-offset (inv( copy-size )))
                (while copy-size (
-                  (set copy-offset (add( (s2i '-8) copy-offset )))
                   (set copy-bytes ( copy-bytes
                      \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%rax \n
                      \t 'mov \s '%rax , \s (i2s( copy-offset )) \[ '%rbp \] \n
                   ))
-                  (set src-offset (add( (s2i 8) src-offset )))
+                  (set copy-offset (add( (s2i '8) copy-offset )))
+                  (set src-offset (add( (s2i '8) src-offset )))
                   (set copy-size (add( (s2i '-8) copy-size )))
                ))
             )))
