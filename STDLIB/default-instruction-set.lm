@@ -162,9 +162,9 @@ fragment mov := λ(: src LocalVariable)(: dst Reg16). (: (.program( \t 'mov \s (
 fragment mov := λ(: src LocalVariable)(: dst Reg32). (: (.program( \t 'mov \s (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n )) Nil);
 fragment mov := λ(: src LocalVariable)(: dst Reg64). (: (.program( \t 'mov \s (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n )) Nil);
 
-fragment push := λ(: dst Reg8). (: (.program( \t 'sub \s '$1 , '%rsp \n \t 'mov \s '% (.expression dst) , 1 \[ '%rsp \] \n )) Nil);
-fragment push := λ(: dst Reg16). (: (.program( \t 'sub \s '$2 , '%rsp \n \t 'mov \s '% (.expression dst) , 2 \[ '%rsp \] \n )) Nil);
-fragment push := λ(: dst Reg32). (: (.program( \t 'sub \s '$4 , '%rsp \n \t 'mov \s '% (.expression dst) , 4 \[ '%rsp \] \n )) Nil);
+fragment push := λ(: dst Reg8). (: (.program( \t 'sub \s '$1 , '%rsp \n \t 'movb \s '% (.expression dst) , 1 \[ '%rsp \] \n )) Nil);
+fragment push := λ(: dst Reg16). (: (.program( \t 'sub \s '$2 , '%rsp \n \t 'movw \s '% (.expression dst) , 2 \[ '%rsp \] \n )) Nil);
+fragment push := λ(: dst Reg32). (: (.program( \t 'sub \s '$4 , '%rsp \n \t 'movl \s '% (.expression dst) , 4 \[ '%rsp \] \n )) Nil);
 fragment push := λ(: dst Reg64). (: (.program( \t 'push \s '% (.expression dst) \n )) Nil);
 
 fragment mov := λ(: offset Constant)(: src Reg64)(: dst Reg8). (: (.program( \t 'mov \s (.expression offset) \[ '% (.expression src) \] , \s '% (.expression dst) \n )) Nil);

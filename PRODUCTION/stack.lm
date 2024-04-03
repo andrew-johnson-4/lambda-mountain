@@ -44,6 +44,7 @@ stack-call := λ ctx function-name function-args offset . (tail(
                ))
             )))
             ( copy-size (tail(
+               (set src-offset (add( (s2i '8) src-offset )))
                (set copy-size (s2i copy-size))
                (set copy-offset (inv( copy-size )))
                (while copy-size (
