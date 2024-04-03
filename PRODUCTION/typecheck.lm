@@ -873,6 +873,24 @@ typecheck-sizeof-impl := λtt . (match tt (
    )))
 ));
 
+typecheck-has-representation := λtt . (match tt (
+   ()
+   ( (lt rt) (
+      if (typecheck-has-representation lt) True
+         (typecheck-has-representation rt)
+   ))
+   ( () () )
+   ( Reg8 True )
+   ( Reg16 True )
+   ( Reg32 True )
+   ( Reg64 True )
+   ( Constant True )
+   ( LocalVariable True )
+   ( StackVariable True )
+   ( GlobalVariable True )
+   ( _ () )
+));
+
 typecheck-not-representation := λtt . (match tt (
    ()
    ( (And( Constant rt )) (typecheck-not-representation rt) )
