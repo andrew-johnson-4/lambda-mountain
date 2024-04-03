@@ -8,11 +8,16 @@ echo := λ(: x U64). (: (
    x
 ) U64);
 
-main := (
-   (let x SNil)
-#   (let x (SCons(
-#      (close(SAtom( 'an-atom_s )))
-#      (close(SNil))
-#   )))
+main := (tail(
+   (let l1 (SAtom( 'an-atom_s )))
+   (let l2 (close l1))
+   (let r1 (SNil))
+   (let r2 (close r1))
+   (let x (SCons( l2 r2 )))
    (print x)
-);
+   ()
+#   (print (SCons(
+#      (SAtom( 'an-atom_s ))
+#      (SNil)
+#   )))
+));
