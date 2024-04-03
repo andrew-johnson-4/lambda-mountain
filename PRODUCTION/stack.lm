@@ -17,42 +17,17 @@ stack-call := λ ctx function-name function-args offset . (tail(
          (local src-offset)
          (local copy-offset)
          (set src-offset (s2i 8)) # stack pointer is 64 bits
-         (match (expr::get-expr e-args) (
-            ()
-            ( 1 (tail(
-               (set copy-offset (add( (s2i '-8) copy-offset )))
-               (set copy-bytes ( copy-bytes
-                  \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%rax \n
-                  \t 'mov \s '%rax , \s (i2s( copy-offset )) \[ '%rbp \] \n
-               ))
-            )))
-            ( 2 (tail(
-               (set copy-offset (add( (s2i '-8) copy-offset )))
-               (set copy-bytes ( copy-bytes
-                  \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%rax \n
-                  \t 'mov \s '%rax , \s (i2s( copy-offset )) \[ '%rbp \] \n
-               ))
-            )))
-            ( 4 (tail(
-               (set copy-offset (add( (s2i '-8) copy-offset )))
-               (set copy-bytes ( copy-bytes
-                  \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%rax \n
-                  \t 'mov \s '%rax , \s (i2s( copy-offset )) \[ '%rbp \] \n
-               ))
-            )))
-            ( copy-size (tail(
-               (set copy-size (s2i copy-size))
-               (set copy-offset (inv( copy-size )))
-               (while copy-size (
-                  (set copy-bytes ( copy-bytes
-                     \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%rax \n
-                     \t 'mov \s '%rax , \s (i2s( copy-offset )) \[ '%rbp \] \n
-                  ))
-                  (set copy-offset (add( (s2i '8) copy-offset )))
-                  (set src-offset (add( (s2i '8) src-offset )))
-                  (set copy-size (add( (s2i '-8) copy-size )))
-               ))
-            )))
+         (local copy-size)
+         (set copy-size (s2i (expr::get-expr e-args)))
+         (set copy-offset (inv( copy-size )))
+         (while copy-size (
+            (set copy-bytes ( copy-bytes
+               \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%rax \n
+               \t 'mov \s '%rax , \s (i2s( copy-offset )) \[ '%rbp \] \n
+            ))
+            (set copy-offset (add( (s2i '8) copy-offset )))
+            (set src-offset (add( (s2i '8) src-offset )))
+            (set copy-size (add( (s2i '-8) copy-size )))
          ))
          (local args-size)
          (set args-size (expr::get-expr e-args))
@@ -142,6 +117,7 @@ stack-call-push-arg := λ ctx e-arg offset args-size . (tail(
    (set et (typecheck-lookup e-arg))
    (local e-sz)
    (set e-sz (typecheck-sizeof et))
+   (set e-sz (max( 8 e-sz )))
    (set args-size (i2s(add( (s2i args-size) (s2i e-sz) ))) )
    (local new-offset)
    (set new-offset(  (i2s(add( (s2i offset) (inv(s2i( e-sz ))) ))) ))
