@@ -68639,38 +68639,6 @@ uuid_0000000000000411:
 	call __assert_eq_C___
 	mov -72(%rbp),%r12
 	mov -80(%rbp),%r13
-	push %r12
-	push %r13
-	mov -88(%rbp),%r12
-	mov -96(%rbp),%r13
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	pop %r13
-	pop %r12
-	push %r8
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	mov %r8, %r12
-	pop %r13
-	call __expr_C__C_chain_C___
-	push %r12
-	push %r13
-	mov -104(%rbp),%r12
-	mov -112(%rbp),%r13
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	pop %r13
-	pop %r12
-	push %r8
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	mov %r8, %r12
-	pop %r13
-	call __expr_C__C_chain_C___
 	mov %r12, -120(%rbp)
 	mov %r13, -128(%rbp)
 	mov $0, %r12
@@ -68787,7 +68755,39 @@ uuid_0000000000000411:
 	push %r13
 	mov -104(%rbp),%r12
 	mov -112(%rbp),%r13
+	call __expr_C__C_get_frame_C___
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	pop %r13
+	pop %r12
+	push %r8
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	mov %r8, %r12
+	pop %r13
+	push %r12
+	push %r13
+	mov -104(%rbp),%r12
+	mov -112(%rbp),%r13
 	call __expr_C__C_get_prog_C___
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	pop %r13
+	pop %r12
+	push %r8
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	mov %r8, %r12
+	pop %r13
+	push %r12
+	push %r13
+	mov -104(%rbp),%r12
+	mov -112(%rbp),%r13
+	call __expr_C__C_get_unframe_C___
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
 	mov %r13, 8(%r8)
@@ -68923,7 +68923,39 @@ uuid_0000000000000411:
 	push %r13
 	mov -88(%rbp),%r12
 	mov -96(%rbp),%r13
+	call __expr_C__C_get_frame_C___
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	pop %r13
+	pop %r12
+	push %r8
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	mov %r8, %r12
+	pop %r13
+	push %r12
+	push %r13
+	mov -88(%rbp),%r12
+	mov -96(%rbp),%r13
 	call __expr_C__C_get_prog_C___
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	pop %r13
+	pop %r12
+	push %r8
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	mov %r8, %r12
+	pop %r13
+	push %r12
+	push %r13
+	mov -88(%rbp),%r12
+	mov -96(%rbp),%r13
+	call __expr_C__C_get_unframe_C___
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
 	mov %r13, 8(%r8)
