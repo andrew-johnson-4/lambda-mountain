@@ -20,28 +20,28 @@ stack-call := λ ctx function-name function-args offset . (tail(
          (match (expr::get-expr e-args) (
             ()
             ( 1 (tail(
+               (set src-offset (add( src-offset (s2i 1) )))
                (set copy-offset (add( (s2i '-1) copy-offset )))
                (set copy-bytes ( copy-bytes
                   \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%al \n
                   \t 'mov \s '%al , \s (i2s( copy-offset )) \[ '%rbp \] \n
                ))
-               (set src-offset (add( src-offset (s2i 1) )))
             )))
             ( 2 (tail(
+               (set src-offset (add( src-offset (s2i 2) )))
                (set copy-offset (add( (s2i '-2) copy-offset )))
                (set copy-bytes ( copy-bytes
                   \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%ax \n
                   \t 'mov \s '%ax , \s (i2s( copy-offset )) \[ '%rbp \] \n
                ))
-               (set src-offset (add( src-offset (s2i 2) )))
             )))
             ( 4 (tail(
+               (set src-offset (add( src-offset (s2i 4) )))
                (set copy-offset (add( (s2i '-4) copy-offset )))
                (set copy-bytes ( copy-bytes
                   \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%eax \n
                   \t 'mov \s '%eax , \s (i2s( copy-offset )) \[ '%rbp \] \n
                ))
-               (set src-offset (add( src-offset (s2i 4) )))
             )))
             ( copy-size (tail(
                (set copy-size (s2i copy-size))
@@ -143,7 +143,7 @@ stack-call-push-arg := λ ctx e-arg offset args-size . (tail(
    (set args-size (i2s(add( (s2i args-size) (s2i e-sz) ))) )
    (local new-offset)
    (set new-offset(  (i2s(add( (s2i offset) (inv(s2i( e-sz ))) ))) ))
-
+   
    (local unframe)
    (if (eq( e-sz '0 )) () (
       (set unframe ( \t 'add \s '$ e-sz , \s '%rsp \n ))
@@ -152,13 +152,10 @@ stack-call-push-arg := λ ctx e-arg offset args-size . (tail(
    (set e1 (compile-expr-strict( ctx e-arg new-offset Used )))
    (set e1 (expr::set-type( e1 (typecheck-lookup e-arg))))
 
-   (print-s (Push (typecheck-lookup e-arg)))(print-s \n)
-
    (set e2 (fragment-apply(
       ctx 'push (typecheck-lookup e-arg)
       (() e1) e1
    )))
-   (print-s (E2 (expr::get-prog e2)))(print-s \n)
 
    (set e2 (expr::set-unframe( e2 ((expr::get-unframe e2) unframe) )))
    (set e2 (expr::set-expr( e2 args-size )))
