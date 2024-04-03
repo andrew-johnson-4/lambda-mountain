@@ -1,6 +1,7 @@
 
 nostd: prod
-	./production --nostd -o tmp.s tests/strict/cc2.lm
+#	./production --nostd -o tmp.s tests/strict/cc2.lm
+	./production --nostd -o tmp.s tests/strict/globals1.lm
 	as -o tmp.o tmp.s
 	ld -o tmp tmp.o
 	./tmp && echo $?

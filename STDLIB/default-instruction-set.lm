@@ -39,6 +39,21 @@ fragment push := λ(: src GlobalVariable+Sized<size>). (: (
          \t 'pushq \s '0 \[ '%r15 \] \n
          \t 'add \s '$8 , \s '%r15 \n
       ))
+      (if-eq size 4 (
+         \t 'mov \s '0 \[ '%r15 \] , \s '%r15d \n
+         \t 'sub \s '$4 , \s '%rsp \n
+         \t 'mov \s '%r15d , \s '-4 \[ '%rsp \] \n
+      ))
+      (if-eq size 2 (
+         \t 'mov \s '0 \[ '%r15 \] , \s '%r15w \n
+         \t 'sub \s '$2 , \s '%rsp \n
+         \t 'mov \s '%r15w , \s '-2 \[ '%rsp \] \n
+      ))
+      (if-eq size 1 (
+         \t 'mov \s '0 \[ '%r15 \] , \s '%r15b \n
+         \t 'sub \s '$1 , \s '%rsp \n
+         \t 'mov \s '%r15b , \s '-1 \[ '%rsp \] \n
+      ))
    ))
 ) Nil);
 fragment push := λ(: src LocalVariable+Sized<size>). (: (
