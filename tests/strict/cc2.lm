@@ -9,9 +9,10 @@ echo := λ(: x U64). (: (
 ) U64);
 
 main := (
-   (let x (SCons(
-      (close(SAtom( 'an-atom_s )))
-      (close(SNil))
-   )))
+   (let x SNil)
+#   (let x (SCons(
+#      (close(SAtom( 'an-atom_s )))
+#      (close(SNil))
+#   )))
    (print x)
 );
