@@ -136,7 +136,6 @@ stack-call-push-arg := λ ctx e-arg offset args-size . (tail(
    (assert-typeof( 'stack-call-push-arg::args-size args-size Atom ))
    (local e1)
    (local e2)
-   (local e3)
    (local et)
    (set et (typecheck-lookup e-arg))
    (local e-sz)
@@ -145,30 +144,22 @@ stack-call-push-arg := λ ctx e-arg offset args-size . (tail(
    (local new-offset)
    (set new-offset(  (i2s(add( (s2i offset) (inv(s2i( e-sz ))) ))) ))
 
-   (local frame)
    (local unframe)
    (if (eq( e-sz '0 )) () (
-      (set frame ( \t 'sub \s '$ e-sz , \s '%rsp \n ))
       (set unframe ( \t 'add \s '$ e-sz , \s '%rsp \n ))
    ))
 
    (set e1 (compile-expr-strict( ctx e-arg new-offset Used )))
    (set e1 (expr::set-type( e1 (typecheck-lookup e-arg))))
-   (set e2 (expr::new()))
-   (set e2 (expr::set-expr( e2 new-offset )))
-   (set e2 (expr::set-context( e2 ctx )))
-   (set e2 (expr::set-offset( e2 new-offset )))
-   (set e2 (expr::set-type( e2 (And( LocalVariable (Sized e-sz) )) )))
 
-   (set e3 (fragment-apply(
-      ctx 'mov (Cons( (typecheck-lookup e-arg) (And( LocalVariable (Sized e-sz) )) ))
-      ((() e1) e2) e2
+   (set e2 (fragment-apply(
+      ctx 'push (typecheck-lookup e-arg)
+      (() e1) e1
    )))
 
-   (set e3 (expr::set-frame( e3 ((expr::get-frame e3) frame) )))
-   (set e3 (expr::set-unframe( e3 ((expr::get-unframe e3) unframe) )))
-   (set e3 (expr::set-expr( e3 args-size )))
-   e3
+   (set e2 (expr::set-unframe( e2 ((expr::get-unframe e2) unframe) )))
+   (set e2 (expr::set-expr( e2 args-size )))
+   e2
 ));
 
 stack-destructure-args := λ ctx function-args offset arg-mode . (tail(
