@@ -20,31 +20,30 @@ stack-call := λ ctx function-name function-args offset . (tail(
          (match (expr::get-expr e-args) (
             ()
             ( 1 (tail(
-               (set src-offset (add( src-offset (s2i 1) )))
-               (set copy-offset (add( (s2i '-1) copy-offset )))
+               (set copy-offset (add( (s2i '-8) copy-offset )))
                (set copy-bytes ( copy-bytes
+                  \t 'mov \s '$0 , \s '%rax \n
                   \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%al \n
-                  \t 'mov \s '%al , \s (i2s( copy-offset )) \[ '%rbp \] \n
+                  \t 'mov \s '%rax , \s (i2s( copy-offset )) \[ '%rbp \] \n
                ))
             )))
             ( 2 (tail(
-               (set src-offset (add( src-offset (s2i 2) )))
-               (set copy-offset (add( (s2i '-2) copy-offset )))
+               (set copy-offset (add( (s2i '-8) copy-offset )))
                (set copy-bytes ( copy-bytes
-                  \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%ax \n
-                  \t 'mov \s '%ax , \s (i2s( copy-offset )) \[ '%rbp \] \n
+                  \t 'mov \s '$0 , \s '%rax \n
+                  \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%al \n
+                  \t 'mov \s '%rax , \s (i2s( copy-offset )) \[ '%rbp \] \n
                ))
             )))
             ( 4 (tail(
-               (set src-offset (add( src-offset (s2i 4) )))
-               (set copy-offset (add( (s2i '-4) copy-offset )))
+               (set copy-offset (add( (s2i '-8) copy-offset )))
                (set copy-bytes ( copy-bytes
-                  \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%eax \n
-                  \t 'mov \s '%eax , \s (i2s( copy-offset )) \[ '%rbp \] \n
+                  \t 'mov \s '$0 , \s '%rax \n
+                  \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%al \n
+                  \t 'mov \s '%rax , \s (i2s( copy-offset )) \[ '%rbp \] \n
                ))
             )))
             ( copy-size (tail(
-               (set src-offset (add( (s2i '8) src-offset )))
                (set copy-size (s2i copy-size))
                (set copy-offset (inv( copy-size )))
                (while copy-size (
