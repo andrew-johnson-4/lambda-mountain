@@ -57,17 +57,22 @@ stack-call := λ ctx function-name function-args offset . (tail(
                ))
             )))
          ))
+         (local args-size)
+         (set args-size (expr::get-expr e-args))
+         (if (eq( args-size 0 )) () (
+            (set args-size (max( '8 args-size )))
+         ))
          (set e-call (expr::set-prog( e-call (
             (expr::get-frame e-args)
             (expr::get-prog e-args)
             (enter-function())
-            (if (eq( (expr::get-expr e-args) 0 )) () (
-               ( \t 'sub \s '$ (expr::get-expr e-args) , \s '%rsp \n )
+            (if (eq( args-size 0 )) () (
+               ( \t 'sub \s '$ args-size , \s '%rsp \n )
             ))
             copy-bytes
             (\t 'call \s (mangle-identifier( function-name (typecheck-lookup body) )) \n)
-            (if (eq( (expr::get-expr e-args) 0 )) () (
-               ( \t 'add \s '$ (expr::get-expr e-args) , \s '%rsp \n )
+            (if (eq( args-size 0 )) () (
+               ( \t 'add \s '$ args-size , \s '%rsp \n )
             ))
             (\t 'mov \s '%rbp, \s '%rsp              \n
              \t 'pop \s '%rbp                        \n)
