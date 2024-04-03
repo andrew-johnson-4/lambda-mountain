@@ -22,21 +22,21 @@ stack-call := λ ctx function-name function-args offset . (tail(
             ( 1 (tail(
                (set copy-offset (add( (s2i '-8) copy-offset )))
                (set copy-bytes ( copy-bytes
-                  \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%al \n
+                  \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%rax \n
                   \t 'mov \s '%rax , \s (i2s( copy-offset )) \[ '%rbp \] \n
                ))
             )))
             ( 2 (tail(
                (set copy-offset (add( (s2i '-8) copy-offset )))
                (set copy-bytes ( copy-bytes
-                  \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%al \n
+                  \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%rax \n
                   \t 'mov \s '%rax , \s (i2s( copy-offset )) \[ '%rbp \] \n
                ))
             )))
             ( 4 (tail(
                (set copy-offset (add( (s2i '-8) copy-offset )))
                (set copy-bytes ( copy-bytes
-                  \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%al \n
+                  \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%rax \n
                   \t 'mov \s '%rax , \s (i2s( copy-offset )) \[ '%rbp \] \n
                ))
             )))
