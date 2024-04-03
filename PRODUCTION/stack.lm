@@ -162,6 +162,7 @@ stack-call-push-arg := λ ctx e-arg offset args-size . (tail(
 
    (set e2 (expr::set-unframe( e2 ((expr::get-unframe e2) unframe) )))
    (set e2 (expr::set-expr( e2 args-size )))
+   (set e2 (expr::set-offset( e2 new-offset )))
    e2
 ));
 
