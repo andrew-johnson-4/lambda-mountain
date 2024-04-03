@@ -89,6 +89,26 @@ fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
       ))
       result
    )))
+   ( (App(
+        (App(
+           (App(
+              (Variable 'if-eq)
+              l
+           ))
+           r
+        ))
+        body
+     )) (tail(
+      (set l (fragment-substitute-context( ctx l )))
+      (set r (fragment-substitute-context( ctx r )))
+      (local result)
+      (if (eq( l r )) (
+         (set result (
+            (fragment-substitute-context( ctx body ))
+         ))
+      ) ())
+      result
+   )))
    ( ('.expression v ) (tail(
       (if (is-atom v) (
          (while ctx (

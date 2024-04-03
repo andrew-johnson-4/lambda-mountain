@@ -479,8 +479,8 @@ strict-bind-accessors := λ ctx base-type src-type field-offset field-number . (
          (App( (App( (Literal ':) (Variable 'src) )) (Literal LocalVariable) ))
          (App(
             (App( (Variable '.program) (
-               \t 'movq \s ('+( ('.expression 'src) field-offset )) \s \[ '%rbp \] ,
-               \s '%r15 \n
+               \t 'mov \s ('+( ('.expression 'src) field-offset )) \s \[ '%rbp \] ,
+               \s '% register-name \n
             )))
             (App( (Variable '.expression) (
                register-name

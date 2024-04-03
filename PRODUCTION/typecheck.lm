@@ -736,7 +736,7 @@ typecheck-infer-expr := λctx e used . (tail(
          (local ctype)
          (set ctype (typecheck-infer-constructor-type lit))
          (if ctype (
-            (typecheck-ascript( e (And( Constant (And( lit ctype )) )) ))
+            (typecheck-ascript( e (And( (And( lit ctype )) Constant )) ))
          ) (
             (typecheck-ascript( e Atom ))
          ))
@@ -871,6 +871,33 @@ typecheck-sizeof-impl := λtt . (match tt (
       ))
       sz
    )))
+));
+
+typecheck-assign-representation := λtt . (tail(
+   (print-s (AssignRepr tt))(print-s \n)
+   (if (not(typecheck-has-representation tt)) (
+      (set tt (And( LocalVariable tt )))
+      (print-s (Repr tt))(print-s \n)
+   ) ())
+   tt
+));
+
+typecheck-has-representation := λtt . (match tt (
+   ()
+   ( (lt rt) (
+      if (typecheck-has-representation lt) True
+         (typecheck-has-representation rt)
+   ))
+   ( () () )
+   ( Constant True )
+   ( Reg8 True )
+   ( Reg16 True )
+   ( Reg32 True )
+   ( Reg64 True )
+   ( LocalVariable True )
+   ( StackVariable True )
+   ( GlobalVariable True )
+   ( _ () )
 ));
 
 typecheck-not-representation := λtt . (match tt (
