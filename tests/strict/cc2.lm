@@ -17,6 +17,6 @@ main := (
 #   (print x)
    (print (SCons(
       (close SNil)
-      (as 0u64 S[])
+      (close SNil)
    )))
 );

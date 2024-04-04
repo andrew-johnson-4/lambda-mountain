@@ -401,6 +401,7 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
                (if (eq( case-padding 0 )) () (
                   \t 'sub \s '$ case-padding , \s '%rsp \n
                ))
+               DontChain
                \t 'pushq \s '$ case-number \n
             )))
          ))))
