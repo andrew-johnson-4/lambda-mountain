@@ -1,5 +1,6 @@
 
 compile-push-rvalue := λctx e offset . (tail(
+   (print-s (PushRvalue offset e))(print-s \n)
    (local e1)
    (local e2)
    (match (typecheck-slot( (typecheck-lookup e) Cons )) (
@@ -9,7 +10,8 @@ compile-push-rvalue := λctx e offset . (tail(
             ()
             ( (App( le re )) (tail(
                (set e1 (compile-push-rvalue( ctx le offset )))
-               (set e2 (compile-push-rvalue( ctx re offset )))
+               (print-s (RType (expr::get-type e1)))(print-s \n)
+               (set e2 (compile-push-rvalue( ctx re (expr::get-offset e1) )))
                (expr::chain( e1 e2 ))
             )))
             ( u (fail (UnexpectedRvalue e)))
@@ -243,7 +245,12 @@ compile-expr-strict := λctx e offset used . (tail(
                      ( (Literal tag) (tail(
                         (set e1 (compile-push-rvalue( ctx r offset )))
                         (set e2 (fragment-apply( ctx 'push (And( (typecheck-lookup e) DontChain)) (() e1) e1 )))
+                        (local sz)
+                        (set sz (typecheck-sizeof(typecheck-lookup e)))
+                        (set offset (expr::get-offset e2))
+                        (set offset (i2s(add( (inv(s2i( sz ))) (s2i offset) ))))
                         (set e2 (expr::set-type( e2 StackVariable )))
+                        (set e2 (expr::set-offset( e2 offset )))
                         e2
                      )))
                      ( u (tail(
