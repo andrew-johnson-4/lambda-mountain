@@ -38,6 +38,7 @@ compile-expr-strict := λctx e offset used . (tail(
    (local e2)
    (local e3)
    (local e4)
+   (local return)
    (match used (
       ()
       (Return (tail(
@@ -52,8 +53,8 @@ compile-expr-strict := λctx e offset used . (tail(
             ))
          ))
       )))
-      (_ (
-         (match e (
+      (_ (tail(
+         (set return (match e (
             ()
             ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
                (local sz)
@@ -243,6 +244,7 @@ compile-expr-strict := λctx e offset used . (tail(
                      ( (Literal tag) (tail(
                         (set e1 (compile-push-rvalue( ctx r offset )))
                         (set e2 (fragment-apply( ctx 'push (And( (typecheck-lookup e) DontChain)) (() e1) e1 )))
+                        (print-s (Tagged (expr::get-prog e2)))(print-s \n)
                         (local sz)
                         (set sz (typecheck-sizeof(typecheck-lookup e)))
                         (set offset (expr::get-offset e2))
@@ -273,8 +275,9 @@ compile-expr-strict := λctx e offset used . (tail(
                result
             )))
             ( _ (fail (TODO CompileStrict e)))
-         ))
-      ))
+         )))
+         return
+      )))
    ))
 ));
 
@@ -356,6 +359,7 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
                \t 'pushq \s '$ case-number \n
             )))
          ))))
+         (print-s (Fragment enum-case body))(print-s \n)
          (typecheck-ascript( body ('->(
             (And( enum-case base-type ))
             Nil
