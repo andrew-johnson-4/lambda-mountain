@@ -9,7 +9,7 @@ compile-push-rvalue := λctx e offset . (tail(
             ()
             ( (App( le re )) (tail(
                (set e1 (compile-push-rvalue( ctx le offset )))
-               (set e2 (compile-push-rvalue( ctx re offset )))
+               (set e2 (compile-push-rvalue( ctx re (expr::get-offset e1) )))
                (expr::chain( e1 e2 ))
             )))
             ( u (fail (UnexpectedRvalue e)))
@@ -38,6 +38,7 @@ compile-expr-strict := λctx e offset used . (tail(
    (local e2)
    (local e3)
    (local e4)
+   (local return)
    (match used (
       ()
       (Return (tail(
@@ -52,8 +53,8 @@ compile-expr-strict := λctx e offset used . (tail(
             ))
          ))
       )))
-      (_ (
-         (match e (
+      (_ (tail(
+         (set return (match e (
             ()
             ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
                (local sz)
@@ -243,7 +244,12 @@ compile-expr-strict := λctx e offset used . (tail(
                      ( (Literal tag) (tail(
                         (set e1 (compile-push-rvalue( ctx r offset )))
                         (set e2 (fragment-apply( ctx 'push (And( (typecheck-lookup e) DontChain)) (() e1) e1 )))
+                        (local sz)
+                        (set sz (typecheck-sizeof(typecheck-lookup e)))
+                        (set offset (expr::get-offset e2))
+                        (set offset (i2s(add( (inv(s2i( sz ))) (s2i offset) ))))
                         (set e2 (expr::set-type( e2 StackVariable )))
+                        (set e2 (expr::set-offset( e2 offset )))
                         e2
                      )))
                      ( u (tail(
@@ -268,8 +274,9 @@ compile-expr-strict := λctx e offset used . (tail(
                result
             )))
             ( _ (fail (TODO CompileStrict e)))
-         ))
-      ))
+         )))
+         return
+      )))
    ))
 ));
 
@@ -347,6 +354,7 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
                   \t 'sub \s '$ case-padding , \s '%rsp \n
                ))
                (App( (Variable '.program) (Variable 'src) ))
+               DontChain
                \t 'pushq \s '$ case-number \n
             )))
          ))))
@@ -393,6 +401,7 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
                (if (eq( case-padding 0 )) () (
                   \t 'sub \s '$ case-padding , \s '%rsp \n
                ))
+               DontChain
                \t 'pushq \s '$ case-number \n
             )))
          ))))
