@@ -206,7 +206,6 @@ fragment-apply-context := λctx fragment-rhs e . (tail(
       ))
       ( u (fail (UnknownSubstituteFragment fragment-rhs)))
    )))
-   (print-s (ApplyContext (expr::set-context( e () )) (expr::get-prog return)))(print-s \n)
    (assert-typeof( 'fragment-apply-context::return return StrictExpr ))
    return
 ));
