@@ -15,8 +15,8 @@ main := (
 #   (let r2 (close(r1)))
 #   (let x (SCons( l2 r2 )))
 #   (print x)
-   (SCons(
+   (print(SCons(
       (close SNil)
       (close SNil)
-   ))
+   )))
 );

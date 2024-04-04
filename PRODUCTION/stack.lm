@@ -130,12 +130,14 @@ stack-call-push-arg := λ ctx e-arg offset args-size . (tail(
    (set e1 (compile-expr-strict( ctx e-arg new-offset Used )))
    (set e1 (expr::set-type( e1 (typecheck-lookup e-arg))))
 
-   (print-s (Push (typecheck-lookup e-arg)))(print-s \n)
-
-   (set e2 (fragment-apply(
-      ctx 'push (typecheck-lookup e-arg)
-      (() e1) e1
-   )))
+   (if (typecheck-is-constructor( typecheck-lookup e-arg )) (
+      (set e2 e1)
+   ) (
+      (set e2 (fragment-apply(
+         ctx 'push (typecheck-lookup e-arg)
+         (() e1) e1
+      )))
+   ))
 
    (set e2 (expr::set-unframe( e2 ((expr::get-unframe e2) unframe) )))
    (set e2 (expr::set-expr( e2 args-size )))

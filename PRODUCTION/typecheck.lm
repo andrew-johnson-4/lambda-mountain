@@ -507,6 +507,32 @@ typecheck-infer-type-compound := λcompound . (tail(
    result
 ));
 
+typecheck-is-constructor := λtt . (match tt (
+   ()
+   ( (And( lt rt )) (
+      if (typecheck-is-constructor lt) True
+         (typecheck-is-constructor rt)
+   ))
+   ( () () )
+   ( (_ _) () )
+   ( ta (typecheck-is-constructor-atom ta))
+));
+typecheck-is-constructor-atom := λta . (tail(
+   (local is-constructor)
+   (local constructors)
+   (set constructors typecheck-constructors)
+   (while constructors (
+      (if (eq( (head(tail constructors)) ta )) (
+         (set is-constructor True)
+      ) ())
+      (if (eq( (tail(tail constructors)) ta )) (
+         (set is-constructor True)
+      ) ())
+      (set constructors (head constructors))
+   ))
+   is-constructor
+));
+
 typecheck-infer-type-constructor := λbase-type body . (match body (
    ()
    ( (Literal tag) (tail(
