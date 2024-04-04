@@ -244,7 +244,7 @@ compile-expr-strict := λctx e offset used . (tail(
                      ( (Literal tag) (tail(
                         (set e1 (compile-push-rvalue( ctx r offset )))
                         (set e2 (fragment-apply( ctx 'push (And( (typecheck-lookup e) DontChain)) (() e1) e1 )))
-                        (print-s (Tagged (expr::get-prog e2)))(print-s \n)
+                        (print-s (Tagged (expr::set-context( e2 () ))))(print-s \n)
                         (local sz)
                         (set sz (typecheck-sizeof(typecheck-lookup e)))
                         (set offset (expr::get-offset e2))
