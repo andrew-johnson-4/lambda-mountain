@@ -1,6 +1,5 @@
 
 compile-push-rvalue := λctx e offset . (tail(
-   (print-s (PushRvalue offset e))(print-s \n)
    (local e1)
    (local e2)
    (match (typecheck-slot( (typecheck-lookup e) Cons )) (
@@ -10,7 +9,6 @@ compile-push-rvalue := λctx e offset . (tail(
             ()
             ( (App( le re )) (tail(
                (set e1 (compile-push-rvalue( ctx le offset )))
-               (print-s (RType (expr::get-type e1)))(print-s \n)
                (set e2 (compile-push-rvalue( ctx re (expr::get-offset e1) )))
                (expr::chain( e1 e2 ))
             )))
