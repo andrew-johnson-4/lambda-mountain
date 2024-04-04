@@ -351,11 +351,11 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
          (set body (Fragment (Lambda(
             (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
             (App( (Variable '.program) (
-               (if (eq( case-padding 0 )) () (
-                  \t 'sub \s '$ case-padding , \s '%rsp \n
-               ))
-               (App( (Variable '.program) (Variable 'src) ))
-               DontChain
+               #(if (eq( case-padding 0 )) () (
+               #   \t 'sub \s '$ case-padding , \s '%rsp \n
+               #))
+               #(App( (Variable '.program) (Variable 'src) ))
+               #DontChain
                \t 'pushq \s '$ case-number \n
             )))
          ))))
