@@ -4,54 +4,56 @@ macro ( ('let x y) )
 
 macro ('match t ps) (tail(
    (let (uuid term) t)
-   (let (uuid matched) ())
-   (let (uuid return) ())
-   (match-pats( (uuid term) (uuid matched) (uuid return) ps ))
-   (uuid return)
+#   (let (uuid matched) ())
+
+#   (let (uuid return) ())
+   (print (uuid term))
+#   (match-pats( (uuid term) (uuid matched) (uuid return) ps ))
+#   (uuid return)
 ));
-macro ('match-pats( term matched return () )) ();
-macro ('match-pats( term matched return (ps (lhs rhs)) )) (
-   (match-pats( term matched return ps ))
-   (if matched () (
-      (set matched True)
-      (match-destructure( term matched return lhs ))
-      (if matched (
-         (set return rhs)
-      ) ())
-   ))
-);
-macro ('match-destructure( term matched return () )) (
-   (if matched (
-      (if term (
-         (set matched ())
-      ) ())
-   ) ())
-);
-macro ('match-destructure( term matched return (:Literal: l) )) (
-   (if matched (
-      (if (is-atom term) (
-         (if (eq( term l )) () (
-            (set matched ())
-         ))
-      ) (
-         (set matched ())
-      ))
-   ) ())
-);
-macro ('match-destructure( term matched return (:Variable: v) )) (
-   (let v term)
-);
-macro ('match-destructure( term matched return (l r) )) (
-   (if matched (
-      (if (is-cons term) (
-         (let (uuid x) term)
-         (set term (head (uuid x)))
-         (match-destructure( term matched return l ))
-         (set term (tail (uuid x)))
-         (match-destructure( term matched return r ))
-         (set term (uuid x))
-      ) (
-         (set matched ())
-      ))
-   ) ())
-);
+#macro ('match-pats( term matched return () )) ();
+#macro ('match-pats( term matched return (ps (lhs rhs)) )) (
+#   (match-pats( term matched return ps ))
+#   (if matched () (
+#      (set matched True)
+#      (match-destructure( term matched return lhs ))
+#      (if matched (
+#         (set return rhs)
+#      ) ())
+#   ))
+#);
+#macro ('match-destructure( term matched return () )) (
+#   (if matched (
+#      (if term (
+#         (set matched ())
+#      ) ())
+#   ) ())
+#);
+#macro ('match-destructure( term matched return (:Literal: l) )) (
+#   (if matched (
+#      (if (is-atom term) (
+#         (if (eq( term l )) () (
+#            (set matched ())
+#         ))
+#      ) (
+#         (set matched ())
+#      ))
+#   ) ())
+#);
+#macro ('match-destructure( term matched return (:Variable: v) )) (
+#   (let v term)
+#);
+#macro ('match-destructure( term matched return (l r) )) (
+#   (if matched (
+#      (if (is-cons term) (
+#         (let (uuid x) term)
+#         (set term (head (uuid x)))
+#         (match-destructure( term matched return l ))
+#         (set term (tail (uuid x)))
+#         (match-destructure( term matched return r ))
+#         (set term (uuid x))
+#      ) (
+#         (set matched ())
+#      ))
+#   ) ())
+#);
