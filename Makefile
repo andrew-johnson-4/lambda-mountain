@@ -1,6 +1,6 @@
 
 nostd: prod
-	./production --nostd -o tmp.s tests/strict/ifeq.lm
+	./production --nostd -o tmp.s tests/strict/ifstreq.lm
 	as -o tmp.o tmp.s
 	ld -o tmp tmp.o
 	./tmp && echo $?
