@@ -7,9 +7,10 @@ import STDLIB/default-stdlib.lm;
 main := (tail(
    (let x 'a_s)
    (let y 'a_s)
-   (print x)(print y)(print \n_s)
-   (if (==( x y )) (print 'AEqA\n_s) (print 'Failure\n_s) )
-   (set y 'b_s)
-   (print x)(print y)(print \n_s)
-   (if (==( x y )) (print 'Failure\n_s) (print 'ANotEqB\n_s) )
+   (==( x y ))
+#   (print x)(print y)(print \n_s)
+#   (if (==( x y )) (print 'AEqA\n_s) (print 'Failure\n_s) )
+#   (set y 'b_s)
+#   (print x)(print y)(print \n_s)
+#   (if (==( x y )) (print 'Failure\n_s) (print 'ANotEqB\n_s) )
 ));

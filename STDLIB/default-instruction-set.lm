@@ -97,6 +97,18 @@ fragment mov := λ(: src Reg64)(: index Literal+Constant)(: dst LocalVariable+Si
          \t 'movq \s (*( word-offset 8 )) \[ '%r14 \] , '%r15 \n
          \t 'movq \s '%r15 , \s (+( (.expression dst) (*( word-offset 8 )) )) \[ '%rbp \] \n
       ))
+      (if-eq size 4 (
+         \t 'movq \s '0 \[ '%r14 \] , \s '%r15 \n
+         \t 'movq \s '%r15 , \s (.expression dst) \[ '%rbp \] \n
+      ))
+      (if-eq size 2 (
+         \t 'movq \s '0 \[ '%r14 \] , \s '%r15 \n
+         \t 'movq \s '%r15 , \s (.expression dst) \[ '%rbp \] \n
+      ))
+      (if-eq size 1 (
+         \t 'movq \s '0 \[ '%r14 \] , \s '%r15 \n
+         \t 'movq \s '%r15 , \s (.expression dst) \[ '%rbp \] \n
+      ))
    ))
 ) Nil);
 
