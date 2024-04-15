@@ -1,0 +1,26 @@
+
+import STDLIB/default-instruction-set.lm;
+import STDLIB/default-primitives.lm;
+import STDLIB/default-rules.lm;
+import STDLIB/default-stdlib.lm;
+
+main := (tail(
+   (match 1u64 (
+      ()
+      (1u64 (print 1u64))
+      (2u64 (print 2u64))
+      (3u64 (print 3u64))
+   ))
+   (match 2u64 (
+      ()
+      (1u64 (print 1u64))
+      (2u64 (print 2u64))
+      (3u64 (print 3u64))
+   ))
+   (match 3u64 (
+      ()
+      (1u64 (print 1u64))
+      (2u64 (print 2u64))
+      (3u64 (print 3u64))
+   ))
+));
