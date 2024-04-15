@@ -183,6 +183,12 @@ fragment == := λ(: l U64+GlobalVariable)(: r U64+Literal+Constant). (: (
    ))
    (.expression( 'je ))
 ) BranchConditional);
+fragment == := λ(: l U64+LocalVariable)(: r U64+Literal+Constant). (: (
+   (.program (
+      \t 'cmp \s '$ (.expression r) , (.expression l) \[ '%rbp \] \n
+   ))
+   (.expression( 'je ))
+) BranchConditional);
 fragment == := λ(: l U64+Literal+Constant)(: r U64+GlobalVariable). (: (
    (.program (
       \t 'mov \s '$ (.expression r) , '%r15 \n
