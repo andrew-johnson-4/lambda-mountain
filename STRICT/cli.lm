@@ -6,32 +6,40 @@ import STDLIB/default-stdlib.lm;
 
 import STRICT/utility.lm;
 
-config-strict            := 0u8;
+config-strict                := True;
+config-preprocess            := True;
+config-target                := 'tmp.s_s;
 
-type CompileMode Tokenize | Parse | Compile;
-config-mode              := Compile;
+type CompileMode ModeTokenize | ModeParse | ModeTypecheck | ModeCompile;
+config-mode              := ModeCompile;
 
 main := λ(: argc U64)(: argv U8[][]).(tail(
    (let argi 0u64)
    (let input SNil)
    (while (<( argi argc )) (
-      (set input (SCons(
-         (close (SAtom( 
-            ([]( argv argi ))
+      (match ([]( argv argi )) (
+         ()
+         ('--tokenize_s (set config-mode ModeTokenize))
+         ('--parse_s (set config-mode ModeParse))
+         ('--typecheck_s (set config-mode ModeTypecheck))
+         ('--compile_s (set config-mode ModeCompile))
+         ('--strict_s (set config-strict True))
+         ('--gradual_s (set config-strict False))
+         ('--macro_s (set config-preprocess True))
+         ('--nomacro_s (set config-preprocess False))
+         ('-o_s (tail(
+            (set argi (+( argi 1u64 )))
+            (set input (SCons(
+               (close input)
+               (close (SAtom([]( argv argi ))))
+            )))
          )))
-         (close input)
-      )))
+         (fp (set input (SCons(
+            (close input)
+            (close (SAtom( fp )))
+         ))))
+      ))
       (set argi (+( argi 1u64 )))
    ))
    (print input)
-#      (print (==( ([]( argv argi )) (: '--tokenize U8[]) )) )
-#             if set_target { config_target().lock().unwrap().set(arg); }
-#      else if arg=="--tokenize" {unsafe{ CONFIG_MODE = CompileMode::Tokenize; }}
-#      else if arg=="--parse" {unsafe{ CONFIG_MODE = CompileMode::Parse; }}
-#      else if arg=="--typecheck" {unsafe{ CONFIG_MODE = CompileMode::Typecheck; }}
-#      else if arg=="--compile" {unsafe{ CONFIG_MODE = CompileMode::Compile; }}
-#      else if arg=="--strict" {unsafe{ CONFIG_STRICT = true; }}
-#      else if arg=="--gradual" {unsafe{ CONFIG_STRICT = false; }}
-#      else if arg=="--noprep" {unsafe{ CONFIG_PREPROCESS = false; }}
-#      else if arg=="-o" { set_target = true; }
 ));
