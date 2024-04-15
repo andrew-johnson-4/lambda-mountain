@@ -183,9 +183,9 @@ print := λ(: x I8). (: (tail(
 )) Nil);
 
 == := λ(: l U8[])(: r U8[]). (: (tail(
-   123u8
-   123u8
-)) U8);
+   123u64
+   1u64
+)) U64);
 
 cons-page-tail := 0u64;
 malloc := λ (: sz U64) . (: (tail(
