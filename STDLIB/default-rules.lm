@@ -7,11 +7,22 @@ macro ('match t ps) (tail(
    (match-pats( (uuid term) ps (fail PatternMatchFailure_s) ))
 ));
 
-macro ('match-pats( term ps remainder )) (
+macro ('match-pats( term () remainder )) (
    remainder
 );
 
-#macro ('match-pats( term matched return () )) ();
+macro ('match-pats( term (ps (lhs rhs)) remainder )) (
+   (match-pats(
+      term
+      ps
+      (if (match-pats-condition lhs) rhs remainder)
+   ))
+);
+
+macro ('match-pats-condition any) (
+   (branchtrue())
+);
+
 #macro ('match-pats( term matched return (ps (lhs rhs)) )) (
 #   (match-pats( term matched return ps ))
 #   (if matched () (
