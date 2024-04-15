@@ -70600,8 +70600,9 @@ uuid_000000000000042e:
 	call __compile_expr_strict_C___
 	mov %r12, -72(%rbp)
 	mov %r13, -80(%rbp)
-	mov -56(%rbp),%r12
-	mov -64(%rbp),%r13
+	mov -72(%rbp),%r12
+	mov -80(%rbp),%r13
+	call __expr_C__C_get_context_C___
 	push %r12
 	push %r13
 	mov -344(%rbp),%r12
@@ -111321,6 +111322,8 @@ __typecheck_infer_expr_C___:
 	pushq $0
 	pushq $0
 	pushq $0
+	pushq $0
+	pushq $0
 	push %r12
 	push %r13
 	call tail
@@ -114441,6 +114444,10 @@ uuid_00000000000008ab:
 	pop %r12
 	cmp $0, %r14
 	je uuid_00000000000008ac
+	mov $0, %r12
+	mov $0, %r13
+	mov %r12, -520(%rbp)
+	mov %r13, -528(%rbp)
 	mov -40(%rbp),%r12
 	mov -48(%rbp),%r13
 	push %r12
@@ -114474,8 +114481,10 @@ uuid_00000000000008ab:
 	mov %r8, %r12
 	pop %r13
 	call __typecheck_infer_expr_C___
-	mov -40(%rbp),%r12
-	mov -48(%rbp),%r13
+	mov %r12, -520(%rbp)
+	mov %r13, -528(%rbp)
+	mov -520(%rbp),%r12
+	mov -528(%rbp),%r13
 	push %r12
 	push %r13
 	mov -488(%rbp),%r12
@@ -114705,8 +114714,8 @@ uuid_00000000000008b1:
 	mov $0, %r14
 	mov 0(%r13), %r12
 	mov 8(%r13), %r13
-	mov %r12, -520(%rbp)
-	mov %r13, -528(%rbp)
+	mov %r12, -536(%rbp)
+	mov %r13, -544(%rbp)
 	mov $1, %r14
 uuid_00000000000008b2:
 	pop %r13
@@ -114723,8 +114732,8 @@ uuid_00000000000008b3:
 	mov $0, %r14
 	mov 0(%r13), %r12
 	mov 8(%r13), %r13
-	mov %r12, -536(%rbp)
-	mov %r13, -544(%rbp)
+	mov %r12, -552(%rbp)
+	mov %r13, -560(%rbp)
 	mov $1, %r14
 uuid_00000000000008b4:
 	pop %r13
@@ -114738,8 +114747,8 @@ uuid_00000000000008b5:
 	mov -48(%rbp),%r13
 	push %r12
 	push %r13
-	mov -520(%rbp),%r12
-	mov -528(%rbp),%r13
+	mov -536(%rbp),%r12
+	mov -544(%rbp),%r13
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
 	mov %r13, 8(%r8)
@@ -114773,8 +114782,8 @@ uuid_00000000000008b5:
 	mov -48(%rbp),%r13
 	push %r12
 	push %r13
-	mov -536(%rbp),%r12
-	mov -544(%rbp),%r13
+	mov -552(%rbp),%r12
+	mov -560(%rbp),%r13
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
 	mov %r13, 8(%r8)
@@ -114990,8 +114999,8 @@ uuid_00000000000008bb:
 	je uuid_00000000000008bc
 	mov 8(%r12), %r13
 	mov 0(%r12), %r12
-	mov %r12, -552(%rbp)
-	mov %r13, -560(%rbp)
+	mov %r12, -568(%rbp)
+	mov %r13, -576(%rbp)
 	mov $1, %r14
 	pop %r13
 	pop %r12
@@ -115002,8 +115011,8 @@ uuid_00000000000008bb:
 	mov $0, %r14
 	mov 0(%r13), %r12
 	mov 8(%r13), %r13
-	mov %r12, -568(%rbp)
-	mov %r13, -576(%rbp)
+	mov %r12, -584(%rbp)
+	mov %r13, -592(%rbp)
 	mov $1, %r14
 uuid_00000000000008bc:
 	pop %r13
@@ -115023,8 +115032,8 @@ uuid_00000000000008bf:
 	mov -48(%rbp),%r13
 	push %r12
 	push %r13
-	mov -552(%rbp),%r12
-	mov -560(%rbp),%r13
+	mov -568(%rbp),%r12
+	mov -576(%rbp),%r13
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
 	mov %r13, 8(%r8)
@@ -115058,8 +115067,8 @@ uuid_00000000000008bf:
 	mov -48(%rbp),%r13
 	push %r12
 	push %r13
-	mov -568(%rbp),%r12
-	mov -576(%rbp),%r13
+	mov -584(%rbp),%r12
+	mov -592(%rbp),%r13
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
 	mov %r13, 8(%r8)
@@ -115089,8 +115098,8 @@ uuid_00000000000008bf:
 	call __typecheck_infer_expr_C___
 	mov %r12, -40(%rbp)
 	mov %r13, -48(%rbp)
-	mov -568(%rbp),%r12
-	mov -576(%rbp),%r13
+	mov -584(%rbp),%r12
+	mov -592(%rbp),%r13
 	call __typecheck_lookup_C___
 	cmp $0,%r12
 	jne uuid_00000000000008c0
@@ -115104,8 +115113,8 @@ uuid_00000000000008c0:
 	mov -32(%rbp),%r13
 	push %r12
 	push %r13
-	mov -568(%rbp),%r12
-	mov -576(%rbp),%r13
+	mov -584(%rbp),%r12
+	mov -592(%rbp),%r13
 	call __typecheck_lookup_C___
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
@@ -115237,8 +115246,8 @@ uuid_00000000000008c5:
 	mov $0, %r14
 	mov 0(%r13), %r12
 	mov 8(%r13), %r13
-	mov %r12, -584(%rbp)
-	mov %r13, -592(%rbp)
+	mov %r12, -600(%rbp)
+	mov %r13, -608(%rbp)
 	mov $1, %r14
 uuid_00000000000008c6:
 	pop %r13
@@ -115284,8 +115293,8 @@ uuid_00000000000008c9:
 	mov $0, %r14
 	mov 0(%r13), %r12
 	mov 8(%r13), %r13
-	mov %r12, -600(%rbp)
-	mov %r13, -608(%rbp)
+	mov %r12, -616(%rbp)
+	mov %r13, -624(%rbp)
 	mov $1, %r14
 uuid_00000000000008ca:
 	pop %r13
@@ -115299,8 +115308,8 @@ uuid_00000000000008cb:
 	mov -48(%rbp),%r13
 	push %r12
 	push %r13
-	mov -600(%rbp),%r12
-	mov -608(%rbp),%r13
+	mov -616(%rbp),%r12
+	mov -624(%rbp),%r13
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
 	mov %r13, 8(%r8)
@@ -115330,8 +115339,8 @@ uuid_00000000000008cb:
 	call __typecheck_infer_expr_C___
 	mov %r12, -40(%rbp)
 	mov %r13, -48(%rbp)
-	mov -600(%rbp),%r12
-	mov -608(%rbp),%r13
+	mov -616(%rbp),%r12
+	mov -624(%rbp),%r13
 	call __typecheck_lookup_C___
 	cmp $0,%r12
 	jne uuid_00000000000008cc
@@ -115341,8 +115350,8 @@ uuid_00000000000008cb:
 	mov -48(%rbp),%r13
 	push %r12
 	push %r13
-	mov -584(%rbp),%r12
-	mov -592(%rbp),%r13
+	mov -600(%rbp),%r12
+	mov -608(%rbp),%r13
 	push %r12
 	push %r13
 	mov $0,%r12
@@ -115377,8 +115386,8 @@ uuid_00000000000008cc:
 	mov -48(%rbp),%r13
 	push %r12
 	push %r13
-	mov -584(%rbp),%r12
-	mov -592(%rbp),%r13
+	mov -600(%rbp),%r12
+	mov -608(%rbp),%r13
 	push %r12
 	push %r13
 	mov $uuid_000000000000039d, %r12
@@ -115389,8 +115398,8 @@ uuid_00000000000008cc:
 	mov $0, %r13
 	push %r12
 	push %r13
-	mov -600(%rbp),%r12
-	mov -608(%rbp),%r13
+	mov -616(%rbp),%r12
+	mov -624(%rbp),%r13
 	call __typecheck_lookup_C___
 	call __typecheck_not_representation_C___
 	call uuid_0000000000000003
@@ -115504,8 +115513,8 @@ uuid_00000000000008cf:
 	je uuid_00000000000008d0
 	mov 8(%r12), %r13
 	mov 0(%r12), %r12
-	mov %r12, -616(%rbp)
-	mov %r13, -624(%rbp)
+	mov %r12, -632(%rbp)
+	mov %r13, -640(%rbp)
 	mov $1, %r14
 	pop %r13
 	pop %r12
@@ -115516,8 +115525,8 @@ uuid_00000000000008cf:
 	mov $0, %r14
 	mov 0(%r13), %r12
 	mov 8(%r13), %r13
-	mov %r12, -632(%rbp)
-	mov %r13, -640(%rbp)
+	mov %r12, -648(%rbp)
+	mov %r13, -656(%rbp)
 	mov $1, %r14
 uuid_00000000000008d0:
 	pop %r13
@@ -115527,41 +115536,6 @@ uuid_00000000000008d1:
 	pop %r12
 	cmp $0, %r14
 	je uuid_00000000000008e0
-	mov -40(%rbp),%r12
-	mov -48(%rbp),%r13
-	push %r12
-	push %r13
-	mov -616(%rbp),%r12
-	mov -624(%rbp),%r13
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	pop %r13
-	pop %r12
-	push %r8
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	mov %r8, %r12
-	pop %r13
-	push %r12
-	push %r13
-	mov -8(%rbp),%r12
-	mov -16(%rbp),%r13
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	pop %r13
-	pop %r12
-	push %r8
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	mov %r8, %r12
-	pop %r13
-	call __typecheck_infer_expr_C___
-	mov %r12, -40(%rbp)
-	mov %r13, -48(%rbp)
 	mov -40(%rbp),%r12
 	mov -48(%rbp),%r13
 	push %r12
@@ -115597,8 +115571,43 @@ uuid_00000000000008d1:
 	call __typecheck_infer_expr_C___
 	mov %r12, -40(%rbp)
 	mov %r13, -48(%rbp)
-	mov -616(%rbp),%r12
-	mov -624(%rbp),%r13
+	mov -40(%rbp),%r12
+	mov -48(%rbp),%r13
+	push %r12
+	push %r13
+	mov -648(%rbp),%r12
+	mov -656(%rbp),%r13
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	pop %r13
+	pop %r12
+	push %r8
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	mov %r8, %r12
+	pop %r13
+	push %r12
+	push %r13
+	mov -8(%rbp),%r12
+	mov -16(%rbp),%r13
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	pop %r13
+	pop %r12
+	push %r8
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	mov %r8, %r12
+	pop %r13
+	call __typecheck_infer_expr_C___
+	mov %r12, -40(%rbp)
+	mov %r13, -48(%rbp)
+	mov -632(%rbp),%r12
+	mov -640(%rbp),%r13
 	call __typecheck_lookup_C___
 	push %r12
 	push %r13
@@ -115618,8 +115627,8 @@ uuid_00000000000008d1:
 	call __typecheck_slot_C___
 	push %r12
 	push %r13
-	mov -632(%rbp),%r12
-	mov -640(%rbp),%r13
+	mov -648(%rbp),%r12
+	mov -656(%rbp),%r13
 	call __typecheck_lookup_C___
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
@@ -115750,8 +115759,8 @@ uuid_00000000000008d8:
 	je uuid_00000000000008d9
 	mov 8(%r12), %r13
 	mov 0(%r12), %r12
-	mov %r12, -648(%rbp)
-	mov %r13, -656(%rbp)
+	mov %r12, -664(%rbp)
+	mov %r13, -672(%rbp)
 	mov $1, %r14
 	pop %r13
 	pop %r12
@@ -115762,8 +115771,8 @@ uuid_00000000000008d8:
 	mov $0, %r14
 	mov 0(%r13), %r12
 	mov 8(%r13), %r13
-	mov %r12, -664(%rbp)
-	mov %r13, -672(%rbp)
+	mov %r12, -680(%rbp)
+	mov %r13, -688(%rbp)
 	mov $1, %r14
 uuid_00000000000008d9:
 	pop %r13
@@ -115780,8 +115789,8 @@ uuid_00000000000008da:
 	mov $0, %r14
 	mov 0(%r13), %r12
 	mov 8(%r13), %r13
-	mov %r12, -680(%rbp)
-	mov %r13, -688(%rbp)
+	mov %r12, -696(%rbp)
+	mov %r13, -704(%rbp)
 	mov $1, %r14
 uuid_00000000000008db:
 	pop %r13
@@ -115796,8 +115805,8 @@ uuid_00000000000008db:
 	mov -32(%rbp),%r13
 	push %r12
 	push %r13
-	mov -616(%rbp),%r12
-	mov -624(%rbp),%r13
+	mov -632(%rbp),%r12
+	mov -640(%rbp),%r13
 	call __typecheck_lookup_C___
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
@@ -115812,8 +115821,8 @@ uuid_00000000000008db:
 	pop %r13
 	push %r12
 	push %r13
-	mov -680(%rbp),%r12
-	mov -688(%rbp),%r13
+	mov -696(%rbp),%r12
+	mov -704(%rbp),%r13
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
 	mov %r13, 8(%r8)
@@ -115849,8 +115858,8 @@ uuid_00000000000008dc:
 	je uuid_00000000000008dd
 	mov 8(%r12), %r13
 	mov 0(%r12), %r12
-	mov %r12, -696(%rbp)
-	mov %r13, -704(%rbp)
+	mov %r12, -712(%rbp)
+	mov %r13, -720(%rbp)
 	mov $1, %r14
 	pop %r13
 	pop %r12
@@ -115861,8 +115870,8 @@ uuid_00000000000008dc:
 	mov $0, %r14
 	mov 0(%r13), %r12
 	mov 8(%r13), %r13
-	mov %r12, -712(%rbp)
-	mov %r13, -720(%rbp)
+	mov %r12, -728(%rbp)
+	mov %r13, -736(%rbp)
 	mov $1, %r14
 uuid_00000000000008dd:
 	pop %r13
@@ -115877,12 +115886,12 @@ uuid_00000000000008dd:
 	mov $0, %r13
 	push %r12
 	push %r13
-	mov -696(%rbp),%r12
-	mov -704(%rbp),%r13
-	push %r12
-	push %r13
 	mov -712(%rbp),%r12
 	mov -720(%rbp),%r13
+	push %r12
+	push %r13
+	mov -728(%rbp),%r12
+	mov -736(%rbp),%r13
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
 	mov %r13, 8(%r8)
@@ -115968,8 +115977,8 @@ uuid_00000000000008e1:
 	je uuid_00000000000008e2
 	mov 8(%r12), %r13
 	mov 0(%r12), %r12
-	mov %r12, -728(%rbp)
-	mov %r13, -736(%rbp)
+	mov %r12, -744(%rbp)
+	mov %r13, -752(%rbp)
 	mov $1, %r14
 	pop %r13
 	pop %r12
@@ -115980,8 +115989,8 @@ uuid_00000000000008e1:
 	mov $0, %r14
 	mov 0(%r13), %r12
 	mov 8(%r13), %r13
-	mov %r12, -744(%rbp)
-	mov %r13, -752(%rbp)
+	mov %r12, -760(%rbp)
+	mov %r13, -768(%rbp)
 	mov $1, %r14
 uuid_00000000000008e2:
 	pop %r13
@@ -115995,8 +116004,8 @@ uuid_00000000000008e3:
 	mov -48(%rbp),%r13
 	push %r12
 	push %r13
-	mov -728(%rbp),%r12
-	mov -736(%rbp),%r13
+	mov -744(%rbp),%r12
+	mov -752(%rbp),%r13
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
 	mov %r13, 8(%r8)
@@ -116015,8 +116024,8 @@ uuid_00000000000008e3:
 	mov -48(%rbp),%r13
 	push %r12
 	push %r13
-	mov -744(%rbp),%r12
-	mov -752(%rbp),%r13
+	mov -760(%rbp),%r12
+	mov -768(%rbp),%r13
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
 	mov %r13, 8(%r8)
@@ -116044,8 +116053,8 @@ uuid_00000000000008e3:
 	mov %r8, %r12
 	pop %r13
 	call __typecheck_infer_expr_C___
-	mov -744(%rbp),%r12
-	mov -752(%rbp),%r13
+	mov -760(%rbp),%r12
+	mov -768(%rbp),%r13
 	call __typecheck_lookup_C___
 	mov $0, %r14
 	cmp $0, %r14
@@ -116064,8 +116073,8 @@ uuid_00000000000008e4:
 uuid_00000000000008e5:
 	cmp $0, %r14
 	jne uuid_00000000000008e6
-	mov %r12, -760(%rbp)
-	mov %r13, -768(%rbp)
+	mov %r12, -776(%rbp)
+	mov %r13, -784(%rbp)
 	mov $1, %r14
 	cmp $0, %r14
 	je uuid_00000000000008e6
@@ -116077,13 +116086,13 @@ uuid_00000000000008e5:
 	mov $0, %r13
 	push %r12
 	push %r13
-	mov -728(%rbp),%r12
-	mov -736(%rbp),%r13
+	mov -744(%rbp),%r12
+	mov -752(%rbp),%r13
 	call __typecheck_typeof_lhs_C___
 	push %r12
 	push %r13
-	mov -760(%rbp),%r12
-	mov -768(%rbp),%r13
+	mov -776(%rbp),%r12
+	mov -784(%rbp),%r13
 	call __typecheck_as_return_C___
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
@@ -116163,8 +116172,8 @@ uuid_00000000000008e9:
 	mov $0, %r14
 	mov 0(%r13), %r12
 	mov 8(%r13), %r13
-	mov %r12, -776(%rbp)
-	mov %r13, -784(%rbp)
+	mov %r12, -792(%rbp)
+	mov %r13, -800(%rbp)
 	mov $1, %r14
 uuid_00000000000008ea:
 	pop %r13
@@ -116175,8 +116184,8 @@ uuid_00000000000008ea:
 	mov -48(%rbp),%r13
 	push %r12
 	push %r13
-	mov -776(%rbp),%r12
-	mov -784(%rbp),%r13
+	mov -792(%rbp),%r12
+	mov -800(%rbp),%r13
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
 	mov %r13, 8(%r8)
@@ -116206,8 +116215,8 @@ uuid_00000000000008eb:
 uuid_00000000000008ec:
 	cmp $0, %r14
 	jne uuid_00000000000008ed
-	mov %r12, -792(%rbp)
-	mov %r13, -800(%rbp)
+	mov %r12, -808(%rbp)
+	mov %r13, -816(%rbp)
 	mov $1, %r14
 	cmp $0, %r14
 	je uuid_00000000000008ed
@@ -116215,8 +116224,8 @@ uuid_00000000000008ec:
 	mov -32(%rbp),%r13
 	push %r12
 	push %r13
-	mov -792(%rbp),%r12
-	mov -800(%rbp),%r13
+	mov -808(%rbp),%r12
+	mov -816(%rbp),%r13
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
 	mov %r13, 8(%r8)
@@ -116240,8 +116249,8 @@ uuid_00000000000008ee:
 uuid_00000000000008ef:
 	cmp $0, %r14
 	jne uuid_00000000000008f1
-	mov %r12, -808(%rbp)
-	mov %r13, -816(%rbp)
+	mov %r12, -824(%rbp)
+	mov %r13, -832(%rbp)
 	mov $1, %r14
 	cmp $0, %r14
 	je uuid_00000000000008f1
@@ -116249,8 +116258,8 @@ uuid_00000000000008ef:
 	mov $0, %r13
 	push %r12
 	push %r13
-	mov -808(%rbp),%r12
-	mov -816(%rbp),%r13
+	mov -824(%rbp),%r12
+	mov -832(%rbp),%r13
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
 	mov %r13, 8(%r8)

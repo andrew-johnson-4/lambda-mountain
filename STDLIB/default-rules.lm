@@ -15,12 +15,12 @@ macro ('match-pats( term (ps (lhs rhs)) remainder )) (
    (match-pats(
       term
       ps
-      (if (match-pats-condition lhs) rhs remainder)
+      (if (match-pats-condition term lhs) rhs remainder)
    ))
 );
 
-macro ('match-pats-condition any) (
-   (branchtrue())
+macro ('match-pats-condition term (:Variable: v)) (
+   (tail( (let v term) (branchtrue()) ))
 );
 
 #macro ('match-pats( term matched return (ps (lhs rhs)) )) (

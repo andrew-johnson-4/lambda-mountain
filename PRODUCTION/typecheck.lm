@@ -775,8 +775,9 @@ typecheck-infer-expr := λctx e used . (tail(
          (typecheck-ascript( e (parse-type( U64+Literal+Constant )) ))
       )))
       ( (App( (App( (App( (Variable 'if) cond )) t )) f )) (tail(
-         (typecheck-infer-expr( ctx cond Used ))
-         (typecheck-infer-expr( ctx t Used ))
+         (local iflet-ctx)
+         (set iflet-ctx (typecheck-infer-expr( ctx cond Used )))
+         (typecheck-infer-expr( iflet-ctx t Used ))
          (typecheck-infer-expr( ctx f Used ))
          (typecheck-ascript( e (typecheck-lookup t) ))
       )))

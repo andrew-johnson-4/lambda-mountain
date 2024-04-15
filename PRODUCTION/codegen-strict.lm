@@ -99,7 +99,7 @@ compile-expr-strict := λctx e offset used . (tail(
             )))
             ( (App( (App( (App( (Variable 'if) cond )) t )) f )) (tail(
                (set e1 (compile-expr-strict( ctx cond offset Used )))
-               (set e2 (compile-expr-strict( ctx t offset Used )))
+               (set e2 (compile-expr-strict( (expr::get-context e1) t offset Used )))
                (set e3 (compile-expr-strict( ctx f offset Used )))
                (assert-eq( 'strict-compile-expr::while::ConditionMustBeBranchConditional (expr::get-type e1) BranchConditional ))
                (set e4 e1)
