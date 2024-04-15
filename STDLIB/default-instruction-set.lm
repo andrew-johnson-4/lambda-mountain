@@ -54,15 +54,26 @@ fragment push := λ(: src GlobalVariable+Sized<size>). (: (
    ))
 ) Nil);
 fragment push := λ(: src LocalVariable+Sized<size>). (: (
-   (.program ( for word-offset in (range( 0 (/( size 8 )) )) (
-      \t 'pushq \s (+(
-         (.expression src)
-         (+(
-            (+( size '-8 ))
-            (inv(*( word-offset 8 )))
-         ))
-      )) \[ '%rbp \] \n
-   )))
+   (.program (
+      (for word-offset in (range( 0 (/( size 8 )) )) (
+         \t 'pushq \s (+(
+            (.expression src)
+            (+(
+               (+( size '-8 ))
+               (inv(*( word-offset 8 )))
+            ))
+         )) \[ '%rbp \] \n
+     ))
+      (if-eq size 4 (
+         \t 'pushq \s (.expression src) \[ '%rbp \] \n
+      ))
+      (if-eq size 2 (
+         \t 'pushq \s (.expression src) \[ '%rbp \] \n
+      ))
+      (if-eq size 1 (
+         \t 'pushq \s (.expression src) \[ '%rbp \] \n
+      ))
+   ))
 ) Nil);
 fragment pop := λ(: src LocalVariable+Sized<size>). (: (
    (.program ( for word-offset in (range( 1 (+( (/( size 8 )) 1 )) )) (
