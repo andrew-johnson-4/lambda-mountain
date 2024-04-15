@@ -14,7 +14,10 @@ config-mode              := Compile;
 main := λ(: argc U64)(: argv U8[][]).(tail(
 #   (let argi 0u64)
    (let input SNil)
-   (set input SNil)
+   (set input (SCons(
+      (close SNil)
+      (close SNil)
+   )))
 #   (while (<( argi argc )) (
 #       (set input (SNil))
 #      (set input (SCons(
