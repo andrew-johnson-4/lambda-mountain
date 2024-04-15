@@ -37,6 +37,17 @@ print := λ(: x S). (: (tail(
    ()
 )) Nil);
 
+fail := λ(: msg Array<U8,?>). (: (tail(
+   (print msg)
+   (exit 1u64)
+)) Nil);
+
+exit := λ(: code U64). (: (tail(
+   (mov( 60u64 RAX ))
+   (mov( code RDI ))
+   (syscall())
+)) Nil);
+
 print := λ(: x Array<U8,?>). (: (tail(
    (mov( x R15 ))
    (mov( 0u64 RDX )) # data length
