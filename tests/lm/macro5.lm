@@ -1,9 +1,0 @@
-
-import STDLIB/default-rules.lm;
-
-f := λx . match x (
-   ()
-   ( (l r) ((f l) (f r)) )
-);
-
-main := print-s( f () );

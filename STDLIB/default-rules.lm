@@ -12,7 +12,15 @@ macro ('match-pats( term () remainder )) (
 );
 
 macro ('match-pats( term (ps (lhs rhs)) remainder )) (
-   remainder
+   (match-pats(
+      term
+      ps
+      (if (match-pats-condition lhs) rhs remainder)
+   ))
+);
+
+macro ('match-pats-condition any) (
+   (branchtrue())
 );
 
 #macro ('match-pats( term matched return (ps (lhs rhs)) )) (

@@ -82,6 +82,13 @@ fragment < := λ(: l LocalVariable+U64)(: r GlobalVariable+U64). (: (
    (.expression( 'jb ))
 ) BranchConditional);
 
+fragment branchtrue := λ(: _ Nil). (: (
+   (.expression( 'jmp ))
+) BranchConditional);
+fragment branchfalse := λ(: _ Nil). (: (
+   (.expression( 'nop ))
+) BranchConditional);
+
 fragment + := λ(: l LocalVariable+U8)(: r LocalVariable+U8). (: (
    (.program(
       \t 'mov \s (.expression l) \[ '%rbp \] , \s '%al \n
