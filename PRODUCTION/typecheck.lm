@@ -269,7 +269,7 @@ typecheck-infer-ctx := λctx e . (match e (
       ctx
    ))
    ( u (
-      fail (UnknownLhs u)
+      fail (UnknownLhsInferCtx u)
    ))
 ));
 
@@ -325,7 +325,7 @@ typecheck-typeof-lhs := λlhs . (match lhs (
       Nil
    ))
    ( u (
-      fail (UnknownLhs u)
+      fail (UnknownLhsTypeofLhs u)
    ))
 ));
 

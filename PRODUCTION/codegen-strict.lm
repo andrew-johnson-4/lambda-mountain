@@ -101,7 +101,17 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e1 (compile-expr-strict( ctx cond offset Used )))
                (set e2 (compile-expr-strict( (expr::get-context e1) t offset Used )))
                (set e3 (compile-expr-strict( ctx f offset Used )))
-               (assert-eq( 'strict-compile-expr::while::ConditionMustBeBranchConditional (expr::get-type e1) BranchConditional ))
+               (match (expr::get-type e1) (
+                  ()
+                  (BranchConditional ())
+                  ( _ (tail(
+                     (set e1 (expr::set-prog( e1 (
+                        (expr::get-prog e1)
+                        \t 'cmp \s '$1 , \s '%rax \n
+                     ))))
+                     (set e1 (expr::set-expr( e1 'je )))
+                  )))
+               ))
                (set e4 e1)
                (local label-true-branch)
                (set label-true-branch (uuid()))

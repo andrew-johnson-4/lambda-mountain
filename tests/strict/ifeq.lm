@@ -1,0 +1,81 @@
+
+import STDLIB/default-instruction-set.lm;
+import STDLIB/default-primitives.lm;
+import STDLIB/default-rules.lm;
+import STDLIB/default-stdlib.lm;
+
+main := (tail(
+   (tail(
+      (let x 0u8)
+      (let y 0u8)
+      (print x)(print y)(print \n_s)
+      (if (==( x y )) (print 'ZeroEqZero\n_s) (print 'Failure\n_s) )
+      (set y 1u8)
+      (print x)(print y)(print \n_s)
+      (if (==( x y )) (print 'Failure\n_s) (print 'ZeroNotEqualOne\n_s) )
+   ))
+   ()
+   (tail(
+      (let x 0u16)
+      (let y 0u16)
+      (print x)(print y)(print \n_s)
+      (if (==( x y )) (print 'ZeroEqZero\n_s) (print 'Failure\n_s) )
+      (set y 1u16)
+      (print x)(print y)(print \n_s)
+      (if (==( x y )) (print 'Failure\n_s) (print 'ZeroNotEqualOne\n_s) )
+   ))
+   (tail(
+      (let x 0u32)
+      (let y 0u32)
+      (print x)(print y)(print \n_s)
+      (if (==( x y )) (print 'ZeroEqZero\n_s) (print 'Failure\n_s) )
+      (set y 1u32)
+      (print x)(print y)(print \n_s)
+      (if (==( x y )) (print 'Failure\n_s) (print 'ZeroNotEqualOne\n_s) )
+   ))
+   (tail(
+      (let x 0u64)
+      (let y 0u64)
+      (print x)(print y)(print \n_s)
+      (if (==( x y )) (print 'ZeroEqZero\n_s) (print 'Failure\n_s) )
+      (set y 1u64)
+      (print x)(print y)(print \n_s)
+      (if (==( x y )) (print 'Failure\n_s) (print 'ZeroNotEqualOne\n_s) )
+   ))
+   (tail(
+      (let x 0i8)
+      (let y 0i8)
+      (print x)(print y)(print \n_s)
+      (if (==( x y )) (print 'ZeroEqZero\n_s) (print 'Failure\n_s) )
+      (set y 1i8)
+      (print x)(print y)(print \n_s)
+      (if (==( x y )) (print 'Failure\n_s) (print 'ZeroNotEqualOne\n_s) )
+   ))
+   (tail(
+      (let x 0i16)
+      (let y 0i16)
+      (print x)(print y)(print \n_s)
+      (if (==( x y )) (print 'ZeroEqZero\n_s) (print 'Failure\n_s) )
+      (set y 1i16)
+      (print x)(print y)(print \n_s)
+      (if (==( x y )) (print 'Failure\n_s) (print 'ZeroNotEqualOne\n_s) )
+   ))
+   (tail(
+      (let x 0i32)
+      (let y 0i32)
+      (print x)(print y)(print \n_s)
+      (if (==( x y )) (print 'ZeroEqZero\n_s) (print 'Failure\n_s) )
+      (set y 1i32)
+      (print x)(print y)(print \n_s)
+      (if (==( x y )) (print 'Failure\n_s) (print 'ZeroNotEqualOne\n_s) )
+   ))
+   (tail(
+      (let x 0i64)
+      (let y 0i64)
+      (print x)(print y)(print \n_s)
+      (if (==( x y )) (print 'ZeroEqZero\n_s) (print 'Failure\n_s) )
+      (set y 1i64)
+      (print x)(print y)(print \n_s)
+      (if (==( x y )) (print 'Failure\n_s) (print 'ZeroNotEqualOne\n_s) )
+   ))
+));
