@@ -8,4 +8,6 @@ main := (
    (let x 0u8)
    (let y 0u8)
    (if (==( x y )) (print 'True_s) (print 'False_s) )
+   (set y 1u8)
+   (if (==( x y )) (print 'True_s) (print 'False_s) )
 );
