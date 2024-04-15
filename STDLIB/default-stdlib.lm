@@ -183,8 +183,30 @@ print := λ(: x I8). (: (tail(
 )) Nil);
 
 == := λ(: l U8[])(: r U8[]). (: (tail(
-   123u64
-   1u64
+   (let c1 0u8)
+   (let c2 0u8)
+   (gensym-label start)
+   (gensym-label end-true)
+   (gensym-label end-false)
+   (gensym-label end)
+   (mov( l R15 ))
+   (mov( r R14 ))
+   (label start )
+   (mov( R15 0u64 c1 ))
+   (mov( R14 0u64 c2 ))
+   (if (==( c1 c2 )) () (jmp end-false))
+   (if (==( c1 0u8 )) () (jmp end-true))
+   (inc R14)
+   (inc R15)
+   (jmp start)
+   (label end-true)
+   (mov( 1u64 RAX ))
+   (jmp( end ))
+   (label end-false)
+   (mov( 0u64 RAX ))
+   (jmp( end ))
+   (label end)
+   (as RAX U64)
 )) U64);
 
 cons-page-tail := 0u64;

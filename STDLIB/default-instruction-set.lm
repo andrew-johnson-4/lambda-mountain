@@ -79,7 +79,7 @@ fragment mov := λ(: src LocalVariable+Sized<size>)(: index Literal+Constant)(: 
       ))
    ))
 ) Nil);
-fragment mov := λ(: src Reg64+x[])(: index Literal+Constant)(: dst LocalVariable+Sized<size>). (: (
+fragment mov := λ(: src Reg64)(: index Literal+Constant)(: dst LocalVariable+Sized<size>). (: (
    (.program (
       (\t 'mov \s '% (.expression src) , \s '%r14 \n)
       (for word-offset in (range( 0 (/( size 8 )) )) (
@@ -176,6 +176,11 @@ fragment cmp := λ(: imm Constant+Literal+Sized<8>)(: r Constant+Reg64). (: (.pr
 fragment cmp := λ(: imm Constant+Literal+Sized<4>)(: r Constant+Reg32). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
 fragment cmp := λ(: imm Constant+Literal+Sized<2>)(: r Constant+Reg16). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
 fragment cmp := λ(: imm Constant+Literal+Sized<1>)(: r Constant+Reg8). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
+
+fragment cmp := λ(: l Constant+Reg8)(: r Constant+Reg8). (: (.program( \t 'cmp \s '% (.expression l) , '% (.expression r) \n )) Nil);
+fragment cmp := λ(: l Constant+Reg16)(: r Constant+Reg16). (: (.program( \t 'cmp \s '% (.expression l) , '% (.expression r) \n )) Nil);
+fragment cmp := λ(: l Constant+Reg32)(: r Constant+Reg32). (: (.program( \t 'cmp \s '% (.expression l) , '% (.expression r) \n )) Nil);
+fragment cmp := λ(: l Constant+Reg64)(: r Constant+Reg64). (: (.program( \t 'cmp \s '% (.expression l) , '% (.expression r) \n )) Nil);
 
 fragment movsx := λ(: src Constant+Reg8)(: dst Constant+Reg64). (: (.program( \t 'movsx \s '% (.expression src) , '% (.expression dst) \n )) Nil);
 fragment movsx := λ(: src Constant+Reg16)(: dst Constant+Reg64). (: (.program( \t 'movsx \s '% (.expression src) , '% (.expression dst) \n )) Nil);

@@ -157,6 +157,25 @@ fragment - := λ(: l GlobalVariable+U64)(: r Constant+U64). (: (
    (.expression( 'r15 ))
 ) Reg64+U64);
 
+== := λ(: l U8)(: r U8). (: (tail(
+   (gensym-label end-true)
+   (gensym-label end-false)
+   (gensym-label end)
+   (mov( l R14B ))
+   (mov( r R15B ))
+   (cmp( R14B R15B ))
+   (je end-true)
+   (jmp end-false)
+   (label end-true)
+   (mov( 1u64 RAX ))
+   (jmp end)
+   (label end-false)
+   (mov( 0u64 RAX ))
+   (jmp end)
+   (label end)
+   (as RAX U64)
+)) U64);
+
 fragment == := λ(: l U64+Reg64)(: r U64+Reg64). (: (
    (.program (
       \t 'cmp \s '% (.expression l) , '% (.expression r) \n
