@@ -4,13 +4,13 @@ macro ( ('let x y) )
 
 macro ('match t ps) (tail(
    (let (uuid term) t)
-#   (let (uuid matched) ())
-
-#   (let (uuid return) ())
-   (print (uuid term))
-#   (match-pats( (uuid term) (uuid matched) (uuid return) ps ))
-#   (uuid return)
+   (match-pats( (uuid term) ps (fail PatternMatchFailure_s) ))
 ));
+
+macro ('match-pats( term ps remainder )) (
+   remainder
+);
+
 #macro ('match-pats( term matched return () )) ();
 #macro ('match-pats( term matched return (ps (lhs rhs)) )) (
 #   (match-pats( term matched return ps ))
