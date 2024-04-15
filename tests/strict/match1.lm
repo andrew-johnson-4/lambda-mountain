@@ -1,0 +1,11 @@
+
+import STDLIB/default-instruction-set.lm;
+import STDLIB/default-primitives.lm;
+import STDLIB/default-rules.lm;
+import STDLIB/default-stdlib.lm;
+
+main := match 1u64 (
+   ()
+   (1u64 (print 1u64))
+   (_ (print 0u64))
+);

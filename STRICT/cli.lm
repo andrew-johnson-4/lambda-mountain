@@ -6,9 +6,9 @@ import STDLIB/default-stdlib.lm;
 
 import STRICT/utility.lm;
 
-config-strict                := True;
-config-preprocess            := True;
-config-target                := 'tmp.s_s;
+#config-strict                := True;
+#config-preprocess            := True;
+#config-target                := 'tmp.s_s;
 
 type CompileMode ModeTokenize | ModeParse | ModeTypecheck | ModeCompile;
 config-mode              := ModeCompile;
@@ -17,27 +17,29 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
    (let argi 0u64)
    (let input SNil)
    (while (<( argi argc )) (
+      (print 'c_s)
       (match ([]( argv argi )) (
          ()
-         ('--tokenize_s (set config-mode ModeTokenize))
-         ('--parse_s (set config-mode ModeParse))
-         ('--typecheck_s (set config-mode ModeTypecheck))
-         ('--compile_s (set config-mode ModeCompile))
-         ('--strict_s (set config-strict True))
-         ('--gradual_s (set config-strict False))
-         ('--macro_s (set config-preprocess True))
-         ('--nomacro_s (set config-preprocess False))
-         ('-o_s (tail(
-            (set argi (+( argi 1u64 )))
-            (set input (SCons(
-               (close input)
-               (close (SAtom([]( argv argi ))))
-            )))
-         )))
-         (fp (set input (SCons(
-            (close input)
-            (close (SAtom( fp )))
-         ))))
+#         (_ (print c_s))
+#         ('--tokenize_s (set config-mode ModeTokenize))
+#         ('--parse_s (set config-mode ModeParse))
+#         ('--typecheck_s (set config-mode ModeTypecheck))
+#         ('--compile_s (set config-mode ModeCompile))
+#         ('--strict_s (set config-strict True))
+#         ('--gradual_s (set config-strict False))
+#         ('--macro_s (set config-preprocess True))
+#         ('--nomacro_s (set config-preprocess False))
+#         ('-o_s (tail(
+#            (set argi (+( argi 1u64 )))
+#            (set input (SCons(
+#               (close input)
+#               (close (SAtom([]( argv argi ))))
+#            )))
+#         )))
+#         (fp (set input (SCons(
+#            (close input)
+#            (close (SAtom( fp )))
+#         ))))
       ))
       (set argi (+( argi 1u64 )))
    ))
