@@ -12,22 +12,19 @@ type CompileMode Tokenize | Parse | Compile;
 config-mode              := Compile;
 
 main := λ(: argc U64)(: argv U8[][]).(tail(
-   (let argi 0u64)
+#   (let argi 0u64)
    (let input SNil)
-   (while (<( argi argc )) (
-      (set input (SCons(
-         (close (SAtom( 
-            ([]( argv argi ))
-         )))
-         (close input)
-      )))
-#      (if (==( ([]( argv argi )) '--tokenize_s )) (
-#         (print '--tokenize_s)
-#      ) (
-#         (print '--not-tokenize_s)
-#      ))
-      (set argi (+( argi 1u64 )))
-   ))
+   (set input SNil)
+#   (while (<( argi argc )) (
+#       (set input (SNil))
+#      (set input (SCons(
+#         (close (SAtom( 
+#            ([]( argv argi ))
+#         )))
+#         (close input)
+#      )))
+#      (set argi (+( argi 1u64 )))
+#   ))
    (print input)
 #      (print (==( ([]( argv argi )) (: '--tokenize U8[]) )) )
 #             if set_target { config_target().lock().unwrap().set(arg); }
