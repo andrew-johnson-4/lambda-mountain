@@ -4,10 +4,61 @@ import STDLIB/default-primitives.lm;
 import STDLIB/default-rules.lm;
 import STDLIB/default-stdlib.lm;
 
-main := (
-   (let x 0u8)
-   (let y 0u8)
-   (if (==( x y )) (print 'True_s) (print 'False_s) )
-   (set y 1u8)
-   (if (==( x y )) (print 'True_s) (print 'False_s) )
-);
+main := (tail(
+   (tail(
+      (let x 0u8)
+      (let y 0u8)
+      (if (==( x y )) (print 'ZeroEqZero\n_s) (print 'Failure\n_s) )
+      (set y 1u8)
+      (if (==( x y )) (print 'Failure\n_s) (print 'ZeroNotEqualOne\n_s) )
+   ))
+   (tail(
+      (let x 0u16)
+      (let y 0u16)
+      (if (==( x y )) (print 'ZeroEqZero\n_s) (print 'Failure\n_s) )
+      (set y 1u16)
+      (if (==( x y )) (print 'Failure\n_s) (print 'ZeroNotEqualOne\n_s) )
+   ))
+   (tail(
+      (let x 0u32)
+      (let y 0u32)
+      (if (==( x y )) (print 'ZeroEqZero\n_s) (print 'Failure\n_s) )
+      (set y 1u32)
+      (if (==( x y )) (print 'Failure\n_s) (print 'ZeroNotEqualOne\n_s) )
+   ))
+   (tail(
+      (let x 0u64)
+      (let y 0u64)
+      (if (==( x y )) (print 'ZeroEqZero\n_s) (print 'Failure\n_s) )
+      (set y 1u64)
+      (if (==( x y )) (print 'Failure\n_s) (print 'ZeroNotEqualOne\n_s) )
+   ))
+   (tail(
+      (let x 0i8)
+      (let y 0i8)
+      (if (==( x y )) (print 'ZeroEqZero\n_s) (print 'Failure\n_s) )
+      (set y 1i8)
+      (if (==( x y )) (print 'Failure\n_s) (print 'ZeroNotEqualOne\n_s) )
+   ))
+   (tail(
+      (let x 0i16)
+      (let y 0i16)
+      (if (==( x y )) (print 'ZeroEqZero\n_s) (print 'Failure\n_s) )
+      (set y 1i16)
+      (if (==( x y )) (print 'Failure\n_s) (print 'ZeroNotEqualOne\n_s) )
+   ))
+   (tail(
+      (let x 0i32)
+      (let y 0i32)
+      (if (==( x y )) (print 'ZeroEqZero\n_s) (print 'Failure\n_s) )
+      (set y 1i32)
+      (if (==( x y )) (print 'Failure\n_s) (print 'ZeroNotEqualOne\n_s) )
+   ))
+   (tail(
+      (let x 0i64)
+      (let y 0i64)
+      (if (==( x y )) (print 'ZeroEqZero\n_s) (print 'Failure\n_s) )
+      (set y 1i64)
+      (if (==( x y )) (print 'Failure\n_s) (print 'ZeroNotEqualOne\n_s) )
+   ))
+));
