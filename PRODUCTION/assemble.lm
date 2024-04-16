@@ -144,7 +144,7 @@ assemble := λprogram . (
             ))
             ( (App( (App( (Literal ':) body-initial )) body-type )) (tail(
                (local mtype)
-               (set mtype (typecheck-lookup body))
+               (set mtype (typecheck-lookup body-initial))
                (local lhs)
                (set lhs (Variable fname))
                (typecheck-ascript( lhs mtype ))

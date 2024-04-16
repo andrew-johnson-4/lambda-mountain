@@ -739,9 +739,16 @@ typecheck-infer-expr := λctx e used . (tail(
       ( (App( (Variable 'label) (Variable lname) )) (
          (typecheck-ascript( e Nil ))
       ))
-      ( (App( (App( (Literal ':) (Literal _) )) tt )) (
-         (typecheck-ascript( (tail (tail (head (tail e)))) (And( Constant (typecheck-infer-type-compound tt) )) ))
-         (typecheck-ascript( e (And( Constant (typecheck-infer-type-compound tt) )) ))
+      ( (App( (App( (Literal ':) (Literal maybe-tag) )) tt )) (
+         (local ctype)
+         (local mtype)
+         (set mtype (typecheck-infer-type-compound tt))
+         (set ctype (typecheck-infer-constructor-type maybe-tag))
+         (if ctype (
+            (set mtype (And( mtype maybe-tag )))
+         ) ())
+         (typecheck-ascript( (tail (tail (head (tail e)))) (And( Constant mtype )) ))
+         (typecheck-ascript( e (And( Constant mtype )) ))
       ))
       ( (App( (App( (Literal ':) asc )) tt )) (
          (typecheck-infer-expr( ctx asc used ))
