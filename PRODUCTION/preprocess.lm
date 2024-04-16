@@ -1,7 +1,57 @@
 
+preprocess-index-types := ();
+
 preprocess := λprogram . (tail(
-   ()
+   (preprocess-index-typedefs program)
    (preprocess-apply-macros program)
+));
+
+preprocess-index-typedefs := λprogram . (tail(
+   (while program (
+      (preprocess-index-typedef (tail program))
+      (set program (head program))
+   ))
+));
+
+preprocess-index-typedef := λterm . (match term (
+   ()
+   ( (Type( l ds )) (
+      (preprocess-index-indices( ds 0 ))
+   ))
+));
+
+preprocess-index-indices := λdef index . (match def (
+   ()
+   ( (App( (App( tds (Variable '|) )) body )) (tail(
+      (preprocess-index-indices( tds (i2s(inc(s2i index))) ))
+      (preprocess-index-index( body index ))
+   )))
+   ( body (
+      (preprocess-index-index( body index ))
+   ))
+));
+	
+preprocess-index-index := λbody index . (match body (
+   ()
+   ( (Literal tag) (tail(
+      (set preprocess-index-types (preprocess-index-types (tag index)))
+   )))
+   ( (App( (Literal tag) args )) (tail(
+      (set preprocess-index-types (preprocess-index-types (tag index)))
+   )))
+));
+
+preprocess-index-of-tag := λtag . (tail(
+   (local indices)
+   (local index)
+   (set indices preprocess-index-types)
+   (while indices (
+      (if (eq( (head(tail indices)) tag )) (
+         (set index (tail(tail indices)))
+      ) ())
+      (set indices (head indices))
+   ))
+   index
 ));
 
 substitute-macro-body := λkvs e . (match e (
@@ -53,7 +103,24 @@ try-destructure-macro := λlhs e . (match (lhs e) (
       (if (eq( pl el )) Accept ())
    ))
    ( ( (App( (Literal :Literal:) (Variable pv) )) (Literal el)) (
-      (Accept (KV( pv e )))
+      (if (typecheck-is-constructor el)
+         ()
+         (Accept (KV( pv e )))
+      )
+   ))
+   ( ( (App( (Literal :Tag:) (Variable pv) )) (Literal el)) (
+      (if (typecheck-is-constructor el)
+         (Accept (KV( pv
+            (App(
+               (App(
+                  (Literal :)
+                  (Literal (preprocess-index-of-tag el))
+               ))
+               (preprocess-restructure-type(parse-type( Constant+Literal+U64 )))
+            ))
+         )))
+         ()
+      )
    ))
    ( ( (App( (Literal :Variable:) (Variable pv) )) (Variable el)) (
       (Accept (KV( pv e )))
