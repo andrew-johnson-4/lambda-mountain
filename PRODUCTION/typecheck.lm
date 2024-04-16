@@ -766,10 +766,10 @@ typecheck-infer-expr := λctx e used . (tail(
          ) ())
       ))
       ( (Literal True) (tail(
-         (typecheck-ascript( e (And( U8 Constant )) ))
+         (typecheck-ascript( e (And( U8 (And( Literal Constant )) )) ))
       )))
       ( (Literal False) (tail(
-         (typecheck-ascript( e (And( U8 Constant )) ))
+         (typecheck-ascript( e (And( U8 (And( Literal Constant )) )) ))
       )))
       ( (Literal lit) (tail(
          (local ctype)
