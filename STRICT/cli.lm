@@ -34,10 +34,13 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
                (close (SAtom([]( argv argi ))))
             )))
          )))
-         (fp (set input (SCons(
-            (close input)
-            (close (SAtom( fp )))
-         ))))
+         (fp (tail(
+            (print fp)
+            (set input (SCons(
+               (close input)
+               (close (SAtom( fp )))
+            )))
+         )))
       ))
       (set argi (+( argi 1u64 )))
    ))
