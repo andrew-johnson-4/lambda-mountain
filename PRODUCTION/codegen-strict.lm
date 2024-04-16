@@ -137,6 +137,7 @@ compile-expr-strict := λctx e offset used . (tail(
                   (expr::get-unframe e2)
                   label-end ': \n
                ))))
+               (set e4 (expr::set-context( e4 (expr::get-context e2) )))
                e4
             )))
             ( (App( (Variable 'label) (Variable label-name) )) (
