@@ -86,6 +86,9 @@ assemble := λprogram . (
                   (typecheck-ascript( (GlobalVariable mname) mtype ))
                )))
             )))
+            ( other (tail(
+               (fail (GlobalsMustBeAscripted other))
+            )))
          ))
          (set preview_program pc3)
       ))

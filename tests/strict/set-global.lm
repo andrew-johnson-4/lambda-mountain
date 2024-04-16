@@ -6,7 +6,7 @@ import STDLIB/default-stdlib.lm;
 
 global-x := 123u64;
 type CompileMode ModeTokenize | ModeParse | ModeTypecheck | ModeCompile;
-config-mode              := ModeCompile;
+config-mode              := (: ModeCompile CompileMode);
 
 main := (tail(
    (print global-x)
