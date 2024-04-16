@@ -23,10 +23,10 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
          ('--parse_s (set config-mode ModeParse))
          ('--typecheck_s (set config-mode ModeTypecheck))
          ('--compile_s (set config-mode ModeCompile))
-         ('--strict_s (set config-strict True))
-         ('--gradual_s (set config-strict False))
-         ('--macro_s (set config-preprocess True))
-         ('--nomacro_s (set config-preprocess False))
+         ('--strict_s (set config-strict Trueu8))
+         ('--gradual_s (set config-strict Falseu8))
+         ('--macro_s (set config-preprocess Trueu8))
+         ('--nomacro_s (set config-preprocess Falseu8))
          ('-o_s (tail(
             (set argi (+( argi 1u64 )))
             (set input (SCons(

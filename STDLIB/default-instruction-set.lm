@@ -47,7 +47,7 @@ fragment push := λ(: src GlobalVariable+Sized<size>). (: (
          \t 'mov \s '0 \[ '%r15 \] , \s '%r15w \n
          \t 'push \s '%r15 \n
       ))
-      (if-eq size 2 (
+      (if-eq size 1 (
          \t 'mov \s '0 \[ '%r15 \] , \s '%r15b \n
          \t 'push \s '%r15 \n
       ))
