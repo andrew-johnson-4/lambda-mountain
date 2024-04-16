@@ -375,12 +375,8 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
          ))))
          (set ctx (context::bind( ctx 'push body )))
 
-         #define 'mov initializer
+         #define 'mov local initializer
          (local body)
-         (local while-push-start)
-         (local while-push-end)
-         (set while-push-start (uuid()))
-         (set while-push-end (uuid()))
          (set body (Fragment (Lambda(
             (App(
                (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
@@ -395,19 +391,50 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
                \t 'mov \s '%rbp , \s '%r15 \n
                \t 'add \s '$ (Variable 'dst) , \s '%r15 \n
                \t 'mov \s '$ case-size , \s '%r14 \n
-               while-push-start ': \n
+               ('label 'while-push-start) ': \n
                \t 'cmp \s '$0 , \s '%r14 \n
-               \t 'je \s while-push-end \n
+               \t 'je \s ('label 'while-push-end) \n
                \t 'pop \s 0 \[ '%r15 \] \n
                \t 'sub \s '$8 , \s '%r14 \n
                \t 'add \s '$8 , \s '%r15 \n
-               \t 'jmp \s while-push-start \n
-               while-push-end ': \n
+               \t 'jmp \s ('label 'while-push-start) \n
+               ('label 'while-push-end) ': \n
             )))
          ))))
          (typecheck-ascript( body ('->(
             (Cons( (And( enum-case base-type )) LocalVariable ))
-            LocalVariable
+            Nil
+         ))))
+         (set ctx (context::bind( ctx 'mov body )))
+
+         #define 'mov global initializer
+         (local body)
+         (set body (Fragment (Lambda(
+            (App(
+               (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
+               (App( (App( (Literal ':) (Variable 'dst) )) (Literal GlobalVariable) ))
+            ))
+            (App( (Variable '.program) (
+               DontChain
+               (if (eq( case-padding 0 )) () (
+                  \t 'sub \s '$ case-padding , \s '%r15 \n
+               ))
+               (App( (Variable '.program) (Variable 'src) ))
+               \t 'mov \s '$ (Variable 'dst) , \s '%r15 \n
+               \t 'mov \s '$ case-size , \s '%r14 \n
+               ('label 'while-push-start) ': \n
+               \t 'cmp \s '$0 , \s '%r14 \n
+               \t 'je \s ('label 'while-push-end) \n
+               \t 'pop \s 0 \[ '%r15 \] \n
+               \t 'sub \s '$8 , \s '%r14 \n
+               \t 'add \s '$8 , \s '%r15 \n
+               \t 'jmp \s ('label 'while-push-start) \n
+               ('label 'while-push-end) ': \n
+            )))
+         ))))
+         (typecheck-ascript( body ('->(
+            (Cons( (And( enum-case base-type )) GlobalVariable ))
+            Nil
          ))))
          (set ctx (context::bind( ctx 'mov body )))
 
@@ -458,7 +485,7 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
          ))))
          (set ctx (context::bind( ctx 'push body )))
 
-         #define 'mov initializer
+         #define 'mov local initializer
          (local body)
          (set body (Fragment (Lambda(
             (App(
@@ -477,7 +504,29 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
          ))))
          (typecheck-ascript( body ('->(
             (Cons( (And( enum-case base-type )) LocalVariable ))
-            LocalVariable
+            Nil
+         ))))
+         (set ctx (context::bind( ctx 'mov body )))
+
+         #define 'mov global initializer
+         (local body)
+         (set body (Fragment (Lambda(
+            (App(
+               (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
+               (App( (App( (Literal ':) (Variable 'dst) )) (Literal GlobalVariable) ))
+            ))
+            (App( (Variable '.program) (
+               DontChain
+               \t 'mov \s '$ (Variable 'dst) , \s '%r15 \n
+               (if (eq( case-padding 0 )) () (
+                  \t 'sub \s '$ case-padding , \s '%r15 \n
+               ))
+               \t 'movq \s '$ case-number , \s 0 \[ '%r15  \] \n
+            )))
+         ))))
+         (typecheck-ascript( body ('->(
+            (Cons( (And( enum-case base-type )) GlobalVariable ))
+            Nil
          ))))
          (set ctx (context::bind( ctx 'mov body )))
 

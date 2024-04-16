@@ -769,7 +769,7 @@ typecheck-infer-expr := λctx e used . (tail(
       ))
       ( (App( (App( (Variable 'set) (Variable lhs) )) rhs )) (tail(
          (typecheck-infer-expr( ctx rhs Used ))
-         (typecheck-ascript( e (typecheck-typeof-var( ctx lhs )) ))
+         (typecheck-ascript( e Nil ))
       )))
       ( (App( (Variable 'sizeof) (Literal tt) )) (tail(
          (typecheck-ascript( e (parse-type( U64+Literal+Constant )) ))
