@@ -1,0 +1,16 @@
+
+import STDLIB/default-instruction-set.lm;
+import STDLIB/default-primitives.lm;
+import STDLIB/default-rules.lm;
+import STDLIB/default-stdlib.lm;
+
+main := (tail(
+   (let x 0u64)
+   (while (<( x 4u64 )) (
+      (match 1u64  (
+         ()
+         (y (print y))
+      ))
+      (set x (+( x 1u64 )))
+   ))
+));
