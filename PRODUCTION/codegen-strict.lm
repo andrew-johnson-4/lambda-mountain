@@ -105,7 +105,7 @@ compile-expr-strict := λctx e offset used . (tail(
             ( (App( (App( (App( (Variable 'if) cond )) t )) f )) (tail(
                (set e1 (compile-expr-strict( ctx cond offset Used )))
                (set e2 (compile-expr-strict( (expr::get-context e1) t (expr::get-offset e1) Used )))
-               (set e3 (compile-expr-strict( ctx f (expr::get-offset e1) Used )))
+               (set e3 (compile-expr-strict( ctx f (expr::get-offset e2) Used )))
                (match (expr::get-type e1) (
                   ()
                   (BranchConditional ())
@@ -132,10 +132,16 @@ compile-expr-strict := λctx e offset used . (tail(
                   (expr::get-unframe e3)
                   \t 'jmp \s label-end \n
                   label-true-branch ': \n
-                  (expr::get-frame e2)
                   (expr::get-prog e2)
-                  (expr::get-unframe e2)
                   label-end ': \n
+               ))))
+               (set e4 (expr::set-context( e4 (expr::get-context e2) )))
+               (set e4 (expr::set-offset( e4 (expr::get-offset e1) )))
+               (set e4 (expr::set-frame( e4 (
+                  (expr::get-frame e1) (expr::get-frame e2)
+               ))))
+               (set e4 (expr::set-unframe( e4 (
+                  (expr::get-unframe e1) (expr::get-unframe e2)
                ))))
                e4
             )))

@@ -15,19 +15,64 @@ macro ('match-pats( term (ps (lhs rhs)) remainder )) (
    (match-pats(
       term
       ps
-      (if (match-pats-condition term lhs) rhs remainder)
+      (if (match-pats-condition( term lhs )) rhs remainder)
    ))
 );
 
-macro ('match-pats-condition term (:Variable: v)) (
+macro ('match-pats-condition( term (:Variable: v) )) (
    (tail( (let v term) (branchtrue()) ))
 );
 
-macro ('match-pats-condition term (:Literal: l)) (
+macro ('match-pats-condition( term (:Literal: l) )) (
    (==( term l ))
 );
 
-macro ('match-pats-condition term (:Tag: l)) (
+macro ('match-pats-condition( term (:Tag: l lt) )) (
    (==( (.0( term )) l ))
 );
+
+macro ('match-pats-condition( term ((:Tag: l lt) ( x1 )) )) (tail(
+   (let ok Trueu8)
+   (if (==( (.0( term )) l )) () (set ok Falseu8))
+   (if (match-pats-condition( (.1( (as term lt) )) x1 )) () (set ok Falseu8))
+   (==( ok Trueu8 ))
+));
+
+macro ('match-pats-condition( term ((:Tag: l lt) ( x2 x1 ) ))) (tail(
+   (let ok Trueu8)
+   (if (==( (.0( term )) l )) () (set ok Falseu8))
+   (if (match-pats-condition( (.1( (as term lt) )) x1 )) () (set ok Falseu8))
+   (if (match-pats-condition( (.2( (as term lt) )) x2 )) () (set ok Falseu8))
+   (==( ok Trueu8 ))
+));
+
+macro ('match-pats-condition( term ((:Tag: l lt) ( x3 x2 x1 ) ))) (tail(
+   (let ok Trueu8)
+   (if (==( (.0( term )) l )) () (set ok Falseu8))
+   (if (match-pats-condition( (.1( (as term lt) )) x1 )) () (set ok Falseu8))
+   (if (match-pats-condition( (.2( (as term lt) )) x2 )) () (set ok Falseu8))
+   (if (match-pats-condition( (.3( (as term lt) )) x3 )) () (set ok Falseu8))
+   (==( ok Trueu8 ))
+));
+
+macro ('match-pats-condition( term ((:Tag: l lt) ( x4 x3 x2 x1 ) ))) (tail(
+   (let ok Trueu8)
+   (if (==( (.0( term )) l )) () (set ok Falseu8))
+   (if (match-pats-condition( (.1( (as term lt) )) x1 )) () (set ok Falseu8))
+   (if (match-pats-condition( (.2( (as term lt) )) x2 )) () (set ok Falseu8))
+   (if (match-pats-condition( (.3( (as term lt) )) x3 )) () (set ok Falseu8))
+   (if (match-pats-condition( (.4( (as term lt) )) x4 )) () (set ok Falseu8))
+   (==( ok Trueu8 ))
+));
+
+macro ('match-pats-condition( term ((:Tag: l lt) ( x5 x4 x3 x2 x1 ) ))) (tail(
+   (let ok Trueu8)
+   (if (==( (.0( term )) l )) () (set ok Falseu8))
+   (if (match-pats-condition( (.1( (as term lt) )) x1 )) () (set ok Falseu8))
+   (if (match-pats-condition( (.2( (as term lt) )) x2 )) () (set ok Falseu8))
+   (if (match-pats-condition( (.3( (as term lt) )) x3 )) () (set ok Falseu8))
+   (if (match-pats-condition( (.4( (as term lt) )) x4 )) () (set ok Falseu8))
+   (if (match-pats-condition( (.5( (as term lt) )) x5 )) () (set ok Falseu8))
+   (==( ok Trueu8 ))
+));
 

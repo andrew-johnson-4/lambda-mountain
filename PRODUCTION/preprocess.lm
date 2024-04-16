@@ -3,7 +3,15 @@ preprocess-index-types := ();
 	
 preprocess := λprogram . (tail(
    (preprocess-index-typedefs program)
-   (preprocess-apply-macros program)
+   (set program (preprocess-apply-macros program))
+   program
+));
+
+preprocess-dump := λprogram . (tail(
+   (while program (
+      (print-s (tail program))(print-s \n)
+      (set program (head program))
+   ))
 ));
 
 preprocess-index-typedefs := λprogram . (tail(
@@ -108,22 +116,29 @@ try-destructure-macro := λlhs e . (match (lhs e) (
          (Accept (KV( pv e )))
       )
    ))
-   ( ( (App( (Literal :Tag:) (Variable pv) )) (Literal el)) (
-      (if (preprocess-index-of-tag el)
-         (Accept (KV( pv
-            (App(
-               (App(
-                  (Literal :)
-                  (Literal (preprocess-index-of-tag el))
-               ))
-               (preprocess-restructure-type(parse-type( Constant+Literal+U64 )))
-            ))
-         )))
-         ()
-      )
-   ))
    ( ( (App( (Literal :Variable:) (Variable pv) )) (Variable el)) (
       (Accept (KV( pv e )))
+   ))
+   ( ( (App( (App( (Literal :Tag:) (Variable pv) )) (Variable pt) )) (Literal el)) (
+      (if (preprocess-index-of-tag el)
+         (  Accept
+            (KV(
+               pv
+               (App(
+                  (App(
+                      (Literal :)
+                     (Literal (preprocess-index-of-tag el))
+                  ))
+                  (preprocess-restructure-type(parse-type( Constant+Literal+U64 )))
+               ))
+            ))
+            (KV(
+               pt
+               (preprocess-restructure-type(parse-type( el )))
+            ))
+         )
+         ()
+      )
    ))
    ( ((Variable pv) e) (
       (Accept (KV( pv e )))
