@@ -1,16 +1,16 @@
 
 
-#import STDLIB/default-instruction-set.lm;
-#import STDLIB/default-primitives.lm;
+import STDLIB/default-instruction-set.lm;
+import STDLIB/default-primitives.lm;
 import STDLIB/default-rules.lm;
-#import STDLIB/default-stdlib.lm;
+import STDLIB/default-stdlib.lm;
 
-#type Cases CaseOne | (CaseTwo( U64 )) | (CaseThree( U64 , U64 ));
+type Cases CaseOne | (CaseTwo( U64 )) | (CaseThree( U64 , U64 ));
 
 main := (
    (match (CaseOne)  (
       ()
-#      ((CaseOne) (print 'CaseOne_s))
+      ((CaseOne) (print 'CaseOne_s))
       ( (CaseTwo( x )) (print 'CaseTwo_s) )
 #      ((CaseThree( x y )) (tail( (print 'CaseThree_s) () )))
    ))

@@ -4,15 +4,6 @@ preprocess-index-types := ();
 preprocess := λprogram . (tail(
    (preprocess-index-typedefs program)
    (set program (preprocess-apply-macros program))
-   (preprocess-dump-program program)
-   program
-));
-
-preprocess-dump-program := λprogram . (tail(
-   (while program (
-      (print-s (TLTerm (tail program)))(print-s \n)
-      (set program (head program))
-   ))
    program
 ));
 

@@ -15,31 +15,31 @@ macro ('match-pats( term (ps (lhs rhs)) remainder )) (
    (match-pats(
       term
       ps
-      (if (match-pats-condition term lhs) rhs remainder)
+      (if (match-pats-condition( term lhs )) rhs remainder)
    ))
 );
 
-macro ('match-pats-condition term (:Variable: v)) (
+macro ('match-pats-condition( term (:Variable: v) )) (
    (tail( (let v term) (branchtrue()) ))
 );
 
-macro ('match-pats-condition term (:Literal: l)) (
+macro ('match-pats-condition( term (:Literal: l) )) (
    (==( term l ))
 );
 
-macro ('match-pats-condition term (:Tag: l lt)) (
+macro ('match-pats-condition( term (:Tag: l lt) )) (
    (==( (.0( term )) l ))
 );
 
-macro ('match-pats-condition term ((:Tag: l lt) ( x1 ))) (
+macro ('match-pats-condition( term ((:Tag: l lt) ( x1 )) )) (
    if (==( (.0( term )) l ))
       (match-pats-condition( (.1( (as term lt) )) x1 ))
       branchfalse
 );
 
-macro ('match-pats-condition term ((:Tag: l lt) ( x1 x2 ))) (
-   if (==( (.0( term )) l ))
-      (match-pats-condition( (.1( (as term lt) )) x1 ))
-      branchfalse
-);
+#macro ('match-pats-condition term ((:Tag: l lt) ( x1 x2 ))) (
+#   if (==( (.0( term )) l ))
+#      (match-pats-condition( (.1( (as term lt) )) x1 ))
+#      branchfalse
+#);
 
