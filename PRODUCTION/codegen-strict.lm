@@ -133,13 +133,17 @@ compile-expr-strict := λctx e offset used . (tail(
                   (expr::get-unframe e3)
                   \t 'jmp \s label-end \n
                   label-true-branch ': \n
-                  (expr::get-frame e2)
                   (expr::get-prog e2)
-                  (expr::get-unframe e2)
                   label-end ': \n
                ))))
                (set e4 (expr::set-context( e4 (expr::get-context e2) )))
-               (set e4 (expr::set-offset( e4 (expr::get-offset e3) )))
+               (set e4 (expr::set-offset( e4 (expr::get-offset e1) )))
+               (set e4 (expr::set-frame( e4 (
+                  (expr::get-frame e1) (expr::get-frame e2)
+               ))))
+               (set e4 (expr::set-unframe( e4 (
+                  (expr::get-unframe e1) (expr::get-unframe e2)
+               ))))
                e4
             )))
             ( (App( (Variable 'label) (Variable label-name) )) (
