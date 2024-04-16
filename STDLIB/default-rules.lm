@@ -38,11 +38,41 @@ macro ('match-pats-condition( term ((:Tag: l lt) ( x1 )) )) (tail(
    (==( ok Trueu8 ))
 ));
 
-macro ('match-pats-condition( term ((:Tag: l lt) ( x1 x2 ) ))) (tail(
+macro ('match-pats-condition( term ((:Tag: l lt) ( x2 x1 ) ))) (tail(
    (let ok Trueu8)
    (if (==( (.0( term )) l )) () (set ok Falseu8))
-   (if (match-pats-condition( (.2( (as term lt) )) x2 )) () (set ok Falseu8))
    (if (match-pats-condition( (.1( (as term lt) )) x1 )) () (set ok Falseu8))
+   (if (match-pats-condition( (.2( (as term lt) )) x2 )) () (set ok Falseu8))
+   (==( ok Trueu8 ))
+));
+
+macro ('match-pats-condition( term ((:Tag: l lt) ( x3 x2 x1 ) ))) (tail(
+   (let ok Trueu8)
+   (if (==( (.0( term )) l )) () (set ok Falseu8))
+   (if (match-pats-condition( (.1( (as term lt) )) x1 )) () (set ok Falseu8))
+   (if (match-pats-condition( (.2( (as term lt) )) x2 )) () (set ok Falseu8))
+   (if (match-pats-condition( (.3( (as term lt) )) x3 )) () (set ok Falseu8))
+   (==( ok Trueu8 ))
+));
+
+macro ('match-pats-condition( term ((:Tag: l lt) ( x4 x3 x2 x1 ) ))) (tail(
+   (let ok Trueu8)
+   (if (==( (.0( term )) l )) () (set ok Falseu8))
+   (if (match-pats-condition( (.1( (as term lt) )) x1 )) () (set ok Falseu8))
+   (if (match-pats-condition( (.2( (as term lt) )) x2 )) () (set ok Falseu8))
+   (if (match-pats-condition( (.3( (as term lt) )) x3 )) () (set ok Falseu8))
+   (if (match-pats-condition( (.4( (as term lt) )) x4 )) () (set ok Falseu8))
+   (==( ok Trueu8 ))
+));
+
+macro ('match-pats-condition( term ((:Tag: l lt) ( x5 x4 x3 x2 x1 ) ))) (tail(
+   (let ok Trueu8)
+   (if (==( (.0( term )) l )) () (set ok Falseu8))
+   (if (match-pats-condition( (.1( (as term lt) )) x1 )) () (set ok Falseu8))
+   (if (match-pats-condition( (.2( (as term lt) )) x2 )) () (set ok Falseu8))
+   (if (match-pats-condition( (.3( (as term lt) )) x3 )) () (set ok Falseu8))
+   (if (match-pats-condition( (.4( (as term lt) )) x4 )) () (set ok Falseu8))
+   (if (match-pats-condition( (.5( (as term lt) )) x5 )) () (set ok Falseu8))
    (==( ok Trueu8 ))
 ));
 
