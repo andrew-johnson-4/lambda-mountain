@@ -42,5 +42,5 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
       (set argi (+( argi 1u64 )))
    ))
    (print Input:\s_s)(print input)(print \n_s)
-#   (print Output:\s_s)(print config-target)(print \n_s)
+   (print Output:\s_s)(print config-target)(print \n_s)
 ));

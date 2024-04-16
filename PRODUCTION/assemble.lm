@@ -142,6 +142,17 @@ assemble := λprogram . (
                   ( (tail output_pd) (expr::get-data e1) )
                ))
             ))
+            ( (App( (App( (Literal ':) body-initial )) body-type )) (tail(
+               (local mtype)
+               (set mtype (typecheck-lookup body-initial))
+               (local lhs)
+               (set lhs (Variable fname))
+               (typecheck-ascript( lhs mtype ))
+               (set main_pd (compile-append(
+                  main_pd global_ctx
+                  (App( (App( (Variable 'set) lhs )) body-initial ))
+               )))
+            )))
          ))
          (set program pc)
       ))
