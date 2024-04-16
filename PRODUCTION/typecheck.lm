@@ -7,7 +7,7 @@ typecheck-global-context                 := ();
 typecheck-size                           := ();
 typecheck-fragment-types                 := ();
 
-preprocess-typecheck := λprogram . (tail(
+typecheck := λprogram . (tail(
    (local p)
    (set p program)
    (local ordered-type-exprs)
@@ -20,9 +20,6 @@ preprocess-typecheck := λprogram . (tail(
       (typecheck-infer-type-expr( (tail ordered-type-exprs) ))
       (set ordered-type-exprs (head ordered-type-exprs))
    ))
-));
-
-typecheck := λprogram . (tail(
    (set typecheck-types-have-changed True)
    (while typecheck-types-have-changed (
       (set typecheck-types-have-changed ())
@@ -768,13 +765,7 @@ typecheck-infer-expr := λctx e used . (tail(
             ))
          ) ())
       ))
-      ( (Literal True) (tail(
-         (typecheck-ascript( e (And( U8 (And( Literal Constant )) )) ))
-      )))
-      ( (Literal False) (tail(
-         (typecheck-ascript( e (And( U8 (And( Literal Constant )) )) ))
-      )))
-      ( (Literal lit) (tail(
+      ( (Literal lit) (
          (local ctype)
          (set ctype (typecheck-infer-constructor-type lit))
          (if ctype (
@@ -782,7 +773,7 @@ typecheck-infer-expr := λctx e used . (tail(
          ) (
             (typecheck-ascript( e Atom ))
          ))
-      )))
+      ))
       ( (App( (App( (Variable 'set) (Variable lhs) )) rhs )) (tail(
          (typecheck-infer-expr( ctx rhs Used ))
          (typecheck-ascript( e Nil ))

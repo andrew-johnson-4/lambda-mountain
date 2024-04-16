@@ -1,6 +1,6 @@
 
-preprocess := λ program . (tail(
-   (preprocess-typecheck program)
+preprocess := λprogram . (tail(
+   ()
    (preprocess-apply-macros program)
 ));
 
@@ -53,16 +53,7 @@ try-destructure-macro := λlhs e . (match (lhs e) (
       (if (eq( pl el )) Accept ())
    ))
    ( ( (App( (Literal :Literal:) (Variable pv) )) (Literal el)) (
-      (if (typecheck-is-constructor el)
-          ()
-          (Accept (KV( pv e )))
-      )
-   ))
-   ( ( (App( (Literal :Tag:) (Variable pv) )) (Literal el)) (
-      (if (typecheck-is-constructor el)
-          (Accept (KV( pv (typecheck-is-constructor el) )))
-          ()
-      )
+      (Accept (KV( pv e )))
    ))
    ( ( (App( (Literal :Variable:) (Variable pv) )) (Variable el)) (
       (Accept (KV( pv e )))

@@ -1,6 +1,6 @@
 
 nostd: prod
-	./production --nostd -o tmp.s tests/strict/match4.lm
+	./production --nostd -o tmp.s tests/strict/printU64.lm
 	as -o tmp.o tmp.s
 	ld -o tmp tmp.o
 	./tmp && echo $?
