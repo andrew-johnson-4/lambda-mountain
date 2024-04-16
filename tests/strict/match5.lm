@@ -7,7 +7,6 @@ import STDLIB/default-stdlib.lm;
 main := (tail(
    (let x 0u64)
    (while (<( x 4u64 )) (
-      (print x)
       (match x (
          ()
          (y (print y))

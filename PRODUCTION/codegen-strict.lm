@@ -86,6 +86,8 @@ compile-expr-strict := λctx e offset used . (tail(
                (local label-end-loop)
                (set label-end-loop (uuid()))
                (set e3 (expr::set-prog( e3 (
+                  (expr::get-frame e1)
+                  (expr::get-frame e2)
                   label-begin-loop ': \n
                   (expr::get-prog e1)
                   \t (expr::get-expr e1) \s label-do-loop \n
@@ -94,6 +96,8 @@ compile-expr-strict := λctx e offset used . (tail(
                   (expr::get-prog e2)
                   \t 'jmp \s label-begin-loop \n
                   label-end-loop ': \n                  
+                  (expr::get-unframe e2)
+                  (expr::get-unframe e1)
                ))))
                e3
             )))
