@@ -765,7 +765,13 @@ typecheck-infer-expr := λctx e used . (tail(
             ))
          ) ())
       ))
-      ( (Literal lit) (
+      ( (Literal True) (tail(
+         (typecheck-ascript( e (And( U8 Constant )) ))
+      )))
+      ( (Literal False) (tail(
+         (typecheck-ascript( e (And( U8 Constant )) ))
+      )))
+      ( (Literal lit) (tail(
          (local ctype)
          (set ctype (typecheck-infer-constructor-type lit))
          (if ctype (
@@ -773,7 +779,7 @@ typecheck-infer-expr := λctx e used . (tail(
          ) (
             (typecheck-ascript( e Atom ))
          ))
-      ))
+      )))
       ( (App( (App( (Variable 'set) (Variable lhs) )) rhs )) (tail(
          (typecheck-infer-expr( ctx rhs Used ))
          (typecheck-ascript( e Nil ))
