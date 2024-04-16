@@ -7,7 +7,7 @@ typecheck-global-context                 := ();
 typecheck-size                           := ();
 typecheck-fragment-types                 := ();
 
-typecheck := λprogram . (tail(
+preprocess-typecheck := λprogram . (tail(
    (local p)
    (set p program)
    (local ordered-type-exprs)
@@ -20,6 +20,9 @@ typecheck := λprogram . (tail(
       (typecheck-infer-type-expr( (tail ordered-type-exprs) ))
       (set ordered-type-exprs (head ordered-type-exprs))
    ))
+));
+
+typecheck := λprogram . (tail(
    (set typecheck-types-have-changed True)
    (while typecheck-types-have-changed (
       (set typecheck-types-have-changed ())
