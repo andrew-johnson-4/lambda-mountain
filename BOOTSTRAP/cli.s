@@ -73954,6 +73954,22 @@ uuid_000000000000045c:
 	push %r13
 	mov -72(%rbp),%r12
 	mov -80(%rbp),%r13
+	call __expr_C__C_get_frame_C___
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	pop %r13
+	pop %r12
+	push %r8
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	mov %r8, %r12
+	pop %r13
+	push %r12
+	push %r13
+	mov -72(%rbp),%r12
+	mov -80(%rbp),%r13
 	call __expr_C__C_get_prog_C___
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
@@ -74166,7 +74182,55 @@ uuid_000000000000045c:
 	push %r13
 	mov -88(%rbp),%r12
 	mov -96(%rbp),%r13
+	call __expr_C__C_get_frame_C___
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	pop %r13
+	pop %r12
+	push %r8
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	mov %r8, %r12
+	pop %r13
+	push %r12
+	push %r13
+	mov -88(%rbp),%r12
+	mov -96(%rbp),%r13
 	call __expr_C__C_get_prog_C___
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	pop %r13
+	pop %r12
+	push %r8
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	mov %r8, %r12
+	pop %r13
+	push %r12
+	push %r13
+	mov -88(%rbp),%r12
+	mov -96(%rbp),%r13
+	call __expr_C__C_get_unframe_C___
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	pop %r13
+	pop %r12
+	push %r8
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	mov %r8, %r12
+	pop %r13
+	push %r12
+	push %r13
+	mov -72(%rbp),%r12
+	mov -80(%rbp),%r13
+	call __expr_C__C_get_unframe_C___
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
 	mov %r13, 8(%r8)
@@ -74287,6 +74351,22 @@ uuid_000000000000045c:
 	push %r13
 	mov $uuid_0000000000000007, %r12
 	mov $0, %r13
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	pop %r13
+	pop %r12
+	push %r8
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	mov %r8, %r12
+	pop %r13
+	push %r12
+	push %r13
+	mov -72(%rbp),%r12
+	mov -80(%rbp),%r13
+	call __expr_C__C_get_unframe_C___
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
 	mov %r13, 8(%r8)
@@ -74617,8 +74697,9 @@ uuid_000000000000046d:
 	pop %r13
 	push %r12
 	push %r13
-	mov -24(%rbp),%r12
-	mov -32(%rbp),%r13
+	mov -72(%rbp),%r12
+	mov -80(%rbp),%r13
+	call __expr_C__C_get_offset_C___
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
 	mov %r13, 8(%r8)
@@ -74667,8 +74748,9 @@ uuid_000000000000046d:
 	pop %r13
 	push %r12
 	push %r13
-	mov -24(%rbp),%r12
-	mov -32(%rbp),%r13
+	mov -72(%rbp),%r12
+	mov -80(%rbp),%r13
+	call __expr_C__C_get_offset_C___
 	call uuid_0000000000000003
 	mov %r12, 0(%r8)
 	mov %r13, 8(%r8)

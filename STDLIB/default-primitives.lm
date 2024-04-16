@@ -86,7 +86,8 @@ fragment branchtrue := λ(: _ Nil). (: (
    (.expression( 'jmp ))
 ) BranchConditional);
 fragment branchfalse := λ(: _ Nil). (: (
-   (.expression( 'nop ))
+   (.program( \t 'cmp \s '%rsp, \s '%rsp \n ))
+   (.expression( 'jne ))
 ) BranchConditional);
 
 fragment + := λ(: l LocalVariable+U8)(: r LocalVariable+U8). (: (
