@@ -1,6 +1,6 @@
 
 preprocess-index-types := ();
-
+	
 preprocess := λprogram . (tail(
    (preprocess-index-typedefs program)
    (preprocess-apply-macros program)
@@ -103,13 +103,13 @@ try-destructure-macro := λlhs e . (match (lhs e) (
       (if (eq( pl el )) Accept ())
    ))
    ( ( (App( (Literal :Literal:) (Variable pv) )) (Literal el)) (
-      (if (typecheck-is-constructor el)
+      (if (preprocess-index-of-tag el)
          ()
          (Accept (KV( pv e )))
       )
    ))
    ( ( (App( (Literal :Tag:) (Variable pv) )) (Literal el)) (
-      (if (typecheck-is-constructor el)
+      (if (preprocess-index-of-tag el)
          (Accept (KV( pv
             (App(
                (App(
