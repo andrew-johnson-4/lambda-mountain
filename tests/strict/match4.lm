@@ -4,7 +4,7 @@ import STDLIB/default-primitives.lm;
 import STDLIB/default-rules.lm;
 import STDLIB/default-stdlib.lm;
 
-type Cases CaseOne (CaseTwo( U64 )) (CaseThree( U64 , U64 ));
+type Cases CaseOne | (CaseTwo( U64 )) | (CaseThree( U64 , U64 ));
 
 main := (tail(
    (match (CaseOne)  (
