@@ -377,10 +377,6 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
 
          #define 'mov local initializer
          (local body)
-         (local while-push-start)
-         (local while-push-end)
-         (set while-push-start (uuid()))
-         (set while-push-end (uuid()))
          (set body (Fragment (Lambda(
             (App(
                (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
@@ -395,14 +391,14 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
                \t 'mov \s '%rbp , \s '%r15 \n
                \t 'add \s '$ (Variable 'dst) , \s '%r15 \n
                \t 'mov \s '$ case-size , \s '%r14 \n
-               while-push-start ': \n
+               ('label 'while-push-start) ': \n
                \t 'cmp \s '$0 , \s '%r14 \n
-               \t 'je \s while-push-end \n
+               \t 'je \s ('label 'while-push-end) \n
                \t 'pop \s 0 \[ '%r15 \] \n
                \t 'sub \s '$8 , \s '%r14 \n
                \t 'add \s '$8 , \s '%r15 \n
-               \t 'jmp \s while-push-start \n
-               while-push-end ': \n
+               \t 'jmp \s ('label 'while-push-start) \n
+               ('label 'while-push-end) ': \n
             )))
          ))))
          (typecheck-ascript( body ('->(
@@ -413,10 +409,6 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
 
          #define 'mov global initializer
          (local body)
-         (local while-push-start)
-         (local while-push-end)
-         (set while-push-start (uuid()))
-         (set while-push-end (uuid()))
          (set body (Fragment (Lambda(
             (App(
                (App( (App( (Literal ':) (Variable 'src) )) (Literal Constant) ))
@@ -430,14 +422,14 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
                (App( (Variable '.program) (Variable 'src) ))
                \t 'mov \s '$ (Variable 'dst) , \s '%r15 \n
                \t 'mov \s '$ case-size , \s '%r14 \n
-               while-push-start ': \n
+               ('label 'while-push-start) ': \n
                \t 'cmp \s '$0 , \s '%r14 \n
-               \t 'je \s while-push-end \n
+               \t 'je \s ('label 'while-push-end) \n
                \t 'pop \s 0 \[ '%r15 \] \n
                \t 'sub \s '$8 , \s '%r14 \n
                \t 'add \s '$8 , \s '%r15 \n
-               \t 'jmp \s while-push-start \n
-               while-push-end ': \n
+               \t 'jmp \s ('label 'while-push-start) \n
+               ('label 'while-push-end) ': \n
             )))
          ))))
          (typecheck-ascript( body ('->(
