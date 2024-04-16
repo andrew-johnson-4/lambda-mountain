@@ -31,3 +31,11 @@ macro ('match-pats-condition term (:Tag: l)) (
    (==( (.0( term )) l ))
 );
 
+macro ('match-pats-condition term ((:Tag: l) ( x1 ))) (
+   (==( (.0( term )) l ))
+);
+
+macro ('match-pats-condition term ((:Tag: l) ( x1 x2 ))) (
+   (==( (.0( term )) l ))
+);
+
