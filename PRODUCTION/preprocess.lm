@@ -58,15 +58,12 @@ try-destructure-macro := λlhs e . (match (lhs e) (
           (Accept (KV( pv e )))
       )
    ))
-   ( ( (App( (Literal :Tag:) (Variable pv) )) (Literal el)) (tail(
+   ( ( (App( (Literal :Tag:) (Variable pv) )) (Literal el)) (
       (if (typecheck-is-constructor el)
-          (tail(
-             (print-s (Tag lhs pv el))(print-s \n)
-             (Accept (KV( pv e )))
-          ))
+          (Accept (KV( pv (typecheck-is-constructor el) )))
           ()
       )
-   )))
+   ))
    ( ( (App( (Literal :Variable:) (Variable pv) )) (Variable el)) (
       (Accept (KV( pv e )))
    ))
