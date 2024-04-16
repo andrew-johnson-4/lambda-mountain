@@ -7,6 +7,13 @@ preprocess := λprogram . (tail(
    program
 ));
 
+preprocess-dump := λprogram . (tail(
+   (while program (
+      (print-s (tail program))(print-s \n)
+      (set program (head program))
+   ))
+));
+
 preprocess-index-typedefs := λprogram . (tail(
    (while program (
       (preprocess-index-typedef (tail program))

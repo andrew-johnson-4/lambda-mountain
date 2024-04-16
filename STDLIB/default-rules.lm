@@ -37,7 +37,7 @@ macro ('match-pats-condition( term ((:Tag: l lt) ( x1 )) )) (
       (branchfalse())
 );
 
-macro ('match-pats-condition term ((:Tag: l lt) ( x1 x2 ))) (
+macro ('match-pats-condition( term ((:Tag: l lt) ( x1 x2 ) ))) (
    if (==( (.0( term )) l ))
       (if (match-pats-condition( (.1( (as term lt) )) x1 ))
           (match-pats-condition( (.2( (as term lt) )) x2 ))
