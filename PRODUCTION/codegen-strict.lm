@@ -182,7 +182,12 @@ compile-expr-strict := λctx e offset used . (tail(
                   (set uid (strict-declare-cstring( lval )))
                   (set e1 (expr::set-expr( (expr::new ()) uid )))
                ) (
-                  (set e1 (expr::set-expr( (expr::new ()) lval )))
+                  (match lval (
+                     ()
+                     (True (set e1 (expr::set-expr( (expr::new ()) '1 ))))
+                     (False (set e1 (expr::set-expr( (expr::new ()) '0 ))))
+                     (_ (set e1 (expr::set-expr( (expr::new ()) lval ))))
+                  ))
                ))
                (set e1 (expr::set-context( e1 ctx )))
                (set e1 (expr::set-offset( e1 offset )))
@@ -202,7 +207,12 @@ compile-expr-strict := λctx e offset used . (tail(
                   (set uid (strict-declare-cstring( lval )))
                   (set e1 (expr::set-expr( (expr::new ()) uid )))
                ) (
-                  (set e1 (expr::set-expr( (expr::new ()) lval )))
+                  (match lval (
+                     ()
+                     (True (set e1 (expr::set-expr( (expr::new ()) '1 ))))
+                     (False (set e1 (expr::set-expr( (expr::new ()) '0 ))))
+                     (_ (set e1 (expr::set-expr( (expr::new ()) lval ))))
+                  ))
                ))
                (set e1 (expr::set-context( e1 ctx )))
                (set e1 (expr::set-offset( e1 offset )))

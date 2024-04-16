@@ -1,0 +1,28 @@
+
+import STDLIB/default-instruction-set.lm;
+import STDLIB/default-primitives.lm;
+import STDLIB/default-rules.lm;
+import STDLIB/default-stdlib.lm;
+
+type Cases CaseOne | CaseTwo | CaseThree;
+
+main := (tail(
+   (match (CaseOne)  (
+      ()
+      ((CaseOne) (print 'CaseOne_s))
+      ((CaseTwo) (print 'CaseTwo_s))
+      ((CaseThree) (print 'CaseThree_s))
+   ))
+   (match (CaseTwo)  (
+      ()
+      ((CaseOne) (print 'CaseOne_s))
+      ((CaseTwo) (print 'CaseTwo_s))
+      ((CaseThree) (print 'CaseThree_s))
+   ))
+   (match (CaseThree)  (
+      ()
+      ((CaseOne) (print 'CaseOne_s))
+      ((CaseTwo) (print 'CaseTwo_s))
+      ((CaseThree) (print 'CaseThree_s))
+   ))
+));

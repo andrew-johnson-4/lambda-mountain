@@ -27,3 +27,7 @@ macro ('match-pats-condition term (:Literal: l)) (
    (==( term l ))
 );
 
+macro ('match-pats-condition term (:Tag: l)) (
+   (==( (.0( term )) l ))
+);
+

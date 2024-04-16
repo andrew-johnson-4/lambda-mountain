@@ -6,8 +6,8 @@ import STDLIB/default-stdlib.lm;
 
 import STRICT/utility.lm;
 
-#config-strict                := True;
-#config-preprocess            := True;
+config-strict                := Trueu8;
+config-preprocess            := Trueu8;
 config-target                := 'tmp.s_s;
 
 type CompileMode ModeTokenize | ModeParse | ModeTypecheck | ModeCompile;
@@ -23,10 +23,10 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
          ('--parse_s (set config-mode ModeParse))
          ('--typecheck_s (set config-mode ModeTypecheck))
          ('--compile_s (set config-mode ModeCompile))
-#         ('--strict_s (set config-strict True))
-#         ('--gradual_s (set config-strict False))
-#         ('--macro_s (set config-preprocess True))
-#         ('--nomacro_s (set config-preprocess False))
+         ('--strict_s (set config-strict Trueu8))
+         ('--gradual_s (set config-strict Falseu8))
+         ('--macro_s (set config-preprocess Trueu8))
+         ('--nomacro_s (set config-preprocess Falseu8))
          ('-o_s (tail(
             (set argi (+( argi 1u64 )))
             (set input (SCons(
@@ -34,13 +34,18 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
                (close (SAtom([]( argv argi ))))
             )))
          )))
-         (fp (set input (SCons(
-            (close input)
-            (close (SAtom( fp )))
-         ))))
+         (fp (tail(
+            (print fp)
+            (set input (SCons(
+               (close input)
+               (close (SAtom( fp )))
+            )))
+         )))
       ))
       (set argi (+( argi 1u64 )))
    ))
    (print Input:\s_s)(print input)(print \n_s)
    (print Output:\s_s)(print config-target)(print \n_s)
+   (print Preprocess:\s_s)(print config-preprocess)(print \n_s)
+   (print Strict:\s_s)(print config-strict)(print \n_s)
 ));
