@@ -57,6 +57,7 @@ compile-expr-strict := λctx e offset used . (tail(
          (set return (match e (
             ()
             ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
+               (print-s (Let lname offset))(print-s \n)
                (local sz)
                (set sz (max( 8 (typecheck-sizeof (typecheck-lookup rhs)) )))
                (if sz () (
@@ -105,7 +106,7 @@ compile-expr-strict := λctx e offset used . (tail(
             ( (App( (App( (App( (Variable 'if) cond )) t )) f )) (tail(
                (set e1 (compile-expr-strict( ctx cond offset Used )))
                (set e2 (compile-expr-strict( (expr::get-context e1) t (expr::get-offset e1) Used )))
-               (set e3 (compile-expr-strict( ctx f (expr::get-offset e1) Used )))
+               (set e3 (compile-expr-strict( ctx f (expr::get-offset e2) Used )))
                (match (expr::get-type e1) (
                   ()
                   (BranchConditional ())
@@ -127,22 +128,20 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e4 (expr::set-prog( e4 (
                   (expr::get-prog e1)
                   \t (expr::get-expr e1) \s label-true-branch \n
-                  (expr::get-frame e3)
                   (expr::get-prog e3)
-                  (expr::get-unframe e3)
                   \t 'jmp \s label-end \n
                   label-true-branch ': \n
                   (expr::get-prog e2)
                   label-end ': \n
                ))))
                (set e4 (expr::set-frame (e4 (
-                  (expr::get-frame e1) (expr::get-frame e2)
+                  (expr::get-frame e1) (expr::get-frame e2) (expr::get-frame e3)
                ))))
                (set e4 (expr::set-unframe (e4 (
-                  (expr::get-unframe e1) (expr::get-unframe e2)
+                  (expr::get-unframe e1) (expr::get-unframe e2) (expr::get-frame e3)
                ))))
                (set e4 (expr::set-context( e4 (expr::get-context e2) )))
-               (set e4 (expr::set-offset( e4 (expr::get-offset e2) )))
+               (set e4 (expr::set-offset( e4 (expr::get-offset e3) )))
                e4
             )))
             ( (App( (Variable 'label) (Variable label-name) )) (
