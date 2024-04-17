@@ -85,9 +85,13 @@ compile-expr-strict := λctx e offset used . (tail(
                   ))
                ))
                (if deref (tail(
+                  (set e1 (compile-expr-strict( ctx r offset Used )))
+                  (set e2 (expr::new()))
+                  (set e2 (expr::set-expr( e2 '0 )))
+                  (set e3 (fragment-apply( ctx 'push (Cons( (typecheck-lookup r) (And( Constant Literal )) )) ((() e1) e2) e1 )))
                   (fail (TODO Deref deref (typecheck-lookup r)))
-                  (set e1 (expr::set-type( e1 StackValue )))
-                  e1
+                  (set e3 (expr::set-type( e3 StackValue )))
+                  e3
                )) (
                   (compile-expr-strict( ctx r offset Used ))
                ))
