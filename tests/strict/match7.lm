@@ -6,9 +6,13 @@ import STDLIB/default-stdlib.lm;
 
 import STRICT/utility.lm;
 
-config-preprocess            := 1u8;
+config-preprocess            := 2u8;
 
 main := λ(: argc U64)(: argv U8[][]).(tail(
+   (print( (==( '--macro_s '--macro_s )) ))
+   (print( (==( '--macro_s '--nomacro_s )) ))
+   (print( (==( '--nomacro_s '--macro_s )) ))
+   (print( (==( '--nomacro_s '--nomacro_s )) ))
    (match '--nomacro_s (
       ()
       ('--macro_s (set config-preprocess 1u8))
