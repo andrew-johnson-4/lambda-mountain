@@ -27,19 +27,19 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
    (while (<( argi argc )) (
       (match ([]( argv argi )) (
          ()
-#         ('--tokenize_s (set config-mode ModeTokenize))
-#         ('--parse_s (set config-mode ModeParse))
-#         ('--typecheck_s (set config-mode ModeTypecheck))
-#         ('--compile_s (set config-mode ModeCompile))
-#         ('--strict_s (set config-strict Trueu8))
-#         ('--gradual_s (set config-strict Falseu8))
-#         ('--macro_s (set config-preprocess Trueu8))
-#         ('--nomacro_s (set config-preprocess Falseu8))
-#         ('-o_s (tail(
-#            (print 'O_s)
-#            (set argi (+( argi 1u64 )))
-#            (set config-target ([]( argv argi )))
-#         )))
+         ('--tokenize_s (set config-mode ModeTokenize))
+         ('--parse_s (set config-mode ModeParse))
+         ('--typecheck_s (set config-mode ModeTypecheck))
+         ('--compile_s (set config-mode ModeCompile))
+         ('--strict_s (set config-strict Trueu8))
+         ('--gradual_s (set config-strict Falseu8))
+         ('--macro_s (set config-preprocess Trueu8))
+         ('--nomacro_s (set config-preprocess Falseu8))
+         ('-o_s (tail(
+            (print 'O_s)
+            (set argi (+( argi 1u64 )))
+            (set config-target ([]( argv argi )))
+         )))
          (fp (
             (set input (SCons(
                (close input)
@@ -49,10 +49,10 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
       ))
       (set argi (+( argi 1u64 )))
    ))
-#   (print Input:\s_s)(print input)(print \n_s)
-#   (print Output:\s_s)(print config-target)(print \n_s)
-#   (print Preprocess:\s_s)(print config-preprocess)(print \n_s)
-#   (print Strict:\s_s)(print config-strict)(print \n_s)
+   (print Input:\s_s)(print input)(print \n_s)
+   (print Output:\s_s)(print config-target)(print \n_s)
+   (print Preprocess:\s_s)(print config-preprocess)(print \n_s)
+   (print Strict:\s_s)(print config-strict)(print \n_s)
 
    (let continue Trueu8)
    (while (==( continue Trueu8 )) (

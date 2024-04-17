@@ -98,7 +98,7 @@ compile-expr-strict := λctx e offset used . (tail(
             )))
             ( (App( (App( (Variable 'while) cond )) body )) (tail(
                (set e1 (compile-expr-strict( ctx cond offset Used )))
-               (set e2 (compile-expr-strict( ctx body offset Unused )))
+               (set e2 (compile-expr-strict( ctx body (expr::get-offset e1) Unused )))
 
                (match (expr::get-type e1) (
                   ()
@@ -134,6 +134,9 @@ compile-expr-strict := λctx e offset used . (tail(
                   label-end-loop ': \n                  
                   (expr::get-unframe e1)
                ))))
+               (set e3 (expr::set-frame( e3 () )))
+               (set e3 (expr::set-unframe( e3 () )))
+               (set e3 (expr::set-offset( e3 offset )))
                e3
             )))
             ( (App( (App( (App( (Variable 'if) cond )) t )) f )) (tail(
