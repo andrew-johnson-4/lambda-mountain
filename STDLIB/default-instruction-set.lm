@@ -84,16 +84,16 @@ fragment push := λ(: src Reg64+Array<Sized<size>,max>)(: index Literal+Constant
                (+( size '-8 ))
                (inv(*( word-offset 8 )))
             ))
-         )) \[ (.expression src) \] \n
+         )) \[ '% (.expression src) \] \n
       ))
       (if-eq size 4 (
-         \t 'pushq \s (.expression index) \[ (.expression src) \] \n
+         \t 'pushq \s (.expression index) \[ '% (.expression src) \] \n
       ))
       (if-eq size 2 (
-         \t 'pushq \s (.expression index) \[ (.expression src) \] \n
+         \t 'pushq \s (.expression index) \[ '% (.expression src) \] \n
       ))
       (if-eq size 1 (
-         \t 'pushq \s (.expression index) \[ (.expression src) \] \n
+         \t 'pushq \s (.expression index) \[ '% (.expression src) \] \n
       ))
    ))
 ) Nil);

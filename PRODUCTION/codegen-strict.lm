@@ -17,7 +17,7 @@ compile-push-rvalue := λctx e offset . (tail(
       ))
       ( lt (tail(
          (set e1 (compile-expr-strict( ctx e offset Used )))
-         (match (typecheck-slot( (expr::get-type e1) StackValue )) (
+         (match (typecheck-slot( (expr::get-type e1) StackVariable )) (
             ()
             ( StackVariable e1 )
             ( _ (tail(
@@ -86,11 +86,11 @@ compile-expr-strict := λctx e offset used . (tail(
                ))
                (if deref (tail(
                   (set e1 (compile-expr-strict( ctx r offset Used )))
+                  (set e1 (expr::set-type( e1 (typecheck-lookup r) )))
                   (set e2 (expr::new()))
                   (set e2 (expr::set-expr( e2 '0 )))
                   (set e3 (fragment-apply( ctx 'push (Cons( (typecheck-lookup r) (And( Constant Literal )) )) ((() e1) e2) e1 )))
-                  (fail (TODO Deref deref (typecheck-lookup r)))
-                  (set e3 (expr::set-type( e3 StackValue )))
+                  (set e3 (expr::set-type( e3 StackVariable )))
                   e3
                )) (
                   (compile-expr-strict( ctx r offset Used ))

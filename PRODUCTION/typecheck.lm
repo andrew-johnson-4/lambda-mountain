@@ -825,7 +825,6 @@ typecheck-infer-expr := λctx e used . (tail(
                   ))
                ))
             ))
-            (print-s (MaybeDeref rtype))(print-s \n)
             (typecheck-ascript( e rtype ))
          ) ())
       )))
