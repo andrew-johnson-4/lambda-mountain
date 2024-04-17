@@ -22,7 +22,7 @@ type CompileMode ModeTokenize | ModeParse | ModeTypecheck | ModeCompile;
 config-mode                  := (: ModeCompile CompileMode);
 
 main := λ(: argc U64)(: argv U8[][]).(tail(
-   (let argi 0u64)
+   (let argi 1u64)
    (let input SNil)
    (while (<( argi argc )) (
       (match ([]( argv argi )) (
@@ -53,4 +53,37 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
    (print Output:\s_s)(print config-target)(print \n_s)
    (print Preprocess:\s_s)(print config-preprocess)(print \n_s)
    (print Strict:\s_s)(print config-strict)(print \n_s)
+
+   (let continue 1u8)
+   (while continue (match input (
+      ()
+      (SNil ())
+      (SCons( l r )) (tail(
+         (set input (open rst))
+      )))
+      (SCons( (SAtom( fp )) rst )) (tail(
+      )))
+   ))
+
+
+#      (Compile (
+#         (parse-program (tokenize-file (head inputs)))
+#         (set inputs (tail inputs))
+#      ))
+#      (Parse (
+#         (parse-program (tokenize-file (head inputs)))
+#         (set inputs (tail inputs))
+#      ))
+#      (Typecheck (
+#         (parse-program (tokenize-file (head inputs)))
+#         (set inputs (tail inputs))
+#      ))
+#      (ParseExpression (
+#         (print-s (parse-expression (tokenize-file (head inputs))))
+#         (set inputs (tail inputs))
+#      ))
+#      (Tokenize (
+#         (print-s (tokenize-file (head inputs)))
+#         (set inputs (tail inputs))
+#      ))
 ));
