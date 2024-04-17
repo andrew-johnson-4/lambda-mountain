@@ -4,7 +4,15 @@ import STDLIB/default-primitives.lm;
 import STDLIB/default-rules.lm;
 import STDLIB/default-stdlib.lm;
 
-main := (match '--nomacro_s (
-   ()
-   ('--nomacro_s (tail( () (print 'Ok_s) )))
+import STRICT/utility.lm;
+
+config-preprocess            := 1u8;
+
+main := λ(: argc U64)(: argv U8[][]).(tail(
+   (match '--nomacro_s (
+      ()
+      ('--macro_s (set config-preprocess 1u8))
+      ('--nomacro_s (set config-preprocess 0u8))
+   ))
+   (print config-preprocess)
 ));
