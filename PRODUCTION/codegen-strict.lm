@@ -72,6 +72,10 @@ compile-expr-strict := λctx e offset used . (tail(
                )))
                (set e1 (expr::set-context( e1 ctx )))
                (set e1 (expr::set-offset( e1 offset )))
+               (set e1 (expr::set-prog( e1 (
+                  \o \s 'let \s lname \s '= \s (quote-s rhs) \s ': \s (quote-s(typecheck-lookup rhs)) \n
+                  (expr::get-prog e1)
+               ))))
                e1
             )))
             ( (App( (Variable 'maybe-deref) r )) (tail(

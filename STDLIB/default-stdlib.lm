@@ -12,15 +12,17 @@ close := λ(: x S). (: (tail(
 
 print := λ(: x S). (: (match x (
    ()
-   ( (SAtom a) (print a) )
-#   ( (SCons( l r )) (tail(
+#   ( (SAtom a) (print a) )
+   ( (SCons( l r )) (tail(
+      ()
+      ()
 #      (print '\[_s)
 #      (print l)
 #      (print '\s_s)
 #      (print r)
 #      (print '\]_s)
-#   )))
-   ( SNil (print '\[\]_s))
+   )))
+#   ( SNil (print '\[\]_s))
 #   ( (SPointer p) (tail(
 #      (print '[_s)
 #      (print (as p U64))
