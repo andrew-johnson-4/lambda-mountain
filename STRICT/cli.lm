@@ -27,20 +27,19 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
          ('--gradual_s (set config-strict Falseu8))
          ('--macro_s (set config-preprocess Trueu8))
          ('--nomacro_s (set config-preprocess Falseu8))
-         ('-o_s (tail(
-            (set argi (+( argi 1u64 )))
-            (set input (SCons(
-               (close input)
-               (close (SAtom([]( argv argi ))))
-            )))
-         )))
-         (fp (tail(
-            (print fp)
+#         ('-o_s (tail(
+#            (set argi (+( argi 1u64 )))
+#            (set input (SCons(
+#               (close input)
+#               (close (SAtom([]( argv argi ))))
+#            )))
+#         )))
+         (fp (
             (set input (SCons(
                (close input)
                (close (SAtom( fp )))
             )))
-         )))
+         ))
       ))
       (set argi (+( argi 1u64 )))
    ))
