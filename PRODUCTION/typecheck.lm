@@ -817,11 +817,14 @@ typecheck-infer-expr := λctx e used . (tail(
          (local rtype)
          (set rtype (typecheck-lookup r))
          (if rtype (
-#            (match (typecheck-slot( (typecheck-lookup r) Array )) (
-#               ()
-#               ( (Array( U8 '? )) () )
-#               ( (Array( x '? )) (set rtype x) )
-#            ))
+            (match (typecheck-slot( (typecheck-lookup r) Array )) (
+               ()
+               ( (Array( x '? )) (
+                  (if (typecheck-unify-implies( x U8 )) () (
+                     (set rtype x)
+                  ))
+               ))
+            ))
             (print-s (MaybeDeref rtype))(print-s \n)
             (typecheck-ascript( e rtype ))
          ) ())
