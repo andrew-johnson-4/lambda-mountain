@@ -20,19 +20,19 @@ macro ('match-pats( term (ps (lhs rhs)) remainder )) (
 );
 
 macro ('match-pats-condition( term (:Variable: v) )) (
-   (tail( (let v term) (branchtrue()) ))
+   (tail( (let v (maybe-deref term)) (branchtrue()) ))
 );
 
 macro ('match-pats-condition( term (:Literal: l) )) (
-   (tail( (let (uuid v) term) (==( (uuid v) l )) ))
+   (tail( (let (uuid v) (maybe-deref term)) (==( (uuid v) l )) ))
 );
 
 macro ('match-pats-condition( term (:Tag: l lt) )) (
-   (tail( (let (uuid v) term) (==( (.0( (uuid v) )) l )) ))
+   (tail( (let (uuid v) (maybe-deref term)) (==( (.0( (uuid v) )) l )) ))
 );
 
 macro ('match-pats-condition( term ((:Tag: l lt) ( x1 )) )) (tail(
-   (let (uuid v) term )
+   (let (uuid v) (maybe-deref term) )
    (let (uuid ok) Trueu8)
    (if (==( (.0( (uuid v) )) l )) () (set (uuid ok) Falseu8))
    (if (match-pats-condition( (.1( (as (uuid v) lt) )) x1 )) () (set (uuid ok) Falseu8))
@@ -40,7 +40,7 @@ macro ('match-pats-condition( term ((:Tag: l lt) ( x1 )) )) (tail(
 ));
 
 macro ('match-pats-condition( term ((:Tag: l lt) ( x2 x1 ) ))) (tail(
-   (let (uuid v) term )
+   (let (uuid v) (maybe-deref term) )
    (let (uuid ok) Trueu8)
    (if (==( (.0( (uuid v) )) l )) () (set (uuid ok) Falseu8))
    (if (match-pats-condition( (.1( (as (uuid v) lt) )) x1 )) () (set (uuid ok) Falseu8))
@@ -49,7 +49,7 @@ macro ('match-pats-condition( term ((:Tag: l lt) ( x2 x1 ) ))) (tail(
 ));
 
 macro ('match-pats-condition( term ((:Tag: l lt) ( x3 x2 x1 ) ))) (tail(
-   (let (uuid v) term )
+   (let (uuid v) (maybe-deref term) )
    (let (uuid ok) Trueu8)
    (if (==( (.0( (uuid v) )) l )) () (set (uuid ok) Falseu8))
    (if (match-pats-condition( (.1( (as (uuid v) lt) )) x1 )) () (set (uuid ok) Falseu8))
@@ -59,7 +59,7 @@ macro ('match-pats-condition( term ((:Tag: l lt) ( x3 x2 x1 ) ))) (tail(
 ));
 
 macro ('match-pats-condition( term ((:Tag: l lt) ( x4 x3 x2 x1 ) ))) (tail(
-   (let (uuid v) term )
+   (let (uuid v) (maybe-deref term) )
    (let (uuid ok) Trueu8)
    (if (==( (.0( (uuid v) )) l )) () (set (uuid ok) Falseu8))
    (if (match-pats-condition( (.1( (as (uuid v) lt) )) x1 )) () (set (uuid ok) Falseu8))
@@ -70,7 +70,7 @@ macro ('match-pats-condition( term ((:Tag: l lt) ( x4 x3 x2 x1 ) ))) (tail(
 ));
 
 macro ('match-pats-condition( term ((:Tag: l lt) ( x5 x4 x3 x2 x1 ) ))) (tail(
-   (let (uuid v) term )
+   (let (uuid v) (maybe-deref term) )
    (let (uuid ok) Trueu8)
    (if (==( (.0( (uuid v) )) l )) () (set (uuid ok) Falseu8))
    (if (match-pats-condition( (.1( (as (uuid v) lt) )) x1 )) () (set (uuid ok) Falseu8))

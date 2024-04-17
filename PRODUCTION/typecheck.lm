@@ -104,6 +104,10 @@ typecheck-assert-expr := λe . (tail(
          (typecheck-assert-expr( l ))
          (typecheck-assert-one( e ))
       )))
+      ( (App( (Variable 'maybe-deref) r )) (tail(
+         (typecheck-assert-expr( r ))
+         (typecheck-assert-one( e ))
+      )))
       ( (App( l r )) (
          (typecheck-assert-expr( r ))
          (typecheck-assert-expr( l ))
@@ -799,18 +803,24 @@ typecheck-infer-expr := λctx e used . (tail(
             (typecheck-ascript( e (typecheck-lookup r) ))
          ) ())
       )))
-      ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
-         (set ctx (typecheck-infer-expr( ctx rhs Used )))
-         (if (typecheck-lookup rhs) (
-            (local rtype)
-            (set rtype (typecheck-lookup rhs))
-            (match (typecheck-slot( rtype Array )) (
+      ( (App( (Variable 'maybe-deref) r )) (tail(
+         (set ctx (typecheck-infer-expr( ctx r used )))
+         (local rtype)
+         (set rtype (typecheck-lookup r))
+         (if rtype (
+            (match (typecheck-slot( (typecheck-lookup r) Array )) (
                ()
                ( (Array( U8 '? )) () )
                ( (Array( x '? )) (set rtype x) )
             ))
-            (print-s (Let rtype))(print-s \n)
-            (set ctx ( ctx (lname (And( LocalVariable (typecheck-not-representation rtype) )) ) ))
+            (print-s (MaybeDeref rtype))(print-s \n)
+            (typecheck-ascript( e rtype ))
+         ) ())
+      )))
+      ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
+         (set ctx (typecheck-infer-expr( ctx rhs Used )))
+         (if (typecheck-lookup rhs) (
+            (set ctx ( ctx (lname (And( LocalVariable (typecheck-not-representation (typecheck-lookup rhs)) )) ) ))
          ) (
             (set ctx ( ctx (lname ()) ))
          ))
