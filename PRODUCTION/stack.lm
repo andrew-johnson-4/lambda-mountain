@@ -35,6 +35,7 @@ stack-call := λ ctx function-name function-args offset . (tail(
             (set args-size (max( '8 args-size )))
          ))
          (set e-call (expr::set-prog( e-call (
+            \o \s 'call \s function-name \s ': \s (quote-s (typecheck-lookup function-args)) \n
             (expr::get-frame e-args)
             (expr::get-prog e-args)
             (enter-function())

@@ -92,7 +92,6 @@ compile-expr-strict := λctx e offset used . (tail(
                      (if (typecheck-unify-implies( x U8 )) () (
                         (set deref True)
                         (set new-size (typecheck-sizeof x))
-                        (print-s (NewSize new-size))(print-s \n)
                      ))
                   ))
                ))
@@ -103,10 +102,12 @@ compile-expr-strict := λctx e offset used . (tail(
                   (set e2 (expr::set-expr( e2 '0 )))
                   (set e3 (fragment-apply( ctx 'push (Cons( (typecheck-lookup r) (And( Constant Literal )) )) ((() e1) e2) e1 )))
                   (set e3 (expr::set-type( e3 StackVariable )))
-                  (print-s (OffsetFrom offset))(print-s \n)
                   (set offset (i2s(add( (s2i offset) (inv(s2i new-size)) ))))
-                  (print-s (OffsetNew offset))(print-s \n)
                   (set e3 (expr::set-offset( e3 offset )))
+                  (set e3 (expr::set-prog( e3 (
+                     \o \s 'deref \s (quote-s r) \n
+                     (expr::get-prog e3)
+                  ))))
                   e3
                )) (
                   (compile-expr-strict( ctx r offset Used ))
@@ -185,17 +186,13 @@ compile-expr-strict := λctx e offset used . (tail(
                   (expr::get-unframe e3)
                   \t 'jmp \s label-end \n
                   label-true-branch ': \n
+                  (expr::get-frame e2)
                   (expr::get-prog e2)
+                  (expr::get-unframe e2)
                   label-end ': \n
                ))))
                (set e4 (expr::set-context( e4 (expr::get-context e2) )))
                (set e4 (expr::set-offset( e4 (expr::get-offset e1) )))
-               (set e4 (expr::set-frame( e4 (
-                  (expr::get-frame e1) (expr::get-frame e2)
-               ))))
-               (set e4 (expr::set-unframe( e4 (
-                  (expr::get-unframe e1) (expr::get-unframe e2)
-               ))))
                e4
             )))
             ( (App( (Variable 'label) (Variable label-name) )) (
