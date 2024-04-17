@@ -103,7 +103,7 @@ compile-expr-strict := λctx e offset used . (tail(
                (match (expr::get-type e1) (
                   ()
                   (BranchConditional ())
-                  ( _ (tail(
+                  ( et (tail(
                      (set e1 (expr::set-prog( e1 (
                         (expr::get-prog e1)
                         \t 'cmp \s '$1 , \s '%rax \n

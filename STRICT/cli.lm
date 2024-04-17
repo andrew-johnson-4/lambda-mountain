@@ -55,17 +55,14 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
    (print Strict:\s_s)(print config-strict)(print \n_s)
 
    (let continue Trueu8)
-   (while (==( continue Trueu8 )) (
-      (print 'Continue_s)
-   ))
-#      ()
-#      (SNil (set continue 0u8))
-#      ( (SCons( (SAtom( fp )) rst )) (tail(
-#         (print fp)
-#         (set input rst)
-#      )))
-#      ( (SCons( SNil rst )) (set input rst) )
-#   )))
+   (while (==( continue Trueu8 )) (match input (
+      ()
+      ( SNil (set continue Falseu8) )
+      ( (SCons( SNil rst )) (set input rst) )
+      ( (SCons( (SAtom( fp )) rst )) (set input rst) )
+#      ( (SCons( (SAtom( fp )) rst )) (tail( (cli-intake fp) (set input rst) )))
+#      ( (SAtom( fp )) (tail( (cli-intake fp) (set continue False) )))
+   )))
 
 
 #      (Compile (
@@ -89,3 +86,9 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
 #         (set inputs (tail inputs))
 #      ))
 ));
+
+cli-intake := λ(: fp U8[]) . (: (tail(
+   (print 'Intake:\s_s)
+   (print fp)
+   (print '\n_s)
+)) Nil);
