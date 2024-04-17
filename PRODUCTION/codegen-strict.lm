@@ -69,6 +69,10 @@ compile-expr-strict := λctx e offset used . (tail(
                      \o \s 'unlet \s lname \s '= \s (quote-s rhs) \s ': \s (quote-s(typecheck-lookup rhs)) \n
                      (expr::get-unframe e1) \t 'add \s '$ sz , \s '%rsp \n
                   ))))
+                  (set e1 (expr::set-altframe( e1 (
+                     \o \s 'altlet \s lname \s '= \s (quote-s rhs) \s ': \s (quote-s(typecheck-lookup rhs)) \n
+                     \t 'sub \s '$ sz , \s '%rsp \n
+                  ))))
                ))
                (set ctx (context::bind( (expr::get-context e1) lname
                   (typecheck-ascript( (LocalVariable offset) (typecheck-lookup rhs) ))
@@ -159,8 +163,6 @@ compile-expr-strict := λctx e offset used . (tail(
             ( (App( (App( (App( (Variable 'if) cond )) t )) f )) (tail(
                (set e1 (compile-expr-strict( ctx cond offset Used )))
                (set e2 (compile-expr-strict( (expr::get-context e1) t (expr::get-offset e1) Used )))
-               (local e2-size)
-               (print-s (E2Offset (expr::get-offset e2)))(print-s \n)
                (set e3 (compile-expr-strict( (expr::get-context e2) f (expr::get-offset e2) Used )))
                (match (expr::get-type e1) (
                   ()
@@ -181,19 +183,15 @@ compile-expr-strict := λctx e offset used . (tail(
                (local label-end)
                (set label-end (uuid()))
                (set e4 (expr::set-prog( e4 (
-                  (expr::get-frame e2)
-                  (expr::get-frame e3)
                   (expr::get-prog e1)
                   \t (expr::get-expr e1) \s label-true-branch \n
-                  (expr::get-frame e3)
+                  (expr::get-altframe e2)
                   (expr::get-prog e3)
-                  (expr::get-unframe e3)
                   \t 'jmp \s label-end \n
                   label-true-branch ': \n
                   (expr::get-prog e2)
+                  (expr::get-altframe e3)
                   label-end ': \n
-                  (expr::get-unframe e2)
-                  (expr::get-unframe e3)
                ))))
                (set e4 (expr::set-context( e4 (expr::get-context e3) )))
                (set e4 (expr::set-offset( e4 (expr::get-offset e3) )))
