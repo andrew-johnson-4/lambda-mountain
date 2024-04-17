@@ -57,6 +57,13 @@ compile-expr-strict := λctx e offset used . (tail(
          (set return (match e (
             ()
             ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
+               (match (typecheck-slot( (typecheck-lookup rhs) Array )) (
+                  ()
+                  ( (Array( U8 '? )) () )
+                  ( (Array( x '? )) (tail(
+                     (print-s (LetDeref x))(print-s \n)
+                  )))
+               ))
                (local sz)
                (set sz (max( 8 (typecheck-sizeof (typecheck-lookup rhs)) )))
                (if sz () (
