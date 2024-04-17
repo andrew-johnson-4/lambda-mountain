@@ -802,6 +802,7 @@ typecheck-infer-expr := λctx e used . (tail(
       ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
          (set ctx (typecheck-infer-expr( ctx rhs Used )))
          (if (typecheck-lookup rhs) (
+            (print-s (Let (typecheck-lookup rhs)))(print-s \n)
             (set ctx ( ctx (lname (And( LocalVariable (typecheck-not-representation (typecheck-lookup rhs)) )) ) ))
          ) (
             (set ctx ( ctx (lname ()) ))
