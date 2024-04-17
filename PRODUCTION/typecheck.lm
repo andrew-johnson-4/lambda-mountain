@@ -173,6 +173,25 @@ typecheck-assert-not-nil := λt whole-tt tt . (match tt (
    ( _ ())
 ));
 
+typecheck-sizeall := λtt . (match (typecheck-slot( tt Sized )) (
+   ()
+   ( (Sized _) tt )
+   ( _ (tail(
+      (local size)
+      (set size (typecheck-sizeof tt))
+      (set tt (typecheck-sizeall-children tt))
+      (if size (
+         (And( tt (Sized size) ))
+      ) tt)
+   )))
+));
+typecheck-sizeall-children := λtt . (match tt (
+   ()
+   ( (Array( bt sz )) (Array( (typecheck-sizeall bt) sz )))
+   ( (lt rt) ( (typecheck-sizeall-children lt) (typecheck-sizeall-children rt) ))
+   ( _ tt )
+));
+
 typecheck-ascript := λt tt . (tail(
    (if tt (tail(
       (typecheck-assert-not-nil( t tt tt ))
@@ -183,17 +202,7 @@ typecheck-ascript := λt tt . (tail(
             fail (TypeAscriptionInequality lt tt)
          ))
       ) (
-         (local size)
-         (set size (typecheck-sizeof tt))
-         (if size (
-            (match (typecheck-slot( tt Sized )) (
-               ()
-               ( (Sized _) () )
-               ( _ (
-                  (set tt (And( tt (Sized size) )))
-               ))
-            ))
-         ) ())
+         (set tt (typecheck-sizeall tt))
          (set typecheck-context ((t tt) typecheck-context))
          (set typecheck-types-have-changed True)
       ))
@@ -808,11 +817,11 @@ typecheck-infer-expr := λctx e used . (tail(
          (local rtype)
          (set rtype (typecheck-lookup r))
          (if rtype (
-            (match (typecheck-slot( (typecheck-lookup r) Array )) (
-               ()
-               ( (Array( U8 '? )) () )
-               ( (Array( x '? )) (set rtype x) )
-            ))
+#            (match (typecheck-slot( (typecheck-lookup r) Array )) (
+#               ()
+#               ( (Array( U8 '? )) () )
+#               ( (Array( x '? )) (set rtype x) )
+#            ))
             (print-s (MaybeDeref rtype))(print-s \n)
             (typecheck-ascript( e rtype ))
          ) ())
@@ -915,9 +924,6 @@ typecheck-sizeof-impl := λtt . (match tt (
             (set sz (tail (tail sizes)))
          ) ())
          (set sizes (head sizes))
-      ))
-      (if sz () (
-         (fail (UnableToDetermineSizeof tt ))
       ))
       sz
    )))

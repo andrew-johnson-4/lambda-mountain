@@ -76,11 +76,11 @@ compile-expr-strict := λctx e offset used . (tail(
             )))
             ( (App( (Variable 'maybe-deref) r )) (tail(
                (local deref)
-               (match (typecheck-slot( (typecheck-lookup r) Array )) (
-                  ()
-                  ( (Array( U8 '? )) () )
-                  ( (Array( x '? )) (set deref True))
-               ))
+#               (match (typecheck-slot( (typecheck-lookup r) Array )) (
+#                  ()
+#                  ( (Array( U8 '? )) () )
+#                  ( (Array( x '? )) (set deref True))
+#               ))
                (if deref (tail(
                   (fail (TODO Deref deref (typecheck-lookup r)))
                   (set e1 (expr::set-type( e1 StackValue )))
