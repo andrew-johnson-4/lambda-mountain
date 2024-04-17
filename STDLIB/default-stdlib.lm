@@ -10,31 +10,22 @@ close := λ(: x S). (: (tail(
    (as R8 S[])
 )) S[]);
 
-print := λ(: x S). (: (tail(
-   (if (==( (.0 x) 3u64 )) (
-      (print '\[\]_s)
-   ) (
-      (if (==( (.0 x) 2u64 )) (
-         (print (.1 (as x SAtom)))
-      ) (
-         (if (==( (.0 x) 1u64 )) (tail(
-            (let c SNil)
-            (print '\[_s)
-            (mov( (.2 (as x SCons)) 0u64 c ))
-            (print c)
-            (print '\s_s)
-            (mov( (.1 (as x SCons)) 0u64 c ))
-            (print c)
-            (print '\]_s)
-            ()
-         )) (tail(
-            (print '[_s)
-            (print (as (.1 (as x SPointer)) U64))
-            (print ']_s)
-         )))
-      ))
-   ))
+print := λ(: x S). (: (match x (
    ()
+   ( (SAtom a) (print a) )
+#   ( (SCons( l r )) (tail(
+#      (print '\[_s)
+#      (print l)
+#      (print '\s_s)
+#      (print r)
+#      (print '\]_s)
+#   )))
+   ( SNil (print '\[\]_s))
+#   ( (SPointer p) (tail(
+#      (print '[_s)
+#      (print (as p U64))
+#      (print ']_s)
+#   )))
 )) Nil);
 
 fail := λ(: msg Array<U8,?>). (: (tail(
