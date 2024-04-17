@@ -23,14 +23,28 @@ fragment cdecl::return := λ(: l LocalVariable+Sized<8>). (: (  (.program( \t 'm
 fragment & := λ(: src LocalVariable). (: ( (.program( \t 'mov \t '%rbp , \s '%r12 \n \t 'add \s '$ (.expression src) , \s '%r12 \n) (.expression( 'r12 ))) ) Reg64);
 
 # Generic 'mov Semantics
-fragment mov := λ(: src LocalVariable+Sized<size>)(: dst LocalVariable+Sized<size>). (: (
-   (.program ( for word-offset in (range( 0 (/( size 8 )) )) (
-      \t 'movq \s (+( (.expression src) (*( word-offset 8 )) )) \[ '%rbp \] , \s '%r15 \n
-      \t 'movq \s '%r15 , \s (+(
-         (.expression dst)
-         (*( word-offset 8 ))
-      )) \[ '%rbp \] \n      
-   )))
+fragment mov := λ(: src LocalVariable+Sized<size>)(: dst LocalVariable). (: (
+   (.program (
+      (for word-offset in (range( 0 (/( size 8 )) )) (
+         \t 'movq \s (+( (.expression src) (*( word-offset 8 )) )) \[ '%rbp \] , \s '%r15 \n
+         \t 'movq \s '%r15 , \s (+(
+            (.expression dst)
+            (*( word-offset 8 ))
+         )) \[ '%rbp \] \n      
+      ))
+      (if-eq size 4 (
+         \t 'mov \s (.expression src) \[ '%rbp \] , \s '%r15d \n
+         \t 'mov \s '%r15d , \s (.expression dst) \[ '%rbp \] \n
+      ))
+      (if-eq size 2 (
+         \t 'mov \s (.expression src) \[ '%rbp \] , \s '%r15w \n
+         \t 'mov \s '%r15w , \s (.expression dst) \[ '%rbp \] \n
+      ))
+      (if-eq size 1 (
+         \t 'mov \s (.expression src) \[ '%rbp \] , \s '%r15b \n
+         \t 'mov \s '%r15b , \s (.expression dst) \[ '%rbp \] \n
+      ))
+   ))
 ) Nil);
 fragment push := λ(: src GlobalVariable+Sized<size>). (: (
    (.program (
