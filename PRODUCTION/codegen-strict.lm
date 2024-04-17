@@ -57,13 +57,6 @@ compile-expr-strict := λctx e offset used . (tail(
          (set return (match e (
             ()
             ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
-               (match (typecheck-slot( (typecheck-lookup rhs) Array )) (
-                  ()
-                  ( (Array( U8 '? )) () )
-                  ( (Array( x '? )) (tail(
-                     (print-s (LetDeref x))(print-s \n)
-                  )))
-               ))
                (local sz)
                (set sz (max( 8 (typecheck-sizeof (typecheck-lookup rhs)) )))
                (if sz () (
@@ -80,6 +73,21 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e1 (expr::set-context( e1 ctx )))
                (set e1 (expr::set-offset( e1 offset )))
                e1
+            )))
+            ( (App( (Variable 'maybe-deref) r )) (tail(
+               (local deref)
+               (match (typecheck-slot( (typecheck-lookup r) Array )) (
+                  ()
+                  ( (Array( U8 '? )) () )
+                  ( (Array( x '? )) (set deref True))
+               ))
+               (if deref (tail(
+                  (fail (TODO Deref deref (typecheck-lookup r)))
+                  (set e1 (expr::set-type( e1 StackValue )))
+                  e1
+               )) (
+                  (compile-expr-strict( ctx r offset Used ))
+               ))
             )))
             ( (App( (App( (Variable 'while) cond )) body )) (tail(
                (set e1 (compile-expr-strict( ctx cond offset Used )))
