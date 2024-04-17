@@ -5,6 +5,14 @@ import STDLIB/default-rules.lm;
 import STDLIB/default-stdlib.lm;
 
 import STRICT/utility.lm;
+import STRICT/tokenize.lm;
+import STRICT/parse.lm;
+import STRICT/preprocess.lm;
+import STRICT/typecheck.lm;
+import STRICT/expression.lm;
+import STRICT/codegen.lm;
+import STRICT/fragment.lm;
+import STRICT/assemble.lm;
 
 config-strict                := Trueu8;
 config-preprocess            := Trueu8;
@@ -27,13 +35,11 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
          ('--gradual_s (set config-strict Falseu8))
          ('--macro_s (set config-preprocess Trueu8))
          ('--nomacro_s (set config-preprocess Falseu8))
-#         ('-o_s (tail(
-#            (set argi (+( argi 1u64 )))
-#            (set input (SCons(
-#               (close input)
-#               (close (SAtom([]( argv argi ))))
-#            )))
-#         )))
+         ('-o_s (tail(
+            (print 'O_s)
+            (set argi (+( argi 1u64 )))
+            (set config-target ([]( argv argi )))
+         )))
          (fp (
             (set input (SCons(
                (close input)
