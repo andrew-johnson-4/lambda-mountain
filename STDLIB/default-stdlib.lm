@@ -55,10 +55,25 @@ print := λ(: x String). (: (tail(
    (inc( R15 ))
    (jmp( begin-count ))
    (label end-count)
-   (mov( 1u64 RAX )) # write
-   (mov( 1u64 RDI )) # stdout
-   (mov( x RSI )) # data
-   (syscall())
+   (system-call( 1u64 1u64 (as x U64) (as RDX U64) ))
+   ()
+)) Nil);
+
+eprint := λ(: x String). (: (tail(
+   (mov( x R15 ))
+   (mov( 0u64 RDX )) # data length
+   (gensym-label begin-count)
+   (gensym-label end-count)
+   (label begin-count)
+   (mov( 0u64 R15 R14B ))
+   (cmp( 0u8 R14B ))
+   (je( end-count ))
+   (inc( RDX ))
+   (inc( R15 ))
+   (jmp( begin-count ))
+   (label end-count)
+   (system-call( 1u64 2u64 (as x U64) (as RDX U64) ))
+   ()
 )) Nil);
 
 print := λ(: x U64). (: (tail(
@@ -84,11 +99,7 @@ print := λ(: x U64). (: (tail(
    (mov( DL cs ))
    (add( 48u8 cs ))
    (dec( R14 ))
-   (mov( 1u64 RAX )) # write
-   (mov( 1u64 RDI )) # stdout
-   (mov( (& cs) RSI )) # data
-   (mov( 1u64 RDX )) # length
-   (syscall())
+   (system-call( 1u64 1u64 (as (& cs) U64) 1u64 ))
    (cmp( 0u64 R14 ))
    (jne( pdigits ))
 )) Nil);
@@ -103,11 +114,7 @@ print := λ(: x I64). (: (tail(
    (jge( unsigned ))
    (neg( R15 ))
    (mov( 45u8 cs ))
-   (mov( 1u64 RAX )) # write
-   (mov( 1u64 RDI )) # stdout
-   (mov( (& cs) RSI )) # data
-   (mov( 1u64 RDX )) # length
-   (syscall())
+   (system-call( 1u64 1u64 (as (& cs) U64) 1u64 ))
 
    (label unsigned)
    (mov( R15 RAX ))
@@ -125,11 +132,7 @@ print := λ(: x I64). (: (tail(
    (mov( DL cs ))
    (add( 48u8 cs ))
    (dec( R14 ))
-   (mov( 1u64 RAX )) # write
-   (mov( 1u64 RDI )) # stdout
-   (mov( (& cs) RSI )) # data
-   (mov( 1u64 RDX )) # length
-   (syscall())
+   (system-call( 1u64 1u64 (as (& cs) U64) 1u64 ))
    (cmp( 0u64 R14 ))
    (jne( pdigits ))
 )) Nil);
@@ -224,3 +227,64 @@ malloc := λ (: sz U64) . (: (tail(
    (set cons-page-tail (as R8 U64))
    (as curr ?[])
 )) ?[]);
+
+system-call := λ(: rax U64)(: rdi U64)(: rsi U64)(: rdx U64). (: (tail(
+   (mov( rax RAX ))
+   (mov( rdi RDI ))
+   (mov( rsi RSI ))
+   (mov( rdx RDX ))
+   (syscall())
+   (as RAX U64)
+)) U64);
+
+read-file := λ(: fp String). (: (tail(
+   (let fd (system-call( 2u64 (as fp U64) 0u64 0u64 )))
+   (mov( fd RAX ))
+   (if (==( (as AL U8) 254u8 )) (tail(
+      (eprint 'Unable\sto\sopen\sfile:\s_s)
+      (eprint fp)
+      (eprint '\n_s)
+      (exit 1u64)
+   )) ())
+   (let shead (as (malloc( 0u64 )) U8[]))
+   (let stail shead)
+   (let more Trueu8)
+   (while (==( more Trueu8 )) (tail(
+      (let rdsz (system-call( 0u64 fd (as stail U64) 1024u64 )))
+      (malloc( rdsz ))
+      (print rdsz)
+      (if (==( rdsz 0u64 )) (
+         (set more Falseu8)
+      ) (
+         (set stail (as (
+           (+( (as stail U64) rdsz ))
+         ) U8[]))
+      ))
+   )))
+   (system-call( 3u64 fd 0u64 0u64 ))
+   (let eos (as (malloc( 1u64 )) U8[]))
+   (mov( 0u8 0u64 eos ))
+   (as shead String)
+)) String);
+
+
+#   # move data from buffer into string
+#   'load_file_loop:                       \n
+#   \t 'cmp \s '$0, \s '%r10               \n
+#   \t 'je \s 'load_file_bufempty          \n
+#   (allocate-atom-grow '$1)
+#   \t 'movb \s '0 \[ '%r11 \] , \s '%bl    \n
+#   \t 'mov \s '%bl, \s '0 \[ '%r9 \]      \n
+#   \t 'inc \s '%r9                        \n
+#   \t 'inc \s '%r11                       \n
+#   \t 'dec \s '%r10                       \n
+#   \t 'jmp \s 'load_file_loop             \n
+
+#   # close file
+#   (system-call( '$3 '%rax '$0 '$0 ))
+#   (allocate-atom-grow '$1)
+#   \t 'movb \s '$0, \s '0 \[ '%r9 \]       \n
+#   \t 'inc \s '%r9                        \n
+#   \t 'mov \s '%r8, \s '%r12              \n
+#   \t 'mov \s '$0, \s '%r13               \n
+#   \t 'ret                                \n

@@ -3,7 +3,7 @@ nostd: prod
 	./production --nostd -o tmp.s STRICT/cli.lm
 	as -o tmp.o tmp.s
 	ld -o tmp tmp.o
-	./tmp && echo $?
+	./tmp STRICT/cli.lm && echo $?
 
 test: prod
 	./production -o production1.s PRODUCTION/cli.lm

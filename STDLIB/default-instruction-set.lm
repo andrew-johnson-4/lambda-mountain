@@ -148,6 +148,22 @@ fragment mov := λ(: src Reg64)(: index Literal+Constant)(: dst LocalVariable+Si
       ))
    ))
 ) Nil);
+fragment mov := λ(: src Literal+Constant)(: index Literal+Constant)(: dst LocalVariable+Sized<size>). (: (
+   (.program (
+      (if-eq size 8 (
+         \t 'movq \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n
+      ))
+      (if-eq size 4 (
+         \t 'movl \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n
+      ))
+      (if-eq size 2 (
+         \t 'movw \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n
+      ))
+      (if-eq size 1 (
+         \t 'movb \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n
+      ))
+   ))
+) Nil);
 
 fragment mov := λ(: src LocalVariable)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n)) ) Nil);
 fragment mov := λ(: src GlobalVariable)(: dst Constant+Reg64). (: ( (.program(
@@ -246,6 +262,7 @@ fragment movsx := λ(: src Constant+Reg8)(: dst Constant+Reg64). (: (.program( \
 fragment movsx := λ(: src Constant+Reg16)(: dst Constant+Reg64). (: (.program( \t 'movsx \s '% (.expression src) , '% (.expression dst) \n )) Nil);
 fragment movsx := λ(: src Constant+Reg32)(: dst Constant+Reg64). (: (.program( \t 'movsx \s '% (.expression src) , '% (.expression dst) \n )) Nil);
 
+fragment jb := λ(: dst Label). (: (.program( \t 'jb \s (.expression dst) \n )) Nil);
 fragment jg := λ(: dst Label). (: (.program( \t 'jg \s (.expression dst) \n )) Nil);
 fragment jge := λ(: dst Label). (: (.program( \t 'jge \s (.expression dst) \n )) Nil);
 fragment jl := λ(: dst Label). (: (.program( \t 'jl \s (.expression dst) \n )) Nil);
@@ -266,6 +283,11 @@ fragment add := λ(: src Constant+Literal+Sized<1>)(: dst LocalVariable). (: (.p
 fragment add := λ(: src Constant+Literal+Sized<8>)(: dst Reg64). (: (.program( \t 'addq \s '$ (.expression src) , \s '% (.expression dst) \n )) Nil);
 
 fragment add := λ(: src LocalVariable+Sized<8>)(: dst Reg64). (: (.program( \t 'addq \s (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n )) Nil);
+
+fragment add := λ(: src Reg8)(: dst Reg8). (: (.program( \t 'add \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment add := λ(: src Reg16)(: dst Reg16). (: (.program( \t 'add \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment add := λ(: src Reg32)(: dst Reg32). (: (.program( \t 'add \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment add := λ(: src Reg64)(: dst Reg64). (: (.program( \t 'add \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
 
 fragment push := λ(: l Reg64). (: (.program( \t 'push \s '% (.expression l) \n )) Nil);
 fragment pop := λ(: l Reg64). (: (.program( \t 'pop \s '% (.expression l) \n )) Nil);
