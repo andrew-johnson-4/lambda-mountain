@@ -4,5 +4,5 @@ import STDLIB/default-primitives.lm;
 import STDLIB/default-rules.lm;
 import STDLIB/default-stdlib.lm;
 
-main := (print (as (head-string 'ABC_s) ASCII));
+main := (print (tail-string 'ABC_s));
 
