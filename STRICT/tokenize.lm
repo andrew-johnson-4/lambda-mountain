@@ -28,10 +28,12 @@ tokenize := λ(: fp String). (: (tail(
          )))
          ( c (tail(
             ()
-            (print (as c ASCII))
+            ()
          )))
       ))
       (set text (tail-string text))
    )))
+   (set ast-tokenized-program SNil)
+   (print ast-tokenized-program)
 )) Nil);
 

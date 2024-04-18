@@ -5,6 +5,6 @@ import STDLIB/default-stdlib.lm;
 import STDLIB/default-rules.lm;
 
 main := (
-   (print 123u64)
-   (print -456i64)
+   (print 123_u64)
+   (print -456_i64)
 );

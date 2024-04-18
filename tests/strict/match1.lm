@@ -4,7 +4,7 @@ import STDLIB/default-primitives.lm;
 import STDLIB/default-rules.lm;
 import STDLIB/default-stdlib.lm;
 
-main := match 1u64 (
+main := match 1_u64 (
    ()
    (x (print x))
 );

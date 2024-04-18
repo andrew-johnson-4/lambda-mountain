@@ -8,7 +8,7 @@ type L (L( U64 ));
 type R (R( L , L ));
 
 main := (
-   (let r (R( (L( 1u64 )) (L( 2u64 )) )) )
+   (let r (R( (L( 1_u64 )) (L( 2_u64 )) )) )
    (print (.0 r) )
    (print (.0 (.1 r)) )
    (print (.1 (.1 r)) )
