@@ -122,9 +122,9 @@ compile-expr-strict := λctx e offset used . (tail(
                   ( et (tail(
                      (set e1 (expr::set-prog( e1 (
                         (expr::get-prog e1)
-                        \t 'cmp \s '$1 , \s '%rax \n
+                        \t 'cmp \s '$0 , \s '%rax \n
                      ))))
-                     (set e1 (expr::set-expr( e1 'je )))
+                     (set e1 (expr::set-expr( e1 'jne )))
                   )))
                ))
 
@@ -165,9 +165,9 @@ compile-expr-strict := λctx e offset used . (tail(
                   ( _ (tail(
                      (set e1 (expr::set-prog( e1 (
                         (expr::get-prog e1)
-                        \t 'cmp \s '$1 , \s '%rax \n
+                        \t 'cmp \s '$0 , \s '%rax \n
                      ))))
-                     (set e1 (expr::set-expr( e1 'je )))
+                     (set e1 (expr::set-expr( e1 'jne )))
                   )))
                ))
                (set e4 e1)

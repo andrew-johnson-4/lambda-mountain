@@ -104,6 +104,11 @@ print := λ(: x U64). (: (tail(
    (jne( pdigits ))
 )) Nil);
 
+print := λ(: cs ASCII). (: (tail(
+   (system-call( 1u64 1u64 (as (& cs) U64) 1u64 ))
+   ()
+)) Nil);
+
 print := λ(: x I64). (: (tail(
    (let cs 0u8)
    (gensym-label unsigned)
