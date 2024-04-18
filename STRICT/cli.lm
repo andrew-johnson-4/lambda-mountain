@@ -51,10 +51,6 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
       ))
       (set argi (+( argi 1u64 )))
    ))
-   (print Input:\s_s)(print input)(print \n_s)
-   (print Output:\s_s)(print config-target)(print \n_s)
-   (print Preprocess:\s_s)(print config-preprocess)(print \n_s)
-   (print Strict:\s_s)(print config-strict)(print \n_s)
 
    (let continue Trueu8)
    (while (==( continue Trueu8 )) (match input (
