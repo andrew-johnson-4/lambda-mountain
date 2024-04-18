@@ -165,6 +165,13 @@ fragment mov := λ(: src Literal+Constant)(: index Literal+Constant)(: dst Local
    ))
 ) Nil);
 
+fragment mov := λ(: src Sized<1>[]+LocalVariable)(: index Literal+Constant)(: dst Reg8). (: (
+   (.program(
+      \t 'mov \s (.expression src) \[ '%rbp \] , \s '%r15 \n
+      \t 'mov \s (.expression index) \[ '%r15 \] , \s '% (.expression dst) \n
+   ))
+) Nil);
+
 fragment mov := λ(: src LocalVariable)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n)) ) Nil);
 fragment mov := λ(: src GlobalVariable)(: dst Constant+Reg64). (: ( (.program(
    \t 'mov \t '$ (.expression src) , \s '% (.expression dst) \n
@@ -240,6 +247,11 @@ fragment mov := λ(: src LocalVariable)(: dst Reg8). (: (.program( \t 'mov \s (.
 fragment mov := λ(: src LocalVariable)(: dst Reg16). (: (.program( \t 'mov \s (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n )) Nil);
 fragment mov := λ(: src LocalVariable)(: dst Reg32). (: (.program( \t 'mov \s (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n )) Nil);
 fragment mov := λ(: src LocalVariable)(: dst Reg64). (: (.program( \t 'mov \s (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n )) Nil);
+
+fragment mov := λ(: src Constant+Literal+Sized<1>)(: dst Reg8). (: (.program( \t 'mov \s '$ (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment mov := λ(: src Constant+Literal+Sized<2>)(: dst Reg16). (: (.program( \t 'mov \s '$ (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment mov := λ(: src Constant+Literal+Sized<4>)(: dst Reg32). (: (.program( \t 'mov \s '$ (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment mov := λ(: src Constant+Literal+Sized<8>)(: dst Reg64). (: (.program( \t 'mov \s '$ (.expression src) , \s '% (.expression dst) \n )) Nil);
 
 fragment push := λ(: dst Reg8). (: (.program( \t 'mov \s '% (.expression dst) , '%r15b \n \t 'push \s '%r15 \n )) Nil);
 fragment push := λ(: dst Reg16). (: (.program( \t 'mov \s '% (.expression dst) , '%r15w \n \t 'push \s '%r15 \n )) Nil);

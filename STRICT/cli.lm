@@ -38,7 +38,6 @@ main := λ(: argc U64)(: argv String[]).(tail(
          ('--macro_s (set config-preprocess Trueu8))
          ('--nomacro_s (set config-preprocess Falseu8))
          ('-o_s (tail(
-            (print 'O_s)
             (set argi (+( argi 1u64 )))
             (set config-target ([]( argv argi )))
          )))
