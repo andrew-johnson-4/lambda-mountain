@@ -167,7 +167,8 @@ fragment mov := λ(: src Literal+Constant)(: index Literal+Constant)(: dst Local
 
 fragment mov := λ(: src Sized<1>[]+LocalVariable)(: index Literal+Constant)(: dst Reg8). (: (
    (.program(
-      \t 'mov \s (+( (.expression index) (.expression src) )) \[ '%rbp \] , \s '% (.expression dst) \n
+      \t 'mov \s (.expression src) \[ '%rbp \] , \s '%r15 \n
+      \t 'mov \s (.expression index) \[ '%r15 \] , \s '% (.expression dst) \n
    ))
 ) Nil);
 
