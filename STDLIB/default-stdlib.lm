@@ -252,7 +252,6 @@ read-file := λ(: fp String). (: (tail(
    (while (==( more Trueu8 )) (tail(
       (let rdsz (system-call( 0u64 fd (as stail U64) 1024u64 )))
       (malloc( rdsz ))
-      (print rdsz)
       (if (==( rdsz 0u64 )) (
          (set more Falseu8)
       ) (
@@ -267,4 +266,25 @@ read-file := λ(: fp String). (: (tail(
    (as shead String)
 )) String);
 
+head-string := λ(: s String). (: (tail(
+   (if (==( (as s U64) 0u64 )) (
+      (mov( 0u8 AL ))
+   ) (
+      (mov( (as s U8[]) 0u64 AL ))
+   ))
+   (as AL U8)
+)) U8);
 
+tail-string := λ(: s String). (: (tail(
+   (if (==( (as s U64) 0u64 )) (
+      (mov( 0u64 RAX ))
+   ) (
+      (if (head-string s) (tail(
+         (mov( (as s U64) RAX ))
+         (inc( RAX ))
+      )) (
+         (mov( 0u64 RAX ))
+      ))
+   ))
+   (as RAX String)
+)) String);

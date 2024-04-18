@@ -3,10 +3,11 @@ type Tokens EOF | (HeadOrder( String , Tokens[] )) | (TailOrder( Tokens[] , Stri
 
 tokenize := λ(: fp String). (: (tail(
    (let text (read-file fp))
-   (while (head-string text) (
-      (print (head-string text))
-      (set text (tail-string text))
-   ))
+   (print text)
+#   (while (head-string text) (
+#      (print text)
+#      (set text (tail-string text))
+#   ))
 )) Nil);
 
 close := λ(: x Tokens). (: (tail(
