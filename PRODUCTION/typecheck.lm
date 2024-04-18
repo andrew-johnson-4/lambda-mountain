@@ -821,7 +821,9 @@ typecheck-infer-expr := λctx e used . (tail(
                ()
                ( (Array( x '? )) (
                   (if (typecheck-unify-implies( x U8 )) () (
-                     (set rtype x)
+                     (if (typecheck-unify-implies( x '? )) () (
+                        (set rtype x)
+                     ))
                   ))
                ))
             ))

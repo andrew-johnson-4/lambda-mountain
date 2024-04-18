@@ -80,7 +80,9 @@ compile-expr-strict := λctx e offset used . (tail(
                   ()
                   ( (Array( x '? )) (
                      (if (typecheck-unify-implies( x U8 )) () (
-                        (set deref True)
+                        (if (typecheck-unify-implies( x '? )) () (
+                           (set deref True)
+                        ))
                      ))
                   ))
                ))
