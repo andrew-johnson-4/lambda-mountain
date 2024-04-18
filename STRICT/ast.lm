@@ -2,5 +2,5 @@
 
 type AST ASTNil;
 
-ast-tokenized-program := (: EOF Tokens);
+ast-tokenized-program := (: SNil S);
 ast-parsed-program := (: ASTNil AST);
