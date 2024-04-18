@@ -18,7 +18,7 @@ config-strict                := Trueu8;
 config-preprocess            := Trueu8;
 config-target                := 'tmp.s_s;
 
-type CompileMode ModeTokenize | ModeParse | ModeTypecheck | ModeCompile;
+type CompileMode ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 config-mode                  := (: ModeCompile CompileMode);
 
 main := λ(: argc U64)(: argv U8[][]).(tail(
@@ -29,6 +29,7 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
          ()
          ('--tokenize_s (set config-mode ModeTokenize))
          ('--parse_s (set config-mode ModeParse))
+         ('--preprocess_s (set config-mode ModePreprocess))
          ('--typecheck_s (set config-mode ModeTypecheck))
          ('--compile_s (set config-mode ModeCompile))
          ('--strict_s (set config-strict Trueu8))
@@ -58,10 +59,9 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
    (while (==( continue Trueu8 )) (match input (
       ()
       ( SNil (set continue Falseu8) )
-      ( (SCons( SNil rst )) (set input rst) )
-      ( (SCons( l rst )) (tail( (print l) (set input rst) )) )
-      ( (SCons( (SAtom( fp )) rst )) (tail( (cli-intake fp) (set input rst) )))
-      ( (SAtom( fp )) (tail( (cli-intake fp) (set continue False) )))
+      ( (SCons( rst SNil )) (set input rst) )
+      ( (SCons( rst (SAtom( fp )) )) (tail( (cli-intake fp) (set input rst) )))
+      ( (SAtom( fp )) (tail( (cli-intake fp) (set continue Falseu8) )))
    )))
 
 
@@ -88,7 +88,33 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
 ));
 
 cli-intake := λ(: fp U8[]) . (: (tail(
-   (print 'Intake:\s_s)
-   (print fp)
-   (print '\n_s)
+   (match config-mode (
+      ()
+      (ModeTokenize (tail(
+         (print 'Tokenize:\s_s)
+         (print fp)
+         (print '\n_s)
+      )))
+      (ModeParse (tail(
+         (print 'Parse:\s_s)
+         (print fp)
+         (print '\n_s)
+      )))
+      (ModePreprocess (tail(
+         (print 'Preprocess:\s_s)
+         (print fp)
+         (print '\n_s)
+      )))
+      (ModeTypecheck (tail(
+         (print 'Typecheck:\s_s)
+         (print fp)
+         (print '\n_s)
+      )))
+      (ModeCompile (tail(
+         (print 'Compile:\s_s)
+         (print fp)
+         (print '\n_s)
+      )))
+   ))
+   ()
 )) Nil);
