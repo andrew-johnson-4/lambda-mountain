@@ -89,10 +89,8 @@ compile-expr-strict := λctx e offset used . (tail(
                (match (typecheck-slot( (typecheck-lookup r) Array )) (
                   ()
                   ( (Array( x '? )) (
-                     (if (typecheck-unify-implies( x U8 )) () (
-                        (if (typecheck-unify-implies( x '? )) () (
-                           (set deref True)
-                        ))
+                     (if (typecheck-unify-implies( x '? )) () (
+                        (set deref True)
                      ))
                   ))
                ))
@@ -243,7 +241,7 @@ compile-expr-strict := λctx e offset used . (tail(
             )))
             ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
                (set ltype (typecheck-infer-type-compound ltype))
-               (if (typecheck-unify-args( (Array( U8 '? )) ltype )) (
+               (if (typecheck-unify-args( String ltype )) (
                   (local uid)
                   (set uid (strict-declare-cstring( lval )))
                   (set e1 (expr::set-expr( (expr::new ()) uid )))
@@ -268,7 +266,7 @@ compile-expr-strict := λctx e offset used . (tail(
                e1
             )))
             ( (Literal lval) (tail(
-               (if (typecheck-unify-args( (Array( U8 '? )) (typecheck-lookup e) )) (
+               (if (typecheck-unify-args( String (typecheck-lookup e) )) (
                   (local uid)
                   (set uid (strict-declare-cstring( lval )))
                   (set e1 (expr::set-expr( (expr::new ()) uid )))

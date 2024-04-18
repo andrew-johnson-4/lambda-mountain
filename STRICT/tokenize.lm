@@ -1,7 +1,7 @@
 
 type Tokens EOF;
 
-tokenize := λ(: fp U8[]). (: (tail(
+tokenize := λ(: fp String). (: (tail(
    ()
    ()
 )) Nil);
