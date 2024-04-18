@@ -1,5 +1,5 @@
 
-parse := λ(: fp Tokens). (: (tail(
+parse := λ. (: (tail(
    ()
    ()
 )) Nil);

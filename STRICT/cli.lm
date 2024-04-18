@@ -64,19 +64,19 @@ main := λ(: argc U64)(: argv String[]).(tail(
    (match config-mode (
       ()
       ( ModeTokenize () )
-      ( ModeParse (parse ast-tokenized-program) )
+      ( ModeParse (parse()) )
       ( ModePreprocess (tail(
-         (parse ast-tokenized-program)
-         (preprocess ast-parsed-program)
+         (parse())
+         (preprocess())
       )))
       ( ModeTypecheck (tail(
-         (parse ast-tokenized-program)
-         (preprocess ast-parsed-program)
+         (parse())
+         (preprocess())
          (typecheck())
       )))
       ( ModeCompile (tail(
-         (parse ast-tokenized-program)
-         (preprocess ast-parsed-program)
+         (parse())
+         (preprocess())
          (typecheck())
          (compile())
       )))

@@ -10,6 +10,12 @@ close := λ(: x S). (: (tail(
    (as R8 S[])
 )) S[]);
 
+close := λ(: x Tokens). (: (tail(
+   (mov( (malloc(sizeof Tokens)) R8 ))
+   (mov( x 0u64 (as R8 Tokens[]) ))
+   (as R8 Tokens[])
+)) Tokens[]);
+
 print := λ(: x S). (: (tail(
    (match x (
       ()

@@ -1,5 +1,5 @@
 
-preprocess := λ(: program AST). (: (tail(
+preprocess := λ. (: (tail(
    ()
    ()
 )) Nil);

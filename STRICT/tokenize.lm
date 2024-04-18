@@ -1,9 +1,7 @@
 
-type Tokens EOF;
+type Tokens EOF | (HeadOrder( String , Tokens[] )) | (TailOrder( Tokens[] , String ));
 
 tokenize := λ(: fp String). (: (tail(
-   (print 'Tokenize:\s_s)
-   (print fp)
-   (print '\n_s)
-   (print (read-file fp))
+   (let text (read-file fp))
+   (print text)
 )) Nil);
