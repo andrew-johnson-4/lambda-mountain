@@ -187,6 +187,7 @@ compile-expr-strict := λctx e offset used . (tail(
                   \t (expr::get-expr e1) \s label-true-branch \n
                   (expr::get-altframe e1)
                   (expr::get-frame e2)
+                  (expr::get-altframe e2)
                   (expr::get-frame e3)
                   (expr::get-prog e3)
                   \t 'jmp \s label-end \n
@@ -194,6 +195,7 @@ compile-expr-strict := λctx e offset used . (tail(
                   (expr::get-frame e2)
                   (expr::get-prog e2)
                   (expr::get-frame e3)
+                  (expr::get-altframe e3)
                   label-end ': \n
                ))))
                (set e4 (expr::set-context( e4 (expr::get-context e3) )))
@@ -201,6 +203,7 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e4 (expr::set-unframe( e4 (
                   (expr::get-unframe e1) (expr::get-unframe e2) (expr::get-unframe e3)
                ))))
+               (set e4 (expr::set-altframe( e4 () )))
                e4
             )))
             ( (App( (Variable 'label) (Variable label-name) )) (
@@ -305,6 +308,7 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e2 (expr::set-text( e2 (  (expr::get-text e1) (expr::get-text e2)  ))))
                (set e2 (expr::set-data( e2 (  (expr::get-data e1) (expr::get-data e2)  ))))
                (set e2 (expr::set-prog( e2 (  (expr::get-prog e1) (expr::get-prog e2)  ))))
+               (set e2 (expr::set-altframe( e2 (  (expr::get-altframe e1) (expr::get-altframe e2)  ))))
                e2
             )))
             ( (App ((Variable 'gensym-label) (Variable arg))) (tail(

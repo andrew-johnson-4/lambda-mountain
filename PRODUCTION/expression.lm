@@ -211,9 +211,12 @@ expr::chain := λ e1 e2 . (tail(
    (set e1 (expr::set-unframe(
       e1 ( (expr::get-unframe e1) (expr::get-unframe e2) )
    )))
-   (set e1 (expr::set-altframe(
-      e1 ( (expr::get-altframe e1) (expr::get-altframe e2) )
-   )))
+   (set e1 (expr::set-altframe( e1 (match ((expr::get-altframe e1) (expr::get-altframe e2)) (
+      ()
+      ( (() r) r )
+      ( (l ()) l )
+      ( (l r) (l r) )
+   )))))
    (set e1 (expr::set-offset( e1 (expr::get-offset e2) )))
    (set e1 (expr::set-context( e1 (expr::get-context e2) )))
    e1
