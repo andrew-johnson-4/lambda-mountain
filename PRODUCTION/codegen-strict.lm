@@ -90,8 +90,9 @@ compile-expr-strict := λctx e offset used . (tail(
                   ()
                   ( (Array( x '? )) (
                      (if (typecheck-unify-implies( x U8 )) () (
-                        (set deref True)
-                        (set new-size (typecheck-sizeof x))
+                        (if (typecheck-unify-implies( x '? )) () (
+                           (set deref True)
+                        ))
                      ))
                   ))
                ))
@@ -159,7 +160,7 @@ compile-expr-strict := λctx e offset used . (tail(
             ( (App( (App( (App( (Variable 'if) cond )) t )) f )) (tail(
                (set e1 (compile-expr-strict( ctx cond offset Used )))
                (set e2 (compile-expr-strict( (expr::get-context e1) t (expr::get-offset e1) Used )))
-               (set e3 (compile-expr-strict( (expr::get-context e2) f (expr::get-offset e2) Used )))
+               (set e3 (compile-expr-strict( (expr::get-context e1) f (expr::get-offset e1) Used )))
                (match (expr::get-type e1) (
                   ()
                   (BranchConditional ())
@@ -179,6 +180,7 @@ compile-expr-strict := λctx e offset used . (tail(
                (local label-end)
                (set label-end (uuid()))
                (set e4 (expr::set-prog( e4 (
+                  (expr::get-frame e1)
                   (expr::get-prog e1)
                   \t (expr::get-expr e1) \s label-true-branch \n
                   (expr::get-frame e3)
@@ -190,9 +192,12 @@ compile-expr-strict := λctx e offset used . (tail(
                   (expr::get-prog e2)
                   (expr::get-unframe e2)
                   label-end ': \n
+                  (expr::get-unframe e1)
                ))))
-               (set e4 (expr::set-context( e4 (expr::get-context e3) )))
-               (set e4 (expr::set-offset( e4 (expr::get-offset e3) )))
+               (set e4 (expr::set-context( e4 ctx )))
+               (set e4 (expr::set-offset( e4 offset )))
+               (set e4 (expr::set-frame( e4 () )))
+               (set e4 (expr::set-unframe( e4 () )))
                e4
             )))
             ( (App( (Variable 'label) (Variable label-name) )) (

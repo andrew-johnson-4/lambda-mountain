@@ -199,7 +199,7 @@ typecheck-ascript := λt tt . (tail(
       (set lt (typecheck-lookup t))
       (if lt (
          (if (typecheck-deep-eq( lt tt )) () (
-            fail (TypeAscriptionInequality lt tt)
+            fail (TypeAscriptionInequality lt tt t)
          ))
       ) (
          (set tt (typecheck-sizeall tt))
@@ -821,7 +821,9 @@ typecheck-infer-expr := λctx e used . (tail(
                ()
                ( (Array( x '? )) (
                   (if (typecheck-unify-implies( x U8 )) () (
-                     (set rtype x)
+                     (if (typecheck-unify-implies( x '? )) () (
+                        (set rtype x)
+                     ))
                   ))
                ))
             ))
