@@ -10,12 +10,6 @@ close := λ(: x S). (: (tail(
    (as R8 S[])
 )) S[]);
 
-close := λ(: x Tokens). (: (tail(
-   (mov( (malloc(sizeof Tokens)) R8 ))
-   (mov( x 0u64 (as R8 Tokens[]) ))
-   (as R8 Tokens[])
-)) Tokens[]);
-
 print := λ(: x S). (: (tail(
    (match x (
       ()
@@ -274,23 +268,3 @@ read-file := λ(: fp String). (: (tail(
 )) String);
 
 
-#   # move data from buffer into string
-#   'load_file_loop:                       \n
-#   \t 'cmp \s '$0, \s '%r10               \n
-#   \t 'je \s 'load_file_bufempty          \n
-#   (allocate-atom-grow '$1)
-#   \t 'movb \s '0 \[ '%r11 \] , \s '%bl    \n
-#   \t 'mov \s '%bl, \s '0 \[ '%r9 \]      \n
-#   \t 'inc \s '%r9                        \n
-#   \t 'inc \s '%r11                       \n
-#   \t 'dec \s '%r10                       \n
-#   \t 'jmp \s 'load_file_loop             \n
-
-#   # close file
-#   (system-call( '$3 '%rax '$0 '$0 ))
-#   (allocate-atom-grow '$1)
-#   \t 'movb \s '$0, \s '0 \[ '%r9 \]       \n
-#   \t 'inc \s '%r9                        \n
-#   \t 'mov \s '%r8, \s '%r12              \n
-#   \t 'mov \s '$0, \s '%r13               \n
-#   \t 'ret                                \n
