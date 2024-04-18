@@ -309,6 +309,10 @@ label-case-atom := λk . (tail(
          (set nk (nk '_))
          (set k (tail-string k))
       ))
+      ('+ (
+         (set nk (nk '_pl_))
+         (set k (tail-string k))
+      ))
       ('= (
          (set nk (nk '_eq_))
          (set k (tail-string k))

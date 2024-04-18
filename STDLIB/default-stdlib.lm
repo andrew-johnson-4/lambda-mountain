@@ -246,30 +246,25 @@ read-file := λ(: fp String). (: (tail(
       (eprint '\n_s)
       (exit 1u64)
    )) ())
-   (let sbuff (as (malloc( 1024u64 )) U8[]))
    (let shead (as (malloc( 0u64 )) U8[]))
    (let stail shead)
    (let more Trueu8)
    (while (==( more Trueu8 )) (tail(
-      (let rdsz (system-call( 0u64 fd (as sbuff U64) 1024u64 )))
+      (let rdsz (system-call( 0u64 fd (as stail U64) 1024u64 )))
+      (malloc( rdsz ))
       (print rdsz)
       (if (==( rdsz 0u64 )) (
          (set more Falseu8)
-      ) (tail(
-         (let bufi 0u64)
-         (while (<( bufi rdsz )) (
-            (print 'Mov:\s_s)
-            (print bufi)
-            (print '\n_s)
-            (set bufi (+( bufi 1u64 )))
-         ))
-      )))
+      ) (
+         (set stail (as (
+           (+( (as stail U64) rdsz ))
+         ) U8[]))
+      ))
    )))
-   (print 'File\sDescriptor:\s_s)
-   (print (as fd U64))
-   (print '\n_s)
-   (let x 'READ_s)
-   x
+   (system-call( 3u64 fd 0u64 0u64 ))
+   (let eos (as (malloc( 1u64 )) U8[]))
+   (mov( 0u8 0u64 eos ))
+   (as shead String)
 )) String);
 
 
@@ -284,19 +279,6 @@ read-file := λ(: fp String). (: (tail(
 #   \t 'inc \s '%r11                       \n
 #   \t 'dec \s '%r10                       \n
 #   \t 'jmp \s 'load_file_loop             \n
-
-#   # read file
-#   'load_file_bufempty:                   \n
-#   \t 'push \s '%rax                      \n
-#   \t 'mov \s '%rax, \s '%r10             \n
-#   \t 'mov \s '$load_file_bsz, \s '%rdx   \n
-#   \t 'mov \s '0 \[ '%rdx \] , \s '%rdx   \n
-#   (system-call( '$0 '%r10 '$load_file_buf () ))
-#   \t 'mov \s '%rax, \s '%r10             \n
-#   \t 'pop \s '%rax                       \n
-#   \t 'mov \s '$load_file_buf, \s '%r11   \n
-#   \t 'cmp \s '$0, \s '%r10               \n
-#   \t 'jne \s 'load_file_loop             \n
 
 #   # close file
 #   (system-call( '$3 '%rax '$0 '$0 ))
