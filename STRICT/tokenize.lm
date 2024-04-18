@@ -1,39 +1,42 @@
 
 tokenize := λ(: fp String). (: (tail(
-   (let text (read-file fp))
-   (let in_comment False_u8)
-   (let buffer SNil)
-   (while (head-string text) (tail(
-      (match (head-string text) (
-         ()
-         ( \o_u8 (tail(
-            (if (non-zero buffer) (tail(
-               (set ast-tokenized-program (SCons(
-                  (close ast-tokenized-program)
-                  (close (SAtom (clone-rope buffer)))
-               )))
-               (set buffer SNil)
-            )) ())
-            (set in_comment True_u8)
-         )))
-         (\n_u8 (tail(
-            (if (non-zero buffer) (tail(
-               (set ast-tokenized-program (SCons(
-                  (close ast-tokenized-program)
-                  (close (SAtom (clone-rope buffer)))
-               )))
-               (set buffer SNil)
-            )) ())
-            (set in_comment False_u8)
-         )))
-         ( c (tail(
-            ()
-            ()
-         )))
-      ))
-      (set text (tail-string text))
-   )))
+#   (let text (read-file fp))
+#   (let in_comment False_u8)
+#   (let buffer SNil)
+#   (while (head-string text) (tail(
+#      (match (head-string text) (
+#         ()
+#         ( \o_u8 (tail(
+#            (if (non-zero buffer) (tail(
+#               (set ast-tokenized-program (SCons(
+#                  (close ast-tokenized-program)
+#                  (close (SAtom (clone-rope buffer)))
+#               )))
+#               (set buffer SNil)
+#            )) ())
+#            (set in_comment True_u8)
+#         )))
+#         (\n_u8 (tail(
+#            (if (non-zero buffer) (tail(
+#               (set ast-tokenized-program (SCons(
+#                  (close ast-tokenized-program)
+#                  (close (SAtom (clone-rope buffer)))
+#               )))
+#               (set buffer SNil)
+#            )) ())
+#            (set in_comment False_u8)
+#         )))
+#         ( c (tail(
+#            ()
+#            ()
+#         )))
+#      ))
+#      (set text (tail-string text))
+#   )))
    (set ast-tokenized-program SNil)
+   (print 'Tokens:\s_s)
+   (print SNil)
    (print ast-tokenized-program)
+   (print '\n_s)
 )) Nil);
 
