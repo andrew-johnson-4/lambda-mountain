@@ -9,13 +9,28 @@ tokenize := λ(: fp String). (: (tail(
       (match (head-string text) (
          ()
          ( \o_u8 (tail(
-            (if buffer (
+            (if (non-zero buffer) (tail(
                (set ast-tokenized-program (TailOrder(
                   (close ast-tokenized-program)
                   (clone-rope buffer)
                )))
-            ) ())
+               (set buffer SNil)
+            )) ())
             (set in_comment True_u8)
+         )))
+         (\n_u8 (tail(
+            (if (non-zero buffer) (tail(
+               (set ast-tokenized-program (TailOrder(
+                  (close ast-tokenized-program)
+                  (clone-rope buffer)
+               )))
+               (set buffer SNil)
+            )) ())
+            (set in_comment False_u8)
+         )))
+         ( c (tail(
+            ()
+            (print (as c ASCII))
          )))
       ))
       (set text (tail-string text))

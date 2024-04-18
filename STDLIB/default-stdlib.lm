@@ -10,6 +10,16 @@ close := λ(: x S). (: (tail(
    (as R8 S[])
 )) S[]);
 
+non-zero := λ(: s S). (: (tail(
+   (mov( 1_u64 RAX ))
+   (match s (
+      ()
+      (SNil (mov( 0_u64 RAX )))
+      (_ ())
+   ))
+   (as RAX U64)
+)) U64);
+
 print := λ(: x S). (: (tail(
    (match x (
       ()
