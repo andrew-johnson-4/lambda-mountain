@@ -501,9 +501,10 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
             (App( (Variable '.program) (
                DontChain
                (if (eq( case-padding 0 )) () (
-                  \t 'sub \s '$ case-padding , \s '%r15 \n
+                  \t 'sub \s '$ case-padding , \s '%rsp \n
                ))
                (App( (Variable '.program) (Variable 'src) ))
+               \t 'pushq \s '$ case-number \n
                \t 'mov \s '$ (Variable 'dst) , \s '%r15 \n
                \t 'mov \s '$ case-size , \s '%r14 \n
                ('label 'while-push-start) ': \n
@@ -602,10 +603,10 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
             (App( (Variable '.program) (
                DontChain
                \t 'mov \s '$ (Variable 'dst) , \s '%r15 \n
+               \t 'movq \s '$ case-number , \s 0 \[ '%r15  \] \n
                (if (eq( case-padding 0 )) () (
                   \t 'sub \s '$ case-padding , \s '%r15 \n
                ))
-               \t 'movq \s '$ case-number , \s 0 \[ '%r15  \] \n
             )))
          ))))
          (typecheck-ascript( body ('->(
