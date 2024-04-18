@@ -4,6 +4,7 @@ import STDLIB/default-primitives.lm;
 import STDLIB/default-rules.lm;
 import STDLIB/default-stdlib.lm;
 
+import STRICT/ast.lm;
 import STRICT/utility.lm;
 import STRICT/tokenize.lm;
 import STRICT/parse.lm;
@@ -60,61 +61,30 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
       ()
       ( SNil (set continue Falseu8) )
       ( (SCons( rst SNil )) (set input rst) )
-      ( (SCons( rst (SAtom( fp )) )) (tail( (cli-intake fp) (set input rst) )))
-      ( (SAtom( fp )) (tail( (cli-intake fp) (set continue Falseu8) )))
+      ( (SCons( rst (SAtom( fp )) )) (tail( (tokenize fp) (set input rst) )))
+      ( (SAtom( fp )) (tail( (tokenize fp) (set continue Falseu8) )))
    )))
 
-
-#      (Compile (
-#         (parse-program (tokenize-file (head inputs)))
-#         (set inputs (tail inputs))
-#      ))
-#      (Parse (
-#         (parse-program (tokenize-file (head inputs)))
-#         (set inputs (tail inputs))
-#      ))
-#      (Typecheck (
-#         (parse-program (tokenize-file (head inputs)))
-#         (set inputs (tail inputs))
-#      ))
-#      (ParseExpression (
-#         (print-s (parse-expression (tokenize-file (head inputs))))
-#         (set inputs (tail inputs))
-#      ))
-#      (Tokenize (
-#         (print-s (tokenize-file (head inputs)))
-#         (set inputs (tail inputs))
-#      ))
-));
-
-cli-intake := λ(: fp U8[]) . (: (tail(
    (match config-mode (
       ()
-      (ModeTokenize (tail(
-         (print 'Tokenize:\s_s)
-         (print fp)
-         (print '\n_s)
+      ( ModeTokenize () )
+      ( ModeParse (parse ast-tokenized-program) )
+      ( ModePreprocess (tail(
+         (parse ast-tokenized-program)
+         (preprocess ast-parsed-program)
       )))
-      (ModeParse (tail(
-         (print 'Parse:\s_s)
-         (print fp)
-         (print '\n_s)
+      ( ModeTypecheck (tail(
+         (parse ast-tokenized-program)
+         (preprocess ast-parsed-program)
+         (typecheck())
       )))
-      (ModePreprocess (tail(
-         (print 'Preprocess:\s_s)
-         (print fp)
-         (print '\n_s)
-      )))
-      (ModeTypecheck (tail(
-         (print 'Typecheck:\s_s)
-         (print fp)
-         (print '\n_s)
-      )))
-      (ModeCompile (tail(
-         (print 'Compile:\s_s)
-         (print fp)
-         (print '\n_s)
+      ( ModeCompile (tail(
+         (parse ast-tokenized-program)
+         (preprocess ast-parsed-program)
+         (typecheck())
+         (compile())
       )))
    ))
-   ()
-)) Nil);
+
+));
+

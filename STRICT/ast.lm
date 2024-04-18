@@ -1,0 +1,6 @@
+
+
+type AST ASTNil;
+
+ast-tokenized-program := (: EOF Tokens);
+ast-parsed-program := (: ASTNil AST);
