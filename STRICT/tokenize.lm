@@ -33,7 +33,6 @@ tokenize := λ(: fp String). (: (tail(
 #      ))
 #      (set text (tail-string text))
 #   )))
-   (set ast-tokenized-program SNil)
    (print 'Tokens:\s_s)
    (print SNil)
    (print ast-tokenized-program)
