@@ -5,4 +5,5 @@ tokenize := λ(: fp String). (: (tail(
    (print 'Tokenize:\s_s)
    (print fp)
    (print '\n_s)
+   (print (read-file fp))
 )) Nil);
