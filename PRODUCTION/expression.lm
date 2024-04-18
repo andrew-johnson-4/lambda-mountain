@@ -1,52 +1,48 @@
 
-expr::new := λ . (StrictExpr(() () () () () () () () 0 ()));
+expr::new := λ . (StrictExpr(() () () () () () () () 0));
 expr::get-type := λe . (match e (
    ()
    ((Expr(f p u t d pc off)) ())
-   ((StrictExpr(tt f u t d p e c o a)) tt)
+   ((StrictExpr(tt f u t d p e c o)) tt)
 ));
 expr::get-frame := λe . (match e (
    ()
    ((Expr(f p u t d pc off)) f)
-   ((StrictExpr(tt f u t d p e c o a)) f)
+   ((StrictExpr(tt f u t d p e c o)) f)
 ));
 expr::get-unframe := λe . (match e (
    ()
    ((Expr(f p u t d pc off)) u)
-   ((StrictExpr(tt f u t d p e c o a)) u)
+   ((StrictExpr(tt f u t d p e c o)) u)
 ));
 expr::get-text := λe . (match e (
    ()
    ((Expr(f p u t d pc off)) t)
-   ((StrictExpr(tt f u t d p e c o a)) t)
+   ((StrictExpr(tt f u t d p e c o)) t)
 ));
 expr::get-data := λe . (match e (
    ()
    ((Expr(f p u t d pc off)) d)
-   ((StrictExpr(tt f u t d p e c o a)) d)
+   ((StrictExpr(tt f u t d p e c o)) d)
 ));
 expr::get-prog := λe . (match e (
    ()
    ((Expr(f p u t d pc off)) p)
-   ((StrictExpr(tt f u t d p e c o a)) p)
+   ((StrictExpr(tt f u t d p e c o)) p)
 ));
 expr::get-expr := λe . (match e (
    ()
-   ((StrictExpr(tt f u t d p x c o a)) x)
+   ((StrictExpr(tt f u t d p x c o)) x)
 ));
 expr::get-context := λe . (match e (
    ()
    ((Expr(f p u t d pc off)) pc)
-   ((StrictExpr(tt f u t d p e c o a)) c)
+   ((StrictExpr(tt f u t d p e c o)) c)
 ));
 expr::get-offset := λe . (match e (
    ()
    ((Expr(f p u t d pc off)) off )
-   ((StrictExpr(tt f u t d p e c o a)) o )
-));
-expr::get-altframe := λe . (match e (
-   ()
-   ((StrictExpr(tt f u t d p e c o a)) a )
+   ((StrictExpr(tt f u t d p e c o)) o )
 ));
 expr::set-frame := λe x . (
    (StrictExpr(
@@ -59,7 +55,6 @@ expr::set-frame := λe x . (
       (expr::get-expr e)
       (expr::get-context e)
       (expr::get-offset e)
-      (expr::get-altframe e)
    ))
 );
 expr::set-unframe := λe x . (
@@ -73,7 +68,6 @@ expr::set-unframe := λe x . (
       (expr::get-expr e)
       (expr::get-context e)
       (expr::get-offset e)
-      (expr::get-altframe e)
    ))
 );
 expr::set-text := λe x . (
@@ -87,7 +81,6 @@ expr::set-text := λe x . (
       (expr::get-expr e)
       (expr::get-context e)
       (expr::get-offset e)
-      (expr::get-altframe e)
    ))
 );
 expr::set-data := λe x . (
@@ -101,7 +94,6 @@ expr::set-data := λe x . (
       (expr::get-expr e)
       (expr::get-context e)
       (expr::get-offset e)
-      (expr::get-altframe e)
    ))
 );
 expr::set-prog := λe x . (
@@ -115,7 +107,6 @@ expr::set-prog := λe x . (
       (expr::get-expr e)
       (expr::get-context e)
       (expr::get-offset e)
-      (expr::get-altframe e)
    ))
 );
 expr::set-expr := λe x . (
@@ -129,7 +120,6 @@ expr::set-expr := λe x . (
       x
       (expr::get-context e)
       (expr::get-offset e)
-      (expr::get-altframe e)
    ))
 );
 expr::set-context := λe x . (
@@ -143,7 +133,6 @@ expr::set-context := λe x . (
       (expr::get-expr e)
       x
       (expr::get-offset e)
-      (expr::get-altframe e)
    ))
 );
 expr::set-offset := λe x . (
@@ -157,7 +146,6 @@ expr::set-offset := λe x . (
       (expr::get-expr e)
       (expr::get-context e)
       x
-      (expr::get-altframe e)
    ))
 );
 expr::set-type := λe x . (
@@ -171,21 +159,6 @@ expr::set-type := λe x . (
       (expr::get-expr e)
       (expr::get-context e)
       (expr::get-offset e)
-      (expr::get-altframe e)
-   ))
-);
-expr::set-altframe := λe x . (
-   (StrictExpr(
-      (expr::get-type e)
-      (expr::get-frame e)
-      (expr::get-unframe e)
-      (expr::get-text e)
-      (expr::get-data e)
-      (expr::get-prog e)
-      (expr::get-expr e)
-      (expr::get-context e)
-      (expr::get-offset e)
-      x
    ))
 );
 
@@ -211,12 +184,6 @@ expr::chain := λ e1 e2 . (tail(
    (set e1 (expr::set-unframe(
       e1 ( (expr::get-unframe e1) (expr::get-unframe e2) )
    )))
-   (set e1 (expr::set-altframe( e1 (match ((expr::get-altframe e1) (expr::get-altframe e2)) (
-      ()
-      ( (() r) r )
-      ( (l ()) l )
-      ( (l r) (l r) )
-   )))))
    (set e1 (expr::set-offset( e1 (expr::get-offset e2) )))
    (set e1 (expr::set-context( e1 (expr::get-context e2) )))
    e1
