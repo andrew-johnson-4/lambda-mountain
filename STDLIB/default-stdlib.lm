@@ -246,32 +246,32 @@ read-file := λ(: fp String). (: (tail(
       (eprint '\n_s)
       (exit 1u64)
    )) ())
+   (let sbuff (as (malloc( 1024u64 )) U8[]))
+   (let shead (as (malloc( 0u64 )) U8[]))
+   (let stail shead)
+   (let more Trueu8)
+   (while (==( more Trueu8 )) (tail(
+      (let rdsz (system-call( 0u64 fd (as sbuff U64) 1024u64 )))
+      (print rdsz)
+      (if (==( rdsz 0u64 )) (
+         (set more Falseu8)
+      ) (tail(
+         (let bufi 0u64)
+         (while (<( bufi rdsz )) (
+            (print 'Mov:\s_s)
+            (print bufi)
+            (print '\n_s)
+            (set bufi (+( bufi 1u64 )))
+         ))
+      )))
+   )))
    (print 'File\sDescriptor:\s_s)
    (print (as fd U64))
    (print '\n_s)
    (let x 'READ_s)
    x
 )) String);
-#   # open file
-#   (system-call( '$2 '%r12 '$0 '$0 ))
-#   # file descriptor is in '%rax
 
-#   \t 'cmp \s '$0, \s '%rax               \n
-#   # if return value is positive then open was a success
-#   \t 'jge \s 'load_file_contents         \n
-
-#   \t 'mov \s '$err_fopen, \s '%r12       \n
-#   \t 'mov \s '$0, \s '%r13               \n
-#   \t 'ret                                \n
-
-#   'load_file_contents:                   \n
-#   \t 'mov \s '$0, \s '%r8                \n
-#   \t 'mov \s '$0, \s '%r9                \n
-#   (allocate-atom-grow '$0)
-#   # r8 holds pointer to head of new data
-#   # r9 holds pointer to tail of new data
-#   \t 'mov \s '$0, \s '%r10               \n # r10 holds amount of data on buffer currently
-#   \t 'mov \s '$load_file_buf, \s '%r11   \n # r11 holds pointer to head of buffer
 
 #   # move data from buffer into string
 #   'load_file_loop:                       \n
