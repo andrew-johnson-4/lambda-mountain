@@ -619,3 +619,9 @@ escape-literal := λs . (tail(
    ))
    (clone-rope buff)
 ));
+
+quote-s := λt . (match t (
+   ()
+   ( (l r) ('\[ (quote-s l) '\s (quote-s r) '\]) )
+   ( x x )
+));

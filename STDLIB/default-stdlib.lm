@@ -28,7 +28,6 @@ print := λ(: x S). (: (tail(
          (print ']_s)
       )))
    ))
-   ()
 )) Nil);
 
 fail := λ(: msg Array<U8,?>). (: (tail(

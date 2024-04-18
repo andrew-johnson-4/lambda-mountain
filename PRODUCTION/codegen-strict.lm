@@ -65,17 +65,27 @@ compile-expr-strict := λctx e offset used . (tail(
                (set e1 (compile-push-rvalue( ctx rhs offset )))
                (set offset (i2s (add( (s2i offset) (inv(s2i sz)) )) )) 
                (if (eq( sz '0 )) () (
-                  (set e1 (expr::set-unframe( e1 ( (expr::get-unframe e1) \t 'add \s '$ sz , \s '%rsp \n ) )))
+                  (set e1 (expr::set-unframe( e1 (
+                     \o \s 'unlet \s lname \s '= \s (quote-s rhs) \s ': \s (quote-s(typecheck-lookup rhs)) \n
+                     (expr::get-unframe e1) \t 'add \s '$ sz , \s '%rsp \n
+                  ))))
                ))
                (set ctx (context::bind( (expr::get-context e1) lname
                   (typecheck-ascript( (LocalVariable offset) (typecheck-lookup rhs) ))
                )))
                (set e1 (expr::set-context( e1 ctx )))
                (set e1 (expr::set-offset( e1 offset )))
+               (set e1 (expr::set-prog( e1 (
+                  \o \s 'let \s lname \s '@ \s offset \n
+                  \o \s 'let \s lname \s '= \s (quote-s rhs) \s ': \s (quote-s(typecheck-lookup rhs)) \n
+                  (expr::get-prog e1)
+               ))))
                e1
             )))
             ( (App( (Variable 'maybe-deref) r )) (tail(
                (local deref)
+               (local new-size)
+               (set new-size (typecheck-sizeof (typecheck-lookup r)))
                (match (typecheck-slot( (typecheck-lookup r) Array )) (
                   ()
                   ( (Array( x '? )) (
@@ -93,6 +103,12 @@ compile-expr-strict := λctx e offset used . (tail(
                   (set e2 (expr::set-expr( e2 '0 )))
                   (set e3 (fragment-apply( ctx 'push (Cons( (typecheck-lookup r) (And( Constant Literal )) )) ((() e1) e2) e1 )))
                   (set e3 (expr::set-type( e3 StackVariable )))
+                  (set offset (i2s(add( (s2i offset) (inv(s2i new-size)) ))))
+                  (set e3 (expr::set-offset( e3 offset )))
+                  (set e3 (expr::set-prog( e3 (
+                     \o \s 'deref \s (quote-s r) \n
+                     (expr::get-prog e3)
+                  ))))
                   e3
                )) (
                   (compile-expr-strict( ctx r offset Used ))
@@ -144,7 +160,7 @@ compile-expr-strict := λctx e offset used . (tail(
             ( (App( (App( (App( (Variable 'if) cond )) t )) f )) (tail(
                (set e1 (compile-expr-strict( ctx cond offset Used )))
                (set e2 (compile-expr-strict( (expr::get-context e1) t (expr::get-offset e1) Used )))
-               (set e3 (compile-expr-strict( ctx f (expr::get-offset e2) Used )))
+               (set e3 (compile-expr-strict( (expr::get-context e2) f (expr::get-offset e2) Used )))
                (match (expr::get-type e1) (
                   ()
                   (BranchConditional ())
@@ -171,17 +187,13 @@ compile-expr-strict := λctx e offset used . (tail(
                   (expr::get-unframe e3)
                   \t 'jmp \s label-end \n
                   label-true-branch ': \n
+                  (expr::get-frame e2)
                   (expr::get-prog e2)
+                  (expr::get-unframe e2)
                   label-end ': \n
                ))))
-               (set e4 (expr::set-context( e4 (expr::get-context e2) )))
-               (set e4 (expr::set-offset( e4 (expr::get-offset e1) )))
-               (set e4 (expr::set-frame( e4 (
-                  (expr::get-frame e1) (expr::get-frame e2)
-               ))))
-               (set e4 (expr::set-unframe( e4 (
-                  (expr::get-unframe e1) (expr::get-unframe e2)
-               ))))
+               (set e4 (expr::set-context( e4 (expr::get-context e3) )))
+               (set e4 (expr::set-offset( e4 (expr::get-offset e3) )))
                e4
             )))
             ( (App( (Variable 'label) (Variable label-name) )) (

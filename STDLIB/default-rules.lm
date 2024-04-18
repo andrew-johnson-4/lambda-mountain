@@ -34,50 +34,55 @@ macro ('match-pats-condition( term (:Tag: l lt) )) (
 macro ('match-pats-condition( term ((:Tag: l lt) ( x1 )) )) (tail(
    (let (uuid v) (maybe-deref term) )
    (let (uuid ok) Trueu8)
-   (if (==( (.0( (uuid v) )) l )) () (set (uuid ok) Falseu8))
-   (if (match-pats-condition( (.1( (as (uuid v) lt) )) x1 )) () (set (uuid ok) Falseu8))
+   (if (==( (.0( (uuid v) )) l )) (
+      (if (match-pats-condition( (.1( (as (uuid v) lt) )) x1 )) () (set (uuid ok) Falseu8))
+   ) (set (uuid ok) Falseu8))
    (==( (uuid ok) Trueu8 ))
 ));
 
 macro ('match-pats-condition( term ((:Tag: l lt) ( x2 x1 ) ))) (tail(
    (let (uuid v) (maybe-deref term) )
    (let (uuid ok) Trueu8)
-   (if (==( (.0( (uuid v) )) l )) () (set (uuid ok) Falseu8))
-   (if (match-pats-condition( (.1( (as (uuid v) lt) )) x1 )) () (set (uuid ok) Falseu8))
-   (if (match-pats-condition( (.2( (as (uuid v) lt) )) x2 )) () (set (uuid ok) Falseu8))
+   (if (==( (.0( (uuid v) )) l )) (tail(
+      (if (match-pats-condition( (.1( (as (uuid v) lt) )) x1 )) () (set (uuid ok) Falseu8))
+      (if (match-pats-condition( (.2( (as (uuid v) lt) )) x2 )) () (set (uuid ok) Falseu8))
+   )) (set (uuid ok) Falseu8))
    (==( (uuid ok) Trueu8 ))
 ));
 
 macro ('match-pats-condition( term ((:Tag: l lt) ( x3 x2 x1 ) ))) (tail(
    (let (uuid v) (maybe-deref term) )
    (let (uuid ok) Trueu8)
-   (if (==( (.0( (uuid v) )) l )) () (set (uuid ok) Falseu8))
-   (if (match-pats-condition( (.1( (as (uuid v) lt) )) x1 )) () (set (uuid ok) Falseu8))
-   (if (match-pats-condition( (.2( (as (uuid v) lt) )) x2 )) () (set (uuid ok) Falseu8))
-   (if (match-pats-condition( (.3( (as (uuid v) lt) )) x3 )) () (set (uuid ok) Falseu8))
+   (if (==( (.0( (uuid v) )) l )) (tail(
+      (if (match-pats-condition( (.1( (as (uuid v) lt) )) x1 )) () (set (uuid ok) Falseu8))
+      (if (match-pats-condition( (.2( (as (uuid v) lt) )) x2 )) () (set (uuid ok) Falseu8))
+      (if (match-pats-condition( (.3( (as (uuid v) lt) )) x3 )) () (set (uuid ok) Falseu8))
+   )) (set (uuid ok) Falseu8))
    (==( (uuid ok) Trueu8 ))
 ));
 
 macro ('match-pats-condition( term ((:Tag: l lt) ( x4 x3 x2 x1 ) ))) (tail(
    (let (uuid v) (maybe-deref term) )
    (let (uuid ok) Trueu8)
-   (if (==( (.0( (uuid v) )) l )) () (set (uuid ok) Falseu8))
-   (if (match-pats-condition( (.1( (as (uuid v) lt) )) x1 )) () (set (uuid ok) Falseu8))
-   (if (match-pats-condition( (.2( (as (uuid v) lt) )) x2 )) () (set (uuid ok) Falseu8))
-   (if (match-pats-condition( (.3( (as (uuid v) lt) )) x3 )) () (set (uuid ok) Falseu8))
-   (if (match-pats-condition( (.4( (as (uuid v) lt) )) x4 )) () (set (uuid ok) Falseu8))
+   (if (==( (.0( (uuid v) )) l )) (tail(
+      (if (match-pats-condition( (.1( (as (uuid v) lt) )) x1 )) () (set (uuid ok) Falseu8))
+      (if (match-pats-condition( (.2( (as (uuid v) lt) )) x2 )) () (set (uuid ok) Falseu8))
+      (if (match-pats-condition( (.3( (as (uuid v) lt) )) x3 )) () (set (uuid ok) Falseu8))
+      (if (match-pats-condition( (.4( (as (uuid v) lt) )) x4 )) () (set (uuid ok) Falseu8))
+   )) (set (uuid ok) Falseu8))
    (==( (uuid ok) Trueu8 ))
 ));
 
 macro ('match-pats-condition( term ((:Tag: l lt) ( x5 x4 x3 x2 x1 ) ))) (tail(
    (let (uuid v) (maybe-deref term) )
    (let (uuid ok) Trueu8)
-   (if (==( (.0( (uuid v) )) l )) () (set (uuid ok) Falseu8))
-   (if (match-pats-condition( (.1( (as (uuid v) lt) )) x1 )) () (set (uuid ok) Falseu8))
-   (if (match-pats-condition( (.2( (as (uuid v) lt) )) x2 )) () (set (uuid ok) Falseu8))
-   (if (match-pats-condition( (.3( (as (uuid v) lt) )) x3 )) () (set (uuid ok) Falseu8))
-   (if (match-pats-condition( (.4( (as (uuid v) lt) )) x4 )) () (set (uuid ok) Falseu8))
-   (if (match-pats-condition( (.5( (as (uuid v) lt) )) x5 )) () (set (uuid ok) Falseu8))
+   (if (==( (.0( (uuid v) )) l )) (tail(
+      (if (match-pats-condition( (.1( (as (uuid v) lt) )) x1 )) () (set (uuid ok) Falseu8))
+      (if (match-pats-condition( (.2( (as (uuid v) lt) )) x2 )) () (set (uuid ok) Falseu8))
+      (if (match-pats-condition( (.3( (as (uuid v) lt) )) x3 )) () (set (uuid ok) Falseu8))
+      (if (match-pats-condition( (.4( (as (uuid v) lt) )) x4 )) () (set (uuid ok) Falseu8))
+      (if (match-pats-condition( (.5( (as (uuid v) lt) )) x5 )) () (set (uuid ok) Falseu8))
+   )) (set (uuid ok) Falseu8))
    (==( (uuid ok) Trueu8 ))
 ));
 
