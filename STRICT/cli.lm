@@ -22,7 +22,7 @@ config-target                := 'tmp.s_s;
 type CompileMode ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 config-mode                  := (: ModeCompile CompileMode);
 
-main := λ(: argc U64)(: argv U8[][]).(tail(
+main := λ(: argc U64)(: argv String[]).(tail(
    (let argi 1u64)
    (let input SNil)
    (while (<( argi argc )) (

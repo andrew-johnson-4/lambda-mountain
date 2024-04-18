@@ -658,7 +658,7 @@ typecheck-infer-type-expr := λe . (match e (
    ))
    ( (Global( 'main (Lambda( _ _ )) )) (tail(
       (set typecheck-global-context ( typecheck-global-context (Global( 'argc (parse-type 'U64+GlobalVariable) )) ))
-      (set typecheck-global-context ( typecheck-global-context (Global( 'argv (parse-type 'U8[?][?]+GlobalVariable) )) ))
+      (set typecheck-global-context ( typecheck-global-context (Global( 'argv (parse-type 'String[?]+GlobalVariable) )) ))
    )))
    ( (Global( gln (Lambda( glp (App( (App( (Literal ':) _ )) rtype )) )) )) (tail(
       (local lt)
@@ -820,10 +820,8 @@ typecheck-infer-expr := λctx e used . (tail(
             (match (typecheck-slot( (typecheck-lookup r) Array )) (
                ()
                ( (Array( x '? )) (
-                  (if (typecheck-unify-implies( x U8 )) () (
-                     (if (typecheck-unify-implies( x '? )) () (
-                        (set rtype x)
-                     ))
+                  (if (typecheck-unify-implies( x '? )) () (
+                     (set rtype x)
                   ))
                ))
             ))

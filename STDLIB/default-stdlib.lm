@@ -1,6 +1,6 @@
 
 type S (SNil)
-     | (SAtom( U8[] ))
+     | (SAtom( String ))
      | (SCons( S[] , S[] ))
      | (SPointer( ?[] ));
 
@@ -31,7 +31,7 @@ print := λ(: x S). (: (tail(
    ()
 )) Nil);
 
-fail := λ(: msg Array<U8,?>). (: (tail(
+fail := λ(: msg String). (: (tail(
    (print msg)
    (exit 1u64)
 )) Nil);
@@ -42,7 +42,7 @@ exit := λ(: code U64). (: (tail(
    (syscall())
 )) Nil);
 
-print := λ(: x Array<U8,?>). (: (tail(
+print := λ(: x String). (: (tail(
    (mov( x R15 ))
    (mov( 0u64 RDX )) # data length
    (gensym-label begin-count)
@@ -176,7 +176,7 @@ print := λ(: x I8). (: (tail(
    (print( (: R15 Reg64+I64) ))
 )) Nil);
 
-== := λ(: l U8[])(: r U8[]). (: (tail(
+== := λ(: l String)(: r String). (: (tail(
    (let c1 0u8)
    (let c2 0u8)
    (gensym-label start)
