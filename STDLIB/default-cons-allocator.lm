@@ -29,9 +29,15 @@ allocate-cons := λ . (tail(
          \t 'syscall                                 \n
          \t 'mov \s '%rax, '%r8                      \n
          \t 'add \s '$ page-size , \s '%r8           \n
+         \t 'add \s '$ page-size , \s '%r8           \n
+         \t 'add \s '$ page-size , \s '%r8           \n
+         \t 'add \s '$ page-size , \s '%r8           \n
          \t 'mov \s '$12, \s '%rax                   \n  # system call brk
          \t 'mov \s '%r8, \s '%rdi                   \n  # new requested brk
          \t 'syscall                                 \n
+         \t 'sub \s '$ page-size , \s '%r8           \n
+         \t 'sub \s '$ page-size , \s '%r8           \n
+         \t 'sub \s '$ page-size , \s '%r8           \n
          \t 'sub \s '$ page-size , \s '%r8           \n
          initialized ':                              \n
          \t 'add \s '$16, \s '%r8                    \n

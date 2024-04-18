@@ -1,0 +1,5 @@
+
+typecheck := λ. (: (tail(
+   ()
+   ()
+)) Nil);

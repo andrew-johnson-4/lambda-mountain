@@ -232,5 +232,12 @@ stack-define-destructure := λ ctx lhs offset . (match lhs (
       (set return (expr::set-offset( return (expr::get-offset more-e) )))
       return
    )))
+   ( Nil (tail(
+      (local return)
+      (set return (expr::new()))
+      (set return (expr::set-context( return ctx )))
+      (set return (expr::set-offset( return offset )))
+      return
+   )))
    ( u (fail (UnknownStackArg lhs)))
 ));

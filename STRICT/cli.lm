@@ -4,6 +4,7 @@ import STDLIB/default-primitives.lm;
 import STDLIB/default-rules.lm;
 import STDLIB/default-stdlib.lm;
 
+import STRICT/ast.lm;
 import STRICT/utility.lm;
 import STRICT/tokenize.lm;
 import STRICT/parse.lm;
@@ -18,7 +19,7 @@ config-strict                := Trueu8;
 config-preprocess            := Trueu8;
 config-target                := 'tmp.s_s;
 
-type CompileMode ModeTokenize | ModeParse | ModeTypecheck | ModeCompile;
+type CompileMode ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 config-mode                  := (: ModeCompile CompileMode);
 
 main := λ(: argc U64)(: argv U8[][]).(tail(
@@ -29,6 +30,7 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
          ()
          ('--tokenize_s (set config-mode ModeTokenize))
          ('--parse_s (set config-mode ModeParse))
+         ('--preprocess_s (set config-mode ModePreprocess))
          ('--typecheck_s (set config-mode ModeTypecheck))
          ('--compile_s (set config-mode ModeCompile))
          ('--strict_s (set config-strict Trueu8))
@@ -54,41 +56,35 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
    (print Preprocess:\s_s)(print config-preprocess)(print \n_s)
    (print Strict:\s_s)(print config-strict)(print \n_s)
 
-#   (let continue Trueu8)
-#   (while (==( continue Trueu8 )) (match input (
-#      ()
-#      ( SNil (set continue Falseu8) )
-#      ( (SCons( SNil rst )) (set input rst) )
-#      ( (SCons( l rst )) (tail( (print l) (set input rst) )) )
-#      ( (SCons( (SAtom( fp )) rst )) (tail( (cli-intake fp) (set input rst) )))
-#      ( (SAtom( fp )) (tail( (cli-intake fp) (set continue False) )))
-#   )))
+   (let continue Trueu8)
+   (while (==( continue Trueu8 )) (match input (
+      ()
+      ( SNil (set continue Falseu8) )
+      ( (SCons( rst SNil )) (set input rst) )
+      ( (SCons( rst (SAtom( fp )) )) (tail( (tokenize fp) (set input rst) )))
+      ( (SAtom( fp )) (tail( (tokenize fp) (set continue Falseu8) )))
+   )))
 
+   (match config-mode (
+      ()
+      ( ModeTokenize () )
+      ( ModeParse (parse ast-tokenized-program) )
+      ( ModePreprocess (tail(
+         (parse ast-tokenized-program)
+         (preprocess ast-parsed-program)
+      )))
+      ( ModeTypecheck (tail(
+         (parse ast-tokenized-program)
+         (preprocess ast-parsed-program)
+         (typecheck())
+      )))
+      ( ModeCompile (tail(
+         (parse ast-tokenized-program)
+         (preprocess ast-parsed-program)
+         (typecheck())
+         (compile())
+      )))
+   ))
 
-#      (Compile (
-#         (parse-program (tokenize-file (head inputs)))
-#         (set inputs (tail inputs))
-#      ))
-#      (Parse (
-#         (parse-program (tokenize-file (head inputs)))
-#         (set inputs (tail inputs))
-#      ))
-#      (Typecheck (
-#         (parse-program (tokenize-file (head inputs)))
-#         (set inputs (tail inputs))
-#      ))
-#      (ParseExpression (
-#         (print-s (parse-expression (tokenize-file (head inputs))))
-#         (set inputs (tail inputs))
-#      ))
-#      (Tokenize (
-#         (print-s (tokenize-file (head inputs)))
-#         (set inputs (tail inputs))
-#      ))
 ));
 
-cli-intake := λ(: fp U8[]) . (: (tail(
-   (print 'Intake:\s_s)
-   (print fp)
-   (print '\n_s)
-)) Nil);
