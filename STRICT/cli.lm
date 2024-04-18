@@ -15,15 +15,15 @@ import STRICT/codegen.lm;
 import STRICT/fragment.lm;
 import STRICT/assemble.lm;
 
-config-strict                := Trueu8;
-config-preprocess            := Trueu8;
+config-strict                := True_u8;
+config-preprocess            := True_u8;
 config-target                := 'tmp.s_s;
 
 type CompileMode ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 config-mode                  := (: ModeCompile CompileMode);
 
 main := λ(: argc U64)(: argv String[]).(tail(
-   (let argi 1u64)
+   (let argi 1_u64)
    (let input SNil)
    (while (<( argi argc )) (
       (match ([]( argv argi )) (
@@ -33,12 +33,12 @@ main := λ(: argc U64)(: argv String[]).(tail(
          ('--preprocess_s (set config-mode ModePreprocess))
          ('--typecheck_s (set config-mode ModeTypecheck))
          ('--compile_s (set config-mode ModeCompile))
-         ('--strict_s (set config-strict Trueu8))
-         ('--gradual_s (set config-strict Falseu8))
-         ('--macro_s (set config-preprocess Trueu8))
-         ('--nomacro_s (set config-preprocess Falseu8))
+         ('--strict_s (set config-strict True_u8))
+         ('--gradual_s (set config-strict False_u8))
+         ('--macro_s (set config-preprocess True_u8))
+         ('--nomacro_s (set config-preprocess False_u8))
          ('-o_s (tail(
-            (set argi (+( argi 1u64 )))
+            (set argi (+( argi 1_u64 )))
             (set config-target ([]( argv argi )))
          )))
          (fp (
@@ -48,16 +48,16 @@ main := λ(: argc U64)(: argv String[]).(tail(
             )))
          ))
       ))
-      (set argi (+( argi 1u64 )))
+      (set argi (+( argi 1_u64 )))
    ))
 
-   (let continue Trueu8)
-   (while (==( continue Trueu8 )) (match input (
+   (let continue True_u8)
+   (while (==( continue True_u8 )) (match input (
       ()
-      ( SNil (set continue Falseu8) )
+      ( SNil (set continue False_u8) )
       ( (SCons( rst SNil )) (set input rst) )
       ( (SCons( rst (SAtom( fp )) )) (tail( (tokenize fp) (set input rst) )))
-      ( (SAtom( fp )) (tail( (tokenize fp) (set continue Falseu8) )))
+      ( (SAtom( fp )) (tail( (tokenize fp) (set continue False_u8) )))
    )))
 
    (match config-mode (

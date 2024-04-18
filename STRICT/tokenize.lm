@@ -3,14 +3,27 @@ type Tokens EOF | (HeadOrder( String , Tokens[] )) | (TailOrder( Tokens[] , Stri
 
 tokenize := λ(: fp String). (: (tail(
    (let text (read-file fp))
+   (let in_comment False_u8)
+   (let buffer SNil)
    (while (head-string text) (tail(
-      (print (as (head-string text) ASCII))
+      (match (head-string text) (
+         ()
+         ( \o_u8 (tail(
+            (if buffer (
+               (set ast-tokenized-program (TailOrder(
+                  (close ast-tokenized-program)
+                  (clone-rope buffer)
+               )))
+            ) ())
+            (set in_comment True_u8)
+         )))
+      ))
       (set text (tail-string text))
    )))
 )) Nil);
 
 close := λ(: x Tokens). (: (tail(
    (mov( (malloc(sizeof Tokens)) R8 ))
-   (mov( x 0u64 (as R8 Tokens[]) ))
+   (mov( x 0_u64 (as R8 Tokens[]) ))
    (as R8 Tokens[])
 )) Tokens[]);
