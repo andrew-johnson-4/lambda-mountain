@@ -58,12 +58,14 @@ uuid := λ . (tail(
 ));
 
 assert-not-typeof := λ loc term tt . (tail(
-   (set tt (parse-type tt))
-   (if (is-typeof( term tt )) (tail(
-      (print-s FailedAssertNotTypeof)(print-s \s)(print-s 'in)(print-s \s)(print-s loc)(print-s \n)
-      (print-s \t)(print-s tt)(print-s \n)
-      (print-s \t)(print-s term)(print-s \n)
-      (exit 1)
+   (if config-debug (tail(
+      (set tt (parse-type tt))
+      (if (is-typeof( term tt )) (tail(
+         (print-s FailedAssertNotTypeof)(print-s \s)(print-s 'in)(print-s \s)(print-s loc)(print-s \n)
+         (print-s \t)(print-s tt)(print-s \n)
+         (print-s \t)(print-s term)(print-s \n)
+         (exit 1)
+      )) ())
    )) ())
 ));
 
@@ -138,12 +140,14 @@ max := λ l r . (tail(
 ));
 
 assert-eq := λ loc l r . (
-   (if (deep-eq( l r )) () (tail(
-      (print-s FailedAssertEqual)(print-s \s)(print-s 'in)(print-s \s)(print-s loc)(print-s \n)
-      (print-s \t)(print-s l)(print-s \n)
-      (print-s \t)(print-s r)(print-s \n)
-      (exit 1)
-   )))
+   (if config-debug (
+      (if (deep-eq( l r )) () (tail(
+         (print-s FailedAssertEqual)(print-s \s)(print-s 'in)(print-s \s)(print-s loc)(print-s \n)
+         (print-s \t)(print-s l)(print-s \n)
+         (print-s \t)(print-s r)(print-s \n)
+         (exit 1)
+      )))
+   ) ())
 );
 
 
@@ -272,13 +276,15 @@ is-typeof := λ term tt . (match tt (
 ));
 
 assert-typeof := λ loc term tt . (tail(
-   (set tt (parse-type tt))
-   (if (is-typeof( term tt )) () (tail(
-      (print-s FailedAssertTypeof)(print-s \s)(print-s 'in)(print-s \s)(print-s loc)(print-s \n)
-      (print-s \t)(print-s tt)(print-s \n)
-      (print-s \t)(print-s term)(print-s \n)
-      (exit 1)
-   )))
+   (if config-debug (tail(
+      (set tt (parse-type tt))
+      (if (is-typeof( term tt )) () (tail(
+         (print-s FailedAssertTypeof)(print-s \s)(print-s 'in)(print-s \s)(print-s loc)(print-s \n)
+         (print-s \t)(print-s tt)(print-s \n)
+         (print-s \t)(print-s term)(print-s \n)
+         (exit 1)
+      )))
+   )) ())
 ));
 
 i2s := λi . (tail(
@@ -361,40 +367,55 @@ mangle-identifier := λname tt . (
    (clone-rope (label-case ( name : tt )))
 );
 
+parse-type-cache := ();
 parse-type := λ tt . (tail(
-   (local buff)
-   (local base-type)
-   (local depth)
-   (while tt (tail(
-      (match (head-string tt) (
-         ()
-         ('< (set depth (inc depth)))
-         ('[ (set depth (inc depth)))
-         ('> (set depth (dec depth)))
-         ('] (set depth (dec depth)))
-      ))
-      (if depth (
-         (set buff (buff (clone-rope (head-string tt))))
-      ) (
-         (if (eq( (head-string tt) '+ )) (tail(
-            (if base-type (
-               (set base-type (And( base-type (parse-type-single (clone-rope buff)) )))
-            ) (
-               (set base-type (parse-type-single (clone-rope buff)))
-            ))
-            (set buff ())
-         )) (
-            (set buff (buff (clone-rope (head-string tt))))
+   (local original-type)
+   (set original-type tt)
+   (local cache)
+   (set cache parse-type-cache)
+   (local found)
+   (while cache (tail(
+      (if (eq( (head(tail( cache ))) tt )) (
+         (set found (tail(tail cache)))
+      ) ())
+      (set cache (head cache))
+   )))
+   (if found found (tail(
+      (local buff)
+      (local base-type)
+      (local depth)
+      (while tt (tail(
+         (match (head-string tt) (
+            ()
+            ('< (set depth (inc depth)))
+            ('[ (set depth (inc depth)))
+            ('> (set depth (dec depth)))
+            ('] (set depth (dec depth)))
          ))
-      ))
-      (set tt (tail-string tt))
+         (if depth (
+            (set buff (buff (clone-rope (head-string tt))))
+         ) (
+            (if (eq( (head-string tt) '+ )) (tail(
+               (if base-type (
+                  (set base-type (And( base-type (parse-type-single (clone-rope buff)) )))
+               ) (
+                  (set base-type (parse-type-single (clone-rope buff)))
+               ))
+               (set buff ())
+            )) (
+               (set buff (buff (clone-rope (head-string tt))))
+            ))
+         ))
+         (set tt (tail-string tt))
+      )))
+      (set base-type (if base-type (
+         (And( base-type (parse-type-single (clone-rope buff)) ))
+      ) (
+         (parse-type-single (clone-rope buff))
+      )))
+      (set parse-type-cache (parse-type-cache (original-type base-type)))
+      base-type
    )))
-   (set base-type (if base-type (
-      (And( base-type (parse-type-single (clone-rope buff)) ))
-   ) (
-      (parse-type-single (clone-rope buff))
-   )))
-   base-type
 ));
 
 parse-type-suffix := λ base suffix . (tail(

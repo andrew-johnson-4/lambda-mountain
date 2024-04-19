@@ -20,6 +20,7 @@ import PRODUCTION/data.lm;
 
 # Static Globals
 
+config-debug                             := ();
 config-nostd                             := ();
 config-strict                            := ();
 cli-config                               := ();
@@ -64,6 +65,10 @@ main := (
       ))
       ( ('--tokenize remainder) (
          (set mode Tokenize)
+         (set args remainder)
+      ))
+      ( ('--debug remainder) (
+         (set config-debug True)
          (set args remainder)
       ))
       ( ('--typecheck remainder) (
