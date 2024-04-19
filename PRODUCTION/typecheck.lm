@@ -29,16 +29,16 @@ typecheck := λprogram . (tail(
    program
 ));
 
-typecheck-assert-complete := λp . (if p (
+typecheck-assert-complete := λp . (if p (tail(
    (typecheck-assert-complete( head p ))
    (typecheck-assert-expr( tail p ))
-) ());
+)) ());
 
 typecheck-assert-one := λe . (
-   (if (typecheck-lookup e) () (
+   (if (typecheck-lookup e) () (tail(
       (print-s (typecheck-show-ascript parse-parsed-program))(print-s \n)
       (fail (UnableToInferTypeOfExpression (typecheck-show-ascript e)))
-   ))
+   )))
 );
 
 typecheck-assert-expr := λe . (tail(
@@ -131,10 +131,10 @@ typecheck-lookup := λterm . (tail(
    (local ttt)
    (while tctx (tail(
       (set ttt (head tctx))
-      (if (is( (head ttt) term )) (
+      (if (is( (head ttt) term )) (tail(
          (set found (tail ttt))
          (set tctx ())
-      ) (
+      )) (
          (set tctx (tail tctx))
       ))
    )))
@@ -478,7 +478,7 @@ typecheck-apply-plural := λmany pt . (match many(
 typecheck-safe-apply-plural := λterm many pt . (tail(
    (local r)
    (set r (typecheck-apply-plural( many pt )))
-   (if r r (
+   (if r r (tail(
       (print-s TypeError)(print-s \s)(print-s InvalidArgument)(print-s \n)
       (print-s Argument:)(print-s \n)
       (print-s \t)(print-s pt)(print-s \n)
@@ -497,7 +497,7 @@ typecheck-safe-apply-plural := λterm many pt . (tail(
       (print-s Term:)(print-s \n)
       (print-s \t)(print-s term)(print-s \n)
       (exit 1)
-   ))
+   )))
 ));
 
 typecheck-infer-type-compound := λcompound . (tail(
@@ -637,20 +637,20 @@ typecheck-infer-type-expr := λe . (match e (
          (match (tail constructors) (
             ()
             ( (tag ('->(ctype (And( my-type tag )) ))) (tail(
-               (if (deep-eq( my-type base-type )) (
+               (if (deep-eq( my-type base-type )) (tail(
                   (typecheck-set-size( tag sz ))
                   (if (typecheck-is-fragment base-type) () (
                      (typecheck-annotate-accessors( base-type tag ctype ))
                   ))
-               ) ())
+               )) ())
             )))
             ( (tag my-type) (tail(
-               (if (deep-eq( my-type base-type )) (
+               (if (deep-eq( my-type base-type )) (tail(
                   (typecheck-set-size( tag sz ))
                   (if (typecheck-is-fragment base-type) () (
                      (typecheck-annotate-accessors( base-type tag () ))
                   ))
-               ) ())
+               )) ())
             )))
          ))
          (set constructors (head constructors))

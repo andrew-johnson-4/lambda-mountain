@@ -268,12 +268,12 @@ fragment-apply := λ ctx function-name function-type function-args e-proto . (ta
    (assert-typeof( 'fragment-apply::function-args function-args List<StrictExpr> ))
    (local arrow)
    (set arrow (get-strict-function( ctx function-name function-type )))
-   (if arrow () (
+   (if arrow () (tail(
       (print-s NoSuchFragment)(print-s \s)
       (print-s function-name)(print-s \s)
       (print-s function-type)(print-s \n)
       (exit 1)
-   ))
+   )))
    (local dont-chain)
    (match (typecheck-slot( function-type DontChain )) (
       ()

@@ -71,10 +71,10 @@ substitute-macro-body := λkvs e . (match e (
          ( (ks Accept) (set kvs ks) )
          ( (ks ()) (set kvs ks) )
          ( (ks (KV(k v))) (
-            (if (eq(n k)) (
+            (if (eq(n k)) (tail(
                (set e v)
                (set kvs ())
-            ) (
+            )) (
                (set kvs ks)
             ))
          ))

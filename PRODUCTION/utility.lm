@@ -59,12 +59,12 @@ uuid := λ . (tail(
 
 assert-not-typeof := λ loc term tt . (tail(
    (set tt (parse-type tt))
-   (if (is-typeof( term tt )) (
+   (if (is-typeof( term tt )) (tail(
       (print-s FailedAssertNotTypeof)(print-s \s)(print-s 'in)(print-s \s)(print-s loc)(print-s \n)
       (print-s \t)(print-s tt)(print-s \n)
       (print-s \t)(print-s term)(print-s \n)
       (exit 1)
-   ) ())
+   )) ())
 ));
 
 s2i := λs . (tail(
@@ -90,10 +90,10 @@ s2i := λs . (tail(
    (set eight( inc(inc(inc( inc(inc(inc(inc(inc( ))))) ))) ))
    (set nine( inc(inc(inc(inc( inc(inc(inc(inc(inc( ))))) )))) ))
    (set ten( inc(inc(inc(inc(inc( inc(inc(inc(inc(inc( ))))) ))))) ))
-   (if (eq( (head-string s) '- )) (
+   (if (eq( (head-string s) '- )) (tail(
       (set is_neg True)
       (set s (tail-string s))
-   ) ())
+   )) ())
    (while s (tail(
       (set i (mul( i ten )))
       (match (head-string s) (
@@ -138,12 +138,12 @@ max := λ l r . (tail(
 ));
 
 assert-eq := λ loc l r . (
-   (if (deep-eq( l r )) () (
+   (if (deep-eq( l r )) () (tail(
       (print-s FailedAssertEqual)(print-s \s)(print-s 'in)(print-s \s)(print-s loc)(print-s \n)
       (print-s \t)(print-s l)(print-s \n)
       (print-s \t)(print-s r)(print-s \n)
       (exit 1)
-   ))
+   )))
 );
 
 
@@ -273,12 +273,12 @@ is-typeof := λ term tt . (match tt (
 
 assert-typeof := λ loc term tt . (tail(
    (set tt (parse-type tt))
-   (if (is-typeof( term tt )) () (
+   (if (is-typeof( term tt )) () (tail(
       (print-s FailedAssertTypeof)(print-s \s)(print-s 'in)(print-s \s)(print-s loc)(print-s \n)
       (print-s \t)(print-s tt)(print-s \n)
       (print-s \t)(print-s term)(print-s \n)
       (exit 1)
-   ))
+   )))
 ));
 
 i2s := λi . (tail(
@@ -287,10 +287,10 @@ i2s := λi . (tail(
    (local sign)
    (local s)
    (local r)
-   (if (is-neg i) (
+   (if (is-neg i) (tail(
       (set sign '-)
       (set i (inv i))
-   ) ())
+   )) ())
    (while i (tail(
       (set r (mod(i ten)))
       (set s ((clone-rope(digit r) s)))
@@ -376,14 +376,14 @@ parse-type := λ tt . (tail(
       (if depth (
          (set buff (buff (clone-rope (head-string tt))))
       ) (
-         (if (eq( (head-string tt) '+ )) (
+         (if (eq( (head-string tt) '+ )) (tail(
             (if base-type (
                (set base-type (And( base-type (parse-type-single (clone-rope buff)) )))
             ) (
                (set base-type (parse-type-single (clone-rope buff)))
             ))
             (set buff ())
-         ) (
+         )) (
             (set buff (buff (clone-rope (head-string tt))))
          ))
       ))
@@ -611,7 +611,7 @@ escape-escape-char := λc . match c (
 escape-literal := λs . (tail(
    (local buff)
    (while s (tail(
-      (if (eq( (head-string s) '\ )) (
+      (if (eq( (head-string s) '\ )) (tail(
          (local e)
          (set e (escape-escape-char( (head-string(tail-string( s ))) )))
          (if e (
@@ -621,10 +621,10 @@ escape-literal := λs . (tail(
             (set buff (buff (escape-literal-char (head-string s))))
             (set s (tail-string s))
          ))
-      ) (
+      )) (tail(
          (set buff (buff (escape-literal-char (head-string s))))
          (set s (tail-string s))
-      ))
+      )))
    )))
    (clone-rope buff)
 ));
