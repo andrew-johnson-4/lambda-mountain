@@ -5,34 +5,35 @@ ast-tokenized-program := (: SNil S);
 ast-parsed-program := (: ASTNil AST);
 
 print := λ(: t AST). (: (tail(
-   (match x (
-      ()
-      ( ASTNil (print '\[\]_s) )
-      ( (Var a) (print a) )
-      ( (Lit a) (tail( (print '\`_s) (print a) )))
-      ( (App( l r )) (tail(
-         (print '\[_s)
-         (print l)
-         (print '\s_s)
-         (print r)
-         (print '\]_s)
-      )))
-      ( (Abs( lhs rhs )) (tail(
-         (print '\[_s)
-         (print '\l_s) (print a)
-         (print lhs)
-         (print '._s) (print a)
-         (print rhs)
-         (print '\]_s)
-      )))
-      ( (Asc( t tt )) (tail(
-         (print '\[_s)
-         (print '\s:\s_s)
-         (print t)
-         (print '\s_s)
-         (print tt)
-         (print '\]_s)
-      )))
-   ))
+#   (match x (
+#      ()
+#      ( ASTNil (print '\[\]_s) )
+#      ( (Var a) (print a) )
+#      ( (Lit a) (tail( (print '\`_s) (print a) )))
+#      ( (App( l r )) (tail(
+#         (print '\[_s)
+#         (print l)
+#         (print '\s_s)
+#         (print r)
+#         (print '\]_s)
+#      )))
+#      ( (Abs( lhs rhs )) (tail(
+#         (print '\[_s)
+#         (print '\l_s) (print a)
+#         (print lhs)
+#         (print '._s) (print a)
+#         (print rhs)
+#         (print '\]_s)
+#      )))
+#      ( (Asc( t tt )) (tail(
+#         (print '\[_s)
+#         (print '\s:\s_s)
+#         (print t)
+#         (print '\s_s)
+#         (print tt)
+#         (print '\]_s)
+#      )))
+#   ))
+   ()
    ()
 )) Nil);
