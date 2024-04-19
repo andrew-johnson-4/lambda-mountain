@@ -21,6 +21,7 @@ import PRODUCTION/data.lm;
 # Static Globals
 
 config-debug                             := ();
+config-nomacro                           := ();
 config-nostd                             := ();
 config-strict                            := ();
 cli-config                               := ();
@@ -71,6 +72,10 @@ main := (
          (set config-debug True)
          (set args remainder)
       ))
+      ( ('--nomacro remainder) (
+         (set config-nomacro True)
+         (set args remainder)
+      ))
       ( ('--typecheck remainder) (
          (set mode Typecheck)
          (set args remainder)
@@ -111,7 +116,9 @@ main := (
       ))
    )))
 
-   (set parse-parsed-program (preprocess parse-parsed-program))
+   (if config-nomacro () (
+      (set parse-parsed-program (preprocess parse-parsed-program))
+   ))
    (if config-strict (typecheck parse-parsed-program) ())
 
    (match mode (
