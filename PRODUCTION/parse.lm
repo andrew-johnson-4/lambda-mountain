@@ -12,14 +12,14 @@ parse-program := λtoks . (tail(
          ((\: remainder) (
             (set toks remainder)
          ))
-         (('macro remainder) (
+         (('macro remainder) (tail(
             (set pme (parse-one-expression remainder))
             (set remainder (tail pme))
             (set pme2 (parse-one-expression remainder))
             (set parse-macros (parse-macros (Macro( (head pme) (head pme2) )) ))
             (set toks (tail pme2))
-         ))
-         (('fragment ('type remainder)) (
+         )))
+         (('fragment ('type remainder)) (tail(
             (set pme (parse-one-expression remainder))
             (set remainder (tail pme))
             (set pme2 (parse-many-expressions remainder))
@@ -28,8 +28,8 @@ parse-program := λtoks . (tail(
                (typecheck-infer-type-compound (head pme))
             ))
             (set toks (tail pme2))
-         ))
-         (('fragment remainder) (
+         )))
+         (('fragment remainder) (tail(
             (set pme (parse-one-expression remainder))
             (set remainder (tail pme))
             (parse-expect( := remainder ))
@@ -37,39 +37,39 @@ parse-program := λtoks . (tail(
             (set pme2 (parse-many-expressions remainder))
             (set parse-parsed-program ( parse-parsed-program (Fragment( (head pme) (head pme2) )) ))
             (set toks (tail pme2))
-         ))
-         (('type remainder) (
+         )))
+         (('type remainder) (tail(
             (set pme (parse-one-expression remainder))
             (set remainder (tail pme))
             (set pme2 (parse-many-expressions remainder))
             (set parse-parsed-program ( parse-parsed-program (Type( (head pme) (head pme2) )) ))
             (set toks (tail pme2))
-         ))
-         (('atom ('suffix (atype (suffix remainder)))) (
+         )))
+         (('atom ('suffix (atype (suffix remainder)))) (tail(
             (set parse-suffix (parse-suffix (atype suffix)))
             (set toks remainder)
-         ))
-         (('size remainder) (
+         )))
+         (('size remainder) (tail(
             (set pme (parse-one-expression remainder))
             (set remainder (tail pme))
             (set pme2 (parse-one-expression remainder))
             (typecheck-set-size( (typecheck-infer-type-compound (head pme)) (typecheck-infer-type-compound (head pme2)) ))
             (set toks (tail pme2))
-         ))
-         (('import (relative-path remainder)) (
+         )))
+         (('import (relative-path remainder)) (tail(
             (parse-program (tokenize-file relative-path))
             (set toks remainder)
-         ))
-         ((key (:= remainder)) (
+         )))
+         ((key (:= remainder)) (tail(
             (set pme (parse-many-expressions remainder))
             (set parse-parsed-program ( parse-parsed-program (Global ( key (head pme))) ))
             (set toks (tail pme))
-         ))
-         (remainder (
+         )))
+         (remainder (tail(
             (set pme (parse-many-expressions remainder))
             (set parse-parsed-program (parse-parsed-program (GExpr (head pme)) ))
             (set toks (tail pme))
-         ))
+         )))
       )
    ))
 ));
@@ -116,31 +116,31 @@ parse-lambda := λtoks . (tail(
    (set toks (tail pme))
    (match lmb (
       ()
-      ((Literal .) (
+      ((Literal .) (tail(
          (set pme (parse-many-expressions toks))
          (set lmb (Nil (head pme)))
          (set remainder (tail pme))
          (set toks ())
-      ))
+      )))
    ))
    (while toks (tail(
       (set pme (parse-one-expression toks))
       (match pme (
          ()
-         (((Literal .) r) (
+         (((Literal .) r) (tail(
             (set pme (parse-many-expressions r))
             (set lmb (lmb (head pme)))
             (set remainder (tail pme))
             (set toks ())
-         ))
-         ((e ()) (
+         )))
+         ((e ()) (tail(
             (parse-expect( . toks ))
             (set toks ())
-         ))
-         ((e r) (
+         )))
+         ((e r) (tail(
             (set lmb (App (lmb e)))
             (set toks r)
-         ))
+         )))
       ))
    )))	
    (lmb remainder)
@@ -155,39 +155,39 @@ parse-one-expression := λtoks . (tail(
    (local expr)
    (match toks (
       ()
-      ( () (
+      ( () (tail(
          (set expr Nil)
          (set remainder ())
-      ))
-      ( ( \l r ) (
+      )))
+      ( ( \l r ) (tail(
          (set pme (parse-lambda r))
          (set expr (Lambda (head pme)))
          (set remainder (tail pme))
-      ))
+      )))
       ( ( \] r ) (
          (parse-unexpect (head toks))
       ))
-      ( ( \[ r ) (
+      ( ( \[ r ) (tail(
          (set pme (parse-many-expressions r))
          (set expr (head pme))
          (set remainder (tail pme))
-      ))
-      ( ( \\ (\' r) ) (
+      )))
+      ( ( \\ (\' r) ) (tail(
          (set expr (Literal \'))
          (set remainder r)
-      ))
-      ( ( \' (i r) ) (
+      )))
+      ( ( \' (i r) ) (tail(
          (set expr (Literal i))
          (set remainder r)
-      ))
-      ( (a r) (
+      )))
+      ( (a r) (tail(
          (if (is-variable a) (
             (set expr (Variable a))
          ) (
             (set expr (Literal a))
          ))
          (set remainder r)
-      ))
+      )))
    ))
    (expr remainder)
 ));
@@ -199,16 +199,16 @@ parse-many-expressions := λtoks . (tail(
    (while toks (tail(
       (match toks (
          ()
-         ((\: tl) (
+         ((\: tl) (tail(
             (set remainder toks)
             (set toks ())
-         ))
-         ((\] tl) (
+         )))
+         ((\] tl) (tail(
             (if expr () (set expr Nil))
             (set remainder tl)
             (set toks ())
-         ))
-         (_ (
+         )))
+         (_ (tail(
             (set pme (parse-one-expression toks))
             (if expr (
                (set expr (App( expr (head pme) )))
@@ -216,7 +216,7 @@ parse-many-expressions := λtoks . (tail(
                (set expr (head pme))
             ))
             (set toks (tail pme))
-         ))
+         )))
       ))
    )))
    (expr remainder)
