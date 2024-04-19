@@ -110,6 +110,28 @@ fragment push := λ(: src Reg64+Array<Sized<size>,max>)(: index Literal+Constant
       ))
    ))
 ) Nil);
+fragment push := λ(: src LocalVariable+Array<Sized<size>,max>)(: index Literal+Constant). (: (
+   (.program (
+      (for word-offset in (range( 0 (/( size 8 )) )) (
+         \t 'pushq \s (+( (.expression src) (+(
+            (*( (.expression index) size ))
+            (+(
+               (+( size '-8 ))
+               (inv(*( word-offset 8 )))
+            ))
+         )) )) \[ '%rbp \] \n
+      ))
+      (if-eq size 4 (
+         \t 'pushq \s (+( (.expression src) (*( (.expression index) size )) )) \[ '%rbp \] \n
+      ))
+      (if-eq size 2 (
+         \t 'pushq \s (+( (.expression src) (*( (.expression index) size )) )) \[ '%rbp \] \n
+      ))
+      (if-eq size 1 (
+         \t 'pushq \s (+( (.expression src) (*( (.expression index) size )) )) \[ '%rbp \] \n
+      ))
+   ))
+) Nil);
 
 fragment pop := λ(: src LocalVariable+Sized<size>). (: (
    (.program ( for word-offset in (range( 1 (+( (/( size 8 )) 1 )) )) (
