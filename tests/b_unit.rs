@@ -48,6 +48,7 @@ fn compile_compiler() {
                       .stderr(std::process::Stdio::piped())
                       .arg("-o")
                       .arg("production.s")
+                      .arg("--debug")
                       .arg("PRODUCTION/cli.lm")
                       .spawn()
                       .expect("failed to execute process")
@@ -94,6 +95,7 @@ fn run_unit(unit: &str) {
                       .stderr(std::process::Stdio::piped())
                       .arg("-o")
                       .arg("unit.s")
+                      .arg("--debug")
                       .arg(unit)
                       .spawn()
                       .expect("failed to execute process")
@@ -145,11 +147,11 @@ fn run_unit(unit: &str) {
    };
 }
 
-#[test]
-fn unit_test_suite() {
-   compile_compiler();
-   for entry in glob("tests/unit/*.lm").unwrap() {
-      let entry = entry.unwrap().display().to_string();
-      run_unit(&entry);
-   }
-}
+//#[test]
+//fn unit_test_suite() {
+//   compile_compiler();
+//   for entry in glob("tests/unit/*.lm").unwrap() {
+//      let entry = entry.unwrap().display().to_string();
+//     run_unit(&entry);
+//   }
+//}

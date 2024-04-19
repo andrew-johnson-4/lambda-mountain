@@ -57,7 +57,7 @@ uuid := λ . (tail(
    (clone-rope ('uuid_ (dump-i uuid-counter)))
 ));
 
-assert-not-typeof := λ loc term tt . (tail(
+assert-not-typeof := λ loc term tt . (
    (if config-debug (tail(
       (set tt (parse-type tt))
       (if (is-typeof( term tt )) (tail(
@@ -67,7 +67,7 @@ assert-not-typeof := λ loc term tt . (tail(
          (exit 1)
       )) ())
    )) ())
-));
+);
 
 s2i := λs . (tail(
    (local i)
@@ -275,7 +275,7 @@ is-typeof := λ term tt . (match tt (
    ( label (eq( (head term) label )) )
 ));
 
-assert-typeof := λ loc term tt . (tail(
+assert-typeof := λ loc term tt . (
    (if config-debug (tail(
       (set tt (parse-type tt))
       (if (is-typeof( term tt )) () (tail(
@@ -285,7 +285,7 @@ assert-typeof := λ loc term tt . (tail(
          (exit 1)
       )))
    )) ())
-));
+);
 
 i2s := λi . (tail(
    (local ten)
