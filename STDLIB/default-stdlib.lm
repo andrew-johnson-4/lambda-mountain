@@ -305,11 +305,29 @@ tail-string := λ(: s String). (: (tail(
 )) String);
 
 clone-rope := λ(: s S). (: (tail(
-   (let x 'TODO\sclone-rope_s)
-   x
+   (let r (malloc( 0_u64 )))
+   (clone-rope-impl s )
+   (let rtail (as (malloc( 1_u64 )) U8[]))
+   (mov( 0_u8 0_u64 rtail ))
+   (as r String)
 )) String);
+clone-rope-impl := λ(: s S). (: (match s (
+   ()
+   ( SNil () )
+   ( (SCons( l r )) (tail(
+      (clone-rope-impl (maybe-deref l))
+      (clone-rope-impl (maybe-deref r))
+   )))
+   ( (SAtom a) (tail(
+      (print a)
+      (let t (as (malloc( 1_u64 )) U8[]))
+      (mov( 16_u8 0_u64 t ))
+   )))
+)) Nil);
 
 clone-rope := λ(: s U8). (: (tail(
-   (let x 'TODO\sclone-rope-c_s)
-   x
+   (let x (as (malloc 2_u64) U8[]))
+   (mov( s 0_u64 x ))
+   (mov( 0_u8 1_u64 x ))
+   (as x String)
 )) String);
