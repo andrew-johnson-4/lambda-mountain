@@ -12,33 +12,34 @@ typecheck := λprogram . (tail(
    (set p program)
    (local ordered-type-exprs)
    (set ordered-type-exprs ())
-   (while p (
+   (while p (tail(
       (set ordered-type-exprs (ordered-type-exprs (tail p)))
       (set p (head p))
-   ))
-   (while ordered-type-exprs (
+   )))
+   (while ordered-type-exprs (tail(
       (typecheck-infer-type-expr( (tail ordered-type-exprs) ))
       (set ordered-type-exprs (head ordered-type-exprs))
-   ))
+   )))
    (set typecheck-types-have-changed True)
-   (while typecheck-types-have-changed (
+   (while typecheck-types-have-changed (tail(
       (set typecheck-types-have-changed ())
       (typecheck-infer-prog program)
-   ))
+   )))
    (typecheck-assert-complete program)
+   (debug-memory-usage 'typecheck)
    program
 ));
 
-typecheck-assert-complete := λp . (if p (
+typecheck-assert-complete := λp . (if p (tail(
    (typecheck-assert-complete( head p ))
    (typecheck-assert-expr( tail p ))
-) ());
+)) ());
 
 typecheck-assert-one := λe . (
-   (if (typecheck-lookup e) () (
+   (if (typecheck-lookup e) () (tail(
       (print-s (typecheck-show-ascript parse-parsed-program))(print-s \n)
       (fail (UnableToInferTypeOfExpression (typecheck-show-ascript e)))
-   ))
+   )))
 );
 
 typecheck-assert-expr := λe . (tail(
@@ -129,15 +130,15 @@ typecheck-lookup := λterm . (tail(
    (set tctx typecheck-context)
    (local found)
    (local ttt)
-   (while tctx (
+   (while tctx (tail(
       (set ttt (head tctx))
-      (if (is( (head ttt) term )) (
+      (if (is( (head ttt) term )) (tail(
          (set found (tail ttt))
          (set tctx ())
-      ) (
+      )) (
          (set tctx (tail tctx))
       ))
-   ))
+   )))
    found
 ));
 
@@ -258,10 +259,10 @@ typecheck-show-ascript := λp . (tail(
 ));
 
 typecheck-infer-prog := λp . (
-   (while p (
+   (while p (tail(
       (typecheck-infer-expr( () (tail p) Used ))
       (set p (head p))
-   ))
+   )))
 );
 
 typecheck-infer-ctx := λctx e . (match e (
@@ -290,7 +291,7 @@ typecheck-typeof-gvar := λv . (tail(
    (local gctx)
    (set gctx typecheck-global-context)
    (local tt)
-   (while gctx (
+   (while gctx (tail(
       (match (tail gctx) (
          ()
          ( (Global( gn gt )) (
@@ -304,7 +305,7 @@ typecheck-typeof-gvar := λv . (tail(
          ))
       ))
       (set gctx (head gctx))
-   ))
+   )))
    tt
 ));
 
@@ -384,7 +385,7 @@ typecheck-unify-implies := λlt rt . (if (eq(lt rt)) True (match lt (
       (local subtypes)
       (local st)
       (set subtypes typecheck-subtypes)
-      (while subtypes (
+      (while subtypes (tail(
          (set st (tail subtypes))
          (if (eq( (head st) lt1 )) (
             (if (eq( (tail st) rt )) (
@@ -392,7 +393,7 @@ typecheck-unify-implies := λlt rt . (if (eq(lt rt)) True (match lt (
             ) ())
          ) ())
          (set subtypes (head subtypes))
-      ))
+      )))
       accept
    )))
 )));
@@ -478,7 +479,7 @@ typecheck-apply-plural := λmany pt . (match many(
 typecheck-safe-apply-plural := λterm many pt . (tail(
    (local r)
    (set r (typecheck-apply-plural( many pt )))
-   (if r r (
+   (if r r (tail(
       (print-s TypeError)(print-s \s)(print-s InvalidArgument)(print-s \n)
       (print-s Argument:)(print-s \n)
       (print-s \t)(print-s pt)(print-s \n)
@@ -497,7 +498,7 @@ typecheck-safe-apply-plural := λterm many pt . (tail(
       (print-s Term:)(print-s \n)
       (print-s \t)(print-s term)(print-s \n)
       (exit 1)
-   ))
+   )))
 ));
 
 typecheck-infer-type-compound := λcompound . (tail(
@@ -579,7 +580,7 @@ typecheck-infer-constructor-type := λtag . (tail(
    (local ctype)
    (local constructors)
    (set constructors typecheck-constructors)
-   (while constructors (
+   (while constructors (tail(
       (if (eq( tag (head(tail(constructors))) )) (
          (if ctype (
             (set ctype (And( ctype (tail(tail(constructors))) )))
@@ -588,7 +589,7 @@ typecheck-infer-constructor-type := λtag . (tail(
          ))
       ) ())
       (set constructors (head constructors))
-   ))
+   )))
    ctype
 ));
 
@@ -633,28 +634,28 @@ typecheck-infer-type-expr := λe . (match e (
 
       (local constructors)
       (set constructors typecheck-constructors)
-      (while constructors (
+      (while constructors (tail(
          (match (tail constructors) (
             ()
             ( (tag ('->(ctype (And( my-type tag )) ))) (tail(
-               (if (deep-eq( my-type base-type )) (
+               (if (deep-eq( my-type base-type )) (tail(
                   (typecheck-set-size( tag sz ))
                   (if (typecheck-is-fragment base-type) () (
                      (typecheck-annotate-accessors( base-type tag ctype ))
                   ))
-               ) ())
+               )) ())
             )))
             ( (tag my-type) (tail(
-               (if (deep-eq( my-type base-type )) (
+               (if (deep-eq( my-type base-type )) (tail(
                   (typecheck-set-size( tag sz ))
                   (if (typecheck-is-fragment base-type) () (
                      (typecheck-annotate-accessors( base-type tag () ))
                   ))
-               ) ())
+               )) ())
             )))
          ))
          (set constructors (head constructors))
-      ))
+      )))
    ))
    ( (Global( 'main (Lambda( _ _ )) )) (tail(
       (set typecheck-global-context ( typecheck-global-context (Global( 'argc (parse-type 'U64+GlobalVariable) )) ))
@@ -921,12 +922,12 @@ typecheck-sizeof-impl := λtt . (match tt (
       (local sz)
       (local sizes)
       (set sizes typecheck-size)
-      (while sizes (
+      (while sizes (tail(
          (if (eq( (head (tail sizes)) tt )) (
             (set sz (tail (tail sizes)))
          ) ())
          (set sizes (head sizes))
-      ))
+      )))
       sz
    )))
 ));
@@ -1062,12 +1063,12 @@ typecheck-is-fragment := λtt . (tail(
    (local is-fragment)
    (local fragment-types)
    (set fragment-types typecheck-fragment-types)
-   (while fragment-types (
+   (while fragment-types (tail(
       (if (deep-eq( tt (tail fragment-types) )) (
          (set is-fragment True)
       ) ())
       (set fragment-types (head fragment-types))
-   ))
+   )))
    is-fragment
 ));
 
@@ -1079,7 +1080,7 @@ typecheck-is-cyclical := λ tt descent . (tail(
          (local cyclical)
          (local constructors)
          (set constructors typecheck-constructors)
-         (while constructors (
+         (while constructors (tail(
             (match (tail constructors) (
                ()
                ( (case ('->( args (And( base-type case_ )) ))) (
@@ -1091,7 +1092,7 @@ typecheck-is-cyclical := λ tt descent . (tail(
                ))
             ))
             (set constructors (head constructors))
-         ))
+         )))
          cyclical
       )))
       ( (Array( _ '? )) () )
@@ -1103,7 +1104,7 @@ typecheck-is-cyclical := λ tt descent . (tail(
          (local cyclical)
          (local constructors)
          (set constructors typecheck-constructors)
-         (while constructors (
+         (while constructors (tail(
             (match (tail constructors) (
                ()
                ( (case ('->( args (And( base-type case_ )) ))) (
@@ -1115,7 +1116,7 @@ typecheck-is-cyclical := λ tt descent . (tail(
                ))
             ))
             (set constructors (head constructors))
-         ))
+         )))
          cyclical
       ))))
    ))

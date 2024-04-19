@@ -20,6 +20,9 @@ import PRODUCTION/data.lm;
 
 # Static Globals
 
+config-perf                              := ();
+config-debug                             := ();
+config-nomacro                           := ();
 config-nostd                             := ();
 config-strict                            := ();
 cli-config                               := ();
@@ -66,6 +69,18 @@ main := (
          (set mode Tokenize)
          (set args remainder)
       ))
+      ( ('--debug remainder) (
+         (set config-debug True)
+         (set args remainder)
+      ))
+      ( ('--perf remainder) (
+         (set config-perf True)
+         (set args remainder)
+      ))
+      ( ('--nomacro remainder) (
+         (set config-nomacro True)
+         (set args remainder)
+      ))
       ( ('--typecheck remainder) (
          (set mode Typecheck)
          (set args remainder)
@@ -78,6 +93,8 @@ main := (
          fail (UnexpectionCommand u)
       ))
    )))
+
+   (debug-memory-usage 'main)
 
    (while inputs (match mode (
       ()
@@ -106,14 +123,28 @@ main := (
       ))
    )))
 
-   (set parse-parsed-program (preprocess parse-parsed-program))
-   (if config-strict (typecheck parse-parsed-program) ())
-
    (match mode (
       ()
-      (Compile (assemble parse-parsed-program))
-      (Parse (print-s parse-parsed-program))
-      (Typecheck (print-s (typecheck-show-ascript (typecheck parse-parsed-program))))
+      (Compile (tail(
+         (if config-nomacro () (
+            (set parse-parsed-program (preprocess parse-parsed-program))
+         ))
+         (if config-strict (typecheck parse-parsed-program) ())
+         (assemble parse-parsed-program)
+      )))
+      (Parse (tail(
+         (if config-nomacro () (
+            (set parse-parsed-program (preprocess parse-parsed-program))
+         ))
+         (print-s parse-parsed-program)
+      )))
+      (Typecheck (tail(
+         (if config-nomacro () (
+            (set parse-parsed-program (preprocess parse-parsed-program))
+         ))
+         (if config-strict (typecheck parse-parsed-program) ())
+         (print-s (typecheck-show-ascript parse-parsed-program))
+      )))
    ))
 );
 

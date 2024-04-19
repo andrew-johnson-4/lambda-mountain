@@ -89,10 +89,10 @@ compile-expr-strict := λctx e offset used . (tail(
                (match (typecheck-slot( (typecheck-lookup r) Array )) (
                   ()
                   ( (Array( x '? )) (
-                     (if (typecheck-unify-implies( x '? )) () (
+                     (if (typecheck-unify-implies( x '? )) () (tail(
                         (set deref True)
                         (set new-size (typecheck-sizeof x))
-                     ))
+                     )))
                   ))
                ))
                (if deref (tail(
@@ -242,11 +242,11 @@ compile-expr-strict := λctx e offset used . (tail(
             )))
             ( (App( (App( (Literal :) (Literal lval) )) ltype )) (tail(
                (set ltype (typecheck-infer-type-compound ltype))
-               (if (typecheck-unify-args( String ltype )) (
+               (if (typecheck-unify-args( String ltype )) (tail(
                   (local uid)
                   (set uid (strict-declare-cstring( lval )))
                   (set e1 (expr::set-expr( (expr::new ()) uid )))
-               ) (
+               )) (
                   (match lval (
                      ()
                      (True (set e1 (expr::set-expr( (expr::new ()) '1 ))))
@@ -275,11 +275,11 @@ compile-expr-strict := λctx e offset used . (tail(
                e1
             )))
             ( (Literal lval) (tail(
-               (if (typecheck-unify-args( String (typecheck-lookup e) )) (
+               (if (typecheck-unify-args( String (typecheck-lookup e) )) (tail(
                   (local uid)
                   (set uid (strict-declare-cstring( lval )))
                   (set e1 (expr::set-expr( (expr::new ()) uid )))
-               ) (
+               )) (
                   (match lval (
                      ()
                      (True (set e1 (expr::set-expr( (expr::new ()) '1 ))))
@@ -417,15 +417,15 @@ strict-declare-cstring := λ value . (tail(
    (local uid)
    (local cache)
    (set cache strict-cstring-cache)
-   (while cache (
-      (if (eq( (head(tail( cache ))) value )) (
+   (while cache (tail(
+      (if (eq( (head(tail( cache ))) value )) (tail(
          (set uid (tail(tail( cache ))))
          (set cache ())
-      ) (
+      )) (
          (set cache (head cache))
       ))
-   ))
-   (if uid () (
+   )))
+   (if uid () (tail(
       (set uid (uuid()))
       (set assemble-data-section (assemble-data-section (
          uid ': \n
@@ -433,7 +433,7 @@ strict-declare-cstring := λ value . (tail(
          '.zero \s '1 \n
       )))
       (set strict-cstring-cache (strict-cstring-cache (value uid)))
-   ))
+   )))
    uid
 ));
 
@@ -696,7 +696,7 @@ strict-bind-accessors := λ ctx base-type src-type field-offset field-number . (
          (set return-type ())
       )))
    ))
-   (if return-type (
+   (if return-type (tail(
       (set body (Fragment (Lambda(
          (App( (App( (Literal ':) (Variable 'src) )) (Literal LocalVariable) ))
          (App(
@@ -714,7 +714,7 @@ strict-bind-accessors := λ ctx base-type src-type field-offset field-number . (
          return-type
       ))))
       (set ctx (context::bind( ctx (clone-rope( '. (i2s field-number) )) body )))
-   ) (
+   )) (tail(
       (set body (Fragment (Lambda(
          (App( (App( (Literal ':) (Variable 'src) )) (Literal LocalVariable) ))
          (App( (Variable '.expression) (
@@ -726,6 +726,6 @@ strict-bind-accessors := λ ctx base-type src-type field-offset field-number . (
          LocalVariable
       ))))
       (set ctx (context::bind( ctx (clone-rope( '. (i2s field-number) )) body )))
-   ))
+   )))
    ctx
 ));

@@ -4,21 +4,22 @@ preprocess-index-types := ();
 preprocess := λprogram . (tail(
    (preprocess-index-typedefs program)
    (set program (preprocess-apply-macros program))
+   (debug-memory-usage 'preprocess)
    program
 ));
 
 preprocess-dump := λprogram . (tail(
-   (while program (
+   (while program (tail(
       (print-s (tail program))(print-s \n)
       (set program (head program))
-   ))
+   )))
 ));
 
 preprocess-index-typedefs := λprogram . (tail(
-   (while program (
+   (while program (tail(
       (preprocess-index-typedef (tail program))
       (set program (head program))
-   ))
+   )))
 ));
 
 preprocess-index-typedef := λterm . (match term (
@@ -53,12 +54,12 @@ preprocess-index-of-tag := λtag . (tail(
    (local indices)
    (local index)
    (set indices preprocess-index-types)
-   (while indices (
+   (while indices (tail(
       (if (eq( (head(tail indices)) tag )) (
          (set index (tail(tail indices)))
       ) ())
       (set indices (head indices))
-   ))
+   )))
    index
 ));
 
@@ -71,10 +72,10 @@ substitute-macro-body := λkvs e . (match e (
          ( (ks Accept) (set kvs ks) )
          ( (ks ()) (set kvs ks) )
          ( (ks (KV(k v))) (
-            (if (eq(n k)) (
+            (if (eq(n k)) (tail(
                (set e v)
                (set kvs ())
-            ) (
+            )) (
                (set kvs ks)
             ))
          ))
@@ -96,13 +97,13 @@ try-destructure-macro := λlhs e . (match (lhs e) (
    ( ( (App(pl pr)) (App(el er)) ) (tail(
       (local ll)
       (set ll (try-destructure-macro(pl el)))
-      (local rl)
-      (set rl (try-destructure-macro(pr er)))
-      (if ll (
+      (if ll (tail(
+         (local rl)
+         (set rl (try-destructure-macro(pr er)))
          (if rl (
             (merge-list( ll rl ))
          ) ())
-      ) ())
+      )) ())
    )))
    ( ((Literal pl) (Variable el)) (
       (if (eq( pl el )) Accept ())

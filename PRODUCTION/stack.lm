@@ -20,7 +20,7 @@ stack-call := λ ctx function-name function-args offset . (tail(
          (local copy-size)
          (set copy-size (s2i (expr::get-expr e-args)))
          (set copy-offset (inv( copy-size )))
-         (while copy-size (
+         (while copy-size (tail(
             (set copy-bytes ( copy-bytes
                \t 'mov \s (i2s( src-offset )) \[ '%rbp \] , \s '%rax \n
                \t 'mov \s '%rax , \s (i2s( copy-offset )) \[ '%rbp \] \n
@@ -28,7 +28,7 @@ stack-call := λ ctx function-name function-args offset . (tail(
             (set copy-offset (add( (s2i '8) copy-offset )))
             (set src-offset (add( (s2i '8) src-offset )))
             (set copy-size (add( (s2i '-8) copy-size )))
-         ))
+         )))
          (local args-size)
          (set args-size (expr::get-expr e-args))
          (if (eq( args-size 0 )) () (

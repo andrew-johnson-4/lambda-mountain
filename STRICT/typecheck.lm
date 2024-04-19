@@ -1,4 +1,6 @@
 
+type Type TNil;
+
 typecheck := λ. (: (tail(
    ()
    ()

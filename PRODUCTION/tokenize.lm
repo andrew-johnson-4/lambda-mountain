@@ -17,7 +17,7 @@ tokenize := λtext . (tail(
    (local char)
    (local parens-counter)
 
-   (while (head-string text) (
+   (while (head-string text) (tail(
       (set char (head-string text))
       (set text (tail-string text))
    (match char (      
@@ -96,7 +96,7 @@ tokenize := λtext . (tail(
             (set buffer ())
          ) ())
       )))
-   ))))
+   )))))
    (if buffer (
       (set program (program (clone-rope buffer)))
    ) ())
@@ -104,6 +104,7 @@ tokenize := λtext . (tail(
    (if parens-counter (
       (fail (Hanging Parens In File currently-tokenizing-file))
    ) ())
+   (debug-memory-usage 'tokenize)
    (reverse-list program)
 ));
 
