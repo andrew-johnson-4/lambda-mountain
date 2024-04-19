@@ -537,7 +537,9 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
 
          #define field accessors
          (local field-offset)
+         (set field-offset 0)
          (local field-number)
+         (set ctx (strict-bind-accessors( ctx base-type U64 0 () )))
          (while args-type (match args-type (
             ()
             ( (Cons( lt rt )) (tail(
@@ -713,6 +715,7 @@ strict-bind-accessors := λ ctx base-type src-type field-offset field-number . (
          (And( base-type LocalVariable ))
          return-type
       ))))
+      (print-s (DefineAccessor field-offset (i2s field-number) base-type))(print-s \n)
       (set ctx (context::bind( ctx (clone-rope( '. (i2s field-number) )) body )))
    )) (tail(
       (set body (Fragment (Lambda(
@@ -725,6 +728,7 @@ strict-bind-accessors := λ ctx base-type src-type field-offset field-number . (
          (And( base-type LocalVariable ))
          LocalVariable
       ))))
+      (print-s (DefineAccessor field-offset (i2s field-number) base-type))(print-s \n)
       (set ctx (context::bind( ctx (clone-rope( '. (i2s field-number) )) body )))
    )))
    ctx
