@@ -244,34 +244,42 @@ preprocess-apply-macros := λprogram . (match program (
       )))
       program
    )))
-   ( _ (tail(
-      (local macros)
-      (set macros parse-macros)
-      (while macros (match macros (
-         ()
-         ( (ms (Macro( lhs rhs ))) (tail(
-            (local new)
-            (set new (try-destructure-macro( lhs program )))
-            (if new (tail(
-               (set program (substitute-macro-body( new rhs )))
-               (set program (parse-macro-substitute-uuids (
-                  (parse-macro-yield-uuids( () program ))
-                  program
-               )))
-               (set program (preprocess-apply-macros program))
-            )) ())
-            (set macros ms)
-         )))
-         ( u (fail (UnrecognizedMacro u)))
-      )))
-      (match program (
-         ()
-         ( (l r) (
-            (preprocess-apply-macros l)
-            (preprocess-apply-macros r)
-         ))
-         ( () () )
-         (u u)
-      ))
-   )))
+   ( (App( (Variable _) _ )) (preprocess-apply-maybe program) )
+   ( (App( (App( (Variable _) _ )) _ )) (preprocess-apply-maybe program) )
+   ( (l r) (
+      (preprocess-apply-macros l)
+      (preprocess-apply-macros r)
+   ))
+   ( u u )
 ));
+
+preprocess-apply-maybe := λ program . (tail(
+   (local macros)
+   (set macros parse-macros)
+   (while macros (match macros (
+      ()
+      ( (ms (Macro( lhs rhs ))) (tail(
+         (local new)
+         (set new (try-destructure-macro( lhs program )))
+         (if new (tail(
+            (set program (substitute-macro-body( new rhs )))
+            (set program (parse-macro-substitute-uuids (
+               (parse-macro-yield-uuids( () program ))
+               program
+            )))
+            (set program (preprocess-apply-macros program))
+         )) ())
+         (set macros ms)
+      )))
+      ( u (fail (UnrecognizedMacro u)))
+   )))
+   (match program (
+      ()
+      ( (l r) (
+         (preprocess-apply-macros l)
+         (preprocess-apply-macros r)
+      ))
+      ( () () )
+      (u u)
+   ))
+))

@@ -1,6 +1,7 @@
 
 nostd: prod
-	./production --nostd --typecheck --perf -o tmp.s STRICT/cli.lm
+	./production --nostd --typecheck --perf -o tmp.s tests/strict/match1.lm
+#	./production --nostd --typecheck --perf -o tmp.s STRICT/cli.lm
 	as -o tmp.o tmp.s
 	ld -o tmp tmp.o
 	./tmp STRICT/cli.lm && echo $?

@@ -135,6 +135,44 @@ compile-expr-dynamic := λctx e offset used . (tail(
          ))
          (Expr( () prog () () () ctx offset ))
       )))
+      ( (App( (Variable 'eq) (App( l r )) )) (tail(
+         (set e1 (compile-expr(ctx l offset Used)))
+         (set e2 (compile-expr(ctx r offset Used)))
+         (local eq-yield-end)
+         (set eq-yield-end (uuid()))
+         (local eq-yield-false)
+         (set eq-yield-false (uuid()))
+         (set prog (
+            (expr::get-prog e1)
+            \t 'cmp \s '$0, \s '%r12 \n
+            \t 'je \s eq-yield-false \n
+            \t 'cmp \s '$0, \s '%r13 \n
+            \t 'jne \s eq-yield-false \n
+            \t 'push \s '%r12 \n
+            (expr::get-prog e2)
+            \t 'cmp \s '$0, \s '%r12 \n
+            \t 'je \s eq-yield-false \n
+            \t 'cmp \s '$0, \s '%r13 \n
+            \t 'jne \s eq-yield-false \n
+            \t 'mov \s '%r12 , \s '%rax \n
+            \t 'pop \s '%rbx         \n
+            \t 'call \s 'streq       \n
+            \t 'jmp \s eq-yield-end  \n
+            eq-yield-false ':        \n
+            \t 'mov \s '$0 , \s '%r12 \n
+            \t 'mov \s '$0 , \s '%r13 \n
+            eq-yield-end ':          \n
+         ))
+         (Expr(
+            ((expr::get-frame e1) (expr::get-frame e2))
+            prog
+            ((expr::get-unframe e1) (expr::get-unframe e2))
+            ((expr::get-text e1) (expr::get-text e2))
+            ((expr::get-data e1) (expr::get-data e2))
+            ctx
+            offset
+         ))
+      )))
       ( (App( (App( (App( (Variable 'if) c )) t )) f )) (tail(
          (set e1 (compile-expr(ctx c offset Used)))
          (set e2 (compile-expr( (expr::get-context e1) t (expr::get-offset e1) Used )))

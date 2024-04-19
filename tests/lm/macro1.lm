@@ -1,5 +1,1 @@
 
-macro ( ('custom_let x y) z )
-      ( (λ x . z) y );
-
-main := (custom_let x 5) (print-s x);
