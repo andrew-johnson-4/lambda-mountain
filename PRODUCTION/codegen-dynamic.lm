@@ -456,12 +456,12 @@ yield-atom := λctx a offset . (tail(
    (set cache yield-atom-cache)
    (local id)
    (local data)
-   (while cache (
+   (while cache (tail(
       (if (eq( (head (head cache)) a )) (
          (set id (tail (head cache)))
       ) ())
       (set cache (tail cache))
-   ))
+   )))
    (if id () (
       (set id (uuid()))
       (set data (id ': \n \t '.ascii \s " (escape-sequences a) " \n \t '.zero \s 1 \n))
@@ -497,7 +497,7 @@ escape-sequences := λt . match t (
       (local c)
       (local cs)
       (local is_escape)
-      (while s (
+      (while s (tail(
          (set c (head-string s))
          (set s (tail-string s))
          (match c (
@@ -523,7 +523,7 @@ escape-sequences := λt . match t (
                (set is_escape ())
             ))
          ))
-      ))
+      )))
       (clone-rope cs)
    )))
 );

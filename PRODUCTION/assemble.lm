@@ -6,13 +6,13 @@ assemble-argv-referenced                 := ();
 assemble := λprogram . (
    (local target)
    (set target 'tmp.s)
-   (while cli-config (
+   (while cli-config (tail(
       (match (tail cli-config) (
          ()
          ((Target t) (set target t))
       ))
       (set cli-config (head cli-config))
-   ))
+   )))
 
    (local main_e)
    (local main_pd)

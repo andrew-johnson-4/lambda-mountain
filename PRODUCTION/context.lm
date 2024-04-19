@@ -10,8 +10,8 @@ context::lookup := λ ctx key key-type . (tail(
    (local bindings)
    (set bindings (context::get-bindings ctx))
    (local return)
-   (while bindings (
-      (if (eq( key (head(tail bindings)) )) (
+   (while bindings (tail(
+      (if (eq( key (head(tail bindings)) )) (tail(
          (if key-type (tail(
             (local body)
             (set body (tail(tail bindings)))
@@ -33,7 +33,7 @@ context::lookup := λ ctx key key-type . (tail(
             (set return (tail(tail bindings)))
             (set bindings ())
          )))
-      ) ()
+      )) ())
       (set bindings (head bindings))
    )))
    return

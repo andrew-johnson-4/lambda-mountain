@@ -8,17 +8,17 @@ preprocess := λprogram . (tail(
 ));
 
 preprocess-dump := λprogram . (tail(
-   (while program (
+   (while program (tail(
       (print-s (tail program))(print-s \n)
       (set program (head program))
-   ))
+   )))
 ));
 
 preprocess-index-typedefs := λprogram . (tail(
-   (while program (
+   (while program (tail(
       (preprocess-index-typedef (tail program))
       (set program (head program))
-   ))
+   )))
 ));
 
 preprocess-index-typedef := λterm . (match term (
@@ -53,12 +53,12 @@ preprocess-index-of-tag := λtag . (tail(
    (local indices)
    (local index)
    (set indices preprocess-index-types)
-   (while indices (
+   (while indices (tail(
       (if (eq( (head(tail indices)) tag )) (
          (set index (tail(tail indices)))
       ) ())
       (set indices (head indices))
-   ))
+   )))
    index
 ));
 

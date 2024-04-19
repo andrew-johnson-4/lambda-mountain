@@ -94,7 +94,7 @@ s2i := λs . (tail(
       (set is_neg True)
       (set s (tail-string s))
    ) ())
-   (while s (
+   (while s (tail(
       (set i (mul( i ten )))
       (match (head-string s) (
          ()
@@ -111,7 +111,7 @@ s2i := λs . (tail(
          (u (fail (InvalidDigit u)))
       ))
       (set s (tail-string s))
-   ))
+   )))
    (if is_neg (
       (mul( (dec()) i ))
    ) i )
@@ -123,7 +123,7 @@ max := λ l r . (tail(
    (local ri)
    (set ri (s2i r))
    (local return)
-   (while (not return) (
+   (while (not return) (tail(
       (if (not li) (
         (set return r)
       ) (
@@ -133,7 +133,7 @@ max := λ l r . (tail(
       ))
       (set li (dec li))
       (set ri (dec ri))
-   ))
+   )))
    return
 ));
 
@@ -194,49 +194,49 @@ is-variable := λv . (match (head-string v) (
 ));
 
 merge-list := λl r . (tail(if l (
-   (while r (
+   (while r (tail(
       (set l (l (tail r)))
       (set r (head r))
-   ))
+   )))
    l
 ) r ));
 
 merge-safe-list := λl r . (if l (
-   (while r (
+   (while r (tail(
       (set l (l (tail r)))
       (set r (head r))
-   ))
+   )))
    l
 ) r );
 
 is-suffix := λs suff . (tail(
    (local match)
-   (while s (
+   (while s (tail(
       (if (eq( s suff )) (set match True) ())
       (set s (tail-string s))
-   ))
+   )))
    match
 ));
 
 remove-suffix := λs suff . (tail(
    (local prefix)
-   (while s (
+   (while s (tail(
       (if (eq( s suff )) (
          (set s ())
       ) (
          (set prefix (prefix (clone-rope (head-string s))))
          (set s (tail-string s))
       ))
-   ))
+   )))
    (clone-rope prefix)
 ));
 
 reverse-list := λl . (tail(
    (local r)
-   (while l (
+   (while l (tail(
       (set r ( (tail l) r ))
       (set l (head l))
-   ))
+   )))
    r
 ));
 
@@ -291,11 +291,11 @@ i2s := λi . (tail(
       (set sign '-)
       (set i (inv i))
    ) ())
-   (while i (
+   (while i (tail(
       (set r (mod(i ten)))
       (set s ((clone-rope(digit r) s)))
       (set i (div(i ten)))
-   ))
+   )))
    (if s () (set s 0))
    (clone-rope (sign s))
 ));
@@ -365,7 +365,7 @@ parse-type := λ tt . (tail(
    (local buff)
    (local base-type)
    (local depth)
-   (while tt (
+   (while tt (tail(
       (match (head-string tt) (
          ()
          ('< (set depth (inc depth)))
@@ -388,7 +388,7 @@ parse-type := λ tt . (tail(
          ))
       ))
       (set tt (tail-string tt))
-   ))
+   )))
    (set base-type (if base-type (
       (And( base-type (parse-type-single (clone-rope buff)) ))
    ) (
@@ -471,7 +471,7 @@ parse-type-comma-sep := λ tt . (tail(
    (local buff)
    (local base)
    (local depth)
-   (while tt (
+   (while tt (tail(
       (match (head-string tt) (
          ()
          ('< (set depth (inc depth)))
@@ -499,7 +499,7 @@ parse-type-comma-sep := λ tt . (tail(
             (set tt (tail-string tt))
          )))
       ))
-   ))
+   )))
    (if base (
       (set base (base (parse-type (clone-rope buff))))
    ) (
@@ -559,7 +559,7 @@ parse-type-tuple := λ tt . (tail(
 parse-type-single := λ tt . (tail(
    (local buff)
    (local base)
-   (while tt (
+   (while tt (tail(
       (match (head-string tt) (
          ()
          ('[ (tail(
@@ -577,7 +577,7 @@ parse-type-single := λ tt . (tail(
          (c (set buff (buff (clone-rope c)) ))
       ))
       (set tt (tail-string tt))
-   ))
+   )))
    (if base base (clone-rope buff))
 ));
 
@@ -610,7 +610,7 @@ escape-escape-char := λc . match c (
 );
 escape-literal := λs . (tail(
    (local buff)
-   (while s (
+   (while s (tail(
       (if (eq( (head-string s) '\ )) (
          (local e)
          (set e (escape-escape-char( (head-string(tail-string( s ))) )))
@@ -625,7 +625,7 @@ escape-literal := λs . (tail(
          (set buff (buff (escape-literal-char (head-string s))))
          (set s (tail-string s))
       ))
-   ))
+   )))
    (clone-rope buff)
 ));
 

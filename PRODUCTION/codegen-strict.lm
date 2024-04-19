@@ -417,14 +417,14 @@ strict-declare-cstring := λ value . (tail(
    (local uid)
    (local cache)
    (set cache strict-cstring-cache)
-   (while cache (
+   (while cache (tail(
       (if (eq( (head(tail( cache ))) value )) (
          (set uid (tail(tail( cache ))))
          (set cache ())
       ) (
          (set cache (head cache))
       ))
-   ))
+   )))
    (if uid () (
       (set uid (uuid()))
       (set assemble-data-section (assemble-data-section (

@@ -5,30 +5,30 @@ fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
    ( (Variable Dontchain) () )
    ( DontChain () )
    ( (Variable( v )) (tail(
-      (while ctx (
+      (while ctx (tail(
          (if (eq( v (head (tail ctx)) )) (
             (set v (expr::get-expr (tail (tail ctx))))
          ) ())
          (set ctx (head ctx))
-      ))
+      )))
       v
    )))
    ( ('label v) (tail(
-      (while ctx (
+      (while ctx (tail(
          (if (eq( v (head (tail ctx)) )) (
             (set v (expr::get-expr (tail (tail ctx))))
          ) ())
          (set ctx (head ctx))
-      ))
+      )))
       v
    )))
    ( (App( (Variable 'label) (Variable v) )) (tail(
-      (while ctx (
+      (while ctx (tail(
          (if (eq( v (head (tail ctx)) )) (
             (set v (expr::get-expr (tail (tail ctx))))
          ) ())
          (set ctx (head ctx))
-      ))
+      )))
       v
    )))
    ( ('inv( x )) (tail(
@@ -73,10 +73,10 @@ fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
       (set low (fragment-substitute-context( ctx low )))
       (set high (fragment-substitute-context( ctx high )))
       (local return)
-      (while (not(eq( low high ))) (
+      (while (not(eq( low high ))) (tail(
          (set return (return low))
          (set low (i2s(inc(s2i( low )))) )
-      ))
+      )))
       (reverse-list return)
    )))
    ( (App(
@@ -94,7 +94,7 @@ fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
      )) (tail(
       (local result)
       (set iterator (fragment-substitute-context( ctx iterator )))
-      (while iterator (
+      (while iterator (tail(
          (local inner-e)
          (set inner-e (expr::new()))
          (set inner-e (expr::set-expr( inner-e (head iterator) )))
@@ -106,7 +106,7 @@ fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
             (fragment-substitute-context( inner-ctx body ))
          )))
          (set iterator (tail iterator))
-      ))
+      )))
       result
    )))
    ( (App(
@@ -131,33 +131,33 @@ fragment-substitute-context := λ ctx fragment-rhs . (match fragment-rhs (
    )))
    ( ('.expression v ) (tail(
       (if (is-atom v) (
-         (while ctx (
+         (while ctx (tail(
             (if (eq( v (head (tail ctx)) )) (
                (set v (expr::get-expr (tail (tail ctx))))
             ) ())
             (set ctx (head ctx))
-         ))
+         )))
       ) (
          (set v (fragment-substitute-context( ctx v )))
       ))
       v
    )))
    ( (App( (Variable '.expression) (Variable v) )) (tail(
-      (while ctx (
+      (while ctx (tail(
          (if (eq( v (head (tail ctx)) )) (
             (set v (expr::get-expr (tail (tail ctx))))
          ) ())
          (set ctx (head ctx))
-      ))
+      )))
       v
    )))
    ( (App( (Variable '.program) (Variable v) )) (tail(
-      (while ctx (
+      (while ctx (tail(
          (if (eq( v (head (tail ctx)) )) (
             (set v (expr::get-prog (tail (tail ctx))))
          ) ())
          (set ctx (head ctx))
-      ))
+      )))
       v
    )))
    ( (Literal v) (
