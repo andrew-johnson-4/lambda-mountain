@@ -96,13 +96,13 @@ try-destructure-macro := λlhs e . (match (lhs e) (
    ( ( (App(pl pr)) (App(el er)) ) (tail(
       (local ll)
       (set ll (try-destructure-macro(pl el)))
-      (local rl)
-      (set rl (try-destructure-macro(pr er)))
-      (if ll (
+      (if ll (tail(
+         (local rl)
+         (set rl (try-destructure-macro(pr er)))
          (if rl (
             (merge-list( ll rl ))
          ) ())
-      ) ())
+      )) ())
    )))
    ( ((Literal pl) (Variable el)) (
       (if (eq( pl el )) Accept ())
