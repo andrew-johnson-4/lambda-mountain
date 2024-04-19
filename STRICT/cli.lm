@@ -25,6 +25,7 @@ config-mode                  := (: ModeCompile CompileMode);
 main := λ(: argc U64)(: argv String[]).(tail(
    (let argi 1_u64)
    (let input SNil)
+   ()
    (while (<( argi argc )) (
       (match ([]( argv argi )) (
          ()

@@ -199,6 +199,7 @@ assemble := λprogram . (
    ))
 
    (write-file (target (clone-rope output_pd)))
+   (debug-memory-usage 'assemble)
 );
 
 assemble-initialize-data := λ e tt . (
