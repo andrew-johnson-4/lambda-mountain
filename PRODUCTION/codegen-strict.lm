@@ -505,7 +505,6 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
                   \t 'sub \s '$ case-padding , \s '%rsp \n
                ))
                (App( (Variable '.program) (Variable 'src) ))
-               \t 'pushq \s '$ case-number \n
                \t 'mov \s '$ (Variable 'dst) , \s '%r15 \n
                \t 'mov \s '$ case-size , \s '%r14 \n
                ('label 'while-push-start) ': \n
