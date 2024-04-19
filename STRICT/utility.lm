@@ -1,0 +1,5 @@
+
+reverse-list := λ(: s S). (: (tail(
+   ()
+   (close s)
+)) S[]);

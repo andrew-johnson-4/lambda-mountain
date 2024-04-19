@@ -3,6 +3,7 @@ tokenize := λ(: fp String). (: (tail(
    (let text (read-file fp))
    (let in_comment False_u8)
    (let buffer SNil)
+   (let parens-counter 0_u64)
    (while (head-string text) (tail(
       (match (head-string text) (
          ()
@@ -16,7 +17,7 @@ tokenize := λ(: fp String). (: (tail(
             )) ())
             (set in_comment True_u8)
          )))
-         (\n_u8 (tail(
+         ( \n_u8 (tail(
             (if (non-zero buffer) (tail(
                (set ast-tokenized-program (SCons(
                   (close ast-tokenized-program)
@@ -26,14 +27,114 @@ tokenize := λ(: fp String). (: (tail(
             )) ())
             (set in_comment False_u8)
          )))
-         ( c (tail(
-            ()
-            ()
-         )))
+         ( \t_u8 (
+            (if (non-zero buffer) (tail(
+               (set ast-tokenized-program (SCons(
+                  (close ast-tokenized-program)
+                  (close (SAtom (clone-rope buffer)))
+               )))
+               (set buffer SNil)
+            )) ())
+         ))
+         ( \s_u8 (
+            (if (non-zero buffer) (tail(
+               (set ast-tokenized-program (SCons(
+                  (close ast-tokenized-program)
+                  (close (SAtom (clone-rope buffer)))
+               )))
+               (set buffer SNil)
+            )) ())
+         ))
+
+         ( \[_u8 (if (==( in_comment True_u8 )) () (tail(
+            (if (non-zero buffer) (tail(
+               (set ast-tokenized-program (SCons(
+                  (close ast-tokenized-program)
+                  (close (SAtom (clone-rope buffer)))
+               )))
+               (set buffer SNil)
+            )) ())
+            (set parens-counter (+( parens-counter 1_u64 )))
+            (set ast-tokenized-program (SCons(
+               (close ast-tokenized-program)
+               (close (SAtom '\[_s))
+            )))
+         ))))
+         ( \]_u8 (if (==( in_comment True_u8 )) () (tail(
+            (if (non-zero buffer) (tail(
+               (set ast-tokenized-program (SCons(
+                  (close ast-tokenized-program)
+                  (close (SAtom (clone-rope buffer)))
+               )))
+               (set buffer SNil)
+            )) ())
+            (set parens-counter (-( parens-counter 1_u64 )))
+            (set ast-tokenized-program (SCons(
+               (close ast-tokenized-program)
+               (close (SAtom '\]_s))
+            )))
+         ))))
+         ( \`_u8 (if (==( in_comment True_u8 )) () (tail(
+            (if (non-zero buffer) (tail(
+               (set ast-tokenized-program (SCons(
+                  (close ast-tokenized-program)
+                  (close (SAtom (clone-rope buffer)))
+               )))
+               (set buffer SNil)
+            )) ())
+            (set ast-tokenized-program (SCons(
+               (close ast-tokenized-program)
+               (close (SAtom \`_s))
+            )))
+         ))))
+         ( \:_u8 (if (==( in_comment True_u8 )) () (tail(
+            (if (non-zero buffer) (tail(
+               (set ast-tokenized-program (SCons(
+                  (close ast-tokenized-program)
+                  (close (SAtom (clone-rope buffer)))
+               )))
+               (set buffer SNil)
+            )) ())
+            (set ast-tokenized-program (SCons(
+               (close ast-tokenized-program)
+               (close (SAtom '\:_s))
+            )))
+         ))))
+
+         ( c (if (==( in_comment True_u8 )) () (tail(
+            (set buffer (SCons(
+               (close buffer)
+               (close (SAtom (clone-rope c)))
+            )))
+            (if (==( '\l_s (clone-rope buffer) )) (tail(
+               (set ast-tokenized-program (SCons(
+                  (close ast-tokenized-program)
+                  (close (SAtom '\l_s))
+               )))
+               (set buffer SNil)
+            )) ())
+         ))))
       ))
       (set text (tail-string text))
    )))
-   (print ast-tokenized-program)
-   (print '\n_s)
+
+   (if (non-zero buffer) (
+      (set ast-tokenized-program (SCons(
+         (close ast-tokenized-program)
+         (close (SAtom (clone-rope buffer)))
+      )))
+   ) ())
+
+   (if (==( parens-counter 0_u64 )) () (tail(
+      (eprint 'Hanging\sParentheses\sIn\sFile:\s_s)
+      (eprint fp)
+      (eprint '\sCount:\s_s)
+      (print parens-counter)
+      (eprint '\n_s)
+      (exit 1_u64)
+   )))
+
+#   (let r (maybe-deref(reverse-list ast-tokenized-program)))
+#   (set ast-tokenized-program r)
 )) Nil);
 

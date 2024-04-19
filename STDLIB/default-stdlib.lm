@@ -11,13 +11,13 @@ close := λ(: x S). (: (tail(
 )) S[]);
 
 non-zero := λ(: s S). (: (tail(
-   (mov( 1_u64 RAX ))
+   (let r 1_u64)
    (match s (
       ()
-      (SNil (mov( 0_u64 RAX )))
+      (SNil (set r 0_u64))
       (_ ())
    ))
-   (as RAX U64)
+   r
 )) U64);
 
 print := λ(: x S). (: (tail(
@@ -305,6 +305,34 @@ tail-string := λ(: s String). (: (tail(
 )) String);
 
 clone-rope := λ(: s S). (: (tail(
-   (let x 'TODO\sclone-rope_s)
-   x
+   (let r (malloc( 0_u64 )))
+   (clone-rope-impl s )
+   (let rtail (as (malloc( 1_u64 )) U8[]))
+   (mov( 0_u8 0_u64 rtail ))
+   (as r String)
+)) String);
+clone-rope-impl := λ(: s S). (: (match s (
+   ()
+   ( SNil () )
+   ( (SCons( l r )) (tail(
+      (clone-rope-impl (maybe-deref l))
+      (clone-rope-impl (maybe-deref r))
+   )))
+   ( (SAtom a) (tail(
+      (let ci 0_u64)
+      (let c ([]( (as a U8[]) ci )))
+      (while (!=( c 0_u8 )) (
+         (let t (as (malloc( 1_u64 )) U8[]))
+         (mov( c 0_u64 t ))
+         (set ci (+( ci 1_u64 )))
+         (set c ([]( (as a U8[]) ci )))
+      ))
+   )))
+)) Nil);
+
+clone-rope := λ(: s U8). (: (tail(
+   (let x (as (malloc 2_u64) U8[]))
+   (mov( s 0_u64 x ))
+   (mov( 0_u8 1_u64 x ))
+   (as x String)
 )) String);

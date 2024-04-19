@@ -10,6 +10,61 @@ fragment type I64;    size I64 8;    atom suffix I64    _i64;
 fragment type ASCII;  size ASCII 1;  atom suffix ASCII  _c;
 fragment type String; size String 8; atom suffix String _s;
 
+#[] := λ(: l Array<Sized<8>,?>)(: li U64). (: (
+#   (mov( l R15 ))
+#   (mov( r R14 ))
+#   (shl( 3_u64 R14 ))
+#   (add( R14 R15 ))
+#   (mov( R15 0_u64 RAX ))
+#   (as RAX x)
+#) x);
+#[] := λ(: l Array<Sized<4>,?>)(: li U64). (: (
+#   (mov( l R15 ))
+#   (mov( r R14 ))
+#   (shl( 2_u64 R14 ))
+#   (add( R14 R15 ))
+#   (mov( R15 0_u64 RAX ))
+#   (as RAX x)
+#) x);
+#[] := λ(: l Array<Sized<2>,?>)(: li U64). (: (
+#   (mov( l R15 ))
+#   (mov( r R14 ))
+#   (shl( 1_u64 R14 ))
+#   (add( R14 R15 ))
+#   (mov( R15 0_u64 RAX ))
+#   (as RAX x)
+#) x);
+#[] := λ(: l Array<Sized<1>,?>)(: li U64). (: (
+#   (mov( l R15 ))
+#   (mov( r R14 ))
+#   (add( R14 R15 ))
+#   (mov( R15 0_u64 RAX ))
+#   (as RAX x)
+#) x);
+
+fragment [] := λ(: l LocalVariable+Array<x+Sized<1>,?>)(: r LocalVariable+U64). (: (
+   (.program (
+      \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
+      \t 'mov \s (.expression r) \[ '%rbp \] , \s '%r14 \n
+      \t 'add \s '%r14 , \s '%r15 \n
+      \t 'mov \s '0 \[ '%r15 \] , \s '%r15b \n
+   ))
+   (.expression( 'r15b ))
+) x+Reg8);
+
+
+fragment [] := λ(: l LocalVariable+Array<x,?>)(: r GlobalVariable+U64). (: (
+   (.program (
+      \t 'mov \s '$ (.expression l) , \s '%r15 \n
+      \t 'mov \s '$ (.expression r) , \s '%r14 \n
+      \t 'mov \s '0 \[ '%r14 \] , \s '%r14 \n
+      \t 'shl \s '$3 , \s '%r14 \n
+      \t 'add \s '%r14 , \s '%r15 \n
+      \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
+   ))
+   (.expression( 'r15 ))
+) x+Reg64);
+
 fragment [] := λ(: l GlobalVariable+Array<x,?>)(: r GlobalVariable+U64). (: (
    (.program (
       \t 'mov \s '$ (.expression l) , \s '%r15 \n
@@ -77,6 +132,13 @@ fragment > := λ(: l LocalVariable+U64)(: r Constant+U64). (: (
    (as RAX U64)
 )) U64);
 
+- := λ(: l U64)(: r U64). (: (tail(
+   (mov( r R8 ))
+   (mov( l RAX ))
+   (sub( R8 RAX ))
+   (as RAX U64)
+)) U64);
+
 fragment branchtrue := λ(: _ Nil). (: (
    (.expression( 'jmp ))
 ) BranchConditional);
@@ -85,30 +147,28 @@ fragment branchfalse := λ(: _ Nil). (: (
    (.expression( 'jne ))
 ) BranchConditional);
 
-fragment - := λ(: l LocalVariable+U8)(: r Constant+U8). (: (
-   (.program( \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r12b \n \t 'sub \s '$ (.expression r) , \s '%r12b \n ))
-   (.expression( 'r12b ))
-) Reg8+U8);
-fragment - := λ(: l LocalVariable+U16)(: r Constant+U16). (: (
-   (.program( \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r12w \n \t 'sub \s '$ (.expression r) , \s '%r12w \n ))
-   (.expression( 'r12w ))
-) Reg16+U16);
-fragment - := λ(: l LocalVariable+U32)(: r Constant+U32). (: (
-   (.program( \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r12d \n \t 'sub \s '$ (.expression r) , \s '%r12d \n ))
-   (.expression( 'r12d ))
-) Reg32+U32);
-fragment - := λ(: l LocalVariable+U64)(: r Constant+U64). (: (
-   (.program( \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r12 \n \t 'sub \s '$ (.expression r) , \s '%r12 \n ))
-   (.expression( 'r12 ))
-) Reg64+U64);
-fragment - := λ(: l GlobalVariable+U64)(: r Constant+U64). (: (
-   (.program(
-      \t 'mov \s '$ (.expression l) , \s '%r15 \n
-      \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
-      \t 'sub \s '$ (.expression r) , \s '%r15 \n
-   ))
-   (.expression( 'r15 ))
-) Reg64+U64);
+!= := λ(: l U8)(: r U8). (: (tail(
+   (push R14)
+   (push R15)
+   (gensym-label end-true)
+   (gensym-label end-false)
+   (gensym-label end)
+   (mov( l R14B ))
+   (mov( r R15B ))
+   (cmp( R14B R15B ))
+   (je end-false)
+   (jmp end-true)
+   (label end-true)
+   (mov( 1_u64 RAX ))
+   (jmp end)
+   (label end-false)
+   (mov( 0_u64 RAX ))
+   (jmp end)
+   (label end)
+   (pop R15)
+   (pop R14)
+   (as RAX U64)
+)) U64);
 
 == := λ(: l U8)(: r U8). (: (tail(
    (push R14)

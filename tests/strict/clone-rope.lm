@@ -1,0 +1,13 @@
+
+import STDLIB/default-instruction-set.lm;
+import STDLIB/default-primitives.lm;
+import STDLIB/default-rules.lm;
+import STDLIB/default-stdlib.lm;
+
+main := (tail(
+   ()
+   (print (clone-rope (SCons (
+      (close (SAtom (clone-rope 65_u8)))
+      (close (SAtom 'BC_s))
+   ))))
+));
