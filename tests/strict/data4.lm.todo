@@ -1,8 +1,0 @@
-
-type T (Pair( (: x U64) (: y U64) ));
-
-main := (
-   (let p (Pair( 1u64 2u64 )))
-   (print (.x p))
-   (print (.y p))
-);

@@ -7,8 +7,8 @@ import STDLIB/default-rules.lm;
 type LR (Left( U8 , U16 , U32 , U64 )) | (Right( I64 , I64 , I32 , I16 , I8 ));
 
 main := (
-   (let l (Left( 1u8 2u16 3u32 4u64 )))
-   (let r (Right( -4i64 -5i64 -6i32 -7i16 -8i8 )))
+   (let l (Left( 1_u8 2_u16 3_u32 4_u64 )))
+   (let r (Right( -4_i64 -5_i64 -6_i32 -7_i16 -8_i8 )))
    (print (.0 l))
    (print (.1 l))
    (print (.2 l))

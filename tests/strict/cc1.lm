@@ -9,6 +9,6 @@ echo := λ(: x U64). (: (
 ) U64);
 
 main := (
-   (let x (echo 123u64))
+   (let x (echo 123_u64))
    (print x)
 );

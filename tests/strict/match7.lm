@@ -6,7 +6,7 @@ import STDLIB/default-stdlib.lm;
 
 import STRICT/utility.lm;
 
-config-preprocess            := 2u8;
+config-preprocess            := 2_u8;
 
 main := λ(: argc U64)(: argv U8[][]).(tail(
    (print( (==( '--macro_s '--macro_s )) ))
@@ -15,8 +15,8 @@ main := λ(: argc U64)(: argv U8[][]).(tail(
    (print( (==( '--nomacro_s '--nomacro_s )) ))
    (match '--nomacro_s (
       ()
-      ('--macro_s (set config-preprocess 1u8))
-      ('--nomacro_s (set config-preprocess 0u8))
+      ('--macro_s (set config-preprocess 1_u8))
+      ('--nomacro_s (set config-preprocess 0_u8))
    ))
    (print config-preprocess)
 ));

@@ -50,8 +50,7 @@ fragment push := λ(: src GlobalVariable+Sized<size>). (: (
    (.program (
       (\t 'mov \s '$ (.expression src) , \s '%r15 \n)
       (for word-offset in (range( 0 (/( size 8 )) )) (
-         \t 'pushq \s '0 \[ '%r15 \] \n
-         \t 'add \s '$8 , \s '%r15 \n
+         \t 'pushq \s (+( (+( size -8 )) (inv(*( word-offset 8 ))) )) \[ '%r15 \] \n
       ))
       (if-eq size 4 (
          \t 'mov \s '0 \[ '%r15 \] , \s '%r15d \n
@@ -108,6 +107,29 @@ fragment push := λ(: src Reg64+Array<Sized<size>,max>)(: index Literal+Constant
       ))
       (if-eq size 1 (
          \t 'pushq \s (.expression index) \[ '% (.expression src) \] \n
+      ))
+   ))
+) Nil);
+fragment push := λ(: src LocalVariable+Array<Sized<size>,max>)(: index Literal+Constant). (: (
+   (.program (
+      \t 'mov \s (.expression src) \[ '%rbp \] , \s '%r15 \n
+      (for word-offset in (range( 0 (/( size 8 )) )) (
+         \t 'pushq \s (+(
+            (*( (.expression index) size ))
+            (+(
+               (+( size '-8 ))
+               (inv(*( word-offset 8 )))
+            ))
+         )) \[ '%r15 \] \n
+      ))
+      (if-eq size 4 (
+         \t 'pushq \s (+( (.expression src) (*( (.expression index) size )) )) \[ '%r15 \] \n
+      ))
+      (if-eq size 2 (
+         \t 'pushq \s (+( (.expression src) (*( (.expression index) size )) )) \[ '%r15 \] \n
+      ))
+      (if-eq size 1 (
+         \t 'pushq \s (+( (.expression src) (*( (.expression index) size )) )) \[ '%r15 \] \n
       ))
    ))
 ) Nil);

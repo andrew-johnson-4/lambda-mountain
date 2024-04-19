@@ -1,10 +1,11 @@
 
 import STDLIB/default-instruction-set.lm;
 import STDLIB/default-primitives.lm;
-import STDLIB/default-rules.lm;
 import STDLIB/default-stdlib.lm;
+import STDLIB/default-rules.lm;
 
-main := match 1_u64 (
-   ()
-   (x (print x))
-);
+main := (tail(
+   (let x (close SNil))
+   (print (maybe-deref x))
+));
+

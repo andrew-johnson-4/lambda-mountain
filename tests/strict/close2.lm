@@ -4,10 +4,12 @@ import STDLIB/default-primitives.lm;
 import STDLIB/default-stdlib.lm;
 import STDLIB/default-rules.lm;
 
-global-integer := -123_i32;
-
 main := (tail(
-   (print global-integer)
-   (set global-integer 543_i32)
-   (print global-integer)
+   (let x (close SNil))
+   (let y (close SNil))
+   (let z (close (SCons(
+      x
+      y
+   ))))
+   (print (maybe-deref z))
 ));

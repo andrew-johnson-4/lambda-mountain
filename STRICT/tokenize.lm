@@ -1,16 +1,39 @@
 
-type Tokens EOF | (HeadOrder( String , Tokens[] )) | (TailOrder( Tokens[] , String ));
-
 tokenize := λ(: fp String). (: (tail(
    (let text (read-file fp))
+   (let in_comment False_u8)
+   (let buffer SNil)
    (while (head-string text) (tail(
-      (print (as (head-string text) ASCII))
+      (match (head-string text) (
+         ()
+         ( \o_u8 (tail(
+            (if (non-zero buffer) (tail(
+               (set ast-tokenized-program (SCons(
+                  (close ast-tokenized-program)
+                  (close (SAtom (clone-rope buffer)))
+               )))
+               (set buffer SNil)
+            )) ())
+            (set in_comment True_u8)
+         )))
+         (\n_u8 (tail(
+            (if (non-zero buffer) (tail(
+               (set ast-tokenized-program (SCons(
+                  (close ast-tokenized-program)
+                  (close (SAtom (clone-rope buffer)))
+               )))
+               (set buffer SNil)
+            )) ())
+            (set in_comment False_u8)
+         )))
+         ( c (tail(
+            ()
+            ()
+         )))
+      ))
       (set text (tail-string text))
    )))
+   (print ast-tokenized-program)
+   (print '\n_s)
 )) Nil);
 
-close := λ(: x Tokens). (: (tail(
-   (mov( (malloc(sizeof Tokens)) R8 ))
-   (mov( x 0u64 (as R8 Tokens[]) ))
-   (as R8 Tokens[])
-)) Tokens[]);

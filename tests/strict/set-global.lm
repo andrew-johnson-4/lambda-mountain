@@ -4,13 +4,13 @@ import STDLIB/default-primitives.lm;
 import STDLIB/default-rules.lm;
 import STDLIB/default-stdlib.lm;
 
-global-x := 123u64;
+global-x := 123_u64;
 type CompileMode ModeTokenize | ModeParse | ModeTypecheck | ModeCompile;
 config-mode              := (: ModeCompile CompileMode);
 
 main := (tail(
    (print global-x)
-   (set global-x 456u64)
+   (set global-x 456_u64)
    (print global-x)
    (set config-mode ModeParse)
 ));
