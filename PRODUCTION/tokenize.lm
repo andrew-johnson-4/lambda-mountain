@@ -104,6 +104,7 @@ tokenize := λtext . (tail(
    (if parens-counter (
       (fail (Hanging Parens In File currently-tokenizing-file))
    ) ())
+   (debug-memory-usage 'tokenize)
    (reverse-list program)
 ));
 

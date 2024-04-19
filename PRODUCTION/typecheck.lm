@@ -26,6 +26,7 @@ typecheck := λprogram . (tail(
       (typecheck-infer-prog program)
    )))
    (typecheck-assert-complete program)
+   (debug-memory-usage 'typecheck)
    program
 ));
 

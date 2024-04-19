@@ -72,6 +72,7 @@ parse-program := λtoks . (tail(
          )))
       )
    ))
+   (debug-memory-usage 'parse)
 ));
 
 parse-macro-yield-uuids := λids program . (match program (

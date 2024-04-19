@@ -4,6 +4,7 @@ preprocess-index-types := ();
 preprocess := λprogram . (tail(
    (preprocess-index-typedefs program)
    (set program (preprocess-apply-macros program))
+   (debug-memory-usage 'preprocess)
    program
 ));
 
