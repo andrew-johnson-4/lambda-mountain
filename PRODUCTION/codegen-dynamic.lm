@@ -173,6 +173,42 @@ compile-expr-dynamic := λctx e offset used . (tail(
             offset
          ))
       )))
+      ( (App( (Variable 'is) (App( l r )) )) (tail(
+         (set e1 (compile-expr(ctx l offset Used)))
+         (set e2 (compile-expr(ctx r offset Used)))
+         (local is-yield-end)
+         (set is-yield-end (uuid()))
+         (local is-yield-false)
+         (set is-yield-false (uuid()))
+         (set prog (
+            (expr::get-prog e1)
+            \t 'push \s '%r12 \n
+            \t 'push \s '%r13 \n
+            (expr::get-prog e2)
+            \t 'pop \s '%r15 \n
+            \t 'pop \s '%r14 \n
+            \t 'cmp \s '%r14, \s '%r12 \n
+            \t 'jne \s is-yield-false \n
+            \t 'cmp \s '%r15, \s '%r13 \n
+            \t 'jne \s is-yield-false \n
+            \t 'mov \s '$true, \s '%r12 \n
+            \t 'mov \s '$0, \s '%r13 \n
+            \t 'jmp \s is-yield-end  \n
+            is-yield-false ':        \n
+            \t 'mov \s '$0 , \s '%r12 \n
+            \t 'mov \s '$0 , \s '%r13 \n
+            is-yield-end ':          \n
+         ))
+         (Expr(
+            ((expr::get-frame e1) (expr::get-frame e2))
+            prog
+            ((expr::get-unframe e1) (expr::get-unframe e2))
+            ((expr::get-text e1) (expr::get-text e2))
+            ((expr::get-data e1) (expr::get-data e2))
+            ctx
+            offset
+         ))
+      )))
       ( (App( (App( (App( (Variable 'if) c )) t )) f )) (tail(
          (set e1 (compile-expr(ctx c offset Used)))
          (set e2 (compile-expr( (expr::get-context e1) t (expr::get-offset e1) Used )))

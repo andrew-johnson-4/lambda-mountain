@@ -47,9 +47,11 @@ fn compile_production() {
    rm("production");
    rm("production.s");
    rm("production.o");
-   let exit = Command::new("./bootstrap")
+   let exit = Command::new("timeout")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
+                      .arg("15")
+                      .arg("./bootstrap")
                       .arg("-o")
                       .arg("production.s")
                       .arg("PRODUCTION/cli.lm")

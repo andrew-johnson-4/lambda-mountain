@@ -227,23 +227,6 @@ stdlib-functions := λ . (
    '__clone_rope_end:                     \n
    \t 'ret                                \n
 
-   'is:                                   \n
-   \t 'cmp \s '$0, \s '%r12               \n
-   \t 'je \s 'return_nil                  \n
-   \t 'cmp \s '$0, \s '%r13               \n
-   \t 'je \s 'return_nil                  \n
-   \t 'mov \s '0 \[ '%r12 \] , \s '%r8    \n
-   \t 'mov \s '0 \[ '%r13 \] , \s '%r9    \n
-   \t 'cmp \s '%r8, \s '%r9               \n
-   \t 'jne \s 'return_nil                 \n
-   \t 'mov \s '8 \[ '%r12 \] , \s '%r8    \n
-   \t 'mov \s '8 \[ '%r13 \] , \s '%r9    \n
-   \t 'cmp \s '%r8, \s '%r9               \n
-   \t 'jne \s 'return_nil                 \n
-   \t 'mov \s '$true, \s '%r12            \n
-   \t 'mov \s '$0, \s '%r13               \n
-   \t 'ret                                \n
-
    'is_neg:                               \n
    \t 'cmp \s '$0, \s '%r12               \n
    \t 'jge \s 'return_nil                 \n
