@@ -134,7 +134,7 @@ tokenize := λ(: fp String). (: (tail(
       (exit 1_u64)
    )))
 
-   (let r (maybe-deref(reverse-list ast-tokenized-program)))
+   (let r (maybe-deref(list-tail-order-to-head-order ast-tokenized-program)))
    (set ast-tokenized-program r)
 )) Nil);
 
