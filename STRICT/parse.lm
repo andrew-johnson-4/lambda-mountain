@@ -1,5 +1,6 @@
 
 parse := λ. (: (tail(
-   ()
-   ()
+   (print 'Parse:\s_s)
+   (print ast-tokenized-program)
+   (print '\n_s)
 )) Nil);

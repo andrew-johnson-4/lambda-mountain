@@ -117,6 +117,22 @@ tokenize := λ(: fp String). (: (tail(
       ))
       (set text (tail-string text))
    )))
+
+   (if (non-zero buffer) (
+      (set ast-tokenized-program (SCons(
+         (close ast-tokenized-program)
+         (close (SAtom (clone-rope buffer)))
+      )))
+   ) ())
+
+   (if (==( parens-counter 0_u64 )) () (tail(
+      (eprint 'Hanging\sParentheses\sIn\sFile:\s_s)
+      (eprint fp)
+      (eprint '\n_s)
+      (exit 1_u64)
+   )))
+
+   (set ast-tokenized-program (reverse-list ast-tokenized-program))
    (print ast-tokenized-program)
    (print '\n_s)
 )) Nil);
