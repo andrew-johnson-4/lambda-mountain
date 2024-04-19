@@ -1,6 +1,93 @@
 
+type ParsePartial (PME( AST , S )); # term, remainder
+
+close := λ(: x ParsePartial). (: (tail(
+   (mov( (malloc(sizeof ParsePartial)) R8 ))
+   (mov( x 0_u64 (as R8 ParsePartial[]) ))
+   (as R8 ParsePartial[])
+)) ParsePartial[]);
+
 parse := λ. (: (tail(
+   (let tokens ast-tokenized-program)
+   (let part1 (close(PME( ASTNil SNil ))))
+   (let part2 (close(PME( ASTNil SNil ))))
+
+   (while (non-zero tokens) (match tokens (
+         ()
+#         ((\: remainder) (
+#            (set toks remainder)
+#         ))
+#         (('macro remainder) (tail(
+#            (set pme (parse-one-expression remainder))
+#            (set remainder (tail pme))
+#            (set pme2 (parse-one-expression remainder))
+#            (set parse-macros (parse-macros (Macro( (head pme) (head pme2) )) ))
+#            (set toks (tail pme2))
+#         )))
+#         (('fragment ('type remainder)) (tail(
+#            (set pme (parse-one-expression remainder))
+#            (set remainder (tail pme))
+#            (set pme2 (parse-many-expressions remainder))
+#            (set parse-parsed-program ( parse-parsed-program (Type( (head pme) (head pme2) )) ))
+#            (set typecheck-fragment-types ( typecheck-fragment-types
+#               (typecheck-infer-type-compound (head pme))
+#            ))
+#            (set toks (tail pme2))
+#         )))
+#         (('fragment remainder) (tail(
+#            (set pme (parse-one-expression remainder))
+#            (set remainder (tail pme))
+#            (parse-expect( := remainder ))
+#            (set remainder (tail remainder))
+#            (set pme2 (parse-many-expressions remainder))
+#            (set parse-parsed-program ( parse-parsed-program (Fragment( (head pme) (head pme2) )) ))
+#            (set toks (tail pme2))
+#         )))
+#         (('type remainder) (tail(
+#            (set pme (parse-one-expression remainder))
+#            (set remainder (tail pme))
+#            (set pme2 (parse-many-expressions remainder))
+#            (set parse-parsed-program ( parse-parsed-program (Type( (head pme) (head pme2) )) ))
+#            (set toks (tail pme2))
+#         )))
+#         (('atom ('suffix (atype (suffix remainder)))) (tail(
+#            (set parse-suffix (parse-suffix (atype suffix)))
+#            (set toks remainder)
+#         )))
+#         (('size remainder) (tail(
+#            (set pme (parse-one-expression remainder))
+#            (set remainder (tail pme))
+#            (set pme2 (parse-one-expression remainder))
+#            (typecheck-set-size( (typecheck-infer-type-compound (head pme)) (typecheck-infer-type-compound (head pme2)) ))
+#            (set toks (tail pme2))
+#         )))
+#         (('import (relative-path remainder)) (tail(
+#            (parse-program (tokenize-file relative-path))
+#            (set toks remainder)
+#         )))
+#         ((key (:= remainder)) (tail(
+#            (set pme (parse-many-expressions remainder))
+#            (set parse-parsed-program ( parse-parsed-program (Global ( key (head pme))) ))
+#            (set toks (tail pme))
+#         )))
+         (remainder (tail(
+            (match (parse-many-expressions remainder) (
+               ()
+               ( (PME( term remainder )) (tail(
+                  (set tokens remainder)
+                  ()
+#            (set parse-parsed-program (parse-parsed-program (GExpr (head pme)) ))
+               )))
+            ))
+            (set tokens (.1 (as (maybe-deref part1) PME)) )
+         )))
+   )))
+
    (print 'Parse:\s_s)
-   (print ast-tokenized-program)
    (print '\n_s)
 )) Nil);
+
+parse-many-expressions := λ(: tokens S). (: (tail(
+   ()
+   (close (PME( ASTNil SNil )) )
+)) ParsePartial[]);
