@@ -193,16 +193,16 @@ fragment mov := λ(: src Reg64)(: index Literal+Constant)(: dst LocalVariable+Si
 fragment mov := λ(: src Literal+Constant)(: index Literal+Constant)(: dst LocalVariable+Sized<size>). (: (
    (.program (
       (if-eq size 8 (
-         \t 'movq \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n
+         \t 'movq \s '$ (.expression src) , \s (+( (.expression dst) (*( index size )) )) \[ '%rbp \] \n
       ))
       (if-eq size 4 (
-         \t 'movl \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n
+         \t 'movl \s '$ (.expression src) , \s (+( (.expression dst) (*( index size )) )) \[ '%rbp \] \n
       ))
       (if-eq size 2 (
-         \t 'movw \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n
+         \t 'movw \s '$ (.expression src) , \s (+( (.expression dst) (*( index size )) )) \[ '%rbp \] \n
       ))
       (if-eq size 1 (
-         \t 'movb \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n
+         \t 'movb \s '$ (.expression src) , \s (+( (.expression dst) (*( index size )) )) \[ '%rbp \] \n
       ))
    ))
 ) Nil);

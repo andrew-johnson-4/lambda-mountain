@@ -5,6 +5,6 @@ import STDLIB/default-rules.lm;
 import STDLIB/default-stdlib.lm;
 
 main := (print (clone-rope (SCons (
-   (close (SAtom 'A_s))
+   (close (SAtom (clone-rope 65_u8)))
    (close (SAtom 'BC_s))
 ))));
