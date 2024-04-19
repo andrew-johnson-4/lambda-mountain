@@ -153,26 +153,6 @@ stdlib-functions := λ . (
    \t 'mov \s '$0, \s '%r13               \n
    \t 'ret                                \n
 
-   'eq:                                   \n
-   \t 'cmp \s '$0, \s '%r12               \n
-   \t 'je \s 'return_nil                  \n
-   \t 'cmp \s '$0, \s '%r13               \n
-   \t 'je \s 'return_nil                  \n
-   \t 'mov \s '8 \[ '%r12 \] , \s '%rax   \n
-   \t 'cmp \s '$0, \s '%rax               \n
-   \t 'jne \s 'return_nil                 \n
-   \t 'mov \s '8 \[ '%r13 \] , \s '%rbx   \n
-   \t 'cmp \s '$0, \s '%rbx               \n
-   \t 'jne \s 'return_nil                 \n
-   \t 'mov \s '0 \[ '%r12 \] , \s '%rax   \n
-   \t 'cmp \s '$0, \s '%rax               \n
-   \t 'je \s 'return_nil                  \n
-   \t 'mov \s '0 \[ '%r13 \] , \s '%rbx   \n
-   \t 'cmp \s '$0, \s '%rbx               \n
-   \t 'je \s 'return_nil                  \n
-   \t 'call \s 'streq                     \n
-   \t 'ret                                \n
-
    'return_nil:                           \n
    \t 'mov \s '$0, \s '%r12               \n
    \t 'mov \s '$0, \s '%r13               \n
