@@ -308,3 +308,8 @@ clone-rope := λ(: s S). (: (tail(
    (let x 'TODO\sclone-rope_s)
    x
 )) String);
+
+clone-rope := λ(: s U8). (: (tail(
+   (let x 'TODO\sclone-rope-c_s)
+   x
+)) String);
