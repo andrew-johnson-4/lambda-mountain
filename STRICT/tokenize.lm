@@ -16,7 +16,7 @@ tokenize := λ(: fp String). (: (tail(
             )) ())
             (set in_comment True_u8)
          )))
-         (\n_u8 (tail(
+         ( \n_u8 (tail(
             (if (non-zero buffer) (tail(
                (set ast-tokenized-program (SCons(
                   (close ast-tokenized-program)
@@ -26,6 +26,24 @@ tokenize := λ(: fp String). (: (tail(
             )) ())
             (set in_comment False_u8)
          )))
+         ( \t_u8 (
+            (if (non-zero buffer) (tail(
+               (set ast-tokenized-program (SCons(
+                  (close ast-tokenized-program)
+                  (close (SAtom (clone-rope buffer)))
+               )))
+               (set buffer SNil)
+            )) ())
+         ))
+         ( \s_u8 (
+            (if (non-zero buffer) (tail(
+               (set ast-tokenized-program (SCons(
+                  (close ast-tokenized-program)
+                  (close (SAtom (clone-rope buffer)))
+               )))
+               (set buffer SNil)
+            )) ())
+         ))
          ( c (tail(
             ()
             ()
