@@ -8,6 +8,28 @@ label-case := λk . (match k (
    (a (label-case-atom a))
 ));
 
+debug-memory-usage-cons := ();
+debug-memory-usage-atom := ();
+debug-memory-usage := λ at . (if config-perf (tail(
+   (if debug-memory-usage-cons () (
+      (set debug-memory-usage-cons (show-cons-tail()))
+   ))
+   (if debug-memory-usage-atom () (
+      (set debug-memory-usage-atom (show-atom-tail()))
+   ))
+   (print-s 'CountMemory:)
+   (print-s at)
+   (print-s '\n)
+#   (print-s 'ConsCount:)
+#   (print-s (i2s( (s2i 1) )))
+#   (print-s (i2s( (add( (show-cons-tail()) (inv debug-memory-usage-cons) )) )))
+#   (print-s '\n)
+#   (print-s 'AtomCount:)
+#   (print-s (i2s( (add( (show-atom-tail()) (inv debug-memory-usage-atom) )) )))
+#   (print-s '\n)
+   ()
+)) ());
+
 deep-eq := λl r . match (l r) (
    ()
    ( (() ()) True )

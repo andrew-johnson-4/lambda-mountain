@@ -20,6 +20,7 @@ import PRODUCTION/data.lm;
 
 # Static Globals
 
+config-perf                              := ();
 config-debug                             := ();
 config-nomacro                           := ();
 config-nostd                             := ();
@@ -29,10 +30,6 @@ cli-config                               := ();
 # Cli Entry Point
 
 main := (
-   (print-s 'ConsTail:)
-   (print-s (i2s( show-cons-tail () )))
-   (print-s 'AtomTail:)
-   (print-s (i2s( show-atom-tail () )))
    (local inputs)
    (local args)
 
@@ -76,6 +73,10 @@ main := (
          (set config-debug True)
          (set args remainder)
       ))
+      ( ('--perf remainder) (
+         (set config-perf True)
+         (set args remainder)
+      ))
       ( ('--nomacro remainder) (
          (set config-nomacro True)
          (set args remainder)
@@ -92,6 +93,8 @@ main := (
          fail (UnexpectionCommand u)
       ))
    )))
+
+   (debug-memory-usage 'main)
 
    (while inputs (match mode (
       ()
