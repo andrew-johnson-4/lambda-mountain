@@ -100,13 +100,13 @@ fragment push := λ(: src Reg64+Array<Sized<size>,max>)(: index Literal+Constant
          )) \[ '% (.expression src) \] \n
       ))
       (if-eq size 4 (
-         \t 'pushq \s (.expression index) \[ '% (.expression src) \] \n
+         \t 'pushq \s (*( (.expression index) size )) \[ '% (.expression src) \] \n
       ))
       (if-eq size 2 (
-         \t 'pushq \s (.expression index) \[ '% (.expression src) \] \n
+         \t 'pushq \s (*( (.expression index) size )) \[ '% (.expression src) \] \n
       ))
       (if-eq size 1 (
-         \t 'pushq \s (.expression index) \[ '% (.expression src) \] \n
+         \t 'pushq \s (*( (.expression index) size )) \[ '% (.expression src) \] \n
       ))
    ))
 ) Nil);
@@ -143,29 +143,31 @@ fragment pop := λ(: src LocalVariable+Sized<size>). (: (
 fragment mov := λ(: src LocalVariable+Sized<size>)(: index Literal+Constant)(: dst Reg64+x[]). (: (
    (.program (
       (\t 'mov \s '% (.expression dst) , \s '%r14 \n)
+      (\t 'add \s '$ (*( index size )) , \s '%r14 \n)
       (for word-offset in (range( 0 (/( size 8 )) )) (
          \t 'movq \s (+( (.expression src) (*( word-offset 8 )) )) \[ '%rbp \] , \s '%r15 \n
          \t 'movq \s '%r15 , \s (*( word-offset 8 )) \[ '%r14 \] \n
       ))
    ))
 ) Nil);
-fragment mov := λ(: src LocalVariable+Sized<size>)(: index Literal+Constant)(: dst LocalVariable+Sized<size>). (: (
+fragment mov := λ(: src LocalVariable+Sized<size>)(: index Literal+Constant)(: dst LocalVariable+Array<Sized<size>,?>). (: (
    (.program (
+      \t 'mov \s (.expression dst) \[ '%rbp \] , \s '%r14 \n
       (for word-offset in (range( 0 (/( size 8 )) )) (
          \t 'mov \s (+( (+( (*( word-offset 8 )) (.expression src) )) (*( index size )) )) \[ '%rbp \] , '%r15 \n
-         \t 'mov \s '%r15 , \s (+( (+( (.expression dst) (*( word-offset 8 )) )) (*( index size )) )) \[ '%rbp \] \n
+         \t 'mov \s '%r15 , \s (+( (*( word-offset 8 )) (*( index size )) )) \[ '%r14 \] \n
       ))
       (if-eq size 4 (
          \t 'mov \s (+( (.expression src) (*( index size )) )) \[ '%rbp \] , '%r15d \n
-         \t 'mov \s '%r15d , \s (+( (.expression dst) (*( index size )) )) \[ '%rbp \] \n
+         \t 'mov \s '%r15d , \s (*( index size )) \[ '%r14 \] \n
       ))
       (if-eq size 2 (
          \t 'mov \s (+( (.expression src) (*( index size )) )) \[ '%rbp \] , '%r15w \n
-         \t 'mov \s '%r15w , \s (+( (.expression dst) (*( index size )) )) \[ '%rbp \] \n
+         \t 'mov \s '%r15w , \s (*( index size )) \[ '%r14 \] \n
       ))
       (if-eq size 1 (
          \t 'mov \s (+( (.expression src) (*( index size )) )) \[ '%rbp \] , '%r15b \n
-         \t 'mov \s '%r15b , \s (+( (.expression dst) (*( index size )) )) \[ '%rbp \] \n
+         \t 'mov \s '%r15b , \s (*( index size )) \[ '%r14 \] \n
       ))
    ))
 ) Nil);
@@ -190,7 +192,7 @@ fragment mov := λ(: src Reg64)(: index Literal+Constant)(: dst LocalVariable+Si
       ))
    ))
 ) Nil);
-fragment mov := λ(: src Literal+Constant)(: index Literal+Constant)(: dst LocalVariable+Sized<size>). (: (
+fragment mov := λ(: src Literal+Constant)(: index Literal+Constant)(: dst LocalVariable+Array<Sized<size>,?>). (: (
    (.program (
       (if-eq size 8 (
          \t 'movq \s '$ (.expression src) , \s (+( (.expression dst) (*( index size )) )) \[ '%rbp \] \n
