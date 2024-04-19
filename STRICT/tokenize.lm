@@ -60,6 +60,20 @@ tokenize := λ(: fp String). (: (tail(
                (close (SAtom '\[_s))
             )))
          ))))
+         ( \]_u8 (if (==( in_comment True_u8 )) () (tail(
+            (if (non-zero buffer) (tail(
+               (set ast-tokenized-program (SCons(
+                  (close ast-tokenized-program)
+                  (close (SAtom (clone-rope buffer)))
+               )))
+               (set buffer SNil)
+            )) ())
+            (set parens-counter (-( parens-counter 1_u64 )))
+            (set ast-tokenized-program (SCons(
+               (close ast-tokenized-program)
+               (close (SAtom '\]_s))
+            )))
+         ))))
 
          ( c (tail(
             ()

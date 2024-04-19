@@ -323,5 +323,10 @@ fragment add := λ(: src Reg16)(: dst Reg16). (: (.program( \t 'add \s '% (.expr
 fragment add := λ(: src Reg32)(: dst Reg32). (: (.program( \t 'add \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
 fragment add := λ(: src Reg64)(: dst Reg64). (: (.program( \t 'add \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
 
+fragment sub := λ(: src Reg8)(: dst Reg8). (: (.program( \t 'sub \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment sub := λ(: src Reg16)(: dst Reg16). (: (.program( \t 'sub \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment sub := λ(: src Reg32)(: dst Reg32). (: (.program( \t 'sub \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment sub := λ(: src Reg64)(: dst Reg64). (: (.program( \t 'sub \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
+
 fragment push := λ(: l Reg64). (: (.program( \t 'push \s '% (.expression l) \n )) Nil);
 fragment pop := λ(: l Reg64). (: (.program( \t 'pop \s '% (.expression l) \n )) Nil);
