@@ -29,6 +29,10 @@ cli-config                               := ();
 # Cli Entry Point
 
 main := (
+   (print-s 'ConsTail:)
+   (print-s (i2s( show-cons-tail () )))
+   (print-s 'AtomTail:)
+   (print-s (i2s( show-atom-tail () )))
    (local inputs)
    (local args)
 

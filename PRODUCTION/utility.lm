@@ -21,6 +21,8 @@ deep-eq := λl r . match (l r) (
 
 is-builtin := λf . (match f (
    ()
+   ('show-cons-tail True)
+   ('show-atom-tail True)
    ('is True)
    ('is-atom True)
    ('is-cons True)
