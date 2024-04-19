@@ -128,12 +128,13 @@ tokenize := λ(: fp String). (: (tail(
    (if (==( parens-counter 0_u64 )) () (tail(
       (eprint 'Hanging\sParentheses\sIn\sFile:\s_s)
       (eprint fp)
+      (eprint '\sCount:\s_s)
+      (print parens-counter)
       (eprint '\n_s)
       (exit 1_u64)
    )))
 
-   (set ast-tokenized-program (reverse-list ast-tokenized-program))
-   (print ast-tokenized-program)
-   (print '\n_s)
+#   (let r (maybe-deref(reverse-list ast-tokenized-program)))
+#   (set ast-tokenized-program r)
 )) Nil);
 
