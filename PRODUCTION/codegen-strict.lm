@@ -592,10 +592,7 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
             (App( (Variable '.program) (
                DontChain
                \t 'mov \s '%rbp , \s '%r15 \n
-               \t 'sub \s '$ (Variable 'dst) , \s '%r15 \n
-               (if (eq( case-padding 0 )) () (
-                  \t 'sub \s '$ case-padding , \s '%r15 \n
-               ))
+               \t 'add \s '$ (Variable 'dst) , \s '%r15 \n
                \t 'movq \s '$ case-number , \s 0 \[ '%r15  \] \n
             )))
          ))))

@@ -1,5 +1,15 @@
 
-reverse-list := λ(: s S). (: (tail(
-   ()
-   (close s)
+list-tail-order-to-head-order := λ(: s S). (: (tail(
+   (let new (close SNil))
+   (while (non-zero s) (match s (
+      ()
+      ( (SCons( l r )) (tail(
+         (set new (close(SCons(
+            (close r)
+            new
+         ))))
+         (set s l)
+      )))
+   )))
+   new
 )) S[]);
