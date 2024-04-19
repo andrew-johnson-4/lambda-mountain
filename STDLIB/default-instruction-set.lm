@@ -112,23 +112,24 @@ fragment push := λ(: src Reg64+Array<Sized<size>,max>)(: index Literal+Constant
 ) Nil);
 fragment push := λ(: src LocalVariable+Array<Sized<size>,max>)(: index Literal+Constant). (: (
    (.program (
+      \t 'mov \s (.expression src) \[ '%rbp \] , \s '%r15 \n
       (for word-offset in (range( 0 (/( size 8 )) )) (
-         \t 'pushq \s (+( (.expression src) (+(
+         \t 'pushq \s (+(
             (*( (.expression index) size ))
             (+(
                (+( size '-8 ))
                (inv(*( word-offset 8 )))
             ))
-         )) )) \[ '%rbp \] \n
+         )) \[ '%r15 \] \n
       ))
       (if-eq size 4 (
-         \t 'pushq \s (+( (.expression src) (*( (.expression index) size )) )) \[ '%rbp \] \n
+         \t 'pushq \s (+( (.expression src) (*( (.expression index) size )) )) \[ '%r15 \] \n
       ))
       (if-eq size 2 (
-         \t 'pushq \s (+( (.expression src) (*( (.expression index) size )) )) \[ '%rbp \] \n
+         \t 'pushq \s (+( (.expression src) (*( (.expression index) size )) )) \[ '%r15 \] \n
       ))
       (if-eq size 1 (
-         \t 'pushq \s (+( (.expression src) (*( (.expression index) size )) )) \[ '%rbp \] \n
+         \t 'pushq \s (+( (.expression src) (*( (.expression index) size )) )) \[ '%r15 \] \n
       ))
    ))
 ) Nil);

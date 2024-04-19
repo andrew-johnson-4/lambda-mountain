@@ -91,6 +91,7 @@ compile-expr-strict := λctx e offset used . (tail(
                   ( (Array( x '? )) (
                      (if (typecheck-unify-implies( x '? )) () (
                         (set deref True)
+                        (set new-size (typecheck-sizeof x))
                      ))
                   ))
                ))
