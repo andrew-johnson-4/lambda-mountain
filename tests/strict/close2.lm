@@ -1,0 +1,15 @@
+
+import STDLIB/default-instruction-set.lm;
+import STDLIB/default-primitives.lm;
+import STDLIB/default-stdlib.lm;
+import STDLIB/default-rules.lm;
+
+main := (tail(
+   (let x (close SNil))
+   (let y (close SNil))
+   (let z (close (SCons(
+      x
+      y
+   ))))
+   (print (maybe-deref z))
+));

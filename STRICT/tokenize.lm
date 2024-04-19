@@ -36,11 +36,11 @@ tokenize := λ(: fp String). (: (tail(
    (print 'Tokens:\s_s)
    (let x (close SNil))
    (print (maybe-deref x))
-#   (let y (close SNil))
-#   (print (maybe-deref y))
+   (let y (close SNil))
+   (print (maybe-deref y))
    (set ast-tokenized-program (SCons(
-      (close SNil)
-      (close SNil)
+      x
+      y
    )))
    (print ast-tokenized-program)
    (print '\n_s)

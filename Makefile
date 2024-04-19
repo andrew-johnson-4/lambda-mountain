@@ -1,6 +1,6 @@
 
 nostd: prod
-	./production --nostd -o tmp.s tests/strict/close1.lm
+	./production --nostd -o tmp.s tests/strict/close3.lm
 #	./production --nostd -o tmp.s STRICT/cli.lm
 	as -o tmp.o tmp.s
 	ld -o tmp tmp.o
