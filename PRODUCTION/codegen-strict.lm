@@ -537,7 +537,9 @@ strict-codegen-type-case := λ ctx base-type type-body case-number . (tail(
 
          #define field accessors
          (local field-offset)
+         (set field-offset 0)
          (local field-number)
+         (set ctx (strict-bind-accessors( ctx base-type U64 0 () )))
          (while args-type (match args-type (
             ()
             ( (Cons( lt rt )) (tail(
