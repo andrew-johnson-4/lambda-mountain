@@ -18,9 +18,13 @@ part := λ. (: (tail(
 )) ParsePartial[]);
 
 main := (
-   (let x (part()))
-   (match x (
+   (match (close(PME( 1_u64 2_u64 ))) (
       ()
       ( (PME( l r )) (print l) )
+   ))
+   (print '\n_s)
+   (match (part()) (
+      ()
+      ( (PME( l r )) (print r) )
    ))
 );

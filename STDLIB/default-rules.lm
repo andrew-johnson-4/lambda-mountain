@@ -3,7 +3,7 @@ macro ( ('let x y) )
       ( (λ x . ()) y );
 
 macro ('match t ps) (tail(
-   (let (uuid term) t)
+   (let (uuid term) (maybe-deref t))
    (match-pats( (uuid term) ps (fail PatternMatchFailure_s) ))
 ));
 
