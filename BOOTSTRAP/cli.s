@@ -78466,6 +78466,27 @@ uuid_0000000000000566:
 	mov %r13, -80(%rbp)
 	mov -72(%rbp),%r12
 	mov -80(%rbp),%r13
+	push %r12
+	push %r13
+	mov -40(%rbp),%r12
+	mov -48(%rbp),%r13
+	call __typecheck_lookup_C___
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	pop %r13
+	pop %r12
+	push %r8
+	call uuid_0000000000000003
+	mov %r12, 0(%r8)
+	mov %r13, 8(%r8)
+	mov %r8, %r12
+	pop %r13
+	call __expr_C__C_set_type_C___
+	mov %r12, -72(%rbp)
+	mov %r13, -80(%rbp)
+	mov -72(%rbp),%r12
+	mov -80(%rbp),%r13
 	mov $1, %r14
 uuid_0000000000000567:
 	cmp $0, %r14

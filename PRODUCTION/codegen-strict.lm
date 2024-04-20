@@ -346,6 +346,7 @@ compile-expr-strict := λctx e offset used . (tail(
                      ()
                      ( (Variable fname) (tail(
                         (set e1 (stack-call( ctx fname r offset )))
+                        (set e1 (expr::set-type( e1 (typecheck-lookup e) )))
                         e1
                      )))
                      ( (Literal tag) (tail(
