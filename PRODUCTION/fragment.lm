@@ -210,7 +210,6 @@ fragment-apply-context := λctx fragment-rhs e . (tail(
    (assert-typeof( 'fragment-apply-context::e e StrictExpr ))
    (local return)
    (set ctx (fragment-gensym-labels( ctx fragment-rhs )))
-   (print-s (ApplyContext fragment-rhs))(print-s \n)
    (set return (match fragment-rhs (
       ()
       ( Nil (
