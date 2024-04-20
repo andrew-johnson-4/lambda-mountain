@@ -71,15 +71,15 @@ parse := λ. (: (tail(
 #            (set toks (tail pme))
 #         )))
          (remainder (tail(
+            ()
             (match (parse-many-expressions remainder) (
                ()
                ( (PME( term remainder )) (tail(
                   (set tokens remainder)
                   ()
-#            (set parse-parsed-program (parse-parsed-program (GExpr (head pme)) ))
+#                 (set parse-parsed-program (parse-parsed-program (GExpr (head pme)) ))
                )))
             ))
-            (set tokens (.1 (as (maybe-deref part1) PME)) )
          )))
    )))
 
