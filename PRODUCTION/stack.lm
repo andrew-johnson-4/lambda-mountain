@@ -118,7 +118,9 @@ stack-call-push-arg := λ ctx e-arg offset args-size . (tail(
    (set et (typecheck-lookup e-arg))
    (local e-sz)
    (set e-sz (typecheck-sizeof et))
-   (set e-sz (max( 8 e-sz )))
+   (if (eq( e-sz '0 )) () (
+      (set e-sz (max( 8 e-sz )))
+   ))
    (set args-size (i2s(add( (s2i args-size) (s2i e-sz) ))) )
    (local new-offset)
    (set new-offset(  (i2s(add( (s2i offset) (inv(s2i( e-sz ))) ))) ))

@@ -715,7 +715,6 @@ strict-bind-accessors := λ ctx base-type src-type field-offset field-number . (
          (And( base-type LocalVariable ))
          return-type
       ))))
-      (print-s (DefineAccessor field-offset (i2s field-number) base-type))(print-s \n)
       (set ctx (context::bind( ctx (clone-rope( '. (i2s field-number) )) body )))
    )) (tail(
       (set body (Fragment (Lambda(
@@ -728,7 +727,6 @@ strict-bind-accessors := λ ctx base-type src-type field-offset field-number . (
          (And( base-type LocalVariable ))
          LocalVariable
       ))))
-      (print-s (DefineAccessor field-offset (i2s field-number) base-type))(print-s \n)
       (set ctx (context::bind( ctx (clone-rope( '. (i2s field-number) )) body )))
    )))
    ctx
