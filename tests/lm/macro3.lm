@@ -1,4 +1,0 @@
-
-macro ('mac ()) M;
-
-main := print-s (mac ());
