@@ -253,6 +253,16 @@ preprocess-apply-macros := λprogram . (match program (
    ( u u )
 ));
 
+preprocess-macro-args := λ ctx kvs . (match kvs (
+   ()
+   ( (KV( k v )) (KV(k (substitute-macro-body( ctx v )) )) )
+   ( (k v) (
+      (preprocess-macro-args( ctx k ))
+      (preprocess-macro-args( ctx v ))
+   ))
+   ( u u )
+));
+
 preprocess-apply-maybe := λ program . (tail(
    (local macros)
    (set macros parse-macros)
