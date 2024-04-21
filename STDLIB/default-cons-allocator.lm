@@ -20,6 +20,7 @@ allocate-cons := λ . (tail(
          \t 'mov \s '$ assemble_cons_tail , \s '%r12 \n
          \t 'mov \s '0 \[ '%r12 \] , \s '%r12        \n
          \t 'mov \s '$0 , \s '%r13                   \n
+         \t 'ret                                     \n
          allocate-cons-function-id ':                \n
          \t 'push \s '%r9                            \n
          \t 'push \s '%rax                           \n

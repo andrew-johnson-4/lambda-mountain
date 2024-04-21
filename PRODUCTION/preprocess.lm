@@ -264,6 +264,7 @@ preprocess-macro-args := λ ctx kvs . (match kvs (
 ));
 
 preprocess-apply-maybe := λ program . (tail(
+   (debug-memory-usage 'preprocess-apply-maybe)
    (local macros)
    (set macros parse-macros)
    (while macros (match macros (

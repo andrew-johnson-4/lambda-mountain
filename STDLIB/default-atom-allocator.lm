@@ -43,6 +43,7 @@ allocate-atom-grow := λ size . (tail(
          \t 'mov \s '$ assemble_atom_tail , \s '%r12 \n
          \t 'mov \s '0 \[ '%r12 \] , \s '%r12        \n
          \t 'mov \s '$0 , \s '%r13                   \n
+         \t 'ret                                     \n
          allocate-atom-grow-fid ':                   \n
          \t 'push \s '%r10                           \n
          \t 'push \s '%rax                           \n
