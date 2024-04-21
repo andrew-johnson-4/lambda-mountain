@@ -190,6 +190,14 @@ preprocess-restructure-type := λtt . (match tt (
    ))
 ));
 
+is-macro-head := λname . (match name (
+   ()
+   ('let True)
+   ('match True)
+   ('match-pats True)
+   ('match-pats-arm True)
+));
+
 preprocess-apply-macros := λprogram . (match program (
    ()
    ( (App( (App( (Literal :) mvar )) (Literal mtype) )) (
@@ -244,8 +252,15 @@ preprocess-apply-macros := λprogram . (match program (
       )))
       program
    )))
-   ( (App( (Variable _) _ )) (preprocess-apply-maybe program) )
-   ( (App( (App( (Variable _) _ )) _ )) (preprocess-apply-maybe program) )
+   ( (App( (Variable vn) vt )) (
+      if (is-macro-head vn) (preprocess-apply-maybe program)
+         (App( (Variable vn) (preprocess-apply-macros vt) ))
+   ))
+   ( (App( (App( (Variable vn) vt1 )) vt2 )) (
+      if (is-macro-head vn) (preprocess-apply-maybe program)
+         (App( (App( (Variable vn) (preprocess-apply-macros vt1) ))
+                                   (preprocess-apply-macros vt2) ))
+   ))
    ( (l r) (
       (preprocess-apply-macros l)
       (preprocess-apply-macros r)
@@ -264,7 +279,6 @@ preprocess-macro-args := λ ctx kvs . (match kvs (
 ));
 
 preprocess-apply-maybe := λ program . (tail(
-   (debug-memory-usage 'preprocess-apply-maybe)
    (local macros)
    (set macros parse-macros)
    (while macros (match macros (
@@ -279,8 +293,10 @@ preprocess-apply-maybe := λ program . (tail(
                program
             )))
             (set program (preprocess-apply-macros program))
-         )) ())
-         (set macros ms)
+            (set macros ())
+         )) (
+            (set macros ms)
+         ))
       )))
       ( u (fail (UnrecognizedMacro u)))
    )))
