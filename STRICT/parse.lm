@@ -75,19 +75,113 @@ parse := λ. (: (tail(
             (match (parse-many-expressions remainder) (
                ()
                ( (PME( term remainder )) (tail(
+                  (set ast-parsed-program (Seq(
+                     (close ast-parsed-program)
+                     (close term)
+                  )))
                   (set tokens remainder)
-                  ()
-#                 (set parse-parsed-program (parse-parsed-program (GExpr (head pme)) ))
                )))
             ))
          )))
    )))
 
-   (print 'Parse:\s_s)
-   (print '\n_s)
+   (print 'Parse:\n_s)
+   (print ast-parsed-program)
+   (print '\:\n_s)
 )) Nil);
 
 parse-many-expressions := λ(: tokens S). (: (tail(
-   ()
-   (close (PME( ASTNil SNil )) )
+   (let expr ASTEOF)
+   (let remainder SNil)
+   (while (non-zero tokens) (match tokens (
+      ()
+      ( (SCons( (SAtom '\:_s) tl )) (tail(
+         (set remainder tokens)
+         (set tokens SNil)
+      )))
+      ( (SCons( (SAtom '\]_s) tl )) (tail(
+         (if (non-zero expr) () (set expr ASTNil))
+         (set remainder tokens)
+         (set tokens SNil)
+      )))
+      ( _ (tail(
+         (let pme (parse-one-expression tokens))
+         (match pme (
+            ()
+            ( (PME( pe pr )) (tail(
+               (if (non-zero expr) (
+                  (set expr (App(
+                     (close expr)
+                     (close pe)
+                  )))
+               ) (
+                  (set expr pe)
+               ))
+               (set tokens pr)
+            )))
+         ))
+      )))
+   ))) 
+   (close( (PME( expr remainder )) ))
 )) ParsePartial[]);
+
+parse-one-expression := λ(: tokens S). (: (tail(
+   (let expr ASTEOF)
+   (let remainder SNil)
+   (match tokens (
+      ()
+      ( SNil (tail(
+         (set expr ASTNil)
+         (set remainder SNil)
+      )))
+      ( (SCons( (SAtom '\l_s) r )) (
+         (match (parse-lambda r) (
+            ()
+            ( (PME( le lr )) (tail(
+               (set expr le)
+               (set remainder lr)
+            )))
+         ))
+      ))
+      ( (SCons( (SAtom '\]_s) r )) (
+         (parse-unexpect( 'Unexpected\sClosing\sParentheses_s tokens ))
+      ))
+#      ( (SCons( (SAtom '\[_s) r )) (
+#         (match (parse-many-expressions r) (
+#            ()
+#            ( (PME( me mr )) (tail(
+#               (set expr me)
+#               (set remainder mr)
+#            )))
+#         ))
+#      ))
+#      ( (SCons( (SAtom '\`_s)
+#                (SCons( (SAtom i) r ))
+#        )) (tail(
+#         (set expr (Lit i))
+#         (set remainder r)
+#      )))
+#      ( (SCons( (SAtom a) r )) (tail(
+#         ()
+#         (if (is-variable a) (
+#            (set expr (Var a))
+#         ) (
+#            (set expr (Lit a))
+#         ))
+#         (set remainder r)
+#      )))
+   ))
+   (close( (PME( expr remainder )) ))
+)) ParsePartial[]);
+
+parse-lambda := λ(: tokens S). (: (tail(
+   (let expr ASTEOF)
+   (let remainder SNil)
+   (close( (PME( expr remainder )) ))
+)) ParsePartial[]);
+
+parse-unexpect := λ(: msg String)(: tokens S). (: (tail(
+   ()
+   (fail msg)
+)) Nil);
+

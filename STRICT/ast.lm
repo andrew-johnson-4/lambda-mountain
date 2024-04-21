@@ -1,39 +1,60 @@
 
-type AST ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] )) | (Asc( AST[] , Type ));
+
+type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] )) | (Asc( AST[] , Type[] )) | (Seq( AST[] , AST[] ));
 
 ast-tokenized-program := (: SNil S);
-ast-parsed-program := (: ASTNil AST);
+ast-parsed-program := (: ASTEOF AST);
+
+non-zero := λ(: t AST). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( ASTEOF (set r 0_u64))
+   ))
+   r
+)) U64);
+
+close := λ(: x AST). (: (tail(
+   (mov( (malloc(sizeof AST)) R8 ))
+   (mov( x 0_u64 (as R8 AST[]) ))
+   (as R8 AST[])
+)) AST[]);
 
 print := λ(: t AST). (: (tail(
-#   (match x (
-#      ()
-#      ( ASTNil (print '\[\]_s) )
-#      ( (Var a) (print a) )
-#      ( (Lit a) (tail( (print '\`_s) (print a) )))
-#      ( (App( l r )) (tail(
-#         (print '\[_s)
-#         (print l)
-#         (print '\s_s)
-#         (print r)
-#         (print '\]_s)
-#      )))
-#      ( (Abs( lhs rhs )) (tail(
-#         (print '\[_s)
-#         (print '\l_s) (print a)
-#         (print lhs)
-#         (print '._s) (print a)
-#         (print rhs)
-#         (print '\]_s)
-#      )))
-#      ( (Asc( t tt )) (tail(
-#         (print '\[_s)
-#         (print '\s:\s_s)
-#         (print t)
-#         (print '\s_s)
-#         (print tt)
-#         (print '\]_s)
-#      )))
-#   ))
-   ()
+   (match t (
+      ()
+      ( ASTEOF (print 'EOF_s) )
+      ( ASTNil (print '\[\]_s) )
+      ( (Var a) (print a) )
+      ( (Lit a) (tail( (print '\`_s) (print a) )))
+      ( (App( l r )) (tail(
+         (print '\[_s)
+         (print l)
+         (print '\s_s)
+         (print r)
+         (print '\]_s)
+      )))
+      ( (Abs( lhs rhs )) (tail(
+         (print '\[_s)
+         (print '\l_s) (print lhs)
+         (print lhs)
+         (print '._s) (print rhs)
+         (print rhs)
+         (print '\]_s)
+      )))
+      ( (Asc( at att )) (tail(
+         (print '\[_s)
+         (print '\s:\s_s)
+         (print at)
+         (print '\s_s)
+         (print att)
+         (print '\]_s)
+      )))
+      ( (Seq( l r )) (tail(
+         (print l)
+         (print '\:\n_s)
+         (print r)
+      )))
+   ))
    ()
 )) Nil);
