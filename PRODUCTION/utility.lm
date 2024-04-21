@@ -21,10 +21,10 @@ debug-memory-usage := λ at . (if config-perf (tail(
    (print-s at)
    (print-s '\n)
    (print-s 'ConsCount:)
-   (print-s (i2s( (add( (show-cons-tail()) (inv(s2i debug-memory-usage-cons)) )) )))
+   (print-s (dump-i( (show-cons-tail()) )))
    (print-s '\n)
    (print-s 'AtomCount:)
-   (print-s (i2s( (add( (show-atom-tail()) (inv(s2i debug-memory-usage-atom)) )) )))
+   (print-s (dump-i( (show-atom-tail()) )))
    (print-s '\n)
    ()
 )) ());

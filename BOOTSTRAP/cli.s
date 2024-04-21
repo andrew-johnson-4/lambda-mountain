@@ -159171,26 +159171,7 @@ uuid_000000000000111f:
 	mov $0,%r12
 	mov $0,%r13
 	call show_cons_tail
-	push %r12
-	push %r13
-	mov $debug_memory_usage_cons, %r15
-	mov 0(%r15), %r12
-	mov 8(%r15), %r13
-	call __s2i_C___
-	call inv
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	pop %r13
-	pop %r12
-	push %r8
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	mov %r8, %r12
-	pop %r13
-	call add
-	call __i2s_C___
+	call dump_i
 	call print_s
 	mov $uuid_0000000000000007, %r12
 	mov $0, %r13
@@ -159201,26 +159182,7 @@ uuid_000000000000111f:
 	mov $0,%r12
 	mov $0,%r13
 	call show_atom_tail
-	push %r12
-	push %r13
-	mov $debug_memory_usage_atom, %r15
-	mov 0(%r15), %r12
-	mov 8(%r15), %r13
-	call __s2i_C___
-	call inv
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	pop %r13
-	pop %r12
-	push %r8
-	call uuid_0000000000000003
-	mov %r12, 0(%r8)
-	mov %r13, 8(%r8)
-	mov %r8, %r12
-	pop %r13
-	call add
-	call __i2s_C___
+	call dump_i
 	call print_s
 	mov $uuid_0000000000000007, %r12
 	mov $0, %r13
