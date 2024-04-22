@@ -31,7 +31,10 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( x1 )) )) (
    (tail(
       (let (uuid v) term)
       (if (==( (.0( (uuid v) )) l ))
-          (branchtrue())
+          (if (match-pats-arm( (.1( (as (uuid v) lt) )) x1 ))
+              (branchtrue())
+              (branchfalse())
+          )
           (branchfalse())
       )
    ))
@@ -41,15 +44,15 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( x2 x1 )) )) (
    (tail(
       (let (uuid v) term)
       (if (==( (.0( (uuid v) )) l ))
-          (branchtrue())
+          (if (match-pats-arm( (.1( (as (uuid v) lt) )) x1 ))
+              (if (match-pats-arm( (.2( (as (uuid v) lt) )) x2 ))
+                  (branchtrue())
+                  (branchfalse())
+              )
+              (branchfalse())
+          )
           (branchfalse())
       )
    ))
-##   (let (uuid v) (maybe-deref term))
-##   (if (==( (.0( (uuid v) )) l )) (
-##      (match-pats-arm( (maybe-deref(.1( (as (uuid v) lt) ))) x1 (
-##         (match-pats-arm( (maybe-deref(.2( (as (uuid v) lt) ))) x2 rhs remainder ))
-##      ) remainder )) 
-##   ) remainder)
 );
 
