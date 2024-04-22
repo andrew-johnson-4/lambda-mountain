@@ -722,26 +722,29 @@ typecheck-infer-expr := λctx e used . (tail(
       ()
       ( () () )
       ( (GExpr ge) (
-         (typecheck-infer-expr( ctx ge Unused ))
+         if (typecheck-lookup ge) ()
+            (typecheck-infer-expr( ctx ge Unused ))
       ))
       ( (Type( l ds )) ())
       ( (Global( 'main (Lambda( lhs rhs )) )) (
-         (typecheck-infer-expr( ctx rhs Used ))
+         if (typecheck-lookup rhs) ()
+            (typecheck-infer-expr( ctx rhs Used ))
       ))
       ( (Global( gln gle )) (
          (typecheck-ascript( gle (typecheck-lookup e) ))
          (typecheck-infer-expr( ctx gle Used ))
       ))
       ( (Fragment( fln fle )) (
-         (match fle (
-            ()
-            ( (Lambda( lhs (App( (App( (Literal ':) rhs )) rhst )) )) (
-               (set rhst (typecheck-infer-type-compound rhst))
-               (local flt)
-               (set flt ('->( (typecheck-typeof-lhs lhs) rhst )) )
-               (typecheck-ascript( fle flt ))
+         if (typecheck-lookup fle) ()
+            (match fle (
+               ()
+               ( (Lambda( lhs (App( (App( (Literal ':) rhs )) rhst )) )) (
+                  (set rhst (typecheck-infer-type-compound rhst))
+                  (local flt)
+                  (set flt ('->( (typecheck-typeof-lhs lhs) rhst )) )
+                  (typecheck-ascript( fle flt ))
+               ))
             ))
-         ))
       ))
       ( Nil (
          (typecheck-ascript( e Nil ))
@@ -754,6 +757,7 @@ typecheck-infer-expr := λctx e used . (tail(
          (typecheck-ascript( e Nil ))
       ))
       ( (App( (App( (Literal ':) (Literal maybe-tag) )) tt )) (
+         # cannot cache (?)
          (local ctype)
          (local mtype)
          (set mtype (typecheck-infer-type-compound tt))
@@ -765,19 +769,23 @@ typecheck-infer-expr := λctx e used . (tail(
          (typecheck-ascript( e (And( Constant mtype )) ))
       ))
       ( (App( (App( (Literal ':) asc )) tt )) (
-         (typecheck-infer-expr( ctx asc used ))
-         (typecheck-ascript( asc (typecheck-infer-type-compound tt) ))
-         (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
+         if (typecheck-lookup e) () (
+            (typecheck-infer-expr( ctx asc used ))
+            (typecheck-ascript( asc (typecheck-infer-type-compound tt) ))
+            (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
+         )
       ))
       ( (App( (App( (Variable 'as) asc )) tt )) (
-         (typecheck-infer-expr( ctx asc used ))
-         (local asc_t)
-         (set asc_t (typecheck-lookup asc))
-         (if asc_t (
-            (typecheck-ascript( e
-               (typecheck-as( asc_t (typecheck-infer-type-compound tt) ))
-            ))
-         ) ())
+         (
+            (typecheck-infer-expr( ctx asc used ))
+            (local asc_t)
+            (set asc_t (typecheck-lookup asc))
+            (if asc_t (
+               (typecheck-ascript( e
+                  (typecheck-as( asc_t (typecheck-infer-type-compound tt) ))
+               ))
+            ) ())
+         )
       ))
       ( (Literal lit) (
          (local ctype)
