@@ -805,6 +805,9 @@ typecheck-infer-expr := λctx e used . (tail(
       ( (App( (Variable 'sizeof) (Literal tt) )) (tail(
          (typecheck-ascript( e (parse-type( U64+Literal+Constant )) ))
       )))
+      ( (App( (Variable 'block-scope) t )) (
+         (typecheck-infer-expr( ctx t used ))
+      ))
       ( (App( (App( (App( (Variable 'if) cond )) t )) f )) (tail(
          (set ctx (typecheck-infer-expr( ctx cond Used )))
          (set ctx (typecheck-infer-expr( ctx t Used )))
