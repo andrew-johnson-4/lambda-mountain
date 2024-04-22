@@ -9,18 +9,19 @@ main := (tail(
       ()
       (1_u64 (print 1_u64))
       (2_u64 (print 2_u64))
-      (3_u64 (print 3_u64))
+#      (3_u64 (print 3_u64))
    ))
-   (match 2_u64 (
-      ()
-      (1_u64 (print 1_u64))
-      (2_u64 (print 2_u64))
-      (3_u64 (print 3_u64))
-   ))
-   (match 3_u64 (
-      ()
-      (1_u64 (print 1_u64))
-      (2_u64 (print 2_u64))
-      (3_u64 (print 3_u64))
-   ))
+   ()
+#   (match 2_u64 (
+#      ()
+#      (1_u64 (print 1_u64))
+#      (2_u64 (print 2_u64))
+#      (3_u64 (print 3_u64))
+#   ))
+#   (match 3_u64 (
+#      ()
+#      (1_u64 (print 1_u64))
+#      (2_u64 (print 2_u64))
+#      (3_u64 (print 3_u64))
+#   ))
 ));

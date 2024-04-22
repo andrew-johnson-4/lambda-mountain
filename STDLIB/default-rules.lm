@@ -8,7 +8,7 @@ macro ('match t ps) (tail(
 ));
 
 macro ('match-pats( term () )) (
-   if (branchfalse()) (fail 'PatternMatchFailure_s)
+   if (branchfalse()) ()
 );
 
 macro ('match-pats( term (ps (lhs rhs)) )) (
@@ -30,29 +30,33 @@ macro ('match-pats-arm( term (:Tag: l lt) )) (
 macro ('match-pats-arm( term ((:Tag: l lt) ( x1 )) )) (
    (tail(
       (let (uuid v) term)
+      (let (uuid m) 0_u8)
       (if (==( (.0( (uuid v) )) l ))
           (if (match-pats-arm( (.1( (as (uuid v) lt) )) x1 ))
-              (branchtrue())
-              (branchfalse())
+              (set (uuid m) 1_u8)
+              ()
           )
-          (branchfalse())
+          ()
       )
+      (==( (uuid m) 1_u8 ))
    ))
 );
 
 macro ('match-pats-arm( term ((:Tag: l lt) ( x2 x1 )) )) (
    (tail(
       (let (uuid v) term)
+      (let (uuid m) 0_u8)
       (if (==( (.0( (uuid v) )) l ))
           (if (match-pats-arm( (.1( (as (uuid v) lt) )) x1 ))
               (if (match-pats-arm( (.2( (as (uuid v) lt) )) x2 ))
-                  (branchtrue())
-                  (branchfalse())
+                  (set (uuid m) 1_u8)
+                  ()
               )
-              (branchfalse())
+              ()
           )
-          (branchfalse())
+          ()
       )
+      (==( (uuid m) 1_u8 ))
    ))
 );
 

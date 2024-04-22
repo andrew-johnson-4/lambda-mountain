@@ -1,6 +1,6 @@
 
 nostd: prod
-	./production --nostd --perf -o tmp.s tests/strict/head-string.lm
+	./production --nostd --perf -o tmp.s tests/strict/match2.lm
 	as -o tmp.o tmp.s
 	ld -o tmp tmp.o
 	./tmp STRICT/cli.lm && echo $?
