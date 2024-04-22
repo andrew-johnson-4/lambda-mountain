@@ -158,7 +158,7 @@ compile-expr-strict := λctx e offset used . (tail(
             )))
             ( (App( (App( (App( (Variable 'if) cond )) t )) f )) (tail(
                (local rsp-offset)
-               (set rsp-offset (i2s(add( (s2i offset) (s2i '8) ))))
+               (set rsp-offset (i2s(add( (s2i offset) (s2i '-8) ))))
                (set e1 (compile-expr-strict( ctx cond rsp-offset Used )))
                (set e2 (compile-expr-strict( (expr::get-context e1) t (expr::get-offset e1) Used )))
                (set e3 (compile-expr-strict( (expr::get-context e1) f (expr::get-offset e2) Used )))
@@ -183,7 +183,7 @@ compile-expr-strict := λctx e offset used . (tail(
                (local label-end)
                (set label-end (uuid()))
                (set e4 (expr::set-prog( e4 (
-                  \t 'push \s '%rsp \n
+                  \t 'push \s '%rbp \n
                   (expr::get-frame e1)
                   (expr::get-prog e1)
                   \t (expr::get-expr e1) \s label-true-branch \n
@@ -195,8 +195,8 @@ compile-expr-strict := λctx e offset used . (tail(
                   (expr::get-frame e2)
                   (expr::get-prog e2)
                   label-end ': \n
-                  \t 'mov \s '- rsp-offset \[ '%rbp \] , \s '%rsp \n
-                  \t 'sub \s '$ (i2s(add( (s2i end-offset) (inv(s2i offset)) ))) , \s '%rsp \n
+                  \t 'mov \s rsp-offset \[ '%rbp \] , \s '%rsp \n
+                  \t 'add \s '$ end-offset , \s '%rsp \n
                ))))
                (set e4 (expr::set-context( e4 (expr::get-context e2) )))
                (set e4 (expr::set-offset( e4 end-offset )))
