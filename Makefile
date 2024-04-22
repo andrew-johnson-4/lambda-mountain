@@ -5,6 +5,9 @@ nostd: prod
 	ld -o tmp tmp.o
 	./tmp STRICT/cli.lm && echo $?
 
+strict: prod
+	./production --nostd --perf -o tmp.s STRICT/cli.lm
+
 test: prod
 	./production -o production1.s PRODUCTION/cli.lm
 	as -o production1.o production1.s

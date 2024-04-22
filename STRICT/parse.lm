@@ -161,14 +161,14 @@ parse-one-expression := λ(: tokens S). (: (tail(
          (set expr (Lit i))
          (set remainder r)
       )))
-      ( (SCons( (SAtom a) r )) (tail(
-         (if (is-variable a) (
-            (set expr (Var a))
-         ) (
-            (set expr (Lit a))
-         ))
-         (set remainder r)
-      )))
+#      ( (SCons( (SAtom a) r )) (tail(
+#         (if (is-variable a) (
+#            (set expr (Var a))
+#         ) (
+#            (set expr (Lit a))
+#         ))
+#         (set remainder r)
+#      )))
    ))
    (close( (PME( expr remainder )) ))
 )) ParsePartial[]);

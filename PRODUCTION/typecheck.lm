@@ -722,12 +722,12 @@ typecheck-infer-expr := λctx e used . (tail(
       ()
       ( () () )
       ( (GExpr ge) (
-         if (typecheck-lookup ge) ()
+         if () ()
             (typecheck-infer-expr( ctx ge Unused ))
       ))
       ( (Type( l ds )) ())
       ( (Global( 'main (Lambda( lhs rhs )) )) (
-         if (typecheck-lookup rhs) ()
+         if () ()
             (typecheck-infer-expr( ctx rhs Used ))
       ))
       ( (Global( gln gle )) (
@@ -735,7 +735,7 @@ typecheck-infer-expr := λctx e used . (tail(
          (typecheck-infer-expr( ctx gle Used ))
       ))
       ( (Fragment( fln fle )) (
-         if (typecheck-lookup fle) ()
+         if () ()
             (match fle (
                ()
                ( (Lambda( lhs (App( (App( (Literal ':) rhs )) rhst )) )) (
@@ -769,14 +769,14 @@ typecheck-infer-expr := λctx e used . (tail(
          (typecheck-ascript( e (And( Constant mtype )) ))
       ))
       ( (App( (App( (Literal ':) asc )) tt )) (
-         if (typecheck-lookup e) () (
+         if () () (
             (typecheck-infer-expr( ctx asc used ))
             (typecheck-ascript( asc (typecheck-infer-type-compound tt) ))
             (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
          )
       ))
       ( (App( (App( (Variable 'as) asc )) tt )) (
-         (
+         if () () (
             (typecheck-infer-expr( ctx asc used ))
             (local asc_t)
             (set asc_t (typecheck-lookup asc))
