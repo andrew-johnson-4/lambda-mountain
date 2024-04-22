@@ -13,3 +13,8 @@ list-tail-order-to-head-order := λ(: s S). (: (tail(
    )))
    new
 )) S[]);
+
+is-variable := λ(: s String). (: (tail(
+   ()
+   1_u64
+)) U64);

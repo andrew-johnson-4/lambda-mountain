@@ -1,9 +1,12 @@
 
 nostd: prod
-	./production --nostd --perf -o tmp.s tests/strict/data2.lm
+	./production --nostd --perf -o tmp.s tests/strict/match1.lm
 	as -o tmp.o tmp.s
 	ld -o tmp tmp.o
 	./tmp STRICT/cli.lm && echo $?
+
+strict: prod
+	./production --nostd --perf -o tmp.s STRICT/cli.lm
 
 test: prod
 	./production -o production1.s PRODUCTION/cli.lm
