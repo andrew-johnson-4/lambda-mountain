@@ -13,34 +13,29 @@ macro ('match-pats( term () )) (
 );
 
 macro ('match-pats( term (ps (lhs rhs)) )) (
-   (match-pats-arm( term lhs rhs ))
+   if (match-pats-arm( term lhs )) rhs
 );
 
 macro ('match-pats-arm( term (:Variable: v) rhs )) (
-   if (tail( (let v (maybe-deref term)) (branchtrue()) ))
-      rhs
+   (tail( (let v (maybe-deref term)) (branchtrue()) ))
 );
 
 macro ('match-pats-arm( term (:Literal: l) rhs )) (
-   if (tail( (let (uuid v) (maybe-deref term)) (==( (uuid v) l )) ))
-      rhs
+   (tail( (let (uuid v) (maybe-deref term)) (==( (uuid v) l )) ))
 );
 
 macro ('match-pats-arm( term (:Tag: l lt) rhs )) (
-   if (tail( (let (uuid v) (maybe-deref term)) (==( (.0( (uuid v) )) l )) ))
-      rhs
+   (tail( (let (uuid v) (maybe-deref term)) (==( (.0( (uuid v) )) l )) ))
 );
 
 macro ('match-pats-arm( term ((:Tag: l lt) ( x1 )) rhs )) (
-   if (branchfalse())
-      rhs
+   (branchfalse())
 ##   (if (==( (.0( (maybe-deref term) )) l ))
 ##      (match-pats-arm( (.1( (as (maybe-deref term) lt) )) x1 rhs remainder )) 
 );
 
 macro ('match-pats-arm( term ((:Tag: l lt) ( x2 x1 )) rhs )) (
-   if (branchfalse())
-      rhs
+   (branchfalse())
 ##   (let (uuid v) (maybe-deref term))
 ##   (if (==( (.0( (uuid v) )) l )) (
 ##      (match-pats-arm( (maybe-deref(.1( (as (uuid v) lt) ))) x1 (
