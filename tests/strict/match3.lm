@@ -7,20 +7,20 @@ import STDLIB/default-stdlib.lm;
 main := (tail(
    (match 'a_s (
       ()
-      ('a_s (print a_s))
-      ('b_s (print b_s))
-      ('c_s (print c_s))
+      ('a_s (print 'a_s))
+      ('b_s (print 'b_s))
+      ('c_s (print 'c_s))
    ))
    (match 'b_s (
       ()
-      ('a_s (print a_s))
-      ('b_s (print b_s))
-      ('c_s (print c_s))
+      ('a_s (print 'a_s))
+      ('b_s (print 'b_s))
+      ('c_s (print 'c_s))
    ))
    (match 'c_s (
       ()
-      ('a_s (print a_s))
-      ('b_s (print b_s))
-      ('c_s (print c_s))
+      ('a_s (print 'a_s))
+      ('b_s (print 'b_s))
+      ('c_s (print 'c_s))
    ))
 ));
