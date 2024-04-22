@@ -161,7 +161,7 @@ compile-expr-strict := λctx e offset used . (tail(
                (set rsp-offset (i2s(add( (s2i offset) (s2i '-8) ))))
                (set e1 (compile-expr-strict( ctx cond rsp-offset Used )))
                (set e2 (compile-expr-strict( (expr::get-context e1) t (expr::get-offset e1) Used )))
-               (set e3 (compile-expr-strict( (expr::get-context e1) f (expr::get-offset e2) Used )))
+               (set e3 (compile-expr-strict( (expr::get-context e1) f (expr::get-offset e1) Used )))
                (match (expr::get-type e1) (
                   ()
                   (BranchConditional ())
