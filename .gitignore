@@ -17,6 +17,7 @@ bin/lm_raw
 production
 production.s
 production.o
+strict.s
 tmp.s
 tmp
 unit
@@ -26,3 +27,5 @@ unit.s
 benchmarks/*.s
 benchmarks/*.o
 *.exe
+*.txt
+strict

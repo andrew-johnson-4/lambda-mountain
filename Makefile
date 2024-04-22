@@ -6,12 +6,17 @@ nostd: prod
 	./tmp STRICT/cli.lm && echo $?
 
 strict: prod
-	./production --nostd --perf -o tmp.s STRICT/cli.lm
+	./production --nostd -o strict.s STRICT/cli.lm
+	as -o strict.o strict.s
+	ld -o strict   strict.o
+
+tokenize: prod strict
+	./production --tokenize STRICT/cli.lm > production-tokenize.txt
+	./strict --tokenize STRICT/cli.lm > strict-tokenize.txt
+	diff production-tokenize.txt strict-tokenize.txt
 
 test: prod
 	./production -o production1.s PRODUCTION/cli.lm
-	as -o production1.o production1.s
-	ld -o production1   production1.o
 	./production1 -o production2.s PRODUCTION/cli.lm
 	as -o production2.o production2.s
 	ld -o production2   production2.o
