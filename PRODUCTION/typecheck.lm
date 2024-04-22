@@ -24,6 +24,7 @@ typecheck := λprogram . (tail(
    (while typecheck-types-have-changed (tail(
       (set typecheck-types-have-changed ())
       (typecheck-infer-prog program)
+      (debug-memory-usage 'typecheck-iter)
    )))
    (typecheck-assert-complete program)
    (debug-memory-usage 'typecheck)
@@ -718,6 +719,7 @@ typecheck-annotate-accessors := λ base-type tag fields-type . (tail(
 ));
 
 typecheck-infer-expr := λctx e used . (tail(
+   (debug-memory-usage 'typecheck-infer-expr)
    (match e (
       ()
       ( () () )
