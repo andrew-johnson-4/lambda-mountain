@@ -114,10 +114,10 @@ parse-many-expressions := λ(: tokens S). (: (tail(
    (while (non-zero tokens) (
       (match tokens (
          ()
-#         ( (SCons( (SAtom '\:_s) tl )) (tail(
-#            (set remainder tokens)
-#            (set tokens SNil)
-#         )))
+         ( (SCons( (SAtom '\:_s) tl )) (tail(
+            (set remainder tokens)
+            (set tokens SNil)
+         )))
          ( (SCons( (SAtom '\]_s) tl )) (tail(
             (if (non-zero expr) () (set expr ASTNil))
             (set remainder tl)
