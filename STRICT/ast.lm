@@ -67,7 +67,7 @@ print := λ(: t AST). (: (tail(
 serialize-ast := λ(: t AST). (: (tail(
    (match t (
       ()
-      ( ASTEOF (print '\[\]_s) )
+      ( ASTEOF () )
       ( ASTNil (print '\[\]_s) )
       ( (Var a) (tail(
          (print '\[Variable\s_s)
@@ -106,6 +106,10 @@ serialize-ast := λ(: t AST). (: (tail(
          (print '\s_s)
          (serialize-ast rhs)
          (print '\]\]_s)
+      )))
+      ( (Seq( ASTEOF r )) (tail(
+         (serialize-ast r)
+         (print '\n_s)
       )))
       ( (Seq( l r )) (tail(
          (serialize-ast l)
