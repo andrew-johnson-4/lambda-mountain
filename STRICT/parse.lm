@@ -23,9 +23,9 @@ parse := λ. (: (tail(
    (while (non-zero tokens) (
       (match tokens (
          ()
-#         ( (SCons( (SAtom \:_s) remainder )) (
-#            (set tokens remainder)
-#         ))
+         ( (SCons( (SAtom \:_s) remainder )) (
+            (set tokens remainder)
+         ))
 #         ( (SCons( (SAtom 'macro_s) remainder )) (
 #            (match (parse-one-expression remainder) (
 #               ()
@@ -118,11 +118,11 @@ parse-many-expressions := λ(: tokens S). (: (tail(
 #            (set remainder tokens)
 #            (set tokens SNil)
 #         )))
-#         ( (SCons( (SAtom '\]_s) tl )) (tail(
-#            (if (non-zero expr) () (set expr ASTNil))
-#            (set remainder tokens)
-#            (set tokens SNil)
-#         )))
+         ( (SCons( (SAtom '\]_s) tl )) (tail(
+            (if (non-zero expr) () (set expr ASTNil))
+            (set remainder tl)
+            (set tokens SNil)
+         )))
          ( _ (
             (match (parse-one-expression tokens) (
                ()
@@ -147,48 +147,48 @@ parse-many-expressions := λ(: tokens S). (: (tail(
 parse-one-expression := λ(: tokens S). (: (tail(
    (let expr ASTEOF)
    (let remainder SNil)
-#   (match tokens (
-#      ()
-#      ( SNil (tail(
-#         (set expr ASTNil)
-#         (set remainder SNil)
-#      )))
-#      ( (SCons( (SAtom '\l_s) r )) (
-#         (match (parse-lambda r) (
-#            ()
-#            ( (PME( le lr )) (tail(
-#               (set expr le)
-#               (set remainder lr)
-#            )))
-#         ))
-#      ))
-#      ( (SCons( (SAtom '\]_s) r )) (
-#         (parse-unexpect( 'Unexpected\sClosing\sParentheses_s tokens ))
-#      ))
-#      ( (SCons( (SAtom '\[_s) r )) (
-#         (match (parse-many-expressions r) (
-#            ()
-#            ( (PME( me mr )) (tail(
-#               (set expr me)
-#               (set remainder mr)
-#            )))
-#         ))
-#      ))
-#      ( (SCons( (SAtom '\`_s)
-#                (SCons( (SAtom i) r ))
-#        )) (tail(
-#         (set expr (Lit i))
-#         (set remainder r)
-#      )))
-#      ( (SCons( (SAtom a) r )) (tail(
-#         (if (is-variable a) (
-#            (set expr (Var a))
-#         ) (
-#            (set expr (Lit a))
-#         ))
-#         (set remainder r)
-#      )))
-#   ))
+   (match tokens (
+      ()
+      ( SNil (tail(
+         (set expr ASTNil)
+         (set remainder SNil)
+      )))
+      ( (SCons( (SAtom '\l_s) r )) (
+         (match (parse-lambda r) (
+            ()
+            ( (PME( le lr )) (tail(
+               (set expr le)
+               (set remainder lr)
+            )))
+         ))
+      ))
+      ( (SCons( (SAtom '\]_s) r )) (
+         (parse-unexpect( 'Unexpected\sClosing\sParentheses_s tokens ))
+      ))
+      ( (SCons( (SAtom '\[_s) r )) (
+         (match (parse-many-expressions r) (
+            ()
+            ( (PME( me mr )) (tail(
+               (set expr me)
+               (set remainder mr)
+            )))
+         ))
+      ))
+      ( (SCons( (SAtom '\`_s)
+                (SCons( (SAtom i) r ))
+        )) (tail(
+         (set expr (Lit i))
+         (set remainder r)
+      )))
+      ( (SCons( (SAtom a) r )) (tail(
+         (if (is-variable a) (
+            (set expr (Var a))
+         ) (
+            (set expr (Lit a))
+         ))
+         (set remainder r)
+      )))
+   ))
    (close( (PME( expr remainder )) ))
 )) ParsePartial[]);
 
