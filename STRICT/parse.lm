@@ -196,6 +196,10 @@ parse-unexpect := λ(: msg String)(: tokens S). (: (tail(
    ()
    (fail msg)
 )) Nil);
+parse-expect := λ(: msg String)(: tokens S). (: (tail(
+   ()
+   (fail msg)
+)) Nil);
 
 parse-lambda := λ(: tokens S). (: (tail(
    (let expr ASTEOF)
@@ -214,27 +218,28 @@ parse-lambda := λ(: tokens S). (: (tail(
          (set remainder pr)
       )))
    ))
-#   (while toks (tail(
-#      (set pme (parse-one-expression toks))
-#      (match pme (
-#         ()
-#         (((Literal .) r) (tail(
-#            (set pme (parse-many-expressions r))
-#            (set lmb (lmb (head pme)))
-#            (set remainder (tail pme))
-#            (set toks ())
-#         )))
-#         ((e ()) (tail(
-#            (parse-expect( . toks ))
-#            (set toks ())
-#         )))
-#         ((e r) (tail(
-#            (set lmb (App (lmb e)))
-#            (set toks r)
-#         )))
-#      ))
-#   )))	
-#   (lmb remainder)
+   (while (non-zero tokens) (
+      (match (parse-one-expression tokens) (
+         ()
+         ( (PME( (Lit '._s) r )) (
+            (match (parse-many-expressions r) (
+               ()
+               ( (PME( le lr )) (tail(
+                  (set expr (App( (close expr) (close le) )))
+                  (set remainder lr)
+                  (set tokens SNil)
+               )))
+            ))
+         ))
+         ( (PME( le SNil )) (
+            (parse-expect( 'Expected\sDot\sFor\sLambda\sBody\n_s tokens ))
+         ))
+         ( (PME( le lr )) (tail(
+            (set expr (App( (close expr) (close le) )))
+            (set tokens lr)
+         )))
+      ))
+   ))
    (close( (PME( expr remainder )) ))
 )) ParsePartial[]);
 
