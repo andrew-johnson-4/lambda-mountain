@@ -62,7 +62,7 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( x2 x1 )) )) (
    ))
 );
 
-macro ('match-pats-arm( term ((:Tag: l lt) ( x3 x2 x1 )) )) (
+macro ('match-pats-arm( term ((:Tag: l lt) ( x3 (x2 x1) )) )) (
    (tail(
       (let (uuid v) term)
       (let (uuid m) 0_u8)
