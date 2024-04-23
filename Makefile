@@ -21,6 +21,11 @@ parse: prod strict
 	./strict --parse STRICT/cli.lm > strict-parse.txt
 	diff production-parse.txt strict-parse.txt
 
+preprocess: prod strict
+	./production --parse STRICT/cli.lm > production-preprocess.txt
+	./strict --preprocess STRICT/cli.lm > strict-preprocess.txt
+	diff production-preprocess.txt strict-preprocess.txt
+
 test: prod
 	./production -o production1.s PRODUCTION/cli.lm
 	as -o production1.o production1.s

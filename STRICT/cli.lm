@@ -71,6 +71,7 @@ main := λ(: argc U64)(: argv String[]).(tail(
       ( ModePreprocess (tail(
          (parse())
          (preprocess())
+         (serialize-ast ast-parsed-program)
       )))
       ( ModeTypecheck (tail(
          (parse())
