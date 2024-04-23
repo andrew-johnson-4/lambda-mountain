@@ -1,0 +1,1 @@
+fragment syscall := λ. (: (.program( \t 'syscall \n )) Nil);
