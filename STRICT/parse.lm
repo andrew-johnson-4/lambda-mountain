@@ -1,5 +1,16 @@
 
-type ParsePartial (PME( AST , S )); # term, remainder
+type ParsePartial (PME( AST[] , S[] )); # term, remainder
+
+print := λ(: x ParsePartial). (: (match x (
+   ()
+   ( (PME( e s )) (tail(
+      (print '\[PME\[_s)
+      (print e)
+      (print '\s_s)
+      (print s)
+      (print '\]\]_s)
+   )))
+)) Nil);
 
 close := λ(: x ParsePartial). (: (tail(
    (mov( (malloc(sizeof ParsePartial)) R8 ))
@@ -9,14 +20,14 @@ close := λ(: x ParsePartial). (: (tail(
 
 parse := λ. (: (tail(
    (let tokens ast-tokenized-program)
-   (let part1 (close(PME( ASTNil SNil ))))
-   (let part2 (close(PME( ASTNil SNil ))))
 
-   (while (non-zero tokens) (match tokens (
+   (while (non-zero tokens) (
+      (print 'Tokens:s\s_s)(print tokens)(print '\n_s)
+      (match tokens (
          ()
-#         ((\: remainder) (
-#            (set toks remainder)
-#         ))
+         ( (SCons( (SAtom \:_s) remainder )) (
+            (set tokens remainder)
+         ))
 #         (('macro remainder) (tail(
 #            (set pme (parse-one-expression remainder))
 #            (set remainder (tail pme))
@@ -71,7 +82,7 @@ parse := λ. (: (tail(
 #            (set toks (tail pme))
 #         )))
          (remainder (tail(
-            ()
+            (print 'ParseRemainder\n_s)
             (match (parse-many-expressions remainder) (
                ()
                ( (PME( term remainder )) (tail(
@@ -83,7 +94,8 @@ parse := λ. (: (tail(
                )))
             ))
          )))
-   )))
+      ))
+   ))
 
    (print 'Parse:\n_s)
    (print ast-parsed-program)
@@ -91,41 +103,52 @@ parse := λ. (: (tail(
 )) Nil);
 
 parse-many-expressions := λ(: tokens S). (: (tail(
+   (print 'ParseMany\n_s)
    (let expr ASTEOF)
    (let remainder SNil)
-   (while (non-zero tokens) (match tokens (
-      ()
-      ( (SCons( (SAtom '\:_s) tl )) (tail(
-         (set remainder tokens)
-         (set tokens SNil)
-      )))
-      ( (SCons( (SAtom '\]_s) tl )) (tail(
-         (if (non-zero expr) () (set expr ASTNil))
-         (set remainder tokens)
-         (set tokens SNil)
-      )))
-      ( _ (tail(
-         (let pme (parse-one-expression tokens))
-         (match pme (
-            ()
-            ( (PME( pe pr )) (tail(
-               (if (non-zero expr) (
-                  (set expr (App(
-                     (close expr)
-                     (close pe)
-                  )))
-               ) (
-                  (set expr pe)
-               ))
-               (set tokens pr)
-            )))
-         ))
-      )))
-   ))) 
-   (close( (PME( expr remainder )) ))
+   (while (non-zero tokens) (
+      (print 'ManyTokens:\s_s)(print tokens)(print '\n_s)
+      (match tokens (
+         ()
+         ( (SCons( (SAtom '\:_s) tl )) (tail(
+            (set remainder tokens)
+            (set tokens SNil)
+         )))
+         ( (SCons( (SAtom '\]_s) tl )) (tail(
+            (if (non-zero expr) () (set expr ASTNil))
+            (set remainder tokens)
+            (set tokens SNil)
+         )))
+         ( _ (tail(
+            (print 'ParseManyOne\n_s)
+            (let pme (maybe-deref(parse-one-expression tokens)))
+            (print 'ParsedManyOne\n_s)
+            (print pme)
+            (match pme (
+               ()
+               ( (PME( pe pr )) (tail(
+                  (if (non-zero expr) (
+                     (set expr (App(
+                        (close expr)
+                        (close pe)
+                     )))
+                  ) (
+                     (set expr pe)
+                  ))
+                  (set tokens pr)
+               )))
+            ))
+            (print 'ParseddManyOne\n_s)
+         )))
+      ))
+      (print 'ManyTokensNext:\s_s)(print tokens)(print '\n_s)
+   ))
+   (print 'EndMany\n_s)
+   (close( (PME( (close expr) (close remainder) )) ))
 )) ParsePartial[]);
 
 parse-one-expression := λ(: tokens S). (: (tail(
+   (print 'ParseOne_s)(print tokens)(print '\n_s)
    (let expr ASTEOF)
    (let remainder SNil)
    (match tokens (
@@ -170,13 +193,15 @@ parse-one-expression := λ(: tokens S). (: (tail(
          (set remainder r)
       )))
    ))
-   (close( (PME( expr remainder )) ))
+   (print 'EndOne:Expr:\s_s)(print expr)(print '\n_s)
+   (print 'EndOne:Remainder:\s_s)(print remainder)(print '\n_s)
+   (close( (PME( (close expr) (close remainder) )) ))
 )) ParsePartial[]);
 
 parse-lambda := λ(: tokens S). (: (tail(
    (let expr ASTEOF)
    (let remainder SNil)
-   (close( (PME( expr remainder )) ))
+   (close( (PME( (close expr) (close remainder) )) ))
 )) ParsePartial[]);
 
 parse-unexpect := λ(: msg String)(: tokens S). (: (tail(
