@@ -22,8 +22,8 @@ non-zero := λ(: x MacroList). (: (tail(
 
 preprocess := λ. (: (tail(
    (preprocess-index-typedefs ast-parsed-program)
-   #(let program (maybe-deref(preprocess-apply ast-parsed-program)))
-   #(set ast-parsed-program program)
+   (let program (maybe-deref(preprocess-apply ast-parsed-program)))
+   (set ast-parsed-program program)
    ()
 )) Nil);
 
@@ -63,9 +63,6 @@ preprocess-apply := λ(: program AST). (: (tail(
       ( (App( (App( (Lit ':_s) mvar )) (Var mtype) )) (
          (set r (Asc( (preprocess-apply mvar) (preprocess-destructure-type mtype) )))
       ))
-      ( u (set r u))
-   ))
-
 #   ( (Literal l) (tail(
 #      (local suffixes)
 #      (set suffixes parse-suffix)
@@ -121,10 +118,12 @@ preprocess-apply := λ(: program AST). (: (tail(
 #         (App( (App( (Variable vn) (preprocess-apply-macros vt1) ))
 #                                   (preprocess-apply-macros vt2) ))
 #   ))
-#   ( (l r) (
-#      (preprocess-apply-macros l)
-#      (preprocess-apply-macros r)
-#   ))
+      ( (App( l r )) (set r (App(
+         (preprocess-apply l)
+         (preprocess-apply r)
+      ))))
+      ( u (set r u))
+   ))
    (close r)
 )) AST[]);
 
