@@ -4,8 +4,6 @@ tokenize := λ(: fp String). (: (tail(
    (let in_comment False_u8)
    (let buffer SNil)
    (let parens-counter 0_u64)
-   ()
-   ()
    (while (head-string text) (tail(
       (match (head-string text) (
          ()
