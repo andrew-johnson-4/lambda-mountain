@@ -20,20 +20,27 @@ close := λ(: x ParsePartial). (: (tail(
 
 parse := λ. (: (tail(
    (let tokens ast-tokenized-program)
-
    (while (non-zero tokens) (
       (match tokens (
          ()
          ( (SCons( (SAtom \:_s) remainder )) (
             (set tokens remainder)
          ))
-#         (('macro remainder) (tail(
-#            (set pme (parse-one-expression remainder))
-#            (set remainder (tail pme))
-#            (set pme2 (parse-one-expression remainder))
-#            (set parse-macros (parse-macros (Macro( (head pme) (head pme2) )) ))
-#            (set toks (tail pme2))
-#         )))
+         ( (SCons( (SAtom 'macro_s) remainder )) (
+            (match (parse-one-expression remainder) (
+               ()
+               ( (PME( mlhs mremainder1 )) (
+                  (match (parse-one-expression mremainder1) (
+                     ()
+                     ( (PME( mrhs mremainder2 )) (tail(
+                        # (set parse-macros (parse-macros (Macro( (head pme) (head pme2) )) ))
+                        ()
+                        (set tokens mremainder2)
+                     )))
+                  ))
+               ))
+            ))
+         ))
 #         (('fragment ('type remainder)) (tail(
 #            (set pme (parse-one-expression remainder))
 #            (set remainder (tail pme))
@@ -115,9 +122,8 @@ parse-many-expressions := λ(: tokens S). (: (tail(
             (set remainder tokens)
             (set tokens SNil)
          )))
-         ( _ (tail(
-            (let pme (maybe-deref(parse-one-expression tokens)))
-            (match pme (
+         ( _ (
+            (match (parse-one-expression tokens) (
                ()
                ( (PME( pe pr )) (tail(
                   (if (non-zero expr) (
@@ -131,7 +137,7 @@ parse-many-expressions := λ(: tokens S). (: (tail(
                   (set tokens pr)
                )))
             ))
-         )))
+         ))
       ))
    ))
    (close( (PME( expr remainder )) ))
