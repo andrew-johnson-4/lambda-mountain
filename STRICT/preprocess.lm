@@ -85,15 +85,14 @@ preprocess-apply := λ(: program AST). (: (tail(
             ))
          )))
       )))
-#   ( (App( (Variable vn) vt )) (
-#      if (is-macro-head vn) (preprocess-apply-maybe program)
-#         (App( (Variable vn) (preprocess-apply-macros vt) ))
-#   ))
-#   ( (App( (App( (Variable vn) vt1 )) vt2 )) (
-#      if (is-macro-head vn) (preprocess-apply-maybe program)
-#         (App( (App( (Variable vn) (preprocess-apply-macros vt1) ))
-#                                   (preprocess-apply-macros vt2) ))
-#   ))
+      ( (App( (Var vn) vt )) (
+         if (is-macro-head vn) (set r (preprocess-apply-maybe program))
+                               (set r (App( (close(Var vn)) (preprocess-apply vt) )))
+      ))
+      ( (App( (App( (Var vn) vt1 )) vt2 )) (
+         if (is-macro-head vn) (set r (preprocess-apply-maybe program))
+                               (set r (App( (close(App( (close(Var vn)) (preprocess-apply vt1) ))) (preprocess-apply vt2) )))
+      ))
       ( (App( l r )) (set r (App(
          (preprocess-apply l)
          (preprocess-apply r)
@@ -103,3 +102,20 @@ preprocess-apply := λ(: program AST). (: (tail(
    (close r)
 )) AST[]);
 
+is-macro-head := λ(: s String). (: (tail(
+   (let r 0_u64)
+   (match s (
+      ()
+      ( 'let_s (set r 1_u64) )
+      ( 'match_s (set r 1_u64) )
+      ( 'match-pats_s (set r 1_u64) )
+      ( 'match-pats-arm_s (set r 1_u64) )
+      ( _ () )
+   ))
+   r
+)) U64);
+
+preprocess-apply-maybe := λ(: program AST). (: (tail(
+   ()
+   (close program)
+)) AST[]);
