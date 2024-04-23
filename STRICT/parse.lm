@@ -34,8 +34,10 @@ parse := λ. (: (tail(
                   (match (parse-one-expression mremainder1) (
                      ()
                      ( (PME( mrhs mremainder2 )) (tail(
-                        # (set parse-macros (parse-macros (Macro( (head pme) (head pme2) )) ))
-                        ()
+                        (set preprocess-macros (MSeq(
+                           (close preprocess-macros)
+                           (Macro( mlhs mrhs ))
+                        )))
                         (set tokens mremainder2)
                      )))
                   ))
