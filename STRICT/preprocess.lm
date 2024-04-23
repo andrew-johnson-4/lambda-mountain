@@ -54,7 +54,7 @@ preprocess-destructure-type := λ(: tt String). (: (tail(
 )) Type[]);
 
 preprocess-apply := λ(: program AST). (: (tail(
-   (let r ASTEOF)
+   (let r program)
    (match program (
       ()
       ( (App( (App( (Lit ':_s) mvar )) (Lit mtype) )) (
@@ -67,57 +67,24 @@ preprocess-apply := λ(: program AST). (: (tail(
          (let suffixes parse-suffixes)
          (while (non-zero suffixes) (match suffixes (
             ()
-            ( (SfxSeq( rst sfx )) (tail(
-               ()
-               (print 'TrySuffix\n_s)
-            )))
+            ( (SfxSeq( rst (Sfx( sfxs sfxtt )) )) (
+               (if (is-suffix( l sfxs )) (
+                  (set r (Asc( (close (Lit (remove-suffix( l sfxs )))) (close sfxtt) )))
+               ) ())
+            ))
          )))
       )))
-#      (local suffixes)
-#      (set suffixes parse-suffix)
-#      (while suffixes (tail(
-#         (local sfx)
-#         (set sfx (tail (tail suffixes)) )
-#         (if (is-suffix( l sfx )) (tail(
-#            (local literal-type)
-#            (set literal-type (preprocess-restructure-type(parse-type(clone-rope((Constant+Literal+ (head(tail( suffixes ))) ))))) )
-#            (set program (
-#               (App(
-#                  (App(
-#                     (Literal ':)
-#                     (Literal (remove-suffix( l sfx )))
-#                  ))
-#                  literal-type
-#               ))
-#            ))
-#         )) ())
-#         (set suffixes (head suffixes))
-#      )))
-#      program
-#   )))
-#   ( (Variable l) (tail(
-#      (local suffixes)
-#      (set suffixes parse-suffix)
-#      (while suffixes (tail(
-#         (local sfx)
-#         (set sfx (tail (tail suffixes)) )
-#         (if (is-suffix( l sfx )) (tail(
-#            (local literal-type)
-#            (set literal-type (preprocess-restructure-type(parse-type(clone-rope((Constant+Literal+ (head(tail( suffixes ))) ))))) )
-#            (set program (
-#               (App(
-#                  (App(
-#                     (Literal ':)
-#                     (Literal (remove-suffix( l sfx )))
-#                  ))
-#                  literal-type
-#               ))
-#            ))
-#         )) ())
-#         (set suffixes (head suffixes))
-#      )))
-#      program
-#   )))
+      ( (Var l) (tail(
+         (let suffixes parse-suffixes)
+         (while (non-zero suffixes) (match suffixes (
+            ()
+            ( (SfxSeq( rst (Sfx( sfxs sfxtt )) )) (
+               (if (is-suffix( l sfxs )) (
+                  (set r (Asc( (close (Lit (remove-suffix( l sfxs )))) (close sfxtt) )))
+               ) ())
+            ))
+         )))
+      )))
 #   ( (App( (Variable vn) vt )) (
 #      if (is-macro-head vn) (preprocess-apply-maybe program)
 #         (App( (Variable vn) (preprocess-apply-macros vt) ))

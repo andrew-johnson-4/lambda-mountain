@@ -1,6 +1,4 @@
 
-type Type TNil;
-
 print := λ(: tt Type). (: (match tt (
    ()
 #   ( TNil (print 'Nil_s))

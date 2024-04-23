@@ -64,3 +64,13 @@ is-variable := λ(: s String). (: (tail(
    ))
    (==( r True_u8 ))
 )) U64);
+
+is-suffix := λ(: base String)(: sfx String). (: (tail(
+   (let r 0_u64)
+   r
+)) U64);
+
+remove-suffix := λ(: base String)(: sfx String). (: (tail(
+   ()
+   base
+)) String);
