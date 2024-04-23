@@ -100,7 +100,7 @@ serialize-ast := λ(: t AST). (: (tail(
          (print '\]\]_s)
       )))
       ( (Fragment( lhs rhs )) (tail(
-         (print '\[Fragment\s\[Variable\s\[_s)
+         (print '\[Fragment\s\[\[Variable\s_s)
          (print lhs)
          (print '\]\s_s)
          (serialize-ast rhs)

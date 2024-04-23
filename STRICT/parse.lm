@@ -262,7 +262,7 @@ parse-lambda := λ(: tokens S). (: (tail(
       ( (PME( (Lit '._s) pr )) (match (parse-many-expressions pr) (
          ()
          ( (PME( le lr )) (tail(
-            (set expr (App( (close ASTNil) (close le) )))
+            (set expr ASTNil)
             (set remainder lr)
          )))
       )))

@@ -1,6 +1,7 @@
 
-nostd: prod
-	./production --nostd -o tmp.s STRICT/cli.lm
+nostd: prod strict
+	./production --parse test.lm
+	./strict --parse test.lm
 	as -o tmp.o tmp.s
 	ld -o tmp tmp.o
 	./tmp STRICT/cli.lm && echo $?
