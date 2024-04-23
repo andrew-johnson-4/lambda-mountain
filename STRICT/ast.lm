@@ -1,7 +1,7 @@
 
 
 type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] ))
-                | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] ));
+                | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Fragment( AST[] , AST[] ));
 
 ast-tokenized-program := (: SNil S);
 ast-parsed-program := (: ASTEOF AST);
@@ -40,6 +40,12 @@ print := λ(: t AST). (: (tail(
          (print '\s:=\s_s)
          (print v)
       )))
+      ( (Fragment( k v )) (tail(
+         (print 'fragment\s_s)
+         (print k)
+         (print '\s:=\s_s)
+         (print v)
+      )))
       ( (App( l r )) (tail(
          (print '\[_s)
          (print l)
@@ -68,7 +74,7 @@ serialize-ast := λ(: t AST). (: (tail(
    (match t (
       ()
       ( ASTEOF () )
-      ( ASTNil (print '\[\]_s) )
+      ( ASTNil (print 'Nil_s) )
       ( (Var a) (tail(
          (print '\[Variable\s_s)
          (print a)
@@ -87,9 +93,16 @@ serialize-ast := λ(: t AST). (: (tail(
          (print '\]\]_s)
       )))
       ( (Glb( lhs rhs )) (tail(
-         (print '\[Global\s\[_s)
+         (print '\[Global\s\[Variable\s\[_s)
          (print lhs)
-         (print '\s_s)
+         (print '\]\s_s)
+         (serialize-ast rhs)
+         (print '\]\]_s)
+      )))
+      ( (Fragment( lhs rhs )) (tail(
+         (print '\[Fragment\s\[Variable\s\[_s)
+         (print lhs)
+         (print '\]\s_s)
          (serialize-ast rhs)
          (print '\]\]_s)
       )))
@@ -113,7 +126,6 @@ serialize-ast := λ(: t AST). (: (tail(
       )))
       ( (Seq( l r )) (tail(
          (serialize-ast l)
-         (print '\n_s)
          (serialize-ast r)
          (print '\n_s)
       )))
