@@ -79,3 +79,8 @@ to-string := λ(: i U64). (: (tail(
    ()
    '1_s
 )) String);
+
+uuid := λ. (: (tail(
+   ()
+   'uuid_00001_s
+)) String);
