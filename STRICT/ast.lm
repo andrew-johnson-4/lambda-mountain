@@ -10,6 +10,7 @@ non-zero := λ(: t AST). (: (tail(
    (match t (
       ()
       ( ASTEOF (set r 0_u64))
+      ( _ () )
    ))
    r
 )) U64);
