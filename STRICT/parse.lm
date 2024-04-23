@@ -1,5 +1,11 @@
 
+
 type ParsePartial (PME( AST , S )); # term, remainder
+
+type Sfx (Sfx( String , Type ));
+type SfxList SfxEOF | (SfxSeq( SfxList[] , Sfx ));
+
+parse-suffixes := (: SfxEOF SfxList);
 
 print := λ(: x ParsePartial). (: (match x (
    ()
@@ -17,6 +23,22 @@ close := λ(: x ParsePartial). (: (tail(
    (mov( x 0_u64 (as R8 ParsePartial[]) ))
    (as R8 ParsePartial[])
 )) ParsePartial[]);
+
+close := λ(: x SfxList). (: (tail(
+   (mov( (malloc(sizeof SfxList)) R8 ))
+   (mov( x 0_u64 (as R8 SfxList[]) ))
+   (as R8 SfxList[])
+)) SfxList[]);
+
+non-zero := λ(: x SfxList). (: (tail(
+   (let r 0_u64)
+   (match x (
+      ()
+      ( SfxEOF (set r 1_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
 
 parse := λ. (: (tail(
    (let tokens ast-tokenized-program)
@@ -107,9 +129,12 @@ parse := λ. (: (tail(
             ))
          ))
          ( (SCons( (SAtom 'atom_s) (SCons( (SAtom 'suffix_s)
-                   (SCons( atype (SCons( suffix remainder )) ))
+                   (SCons( (SAtom atype) (SCons( (SAtom suffix) remainder )) ))
            )) )) (tail(
-#            (set parse-suffix (parse-suffix (atype suffix)))
+            (set parse-suffixes (SfxSeq(
+               (close parse-suffixes)
+               (Sfx( suffix (maybe-deref(parse-type atype)) ))
+            )))
             ()
             (set tokens remainder)
          )))
@@ -299,3 +324,7 @@ parse-lambda := λ(: tokens S). (: (tail(
    (close( (PME( expr remainder )) ))
 )) ParsePartial[]);
 
+parse-type := λ(: tt String). (: (tail(
+   ()
+   (close TNil)
+)) Type[]);

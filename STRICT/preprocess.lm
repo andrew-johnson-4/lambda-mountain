@@ -63,7 +63,16 @@ preprocess-apply := λ(: program AST). (: (tail(
       ( (App( (App( (Lit ':_s) mvar )) (Var mtype) )) (
          (set r (Asc( (preprocess-apply mvar) (preprocess-destructure-type mtype) )))
       ))
-#   ( (Literal l) (tail(
+      ( (Lit l) (tail(
+         (let suffixes parse-suffixes)
+         (while (non-zero suffixes) (match suffixes (
+            ()
+            ( (SfxSeq( rst sfx )) (tail(
+               ()
+               (print 'TrySuffix\n_s)
+            )))
+         )))
+      )))
 #      (local suffixes)
 #      (set suffixes parse-suffix)
 #      (while suffixes (tail(
