@@ -117,10 +117,84 @@ is-macro-head := λ(: s String). (: (tail(
    r
 )) U64);
 
-try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
+merge := λ(: l Context)(: r Context). (: (tail(
    ()
-   (close CtxEOF)
+   (close l)
 )) Context[]);
+
+try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
+   (let r CtxEOF)
+   (match (Pair( lhs term )) (
+      ()
+      ( (Pair( ASTNil ASTNil )) (set r CtxNil) )
+      ( (Pair( (App(pl pr)) (App(el er)) )) (tail(
+         (let ll (maybe-deref(try-destructure-macro( pl el ))))
+         (if (non-zero ll) (tail(
+            (let rl (maybe-deref(try-destructure-macro( pr er ))))
+            (if (non-zero rl) (tail(
+               (let m (maybe-deref(merge( ll rl ))))
+               (set r m)
+            )) ())
+         )) ())
+      )))
+   ))
+   (close r)
+)) Context[]);
+
+#try-destructure-macro := λlhs e . (match (lhs e) (
+#   ()
+#   ( ( Nil Nil ) Accept )
+#   ( ( (App(pl pr)) (App(el er)) ) (tail(
+#      (local ll)
+#      (set ll (try-destructure-macro(pl el)))
+#      (if ll (tail(
+#         (local rl)
+#         (set rl (try-destructure-macro(pr er)))
+#         (if rl (
+#            (merge-list( ll rl ))
+#         ) ())
+#      )) ())
+#   )))
+#   ( ((Literal pl) (Variable el)) (
+#      (if (eq( pl el )) Accept ())
+#   ))
+#   ( ((Literal pl) (Literal el)) (
+#      (if (eq( pl el )) Accept ())
+#   ))
+#   ( ( (App( (Literal :Literal:) (Variable pv) )) (Literal el)) (
+#      (if (preprocess-index-of-tag el)
+#         ()
+#         (Accept (KV( pv e )))
+#      )
+#   ))
+#   ( ( (App( (Literal :Variable:) (Variable pv) )) (Variable el)) (
+#      (Accept (KV( pv e )))
+#   ))
+#   ( ( (App( (App( (Literal :Tag:) (Variable pv) )) (Variable pt) )) (Literal el)) (
+#      (if (preprocess-index-of-tag el)
+#         (  Accept
+#            (KV(
+#               pv
+#               (App(
+#                  (App(
+#                      (Literal :)
+#                     (Literal (preprocess-index-of-tag el))
+#                  ))
+#                  (preprocess-restructure-type(parse-type( Constant+Literal+U64 )))
+#               ))
+#            ))
+#            (KV(
+#               pt
+#               (preprocess-restructure-type(parse-type( el )))
+#            ))
+#         )
+#         ()
+#      )
+#   ))
+#   ( ((Variable pv) e) (
+#      (Accept (KV( pv e )))
+#   ))
+#));
 
 apply-context := λ(: ctx Context)(: term AST). (: (tail( 
    ()

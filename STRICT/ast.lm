@@ -5,7 +5,8 @@ type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( Stri
                 | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Fragment( AST[] , AST[] ))
                 | (Asc( AST[] , Type[] ));
 
-type Context CtxEOF | (CtxBind( Context[] , String , Ast[] ));
+type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , Ast[] ));
+type Pair (Pair( AST , AST ));
 
 ast-tokenized-program := (: SNil S);
 ast-parsed-program := (: ASTEOF AST);
@@ -15,6 +16,16 @@ non-zero := λ(: t AST). (: (tail(
    (match t (
       ()
       ( ASTEOF (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+non-zero := λ(: t Context). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( CtxEOF (set r 0_u64))
       ( _ () )
    ))
    r
