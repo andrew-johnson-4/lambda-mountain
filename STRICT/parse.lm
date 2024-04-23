@@ -66,20 +66,46 @@ parse := λ. (: (tail(
 #            (set pme (parse-one-expression remainder))
 #            (set remainder (tail pme))
 #            (set pme2 (parse-many-expressions remainder))
-#            (set parse-parsed-program ( parse-parsed-program (Type( (head pme) (head pme2) )) ))
 #            (set toks (tail pme2))
 #         )))
-#         (('atom ('suffix (atype (suffix remainder)))) (tail(
+         ( (SCons( (SAtom 'type_s) remainder )) (
+            (match (parse-one-expression remainder) (
+               ()
+               ( (PME( e1 r1 )) (match (parse-many-expressions r1) (
+                  ()
+                  ( (PME( e2 r2 )) (tail(
+                     (set ast-parsed-program (Seq(
+                        (close ast-parsed-program)
+                        (close (ASTType(
+                           (close e1)
+                           (close e2)
+                        )))
+                     )))
+                     (set tokens r2)
+                  )))
+               )))
+            ))
+         ))
+         ( (SCons( (SAtom 'atom_s) (SCons( (SAtom 'suffix_s)
+                   (SCons( atype (SCons( suffix remainder )) ))
+           )) )) (tail(
 #            (set parse-suffix (parse-suffix (atype suffix)))
-#            (set toks remainder)
-#         )))
-#         (('size remainder) (tail(
-#            (set pme (parse-one-expression remainder))
-#            (set remainder (tail pme))
-#            (set pme2 (parse-one-expression remainder))
-#            (typecheck-set-size( (typecheck-infer-type-compound (head pme)) (typecheck-infer-type-compound (head pme2)) ))
-#            (set toks (tail pme2))
-#         )))
+            ()
+            (set tokens remainder)
+         )))
+         ( (SCons( (SAtom 'size_s) remainder )) (
+            (match (parse-one-expression remainder) (
+               ()
+               ( (PME( e1 r1 )) (match (parse-one-expression r1) (
+                  ()
+                  ( (PME( e2 r2 )) (tail(
+                     #(typecheck-set-size( (typecheck-infer-type-compound (head pme)) (typecheck-infer-type-compound (head pme2)) ))
+                     ()
+                     (set tokens r2)
+                  )))
+               )))
+            ))
+         ))
          ( (SCons( (SAtom 'import_s) (SCons( (SAtom relative-path) remainder )) )) (tail(
             (tokenize relative-path)
             (parse ())
@@ -90,12 +116,10 @@ parse := λ. (: (tail(
             (match (parse-many-expressions remainder) (
                ()
                ( (PME( re rr )) (tail(
-                  (let bind (Glb( key (close re) )))
                   (set ast-parsed-program (Seq(
                      (close ast-parsed-program)
-                     (close bind)
+                     (close (Glb( key (close re) )))
                   )))
-                  ()
                   (set tokens rr)
                )))
             ))
