@@ -21,6 +21,33 @@ non-zero := λ(: x MacroList). (: (tail(
 )) U64);
 
 preprocess := λ. (: (tail(
-   ()
-   ()
+   (preprocess-index-typedefs ast-parsed-program)
+   (let program (maybe-deref(preprocess-apply ast-parsed-program)))
+   (set ast-parsed-program program)
 )) Nil);
+
+preprocess-index-typedefs := λ(: program AST). (: (
+   (while (non-zero program) (match program (
+      ()
+      ( (Seq( rst term )) (tail(
+         (preprocess-index-typedef term)
+         (set program rst)
+      )))
+   )))
+) Nil);
+
+preprocess-index-typedef := λ(: term AST). (: (match term (
+   ()
+   ( (ASTType( lhs rhs )) (tail(
+      (print 'Index\sType:\s_s)
+      (print lhs)
+      (print '\n_s)
+#      (preprocess-index-indices( ds 0 ))
+   )))
+   ( _ () )
+)) Nil);
+
+preprocess-apply := λ(: program AST). (: (tail(
+   ()
+   (close program)
+)) AST[]);
