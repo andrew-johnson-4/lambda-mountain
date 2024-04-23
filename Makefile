@@ -15,6 +15,11 @@ tokenize: prod strict
 	./strict --tokenize STRICT/cli.lm > strict-tokenize.txt
 	diff production-tokenize.txt strict-tokenize.txt
 
+parse: prod strict
+	./production --parse STRICT/cli.lm > production-parse.txt
+	./strict --parse STRICT/cli.lm > strict-parse.txt
+	diff production-parse.txt strict-parse.txt
+
 test: prod
 	./production -o production1.s PRODUCTION/cli.lm
 	./production1 -o production2.s PRODUCTION/cli.lm
