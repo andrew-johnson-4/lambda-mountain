@@ -20,6 +20,7 @@ close := λ(: x ParsePartial). (: (tail(
 
 parse := λ. (: (tail(
    (let tokens ast-tokenized-program)
+   (set ast-tokenized-program SNil)
    (while (non-zero tokens) (
       (match tokens (
          ()
@@ -79,10 +80,11 @@ parse := λ. (: (tail(
 #            (typecheck-set-size( (typecheck-infer-type-compound (head pme)) (typecheck-infer-type-compound (head pme2)) ))
 #            (set toks (tail pme2))
 #         )))
-#         (('import (relative-path remainder)) (tail(
-#            (parse-program (tokenize-file relative-path))
-#            (set toks remainder)
-#         )))
+         ( (SCons( (SAtom 'import_s) (SCons( (SAtom relative-path) remainder )) )) (tail(
+            (tokenize relative-path)
+            (parse ())
+            (set tokens remainder)
+         )))
 
          ( (SCons( (SAtom key) (SCons( (SAtom ':=_s) remainder )) )) (
             (match (parse-many-expressions remainder) (
