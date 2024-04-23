@@ -71,3 +71,53 @@ print := λ(: t AST). (: (tail(
    ))
    ()
 )) Nil);
+
+serialize-ast := λ(: t AST). (: (tail(
+   (match t (
+      ()
+      ( ASTEOF (print 'EOF_s) )
+      ( ASTNil (print '\[\]_s) )
+      ( (Var a) (print a) )
+      ( (Lit a) (tail( (print '\`_s) (print a) )))
+      ( (ASTType( lhs rhs )) (tail(
+         (print 'type\s_s)
+         (print lhs)
+         (print '\s=\s_s)
+         (print rhs)
+      )))
+      ( (Glb( k v )) (tail(
+         (print k)
+         (print '\s:=\s_s)
+         (print v)
+      )))
+      ( (App( l r )) (tail(
+         (print '\[_s)
+         (print l)
+         (print '\s_s)
+         (print r)
+         (print '\]_s)
+      )))
+      ( (Abs( lhs rhs )) (tail(
+         (print '\[_s)
+         (print '\l_s) (print lhs)
+         (print lhs)
+         (print '._s) (print rhs)
+         (print rhs)
+         (print '\]_s)
+      )))
+      ( (Asc( at att )) (tail(
+         (print '\[_s)
+         (print '\s:\s_s)
+         (print at)
+         (print '\s_s)
+         (print att)
+         (print '\]_s)
+      )))
+      ( (Seq( l r )) (tail(
+         (print l)
+         (print '\:\n_s)
+         (print r)
+      )))
+   ))
+   ()
+)) Nil);

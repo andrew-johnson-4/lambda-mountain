@@ -42,32 +42,50 @@ parse := λ. (: (tail(
                ))
             ))
          ))
-
-#         (('fragment ('type remainder)) (tail(
-#            (set pme (parse-one-expression remainder))
-#            (set remainder (tail pme))
-#            (set pme2 (parse-many-expressions remainder))
-#            (set parse-parsed-program ( parse-parsed-program (Type( (head pme) (head pme2) )) ))
-#            (set typecheck-fragment-types ( typecheck-fragment-types
-#               (typecheck-infer-type-compound (head pme))
-#            ))
-#            (set toks (tail pme2))
-#         )))
-#         (('fragment remainder) (tail(
-#            (set pme (parse-one-expression remainder))
-#            (set remainder (tail pme))
-#            (parse-expect( := remainder ))
-#            (set remainder (tail remainder))
-#            (set pme2 (parse-many-expressions remainder))
-#            (set parse-parsed-program ( parse-parsed-program (Fragment( (head pme) (head pme2) )) ))
-#            (set toks (tail pme2))
-#         )))
-#         (('type remainder) (tail(
-#            (set pme (parse-one-expression remainder))
-#            (set remainder (tail pme))
-#            (set pme2 (parse-many-expressions remainder))
-#            (set toks (tail pme2))
-#         )))
+         ( (SCons( (SAtom 'fragment_s) (SCons( (SAtom 'type_s) remainder )) )) (
+            (match (parse-one-expression remainder) (
+               ()
+               ( (PME( e1 r1 )) (match (parse-many-expressions r1) (
+                  ()
+                  ( (PME( e2 r2 )) (tail(
+                     (set ast-parsed-program (Seq(
+                        (close ast-parsed-program)
+                        (close (ASTType(
+                           (close e1)
+                           (close e2)
+                        )))
+                     )))
+#                    (set typecheck-fragment-types ( typecheck-fragment-types
+#                       (typecheck-infer-type-compound (head pme))
+#                    ))
+                     (set tokens r2)
+                  )))
+               )))
+            ))
+         ))
+         ( (SCons( (SAtom 'fragment_s) remainder )) (
+            (match (parse-one-expression remainder) (
+               ()
+               ( (PME( e1 (SCons( (SAtom( ':=_s )) r1 )) )) (
+                  (match (parse-many-expressions r1) (
+                     ()
+                     ( (PME( e2 r2 )) (tail(
+                        (set ast-parsed-program (Seq(
+                           (close ast-parsed-program)
+                           (close (ASTType(
+                              (close e1)
+                              (close e2)
+                           )))
+                        )))
+                        (set tokens r2)
+                     )))
+                  ))
+               ))
+               ( (PME( _ r1 )) (
+                  (parse-expect( 'Fragment\sExpected\s\sKeyValue_s tokens ))
+               ))
+            ))
+         ))
          ( (SCons( (SAtom 'type_s) remainder )) (
             (match (parse-one-expression remainder) (
                ()
@@ -234,7 +252,10 @@ parse-unexpect := λ(: msg String)(: tokens S). (: (tail(
 )) Nil);
 parse-expect := λ(: msg String)(: tokens S). (: (tail(
    ()
-   (fail msg)
+   (eprint msg)
+   (print '\n_s)
+   (print tokens)
+   (exit 1_u64)
 )) Nil);
 
 parse-lambda := λ(: tokens S). (: (tail(
