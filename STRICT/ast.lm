@@ -93,7 +93,7 @@ serialize-ast := λ(: t AST). (: (tail(
          (print '\]\]_s)
       )))
       ( (Glb( lhs rhs )) (tail(
-         (print '\[Global\s\[Variable\s\[_s)
+         (print '\[Global\s\[\[Variable\s_s)
          (print lhs)
          (print '\]\s_s)
          (serialize-ast rhs)

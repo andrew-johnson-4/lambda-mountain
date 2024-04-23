@@ -17,7 +17,7 @@ tokenize: prod strict
 	diff production-tokenize.txt strict-tokenize.txt
 
 parse: prod strict
-	./production --parse STRICT/cli.lm > production-parse.txt
+	./production --parse --nomacro STRICT/cli.lm > production-parse.txt
 	./strict --parse STRICT/cli.lm > strict-parse.txt
 	diff production-parse.txt strict-parse.txt
 
