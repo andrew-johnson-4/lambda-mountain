@@ -5,6 +5,8 @@ type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( Stri
                 | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Fragment( AST[] , AST[] ))
                 | (Asc( AST[] , Type[] ));
 
+type Context CtxEOF | (CtxBind( Context[] , String , Ast[] ));
+
 ast-tokenized-program := (: SNil S);
 ast-parsed-program := (: ASTEOF AST);
 
@@ -23,6 +25,12 @@ close := λ(: x AST). (: (tail(
    (mov( x 0_u64 (as R8 AST[]) ))
    (as R8 AST[])
 )) AST[]);
+
+close := λ(: x Context). (: (tail(
+   (mov( (malloc(sizeof Context)) R8 ))
+   (mov( x 0_u64 (as R8 Context[]) ))
+   (as R8 Context[])
+)) Context[]);
 
 print := λ(: t AST). (: (tail(
    (match t (

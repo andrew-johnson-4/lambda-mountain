@@ -2,6 +2,8 @@
 type Macro (Macro( AST , AST ));
 type MacroList MEOF | (MSeq( MacroList[] , Macro ));
 
+type Destructure DestFail | (DestOk( Context ));
+
 preprocess-macros := (: MEOF MacroList);
 
 close := λ(: x MacroList). (: (tail(
@@ -115,7 +117,43 @@ is-macro-head := λ(: s String). (: (tail(
    r
 )) U64);
 
-preprocess-apply-maybe := λ(: program AST). (: (tail(
+try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
    ()
+   (close CtxEOF)
+)) Context[]);
+
+apply-context := λ(: ctx Context)(: term AST). (: (tail( 
+   ()
+   (close term)
+)) AST[]);
+
+substitute-uuids := λ(: ctx Context)(: term AST). (: (tail( 
+   ()
+   (close term)
+)) AST[]);
+
+extract-uuids := λ(: ctx Context)(: term AST). (: (tail( 
+   ()
+   (close CtxEOF)
+)) Context[]);
+
+preprocess-apply-maybe := λ(: program AST). (: (tail(
+   (let macros preprocess-macros)
+   (while (non-zero macros) (match macros (
+      ()
+      ( (MSeq( rst (Macro( lhs rhs )) )) (
+         (match (try-destructure-macro( lhs program )) (
+            ()
+            ( (DestOk( ctx )) (tail(
+               (let p (maybe-deref(apply-context( ctx rhs ))))
+               (let c (maybe-deref(extract-uuids( CtxEOF p ))))
+               (let u (maybe-deref(substitute-uuids( c p ))))
+               (set program u)
+               (set macros MEOF)
+            )))
+            ( DestFail (set macros rst) )
+         ))
+      ))
+   )))
    (close program)
 )) AST[]);
