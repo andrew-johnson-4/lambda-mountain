@@ -192,14 +192,49 @@ parse-one-expression := λ(: tokens S). (: (tail(
    (close( (PME( expr remainder )) ))
 )) ParsePartial[]);
 
-parse-lambda := λ(: tokens S). (: (tail(
-   (let expr ASTEOF)
-   (let remainder SNil)
-   (close( (PME( expr remainder )) ))
-)) ParsePartial[]);
-
 parse-unexpect := λ(: msg String)(: tokens S). (: (tail(
    ()
    (fail msg)
 )) Nil);
+
+parse-lambda := λ(: tokens S). (: (tail(
+   (let expr ASTEOF)
+   (let remainder SNil)
+   (match (parse-one-expression tokens) (
+      ()
+      ( (PME( (Lit '._s) pr )) (match (parse-many-expressions pr) (
+         ()
+         ( (PME( le lr )) (tail(
+            (set expr (App( (close ASTNil) (close le) )))
+            (set remainder lr)
+         )))
+      )))
+      ( (PME( pe pr )) (tail(
+         (set expr pe)
+         (set remainder pr)
+      )))
+   ))
+#   (while toks (tail(
+#      (set pme (parse-one-expression toks))
+#      (match pme (
+#         ()
+#         (((Literal .) r) (tail(
+#            (set pme (parse-many-expressions r))
+#            (set lmb (lmb (head pme)))
+#            (set remainder (tail pme))
+#            (set toks ())
+#         )))
+#         ((e ()) (tail(
+#            (parse-expect( . toks ))
+#            (set toks ())
+#         )))
+#         ((e r) (tail(
+#            (set lmb (App (lmb e)))
+#            (set toks r)
+#         )))
+#      ))
+#   )))	
+#   (lmb remainder)
+   (close( (PME( expr remainder )) ))
+)) ParsePartial[]);
 
