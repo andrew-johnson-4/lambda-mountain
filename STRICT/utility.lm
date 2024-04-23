@@ -74,3 +74,8 @@ remove-suffix := λ(: base String)(: sfx String). (: (tail(
    ()
    base
 )) String);
+
+to-string := λ(: i U64). (: (tail(
+   ()
+   '1_s
+)) String);

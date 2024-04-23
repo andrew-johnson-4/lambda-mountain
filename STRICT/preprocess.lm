@@ -157,27 +157,18 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
       ( (Pair( (App( (Lit ':Variable:_s) (Var pv) )) (Var el) )) (
          (set r (CtxBind( (close CtxNil) pv (close term) )))
       ))
-#   ( ( (App( (App( (Literal :Tag:) (Variable pv) )) (Variable pt) )) (Literal el)) (
-#      (if (preprocess-index-of-tag el)
-#         (  Accept
-#            (KV(
-#               pv
-#               (App(
-#                  (App(
-#                      (Literal :)
-#                     (Literal (preprocess-index-of-tag el))
-#                  ))
-#                  (preprocess-restructure-type(parse-type( Constant+Literal+U64 )))
-#               ))
-#            ))
-#            (KV(
-#               pt
-#               (preprocess-restructure-type(parse-type( el )))
-#            ))
-#         )
-#         ()
-#      )
-#   ))
+      ( (Pair( (App( (App( (Lit ':Tag_s) (Var pv) )) (Var pt) )) (Lit el) )) (
+         (if (preprocess-index-of-tag el) (tail(
+            (set r CtxNil)
+            (set r (CtxBind( (close r) pv (close(
+               (Asc(
+                  (close(Lit (to-string(preprocess-index-of-tag el)) ))
+                  (parse-type 'Constant+Literal+U64_s)
+               ))
+            )) )))
+            (set r (CtxBind( (close r) pt (close(Lit el)) )))
+         )) ())
+      ))
       ( (Pair( (Var pv) _ )) (
          (set r (CtxBind( (close CtxNil) pv (close term) )))
       ))
