@@ -5,7 +5,7 @@ type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( Stri
                 | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Fragment( AST[] , AST[] ))
                 | (Asc( AST[] , Type[] ));
 
-type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , Ast[] ));
+type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST[] ));
 type Pair (Pair( AST , AST ));
 
 ast-tokenized-program := (: SNil S);

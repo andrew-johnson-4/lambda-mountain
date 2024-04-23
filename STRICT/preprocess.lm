@@ -6,6 +6,11 @@ type Destructure DestFail | (DestOk( Context ));
 
 preprocess-macros := (: MEOF MacroList);
 
+preprocess-index-of-tag := λ(: tag String). (: (tail(
+   ()
+   0_u64
+)) U64);
+
 close := λ(: x MacroList). (: (tail(
    (mov( (malloc(sizeof MacroList)) R8 ))
    (mov( x 0_u64 (as R8 MacroList[]) ))
@@ -137,39 +142,21 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
             )) ())
          )) ())
       )))
-   ))
-   (close r)
-)) Context[]);
-
-#try-destructure-macro := λlhs e . (match (lhs e) (
-#   ()
-#   ( ( Nil Nil ) Accept )
-#   ( ( (App(pl pr)) (App(el er)) ) (tail(
-#      (local ll)
-#      (set ll (try-destructure-macro(pl el)))
-#      (if ll (tail(
-#         (local rl)
-#         (set rl (try-destructure-macro(pr er)))
-#         (if rl (
-#            (merge-list( ll rl ))
-#         ) ())
-#      )) ())
-#   )))
-#   ( ((Literal pl) (Variable el)) (
-#      (if (eq( pl el )) Accept ())
-#   ))
-#   ( ((Literal pl) (Literal el)) (
-#      (if (eq( pl el )) Accept ())
-#   ))
-#   ( ( (App( (Literal :Literal:) (Variable pv) )) (Literal el)) (
-#      (if (preprocess-index-of-tag el)
-#         ()
-#         (Accept (KV( pv e )))
-#      )
-#   ))
-#   ( ( (App( (Literal :Variable:) (Variable pv) )) (Variable el)) (
-#      (Accept (KV( pv e )))
-#   ))
+      ( (Pair( (Lit pl) (Var el) )) (
+         (if (==( pl el )) (set r CtxNil) ())
+      ))
+      ( (Pair( (Lit pl) (Lit el) )) (
+         (if (==( pl el )) (set r CtxNil) ())
+      ))
+      ( (Pair( (App( (Lit ':Literal:_s) (Var pv) )) (Lit el) )) (
+         (if (preprocess-index-of-tag el)
+             ()
+             (set r (CtxBind( (close CtxNil) pv (close term) )))
+         )
+      ))
+      ( (Pair( (App( (Lit ':Variable:_s) (Var pv) )) (Var el) )) (
+         (set r (CtxBind( (close CtxNil) pv (close term) )))
+      ))
 #   ( ( (App( (App( (Literal :Tag:) (Variable pv) )) (Variable pt) )) (Literal el)) (
 #      (if (preprocess-index-of-tag el)
 #         (  Accept
@@ -191,10 +178,12 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
 #         ()
 #      )
 #   ))
-#   ( ((Variable pv) e) (
-#      (Accept (KV( pv e )))
-#   ))
-#));
+      ( (Pair( (Var pv) _ )) (
+         (set r (CtxBind( (close CtxNil) pv (close term) )))
+      ))
+   ))
+   (close r)
+)) Context[]);
 
 apply-context := λ(: ctx Context)(: term AST). (: (tail( 
    ()
