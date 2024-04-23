@@ -182,13 +182,13 @@ apply-context := λ(: ctx Context)(: term AST). (: (tail(
       ( (Var n) (
          (while (non-zero ctx) (match ctx (
             ()
-            ( (CtxBind( rst ck v )) (
-#               (if (==( k n )) (
-#                  (set term v)
-#                  (set ctx CtxEOF)
-#               ) (
-#                  (set ctx rst)
-#               ))
+            ( (CtxBind( rst (*(k v)) )) (
+               (if (==( k n )) (tail(
+                  (set term v)
+                  (set ctx CtxEOF)
+               )) (
+                  (set ctx rst)
+               ))
             ))
             ( _ (set ctx CtxEOF))
          )))
