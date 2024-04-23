@@ -1,12 +1,25 @@
 
-nostd: prod
-	./production --nostd -o tmp.s tests/strict/ifstreq.lm
+nostd: prod strict
+	./production --parse test.lm
+	./strict --parse test.lm
 	as -o tmp.o tmp.s
 	ld -o tmp tmp.o
 	./tmp STRICT/cli.lm && echo $?
 
 strict: prod
-	./production --nostd --perf -o tmp.s STRICT/cli.lm
+	./production --nostd -o strict.s STRICT/cli.lm
+	as -o strict.o strict.s
+	ld -o strict   strict.o
+
+tokenize: prod strict
+	./production --tokenize STRICT/cli.lm > production-tokenize.txt
+	./strict --tokenize STRICT/cli.lm > strict-tokenize.txt
+	diff production-tokenize.txt strict-tokenize.txt
+
+parse: prod strict
+	./production --parse --nomacro STRICT/cli.lm > production-parse.txt
+	./strict --parse STRICT/cli.lm > strict-parse.txt
+	diff production-parse.txt strict-parse.txt
 
 test: prod
 	./production -o production1.s PRODUCTION/cli.lm

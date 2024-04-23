@@ -1,6 +1,7 @@
 
 
-type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] )) | (Asc( AST[] , Type[] )) | (Seq( AST[] , AST[] ));
+type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] ))
+                | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Fragment( AST[] , AST[] ));
 
 ast-tokenized-program := (: SNil S);
 ast-parsed-program := (: ASTEOF AST);
@@ -10,6 +11,7 @@ non-zero := λ(: t AST). (: (tail(
    (match t (
       ()
       ( ASTEOF (set r 0_u64))
+      ( _ () )
    ))
    r
 )) U64);
@@ -27,6 +29,23 @@ print := λ(: t AST). (: (tail(
       ( ASTNil (print '\[\]_s) )
       ( (Var a) (print a) )
       ( (Lit a) (tail( (print '\`_s) (print a) )))
+      ( (ASTType( lhs rhs )) (tail(
+         (print 'type\s_s)
+         (print lhs)
+         (print '\s=\s_s)
+         (print rhs)
+      )))
+      ( (Glb( k v )) (tail(
+         (print k)
+         (print '\s:=\s_s)
+         (print v)
+      )))
+      ( (Fragment( k v )) (tail(
+         (print 'fragment\s_s)
+         (print k)
+         (print '\s:=\s_s)
+         (print v)
+      )))
       ( (App( l r )) (tail(
          (print '\[_s)
          (print l)
@@ -36,24 +55,79 @@ print := λ(: t AST). (: (tail(
       )))
       ( (Abs( lhs rhs )) (tail(
          (print '\[_s)
-         (print '\l_s) (print lhs)
+         (print '\l_s)
          (print lhs)
-         (print '._s) (print rhs)
+         (print '._s)
          (print rhs)
-         (print '\]_s)
-      )))
-      ( (Asc( at att )) (tail(
-         (print '\[_s)
-         (print '\s:\s_s)
-         (print at)
-         (print '\s_s)
-         (print att)
          (print '\]_s)
       )))
       ( (Seq( l r )) (tail(
          (print l)
          (print '\:\n_s)
          (print r)
+      )))
+   ))
+   ()
+)) Nil);
+
+serialize-ast := λ(: t AST). (: (tail(
+   (match t (
+      ()
+      ( ASTEOF (print '\[\]_s) )
+      ( ASTNil (print 'Nil_s) )
+      ( (Var a) (tail(
+         (print '\[Variable\s_s)
+         (print a)
+         (print '\]_s)
+      )))
+      ( (Lit a) (tail(
+         (print '\[Literal\s_s)
+         (print a)
+         (print '\]_s)
+      )))
+      ( (ASTType( lhs rhs )) (tail(
+         (print '\[Type\s\[_s)
+         (serialize-ast lhs)
+         (print '\s_s)
+         (serialize-ast rhs)
+         (print '\]\]_s)
+      )))
+      ( (Glb( lhs rhs )) (tail(
+         (print '\[Global\s\[_s)
+         (print lhs)
+         (print '\s_s)
+         (serialize-ast rhs)
+         (print '\]\]_s)
+      )))
+      ( (Fragment( lhs rhs )) (tail(
+         (print '\[Fragment\s\[_s)
+         (serialize-ast lhs)
+         (print '\s_s)
+         (serialize-ast rhs)
+         (print '\]\]_s)
+      )))
+      ( (App( lhs rhs )) (tail(
+         (print '\[App\s\[_s)
+         (serialize-ast lhs)
+         (print '\s_s)
+         (serialize-ast rhs)
+         (print '\]\]_s)
+      )))
+      ( (Abs( lhs rhs )) (tail(
+         (print '\[Lambda\s\[_s)
+         (serialize-ast lhs)
+         (print '\s_s)
+         (serialize-ast rhs)
+         (print '\]\]_s)
+      )))
+      ( (Seq( ASTEOF r )) (tail(
+         (serialize-ast r)
+         (print '\n_s)
+      )))
+      ( (Seq( l r )) (tail(
+         (serialize-ast l)
+         (serialize-ast r)
+         (print '\n_s)
       )))
    ))
    ()

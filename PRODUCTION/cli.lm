@@ -136,7 +136,7 @@ main := (
          (if config-nomacro () (
             (set parse-parsed-program (preprocess parse-parsed-program))
          ))
-         (print-s parse-parsed-program)
+         (serialize-ast parse-parsed-program)
       )))
       (Typecheck (tail(
          (if config-nomacro () (
@@ -148,3 +148,11 @@ main := (
    ))
 );
 
+serialize-ast := λ program . (match program (
+   ()
+   ( (l r) (tail(
+      (serialize-ast l)
+      (print-s r)(print-s \n)
+   )))
+   ( u (print-s u)(print-s \n))
+));
