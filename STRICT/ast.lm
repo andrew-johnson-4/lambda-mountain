@@ -1,6 +1,6 @@
 
 
-type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] )) | (Asc( AST[] , Type[] )) | (Seq( AST[] , AST[] ));
+type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] )) | (Asc( AST[] , Type[] )) | (Seq( AST[] , AST[] )) | (Glb( String , AST[] ));
 
 ast-tokenized-program := (: SNil S);
 ast-parsed-program := (: ASTEOF AST);
@@ -28,6 +28,11 @@ print := λ(: t AST). (: (tail(
       ( ASTNil (print '\[\]_s) )
       ( (Var a) (print a) )
       ( (Lit a) (tail( (print '\`_s) (print a) )))
+      ( (Glb( k v )) (tail(
+         (print k)
+         (print '\s:=\s_s)
+         (print v)
+      )))
       ( (App( l r )) (tail(
          (print '\[_s)
          (print l)

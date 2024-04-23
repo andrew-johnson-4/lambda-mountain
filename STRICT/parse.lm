@@ -26,21 +26,21 @@ parse := λ. (: (tail(
          ( (SCons( (SAtom \:_s) remainder )) (
             (set tokens remainder)
          ))
-#         ( (SCons( (SAtom 'macro_s) remainder )) (
-#            (match (parse-one-expression remainder) (
-#               ()
-#               ( (PME( mlhs mremainder1 )) (
-#                  (match (parse-one-expression mremainder1) (
-#                     ()
-#                     ( (PME( mrhs mremainder2 )) (tail(
-#                        # (set parse-macros (parse-macros (Macro( (head pme) (head pme2) )) ))
-#                        ()
-#                        (set tokens mremainder2)
-#                     )))
-#                  ))
-#               ))
-#            ))
-#         ))
+         ( (SCons( (SAtom 'macro_s) remainder )) (
+            (match (parse-one-expression remainder) (
+               ()
+               ( (PME( mlhs mremainder1 )) (
+                  (match (parse-one-expression mremainder1) (
+                     ()
+                     ( (PME( mrhs mremainder2 )) (tail(
+                        # (set parse-macros (parse-macros (Macro( (head pme) (head pme2) )) ))
+                        ()
+                        (set tokens mremainder2)
+                     )))
+                  ))
+               ))
+            ))
+         ))
 
 #         (('fragment ('type remainder)) (tail(
 #            (set pme (parse-one-expression remainder))
@@ -83,11 +83,21 @@ parse := λ. (: (tail(
 #            (parse-program (tokenize-file relative-path))
 #            (set toks remainder)
 #         )))
-#         ((key (:= remainder)) (tail(
-#            (set pme (parse-many-expressions remainder))
-#            (set parse-parsed-program ( parse-parsed-program (Global ( key (head pme))) ))
-#            (set toks (tail pme))
-#         )))
+
+         ( (SCons( (SAtom key) (SCons( (SAtom ':=_s) remainder )) )) (
+            (match (parse-many-expressions remainder) (
+               ()
+               ( (PME( re rr )) (tail(
+                  (let bind (Glb( key (close re) )))
+                  (set ast-parsed-program (Seq(
+                     (close ast-parsed-program)
+                     (close bind)
+                  )))
+                  ()
+                  (set tokens rr)
+               )))
+            ))
+         ))
          (remainder (
             (match (parse-many-expressions remainder) (
                ()
