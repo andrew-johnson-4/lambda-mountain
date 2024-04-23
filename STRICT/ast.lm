@@ -1,7 +1,8 @@
 
 
 type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] ))
-                | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Fragment( AST[] , AST[] ));
+                | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Fragment( AST[] , AST[] ))
+                | (Asc( AST[] , Type[] ));
 
 ast-tokenized-program := (: SNil S);
 ast-parsed-program := (: ASTEOF AST);

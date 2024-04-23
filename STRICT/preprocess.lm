@@ -22,8 +22,9 @@ non-zero := λ(: x MacroList). (: (tail(
 
 preprocess := λ. (: (tail(
    (preprocess-index-typedefs ast-parsed-program)
-   (let program (maybe-deref(preprocess-apply ast-parsed-program)))
-   (set ast-parsed-program program)
+   #(let program (maybe-deref(preprocess-apply ast-parsed-program)))
+   #(set ast-parsed-program program)
+   ()
 )) Nil);
 
 preprocess-index-typedefs := λ(: program AST). (: (
@@ -47,7 +48,83 @@ preprocess-index-typedef := λ(: term AST). (: (match term (
    ( _ () )
 )) Nil);
 
-preprocess-apply := λ(: program AST). (: (tail(
+preprocess-destructure-type := λ(: tt String). (: (tail(
    ()
-   (close program)
+   (close TNil)
+)) Type[]);
+
+preprocess-apply := λ(: program AST). (: (tail(
+   (let r ASTEOF)
+   (match program (
+      ()
+      ( (App( (App( (Lit ':_s) mvar )) (Lit mtype) )) (
+         (set r (Asc( (preprocess-apply mvar) (preprocess-destructure-type mtype) )))
+      ))
+      ( (App( (App( (Lit ':_s) mvar )) (Var mtype) )) (
+         (set r (Asc( (preprocess-apply mvar) (preprocess-destructure-type mtype) )))
+      ))
+      ( u (set r u))
+   ))
+
+#   ( (Literal l) (tail(
+#      (local suffixes)
+#      (set suffixes parse-suffix)
+#      (while suffixes (tail(
+#         (local sfx)
+#         (set sfx (tail (tail suffixes)) )
+#         (if (is-suffix( l sfx )) (tail(
+#            (local literal-type)
+#            (set literal-type (preprocess-restructure-type(parse-type(clone-rope((Constant+Literal+ (head(tail( suffixes ))) ))))) )
+#            (set program (
+#               (App(
+#                  (App(
+#                     (Literal ':)
+#                     (Literal (remove-suffix( l sfx )))
+#                  ))
+#                  literal-type
+#               ))
+#            ))
+#         )) ())
+#         (set suffixes (head suffixes))
+#      )))
+#      program
+#   )))
+#   ( (Variable l) (tail(
+#      (local suffixes)
+#      (set suffixes parse-suffix)
+#      (while suffixes (tail(
+#         (local sfx)
+#         (set sfx (tail (tail suffixes)) )
+#         (if (is-suffix( l sfx )) (tail(
+#            (local literal-type)
+#            (set literal-type (preprocess-restructure-type(parse-type(clone-rope((Constant+Literal+ (head(tail( suffixes ))) ))))) )
+#            (set program (
+#               (App(
+#                  (App(
+#                     (Literal ':)
+#                     (Literal (remove-suffix( l sfx )))
+#                  ))
+#                  literal-type
+#               ))
+#            ))
+#         )) ())
+#         (set suffixes (head suffixes))
+#      )))
+#      program
+#   )))
+#   ( (App( (Variable vn) vt )) (
+#      if (is-macro-head vn) (preprocess-apply-maybe program)
+#         (App( (Variable vn) (preprocess-apply-macros vt) ))
+#   ))
+#   ( (App( (App( (Variable vn) vt1 )) vt2 )) (
+#      if (is-macro-head vn) (preprocess-apply-maybe program)
+#         (App( (App( (Variable vn) (preprocess-apply-macros vt1) ))
+#                                   (preprocess-apply-macros vt2) ))
+#   ))
+#   ( (l r) (
+#      (preprocess-apply-macros l)
+#      (preprocess-apply-macros r)
+#   ))
+   (close r)
 )) AST[]);
+
