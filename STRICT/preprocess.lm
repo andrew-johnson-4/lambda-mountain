@@ -177,7 +177,30 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
 )) Context[]);
 
 apply-context := λ(: ctx Context)(: term AST). (: (tail( 
-   ()
+   (match term (
+      ()
+      ( (Var n) (
+         (while (non-zero ctx) (match ctx (
+            ()
+            ( (CtxBind( rst ck v )) (
+#               (if (==( k n )) (
+#                  (set term v)
+#                  (set ctx CtxEOF)
+#               ) (
+#                  (set ctx rst)
+#               ))
+            ))
+            ( _ (set ctx CtxEOF))
+         )))
+      ))
+      ( (App( vl vr )) (
+         (set term (App(
+            (apply-context( ctx vl ))
+            (apply-context( ctx vr ))
+         )))
+      ))
+      ( _ () )
+   ))
    (close term)
 )) AST[]);
 
@@ -211,3 +234,4 @@ preprocess-apply-maybe := λ(: program AST). (: (tail(
    )))
    (close program)
 )) AST[]);
+

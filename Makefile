@@ -1,4 +1,10 @@
 
+start: prod
+	./production --nostd -o tmp.s tests/strict/match11.lm
+	as -o tmp.o tmp.s
+	ld -o tmp tmp.o
+	./tmp
+
 nostd: prod strict
 	./production --parse test.lm
 	./strict --parse test.lm
