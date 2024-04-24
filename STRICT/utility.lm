@@ -23,6 +23,7 @@ is-variable := λ(: s String). (: (tail(
       ( 91_u8 (set r True_u8) )
       ( 63_u8 (set r True_u8) )
       ( 33_u8 (set r True_u8) )
+      ( 37_u8 (set r True_u8) )
       ( 61_u8 (set r True_u8) )
       ( 62_u8 (set r True_u8) )
       ( 60_u8 (set r True_u8) )
@@ -97,7 +98,56 @@ to-string := λ(: i U64). (: (tail(
    '1_s
 )) String);
 
-uuid := λ. (: (tail(
-   ()
-   'uuid_00001_s
+uuid-counter := 0_u64;
+uuid := λ . (: (tail(
+   (set uuid-counter (+( uuid-counter 1_u64 )))
+   (clone-rope (SCons(
+      (close(SAtom 'uuid__s))
+      (close(SAtom(dump-i uuid-counter)))
+   )))
+)) String);
+
+dump-i := λ(: i U64). (: (tail(
+   (let buff SNil)
+   (let rpt 16_u64)
+   (while (>( rpt 0_u64 )) (
+      (match (%( i 8_u64 )) (
+         ()
+         ( 0_u64 (set buff (SCons(
+            (close (SAtom( '0_s )))
+            (close buff)
+         ))))
+         ( 1_u64 (set buff (SCons(
+            (close (SAtom( '1_s )))
+            (close buff)
+         ))))
+         ( 2_u64 (set buff (SCons(
+            (close (SAtom( '2_s )))
+            (close buff)
+         ))))
+         ( 3_u64 (set buff (SCons(
+            (close (SAtom( '3_s )))
+            (close buff)
+         ))))
+         ( 4_u64 (set buff (SCons(
+            (close (SAtom( '4_s )))
+            (close buff)
+         ))))
+         ( 5_u64 (set buff (SCons(
+            (close (SAtom( '5_s )))
+            (close buff)
+         ))))
+         ( 6_u64 (set buff (SCons(
+            (close (SAtom( '6_s )))
+            (close buff)
+         ))))
+         ( 7_u64 (set buff (SCons(
+            (close (SAtom( '7_s )))
+            (close buff)
+         ))))
+      ))
+      (set i (/( i 8_u64 )))
+      (set rpt (-( rpt 1_u64 )))
+   ))
+   (clone-rope buff)
 )) String);
