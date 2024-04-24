@@ -1,10 +1,12 @@
 
 type Macro (Macro( AST , AST ));
 type MacroList MEOF | (MSeq( MacroList[] , Macro ));
+type IndexList IEOF | (ISeq( IndexList[] , String , U64 ));
 
 type Destructure DestFail | (DestOk( Context ));
 
 preprocess-macros := (: MEOF MacroList);
+preprocess-tag-indices := (: IEOF IndexList);
 
 preprocess-index-of-tag := λ(: tag String). (: (tail(
    ()
@@ -17,11 +19,27 @@ close := λ(: x MacroList). (: (tail(
    (as R8 MacroList[])
 )) MacroList[]);
 
+close := λ(: x IndexList). (: (tail(
+   (mov( (malloc(sizeof IndexList)) R8 ))
+   (mov( x 0_u64 (as R8 IndexList[]) ))
+   (as R8 IndexList[])
+)) IndexList[]);
+
 non-zero := λ(: x MacroList). (: (tail(
    (let r 1_u64)
    (match x (
       ()
       ( MEOF (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+non-zero := λ(: x IndexList). (: (tail(
+   (let r 1_u64)
+   (match x (
+      ()
+      ( IEOF (set r 0_u64))
       ( _ () )
    ))
    r
@@ -50,9 +68,44 @@ preprocess-index-typedef := λ(: term AST). (: (match term (
       (print 'Index\sType:\s_s)
       (print lhs)
       (print '\n_s)
-#      (preprocess-index-indices( ds 0 ))
+      (preprocess-index-indices( rhs 0_u64 ))
    )))
    ( _ () )
+)) Nil);
+
+preprocess-index-indices := λ(: def AST)(: index U64) . (: (tail(
+   (match def (
+      ()
+      ( (App( (App( tds (Var '|_s) )) body )) (tail(
+         (preprocess-index-indices( tds (+( index 1_u64 )) ))
+         (preprocess-index-index( body index ))
+      )))
+      ( body (
+         (preprocess-index-index( body index ))
+      ))
+   ))
+   ()
+)) Nil);
+
+preprocess-index-index := λ(: body AST)(: index U64). (: (tail(
+   (match body (
+      ()
+      ( (Lit tag) (
+         (set preprocess-tag-indices (ISeq(
+            (close preprocess-tag-indices)
+            tag
+            index
+         )))
+      ))
+      ( (App( (Lit tag) args )) (
+         (set preprocess-tag-indices (ISeq(
+            (close preprocess-tag-indices)
+            tag
+            index
+         )))
+      ))
+   ))
+   ()
 )) Nil);
 
 preprocess-destructure-type := λ(: tt String). (: (tail(
