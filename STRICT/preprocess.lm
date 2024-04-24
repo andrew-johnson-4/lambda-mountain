@@ -54,6 +54,7 @@ non-zero := λ(: x IndexList). (: (tail(
 )) U64);
 
 preprocess := λ. (: (tail(
+   (preprocess-index-typedefs ast-parsed-program)
    (let program (maybe-deref(preprocess-apply ast-parsed-program)))
    (set ast-parsed-program program)
 )) Nil);
@@ -77,7 +78,8 @@ preprocess-index-typedef := λ(: term AST). (: (match term (
    ( _ () )
 )) Nil);
 
-preprocess-index-indices := λ(: def AST)(: index U64) . (: (
+preprocess-index-indices := λ(: def AST)(: index U64) . (: (tail(
+   ()
    (match def (
       ()
       ( (App( (App( tds (Var '|_s) )) body )) (tail(
@@ -88,7 +90,7 @@ preprocess-index-indices := λ(: def AST)(: index U64) . (: (
          (preprocess-index-index( body index ))
       ))
    ))
-) Nil);
+)) Nil);
 
 preprocess-index-index := λ(: body AST)(: index U64). (: (tail(
    (match body (
@@ -262,7 +264,7 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
       ( (Pair( (App( (Lit ':Variable:_s) (Var pv) )) (Var el) )) (
          (set r (CtxBind( (close CtxNil) pv (close term) )))
       ))
-      ( (Pair( (App( (App( (Lit ':Tag_s) (Var pv) )) (Var pt) )) (Lit el) )) (
+      ( (Pair( (App( (App( (Lit ':Tag:_s) (Var pv) )) (Var pt) )) (Lit el) )) (
          (if (preprocess-index-of-tag el) (tail(
             (set r CtxNil)
             (set r (CtxBind( (close r) pv (close(
@@ -391,9 +393,14 @@ preprocess-apply-maybe := λ(: program AST). (: (tail(
             ()
             ( CtxEOF (set macros rst) )
             ( ctx (tail(
+               #(print 'Match:\s_s)
+               #(print ctx)
                (let p (maybe-deref(apply-context( ctx rhs ))))
                (let c (maybe-deref(extract-uuids( CtxEOF p ))))
                (let u (maybe-deref(substitute-uuids( c p ))))
+               #(print 'Yield:\s_s)
+               #(print u)
+               #(print '\n_s)
                (let n (maybe-deref(preprocess-apply u)))
                (set program n)
                (set macros MEOF)
