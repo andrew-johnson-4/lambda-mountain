@@ -328,7 +328,6 @@ parse-type := λ(: tt String). (: (tail(
    (let depth 0_u64)
    (let buff SNil)
    (let base-type (maybe-deref(tnil())))
-   (serialize-ast base-type)
    (while (head-string tt) (tail(
       (match (head-string tt) (
          ()
@@ -383,7 +382,6 @@ parse-type := λ(: tt String). (: (tail(
          ))
       ))
    ) ())
-   (serialize-ast base-type)
    (close base-type)
 )) Type[]);
 
