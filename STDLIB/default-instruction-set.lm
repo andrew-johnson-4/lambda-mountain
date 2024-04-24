@@ -244,6 +244,7 @@ fragment mov := λ(: src GlobalVariable)(: dst Constant+Reg64). (: ( (.program(
 )) ) Nil);
 fragment mov := λ(: src Constant+Literal+Sized<8>)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t '$ (.expression src) , \s '% (.expression dst) \n)) ) Nil);
 fragment mov := λ(: src Reg64)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t '% (.expression src) , \s '% (.expression dst) \n)) ) Nil);
+fragment mov := λ(: src Reg8)(: dst Constant+Reg8). (: ( (.program( \t 'mov \t '% (.expression src) , \s '% (.expression dst) \n)) ) Nil);
 
 fragment mov := λ(: src Constant+Literal+Sized<1>)(: dst LocalVariable). (: (.program( \t 'movb \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
 fragment mov := λ(: src Constant+Literal+Sized<2>)(: dst LocalVariable). (: (.program( \t 'movw \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
@@ -373,3 +374,6 @@ fragment sub := λ(: src Reg64)(: dst Reg64). (: (.program( \t 'sub \s '% (.expr
 
 fragment push := λ(: l Reg64). (: (.program( \t 'push \s '% (.expression l) \n )) Nil);
 fragment pop := λ(: l Reg64). (: (.program( \t 'pop \s '% (.expression l) \n )) Nil);
+
+fragment shl := λ(: c Literal+Constant)(: l Reg64). (: (.program( \t 'shl \s '$ (.expression c) , \s '% (.expression l) \n )) Nil);
+fragment shr := λ(: c Literal+Constant)(: l Reg64). (: (.program( \t 'shr \s '$ (.expression c) , \s '% (.expression l) \n )) Nil);

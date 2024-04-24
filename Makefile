@@ -1,13 +1,13 @@
 
-start: prod strict
-	./strict --preprocess test.lm
 
-nostd: prod strict
-	./production --parse test.lm
-	./strict --parse test.lm
+nostd: prod
+	./production --nostd -o tmp.s tests/strict/div.lm
 	as -o tmp.o tmp.s
 	ld -o tmp tmp.o
-	./tmp STRICT/cli.lm && echo $?
+	./tmp
+
+start: prod strict
+	./strict --preprocess test.lm
 
 strict: prod
 	./production --nostd -o strict.s STRICT/cli.lm
