@@ -54,9 +54,7 @@ non-zero := λ(: x IndexList). (: (tail(
 )) U64);
 
 preprocess := λ. (: (tail(
-   (print 'Preprocess\n_s)
    (let program (maybe-deref(preprocess-apply ast-parsed-program)))
-   (print 'End\sPreprocess\n_s)
    (set ast-parsed-program program)
 )) Nil);
 
@@ -120,9 +118,6 @@ preprocess-destructure-type := λ(: tt String). (: (tail(
 )) Type[]);
 
 preprocess-apply := λ(: program AST). (: (tail(
-   (print 'Apply\s_s)
-   (print program)
-   (print '\n_s)
    (let r program)
    (match program (
       ()

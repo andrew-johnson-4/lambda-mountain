@@ -30,10 +30,10 @@ close := λ(: x SfxList). (: (tail(
 )) SfxList[]);
 
 non-zero := λ(: x SfxList). (: (tail(
-   (let r 0_u64)
+   (let r 1_u64)
    (match x (
       ()
-      ( SfxEOF (set r 1_u64))
+      ( SfxEOF (set r 0_u64))
       ( _ () )
    ))
    r
