@@ -67,12 +67,29 @@ is-variable := λ(: s String). (: (tail(
 
 is-suffix := λ(: base String)(: sfx String). (: (tail(
    (let r 0_u64)
+   (while (head-string base) (tail(
+      (if (==( base sfx )) (
+         (set r 1_u64)
+      ) ())
+      (set base (tail-string base))
+   )))
    r
 )) U64);
 
 remove-suffix := λ(: base String)(: sfx String). (: (tail(
-   ()
-   base
+   (let r SNil)
+   (while (head-string base) (tail(
+      (if (==( base sfx )) (
+         (set base '0_s)
+      ) (
+         (set r (SCons(
+            (close r)
+            (close(SAtom(clone-rope(head-string base))))
+         )))
+      ))
+      (set base (tail-string base))
+   )))
+   (clone-rope r)
 )) String);
 
 to-string := λ(: i U64). (: (tail(
