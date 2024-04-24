@@ -1,7 +1,12 @@
 
 print := λ(: tt Type). (: (match tt (
    ()
-#   ( TNil (print 'Nil_s))
+   ( TNil (print 'Nil_s) )
+)) Nil);
+
+serialize-ast := λ(: tt Type). (: (match tt (
+   ()
+   ( TNil (print 'Nil_s) )
 )) Nil);
 
 close := λ(: x Type). (: (tail(

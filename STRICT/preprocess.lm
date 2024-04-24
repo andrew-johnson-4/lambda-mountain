@@ -65,6 +65,7 @@ preprocess-index-typedefs := λ(: program AST). (: (
          (preprocess-index-typedef term)
          (set program rst)
       )))
+      ( _ (set program ASTEOF) )
    )))
 ) Nil);
 
@@ -377,9 +378,6 @@ extract-uuids := λ(: ctx Context)(: term AST). (: (tail(
 )) Context[]);
 
 preprocess-apply-maybe := λ(: program AST). (: (tail(
-   (print 'ApplyMaybe:\s_s)
-   (print program)
-   (print '\n_s)
    (let macros preprocess-macros)
    (while (non-zero macros) (match macros (
       ()
@@ -402,6 +400,7 @@ preprocess-apply-maybe := λ(: program AST). (: (tail(
             )))
          ))
       ))
+      ( _ (set macros MEOF) )
    )))
    (close program)
 )) AST[]);
