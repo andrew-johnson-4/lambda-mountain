@@ -1,17 +1,25 @@
 
 print := λ(: tt Type). (: (match tt (
    ()
-   ( (TGround( tag ASTLEOF )) (print tag) )
+   ( TAny (print '?_s) )
+   ( (TGround( tag TypeEOF )) (print tag) )
    ( (TAnd( lt rt )) (tail(
       (print lt)
       (print '+_s)
       (print rt)
    )))
+   ( (TArray( lt rt )) (tail(
+      (print lt)
+      (print '[_s)
+      (print rt)
+      (print ']_s)
+   )))
 )) Nil);
 
 serialize-ast := λ(: tt Type). (: (match tt (
    ()
-   ( (TGround( tag ASTLEOF )) (tail(
+   ( TAny (print '?_s) )
+   ( (TGround( tag TypeEOF )) (tail(
       (print '\[Literal\s_s)
       (print tag)
       (print '\]_s)
@@ -31,6 +39,12 @@ serialize-ast := λ(: tt Type). (: (match tt (
       (print '\]\]_s)
       (print '\]\]_s)
    )))
+   ( (TArray( lt rt )) (tail(
+      (print lt)
+      (print '[_s)
+      (print rt)
+      (print ']_s)
+   )))
 )) Nil);
 
 close := λ(: x Type). (: (tail(
@@ -48,6 +62,6 @@ tnil := λ. (: (tail(
    ()
    (close (TGround(
       'Nil_s
-      (close ASTLEOF)
+      (close TypeEOF)
    )))
 )) Type[]);
