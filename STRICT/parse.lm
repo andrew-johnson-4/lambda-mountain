@@ -474,12 +474,24 @@ parse-type-single := λ(: tt String). (: (tail(
       )))
       (set tt (tail-string tt))
    )))
+   (if (non-zero buff) (
+      (set base-type (TGround(
+         (clone-rope buff)
+         (close TypeEOF)
+      )))
+   ) ())
    (close base-type)
 )) Type[]);
 
 parse-type-comma-sep := λ(: tt String). (: (tail(
    ()
-   (close TypeEOF)
+   (close (TypeSeq(
+      (close TypeEOF)
+      (TGround(
+         tt
+         (close TypeEOF)
+      ))
+   )))
 )) TypeList[]);
 
 #parse-type-comma-sep := λ tt . (tail(

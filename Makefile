@@ -1,6 +1,6 @@
 
 start: prod strict
-	./strict --preprocess STRICT/cli.lm
+	./strict --preprocess test.lm
 
 nostd: prod strict
 	./production --parse test.lm

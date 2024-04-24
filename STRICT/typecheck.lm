@@ -3,6 +3,12 @@ print := λ(: tt Type). (: (match tt (
    ()
    ( TAny (print '?_s) )
    ( (TGround( tag TypeEOF )) (print tag) )
+   ( (TGround( tag (TypeSeq( TypeEOF p1 )) )) (tail(
+      (print tag)
+      (print '<_s)
+      (print p1)
+      (print '>_s)
+   )))
    ( (TAnd( lt rt )) (tail(
       (print lt)
       (print '+_s)
@@ -23,6 +29,14 @@ serialize-ast := λ(: tt Type). (: (match tt (
       (print '\[Literal\s_s)
       (print tag)
       (print '\]_s)
+   )))
+   ( (TGround( tag (TypeSeq( TypeEOF p1 )) )) (tail(
+      (print '\[App\s\[_s) 
+      (print '\[Literal\s_s)
+      (print tag)
+      (print '\]\s_s)
+      (serialize-ast p1)
+      (print '\]\]_s)
    )))
    ( (TGround( tag _ )) (tail(
       (print '\[Literal\s_s)
