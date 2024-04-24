@@ -327,7 +327,7 @@ substitute-uuids := λ(: ctx Context)(: term AST). (: (tail(
             ( (CtxBind( rst (*( k v )) )) (
                (if (==( x k )) (tail(
                   (set term v)
-                  (set ctx CtxEOF)
+                  (set ctx rst)
                )) (
                   (set ctx rst)
                ))
