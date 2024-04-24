@@ -409,6 +409,17 @@ preprocess-apply-maybe := λ(: program AST). (: (tail(
       ))
       ( _ (set macros MEOF) )
    )))
+   (match program (
+      ()
+      ( (App( l r )) (tail(
+         (let np (App(
+            (preprocess-apply l)
+            (preprocess-apply r)
+         )))
+         (set program np)
+      )))
+      ( _ () )
+   ))
    (close program)
 )) AST[]);
 
