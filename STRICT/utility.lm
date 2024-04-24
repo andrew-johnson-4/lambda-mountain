@@ -125,7 +125,7 @@ dump-i := λ(: i U64). (: (tail(
    (let buff SNil)
    (let rpt 16_u64)
    (while (>( rpt 0_u64 )) (
-      (match (%( i 8_u64 )) (
+      (match (%( i 16_u64 )) (
          ()
          ( 0_u64 (set buff (SCons(
             (close (SAtom( '0_s )))
@@ -159,8 +159,40 @@ dump-i := λ(: i U64). (: (tail(
             (close (SAtom( '7_s )))
             (close buff)
          ))))
+         ( 8_u64 (set buff (SCons(
+            (close (SAtom( '8_s )))
+            (close buff)
+         ))))
+         ( 9_u64 (set buff (SCons(
+            (close (SAtom( '9_s )))
+            (close buff)
+         ))))
+         ( 10_u64 (set buff (SCons(
+            (close (SAtom( 'a_s )))
+            (close buff)
+         ))))
+         ( 11_u64 (set buff (SCons(
+            (close (SAtom( 'b_s )))
+            (close buff)
+         ))))
+         ( 12_u64 (set buff (SCons(
+            (close (SAtom( 'c_s )))
+            (close buff)
+         ))))
+         ( 13_u64 (set buff (SCons(
+            (close (SAtom( 'd_s )))
+            (close buff)
+         ))))
+         ( 14_u64 (set buff (SCons(
+            (close (SAtom( 'e_s )))
+            (close buff)
+         ))))
+         ( 15_u64 (set buff (SCons(
+            (close (SAtom( 'f_s )))
+            (close buff)
+         ))))
       ))
-      (set i (/( i 8_u64 )))
+      (set i (/( i 16_u64 )))
       (set rpt (-( rpt 1_u64 )))
    ))
    (clone-rope buff)
