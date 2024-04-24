@@ -328,6 +328,7 @@ parse-type := λ(: tt String). (: (tail(
    (let depth 0_u64)
    (let buff SNil)
    (let base-type (maybe-deref(tnil())))
+   (serialize-ast base-type)
    (while (head-string tt) (tail(
       (match (head-string tt) (
          ()
@@ -341,9 +342,10 @@ parse-type := λ(: tt String). (: (tail(
          (if (==( (head-string tt) 43_u8 )) (tail(
             (match base-type (
                ()
-               ( (TGround( 'Nil_s ASTLEOF )) (
-                  (set base-type (parse-type-single (clone-rope buff)))
-               ))
+               ( (TGround( 'Nil_s ASTLEOF )) (tail(
+                  (let bt (maybe-deref(parse-type-single (clone-rope buff))))
+                  (set base-type bt)
+               )))
                ( _ (
                   (set base-type (TAnd(
                      (close base-type)
@@ -366,15 +368,31 @@ parse-type := λ(: tt String). (: (tail(
       ))
       (set tt (tail-string tt))
    )))
-   (tnil())
+   (if (non-zero buff) (
+      (match base-type (
+         ()
+         ( (TGround( 'Nil_s ASTLEOF )) (tail(
+            (let bt (maybe-deref(parse-type-single (clone-rope buff))))
+            (set base-type bt)
+         )))
+         ( _ (
+            (set base-type (TAnd(
+               (close base-type)
+               (parse-type-single (clone-rope buff))
+            )))
+         ))
+      ))
+   ) ())
+   (serialize-ast base-type)
+   (close base-type)
 )) Type[]);
 
 parse-type-single := λ(: tt String). (: (tail(
-   ()
-   (close(TGround(
+   (let r (close(TGround(
       tt
       (close ASTLEOF)
-   )))
+   ))))
+   r
 )) Type[]);
 
 #parse-type := λ tt . (tail(

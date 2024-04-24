@@ -2,6 +2,11 @@
 print := λ(: tt Type). (: (match tt (
    ()
    ( (TGround( tag ASTLEOF )) (print tag) )
+   ( (TAnd( lt rt )) (tail(
+      (print lt)
+      (print '+_s)
+      (print rt)
+   )))
 )) Nil);
 
 serialize-ast := λ(: tt Type). (: (match tt (
@@ -10,6 +15,21 @@ serialize-ast := λ(: tt Type). (: (match tt (
       (print '\[Literal\s_s)
       (print tag)
       (print '\]_s)
+   )))
+   ( (TGround( tag _ )) (tail(
+      (print '\[Literal\s_s)
+      (print tag)
+      (print '\]_s)
+   )))
+   ( (TAnd( lt rt )) (tail(
+      (print '\[App\s\[_s)
+      (print '\[Literal\sAnd\]\s_s)
+      (print '\[App\s\[_s)
+      (serialize-ast lt)
+      (print '\s_s)
+      (serialize-ast rt)
+      (print '\]\]_s)
+      (print '\]\]_s)
    )))
 )) Nil);
 
