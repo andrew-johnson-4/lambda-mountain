@@ -1,12 +1,16 @@
 
 print := λ(: tt Type). (: (match tt (
    ()
-   ( TNil (print 'Nil_s) )
+   ( (TGround( tag ASTLEOF )) (print tag) )
 )) Nil);
 
 serialize-ast := λ(: tt Type). (: (match tt (
    ()
-   ( TNil (print 'Nil_s) )
+   ( (TGround( tag ASTLEOF )) (tail(
+      (print '\[Literal\s_s)
+      (print tag)
+      (print '\]_s)
+   )))
 )) Nil);
 
 close := λ(: x Type). (: (tail(
@@ -19,3 +23,11 @@ typecheck := λ. (: (tail(
    ()
    ()
 )) Nil);
+
+tnil := λ. (: (tail(
+   ()
+   (close (TGround(
+      'Nil_s
+      (close ASTLEOF)
+   )))
+)) Type[]);

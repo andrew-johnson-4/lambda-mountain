@@ -114,7 +114,7 @@ preprocess-index-index := λ(: body AST)(: index U64). (: (tail(
 
 preprocess-destructure-type := λ(: tt String). (: (tail(
    ()
-   (close TNil)
+   (tnil())
 )) Type[]);
 
 preprocess-apply := λ(: program AST). (: (tail(

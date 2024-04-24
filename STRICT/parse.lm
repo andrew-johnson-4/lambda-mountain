@@ -326,5 +326,5 @@ parse-lambda := λ(: tokens S). (: (tail(
 
 parse-type := λ(: tt String). (: (tail(
    ()
-   (close TNil)
+   (tnil())
 )) Type[]);
