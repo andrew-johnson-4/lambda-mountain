@@ -133,7 +133,13 @@ parse := λ. (: (tail(
             (set parse-suffixes (SfxSeq(
                (close parse-suffixes)
                suffix
-               (maybe-deref(parse-type atype))
+               (TAnd(
+                  (close(TAnd(
+                     (close(TGround( 'Constant_s (close TypeEOF) )))
+                     (close(TGround( 'Literal_s (close TypeEOF) )))
+                  )))
+                  (parse-type atype)
+               ))
             )))
             ()
             (set tokens remainder)
