@@ -42,7 +42,7 @@ print := λ(: tt Type). (: (match tt (
 
 serialize-ast := λ(: tt Type). (: (match tt (
    ()
-   ( TAny (print '?_s) )
+   ( TAny (print '\[Variable\s?\]_s) )
    ( (TGround( tag TypeEOF )) (
       (if (is-variable tag) (tail(
          (print '\[Variable\s_s)
@@ -100,10 +100,14 @@ serialize-ast := λ(: tt Type). (: (match tt (
       (print '\]\]_s)
    )))
    ( (TArray( lt rt )) (tail(
-      (print lt)
-      (print '[_s)
-      (print rt)
-      (print ']_s)
+      (print '\[App\s\[_s)
+      (print '\[Literal\sArray\]\s_s)
+      (print '\[App\s\[_s)
+      (serialize-ast lt)
+      (print '\s_s)
+      (serialize-ast rt)
+      (print '\]\]_s)
+      (print '\]\]_s)
    )))
 )) Nil);
 
