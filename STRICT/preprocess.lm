@@ -299,6 +299,12 @@ apply-context := λ(: ctx Context)(: term AST). (: (tail(
             (apply-context( ctx vr ))
          )))
       ))
+      ( (Abs( vl vr )) (
+         (set term (Abs(
+            (apply-context( ctx vl ))
+            (apply-context( ctx vr ))
+         )))
+      ))
       ( _ () )
    ))
    (close term)
@@ -327,6 +333,19 @@ substitute-uuids := λ(: ctx Context)(: term AST). (: (tail(
             (substitute-uuids( ctx r ))
          )))
       ))
+      ( (Abs( l r )) (
+         (set term (Abs(
+            (substitute-uuids( ctx l ))
+            (substitute-uuids( ctx r ))
+         )))
+      ))
+      ( (Asc( l rt )) (
+         (set term (Asc(
+            (substitute-uuids( ctx l ))
+            (close rt)
+         )))
+      ))
+      ( _ () )
    ))
    (close term)
 )) AST[]);
@@ -342,6 +361,15 @@ extract-uuids := λ(: ctx Context)(: term AST). (: (tail(
          (let lctx (maybe-deref(extract-uuids( ctx l ))))
          (let rctx (maybe-deref(extract-uuids( lctx r ))))
          (set ctx rctx)
+      )))
+      ( (Abs( l r )) (tail(
+         (let lctx (maybe-deref(extract-uuids( ctx l ))))
+         (let rctx (maybe-deref(extract-uuids( lctx r ))))
+         (set ctx rctx)
+      )))
+      ( (Asc( l rt )) (tail(
+         (let lctx (maybe-deref(extract-uuids( ctx l ))))
+         (set ctx lctx)
       )))
       ( _ () )
    ))
@@ -364,8 +392,11 @@ preprocess-apply-maybe := λ(: program AST). (: (tail(
                (print lhs)
                (print '\n_s)
                (let p (maybe-deref(apply-context( ctx rhs ))))
+               (print 'Match1\n_s)
                (let c (maybe-deref(extract-uuids( CtxEOF p ))))
+               (print 'Match2\n_s)
                (let u (maybe-deref(substitute-uuids( c p ))))
+               (print 'Match3\n_s)
                (set program u)
                (set macros MEOF)
             )))
