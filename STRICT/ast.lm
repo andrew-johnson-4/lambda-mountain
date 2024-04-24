@@ -79,6 +79,22 @@ close := λ(: x Context). (: (tail(
    (as R8 Context[])
 )) Context[]);
 
+print := λ(: t Context). (: (tail(
+   (match t (
+      ()
+      ( CtxEOF () )
+      ( CtxNil () )
+      ( (CtxBind( rst (*( k v )) )) (tail(
+         (print rst)
+         (print k)
+         (print '\s=\s_s)
+         (print v)
+         (print '\:\n_s)
+      )))
+   ))
+   ()
+)) Nil);
+
 print := λ(: t AST). (: (tail(
    (match t (
       ()

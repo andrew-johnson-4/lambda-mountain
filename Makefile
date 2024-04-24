@@ -1,10 +1,9 @@
 
-
-nostd: prod
-	./production --nostd -o tmp.s tests/strict/div.lm
-	as -o tmp.o tmp.s
-	ld -o tmp tmp.o
-	./tmp
+devv: prod strict
+	./production --parse test.lm > production-preprocess.txt
+	./strict --preprocess test.lm > strict-preprocess.txt
+	diff production-preprocess.txt strict-preprocess.txt > diff.txt
+	cat diff.txt
 
 start: prod strict
 	./strict --preprocess test.lm

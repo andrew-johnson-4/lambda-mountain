@@ -215,7 +215,7 @@ merge := λ(: l Context)(: r Context). (: (tail(
                 (CtxBind( cr (*( kr vr )) )) )) (tail(
          (let c1 (merge( cl cr )))
          (let c2 (close(CtxBind( c1 kl (close vl) ))))
-         (let c3 (close(CtxBind( c2 kr (close vr) ))))
+         (let c3 (CtxBind( c2 kr (close vr) )))
          (set l c3)
       )))
    ))
