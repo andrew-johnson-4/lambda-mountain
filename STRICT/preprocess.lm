@@ -54,7 +54,9 @@ non-zero := λ(: x IndexList). (: (tail(
 )) U64);
 
 preprocess := λ. (: (tail(
+   (print 'Preprocess\n_s)
    (let program (maybe-deref(preprocess-apply ast-parsed-program)))
+   (print 'End\sPreprocess\n_s)
    (set ast-parsed-program program)
 )) Nil);
 
@@ -118,6 +120,9 @@ preprocess-destructure-type := λ(: tt String). (: (tail(
 )) Type[]);
 
 preprocess-apply := λ(: program AST). (: (tail(
+   (print 'Apply\s_s)
+   (print program)
+   (print '\n_s)
    (let r program)
    (match program (
       ()
@@ -386,15 +391,9 @@ preprocess-apply-maybe := λ(: program AST). (: (tail(
             ()
             ( CtxEOF (set macros rst) )
             ( ctx (tail(
-               (print 'Match:\s_s)
-               (print lhs)
-               (print '\n_s)
                (let p (maybe-deref(apply-context( ctx rhs ))))
-               (print 'Match1\n_s)
                (let c (maybe-deref(extract-uuids( CtxEOF p ))))
-               (print 'Match2\n_s)
                (let u (maybe-deref(substitute-uuids( c p ))))
-               (print 'Match3\n_s)
                (set program u)
                (set macros MEOF)
             )))

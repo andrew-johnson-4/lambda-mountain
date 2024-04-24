@@ -1,6 +1,6 @@
 
 start: prod strict
-	./strict --preprocess STRICT/cli.lm
+	./strict --preprocess STDLIB/default-instruction-set.lm
 
 nostd: prod strict
 	./production --parse test.lm
@@ -27,8 +27,8 @@ parse: prod strict
 	cat diff.txt
 
 preprocess: prod strict
-	./production --parse STRICT/cli.lm > production-preprocess.txt
-	./strict --preprocess STRICT/cli.lm > strict-preprocess.txt
+	./production --parse STDLIB/default-instruction-set.lm > production-preprocess.txt
+	./strict --preprocess STDLIB/default-instruction-set.lm > strict-preprocess.txt
 	diff production-preprocess.txt strict-preprocess.txt > diff.txt
 	cat diff.txt
 
