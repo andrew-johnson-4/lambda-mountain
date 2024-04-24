@@ -1,5 +1,10 @@
 
+
 type ParsePartial (PME( AST , S )); # term, remainder
+
+type SfxList SfxEOF | (SfxSeq( SfxList[] , String , Type ));
+
+parse-suffixes := (: SfxEOF SfxList);
 
 print := λ(: x ParsePartial). (: (match x (
    ()
@@ -18,6 +23,22 @@ close := λ(: x ParsePartial). (: (tail(
    (as R8 ParsePartial[])
 )) ParsePartial[]);
 
+close := λ(: x SfxList). (: (tail(
+   (mov( (malloc(sizeof SfxList)) R8 ))
+   (mov( x 0_u64 (as R8 SfxList[]) ))
+   (as R8 SfxList[])
+)) SfxList[]);
+
+non-zero := λ(: x SfxList). (: (tail(
+   (let r 1_u64)
+   (match x (
+      ()
+      ( SfxEOF (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
 parse := λ. (: (tail(
    (let tokens ast-tokenized-program)
    (set ast-tokenized-program SNil)
@@ -34,8 +55,10 @@ parse := λ. (: (tail(
                   (match (parse-one-expression mremainder1) (
                      ()
                      ( (PME( mrhs mremainder2 )) (tail(
-                        # (set parse-macros (parse-macros (Macro( (head pme) (head pme2) )) ))
-                        ()
+                        (set preprocess-macros (MSeq(
+                           (close preprocess-macros)
+                           (Macro( mlhs mrhs ))
+                        )))
                         (set tokens mremainder2)
                      )))
                   ))
@@ -105,9 +128,13 @@ parse := λ. (: (tail(
             ))
          ))
          ( (SCons( (SAtom 'atom_s) (SCons( (SAtom 'suffix_s)
-                   (SCons( atype (SCons( suffix remainder )) ))
+                   (SCons( (SAtom atype) (SCons( (SAtom suffix) remainder )) ))
            )) )) (tail(
-#            (set parse-suffix (parse-suffix (atype suffix)))
+            (set parse-suffixes (SfxSeq(
+               (close parse-suffixes)
+               suffix
+               (maybe-deref(parse-type atype))
+            )))
             ()
             (set tokens remainder)
          )))
@@ -297,3 +324,7 @@ parse-lambda := λ(: tokens S). (: (tail(
    (close( (PME( expr remainder )) ))
 )) ParsePartial[]);
 
+parse-type := λ(: tt String). (: (tail(
+   ()
+   (close TNil)
+)) Type[]);

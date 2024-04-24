@@ -8,8 +8,8 @@ import STRICT/ast.lm;
 import STRICT/utility.lm;
 import STRICT/tokenize.lm;
 import STRICT/parse.lm;
-import STRICT/preprocess.lm;
 import STRICT/typecheck.lm;
+import STRICT/preprocess.lm;
 import STRICT/expression.lm;
 import STRICT/codegen.lm;
 import STRICT/fragment.lm;
@@ -71,6 +71,7 @@ main := λ(: argc U64)(: argv String[]).(tail(
       ( ModePreprocess (tail(
          (parse())
          (preprocess())
+         (serialize-ast ast-parsed-program)
       )))
       ( ModeTypecheck (tail(
          (parse())

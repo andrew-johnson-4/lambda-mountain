@@ -1,10 +1,19 @@
 
-type Type TNil;
-
 print := λ(: tt Type). (: (match tt (
    ()
-#   ( TNil (print 'Nil_s))
+   ( TNil (print 'Nil_s) )
 )) Nil);
+
+serialize-ast := λ(: tt Type). (: (match tt (
+   ()
+   ( TNil (print 'Nil_s) )
+)) Nil);
+
+close := λ(: x Type). (: (tail(
+   (mov( (malloc(sizeof Type)) R8 ))
+   (mov( x 0_u64 (as R8 Type[]) ))
+   (as R8 Type[])
+)) Type[]);
 
 typecheck := λ. (: (tail(
    ()

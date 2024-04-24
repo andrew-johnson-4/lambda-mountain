@@ -1,7 +1,13 @@
 
+type Type TNil;
 
 type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] ))
-                | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Fragment( AST[] , AST[] ));
+                | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Fragment( AST[] , AST[] ))
+                | (Asc( AST[] , Type[] ));
+
+type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST[] ));
+type Pair (Pair( AST , AST ));
+type CPair (CPair( Context , Context ));
 
 ast-tokenized-program := (: SNil S);
 ast-parsed-program := (: ASTEOF AST);
@@ -16,11 +22,27 @@ non-zero := λ(: t AST). (: (tail(
    r
 )) U64);
 
+non-zero := λ(: t Context). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( CtxEOF (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
 close := λ(: x AST). (: (tail(
    (mov( (malloc(sizeof AST)) R8 ))
    (mov( x 0_u64 (as R8 AST[]) ))
    (as R8 AST[])
 )) AST[]);
+
+close := λ(: x Context). (: (tail(
+   (mov( (malloc(sizeof Context)) R8 ))
+   (mov( x 0_u64 (as R8 Context[]) ))
+   (as R8 Context[])
+)) Context[]);
 
 print := λ(: t AST). (: (tail(
    (match t (
@@ -59,6 +81,13 @@ print := λ(: t AST). (: (tail(
          (print lhs)
          (print '._s)
          (print rhs)
+         (print '\]_s)
+      )))
+      ( (Asc( t tt )) (tail(
+         (print '\[:_s)
+         (print t)
+         (print '\s_s)
+         (print tt)
          (print '\]_s)
       )))
       ( (Seq( l r )) (tail(
@@ -128,6 +157,15 @@ serialize-ast := λ(: t AST). (: (tail(
          (serialize-ast l)
          (serialize-ast r)
          (print '\n_s)
+      )))
+      ( (Asc( t tt )) (tail(
+         (print '\[App\s\[_s)
+         (print '\[App\s\[_s)
+         (print '\[Literal\s:\]\s_s)
+         (serialize-ast t)
+         (print '\]\]\s_s)
+         (serialize-ast tt)
+         (print '\]\]_s)
       )))
    ))
    ()

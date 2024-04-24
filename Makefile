@@ -1,4 +1,7 @@
 
+start: prod strict
+	./strict --preprocess STRICT/cli.lm
+
 nostd: prod strict
 	./production --parse test.lm
 	./strict --parse test.lm
@@ -14,12 +17,20 @@ strict: prod
 tokenize: prod strict
 	./production --tokenize STRICT/cli.lm > production-tokenize.txt
 	./strict --tokenize STRICT/cli.lm > strict-tokenize.txt
-	diff production-tokenize.txt strict-tokenize.txt
+	diff production-tokenize.txt strict-tokenize.txt > diff.txt
+	cat diff.txt
 
 parse: prod strict
 	./production --parse --nomacro STRICT/cli.lm > production-parse.txt
 	./strict --parse STRICT/cli.lm > strict-parse.txt
-	diff production-parse.txt strict-parse.txt
+	diff production-parse.txt strict-parse.txt > diff.txt
+	cat diff.txt
+
+preprocess: prod strict
+	./production --parse STRICT/cli.lm > production-preprocess.txt
+	./strict --preprocess STRICT/cli.lm > strict-preprocess.txt
+	diff production-preprocess.txt strict-preprocess.txt > diff.txt
+	cat diff.txt
 
 test: prod
 	./production -o production1.s PRODUCTION/cli.lm
