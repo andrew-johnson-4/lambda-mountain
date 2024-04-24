@@ -2,8 +2,7 @@
 
 type ParsePartial (PME( AST , S )); # term, remainder
 
-type Sfx (Sfx( String , Type ));
-type SfxList SfxEOF | (SfxSeq( SfxList[] , Sfx ));
+type SfxList SfxEOF | (SfxSeq( SfxList[] , String , Type ));
 
 parse-suffixes := (: SfxEOF SfxList);
 
@@ -133,7 +132,8 @@ parse := λ. (: (tail(
            )) )) (tail(
             (set parse-suffixes (SfxSeq(
                (close parse-suffixes)
-               (Sfx( suffix (maybe-deref(parse-type atype)) ))
+               suffix
+               (maybe-deref(parse-type atype))
             )))
             ()
             (set tokens remainder)
