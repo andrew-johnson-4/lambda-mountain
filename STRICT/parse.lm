@@ -386,37 +386,64 @@ parse-type := λ(: tt String). (: (tail(
 )) Type[]);
 
 parse-type-single := λ(: tt String). (: (tail(
-   (let r (close(TGround(
-      tt
-      (close ASTLEOF)
-   ))))
-   r
+   (let depth 0_u64)
+   (let mode 0_u8)
+   (let buff SNil)
+   (let base-type (maybe-deref(tnil())))
+   (while (head-string tt) (tail(
+      (if (==( depth 0_u64 )) (
+         (match (head-string tt) (
+            ()
+            ( 91_u8 (tail(
+               (set mode 91_u8)
+               (set depth 1_u64)
+               (if (non-zero buff) (
+                  (set base-type (TGround(
+                     (clone-rope buff)
+                     (close ASTLEOF)
+                  )))
+               ) ())
+               (set buff SNil)
+            )))
+            ( 60_u8 (tail(
+               (set mode 60_u8)
+               (set depth 1_u64)
+               (if (non-zero buff) (
+                  (set base-type (TGround(
+                     (clone-rope buff)
+                     (close ASTLEOF)
+                  )))
+               ) ())
+               (set buff SNil)
+            )))
+            ( c (
+               (set buff (SCons(
+                  (close buff)
+                  (close (SAtom (clone-rope c)))
+               )))
+            ))
+         ))
+      ) (tail(
+         (match (head-string tt) (
+            ()
+            ( 60_u8 (set depth (+( depth 1_u64 )) ))
+            ( 62_u8 (set depth (-( depth 1_u64 )) ))
+            ( 91_u8 (set depth (+( depth 1_u64 )) ))
+            ( 93_u8 (set depth (-( depth 1_u64 )) ))
+            ( _ () )
+         ))
+         (if (==( depth 1_u64 )) (
+         ) (
+            (set buff (SCons(
+               (close buff)
+               (close (SAtom (clone-rope (head-string tt))))
+            )))
+         ))
+      )))
+      (set tt (tail-string tt))
+   )))
+   (close base-type)
 )) Type[]);
-
-#parse-type := λ tt . (tail(
-#         (if depth (
-#            (set buff (buff (clone-rope (head-string tt))))
-#         ) (
-#            (if (eq( (head-string tt) '+ )) (tail(
-#               (if base-type (
-#                  (set base-type (And( base-type (parse-type-single (clone-rope buff)) )))
-#               ) (
-#                  (set base-type (parse-type-single (clone-rope buff)))
-#               ))
-#               (set buff ())
-#            )) (
-#               (set buff (buff (clone-rope (head-string tt))))
-#            ))
-#         ))
-#         (set tt (tail-string tt))
-#      )))
-#      (set base-type (if base-type (
-#         (And( base-type (parse-type-single (clone-rope buff)) ))
-#      ) (
-#         (parse-type-single (clone-rope buff))
-#      )))
-#      (set parse-type-cache (parse-type-cache (original-type base-type)))
-#      base-type
 
 #parse-type-suffix := λ base suffix . (tail(
 #   (assert-typeof( 'parse-array-type::suffix suffix Atom ))
