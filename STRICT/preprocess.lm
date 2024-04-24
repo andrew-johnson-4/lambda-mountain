@@ -56,9 +56,6 @@ non-zero := λ(: x IndexList). (: (tail(
 )) U64);
 
 preprocess := λ. (: (tail(
-   (print 'IndexTypedefs\n_s)
-   (preprocess-index-typedefs ast-parsed-program)
-   (print 'IndexedTypedefs\n_s)
    (let program (maybe-deref(preprocess-apply ast-parsed-program)))
    (set ast-parsed-program program)
    ()
@@ -82,7 +79,7 @@ preprocess-index-typedef := λ(: term AST). (: (match term (
    ( _ () )
 )) Nil);
 
-preprocess-index-indices := λ(: def AST)(: index U64) . (: (tail(
+preprocess-index-indices := λ(: def AST)(: index U64) . (: (
    (match def (
       ()
       ( (App( (App( tds (Var '|_s) )) body )) (tail(
@@ -93,8 +90,7 @@ preprocess-index-indices := λ(: def AST)(: index U64) . (: (tail(
          (preprocess-index-index( body index ))
       ))
    ))
-   ()
-)) Nil);
+) Nil);
 
 preprocess-index-index := λ(: body AST)(: index U64). (: (tail(
    (match body (
@@ -113,6 +109,7 @@ preprocess-index-index := λ(: body AST)(: index U64). (: (tail(
             index
          )))
       ))
+      ( _ () )
    ))
    ()
 )) Nil);
@@ -123,9 +120,6 @@ preprocess-destructure-type := λ(: tt String). (: (tail(
 )) Type[]);
 
 preprocess-apply := λ(: program AST). (: (tail(
-   (print 'Preprocess:\s_s)
-   (print program)
-   (print '\n_s)
    (let r program)
    (match program (
       ()
