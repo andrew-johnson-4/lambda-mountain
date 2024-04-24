@@ -9,8 +9,18 @@ preprocess-macros := (: MEOF MacroList);
 preprocess-tag-indices := (: IEOF IndexList);
 
 preprocess-index-of-tag := λ(: tag String). (: (tail(
-   ()
-   0_u64
+   (let index 0_u64)
+   (let indices preprocess-tag-indices)
+   (while (non-zero indices) (match indices (
+      ()
+      ( (ISeq( rst (*( tag-name tag-index )) )) (tail(
+         (if (==( tag tag-name )) (
+            (set index tag-index)
+         ) ())
+         (set indices rst)
+      )))
+   )))
+   index
 )) U64);
 
 close := λ(: x MacroList). (: (tail(
@@ -46,7 +56,9 @@ non-zero := λ(: x IndexList). (: (tail(
 )) U64);
 
 preprocess := λ. (: (tail(
+   (print 'IndexTypedefs\n_s)
    (preprocess-index-typedefs ast-parsed-program)
+   (print 'IndexedTypedefs\n_s)
    (let program (maybe-deref(preprocess-apply ast-parsed-program)))
    (set ast-parsed-program program)
    ()
@@ -64,12 +76,9 @@ preprocess-index-typedefs := λ(: program AST). (: (
 
 preprocess-index-typedef := λ(: term AST). (: (match term (
    ()
-   ( (ASTType( lhs rhs )) (tail(
-      (print 'Index\sType:\s_s)
-      (print lhs)
-      (print '\n_s)
+   ( (ASTType( lhs rhs )) (
       (preprocess-index-indices( rhs 0_u64 ))
-   )))
+   ))
    ( _ () )
 )) Nil);
 
@@ -114,6 +123,9 @@ preprocess-destructure-type := λ(: tt String). (: (tail(
 )) Type[]);
 
 preprocess-apply := λ(: program AST). (: (tail(
+   (print 'Preprocess:\s_s)
+   (print program)
+   (print '\n_s)
    (let r program)
    (match program (
       ()
