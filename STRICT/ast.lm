@@ -1,5 +1,5 @@
 
-type Type (TGround( String , ASTList[] ));
+type Type (TGround( String , ASTList[] )) | (TAnd( Type[] , Type[] ));
 
 type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] ))
                 | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Fragment( AST[] , AST[] ))

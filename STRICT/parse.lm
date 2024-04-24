@@ -325,23 +325,59 @@ parse-lambda := λ(: tokens S). (: (tail(
 )) ParsePartial[]);
 
 parse-type := λ(: tt String). (: (tail(
-   ()
+   (let depth 0_u64)
+   (let buff SNil)
+   (let base-type (maybe-deref(tnil())))
+   (while (head-string tt) (tail(
+      (match (head-string tt) (
+         ()
+         ( 60_u8 (set depth (+( depth 1_u64 )) ))
+         ( 62_u8 (set depth (-( depth 1_u64 )) ))
+         ( 91_u8 (set depth (+( depth 1_u64 )) ))
+         ( 93_u8 (set depth (-( depth 1_u64 )) ))
+         ( _ () )
+      ))
+      (if (==( depth 0_u64 )) (
+         (if (==( (head-string tt) 43_u8 )) (tail(
+            (match base-type (
+               ()
+               ( (TGround( 'Nil_s ASTLEOF )) (
+                  (set base-type (parse-type-single (clone-rope buff)))
+               ))
+               ( _ (
+                  (set base-type (TAnd(
+                     (close base-type)
+                     (parse-type-single (clone-rope buff))
+                  )))
+               ))
+            ))
+            (set buff SNil)
+         )) (
+            (set buff (SCons(
+               (close buff)
+               (close (SAtom (clone-rope (head-string tt))))
+            )))
+         ))
+      ) (
+         (set buff (SCons(
+            (close buff)
+            (close (SAtom (clone-rope (head-string tt))))
+         )))
+      ))
+      (set tt (tail-string tt))
+   )))
    (tnil())
 )) Type[]);
 
+parse-type-single := λ(: tt String). (: (tail(
+   ()
+   (close(TGround(
+      tt
+      (close ASTLEOF)
+   )))
+)) Type[]);
+
 #parse-type := λ tt . (tail(
-#   (if found found (tail(
-#      (local buff)
-#      (local base-type)
-#      (local depth)
-#      (while tt (tail(
-#         (match (head-string tt) (
-#            ()
-#            ('< (set depth (inc depth)))
-#            ('[ (set depth (inc depth)))
-#            ('> (set depth (dec depth)))
-#            ('] (set depth (dec depth)))
-#         ))
 #         (if depth (
 #            (set buff (buff (clone-rope (head-string tt))))
 #         ) (
@@ -365,8 +401,6 @@ parse-type := λ(: tt String). (: (tail(
 #      )))
 #      (set parse-type-cache (parse-type-cache (original-type base-type)))
 #      base-type
-#   )))
-#));
 
 #parse-type-suffix := λ base suffix . (tail(
 #   (assert-typeof( 'parse-array-type::suffix suffix Atom ))
