@@ -3,8 +3,6 @@ type Macro (Macro( AST , AST ));
 type MacroList MEOF | (MSeq( MacroList[] , Macro ));
 type IndexList IEOF | (ISeq( IndexList[] , String , U64 ));
 
-type Destructure DestFail | (DestOk( Context ));
-
 preprocess-macros := (: MEOF MacroList);
 preprocess-tag-indices := (: IEOF IndexList);
 
@@ -58,7 +56,6 @@ non-zero := λ(: x IndexList). (: (tail(
 preprocess := λ. (: (tail(
    (let program (maybe-deref(preprocess-apply ast-parsed-program)))
    (set ast-parsed-program program)
-   ()
 )) Nil);
 
 preprocess-index-typedefs := λ(: program AST). (: (
@@ -159,6 +156,10 @@ preprocess-apply := λ(: program AST). (: (tail(
          if (is-macro-head vn) (set r (preprocess-apply-maybe program))
                                (set r (App( (close(App( (close(Var vn)) (preprocess-apply vt1) ))) (preprocess-apply vt2) )))
       ))
+      ( (Seq( al ar )) (set r (Seq(
+         (preprocess-apply al)
+         (preprocess-apply ar)
+      ))))
       ( (App( al ar )) (set r (App(
          (preprocess-apply al)
          (preprocess-apply ar)
@@ -170,6 +171,14 @@ preprocess-apply := λ(: program AST). (: (tail(
       ( (Asc( al at )) (set r (Asc(
          (preprocess-apply al)
          (close at)
+      ))))
+      ( (Fragment( al ar )) (set r (Fragment(
+         (preprocess-apply al)
+         (preprocess-apply ar)
+      ))))
+      ( (Glb( k ar )) (set r (Glb(
+         k
+         (preprocess-apply ar)
       ))))
       ( u (set r u))
    ))
@@ -222,6 +231,16 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
             )) ())
          )) ())
       )))
+      ( (Pair( (Abs(pl pr)) (Abs(el er)) )) (tail(
+         (let ll (maybe-deref(try-destructure-macro( pl el ))))
+         (if (non-zero ll) (tail(
+            (let rl (maybe-deref(try-destructure-macro( pr er ))))
+            (if (non-zero rl) (tail(
+               (let m (maybe-deref(merge( ll rl ))))
+               (set r m)
+            )) ())
+         )) ())
+      )))
       ( (Pair( (Lit pl) (Var el) )) (
          (if (==( pl el )) (set r CtxNil) ())
       ))
@@ -252,6 +271,7 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
       ( (Pair( (Var pv) _ )) (
          (set r (CtxBind( (close CtxNil) pv (close term) )))
       ))
+      ( _ () )
    ))
    (close r)
 )) Context[]);
@@ -329,20 +349,26 @@ extract-uuids := λ(: ctx Context)(: term AST). (: (tail(
 )) Context[]);
 
 preprocess-apply-maybe := λ(: program AST). (: (tail(
+   (print 'ApplyMaybe:\s_s)
+   (print program)
+   (print '\n_s)
    (let macros preprocess-macros)
    (while (non-zero macros) (match macros (
       ()
       ( (MSeq( rst (Macro( lhs rhs )) )) (
          (match (try-destructure-macro( lhs program )) (
             ()
-            ( (DestOk( ctx )) (tail(
+            ( CtxEOF (set macros rst) )
+            ( ctx (tail(
+               (print 'Match:\s_s)
+               (print lhs)
+               (print '\n_s)
                (let p (maybe-deref(apply-context( ctx rhs ))))
                (let c (maybe-deref(extract-uuids( CtxEOF p ))))
                (let u (maybe-deref(substitute-uuids( c p ))))
                (set program u)
                (set macros MEOF)
             )))
-            ( DestFail (set macros rst) )
          ))
       ))
    )))
