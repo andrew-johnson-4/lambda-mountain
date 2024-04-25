@@ -117,11 +117,6 @@ close := λ(: x Type). (: (tail(
    (as R8 Type[])
 )) Type[]);
 
-typecheck := λ. (: (tail(
-   ()
-   ()
-)) Nil);
-
 tnil := λ. (: (tail(
    ()
    (close (TGround(
@@ -129,3 +124,51 @@ tnil := λ. (: (tail(
       (close TypeEOF)
    )))
 )) Type[]);
+
+typecheck-types-have-changed := True_u8;
+typecheck := λ. (: (tail(
+   (let p ast-parsed-program)
+   (let ordered-type-exprs ASTEOF)
+   (while (non-zero p) (match p (
+      ()
+      ( (Seq( rst r )) (tail(
+         (set ordered-type-exprs (Seq( (close ordered-type-exprs) (close r) )))
+         (set p rst)
+      )))
+   )))
+   (while (non-zero ordered-type-exprs) (match ordered-type-exprs (
+      ()
+      ( (Seq( rst r )) (tail(
+         (typecheck-infer-type-expr( r ))
+         (set ordered-type-exprs rst)
+      )))
+   )))
+   (while (==( typecheck-types-have-changed True_u8 )) (
+      (set typecheck-types-have-changed False_u8)
+      (typecheck-infer-prog ast-parsed-program)
+   ))
+   (typecheck-assert-complete ast-parsed-program)
+)) Nil);
+
+typecheck-infer-type-expr := λ(: td AST). (: (tail(
+   (match td (
+      ()
+      ( (ASTType( _ _ )) (tail(
+         (print td)
+         (print '\n_s)
+      )))
+      ( _ () )
+   ))
+   ()
+)) Nil);
+
+typecheck-assert-complete := λ(: term AST). (: (tail(
+   ()
+   ()
+)) Nil);
+
+typecheck-infer-prog := λ(: term AST). (: (tail(
+   ()
+   ()
+)) Nil);
+	

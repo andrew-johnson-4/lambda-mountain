@@ -1,9 +1,6 @@
 
 devv: prod strict
-	./production --parse test.lm > production-preprocess.txt
-	./strict --preprocess test.lm > strict-preprocess.txt
-	diff production-preprocess.txt strict-preprocess.txt > diff.txt
-	cat diff.txt
+	./strict --typecheck STRICT/cli.lm
 
 start: prod strict
 	./strict --preprocess test.lm
