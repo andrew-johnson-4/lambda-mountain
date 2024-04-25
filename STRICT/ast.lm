@@ -25,6 +25,75 @@ non-zero := λ(: t AST). (: (tail(
    r
 )) U64);
 
+== := λ(: lterm AST)(: rterm AST). (: (tail(
+   (let r 0_u64)
+   (match (Pair( lterm rterm )) (
+      ()
+      ( (Pair( ASTEOF ASTEOF )) (set r 1_u64) )
+      ( (Pair( ASTNil ASTNil )) (set r 1_u64) )
+      ( (Pair( (App( ll lr )) (App( rl rr )) )) (
+         (if (==( (as (.1( (as lterm App) )) U64) (as (.1( (as rterm App) )) U64) )) (
+            (if (==( (as (.2( (as lterm App) )) U64) (as (.2( (as rterm App) )) U64) )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+      ))
+      ( (Pair( (Abs( ll lr )) (Abs( rl rr )) )) (
+         (if (==( (as (.1( (as lterm Abs) )) U64) (as (.1( (as rterm Abs) )) U64) )) (
+            (if (==( (as (.2( (as lterm Abs) )) U64) (as (.2( (as rterm Abs) )) U64) )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+      ))
+      ( (Pair( (Seq( ll lr )) (Seq( rl rr )) )) (
+         (if (==( (as (.1( (as lterm Seq) )) U64) (as (.1( (as rterm Seq) )) U64) )) (
+            (if (==( (as (.2( (as lterm Seq) )) U64) (as (.2( (as rterm Seq) )) U64) )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+      ))
+      ( (Pair( (ASTType( ll lr )) (ASTType( rl rr )) )) (
+         (if (==( (as (.1( (as lterm ASTType) )) U64) (as (.1( (as rterm ASTType) )) U64) )) (
+            (if (==( (as (.2( (as lterm ASTType) )) U64) (as (.2( (as rterm ASTType) )) U64) )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+      ))
+      ( (Pair( (Fragment( ll lr )) (Fragment( rl rr )) )) (
+         (if (==( (as (.1( (as lterm Fragment) )) U64) (as (.1( (as rterm Fragment) )) U64) )) (
+            (if (==( (as (.2( (as lterm Fragment) )) U64) (as (.2( (as rterm Fragment) )) U64) )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+      ))
+      ( (Pair( (Asc( ll lr )) (Asc( rl rr )) )) (
+         (if (==( (as (.1( (as lterm Asc) )) U64) (as (.1( (as rterm Asc) )) U64) )) (
+            (if (==( (as (.2( (as lterm Asc) )) U64) (as (.2( (as rterm Asc) )) U64) )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+      ))
+      ( (Pair( (Glb( ll lr )) (Glb( rl rr )) )) (
+         (if (==( ll rl )) (
+            (if (==( (as (.2( (as lterm Glb) )) U64) (as (.2( (as rterm Glb) )) U64) )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+      ))
+      ( (Pair( (Var lv) (Var rv) )) (
+         (if (==( lv rv )) (
+            (set r 1_u64)
+         ) ())
+      ))
+      ( (Pair( (Lit lv) (Lit rv) )) (
+         (if (==( lv rv )) (
+            (set r 1_u64)
+         ) ())
+      ))
+   ))
+   r
+)) U64);
+
 non-zero := λ(: t ASTList). (: (tail(
    (let r 1_u64)
    (match t (
