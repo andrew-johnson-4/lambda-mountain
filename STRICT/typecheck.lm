@@ -125,6 +125,25 @@ tnil := λ. (: (tail(
    )))
 )) Type[]);
 
+type TermTypeList TTEOF | (TTSeq( TermTypeList[] , AST , Type ));
+
+non-zero := λ(: t TermTypeList). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( TTEOF (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+close := λ(: x TermTypeList). (: (tail(
+   (mov( (malloc(sizeof TermTypeList)) R8 ))
+   (mov( x 0_u64 (as R8 TermTypeList[]) ))
+   (as R8 TermTypeList[])
+)) TermTypeList[]);
+
+typecheck-term-type-list := (: TTEOF TermTypeList);
 typecheck-types-have-changed := True_u8;
 typecheck := λ. (: (tail(
    (let p ast-parsed-program)
@@ -216,10 +235,23 @@ typecheck-assert-complete := λ(: term AST). (: (
 ) Nil);
 
 typecheck-assert-one := λ(: term AST). (: (tail(
-   (print 'Unable\sto\sinfer\stype\sof\sexpression:\n_s)
-   (print term)
-   (print '\n_s)
-   (exit 1_u64)
+   (let found False_u8)
+   (let tts typecheck-term-type-list)
+   (while (non-zero tts) (match tts (
+      ()
+      ( (TTSeq( rst (*( t tt )) )) (tail(
+         (if (==( t term )) (
+            (set found True_u8)
+         ) ())
+         (set tts rst)
+      )))
+   )))
+   (if (==( found False_u8 )) (tail(
+      (print 'Unable\sto\sinfer\stype\sof\sexpression:\n_s)
+      (print term)
+      (print '\n_s)
+      (exit 1_u64)
+   )) ())
 )) Nil);
 
 typecheck-infer-prog := λ(: term AST). (: (tail(
