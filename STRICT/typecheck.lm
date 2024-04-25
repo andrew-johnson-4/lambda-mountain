@@ -162,9 +162,64 @@ typecheck-infer-type-expr := λ(: td AST). (: (tail(
    ()
 )) Nil);
 
-typecheck-assert-complete := λ(: term AST). (: (tail(
-   ()
-   ()
+typecheck-assert-complete := λ(: term AST). (: (
+   (match term (
+      ()
+      ( ASTEOF (typecheck-assert-one term) )
+      ( ASTNil (typecheck-assert-one term) )
+      ( (Glb( k v )) (
+         (typecheck-assert-complete v)
+      ))
+      ( (ASTType( _ _ )) () )
+      ( (Fragment( _ _ )) () )
+      ( (App( (Abs( (Var lname) ASTNil )) rhs )) (tail(
+         (typecheck-assert-complete rhs)
+         (typecheck-assert-one term)
+      )))
+      ( (App( (Var 'gensym-label_s) _ )) () )
+      ( (App( (Var 'label_s) (Var _) )) () )
+      ( (App( (App( (Var 'while_s) cond )) body )) (tail(
+         (typecheck-assert-complete cond)
+         (typecheck-assert-complete body)
+         (typecheck-assert-one term)
+      )))
+      ( (App( (App( (App( (Var 'if_s) cond )) t )) f )) (tail(
+         (typecheck-assert-complete cond)
+         (typecheck-assert-complete t)
+         (typecheck-assert-complete f)
+         (typecheck-assert-one term)
+      )))
+      ( (App( (App( (Var 'set_s) lhs )) rhs )) (tail(
+         (typecheck-assert-complete rhs)
+         (typecheck-assert-one term)
+      )))
+      ( (Asc( t tt )) (tail(
+         (typecheck-assert-complete t)
+         (typecheck-assert-one term)
+      )))
+      ( (Lit l) (typecheck-assert-one term) )
+      ( (Var l) (typecheck-assert-one term) )
+      ( (Abs( lhs rhs )) (tail(
+         (typecheck-assert-complete rhs)
+         (typecheck-assert-one term)
+      )))
+      ( (App( l r )) (tail(
+         (typecheck-assert-complete l)
+         (typecheck-assert-complete r)
+         (typecheck-assert-one term)
+      )))
+      ( (Seq( l r )) (tail(
+         (typecheck-assert-complete l)
+         (typecheck-assert-complete r)
+      )))
+   ))
+) Nil);
+
+typecheck-assert-one := λ(: term AST). (: (tail(
+   (print 'Unable\sto\sinfer\stype\sof\sexpression:\n_s)
+   (print term)
+   (print '\n_s)
+   (exit 1_u64)
 )) Nil);
 
 typecheck-infer-prog := λ(: term AST). (: (tail(
