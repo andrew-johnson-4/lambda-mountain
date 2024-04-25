@@ -1,13 +1,12 @@
 
-start: prod strict
-	./strict --preprocess STRICT/cli.lm
+devv: prod strict
+	./production --parse test.lm > production-preprocess.txt
+	./strict --preprocess test.lm > strict-preprocess.txt
+	diff production-preprocess.txt strict-preprocess.txt > diff.txt
+	cat diff.txt
 
-nostd: prod strict
-	./production --parse test.lm
-	./strict --parse test.lm
-	as -o tmp.o tmp.s
-	ld -o tmp tmp.o
-	./tmp STRICT/cli.lm && echo $?
+start: prod strict
+	./strict --preprocess test.lm
 
 strict: prod
 	./production --nostd -o strict.s STRICT/cli.lm

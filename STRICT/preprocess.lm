@@ -7,7 +7,7 @@ preprocess-macros := (: MEOF MacroList);
 preprocess-tag-indices := (: IEOF IndexList);
 
 preprocess-index-of-tag := λ(: tag String). (: (tail(
-   (let index 0_u64)
+   (let index 9999_u64)
    (let indices preprocess-tag-indices)
    (while (non-zero indices) (match indices (
       ()
@@ -54,6 +54,7 @@ non-zero := λ(: x IndexList). (: (tail(
 )) U64);
 
 preprocess := λ. (: (tail(
+   (preprocess-index-typedefs ast-parsed-program)
    (let program (maybe-deref(preprocess-apply ast-parsed-program)))
    (set ast-parsed-program program)
 )) Nil);
@@ -77,7 +78,8 @@ preprocess-index-typedef := λ(: term AST). (: (match term (
    ( _ () )
 )) Nil);
 
-preprocess-index-indices := λ(: def AST)(: index U64) . (: (
+preprocess-index-indices := λ(: def AST)(: index U64) . (: (tail(
+   ()
    (match def (
       ()
       ( (App( (App( tds (Var '|_s) )) body )) (tail(
@@ -88,7 +90,7 @@ preprocess-index-indices := λ(: def AST)(: index U64) . (: (
          (preprocess-index-index( body index ))
       ))
    ))
-) Nil);
+)) Nil);
 
 preprocess-index-index := λ(: body AST)(: index U64). (: (tail(
    (match body (
@@ -112,20 +114,15 @@ preprocess-index-index := λ(: body AST)(: index U64). (: (tail(
    ()
 )) Nil);
 
-preprocess-destructure-type := λ(: tt String). (: (tail(
-   ()
-   (close TNil)
-)) Type[]);
-
 preprocess-apply := λ(: program AST). (: (tail(
    (let r program)
    (match program (
       ()
       ( (App( (App( (Lit ':_s) mvar )) (Lit mtype) )) (
-         (set r (Asc( (preprocess-apply mvar) (preprocess-destructure-type mtype) )))
+         (set r (Asc( (preprocess-apply mvar) (parse-type mtype) )))
       ))
       ( (App( (App( (Lit ':_s) mvar )) (Var mtype) )) (
-         (set r (Asc( (preprocess-apply mvar) (preprocess-destructure-type mtype) )))
+         (set r (Asc( (preprocess-apply mvar) (parse-type mtype) )))
       ))
       ( (Lit l) (tail(
          (let suffixes parse-suffixes)
@@ -220,7 +217,7 @@ merge := λ(: l Context)(: r Context). (: (tail(
                 (CtxBind( cr (*( kr vr )) )) )) (tail(
          (let c1 (merge( cl cr )))
          (let c2 (close(CtxBind( c1 kl (close vl) ))))
-         (let c3 (close(CtxBind( c2 kr (close vr) ))))
+         (let c3 (CtxBind( c2 kr (close vr) )))
          (set l c3)
       )))
    ))
@@ -259,16 +256,16 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
          (if (==( pl el )) (set r CtxNil) ())
       ))
       ( (Pair( (App( (Lit ':Literal:_s) (Var pv) )) (Lit el) )) (
-         (if (preprocess-index-of-tag el)
-             ()
+         (if (==( (preprocess-index-of-tag el) 9999_u64 ))
              (set r (CtxBind( (close CtxNil) pv (close term) )))
+             ()
          )
       ))
       ( (Pair( (App( (Lit ':Variable:_s) (Var pv) )) (Var el) )) (
          (set r (CtxBind( (close CtxNil) pv (close term) )))
       ))
-      ( (Pair( (App( (App( (Lit ':Tag_s) (Var pv) )) (Var pt) )) (Lit el) )) (
-         (if (preprocess-index-of-tag el) (tail(
+      ( (Pair( (App( (App( (Lit ':Tag:_s) (Var pv) )) (Var pt) )) (Lit el) )) (
+         (if (==( (preprocess-index-of-tag el) 9999_u64 )) () (tail(
             (set r CtxNil)
             (set r (CtxBind( (close r) pv (close(
                (Asc(
@@ -277,7 +274,7 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
                ))
             )) )))
             (set r (CtxBind( (close r) pt (close(Lit el)) )))
-         )) ())
+         )))
       ))
       ( (Pair( (Var pv) _ )) (
          (set r (CtxBind( (close CtxNil) pv (close term) )))
@@ -330,7 +327,7 @@ substitute-uuids := λ(: ctx Context)(: term AST). (: (tail(
             ( (CtxBind( rst (*( k v )) )) (
                (if (==( x k )) (tail(
                   (set term v)
-                  (set ctx CtxEOF)
+                  (set ctx rst)
                )) (
                   (set ctx rst)
                ))
@@ -389,6 +386,7 @@ extract-uuids := λ(: ctx Context)(: term AST). (: (tail(
 
 preprocess-apply-maybe := λ(: program AST). (: (tail(
    (let macros preprocess-macros)
+   (let matched False_u8)
    (while (non-zero macros) (match macros (
       ()
       ( (MSeq( rst (Macro( lhs rhs )) )) (
@@ -396,16 +394,39 @@ preprocess-apply-maybe := λ(: program AST). (: (tail(
             ()
             ( CtxEOF (set macros rst) )
             ( ctx (tail(
+               #(print 'Match:\s_s)
+               #(print ctx)
                (let p (maybe-deref(apply-context( ctx rhs ))))
                (let c (maybe-deref(extract-uuids( CtxEOF p ))))
                (let u (maybe-deref(substitute-uuids( c p ))))
-               (set program u)
+               #(print 'Yield:\s_s)
+               #(print u)
+               #(print '\n_s)
+               (let n (maybe-deref(preprocess-apply u)))
+               (set program n)
                (set macros MEOF)
+               (set matched True_u8)
             )))
          ))
       ))
       ( _ (set macros MEOF) )
    )))
+   (if (==( matched False_u8 )) (tail(
+      (print 'Match\sFailed:\s_s)
+      (print program)
+      (print '\n_s)
+      (exit 1_u64)
+   )) ())
+   (match program (
+      ()
+      ( (App( l r )) (tail(
+         (let np (App(
+            (preprocess-apply l)
+            (preprocess-apply r)
+         )))
+         (set program np)
+      )))
+      ( _ () )
+   ))
    (close program)
 )) AST[]);
-

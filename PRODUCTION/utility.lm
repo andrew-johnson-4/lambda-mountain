@@ -185,6 +185,7 @@ is-variable := λv . (match (head-string v) (
    ('> True )
    ('< True )
    ('/ True )
+   ('% True )
    ('* True )
    ('+ True )
    ('- True )
@@ -368,6 +369,14 @@ label-case-atom := λk . (tail(
       ))
       (\] (
          (set nk (nk '_RP_))
+         (set k (tail-string k))
+      ))
+      ('% (
+         (set nk (nk '_MD_))
+         (set k (tail-string k))
+      ))
+      ('/ (
+         (set nk (nk '_DV_))
          (set k (tail-string k))
       ))
       ('! (

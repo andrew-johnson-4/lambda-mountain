@@ -1,9 +1,12 @@
 
-type Type TNil;
+type Type TAny | (TGround( String , TypeList[] )) | (TAnd( Type[] , Type[] )) | (TArray( Type[] , Type[] ));
+type TypeList TypeEOF | (TypeSeq( TypeList[] , Type ));
 
 type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] ))
                 | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Fragment( AST[] , AST[] ))
                 | (Asc( AST[] , Type[] ));
+
+type ASTList ASTLEOF | (ASTSeq( ASTList[] , AST ));
 
 type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST[] ));
 type Pair (Pair( AST , AST ));
@@ -17,6 +20,26 @@ non-zero := λ(: t AST). (: (tail(
    (match t (
       ()
       ( ASTEOF (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+non-zero := λ(: t ASTList). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( ASTLEOF (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+non-zero := λ(: t TypeList). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( TypeEOF (set r 0_u64))
       ( _ () )
    ))
    r
@@ -38,11 +61,39 @@ close := λ(: x AST). (: (tail(
    (as R8 AST[])
 )) AST[]);
 
+close := λ(: x ASTList). (: (tail(
+   (mov( (malloc(sizeof ASTList)) R8 ))
+   (mov( x 0_u64 (as R8 ASTList[]) ))
+   (as R8 ASTList[])
+)) ASTList[]);
+
+close := λ(: x TypeList). (: (tail(
+   (mov( (malloc(sizeof TypeList)) R8 ))
+   (mov( x 0_u64 (as R8 TypeList[]) ))
+   (as R8 TypeList[])
+)) TypeList[]);
+
 close := λ(: x Context). (: (tail(
    (mov( (malloc(sizeof Context)) R8 ))
    (mov( x 0_u64 (as R8 Context[]) ))
    (as R8 Context[])
 )) Context[]);
+
+print := λ(: t Context). (: (tail(
+   (match t (
+      ()
+      ( CtxEOF () )
+      ( CtxNil () )
+      ( (CtxBind( rst (*( k v )) )) (tail(
+         (print rst)
+         (print k)
+         (print '\s=\s_s)
+         (print v)
+         (print '\:\n_s)
+      )))
+   ))
+   ()
+)) Nil);
 
 print := λ(: t AST). (: (tail(
    (match t (

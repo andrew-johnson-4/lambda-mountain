@@ -1,12 +1,114 @@
 
 print := λ(: tt Type). (: (match tt (
    ()
-   ( TNil (print 'Nil_s) )
+   ( TAny (print '?_s) )
+   ( (TGround( tag TypeEOF )) (print tag) )
+   ( (TGround( tag (TypeSeq( TypeEOF p1 )) )) (tail(
+      (print tag)
+      (print '<_s)
+      (print p1)
+      (print '>_s)
+   )))
+   ( (TGround( tag (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (tail(
+      (print tag)
+      (print '<_s)
+      (print p1)
+      (print ',_s)
+      (print p2)
+      (print '>_s)
+   )))
+   ( (TGround( tag (TypeSeq( (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) p3 )) )) (tail(
+      (print tag)
+      (print '<_s)
+      (print p1)
+      (print ',_s)
+      (print p2)
+      (print ',_s)
+      (print p3)
+      (print '>_s)
+   )))
+   ( (TAnd( lt rt )) (tail(
+      (print lt)
+      (print '+_s)
+      (print rt)
+   )))
+   ( (TArray( lt rt )) (tail(
+      (print lt)
+      (print '[_s)
+      (print rt)
+      (print ']_s)
+   )))
 )) Nil);
 
 serialize-ast := λ(: tt Type). (: (match tt (
    ()
-   ( TNil (print 'Nil_s) )
+   ( TAny (print '\[Variable\s?\]_s) )
+   ( (TGround( tag TypeEOF )) (
+      (if (is-variable tag) (tail(
+         (print '\[Variable\s_s)
+         (print tag)
+         (print '\]_s)
+      )) (tail(
+         (print '\[Literal\s_s)
+         (print tag)
+         (print '\]_s)
+      )))
+   ))
+   ( (TGround( tag (TypeSeq( TypeEOF p1 )) )) (tail(
+      (print '\[App\s\[_s) 
+      (print '\[Literal\s_s)
+      (print tag)
+      (print '\]\s_s)
+      (serialize-ast p1)
+      (print '\]\]_s)
+   )))
+   ( (TGround( tag (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (tail(
+      (print '\[App\s\[_s) 
+      (print '\[Literal\s_s)
+      (print tag)
+      (print '\]\s_s)
+      (print '\[App\s\[_s) 
+      (serialize-ast p1)
+      (print '\s_s)
+      (serialize-ast p2)
+      (print '\]\]_s)
+      (print '\]\]_s)
+   )))
+   ( (TGround( tag (TypeSeq( (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) p3 )) )) (tail(
+      (print '\[App\s\[_s) 
+      (print '\[Literal\s_s)
+      (print tag)
+      (print '\]\s_s)
+      (print '\[App\s\[_s) 
+      (print '\[App\s\[_s) 
+      (serialize-ast p1)
+      (print '\s_s)
+      (serialize-ast p2)
+      (print '\]\]\s_s)
+      (serialize-ast p3)
+      (print '\]\]_s)
+      (print '\]\]_s)
+   )))
+   ( (TAnd( lt rt )) (tail(
+      (print '\[App\s\[_s)
+      (print '\[Literal\sAnd\]\s_s)
+      (print '\[App\s\[_s)
+      (serialize-ast lt)
+      (print '\s_s)
+      (serialize-ast rt)
+      (print '\]\]_s)
+      (print '\]\]_s)
+   )))
+   ( (TArray( lt rt )) (tail(
+      (print '\[App\s\[_s)
+      (print '\[Literal\sArray\]\s_s)
+      (print '\[App\s\[_s)
+      (serialize-ast lt)
+      (print '\s_s)
+      (serialize-ast rt)
+      (print '\]\]_s)
+      (print '\]\]_s)
+   )))
 )) Nil);
 
 close := λ(: x Type). (: (tail(
@@ -19,3 +121,11 @@ typecheck := λ. (: (tail(
    ()
    ()
 )) Nil);
+
+tnil := λ. (: (tail(
+   ()
+   (close (TGround(
+      'Nil_s
+      (close TypeEOF)
+   )))
+)) Type[]);

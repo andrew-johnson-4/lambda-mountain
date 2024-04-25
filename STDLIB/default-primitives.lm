@@ -10,38 +10,6 @@ fragment type I64;    size I64 8;    atom suffix I64    _i64;
 fragment type ASCII;  size ASCII 1;  atom suffix ASCII  _c;
 fragment type String; size String 8; atom suffix String _s;
 
-#[] := λ(: l Array<Sized<8>,?>)(: li U64). (: (
-#   (mov( l R15 ))
-#   (mov( r R14 ))
-#   (shl( 3_u64 R14 ))
-#   (add( R14 R15 ))
-#   (mov( R15 0_u64 RAX ))
-#   (as RAX x)
-#) x);
-#[] := λ(: l Array<Sized<4>,?>)(: li U64). (: (
-#   (mov( l R15 ))
-#   (mov( r R14 ))
-#   (shl( 2_u64 R14 ))
-#   (add( R14 R15 ))
-#   (mov( R15 0_u64 RAX ))
-#   (as RAX x)
-#) x);
-#[] := λ(: l Array<Sized<2>,?>)(: li U64). (: (
-#   (mov( l R15 ))
-#   (mov( r R14 ))
-#   (shl( 1_u64 R14 ))
-#   (add( R14 R15 ))
-#   (mov( R15 0_u64 RAX ))
-#   (as RAX x)
-#) x);
-#[] := λ(: l Array<Sized<1>,?>)(: li U64). (: (
-#   (mov( l R15 ))
-#   (mov( r R14 ))
-#   (add( R14 R15 ))
-#   (mov( R15 0_u64 RAX ))
-#   (as RAX x)
-#) x);
-
 fragment [] := λ(: l LocalVariable+Array<x+Sized<1>,?>)(: r LocalVariable+U64). (: (
    (.program (
       \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
@@ -136,6 +104,22 @@ fragment > := λ(: l LocalVariable+U64)(: r Constant+U64). (: (
    (mov( r R8 ))
    (mov( l RAX ))
    (sub( R8 RAX ))
+   (as RAX U64)
+)) U64);
+
+% := λ(: l U64)(: r U64). (: (tail(
+   (mov( 0_u64 RDX ))
+   (mov( l RAX ))
+   (mov( r R8 ))
+   (div( R8 ))
+   (as RDX U64)
+)) U64);
+
+/ := λ(: l U64)(: r U64). (: (tail(
+   (mov( 0_u64 RDX ))
+   (mov( l RAX ))
+   (mov( r R8 ))
+   (div( R8 ))
    (as RAX U64)
 )) U64);
 
@@ -259,6 +243,13 @@ fragment branchfalse := λ(: _ Nil). (: (
    (as RAX U64)
 )) U64);
 
+not := λ(: x U64). (: (tail(
+   (let r 0_u64)
+   (if (==( x 0_u64 )) (
+      (set r 1_u64)
+   ) ())
+   r
+)) U64);
 
 == := λ(: l I8)(: r I8). (: (tail(
    (push R14)
