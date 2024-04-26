@@ -259,3 +259,209 @@ typecheck-infer-prog := λ(: term AST). (: (tail(
    ()
 )) Nil);
 	
+
+#typecheck-lookup := λterm . (tail(
+#   (local tctx)
+#   (set tctx typecheck-context)
+#   (local found)
+#   (local ttt)
+#   (while tctx (tail(
+#      (set ttt (head tctx))
+#      (if (is( (head ttt) term )) (tail(
+#         (set found (tail ttt))
+#         (set tctx ())
+#      )) (
+#         (set tctx (tail tctx))
+#      ))
+#   )))
+#   found
+#));
+
+#typecheck-ascript := λt tt . (tail(
+#   (if tt (tail(
+#      (typecheck-assert-not-nil( t tt tt ))
+#      (local lt)
+#      (set lt (typecheck-lookup t))
+#      (if lt (
+#         (if (typecheck-deep-eq( lt tt )) () (
+#            fail (TypeAscriptionInequality lt tt t)
+#         ))
+#      ) (
+#         (set tt (typecheck-sizeall tt))
+#         (set typecheck-context ((t tt) typecheck-context))
+#         (set typecheck-types-have-changed True)
+#      ))
+#   )) ())
+#   t
+#));
+
+typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used U8). (: (tail(
+    ()
+    ()
+#   (match e (
+#      ()
+#      ( (GExpr ge) (
+#         if () ()
+#            (typecheck-infer-expr( ctx ge Unused ))
+#      ))
+#      ( (Type( l ds )) ())
+#      ( (Global( 'main (Lambda( lhs rhs )) )) (
+#         if () ()
+#            (typecheck-infer-expr( ctx rhs Used ))
+#      ))
+#      ( (Global( gln gle )) (
+#         (typecheck-ascript( gle (typecheck-lookup e) ))
+#         (typecheck-infer-expr( ctx gle Used ))
+#      ))
+#      ( (Fragment( fln fle )) (
+#         if () ()
+#            (match fle (
+#               ()
+#               ( (Lambda( lhs (App( (App( (Literal ':) rhs )) rhst )) )) (
+#                  (set rhst (typecheck-infer-type-compound rhst))
+#                  (local flt)
+#                  (set flt ('->( (typecheck-typeof-lhs lhs) rhst )) )
+#                  (typecheck-ascript( fle flt ))
+#               ))
+#            ))
+#      ))
+#      ( Nil (
+#         (typecheck-ascript( e Nil ))
+#      ))
+#      ( (App( (Variable 'gensym-label) (Variable lname) )) (
+#         (set ctx ( ctx (lname (And( Constant Label ))) ))
+#         (typecheck-ascript( e Nil ))
+#      ))
+#      ( (App( (Variable 'label) (Variable lname) )) (
+#         (typecheck-ascript( e Nil ))
+#      ))
+#      ( (App( (App( (Literal ':) (Literal maybe-tag) )) tt )) (
+#         (local ctype)
+#         (local mtype)
+#         (set mtype (typecheck-infer-type-compound tt))
+#         (set ctype (typecheck-infer-constructor-type maybe-tag))
+#         (if ctype (
+#            (set mtype (And( mtype maybe-tag )))
+#         ) ())
+#         (typecheck-ascript( (tail (tail (head (tail e)))) (And( Constant mtype )) ))
+#         (typecheck-ascript( e (And( Constant mtype )) ))
+#      ))
+#      ( (App( (App( (Literal ':) asc )) tt )) (
+#         if () () (
+#            (typecheck-infer-expr( ctx asc used ))
+#            (typecheck-ascript( asc (typecheck-infer-type-compound tt) ))
+#            (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
+#         )
+#      ))
+#      ( (App( (App( (Variable 'as) asc )) tt )) (
+#         if () () (
+#            (typecheck-infer-expr( ctx asc used ))
+#            (local asc_t)
+#            (set asc_t (typecheck-lookup asc))
+#            (if asc_t (
+#               (typecheck-ascript( e
+#                  (typecheck-as( asc_t (typecheck-infer-type-compound tt) ))
+#               ))
+#            ) ())
+#         )
+#      ))
+#      ( (Literal lit) (
+#         (local ctype)
+#         (set ctype (typecheck-infer-constructor-type lit))
+#         (if ctype (
+#            (typecheck-ascript( e (And( (And( lit ctype )) Constant )) ))
+#         ) (
+#            (typecheck-ascript( e Atom ))
+#         ))
+#      ))
+#      ( (App( (App( (Variable 'set) (Variable lhs) )) rhs )) (tail(
+#         (typecheck-infer-expr( ctx rhs Used ))
+#         (typecheck-ascript( e Nil ))
+#      )))
+#      ( (App( (Variable 'sizeof) (Literal tt) )) (tail(
+#         (typecheck-ascript( e (parse-type( U64+Literal+Constant )) ))
+#      )))
+#      ( (App( (Variable 'block-scope) t )) (
+#         (typecheck-infer-expr( ctx t used ))
+#      ))
+#      ( (App( (App( (App( (Variable 'if) cond )) t )) f )) (tail(
+#         (set ctx (typecheck-infer-expr( ctx cond Used )))
+#         (set ctx (typecheck-infer-expr( ctx t Used )))
+#         (typecheck-infer-expr( ctx f Used ))
+#         (typecheck-ascript( e (typecheck-lookup t) ))
+#      )))
+#      ( (App( (App( (Variable 'while) cond )) body )) (
+#         (typecheck-infer-expr( ctx cond Used ))
+#         (typecheck-infer-expr( ctx body Unused ))
+#         (typecheck-ascript( e Nil ))
+#      ))
+#      ( (App( (Variable 'tail) (App( l r )) )) (tail(
+#         (set ctx (typecheck-infer-expr( ctx l Unused )))
+#         (set ctx (typecheck-infer-expr( ctx r used )))
+#         (if (typecheck-lookup r) (
+#            (typecheck-ascript( e (typecheck-lookup r) ))
+#         ) ())
+#      )))
+#      ( (App( (Variable 'maybe-deref) r )) (tail(
+#         (set ctx (typecheck-infer-expr( ctx r used )))
+#         (local rtype)
+#         (set rtype (typecheck-lookup r))
+#         (if rtype (
+#            (match (typecheck-slot( (typecheck-lookup r) Array )) (
+#               ()
+#               ( (Array( x '? )) (
+#                  (if (typecheck-unify-implies( x '? )) () (
+#                     (set rtype x)
+#                  ))
+#               ))
+#            ))
+#            (typecheck-ascript( e rtype ))
+#         ) ())
+#      )))
+#      ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
+#         (set ctx (typecheck-infer-expr( ctx rhs Used )))
+#         (if (typecheck-lookup rhs) (
+#            (set ctx ( ctx (lname (And( LocalVariable (typecheck-not-representation (typecheck-lookup rhs)) )) ) ))
+#         ) (
+#            (set ctx ( ctx (lname ()) ))
+#         ))
+#         (typecheck-ascript( e Nil ))
+#      )))
+#      ( (App( l r )) (tail(
+#         (set ctx (typecheck-infer-expr( ctx l used )))
+#         (set ctx (typecheck-infer-expr( ctx r used )))
+#         (match ( (typecheck-slot( (typecheck-lookup l) '-> )) (typecheck-lookup r) ) (
+#            ()
+#            ( (() _) () )
+#            ( (_ ()) () )
+#            ( ( ('->(lt rt)) pt ) (
+#               (typecheck-ascript( e (typecheck-safe-apply-plural( e (typecheck-lookup l) pt )) ))
+#            ))
+#            ( (lt rt) (
+#               (typecheck-ascript( e (Cons(lt rt)) ))
+#            ))
+#         ))
+#      )))
+#      ( (Lambda( lhs rhs )) (tail(
+#         (set ctx (typecheck-infer-ctx( ctx lhs )))
+#         (typecheck-infer-expr( ctx rhs Used ))
+#         (match (typecheck-lookup rhs) (
+#            ()
+#            ( () () )
+#            ( rt (
+#               (typecheck-ascript( e ('->( (typecheck-typeof-lhs lhs) (typecheck-as-return rt) )) ))
+#            ))
+#         ))
+#      )))
+#      ( (Variable v) (
+#         (match (typecheck-typeof-var( ctx v )) (
+#            ()
+#            ( () () )
+#            ( tt (typecheck-ascript( e tt )) )
+#         ))
+#      ))
+#      ( u (fail (UnknownTerm u)) )
+#   ))
+#   ctx
+)) Nil);
+
