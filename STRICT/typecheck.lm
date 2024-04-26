@@ -271,25 +271,27 @@ typecheck-lookup := λ(: term AST). (: (tail(
    (close found)
 )) Type[]);
 
-typecheck-ascript := λ(: t AST)(: tt Type). (: (tail(
-   (let ot (maybe-deref(typecheck-lookup t)))
-   (if (non-zero ot) (
-      (if (==( ot tt )) () (tail(
-         (print 'Type\sAscription\sInequality\n_s)
-         (print t)
-         (print '\n_s)
-         (print tt)
-         (print '\n_s)
-         (exit 1_u64)
-      ))
-   )) (tail(
-      (set typecheck-term-type-list (TTSeq(
-         (close typecheck-term-type-list)
-         t tt
-      )))
-      (set typecheck-types-have-changed True_u8)
-   )))
-)) Nil);
+typecheck-ascript := λ(: t AST)(: tt Type). (: (
+   (if (non-zero tt) (tail(
+      (let ot (maybe-deref(typecheck-lookup t)))
+      (if (non-zero ot) (
+         (if (==( ot tt )) () (tail(
+            (print 'Type\sAscription\sInequality\n_s)
+            (print t)
+            (print '\n_s)
+            (print tt)
+            (print '\n_s)
+            (exit 1_u64)
+         ))
+      )) (tail(
+         (set typecheck-term-type-list (TTSeq(
+            (close typecheck-term-type-list)
+            t tt
+         )))
+         (set typecheck-types-have-changed True_u8)
+     )))
+   )) ())
+) Nil);
 
 typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
    (match term (
