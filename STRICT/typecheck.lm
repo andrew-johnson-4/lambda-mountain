@@ -361,6 +361,15 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
           )))
           (typecheck-ascript( term (maybe-deref(tnil())) ))
        )))
+       ( (App( l r )) (tail(
+          (typecheck-infer-expr( tctx l Used ))
+          (typecheck-infer-expr( tctx r Used ))
+          (let rt (maybe-deref(typecheck-apply(
+             (maybe-deref(typecheck-lookup l))
+             (maybe-deref(typecheck-lookup r))
+          ))))
+          (typecheck-ascript( term rt ))
+       )))
        ( _ (tail(
           (print 'Unknown\sTerm\sIn\sType\sInference\n_s)
           (print term)
@@ -410,4 +419,9 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
 as-local-variable := λ(: tt Type). (: (tail(
    ()
    (close tt)
+)) Type[]);
+
+typecheck-apply := λ(: ft Type)(: pt Type). (: (tail(
+   ()
+   (tnil())
 )) Type[]);
