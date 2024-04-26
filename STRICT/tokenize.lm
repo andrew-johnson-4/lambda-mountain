@@ -1,4 +1,40 @@
 
+type SourceLocation (SourceLocation( String , U64 , U64 ));
+type SourceMap SourceMapEOF | (SourceMapSeq( SourceMap[] , String , SourceLocation ));
+
+non-zero := λ(: t SourceMap). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( SourceMapEOF (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+close := λ(: x SourceMap). (: (tail(
+   (mov( (malloc(sizeof SourceMap)) R8 ))
+   (mov( x 0_u64 (as R8 SourceMap[]) ))
+   (as R8 SourceMap[])
+)) SourceMap[]);
+
+token-source-location := (: SourceMapEOF SourceMap);
+
+location-of-token := λ(: tok String). (: (tail(
+   (let loc SourceMapEOF)
+   (let locs token-source-location)
+   (while (non-zero locs) (match locs (
+      ()
+      ( (SourceMapSeq( rst (*( k vl )) )) (tail(
+         (if (==( (as k U64) (as tok U64) )) (
+            (set loc locs)
+         ) ())
+         (set locs rst)
+      )))
+   )))
+   (close loc)
+)) SourceMap[]);
+
 tokenize := λ(: fp String). (: (tail(
    (let text (read-file fp))
    (let in_comment False_u8)
