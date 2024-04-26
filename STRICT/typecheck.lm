@@ -294,6 +294,7 @@ typecheck-ascript := λ(: t AST)(: tt Type). (: (tail(
 typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
     (match term (
        ()
+       ( ASTNil (typecheck-ascript( term (maybe-deref(tnil())) )) )
        ( ASTEOF (typecheck-ascript( term (maybe-deref(tnil())) )) )
        ( (Seq( l r )) (tail(
           (typecheck-infer-expr( tctx l used ))
@@ -304,9 +305,30 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
           (typecheck-ascript( v (maybe-deref(typecheck-lookup term)) ))
           (typecheck-infer-expr( tctx v Used ))
        )))
-       ( (Fragment( k (Abs( lhs (Asc( rhs rhst )) )) )) (tail(
-          (print 'Fragment\n_s)
+       ( (Fragment( k (Abs( lhs (Asc( rhs rhst )) )) )) (
           (typecheck-ascript( term rhst ))
+       ))
+       ( (Asc( t tt )) (tail(
+          (typecheck-ascript( term tt ))
+          (typecheck-ascript( t tt ))
+          (typecheck-infer-expr( tctx t used ))
+       )))
+#       ( (Lit( lit )) (tail(
+#         (set ctype (typecheck-infer-constructor-type lit))
+#         (typecheck-ascript( term ctype ))
+#       )))
+       ( (App( (App( (App( (Var 'if_s) cond )) t )) f )) (tail(
+          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx cond Used ))))
+          (let tctx3 (maybe-deref(typecheck-infer-expr( tctx2 t Used ))))
+          (set tctx tctx3)
+          (typecheck-infer-expr( tctx f Used ))
+          (typecheck-ascript( term (maybe-deref(typecheck-lookup t)) ))
+       )))
+       ( (App( (App( (Var 'while_s) cond )) body )) (tail(
+          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx cond Used ))))
+          (set tctx tctx2)
+          (typecheck-infer-expr( tctx body Used ))
+          (typecheck-ascript( term (maybe-deref(tnil())) ))
        )))
        ( _ (tail(
           (print 'Unknown\sTerm\sIn\sType\sInference\n_s)
@@ -315,89 +337,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
           (exit 1_u64)
        )))
     ))
-    ()
-#      ( (Fragment( fln fle )) (
-#         if () ()
-#            (match fle (
-#               ()
-#               ( (Lambda( lhs (App( (App( (Literal ':) rhs )) rhst )) )) (
-#                  (set rhst (typecheck-infer-type-compound rhst))
-#                  (local flt)
-#                  (set flt ('->( (typecheck-typeof-lhs lhs) rhst )) )
-#                  (typecheck-ascript( fle flt ))
-#               ))
-#            ))
-#      ))
-#      ( Nil (
-#         (typecheck-ascript( e Nil ))
-#      ))
-#      ( (App( (Variable 'gensym-label) (Variable lname) )) (
-#         (set ctx ( ctx (lname (And( Constant Label ))) ))
-#         (typecheck-ascript( e Nil ))
-#      ))
-#      ( (App( (Variable 'label) (Variable lname) )) (
-#         (typecheck-ascript( e Nil ))
-#      ))
-#      ( (App( (App( (Literal ':) (Literal maybe-tag) )) tt )) (
-#         (local ctype)
-#         (local mtype)
-#         (set mtype (typecheck-infer-type-compound tt))
-#         (set ctype (typecheck-infer-constructor-type maybe-tag))
-#         (if ctype (
-#            (set mtype (And( mtype maybe-tag )))
-#         ) ())
-#         (typecheck-ascript( (tail (tail (head (tail e)))) (And( Constant mtype )) ))
-#         (typecheck-ascript( e (And( Constant mtype )) ))
-#      ))
-#      ( (App( (App( (Literal ':) asc )) tt )) (
-#         if () () (
-#            (typecheck-infer-expr( ctx asc used ))
-#            (typecheck-ascript( asc (typecheck-infer-type-compound tt) ))
-#            (typecheck-ascript( e (typecheck-infer-type-compound tt) ))
-#         )
-#      ))
-#      ( (App( (App( (Variable 'as) asc )) tt )) (
-#         if () () (
-#            (typecheck-infer-expr( ctx asc used ))
-#            (local asc_t)
-#            (set asc_t (typecheck-lookup asc))
-#            (if asc_t (
-#               (typecheck-ascript( e
-#                  (typecheck-as( asc_t (typecheck-infer-type-compound tt) ))
-#               ))
-#            ) ())
-#         )
-#      ))
-#      ( (Literal lit) (
-#         (local ctype)
-#         (set ctype (typecheck-infer-constructor-type lit))
-#         (if ctype (
-#            (typecheck-ascript( e (And( (And( lit ctype )) Constant )) ))
-#         ) (
-#            (typecheck-ascript( e Atom ))
-#         ))
-#      ))
-#      ( (App( (App( (Variable 'set) (Variable lhs) )) rhs )) (tail(
-#         (typecheck-infer-expr( ctx rhs Used ))
-#         (typecheck-ascript( e Nil ))
-#      )))
-#      ( (App( (Variable 'sizeof) (Literal tt) )) (tail(
-#         (typecheck-ascript( e (parse-type( U64+Literal+Constant )) ))
-#      )))
-#      ( (App( (Variable 'block-scope) t )) (
-#         (typecheck-infer-expr( ctx t used ))
-#      ))
-#      ( (App( (App( (App( (Variable 'if) cond )) t )) f )) (tail(
-#         (set ctx (typecheck-infer-expr( ctx cond Used )))
-#         (set ctx (typecheck-infer-expr( ctx t Used )))
-#         (typecheck-infer-expr( ctx f Used ))
-#         (typecheck-ascript( e (typecheck-lookup t) ))
-#      )))
-#      ( (App( (App( (Variable 'while) cond )) body )) (
-#         (typecheck-infer-expr( ctx cond Used ))
-#         (typecheck-infer-expr( ctx body Unused ))
-#         (typecheck-ascript( e Nil ))
-#      ))
+    (close tctx)
 #      ( (App( (Variable 'tail) (App( l r )) )) (tail(
 #         (set ctx (typecheck-infer-expr( ctx l Unused )))
 #         (set ctx (typecheck-infer-expr( ctx r used )))
@@ -466,5 +406,5 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
 #      ( u (fail (UnknownTerm u)) )
 #   ))
 #   ctx
-)) Nil);
+)) TContext[]);
 
