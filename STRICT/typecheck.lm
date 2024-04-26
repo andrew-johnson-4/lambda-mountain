@@ -173,6 +173,7 @@ typecheck := λ. (: (tail(
       )))
    )))
    (while (==( typecheck-types-have-changed True_u8 )) (
+      (print 'Typecheck\sIter\n_s)
       (set typecheck-types-have-changed False_u8)
       (typecheck-infer-expr( global-type-context ast-parsed-program Unused))
    ))
@@ -293,6 +294,7 @@ typecheck-ascript := λ(: t AST)(: tt Type). (: (tail(
 typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
     (match term (
        ()
+       ( ASTEOF (typecheck-ascript( term (maybe-deref(tnil())) )) )
        ( (Seq( l r )) (tail(
           (typecheck-infer-expr( tctx l used ))
           (typecheck-infer-expr( tctx r used ))
@@ -302,19 +304,18 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
           (typecheck-ascript( v (maybe-deref(typecheck-lookup term)) ))
           (typecheck-infer-expr( tctx v Used ))
        )))
+       ( (Fragment( k (Abs( lhs (Asc( rhs rhst )) )) )) (tail(
+          (print 'Fragment\n_s)
+          (typecheck-ascript( term rhst ))
+       )))
+       ( _ (tail(
+          (print 'Unknown\sTerm\sIn\sType\sInference\n_s)
+          (print term)
+          (print '\n_s)
+          (exit 1_u64)
+       )))
     ))
     ()
-#   (match e (
-#      ()
-#      ( (Type( l ds )) ())
-#      ( (Global( 'main (Lambda( lhs rhs )) )) (
-#         if () ()
-#            (typecheck-infer-expr( ctx rhs Used ))
-#      ))
-#      ( (Global( gln gle )) (
-#         (typecheck-ascript( gle (typecheck-lookup e) ))
-#         (typecheck-infer-expr( ctx gle Used ))
-#      ))
 #      ( (Fragment( fln fle )) (
 #         if () ()
 #            (match fle (

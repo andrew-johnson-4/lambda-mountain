@@ -50,6 +50,13 @@ non-zero := λ(: t TContext). (: (tail(
       ()
       ( (Pair( ASTEOF ASTEOF )) (set r 1_u64) )
       ( (Pair( ASTNil ASTNil )) (set r 1_u64) )
+      ( (Pair( (Seq( ll lr )) (Seq( rl rr )) )) (
+         (if (==( (as (.1( (as lterm Seq) )) U64) (as (.1( (as rterm Seq) )) U64) )) (
+            (if (==( (as (.2( (as lterm Seq) )) U64) (as (.2( (as rterm Seq) )) U64) )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+      ))
       ( (Pair( (App( ll lr )) (App( rl rr )) )) (
          (if (==( (as (.1( (as lterm App) )) U64) (as (.1( (as rterm App) )) U64) )) (
             (if (==( (as (.2( (as lterm App) )) U64) (as (.2( (as rterm App) )) U64) )) (
@@ -109,6 +116,7 @@ non-zero := λ(: t TContext). (: (tail(
             (set r 1_u64)
          ) ())
       ))
+      ( _ () )
    ))
    r
 )) U64);
