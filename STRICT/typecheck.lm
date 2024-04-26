@@ -330,21 +330,11 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
           (typecheck-infer-expr( tctx body Used ))
           (typecheck-ascript( term (maybe-deref(tnil())) ))
        )))
-       ( _ (tail(
-          (print 'Unknown\sTerm\sIn\sType\sInference\n_s)
-          (print term)
-          (print '\n_s)
-          (exit 1_u64)
+       ( (App( (Var 'tail_s) (App( l r )) )) (tail(
+          (typecheck-infer-expr( tctx l Unused ))
+          (typecheck-infer-expr( tctx r used ))
+          (typecheck-ascript( term (maybe-deref(typecheck-lookup r)) ))
        )))
-    ))
-    (close tctx)
-#      ( (App( (Variable 'tail) (App( l r )) )) (tail(
-#         (set ctx (typecheck-infer-expr( ctx l Unused )))
-#         (set ctx (typecheck-infer-expr( ctx r used )))
-#         (if (typecheck-lookup r) (
-#            (typecheck-ascript( e (typecheck-lookup r) ))
-#         ) ())
-#      )))
 #      ( (App( (Variable 'maybe-deref) r )) (tail(
 #         (set ctx (typecheck-infer-expr( ctx r used )))
 #         (local rtype)
@@ -361,15 +351,24 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
 #            (typecheck-ascript( e rtype ))
 #         ) ())
 #      )))
-#      ( (App( (Lambda( (Variable lname) Nil )) rhs )) (tail(
-#         (set ctx (typecheck-infer-expr( ctx rhs Used )))
-#         (if (typecheck-lookup rhs) (
-#            (set ctx ( ctx (lname (And( LocalVariable (typecheck-not-representation (typecheck-lookup rhs)) )) ) ))
-#         ) (
-#            (set ctx ( ctx (lname ()) ))
-#         ))
-#         (typecheck-ascript( e Nil ))
-#      )))
+       ( (App( (Abs( (Var lname) ASTNil )) rhs )) (tail(
+          (typecheck-infer-expr( tctx rhs Used ))
+          (let rt (maybe-deref(as-local-variable(maybe-deref(typecheck-lookup rhs)))))
+          (set tctx (TCtxBind(
+             (close tctx)
+             lname
+             rt
+          )))
+          (typecheck-ascript( term (maybe-deref(tnil())) ))
+       )))
+       ( _ (tail(
+          (print 'Unknown\sTerm\sIn\sType\sInference\n_s)
+          (print term)
+          (print '\n_s)
+          (exit 1_u64)
+       )))
+    ))
+    (close tctx)
 #      ( (App( l r )) (tail(
 #         (set ctx (typecheck-infer-expr( ctx l used )))
 #         (set ctx (typecheck-infer-expr( ctx r used )))
@@ -408,3 +407,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
 #   ctx
 )) TContext[]);
 
+as-local-variable := λ(: tt Type). (: (tail(
+   ()
+   (close tt)
+)) Type[]);
