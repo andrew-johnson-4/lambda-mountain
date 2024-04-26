@@ -313,6 +313,18 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
           (typecheck-ascript( t tt ))
           (typecheck-infer-expr( tctx t used ))
        )))
+       ( (App( (Var 'gensym-label_s) (Var lname) )) (tail(
+          (let tctx2 (TCtxBind(
+             (close tctx)
+             lname
+             (maybe-deref(tlabel()))
+          )))
+          (set tctx tctx2)
+          (typecheck-ascript( term (maybe-deref(tnil())) ))
+       )))
+       ( (App( (Var 'label_s) (Var lname) )) (
+          (typecheck-ascript( term (maybe-deref(tnil())) ))
+       ))
 #       ( (Lit( lit )) (tail(
 #         (set ctype (typecheck-infer-constructor-type lit))
 #         (typecheck-ascript( term ctype ))
@@ -425,6 +437,11 @@ typecheck-typeof-lhs := λ(: ft AST). (: (tail(
 )) Type[]);
 
 tarrow := λ(: lt Type)(: rt Type). (: (tail(
+   ()
+   (tnil())
+)) Type[]);
+
+tlabel := λ. (: (tail(
    ()
    (tnil())
 )) Type[]);
