@@ -370,6 +370,14 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
           ))))
           (typecheck-ascript( term rt ))
        )))
+       ( (Abs( lhs rhs )) (tail(
+          (let tctx2 (typecheck-infer-ctx( tctx lhs )))
+          (set tctx tctx2)
+          (typecheck-infer-expr( tctx rhs Used ))
+          (let lt (maybe-deref(typecheck-typeof-lhs rhs)))
+          (let rt (maybe-deref(typecheck-lookup rhs)))
+          (typecheck-ascript( term (maybe-deref(tarrow( lt rt ))) ))
+       )))
        ( _ (tail(
           (print 'Unknown\sTerm\sIn\sType\sInference\n_s)
           (print term)
@@ -378,21 +386,6 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
        )))
     ))
     (close tctx)
-#      ( (App( l r )) (tail(
-#         (set ctx (typecheck-infer-expr( ctx l used )))
-#         (set ctx (typecheck-infer-expr( ctx r used )))
-#         (match ( (typecheck-slot( (typecheck-lookup l) '-> )) (typecheck-lookup r) ) (
-#            ()
-#            ( (() _) () )
-#            ( (_ ()) () )
-#            ( ( ('->(lt rt)) pt ) (
-#               (typecheck-ascript( e (typecheck-safe-apply-plural( e (typecheck-lookup l) pt )) ))
-#            ))
-#            ( (lt rt) (
-#               (typecheck-ascript( e (Cons(lt rt)) ))
-#            ))
-#         ))
-#      )))
 #      ( (Lambda( lhs rhs )) (tail(
 #         (set ctx (typecheck-infer-ctx( ctx lhs )))
 #         (typecheck-infer-expr( ctx rhs Used ))
@@ -425,3 +418,18 @@ typecheck-apply := λ(: ft Type)(: pt Type). (: (tail(
    ()
    (tnil())
 )) Type[]);
+
+typecheck-typeof-lhs := λ(: ft AST). (: (tail(
+   ()
+   (tnil())
+)) Type[]);
+
+tarrow := λ(: lt Type)(: rt Type). (: (tail(
+   ()
+   (tnil())
+)) Type[]);
+
+typecheck-infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
+   ()
+   (close tctx)
+)) TContext[]);
