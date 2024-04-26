@@ -277,11 +277,11 @@ typecheck-ascript := λ(: t AST)(: tt Type). (: (
       (if (non-zero ot) (
          (if (==( ot tt )) () (tail(
             (print 'Type\sAscription\sInequality\n_s)
-            (print t)
-            (print '\n_s)
             (print ot)
             (print '\s!=\s_s)
             (print tt)
+            (print '\n_s)
+            (print (maybe-deref(location( t ))))
             (print '\n_s)
             (exit 1_u64)
          ))

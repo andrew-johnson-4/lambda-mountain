@@ -20,7 +20,7 @@ close := λ(: x SourceMap). (: (tail(
 
 token-source-location := (: SourceMapEOF SourceMap);
 
-location-of-token := λ(: tok String). (: (tail(
+location := λ(: tok String). (: (tail(
    (let loc SourceMapEOF)
    (let locs token-source-location)
    (while (non-zero locs) (match locs (
@@ -34,6 +34,58 @@ location-of-token := λ(: tok String). (: (tail(
    )))
    (close loc)
 )) SourceMap[]);
+
+location := λ(: term AST). (: (tail(
+   (let r (close SourceMapEOF))
+   (match term (
+      ()
+      ( (Var v) (set r (location v)) )
+      ( (Lit v) (set r (location v)) )
+      ( (App( tl tr )) (tail(
+         (set r (location tl))
+         (if (non-zero(maybe-deref r)) () (set r (location tr)))
+      )))
+      ( (Abs( tl tr )) (tail(
+         (set r (location tl))
+         (if (non-zero(maybe-deref r)) () (set r (location tr)))
+      )))
+      ( (Seq( tl tr )) (tail(
+         (set r (location tl))
+         (if (non-zero(maybe-deref r)) () (set r (location tr)))
+      )))
+      ( (Glb( k v )) (
+         (set r (location v))
+      ))
+      ( (ASTType( tl tr )) (tail(
+         (set r (location tl))
+         (if (non-zero(maybe-deref r)) () (set r (location tr)))
+      )))
+      ( (Fragment( tl tr )) (tail(
+         (set r (location tl))
+         (if (non-zero(maybe-deref r)) () (set r (location tr)))
+      )))
+      ( (Asc( t tt )) (
+         (set r (location t))
+      ))
+      ( _ () )
+   ))
+   r
+)) SourceMap[]);
+
+print := λ(: loc SourceMap). (: (
+   (match loc (
+      ()
+      (SourceMapEOF (print 'Location\sUnknown_s))
+      ( (SourceMapSeq( _ (*( _ (SourceLocation( fp (*( ln cl )) )) )) )) (tail(
+         (print 'In\sFile\s_s)
+         (print fp)
+         (print '\sLine\s_s)
+         (print ln)
+         (print '\sColumn\s_s)
+         (print cl)
+      )))
+   ))
+) Nil);
 
 tokenize := λ(: fp String). (: (tail(
    (let text (read-file fp))
