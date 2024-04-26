@@ -9,6 +9,7 @@ type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( Stri
 type ASTList ASTLEOF | (ASTSeq( ASTList[] , AST ));
 
 type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST[] ));
+type TContext TCtxEOF | (TCtxBind( TContext[] , String , Type ));
 type Pair (Pair( AST , AST ));
 type CPair (CPair( Context , Context ));
 
@@ -20,6 +21,16 @@ non-zero := λ(: t AST). (: (tail(
    (match t (
       ()
       ( ASTEOF (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+non-zero := λ(: t TContext). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( TCtxEOF (set r 0_u64))
       ( _ () )
    ))
    r
@@ -147,6 +158,12 @@ close := λ(: x Context). (: (tail(
    (mov( x 0_u64 (as R8 Context[]) ))
    (as R8 Context[])
 )) Context[]);
+
+close := λ(: x TContext). (: (tail(
+   (mov( (malloc(sizeof TContext)) R8 ))
+   (mov( x 0_u64 (as R8 TContext[]) ))
+   (as R8 TContext[])
+)) TContext[]);
 
 print := λ(: t Context). (: (tail(
    (match t (

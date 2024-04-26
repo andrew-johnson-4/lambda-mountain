@@ -137,6 +137,16 @@ non-zero := λ(: t TermTypeList). (: (tail(
    r
 )) U64);
 
+non-zero := λ(: t Type). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( TAny (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
 close := λ(: x TermTypeList). (: (tail(
    (mov( (malloc(sizeof TermTypeList)) R8 ))
    (mov( x 0_u64 (as R8 TermTypeList[]) ))
@@ -234,25 +244,14 @@ typecheck-assert-complete := λ(: term AST). (: (
    ))
 ) Nil);
 
-typecheck-assert-one := λ(: term AST). (: (tail(
-   (let found False_u8)
-   (let tts typecheck-term-type-list)
-   (while (non-zero tts) (match tts (
-      ()
-      ( (TTSeq( rst (*( t tt )) )) (tail(
-         (if (==( t term )) (
-            (set found True_u8)
-         ) ())
-         (set tts rst)
-      )))
-   )))
-   (if (==( found False_u8 )) (tail(
+typecheck-assert-one := λ(: term AST). (: (
+   (if (non-zero(maybe-deref(typecheck-lookup term))) () (tail(
       (print 'Unable\sto\sinfer\stype\sof\sexpression:\n_s)
       (print term)
       (print '\n_s)
       (exit 1_u64)
-   )) ())
-)) Nil);
+   )))
+) Nil);
 
 typecheck-infer-prog := λ(: term AST). (: (tail(
    ()
@@ -260,22 +259,20 @@ typecheck-infer-prog := λ(: term AST). (: (tail(
 )) Nil);
 	
 
-#typecheck-lookup := λterm . (tail(
-#   (local tctx)
-#   (set tctx typecheck-context)
-#   (local found)
-#   (local ttt)
-#   (while tctx (tail(
-#      (set ttt (head tctx))
-#      (if (is( (head ttt) term )) (tail(
-#         (set found (tail ttt))
-#         (set tctx ())
-#      )) (
-#         (set tctx (tail tctx))
-#      ))
-#   )))
-#   found
-#));
+typecheck-lookup := λ(: term AST). (: (tail(
+   (let found TAny)
+   (let tctx typecheck-term-type-list)
+   (while (non-zero tctx) (match tctx (
+      ()
+      ( (TTSeq( rst (*( t tt )) )) (tail(
+         (if (==( t term )) (
+            (set found tt)
+         ) ())
+         (set tctx rst)
+      )))
+   )))
+   (close found)
+)) Type[]);
 
 #typecheck-ascript := λt tt . (tail(
 #   (if tt (tail(
@@ -296,7 +293,13 @@ typecheck-infer-prog := λ(: term AST). (: (tail(
 #));
 
 typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used U8). (: (tail(
-    ()
+    (match term (
+       ()
+       ( (Seq( l r )) (tail(
+          (typecheck-infer-expr( tctx l used ))
+          (typecheck-infer-expr( tctx r used ))
+       )))
+    ))
     ()
 #   (match e (
 #      ()
