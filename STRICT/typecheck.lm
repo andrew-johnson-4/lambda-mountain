@@ -423,12 +423,14 @@ typecheck-typeof-lhs := λ(: ft AST). (: (tail(
 
 tarrow := λ(: lt Type)(: rt Type). (: (tail(
    ()
-   (tnil())
+   (close(TGround( '->_s
+      (close(TypeSeq( (close(TypeSeq( (close TypeEOF) lt ))) rt )))
+   )))
 )) Type[]);
 
 tlabel := λ. (: (tail(
    ()
-   (tnil())
+   (close(TGround( 'Label_s (close TypeEOF) )))
 )) Type[]);
 
 typecheck-infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
