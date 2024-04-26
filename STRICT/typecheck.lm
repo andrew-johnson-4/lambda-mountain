@@ -29,7 +29,7 @@ print := λ(: tt Type). (: (match tt (
    )))
    ( (TAnd( lt rt )) (tail(
       (print lt)
-      (print '+_s)
+      (print '\s+\s_s)
       (print rt)
    )))
    ( (TArray( lt rt )) (tail(
@@ -279,6 +279,8 @@ typecheck-ascript := λ(: t AST)(: tt Type). (: (
             (print 'Type\sAscription\sInequality\n_s)
             (print t)
             (print '\n_s)
+            (print ot)
+            (print '\s!=\s_s)
             (print tt)
             (print '\n_s)
             (exit 1_u64)
@@ -348,6 +350,11 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (typecheck-infer-expr( tctx l Unused ))
          (typecheck-infer-expr( tctx r used ))
          (typecheck-ascript( term (maybe-deref(typecheck-lookup r)) ))
+      )))
+      ( (App( (App( (Var 'as_s) t )) (Lit lt) )) (tail(
+         (let tt (maybe-deref(parse-type lt)))
+         (typecheck-infer-expr( tctx t used ))
+         (typecheck-ascript( term tt ))
       )))
 #      ( (App( (Variable 'maybe-deref) r )) (tail(
 #         (set ctx (typecheck-infer-expr( ctx r used )))
