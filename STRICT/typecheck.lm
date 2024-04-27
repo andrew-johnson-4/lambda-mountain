@@ -153,6 +153,34 @@ close := λ(: x TermTypeList). (: (tail(
    (as R8 TermTypeList[])
 )) TermTypeList[]);
 
+typecheck-typeof-lhs := λ(: lhs AST). (: (tail(
+   (let r TAny)
+   (match lhs (
+      ()
+      ( (Asc( _ tt )) (
+         (set r tt)
+      ))
+      ( (App( ps (Asc( _ tt )) )) (
+         (set r (TGround(
+            'Cons_s
+            (close(TypeSeq(
+               (close(TypeSeq(
+                  (close TypeEOF)
+                  (maybe-deref(typecheck-typeof-lhs( ps )))
+               )))
+               tt
+            )))
+         )))
+      ))
+      ( ASTNil (tail(
+         (let r2 (maybe-deref(tnil())))
+         (set r r2)
+      )))
+      ( _ (exit-error( 'Unknown\sLHS_s lhs )))
+   ))
+   (close r)
+)) Type[]);
+
 typecheck-term-type-list := (: TTEOF TermTypeList);
 typecheck-types-have-changed := True_u8;
 typecheck := λ. (: (tail(
@@ -189,11 +217,33 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
          (print td)
          (print '\n_s)
       )))
-#      ( (Glb( k _ )) (tail(
-#         (print td)
-#         (print '\n_s)
-#      )))
+      ( (Glb( k (Abs( lhs (Asc( rhs rhst )) )) )) (tail(
+         (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
+         (let ft (maybe-deref(tarrow( lt rhst ))))
+         (set global-type-context (TCtxBind(
+            (close global-type-context)
+            k
+            ft
+         )))
+      )))
+      ( (Glb( k (Asc( rhs rhst )) )) (
+         (set global-type-context (TCtxBind(
+            (close global-type-context)
+            k
+            rhst
+         )))
+      ))
+      ( (Fragment( k (Asc( rhs rhst )) )) (
+         (set global-type-context (TCtxBind(
+            (close global-type-context)
+            k
+            rhst
+         )))
+      ))
       ( (Glb( k _ )) (
+         (exit-error( 'Global\sBindings\sMust\sBe\sAscripted_s td ))
+      ))
+      ( (Fragment( k _ )) (
          (exit-error( 'Global\sBindings\sMust\sBe\sAscripted_s td ))
       ))
       ( _ () )
@@ -439,11 +489,6 @@ as-local-variable := λ(: tt Type). (: (tail(
 
 typecheck-apply := λ(: ft Type)(: pt Type). (: (tail(
    (fail 'TODO\stypecheck-apply\n_s)
-   (tnil())
-)) Type[]);
-
-typecheck-typeof-lhs := λ(: ft AST). (: (tail(
-   ()
    (tnil())
 )) Type[]);
 

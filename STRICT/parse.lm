@@ -86,27 +86,19 @@ parse := λ. (: (tail(
                )))
             ))
          ))
-         ( (SCons( (SAtom 'fragment_s) remainder )) (
-            (match (parse-one-expression remainder) (
+         ( (SCons( (SAtom 'fragment_s) (SCons( (SAtom key ) (SCons( (SAtom ':=_s) remainder )) )) )) (
+            (match (parse-many-expressions remainder) (
                ()
-               ( (PME( e1 (SCons( (SAtom( ':=_s )) r1 )) )) (
-                  (match (parse-many-expressions r1) (
-                     ()
-                     ( (PME( e2 r2 )) (tail(
-                        (set ast-parsed-program (Seq(
-                           (close ast-parsed-program)
-                           (close (Fragment(
-                              (close e1)
-                              (close e2)
-                           )))
-                        )))
-                        (set tokens r2)
+               ( (PME( re rr )) (tail(
+                  (set ast-parsed-program (Seq(
+                     (close ast-parsed-program)
+                     (close (Fragment(
+                        key
+                        (close re)
                      )))
-                  ))
-               ))
-               ( (PME( _ r1 )) (
-                  (parse-expect( 'Fragment\sExpected\s\sKeyValue_s tokens ))
-               ))
+                  )))
+                  (set tokens rr)
+               )))
             ))
          ))
          ( (SCons( (SAtom 'type_s) remainder )) (
