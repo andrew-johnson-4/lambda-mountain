@@ -29,7 +29,7 @@ print := λ(: tt Type). (: (match tt (
    )))
    ( (TAnd( lt rt )) (tail(
       (print lt)
-      (print '+_s)
+      (print '\s+\s_s)
       (print rt)
    )))
    ( (TArray( lt rt )) (tail(
@@ -117,15 +117,337 @@ close := λ(: x Type). (: (tail(
    (as R8 Type[])
 )) Type[]);
 
-typecheck := λ. (: (tail(
-   ()
-   ()
-)) Nil);
-
 tnil := λ. (: (tail(
    ()
    (close (TGround(
       'Nil_s
       (close TypeEOF)
    )))
+)) Type[]);
+
+type TermTypeList TTEOF | (TTSeq( TermTypeList[] , AST , Type ));
+
+non-zero := λ(: t TermTypeList). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( TTEOF (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+non-zero := λ(: t Type). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( TAny (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+close := λ(: x TermTypeList). (: (tail(
+   (mov( (malloc(sizeof TermTypeList)) R8 ))
+   (mov( x 0_u64 (as R8 TermTypeList[]) ))
+   (as R8 TermTypeList[])
+)) TermTypeList[]);
+
+typecheck-term-type-list := (: TTEOF TermTypeList);
+typecheck-types-have-changed := True_u8;
+typecheck := λ. (: (tail(
+   (let p ast-parsed-program)
+   (let ordered-type-exprs ASTEOF)
+   (while (non-zero p) (match p (
+      ()
+      ( (Seq( rst r )) (tail(
+         (set ordered-type-exprs (Seq( (close ordered-type-exprs) (close r) )))
+         (set p rst)
+      )))
+   )))
+   (while (non-zero ordered-type-exprs) (match ordered-type-exprs (
+      ()
+      ( (Seq( rst r )) (tail(
+         (typecheck-infer-type-expr( r ))
+         (set ordered-type-exprs rst)
+      )))
+   )))
+   (while (==( typecheck-types-have-changed True_u8 )) (
+      (print 'Typecheck\sIter\n_s)
+      (set typecheck-types-have-changed False_u8)
+      (typecheck-infer-expr( global-type-context ast-parsed-program Unused))
+   ))
+   (typecheck-assert-complete ast-parsed-program)
+)) Nil);
+
+global-type-context := (: TCtxEOF TContext);
+
+typecheck-infer-type-expr := λ(: td AST). (: (tail(
+   (match td (
+      ()
+      ( (ASTType( _ _ )) (tail(
+         (print td)
+         (print '\n_s)
+      )))
+      ( _ () )
+   ))
+   ()
+)) Nil);
+
+typecheck-assert-complete := λ(: term AST). (: (
+   (match term (
+      ()
+      ( ASTEOF (typecheck-assert-one term) )
+      ( ASTNil (typecheck-assert-one term) )
+      ( (Glb( k v )) (
+         (typecheck-assert-complete v)
+      ))
+      ( (ASTType( _ _ )) () )
+      ( (Fragment( _ _ )) () )
+      ( (App( (Abs( (Var lname) ASTNil )) rhs )) (tail(
+         (typecheck-assert-complete rhs)
+         (typecheck-assert-one term)
+      )))
+      ( (App( (Var 'gensym-label_s) _ )) () )
+      ( (App( (Var 'label_s) (Var _) )) () )
+      ( (App( (App( (Var 'while_s) cond )) body )) (tail(
+         (typecheck-assert-complete cond)
+         (typecheck-assert-complete body)
+         (typecheck-assert-one term)
+      )))
+      ( (App( (App( (App( (Var 'if_s) cond )) t )) f )) (tail(
+         (typecheck-assert-complete cond)
+         (typecheck-assert-complete t)
+         (typecheck-assert-complete f)
+         (typecheck-assert-one term)
+      )))
+      ( (App( (App( (Var 'set_s) lhs )) rhs )) (tail(
+         (typecheck-assert-complete rhs)
+         (typecheck-assert-one term)
+      )))
+      ( (Asc( t tt )) (tail(
+         (typecheck-assert-complete t)
+         (typecheck-assert-one term)
+      )))
+      ( (Lit l) (typecheck-assert-one term) )
+      ( (Var l) (typecheck-assert-one term) )
+      ( (Abs( lhs rhs )) (tail(
+         (typecheck-assert-complete rhs)
+         (typecheck-assert-one term)
+      )))
+      ( (App( l r )) (tail(
+         (typecheck-assert-complete l)
+         (typecheck-assert-complete r)
+         (typecheck-assert-one term)
+      )))
+      ( (Seq( l r )) (tail(
+         (typecheck-assert-complete l)
+         (typecheck-assert-complete r)
+      )))
+   ))
+) Nil);
+
+typecheck-assert-one := λ(: term AST). (: (
+   (if (non-zero(maybe-deref(typecheck-lookup term))) () (tail(
+      (print 'Unable\sto\sinfer\stype\sof\sexpression:\n_s)
+      (print term)
+      (print '\n_s)
+      (exit 1_u64)
+   )))
+) Nil);
+
+typecheck-lookup := λ(: term AST). (: (tail(
+   (let found TAny)
+   (let tctx typecheck-term-type-list)
+   (while (non-zero tctx) (match tctx (
+      ()
+      ( (TTSeq( rst (*( t tt )) )) (tail(
+         (if (==( t term )) (
+            (set found tt)
+         ) ())
+         (set tctx rst)
+      )))
+   )))
+   (close found)
+)) Type[]);
+
+typecheck-ascript := λ(: t AST)(: tt Type). (: (
+   (if (non-zero tt) (tail(
+      (let ot (maybe-deref(typecheck-lookup t)))
+      (if (non-zero ot) (
+         (if (==( ot tt )) () (tail(
+            (print 'Type\sAscription\sInequality\n_s)
+            (print ot)
+            (print '\s!=\s_s)
+            (print tt)
+            (print '\n_s)
+            (print (maybe-deref(location( t ))))
+            (print '\n_s)
+            (print t)
+            (print '\n_s)
+            (exit 1_u64)
+         ))
+      )) (tail(
+         (set typecheck-term-type-list (TTSeq(
+            (close typecheck-term-type-list)
+            t tt
+         )))
+         (set typecheck-types-have-changed True_u8)
+     )))
+   )) ())
+) Nil);
+
+typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
+   (match term (
+      ()
+      ( ASTNil (typecheck-ascript( term (maybe-deref(tnil())) )) )
+      ( ASTEOF (typecheck-ascript( term (maybe-deref(tnil())) )) )
+      ( (Seq( l r )) (tail(
+         (typecheck-infer-expr( tctx l used ))
+         (typecheck-infer-expr( tctx r used ))
+      )))
+      ( (ASTType( _ _ )) () )
+      ( (Glb( k v )) (tail(
+         (typecheck-ascript( v (maybe-deref(typecheck-lookup term)) ))
+         (typecheck-infer-expr( tctx v Used ))
+      )))
+      ( (Fragment( k (Abs( lhs (Asc( rhs rhst )) )) )) (
+         (typecheck-ascript( term rhst ))
+      ))
+      ( (Asc( t tt )) (tail(
+         (typecheck-ascript( term tt ))
+         (typecheck-ascript( t tt ))
+         (typecheck-infer-expr( tctx t used ))
+      )))
+      ( (App( (Var 'gensym-label_s) (Var lname) )) (tail(
+         (let tctx2 (TCtxBind(
+            (close tctx)
+            lname
+            (maybe-deref(tlabel()))
+         )))
+         (set tctx tctx2)
+         (typecheck-ascript( term (maybe-deref(tnil())) ))
+      )))
+      ( (App( (Var 'label_s) (Var lname) )) (
+         (typecheck-ascript( term (maybe-deref(tnil())) ))
+      ))
+#       ( (Lit( lit )) (tail(
+#         (set ctype (typecheck-infer-constructor-type lit))
+#         (typecheck-ascript( term ctype ))
+#       )))
+      ( (App( (App( (App( (Var 'if_s) cond )) t )) f )) (tail(
+         (let tctx2 (maybe-deref(typecheck-infer-expr( tctx cond Used ))))
+         (let tctx3 (maybe-deref(typecheck-infer-expr( tctx2 t Used ))))
+         (set tctx tctx3)
+         (typecheck-infer-expr( tctx f Used ))
+         (typecheck-ascript( term (maybe-deref(typecheck-lookup t)) ))
+      )))
+      ( (App( (App( (Var 'while_s) cond )) body )) (tail(
+         (let tctx2 (maybe-deref(typecheck-infer-expr( tctx cond Used ))))
+         (set tctx tctx2)
+         (typecheck-infer-expr( tctx body Used ))
+         (typecheck-ascript( term (maybe-deref(tnil())) ))
+      )))
+      ( (App( (Var 'tail_s) (App( l r )) )) (tail(
+         (typecheck-infer-expr( tctx l Unused ))
+         (typecheck-infer-expr( tctx r used ))
+         (typecheck-ascript( term (maybe-deref(typecheck-lookup r)) ))
+      )))
+      ( (App( (App( (Var 'as_s) t )) (Lit lt) )) (tail(
+         (let tt (maybe-deref(parse-type lt)))
+         (typecheck-infer-expr( tctx t used ))
+         (typecheck-ascript( term tt ))
+      )))
+#      ( (App( (Variable 'maybe-deref) r )) (tail(
+#         (set ctx (typecheck-infer-expr( ctx r used )))
+#         (local rtype)
+#         (set rtype (typecheck-lookup r))
+#         (if rtype (
+#            (match (typecheck-slot( (typecheck-lookup r) Array )) (
+#               ()
+#               ( (Array( x '? )) (
+#                  (if (typecheck-unify-implies( x '? )) () (
+#                     (set rtype x)
+#                  ))
+#               ))
+#            ))
+#            (typecheck-ascript( e rtype ))
+#         ) ())
+#      )))
+      ( (App( (Abs( (Var lname) ASTNil )) rhs )) (tail(
+         (typecheck-infer-expr( tctx rhs Used ))
+         (let rt (maybe-deref(as-local-variable(maybe-deref(typecheck-lookup rhs)))))
+         (set tctx (TCtxBind(
+            (close tctx)
+            lname
+            rt
+         )))
+         (typecheck-ascript( term (maybe-deref(tnil())) ))
+      )))
+      ( (App( l r )) (tail(
+         (typecheck-infer-expr( tctx l Used ))
+         (typecheck-infer-expr( tctx r Used ))
+         (let rt (maybe-deref(typecheck-apply(
+            (maybe-deref(typecheck-lookup l))
+            (maybe-deref(typecheck-lookup r))
+         ))))
+         (typecheck-ascript( term rt ))
+      )))
+      ( (Abs( lhs rhs )) (tail(
+         (let tctx2 (typecheck-infer-ctx( tctx lhs )))
+         (set tctx tctx2)
+         (typecheck-infer-expr( tctx rhs Used ))
+         (let lt (maybe-deref(typecheck-typeof-lhs rhs)))
+         (let rt (maybe-deref(typecheck-lookup rhs)))
+         (typecheck-ascript( term (maybe-deref(tarrow( lt rt ))) ))
+      )))
+      ( (Var v) (
+         (typecheck-ascript( term (maybe-deref(typecheck-typeof-var( tctx v ))) ))
+      ))
+      ( (Lit _) () ) #Literals need to be ascripted or inferred or gradual
+      ( _ (tail(
+         (print 'Unknown\sTerm\sIn\sType\sInference\n_s)
+         (print term)
+         (print '\n_s)
+         (exit 1_u64)
+      )))
+   ))
+   (close tctx)
+)) TContext[]);
+
+as-local-variable := λ(: tt Type). (: (tail(
+   ()
+   (close tt)
+)) Type[]);
+
+typecheck-apply := λ(: ft Type)(: pt Type). (: (tail(
+   ()
+   (tnil())
+)) Type[]);
+
+typecheck-typeof-lhs := λ(: ft AST). (: (tail(
+   ()
+   (tnil())
+)) Type[]);
+
+tarrow := λ(: lt Type)(: rt Type). (: (tail(
+   ()
+   (close(TGround( '->_s
+      (close(TypeSeq( (close(TypeSeq( (close TypeEOF) lt ))) rt )))
+   )))
+)) Type[]);
+
+tlabel := λ. (: (tail(
+   ()
+   (close(TGround( 'Label_s (close TypeEOF) )))
+)) Type[]);
+
+typecheck-infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
+   ()
+   (close tctx)
+)) TContext[]);
+
+typecheck-typeof-var := λ(: tctx TContext)(: v String). (: (tail(
+   ()
+   (close TAny)
 )) Type[]);
