@@ -497,9 +497,39 @@ as-local-variable := λ(: tt Type). (: (tail(
 )) Type[]);
 
 typecheck-apply := λ(: ft Type)(: pt Type). (: (tail(
-   (fail 'TODO\stypecheck-apply\n_s)
-   (tnil())
+   (let rt TAny)
+   (match ft (
+      ()
+      ( (TAnd( ft1 ft2 )) (tail(
+         (let rt1 (maybe-deref(typecheck-apply( ft1 pt ))))
+         (if (non-zero rt1) (
+            (set rt rt1)
+         ) (tail(
+            (let rt2 (maybe-deref(typecheck-apply( ft2 pt ))))
+            (set rt rt2)
+         )))
+      )))
+      ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (tail(
+         (let ctx (maybe-deref(typecheck-unify-args( fpt pt ))))
+         (if (non-zero ctx) (tail(
+            (let rt1 (maybe-deref(typecheck-unify-ctx( ctx frt ))))
+            (set rt rt1)
+         )) ())
+      )))
+      ( _ () )
+   ))
+   (close rt)
 )) Type[]);
+
+typecheck-unify-ctx := λ(: ctx TContext)(: tt Type). (: (tail(
+   ()
+   (close tt)
+)) Type[]);
+
+typecheck-unify-args := λ(: fpt Type)(: pt Type). (: (tail(
+   ()
+   (close TCtxEOF)
+)) TContext[]);
 
 tarrow := λ(: lt Type)(: rt Type). (: (tail(
    ()
