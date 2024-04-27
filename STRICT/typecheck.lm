@@ -168,7 +168,7 @@ typecheck := λ. (: (tail(
    (while (non-zero ordered-type-exprs) (match ordered-type-exprs (
       ()
       ( (Seq( rst r )) (tail(
-         (typecheck-infer-type-expr( r ))
+         (typecheck-infer-global-context( r ))
          (set ordered-type-exprs rst)
       )))
    )))
@@ -182,13 +182,20 @@ typecheck := λ. (: (tail(
 
 global-type-context := (: TCtxEOF TContext);
 
-typecheck-infer-type-expr := λ(: td AST). (: (tail(
+typecheck-infer-global-context := λ(: td AST). (: (tail(
    (match td (
       ()
       ( (ASTType( _ _ )) (tail(
          (print td)
          (print '\n_s)
       )))
+#      ( (Glb( k _ )) (tail(
+#         (print td)
+#         (print '\n_s)
+#      )))
+      ( (Glb( k _ )) (
+         (exit-error( 'Global\sBindings\sMust\sBe\sAscripted_s td ))
+      ))
       ( _ () )
    ))
    ()
@@ -271,23 +278,28 @@ typecheck-lookup := λ(: term AST). (: (tail(
    (close found)
 )) Type[]);
 
+exit-error := λ(: msg String)(: t AST). (: (tail(
+   (print msg)
+   (print '\n_s)
+   (print (maybe-deref(location( t ))))
+   (print '\n_s)
+   (print t)
+   (print '\n_s)
+   (exit 1_u64)
+)) Nil);
+
 typecheck-ascript := λ(: t AST)(: tt Type). (: (
    (if (non-zero tt) (tail(
       (let ot (maybe-deref(typecheck-lookup t)))
       (if (non-zero ot) (
          (if (==( ot tt )) () (tail(
-            (print 'Type\sAscription\sInequality\n_s)
             (print ot)
             (print '\s!=\s_s)
             (print tt)
             (print '\n_s)
-            (print (maybe-deref(location( t ))))
-            (print '\n_s)
-            (print t)
-            (print '\n_s)
-            (exit 1_u64)
-         ))
-      )) (tail(
+            (exit-error( 'Type\sAscription\sInequality_s t ))
+         )))
+      ) (tail(
          (set typecheck-term-type-list (TTSeq(
             (close typecheck-term-type-list)
             t tt
