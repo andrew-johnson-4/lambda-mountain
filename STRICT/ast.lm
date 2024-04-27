@@ -235,6 +235,21 @@ print := λ(: t Context). (: (tail(
    ()
 )) Nil);
 
+print := λ(: t TContext). (: (tail(
+   (match t (
+      ()
+      ( TCtxEOF () )
+      ( (TCtxBind( rst (*( k v )) )) (tail(
+         (print rst)
+         (print k)
+         (print '\s=\s_s)
+         (print v)
+         (print '\:\n_s)
+      )))
+   ))
+   ()
+)) Nil);
+
 print := λ(: t AST). (: (tail(
    (match t (
       ()

@@ -298,6 +298,7 @@ typecheck-ascript := λ(: t AST)(: tt Type). (: (
 ) Nil);
 
 typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
+   (print term)(print '\n_s)
    (match term (
       ()
       ( ASTNil (typecheck-ascript( term (maybe-deref(tnil())) )) )
@@ -354,6 +355,11 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (typecheck-ascript( term (maybe-deref(typecheck-lookup r)) ))
       )))
       ( (App( (App( (Var 'as_s) t )) (Lit lt) )) (tail(
+         (let tt (maybe-deref(parse-type lt)))
+         (typecheck-infer-expr( tctx t used ))
+         (typecheck-ascript( term tt ))
+      )))
+      ( (App( (App( (Var 'as_s) t )) (Var lt) )) (tail(
          (let tt (maybe-deref(parse-type lt)))
          (typecheck-infer-expr( tctx t used ))
          (typecheck-ascript( term tt ))
@@ -421,7 +427,7 @@ as-local-variable := λ(: tt Type). (: (tail(
 )) Type[]);
 
 typecheck-apply := λ(: ft Type)(: pt Type). (: (tail(
-   ()
+   (fail 'TODO\stypecheck-apply\n_s)
    (tnil())
 )) Type[]);
 
@@ -447,7 +453,28 @@ typecheck-infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
    (close tctx)
 )) TContext[]);
 
-typecheck-typeof-var := λ(: tctx TContext)(: v String). (: (tail(
-   ()
-   (close TAny)
+typecheck-typeof-var := λ(: tctx TContext)(: vname String). (: (tail(
+   (print 'TypeOfVar1\n_s)
+   (print tctx)
+   (let found TAny)
+   (while (non-zero tctx) (match tctx (
+      ()
+      ( (TCtxBind( rst (*( k vt  )) )) (
+         (if (==( k vname )) (tail(
+            (set found vt)
+            (set tctx TCtxEOF)
+         )) (
+            (set tctx rst)
+         ))
+      ))
+   )))
+   (print 'TypeOfVar2\n_s)
+   (if (non-zero found) () (tail(
+      (print 'Unknown\sReferenced\sVariable:\s_s)
+      (print vname)
+      (print '\n_s)
+      (exit 1_u64)
+   )))
+   (print 'TypeOfVar3\n_s)
+   (close found)
 )) Type[]);
