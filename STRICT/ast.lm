@@ -3,7 +3,7 @@ type Type TAny | (TGround( String , TypeList[] )) | (TAnd( Type[] , Type[] )) | 
 type TypeList TypeEOF | (TypeSeq( TypeList[] , Type ));
 
 type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] ))
-                | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Fragment( AST[] , AST[] ))
+                | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Fragment( String , AST[] ))
                 | (Asc( AST[] , Type[] ));
 
 type ASTList ASTLEOF | (ASTSeq( ASTList[] , AST ));
@@ -124,7 +124,7 @@ non-zero := λ(: t TContext). (: (tail(
          ) ())
       ))
       ( (Pair( (Fragment( ll lr )) (Fragment( rl rr )) )) (
-         (if (==( (as (.1( (as lterm Fragment) )) U64) (as (.1( (as rterm Fragment) )) U64) )) (
+         (if (==( ll rl )) (
             (if (==( (as (.2( (as lterm Fragment) )) U64) (as (.2( (as rterm Fragment) )) U64) )) (
                (set r 1_u64)
             ) ())
@@ -145,12 +145,12 @@ non-zero := λ(: t TContext). (: (tail(
          ) ())
       ))
       ( (Pair( (Var lv) (Var rv) )) (
-         (if (==( lv rv )) (
+         (if (==( (as lv U64) (as rv U64) )) (
             (set r 1_u64)
          ) ())
       ))
       ( (Pair( (Lit lv) (Lit rv) )) (
-         (if (==( lv rv )) (
+         (if (==( (as lv U64) (as rv U64) )) (
             (set r 1_u64)
          ) ())
       ))
@@ -235,6 +235,21 @@ print := λ(: t Context). (: (tail(
    ()
 )) Nil);
 
+print := λ(: t TContext). (: (tail(
+   (match t (
+      ()
+      ( TCtxEOF () )
+      ( (TCtxBind( rst (*( k v )) )) (tail(
+         (print rst)
+         (print k)
+         (print '\s=\s_s)
+         (print v)
+         (print '\:\n_s)
+      )))
+   ))
+   ()
+)) Nil);
+
 print := λ(: t AST). (: (tail(
    (match t (
       ()
@@ -275,7 +290,7 @@ print := λ(: t AST). (: (tail(
          (print '\]_s)
       )))
       ( (Asc( t tt )) (tail(
-         (print '\[:_s)
+         (print '\[:\s_s)
          (print t)
          (print '\s_s)
          (print tt)
@@ -321,7 +336,7 @@ serialize-ast := λ(: t AST). (: (tail(
       )))
       ( (Fragment( lhs rhs )) (tail(
          (print '\[Fragment\s\[_s)
-         (serialize-ast lhs)
+         (print lhs)
          (print '\s_s)
          (serialize-ast rhs)
          (print '\]\]_s)
