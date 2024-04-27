@@ -145,12 +145,12 @@ non-zero := λ(: t TContext). (: (tail(
          ) ())
       ))
       ( (Pair( (Var lv) (Var rv) )) (
-         (if (==( lv rv )) (
+         (if (==( (as lv U64) (as rv U64) )) (
             (set r 1_u64)
          ) ())
       ))
       ( (Pair( (Lit lv) (Lit rv) )) (
-         (if (==( lv rv )) (
+         (if (==( (as lv U64) (as rv U64) )) (
             (set r 1_u64)
          ) ())
       ))
