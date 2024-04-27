@@ -226,6 +226,15 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
             ft
          )))
       )))
+      ( (Fragment( k (Abs( lhs (Asc( rhs rhst )) )) )) (tail(
+         (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
+         (let ft (maybe-deref(tarrow( lt rhst ))))
+         (set global-type-context (TCtxBind(
+            (close global-type-context)
+            k
+            ft
+         )))
+      )))
       ( (Glb( k (Asc( rhs rhst )) )) (
          (set global-type-context (TCtxBind(
             (close global-type-context)
@@ -510,7 +519,6 @@ typecheck-infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
 )) TContext[]);
 
 typecheck-typeof-var := λ(: tctx TContext)(: vname String). (: (tail(
-   (print tctx)
    (let found TAny)
    (while (non-zero tctx) (match tctx (
       ()
