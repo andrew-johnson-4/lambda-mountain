@@ -283,6 +283,8 @@ typecheck-ascript := λ(: t AST)(: tt Type). (: (
             (print '\n_s)
             (print (maybe-deref(location( t ))))
             (print '\n_s)
+            (print t)
+            (print '\n_s)
             (exit 1_u64)
          ))
       )) (tail(
