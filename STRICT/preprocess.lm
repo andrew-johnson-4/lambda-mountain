@@ -130,7 +130,10 @@ preprocess-apply := λ(: program AST). (: (tail(
             ()
             ( (SfxSeq( rst (*( sfxs sfxtt )) )) (
                (if (is-suffix( l sfxs )) (tail(
-                  (set r (Asc( (close (Lit (remove-suffix( l sfxs )))) (close sfxtt) )))
+                  (let lloc (maybe-deref(location l)))
+                  (let lpfx (remove-suffix( l sfxs )))
+                  (add-location( lpfx lloc ))
+                  (set r (Asc( (close (Lit lpfx)) (close sfxtt) )))
                   (set suffixes SfxEOF)
                )) (
                   (set suffixes rst)
@@ -144,7 +147,10 @@ preprocess-apply := λ(: program AST). (: (tail(
             ()
             ( (SfxSeq( rst (*( sfxs sfxtt )) )) (
                (if (is-suffix( l sfxs )) (tail(
-                  (set r (Asc( (close (Lit (remove-suffix( l sfxs )))) (close sfxtt) )))
+                  (let lloc (maybe-deref(location l)))
+                  (let lpfx (remove-suffix( l sfxs )))
+                  (add-location( lpfx lloc ))
+                  (set r (Asc( (close (Lit lpfx)) (close sfxtt) )))
                   (set suffixes SfxEOF)
                )) (
                   (set suffixes rst)

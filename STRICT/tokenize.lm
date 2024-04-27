@@ -35,6 +35,32 @@ location := λ(: tok String). (: (tail(
    (close loc)
 )) SourceMap[]);
 
+add-location := λ(: tok String)(: loc SourceLocation). (: (
+   (set token-source-location (SourceMapSeq(
+      (close token-source-location)
+      tok
+      loc
+   )))
+) Nil);
+
+add-location := λ(: tok String)(: loc SourceMap). (: (
+   (match loc (
+      ()
+      ( (SourceMapSeq( _ (*( _ sloc )) )) (
+         (add-location( tok sloc ))
+      ))
+      ( _ () )
+   ))
+) Nil);
+
+add-location := λ(: tok String)(: file String)(: line U64)(: column U64). (: (
+   (set token-source-location (SourceMapSeq(
+      (close token-source-location)
+      tok
+      (SourceLocation( file line column ))
+   )))
+) Nil);
+
 location := λ(: term AST). (: (tail(
    (let r (close SourceMapEOF))
    (match term (
@@ -91,8 +117,22 @@ tokenize := λ(: fp String). (: (tail(
    (let text (read-file fp))
    (let in_comment False_u8)
    (let buffer SNil)
+   (let current-line 1_u64)
+   (let current-column 1_u64)
+   (let token-line 1_u64)
+   (let token-column 1_u64)
    (let parens-counter 0_u64)
    (while (head-string text) (tail(
+      (match (head-string text) (
+         ()
+         ( '\n_u8 (tail(
+            (set current-line (+( current-line 1_u64 )))
+            (set current-column 1_u64)
+         )))
+         ( _ (
+            (set current-column (+( current-line 1_u64 )))
+         ))
+      ))
       (match (head-string text) (
          ()
          ( \o_u8 (tail(
@@ -103,6 +143,8 @@ tokenize := λ(: fp String). (: (tail(
                )))
                (set buffer SNil)
             )) ())
+            (set token-line current-line)
+            (set token-column current-column)
             (set in_comment True_u8)
          )))
          ( \n_u8 (tail(
@@ -113,9 +155,11 @@ tokenize := λ(: fp String). (: (tail(
                )))
                (set buffer SNil)
             )) ())
+            (set token-line current-line)
+            (set token-column current-column)
             (set in_comment False_u8)
          )))
-         ( \t_u8 (
+         ( \t_u8 (tail(
             (if (non-zero buffer) (tail(
                (set ast-tokenized-program (SCons(
                   (close ast-tokenized-program)
@@ -123,8 +167,10 @@ tokenize := λ(: fp String). (: (tail(
                )))
                (set buffer SNil)
             )) ())
-         ))
-         ( \s_u8 (
+            (set token-line current-line)
+            (set token-column current-column)
+         )))
+         ( \s_u8 (tail(
             (if (non-zero buffer) (tail(
                (set ast-tokenized-program (SCons(
                   (close ast-tokenized-program)
@@ -132,13 +178,17 @@ tokenize := λ(: fp String). (: (tail(
                )))
                (set buffer SNil)
             )) ())
-         ))
+            (set token-line current-line)
+            (set token-column current-column)
+         )))
 
          ( \[_u8 (if (==( in_comment True_u8 )) () (tail(
             (if (non-zero buffer) (tail(
+               (let tk (clone-rope buffer))
+               (add-location( tk fp token-line token-column ))
                (set ast-tokenized-program (SCons(
                   (close ast-tokenized-program)
-                  (close (SAtom (clone-rope buffer)))
+                  (close (SAtom tk))
                )))
                (set buffer SNil)
             )) ())
@@ -147,12 +197,16 @@ tokenize := λ(: fp String). (: (tail(
                (close ast-tokenized-program)
                (close (SAtom '\[_s))
             )))
+            (set token-line current-line)
+            (set token-column current-column)
          ))))
          ( \]_u8 (if (==( in_comment True_u8 )) () (tail(
             (if (non-zero buffer) (tail(
+               (let tk (clone-rope buffer))
+               (add-location( tk fp token-line token-column ))
                (set ast-tokenized-program (SCons(
                   (close ast-tokenized-program)
-                  (close (SAtom (clone-rope buffer)))
+                  (close (SAtom tk))
                )))
                (set buffer SNil)
             )) ())
@@ -164,9 +218,11 @@ tokenize := λ(: fp String). (: (tail(
          ))))
          ( \`_u8 (if (==( in_comment True_u8 )) () (tail(
             (if (non-zero buffer) (tail(
+               (let tk (clone-rope buffer))
+               (add-location( tk fp token-line token-column ))
                (set ast-tokenized-program (SCons(
                   (close ast-tokenized-program)
-                  (close (SAtom (clone-rope buffer)))
+                  (close (SAtom tk))
                )))
                (set buffer SNil)
             )) ())
@@ -177,9 +233,11 @@ tokenize := λ(: fp String). (: (tail(
          ))))
          ( \:_u8 (if (==( in_comment True_u8 )) () (tail(
             (if (non-zero buffer) (tail(
+               (let tk (clone-rope buffer))
+               (add-location( tk fp token-line token-column ))
                (set ast-tokenized-program (SCons(
                   (close ast-tokenized-program)
-                  (close (SAtom (clone-rope buffer)))
+                  (close (SAtom tk))
                )))
                (set buffer SNil)
             )) ())
