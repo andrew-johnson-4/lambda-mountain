@@ -573,22 +573,22 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (typecheck-infer-expr( tctx t used ))
          (typecheck-ascript( term tt ))
       )))
-#      ( (App( (Variable 'maybe-deref) r )) (tail(
-#         (set ctx (typecheck-infer-expr( ctx r used )))
-#         (local rtype)
-#         (set rtype (typecheck-lookup r))
-#         (if rtype (
-#            (match (typecheck-slot( (typecheck-lookup r) Array )) (
-#               ()
-#               ( (Array( x '? )) (
-#                  (if (typecheck-unify-implies( x '? )) () (
-#                     (set rtype x)
-#                  ))
-#               ))
-#            ))
-#            (typecheck-ascript( e rtype ))
-#         ) ())
-#      )))
+      ( (App( (Var 'sizeof_s) _ )) (
+         (typecheck-ascript( term (maybe-deref(parse-type 'U64_s)) ))
+      ))
+      ( (App( (Var 'maybe-deref_s) r )) (tail(
+         (let tctx2 (maybe-deref(typecheck-infer-expr( tctx r used ))))
+         (set tctx tctx2)
+         (let deref-type (maybe-deref(typecheck-lookup r)))
+         (match (typecheck-slot( deref-type 'Array_s )) (
+            ()
+            ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF array-base )) (TGround( '?_s _ )) )) )) (
+               (set deref-type array-base)
+            ))
+            ( _ () )
+         ))
+         (typecheck-ascript( term deref-type ))
+      )))
       ( (App( (Abs( (Var lname) ASTNil )) rhs )) (tail(
          (typecheck-infer-expr( tctx rhs Used ))
          (let rt (maybe-deref(as-local-variable(maybe-deref(typecheck-lookup rhs)))))
@@ -636,6 +636,35 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
    ))
    (close tctx)
 )) TContext[]);
+
+typecheck-slot := λ(: tt Type)(: slot String). (: (tail(
+   (let rt (maybe-deref(typecheck-slot-inner( tt slot ))))
+   (if (non-zero rt) () (
+      (set rt tt)
+   ))
+   (close rt)
+)) Type[]);
+
+typecheck-slot-inner := λ(: tt Type)(: slot String). (: (tail(
+   (let rt TAny)
+   (match tt (
+      ()
+      ( (TGround( bt _ )) (
+         (if (==( bt slot )) (set rt tt) ())
+      ))
+      ( (TAnd( lt rt )) (tail(
+         (let lt2 (maybe-deref(typecheck-slot-inner( lt slot ))))
+         (if (non-zero lt2) (
+            (set rt lt2)
+         ) (tail(
+            (let rt2 (maybe-deref(typecheck-slot-inner( rt slot ))))
+            (set rt rt2)
+         )))
+      )))
+      ( _ () )
+   ))
+   (close rt)
+)) Type[]);
 
 typecheck-typeof-tag := λ(: tag String). (: (tail(
    (let r TAny)
