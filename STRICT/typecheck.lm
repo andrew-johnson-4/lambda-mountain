@@ -453,14 +453,38 @@ exit-error := λ(: msg String)(: t AST). (: (tail(
    (exit 1_u64)
 )) Nil);
 
+normalize := λ(: tt Type). (: (tail(
+   (match tt (
+      ()
+      ( (TGround( 'Constant_s TypeEOF )) (set tt TAny) )
+      ( (TGround( 'Literal_s TypeEOF )) (set tt TAny) )
+      ( (TGround( 'StackVariable_s TypeEOF )) (set tt TAny) )
+      ( (TGround( 'LocalVariable_s TypeEOF )) (set tt TAny) )
+      ( (TGround( 'GlobalVariable_s TypeEOF )) (set tt TAny) )
+      ( (TAnd( lt rt )) (tail(
+         (let lt1 (maybe-deref(normalize lt )))
+         (let rt1 (maybe-deref(normalize rt )))
+         (match (TPair( lt1 rt1 )) (
+            ()
+            ( (TPair( TAny rt2 )) (set tt rt2) )
+            ( (TPair( lt2 TAny )) (set tt lt2) )
+            ( (TPair( lt2 rt2 )) (set tt (TAnd( (close lt2) (close rt2) ))) )
+         ))
+      )))
+      ( _ () )
+   ))
+   (close tt)
+)) Type[]);
+
 typecheck-ascript := λ(: t AST)(: tt Type). (: (
    (if (non-zero tt) (tail(
-      (let ot (maybe-deref(typecheck-lookup t)))
-      (if (non-zero ot) (
-         (if (==( ot tt )) () (tail(
-            (print ot)
+      (let tt-normal (maybe-deref(normalize( tt ))))
+      (let ot-normal (maybe-deref(normalize(maybe-deref(typecheck-lookup t)))))
+      (if (non-zero ot-normal) (
+         (if (==( ot-normal tt-normal )) () (tail(
+            (print ot-normal)
             (print '\s!=\s_s)
-            (print tt)
+            (print tt-normal)
             (print '\n_s)
             (exit-error( 'Type\sAscription\sInequality_s t ))
          )))
@@ -514,14 +538,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
       )))
       ( (App( (App( (Var 'set_s) (Var v) )) rhs )) (tail(
          (typecheck-infer-expr( tctx rhs Used ))
-         (let vt (maybe-deref(typecheck-typeof-var( term tctx v ))))
-         (let bt (maybe-deref(typecheck-lookup( rhs ))))
-         (let tctx-ok (maybe-deref(typecheck-unify-args( bt vt ))))
-         (if (non-zero tctx-ok) () (tail(
-            (print 'Expected:\s_s)(print bt)(print '\n_s)
-            (print 'Assigned:\s_s)(print vt)(print '\n_s)
-            (exit-error( 'Assignment\sIncompatible\sWith\sBinding_s term ))
-         )))
+         (typecheck-ascript( rhs (maybe-deref(typecheck-typeof-var( term tctx v ))) ))
          (typecheck-ascript( term (maybe-deref(tnil())) ))
       )))
       ( (App( (Var 'label_s) (Var lname) )) (
@@ -541,8 +558,9 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (typecheck-ascript( term (maybe-deref(tnil())) ))
       )))
       ( (App( (Var 'tail_s) (App( l r )) )) (tail(
-         (typecheck-infer-expr( tctx l Unused ))
-         (typecheck-infer-expr( tctx r used ))
+         (let tctx2 (maybe-deref(typecheck-infer-expr( tctx l Unused ))))
+         (let tctx3 (maybe-deref(typecheck-infer-expr( tctx2 r used ))))
+         (set tctx tctx3)
          (typecheck-ascript( term (maybe-deref(typecheck-lookup r)) ))
       )))
       ( (App( (App( (Var 'as_s) t )) (Lit lt) )) (tail(
