@@ -783,10 +783,9 @@ typecheck-apply := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
    (print ft)
    (print '\n_s)
    (print pt)
-   (print '\nyields:\t_s)
+   (print '\n_s)
    (print rt)
    (print '\n_s)
-   (print '___________s)
    (close rt)
 )) Type[]);
 

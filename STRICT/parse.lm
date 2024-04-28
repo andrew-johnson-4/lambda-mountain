@@ -456,17 +456,19 @@ parse-type-single := λ(: tt String). (: (tail(
                ()
                ( 91_u8 (
                   (if (non-zero buff) (tail(
-                     (set base-type (tarray(
+                     (let base-type-2 (maybe-deref(tarray(
                         base-type
                         (maybe-deref(parse-type(clone-rope buff)))
-                     )))
+                     ))))
+                     (set base-type base-type-2)
                      (set buff SNil)
-                  )) (
-                     (set base-type (tarray(
+                  )) (tail(
+                     (let base-type-2 (maybe-deref(tarray(
                         base-type
                         TAny
-                     )))
-                  ))
+                     ))))
+                     (set base-type base-type-2)
+                  )))
                ))
                ( 60_u8 (match base-type (
                   ()
