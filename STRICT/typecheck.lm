@@ -499,6 +499,11 @@ normalize := λ(: tt Type). (: (tail(
             ( (TPair( lt2 rt2 )) (set tt (TAnd( (close lt2) (close rt2) ))) )
          ))
       )))
+      ( (TGround( tag _ )) (
+         (if (non-zero(maybe-deref(typecheck-typeof-tag tag))) (
+            (set tt TAny)
+         ) ())
+      ))
       ( _ () )
    ))
    (close tt)
@@ -806,13 +811,13 @@ typecheck-apply := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
          )) ())
       ) ())
    ))
-   (print 'Apply:\n_s)
-   (print ft)
-   (print '\n_s)
-   (print pt)
-   (print '\n_s)
-   (print rt)
-   (print '\n_s)
+   #(print 'Apply:\n_s)
+   #(print ft)
+   #(print '\n_s)
+   #(print pt)
+   #(print '\n_s)
+   #(print rt)
+   #(print '\n_s)
    (close rt)
 )) Type[]);
 
