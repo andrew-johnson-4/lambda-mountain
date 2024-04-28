@@ -1,5 +1,5 @@
 
-type Type TAny | (TGround( String , TypeList[] )) | (TAnd( Type[] , Type[] )) | (TArray( Type[] , Type[] ));
+type Type TAny | (TGround( String , TypeList[] )) | (TAnd( Type[] , Type[] ));
 type TypeList TypeEOF | (TypeSeq( TypeList[] , Type ));
 
 type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] ))
@@ -46,13 +46,6 @@ non-zero := λ(: t TContext). (: (tail(
       ()
       ( (TPair( TAny TAny )) (set r 1_u64) )
       ( (TPair( (TAnd( llt rlt )) (TAnd( lrt rrt )) )) (
-         (if (==( llt lrt )) (
-            (if (==( rlt rrt )) (
-               (set r 1_u64)
-            ) ())
-         ) ())
-      ))
-      ( (TPair( (TArray( llt rlt )) (TArray( lrt rrt )) )) (
          (if (==( llt lrt )) (
             (if (==( rlt rrt )) (
                (set r 1_u64)
