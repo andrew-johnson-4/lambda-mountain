@@ -474,9 +474,11 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (typecheck-ascript( term (maybe-deref(tnil())) ))
       )))
       ( (App( l r )) (tail(
-         (typecheck-infer-expr( tctx l Used ))
-         (typecheck-infer-expr( tctx r Used ))
+         (let tctx2 (maybe-deref(typecheck-infer-expr( tctx l Used ))))
+         (let tctx3 (maybe-deref(typecheck-infer-expr( tctx2 r Used ))))
+         (set tctx tctx3)
          (let rt (maybe-deref(typecheck-apply(
+            term
             (maybe-deref(typecheck-lookup l))
             (maybe-deref(typecheck-lookup r))
          ))))
@@ -526,17 +528,17 @@ is-arrow := λ(: tt Type). (: (tail(
    r
 )) U64);
 
-typecheck-apply := λ(: ft Type)(: pt Type). (: (tail(
+typecheck-apply := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
    (let rt TAny)
    (if (is-arrow ft) (
       (match ft (
          ()
          ( (TAnd( ft1 ft2 )) (tail(
-            (let rt1 (maybe-deref(typecheck-apply( ft1 pt ))))
+            (let rt1 (maybe-deref(typecheck-apply( sloc ft1 pt ))))
             (if (non-zero rt1) (
                (set rt rt1)
             ) (tail(
-               (let rt2 (maybe-deref(typecheck-apply( ft2 pt ))))
+               (let rt2 (maybe-deref(typecheck-apply( sloc ft2 pt ))))
                (set rt rt2)
             )))
          )))
@@ -567,6 +569,8 @@ typecheck-apply := λ(: ft Type)(: pt Type). (: (tail(
       ) ())
    ))
    (print 'Apply:s\s_s)
+   (print (maybe-deref(location( sloc ))))
+   (print '\n_s)
    (print ft)
    (print '\sx\s_s)
    (print pt)
