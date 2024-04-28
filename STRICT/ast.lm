@@ -13,6 +13,7 @@ type TContext TCtxEOF | (TCtxBind( TContext[] , String , Type ));
 type Pair (Pair( AST , AST ));
 type CPair (CPair( Context , Context ));
 type TPair (TPair( Type , Type ));
+type TCPair (TCPair( TContext , TContext ));
 
 type Used Used | Unused | Tail;
 
