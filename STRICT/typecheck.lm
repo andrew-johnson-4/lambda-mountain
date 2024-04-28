@@ -509,27 +509,62 @@ as-local-variable := λ(: tt Type). (: (tail(
    (close tt)
 )) Type[]);
 
+is-arrow := λ(: tt Type). (: (tail(
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (
+         (if (is-arrow lt) (
+            (set r 1_u64)
+         ) (
+            (set r (is-arrow rt))
+         ))
+      ))
+      ( (TGround( '->_s _ )) (set r 1_u64) )
+      ( _ () )
+   ))
+   r
+)) U64);
+
 typecheck-apply := λ(: ft Type)(: pt Type). (: (tail(
    (let rt TAny)
-   (match ft (
-      ()
-      ( (TAnd( ft1 ft2 )) (tail(
-         (let rt1 (maybe-deref(typecheck-apply( ft1 pt ))))
-         (if (non-zero rt1) (
-            (set rt rt1)
-         ) (tail(
-            (let rt2 (maybe-deref(typecheck-apply( ft2 pt ))))
-            (set rt rt2)
+   (if (is-arrow ft) (
+      (match ft (
+         ()
+         ( (TAnd( ft1 ft2 )) (tail(
+            (let rt1 (maybe-deref(typecheck-apply( ft1 pt ))))
+            (if (non-zero rt1) (
+               (set rt rt1)
+            ) (tail(
+               (let rt2 (maybe-deref(typecheck-apply( ft2 pt ))))
+               (set rt rt2)
+            )))
          )))
-      )))
-      ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (tail(
-         (let ctx (maybe-deref(typecheck-unify-args( fpt pt ))))
-         (if (non-zero ctx) (tail(
-            (let rt1 (maybe-deref(typecheck-unify-ctx( ctx frt ))))
-            (set rt rt1)
+         ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (tail(
+            (let ctx (maybe-deref(typecheck-unify-args( fpt pt ))))
+            (if (non-zero ctx) (tail(
+               (let rt1 (maybe-deref(typecheck-unify-ctx( ctx frt ))))
+               (set rt rt1)
+            )) ())
+         )))
+         ( _ () )
+      ))
+   ) (
+      (if (non-zero ft) (
+         (if (non-zero pt) (tail(
+            (let rt2 (TGround(
+               'Cons_s
+               (close(TypeSeq(
+                  (close(TypeSeq(
+                     (close TypeEOF)
+                     ft
+                  )))
+                  pt
+               )))
+            )))
+            (set rt rt2)
          )) ())
-      )))
-      ( _ () )
+      ) ())
    ))
    (print 'Apply:s\s_s)
    (print ft)
