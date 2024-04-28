@@ -766,7 +766,7 @@ typecheck-unify-args := λ(: fpt Type)(: pt Type). (: (tail(
       ))
       ( _ () )
    ))
-   (close TCtxEOF)
+   (close ctx)
 )) TContext[]);
 
 #typecheck-unify-args-inner := λlt rt . (match (lt rt) (
@@ -831,14 +831,23 @@ typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tai
    (let found TAny)
    (while (non-zero tctx) (match tctx (
       ()
-      ( (TCtxBind( rst (*( k vt  )) )) (
-         (if (==( k vname )) (tail(
-            (set found vt)
-            (set tctx TCtxEOF)
-         )) (
-            (set tctx rst)
-         ))
-      ))
+      ( (TCtxBind( rst (*( k vt  )) )) (tail(
+         (if (==( k vname )) (
+            (if (non-zero found) (
+               (if (is-arrow vt) (
+                  (set found (TAnd(
+                     (close found)
+                     (close vt)
+                  )))
+               ) (
+                  (set found vt)
+               ))
+            ) (
+               (set found vt)
+            ))
+         ) ())
+         (set tctx rst)
+      )))
    )))
    (if (non-zero found) () (
       (exit-error( 'Unknown\sReferenced\sVariable_s sloc ))
