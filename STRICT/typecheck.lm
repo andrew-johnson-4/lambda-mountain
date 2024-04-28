@@ -567,7 +567,8 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
       ( (Asc( t tt )) (tail(
          (typecheck-ascript( term tt ))
          (typecheck-ascript( t tt ))
-         (typecheck-infer-expr( tctx t used ))
+         (let tctx2 (maybe-deref(typecheck-infer-expr( tctx t used ))))
+         (set tctx tctx2)
       )))
       ( (App( (Var 'gensym-label_s) (Var lname) )) (tail(
          (let tctx2 (TCtxBind(
@@ -607,12 +608,14 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
       )))
       ( (App( (App( (Var 'as_s) t )) (Lit lt) )) (tail(
          (let tt (maybe-deref(parse-type lt)))
-         (typecheck-infer-expr( tctx t used ))
+         (let tctx2 (maybe-deref(typecheck-infer-expr( tctx t used ))))
+         (set tctx tctx2)
          (typecheck-ascript( term tt ))
       )))
       ( (App( (App( (Var 'as_s) t )) (Var lt) )) (tail(
          (let tt (maybe-deref(parse-type lt)))
-         (typecheck-infer-expr( tctx t used ))
+         (let tctx2 (maybe-deref(typecheck-infer-expr( tctx t used ))))
+         (set tctx tctx2)
          (typecheck-ascript( term tt ))
       )))
       ( (App( (Var 'sizeof_s) _ )) (
@@ -634,6 +637,11 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
       ( (App( (Abs( (Var lname) ASTNil )) rhs )) (tail(
          (typecheck-infer-expr( tctx rhs Used ))
          (let rt (maybe-deref(as-local-variable(maybe-deref(typecheck-lookup rhs)))))
+         (print 'Let\s_s)
+         (print lname)
+         (print '\s:\s_s)
+         (print rt)
+         (print '\n_s)
          (set tctx (TCtxBind(
             (close tctx)
             lname
@@ -787,6 +795,14 @@ typecheck-apply := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
          )) ())
       ) ())
    ))
+   (print 'Apply:\n_s)
+   (print ft)
+   (print '\n_s)
+   (print pt)
+   (print '\nyields:\t_s)
+   (print rt)
+   (print '\n_s)
+   (print '___________s)
    (close rt)
 )) Type[]);
 
