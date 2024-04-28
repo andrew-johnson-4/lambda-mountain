@@ -322,65 +322,86 @@ parse-lambda := λ(: tokens S). (: (tail(
    (close( (PME( expr remainder )) ))
 )) ParsePartial[]);
 
+parse-type-cache := (: TCtxEOF TContext);
 parse-type := λ(: tt String). (: (tail(
-   (let depth 0_u64)
-   (let buff SNil)
-   (let base-type (maybe-deref(tnil())))
-   (while (head-string tt) (tail(
-      (match (head-string tt) (
-         ()
-         ( 60_u8 (set depth (+( depth 1_u64 )) ))
-         ( 62_u8 (set depth (-( depth 1_u64 )) ))
-         ( 91_u8 (set depth (+( depth 1_u64 )) ))
-         ( 93_u8 (set depth (-( depth 1_u64 )) ))
-         ( _ () )
-      ))
-      (if (==( depth 0_u64 )) (
-         (if (==( (head-string tt) 43_u8 )) (tail(
-            (match base-type (
-               ()
-               ( (TGround( 'Nil_s TypeEOF )) (tail(
-                  (let bt (maybe-deref(parse-type-single (clone-rope buff))))
-                  (set base-type bt)
-               )))
-               ( _ (
-                  (set base-type (TAnd(
-                     (close base-type)
-                     (parse-type-single (clone-rope buff))
+   (let original-type tt)
+   (let cache-found TAny)
+   (let cache parse-type-cache)
+   (while (non-zero cache) (match cache (
+      ()
+      ( (TCtxBind( rst (*( k kt )) )) (tail(
+         (if (==( k tt )) (
+            (set cache-found kt)
+         ) ())
+         (set cache rst)
+      )))
+   )))
+   (if (non-zero cache-found) () (tail(
+      (let depth 0_u64)
+      (let buff SNil)
+      (let base-type (maybe-deref(tnil())))
+      (while (head-string tt) (tail(
+         (match (head-string tt) (
+            ()
+            ( 60_u8 (set depth (+( depth 1_u64 )) ))
+            ( 62_u8 (set depth (-( depth 1_u64 )) ))
+            ( 91_u8 (set depth (+( depth 1_u64 )) ))
+            ( 93_u8 (set depth (-( depth 1_u64 )) ))
+            ( _ () )
+         ))
+         (if (==( depth 0_u64 )) (
+            (if (==( (head-string tt) 43_u8 )) (tail(
+               (match base-type (
+                  ()
+                  ( (TGround( 'Nil_s TypeEOF )) (tail(
+                     (let bt (maybe-deref(parse-type-single (clone-rope buff))))
+                     (set base-type bt)
                   )))
+                  ( _ (
+                     (set base-type (TAnd(
+                        (close base-type)
+                        (parse-type-single (clone-rope buff))
+                     )))
+                  ))
                ))
+               (set buff SNil)
+            )) (
+               (set buff (SCons(
+                  (close buff)
+                  (close (SAtom (clone-rope (head-string tt))))
+               )))
             ))
-            (set buff SNil)
-         )) (
+         ) (
             (set buff (SCons(
                (close buff)
                (close (SAtom (clone-rope (head-string tt))))
             )))
          ))
-      ) (
-         (set buff (SCons(
-            (close buff)
-            (close (SAtom (clone-rope (head-string tt))))
-         )))
-      ))
-      (set tt (tail-string tt))
-   )))
-   (if (non-zero buff) (
-      (match base-type (
-         ()
-         ( (TGround( 'Nil_s TypeEOF )) (tail(
-            (let bt (maybe-deref(parse-type-single (clone-rope buff))))
-            (set base-type bt)
-         )))
-         ( _ (
-            (set base-type (TAnd(
-               (close base-type)
-               (parse-type-single (clone-rope buff))
+         (set tt (tail-string tt))
+      )))
+      (if (non-zero buff) (
+         (match base-type (
+            ()
+            ( (TGround( 'Nil_s TypeEOF )) (tail(
+               (let bt (maybe-deref(parse-type-single (clone-rope buff))))
+               (set base-type bt)
             )))
+            ( _ (
+               (set base-type (TAnd(
+                  (close base-type)
+                  (parse-type-single (clone-rope buff))
+               )))
+            ))
          ))
-      ))
-   ) ())
-   (close base-type)
+      ) ())
+      (set parse-type-cache (TCtxBind(
+         (close parse-type-cache)
+         original-type
+         base-type
+      )))
+      (set cache-found base-type)
+   )))
+   (close cache-found)
 )) Type[]);
 
 parse-type-single := λ(: tt String). (: (tail(
