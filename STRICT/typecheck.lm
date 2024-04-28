@@ -270,6 +270,8 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (
       ( (App( (Lit tag) args )) (tail(
          (let atype (maybe-deref(typecheck-infer-type-compound args)))
          (let rtype (TAnd( (close base-type) (parse-type tag) )))
+         (typecheck-annotate-head-accessor( base-type ))
+         (typecheck-annotate-accessors( (maybe-deref(parse-type tag)) atype ))
          (set typecheck-type-constructors (TConSeq(
             (close typecheck-type-constructors)
             tag
@@ -279,6 +281,46 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (
       ( _ () )
    ))
 ) Nil);
+
+typecheck-annotate-head-accessor := λ(: base-type Type). (: (
+   (set global-type-context (TCtxBind(
+      (close global-type-context)
+      '.0_s
+      (maybe-deref(tarrow( base-type (maybe-deref(parse-type 'U64_s)) )))
+   )))
+) Nil);
+
+typecheck-annotate-accessors := λ(: base-type Type)(: args-type Type). (: (tail(
+   (let field-number 1_u64)
+   (while (non-zero args-type) (match args-type (
+      ()
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF lt )) rt )) )) (tail(
+         (let accessor-name (clone-rope(SCons(
+            (close (SAtom '._s))
+            (close (SAtom (to-string field-number)))
+         ))))
+         (set global-type-context (TCtxBind(
+            (close global-type-context)
+            accessor-name
+            (maybe-deref(tarrow( base-type rt )))
+         )))
+         (set field-number (+( field-number 1_u64 )))
+         (set args-type lt)
+      )))
+      ( tt (tail(
+         (let accessor-name (clone-rope(SCons(
+            (close (SAtom '._s))
+            (close (SAtom (to-string field-number)))
+         ))))
+         (set global-type-context (TCtxBind(
+            (close global-type-context)
+            accessor-name
+            (maybe-deref(tarrow( base-type tt )))
+         )))
+         (set args-type TAny)
+      )))
+   )))
+)) Nil);
 
 typecheck-infer-type-compound := λ(: compound AST). (: (tail(
    (let r TAny)
