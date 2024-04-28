@@ -678,7 +678,26 @@ tlabel := λ. (: (tail(
 )) Type[]);
 
 typecheck-infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
-   ()
+   (match lhs (
+      ()
+      ( (Asc( (Var v) tt )) (
+         (set tctx (TCtxBind(
+            (close tctx)
+            v
+            tt
+         )))
+      ))
+      ( (App( ps (Asc( (Var v) tt )) )) (tail(
+         (set tctx (TCtxBind(
+            (close tctx)
+            v
+            tt
+         )))
+         (let tctx2 (maybe-deref(typecheck-infer-ctx( tctx ps ))))
+         (set tctx tctx2)
+      )))
+      ( _ () )
+   ))
    (close tctx)
 )) TContext[]);
 
