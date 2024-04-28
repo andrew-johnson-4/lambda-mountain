@@ -541,6 +541,8 @@ typecheck-ascript := λ(: t AST)(: tt Type). (: (
          (if (==( ot-normal tt-normal )) () (tail(
             (print ot-normal)
             (print '\s!=\s_s)
+            (print tt)
+            (print '\s<:\s_s)
             (print tt-normal)
             (print '\n_s)
             (exit-error( 'Type\sAscription\sInequality_s t ))
@@ -745,8 +747,11 @@ typecheck-typeof-tag := λ(: tag String). (: (tail(
 
 as-local-variable := λ(: tt Type). (: (tail(
    (let tt2 (maybe-deref(normalize tt)))
-   (let tt3 (TAnd( (close tt2) (close(TGround( 'LocalVariable_s (close TypeEOF) ))) )))
-   (close tt3)
+   (if (non-zero tt2) (
+      (let tt3 (TAnd( (close tt2) (close(TGround( 'LocalVariable_s (close TypeEOF) ))) )))
+      (set tt2 tt3)
+   ) ())
+   (close tt2)
 )) Type[]);
 
 is-arrow := λ(: tt Type). (: (tail(
