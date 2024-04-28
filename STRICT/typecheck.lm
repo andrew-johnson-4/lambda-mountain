@@ -1,4 +1,24 @@
 
+type TypeConstructorList (TConEOF) | (TConSeq( TypeConstructorList[] , String , Type ));
+
+typecheck-type-constructors := (: TConEOF TypeConstructorList);
+
+non-zero := λ(: t TypeConstructorList). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( TConEOF (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+close := λ(: x TypeConstructorList). (: (tail(
+   (mov( (malloc(sizeof TypeConstructorList)) R8 ))
+   (mov( x 0_u64 (as R8 TypeConstructorList[]) ))
+   (as R8 TypeConstructorList[])
+)) TypeConstructorList[]);
+
 merge := λ(: lctx TContext)(: rctx TContext). (: (tail(
    (match rctx (
       ()
@@ -223,12 +243,85 @@ typecheck := λ. (: (tail(
 
 global-type-context := (: TCtxEOF TContext);
 
+typecheck-infer-type-definition := λ(: base-type Type)(: body AST). (: (
+   (match body (
+      ()
+      ( (App( (App( tds (Var '|_s) )) case )) (tail(
+         (typecheck-infer-type-definition( base-type tds ))
+         (typecheck-infer-type-constructor( base-type case ))
+      )))
+      ( case (
+         (typecheck-infer-type-constructor( base-type case ))
+      ))
+   ))
+) Nil);
+
+typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (
+   (match body (
+      ()
+      ( (Lit tag) (tail(
+         (let rtype (TAnd( (close base-type) (parse-type tag) )) )
+         (set typecheck-type-constructors (TConSeq(
+            (close typecheck-type-constructors)
+            tag
+            rtype
+         )))
+      )))
+      ( (App( (Lit tag) args )) (tail(
+         (let atype (maybe-deref(typecheck-infer-type-compound args)))
+         (let rtype (TAnd( (close base-type) (parse-type tag) )))
+         (set typecheck-type-constructors (TConSeq(
+            (close typecheck-type-constructors)
+            tag
+            (maybe-deref(tarrow( atype rtype )))
+         )))
+      )))
+      ( _ () )
+   ))
+) Nil);
+
+typecheck-infer-type-compound := λ(: compound AST). (: (tail(
+   (let r TAny)
+   (match compound (
+      ()
+      ( (Lit tt) (tail(
+         (let nt (maybe-deref(parse-type tt)))
+         (set r nt)
+      )))
+      ( (Var tt) (tail(
+         (let nt (maybe-deref(parse-type tt)))
+         (set r nt)
+      )))
+      ( (App( (Lit 'And_s) (App( lt rt )) )) (tail(
+         (let ltt (maybe-deref(typecheck-infer-type-compound lt)))
+         (let rtt (maybe-deref(typecheck-infer-type-compound rt)))
+         (set r (TAnd( (close ltt) (close rtt) )))
+      )))
+      ( (App( (App( lt (Lit ',_s) )) rt )) (tail(
+         (let ltt (maybe-deref(typecheck-infer-type-compound lt)))
+         (let rtt (maybe-deref(typecheck-infer-type-compound rt)))
+         (set r (TGround(
+            'Cons_s
+            (close(TypeSeq(
+               (close(TypeSeq(
+                  (close TypeEOF)
+                  ltt
+               )))
+               rtt
+            )))
+         )))
+      )))
+      ( _ (exit-error( 'Malformed\sType\sDefinition_s compound )))
+   ))
+   (close r)
+)) Type[]);
+
 typecheck-infer-global-context := λ(: td AST). (: (tail(
    (match td (
       ()
-      ( (ASTType( _ _ )) (tail(
-         (print td)
-         (print '\n_s)
+      ( (ASTType( (Lit base-type) case-constructors )) (tail(
+         (let bt (maybe-deref(parse-type base-type)))
+         (typecheck-infer-type-definition( bt case-constructors ))
       )))
       ( (Glb( k (Abs( lhs (Asc( rhs rhst )) )) )) (tail(
          (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
@@ -398,6 +491,13 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
       ( (Fragment( k (Abs( lhs (Asc( rhs rhst )) )) )) (
          (typecheck-ascript( term rhst ))
       ))
+      ( (Asc( (Lit _) tt )) (tail(
+         (typecheck-ascript( term tt ))
+         (match term (
+            ()
+            ( (Asc( t _ )) (typecheck-ascript( t tt )) )
+         ))
+      )))
       ( (Asc( t tt )) (tail(
          (typecheck-ascript( term tt ))
          (typecheck-ascript( t tt ))
@@ -474,9 +574,11 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (typecheck-ascript( term (maybe-deref(tnil())) ))
       )))
       ( (App( l r )) (tail(
-         (typecheck-infer-expr( tctx l Used ))
-         (typecheck-infer-expr( tctx r Used ))
+         (let tctx2 (maybe-deref(typecheck-infer-expr( tctx l Used ))))
+         (let tctx3 (maybe-deref(typecheck-infer-expr( tctx2 r Used ))))
+         (set tctx tctx3)
          (let rt (maybe-deref(typecheck-apply(
+            term
             (maybe-deref(typecheck-lookup l))
             (maybe-deref(typecheck-lookup r))
          ))))
@@ -491,9 +593,14 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (typecheck-ascript( term (maybe-deref(tarrow( lt rt ))) ))
       )))
       ( (Var v) (
-         (typecheck-ascript( term (maybe-deref(typecheck-typeof-var( tctx v ))) ))
+         (typecheck-ascript( term (maybe-deref(typecheck-typeof-var( term tctx v ))) ))
       ))
-      ( (Lit _) () ) #Literals need to be ascripted or inferred or gradual
+      ( (Lit l) (tail(
+         (let tt (maybe-deref(typecheck-typeof-tag l)))
+         (if (non-zero tt) (
+            (typecheck-ascript( term tt ))
+         ) ())
+      )))
       ( _ (tail(
          (print 'Unknown\sTerm\sIn\sType\sInference\n_s)
          (print term)
@@ -503,6 +610,23 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
    ))
    (close tctx)
 )) TContext[]);
+
+typecheck-typeof-tag := λ(: tag String). (: (tail(
+   (let r TAny)
+   (let tag-list typecheck-type-constructors)
+   (while (non-zero tag-list) (match tag-list (
+      ()
+      ( (TConSeq( rst (*( k kt )) )) (
+         (if (==( k tag )) (tail(
+            (set r kt)
+            (set tag-list TConEOF)
+         )) (
+            (set tag-list rst)
+         ))
+      ))
+   )))
+   (close r)
+)) Type[]);
 
 as-local-variable := λ(: tt Type). (: (tail(
    ()
@@ -526,17 +650,17 @@ is-arrow := λ(: tt Type). (: (tail(
    r
 )) U64);
 
-typecheck-apply := λ(: ft Type)(: pt Type). (: (tail(
+typecheck-apply := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
    (let rt TAny)
    (if (is-arrow ft) (
       (match ft (
          ()
          ( (TAnd( ft1 ft2 )) (tail(
-            (let rt1 (maybe-deref(typecheck-apply( ft1 pt ))))
+            (let rt1 (maybe-deref(typecheck-apply( sloc ft1 pt ))))
             (if (non-zero rt1) (
                (set rt rt1)
             ) (tail(
-               (let rt2 (maybe-deref(typecheck-apply( ft2 pt ))))
+               (let rt2 (maybe-deref(typecheck-apply( sloc ft2 pt ))))
                (set rt rt2)
             )))
          )))
@@ -567,6 +691,8 @@ typecheck-apply := λ(: ft Type)(: pt Type). (: (tail(
       ) ())
    ))
    (print 'Apply:s\s_s)
+   (print (maybe-deref(location( sloc ))))
+   (print '\n_s)
    (print ft)
    (print '\sx\s_s)
    (print pt)
@@ -640,7 +766,7 @@ typecheck-unify-args := λ(: fpt Type)(: pt Type). (: (tail(
       ))
       ( _ () )
    ))
-   (close TCtxEOF)
+   (close ctx)
 )) TContext[]);
 
 #typecheck-unify-args-inner := λlt rt . (match (lt rt) (
@@ -678,28 +804,53 @@ tlabel := λ. (: (tail(
 )) Type[]);
 
 typecheck-infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
-   ()
+   (match lhs (
+      ()
+      ( (Asc( (Var v) tt )) (
+         (set tctx (TCtxBind(
+            (close tctx)
+            v
+            tt
+         )))
+      ))
+      ( (App( ps (Asc( (Var v) tt )) )) (tail(
+         (set tctx (TCtxBind(
+            (close tctx)
+            v
+            tt
+         )))
+         (let tctx2 (maybe-deref(typecheck-infer-ctx( tctx ps ))))
+         (set tctx tctx2)
+      )))
+      ( _ () )
+   ))
    (close tctx)
 )) TContext[]);
 
-typecheck-typeof-var := λ(: tctx TContext)(: vname String). (: (tail(
+typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tail(
    (let found TAny)
    (while (non-zero tctx) (match tctx (
       ()
-      ( (TCtxBind( rst (*( k vt  )) )) (
-         (if (==( k vname )) (tail(
-            (set found vt)
-            (set tctx TCtxEOF)
-         )) (
-            (set tctx rst)
-         ))
-      ))
+      ( (TCtxBind( rst (*( k vt  )) )) (tail(
+         (if (==( k vname )) (
+            (if (non-zero found) (
+               (if (is-arrow vt) (
+                  (set found (TAnd(
+                     (close found)
+                     (close vt)
+                  )))
+               ) (
+                  (set found vt)
+               ))
+            ) (
+               (set found vt)
+            ))
+         ) ())
+         (set tctx rst)
+      )))
    )))
-   (if (non-zero found) () (tail(
-      (print 'Unknown\sReferenced\sVariable:\s_s)
-      (print vname)
-      (print '\n_s)
-      (exit 1_u64)
-   )))
+   (if (non-zero found) () (
+      (exit-error( 'Unknown\sReferenced\sVariable_s sloc ))
+   ))
    (close found)
 )) Type[]);

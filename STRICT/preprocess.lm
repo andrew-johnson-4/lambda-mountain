@@ -5,9 +5,10 @@ type IndexList IEOF | (ISeq( IndexList[] , String , U64 ));
 
 preprocess-macros := (: MEOF MacroList);
 preprocess-tag-indices := (: IEOF IndexList);
+preprocess-tag-index-eof := 99999_u64;
 
 preprocess-index-of-tag := λ(: tag String). (: (tail(
-   (let index 9999_u64)
+   (let index preprocess-tag-index-eof)
    (let indices preprocess-tag-indices)
    (while (non-zero indices) (match indices (
       ()
@@ -262,7 +263,7 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
          (if (==( pl el )) (set r CtxNil) ())
       ))
       ( (Pair( (App( (Lit ':Literal:_s) (Var pv) )) (Lit el) )) (
-         (if (==( (preprocess-index-of-tag el) 9999_u64 ))
+         (if (==( (preprocess-index-of-tag el) preprocess-tag-index-eof ))
              (set r (CtxBind( (close CtxNil) pv (close term) )))
              ()
          )
@@ -271,7 +272,7 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
          (set r (CtxBind( (close CtxNil) pv (close term) )))
       ))
       ( (Pair( (App( (App( (Lit ':Tag:_s) (Var pv) )) (Var pt) )) (Lit el) )) (
-         (if (==( (preprocess-index-of-tag el) 9999_u64 )) () (tail(
+         (if (==( (preprocess-index-of-tag el) preprocess-tag-index-eof )) () (tail(
             (set r CtxNil)
             (set r (CtxBind( (close r) pv (close(
                (Asc(
