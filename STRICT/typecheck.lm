@@ -845,7 +845,7 @@ typecheck-unify-args := λ(: fpt Type)(: pt Type). (: (tail(
             ( (TCPair( TCtxEOF _ )) () )
             ( (TCPair( _ TCtxEOF )) () )
             ( (TCPair( lctx rctx )) (tail(
-               (let nctx (merge( lctx rctx )))
+               (let nctx (maybe-deref(merge( lctx rctx ))))
                (set ctx nctx)
             )))
          ))
@@ -857,7 +857,7 @@ typecheck-unify-args := λ(: fpt Type)(: pt Type). (: (tail(
             ( (TCPair( lctx TCtxEOF )) (set ctx lctx) )
             ( (TCPair( TCtxEOF rctx )) (set ctx rctx) )
             ( (TCPair( lctx rctx )) (tail(
-               (let nctx (merge( lctx rctx )))
+               (let nctx (maybe-deref(merge( lctx rctx ))))
                (set ctx nctx)
             )))
          ))
