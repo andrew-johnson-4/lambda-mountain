@@ -512,13 +512,21 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (set tctx tctx2)
          (typecheck-ascript( term (maybe-deref(tnil())) ))
       )))
+      ( (App( (App( (Var 'set_s) (Var v) )) rhs )) (tail(
+         (typecheck-infer-expr( tctx rhs Used ))
+         (let vt (maybe-deref(typecheck-typeof-var( term tctx v ))))
+         (let bt (maybe-deref(typecheck-lookup( rhs ))))
+         (let tctx-ok (maybe-deref(typecheck-unify-args( bt vt ))))
+         (if (non-zero tctx-ok) () (tail(
+            (print 'Expected:\s_s)(print bt)(print '\n_s)
+            (print 'Assigned:\s_s)(print vt)(print '\n_s)
+            (exit-error( 'Assignment\sIncompatible\sWith\sBinding_s term ))
+         )))
+         (typecheck-ascript( term (maybe-deref(tnil())) ))
+      )))
       ( (App( (Var 'label_s) (Var lname) )) (
          (typecheck-ascript( term (maybe-deref(tnil())) ))
       ))
-#       ( (Lit( lit )) (tail(
-#         (set ctype (typecheck-infer-constructor-type lit))
-#         (typecheck-ascript( term ctype ))
-#       )))
       ( (App( (App( (App( (Var 'if_s) cond )) t )) f )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx cond Used ))))
          (let tctx3 (maybe-deref(typecheck-infer-expr( tctx2 t Used ))))
@@ -690,15 +698,6 @@ typecheck-apply := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
          )) ())
       ) ())
    ))
-   (print 'Apply:s\s_s)
-   (print (maybe-deref(location( sloc ))))
-   (print '\n_s)
-   (print ft)
-   (print '\sx\s_s)
-   (print pt)
-   (print '\s=\s_s)
-   (print rt)
-   (print '\n_s)
    (close rt)
 )) Type[]);
 
@@ -768,28 +767,6 @@ typecheck-unify-args := λ(: fpt Type)(: pt Type). (: (tail(
    ))
    (close ctx)
 )) TContext[]);
-
-#typecheck-unify-args-inner := λlt rt . (match (lt rt) (
-#   ( (a1 a2) (
-#      (if (typecheck-unify-implies( a2 a1 )) ( # argument type must imply parameter type
-#         Accept
-#      ) (
-#         (if (is-variable a1) (
-#            (if (is-variable a2) (
-#               Accept
-#            ) (
-#               (Bind( a1 a2 ))
-#            ))
-#         ) (
-#            (if (is-variable a2) (
-#               (Bind( a2 a1 ))
-#            ) (
-#               ()
-#            ))
-#         ))
-#      ))
-#   ))
-#));
 
 tarrow := λ(: lt Type)(: rt Type). (: (tail(
    ()
