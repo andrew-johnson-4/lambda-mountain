@@ -398,6 +398,13 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
       ( (Fragment( k (Abs( lhs (Asc( rhs rhst )) )) )) (
          (typecheck-ascript( term rhst ))
       ))
+      ( (Asc( (Lit _) tt )) (tail(
+         (typecheck-ascript( term tt ))
+         (match term (
+            ()
+            ( (Asc( t _ )) (typecheck-ascript( t tt )) )
+         ))
+      )))
       ( (Asc( t tt )) (tail(
          (typecheck-ascript( term tt ))
          (typecheck-ascript( t tt ))
@@ -495,7 +502,12 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
       ( (Var v) (
          (typecheck-ascript( term (maybe-deref(typecheck-typeof-var( term tctx v ))) ))
       ))
-      ( (Lit _) () ) #Literals need to be ascripted or inferred or gradual
+      ( (Lit l) (tail(
+         (let tt (maybe-deref(typecheck-typeof-tag l)))
+         (if (non-zero tt) (
+            (typecheck-ascript( term tt ))
+         ) ())
+      )))
       ( _ (tail(
          (print 'Unknown\sTerm\sIn\sType\sInference\n_s)
          (print term)
@@ -505,6 +517,11 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
    ))
    (close tctx)
 )) TContext[]);
+
+typecheck-typeof-tag := λ(: tag String). (: (tail(
+   (let r TAny)
+   (close r)
+)) Type[]);
 
 as-local-variable := λ(: tt Type). (: (tail(
    ()
