@@ -65,12 +65,6 @@ print := λ(: tt Type). (: (match tt (
       (print '\s+\s_s)
       (print rt)
    )))
-   ( (TArray( lt rt )) (tail(
-      (print lt)
-      (print '[_s)
-      (print rt)
-      (print ']_s)
-   )))
 )) Nil);
 
 serialize-ast := λ(: tt Type). (: (match tt (
@@ -125,16 +119,6 @@ serialize-ast := λ(: tt Type). (: (match tt (
    ( (TAnd( lt rt )) (tail(
       (print '\[App\s\[_s)
       (print '\[Literal\sAnd\]\s_s)
-      (print '\[App\s\[_s)
-      (serialize-ast lt)
-      (print '\s_s)
-      (serialize-ast rt)
-      (print '\]\]_s)
-      (print '\]\]_s)
-   )))
-   ( (TArray( lt rt )) (tail(
-      (print '\[App\s\[_s)
-      (print '\[Literal\sArray\]\s_s)
       (print '\[App\s\[_s)
       (serialize-ast lt)
       (print '\s_s)
@@ -876,6 +860,13 @@ typecheck-unify-args := λ(: fpt Type)(: pt Type). (: (tail(
 tarrow := λ(: lt Type)(: rt Type). (: (tail(
    ()
    (close(TGround( '->_s
+      (close(TypeSeq( (close(TypeSeq( (close TypeEOF) lt ))) rt )))
+   )))
+)) Type[]);
+
+tarray := λ(: lt Type)(: rt Type). (: (tail(
+   ()
+   (close(TGround( 'Array_s
       (close(TypeSeq( (close(TypeSeq( (close TypeEOF) lt ))) rt )))
    )))
 )) Type[]);
