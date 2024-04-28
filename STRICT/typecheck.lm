@@ -652,11 +652,6 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
       ( (App( (Abs( (Var lname) ASTNil )) rhs )) (tail(
          (typecheck-infer-expr( tctx rhs Used ))
          (let rt (maybe-deref(as-local-variable(maybe-deref(typecheck-lookup rhs)))))
-         (print 'Let\s_s)
-         (print lname)
-         (print '\s:\s_s)
-         (print rt)
-         (print '\n_s)
          (set tctx (TCtxBind(
             (close tctx)
             lname
