@@ -459,12 +459,14 @@ typecheck-lookup := λ(: term AST). (: (tail(
    (let tctx typecheck-term-type-list)
    (while (non-zero tctx) (match tctx (
       ()
-      ( (TTSeq( rst (*( t tt )) )) (tail(
-         (if (==( t term )) (
+      ( (TTSeq( rst (*( t tt )) )) (
+         (if (==( t term )) (tail(
             (set found tt)
-         ) ())
-         (set tctx rst)
-      )))
+            (set tctx TTEOF)
+         )) (
+            (set tctx rst)
+         ))
+      ))
    )))
    (close found)
 )) Type[]);
@@ -502,11 +504,35 @@ normalize := λ(: tt Type). (: (tail(
    (close tt)
 )) Type[]);
 
+nonnormal := λ(: tt Type). (: (tail(
+   (let rt TAny)
+   (match tt (
+      ()
+      ( (TGround( 'Constant_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'Literal_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'StackVariable_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'LocalVariable_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'GlobalVariable_s TypeEOF )) (set rt tt) )
+      ( (TAnd( lt rt )) (tail(
+         (let lt1 (maybe-deref(nonnormal lt )))
+         (let rt1 (maybe-deref(nonnormal rt )))
+         (match (TPair( lt1 rt1 )) (
+            ()
+            ( (TPair( TAny rt2 )) (set rt rt2) )
+            ( (TPair( lt2 TAny )) (set rt lt2) )
+            ( (TPair( lt2 rt2 )) (set rt (TAnd( (close lt2) (close rt2) ))) )
+         ))
+      )))
+      ( _ () )
+   ))
+   (close rt)
+)) Type[]);
+
 typecheck-ascript := λ(: t AST)(: tt Type). (: (
    (if (non-zero tt) (tail(
       (let tt-normal (maybe-deref(normalize( tt ))))
       (let ot-normal (maybe-deref(normalize(maybe-deref(typecheck-lookup t)))))
-      (if (non-zero ot-normal) (
+      (if (non-zero ot-normal) (tail(
          (if (==( ot-normal tt-normal )) () (tail(
             (print ot-normal)
             (print '\s!=\s_s)
@@ -514,7 +540,15 @@ typecheck-ascript := λ(: t AST)(: tt Type). (: (
             (print '\n_s)
             (exit-error( 'Type\sAscription\sInequality_s t ))
          )))
-      ) (tail(
+         (let nn (maybe-deref(nonnormal tt)))
+         (if (non-zero nn) (
+            (set typecheck-term-type-list (TTSeq(
+               (close typecheck-term-type-list)
+               t
+               (TAnd( (close ot-normal) (close nn) ))
+            )))
+         ) ())
+      )) (tail(
          (set typecheck-term-type-list (TTSeq(
             (close typecheck-term-type-list)
             t tt
