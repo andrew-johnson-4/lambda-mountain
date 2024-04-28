@@ -491,7 +491,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (typecheck-ascript( term (maybe-deref(tarrow( lt rt ))) ))
       )))
       ( (Var v) (
-         (typecheck-ascript( term (maybe-deref(typecheck-typeof-var( tctx v ))) ))
+         (typecheck-ascript( term (maybe-deref(typecheck-typeof-var( term tctx v ))) ))
       ))
       ( (Lit _) () ) #Literals need to be ascripted or inferred or gradual
       ( _ (tail(
@@ -682,7 +682,7 @@ typecheck-infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
    (close tctx)
 )) TContext[]);
 
-typecheck-typeof-var := λ(: tctx TContext)(: vname String). (: (tail(
+typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tail(
    (let found TAny)
    (while (non-zero tctx) (match tctx (
       ()
@@ -695,11 +695,8 @@ typecheck-typeof-var := λ(: tctx TContext)(: vname String). (: (tail(
          ))
       ))
    )))
-   (if (non-zero found) () (tail(
-      (print 'Unknown\sReferenced\sVariable:\s_s)
-      (print vname)
-      (print '\n_s)
-      (exit 1_u64)
-   )))
+   (if (non-zero found) () (
+      (exit-error( 'Unknown\sReferenced\sVariable_s sloc ))
+   ))
    (close found)
 )) Type[]);
