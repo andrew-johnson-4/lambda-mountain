@@ -223,6 +223,59 @@ typecheck := λ. (: (tail(
 
 global-type-context := (: TCtxEOF TContext);
 
+typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (
+   (match body (
+      ()
+      ( (Lit tag) (tail(
+         ()
+         ()
+         #(set typecheck-constructors ( typecheck-constructors (tag base-type) ))
+      )))
+      ( (App( (Lit tag) args )) (tail(
+         ()
+         (let ctype (maybe-deref(typecheck-infer-type-compound args)))
+         #(set typecheck-constructors ( typecheck-constructors (tag ('->(ctype (And( base-type tag )) ))) ))
+      )))
+      ( _ () )
+   ))
+) Nil);
+
+typecheck-infer-type-compound := λ(: compound AST). (: (tail(
+   (let r TAny)
+   (match compound (
+      ()
+      ( (Lit tt) (tail(
+         (let nt (maybe-deref(parse-type tt)))
+         (set r nt)
+      )))
+      ( (Var tt) (tail(
+         (let nt (maybe-deref(parse-type tt)))
+         (set r nt)
+      )))
+      ( (App( (Lit 'And_s) (App( lt rt )) )) (tail(
+         (let ltt (maybe-deref(typecheck-infer-type-compound lt)))
+         (let rtt (maybe-deref(typecheck-infer-type-compound rt)))
+         (set r (TAnd( (close ltt) (close rtt) )))
+      )))
+      ( (App( (App( lt (Lit ',_s) )) rt )) (tail(
+         (let ltt (maybe-deref(typecheck-infer-type-compound lt)))
+         (let rtt (maybe-deref(typecheck-infer-type-compound rt)))
+         (set r (TGround(
+            'Cons_s
+            (close(TypeSeq(
+               (close(TypeSeq(
+                  (close TypeEOF)
+                  ltt
+               )))
+               rtt
+            )))
+         )))
+      )))
+      ( _ (exit-error( 'Malformed\sType\sDefinition_s compound )))
+   ))
+   (close r)
+)) Type[]);
+
 typecheck-infer-global-context := λ(: td AST). (: (tail(
    (match td (
       ()
