@@ -1,4 +1,24 @@
 
+type TypeConstructorList (TConEOF) | (TConSeq( TypeConstructorList[] , String , Type ));
+
+typecheck-type-constructors := (: TConEOF TypeConstructorList);
+
+non-zero := λ(: t TypeConstructorList). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( TConEOF (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+close := λ(: x TypeConstructorList). (: (tail(
+   (mov( (malloc(sizeof TypeConstructorList)) R8 ))
+   (mov( x 0_u64 (as R8 TypeConstructorList[]) ))
+   (as R8 TypeConstructorList[])
+)) TypeConstructorList[]);
+
 merge := λ(: lctx TContext)(: rctx TContext). (: (tail(
    (match rctx (
       ()
@@ -223,18 +243,38 @@ typecheck := λ. (: (tail(
 
 global-type-context := (: TCtxEOF TContext);
 
+typecheck-infer-type-definition := λ(: base-type Type)(: body AST). (: (
+   (match body (
+      ()
+      ( (App( (App( tds (Var '|_s) )) case )) (tail(
+         (typecheck-infer-type-definition( base-type tds ))
+         (typecheck-infer-type-constructor( base-type case ))
+      )))
+      ( case (
+         (typecheck-infer-type-constructor( base-type case ))
+      ))
+   ))
+) Nil);
+
 typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (
    (match body (
       ()
       ( (Lit tag) (tail(
-         ()
-         ()
-         #(set typecheck-constructors ( typecheck-constructors (tag base-type) ))
+         (let rtype (TAnd( (close base-type) (parse-type tag) )) )
+         (set typecheck-type-constructors (TConSeq(
+            (close typecheck-type-constructors)
+            tag
+            rtype
+         )))
       )))
       ( (App( (Lit tag) args )) (tail(
-         ()
-         (let ctype (maybe-deref(typecheck-infer-type-compound args)))
-         #(set typecheck-constructors ( typecheck-constructors (tag ('->(ctype (And( base-type tag )) ))) ))
+         (let atype (maybe-deref(typecheck-infer-type-compound args)))
+         (let rtype (TAnd( (close base-type) (parse-type tag) )))
+         (set typecheck-type-constructors (TConSeq(
+            (close typecheck-type-constructors)
+            tag
+            (maybe-deref(tarrow( atype rtype )))
+         )))
       )))
       ( _ () )
    ))
@@ -279,9 +319,9 @@ typecheck-infer-type-compound := λ(: compound AST). (: (tail(
 typecheck-infer-global-context := λ(: td AST). (: (tail(
    (match td (
       ()
-      ( (ASTType( _ _ )) (tail(
-         (print td)
-         (print '\n_s)
+      ( (ASTType( (Lit base-type) case-constructors )) (tail(
+         (let bt (maybe-deref(parse-type base-type)))
+         (typecheck-infer-type-definition( bt case-constructors ))
       )))
       ( (Glb( k (Abs( lhs (Asc( rhs rhst )) )) )) (tail(
          (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
@@ -573,6 +613,18 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
 
 typecheck-typeof-tag := λ(: tag String). (: (tail(
    (let r TAny)
+   (let tag-list typecheck-type-constructors)
+   (while (non-zero tag-list) (match tag-list (
+      ()
+      ( (TConSeq( rst (*( k kt )) )) (
+         (if (==( k tag )) (tail(
+            (set r kt)
+            (set tag-list TConEOF)
+         )) (
+            (set tag-list rst)
+         ))
+      ))
+   )))
    (close r)
 )) Type[]);
 
