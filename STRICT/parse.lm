@@ -409,13 +409,17 @@ parse-type-single := λ(: tt String). (: (tail(
                (set depth 1_u64)
                (if (non-zero buff) (tail(
                   (let vn (clone-rope buff))
-                  (if (is-variable vn) (
-                     (set base-type (TVar vn))
+                  (if (==( vn '?_s )) (
+                     (set base-type TAny)
                   ) (
-                     (set base-type (TGround(
-                        (clone-rope buff)
-                        (close TypeEOF)
-                     )))
+                     (if (is-variable vn) (
+                        (set base-type (TVar vn))
+                     ) (
+                        (set base-type (TGround(
+                           (clone-rope buff)
+                           (close TypeEOF)
+                        )))
+                     ))
                   ))
                )) ())
                (set buff SNil)
@@ -425,13 +429,17 @@ parse-type-single := λ(: tt String). (: (tail(
                (set depth 1_u64)
                (if (non-zero buff) (tail(
                   (let vn (clone-rope buff))
-                  (if (is-variable vn) (
-                     (set base-type (TVar vn))
+                  (if (==( vn '?_s )) (
+                     (set base-type TAny)
                   ) (
-                     (set base-type (TGround(
-                        (clone-rope buff)
-                        (close TypeEOF)
-                     )))
+                     (if (is-variable vn) (
+                        (set base-type (TVar vn))
+                     ) (
+                        (set base-type (TGround(
+                           (clone-rope buff)
+                           (close TypeEOF)
+                        )))
+                     ))
                   ))
                )) ())
                (set buff SNil)
@@ -498,13 +506,17 @@ parse-type-single := λ(: tt String). (: (tail(
    )))
    (if (non-zero buff) (tail(
       (let vn (clone-rope buff))
-      (if (is-variable vn) (
-         (set base-type (TVar vn))
+      (if (==( vn '?_s )) (
+         (set base-type TAny)
       ) (
-         (set base-type (TGround(
-            (clone-rope buff)
-            (close TypeEOF)
-         )))
+         (if (is-variable vn) (
+            (set base-type (TVar vn))
+         ) (
+            (set base-type (TGround(
+               (clone-rope buff)
+               (close TypeEOF)
+            )))
+         ))
       ))
    )) ())
    (close base-type)
