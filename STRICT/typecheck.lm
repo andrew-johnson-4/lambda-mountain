@@ -1175,14 +1175,14 @@ typecheck-infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
          (set tctx (TCtxBind(
             (close tctx)
             v
-            tt
+            (maybe-deref(as-local-variable tt))
          )))
       ))
       ( (App( ps (Asc( (Var v) tt )) )) (tail(
          (set tctx (TCtxBind(
             (close tctx)
             v
-            tt
+            (maybe-deref(as-local-variable tt))
          )))
          (let tctx2 (maybe-deref(typecheck-infer-ctx( tctx ps ))))
          (set tctx tctx2)
