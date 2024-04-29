@@ -595,7 +595,6 @@ normalize := λ(: tt Type). (: (tail(
       ( (TGround( 'StackVariable_s TypeEOF )) (set tt TAny) )
       ( (TGround( 'LocalVariable_s TypeEOF )) (set tt TAny) )
       ( (TGround( 'GlobalVariable_s TypeEOF )) (set tt TAny) )
-      ( (TGround( 'Sized_s _ )) (set tt TAny) )
       ( (TAnd( lt rt )) (tail(
          (let lt1 (maybe-deref(normalize lt )))
          (let rt1 (maybe-deref(normalize rt )))
@@ -615,7 +614,8 @@ normalize := λ(: tt Type). (: (tail(
       ))
       ( _ () )
    ))
-   (close tt)
+   (let tt2 (maybe-deref(typecheck-annotate-size tt)))
+   (close tt2)
 )) Type[]);
 
 nonnormal := λ(: tt Type). (: (tail(
@@ -741,7 +741,7 @@ typecheck-annotate-size := λ(: tt Type). (: (tail(
 
 typecheck-ascript := λ(: t AST)(: tt Type). (: (
    (if (non-zero tt) (tail(
-      (let ot-normal (maybe-deref(typecheck-annotate-size(maybe-deref(normalize(maybe-deref(typecheck-lookup t)))))))
+      (let ot-normal (maybe-deref(normalize(maybe-deref(typecheck-lookup t)))))
       (if (non-zero ot-normal) (
          (if (is-arrow tt) () (tail(
             (let tt-normal (maybe-deref(normalize( tt ))))
