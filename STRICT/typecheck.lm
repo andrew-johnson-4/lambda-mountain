@@ -584,7 +584,20 @@ exit-error := λ(: msg String)(: t AST). (: (tail(
    (print '\n_s)
    (print (maybe-deref(location( t ))))
    (print '\n_s)
-   (print t)
+   (match t (
+      ()
+      ( (App( f a )) (tail(
+         (print 'FunctionApplication\n_s)
+         (print f)(print ':\n_s)
+         (print (maybe-deref(typecheck-lookup f)))(print '\n_s)
+         (print a)(print ':\n_s)
+         (print (maybe-deref(typecheck-lookup a)))(print '\n_s)
+      )))
+      ( _ (tail(
+         (print t)
+         (print '\n_s)
+      )))
+   ))
    (print '\n_s)
    (exit 1_u64)
 )) Nil);
