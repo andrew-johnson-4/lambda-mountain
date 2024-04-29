@@ -933,9 +933,11 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
       ))
       ( (Lit l) (tail(
          (let tt (maybe-deref(typecheck-typeof-tag l)))
-         (if (non-zero tt) (
+         (if (non-zero tt) (tail(
+            (let tt2 (maybe-deref(as-constant tt)))
+            (set tt tt2)
             (typecheck-ascript( term tt ))
-         ) ())
+         )) ())
       )))
       ( _ (tail(
          (print 'Unknown\sTerm\sIn\sType\sInference\n_s)
@@ -1001,6 +1003,11 @@ as-local-variable := λ(: tt Type). (: (tail(
    )) ())
    (let tt3 (maybe-deref(typecheck-annotate-size tt2)))
    (close tt3)
+)) Type[]);
+
+as-constant := λ(: tt Type). (: (tail(
+   (let tt2 (TAnd( (close tt) (close(TGround( 'Constant_s (close TypeEOF) ))) )))
+   (close tt2)
 )) Type[]);
 
 is-arrow := λ(: tt Type). (: (tail(
