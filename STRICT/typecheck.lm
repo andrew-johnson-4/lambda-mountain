@@ -1037,7 +1037,6 @@ typecheck-apply := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
          )))
          ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (tail(
             (let ctx (maybe-deref(typecheck-unify-args( fpt pt ))))
-            (print 'Context:_s)(print ctx)(print '\n_s)
             (if (non-zero ctx) (tail(
                (let rt1 (maybe-deref(typecheck-unify-ctx( ctx frt ))))
                (set rt rt1)
@@ -1062,13 +1061,13 @@ typecheck-apply := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
          )) ())
       ) ())
    ))
-   (print 'Apply:\n_s)
-   (print ft)
-   (print '\n_s)
-   (print pt)
-   (print '\n_s)
-   (print rt)
-   (print '\n_s)
+   #(print 'Apply:\n_s)
+   #(print ft)
+   #(print '\n_s)
+   #(print pt)
+   #(print '\n_s)
+   #(print rt)
+   #(print '\n_s)
    (close rt)
 )) Type[]);
 
@@ -1090,6 +1089,10 @@ typecheck-unify-args := λ(: fpt Type)(: pt Type). (: (tail(
    (let ctx TCtxEOF)
    (match (TPair( fpt pt )) (
       ()
+      ( (TPair( TAny TAny )) (tail(
+         (let ctx2 (maybe-deref(tcontext-accept())))
+         (set ctx ctx2)
+      )))
       ( (TPair( (TVar( ltv )) rt )) (
          (set ctx (TCtxBind(
             (close TCtxEOF)
@@ -1137,7 +1140,8 @@ typecheck-unify-args := λ(: fpt Type)(: pt Type). (: (tail(
             (let ctx2 (maybe-deref(typecheck-unify-args( lt1 rt1 ))))
             (if (non-zero ctx2) (tail(
                (let ctx3 (maybe-deref(typecheck-unify-args( lt2 rt2 ))))
-               (set ctx ctx3)
+               (let ctx4 (maybe-deref(merge( ctx2 ctx3 ))))
+               (set ctx ctx4)
             )) ())
          )) ())
       ))
