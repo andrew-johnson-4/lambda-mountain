@@ -557,12 +557,9 @@ typecheck-assert-complete := λ(: term AST). (: (
 ) Nil);
 
 typecheck-assert-one := λ(: term AST). (: (
-   (if (non-zero(maybe-deref(typecheck-lookup term))) () (tail(
-      (print 'Unable\sto\sinfer\stype\sof\sexpression:\n_s)
-      (print term)
-      (print '\n_s)
-      (exit 1_u64)
-   )))
+   (if (non-zero(maybe-deref(typecheck-lookup term))) () (
+      (exit-error( 'Unable\sto\sinfer\stype\sof\sexpression_s term ))
+   ))
 ) Nil);
 
 typecheck-lookup := λ(: term AST). (: (tail(
