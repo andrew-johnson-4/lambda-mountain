@@ -736,7 +736,6 @@ typecheck-annotate-size := λ(: tt Type). (: (tail(
          )))
       ))
    )))
-   (print 'Annotate\sSize:\s_s)(print tt)(print '\n_s)
    (close tt)
 )) Type[]);
 
@@ -953,6 +952,7 @@ typecheck-slot := λ(: tt Type)(: slot String). (: (tail(
    (if (non-zero rt) () (
       (set rt tt)
    ))
+   (print 'Slot\s_s)(print slot)(print '\s_s)(print rt)(print '\n_s)
    (close rt)
 )) Type[]);
 
@@ -963,12 +963,12 @@ typecheck-slot-inner := λ(: tt Type)(: slot String). (: (tail(
       ( (TGround( bt _ )) (
          (if (==( bt slot )) (set rt tt) ())
       ))
-      ( (TAnd( lt rt )) (tail(
-         (let lt2 (maybe-deref(typecheck-slot-inner( lt slot ))))
+      ( (TAnd( ltt rtt )) (tail(
+         (let lt2 (maybe-deref(typecheck-slot-inner( ltt slot ))))
          (if (non-zero lt2) (
             (set rt lt2)
          ) (tail(
-            (let rt2 (maybe-deref(typecheck-slot-inner( rt slot ))))
+            (let rt2 (maybe-deref(typecheck-slot-inner( rtt slot ))))
             (set rt rt2)
          )))
       )))
