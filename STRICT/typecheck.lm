@@ -35,6 +35,7 @@ merge := λ(: lctx TContext)(: rctx TContext). (: (tail(
 print := λ(: tt Type). (: (match tt (
    ()
    ( TAny (print '?_s) )
+   ( (TVar( vn )) (print vn) )
    ( (TGround( tag TypeEOF )) (print tag) )
    ( (TGround( tag (TypeSeq( TypeEOF p1 )) )) (tail(
       (print tag)
@@ -70,17 +71,16 @@ print := λ(: tt Type). (: (match tt (
 serialize-ast := λ(: tt Type). (: (match tt (
    ()
    ( TAny (print '\[Variable\s?\]_s) )
-   ( (TGround( tag TypeEOF )) (
-      (if (is-variable tag) (tail(
-         (print '\[Variable\s_s)
-         (print tag)
-         (print '\]_s)
-      )) (tail(
-         (print '\[Literal\s_s)
-         (print tag)
-         (print '\]_s)
-      )))
-   ))
+   ( (TVar( vn )) (tail(
+      (print '\[Variable\s_s)
+      (print vn)
+      (print '\]_s)
+   )))
+   ( (TGround( tag TypeEOF )) (tail(
+      (print '\[Literal\s_s)
+      (print tag)
+      (print '\]_s)
+   )))
    ( (TGround( tag (TypeSeq( TypeEOF p1 )) )) (tail(
       (print '\[App\s\[_s) 
       (print '\[Literal\s_s)
@@ -535,17 +535,19 @@ nonnormal := λ(: tt Type). (: (tail(
 
 typecheck-ascript := λ(: t AST)(: tt Type). (: (
    (if (non-zero tt) (tail(
-      (let tt-normal (maybe-deref(normalize( tt ))))
       (let ot-normal (maybe-deref(normalize(maybe-deref(typecheck-lookup t)))))
       (if (non-zero ot-normal) (
-         (if (==( ot-normal tt-normal )) () (tail(
-            (print ot-normal)
-            (print '\s!=\s_s)
-            (print tt)
-            (print '\s<:\s_s)
-            (print tt-normal)
-            (print '\n_s)
-            (exit-error( 'Type\sAscription\sInequality_s t ))
+         (if (is-arrow tt) () (tail(
+            (let tt-normal (maybe-deref(normalize( tt ))))
+            (if (==( ot-normal tt-normal )) () (tail(
+               (print ot-normal)
+               (print '\s!=\s_s)
+               (print tt)
+               (print '\s<:\s_s)
+               (print tt-normal)
+               (print '\n_s)
+               (exit-error( 'Type\sAscription\sInequality_s t ))
+            )))
          )))
       ) (tail(
          (set typecheck-term-type-list (TTSeq(
@@ -553,7 +555,7 @@ typecheck-ascript := λ(: t AST)(: tt Type). (: (
             t tt
          )))
          (set typecheck-types-have-changed True_u8)
-     )))
+      )))
    )) ())
 ) Nil);
 
@@ -586,7 +588,6 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (set tctx tctx2)
          (let inner-tt (maybe-deref(typecheck-lookup t)))
          (if (non-zero inner-tt) (tail(
-            (let tt (maybe-deref(parse-type lt)))
             (let nn (maybe-deref(nonnormal inner-tt)))
             (if (non-zero nn) (
                (set tt (TAnd(
@@ -875,6 +876,13 @@ typecheck-unify-args := λ(: fpt Type)(: pt Type). (: (tail(
    (let ctx TCtxEOF)
    (match (TPair( fpt pt )) (
       ()
+      ( (TPair( (TVar( ltv )) rt )) (
+         (set ctx (TCtxBind(
+            (close TCtxEOF)
+            ltv
+            rt
+         )))
+      ))
       ( (TPair( (TAnd( lt1 lt2 )) rt )) (
          (match (TCPair( (maybe-deref(typecheck-unify-args( lt1 rt ))) (maybe-deref(typecheck-unify-args( lt2 rt ))) )) (
             ()

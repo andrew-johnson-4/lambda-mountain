@@ -1,5 +1,5 @@
 
-type Type TAny | (TGround( String , TypeList[] )) | (TAnd( Type[] , Type[] ));
+type Type TAny | (TVar String) | (TGround( String , TypeList[] )) | (TAnd( Type[] , Type[] ));
 type TypeList TypeEOF | (TypeSeq( TypeList[] , Type ));
 
 type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] ))
