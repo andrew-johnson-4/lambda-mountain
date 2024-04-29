@@ -136,19 +136,10 @@ parse := λ. (: (tail(
             ()
             (set tokens remainder)
          )))
-         ( (SCons( (SAtom 'size_s) remainder )) (
-            (match (parse-one-expression remainder) (
-               ()
-               ( (PME( e1 r1 )) (match (parse-one-expression r1) (
-                  ()
-                  ( (PME( e2 r2 )) (tail(
-                     #(typecheck-set-size( (typecheck-infer-type-compound (head pme)) (typecheck-infer-type-compound (head pme2)) ))
-                     ()
-                     (set tokens r2)
-                  )))
-               )))
-            ))
-         ))
+         ( (SCons( (SAtom 'size_s) (SCons( (SAtom tt) (SCons( (SAtom sz) remainder )) )) )) (tail(
+            (typecheck-set-size( tt (to-u64 sz) ))
+            (set tokens remainder)
+         )))
          ( (SCons( (SAtom 'import_s) (SCons( (SAtom relative-path) remainder )) )) (tail(
             (tokenize relative-path)
             (parse ())
@@ -418,13 +409,17 @@ parse-type-single := λ(: tt String). (: (tail(
                (set depth 1_u64)
                (if (non-zero buff) (tail(
                   (let vn (clone-rope buff))
-                  (if (is-variable vn) (
-                     (set base-type (TVar vn))
+                  (if (==( vn '?_s )) (
+                     (set base-type TAny)
                   ) (
-                     (set base-type (TGround(
-                        (clone-rope buff)
-                        (close TypeEOF)
-                     )))
+                     (if (is-variable vn) (
+                        (set base-type (TVar vn))
+                     ) (
+                        (set base-type (TGround(
+                           (clone-rope buff)
+                           (close TypeEOF)
+                        )))
+                     ))
                   ))
                )) ())
                (set buff SNil)
@@ -434,13 +429,17 @@ parse-type-single := λ(: tt String). (: (tail(
                (set depth 1_u64)
                (if (non-zero buff) (tail(
                   (let vn (clone-rope buff))
-                  (if (is-variable vn) (
-                     (set base-type (TVar vn))
+                  (if (==( vn '?_s )) (
+                     (set base-type TAny)
                   ) (
-                     (set base-type (TGround(
-                        (clone-rope buff)
-                        (close TypeEOF)
-                     )))
+                     (if (is-variable vn) (
+                        (set base-type (TVar vn))
+                     ) (
+                        (set base-type (TGround(
+                           (clone-rope buff)
+                           (close TypeEOF)
+                        )))
+                     ))
                   ))
                )) ())
                (set buff SNil)
@@ -507,13 +506,17 @@ parse-type-single := λ(: tt String). (: (tail(
    )))
    (if (non-zero buff) (tail(
       (let vn (clone-rope buff))
-      (if (is-variable vn) (
-         (set base-type (TVar vn))
+      (if (==( vn '?_s )) (
+         (set base-type TAny)
       ) (
-         (set base-type (TGround(
-            (clone-rope buff)
-            (close TypeEOF)
-         )))
+         (if (is-variable vn) (
+            (set base-type (TVar vn))
+         ) (
+            (set base-type (TGround(
+               (clone-rope buff)
+               (close TypeEOF)
+            )))
+         ))
       ))
    )) ())
    (close base-type)

@@ -365,25 +365,28 @@ substitute-uuids := λ(: ctx Context)(: term AST). (: (tail(
    (close term)
 )) AST[]);
 
-extract-uuids := λ(: ctx Context)(: term AST). (: (tail( 
+extract-uuids := λ(: sloc AST)(: ctx Context)(: term AST). (: (tail( 
    (match term (
       ()
       ( (App( (Var 'uuid_s) (Var x) )) (tail(
-         (let lctx (CtxBind( (close ctx) x (close(Var (uuid()))) )))
+         (let id (uuid()))
+         (let loc (maybe-deref(location sloc)))
+         (add-location( id loc ))
+         (let lctx (CtxBind( (close ctx) x (close(Var id)) )))
          (set ctx lctx)
       )))
       ( (App( l r )) (tail(
-         (let lctx (maybe-deref(extract-uuids( ctx l ))))
-         (let rctx (maybe-deref(extract-uuids( lctx r ))))
+         (let lctx (maybe-deref(extract-uuids( sloc ctx l ))))
+         (let rctx (maybe-deref(extract-uuids( sloc lctx r ))))
          (set ctx rctx)
       )))
       ( (Abs( l r )) (tail(
-         (let lctx (maybe-deref(extract-uuids( ctx l ))))
-         (let rctx (maybe-deref(extract-uuids( lctx r ))))
+         (let lctx (maybe-deref(extract-uuids( sloc ctx l ))))
+         (let rctx (maybe-deref(extract-uuids( sloc lctx r ))))
          (set ctx rctx)
       )))
       ( (Asc( l rt )) (tail(
-         (let lctx (maybe-deref(extract-uuids( ctx l ))))
+         (let lctx (maybe-deref(extract-uuids( sloc ctx l ))))
          (set ctx lctx)
       )))
       ( _ () )
@@ -404,7 +407,7 @@ preprocess-apply-maybe := λ(: program AST). (: (tail(
                #(print 'Match:\s_s)
                #(print ctx)
                (let p (maybe-deref(apply-context( ctx rhs ))))
-               (let c (maybe-deref(extract-uuids( CtxEOF p ))))
+               (let c (maybe-deref(extract-uuids( program CtxEOF p ))))
                (let u (maybe-deref(substitute-uuids( c p ))))
                #(print 'Yield:\s_s)
                #(print u)

@@ -123,6 +123,13 @@ fragment > := λ(: l LocalVariable+U64)(: r Constant+U64). (: (
    (as RAX U64)
 )) U64);
 
+* := λ(: l U64)(: r U64). (: (tail(
+   (mov( r RAX ))
+   (mov( l R8 ))
+   (mul( R8 ))
+   (as RAX U64)
+)) U64);
+
 fragment branchtrue := λ(: _ Nil). (: (
    (.expression( 'jmp ))
 ) BranchConditional);
