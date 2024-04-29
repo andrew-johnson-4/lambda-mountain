@@ -778,9 +778,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (typecheck-ascript( v (maybe-deref(typecheck-lookup term)) ))
          (typecheck-infer-expr( tctx v Used ))
       )))
-      ( (Fragment( k (Abs( lhs (Asc( rhs rhst )) )) )) (
-         (typecheck-ascript( term rhst ))
-      ))
+      ( (Fragment( k _ )) () )
       ( (Asc( (Lit _) tt )) (tail(
          (typecheck-ascript( term tt ))
          (match term (
