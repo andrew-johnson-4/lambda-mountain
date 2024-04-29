@@ -591,7 +591,9 @@ normalize := λ(: tt Type). (: (tail(
       )))
       ( (TGround( tag _ )) (
          (if (non-zero(maybe-deref(typecheck-typeof-tag tag))) (
-            (set tt TAny)
+            (if (typecheck-get-size tag) () (
+               (set tt TAny)
+            ))
          ) ())
       ))
       ( _ () )
@@ -630,6 +632,7 @@ typecheck-sized := λ(: tt Type). (: (tail(
       ()
       ( TAny (set r typecheck-do-not-size) )
       ( (TGround( 'Cons_s _ )) (set r typecheck-do-not-size) )
+      ( (TGround( '->_s _ )) (set r typecheck-do-not-size) )
       ( (TAnd( lt rt )) (
          (set r (max(
             (typecheck-sized lt)
