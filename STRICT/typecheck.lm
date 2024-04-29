@@ -902,11 +902,6 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
             lname
             rt
          )))
-         (print 'Let\s_s)
-         (print lname)
-         (print '\s:\s_s)
-         (print rt)
-         (print '\n_s)
          (typecheck-ascript( term (maybe-deref(tnil())) ))
       )))
       ( (App( l r )) (tail(
@@ -952,7 +947,6 @@ typecheck-slot := λ(: tt Type)(: slot String). (: (tail(
    (if (non-zero rt) () (
       (set rt tt)
    ))
-   (print 'Slot\s_s)(print slot)(print '\s_s)(print rt)(print '\n_s)
    (close rt)
 )) Type[]);
 
