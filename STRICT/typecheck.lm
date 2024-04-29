@@ -885,6 +885,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (let deref-type (maybe-deref(typecheck-lookup r)))
          (match (typecheck-slot( deref-type 'Array_s )) (
             ()
+            ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF TAny )) _ )) )) () )
             ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF array-base )) TAny )) )) (
                (set deref-type array-base)
             ))
