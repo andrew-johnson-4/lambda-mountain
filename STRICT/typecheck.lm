@@ -52,6 +52,12 @@ typecheck-sizeof := λ(: tt Type). (: (tail(
       ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF p1 )) TAny )) )) (
          (set sz 8_u64)
       ))
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (set sz (+(
+            (typecheck-sizeof p1)
+            (typecheck-sizeof p2)
+         )))
+      ))
       ( (TGround( tag (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
          (set sz (typecheck-get-size tag))
       ))
@@ -572,6 +578,7 @@ normalize := λ(: tt Type). (: (tail(
       ( (TGround( 'StackVariable_s TypeEOF )) (set tt TAny) )
       ( (TGround( 'LocalVariable_s TypeEOF )) (set tt TAny) )
       ( (TGround( 'GlobalVariable_s TypeEOF )) (set tt TAny) )
+      ( (TGround( 'Sized_s _ )) (set tt TAny) )
       ( (TAnd( lt rt )) (tail(
          (let lt1 (maybe-deref(normalize lt )))
          (let rt1 (maybe-deref(normalize rt )))
@@ -616,10 +623,13 @@ nonnormal := λ(: tt Type). (: (tail(
    (close rt)
 )) Type[]);
 
+typecheck-do-not-size := 99999_u64;
 typecheck-sized := λ(: tt Type). (: (tail(
    (let r 0_u64)
    (match tt (
       ()
+      ( TAny (set r typecheck-do-not-size) )
+      ( (TGround( 'Cons_s _ )) (set r typecheck-do-not-size) )
       ( (TAnd( lt rt )) (
          (set r (max(
             (typecheck-sized lt)
@@ -651,19 +661,21 @@ typecheck-annotate-size-inner := λ(: tt Type). (: (tail(
 typecheck-annotate-size := λ(: tt Type). (: (tail(
    (if (typecheck-sized tt) () (tail(
       (let sz (typecheck-annotate-size-inner tt))
-      (set tt (TAnd(
-          (close tt)
-          (close (TGround(
-             'Sized_s
-             (close (TypeSeq(
-                (close TypeEOF)
-                (TGround(
-                   (to-string sz)
-                   (close TypeEOF)
-                ))
-             )))
-          )))
-      )))
+      (if (==( sz typecheck-do-not-size )) () (
+         (set tt (TAnd(
+            (close tt)
+            (close (TGround(
+               'Sized_s
+               (close (TypeSeq(
+                  (close TypeEOF)
+                  (TGround(
+                     (to-string sz)
+                     (close TypeEOF)
+                  ))
+               )))
+            )))
+         )))
+      ))
    )))
    (close tt)
 )) Type[]);
