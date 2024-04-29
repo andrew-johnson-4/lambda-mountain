@@ -661,8 +661,46 @@ typecheck-annotate-size-inner := λ(: tt Type). (: (tail(
    sz
 )) U64);
 
+typecheck-annotate-size-recurse := λ(: tt Type). (: (tail(
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (tail(
+         (let lt2 (maybe-deref(typecheck-annotate-size-recurse lt)))
+         (let rt2 (maybe-deref(typecheck-annotate-size-recurse rt)))
+         (set tt (TAnd( (close lt2) (close rt2) )))
+      )))
+      ( (TGround( _ TypeEOF )) () )
+      ( (TGround( tag (TypeSeq( TypeEOF pt1 )) )) (tail(
+         (let pt1t (maybe-deref(typecheck-annotate-size pt1)))
+         (set tt (TGround( tag (
+            (close(TypeSeq(
+               (close TypeEOF)
+               pt1t
+            )))
+         ))))
+      )))
+      ( (TGround( tag (TypeSeq( (TypeSeq( TypeEOF pt1 )) pt2 )) )) (tail(
+         (let pt1t (maybe-deref(typecheck-annotate-size pt1)))
+         (let pt2t (maybe-deref(typecheck-annotate-size pt2)))
+         (set tt (TGround( tag (
+            (close(TypeSeq(
+               (close(TypeSeq(
+                  (close TypeEOF)
+                  pt1t
+               )))
+               pt2t
+            )))
+         ))))
+      )))
+      ( _ () )
+   ))
+   (close tt)
+)) Type[]);
+
 typecheck-annotate-size := λ(: tt Type). (: (tail(
    (if (typecheck-sized tt) () (tail(
+      (let tt2 (maybe-deref(typecheck-annotate-size-recurse tt)))
+      (set tt tt2)
       (let sz (typecheck-annotate-size-inner tt))
       (if (==( sz typecheck-do-not-size )) () (
          (set tt (TAnd(
