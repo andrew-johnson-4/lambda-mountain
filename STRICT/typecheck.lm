@@ -302,20 +302,24 @@ typecheck := λ. (: (tail(
 
 global-type-context := (: TCtxEOF TContext);
 
-typecheck-infer-type-definition := λ(: base-type Type)(: body AST). (: (
+typecheck-infer-type-definition := λ(: base-type Type)(: body AST). (: (tail(
+   (let r 0_u64)
    (match body (
       ()
       ( (App( (App( tds (Var '|_s) )) case )) (tail(
-         (typecheck-infer-type-definition( base-type tds ))
-         (typecheck-infer-type-constructor( base-type case ))
+         (let r1 (typecheck-infer-type-definition( base-type tds )))
+         (let r2 (typecheck-infer-type-constructor( base-type case )))
+         (set r (max( r1 r2 )))
       )))
       ( case (
-         (typecheck-infer-type-constructor( base-type case ))
+         (set r (typecheck-infer-type-constructor( base-type case )))
       ))
    ))
-) Nil);
+   r
+)) U64);
 
-typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (
+typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
+   (let r 0_u64)
    (match body (
       ()
       ( (Lit tag) (tail(
@@ -325,6 +329,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (
             tag
             rtype
          )))
+         (set r 8_u64)
       )))
       ( (App( (Lit tag) args )) (tail(
          (let atype (maybe-deref(typecheck-infer-type-compound args)))
@@ -336,10 +341,12 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (
             tag
             (maybe-deref(tarrow( atype rtype )))
          )))
+         (set r (+( 8_u64 (typecheck-sizeof atype) )))
       )))
       ( _ () )
    ))
-) Nil);
+   r
+)) U64);
 
 typecheck-annotate-head-accessor := λ(: base-type Type). (: (
    (set global-type-context (TCtxBind(
