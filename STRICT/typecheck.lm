@@ -429,7 +429,8 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
       ()
       ( (ASTType( (Lit base-type) case-constructors )) (tail(
          (let bt (maybe-deref(parse-type base-type)))
-         (typecheck-infer-type-definition( bt case-constructors ))
+         (let size (typecheck-infer-type-definition( bt case-constructors )))
+         (typecheck-set-size( base-type size ))
       )))
       ( (Glb( k (Abs( lhs (Asc( rhs rhst )) )) )) (tail(
          (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
