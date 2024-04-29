@@ -741,7 +741,7 @@ typecheck-annotate-size := λ(: tt Type). (: (tail(
 
 typecheck-ascript := λ(: t AST)(: tt Type). (: (
    (if (non-zero tt) (tail(
-      (let ot-normal (maybe-deref(normalize(maybe-deref(typecheck-lookup t)))))
+      (let ot-normal (maybe-deref(typecheck-annotate-size(maybe-deref(normalize(maybe-deref(typecheck-lookup t)))))))
       (if (non-zero ot-normal) (
          (if (is-arrow tt) () (tail(
             (let tt-normal (maybe-deref(normalize( tt ))))
