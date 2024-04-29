@@ -518,9 +518,9 @@ nonnormal := λ(: tt Type). (: (tail(
       ( (TGround( 'StackVariable_s TypeEOF )) (set rt tt) )
       ( (TGround( 'LocalVariable_s TypeEOF )) (set rt tt) )
       ( (TGround( 'GlobalVariable_s TypeEOF )) (set rt tt) )
-      ( (TAnd( lt rt )) (tail(
-         (let lt1 (maybe-deref(nonnormal lt )))
-         (let rt1 (maybe-deref(nonnormal rt )))
+      ( (TAnd( ltt rtt )) (tail(
+         (let lt1 (maybe-deref(nonnormal ltt )))
+         (let rt1 (maybe-deref(nonnormal rtt )))
          (match (TPair( lt1 rt1 )) (
             ()
             ( (TPair( TAny rt2 )) (set rt rt2) )
@@ -582,10 +582,21 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          ))
       )))
       ( (Asc( t tt )) (tail(
-         (typecheck-ascript( term tt ))
-         (typecheck-ascript( t tt ))
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx t used ))))
          (set tctx tctx2)
+         (let inner-tt (maybe-deref(typecheck-lookup t)))
+         (if (non-zero inner-tt) (tail(
+            (let tt (maybe-deref(parse-type lt)))
+            (let nn (maybe-deref(nonnormal inner-tt)))
+            (if (non-zero nn) (
+               (set tt (TAnd(
+                  (close tt)
+                  (close nn)
+               )))
+            ) ())
+            (typecheck-ascript( t tt ))
+            (typecheck-ascript( term tt ))
+         )) ())
       )))
       ( (App( (Var 'gensym-label_s) (Var lname) )) (tail(
          (let tctx2 (TCtxBind(
@@ -627,7 +638,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx t used ))))
          (set tctx tctx2)
          (let inner-tt (maybe-deref(typecheck-lookup t)))
-         (if (non-zero inner-tt) (
+         (if (non-zero inner-tt) (tail(
             (let tt (maybe-deref(parse-type lt)))
             (let nn (maybe-deref(nonnormal inner-tt)))
             (if (non-zero nn) (
@@ -637,13 +648,13 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
                )))
             ) ())
             (typecheck-ascript( term tt ))
-         ) ())
+         )) ())
       )))
       ( (App( (App( (Var 'as_s) t )) (Var lt) )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx t used ))))
          (set tctx tctx2)
          (let inner-tt (maybe-deref(typecheck-lookup t)))
-         (if (non-zero inner-tt) (
+         (if (non-zero inner-tt) (tail(
             (let tt (maybe-deref(parse-type lt)))
             (let nn (maybe-deref(nonnormal inner-tt)))
             (if (non-zero nn) (
@@ -653,7 +664,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
                )))
             ) ())
             (typecheck-ascript( term tt ))
-         ) ())
+         )) ())
       )))
       ( (App( (Var 'sizeof_s) _ )) (
          (typecheck-ascript( term (maybe-deref(parse-type 'U64_s)) ))
@@ -679,6 +690,11 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
             lname
             rt
          )))
+         (print 'Let\s_s)
+         (print lname)
+         (print '\s:\s_s)
+         (print rt)
+         (print '\n_s)
          (typecheck-ascript( term (maybe-deref(tnil())) ))
       )))
       ( (App( l r )) (tail(
