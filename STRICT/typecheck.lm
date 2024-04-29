@@ -651,10 +651,8 @@ typecheck-is-sized := λ(: tt Type). (: (tail(
       ( (TGround( 'Cons_s _ )) (set r typecheck-do-not-size) )
       ( (TGround( '->_s _ )) (set r typecheck-do-not-size) )
       ( (TAnd( lt rt )) (
-         (set r (max(
-            (typecheck-is-sized lt)
-            (typecheck-is-sized rt)
-         )))
+         (if (typecheck-is-sized lt) (set r 1_u64) ())
+         (if (typecheck-is-sized rt) (set r 1_u64) ())
       ))
       ( (TGround( 'Sized_s _ )) (set r 1_u64) )
       ( _ () )
