@@ -616,6 +616,58 @@ nonnormal := λ(: tt Type). (: (tail(
    (close rt)
 )) Type[]);
 
+typecheck-sized := λ(: tt Type). (: (tail(
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (
+         (set r (max(
+            (typecheck-sized lt)
+            (typecheck-sized rt)
+         )))
+      ))
+      ( (TGround( 'Sized_s _ )) (set r 1_u64) )
+      ( _ () )
+   ))
+   r
+)) U64);
+
+typecheck-annotate-size-inner := λ(: tt Type). (: (tail(
+   (let sz 0_u64)
+   (match tt (
+      ()
+      ( (TGround( tag _ )) (set sz (typecheck-get-size tag)) )
+      ( (TAnd( lt rt )) (
+         (set sz (max(
+            (typecheck-annotate-size-inner lt)
+            (typecheck-annotate-size-inner rt)
+         )))
+      ))
+      ( _ () )
+   ))
+   sz
+)) U64);
+
+typecheck-annotate-size := λ(: tt Type). (: (tail(
+   (if (typecheck-sized tt) () (tail(
+      (let sz (typecheck-annotate-size-inner tt))
+      (set tt (TAnd(
+          (close tt)
+          (close (TGround(
+             'Sized_s
+             (close (TypeSeq(
+                (close TypeEOF)
+                (TGround(
+                   (to-string sz)
+                   (close TypeEOF)
+                ))
+             )))
+          )))
+      )))
+   )))
+   (close tt)
+)) Type[]);
+
 typecheck-ascript := λ(: t AST)(: tt Type). (: (
    (if (non-zero tt) (tail(
       (let ot-normal (maybe-deref(normalize(maybe-deref(typecheck-lookup t)))))
@@ -631,9 +683,10 @@ typecheck-ascript := λ(: t AST)(: tt Type). (: (
             )))
          )))
       ) (tail(
+         (let stt (maybe-deref(typecheck-annotate-size tt)))
          (set typecheck-term-type-list (TTSeq(
             (close typecheck-term-type-list)
-            t tt
+            t stt
          )))
          (set typecheck-types-have-changed True_u8)
       )))
