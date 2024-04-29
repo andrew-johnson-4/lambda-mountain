@@ -533,6 +533,9 @@ typecheck-assert-complete := λ(: term AST). (: (
          (typecheck-assert-complete t)
          (typecheck-assert-one term)
       )))
+      ( (App( (Var 'sizeof_s) _ )) (
+         (typecheck-assert-one term)
+      ))
       ( (App( (Var 'tail_s) (App( lterm rterm )) )) (tail(
          (typecheck-assert-complete lterm)
          (typecheck-assert-complete rterm)
