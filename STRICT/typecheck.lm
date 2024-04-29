@@ -614,8 +614,7 @@ normalize := λ(: tt Type). (: (tail(
       ))
       ( _ () )
    ))
-   (let tt2 (maybe-deref(typecheck-annotate-size tt)))
-   (close tt2)
+   (close tt)
 )) Type[]);
 
 nonnormal := λ(: tt Type). (: (tail(
@@ -741,7 +740,8 @@ typecheck-ascript := λ(: t AST)(: tt Type). (: (
       (let ot-normal (maybe-deref(normalize(maybe-deref(typecheck-lookup t)))))
       (if (non-zero ot-normal) (
          (if (is-arrow tt) () (tail(
-            (let tt-normal (maybe-deref(normalize( tt ))))
+            (let tt2 (maybe-deref(typecheck-annotate-size tt)))
+            (let tt-normal (maybe-deref(normalize( tt2 ))))
             (if (==( ot-normal tt-normal )) () (tail(
                (print ot-normal)
                (print '\s!=\s_s)
