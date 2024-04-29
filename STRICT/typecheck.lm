@@ -142,6 +142,23 @@ print := λ(: tt Type). (: (match tt (
       (print p3)
       (print '>_s)
    )))
+   ( (TAnd( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) rt )) (tail(
+      (print '-><_s)
+      (print p1)
+      (print ',_s)
+      (print p2)
+      (print '>\n_s)
+      (print rt)
+   )))
+   ( (TAnd( lt (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) )) (tail(
+      (print lt)
+      (print '\n_s)
+      (print '-><_s)
+      (print p1)
+      (print ',_s)
+      (print p2)
+      (print '>_s)
+   )))
    ( (TAnd( lt rt )) (tail(
       (print lt)
       (print '\s+\s_s)
@@ -649,6 +666,7 @@ typecheck-annotate-size-inner := λ(: tt Type). (: (tail(
    (let sz 0_u64)
    (match tt (
       ()
+      ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF _ )) TAny )) )) (set sz 8_u64) )
       ( (TGround( tag _ )) (set sz (typecheck-get-size tag)) )
       ( (TAnd( lt rt )) (
          (set sz (max(
@@ -718,6 +736,7 @@ typecheck-annotate-size := λ(: tt Type). (: (tail(
          )))
       ))
    )))
+   (print 'Annotate\sSize:\s_s)(print tt)(print '\n_s)
    (close tt)
 )) Type[]);
 
@@ -782,6 +801,8 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
                   (close nn)
                )))
             ) ())
+            (let tt2 (maybe-deref(typecheck-annotate-size tt)))
+            (set tt tt2)
             (typecheck-ascript( t tt ))
             (typecheck-ascript( term tt ))
          )) ())
@@ -835,6 +856,8 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
                   (close nn)
                )))
             ) ())
+            (let tt2 (maybe-deref(typecheck-annotate-size tt)))
+            (set tt tt2)
             (typecheck-ascript( term tt ))
          )) ())
       )))
@@ -851,6 +874,8 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
                   (close nn)
                )))
             ) ())
+            (let tt2 (maybe-deref(typecheck-annotate-size tt)))
+            (set tt tt2)
             (typecheck-ascript( term tt ))
          )) ())
       )))
@@ -975,7 +1000,8 @@ as-local-variable := λ(: tt Type). (: (tail(
       (let tt3 (TAnd( (close tt2) (close(TGround( 'LocalVariable_s (close TypeEOF) ))) )))
       (set tt2 tt3)
    )) ())
-   (close tt2)
+   (let tt3 (maybe-deref(typecheck-annotate-size tt2)))
+   (close tt3)
 )) Type[]);
 
 is-arrow := λ(: tt Type). (: (tail(
