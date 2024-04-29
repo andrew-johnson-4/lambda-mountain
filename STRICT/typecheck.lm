@@ -652,8 +652,8 @@ typecheck-is-sized := λ(: tt Type). (: (tail(
       ( (TGround( '->_s _ )) (set r typecheck-do-not-size) )
       ( (TAnd( lt rt )) (
          (set r (max(
-            (typecheck-sized lt)
-            (typecheck-sized rt)
+            (typecheck-is-sized lt)
+            (typecheck-is-sized rt)
          )))
       ))
       ( (TGround( 'Sized_s _ )) (set r 1_u64) )
@@ -716,8 +716,8 @@ typecheck-annotate-size-recurse := λ(: tt Type). (: (tail(
 )) Type[]);
 
 typecheck-annotate-size := λ(: tt Type). (: (tail(
-   (if (typecheck-sized tt) () (
-      (if (==( (typecheck-sized tt) typecheck-do-not-size )) () (tail(
+   (if (typecheck-is-sized tt) () (
+      (if (==( (typecheck-is-sized tt) typecheck-do-not-size )) () (tail(
          (let sz (typecheck-annotate-size-inner tt))
          (let tt2 (maybe-deref(typecheck-annotate-size-recurse tt)))
          (set tt (TAnd(
