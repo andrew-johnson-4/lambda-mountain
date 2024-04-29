@@ -39,6 +39,36 @@ close := λ(: x TypeSizeList). (: (tail(
    (as R8 TypeSizeList[])
 )) TypeSizeList[]);
 
+typecheck-sizeof := λ(: tt Type). (: (tail(
+   (let sz 0_u64)
+   (match tt (
+      ()
+      ( TAny () )
+      ( (TVar _) () )
+      ( (TGround( tag TypeEOF )) (set sz (typecheck-get-size tag)) )
+      ( (TGround( tag (TypeSeq( TypeEOF p1 )) )) (
+         (set sz (typecheck-get-size tag))
+      ))
+      ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF p1 )) TAny )) )) (
+         (set sz 8_u64)
+      ))
+      ( (TGround( tag (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (set sz (typecheck-get-size tag))
+      ))
+      ( (TGround( tag (TypeSeq( (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) p3 )) )) (
+         (set sz (typecheck-get-size tag))
+      ))
+      ( (TAnd( lt rt )) (
+         (if (typecheck-sizeof lt) (
+            (set sz (typecheck-sizeof lt))
+         ) (
+            (set sz (typecheck-sizeof rt))
+         ))
+      ))
+   ))
+   sz
+)) U64);
+
 typecheck-get-size := λ(: tag String). (: (tail(
    (let sz 0_u64)
    (let sizes typecheck-type-sizes)
