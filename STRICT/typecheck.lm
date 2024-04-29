@@ -624,16 +624,36 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (typecheck-ascript( term (maybe-deref(typecheck-lookup r)) ))
       )))
       ( (App( (App( (Var 'as_s) t )) (Lit lt) )) (tail(
-         (let tt (maybe-deref(parse-type lt)))
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx t used ))))
          (set tctx tctx2)
-         (typecheck-ascript( term tt ))
+         (let inner-tt (maybe-deref(typecheck-lookup t)))
+         (if (non-zero inner-tt) (
+            (let tt (maybe-deref(parse-type lt)))
+            (let nn (maybe-deref(nonnormal inner-tt)))
+            (if (non-zero nn) (
+               (set tt (TAnd(
+                  (close tt)
+                  (close nn)
+               )))
+            ) ())
+            (typecheck-ascript( term tt ))
+         ) ())
       )))
       ( (App( (App( (Var 'as_s) t )) (Var lt) )) (tail(
-         (let tt (maybe-deref(parse-type lt)))
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx t used ))))
          (set tctx tctx2)
-         (typecheck-ascript( term tt ))
+         (let inner-tt (maybe-deref(typecheck-lookup t)))
+         (if (non-zero inner-tt) (
+            (let tt (maybe-deref(parse-type lt)))
+            (let nn (maybe-deref(nonnormal inner-tt)))
+            (if (non-zero nn) (
+               (set tt (TAnd(
+                  (close tt)
+                  (close nn)
+               )))
+            ) ())
+            (typecheck-ascript( term tt ))
+         ) ())
       )))
       ( (App( (Var 'sizeof_s) _ )) (
          (typecheck-ascript( term (maybe-deref(parse-type 'U64_s)) ))
@@ -747,10 +767,10 @@ typecheck-typeof-tag := λ(: tag String). (: (tail(
 
 as-local-variable := λ(: tt Type). (: (tail(
    (let tt2 (maybe-deref(normalize tt)))
-   (if (non-zero tt2) (
+   (if (non-zero tt2) (tail(
       (let tt3 (TAnd( (close tt2) (close(TGround( 'LocalVariable_s (close TypeEOF) ))) )))
       (set tt2 tt3)
-   ) ())
+   )) ())
    (close tt2)
 )) Type[]);
 
@@ -811,13 +831,13 @@ typecheck-apply := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
          )) ())
       ) ())
    ))
-   #(print 'Apply:\n_s)
-   #(print ft)
-   #(print '\n_s)
-   #(print pt)
-   #(print '\n_s)
-   #(print rt)
-   #(print '\n_s)
+   (print 'Apply:\n_s)
+   (print ft)
+   (print '\n_s)
+   (print pt)
+   (print '\n_s)
+   (print rt)
+   (print '\n_s)
    (close rt)
 )) Type[]);
 
