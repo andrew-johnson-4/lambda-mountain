@@ -105,7 +105,7 @@ merge := λ(: lctx TContext)(: rctx TContext). (: (tail(
       ()
       ( (TCtxBind( rst (*( k v )) )) (tail(
          (let lctx2 (TCtxBind( (close lctx) k v )))
-         (let lctx3 (merge( lctx2 rst )))
+         (let lctx3 (maybe-deref(merge( lctx2 rst ))))
          (set lctx lctx3)
       )))
       ( _ () )
@@ -1037,6 +1037,7 @@ typecheck-apply := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
          )))
          ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (tail(
             (let ctx (maybe-deref(typecheck-unify-args( fpt pt ))))
+            (print 'Context:_s)(print ctx)(print '\n_s)
             (if (non-zero ctx) (tail(
                (let rt1 (maybe-deref(typecheck-unify-ctx( ctx frt ))))
                (set rt rt1)
