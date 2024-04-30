@@ -269,8 +269,13 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
              ()
          )
       ))
+      ( (Pair( (Lit ':Any:_s) (Var '__s) )) (
+         (set r CtxNil)
+      ))
       ( (Pair( (App( (Lit ':Variable:_s) (Var pv) )) (Var el) )) (
-         (set r (CtxBind( (close CtxNil) pv (close term) )))
+         (if (==( el '__s )) () (
+            (set r (CtxBind( (close CtxNil) pv (close term) )))
+         ))
       ))
       ( (Pair( (App( (App( (Lit ':Tag:_s) (Var pv) )) (Var pt) )) (Lit el) )) (
          (if (==( (preprocess-index-of-tag el) preprocess-tag-index-eof )) () (tail(
