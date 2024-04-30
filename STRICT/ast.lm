@@ -83,62 +83,6 @@ non-zero := λ(: t TContext). (: (tail(
       ()
       ( (Pair( ASTEOF ASTEOF )) (set r 1_u64) )
       ( (Pair( ASTNil ASTNil )) (set r 1_u64) )
-      ( (Pair( (Seq( _ _ )) (Seq( _ _ )) )) (
-         (if (==( (as (.1( (as lterm Seq) )) U64) (as (.1( (as rterm Seq) )) U64) )) (
-            (if (==( (as (.2( (as lterm Seq) )) U64) (as (.2( (as rterm Seq) )) U64) )) (
-               (set r 1_u64)
-            ) ())
-         ) ())
-      ))
-      ( (Pair( (App( _ _ )) (App( _ _ )) )) (
-         (if (==( (as (.1( (as lterm App) )) U64) (as (.1( (as rterm App) )) U64) )) (
-            (if (==( (as (.2( (as lterm App) )) U64) (as (.2( (as rterm App) )) U64) )) (
-               (set r 1_u64)
-            ) ())
-         ) ())
-      ))
-      ( (Pair( (Abs( _ _ )) (Abs( _ _ )) )) (
-         (if (==( (as (.1( (as lterm Abs) )) U64) (as (.1( (as rterm Abs) )) U64) )) (
-            (if (==( (as (.2( (as lterm Abs) )) U64) (as (.2( (as rterm Abs) )) U64) )) (
-               (set r 1_u64)
-            ) ())
-         ) ())
-      ))
-      ( (Pair( (Seq( _ _ )) (Seq( _ _ )) )) (
-         (if (==( (as (.1( (as lterm Seq) )) U64) (as (.1( (as rterm Seq) )) U64) )) (
-            (if (==( (as (.2( (as lterm Seq) )) U64) (as (.2( (as rterm Seq) )) U64) )) (
-               (set r 1_u64)
-            ) ())
-         ) ())
-      ))
-      ( (Pair( (ASTType( _ _ )) (ASTType( _ _ )) )) (
-         (if (==( (as (.1( (as lterm ASTType) )) U64) (as (.1( (as rterm ASTType) )) U64) )) (
-            (if (==( (as (.2( (as lterm ASTType) )) U64) (as (.2( (as rterm ASTType) )) U64) )) (
-               (set r 1_u64)
-            ) ())
-         ) ())
-      ))
-      ( (Pair( (Fragment( _ _ )) (Fragment( _ _ )) )) (
-         (if (==( ll rl )) (
-            (if (==( (as (.2( (as lterm Fragment) )) U64) (as (.2( (as rterm Fragment) )) U64) )) (
-               (set r 1_u64)
-            ) ())
-         ) ())
-      ))
-      ( (Pair( (Asc( _ _ )) (Asc( _ _ )) )) (
-         (if (==( (as (.1( (as lterm Asc) )) U64) (as (.1( (as rterm Asc) )) U64) )) (
-            (if (==( (as (.2( (as lterm Asc) )) U64) (as (.2( (as rterm Asc) )) U64) )) (
-               (set r 1_u64)
-            ) ())
-         ) ())
-      ))
-      ( (Pair( (Glb( _ _ )) (Glb( _ _ )) )) (
-         (if (==( ll rl )) (
-            (if (==( (as (.2( (as lterm Glb) )) U64) (as (.2( (as rterm Glb) )) U64) )) (
-               (set r 1_u64)
-            ) ())
-         ) ())
-      ))
       ( (Pair( (Var lv) (Var rv) )) (
          (if (==( (as lv U64) (as rv U64) )) (
             (set r 1_u64)
@@ -149,7 +93,11 @@ non-zero := λ(: t TContext). (: (tail(
             (set r 1_u64)
          ) ())
       ))
-      ( _ () )
+      ( _ (tail(
+        (if (==( (.0 lterm) (.0 rterm) )) () (set r 1_u64) )
+        (if (==( (as (.1 (as lterm App)) U64) (as (.1 (as rterm App)) U64) )) () (set r 1_u64) )
+        (if (==( (as (.2 (as lterm App)) U64) (as (.2 (as rterm App)) U64) )) () (set r 1_u64) )
+      )))
    ))
    r
 )) U64);

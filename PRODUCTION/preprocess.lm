@@ -117,13 +117,8 @@ try-destructure-macro := λlhs e . (match (lhs e) (
          (Accept (KV( pv e )))
       )
    ))
-   ( ( (Literal :Any:) (Variable '_) ) (
-      Accept
-   ))
    ( ( (App( (Literal :Variable:) (Variable pv) )) (Variable el)) (
-      (if (eq( el '_ )) () (
-         (Accept (KV( pv e )))
-      ))
+      (Accept (KV( pv e )))
    ))
    ( ( (App( (App( (Literal :Tag:) (Variable pv) )) (Variable pt) )) (Literal el)) (
       (if (preprocess-index-of-tag el)
