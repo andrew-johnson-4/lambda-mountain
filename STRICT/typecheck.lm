@@ -925,7 +925,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
                   lname
                   rt
                )))
-            )) ())
+            ) ())
          )) ())
          (typecheck-ascript( term (maybe-deref(tnil())) ))
       )))
