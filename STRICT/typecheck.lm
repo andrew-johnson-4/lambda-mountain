@@ -1071,7 +1071,7 @@ typecheck-apply := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
          ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (tail(
             (let ctx (maybe-deref(typecheck-unify-args( fpt pt ))))
             (if (non-zero ctx) (tail(
-               (let rt1 (maybe-deref(typecheck-unify-ctx( ctx frt ))))
+               (let rt1 (maybe-deref(as-return(maybe-deref(typecheck-unify-ctx( ctx frt ))))))
                (set rt rt1)
             )) ())
          )))
