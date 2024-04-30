@@ -57,6 +57,7 @@ non-zero := λ(: x IndexList). (: (tail(
 preprocess := λ. (: (tail(
    (preprocess-index-typedefs ast-parsed-program)
    (let program (maybe-deref(preprocess-apply ast-parsed-program)))
+   (print 'Preprocessed\n_s)
    (set ast-parsed-program program)
 )) Nil);
 
@@ -291,6 +292,50 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
    (close r)
 )) Context[]);
 
+replace-loc := λ(: loc AST)(: term AST). (: (tail(
+   (match term (
+      ()
+      ( ASTEOF () )
+      ( ASTNil () )
+      ( (Var v) (tail(
+         (let new-v (clone-rope(SAtom v)))
+         (add-location( new-v (maybe-deref(location loc)) ))
+         (set term (Var new-v))
+      )))
+      ( (Lit v) (tail(
+         (let new-v (clone-rope(SAtom v)))
+         (add-location( new-v (maybe-deref(location loc)) ))
+         (set term (Lit new-v))
+      )))
+      ( (App( lt rt )) (
+         (set term (App(
+            (replace-loc( loc lt ))
+            (replace-loc( loc rt ))
+         )))
+      ))
+      ( (Abs( lt rt )) (
+         (set term (Abs(
+            (replace-loc( loc lt ))
+            (replace-loc( loc rt ))
+         )))
+      ))
+      ( (Seq( lt rt )) (
+         (set term (Seq(
+            (replace-loc( loc lt ))
+            (replace-loc( loc rt ))
+         )))
+      ))
+      ( (Asc( lt rt )) (
+         (set term (Asc(
+            (replace-loc( loc lt ))
+            (close rt)
+         )))
+      ))
+      ( _ (exit-error( 'preprocess::replace-loc\sUnexpected\sTerm_s term )) )
+   ))
+   (close term)
+)) AST[]);
+
 apply-context := λ(: ctx Context)(: term AST). (: (tail( 
    (match term (
       ()
@@ -409,6 +454,7 @@ preprocess-apply-maybe := λ(: program AST). (: (tail(
                (let p (maybe-deref(apply-context( ctx rhs ))))
                (let c (maybe-deref(extract-uuids( program CtxEOF p ))))
                (let u (maybe-deref(substitute-uuids( c p ))))
+               #(let u2 (maybe-deref(replace-loc( program u ))))
                #(print 'Yield:\s_s)
                #(print u)
                #(print '\n_s)

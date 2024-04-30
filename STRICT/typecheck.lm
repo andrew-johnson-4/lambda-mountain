@@ -529,8 +529,19 @@ typecheck-assert-complete := λ(: term AST). (: (
          (typecheck-assert-complete rhs)
          (typecheck-assert-one term)
       )))
+      ( (App( (App( (Var 'as_s) t )) _ )) (tail(
+         (typecheck-assert-complete t)
+         (typecheck-assert-one term)
+      )))
+      ( (App( (Var 'sizeof_s) _ )) (
+         (typecheck-assert-one term)
+      ))
       ( (App( (Var 'tail_s) (App( lterm rterm )) )) (tail(
          (typecheck-assert-complete lterm)
+         (typecheck-assert-complete rterm)
+         (typecheck-assert-one term)
+      )))
+      ( (App( (Var 'maybe-deref_s) rterm )) (tail(
          (typecheck-assert-complete rterm)
          (typecheck-assert-one term)
       )))
@@ -584,7 +595,20 @@ exit-error := λ(: msg String)(: t AST). (: (tail(
    (print '\n_s)
    (print (maybe-deref(location( t ))))
    (print '\n_s)
-   (print t)
+   (match t (
+      ()
+      ( (App( f a )) (tail(
+         (print 'FunctionApplication\n_s)
+         (print f)(print ':\n_s)
+         (print (maybe-deref(typecheck-lookup f)))(print '\n_s)
+         (print a)(print ':\n_s)
+         (print (maybe-deref(typecheck-lookup a)))(print '\n_s)
+      )))
+      ( _ (tail(
+         (print t)
+         (print '\n_s)
+      )))
+   ))
    (print '\n_s)
    (exit 1_u64)
 )) Nil);
@@ -597,6 +621,10 @@ normalize := λ(: tt Type). (: (tail(
       ( (TGround( 'StackVariable_s TypeEOF )) (set tt TAny) )
       ( (TGround( 'LocalVariable_s TypeEOF )) (set tt TAny) )
       ( (TGround( 'GlobalVariable_s TypeEOF )) (set tt TAny) )
+      ( (TGround( 'Reg8_s TypeEOF )) (set tt TAny) )
+      ( (TGround( 'Reg16_s TypeEOF )) (set tt TAny) )
+      ( (TGround( 'Reg32_s TypeEOF )) (set tt TAny) )
+      ( (TGround( 'Reg64_s TypeEOF )) (set tt TAny) )
       ( (TAnd( lt rt )) (tail(
          (let lt1 (maybe-deref(normalize lt )))
          (let rt1 (maybe-deref(normalize rt )))
@@ -870,7 +898,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          )) ())
       )))
       ( (App( (Var 'sizeof_s) _ )) (
-         (typecheck-ascript( term (maybe-deref(parse-type 'U64_s)) ))
+         (typecheck-ascript( term (maybe-deref(as-constant(maybe-deref(parse-type 'U64_s)))) ))
       ))
       ( (App( (Var 'maybe-deref_s) r )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx r used ))))
@@ -888,7 +916,14 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
       )))
       ( (App( (Abs( (Var lname) ASTNil )) rhs )) (tail(
          (typecheck-infer-expr( tctx rhs Used ))
-         (let rt (maybe-deref(as-local-variable(maybe-deref(typecheck-lookup rhs)))))
+         (let tt (maybe-deref(typecheck-lookup rhs)))
+         (let rt (maybe-deref(as-local-variable(tt))))
+         (if (non-zero tt) () (
+            (exit-error( 'Unable\sto\sinfer\stype\sof\sexpression_s rhs ))
+         ))
+         (if (non-zero rt) () (
+            (exit-error( 'Unable\sto\sinfer\stype\sof\sexpression_s rhs ))
+         ))
          (set tctx (TCtxBind(
             (close tctx)
             lname
@@ -920,9 +955,11 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
       ))
       ( (Lit l) (tail(
          (let tt (maybe-deref(typecheck-typeof-tag l)))
-         (if (non-zero tt) (
+         (if (non-zero tt) (tail(
+            (let tt2 (maybe-deref(as-constant tt)))
+            (set tt tt2)
             (typecheck-ascript( term tt ))
-         ) ())
+         )) ())
       )))
       ( _ (tail(
          (print 'Unknown\sTerm\sIn\sType\sInference\n_s)
@@ -990,6 +1027,35 @@ as-local-variable := λ(: tt Type). (: (tail(
    (close tt3)
 )) Type[]);
 
+as-constant := λ(: tt Type). (: (tail(
+   (if (non-zero tt) (tail(
+      (let tt2 (TAnd( (close tt) (close(TGround( 'Constant_s (close TypeEOF) ))) )))
+      (set tt tt2)
+   )) ())
+   (close tt2)
+)) Type[]);
+
+as-return := λ(: tt Type). (: (tail(
+   (let sz (typecheck-sizeof tt))
+   (let rtrep '_s)
+   (match sz (
+      ()
+      ( 0_u64 () )
+      ( 1_u64 (set rtrep 'Reg8_s) )
+      ( 2_u64 (set rtrep 'Reg16_s) )
+      ( 4_u64 (set rtrep 'Reg32_s) )
+      ( 8_u64 (set rtrep 'Reg64_s) )
+      ( _ (set rtrep 'StackVariable_s) )
+   ))
+   (if (head-string rtrep) (
+      (set tt (TAnd(
+         (close tt)
+         (close(TGround( rtrep (close TypeEOF) )))
+      )))
+   ) ())
+   (close tt)
+)) Type[]);
+
 is-arrow := λ(: tt Type). (: (tail(
    (let r 0_u64)
    (match tt (
@@ -1024,7 +1090,7 @@ typecheck-apply := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
          ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (tail(
             (let ctx (maybe-deref(typecheck-unify-args( fpt pt ))))
             (if (non-zero ctx) (tail(
-               (let rt1 (maybe-deref(typecheck-unify-ctx( ctx frt ))))
+               (let rt1 (maybe-deref(as-return(maybe-deref(typecheck-unify-ctx( ctx frt ))))))
                (set rt rt1)
             )) ())
          )))
@@ -1058,7 +1124,63 @@ typecheck-apply := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
 )) Type[]);
 
 typecheck-unify-ctx := λ(: ctx TContext)(: tt Type). (: (tail(
-   ()
+   (match tt (
+      ()
+      ( (TVar v) (
+         (while (non-zero ctx) (match ctx (
+            ()
+            ( (TCtxBind( rst (*( tk tv )) )) (tail(
+               (if (==( tk v )) (
+                  (set tt tv)
+               ) ())
+               (set ctx rst)
+            )))
+         )))
+      ))
+      ( (TGround( tag (TypeSeq( TypeEOF p1 )) )) (
+         (set tt (TGround(
+            tag
+            (close(TypeSeq(
+               (close TypeEOF)
+               (maybe-deref(typecheck-unify-ctx( ctx p1 )))
+            )))
+         )))
+      ))
+      ( (TGround( tag (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (set tt (TGround(
+            tag
+            (close(TypeSeq(
+               (close(TypeSeq(
+                  (close TypeEOF)
+                  (maybe-deref(typecheck-unify-ctx( ctx p1 )))
+               )))
+               (maybe-deref(typecheck-unify-ctx( ctx p2 )))
+            )))
+         )))
+      ))
+      ( (TGround( tag (TypeSeq( (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) p3 )) )) (
+         (set tt (TGround(
+            tag
+            (close(TypeSeq(
+               (close(TypeSeq(
+                  (close(TypeSeq(
+                     (close TypeEOF)
+                     (maybe-deref(typecheck-unify-ctx( ctx p1 )))
+                  )))
+                  (maybe-deref(typecheck-unify-ctx( ctx p2 )))
+               )))
+               (maybe-deref(typecheck-unify-ctx( ctx p3 )))
+            )))
+         )))
+      ))
+      ( (TAnd( lt rt )) (
+         (set tt (TAnd(
+            (typecheck-unify-ctx( ctx lt ))
+            (typecheck-unify-ctx( ctx rt ))
+         )))
+      ))
+      ( _ () )
+   ))
    (close tt)
 )) Type[]);
 
@@ -1162,14 +1284,14 @@ typecheck-infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
          (set tctx (TCtxBind(
             (close tctx)
             v
-            tt
+            (maybe-deref(as-local-variable tt))
          )))
       ))
       ( (App( ps (Asc( (Var v) tt )) )) (tail(
          (set tctx (TCtxBind(
             (close tctx)
             v
-            tt
+            (maybe-deref(as-local-variable tt))
          )))
          (let tctx2 (maybe-deref(typecheck-infer-ctx( tctx ps ))))
          (set tctx tctx2)
@@ -1183,8 +1305,8 @@ typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tai
    (let found TAny)
    (while (non-zero tctx) (match tctx (
       ()
-      ( (TCtxBind( rst (*( k vt  )) )) (tail(
-         (if (==( k vname )) (
+      ( (TCtxBind( rst (*( k vt  )) )) (
+         (if (==( k vname )) (tail(
             (if (non-zero found) (
                (if (is-arrow vt) (
                   (set found (TAnd(
@@ -1197,9 +1319,11 @@ typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tai
             ) (
                (set found vt)
             ))
-         ) ())
-         (set tctx rst)
-      )))
+            (set tctx TCtxEOF)
+         )) (
+            (set tctx rst)
+         ))
+      ))
    )))
    (if (non-zero found) () (
       (exit-error( 'Unknown\sReferenced\sVariable_s sloc ))
