@@ -1,0 +1,9 @@
+
+assemble-text-section                    := (: SNil S);
+assemble-data-section                    := (: SNil S);
+assemble-argv-referenced                 := False_u8;
+
+compile := λ(). (: (tail(
+   ()
+   ()
+)) Nil);
