@@ -1021,10 +1021,10 @@ as-local-variable := λ(: tt Type). (: (tail(
 )) Type[]);
 
 as-constant := λ(: tt Type). (: (tail(
-   (if (non-zero tt) (
+   (if (non-zero tt) (tail(
       (let tt2 (TAnd( (close tt) (close(TGround( 'Constant_s (close TypeEOF) ))) )))
       (set tt tt2)
-   ) ())
+   )) ())
    (close tt2)
 )) Type[]);
 
@@ -1299,7 +1299,7 @@ typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tai
    (while (non-zero tctx) (match tctx (
       ()
       ( (TCtxBind( rst (*( k vt  )) )) (tail(
-         (if (==( k vname )) (
+         (if (==( k vname )) (tail(
             (if (non-zero found) (
                (if (is-arrow vt) (
                   (set found (TAnd(
@@ -1312,8 +1312,10 @@ typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tai
             ) (
                (set found vt)
             ))
-         ) ())
-         (set tctx rst)
+            (set tctx TCtxEOF)         
+         )) (
+            (set tctx rst)
+         ))
       )))
    )))
    (if (non-zero found) () (
