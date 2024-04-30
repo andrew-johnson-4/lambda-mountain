@@ -1298,7 +1298,7 @@ typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tai
    (let found TAny)
    (while (non-zero tctx) (match tctx (
       ()
-      ( (TCtxBind( rst (*( k vt  )) )) (tail(
+      ( (TCtxBind( rst (*( k vt  )) )) (
          (if (==( k vname )) (tail(
             (if (non-zero found) (
                (if (is-arrow vt) (
@@ -1316,7 +1316,7 @@ typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tai
          )) (
             (set tctx rst)
          ))
-      )))
+      ))
    )))
    (if (non-zero found) () (
       (exit-error( 'Unknown\sReferenced\sVariable_s sloc ))
