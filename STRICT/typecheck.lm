@@ -315,11 +315,8 @@ typecheck := λ. (: (tail(
          (set ordered-type-exprs rst)
       )))
    )))
-   (while (==( typecheck-types-have-changed True_u8 )) (
-      (print 'Typecheck\sIter\n_s)
-      (set typecheck-types-have-changed False_u8)
-      (typecheck-infer-expr( global-type-context ast-parsed-program Unused))
-   ))
+   #One Pass is Sound for Now
+   (typecheck-infer-expr( global-type-context ast-parsed-program Unused))
    (typecheck-assert-complete ast-parsed-program)
 )) Nil);
 
