@@ -918,7 +918,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (typecheck-infer-expr( tctx rhs Used ))
          (let tt (maybe-deref(typecheck-lookup rhs)))
          (if (non-zero tt) (tail(
-            (let rt (maybe-deref(as-local-variable(tt)))
+            (let rt (maybe-deref(as-local-variable(tt))))
             (set tctx (TCtxBind(
                (close tctx)
                lname
