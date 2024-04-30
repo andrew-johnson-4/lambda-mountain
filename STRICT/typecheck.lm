@@ -1017,6 +1017,26 @@ as-constant := λ(: tt Type). (: (tail(
    (close tt2)
 )) Type[]);
 
+as-return := λ(: tt Type). (: (tail(
+   (let sz (typecheck-sizeof tt))
+   (let rtrep (match sz (
+      ()
+      ( 0_u64 ('_s) )
+      ( 1_u64 ('Reg8_s) )
+      ( 2_u64 ('Reg16_s) )
+      ( 4_u64 ('Reg32_s) )
+      ( 8_u64 ('Reg64_s) )
+      ( _ ('StackVariable_s) )
+   )))
+   (if (head-string rtrep) (
+      (set tt (TAnd(
+         (close tt)
+         (close(TGround( rtrep (close TypeEOF) )))
+      )))
+   ) ())
+   (close tt)
+)) Type[]);
+
 is-arrow := λ(: tt Type). (: (tail(
    (let r 0_u64)
    (match tt (
