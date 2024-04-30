@@ -21,3 +21,8 @@ cccontext::new := λ. (: (tail(
    (let r CCCEOF)
    (close r)
 )) CCContext[]);
+
+cccontext::bind := λ(: ctx CCContext)(: k String)(: kt Type)(: f CCFragment). (: (tail(
+   ()
+   ()
+)) Nil);

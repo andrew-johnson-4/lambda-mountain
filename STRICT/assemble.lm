@@ -4,79 +4,44 @@ assemble-data-section                    := (: SNil S);
 assemble-argv-referenced                 := False_u8;
 
 compile := λ(). (: (tail(
-   (let global-ctx (cccontext::new()))
-   ()
+   (let global-ctx (maybe-deref(cccontext::new())))
+   (let preview-program ast-parsed-program)
+   (while (non-zero preview-program) (match preview-program (
+      ()
+      ( (Seq( rst (Glb( k rhs )) )) (tail(
+         (set global-ctx (maybe-deref(cccontext::bind(
+            global-ctx
+            k
+            (maybe-deref(typecheck-lookup rhs))
+            (maybe-deref(ccfragment::new()))
+         ))))
+         (set preview-program rst)
+      )))
+      ( (Seq( rst (Fragment( k rhs )) )) (tail(
+         (set global-ctx (maybe-deref(cccontext::bind(
+            global-ctx
+            k
+            (maybe-deref(typecheck-lookup rhs))
+            (maybe-deref(ccfragment::new()))
+         ))))
+         (set preview-program rst)
+      )))
+      ( (Seq( rst (ASTType( lhs rhs )) )) (tail(
+         (set global-ctx (maybe-deref(compile-type( global-ctx lhs rhs ))))
+         (set preview-program rst)
+      )))
+      ( (Seq( rst _ )) (
+         (set preview-program rst)
+      ))
+   )))
    ()
 )) Nil);
 
-#   (while preview_program (match preview_program (
-#      ()
-#      ( (pc (Global ('main (
-#            (Lambda( lhs rhs ))
-#         )))) (
-#         (set global_ctx (context::bind( global_ctx 'argc
-#            (typecheck-ascript( (GlobalVariable 'argc) (parse-type 'U64+GlobalVariable) ))
-#         )))
-#         (set global_ctx (context::bind( global_ctx 'argv
-#            (typecheck-ascript( (GlobalVariable 'argv) (parse-type 'String[?]+GlobalVariable) ))
-#         )))
-#         (set assemble-argv-referenced True)
-#         (set preview_program pc)
-#      ))
-#      ( (pc3 (Global (fname body))) (
-#         (match body (
-#            ()
-#            ( Nil (tail(
-#               (set output_pd (
-#                  (head output_pd)
-#                 (
-#                     (tail output_pd)
-#                     (label-case fname)
-#                     ': \n \t '.zero \s '16 \n
-#                  )
-#               ))
-#               (set global_ctx (context::bind( global_ctx fname
-#                  (typecheck-ascript( (GlobalVariable body) (typecheck-lookup body) ))
-#               )))
-#            )))
-#            ( (Lambda(lhs rhs)) (tail(
-#               (set global_ctx (context::bind( global_ctx fname
-#                  (typecheck-ascript( (GlobalFunction body) (typecheck-lookup body) ))
-#               )))
-#            )))
-#            ( (App( (App( (Literal ':) body-initial )) body-type )) (tail(
-#               (local mtype)
-#               (set mtype (typecheck-lookup body))
-#               (local mname)
-#               (set mname (mangle-identifier( fname mtype )))
-#               (set output_pd (
-#                  (head output_pd)
-#                  (
-#                     (tail output_pd)
-#                     mname ': \n
-#                     (assemble-initialize-data( body-initial mtype ))
-#                  )
-#               ))
-#               (set global_ctx (context::bind( global_ctx fname
-#                  (typecheck-ascript( (GlobalVariable mname) mtype ))
-#               )))
-#            )))
-#            ( other (tail(
-#               (fail (GlobalsMustBeAscripted other))
-#            )))
-#         ))
-#         (set preview_program pc3)
-#      ))
-#      ( (prog (Fragment( (Variable fname) fbody ))) (
-#         (set global_ctx (context::bind( global_ctx fname
-#            (typecheck-ascript( (Fragment fbody) (typecheck-lookup fbody) ))
-#         )))
-#         (set preview_program prog)
-#      ))
-#      ( (prog (Type( tn tb ))) (
-#         (set global_ctx (strict-codegen-type( global_ctx tn tb 0 )) )
-#         (set preview_program prog)
-#      ))
+compile-type := λ(: ctx CCContext)(: lhs AST)(: rhs AST). (: (tail(
+   ()
+   (close ctx)
+)) CCContext[])
+
 
 #   (while program (match program (
 #      ()
