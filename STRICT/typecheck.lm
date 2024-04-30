@@ -1021,7 +1021,10 @@ as-local-variable := λ(: tt Type). (: (tail(
 )) Type[]);
 
 as-constant := λ(: tt Type). (: (tail(
-   (let tt2 (TAnd( (close tt) (close(TGround( 'Constant_s (close TypeEOF) ))) )))
+   (if (non-zero tt) (
+      (let tt2 (TAnd( (close tt) (close(TGround( 'Constant_s (close TypeEOF) ))) )))
+      (set tt tt2)
+   ) ())
    (close tt2)
 )) Type[]);
 
