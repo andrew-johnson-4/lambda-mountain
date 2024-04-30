@@ -541,6 +541,10 @@ typecheck-assert-complete := λ(: term AST). (: (
          (typecheck-assert-complete rterm)
          (typecheck-assert-one term)
       )))
+      ( (App( (Var 'maybe-deref_s) rterm )) (tail(
+         (typecheck-assert-complete rterm)
+         (typecheck-assert-one term)
+      )))
       ( (Asc( t tt )) (tail(
          (typecheck-assert-complete t)
          (typecheck-assert-one term)
