@@ -294,6 +294,8 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
 replace-loc := λ(: loc AST)(: term AST). (: (tail(
    (match term (
       ()
+      ( ASTEOF () )
+      ( ASTNil () )
       ( (Var v) (tail(
          (let new-v (clone-rope(SAtom v)))
          (add-location( new-v (maybe-deref(location loc)) ))
