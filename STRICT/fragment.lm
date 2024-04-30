@@ -16,3 +16,8 @@ close := λ(: x CCFragment). (: (tail(
    (mov( x 0_u64 (as R8 CCFragment[]) ))
    (as R8 CCFragment[])
 )) CCFragment[]);
+
+ccfragment::new := λ(: (tail(
+   (let r CCFEOF)
+   (close r)
+)) CCFragment[]);
