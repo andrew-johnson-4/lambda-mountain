@@ -315,12 +315,11 @@ typecheck := λ. (: (tail(
          (set ordered-type-exprs rst)
       )))
    )))
-   (while (==( typecheck-types-have-changed True_u8 )) (
-      (print 'Typecheck\sIter\n_s)
-      (set typecheck-types-have-changed False_u8)
-      (typecheck-infer-expr( global-type-context ast-parsed-program Unused))
-   ))
+   #One Pass is Sound for Now
+   (typecheck-infer-expr( global-type-context ast-parsed-program Unused))
+   (print 'Typecheck\sIter\n_s)
    (typecheck-assert-complete ast-parsed-program)
+   (print 'Typechecked\n_s)
 )) Nil);
 
 global-type-context := (: TCtxEOF TContext);
@@ -346,6 +345,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
    (match body (
       ()
       ( (Lit tag) (tail(
+         (typecheck-annotate-head-accessor( base-type ))
          (let rtype (TAnd( (close base-type) (parse-type tag) )) )
          (set typecheck-type-constructors (TConSeq(
             (close typecheck-type-constructors)
@@ -1319,7 +1319,11 @@ typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tai
             ) (
                (set found vt)
             ))
-            (set tctx TCtxEOF)
+            (if (is-arrow vt) (
+               (set tctx rst)
+            ) (
+               (set tctx TCtxEOF)
+            ))
          )) (
             (set tctx rst)
          ))

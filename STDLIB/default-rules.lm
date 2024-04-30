@@ -21,6 +21,10 @@ macro ('match-pats-arm( term (:Variable: v) )) (
    (tail( (let v term) (branchtrue()) ))
 );
 
+macro ('match-pats-arm( term :Any: )) (
+   (branchtrue())
+);
+
 macro ('match-pats-arm( term (:Literal: l) )) (
    (tail( (let (uuid v) term) (==( (uuid v) l )) ))
 );
