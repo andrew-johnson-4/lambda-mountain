@@ -1019,15 +1019,16 @@ as-constant := λ(: tt Type). (: (tail(
 
 as-return := λ(: tt Type). (: (tail(
    (let sz (typecheck-sizeof tt))
-   (let rtrep (match sz (
+   (let rtrep '_s)
+   (match sz (
       ()
-      ( 0_u64 ('_s) )
-      ( 1_u64 ('Reg8_s) )
-      ( 2_u64 ('Reg16_s) )
-      ( 4_u64 ('Reg32_s) )
-      ( 8_u64 ('Reg64_s) )
-      ( _ ('StackVariable_s) )
-   )))
+      ( 0_u64 () )
+      ( 1_u64 (set rtrep 'Reg8_s) )
+      ( 2_u64 (set rtrep 'Reg16_s) )
+      ( 4_u64 (set rtrep 'Reg32_s) )
+      ( 8_u64 (set rtrep 'Reg64_s) )
+      ( _ (set rtrep 'StackVariable_s) )
+   ))
    (if (head-string rtrep) (
       (set tt (TAnd(
          (close tt)
