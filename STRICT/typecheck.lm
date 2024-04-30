@@ -617,6 +617,10 @@ normalize := λ(: tt Type). (: (tail(
       ( (TGround( 'StackVariable_s TypeEOF )) (set tt TAny) )
       ( (TGround( 'LocalVariable_s TypeEOF )) (set tt TAny) )
       ( (TGround( 'GlobalVariable_s TypeEOF )) (set tt TAny) )
+      ( (TGround( 'Reg8_s TypeEOF )) (set tt TAny) )
+      ( (TGround( 'Reg16_s TypeEOF )) (set tt TAny) )
+      ( (TGround( 'Reg32_s TypeEOF )) (set tt TAny) )
+      ( (TGround( 'Reg64_s TypeEOF )) (set tt TAny) )
       ( (TAnd( lt rt )) (tail(
          (let lt1 (maybe-deref(normalize lt )))
          (let rt1 (maybe-deref(normalize rt )))
