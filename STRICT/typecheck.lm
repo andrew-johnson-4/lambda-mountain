@@ -1114,7 +1114,63 @@ typecheck-apply := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
 )) Type[]);
 
 typecheck-unify-ctx := λ(: ctx TContext)(: tt Type). (: (tail(
-   ()
+   (match tt (
+      ()
+      ( (TVar v) (
+         (while (non-zero ctx) (match ctx (
+            ()
+            ( (TCtxBind( rst (*( tk tv )) )) (tail(
+               (if (==( tk v )) (
+                  (set tt tv)
+               ) ())
+               (set ctx rst)
+            )))
+         )))
+      ))
+      ( (TGround( tag (TypeSeq( TypeEOF p1 )) )) (
+         (set tt (TGround(
+            tag
+            (close(TypeSeq(
+               (close TypeEOF)
+               (maybe-deref(typecheck-unify-ctx( ctx p1 )))
+            )))
+         )))
+      ))
+      ( (TGround( tag (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (set tt (TGround(
+            tag
+            (close(TypeSeq(
+               (close(TypeSeq(
+                  (close TypeEOF)
+                  (maybe-deref(typecheck-unify-ctx( ctx p1 )))
+               )))
+               (maybe-deref(typecheck-unify-ctx( ctx p2 )))
+            )))
+         )))
+      ))
+      ( (TGround( tag (TypeSeq( (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) p3 )) )) (
+         (set tt (TGround(
+            tag
+            (close(TypeSeq(
+               (close(TypeSeq(
+                  (close(TypeSeq(
+                     (close TypeEOF)
+                     (maybe-deref(typecheck-unify-ctx( ctx p1 )))
+                  )))
+                  (maybe-deref(typecheck-unify-ctx( ctx p2 )))
+               )))
+               (maybe-deref(typecheck-unify-ctx( ctx p3 )))
+            )))
+         )))
+      ))
+      ( (TAnd( lt rt )) (
+         (set tt (TAnd(
+            (typecheck-unify-ctx( ctx lt ))
+            (typecheck-unify-ctx( ctx rt ))
+         )))
+      ))
+      ( _ () )
+   ))
    (close tt)
 )) Type[]);
 
