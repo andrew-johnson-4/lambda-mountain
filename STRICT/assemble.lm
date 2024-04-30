@@ -4,6 +4,114 @@ assemble-data-section                    := (: SNil S);
 assemble-argv-referenced                 := False_u8;
 
 compile := λ(). (: (tail(
+   (let global-ctx (cccontext::new()))
    ()
    ()
 )) Nil);
+
+#   (while preview_program (match preview_program (
+#      ()
+#      ( (pc (Global ('main (
+#            (Lambda( lhs rhs ))
+#         )))) (
+#         (set global_ctx (context::bind( global_ctx 'argc
+#            (typecheck-ascript( (GlobalVariable 'argc) (parse-type 'U64+GlobalVariable) ))
+#         )))
+#         (set global_ctx (context::bind( global_ctx 'argv
+#            (typecheck-ascript( (GlobalVariable 'argv) (parse-type 'String[?]+GlobalVariable) ))
+#         )))
+#         (set assemble-argv-referenced True)
+#         (set preview_program pc)
+#      ))
+#      ( (pc3 (Global (fname body))) (
+#         (match body (
+#            ()
+#            ( Nil (tail(
+#               (set output_pd (
+#                  (head output_pd)
+#                 (
+#                     (tail output_pd)
+#                     (label-case fname)
+#                     ': \n \t '.zero \s '16 \n
+#                  )
+#               ))
+#               (set global_ctx (context::bind( global_ctx fname
+#                  (typecheck-ascript( (GlobalVariable body) (typecheck-lookup body) ))
+#               )))
+#            )))
+#            ( (Lambda(lhs rhs)) (tail(
+#               (set global_ctx (context::bind( global_ctx fname
+#                  (typecheck-ascript( (GlobalFunction body) (typecheck-lookup body) ))
+#               )))
+#            )))
+#            ( (App( (App( (Literal ':) body-initial )) body-type )) (tail(
+#               (local mtype)
+#               (set mtype (typecheck-lookup body))
+#               (local mname)
+#               (set mname (mangle-identifier( fname mtype )))
+#               (set output_pd (
+#                  (head output_pd)
+#                  (
+#                     (tail output_pd)
+#                     mname ': \n
+#                     (assemble-initialize-data( body-initial mtype ))
+#                  )
+#               ))
+#               (set global_ctx (context::bind( global_ctx fname
+#                  (typecheck-ascript( (GlobalVariable mname) mtype ))
+#               )))
+#            )))
+#            ( other (tail(
+#               (fail (GlobalsMustBeAscripted other))
+#            )))
+#         ))
+#         (set preview_program pc3)
+#      ))
+#      ( (prog (Fragment( (Variable fname) fbody ))) (
+#         (set global_ctx (context::bind( global_ctx fname
+#            (typecheck-ascript( (Fragment fbody) (typecheck-lookup fbody) ))
+#         )))
+#         (set preview_program prog)
+#      ))
+#      ( (prog (Type( tn tb ))) (
+#         (set global_ctx (strict-codegen-type( global_ctx tn tb 0 )) )
+#         (set preview_program prog)
+#      ))
+
+#   (while program (match program (
+#      ()
+#      ( (pc (GExpr e)) (
+#         (set main_pd (compile-append( main_pd global_ctx e )))
+#         (set program pc)
+#      ))
+#      ( (pc (Global (fname body))) (
+#         (match body (
+#            ()
+#            ( Nil (
+#            ))
+#            ( (Lambda(lhs rhs)) (
+#               (if config-strict (
+#                  (set e1 (stack-define( global_ctx fname body )))
+#               ) (
+#                  (set e1 (define-calling-convention-s( global_ctx fname body )))
+#               ))
+#               (set output_pd (
+#                  ( (head output_pd) (expr::get-text e1) )
+#                  ( (tail output_pd) (expr::get-data e1) )
+#               ))
+#            ))
+#            ( (App( (App( (Literal ':) body-initial )) body-type )) (tail(
+#               (local mtype)
+#               (set mtype (typecheck-lookup body-initial))
+#               (local lhs)
+#               (set lhs (Variable fname))
+#               (typecheck-ascript( lhs mtype ))
+#               (set main_pd (compile-append(
+#                  main_pd global_ctx
+#                  (App( (App( (Variable 'set) lhs )) body-initial ))
+#               )))
+#            )))
+#         ))
+#         (set program pc)
+#      ))
+

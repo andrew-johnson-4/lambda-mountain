@@ -1,0 +1,18 @@
+
+type CCFragment (CCFEOF) | (CCFSeq( CCFragment[] , String , S ));
+
+non-zero := λ(: t CCFragment). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( CCFEOF (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+close := λ(: x CCFragment). (: (tail(
+   (mov( (malloc(sizeof CCFragment)) R8 ))
+   (mov( x 0_u64 (as R8 CCFragment[]) ))
+   (as R8 CCFragment[])
+)) CCFragment[]);
