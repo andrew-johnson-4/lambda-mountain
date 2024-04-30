@@ -917,14 +917,14 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
       ( (App( (Abs( (Var lname) ASTNil )) rhs )) (tail(
          (typecheck-infer-expr( tctx rhs Used ))
          (let tt (maybe-deref(typecheck-lookup rhs)))
-         (if (non-zero tt) (
+         (if (non-zero tt) (tail(
             (let rt (maybe-deref(as-local-variable(tt)))
             (set tctx (TCtxBind(
                (close tctx)
                lname
                rt
             )))
-         ) ())
+         )) ())
          (typecheck-ascript( term (maybe-deref(tnil())) ))
       )))
       ( (App( l r )) (tail(
