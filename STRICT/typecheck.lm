@@ -890,7 +890,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          )) ())
       )))
       ( (App( (Var 'sizeof_s) _ )) (
-         (typecheck-ascript( term (maybe-deref(parse-type 'U64_s)) ))
+         (typecheck-ascript( term (maybe-deref(as-constant(maybe-deref(parse-type 'U64_s)))) ))
       ))
       ( (App( (Var 'maybe-deref_s) r )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx r used ))))
