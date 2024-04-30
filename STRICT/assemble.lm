@@ -9,25 +9,28 @@ compile := λ(). (: (tail(
    (while (non-zero preview-program) (match preview-program (
       ()
       ( (Seq( rst (Glb( k rhs )) )) (tail(
-         (set global-ctx (maybe-deref(cccontext::bind(
+         (let global-ctx-2 (maybe-deref(cccontext::bind(
             global-ctx
             k
             (maybe-deref(typecheck-lookup rhs))
             (maybe-deref(ccfragment::new()))
          ))))
+         (set global-ctx global-ctx-2)
          (set preview-program rst)
       )))
       ( (Seq( rst (Fragment( k rhs )) )) (tail(
-         (set global-ctx (maybe-deref(cccontext::bind(
+         (let global-ctx-2 (maybe-deref(cccontext::bind(
             global-ctx
             k
             (maybe-deref(typecheck-lookup rhs))
             (maybe-deref(ccfragment::new()))
          ))))
+         (set global-ctx global-ctx-2)
          (set preview-program rst)
       )))
       ( (Seq( rst (ASTType( lhs rhs )) )) (tail(
-         (set global-ctx (maybe-deref(compile-type( global-ctx lhs rhs ))))
+         (let global-ctx-2 (maybe-deref(compile-type( global-ctx lhs rhs ))))
+         (set global-ctx global-ctx-2)
          (set preview-program rst)
       )))
       ( (Seq( rst _ )) (
