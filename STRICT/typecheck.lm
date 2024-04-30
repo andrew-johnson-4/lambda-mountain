@@ -317,7 +317,9 @@ typecheck := λ. (: (tail(
    )))
    #One Pass is Sound for Now
    (typecheck-infer-expr( global-type-context ast-parsed-program Unused))
+   (print 'Typecheck\sIter\n_s)
    (typecheck-assert-complete ast-parsed-program)
+   (print 'Typechecked\n_s)
 )) Nil);
 
 global-type-context := (: TCtxEOF TContext);
@@ -343,6 +345,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
    (match body (
       ()
       ( (Lit tag) (tail(
+         (typecheck-annotate-head-accessor( base-type ))
          (let rtype (TAnd( (close base-type) (parse-type tag) )) )
          (set typecheck-type-constructors (TConSeq(
             (close typecheck-type-constructors)
