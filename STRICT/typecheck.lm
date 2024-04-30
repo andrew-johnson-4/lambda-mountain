@@ -1319,7 +1319,11 @@ typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tai
             ) (
                (set found vt)
             ))
-            (set tctx TCtxEOF)
+            (if (is-arrow vt) (
+               (set tctx rst)
+            ) (
+               (set tctx TCtxEOF)
+            ))
          )) (
             (set tctx rst)
          ))

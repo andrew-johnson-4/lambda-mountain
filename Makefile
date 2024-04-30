@@ -1,6 +1,6 @@
 
 devv: prod strict
-	./strict --typecheck STRICT/cli.lm
+	./strict --typecheck tests/strict/typecheck3.lm
 
 start: prod strict
 	./strict --preprocess test.lm
