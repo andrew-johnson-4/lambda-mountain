@@ -1,6 +1,7 @@
 
 assemble-text-section                    := (: SNil S);
 assemble-data-section                    := (: SNil S);
+assemble-final                           := '_s;
 assemble-argv-referenced                 := False_u8;
 
 compile := λ(). (: (tail(
@@ -95,8 +96,7 @@ compile-finish := λ. (: (tail(
 )) Nil);
 
 compile-write := λ. (: (tail(
-   #(write-file (target (clone-rope output_pd)))
    ()
-   ()
+   (write-file( config-target assemble-final ))
 )) Nil);
 
