@@ -70,8 +70,9 @@ compile-expr := λ(: ctx CCContext)(: rhs AST). (: (tail(
 )) Nil);
 
 compile-finish := λ. (: (tail(
-#         (assemble-program-header())
-#         (before-main())
+   (let output SNil)
+   (set output (SCons( (close output) (compile-program-header()) )))
+   (set output (SCons( (close output) (compile-before-main()) )))
 #         (if assemble-argv-referenced (assemble-argv-prog-header()) ())
 #         (enter-function())
 #         (expr::get-frame main_pd)
@@ -91,8 +92,7 @@ compile-finish := λ. (: (tail(
 #      ((head output_pd) assemble-text-section)
 #      ((assemble-data-header()) (tail output_pd) assemble-data-section)
 #   ))
-   ()
-   ()
+   (set assemble-final (clone-rope output))
 )) Nil);
 
 compile-write := λ. (: (tail(
