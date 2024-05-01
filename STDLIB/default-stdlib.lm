@@ -349,7 +349,7 @@ clone-rope := λ(: s U8). (: (tail(
 length := λ(: s String). (: (tail(
    (let sz 0_u64)
    (while (head-string s) (tail(
-      (set sz (+( sz 1_u64 ))
+      (set sz (+( sz 1_u64 )))
       (set s (tail-string s))
    )))
    sz
