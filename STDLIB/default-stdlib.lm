@@ -357,12 +357,11 @@ length := λ(: s String). (: (tail(
 
 write-file := λ(: fp String)(: data String). (: (tail(
    #open file
-   (system-call( 2_u64 (as fp U64) 577_u64 420_u64 ))
-   (mov( RAX R10 ))
+   (let fd (system-call( 2_u64 (as fp U64) 577_u64 420_u64 )))
 
    #write to file
-   (system-call( 1_u64 (as R10 U64) (as data U64) (length data) ))
+   (system-call( 1_u64 fd (as data U64) (length data) ))
 
    #close file
-   (system-call( 3_u64 (as R10 U64) 0_u64 0_u64 ))
+   (system-call( 3_u64 fd 0_u64 0_u64 )) ()
 )) Nil);
