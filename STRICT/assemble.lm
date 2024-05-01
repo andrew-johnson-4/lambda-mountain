@@ -1,0 +1,102 @@
+
+assemble-text-section                    := (: SNil S);
+assemble-data-section                    := (: SNil S);
+assemble-final                           := '_s;
+assemble-argv-referenced                 := False_u8;
+
+compile := λ(). (: (tail(
+   (let global-ctx (maybe-deref(cccontext::new())))
+   (let preview-program ast-parsed-program)
+   (while (non-zero preview-program) (match preview-program (
+      ()
+      ( (Seq( rst (Glb( k rhs )) )) (tail(
+         (let global-ctx-2 (maybe-deref(cccontext::bind(
+            global-ctx
+            k
+            (maybe-deref(typecheck-lookup rhs))
+            (maybe-deref(ccfragment::new()))
+         ))))
+         (set global-ctx global-ctx-2)
+         (set preview-program rst)
+      )))
+      ( (Seq( rst (Fragment( k rhs )) )) (tail(
+         (let global-ctx-2 (maybe-deref(cccontext::bind(
+            global-ctx
+            k
+            (maybe-deref(typecheck-lookup rhs))
+            (maybe-deref(ccfragment::new()))
+         ))))
+         (set global-ctx global-ctx-2)
+         (set preview-program rst)
+      )))
+      ( (Seq( rst (ASTType( lhs rhs )) )) (tail(
+         (let global-ctx-2 (maybe-deref(compile-type( global-ctx lhs rhs ))))
+         (set global-ctx global-ctx-2)
+         (set preview-program rst)
+      )))
+      ( (Seq( rst _ )) (
+         (set preview-program rst)
+      ))
+   )))
+   (let program ast-parsed-program)
+   (while (non-zero preview-program) (match preview-program (
+      ()
+      ( (Seq( rst (Glb( k rhs )) )) (tail(
+         (compile-global( global-ctx k rhs ))
+         (set program rst)
+      )))
+      ( (Seq( rst e )) (tail(
+         (compile-expr( global-ctx e ))
+         (set program rst)
+      )))
+   )))
+   (compile-finish())
+   (compile-write())
+)) Nil);
+
+compile-type := λ(: ctx CCContext)(: lhs AST)(: rhs AST). (: (tail(
+   ()
+   (close ctx)
+)) CCContext[]);
+
+compile-global := λ(: ctx CCContext)(: k String)(: rhs AST). (: (tail(
+   ()
+   ()
+)) Nil);
+
+compile-expr := λ(: ctx CCContext)(: rhs AST). (: (tail(
+   ()
+   ()
+)) Nil);
+
+compile-finish := λ. (: (tail(
+   (let output SNil)
+   (set output (SCons( (close output) (compile-program-header()) )))
+   (set output (SCons( (close output) (compile-before-main()) )))
+#         (if assemble-argv-referenced (assemble-argv-prog-header()) ())
+#         (enter-function())
+#         (expr::get-frame main_pd)
+#         (expr::get-prog main_pd)
+#         (expr::get-unframe main_pd)
+#         (exit-cleanup())
+#         (head output_pd)
+#         (expr::get-text main_pd)
+#         (if config-nostd () (stdlib-functions()))
+#      )
+#      ( (if config-nostd () (stdlib-data()))
+#        (tail output_pd) (expr::get-data main_pd)
+#        (if assemble-argv-referenced (assemble-argv-data-header()) ())
+#      )
+#   ))
+#   (set output_pd (
+#      ((head output_pd) assemble-text-section)
+#      ((assemble-data-header()) (tail output_pd) assemble-data-section)
+#   ))
+   (set assemble-final (clone-rope output))
+)) Nil);
+
+compile-write := λ. (: (tail(
+   ()
+   (write-file( config-target assemble-final ))
+)) Nil);
+

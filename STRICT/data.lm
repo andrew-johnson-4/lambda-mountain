@@ -1,0 +1,15 @@
+
+compile-program-header := λ . (: (tail(
+   (let output SNil)
+   (set output (SCons( (close output) (close(SAtom '.global\s_start\n_s )) )))
+   (set output (SCons( (close output) (close(SAtom '.text\n_s )) )))
+   (set output (SCons( (close output) (close(SAtom '_start:\n_s )) )))
+   (set output (SCons( (close output) (close(SAtom '\tjmp\smain\n_s )) )))
+   (close output)
+)) S[]);
+
+compile-before-main := λ . (: (tail(
+   (let output SNil)
+   (set output (SCons( (close output) (close(SAtom 'main:\n_s )) )))
+   (close output)
+)) S[]);

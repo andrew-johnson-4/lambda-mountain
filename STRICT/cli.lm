@@ -13,7 +13,9 @@ import STRICT/preprocess.lm;
 import STRICT/expression.lm;
 import STRICT/codegen.lm;
 import STRICT/fragment.lm;
+import STRICT/context.lm;
 import STRICT/assemble.lm;
+import STRICT/data.lm;
 
 config-strict                := True_u8;
 config-preprocess            := True_u8;

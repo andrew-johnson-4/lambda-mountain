@@ -1,0 +1,28 @@
+
+type CCContext (CCCEOF) | (CCCtxBind( CCContext[] , String , Type , CCFragment ));
+
+non-zero := λ(: t CCContext). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( CCCEOF (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+close := λ(: x CCContext). (: (tail(
+   (mov( (malloc(sizeof CCContext)) R8 ))
+   (mov( x 0_u64 (as R8 CCContext[]) ))
+   (as R8 CCContext[])
+)) CCContext[]);
+
+cccontext::new := λ. (: (tail(
+   (let r CCCEOF)
+   (close r)
+)) CCContext[]);
+
+cccontext::bind := λ(: ctx CCContext)(: k String)(: kt Type)(: f CCFragment). (: (tail(
+   ()
+   (close ctx)
+)) CCContext[]);
