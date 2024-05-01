@@ -102,6 +102,7 @@ fn compile_strict() {
    let exit = Command::new("./production")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
+                      .arg("--nostd")
                       .arg("-o")
                       .arg("strict.s")
                       .arg("STRICT/cli.lm")
