@@ -49,6 +49,8 @@ compile := λ(). (: (tail(
          (set program rst)
       )))
    )))
+   (compile-finish())
+   (compile-write())
 )) Nil);
 
 compile-type := λ(: ctx CCContext)(: lhs AST)(: rhs AST). (: (tail(
@@ -66,4 +68,35 @@ compile-expr := λ(: ctx CCContext)(: rhs AST). (: (tail(
    ()
 )) Nil);
 
+compile-finish := λ. (: (tail(
+#         (assemble-program-header())
+#         (before-main())
+#         (if assemble-argv-referenced (assemble-argv-prog-header()) ())
+#         (enter-function())
+#         (expr::get-frame main_pd)
+#         (expr::get-prog main_pd)
+#         (expr::get-unframe main_pd)
+#         (exit-cleanup())
+#         (head output_pd)
+#         (expr::get-text main_pd)
+#         (if config-nostd () (stdlib-functions()))
+#      )
+#      ( (if config-nostd () (stdlib-data()))
+#        (tail output_pd) (expr::get-data main_pd)
+#        (if assemble-argv-referenced (assemble-argv-data-header()) ())
+#      )
+#   ))
+#   (set output_pd (
+#      ((head output_pd) assemble-text-section)
+#      ((assemble-data-header()) (tail output_pd) assemble-data-section)
+#   ))
+   ()
+   ()
+)) Nil);
+
+compile-write := λ. (: (tail(
+   #(write-file (target (clone-rope output_pd)))
+   ()
+   ()
+)) Nil);
 
