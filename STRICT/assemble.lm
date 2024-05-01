@@ -37,49 +37,33 @@ compile := λ(). (: (tail(
          (set preview-program rst)
       ))
    )))
-   ()
+   (let program ast-parsed-program)
+   (while (non-zero preview-program) (match preview-program (
+      ()
+      ( (Seq( rst (Glb( k rhs )) )) (tail(
+         (compile-global( global-ctx k rhs ))
+         (set program rst)
+      )))
+      ( (Seq( rst e )) (tail(
+         (compile-expr( global-ctx e ))
+         (set program rst)
+      )))
+   )))
 )) Nil);
 
 compile-type := λ(: ctx CCContext)(: lhs AST)(: rhs AST). (: (tail(
    ()
    (close ctx)
-)) CCContext[])
+)) CCContext[]);
 
+compile-global := λ(: ctx CCContext)(: k String)(: rhs AST). (: (tail(
+   ()
+   ()
+)) Nil);
 
-#   (while program (match program (
-#      ()
-#      ( (pc (GExpr e)) (
-#         (set main_pd (compile-append( main_pd global_ctx e )))
-#         (set program pc)
-#      ))
-#      ( (pc (Global (fname body))) (
-#         (match body (
-#            ()
-#            ( Nil (
-#            ))
-#            ( (Lambda(lhs rhs)) (
-#               (if config-strict (
-#                  (set e1 (stack-define( global_ctx fname body )))
-#               ) (
-#                  (set e1 (define-calling-convention-s( global_ctx fname body )))
-#               ))
-#               (set output_pd (
-#                  ( (head output_pd) (expr::get-text e1) )
-#                  ( (tail output_pd) (expr::get-data e1) )
-#               ))
-#            ))
-#            ( (App( (App( (Literal ':) body-initial )) body-type )) (tail(
-#               (local mtype)
-#               (set mtype (typecheck-lookup body-initial))
-#               (local lhs)
-#               (set lhs (Variable fname))
-#               (typecheck-ascript( lhs mtype ))
-#               (set main_pd (compile-append(
-#                  main_pd global_ctx
-#                  (App( (App( (Variable 'set) lhs )) body-initial ))
-#               )))
-#            )))
-#         ))
-#         (set program pc)
-#      ))
+compile-expr := λ(: ctx CCContext)(: rhs AST). (: (tail(
+   ()
+   ()
+)) Nil);
+
 
