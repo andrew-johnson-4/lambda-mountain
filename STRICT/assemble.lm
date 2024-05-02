@@ -74,12 +74,6 @@ compile-finish := λ. (: (tail(
    (set output (SCons( (close output) (close assemble-text-section) )))
    (set output (SCons( (close output) (compile-data-header()) )))
    (set output (SCons( (close output) (close assemble-data-section) )))
-   (if (==( assemble-argv-referenced True_u8 )) (
-      (set output (SCons(
-         (close output)
-         (compile-argv-data-header())
-      )))
-   ) ())
    (set assemble-final (clone-rope output))
 )) Nil);
 

@@ -22,28 +22,6 @@ compile-before-main := λ . (: (tail(
 
 compile-argv-text-header := λ . (: (tail(
    (let r SNil)
-   (set r (SCons( (close r) (close(SAtom '\tpop\s%r15\n_s)) )))
-   (set r (SCons( (close r) (close(SAtom '\tmov\s$argc,\s%r14\n_s)) )))
-   (set r (SCons( (close r) (close(SAtom '\tmov\s%r15,\s0\[%r14\]\n_s)) )))
-   (set r (SCons( (close r) (close(SAtom '\tmov\s$argv,\s%r14\n_s)) )))
-   (set r (SCons( (close r) (close(SAtom 'argv_populate_loop_begin:\n_s)) )))
-   (set r (SCons( (close r) (close(SAtom '\tcmp\s$0,\s%r15\n_s)) )))
-   (set r (SCons( (close r) (close(SAtom '\tje\sargv_populate_loop_end\n_s)) )))
-   (set r (SCons( (close r) (close(SAtom '\tpop\s%r13\n_s)) )))
-   (set r (SCons( (close r) (close(SAtom '\tmov\s%r13,\s0\[%r14\]\n_s)) )))
-   (set r (SCons( (close r) (close(SAtom '\tadd\s$8,\s%r14\n_s)) )))
-   (set r (SCons( (close r) (close(SAtom '\tdec\s%r15\n_s)) )))
-   (set r (SCons( (close r) (close(SAtom '\tjmp\sargv_populate_loop_begin\n_s)) )))
-   (set r (SCons( (close r) (close(SAtom 'argv_populate_loop_end:\n_s)) )))
-   (close r)
-)) S[]);
-
-compile-argv-data-header := λ . (: (tail(
-   (let r SNil)
-   (set r (SCons( (close r) (close(SAtom 'argc:\n_s)) )))
-   (set r (SCons( (close r) (close(SAtom '\t.zero\s8\n_s)) )))
-   (set r (SCons( (close r) (close(SAtom 'argv:\n_s)) )))
-   (set r (SCons( (close r) (close(SAtom '\t.zero\s8192\n_s)) )))
    (close r)
 )) S[]);
 
