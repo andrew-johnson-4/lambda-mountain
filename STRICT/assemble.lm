@@ -10,6 +10,7 @@ compile := λ(). (: (tail(
    (while (non-zero preview-program) (match preview-program (
       ()
       ( (Seq( rst (Glb( k rhs )) )) (tail(
+         (if (==( k 'main_s )) (set assemble-argv-referenced True_u8) ())
          (let global-ctx-2 (maybe-deref(cccontext::bind(
             global-ctx
             k
@@ -46,7 +47,7 @@ compile := λ(). (: (tail(
          (set program rst)
       )))
       ( (Seq( rst e )) (tail(
-         (compile-expr( global-ctx e ))
+         (compile-global( global-ctx e ))
          (set program rst)
       )))
    )))
@@ -59,39 +60,20 @@ compile-type := λ(: ctx CCContext)(: lhs AST)(: rhs AST). (: (tail(
    (close ctx)
 )) CCContext[]);
 
-compile-global := λ(: ctx CCContext)(: k String)(: rhs AST). (: (tail(
-   ()
-   ()
-)) Nil);
-
-compile-expr := λ(: ctx CCContext)(: rhs AST). (: (tail(
-   ()
-   ()
-)) Nil);
-
 compile-finish := λ. (: (tail(
    (let output SNil)
-   (set output (SCons( (close output) (compile-program-header()) )))
+   (set output (SCons( (close output) (compile-text-header()) )))
    (set output (SCons( (close output) (compile-before-main()) )))
-#         (if assemble-argv-referenced (assemble-argv-prog-header()) ())
-#         (enter-function())
-#         (expr::get-frame main_pd)
-#         (expr::get-prog main_pd)
-#         (expr::get-unframe main_pd)
-#         (exit-cleanup())
-#         (head output_pd)
-#         (expr::get-text main_pd)
-#         (if config-nostd () (stdlib-functions()))
-#      )
-#      ( (if config-nostd () (stdlib-data()))
-#        (tail output_pd) (expr::get-data main_pd)
-#        (if assemble-argv-referenced (assemble-argv-data-header()) ())
-#      )
-#   ))
-#   (set output_pd (
-#      ((head output_pd) assemble-text-section)
-#      ((assemble-data-header()) (tail output_pd) assemble-data-section)
-#   ))
+   (if (==( assemble-argv-referenced True_u8 )) (
+      (set output (SCons(
+         (close output)
+         (compile-argv-text-header())
+      )))
+   ) ())
+   (set output (SCons( (close output) (compile-exit-cleanup()) )))
+   (set output (SCons( (close output) (close assemble-text-section) )))
+   (set output (SCons( (close output) (compile-data-header()) )))
+   (set output (SCons( (close output) (close assemble-data-section) )))
    (set assemble-final (clone-rope output))
 )) Nil);
 
@@ -99,4 +81,32 @@ compile-write := λ. (: (tail(
    ()
    (write-file( config-target assemble-final ))
 )) Nil);
+
+compile-destructure-args := λ(: ctx CCContext)(: lhs AST)(: offset I64). (: (tail(
+   (match lhs (
+      ()
+      ( (App( rst (Asc( (Var k) kt )) )) (tail(
+         (let sz (max( (typecheck-sizeof kt) 8_u64 )))
+         (let new-offset (-( offset (as sz I64) )))
+         (let new-ctx (maybe-deref(cccontext::bind( 
+            ctx k kt (maybe-deref(ccfragment::local-variable new-offset))
+         ))))
+         (set ctx new-ctx)
+         (let new-ctx-2 (maybe-deref(compile-destructure-args( ctx rst new-offset ))))
+         (set ctx new-ctx-2)
+      )))
+      ( (Asc( (Var k) kt )) (tail(
+         (let sz (max( (typecheck-sizeof kt) 8_u64 )))
+         (let new-offset (-( offset (as sz I64) )))
+         (let new-ctx (maybe-deref(cccontext::bind( 
+            ctx k kt (maybe-deref(ccfragment::local-variable new-offset))
+         ))))
+         (set ctx new-ctx)
+         (let new-ctx-2 (maybe-deref(cccontext::bind( ctx 'offset_s (to-string new-offset) ))))
+         (set ctx new-ctx-2)
+      )))
+      ( _ () )
+   ))
+   (close ctx)
+)) CCContext[]);
 

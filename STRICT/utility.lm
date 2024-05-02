@@ -112,6 +112,29 @@ to-string := λ(: i U64). (: (tail(
    (clone-rope r)
 )) String);
 
+to-string := λ(: i I64). (: (tail(
+   (let r SNil)
+   (if (<( i 0_i64 )) (tail(
+      (set r (SAtom '-_s))
+      (set i (-( 0_i64 i )))
+   )) ())
+   (let c 0_u8)
+   (while (not(==( i 0_i64 ))) (
+      (let ci (+( (%( i 10_i64 )) 48_i64 )))
+      (set i (/( i 10_i64 )))
+      (mov( ci R8 ))
+      (mov( R8B c ))
+      (set r (SCons(
+         (close(SAtom(clone-rope c)))
+         (close r)
+      )))
+   ))
+   (if (non-zero r) () (
+      (set r (SAtom '0_s))
+   ))
+   (clone-rope r)
+)) String);
+
 uuid-counter := 0_u64;
 uuid := λ . (: (tail(
    (set uuid-counter (+( uuid-counter 1_u64 )))
@@ -197,6 +220,19 @@ dump-i := λ(: i U64). (: (tail(
    ))
    (clone-rope buff)
 )) String);
+
+to-i64 := λ(: s String). (: (tail(
+   (let negative False_u8)
+   (if (==( (head-string s) 46_u8 )) (tail(
+      (set negative True_u8)
+      (set s (tail-string s))
+   )) ())
+   (let base (as (to-u64 s) I64))
+   (if (==( negative True_u8 )) (
+      (set base (-( 0_i64 base )))
+   ) ())
+   base
+)) I64);
 
 to-u64 := λ(: s String). (: (tail(
    (let i 0_u64)

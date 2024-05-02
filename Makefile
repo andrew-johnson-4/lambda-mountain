@@ -1,6 +1,9 @@
 
 devv: prod strict
-	./strict STRICT/cli.lm
+	./strict -o tmp.s tests/strict/printU64.lm
+	as tmp.s -o tmp.o
+	ld tmp.o -o tmp
+	./tmp
 
 start: prod strict
 	./strict --preprocess test.lm

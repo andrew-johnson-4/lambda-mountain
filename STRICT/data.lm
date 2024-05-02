@@ -1,5 +1,5 @@
 
-compile-program-header := λ . (: (tail(
+compile-text-header := λ . (: (tail(
    (let output SNil)
    (set output (SCons( (close output) (close(SAtom '.global\s_start\n_s )) )))
    (set output (SCons( (close output) (close(SAtom '.text\n_s )) )))
@@ -8,8 +8,27 @@ compile-program-header := λ . (: (tail(
    (close output)
 )) S[]);
 
+compile-data-header := λ . (: (tail(
+   (let output SNil)
+   (set output (SCons( (close output) (close(SAtom '.data\n_s )) )))
+   (close output)
+)) S[]);
+
 compile-before-main := λ . (: (tail(
    (let output SNil)
    (set output (SCons( (close output) (close(SAtom 'main:\n_s )) )))
    (close output)
+)) S[]);
+
+compile-argv-text-header := λ . (: (tail(
+   (let r SNil)
+   (close r)
+)) S[]);
+
+compile-exit-cleanup := λ . (: (tail(
+   (let r SNil)
+   (set r (SCons( (close r) (close(SAtom '\tmov\s$60,\s%rax\n_s)) )))
+   (set r (SCons( (close r) (close(SAtom '\tmov\s$0,\s%rdi\n_s)) )))
+   (set r (SCons( (close r) (close(SAtom '\tsyscall\n_s)) )))
+   (close r)
 )) S[]);

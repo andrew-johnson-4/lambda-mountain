@@ -356,8 +356,10 @@ fragment inc := λ(: l Reg64). (: (.program( \t 'inc \s '% (.expression l) \n ))
 fragment dec := λ(: l Reg64). (: (.program( \t 'dec \s '% (.expression l) \n )) Nil);
 
 fragment div := λ(: l Reg64). (: (.program( \t 'div \s '% (.expression l) \n )) Nil);
+fragment idiv := λ(: l Reg64). (: (.program( \t 'idiv \s '% (.expression l) \n )) Nil);
 
 fragment mul := λ(: l Reg64). (: (.program( \t 'mul \s '% (.expression l) \n )) Nil);
+fragment imul := λ(: l Reg64). (: (.program( \t 'imul \s '% (.expression l) \n )) Nil);
 
 fragment add := λ(: src Constant+Literal+Sized<1>)(: dst LocalVariable). (: (.program( \t 'addb \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
 fragment add := λ(: src Constant+Literal+Sized<8>)(: dst Reg64). (: (.program( \t 'addq \s '$ (.expression src) , \s '% (.expression dst) \n )) Nil);
