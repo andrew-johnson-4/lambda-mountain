@@ -70,6 +70,7 @@ compile-finish := λ. (: (tail(
          (compile-argv-text-header())
       )))
    ) ())
+   (set output (SCons( (close output) (compile-exit-cleanup()) )))
    (set output (SCons( (close output) (close assemble-text-section) )))
    (set output (SCons( (close output) (close assemble-data-section) )))
    (if (==( assemble-argv-referenced True_u8 )) (
@@ -117,3 +118,12 @@ compile-argv-data-header := λ . (: (tail(
    (set r (SCons( (close r) (close(SAtom '\t.zero\s8192\n_s)) )))
    (close r)
 )) S[]);
+
+compile-exit-cleanup := λ . (: (tail(
+   (let r SNil)
+   (set r (SCons( (close r) (close(SAtom '\tmov\s$60,\s%rax\n_s)) )))
+   (set r (SCons( (close r) (close(SAtom '\tmov\s$0,\s%rdi\n_s)) )))
+   (set r (SCons( (close r) (close(SAtom '\tsyscall\n_s)) )))
+   (close r)
+)) S[]);
+
