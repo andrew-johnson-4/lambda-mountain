@@ -22,7 +22,7 @@ ccfragment::new := λ . (: (tail(
    (close r)
 )) CCFragment[]);
 
-ccfragment::local-variale := λ(: offset I64) . (: (tail(
+ccfragment::local-variable := λ(: offset I64) . (: (tail(
    (let r (CCFSeq(
       (close CCFEOF)
       'offset_s
