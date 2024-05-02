@@ -1,1 +1,42 @@
 
+#global binding
+compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
+   ()
+   (match term (
+      ()
+      ( (Abs( lhs rhs )) (tail(
+         (let ctx-2 (compile-destructure-args( ctx lhs )))
+         (set ctx ctx-2)
+         (let stack-offset (+( (to-i64(cccontext::get( ctx 'offset_s ))) -8_i64 )) )
+         (let e (compile-expr( ctx rhs stack-offset Return )))
+         #(set text ( text (mangle-identifier( fname (typecheck-lookup lmb) )) ': \n ))
+         #(set text ( text (expr::get-frame e2) ))
+         #(set text ( text (expr::get-prog e2) ))
+         #(set text ( text (expr::get-unframe e2) ))
+         #(set text ( text (\t 'ret \n) ))
+         #(set text ( text (expr::get-text e2) ))
+         #(local return)
+         #(set return (expr::new()))
+         #(set return (expr::set-text( return text )))
+         #(set return (expr::set-data( return (expr::get-data e2) )))
+      )))
+      ( _ (tail(
+         (print rhs)
+         (exit-error( 'Unrecognized\sCompile\sGlobal\n_s term ))
+      )))
+   ))
+)) Nil);
+
+#top expression
+compile-global := λ(: ctx CCContext)(: term AST). (: (tail(
+   (let e (maybe-deref(ccfragment::new())))
+   (close e)
+)) CCFragment[]);
+
+compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used). (: (tail(
+   (let e (maybe-deref(ccfragment::new())))
+   (close e)
+)) CCFragment[]);
+
+
+

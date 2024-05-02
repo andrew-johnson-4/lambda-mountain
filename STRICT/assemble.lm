@@ -46,7 +46,7 @@ compile := λ(). (: (tail(
          (set program rst)
       )))
       ( (Seq( rst e )) (tail(
-         (compile-expr( global-ctx e ))
+         (compile-global( global-ctx e ))
          (set program rst)
       )))
    )))
@@ -58,38 +58,6 @@ compile-type := λ(: ctx CCContext)(: lhs AST)(: rhs AST). (: (tail(
    ()
    (close ctx)
 )) CCContext[]);
-
-compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
-   ()
-   (match term (
-      ()
-      ( (Abs( lhs (Asc( rhs rhst )) )) (tail(
-         (let ctx-2 (compile-destructure-args( ctx lhs )))
-         (set ctx ctx-2)
-         (let stack-offset (+( (to-i64(cccontext::get( ctx 'offset_s ))) -8_i64 )) )
-         #(let e2 (compile-expr( ctx rhs stack-offset Return )))
-         #(set text ( text (mangle-identifier( fname (typecheck-lookup lmb) )) ': \n ))
-         #(set text ( text (expr::get-frame e2) ))
-         #(set text ( text (expr::get-prog e2) ))
-         #(set text ( text (expr::get-unframe e2) ))
-         #(set text ( text (\t 'ret \n) ))
-         #(set text ( text (expr::get-text e2) ))
-         #(local return)
-         #(set return (expr::new()))
-         #(set return (expr::set-text( return text )))
-         #(set return (expr::set-data( return (expr::get-data e2) )))
-      )))
-      ( _ (tail(
-         (print rhs)
-         (exit-error( 'Unrecognized\sCompile\sGlobal\n_s term ))
-      )))
-   ))
-)) Nil);
-
-compile-expr := λ(: ctx CCContext)(: rhs AST). (: (tail(
-   ()
-   ()
-)) Nil);
 
 compile-finish := λ. (: (tail(
    (let output SNil)
