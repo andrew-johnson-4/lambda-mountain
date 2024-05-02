@@ -85,7 +85,7 @@ compile-write := λ. (: (tail(
 compile-destructure-args := λ(: ctx CCContext)(: lhs AST)(: offset I64). (: (tail(
    (match lhs (
       ()
-      ( (App( rst (Asc( k kt )) )) (tail(
+      ( (App( rst (Asc( (Var k) kt )) )) (tail(
          (let sz (max( (typecheck-sizeof kt) 8_u64 )))
          (let new-offset (-( offset (as sz I64) )))
          (let new-ctx (maybe-deref(cccontext::bind( 
@@ -95,7 +95,7 @@ compile-destructure-args := λ(: ctx CCContext)(: lhs AST)(: offset I64). (: (ta
          (let new-ctx-2 (maybe-deref(compile-destructure-args( ctx rst new-offset ))))
          (set ctx new-ctx-2)
       )))
-      ( (Asc( k kt )) (tail(
+      ( (Asc( (Var k) kt )) (tail(
          (let sz (max( (typecheck-sizeof kt) 8_u64 )))
          (let new-offset (-( offset (as sz I64) )))
          (let new-ctx (maybe-deref(cccontext::bind( 
