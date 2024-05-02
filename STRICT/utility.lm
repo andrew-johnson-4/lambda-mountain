@@ -198,6 +198,19 @@ dump-i := λ(: i U64). (: (tail(
    (clone-rope buff)
 )) String);
 
+to-i64 := λ(: s String). (: (tail(
+   (let negative False_u8)
+   (if (==( (head-string s) 46_u8 )) (tail(
+      (set negative True_u8)
+      (set s (tail-string s))
+   )) ())
+   (let base (as (to-u64 s) I64))
+   (if (==( negative True_u8 )) (
+      (set base (-( 0_i64 base )))
+   ) ())
+   base
+)) I64);
+
 to-u64 := λ(: s String). (: (tail(
    (let i 0_u64)
    (while (head-string s) (tail(

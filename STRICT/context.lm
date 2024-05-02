@@ -26,3 +26,8 @@ cccontext::bind := λ(: ctx CCContext)(: k String)(: kt Type)(: f CCFragment). (
    ()
    (close ctx)
 )) CCContext[]);
+
+cccontext::get := λ(: ctx CCContext)(: k String). (: (tail(
+   ()
+   'TODO\scccontext::get_s
+)) String);
