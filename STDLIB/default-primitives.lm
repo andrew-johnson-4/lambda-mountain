@@ -93,6 +93,18 @@ fragment > := λ(: l LocalVariable+U64)(: r Constant+U64). (: (
    (as RAX U64)
 )) U64);
 
+< := λ(: l I64)(: r I64). (: (tail(
+   (gensym-label end)
+   (mov( 1_u64 RAX ))
+   (mov( l R8 ))
+   (mov( r R9 ))
+   (cmp( R9 R8 ))
+   (jl end)
+   (mov( 0_u64 RAX ))
+   (label end)
+   (as RAX U64)
+)) U64);
+
 + := λ(: l U64)(: r U64). (: (tail(
    (mov( l R8 ))
    (mov( r RAX ))

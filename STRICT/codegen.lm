@@ -5,9 +5,9 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
    (match term (
       ()
       ( (Abs( lhs rhs )) (tail(
-         (let ctx-2 (compile-destructure-args( ctx lhs )))
+         (let ctx-2 (compile-destructure-args( ctx lhs 0_i64 )))
          (set ctx ctx-2)
-         (let stack-offset (+( (to-i64(cccontext::get( ctx 'offset_s ))) -8_i64 )) )
+         (let stack-offset (to-i64(cccontext::get( ctx 'offset_s ))))
          (let e (compile-expr( ctx rhs stack-offset Return )))
          #(set text ( text (mangle-identifier( fname (typecheck-lookup lmb) )) ': \n ))
          #(set text ( text (expr::get-frame e2) ))
