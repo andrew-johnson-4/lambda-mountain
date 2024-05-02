@@ -82,31 +82,3 @@ compile-write := λ. (: (tail(
    (write-file( config-target assemble-final ))
 )) Nil);
 
-compile-destructure-args := λ(: ctx CCContext)(: lhs AST)(: offset I64). (: (tail(
-   (match lhs (
-      ()
-      ( (App( rst (Asc( (Var k) kt )) )) (tail(
-         (let sz (max( (typecheck-sizeof kt) 8_u64 )))
-         (let new-offset (-( offset (as sz I64) )))
-         (let new-ctx (maybe-deref(cccontext::bind( 
-            ctx k kt (maybe-deref(ccfragment::local-variable new-offset))
-         ))))
-         (set ctx new-ctx)
-         (let new-ctx-2 (maybe-deref(compile-destructure-args( ctx rst new-offset ))))
-         (set ctx new-ctx-2)
-      )))
-      ( (Asc( (Var k) kt )) (tail(
-         (let sz (max( (typecheck-sizeof kt) 8_u64 )))
-         (let new-offset (-( offset (as sz I64) )))
-         (let new-ctx (maybe-deref(cccontext::bind( 
-            ctx k kt (maybe-deref(ccfragment::local-variable new-offset))
-         ))))
-         (set ctx new-ctx)
-         (let new-ctx-2 (maybe-deref(cccontext::bind( ctx 'offset_s (to-string new-offset) ))))
-         (set ctx new-ctx-2)
-      )))
-      ( _ () )
-   ))
-   (close ctx)
-)) CCContext[]);
-
