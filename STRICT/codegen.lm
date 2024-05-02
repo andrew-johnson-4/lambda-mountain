@@ -35,6 +35,10 @@ compile-global := λ(: ctx CCContext)(: term AST). (: (tail(
 
 compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used). (: (tail(
    (let e (maybe-deref(ccfragment::new())))
+   (match term (
+      ()
+      ( u (exit-error( 'compile-expr\sUnsupported\sExpression_s term )))
+   ))
    (close e)
 )) CCFragment[]);
 
