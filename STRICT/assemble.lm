@@ -40,7 +40,7 @@ compile := λ(). (: (tail(
       ))
    )))
    (let program ast-parsed-program)
-   (while (non-zero preview-program) (match program (
+   (while (non-zero program) (match program (
       ()
       ( (Seq( rst (Glb( k rhs )) )) (tail(
          (compile-global( global-ctx k rhs ))
