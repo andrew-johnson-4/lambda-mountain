@@ -141,11 +141,27 @@ fragment > := λ(: l LocalVariable+U64)(: r Constant+U64). (: (
    (as RDX U64)
 )) U64);
 
+% := λ(: l I64)(: r I64). (: (tail(
+   (mov( 0_u64 RDX ))
+   (mov( l RAX ))
+   (mov( r R8 ))
+   (idiv( R8 ))
+   (as RDX U64)
+)) U64);
+
 / := λ(: l U64)(: r U64). (: (tail(
    (mov( 0_u64 RDX ))
    (mov( l RAX ))
    (mov( r R8 ))
    (div( R8 ))
+   (as RAX U64)
+)) U64);
+
+/ := λ(: l I64)(: r I64). (: (tail(
+   (mov( 0_u64 RDX ))
+   (mov( l RAX ))
+   (mov( r R8 ))
+   (idiv( R8 ))
    (as RAX U64)
 )) U64);
 
