@@ -110,7 +110,8 @@ compile-destructure-args := λ(: ctx CCContext)(: lhs AST)(: offset I64). (: (ta
 compile-stack-call := λ(: ctx CCContext)(: function-name String)(: args AST)(: offset I64). (: (tail(
    (let r (maybe-deref(ccfragment::new())))
    (print 'TODO:\sApply\sFunction\n_s)
-   (print term)
+   (print function-name)(print '\n_s)
+   (print args)
    (exit 1_u64)
    (close r)
 )) CCFragment[]);
@@ -118,7 +119,8 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: args AST)(: 
 compile-constructor := λ(: ctx CCContext)(: function-name String)(: args AST)(: offset I64). (: (tail(
    (let r (maybe-deref(ccfragment::new())))
    (print 'TODO:\sApply\sConstructor\n_s)
-   (print term)
+   (print function-name)(print '\n_s)
+   (print args)
    (exit 1_u64)
    (close r)
 #                        (set e1 (compile-push-rvalue( ctx r offset )))
