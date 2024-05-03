@@ -49,7 +49,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
       ( (App( f a )) (
          (match (maybe-deref(typecheck-slot( (maybe-deref(typecheck-lookup f)) '->_s ))) (
             ()
-            ( (TGround( '->_s _ )) (tail(
+            ( (TGround( '->_s _ )) (
                (match f (
                   ()
                   ( (Var fname) (tail(
@@ -57,22 +57,11 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
                      (set e e1)
                   )))
                   ( (Lit fname) (tail(
-                     (print 'TODO:\sApply\sConstructor\n_s)
-                     (print term)
-                     (exit 1_u64)
+                     (let e1 (maybe-deref(compile-constructor( ctx fname a stack-offset ))))
+                     (set e e1)
                   )))
                ))
-#                     ( (Literal tag) (tail(
-#                        (set e1 (compile-push-rvalue( ctx r offset )))
-#                        (set e2 (fragment-apply( ctx 'push (And( (typecheck-lookup e) DontChain)) (() e1) e1 )))
-#                        (local sz)
-#                        (set sz (typecheck-sizeof(typecheck-lookup e)))
-#                        (set offset (expr::get-offset e2))
-#                        (set offset (i2s(add( (inv(s2i( sz ))) (s2i offset) ))))
-#                        (set e2 (expr::set-type( e2 StackVariable )))
-#                        (set e2 (expr::set-offset( e2 offset )))
-#                        e2
-            )))
+            ))
             ( _ (
                (if (==( used Used )) (
                   (exit-error( 'Raw\sCons\sCells\sNot\sPermitted\sIn\sStrict\sMode_s term ))
@@ -126,4 +115,19 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: args AST)(: 
    (close r)
 )) CCFragment[]);
 
-
+compile-constructor := λ(: ctx CCContext)(: function-name String)(: args AST)(: offset I64). (: (tail(
+   (let r (maybe-deref(ccfragment::new())))
+   (print 'TODO:\sApply\sConstructor\n_s)
+   (print term)
+   (exit 1_u64)
+   (close r)
+#                        (set e1 (compile-push-rvalue( ctx r offset )))
+#                        (set e2 (fragment-apply( ctx 'push (And( (typecheck-lookup e) DontChain)) (() e1) e1 )))
+#                        (local sz)
+#                        (set sz (typecheck-sizeof(typecheck-lookup e)))
+#                        (set offset (expr::get-offset e2))
+#                        (set offset (i2s(add( (inv(s2i( sz ))) (s2i offset) ))))
+#                        (set e2 (expr::set-type( e2 StackVariable )))
+#                        (set e2 (expr::set-offset( e2 offset )))
+#                        e2
+)) CCFragment[]);
