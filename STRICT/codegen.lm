@@ -37,6 +37,10 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
    (let e (maybe-deref(ccfragment::new())))
    (match term (
       ()
+      ( (Asc( t tt )) (tail(
+         (let e1 (maybe-deref(compile-expr( ctx t stack-offset used ))))
+         (set e e1)
+      )))
       ( (App( (Var 'tail_s) (App( lt rt )) )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx term stack-offset Unused ))))
          (let e2 (maybe-deref(compile-expr( (maybe-deref(ccfragment::get-context e1)) term (ccfragment::get-offset e1) Unused ))))
