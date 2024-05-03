@@ -5,10 +5,10 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
    (match term (
       ()
       ( (Abs( lhs rhs )) (tail(
-         (let ctx-2 (compile-destructure-args( ctx lhs 0_i64 )))
+         (let ctx-2 (maybe-deref(compile-destructure-args( ctx lhs 0_i64 ))))
          (set ctx ctx-2)
-         (let stack-offset (to-i64(cccontext::get( ctx 'offset_s ))))
-         (let e (compile-expr( ctx rhs stack-offset Return )))
+         (let stack-offset (cccontext::get-offset( ctx )))
+         (let e (maybe-deref(compile-expr( ctx rhs stack-offset Return ))))
          #(set text ( text (mangle-identifier( fname (typecheck-lookup lmb) )) ': \n ))
          #(set text ( text (expr::get-frame e2) ))
          #(set text ( text (expr::get-prog e2) ))
@@ -37,6 +37,12 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
    (let e (maybe-deref(ccfragment::new())))
    (match term (
       ()
+      ( (App( (Var 'tail_s) (App( lt rt )) )) (tail(
+         (let e1 (maybe-deref(compile-expr( ctx term stack-offset Unused ))))
+         (let e2 (maybe-deref(compile-expr( (maybe-deref(ccfragment::get-context e1)) term (ccfragment::get-offset e1) Unused ))))
+         (let e12 (maybe-deref(ccfragment::chain( e1 e2 ))))
+         (set e e12)
+      )))
       ( u (exit-error( 'compile-expr\sUnsupported\sExpression_s term )))
    ))
    (close e)

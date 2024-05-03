@@ -36,3 +36,8 @@ cccontext::get := λ(: ctx CCContext)(: k String). (: (tail(
    ()
    'TODO\scccontext::get_s
 )) String);
+
+cccontext::get-offset := λ(: ctx CCContext). (: (tail(
+   ()
+   0_i64
+)) I64);

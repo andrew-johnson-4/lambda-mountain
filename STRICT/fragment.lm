@@ -30,3 +30,18 @@ ccfragment::local-variable := λ(: offset I64) . (: (tail(
    )))
    (close r)
 )) CCFragment[]);
+
+ccfragment::get-context := λ(: e CCFragment) . (: (tail(
+   (let r (maybe-deref(cccontext::new())))
+   (close r)
+)) CCContext[]);
+
+ccfragment::get-offset := λ(: ctx CCFragment). (: (tail(
+   ()
+   0_i64
+)) I64);
+
+ccfragment::chain := λ(: l CCFragment)(: r CCFragment). (: (tail(
+   ()
+   (close l)
+)) CCFragment[]);
