@@ -317,9 +317,7 @@ typecheck := λ. (: (tail(
    )))
    #One Pass is Sound for Now
    (typecheck-infer-expr( global-type-context ast-parsed-program Unused))
-   (print 'Typecheck\sIter\n_s)
    (typecheck-assert-complete ast-parsed-program)
-   (print 'Typechecked\n_s)
 )) Nil);
 
 global-type-context := (: TCtxEOF TContext);

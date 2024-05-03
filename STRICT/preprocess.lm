@@ -57,7 +57,6 @@ non-zero := λ(: x IndexList). (: (tail(
 preprocess := λ. (: (tail(
    (preprocess-index-typedefs ast-parsed-program)
    (let program (maybe-deref(preprocess-apply ast-parsed-program)))
-   (print 'Preprocessed\n_s)
    (set ast-parsed-program program)
 )) Nil);
 
