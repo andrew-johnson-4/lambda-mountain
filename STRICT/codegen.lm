@@ -70,7 +70,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
 #                        e2
             )))
             ( _ (
-               (if (==( (.0 used) (.0 Used) )) (
+               (if (==( used Used )) (
                   (exit-error( 'Raw\sCons\sCells\sNot\sPermitted\sIn\sStrict\sMode_s term ))
                ) (tail(
                   (print 'TODO:\sSequence\n_s)
