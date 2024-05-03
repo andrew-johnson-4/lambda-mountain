@@ -5,10 +5,10 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
    (match term (
       ()
       ( (Abs( lhs rhs )) (tail(
-         (let ctx-2 (compile-destructure-args( ctx lhs 0_i64 )))
+         (let ctx-2 (maybe-deref(compile-destructure-args( ctx lhs 0_i64 ))))
          (set ctx ctx-2)
-         (let stack-offset (to-i64(cccontext::get( ctx 'offset_s ))))
-         (let e (compile-expr( ctx rhs stack-offset Return )))
+         (let stack-offset (cccontext::get-offset( ctx )))
+         (let e (maybe-deref(compile-expr( ctx rhs stack-offset Return ))))
          #(set text ( text (mangle-identifier( fname (typecheck-lookup lmb) )) ': \n ))
          #(set text ( text (expr::get-frame e2) ))
          #(set text ( text (expr::get-prog e2) ))
@@ -20,10 +20,9 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
          #(set return (expr::set-text( return text )))
          #(set return (expr::set-data( return (expr::get-data e2) )))
       )))
-      ( _ (tail(
-         (print rhs)
+      ( _ (
          (exit-error( 'Unrecognized\sCompile\sGlobal\n_s term ))
-      )))
+      ))
    ))
 )) Nil);
 
@@ -35,8 +34,48 @@ compile-global := λ(: ctx CCContext)(: term AST). (: (tail(
 
 compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used). (: (tail(
    (let e (maybe-deref(ccfragment::new())))
+   (match term (
+      ()
+      ( (Asc( t tt )) (tail(
+         (let e1 (maybe-deref(compile-expr( ctx t stack-offset used ))))
+         (set e e1)
+      )))
+      ( (App( (Var 'tail_s) (App( lt rt )) )) (tail(
+         (let e1 (maybe-deref(compile-expr( ctx lt stack-offset Unused ))))
+         (let e2 (maybe-deref(compile-expr( (maybe-deref(ccfragment::get-context e1)) rt (ccfragment::get-offset e1) Unused ))))
+         (let e12 (maybe-deref(ccfragment::chain( e1 e2 ))))
+         (set e e12)
+      )))
+      ( u (exit-error( 'compile-expr\sUnsupported\sExpression_s term )))
+   ))
    (close e)
 )) CCFragment[]);
 
-
-
+compile-destructure-args := λ(: ctx CCContext)(: lhs AST)(: offset I64). (: (tail(
+   ()
+   (match lhs (
+      ()
+      ( (App( rst (Asc( (Var k) kt )) )) (tail(
+         (let sz (max( (typecheck-sizeof kt) 8_u64 )))
+         (let new-offset (-( offset (as sz I64) )))
+         (let new-ctx (maybe-deref(cccontext::bind(
+            ctx k kt (maybe-deref(ccfragment::local-variable new-offset))
+         ))))
+         (set ctx new-ctx)
+         (let new-ctx-2 (maybe-deref(compile-destructure-args( ctx rst new-offset ))))
+         (set ctx new-ctx-2)
+      )))
+      ( (Asc( (Var k) kt )) (tail(
+         (let sz (max( (typecheck-sizeof kt) 8_u64 )))
+         (let new-offset (-( offset (as sz I64) )))
+         (let new-ctx (maybe-deref(cccontext::bind(
+            ctx k kt (maybe-deref(ccfragment::local-variable new-offset))
+         ))))
+         (set ctx new-ctx)
+         (let new-ctx-2 (maybe-deref(cccontext::bind( ctx 'offset_s (to-string new-offset) ))))
+         (set ctx new-ctx-2)
+      )))
+      ( _ () )
+   ))
+   (close ctx)
+)) CCContext[]);
