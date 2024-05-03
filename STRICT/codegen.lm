@@ -42,9 +42,43 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
       )))
       ( (App( (Var 'tail_s) (App( lt rt )) )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx lt stack-offset Unused ))))
-         (let e2 (maybe-deref(compile-expr( (maybe-deref(ccfragment::get-context e1)) rt (ccfragment::get-offset e1) Unused ))))
+         (let e2 (maybe-deref(compile-expr( (maybe-deref(ccfragment::get-context e1)) rt (ccfragment::get-offset e1) used ))))
          (let e12 (maybe-deref(ccfragment::chain( e1 e2 ))))
          (set e e12)
+      )))
+      ( (App( f a )) (tail(
+         (match (maybe-deref(typecheck-slot( (maybe-deref(typecheck-lookup f)) '->_s ))) (
+            ()
+            ( (TGround( '->_s _ )) (tail(
+               (print 'TODO:\sApply\sFunction\sOr\sConstructor\n_s)
+               (print term)
+               (exit 1_u64)
+#                     ( (Variable fname) (tail(
+#                        (set e1 (stack-call( ctx fname r offset )))
+#                        (set e1 (expr::set-type( e1 (typecheck-lookup e) )))
+#                        e1
+#                     )))
+#                     ( (Literal tag) (tail(
+#                        (set e1 (compile-push-rvalue( ctx r offset )))
+#                        (set e2 (fragment-apply( ctx 'push (And( (typecheck-lookup e) DontChain)) (() e1) e1 )))
+#                        (local sz)
+#                        (set sz (typecheck-sizeof(typecheck-lookup e)))
+#                        (set offset (expr::get-offset e2))
+#                        (set offset (i2s(add( (inv(s2i( sz ))) (s2i offset) ))))
+#                        (set e2 (expr::set-type( e2 StackVariable )))
+#                        (set e2 (expr::set-offset( e2 offset )))
+#                        e2
+            )))
+            ( _ (
+               (if (==( (.0 used) (.0 Used) )) (
+                  (exit-error( 'Raw\sCons\sCells\sNot\sPermitted\sIn\sStrict\sMode_s term ))
+               ) (tail(
+                  (print 'TODO:\sSequence\n_s)
+                  (print term)
+                  (exit 1_u64)
+               ))) 
+            ))
+         ))
       )))
       ( u (exit-error( 'compile-expr\sUnsupported\sExpression_s term )))
    ))
