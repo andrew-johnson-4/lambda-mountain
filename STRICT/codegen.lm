@@ -46,7 +46,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (let e12 (maybe-deref(ccfragment::chain( e1 e2 ))))
          (set e e12)
       )))
-      ( (App( f a )) (tail(
+      ( (App( f a )) (
          (match (maybe-deref(typecheck-slot( (maybe-deref(typecheck-lookup f)) '->_s ))) (
             ()
             ( (TGround( '->_s _ )) (tail(
@@ -79,7 +79,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
                ))) 
             ))
          ))
-      )))
+      ))
       ( u (exit-error( 'compile-expr\sUnsupported\sExpression_s term )))
    ))
    (close e)
