@@ -53,6 +53,14 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (let e12 (maybe-deref(ccfragment::chain( e1 e2 ))))
          (set e e12)
       )))
+      ( (App( (App( (Var 'while_s) cond )) body )) (tail(
+         ()
+         ()
+      )))
+      ( (App( (App( (App( (Var 'if_s) cond )) t )) f )) (tail(
+         ()
+         ()
+      )))
       ( (App( (Abs( (Var lhs) ASTNil )) rhs )) (tail(
          (print 'TODO:\sLet\sBinding\n_s)
          ()
