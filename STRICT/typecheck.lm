@@ -293,6 +293,7 @@ typecheck-typeof-lhs := λ(: lhs AST). (: (tail(
       )))
       ( _ (exit-error( 'Unknown\sLHS_s lhs )))
    ))
+   (print 'TypeofLHS\s_s)(print r)(print lhs)(print '\n_s)
    (close r)
 )) Type[]);
 

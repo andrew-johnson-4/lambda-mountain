@@ -6,6 +6,7 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
    (match term (
       ()
       ( (Abs( lhs rhs )) (tail(
+         (print 'Compile\sGlobal\s_s)(print k)(print kt)(print lhs)(print '\n_s)
          (let ctx-2 (maybe-deref(compile-destructure-args( ctx lhs 0_i64 ))))
          (set ctx ctx-2)
          (let stack-offset (cccontext::get-offset( ctx )))

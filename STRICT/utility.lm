@@ -331,10 +331,8 @@ mangle-identifier := λ(: k String). (: (tail(
 )) S[]);
 
 mangle-identifier := λ(: k String)(: kt Type). (: (tail(
-   (print 'Mangle\s_s)(print k)(print kt)(print '\n_s)
    (let cs (maybe-deref(mangle-identifier( k ))))
    (set cs (SCons( (close cs) (close(SAtom( '_CL__s ))) )))
    (set cs (SCons( (close cs) (mangle-identifier kt) )))
-   (print 'Mangled\s_s)(print (clone-rope cs))(print '\n_s)
    (clone-rope cs)
 )) String);
