@@ -2,7 +2,7 @@
 #global binding
 compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
    ()
-   (let kt (maybde-deref(typecheck-lookup term)))
+   (let kt (maybe-deref(typecheck-lookup term)))
    (match term (
       ()
       ( (Abs( lhs rhs )) (tail(
