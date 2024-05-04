@@ -43,6 +43,14 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
       ()
       ( ASTNil () )
       ( ASTEOF () )
+      ( (Var( id )) (tail(
+         (print 'TODO:\sVariable\n_s)
+         ()
+      )))
+      ( (Lit( id )) (tail(
+         (print 'TODO:\sLiteral\n_s)
+         ()
+      )))
       ( (Asc( t tt )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset used ))))
          (set e e1)
@@ -54,11 +62,11 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (set e e12)
       )))
       ( (App( (App( (Var 'while_s) cond )) body )) (tail(
-         ()
+         (print 'TODO:\sWhile\n_s)
          ()
       )))
       ( (App( (App( (App( (Var 'if_s) cond )) t )) f )) (tail(
-         ()
+         (print 'TODO:\sIf\n_s)
          ()
       )))
       ( (App( (Abs( (Var lhs) ASTNil )) rhs )) (tail(
