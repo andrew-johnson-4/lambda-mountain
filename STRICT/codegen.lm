@@ -2,6 +2,7 @@
 #global binding
 compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
    ()
+   (let kt (maybde-deref(typecheck-lookup term)))
    (match term (
       ()
       ( (Abs( lhs rhs )) (tail(
@@ -10,7 +11,7 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
          (let stack-offset (cccontext::get-offset( ctx )))
          (let e (maybe-deref(compile-expr( ctx rhs stack-offset Return ))))
          (let text SNil)
-         (set text (SCons( (close text) (close(SAtom( (mangle-identifier( fname (typecheck-lookup term) )) ))) )))
+         (set text (SCons( (close text) (close(SAtom( (mangle-identifier( k kt )) ))) )))
          (let frame (maybe-deref(ccfragment::get( e 'frame_s ))))
          (set text (SCons( (close text) (close frame) )))
          (let program (maybe-deref(ccfragment::get( e 'program_s ))))

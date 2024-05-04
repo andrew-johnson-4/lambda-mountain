@@ -261,3 +261,8 @@ max := λ(: l U64)(: r U64). (: (tail(
    (if (<( l r )) (set l r) ())
    l
 )) U64);
+
+mangle-identifier := λ(: k String)(: kt Type). (: (tail(
+   ()
+   k
+)) String);
