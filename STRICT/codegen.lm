@@ -21,9 +21,9 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
          (set text (SCons( (close text) (close(SAtom '\tret\n_s)) )))
          (let text-etc (maybe-deref(ccfragment::get( e 'text_s ))))
          (set text (SCons( (close text) (close text-etc) )))
-#         (let data (maybe-deref(ccfragment::get( e 'data_s ))))
-#         (set assemble-text-section (SCons( (close assemble-text-section) text )))
-#         (set assemble-data-section (SCons( (close assemble-data-section) data )))
+         (let data (maybe-deref(ccfragment::get( e 'data_s ))))
+         (set assemble-text-section (SCons( (close assemble-text-section) (close text) )))
+         (set assemble-data-section (SCons( (close assemble-data-section) (close data) )))
       )))
       ( _ (
          (exit-error( 'Unrecognized\sCompile\sGlobal\n_s term ))
