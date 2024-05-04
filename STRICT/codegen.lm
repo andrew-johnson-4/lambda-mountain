@@ -71,9 +71,10 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
                (if (==( used Used )) (
                   (exit-error( 'Raw\sCons\sCells\sNot\sPermitted\sIn\sStrict\sMode_s term ))
                ) (tail(
-                  (print 'TODO:\sSequence\n_s)
-                  (print term)
-                  (exit 1_u64)
+                  (let e1 (maybe-deref(compile-expr( ctx f stack-offset Unused ))))
+                  (let e2 (maybe-deref(compile-expr( (maybe-deref(ccfragment::get-context e1)) a (ccfragment::get-offset e1) used ))))
+                  (let e12 (maybe-deref(ccfragment::chain( e1 e2 ))))
+                  (set e e12)
                ))) 
             ))
          ))
@@ -120,10 +121,6 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: args AST)(: 
    (set call (SCons( (close call) (close(SAtom '\o\scall\s_s)) )))
    (set call (SCons( (close call) (close(SAtom function-name)) )))
    (set call (SCons( (close call) (close(SAtom '\n_s)) )))
-   (print 'TODO:\sApply\sFunction\n_s)
-   (print function-name)(print '\n_s)
-   (print args)
-   (exit 1_u64)
    (close r)
 
 
