@@ -25,6 +25,10 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
          (set assemble-text-section (SCons( (close assemble-text-section) (close text) )))
          (set assemble-data-section (SCons( (close assemble-data-section) (close data) )))
       )))
+      ( (Asc( t tt )) (tail(
+         (print 'TODO:\sDeclare\sGlobal\sVariable\n_s)
+         ()
+      )))
       ( _ (
          (exit-error( 'Unrecognized\sCompile\sGlobal\n_s term ))
       ))
