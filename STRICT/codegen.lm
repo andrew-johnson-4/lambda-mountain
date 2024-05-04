@@ -110,10 +110,43 @@ compile-destructure-args := λ(: ctx CCContext)(: lhs AST)(: offset I64). (: (ta
 compile-stack-call := λ(: ctx CCContext)(: function-name String)(: args AST)(: offset I64). (: (tail(
    (let r (maybe-deref(ccfragment::new())))
    (let f (maybe-deref(cccontext::lookup( ctx function-name (maybe-deref(typecheck-lookup args)) ))))
+   (let push-args (maybe-deref(compile-stack-call-push-args( ctx args offset 0_i64 ))))
+   (let call SNil)
+   (set call (SCons( (close call) (close(SAtom '\o\scall\s_s)) )))
+   (set call (SCons( (close call) (close(SAtom function-name)) )))
+   (set call (SCons( (close call) (close(SAtom '\n_s)) )))
    (print 'TODO:\sApply\sFunction\n_s)
    (print function-name)(print '\n_s)
    (print args)
    (exit 1_u64)
+   (close r)
+
+
+#         (set e-call (expr::set-prog( e-call (
+#            (expr::get-frame e-args)
+#            (expr::get-prog e-args)
+#            (enter-function())
+#            (\t 'call \s (mangle-identifier( function-name (typecheck-lookup body) )) \n)
+#            (\t 'mov \s '%rbp, \s '%rsp              \n
+#             \t 'pop \s '%rbp                        \n)
+#            (expr::get-unframe e-args)
+#         ))))
+#         (set e-call (expr::set-expr( e-call (
+#            (match (typecheck-sizeof (typecheck-rvalue (typecheck-lookup body))) (
+#               ()
+#               ( 1 'al )
+#               ( 2 'ax )
+#               ( 4 'eax )
+#               ( 8 'rax )
+#            ))
+#         ))))
+#         (set e-call (expr::set-context( e-call ctx )))
+#         (set e-call (expr::set-offset( e-call offset )))
+
+)) CCFragment[]);
+
+compile-stack-call-push-args := λ(: ctx CCContext)(: args AST)(: inner-offset I64)(: outer-offset I64). (: (tail(
+   (let r (maybe-deref(ccfragment::new())))
    (close r)
 )) CCFragment[]);
 
