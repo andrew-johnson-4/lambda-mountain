@@ -1,11 +1,11 @@
 
-develop: compile-prod compile-strict
+develop: compile-strict
 	./strict -o tmp.s tests/strict/printU64.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp
 
-compile-strict: prod
+compile-strict: compile-prod
 	./production --nostd -o strict.s STRICT/cli.lm
 	as -o strict.o strict.s
 	ld -o strict   strict.o
