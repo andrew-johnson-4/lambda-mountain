@@ -8,6 +8,8 @@ compile-text-header := λ . (: (tail(
    (set output (SCons( (close output) (close(SAtom '\tmov\s%rsp,\s%rbp\n_s )) )))
    #if argv used then push argc / argv
    (set output (SCons( (close output) (close(SAtom '\tcall\smain\n_s )) )))
+   (set output (SCons( (close output) (close(SAtom '\tmov\s%rbp,\s%rsp\n_s )) )))
+   (set output (SCons( (close output) (close(SAtom '\tpop\s%rbp\n_s )) )))
    (close output)
 )) S[]);
 
