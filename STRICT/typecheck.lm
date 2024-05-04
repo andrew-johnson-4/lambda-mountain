@@ -944,7 +944,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (let tctx2 (maybe-deref(typecheck-infer-ctx( tctx lhs ))))
          (set tctx tctx2)
          (typecheck-infer-expr( tctx rhs Used ))
-         (let lt (maybe-deref(typecheck-typeof-lhs rhs)))
+         (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
          (let rt (maybe-deref(typecheck-lookup rhs)))
          (typecheck-ascript( term (maybe-deref(tarrow( lt rt ))) ))
       )))

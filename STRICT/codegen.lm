@@ -6,12 +6,18 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
    (match term (
       ()
       ( (Abs( lhs rhs )) (tail(
+         (print 'Compile\sGlobal\s_s)(print k)(print kt)(print lhs)(print '\n_s)
          (let ctx-2 (maybe-deref(compile-destructure-args( ctx lhs 0_i64 ))))
          (set ctx ctx-2)
          (let stack-offset (cccontext::get-offset( ctx )))
          (let e (maybe-deref(compile-expr( ctx rhs stack-offset Return ))))
          (let text SNil)
-         (set text (SCons( (close text) (close(SAtom( (mangle-identifier( k kt )) ))) )))
+         (if (==( k 'main_s )) (
+            (set text (SCons( (close text) (close(SAtom( 'main_s ))) )))
+         ) (
+            (set text (SCons( (close text) (close(SAtom( (mangle-identifier( k kt )) ))) )))
+         ))
+         (set text (SCons( (close text) (close(SAtom( ':\n_s ))) )))
          (let frame (maybe-deref(ccfragment::get( e 'frame_s ))))
          (set text (SCons( (close text) (close frame) )))
          (let program (maybe-deref(ccfragment::get( e 'program_s ))))
@@ -24,6 +30,10 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
          (let data (maybe-deref(ccfragment::get( e 'data_s ))))
          (set assemble-text-section (SCons( (close assemble-text-section) (close text) )))
          (set assemble-data-section (SCons( (close assemble-data-section) (close data) )))
+      )))
+      ( (Asc( t tt )) (tail(
+         (print 'TODO:\sDeclare\sGlobal\sVariable\n_s)
+         ()
       )))
       ( _ (
          (exit-error( 'Unrecognized\sCompile\sGlobal\n_s term ))
@@ -41,6 +51,16 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
    (let e (maybe-deref(ccfragment::new())))
    (match term (
       ()
+      ( ASTNil () )
+      ( ASTEOF () )
+      ( (Var( id )) (tail(
+         (print 'TODO:\sVariable\n_s)
+         ()
+      )))
+      ( (Lit( id )) (tail(
+         (print 'TODO:\sLiteral\n_s)
+         ()
+      )))
       ( (Asc( t tt )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset used ))))
          (set e e1)
@@ -50,6 +70,18 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (let e2 (maybe-deref(compile-expr( (maybe-deref(ccfragment::get-context e1)) rt (ccfragment::get-offset e1) used ))))
          (let e12 (maybe-deref(ccfragment::chain( e1 e2 ))))
          (set e e12)
+      )))
+      ( (App( (App( (Var 'while_s) cond )) body )) (tail(
+         (print 'TODO:\sWhile\n_s)
+         ()
+      )))
+      ( (App( (App( (App( (Var 'if_s) cond )) t )) f )) (tail(
+         (print 'TODO:\sIf\n_s)
+         ()
+      )))
+      ( (App( (Abs( (Var lhs) ASTNil )) rhs )) (tail(
+         (print 'TODO:\sLet\sBinding\n_s)
+         ()
       )))
       ( (App( f a )) (
          (match (maybe-deref(typecheck-slot( (maybe-deref(typecheck-lookup f)) '->_s ))) (
@@ -71,9 +103,10 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
                (if (==( used Used )) (
                   (exit-error( 'Raw\sCons\sCells\sNot\sPermitted\sIn\sStrict\sMode_s term ))
                ) (tail(
-                  (print 'TODO:\sSequence\n_s)
-                  (print term)
-                  (exit 1_u64)
+                  (let e1 (maybe-deref(compile-expr( ctx f stack-offset Unused ))))
+                  (let e2 (maybe-deref(compile-expr( (maybe-deref(ccfragment::get-context e1)) a (ccfragment::get-offset e1) used ))))
+                  (let e12 (maybe-deref(ccfragment::chain( e1 e2 ))))
+                  (set e e12)
                ))) 
             ))
          ))
@@ -120,10 +153,6 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: args AST)(: 
    (set call (SCons( (close call) (close(SAtom '\o\scall\s_s)) )))
    (set call (SCons( (close call) (close(SAtom function-name)) )))
    (set call (SCons( (close call) (close(SAtom '\n_s)) )))
-   (print 'TODO:\sApply\sFunction\n_s)
-   (print function-name)(print '\n_s)
-   (print args)
-   (exit 1_u64)
    (close r)
 
 
