@@ -4,6 +4,8 @@ compile-text-header := λ . (: (tail(
    (set output (SCons( (close output) (close(SAtom '.global\s_start\n_s )) )))
    (set output (SCons( (close output) (close(SAtom '.text\n_s )) )))
    (set output (SCons( (close output) (close(SAtom '_start:\n_s )) )))
+   (set output (SCons( (close output) (close(SAtom '\tmov\s%rsp,\s%rbp\n_s )) )))
+   #if argv used then push argc / argv
    (set output (SCons( (close output) (close(SAtom '\tjmp\smain\n_s )) )))
    (close output)
 )) S[]);
@@ -11,12 +13,6 @@ compile-text-header := λ . (: (tail(
 compile-data-header := λ . (: (tail(
    (let output SNil)
    (set output (SCons( (close output) (close(SAtom '.data\n_s )) )))
-   (close output)
-)) S[]);
-
-compile-before-main := λ . (: (tail(
-   (let output SNil)
-   (set output (SCons( (close output) (close(SAtom 'main:\n_s )) )))
    (close output)
 )) S[]);
 

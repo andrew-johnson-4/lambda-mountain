@@ -65,13 +65,6 @@ compile-type := λ(: ctx CCContext)(: lhs AST)(: rhs AST). (: (tail(
 compile-finish := λ. (: (tail(
    (let output SNil)
    (set output (SCons( (close output) (compile-text-header()) )))
-   (set output (SCons( (close output) (compile-before-main()) )))
-   (if (==( assemble-argv-referenced True_u8 )) (
-      (set output (SCons(
-         (close output)
-         (compile-argv-text-header())
-      )))
-   ) ())
    (set output (SCons( (close output) (compile-exit-cleanup()) )))
    (set output (SCons( (close output) (close assemble-text-section) )))
    (set output (SCons( (close output) (compile-data-header()) )))
