@@ -22,6 +22,11 @@ cccontext::new := λ. (: (tail(
    (close r)
 )) CCContext[]);
 
+cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type). (: (tail(
+   (let r (maybe-deref(ccfragment::new())))
+   (close r)
+)) CCFragment[]);
+
 cccontext::bind := λ(: ctx CCContext)(: k String)(: kt Type)(: f CCFragment). (: (tail(
    ()
    (close ctx)
