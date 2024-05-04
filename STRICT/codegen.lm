@@ -51,6 +51,10 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (let e12 (maybe-deref(ccfragment::chain( e1 e2 ))))
          (set e e12)
       )))
+      ( (App( (Abs( (Var lhs) ASTNil )) rhs )) (tail(
+         (print 'TODO:\sLet\sBinding\n_s)
+         ()
+      )))
       ( (App( f a )) (
          (match (maybe-deref(typecheck-slot( (maybe-deref(typecheck-lookup f)) '->_s ))) (
             ()
