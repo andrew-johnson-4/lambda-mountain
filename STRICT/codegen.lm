@@ -12,7 +12,11 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
          (let stack-offset (cccontext::get-offset( ctx )))
          (let e (maybe-deref(compile-expr( ctx rhs stack-offset Return ))))
          (let text SNil)
-         (set text (SCons( (close text) (close(SAtom( (mangle-identifier( k kt )) ))) )))
+         (if (==( k 'main_s )) (
+            (set text (SCons( (close text) (close(SAtom( 'main_s ))) )))
+         ) (
+            (set text (SCons( (close text) (close(SAtom( (mangle-identifier( k kt )) ))) )))
+         ))
          (set text (SCons( (close text) (close(SAtom( ':\n_s ))) )))
          (let frame (maybe-deref(ccfragment::get( e 'frame_s ))))
          (set text (SCons( (close text) (close frame) )))
