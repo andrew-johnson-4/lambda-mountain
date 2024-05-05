@@ -90,9 +90,13 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
                (let e1 (maybe-deref(compile-expr( ctx rhs stack-offset Used ))))
                (let e2 (maybe-deref(ccfragment::new())))
                (let e2-2 (maybe-deref(ccfragment::set-offset( e2 sv-offset ))))
-#               (let e2-3 (maybe-deref(ccfragment::set-context( e2-2 ctx ))))
-#               (let e2-4 (maybe-deref(ccfragment::set-offset( e2-3 stack-offset ))))
-#               (let e3 (maybe-deref(fragment-apply( ctx 'mov_s (TG
+               (let e2-3 (maybe-deref(ccfragment::set-context( e2-2 ctx ))))
+               (let e2-4 (maybe-deref(ccfragment::set-offset( e2-3 stack-offset ))))
+               (let e3 (maybe-deref(fragment-apply( ctx 'mov_s
+                  (maybe-deref(tcons( kt (maybe-deref(tlocalvariable())) )))
+                  (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
+               ))))
+               (set e e3)
             )))
             ( (WrappedGlobal( id rst )) (tail(
                ()
