@@ -81,6 +81,51 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (let e12 (maybe-deref(ccfragment::chain( e1 e2 ))))
          (set e e12)
       )))
+#      ( (App( (App( (Var 'set_s) (Var k) )) rhs )) (tail(
+#         (let kt (maybe-deref(typecheck-lookup rhs)))
+#         (let binding (maybe-deref(cccontext::lookup( ctx k kt ))))
+#         (match binding (
+#            ()
+#            ( (LocalVariable( sv-offset rst )) (tail(
+#               (let e1 (maybe-deref(compile-expr( ctx rhs stack-offset Used ))))
+#               (let e2 (maybe-deref(ccfragment::new())))
+#               (let e2-2 (maybe-deref(ccfragment::set( e2 'offset_s (SAtom(to-string sv-offset)) ))))
+#               (let e2-3 (maybe-deref(ccfragment::set-context( e2-2 ctx ))))
+#               (let e2-4 (maybe-deref(ccfragment::set-offset( e2-3 stack-offset ))))
+#               (let e3 (maybe-deref(fragment-apply( ctx 'mov_s (TG
+#            )))
+#            ( _ (
+#               (exit-error( 'Unknown\sVariable_s term ))
+#            ))
+#            ( (GlobalVariable( id rst )) (tail(
+#            )))
+#         ))
+#      )))
+
+#               (match (get-strict-function( ctx (tail lhs) (typecheck-lookup rhs))) (
+#                  ()
+#                  ( (LocalVariable( sv-offset )) (tail(
+#                     (set e2 (expr::new()))
+#                     (set e2 (expr::set-expr( e2 sv-offset )))
+#                     (set e2 (expr::set-context( e2 ctx )))
+#                     (set e2 (expr::set-offset( e2 offset )))
+#                     (set e2 (expr::set-type( e2 (typecheck-lookup lhs) )))
+#                     (set e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup rhs) LocalVariable )) ((() e1) e2) e2 )))
+#                     (set e3 (expr::set-prog( e3 (
+#                        \o \s 'set \s 'local \s (quote-s lhs) \s '@ \s sv-offset \n
+#                        (expr::get-prog e3)
+#                     ))))
+#                  )))
+#                  ( (GlobalVariable( uid )) (tail(
+#                     (set e1 (compile-expr-strict( ctx rhs offset Used )))
+#                     (set e1 (expr::set-type( e1 (typecheck-lookup rhs) )))
+#                     (set e2 (expr::new()))
+#                     (set e2 (expr::set-expr( e2 uid )))
+#                     (set e2 (expr::set-context( e2 ctx )))
+#                     (set e2 (expr::set-offset( e2 offset )))
+#                     (set e2 (expr::set-type( e2 (typecheck-lookup lhs) )))
+#                     (set e3 (fragment-apply( ctx 'mov (Cons( (typecheck-lookup rhs) GlobalVariable )) ((() e1) e2) e2 )))
+#                  )))
       ( (App( (App( (Var 'while_s) cond )) body )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx cond stack-offset Used ))))
          (let e2 (maybe-deref(compile-expr( (maybe-deref(ccfragment::get-context e1)) body (ccfragment::get-offset e1) Used ))))

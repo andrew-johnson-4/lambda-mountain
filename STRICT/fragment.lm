@@ -1,6 +1,8 @@
 
 type CCFragment (CCFEOF) | (CCFSeq( CCFragment[] , String , S ));
 
+type WrappedFragment (WrappedLocal( I64 , CCFragment )) | (WrappedGlobal( String , CCFragment )) | (WrappedUnknown( CCFragment ));
+
 non-zero := λ(: t CCFragment). (: (tail(
    (let r 1_u64)
    (match t (
@@ -16,6 +18,12 @@ close := λ(: x CCFragment). (: (tail(
    (mov( x 0_u64 (as R8 CCFragment[]) ))
    (as R8 CCFragment[])
 )) CCFragment[]);
+
+close := λ(: x WrappedFragment). (: (tail(
+   (mov( (malloc(sizeof WrappedFragment)) R8 ))
+   (mov( x 0_u64 (as R8 WrappedFragment[]) ))
+   (as R8 WrappedFragment[])
+)) WrappedFragment[]);
 
 ccfragment::new := λ . (: (tail(
    (let r CCFEOF)
