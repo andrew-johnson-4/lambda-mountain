@@ -81,26 +81,28 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (let e12 (maybe-deref(ccfragment::chain( e1 e2 ))))
          (set e e12)
       )))
-#      ( (App( (App( (Var 'set_s) (Var k) )) rhs )) (tail(
-#         (let kt (maybe-deref(typecheck-lookup rhs)))
-#         (let binding (maybe-deref(cccontext::lookup( ctx k kt ))))
-#         (match binding (
-#            ()
-#            ( (LocalVariable( sv-offset rst )) (tail(
-#               (let e1 (maybe-deref(compile-expr( ctx rhs stack-offset Used ))))
-#               (let e2 (maybe-deref(ccfragment::new())))
-#               (let e2-2 (maybe-deref(ccfragment::set( e2 'offset_s (SAtom(to-string sv-offset)) ))))
+      ( (App( (App( (Var 'set_s) (Var k) )) rhs )) (tail(
+         (let kt (maybe-deref(typecheck-lookup rhs)))
+         (let binding (maybe-deref(cccontext::lookup( ctx k kt ))))
+         (match binding (
+            ()
+            ( (WrappedLocal( sv-offset rst )) (tail(
+               (let e1 (maybe-deref(compile-expr( ctx rhs stack-offset Used ))))
+               (let e2 (maybe-deref(ccfragment::new())))
+               (let e2-2 (maybe-deref(ccfragment::set-offset( e2 sv-offset ))))
 #               (let e2-3 (maybe-deref(ccfragment::set-context( e2-2 ctx ))))
 #               (let e2-4 (maybe-deref(ccfragment::set-offset( e2-3 stack-offset ))))
 #               (let e3 (maybe-deref(fragment-apply( ctx 'mov_s (TG
-#            )))
-#            ( _ (
-#               (exit-error( 'Unknown\sVariable_s term ))
-#            ))
-#            ( (GlobalVariable( id rst )) (tail(
-#            )))
-#         ))
-#      )))
+            )))
+            ( (WrappedGlobal( id rst )) (tail(
+               ()
+               ()
+            )))
+            ( _ (
+               (exit-error( 'Unknown\sVariable_s term ))
+            ))
+         ))
+      )))
 
 #               (match (get-strict-function( ctx (tail lhs) (typecheck-lookup rhs))) (
 #                  ()
