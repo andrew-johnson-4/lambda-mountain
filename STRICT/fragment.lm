@@ -31,6 +31,15 @@ ccfragment::local-variable := λ(: offset I64) . (: (tail(
    (close r)
 )) CCFragment[]);
 
+ccfragment::expression := λ(: val String) . (: (tail(
+   (let r (CCFSeq(
+      (close CCFEOF)
+      'expression_s
+      (SAtom val)
+   )))
+   (close r)
+)) CCFragment[]);
+
 ccfragment::get := λ(: e CCFragment)(: k String). (: (tail(
    (let r SNil)
    (close r)
@@ -38,18 +47,28 @@ ccfragment::get := λ(: e CCFragment)(: k String). (: (tail(
 
 ccfragment::set := λ(: e CCFragment)(: k String)(: v S). (: (tail(
    ()
-   ()
-)) Nil);
+   (close e)
+)) CCFragment[]);
 
 ccfragment::get-context := λ(: e CCFragment) . (: (tail(
    (let r (maybe-deref(cccontext::new())))
    (close r)
 )) CCContext[]);
 
-ccfragment::get-offset := λ(: ctx CCFragment). (: (tail(
+ccfragment::set-context := λ(: e CCFragment)(: ctx CCContext). (: (tail(
+   ()
+   (close e)
+)) CCFragment[]);
+
+ccfragment::get-offset := λ(: e CCFragment). (: (tail(
    ()
    0_i64
 )) I64);
+
+ccfragment::set-offset := λ(: e CCFragment)(: offset I64). (: (tail(
+   ()
+   (close e)
+)) CCFragment[]);
 
 ccfragment::chain := λ(: l CCFragment)(: r CCFragment). (: (tail(
    ()
