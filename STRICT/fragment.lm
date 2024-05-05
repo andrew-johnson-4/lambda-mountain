@@ -55,6 +55,11 @@ ccfragment::get-context := λ(: e CCFragment) . (: (tail(
    (close r)
 )) CCContext[]);
 
+ccfragment::set-context := λ(: e CCFragment)(: ctx CCContext). (: (tail(
+   ()
+   (close e)
+)) CCFragment[]);
+
 ccfragment::get-offset := λ(: ctx CCFragment). (: (tail(
    ()
    0_i64
