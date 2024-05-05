@@ -213,8 +213,28 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (set e e9)
       )))
       ( (App( (Abs( (Var lhs) ASTNil )) rhs )) (tail(
-         (print 'TODO:\sLet\sBinding\n_s)
-         ()
+         (let rtype (maybe-deref(typecheck-lookup rhs)))
+         (let size (typecheck-sizeof rtype))
+         (let e1 (maybe-deref(compile-push-rvalue( ctx rhs stack-offset ))))
+         (let bind-offset (+( stack-offset (as size I64) )))
+         (let e1-2 (ccfragment::set( e1 'unframe_s
+            (SCons(
+               (close(ccfragment::get( e1 'unframe_s )))
+               (close(SCons(
+                  (close(SAtom '\tadd\s_s))
+                  (close(SCons(
+                     (close(SAtom(to-string size)))
+                     (close(SAtom ',\s%rsp\n_s))
+                  )))
+               )))
+            ))
+         )))
+         (let new-ctx (maybe-deref(cccontext::bind(
+            ctx lhs rtype (maybe-deref(ccfragment::local-variable bind-offset))
+         ))))
+         (let e1-3 (ccfragment::set-context( e1-2 new-ctx )))
+         (let e1-4 (ccfragment::set-offset( e1-3 bind-offset )))
+         (set e e1-4)
       )))
       ( (App( f a )) (
          (match (maybe-deref(typecheck-slot( (maybe-deref(typecheck-lookup f)) '->_s ))) (
