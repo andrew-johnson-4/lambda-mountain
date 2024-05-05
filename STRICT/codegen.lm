@@ -54,8 +54,8 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
       ( ASTNil () )
       ( ASTEOF () )
       ( (Var( id )) (tail(
-         (print 'TODO:\sVariable\n_s)
-         ()
+         (let e1 (maybe-deref(compile-push-var( ctx id (maybe-deref(typecheck-lookup term)) stack-offset ))))
+         (set e e1)
       )))
       ( (Lit( val )) (tail(
          (let ltype (maybe-deref(typecheck-lookup term)))
@@ -213,8 +213,28 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (set e e9)
       )))
       ( (App( (Abs( (Var lhs) ASTNil )) rhs )) (tail(
-         (print 'TODO:\sLet\sBinding\n_s)
-         ()
+         (let rtype (maybe-deref(typecheck-lookup rhs)))
+         (let size (typecheck-sizeof rtype))
+         (let e1 (maybe-deref(compile-push-rvalue( ctx rhs stack-offset ))))
+         (let bind-offset (+( stack-offset (as size I64) )))
+         (let e1-2 (maybe-deref(ccfragment::set( e1 'unframe_s
+            (SCons(
+               (ccfragment::get( e1 'unframe_s ))
+               (close(SCons(
+                  (close(SAtom '\tadd\s_s))
+                  (close(SCons(
+                     (close(SAtom(to-string size)))
+                     (close(SAtom ',\s%rsp\n_s))
+                  )))
+               )))
+            ))
+         ))))
+         (let new-ctx (maybe-deref(cccontext::bind(
+            ctx lhs rtype (maybe-deref(ccfragment::local-variable bind-offset))
+         ))))
+         (let e1-3 (maybe-deref(ccfragment::set-context( e1-2 new-ctx ))))
+         (let e1-4 (maybe-deref(ccfragment::set-offset( e1-3 bind-offset ))))
+         (set e e1-4)
       )))
       ( (App( f a )) (
          (match (maybe-deref(typecheck-slot( (maybe-deref(typecheck-lookup f)) '->_s ))) (
@@ -323,6 +343,16 @@ as-branch-conditional := λ(: f CCFragment). (: (tail(
 )) CCFragment[]);
 
 compile-declare-cstring := λ(: val String). (: (tail(
+   (let r (maybe-deref(ccfragment::new())))
+   (close r)
+)) CCFragment[]);
+
+compile-push-rvalue := λ(: ctx CCContext)(: rval AST)(: offset I64). (: (tail(
+   (let r (maybe-deref(ccfragment::new())))
+   (close r)
+)) CCFragment[]);
+
+compile-push-var := λ(: ctx CCContext)(: k String)(: kt Type)(: offset I64). (: (tail(
    (let r (maybe-deref(ccfragment::new())))
    (close r)
 )) CCFragment[]);
