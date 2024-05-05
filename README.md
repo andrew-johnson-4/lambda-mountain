@@ -1,7 +1,7 @@
 # [Lambda Mountain](https://github.com/andrew-johnson-4/-/wiki)
 
 λ☶ (pronounced Lambda Mountain) is a compiler backend that provides a relatively clean implementation of **System F<: with Specialization**.
-The language is intended only as an intermediate form, so this project is more similar to GCC than C.
+The language is intended only as an intermediate form, so this project is more similar to GCC than to C.
 
 More information is available on the [λ☶ Wiki](https://github.com/andrew-johnson-4/-/wiki).
 
