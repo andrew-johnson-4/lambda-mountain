@@ -248,6 +248,14 @@ tlocalvariable := λ. (: (tail(
    )))
 )) Type[]);
 
+tglobalvariable := λ. (: (tail(
+   ()
+   (close (TGround(
+      'GlobalVariable_s
+      (close TypeEOF)
+   )))
+)) Type[]);
+
 tcons := λ(: l Type)(: r Type). (: (tail(
    ()
    (close (TGround(
