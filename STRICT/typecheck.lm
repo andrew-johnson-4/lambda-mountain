@@ -240,6 +240,36 @@ tnil := λ. (: (tail(
    )))
 )) Type[]);
 
+tlocalvariable := λ. (: (tail(
+   ()
+   (close (TGround(
+      'LocalVariable_s
+      (close TypeEOF)
+   )))
+)) Type[]);
+
+tglobalvariable := λ. (: (tail(
+   ()
+   (close (TGround(
+      'GlobalVariable_s
+      (close TypeEOF)
+   )))
+)) Type[]);
+
+tcons := λ(: l Type)(: r Type). (: (tail(
+   ()
+   (close (TGround(
+      'Cons_s
+      (close(TypeSeq(
+         (close(TypeSeq(
+            (close TypeEOF)
+            l
+         )))
+         r
+      )))
+   )))
+)) Type[]);
+
 type TermTypeList TTEOF | (TTSeq( TermTypeList[] , AST , Type ));
 
 non-zero := λ(: t TermTypeList). (: (tail(

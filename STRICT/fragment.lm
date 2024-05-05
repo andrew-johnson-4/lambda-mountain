@@ -1,5 +1,8 @@
 
 type CCFragment (CCFEOF) | (CCFSeq( CCFragment[] , String , S ));
+type WrappedFragment (WrappedLocal( I64 , CCFragment )) | (WrappedGlobal( String , CCFragment )) | (WrappedUnknown( CCFragment ));
+
+type FragList (FLEOF) | (FLSeq( FragList[] , CCFragment ));
 
 non-zero := λ(: t CCFragment). (: (tail(
    (let r 1_u64)
@@ -11,11 +14,33 @@ non-zero := λ(: t CCFragment). (: (tail(
    r
 )) U64);
 
+non-zero := λ(: t FragList). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( FLEOF (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
 close := λ(: x CCFragment). (: (tail(
    (mov( (malloc(sizeof CCFragment)) R8 ))
    (mov( x 0_u64 (as R8 CCFragment[]) ))
    (as R8 CCFragment[])
 )) CCFragment[]);
+
+close := λ(: x FragList). (: (tail(
+   (mov( (malloc(sizeof FragList)) R8 ))
+   (mov( x 0_u64 (as R8 FragList[]) ))
+   (as R8 FragList[])
+)) FragList[]);
+
+close := λ(: x WrappedFragment). (: (tail(
+   (mov( (malloc(sizeof WrappedFragment)) R8 ))
+   (mov( x 0_u64 (as R8 WrappedFragment[]) ))
+   (as R8 WrappedFragment[])
+)) WrappedFragment[]);
 
 ccfragment::new := λ . (: (tail(
    (let r CCFEOF)
@@ -73,4 +98,9 @@ ccfragment::set-offset := λ(: e CCFragment)(: offset I64). (: (tail(
 ccfragment::chain := λ(: l CCFragment)(: r CCFragment). (: (tail(
    ()
    (close l)
+)) CCFragment[]);
+
+fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList). (: (tail(
+   (let r (maybe-deref(ccfragment::new())))
+   (close r)
 )) CCFragment[]);
