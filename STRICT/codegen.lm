@@ -82,7 +82,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (set e e12)
       )))
       ( (App( (App( (Var 'while_s) cond )) body )) (tail(
-         (let e1 (maybe-deref(compile-expr( ctx cond rsp-offset Used ))))
+         (let e1 (maybe-deref(compile-expr( ctx cond offset Used ))))
          (let e2 (maybe-deref(compile-expr( (maybe-deref(ccfragment::get-context e1)) body (ccfragment::get-offset e1) Used ))))
          (let e3 (maybe-deref(as-branch-conditional e1)))
          (let label-begin-loop (uuid()))
