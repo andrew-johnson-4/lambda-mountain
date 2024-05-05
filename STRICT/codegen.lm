@@ -127,7 +127,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (let e6 (maybe-deref(ccfragment::set-context( e5 (maybe-deref(ccfragment::get-context e2)) ))))
          (let e7 (maybe-deref(ccfragment::set-offset( e6 end-offset ))))
          (let e8 (maybe-deref(ccfragment::set( e7 'frame_s SNil ))))
-         (let e9 (maybe-deref(ccfragment::set( e8 'unframe_s SNil ))))
+         (let e9 (maybe-deref(ccfragment::set( e8 'unframe_s
             (SCons(
                (ccfragment::get( e1 'unframe_s ))
                (close(SCons(
