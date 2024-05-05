@@ -219,7 +219,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (let bind-offset (+( stack-offset (as size I64) )))
          (let e1-2 (ccfragment::set( e1 'unframe_s
             (SCons(
-               (close(ccfragment::get( e1 'unframe_s )))
+               (ccfragment::get( e1 'unframe_s ))
                (close(SCons(
                   (close(SAtom '\tadd\s_s))
                   (close(SCons(
@@ -343,6 +343,11 @@ as-branch-conditional := λ(: f CCFragment). (: (tail(
 )) CCFragment[]);
 
 compile-declare-cstring := λ(: val String). (: (tail(
+   (let r (maybe-deref(ccfragment::new())))
+   (close r)
+)) CCFragment[]);
+
+compile-push-rvalue := λ(: ctx CCContext)(: rval AST)(: offset I64). (: (tail(
    (let r (maybe-deref(ccfragment::new())))
    (close r)
 )) CCFragment[]);
