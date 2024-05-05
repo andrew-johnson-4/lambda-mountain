@@ -47,8 +47,8 @@ ccfragment::get := λ(: e CCFragment)(: k String). (: (tail(
 
 ccfragment::set := λ(: e CCFragment)(: k String)(: v S). (: (tail(
    ()
-   ()
-)) Nil);
+   (close e)
+)) CCFragment[]);
 
 ccfragment::get-context := λ(: e CCFragment) . (: (tail(
    (let r (maybe-deref(cccontext::new())))
