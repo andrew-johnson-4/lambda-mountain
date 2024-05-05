@@ -31,6 +31,15 @@ ccfragment::local-variable := λ(: offset I64) . (: (tail(
    (close r)
 )) CCFragment[]);
 
+ccfragment::expression := λ(: val String) . (: (tail(
+   (let r (CCFSeq(
+      (close CCFEOF)
+      'expression_s
+      (SAtom val)
+   )))
+   (close r)
+)) CCFragment[]);
+
 ccfragment::get := λ(: e CCFragment)(: k String). (: (tail(
    (let r SNil)
    (close r)

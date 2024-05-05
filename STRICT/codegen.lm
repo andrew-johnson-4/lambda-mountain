@@ -57,9 +57,19 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (print 'TODO:\sVariable\n_s)
          ()
       )))
-      ( (Lit( id )) (tail(
-         (print 'TODO:\sLiteral\n_s)
-         ()
+      ( (Lit( val )) (tail(
+         (let ltype (maybe-deref(typecheck-lookup term)))
+         (match (maybe-deref(typecheck-slot( ltype 'String_s ))) (
+            ()
+            ( (TGround( 'String_s _ )) (tail(
+               (let e1 (maybe-deref(compile-declare-cstring( val ))))
+               (set e e1)
+            )))
+            ( _ (tail(
+               (let e1 (maybe-deref(ccfragment::expression( val ))))
+               (set e e1)
+            )))
+         ))
       )))
       ( (Asc( t tt )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset used ))))
@@ -180,6 +190,11 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: args AST)(: 
 )) CCFragment[]);
 
 compile-stack-call-push-args := λ(: ctx CCContext)(: args AST)(: inner-offset I64)(: outer-offset I64). (: (tail(
+   (let r (maybe-deref(ccfragment::new())))
+   (close r)
+)) CCFragment[]);
+
+compile-declare-cstring := λ(: val String). (: (tail(
    (let r (maybe-deref(ccfragment::new())))
    (close r)
 )) CCFragment[]);
