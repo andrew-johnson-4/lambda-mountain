@@ -54,8 +54,8 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
       ( ASTNil () )
       ( ASTEOF () )
       ( (Var( id )) (tail(
-         (print 'TODO:\sVariable\n_s)
-         ()
+         (let e1 (maybe-deref(compile-push-var( ctx id (maybe-deref(typecheck-lookup term)) stack-offset ))))
+         (set e e1)
       )))
       ( (Lit( val )) (tail(
          (let ltype (maybe-deref(typecheck-lookup term)))
@@ -348,6 +348,11 @@ compile-declare-cstring := λ(: val String). (: (tail(
 )) CCFragment[]);
 
 compile-push-rvalue := λ(: ctx CCContext)(: rval AST)(: offset I64). (: (tail(
+   (let r (maybe-deref(ccfragment::new())))
+   (close r)
+)) CCFragment[]);
+
+compile-push-var := λ(: ctx CCContext)(: k String)(: kt Type)(: offset I64). (: (tail(
    (let r (maybe-deref(ccfragment::new())))
    (close r)
 )) CCFragment[]);
