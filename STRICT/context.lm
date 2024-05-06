@@ -29,8 +29,11 @@ cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type). (: (tail(
 )) WrappedFragment[]);
 
 cccontext::bind := λ(: ctx CCContext)(: k String)(: kt Type)(: f CCFragment). (: (tail(
-   ()
-   (close ctx)
+   (let new-ctx (CCCtxBind(
+      (close ctx)
+      k kt f
+   )))
+   (close new-ctx)
 )) CCContext[]);
 
 cccontext::bind := λ(: ctx CCContext)(: k String)(: v String). (: (tail(
