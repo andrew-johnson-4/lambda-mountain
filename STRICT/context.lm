@@ -38,6 +38,7 @@ cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST). (: 
             (match (maybe-deref(typecheck-slot( rt '->_s ))) (
                ()
                ( (TGround( '->_s _ )) (tail(
+                  (print 'Try\sApply\s_s)(print rk)(print '\s:\s_s)(print rt)(print '\n_s)
                   (let u (maybe-deref(typecheck-apply( sloc rt kt ))))
                   (if (non-zero u) (tail(
                      (set r rf)
