@@ -144,6 +144,14 @@ fragment-apply-direct := λ(: arrow CCFragment)(: args FragList)(: e CCFragment)
    (close r)
 )) CCFragment[]);
 
+ccfragment::chain := λ(: l CCFragment)(: r CCFragment). (: (tail(
+   (let e1 (maybe-deref(ccfragment::set-context(
+      l
+      (maybe-deref(ccfragment::get-context( r )))
+   ))))
+   (close e1)
+)) CCFragment[]);
+
 fragment-chain := λ(: fragment-ctx FragList)(: e CCFragment). (: (tail(
    (let fragment-chain FLEOF)
    (while (non-zero fragment-ctx) (match fragment-ctx (
@@ -159,10 +167,7 @@ fragment-chain := λ(: fragment-ctx FragList)(: e CCFragment). (: (tail(
    (while (non-zero fragment-chain) (match fragment-chain (
       ()
       ( (FLSeq( rst cf )) (tail(
-         (let e1 (maybe-deref(ccfragment::set-context(
-            e
-            (maybe-deref(ccfragment::get-context( e )))
-         ))))
+         (let e1 (maybe-deref(ccfragment::chain( e cf ))))
          (set e e1)
          (set fragment-chain rst)
       )))
