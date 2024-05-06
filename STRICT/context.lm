@@ -39,11 +39,11 @@ cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type). (: (tail(
          (set ctx rst)
       )))
    )))
-   (if found () (
+   (if found () (tail(
       (print 'Context::lookup\sCould\sNot\sFind\n_s)
       (print k)(print '\s:\s_s)(print kt)(print '\n_s)
       (exit 1_u64)
-   ))
+   )))
    (close r)
 )) CCFragment[]);
 
