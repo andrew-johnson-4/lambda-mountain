@@ -103,7 +103,7 @@ ccfragment::get-context := λ(: e CCFragment) . (: (tail(
 ccfragment::set-context := λ(: e CCFragment)(: ctx CCContext). (: (tail(
    (match e (
       ()
-      ( (CFragment( kvs (*( offset ctx )) )) (
+      ( (CCFragment( kvs (*( offset ctx )) )) (
          (set e (CCFragment( (close kvs) offset (close ctx) ))) 
       ))
    ))
