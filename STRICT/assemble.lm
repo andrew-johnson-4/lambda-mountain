@@ -41,6 +41,7 @@ compile := λ(). (: (tail(
       ))
    )))
    (let program ast-parsed-program)
+   (cccontext::lookup( global-ctx 'print_s (maybe-deref(tnil())) program ))
    (while (non-zero program) (match program (
       ()
       ( (Seq( rst (Glb( k rhs )) )) (tail(
