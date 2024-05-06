@@ -107,7 +107,7 @@ fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList). (
       ()
       ( (CCCtxBind( rst (*( rk (*( rt rf )) )) )) (tail(
          (if (==( k rk )) (
-            (print 'Candidate\sFragment\s_)(print k)
+            (print 'Candidate\sFragment\s_s)(print k)
             (print '\s:\s_s)(print kt)(print '\n_s)
          ) ())
          (set ctx rst)
