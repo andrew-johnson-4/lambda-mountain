@@ -1101,6 +1101,25 @@ is-arrow := λ(: tt Type). (: (tail(
    r
 )) U64);
 
+typecheck-apply-plural := λ(: sloc AST)(: many Type)(: pt Type). (: (tail(
+   (let r TAny)
+   (match many(
+      ()
+      ( (TAnd( t1 t2 )) (tail(
+         (let r1 (maybe-deref(typecheck-apply-plural( sloc t1 pt ))))
+         (if (non-zero r1) (set r r1) (
+            (let r2 (maybe-deref(typecheck-apply-plural( sloc t2 pt ))))
+            (set r r2)
+         ))
+      )))
+      ( _ (tail(
+         (let r1 (maybe-deref(typecheck-apply( sloc many pt ))))
+         (set r r1)
+      )))
+   ))
+   (close r)
+)) Type[]);
+
 typecheck-apply := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
    (let rt TAny)
    (if (is-arrow ft) (

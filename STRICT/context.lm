@@ -28,7 +28,7 @@ cccontext::wrapped-lookup := λ(: ctx CCContext)(: k String)(: kt Type). (: (tai
    (close u)
 )) WrappedFragment[]);
 
-cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type). (: (tail(
+cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST). (: (tail(
    (let r (maybe-deref(ccfragment::new())))
    (let found False_u8)
    (while (non-zero ctx) (match ctx (
@@ -38,10 +38,13 @@ cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type). (: (tail(
             (match (maybe-deref(typecheck-slot( rt '->_s ))) (
                ()
                ( (TGround( '->_s _ )) (tail(
-                  (print 'TODO\sTypecheck\sApply\sPlural\n_s)
-                  (print rk)(print '\s:\s_s)
-                  (print rt)(print '\n_s)
-                  (exit 1_u64)
+                  (let u (maybe-deref(typecheck-apply-plural( sloc rt kt ))))
+                  (if (non-zero u) (tail(
+                     (set found True_u8)
+                     (set r rf)
+                  )) (
+                     (exit-error( 'Context::lookup\sFailed\sUnification_s sloc ))
+                  ))
                )))
                ( _ (set r rf))
             ))
@@ -52,11 +55,9 @@ cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type). (: (tail(
          ))
       ))
    )))
-   (if found () (tail(
-      (print 'Context::lookup\sCould\sNot\sFind\n_s)
-      (print k)(print '\s:\s_s)(print kt)(print '\n_s)
-      (exit 1_u64)
-   )))
+   (if found () (
+      (exit-error( 'Context::lookup\sCould\sNot\sFind\sSymbol_s sloc ))
+   ))
    (close r)
 )) CCFragment[]);
 
