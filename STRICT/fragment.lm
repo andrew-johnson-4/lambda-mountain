@@ -1,14 +1,16 @@
 
-type CCFragment (CCFEOF) | (CCFSeq( CCFragment[] , String , S ));
+type CCFragKV (CCKVEOF) | (CCKVSeq( CCFragKV[] , String , S ));
+
+type CCFragment (CCFragment( CCFragKV[] , I64 , CCContext[] ));
 type WrappedFragment (WrappedLocal( I64 , CCFragment )) | (WrappedGlobal( String , CCFragment )) | (WrappedUnknown( CCFragment ));
 
 type FragList (FLEOF) | (FLSeq( FragList[] , CCFragment ));
 
-non-zero := λ(: t CCFragment). (: (tail(
+non-zero := λ(: t CCFragKV). (: (tail(
    (let r 1_u64)
    (match t (
       ()
-      ( CCFEOF (set r 0_u64))
+      ( CCKVEOF (set r 0_u64))
       ( _ () )
    ))
    r
@@ -30,6 +32,12 @@ close := λ(: x CCFragment). (: (tail(
    (as R8 CCFragment[])
 )) CCFragment[]);
 
+close := λ(: x CCFragKV). (: (tail(
+   (mov( (malloc(sizeof CCFragKV)) R8 ))
+   (mov( x 0_u64 (as R8 CCFragKV[]) ))
+   (as R8 CCFragKV[])
+)) CCFragKV[]);
+
 close := λ(: x FragList). (: (tail(
    (mov( (malloc(sizeof FragList)) R8 ))
    (mov( x 0_u64 (as R8 FragList[]) ))
@@ -43,24 +51,36 @@ close := λ(: x WrappedFragment). (: (tail(
 )) WrappedFragment[]);
 
 ccfragment::new := λ . (: (tail(
-   (let r CCFEOF)
+   (let r (CCFragment(
+      (close CCKVEOF)
+      0_i64
+      (cccontext::new())
+   )))
    (close r)
 )) CCFragment[]);
 
 ccfragment::local-variable := λ(: offset I64) . (: (tail(
-   (let r (CCFSeq(
-      (close CCFEOF)
-      'offset_s
-      (SAtom(to-string offset))
+   (let r (CCFragment(
+      (close(CCKVSeq(
+         (close CCKVEOF)
+         'offset_s
+         (SAtom(to-string offset))
+      )))
+      0_i64
+      (cccontext::new())
    )))
    (close r)
 )) CCFragment[]);
 
 ccfragment::expression := λ(: val String) . (: (tail(
-   (let r (CCFSeq(
-      (close CCFEOF)
-      'expression_s
-      (SAtom val)
+   (let r (CCFragment(
+      (close(CCKVSeq(
+         (close CCKVEOF)
+         'expression_s
+         (SAtom( val ))
+      )))
+      0_i64
+      (cccontext::new())
    )))
    (close r)
 )) CCFragment[]);
@@ -106,10 +126,8 @@ fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList). (
    (while (non-zero ctx) (match ctx (
       ()
       ( (CCCtxBind( rst (*( rk (*( rt rf )) )) )) (tail(
-         (if (==( k rk )) (tail(
-            (print 'Candidate\sFragment\s_s)(print k)
-            (print '\s:\s_s)(print kt)(print '\n_s)
-         )) ())
+         (print 'Candidate\sFragment\s_s)(print rk)
+         (print '\s:\s_s)(print rt)(print '\n_s)
          (set ctx rst)
       )))
    )))
