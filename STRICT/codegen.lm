@@ -49,6 +49,9 @@ compile-global := λ(: ctx CCContext)(: term AST). (: (tail(
 
 compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used). (: (tail(
    (let e (maybe-deref(ccfragment::new())))
+   (let e-2 (maybe-deref(ccfragment::set-context( e ctx ))))
+   (set e e-2)
+   (fragment-apply( (maybe-deref(ccfragment::get-context e)) 'mov_s (maybe-deref(tnil())) FLEOF ))
    (match term (
       ()
       ( ASTNil () )
