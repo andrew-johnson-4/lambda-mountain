@@ -102,6 +102,17 @@ ccfragment::chain := λ(: l CCFragment)(: r CCFragment). (: (tail(
 
 fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList). (: (tail(
    (let r (maybe-deref(ccfragment::new())))
+   (let found False_u8)
+   (while (non-zero ctx) (match ctx (
+      ()
+      ( (CCCtxBind( rst (*( rk (*( rt rf )) )) )) (tail(
+         (if (==( k rk )) (
+            (print 'Candidate\sFragment\s_)(print k)
+            (print '\s:\s_s)(print kt)(print '\n_s)
+         ) ())
+         (set ctx rst)
+      )))
+   )))
    (print 'Fragment\sApply\s_s)(print k)(print kt)(print '\n_s)
    (close r)
 )) CCFragment[]);
