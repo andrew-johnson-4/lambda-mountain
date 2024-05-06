@@ -34,26 +34,24 @@ cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST). (: 
    (while (non-zero ctx) (match ctx (
       ()
       ( (CCCtxBind( rst (*( rk (*( rt rf )) )) )) (
-         (if (==( k rk )) (tail(
+         (if (==( k rk )) (
             (match (maybe-deref(typecheck-slot( rt '->_s ))) (
                ()
                ( (TGround( '->_s _ )) (tail(
-                  (let u (maybe-deref(typecheck-apply-plural( sloc rt kt ))))
+                  (let u (maybe-deref(typecheck-apply( sloc rt kt ))))
                   (if (non-zero u) (tail(
-                     (set found True_u8)
                      (set r rf)
-                  )) (tail(
-                     (print 'Unify\sFunction\sName\s_s)(print k)(print '\n_s) 
-                     (print 'Unify\sParameter\s_s)(print kt)(print '\n_s) 
-                     (print 'Unify\sFunction\s_s)(print rt)(print '\n_s) 
-                     (exit-error( 'Context::lookup\sFailed\sUnification_s sloc ))
-                  )))
+                     (set found True_u8)
+                     (set ctx CCCEOF)
+                  )) ())
                )))
-               ( _ (set r rf))
+               ( _ (tail(
+                  (set r rf)
+                  (set found True_u8)
+                  (set ctx CCCEOF)
+               )))
             ))
-            (set found True_u8)
-            (set ctx CCCEOF)
-         )) (
+         ) (
             (set ctx rst)
          ))
       ))
