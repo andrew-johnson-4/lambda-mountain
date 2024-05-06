@@ -56,9 +56,11 @@ The programmer gets to inspect and verify *every single transformation down to i
 
 ### More About The Type System
 
-LM soundly integrates several features that are useful but historically hard to combine.
-The type system is not decidable in the general case.
-However, by providing type annotations on all overloaded functions it becomes decidable.
+System F<: with Specialization is a fancy way of saying Functional / Object-Oriented Programming in formal speak.
+The term/type system is somewhat less expressive than something like Calculus of Constructions, but is probably more familiar to most programmers.
+The type system is strongly normalizing and decidable as long as all overloaded functions are given explicit types.
+
+Prominent Features include:
 
 * Higher Order Functions (Functional Programming)
 * Parametric Polymorphism (Generic Programming)
