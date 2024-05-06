@@ -126,8 +126,33 @@ ccfragment::chain := λ(: l CCFragment)(: r CCFragment). (: (tail(
 )) CCFragment[]);
 
 fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList)(: sloc AST). (: (tail(
-   (let r (maybe-deref(ccfragment::new())))
+   (let e-proto (maybe-deref(ccfragment::new())))
    (print 'Fragment\sApply\s_s)(print k)(print kt)(print '\n_s)
-   (let f (maybe-deref(cccontext::lookup( ctx k kt sloc ))))
+   (let arrow (maybe-deref(cccontext::lookup( ctx k kt sloc ))))
+   (let chain True_u8)
+   (match (maybe-deref(typecheck-slot( kt 'DontChain_s ))) (
+      ()
+      ( (TGround( 'DontChain_s _ )) (set chain False_u8) )
+      ( _ () )
+   ))
+   (let return (maybe-deref(fragment-apply-direct( arrow args e-proto chain ))))
+   (close return)
+)) CCFragment[]);
+
+fragment-apply-direct := λ(: arrow CCFragment)(: args FragList)(: e CCFragment)(: chain U8). (: (tail(
+   (let r (maybe-deref(fragment-chain( args e ))))
    (close r)
 )) CCFragment[]);
+
+fragment-chain := λ(: fragment-ctx FragList)(: e CCFragment). (: (tail(
+   ()
+   (close e)
+)) CCFragment[]);
+#   (assert-typeof( 'fragment-chain::fragment-ctx fragment-ctx List<[Atom,StrictExpr]> ))
+#   (assert-typeof( 'fragment-chain::e e StrictExpr ))
+#   (while fragment-ctx (tail(
+#      (set e (expr::chain( (tail(tail fragment-ctx)) e )))
+#      (set fragment-ctx (head fragment-ctx))
+#   )))
+#   e
+#));
