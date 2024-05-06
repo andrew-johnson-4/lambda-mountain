@@ -1,7 +1,9 @@
 # [Lambda Mountain](https://github.com/andrew-johnson-4/-/wiki)
 
 λ☶ (pronounced Lambda Mountain) is a compiler backend that provides a relatively clean implementation of **System F<: with Specialization**.
-The language is intended only as an intermediate form, so this project is more similar to GCC than to C.
+"System F<: with Specialization" is just a fancy way of saying Functional / Object-Oriented Programming in formal speak.
+The term/type system is somewhat less expressive than something like Calculus of Constructions, but is probably more familiar to most programmers.
+The language syntax is intended only as an intermediate form, so this project is more similar to GCC than to C.
 
 More information is available on the [λ☶ Wiki](https://github.com/andrew-johnson-4/-/wiki).
 
@@ -56,8 +58,6 @@ The programmer gets to inspect and verify *every single transformation down to i
 
 ### More About The Type System
 
-System F<: with Specialization is a fancy way of saying Functional / Object-Oriented Programming in formal speak.
-The term/type system is somewhat less expressive than something like Calculus of Constructions, but is probably more familiar to most programmers.
 The type system is strongly normalizing and decidable as long as all overloaded functions are given explicit types.
 
 Prominent Features include:
