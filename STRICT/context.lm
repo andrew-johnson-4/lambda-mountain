@@ -56,7 +56,7 @@ cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST). (: 
          ))
       ))
    )))
-   (if (==( found True_u8 ) () (tail(
+   (if (==( found True_u8 )) () (tail(
       (print 'Context::lookup\s_s)(print k)(print '\s:\s_s)(print kt)(print '\n_s)
       (exit-error( 'Context::lookup\sCould\sNot\sFind\sSymbol_s sloc ))
    )))
