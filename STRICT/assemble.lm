@@ -11,7 +11,6 @@ compile := λ(). (: (tail(
       ()
       ( (Seq( rst (Glb( k rhs )) )) (tail(
          (if (==( k 'main_s )) (set assemble-argv-referenced True_u8) ())
-         (print 'Bind\s_s)(print k)(print '\s:\s_s)(print (maybe-deref(typecheck-lookup rhs)))(print '\n_s)
          (let global-ctx-2 (maybe-deref(cccontext::bind(
             global-ctx
             k
