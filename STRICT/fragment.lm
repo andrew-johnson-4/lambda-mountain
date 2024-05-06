@@ -103,8 +103,8 @@ ccfragment::get-context := λ(: e CCFragment) . (: (tail(
 ccfragment::set-context := λ(: e CCFragment)(: ctx CCContext). (: (tail(
    (match e (
       ()
-      ( (CCFragment( kvs (*( offset ctx )) )) (
-         (set e (CCFragment( (close kvs) offset (close ctx) ))) 
+      ( (CCFragment( e-kvs (*( e-offset e-ctx )) )) (
+         (set e (CCFragment( (close e-kvs) e-offset (close ctx) ))) 
       ))
    ))
    (close e)
@@ -125,17 +125,9 @@ ccfragment::chain := λ(: l CCFragment)(: r CCFragment). (: (tail(
    (close l)
 )) CCFragment[]);
 
-fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList). (: (tail(
+fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList)(: sloc AST). (: (tail(
    (let r (maybe-deref(ccfragment::new())))
-   (let found False_u8)
-   (while (non-zero ctx) (match ctx (
-      ()
-      ( (CCCtxBind( rst (*( rk (*( rt rf )) )) )) (tail(
-         (print 'Candidate\sFragment\s_s)(print rk)
-         (print '\s:\s_s)(print rt)(print '\n_s)
-         (set ctx rst)
-      )))
-   )))
    (print 'Fragment\sApply\s_s)(print k)(print kt)(print '\n_s)
+   (let f (maybe-deref(cccontext::lookup( ctx k kt sloc ))))
    (close r)
 )) CCFragment[]);
