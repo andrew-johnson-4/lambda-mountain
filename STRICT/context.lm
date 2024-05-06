@@ -34,11 +34,11 @@ cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST). (: 
    (while (non-zero ctx) (match ctx (
       ()
       ( (CCCtxBind( rst (*( rk (*( rt rf )) )) )) (
-         (if (==( k rk )) (
+         (if (==( k rk )) (tail(
+            (print 'Try\sApply\s_s)(print rk)(print '\s:\s_s)(print rt)(print '\n_s)
             (match (maybe-deref(typecheck-slot( rt '->_s ))) (
                ()
                ( (TGround( '->_s _ )) (tail(
-                  (print 'Try\sApply\s_s)(print rk)(print '\s:\s_s)(print rt)(print '\n_s)
                   (let u (maybe-deref(typecheck-apply( sloc rt kt ))))
                   (if (non-zero u) (tail(
                      (set r rf)
@@ -52,7 +52,7 @@ cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST). (: 
                   (set ctx CCCEOF)
                )))
             ))
-         ) (
+         )) (
             (set ctx rst)
          ))
       ))
