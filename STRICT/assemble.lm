@@ -28,6 +28,7 @@ compile := λ(). (: (tail(
             (maybe-deref(ccfragment::new()))
          ))))
          (set global-ctx global-ctx-2)
+         (fragment-apply( global-ctx 'mov_s (maybe-deref(tnil())) FLEOF ))
          (set preview-program rst)
       )))
       ( (Seq( rst (ASTType( lhs rhs )) )) (tail(
