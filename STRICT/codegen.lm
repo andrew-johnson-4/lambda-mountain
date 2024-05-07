@@ -346,6 +346,8 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: args AST)(: 
 
 compile-stack-call-push-args := λ(: ctx CCContext)(: args AST)(: inner-offset I64)(: outer-offset I64). (: (tail(
    (let r (maybe-deref(ccfragment::new())))
+   (let e1 (maybe-deref(compile-push-rvalue( ctx args inner-offset ))))
+   (set r e1)
    (close r)
 )) CCFragment[]);
 
@@ -361,6 +363,25 @@ compile-declare-cstring := λ(: val String). (: (tail(
 
 compile-push-rvalue := λ(: ctx CCContext)(: rval AST)(: offset I64). (: (tail(
    (let r (maybe-deref(ccfragment::new())))
+   (match (typecheck-slot( (maybe-deref(typecheck-lookup rval)) 'Cons_s )) (
+      ()
+      ( (Ground( 'Cons_s _ )) (
+         (match rval (
+            ()
+            ( (App( le re )) (tail(
+               (let e1 (maybe-deref(compile-expr( ctx le offset Used ))))
+               (let e2 (maybe-deref(compile-expr( ctx re (ccfragment::get-offset e1) Used ))))
+               (set r (maybe-deref(ccfragment::chain( e1 e2 ))))
+            )))
+            ( u (exit-error( 'Invalid\sRvalue_s rval )))
+         ))
+      ))
+      ( _ (tail(
+         (let e1 (maybe-deref(compile-expr( ctx rval offset Used ))))
+         # push if not a stack variable (fragment-apply( ctx 'push lt (() e1) e1 ))
+         (set r e1)
+      )))
+   ))
    (close r)
 )) CCFragment[]);
 
