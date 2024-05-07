@@ -270,9 +270,9 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
       ))
       ( u (exit-error( 'compile-expr\sUnsupported\sExpression_s term )))
    ))
-   (if (non-zero(maybe-deref(ccfragment::get-context( e )))) () (tail(
+   (if (non-zero(maybe-deref(ccfragment::get-context( e )))) () (
       (exit-error( 'Context\sBecame\sNull_s term ))
-   )))
+   ))
    (close e)
 )) CCFragment[]);
 
