@@ -92,12 +92,12 @@ ccfragment::get := λ(: e CCFragment)(: k String). (: (tail(
       ( (CCFragment( kvs (*( offset ctx )) )) (
          (while (non-zero kvs) (match kvs (
             ()
-            ( (CCKVSeq( rst (*( kvs-k kvs-v )) )) (tail(
+            ( (CCKVSeq( rst (*( kvs-k kvs-v )) )) (
                (if (==( k kvs-k )) (tail(
                   (set r kvs-v)
                   (set kvs CCKVEOF)
                )) (set kvs rst))
-            )))
+            ))
          )))
       ))
    ))
