@@ -136,7 +136,6 @@ fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList)(: 
 
 fragment-apply-direct := λ(: arrow CCFragment)(: args FragList)(: e CCFragment)(: chain U8). (: (tail(
    (let r (maybe-deref(fragment-chain( args e ))))
-   (let r-2 (maybe-deref(ccfragment::set( r 'program_s (SAtom '\tApply\sDirect\n_s) ))))(set r r-2)
    (close r)
 )) CCFragment[]);
 
