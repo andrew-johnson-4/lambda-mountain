@@ -120,14 +120,52 @@ ccfragment::set-offset := λ(: e CCFragment)(: offset I64). (: (tail(
    (close e)
 )) CCFragment[]);
 
-ccfragment::chain := λ(: l CCFragment)(: r CCFragment). (: (tail(
-   ()
-   (close l)
+fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList)(: sloc AST). (: (tail(
+   (let e-proto (maybe-deref(ccfragment::new())))
+   (print 'Fragment\sApply\s_s)(print k)(print kt)(print '\n_s)
+   (let arrow (maybe-deref(cccontext::lookup( ctx k kt sloc ))))
+   (let chain True_u8)
+   (match (maybe-deref(typecheck-slot( kt 'DontChain_s ))) (
+      ()
+      ( (TGround( 'DontChain_s _ )) (set chain False_u8) )
+      ( _ () )
+   ))
+   (let return (maybe-deref(fragment-apply-direct( arrow args e-proto chain ))))
+   (close return)
 )) CCFragment[]);
 
-fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList)(: sloc AST). (: (tail(
-   (let r (maybe-deref(ccfragment::new())))
-   (print 'Fragment\sApply\s_s)(print k)(print kt)(print '\n_s)
-   (let f (maybe-deref(cccontext::lookup( ctx k kt sloc ))))
+fragment-apply-direct := λ(: arrow CCFragment)(: args FragList)(: e CCFragment)(: chain U8). (: (tail(
+   (let r (maybe-deref(fragment-chain( args e ))))
    (close r)
+)) CCFragment[]);
+
+ccfragment::chain := λ(: l CCFragment)(: r CCFragment). (: (tail(
+   (let e1 (maybe-deref(ccfragment::set-context(
+      l
+      (maybe-deref(ccfragment::get-context( r )))
+   ))))
+   (close e1)
+)) CCFragment[]);
+
+fragment-chain := λ(: fragment-ctx FragList)(: e CCFragment). (: (tail(
+   (let fragment-chain FLEOF)
+   (while (non-zero fragment-ctx) (match fragment-ctx (
+      ()
+      ( (FLSeq( rst cf )) (tail(
+         (set fragment-chain (FLSeq(
+            (close fragment-chain)
+            cf
+         )))
+         (set fragment-ctx rst)
+      )))
+   )))
+   (while (non-zero fragment-chain) (match fragment-chain (
+      ()
+      ( (FLSeq( rst cf )) (tail(
+         (let e1 (maybe-deref(ccfragment::chain( e cf ))))
+         (set e e1)
+         (set fragment-chain rst)
+      )))
+   )))
+   (close e)
 )) CCFragment[]);
