@@ -103,7 +103,8 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
                   (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
                   term
                ))))
-               (set e e3)
+               (let e3-2 (maybe-deref(ccfragment::set-context( e3 ctx ))))
+               (set e e3-2)
             )))
             ( (WrappedGlobal( id rst )) (tail(
                (let e1 (maybe-deref(compile-expr( ctx rhs stack-offset Used ))))
@@ -116,7 +117,8 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
                   (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
                   term
                ))))
-               (set e e3)
+               (let e3-2 (maybe-deref(ccfragment::set-context( e3 ctx ))))
+               (set e e3-2)
             )))
             ( _ (
                (exit-error( 'Unknown\sVariable_s term ))
