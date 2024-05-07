@@ -120,11 +120,6 @@ ccfragment::set-offset := λ(: e CCFragment)(: offset I64). (: (tail(
    (close e)
 )) CCFragment[]);
 
-ccfragment::chain := λ(: l CCFragment)(: r CCFragment). (: (tail(
-   ()
-   (close l)
-)) CCFragment[]);
-
 fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList)(: sloc AST). (: (tail(
    (let e-proto (maybe-deref(ccfragment::new())))
    (print 'Fragment\sApply\s_s)(print k)(print kt)(print '\n_s)
