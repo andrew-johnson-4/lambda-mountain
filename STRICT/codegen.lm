@@ -365,7 +365,7 @@ compile-push-rvalue := λ(: ctx CCContext)(: rval AST)(: offset I64). (: (tail(
    (let r (maybe-deref(ccfragment::new())))
    (match (typecheck-slot( (maybe-deref(typecheck-lookup rval)) 'Cons_s )) (
       ()
-      ( (Ground( 'Cons_s _ )) (
+      ( (TGround( 'Cons_s _ )) (
          (match rval (
             ()
             ( (App( le re )) (tail(
