@@ -363,6 +363,7 @@ compile-declare-cstring := λ(: val String). (: (tail(
 
 compile-push-rvalue := λ(: ctx CCContext)(: rval AST)(: offset I64). (: (tail(
    (let r (maybe-deref(ccfragment::new())))
+   (print 'Push\sRvalue\s_s)(print (maybe-deref(typecheck-lookup rval)))(print '\n_s)
    (match (typecheck-slot( (maybe-deref(typecheck-lookup rval)) 'Cons_s )) (
       ()
       ( (TGround( 'Cons_s _ )) (
