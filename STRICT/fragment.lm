@@ -87,11 +87,33 @@ ccfragment::expression := λ(: val String) . (: (tail(
 
 ccfragment::get := λ(: e CCFragment)(: k String). (: (tail(
    (let r SNil)
+   (match e (
+      ()
+      ( (CCFragment( kvs (*( offset ctx )) )) (
+         (while (non-zero kvs) (match kvs (
+            ()
+            ( (CCKVSeq( rst (*( kvs-k kvs-v )) )) (
+               (if (==( k kvs-k )) (tail(
+                  (set r kvs-v)
+                  (set kvs CCKVEOF)
+               )) (set kvs rst))
+            ))
+         )))
+      ))
+   ))
    (close r)
 )) S[]);
 
 ccfragment::set := λ(: e CCFragment)(: k String)(: v S). (: (tail(
-   ()
+   (match e (
+      ()
+      ( (CCFragment( kvs (*( offset ctx )) )) (
+         (set e (CCFragment(
+            (close(CCKVSeq( (close kvs) k v )))
+            offset (close ctx)
+         )))
+      ))
+   ))
    (close e)
 )) CCFragment[]);
 
@@ -144,7 +166,42 @@ ccfragment::chain := λ(: l CCFragment)(: r CCFragment). (: (tail(
       l
       (maybe-deref(ccfragment::get-context( r )))
    ))))
-   (close e1)
+   (let e1-2 (maybe-deref(ccfragment::set(
+      e1 'frame_s
+      (SCons(
+         (ccfragment::get( l 'frame_s ))
+         (ccfragment::get( r 'frame_s ))
+      ))
+   ))))
+   (let e1-3 (maybe-deref(ccfragment::set(
+      e1-2 'unframe_s
+      (SCons(
+         (ccfragment::get( l 'unframe_s ))
+         (ccfragment::get( r 'unframe_s ))
+      ))
+   ))))
+   (let e1-4 (maybe-deref(ccfragment::set(
+      e1-3 'text_s
+      (SCons(
+         (ccfragment::get( l 'text_s ))
+         (ccfragment::get( r 'text_s ))
+      ))
+   ))))
+   (let e1-5 (maybe-deref(ccfragment::set(
+      e1-4 'data_s
+      (SCons(
+         (ccfragment::get( l 'data_s ))
+         (ccfragment::get( r 'data_s ))
+      ))
+   ))))
+   (let e1-6 (maybe-deref(ccfragment::set(
+      e1-5 'program_s
+      (SCons(
+         (ccfragment::get( l 'program_s ))
+         (ccfragment::get( r 'program_s ))
+      ))
+   ))))
+   (close e1-6)
 )) CCFragment[]);
 
 fragment-chain := λ(: fragment-ctx FragList)(: e CCFragment). (: (tail(
