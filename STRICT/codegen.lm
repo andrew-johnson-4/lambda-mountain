@@ -56,8 +56,8 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
       ( ASTNil () )
       ( ASTEOF () )
       ( (Var( id )) (tail(
-         (let e1 (maybe-deref(compile-push-var( ctx id (maybe-deref(typecheck-lookup term)) stack-offset ))))
-         (set e e1)
+         (let e1 (maybe-deref(compile-push-var( ctx id (maybe-deref(typecheck-lookup term)) stack-offset ))))(set e e1)
+         (let e-2 (maybe-deref(ccfragment::set-context( e ctx ))))(set e e-2)
       )))
       ( (Lit( val )) (tail(
          (let ltype (maybe-deref(typecheck-lookup term)))
@@ -72,6 +72,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
                (set e e1)
             )))
          ))
+         (let e-2 (maybe-deref(ccfragment::set-context( e ctx ))))(set e e-2)
       )))
       ( (Asc( t tt )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset used ))))
