@@ -107,7 +107,7 @@ ccfragment::get := λ(: e CCFragment)(: k String). (: (tail(
 ccfragment::set := λ(: e CCFragment)(: k String)(: v S). (: (tail(
    (match e (
       ()
-      ( (CCFragment( kvs offset ctx )) (
+      ( (CCFragment( kvs (*( offset ctx )) )) (
          (set e (CCFragment(
             (close(CCKVSeq( (close kvs) k v )))
             offset (close ctx)
