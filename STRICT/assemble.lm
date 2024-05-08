@@ -64,12 +64,12 @@ compile-type := λ(: ctx CCContext)(: lhs AST)(: rhs AST). (: (tail(
    (while (non-zero def) (match def (
       ()
       ( (App( (App( tds (Var '|_s) )) body )) (tail(
-         (compile-type-case( base-type body case-number ))
+         (let ctx-2 (maybe-deref(compile-type-case( ctx base-type body case-number ))))(set ctx ctx-2)
          (set case-number (+( case-number 1_u64 )))
          (set def tds)
       )))
       ( body (tail(
-         (compile-type-case( base-type body case-number ))
+         (let ctx-2 (maybe-deref(compile-type-case( ctx base-type body case-number ))))(set ctx ctx-2)
          (set case-number (+( case-number 1_u64 )))
          (set def ASTEOF)
       )))
