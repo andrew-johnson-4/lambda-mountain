@@ -89,6 +89,11 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset Used ))))
          (set e e1)
       )))
+      ( (App( (Var 'sizeof_s) t )) (tail(
+         (print 'TODO\sSizeof\n_s)
+         (let e1 (maybe-deref(compile-expr( ctx t stack-offset Used ))))
+         (set e e1)
+      )))
       ( (App( (App( (Var 'as_s) t )) (Lit tt) )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset used ))))
          (set e e1)
