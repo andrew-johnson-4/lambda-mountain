@@ -100,7 +100,7 @@ compile-type-case := λ(: ctx CCContext)(: base-type Type)(: rhs AST)(: case-num
 
 compile-define-head-accessor := λ(: ctx CCContext)(: base-type Type)(: case-number U64). (: (tail(
    (let ctx-2 (maybe-deref(cccontext::bind(
-      ctx '.0_s (maybe-deref(tarrow( base-type (tu64()) )))
+      ctx '.0_s (maybe-deref(tarrow( base-type (maybe-deref(tu64())) )))
       (maybe-deref(ccfragment::new()))
    ))))
    (close ctx-2)
@@ -113,7 +113,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
 
 compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types Type)(: rtype Type)(: case-number U64). (: (tail(
    (let ctx-2 (maybe-deref(cccontext::bind(
-      ctx tag (maybe-deref(tarrow( arg-types (tu64()) )))
+      ctx tag (maybe-deref(tarrow( arg-types rtype )))
       (maybe-deref(ccfragment::new()))
    ))))
    (close ctx-2)
