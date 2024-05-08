@@ -248,6 +248,14 @@ tlocalvariable := λ. (: (tail(
    )))
 )) Type[]);
 
+tu64 := λ. (: (tail(
+   ()
+   (close (TGround(
+      'U64_s
+      (close TypeEOF)
+   )))
+)) Type[]);
+
 tglobalvariable := λ. (: (tail(
    ()
    (close (TGround(
