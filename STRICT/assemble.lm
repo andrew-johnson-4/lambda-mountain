@@ -58,7 +58,27 @@ compile := λ(). (: (tail(
 )) Nil);
 
 compile-type := λ(: ctx CCContext)(: lhs AST)(: rhs AST). (: (tail(
-   ()
+   (let def rhs)
+   (let base-type (maybe-deref(typecheck-infer-type-compound( lhs ))))
+   (let case-number 0_u64)
+   (while (non-zero def) (match def (
+      ()
+      ( (App( (App( tds (Var '|_s) )) body )) (tail(
+         (compile-type-case( base-type body case-number ))
+         (set case-number (+( case-number 1_u64 )))
+         (set def tds)
+      )))
+      ( body (tail(
+         (compile-type-case( base-type body case-number ))
+         (set case-number (+( case-number 1_u64 )))
+         (set def ASTEOF)
+      )))
+   )))
+   (close ctx)
+)) CCContext[]);
+
+compile-type-case := λ(: ctx CCContext)(: base-type Type)(: rhs AST)(: case-number U64). (: (tail(
+   (print 'DefineTypeCase\s_s)(print base-type)(print '\o_s)(print case-number)(print '\n_s)
    (close ctx)
 )) CCContext[]);
 
