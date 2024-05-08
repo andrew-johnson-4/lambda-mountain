@@ -79,6 +79,37 @@ compile-type := λ(: ctx CCContext)(: lhs AST)(: rhs AST). (: (tail(
 
 compile-type-case := λ(: ctx CCContext)(: base-type Type)(: rhs AST)(: case-number U64). (: (tail(
    (print 'DefineTypeCase\s_s)(print base-type)(print '\o_s)(print case-number)(print '\n_s)
+   (match body (
+      ()
+      ( (Lit tag) (tail(
+         (let ctx-2 (maybe-deref(compile-define-head-accessor( ctx base-type ))))(set ctx ctx-2)
+         (let rtype (TAnd( (close base-type) (parse-type tag) )) )
+         (let ctx-3 (maybe-deref(compile-define-tag-constructor( ctx tag TAny rtype ))))(set ctx ctx-3)
+      )))
+      ( (App( (Lit tag) args )) (tail(
+         (let atype (maybe-deref(typecheck-infer-type-compound args)))
+         (let rtype (TAnd( (close base-type) (parse-type tag) )))
+         (let ctx-2 (maybe-deref(compile-define-head-accessor( ctx base-type ))))(set ctx ctx-2)
+         (let ctx-3 (maybe-deref(compile-define-tag-constructor( ctx tag atype rtype ))))(set ctx ctx-3)
+         (let ctx-4 (maybe-deref(compile-define-field-accessors( ctx (maybe-deref(parse-type tag)) atype ))))(set ctx ctx-4)
+      )))
+      ( _ () )
+   ))
+   (close ctx)
+)) CCContext[]);
+
+compile-define-head-accessor := λ(: ctx CCContext)(: base-type Type). (: (tail(
+   ()
+   (close ctx)
+)) CCContext[]);
+
+compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-types Type). (: (tail(
+   ()
+   (close ctx)
+)) CCContext[]);
+
+compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types Type)(: rtype Type). (: (tail(
+   ()
    (close ctx)
 )) CCContext[]);
 
