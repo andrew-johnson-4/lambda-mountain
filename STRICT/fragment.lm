@@ -203,7 +203,26 @@ fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (t
 )) CCContext[]);
 
 fragment-apply-context := λ(: ctx CCContext)(: rhs S)(: e CCFragment). (: (tail(
-   ()
+   (match rhs (
+      ()
+      ( (SCons( (SAtom 'App_s) (SCons( (SAtom '.program_s) prg )) )) (tail(
+         ()
+         (print 'Render\sProgram:\s_s)(print prg)(print '\n_s)
+      )))
+      ( (SCons( (SAtom 'App_s) (SCons( (SAtom '.expression_s) prg )) )) (tail(
+         ()
+         (print 'Render\sProgram:\s_s)(print prg)(print '\n_s)
+      )))
+      ( (SCons( (SAtom 'App_s) (SCons( lt rt )) )) (tail(
+         (let e-2 (maybe-deref(fragment-apply-context( ctx lt e ))))
+         (let e-3 (maybe-deref(fragment-apply-context( ctx lt e-2 ))))
+         (set e e-3)
+      )))
+      ( u (tail(
+         (print 'Invalid\sApplied\sFragment\n_s)
+         (print rhs)(print '\n_s)
+      )))
+   ))
    (close e)
 )) CCFragment[]);
 
