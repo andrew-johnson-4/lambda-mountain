@@ -113,9 +113,10 @@ to-string := λ(: i U64). (: (tail(
 )) String);
 
 to-string := λ(: i I64). (: (tail(
+   (let sign SNil)
    (let r SNil)
    (if (<( i 0_i64 )) (tail(
-      (set r (SAtom '-_s))
+      (set sign (SAtom '-_s))
       (set i (-( 0_i64 i )))
    )) ())
    (let c 0_u8)
@@ -132,7 +133,7 @@ to-string := λ(: i I64). (: (tail(
    (if (non-zero r) () (
       (set r (SAtom '0_s))
    ))
-   (clone-rope r)
+   (clone-rope(SCons( (close sign) (close r) )))
 )) String);
 
 uuid-counter := 0_u64;

@@ -150,9 +150,9 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (set text (SCons( (close text) (ccfragment::get( e3 'frame_s )) )))
          (set text (SCons( (close text) (ccfragment::get( e3 'program_s )) )))
          (set text (SCons( (close text) (close(SAtom '\t_s)) )))
-         (set text (SCons( (close text) (ccfragment::get( e3 'expression_s )) )))
-         (set text (SCons( (close text) (close(SAtom '\s_s)) )))
-         (set text (SCons( (close text) (close(SAtom label-do-loop)) )))
+#         (set text (SCons( (close text) (ccfragment::get( e3 'expression_s )) )))
+#         (set text (SCons( (close text) (close(SAtom '\s_s)) )))
+#         (set text (SCons( (close text) (close(SAtom label-do-loop)) )))
          (set text (SCons( (close text) (close(SAtom '\n\tjmp\s_s)) )))
          (set text (SCons( (close text) (close(SAtom label-end-loop)) )))
          (set text (SCons( (close text) (close(SAtom '\n_s)) )))
@@ -192,10 +192,10 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (set text (SCons( (close text) (ccfragment::get( e4 'frame_s )) )))
          (set text (SCons( (close text) (ccfragment::get( e4 'program_s )) )))
          (set text (SCons( (close text) (close(SAtom '\t_s)) )))
-         (set text (SCons( (close text) (ccfragment::get( e4 'expression_s )) )))
-         (set text (SCons( (close text) (close(SAtom '\s_s)) )))
-         (set text (SCons( (close text) (close(SAtom label-false-branch)) )))
-         (set text (SCons( (close text) (close(SAtom ':\n_s)) )))
+#         (set text (SCons( (close text) (ccfragment::get( e4 'expression_s )) )))
+#         (set text (SCons( (close text) (close(SAtom '\s_s)) )))
+#         (set text (SCons( (close text) (close(SAtom label-false-branch)) )))
+#         (set text (SCons( (close text) (close(SAtom '\n_s)) )))
          (set text (SCons( (close text) (ccfragment::get( e3 'frame_s )) )))
          (set text (SCons( (close text) (ccfragment::get( e3 'program_s )) )))
          (set text (SCons( (close text) (ccfragment::get( e3 'unframe_s )) )))
@@ -354,7 +354,13 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: args AST)(: 
 
 )) CCFragment[]);
 
+compile-translate-local-variables := λ(: ctx CCContext)(: delta I64). (: (tail(
+   (print 'TODO\stranslate\slocal\svariables\n_s)
+   (close ctx)
+)) CCContext[]);
+
 compile-stack-call-push-args := λ(: ctx CCContext)(: args AST)(: inner-offset I64)(: outer-offset I64). (: (tail(
+   (let ctx-2 (maybe-deref(compile-translate-local-variables( ctx 0_i64 ))))(set ctx ctx-2)
    (let r (maybe-deref(ccfragment::new())))
    (let e1 (maybe-deref(compile-push-rvalue( ctx args inner-offset ))))
    (set r e1)
@@ -371,24 +377,40 @@ compile-declare-cstring := λ(: val String). (: (tail(
    (close r)
 )) CCFragment[]);
 
+compile-maybe-push-stack := λ(: ctx CCContext)(: fragment CCFragment)(: expression-type Type)(: sloc AST). (: (tail(
+   (match (maybe-deref(ccfragment::get( fragment 'fragment-type_s ))) (
+      ()
+      ( (SAtom 'StackVariable_s) () )
+      ( _ (tail(
+         (let f1 (maybe-deref(fragment-apply(
+            ctx 'push_s expression-type
+            (FLSeq( (close FLEOF) fragment )) sloc
+         ))))
+         (set fragment f1)
+      )))
+   ))
+   (close fragment)
+)) CCFragment[]);
+
 compile-push-rvalue := λ(: ctx CCContext)(: rval AST)(: offset I64). (: (tail(
    (let r (maybe-deref(ccfragment::new())))
    (match (typecheck-slot( (maybe-deref(typecheck-lookup rval)) 'Cons_s )) (
       ()
-      ( (TGround( 'Cons_s _ )) (
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
          (match rval (
             ()
             ( (App( le re )) (tail(
                (let e1 (maybe-deref(compile-push-rvalue( ctx le offset ))))
                (let e2 (maybe-deref(compile-expr( ctx re (ccfragment::get-offset e1) Used ))))
+               (let e2-2 (maybe-deref(compile-maybe-push-stack( ctx e2 p2 rval ))))(set e2 e2-2)
                (set r (maybe-deref(ccfragment::chain( e1 e2 ))))
             )))
             ( u (exit-error( 'Invalid\sRvalue_s rval )))
          ))
       ))
-      ( _ (tail(
+      ( et (tail(
          (let e1 (maybe-deref(compile-expr( ctx rval offset Used ))))
-         # push if not a stack variable (fragment-apply( ctx 'push lt (() e1) e1 ))
+         (let e1-2 (maybe-deref(compile-maybe-push-stack( ctx e1 et rval ))))(set e1 e1-2)
          (set r e1)
       )))
    ))
