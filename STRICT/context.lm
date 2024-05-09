@@ -34,7 +34,7 @@ cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST). (: 
    (while (non-zero ctx) (match ctx (
       ()
       ( (CCCtxBind( rst (*( rk (*( rt rf )) )) )) (
-         (if (==( k rk )) (tail(
+         (if (==( k rk )) (
             (match (maybe-deref(typecheck-slot( rt '->_s ))) (
                ()
                ( (TGround( '->_s _ )) (tail(
@@ -52,7 +52,7 @@ cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST). (: 
                   (set ctx CCCEOF)
                )))
             ))
-         )) (
+         ) (
             (set ctx rst)
          ))
       ))
