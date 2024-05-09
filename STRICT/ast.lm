@@ -24,6 +24,7 @@ ast-parsed-program := (: ASTEOF AST);
 to-s := λ(: term AST). (: (tail(
    (let s SNil)
    (match term (
+      ()
       ( (Var v) (
          (set s (SCons(
             (close(SAtom 'Var_s))
