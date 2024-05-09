@@ -173,25 +173,39 @@ fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList)(: 
    (close return)
 )) CCFragment[]);
 
-fragment-destructure-lhs := λ(: arrow CCFragment)(: args FragList). (: (tail(
-   (let c (maybe-deref(cccontext::new())))
-   (close c)
+fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (tail(
+   ()
+   (close ctx)
 )) CCContext[]);
 
-fragment-apply-context := λ(: ctx CCContext)(: arrow CCFragment). (: (tail(
-   (let f (maybe-deref(ccfragment::new())))
-   (close f)
+fragment-apply-context := λ(: ctx CCContext)(: rhs S)(: e CCFragment). (: (tail(
+   ()
+   (close e)
 )) CCFragment[]);
 
 fragment-apply-direct := λ(: arrow CCFragment)(: args FragList)(: e-proto CCFragment)(: chain U8). (: (tail(
-   (let f-ctx (maybe-deref(fragment-destructure-lhs( arrow args ))))
-   (let f-app (maybe-deref(fragment-apply-context( f-ctx arrow ))))
+   (match (maybe-deref(ccfragment::get( arrow 'fragment_s ))) (
+      ()
+      ( (SCons( (SAtom 'Abs_s) (SCons( lhs rhs )) )) (tail(
+         (let f-ctx (maybe-deref(cccontext::new())))
+         (let f-ctx-2 (maybe-deref(fragment-destructure-lhs( f-ctx lhs args ))))
+         (let f-app (maybe-deref(fragment-apply-context( f-ctx-2 rhs e-proto ))))
+         (set e-proto f-app)
+      )))
+      ( _ (tail(
+         (print 'Invalid\sFragment\sApplied:\n_s)
+         (print arrow)(print '\n_s)
+         (exit 1_u64)
+      )))
+   ))
    #set context to e-proto
    #set offset to e-proto
    #only if chain, chain
-   (let r (maybe-deref(fragment-chain( args f-app ))))
-   (print 'Apply\sDirect\n_s)(print arrow)
-   (close r)
+   (if (==( chain True_u8 )) (tail(
+      (let r (maybe-deref(fragment-chain( args e-proto ))))
+      (set e-proto r)
+   )) ())
+   (close e-proto)
 )) CCFragment[]);
 
 ccfragment::chain := λ(: l CCFragment)(: r CCFragment). (: (tail(
