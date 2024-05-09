@@ -50,6 +50,23 @@ close := λ(: x WrappedFragment). (: (tail(
    (as R8 WrappedFragment[])
 )) WrappedFragment[]);
 
+print := λ(: x CCFragment). (: (
+   (match x ( 
+      ()
+      ( (CCFragment( kvs (*( offset ctx )) )) (tail(
+         (print 'Fragment\n_s)
+         (print '\tOffset\s=\s_s)(print offset)(print '\n_s)
+         (while (non-zero kvs) (match kvs (
+            ()
+            ( (KVSeq( rst (*( k v )) )) (tail(
+               (print '\t_s)(print k)(print '\s=\s_s)(print v)(print '\n_s)
+               (set kvs rst)
+            )))
+         )))
+      )))
+   ))
+) Nil);
+
 ccfragment::new := λ . (: (tail(
    (let r (CCFragment(
       (close CCKVEOF)
@@ -158,6 +175,7 @@ fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList)(: 
 
 fragment-apply-direct := λ(: arrow CCFragment)(: args FragList)(: e CCFragment)(: chain U8). (: (tail(
    (let r (maybe-deref(fragment-chain( args e ))))
+   (print 'Apply\sDirect\n_s)(print arrow)
    (close r)
 )) CCFragment[]);
 
