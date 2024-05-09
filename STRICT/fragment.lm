@@ -213,6 +213,7 @@ fragment-apply-direct := λ(: arrow CCFragment)(: args FragList)(: e-proto CCFra
       ( (SCons( (SAtom 'Abs_s) (SCons( lhs rhs )) )) (tail(
          (let f-ctx (maybe-deref(cccontext::new())))
          (let f-ctx-2 (maybe-deref(fragment-destructure-lhs( f-ctx lhs args ))))
+         (print f-ctx-2)
          (let f-app (maybe-deref(fragment-apply-context( f-ctx-2 rhs e-proto ))))
          (set e-proto f-app)
       )))

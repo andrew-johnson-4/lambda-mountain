@@ -11,6 +11,18 @@ non-zero := λ(: t CCContext). (: (tail(
    r
 )) U64);
 
+print := λ(: ctx CCContext). (: (tail(
+   (print 'Context:\n_s)
+   (while (non-zero ctx) (match ctx (
+      ()
+      ( (CCCtxBind( rst (*( k (*( kt kf )) )) )) (tail(
+         (print 'Context\sKey\s_s)(print k)(print '\s:\s_s)(print kt)(print '\n_s)
+         (print kf)
+         (set ctx rst)
+      )))
+   )))
+)) Nil);
+
 close := λ(: x CCContext). (: (tail(
    (mov( (malloc(sizeof CCContext)) R8 ))
    (mov( x 0_u64 (as R8 CCContext[]) ))
