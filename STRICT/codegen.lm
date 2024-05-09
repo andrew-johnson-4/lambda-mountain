@@ -360,7 +360,7 @@ compile-translate-local-variables := λ(: ctx CCContext)(: delta I64). (: (tail(
 )) CCContext[]);
 
 compile-stack-call-push-args := λ(: ctx CCContext)(: args AST)(: inner-offset I64)(: outer-offset I64). (: (tail(
-   (let ctx-2 (compile-translate-local-variables( ctx 0_i64 )))(set ctx ctx-2)
+   (let ctx-2 (maybe-deref(compile-translate-local-variables( ctx 0_i64 ))))(set ctx ctx-2)
    (let r (maybe-deref(ccfragment::new())))
    (print 'Push\sRvalue\n_s)
    (let e1 (maybe-deref(compile-push-rvalue( ctx args inner-offset ))))
