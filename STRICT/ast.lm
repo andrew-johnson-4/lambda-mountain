@@ -21,6 +21,11 @@ type UPair (UPair( Used , Used ));
 ast-tokenized-program := (: SNil S);
 ast-parsed-program := (: ASTEOF AST);
 
+to-s := λ(: r AST). (: (tail(
+   (let s SNil)
+   (close s)
+)) S[]);
+
 == := λ(: lu Used)(: ru Used). (: (tail(
    (let r 0_u64)
    (match (UPair( lu ru )) (
