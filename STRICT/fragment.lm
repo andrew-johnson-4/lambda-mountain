@@ -86,7 +86,6 @@ ccfragment::expression := λ(: val String) . (: (tail(
 )) CCFragment[]);
 
 ccfragment::get := λ(: e CCFragment)(: k String). (: (tail(
-   (print 'Fragment::get\n_s)
    (let r SNil)
    (match e (
       ()
@@ -102,7 +101,6 @@ ccfragment::get := λ(: e CCFragment)(: k String). (: (tail(
          )))
       ))
    ))
-   (print 'Fragment::got\n_s)
    (close r)
 )) S[]);
 
@@ -148,16 +146,13 @@ fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList)(: 
    (let e-proto (maybe-deref(ccfragment::new())))
    (print 'Fragment\sApply\s_s)(print k)(print kt)(print '\n_s)
    (let arrow (maybe-deref(cccontext::lookup( ctx k kt sloc ))))
-   (print 'Fragment\sApply\sLooked\sUp_s)(print k)(print kt)(print '\n_s)
    (let chain True_u8)
    (match (maybe-deref(typecheck-slot( kt 'DontChain_s ))) (
       ()
       ( (TGround( 'DontChain_s _ )) (set chain False_u8) )
       ( _ () )
    ))
-   (print 'Fragment\sApply\sDont\sChain_s)(print k)(print kt)(print '\n_s)
    (let return (maybe-deref(fragment-apply-direct( arrow args e-proto chain ))))
-   (print 'Fragment\sApplied\s_s)(print k)(print kt)(print '\n_s)
    (close return)
 )) CCFragment[]);
 
