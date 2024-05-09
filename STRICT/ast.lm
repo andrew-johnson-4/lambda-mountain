@@ -21,8 +21,42 @@ type UPair (UPair( Used , Used ));
 ast-tokenized-program := (: SNil S);
 ast-parsed-program := (: ASTEOF AST);
 
-to-s := λ(: r AST). (: (tail(
+to-s := λ(: term AST). (: (tail(
    (let s SNil)
+   (match term (
+      ( (Var v) (
+         (set s (SCons(
+            (close(SAtom 'Var_s))
+            (close(SAtom v))
+         )))
+      ))
+      ( (Lit v) (
+         (set s (SCons(
+            (close(SAtom 'Lit_s))
+            (close(SAtom v))
+         )))
+      ))
+      ( (App( lt rt )) (
+         (set s (SCons(
+            (close(SAtom 'App_s))
+            (close(SCons(
+               (to-s lt)
+               (to-s rt)
+            )))
+         )))
+      ))
+      ( (Abs( lt rt )) (
+         (set s (SCons(
+            (close(SAtom 'Abs_s))
+            (close(SCons(
+               (to-s lt)
+               (to-s rt)
+            )))
+         )))
+      ))
+      ( (Asc( t tt )) (set s (maybe-deref(to-s t))) )
+      ( _ () )
+   ))
    (close s)
 )) S[]);
 
