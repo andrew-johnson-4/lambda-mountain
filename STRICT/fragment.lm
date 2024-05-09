@@ -173,8 +173,23 @@ fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList)(: 
    (close return)
 )) CCFragment[]);
 
-fragment-apply-direct := λ(: arrow CCFragment)(: args FragList)(: e CCFragment)(: chain U8). (: (tail(
-   (let r (maybe-deref(fragment-chain( args e ))))
+fragment-destructure-lhs := λ(: arrow CCFragment)(: args FragList). (: (tail(
+   (let c (maybe-deref(cccontext::new())))
+   (close c)
+)) CCContext[]);
+
+fragment-apply-context := λ(: ctx CCContext)(: arrow CCFragment). (: (tail(
+   (let f (maybe-deref(ccfragment::new())))
+   (close f)
+)) CCFragment[]);
+
+fragment-apply-direct := λ(: arrow CCFragment)(: args FragList)(: e-proto CCFragment)(: chain U8). (: (tail(
+   (let f-ctx (maybe-deref(fragment-destructure-lhs( arrow args ))))
+   (let f-app (maybe-deref(fragment-apply-context( f-ctx arrow ))))
+   #set context to e-proto
+   #set offset to e-proto
+   #only if chain, chain
+   (let r (maybe-deref(fragment-chain( args f-app ))))
    (print 'Apply\sDirect\n_s)(print arrow)
    (close r)
 )) CCFragment[]);
