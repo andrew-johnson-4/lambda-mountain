@@ -55,7 +55,10 @@ to-s := λ(: term AST). (: (tail(
             )))
          )))
       ))
-      ( (Asc( t tt )) (set s (maybe-deref(to-s t))) )
+      ( (Asc( t tt )) (tail(
+          (let s-2 (maybe-deref(to-s t)))
+          (set s s-2)
+      )))
       ( _ () )
    ))
    (close s)
