@@ -23,7 +23,7 @@ compile := λ(). (: (tail(
       ( (Seq( rst (Fragment( k rhs )) )) (tail(
          (let fragment (maybe-deref(ccfragment::new())))
          (let fragment-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))
-         (set fragment-3 (maybe-deref(ccfragment::set( fragment-2 'program_s (maybe-deref(to-s rhs)) ))))
+         (let fragment-3 (maybe-deref(ccfragment::set( fragment-2 'fragment_s (maybe-deref(to-s rhs)) ))))
          (let global-ctx-2 (maybe-deref(cccontext::bind(
             global-ctx
             k
