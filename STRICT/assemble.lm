@@ -78,7 +78,6 @@ compile-type := λ(: ctx CCContext)(: lhs AST)(: rhs AST). (: (tail(
 )) CCContext[]);
 
 compile-type-case := λ(: ctx CCContext)(: base-type Type)(: rhs AST)(: case-number U64). (: (tail(
-   (print 'DefineTypeCase\s_s)(print base-type)(print '\o_s)(print case-number)(print '\n_s)
    (match rhs (
       ()
       ( (Lit tag) (tail(
