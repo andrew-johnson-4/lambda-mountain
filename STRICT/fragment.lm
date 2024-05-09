@@ -58,7 +58,7 @@ print := λ(: x CCFragment). (: (
          (print '\tOffset\s=\s_s)(print offset)(print '\n_s)
          (while (non-zero kvs) (match kvs (
             ()
-            ( (KVSeq( rst (*( k v )) )) (tail(
+            ( (CCKVSeq( rst (*( k v )) )) (tail(
                (print '\t_s)(print k)(print '\s=\s_s)(print v)(print '\n_s)
                (set kvs rst)
             )))
