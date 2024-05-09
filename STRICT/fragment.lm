@@ -175,27 +175,30 @@ fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList)(: 
 
 fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (tail(
    (print 'Destructure\s_s)(print lhs)(print '\n_s)
-#   (set return (match lhs (
-#      ( Nil (tail(
-#      ( (App( (App( (Literal ':) (Variable vname) )) vtype )) (tail(
-#         (local ctype)
-#         (set ctype (typecheck-infer-type-compound vtype))
-#         (local tctx)
-#         (set tctx (typecheck-unify-args( ctype (expr::get-type (tail args)) )))
-#         (set ctx (fragment-bind-types( ctx tctx )))
-#         (set ctx ( ctx (vname (tail args)) ))
-#         ctx
-#      )))
-#      ( (App( inner (App( (App( (Literal ':) (Variable vname) )) vtype )) )) (tail(
-#         (local ctype)
-#         (set ctype (typecheck-infer-type-compound vtype))
-#         (local tctx)
-#         (set tctx (typecheck-unify-args( ctype (expr::get-type (tail args)) )))
-#         (set ctx (fragment-bind-types( ctx tctx )))
-#         (set ctx ( ctx (vname (tail args)) ))
-#         (set ctx (fragment-destructure-lhs( ctx inner (head args) )))
-#         ctx
-#      )))
+   (match lhs (
+      ()
+      ( (SCons( (SAtom 'Var_s) (SAtom k) )) (
+         (match args (
+            ()
+            ( (FLSeq( _ f )) (tail(
+               (let new-ctx (CCCtxBind( (close ctx) k TAny f )))
+               (set ctx new-ctx)
+            )))
+         ))
+      ))
+      ( (SCons( (SAtom 'App_s) (SCons( lhs-rst (SCons( (SAtom 'Var_s) (SAtom k) )) )) )) (tail(
+         (match args (
+            ()
+            ( (FLSeq( fl-rst f )) (tail(
+               (let new-ctx (CCCtxBind( (close ctx) k TAny f )))
+               (set ctx new-ctx)
+               (set args fl-rst)
+            )))
+         ))
+         (let ctx-2 (maybe-deref(fragment-destructure-lhs( ctx lhs-rst args ))))
+         (set ctx ctx-2)
+      )))
+   ))
    (close ctx)
 )) CCContext[]);
 
