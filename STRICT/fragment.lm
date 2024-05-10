@@ -271,6 +271,7 @@ fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
          (let iter-result (maybe-deref(fragment-render( mode ctx iter ))))
          (print 'TODO\sRender\sfor-each\s_s)
          (print binding)(print '\s_s)
+         (print 'Iter:\s_s)(print iter)(print '\n_s)
          (print 'Iter\sResult:\s_s)(print iter-result)(print '\n_s)
          (print body)(print '\n_s)
       )))
