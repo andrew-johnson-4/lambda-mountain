@@ -36,7 +36,7 @@ non-zero := λ(: s S). (: (tail(
       ( (SPair( (SPointer lc) (SPointer rc) )) (
          (if (==( (as lc U64) (as rc U64) )) (set r 1_u64) ())
       ))
-      ( () () )
+      ( _ () )
    ))
    r
 )) U64);
