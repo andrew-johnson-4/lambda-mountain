@@ -215,6 +215,19 @@ fragment-render := λ(: ctx CCContext)(: s S). (: (tail(
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '*_s) )) (SCons( (SAtom 'App_s) (SCons( l r )) )) )) )) (print 'TODO\sRender\s*\n_s) )
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '/_s) )) (SCons( (SAtom 'App_s) (SCons( l r )) )) )) )) (print 'TODO\sRender\s/\n_s) )
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '%_s) )) (SCons( (SAtom 'App_s) (SCons( l r )) )) )) )) (print 'TODO\sRender\s%\n_s) )
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom 'range_s) )) (SCons( (SAtom 'App_s) (SCons( l r )) )) )) )) (print 'TODO\sRender\srange\n_s) )
+      ( (SCons(
+         (SCons(
+            (SCons(
+               (SCons( (SAtom 'App_s) (SCons( (SAtom 'Var_s) (SAtom 'if-eq_s) )) )) l
+            )) r
+         )) body
+      )) (tail(
+         (print 'TODO\sRender\srange\s_s)
+         (print l)(print '\s_s)
+         (print r)(print '\s_s)
+         (print body)(print '\n_s)
+      )))
       ( (SCons( (SAtom 'App_s) (SCons( l r )) )) (tail(
          (let lf (maybe-deref(fragment-render( ctx l ))))
          (let rf (maybe-deref(fragment-render( ctx r ))))
@@ -224,16 +237,6 @@ fragment-render := λ(: ctx CCContext)(: s S). (: (tail(
          (print 'Render\sUnknown\s_s)(print u)(print '\n_s)
       )))
    ))
-#   ( (App( (Variable 'range) (App( low high )) )) (tail(
-#      (set low (fragment-substitute-context( ctx low )))
-#      (set high (fragment-substitute-context( ctx high )))
-#      (local return)
-#      (while (not(eq( low high ))) (tail(
-#         (set return (return low))
-#         (set low (i2s(inc(s2i( low )))) )
-#      )))
-#      (reverse-list return)
-#   )))
 #   ( (App(
 #        (App(
 #           (App(
@@ -262,26 +265,6 @@ fragment-render := λ(: ctx CCContext)(: s S). (: (tail(
 #         )))
 #         (set iterator (tail iterator))
 #      )))
-#      result
-#   )))
-#   ( (App(
-#        (App(
-#           (App(
-#              (Variable 'if-eq)
-#              l
-#           ))
-#           r
-#        ))
-#        body
-#     )) (tail(
-#      (set l (fragment-substitute-context( ctx l )))
-#      (set r (fragment-substitute-context( ctx r )))
-#      (local result)
-#      (if (eq( l r )) (
-#         (set result (
-#            (fragment-substitute-context( ctx body ))
-#         ))
-#      ) ())
 #      result
 #   )))
    (close r)
