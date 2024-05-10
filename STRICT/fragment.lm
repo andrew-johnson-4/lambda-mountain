@@ -206,7 +206,11 @@ fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
    (match s (
       ()
       ( (SCons( (SAtom 'Lit_s) (SAtom 'DontChain_s) )) () )
-      ( (SCons( (SAtom 'Var_s) (SAtom v) )) (tail( (print 'TODO\sRender\sVariable\s_s) (print v) (print '\n_s) )) )
+      ( (SCons( (SAtom 'Var_s) (SAtom v) )) (tail(
+         (let f (maybe-deref(cccontext::lookup( ctx v TAny ASTEOF ))))
+         (let fe (maybe-deref(ccfragment::get( f 'expression_s ))))
+         (set r fe)
+      )))
       ( (SCons( (SAtom 'Lit_s) (SAtom v) )) (set r (SAtom v)) )
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '.expression_s) )) v )) )) (tail(
          (let r2 (maybe-deref(fragment-render( 'expression_s ctx v ))))
