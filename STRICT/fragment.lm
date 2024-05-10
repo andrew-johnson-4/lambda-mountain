@@ -174,7 +174,6 @@ fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList)(: 
 )) CCFragment[]);
 
 fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (tail(
-   (print 'Destructure\s_s)(print lhs)(print '\n_s)
    (match lhs (
       ()
       ( (SCons( (SAtom 'Var_s) (SAtom k) )) (
@@ -202,16 +201,23 @@ fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (t
    (close ctx)
 )) CCContext[]);
 
+fragment-render := λ(: ctx CCContext)(: s S). (: (tail(
+   (print 'Render\s_s)(print s)(print '\n_s)
+   (close s)
+)) S[]);
+
 fragment-apply-context := λ(: ctx CCContext)(: rhs S)(: e CCFragment). (: (tail(
    (match rhs (
       ()
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '.program_s) )) prg )) )) (tail(
-         ()
-         (print 'Render\sProgram:\s_s)(print prg)(print '\n_s)
+         (let s (maybe-deref(fragment-render( ctx prg ))))
+         (let f (maybe-deref(ccfragment::set( e 'program_s s ))))
+         (set e f)
       )))
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '.expression_s) )) prg )) )) (tail(
-         ()
-         (print 'Render\sProgram:\s_s)(print prg)(print '\n_s)
+         (let s (maybe-deref(fragment-render( ctx prg ))))
+         (let f (maybe-deref(ccfragment::set( e 'expression_s s ))))
+         (set e f)
       )))
       ( (SCons( (SAtom 'App_s) (SCons( lt rt )) )) (tail(
          (let e-2 (maybe-deref(fragment-apply-context( ctx lt e ))))
