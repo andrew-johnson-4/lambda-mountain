@@ -203,7 +203,84 @@ fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (t
 
 fragment-render := λ(: ctx CCContext)(: s S). (: (tail(
    (print 'Render\s_s)(print s)(print '\n_s)
-   (close s)
+   (let r SNil)
+   (match s (
+      ()
+      ( (SCons( (SAtom 'Lit_s) (SAtom 'DontChain_s) )) () )
+      ( (SCons( (SAtom 'Var_s) (SAtom v) )) (print 'TODO\sRender\sVariable\n_s) )
+      ( (SCons( (SAtom 'Lit_s) (SAtom v) )) (print 'TODO\sRender\sLiteral\n_s) )
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom 'label_s) )) (SCons( (SAtom 'Var_s) (SAtom v) )) )) )) (print 'TODO\sRender\sLabel\n_s) )
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom 'inv_s) )) (SCons( (SAtom 'Var_s) (SAtom v) )) )) )) (print 'TODO\sRender\sInvert\n_s) )
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '+_s) )) (SCons( (SAtom 'App_s) (SCons( l r )) )) )) )) (print 'TODO\sRender\s+\n_s) )
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '-_s) )) (SCons( (SAtom 'App_s) (SCons( l r )) )) )) )) (print 'TODO\sRender\s-\n_s) )
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '*_s) )) (SCons( (SAtom 'App_s) (SCons( l r )) )) )) )) (print 'TODO\sRender\s*\n_s) )
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '/_s) )) (SCons( (SAtom 'App_s) (SCons( l r )) )) )) )) (print 'TODO\sRender\s/\n_s) )
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '%_s) )) (SCons( (SAtom 'App_s) (SCons( l r )) )) )) )) (print 'TODO\sRender\s%\n_s) )
+      ( u (tail(
+         (print 'Render\sUnknown\s_s)(print u)(print '\n_s)
+      )))
+   ))
+#   ( (App( (Variable 'range) (App( low high )) )) (tail(
+#      (set low (fragment-substitute-context( ctx low )))
+#      (set high (fragment-substitute-context( ctx high )))
+#      (local return)
+#      (while (not(eq( low high ))) (tail(
+#         (set return (return low))
+#         (set low (i2s(inc(s2i( low )))) )
+#      )))
+#      (reverse-list return)
+#   )))
+#   ( (App(
+#        (App(
+#           (App(
+#              (App(
+#                 (Variable 'for)
+#                 (Variable v)
+#              ))
+#              (Variable 'in)
+#           ))
+#           iterator
+#        ))
+#        body
+#     )) (tail(
+#      (local result)
+#      (set iterator (fragment-substitute-context( ctx iterator )))
+#      (while iterator (tail(
+#         (local inner-e)
+#         (set inner-e (expr::new()))
+#         (set inner-e (expr::set-expr( inner-e (head iterator) )))
+#         (local inner-ctx)
+#         (set inner-ctx (ctx (
+#            (v inner-e)
+#         )))
+#         (set result (result (
+#            (fragment-substitute-context( inner-ctx body ))
+#         )))
+#         (set iterator (tail iterator))
+#      )))
+#      result
+#   )))
+#   ( (App(
+#        (App(
+#           (App(
+#              (Variable 'if-eq)
+#              l
+#           ))
+#           r
+#        ))
+#        body
+#     )) (tail(
+#      (set l (fragment-substitute-context( ctx l )))
+#      (set r (fragment-substitute-context( ctx r )))
+#      (local result)
+#      (if (eq( l r )) (
+#         (set result (
+#            (fragment-substitute-context( ctx body ))
+#         ))
+#      ) ())
+#      result
+#   )))
+   (close r)
 )) S[]);
 
 fragment-apply-context := λ(: ctx CCContext)(: rhs S)(: e CCFragment). (: (tail(
