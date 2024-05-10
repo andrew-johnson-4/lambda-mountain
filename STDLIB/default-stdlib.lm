@@ -4,6 +4,8 @@ type S (SNil)
      | (SCons( S[] , S[] ))
      | (SPointer( ?[] ));
 
+type SPair (SPair( S , S ));
+
 close := λ(: x S). (: (tail(
    (mov( (malloc(sizeof S)) R8 ))
    (mov( x 0_u64 (as R8 S[]) ))
@@ -16,6 +18,24 @@ non-zero := λ(: s S). (: (tail(
       ()
       (SNil (set r 0_u64))
       (_ ())
+   ))
+   r
+)) U64);
+
+== := λ(: ls S)(: rs S). (: (tail(
+   (let r 0_u64)
+   (match (SPair( ls rs )) (
+      ()
+      ( (SPair( SNil SNil )) (set r 1_u64) )
+      ( (SPair( (SAtom lc) (SAtom rc) )) (set r (==( lc rc ))) )
+      ( (SPair( (SCons( l1 l2 )) (SCons( r1 r2 )) )) (
+         (if (==( l1 r1 )) (
+            (if (==( l2 r2 )) (set r 1_u64) ())
+         ) ())
+      ))
+      ( (SPair( (SPointer lc) (SPointer rc) )) (
+         (if (==( (as lc U64) (as rc U64) )) (set r 1_u64) ())
+      ))
    ))
    r
 )) U64);

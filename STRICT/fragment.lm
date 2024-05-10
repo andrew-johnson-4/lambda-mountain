@@ -221,14 +221,16 @@ fragment-render := λ(: ctx CCContext)(: s S). (: (tail(
       ( (SCons( (SAtom 'App_s) (SCons(
          (SCons( (SAtom 'App_s) (SCons(
             (SCons( (SAtom 'App_s) (SCons(
-               (SCons( (SAtom 'Var_s) (SAtom 'if-eq_s) )) l
-            )) )) r
+               (SCons( (SAtom 'Var_s) (SAtom 'if-eq_s) )) lc
+            )) )) rc
          )) )) body
       )) )) (tail(
-         (print 'TODO\sRender\sif-eq\s_s)
-         (print l)(print '\s_s)
-         (print r)(print '\s_s)
-         (print body)(print '\n_s)
+         (let lt (maybe-deref(fragment-render( ctx lc ))))
+         (let rt (maybe-deref(fragment-render( ctx rc ))))
+         (if (==( lt rt )) (tail(
+            (let bodyt (maybe-deref(fragment-render( ctx body ))))
+            (set r bodyt)
+         )) ())
       )))
       ( (SCons( (SAtom 'App_s) (SCons(
          (SCons( (SAtom 'App_s) (SCons(
@@ -255,36 +257,6 @@ fragment-render := λ(: ctx CCContext)(: s S). (: (tail(
          (print 'Render\sUnknown\s_s)(print u)(print '\n_s)
       )))
    ))
-#   ( (App(
-#        (App(
-#           (App(
-#              (App(
-#                 (Variable 'for)
-#                 (Variable v)
-#              ))
-#              (Variable 'in)
-#           ))
-#           iterator
-#        ))
-#        body
-#     )) (tail(
-#      (local result)
-#      (set iterator (fragment-substitute-context( ctx iterator )))
-#      (while iterator (tail(
-#         (local inner-e)
-#         (set inner-e (expr::new()))
-#         (set inner-e (expr::set-expr( inner-e (head iterator) )))
-#         (local inner-ctx)
-#         (set inner-ctx (ctx (
-#            (v inner-e)
-#         )))
-#         (set result (result (
-#            (fragment-substitute-context( inner-ctx body ))
-#         )))
-#         (set iterator (tail iterator))
-#      )))
-#      result
-#   )))
    (close r)
 )) S[]);
 
