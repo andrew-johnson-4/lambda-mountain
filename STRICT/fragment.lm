@@ -202,7 +202,6 @@ fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (t
 )) CCContext[]);
 
 fragment-render := λ(: ctx CCContext)(: s S). (: (tail(
-   (print 'Render\s_s)(print s)(print '\n_s)
    (let r SNil)
    (match s (
       ()
@@ -216,6 +215,11 @@ fragment-render := λ(: ctx CCContext)(: s S). (: (tail(
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '*_s) )) (SCons( (SAtom 'App_s) (SCons( l r )) )) )) )) (print 'TODO\sRender\s*\n_s) )
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '/_s) )) (SCons( (SAtom 'App_s) (SCons( l r )) )) )) )) (print 'TODO\sRender\s/\n_s) )
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '%_s) )) (SCons( (SAtom 'App_s) (SCons( l r )) )) )) )) (print 'TODO\sRender\s%\n_s) )
+      ( (SCons( (SAtom 'App_s) (SCons( l r )) )) (tail(
+         (let lf (maybe-deref(fragment-render( ctx l ))))
+         (let rf (maybe-deref(fragment-render( ctx r ))))
+         (set r (SCons( (close lf) (close rf) )))
+      )))
       ( u (tail(
          (print 'Render\sUnknown\s_s)(print u)(print '\n_s)
       )))
