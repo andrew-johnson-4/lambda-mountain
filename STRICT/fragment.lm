@@ -383,6 +383,7 @@ fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
                (set iter-result rst)
             )))
          )))
+         (print 'For\sResult:\n_s)(print r)(print '\n_s)
       )))
       ( (SCons( (SAtom 'App_s) (SCons( l r )) )) (tail(
          (let lf (maybe-deref(fragment-render( mode ctx l ))))
