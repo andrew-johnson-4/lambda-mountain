@@ -161,7 +161,7 @@ ccfragment::set-type := λ(: e CCFragment)(: tt Type). (: (tail(
    (match e (
       ()
       ( (CCFragment( e-kvs (*( e-offset (*( e-tt e-ctx )) )) )) (
-         (set e (CCFragment( (close e-kvs) e-offset tt (close ctx) ))) 
+         (set e (CCFragment( (close e-kvs) e-offset tt (close e-ctx) ))) 
       ))
    ))
    (close e)
