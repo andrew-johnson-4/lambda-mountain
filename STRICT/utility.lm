@@ -355,7 +355,7 @@ escape-string-simple := λ(: s String). (: (tail(
          ))
          (set s (tail-string s))
       )) (tail(
-         (set e (SCons( (close e) (close(SAtom( (clone-rope 92_u8) ))) )))
+         (set e (SCons( (close e) (close(SAtom( (clone-rope(head-string s)) ))) )))
          (set s (tail-string s))
       )))
    ))
