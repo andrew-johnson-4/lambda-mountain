@@ -53,7 +53,7 @@ is := λ(: ls S)(: rs S). (: (tail(
       ( (SPair( _ _ )) (
          (if (==( (.0 ls) (.0 rs) )) (
             (if (==( (as (.1 (as ls SCons)) U64) (as (.1 (as rs SCons)) U64) )) (
-               (if (==( (.2 (as (as ls SCons)) U64) (as (.2 (as rs SCons)) U64) )) (
+               (if (==( (as (.2 (as ls SCons)) U64) (as (.2 (as rs SCons)) U64) )) (
                   (set r 1_u64)
                ) ())
             ) ())
