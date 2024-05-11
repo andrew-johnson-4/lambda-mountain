@@ -152,6 +152,21 @@ ccfragment::set-context := λ(: e CCFragment)(: ctx CCContext). (: (tail(
    (close e)
 )) CCFragment[]);
 
+ccfragment::get-type := λ(: e CCFragment) . (: (tail(
+   (let ctx (.2( e )))
+   (close ctx)
+)) Type[]);
+
+ccfragment::set-type := λ(: e CCFragment)(: tt Type). (: (tail(
+   (match e (
+      ()
+      ( (CCFragment( e-kvs (*( e-offset (*( e-tt e-ctx )) )) )) (
+         (set e (CCFragment( (close e-kvs) e-offset tt (close ctx) ))) 
+      ))
+   ))
+   (close e)
+)) CCFragment[]);
+
 ccfragment::get-offset := λ(: e CCFragment). (: (tail(
    ()
    0_i64
@@ -184,7 +199,13 @@ fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (t
          (match args (
             ()
             ( (FLSeq( _ f )) (tail(
-               (let new-ctx (CCCtxBind( (close ctx) k TAny f )))
+               (let ft (maybe-deref(ccfragment::get-type f)))
+               (if (non-zero ft) (tail(
+                  (print 'Fragment\sHas\sNo\sType:\n_s)
+                  (print f)
+                  (exit 1_u64)
+               )) ())
+               (let new-ctx (CCCtxBind( (close ctx) k ft f )))
                (set ctx new-ctx)
             )))
          ))
@@ -200,7 +221,13 @@ fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (t
          (match args (
             ()
             ( (FLSeq( fl-rst f )) (tail(
-               (let new-ctx (CCCtxBind( (close ctx) k TAny f )))
+               (let ft (maybe-deref(ccfragment::get-type f)))
+               (if (non-zero ft) (tail(
+                  (print 'Fragment\sHas\sNo\sType:\n_s)
+                  (print f)
+                  (exit 1_u64)
+               )) ())
+               (let new-ctx (CCCtxBind( (close ctx) k ft f )))
                (set ctx new-ctx)
                (set args fl-rst)
             )))
