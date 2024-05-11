@@ -56,8 +56,15 @@ to-s := λ(: term AST). (: (tail(
          )))
       ))
       ( (Asc( t tt )) (tail(
-          (let s-2 (maybe-deref(to-s t)))
-          (set s s-2)
+         (let t1 (maybe-deref(to-s t)))
+         (set s t1)
+         #(set s (SCons(
+         #   (close(SAtom 'Asc_s))
+         #   (close(SCons(
+         #      (to-s lt)
+         #      (close(SAtom 'Type_s))
+         #   )))
+         #)))
       )))
       ( _ () )
    ))
