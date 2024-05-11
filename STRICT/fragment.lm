@@ -191,6 +191,20 @@ fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList)(: 
    (close return)
 )) CCFragment[]);
 
+fragment-destructure-tctx := λ(: ctx CCContext)(: tctx TContext). (: (tail(
+   (while (non-zero tctx) (match tctx (
+      ()
+      ( (TCtxBind( rst k vt )) (tail(
+         (set ctx (CCCtxBind(
+            (close ctx)
+            k TAny (ccfragment::expression(to-string vt))
+         )))
+         (set tctx rst)
+      )))
+   )))
+   (close ctx)
+)) CCContext[]);
+
 fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (tail(
    (match lhs (
       ()
