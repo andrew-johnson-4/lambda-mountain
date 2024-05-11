@@ -197,7 +197,7 @@ fragment-destructure-tctx := λ(: ctx CCContext)(: tctx TContext). (: (tail(
       ( (TCtxBind( rst (*( k vt )) )) (tail(
          (set ctx (CCCtxBind(
             (close ctx)
-            k TAny (ccfragment::expression(to-string vt))
+            k TAny (maybe-deref(ccfragment::expression(to-string vt)))
          )))
          (set tctx rst)
       )))
