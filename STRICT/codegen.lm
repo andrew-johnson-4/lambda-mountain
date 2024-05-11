@@ -109,9 +109,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
                (let e2-2 (maybe-deref(ccfragment::set-offset( e2 sv-offset ))))
                (let e2-3 (maybe-deref(ccfragment::set-context( e2-2 ctx ))))
                (let e2-4 (maybe-deref(ccfragment::set-offset( e2-3 stack-offset ))))
-               (print 'TODO\sset\ssize\sfrom\stypes\n_s)
-               (let sz-ctx (CCCtxBind( (close ctx) 'size_s TAny (maybe-deref(ccfragment::expression '25_s)) )))
-               (let e3 (maybe-deref(fragment-apply( sz-ctx 'mov_s
+               (let e3 (maybe-deref(fragment-apply( ctx 'mov_s
                   (maybe-deref(tcons( kt (maybe-deref(tlocalvariable())) )))
                   (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
                   term
@@ -125,9 +123,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
                (let e2-2 (maybe-deref(ccfragment::set( e2 'expression_s (SAtom id) ))))
                (let e2-3 (maybe-deref(ccfragment::set-context( e2-2 ctx ))))
                (let e2-4 (maybe-deref(ccfragment::set-offset( e2-3 stack-offset ))))
-               (print 'TODO\sset\ssize\sfrom\stypes\n_s)
-               (let sz-ctx (CCCtxBind( (close ctx) 'size_s TAny (maybe-deref(ccfragment::expression '25_s)) )))
-               (let e3 (maybe-deref(fragment-apply( sz-ctx 'mov_s
+               (let e3 (maybe-deref(fragment-apply( ctx 'mov_s
                   (maybe-deref(tcons( kt (maybe-deref(tglobalvariable())) )))
                   (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
                   term
@@ -386,10 +382,8 @@ compile-maybe-push-stack := λ(: ctx CCContext)(: fragment CCFragment)(: express
       ()
       ( (SAtom 'StackVariable_s) () )
       ( _ (tail(
-         (print 'TODO\smaybe-push\ssize\sfrom\stypes\n_s)
-         (let sz-ctx (CCCtxBind( (close ctx) 'size_s TAny (maybe-deref(ccfragment::expression '25_s)) )))
          (let f1 (maybe-deref(fragment-apply(
-            sz-ctx 'push_s expression-type
+            ctx 'push_s expression-type
             (FLSeq( (close FLEOF) fragment )) sloc
          ))))
          (set fragment f1)
