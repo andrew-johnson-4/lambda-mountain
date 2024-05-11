@@ -337,3 +337,29 @@ mangle-identifier := λ(: k String)(: kt Type). (: (tail(
    (set cs (SCons( (close cs) (mangle-identifier kt) )))
    (clone-rope cs)
 )) String);
+
+escape-string-simple := λ(: s String). (: (tail(
+   (let e SNil)
+   (while (head-string s) (
+      (if (==( (head-string s) 92_u8 )) (tail(
+         (set s (tail-string s))
+         (match (head-string s) (
+            ()
+            ( 91_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 40_u8) ))) ))) )
+            ( 93_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 41_u8) ))) ))) )
+            ( 96_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 39_u8) ))) ))) ) 
+            ( 110_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 10_u8) ))) ))) )
+            ( 116_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 9_u8) ))) ))) )
+            ( 115_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 32_u8) ))) ))) )
+            ( _ () )
+         ))
+         (set s (tail-string s))
+      )) (tail(
+         (set e (SCons( (close e) (close(SAtom( (clone-rope(head-string s)) ))) )))
+         (set s (tail-string s))
+      )))
+   ))
+   (clone-rope e)
+)) String);
+
+

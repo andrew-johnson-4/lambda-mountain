@@ -41,6 +41,28 @@ non-zero := λ(: s S). (: (tail(
    r
 )) U64);
 
+is := λ(: ls S)(: rs S). (: (tail(
+   (let r 0_u64)
+   (match (SPair( ls rs )) (
+      ()
+      ( (SPair( SNil SNil )) (set r 1_u64) )
+      ( (SPair( (SAtom lc) (SAtom rc) )) (set r (==( lc rc ))) )
+      ( (SPair( (SPointer lc) (SPointer rc) )) (
+         (if (==( (as lc U64) (as rc U64) )) (set r 1_u64) ())
+      ))
+      ( (SPair( _ _ )) (
+         (if (==( (.0 ls) (.0 rs) )) (
+            (if (==( (as (.1 (as ls SCons)) U64) (as (.1 (as rs SCons)) U64) )) (
+               (if (==( (as (.2 (as ls SCons)) U64) (as (.2 (as rs SCons)) U64) )) (
+                  (set r 1_u64)
+               ) ())
+            ) ())
+         ) ())
+      ))
+   ))
+   r
+)) U64);
+
 print := λ(: x S). (: (tail(
    (match x (
       ()
