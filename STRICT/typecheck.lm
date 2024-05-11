@@ -870,6 +870,24 @@ typecheck-ascript := λ(: t S)(: tt Type). (: (
    )))
 ) Nil);
 
+typecheck-lookup := λ(: term S). (: (tail(
+   (let found TAny)
+   (let tctx typecheck-s-type-list)
+   (while (non-zero tctx) (match tctx (
+      ()
+      ( (STSeq( rst (*( s tt )) )) (
+         (if (is( s term )) (tail(
+            (set found tt)
+            (set tctx TTEOF)
+         )) (
+            (set tctx rst)
+         ))
+      ))
+   )))
+   (close found)
+)) Type[]);
+
+
 typecheck-ascript := λ(: t AST)(: tt Type). (: (
    (if (non-zero tt) (tail(
       (let ot-normal (maybe-deref(normalize(maybe-deref(typecheck-lookup t)))))
