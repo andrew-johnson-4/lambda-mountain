@@ -323,12 +323,23 @@ tcons := λ(: l Type)(: r Type). (: (tail(
 )) Type[]);
 
 type TermTypeList TTEOF | (TTSeq( TermTypeList[] , AST , Type ));
+type STypeList STEOF | (STSeq( STypeList[] , S , Type ));
 
 non-zero := λ(: t TermTypeList). (: (tail(
    (let r 1_u64)
    (match t (
       ()
       ( TTEOF (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+non-zero := λ(: t STypeList). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( STEOF (set r 0_u64))
       ( _ () )
    ))
    r
@@ -349,6 +360,12 @@ close := λ(: x TermTypeList). (: (tail(
    (mov( x 0_u64 (as R8 TermTypeList[]) ))
    (as R8 TermTypeList[])
 )) TermTypeList[]);
+
+close := λ(: x STypeList). (: (tail(
+   (mov( (malloc(sizeof STypeList)) R8 ))
+   (mov( x 0_u64 (as R8 STypeList[]) ))
+   (as R8 STypeList[])
+)) STypeList[]);
 
 typecheck-typeof-lhs := λ(: lhs AST). (: (tail(
    (let r TAny)
@@ -844,6 +861,14 @@ typecheck-annotate-size := λ(: tt Type). (: (tail(
    ))
    (close tt)
 )) Type[]);
+
+typecheck-s-type-list := (: STEOF STypeList);
+typecheck-ascript := λ(: t S)(: tt Type). (: (
+   (set typecheck-s-type-list (STSeq(
+      (close typecheck-s-type-list)
+      t tt
+   )))
+) Nil);
 
 typecheck-ascript := λ(: t AST)(: tt Type). (: (
    (if (non-zero tt) (tail(
