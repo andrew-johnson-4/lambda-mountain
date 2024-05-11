@@ -105,13 +105,15 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
             ()
             ( (WrappedLocal( sv-offset rst )) (tail(
                (let e1 (maybe-deref(compile-expr( ctx rhs stack-offset Used ))))
+               (let e1-2 (maybe-deref(ccfragment::set-type( e1 kt ))))
                (let e2 (maybe-deref(ccfragment::new())))
                (let e2-2 (maybe-deref(ccfragment::set-offset( e2 sv-offset ))))
                (let e2-3 (maybe-deref(ccfragment::set-context( e2-2 ctx ))))
                (let e2-4 (maybe-deref(ccfragment::set-offset( e2-3 stack-offset ))))
+               (let e2-5 (maybe-deref(ccfragment::set-type( e1 (maybe-deref(tlocalvariable())) ))))
                (let e3 (maybe-deref(fragment-apply( ctx 'mov_s
                   (maybe-deref(tcons( kt (maybe-deref(tlocalvariable())) )))
-                  (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
+                  (FLSeq( (close(FLSeq( (close FLEOF) e1-2 ))) e2-5 ))
                   term
                ))))
                (let e3-2 (maybe-deref(ccfragment::set-context( e3 ctx ))))
@@ -119,13 +121,15 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
             )))
             ( (WrappedGlobal( id rst )) (tail(
                (let e1 (maybe-deref(compile-expr( ctx rhs stack-offset Used ))))
+               (let e1-2 (maybe-deref(ccfragment::set-type( e1 kt ))))
                (let e2 (maybe-deref(ccfragment::new())))
                (let e2-2 (maybe-deref(ccfragment::set( e2 'expression_s (SAtom id) ))))
                (let e2-3 (maybe-deref(ccfragment::set-context( e2-2 ctx ))))
                (let e2-4 (maybe-deref(ccfragment::set-offset( e2-3 stack-offset ))))
+               (let e2-5 (maybe-deref(ccfragment::set-type( e1 (maybe-deref(tglobalvariable())) ))))
                (let e3 (maybe-deref(fragment-apply( ctx 'mov_s
                   (maybe-deref(tcons( kt (maybe-deref(tglobalvariable())) )))
-                  (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
+                  (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2-5 ))
                   term
                ))))
                (let e3-2 (maybe-deref(ccfragment::set-context( e3 ctx ))))
@@ -382,9 +386,10 @@ compile-maybe-push-stack := λ(: ctx CCContext)(: fragment CCFragment)(: express
       ()
       ( (SAtom 'StackVariable_s) () )
       ( _ (tail(
+         (let f-arg (maybe-deref(ccfragment::set-type( fragment expression-type ))))
          (let f1 (maybe-deref(fragment-apply(
             ctx 'push_s expression-type
-            (FLSeq( (close FLEOF) fragment )) sloc
+            (FLSeq( (close FLEOF) f-arg )) sloc
          ))))
          (set fragment f1)
       )))
