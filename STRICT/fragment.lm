@@ -194,7 +194,7 @@ fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList)(: 
 fragment-destructure-tctx := λ(: ctx CCContext)(: tctx TContext). (: (tail(
    (while (non-zero tctx) (match tctx (
       ()
-      ( (TCtxBind( rst k vt )) (tail(
+      ( (TCtxBind( rst (*( k vt )) )) (tail(
          (set ctx (CCCtxBind(
             (close ctx)
             k TAny (ccfragment::expression(to-string vt))
