@@ -176,7 +176,7 @@ fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList)(: 
 fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (tail(
    (match lhs (
       ()
-      ( (SCons( (SAtom 'Var_s) (SAtom k) )) (
+      ( (SCons( (SAtom 'Var_s) (SAtom k) )) (tail(
          (print 'Destructure\s_s)(print k)(print '\s:\s_s)(print(maybe-deref(typecheck-lookup lhs)))(print '\n_s)
          (match args (
             ()
@@ -185,9 +185,15 @@ fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (t
                (set ctx new-ctx)
             )))
          ))
-      ))
+      )))
       ( (SCons( (SAtom 'App_s) (SCons( lhs-rst (SCons( (SAtom 'Var_s) (SAtom k) )) )) )) (tail(
-         (print 'Destructure\s_s)(print k)(print '\s:\s_s)(print(maybe-deref(typecheck-lookup lhs)))(print '\n_s)
+         (match lhs (
+            ()
+            ( (SCons( (SAtom 'App_s) (SCons( _ binding )) )) (tail(
+               ()
+               (print 'Destructure\s_s)(print k)(print '\s:\s_s)(print(maybe-deref(typecheck-lookup binding)))(print '\n_s)
+            )))
+         ))
          (match args (
             ()
             ( (FLSeq( fl-rst f )) (tail(
