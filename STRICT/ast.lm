@@ -55,7 +55,7 @@ to-s := λ(: term AST). (: (tail(
             )))
          )))
       ))
-      ( (Asc( t tt )) (tail(
+      ( (Asc( t tt )) (
          (set s (SCons(
             (close(SAtom 'Asc_s))
             (close(SCons(
@@ -63,7 +63,7 @@ to-s := λ(: term AST). (: (tail(
                (close(SAtom(to-string tt)))
             )))
          )))
-      )))
+      ))
       ( _ () )
    ))
    (close s)
