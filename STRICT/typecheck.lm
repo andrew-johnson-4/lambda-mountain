@@ -1400,6 +1400,72 @@ typecheck-unify-args := λ(: fpt Type)(: pt Type). (: (tail(
    (close ctx)
 )) TContext[]);
 
+typecheck-unify-generous := λ(: fpt Type)(: pt Type). (: (tail(
+   (let ctx TCtxEOF)
+   (match (TPair( fpt pt )) (
+      ()
+      ( (TPair( TAny TAny )) (tail(
+         (let ctx2 (maybe-deref(tcontext-accept())))
+         (set ctx ctx2)
+      )))
+      ( (TPair( (TVar( ltv )) rt )) (
+         (set ctx (TCtxBind(
+            (close TCtxEOF)
+            ltv
+            rt
+         )))
+      ))
+      ( (TPair( (TAnd( lt1 lt2 )) rt )) (
+         (match (TCPair( (maybe-deref(typecheck-unify-args( lt1 rt ))) (maybe-deref(typecheck-unify-args( lt2 rt ))) )) (
+            ()
+            ( (TCPair( TCtxEOF TCtxEOF )) () )
+            ( (TCPair( lctx TCtxEOF )) (set ctx lctx) )
+            ( (TCPair( TCtxEOF rctx )) (set ctx rctx) )
+            ( (TCPair( lctx rctx )) (tail(
+               (let nctx (maybe-deref(merge( lctx rctx ))))
+               (set ctx nctx)
+            )))
+         ))
+      ))
+      ( (TPair( lt (TAnd( rt1 rt2 )) )) (
+         (match (TCPair( (maybe-deref(typecheck-unify-args( lt rt1 ))) (maybe-deref(typecheck-unify-args( lt rt2 ))) )) (
+            ()
+            ( (TCPair( TCtxEOF TCtxEOF )) () )
+            ( (TCPair( lctx TCtxEOF )) (set ctx lctx) )
+            ( (TCPair( TCtxEOF rctx )) (set ctx rctx) )
+            ( (TCPair( lctx rctx )) (tail(
+               (let nctx (maybe-deref(merge( lctx rctx ))))
+               (set ctx nctx)
+            )))
+         ))
+      ))
+      ( (TPair( (TGround( ltn TypeEOF )) (TGround( rtn TypeEOF )) )) (
+         (if (==( ltn rtn )) (tail(
+            (let ctx2 (maybe-deref(tcontext-accept())))
+            (set ctx ctx2)
+         )) ())
+      ))
+      ( (TPair( (TGround( ltn (TypeSeq( TypeEOF lt1 )) )) (TGround( rtn (TypeSeq( TypeEOF rt1 )) )) )) (
+         (if (==( ltn rtn )) (tail(
+            (let ctx2 (maybe-deref(typecheck-unify-args( lt1 rt1 ))))
+            (set ctx ctx2)
+         )) ())
+      ))
+      ( (TPair( (TGround( ltn (TypeSeq( (TypeSeq( TypeEOF lt1 )) lt2 )) )) (TGround( rtn (TypeSeq( (TypeSeq( TypeEOF rt1 )) rt2 )) )) )) (
+         (if (==( ltn rtn )) (tail(
+            (let ctx2 (maybe-deref(typecheck-unify-args( lt1 rt1 ))))
+            (if (non-zero ctx2) (tail(
+               (let ctx3 (maybe-deref(typecheck-unify-args( lt2 rt2 ))))
+               (let ctx4 (maybe-deref(merge( ctx2 ctx3 ))))
+               (set ctx ctx4)
+            )) ())
+         )) ())
+      ))
+      ( _ () )
+   ))
+   (close ctx)
+)) TContext[]);
+
 tarrow := λ(: lt Type)(: rt Type). (: (tail(
    ()
    (close(TGround( '->_s
