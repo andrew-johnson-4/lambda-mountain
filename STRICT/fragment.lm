@@ -200,11 +200,11 @@ fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (t
             ()
             ( (FLSeq( _ f )) (tail(
                (let ft (maybe-deref(ccfragment::get-type f)))
-               (if (non-zero ft) (tail(
+               (if (non-zero ft) () (tail(
                   (print 'Fragment\sHas\sNo\sType:\n_s)
                   (print f)
                   (exit 1_u64)
-               )) ())
+               )))
                (let new-ctx (CCCtxBind( (close ctx) k ft f )))
                (set ctx new-ctx)
             )))
@@ -222,11 +222,11 @@ fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (t
             ()
             ( (FLSeq( fl-rst f )) (tail(
                (let ft (maybe-deref(ccfragment::get-type f)))
-               (if (non-zero ft) (tail(
+               (if (non-zero ft) () (tail(
                   (print 'Fragment\sHas\sNo\sType:\n_s)
                   (print f)
                   (exit 1_u64)
-               )) ())
+               )))
                (let new-ctx (CCCtxBind( (close ctx) k ft f )))
                (set ctx new-ctx)
                (set args fl-rst)
