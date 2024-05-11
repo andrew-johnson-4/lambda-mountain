@@ -160,7 +160,7 @@ merge := λ(: lctx TContext)(: rctx TContext). (: (tail(
 print := λ(: tt Type). (: (match tt (
    ()
    ( TAny (print '?_s) )
-   ( (TVar( vn )) (print vn) )
+   ( (TVar( vn )) (tail( (print '`_s) (print vn) )) )
    ( (TGround( tag TypeEOF )) (print tag) )
    ( (TGround( tag (TypeSeq( TypeEOF p1 )) )) (tail(
       (print tag)
