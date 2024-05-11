@@ -380,6 +380,7 @@ fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
                   (close r)
                   body-instance
                )))
+               (set iter-result rst)
             )))
          )))
       )))
