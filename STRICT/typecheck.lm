@@ -24,21 +24,21 @@ to-string := λ(: tt Type). (: (tail(
 
 to-string-impl := λ(: tt Type). (: (tail(
    (let r SNil)
-   (match tt (
-      ()
-      ( TAny (set r (SAtom '?_s)) )
-      ( (TVar v) (set r (SAtom v)) )
-      ( (TAnd( lt rt )) (tail(
-         (let ls (to-string-impl lt))
-         (let rs (to-string-impl rt))
-         (set r (SCons(
-            ls
-            (close(SCons(
-               (close(SAtom '+_s))
-               rs
-            )))
-         )))
-      )))
+#   (match tt (
+#      ()
+#      ( TAny (set r (SAtom '?_s)) )
+#      ( (TVar v) (set r (SAtom v)) )
+#      ( (TAnd( lt rt )) (tail(
+#         (let ls (to-string-impl lt))
+#         (let rs (to-string-impl rt))
+#         (set r (SCons(
+#            ls
+#            (close(SCons(
+#               (close(SAtom '+_s))
+#               rs
+#            )))
+#         )))
+#      )))
 #      ( (TGround( tag TypeEOF )) (
 #        (set r (SAtom tag))
 #      ))
@@ -56,8 +56,8 @@ to-string-impl := λ(: tt Type). (: (tail(
 #        (set r (SCons( (close r) (to-string-impl p2) )))
 #        (set r (SCons( (close r) (close(SAtom '>_s)) )))
 #      )))
-      ( _ () )
-   ))
+#      ( _ () )
+#   ))
    (close r)
 )) S[]);
 
