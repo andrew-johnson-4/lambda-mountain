@@ -181,7 +181,7 @@ fragment-apply := λ(: ctx CCContext)(: k String)(: at Type)(: args FragList)(: 
    (let e-proto (maybe-deref(ccfragment::new())))
    (let arrow (maybe-deref(cccontext::lookup( ctx k at sloc ))))
    (let chain True_u8)
-   (match (maybe-deref(typecheck-slot( kt 'DontChain_s ))) (
+   (match (maybe-deref(typecheck-slot( at 'DontChain_s ))) (
       ()
       ( (TGround( 'DontChain_s _ )) (set chain False_u8) )
       ( _ () )
