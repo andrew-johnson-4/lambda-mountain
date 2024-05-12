@@ -603,8 +603,10 @@ typecheck-assert-complete := λ(: term AST). (: (
       ( (Glb( k v )) (
          (typecheck-assert-complete v)
       ))
+      ( (Fragment( k v )) (
+         (typecheck-assert-complete v)
+      ))
       ( (ASTType( _ _ )) () )
-      ( (Fragment( _ _ )) () )
       ( (App( (Abs( (Var lname) ASTNil )) rhs )) (tail(
          (typecheck-assert-complete rhs)
          (typecheck-assert-one term)
@@ -928,7 +930,10 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (typecheck-ascript( v (maybe-deref(typecheck-lookup term)) ))
          (typecheck-infer-expr( tctx v Used ))
       )))
-      ( (Fragment( k _ )) () )
+      ( (Fragment( k v )) (tail(
+         (typecheck-ascript( v (maybe-deref(typecheck-lookup term)) ))
+         ()
+      )))
       ( (Asc( (Lit _) tt )) (tail(
          (typecheck-ascript( term tt ))
          (match term (
