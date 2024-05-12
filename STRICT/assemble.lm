@@ -24,6 +24,7 @@ compile := λ(). (: (tail(
          (set preview-program rst)
       )))
       ( (Seq( rst (Fragment( k rhs )) )) (tail(
+         (print 'Put\sFragment\s_s)(print k)(print '\s:\s_s)(print (maybe-deref(typecheck-lookup rhs)))(print '\n_s)
          (let fragment (maybe-deref(ccfragment::new())))
          (let fragment-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))
          (let fragment-3 (maybe-deref(ccfragment::set( fragment-2 'fragment_s (maybe-deref(to-s rhs)) ))))
