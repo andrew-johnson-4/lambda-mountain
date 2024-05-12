@@ -184,9 +184,10 @@ typeof := λ(: args FragList). (: (tail(
       ( (FLSeq( rst f )) (tail(
          (let rst-tt (maybe-deref(typeof rst)))
          (let f-tt (maybe-deref(ccfragment::get-type f)))
-         (if (non-zero rst-tt) (
-            (set r (maybe-deref(tcons( rst-tt f-tt ))))
-         ) (
+         (if (non-zero rst-tt) (tail(
+            (let r2 (maybe-deref(tcons( rst-tt f-tt ))))
+            (set r r2)
+         )) (
             (set r f-tt)
          ))
       )))
