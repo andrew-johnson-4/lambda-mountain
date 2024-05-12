@@ -199,9 +199,11 @@ typeof := λ(: args FragList). (: (tail(
 fragment-apply := λ(: ctx CCContext)(: k String)(: args FragList)(: sloc AST). (: (tail(
    (let e-proto (maybe-deref(ccfragment::new())))
    (let at (maybe-deref(typeof args)))
-   (if (non-zero at) () (
-      (exit-error( 'Untyped\sFragment\sArguments_s sloc ))
-   ))
+   (if (non-zero at) () (tail(
+      (print 'Apply\s_s)(print k)(print args)
+      (let msg (clone-rope(SCons( (close(SAtom 'Untyped\sFragment\sArguments:\s_s)) (close(SAtom k)) ))))
+      (exit-error( msg sloc ))
+   )))
    (let arrow (maybe-deref(cccontext::lookup( ctx k at sloc ))))
    (let chain True_u8)
    (match (maybe-deref(typecheck-slot( at 'DontChain_s ))) (
