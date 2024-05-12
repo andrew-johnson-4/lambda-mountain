@@ -308,6 +308,14 @@ tglobalvariable := λ. (: (tail(
    )))
 )) Type[]);
 
+tstackvariable := λ. (: (tail(
+   ()
+   (close (TGround(
+      'StackVariable_s
+      (close TypeEOF)
+   )))
+)) Type[]);
+
 tcons := λ(: l Type)(: r Type). (: (tail(
    ()
    (close (TGround(
