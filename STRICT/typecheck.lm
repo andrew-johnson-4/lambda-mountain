@@ -24,40 +24,40 @@ to-string := λ(: tt Type). (: (tail(
 
 to-string-impl := λ(: tt Type). (: (tail(
    (let r SNil)
-#   (match tt (
-#      ()
-#      ( TAny (set r (SAtom '?_s)) )
-#      ( (TVar v) (set r (SAtom v)) )
-#      ( (TAnd( lt rt )) (tail(
-#         (let ls (to-string-impl lt))
-#         (let rs (to-string-impl rt))
-#         (set r (SCons(
-#            ls
-#            (close(SCons(
-#               (close(SAtom '+_s))
-#               rs
-#            )))
-#         )))
-#      )))
-#      ( (TGround( tag TypeEOF )) (
-#        (set r (SAtom tag))
-#      ))
-#      ( (TGround( tag (TypeSeq( TypeEOF p1 )) )) (tail(
-#        (set r (SAtom tag))
-#        (set r (SCons( (close r) (close(SAtom '<_s)) )))
-#        (set r (SCons( (close r) (to-string-impl p1) )))
-#        (set r (SCons( (close r) (close(SAtom '>_s)) )))
-#      )))
-#      ( (TGround( tag (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (tail(
-#        (set r (SAtom tag))
-#        (set r (SCons( (close r) (close(SAtom '<_s)) )))
-#        (set r (SCons( (close r) (to-string-impl p1) )))
-#        (set r (SCons( (close r) (close(SAtom ',_s)) )))
-#        (set r (SCons( (close r) (to-string-impl p2) )))
-#        (set r (SCons( (close r) (close(SAtom '>_s)) )))
-#      )))
-#      ( _ () )
-#   ))
+   (match tt (
+      ()
+      ( TAny (set r (SAtom '?_s)) )
+      ( (TVar v) (set r (SAtom v)) )
+      ( (TAnd( lt rt )) (tail(
+         (let ls (to-string-impl lt))
+         (let rs (to-string-impl rt))
+         (set r (SCons(
+            ls
+            (close(SCons(
+               (close(SAtom '+_s))
+               rs
+            )))
+         )))
+      )))
+      ( (TGround( tag TypeEOF )) (
+        (set r (SAtom tag))
+      ))
+      ( (TGround( tag (TypeSeq( TypeEOF p1 )) )) (tail(
+        (set r (SAtom tag))
+        (set r (SCons( (close r) (close(SAtom '<_s)) )))
+        (set r (SCons( (close r) (to-string-impl p1) )))
+        (set r (SCons( (close r) (close(SAtom '>_s)) )))
+      )))
+      ( (TGround( tag (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (tail(
+        (set r (SAtom tag))
+        (set r (SCons( (close r) (close(SAtom '<_s)) )))
+        (set r (SCons( (close r) (to-string-impl p1) )))
+        (set r (SCons( (close r) (close(SAtom ',_s)) )))
+        (set r (SCons( (close r) (to-string-impl p2) )))
+        (set r (SCons( (close r) (close(SAtom '>_s)) )))
+      )))
+      ( _ () )
+   ))
    (close r)
 )) S[]);
 
@@ -564,6 +564,7 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
       ( (Fragment( k (Abs( lhs (Asc( rhs rhst )) )) )) (tail(
          (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
          (let ft (maybe-deref(tarrow( lt rhst ))))
+         (typecheck-ascript( td ft ))
          (set global-type-context (TCtxBind(
             (close global-type-context)
             k
@@ -603,8 +604,10 @@ typecheck-assert-complete := λ(: term AST). (: (
       ( (Glb( k v )) (
          (typecheck-assert-complete v)
       ))
+      ( (Fragment( k v )) (
+         (typecheck-assert-one v)
+      ))
       ( (ASTType( _ _ )) () )
-      ( (Fragment( _ _ )) () )
       ( (App( (Abs( (Var lname) ASTNil )) rhs )) (tail(
          (typecheck-assert-complete rhs)
          (typecheck-assert-one term)
@@ -928,7 +931,10 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (typecheck-ascript( v (maybe-deref(typecheck-lookup term)) ))
          (typecheck-infer-expr( tctx v Used ))
       )))
-      ( (Fragment( k _ )) () )
+      ( (Fragment( k v )) (tail(
+         (typecheck-ascript( v (maybe-deref(typecheck-lookup term)) ))
+         ()
+      )))
       ( (Asc( (Lit _) tt )) (tail(
          (typecheck-ascript( term tt ))
          (match term (
@@ -1195,6 +1201,27 @@ is-arrow := λ(: tt Type). (: (tail(
    ))
    r
 )) U64);
+
+typecheck-find-plural-app := λ(: sloc AST)(: many Type)(: pt Type). (: (tail(
+   (let r TAny)
+   (match many(
+      ()
+      ( (TAnd( t1 t2 )) (tail(
+         (let r1 (maybe-deref(typecheck-apply-plural( sloc t1 pt ))))
+         (if (non-zero r1) (set r r1) (tail(
+            (let r2 (maybe-deref(typecheck-apply-plural( sloc t2 pt ))))
+            (set r r2)
+         )))
+      )))
+      ( arrow (tail(
+         (let r1 (maybe-deref(typecheck-apply( sloc many arrow ))))
+         (if (non-zero r1) (
+            (set r arrow)
+         ) ())
+      )))
+   ))
+   (close r)
+)) Type[]);
 
 typecheck-apply-plural := λ(: sloc AST)(: many Type)(: pt Type). (: (tail(
    (let r TAny)
