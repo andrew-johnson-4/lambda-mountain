@@ -762,6 +762,10 @@ nonnormal := λ(: tt Type). (: (tail(
       ( (TGround( 'StackVariable_s TypeEOF )) (set rt tt) )
       ( (TGround( 'LocalVariable_s TypeEOF )) (set rt tt) )
       ( (TGround( 'GlobalVariable_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'Reg8_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'Reg16_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'Reg32_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'Reg64_s TypeEOF )) (set rt tt) )
       ( (TAnd( ltt rtt )) (tail(
          (let lt1 (maybe-deref(nonnormal ltt )))
          (let rt1 (maybe-deref(nonnormal rtt )))
