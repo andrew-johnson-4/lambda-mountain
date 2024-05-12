@@ -192,6 +192,7 @@ typeof := λ(: args FragList). (: (tail(
       )))
       ( _ () )
    ))
+   (close r)
 )) Type[]);
 
 fragment-apply := λ(: ctx CCContext)(: k String)(: args FragList)(: sloc AST). (: (tail(
