@@ -85,8 +85,17 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (set e e12)
       )))
       ( (App( (Var 'maybe-deref_s) t )) (tail(
-         (print 'TODO\sMaybe\sDeref\n_s)
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset Used ))))
+         (let tt (maybe-deref(typecheck-lookup t)))
+         (match (maybe-deref(typecheck-slot( tt 'Array_s ))) (
+            ()
+            ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF inner-tt )) TAny )) )) (tail(
+               (print 'TODO\sImplement\sDeref\n_s)
+               (let new-tt (TAnd( (tstackvariable()) (close inner-tt) )))
+               (let e1-2 (maybe-deref(ccfragment::set-type( e1 new-tt ))))
+               (set e1 e1-2)
+            )))
+         ))
          (set e e1)
       )))
       ( (App( (Var 'sizeof_s) t )) (tail(
