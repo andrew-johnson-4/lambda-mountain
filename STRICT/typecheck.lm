@@ -697,8 +697,14 @@ exit-error := λ(: msg String)(: t AST). (: (tail(
    (print '\n_s)
    (match t (
       ()
+      ( (App( (App( (Var 'as_s) inner )) (Lit cast) )) (tail(
+         (print 'In\sCoercion\n_s)
+         (print inner)(print ':\n_s)
+         (print (maybe-deref(typecheck-lookup inner)))(print '\n_s)
+         (print 'As:\s_s)(print cast)(print '\n_s)
+      )))
       ( (App( f a )) (tail(
-         (print 'FunctionApplication\n_s)
+         (print 'In\sFunction\sApplication\n_s)
          (print f)(print ':\n_s)
          (print (maybe-deref(typecheck-lookup f)))(print '\n_s)
          (print a)(print ':\n_s)
