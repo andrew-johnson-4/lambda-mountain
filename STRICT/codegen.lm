@@ -415,13 +415,13 @@ compile-declare-cstring := λ(: val String). (: (tail(
 
 compile-maybe-push-stack := λ(: ctx CCContext)(: fragment CCFragment)(: expression-type Type)(: sloc AST). (: (tail(
    (let ft (maybe-deref(ccfragment::get-type( fragment ))))
-   (print 'Maybe\sPush\s_s)(print ft)(print '\n_s)
+   (if (non-zero ft) () (set ft expression-type))
    (match (maybe-deref(typecheck-slot( ft 'StackVariable_s ))) (
       ()
       ( (TGround( 'StackVariable_s _ )) () )
       ( _ (tail(
-         (if (non-zero ft) () (tail(
-            (let f-arg (maybe-deref(ccfragment::set-type( fragment expression-type ))))
+         (if (non-zero(maybe-deref(ccfragment::get-type fragment))) () (
+            (let f-arg (maybe-deref(ccfragment::set-type( fragment ft ))))
             (set fragment f-arg)
          )))
          (let f1 (maybe-deref(fragment-apply(
