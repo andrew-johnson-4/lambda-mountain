@@ -187,6 +187,15 @@ fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList)(: 
       ( _ () )
    ))
    (let return (maybe-deref(fragment-apply-direct( arrow args e-proto chain ))))
+   (let comment (SAtom '\o\s_s))
+   (set comment (SCons( (close comment) (SAtom k) )))
+   (set comment (SCons( (close comment) (SAtom '\s:\s_s) )))
+   (set comment (SCons( (close comment) (SAtom(to-string kt)) )))
+   (set comment (SCons( (close comment) (SAtom '\n_s) )))
+   (let r2 (maybe-deref(ccfragment::set( return 'program_s (SCons(
+      (close comment)
+      (ccfragment::get( return 'program_s ))
+   ))))))(set return r2)
    (close return)
 )) CCFragment[]);
 

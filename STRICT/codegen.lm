@@ -393,7 +393,7 @@ compile-declare-cstring := λ(: val String). (: (tail(
 )) CCFragment[]);
 
 compile-maybe-push-stack := λ(: ctx CCContext)(: fragment CCFragment)(: expression-type Type)(: sloc AST). (: (tail(
-   (match (maybe-deref(ccfragment::get( fragment 'fragment-type_s ))) (
+   (match (maybe-deref(ccfragment::get( fragment 'representation_s ))) (
       ()
       ( (SAtom 'StackVariable_s) () )
       ( _ (tail(
