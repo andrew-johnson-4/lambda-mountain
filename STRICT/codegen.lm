@@ -98,6 +98,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
             ( _ () )
          ))
          (set e e1)
+         (print e)
       )))
       ( (App( (Var 'sizeof_s) t )) (tail(
          (print 'TODO\sSizeof\n_s)
@@ -413,14 +414,18 @@ compile-declare-cstring := λ(: val String). (: (tail(
 )) CCFragment[]);
 
 compile-maybe-push-stack := λ(: ctx CCContext)(: fragment CCFragment)(: expression-type Type)(: sloc AST). (: (tail(
-   (match (maybe-deref(ccfragment::get( fragment 'representation_s ))) (
+   (let ft (maybe-deref(ccfragment::get-type( fragment ))))
+   (match (maybe-deref(typecheck-slot( ft 'StackVariable_s ))) (
       ()
-      ( (SAtom 'StackVariable_s) () )
+      ( (TGround( 'StackVariable_s _ )) () )
       ( _ (tail(
-         (let f-arg (maybe-deref(ccfragment::set-type( fragment expression-type ))))
+         (if (non-zero ft) () (tail(
+            (let f-arg (maybe-deref(ccfragment::set-type( fragment expression-type ))))
+            (set fragment f-arg)
+         )))
          (let f1 (maybe-deref(fragment-apply(
             ctx 'push_s
-            (FLSeq( (close FLEOF) f-arg )) sloc
+            (FLSeq( (close FLEOF) fragment )) sloc
          ))))
          (set fragment f1)
       )))
