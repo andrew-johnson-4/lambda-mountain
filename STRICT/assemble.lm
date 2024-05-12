@@ -156,7 +156,7 @@ compile-finish := λ. (: (tail(
    (set output (SCons( (close output) (close assemble-text-section) )))
    (set output (SCons( (close output) (compile-data-header()) )))
    (set output (SCons( (close output) (close assemble-data-section) )))
-   (set assemble-final (clone-rope(escape-string output)))
+   (set assemble-final (clone-rope(maybe-deref(escape-string output))))
 )) Nil);
 
 compile-write := λ. (: (tail(
