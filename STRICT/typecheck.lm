@@ -564,6 +564,7 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
       ( (Fragment( k (Abs( lhs (Asc( rhs rhst )) )) )) (tail(
          (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
          (let ft (maybe-deref(tarrow( lt rhst ))))
+         (typecheck-ascript( td ft ))
          (set global-type-context (TCtxBind(
             (close global-type-context)
             k
