@@ -181,7 +181,7 @@ typeof := λ(: args FragList). (: (tail(
    (let r TAny)
    (match args (
       ()
-      ( (FragList( rst f )) (tail(
+      ( (FLSeq( rst f )) (tail(
          (let rst-tt (maybe-deref(typeof rst)))
          (let f-tt (maybe-deref(ccfragment::get-type f)))
          (if (non-zero rst-tt) (
