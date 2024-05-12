@@ -67,6 +67,17 @@ print := λ(: x CCFragment). (: (
    ))
 ) Nil);
 
+print := λ(: x FragList). (: (
+   (match x ( 
+      ()
+      ( (FLSeq( rst f )) (tail(
+         (print rst)
+         (print f)
+      )))
+      ( _ () )
+   ))
+) Nil);
+
 ccfragment::new := λ . (: (tail(
    (let r (CCFragment(
       (close CCKVEOF)
