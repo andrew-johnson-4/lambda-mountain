@@ -180,6 +180,7 @@ ccfragment::set-offset := λ(: e CCFragment)(: offset I64). (: (tail(
 fragment-apply := λ(: ctx CCContext)(: k String)(: kt Type)(: args FragList)(: sloc AST). (: (tail(
    (let e-proto (maybe-deref(ccfragment::new())))
    (let arrow (maybe-deref(cccontext::lookup( ctx k kt sloc ))))
+   (print 'Fragment\sApply\s_s)(print k)(print '\s:\s_s)(print kt)(print arrow)
    (let chain True_u8)
    (match (maybe-deref(typecheck-slot( kt 'DontChain_s ))) (
       ()
