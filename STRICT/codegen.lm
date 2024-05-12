@@ -332,7 +332,7 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: args AST)(: 
       ()
       ( (SAtom 'Fragment_s) (tail(
          (let f-args (maybe-deref(compile-fragment-args( ctx args offset ))))
-         (let r-2 (maybe-deref(fragment-apply( ctx function-name function-type f-args args ))))
+         (let r-2 (maybe-deref(fragment-apply( ctx function-name (maybe-deref(typecheck-lookup args)) f-args args ))))
          (set r r-2)
       )))
       ( _ (tail(
