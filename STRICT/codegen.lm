@@ -139,7 +139,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
                (let e2-4 (maybe-deref(ccfragment::set-offset( e2-3 stack-offset ))))
                (let e2-5 (maybe-deref(ccfragment::set-type( e1 (maybe-deref(tglobalvariable())) ))))
                (let e3 (maybe-deref(fragment-apply( ctx 'mov_s
-                  (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2-5 ))
+                  (FLSeq( (close(FLSeq( (close FLEOF) e1-2 ))) e2-5 ))
                   term
                ))))
                (let e3-2 (maybe-deref(ccfragment::set-context( e3 ctx ))))
