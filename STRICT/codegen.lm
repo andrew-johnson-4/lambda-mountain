@@ -289,7 +289,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
                      (set e e1)
                   )))
                   ( (Lit fname) (tail(
-                     (let e1 (maybe-deref(compile-constructor( ctx fname a stack-offset ))))
+                     (let e1 (maybe-deref(compile-constructor( ctx fname (maybe-deref(typecheck-lookup term)) a stack-offset ))))
                      (set e e1)
                   )))
                ))
@@ -493,9 +493,10 @@ compile-push-var := λ(: ctx CCContext)(: k String)(: kt Type)(: offset I64). (:
    (close r)
 )) CCFragment[]);
 
-compile-constructor := λ(: ctx CCContext)(: function-name String)(: args AST)(: offset I64). (: (tail(
+compile-constructor := λ(: ctx CCContext)(: function-name String)(: return-type Type)(: args AST)(: offset I64). (: (tail(
    (let r (maybe-deref(ccfragment::new())))
    (let r-1 (maybe-deref(ccfragment::set-context( r ctx ))))(set r r-1)
+   (let r-2 (maybe-deref(ccfragment::set-type( r return-type ))))(set r r-2)
    (print 'TODO:\sApply\sConstructor\n_s)
    (print function-name)(print '\n_s)
    (print args)
