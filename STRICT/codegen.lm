@@ -420,7 +420,7 @@ compile-maybe-push-stack := λ(: ctx CCContext)(: fragment CCFragment)(: express
       ()
       ( (TGround( 'StackVariable_s _ )) () )
       ( _ (tail(
-         (if (non-zero(maybe-deref(ccfragment::get-type fragment))) () (
+         (if (non-zero(maybe-deref(ccfragment::get-type fragment))) () (tail(
             (let f-arg (maybe-deref(ccfragment::set-type( fragment ft ))))
             (set fragment f-arg)
          )))
