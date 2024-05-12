@@ -60,6 +60,7 @@ compile := λ(). (: (tail(
          (set program rst)
       )))
    )))
+   (print 'Start\sFinish\n_s)
    (compile-finish())
    (compile-write())
 )) Nil);
