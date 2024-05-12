@@ -264,7 +264,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
                (match f (
                   ()
                   ( (Var fname) (tail(
-                     (let e1 (maybe-deref(compile-stack-call( ctx fname a stack-offset ))))
+                     (let e1 (maybe-deref(compile-stack-call( ctx fname (maybe-deref(typecheck-lookup f)) a stack-offset ))))
                      (set e e1)
                   )))
                   ( (Lit fname) (tail(
@@ -322,15 +322,26 @@ compile-destructure-args := λ(: ctx CCContext)(: lhs AST)(: offset I64). (: (ta
    (close ctx)
 )) CCContext[]);
 
-compile-stack-call := λ(: ctx CCContext)(: function-name String)(: args AST)(: offset I64). (: (tail(
+compile-stack-call := λ(: ctx CCContext)(: function-name String)(: function-type Type)(: args AST)(: offset I64). (: (tail(
    (let r (maybe-deref(ccfragment::new())))
    (let r-1 (maybe-deref(ccfragment::set-context( r ctx ))))(set r r-1)
    (let f (maybe-deref(cccontext::lookup( ctx function-name (maybe-deref(typecheck-lookup args)) args ))))
    (let push-args (maybe-deref(compile-stack-call-push-args( ctx args offset 0_i64 ))))
    (let call SNil)
-   (set call (SCons( (close call) (close(SAtom '\o\scall\s_s)) )))
-   (set call (SCons( (close call) (close(SAtom function-name)) )))
+   (let function-id (mangle-identifier( function-name function-type )))
+
+   (print 'ConsTail:\s_s)(print cons-page-tail)(print '\n_s)
+
+   (set call (SCons( (close call) (close(SAtom 'push\s%rbp\n_s)) )))
+   (set call (SCons( (close call) (close(SAtom 'mov\s%rsp,\s%rbp\n_s)) )))
+   (set call (SCons( (close call) (ccfragment::get( push-args 'program_s )) )))
+   (set call (SCons( (close call) (close(SAtom '\tcall\s_s)) )))
+   (set call (SCons( (close call) (close(SAtom function-id)) )))
    (set call (SCons( (close call) (close(SAtom '\n_s)) )))
+   (set call (SCons( (close call) (ccfragment::get( push-args 'unframe_s )) )))
+   (set call (SCons( (close call) (close(SAtom 'mov\s%rbp,\s%rsp\n_s)) )))
+   (set call (SCons( (close call) (close(SAtom 'pop\s%rbp\n_s)) )))
+
    (let r-2 (maybe-deref(ccfragment::set( r 'program_s call ))))(set r r-2)
    (close r)
 
