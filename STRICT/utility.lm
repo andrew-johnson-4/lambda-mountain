@@ -362,4 +362,3 @@ escape-string-simple := λ(: s String). (: (tail(
    (clone-rope e)
 )) String);
 
-
