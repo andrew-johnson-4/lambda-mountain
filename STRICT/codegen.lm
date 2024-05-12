@@ -264,7 +264,8 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
                (match f (
                   ()
                   ( (Var fname) (tail(
-                     (let e1 (maybe-deref(compile-stack-call( ctx fname (maybe-deref(typecheck-lookup f)) a stack-offset ))))
+                     (let ft (maybe-deref(typecheck-find-plural-app( term (maybe-deref(typecheck-lookup f)) (maybe-deref(typecheck-lookup a)) ))))
+                     (let e1 (maybe-deref(compile-stack-call( ctx fname ft a stack-offset ))))
                      (set e e1)
                   )))
                   ( (Lit fname) (tail(
