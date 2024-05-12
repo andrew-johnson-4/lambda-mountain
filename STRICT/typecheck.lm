@@ -604,7 +604,7 @@ typecheck-assert-complete := λ(: term AST). (: (
          (typecheck-assert-complete v)
       ))
       ( (Fragment( k v )) (
-         (typecheck-assert-complete v)
+         (typecheck-assert-one v)
       ))
       ( (ASTType( _ _ )) () )
       ( (App( (Abs( (Var lname) ASTNil )) rhs )) (tail(
