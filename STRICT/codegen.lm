@@ -124,7 +124,6 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
                (let e2-4 (maybe-deref(ccfragment::set-offset( e2-3 stack-offset ))))
                (let e2-5 (maybe-deref(ccfragment::set-type( e1 (maybe-deref(tlocalvariable())) ))))
                (let e3 (maybe-deref(fragment-apply( ctx 'mov_s
-                  (maybe-deref(tcons( kt (maybe-deref(tlocalvariable())) )))
                   (FLSeq( (close(FLSeq( (close FLEOF) e1-2 ))) e2-5 ))
                   term
                ))))
@@ -140,7 +139,6 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
                (let e2-4 (maybe-deref(ccfragment::set-offset( e2-3 stack-offset ))))
                (let e2-5 (maybe-deref(ccfragment::set-type( e1 (maybe-deref(tglobalvariable())) ))))
                (let e3 (maybe-deref(fragment-apply( ctx 'mov_s
-                  (maybe-deref(tcons( kt (maybe-deref(tglobalvariable())) )))
                   (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2-5 ))
                   term
                ))))
@@ -344,7 +342,7 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: args AST)(: 
       ()
       ( (SAtom 'Fragment_s) (tail(
          (let f-args (maybe-deref(compile-fragment-args( ctx args offset ))))
-         (let r-2 (maybe-deref(fragment-apply( ctx function-name (maybe-deref(typecheck-lookup args)) f-args args ))))
+         (let r-2 (maybe-deref(fragment-apply( ctx function-name f-args args ))))
          (set r r-2)
       )))
       ( _ (tail(
@@ -411,7 +409,7 @@ compile-maybe-push-stack := λ(: ctx CCContext)(: fragment CCFragment)(: express
       ( _ (tail(
          (let f-arg (maybe-deref(ccfragment::set-type( fragment expression-type ))))
          (let f1 (maybe-deref(fragment-apply(
-            ctx 'push_s expression-type
+            ctx 'push_s
             (FLSeq( (close FLEOF) f-arg )) sloc
          ))))
          (set fragment f1)

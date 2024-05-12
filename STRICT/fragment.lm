@@ -177,8 +177,26 @@ ccfragment::set-offset := λ(: e CCFragment)(: offset I64). (: (tail(
    (close e)
 )) CCFragment[]);
 
-fragment-apply := λ(: ctx CCContext)(: k String)(: at Type)(: args FragList)(: sloc AST). (: (tail(
+typeof := λ(: args FragList). (: (tail(
+   (let r TAny)
+   (match args (
+      ()
+      ( (FragList( rst f )) (tail(
+         (let rst-tt (maybe-deref(typeof rst)))
+         (let f-tt (maybe-deref(ccfragment::get-type f)))
+         (if (non-zero rst-tt) (
+            (set r (maybe-deref(tcons( rst-tt f-tt ))))
+         ) (
+            (set r f-tt)
+         ))
+      )))
+      ( _ () )
+   ))
+)) Type[]);
+
+fragment-apply := λ(: ctx CCContext)(: k String)(: args FragList)(: sloc AST). (: (tail(
    (let e-proto (maybe-deref(ccfragment::new())))
+   (let at (maybe-deref(typeof args)))
    (let arrow (maybe-deref(cccontext::lookup( ctx k at sloc ))))
    (let chain True_u8)
    (match (maybe-deref(typecheck-slot( at 'DontChain_s ))) (
