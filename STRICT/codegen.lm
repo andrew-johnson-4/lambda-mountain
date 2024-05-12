@@ -415,6 +415,7 @@ compile-declare-cstring := λ(: val String). (: (tail(
 
 compile-maybe-push-stack := λ(: ctx CCContext)(: fragment CCFragment)(: expression-type Type)(: sloc AST). (: (tail(
    (let ft (maybe-deref(ccfragment::get-type( fragment ))))
+   (print 'Maybe\sPush\s_s)(print ft)(print '\n_s)
    (match (maybe-deref(typecheck-slot( ft 'StackVariable_s ))) (
       ()
       ( (TGround( 'StackVariable_s _ )) () )
