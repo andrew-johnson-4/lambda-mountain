@@ -264,8 +264,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
                (match f (
                   ()
                   ( (Var fname) (tail(
-                     (let ft (maybe-deref(typecheck-find-plural-app( term (maybe-deref(typecheck-lookup f)) (maybe-deref(typecheck-lookup a)) ))))
-                     (let e1 (maybe-deref(compile-stack-call( ctx fname ft a stack-offset ))))
+                     (let e1 (maybe-deref(compile-stack-call( ctx fname a stack-offset ))))
                      (set e e1)
                   )))
                   ( (Lit fname) (tail(
@@ -323,39 +322,38 @@ compile-destructure-args := λ(: ctx CCContext)(: lhs AST)(: offset I64). (: (ta
    (close ctx)
 )) CCContext[]);
 
-compile-stack-call := λ(: ctx CCContext)(: function-name String)(: function-type Type)(: args AST)(: offset I64). (: (tail(
+compile-stack-call := λ(: ctx CCContext)(: function-name String)(: args AST)(: offset I64). (: (tail(
+   (let f (maybe-deref(cccontext::lookup( ctx function-name (maybe-deref(typecheck-lookup args)) args ))))
+   (let function-type (maybe-deref(ccfragment::get-type f)))
    (let r (maybe-deref(ccfragment::new())))
    (let r-1 (maybe-deref(ccfragment::set-context( r ctx ))))(set r r-1)
-   (let f (maybe-deref(cccontext::lookup( ctx function-name (maybe-deref(typecheck-lookup args)) args ))))
-   (let push-args (maybe-deref(compile-stack-call-push-args( ctx args offset 0_i64 ))))
-   (let call SNil)
-   (let function-id (mangle-identifier( function-name function-type )))
 
-   (print 'ConsTail:\s_s)(print cons-page-tail)(print '\n_s)
+   (match (maybe-deref(ccfragment::get( f 'fragment-type_s ))) (
+      ()
+      ( (SAtom 'fragment_s) (tail(
+         ()
+         (print 'TODO:\sCall\sApply\sFragment\n_s)
+      )))
+      ( _ (tail(
+         (let push-args (maybe-deref(compile-stack-call-push-args( ctx args offset 0_i64 ))))
+         (let call SNil)
+         (let function-id (mangle-identifier( function-name function-type )))
 
-   (set call (SCons( (close call) (close(SAtom 'push\s%rbp\n_s)) )))
-   (set call (SCons( (close call) (close(SAtom 'mov\s%rsp,\s%rbp\n_s)) )))
-   (set call (SCons( (close call) (ccfragment::get( push-args 'program_s )) )))
-   (set call (SCons( (close call) (close(SAtom '\tcall\s_s)) )))
-   (set call (SCons( (close call) (close(SAtom function-id)) )))
-   (set call (SCons( (close call) (close(SAtom '\n_s)) )))
-   (set call (SCons( (close call) (ccfragment::get( push-args 'unframe_s )) )))
-   (set call (SCons( (close call) (close(SAtom 'mov\s%rbp,\s%rsp\n_s)) )))
-   (set call (SCons( (close call) (close(SAtom 'pop\s%rbp\n_s)) )))
+         (set call (SCons( (close call) (close(SAtom 'push\s%rbp\n_s)) )))
+         (set call (SCons( (close call) (close(SAtom 'mov\s%rsp,\s%rbp\n_s)) )))
+         (set call (SCons( (close call) (ccfragment::get( push-args 'program_s )) )))
+         (set call (SCons( (close call) (close(SAtom '\tcall\s_s)) )))
+         (set call (SCons( (close call) (close(SAtom function-id)) )))
+         (set call (SCons( (close call) (close(SAtom '\n_s)) )))
+         (set call (SCons( (close call) (ccfragment::get( push-args 'unframe_s )) )))
+         (set call (SCons( (close call) (close(SAtom 'mov\s%rbp,\s%rsp\n_s)) )))
+         (set call (SCons( (close call) (close(SAtom 'pop\s%rbp\n_s)) )))
 
-   (let r-2 (maybe-deref(ccfragment::set( r 'program_s call ))))(set r r-2)
+         (let r-2 (maybe-deref(ccfragment::set( r 'program_s call ))))(set r r-2)
+      )))
+   ))
    (close r)
 
-
-#         (set e-call (expr::set-prog( e-call (
-#            (expr::get-frame e-args)
-#            (expr::get-prog e-args)
-#            (enter-function())
-#            (\t 'call \s (mangle-identifier( function-name (typecheck-lookup body) )) \n)
-#            (\t 'mov \s '%rbp, \s '%rsp              \n
-#             \t 'pop \s '%rbp                        \n)
-#            (expr::get-unframe e-args)
-#         ))))
 #         (set e-call (expr::set-expr( e-call (
 #            (match (typecheck-sizeof (typecheck-rvalue (typecheck-lookup body))) (
 #               ()
