@@ -365,7 +365,7 @@ escape-string := λ(: s String). (: (tail(
 escape-string := λ(: s S). (: (tail(
    (match s (
       ()
-      ( (SAtom a) (set s (SAtom(escape-string a)) )
+      ( (SAtom a) (set s (SAtom(escape-string a))) )
       ( (SCons( l r )) (set s (SCons(
          (escape-string l)
          (escape-string r)
