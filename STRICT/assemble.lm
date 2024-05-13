@@ -122,11 +122,12 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
             (close(SAtom '._s))
             (close(SAtom(to-string field-number)))
          ))))
+         (let ftype (maybe-deref(tarrow( base-type p2 ))))
          (let fragment (maybe-deref(ccfragment::new())))
          (let af-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment af-2)
+         (let af-3 (maybe-deref(ccfragment::set-type( fragment ftype ))))(set fragment af-3)
          (let ctx-2 (maybe-deref(cccontext::bind(
-            ctx accessor-name (maybe-deref(tarrow( base-type p2 )))
-            fragment
+            ctx accessor-name ftype fragment
          ))))
          (set ctx ctx-2)
          (set field-types p1)
@@ -137,11 +138,12 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
             (close(SAtom '._s))
             (close(SAtom(to-string field-number)))
          ))))
+         (let ftype (maybe-deref(tarrow( base-type p2 ))))
          (let fragment (maybe-deref(ccfragment::new())))
          (let af-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment af-2)
+         (let af-3 (maybe-deref(ccfragment::set-type( fragment ftype ))))(set fragment af-3)
          (let ctx-2 (maybe-deref(cccontext::bind(
-            ctx accessor-name (maybe-deref(tarrow( base-type p2 )))
-            fragment
+            ctx accessor-name ftype fragment
          ))))
          (set ctx ctx-2)
          (set field-types TAny)
