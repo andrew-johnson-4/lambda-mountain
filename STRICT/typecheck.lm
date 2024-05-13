@@ -284,6 +284,22 @@ tnil := λ. (: (tail(
    )))
 )) Type[]);
 
+tliteral := λ. (: (tail(
+   ()
+   (close (TGround(
+      'Literal_s
+      (close TypeEOF)
+   )))
+)) Type[]);
+
+tconstant := λ. (: (tail(
+   ()
+   (close (TGround(
+      'Constant_s
+      (close TypeEOF)
+   )))
+)) Type[]);
+
 tlocalvariable := λ. (: (tail(
    ()
    (close (TGround(
