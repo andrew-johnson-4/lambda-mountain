@@ -608,7 +608,13 @@ ccfragment::chain := λ(: l CCFragment)(: r CCFragment). (: (tail(
          (ccfragment::get( r 'program_s ))
       ))
    ))))
-   (close e1-6)
+   (let e1-7 (maybe-deref(ccfragment::set-context( e1-6
+      (maybe-deref(ccfragment::get-context r))
+   ))))
+   (let e1-8 (maybe-deref(ccfragment::set-offset( e1-7
+      (maybe-deref(ccfragment::get-offset r))
+   ))))
+   (close e1-8)
 )) CCFragment[]);
 
 fragment-chain := λ(: fragment-ctx FragList)(: e CCFragment). (: (tail(
