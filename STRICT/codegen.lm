@@ -396,6 +396,7 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type 
             ( 4_u64 (set expr 'eax_s))
             ( 8_u64 (set expr 'rax_s))
             ( _ (tail(
+               (print 'Function\sName:\s_s)(print function-name)(print '\n_s)
                (print 'Return\sValue:\s_s)(print return-type)(print '\n_s)
                (exit-error( 'TODO\slarge\srvalues_s args ))
             )))
