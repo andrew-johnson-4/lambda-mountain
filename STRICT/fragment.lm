@@ -216,6 +216,17 @@ fragment-apply := λ(: ctx CCContext)(: k String)(: args FragList)(: sloc AST). 
       (exit-error( msg sloc ))
    )))
    (let arrow (maybe-deref(cccontext::lookup( ctx k at sloc ))))
+
+   (match (maybe-deref(typecheck-slot( (maybe-deref(ccfragment::get-type arrow)) '->_s ))) (
+      ()
+      ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF lt )) rt )) )) () )
+      ( arrow-tt (tail(
+         (print 'Apply\sDirect\sFragment\sIs\sNot\sAn\sArrow:\s_s)
+         (print k)(print '\s:\s_s)
+         (print arrow-tt)(print '\n_s)
+      )))
+   ))
+
    (let chain True_u8)
    (match (maybe-deref(typecheck-slot( at 'DontChain_s ))) (
       ()
