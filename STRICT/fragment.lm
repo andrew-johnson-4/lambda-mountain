@@ -208,6 +208,7 @@ typeof := λ(: args FragList). (: (tail(
 )) Type[]);
 
 fragment-apply := λ(: ctx CCContext)(: offset I64)(: k String)(: args FragList)(: sloc AST). (: (tail(
+   (print 'Apply\sFragment\s_s)(print k)(print args)
    (let e-proto (maybe-deref(ccfragment::new())))
    (let e-proto-2 (maybe-deref(ccfragment::set-context( e-proto ctx ))))(set e-proto e-proto-2)
    (let e-proto-3 (maybe-deref(ccfragment::set-offset( e-proto offset ))))(set e-proto e-proto-3)
