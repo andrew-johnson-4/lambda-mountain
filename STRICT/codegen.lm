@@ -394,7 +394,7 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type 
             ( 2_u64 (set expr 'ax_s))
             ( 4_u64 (set expr 'eax_s))
             ( 8_u64 (set expr 'rax_s))
-            ( _ (exit-error( 'TODO\slarge\srvalues_s return-type )))
+            ( _ (exit-error( 'TODO\slarge\srvalues_s args )))
          ))
          (let r-4 (maybe-deref(ccfragment::set( r 'expression_s (SAtom expr) ))))(set r r-4)
       )))
