@@ -524,6 +524,15 @@ fragment-apply-context := λ(: ctx CCContext)(: rhs S)(: e CCFragment). (: (tail
 )) CCFragment[]);
 
 fragment-apply-direct := λ(: arrow CCFragment)(: args FragList)(: e-proto CCFragment)(: chain U8). (: (tail(
+   (let rtype (maybe-deref(ccfragment::get-type arrow)))
+   (match (maybe-deref(typecheck-slot( rtype '->_s ))) (
+      ()
+      ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF lt )) rt )) )) (set rtype rt) )
+      ( _ (tail(
+         (print 'Apply\sDirect\sFragment\sIs\sNot\sAn\sArrow:\s_s)
+         (print rtype)(print '\n_s)
+      )))
+   ))
    (match (maybe-deref(ccfragment::get( arrow 'fragment_s ))) (
       ()
       ( (SCons( (SAtom 'Abs_s) (SCons( lhs rhs )) )) (tail(
@@ -545,6 +554,7 @@ fragment-apply-direct := λ(: arrow CCFragment)(: args FragList)(: e-proto CCFra
       (let r (maybe-deref(fragment-chain( args e-proto ))))
       (set e-proto r)
    )) ())
+   (let e-2 (maybe-deref(ccfragment::set-type( e-proto rtype ))))(set e-proto e-2)
    (close e-proto)
 )) CCFragment[]);
 
