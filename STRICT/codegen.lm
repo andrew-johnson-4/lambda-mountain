@@ -299,7 +299,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
                (match f (
                   ()
                   ( (Var fname) (tail(
-                     (let e1 (maybe-deref(compile-stack-call( ctx fname a stack-offset ))))
+                     (let e1 (maybe-deref(compile-stack-call( ctx fname (maybe-deref(typecheck-lookup term)) a stack-offset ))))
                      (set e e1)
                   )))
                   ( (Lit fname) (tail(
@@ -357,11 +357,12 @@ compile-destructure-args := λ(: ctx CCContext)(: lhs AST)(: offset I64). (: (ta
    (close ctx)
 )) CCContext[]);
 
-compile-stack-call := λ(: ctx CCContext)(: function-name String)(: args AST)(: offset I64). (: (tail(
+compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type Type)(: args AST)(: offset I64). (: (tail(
    (let f (maybe-deref(cccontext::lookup( ctx function-name (maybe-deref(typecheck-lookup args)) args ))))
    (let function-type (maybe-deref(ccfragment::get-type f)))
    (let r (maybe-deref(ccfragment::new())))
    (let r-1 (maybe-deref(ccfragment::set-context( r ctx ))))(set r r-1)
+   (let r-2 (maybe-deref(ccfragment::set-offset( r offset ))))(set r r-2)
 
    (match (maybe-deref(ccfragment::get( f 'fragment-type_s ))) (
       ()
@@ -384,24 +385,21 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: args AST)(: 
          (set call (SCons( (close call) (ccfragment::get( push-args 'unframe_s )) )))
          (set call (SCons( (close call) (close(SAtom '\tmov\s%rbp,\s%rsp\n_s)) )))
          (set call (SCons( (close call) (close(SAtom '\tpop\s%rbp\n_s)) )))
+         (let r-3 (maybe-deref(ccfragment::set( r 'program_s call ))))(set r r-3)
 
-         (let r-2 (maybe-deref(ccfragment::set( r 'program_s call ))))(set r r-2)
+         (let expr 'Invalid\sExpression_s)
+         (match (typecheck-sizeof return-type) (
+            ()
+            ( 1_u64 (set expr 'al_s))
+            ( 2_u64 (set expr 'ax_s))
+            ( 4_u64 (set expr 'eax_s))
+            ( 8_u64 (set expr 'rax_s))
+            ( _ (exit-error( 'TODO\slarge\srvalues_s return-type )))
+         ))
+         (let r-4 (maybe-deref(ccfragment::set( r 'expression_s (SAtom expr) ))))(set r r-4)
       )))
    ))
    (close r)
-
-#         (set e-call (expr::set-expr( e-call (
-#            (match (typecheck-sizeof (typecheck-rvalue (typecheck-lookup body))) (
-#               ()
-#               ( 1 'al )
-#               ( 2 'ax )
-#               ( 4 'eax )
-#               ( 8 'rax )
-#            ))
-#         ))))
-#         (set e-call (expr::set-context( e-call ctx )))
-#         (set e-call (expr::set-offset( e-call offset )))
-
 )) CCFragment[]);
 
 compile-translate-local-variables := λ(: ctx CCContext)(: delta I64). (: (tail(
