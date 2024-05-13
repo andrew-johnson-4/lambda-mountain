@@ -318,7 +318,11 @@ fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (t
          (let ctx-2 (maybe-deref(fragment-destructure-lhs( ctx lhs-rst args ))))
          (set ctx ctx-2)
       )))
-      ( _ () )
+      ( _ (tail(
+         (print 'Unexpected\sDestructure\sLHS:\s_s)
+         (print lhs)(print '\n_s)
+         (exit 1_u64)
+      )))
    ))
    (close ctx)
 )) CCContext[]);
