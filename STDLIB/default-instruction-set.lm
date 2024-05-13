@@ -170,15 +170,15 @@ fragment mov := λ(: src LocalVariable+Sized<size>)(: index Literal+Constant)(: 
          \t 'movq \s '%r15 , \s (*( word-offset 8 )) \[ '%r14 \] \n
       ))
       (if-eq size 4 (
-         \t 'mov \s (+( (.expression src) \[ '%rbp \] , \s '%r15d \n
+         \t 'mov \s (.expression src) \[ '%rbp \] , \s '%r15d \n
          \t 'mov \s '%r15d , \s '0 \[ '%r14 \] \n
       ))
       (if-eq size 2 (
-         \t 'mov \s (+( (.expression src) \[ '%rbp \] , \s '%r15w \n
+         \t 'mov \s (.expression src) \[ '%rbp \] , \s '%r15w \n
          \t 'mov \s '%r15w , \s '0 \[ '%r14 \] \n
       ))
       (if-eq size 1 (
-         \t 'mov \s (+( (.expression src) \[ '%rbp \] , \s '%r15b \n
+         \t 'mov \s (.expression src) \[ '%rbp \] , \s '%r15b \n
          \t 'mov \s '%r15b , \s '0 \[ '%r14 \] \n
       ))
    ))
