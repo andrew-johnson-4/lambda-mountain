@@ -1557,6 +1557,20 @@ tlabel := λ. (: (tail(
    (close(TGround( 'Label_s (close TypeEOF) )))
 )) Type[]);
 
+with-representation := λ(: tt Type). (: (tail(
+   (let sz (typecheck-sizeof tt))
+   (match sz (
+      ()
+      ( 0_u64 () )
+      ( 1_u64 (set tt (TAnd( (close tt) (close(TGround( 'Reg8_s (close TypeEOF) )))  ))))
+      ( 2_u64 (set tt (TAnd( (close tt) (close(TGround( 'Reg16_s (close TypeEOF) )))  ))))
+      ( 3_u64 (set tt (TAnd( (close tt) (close(TGround( 'Reg32_s (close TypeEOF) )))  ))))
+      ( 4_u64 (set tt (TAnd( (close tt) (close(TGround( 'Reg64_s (close TypeEOF) )))  ))))
+      ( _ (set tt (TAnd( (close tt) (close(TGround( 'StackVariable_s (close TypeEOF) )))  ))))
+   ))
+   (close tt)
+)) Type[]);
+
 typecheck-infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
    (match lhs (
       ()
@@ -1614,3 +1628,4 @@ typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tai
    ))
    (close found)
 )) Type[]);
+

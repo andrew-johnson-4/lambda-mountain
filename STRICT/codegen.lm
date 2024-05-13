@@ -148,7 +148,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
                (let e2-3 (maybe-deref(ccfragment::set-context( e2-2 ctx ))))
                (let e2-4 (maybe-deref(ccfragment::set-offset( e2-3 stack-offset ))))
                (let e2-5 (maybe-deref(ccfragment::set-type( e1 (maybe-deref(tlocalvariable())) ))))
-               (let e3 (maybe-deref(fragment-apply( ctx 'mov_s
+               (let e3 (maybe-deref(fragment-apply( ctx stack-offset 'mov_s
                   (FLSeq( (close(FLSeq( (close FLEOF) e1-2 ))) e2-5 ))
                   term
                ))))
@@ -163,7 +163,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
                (let e2-3 (maybe-deref(ccfragment::set-context( e2-2 ctx ))))
                (let e2-4 (maybe-deref(ccfragment::set-offset( e2-3 stack-offset ))))
                (let e2-5 (maybe-deref(ccfragment::set-type( e1 (maybe-deref(tglobalvariable())) ))))
-               (let e3 (maybe-deref(fragment-apply( ctx 'mov_s
+               (let e3 (maybe-deref(fragment-apply( ctx stack-offset 'mov_s
                   (FLSeq( (close(FLSeq( (close FLEOF) e1-2 ))) e2-5 ))
                   term
                ))))
@@ -299,7 +299,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
                (match f (
                   ()
                   ( (Var fname) (tail(
-                     (let e1 (maybe-deref(compile-stack-call( ctx fname a stack-offset ))))
+                     (let e1 (maybe-deref(compile-stack-call( ctx fname (maybe-deref(typecheck-lookup term)) a stack-offset ))))
                      (set e e1)
                   )))
                   ( (Lit fname) (tail(
@@ -357,17 +357,18 @@ compile-destructure-args := λ(: ctx CCContext)(: lhs AST)(: offset I64). (: (ta
    (close ctx)
 )) CCContext[]);
 
-compile-stack-call := λ(: ctx CCContext)(: function-name String)(: args AST)(: offset I64). (: (tail(
+compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type Type)(: args AST)(: offset I64). (: (tail(
    (let f (maybe-deref(cccontext::lookup( ctx function-name (maybe-deref(typecheck-lookup args)) args ))))
    (let function-type (maybe-deref(ccfragment::get-type f)))
    (let r (maybe-deref(ccfragment::new())))
    (let r-1 (maybe-deref(ccfragment::set-context( r ctx ))))(set r r-1)
+   (let r-2 (maybe-deref(ccfragment::set-offset( r offset ))))(set r r-2)
 
    (match (maybe-deref(ccfragment::get( f 'fragment-type_s ))) (
       ()
       ( (SAtom 'Fragment_s) (tail(
          (let f-args (maybe-deref(compile-fragment-args( ctx args offset ))))
-         (let r-2 (maybe-deref(fragment-apply( ctx function-name f-args args ))))
+         (let r-2 (maybe-deref(fragment-apply( ctx offset function-name f-args args ))))
          (set r r-2)
       )))
       ( _ (tail(
@@ -384,24 +385,26 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: args AST)(: 
          (set call (SCons( (close call) (ccfragment::get( push-args 'unframe_s )) )))
          (set call (SCons( (close call) (close(SAtom '\tmov\s%rbp,\s%rsp\n_s)) )))
          (set call (SCons( (close call) (close(SAtom '\tpop\s%rbp\n_s)) )))
+         (let r-3 (maybe-deref(ccfragment::set( r 'program_s call ))))(set r r-3)
 
-         (let r-2 (maybe-deref(ccfragment::set( r 'program_s call ))))(set r r-2)
+         (let expr 'Invalid\sExpression_s)
+         (match (typecheck-sizeof return-type) (
+            ()
+            ( 0_u64 ())
+            ( 1_u64 (set expr 'al_s))
+            ( 2_u64 (set expr 'ax_s))
+            ( 4_u64 (set expr 'eax_s))
+            ( 8_u64 (set expr 'rax_s))
+            ( _ (tail(
+               (print 'Function\sName:\s_s)(print function-name)(print '\n_s)
+               (print 'Return\sValue:\s_s)(print return-type)(print '\n_s)
+               (exit-error( 'TODO\slarge\srvalues_s args ))
+            )))
+         ))
+         (let r-4 (maybe-deref(ccfragment::set( r 'expression_s (SAtom expr) ))))(set r r-4)
       )))
    ))
    (close r)
-
-#         (set e-call (expr::set-expr( e-call (
-#            (match (typecheck-sizeof (typecheck-rvalue (typecheck-lookup body))) (
-#               ()
-#               ( 1 'al )
-#               ( 2 'ax )
-#               ( 4 'eax )
-#               ( 8 'rax )
-#            ))
-#         ))))
-#         (set e-call (expr::set-context( e-call ctx )))
-#         (set e-call (expr::set-offset( e-call offset )))
-
 )) CCFragment[]);
 
 compile-translate-local-variables := λ(: ctx CCContext)(: delta I64). (: (tail(
@@ -427,7 +430,7 @@ compile-declare-cstring := λ(: val String). (: (tail(
    (close r)
 )) CCFragment[]);
 
-compile-maybe-push-stack := λ(: ctx CCContext)(: fragment CCFragment)(: expression-type Type)(: sloc AST). (: (tail(
+compile-maybe-push-stack := λ(: ctx CCContext)(: offset I64)(: fragment CCFragment)(: expression-type Type)(: sloc AST). (: (tail(
    (let ft (maybe-deref(ccfragment::get-type( fragment ))))
    (if (non-zero ft) () (set ft expression-type))
    (match (maybe-deref(typecheck-slot( ft 'StackVariable_s ))) (
@@ -439,7 +442,7 @@ compile-maybe-push-stack := λ(: ctx CCContext)(: fragment CCFragment)(: express
             (set fragment f-arg)
          )))
          (let f1 (maybe-deref(fragment-apply(
-            ctx 'push_s
+            ctx offset 'push_s
             (FLSeq( (close FLEOF) fragment )) sloc
          ))))
          (set fragment f1)
@@ -458,7 +461,7 @@ compile-push-rvalue := λ(: ctx CCContext)(: rval AST)(: offset I64). (: (tail(
             ( (App( le re )) (tail(
                (let e1 (maybe-deref(compile-push-rvalue( ctx le offset ))))
                (let e2 (maybe-deref(compile-expr( ctx re (ccfragment::get-offset e1) Used ))))
-               (let e2-2 (maybe-deref(compile-maybe-push-stack( ctx e2 p2 rval ))))(set e2 e2-2)
+               (let e2-2 (maybe-deref(compile-maybe-push-stack( ctx offset e2 p2 rval ))))(set e2 e2-2)
                (set r (maybe-deref(ccfragment::chain( e1 e2 ))))
             )))
             ( u (exit-error( 'Invalid\sRvalue_s rval )))
@@ -466,7 +469,7 @@ compile-push-rvalue := λ(: ctx CCContext)(: rval AST)(: offset I64). (: (tail(
       ))
       ( et (tail(
          (let e1 (maybe-deref(compile-expr( ctx rval offset Used ))))
-         (let e1-2 (maybe-deref(compile-maybe-push-stack( ctx e1 et rval ))))(set e1 e1-2)
+         (let e1-2 (maybe-deref(compile-maybe-push-stack( ctx offset e1 et rval ))))(set e1 e1-2)
          (set r e1)
       )))
    ))

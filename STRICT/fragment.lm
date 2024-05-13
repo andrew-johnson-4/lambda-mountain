@@ -207,8 +207,11 @@ typeof := λ(: args FragList). (: (tail(
    (close r)
 )) Type[]);
 
-fragment-apply := λ(: ctx CCContext)(: k String)(: args FragList)(: sloc AST). (: (tail(
+fragment-apply := λ(: ctx CCContext)(: offset I64)(: k String)(: args FragList)(: sloc AST). (: (tail(
    (let e-proto (maybe-deref(ccfragment::new())))
+   (let e-proto-2 (maybe-deref(ccfragment::set-context( e-proto ctx ))))(set e-proto e-proto-2)
+   (let e-proto-3 (maybe-deref(ccfragment::set-offset( e-proto offset ))))(set e-proto e-proto-3)
+
    (let at (maybe-deref(typeof args)))
    (if (non-zero at) () (tail(
       (print 'Apply\s_s)(print k)(print args)
@@ -216,6 +219,17 @@ fragment-apply := λ(: ctx CCContext)(: k String)(: args FragList)(: sloc AST). 
       (exit-error( msg sloc ))
    )))
    (let arrow (maybe-deref(cccontext::lookup( ctx k at sloc ))))
+
+   (match (maybe-deref(typecheck-slot( (maybe-deref(ccfragment::get-type arrow)) '->_s ))) (
+      ()
+      ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF lt )) rt )) )) () )
+      ( arrow-tt (tail(
+         (print 'Apply\sDirect\sFragment\sIs\sNot\sAn\sArrow:\s_s)
+         (print k)(print '\s:\s_s)
+         (print arrow-tt)(print '\n_s)
+      )))
+   ))
+
    (let chain True_u8)
    (match (maybe-deref(typecheck-slot( at 'DontChain_s ))) (
       ()
@@ -524,6 +538,15 @@ fragment-apply-context := λ(: ctx CCContext)(: rhs S)(: e CCFragment). (: (tail
 )) CCFragment[]);
 
 fragment-apply-direct := λ(: arrow CCFragment)(: args FragList)(: e-proto CCFragment)(: chain U8). (: (tail(
+   (let rtype (maybe-deref(ccfragment::get-type arrow)))
+   (match (maybe-deref(typecheck-slot( rtype '->_s ))) (
+      ()
+      ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF lt )) rt )) )) (set rtype rt) )
+      ( _ (tail(
+         (print 'Apply\sDirect\sFragment\sIs\sNot\sAn\sArrow:\s_s)
+         (print rtype)(print '\n_s)
+      )))
+   ))
    (match (maybe-deref(ccfragment::get( arrow 'fragment_s ))) (
       ()
       ( (SCons( (SAtom 'Abs_s) (SCons( lhs rhs )) )) (tail(
@@ -535,7 +558,6 @@ fragment-apply-direct := λ(: arrow CCFragment)(: args FragList)(: e-proto CCFra
       ( _ (tail(
          (print 'Invalid\sFragment\sApplied:\n_s)
          (print arrow)(print '\n_s)
-         (exit 1_u64)
       )))
    ))
    #set context to e-proto
@@ -545,6 +567,7 @@ fragment-apply-direct := λ(: arrow CCFragment)(: args FragList)(: e-proto CCFra
       (let r (maybe-deref(fragment-chain( args e-proto ))))
       (set e-proto r)
    )) ())
+   (let e-2 (maybe-deref(ccfragment::set-type( e-proto rtype ))))(set e-proto e-2)
    (close e-proto)
 )) CCFragment[]);
 
@@ -588,27 +611,22 @@ ccfragment::chain := λ(: l CCFragment)(: r CCFragment). (: (tail(
          (ccfragment::get( r 'program_s ))
       ))
    ))))
-   (close e1-6)
+   (let e1-7 (maybe-deref(ccfragment::set-context( e1-6
+      (maybe-deref(ccfragment::get-context r))
+   ))))
+   (let e1-8 (maybe-deref(ccfragment::set-offset( e1-7
+      (maybe-deref(ccfragment::get-offset r))
+   ))))
+   (close e1-8)
 )) CCFragment[]);
 
 fragment-chain := λ(: fragment-ctx FragList)(: e CCFragment). (: (tail(
-   (let fragment-chain FLEOF)
    (while (non-zero fragment-ctx) (match fragment-ctx (
       ()
       ( (FLSeq( rst cf )) (tail(
-         (set fragment-chain (FLSeq(
-            (close fragment-chain)
-            cf
-         )))
-         (set fragment-ctx rst)
-      )))
-   )))
-   (while (non-zero fragment-chain) (match fragment-chain (
-      ()
-      ( (FLSeq( rst cf )) (tail(
-         (let e1 (maybe-deref(ccfragment::chain( e cf ))))
+         (let e1 (maybe-deref(ccfragment::chain( cf e ))))
          (set e e1)
-         (set fragment-chain rst)
+         (set fragment-ctx rst)
       )))
    )))
    (close e)
