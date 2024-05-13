@@ -113,6 +113,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          )))
          (let e1-2 (maybe-deref(ccfragment::set-type( e1 et ))))(set e1 e1-2)
          (let e1-3 (maybe-deref(ccfragment::set-context( e1 ctx ))))(set e1 e1-3)
+         (let e1-4 (maybe-deref(ccfragment::set-offset( e1 stack-offset ))))(set e1 e1-4)
          (set e e1)
       )))
       ( (App( (App( (Var 'as_s) t )) (Lit tt) )) (tail(
