@@ -390,11 +390,15 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type 
          (let expr 'Invalid\sExpression_s)
          (match (typecheck-sizeof return-type) (
             ()
+            ( 0_u64 ())
             ( 1_u64 (set expr 'al_s))
             ( 2_u64 (set expr 'ax_s))
             ( 4_u64 (set expr 'eax_s))
             ( 8_u64 (set expr 'rax_s))
-            ( _ (exit-error( 'TODO\slarge\srvalues_s args )))
+            ( _ (tail(
+               (print 'Return\sValue:\s_s)(print return-type)(print '\n_s)
+               (exit-error( 'TODO\slarge\srvalues_s args ))
+            )))
          ))
          (let r-4 (maybe-deref(ccfragment::set( r 'expression_s (SAtom expr) ))))(set r r-4)
       )))
