@@ -48,6 +48,7 @@ In this example both candidate functions “fit” AND are equivalent.
 In this case we apply *metrics* to determine the best fit.
 A metric is an order that can be applied to term/type pairs to determine which is a “better fit” in non-semantic cases.
 Metrics are very useful when there exist multiple equivalent forms of code representation that have different performance characteristics.
+Equivalence classes are another high-level concept and are not required to be nominally equivalent.
 
 ### Why is Ad-Hoc Specialization so Important For an Assembler?
 
