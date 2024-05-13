@@ -284,6 +284,33 @@ tnil := λ. (: (tail(
    )))
 )) Type[]);
 
+tsized := λ(: sz String). (: (tail(
+   (let sz (TGround(
+      sz
+      (close TypeEOF)
+   )))
+   (close(TGround(
+      'Sized_s
+      (close(TypeSeq( (close TypeEOF) sz )))
+   )))
+)) Type[]);
+
+tliteral := λ. (: (tail(
+   ()
+   (close (TGround(
+      'Literal_s
+      (close TypeEOF)
+   )))
+)) Type[]);
+
+tconstant := λ. (: (tail(
+   ()
+   (close (TGround(
+      'Constant_s
+      (close TypeEOF)
+   )))
+)) Type[]);
+
 tlocalvariable := λ. (: (tail(
    ()
    (close (TGround(
@@ -304,6 +331,14 @@ tglobalvariable := λ. (: (tail(
    ()
    (close (TGround(
       'GlobalVariable_s
+      (close TypeEOF)
+   )))
+)) Type[]);
+
+tstackvariable := λ. (: (tail(
+   ()
+   (close (TGround(
+      'StackVariable_s
       (close TypeEOF)
    )))
 )) Type[]);
@@ -697,8 +732,14 @@ exit-error := λ(: msg String)(: t AST). (: (tail(
    (print '\n_s)
    (match t (
       ()
+      ( (App( (App( (Var 'as_s) inner )) (Lit cast) )) (tail(
+         (print 'In\sCoercion\n_s)
+         (print inner)(print ':\n_s)
+         (print (maybe-deref(typecheck-lookup inner)))(print '\n_s)
+         (print 'As:\s_s)(print cast)(print '\n_s)
+      )))
       ( (App( f a )) (tail(
-         (print 'FunctionApplication\n_s)
+         (print 'In\sFunction\sApplication\n_s)
          (print f)(print ':\n_s)
          (print (maybe-deref(typecheck-lookup f)))(print '\n_s)
          (print a)(print ':\n_s)
@@ -756,6 +797,10 @@ nonnormal := λ(: tt Type). (: (tail(
       ( (TGround( 'StackVariable_s TypeEOF )) (set rt tt) )
       ( (TGround( 'LocalVariable_s TypeEOF )) (set rt tt) )
       ( (TGround( 'GlobalVariable_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'Reg8_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'Reg16_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'Reg32_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'Reg64_s TypeEOF )) (set rt tt) )
       ( (TAnd( ltt rtt )) (tail(
          (let lt1 (maybe-deref(nonnormal ltt )))
          (let rt1 (maybe-deref(nonnormal rtt )))

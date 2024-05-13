@@ -67,6 +67,17 @@ print := λ(: x CCFragment). (: (
    ))
 ) Nil);
 
+print := λ(: x FragList). (: (
+   (match x ( 
+      ()
+      ( (FLSeq( rst f )) (tail(
+         (print rst)
+         (print f)
+      )))
+      ( _ () )
+   ))
+) Nil);
+
 ccfragment::new := λ . (: (tail(
    (let r (CCFragment(
       (close CCKVEOF)
@@ -177,8 +188,33 @@ ccfragment::set-offset := λ(: e CCFragment)(: offset I64). (: (tail(
    (close e)
 )) CCFragment[]);
 
-fragment-apply := λ(: ctx CCContext)(: k String)(: at Type)(: args FragList)(: sloc AST). (: (tail(
+typeof := λ(: args FragList). (: (tail(
+   (let r TAny)
+   (match args (
+      ()
+      ( (FLSeq( rst f )) (tail(
+         (let rst-tt (maybe-deref(typeof rst)))
+         (let f-tt (maybe-deref(ccfragment::get-type f)))
+         (if (non-zero rst-tt) (tail(
+            (let r2 (maybe-deref(tcons( rst-tt f-tt ))))
+            (set r r2)
+         )) (
+            (set r f-tt)
+         ))
+      )))
+      ( _ () )
+   ))
+   (close r)
+)) Type[]);
+
+fragment-apply := λ(: ctx CCContext)(: k String)(: args FragList)(: sloc AST). (: (tail(
    (let e-proto (maybe-deref(ccfragment::new())))
+   (let at (maybe-deref(typeof args)))
+   (if (non-zero at) () (tail(
+      (print 'Apply\s_s)(print k)(print args)
+      (let msg (clone-rope(SCons( (close(SAtom 'Untyped\sFragment\sArguments:\s_s)) (close(SAtom k)) ))))
+      (exit-error( msg sloc ))
+   )))
    (let arrow (maybe-deref(cccontext::lookup( ctx k at sloc ))))
    (let chain True_u8)
    (match (maybe-deref(typecheck-slot( at 'DontChain_s ))) (
