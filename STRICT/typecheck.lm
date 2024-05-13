@@ -286,7 +286,7 @@ tnil := λ. (: (tail(
 
 tsized := λ(: sz String). (: (tail(
    (let sz (TGround(
-      'Nil_s
+      sz
       (close TypeEOF)
    )))
    (close(TGround(
