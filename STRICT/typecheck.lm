@@ -284,6 +284,17 @@ tnil := λ. (: (tail(
    )))
 )) Type[]);
 
+tsized := λ(: sz String). (: (tail(
+   (let sz (TGround(
+      'Nil_s
+      (close TypeEOF)
+   ))
+   (close(TGround(
+      'Sized_s
+      (close(TypeSeq( (close TypeEOF) sz )))
+   )))
+)) Type[]);
+
 tliteral := λ. (: (tail(
    ()
    (close (TGround(

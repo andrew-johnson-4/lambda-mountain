@@ -108,7 +108,10 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
             (tliteral())
             (close(TAnd(
                (tconstant())
-               (tu64())
+               (close(TAnd(
+                  (tu64())
+                  (tsized '8_s)
+               )))
             )))
          )))
          (let e1-2 (maybe-deref(ccfragment::set-type( e1 et ))))(set e1 e1-2)
