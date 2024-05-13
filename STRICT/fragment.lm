@@ -555,7 +555,6 @@ fragment-apply-direct := λ(: arrow CCFragment)(: args FragList)(: e-proto CCFra
       ( _ (tail(
          (print 'Invalid\sFragment\sApplied:\n_s)
          (print arrow)(print '\n_s)
-         (exit 1_u64)
       )))
    ))
    #set context to e-proto
