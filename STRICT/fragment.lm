@@ -278,6 +278,8 @@ fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (t
             ()
             ( (FLSeq( _ f )) (tail(
                (let ft (maybe-deref(ccfragment::get-type f)))
+               (let ft-sized (maybe-deref(typecheck-annotate-size( ft ))))(set ft ft-sized)
+               (let f-sized (maybe-deref(ccfragment::set-type( f ft ))))(set f f-sized)
                (if (non-zero ft) () (tail(
                   (print 'Fragment\sHas\sNo\sType:\n_s)
                   (print f)
@@ -302,6 +304,8 @@ fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (t
             ()
             ( (FLSeq( fl-rst f )) (tail(
                (let ft (maybe-deref(ccfragment::get-type f)))
+               (let ft-sized (maybe-deref(typecheck-annotate-size( ft ))))(set ft ft-sized)
+               (let f-sized (maybe-deref(ccfragment::set-type( f ft ))))(set f f-sized)
                (if (non-zero ft) () (tail(
                   (print 'Fragment\sHas\sNo\sType:\n_s)
                   (print f)
