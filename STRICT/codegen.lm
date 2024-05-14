@@ -273,7 +273,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
       ( (App( (Abs( (Var lhs) ASTNil )) rhs )) (tail(
          (let rtype (maybe-deref(typecheck-lookup rhs)))
          (let rtype-2 (TAnd( (close rtype) (tlocalvariable()) )))(set rtype rtype-2)
-         (let rtype-3 (typecheck-annotated-size( rtype )))(set rtype rtype-3)
+         (let rtype-3 (typecheck-annotate-size( rtype )))(set rtype rtype-3)
          (let size (typecheck-sizeof rtype))
          (let e1 (maybe-deref(compile-push-rvalue( ctx rhs stack-offset ))))
          (let bind-offset (+( stack-offset (as size I64) )))
