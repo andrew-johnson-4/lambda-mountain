@@ -271,7 +271,6 @@ fragment-destructure-tctx := λ(: ctx CCContext)(: tctx TContext). (: (tail(
 )) CCContext[]);
 
 fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (tail(
-   (print 'Destructure:\s_s)(print lhs)(print '\n_s)
    (match lhs (
       ()
       ( (SCons( (SAtom 'Var_s) (SAtom k) )) (tail(
@@ -324,7 +323,6 @@ fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (t
          (exit 1_u64)
       )))
    ))
-   (print 'Destructured:\s_s)(print ctx)(print '\n_s)
    (close ctx)
 )) CCContext[]);
 
