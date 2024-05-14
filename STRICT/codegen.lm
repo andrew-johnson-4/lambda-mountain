@@ -48,8 +48,8 @@ compile-global := λ(: ctx CCContext)(: term AST). (: (tail(
 
 compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used). (: (tail(
    (let e (maybe-deref(ccfragment::new())))
-   (let e-2 (maybe-deref(ccfragment::set-context( e ctx ))))
-   (set e e-2)
+   (let e-2 (maybe-deref(ccfragment::set-context( e ctx ))))(set e e-2)
+   (let e-3 (maybe-deref(ccfragment::set-offset( e stack-offset ))))(set e e-3)
    (match term (
       ()
       ( ASTNil () )
@@ -83,6 +83,10 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (let e2 (maybe-deref(compile-expr( (maybe-deref(ccfragment::get-context e1)) rt (ccfragment::get-offset e1) used ))))
          (let e12 (maybe-deref(ccfragment::chain( e1 e2 ))))
          (set e e12)
+      )))
+      ( (App( (Var 'gensym-label_s) t )) (tail(
+         ()
+         ()
       )))
       ( (App( (Var 'maybe-deref_s) t )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset Used ))))
