@@ -1586,12 +1586,13 @@ without-representation := λ(: tt Type). (: (tail(
       ( (TGround( 'Reg16_s TypeEOF )) (set tt TAny) )
       ( (TGround( 'Reg32_s TypeEOF )) (set tt TAny) )
       ( (TGround( 'Reg64_s TypeEOF )) (set tt TAny) )
+      ( (TGround( 'Sized_s _ )) (set tt TAny) )
       ( (TGround( _ TypeEOF )) () )
       ( (TGround( n (TypeSeq( TypeEOF p1 )) )) (
-         (set tt (TGround( n (close(TypeSeq( (close TypeEOF) p1 ))) )))
+         (set tt (TGround( n (close(TypeSeq( (close TypeEOF) (maybe-deref(without-representation p1)) ))) )))
       ))
       ( (TGround( n (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
-         (set tt (TGround( n (close(TypeSeq( (close(TypeSeq( (close TypeEOF) p1 ))) p2 ))) )))
+         (set tt (TGround( n (close(TypeSeq( (close(TypeSeq( (close TypeEOF) (maybe-deref(without-representation p1)) ))) (maybe-deref(without-representation p2)) ))) )))
       ))
       ( _ () )
    ))
