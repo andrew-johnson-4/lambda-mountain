@@ -84,7 +84,11 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (let e12 (maybe-deref(ccfragment::chain( e1 e2 ))))
          (set e e12)
       )))
-      ( (App( (Var 'gensym-label_s) t )) (tail(
+      ( (App( (Var 'gensym-label_s) (Var id) )) (tail(
+         ()
+         ()
+      )))
+      ( (App( (Var 'label_s) (Var id) )) (tail(
          ()
          ()
       )))
