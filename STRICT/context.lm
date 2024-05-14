@@ -15,10 +15,10 @@ print := λ(: ctx CCContext). (: (tail(
    (print 'Context:\n_s)
    (while (non-zero ctx) (match ctx (
       ()
-      ( (CCCtxBind( rst (*( k (*( kt kf )) )) )) (
+      ( (CCCtxBind( rst (*( k (*( kt kf )) )) )) (tail(
          (print k)(print '\s:\s_s)(print kt)(print '\n_s)(print kf)
          (set ctx rst)
-      ))
+      )))
    )))
 )) Nil);
 
