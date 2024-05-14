@@ -122,7 +122,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (let e1-4 (maybe-deref(ccfragment::set-offset( e1 stack-offset ))))(set e1 e1-4)
          (set e e1)
       )))
-      ( (App( (App( (Var 'as_s) t )) (Lit tt) )) (tail(
+      ( (App( (App( (Var 'as_s) t )) tt )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset used ))))
          (let outer-tt (maybe-deref(typecheck-lookup term)))
          (let inner-tt (maybe-deref(typecheck-lookup t)))
