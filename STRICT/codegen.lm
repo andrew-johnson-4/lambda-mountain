@@ -1,7 +1,6 @@
 
 #global binding
 compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
-   ()
    (let kt (maybe-deref(typecheck-lookup term)))
    (match term (
       ()
@@ -329,7 +328,6 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
 )) CCFragment[]);
 
 compile-destructure-args := λ(: ctx CCContext)(: lhs AST)(: offset I64). (: (tail(
-   ()
    (match lhs (
       ()
       ( (App( rst (Asc( (Var k) kt )) )) (tail(
