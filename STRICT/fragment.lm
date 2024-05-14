@@ -324,6 +324,7 @@ fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (t
          (exit 1_u64)
       )))
    ))
+   (print 'Destructured:\s_s)(print ctx)(print '\n_s)
    (close ctx)
 )) CCContext[]);
 
