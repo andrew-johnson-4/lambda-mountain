@@ -102,6 +102,20 @@ ccfragment::local-variable := λ(: offset I64)(: tt Type). (: (tail(
    (close r)
 )) CCFragment[]);
 
+ccfragment::label := λ(: id String). (: (tail(
+   (let r (CCFragment(
+      (close(CCKVSeq(
+         (close CCKVEOF)
+         'expression_s
+         (SAtom id)
+      )))
+      0_i64
+      (maybe-deref(tlabel()))
+      (cccontext::new())
+   )))
+   (close r)
+)) CCFragment[]);
+
 ccfragment::expression := λ(: val String) . (: (tail(
    (let r (CCFragment(
       (close(CCKVSeq(
