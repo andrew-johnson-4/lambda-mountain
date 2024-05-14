@@ -207,7 +207,25 @@ typeof := λ(: args FragList). (: (tail(
    (close r)
 )) Type[]);
 
+fragment-args-sized := λ(: args FragList). (: (tail(
+   (match args (
+      ()
+      ( (FLSeq( rst f )) (tail(
+         (let f-tt (maybe-deref(ccfragment::get-type f)))
+         (let f-tt-sized (maybe-deref(typecheck-annotate-size f-tt)))
+         (let f-sized (maybe-deref(ccfragment::set-type( f f-tt-sized ))))(set f f-sized)
+         (set args (FLSeq(
+            (fragment-args-sized rst)
+            f
+         )))
+      )))
+      ( _ () )
+   ))
+   (close args)
+)) FragList[]);
+
 fragment-apply := λ(: ctx CCContext)(: offset I64)(: k String)(: args FragList)(: sloc AST). (: (tail(
+   (let args-sized (maybe-deref(fragment-size-args args)))(set args args-sized)
    (let e-proto (maybe-deref(ccfragment::new())))
    (let e-proto-2 (maybe-deref(ccfragment::set-context( e-proto ctx ))))(set e-proto e-proto-2)
    (let e-proto-3 (maybe-deref(ccfragment::set-offset( e-proto offset ))))(set e-proto e-proto-3)
@@ -278,8 +296,6 @@ fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (t
             ()
             ( (FLSeq( _ f )) (tail(
                (let ft (maybe-deref(ccfragment::get-type f)))
-               (let ft-sized (maybe-deref(typecheck-annotate-size( ft ))))(set ft ft-sized)
-               (let f-sized (maybe-deref(ccfragment::set-type( f ft ))))(set f f-sized)
                (if (non-zero ft) () (tail(
                   (print 'Fragment\sHas\sNo\sType:\n_s)
                   (print f)
@@ -304,8 +320,6 @@ fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (t
             ()
             ( (FLSeq( fl-rst f )) (tail(
                (let ft (maybe-deref(ccfragment::get-type f)))
-               (let ft-sized (maybe-deref(typecheck-annotate-size( ft ))))(set ft ft-sized)
-               (let f-sized (maybe-deref(ccfragment::set-type( f ft ))))(set f f-sized)
                (if (non-zero ft) () (tail(
                   (print 'Fragment\sHas\sNo\sType:\n_s)
                   (print f)
