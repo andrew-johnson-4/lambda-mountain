@@ -95,7 +95,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (let l (maybe-deref(cccontext::lookup( ctx id (maybe-deref(tlabel())) term ))))
          (let prog (SCons(
             (ccfragment::get( l 'expression_s ))
-            (close(SAtom ':_s))
+            (close(SAtom ':\n_s))
          )))
          (let e-2 (maybe-deref(ccfragment::set( e 'program_s prog ))))(set e e-2)
       )))
