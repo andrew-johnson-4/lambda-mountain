@@ -91,6 +91,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (let tt (maybe-deref(typecheck-lookup t)))
          (match (maybe-deref(typecheck-slot( tt 'Array_s ))) (
             ()
+            ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF TAny )) _ )) )) () )
             ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF inner-tt )) TAny )) )) (tail(
                (print 'TODO\sImplement\sDeref\n_s)
                (let new-tt (TAnd( (tstackvariable()) (close inner-tt) )))
@@ -273,7 +274,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
       ( (App( (Abs( (Var lhs) ASTNil )) rhs )) (tail(
          (let rtype (maybe-deref(typecheck-lookup rhs)))
          (let rtype-2 (TAnd( (close rtype) (tlocalvariable()) )))(set rtype rtype-2)
-         (let rtype-3 (typecheck-annotate-size( rtype )))(set rtype rtype-3)
+         (let rtype-3 (maybe-deref(typecheck-annotate-size( rtype ))))(set rtype rtype-3)
          (let size (typecheck-sizeof rtype))
          (let e1 (maybe-deref(compile-push-rvalue( ctx rhs stack-offset ))))
          (let bind-offset (+( stack-offset (as size I64) )))
