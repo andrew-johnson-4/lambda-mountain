@@ -88,15 +88,29 @@ ccfragment::new := λ . (: (tail(
    (close r)
 )) CCFragment[]);
 
-ccfragment::local-variable := λ(: offset I64) . (: (tail(
+ccfragment::local-variable := λ(: offset I64)(: tt Type). (: (tail(
    (let r (CCFragment(
       (close(CCKVSeq(
          (close CCKVEOF)
-         'offset_s
+         'expression_s
          (SAtom(to-string offset))
       )))
       0_i64
-      TAny
+      tt
+      (cccontext::new())
+   )))
+   (close r)
+)) CCFragment[]);
+
+ccfragment::label := λ(: id String). (: (tail(
+   (let r (CCFragment(
+      (close(CCKVSeq(
+         (close CCKVEOF)
+         'expression_s
+         (SAtom id)
+      )))
+      0_i64
+      (maybe-deref(tlabel()))
       (cccontext::new())
    )))
    (close r)
@@ -207,8 +221,25 @@ typeof := λ(: args FragList). (: (tail(
    (close r)
 )) Type[]);
 
+fragment-size-args := λ(: args FragList). (: (tail(
+   (match args (
+      ()
+      ( (FLSeq( rst f )) (tail(
+         (let f-tt (maybe-deref(ccfragment::get-type f)))
+         (let f-tt-sized (maybe-deref(typecheck-annotate-size f-tt)))
+         (let f-sized (maybe-deref(ccfragment::set-type( f f-tt-sized ))))(set f f-sized)
+         (set args (FLSeq(
+            (fragment-size-args rst)
+            f
+         )))
+      )))
+      ( _ () )
+   ))
+   (close args)
+)) FragList[]);
+
 fragment-apply := λ(: ctx CCContext)(: offset I64)(: k String)(: args FragList)(: sloc AST). (: (tail(
-   (print 'Apply\sFragment\s_s)(print k)(print args)
+   (let args-sized (maybe-deref(fragment-size-args args)))(set args args-sized)
    (let e-proto (maybe-deref(ccfragment::new())))
    (let e-proto-2 (maybe-deref(ccfragment::set-context( e-proto ctx ))))(set e-proto e-proto-2)
    (let e-proto-3 (maybe-deref(ccfragment::set-offset( e-proto offset ))))(set e-proto e-proto-3)
