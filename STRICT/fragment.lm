@@ -207,7 +207,7 @@ typeof := λ(: args FragList). (: (tail(
    (close r)
 )) Type[]);
 
-fragment-args-sized := λ(: args FragList). (: (tail(
+fragment-size-args := λ(: args FragList). (: (tail(
    (match args (
       ()
       ( (FLSeq( rst f )) (tail(
@@ -215,7 +215,7 @@ fragment-args-sized := λ(: args FragList). (: (tail(
          (let f-tt-sized (maybe-deref(typecheck-annotate-size f-tt)))
          (let f-sized (maybe-deref(ccfragment::set-type( f f-tt-sized ))))(set f f-sized)
          (set args (FLSeq(
-            (fragment-args-sized rst)
+            (fragment-size-args rst)
             f
          )))
       )))
