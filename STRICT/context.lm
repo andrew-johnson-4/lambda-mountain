@@ -44,9 +44,6 @@ cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST). (: 
 ) CCFragment[]);
 
 cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST)(: hard-error U8). (: (tail(
-   (if (==( k 'src_s )) (tail(
-      (print 'Context\sLookup:\s_s)(print k)(print '\n_s)(print ctx)
-   )) ())
    (let r (maybe-deref(ccfragment::expression k)))
    (let found False_u8)
    (while (non-zero ctx) (match ctx (
@@ -74,6 +71,9 @@ cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST)(: ha
          ))
       ))
    )))
+   (if (==( found True_u8 )) (tail(
+      (print 'Found\s_s)(print k)(print '\n_s)(print r)
+   )) ())
    (if (==( found True_u8 )) () (
       (if (==( hard-error True_u8 )) (tail(
          (print 'Context::lookup\s_s)(print k)(print '\s:\s_s)(print kt)(print '\n_s)
