@@ -88,15 +88,15 @@ ccfragment::new := λ . (: (tail(
    (close r)
 )) CCFragment[]);
 
-ccfragment::local-variable := λ(: offset I64) . (: (tail(
+ccfragment::local-variable := λ(: offset I64)(: tt Type). (: (tail(
    (let r (CCFragment(
       (close(CCKVSeq(
          (close CCKVEOF)
-         'offset_s
+         'expression_s
          (SAtom(to-string offset))
       )))
       0_i64
-      TAny
+      tt
       (cccontext::new())
    )))
    (close r)
