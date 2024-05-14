@@ -333,9 +333,7 @@ fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
       ( (SCons( (SAtom 'Lit_s) (SAtom 'DontChain_s) )) () )
       ( (SCons( (SAtom 'Var_s) (SAtom v) )) (tail(
          (let f (maybe-deref(cccontext::lookup( ctx v TAny ASTEOF False_u8 ))))
-         (print 'Render\sVar:\s_s)(print '\n_s)(print f)
          (let fe (maybe-deref(ccfragment::get( f mode ))))
-         (print 'Render\sVar\sExpression:\s_s)(print '\n_s)(print fe)
          (set r fe)
       )))
       ( (SCons( (SAtom 'Lit_s) (SAtom v) )) (set r (SAtom v)) )
@@ -563,7 +561,6 @@ fragment-apply-direct := λ(: arrow CCFragment)(: args FragList)(: e-proto CCFra
       ( (SCons( (SAtom 'Abs_s) (SCons( lhs rhs )) )) (tail(
          (let f-ctx (maybe-deref(cccontext::new())))
          (let f-ctx-2 (maybe-deref(fragment-destructure-lhs( f-ctx lhs args ))))
-         (print 'Apply\sDirect\sContext\s_s)(print f-ctx-2)
          (let f-app (maybe-deref(fragment-apply-context( f-ctx-2 rhs e-proto ))))
          (set e-proto f-app)
       )))
