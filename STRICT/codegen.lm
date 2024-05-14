@@ -92,8 +92,12 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (set e e-1)
       )))
       ( (App( (Var 'label_s) (Var id) )) (tail(
-         ()
-         ()
+         (let l (maybe-deref(cccontext::lookup( ctx id (maybe-deref(tlabel())) term ))))
+         (let prog (SCons(
+            (ccfragment::get( l 'expression_s ))
+            (close(SAtom ':_s))
+         )))
+         (let e-2 (maybe-deref(ccfragment::set( e 'program_s prog ))))(set e e-2)
       )))
       ( (App( (Var 'maybe-deref_s) t )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset Used ))))
