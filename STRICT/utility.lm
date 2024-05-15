@@ -387,7 +387,7 @@ escape-literal := λ(: s String). (: (tail(
          ( c (set cs (SCons( (close cs) (close(SAtom(clone-rope c))) ))))
       ))
       (set s (tail-string s))
-   ))
+   )))
    (clone-rope cs)
 )) String);
 
