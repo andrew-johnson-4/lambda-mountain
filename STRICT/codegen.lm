@@ -471,7 +471,7 @@ compile-declare-cstring := λ(: val String). (: (tail(
    )))
    (let r (maybe-deref(ccfragment::new())))
    (let r-1 (maybe-deref(ccfragment::set( r 'data_s data ))))(set r r-1)
-   (let r-2 (maybe-deref(ccfragment::set( r 'expression_s id ))))(set r r-2)
+   (let r-2 (maybe-deref(ccfragment::set( r 'expression_s (SAtom id) ))))(set r r-2)
    (close r)
 )) CCFragment[]);
 
