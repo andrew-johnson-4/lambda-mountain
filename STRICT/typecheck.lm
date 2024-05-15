@@ -1462,8 +1462,10 @@ typecheck-unify-args := λ(: fpt Type)(: pt Type). (: (tail(
             (let ctx2 (maybe-deref(typecheck-unify-args( lt1 rt1 ))))
             (if (non-zero ctx2) (tail(
                (let ctx3 (maybe-deref(typecheck-unify-args( lt2 rt2 ))))
-               (let ctx4 (maybe-deref(merge( ctx2 ctx3 ))))
-               (set ctx ctx4)
+               (if (non-zero ctx3) (tail(
+                  (let ctx4 (maybe-deref(merge( ctx2 ctx3 ))))
+                  (set ctx ctx4)
+               )) ())
             )) ())
          )) ())
       ))
