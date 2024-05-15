@@ -563,10 +563,19 @@ fragment-apply-context := λ(: ctx CCContext)(: rhs S)(: e CCFragment). (: (tail
          (let f (maybe-deref(ccfragment::set( e 'expression_s s ))))
          (set e f)
       )))
-      ( (SCons( (SAtom 'App_s) (SCons( lt rt )) )) (tail(
-         (let e-2 (maybe-deref(fragment-apply-context( ctx lt e ))))
-         (let e-3 (maybe-deref(fragment-apply-context( ctx lt e-2 ))))
-         (set e e-3)
+      ( (SCons( (SAtom 'App_s) (SCons( rst (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '.program_s) )) prg )) )) )) )) (tail(
+         (let s (maybe-deref(fragment-render( 'program_s ctx prg ))))
+         (let f (maybe-deref(ccfragment::set( e 'program_s s ))))
+         (set e f)
+         (let e-rst (maybe-deref(fragment-apply-context( ctx rst e ))))
+         (set e e-rst)
+      )))
+      ( (SCons( (SAtom 'App_s) (SCons( rst (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '.expression_s) )) prg )) )) )) )) (tail(
+         (let s (maybe-deref(fragment-render( 'expression_s ctx prg ))))
+         (let f (maybe-deref(ccfragment::set( e 'expression_s s ))))
+         (set e f)
+         (let e-rst (maybe-deref(fragment-apply-context( ctx rst e ))))
+         (set e e-rst)
       )))
       ( u (tail(
          (print 'Invalid\sApplied\sFragment\n_s)
@@ -657,7 +666,11 @@ ccfragment::chain := λ(: l CCFragment)(: r CCFragment). (: (tail(
    (let e1-8 (maybe-deref(ccfragment::set-offset( e1-7
       (maybe-deref(ccfragment::get-offset r))
    ))))
-   (close e1-8)
+   (let e1-9 (maybe-deref(ccfragment::set(
+      e1-8 'expression_s
+     (maybe-deref(ccfragment::get( r 'expression_s )))
+   ))))
+   (close e1-9)
 )) CCFragment[]);
 
 fragment-chain := λ(: fragment-ctx FragList)(: e CCFragment). (: (tail(
