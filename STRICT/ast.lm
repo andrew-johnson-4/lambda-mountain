@@ -8,6 +8,8 @@ type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( Stri
 
 type ASTList ASTLEOF | (ASTSeq( ASTList[] , AST ));
 
+type StringStringList SSEOF | (SSSeq( StringStringList[] , String , String ));
+
 type Used Used | Unused | Tail | Return;
 
 type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST[] ));
@@ -20,6 +22,22 @@ type UPair (UPair( Used , Used ));
 
 ast-tokenized-program := (: SNil S);
 ast-parsed-program := (: ASTEOF AST);
+
+close := λ(: x StringStringList). (: (tail(
+   (mov( (malloc(sizeof StringStringList)) R8 ))
+   (mov( x 0_u64 (as R8 StringStringList[]) ))
+   (as R8 StringStringList[])
+)) StringStringList[]);
+
+non-zero := λ(: s StringStringList). (: (tail(
+   (let r 1_u64)
+   (match s (
+      ()
+      (SSEOF (set r 0_u64))
+      (_ ())
+   ))
+   r
+)) U64);
 
 to-s := λ(: term AST). (: (tail(
    (let s SNil)
