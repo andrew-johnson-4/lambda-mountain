@@ -641,6 +641,7 @@ parse-type-single := λ tt . (tail(
 escape-literal-char := λc . match c (
    ()
    ( '\\ '\\\\ )
+   ( '" '\\" )
    ( '\\: '\: )
    ( '\\o '\o )
    ( '\\n (\\ 'n))

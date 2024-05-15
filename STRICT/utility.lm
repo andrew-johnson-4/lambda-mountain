@@ -347,6 +347,7 @@ escape-string := λ(: s String). (: (tail(
          (match (head-string s) (
             ()
             ( 91_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 40_u8) ))) ))) )
+            ( 92_u8 (set e (SCons( (close e) (close(SAtom( '\\_s ))) ))) )
             ( 93_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 41_u8) ))) ))) )
             ( 96_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 39_u8) ))) ))) ) 
             ( 110_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 10_u8) ))) ))) )
@@ -375,3 +376,19 @@ escape-string := λ(: s S). (: (tail(
    ))
    (close s)
 )) S[]);
+
+escape-literal := λ(: s String). (: (tail(
+   (let cs SNil)
+   (while (head-string s) (tail(
+      (match (head-string s) (
+         ()
+         ( 34_u8 (set cs (SCons( (close cs) (close(SAtom '\\"_s)) ))))
+         ( 92_u8 (set cs (SCons( (close cs) (close(SAtom '\\\\_s)) ))))
+         ( 10_u8 (set cs (SCons( (close cs) (close(SAtom '\\n_s)) ))))
+         ( c (set cs (SCons( (close cs) (close(SAtom(clone-rope c))) ))))
+      ))
+      (set s (tail-string s))
+   )))
+   (clone-rope cs)
+)) String);
+

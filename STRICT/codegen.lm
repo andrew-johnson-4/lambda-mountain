@@ -26,9 +26,7 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
          (set text (SCons( (close text) (close(SAtom '\tret\n_s)) )))
          (let text-etc (maybe-deref(ccfragment::get( e 'text_s ))))
          (set text (SCons( (close text) (close text-etc) )))
-         (let data (maybe-deref(ccfragment::get( e 'data_s ))))
          (set assemble-text-section (SCons( (close assemble-text-section) (close text) )))
-         (set assemble-data-section (SCons( (close assemble-data-section) (close data) )))
       )))
       ( (Asc( t tt )) (tail(
          (print 'TODO:\sDeclare\sGlobal\sVariable\n_s)
@@ -445,8 +443,31 @@ as-branch-conditional := λ(: f CCFragment). (: (tail(
    (close f)
 )) CCFragment[]);
 
+cstring-cache := (: SSEOF StringStringList);
 compile-declare-cstring := λ(: val String). (: (tail(
+   (let cache cstring-cache)
+   (let id '_s)
+   (while (non-zero cache) (match cache (
+      ()
+      ( (SSSeq( rst (*( k v )) )) (
+         (if (==( k val )) (tail(
+            (set id v)
+            (set cache SSEOF)
+         )) (set cache rst))
+      ))
+   )))
+   (if (head-string id) () (tail(
+      (set id (uuid()))
+      (set assemble-data-section (SCons( (close assemble-data-section) (close(SAtom id)) )))
+      (set assemble-data-section (SCons( (close assemble-data-section) (close(SAtom ':\n.ascii\s"_s)) )))
+      (set assemble-data-section (SCons( (close assemble-data-section) (close(SAtom( escape-literal val ))) )))
+      (set assemble-data-section (SCons( (close assemble-data-section) (close(SAtom '"\n.zero\s1\n_s)) )))
+      (set cstring-cache (SSSeq(
+         (close cstring-cache) val id
+      )))
+   )))
    (let r (maybe-deref(ccfragment::new())))
+   (let r-2 (maybe-deref(ccfragment::set( r 'expression_s (SAtom id) ))))(set r r-2)
    (close r)
 )) CCFragment[]);
 
@@ -521,11 +542,6 @@ compile-fragment-args := λ(: ctx CCContext)(: rval AST)(: offset I64). (: (tail
    ))
    (close r)
 )) FragList[]);
-
-compile-push-var := λ(: ctx CCContext)(: k String)(: kt Type)(: offset I64). (: (tail(
-   (let r (maybe-deref(ccfragment::new())))
-   (close r)
-)) CCFragment[]);
 
 compile-constructor := λ(: ctx CCContext)(: function-name String)(: return-type Type)(: args AST)(: offset I64). (: (tail(
    (let r (maybe-deref(ccfragment::new())))
