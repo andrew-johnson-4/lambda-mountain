@@ -375,3 +375,8 @@ escape-string := λ(: s S). (: (tail(
    ))
    (close s)
 )) S[]);
+
+escape-literal := λ(: s String). (: (tail(
+   ()
+   s
+)) String);

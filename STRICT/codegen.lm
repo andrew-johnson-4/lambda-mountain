@@ -462,9 +462,9 @@ compile-declare-cstring := λ(: val String). (: (tail(
    (if (head-string id) () (tail(
       (set id (uuid()))
       (set data (SCons( (close data) (close(SAtom id)) )))
-      (set data (SCons( (close data) (close(':\n.ascii\s_s)) )))
-      (set data (SCons( (close data) (close(escape-literal val)) )))
-      (set data (SCons( (close data) (close('"\n.zero\s1\n_s)) )))
+      (set data (SCons( (close data) (close(SAtom ':\n.ascii\s_s)) )))
+      (set data (SCons( (close data) (close(SAtom( escape-literal val ))) )))
+      (set data (SCons( (close data) (close(SAtom '"\n.zero\s1\n_s)) )))
       (set cstring-cache (SSSeq(
          (close cstring-cache) val id
       )))
