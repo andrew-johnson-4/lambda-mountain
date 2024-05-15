@@ -659,7 +659,7 @@ ccfragment::chain := λ(: l CCFragment)(: r CCFragment). (: (tail(
    ))))
    (let e1-9 (maybe-deref(ccfragment::set(
       e1-8 'expression_s
-     (ccfragment::get( r 'expression_s ))
+     (maybe-deref(ccfragment::get( r 'expression_s )))
    ))))
    (close e1-9)
 )) CCFragment[]);
