@@ -27,8 +27,10 @@ compile := λ(). (: (tail(
                (let clean-tt (maybe-deref(without-representation rhs-tt)))
                (let repr-tt (TAnd( (close clean-tt) (tglobalvariable()) )))
                (let fragment-3 (maybe-deref(ccfragment::set-type( fragment-2 repr-tt ))))
+               (let mid (mangle-identifier( k clean-tt )))
+               (let fragment-4 (maybe-deref(ccfragment::set( fragment-3 'expression_s (SAtom mid) ))))
                (let global-ctx-2 (maybe-deref(cccontext::bind(
-                  global-ctx k repr-tt fragment-3
+                  global-ctx k repr-tt fragment-4
                ))))
                (set global-ctx global-ctx-2)
             )))

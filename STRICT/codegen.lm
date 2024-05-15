@@ -29,8 +29,24 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
          (set assemble-text-section (SCons( (close assemble-text-section) (close text) )))
       )))
       ( (Asc( t tt )) (tail(
-         (print 'TODO:\sDeclare\sGlobal\sVariable\n_s)
-         ()
+         (let clean-tt (maybe-deref(without-representation kt)))
+         (let mid (mangle-identifier( k clean-tt )))
+         (set assemble-data-section (SCons(
+            (close assemble-data-section)
+            (SAtom mid)
+         )))
+         (set assemble-data-section (SCons(
+            (close assemble-data-section)
+            (SAtom ':\n.zero\s_s)
+         )))
+         (set assemble-data-section (SCons(
+            (close assemble-data-section)
+            (SAtom (to-string(typecheck-sizeof kt)))
+         )))
+         (set assemble-data-section (SCons(
+            (close assemble-data-section)
+            (SAtom ':\n_s)
+         )))
       )))
       ( _ (
          (exit-error( 'Unrecognized\sCompile\sGlobal\n_s term ))
