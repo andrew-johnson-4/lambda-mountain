@@ -560,6 +560,8 @@ fragment-apply-context := λ(: ctx CCContext)(: rhs S)(: e CCFragment). (: (tail
       )))
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '.expression_s) )) prg )) )) (tail(
          (let s (maybe-deref(fragment-render( 'expression_s ctx prg ))))
+         (print 'Render\sExpression\s_s)(print prg)(print '\n_s)
+         (print 'Render\sExpression\sYields\s_s)(print s)(print '\n_s)
          (let f (maybe-deref(ccfragment::set( e 'expression_s s ))))
          (set e f)
       )))
