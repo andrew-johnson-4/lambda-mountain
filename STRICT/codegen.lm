@@ -450,7 +450,7 @@ compile-declare-cstring := λ(: val String). (: (tail(
    (let cache cstring-cache)
    (let id '_s)
    (let data SNil)
-   (while (non-zero cache) (match (
+   (while (non-zero cache) (match cache (
       ()
       ( (SSSeq( rst (*( k v )) )) (tail(
          (if (==( k val )) (tail(
