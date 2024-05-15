@@ -452,12 +452,12 @@ compile-declare-cstring := λ(: val String). (: (tail(
    (let data SNil)
    (while (non-zero cache) (match cache (
       ()
-      ( (SSSeq( rst (*( k v )) )) (tail(
+      ( (SSSeq( rst (*( k v )) )) (
          (if (==( k val )) (tail(
             (set id v)
             (set cache SSEOF)
          )) (set cache rst))
-      )))
+      ))
    )))
    (if (head-string id) () (tail(
       (set id (uuid()))
