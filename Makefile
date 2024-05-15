@@ -6,6 +6,13 @@ develop: compile-strict
 	ld tmp.o -o tmp
 	./tmp
 
+re:
+	rm -f tmp tmp.o tmp.s
+	./strict -o tmp.s tests/strict/head-string.lm
+	as tmp.s -o tmp.o
+	ld tmp.o -o tmp
+	./tmp
+
 compile-strict: compile-prod
 	rm -f strict strict.o strict.s
 	./production --nostd -o strict.s STRICT/cli.lm

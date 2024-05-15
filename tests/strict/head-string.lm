@@ -4,5 +4,7 @@ import STDLIB/default-primitives.lm;
 import STDLIB/default-rules.lm;
 import STDLIB/default-stdlib.lm;
 
-main := λ. (print (as (head-string 'ABC_s) ASCII));
+main := λ. (: (
+   (print (as (head-string 'ABC_s) ASCII))
+) Nil);
 
