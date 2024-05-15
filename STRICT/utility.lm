@@ -378,13 +378,16 @@ escape-string := λ(: s S). (: (tail(
 
 escape-literal := λ(: s String). (: (tail(
    (let cs SNil)
-   (while (head-string s) (match (head-string s) (
-      ()
-      ( 34_u8 (set cs (SCons( (close cs) (close(SAtom '\\"_s)) ))))
-      ( 92_u8 (set cs (SCons( (close cs) (close(SAtom '\\\\_s)) ))))
-      ( 10_u8 (set cs (SCons( (close cs) (close(SAtom '\\n_s)) ))))
-      ( c (set cs (SCons( (close cs) (close(SAtom(clone-rope c))) ))))
-   )))
+   (while (head-string s) (tail(
+      (match (head-string s) (
+         ()
+         ( 34_u8 (set cs (SCons( (close cs) (close(SAtom '\\"_s)) ))))
+         ( 92_u8 (set cs (SCons( (close cs) (close(SAtom '\\\\_s)) ))))
+         ( 10_u8 (set cs (SCons( (close cs) (close(SAtom '\\n_s)) ))))
+         ( c (set cs (SCons( (close cs) (close(SAtom(clone-rope c))) ))))
+      ))
+      (set s (tail-string s))
+   ))
    (clone-rope cs)
 )) String);
 
