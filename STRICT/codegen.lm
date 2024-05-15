@@ -26,9 +26,7 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
          (set text (SCons( (close text) (close(SAtom '\tret\n_s)) )))
          (let text-etc (maybe-deref(ccfragment::get( e 'text_s ))))
          (set text (SCons( (close text) (close text-etc) )))
-         (let data (maybe-deref(ccfragment::get( e 'data_s ))))
          (set assemble-text-section (SCons( (close assemble-text-section) (close text) )))
-         (set assemble-data-section (SCons( (close assemble-data-section) (close data) )))
       )))
       ( (Asc( t tt )) (tail(
          (print 'TODO:\sDeclare\sGlobal\sVariable\n_s)
@@ -449,7 +447,6 @@ cstring-cache := (: SSEOF StringStringList);
 compile-declare-cstring := λ(: val String). (: (tail(
    (let cache cstring-cache)
    (let id '_s)
-   (let data SNil)
    (while (non-zero cache) (match cache (
       ()
       ( (SSSeq( rst (*( k v )) )) (
@@ -461,16 +458,15 @@ compile-declare-cstring := λ(: val String). (: (tail(
    )))
    (if (head-string id) () (tail(
       (set id (uuid()))
-      (set data (SCons( (close data) (close(SAtom id)) )))
-      (set data (SCons( (close data) (close(SAtom ':\n.ascii\s\o_s)) )))
-      (set data (SCons( (close data) (close(SAtom( escape-literal val ))) )))
-      (set data (SCons( (close data) (close(SAtom '\o\n.zero\s1\n_s)) )))
+      (set assemble-data-section (SCons( (close assemble-data-section) (close(SAtom id)) )))
+      (set assemble-data-section (SCons( (close assemble-data-section) (close(SAtom ':\n.ascii\s\o_s)) )))
+      (set assemble-data-section (SCons( (close assemble-data-section) (close(SAtom( escape-literal val ))) )))
+      (set assemble-data-section (SCons( (close assemble-data-section) (close(SAtom '\o\n.zero\s1\n_s)) )))
       (set cstring-cache (SSSeq(
          (close cstring-cache) val id
       )))
    )))
    (let r (maybe-deref(ccfragment::new())))
-   (let r-1 (maybe-deref(ccfragment::set( r 'data_s data ))))(set r r-1)
    (let r-2 (maybe-deref(ccfragment::set( r 'expression_s (SAtom id) ))))(set r r-2)
    (close r)
 )) CCFragment[]);

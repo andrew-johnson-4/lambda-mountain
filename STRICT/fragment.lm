@@ -639,20 +639,6 @@ ccfragment::chain := λ(: l CCFragment)(: r CCFragment). (: (tail(
          (ccfragment::get( r 'unframe_s ))
       ))
    ))))
-   (let e1-4 (maybe-deref(ccfragment::set(
-      e1-3 'text_s
-      (SCons(
-         (ccfragment::get( l 'text_s ))
-         (ccfragment::get( r 'text_s ))
-      ))
-   ))))
-   (let e1-5 (maybe-deref(ccfragment::set(
-      e1-4 'data_s
-      (SCons(
-         (ccfragment::get( l 'data_s ))
-         (ccfragment::get( r 'data_s ))
-      ))
-   ))))
    (let e1-6 (maybe-deref(ccfragment::set(
       e1-5 'program_s
       (SCons(
