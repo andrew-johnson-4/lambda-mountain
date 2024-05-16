@@ -132,7 +132,7 @@ compile-define-head-accessor := λ(: ctx CCContext)(: base-type Type)(: case-num
    (let f-abs (SCons( (close(SAtom 'Abs_s)) (close(SCons( (close f-lhs) (close f-rhs-a) ))) )))
    (let fragment-4 (maybe-deref(ccfragment::set( fragment 'fragment_s f-abs ))))(set fragment fragment-4)
    (let ctx-2 (maybe-deref(cccontext::bind(
-      ctx '].0_s at fragment
+      ctx '.0_s at fragment
    ))))
    (close ctx-2)
 )) CCContext[]);
