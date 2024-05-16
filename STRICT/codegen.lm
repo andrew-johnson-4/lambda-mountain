@@ -131,7 +131,6 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (print e)
       )))
       ( (App( (Var 'sizeof_s) t )) (tail(
-         (print 'TODO\sSizeof\n_s)
          (let sz (typecheck-sizeof(maybe-deref(typecheck-lookup t))))
          (let e1 (maybe-deref(ccfragment::expression(to-string sz))))
          (let et (TAnd( 
@@ -150,20 +149,8 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (set e e1)
       )))
       ( (App( (App( (Var 'as_s) t )) tt )) (tail(
-         (let e1 (maybe-deref(compile-expr( ctx t stack-offset used ))))
-         (let outer-tt (maybe-deref(typecheck-lookup term)))
-         (let inner-tt (maybe-deref(typecheck-lookup t)))
-         (if (non-zero inner-tt) (tail(
-            (let nn (maybe-deref(nonnormal inner-tt)))
-            (if (non-zero nn) (
-               (set outer-tt (TAnd(
-                  (close outer-tt)
-                  (close nn)
-               )))
-            ) ())
-         )) ())
-         (let e1-2 (maybe-deref(ccfragment::set-type( e1 outer-tt ))))(set e1 e1-2)
-         (set e e1)
+         (let e-1 (maybe-deref(compile-expr( ctx t stack-offset used ))))(set e e-1)
+         (let e-2 (maybe-deref(ccfragment::set-type( e (maybe-deref(typecheck-lookup term)) ))))(set e e-2)
       )))
       ( (App( (App( (Var 'set_s) (Var k) )) rhs )) (tail(
          (let kt (maybe-deref(typecheck-lookup rhs)))

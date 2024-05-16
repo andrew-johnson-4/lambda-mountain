@@ -516,6 +516,7 @@ typecheck-annotate-accessors := λ(: base-type Type)(: args-type Type). (: (tail
    (while (non-zero args-type) (match args-type (
       ()
       ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF lt )) rt )) )) (tail(
+         (let rt-s (TAnd( (close rt) (tstackvariable()) )))(set rt rt-s)
          (let accessor-name (clone-rope(SCons(
             (close (SAtom '._s))
             (close (SAtom (to-string field-number)))
@@ -528,7 +529,8 @@ typecheck-annotate-accessors := λ(: base-type Type)(: args-type Type). (: (tail
          (set field-number (+( field-number 1_u64 )))
          (set args-type lt)
       )))
-      ( tt (tail(
+      ( rt (tail(
+         (let rt-s (TAnd( (close rt) (tstackvariable()) )))(set rt rt-s)
          (let accessor-name (clone-rope(SCons(
             (close (SAtom '._s))
             (close (SAtom (to-string field-number)))
@@ -536,7 +538,7 @@ typecheck-annotate-accessors := λ(: base-type Type)(: args-type Type). (: (tail
          (set global-type-context (TCtxBind(
             (close global-type-context)
             accessor-name
-            (maybe-deref(tarrow( base-type tt )))
+            (maybe-deref(tarrow( base-type rt )))
          )))
          (set args-type TAny)
       )))
@@ -776,13 +778,14 @@ normalize := λ(: tt Type). (: (tail(
             ( (TPair( lt2 rt2 )) (set tt (TAnd( (close lt2) (close rt2) ))) )
          ))
       )))
-      ( (TGround( tag _ )) (
-         (if (non-zero(maybe-deref(typecheck-typeof-tag tag))) (
-            (if (typecheck-get-size tag) () (
-               (set tt TAny)
-            ))
-         ) ())
-      ))
+#      what was this case for? try removing it
+#      ( (TGround( tag _ )) (
+#         (if (non-zero(maybe-deref(typecheck-typeof-tag tag))) (
+#            (if (typecheck-get-size tag) () (
+#               (set tt TAny)
+#            ))
+#         ) ())
+#      ))
       ( _ () )
    ))
    (close tt)
@@ -1039,35 +1042,20 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (set tctx tctx3)
          (typecheck-ascript( term (maybe-deref(typecheck-lookup r)) ))
       )))
-      ( (App( (App( (Var 'as_s) t )) (Lit lt) )) (tail(
+      ( (App( (App( (Var 'as_s) t )) lt )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx t used ))))
          (set tctx tctx2)
          (let inner-tt (maybe-deref(typecheck-lookup t)))
          (if (non-zero inner-tt) (tail(
-            (let tt (maybe-deref(parse-type lt)))
-            (let nn (maybe-deref(nonnormal inner-tt)))
+            (let tt (maybe-deref(typecheck-infer-type-compound lt)))
+            (let nn (maybe-deref(with-only-representation inner-tt)))
             (if (non-zero nn) (
                (set tt (TAnd(
                   (close tt)
                   (close nn)
                )))
             ) ())
-            (typecheck-ascript( term tt ))
-         )) ())
-      )))
-      ( (App( (App( (Var 'as_s) t )) (Var lt) )) (tail(
-         (let tctx2 (maybe-deref(typecheck-infer-expr( tctx t used ))))
-         (set tctx tctx2)
-         (let inner-tt (maybe-deref(typecheck-lookup t)))
-         (if (non-zero inner-tt) (tail(
-            (let tt (maybe-deref(parse-type lt)))
-            (let nn (maybe-deref(nonnormal inner-tt)))
-            (if (non-zero nn) (
-               (set tt (TAnd(
-                  (close tt)
-                  (close nn)
-               )))
-            ) ())
+            (print 'TC\sAs:\s_s)(print lt)(print '\s:\s_s)(print tt)(print '\n_s)
             (typecheck-ascript( term tt ))
          )) ())
       )))
@@ -1600,6 +1588,37 @@ without-representation := λ(: tt Type). (: (tail(
    ))
    (close tt)
 )) Type[]);
+
+with-only-representation := λ(: tt Type). (: (tail(
+   (let rt TAny)
+   (match tt (
+      ()
+      ( (TGround( 'Constant_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'Literal_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'StackVariable_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'LocalVariable_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'GlobalVariable_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'Reg8_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'Reg16_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'Reg32_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'Reg64_s TypeEOF )) (set rt tt) )
+      ( (TAnd( ltt rtt )) (tail(
+         (let lt1 (maybe-deref(with-only-representation ltt)))
+         (let rt1 (maybe-deref(with-only-representation rtt)))
+         (match (TPair( lt1 rt1 )) (
+            ()
+            ( (TPair( TAny rt2 )) (set rt rt2) )
+            ( (TPair( lt2 TAny )) (set rt lt2) )
+            ( (TPair( lt2 rt2 )) (set rt (TAnd( (close lt2) (close rt2) ))) )
+         ))
+      )))
+      ( _ () )
+   ))
+   (print 'Only\sRepresentation\sIncoming\s_s)(print tt)(print '\n_s)
+   (print 'Only\sRepresentation\sOutgoing\s_s)(print rt)(print '\n_s)
+   (close rt)
+)) Type[]);
+
 
 with-representation := λ(: tt Type). (: (tail(
    (let sz (typecheck-sizeof tt))
