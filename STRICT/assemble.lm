@@ -124,7 +124,7 @@ compile-define-head-accessor := λ(: ctx CCContext)(: base-type Type)(: case-num
    (let fragment (maybe-deref(ccfragment::new())))
    (let fragment-2 (maybe-deref(ccfragment::set-type( fragment rt ))))(set fragment fragment-2)
    (let fragment-3 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment fragment-3)
-   (let fragment-4 (maybe-deref(ccfragment::set( fragment 'expression_s (SAtom 'rax_s) ))))(set fragment fragment-4)
+   (let fragment-4 (maybe-deref(ccfragment::set( fragment 'expression_s (SAtom 'r15_s) ))))(set fragment fragment-4)
    (let ctx-2 (maybe-deref(cccontext::bind(
       ctx '.0_s (maybe-deref(tarrow( base-type rt ))) fragment
    ))))
