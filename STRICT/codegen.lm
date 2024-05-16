@@ -150,16 +150,13 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
       )))
       ( (App( (App( (Var 'as_s) t )) tt )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset used ))))
-         (let outer-tt (maybe-deref(typecheck-lookup term)))
-         (let inner-tt (maybe-deref(typecheck-lookup t)))
+         (let outer-tt (maybe-deref(normalize tt)))
+         (let inner-tt (maybe-deref(nonnormal t)))
          (if (non-zero inner-tt) (tail(
-            (let nn (maybe-deref(nonnormal inner-tt)))
-            (if (non-zero nn) (
-               (set outer-tt (TAnd(
-                  (close outer-tt)
-                  (close nn)
-               )))
-            ) ())
+            (set outer-tt (TAnd(
+               (close outer-tt)
+               (close nn)
+            )))
          )) ())
          (let e1-2 (maybe-deref(ccfragment::set-type( e1 outer-tt ))))(set e1 e1-2)
          (set e e1)
