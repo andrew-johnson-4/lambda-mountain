@@ -1055,7 +1055,6 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
                   (close nn)
                )))
             ) ())
-            (print 'TC\sAs:\s_s)(print lt)(print '\s:\s_s)(print tt)(print '\n_s)
             (typecheck-ascript( term tt ))
          )) ())
       )))
@@ -1614,8 +1613,6 @@ with-only-representation := λ(: tt Type). (: (tail(
       )))
       ( _ () )
    ))
-   (print 'Only\sRepresentation\sIncoming\s_s)(print tt)(print '\n_s)
-   (print 'Only\sRepresentation\sOutgoing\s_s)(print rt)(print '\n_s)
    (close rt)
 )) Type[]);
 
