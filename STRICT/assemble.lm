@@ -120,9 +120,12 @@ compile-type-case := λ(: ctx CCContext)(: base-type Type)(: rhs AST)(: case-num
 )) CCContext[]);
 
 compile-define-head-accessor := λ(: ctx CCContext)(: base-type Type)(: case-number U64). (: (tail(
+   (let rt (TAnd( (tu64()) (treg64()) )))
+   (let fragment (maybe-deref(ccfragment::new())))
+   (let fragment-2 (maybe-deref(ccfragment::set-type( fragment rt ))))(set fragment fragment-2)
+   (let fragment-3 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment fragment-3)
    (let ctx-2 (maybe-deref(cccontext::bind(
-      ctx '.0_s (maybe-deref(tarrow( base-type (maybe-deref(tu64())) )))
-      (maybe-deref(ccfragment::new()))
+      ctx '.0_s (maybe-deref(tarrow( base-type rt ))) fragment
    ))))
    (close ctx-2)
 )) CCContext[]);

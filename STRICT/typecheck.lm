@@ -327,6 +327,14 @@ tu64 := λ. (: (tail(
    )))
 )) Type[]);
 
+treg64 := λ. (: (tail(
+   ()
+   (close (TGround(
+      'Reg64_s
+      (close TypeEOF)
+   )))
+)) Type[]);
+
 tglobalvariable := λ. (: (tail(
    ()
    (close (TGround(
@@ -503,13 +511,14 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
    r
 )) U64);
 
-typecheck-annotate-head-accessor := λ(: base-type Type). (: (
+typecheck-annotate-head-accessor := λ(: base-type Type). (: (tail(
+   (let tt (TAnd( (tu64()) (treg64()) )))
    (set global-type-context (TCtxBind(
       (close global-type-context)
       '.0_s
-      (maybe-deref(tarrow( base-type (maybe-deref(parse-type 'U64_s)) )))
+      (maybe-deref(tarrow( base-type tt )))
    )))
-) Nil);
+)) Nil);
 
 typecheck-annotate-accessors := λ(: base-type Type)(: args-type Type). (: (tail(
    (let field-number 1_u64)
