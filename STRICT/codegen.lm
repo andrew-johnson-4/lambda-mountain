@@ -155,7 +155,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (if (non-zero inner-tt) (tail(
             (set outer-tt (TAnd(
                (close outer-tt)
-               (close nn)
+               (close inner-tt)
             )))
          )) ())
          (let e1-2 (maybe-deref(ccfragment::set-type( e1 outer-tt ))))(set e1 e1-2)
