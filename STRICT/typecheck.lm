@@ -787,14 +787,6 @@ normalize := λ(: tt Type). (: (tail(
             ( (TPair( lt2 rt2 )) (set tt (TAnd( (close lt2) (close rt2) ))) )
          ))
       )))
-#      what was this case for? try removing it
-#      ( (TGround( tag _ )) (
-#         (if (non-zero(maybe-deref(typecheck-typeof-tag tag))) (
-#            (if (typecheck-get-size tag) () (
-#               (set tt TAny)
-#            ))
-#         ) ())
-#      ))
       ( _ () )
    ))
    (close tt)
