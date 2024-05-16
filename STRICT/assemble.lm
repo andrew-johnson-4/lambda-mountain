@@ -13,14 +13,28 @@ compile := λ(). (: (tail(
          (if (==( k 'main_s )) (set assemble-argv-referenced True_u8) ())
          (let fragment (maybe-deref(ccfragment::new())))
          (let fragment-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Global_s) ))))
-         (let fragment-3 (maybe-deref(ccfragment::set-type( fragment-2 (maybe-deref(typecheck-lookup rhs)) ))))
-         (let global-ctx-2 (maybe-deref(cccontext::bind(
-            global-ctx
-            k
-            (maybe-deref(typecheck-lookup rhs))
-            fragment-3
-         ))))
-         (set global-ctx global-ctx-2)
+         (let rhs-tt (maybe-deref(typecheck-lookup rhs)))
+         (match (typecheck-slot( rhs-tt '->_s )) (
+            ()
+            ( (TGround( '->_s _ )) (tail(
+               (let fragment-3 (maybe-deref(ccfragment::set-type( fragment-2 rhs-tt ))))
+               (let global-ctx-2 (maybe-deref(cccontext::bind(
+                  global-ctx k rhs-tt fragment-3
+               ))))
+               (set global-ctx global-ctx-2)
+            )))
+            ( _ (tail(
+               (let clean-tt (maybe-deref(without-representation rhs-tt)))
+               (let repr-tt (TAnd( (close clean-tt) (tglobalvariable()) )))
+               (let fragment-3 (maybe-deref(ccfragment::set-type( fragment-2 repr-tt ))))
+               (let mid (mangle-identifier( k clean-tt )))
+               (let fragment-4 (maybe-deref(ccfragment::set( fragment-3 'expression_s (SAtom mid) ))))
+               (let global-ctx-2 (maybe-deref(cccontext::bind(
+                  global-ctx k repr-tt fragment-4
+               ))))
+               (set global-ctx global-ctx-2)
+            )))
+         ))
          (set preview-program rst)
       )))
       ( (Seq( rst (Fragment( k rhs )) )) (tail(
