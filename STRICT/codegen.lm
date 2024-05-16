@@ -131,7 +131,6 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (print e)
       )))
       ( (App( (Var 'sizeof_s) t )) (tail(
-         (print 'TODO\sSizeof\n_s)
          (let sz (typecheck-sizeof(maybe-deref(typecheck-lookup t))))
          (let e1 (maybe-deref(ccfragment::expression(to-string sz))))
          (let et (TAnd( 
