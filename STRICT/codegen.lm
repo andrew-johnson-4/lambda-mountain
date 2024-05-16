@@ -397,7 +397,7 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type 
          (let call SNil)
          (let function-id (mangle-identifier( function-name function-type )))
 
-         (set call (SCons( (close call) (close(SAtom 'Call\sFunction\s_s)) )))
+         (set call (SCons( (close call) (close(SAtom '\oCall\sFunction\s_s)) )))
          (set call (SCons( (close call) (close(SAtom function-name)) )))
          (set call (SCons( (close call) (close(SAtom '\s:\s_s)) )))
          (set call (SCons( (close call) (close(SAtom(to-string (maybe-deref(ccfragment::get-type f))))) )))

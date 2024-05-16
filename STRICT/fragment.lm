@@ -272,7 +272,7 @@ fragment-apply := λ(: ctx CCContext)(: offset I64)(: k String)(: args FragList)
    ))
    (let return (maybe-deref(fragment-apply-direct( arrow args e-proto chain ))))
 
-   (let comment (SAtom 'Call\sFragment\s_s))
+   (let comment (SAtom '\oCall\sFragment\s_s))
    (set comment (SCons( (close comment) (close(SAtom k)) )))
    (set comment (SCons( (close comment) (close(SAtom '\s:\s_s)) )))
    (set comment (SCons( (close comment) (close(SAtom(to-string arrow-tt))) )))
