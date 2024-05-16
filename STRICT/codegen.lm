@@ -151,14 +151,13 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
       ( (App( (App( (Var 'as_s) t )) tt )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset used ))))
          (let outer-tt (maybe-deref(typecheck-infer-type-compound tt)))
-         (let inner-tt (maybe-deref(nonnormal(maybe-deref(typecheck-lookup t)))))
+         (let inner-tt (maybe-deref(with-only-representation(maybe-deref(typecheck-lookup t)))))
          (if (non-zero inner-tt) (
             (set outer-tt (TAnd(
                (close outer-tt)
                (close inner-tt)
             )))
          ) ())
-         (let e1-2 (maybe-deref(ccfragment::set-type( e1 outer-tt ))))(set e1 e1-2)
          (print 'As\sIncoming\s_s)(print (maybe-deref(typecheck-lookup t)))(print '\n_s)
          (print 'As\sAscripted\s_s)(print tt)(print '\n_s)
          (print 'As\sOutgoing\s_s)(print outer-tt)(print '\n_s)

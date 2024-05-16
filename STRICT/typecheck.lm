@@ -1586,6 +1586,37 @@ without-representation := λ(: tt Type). (: (tail(
    (close tt)
 )) Type[]);
 
+with-only-representation := λ(: tt Type). (: (tail(
+   (let rt TAny)
+   (match tt (
+      ()
+      ( (TGround( 'Constant_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'Literal_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'StackVariable_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'LocalVariable_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'GlobalVariable_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'Reg8_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'Reg16_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'Reg32_s TypeEOF )) (set rt tt) )
+      ( (TGround( 'Reg64_s TypeEOF )) (set rt tt) )
+      ( (TAnd( ltt rtt )) (tail(
+         (let lt1 (maybe-deref(with-only-representation ltt)))
+         (let rt1 (maybe-deref(with-only-representation rtt)))
+         (match (TPair( lt1 rt1 )) (
+            ()
+            ( (TPair( TAny rt2 )) (set rt rt2) )
+            ( (TPair( lt2 TAny )) (set rt lt2) )
+            ( (TPair( lt2 rt2 )) (set rt (TAnd( (close lt2) (close rt2) ))) )
+         ))
+      )))
+      ( _ () )
+   ))
+   (print 'Only\sRepresentation\sIncoming\s_s)(print tt)(print '\n_s)
+   (print 'Only\sRepresentation\sOutgoing\s_s)(print rt)(print '\n_s)
+   (close rt)
+)) Type[]);
+
+
 with-representation := λ(: tt Type). (: (tail(
    (let sz (typecheck-sizeof tt))
    (match sz (
