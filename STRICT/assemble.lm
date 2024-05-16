@@ -126,7 +126,7 @@ compile-define-head-accessor := λ(: ctx CCContext)(: base-type Type)(: case-num
    (let fragment-2 (maybe-deref(ccfragment::set-type( fragment at ))))(set fragment fragment-2)
    (let fragment-3 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment fragment-3)
    (let f-lhs (SCons( (close(SAtom 'Var_s)) (close(SAtom 'src_s)) )))
-   (let f-rhs-o (SCons( (close(SAtom 'Var_s)) (close(SAtom 'src_s)) )))
+   (let f-rhs-o (SCons( (close(SAtom 'Lit_s)) (close(SAtom 'r15_s)) )))
    (let f-rhs-e (SCons( (close(SAtom 'Var_s)) (close(SAtom '.expression_s)) )))
    (let f-rhs-a (SCons( (close(SAtom 'App_s)) (close(SCons( (close f-rhs-e) (close f-rhs-o) ))) )))
    (let f-abs (SCons( (close(SAtom 'Abs_s)) (close(SCons( (close f-lhs) (close f-rhs-a) ))) )))
