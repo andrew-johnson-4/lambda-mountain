@@ -33,19 +33,19 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
          (let mid (mangle-identifier( k clean-tt )))
          (set assemble-data-section (SCons(
             (close assemble-data-section)
-            (SAtom mid)
+            (close(SAtom mid))
          )))
          (set assemble-data-section (SCons(
             (close assemble-data-section)
-            (SAtom ':\n.zero\s_s)
+            (close(SAtom ':\n.zero\s_s))
          )))
          (set assemble-data-section (SCons(
             (close assemble-data-section)
-            (SAtom (to-string(typecheck-sizeof kt)))
+            (close(SAtom (to-string(typecheck-sizeof kt))))
          )))
          (set assemble-data-section (SCons(
             (close assemble-data-section)
-            (SAtom ':\n_s)
+            (close(SAtom ':\n_s))
          )))
       )))
       ( _ (
