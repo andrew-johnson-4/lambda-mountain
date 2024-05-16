@@ -180,7 +180,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
 
 compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types Type)(: rtype Type)(: case-number U64). (: (tail(
    (let arrow-tt (maybe-deref(tarrow( arg-types rtype ))))
-   (let arrow-dc (TAnd( (close arrow) (tdontchain()) )))(set arrow-tt arrow-dc)
+   (let arrow-dc (TAnd( (close arrow-tt) (tdontchain()) )))(set arrow-tt arrow-dc)
    (let ctx-2 (maybe-deref(cccontext::bind(
       ctx tag arrow-tt
       (maybe-deref(ccfragment::new()))
