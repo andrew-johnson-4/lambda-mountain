@@ -319,6 +319,14 @@ tlocalvariable := λ. (: (tail(
    )))
 )) Type[]);
 
+tdontchain := λ. (: (tail(
+   ()
+   (close (TGround(
+      'DontChain_s
+      (close TypeEOF)
+   )))
+)) Type[]);
+
 tu64 := λ. (: (tail(
    ()
    (close (TGround(
