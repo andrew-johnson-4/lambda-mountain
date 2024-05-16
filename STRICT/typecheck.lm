@@ -1046,13 +1046,14 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (let inner-tt (maybe-deref(typecheck-lookup t)))
          (if (non-zero inner-tt) (tail(
             (let tt (maybe-deref(typecheck-infer-type-compound lt)))
-            (let nn (maybe-deref(nonnormal inner-tt)))
+            (let nn (maybe-deref(with-only-representation inner-tt)))
             (if (non-zero nn) (
                (set tt (TAnd(
                   (close tt)
                   (close nn)
                )))
             ) ())
+            (print 'TC\sAs:\s_s)(print lt)(print '\s:\s_s)(print tt)(print '\n_s)
             (typecheck-ascript( term tt ))
          )) ())
       )))
