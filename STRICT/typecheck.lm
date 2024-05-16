@@ -1040,28 +1040,12 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (set tctx tctx3)
          (typecheck-ascript( term (maybe-deref(typecheck-lookup r)) ))
       )))
-      ( (App( (App( (Var 'as_s) t )) (Lit lt) )) (tail(
+      ( (App( (App( (Var 'as_s) t )) lt )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx t used ))))
          (set tctx tctx2)
          (let inner-tt (maybe-deref(typecheck-lookup t)))
          (if (non-zero inner-tt) (tail(
-            (let tt (maybe-deref(parse-type lt)))
-            (let nn (maybe-deref(nonnormal inner-tt)))
-            (if (non-zero nn) (
-               (set tt (TAnd(
-                  (close tt)
-                  (close nn)
-               )))
-            ) ())
-            (typecheck-ascript( term tt ))
-         )) ())
-      )))
-      ( (App( (App( (Var 'as_s) t )) (Var lt) )) (tail(
-         (let tctx2 (maybe-deref(typecheck-infer-expr( tctx t used ))))
-         (set tctx tctx2)
-         (let inner-tt (maybe-deref(typecheck-lookup t)))
-         (if (non-zero inner-tt) (tail(
-            (let tt (maybe-deref(parse-type lt)))
+            (let tt (maybe-deref(typecheck-infer-type-compound lt)))
             (let nn (maybe-deref(nonnormal inner-tt)))
             (if (non-zero nn) (
                (set tt (TAnd(
