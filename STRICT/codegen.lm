@@ -45,7 +45,7 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
          )))
          (set assemble-data-section (SCons(
             (close assemble-data-section)
-            (close(SAtom ':\n_s))
+            (close(SAtom '\n_s))
          )))
       )))
       ( _ (
