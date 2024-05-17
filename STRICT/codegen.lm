@@ -444,6 +444,7 @@ compile-translate-local-variables := λ(: ctx CCContext)(: delta I64). (: (tail(
                      (let p-offset (to-i64 previous-offset))
                      (let new-offset (+( p-offset delta )))
                      (print 'Translate\sPrevious\s_s)(print previous-offset)(print '\n_s)
+                     (print 'Translate\sPrevious\sAs\sInt\s_s)(print p-offset)(print '\n_s)
                      (print 'Translate\sDelta\s_s)(print delta)(print '\n_s)
                      (print 'Translate\sNew\s_s)(print new-offset)(print '\n_s)
                      (let new-f (maybe-deref(ccfragment::set( f 'expression_s (SAtom(to-string new-offset)) ))))
