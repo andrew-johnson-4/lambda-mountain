@@ -202,7 +202,7 @@ ccfragment::set-offset := λ(: e CCFragment)(: offset I64). (: (tail(
       ()
       ( (CCFragment( e-kvs (*( e-offset (*( e-tt e-ctx )) )) )) (
          (set e (CCFragment(
-            e-kvs offset e-tt e-ctx
+            (close e-kvs) offset e-tt (close e-ctx)
          )))
       ))
    ))
