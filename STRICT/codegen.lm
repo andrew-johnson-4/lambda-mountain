@@ -376,7 +376,7 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type 
          (set r r-2)
       )))
       ( _ (tail(
-         (let push-args (maybe-deref(compile-stack-call-push-args( ctx args offset 0_i64 ))))
+         (let push-args (maybe-deref(compile-stack-call-push-args( ctx args offset ))))
          (let call SNil)
          (let function-id (mangle-identifier( function-name function-type )))
 
@@ -434,8 +434,8 @@ compile-translate-local-variables := λ(: ctx CCContext)(: delta I64). (: (tail(
    (close ctx)
 )) CCContext[]);
 
-compile-stack-call-push-args := λ(: ctx CCContext)(: args AST)(: inner-offset I64)(: outer-offset I64). (: (tail(
-   (let translate-delta (+( 8_i64 (as (typecheck-sizeof(maybe-deref(typecheck-lookup args))) I64) )))
+compile-stack-call-push-args := λ(: ctx CCContext)(: args AST)(: inner-offset I64). (: (tail(
+   (let translate-delta (-( 0_i64 inner-offset )))
    (let ctx-2 (maybe-deref(compile-translate-local-variables( ctx translate-delta ))))(set ctx ctx-2)
    (let r (maybe-deref(ccfragment::new())))
    (let e1 (maybe-deref(compile-push-rvalue( ctx args inner-offset ))))
