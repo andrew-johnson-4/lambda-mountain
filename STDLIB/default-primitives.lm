@@ -192,7 +192,7 @@ fragment > := λ(: l LocalVariable+I64)(: r Constant+I64). (: (
    (mov( r RAX ))
    (mov( l R8 ))
    (imul( R8 ))
-   (as RAX U64)
+   (as RAX I64)
 )) I64);
 
 fragment branchtrue := λ(: _ Nil). (: (
