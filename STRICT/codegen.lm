@@ -154,43 +154,32 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
       )))
       ( (App( (App( (Var 'set_s) (Var k) )) rhs )) (tail(
          (let kt (maybe-deref(typecheck-lookup rhs)))
-         (let binding (maybe-deref(cccontext::wrapped-lookup( ctx k kt ))))
-         (match binding (
+
+         (let e1 (maybe-deref(compile-expr( ctx rhs stack-offset Used ))))
+         (let e1-2 (maybe-deref(ccfragment::set-type( e1 kt ))))(set e1 e1-2)
+
+         (let e2 (maybe-deref(ccfragment::new())))
+         (let e2-2 (maybe-deref(ccfragment::set-offset( e2 sv-offset ))))(set e2 e2-2)
+         (let e2-3 (maybe-deref(ccfragment::set-context( e2 ctx ))))(set e2 e2-3)
+
+         (let binding (maybe-deref(cccontext::wrapped-lookup( ctx k kt term ))))
+         (match (maybe-deref(ccfragment::get( binding 'fragment-type_s ))) (
             ()
-            ( (WrappedLocal( sv-offset rst )) (tail(
-               (let e1 (maybe-deref(compile-expr( ctx rhs stack-offset Used ))))
-               (let e1-2 (maybe-deref(ccfragment::set-type( e1 kt ))))
-               (let e2 (maybe-deref(ccfragment::new())))
-               (let e2-2 (maybe-deref(ccfragment::set-offset( e2 sv-offset ))))
-               (let e2-3 (maybe-deref(ccfragment::set-context( e2-2 ctx ))))
-               (let e2-4 (maybe-deref(ccfragment::set-offset( e2-3 stack-offset ))))
-               (let e2-5 (maybe-deref(ccfragment::set-type( e1 (maybe-deref(tlocalvariable())) ))))
-               (let e3 (maybe-deref(fragment-apply( ctx stack-offset 'mov_s
-                  (FLSeq( (close(FLSeq( (close FLEOF) e1-2 ))) e2-5 ))
-                  term
-               ))))
-               (let e3-2 (maybe-deref(ccfragment::set-context( e3 ctx ))))
-               (set e e3-2)
+            ( (SAtom 'Global_s) (tail(
+               (let e2-4 (maybe-deref(ccfragment::set-type( e2 (maybe-deref(tglobalvariable())) ))))(set e2 e2-4)
             )))
-            ( (WrappedGlobal( id rst )) (tail(
-               (let e1 (maybe-deref(compile-expr( ctx rhs stack-offset Used ))))
-               (let e1-2 (maybe-deref(ccfragment::set-type( e1 kt ))))
-               (let e2 (maybe-deref(ccfragment::new())))
-               (let e2-2 (maybe-deref(ccfragment::set( e2 'expression_s (SAtom id) ))))
-               (let e2-3 (maybe-deref(ccfragment::set-context( e2-2 ctx ))))
-               (let e2-4 (maybe-deref(ccfragment::set-offset( e2-3 stack-offset ))))
-               (let e2-5 (maybe-deref(ccfragment::set-type( e1 (maybe-deref(tglobalvariable())) ))))
-               (let e3 (maybe-deref(fragment-apply( ctx stack-offset 'mov_s
-                  (FLSeq( (close(FLSeq( (close FLEOF) e1-2 ))) e2-5 ))
-                  term
-               ))))
-               (let e3-2 (maybe-deref(ccfragment::set-context( e3 ctx ))))
-               (set e e3-2)
+            ( (SAtom 'Local_s) (tail(
+               (let e2-4 (maybe-deref(ccfragment::set-type( e2 (maybe-deref(tlocalvariable())) ))))(set e2 e2-4)
             )))
-            ( _ (
-               (exit-error( 'Unknown\sVariable_s term ))
-            ))
+            ( _ (exit-error( 'Invalid\sFragment\sType\sIn\sSet_s term )))
          ))
+
+         (let e3 (maybe-deref(fragment-apply( ctx stack-offset 'mov_s
+            (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
+            term
+         ))))(set e e3)
+         (let e3-2 (maybe-deref(ccfragment::set-context( e ctx ))))(set e e3-2)
+         (let e3-3 (maybe-deref(ccfragment::set-offset( e stack-offset ))))(set e e3-3)
       )))
       ( (App( (App( (Var 'while_s) cond )) body )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx cond stack-offset Used ))))

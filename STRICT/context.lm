@@ -33,12 +33,6 @@ cccontext::new := λ. (: (tail(
    (close r)
 )) CCContext[]);
 
-cccontext::wrapped-lookup := λ(: ctx CCContext)(: k String)(: kt Type). (: (tail(
-   (let rst (maybe-deref(ccfragment::new())))
-   (let u (WrappedLocal( 0_i64 rst )))
-   (close u)
-)) WrappedFragment[]);
-
 cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST). (: (
    (cccontext::lookup( ctx k kt sloc True_u8 ))
 ) CCFragment[]);
