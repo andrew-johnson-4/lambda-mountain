@@ -157,23 +157,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
 
          (let e1 (maybe-deref(compile-expr( ctx rhs stack-offset Used ))))
          (let e1-2 (maybe-deref(ccfragment::set-type( e1 kt ))))(set e1 e1-2)
-
-         (let e2 (maybe-deref(ccfragment::new())))
-         (let e2-2 (maybe-deref(ccfragment::set-offset( e2 sv-offset ))))(set e2 e2-2)
-         (let e2-3 (maybe-deref(ccfragment::set-context( e2 ctx ))))(set e2 e2-3)
-
-         (let binding (maybe-deref(cccontext::lookup( ctx k kt term ))))
-         (match (maybe-deref(ccfragment::get( binding 'fragment-type_s ))) (
-            ()
-            ( (SAtom 'Global_s) (tail(
-               (let e2-4 (maybe-deref(ccfragment::set-type( e2 (maybe-deref(tglobalvariable())) ))))(set e2 e2-4)
-            )))
-            ( (SAtom 'Local_s) (tail(
-               (let e2-4 (maybe-deref(ccfragment::set-type( e2 (maybe-deref(tlocalvariable())) ))))(set e2 e2-4)
-            )))
-            ( _ (exit-error( 'Invalid\sFragment\sType\sIn\sSet_s term )))
-         ))
-
+         (let e2 (maybe-deref(cccontext::lookup( ctx k kt term ))))
          (let e3 (maybe-deref(fragment-apply( ctx stack-offset 'mov_s
             (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
             term
