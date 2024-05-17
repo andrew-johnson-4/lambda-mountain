@@ -429,12 +429,14 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type 
 )) CCFragment[]);
 
 compile-translate-local-variables := λ(: ctx CCContext)(: delta I64). (: (tail(
+   (print 'Translate\sDelta:\s_s)(print delta)(print '\n_s)
    (print 'TODO\stranslate\slocal\svariables\n_s)
    (close ctx)
 )) CCContext[]);
 
 compile-stack-call-push-args := λ(: ctx CCContext)(: args AST)(: inner-offset I64)(: outer-offset I64). (: (tail(
-   (let ctx-2 (maybe-deref(compile-translate-local-variables( ctx 0_i64 ))))(set ctx ctx-2)
+   (let translate-delta (+( 8_i64 (typecheck-sizeof(maybe-deref(typecheck-lookup args))) )))
+   (let ctx-2 (maybe-deref(compile-translate-local-variables( ctx translate-delta ))))(set ctx ctx-2)
    (let r (maybe-deref(ccfragment::new())))
    (let e1 (maybe-deref(compile-push-rvalue( ctx args inner-offset ))))
    (set r e1)
