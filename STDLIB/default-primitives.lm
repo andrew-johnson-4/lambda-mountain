@@ -81,6 +81,22 @@ fragment > := λ(: l LocalVariable+U64)(: r Constant+U64). (: (
    (.expression( 'ja ))
 ) BranchConditional);
 
+fragment > := λ(: l GlobalVariable+I64)(: r Constant+I64). (: (
+   (.program (
+      \t 'mov \s '$ (.expression l) , \s '%r15 \n
+      \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
+      \t 'cmp \s '$ (.expression r) , '%r15 \n
+   ))
+   (.expression( 'jg ))
+) BranchConditional);
+fragment > := λ(: l LocalVariable+I64)(: r Constant+I64). (: (
+   (.program (
+      \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
+      \t 'cmp \s '$ (.expression r) , '%r15 \n
+   ))
+   (.expression( 'jg ))
+) BranchConditional);
+
 < := λ(: l U64)(: r U64). (: (tail(
    (gensym-label end)
    (mov( 1_u64 RAX ))
