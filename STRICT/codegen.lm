@@ -278,6 +278,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (let size (typecheck-sizeof rtype))
          (let e1 (maybe-deref(compile-push-rvalue( ctx rhs stack-offset ))))
          (let bind-offset (-( stack-offset (as size I64) )))
+         (print 'Bind\s_s)(print lhs)(print '@_s)(print bind-offset)(print '\n_s)
          (let e1-2 (maybe-deref(ccfragment::set( e1 'unframe_s
             (SCons(
                (ccfragment::get( e1 'unframe_s ))
@@ -442,6 +443,9 @@ compile-translate-local-variables := λ(: ctx CCContext)(: delta I64). (: (tail(
                   ( (SAtom previous-offset) (tail(
                      (let p-offset (to-i64 previous-offset))
                      (let new-offset (+( p-offset delta )))
+                     (print 'Translate\sPrevious\s_s)(print previous-offset)(print '\n_s)
+                     (print 'Translate\sDelta\s_s)(print delta)(print '\n_s)
+                     (print 'Translate\sNew\s_s)(print new-offset)(print '\n_s)
                      (let new-f (maybe-deref(ccfragment::set( f 'expression_s (SAtom(to-string new-offset)) ))))
                      (set ctx (CCCtxBind( (close rst) k kt new-f )))
                   )))
