@@ -8,7 +8,7 @@ develop: compile-strict
 
 re:
 	rm -f tmp tmp.o tmp.s
-	./strict -o tmp.s tests/strict/head-string.lm
+	./strict -o tmp.s tests/btstrp/test5.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp
