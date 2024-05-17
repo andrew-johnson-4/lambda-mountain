@@ -2,7 +2,6 @@
 type CCFragKV (CCKVEOF) | (CCKVSeq( CCFragKV[] , String , S ));
 
 type CCFragment (CCFragment( CCFragKV[] , I64 , Type , CCContext[] ));
-type WrappedFragment (WrappedLocal( I64 , CCFragment )) | (WrappedGlobal( String , CCFragment )) | (WrappedUnknown( CCFragment ));
 
 type FragList (FLEOF) | (FLSeq( FragList[] , CCFragment ));
 
@@ -43,12 +42,6 @@ close := λ(: x FragList). (: (tail(
    (mov( x 0_u64 (as R8 FragList[]) ))
    (as R8 FragList[])
 )) FragList[]);
-
-close := λ(: x WrappedFragment). (: (tail(
-   (mov( (malloc(sizeof WrappedFragment)) R8 ))
-   (mov( x 0_u64 (as R8 WrappedFragment[]) ))
-   (as R8 WrappedFragment[])
-)) WrappedFragment[]);
 
 print := λ(: x CCFragment). (: (
    (match x ( 
@@ -99,6 +92,7 @@ ccfragment::local-variable := λ(: offset I64)(: tt Type). (: (tail(
       tt
       (cccontext::new())
    )))
+   (let r-2 (maybe-deref(ccfragment::set( r 'fragment-type_s (SAtom 'Local_s) ))))(set r r-2)
    (close r)
 )) CCFragment[]);
 
@@ -193,12 +187,25 @@ ccfragment::set-type := λ(: e CCFragment)(: tt Type). (: (tail(
 )) CCFragment[]);
 
 ccfragment::get-offset := λ(: e CCFragment). (: (tail(
-   ()
-   0_i64
+   (let offset 0_i64)
+   (match e (
+      ()
+      ( (CCFragment( e-kvs (*( e-offset (*( e-tt e-ctx )) )) )) (
+         (set offset e-offset)
+      ))
+   ))
+   offset
 )) I64);
 
 ccfragment::set-offset := λ(: e CCFragment)(: offset I64). (: (tail(
-   ()
+   (match e (
+      ()
+      ( (CCFragment( e-kvs (*( e-offset (*( e-tt e-ctx )) )) )) (
+         (set e (CCFragment(
+            (close e-kvs) offset e-tt (close e-ctx)
+         )))
+      ))
+   ))
    (close e)
 )) CCFragment[]);
 
