@@ -120,9 +120,19 @@ compile-type-case := λ(: ctx CCContext)(: base-type Type)(: rhs AST)(: case-num
 )) CCContext[]);
 
 compile-define-head-accessor := λ(: ctx CCContext)(: base-type Type)(: case-number U64). (: (tail(
+   (let rt (TAnd( (tu64()) (treg64()) )))
+   (let at (maybe-deref( (tarrow( base-type rt )) )))
+   (let fragment (maybe-deref(ccfragment::new())))
+   (let fragment-2 (maybe-deref(ccfragment::set-type( fragment at ))))(set fragment fragment-2)
+   (let fragment-3 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment fragment-3)
+   (let f-lhs (SCons( (close(SAtom 'Var_s)) (close(SAtom 'src_s)) )))
+   (let f-rhs-o (SCons( (close(SAtom 'Lit_s)) (close(SAtom 'r15_s)) )))
+   (let f-rhs-e (SCons( (close(SAtom 'Var_s)) (close(SAtom '.expression_s)) )))
+   (let f-rhs-a (SCons( (close(SAtom 'App_s)) (close(SCons( (close f-rhs-e) (close f-rhs-o) ))) )))
+   (let f-abs (SCons( (close(SAtom 'Abs_s)) (close(SCons( (close f-lhs) (close f-rhs-a) ))) )))
+   (let fragment-4 (maybe-deref(ccfragment::set( fragment 'fragment_s f-abs ))))(set fragment fragment-4)
    (let ctx-2 (maybe-deref(cccontext::bind(
-      ctx '.0_s (maybe-deref(tarrow( base-type (maybe-deref(tu64())) )))
-      (maybe-deref(ccfragment::new()))
+      ctx '.0_s at fragment
    ))))
    (close ctx-2)
 )) CCContext[]);
@@ -169,8 +179,10 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
 )) CCContext[]);
 
 compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types Type)(: rtype Type)(: case-number U64). (: (tail(
+   (let arrow-tt (maybe-deref(tarrow( arg-types rtype ))))
+   (let arrow-dc (TAnd( (close arrow-tt) (tdontchain()) )))(set arrow-tt arrow-dc)
    (let ctx-2 (maybe-deref(cccontext::bind(
-      ctx tag (maybe-deref(tarrow( arg-types rtype )))
+      ctx tag arrow-tt
       (maybe-deref(ccfragment::new()))
    ))))
    (close ctx-2)

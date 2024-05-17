@@ -319,10 +319,26 @@ tlocalvariable := λ. (: (tail(
    )))
 )) Type[]);
 
+tdontchain := λ. (: (tail(
+   ()
+   (close (TGround(
+      'DontChain_s
+      (close TypeEOF)
+   )))
+)) Type[]);
+
 tu64 := λ. (: (tail(
    ()
    (close (TGround(
       'U64_s
+      (close TypeEOF)
+   )))
+)) Type[]);
+
+treg64 := λ. (: (tail(
+   ()
+   (close (TGround(
+      'Reg64_s
       (close TypeEOF)
    )))
 )) Type[]);
@@ -503,13 +519,14 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
    r
 )) U64);
 
-typecheck-annotate-head-accessor := λ(: base-type Type). (: (
+typecheck-annotate-head-accessor := λ(: base-type Type). (: (tail(
+   (let tt (TAnd( (tu64()) (treg64()) )))
    (set global-type-context (TCtxBind(
       (close global-type-context)
       '.0_s
-      (maybe-deref(tarrow( base-type (maybe-deref(parse-type 'U64_s)) )))
+      (maybe-deref(tarrow( base-type tt )))
    )))
-) Nil);
+)) Nil);
 
 typecheck-annotate-accessors := λ(: base-type Type)(: args-type Type). (: (tail(
    (let field-number 1_u64)
@@ -778,14 +795,6 @@ normalize := λ(: tt Type). (: (tail(
             ( (TPair( lt2 rt2 )) (set tt (TAnd( (close lt2) (close rt2) ))) )
          ))
       )))
-#      what was this case for? try removing it
-#      ( (TGround( tag _ )) (
-#         (if (non-zero(maybe-deref(typecheck-typeof-tag tag))) (
-#            (if (typecheck-get-size tag) () (
-#               (set tt TAny)
-#            ))
-#         ) ())
-#      ))
       ( _ () )
    ))
    (close tt)
