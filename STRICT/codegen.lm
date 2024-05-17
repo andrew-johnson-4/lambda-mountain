@@ -265,7 +265,6 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (let size (typecheck-sizeof rtype))
          (let e1 (maybe-deref(compile-push-rvalue( ctx rhs stack-offset ))))
          (let bind-offset (-( stack-offset (as size I64) )))
-         (print 'Bind\s_s)(print lhs)(print bind-offset)(print '\s_s)(print stack-offset)(print '\n_s)
          (let e1-2 (maybe-deref(ccfragment::set( e1 'unframe_s
             (SCons(
                (ccfragment::get( e1 'unframe_s ))
