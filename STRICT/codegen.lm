@@ -162,7 +162,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
          (let e2-2 (maybe-deref(ccfragment::set-offset( e2 sv-offset ))))(set e2 e2-2)
          (let e2-3 (maybe-deref(ccfragment::set-context( e2 ctx ))))(set e2 e2-3)
 
-         (let binding (maybe-deref(cccontext::wrapped-lookup( ctx k kt term ))))
+         (let binding (maybe-deref(cccontext::lookup( ctx k kt term ))))
          (match (maybe-deref(ccfragment::get( binding 'fragment-type_s ))) (
             ()
             ( (SAtom 'Global_s) (tail(
