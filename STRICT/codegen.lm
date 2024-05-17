@@ -429,8 +429,29 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type 
 )) CCFragment[]);
 
 compile-translate-local-variables := λ(: ctx CCContext)(: delta I64). (: (tail(
-   (print 'Translate\sDelta:\s_s)(print delta)(print '\n_s)
-   (print 'TODO\stranslate\slocal\svariables\n_s)
+   (match ctx (
+      ()
+      ( CCCEOF () )
+      ( (CCCtxBind( rst (*( k (*( kt f )) )) )) (tail(
+         (let rst (maybe-deref(compile-translate-local-variables( rst delta ))))
+         (match (maybe-deref(ccfragment::get-type( f 'fragment-type_s ))) (
+            ()
+            ( (SAtom 'Local_s) (
+               (match (maybe-deref(ccfragment::get( f 'expression_s ))) (
+                  ()
+                  ( (SAtom previous-offset) (tail(
+                     (let p-offset (to-i64 previous-offset))
+                     (let new-offset (+( p-offset delta )))
+                     (let new-f (maybe-deref(ccfragment::set( f 'expression_s (SAtom(to-string new-offset)) ))))
+                     (set rst (CCCtxBind( (close rst) k kt new-f )))
+                  )))
+               ))
+            ))
+            ( _ () )
+         ))
+         (set ctx rst)
+      )))
+   ))
    (close ctx)
 )) CCContext[]);
 
