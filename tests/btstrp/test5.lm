@@ -24,6 +24,8 @@ code1 := 4_u64;
 
 main := λ(: argc U64)(: argv String[]). (: (tail(
    (let code2 6_u64)
+   (let codex 7_u64)
+   (let codey 8_u64)
    (let code3 (+( code1 code2 )))
    (mov( 60_u64 RAX ))
    (mov( code3 RDI ))
