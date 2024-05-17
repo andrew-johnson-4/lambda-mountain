@@ -593,6 +593,10 @@ fragment-apply-context := λ(: ctx CCContext)(: rhs S)(: e CCFragment). (: (tail
          (let e-rst (maybe-deref(fragment-apply-context( ctx rst e ))))
          (set e e-rst)
       )))
+      ( SNil (tail(
+         (let f (maybe-deref(ccfragment::new())))
+         (set e f)
+      )))
       ( u (tail(
          (print 'Invalid\sApplied\sFragment\n_s)
          (print rhs)(print '\n_s)
