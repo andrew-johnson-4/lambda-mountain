@@ -187,12 +187,25 @@ ccfragment::set-type := λ(: e CCFragment)(: tt Type). (: (tail(
 )) CCFragment[]);
 
 ccfragment::get-offset := λ(: e CCFragment). (: (tail(
-   ()
-   0_i64
+   (let offset 0_i64)
+   (match e (
+      ()
+      ( (CCFragment( e-kvs (*( e-offset (*( e-tt e-ctx )) )) )) (
+         (set offset e-offset)
+      ))
+   ))
+   offset
 )) I64);
 
 ccfragment::set-offset := λ(: e CCFragment)(: offset I64). (: (tail(
-   ()
+   (match e (
+      ()
+      ( (CCFragment( e-kvs (*( e-offset (*( e-tt e-ctx )) )) )) (
+         (set e (CCFragment(
+            e-kvs offset e-tt e-ctx
+         )))
+      ))
+   ))
    (close e)
 )) CCFragment[]);
 
