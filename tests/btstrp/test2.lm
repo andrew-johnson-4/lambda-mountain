@@ -1,0 +1,9 @@
+
+import STDLIB/default-instruction-set.lm;
+import STDLIB/default-rules.lm;
+
+main := λ(: argc U64)(: argv String[]). (: (tail(
+   (mov( 60_u64 RAX ))
+   (mov( 4_u64 RDI ))
+   (syscall())
+)) Nil);
