@@ -434,7 +434,7 @@ compile-translate-local-variables := λ(: ctx CCContext)(: delta I64). (: (tail(
       ( CCCEOF () )
       ( (CCCtxBind( rst (*( k (*( kt f )) )) )) (tail(
          (let rst (maybe-deref(compile-translate-local-variables( rst delta ))))
-         (match (maybe-deref(ccfragment::get-type( f 'fragment-type_s ))) (
+         (match (maybe-deref(ccfragment::get( f 'fragment-type_s ))) (
             ()
             ( (SAtom 'Local_s) (
                (match (maybe-deref(ccfragment::get( f 'expression_s ))) (
