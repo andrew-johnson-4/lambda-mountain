@@ -78,6 +78,7 @@ compile-program-ordered := λ(: global-ctx CCContext)(: program AST). (: (
          (compile-program-ordered( global-ctx rst ))
          (compile-global( global-ctx e ))
       ))) 
+      ( ASTEOF () )
    ))
 ) Nil);
 
