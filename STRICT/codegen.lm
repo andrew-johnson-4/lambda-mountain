@@ -74,6 +74,25 @@ compile-global := λ(: ctx CCContext)(: term AST). (: (tail(
 
 compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used). (: (tail(
    (let e (maybe-deref(ccfragment::new())))
+   (match used (
+      ()
+      ( Return (tail(
+         (let e-1 (maybe-deref(compile-expr-direct( ctx term stack-offset Used ))))
+         (let e-2 (maybe-deref(fragment-apply( ctx stack-offset 'cdecl::return_s
+            (FLSeq( (close FLEOF) e-1 ))
+            term
+         ))))(set e e-2)
+      )))
+      ( _ (tail(
+         (let e-1 (maybe-deref(compile-expr-direct( ctx term stack-offset used ))))
+         (set e e-1)
+      )))
+   ))
+   (close e)
+)) CCFragment[]);
+
+compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used). (: (tail(
+   (let e (maybe-deref(ccfragment::new())))
    (let e-2 (maybe-deref(ccfragment::set-context( e ctx ))))(set e e-2)
    (let e-3 (maybe-deref(ccfragment::set-offset( e stack-offset ))))(set e e-3)
    (match term (
