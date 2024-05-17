@@ -1,6 +1,6 @@
 
-import STDLIB/default-instruction-set.lm;
-import STDLIB/default-rules.lm;
+import LIB/default-instruction-set.lm;
+import LIB/default-rules.lm;
 
 fragment type U8;     size U8 1;     atom suffix U8     _u8;
 fragment type U16;    size U16 2;    atom suffix U16    _u16;
