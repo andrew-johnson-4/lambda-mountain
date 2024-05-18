@@ -128,14 +128,15 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
          (let e1 (maybe-deref(compile-expr( ctx lt stack-offset Unused ))))
          (let e2 (maybe-deref(compile-expr( (maybe-deref(ccfragment::get-context e1)) rt (ccfragment::get-offset e1) used ))))
          (let e12 (maybe-deref(ccfragment::chain( e1 e2 ))))
+         (let e12-2 (maybe-deref(ccfragment::set-type( e12 (maybe-deref(typecheck-lookup term)) ))))(set e12 e12-2)
          (set e e12)
       )))
       ( (App( (Var 'gensym-label_s) (Var id) )) (tail(
          (let new-ctx (maybe-deref(cccontext::bind(
             ctx id (maybe-deref(tlabel())) (maybe-deref(ccfragment::label( (uuid()) )))
          ))))
-         (let e-1 (maybe-deref(ccfragment::set-context( e new-ctx ))))
-         (set e e-1)
+         (let e-1 (maybe-deref(ccfragment::set-context( e new-ctx ))))(set e e-1)
+         (let e-2 (maybe-deref(ccfragment::set-type( e (maybe-deref(tnil())) ))))(set e e-2)
       )))
       ( (App( (Var 'label_s) (Var id) )) (tail(
          (let l (maybe-deref(cccontext::lookup( ctx id (maybe-deref(tlabel())) term ))))
@@ -144,6 +145,7 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
             (close(SAtom ':\n_s))
          )))
          (let e-2 (maybe-deref(ccfragment::set( e 'program_s prog ))))(set e e-2)
+         (let e-3 (maybe-deref(ccfragment::set-type( e (maybe-deref(tnil())) ))))(set e e-3)
       )))
       ( (App( (Var 'maybe-deref_s) t )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset Used ))))
