@@ -1700,7 +1700,7 @@ typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tai
 
 typecheck-domain := λ(: tt Type). (: (tail(
    (let r TAny)
-   (match (maybe-deref(typecheck-slot( kt '->_s ))) (
+   (match (maybe-deref(typecheck-slot( tt '->_s ))) (
       ()
       ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (set r p1) )
       ( _ () )
@@ -1710,7 +1710,7 @@ typecheck-domain := λ(: tt Type). (: (tail(
 
 typecheck-range := λ(: tt Type). (: (tail(
    (let r TAny)
-   (match (maybe-deref(typecheck-slot( kt '->_s ))) (
+   (match (maybe-deref(typecheck-slot( tt '->_s ))) (
       ()
       ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (set r p2) )
       ( _ () )
