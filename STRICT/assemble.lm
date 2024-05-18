@@ -26,7 +26,7 @@ compile := λ(). (: (tail(
             )))
             ( _ (tail(
                (let clean-tt (maybe-deref(without-representation rhs-tt)))
-               (let repr-tt (TAnd( (close clean-tt) (t 'GlobalVariable_s) )))
+               (let repr-tt (TAnd( (close clean-tt) (t1 'GlobalVariable_s) )))
                (let fragment-3 (maybe-deref(ccfragment::set-type( fragment-2 repr-tt ))))
                (let mid (mangle-identifier( k clean-tt )))
                (let fragment-4 (maybe-deref(ccfragment::set( fragment-3 'expression_s (SAtom mid) ))))
@@ -123,7 +123,7 @@ compile-type-case := λ(: ctx CCContext)(: base-type Type)(: rhs AST)(: case-num
 )) CCContext[]);
 
 compile-define-head-accessor := λ(: ctx CCContext)(: base-type Type)(: case-number U64). (: (tail(
-   (let rt (TAnd( (t 'U64_s) (t 'Reg64_s) )))
+   (let rt (TAnd( (t1 'U64_s) (t1 'Reg64_s) )))
    (let at (maybe-deref( (tarrow( base-type rt )) )))
    (let fragment (maybe-deref(ccfragment::new())))
    (let fragment-2 (maybe-deref(ccfragment::set-type( fragment at ))))(set fragment fragment-2)
@@ -185,14 +185,14 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
    (if (non-zero arg-types) (tail(
       (print 'TODO\sComplex\sConstrutor:\s_s)(print tag)(print '\n_s)
       #(let arrow-tt (maybe-deref(tarrow( arg-types rtype ))))
-      #(let arrow-dc (TAnd( (close arrow-tt) (t 'DontChain_s) )))(set arrow-tt arrow-dc)
+      #(let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
       #(let ctx-2 (maybe-deref(cccontext::bind(
       #   ctx tag arrow-tt
       #   (maybe-deref(ccfragment::new()))
       #))))
    )) (tail(
       (let arrow-tt (maybe-deref(tarrow( (maybe-deref(t tag)) rtype ))))
-      (let arrow-dc (TAnd( (close arrow-tt) (t 'DontChain_s) )))(set arrow-tt arrow-dc)
+      (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
       (let ctx-2 (maybe-deref(cccontext::bind(
          ctx 'push_s arrow-tt
          (maybe-deref(ccfragment::new()))

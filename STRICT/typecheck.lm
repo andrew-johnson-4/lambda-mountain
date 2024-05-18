@@ -287,7 +287,7 @@ tsized := λ(: sz String). (: (tail(
    )))
 )) Type[]);
 
-t := λ(: s String). (: (tail(
+t1 := λ(: s String). (: (tail(
    ()
    (close (TGround(
       s
@@ -374,7 +374,7 @@ typecheck-typeof-lhs := λ(: lhs AST). (: (tail(
          )))
       ))
       ( ASTNil (tail(
-         (let r2 (maybe-deref(t 'Nil_s)))
+         (let r2 (maybe-deref(t1 'Nil_s)))
          (set r r2)
       )))
       ( _ (exit-error( 'Unknown\sLHS_s lhs )))
@@ -456,7 +456,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
 )) U64);
 
 typecheck-annotate-head-accessor := λ(: base-type Type). (: (tail(
-   (let tt (TAnd( (t 'U64_s) (t 'Reg64_s) )))
+   (let tt (TAnd( (t1 'U64_s) (t1 'Reg64_s) )))
    (set global-type-context (TCtxBind(
       (close global-type-context)
       '.0_s
@@ -469,7 +469,7 @@ typecheck-annotate-accessors := λ(: base-type Type)(: args-type Type). (: (tail
    (while (non-zero args-type) (match args-type (
       ()
       ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF lt )) rt )) )) (tail(
-         (let rt-s (TAnd( (close rt) (t 'StackVariable_s) )))(set rt rt-s)
+         (let rt-s (TAnd( (close rt) (t1 'StackVariable_s) )))(set rt rt-s)
          (let accessor-name (clone-rope(SCons(
             (close (SAtom '._s))
             (close (SAtom (to-string field-number)))
@@ -483,7 +483,7 @@ typecheck-annotate-accessors := λ(: base-type Type)(: args-type Type). (: (tail
          (set args-type lt)
       )))
       ( rt (tail(
-         (let rt-s (TAnd( (close rt) (t 'StackVariable_s) )))(set rt rt-s)
+         (let rt-s (TAnd( (close rt) (t1 'StackVariable_s) )))(set rt rt-s)
          (let accessor-name (clone-rope(SCons(
             (close (SAtom '._s))
             (close (SAtom (to-string field-number)))
@@ -913,8 +913,8 @@ typecheck-ascript := λ(: t AST)(: tt Type). (: (
 typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
    (match term (
       ()
-      ( ASTNil (typecheck-ascript( term (maybe-deref(t 'Nil_s)) )) )
-      ( ASTEOF (typecheck-ascript( term (maybe-deref(t 'Nil_s)) )) )
+      ( ASTNil (typecheck-ascript( term (maybe-deref(t1 'Nil_s)) )) )
+      ( ASTEOF (typecheck-ascript( term (maybe-deref(t1 'Nil_s)) )) )
       ( (Seq( l r )) (tail(
          (typecheck-infer-expr( tctx l used ))
          (typecheck-infer-expr( tctx r used ))
@@ -958,15 +958,15 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
             (maybe-deref(tlabel()))
          )))
          (set tctx tctx2)
-         (typecheck-ascript( term (maybe-deref(t 'Nil_s)) ))
+         (typecheck-ascript( term (maybe-deref(t1 'Nil_s)) ))
       )))
       ( (App( (App( (Var 'set_s) (Var v) )) rhs )) (tail(
          (typecheck-infer-expr( tctx rhs Used ))
          (typecheck-ascript( rhs (maybe-deref(typecheck-typeof-var( term tctx v ))) ))
-         (typecheck-ascript( term (maybe-deref(t 'Nil_s)) ))
+         (typecheck-ascript( term (maybe-deref(t1 'Nil_s)) ))
       )))
       ( (App( (Var 'label_s) (Var lname) )) (
-         (typecheck-ascript( term (maybe-deref(t 'Nil_s)) ))
+         (typecheck-ascript( term (maybe-deref(t1 'Nil_s)) ))
       ))
       ( (App( (App( (App( (Var 'if_s) cond )) t )) f )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx cond Used ))))
@@ -979,7 +979,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx cond Used ))))
          (set tctx tctx2)
          (typecheck-infer-expr( tctx body Used ))
-         (typecheck-ascript( term (maybe-deref(t 'Nil_s)) ))
+         (typecheck-ascript( term (maybe-deref(t1 'Nil_s)) ))
       )))
       ( (App( (Var 'tail_s) (App( l r )) )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx l Unused ))))
@@ -1035,7 +1035,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
             lname
             rt
          )))
-         (typecheck-ascript( term (maybe-deref(t 'Nil_s)) ))
+         (typecheck-ascript( term (maybe-deref(t1 'Nil_s)) ))
       )))
       ( (App( l r )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx l Used ))))
@@ -1334,7 +1334,7 @@ tcontext-accept := λ. (: (tail(
    (let r (TCtxBind(
       (close TCtxEOF)
       'Accept_s
-      (maybe-deref(t 'Nil_s))
+      (maybe-deref(t1 'Nil_s))
    )))
    (close r)
 )) TContext[]);

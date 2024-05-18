@@ -136,7 +136,7 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
             ctx id (maybe-deref(tlabel())) (maybe-deref(ccfragment::label( (uuid()) )))
          ))))
          (let e-1 (maybe-deref(ccfragment::set-context( e new-ctx ))))(set e e-1)
-         (let e-2 (maybe-deref(ccfragment::set-type( e (maybe-deref(t 'Nil_s)) ))))(set e e-2)
+         (let e-2 (maybe-deref(ccfragment::set-type( e (maybe-deref(t1 'Nil_s)) ))))(set e e-2)
       )))
       ( (App( (Var 'label_s) (Var id) )) (tail(
          (let l (maybe-deref(cccontext::lookup( ctx id (maybe-deref(tlabel())) term ))))
@@ -145,7 +145,7 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
             (close(SAtom ':\n_s))
          )))
          (let e-2 (maybe-deref(ccfragment::set( e 'program_s prog ))))(set e e-2)
-         (let e-3 (maybe-deref(ccfragment::set-type( e (maybe-deref(t 'Nil_s)) ))))(set e e-3)
+         (let e-3 (maybe-deref(ccfragment::set-type( e (maybe-deref(t1 'Nil_s)) ))))(set e e-3)
       )))
       ( (App( (Var 'maybe-deref_s) t )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset Used ))))
@@ -155,7 +155,7 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
             ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF TAny )) _ )) )) () )
             ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF inner-tt )) TAny )) )) (tail(
                (print 'TODO\sImplement\sDeref\n_s)
-               (let new-tt (TAnd( (t 'StackVariable_s) (close inner-tt) )))
+               (let new-tt (TAnd( (t1 'StackVariable_s) (close inner-tt) )))
                (let e1-2 (maybe-deref(ccfragment::set-type( e1 new-tt ))))
                (set e1 e1-2)
             )))
@@ -168,11 +168,11 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
          (let sz (typecheck-sizeof(maybe-deref(typecheck-lookup t))))
          (let e1 (maybe-deref(ccfragment::expression(to-string sz))))
          (let et (TAnd( 
-            (t 'Literal_s)
+            (t1 'Literal_s)
             (close(TAnd(
-               (t 'Constant_s)
+               (t1 'Constant_s)
                (close(TAnd(
-                  (t 'U64_s)
+                  (t1 'U64_s)
                   (tsized '8_s)
                )))
             )))
@@ -294,7 +294,7 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
       ( (App( (Abs( (Var lhs) ASTNil )) rhs )) (tail(
          (let rtype (maybe-deref(typecheck-lookup rhs)))
          (let rtype-clean (maybe-deref(without-representation rtype)))(set rtype rtype-clean)
-         (let rtype-2 (TAnd( (close rtype) (t 'LocalVariable_s) )))(set rtype rtype-2)
+         (let rtype-2 (TAnd( (close rtype) (t1 'LocalVariable_s) )))(set rtype rtype-2)
          (let rtype-3 (maybe-deref(typecheck-annotate-size( rtype ))))(set rtype rtype-3)
          (let size (typecheck-sizeof rtype))
          (let e1 (maybe-deref(compile-push-rvalue( ctx rhs stack-offset ))))
@@ -364,7 +364,7 @@ compile-destructure-args := λ(: tt Type)(: ctx CCContext)(: lhs AST)(: offset I
                (let new-ctx-2 (maybe-deref(compile-destructure-args( rst-tt ctx rst offset ))))
                (let rst-sz (typecheck-sizeof rst-tt))
                (let rst-offset (-( offset (as rst-sz I64) )))
-               (let kt-2 (TAnd( (close kt) (t 'LocalVariable_s) )))(set kt kt-2)
+               (let kt-2 (TAnd( (close kt) (t1 'LocalVariable_s) )))(set kt kt-2)
                (let sz (typecheck-sizeof kt))
                (let new-offset (-( rst-offset (as sz I64) )))
                (let new-ctx (maybe-deref(cccontext::bind(
@@ -376,7 +376,7 @@ compile-destructure-args := λ(: tt Type)(: ctx CCContext)(: lhs AST)(: offset I
          ))
       ))
       ( (Asc( (Var k) kt )) (tail(
-         (let kt-2 (TAnd( (close kt) (t 'LocalVariable_s) )))(set kt kt-2)
+         (let kt-2 (TAnd( (close kt) (t1 'LocalVariable_s) )))(set kt kt-2)
          (let sz (typecheck-sizeof kt))
          (let new-offset (-( offset (as sz I64) )))
          (let new-ctx (maybe-deref(cccontext::bind(
@@ -497,7 +497,7 @@ as-branch-conditional := λ(: f CCFragment). (: (tail(
       ()
       ( (TGround( 'BranchConditional_s _ )) () )
       ( _ (tail(
-         (let f-1 (maybe-deref(ccfragment::set-type( f (maybe-deref(t 'BranchConditional_s)) ))))(set f f-1)
+         (let f-1 (maybe-deref(ccfragment::set-type( f (maybe-deref(t1 'BranchConditional_s)) ))))(set f f-1)
          (let f-2 (maybe-deref(ccfragment::set( f 'expression_s (SAtom 'jne_s) ))))(set f f-2)
          (let f-3 (maybe-deref(ccfragment::set( f 'program_s
             (SCons(

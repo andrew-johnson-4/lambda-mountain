@@ -74,9 +74,9 @@ to-s := λ(: term AST). (: (tail(
          )))
       ))
       ( (Asc( t tt )) (tail(
-         (let t1 (maybe-deref(to-s t)))
-         (typecheck-ascript( t1 tt ))
-         (set s t1)
+         (let st1 (maybe-deref(to-s t)))
+         (typecheck-ascript( st1 tt ))
+         (set s st1)
       )))
       ( _ () )
    ))
