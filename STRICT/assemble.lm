@@ -191,7 +191,7 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
       #   (maybe-deref(ccfragment::new()))
       #))))
    )) (tail(
-      (let arrow-tt (maybe-deref(tarrow( (maybe-deref(t tag)) rtype ))))
+      (let arrow-tt (maybe-deref(tarrow( (maybe-deref(t1 tag)) rtype ))))
       (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
       (let ctx-2 (maybe-deref(cccontext::bind(
          ctx 'push_s arrow-tt
