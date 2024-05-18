@@ -19,7 +19,7 @@ main := λ(: argc U64)(: argv String[]). (: (tail(
    (let code1 6_u64)
    (let code2 7_u64)
    (let code3 8_u64)
-   (let code4 (f( code1 code2 )))
+   (let code4 (f( 1_u64 2_u64 )))
    (mov( 60_u64 RAX ))
    (mov( code4 RDI ))
    (syscall())
