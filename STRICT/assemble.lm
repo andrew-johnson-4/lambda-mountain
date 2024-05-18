@@ -182,13 +182,23 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
 )) CCContext[]);
 
 compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types Type)(: rtype Type)(: case-number U64). (: (tail(
-   (let arrow-tt (maybe-deref(tarrow( arg-types rtype ))))
-   (let arrow-dc (TAnd( (close arrow-tt) (tdontchain()) )))(set arrow-tt arrow-dc)
-   (let ctx-2 (maybe-deref(cccontext::bind(
-      ctx tag arrow-tt
-      (maybe-deref(ccfragment::new()))
-   ))))
-   (close ctx-2)
+   (if (non-zero arg-types) (tail(
+      (print 'TODO\sComplex\sConstrutor:\s_s)(print tag)(print '\n_s)
+      #(let arrow-tt (maybe-deref(tarrow( arg-types rtype ))))
+      #(let arrow-dc (TAnd( (close arrow-tt) (tdontchain()) )))(set arrow-tt arrow-dc)
+      #(let ctx-2 (maybe-deref(cccontext::bind(
+      #   ctx tag arrow-tt
+      #   (maybe-deref(ccfragment::new()))
+      #))))
+   )) (tail(
+      (let arrow-tt (maybe-deref(tarrow( (maybe-deref(t tag)) rtype ))))
+      (let arrow-dc (TAnd( (close arrow-tt) (tdontchain()) )))(set arrow-tt arrow-dc)
+      (let ctx-2 (maybe-deref(cccontext::bind(
+         ctx 'push_s arrow-tt
+         (maybe-deref(ccfragment::new()))
+      ))))(set ctx ctx-2)
+   )))
+   (close ctx)
 )) CCContext[]);
 
 compile-finish := λ. (: (tail(

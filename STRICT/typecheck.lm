@@ -311,6 +311,14 @@ tconstant := λ. (: (tail(
    )))
 )) Type[]);
 
+t := λ(: s String). (: (tail(
+   ()
+   (close (TGround(
+      s
+      (close TypeEOF)
+   )))
+)) Type[]);
+
 tlocalvariable := λ. (: (tail(
    ()
    (close (TGround(
