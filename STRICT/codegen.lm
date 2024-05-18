@@ -367,7 +367,6 @@ compile-destructure-args := λ(: ctx CCContext)(: lhs AST)(: offset I64). (: (ta
             new-ctx-2 k kt (maybe-deref(ccfragment::local-variable( new-offset kt )))
          ))))
          (set ctx new-ctx)
-         (set ctx new-ctx-2)
       )))
       ( (Asc( (Var k) kt )) (tail(
          (let kt-2 (TAnd( (close kt) (tlocalvariable()) )))(set kt kt-2)
