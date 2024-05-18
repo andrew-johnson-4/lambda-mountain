@@ -330,7 +330,7 @@ parse-type := λ(: tt String). (: (tail(
    (if (non-zero cache-found) () (tail(
       (let depth 0_u64)
       (let buff SNil)
-      (let base-type (maybe-deref(tnil())))
+      (let base-type (maybe-deref(t 'Nil_s)))
       (while (head-string tt) (tail(
          (match (head-string tt) (
             ()
@@ -399,7 +399,7 @@ parse-type-single := λ(: tt String). (: (tail(
    (let depth 0_u64)
    (let mode 0_u8)
    (let buff SNil)
-   (let base-type (maybe-deref(tnil())))
+   (let base-type (maybe-deref(t 'Nil_s)))
    (while (head-string tt) (tail(
       (if (==( depth 0_u64 )) (
          (match (head-string tt) (
