@@ -493,7 +493,21 @@ compile-stack-call-push-args := λ(: ctx CCContext)(: args AST)(: inner-offset I
 )) CCFragment[]);
 
 as-branch-conditional := λ(: f CCFragment). (: (tail(
-   ()
+   (let ft (maybe-deref(ccfragment::get-type f)))
+   (match (maybe-deref(typecheck-slot( ft 'BranchConditional_s ))) (
+      ()
+      ( (TGround( 'BranchConditional_s _ )) () )
+      ( _ (tail(
+         (let f-1 (maybe-deref(ccfragment::set-type( f (maybe-deref(tbranchconditional())) ))))(set f f-1)
+         (let f-2 (maybe-deref(ccfragment::set( f 'expression_s (SAtom 'jne_s) ))))(set f f-2)
+         (let f-3 (maybe-deref(ccfragment::set( f 'program_s
+            (SCons(
+               (ccfragment::get( f 'program_s ))
+               (close(SAtom '\tcmp\s$0,\srax\n_s))
+            ))
+         ))))(set f f-3)
+      )))
+   ))
    (close f)
 )) CCFragment[]);
 

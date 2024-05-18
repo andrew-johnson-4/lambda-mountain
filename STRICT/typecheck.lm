@@ -319,6 +319,14 @@ tlocalvariable := λ. (: (tail(
    )))
 )) Type[]);
 
+tbranchconditional := λ. (: (tail(
+   ()
+   (close (TGround(
+      'BranchConditional_s
+      (close TypeEOF)
+   )))
+)) Type[]);
+
 tdontchain := λ. (: (tail(
    ()
    (close (TGround(
