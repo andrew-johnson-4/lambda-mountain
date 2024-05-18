@@ -34,9 +34,9 @@ fragment type String; size String 8; atom suffix String _s;
 
 main := λ(: argc U64)(: argv String[]). (: (tail(
    (let x 1_u64)
-   (if (<( x 10_u64 )) (
+   (if (<( x 10_u64 )) () (
       (set x (+( x 2_u64 )))
-   ) ())
+   ))
    (let y 4_u64)
    (mov( 60_u64 RAX ))
    (mov( x RDI ))
