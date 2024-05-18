@@ -224,7 +224,7 @@ dump-i := λ(: i U64). (: (tail(
 
 to-i64 := λ(: s String). (: (tail(
    (let negative False_u8)
-   (if (==( (head-string s) 46_u8 )) (tail(
+   (if (==( (head-string s) 45_u8 )) (tail(
       (set negative True_u8)
       (set s (tail-string s))
    )) ())

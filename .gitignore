@@ -17,6 +17,7 @@ bin/lm_raw
 production
 production.s
 production.o
+re-strict
 strict.s
 tmp.s
 tmp

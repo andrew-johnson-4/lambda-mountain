@@ -1698,3 +1698,22 @@ typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tai
    (close found)
 )) Type[]);
 
+typecheck-domain := λ(: tt Type). (: (tail(
+   (let r TAny)
+   (match (maybe-deref(typecheck-slot( tt '->_s ))) (
+      ()
+      ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (set r p1) )
+      ( _ () )
+   ))
+   (close r)
+)) Type[]);
+
+typecheck-range := λ(: tt Type). (: (tail(
+   (let r TAny)
+   (match (maybe-deref(typecheck-slot( tt '->_s ))) (
+      ()
+      ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (set r p2) )
+      ( _ () )
+   ))
+   (close r)
+)) Type[]);
