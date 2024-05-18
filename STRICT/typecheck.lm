@@ -456,7 +456,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
 )) U64);
 
 typecheck-annotate-head-accessor := λ(: base-type Type). (: (tail(
-   (let tt (TAnd( (tu64()) (treg64()) )))
+   (let tt (TAnd( (t 'U64_s) (t 'Reg64_s) )))
    (set global-type-context (TCtxBind(
       (close global-type-context)
       '.0_s
