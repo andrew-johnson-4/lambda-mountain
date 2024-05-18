@@ -8,6 +8,7 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
          (print 'Compile\sGlobal\s_s)(print k)(print kt)(print lhs)(print '\n_s)
          (let ctx-2 (maybe-deref(compile-destructure-args( (maybe-deref(typecheck-lookup lhs)) ctx lhs 0_i64 ))))
          (set ctx ctx-2)
+         (let args-type (maybe-deref(domain kt)))
          (let e (maybe-deref(compile-expr( ctx rhs -8_i64 Return ))))
          (let text SNil)
          (if (==( k 'main_s )) (

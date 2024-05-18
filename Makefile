@@ -1,6 +1,6 @@
 
 develop: compile-strict
-	mv strict re-strict
+	cp strict re-strict
 	rm -f tmp tmp.o tmp.s
 	./strict -o tmp.s tests/btstrp/test6.lm
 	as tmp.s -o tmp.o
