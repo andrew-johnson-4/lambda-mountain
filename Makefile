@@ -2,14 +2,14 @@
 develop: compile-strict
 	cp strict re-strict
 	rm -f tmp tmp.o tmp.s
-	./strict -o tmp.s tests/btstrp/test10.lm
+	./strict -o tmp.s tests/btstrp/test11.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp
 
 re:
 	rm -f tmp tmp.o tmp.s
-	./re-strict -o tmp.s tests/btstrp/test10.lm
+	./re-strict -o tmp.s tests/btstrp/test11.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp
