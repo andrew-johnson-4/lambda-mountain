@@ -503,7 +503,7 @@ as-branch-conditional := λ(: f CCFragment). (: (tail(
          (let f-3 (maybe-deref(ccfragment::set( f 'program_s
             (SCons(
                (ccfragment::get( f 'program_s ))
-               (close(SAtom '\tcmp\s$0,\srax\n_s))
+               (close(SAtom '\tcmp\s$0,\s%rax\n_s))
             ))
          ))))(set f f-3)
       )))
