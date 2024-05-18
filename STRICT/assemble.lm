@@ -186,15 +186,17 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
       (print 'TODO\sComplex\sConstrutor:\s_s)(print tag)(print '\n_s)
       (let arrow-tt (maybe-deref(tarrow( arg-types rtype ))))
       (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
+      (let fragment (maybe-deref(ccfragment::new())))
+      (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
       (let ctx-2 (maybe-deref(cccontext::bind(
-         ctx tag arrow-tt
-         (maybe-deref(ccfragment::new()))
+         ctx tag arrow-tt fragment
       ))))
    )) (tail(
       (let arrow-tt (maybe-deref(tarrow( (maybe-deref(t1 tag)) rtype ))))
       (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
       (let fragment (maybe-deref(ccfragment::new())))
-      (let fragment-1 (maybe-deref(ccfragment::set( fragment 'program_s
+      (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
+      (let fragment-2 (maybe-deref(ccfragment::set( fragment 'program_s
          (SCons(
             (close(SAtom( '\tpush\s$_s )))
             (close(SCons(
@@ -202,7 +204,7 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
                (close(SAtom( '\n_s )))
             )))
          ))
-      ))))(set fragment fragment-1)
+      ))))(set fragment fragment-2)
       (let ctx-2 (maybe-deref(cccontext::bind(
          ctx 'push_s arrow-tt fragment
       ))))(set ctx ctx-2)
