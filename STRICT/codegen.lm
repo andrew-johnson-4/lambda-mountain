@@ -128,14 +128,15 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
          (let e1 (maybe-deref(compile-expr( ctx lt stack-offset Unused ))))
          (let e2 (maybe-deref(compile-expr( (maybe-deref(ccfragment::get-context e1)) rt (ccfragment::get-offset e1) used ))))
          (let e12 (maybe-deref(ccfragment::chain( e1 e2 ))))
+         (let e12-2 (maybe-deref(ccfragment::set-type( e12 (maybe-deref(typecheck-lookup term)) ))))(set e12 e12-2)
          (set e e12)
       )))
       ( (App( (Var 'gensym-label_s) (Var id) )) (tail(
          (let new-ctx (maybe-deref(cccontext::bind(
             ctx id (maybe-deref(tlabel())) (maybe-deref(ccfragment::label( (uuid()) )))
          ))))
-         (let e-1 (maybe-deref(ccfragment::set-context( e new-ctx ))))
-         (set e e-1)
+         (let e-1 (maybe-deref(ccfragment::set-context( e new-ctx ))))(set e e-1)
+         (let e-2 (maybe-deref(ccfragment::set-type( e (maybe-deref(tnil())) ))))(set e e-2)
       )))
       ( (App( (Var 'label_s) (Var id) )) (tail(
          (let l (maybe-deref(cccontext::lookup( ctx id (maybe-deref(tlabel())) term ))))
@@ -144,6 +145,7 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
             (close(SAtom ':\n_s))
          )))
          (let e-2 (maybe-deref(ccfragment::set( e 'program_s prog ))))(set e e-2)
+         (let e-3 (maybe-deref(ccfragment::set-type( e (maybe-deref(tnil())) ))))(set e e-3)
       )))
       ( (App( (Var 'maybe-deref_s) t )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset Used ))))
@@ -211,9 +213,9 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
          (set text (SCons( (close text) (ccfragment::get( e3 'frame_s )) )))
          (set text (SCons( (close text) (ccfragment::get( e3 'program_s )) )))
          (set text (SCons( (close text) (close(SAtom '\t_s)) )))
-#         (set text (SCons( (close text) (ccfragment::get( e3 'expression_s )) )))
-#         (set text (SCons( (close text) (close(SAtom '\s_s)) )))
-#         (set text (SCons( (close text) (close(SAtom label-do-loop)) )))
+         (set text (SCons( (close text) (ccfragment::get( e3 'expression_s )) )))
+         (set text (SCons( (close text) (close(SAtom '\s_s)) )))
+         (set text (SCons( (close text) (close(SAtom label-do-loop)) )))
          (set text (SCons( (close text) (close(SAtom '\n\tjmp\s_s)) )))
          (set text (SCons( (close text) (close(SAtom label-end-loop)) )))
          (set text (SCons( (close text) (close(SAtom '\n_s)) )))
@@ -491,7 +493,21 @@ compile-stack-call-push-args := λ(: ctx CCContext)(: args AST)(: inner-offset I
 )) CCFragment[]);
 
 as-branch-conditional := λ(: f CCFragment). (: (tail(
-   ()
+   (let ft (maybe-deref(ccfragment::get-type f)))
+   (match (maybe-deref(typecheck-slot( ft 'BranchConditional_s ))) (
+      ()
+      ( (TGround( 'BranchConditional_s _ )) () )
+      ( _ (tail(
+         (let f-1 (maybe-deref(ccfragment::set-type( f (maybe-deref(tbranchconditional())) ))))(set f f-1)
+         (let f-2 (maybe-deref(ccfragment::set( f 'expression_s (SAtom 'jne_s) ))))(set f f-2)
+         (let f-3 (maybe-deref(ccfragment::set( f 'program_s
+            (SCons(
+               (ccfragment::get( f 'program_s ))
+               (close(SAtom '\tcmp\s$0,\s%rax\n_s))
+            ))
+         ))))(set f f-3)
+      )))
+   ))
    (close f)
 )) CCFragment[]);
 
