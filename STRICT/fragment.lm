@@ -548,7 +548,7 @@ fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
          (while (non-zero iter-result) (match iter-result (
             ()
             ( (SCons( rst (SAtom i) )) (tail(
-               (print 'For\sInstance\s_s)(print binding)(print '\s=\s_s)(print i)(print '\n)
+               (print 'For\sInstance\s_s)(print binding)(print '\s=\s_s)(print i)(print '\n_s)
                (let inner-ctx (CCCtxBind(
                   (close ctx) binding TAny
                   (maybe-deref(ccfragment::expression i))
