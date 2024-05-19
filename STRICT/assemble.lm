@@ -213,22 +213,26 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
                         (close(SAtom 'Var_s))
                         (close(SAtom '.program_s))                   
                      )))
-                  (close(SCons(
-                     (close(SAtom( 'App_s )))
-                     (close(SCons(
-                        (close(SCons(
-                           (close(SAtom 'Lit_s))
-                           (close(SAtom '\tpush\s$_s))
-                        )))
                      (close(SCons(
                         (close(SAtom( 'App_s )))
                         (close(SCons(
-                           (close(SAtom 'Lit_s))
-                           (close(SAtom(to-string case-number)))
-                        )))
-                        (close(SCons(
-                           (close(SAtom 'Lit_s))
-                           (close(SAtom '\n_s))
+                           (close(SCons(
+                              (close(SAtom 'Lit_s))
+                              (close(SAtom '\tpush\s$_s))
+                           )))
+                           (close(SCons(
+                              (close(SAtom( 'App_s )))
+                              (close(SCons(
+                                 (close(SCons(
+                                    (close(SAtom 'Lit_s))
+                                    (close(SAtom(to-string case-number)))
+                                 )))
+                                 (close(SCons(
+                                    (close(SAtom 'Lit_s))
+                                    (close(SAtom '\n_s))
+                                 )))
+                              )))
+                           )))
                         )))
                      )))
                   )))
