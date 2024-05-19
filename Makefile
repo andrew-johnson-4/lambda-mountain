@@ -9,7 +9,7 @@ develop: compile-strict
 
 re:
 	rm -f tmp tmp.o tmp.s
-	./re-strict -o tmp.s tests/btstrp/test15.lm
+	./re-strict -o tmp.s tests/btstrp/test17.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp
