@@ -2,7 +2,6 @@
 
 λ☶ (pronounced Lambda Mountain) is a compiler backend that provides a relatively clean implementation of **System F<: with Specialization**.
 The whole compiler is only 3000 lines of code, so this could be a good starting point for projects in need of codegen for JIT or AOT compilation.
-Very much under active development, so practical usage is limited.
 
 More information is available on the [λ☶ Wiki](https://github.com/andrew-johnson-4/-/wiki).
 
