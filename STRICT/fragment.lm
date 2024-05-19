@@ -401,7 +401,7 @@ fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
             ( _ () )
          ))
          (set r (SAtom(to-string (-( 0_i64 li )) )))
-         (print 'Inv\s_s)(print r)(print '\n_s)
+         (print 'Inv\s_s)(print lt)(print '\s=\s_s)(print r)(print '\n_s)
       )))
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '+_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (tail(
          (let lt (maybe-deref(fragment-render( mode ctx lc ))))
@@ -419,7 +419,7 @@ fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
             ( _ () )
          ))
          (set r (SAtom(to-string(+( li ri )))))
-         (print '+\s_s)(print r)(print '\n_s)
+         (print '+\s_s)(print lt)(print '\s_s)(print rt)(print '\s=\s_s)(print r)(print '\n_s)
       )))
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '-_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (tail(
          (let lt (maybe-deref(fragment-render( mode ctx lc ))))
@@ -437,7 +437,7 @@ fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
             ( _ () )
          ))
          (set r (SAtom(to-string(-( li ri )))))
-         (print '-\s_s)(print r)(print '\n_s)
+         (print '-\s_s)(print lt)(print '\s_s)(print rt)(print '\s=\s_s)(print r)(print '\n_s)
       )))
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '*_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (tail(
          (let lt (maybe-deref(fragment-render( mode ctx lc ))))
@@ -455,7 +455,7 @@ fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
             ( _ () )
          ))
          (set r (SAtom(to-string(*( li ri )))))
-         (print '*\s_s)(print r)(print '\n_s)
+         (print '*\s_s)(print lt)(print '\s_s)(print rt)(print '\s=\s_s)(print r)(print '\n_s)
       )))
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '/_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (tail(
          (let lt (maybe-deref(fragment-render( mode ctx lc ))))
@@ -475,7 +475,7 @@ fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
          (if (>( ri 0_i64 )) (
             (set r (SAtom(to-string(/( li ri )))))
          ) ())
-         (print '/\s_s)(print r)(print '\n_s)
+         (print '/\s_s)(print lt)(print '\s_s)(print rt)(print '\s=\s_s)(print r)(print '\n_s)
       )))
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '%_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (tail(
          (let lt (maybe-deref(fragment-render( mode ctx lc ))))
@@ -495,7 +495,7 @@ fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
          (if (>( ri 0_i64 )) (
             (set r (SAtom(to-string(%( li ri )))))
          ) ())
-         (print '%\s_s)(print r)(print '\n_s)
+         (print '%\s_s)(print lt)(print '\s_s)(print rt)(print '\s=\s_s)(print r)(print '\n_s)
       )))
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom 'range_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (tail(
          (let lt (maybe-deref(fragment-render( mode ctx lc ))))
