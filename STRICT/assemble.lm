@@ -208,10 +208,10 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
                )))
                (close(SCons(
                   (close(SAtom( '\tpush\s$_s )))
-                     (close(SCons(
-                        (close(SAtom(to-string case-number)))
-                        (close(SAtom( '\n_s )))
-                     )))
+                  (close(SCons(
+                     (close(SAtom(to-string case-number)))
+                     (close(SAtom( '\n_s )))
+                  )))
                )))
             )))
          ))

@@ -600,8 +600,6 @@ fragment-apply-context := λ(: ctx CCContext)(: rhs S)(: e CCFragment). (: (tail
          (let s (maybe-deref(fragment-render( 'program_s ctx prg ))))
          (let f (maybe-deref(ccfragment::set( e 'program_s s ))))
          (set e f)
-         (let e-rst (maybe-deref(fragment-apply-context( ctx rst e ))))
-         (set e e-rst)
       )))
    ))
    (close e)
