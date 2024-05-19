@@ -10,7 +10,5 @@ main := λ(: argc U64)(: argv String[]). (: (tail(
    (let x CaseOne)
    (let y CaseTwo)
    (let z CaseThree)
-   (print (.0 x))
-   (print (.0 y))
-   (print (.0 z))
+   (exit (.0 x))
 )) Nil);
