@@ -1646,9 +1646,10 @@ is-fragment-type := λ(: tt Type). (: (tail(
    (let fs typecheck-fragment-types)
    (while (non-zero fs) (match fs (
       ()
-      ( (TypeSeq( rst (TGround( p2 _ )) )) (
+      ( (TypeSeq( rst (TGround( p2 _ )) )) (tail(
          (if (==( tt-s p2 )) (set r 1_u64) ())
-      ))
+         (set fs rst)
+      )))
       ( (TypeSeq( rst _ )) (set fs rst) )
    )))
    r
