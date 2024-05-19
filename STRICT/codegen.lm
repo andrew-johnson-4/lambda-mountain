@@ -7,13 +7,22 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
       ( (Abs( lhs rhs )) (tail(
          (print 'Compile\sGlobal\s_s)(print k)(print kt)(print lhs)(print '\n_s)
          (let args-type (maybe-deref(typecheck-domain kt)))
+         (let args-size (typecheck-sizeof args-type))
          (let ctx-2 (maybe-deref(compile-destructure-args( args-type ctx lhs 0_i64 ))))
          (set ctx ctx-2)
-         (let e (maybe-deref(compile-expr( ctx rhs -8_i64 Return ))))
+         (let stack-offset 0_i64)
+         (set stack-offset (-( stack-offset 8_i64 )))
+         (set stack-offset (-( stack-offset (as args-size I64) )))
+         (let e (maybe-deref(compile-expr( ctx rhs stack-offset Return ))))
          (let text SNil)
-         (if (==( k 'main_s )) (
+         (if (==( k 'main_s )) (tail(
+            (match lhs (
+               ()
+               ( ASTNil () )
+               ( _ (set main-with-argv True_u64) )
+            ))
             (set text (SCons( (close text) (close(SAtom( 'main_s ))) )))
-         ) (
+         )) (
             (set text (SCons( (close text) (close(SAtom( (mangle-identifier( k kt )) ))) )))
          ))
          (set text (SCons( (close text) (close(SAtom( ':\n_s ))) )))
@@ -21,8 +30,10 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
          (set text (SCons( (close text) (close frame) )))
          (let program (maybe-deref(ccfragment::get( e 'program_s ))))
          (set text (SCons( (close text) (close program) )))
-         (let unframe (maybe-deref(ccfragment::get( e 'unframe_s ))))
-         (set text (SCons( (close text) (close unframe) )))
+         (set text (SCons( (close text) (close(SAtom '\tmov\s%rbp,\s%rsp\n_s)) )))
+         (set text (SCons( (close text) (close(SAtom '\tsub\s$_s)) )))
+         (set text (SCons( (close text) (close(SAtom (to-string(+( args-size 8_u64 ))) )) )))
+         (set text (SCons( (close text) (close(SAtom ',\s%rsp\n_s)) )))
          (set text (SCons( (close text) (close(SAtom '\tret\n_s)) )))
          (let text-etc (maybe-deref(ccfragment::get( e 'text_s ))))
          (set text (SCons( (close text) (close text-etc) )))
@@ -301,7 +312,7 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
          (let rtype-clean (maybe-deref(without-representation rtype)))(set rtype rtype-clean)
          (let rtype-2 (TAnd( (close rtype) (t1 'LocalVariable_s) )))(set rtype rtype-2)
          (let rtype-3 (maybe-deref(typecheck-annotate-size( rtype ))))(set rtype rtype-3)
-         (let size (typecheck-sizeof rtype))
+         (let size (max( 8_u64 (typecheck-sizeof rtype) )))
          (let e1 (maybe-deref(compile-push-rvalue( ctx rhs stack-offset ))))
          (let bind-offset (-( stack-offset (as size I64) )))
          (let e1-2 (maybe-deref(ccfragment::set( e1 'unframe_s
