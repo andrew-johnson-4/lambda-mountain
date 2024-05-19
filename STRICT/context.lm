@@ -39,6 +39,7 @@ cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST). (: 
 
 cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST)(: hard-error U8). (: (tail(
    (let r (maybe-deref(ccfragment::expression k)))
+   (let r-2 (maybe-deref(ccfragment::set( r 'program_s (SAtom k) ))))(set r r-2)
    (let found False_u8)
    (while (non-zero ctx) (match ctx (
       ()
