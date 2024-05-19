@@ -1041,7 +1041,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx l Used ))))
          (let tctx3 (maybe-deref(typecheck-infer-expr( tctx2 r Used ))))
          (set tctx tctx3)
-         (let rt (maybe-deref(typecheck-apply(
+         (let rt (maybe-deref(typecheck-apply-hard(
             term
             (maybe-deref(typecheck-lookup l))
             (maybe-deref(typecheck-lookup r))
@@ -1179,27 +1179,6 @@ is-arrow := λ(: tt Type). (: (tail(
    r
 )) U64);
 
-typecheck-find-plural-app := λ(: sloc AST)(: many Type)(: pt Type). (: (tail(
-   (let r TAny)
-   (match many(
-      ()
-      ( (TAnd( t1 t2 )) (tail(
-         (let r1 (maybe-deref(typecheck-apply-plural( sloc t1 pt ))))
-         (if (non-zero r1) (set r r1) (tail(
-            (let r2 (maybe-deref(typecheck-apply-plural( sloc t2 pt ))))
-            (set r r2)
-         )))
-      )))
-      ( arrow (tail(
-         (let r1 (maybe-deref(typecheck-apply( sloc many arrow ))))
-         (if (non-zero r1) (
-            (set r arrow)
-         ) ())
-      )))
-   ))
-   (close r)
-)) Type[]);
-
 typecheck-apply-plural := λ(: sloc AST)(: many Type)(: pt Type). (: (tail(
    (let r TAny)
    (match many(
@@ -1212,7 +1191,7 @@ typecheck-apply-plural := λ(: sloc AST)(: many Type)(: pt Type). (: (tail(
          )))
       )))
       ( (TGround( '->_s _ )) (tail(
-         (let r1 (maybe-deref(typecheck-apply( sloc many pt ))))
+         (let r1 (maybe-deref(typecheck-apply-hard( sloc many pt ))))
          (set r r1)
       )))
       ( _ () )
@@ -1220,17 +1199,17 @@ typecheck-apply-plural := λ(: sloc AST)(: many Type)(: pt Type). (: (tail(
    (close r)
 )) Type[]);
 
-typecheck-apply := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
+typecheck-apply-hard := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
    (let rt TAny)
    (if (is-arrow ft) (
       (match ft (
          ()
          ( (TAnd( ft1 ft2 )) (tail(
-            (let rt1 (maybe-deref(typecheck-apply( sloc ft1 pt ))))
+            (let rt1 (maybe-deref(typecheck-apply-hard( sloc ft1 pt ))))
             (if (non-zero rt1) (
                (set rt rt1)
             ) (tail(
-               (let rt2 (maybe-deref(typecheck-apply( sloc ft2 pt ))))
+               (let rt2 (maybe-deref(typecheck-apply-hard( sloc ft2 pt ))))
                (set rt rt2)
             )))
          )))
