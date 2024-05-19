@@ -597,9 +597,9 @@ fragment-apply-context := λ(: ctx CCContext)(: rhs S)(: e CCFragment). (: (tail
          (set e f)
       )))
       ( prg (tail(
-         (let s (maybe-deref(fragment-render( 'program_s ctx prg ))))
-         (let f (maybe-deref(ccfragment::set( e 'program_s s ))))
-         (set e f)
+         (print 'Invalid\sApply\sFragment\s_s)
+         (print prg)
+         (exit 1_u64)
       )))
    ))
    (close e)
