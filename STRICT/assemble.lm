@@ -203,11 +203,8 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
             (close(SAtom 'Abs_s))
             (close(SCons(
                (close(SCons(
-                  (close(SAtom 'App_s))
-                  (close(SCons(
-                     (close(SAtom 'Var_s))
-                     (close(SAtom 'tag_s))                   
-                  )))
+                  (close(SAtom 'Var_s))
+                  (close(SAtom 'tag_s))                   
                )))
                (close(SCons(
                   (close(SAtom( '\tpush\s$_s )))
