@@ -7,6 +7,7 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
       ( (Abs( lhs rhs )) (tail(
          (print 'Compile\sGlobal\s_s)(print k)(print kt)(print lhs)(print '\n_s)
          (let args-type (maybe-deref(typecheck-domain kt)))
+         (let args-size (typecheck-sizeof args-type))
          (let ctx-2 (maybe-deref(compile-destructure-args( args-type ctx lhs 0_i64 ))))
          (set ctx ctx-2)
          (let e (maybe-deref(compile-expr( ctx rhs -8_i64 Return ))))
@@ -22,7 +23,9 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
          (let program (maybe-deref(ccfragment::get( e 'program_s ))))
          (set text (SCons( (close text) (close program) )))
          (set text (SCons( (close text) (close(SAtom '\tmov\s%rbp,\s%rsp\n_s)) )))
-         (set text (SCons( (close text) (close(SAtom '\tsub\s$8,\s%rsp\n_s)) )))
+         (set text (SCons( (close text) (close(SAtom '\tsub\s$_s)) )))
+         (set text (SCons( (close text) (close(SAtom (to-string(+( args-size 8_u64 ))))) )))
+         (set text (SCons( (close text) (close(SAtom ',\s%rsp\n_s)) )))
          (set text (SCons( (close text) (close(SAtom '\tret\n_s)) )))
          (let text-etc (maybe-deref(ccfragment::get( e 'text_s ))))
          (set text (SCons( (close text) (close text-etc) )))
