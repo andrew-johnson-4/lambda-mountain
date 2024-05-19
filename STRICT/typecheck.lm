@@ -2,6 +2,7 @@
 type TypeConstructorList (TConEOF) | (TConSeq( TypeConstructorList[] , String , Type ));
 
 typecheck-type-constructors := (: TConEOF TypeConstructorList);
+typecheck-fragment-types := (: TypeEOF TypeList);
 
 type TypeSizeList (TSzEOF) | (TSzSeq( TypeSizeList[] , String , U64 ));
 
@@ -1633,3 +1634,23 @@ typecheck-range := λ(: tt Type). (: (tail(
    ))
    (close r)
 )) Type[]);
+
+is-fragment-type := λ(: tt Type). (: (tail(
+   (let tt-s '_s)
+   (match tt (
+      ()
+      ( (TGround( p _ )) (set tt-s p) )
+      ( _ () )
+   ))
+   (let r 0_u64)
+   (let fs typecheck-fragment-types)
+   (while (non-zero fs) (match fs (
+      ()
+      ( (TypeSeq( rst (TGround( p2 _ )) )) (tail(
+         (if (==( tt-s p2 )) (set r 1_u64) ())
+         (set fs rst)
+      )))
+      ( (TypeSeq( rst _ )) (set fs rst) )
+   )))
+   r
+)) U64);
