@@ -99,6 +99,7 @@ compile-type := λ(: ctx CCContext)(: lhs AST)(: rhs AST). (: (tail(
          (set def ASTEOF)
       )))
    )))
+   (let ctx-3 (maybe-deref(compile-define-head-accessor( ctx base-type ))))(set ctx ctx-3)
    (close ctx)
 )) CCContext[]);
 
@@ -106,14 +107,12 @@ compile-type-case := λ(: ctx CCContext)(: base-type Type)(: rhs AST)(: case-num
    (match rhs (
       ()
       ( (Lit tag) (tail(
-         (let ctx-2 (maybe-deref(compile-define-head-accessor( ctx base-type case-number ))))(set ctx ctx-2)
          (let rtype (TAnd( (close base-type) (parse-type tag) )) )
          (let ctx-3 (maybe-deref(compile-define-tag-constructor( ctx tag TAny rtype case-number ))))(set ctx ctx-3)
       )))
       ( (App( (Lit tag) args )) (tail(
          (let atype (maybe-deref(typecheck-infer-type-compound args)))
          (let rtype (TAnd( (close base-type) (parse-type tag) )))
-         (let ctx-2 (maybe-deref(compile-define-head-accessor( ctx base-type case-number ))))(set ctx ctx-2)
          (let ctx-3 (maybe-deref(compile-define-tag-constructor( ctx tag atype rtype case-number ))))(set ctx ctx-3)
          (let ctx-4 (maybe-deref(compile-define-field-accessors( ctx (maybe-deref(parse-type tag)) atype case-number ))))(set ctx ctx-4)
       )))
@@ -122,22 +121,69 @@ compile-type-case := λ(: ctx CCContext)(: base-type Type)(: rhs AST)(: case-num
    (close ctx)
 )) CCContext[]);
 
-compile-define-head-accessor := λ(: ctx CCContext)(: base-type Type)(: case-number U64). (: (tail(
-   (let rt (TAnd( (t1 'U64_s) (t1 'Reg64_s) )))
-   (let at (maybe-deref( (tarrow( base-type rt )) )))
+compile-define-head-accessor := λ(: ctx CCContext)(: base-type Type). (: (tail(
+
+   (let arrow-tt (maybe-deref(tarrow( (TAnd( (close base-type) (t1 'LocalVariable_s) )) (maybe-deref(t1 'Reg64_s)) ))))
+   (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
    (let fragment (maybe-deref(ccfragment::new())))
-   (let fragment-2 (maybe-deref(ccfragment::set-type( fragment at ))))(set fragment fragment-2)
-   (let fragment-3 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment fragment-3)
-   (let f-lhs (SCons( (close(SAtom 'Var_s)) (close(SAtom 'src_s)) )))
-   (let f-rhs-o (SCons( (close(SAtom 'Lit_s)) (close(SAtom 'r15_s)) )))
-   (let f-rhs-e (SCons( (close(SAtom 'Var_s)) (close(SAtom '.expression_s)) )))
-   (let f-rhs-a (SCons( (close(SAtom 'App_s)) (close(SCons( (close f-rhs-e) (close f-rhs-o) ))) )))
-   (let f-abs (SCons( (close(SAtom 'Abs_s)) (close(SCons( (close f-lhs) (close f-rhs-a) ))) )))
-   (let fragment-4 (maybe-deref(ccfragment::set( fragment 'fragment_s f-abs ))))(set fragment fragment-4)
+   (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
+   (let fragment-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment fragment-2)
+   (let fragment-3 (maybe-deref(ccfragment::set( fragment 'fragment_s
+      (maybe-deref(s-abs(
+         (s-var 'src_s)
+         (s-app(
+            (s-app(
+               (s-var '.program_s)
+               (s-app(
+                  (s-lit '\tmovq\s_s)
+                  (s-app(
+                     (s-app( (s-var '.expression_s) (s-var 'src_s) ))
+                     (s-lit '\[%rbp\],\s%r15\n_s)
+                  ))
+               ))
+            ))
+            (s-app(
+               (s-var '.expression_s)
+               (s-lit 'r15_s)
+            ))
+         ))
+      )))
+   ))))(set fragment fragment-3)
    (let ctx-2 (maybe-deref(cccontext::bind(
-      ctx '.0_s at fragment
-   ))))
-   (close ctx-2)
+      ctx '.0_s arrow-tt fragment
+   ))))(set ctx ctx-2)
+
+   (let arrow-tt (maybe-deref(tarrow( (TAnd( (close base-type) (t1 'GlobalVariable_s) )) (maybe-deref(t1 'Reg64_s)) ))))
+   (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
+   (let fragment (maybe-deref(ccfragment::new())))
+   (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
+   (let fragment-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment fragment-2)
+   (let fragment-3 (maybe-deref(ccfragment::set( fragment 'fragment_s
+      (maybe-deref(s-abs(
+         (s-var 'src_s)
+         (s-app(
+            (s-app(
+               (s-var '.program_s)
+               (s-app(
+                  (s-lit '\tmovq\s$_s)
+                  (s-app(
+                     (s-app( (s-var '.expression_s) (s-var 'src_s) ))
+                     (s-lit ',\s%r15\n\tmovq\s0\[%r15\],\s%r15\n_s)
+                  ))
+               ))
+            ))
+            (s-app(
+               (s-var '.expression_s)
+               (s-lit 'r15_s)
+            ))
+         ))
+      )))
+   ))))(set fragment fragment-3)
+   (let ctx-2 (maybe-deref(cccontext::bind(
+      ctx '.0_s arrow-tt fragment
+   ))))(set ctx ctx-2)
+
+   (close ctx)
 )) CCContext[]);
 
 compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-types Type)(: case-number U64). (: (tail(
@@ -244,37 +290,6 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
       ))))(set fragment fragment-3)
       (let ctx-2 (maybe-deref(cccontext::bind(
          ctx 'push_s arrow-tt fragment
-      ))))(set ctx ctx-2)
-
-      # .0 head accessor
-      (let arrow-tt (maybe-deref(tarrow( (TAnd( (close rtype) (t1 'LocalVariable_s) )) (maybe-deref(t1 'Reg64_s)) ))))
-      (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
-      (let fragment (maybe-deref(ccfragment::new())))
-      (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
-      (let fragment-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment fragment-2)
-      (let fragment-3 (maybe-deref(ccfragment::set( fragment 'fragment_s
-         (maybe-deref(s-abs(
-            (s-var 'src_s)
-            (s-app(
-               (s-app(
-                  (s-var '.program_s)
-                  (s-app(
-                     (s-lit '\tmovq\s_s)
-                     (s-app(
-                        (s-app( (s-var '.expression_s) (s-var 'src_s) ))
-                        (s-lit '\[%rbp\],\s%r15\n_s)
-                     ))
-                  ))
-               ))
-               (s-app(
-                  (s-var '.expression_s)
-                  (s-lit 'r15_s)
-               ))
-            ))
-         )))
-      ))))(set fragment fragment-3)
-      (let ctx-2 (maybe-deref(cccontext::bind(
-         ctx '.0_s arrow-tt fragment
       ))))(set ctx ctx-2)
 
    )))
