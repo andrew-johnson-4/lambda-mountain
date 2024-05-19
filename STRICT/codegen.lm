@@ -15,9 +15,14 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
          (set stack-offset (-( stack-offset (as args-size I64) )))
          (let e (maybe-deref(compile-expr( ctx rhs stack-offset Return ))))
          (let text SNil)
-         (if (==( k 'main_s )) (
+         (if (==( k 'main_s )) (tail(
+            (match lhs (
+               ()
+               ( ASTNil () )
+               ( _ (set main-with-argv True_u64) )
+            ))
             (set text (SCons( (close text) (close(SAtom( 'main_s ))) )))
-         ) (
+         )) (
             (set text (SCons( (close text) (close(SAtom( (mangle-identifier( k kt )) ))) )))
          ))
          (set text (SCons( (close text) (close(SAtom( ':\n_s ))) )))
