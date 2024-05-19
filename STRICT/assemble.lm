@@ -198,12 +198,24 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
       (let fragment (maybe-deref(ccfragment::new())))
       (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
       (let fragment-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment fragment-2)
-      (let fragment-3 (maybe-deref(ccfragment::set( fragment 'program_s
+      (let fragment-3 (maybe-deref(ccfragment::set( fragment 'fragment_s
          (SCons(
-            (close(SAtom( '\tpush\s$_s )))
+            (close(SAtom 'Abs_s))
             (close(SCons(
-               (close(SAtom(to-string case-number)))
-               (close(SAtom( '\n_s )))
+               (close(SCons(
+                  (close(SAtom 'App_s))
+                  (close(SCons(
+                     (close(SAtom 'Var_s))
+                     (close(SAtom 'tag_s))                   
+                  )))
+               )))
+               (close(SCons(
+                  (close(SAtom( '\tpush\s$_s )))
+                     (close(SCons(
+                        (close(SAtom(to-string case-number)))
+                        (close(SAtom( '\n_s )))
+                     )))
+               )))
             )))
          ))
       ))))(set fragment fragment-3)
