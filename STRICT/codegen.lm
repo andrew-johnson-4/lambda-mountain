@@ -301,7 +301,7 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
          (let rtype-clean (maybe-deref(without-representation rtype)))(set rtype rtype-clean)
          (let rtype-2 (TAnd( (close rtype) (t1 'LocalVariable_s) )))(set rtype rtype-2)
          (let rtype-3 (maybe-deref(typecheck-annotate-size( rtype ))))(set rtype rtype-3)
-         (let size (typecheck-sizeof rtype))
+         (let size (max( 8_u64 (typecheck-sizeof rtype) )))
          (let e1 (maybe-deref(compile-push-rvalue( ctx rhs stack-offset ))))
          (let bind-offset (-( stack-offset (as size I64) )))
          (let e1-2 (maybe-deref(ccfragment::set( e1 'unframe_s
