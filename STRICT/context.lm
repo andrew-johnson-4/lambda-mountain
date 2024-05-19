@@ -47,7 +47,7 @@ cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST)(: ha
             (match (maybe-deref(typecheck-slot( rt '->_s ))) (
                ()
                ( (TGround( '->_s _ )) (tail(
-                  (let u (maybe-deref(typecheck-apply( sloc rt kt ))))
+                  (let u (maybe-deref(typecheck-apply-plural( sloc rt kt ))))
                   (if (non-zero u) (tail(
                      (set r rf)
                      (set found True_u8)

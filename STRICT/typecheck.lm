@@ -1211,10 +1211,11 @@ typecheck-apply-plural := λ(: sloc AST)(: many Type)(: pt Type). (: (tail(
             (set r r2)
          )))
       )))
-      ( _ (tail(
+      ( (TGround( '->_s _ )) (tail(
          (let r1 (maybe-deref(typecheck-apply( sloc many pt ))))
          (set r r1)
       )))
+      ( _ () )
    ))
    (close r)
 )) Type[]);
