@@ -733,18 +733,9 @@ normalize := λ(: tt Type). (: (tail(
          ))
       )))
       ( (TGround( possibly-tag-name _ )) (tail(
-         (let iso False_u8)
+         #if this is a tag and not a class, then remove from normal form
          (let class-type (maybe-deref(typecheck-typeof-tag possibly-tag-name)))
-         (match (maybe-deref(typecheck-slot( class-type possibly-tag-name ))) (
-            ()
-            ( (TGround( class-name _ )) (set iso (==( possibly-tag-name class-name ))) )
-            ( _ () )
-         ))
-         (if (non-zero class-type) (
-            (if (==( iso True_u8 )) () (set tt TAny))
-         ) ())
-         (print 'Normalize\s_s)(print possibly-tag-name)(print '\s_s)(print (maybe-deref(typecheck-typeof-tag possibly-tag-name)))(print '\n_s)
-         (print 'Class\s_s)(print class-type)(print '\n_s)
+         (if (non-zero class-type) (set tt TAny))
       )))
       ( _ () )
    ))
