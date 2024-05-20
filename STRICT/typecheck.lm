@@ -297,20 +297,6 @@ t1 := λ(: s String). (: (tail(
    )))
 )) Type[]);
 
-tcons := λ(: l Type)(: r Type). (: (tail(
-   ()
-   (close (TGround(
-      'Cons_s
-      (close(TypeSeq(
-         (close(TypeSeq(
-            (close TypeEOF)
-            l
-         )))
-         r
-      )))
-   )))
-)) Type[]);
-
 type TermTypeList TTEOF | (TTSeq( TermTypeList[] , AST , Type ));
 type STypeList STEOF | (STSeq( STypeList[] , S , Type ));
 
@@ -1520,6 +1506,13 @@ typecheck-unify-generous := λ(: fpt Type)(: pt Type). (: (tail(
 tarrow := λ(: lt Type)(: rt Type). (: (tail(
    ()
    (close(TGround( '->_s
+      (close(TypeSeq( (close(TypeSeq( (close TypeEOF) lt ))) rt )))
+   )))
+)) Type[]);
+
+tcons := λ(: lt Type)(: rt Type). (: (tail(
+   ()
+   (close(TGround( 'Cons_s
       (close(TypeSeq( (close(TypeSeq( (close TypeEOF) lt ))) rt )))
    )))
 )) Type[]);
