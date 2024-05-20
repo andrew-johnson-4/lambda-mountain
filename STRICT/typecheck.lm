@@ -2,6 +2,7 @@
 type TypeConstructorList (TConEOF) | (TConSeq( TypeConstructorList[] , String , Type ));
 
 typecheck-type-constructors := (: TConEOF TypeConstructorList);
+typecheck-class-of-tag := (: TConEOF TypeConstructorList);
 typecheck-fragment-types := (: TypeEOF TypeList);
 
 type TypeSizeList (TSzEOF) | (TSzSeq( TypeSizeList[] , String , U64 ));
@@ -431,7 +432,12 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
       ()
       ( (Lit tag) (tail(
          (typecheck-annotate-head-accessor( base-type ))
-         (let rtype base-type)
+         (let rtype (TAnd( (close base-type) (t1 tag) )))
+         (set typecheck-class-of-tag (TConSeq(
+            (close typecheck-class-of-tag)
+            tag
+            base-type
+         )))
          (set typecheck-type-constructors (TConSeq(
             (close typecheck-type-constructors)
             tag
@@ -441,9 +447,14 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
       )))
       ( (App( (Lit tag) args )) (tail(
          (let atype (maybe-deref(typecheck-infer-type-compound args)))
-         (let rtype base-type)
+         (let rtype (TAnd( (close base-type) (t1 tag) )))
          (typecheck-annotate-head-accessor( base-type ))
          (typecheck-annotate-accessors( (maybe-deref(parse-type tag)) atype ))
+         (set typecheck-class-of-tag (TConSeq(
+            (close typecheck-class-of-tag)
+            tag
+            base-type
+         )))
          (set typecheck-type-constructors (TConSeq(
             (close typecheck-type-constructors)
             tag
@@ -725,9 +736,9 @@ without-tag := λ(: tt Type). (: (tail(
       )))
       ( (TGround( possibly-tag-name _ )) (tail(
          #if this is a tag and not a class, then remove from normal form
-         (let class-type (maybe-deref(typecheck-typeof-tag possibly-tag-name)))
+         (let class-type (maybe-deref(typecheck-classof-tag possibly-tag-name)))
          (let iso False_u8)
-         (match (maybe-deref(typecheck-slot( class-type possibly-tag-name ))) (
+         (match class-type (
             ()
             ( (TGround( class-name _ )) (
                (if (==( possibly-tag-name class-name )) (
@@ -1146,6 +1157,23 @@ typecheck-slot-inner := λ(: tt Type)(: slot String). (: (tail(
 typecheck-typeof-tag := λ(: tag String). (: (tail(
    (let r TAny)
    (let tag-list typecheck-type-constructors)
+   (while (non-zero tag-list) (match tag-list (
+      ()
+      ( (TConSeq( rst (*( k kt )) )) (
+         (if (==( k tag )) (tail(
+            (set r kt)
+            (set tag-list TConEOF)
+         )) (
+            (set tag-list rst)
+         ))
+      ))
+   )))
+   (close r)
+)) Type[]);
+
+typecheck-classof-tag := λ(: tag String). (: (tail(
+   (let r TAny)
+   (let tag-list typecheck-class-of-tag)
    (while (non-zero tag-list) (match tag-list (
       ()
       ( (TConSeq( rst (*( k kt )) )) (
