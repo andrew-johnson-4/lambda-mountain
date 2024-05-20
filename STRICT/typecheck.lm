@@ -431,7 +431,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
       ()
       ( (Lit tag) (tail(
          (typecheck-annotate-head-accessor( base-type ))
-         (let rtype (TAnd( (close base-type) (parse-type tag) )) )
+         (let rtype base-type)
          (set typecheck-type-constructors (TConSeq(
             (close typecheck-type-constructors)
             tag
@@ -441,7 +441,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
       )))
       ( (App( (Lit tag) args )) (tail(
          (let atype (maybe-deref(typecheck-infer-type-compound args)))
-         (let rtype (TAnd( (close base-type) (parse-type tag) )))
+         (let rtype base-type)
          (typecheck-annotate-head-accessor( base-type ))
          (typecheck-annotate-accessors( (maybe-deref(parse-type tag)) atype ))
          (set typecheck-type-constructors (TConSeq(
@@ -735,7 +735,19 @@ normalize := λ(: tt Type). (: (tail(
       ( (TGround( possibly-tag-name _ )) (tail(
          #if this is a tag and not a class, then remove from normal form
          (let class-type (maybe-deref(typecheck-typeof-tag possibly-tag-name)))
-         (if (non-zero class-type) (set tt TAny) ())
+         (let iso False_u8)
+         (match (maybe-deref(typecheck-slot( class-type possibly-tag-name ))) (
+            ()
+            ( (TGround( class-name _ )) (
+               (if (==( possibly-tag-name class-name )) (
+                  (set iso True_u8)
+               ) ())
+            ))
+            ( _ () )
+         ))
+         (if (non-zero class-type) (
+            (if (==( iso True_u8 )) (set tt TAny) ())
+         ) ())
       )))
       ( _ () )
    ))
