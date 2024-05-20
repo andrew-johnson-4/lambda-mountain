@@ -268,7 +268,10 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
       ))))(set ctx ctx-2)
 
       #mov local constructor
-      (let arrow-tt (maybe-deref(tarrow( (maybe-deref(t1 tag)) (TAnd( (close rtype) (t1 'LocalVariable_s) )) ))))
+      (let arrow-tt (maybe-deref(tarrow(
+         (TAnd( (t1 tag) (close(TAnd( (close rtype) (t1 'LocalVariable_s) ))) ))
+         (t1 'Nil_s)
+      ))))
       (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
       (let fragment (maybe-deref(ccfragment::new())))
       (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
@@ -305,7 +308,10 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
       ))))(set ctx ctx-2)
 
       #mov global constructor
-      (let arrow-tt (maybe-deref(tarrow( (maybe-deref(t1 tag)) (TAnd( (close rtype) (t1 'GlobalVariable_s) )) ))))
+      (let arrow-tt (maybe-deref(tarrow(
+         (TAnd( (t1 tag) (close(TAnd( (close rtype) (t1 'GlobalVariable_s) ))) ))
+         (t1 'Nil_s)
+      ))))
       (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
       (let fragment (maybe-deref(ccfragment::new())))
       (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
