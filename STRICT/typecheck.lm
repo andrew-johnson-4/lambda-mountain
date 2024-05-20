@@ -725,8 +725,8 @@ without-tag := λ(: tt Type). (: (tail(
    (match tt (
       ()
       ( (TAnd( lt rt )) (tail(
-         (let lt1 (maybe-deref(normalize lt )))
-         (let rt1 (maybe-deref(normalize rt )))
+         (let lt1 (maybe-deref(without-tag lt )))
+         (let rt1 (maybe-deref(without-tag rt )))
          (match (TPair( lt1 rt1 )) (
             ()
             ( (TPair( TAny rt2 )) (set tt rt2) )
