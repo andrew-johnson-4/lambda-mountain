@@ -749,7 +749,7 @@ without-tag := λ(: tt Type). (: (tail(
             ( _ () )
          ))
          (if (non-zero class-type) (
-            (if (==( iso True_u8 )) (set tt TAny) ())
+            (if (==( iso True_u8 )) () (set tt TAny))
          ) ())
       )))
    ))
