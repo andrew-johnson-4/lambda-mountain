@@ -297,20 +297,6 @@ t1 := λ(: s String). (: (tail(
    )))
 )) Type[]);
 
-tcons := λ(: l Type)(: r Type). (: (tail(
-   ()
-   (close (TGround(
-      'Cons_s
-      (close(TypeSeq(
-         (close(TypeSeq(
-            (close TypeEOF)
-            l
-         )))
-         r
-      )))
-   )))
-)) Type[]);
-
 type TermTypeList TTEOF | (TTSeq( TermTypeList[] , AST , Type ));
 type STypeList STEOF | (STSeq( STypeList[] , S , Type ));
 
@@ -577,7 +563,7 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
          (set global-type-context (TCtxBind(
             (close global-type-context)
             k
-            rhst
+            (TAnd( (close rhst) (t1 'GlobalVariable_s) ))
          )))
       ))
       ( (Fragment( k (Asc( rhs rhst )) )) (
@@ -725,8 +711,8 @@ without-tag := λ(: tt Type). (: (tail(
    (match tt (
       ()
       ( (TAnd( lt rt )) (tail(
-         (let lt1 (maybe-deref(normalize lt )))
-         (let rt1 (maybe-deref(normalize rt )))
+         (let lt1 (maybe-deref(without-tag lt )))
+         (let rt1 (maybe-deref(without-tag rt )))
          (match (TPair( lt1 rt1 )) (
             ()
             ( (TPair( TAny rt2 )) (set tt rt2) )
@@ -748,7 +734,7 @@ without-tag := λ(: tt Type). (: (tail(
             ( _ () )
          ))
          (if (non-zero class-type) (
-            (if (==( iso True_u8 )) (set tt TAny) ())
+            (if (==( iso True_u8 )) () (set tt TAny))
          ) ())
       )))
    ))
@@ -1520,6 +1506,13 @@ typecheck-unify-generous := λ(: fpt Type)(: pt Type). (: (tail(
 tarrow := λ(: lt Type)(: rt Type). (: (tail(
    ()
    (close(TGround( '->_s
+      (close(TypeSeq( (close(TypeSeq( (close TypeEOF) lt ))) rt )))
+   )))
+)) Type[]);
+
+tcons := λ(: lt Type)(: rt Type). (: (tail(
+   ()
+   (close(TGround( 'Cons_s
       (close(TypeSeq( (close(TypeSeq( (close TypeEOF) lt ))) rt )))
    )))
 )) Type[]);
