@@ -1,0 +1,12 @@
+import STDLIB/default-instruction-set.lm;
+import STDLIB/default-primitives.lm;
+import STDLIB/default-stdlib.lm;
+import STDLIB/default-rules.lm;
+
+main := λ(: argc U64)(: argv String[]). (: (tail(
+   (let argi 0_i64)
+   (while (<( argi argc )) (tail(
+      (print ([]( argv argi )))
+      (set argi (+( argi 1_u64 )))
+   )))
+)) Nil);
