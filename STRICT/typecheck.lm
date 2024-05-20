@@ -563,7 +563,7 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
          (set global-type-context (TCtxBind(
             (close global-type-context)
             k
-            rhst
+            (TAnd( (close rhst) (t1 'GlobalVariable_s) ))
          )))
       ))
       ( (Fragment( k (Asc( rhs rhst )) )) (

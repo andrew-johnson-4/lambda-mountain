@@ -6,13 +6,18 @@ import STDLIB/default-rules.lm;
 
 type E CaseOne | CaseTwo | CaseThree;
 
+w := (: CaseOne E+CaseOne);
+
 main := λ(: argc U64)(: argv String[]). (: (tail(
    (let x CaseOne)
    (let y CaseTwo)
    (let z CaseThree)
+   (print (.0 w))
    (print (.0 x))
    (print (.0 y))
    (print (.0 z))
    (set z CaseTwo)
    (print (.0 z))
+   (set w CaseTwo)
+   (print (.0 w))
 )) Nil);
