@@ -6,7 +6,7 @@ import STDLIB/default-rules.lm;
 main := λ(: argc U64)(: argv String[]). (: (tail(
    (let argi 0_u64)
    (while (<( argi argc )) (tail(
-      (print ([]( argv argi )))
+      (print ([]( argv (-( 0_i64 (as argi I64) )) )))
       (set argi (+( argi 1_u64 )))
    )))
 )) Nil);
