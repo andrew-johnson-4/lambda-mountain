@@ -270,7 +270,7 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
       #mov local constructor
       (let arrow-tt (maybe-deref(tarrow(
          (TAnd( (t1 tag) (close(TAnd( (close rtype) (t1 'LocalVariable_s) ))) ))
-         (t1 'Nil_s)
+         (maybe-deref(t1 'Nil_s))
       ))))
       (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
       (let fragment (maybe-deref(ccfragment::new())))
@@ -310,7 +310,7 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
       #mov global constructor
       (let arrow-tt (maybe-deref(tarrow(
          (TAnd( (t1 tag) (close(TAnd( (close rtype) (t1 'GlobalVariable_s) ))) ))
-         (t1 'Nil_s)
+         (maybe-deref(t1 'Nil_s))
       ))))
       (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
       (let fragment (maybe-deref(ccfragment::new())))
