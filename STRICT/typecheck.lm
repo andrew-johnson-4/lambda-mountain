@@ -737,6 +737,7 @@ without-tag := λ(: tt Type). (: (tail(
       ( (TGround( possibly-tag-name _ )) (tail(
          #if this is a tag and not a class, then remove from normal form
          (let class-type (maybe-deref(typecheck-classof-tag possibly-tag-name)))
+         (print 'Without\sTag\s_s)(print possibly-tag-name)(print '\sclass\s_s)(print class-type)(print '\n_s)
          (let iso False_u8)
          (match class-type (
             ()
