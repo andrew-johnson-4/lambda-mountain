@@ -2,6 +2,7 @@
 type TypeConstructorList (TConEOF) | (TConSeq( TypeConstructorList[] , String , Type ));
 
 typecheck-type-constructors := (: TConEOF TypeConstructorList);
+typecheck-classes-of-tag := (: TConEOF TypeConstructorList);
 typecheck-fragment-types := (: TypeEOF TypeList);
 
 type TypeSizeList (TSzEOF) | (TSzSeq( TypeSizeList[] , String , U64 ));
@@ -431,7 +432,12 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
       ()
       ( (Lit tag) (tail(
          (typecheck-annotate-head-accessor( base-type ))
-         (let rtype (TAnd( (close base-type) (parse-type tag) )) )
+         (let rtype (TAnd( (close base-type) (t1 tag) )))
+         (set typecheck-classes-of-tag (TConSeq(
+            (close typecheck-classes-of-tag)
+            tag
+            base-type
+         )))
          (set typecheck-type-constructors (TConSeq(
             (close typecheck-type-constructors)
             tag
@@ -441,9 +447,14 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
       )))
       ( (App( (Lit tag) args )) (tail(
          (let atype (maybe-deref(typecheck-infer-type-compound args)))
-         (let rtype (TAnd( (close base-type) (parse-type tag) )))
+         (let rtype (TAnd( (close base-type) (t1 tag) )))
          (typecheck-annotate-head-accessor( base-type ))
          (typecheck-annotate-accessors( (maybe-deref(parse-type tag)) atype ))
+         (set typecheck-classes-of-tag (TConSeq(
+            (close typecheck-classes-of-tag)
+            tag
+            base-type
+         )))
          (set typecheck-type-constructors (TConSeq(
             (close typecheck-type-constructors)
             tag
@@ -710,6 +721,40 @@ exit-error := λ(: msg String)(: t AST). (: (tail(
    (exit 1_u64)
 )) Nil);
 
+without-tag := λ(: tt Type). (: (tail(
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (tail(
+         (let lt1 (maybe-deref(normalize lt )))
+         (let rt1 (maybe-deref(normalize rt )))
+         (match (TPair( lt1 rt1 )) (
+            ()
+            ( (TPair( TAny rt2 )) (set tt rt2) )
+            ( (TPair( lt2 TAny )) (set tt lt2) )
+            ( (TPair( lt2 rt2 )) (set tt (TAnd( (close lt2) (close rt2) ))) )
+         ))
+      )))
+      ( (TGround( possibly-tag-name _ )) (tail(
+         #if this is a tag and not a class, then remove from normal form
+         (let class-type (maybe-deref(typecheck-classof-tag possibly-tag-name)))
+         (let iso False_u8)
+         (match class-type (
+            ()
+            ( (TGround( class-name _ )) (
+               (if (==( possibly-tag-name class-name )) (
+                  (set iso True_u8)
+               ) ())
+            ))
+            ( _ () )
+         ))
+         (if (non-zero class-type) (
+            (if (==( iso True_u8 )) (set tt TAny) ())
+         ) ())
+      )))
+   ))
+   (close tt)
+)) Type[]);
+
 normalize := λ(: tt Type). (: (tail(
    (match tt (
       ()
@@ -892,10 +937,12 @@ typecheck-ascript := λ(: t AST)(: tt Type). (: (
          (if (is-arrow tt) () (tail(
             (let tt2 (maybe-deref(typecheck-annotate-size tt)))
             (let tt-normal (maybe-deref(normalize( tt2 ))))
-            (if (==( ot-normal tt-normal )) () (tail(
-               (print ot-normal)
+            (let ot-supernormal (maybe-deref(without-tag ot-normal)))
+            (let tt-supernormal (maybe-deref(without-tag tt-normal)))
+            (if (==( ot-supernormal tt-supernormal )) () (tail(
+               (print ot-supernormal)
                (print '\s!=\s_s)
-               (print tt-normal)
+               (print tt-supernormal)
                (print '\n_s)
                (exit-error( 'Type\sAscription\sInequality_s t ))
             )))
@@ -1110,6 +1157,23 @@ typecheck-slot-inner := λ(: tt Type)(: slot String). (: (tail(
 typecheck-typeof-tag := λ(: tag String). (: (tail(
    (let r TAny)
    (let tag-list typecheck-type-constructors)
+   (while (non-zero tag-list) (match tag-list (
+      ()
+      ( (TConSeq( rst (*( k kt )) )) (
+         (if (==( k tag )) (tail(
+            (set r kt)
+            (set tag-list TConEOF)
+         )) (
+            (set tag-list rst)
+         ))
+      ))
+   )))
+   (close r)
+)) Type[]);
+
+typecheck-classof-tag := λ(: tag String). (: (tail(
+   (let r TAny)
+   (let tag-list typecheck-classes-of-tag)
    (while (non-zero tag-list) (match tag-list (
       ()
       ( (TConSeq( rst (*( k kt )) )) (
