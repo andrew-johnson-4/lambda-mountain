@@ -735,7 +735,7 @@ normalize := λ(: tt Type). (: (tail(
       ( (TGround( possibly-tag-name _ )) (tail(
          #if this is a tag and not a class, then remove from normal form
          (let class-type (maybe-deref(typecheck-typeof-tag possibly-tag-name)))
-         (if (non-zero class-type) (set tt TAny))
+         (if (non-zero class-type) (set tt TAny) ())
       )))
       ( _ () )
    ))
