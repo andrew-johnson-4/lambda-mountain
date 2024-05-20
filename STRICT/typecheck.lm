@@ -732,7 +732,8 @@ normalize := λ(: tt Type). (: (tail(
             ( (TPair( lt2 rt2 )) (set tt (TAnd( (close lt2) (close rt2) ))) )
          ))
       )))
-      ( (TGround( possibly-tag-name _ )) (
+      ( (TGround( possibly-tag-name _ )) (tail(
+         (print 'Normalize\s_s)(print possibly-tag-name)(print '\s_s)(print (maybe-deref(typecheck-typeof-tag possibly-tag-name)))(print '\n_s)
          (match (maybe-deref(typecheck-typeof-tag possibly-tag-name)) (
             ()
             ( (TGround( class-name _ )) (
@@ -743,7 +744,7 @@ normalize := λ(: tt Type). (: (tail(
             ))
             ( _ () )
          ))
-      ))
+      )))
       ( _ () )
    ))
    (close tt)
