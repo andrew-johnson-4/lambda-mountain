@@ -20,6 +20,16 @@ fragment [] := λ(: l LocalVariable+Array<x+Sized<1>,?>)(: r LocalVariable+U64).
    (.expression( 'r15b ))
 ) x+Reg8);
 
+fragment [] := λ(: l LocalVariable+Array<x+Sized<8>,?>)(: r LocalVariable+U64). (: (
+   (.program (
+      \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
+      \t 'mov \s (.expression r) \[ '%rbp \] , \s '%r14 \n
+      \t 'shl \s $3, %r14 \n
+      \t 'add \s '%r14 , \s '%r15 \n
+      \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
+   ))
+   (.expression( 'r15 ))
+) x+Reg64);
 
 fragment [] := λ(: l LocalVariable+Array<x,?>)(: r GlobalVariable+U64). (: (
    (.program (
