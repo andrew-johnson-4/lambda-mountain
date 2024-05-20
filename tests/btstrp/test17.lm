@@ -13,4 +13,6 @@ main := λ(: argc U64)(: argv String[]). (: (tail(
    (print (.0 x))
    (print (.0 y))
    (print (.0 z))
+   (set z CaseTwo)
+   (print (.0 z))
 )) Nil);
