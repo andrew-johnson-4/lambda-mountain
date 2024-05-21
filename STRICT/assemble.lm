@@ -197,7 +197,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
             (close(SAtom '._s))
             (close(SAtom(to-string field-number)))
          ))))
-         (let rtype (maybe-deref(withonly-representation p2)))
+         (let rtype (maybe-deref(with-only-representation p2)))
          (let reg-name '_s)
          (match rtype (
             ()
@@ -252,7 +252,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
             (close(SAtom '._s))
             (close(SAtom(to-string field-number)))
          ))))
-         (let rtype (maybe-deref(withonly-representation p2)))
+         (let rtype (maybe-deref(with-only-representation p2)))
          (let reg-name '_s)
          (match rtype (
             ()
