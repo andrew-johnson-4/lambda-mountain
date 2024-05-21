@@ -215,24 +215,27 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
             (let af-4 (maybe-deref(ccfragment::set( fragment 'fragment_s (maybe-deref(s-abs(
                (s-var 'src_s)
                (s-app(
+                  (s-var '.program_s)
                   (s-app(
-                     (s-lit '\tmov\s_s)
                      (s-app(
-                        (s-var '+_s)
+                        (s-lit '\tmov\s_s)
                         (s-app(
+                           (s-var '+_s)
                            (s-app(
-                              (s-var '.program_s)
-                              (s-var 'src_s)
+                              (s-app(
+                                 (s-var '.program_s)
+                                 (s-var 'src_s)
+                              ))
+                              (s-lit(to-string field-offset))
                            ))
-                           (s-lit(to-string field-offset))
                         ))
                      ))
-                  ))
-                  (s-app(
-                     (s-lit '\[%rbp\],\s%_s)
                      (s-app(
-                        (s-lit reg-name)
-                        (s-lit '\n_s)
+                        (s-lit '\[%rbp\],\s%_s)
+                        (s-app(
+                           (s-lit reg-name)
+                           (s-lit '\n_s)
+                        ))
                      ))
                   ))
                ))
@@ -277,24 +280,27 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
             (let af-4 (maybe-deref(ccfragment::set( fragment 'fragment_s (maybe-deref(s-abs(
                (s-var 'src_s)
                (s-app(
+                  (s-var '.program_s)
                   (s-app(
-                     (s-lit '\tmov\s_s)
                      (s-app(
-                        (s-var '+_s)
+                        (s-lit '\tmov\s_s)
                         (s-app(
+                           (s-var '+_s)
                            (s-app(
-                              (s-var '.program_s)
-                              (s-var 'src_s)
+                              (s-app(
+                                 (s-var '.program_s)
+                                 (s-var 'src_s)
+                              ))
+                              (s-lit(to-string field-offset))
                            ))
-                           (s-lit(to-string field-offset))
                         ))
                      ))
-                  ))
-                  (s-app(
-                     (s-lit '\[%rbp\],\s%_s)
                      (s-app(
-                        (s-lit reg-name)
-                        (s-lit '\n_s)
+                        (s-lit '\[%rbp\],\s%_s)
+                        (s-app(
+                           (s-lit reg-name)
+                           (s-lit '\n_s)
+                        ))
                      ))
                   ))
                ))
