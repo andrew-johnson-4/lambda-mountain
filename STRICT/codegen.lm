@@ -626,9 +626,9 @@ compile-fragment-args := λ(: ctx CCContext)(: rval AST)(: offset I64). (: (tail
    (close r)
 )) FragList[]);
 
-compile-constructor := λ(: ctx CCContext)(: function-name String)(: return-type Type)(: args AST)(: offset I64). (: (tail(
-   (print 'Constructor\s_s)(print function-name)(print '\n_s)
+compile-constructor := λ(: ctx CCContext)(: tag-name String)(: return-type Type)(: args AST)(: offset I64). (: (tail(
    (let e1 (maybe-deref(compile-push-rvalue( ctx args offset ))))
+   (let e1-2 (maybe-deref(ccfragment::set-type( e1 (maybe-deref(t1 tag-name)) ))))(set e1 e1-2)
    (let r (maybe-deref(fragment-apply(
       ctx offset 'push_s
       (FLSeq( (close FLEOF) e1 )) args
