@@ -1617,7 +1617,7 @@ with-representation := λ(: tt Type). (: (tail(
    (close tt)
 )) Type[]);
 
-with-only-representation := λ(: tt Type). (: (tail(
+guess-only-representation := λ(: tt Type). (: (tail(
    (let sz (typecheck-sizeof tt))
    (match sz (
       ()
