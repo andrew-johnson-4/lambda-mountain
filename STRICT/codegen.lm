@@ -630,7 +630,7 @@ compile-constructor := λ(: ctx CCContext)(: function-name String)(: return-type
    (let e1 (maybe-deref(compile-stack-call-push-args( ctx args offset ))))
    (let r (maybe-deref(fragment-apply(
       ctx offset 'push_s
-      (FLSeq( (close FLEOF) e1 )) sloc
+      (FLSeq( (close FLEOF) e1 )) args
    ))))
    (let r-1 (maybe-deref(ccfragment::set-context( r ctx ))))(set r r-1)
    (let r-2 (maybe-deref(ccfragment::set-type( r return-type ))))(set r r-2)
