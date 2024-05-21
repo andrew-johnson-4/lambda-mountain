@@ -279,6 +279,7 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
    (if (non-zero arg-types) (tail(
       (let arrow-tt (maybe-deref(tarrow( arg-types rtype ))))
       (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
+      (let arrow-ps (TAnd( (close arrow-tt) (t1 'PushArgs_s) )))(set arrow-tt arrow-ps)
       (let fragment (maybe-deref(ccfragment::new())))
       (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
       (let fragment-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment fragment-2)

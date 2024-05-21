@@ -245,6 +245,19 @@ fragment-size-args := λ(: args FragList). (: (tail(
    (close args)
 )) FragList[]);
 
+push := λ(: ctx CCContext)(: offset I64)(: args FragList)(: sloc AST). (: (tail(
+   (match args (
+      ()
+      ( (FLSeq( rst f )) (tail(
+         (let rst-2 (maybe-deref(push( ctx offset rst sloc ))))
+         (let f-2 (maybe-deref(compile-maybe-push-stack( ctx offset f (maybe-deref(ccfragment::get-type f)) sloc ))))
+         (let args-2 (FLSeq( (close rst-2) f-2 )))
+         (set args args-2)
+      )))
+   ))
+   (close args)
+)) FragList[]);
+
 fragment-apply := λ(: ctx CCContext)(: offset I64)(: k String)(: args FragList)(: sloc AST). (: (tail(
    (let args-sized (maybe-deref(fragment-size-args args)))(set args args-sized)
    (let e-proto (maybe-deref(ccfragment::new())))
@@ -269,6 +282,15 @@ fragment-apply := λ(: ctx CCContext)(: offset I64)(: k String)(: args FragList)
          (print k)(print '\s:\s_s)
          (print arrow-tt)(print '\n_s)
       )))
+   ))
+
+   (match (maybe-deref(typecheck-slot( arrow-tt 'PushArgs_s ))) (
+      ()
+      ( (TGround( 'PushArgs_s _ )) (tail(
+         (let args-2 (push( ctx offset args sloc )))
+         (set args args-2)
+      )))
+      ( _ () )
    ))
 
    (let chain True_u8)
