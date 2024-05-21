@@ -249,7 +249,7 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
                         (s-lit '\tsubq\s$_s)
                         (s-lit(to-string whitespace-sz))
                      ))
-                     (s-lit ',\s%rsp\n\tpushq\s$_s)
+                     (s-lit ',\s%rsp\n_s)
                   ))
                   (s-app(
                      (s-app(
@@ -259,7 +259,13 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
                            (s-var 'src_s)
                         ))
                      ))
-                     (s-lit(to-string case-number))
+                     (s-app(
+                        (s-lit '\tpushq\s$\n_s)
+                        (s-app(
+                           (s-lit(to-string case-number))
+                           (s-lit '\n_s)
+                        ))
+                     ))
                   ))
                ))
             ))
