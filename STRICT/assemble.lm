@@ -205,10 +205,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
             ( (TGround( 'Reg16_s _ )) (set reg-name 'r15w_s) )
             ( (TGround( 'Reg32_s _ )) (set reg-name 'r15d_s) )
             ( (TGround( 'Reg64_s _ )) (set reg-name 'r15_s) )
-            ( (TGround( 'StackVariable_s _ )) (tail(
-               (print 'TODO:\sLarge\sField\sAccessors\sTo\sStackVariable\n_s)
-               (exit 1_u64)
-            )))
+            ( (TGround( 'StackVariable_s _ )) () )
          ))
          (let ftype (maybe-deref(tarrow( (maybe-deref(tand( base-type (maybe-deref(t1 'LocalVariable_s)) ))) rtype ))))
          (let fragment (maybe-deref(ccfragment::new())))
@@ -267,10 +264,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
             ( (TGround( 'Reg16_s _ )) (set reg-name 'r15w_s) )
             ( (TGround( 'Reg32_s _ )) (set reg-name 'r15d_s) )
             ( (TGround( 'Reg64_s _ )) (set reg-name 'r15_s) )
-            ( (TGround( 'StackVariable_s _ )) (tail(
-               (print 'TODO:\sLarge\sField\sAccessors\sTo\sStackVariable\n_s)
-               (exit 1_u64)
-            )))
+            ( (TGround( 'StackVariable_s _ )) () )
          ))
          (let ftype (maybe-deref(tarrow( base-type rtype ))))
          (let fragment (maybe-deref(ccfragment::new())))
