@@ -1517,6 +1517,14 @@ tcons := λ(: lt Type)(: rt Type). (: (tail(
    )))
 )) Type[]);
 
+tand := λ(: lt Type)(: rt Type). (: (tail(
+   ()
+   (close(TAnd(
+      (close lt)
+      (close rt)
+   )))
+)) Type[]);
+
 tarray := λ(: lt Type)(: rt Type). (: (tail(
    ()
    (close(TGround( 'Array_s

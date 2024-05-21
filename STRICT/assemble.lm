@@ -231,7 +231,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
 
 compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types Type)(: base-type Type)(: rtype Type)(: case-number U64). (: (tail(
    (if (non-zero arg-types) (tail(
-      (let arrow-tt (maybe-deref(tarrow( arg-types (tand( rtype (maybe-deref(t1 'StackVariable_s)) )) ))))
+      (let arrow-tt (maybe-deref(tarrow( arg-types (maybe-deref(tand( rtype (maybe-deref(t1 'StackVariable_s)) ))) ))))
       (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
       (let fragment (maybe-deref(ccfragment::new())))
       (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
