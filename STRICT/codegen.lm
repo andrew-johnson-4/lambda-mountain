@@ -5,7 +5,6 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
    (match term (
       ()
       ( (Abs( lhs rhs )) (tail(
-         (print 'Compile\sGlobal\s_s)(print k)(print kt)(print lhs)(print '\n_s)
          (let args-type (maybe-deref(typecheck-domain kt)))
          (let args-size (typecheck-sizeof args-type))
          (let ctx-2 (maybe-deref(compile-destructure-args( args-type ctx lhs 0_i64 ))))
@@ -626,21 +625,15 @@ compile-fragment-args := λ(: ctx CCContext)(: rval AST)(: offset I64). (: (tail
    (close r)
 )) FragList[]);
 
-compile-constructor := λ(: ctx CCContext)(: function-name String)(: return-type Type)(: args AST)(: offset I64). (: (tail(
-   (let r (maybe-deref(ccfragment::new())))
+compile-constructor := λ(: ctx CCContext)(: tag-name String)(: return-type Type)(: args AST)(: offset I64). (: (tail(
+   (let e1 (maybe-deref(compile-push-rvalue( ctx args offset ))))
+   (let e1-2 (maybe-deref(ccfragment::set-type( e1 (maybe-deref(t1 tag-name)) ))))(set e1 e1-2)
+   (let r (maybe-deref(fragment-apply(
+      ctx offset 'push_s
+      (FLSeq( (close FLEOF) e1 )) args
+   ))))
    (let r-1 (maybe-deref(ccfragment::set-context( r ctx ))))(set r r-1)
    (let r-2 (maybe-deref(ccfragment::set-type( r return-type ))))(set r r-2)
-   (print 'TODO:\sApply\sConstructor\n_s)
-   (print function-name)(print '\n_s)
-   (print args)
    (close r)
-#                        (set e1 (compile-push-rvalue( ctx r offset )))
-#                        (set e2 (fragment-apply( ctx 'push (And( (typecheck-lookup e) DontChain)) (() e1) e1 )))
-#                        (local sz)
-#                        (set sz (typecheck-sizeof(typecheck-lookup e)))
-#                        (set offset (expr::get-offset e2))
-#                        (set offset (i2s(add( (inv(s2i( sz ))) (s2i offset) ))))
-#                        (set e2 (expr::set-type( e2 StackVariable )))
-#                        (set e2 (expr::set-offset( e2 offset )))
-#                        e2
 )) CCFragment[]);
+

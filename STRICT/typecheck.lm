@@ -697,6 +697,8 @@ exit-error := λ(: msg String)(: t AST). (: (tail(
          (print (maybe-deref(typecheck-lookup f)))(print '\n_s)
          (print a)(print ':\n_s)
          (print (maybe-deref(typecheck-lookup a)))(print '\n_s)
+         (print 'Return:\n_s)
+         (print (maybe-deref(typecheck-lookup t)))(print '\n_s)
       )))
       ( _ (tail(
          (print t)
@@ -1290,13 +1292,6 @@ typecheck-apply-hard := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
          )) ())
       ) ())
    ))
-   #(print 'Apply:\n_s)
-   #(print ft)
-   #(print '\n_s)
-   #(print pt)
-   #(print '\n_s)
-   #(print rt)
-   #(print '\n_s)
    (close rt)
 )) Type[]);
 
@@ -1514,6 +1509,14 @@ tcons := λ(: lt Type)(: rt Type). (: (tail(
    ()
    (close(TGround( 'Cons_s
       (close(TypeSeq( (close(TypeSeq( (close TypeEOF) lt ))) rt )))
+   )))
+)) Type[]);
+
+tand := λ(: lt Type)(: rt Type). (: (tail(
+   ()
+   (close(TAnd(
+      (close lt)
+      (close rt)
    )))
 )) Type[]);
 

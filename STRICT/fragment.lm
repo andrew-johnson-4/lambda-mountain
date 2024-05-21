@@ -272,11 +272,12 @@ fragment-apply := λ(: ctx CCContext)(: offset I64)(: k String)(: args FragList)
    ))
 
    (let chain True_u8)
-   (match (maybe-deref(typecheck-slot( at 'DontChain_s ))) (
+   (match (maybe-deref(typecheck-slot( arrow-tt 'DontChain_s ))) (
       ()
       ( (TGround( 'DontChain_s _ )) (set chain False_u8) )
       ( _ () )
    ))
+   (print 'Apply\sFragment\s_s)(print k)(print '\s:\s_s)(print arrow-tt)(print '\sDontChain=_s)(print chain)(print '\n_s)
    (let return (maybe-deref(fragment-apply-direct( arrow args e-proto chain ))))
 
    (let comment (SAtom '\oCall\sFragment\s_s))
