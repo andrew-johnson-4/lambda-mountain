@@ -257,7 +257,7 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
          )))
       ))))(set fragment fragment-3)
       (let ctx-2 (maybe-deref(cccontext::bind(
-         ctx tag arrow-tt fragment
+         ctx 'push_s arrow-tt fragment
       ))))(set ctx ctx-2)
 
 #      (let arrow-tt (maybe-deref(tarrow(
