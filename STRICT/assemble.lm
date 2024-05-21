@@ -214,7 +214,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
          (let fragment (maybe-deref(ccfragment::new())))
          (let af-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment af-2)
          (let af-3 (maybe-deref(ccfragment::set-type( fragment ftype ))))(set fragment af-3)
-         (let af-4 (maybe-deref(ccfragment::set( fragment 'fragment_s (s-abs(
+         (let af-4 (maybe-deref(ccfragment::set( fragment 'fragment_s (maybe-deref(s-abs(
             (s-var 'src_s)
             (s-app(
                (s-app(
@@ -238,7 +238,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
                   ))
                ))
             ))
-         )) ))))(set fragment af-4)
+         ))) ))))(set fragment af-4)
          (set field-offset (+( field-offset (typecheck-sizeof p2) )))
          (let ctx-2 (maybe-deref(cccontext::bind(
             ctx accessor-name ftype fragment
