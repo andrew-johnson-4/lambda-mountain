@@ -230,6 +230,9 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
 
 compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types Type)(: base-type Type)(: rtype Type)(: case-number U64). (: (tail(
    (if (non-zero arg-types) (tail(
+      (let base-type-sz (typecheck-sizeof base-type))
+      (let args-sz (typecheck-sizeof arg-types))
+      (let whitespace-sz (-( (-( base-type-sz 8_u64 )) args-sz )))
       (let arrow-tt (maybe-deref(tarrow( (maybe-deref(t1 tag)) (maybe-deref(tand( rtype (maybe-deref(t1 'StackVariable_s)) ))) ))))
       (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
       (let fragment (maybe-deref(ccfragment::new())))
@@ -241,9 +244,14 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
             (s-app(
                (s-var '.program_s)
                (s-app(
-                  (s-lit '\tpushq\s$_s)
                   (s-app(
-                     (s-lit(to-string case-number))
+                     (s-app(
+                        (s-lit '\tsubq\s$_s)
+                        (s-lit(to-string whitespace-sz))
+                     ))
+                     (s-lit ',\s%rsp\n\tpushq\s$_s)
+                  ))
+                  (s-app(
                      (s-app(
                         (s-lit '\n_s)
                         (s-app(
@@ -251,6 +259,7 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
                            (s-var 'src_s)
                         ))
                      ))
+                     (s-lit(to-string case-number))
                   ))
                ))
             ))
