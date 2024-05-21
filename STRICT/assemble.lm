@@ -255,7 +255,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
                ))
             ))) ))))(set fragment af-4)
          )))
-         (set field-offset (+( field-offset (typecheck-sizeof p2) )))
+         (set field-offset (+( field-offset (max( 8_u64 (typecheck-sizeof p2) )) )))
          (let ctx-2 (maybe-deref(cccontext::bind(
             ctx accessor-name ftype fragment
          ))))
