@@ -229,52 +229,6 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
    (close ctx)
 )) CCContext[]);
 
-compile-define-tag-constructor-args := λ(: arg-types Type)(: arg-index U64). (: (tail(
-   (let output SNil)
-   (match arg-types (
-      ()
-      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (tail(
-         (let output-2 (maybe-deref(s-app(
-            (compile-define-tag-constructor-args( p1 (+( arg-index 1_u64 )) ))
-            (s-var(to-string arg-index))
-         ))))
-         (set output output-2)
-      )))
-      ( _ (tail(
-         (let output-2 (maybe-deref(s-var(
-            (to-string arg-index)
-         ))))
-         (set output output-2)
-      )))
-   ))
-   (close output)
-)) S[]);
-
-compile-define-tag-constructor-push := λ(: arg-types Type)(: arg-index U64). (: (tail(
-   (let output SNil)
-   (match arg-types (
-      ()
-      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (tail(
-         (let output-2 (maybe-deref(s-app(
-            (s-app(
-               (s-var '.program_s)
-               (s-var(to-string arg-index))
-            ))
-            (compile-define-tag-constructor-push( p1 (+( arg-index 1_u64 )) ))
-         ))))
-         (set output output-2)
-      )))
-      ( _ (tail(
-         (let output-2 (maybe-deref(s-app(
-            (s-var '.program_s)
-            (s-var(to-string arg-index))
-         ))))
-         (set output output-2)
-      )))
-   ))
-   (close output)
-)) S[]);
-
 compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types Type)(: base-type Type)(: rtype Type)(: case-number U64). (: (tail(
    (if (non-zero arg-types) (tail(
       (let arrow-tt (maybe-deref(tarrow( arg-types rtype ))))
@@ -284,7 +238,7 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
       (let fragment-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment fragment-2)
       (let fragment-3 (maybe-deref(ccfragment::set( fragment 'fragment_s
          (maybe-deref(s-abs(
-            (compile-define-tag-constructor-args( arg-types 0_u64 ))
+            (s-var 'src_s)
             (s-app(
                (s-var '.program_s)
                (s-app(
@@ -293,7 +247,10 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
                      (s-lit(to-string case-number))
                      (s-app(
                         (s-lit '\n_s)
-                        (compile-define-tag-constructor-push( arg-types 0_u64 ))
+                        (s-app(
+                           (s-var '.program_s)
+                           (s-var 'src_s)
+                        ))
                      ))
                   ))
                ))
