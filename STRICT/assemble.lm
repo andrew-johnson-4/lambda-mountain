@@ -239,7 +239,7 @@ compile-define-tag-constructor-args := λ(: arg-types Type)(: arg-index U64). (:
             (s-var(to-string arg-index))
          ))))
          (set output output-2)
-      ))
+      )))
       ( _ (tail(
          (let output-2 (maybe-deref(s-var(
             (to-string arg-index)
