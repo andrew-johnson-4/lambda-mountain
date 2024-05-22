@@ -970,13 +970,18 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (typecheck-ascript( v (maybe-deref(typecheck-lookup term)) ))
          ()
       )))
-      ( (Asc( (Lit _) tt )) (tail(
-         (typecheck-ascript( term tt ))
+      ( (Asc( (Lit _) tt )) (
          (match term (
             ()
-            ( (Asc( t _ )) (typecheck-ascript( t tt )) )
+            ( (Asc( t _ )) (tail(
+               (typecheck-infer-expr( tctx t used ))
+               (let it (maybe-deref(typecheck-lookup t)))
+               (if (non-zero it) () (set it tt))
+               (typecheck-ascript( t tt ))
+               (typecheck-ascript( term tt ))
+            )))
          ))
-      )))
+      ))
       ( (Asc( t tt )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx t used ))))
          (set tctx tctx2)
