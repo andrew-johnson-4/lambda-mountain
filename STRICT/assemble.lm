@@ -255,7 +255,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
                ))
             ))) ))))(set fragment af-4)
          )))
-         (set field-offset (+( field-offset (max( 8_u64 (typecheck-sizeof p2) )) )))
+         (set field-offset (+( field-offset (typecheck-aligned-sizeof p2) )))
          (let ctx-2 (maybe-deref(cccontext::bind(
             ctx accessor-name ftype fragment
          ))))
@@ -278,7 +278,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
             ( (TGround( 'Reg64_s _ )) (set reg-name 'r15_s) )
             ( (TGround( 'StackVariable_s _ )) () )
          ))
-         (let ftype (maybe-deref(tarrow( base-type rtype ))))
+         (let ftype (maybe-deref(tarrow( (maybe-deref(tand( base-type (maybe-deref(t1 'LocalVariable_s)) ))) rtype ))))
          (let fragment (maybe-deref(ccfragment::new())))
          (let af-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment af-2)
          (let af-3 (maybe-deref(ccfragment::set-type( fragment ftype ))))(set fragment af-3)
@@ -338,8 +338,8 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
 
 compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types Type)(: base-type Type)(: rtype Type)(: case-number U64). (: (tail(
    (if (non-zero arg-types) (tail(
-      (let base-type-sz (typecheck-sizeof base-type))
-      (let args-sz (typecheck-sizeof arg-types))
+      (let base-type-sz (typecheck-aligned-sizeof base-type))
+      (let args-sz (typecheck-aligned-sizeof arg-types))
       (let whitespace-sz (-( (-( base-type-sz 8_u64 )) args-sz )))
       (let arrow-tt (maybe-deref(tarrow( (maybe-deref(t1 tag)) (maybe-deref(tand( rtype (maybe-deref(t1 'StackVariable_s)) ))) ))))
       (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
