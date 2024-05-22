@@ -992,7 +992,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (match term (
             ()
             ( (Asc( t _ )) (tail(
-               (match tt (
+               (match (maybe-deref(typecheck-slot( tt 'String_s ))) (
                   ()
                   ( (TGround( 'String_s _ )) () )
                   ( _ (typecheck-infer-expr( tctx t used )) )
