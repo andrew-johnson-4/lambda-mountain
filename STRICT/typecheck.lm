@@ -518,7 +518,8 @@ typecheck-infer-type-compound := λ(: compound AST). (: (tail(
       ( (App( (Lit 'And_s) (App( lt rt )) )) (tail(
          (let ltt (maybe-deref(typecheck-infer-type-compound lt)))
          (let rtt (maybe-deref(typecheck-infer-type-compound rt)))
-         (set r (maybe-deref(tand( ltt rtt ))))
+         (let r-2 (maybe-deref(tand( ltt rtt ))))
+         (set r r-2)
       )))
       ( (App( (App( lt (Lit ',_s) )) rt )) (tail(
          (let ltt (maybe-deref(typecheck-infer-type-compound lt)))
@@ -726,7 +727,10 @@ without-tag := λ(: tt Type). (: (tail(
             ()
             ( (TPair( TAny rt2 )) (set tt rt2) )
             ( (TPair( lt2 TAny )) (set tt lt2) )
-            ( (TPair( lt2 rt2 )) (set tt (maybe-deref(tand( lt2 rt2 )))) )
+            ( (TPair( lt2 rt2 )) (tail(
+               (let tt-2 (maybe-deref(tand( lt2 rt2 ))))
+               (set tt tt-2)
+            )))
          ))
       )))
       ( (TGround( possibly-tag-name _ )) (tail(
@@ -770,7 +774,10 @@ normalize := λ(: tt Type). (: (tail(
             ()
             ( (TPair( TAny rt2 )) (set tt rt2) )
             ( (TPair( lt2 TAny )) (set tt lt2) )
-            ( (TPair( lt2 rt2 )) (set tt (maybe-deref(tand( lt2 rt2 )))) )
+            ( (TPair( lt2 rt2 )) (tail(
+               (let tt-2 (maybe-deref(tand( lt2 rt2 ))))
+               (set tt tt-2)
+            )))
          ))
       )))
       ( _ () )
@@ -798,7 +805,10 @@ nonnormal := λ(: tt Type). (: (tail(
             ()
             ( (TPair( TAny rt2 )) (set rt rt2) )
             ( (TPair( lt2 TAny )) (set rt lt2) )
-            ( (TPair( lt2 rt2 )) (set rt (maybe-deref(tand( lt2 rt2 )))) )
+            ( (TPair( lt2 rt2 )) (tail(
+               (let rt-2 (maybe-deref(tand( lt2 rt2 ))))
+               (set rt rt-2)
+            )))
          ))
       )))
       ( _ () )
@@ -849,7 +859,8 @@ typecheck-annotate-size-recurse := λ(: tt Type). (: (tail(
       ( (TAnd( lt rt )) (tail(
          (let lt2 (maybe-deref(typecheck-annotate-size-recurse lt)))
          (let rt2 (maybe-deref(typecheck-annotate-size-recurse rt)))
-         (set tt (maybe-deref(tand( lt2 rt2 ))))
+         (let tt-2 (maybe-deref(tand( lt2 rt2 ))))
+         (set tt tt-2)
       )))
       ( (TGround( _ TypeEOF )) () )
       ( (TGround( tag (TypeSeq( TypeEOF pt1 )) )) (tail(
@@ -888,7 +899,7 @@ typecheck-annotate-size := λ(: tt Type). (: (tail(
       (if (==( (typecheck-is-sized tt) typecheck-do-not-size )) () (tail(
          (let sz (typecheck-annotate-size-inner tt))
          (let tt2 (maybe-deref(typecheck-annotate-size-recurse tt)))
-         (set tt (maybe-deref(tand(
+         (let tt3 (maybe-deref(tand(
             tt2
             (TGround(
                'Sized_s
@@ -901,6 +912,7 @@ typecheck-annotate-size := λ(: tt Type). (: (tail(
                )))
             ))
          ))))
+         (set tt tt3)
       )))
    ))
    (close tt)
@@ -983,9 +995,10 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
             ( (Asc( t _ )) (tail(
                (typecheck-infer-expr( tctx t used ))
                (let it (maybe-deref(typecheck-lookup t)))
-               (if (non-zero it) (
-                  (set it (maybe-deref(tand( it tt ))))
-               ) (tail(
+               (if (non-zero it) (tail(
+                  (let it-2 (maybe-deref(tand( it tt ))))
+                  (set it it-2)
+               )) (tail(
                   (set it tt)
                   (typecheck-ascript( t it ))
                )))
@@ -999,12 +1012,13 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (let inner-tt (maybe-deref(typecheck-lookup t)))
          (if (non-zero inner-tt) (tail(
             (let nn (maybe-deref(nonnormal inner-tt)))
-            (if (non-zero nn) (
-               (set tt (maybe-deref(tand(
+            (if (non-zero nn) (tail(
+               (let tt-2 (maybe-deref(tand(
                   tt
                   nn
                ))))
-            ) ())
+               (set tt tt-2)
+            )) ())
             (typecheck-ascript( t tt ))
             (typecheck-ascript( term tt ))
          )) ())
@@ -1052,12 +1066,13 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (if (non-zero inner-tt) (tail(
             (let tt (maybe-deref(typecheck-infer-type-compound lt)))
             (let nn (maybe-deref(with-only-representation inner-tt)))
-            (if (non-zero nn) (
-               (set tt (maybe-deref(tand(
+            (if (non-zero nn) (tail(
+               (let tt-2 (maybe-deref(tand(
                   tt
                   nn
                ))))
-            ) ())
+               (set tt tt-2)
+            )) ())
             (typecheck-ascript( term tt ))
          )) ())
       )))
@@ -1366,12 +1381,13 @@ typecheck-unify-ctx := λ(: ctx TContext)(: tt Type). (: (tail(
             )))
          )))
       ))
-      ( (TAnd( lt rt )) (
-         (set tt (maybe-deref(tand(
+      ( (TAnd( lt rt )) (tail(
+         (let tt-2 (maybe-deref(tand(
             (maybe-deref(typecheck-unify-ctx( ctx lt )))
             (maybe-deref(typecheck-unify-ctx( ctx rt )))
          ))))
-      ))
+         (set tt tt-2)
+      )))
       ( _ () )
    ))
    (close tt)
@@ -1560,9 +1576,10 @@ without-representation := λ(: tt Type). (: (tail(
          (let lt2 (maybe-deref(without-representation lt)))
          (let rt2 (maybe-deref(without-representation rt)))
          (if (non-zero lt2) (
-            (if (non-zero rt2) (
-               (set tt (maybe-deref(tand( lt2 rt2 ))))
-            ) (
+            (if (non-zero rt2) (tail(
+               (let tt-2 (maybe-deref(tand( lt2 rt2 ))))
+               (set tt tt-2)
+            )) (
                (set tt lt2)
             ))
          ) (
@@ -1615,7 +1632,10 @@ with-only-representation := λ(: tt Type). (: (tail(
             ()
             ( (TPair( TAny rt2 )) (set rt rt2) )
             ( (TPair( lt2 TAny )) (set rt lt2) )
-            ( (TPair( lt2 rt2 )) (set rt (maybe-deref(tand( lt2 rt2 )))) )
+            ( (TPair( lt2 rt2 )) (tail(
+               (let rt-2 (maybe-deref(tand( lt2 rt2 ))))
+               (set rt rt-2)
+            )))
          ))
       )))
       ( _ () )
@@ -1629,11 +1649,11 @@ with-representation := λ(: tt Type). (: (tail(
    (match sz (
       ()
       ( 0_u64 () )
-      ( 1_u64 (set tt (maybe-deref(tand( tt (TGround( 'Reg8_s (close TypeEOF) )) )))))
-      ( 2_u64 (set tt (maybe-deref(tand( tt (TGround( 'Reg16_s (close TypeEOF) )) )))))
-      ( 4_u64 (set tt (maybe-deref(tand( tt (TGround( 'Reg32_s (close TypeEOF) )) )))))
-      ( 8_u64 (set tt (maybe-deref(tand( tt (TGround( 'Reg64_s (close TypeEOF) )) )))))
-      ( _ (set tt (maybe-deref(tand( tt (TGround( 'StackVariable_s (close TypeEOF) )) )))))
+      ( 1_u64 (tail( (let tt-2 (maybe-deref(tand( tt (TGround( 'Reg8_s (close TypeEOF) )) )))) (set tt tt-2) )))
+      ( 2_u64 (tail( (let tt-2 (maybe-deref(tand( tt (TGround( 'Reg16_s (close TypeEOF) )) )))) (set tt tt-2) )))
+      ( 4_u64 (tail( (let tt-2 (maybe-deref(tand( tt (TGround( 'Reg32_s (close TypeEOF) )) )))) (set tt tt-2) )))
+      ( 8_u64 (tail( (let tt-2 (maybe-deref(tand( tt (TGround( 'Reg64_s (close TypeEOF) )) )))) (set tt tt-2) )))
+      ( _ (tail( (let tt-2 (maybe-deref(tand( tt (TGround( 'StackVariable_s (close TypeEOF) )) )))) (set tt tt-2) )))
    ))
    (close tt)
 )) Type[]);
@@ -1683,12 +1703,13 @@ typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tai
       ( (TCtxBind( rst (*( k vt  )) )) (
          (if (==( k vname )) (tail(
             (if (non-zero found) (
-               (if (is-arrow vt) (
-                  (set found (maybe-deref(tand(
+               (if (is-arrow vt) (tail(
+                  (let found-2 (maybe-deref(tand(
                      found
                      vt
                   ))))
-               ) (
+                  (set found found-2)
+               )) (
                   (set found vt)
                ))
             ) (
