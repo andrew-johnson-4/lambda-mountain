@@ -762,6 +762,7 @@ normalize := λ(: tt Type). (: (tail(
       ( (TGround( 'Reg16_s TypeEOF )) (set tt TAny) )
       ( (TGround( 'Reg32_s TypeEOF )) (set tt TAny) )
       ( (TGround( 'Reg64_s TypeEOF )) (set tt TAny) )
+      ( (TGround( 'Sized_s _ )) (set tt TAny) )
       ( (TAnd( lt rt )) (tail(
          (let lt1 (maybe-deref(normalize lt )))
          (let rt1 (maybe-deref(normalize rt )))
@@ -813,10 +814,12 @@ typecheck-is-sized := λ(: tt Type). (: (tail(
       ( TAny (set r typecheck-do-not-size) )
       ( (TGround( 'Cons_s _ )) (set r typecheck-do-not-size) )
       ( (TGround( '->_s _ )) (set r typecheck-do-not-size) )
-      ( (TAnd( lt rt )) (tail(
-         (if (typecheck-is-sized lt) (set r 1_u64) ())
-         (if (typecheck-is-sized rt) (set r 1_u64) ())
-      )))
+      ( (TAnd( lt rt )) (
+         (set r (max(
+            (typecheck-is-sized lt)
+            (typecheck-is-sized rt)
+         )))
+      ))
       ( (TGround( 'Sized_s _ )) (set r 1_u64) )
       ( _ () )
    ))
@@ -1114,7 +1117,6 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (let tt (maybe-deref(typecheck-typeof-tag l)))
          (if (non-zero tt) (tail(
             (let tt2 (maybe-deref(as-constant tt)))(set tt tt2)
-            (let tt3 (maybe-deref(with-size tt)))(set tt tt3)
             (typecheck-ascript( term tt ))
          )) ())
       )))
