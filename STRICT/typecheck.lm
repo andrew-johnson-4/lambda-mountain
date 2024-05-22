@@ -567,13 +567,12 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
             ft
          )))
       )))
-      ( (Glb( k (Asc( rhs rhst )) )) (
+      ( (Glb( k (Asc( rhs rhst )) )) (tail(
+         (let kt (maybe-deref(tand( rhst (maybe-deref(t1 'GlobalVariable_s)) ))))
          (set global-type-context (TCtxBind(
-            (close global-type-context)
-            k
-            (maybe-deref(tand( rhst (maybe-deref(t1 'GlobalVariable_s)) )))
+            (close global-type-context) k kt
          )))
-      ))
+      )))
       ( (Fragment( k (Asc( rhs rhst )) )) (
          (set global-type-context (TCtxBind(
             (close global-type-context)
@@ -1242,12 +1241,13 @@ as-return := λ(: tt Type). (: (tail(
       ( 8_u64 (set rtrep 'Reg64_s) )
       ( _ (set rtrep 'StackVariable_s) )
    ))
-   (if (head-string rtrep) (
-      (set tt (maybe-deref(tand(
+   (if (head-string rtrep) (tail(
+      (let tt-2 (maybe-deref(tand(
          tt
          (TGround( rtrep (close TypeEOF) ))
       ))))
-   ) ())
+      (set tt-2)
+   )) ())
    (close tt)
 )) Type[]);
 
