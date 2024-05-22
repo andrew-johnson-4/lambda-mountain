@@ -1246,7 +1246,7 @@ as-return := λ(: tt Type). (: (tail(
          tt
          (TGround( rtrep (close TypeEOF) ))
       ))))
-      (set tt-2)
+      (set tt tt-2)
    )) ())
    (close tt)
 )) Type[]);
