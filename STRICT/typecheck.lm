@@ -1549,12 +1549,52 @@ tcons := λ(: lt Type)(: rt Type). (: (tail(
    )))
 )) Type[]);
 
+right-if-not-left := λ(: lt Type)(: rt Type). (: (tail(
+   (match (TPair( lt rt )) (
+      ()
+      ( (TPair( (TGround( ltag _ )) (TGround( rtag _ )) )) (
+         (if (==( ltag rtag )) (set rt TAny) ())
+      ))
+      ( (TPair( (TAnd( lt1 lt2 )) (TGround( rtag _ )) )) (tail(
+         (let llt1 (maybe-deref(right-if-not-left( lt1 rt ))))
+         (let llt2 (maybe-deref(right-if-not-left( lt2 rt ))))
+         (if (non-zero llt1) () (set rt TAny))
+         (if (non-zero llt2) () (set rt TAny))
+      )))
+      ( (TPair( _ (TAnd( rt1 rt2 )) )) (tail(
+         (let rrt1 (maybe-deref(right-if-not-left( lt rt1 ))))
+         (let rrt2 (maybe-deref(right-if-not-left( lt rt2 ))))
+         (if (non-zero rrt1) (
+            (if (non-zero rrt2) (
+               (set rt (TAnd(
+                  (close rrt1)
+                  (close rrt2)
+               )))
+            ) (
+               (set rt rrt1)
+            ))
+         ) (
+            (if (non-zero rrt2) (
+               (set rt rrt2)
+            ) (
+               (set rt TAny)
+            ))
+         ))
+      )))
+      ( _ () )
+   ))
+   (close rt)
+)) Type[]);
+
 tand := λ(: lt Type)(: rt Type). (: (tail(
-   ()
-   (close(TAnd(
-      (close lt)
-      (close rt)
-   )))
+   (let only-rt (maybe-deref(right-if-not-left( lt rt ))))
+   (if (non-zero only-rt) (
+      (set lt (close(TAnd(
+         (close lt)
+         (close only-rt)
+      ))))
+   ) ())
+   (close lt)
 )) Type[]);
 
 tarray := λ(: lt Type)(: rt Type). (: (tail(
