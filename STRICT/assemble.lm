@@ -228,7 +228,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
                               (s-var '+_s)
                               (s-app(
                                  (s-app(
-                                    (s-var '.program_s)
+                                    (s-var '.expression_s)
                                     (s-var 'src_s)
                                  ))
                                  (s-lit(to-string field-offset))
@@ -299,7 +299,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
                               (s-var '+_s)
                               (s-app(
                                  (s-app(
-                                    (s-var '.program_s)
+                                    (s-var '.expression_s)
                                     (s-var 'src_s)
                                  ))
                                  (s-lit(to-string field-offset))
