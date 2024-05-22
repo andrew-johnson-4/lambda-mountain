@@ -164,20 +164,25 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
       )))
       ( (App( (Var 'maybe-deref_s) t )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset Used ))))
+         (set e e1)
          (let tt (maybe-deref(typecheck-lookup t)))
          (match (maybe-deref(typecheck-slot( tt 'Array_s ))) (
             ()
             ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF TAny )) _ )) )) () )
             ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF inner-tt )) TAny )) )) (tail(
-               (print 'TODO\sImplement\sDeref\n_s)
-               (let new-tt (TAnd( (t1 'StackVariable_s) (close inner-tt) )))
-               (let e1-2 (maybe-deref(ccfragment::set-type( e1 new-tt ))))
-               (set e1 e1-2)
+               (let e2 (maybe-deref(ccfragment::new())))
+               (let e2-2 (maybe-deref(ccfragment::set( e2 'expression_s (SAtom '0_s) ))))(set e2 e2-2)
+               (let e3 (maybe-deref(fragment-apply( ctx stack-offset 'push_s
+                  (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
+                  term
+               ))))
+               (let e3-2 (ccfragment::set-type( e3 (maybe-deref(tand( tt (maybe-deref(t1 'StackVariable_s)) ))) )))(set e3 e3-2)
+               (let new-offset (-( stack-offset (as (typecheck-aligned-sizeof inner-tt) I64) )))
+               (let e3-3 (ccfragment::set-offset( e3 new-offset )))(set e3 e3-3)
+               (set e e3)
             )))
             ( _ () )
          ))
-         (set e e1)
-         (print e)
       )))
       ( (App( (Var 'sizeof_s) t )) (tail(
          (let sz (typecheck-sizeof(maybe-deref(typecheck-lookup t))))
