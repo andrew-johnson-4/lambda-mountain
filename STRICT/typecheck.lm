@@ -1552,6 +1552,7 @@ tcons := λ(: lt Type)(: rt Type). (: (tail(
 right-if-not-left := λ(: lt Type)(: rt Type). (: (tail(
    (match (TPair( lt rt )) (
       ()
+      ( _ (TPair( _ (TGround( '->_s _ )) )) () )
       ( (TPair( (TGround( ltag _ )) (TGround( rtag _ )) )) (
          (if (==( ltag rtag )) (set rt TAny) ())
       ))
