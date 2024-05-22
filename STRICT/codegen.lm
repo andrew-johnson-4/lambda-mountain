@@ -18,7 +18,7 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
             (match lhs (
                ()
                ( ASTNil () )
-               ( _ (set main-with-argv True_u64) )
+               ( _ (set main-with-argv True_u8) )
             ))
             (set text (SCons( (close text) (close(SAtom( 'main_s ))) )))
          )) (
