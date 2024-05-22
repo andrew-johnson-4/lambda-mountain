@@ -981,7 +981,6 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
                (typecheck-infer-expr( tctx t used ))
                (let it (maybe-deref(typecheck-lookup t)))
                (set it (TAnd( (close it) (close tt) )))
-               (let it-2 (maybe-deref(with-size it)))(set it it-2)
                (typecheck-ascript( t it ))
                (typecheck-ascript( term it ))
             )))
@@ -1114,8 +1113,8 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
       ( (Lit l) (tail(
          (let tt (maybe-deref(typecheck-typeof-tag l)))
          (if (non-zero tt) (tail(
-            (let tt2 (maybe-deref(as-constant tt)))
-            (set tt tt2)
+            (let tt2 (maybe-deref(as-constant tt)))(set tt tt2)
+            (let tt3 (maybe-deref(with-size tt)))(set tt tt3)
             (typecheck-ascript( term tt ))
          )) ())
       )))
