@@ -176,9 +176,9 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
                   (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
                   term
                ))))
-               (let e3-2 (ccfragment::set-type( e3 (maybe-deref(tand( inner-tt (maybe-deref(t1 'StackVariable_s)) ))) )))(set e3 e3-2)
+               (let e3-2 (maybe-deref(ccfragment::set-type( e3 (maybe-deref(tand( inner-tt (maybe-deref(t1 'StackVariable_s)) ))) ))))(set e3 e3-2)
                (let new-offset (-( stack-offset (as (typecheck-aligned-sizeof inner-tt) I64) )))
-               (let e3-3 (ccfragment::set-offset( e3 new-offset )))(set e3 e3-3)
+               (let e3-3 (maybe-deref(ccfragment::set-offset( e3 new-offset ))))(set e3 e3-3)
                (set e e3)
             )))
             ( _ () )
