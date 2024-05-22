@@ -439,7 +439,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
       )))
       ( (App( (Lit tag) args )) (tail(
          (let atype (maybe-deref(typecheck-infer-type-compound args)))
-         (let rtype (maybe-deref(TAnd( base-type (maybe-deref(t1 tag)) ))))
+         (let rtype (maybe-deref(tand( base-type (maybe-deref(t1 tag)) ))))
          (typecheck-annotate-head-accessor( base-type ))
          (typecheck-annotate-accessors( (maybe-deref(parse-type tag)) atype ))
          (set typecheck-classes-of-tag (TConSeq(
