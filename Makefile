@@ -16,11 +16,12 @@ develop-2: compile-strict
 	./tmp
 
 re:
-	rm -f strict-loop strict-loop.o strict-loop.s
-	./strict -o strict-loop.s STRICT/cli.lm
-	as strict-loop.s -o strict-loop.o
-	ld strict-loop.o -o strict-loop
-	./strict-loop --tokenize STRICT/cli.lm
+	cp strict re-strict
+	rm -f tmp tmp.o tmp.s
+	./strict -o tmp.s tests/btstrp/test20.lm
+	as tmp.s -o tmp.o
+	ld tmp.o -o tmp
+	./tmp
 
 compile-strict: compile-prod
 	rm -f strict strict.o strict.s
