@@ -100,8 +100,8 @@ typecheck-sizeof := λ(: tt Type). (: (tail(
       ))
       ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
          (set sz (+(
-            (typecheck-sizeof p1)
-            (typecheck-sizeof p2)
+            (typecheck-aligned-sizeof p1)
+            (typecheck-aligned-sizeof p2)
          )))
       ))
       ( (TGround( tag (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
@@ -118,6 +118,12 @@ typecheck-sizeof := λ(: tt Type). (: (tail(
          ))
       ))
    ))
+   sz
+)) U64);
+
+typecheck-aligned-sizeof := λ(: tt Type). (: (tail(
+   (let sz (typecheck-sizeof tt))
+   (if (==( sz 0_u64 )) () (set sz (max( 8_u64 sz ))))
    sz
 )) U64);
 
@@ -446,7 +452,8 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
             tag
             (maybe-deref(tarrow( atype rtype )))
          )))
-         (set r (+( 8_u64 (typecheck-sizeof atype) )))
+         (set r (typecheck-aligned-sizeof atype))
+         (set r (+( r 8_u64 )))
       )))
       ( _ () )
    ))
@@ -1613,6 +1620,20 @@ with-representation := λ(: tt Type). (: (tail(
       ( 3_u64 (set tt (TAnd( (close tt) (close(TGround( 'Reg32_s (close TypeEOF) )))  ))))
       ( 4_u64 (set tt (TAnd( (close tt) (close(TGround( 'Reg64_s (close TypeEOF) )))  ))))
       ( _ (set tt (TAnd( (close tt) (close(TGround( 'StackVariable_s (close TypeEOF) )))  ))))
+   ))
+   (close tt)
+)) Type[]);
+
+guess-only-representation := λ(: tt Type). (: (tail(
+   (let sz (typecheck-sizeof tt))
+   (match sz (
+      ()
+      ( 0_u64 (set tt TAny) )
+      ( 1_u64 (set tt (TGround( 'Reg8_s (close TypeEOF) ))) )
+      ( 2_u64 (set tt (TGround( 'Reg16_s (close TypeEOF) ))) )
+      ( 4_u64 (set tt (TGround( 'Reg32_s (close TypeEOF) ))) )
+      ( 8_u64 (set tt (TGround( 'Reg64_s (close TypeEOF) ))) )
+      ( _ (set tt (TGround( 'StackVariable_s (close TypeEOF) ))) )
    ))
    (close tt)
 )) Type[]);
