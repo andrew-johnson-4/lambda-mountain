@@ -6,7 +6,7 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
       ()
       ( (Abs( lhs rhs )) (tail(
          (let args-type (maybe-deref(typecheck-domain kt)))
-         (let args-size (typecheck-sizeof args-type))
+         (let args-size (typecheck-aligned-sizeof args-type))
          (let ctx-2 (maybe-deref(compile-destructure-args( args-type ctx lhs 0_i64 ))))
          (set ctx ctx-2)
          (let stack-offset 0_i64)
@@ -51,7 +51,7 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
          )))
          (set assemble-data-section (SCons(
             (close assemble-data-section)
-            (close(SAtom (to-string(typecheck-sizeof kt))))
+            (close(SAtom (to-string(typecheck-aligned-sizeof kt))))
          )))
          (set assemble-data-section (SCons(
             (close assemble-data-section)
@@ -311,7 +311,7 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
          (let rtype-clean (maybe-deref(without-representation rtype)))(set rtype rtype-clean)
          (let rtype-2 (TAnd( (close rtype) (t1 'LocalVariable_s) )))(set rtype rtype-2)
          (let rtype-3 (maybe-deref(typecheck-annotate-size( rtype ))))(set rtype rtype-3)
-         (let size (max( 8_u64 (typecheck-sizeof rtype) )))
+         (let size (typecheck-aligned-sizeof rtype))
          (let e1 (maybe-deref(compile-push-rvalue( ctx rhs stack-offset ))))
          (let bind-offset (-( stack-offset (as size I64) )))
          (let e1-2 (maybe-deref(ccfragment::set( e1 'unframe_s
@@ -377,10 +377,10 @@ compile-destructure-args := λ(: tt Type)(: ctx CCContext)(: lhs AST)(: offset I
             ()
             ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF rst-tt )) p2 )) )) (tail(
                (let new-ctx-2 (maybe-deref(compile-destructure-args( rst-tt ctx rst offset ))))
-               (let rst-sz (typecheck-sizeof rst-tt))
+               (let rst-sz (typecheck-aligned-sizeof rst-tt))
                (let rst-offset (-( offset (as rst-sz I64) )))
                (let kt-2 (TAnd( (close kt) (t1 'LocalVariable_s) )))(set kt kt-2)
-               (let sz (typecheck-sizeof kt))
+               (let sz (typecheck-aligned-sizeof kt))
                (let new-offset (-( rst-offset (as sz I64) )))
                (let new-ctx (maybe-deref(cccontext::bind(
                   new-ctx-2 k kt (maybe-deref(ccfragment::local-variable( new-offset kt )))
@@ -392,7 +392,7 @@ compile-destructure-args := λ(: tt Type)(: ctx CCContext)(: lhs AST)(: offset I
       ))
       ( (Asc( (Var k) kt )) (tail(
          (let kt-2 (TAnd( (close kt) (t1 'LocalVariable_s) )))(set kt kt-2)
-         (let sz (typecheck-sizeof kt))
+         (let sz (typecheck-aligned-sizeof kt))
          (let new-offset (-( offset (as sz I64) )))
          (let new-ctx (maybe-deref(cccontext::bind(
             ctx k kt (maybe-deref(ccfragment::local-variable( new-offset kt )))

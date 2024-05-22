@@ -452,7 +452,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
             tag
             (maybe-deref(tarrow( atype rtype )))
          )))
-         (set r (+( 8_u64 (typecheck-sizeof atype) )))
+         (set r (typecheck-aligned-sizeof atype))
       )))
       ( _ () )
    ))
