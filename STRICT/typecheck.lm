@@ -976,9 +976,9 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
             ( (Asc( t _ )) (tail(
                (typecheck-infer-expr( tctx t used ))
                (let it (maybe-deref(typecheck-lookup t)))
-               (if (non-zero it) () (set it tt))
-               (typecheck-ascript( t tt ))
-               (typecheck-ascript( term tt ))
+               (set it (TAnd( (close it) (close tt) )))
+               (typecheck-ascript( t it ))
+               (typecheck-ascript( term it ))
             )))
          ))
       ))
