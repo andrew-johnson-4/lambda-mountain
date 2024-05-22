@@ -762,6 +762,7 @@ normalize := λ(: tt Type). (: (tail(
       ( (TGround( 'Reg16_s TypeEOF )) (set tt TAny) )
       ( (TGround( 'Reg32_s TypeEOF )) (set tt TAny) )
       ( (TGround( 'Reg64_s TypeEOF )) (set tt TAny) )
+      ( (TGround( 'Sized_s _ )) (set tt TAny) )
       ( (TAnd( lt rt )) (tail(
          (let lt1 (maybe-deref(normalize lt )))
          (let rt1 (maybe-deref(normalize rt )))
@@ -813,10 +814,12 @@ typecheck-is-sized := λ(: tt Type). (: (tail(
       ( TAny (set r typecheck-do-not-size) )
       ( (TGround( 'Cons_s _ )) (set r typecheck-do-not-size) )
       ( (TGround( '->_s _ )) (set r typecheck-do-not-size) )
-      ( (TAnd( lt rt )) (tail(
-         (if (typecheck-is-sized lt) (set r 1_u64) ())
-         (if (typecheck-is-sized rt) (set r 1_u64) ())
-      )))
+      ( (TAnd( lt rt )) (
+         (set r (max(
+            (typecheck-is-sized lt)
+            (typecheck-is-sized rt)
+         )))
+      ))
       ( (TGround( 'Sized_s _ )) (set r 1_u64) )
       ( _ () )
    ))
@@ -875,6 +878,10 @@ typecheck-annotate-size-recurse := λ(: tt Type). (: (tail(
    ))
    (close tt)
 )) Type[]);
+
+with-size := λ(: tt Type). (: (
+   (typecheck-annotate-size tt)
+) Type[]);
 
 typecheck-annotate-size := λ(: tt Type). (: (tail(
    (if (typecheck-is-sized tt) () (
@@ -963,21 +970,29 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (typecheck-infer-expr( tctx r used ))
       )))
       ( (ASTType( _ _ )) () )
-      ( (Glb( k v )) (tail(
-         (typecheck-ascript( v (maybe-deref(typecheck-lookup term)) ))
+      ( (Glb( k v )) (
          (typecheck-infer-expr( tctx v Used ))
-      )))
+      ))
       ( (Fragment( k v )) (tail(
          (typecheck-ascript( v (maybe-deref(typecheck-lookup term)) ))
          ()
       )))
-      ( (Asc( (Lit _) tt )) (tail(
-         (typecheck-ascript( term tt ))
+      ( (Asc( (Lit _) tt )) (
          (match term (
             ()
-            ( (Asc( t _ )) (typecheck-ascript( t tt )) )
+            ( (Asc( t _ )) (tail(
+               (typecheck-infer-expr( tctx t used ))
+               (let it (maybe-deref(typecheck-lookup t)))
+               (if (non-zero it) (
+                  (set it (TAnd( (close it) (close tt) )))
+               ) (tail(
+                  (set it tt)
+                  (typecheck-ascript( t it ))
+               )))
+               (typecheck-ascript( term it ))
+            )))
          ))
-      )))
+      ))
       ( (Asc( t tt )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx t used ))))
          (set tctx tctx2)
@@ -1105,8 +1120,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
       ( (Lit l) (tail(
          (let tt (maybe-deref(typecheck-typeof-tag l)))
          (if (non-zero tt) (tail(
-            (let tt2 (maybe-deref(as-constant tt)))
-            (set tt tt2)
+            (let tt2 (maybe-deref(as-constant tt)))(set tt tt2)
             (typecheck-ascript( term tt ))
          )) ())
       )))

@@ -6,7 +6,7 @@ import STDLIB/default-rules.lm;
 
 type E CaseOne | CaseTwo | CaseThree;
 
-w := (: CaseOne E+CaseOne);
+w := (: CaseOne E);
 
 main := λ(: argc U64)(: argv String[]). (: (tail(
    (let x CaseOne)
