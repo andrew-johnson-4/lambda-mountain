@@ -922,7 +922,7 @@ typecheck-lookup := λ(: term S). (: (tail(
       ( (STSeq( rst (*( s tt )) )) (
          (if (is( s term )) (tail(
             (set found tt)
-            (set tctx TTEOF)
+            (set tctx STEOF)
          )) (
             (set tctx rst)
          ))
