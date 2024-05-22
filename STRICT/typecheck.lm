@@ -963,10 +963,9 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
          (typecheck-infer-expr( tctx r used ))
       )))
       ( (ASTType( _ _ )) () )
-      ( (Glb( k v )) (tail(
-         (typecheck-ascript( v (maybe-deref(typecheck-lookup term)) ))
+      ( (Glb( k v )) (
          (typecheck-infer-expr( tctx v Used ))
-      )))
+      ))
       ( (Fragment( k v )) (tail(
          (typecheck-ascript( v (maybe-deref(typecheck-lookup term)) ))
          ()

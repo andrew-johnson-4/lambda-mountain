@@ -1,6 +1,14 @@
 
 develop: compile-strict
 	cp strict re-strict
+	rm -f tmp tmp.o tmp.s
+	./strict -o tmp.s tests/btstrp/test17.lm
+	as tmp.s -o tmp.o
+	ld tmp.o -o tmp
+	./tmp
+
+develop-2: compile-strict
+	cp strict re-strict
 	rm -f strict-loop strict-loop.o strict-loop.s
 	./strict -o strict-loop.s STRICT/cli.lm
 	as strict-loop.s -o strict-loop.o
@@ -9,7 +17,7 @@ develop: compile-strict
 
 re:
 	rm -f tmp tmp.o tmp.s
-	./re-strict -o tmp.s tests/btstrp/test18.lm
+	./re-strict -o tmp.s tests/btstrp/test17.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp
