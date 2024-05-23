@@ -6,10 +6,11 @@ import STDLIB/default-rules.lm;
 
 main := λ(: argc U64)(: argv String[]). (: (tail(
    (let x (SCons(
-      (close SNil)
       (close(SAtom 'xy_s))
+      (close(SCons(
+         (close SNil)
+         (close(SAtom 'ab_s))
+      )))
    )))
-   (print 123456_u64)
-   (print -123456_i64)
    (print x)
 )) Nil);
