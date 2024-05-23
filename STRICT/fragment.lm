@@ -540,9 +540,10 @@ fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
          (while (non-zero iter-result) (match iter-result (
             ()
             ( (SCons( rst (SAtom i) )) (tail(
+               (let fi (maybe-deref(ccfragment::expression i)))
+               (let fi-2 (maybe-deref(ccfragment::set( fi 'program_s (SAtom i) ))))(set fi fi-2)
                (let inner-ctx (CCCtxBind(
-                  (close ctx) binding TAny
-                  (maybe-deref(ccfragment::expression i))
+                  (close ctx) binding TAny fi
                )))
                (let body-instance (maybe-deref(fragment-render( mode inner-ctx body ))))
                (set r (SCons(

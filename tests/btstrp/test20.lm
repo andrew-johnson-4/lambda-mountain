@@ -9,5 +9,7 @@ main := λ(: argc U64)(: argv String[]). (: (tail(
       (close SNil)
       (close(SAtom 'xy_s))
    )))
+   (print 123456_u64)
+   (print -123456_i64)
    (print x)
 )) Nil);
