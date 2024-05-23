@@ -399,7 +399,6 @@ fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
          (let r2 (maybe-deref(fragment-render( 'program_s ctx v ))))
          (set r r2)
       )))
-      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom 'label_s) )) (SCons( (SAtom 'Var_s) (SAtom v) )) )) )) (print 'TODO\sRender\sLabel\n_s) )
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom 'inv_s) )) lc )) )) (tail(
          (let lt (maybe-deref(fragment-render( mode ctx lc ))))
          (let li 0_i64)
