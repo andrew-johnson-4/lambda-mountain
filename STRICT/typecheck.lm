@@ -1592,13 +1592,15 @@ right-if-not-left := λ(: lt Type)(: rt Type). (: (tail(
 )) Type[]);
 
 tand := λ(: lt Type)(: rt Type). (: (tail(
-   (let only-rt (maybe-deref(right-if-not-left( lt rt ))))
-   (if (non-zero only-rt) (
-      (set lt (TAnd(
-         (close lt)
-         (close only-rt)
-      )))
-   ) ())
+   (if (non-zero lt) (tail(
+      (let only-rt (maybe-deref(right-if-not-left( lt rt ))))
+      (if (non-zero only-rt) (
+         (set lt (TAnd(
+            (close lt)
+            (close only-rt)
+         )))
+      ) ())
+   )) (set lt rt))
    (close lt)
 )) Type[]);
 

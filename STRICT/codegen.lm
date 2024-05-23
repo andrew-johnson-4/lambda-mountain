@@ -170,8 +170,20 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
             ()
             ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF TAny )) _ )) )) () )
             ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF inner-tt )) TAny )) )) (tail(
+               (let e1-2 (maybe-deref(ccfragment::set-type( e1
+                  (maybe-deref(tand(
+                     (maybe-deref(ccfragment::get-type e1))
+                     inner-tt
+                  )))               
+               ))))(set e1 e1-2)
                (let e2 (maybe-deref(ccfragment::new())))
                (let e2-2 (maybe-deref(ccfragment::set( e2 'expression_s (SAtom '0_s) ))))(set e2 e2-2)
+               (let e2-3 (maybe-deref(ccfragment::set-type( e2
+                  (maybe-deref(tand(
+                     (maybe-deref(t1 'Literal_s))
+                     (maybe-deref(t1 'Constant_s))
+                  )))
+               ))))(set e2 e2-3)
                (let e3 (maybe-deref(fragment-apply( ctx stack-offset 'push_s
                   (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
                   term
