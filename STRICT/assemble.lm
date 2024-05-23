@@ -248,6 +248,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
                ))
             ))) ))))(set fragment af-4)
          )) (tail(
+            (print '\oTODO\sLarge\sField\sAccessors\n_s)
             (let af-4 (maybe-deref(ccfragment::set( fragment 'fragment_s (maybe-deref(s-abs(
                (s-var 'src_s)
                (s-app(
@@ -320,6 +321,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
                ))
             ))) ))))(set fragment af-4)
          )) (tail(
+            (print '\oTODO\sLarge\sField\sAccessors\n_s)
             (let af-4 (maybe-deref(ccfragment::set( fragment 'fragment_s (maybe-deref(s-abs(
                (s-var 'src_s)
                (s-app(
