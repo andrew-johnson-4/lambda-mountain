@@ -406,6 +406,8 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
 #      ))))
 
    )) (tail(
+      (let base-type-sz (typecheck-aligned-sizeof base-type))
+      (let whitespace-sz (-( base-type-sz 8_u64 )))
 
       #push constructor
       (let arrow-tt (maybe-deref(tarrow( (maybe-deref(t1 tag)) rtype ))))
@@ -419,10 +421,19 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
             (s-app(
                (s-var '.program_s)
                (s-app(
-                  (s-lit '\tpushq\s$_s)
                   (s-app(
-                     (s-lit(to-string case-number))
-                     (s-lit '\n_s)
+                     (s-app(
+                        (s-lit '\tsubq\s$_s)
+                        (s-lit(to-string whitespace-sz))
+                     ))
+                     (s-lit ',\s%rsp\n_s)
+                  ))
+                  (s-app(
+                     (s-lit '\tpushq\s$_s)
+                     (s-app(
+                        (s-lit(to-string case-number))
+                        (s-lit '\n_s)
+                     ))
                   ))
                ))
             ))
