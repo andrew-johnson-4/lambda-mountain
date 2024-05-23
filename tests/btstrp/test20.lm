@@ -5,10 +5,11 @@ import STDLIB/default-stdlib.lm;
 import STDLIB/default-rules.lm;
 
 main := λ(: argc U64)(: argv String[]). (: (tail(
-#   (let x (SCons(
-#      (close SNil)
-#      (close(SAtom 'xy_s))
-#   )))
-   (let x SNil)
+   (let x (SCons(
+      (close SNil)
+      (close(SAtom 'xy_s))
+   )))
+   (print (.0 x))
+   (print (.0 (maybe-deref(.1 (as x SCons))) ))
    (print x)
 )) Nil);
