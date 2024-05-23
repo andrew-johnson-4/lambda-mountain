@@ -387,7 +387,7 @@ fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
             (set fe fe-2)
          )))
          (if (non-zero fe) () (tail(
-            (print 'Referenced\sVariable\sIn\sFragment\sWas\sNull\s_)
+            (print 'Referenced\sVariable\sIn\sFragment\sWas\sNull\s_s)
             (print v)(print '\n_s)(exit 1_u64)
          )))
          (set r fe)
