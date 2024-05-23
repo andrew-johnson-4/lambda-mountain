@@ -6,11 +6,11 @@ import STDLIB/default-rules.lm;
 
 main := λ(: argc U64)(: argv String[]). (: (tail(
    (let x (SCons(
-      (close SNil)
       (close(SAtom 'xy_s))
+      (close(SCons(
+         (close SNil)
+         (close(SAtom 'ab_s))
+      )))
    )))
-   (let x1 (maybe-deref(.1(as x SCons))))
-   (let x2 (maybe-deref(.2(as x SCons))))
-   (print (.0 x1))
-   (print (.0 x2))
+   (print x)
 )) Nil);
