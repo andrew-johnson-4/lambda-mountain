@@ -195,8 +195,8 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
          (let sz 0_u64)
          (match t (
             ()
-            ( (Lit tt) (set sz (typecheck-sizeof(parse-type tt))) )
-            ( (Var tt) (set sz (typecheck-sizeof(parse-type tt))) )
+            ( (Lit tt) (set sz (typecheck-sizeof(maybe-deref(parse-type tt)))) )
+            ( (Var tt) (set sz (typecheck-sizeof(maybe-deref(parse-type tt)))) )
             ( _ (exit-error( 'Cannot\sSize\sType_s t )))
          ))
          (let e1 (maybe-deref(ccfragment::expression(to-string sz))))
