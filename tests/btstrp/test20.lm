@@ -9,6 +9,7 @@ main := λ(: argc U64)(: argv String[]). (: (tail(
       (close SNil)
       (close(SAtom 'xy_s))
    )))
+   (print 123456_u64)
    (print (.0 x))
    (print (as (.1 (as x SCons)) U64))
    (print (as (.2 (as x SCons)) U64))
