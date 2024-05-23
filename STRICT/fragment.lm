@@ -400,9 +400,6 @@ fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
             ( (SAtom lai) (set li (to-i64 lai)) )
             ( _ () )
          ))
-         (print 'Inv\sInput\s_s)(print lc)(print '\n_s)
-         (print 'Inv\sRendered\s_s)(print lt)(print '\n_s)
-         (print 'Inv\sOutput\s_s)(print (-( 0_i64 li )))(print '\n_s)
          (set r (SAtom(to-string (-( 0_i64 li )) )))
       )))
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '+_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (tail(
@@ -454,11 +451,6 @@ fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
             ( (SAtom rai) (set ri (to-i64 rai)) )
             ( _ () )
          ))
-         (print 'Inv\sInput\s_s)(print lc)(print '\n_s)
-         (print 'Inv\sRendered\s_s)(print lt)(print '\n_s)
-         (print 'Inv\sInput\s_s)(print rc)(print '\n_s)
-         (print 'Inv\sRendered\s_s)(print rt)(print '\n_s)
-         (print 'Inv\sOutput\s_s)(print (*( li ri )))(print '\n_s)
          (set r (SAtom(to-string(*( li ri )))))
       )))
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '/_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (tail(
