@@ -9,5 +9,8 @@ main := λ(: argc U64)(: argv String[]). (: (tail(
       (close SNil)
       (close(SAtom 'xy_s))
    )))
-   (print x)
+   (let x1 (maybe-deref(.1(as x SCons))))
+   (let x2 (maybe-deref(.2(as x SCons))))
+   (print (.0 x1))
+   (print (.0 x2))
 )) Nil);
