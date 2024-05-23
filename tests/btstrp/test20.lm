@@ -10,9 +10,6 @@ main := λ(: argc U64)(: argv String[]). (: (tail(
       (close(SAtom 'xy_s))
    )))
    (print 123456_u64)
-   (print (.0 x))
-   (print (as (.1 (as x SCons)) U64))
-   (print (as (.2 (as x SCons)) U64))
-#   (print (.0 (maybe-deref(.1 (as x SCons))) ))
-#   (print x)
+   (print -123456_i64)
+   (print x)
 )) Nil);
