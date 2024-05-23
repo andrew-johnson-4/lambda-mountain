@@ -252,6 +252,7 @@ fragment-apply := λ(: ctx CCContext)(: offset I64)(: k String)(: args FragList)
    (let e-proto-3 (maybe-deref(ccfragment::set-offset( e-proto offset ))))(set e-proto e-proto-3)
 
    (let at (maybe-deref(typeof args)))
+   (print 'Apply\sFragment\s_s)(print k)(print '\s:\s_s)(print at)(print '\n_s)
    (if (non-zero at) () (tail(
       (print 'Apply\s_s)(print k)(print args)
       (let msg (clone-rope(SCons( (close(SAtom 'Untyped\sFragment\sArguments:\s_s)) (close(SAtom k)) ))))
