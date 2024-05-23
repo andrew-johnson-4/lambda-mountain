@@ -474,7 +474,7 @@ typecheck-annotate-accessors := λ(: base-type Type)(: args-type Type). (: (tail
    (while (non-zero args-type) (match args-type (
       ()
       ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF lt )) rt )) )) (tail(
-         (let rt-s (maybe-deref(tand( rt (maybe-deref(t1 'StackVariable_s)) ))))(set rt rt-s)
+         (let rt-s (maybe-deref(with-representation rt)))(set rt rt-s)
          (let accessor-name (clone-rope(SCons(
             (close (SAtom '._s))
             (close (SAtom (to-string field-number)))
@@ -488,7 +488,7 @@ typecheck-annotate-accessors := λ(: base-type Type)(: args-type Type). (: (tail
          (set args-type lt)
       )))
       ( rt (tail(
-         (let rt-s (maybe-deref(tand( rt (maybe-deref(t1 'StackVariable_s)) ))))(set rt rt-s)
+         (let rt-s (maybe-deref(with-representation rt)))(set rt rt-s)
          (let accessor-name (clone-rope(SCons(
             (close (SAtom '._s))
             (close (SAtom (to-string field-number)))
