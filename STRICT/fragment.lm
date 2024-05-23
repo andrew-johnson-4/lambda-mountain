@@ -382,6 +382,14 @@ fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
       ( (SCons( (SAtom 'Var_s) (SAtom v) )) (tail(
          (let f (maybe-deref(cccontext::lookup( ctx v TAny ASTEOF False_u8 ))))
          (let fe (maybe-deref(ccfragment::get( f mode ))))
+         (if (non-zero fe) () (tail(
+            (let fe-2 (maybe-deref(ccfragment::get( f 'expression_s ))))
+            (set fe fe-2)
+         )))
+         (if (non-zero fe) () (tail(
+            (print 'Referenced\sVariable\sIn\sFragment\sWas\sNull\s_)
+            (print v)(print '\n_s)(exit 1_u64)
+         )))
          (set r fe)
       )))
       ( (SCons( (SAtom 'Lit_s) (SAtom v) )) (set r (SAtom v)) )
