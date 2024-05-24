@@ -628,6 +628,9 @@ fragment-apply-direct := λ(: arrow CCFragment)(: args FragList)(: e-proto CCFra
          (print arrow)(print '\n_s)
       )))
    ))
+   #set context to e-proto
+   #set offset to e-proto
+   #only if chain, chain
    (if (==( chain True_u8 )) (tail(
       (let r (maybe-deref(fragment-chain( args e-proto ))))
       (set e-proto r)

@@ -1,0 +1,18 @@
+
+import STDLIB/default-instruction-set.lm;
+import STDLIB/default-primitives.lm;
+import STDLIB/default-rules.lm;
+import STDLIB/default-stdlib.lm;
+
+main := λ(: argc U64)(: argv String[]). (: (tail(
+
+   (let input SNil)
+   (let a 'abc_s)
+   (set input (SCons(
+      (close input)
+      (close (SAtom( a )))
+   )))
+   (print input)
+
+)) Nil);
+
