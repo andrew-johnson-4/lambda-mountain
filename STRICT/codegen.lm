@@ -516,6 +516,7 @@ compile-translate-local-variables := λ(: ctx CCContext)(: delta I64). (: (tail(
 )) CCContext[]);
 
 compile-stack-call-push-args := λ(: ctx CCContext)(: args AST)(: inner-offset I64). (: (tail(
+   # TODO calculate inner offset here, it is wrong
    (let translate-delta (-( 8_i64 inner-offset )))
    (let ctx-2 (maybe-deref(compile-translate-local-variables( ctx translate-delta ))))(set ctx ctx-2)
    (let r (maybe-deref(ccfragment::new())))
@@ -649,7 +650,10 @@ compile-fragment-args := λ(: ctx CCContext)(: rval AST)(: offset I64). (: (tail
 )) FragList[]);
 
 compile-constructor := λ(: ctx CCContext)(: tag-name String)(: return-type Type)(: args-type Type)(: args AST)(: offset I64). (: (tail(
+   (let translate-delta (-( 8_i64 offset )))
+   (let ctx-2 (maybe-deref(compile-translate-local-variables( ctx translate-delta ))))(set ctx ctx-2)
    (let whitespace-sz (-( (-( (typecheck-sizeof return-type) (typecheck-sizeof args-type) )) 8_u64 )))
+   # TODO calculate inner offset here, it is wrong
    (let e1 (maybe-deref(compile-push-rvalue( ctx args (-( offset (as whitespace-sz I64) )) ))))
    (let e1-2 (maybe-deref(ccfragment::set-type( e1 (maybe-deref(t1 tag-name)) ))))(set e1 e1-2)
    (let r (maybe-deref(fragment-apply(
