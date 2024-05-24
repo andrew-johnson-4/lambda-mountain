@@ -248,7 +248,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
                ))
             ))) ))))(set fragment af-4)
          )) (tail(
-            (let pop SNil)
+            (let pop (maybe-deref(s-lit '_s)))
             (let base-size (as (typecheck-sizeof base-type) I64))
             (let popped-size 0_i64)
             (while (<( popped-size base-size )) (tail(
@@ -349,7 +349,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
                ))
             ))) ))))(set fragment af-4)
          )) (tail(
-            (let pop SNil)
+            (let pop (maybe-deref(s-lit '_s)))
             (let base-size (as (typecheck-sizeof base-type) I64))
             (let popped-size 0_i64)
             (while (<( popped-size base-size )) (tail(
