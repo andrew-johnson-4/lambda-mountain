@@ -138,6 +138,7 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
       )))
       ( (Asc( t tt )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset used ))))
+         (let e1-2 (maybe-deref(ccfragment::set-type( e1 (maybe-deref(typecheck-lookup term)) ))))(set e1 e1-2)
          (set e e1)
       )))
       ( (App( (Var 'tail_s) (App( lt rt )) )) (tail(
@@ -271,7 +272,8 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
          (let e6 (maybe-deref(ccfragment::set( e5 'unframe_s SNil ))))
          (let e7 (maybe-deref(ccfragment::set-context( e6 ctx ))))
          (let e8 (maybe-deref(ccfragment::set-offset( e7 stack-offset ))))
-         (set e e8)
+         (let e9 (maybe-deref(ccfragment::set-type( e8 (maybe-deref(typecheck-lookup term)) ))))
+         (set e e9)
       )))
       ( (App( (App( (App( (Var 'if_s) cond )) t )) f )) (tail(
          (let rsp-offset (+( stack-offset -8_i64 )))
@@ -323,6 +325,7 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
                )))
             ))
          ))))(set e1 e1-9)
+         (let e1-10 (maybe-deref(ccfragment::set-type( e1 (maybe-deref(typecheck-lookup term)) ))))(set e1 e1-10)
          (set e e1)
       )))
       ( (App( (Abs( (Var lhs) ASTNil )) rhs )) (tail(
@@ -350,7 +353,8 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
          ))))
          (let e1-3 (maybe-deref(ccfragment::set-context( e1-2 new-ctx ))))
          (let e1-4 (maybe-deref(ccfragment::set-offset( e1-3 bind-offset ))))
-         (set e e1-4)
+         (let e1-5 (maybe-deref(ccfragment::set-type( e1-4 (maybe-deref(typecheck-lookup term)) ))))
+         (set e e1-5)
       )))
       ( (App( f a )) (
          (match (maybe-deref(typecheck-slot( (maybe-deref(typecheck-lookup f)) '->_s ))) (
