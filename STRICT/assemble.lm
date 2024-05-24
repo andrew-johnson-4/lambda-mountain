@@ -257,7 +257,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
                   (as field-offset I64)
                   (-( base-size popped-size ))
                )))
-               (set pop (SCons(
+               (set pop (maybe-deref(s-app(
                   (close pop)
                   (s-app(
                      (s-lit '\tpush\s_s)
@@ -275,7 +275,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
                         (s-lit '\[%rbp\]\n_s)
                      ))
                   ))
-               )))
+               ))))
             )))
             (let af-4 (maybe-deref(ccfragment::set( fragment 'fragment_s (maybe-deref(s-abs(
                (s-var 'src_s)
@@ -358,7 +358,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
                   (as field-offset I64)
                   (-( base-size popped-size ))
                )))
-               (set pop (SCons(
+               (set pop (maybe-deref(s-app(
                   (close pop)
                   (s-app(
                      (s-lit '\tpush\s_s)
@@ -376,7 +376,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
                         (s-lit '\[%rbp\]\n_s)
                      ))
                   ))
-               )))
+               ))))
             )))
             (let af-4 (maybe-deref(ccfragment::set( fragment 'fragment_s (maybe-deref(s-abs(
                (s-var 'src_s)
