@@ -12,8 +12,7 @@ main := λ(: argc U64)(: argv String[]). (: (tail(
          (close(SAtom 'ab_s))
       )))
    )))
-   (let y SNil)
-   (let xy (SPair( x y )))
+   (let xy (SPair( x SNil )))
    (print (.1 xy))
    (print (.2 xy))
 )) Nil);
