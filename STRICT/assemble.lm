@@ -254,7 +254,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
             (while (<( popped-size base-size )) (tail(
                (set popped-size (+( popped-size 8_i64 )))
                (let total-offset (+(
-                  field-offset
+                  (as field-offset I64)
                   (-( base-size popped-size ))
                )))
                (set pop (SCons(
@@ -355,7 +355,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
             (while (<( popped-size base-size )) (tail(
                (set popped-size (+( popped-size 8_i64 )))
                (let total-offset (+(
-                  field-offset
+                  (as field-offset I64)
                   (-( base-size popped-size ))
                )))
                (set pop (SCons(
