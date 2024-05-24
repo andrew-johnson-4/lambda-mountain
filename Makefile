@@ -1,26 +1,18 @@
 
-develop-2: compile-strict
-	cp strict re-strict
-	rm -f tmp tmp.o tmp.s
-	./strict -o tmp.s tests/btstrp/test21.lm
-	as tmp.s -o tmp.o
-	ld tmp.o -o tmp
-	./tmp
-
 develop: compile-strict
 	cp strict re-strict
 	rm -f strict-loop strict-loop.o strict-loop.s
-	./strict -o strict-loop.s STRICT/cli.lm
+	./strict -o strict-loop.s SRC/cli.lm
 	as strict-loop.s -o strict-loop.o
 	ld strict-loop.o -o strict-loop
-	./strict-loop --tokenize STRICT/cli.lm
+	./strict-loop --tokenize SRC/cli.lm
 
 re:
-	rm -f tmp tmp.o tmp.s
-	./re-strict -o tmp.s tests/btstrp/test21.lm
-	as tmp.s -o tmp.o
-	ld tmp.o -o tmp
-	./tmp
+	rm -f strict-loop strict-loop.o strict-loop.s
+	./re-strict -o strict-loop.s SRC/cli.lm
+	as strict-loop.s -o strict-loop.o
+	ld strict-loop.o -o strict-loop
+	./strict-loop --tokenize SRC/cli.lm
 
 compile-strict: compile-prod
 	rm -f strict strict.o strict.s
