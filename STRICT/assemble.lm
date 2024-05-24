@@ -479,28 +479,10 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
                (s-var '.program_s)
                (s-app(
                   (s-app(
-                     (s-app(
-                        (s-lit '\tsubq\s$_s)
-                        (s-lit(to-string whitespace-sz))
-                     ))
-                     (s-lit ',\s%rsp\n_s)
+                     (s-var '.program_s)
+                     (s-var 'src_s)
                   ))
-                  (s-app(
-                     (s-app(
-                        (s-var '.program_s)
-                        (s-var 'src_s)
-                     ))
-                     (s-app(
-                        (s-lit '\tpushq\s$_s)
-                        (s-app(
-                           (s-lit(to-string case-number))
-                           (s-app(
-                              (s-lit '\n_s)
-                              (close pop)
-                           ))
-                        ))
-                     ))
-                  ))
+                  (close pop)
                ))
             ))
          )))
@@ -543,36 +525,18 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
                (s-var '.program_s)
                (s-app(
                   (s-app(
-                     (s-app(
-                        (s-lit '\tsubq\s$_s)
-                        (s-lit(to-string whitespace-sz))
-                     ))
-                     (s-lit ',\s%rsp\n_s)
+                     (s-var '.program_s)
+                     (s-var 'src_s)
                   ))
                   (s-app(
                      (s-app(
-                        (s-var '.program_s)
-                        (s-var 'src_s)
-                     ))
-                     (s-app(
-                        (s-lit '\tpushq\s$_s)
+                        (s-lit '\tmov\s$_s)
                         (s-app(
-                           (s-lit(to-string case-number))
-                           (s-app(
-                              (s-lit '\n_s)
-                              (s-app(
-                                 (s-app(
-                                    (s-lit '\tmov\s$_s)
-                                    (s-app(
-                                       (s-app( (s-var '.expression_s) (s-var 'dst_s) ))
-                                       (s-lit ',\s%r15\n_s)
-                                    ))
-                                 ))
-                                 (close pop)
-                              ))
-                           ))
+                           (s-app( (s-var '.expression_s) (s-var 'dst_s) ))
+                           (s-lit ',\s%r15\n_s)
                         ))
                      ))
+                     (close pop)
                   ))
                ))
             ))
