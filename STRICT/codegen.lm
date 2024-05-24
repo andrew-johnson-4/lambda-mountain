@@ -433,8 +433,7 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type 
       ()
       ( (SAtom 'Fragment_s) (tail(
          (let f-args (maybe-deref(compile-fragment-args( ctx args offset ))))
-         (let r-2 (maybe-deref(fragment-apply( ctx offset function-name f-args args ))))
-         (set r r-2)
+         (let r-2 (maybe-deref(fragment-apply( ctx offset function-name f-args args ))))(set r r-2)
       )))
       ( _ (tail(
          (let push-args (maybe-deref(compile-stack-call-push-args( ctx args offset ))))
@@ -483,10 +482,10 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type 
          ))
          (let r-4 (maybe-deref(ccfragment::set( r 'expression_s (SAtom expr) ))))(set r r-4)
          (let r-5 (maybe-deref(ccfragment::set-type( r return-type ))))(set r r-5)
+         (let r-6 (maybe-deref(ccfragment::set-offset( r (-( offset (as (typecheck-sizeof return-type) I64) )) ))))(set r r-6)
       )))
    ))
    (let r-1 (maybe-deref(ccfragment::set-context( r ctx ))))(set r r-1)
-   (let r-2 (maybe-deref(ccfragment::set-offset( r offset ))))(set r r-2)
    (close r)
 )) CCFragment[]);
 
@@ -601,7 +600,7 @@ compile-push-rvalue := λ(: ctx CCContext)(: rval AST)(: offset I64). (: (tail(
             ( (App( le re )) (tail(
                (let e1 (maybe-deref(compile-push-rvalue( ctx le offset ))))
                (let e2 (maybe-deref(compile-expr( ctx re (ccfragment::get-offset e1) Used ))))
-               (let e2-2 (maybe-deref(compile-maybe-push-stack( ctx offset e2 p2 rval ))))(set e2 e2-2)
+               (let e2-2 (maybe-deref(compile-maybe-push-stack( ctx (ccfragment::get-offset e2) e2 p2 rval ))))(set e2 e2-2)
                (set r (maybe-deref(ccfragment::chain( e1 e2 ))))
             )))
             ( u (exit-error( 'Invalid\sRvalue_s rval )))
@@ -609,7 +608,7 @@ compile-push-rvalue := λ(: ctx CCContext)(: rval AST)(: offset I64). (: (tail(
       ))
       ( et (tail(
          (let e1 (maybe-deref(compile-expr( ctx rval offset Used ))))
-         (let e1-2 (maybe-deref(compile-maybe-push-stack( ctx offset e1 et rval ))))(set e1 e1-2)
+         (let e1-2 (maybe-deref(compile-maybe-push-stack( ctx (ccfragment::get-offset e1) e1 et rval ))))(set e1 e1-2)
          (set r e1)
       )))
    ))
