@@ -4,7 +4,7 @@ import STDLIB/default-primitives.lm;
 import STDLIB/default-stdlib.lm;
 import STDLIB/default-rules.lm;
 
-xyz := (: (SAtom 'xyz_s) S);
+xyz := (: SNil S);
 
 main := λ(: argc U64)(: argv String[]). (: (tail(
    (let x (SCons(
@@ -18,6 +18,7 @@ main := λ(: argc U64)(: argv String[]). (: (tail(
    (print (.1 xy))
    (print (.2 xy))
    (set x (SAtom 'abc_s))
+   (set xyz (SAtom 'xyz_s))
    (print x)
    (print xyz)
 )) Nil);

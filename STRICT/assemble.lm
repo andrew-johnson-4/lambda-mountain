@@ -559,7 +559,7 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
                                     (s-lit '\tmov\s$_s)
                                     (s-app(
                                        (s-app( (s-var '.expression_s) (s-var 'dst_s) ))
-                                       (s-lit '\s%r15\n_s)
+                                       (s-lit ',\s%r15\n_s)
                                     ))
                                  ))
                                  (close pop)
