@@ -482,10 +482,12 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type 
          ))
          (let r-4 (maybe-deref(ccfragment::set( r 'expression_s (SAtom expr) ))))(set r r-4)
          (let r-5 (maybe-deref(ccfragment::set-type( r return-type ))))(set r r-5)
-         (let r-6 (maybe-deref(ccfragment::set-offset( r (-( offset (as (typecheck-sizeof return-type) I64) )) ))))(set r r-6)
+         (let r-6 (maybe-deref(ccfragment::set-offset( r offset )) ))))(set r r-6)
       )))
    ))
    (let r-1 (maybe-deref(ccfragment::set-context( r ctx ))))(set r r-1)
+   #TODO variable sized returns need to adjust offset
+   (let r-6 (maybe-deref(ccfragment::set-offset( r offset )) ))))(set r r-6)
    (close r)
 )) CCFragment[]);
 
