@@ -611,6 +611,10 @@ compile-push-rvalue := λ(: ctx CCContext)(: rval AST)(: offset I64). (: (tail(
             ( u (exit-error( 'Invalid\sRvalue_s rval )))
          ))
       ))
+      ( (TGround( 'Nil_s _ )) (tail(
+         (let r-1 (maybe-deref(ccfragment::set-context( r ctx )) ))))(set r r-1)
+         (let r-2 (maybe-deref(ccfragment::set-offset( r offset )) ))))(set r r-2)
+      )))
       ( et (tail(
          (let e1 (maybe-deref(compile-expr( ctx rval offset Used ))))
          (let e1-2 (maybe-deref(compile-maybe-push-stack( ctx (ccfragment::get-offset e1) e1 et rval ))))(set e1 e1-2)
