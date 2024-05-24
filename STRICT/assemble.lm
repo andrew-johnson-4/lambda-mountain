@@ -251,11 +251,11 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
             (let pop (maybe-deref(s-lit '_s)))
             (let return-size (as (typecheck-sizeof return-type) I64))
             (let popped-size 0_i64)
-            (while (<( popped-size base-size )) (tail(
+            (while (<( popped-size return-size )) (tail(
                (set popped-size (+( popped-size 8_i64 )))
                (let total-offset (+(
                   (as field-offset I64)
-                  (-( base-size popped-size ))
+                  (-( return-size popped-size ))
                )))
                (let pop-2 (maybe-deref(s-app(
                   (close pop)
@@ -353,11 +353,11 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
             (let pop (maybe-deref(s-lit '_s)))
             (let return-size (as (typecheck-sizeof return-type) I64))
             (let popped-size 0_i64)
-            (while (<( popped-size base-size )) (tail(
+            (while (<( popped-size return-size )) (tail(
                (set popped-size (+( popped-size 8_i64 )))
                (let total-offset (+(
                   (as field-offset I64)
-                  (-( base-size popped-size ))
+                  (-( return-size popped-size ))
                )))
                (let pop-2 (maybe-deref(s-app(
                   (close pop)
