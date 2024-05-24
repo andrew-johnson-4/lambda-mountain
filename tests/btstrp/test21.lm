@@ -18,7 +18,7 @@ main := λ(: argc U64)(: argv String[]). (: (tail(
    (print (.1 xy))
    (print (.2 xy))
    (set x (SAtom 'abc_s))
-   (set xyz (SAtom 'xyz_s))
    (print x)
+   (set xyz (SAtom 'xyz_s))
    (print xyz)
 )) Nil);

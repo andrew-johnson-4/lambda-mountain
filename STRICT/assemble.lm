@@ -454,13 +454,16 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
       (let popped-sz 0_u64)
       (while (<( popped-sz base-type-sz )) (tail(
          (let pop-2 (maybe-deref(s-app(
-            (s-lit '\tpop\s_s)
+            (close pop)
             (s-app(
-               (s-app( (s-var '+_s) (s-app(
-                  (s-app( (s-var '.expression_s) (s-var 'dst_s) ))
-                  (s-lit(to-string popped-sz))
-               ))))
-               (s-lit '\[%rbp\]\n_s)
+               (s-lit '\tpop\s_s)
+               (s-app(
+                  (s-app( (s-var '+_s) (s-app(
+                     (s-app( (s-var '.expression_s) (s-var 'dst_s) ))
+                     (s-lit(to-string popped-sz))
+                  ))))
+                  (s-lit '\[%rbp\]\n_s)
+               ))
             ))
          ))))
          (set pop pop-2)
@@ -518,10 +521,13 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
       (let popped-sz 0_u64)
       (while (<( popped-sz base-type-sz )) (tail(
          (let pop-2 (maybe-deref(s-app(
-            (s-lit '\tpop\s_s)
+            (close pop)
             (s-app(
-               (s-lit(to-string popped-sz))
-               (s-lit '\[%r15\]\n_s)
+               (s-lit '\tpop\s_s)
+               (s-app(
+                  (s-lit(to-string popped-sz))
+                  (s-lit '\[%r15\]\n_s)
+               ))
             ))
          ))))
          (set pop pop-2)
