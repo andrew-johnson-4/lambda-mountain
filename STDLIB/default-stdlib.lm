@@ -66,7 +66,7 @@ is := λ(: ls S)(: rs S). (: (tail(
 print := λ(: x S). (: (tail(
    (match x (
       ()
-      (SNil (print '\[\]_s))
+      ( SNil (print '\[\]_s) )
       ( (SAtom a) (print a))
       ( (SCons( l r )) (tail(
          (print '\[_s)
