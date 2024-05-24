@@ -5,10 +5,10 @@ import STDLIB/default-rules.lm;
 import STDLIB/default-stdlib.lm;
 
 import SRC/ast.lm;
-#import SRC/utility.lm;
+import SRC/utility.lm;
 import SRC/tokenize.lm;
-#import SRC/parse.lm;
-#import SRC/typecheck.lm;
+import SRC/parse.lm;
+import SRC/typecheck.lm;
 #import SRC/preprocess.lm;
 #import SRC/expression.lm;
 #import SRC/codegen.lm;
