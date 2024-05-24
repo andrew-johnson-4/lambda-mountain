@@ -8,11 +8,12 @@ main := λ(: argc U64)(: argv String[]). (: (tail(
 
    (let input SNil)
    (let a 'abc_s)
-   (set input (SCons(
+   (let input-2 (SCons(
       (close input)
-      (close (SAtom( a )))
+      (close input)
+#      (close (SAtom( a )))
    )))
-   (print input)
+   (print input-2)
 
 )) Nil);
 
