@@ -466,10 +466,9 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
             ))
          )))
       ))))(set fragment fragment-3)
-
       (let ctx-2 (maybe-deref(cccontext::bind(
          ctx 'mov_s arrow-tt fragment
-      ))))
+      ))))(set ctx ctx-2)
 
       (let arrow-tt (maybe-deref(tarrow(
          (maybe-deref(tcons( (maybe-deref(t1 tag)) (maybe-deref(t1 'GlobalVariable_s)) )))
@@ -496,7 +495,7 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
       ))))(set fragment fragment-3)
       (let ctx-2 (maybe-deref(cccontext::bind(
          ctx 'mov_s arrow-tt fragment
-      ))))
+      ))))(set ctx ctx-2)
 
    )) (tail(
       (let base-type-sz (typecheck-aligned-sizeof base-type))
