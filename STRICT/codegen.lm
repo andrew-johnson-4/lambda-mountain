@@ -487,7 +487,7 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type 
    ))
    (let r-1 (maybe-deref(ccfragment::set-context( r ctx ))))(set r r-1)
    #TODO variable sized returns need to adjust offset
-   (let r-6 (maybe-deref(ccfragment::set-offset( r offset )) ))))(set r r-6)
+   (let r-6 (maybe-deref(ccfragment::set-offset( r offset ))))(set r r-6)
    (close r)
 )) CCFragment[]);
 
