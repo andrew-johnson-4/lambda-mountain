@@ -459,7 +459,10 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
             ))
             (s-app(
                (s-var '.program_s)
-               (s-app( (s-var '.program_s) (s-var 'src_s) ))
+               (s-app(
+                  (s-lit '\oTODO\sMov\sInit\n_s)
+                  (s-app( (s-var '.program_s) (s-var 'src_s) ))
+               ))
             ))
          )))
       ))))(set fragment fragment-3)
@@ -484,7 +487,10 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
             ))
             (s-app(
                (s-var '.program_s)
-               (s-app( (s-var '.program_s) (s-var 'src_s) ))
+               (s-app(
+                  (s-lit '\oTODO\sMov\sInit\n_s)
+                  (s-app( (s-var '.program_s) (s-var 'src_s) ))
+               ))
             ))
          )))
       ))))(set fragment fragment-3)
