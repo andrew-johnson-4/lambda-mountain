@@ -601,6 +601,8 @@ compile-push-rvalue := λ(: ctx CCContext)(: rval AST)(: offset I64). (: (tail(
                (let e1 (maybe-deref(compile-push-rvalue( ctx le offset ))))
                (let e2 (maybe-deref(compile-expr( ctx re (ccfragment::get-offset e1) Used ))))
                (let e2-2 (maybe-deref(compile-maybe-push-stack( ctx (ccfragment::get-offset e2) e2 p2 rval ))))(set e2 e2-2)
+               (let sz (typecheck-sizeof(maybe-deref(typecheck-lookup rval))))
+               (let e2-3 (maybe-deref(ccfragment::set-offset( e2 (-( offset sz )) ))))(set e2 e2-3)
                (set r (maybe-deref(ccfragment::chain( e1 e2 ))))
             )))
             ( u (exit-error( 'Invalid\sRvalue_s rval )))
@@ -609,6 +611,8 @@ compile-push-rvalue := λ(: ctx CCContext)(: rval AST)(: offset I64). (: (tail(
       ( et (tail(
          (let e1 (maybe-deref(compile-expr( ctx rval offset Used ))))
          (let e1-2 (maybe-deref(compile-maybe-push-stack( ctx (ccfragment::get-offset e1) e1 et rval ))))(set e1 e1-2)
+         (let sz (typecheck-sizeof(maybe-deref(typecheck-lookup rval))))
+         (let e1-3 (maybe-deref(ccfragment::set-offset( e2 (-( offset sz )) ))))(set e1 e1-3)
          (set r e1)
       )))
    ))
