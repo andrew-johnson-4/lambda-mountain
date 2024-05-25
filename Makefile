@@ -2,10 +2,10 @@
 develop: compile-strict
 	cp strict re-strict
 	rm -f strict-loop strict-loop.o strict-loop.s
-	./strict -o strict-loop.s STRICT/cli.lm
+	./strict -o strict-loop.s SRC/cli.lm
 	as strict-loop.s -o strict-loop.o
 	ld strict-loop.o -o strict-loop
-	./strict-loop --tokenize STRICT/cli.lm
+	./strict-loop --tokenize SRC/cli.lm
 
 re:
 	rm -f strict-loop strict-loop.o strict-loop.s
