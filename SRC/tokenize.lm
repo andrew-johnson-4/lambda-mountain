@@ -138,6 +138,12 @@ tokenize := λ(: fp String). (: (tail(
             (set current-column (+( current-column 1_u64 )))
          ))
       ))
+      (print 'Line\s_s)
+      (print current-line)
+      (print '\n_s)
+      (print 'Column\s_s)
+      (print current-column)
+      (print '\n_s)
       (match (head-string text) (
          ()
          ( \o_u8 (tail(
@@ -261,10 +267,12 @@ tokenize := λ(: fp String). (: (tail(
          ))))
 
          ( c (if (==( in_comment True_u8 )) () (tail(
+            (print 'C\n_s)
             (set buffer (SCons(
                (close buffer)
                (close (SAtom (clone-rope c)))
             )))
+            (print 'C2\n_s)
             (if (==( '\l_s (clone-rope buffer) )) (tail(
                (set ast-tokenized-program (SCons(
                   (close ast-tokenized-program)
@@ -272,6 +280,7 @@ tokenize := λ(: fp String). (: (tail(
                )))
                (set buffer SNil)
            )) ())
+           (print 'C3\n_s)
          ))))
       ))
       (set text (tail-string text))
