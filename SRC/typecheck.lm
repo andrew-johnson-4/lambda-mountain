@@ -971,7 +971,7 @@ typecheck-ascript := λ(: t AST)(: tt Type). (: (
    )) ())
 ) Nil);
 
-typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used Used). (: (tail(
+typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail(
    (match term (
       ()
       ( ASTNil (typecheck-ascript( term (maybe-deref(t1 'Nil_s)) )) )
