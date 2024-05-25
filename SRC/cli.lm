@@ -1,21 +1,21 @@
 
-import STDLIB/default-instruction-set.lm;
-import STDLIB/default-primitives.lm;
-import STDLIB/default-rules.lm;
-import STDLIB/default-stdlib.lm;
+import LIB/default-instruction-set.lm;
+import LIB/default-primitives.lm;
+import LIB/default-rules.lm;
+import LIB/default-stdlib.lm;
 
 import SRC/ast.lm;
 import SRC/utility.lm;
 import SRC/tokenize.lm;
-#import SRC/parse.lm;
+import SRC/parse.lm;
 import SRC/typecheck.lm;
-#import SRC/preprocess.lm;
-#import SRC/expression.lm;
-#import SRC/codegen.lm;
-#import SRC/fragment.lm;
-#import SRC/context.lm;
-#import SRC/assemble.lm;
-#import SRC/data.lm;
+import SRC/preprocess.lm;
+import SRC/expression.lm;
+import SRC/codegen.lm;
+import SRC/fragment.lm;
+import SRC/context.lm;
+import SRC/assemble.lm;
+import SRC/data.lm;
 
 config-strict                := True_u8;
 config-preprocess            := True_u8;
@@ -54,8 +54,6 @@ main := λ(: argc U64)(: argv String[]). (: (tail(
       (set argi (+( argi 1_u64 )))
    ))
 
-   (print input)
-
    (let continue True_u8)
    (while (==( continue True_u8 )) (match input (
       ()
@@ -65,30 +63,30 @@ main := λ(: argc U64)(: argv String[]). (: (tail(
       ( (SAtom( fp )) (tail( (tokenize fp) (set continue False_u8) )))
    )))
 
-#   (match config-mode (
-#      ()
-#      ( ModeTokenize (print ast-tokenized-program) )
-#      ( ModeParse (tail(
-#         (parse())
-#         (serialize-ast ast-parsed-program)
-#      )))
-#      ( ModePreprocess (tail(
-#         (parse())
-#         (preprocess())
-#         (serialize-ast ast-parsed-program)
-#      )))
-#      ( ModeTypecheck (tail(
-#         (parse())
-#         (preprocess())
-#         (typecheck())
-#      )))
-#      ( ModeCompile (tail(
-#         (parse())
-#         (preprocess())
-#         (typecheck())
-#         (compile())
-#      )))
-#   ))
+   (match config-mode (
+      ()
+      ( ModeTokenize (print ast-tokenized-program) )
+      ( ModeParse (tail(
+         (parse())
+         (serialize-ast ast-parsed-program)
+      )))
+      ( ModePreprocess (tail(
+         (parse())
+         (preprocess())
+         (serialize-ast ast-parsed-program)
+      )))
+      ( ModeTypecheck (tail(
+         (parse())
+         (preprocess())
+         (typecheck())
+      )))
+      ( ModeCompile (tail(
+         (parse())
+         (preprocess())
+         (typecheck())
+         (compile())
+      )))
+   ))
 
 )) Nil);
 

@@ -1,0 +1,418 @@
+
+type S (SNil)
+     | (SAtom( String ))
+     | (SCons( S[] , S[] ))
+     | (SPointer( ?[] ));
+
+type SPair (SPair( S , S ));
+
+close := λ(: x S). (: (tail(
+   (mov( (malloc(sizeof S)) R8 ))
+   (mov( x 0_u64 (as R8 S[]) ))
+   (as R8 S[])
+)) S[]);
+
+non-zero := λ(: s S). (: (tail(
+   (let r 1_u64)
+   (match s (
+      ()
+      (SNil (set r 0_u64))
+      (_ ())
+   ))
+   r
+)) U64);
+
+== := λ(: ls S)(: rs S). (: (tail(
+   (let r 0_u64)
+   (match (SPair( ls rs )) (
+      ()
+      ( (SPair( SNil SNil )) (set r 1_u64) )
+      ( (SPair( (SAtom lc) (SAtom rc) )) (set r (==( lc rc ))) )
+      ( (SPair( (SCons( l1 l2 )) (SCons( r1 r2 )) )) (
+         (if (==( l1 r1 )) (
+            (if (==( l2 r2 )) (set r 1_u64) ())
+         ) ())
+      ))
+      ( (SPair( (SPointer lc) (SPointer rc) )) (
+         (if (==( (as lc U64) (as rc U64) )) (set r 1_u64) ())
+      ))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+is := λ(: ls S)(: rs S). (: (tail(
+   (let r 0_u64)
+   (match (SPair( ls rs )) (
+      ()
+      ( (SPair( SNil SNil )) (set r 1_u64) )
+      ( (SPair( (SAtom lc) (SAtom rc) )) (set r (==( lc rc ))) )
+      ( (SPair( (SPointer lc) (SPointer rc) )) (
+         (if (==( (as lc U64) (as rc U64) )) (set r 1_u64) ())
+      ))
+      ( (SPair( _ _ )) (
+         (if (==( (.0 ls) (.0 rs) )) (
+            (if (==( (as (.1 (as ls SCons)) U64) (as (.1 (as rs SCons)) U64) )) (
+               (if (==( (as (.2 (as ls SCons)) U64) (as (.2 (as rs SCons)) U64) )) (
+                  (set r 1_u64)
+               ) ())
+            ) ())
+         ) ())
+      ))
+   ))
+   r
+)) U64);
+
+print := λ(: x S). (: (tail(
+   (match x (
+      ()
+      ( SNil (print '\[\]_s) )
+      ( (SAtom a) (print a))
+      ( (SCons( l r )) (tail(
+         (print '\[_s)
+         (print l)
+         (print '\s_s)
+         (print r)
+         (print '\]_s)
+      )))
+      ( (SPointer p) (tail(
+         (print '[_s)
+         (print (as p U64))
+         (print ']_s)
+      )))
+   ))
+   ()
+)) Nil);
+
+fail := λ(: msg String). (: (tail(
+   (print msg)
+   (exit 1_u64)
+)) Nil);
+
+exit := λ(: code U64). (: (tail(
+   (mov( 60_u64 RAX ))
+   (mov( code RDI ))
+   (syscall())
+)) Nil);
+
+print := λ(: x String). (: (tail(
+   (mov( x R15 ))
+   (mov( 0_u64 RDX )) # data length
+   (gensym-label begin-count)
+   (gensym-label end-count)
+   (label begin-count)
+   (mov( 0_u64 R15 R14B ))
+   (cmp( 0_u8 R14B ))
+   (je( end-count ))
+   (inc( RDX ))
+   (inc( R15 ))
+   (jmp( begin-count ))
+   (label end-count)
+   (system-call( 1_u64 1_u64 (as x U64) (as RDX U64) ))
+   ()
+)) Nil);
+
+eprint := λ(: x String). (: (tail(
+   (mov( x R15 ))
+   (mov( 0_u64 RDX )) # data length
+   (gensym-label begin-count)
+   (gensym-label end-count)
+   (label begin-count)
+   (mov( 0_u64 R15 R14B ))
+   (cmp( 0_u8 R14B ))
+   (je( end-count ))
+   (inc( RDX ))
+   (inc( R15 ))
+   (jmp( begin-count ))
+   (label end-count)
+   (system-call( 1_u64 2_u64 (as x U64) (as RDX U64) ))
+   ()
+)) Nil);
+
+print := λ(: x U64). (: (tail(
+   (let cs 0_u8)
+   (gensym-label unsigned)
+   (gensym-label pdigits)
+   (mov( x R15 ))
+   (mov( 0_u64 R14 ))
+
+   (label unsigned)
+   (mov( R15 RAX ))
+   (mov( 0_u64 RDX ))
+   (mov( 10_u64 RCX ))
+   (div( RCX ))
+   (push( RDX ))
+   (inc( R14 ))
+   (mov( RAX R15 ))
+   (cmp( 0_u64 R15 ))
+   (jne( unsigned ))
+
+   (label pdigits)
+   (pop( RDX ))
+   (mov( DL cs ))
+   (add( 48_u8 cs ))
+   (dec( R14 ))
+   (mov( 1_u64 RAX ))
+   (mov( 1_u64 RDI ))
+   (mov( (as (& cs) U64) RSI ))
+   (mov( 1_u64 RDX ))
+   (syscall())
+   (cmp( 0_u64 R14 ))
+   (jne( pdigits ))
+)) Nil);
+
+print := λ(: cs ASCII). (: (tail(
+   (system-call( 1_u64 1_u64 (as (& cs) U64) 1_u64 ))
+   ()
+)) Nil);
+
+print := λ(: x I64). (: (tail(
+   (let cs 0_u8)
+   (gensym-label unsigned)
+   (gensym-label pdigits)
+   (mov( x R15 ))
+   (mov( 0_u64 R14 ))
+   (cmp( 0_i64 R15 ))
+   (jge( unsigned ))
+   (neg( R15 ))
+   (mov( 45_u8 cs ))
+   (system-call( 1_u64 1_u64 (as (& cs) U64) 1_u64 ))
+
+   (label unsigned)
+   (mov( R15 RAX ))
+   (mov( 0_u64 RDX ))
+   (mov( 10_u64 RCX ))
+   (div( RCX ))
+   (push( RDX ))
+   (inc( R14 ))
+   (mov( RAX R15 ))
+   (cmp( 0_u64 R15 ))
+   (jne( unsigned ))
+
+   (label pdigits)
+   (pop( RDX ))
+   (mov( DL cs ))
+   (add( 48_u8 cs ))
+   (dec( R14 ))
+   (mov( 1_u64 RAX ))
+   (mov( 1_u64 RDI ))
+   (mov( (as (& cs) U64) RSI ))
+   (mov( 1_u64 RDX ))
+   (syscall())
+   (cmp( 0_u64 R14 ))
+   (jne( pdigits ))
+)) Nil);
+
+print := λ(: x U32). (: (tail(
+   (mov( 0_u64 R15 ))
+   (mov( x R15D ))
+   (print( (: R15 Reg64+U64) ))
+)) Nil);
+
+print := λ(: x U16). (: (tail(
+   (mov( 0_u64 R15 ))
+   (mov( x R15W ))
+   (print( (: R15 Reg64+U64) ))
+)) Nil);
+
+print := λ(: x U8). (: (tail(
+   (mov( 0_u64 R15 ))
+   (mov( x R15B ))
+   (print( (: R15 Reg64+U64) ))
+)) Nil);
+
+print := λ(: x I32). (: (tail(
+   (gensym-label unsigned)
+   (mov( 0_u64 R15 ))
+   (mov( x R15D ))
+   (movsx( R15D R15 ))
+   (print( (: R15 Reg64+I64) ))
+)) Nil);
+
+print := λ(: x I16). (: (tail(
+   (gensym-label unsigned)
+   (mov( 0_u64 R15 ))
+   (mov( x R15W ))
+   (movsx( R15W R15 ))
+   (print( (: R15 Reg64+I64) ))
+)) Nil);
+
+print := λ(: x I8). (: (tail(
+   (gensym-label unsigned)
+   (mov( 0_u64 R15 ))
+   (mov( x R15B ))
+   (movsx( R15B R15 ))
+   (print( (: R15 Reg64+I64) ))
+)) Nil);
+
+== := λ(: l String)(: r String). (: (tail(
+   (let c1 0_u8)
+   (let c2 0_u8)
+   (let cc 0_u64)
+   (gensym-label start)
+   (gensym-label end-true)
+   (gensym-label end-false)
+   (gensym-label end)
+   (mov( l R8 ))
+   (mov( r R9 ))
+   (label start )
+   (mov( R8 0_u64 c1 ))
+   (mov( R9 0_u64 c2 ))
+   (set cc (==( c1 c2 )))
+   (mov( cc R10 ))
+   (cmp( 0_u64 R10 ))
+   (je end-false)
+   (set cc (==( c1 0_u8 )))
+   (mov( cc R10 ))
+   (cmp( 0_u64 R10 ))
+   (jne end-true)
+   (inc R8)
+   (inc R9)
+   (jmp start)
+   (label end-true)
+   (mov( 1_u64 RAX ))
+   (jmp end)
+   (label end-false)
+   (mov( 0_u64 RAX ))
+   (jmp end)
+   (label end)
+   (as RAX U64)
+)) U64);
+
+cons-page-tail := 0_u64;
+malloc := λ (: sz U64) . (: (tail(
+   (if (==( cons-page-tail 0_u64 )) (tail(
+      (mov( 12_u64 RAX ))
+      (mov( 0_u64 RDI ))
+      (syscall())
+      (mov( RAX R8 )) #current page break in R8
+      (set cons-page-tail (as R8 U64))
+      # 4 GB
+      (add( 1073741824_u64 R8 ))
+      (add( 1073741824_u64 R8 ))
+      (add( 1073741824_u64 R8 ))
+      (add( 1073741824_u64 R8 ))
+      (mov( 12_u64 RAX ))
+      (mov( R8 RDI ))
+      (syscall())
+   )) ())
+   (let curr cons-page-tail)
+   (mov( cons-page-tail R8 ))
+   (add( sz R8 ))
+   (set cons-page-tail (as R8 U64))
+   (as curr ?[])
+)) ?[]);
+
+system-call := λ(: rax U64)(: rdi U64)(: rsi U64)(: rdx U64). (: (tail(
+   (mov( rax RAX ))
+   (mov( rdi RDI ))
+   (mov( rsi RSI ))
+   (mov( rdx RDX ))
+   (syscall())
+   (as RAX U64)
+)) U64);
+
+read-file := λ(: fp String). (: (tail(
+   (let fd (system-call( 2_u64 (as fp U64) 0_u64 0_u64 )))
+   (mov( fd RAX ))
+   (if (==( (as AL U8) 254_u8 )) (tail(
+      (eprint 'Unable\sto\sopen\sfile:\s_s)
+      (eprint fp)
+      (eprint '\n_s)
+      (exit 1_u64)
+   )) ())
+   (let shead (as (malloc( 0_u64 )) U8[]))
+   (let stail shead)
+   (let more True_u8)
+   (while (==( more True_u8 )) (tail(
+      (let rdsz (system-call( 0_u64 fd (as stail U64) 1024_u64 )))
+      (malloc( rdsz ))
+      (if (==( rdsz 0_u64 )) (
+         (set more False_u8)
+      ) (
+         (set stail (as (
+           (+( (as stail U64) rdsz ))
+         ) U8[]))
+      ))
+   )))
+   (system-call( 3_u64 fd 0_u64 0_u64 ))
+   (let eos (as (malloc( 1_u64 )) U8[]))
+   (mov( 0_u8 0_u64 eos ))
+   (as shead String)
+)) String);
+
+head-string := λ(: s String). (: (tail(
+   (if (==( (as s U64) 0_u64 )) (
+      (mov( 0_u8 AL ))
+   ) (
+      (mov( (as s U8[]) 0_u64 AL ))
+   ))
+   (as AL U8)
+)) U8);
+
+tail-string := λ(: s String). (: (tail(
+   (if (==( (as s U64) 0_u64 )) (
+      (mov( 0_u64 RAX ))
+   ) (
+      (if (head-string s) (tail(
+         (mov( (as s U64) RAX ))
+         (inc( RAX ))
+      )) (
+         (mov( 0_u64 RAX ))
+      ))
+   ))
+   (as RAX String)
+)) String);
+
+clone-rope := λ(: s S). (: (tail(
+   (let r (malloc( 0_u64 )))
+   (clone-rope-impl s )
+   (let rtail (as (malloc( 1_u64 )) U8[]))
+   (mov( 0_u8 0_u64 rtail ))
+   (as r String)
+)) String);
+clone-rope-impl := λ(: s S). (: (match s (
+   ()
+   ( SNil () )
+   ( (SCons( l r )) (tail(
+      (clone-rope-impl (maybe-deref l))
+      (clone-rope-impl (maybe-deref r))
+   )))
+   ( (SAtom a) (tail(
+      (let ci 0_u64)
+      (let c ([]( (as a U8[]) ci )))
+      (while (!=( c 0_u8 )) (
+         (let t (as (malloc( 1_u64 )) U8[]))
+         (mov( c 0_u64 t ))
+         (set ci (+( ci 1_u64 )))
+         (set c ([]( (as a U8[]) ci )))
+      ))
+   )))
+)) Nil);
+
+clone-rope := λ(: s U8). (: (tail(
+   (let x (as (malloc 2_u64) U8[]))
+   (mov( s 0_u64 x ))
+   (mov( 0_u8 1_u64 x ))
+   (as x String)
+)) String);
+
+length := λ(: s String). (: (tail(
+   (let sz 0_u64)
+   (while (head-string s) (tail(
+      (set sz (+( sz 1_u64 )))
+      (set s (tail-string s))
+   )))
+   sz
+)) U64);
+
+write-file := λ(: fp String)(: data String). (: (tail(
+   #open file
+   (let fd (system-call( 2_u64 (as fp U64) 577_u64 420_u64 )))
+
+   #write to file
+   (system-call( 1_u64 fd (as data U64) (length data) ))
+
+   #close file
+   (system-call( 3_u64 fd 0_u64 0_u64 )) ()
+)) Nil);
