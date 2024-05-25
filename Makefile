@@ -5,7 +5,7 @@ develop: compile-strict
 	./strict -o strict-loop.s SRC/cli.lm
 	as strict-loop.s -o strict-loop.o
 	ld strict-loop.o -o strict-loop
-	./strict-loop --tokenize SRC/cli.lm
+	./strict-loop -o strict-loop-2.s SRC/cli.lm
 
 re:
 	rm -f strict-loop strict-loop.o strict-loop.s
