@@ -7,6 +7,12 @@ Currently the best example code is the compiler itself, which is located in the 
 
 More information is available on the [λ☶ Wiki](https://github.com/andrew-johnson-4/-/wiki).
 
+### What is a Fragment Assembler?
+
+An assembler takes pieces of data, and sticks them together. Assemblers don't always understand the meaning of what they do, they just do it.
+
+A fragment is a Key-Value Map of Strings to S-Expressions. This data structure permits more detailed manipulation of code than a typical assembler.
+
 ### What is Ad-Hoc Specialization?
 
 If we have several overloaded functions then specialization lets us choose the best fit for any particular application.
