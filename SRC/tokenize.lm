@@ -144,6 +144,7 @@ tokenize := λ(: fp String). (: (tail(
       (print 'Column\s_s)
       (print current-column)
       (print '\n_s)
+      (print 'RSP\s_s)(print (as RSP U64))(print '\n_s)
       (match (head-string text) (
          ()
          ( \o_u8 (tail(
