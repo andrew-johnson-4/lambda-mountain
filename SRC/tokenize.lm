@@ -283,8 +283,8 @@ tokenize := λ(: fp String). (: (tail(
            )) ())
            (print 'C3\n_s)
          ))))
-         (print 'Buffer\s_s)(print buffer)(print '\n_s)
       ))
+      (print 'Buffer\s_s)(print buffer)(print '\n_s)
       (set text (tail-string text))
    )))
 
