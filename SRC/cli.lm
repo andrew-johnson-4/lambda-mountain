@@ -7,9 +7,9 @@ import STDLIB/default-stdlib.lm;
 import SRC/ast.lm;
 import SRC/utility.lm;
 import SRC/tokenize.lm;
-import SRC/parse.lm;
+#import SRC/parse.lm;
 import SRC/typecheck.lm;
-import SRC/preprocess.lm;
+#import SRC/preprocess.lm;
 #import SRC/expression.lm;
 #import SRC/codegen.lm;
 #import SRC/fragment.lm;
@@ -53,6 +53,8 @@ main := λ(: argc U64)(: argv String[]). (: (tail(
       ))
       (set argi (+( argi 1_u64 )))
    ))
+
+   (print input)
 
    (let continue True_u8)
    (while (==( continue True_u8 )) (match input (
