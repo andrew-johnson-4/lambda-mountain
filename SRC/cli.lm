@@ -54,6 +54,8 @@ main := λ(: argc U64)(: argv String[]). (: (tail(
       (set argi (+( argi 1_u64 )))
    ))
 
+   (print input)
+
    (let continue True_u8)
    (while (==( continue True_u8 )) (match input (
       ()
