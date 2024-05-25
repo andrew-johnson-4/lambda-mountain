@@ -115,10 +115,6 @@ print := λ(: loc SourceMap). (: (
 
 tokenize := λ(: fp String). (: (tail(
    (let text (read-file fp))
-   (print (tail-string text))
-   (print 'Tokenize\s_s)
-   (print fp)
-   (print '\n_s)
 
    (let in_comment False_u8)
    (let buffer SNil)
@@ -127,9 +123,11 @@ tokenize := λ(: fp String). (: (tail(
    (let token-line 1_u64)
    (let token-column 1_u64)
    (let parens-counter 0_u64)
-   (print 'While\n_s)
+   (print 'Tokenize\s_s)(print fp)(print '\n_s)
    (while (head-string text) (tail(
+      (print 'While\sTake\sHead\s_s)
       (print (head-string text))
+      (print '\n_s)
       (match (head-string text) (
          ()
          ( '\n_u8 (tail(
