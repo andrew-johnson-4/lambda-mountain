@@ -54,8 +54,6 @@ main := λ(: argc U64)(: argv String[]). (: (tail(
       (set argi (+( argi 1_u64 )))
    ))
 
-   (print input)
-
    (let continue True_u8)
    (while (==( continue True_u8 )) (match input (
       ()
@@ -64,6 +62,8 @@ main := λ(: argc U64)(: argv String[]). (: (tail(
       ( (SCons( rst (SAtom( fp )) )) (tail( (tokenize fp) (set input rst) )))
       ( (SAtom( fp )) (tail( (tokenize fp) (set continue False_u8) )))
    )))
+
+   (print ast-tokenized-program)
 
 #   (match config-mode (
 #      ()
