@@ -124,6 +124,13 @@ tokenize := λ(: fp String). (: (tail(
    (let token-column 1_u64)
    (let parens-counter 0_u64)
    (print 'Tokenize\s_s)(print fp)(print '\n_s)
+   (let x (clone-rope 55_u8))(print x)
+   (set buffer (SCons(
+      (close buffer)
+      (close (SAtom 'abc_s))
+#      (close (SAtom (clone-rope 10_u8)))
+   )))
+   (print buffer)
    (while (head-string text) (tail(
       (print 'While\sTake\sHead\s_s)
       (match (head-string text) (
