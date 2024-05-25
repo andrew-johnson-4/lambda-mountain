@@ -25,6 +25,16 @@ type TPair (TPair( Type , Type ));
 type TCPair (TCPair( TContext , TContext ));
 type UPair (UPair( Used , Used ));
 
+type TypeConstructorList (TConEOF) | (TConSeq( TypeConstructorList[] , String , Type ));
+
+typecheck-type-constructors := (: TConEOF TypeConstructorList);
+typecheck-classes-of-tag := (: TConEOF TypeConstructorList);
+typecheck-fragment-types := (: TypeEOF TypeList);
+
+type TypeSizeList (TSzEOF) | (TSzSeq( TypeSizeList[] , String , U64 ));
+
+typecheck-type-sizes := (: TSzEOF TypeSizeList);
+
 == := λ(: lterm AST)(: rterm AST). (: (tail(
    (let r 0_u64)
    (match (Pair( lterm rterm )) (
@@ -181,6 +191,7 @@ is-arrow := λ(: tt Type). (: (tail(
 )) U64);
 
 typecheck-annotate-size := λ(: tt Type). (: (tail(
+   ()
    (if (typecheck-is-sized tt) () (
       (if (==( (typecheck-is-sized tt) typecheck-do-not-size )) () (tail(
          (let sz (typecheck-annotate-size-inner tt))
@@ -241,11 +252,390 @@ without-tag := λ(: tt Type). (: (tail(
    (close tt)
 )) Type[]);
 
+exit-error := λ(: msg String)(: t AST). (: (tail(
+   (print msg)
+   (print '\n_s)
+   (exit 1_u64)
+)) Nil);
+
+typecheck-types-have-changed := True_u8;
+
+tand := λ(: lt Type)(: rt Type). (: (tail(
+   (if (non-zero lt) (tail(
+      (let only-rt (maybe-deref(right-if-not-left( lt rt ))))
+      (if (non-zero only-rt) (
+         (set lt (TAnd(
+            (close lt)
+            (close only-rt)
+         )))
+      ) ())
+   )) (set lt rt))
+   (close lt)
+)) Type[]);
+
+right-if-not-left := λ(: lt Type)(: rt Type). (: (tail(
+   (match (TPair( lt rt )) (
+      ()
+      ( (TPair( _ (TGround( '->_s _ )) )) () )
+      ( (TPair( (TGround( ltag _ )) (TGround( rtag _ )) )) (
+         (if (==( ltag rtag )) (set rt TAny) ())
+      ))
+      ( (TPair( (TAnd( lt1 lt2 )) (TGround( rtag _ )) )) (tail(
+         (let llt1 (maybe-deref(right-if-not-left( lt1 rt ))))
+         (let llt2 (maybe-deref(right-if-not-left( lt2 rt ))))
+         (if (non-zero llt1) () (set rt TAny))
+         (if (non-zero llt2) () (set rt TAny))
+      )))
+      ( (TPair( _ (TAnd( rt1 rt2 )) )) (tail(
+         (let rrt1 (maybe-deref(right-if-not-left( lt rt1 ))))
+         (let rrt2 (maybe-deref(right-if-not-left( lt rt2 ))))
+         (if (non-zero rrt1) (
+            (if (non-zero rrt2) (
+               (set rt (TAnd(
+                  (close rrt1)
+                  (close rrt2)
+               )))
+            ) (
+               (set rt rrt1)
+            ))
+         ) (
+            (if (non-zero rrt2) (
+               (set rt rrt2)
+            ) (
+               (set rt TAny)
+            ))
+         ))
+      )))
+      ( _ () )
+   ))
+   (close rt)
+)) Type[]);
+
+typecheck-do-not-size := 99999_u64;
+typecheck-is-sized := λ(: tt Type). (: (tail(
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( TAny (set r typecheck-do-not-size) )
+      ( (TGround( 'Cons_s _ )) (set r typecheck-do-not-size) )
+      ( (TGround( '->_s _ )) (set r typecheck-do-not-size) )
+      ( (TAnd( lt rt )) (
+         (set r (max(
+            (typecheck-is-sized lt)
+            (typecheck-is-sized rt)
+         )))
+      ))
+      ( (TGround( 'Sized_s _ )) (set r 1_u64) )
+      ( _ () )
+   ))
+   r
+)) U64);
+
+typecheck-annotate-size-inner := λ(: tt Type). (: (tail(
+   (let sz 0_u64)
+   (match tt (
+      ()
+      ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF _ )) TAny )) )) (set sz 8_u64) )
+      ( (TGround( tag _ )) (set sz (typecheck-get-size tag)) )
+      ( (TAnd( lt rt )) (
+         (set sz (max(
+            (typecheck-annotate-size-inner lt)
+            (typecheck-annotate-size-inner rt)
+         )))
+      ))
+      ( _ () )
+   ))
+   sz
+)) U64);
+
+typecheck-annotate-size-recurse := λ(: tt Type). (: (tail(
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (tail(
+         (let lt2 (maybe-deref(typecheck-annotate-size-recurse lt)))
+         (let rt2 (maybe-deref(typecheck-annotate-size-recurse rt)))
+         (let tt-2 (maybe-deref(tand( lt2 rt2 ))))
+         (set tt tt-2)
+      )))
+      ( (TGround( _ TypeEOF )) () )
+      ( (TGround( tag (TypeSeq( TypeEOF pt1 )) )) (tail(
+         (let pt1t (maybe-deref(typecheck-annotate-size pt1)))
+         (set tt (TGround( tag (
+            (close(TypeSeq(
+               (close TypeEOF)
+               pt1t
+            )))
+         ))))
+      )))
+      ( (TGround( tag (TypeSeq( (TypeSeq( TypeEOF pt1 )) pt2 )) )) (tail(
+         (let pt1t (maybe-deref(typecheck-annotate-size pt1)))
+         (let pt2t (maybe-deref(typecheck-annotate-size pt2)))
+         (set tt (TGround( tag (
+            (close(TypeSeq(
+               (close(TypeSeq(
+                  (close TypeEOF)
+                  pt1t
+               )))
+               pt2t
+            )))
+         ))))
+      )))
+      ( _ () )
+   ))
+   (close tt)
+)) Type[]);
+
+to-string := λ(: i U64). (: (tail(
+   (let r SNil)
+   (let c 0_u8)
+   (while (not(==( i 0_u64 ))) (
+      (let ci (+( (%( i 10_u64 )) 48_u64 )))
+      (set i (/( i 10_u64 )))
+      (mov( ci R8 ))
+      (mov( R8B c ))
+      (set r (SCons(
+         (close(SAtom(clone-rope c)))
+         (close r)
+      )))
+   ))
+   (if (non-zero r) () (
+      (set r (SAtom '0_s))
+   ))
+   (clone-rope r)
+)) String);
+
+typecheck-classof-tag := λ(: tag String). (: (tail(
+   (let r TAny)
+   (let tag-list typecheck-classes-of-tag)
+   (while (non-zero tag-list) (match tag-list (
+      ()
+      ( (TConSeq( rst (*( k kt )) )) (
+         (if (==( k tag )) (tail(
+            (set r kt)
+            (set tag-list TConEOF)
+         )) (
+            (set tag-list rst)
+         ))
+      ))
+   )))
+   (close r)
+)) Type[]);
+
+max := λ(: l U64)(: r U64). (: (tail(
+   (if (<( l r )) (set l r) ())
+   l
+)) U64);
+
+typecheck-get-size := λ(: tag String). (: (tail(
+   (let sz 0_u64)
+   (let sizes typecheck-type-sizes)
+   (while (non-zero sizes) (match sizes (
+      ()
+      ( (TSzSeq( rst (*( kt ks )) )) (tail(
+         (if (==( kt tag )) (
+            (set sz ks)
+         ) ())
+         (set sizes rst)
+      )))
+   )))
+   sz
+)) U64);
+
+non-zero := λ(: t TypeSizeList). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( TSzEOF (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+close := λ(: x TypeConstructorList). (: (tail(
+   (mov( (malloc(sizeof TypeConstructorList)) R8 ))
+   (mov( x 0_u64 (as R8 TypeConstructorList[]) ))
+   (as R8 TypeConstructorList[])
+)) TypeConstructorList[]);
+
+close := λ(: x TypeSizeList). (: (tail(
+   (mov( (malloc(sizeof TypeSizeList)) R8 ))
+   (mov( x 0_u64 (as R8 TypeSizeList[]) ))
+   (as R8 TypeSizeList[])
+)) TypeSizeList[]);
+
+non-zero := λ(: t ASTList). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( ASTLEOF (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+non-zero := λ(: t TypeList). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( TypeEOF (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+non-zero := λ(: t Context). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( CtxEOF (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+close := λ(: x AST). (: (tail(
+   (mov( (malloc(sizeof AST)) R8 ))
+   (mov( x 0_u64 (as R8 AST[]) ))
+   (as R8 AST[])
+)) AST[]);
+
+close := λ(: x ASTList). (: (tail(
+   (mov( (malloc(sizeof ASTList)) R8 ))
+   (mov( x 0_u64 (as R8 ASTList[]) ))
+   (as R8 ASTList[])
+)) ASTList[]);
+
+close := λ(: x TypeList). (: (tail(
+   (mov( (malloc(sizeof TypeList)) R8 ))
+   (mov( x 0_u64 (as R8 TypeList[]) ))
+   (as R8 TypeList[])
+)) TypeList[]);
+
+close := λ(: x Type). (: (tail(
+   (mov( (malloc(sizeof Type)) R8 ))
+   (mov( x 0_u64 (as R8 Type[]) ))
+   (as R8 Type[])
+)) Type[]);
+
+== := λ(: lt Type)(: rt Type). (: (tail(
+   (let r 0_u64)
+   (match (TPair( lt rt )) (
+      ()
+      ( (TPair( TAny TAny )) (set r 1_u64) )
+      ( (TPair( (TVar lv) (TVar rv) )) (set r (==( lv rv ))) )
+      ( (TPair( (TAnd( llt rlt )) (TAnd( lrt rrt )) )) (
+         (if (==( llt lrt )) (
+            (if (==( rlt rrt )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+      ))
+      ( (TPair( (TGround( ln TypeEOF )) (TGround( rn TypeEOF )) )) (
+         (set r (==( ln rn )))
+      ))
+      ( (TPair( (TGround( ln (TypeSeq( TypeEOF lt1 )) )) (TGround( rn (TypeSeq( TypeEOF rt1 )) )) )) (
+         (if (==( ln rn )) (
+            (if (==( lt1 rt1 )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+      ))
+      ( (TPair( (TGround( ln (TypeSeq( (TypeSeq( TypeEOF lt1 )) lt2 )) )) (TGround( rn (TypeSeq( (TypeSeq( TypeEOF rt1 )) rt2 )) )) )) (
+         (if (==( ln rn )) (
+            (if (==( lt1 rt1 )) (
+               (if (==( lt2 rt2 )) (
+                  (set r 1_u64)
+               ) ())
+            ) ())
+         ) ())
+      ))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+print := λ(: tt Type). (: (match tt (
+   ()
+   ( TAny (print '?_s) )
+   ( (TVar( vn )) (tail( (print '`_s) (print vn) )) )
+   ( (TGround( tag TypeEOF )) (print tag) )
+   ( (TGround( tag (TypeSeq( TypeEOF p1 )) )) (tail(
+      (print tag)
+      (print '<_s)
+      (print p1)
+      (print '>_s)
+   )))
+   ( (TGround( tag (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (tail(
+      (print tag)
+      (print '<_s)
+      (print p1)
+      (print ',_s)
+      (print p2)
+      (print '>_s)
+   )))
+   ( (TGround( tag (TypeSeq( (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) p3 )) )) (tail(
+      (print tag)
+      (print '<_s)
+      (print p1)
+      (print ',_s)
+      (print p2)
+      (print ',_s)
+      (print p3)
+      (print '>_s)
+   )))
+   ( (TAnd( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) rt )) (tail(
+      (print '-><_s)
+      (print p1)
+      (print ',_s)
+      (print p2)
+      (print '>\n_s)
+      (print rt)
+   )))
+   ( (TAnd( lt (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) )) (tail(
+      (print lt)
+      (print '\n_s)
+      (print '-><_s)
+      (print p1)
+      (print ',_s)
+      (print p2)
+      (print '>_s)
+   )))
+   ( (TAnd( lt rt )) (tail(
+      (print lt)
+      (print '\s+\s_s)
+      (print rt)
+   )))
+)) Nil);
+
+close := λ(: x TermTypeList). (: (tail(
+   (mov( (malloc(sizeof TermTypeList)) R8 ))
+   (mov( x 0_u64 (as R8 TermTypeList[]) ))
+   (as R8 TermTypeList[])
+)) TermTypeList[]);
+
+close := λ(: x STypeList). (: (tail(
+   (mov( (malloc(sizeof STypeList)) R8 ))
+   (mov( x 0_u64 (as R8 STypeList[]) ))
+   (as R8 STypeList[])
+)) STypeList[]);
+
+non-zero := λ(: t TypeConstructorList). (: (tail(
+   (let r 1_u64)
+   (match t (
+      ()
+      ( TConEOF (set r 0_u64))
+      ( _ () )
+   ))
+   r
+)) U64);
+
 main := λ. (: (tail(
    (let x (Var 'x_s))
-   (typecheck-ascript(
-      x
-      (TGround( 'X_s TypeEOF ))
-   ))
+   (let xt (TGround( 'X_s (close TypeEOF) )))
+   (let y (Var 'y_s))
+   (let yt (TGround( 'Y_s (close TypeEOF) )))
+   (typecheck-ascript( x xt ))
+   (typecheck-ascript( y yt ))
    (print(maybe-deref(typecheck-lookup( x ))))
+   (print(maybe-deref(typecheck-lookup( y ))))
 )) Nil);
