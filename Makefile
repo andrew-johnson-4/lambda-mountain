@@ -9,7 +9,7 @@ develop: compile-strict
 	./strict-loop -o strict-loop-2.s SRC/cli.lm
 
 re:
-	./re-strict -o tmp.s tests/btstrp/test22.lm
+	./re-strict -o tmp.s tests/btstrp/test23.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp
