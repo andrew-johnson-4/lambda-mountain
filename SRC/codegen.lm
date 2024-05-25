@@ -84,8 +84,7 @@ compile-global := λ(: ctx CCContext)(: term AST). (: (tail(
    (close e)
 )) CCFragment[]);
 
-compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used). (: (tail(
-   (print 'Compile\sExpression\s_s)(print (maybe-deref(typecheck-lookup term)))(print '\n_s)
+compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used IsUsed). (: (tail(
    (let e (maybe-deref(ccfragment::new())))
    (match used (
       ()
@@ -104,7 +103,7 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used)
    (close e)
 )) CCFragment[]);
 
-compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used). (: (tail(
+compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used IsUsed). (: (tail(
    (let e (maybe-deref(ccfragment::new())))
    (let e-2 (maybe-deref(ccfragment::set-context( e ctx ))))(set e e-2)
    (let e-3 (maybe-deref(ccfragment::set-offset( e stack-offset ))))(set e e-3)

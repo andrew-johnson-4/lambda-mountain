@@ -962,7 +962,6 @@ typecheck-ascript := λ(: t AST)(: tt Type). (: (
          )))
       ) (tail(
          (let stt (maybe-deref(typecheck-annotate-size tt)))
-         (print 'Ascript\s_s)(print tt)(print '\n_s)
          (set typecheck-term-type-list (TTSeq(
             (close typecheck-term-type-list)
             t stt
