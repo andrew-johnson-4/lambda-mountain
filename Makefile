@@ -9,10 +9,10 @@ develop: compile-strict
 
 re:
 	rm -f strict-loop strict-loop.o strict-loop.s
-	./re-strict -o strict-loop.s STRICT/cli.lm
+	./re-strict -o strict-loop.s SRC/cli.lm
 	as strict-loop.s -o strict-loop.o
 	ld strict-loop.o -o strict-loop
-	./strict-loop --tokenize STRICT/cli.lm
+	./strict-loop --tokenize SRC/cli.lm
 
 compile-strict: compile-prod
 	rm -f strict strict.o strict.s
