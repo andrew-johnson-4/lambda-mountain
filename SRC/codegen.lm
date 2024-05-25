@@ -85,6 +85,7 @@ compile-global := λ(: ctx CCContext)(: term AST). (: (tail(
 )) CCFragment[]);
 
 compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used Used). (: (tail(
+   (print 'Compile\sExpression\s_s)(print (maybe-deref(typecheck-lookup term)))(print '\n_s)
    (let e (maybe-deref(ccfragment::new())))
    (match used (
       ()
