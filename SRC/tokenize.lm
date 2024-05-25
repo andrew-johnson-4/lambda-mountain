@@ -119,6 +119,10 @@ tokenize := λ(: fp String). (: (tail(
    (print '\n_s)
 
    (let text (read-file fp))
+   (print text)
+   (print 'Head\s_s)
+   (print (head-string text))
+   (print (head-string(tail-string text)))
 
    (let in_comment False_u8)
    (let buffer SNil)
@@ -278,6 +282,8 @@ tokenize := λ(: fp String). (: (tail(
       ))
       (set text (tail-string text))
    )))
+
+   (print 'End\s_s)
 
    (if (non-zero buffer) (
       (set ast-tokenized-program (SCons(
