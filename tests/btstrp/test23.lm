@@ -13,9 +13,9 @@ type UPair (UPair( Used , Used ));
    (match (UPair( lu ru )) (
       ()
       ( (UPair( Used Used )) (set r 1_u64) )
-      ( (UPair( Unused Unused )) (set r 1_u64) )
-      ( (UPair( Tail Tail )) (set r 1_u64) )
-      ( (UPair( Return Return )) (set r 1_u64) )
+#      ( (UPair( Unused Unused )) (set r 1_u64) )
+#      ( (UPair( Tail Tail )) (set r 1_u64) )
+#      ( (UPair( Return Return )) (set r 1_u64) )
       ( _ () )
    ))
    r
@@ -25,25 +25,25 @@ main := λ. (: (tail(
    (let used Used)
    (if (==( used Used )) (
       (print 'Used\n_s)
-   ) (tail(
+   ) (
       (print 'Unused\n_s)
-   )))
+   ))
    (let unused Unused)
    (if (==( unused Used )) (
       (print 'Used\n_s)
-   ) (tail(
+   ) (
       (print 'Unused\n_s)
-   )))
+   ))
    (let tl Unused)
    (if (==( tl Used )) (
       (print 'Used\n_s)
-   ) (tail(
+   ) (
       (print 'Unused\n_s)
-   )))
+   ))
    (let rt Unused)
    (if (==( rt Used )) (
       (print 'Used\n_s)
-   ) (tail(
+   ) (
       (print 'Unused\n_s)
-   )))
+   ))
 )) Nil);
