@@ -32,3 +32,4 @@ benchmarks/*.o
 strict
 strict-loop
 strict-loop.s
+re-strict-loop
