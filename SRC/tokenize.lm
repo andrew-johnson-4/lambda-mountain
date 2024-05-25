@@ -126,8 +126,6 @@ tokenize := λ(: fp String). (: (tail(
    (print 'Tokenize\s_s)(print fp)(print '\n_s)
    (while (head-string text) (tail(
       (print 'While\sTake\sHead\s_s)
-      (print (head-string text))
-      (print '\n_s)
       (match (head-string text) (
          ()
          ( '\n_u8 (tail(
@@ -268,7 +266,7 @@ tokenize := λ(: fp String). (: (tail(
          ))))
 
          ( c (if (==( in_comment True_u8 )) () (tail(
-            (print 'C\n_s)
+            (print 'C\n_s)(print c)
             (set buffer (SCons(
                (close buffer)
                (close (SAtom (clone-rope c)))
