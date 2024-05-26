@@ -29,7 +29,4 @@ benchmarks/*.s
 benchmarks/*.o
 *.exe
 *.txt
-strict
-strict-loop
-strict-loop.s
-re-strict-loop
+re-production
