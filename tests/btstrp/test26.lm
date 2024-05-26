@@ -12,13 +12,6 @@ main := λ. (: (tail(
    (let c (C( 1_u64 2_u64 3_u64 )))
    (let b (B( 1_u64 2_u64 )))
    (let a (A( b 3_u64 )))
-   (match a (
-      ()
-      ( (A( (B( _ x )) y )) (
-         (print x)
-         (print y)
-      ))
-   ))
    (match c (
       ()
       ( (C( x y _ )) (
@@ -26,4 +19,5 @@ main := λ. (: (tail(
          (print y)
       ))
    ))
+   ()
 )) Nil);
