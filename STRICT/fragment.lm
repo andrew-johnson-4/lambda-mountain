@@ -113,7 +113,11 @@ ccfragment::label := λ(: id String). (: (tail(
 ccfragment::expression := λ(: val String) . (: (tail(
    (let r (CCFragment(
       (close(CCKVSeq(
-         (close CCKVEOF)
+         (close(CCKVSeq(
+            (close CCKVEOF)
+            'program_s
+            (SAtom( val ))
+         )))
          'expression_s
          (SAtom( val ))
       )))
