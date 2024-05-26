@@ -394,6 +394,10 @@ escape-literal := λ(: s String). (: (tail(
                   (set s (tail-string s))
                   (set cs (SCons( (close cs) (close(SAtom '\[_s)) )))
                )))
+               ( 92_u8 (tail(
+                  (set s (tail-string s))
+                  (set cs (SCons( (close cs) (close(SAtom '\\\\\\\\_s)) )))
+               )))
                ( 93_u8 (tail(
                   (set s (tail-string s))
                   (set cs (SCons( (close cs) (close(SAtom '\]_s)) )))
