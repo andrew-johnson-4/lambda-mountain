@@ -15,7 +15,7 @@ re:
 	./tmp
 
 deploy: compile-production
-	./production -o deploy.s SRC/cli.lm
+	time ./production -o deploy.s SRC/cli.lm
 	diff production.s deploy.s
 	mv deploy.s BOOTSTRAP/cli.s
 
