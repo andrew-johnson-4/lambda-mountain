@@ -256,6 +256,9 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
             )) ())
          )) ())
       )))
+      ( (Pair( (Lit ':Any:_s) (Var '__s) )) (
+         (set r CtxNil)
+      ))
       ( (Pair( (Lit pl) (Var el) )) (
          (if (==( pl el )) (set r CtxNil) ())
       ))
@@ -268,9 +271,9 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
              ()
          )
       ))
-      #( (Pair( (Lit ':Any:_s) (Var '__s) )) (
-      #   (set r CtxNil)
-      #))
+      ( (Pair( (App( (Lit ':Variable:_s) _ )) (Var '__s) )) (
+         ()
+      ))
       ( (Pair( (App( (Lit ':Variable:_s) (Var pv) )) (Var el) )) (
          (set r (CtxBind( (close CtxNil) pv (close term) )))
       ))

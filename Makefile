@@ -1,29 +1,27 @@
 
-develop: compile-strict
-	cp strict re-strict
-	rm -f strict-loop strict-loop.o strict-loop.s
-	./strict -o strict-loop.s SRC/cli.lm
-	as strict-loop.s -o strict-loop.o
-	ld strict-loop.o -o strict-loop
-	cp strict-loop re-strict-loop
-	./strict-loop -o strict-loop-2.s SRC/cli.lm
-
-re:
-	./re-strict -o tmp.s tests/btstrp/test24.lm
+develop: compile-production
+	cp production re-production
+	rm -f tmp tmp.o tmp.s
+	./production -o tmp.s tests/btstrp/test25.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp
-#	./re-strict -o tmp.s tests/btstrp/test24.lm
 
-compile-strict: compile-prod
-	rm -f strict strict.o strict.s
-	./production --nostd -o strict.s STRICT/cli.lm
-	as -o strict.o strict.s
-	ld -o strict   strict.o
+re:
+	rm -f tmp tmp.o tmp.s
+	./re-production -o tmp.s tests/btstrp/test25.lm
+	as tmp.s -o tmp.o
+	ld tmp.o -o tmp
+	./tmp
 
-compile-prod: compile-bootstrap
+deploy: compile-production
+	time ./production -o deploy.s SRC/cli.lm
+	diff production.s deploy.s
+	mv deploy.s BOOTSTRAP/cli.s
+
+compile-production: compile-bootstrap
 	rm -f production production.o production.s
-	./bootstrap -o production.s PRODUCTION/cli.lm
+	./bootstrap -o production.s SRC/cli.lm
 	as -o production.o production.s
 	ld -o production   production.o
 

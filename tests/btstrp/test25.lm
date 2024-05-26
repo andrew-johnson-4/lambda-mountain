@@ -1,0 +1,18 @@
+
+import LIB/default-instruction-set.lm;
+import LIB/default-primitives.lm;
+import LIB/default-stdlib.lm;
+import LIB/default-rules.lm;
+
+type A (A( B , U64 ));
+type B (B( U64 , U64 ));
+
+main := λ. (: (tail(
+   (let y (B( 1_u64 2_u64 )))
+   (match y (
+      ()
+      ( (B( _ x )) (
+         (print x)
+      ))
+   ))
+)) Nil);
