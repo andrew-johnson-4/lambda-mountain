@@ -236,7 +236,7 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
    (match (Pair( lhs term )) (
       ()
       ( (Pair( ASTNil ASTNil )) (set r CtxNil) )
-      ( (Pair( (App( (Var _) (Var _) )) (App( (Lit _) _ )) )) () )
+      ( (Pair( (App( (App( (Var _) (Var _) )) (Var _) )) (App( (App( (Lit _) _ )) _ )) )) () )
       ( (Pair( (App(pl pr)) (App(el er)) )) (tail(
          (let ll (maybe-deref(try-destructure-macro( pl el ))))
          (if (non-zero ll) (tail(
