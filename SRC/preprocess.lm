@@ -12,7 +12,7 @@ preprocess-index-of-tag := λ(: tag String). (: (tail(
    (let indices preprocess-tag-indices)
    (while (non-zero indices) (match indices (
       ()
-      ( (ISeq( rst (*( tag-name tag-index )) )) (tail(
+      ( (ISeq( rst tag-name tag-index )) (tail(
          (if (==( tag tag-name )) (
             (set index tag-index)
          ) ())
@@ -129,7 +129,7 @@ preprocess-apply := λ(: program AST). (: (tail(
          (let suffixes parse-suffixes)
          (while (non-zero suffixes) (match suffixes (
             ()
-            ( (SfxSeq( rst (*( sfxs sfxtt )) )) (
+            ( (SfxSeq( rst sfxs sfxtt )) (
                (if (is-suffix( l sfxs )) (tail(
                   (let lloc (maybe-deref(location l)))
                   (let lpfx (remove-suffix( l sfxs )))
@@ -146,7 +146,7 @@ preprocess-apply := λ(: program AST). (: (tail(
          (let suffixes parse-suffixes)
          (while (non-zero suffixes) (match suffixes (
             ()
-            ( (SfxSeq( rst (*( sfxs sfxtt )) )) (
+            ( (SfxSeq( rst sfxs sfxtt )) (
                (if (is-suffix( l sfxs )) (tail(
                   (let lloc (maybe-deref(location l)))
                   (let lpfx (remove-suffix( l sfxs )))
@@ -220,8 +220,8 @@ merge := λ(: l Context)(: r Context). (: (tail(
       ( (CPair( _ CtxEOF )) (set l CtxEOF ) )
       ( (CPair( CtxNil cr )) (set l cr) )
       ( (CPair( cl CtxNil )) (set l cl) )
-      ( (CPair( (CtxBind( cl (*( kl vl )) ))
-                (CtxBind( cr (*( kr vr )) )) )) (tail(
+      ( (CPair( (CtxBind( cl kl vl ))
+                (CtxBind( cr kr vr )) )) (tail(
          (let c1 (merge( cl cr )))
          (let c2 (close(CtxBind( c1 kl (close vl) ))))
          (let c3 (CtxBind( c2 kr (close vr) )))
@@ -348,7 +348,7 @@ apply-context := λ(: ctx Context)(: term AST). (: (tail(
       ( (Var n) (
          (while (non-zero ctx) (match ctx (
             ()
-            ( (CtxBind( rst (*(k v)) )) (
+            ( (CtxBind( rst k v )) (
                (if (==( k n )) (tail(
                   (set term v)
                   (set ctx CtxEOF)
@@ -382,7 +382,7 @@ substitute-uuids := λ(: ctx Context)(: term AST). (: (tail(
       ( (App( (Var 'uuid_s) (Var x ) )) (
          (while (non-zero ctx) (match ctx (
             ()
-            ( (CtxBind( rst (*( k v )) )) (
+            ( (CtxBind( rst k v )) (
                (if (==( x k )) (tail(
                   (set term v)
                   (set ctx rst)

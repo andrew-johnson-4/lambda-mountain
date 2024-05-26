@@ -508,7 +508,7 @@ compile-translate-local-variables := λ(: ctx CCContext)(: delta I64). (: (tail(
    (match ctx (
       ()
       ( CCCEOF () )
-      ( (CCCtxBind( rst (*( k (*( kt f )) )) )) (tail(
+      ( (CCCtxBind( rst k kt f )) (tail(
          (let rst (maybe-deref(compile-translate-local-variables( rst delta ))))
          (match (maybe-deref(ccfragment::get( f 'fragment-type_s ))) (
             ()
@@ -568,7 +568,7 @@ compile-declare-cstring := λ(: val String). (: (tail(
    (let id '_s)
    (while (non-zero cache) (match cache (
       ()
-      ( (SSSeq( rst (*( k v )) )) (
+      ( (SSSeq( rst k v )) (
          (if (==( k val )) (tail(
             (set id v)
             (set cache SSEOF)

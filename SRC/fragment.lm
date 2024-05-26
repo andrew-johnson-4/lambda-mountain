@@ -46,12 +46,12 @@ close := λ(: x FragList). (: (tail(
 print := λ(: x CCFragment). (: (
    (match x ( 
       ()
-      ( (CCFragment( kvs (*( offset (*( xtt ctx )) )) )) (tail(
+      ( (CCFragment( kvs offset xtt ctx )) (tail(
          (print 'Fragment\n_s)
          (print '\tOffset\s=\s_s)(print offset)(print '\n_s)
          (while (non-zero kvs) (match kvs (
             ()
-            ( (CCKVSeq( rst (*( k v )) )) (tail(
+            ( (CCKVSeq( rst k v )) (tail(
                (print '\t_s)(print k)(print '\s=\s_s)(print v)(print '\n_s)
                (set kvs rst)
             )))
@@ -128,10 +128,10 @@ ccfragment::get := λ(: e CCFragment)(: k String). (: (tail(
    (let r SNil)
    (match e (
       ()
-      ( (CCFragment( kvs (*( offset (*( ft ctx )) )) )) (
+      ( (CCFragment( kvs offset ft ctx )) (
          (while (non-zero kvs) (match kvs (
             ()
-            ( (CCKVSeq( rst (*( kvs-k kvs-v )) )) (
+            ( (CCKVSeq( rst kvs-k kvs-v )) (
                (if (==( k kvs-k )) (tail(
                   (set r kvs-v)
                   (set kvs CCKVEOF)
@@ -146,7 +146,7 @@ ccfragment::get := λ(: e CCFragment)(: k String). (: (tail(
 ccfragment::set := λ(: e CCFragment)(: k String)(: v S). (: (tail(
    (match e (
       ()
-      ( (CCFragment( kvs (*( offset (*( ft ctx )) )) )) (
+      ( (CCFragment( kvs offset ft ctx )) (
          (set e (CCFragment(
             (close(CCKVSeq( (close kvs) k v )))
             offset ft (close ctx)
@@ -164,7 +164,7 @@ ccfragment::get-context := λ(: e CCFragment) . (: (tail(
 ccfragment::set-context := λ(: e CCFragment)(: ctx CCContext). (: (tail(
    (match e (
       ()
-      ( (CCFragment( e-kvs (*( e-offset (*( e-tt e-ctx )) )) )) (
+      ( (CCFragment( e-kvs e-offset e-tt e-ctx )) (
          (set e (CCFragment( (close e-kvs) e-offset e-tt (close ctx) ))) 
       ))
    ))
@@ -179,7 +179,7 @@ ccfragment::get-type := λ(: e CCFragment) . (: (tail(
 ccfragment::set-type := λ(: e CCFragment)(: tt Type). (: (tail(
    (match e (
       ()
-      ( (CCFragment( e-kvs (*( e-offset (*( e-tt e-ctx )) )) )) (
+      ( (CCFragment( e-kvs e-offset e-tt e-ctx )) (
          (set e (CCFragment( (close e-kvs) e-offset tt (close e-ctx) ))) 
       ))
    ))
@@ -190,7 +190,7 @@ ccfragment::get-offset := λ(: e CCFragment). (: (tail(
    (let offset 0_i64)
    (match e (
       ()
-      ( (CCFragment( e-kvs (*( e-offset (*( e-tt e-ctx )) )) )) (
+      ( (CCFragment( e-kvs e-offset e-tt e-ctx )) (
          (set offset e-offset)
       ))
    ))
@@ -200,7 +200,7 @@ ccfragment::get-offset := λ(: e CCFragment). (: (tail(
 ccfragment::set-offset := λ(: e CCFragment)(: offset I64). (: (tail(
    (match e (
       ()
-      ( (CCFragment( e-kvs (*( e-offset (*( e-tt e-ctx )) )) )) (
+      ( (CCFragment( e-kvs e-offset e-tt e-ctx )) (
          (set e (CCFragment(
             (close e-kvs) offset e-tt (close e-ctx)
          )))
@@ -305,7 +305,7 @@ fragment-apply := λ(: ctx CCContext)(: offset I64)(: k String)(: args FragList)
 fragment-destructure-tctx := λ(: ctx CCContext)(: tctx TContext). (: (tail(
    (while (non-zero tctx) (match tctx (
       ()
-      ( (TCtxBind( rst (*( k vt )) )) (tail(
+      ( (TCtxBind( rst k vt )) (tail(
          (let fragment (maybe-deref(ccfragment::expression(to-string vt))))
          (let fragment-2 (maybe-deref(ccfragment::set( fragment 'program_s (SAtom(to-string vt)) ))))(set fragment fragment-2)
          (set ctx (CCCtxBind(
