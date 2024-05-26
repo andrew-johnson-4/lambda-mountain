@@ -1,0 +1,20 @@
+
+import STDLIB/default-instruction-set.lm;
+import STDLIB/default-primitives.lm;
+import STDLIB/default-stdlib.lm;
+import STDLIB/default-rules.lm;
+
+type A (A( B , U64 ));
+type B (B( U64 , U64 ));
+
+main := λ. (: (tail(
+   (let x (A( (B( 1_u64 2_u64 )) 3_u64 )))
+   (match x (
+      ()
+      ( (A( (B( x y )) z )) (tail(
+         (print x)
+         (print y)
+         (print z)
+      )))
+   ))
+)) Nil);
