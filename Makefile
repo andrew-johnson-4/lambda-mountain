@@ -14,6 +14,11 @@ re:
 	ld tmp.o -o tmp
 	./tmp
 
+deploy: compile-production
+	./production -o deploy.s SRC/cli.lm
+	diff production.s deploy.s
+	mv deploy.s BOOTSTRAP/cli.s
+
 compile-production: compile-bootstrap
 	rm -f production production.o production.s
 	./bootstrap -o production.s SRC/cli.lm
