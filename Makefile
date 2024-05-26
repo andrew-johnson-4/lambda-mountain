@@ -5,14 +5,15 @@ develop: compile-strict
 	./strict -o strict-loop.s SRC/cli.lm
 	as strict-loop.s -o strict-loop.o
 	ld strict-loop.o -o strict-loop
-	./strict-loop --tokenize SRC/cli.lm
+	cp strict-loop re-strict-loop
+	./strict-loop -o strict-loop-2.s SRC/cli.lm
 
 re:
-	rm -f strict-loop strict-loop.o strict-loop.s
-	./re-strict -o strict-loop.s SRC/cli.lm
-	as strict-loop.s -o strict-loop.o
-	ld strict-loop.o -o strict-loop
-	./strict-loop --tokenize SRC/cli.lm
+	./re-strict -o tmp.s tests/btstrp/test24.lm
+	as tmp.s -o tmp.o
+	ld tmp.o -o tmp
+	./tmp
+#	./re-strict -o tmp.s tests/btstrp/test24.lm
 
 compile-strict: compile-prod
 	rm -f strict strict.o strict.s

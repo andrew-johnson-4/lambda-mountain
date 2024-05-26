@@ -382,13 +382,21 @@ escape-literal := λ(: s String). (: (tail(
    (while (head-string s) (tail(
       (match (head-string s) (
          ()
-         ( 34_u8 (set cs (SCons( (close cs) (close(SAtom '\\"_s)) ))))
+         ( 34_u8 (set cs (SCons( (close cs) (close(SAtom '\\\\"_s)) ))))
          ( 92_u8 (
             (match (head-string(tail-string s)) (
                ()
+               ( 58_u8 (tail(
+                  (set s (tail-string s))
+                  (set cs (SCons( (close cs) (close(SAtom '\:_s)) )))
+               )))
                ( 91_u8 (tail(
                   (set s (tail-string s))
                   (set cs (SCons( (close cs) (close(SAtom '\[_s)) )))
+               )))
+               ( 92_u8 (tail(
+                  (set s (tail-string s))
+                  (set cs (SCons( (close cs) (close(SAtom '\\\\\\\\_s)) )))
                )))
                ( 93_u8 (tail(
                   (set s (tail-string s))
@@ -405,6 +413,10 @@ escape-literal := λ(: s String). (: (tail(
                ( 110_u8 (tail(
                   (set s (tail-string s))
                   (set cs (SCons( (close cs) (close(SAtom '\\\\n_s)) )))
+               )))
+               ( 111_u8 (tail(
+                  (set s (tail-string s))
+                  (set cs (SCons( (close cs) (close(SAtom '\o_s)) )))
                )))
                ( 115_u8 (tail(
                   (set s (tail-string s))

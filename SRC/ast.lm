@@ -10,7 +10,7 @@ type ASTList ASTLEOF | (ASTSeq( ASTList[] , AST ));
 
 type StringStringList SSEOF | (SSSeq( StringStringList[] , String , String ));
 
-type Used Used | Unused | Tail | Return;
+type IsUsed Used | Unused | Tail | Return;
 
 type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST[] ));
 type TContext TCtxEOF | (TCtxBind( TContext[] , String , Type ));
@@ -18,7 +18,7 @@ type Pair (Pair( AST , AST ));
 type CPair (CPair( Context , Context ));
 type TPair (TPair( Type , Type ));
 type TCPair (TCPair( TContext , TContext ));
-type UPair (UPair( Used , Used ));
+type UPair (UPair( IsUsed , IsUsed ));
 
 ast-tokenized-program := (: SNil S);
 ast-parsed-program := (: ASTEOF AST);
@@ -83,7 +83,7 @@ to-s := λ(: term AST). (: (tail(
    (close s)
 )) S[]);
 
-== := λ(: lu Used)(: ru Used). (: (tail(
+== := λ(: lu IsUsed)(: ru IsUsed). (: (tail(
    (let r 0_u64)
    (match (UPair( lu ru )) (
       ()

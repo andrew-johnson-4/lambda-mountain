@@ -1,0 +1,23 @@
+
+import STDLIB/default-instruction-set.lm;
+import STDLIB/default-primitives.lm;
+import STDLIB/default-stdlib.lm;
+import STDLIB/default-rules.lm;
+
+main := λ. (: (tail(
+   (let val '\\]_s)
+   (print val)
+   (match val (
+      ()
+      ( 'True_s (print 'True_s) )
+      ( 'False_s (print 'True_s) )
+      ( '\\t_s (print 'Tab_s) )
+      ( '\\n_s (print 'Newline_s) )
+      ( '\\s_s (print 'Space_s) )
+      ( '\\o_s (print 'Octothorpe_s) )
+      ( '\\[_s (print 'Left_s) )
+      ( '\\]_s (print 'Right_s) )
+      ( '\\:_s (print 'Colon_s) )
+      ( _ () )
+   ))
+)) Nil);
