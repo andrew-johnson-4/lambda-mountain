@@ -13,6 +13,7 @@ re:
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp
+#	./re-strict -o tmp.s tests/btstrp/test24.lm
 
 compile-strict: compile-prod
 	rm -f strict strict.o strict.s
