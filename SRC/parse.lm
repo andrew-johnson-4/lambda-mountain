@@ -321,7 +321,7 @@ parse-type := λ(: tt String). (: (tail(
    (let cache parse-type-cache)
    (while (non-zero cache) (match cache (
       ()
-      ( (TCtxBind( rst (*( k kt )) )) (tail(
+      ( (TCtxBind( rst k kt )) (tail(
          (if (==( k tt )) (
             (set cache-found kt)
          ) ())

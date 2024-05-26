@@ -245,7 +245,7 @@ print := λ(: t Context). (: (tail(
       ()
       ( CtxEOF () )
       ( CtxNil () )
-      ( (CtxBind( rst (*( k v )) )) (tail(
+      ( (CtxBind( rst k v )) (tail(
          (print rst)
          (print k)
          (print '\s=\s_s)
@@ -260,7 +260,7 @@ print := λ(: t TContext). (: (tail(
    (match t (
       ()
       ( TCtxEOF () )
-      ( (TCtxBind( rst (*( k v )) )) (tail(
+      ( (TCtxBind( rst k v )) (tail(
          (print rst)
          (print k)
          (print '\s=\s_s)

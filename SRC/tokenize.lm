@@ -25,7 +25,7 @@ location := λ(: tok String). (: (tail(
    (let locs token-source-location)
    (while (non-zero locs) (match locs (
       ()
-      ( (SourceMapSeq( rst (*( k vl )) )) (tail(
+      ( (SourceMapSeq( rst k vl )) (tail(
          (if (==( (as k U64) (as tok U64) )) (
             (set loc locs)
          ) ())
@@ -46,7 +46,7 @@ add-location := λ(: tok String)(: loc SourceLocation). (: (
 add-location := λ(: tok String)(: loc SourceMap). (: (
    (match loc (
       ()
-      ( (SourceMapSeq( _ (*( _ sloc )) )) (
+      ( (SourceMapSeq( _ _ sloc )) (
          (add-location( tok sloc ))
       ))
       ( _ () )
@@ -102,7 +102,7 @@ print := λ(: loc SourceMap). (: (
    (match loc (
       ()
       (SourceMapEOF (print 'Location\sUnknown_s))
-      ( (SourceMapSeq( _ (*( _ (SourceLocation( fp (*( ln cl )) )) )) )) (tail(
+      ( (SourceMapSeq( _ _ (SourceLocation( fp ln cl )) )) (tail(
          (print 'In\sFile\s_s)
          (print fp)
          (print '\sLine\s_s)

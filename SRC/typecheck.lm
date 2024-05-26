@@ -132,7 +132,7 @@ typecheck-get-size := λ(: tag String). (: (tail(
    (let sizes typecheck-type-sizes)
    (while (non-zero sizes) (match sizes (
       ()
-      ( (TSzSeq( rst (*( kt ks )) )) (tail(
+      ( (TSzSeq( rst kt ks )) (tail(
          (if (==( kt tag )) (
             (set sz ks)
          ) ())
@@ -155,7 +155,7 @@ typecheck-set-size := λ(: tag String)(: size U64). (: (
 merge := λ(: lctx TContext)(: rctx TContext). (: (tail(
    (match rctx (
       ()
-      ( (TCtxBind( rst (*( k v )) )) (tail(
+      ( (TCtxBind( rst k v )) (tail(
          (let lctx2 (TCtxBind( (close lctx) k v )))
          (let lctx3 (maybe-deref(merge( lctx2 rst ))))
          (set lctx lctx3)
@@ -673,7 +673,7 @@ typecheck-lookup := λ(: term AST). (: (tail(
    (let tctx typecheck-term-type-list)
    (while (non-zero tctx) (match tctx (
       ()
-      ( (TTSeq( rst (*( t tt )) )) (
+      ( (TTSeq( rst t tt )) (
          (if (==( t term )) (tail(
             (set found tt)
             (set tctx TTEOF)
@@ -930,7 +930,7 @@ typecheck-lookup := λ(: term S). (: (tail(
    (let tctx typecheck-s-type-list)
    (while (non-zero tctx) (match tctx (
       ()
-      ( (STSeq( rst (*( s tt )) )) (
+      ( (STSeq( rst s tt )) (
          (if (is( s term )) (tail(
             (set found tt)
             (set tctx STEOF)
@@ -1186,7 +1186,7 @@ typecheck-typeof-tag := λ(: tag String). (: (tail(
    (let tag-list typecheck-type-constructors)
    (while (non-zero tag-list) (match tag-list (
       ()
-      ( (TConSeq( rst (*( k kt )) )) (
+      ( (TConSeq( rst k kt )) (
          (if (==( k tag )) (tail(
             (set r kt)
             (set tag-list TConEOF)
@@ -1203,7 +1203,7 @@ typecheck-classof-tag := λ(: tag String). (: (tail(
    (let tag-list typecheck-classes-of-tag)
    (while (non-zero tag-list) (match tag-list (
       ()
-      ( (TConSeq( rst (*( k kt )) )) (
+      ( (TConSeq( rst k kt )) (
          (if (==( k tag )) (tail(
             (set r kt)
             (set tag-list TConEOF)
@@ -1341,7 +1341,7 @@ typecheck-unify-ctx := λ(: ctx TContext)(: tt Type). (: (tail(
       ( (TVar v) (
          (while (non-zero ctx) (match ctx (
             ()
-            ( (TCtxBind( rst (*( tk tv )) )) (tail(
+            ( (TCtxBind( rst tk tv )) (tail(
                (if (==( tk v )) (
                   (set tt tv)
                ) ())
@@ -1747,7 +1747,7 @@ typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tai
    (let found TAny)
    (while (non-zero tctx) (match tctx (
       ()
-      ( (TCtxBind( rst (*( k vt  )) )) (
+      ( (TCtxBind( rst k vt )) (
          (if (==( k vname )) (tail(
             (if (non-zero found) (
                (if (is-arrow vt) (tail(
