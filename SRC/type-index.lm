@@ -3,6 +3,12 @@ type TTBTree (TTBTree( U64 , AST , Type , TTBTree[] , TTBTree[]  ));
 
 type-index := (: (TTBTree( 0_u64 ASTEOF TAny (as 0_u64 TTBTree[]) (as 0_u64 TTBTree[]) )) TTBTree);
 
+close := λ(: x TTBTree). (: (tail(
+   (mov( (malloc(sizeof TTBTree)) R8 ))
+   (mov( x 0_u64 (as R8 TTBTree[]) ))
+   (as R8 TTBTree[])
+)) TTBTree[]);
+
 # Jenkins One at a Time Hash
 hash := λ(: key x+Sized<24>). (: (tail(
    (let i 0_u64)
