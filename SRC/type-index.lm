@@ -69,3 +69,8 @@ typeof := λ(: t AST). (: (tail(
    ))
    (close tt)
 )) Type[]);
+
+ascript := λ(: t AST)(: tt Type). (: (tail(
+   ()
+   ()
+)) Nil);

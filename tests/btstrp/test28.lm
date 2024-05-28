@@ -17,16 +17,8 @@ main := λ. (: (tail(
    (let xt (TGround( 'X_s (close TypeEOF) )))
    (let yt (TGround( 'Y_s (close TypeEOF) )))
 
-   (set type-index (TTBTree(
-      (hash x) x xt
-      (as 0_u64 TTBTree[])
-      (as 0_u64 TTBTree[])
-   )))
-   (set type-index (TTBTree(
-      (hash y) y yt
-      (close type-index)
-      (close type-index)
-   )))
+   (ascript( x xt ))
+   (ascript( y yt ))
 
    (print (maybe-deref(typeof x)))(print '\n_s)
    (print (maybe-deref(typeof y)))(print '\n_s)
