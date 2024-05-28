@@ -2,21 +2,24 @@
 develop: compile-production
 	cp production re-production
 	rm -f tmp tmp.o tmp.s
-	./production -o tmp.s tests/btstrp/test26.lm
+	./production -o tmp.s tests/btstrp/test27.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp
 
 re:
 	rm -f tmp tmp.o tmp.s
-	./re-production -o tmp.s tests/btstrp/test26.lm
+	./re-production -o tmp.s tests/btstrp/test27.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp
 
 deploy: compile-production
 	time ./production -o deploy.s SRC/cli.lm
-	diff production.s deploy.s
+	as deploy.s -o deploy.o
+	ld deploy.o -o deploy
+	time ./deploy -o deploy2.s SRC/cli.lm
+	diff deploy.s deploy2.s
 	mv deploy.s BOOTSTRAP/cli.s
 
 compile-production: compile-bootstrap
