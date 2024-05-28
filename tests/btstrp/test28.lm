@@ -14,4 +14,9 @@ main := λ. (: (tail(
    (print(==( x x )))(print '\n_s)
    (print(==( y y )))(print '\n_s)
    (print(==( x y )))(print '\n_s)
+   (let xt (TGround( 'X_s (close TypeEOF) )))
+   (let yt (TGround( 'Y_s (close TypeEOF) )))
+
+   (print (maybe-deref(typeof x)))(print '\n_s)
+   (print (maybe-deref(typeof y)))(print '\n_s)
 )) Nil);

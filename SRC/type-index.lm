@@ -1,5 +1,7 @@
 
-type TTBTree (TTBTree( U32 , AST , Type , TTBTree[] , TTBTree[]  ));
+type TTBTree (TTBTree( U64 , AST , Type , TTBTree[] , TTBTree[]  ));
+
+type-index := (: (TTBTree( 0_u64 ASTEOF TAny (as 0_u64 TTBTree[]) (as 0_u64 TTBTree[]) )) TTBTree);
 
 # Jenkins One at a Time Hash
 hash := λ(: key x+Sized<24>). (: (tail(
@@ -28,3 +30,8 @@ is := λ(: l x+Sized<24>)(: r y+Sized<24>). (: (tail(
    )))
    return
 )) U64);
+
+typeof := λ(: t AST). (: (tail(
+   ()
+   (close TAny)
+)) Type[]);
