@@ -394,3 +394,4 @@ fragment pop := λ(: l Reg64). (: (.program( \t 'pop \s '% (.expression l) \n ))
 
 fragment shl := λ(: c Literal+Constant)(: l Reg64). (: (.program( \t 'shl \s '$ (.expression c) , \s '% (.expression l) \n )) Nil);
 fragment shr := λ(: c Literal+Constant)(: l Reg64). (: (.program( \t 'shr \s '$ (.expression c) , \s '% (.expression l) \n )) Nil);
+fragment xor := λ(: c Reg64)(: l Reg64). (: (.program( \t 'xor \s '% (.expression c) , \s '% (.expression l) \n )) Nil);
