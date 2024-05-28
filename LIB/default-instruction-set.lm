@@ -21,6 +21,7 @@ fragment cdecl::return := λ(: l LocalVariable+Sized<4>). (: (  (.program( \t 'm
 fragment cdecl::return := λ(: l LocalVariable+Sized<8>). (: (  (.program( \t 'mov \t (.expression l) \[ '%rbp \] , '%rax \n))  (.expression 'rax)  ) Nil);
 
 fragment & := λ(: src LocalVariable). (: ( (.program( \t 'mov \t '%rbp , \s '%r12 \n \t 'add \s '$ (.expression src) , \s '%r12 \n) (.expression( 'r12 ))) ) Reg64);
+fragment & := λ(: src GlobalVariable). (: ( (.program( \t 'mov \t '$ (.expression src) , \s '%r12 \n) (.expression( 'r12 ))) ) Reg64);
 
 # Generic 'mov Semantics
 fragment mov := λ(: src LocalVariable+Sized<size>)(: dst LocalVariable). (: (

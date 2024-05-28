@@ -72,26 +72,33 @@ typeof := λ(: t AST). (: (tail(
 
 ascript := λ(: t AST)(: tt Type). (: (tail(
    (let ht (hash t))
-   (let index type-index)
+   (let index (as (& type-index) TTBTree[]))
    (let continue True_u8)
    (let cell (close(TTBTree( ht t tt (as 0_u64 TTBTree[]) (as 0_u64 TTBTree[]) ))))
-   (while (==( continue True_u8 )) (
-      (if (<( (.5 index) ht )) (
-         (if (==( (as (.1 index) U64) 0_u64 )) (tail(
+   (while (==( continue True_u8 )) (tail(
+      (let flat-index (maybe-deref index))
+      (if (<( ht (.5 flat-index) )) (
+         (if (==( (as (.1 flat-index) U64) 0_u64 )) (tail(
             (mov( (as cell U64) R8 ))
-            (set[]( (as index Field<U64,?>) 1_u64 R8 ))
+            (print 'Insert\sLeft\n_s)
+            (print (.5 flat-index))(print '\n_s)
+            (print ht)(print '\n_s)
+            (set[]( (as index Field<U64,?>[]) 1_u64 R8 ))
             (set continue False_u8)
          )) (
-            (set index (maybe-deref(.1 index)))
+            (set index (.1 flat-index))
          ))
       ) (
-         (if (==( (as (.2 index) U64) 0_u64 )) (tail(
+         (if (==( (as (.2 flat-index) U64) 0_u64 )) (tail(
             (mov( (as cell U64) R8 ))
-            (set[]( (as index Field<U64,?>) 2_u64 R8 ))
+            (print 'Insert\sRight\n_s)
+            (print (.5 flat-index))(print '\n_s)
+            (print ht)(print '\n_s)
+            (set[]( (as index Field<U64,?>[]) 2_u64 R8 ))
             (set continue False_u8)
          )) (
-            (set index (maybe-deref(.2 index)))
+            (set index (.2 flat-index))
          ))
       ))
-   ))
+   )))
 )) Nil);
