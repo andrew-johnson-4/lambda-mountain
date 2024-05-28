@@ -8,6 +8,10 @@ import SRC/type-index.lm;
 
 main := λ. (: (tail(
    (let x ASTEOF)
+   (let y ASTNil)
    (print(hash x))(print '\n_s)
    (print(hash x))(print '\n_s)
+   (print(==( x x )))(print '\n_s)
+   (print(==( y y )))(print '\n_s)
+   (print(==( x y )))(print '\n_s)
 )) Nil);

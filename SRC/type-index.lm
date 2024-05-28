@@ -16,3 +16,15 @@ hash := λ(: key x+Sized<24>). (: (tail(
    (set hash (+( hash (<<( hash 15_u64 )) )))
    hash
 )) U64);
+
+is := λ(: l x+Sized<24>)(: r y+Sized<24>). (: (tail(
+   (let i 0_u64)
+   (let return 1_u64)
+   (while (<( i 3_u64 )) (tail(
+      (let li ([]( (as l Field<U64,3>) i )))
+      (let ri ([]( (as r Field<U64,3>) i )))
+      (if (==( li ri )) () (set return 0_u64))
+      (set i (+( i 1_u64 )))
+   )))
+   return
+)) U64);
