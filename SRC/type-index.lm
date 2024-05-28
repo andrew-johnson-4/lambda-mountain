@@ -77,13 +77,13 @@ ascript := λ(: t AST)(: tt Type). (: (tail(
    (let cell (close(TTBTree( ht t tt (as 0_u64 TTBTree[]) (as 0_u64 TTBTree[]) ))))
    (while (==( continue True_u8 )) (tail(
       (let flat-index (maybe-deref index))
-      (if (<( ht (.5 flat-index) )) (
+      (if (<( (.5 flat-index) ht )) (
          (if (==( (as (.1 flat-index) U64) 0_u64 )) (tail(
             (mov( (as cell U64) R8 ))
             (print 'Insert\sLeft\n_s)
             (print (.5 flat-index))(print '\n_s)
             (print ht)(print '\n_s)
-            (set[]( (as index Field<U64,?>[]) 1_u64 R8 ))
+            (set[]( (as index Field<Sized<8>,1>[]) 1_u64 R8 ))
             (set continue False_u8)
          )) (
             (set index (.1 flat-index))
@@ -94,7 +94,7 @@ ascript := λ(: t AST)(: tt Type). (: (tail(
             (print 'Insert\sRight\n_s)
             (print (.5 flat-index))(print '\n_s)
             (print ht)(print '\n_s)
-            (set[]( (as index Field<U64,?>[]) 2_u64 R8 ))
+            (set[]( (as index Field<Sized<8>,1>[]) 2_u64 R8 ))
             (set continue False_u8)
          )) (
             (set index (.2 flat-index))
