@@ -55,29 +55,14 @@ fragment [] := λ(: l LocalVariable+Array<x,?>)(: r GlobalVariable+U64). (: (
    (.expression( 'r15 ))
 ) x+Reg64);
 
-fragment set[] := λ(: l LocalVariable+Field<x+Sized<8>,?>)(: i LocalVariable+U64)(: v Reg64+U64). (: (
+fragment set[] := λ(: l LocalVariable+Field<x+Sized<8>,?>)(: i Literal+Constant+U64)(: v Reg64). (: (
    (.program (
       \t 'mov \s '%rbp , \s '%r15 \n
       \t 'add \s '$ (.expression l) , \s %r15 \n
-      \t 'mov \s (.expression i) \[ '%rbp \] , \s '%r14 \n
-      \t 'shl \s $3, %r14 \n
-      \t 'add \s '%r14 , \s '%r15 \n
+      \t 'add \s '$ (*( '8 (.expression i) )) , \s '%r15 \n
       \t 'mov \s '% (.expression v) , \s '0 \[ '%r15 \] \n
    ))
-   (.expression( 'r15 ))
-) x+Reg64);
-
-fragment set[] := λ(: l LocalVariable+Array<x,?>)(: i GlobalVariable+U64)(: v Reg64+U64). (: (
-   (.program (
-      \t 'mov \s '$ (.expression l) , \s '%r15 \n
-      \t 'mov \s '$ (.expression i) , \s '%r14 \n
-      \t 'mov \s '0 \[ '%r14 \] , \s '%r14 \n
-      \t 'shl \s '$3 , \s '%r14 \n
-      \t 'add \s '%r14 , \s '%r15 \n
-      \t 'mov \s '% (.expression v) , \s '0 \[ '%r15 \] \n
-   ))
-   (.expression( 'r15 ))
-) x+Reg64);
+) Nil);
 
 fragment [] := λ(: l GlobalVariable+Array<x,?>)(: r GlobalVariable+U64). (: (
    (.program (

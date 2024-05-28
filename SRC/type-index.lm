@@ -71,6 +71,27 @@ typeof := λ(: t AST). (: (tail(
 )) Type[]);
 
 ascript := λ(: t AST)(: tt Type). (: (tail(
-   ()
-   ()
+   (let ht (hash t))
+   (let index type-index)
+   (let continue True_u8)
+   (let cell (close(TTBTree( ht t tt (as 0_u64 TTBTree[]) (as 0_u64 TTBTree[]) ))))
+   (while (==( continue True_u8 )) (
+      (if (<( (.5 index) ht )) (
+         (if (==( (as (.1 index) U64) 0_u64 )) (tail(
+            (mov( (as cell U64) R8 ))
+            (set[]( (as index Field<U64,?>) 1_u64 R8 ))
+            (set continue False_u8)
+         )) (
+            (set index (maybe-deref(.1 index)))
+         ))
+      ) (
+         (if (==( (as (.2 index) U64) 0_u64 )) (tail(
+            (mov( (as cell U64) R8 ))
+            (set[]( (as index Field<U64,?>) 2_u64 R8 ))
+            (set continue False_u8)
+         )) (
+            (set index (maybe-deref(.2 index)))
+         ))
+      ))
+   ))
 )) Nil);
