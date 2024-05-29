@@ -29,15 +29,10 @@ compile-data-header := λ . (: (tail(
    output
 )) S);
 
-compile-argv-text-header := λ . (: (tail(
-   (let r SNil)
-   (close r)
-)) S[]);
-
 compile-exit-cleanup := λ . (: (tail(
    (let r SNil)
    (set r (SCons( (close r) (close(SAtom '\tmov\s$60,\s%rax\n_s)) )))
    (set r (SCons( (close r) (close(SAtom '\tmov\s$0,\s%rdi\n_s)) )))
    (set r (SCons( (close r) (close(SAtom '\tsyscall\n_s)) )))
-   (close r)
-)) S[]);
+   r
+)) S);
