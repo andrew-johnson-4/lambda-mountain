@@ -72,7 +72,6 @@ cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST)(: ha
          (exit-error( 'Context::lookup\sCould\sNot\sFind\sSymbol_s sloc ))
       )) ())
    ))
-   (if (==( k 'cdecl::args-size_s )) (print r) ())
    (close r)
 )) CCFragment[]);
 
