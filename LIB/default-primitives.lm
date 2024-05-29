@@ -110,6 +110,24 @@ fragment > := λ(: l LocalVariable+U64)(: r Constant+U64). (: (
    (.expression( 'ja ))
 ) BranchConditional);
 
+fragment > := λ(: l LocalVariable+U64)(: r LocalVariable+U64). (: (
+   (.program (
+      \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
+      \t 'mov \s (.expression r) \[ '%rbp \] , \s '%r14 \n
+      \t 'cmp \s '%r14 , '%r15 \n
+   ))
+   (.expression( 'ja ))
+) BranchConditional);
+
+fragment > := λ(: l LocalVariable+I64)(: r LocalVariable+I64). (: (
+   (.program (
+      \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
+      \t 'mov \s (.expression r) \[ '%rbp \] , \s '%r14 \n
+      \t 'cmp \s '%r14 , '%r15 \n
+   ))
+   (.expression( 'jg ))
+) BranchConditional);
+
 fragment > := λ(: l GlobalVariable+I64)(: r Constant+I64). (: (
    (.program (
       \t 'mov \s '$ (.expression l) , \s '%r15 \n
