@@ -263,7 +263,6 @@ typecheck-typeof-lhs := λ(: lhs AST). (: (tail(
    (close r)
 )) Type[]);
 
-typecheck-term-type-list := (: TTEOF TermTypeList);
 typecheck-types-have-changed := True_u8;
 typecheck := λ. (: (tail(
    (let p ast-parsed-program)
@@ -556,20 +555,8 @@ typecheck-assert-one := λ(: term AST). (: (
 ) Nil);
 
 typecheck-lookup := λ(: term AST). (: (tail(
-   (let found TAny)
-   (let tctx typecheck-term-type-list)
-   (while (non-zero tctx) (match tctx (
-      ()
-      ( (TTSeq( rst t tt )) (
-         (if (==( t term )) (tail(
-            (set found tt)
-            (set tctx TTEOF)
-         )) (
-            (set tctx rst)
-         ))
-      ))
-   )))
-   (close found)
+   ()
+   (typeof term)
 )) Type[]);
 
 exit-error := λ(: msg String)(: t AST). (: (tail(
@@ -849,10 +836,7 @@ typecheck-ascript := λ(: t AST)(: tt Type). (: (
          )))
       ) (tail(
          (let stt (maybe-deref(typecheck-annotate-size tt)))
-         (set typecheck-term-type-list (TTSeq(
-            (close typecheck-term-type-list)
-            t stt
-         )))
+         (ascript( t stt ))
          (set typecheck-types-have-changed True_u8)
       )))
    )) ())

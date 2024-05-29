@@ -1,5 +1,13 @@
 
-type TTBTree (TTBTree( U32 , AST , Type , TTBTree[] , TTBTree[]  ));
+type TTBTree (TTBTree( U64 , AST , Type , TTBTree[] , TTBTree[]  ));
+
+type-index := (: (TTBTree( 0_u64 ASTEOF TAny (as 0_u64 TTBTree[]) (as 0_u64 TTBTree[]) )) TTBTree);
+
+close := λ(: x TTBTree). (: (tail(
+   (mov( (malloc(sizeof TTBTree)) R8 ))
+   (mov( x 0_u64 (as R8 TTBTree[]) ))
+   (as R8 TTBTree[])
+)) TTBTree[]);
 
 # Jenkins One at a Time Hash
 hash := λ(: key x+Sized<24>). (: (tail(
@@ -16,3 +24,75 @@ hash := λ(: key x+Sized<24>). (: (tail(
    (set hash (+( hash (<<( hash 15_u64 )) )))
    hash
 )) U64);
+
+is := λ(: l x+Sized<24>)(: r y+Sized<24>). (: (tail(
+   (let i 0_u64)
+   (let return 1_u64)
+   (while (<( i 3_u64 )) (tail(
+      (let li ([]( (as l Field<U64,3>) i )))
+      (let ri ([]( (as r Field<U64,3>) i )))
+      (if (==( li ri )) () (set return 0_u64))
+      (set i (+( i 1_u64 )))
+   )))
+   return
+)) U64);
+
+typeof := λ(: t AST). (: (tail(
+   (let th (hash t))
+   (let tt TAny)
+   (let index type-index)
+   (let continue True_u8)
+   (while (==( continue True_u8 )) (
+      (let ih (.5 index))
+      (if (==( th ih )) (
+         (if (is( t (.4 index) )) (tail(
+            (let tt-2 (.3 index))
+            (set tt tt-2)
+            (set continue False_u8)
+         )) ())
+      ) ())
+      (if (==( continue True_u8 )) (
+         (if (<( ih th )) (
+            (if (==( (as (.1 index) U64) 0_u64 )) (
+               (set continue False_u8)
+            ) (
+               (set index (maybe-deref(.1 index)))
+            ))
+         ) (
+            (if (==( (as (.2 index) U64) 0_u64 )) (
+               (set continue False_u8)
+            ) (
+               (set index (maybe-deref(.2 index)))
+            ))
+         ))
+      ) ())
+   ))
+   (close tt)
+)) Type[]);
+
+ascript := λ(: t AST)(: tt Type). (: (tail(
+   (let ht (hash t))
+   (let index (as (& type-index) TTBTree[]))
+   (let continue True_u8)
+   (let cell (close(TTBTree( ht t tt (as 0_u64 TTBTree[]) (as 0_u64 TTBTree[]) ))))
+   (while (==( continue True_u8 )) (tail(
+      (let flat-index (maybe-deref index))
+      (if (<( (.5 flat-index) ht )) (
+         (if (==( (as (.1 flat-index) U64) 0_u64 )) (tail(
+            (mov( (as cell U64) R8 ))
+            (set[]( (as index Field<Sized<8>,1>[]) 1_u64 R8 ))
+            (set continue False_u8)
+         )) (
+            (set index (.1 flat-index))
+         ))
+      ) (
+         (if (==( (as (.2 flat-index) U64) 0_u64 )) (tail(
+            (mov( (as cell U64) R8 ))
+            (set[]( (as index Field<Sized<8>,1>[]) 2_u64 R8 ))
+            (set continue False_u8)
+         )) (
+            (set index (.2 flat-index))
+         ))
+      ))
+   )))
+)) Nil);
