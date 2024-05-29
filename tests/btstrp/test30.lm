@@ -13,7 +13,7 @@ ts := λ(: s String). (: (tail(
 )) T);
 
 main := λ. (: (
-   (match (ts()) (
+   (match (ts 'A_s) (
       ()
       ( (T( x y )) (tail(
          (print x)
