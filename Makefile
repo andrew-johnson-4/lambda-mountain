@@ -15,6 +15,7 @@ re:
 	./tmp
 
 deploy: compile-production
+	cp production re-production
 	time ./production -o deploy.s SRC/cli.lm
 	as deploy.s -o deploy.o
 	ld deploy.o -o deploy
