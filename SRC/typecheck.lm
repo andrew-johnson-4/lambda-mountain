@@ -183,12 +183,12 @@ tsized := λ(: sz String). (: (tail(
 )) Type[]);
 
 t1 := λ(: s String). (: (tail(
-   ()
-   (close (TGround(
+   (let tt (TGround(
       s
       (close TypeEOF)
    )))
-)) Type[]);
+   tt
+)) Type);
 
 type TermTypeList TTEOF | (TTSeq( TermTypeList[] , AST , Type ));
 type STypeList STEOF | (STSeq( STypeList[] , S , Type ));
@@ -1481,13 +1481,13 @@ tarray := λ(: lt Type)(: rt Type). (: (tail(
    (let tt (TGround( 'Array_s
       (close(TypeSeq( (close(TypeSeq( (close TypeEOF) lt ))) rt )))
    )))
-   (close tt)
-)) Type[]);
+   tt
+)) Type);
 
 tlabel := λ. (: (tail(
    (let tt (TGround( 'Label_s (close TypeEOF) )))
-   (close tt)
-)) Type[]);
+   tt
+)) Type);
 
 without-representation := λ(: tt Type). (: (tail(
    (match tt (
