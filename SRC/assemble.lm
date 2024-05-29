@@ -124,7 +124,7 @@ compile-type-case := λ(: ctx CCContext)(: base-type Type)(: rhs AST)(: case-num
 
 compile-define-head-accessor := λ(: ctx CCContext)(: base-type Type). (: (tail(
 
-   (let arrow-tt (maybe-deref(tarrow( (TAnd( (close base-type) (t1 'LocalVariable_s) )) (maybe-deref(t1 'Reg64_s)) ))))
+   (let arrow-tt (tarrow( (TAnd( (close base-type) (t1 'LocalVariable_s) )) (maybe-deref(t1 'Reg64_s)) )))
    (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
    (let fragment (maybe-deref(ccfragment::new())))
    (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
@@ -154,7 +154,7 @@ compile-define-head-accessor := λ(: ctx CCContext)(: base-type Type). (: (tail(
       ctx '.0_s arrow-tt fragment
    ))))(set ctx ctx-2)
 
-   (let arrow-tt (maybe-deref(tarrow( (TAnd( (close base-type) (t1 'GlobalVariable_s) )) (maybe-deref(t1 'Reg64_s)) ))))
+   (let arrow-tt (tarrow( (TAnd( (close base-type) (t1 'GlobalVariable_s) )) (maybe-deref(t1 'Reg64_s)) )))
    (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
    (let fragment (maybe-deref(ccfragment::new())))
    (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
@@ -208,7 +208,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
             ( (TGround( 'StackVariable_s _ )) () )
          ))
          (let return-type (maybe-deref(with-representation p2)))
-         (let ftype (maybe-deref(tarrow( (maybe-deref(tand( base-type (maybe-deref(t1 'LocalVariable_s)) ))) return-type ))))
+         (let ftype (tarrow( (maybe-deref(tand( base-type (maybe-deref(t1 'LocalVariable_s)) ))) return-type )))
          (let fragment (maybe-deref(ccfragment::new())))
          (let af-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment af-2)
          (let af-3 (maybe-deref(ccfragment::set-type( fragment ftype ))))(set fragment af-3)
@@ -310,7 +310,7 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
             ( (TGround( 'StackVariable_s _ )) () )
          ))
          (let return-type (maybe-deref(with-representation p2)))
-         (let ftype (maybe-deref(tarrow( (maybe-deref(tand( base-type (maybe-deref(t1 'LocalVariable_s)) ))) return-type ))))
+         (let ftype (tarrow( (maybe-deref(tand( base-type (maybe-deref(t1 'LocalVariable_s)) ))) return-type )))
          (let fragment (maybe-deref(ccfragment::new())))
          (let af-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment af-2)
          (let af-3 (maybe-deref(ccfragment::set-type( fragment ftype ))))(set fragment af-3)
@@ -403,7 +403,7 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
       (let base-type-sz (typecheck-aligned-sizeof base-type))
       (let args-sz (typecheck-aligned-sizeof arg-types))
       (let whitespace-sz (-( (-( base-type-sz 8_u64 )) args-sz )))
-      (let arrow-tt (maybe-deref(tarrow( (maybe-deref(t1 tag)) (maybe-deref(tand( rtype (maybe-deref(t1 'StackVariable_s)) ))) ))))
+      (let arrow-tt (tarrow( (maybe-deref(t1 tag)) (maybe-deref(tand( rtype (maybe-deref(t1 'StackVariable_s)) ))) )))
       (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
       (let fragment (maybe-deref(ccfragment::new())))
       (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
@@ -442,10 +442,10 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
          ctx 'push_s arrow-tt fragment
       ))))(set ctx ctx-2)
 
-      (let arrow-tt (maybe-deref(tarrow(
+      (let arrow-tt (tarrow(
          (maybe-deref(tcons( (maybe-deref(t1 tag)) (maybe-deref(t1 'LocalVariable_s)) )))
          (maybe-deref(t1 'Nil_s))
-      ))))
+      )))
       (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
       (let fragment (maybe-deref(ccfragment::new())))
       (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
@@ -491,10 +491,10 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
          ctx 'mov_s arrow-tt fragment
       ))))(set ctx ctx-2)
 
-      (let arrow-tt (maybe-deref(tarrow(
+      (let arrow-tt (tarrow(
          (maybe-deref(tcons( (maybe-deref(t1 tag)) (maybe-deref(t1 'GlobalVariable_s)) )))
          (maybe-deref(t1 'Nil_s))
-      ))))
+      )))	
       (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
       (let fragment (maybe-deref(ccfragment::new())))
       (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
@@ -551,7 +551,7 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
       (let whitespace-sz (-( base-type-sz 8_u64 )))
 
       #push constructor
-      (let arrow-tt (maybe-deref(tarrow( (maybe-deref(t1 tag)) rtype ))))
+      (let arrow-tt (tarrow( (maybe-deref(t1 tag)) rtype )))
       (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
       (let fragment (maybe-deref(ccfragment::new())))
       (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
@@ -585,10 +585,10 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
       ))))(set ctx ctx-2)
 
       #mov local constructor
-      (let arrow-tt (maybe-deref(tarrow(
+      (let arrow-tt (tarrow(
          (maybe-deref(tcons( (maybe-deref(t1 tag)) (TAnd( (close base-type) (t1 'LocalVariable_s) )) )))
          (maybe-deref(t1 'Nil_s))
-      ))))
+      )))
       (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
       (let fragment (maybe-deref(ccfragment::new())))
       (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
@@ -625,10 +625,10 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
       ))))(set ctx ctx-2)
 
       #mov global constructor
-      (let arrow-tt (maybe-deref(tarrow(
+      (let arrow-tt (tarrow(
          (maybe-deref(tcons( (maybe-deref(t1 tag)) (TAnd( (close base-type) (t1 'GlobalVariable_s) )) )))
          (maybe-deref(t1 'Nil_s))
-      ))))
+      )))
       (let arrow-dc (TAnd( (close arrow-tt) (t1 'DontChain_s) )))(set arrow-tt arrow-dc)
       (let fragment (maybe-deref(ccfragment::new())))
       (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)

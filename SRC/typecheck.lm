@@ -336,7 +336,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
          (set typecheck-type-constructors (TConSeq(
             (close typecheck-type-constructors)
             tag
-            (maybe-deref(tarrow( atype rtype )))
+            (tarrow( atype rtype ))
          )))
          (set r (typecheck-aligned-sizeof atype))
          (set r (+( r 8_u64 )))
@@ -351,7 +351,7 @@ typecheck-annotate-head-accessor := λ(: base-type Type). (: (tail(
    (set global-type-context (TCtxBind(
       (close global-type-context)
       '.0_s
-      (maybe-deref(tarrow( base-type tt )))
+      (tarrow( base-type tt ))
    )))
 )) Nil);
 
@@ -368,7 +368,7 @@ typecheck-annotate-accessors := λ(: base-type Type)(: args-type Type). (: (tail
          (set global-type-context (TCtxBind(
             (close global-type-context)
             accessor-name
-            (maybe-deref(tarrow( base-type rt )))
+            (tarrow( base-type rt ))
          )))
          (set field-number (+( field-number 1_u64 )))
          (set args-type lt)
@@ -382,7 +382,7 @@ typecheck-annotate-accessors := λ(: base-type Type)(: args-type Type). (: (tail
          (set global-type-context (TCtxBind(
             (close global-type-context)
             accessor-name
-            (maybe-deref(tarrow( base-type rt )))
+            (tarrow( base-type rt ))
          )))
          (set args-type TAny)
       )))
@@ -438,7 +438,7 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
          (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
          (let return-type (maybe-deref(without-representation rhst)))
          (let return-type-2 (maybe-deref(with-representation return-type)))
-         (let ft (maybe-deref(tarrow( lt return-type-2 ))))
+         (let ft (tarrow( lt return-type-2 )))
          (set global-type-context (TCtxBind(
             (close global-type-context)
             k
@@ -447,7 +447,7 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
       )))
       ( (Fragment( k (Abs( lhs (Asc( rhs rhst )) )) )) (tail(
          (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
-         (let ft (maybe-deref(tarrow( lt rhst ))))
+         (let ft (tarrow( lt rhst )))
          (typecheck-ascript( td ft ))
          (set global-type-context (TCtxBind(
             (close global-type-context)
@@ -1003,7 +1003,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
          (typecheck-infer-expr( tctx rhs Used ))
          (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
          (let rt (maybe-deref(typecheck-lookup rhs)))
-         (typecheck-ascript( term (maybe-deref(tarrow( lt rt ))) ))
+         (typecheck-ascript( term (tarrow( lt rt )) ))
       )))
       ( (Var v) (
          (typecheck-ascript( term (maybe-deref(typecheck-typeof-var( term tctx v ))) ))
@@ -1413,18 +1413,18 @@ typecheck-unify-generous := λ(: fpt Type)(: pt Type). (: (tail(
 )) TContext[]);
 
 tarrow := λ(: lt Type)(: rt Type). (: (tail(
-   ()
-   (close(TGround( '->_s
+   (let tt (TGround( '->_s
       (close(TypeSeq( (close(TypeSeq( (close TypeEOF) lt ))) rt )))
    )))
-)) Type[]);
+   tt
+)) Type);
 
 tcons := λ(: lt Type)(: rt Type). (: (tail(
-   ()
-   (close(TGround( 'Cons_s
+   (let tt (TGround( 'Cons_s
       (close(TypeSeq( (close(TypeSeq( (close TypeEOF) lt ))) rt )))
    )))
-)) Type[]);
+   tt
+)) Type);
 
 right-if-not-left := λ(: lt Type)(: rt Type). (: (tail(
    (match (TPair( lt rt )) (
@@ -1474,20 +1474,20 @@ tand := λ(: lt Type)(: rt Type). (: (tail(
          )))
       ) ())
    )) (set lt rt))
-   (close lt)
-)) Type[]);
+   lt
+)) Type);
 
 tarray := λ(: lt Type)(: rt Type). (: (tail(
-   ()
-   (close(TGround( 'Array_s
+   (let tt (TGround( 'Array_s
       (close(TypeSeq( (close(TypeSeq( (close TypeEOF) lt ))) rt )))
    )))
-)) Type[]);
+   tt
+)) Type);
 
 tlabel := λ. (: (tail(
-   ()
-   (close(TGround( 'Label_s (close TypeEOF) )))
-)) Type[]);
+   (let tt (TGround( 'Label_s (close TypeEOF) )))
+   tt
+)) Type);
 
 without-representation := λ(: tt Type). (: (tail(
    (match tt (
