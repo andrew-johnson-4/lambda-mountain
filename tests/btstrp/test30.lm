@@ -4,18 +4,20 @@ import LIB/default-primitives.lm;
 import LIB/default-stdlib.lm;
 import LIB/default-rules.lm;
 
-type T (T( U64 , U64 ));
+type T (T( U64 , String ));
 
-ts := λ. (: (tail(
-#   (let x 123_u64)
-   (let sz '8_s)
-   (let t (T( 1_u64 2_u64 )))
+ts := λ(: s String). (: (tail(
+   (let x 123_u64)
+   (let t (T( 1_u64 s )))
    t
 )) T);
 
-main := λ. (: (tail(
-   (let szt (ts()))
-   (print (.0 szt))
-   (print (.1 szt))
-   (print (.2 szt))
-)) Nil);
+main := λ. (: (
+   (match (ts()) (
+      ()
+      ( (T( x y )) (tail(
+         (print x)
+         (print y)
+      )))
+   ))
+) Nil);
