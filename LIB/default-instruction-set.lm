@@ -15,10 +15,27 @@ fragment cdecl::return := λ(: l Constant+Literal+Sized<1>). (: (  (.program( \t
 fragment cdecl::return := λ(: l Constant+Literal+Sized<2>). (: (  (.program( \t 'mov \t '$ (.expression l) , '%ax \n))  (.expression 'ax)  ) Nil);
 fragment cdecl::return := λ(: l Constant+Literal+Sized<4>). (: (  (.program( \t 'mov \t '$ (.expression l) , '%eax \n))  (.expression 'eax)  ) Nil);
 fragment cdecl::return := λ(: l Constant+Literal+Sized<8>). (: (  (.program( \t 'mov \t '$ (.expression l) , '%rax \n))  (.expression 'rax)  ) Nil);
-fragment cdecl::return := λ(: l LocalVariable+Sized<1>). (: (  (.program( \t 'mov \t (.expression l) \[ '%rbp \] , '%al \n))  (.expression 'al)  ) Nil);
-fragment cdecl::return := λ(: l LocalVariable+Sized<2>). (: (  (.program( \t 'mov \t (.expression l) \[ '%rbp \] , '%ax \n))  (.expression 'ax)  ) Nil);
-fragment cdecl::return := λ(: l LocalVariable+Sized<4>). (: (  (.program( \t 'mov \t (.expression l) \[ '%rbp \] , '%eax \n))  (.expression 'eax)  ) Nil);
-fragment cdecl::return := λ(: l LocalVariable+Sized<8>). (: (  (.program( \t 'mov \t (.expression l) \[ '%rbp \] , '%rax \n))  (.expression 'rax)  ) Nil);
+
+fragment cdecl::return := λ(: src LocalVariable+Sized<size>). (: (
+   (.program(
+      (if-eq size 1 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%al \n))
+      (if-eq size 2 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%ax \n))
+      (if-eq size 4 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%eax \n))
+      (if-eq size 8 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%rax \n))
+      (if-eq 1 (>( size 8 )) (
+         (for word-offset in (range( 0 (/( size 8 )) )) (
+            \t 'movq \s (+( (.expression src) (*( word-offset 8 )) )) \[ '%rbp \] , '%r15 \n
+            \t 'movq \s '%r15 , \s (+( (-( -8 size )) (*( word-offset 8 )) )) \[ '%rbp \] \n
+         ))
+      ))
+   ))
+   (.expression(
+      (if-eq size 1 'al)
+      (if-eq size 2 'ax)
+      (if-eq size 4 'eax)
+      (if-eq size 8 'rax)
+   ))
+) Nil);
 
 fragment & := λ(: src LocalVariable). (: ( (.program( \t 'mov \t '%rbp , \s '%r12 \n \t 'add \s '$ (.expression src) , \s '%r12 \n) (.expression( 'r12 ))) ) Reg64);
 fragment & := λ(: src GlobalVariable). (: ( (.program( \t 'mov \t '$ (.expression src) , \s '%r12 \n) (.expression( 'r12 ))) ) Reg64);

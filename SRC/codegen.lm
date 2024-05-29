@@ -474,10 +474,9 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type 
          (set call (SCons( (close call) (close(SAtom '\tcall\s_s)) )))
          (set call (SCons( (close call) (close(SAtom function-id)) )))
          (set call (SCons( (close call) (close(SAtom '\n_s)) )))
-         (set call (SCons( (close call) (ccfragment::get( push-args 'unframe_s )) )))
+
          (set call (SCons( (close call) (close(SAtom '\tmov\s%rbp,\s%rsp\n_s)) )))
          (set call (SCons( (close call) (close(SAtom '\tpop\s%rbp\n_s)) )))
-         (let r-3 (maybe-deref(ccfragment::set( r 'program_s call ))))(set r r-3)
 
          (let expr 'Invalid\sExpression_s)
          (match (typecheck-sizeof return-type) (
@@ -487,12 +486,19 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type 
             ( 2_u64 (set expr 'ax_s))
             ( 4_u64 (set expr 'eax_s))
             ( 8_u64 (set expr 'rax_s))
-            ( _ (tail(
-               (print 'Function\sName:\s_s)(print function-name)(print '\n_s)
-               (print 'Return\sValue:\s_s)(print return-type)(print '\n_s)
-               (exit-error( 'TODO\slarge\srvalues_s args ))
+            ( rsz (tail(
+               (let rsi 0_u64)
+               (let rel-off (-( 0_i64 (as rsz I64) )) )
+               (while (<( rsi rsz )) (tail(
+                  (set call (SCons( (close call) (close(SAtom '\tpush\s_s)) )))
+                  (set call (SCons( (close call) (close(SAtom(to-string rel-off))) )))
+                  (set call (SCons( (close call) (close(SAtom '\[%rsp\]\n_s)) )))
+                  (set rsi (+( rsi 8_u64 )))
+               )))
             )))
          ))
+
+         (let r-3 (maybe-deref(ccfragment::set( r 'program_s call ))))(set r r-3)
          (let r-4 (maybe-deref(ccfragment::set( r 'expression_s (SAtom expr) ))))(set r r-4)
          (let r-5 (maybe-deref(ccfragment::set-type( r return-type ))))(set r r-5)
       )))

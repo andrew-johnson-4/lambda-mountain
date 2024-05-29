@@ -436,7 +436,9 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
       )))
       ( (Glb( k (Abs( lhs (Asc( rhs rhst )) )) )) (tail(
          (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
-         (let ft (maybe-deref(tarrow( lt rhst ))))
+         (let return-type (maybe-deref(without-representation rhst)))
+         (let return-type-2 (maybe-deref(with-representation return-type)))
+         (let ft (maybe-deref(tarrow( lt return-type-2 ))))
          (set global-type-context (TCtxBind(
             (close global-type-context)
             k
