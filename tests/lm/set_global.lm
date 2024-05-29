@@ -1,8 +1,0 @@
-
-global1 := ();
-global2 := ();
-
-main := (
-   (set global1 (global1 global2))
-   (print-s global1)
-);

@@ -1,7 +1,0 @@
-
-main := (
-   print-s (dump-i(add(
-      (inc (inc () ))
-      (dec (dec (dec () )))
-   )))
-);

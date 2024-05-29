@@ -1,2 +1,0 @@
-
-main := print-s (clone-rope ('he ('llo ()) 'world));

@@ -1,8 +1,0 @@
-
-import STDLIB/default-instruction-set.lm;
-import STDLIB/default-rules.lm;
-
-main := λ(: argc U64)(: argv String[]). (: (tail(
-   ()
-   ()
-)) Nil);

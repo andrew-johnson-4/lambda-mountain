@@ -1,6 +1,0 @@
-
-main := (
-   print-s (is-neg(
-      (dec (dec () ))
-   ))
-);

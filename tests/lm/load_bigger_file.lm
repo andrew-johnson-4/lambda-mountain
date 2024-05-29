@@ -1,4 +1,0 @@
-
-main := (
-   (print-s (load-file 'tests/lm/bigger_file\,txt))
-);

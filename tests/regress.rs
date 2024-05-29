@@ -42,109 +42,7 @@ fn compile_bootstrap() {
    };
 }
 
-fn compile_production() {
-   compile_bootstrap();
-   rm("production");
-   rm("production.s");
-   rm("production.o");
-   let exit = Command::new("timeout")
-                      .stdout(std::process::Stdio::piped())
-                      .stderr(std::process::Stdio::piped())
-                      .arg("30")
-                      .arg("./bootstrap")
-                      .arg("-o")
-                      .arg("production.s")
-                      .arg("PRODUCTION/cli.lm")
-                      .spawn()
-                      .expect("failed to execute process")
-                      .wait_with_output()
-                      .expect("failed to wait for process");
-   if !exit.status.success() {
-      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("lm error code: {}", stderr);
-   };
-   let exit = Command::new("as")
-                      .stdout(std::process::Stdio::piped())
-                      .stderr(std::process::Stdio::piped())
-                      .arg("-o")
-                      .arg("production.o")
-                      .arg("production.s")
-                      .spawn()
-                      .expect("failed to execute process")
-                      .wait_with_output()
-                      .expect("failed to wait for process");
-   if !exit.status.success() {
-      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("as error code: {}", stderr);
-   };
-   let exit = Command::new("ld")
-                      .stdout(std::process::Stdio::piped())
-                      .stderr(std::process::Stdio::piped())
-                      .arg("-o")
-                      .arg("production")
-                      .arg("production.o")
-                      .spawn()
-                      .expect("failed to execute process")
-                      .wait_with_output()
-                      .expect("failed to wait for process");
-   if !exit.status.success() {
-      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("ld error code: {}", stderr);
-   };
-}
-
-fn compile_strict() {
-   compile_bootstrap();
-   compile_production();
-   rm("strict");
-   rm("strict.s");
-   rm("strict.o");
-   let exit = Command::new("./production")
-                      .stdout(std::process::Stdio::piped())
-                      .stderr(std::process::Stdio::piped())
-                      .arg("--nostd")
-                      .arg("-o")
-                      .arg("strict.s")
-                      .arg("STRICT/cli.lm")
-                      .spawn()
-                      .expect("failed to execute process")
-                      .wait_with_output()
-                      .expect("failed to wait for process");
-   if !exit.status.success() {
-      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("lm error code: {}", stderr);
-   };
-   let exit = Command::new("as")
-                      .stdout(std::process::Stdio::piped())
-                      .stderr(std::process::Stdio::piped())
-                      .arg("-o")
-                      .arg("strict.o")
-                      .arg("strict.s")
-                      .spawn()
-                      .expect("failed to execute process")
-                      .wait_with_output()
-                      .expect("failed to wait for process");
-   if !exit.status.success() {
-      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("as error code: {}", stderr);
-   };
-   let exit = Command::new("ld")
-                      .stdout(std::process::Stdio::piped())
-                      .stderr(std::process::Stdio::piped())
-                      .arg("-o")
-                      .arg("strict")
-                      .arg("strict.o")
-                      .spawn()
-                      .expect("failed to execute process")
-                      .wait_with_output()
-                      .expect("failed to wait for process");
-   if !exit.status.success() {
-      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("ld error code: {}", stderr);
-   };
-}
-
-fn run_compile_strict(mode:&str, target: &str) -> String {
+fn run_bootstrap(target: &str) -> String {
    rm("tmp.s");
    rm("tmp.o");
    rm("a.out");
@@ -153,8 +51,7 @@ fn run_compile_strict(mode:&str, target: &str) -> String {
            .stdout(std::process::Stdio::piped())
            .stderr(std::process::Stdio::piped())
            .arg("600")
-           .arg("./strict")
-           .arg(mode)
+           .arg("./bootstrap")
            .arg("-o")
            .arg("tmp.s")
            .arg(target)
@@ -165,7 +62,7 @@ fn run_compile_strict(mode:&str, target: &str) -> String {
 
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      return format!("timeout 600 ./strict error code: {} on target {}", stderr, target);
+      return format!("timeout 600 ./bootstrap error code: {} on target {}", stderr, target);
    };
    let exit = Command::new("as")
                       .stdout(std::process::Stdio::piped())
@@ -216,18 +113,18 @@ fn run_compile_strict(mode:&str, target: &str) -> String {
 }
 
 #[test]
-fn strict_testsuite() {
-   compile_strict();
+fn regression_tests() {
+   compile_bootstrap();
    let mut failures = Vec::new();
-   for entry in glob("tests/strict/*.lm").unwrap() {
+   for entry in glob("tests/regress/*.lm").unwrap() {
       let path = entry.unwrap().display().to_string();
       let expected = std::fs::read_to_string(path.clone() + ".out")
                     .expect(&format!("Could not load expected output {}.out", path));
       let expected = expected.trim().to_string();
-      let actual = run_compile_strict("--compile", &path);
+      let actual = run_bootstrap(&path);
       let actual = actual.trim().to_string();
       if expected != actual {
-         failures.push(( "--strict", path, expected, actual ));
+         failures.push(( "--compile", path, expected, actual ));
       }
    }
    for (mode,path,expected,actual) in &failures {

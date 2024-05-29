@@ -1,5 +1,0 @@
-
-main := print-s(tail(
-   (local a)
-   a
-));

@@ -14,6 +14,9 @@ deploy: compile-production
 	diff deploy.s deploy2.s
 	mv deploy.s BOOTSTRAP/cli.s
 
+test: deploy
+	cargo test regression_tests
+
 compile-production: compile-bootstrap
 	rm -f production production.o production.s
 	./bootstrap -o production.s SRC/cli.lm

@@ -1,6 +1,0 @@
-
-type A Tag1
-     | (Tag2( S ))
-     | (Tag3( S S ));
-
-(Tag2 3);
