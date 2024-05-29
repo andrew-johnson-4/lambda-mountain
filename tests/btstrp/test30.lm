@@ -12,7 +12,12 @@ ts := λ(: s String). (: (tail(
    t
 )) T);
 
-main := λ. (: (
+ts2 := λ(: s String). (: (tail(
+   (let t (T( 1_u64 s )))
+   t
+)) T);
+
+main := λ. (: (tail(
    (match (ts 'A_s) (
       ()
       ( (T( x y )) (tail(
@@ -20,4 +25,11 @@ main := λ. (: (
          (print y)
       )))
    ))
-) Nil);
+   (match (ts2 'B_s) (
+      ()
+      ( (T( x y )) (tail(
+         (print x)
+         (print y)
+      )))
+   ))
+)) Nil);
