@@ -24,8 +24,10 @@ fragment cdecl::return := λ(: src LocalVariable+Sized<size>). (: (
       (if-eq size 8 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%rax \n))
       (if-eq 1 (>( size 8 )) (
          (for word-offset in (range( 0 (/( size 8 )) )) (
-            \t 'movq \s (+( (.expression src) (*( word-offset 8 )) )) \[ '%rbp \] , '%r15 \n
-            \t 'movq \s '%r15 , \s (+( (-( -8 size )) (*( word-offset 8 )) )) \[ '%rbp \] \n
+            \t 'pushq \s (+( (.expression src) (*( word-offset 8 )) )) \[ '%rbp \] \n
+         ))
+         (for word-offset in (range( 0 (/( size 8 )) )) (
+            \t 'popq \s (-( (-( -16 (*( word-offset 8 )) )) cdecl::args-size )) \[ '%rbp \] \n
          ))
       ))
    ))

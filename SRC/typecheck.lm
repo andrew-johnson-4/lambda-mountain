@@ -1413,17 +1413,17 @@ typecheck-unify-generous := λ(: fpt Type)(: pt Type). (: (tail(
 )) TContext[]);
 
 tarrow := λ(: lt Type)(: rt Type). (: (tail(
-   ()
-   (close(TGround( '->_s
+   (let tt (TGround( '->_s
       (close(TypeSeq( (close(TypeSeq( (close TypeEOF) lt ))) rt )))
    )))
+   (close tt)
 )) Type[]);
 
 tcons := λ(: lt Type)(: rt Type). (: (tail(
-   ()
-   (close(TGround( 'Cons_s
+   (let tt (TGround( 'Cons_s
       (close(TypeSeq( (close(TypeSeq( (close TypeEOF) lt ))) rt )))
    )))
+   (close tt)
 )) Type[]);
 
 right-if-not-left := λ(: lt Type)(: rt Type). (: (tail(
@@ -1478,15 +1478,15 @@ tand := λ(: lt Type)(: rt Type). (: (tail(
 )) Type[]);
 
 tarray := λ(: lt Type)(: rt Type). (: (tail(
-   ()
-   (close(TGround( 'Array_s
+   (let tt (TGround( 'Array_s
       (close(TypeSeq( (close(TypeSeq( (close TypeEOF) lt ))) rt )))
    )))
+   (close tt)
 )) Type[]);
 
 tlabel := λ. (: (tail(
-   ()
-   (close(TGround( 'Label_s (close TypeEOF) )))
+   (let tt (TGround( 'Label_s (close TypeEOF) )))
+   (close tt)
 )) Type[]);
 
 without-representation := λ(: tt Type). (: (tail(
