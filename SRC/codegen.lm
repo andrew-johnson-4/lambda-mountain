@@ -9,6 +9,9 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
          (let args-size (typecheck-aligned-sizeof args-type))
          (let ctx-2 (maybe-deref(compile-destructure-args( args-type ctx lhs 0_i64 ))))
          (set ctx ctx-2)
+         (set ctx (CCCtxBind( (close ctx) 'cdecl::args-size_s TAny
+            (maybe-deref(ccfragment::expression(to-string args-size)))
+         )))
          (let stack-offset 0_i64)
          (set stack-offset (-( stack-offset 8_i64 )))
          (set stack-offset (-( stack-offset (as args-size I64) )))
@@ -491,6 +494,8 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type 
             ( 8_u64 (set expr 'rax_s))
             ( rsz (tail(
                (let rsi 0_u64)
+               #(let args-size (typecheck-sizeof(maybe-deref(typecheck-lookup args))))
+               #(let rel-off (-( (-( 0_i64 (as rsz I64) )) (as args-size I64) )) )
                (let rel-off (-( 0_i64 (as rsz I64) )) )
                (while (<( rsi rsz )) (tail(
                   (set call (SCons( (close call) (close(SAtom '\tpush\s_s)) )))
