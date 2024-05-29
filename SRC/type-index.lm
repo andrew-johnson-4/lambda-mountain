@@ -80,9 +80,6 @@ ascript := λ(: t AST)(: tt Type). (: (tail(
       (if (<( (.5 flat-index) ht )) (
          (if (==( (as (.1 flat-index) U64) 0_u64 )) (tail(
             (mov( (as cell U64) R8 ))
-            (print 'Insert\sLeft\n_s)
-            (print (.5 flat-index))(print '\n_s)
-            (print ht)(print '\n_s)
             (set[]( (as index Field<Sized<8>,1>[]) 1_u64 R8 ))
             (set continue False_u8)
          )) (
@@ -91,9 +88,6 @@ ascript := λ(: t AST)(: tt Type). (: (tail(
       ) (
          (if (==( (as (.2 flat-index) U64) 0_u64 )) (tail(
             (mov( (as cell U64) R8 ))
-            (print 'Insert\sRight\n_s)
-            (print (.5 flat-index))(print '\n_s)
-            (print ht)(print '\n_s)
             (set[]( (as index Field<Sized<8>,1>[]) 2_u64 R8 ))
             (set continue False_u8)
          )) (
