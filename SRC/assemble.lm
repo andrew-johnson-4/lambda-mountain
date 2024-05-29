@@ -669,10 +669,10 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
 
 compile-finish := λ. (: (tail(
    (let output SNil)
-   (set output (SCons( (close output) (compile-text-header()) )))
+   (set output (SCons( (close output) (close(compile-text-header())) )))
    (set output (SCons( (close output) (compile-exit-cleanup()) )))
    (set output (SCons( (close output) (close assemble-text-section) )))
-   (set output (SCons( (close output) (compile-data-header()) )))
+   (set output (SCons( (close output) (close(compile-data-header())) )))
    (set output (SCons( (close output) (close assemble-data-section) )))
    (set assemble-final (clone-rope(maybe-deref(escape-string output))))
 )) Nil);
