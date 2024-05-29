@@ -9,7 +9,7 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
          (let args-size (typecheck-aligned-sizeof args-type))
          (let ctx-2 (maybe-deref(compile-destructure-args( args-type ctx lhs 0_i64 ))))
          (set ctx ctx-2)
-         (let ctx-3 (CCCtxBind( (close ctx) 'cdecl::args-size_s (maybe-deref(t1 'U64_s))
+         (let ctx-3 (CCCtxBind( (close ctx) 'cdecl::args-size_s TAny
             (maybe-deref(ccfragment::expression(to-string args-size)))
          )))(set ctx ctx-3)
          (let stack-offset 0_i64)
