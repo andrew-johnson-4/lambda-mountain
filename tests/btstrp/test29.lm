@@ -7,7 +7,7 @@ import LIB/default-rules.lm;
 type X (X( U64 , U64 ));
 
 f := λ. (: (tail(
-   (let x (X( 1_u64 2_u64 )))
+   (let x (X( 7_u64 8_u64 )))
    x
 )) X);
 
@@ -22,7 +22,7 @@ main := λ. (: (tail(
    (print (f3()))(print '\n_s)
    (print (f4()))(print '\n_s)
    (let x (f()))
-   (print (.0 x))
-   (print (.1 x))
-   (print (.2 x))
+   (print (.0 x))(print '\n_s)
+   (print (.1 x))(print '\n_s)
+   (print (.2 x))(print '\n_s)
 )) Nil);
