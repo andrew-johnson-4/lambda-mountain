@@ -26,4 +26,11 @@ main := λ. (: (tail(
    (print (.0 x))(print '\n_s)
    (print (.1 x))(print '\n_s)
    (print (.2 x))(print '\n_s)
+   (match (f()) (
+      ()
+      ( (X( x y )) (tail(
+         (print x)
+         (print y)
+      )))
+   ))
 )) Nil);
