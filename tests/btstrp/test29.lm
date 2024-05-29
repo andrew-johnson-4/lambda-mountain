@@ -4,16 +4,25 @@ import LIB/default-primitives.lm;
 import LIB/default-stdlib.lm;
 import LIB/default-rules.lm;
 
-type (X( U64 , U64 ));
+#type X (X( U64 , U64 ));
 
-f := λ. (: (tail(
-   (let x (X( 1_u64 2_u64 )))
-   x
-)) X);
+#f := λ. (: (tail(
+#   (let x (X( 1_u64 2_u64 )))
+#   x
+#)) X);
+
+f1 := λ. 3_u8;
+f2 := λ. 4_u16;
+f3 := λ. 5_u32;
+f4 := λ. 6_u64;
 
 main := λ. (: (tail(
-   (let x (f()))
-   (print (.0 x))
-   (print (.1 x))
-   (print (.2 x))
+   (print (f1()))(print '\n_s)
+   (print (f2()))(print '\n_s)
+   (print (f3()))(print '\n_s)
+   (print (f4()))(print '\n_s)
+#   (let x (f()))
+#   (print (.0 x))
+#   (print (.1 x))
+#   (print (.2 x))
 )) Nil);
