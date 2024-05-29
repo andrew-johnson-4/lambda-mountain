@@ -478,6 +478,8 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type 
          (set call (SCons( (close call) (close(SAtom '\tmov\s%rbp,\s%rsp\n_s)) )))
          (set call (SCons( (close call) (close(SAtom '\tpop\s%rbp\n_s)) )))
 
+         (let r-6 (maybe-deref(ccfragment::set-offset( r offset ))))(set r r-6)
+
          (let expr 'Invalid\sExpression_s)
          (match (typecheck-sizeof return-type) (
             ()
@@ -495,6 +497,7 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type 
                   (set call (SCons( (close call) (close(SAtom '\[%rsp\]\n_s)) )))
                   (set rsi (+( rsi 8_u64 )))
                )))
+               (let r-7 (maybe-deref(ccfragment::set-offset( r (-( offset (as rsz I64) )) ))))(set r r-7)
             )))
          ))
 
@@ -504,8 +507,6 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type 
       )))
    ))
    (let r-1 (maybe-deref(ccfragment::set-context( r ctx ))))(set r r-1)
-   #TODO variable sized returns need to adjust offset
-   (let r-6 (maybe-deref(ccfragment::set-offset( r offset ))))(set r r-6)
    (close r)
 )) CCFragment[]);
 
