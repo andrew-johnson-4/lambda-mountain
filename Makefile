@@ -2,14 +2,14 @@
 develop: compile-production
 	cp production re-production
 	rm -f tmp tmp.o tmp.s
-	./production -o tmp.s tests/btstrp/test29.lm
+	./production -o tmp.s tests/btstrp/test30.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp
 
 re:
 	rm -f tmp tmp.o tmp.s
-	./re-production -o tmp.s tests/btstrp/test29.lm
+	./re-production -o tmp.s tests/btstrp/test30.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp
