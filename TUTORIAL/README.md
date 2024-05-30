@@ -23,3 +23,15 @@ x := (: 123 U64);
 
 f := λ(: x X). (: x X);
 ```
+
+### What is a Fragment?
+
+Fragments are bound in a similar fashion to Global Terms.
+However only the external interface of a fragment is typed.
+The internals of a fragment define a rendering template that yields code fragments.
+
+```
+fragment f := λ(: x X). (: (
+   (.program( \t mov \s x , \s %rax \n ))
+) F);
+```
