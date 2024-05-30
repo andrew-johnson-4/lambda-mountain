@@ -312,7 +312,13 @@ compile-define-field-accessor := λ(: ctx CCContext)(: base-type Type)(: field-t
                      ))
                   ))
                   (s-app(
-                     (s-lit '\tmov\s0\[%r15\],\s%_s)
+                     (s-app(
+                        (s-lit '\tmov\s_s)
+                        (s-app(
+                           (s-lit(to-string field-offset))
+                           (s-lit '\[%r15\],\s%_s)
+                        ))
+                     ))
                      (s-app(
                         (s-lit reg-name)
                         (s-lit '\n_s)

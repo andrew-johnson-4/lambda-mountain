@@ -5,9 +5,11 @@ import LIB/default-rules.lm;
 import LIB/default-stdlib.lm;
 
 type XY X | (Y( U64 ));
+type XYZ (Z( XY , U64 ));
 
 xy := (: X XY);
 xy2 := (: (Y( 12_u64 )) XY);
+xyz := (: (Z( (Y( 123_u64 )) 456_u64 )) XYZ);
 
 main := λ. (: (tail(
   (let x X)
@@ -25,18 +27,15 @@ main := λ. (: (tail(
   (set xy (Y( 123_u64 )))
   (print (.0 xy))
   (print (.1 (as xy Y)))
-  #this is still zero? should be 123
   (print '\n_s)
 
   (print (.0 xy2))
   (print (.1 (as xy2 Y)))
-  #this is still zero? should be 12
   (set xy2 X)
   (print (.0 xy2))
   (set xy2 (Y( 123_u64 )))
   (print (.0 xy2))
   (print (.1 (as xy2 Y)))
-  #this is still zero? should be 123
   (print '\n_s)
 
   (let xy3 (Y( 456_u64 )))
@@ -47,6 +46,13 @@ main := λ. (: (tail(
   (set xy3 (Y( 123_u64 )))
   (print (.0 xy3))
   (print (.1 (as xy3 Y)))
+  (print '\n_s)
+
+  (print (.0 xyz))
+  (print (.1 (as xyz Z)))
+  (let ixy (.2 (as xyz Z)))
+  (print (.0 ixy))
+  (print (.1 (as ixy Y)))
   (print '\n_s)
 )) Nil);
 
