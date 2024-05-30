@@ -168,6 +168,126 @@ fragment > := λ(: l LocalVariable+I64)(: r Constant+I64). (: (
    (as RAX U64)
 )) U64);
 
+<= := λ(: l U64)(: r U64). (: (tail(
+   (gensym-label end)
+   (mov( 1_u64 RAX ))
+   (mov( l R8 ))
+   (mov( r R9 ))
+   (cmp( R9 R8 ))
+   (jbe end)
+   (mov( 0_u64 RAX ))
+   (label end)
+   (as RAX U64)
+)) U64);
+
+<= := λ(: l I64)(: r I64). (: (tail(
+   (gensym-label end)
+   (mov( 1_u64 RAX ))
+   (mov( l R8 ))
+   (mov( r R9 ))
+   (cmp( R9 R8 ))
+   (jle end)
+   (mov( 0_u64 RAX ))
+   (label end)
+   (as RAX U64)
+)) U64);
+
+> := λ(: l U64)(: r U64). (: (tail(
+   (gensym-label end)
+   (mov( 1_u64 RAX ))
+   (mov( l R8 ))
+   (mov( r R9 ))
+   (cmp( R9 R8 ))
+   (ja end)
+   (mov( 0_u64 RAX ))
+   (label end)
+   (as RAX U64)
+)) U64);
+
+> := λ(: l I64)(: r I64). (: (tail(
+   (gensym-label end)
+   (mov( 1_u64 RAX ))
+   (mov( l R8 ))
+   (mov( r R9 ))
+   (cmp( R9 R8 ))
+   (jg end)
+   (mov( 0_u64 RAX ))
+   (label end)
+   (as RAX U64)
+)) U64);
+
+>= := λ(: l U64)(: r U64). (: (tail(
+   (gensym-label end)
+   (mov( 1_u64 RAX ))
+   (mov( l R8 ))
+   (mov( r R9 ))
+   (cmp( R9 R8 ))
+   (jae end)
+   (mov( 0_u64 RAX ))
+   (label end)
+   (as RAX U64)
+)) U64);
+
+>= := λ(: l I64)(: r I64). (: (tail(
+   (gensym-label end)
+   (mov( 1_u64 RAX ))
+   (mov( l R8 ))
+   (mov( r R9 ))
+   (cmp( R9 R8 ))
+   (jge end)
+   (mov( 0_u64 RAX ))
+   (label end)
+   (as RAX U64)
+)) U64);
+
+== := λ(: l U64)(: r U64). (: (tail(
+   (gensym-label end)
+   (mov( 1_u64 RAX ))
+   (mov( l R8 ))
+   (mov( r R9 ))
+   (cmp( R9 R8 ))
+   (je end)
+   (mov( 0_u64 RAX ))
+   (label end)
+   (as RAX U64)
+)) U64);
+
+== := λ(: l I64)(: r I64). (: (tail(
+   (gensym-label end)
+   (mov( 1_u64 RAX ))
+   (mov( l R8 ))
+   (mov( r R9 ))
+   (cmp( R9 R8 ))
+   (je end)
+   (mov( 0_u64 RAX ))
+   (label end)
+   (as RAX U64)
+)) U64);
+
+!= := λ(: l U64)(: r U64). (: (tail(
+   (gensym-label end)
+   (mov( 1_u64 RAX ))
+   (mov( l R8 ))
+   (mov( r R9 ))
+   (cmp( R9 R8 ))
+   (jne end)
+   (mov( 0_u64 RAX ))
+   (label end)
+   (as RAX U64)
+)) U64);
+
+!= := λ(: l I64)(: r I64). (: (tail(
+   (gensym-label end)
+   (mov( 1_u64 RAX ))
+   (mov( l R8 ))
+   (mov( r R9 ))
+   (cmp( R9 R8 ))
+   (jne end)
+   (mov( 0_u64 RAX ))
+   (label end)
+   (as RAX U64)
+)) U64);
+
 + := λ(: l U64)(: r U64). (: (tail(
    (mov( l R8 ))
    (mov( r RAX ))
@@ -362,28 +482,6 @@ fragment branchfalse := λ(: _ Nil). (: (
    (pop R14)
    (as RAX U64)
 )) U64);
-== := λ(: l U64)(: r U64). (: (tail(
-   (push R14)
-   (push R15)
-   (gensym-label end-true)
-   (gensym-label end-false)
-   (gensym-label end)
-   (mov( l R14 ))
-   (mov( r R15 ))
-   (cmp( R14 R15 ))
-   (je end-true)
-   (jmp end-false)
-   (label end-true)
-   (mov( 1_u64 RAX ))
-   (jmp end)
-   (label end-false)
-   (mov( 0_u64 RAX ))
-   (jmp end)
-   (label end)
-   (pop R15)
-   (pop R14)
-   (as RAX U64)
-)) U64);
 
 not := λ(: x U64). (: (tail(
    (let r 0_u64)
@@ -459,26 +557,3 @@ not := λ(: x U64). (: (tail(
    (pop R14)
    (as RAX U64)
 )) U64);
-== := λ(: l I64)(: r I64). (: (tail(
-   (push R14)
-   (push R15)
-   (gensym-label end-true)
-   (gensym-label end-false)
-   (gensym-label end)
-   (mov( l R14 ))
-   (mov( r R15 ))
-   (cmp( R14 R15 ))
-   (je end-true)
-   (jmp end-false)
-   (label end-true)
-   (mov( 1_u64 RAX ))
-   (jmp end)
-   (label end-false)
-   (mov( 0_u64 RAX ))
-   (jmp end)
-   (label end)
-   (pop R15)
-   (pop R14)
-   (as RAX U64)
-)) U64);
-
