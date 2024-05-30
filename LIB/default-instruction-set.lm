@@ -27,7 +27,7 @@ fragment cdecl::return := λ(: src LocalVariable+Sized<size>). (: (
             \t 'pushq \s (+( (.expression src) (*( (.expression word-offset) 8 )) )) \[ '%rbp \] \n
          ))
          (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
-            \t 'popq \s (-( (-( -16 (*( (.expression word-offset) 8 )) )) cdecl::args-size )) \[ '%rbp \] \n
+            \t 'popq \s (-( (-( '-16 (*( (.expression word-offset) 8 )) )) (.expression cdecl::args-size) )) \[ '%rbp \] \n
          ))
       ))
    ))
@@ -116,7 +116,7 @@ fragment push := λ(: src GlobalVariable+Sized<size>). (: (
    (.program (
       (\t 'mov \s '$ (.expression src) , \s '%r15 \n)
       (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
-         \t 'pushq \s (+( (+( (.expression size) -8 )) (inv(*( (.expression word-offset) 8 ))) )) \[ '%r15 \] \n
+         \t 'pushq \s (+( (+( (.expression size) '-8 )) (inv(*( (.expression word-offset) 8 ))) )) \[ '%r15 \] \n
       ))
       (if-eq (.expression size) 4 (
          \t 'mov \s '0 \[ '%r15 \] , \s '%r15d \n
@@ -139,7 +139,7 @@ fragment push := λ(: src LocalVariable+Sized<size>). (: (
             (.expression src)
             (+(
                (+( (.expression size) '-8 ))
-               (inv(*( word-offset 8 )))
+               (inv(*( (.expression word-offset) 8 )))
             ))
          )) \[ '%rbp \] \n
      ))
@@ -161,7 +161,7 @@ fragment push := λ(: src Reg64+Array<Sized<size>,max>)(: index Literal+Constant
             (*( (.expression index) (.expression size) ))
             (+(
                (+( (.expression size) '-8 ))
-               (inv(*( word-offset 8 )))
+               (inv(*( (.expression word-offset) 8 )))
             ))
          )) \[ '% (.expression src) \] \n
       ))
