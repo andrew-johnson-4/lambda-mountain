@@ -285,6 +285,90 @@ compile-define-field-accessor := λ(: ctx CCContext)(: base-type Type)(: field-t
       ctx accessor-name ftype fragment
    ))))
    (set ctx ctx-2)
+
+   (let ftype (maybe-deref(tarrow( (maybe-deref(tand( base-type (maybe-deref(t1 'GlobalVariable_s)) ))) return-type ))))
+   (let fragment (maybe-deref(ccfragment::new())))
+   (let af-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment af-2)
+   (let af-3 (maybe-deref(ccfragment::set-type( fragment ftype ))))(set fragment af-3)
+   (if (head-string reg-name) (tail(
+      (let af-4 (maybe-deref(ccfragment::set( fragment 'fragment_s (maybe-deref(s-abs(
+         (s-var 'src_s)
+         (s-app(
+            (s-app(
+               (s-var '.expression_s)
+               (s-lit reg-name)
+            ))
+            (s-app(
+               (s-var '.program_s)
+               (s-app(
+                  (s-app(
+                     (s-lit '\tmov\s$_s)
+                     (s-app(
+                        (s-app(
+                           (s-var '.expression_s)
+                           (s-var 'src_s)
+                        ))
+                        (s-lit ',\s%r15\n_s)
+                     ))
+                  ))
+                  (s-app(
+                     (s-lit '\tmov\s0\[%r15\],\s%_s)
+                     (s-app(
+                        (s-lit reg-name)
+                        (s-lit '\n_s)
+                     ))
+                  ))
+               ))
+            ))
+         ))
+      ))) ))))(set fragment af-4)
+   )) (tail(
+      (let pop (maybe-deref(s-lit '_s)))
+      (let return-size (as (typecheck-sizeof return-type) I64))
+      (let popped-size 0_i64)
+      (while (<( popped-size return-size )) (tail(
+         (set popped-size (+( popped-size 8_i64 )))
+         (let total-offset (+(
+            (as field-offset I64)
+            (-( return-size popped-size ))
+         )))
+         (let pop-2 (maybe-deref(s-app(
+            (close pop)
+            (s-app(
+               (s-lit '\tpush\s_s)
+               (s-app(
+                  (s-lit(to-string total-offset))
+                  (s-lit '\[%r15\]\n_s)
+               ))
+            ))
+         ))))
+         (set pop pop-2)
+      )))
+      (let af-4 (maybe-deref(ccfragment::set( fragment 'fragment_s (maybe-deref(s-abs(
+         (s-var 'src_s)
+         (s-app(
+            (s-var '.program_s)
+            (s-app(
+               (s-app(
+                  (s-lit '\tmov\s$_s)
+                  (s-app(
+                     (s-app(
+                        (s-var '.expression_s)
+                        (s-var 'src_s)
+                     ))
+                     (s-lit ',\s%r15\n_s)
+                  ))
+               ))
+               (close pop)
+            ))
+         ))
+      ))) ))))(set fragment af-4)
+   )))
+   (let ctx-2 (maybe-deref(cccontext::bind(
+      ctx accessor-name ftype fragment
+   ))))
+   (set ctx ctx-2)
+
    (close ctx)
 )) CCContext[]);
 

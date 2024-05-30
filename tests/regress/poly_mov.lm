@@ -24,15 +24,29 @@ main := λ. (: (tail(
   (print (.0 xy))
   (set xy (Y( 123_u64 )))
   (print (.0 xy))
-#  (print (.1 (as xy Y)))
+  (print (.1 (as xy Y)))
+  #this is still zero? should be 123
   (print '\n_s)
 
   (print (.0 xy2))
   (print (.1 (as xy2 Y)))
+  #this is still zero? should be 12
   (set xy2 X)
   (print (.0 xy2))
   (set xy2 (Y( 123_u64 )))
   (print (.0 xy2))
-#  (print (.1 (as xy2 Y)))
+  (print (.1 (as xy2 Y)))
+  #this is still zero? should be 123
+  (print '\n_s)
+
+  (let xy3 (Y( 456_u64 )))
+  (print (.0 xy3))
+  (print (.1 (as xy3 Y)))
+  (set xy3 X)
+  (print (.0 xy3))
+  (set xy3 (Y( 123_u64 )))
+  (print (.0 xy3))
+  (print (.1 (as xy3 Y)))
   (print '\n_s)
 )) Nil);
+

@@ -100,6 +100,17 @@ fragment mov := λ(: src StackVariable+Sized<size>)(: dst GlobalVariable+Sized<s
    ))
 ) Nil);
 
+fragment mov := λ(: src StackVariable+Sized<size>)(: dst LocalVariable+Sized<size>). (: (
+   (.program (
+      (for word-offset in (range( 0 (/( size 8 )) )) (
+         \t 'pop \s (+( (.expression dst) (*( word-offset 8 )) )) \[ '%rbp \] \n
+      ))
+      (if-eq size 4 ( \t 'pop \s (.expression dst) \[ '%rbp \] \n ))
+      (if-eq size 2 ( \t 'pop \s (.expression dst) \[ '%rbp \] \n ))
+      (if-eq size 1 ( \t 'pop \s (.expression dst) \[ '%rbp \] \n ))
+   ))
+) Nil);
+
 
 fragment push := λ(: src GlobalVariable+Sized<size>). (: (
    (.program (
