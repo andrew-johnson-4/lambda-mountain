@@ -1,0 +1,12 @@
+
+import LIB/default-instruction-set.lm;
+import LIB/default-primitives.lm;
+import LIB/default-rules.lm;
+import LIB/default-stdlib.lm;
+
+macro ('m1 a) (print a);
+
+main := λ. (: (tail(
+  (m1 'ABC\n_s)
+  (m1 'XYZ\n_s)
+)) Nil);
