@@ -1,0 +1,32 @@
+
+import LIB/default-instruction-set.lm;
+import LIB/default-primitives.lm;
+import LIB/default-rules.lm;
+import LIB/default-stdlib.lm;
+
+main := λ. (: (tail(
+  (print 1_u64)(print '\n_s)
+  (print -2_i64)(print '\n_s)
+  (print (+( 1_u64 2_u64 )))(print '\n_s)
+  (print (+( 1_i64 -2_i64 )))(print '\n_s)
+  (print (-( 2_u64 1_u64 )))(print '\n_s)
+  (print (-( 1_i64 -2_i64 )))(print '\n_s)
+  (print (*( 1_u64 2_u64 )))(print '\n_s)
+  (print (*( 1_i64 -2_i64 )))(print '\n_s)
+  (print (/( 5_u64 2_u64 )))(print '\n_s)
+  (print (/( 5_i64 2_i64 )))(print '\n_s)
+  (print (%( 5_u64 2_u64 )))(print '\n_s)
+  (print (%( -5_i64 2_i64 )))(print '\n_s)
+  (print (<( 1_u64 2_u64 )))(print '\n_s)
+  (print (<=( 1_u64 2_u64 )))(print '\n_s)
+  (print (==( 1_u64 2_u64 )))(print '\n_s)
+  (print (!=( 1_u64 2_u64 )))(print '\n_s)
+  (print (>( 1_u64 2_u64 )))(print '\n_s)
+  (print (>=( 1_u64 2_u64 )))(print '\n_s)
+  (print (<( -1_i64 2_i64 )))(print '\n_s)
+  (print (<=( -1_i64 2_i64 )))(print '\n_s)
+  (print (==( -1_i64 2_i64 )))(print '\n_s)
+  (print (!=( -1_i64 2_i64 )))(print '\n_s)
+  (print (>( -1_i64 2_i64 )))(print '\n_s)
+  (print (>=( -1_i64 2_i64 )))(print '\n_s)
+)) Nil);

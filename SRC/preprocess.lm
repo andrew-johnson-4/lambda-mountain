@@ -163,13 +163,33 @@ preprocess-apply := λ(: program AST). (: (tail(
          if (is-macro-head vn) (tail(
             (let applied (maybe-deref(preprocess-apply-maybe program)))
             (set r applied)
-         )) (set r (App( (close(Var vn)) (preprocess-apply vt) )))
+         )) (
+            (match program (
+               ()
+               ( (App( v1 v2 )) (
+                  (set r (App( (preprocess-apply v1) (preprocess-apply v2) )))
+               ))
+            ))
+         )
       ))
       ( (App( (App( (Var vn) vt1 )) vt2 )) (
          if (is-macro-head vn) (tail(
             (let applied (maybe-deref(preprocess-apply-maybe program)))
             (set r applied)
-         )) (set r (App( (close(App( (close(Var vn)) (preprocess-apply vt1) ))) (preprocess-apply vt2) )))
+         )) (
+            (match program (
+               ()
+               ( (App( (App( v1 v2 )) v3 )) (
+                  (set r (App(
+                     (close(App(
+                        (preprocess-apply v1)
+                        (preprocess-apply v2)
+                     )))
+                     (preprocess-apply v3)
+                  )))
+               ))
+            ))
+         )
       ))
       ( (Seq( al ar )) (set r (Seq(
          (preprocess-apply al)
@@ -200,17 +220,32 @@ preprocess-apply := λ(: program AST). (: (tail(
    (close r)
 )) AST[]);
 
-is-macro-head := λ(: s String). (: (tail(
+is-macro-head := λ(: s String)(: m AST). (: (tail(
    (let r 0_u64)
-   (match s (
+   (match m (
       ()
-      ( 'let_s (set r 1_u64) )
-      ( 'match_s (set r 1_u64) )
-      ( 'match-pats_s (set r 1_u64) )
-      ( 'match-pats-arm_s (set r 1_u64) )
-      ( _ () )
+      ( (Lit mv) (set r (==( s mv ))) )
+      ( (App( l1 l2 )) (set r (is-macro-head( s l1 ))) )
+      ( _ (exit-error( 'Unrecognized\sMacro\sLHS_s m )) )
    ))
    r
+)) U64);
+
+is-macro-head := λ(: s String). (: (tail(
+   (let macros preprocess-macros)
+   (let found 0_u64)
+   (while (non-zero macros) (match macros (
+      ()
+      ( (MSeq( rst (Macro( mlhs mrhs )) )) (
+         (if (is-macro-head( s mlhs )) (tail(
+            (set found 1_u64)
+            (set macros MEOF)
+         )) (
+            (set macros rst)
+         ))
+      ))
+   )))
+   found
 )) U64);
 
 merge := λ(: l Context)(: r Context). (: (tail(
@@ -455,15 +490,9 @@ preprocess-apply-maybe := λ(: program AST). (: (tail(
             ()
             ( CtxEOF (set macros rst) )
             ( ctx (tail(
-               #(print 'Match:\s_s)
-               #(print ctx)
                (let p (maybe-deref(apply-context( ctx rhs ))))
                (let c (maybe-deref(extract-uuids( program CtxEOF p ))))
                (let u (maybe-deref(substitute-uuids( c p ))))
-               #(let u2 (maybe-deref(replace-loc( program u ))))
-               #(print 'Yield:\s_s)
-               #(print u)
-               #(print '\n_s)
                (let n (maybe-deref(preprocess-apply u)))
                (set program n)
                (set macros MEOF)
@@ -473,12 +502,6 @@ preprocess-apply-maybe := λ(: program AST). (: (tail(
       ))
       ( _ (set macros MEOF) )
    )))
-   (if (==( matched False_u8 )) (tail(
-      (print 'Match\sFailed:\s_s)
-      (print program)
-      (print '\n_s)
-      (exit 1_u64)
-   )) ())
    (match program (
       ()
       ( (App( l r )) (tail(
