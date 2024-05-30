@@ -378,27 +378,25 @@ fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
    (match s (
       ()
       ( SNil () )
-      ( (SCons( (SAtom 'Var_s) (SAtom v) )) (tail(
-         (let f (maybe-deref(cccontext::lookup( ctx v TAny ASTEOF False_u8 ))))
-         (let fe (maybe-deref(ccfragment::get( f mode ))))
-         (if (non-zero fe) () (tail(
-            (let fe-2 (maybe-deref(ccfragment::get( f 'expression_s ))))
-            (set fe fe-2)
-         )))
+      ( (SCons( (SAtom 'Var_s) (SAtom v) )) (set r (SAtom v)) )
+      ( (SCons( (SAtom 'Lit_s) (SAtom v) )) (set r (SAtom v)) )
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '.expression_s) )) v )) )) (tail(
+         (let f (maybe-deref(cccontext::lookup( ctx v TAny ASTEOF ))))
+         (let fe (maybe-deref(ccfragment::get( f 'expression_s ))))
          (if (non-zero fe) () (tail(
             (print 'Referenced\sVariable\sIn\sFragment\sWas\sNull\s_s)
             (print v)(print '\n_s)(exit 1_u64)
          )))
          (set r fe)
       )))
-      ( (SCons( (SAtom 'Lit_s) (SAtom v) )) (set r (SAtom v)) )
-      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '.expression_s) )) v )) )) (tail(
-         (let r2 (maybe-deref(fragment-render( 'expression_s ctx v ))))
-         (set r r2)
-      )))
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '.program_s) )) v )) )) (tail(
-         (let r2 (maybe-deref(fragment-render( 'program_s ctx v ))))
-         (set r r2)
+         (let f (maybe-deref(cccontext::lookup( ctx v TAny ASTEOF ))))
+         (let fe (maybe-deref(ccfragment::get( f 'program_s ))))
+         (if (non-zero fe) () (tail(
+            (print 'Referenced\sVariable\sIn\sFragment\sWas\sNull\s_s)
+            (print v)(print '\n_s)(exit 1_u64)
+         )))
+         (set r fe)
       )))
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom 'inv_s) )) lc )) )) (tail(
          (let lt (maybe-deref(fragment-render( mode ctx lc ))))
