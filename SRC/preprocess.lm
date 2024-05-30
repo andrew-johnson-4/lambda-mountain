@@ -163,13 +163,33 @@ preprocess-apply := λ(: program AST). (: (tail(
          if (is-macro-head vn) (tail(
             (let applied (maybe-deref(preprocess-apply-maybe program)))
             (set r applied)
-         )) (set r (App( (close(Var vn)) (preprocess-apply vt) )))
+         )) (
+            (match program (
+               ()
+               ( (App( v1 v2 )) (
+                  (set r (App( (preprocess-apply v1) (preprocess-apply v2) )))
+               ))
+            ))
+         )
       ))
       ( (App( (App( (Var vn) vt1 )) vt2 )) (
          if (is-macro-head vn) (tail(
             (let applied (maybe-deref(preprocess-apply-maybe program)))
             (set r applied)
-         )) (set r (App( (close(App( (close(Var vn)) (preprocess-apply vt1) ))) (preprocess-apply vt2) )))
+         )) (
+            (match program (
+               ()
+               ( (App( (App( v1 v2 )) v3 )) (
+                  (set r (App(
+                     (close(App(
+                        (preprocess-apply v1)
+                        (preprocess-apply v2)
+                     )))
+                     (preprocess-apply v3)
+                  )))
+               ))
+            ))
+         )
       ))
       ( (Seq( al ar )) (set r (Seq(
          (preprocess-apply al)
