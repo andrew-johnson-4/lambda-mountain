@@ -1,0 +1,37 @@
+
+import LIB/default-instruction-set.lm;
+import LIB/default-primitives.lm;
+import LIB/default-rules.lm;
+import LIB/default-stdlib.lm;
+
+type XY X | (Y( U64 ));
+
+xy := (: X XY);
+xy2 := (: (Y( 12_u64 )) XY);
+
+main := λ. (: (tail(
+  (let x X)
+  (print (.0 x))
+  (set x X)
+  (print (.0 x))
+  (set x (Y( 123_u64 )))
+  (print (.0 x))
+  (print (.1 (as x Y)))
+  (print '\n_s)
+
+  (print (.0 xy))
+  (set xy X)
+  (print (.0 xy))
+  (set xy (Y( 123_u64 )))
+  (print (.0 xy))
+#  (print (.1 (as xy Y)))
+  (print '\n_s)
+
+  (print (.0 xy2))
+  (set xy2 X)
+  (print (.0 xy2))
+  (set xy2 (Y( 123_u64 )))
+  (print (.0 xy2))
+#  (print (.1 (as xy Y)))
+  (print '\n_s)
+)) Nil);
