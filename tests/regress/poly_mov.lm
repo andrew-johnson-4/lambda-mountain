@@ -28,10 +28,11 @@ main := λ. (: (tail(
   (print '\n_s)
 
   (print (.0 xy2))
+  (print (.1 (as xy2 Y)))
   (set xy2 X)
   (print (.0 xy2))
   (set xy2 (Y( 123_u64 )))
   (print (.0 xy2))
-#  (print (.1 (as xy Y)))
+#  (print (.1 (as xy2 Y)))
   (print '\n_s)
 )) Nil);
