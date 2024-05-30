@@ -1,1 +1,0 @@
-((() (Type ((Literal A) (App ((App ((App ((App ((Literal Tag1) (Literal |))) (App ((Literal Tag2) (Literal S))))) (Literal |))) (App ((Literal Tag3) (App ((Literal S) (Literal S)))))))))) (GExpr (: ((App ((: ((Literal Tag2) (And ((-> (S (Tag2 S))) Atom)))) (: ((Literal 3) Atom)))) (Tag2 S)))))

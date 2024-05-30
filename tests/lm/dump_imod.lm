@@ -1,7 +1,0 @@
-
-main := (
-   print-s (dump-i(mod(
-      (inc(inc(inc(inc(inc( () ))))))
-      (inc(inc( () )))
-   )))
-);

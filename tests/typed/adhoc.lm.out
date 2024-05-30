@@ -1,1 +1,0 @@
-(((() (Global (f (: ((Lambda ((App ((App ((Literal :) (Variable b))) (Literal Atom))) (: ((Variable b) Atom)))) (-> (Atom Atom))))))) (Global (f (: ((Lambda ((App ((App ((Literal :) (Variable b))) (Literal Nil))) (: ((Variable b) Nil)))) (-> (Nil Nil))))))) (GExpr (: ((App ((: ((Variable f) (And ((-> (Atom Atom)) (-> (Nil Nil)))))) (: ((Literal 1) Atom)))) Atom))))

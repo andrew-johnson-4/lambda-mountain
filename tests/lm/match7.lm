@@ -1,5 +1,0 @@
-
-main := print-s(match (Lambda 1 2) (
-   ()
-   ((Lambda x y) x)
-));

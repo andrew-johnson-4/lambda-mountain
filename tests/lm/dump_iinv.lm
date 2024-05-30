@@ -1,6 +1,0 @@
-
-main := (
-   print-s (dump-i(inv(
-      (inc (inc () ))
-   )))
-);

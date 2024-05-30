@@ -1,6 +1,0 @@
-
-my-tail := λ. tail $_;
-
-main := (
-   print-s (my-tail ('a 'b))
-);

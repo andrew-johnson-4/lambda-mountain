@@ -13,6 +13,7 @@ deploy: compile-production
 	time ./deploy -o deploy2.s SRC/cli.lm
 	diff deploy.s deploy2.s
 	mv deploy.s BOOTSTRAP/cli.s
+	cargo test regression_tests
 
 compile-production: compile-bootstrap
 	rm -f production production.o production.s

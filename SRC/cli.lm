@@ -11,7 +11,6 @@ import SRC/parse.lm;
 import SRC/typecheck.lm;
 import SRC/type-index.lm;
 import SRC/preprocess.lm;
-import SRC/expression.lm;
 import SRC/codegen.lm;
 import SRC/fragment.lm;
 import SRC/context.lm;

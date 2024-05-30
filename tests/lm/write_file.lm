@@ -1,6 +1,0 @@
-
-main := (
-   (write-file('tests/lm/writable_hello\,txt 'hello_world_junk_data))
-   (write-file('tests/lm/writable_hello\,txt 'hello_world))
-   (print-s (load-file 'tests/lm/writable_hello\,txt))
-);

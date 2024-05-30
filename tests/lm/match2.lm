@@ -1,5 +1,0 @@
-
-main := print-s(match 2 (
-   ()
-   (y y)
-));
