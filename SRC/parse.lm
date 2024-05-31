@@ -2,7 +2,7 @@
 
 type ParsePartial (PME( AST , S )); # term, remainder
 
-type SfxList SfxEOF | (SfxSeq( SfxList[] , String , Type ));
+type SfxList SfxEOF | (SfxSeq( SfxList[] , String , Type )); zero SfxList SfxEOF;
 
 parse-suffixes := (: SfxEOF SfxList);
 
@@ -28,16 +28,6 @@ close := λ(: x SfxList). (: (tail(
    (mov( x 0_u64 (as R8 SfxList[]) ))
    (as R8 SfxList[])
 )) SfxList[]);
-
-non-zero := λ(: x SfxList). (: (tail(
-   (let r 1_u64)
-   (match x (
-      ()
-      ( SfxEOF (set r 0_u64))
-      ( _ () )
-   ))
-   r
-)) U64);
 
 parse := λ. (: (tail(
    (let tokens ast-tokenized-program)

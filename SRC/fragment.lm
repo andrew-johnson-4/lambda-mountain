@@ -1,29 +1,9 @@
 
-type CCFragKV (CCKVEOF) | (CCKVSeq( CCFragKV[] , String , S ));
+type CCFragKV (CCKVEOF) | (CCKVSeq( CCFragKV[] , String , S )); zero CCFragKV CCKVEOF;
 
 type CCFragment (CCFragment( CCFragKV[] , I64 , Type , CCContext[] ));
 
-type FragList (FLEOF) | (FLSeq( FragList[] , CCFragment ));
-
-non-zero := λ(: t CCFragKV). (: (tail(
-   (let r 1_u64)
-   (match t (
-      ()
-      ( CCKVEOF (set r 0_u64))
-      ( _ () )
-   ))
-   r
-)) U64);
-
-non-zero := λ(: t FragList). (: (tail(
-   (let r 1_u64)
-   (match t (
-      ()
-      ( FLEOF (set r 0_u64))
-      ( _ () )
-   ))
-   r
-)) U64);
+type FragList (FLEOF) | (FLSeq( FragList[] , CCFragment )); zero FragList FLEOF;
 
 close := λ(: x CCFragment). (: (tail(
    (mov( (malloc(sizeof CCFragment)) R8 ))

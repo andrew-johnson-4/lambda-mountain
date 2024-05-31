@@ -1,15 +1,5 @@
 
-type CCContext (CCCEOF) | (CCCtxBind( CCContext[] , String , Type , CCFragment ));
-
-non-zero := λ(: t CCContext). (: (tail(
-   (let r 1_u64)
-   (match t (
-      ()
-      ( CCCEOF (set r 0_u64))
-      ( _ () )
-   ))
-   r
-)) U64);
+type CCContext (CCCEOF) | (CCCtxBind( CCContext[] , String , Type , CCFragment )); zero CCContext CCCEOF;
 
 print := λ(: ctx CCContext). (: (tail(
    (print 'Context:\n_s)
