@@ -20,8 +20,8 @@ close := λ(: x CCContext). (: (tail(
 
 cccontext::new := λ. (: (tail(
    (let r CCCEOF)
-   (close r)
-)) CCContext[]);
+   r
+)) CCContext);
 
 cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST). (: (tail(
    (let r (maybe-deref(ccfragment::new())))

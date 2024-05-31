@@ -56,7 +56,7 @@ ccfragment::new := λ . (: (tail(
       (close CCKVEOF)
       0_i64
       TAny
-      (cccontext::new())
+      (close(cccontext::new()))
    )))
    (close r)
 )) CCFragment[]);
@@ -70,7 +70,7 @@ ccfragment::local-variable := λ(: offset I64)(: tt Type). (: (tail(
       )))
       0_i64
       tt
-      (cccontext::new())
+      (close(cccontext::new()))
    )))
    (let r-2 (maybe-deref(ccfragment::set( r 'fragment-type_s (SAtom 'Local_s) ))))(set r r-2)
    (close r)
@@ -85,7 +85,7 @@ ccfragment::label := λ(: id String). (: (tail(
       )))
       0_i64
       (maybe-deref(tlabel()))
-      (cccontext::new())
+      (close(cccontext::new()))
    )))
    (close r)
 )) CCFragment[]);
@@ -99,7 +99,7 @@ ccfragment::expression := λ(: val String) . (: (tail(
       )))
       0_i64
       TAny
-      (cccontext::new())
+      (close(cccontext::new()))
    )))
    (close r)
 )) CCFragment[]);
