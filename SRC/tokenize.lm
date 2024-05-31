@@ -22,8 +22,8 @@ location := λ(: tok String). (: (tail(
          (set locs rst)
       )))
    )))
-   (close loc)
-)) SourceMap[]);
+   loc
+)) SourceMap);
 
 add-location := λ(: tok String)(: loc SourceLocation). (: (
    (set token-source-location (SourceMapSeq(
@@ -52,7 +52,7 @@ add-location := λ(: tok String)(: file String)(: line U64)(: column U64). (: (
 ) Nil);
 
 location := λ(: term AST). (: (tail(
-   (let r (close SourceMapEOF))
+   (let r SourceMapEOF)
    (match term (
       ()
       ( (Var v) (set r (location v)) )
@@ -86,7 +86,7 @@ location := λ(: term AST). (: (tail(
       ( _ () )
    ))
    r
-)) SourceMap[]);
+)) SourceMap);
 
 print := λ(: loc SourceMap). (: (
    (match loc (
