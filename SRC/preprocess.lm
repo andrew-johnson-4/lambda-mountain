@@ -100,10 +100,10 @@ preprocess-apply := λ(: program AST). (: (tail(
    (match program (
       ()
       ( (App( (App( (Lit ':_s) mvar )) (Lit mtype) )) (
-         (set r (Asc( (preprocess-apply mvar) (parse-type mtype) )))
+         (set r (Asc( (preprocess-apply mvar) (close(parse-type mtype)) )))
       ))
       ( (App( (App( (Lit ':_s) mvar )) (Var mtype) )) (
-         (set r (Asc( (preprocess-apply mvar) (parse-type mtype) )))
+         (set r (Asc( (preprocess-apply mvar) (close(parse-type mtype)) )))
       ))
       ( (Lit l) (tail(
          (let suffixes parse-suffixes)
@@ -299,7 +299,7 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
             (set r (CtxBind( (close r) pv (close(
                (Asc(
                   (close(Lit (to-string(preprocess-index-of-tag el)) ))
-                  (parse-type 'Constant+Literal+U64_s)
+                  (close(parse-type 'Constant+Literal+U64_s))
                ))
             )) )))
             (set r (CtxBind( (close r) pt (close(Lit el)) )))

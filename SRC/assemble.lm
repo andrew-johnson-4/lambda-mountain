@@ -108,12 +108,12 @@ compile-type-case := λ(: ctx CCContext)(: base-type Type)(: rhs AST)(: case-num
    (match rhs (
       ()
       ( (Lit tag) (tail(
-         (let rtype (TAnd( (close base-type) (parse-type tag) )) )
+         (let rtype (TAnd( (close base-type) (close(parse-type tag)) )) )
          (let ctx-3 (maybe-deref(compile-define-tag-constructor( ctx tag TAny base-type rtype case-number ))))(set ctx ctx-3)
       )))
       ( (App( (Lit tag) args )) (tail(
          (let atype (maybe-deref(typecheck-infer-type-compound args)))
-         (let rtype (TAnd( (close base-type) (parse-type tag) )))
+         (let rtype (TAnd( (close base-type) (close(parse-type tag)) )))
          (let ctx-3 (maybe-deref(compile-define-tag-constructor( ctx tag atype base-type rtype case-number ))))(set ctx ctx-3)
          (let ctx-4 (maybe-deref(compile-define-field-accessors( ctx (maybe-deref(parse-type tag)) atype case-number ))))(set ctx ctx-4)
       )))

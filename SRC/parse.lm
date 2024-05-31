@@ -121,7 +121,7 @@ parse := λ. (: (tail(
                      (close(TGround( 'Constant_s (close TypeEOF) )))
                      (close(TGround( 'Literal_s (close TypeEOF) )))
                   )))
-                  (parse-type atype)
+                  (close(parse-type atype))
                ))
             )))
             ()
@@ -140,7 +140,7 @@ parse := λ. (: (tail(
             (set ast-parsed-program (Seq(
                (close ast-parsed-program)
                (close (Glb( 'non-zero_s (close(Abs(
-                  (close(Asc( (close(Var(clone-rope(SAtom 't_s)))) (parse-type base-type) )))
+                  (close(Asc( (close(Var(clone-rope(SAtom 't_s)))) (close(parse-type base-type)) )))
                   (close(Asc(
                      (close(App(
                         (close(Var(clone-rope(SAtom '!=_s))))
@@ -222,8 +222,9 @@ parse-many-expressions := λ(: tokens S). (: (tail(
          ))
       ))
    ))
-   (close( (PME( expr remainder )) ))
-)) ParsePartial[]);
+   (let pp ( (PME( expr remainder )) ))
+   pp
+)) ParsePartial);
 
 parse-one-expression := λ(: tokens S). (: (tail(
    (let expr ASTEOF)
@@ -270,8 +271,9 @@ parse-one-expression := λ(: tokens S). (: (tail(
          (set remainder r)
       )))
    ))
-   (close( (PME( expr remainder )) ))
-)) ParsePartial[]);
+   (let pp ( (PME( expr remainder )) ))
+   pp
+)) ParsePartial);
 
 parse-unexpect := λ(: msg String)(: tokens S). (: (tail(
    ()
@@ -367,7 +369,7 @@ parse-type := λ(: tt String). (: (tail(
                   ( _ (
                      (set base-type (TAnd(
                         (close base-type)
-                        (parse-type-single (clone-rope buff))
+                        (close(parse-type-single (clone-rope buff)))
                      )))
                   ))
                ))
@@ -390,13 +392,13 @@ parse-type := λ(: tt String). (: (tail(
          (match base-type (
             ()
             ( (TGround( 'Nil_s TypeEOF )) (tail(
-               (let bt (maybe-deref(parse-type-single (clone-rope buff))))
+               (let bt (parse-type-single (clone-rope buff)))
                (set base-type bt)
             )))
             ( _ (
                (set base-type (TAnd(
                   (close base-type)
-                  (parse-type-single (clone-rope buff))
+                  (close(parse-type-single (clone-rope buff)))
                )))
             ))
          ))
@@ -408,8 +410,8 @@ parse-type := λ(: tt String). (: (tail(
       )))
       (set cache-found base-type)
    )))
-   (close cache-found)
-)) Type[]);
+   cache-found
+)) Type);
 
 parse-type-single := λ(: tt String). (: (tail(
    (let depth 0_u64)
@@ -500,7 +502,7 @@ parse-type-single := λ(: tt String). (: (tail(
                   ( (TGround( tag TypeEOF )) (tail(
                      (set base-type (TGround(
                         tag
-                        (parse-type-comma-sep(clone-rope buff))
+                        (close(parse-type-comma-sep(clone-rope buff)))
                      )))
                      (set buff SNil)
                   )))
@@ -535,8 +537,8 @@ parse-type-single := λ(: tt String). (: (tail(
          ))
       ))
    )) ())
-   (close base-type)
-)) Type[]);
+   base-type
+)) Type);
 
 parse-type-comma-sep := λ(: tt String). (: (tail(
    (let buff SNil)
@@ -576,6 +578,6 @@ parse-type-comma-sep := λ(: tt String). (: (tail(
       (close base)
       (maybe-deref(parse-type(clone-rope buff)))
    )))
-   (close base)
-)) TypeList[]);
+   base
+)) TypeList);
 
