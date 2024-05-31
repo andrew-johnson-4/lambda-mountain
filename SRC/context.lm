@@ -55,28 +55,14 @@ cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST). (: 
       (print 'Context::lookup\s_s)(print k)(print '\s:\s_s)(print kt)(print '\n_s)
       (exit-error( 'Context::lookup\sCould\sNot\sFind\sSymbol_s sloc ))
    )))
-   (close r)
-)) CCFragment[]);
+   r
+)) CCFragment);
 
 cccontext::bind := λ(: ctx CCContext)(: k String)(: kt Type)(: f CCFragment). (: (tail(
    (let new-ctx (CCCtxBind(
       (close ctx)
       k kt f
    )))
-   (close new-ctx)
-)) CCContext[]);
+   new-ctx
+)) CCContext);
 
-cccontext::bind := λ(: ctx CCContext)(: k String)(: v String). (: (tail(
-   ()
-   (close ctx)
-)) CCContext[]);
-
-cccontext::get := λ(: ctx CCContext)(: k String). (: (tail(
-   ()
-   'TODO\scccontext::get_s
-)) String);
-
-cccontext::get-offset := λ(: ctx CCContext). (: (tail(
-   ()
-   0_i64
-)) I64);

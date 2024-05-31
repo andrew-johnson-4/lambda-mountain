@@ -464,8 +464,6 @@ compile-destructure-args := λ(: tt Type)(: ctx CCContext)(: lhs AST)(: offset I
             ctx k kt (maybe-deref(ccfragment::local-variable( new-offset kt )))
          ))))
          (set ctx new-ctx)
-         (let new-ctx-2 (maybe-deref(cccontext::bind( ctx 'offset_s (to-string new-offset) ))))
-         (set ctx new-ctx-2)
       )))
       ( _ () )
    ))
