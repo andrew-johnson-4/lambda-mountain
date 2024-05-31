@@ -27,7 +27,7 @@ fragment cdecl::return := λ(: src LocalVariable+Sized<size>). (: (
             \t 'pushq \s (+( (.expression src) (*( (.expression word-offset) 8 )) )) \[ '%rbp \] \n
          ))
          (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
-            \t 'popq \s (-( (-( '-16 (*( (.expression word-offset) 8 )) )) (.expression cdecl::args-size) )) \[ '%rbp \] \n
+            \t 'popq \s (-( (-( '-16 (.expression cdecl::args-size) )) (*( (.expression word-offset) 8 )) )) \[ '%rbp \] \n
          ))
       ))
    ))
