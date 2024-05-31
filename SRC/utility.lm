@@ -1,18 +1,18 @@
 
 list-tail-order-to-head-order := λ(: s S). (: (tail(
-   (let new (close SNil))
+   (let new SNil)
    (while (non-zero s) (match s (
       ()
       ( (SCons( l r )) (tail(
-         (set new (close(SCons(
+         (set new (SCons(
             (close r)
-            new
-         ))))
+            (close new)
+         )))
          (set s l)
       )))
    )))
    new
-)) S[]);
+)) S);
 
 is-variable := λ(: s String). (: (tail(
    (let r False_u8)
@@ -370,13 +370,13 @@ escape-string := λ(: s S). (: (tail(
       ()
       ( (SAtom a) (set s (SAtom(escape-string a))) )
       ( (SCons( l r )) (set s (SCons(
-         (escape-string l)
-         (escape-string r)
+         (close(escape-string l))
+         (close(escape-string r))
       ))))
       ( _ () )
    ))
-   (close s)
-)) S[]);
+   s
+)) S);
 
 escape-literal := λ(: s String). (: (tail(
    (let cs SNil)
