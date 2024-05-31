@@ -24,10 +24,10 @@ to-string-impl := λ(: tt Type). (: (tail(
          (let ls (to-string-impl lt))
          (let rs (to-string-impl rt))
          (set r (SCons(
-            ls
+            (close ls)
             (close(SCons(
                (close(SAtom '+_s))
-               rs
+               (close rs)
             )))
          )))
       )))
@@ -37,21 +37,21 @@ to-string-impl := λ(: tt Type). (: (tail(
       ( (TGround( tag (TypeSeq( TypeEOF p1 )) )) (tail(
         (set r (SAtom tag))
         (set r (SCons( (close r) (close(SAtom '<_s)) )))
-        (set r (SCons( (close r) (to-string-impl p1) )))
+        (set r (SCons( (close r) (close(to-string-impl p1)) )))
         (set r (SCons( (close r) (close(SAtom '>_s)) )))
       )))
       ( (TGround( tag (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (tail(
         (set r (SAtom tag))
         (set r (SCons( (close r) (close(SAtom '<_s)) )))
-        (set r (SCons( (close r) (to-string-impl p1) )))
+        (set r (SCons( (close r) (close(to-string-impl p1)) )))
         (set r (SCons( (close r) (close(SAtom ',_s)) )))
-        (set r (SCons( (close r) (to-string-impl p2) )))
+        (set r (SCons( (close r) (close(to-string-impl p2)) )))
         (set r (SCons( (close r) (close(SAtom '>_s)) )))
       )))
       ( _ () )
    ))
-   (close r)
-)) S[]);
+   r
+)) S);
 
 close := λ(: x TypeConstructorList). (: (tail(
    (mov( (malloc(sizeof TypeConstructorList)) R8 ))
@@ -211,8 +211,8 @@ typecheck-typeof-lhs := λ(: lhs AST). (: (tail(
       )))
       ( _ (exit-error( 'Unknown\sLHS_s lhs )))
    ))
-   (close r)
-)) Type[]);
+   r
+)) Type);
 
 typecheck-types-have-changed := True_u8;
 typecheck := λ. (: (tail(
@@ -374,8 +374,8 @@ typecheck-infer-type-compound := λ(: compound AST). (: (tail(
       )))
       ( _ (exit-error( 'Malformed\sType\sDefinition_s compound )))
    ))
-   (close r)
-)) Type[]);
+   r
+)) Type);
 
 typecheck-infer-global-context := λ(: td AST). (: (tail(
    (match td (
@@ -508,9 +508,9 @@ typecheck-assert-one := λ(: term AST). (: (
 ) Nil);
 
 typecheck-lookup := λ(: term AST). (: (tail(
-   ()
-   (typeof term)
-)) Type[]);
+   (let tt (typeof term))
+   tt
+)) Type);
 
 exit-error := λ(: msg String)(: t AST). (: (tail(
    (print msg)
