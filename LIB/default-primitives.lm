@@ -557,3 +557,31 @@ not := λ(: x U64). (: (tail(
    (pop R14)
    (as RAX U64)
 )) U64);
+
+fragment non-zero := λ(: l Reg64+U64). (: (
+   (.program (
+      \t 'cmp \s '$0 , \s '% (.expression l) \n
+   ))
+   (.expression( 'jne ))
+) BranchConditional);
+fragment non-zero := λ(: l Reg32+U32). (: (
+   (.program (
+      \t 'cmp \s '$0 , \s '% (.expression l) \n
+   ))
+   (.expression( 'jne ))
+) BranchConditional);
+fragment non-zero := λ(: l Reg16+U16). (: (
+   (.program (
+      \t 'cmp \s '$0 , \s '% (.expression l) \n
+   ))
+   (.expression( 'jne ))
+) BranchConditional);
+fragment non-zero := λ(: l Reg8+U8). (: (
+   (.program (
+      \t 'cmp \s '$0 , \s '% (.expression l) \n
+   ))
+   (.expression( 'jne ))
+) BranchConditional);
+fragment non-zero := λ(: l BranchConditional). (: (
+   (.expression( (.expression l) ))
+) BranchConditional);
