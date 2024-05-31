@@ -527,7 +527,7 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type 
             ( rsz (tail(
                (let rsi 0_u64)
                (let args-size (typecheck-sizeof(maybe-deref(typecheck-lookup args))))
-               (let rel-off (-( (-( 0_i64 (as rsz I64) )) (as args-size I64) )))
+               (let rel-off (-( -24_i64 (as args-size I64) )))
                (while (<( rsi rsz )) (tail(
                   (set call (SCons( (close call) (close(SAtom '\tpush\s_s)) )))
                   (set call (SCons( (close call) (close(SAtom(to-string rel-off))) )))
