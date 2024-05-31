@@ -126,22 +126,54 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
                (let e1 (maybe-deref(compile-declare-cstring( val ))))
                (set e e1)
             )))
-            ( _ (
-               (match val (
+            ( _ (tail(
+               (let is-fragment False_u8)
+               (match (typecheck-slot( ltype 'Reg8_s )) (
                   ()
-                  ( 'True_s (tail( (let e1 (maybe-deref(ccfragment::expression '1_s))) (set e e1) )))
-                  ( 'False_s (tail( (let e1 (maybe-deref(ccfragment::expression '0_s))) (set e e1) )))
-                  ( '\\t_s (tail( (let e1 (maybe-deref(ccfragment::expression '9_s))) (set e e1) )))
-                  ( '\\n_s (tail( (let e1 (maybe-deref(ccfragment::expression '10_s))) (set e e1) )))
-                  ( '\\s_s (tail( (let e1 (maybe-deref(ccfragment::expression '32_s))) (set e e1) )))
-                  ( '\\o_s (tail( (let e1 (maybe-deref(ccfragment::expression '35_s))) (set e e1) )))
-                  ( '\\`_s (tail( (let e1 (maybe-deref(ccfragment::expression '39_s))) (set e e1) )))
-                  ( '\\[_s (tail( (let e1 (maybe-deref(ccfragment::expression '40_s))) (set e e1) )))
-                  ( '\\]_s (tail( (let e1 (maybe-deref(ccfragment::expression '41_s))) (set e e1) )))
-                  ( '\\:_s (tail( (let e1 (maybe-deref(ccfragment::expression '59_s))) (set e e1) )))
-                  ( _ (tail( (let e1 (maybe-deref(ccfragment::expression val))) (set e e1) )))
+                  ( (TGround( 'Reg8_s _ )) (set is-fragment True_u8) )
+                  ( _ () )
                ))
-            ))
+               (match (typecheck-slot( ltype 'Reg16_s )) (
+                  ()
+                  ( (TGround( 'Reg16_s _ )) (set is-fragment True_u8) )
+                  ( _ () )
+               ))
+               (match (typecheck-slot( ltype 'Reg32_s )) (
+                  ()
+                  ( (TGround( 'Reg32_s _ )) (set is-fragment True_u8) )
+                  ( _ () )
+               ))
+               (match (typecheck-slot( ltype 'Reg64_s )) (
+                  ()
+                  ( (TGround( 'Reg64_s _ )) (set is-fragment True_u8) )
+                  ( _ () )
+               ))
+               (if (==( is-fragment True_u8 )) (tail(
+                  (let e1 (maybe-deref(ccfragment::expression val)))
+                  (set e e1)
+               )) (
+                  (if (non-zero(maybe-deref(typecheck-classof-tag val))) (tail(
+                     (let tag-index (preprocess-index-of-tag val))
+                     (let e1 (maybe-deref(ccfragment::expression(to-string tag-index))))
+                     (set e e1)
+                  )) (
+                     (match val (
+                        ()
+                        ( 'True_s (tail( (let e1 (maybe-deref(ccfragment::expression '1_s))) (set e e1) )))
+                        ( 'False_s (tail( (let e1 (maybe-deref(ccfragment::expression '0_s))) (set e e1) )))
+                        ( '\\t_s (tail( (let e1 (maybe-deref(ccfragment::expression '9_s))) (set e e1) )))
+                        ( '\\n_s (tail( (let e1 (maybe-deref(ccfragment::expression '10_s))) (set e e1) )))
+                        ( '\\s_s (tail( (let e1 (maybe-deref(ccfragment::expression '32_s))) (set e e1) )))
+                        ( '\\o_s (tail( (let e1 (maybe-deref(ccfragment::expression '35_s))) (set e e1) )))
+                        ( '\\`_s (tail( (let e1 (maybe-deref(ccfragment::expression '39_s))) (set e e1) )))
+                        ( '\\[_s (tail( (let e1 (maybe-deref(ccfragment::expression '40_s))) (set e e1) )))
+                        ( '\\]_s (tail( (let e1 (maybe-deref(ccfragment::expression '41_s))) (set e e1) )))
+                        ( '\\:_s (tail( (let e1 (maybe-deref(ccfragment::expression '59_s))) (set e e1) )))
+                        ( _ (tail( (let e1 (maybe-deref(ccfragment::expression val))) (set e e1) )))
+                     ))
+                  ))
+               ))
+            )))
          ))
          (let e-2 (maybe-deref(ccfragment::set-context( e ctx ))))(set e e-2)
          (let e-3 (maybe-deref(ccfragment::set-type( e ltype ))))(set e e-3)
