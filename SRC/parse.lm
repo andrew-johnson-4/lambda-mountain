@@ -325,8 +325,9 @@ parse-lambda := λ(: tokens S). (: (tail(
          )))
       ))
    ))
-   (close( (PME( expr remainder )) ))
-)) ParsePartial[]);
+   (let pp ( (PME( expr remainder )) ))
+   pp
+)) ParsePartial);
 
 parse-type-cache := (: TCtxEOF TContext);
 parse-type := λ(: tt String). (: (tail(
