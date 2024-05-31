@@ -527,13 +527,25 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type 
             ( rsz (tail(
                (let rsi 0_u64)
                (let args-size (typecheck-sizeof(maybe-deref(typecheck-lookup args))))
-               (let rel-off (-( -8_i64 (as rsz I64) )))
+               (let rel-off (-( (-( -16_i64 (as rsz I64) )) (as args-size I64) )))
+               # current
+               #          [offset] [constant] [rsz] [args-size] [delta] [rsp] [effective]
+               # push 1 |   -64       -16      -32     -16        0       0     -64
+               # push 2 |   -48       -16      -32     -16        16     -8     -56
+               # push 3 |   -32       -16      -32     -16        32     -16    -48
+               # push 4 |   -16       -16      -32     -16        48     -24    -40
+               # desired
+               #          [offset] [constant] [rsz] [args-size] [delta] [rsp] [effective]
+               # push 1 |   -64       -16      -32     -16        0       0     -40
+               # push 2 |   -48       -16      -32     -16        16     -8     -48
+               # push 3 |   -32       -16      -32     -16        32     -16    -56
+               # push 4 |   -16       -16      -32     -16        48     -24    -64
                (while (<( rsi rsz )) (tail(
                   (set call (SCons( (close call) (close(SAtom '\tpush\s_s)) )))
                   (set call (SCons( (close call) (close(SAtom(to-string rel-off))) )))
                   (set call (SCons( (close call) (close(SAtom '\[%rsp\]\n_s)) )))
                   (set rsi (+( rsi 8_u64 )))
-                  #(set rel-off (+( rel-off 16_i64 )))
+                  (set rel-off (+( rel-off 16_i64 )))
                )))
                (let r-7 (maybe-deref(ccfragment::set-offset( r (-( offset (as rsz I64) )) ))))(set r r-7)
             )))
