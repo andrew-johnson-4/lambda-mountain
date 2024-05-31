@@ -250,7 +250,7 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
                (close(t1 'Constant_s))
                (close(TAnd(
                   (close(t1 'U64_s))
-                  (tsized '8_s)
+                  (close(tsized '8_s))
                )))
             )))
          )))

@@ -148,19 +148,20 @@ merge := λ(: lctx TContext)(: rctx TContext). (: (tail(
       )))
       ( _ () )
    ))
-   (close lctx)
-)) TContext[]);
+   lctx
+)) TContext);
 
 tsized := λ(: sz String). (: (tail(
    (let sz (TGround(
       sz
       (close TypeEOF)
    )))
-   (close(TGround(
+   (let tt (TGround(
       'Sized_s
       (close(TypeSeq( (close TypeEOF) sz )))
    )))
-)) Type[]);
+   tt
+)) Type);
 
 t1 := λ(: s String). (: (tail(
    (let tt (TGround(
