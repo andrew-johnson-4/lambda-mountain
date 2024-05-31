@@ -1,7 +1,7 @@
 
 develop: compile-production
 	rm -f tmp tmp.o tmp.s
-	./production -o tmp.s tests/btstrp/test30.lm
+	./production -o tmp.s tests/regress/zero.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp

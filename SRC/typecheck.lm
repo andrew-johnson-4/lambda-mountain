@@ -1,23 +1,13 @@
 
-type TypeConstructorList (TConEOF) | (TConSeq( TypeConstructorList[] , String , Type ));
+type TypeConstructorList (TConEOF) | (TConSeq( TypeConstructorList[] , String , Type )); zero TypeConstructorList TConEOF;
 
 typecheck-type-constructors := (: TConEOF TypeConstructorList);
 typecheck-classes-of-tag := (: TConEOF TypeConstructorList);
 typecheck-fragment-types := (: TypeEOF TypeList);
 
-type TypeSizeList (TSzEOF) | (TSzSeq( TypeSizeList[] , String , U64 ));
+type TypeSizeList (TSzEOF) | (TSzSeq( TypeSizeList[] , String , U64 )); zero TypeSizeList TSzEOF;
 
 typecheck-type-sizes := (: TSzEOF TypeSizeList);
-
-non-zero := λ(: t TypeConstructorList). (: (tail(
-   (let r 1_u64)
-   (match t (
-      ()
-      ( TConEOF (set r 0_u64))
-      ( _ () )
-   ))
-   r
-)) U64);
 
 to-string := λ(: tt Type). (: (tail(
    (let s (maybe-deref(to-string-impl tt)))
@@ -62,16 +52,6 @@ to-string-impl := λ(: tt Type). (: (tail(
    ))
    (close r)
 )) S[]);
-
-non-zero := λ(: t TypeSizeList). (: (tail(
-   (let r 1_u64)
-   (match t (
-      ()
-      ( TSzEOF (set r 0_u64))
-      ( _ () )
-   ))
-   r
-)) U64);
 
 close := λ(: x TypeConstructorList). (: (tail(
    (mov( (malloc(sizeof TypeConstructorList)) R8 ))
@@ -190,38 +170,8 @@ t1 := λ(: s String). (: (tail(
    tt
 )) Type);
 
-type TermTypeList TTEOF | (TTSeq( TermTypeList[] , AST , Type ));
-type STypeList STEOF | (STSeq( STypeList[] , S , Type ));
-
-non-zero := λ(: t TermTypeList). (: (tail(
-   (let r 1_u64)
-   (match t (
-      ()
-      ( TTEOF (set r 0_u64))
-      ( _ () )
-   ))
-   r
-)) U64);
-
-non-zero := λ(: t STypeList). (: (tail(
-   (let r 1_u64)
-   (match t (
-      ()
-      ( STEOF (set r 0_u64))
-      ( _ () )
-   ))
-   r
-)) U64);
-
-non-zero := λ(: t Type). (: (tail(
-   (let r 1_u64)
-   (match t (
-      ()
-      ( TAny (set r 0_u64))
-      ( _ () )
-   ))
-   r
-)) U64);
+type TermTypeList TTEOF | (TTSeq( TermTypeList[] , AST , Type )); zero TermTypeList TTEOF;
+type STypeList STEOF | (STSeq( STypeList[] , S , Type )); zero STypeList STEOF;
 
 close := λ(: x TermTypeList). (: (tail(
    (mov( (malloc(sizeof TermTypeList)) R8 ))

@@ -1,0 +1,12 @@
+
+import LIB/default-instruction-set.lm;
+import LIB/default-primitives.lm;
+import LIB/default-rules.lm;
+import LIB/default-stdlib.lm;
+
+type AB A | B; zero AB B;
+
+main := λ. (: (tail(
+  (print (non-zero A))
+  (print (non-zero B))
+)) Nil);

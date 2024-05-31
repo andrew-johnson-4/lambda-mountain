@@ -1,7 +1,7 @@
 
 type Macro (Macro( AST , AST ));
-type MacroList MEOF | (MSeq( MacroList[] , Macro ));
-type IndexList IEOF | (ISeq( IndexList[] , String , U64 ));
+type MacroList MEOF | (MSeq( MacroList[] , Macro )); zero MacroList MEOF;
+type IndexList IEOF | (ISeq( IndexList[] , String , U64 )); zero IndexList IEOF;
 
 preprocess-macros := (: MEOF MacroList);
 preprocess-tag-indices := (: IEOF IndexList);
@@ -33,26 +33,6 @@ close := λ(: x IndexList). (: (tail(
    (mov( x 0_u64 (as R8 IndexList[]) ))
    (as R8 IndexList[])
 )) IndexList[]);
-
-non-zero := λ(: x MacroList). (: (tail(
-   (let r 1_u64)
-   (match x (
-      ()
-      ( MEOF (set r 0_u64))
-      ( _ () )
-   ))
-   r
-)) U64);
-
-non-zero := λ(: x IndexList). (: (tail(
-   (let r 1_u64)
-   (match x (
-      ()
-      ( IEOF (set r 0_u64))
-      ( _ () )
-   ))
-   r
-)) U64);
 
 preprocess := λ. (: (tail(
    (preprocess-index-typedefs ast-parsed-program)

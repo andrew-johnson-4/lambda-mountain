@@ -2,7 +2,7 @@
 
 type ParsePartial (PME( AST , S )); # term, remainder
 
-type SfxList SfxEOF | (SfxSeq( SfxList[] , String , Type ));
+type SfxList SfxEOF | (SfxSeq( SfxList[] , String , Type )); zero SfxList SfxEOF;
 
 parse-suffixes := (: SfxEOF SfxList);
 
@@ -28,16 +28,6 @@ close := λ(: x SfxList). (: (tail(
    (mov( x 0_u64 (as R8 SfxList[]) ))
    (as R8 SfxList[])
 )) SfxList[]);
-
-non-zero := λ(: x SfxList). (: (tail(
-   (let r 1_u64)
-   (match x (
-      ()
-      ( SfxEOF (set r 0_u64))
-      ( _ () )
-   ))
-   r
-)) U64);
 
 parse := λ. (: (tail(
    (let tokens ast-tokenized-program)
@@ -146,7 +136,31 @@ parse := λ. (: (tail(
             (parse ())
             (set tokens remainder)
          )))
-
+         ( (SCons( (SAtom 'zero_s) (SCons( (SAtom base-type) (SCons( (SAtom tag-type) remainder )) )) )) (tail(
+            (set ast-parsed-program (Seq(
+               (close ast-parsed-program)
+               (close (Glb( 'non-zero_s (close(Abs(
+                  (close(Asc( (close(Var(clone-rope(SAtom 't_s)))) (parse-type base-type) )))
+                  (close(Asc(
+                     (close(App(
+                        (close(Var(clone-rope(SAtom '!=_s))))
+                        (close(App(
+                           (close(App(
+                              (close(Var(clone-rope(SAtom '.0_s))))
+                              (close(Var(clone-rope(SAtom 't_s))))
+                           )))
+                           (close(App(
+                              (close(Var(clone-rope(SAtom '.0_s))))
+                              (close(Lit tag-type))
+                           )))
+                        )))
+                     )))
+                     (close(t1 'U64_s))
+                  )))
+               ))) )))
+            )))
+            (set tokens remainder)
+         )))
          ( (SCons( (SAtom key) (SCons( (SAtom ':=_s) remainder )) )) (
             (match (parse-many-expressions remainder) (
                ()

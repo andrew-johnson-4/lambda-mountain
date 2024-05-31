@@ -1,19 +1,19 @@
 
-type Type TAny | (TVar String) | (TGround( String , TypeList[] )) | (TAnd( Type[] , Type[] ));
-type TypeList TypeEOF | (TypeSeq( TypeList[] , Type ));
+type Type TAny | (TVar String) | (TGround( String , TypeList[] )) | (TAnd( Type[] , Type[] )); zero Type TAny;
+type TypeList TypeEOF | (TypeSeq( TypeList[] , Type )); zero TypeList TypeEOF;
 
 type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] ))
                 | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Fragment( String , AST[] ))
-                | (Asc( AST[] , Type[] ));
+                | (Asc( AST[] , Type[] )); zero AST ASTEOF;
 
-type ASTList ASTLEOF | (ASTSeq( ASTList[] , AST ));
+type ASTList ASTLEOF | (ASTSeq( ASTList[] , AST )); zero ASTList ASTLEOF;
 
-type StringStringList SSEOF | (SSSeq( StringStringList[] , String , String ));
+type StringStringList SSEOF | (SSSeq( StringStringList[] , String , String )); zero StringStringList SSEOF;
 
 type IsUsed Used | Unused | Tail | Return;
 
-type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST[] ));
-type TContext TCtxEOF | (TCtxBind( TContext[] , String , Type ));
+type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST[] )); zero Context CtxEOF;
+type TContext TCtxEOF | (TCtxBind( TContext[] , String , Type )); zero TContext TCtxEOF;
 type Pair (Pair( AST , AST ));
 type CPair (CPair( Context , Context ));
 type TPair (TPair( Type , Type ));
@@ -29,16 +29,6 @@ close := λ(: x StringStringList). (: (tail(
    (as R8 StringStringList[])
 )) StringStringList[]);
 
-non-zero := λ(: s StringStringList). (: (tail(
-   (let r 1_u64)
-   (match s (
-      ()
-      (SSEOF (set r 0_u64))
-      (_ ())
-   ))
-   r
-)) U64);
-
 == := λ(: lu IsUsed)(: ru IsUsed). (: (tail(
    (let r 0_u64)
    (match (UPair( lu ru )) (
@@ -47,26 +37,6 @@ non-zero := λ(: s StringStringList). (: (tail(
       ( (UPair( Unused Unused )) (set r 1_u64) )
       ( (UPair( Tail Tail )) (set r 1_u64) )
       ( (UPair( Return Return )) (set r 1_u64) )
-      ( _ () )
-   ))
-   r
-)) U64);
-
-non-zero := λ(: t AST). (: (tail(
-   (let r 1_u64)
-   (match t (
-      ()
-      ( ASTEOF (set r 0_u64))
-      ( _ () )
-   ))
-   r
-)) U64);
-
-non-zero := λ(: t TContext). (: (tail(
-   (let r 1_u64)
-   (match t (
-      ()
-      ( TCtxEOF (set r 0_u64))
       ( _ () )
    ))
    r
@@ -132,36 +102,6 @@ non-zero := λ(: t TContext). (: (tail(
            ) ())
         ) ())
       ))
-   ))
-   r
-)) U64);
-
-non-zero := λ(: t ASTList). (: (tail(
-   (let r 1_u64)
-   (match t (
-      ()
-      ( ASTLEOF (set r 0_u64))
-      ( _ () )
-   ))
-   r
-)) U64);
-
-non-zero := λ(: t TypeList). (: (tail(
-   (let r 1_u64)
-   (match t (
-      ()
-      ( TypeEOF (set r 0_u64))
-      ( _ () )
-   ))
-   r
-)) U64);
-
-non-zero := λ(: t Context). (: (tail(
-   (let r 1_u64)
-   (match t (
-      ()
-      ( CtxEOF (set r 0_u64))
-      ( _ () )
    ))
    r
 )) U64);
