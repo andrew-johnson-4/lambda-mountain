@@ -133,8 +133,8 @@ ccfragment::set := λ(: e CCFragment)(: k String)(: v S). (: (tail(
          )))
       ))
    ))
-   (close e)
-)) CCFragment[]);
+   e
+)) CCFragment);
 
 ccfragment::get-context := λ(: e CCFragment) . (: (tail(
    (let ctx (.1( e )))
@@ -148,8 +148,8 @@ ccfragment::set-context := λ(: e CCFragment)(: ctx CCContext). (: (tail(
          (set e (CCFragment( (close e-kvs) e-offset e-tt (close ctx) ))) 
       ))
    ))
-   (close e)
-)) CCFragment[]);
+   e
+)) CCFragment);
 
 ccfragment::get-type := λ(: e CCFragment) . (: (tail(
    (let ctx (.2( e )))
