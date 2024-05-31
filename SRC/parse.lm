@@ -147,7 +147,28 @@ parse := λ. (: (tail(
             (set tokens remainder)
          )))
          ( (SCons( (SAtom 'zero_s) (SCons( (SAtom base-type) (SCons( (SAtom tag-type) remainder )) )) )) (tail(
-            (print 'Type\n_s)
+            (set ast-parsed-program (Seq(
+               (close ast-parsed-program)
+               (close (Glb( 'non-zero_s (close(Abs(
+                  (close(Asc( (close(Var 't_s)) (parse-type base-type) )))
+                  (close(Asc(
+                     (close(App(
+                        (close(Var '!=_s))
+                        (close(App(
+                           (close(App(
+                              (close(Var '.0_s))
+                              (close(Var 't_s))
+                           )))
+                           (close(App(
+                              (close(Var '.0_s))
+                              (close(Lit tag-type))
+                           )))
+                        )))
+                     )))
+                     (close(t1 'U64_s))
+                  )))
+               ))) )))
+            )))
             (set tokens remainder)
          )))
          ( (SCons( (SAtom key) (SCons( (SAtom ':=_s) remainder )) )) (
