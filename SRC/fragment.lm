@@ -281,8 +281,8 @@ fragment-apply := λ(: ctx CCContext)(: offset I64)(: k String)(: args FragList)
    ))))))(set return r2)
    (let r3 (maybe-deref(ccfragment::set-type( return return-tt ))))(set return r3)
 
-   (close return)
-)) CCFragment[]);
+   return
+)) CCFragment);
 
 #Bug with raw return (TODO)
 fragment-destructure-tctx := λ(: ctx CCContext)(: tctx TContext). (: (tail(
@@ -353,8 +353,8 @@ fragment-destructure-lhs := λ(: ctx CCContext)(: lhs S)(: args FragList). (: (t
          (exit 1_u64)
       )))
    ))
-   (close ctx)
-)) CCContext[]);
+   ctx
+)) CCContext);
 
 fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
    (let r SNil)
