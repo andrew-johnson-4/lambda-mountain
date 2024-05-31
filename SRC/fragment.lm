@@ -163,8 +163,8 @@ ccfragment::set-type := λ(: e CCFragment)(: tt Type). (: (tail(
          (set e (CCFragment( (close e-kvs) e-offset tt (close e-ctx) ))) 
       ))
    ))
-   (close e)
-)) CCFragment[]);
+   e
+)) CCFragment);
 
 ccfragment::get-offset := λ(: e CCFragment). (: (tail(
    (let offset 0_i64)
@@ -186,8 +186,8 @@ ccfragment::set-offset := λ(: e CCFragment)(: offset I64). (: (tail(
          )))
       ))
    ))
-   (close e)
-)) CCFragment[]);
+   e
+)) CCFragment);
 
 typeof := λ(: args FragList). (: (tail(
    (let r TAny)
@@ -205,8 +205,8 @@ typeof := λ(: args FragList). (: (tail(
       )))
       ( _ () )
    ))
-   (close r)
-)) Type[]);
+   r
+)) Type);
 
 fragment-size-args := λ(: args FragList). (: (tail(
    (match args (
