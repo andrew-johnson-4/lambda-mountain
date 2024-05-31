@@ -282,6 +282,7 @@ fragment-apply := λ(: ctx CCContext)(: offset I64)(: k String)(: args FragList)
    (close return)
 )) CCFragment[]);
 
+#Bug with raw return (TODO)
 fragment-destructure-tctx := λ(: ctx CCContext)(: tctx TContext). (: (tail(
    (while (non-zero tctx) (match tctx (
       ()
