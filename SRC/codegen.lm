@@ -82,9 +82,9 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
 
 #top expression
 compile-global := λ(: ctx CCContext)(: term AST). (: (tail(
-   (let e (maybe-deref(ccfragment::new())))
-   (close e)
-)) CCFragment[]);
+   ()
+   ()
+)) Nil);
 
 compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used IsUsed). (: (tail(
    (let e (maybe-deref(ccfragment::new())))
@@ -102,8 +102,8 @@ compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used IsUse
          (set e e-1)
       )))
    ))
-   (close e)
-)) CCFragment[]);
+   e
+)) CCFragment);
 
 compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used IsUsed). (: (tail(
    (let e (maybe-deref(ccfragment::new())))
@@ -432,8 +432,8 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
    (if (non-zero(maybe-deref(ccfragment::get-context( e )))) () (
       (exit-error( 'Context\sBecame\sNull_s term ))
    ))
-   (close e)
-)) CCFragment[]);
+   e
+)) CCFragment);
 
 compile-destructure-args := λ(: tt Type)(: ctx CCContext)(: lhs AST)(: offset I64). (: (tail(
    (match lhs (
@@ -469,8 +469,8 @@ compile-destructure-args := λ(: tt Type)(: ctx CCContext)(: lhs AST)(: offset I
       )))
       ( _ () )
    ))
-   (close ctx)
-)) CCContext[]);
+   ctx
+)) CCContext);
 
 compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type Type)(: args AST)(: offset I64). (: (tail(
    (let f (maybe-deref(cccontext::lookup( ctx function-name (maybe-deref(typecheck-lookup args)) args ))))
@@ -544,8 +544,8 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type 
       )))
    ))
    (let r-1 (maybe-deref(ccfragment::set-context( r ctx ))))(set r r-1)
-   (close r)
-)) CCFragment[]);
+   r
+)) CCFragment);
 
 compile-translate-local-variables := λ(: ctx CCContext)(: delta I64). (: (tail(
    (match ctx (
