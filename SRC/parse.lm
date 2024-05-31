@@ -150,17 +150,17 @@ parse := λ. (: (tail(
             (set ast-parsed-program (Seq(
                (close ast-parsed-program)
                (close (Glb( 'non-zero_s (close(Abs(
-                  (close(Asc( (close(Var 't_s)) (parse-type base-type) )))
+                  (close(Asc( (close(Var(clone-rope(SAtom 't_s)))) (parse-type base-type) )))
                   (close(Asc(
                      (close(App(
-                        (close(Var '!=_s))
+                        (close(Var(clone-rope(SAtom '!=_s))))
                         (close(App(
                            (close(App(
-                              (close(Var '.0_s))
-                              (close(Var 't_s))
+                              (close(Var(clone-rope(SAtom '.0_s))))
+                              (close(Var(clone-rope(SAtom 't_s))))
                            )))
                            (close(App(
-                              (close(Var '.0_s))
+                              (close(Var(clone-rope(SAtom '.0_s))))
                               (close(Lit tag-type))
                            )))
                         )))
