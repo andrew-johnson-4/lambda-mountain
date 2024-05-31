@@ -6,6 +6,13 @@ develop: compile-production
 	ld tmp.o -o tmp
 	./tmp
 
+re: compile-production
+	rm -f tmp tmp.o tmp.s
+	./re-production -o tmp.s tests/regress/big_return.lm
+	as tmp.s -o tmp.o
+	ld tmp.o -o tmp
+	./tmp
+
 deploy: compile-production
 	time ./production -o deploy.s SRC/cli.lm
 	as deploy.s -o deploy.o
@@ -20,6 +27,7 @@ compile-production: compile-bootstrap
 	./bootstrap -o production.s SRC/cli.lm
 	as -o production.o production.s
 	ld -o production   production.o
+	cp production re-production
 
 compile-bootstrap:
 	rm -f bootstrap bootstrap.o

@@ -9,11 +9,23 @@ type XYZ (Z( XY , U64 ));
 
 f := λ(: x U64)(: y U64). (: (tail(
    (let xyz (Z( (Y( x )) y )))
+   (print (.0 xyz))
+   (print (.1 (as xyz Z)))
+   (let xy (.2 (as xyz Z)))
+   (print (.0 xy))
+   (print (.1(as xy Y)))
+   (print '\n_s)
    xyz
 )) XYZ);
 
 main := λ. (: (tail(
-  ()
+  (let xyz (f( 123_u64 456_u64 )))
+  (print (.0 xyz))
+  (print (.1 (as xyz Z)))
+  (let xy (.2 (as xyz Z)))
+  (print (.0 xy))
+  (print (.1(as xy Y)))
+  (print '\n_s)
   (match (f( 123_u64 456_u64 )) (
      ()
      ( (Z( (Y( x )) y )) (tail(
