@@ -1224,6 +1224,29 @@ typecheck-apply-hard := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
    (close rt)
 )) Type[]);
 
+type SpecialRegistry SREOF | (SRSeq( SpecialRegistry[] , String , Type )); zero SpecialRegistry SREOF;
+special-registry := (: SREOF SpecialRegistry);
+
+close := λ(: x SpecialRegistry). (: (tail(
+   (mov( (malloc(sizeof SpecialRegistry)) R8 ))
+   (mov( x 0_u64 (as R8 SpecialRegistry[]) ))
+   (as R8 SpecialRegistry[])
+)) SpecialRegistry[]);
+
+specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
+   (print 'Specialize\s_s)(print key)(print '\s:\s_s)(print ft)(print '\n_s)
+   (print 'As\s_s)(print result-type)(print '\n_s)
+   (set special-registry (SRSeq(
+      (close special-registry)
+      key result-type
+   )))
+)) Nil);
+
+already-special := λ(: key String)(: key-type Type). (: (tail(
+   (let r 0_u64)
+   r
+)) U64);
+
 try-specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
    (let global-ctx global-type-context)
    (while (non-zero global-ctx) (match global-ctx (
@@ -1232,10 +1255,11 @@ try-specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-typ
          (if (is( ft kt )) (
             (match t (
                ()
-               ( (Glb( _ (Abs( _ _ )) )) (tail(
-                  (print 'Specialize\s_s)(print key)(print '\s:\s_s)(print ft)(print '\n_s)
-                  (print 'As\s_s)(print result-type)(print '\n_s)
-               )))
+               ( (Glb( _ (Abs( _ _ )) )) (
+                  (if (already-special( key result-type )) () (
+                     (specialize( key ft unify-ctx result-type ))
+                  ))
+               ))
                ( _ () )
             ))
          ) ())
