@@ -577,8 +577,8 @@ fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
          (print 'Render\sUnknown\s_s)(print u)(print '\n_s)
       )))
    ))
-   (close r)
-)) S[]);
+   r
+)) S);
 
 fragment-apply-context := λ(: ctx CCContext)(: rhs S)(: e CCFragment). (: (tail(
    (match rhs (
