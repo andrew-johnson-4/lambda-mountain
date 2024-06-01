@@ -393,6 +393,7 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
          (let return-type (maybe-deref(without-representation rhst)))
          (let return-type-2 (maybe-deref(with-representation return-type)))
          (let ft (maybe-deref(tarrow( lt return-type-2 ))))
+         (typecheck-ascript( td ft ))
          (set global-type-context (TCtxBind(
             (close global-type-context)
             k
@@ -439,7 +440,9 @@ typecheck-assert-complete := λ(: term AST). (: (
       ( ASTEOF (typecheck-assert-one term) )
       ( ASTNil (typecheck-assert-one term) )
       ( (Glb( k v )) (
-         (typecheck-assert-complete v)
+         (if (is-open(typecheck-lookup term)) () (
+            (typecheck-assert-complete v)
+         ))
       ))
       ( (Fragment( k v )) (
          (typecheck-assert-one v)
@@ -809,7 +812,12 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
       )))
       ( (ASTType( _ _ )) () )
       ( (Glb( k v )) (
-         (typecheck-infer-expr( tctx v Used ))
+         (if (is-open(typecheck-lookup term)) (tail(
+            (print 'Ignoring\sParametric\sGlobal\sTerm\s_s)
+            (print k)(print '\s:\s_s)(print (typecheck-lookup term))(print '\n_s)
+         )) (
+            (typecheck-infer-expr( tctx v Used ))
+         ))
       ))
       ( (Fragment( k v )) (tail(
          (typecheck-ascript( v (maybe-deref(typecheck-lookup term)) ))
@@ -1041,6 +1049,28 @@ typecheck-classof-tag := λ(: tag String). (: (tail(
    )))
    (close r)
 )) Type[]);
+
+is-open := λ(: tt Type). (: (tail(
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( TAny () )
+      ( (TVar _) (set r 1_u64) )
+      ( (TAnd( lt rt )) (tail(
+         (if (is-open lt) (set r 1_u64) ())
+         (if (is-open rt) (set r 1_u64) ())
+      )))
+      ( (TGround( _ TypeEOF )) () )
+      ( (TGround( _ (TypeSeq( TypeEOF p1 )) )) (
+         (if (is-open p1) (set r 1_u64) ())
+      ))
+      ( (TGround( _ (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (tail(
+         (if (is-open p1) (set r 1_u64) ())
+         (if (is-open p2) (set r 1_u64) ())
+      )))
+   ))
+   r
+)) U64);
 
 as-local-variable := λ(: tt Type). (: (tail(
    (let tt2 (maybe-deref(normalize tt)))
