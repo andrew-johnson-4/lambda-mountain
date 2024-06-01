@@ -10,8 +10,8 @@ f := λ(: x x). (: (
 
 main := λ. (: (tail(
   (print (f 5_u64))(print '\n_s)
-  (print (f -5_u64))(print '\n_s)
+  (print (f -5_i64))(print '\n_s)
   (print (f 5_u64))(print '\n_s)
-  (print (f -5_u64))(print '\n_s)
+  (print (f -5_i64))(print '\n_s)
 )) Nil);
 
