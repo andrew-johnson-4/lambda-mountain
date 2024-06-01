@@ -679,6 +679,7 @@ ccfragment::chain := λ(: l CCFragment)(: r CCFragment). (: (tail(
    e1-7
 )) CCFragment);
 
+#TODO remove indirect reference of return value
 fragment-chain := λ(: fragment-ctx FragList)(: e CCFragment). (: (tail(
    (while (non-zero fragment-ctx) (match fragment-ctx (
       ()
