@@ -12,30 +12,39 @@ compile := λ(). (: (tail(
       ()
       ( (Seq( rst (Glb( k rhs )) )) (tail(
          (if (==( k 'main_s )) (set assemble-argv-referenced True_u8) ())
-         (let fragment (maybe-deref(ccfragment::new())))
-         (let fragment-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Global_s) ))))
-         (let rhs-tt (maybe-deref(typecheck-lookup rhs)))
-         (match (typecheck-slot( rhs-tt '->_s )) (
+         (let open False_u8)
+         (match preview-program (
             ()
-            ( (TGround( '->_s _ )) (tail(
-               (let fragment-3 (maybe-deref(ccfragment::set-type( fragment-2 rhs-tt ))))
-               (let global-ctx-2 (maybe-deref(cccontext::bind(
-                  global-ctx k rhs-tt fragment-3
-               ))))
-               (set global-ctx global-ctx-2)
-            )))
-            ( _ (tail(
-               (let clean-tt (maybe-deref(without-representation rhs-tt)))
-               (let repr-tt (TAnd( (close clean-tt) (close(t1 'GlobalVariable_s)) )))
-               (let fragment-3 (maybe-deref(ccfragment::set-type( fragment-2 repr-tt ))))
-               (let mid (mangle-identifier( k clean-tt )))
-               (let fragment-4 (maybe-deref(ccfragment::set( fragment-3 'expression_s (SAtom mid) ))))
-               (let global-ctx-2 (maybe-deref(cccontext::bind(
-                  global-ctx k repr-tt fragment-4
-               ))))
-               (set global-ctx global-ctx-2)
-            )))
+            ( (Seq( _ term )) (
+               (if (is-open(typecheck-lookup term)) (set open True_u8) ())
+            ))
          ))
+         (if (==( open True_u8 )) () (tail(
+            (let fragment (maybe-deref(ccfragment::new())))
+            (let fragment-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Global_s) ))))
+            (let rhs-tt (maybe-deref(typecheck-lookup rhs)))
+            (match (typecheck-slot( rhs-tt '->_s )) (
+               ()
+               ( (TGround( '->_s _ )) (tail(
+                  (let fragment-3 (maybe-deref(ccfragment::set-type( fragment-2 rhs-tt ))))
+                  (let global-ctx-2 (maybe-deref(cccontext::bind(
+                     global-ctx k rhs-tt fragment-3
+                  ))))
+                  (set global-ctx global-ctx-2)
+               )))
+               ( _ (tail(
+                  (let clean-tt (maybe-deref(without-representation rhs-tt)))
+                  (let repr-tt (TAnd( (close clean-tt) (close(t1 'GlobalVariable_s)) )))
+                  (let fragment-3 (maybe-deref(ccfragment::set-type( fragment-2 repr-tt ))))
+                  (let mid (mangle-identifier( k clean-tt )))
+                  (let fragment-4 (maybe-deref(ccfragment::set( fragment-3 'expression_s (SAtom mid) ))))
+                  (let global-ctx-2 (maybe-deref(cccontext::bind(
+                     global-ctx k repr-tt fragment-4
+                  ))))
+                  (set global-ctx global-ctx-2)
+               )))
+            ))
+         )))
          (set preview-program rst)
       )))
       ( (Seq( rst (Fragment( k rhs )) )) (tail(
@@ -66,12 +75,22 @@ compile := λ(). (: (tail(
    (compile-write())
 )) Nil);
 
-compile-program-ordered := λ(: global-ctx CCContext)(: program AST). (: (
+compile-program-ordered := λ(: global-ctx CCContext)(: program AST). (: (tail(
+   (let open False_u8)
+   (match program (
+      ()
+      ( (Seq( _ e )) (
+         (if (is-open(typecheck-lookup e)) (set open True_u8) ())
+      ))
+      ( _ () )
+   ))
    (match program (
       ()
       ( (Seq( rst (Glb( k rhs )) )) (tail(
          (compile-program-ordered( global-ctx rst ))
-         (compile-global( global-ctx k rhs ))
+         (if (==( open True_u8 )) () (
+            (compile-global( global-ctx k rhs ))
+         ))
       )))
       ( (Seq( rst e )) (tail(
          (compile-program-ordered( global-ctx rst ))
@@ -79,7 +98,7 @@ compile-program-ordered := λ(: global-ctx CCContext)(: program AST). (: (
       ))) 
       ( ASTEOF () )
    ))
-) Nil);
+)) Nil);
 
 compile-type := λ(: ctx CCContext)(: lhs AST)(: rhs AST). (: (tail(
    (let def rhs)

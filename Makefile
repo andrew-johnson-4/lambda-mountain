@@ -1,14 +1,14 @@
 
 develop: compile-production
 	rm -f tmp tmp.o tmp.s
-	./production -o tmp.s tests/regress/big_return.lm
+	./production -o tmp.s tests/regress/parametric.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp
 
 re: compile-production
 	rm -f tmp tmp.o tmp.s
-	./re-production -o tmp.s tests/regress/big_return.lm
+	./re-production -o tmp.s tests/regress/parametric.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp

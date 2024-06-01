@@ -4,7 +4,7 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
    (let kt (maybe-deref(typecheck-lookup term)))
    (match term (
       ()
-      ( (Abs( lhs rhs )) (tail(
+      ( (Abs( lhs rhs )) (if (is-open kt) () (tail(
          (let args-type (maybe-deref(typecheck-domain kt)))
          (let args-size (typecheck-aligned-sizeof args-type))
          (let ctx-2 (maybe-deref(compile-destructure-args( args-type ctx lhs 0_i64 ))))
@@ -40,7 +40,7 @@ compile-global := λ(: ctx CCContext)(: k String)(: term AST). (: (tail(
          (let text-etc (maybe-deref(ccfragment::get( e 'text_s ))))
          (set text (SCons( (close text) (close text-etc) )))
          (set assemble-text-section (SCons( (close assemble-text-section) (close text) )))
-      )))
+      ))))
       ( (Asc( t tt )) (tail(
          (let clean-tt (maybe-deref(without-representation kt)))
          (let mid (mangle-identifier( k clean-tt )))
@@ -259,7 +259,7 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
          (let e1-4 (maybe-deref(ccfragment::set-offset( e1 stack-offset ))))(set e1 e1-4)
          (set e e1)
       )))
-      ( (App( (App( (Var 'as_s) t )) tt )) (tail(
+      ( (As( t tt )) (tail(
          (let e-1 (maybe-deref(compile-expr( ctx t stack-offset used ))))(set e e-1)
          (let e-2 (maybe-deref(ccfragment::set-type( e (maybe-deref(typecheck-lookup term)) ))))(set e e-2)
       )))
