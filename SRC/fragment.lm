@@ -676,8 +676,8 @@ ccfragment::chain := λ(: l CCFragment)(: r CCFragment). (: (tail(
       e1-6 'expression_s
      (maybe-deref(ccfragment::get( r 'expression_s )))
    ))))
-   (close e1-7)
-)) CCFragment[]);
+   e1-7
+)) CCFragment);
 
 fragment-chain := λ(: fragment-ctx FragList)(: e CCFragment). (: (tail(
    (while (non-zero fragment-ctx) (match fragment-ctx (
