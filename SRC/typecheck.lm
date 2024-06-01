@@ -477,7 +477,7 @@ typecheck-assert-complete := λ(: term AST). (: (
          (typecheck-assert-complete rhs)
          (typecheck-assert-one term)
       )))
-      ( (App( (App( (Var 'as_s) t )) _ )) (tail(
+      ( (As( t _ )) (tail(
          (typecheck-assert-complete t)
          (typecheck-assert-one term)
       )))
@@ -537,7 +537,7 @@ exit-error := λ(: msg String)(: t AST). (: (tail(
    (print '\n_s)
    (match t (
       ()
-      ( (App( (App( (Var 'as_s) inner )) (Lit cast) )) (tail(
+      ( (As( inner cast )) (tail(
          (print 'In\sCoercion\n_s)
          (print inner)(print ':\n_s)
          (print (maybe-deref(typecheck-lookup inner)))(print '\n_s)
@@ -911,12 +911,11 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
          (set tctx tctx3)
          (typecheck-ascript( term (maybe-deref(typecheck-lookup r)) ))
       )))
-      ( (App( (App( (Var 'as_s) t )) lt )) (tail(
+      ( (As( t tt )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx t used ))))
          (set tctx tctx2)
          (let inner-tt (maybe-deref(typecheck-lookup t)))
          (if (non-zero inner-tt) (tail(
-            (let tt (maybe-deref(typecheck-infer-type-compound lt)))
             (let nn (maybe-deref(with-only-representation inner-tt)))
             (if (non-zero nn) (tail(
                (let tt-2 (maybe-deref(tand(

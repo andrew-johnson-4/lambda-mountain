@@ -105,6 +105,12 @@ preprocess-apply := λ(: program AST). (: (tail(
       ( (App( (App( (Lit ':_s) mvar )) (Var mtype) )) (
          (set r (Asc( (close(preprocess-apply mvar)) (close(parse-type mtype)) )))
       ))
+      ( (App( (App( (Var 'as_s) mvar )) (Lit mtype) )) (
+         (set r (As( (close(preprocess-apply mvar)) (close(parse-type mtype)) )))
+      ))
+      ( (App( (App( (Var 'as_s) mvar )) (Var mtype) )) (
+         (set r (As( (close(preprocess-apply mvar)) (close(parse-type mtype)) )))
+      ))
       ( (Lit l) (tail(
          (let suffixes parse-suffixes)
          (while (non-zero suffixes) (match suffixes (

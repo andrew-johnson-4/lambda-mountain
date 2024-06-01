@@ -4,7 +4,7 @@ type TypeList TypeEOF | (TypeSeq( TypeList[] , Type )); zero TypeList TypeEOF;
 
 type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] ))
                 | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Fragment( String , AST[] ))
-                | (Asc( AST[] , Type[] )); zero AST ASTEOF;
+                | (Asc( AST[] , Type[] )) | (As( AST[] , Type[] )); zero AST ASTEOF;
 
 type ASTList ASTLEOF | (ASTSeq( ASTList[] , AST )); zero ASTList ASTLEOF;
 
