@@ -1206,7 +1206,7 @@ typecheck-apply-hard := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
 
 try-specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
    (print 'Specialize\s_s)(print key)(print '\s:\s_s)(print ft)(print '\n_s)
-   (print 'As\s_s)(print closed-type)(print '\n_s)
+   (print 'As\s_s)(print result-type)(print '\n_s)
 )) Nil);
 
 typecheck-unify-ctx := λ(: ctx TContext)(: tt Type). (: (tail(
