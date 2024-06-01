@@ -617,8 +617,8 @@ fragment-apply-context := λ(: ctx CCContext)(: rhs S)(: e CCFragment). (: (tail
          (exit 1_u64)
       )))
    ))
-   (close e)
-)) CCFragment[]);
+   e
+)) CCFragment);
 
 fragment-apply-direct := λ(: ctx CCContext)(: arrow CCFragment)(: args FragList)(: e-proto CCFragment)(: chain U8). (: (tail(
    (match (maybe-deref(ccfragment::get( arrow 'fragment_s ))) (
