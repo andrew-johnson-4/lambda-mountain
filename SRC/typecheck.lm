@@ -106,6 +106,10 @@ typecheck-sizeof := λ(: tt Type). (: (tail(
             (set sz (typecheck-sizeof rt))
          ))
       ))
+      ( _ (tail(
+         (print 'Unexpected\sType\stypecheck-sizeof\s_s)
+         (print tt)(print '\n_s)(exit 1_u64)
+      )))
    ))
    sz
 )) U64);
@@ -235,7 +239,6 @@ typecheck := λ. (: (tail(
          (set ordered-type-exprs rst)
       )))
    )))
-   #One Pass is Sound for Now
    (typecheck-infer-expr( global-type-context ast-parsed-program Unused))
    (typecheck-assert-complete ast-parsed-program)
 )) Nil);
@@ -509,6 +512,10 @@ typecheck-assert-complete := λ(: term AST). (: (
          (typecheck-assert-complete l)
          (typecheck-assert-complete r)
       )))
+      ( term (tail(
+         (print 'Typecheck\sAssert\sComplete\n_s)
+         (exit 1_u64)
+      )))
    ))
 ) Nil);
 
@@ -587,6 +594,7 @@ without-tag := λ(: tt Type). (: (tail(
             (if (==( iso True_u8 )) () (set tt TAny))
          ) ())
       )))
+      ( tt () )
    ))
    (close tt)
 )) Type[]);
@@ -1074,6 +1082,10 @@ is-open := λ(: tt Type). (: (tail(
       ( (TGround( _ (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (tail(
          (if (is-open p1) (set r 1_u64) ())
          (if (is-open p2) (set r 1_u64) ())
+      )))
+      ( tt (tail(
+         (print 'Is\sOpen\n_s)
+         (exit 1_u64)
       )))
    ))
    (set r 0_u64)
