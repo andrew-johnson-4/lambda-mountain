@@ -1,18 +1,18 @@
 
 list-tail-order-to-head-order := λ(: s S). (: (tail(
-   (let new (close SNil))
+   (let new SNil)
    (while (non-zero s) (match s (
       ()
       ( (SCons( l r )) (tail(
-         (set new (close(SCons(
+         (set new (SCons(
             (close r)
-            new
-         ))))
+            (close new)
+         )))
          (set s l)
       )))
    )))
    new
-)) S[]);
+)) S);
 
 is-variable := λ(: s String). (: (tail(
    (let r False_u8)
@@ -269,36 +269,36 @@ mangle-identifier := λ(: kt Type). (: (tail(
    (match kt (
       ()
       ( TAny (tail(
-         (let kr (maybe-deref(mangle-identifier '?_s)))
+         (let kr (mangle-identifier '?_s))
          (set r kr)
       )))
       ( (TVar v) (tail(
-         (let kr (maybe-deref(mangle-identifier v)))
+         (let kr (mangle-identifier v))
          (set r kr)
       )))
       ( (TGround( tv TypeEOF )) (tail(
-         (let kr (maybe-deref(mangle-identifier tv)))
+         (let kr (mangle-identifier tv))
          (set r kr)
       )))
       ( (TGround( tv (TypeSeq( TypeEOF tv1 )) )) (tail(
-         (let kr (maybe-deref(mangle-identifier tv)))
-         (let kr1 (maybe-deref(mangle-identifier tv1)))
+         (let kr (mangle-identifier tv))
+         (let kr1 (mangle-identifier tv1))
          (set r (SCons( (close kr) (close kr1) )))
       )))
       ( (TGround( tv (TypeSeq( (TypeSeq( TypeEOF tv1 )) tv2 )) )) (tail(
-         (let kr (maybe-deref(mangle-identifier tv)))
-         (let kr1 (maybe-deref(mangle-identifier tv1)))
-         (let kr2 (maybe-deref(mangle-identifier tv2)))
+         (let kr (mangle-identifier tv))
+         (let kr1 (mangle-identifier tv1))
+         (let kr2 (mangle-identifier tv2))
          (set r (SCons( (close kr) (close(SCons( (close kr1) (close kr2) ))) )))
       )))
       ( (TAnd( tl tr )) (tail(
-         (let kl (maybe-deref(mangle-identifier tl)))
-         (let kr (maybe-deref(mangle-identifier tr)))
+         (let kl (mangle-identifier tl))
+         (let kr (mangle-identifier tr))
          (set r (SCons( (close kl) (close kr) )))
       )))
    ))
-   (close r)
-)) S[]);
+   r
+)) S);
 
 mangle-identifier := λ(: k String). (: (tail(
    (let cs SNil)
@@ -329,14 +329,14 @@ mangle-identifier := λ(: k String). (: (tail(
       ))
       (set k (tail-string k))
    )))
-   (close cs)
-)) S[]);
+   cs
+)) S);
 
 mangle-identifier := λ(: k String)(: kt Type). (: (tail(
-   (let cs (maybe-deref(mangle-identifier( k ))))
+   (let cs (mangle-identifier( k )))
    (set cs (SCons( (close cs) (close(SAtom( '_CL__s ))) )))
    (let kt2 (maybe-deref(without-representation kt)))
-   (set cs (SCons( (close cs) (mangle-identifier kt2) )))
+   (set cs (SCons( (close cs) (close(mangle-identifier kt2)) )))
    (clone-rope cs)
 )) String);
 
@@ -370,13 +370,13 @@ escape-string := λ(: s S). (: (tail(
       ()
       ( (SAtom a) (set s (SAtom(escape-string a))) )
       ( (SCons( l r )) (set s (SCons(
-         (escape-string l)
-         (escape-string r)
+         (close(escape-string l))
+         (close(escape-string r))
       ))))
       ( _ () )
    ))
-   (close s)
-)) S[]);
+   s
+)) S);
 
 escape-literal := λ(: s String). (: (tail(
    (let cs SNil)

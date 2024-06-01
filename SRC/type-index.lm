@@ -67,8 +67,8 @@ typeof := λ(: t AST). (: (tail(
          ))
       ) ())
    ))
-   (close tt)
-)) Type[]);
+   tt
+)) Type);
 
 ascript := λ(: t AST)(: tt Type). (: (tail(
    (let ht (hash t))
