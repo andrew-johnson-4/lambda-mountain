@@ -1087,7 +1087,6 @@ is-open := λ(: tt Type). (: (tail(
          (exit 1_u64)
       )))
    ))
-   (set r 0_u64)
    r
 )) U64);
 
@@ -1254,6 +1253,16 @@ specialize-term := λ(: tctx TContext)(: t AST). (: (tail(
          (let tt2 (typecheck-unify-ctx( tctx tt )))
          (set t (Asc( (close lt2) tt2 )))
       )))
+      ( (As( lt tt )) (tail(
+         (let lt2 (specialize-term( tctx lt )))
+         (let tt2 (typecheck-unify-ctx( tctx tt )))
+         (set t (As( (close lt2) tt2 )))
+      )))
+      ( (Glb( k v )) (tail(
+         (let k2 (clone-rope(SAtom k)))
+         (let v2 (specialize-term( tctx v )))
+         (set t (Glb( k2 (close v2) )))
+      )))
       ( _ (tail(
          (print 'Unexpected\sSpecialize\sTerm:\s_s)(print t)(print '\n_s)
          (exit 1_u64)
@@ -1284,10 +1293,13 @@ specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Ty
       (close special-registry)
       key result-type
    )))
-   #TODO
-   #(let special-term (specialize-term( unify-ctx term )))
-   #(typecheck-infer-global-context( special-term ))
-   #(typecheck-infer-expr( global-type-context special-term ))
+   (let special-term (specialize-term( unify-ctx term )))
+   (typecheck-infer-global-context( special-term ))
+   (typecheck-infer-expr( global-type-context special-term Unused ))
+   (set ast-parsed-program (Seq(
+      (close ast-parsed-program)
+      (close special-term)
+   )))
 )) Nil);
 
 already-special := λ(: key String)(: key-type Type). (: (tail(

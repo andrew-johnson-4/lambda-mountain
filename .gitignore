@@ -31,4 +31,5 @@ benchmarks/*.o
 *.txt
 re-production
 deploy
+deploy.s
 deploy2.s
