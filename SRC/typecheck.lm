@@ -9,6 +9,9 @@ type TypeSizeList (TSzEOF) | (TSzSeq( TypeSizeList[] , String , U64 )); zero Typ
 
 typecheck-type-sizes := (: TSzEOF TypeSizeList);
 
+type ParametricIndex PIEOF | (PISeq( ParametricIndex[] , String , Type ));
+parametric-index := (: PIEOF ParametricIndex);
+
 to-string := λ(: tt Type). (: (tail(
    (let s (maybe-deref(to-string-impl tt)))
    (clone-rope s)
