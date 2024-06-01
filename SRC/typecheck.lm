@@ -144,8 +144,8 @@ typecheck-set-size := λ(: tag String)(: size U64). (: (
 merge := λ(: lctx TContext)(: rctx TContext). (: (tail(
    (match rctx (
       ()
-      ( (TCtxBind( rst k v )) (tail(
-         (let lctx2 (TCtxBind( (close lctx) k v )))
+      ( (TCtxBind( rst k v _ )) (tail(
+         (let lctx2 (TCtxBind( (close lctx) k v ASTEOF )))
          (let lctx3 (maybe-deref(merge( lctx2 rst ))))
          (set lctx lctx3)
       )))
@@ -306,6 +306,7 @@ typecheck-annotate-head-accessor := λ(: base-type Type). (: (tail(
       (close global-type-context)
       '.0_s
       (maybe-deref(tarrow( base-type tt )))
+      ASTEOF
    )))
 )) Nil);
 
@@ -323,6 +324,7 @@ typecheck-annotate-accessors := λ(: base-type Type)(: args-type Type). (: (tail
             (close global-type-context)
             accessor-name
             (maybe-deref(tarrow( base-type rt )))
+            ASTEOF
          )))
          (set field-number (+( field-number 1_u64 )))
          (set args-type lt)
@@ -337,6 +339,7 @@ typecheck-annotate-accessors := λ(: base-type Type)(: args-type Type). (: (tail
             (close global-type-context)
             accessor-name
             (maybe-deref(tarrow( base-type rt )))
+            ASTEOF
          )))
          (set args-type TAny)
       )))
@@ -398,6 +401,7 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
             (close global-type-context)
             k
             ft
+            td
          )))
       )))
       ( (Fragment( k (Abs( lhs (Asc( rhs rhst )) )) )) (tail(
@@ -408,19 +412,20 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
             (close global-type-context)
             k
             ft
+            ASTEOF
          )))
       )))
       ( (Glb( k (Asc( rhs rhst )) )) (tail(
          (let kt (maybe-deref(tand( rhst (maybe-deref(t1 'GlobalVariable_s)) ))))
          (set global-type-context (TCtxBind(
-            (close global-type-context) k kt
+            (close global-type-context) k kt ASTEOF
          )))
       )))
       ( (Fragment( k (Asc( rhs rhst )) )) (
          (set global-type-context (TCtxBind(
             (close global-type-context)
             k
-            rhst
+            rhst ASTEOF
          )))
       ))
       ( (Glb( k _ )) (
@@ -866,6 +871,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
             (close tctx)
             lname
             (maybe-deref(tlabel()))
+            ASTEOF
          )))
          (set tctx tctx2)
          (typecheck-ascript( term (maybe-deref(t1 'Nil_s)) ))
@@ -945,6 +951,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
             (close tctx)
             lname
             rt
+            ASTEOF
          )))
          (typecheck-ascript( term (maybe-deref(t1 'Nil_s)) ))
       )))
@@ -1205,6 +1212,12 @@ typecheck-apply-hard := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
 )) Type[]);
 
 try-specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
+#   (let global-ctx
+#            (set global-type-context (TCtxBind(
+#            (close global-type-context)
+#            k
+#            ft
+#         )))
    (print 'Specialize\s_s)(print key)(print '\s:\s_s)(print ft)(print '\n_s)
    (print 'As\s_s)(print result-type)(print '\n_s)
 )) Nil);
@@ -1215,7 +1228,7 @@ typecheck-unify-ctx := λ(: ctx TContext)(: tt Type). (: (tail(
       ( (TVar v) (
          (while (non-zero ctx) (match ctx (
             ()
-            ( (TCtxBind( rst tk tv )) (tail(
+            ( (TCtxBind( rst tk tv _ )) (tail(
                (if (==( tk v )) (
                   (set tt tv)
                ) ())
@@ -1276,6 +1289,7 @@ tcontext-accept := λ. (: (tail(
       (close TCtxEOF)
       'Accept_s
       (maybe-deref(t1 'Nil_s))
+      ASTEOF
    )))
    (close r)
 )) TContext[]);
@@ -1284,8 +1298,8 @@ is-closing := λ(: tctx TContext). (: (tail(
    (let r 0_u64)
    (while (non-zero tctx) (match tctx (
       ()
-      ( (TCtxBind( rst 'Accept_s _ )) (set tctx rst) )
-      ( (TCtxBind( rst _ _ )) (tail(
+      ( (TCtxBind( rst 'Accept_s _ _ )) (set tctx rst) )
+      ( (TCtxBind( rst _ _ _ )) (tail(
          (set r 1_u64)
          (set tctx TCtxEOF)
       )))
@@ -1306,6 +1320,7 @@ typecheck-unify-args := λ(: fpt Type)(: pt Type). (: (tail(
             (close TCtxEOF)
             ltv
             rt
+            ASTEOF
          )))
       ))
       ( (TPair( (TAnd( lt1 lt2 )) rt )) (
@@ -1373,6 +1388,7 @@ typecheck-unify-generous := λ(: fpt Type)(: pt Type). (: (tail(
             (close TCtxEOF)
             ltv
             rt
+            ASTEOF
          )))
       ))
       ( (TPair( (TAnd( lt1 lt2 )) rt )) (
@@ -1614,6 +1630,7 @@ typecheck-infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
             (close tctx)
             v
             (maybe-deref(as-local-variable tt))
+            ASTEOF
          )))
       ))
       ( (App( ps (Asc( (Var v) tt )) )) (tail(
@@ -1621,6 +1638,7 @@ typecheck-infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
             (close tctx)
             v
             (maybe-deref(as-local-variable tt))
+            ASTEOF
          )))
          (let tctx2 (maybe-deref(typecheck-infer-ctx( tctx ps ))))
          (set tctx tctx2)
@@ -1634,7 +1652,7 @@ typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tai
    (let found TAny)
    (while (non-zero tctx) (match tctx (
       ()
-      ( (TCtxBind( rst k vt )) (
+      ( (TCtxBind( rst k vt _ )) (
          (if (==( k vname )) (tail(
             (if (non-zero found) (
                (if (is-arrow vt) (tail(

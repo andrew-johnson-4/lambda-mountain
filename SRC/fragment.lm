@@ -288,7 +288,7 @@ fragment-apply := λ(: ctx CCContext)(: offset I64)(: k String)(: args FragList)
 fragment-destructure-tctx := λ(: ctx CCContext)(: tctx TContext). (: (tail(
    (while (non-zero tctx) (match tctx (
       ()
-      ( (TCtxBind( rst k vt )) (tail(
+      ( (TCtxBind( rst k vt _ )) (tail(
          (let fragment (maybe-deref(ccfragment::expression(to-string vt))))
          (let fragment-2 (maybe-deref(ccfragment::set( fragment 'program_s (SAtom(to-string vt)) ))))(set fragment fragment-2)
          (set ctx (CCCtxBind(

@@ -13,7 +13,7 @@ type StringStringList SSEOF | (SSSeq( StringStringList[] , String , String )); z
 type IsUsed Used | Unused | Tail | Return;
 
 type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST[] )); zero Context CtxEOF;
-type TContext TCtxEOF | (TCtxBind( TContext[] , String , Type )); zero TContext TCtxEOF;
+type TContext TCtxEOF | (TCtxBind( TContext[] , String , Type , AST )); zero TContext TCtxEOF;
 type Pair (Pair( AST , AST ));
 type CPair (CPair( Context , Context ));
 type TPair (TPair( Type , Type ));
