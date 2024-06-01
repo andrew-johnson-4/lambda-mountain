@@ -4,9 +4,9 @@ import LIB/default-primitives.lm;
 import LIB/default-rules.lm;
 import LIB/default-stdlib.lm;
 
-f := λ(: x x). (: (tail(
+f := λ(: x x). (: (
   (+( x x ))
-)) x);
+) x);
 
 main := λ. (: (tail(
   (print (f 5_u64))(print '\n_s)
