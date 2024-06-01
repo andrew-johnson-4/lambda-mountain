@@ -1244,6 +1244,18 @@ specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Ty
 
 already-special := λ(: key String)(: key-type Type). (: (tail(
    (let r 0_u64)
+   (let registry special-registry)
+   (while (non-zero registry) (match registry (
+      ()
+      ( (SRSeq( rst k kt )) (tail(
+         (if (==( k key )) (
+            (if (==( kt key-type )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+         (set registry rst)
+      )))
+   )))
    r
 )) U64);
 
