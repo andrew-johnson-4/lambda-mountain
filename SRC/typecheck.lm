@@ -1233,13 +1233,62 @@ close := λ(: x SpecialRegistry). (: (tail(
    (as R8 SpecialRegistry[])
 )) SpecialRegistry[]);
 
+specialize-term := λ(: tctx TContext)(: t AST). (: (tail(
+   (match t (
+      ()
+      ( ASTEOF (set t ASTEOF) )
+      ( ASTNil (set t ASTNil) )
+      ( (Var l) (set t (Var(clone-rope(SAtom l)))) )
+      ( (Lit l) (set t (Lit(clone-rope(SAtom l)))) )
+      ( (App( lt rt )) (tail(
+         (let lt2 (specialize-term( tctx lt )))
+         (let rt2 (specialize-term( tctx rt )))
+         (set t (App( (close lt2) (close rt2) )))
+      )))
+      ( (Abs( lt rt )) (tail(
+         (let lt2 (specialize-term( tctx lt )))
+         (let rt2 (specialize-term( tctx rt )))
+         (set t (Abs( (close lt2) (close rt2) )))
+      )))
+      ( (Asc( lt tt )) (tail(
+         (let lt2 (specialize-term( tctx lt )))
+         (let tt2 (typecheck-unify-ctx( tctx tt )))
+         (set t (Asc( (close lt2) tt2 )))
+      )))
+      ( _ (tail(
+         (print 'Unexpected\sSpecialize\sTerm:\s_s)(print t)(print '\n_s)
+         (exit 1_u64)
+      )))
+   ))
+   t
+)) AST);
+
 specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
    (print 'Specialize\s_s)(print key)(print '\s:\s_s)(print ft)(print '\n_s)
    (print 'As\s_s)(print result-type)(print '\n_s)
+   (let term ASTEOF)
+   (let global-ctx global-type-context)
+   (while (non-zero global-ctx) (match global-ctx (
+      ()
+      ( (TCtxBind( rst k kt t )) (tail(
+         (if (is( ft kt )) (
+            (match t (
+               ()
+               ( (Glb( _ (Abs( _ _ )) )) (set term t) )
+               ( _ () )
+            ))
+         ) ())
+         (set global-ctx rst)
+      )))
+   )))
    (set special-registry (SRSeq(
       (close special-registry)
       key result-type
    )))
+   #TODO
+   #(let special-term (specialize-term( unify-ctx term )))
+   #(typecheck-infer-global-context( special-term ))
+   #(typecheck-infer-expr( global-type-context special-term ))
 )) Nil);
 
 already-special := λ(: key String)(: key-type Type). (: (tail(
