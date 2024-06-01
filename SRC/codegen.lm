@@ -235,14 +235,8 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
             ( _ () )
          ))
       )))
-      ( (App( (Var 'sizeof_s) t )) (tail(
-         (let sz 0_u64)
-         (match t (
-            ()
-            ( (Lit tt) (set sz (typecheck-sizeof(maybe-deref(parse-type tt)))) )
-            ( (Var tt) (set sz (typecheck-sizeof(maybe-deref(parse-type tt)))) )
-            ( _ (exit-error( 'Cannot\sSize\sType_s t )))
-         ))
+      ( (Sizeof( tt )) (tail(
+         (let sz (typecheck-sizeof( tt )))
          (let e1 (maybe-deref(ccfragment::expression(to-string sz))))
          (let et (TAnd( 
             (close(t1 'Literal_s))

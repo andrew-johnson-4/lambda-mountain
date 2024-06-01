@@ -4,7 +4,7 @@ type TypeList TypeEOF | (TypeSeq( TypeList[] , Type )); zero TypeList TypeEOF;
 
 type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] ))
                 | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Fragment( String , AST[] ))
-                | (Asc( AST[] , Type[] )) | (As( AST[] , Type[] )); zero AST ASTEOF;
+                | (Asc( AST[] , Type[] )) | (As( AST[] , Type[] )) | (Sizeof( Type[] )); zero AST ASTEOF;
 
 type ASTList ASTLEOF | (ASTSeq( ASTList[] , AST )); zero ASTList ASTLEOF;
 
@@ -213,6 +213,18 @@ print := λ(: t AST). (: (tail(
          (print tt)
          (print '\]_s)
       )))
+      ( (As( t tt )) (tail(
+         (print '\[as\s_s)
+         (print t)
+         (print '\s_s)
+         (print tt)
+         (print '\]_s)
+      )))
+      ( (Sizeof( tt )) (tail(
+         (print '\[sizeof\s_s)
+         (print tt)
+         (print '\]_s)
+      )))
       ( (Seq( l r )) (tail(
          (print l)
          (print '\:\n_s)
@@ -287,6 +299,21 @@ serialize-ast := λ(: t AST). (: (tail(
          (print '\[Literal\s:\]\s_s)
          (serialize-ast t)
          (print '\]\]\s_s)
+         (serialize-ast tt)
+         (print '\]\]_s)
+      )))
+      ( (As( t tt )) (tail(
+         (print '\[App\s\[_s)
+         (print '\[App\s\[_s)
+         (print '\[Var\sas\]\s_s)
+         (serialize-ast t)
+         (print '\]\]\s_s)
+         (serialize-ast tt)
+         (print '\]\]_s)
+      )))
+      ( (Sizeof( tt )) (tail(
+         (print '\[App\s\[_s)
+         (print '\[Var\ssizeof\]\s_s)
          (serialize-ast tt)
          (print '\]\]_s)
       )))

@@ -481,7 +481,7 @@ typecheck-assert-complete := λ(: term AST). (: (
          (typecheck-assert-complete t)
          (typecheck-assert-one term)
       )))
-      ( (App( (Var 'sizeof_s) _ )) (
+      ( (Sizeof( _ )) (
          (typecheck-assert-one term)
       ))
       ( (App( (Var 'tail_s) (App( lterm rterm )) )) (tail(
@@ -957,7 +957,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
             (typecheck-ascript( term tt ))
          )) ())
       )))
-      ( (App( (Var 'sizeof_s) _ )) (
+      ( (Sizeof( _ )) (
          (typecheck-ascript( term (maybe-deref(as-constant(maybe-deref(parse-type 'U64_s)))) ))
       ))
       ( (App( (Var 'maybe-deref_s) r )) (tail(
@@ -1288,6 +1288,10 @@ specialize-term := λ(: tctx TContext)(: t AST). (: (tail(
          (let lt2 (specialize-term( tctx lt )))
          (let tt2 (typecheck-unify-ctx( tctx tt )))
          (set t (As( (close lt2) tt2 )))
+      )))
+      ( (Sizeof( tt )) (tail(
+         (let tt2 (typecheck-unify-ctx( tctx tt )))
+         (set t (Sizeof( tt2 )))
       )))
       ( (Glb( k v )) (tail(
          (let k2 (clone-rope(SAtom k)))
