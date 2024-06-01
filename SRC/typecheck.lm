@@ -640,6 +640,24 @@ normalize := λ(: tt Type). (: (tail(
             )))
          ))
       )))
+      ( (TGround( gt TypeEOF )) () )
+      ( (TGround( gt (TypeSeq( TypeEOF p1 )) )) (
+         (set tt (TGround(
+            gt (close(TypeSeq(
+               (close TypeEOF) (maybe-deref(normalize p1))
+            )))
+         )))
+      ))
+      ( (TGround( gt (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (set tt (TGround(
+            gt (close(TypeSeq(
+               (close(TypeSeq(
+                  (close TypeEOF) (maybe-deref(normalize p1))
+               )))
+               (maybe-deref(normalize p2))
+            )))
+         )))
+      ))
       ( _ () )
    ))
    (close tt)
@@ -1287,6 +1305,7 @@ specialize-term := λ(: tctx TContext)(: t AST). (: (tail(
 )) AST);
 
 specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
+   (let result-type-2 (maybe-deref(normalize result-type)))(set result-type result-type-2)
    (let unify-ctx-2 (normalize unify-ctx))(set unify-ctx unify-ctx-2)
    (print 'Specialize\s_s)(print key)(print '\s:\s_s)(print ft)(print '\n_s)
    (print 'As\s_s)(print result-type)(print '\n_s)
