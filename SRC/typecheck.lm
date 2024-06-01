@@ -1150,6 +1150,12 @@ typecheck-apply-plural := λ(: sloc AST)(: many Type)(: pt Type). (: (tail(
 )) Type[]);
 
 typecheck-apply-hard := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
+   (let key '_s)
+   (match sloc (
+      ()
+      ( (App( (Var k) _ )) (set key k) )
+      ( _ () )
+   ))
    (let rt TAny)
    (if (is-arrow ft) (
       (match ft (
@@ -1166,8 +1172,15 @@ typecheck-apply-hard := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
          ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (tail(
             (let ctx (maybe-deref(typecheck-unify-args( fpt pt ))))
             (if (non-zero ctx) (tail(
+               (let closed-type (maybe-deref(typecheck-unify-ctx( ctx ft ))))
                (let rt1 (maybe-deref(as-return(maybe-deref(typecheck-unify-ctx( ctx frt ))))))
                (set rt rt1)
+               (if (head-string key) (
+                  (if (is-closing ctx) (
+                     (print 'Specialize\s_s)(print key)(print '\s:\s_s)(print ft)(print '\n_s)
+                     (print 'As\s_s)(print closed-type)(print '\n_s)
+                  ) ())
+               ) ())
             )) ())
          )))
          ( _ () )
@@ -1262,6 +1275,19 @@ tcontext-accept := λ. (: (tail(
    )))
    (close r)
 )) TContext[]);
+
+is-closing := λ(: tctx TContext). (: (tail(
+   (let r 0_u64)
+   (while (non-zero tctx) (match tctx (
+      ()
+      ( (TCtxBind( rst 'Accept_s _ )) (set tctx rst) )
+      ( (TCtxBind( rst _ _ )) (tail(
+         (set r 1_u64)
+         (set tctx TCtxEOF)
+      )))
+   )))
+   r
+)) U64);
 
 typecheck-unify-args := λ(: fpt Type)(: pt Type). (: (tail(
    (let ctx TCtxEOF)
