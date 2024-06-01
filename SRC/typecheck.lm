@@ -398,7 +398,6 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
          (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
          (let return-type (maybe-deref(without-representation rhst)))
          (let return-type-2 (maybe-deref(with-representation return-type)))
-         (print 'Return\sWith\sRepresentation_s)(print return-type-2)(print '\n_s)
          (let ft (maybe-deref(tarrow( lt return-type-2 ))))
          (typecheck-ascript( td ft ))
          (set global-type-context (TCtxBind(
@@ -859,10 +858,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
       )))
       ( (ASTType( _ _ )) () )
       ( (Glb( k v )) (
-         (if (is-open(typecheck-lookup term)) (tail(
-            (print 'Ignoring\sParametric\sGlobal\sTerm\s_s)
-            (print k)(print '\s:\s_s)(print (typecheck-lookup term))(print '\n_s)
-         )) (
+         (if (is-open(typecheck-lookup term)) () (
             (typecheck-infer-expr( tctx v Used ))
          ))
       ))
@@ -1308,7 +1304,6 @@ specialize-term := λ(: tctx TContext)(: t AST). (: (tail(
 
 specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
    (let unify-ctx-2 (normalize unify-ctx))(set unify-ctx unify-ctx-2)
-   (print 'Specialize\s_s)(print key)(print '\n_s)(print unify-ctx)
    (let term ASTEOF)
    (let global-ctx global-type-context)
    (while (non-zero global-ctx) (match global-ctx (
