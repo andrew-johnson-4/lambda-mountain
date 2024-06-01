@@ -24,7 +24,6 @@ cccontext::new := λ. (: (tail(
 )) CCContext);
 
 cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST). (: (tail(
-   (print 'Lookup\s_s)(print k)(print '\n_s)
    (let r (maybe-deref(ccfragment::new())))
    (let found False_u8)
    (while (non-zero ctx) (match ctx (
@@ -34,7 +33,7 @@ cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST). (: 
             (match (maybe-deref(typecheck-slot( rt '->_s ))) (
                ()
                ( (TGround( '->_s _ )) (tail(
-                  (let u (maybe-deref(typecheck-apply-plural( sloc rt kt ))))
+                  (let u (maybe-deref(typecheck-apply-plural( ASTEOF rt kt ))))
                   (if (non-zero u) (tail(
                      (set r rf)
                      (set found True_u8)
