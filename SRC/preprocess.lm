@@ -22,18 +22,6 @@ preprocess-index-of-tag := λ(: tag String). (: (tail(
    index
 )) U64);
 
-close := λ(: x MacroList). (: (tail(
-   (mov( (malloc(sizeof MacroList)) R8 ))
-   (mov( x 0_u64 (as R8 MacroList[]) ))
-   (as R8 MacroList[])
-)) MacroList[]);
-
-close := λ(: x IndexList). (: (tail(
-   (mov( (malloc(sizeof IndexList)) R8 ))
-   (mov( x 0_u64 (as R8 IndexList[]) ))
-   (as R8 IndexList[])
-)) IndexList[]);
-
 preprocess := λ. (: (tail(
    (preprocess-index-typedefs ast-parsed-program)
    (let program (maybe-deref(preprocess-apply ast-parsed-program)))
@@ -110,6 +98,12 @@ preprocess-apply := λ(: program AST). (: (tail(
       ))
       ( (App( (App( (Var 'as_s) mvar )) (Var mtype) )) (
          (set r (As( (close(preprocess-apply mvar)) (close(parse-type mtype)) )))
+      ))
+      ( (App( (Var 'sizeof_s) (Var mtype) )) (
+         (set r (Sizeof( (close(parse-type mtype)) )))
+      ))
+      ( (App( (Var 'sizeof_s) (Lit mtype) )) (
+         (set r (Sizeof( (close(parse-type mtype)) )))
       ))
       ( (Lit l) (tail(
          (let suffixes parse-suffixes)

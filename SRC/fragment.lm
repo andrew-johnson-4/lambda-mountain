@@ -5,24 +5,6 @@ type CCFragment (CCFragment( CCFragKV[] , I64 , Type , CCContext[] ));
 
 type FragList (FLEOF) | (FLSeq( FragList[] , CCFragment )); zero FragList FLEOF;
 
-close := λ(: x CCFragment). (: (tail(
-   (mov( (malloc(sizeof CCFragment)) R8 ))
-   (mov( x 0_u64 (as R8 CCFragment[]) ))
-   (as R8 CCFragment[])
-)) CCFragment[]);
-
-close := λ(: x CCFragKV). (: (tail(
-   (mov( (malloc(sizeof CCFragKV)) R8 ))
-   (mov( x 0_u64 (as R8 CCFragKV[]) ))
-   (as R8 CCFragKV[])
-)) CCFragKV[]);
-
-close := λ(: x FragList). (: (tail(
-   (mov( (malloc(sizeof FragList)) R8 ))
-   (mov( x 0_u64 (as R8 FragList[]) ))
-   (as R8 FragList[])
-)) FragList[]);
-
 print := λ(: x CCFragment). (: (
    (match x ( 
       ()

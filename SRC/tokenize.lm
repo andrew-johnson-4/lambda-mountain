@@ -2,12 +2,6 @@
 type SourceLocation (SourceLocation( String , U64 , U64 ));
 type SourceMap SourceMapEOF | (SourceMapSeq( SourceMap[] , String , SourceLocation )); zero SourceMap SourceMapEOF;
 
-close := λ(: x SourceMap). (: (tail(
-   (mov( (malloc(sizeof SourceMap)) R8 ))
-   (mov( x 0_u64 (as R8 SourceMap[]) ))
-   (as R8 SourceMap[])
-)) SourceMap[]);
-
 token-source-location := (: SourceMapEOF SourceMap);
 
 location := λ(: tok String). (: (tail(

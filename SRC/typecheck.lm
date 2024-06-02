@@ -56,18 +56,6 @@ to-string-impl := λ(: tt Type). (: (tail(
    r
 )) S);
 
-close := λ(: x TypeConstructorList). (: (tail(
-   (mov( (malloc(sizeof TypeConstructorList)) R8 ))
-   (mov( x 0_u64 (as R8 TypeConstructorList[]) ))
-   (as R8 TypeConstructorList[])
-)) TypeConstructorList[]);
-
-close := λ(: x TypeSizeList). (: (tail(
-   (mov( (malloc(sizeof TypeSizeList)) R8 ))
-   (mov( x 0_u64 (as R8 TypeSizeList[]) ))
-   (as R8 TypeSizeList[])
-)) TypeSizeList[]);
-
 typecheck-sizeof := λ(: tt Type). (: (tail(
    (let sz 0_u64)
    (match tt (
@@ -180,18 +168,6 @@ t1 := λ(: s String). (: (tail(
 
 type TermTypeList TTEOF | (TTSeq( TermTypeList[] , AST , Type )); zero TermTypeList TTEOF;
 type STypeList STEOF | (STSeq( STypeList[] , S , Type )); zero STypeList STEOF;
-
-close := λ(: x TermTypeList). (: (tail(
-   (mov( (malloc(sizeof TermTypeList)) R8 ))
-   (mov( x 0_u64 (as R8 TermTypeList[]) ))
-   (as R8 TermTypeList[])
-)) TermTypeList[]);
-
-close := λ(: x STypeList). (: (tail(
-   (mov( (malloc(sizeof STypeList)) R8 ))
-   (mov( x 0_u64 (as R8 STypeList[]) ))
-   (as R8 STypeList[])
-)) STypeList[]);
 
 typecheck-typeof-lhs := λ(: lhs AST). (: (tail(
    (let r TAny)
@@ -481,7 +457,7 @@ typecheck-assert-complete := λ(: term AST). (: (
          (typecheck-assert-complete t)
          (typecheck-assert-one term)
       )))
-      ( (App( (Var 'sizeof_s) _ )) (
+      ( (Sizeof( _ )) (
          (typecheck-assert-one term)
       ))
       ( (App( (Var 'tail_s) (App( lterm rterm )) )) (tail(
@@ -577,7 +553,8 @@ without-tag := λ(: tt Type). (: (tail(
             )))
          ))
       )))
-      ( (TGround( possibly-tag-name _ )) (tail(
+      ( (TGround( possibly-tag-name ps )) (tail(
+         (set tt (TGround( possibly-tag-name (without-tag ps) )))
          #if this is a tag and not a class, then remove from normal form
          (let class-type (maybe-deref(typecheck-classof-tag possibly-tag-name)))
          (let iso False_u8)
@@ -598,6 +575,17 @@ without-tag := λ(: tt Type). (: (tail(
    ))
    (close tt)
 )) Type[]);
+
+without-tag := λ(: tt TypeList). (: (tail(
+   (match tt (
+      ()
+      ( (TypeSeq( rst p1 )) (
+         (set tt (TypeSeq( (without-tag rst) (maybe-deref(without-tag p1)) )))
+      ))
+      ( TypeEOF () )
+   ))
+   (close tt)
+)) TypeList[]);
 
 normalize := λ(: tctx TContext). (: (tail(
    (match tctx (
@@ -957,7 +945,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
             (typecheck-ascript( term tt ))
          )) ())
       )))
-      ( (App( (Var 'sizeof_s) _ )) (
+      ( (Sizeof( _ )) (
          (typecheck-ascript( term (maybe-deref(as-constant(maybe-deref(parse-type 'U64_s)))) ))
       ))
       ( (App( (Var 'maybe-deref_s) r )) (tail(
@@ -1256,12 +1244,6 @@ typecheck-apply-hard := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
 type SpecialRegistry SREOF | (SRSeq( SpecialRegistry[] , String , Type )); zero SpecialRegistry SREOF;
 special-registry := (: SREOF SpecialRegistry);
 
-close := λ(: x SpecialRegistry). (: (tail(
-   (mov( (malloc(sizeof SpecialRegistry)) R8 ))
-   (mov( x 0_u64 (as R8 SpecialRegistry[]) ))
-   (as R8 SpecialRegistry[])
-)) SpecialRegistry[]);
-
 specialize-term := λ(: tctx TContext)(: t AST). (: (tail(
    (match t (
       ()
@@ -1288,6 +1270,10 @@ specialize-term := λ(: tctx TContext)(: t AST). (: (tail(
          (let lt2 (specialize-term( tctx lt )))
          (let tt2 (typecheck-unify-ctx( tctx tt )))
          (set t (As( (close lt2) tt2 )))
+      )))
+      ( (Sizeof( tt )) (tail(
+         (let tt2 (typecheck-unify-ctx( tctx tt )))
+         (set t (Sizeof( tt2 )))
       )))
       ( (Glb( k v )) (tail(
          (let k2 (clone-rope(SAtom k)))

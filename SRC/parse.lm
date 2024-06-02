@@ -17,18 +17,6 @@ print := λ(: x ParsePartial). (: (match x (
    )))
 )) Nil);
 
-close := λ(: x ParsePartial). (: (tail(
-   (mov( (malloc(sizeof ParsePartial)) R8 ))
-   (mov( x 0_u64 (as R8 ParsePartial[]) ))
-   (as R8 ParsePartial[])
-)) ParsePartial[]);
-
-close := λ(: x SfxList). (: (tail(
-   (mov( (malloc(sizeof SfxList)) R8 ))
-   (mov( x 0_u64 (as R8 SfxList[]) ))
-   (as R8 SfxList[])
-)) SfxList[]);
-
 parse := λ. (: (tail(
    (let tokens ast-tokenized-program)
    (set ast-tokenized-program SNil)

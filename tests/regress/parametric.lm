@@ -8,10 +8,18 @@ f := λ(: x x). (: (
   (+( x x ))
 ) x);
 
+custom-close := λ(: x x). (: (tail(
+   (mov( (malloc(sizeof x)) R8 ))
+   (mov( x 0_u64 (as R8 x[]) ))
+   (as R8 x[])
+)) x[]);
+
 main := λ. (: (tail(
   (print (f 5_u64))(print '\n_s)
   (print (f -5_i64))(print '\n_s)
   (print (f 5_u64))(print '\n_s)
   (print (f -5_i64))(print '\n_s)
+  (print (maybe-deref(custom-close(SAtom 'X_s))))(print '\n_s)
+  (print (maybe-deref(custom-close(SAtom 'Y_s))))(print '\n_s)
 )) Nil);
 
