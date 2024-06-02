@@ -23,12 +23,6 @@ type UPair (UPair( IsUsed , IsUsed ));
 ast-tokenized-program := (: SNil S);
 ast-parsed-program := (: ASTEOF AST);
 
-close := λ(: x StringStringList). (: (tail(
-   (mov( (malloc(sizeof StringStringList)) R8 ))
-   (mov( x 0_u64 (as R8 StringStringList[]) ))
-   (as R8 StringStringList[])
-)) StringStringList[]);
-
 == := λ(: lu IsUsed)(: ru IsUsed). (: (tail(
    (let r 0_u64)
    (match (UPair( lu ru )) (
@@ -105,36 +99,6 @@ close := λ(: x StringStringList). (: (tail(
    ))
    r
 )) U64);
-
-close := λ(: x AST). (: (tail(
-   (mov( (malloc(sizeof AST)) R8 ))
-   (mov( x 0_u64 (as R8 AST[]) ))
-   (as R8 AST[])
-)) AST[]);
-
-close := λ(: x ASTList). (: (tail(
-   (mov( (malloc(sizeof ASTList)) R8 ))
-   (mov( x 0_u64 (as R8 ASTList[]) ))
-   (as R8 ASTList[])
-)) ASTList[]);
-
-close := λ(: x TypeList). (: (tail(
-   (mov( (malloc(sizeof TypeList)) R8 ))
-   (mov( x 0_u64 (as R8 TypeList[]) ))
-   (as R8 TypeList[])
-)) TypeList[]);
-
-close := λ(: x Context). (: (tail(
-   (mov( (malloc(sizeof Context)) R8 ))
-   (mov( x 0_u64 (as R8 Context[]) ))
-   (as R8 Context[])
-)) Context[]);
-
-close := λ(: x TContext). (: (tail(
-   (mov( (malloc(sizeof TContext)) R8 ))
-   (mov( x 0_u64 (as R8 TContext[]) ))
-   (as R8 TContext[])
-)) TContext[]);
 
 print := λ(: t Context). (: (tail(
    (match t (

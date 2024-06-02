@@ -12,12 +12,6 @@ print := λ(: ctx CCContext). (: (tail(
    )))
 )) Nil);
 
-close := λ(: x CCContext). (: (tail(
-   (mov( (malloc(sizeof CCContext)) R8 ))
-   (mov( x 0_u64 (as R8 CCContext[]) ))
-   (as R8 CCContext[])
-)) CCContext[]);
-
 cccontext::new := λ. (: (tail(
    (let r CCCEOF)
    r
