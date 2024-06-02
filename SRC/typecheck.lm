@@ -577,7 +577,8 @@ without-tag := λ(: tt Type). (: (tail(
             )))
          ))
       )))
-      ( (TGround( possibly-tag-name _ )) (tail(
+      ( (TGround( possibly-tag-name ps )) (tail(
+         (set tt (TGround( possibly-tag-name (without-tag ps) )))
          #if this is a tag and not a class, then remove from normal form
          (let class-type (maybe-deref(typecheck-classof-tag possibly-tag-name)))
          (let iso False_u8)
@@ -598,6 +599,17 @@ without-tag := λ(: tt Type). (: (tail(
    ))
    (close tt)
 )) Type[]);
+
+without-tag := λ(: tt TypeList). (: (tail(
+   (match tt (
+      ()
+      ( (TypeSeq( rst p1 )) (
+         (set tt (TypeSeq( (without-tag rst) (maybe-deref(without-tag p1)) )))
+      ))
+      ( TypeEOF () )
+   ))
+   (close tt)
+)) TypeList[]);
 
 normalize := λ(: tctx TContext). (: (tail(
    (match tctx (
