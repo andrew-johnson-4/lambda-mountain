@@ -56,18 +56,6 @@ to-string-impl := λ(: tt Type). (: (tail(
    r
 )) S);
 
-close := λ(: x TypeConstructorList). (: (tail(
-   (mov( (malloc(sizeof TypeConstructorList)) R8 ))
-   (mov( x 0_u64 (as R8 TypeConstructorList[]) ))
-   (as R8 TypeConstructorList[])
-)) TypeConstructorList[]);
-
-close := λ(: x TypeSizeList). (: (tail(
-   (mov( (malloc(sizeof TypeSizeList)) R8 ))
-   (mov( x 0_u64 (as R8 TypeSizeList[]) ))
-   (as R8 TypeSizeList[])
-)) TypeSizeList[]);
-
 typecheck-sizeof := λ(: tt Type). (: (tail(
    (let sz 0_u64)
    (match tt (
@@ -180,18 +168,6 @@ t1 := λ(: s String). (: (tail(
 
 type TermTypeList TTEOF | (TTSeq( TermTypeList[] , AST , Type )); zero TermTypeList TTEOF;
 type STypeList STEOF | (STSeq( STypeList[] , S , Type )); zero STypeList STEOF;
-
-close := λ(: x TermTypeList). (: (tail(
-   (mov( (malloc(sizeof TermTypeList)) R8 ))
-   (mov( x 0_u64 (as R8 TermTypeList[]) ))
-   (as R8 TermTypeList[])
-)) TermTypeList[]);
-
-close := λ(: x STypeList). (: (tail(
-   (mov( (malloc(sizeof STypeList)) R8 ))
-   (mov( x 0_u64 (as R8 STypeList[]) ))
-   (as R8 STypeList[])
-)) STypeList[]);
 
 typecheck-typeof-lhs := λ(: lhs AST). (: (tail(
    (let r TAny)
@@ -1267,12 +1243,6 @@ typecheck-apply-hard := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
 
 type SpecialRegistry SREOF | (SRSeq( SpecialRegistry[] , String , Type )); zero SpecialRegistry SREOF;
 special-registry := (: SREOF SpecialRegistry);
-
-close := λ(: x SpecialRegistry). (: (tail(
-   (mov( (malloc(sizeof SpecialRegistry)) R8 ))
-   (mov( x 0_u64 (as R8 SpecialRegistry[]) ))
-   (as R8 SpecialRegistry[])
-)) SpecialRegistry[]);
 
 specialize-term := λ(: tctx TContext)(: t AST). (: (tail(
    (match t (

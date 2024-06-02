@@ -22,18 +22,6 @@ preprocess-index-of-tag := λ(: tag String). (: (tail(
    index
 )) U64);
 
-close := λ(: x MacroList). (: (tail(
-   (mov( (malloc(sizeof MacroList)) R8 ))
-   (mov( x 0_u64 (as R8 MacroList[]) ))
-   (as R8 MacroList[])
-)) MacroList[]);
-
-close := λ(: x IndexList). (: (tail(
-   (mov( (malloc(sizeof IndexList)) R8 ))
-   (mov( x 0_u64 (as R8 IndexList[]) ))
-   (as R8 IndexList[])
-)) IndexList[]);
-
 preprocess := λ. (: (tail(
    (preprocess-index-typedefs ast-parsed-program)
    (let program (maybe-deref(preprocess-apply ast-parsed-program)))
