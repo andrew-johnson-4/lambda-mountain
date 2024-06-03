@@ -1176,7 +1176,7 @@ is-arrow := λ(: tt Type). (: (tail(
 typecheck-apply-plural := λ(: sloc AST)(: many Type)(: pt Type). (: (tail(
    (let tt (typecheck-apply-plural( sloc many pt True_u8 )))
    tt
-)) Type[]);
+)) Type);
 
 typecheck-apply-plural := λ(: sloc AST)(: many Type)(: pt Type)(: do-specialize U8). (: (tail(
    (let r TAny)
@@ -1195,8 +1195,8 @@ typecheck-apply-plural := λ(: sloc AST)(: many Type)(: pt Type)(: do-specialize
       )))
       ( _ () )
    ))
-   (close r)
-)) Type[]);
+   r
+)) Type);
 
 typecheck-apply-hard := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
    (let tt (typecheck-apply-hard( sloc ft pt True_u8 )))
