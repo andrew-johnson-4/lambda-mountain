@@ -219,6 +219,7 @@ typecheck := λ. (: (tail(
    )))
    (typecheck-infer-expr( global-type-context ast-parsed-program Unused))
    (typecheck-assert-complete ast-parsed-program)
+   (print 'Typecheck\sMemory:\s_s)(print (-( cons-page-tail cons-page-head )))(print '\n_s)
 )) Nil);
 
 global-type-context := (: TCtxEOF TContext);
@@ -562,7 +563,7 @@ without-tag := λ(: tt Type). (: (tail(
          ))
       )))
       ( (TGround( possibly-tag-name ps )) (tail(
-         (set tt (TGround( possibly-tag-name (without-tag ps) )))
+         (set tt (TGround( possibly-tag-name (close(without-tag ps)) )))
          #if this is a tag and not a class, then remove from normal form
          (let class-type (maybe-deref(typecheck-classof-tag possibly-tag-name)))
          (let iso False_u8)
@@ -581,19 +582,19 @@ without-tag := λ(: tt Type). (: (tail(
       )))
       ( tt () )
    ))
-   (close tt)
-)) Type[]);
+   tt
+)) Type);
 
 without-tag := λ(: tt TypeList). (: (tail(
    (match tt (
       ()
       ( (TypeSeq( rst p1 )) (
-         (set tt (TypeSeq( (without-tag rst) (maybe-deref(without-tag p1)) )))
+         (set tt (TypeSeq( (close(without-tag rst)) (maybe-deref(without-tag p1)) )))
       ))
       ( TypeEOF () )
    ))
-   (close tt)
-)) TypeList[]);
+   tt
+)) TypeList);
 
 normalize := λ(: tctx TContext). (: (tail(
    (match tctx (
@@ -656,8 +657,8 @@ normalize := λ(: tt Type). (: (tail(
       ))
       ( _ () )
    ))
-   (close tt)
-)) Type[]);
+   tt
+)) Type);
 
 nonnormal := λ(: tt Type). (: (tail(
    (let rt TAny)
@@ -687,8 +688,8 @@ nonnormal := λ(: tt Type). (: (tail(
       )))
       ( _ () )
    ))
-   (close rt)
-)) Type[]);
+   rt
+)) Type);
 
 typecheck-do-not-size := 99999_u64;
 typecheck-is-sized := λ(: tt Type). (: (tail(
@@ -761,8 +762,8 @@ typecheck-annotate-size-recurse := λ(: tt Type). (: (tail(
       )))
       ( _ () )
    ))
-   (close tt)
-)) Type[]);
+   tt
+)) Type);
 
 with-size := λ(: tt Type). (: (
    (typecheck-annotate-size tt)
@@ -1530,6 +1531,45 @@ typecheck-unify-args := λ(: fpt Type)(: pt Type). (: (tail(
    (close ctx)
 )) TContext[]);
 
+can-unify := λ(: fpt Type)(: pt Type). (: (tail(
+   (let r 0_u64)
+   (match (TPair( fpt pt )) (
+      ()
+      ( (TPair( TAny _ )) (set r 1_u64) )
+      ( (TPair( (TVar( ltv )) rt )) (set r 1_u64) )
+      ( (TPair( (TAnd( lt1 lt2 )) rt )) (
+         (if (can-unify( lt1 rt )) (
+            (if (can-unify( lt2 rt )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+      ))
+      ( (TPair( lt (TAnd( rt1 rt2 )) )) (tail(
+         (if (can-unify( lt rt1 )) (set r 1_u64) ())
+         (if (can-unify( lt rt2 )) (set r 1_u64) ())
+      )))
+      ( (TPair( (TGround( ltn TypeEOF )) (TGround( rtn TypeEOF )) )) (
+         (if (==( ltn rtn )) (set r 1_u64) ())
+      ))
+      ( (TPair( (TGround( ltn (TypeSeq( TypeEOF lt1 )) )) (TGround( rtn (TypeSeq( TypeEOF rt1 )) )) )) (
+         (if (==( ltn rtn )) (
+            (if (can-unify( lt1 rt1 )) (set r 1_u64) ())
+         ) ())
+      ))
+      ( (TPair( (TGround( ltn (TypeSeq( (TypeSeq( TypeEOF lt1 )) lt2 )) )) (TGround( rtn (TypeSeq( (TypeSeq( TypeEOF rt1 )) rt2 )) )) )) (
+         (if (==( ltn rtn )) (
+            (if (can-unify( lt1 rt1 )) (
+               (if (can-unify( lt2 rt2 )) (
+                  (set r 1_u64)
+               ) ())
+            ) ())
+         ) ())
+      ))
+      ( _ () )
+   ))
+   r
+)) U64);
+
 typecheck-unify-generous := λ(: fpt Type)(: pt Type). (: (tail(
    (let ctx TCtxEOF)
    (match (TPair( fpt pt )) (
@@ -1845,8 +1885,8 @@ typecheck-domain := λ(: tt Type). (: (tail(
       ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (set r p1) )
       ( _ () )
    ))
-   (close r)
-)) Type[]);
+   r
+)) Type);
 
 typecheck-range := λ(: tt Type). (: (tail(
    (let r TAny)
@@ -1855,8 +1895,8 @@ typecheck-range := λ(: tt Type). (: (tail(
       ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (set r p2) )
       ( _ () )
    ))
-   (close r)
-)) Type[]);
+   r
+)) Type);
 
 is-fragment-type := λ(: tt Type). (: (tail(
    (let tt-s '_s)

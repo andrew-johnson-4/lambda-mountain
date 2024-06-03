@@ -26,6 +26,7 @@ preprocess := λ. (: (tail(
    (preprocess-index-typedefs ast-parsed-program)
    (let program (maybe-deref(preprocess-apply ast-parsed-program)))
    (set ast-parsed-program program)
+   (print 'Preprocess\sMemory:\s_s)(print (-( cons-page-tail cons-page-head )))(print '\n_s)
 )) Nil);
 
 preprocess-index-typedefs := λ(: program AST). (: (

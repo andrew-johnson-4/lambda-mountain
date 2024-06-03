@@ -257,6 +257,7 @@ print := λ(: x I8). (: (tail(
    (as RAX U64)
 )) U64);
 
+cons-page-head := 0_u64;
 cons-page-tail := 0_u64;
 malloc := λ (: sz U64) . (: (tail(
    (if (==( cons-page-tail 0_u64 )) (tail(
@@ -264,6 +265,7 @@ malloc := λ (: sz U64) . (: (tail(
       (mov( 0_u64 RDI ))
       (syscall())
       (mov( RAX R8 )) #current page break in R8
+      (set cons-page-head (as R8 U64))
       (set cons-page-tail (as R8 U64))
       # 4 GB
       (add( 1073741824_u64 R8 ))
