@@ -814,8 +814,8 @@ typecheck-lookup := λ(: term S). (: (tail(
          ))
       ))
    )))
-   (close found)
-)) Type[]);
+   found
+)) Type);
 
 
 typecheck-ascript := λ(: t AST)(: tt Type). (: (
