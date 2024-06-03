@@ -765,9 +765,10 @@ typecheck-annotate-size-recurse := λ(: tt Type). (: (tail(
    tt
 )) Type);
 
-with-size := λ(: tt Type). (: (
-   (typecheck-annotate-size tt)
-) Type[]);
+with-size := λ(: tt Type). (: (tail(
+   (let rt (typecheck-annotate-size tt))
+   rt
+)) Type);
 
 typecheck-annotate-size := λ(: tt Type). (: (tail(
    (if (&&( (not(typecheck-is-sized tt)) (!=( (typecheck-is-sized tt) typecheck-do-not-size )) )) (tail(
@@ -788,8 +789,8 @@ typecheck-annotate-size := λ(: tt Type). (: (tail(
       ))))
       (set tt tt3)
    )) ())
-   (close tt)
-)) Type[]);
+   tt
+)) Type);
 
 typecheck-s-type-list := (: STEOF STypeList);
 typecheck-ascript := λ(: t S)(: tt Type). (: (
