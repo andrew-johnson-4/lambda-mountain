@@ -1070,8 +1070,8 @@ typecheck-typeof-tag := λ(: tag String). (: (tail(
          ))
       ))
    )))
-   (close r)
-)) Type[]);
+   r
+)) Type);
 
 typecheck-classof-tag := λ(: tag String). (: (tail(
    (let r TAny)
@@ -1087,8 +1087,8 @@ typecheck-classof-tag := λ(: tag String). (: (tail(
          ))
       ))
    )))
-   (close r)
-)) Type[]);
+   r
+)) Type);
 
 is-open := λ(: tt Type). (: (tail(
    (let r 0_u64)
