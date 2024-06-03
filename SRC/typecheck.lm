@@ -770,26 +770,24 @@ with-size := λ(: tt Type). (: (
 ) Type[]);
 
 typecheck-annotate-size := λ(: tt Type). (: (tail(
-   (if (typecheck-is-sized tt) () (
-      (if (==( (typecheck-is-sized tt) typecheck-do-not-size )) () (tail(
-         (let sz (typecheck-annotate-size-inner tt))
-         (let tt2 (maybe-deref(typecheck-annotate-size-recurse tt)))
-         (let tt3 (maybe-deref(tand(
-            tt2
-            (TGround(
-               'Sized_s
-               (close (TypeSeq(
+   (if (&&( (not(typecheck-is-sized tt)) (!=( (typecheck-is-sized tt) typecheck-do-not-size )) )) (tail(
+      (let sz (typecheck-annotate-size-inner tt))
+      (let tt2 (maybe-deref(typecheck-annotate-size-recurse tt)))
+      (let tt3 (maybe-deref(tand(
+         tt2
+         (TGround(
+            'Sized_s
+            (close (TypeSeq(
+               (close TypeEOF)
+               (TGround(
+                  (to-string sz)
                   (close TypeEOF)
-                  (TGround(
-                     (to-string sz)
-                     (close TypeEOF)
-                  ))
-               )))
-            ))
-         ))))
-         (set tt tt3)
-      )))
-   ))
+               ))
+            )))
+         ))
+      ))))
+      (set tt tt3)
+   )) ())
    (close tt)
 )) Type[]);
 
