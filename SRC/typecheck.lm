@@ -762,8 +762,8 @@ typecheck-annotate-size-recurse := λ(: tt Type). (: (tail(
       )))
       ( _ () )
    ))
-   (close tt)
-)) Type[]);
+   tt
+)) Type);
 
 with-size := λ(: tt Type). (: (
    (typecheck-annotate-size tt)
