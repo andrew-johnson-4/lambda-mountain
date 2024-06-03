@@ -102,8 +102,8 @@ ccfragment::get := λ(: e CCFragment)(: k String). (: (tail(
          )))
       ))
    ))
-   (close r)
-)) S[]);
+   r
+)) S);
 
 ccfragment::set := λ(: e CCFragment)(: k String)(: v S). (: (tail(
    (match e (
@@ -259,7 +259,7 @@ fragment-apply := λ(: ctx CCContext)(: offset I64)(: k String)(: args FragList)
    (set comment (SCons( (close comment) (close(SAtom '\n_s)) )))
    (let r2 (maybe-deref(ccfragment::set( return 'program_s (SCons(
       (close comment)
-      (ccfragment::get( return 'program_s ))
+      (close(ccfragment::get( return 'program_s )))
    ))))))(set return r2)
    (let r3 (maybe-deref(ccfragment::set-type( return return-tt ))))(set return r3)
 
@@ -630,22 +630,22 @@ ccfragment::chain := λ(: l CCFragment)(: r CCFragment). (: (tail(
    (let e1-2 (maybe-deref(ccfragment::set(
       e1 'frame_s
       (SCons(
-         (ccfragment::get( l 'frame_s ))
-         (ccfragment::get( r 'frame_s ))
+         (close(ccfragment::get( l 'frame_s )))
+         (close(ccfragment::get( r 'frame_s )))
       ))
    ))))
    (let e1-3 (maybe-deref(ccfragment::set(
       e1-2 'unframe_s
       (SCons(
-         (ccfragment::get( l 'unframe_s ))
-         (ccfragment::get( r 'unframe_s ))
+         (close(ccfragment::get( l 'unframe_s )))
+         (close(ccfragment::get( r 'unframe_s )))
       ))
    ))))
    (let e1-4 (maybe-deref(ccfragment::set(
       e1-3 'program_s
       (SCons(
-         (ccfragment::get( l 'program_s ))
-         (ccfragment::get( r 'program_s ))
+         (close(ccfragment::get( l 'program_s )))
+         (close(ccfragment::get( r 'program_s )))
       ))
    ))))
    (let e1-5 (maybe-deref(ccfragment::set-context( e1-4
