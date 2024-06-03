@@ -72,7 +72,6 @@ compile := λ(). (: (tail(
    )))
    (compile-program-ordered( global-ctx ast-parsed-program ))
    (compile-finish())
-   (print 'Compile\sMemory:\s_s)(print (-( cons-page-tail cons-page-head )))(print '\n_s)
    (compile-write())
 )) Nil);
 
