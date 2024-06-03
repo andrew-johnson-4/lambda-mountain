@@ -1846,8 +1846,8 @@ typecheck-domain := λ(: tt Type). (: (tail(
       ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (set r p1) )
       ( _ () )
    ))
-   (close r)
-)) Type[]);
+   r
+)) Type);
 
 typecheck-range := λ(: tt Type). (: (tail(
    (let r TAny)
@@ -1856,8 +1856,8 @@ typecheck-range := λ(: tt Type). (: (tail(
       ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (set r p2) )
       ( _ () )
    ))
-   (close r)
-)) Type[]);
+   r
+)) Type);
 
 is-fragment-type := λ(: tt Type). (: (tail(
    (let tt-s '_s)
