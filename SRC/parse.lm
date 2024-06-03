@@ -175,7 +175,6 @@ parse := λ. (: (tail(
          ))
       ))
    ))
-   (print 'Parse\sMemory:\s_s)(print (-( cons-page-tail cons-page-head )))(print '\n_s)
 )) Nil);
 
 parse-many-expressions := λ(: tokens S). (: (tail(

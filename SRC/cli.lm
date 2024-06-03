@@ -88,7 +88,5 @@ main := λ(: argc U64)(: argv String[]). (: (tail(
          (compile())
       )))
    ))
-
-   (print 'Memory:\s_s)(print (-( cons-page-tail cons-page-head )))(print '\n_s)
 )) Nil);
 

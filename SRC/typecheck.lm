@@ -219,7 +219,6 @@ typecheck := λ. (: (tail(
    )))
    (typecheck-infer-expr( global-type-context ast-parsed-program Unused))
    (typecheck-assert-complete ast-parsed-program)
-   (print 'Typecheck\sMemory:\s_s)(print (-( cons-page-tail cons-page-head )))(print '\n_s)
 )) Nil);
 
 global-type-context := (: TCtxEOF TContext);
