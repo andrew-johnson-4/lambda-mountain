@@ -120,9 +120,9 @@ ccfragment::set := λ(: e CCFragment)(: k String)(: v S). (: (tail(
 
 # TODO return non-pointer value just normal value
 ccfragment::get-context := λ(: e CCFragment) . (: (tail(
-   (let ctx (.1( e )))
+   (let ctx (maybe-deref(.1( e ))))
    ctx
-)) CCContext[]);
+)) CCContext);
 
 ccfragment::set-context := λ(: e CCFragment)(: ctx CCContext). (: (tail(
    (match e (
