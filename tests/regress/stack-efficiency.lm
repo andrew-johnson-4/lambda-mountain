@@ -1,0 +1,18 @@
+
+import LIB/default-instruction-set.lm;
+import LIB/default-primitives.lm;
+import LIB/default-rules.lm;
+import LIB/default-stdlib.lm;
+
+type XY (XY( U64 , U64 ));
+
+f := λ. (: (tail(
+   (let x (XY( 1_u64 2_u64 )))
+   x
+)) XY);
+
+main := λ. (: (tail(
+  (f())
+  (f())
+  ()
+)) Nil);
