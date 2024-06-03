@@ -403,10 +403,21 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
                      (let e1 (maybe-deref(compile-stack-call( ctx fname (maybe-deref(typecheck-lookup term)) a stack-offset used ))))
                      (set e e1)
                   )))
+                  ( (Asc( (Var fname) ft )) (tail(
+                     (let e1 (maybe-deref(compile-stack-call( ctx fname (maybe-deref(typecheck-lookup term)) a stack-offset used ))))
+                     (set e e1)
+                  )))
                   ( (Lit fname) (tail(
                      (let e1 (maybe-deref(compile-constructor( ctx fname (maybe-deref(typecheck-lookup term)) (maybe-deref(typecheck-lookup a)) a stack-offset ))))
                      (set e e1)
                   )))
+                  ( (Asc( (Lit fname) ft )) (tail(
+                     (let e1 (maybe-deref(compile-constructor( ctx fname (maybe-deref(typecheck-lookup term)) (maybe-deref(typecheck-lookup a)) a stack-offset ))))
+                     (set e e1)
+                  )))
+                  ( _ (
+                     (exit-error( 'Unexpected\sApplication\sTerm_s term ))
+                  ))
                ))
             ))
             ( _ (
