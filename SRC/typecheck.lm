@@ -1446,8 +1446,8 @@ tcontext-accept := λ. (: (tail(
       (maybe-deref(t1 'Nil_s))
       ASTEOF
    )))
-   (close r)
-)) TContext[]);
+   r
+)) TContext);
 
 is-closing := λ(: tctx TContext). (: (tail(
    (let r 0_u64)
