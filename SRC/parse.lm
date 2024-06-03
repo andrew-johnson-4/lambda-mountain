@@ -495,6 +495,13 @@ parse-type-single := λ(: tt String). (: (tail(
                      )))
                      (set buff SNil)
                   )))
+                  ( (TVar( tag )) (tail(
+                     (set base-type (TGround(
+                        tag
+                        (close(parse-type-comma-sep(clone-rope buff)))
+                     )))
+                     (set buff SNil)
+                  )))
                   ( _ (tail(
                      (eprint 'Unexpected\sParameterized\sType:\s_s)
                      (print base-type)
