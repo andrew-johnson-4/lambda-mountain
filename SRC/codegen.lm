@@ -528,9 +528,9 @@ compile-stack-call := λ(: ctx CCContext)(: function-name String)(: return-type 
                      (set rsi (+( rsi 8_u64 )))
                   )))
                   (let r-7 (maybe-deref(ccfragment::set-offset( r (-( offset (as rsz I64) )) ))))(set r r-7)
-               )) (
+               )) (tail(
                   (let r-7 (maybe-deref(ccfragment::set-offset( r offset ))))(set r r-7)
-               ))
+               )))
             ))
          ))
 
