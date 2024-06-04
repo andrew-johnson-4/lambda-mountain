@@ -306,6 +306,10 @@ s-app := λ(: lhs S[])(: rhs S[]). (: (
    )))
 ) S[]);
 
+s-nil := λ. (: (
+   (close SNil)
+) S[]);
+
 s-var := λ(: s String). (: (
    (close(SCons(
       (close(SAtom 'Var_s))

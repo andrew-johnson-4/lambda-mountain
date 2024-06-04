@@ -2006,6 +2006,10 @@ is-parameterized := λ(: tt Type). (: (tail(
    (match tt (
       ()
       ( (TGround( _ (TypeSeq( _ _ )) )) (set r 1_u64) )
+      ( (TAnd( lt rt )) (tail(
+         (if (is-parameterized lt) (set r 1_u64) ())
+         (if (is-parameterized rt) (set r 1_u64) ())
+      )))
       ( _ () )
    ))
    r

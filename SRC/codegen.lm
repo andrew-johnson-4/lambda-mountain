@@ -155,7 +155,8 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
                   (if (non-zero(maybe-deref(typecheck-classof-tag val))) (tail(
                      (let tag-index (preprocess-index-of-tag val))
                      (let e1 (maybe-deref(ccfragment::expression(to-string tag-index))))
-                     (set e e1)
+                     (let e2 (maybe-deref(ccfragment::set( e1 'program_s (maybe-deref(s-app( (s-nil()) (s-nil()) ))) ))))
+                     (set e e2)
                   )) (
                      (match val (
                         ()
@@ -648,6 +649,7 @@ compile-maybe-push-stack := λ(: ctx CCContext)(: offset I64)(: fragment CCFragm
       ( (TGround( 'StackVariable_s _ )) () )
       ( _ (tail(
          (let f-arg (maybe-deref(ccfragment::set-type( fragment ft ))))(set fragment f-arg)
+         (print 'Push\s_s)(print ft)(print fragment)(print '\n_s)
          (let f-1 (maybe-deref(fragment-apply(
             ctx offset 'push_s
             (FLSeq( (close FLEOF) fragment )) sloc
@@ -682,6 +684,7 @@ compile-push-rvalue := λ(: ctx CCContext)(: rval AST)(: offset I64). (: (tail(
          (if (==( sz 0_u64 )) (tail(
             (let r-1 (maybe-deref(ccfragment::set-context( r ctx ))))(set r r-1)
             (let r-2 (maybe-deref(ccfragment::set-offset( r offset ))))(set r r-2)
+            (let r-3 (maybe-deref(ccfragment::set( r 'program_s (maybe-deref(s-app( (s-nil()) (s-nil()) ))) ))))(set r r-3)
          )) (tail(
             (let e1 (maybe-deref(compile-expr( ctx rval offset Used ))))
             (let e1-2 (maybe-deref(compile-maybe-push-stack( ctx (ccfragment::get-offset e1) e1 et rval ))))(set e1 e1-2)
