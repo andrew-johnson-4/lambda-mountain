@@ -512,13 +512,22 @@ compile-define-tag-constructor-parametric := λ(: ctx CCContext)(: tag String)(:
    (let push-template (cccontext::lookup( ctx 'template::push_s tg ASTEOF )))
    (let movl-template (cccontext::lookup( ctx 'template::mov_s (maybe-deref(tcons( tg (t1 'LocalVariable_s) ))) ASTEOF )))
    (let movg-template (cccontext::lookup( ctx 'template::mov_s (maybe-deref(tcons( tg (t1 'GlobalVariable_s) ))) ASTEOF )))
+  
+   (let tctx (SSLSeq(
+      (close SSLEOF)
+      'case-number_s
+      (SAtom(to-string case-number))
+   )))
 
    (let arrow-tt (maybe-deref(tarrow( (maybe-deref(t1 tag)) (maybe-deref(tand( rtype (maybe-deref(t1 'StackVariable_s)) ))) ))))
    (let arrow-dc (TAnd( (close arrow-tt) (close(t1 'DontChain_s)) )))(set arrow-tt arrow-dc)
    (let fragment push-template)
    (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
    (let fragment-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment fragment-2)
-   # TODO specialize 'fragment
+   (let fragment-3 (maybe-deref(ccfragment::set( fragment 'fragment_s
+      (specialize-term( tctx (ccfragment::get( fragment 'fragment_s )) ))
+   ))))(set fragment fragment-3)
+   (print 'Fragment\s_s)(print (ccfragment::get( fragment 'fragment_s )))(print '\n_s)
    (let ctx-2 (maybe-deref(cccontext::bind(
       ctx 'push_s arrow-tt fragment
    ))))(set ctx ctx-2)
@@ -528,7 +537,9 @@ compile-define-tag-constructor-parametric := λ(: ctx CCContext)(: tag String)(:
    (let fragment movl-template)
    (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
    (let fragment-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment fragment-2)
-   # TODO specialize 'fragment
+   (let fragment-3 (maybe-deref(ccfragment::set( fragment 'fragment_s
+      (specialize-term( tctx (ccfragment::get( fragment 'fragment_s )) ))
+   ))))(set fragment fragment-3)
    (let ctx-2 (maybe-deref(cccontext::bind(
       ctx 'push_s arrow-tt fragment
    ))))(set ctx ctx-2)
@@ -538,7 +549,9 @@ compile-define-tag-constructor-parametric := λ(: ctx CCContext)(: tag String)(:
    (let fragment movg-template)
    (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
    (let fragment-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment fragment-2)
-   # TODO specialize 'fragment
+   (let fragment-3 (maybe-deref(ccfragment::set( fragment 'fragment_s
+      (specialize-term( tctx (ccfragment::get( fragment 'fragment_s )) ))
+   ))))(set fragment fragment-3)
    (let ctx-2 (maybe-deref(cccontext::bind(
       ctx 'push_s arrow-tt fragment
    ))))(set ctx ctx-2)

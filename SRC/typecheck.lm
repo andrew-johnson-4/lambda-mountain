@@ -1312,6 +1312,11 @@ specialize-term := λ(: tctx TContext)(: t AST). (: (tail(
    t
 )) AST);
 
+specialize-term := λ(: tctx StringSList)(: t S). (: (tail(
+   (let rt t)
+   rt
+)) S);
+
 specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
    (let unify-ctx-2 (normalize unify-ctx))(set unify-ctx unify-ctx-2)
    (let term ASTEOF)
