@@ -522,7 +522,7 @@ compile-define-tag-constructor-parametric := λ(: ctx CCContext)(: tag String)(:
    (let arrow-tt (maybe-deref(tarrow( (maybe-deref(t1 tag)) (maybe-deref(tand( rtype (maybe-deref(t1 'StackVariable_s)) ))) ))))
    (let arrow-dc (TAnd( (close arrow-tt) (close(t1 'DontChain_s)) )))(set arrow-tt arrow-dc)
    (let fragment push-template)
-   (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
+   (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-dc ))))(set fragment fragment-1)
    (let fragment-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment fragment-2)
    (let fragment-3 (maybe-deref(ccfragment::set( fragment 'fragment_s
       (specialize-term( tctx (ccfragment::get( fragment 'fragment_s )) ))
@@ -534,7 +534,7 @@ compile-define-tag-constructor-parametric := λ(: ctx CCContext)(: tag String)(:
    (let arrow-tt (maybe-deref(tarrow( (maybe-deref(tcons( (maybe-deref(t1 tag)) (t1 'LocalVariable_s) ))) (t1 'Nil_s) ))))
    (let arrow-dc (TAnd( (close arrow-tt) (close(t1 'DontChain_s)) )))(set arrow-tt arrow-dc)
    (let fragment movl-template)
-   (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
+   (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-dc ))))(set fragment fragment-1)
    (let fragment-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment fragment-2)
    (let fragment-3 (maybe-deref(ccfragment::set( fragment 'fragment_s
       (specialize-term( tctx (ccfragment::get( fragment 'fragment_s )) ))
@@ -546,7 +546,7 @@ compile-define-tag-constructor-parametric := λ(: ctx CCContext)(: tag String)(:
    (let arrow-tt (maybe-deref(tarrow( (maybe-deref(tcons( (maybe-deref(t1 tag)) (t1 'GlobalVariable_s) ))) (t1 'Nil_s) ))))
    (let arrow-dc (TAnd( (close arrow-tt) (close(t1 'DontChain_s)) )))(set arrow-tt arrow-dc)
    (let fragment movg-template)
-   (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-tt ))))(set fragment fragment-1)
+   (let fragment-1 (maybe-deref(ccfragment::set-type( fragment arrow-dc ))))(set fragment fragment-1)
    (let fragment-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment fragment-2)
    (let fragment-3 (maybe-deref(ccfragment::set( fragment 'fragment_s
       (specialize-term( tctx (ccfragment::get( fragment 'fragment_s )) ))
