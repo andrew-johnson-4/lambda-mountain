@@ -697,7 +697,7 @@ typecheck-is-sized := λ(: tt Type). (: (tail(
       ()
       ( TAny (set r typecheck-do-not-size) )
       ( (TGround( 'Cons_s _ )) (set r typecheck-do-not-size) )
-      ( (TGround( '->_s _ )) (set r typecheck-do-not-size) )
+      ( (TGround( 'Arrow_s _ )) (set r typecheck-do-not-size) )
       ( (TAnd( lt rt )) (
          (set r (max(
             (typecheck-is-sized lt)
@@ -1172,7 +1172,7 @@ is-arrow := λ(: tt Type). (: (tail(
             (set r (is-arrow rt))
          ))
       ))
-      ( (TGround( '->_s _ )) (set r 1_u64) )
+      ( (TGround( 'Arrow_s _ )) (set r 1_u64) )
       ( _ () )
    ))
    r
@@ -1194,7 +1194,7 @@ typecheck-apply-plural := λ(: sloc AST)(: many Type)(: pt Type)(: do-specialize
             (set r r2)
          )))
       )))
-      ( (TGround( '->_s _ )) (tail(
+      ( (TGround( 'Arrow_s _ )) (tail(
          (let r1 (maybe-deref(typecheck-apply-hard( sloc many pt do-specialize ))))
          (set r r1)
       )))
@@ -1228,7 +1228,7 @@ typecheck-apply-hard := λ(: sloc AST)(: ft Type)(: pt Type)(: do-specialize U8)
                (set rt rt2)
             )))
          )))
-         ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (tail(
+         ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (tail(
             (let ctx (maybe-deref(typecheck-unify-args( fpt pt ))))
             (if (non-zero ctx) (tail(
                (let ctx-2 (normalize ctx))(set ctx ctx-2)
@@ -1677,7 +1677,7 @@ typecheck-unify-generous := λ(: fpt Type)(: pt Type). (: (tail(
 )) TContext[]);
 
 tarrow := λ(: lt Type)(: rt Type). (: (tail(
-   (let tt (TGround( '->_s
+   (let tt (TGround( 'Arrow_s
       (close(TypeSeq( (close(TypeSeq( (close TypeEOF) lt ))) rt )))
    )))
    (close tt)
@@ -1693,7 +1693,7 @@ tcons := λ(: lt Type)(: rt Type). (: (tail(
 right-if-not-left := λ(: lt Type)(: rt Type). (: (tail(
    (match (TPair( lt rt )) (
       ()
-      ( (TPair( _ (TGround( '->_s _ )) )) () )
+      ( (TPair( _ (TGround( 'Arrow_s _ )) )) () )
       ( (TPair( (TGround( ltag _ )) (TGround( rtag _ )) )) (
          (if (==( ltag rtag )) (set rt TAny) ())
       ))
@@ -1919,9 +1919,9 @@ typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tai
 
 typecheck-domain := λ(: tt Type). (: (tail(
    (let r TAny)
-   (match (maybe-deref(typecheck-slot( tt '->_s ))) (
+   (match (maybe-deref(typecheck-slot( tt 'Arrow_s ))) (
       ()
-      ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (set r p1) )
+      ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (set r p1) )
       ( _ () )
    ))
    r
@@ -1929,9 +1929,9 @@ typecheck-domain := λ(: tt Type). (: (tail(
 
 typecheck-range := λ(: tt Type). (: (tail(
    (let r TAny)
-   (match (maybe-deref(typecheck-slot( tt '->_s ))) (
+   (match (maybe-deref(typecheck-slot( tt 'Arrow_s ))) (
       ()
-      ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (set r p2) )
+      ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (set r p2) )
       ( _ () )
    ))
    r

@@ -87,6 +87,7 @@ compile-global := λ(: ctx CCContext)(: term AST). (: (tail(
 )) Nil);
 
 compile-expr := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: used IsUsed). (: (tail(
+   (print 'Compile\s_s)(print term)(print '\n_s)
    (let e (maybe-deref(ccfragment::new())))
    (match used (
       ()
@@ -395,9 +396,9 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
          (set e e1-5)
       )))
       ( (App( f a )) (
-         (match (maybe-deref(typecheck-slot( (maybe-deref(typecheck-lookup f)) '->_s ))) (
+         (match (maybe-deref(typecheck-slot( (maybe-deref(typecheck-lookup f)) 'Arrow_s ))) (
             ()
-            ( (TGround( '->_s _ )) (
+            ( (TGround( 'Arrow_s _ )) (
                (match f (
                   ()
                   ( (Var fname) (tail(
@@ -649,7 +650,6 @@ compile-maybe-push-stack := λ(: ctx CCContext)(: offset I64)(: fragment CCFragm
       ( (TGround( 'StackVariable_s _ )) () )
       ( _ (tail(
          (let f-arg (maybe-deref(ccfragment::set-type( fragment ft ))))(set fragment f-arg)
-         (print 'Push\s_s)(print ft)(print fragment)(print '\n_s)
          (let f-1 (maybe-deref(fragment-apply(
             ctx offset 'push_s
             (FLSeq( (close FLEOF) fragment )) sloc
