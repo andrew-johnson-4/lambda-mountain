@@ -866,9 +866,9 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
          (match term (
             ()
             ( (Asc( t _ )) (tail(
-               (if (is-parameterized tt) (
+               (if (is-parameterized tt) (tail(
                   (typecheck-ascript( t tt ))
-               ) ())
+               )) ())
                (match (maybe-deref(typecheck-slot( tt 'String_s ))) (
                   ()
                   ( (TGround( 'String_s _ )) () )
