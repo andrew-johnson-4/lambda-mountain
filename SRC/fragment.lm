@@ -605,6 +605,9 @@ fragment-apply-direct := λ(: ctx CCContext)(: arrow CCFragment)(: args FragList
       ()
       ( (SCons( (SAtom 'Abs_s) (SCons( lhs rhs )) )) (tail(
          (let f-ctx-2 (maybe-deref(fragment-destructure-lhs( ctx lhs args ))))
+         (print 'Arrow\sType\s_s)(print (ccfragment::get-type arrow))(print '\n_s)
+         #(let tctx (maybe-deref(typecheck-unify-generous( a-type ft ))))
+         #(let ctx-2 (maybe-deref(fragment-destructure-tctx( ctx tctx ))))(set ctx ctx-2)
          (let f-app (maybe-deref(fragment-apply-context( f-ctx-2 rhs e-proto ))))
          (set e-proto f-app)
       )))
