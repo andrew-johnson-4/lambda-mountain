@@ -2013,7 +2013,6 @@ typecheck-get-size := λ(: tt Type). (: (tail(
                sz
                (+( 8_u64 (typecheck-aligned-sizeof arg-types) ))
             )))
-            (print 'Check\sSize\s_s)(print arg-types)(print '\svs\s_s)(print kt)(print sz)(print '\n_s)
          )) ())
          (set sizes rst)
       )))
