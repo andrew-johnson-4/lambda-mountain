@@ -9,6 +9,7 @@ type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( Stri
 type ASTList ASTLEOF | (ASTSeq( ASTList[] , AST )); zero ASTList ASTLEOF;
 
 type StringStringList SSEOF | (SSSeq( StringStringList[] , String , String )); zero StringStringList SSEOF;
+type StringSList SSLEOF | (SSLSeq( StringSList[] , String , S )); zero StringSList SSLEOF;
 
 type IsUsed Used | Unused | Tail | Return;
 
@@ -303,6 +304,10 @@ s-app := λ(: lhs S[])(: rhs S[]). (: (
          rhs
       )))
    )))
+) S[]);
+
+s-nil := λ. (: (
+   (close SNil)
 ) S[]);
 
 s-var := λ(: s String). (: (

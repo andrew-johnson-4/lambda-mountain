@@ -1,15 +1,15 @@
 
-fragment template::push := λ(: src tag+Sized<size>). (: (
+fragment template::push := λ(: src Sized<size>). (: (
    (.program(
-      (for wsz in (range( '0 (-( (-( (.expression return-size) (.expression size) )) '8 )) )) (
+      (for wsz in (range( '0 (/( (-( (-( (.expression return-size) (.expression size) )) '8 )) '8 )) )) (
          \t 'pushq \s '$0 \n
       ))
       (.program src)
-      \t 'pushq \s (.expression case-number) \n
+      \t 'pushq \s '$ 'case-number \n
    ))
-) return-type+Sized<return-size>+StackVariable);
+) Sized<return-size>);
 
-fragment template::mov := λ(: src tag+Sized<size>)(: dst LocalVariable). (: (
+fragment template::mov := λ(: src Sized<size>)(: dst LocalVariable). (: (
    (.program(
       (.program src)
       (for index in (range( 0 (/( (.expression size) '8 )) )) (
@@ -18,7 +18,7 @@ fragment template::mov := λ(: src tag+Sized<size>)(: dst LocalVariable). (: (
    ))
 ) Nil);
 
-fragment template::mov := λ(: src tag+Sized<size>)(: dst GlobalVariable). (: (
+fragment template::mov := λ(: src Sized<size>)(: dst GlobalVariable). (: (
    (.program(
       (.program src)
       \t 'movq \s '$ (.expression dst) , \s '%r15 \n

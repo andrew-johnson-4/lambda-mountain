@@ -207,7 +207,7 @@ fragment-size-args := λ(: args FragList). (: (tail(
    args
 )) FragList);
 
-fragment-apply := λ(: ctx CCContext)(: offset I64)(: k String)(: args FragList)(: sloc AST). (: (tail(
+fragment-apply := λ(: ctx CCContext)(: offset I64)(: k String)(: args FragList)(: direct-type Type)(: sloc AST). (: (tail(
    (let args-sized (maybe-deref(fragment-size-args args)))(set args args-sized)
    (let e-proto (maybe-deref(ccfragment::new())))
    (let e-proto-2 (maybe-deref(ccfragment::set-context( e-proto ctx ))))(set e-proto e-proto-2)
@@ -223,9 +223,9 @@ fragment-apply := λ(: ctx CCContext)(: offset I64)(: k String)(: args FragList)
    (let arrow-tt (maybe-deref(ccfragment::get-type arrow)))
 
    (let return-tt TAny)
-   (match (maybe-deref(typecheck-slot( (maybe-deref(ccfragment::get-type arrow)) '->_s ))) (
+   (match (maybe-deref(typecheck-slot( (maybe-deref(ccfragment::get-type arrow)) 'Arrow_s ))) (
       ()
-      ( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF lt )) rt )) )) (set return-tt rt) )
+      ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF lt )) rt )) )) (set return-tt rt) )
       ( arrow-tt (tail(
          (print 'Apply\sDirect\sFragment\sIs\sNot\sAn\sArrow:\s_s)
          (print k)(print '\s:\s_s)
@@ -239,6 +239,11 @@ fragment-apply := λ(: ctx CCContext)(: offset I64)(: k String)(: args FragList)
       ( (TGround( 'DontChain_s _ )) (set chain False_u8) )
       ( _ () )
    ))
+
+   (let lhs-type (typecheck-lookup(ccfragment::get( arrow 'fragment_s ))))
+   (let tctx (maybe-deref(typecheck-unify-generous( lhs-type direct-type ))))
+   (let ctx-2 (maybe-deref(fragment-destructure-tctx( ctx tctx ))))(set ctx ctx-2)
+
    (let return (maybe-deref(fragment-apply-direct( ctx arrow args e-proto chain ))))
 
    (let comment (SAtom '\oCall\sFragment\s_s))
