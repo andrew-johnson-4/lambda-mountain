@@ -715,6 +715,7 @@ typecheck-annotate-size-inner := λ(: tt Type). (: (tail(
    (match tt (
       ()
       ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF _ )) TAny )) )) (set sz 8_u64) )
+      ( (TGround( tag (TypeSeq( _ _ )) )) (set sz (typecheck-get-size tt)) )
       ( (TGround( tag _ )) (set sz (typecheck-get-size tag)) )
       ( (TAnd( lt rt )) (
          (set sz (max(
@@ -1313,6 +1314,27 @@ specialize-term := λ(: tctx TContext)(: t AST). (: (tail(
 )) AST);
 
 specialize-term := λ(: tctx StringSList)(: t S). (: (tail(
+   (match t (
+      ()
+      ( SNil (set t SNil) )
+      ( (SAtom a) (
+         (while (non-zero tctx) (match tctx (
+            ()
+            ( (SSLSeq( rst k v )) (tail(
+               (if (==( a k )) (
+                  (set t v)
+               ) ())
+               (set tctx rst)
+            )))
+         )))
+      ))
+      ( (SCons( lt rt )) (
+         (set t (SCons(
+            (close(specialize-term( tctx lt )))
+            (close(specialize-term( tctx rt )))
+         )))
+      ))
+   ))
    (let rt t)
    rt
 )) S);
