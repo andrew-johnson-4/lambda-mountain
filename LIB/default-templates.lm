@@ -5,7 +5,7 @@ fragment template::push := λ(: src tag+Sized<size>). (: (
          \t 'pushq \s '$0 \n
       ))
       (.program src)
-      \t 'pushq \s (.expression case-number) \n
+      \t 'pushq \s '$ 'case-number \n
    ))
 ) return-type+Sized<return-size>+StackVariable);
 
