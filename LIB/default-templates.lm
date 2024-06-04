@@ -1,9 +1,9 @@
 
 fragment template::push := λ(: src tag+Sized<size>). (: (
    (.program(
-#      (for wsz in (range( '0 (-( (-( (.expression return-size) (.expression size) )) '8 )) )) (
+      (for wsz in (range( '0 (-( (-( (.expression return-size) (.expression size) )) '8 )) )) (
          \t 'pushq \s '$0 \n
-#      ))
+      ))
       (.program src)
       \t 'pushq \s '$ 'case-number \n
    ))
