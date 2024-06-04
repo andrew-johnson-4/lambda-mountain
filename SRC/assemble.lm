@@ -519,6 +519,8 @@ compile-define-tag-constructor-parametric := λ(: ctx CCContext)(: tag String)(:
       (SAtom(to-string case-number))
    )))
 
+   (print 'Push\s_s)(print tag)(print arg-types)(print '\n_s)
+
    (let arrow-tt (maybe-deref(tarrow( (maybe-deref(t1 tag)) (maybe-deref(tand( rtype (maybe-deref(t1 'StackVariable_s)) ))) ))))
    (let arrow-dc (TAnd( (close arrow-tt) (close(t1 'DontChain_s)) )))(set arrow-tt arrow-dc)
    (let fragment push-template)
