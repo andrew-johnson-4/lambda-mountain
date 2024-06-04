@@ -491,13 +491,24 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
    (close ctx)
 )) CCContext[]);
 
+
 compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types Type)(: base-type Type)(: rtype Type)(: case-number U64). (: (tail(
-   (if (is-open base-type) (
-      (print 'TODO\sParametric\sConstructors\n_s)
-   ) (tail(
+   (if (is-open base-type) (tail(
+      (let ctx-2 (maybe-deref(compile-define-tag-constructor-parametric( ctx tag arg-types base-type rtype case-number ))))
+      (set ctx ctx-2)
+   )) (tail(
       (let ctx-2 (maybe-deref(compile-define-tag-constructor-simple( ctx tag arg-types base-type rtype case-number ))))
       (set ctx ctx-2)
    )))
+   (close ctx)
+)) CCContext[]);
+
+compile-define-tag-constructor-parametric := λ(: ctx CCContext)(: tag String)(: arg-types Type)(: base-type Type)(: rtype Type)(: case-number U64). (: (tail(
+   (let tg (maybe-deref(tand( (t1 tag) (tsized '0_s) ))))
+   (let push-template (cccontext::lookup( ctx 'template::push_s tg ASTEOF )))
+   (let movl-template (cccontext::lookup( ctx 'template::mov_s (maybe-deref(tcons( tg (t1 'LocalVariable_s) ))) ASTEOF )))
+   (let movg-template (cccontext::lookup( ctx 'template::mov_s (maybe-deref(tcons( tg (t1 'GlobalVariable_s) ))) ASTEOF )))
+   (print 'TODO\sParametric\sConstructors\n_s)
    (close ctx)
 )) CCContext[]);
 
