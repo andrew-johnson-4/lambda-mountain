@@ -240,7 +240,7 @@ fragment-apply := λ(: ctx CCContext)(: offset I64)(: k String)(: args FragList)
       ( _ () )
    ))
 
-   (print 'Arrow\sType\s_s)(print return-type)(print '\n_s)
+   (print 'Arrow\sType\s_s)(print (maybe-deref(tarrow( at return-type ))))(print '\n_s)
    (print 'Arrow\sType\s_s)(print (typecheck-lookup(ccfragment::get( arrow 'fragment_s ))))(print '\n_s)
    #(let tctx (maybe-deref(typecheck-unify-generous( a-type ft ))))
    #(let ctx-2 (maybe-deref(fragment-destructure-tctx( ctx tctx ))))(set ctx ctx-2)
