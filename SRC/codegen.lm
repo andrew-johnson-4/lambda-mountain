@@ -653,9 +653,13 @@ compile-maybe-push-stack := λ(: ctx CCContext)(: offset I64)(: fragment CCFragm
       ( (TGround( 'StackVariable_s _ )) () )
       ( _ (tail(
          (let f-arg (maybe-deref(ccfragment::set-type( fragment ft ))))(set fragment f-arg)
+         (let direct-type (maybe-deref(tarrow(
+            (maybe-deref(tand( (t1 'Nil_s) (maybe-deref(tsized '0_s)) )))
+            ft
+         ))))
          (let f-1 (maybe-deref(fragment-apply(
             ctx offset 'push_s
-            (FLSeq( (close FLEOF) fragment )) (t1 'Nil_s) sloc
+            (FLSeq( (close FLEOF) fragment )) direct-type sloc
          ))))(set fragment f-1)
          (let f-sz (as (typecheck-sizeof ft) I64))
          (let f-2 (maybe-deref(ccfragment::set-offset( fragment (-( offset f-sz )) ))))(set fragment f-2)
