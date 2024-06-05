@@ -850,15 +850,25 @@ fields-of-tag := λ(: tag Type)(: class Type). (: (tail(
    ))
    (let rt TAny)
    (let field-list typecheck-fields-of-tag)
+   (let rhst TAny)
    (while (non-zero field-list) (match field-list (
       ()
       ( (TConSeq( rst k ftype )) (tail(
-         (if (==( k tag-s )) (tail(
-            (print 'Fields_s)(print tag)(print ftype)(print '\n_s)
-         )) ())
+         (if (==( k tag-s )) (
+            (match ftype (
+               ()
+               ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (tail(
+                  (let tctx (maybe-deref(typecheck-unify-args( p1 class ))))
+                  (let closed-type (maybe-deref(typecheck-unify-ctx( tctx p2 ))))
+                  (set rhst closed-type)
+               )))
+               ( _ () )
+            ))
+         ) ())
          (set field-list rst)
       )))
    )))
+   (print 'Fields\s_s)(print tag)(print '\s_s)(print rhst)(print '\n_s)
    rt
 )) Type);
 
