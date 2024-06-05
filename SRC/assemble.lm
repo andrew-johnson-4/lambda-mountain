@@ -171,6 +171,7 @@ compile-type-case := λ(: ctx CCContext)(: base-type Type)(: rhs AST)(: case-num
          (if (is-open base-type) (
             (print 'TODO\sParametric\sField\sAccessors\n_s)
          ) (tail(
+            (print 'Field\sAccessors\n_s)(print base-type)(print '\n_s)
             (let ctx-4 (maybe-deref(compile-define-field-accessors( ctx (maybe-deref(parse-type tag)) atype case-number ))))(set ctx ctx-4)
          )))
       )))
