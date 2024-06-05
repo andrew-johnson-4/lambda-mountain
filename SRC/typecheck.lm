@@ -842,13 +842,44 @@ with-only-tag := λ(: tt Type). (: (tail(
    rt
 )) Type);
 
+fields-of-type := λ(: tt Type). (: (tail(
+   (match tt (
+      ()
+      ( TAny (set tt (t1 'Nil_s)) )
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (set tt (TGround(
+            'Cons_s
+            (close(TypeSeq(
+               (close(TypeSeq(
+                  (close TypeEOF)
+                  (fields-of-type p1)
+               )))
+               p2
+            )))
+         )))
+      ))
+      ( _ (
+         (set tt (TGround(
+            'Cons_s
+            (close(TypeSeq(
+               (close(TypeSeq(
+                  (close TypeEOF)
+                  (t1 'Nil_s)
+               )))
+               tt
+            )))
+         )))
+      ))
+   ))
+   tt
+)) Type);
+
 fields-of-tag := λ(: tag Type)(: class Type). (: (tail(
    (let tag-s '_s)
    (match tag (
       ()
       ( (TGround( ts _ )) (set tag-s ts) )
    ))
-   (let rt TAny)
    (let field-list typecheck-fields-of-tag)
    (let rhst TAny)
    (while (non-zero field-list) (match field-list (
@@ -868,7 +899,10 @@ fields-of-tag := λ(: tag Type)(: class Type). (: (tail(
          (set field-list rst)
       )))
    )))
-   (print 'Fields\s_s)(print tag)(print '\s_s)(print rhst)(print '\n_s)
+   (let rt (TGround( 'Fields_s (close(TypeSeq(
+      (close TypeEOF)
+      (fields-of-type rhst)
+   ))))))
    rt
 )) Type);
 
