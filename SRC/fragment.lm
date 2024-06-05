@@ -401,6 +401,23 @@ fragment-render := λ(: mode String)(: ctx CCContext)(: s S). (: (tail(
             (set r (SAtom '0_s))
          ))
       )))
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom 'max_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (tail(
+         (let lt (maybe-deref(fragment-render( mode ctx lc ))))
+         (let li 0_i64)
+         (match lt (
+            ()
+            ( (SAtom lai) (set li (to-i64 lai)) )
+            ( _ () )
+         ))
+         (let rt (maybe-deref(fragment-render( mode ctx rc ))))
+         (let ri 0_i64)
+         (match rt (
+            ()
+            ( (SAtom rai) (set ri (to-i64 rai)) )
+            ( _ () )
+         ))
+         (set r (SAtom(to-string(max( li ri )))))
+      )))
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '+_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (tail(
          (let lt (maybe-deref(fragment-render( mode ctx lc ))))
          (let li 0_i64)

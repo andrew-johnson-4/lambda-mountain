@@ -3,6 +3,7 @@ type TypeConstructorList (TConEOF) | (TConSeq( TypeConstructorList[] , String , 
 
 typecheck-type-constructors := (: TConEOF TypeConstructorList);
 typecheck-classes-of-tag := (: TConEOF TypeConstructorList);
+typecheck-fields-of-tag := (: TConEOF TypeConstructorList);
 typecheck-fragment-types := (: TypeEOF TypeList);
 
 type TypeSizeList (TSzEOF) | (TSzSeq( TypeSizeList[] , String , U64 )); zero TypeSizeList TSzEOF;
@@ -252,6 +253,11 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
             tag
             base-type
          )))
+         (set typecheck-fields-of-tag (TConSeq(
+            (close typecheck-fields-of-tag)
+            tag
+            TAny
+         )))
          (set typecheck-type-constructors (TConSeq(
             (close typecheck-type-constructors)
             tag
@@ -264,11 +270,16 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
          (typecheck-set-size( base-type atype ))
          (let rtype (maybe-deref(tand( base-type (maybe-deref(t1 tag)) ))))
          (typecheck-annotate-head-accessor( base-type ))
-         (typecheck-annotate-accessors( (maybe-deref(parse-type tag)) atype ))
+         (typecheck-annotate-accessors( base-type (maybe-deref(parse-type tag)) atype ))
          (set typecheck-classes-of-tag (TConSeq(
             (close typecheck-classes-of-tag)
             tag
             base-type
+         )))
+         (set typecheck-fields-of-tag (TConSeq(
+            (close typecheck-fields-of-tag)
+            tag
+            (maybe-deref(tcons( base-type atype )))
          )))
          (set typecheck-type-constructors (TConSeq(
             (close typecheck-type-constructors)
@@ -293,7 +304,12 @@ typecheck-annotate-head-accessor := λ(: base-type Type). (: (tail(
    )))
 )) Nil);
 
-typecheck-annotate-accessors := λ(: base-type Type)(: args-type Type). (: (tail(
+typecheck-annotate-accessors := λ(: base-type Type)(: tag-type Type)(: args-type Type). (: (tail(
+   (let base-type-2 (maybe-deref(tand(
+      base-type
+      tag-type
+   ))))
+   (set base-type base-type-2)
    (let field-number 1_u64)
    (while (non-zero args-type) (match args-type (
       ()
@@ -770,6 +786,143 @@ with-size := λ(: tt Type). (: (tail(
    rt
 )) Type);
 
+with-only-class := λ(: tt Type). (: (tail(
+   (let rt TAny)
+   (match tt (
+      ()
+      ( (TAnd( lt1 rt1 )) (tail(
+         (let lc (with-only-class lt1))
+         (if (non-zero lc) (set rt lc) ())
+         (let rc (with-only-class rt1))
+         (if (non-zero rc) (set rt rc) ())
+      )))
+      ( (TGround( tag _ )) (tail(
+         (let classes typecheck-classes-of-tag)
+         (while (non-zero classes) (match classes (
+            ()
+            ( (TConSeq( rst k (TGround( ctag _ )) )) (tail(
+               (if (==( tag ctag )) (
+                  (if (is-fragment-type tt) () (
+                     (set rt tt)
+                  ))
+               ) ())
+               (set classes rst)
+            )))
+         )))
+      )))
+      ( _ () )
+   ))
+   rt
+)) Type);
+
+with-only-tag := λ(: tt Type). (: (tail(
+   (let rt TAny)
+   (match tt (
+      ()
+      ( (TAnd( lt1 rt1 )) (tail(
+         (let lc (with-only-tag lt1))
+         (if (non-zero lc) (set rt lc) ())
+         (let rc (with-only-tag rt1))
+         (if (non-zero rc) (set rt rc) ())
+      )))
+      ( (TGround( tag _ )) (tail(
+         (let tc (typecheck-classof-tag tag))
+         (match tc (
+            ()
+            ( TAny () )
+            ( (TGround( 'Reg8_s _ )) () )
+            ( (TGround( 'Reg16_s _ )) () )
+            ( (TGround( 'Reg32_s _ )) () )
+            ( (TGround( 'Reg64_s _ )) () )
+            ( _ (set rt tt) )
+         ))
+      )))
+      ( _ () )
+   ))
+   rt
+)) Type);
+
+fields-of-type := λ(: tt Type). (: (tail(
+   (match tt (
+      ()
+      ( TAny (set tt (t1 'Nil_s)) )
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (set tt (TGround(
+            'Cons_s
+            (close(TypeSeq(
+               (close(TypeSeq(
+                  (close TypeEOF)
+                  (fields-of-type p1)
+               )))
+               p2
+            )))
+         )))
+      ))
+      ( _ (
+         (set tt (TGround(
+            'Cons_s
+            (close(TypeSeq(
+               (close(TypeSeq(
+                  (close TypeEOF)
+                  (t1 'Nil_s)
+               )))
+               tt
+            )))
+         )))
+      ))
+   ))
+   tt
+)) Type);
+
+fields-of-tag := λ(: tag Type)(: class Type). (: (tail(
+   (let tag-s '_s)
+   (match tag (
+      ()
+      ( (TGround( ts _ )) (set tag-s ts) )
+   ))
+   (let field-list typecheck-fields-of-tag)
+   (let rhst TAny)
+   (while (non-zero field-list) (match field-list (
+      ()
+      ( (TConSeq( rst k ftype )) (tail(
+         (if (==( k tag-s )) (
+            (match ftype (
+               ()
+               ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (tail(
+                  (let tctx (maybe-deref(typecheck-unify-args( p1 class ))))
+                  (let closed-type (maybe-deref(typecheck-unify-ctx( tctx p2 ))))
+                  (set rhst closed-type)
+               )))
+               ( _ () )
+            ))
+         ) ())
+         (set field-list rst)
+      )))
+   )))
+   (let rt (TGround( 'Fields_s (close(TypeSeq(
+      (close TypeEOF)
+      (fields-of-type rhst)
+   ))))))
+   rt
+)) Type);
+
+typecheck-annotate-fields := λ(: tt Type). (: (tail(
+   (match (typecheck-slot( tt 'Fields_s )) (
+      ()
+      ( (TGround( 'Fields_s _ )) () )
+      ( _ (tail(
+         (let class (with-only-class tt))
+         (let tag (with-only-tag tt))
+         (if (&&( (non-zero tag) (non-zero class) )) (tail(
+            (let ft (fields-of-tag( tag class )))
+            (let tt-2 (maybe-deref(tand( tt ft ))))
+            (set tt tt-2)
+         )) ())
+      )))
+   ))
+   tt
+)) Type);
+
 typecheck-annotate-size := λ(: tt Type). (: (tail(
    (if (&&( (not(typecheck-is-sized tt)) (!=( (typecheck-is-sized tt) typecheck-do-not-size )) )) (tail(
       (let sz (typecheck-annotate-size-inner tt))
@@ -789,6 +942,7 @@ typecheck-annotate-size := λ(: tt Type). (: (tail(
       ))))
       (set tt tt3)
    )) ())
+   (set tt (typecheck-annotate-fields tt))
    tt
 )) Type);
 
@@ -946,6 +1100,14 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
          (let inner-tt (maybe-deref(typecheck-lookup t)))
          (if (non-zero inner-tt) (tail(
             (let nn (maybe-deref(with-only-representation inner-tt)))
+            (if (non-zero nn) (tail(
+               (let tt-2 (maybe-deref(tand(
+                  tt
+                  nn
+               ))))
+               (set tt tt-2)
+            )) ())
+            (let nn (maybe-deref(with-only-class inner-tt)))
             (if (non-zero nn) (tail(
                (let tt-2 (maybe-deref(tand(
                   tt

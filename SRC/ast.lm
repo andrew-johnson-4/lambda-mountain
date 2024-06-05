@@ -353,18 +353,18 @@ print := λ(: tt Type). (: (match tt (
       (print p3)
       (print '>_s)
    )))
-   ( (TAnd( (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) rt )) (tail(
-      (print '-><_s)
+   ( (TAnd( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) rt )) (tail(
+      (print 'Arrow<_s)
       (print p1)
       (print ',_s)
       (print p2)
       (print '>\n_s)
       (print rt)
    )))
-   ( (TAnd( lt (TGround( '->_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) )) (tail(
+   ( (TAnd( lt (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) )) (tail(
       (print lt)
       (print '\n_s)
-      (print '-><_s)
+      (print 'Arrow<_s)
       (print p1)
       (print ',_s)
       (print p2)
