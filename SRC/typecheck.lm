@@ -264,7 +264,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
          (typecheck-set-size( base-type atype ))
          (let rtype (maybe-deref(tand( base-type (maybe-deref(t1 tag)) ))))
          (typecheck-annotate-head-accessor( base-type ))
-         (typecheck-annotate-accessors( (maybe-deref(parse-type tag)) atype ))
+         (typecheck-annotate-accessors( base-type (maybe-deref(parse-type tag)) atype ))
          (set typecheck-classes-of-tag (TConSeq(
             (close typecheck-classes-of-tag)
             tag
@@ -293,7 +293,12 @@ typecheck-annotate-head-accessor := λ(: base-type Type). (: (tail(
    )))
 )) Nil);
 
-typecheck-annotate-accessors := λ(: base-type Type)(: args-type Type). (: (tail(
+typecheck-annotate-accessors := λ(: base-type Type)(: tag-type Type)(: args-type Type). (: (tail(
+   (let base-type-2 (maybe-deref(tand(
+      base-type
+      tag-type
+   ))))
+   (set base-type base-type-2)
    (let field-number 1_u64)
    (while (non-zero args-type) (match args-type (
       ()
@@ -836,7 +841,7 @@ typecheck-annotate-fields := λ(: tt Type). (: (tail(
          (match (typecheck-slot( tt 'SPointer_s )) (
             ()
             ( (TGround( 'SPointer_s _ )) (tail(
-               (print 'Class\s_s)(print tt)(print '\sin\s_s)(print tag)(print '\sx\s_s)(print class)(print '\n_s)
+               (print 'TODO:AnnotateFieldsOfClass\s_s)(print tt)(print '\sin\s_s)(print tag)(print '\sx\s_s)(print class)(print '\n_s)
             )))
             ( _ () )
          ))
