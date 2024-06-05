@@ -770,9 +770,49 @@ with-size := λ(: tt Type). (: (tail(
    rt
 )) Type);
 
-typecheck-annotate-fields := λ(: tt Type). (: (tail(
-   (let rt tt)
+with-only-class := λ(: tt Type). (: (tail(
+   (let rt TAny)
+   (match tt (
+      ()
+      ( (TAnd( lt1 rt1 )) (tail(
+         (let lc (with-only-class lt1))
+         (if (non-zero lc) (set rt1 lc) ())
+         (let rc (with-only-class rt1))
+         (if (non-zero rc) (set rt1 rc) ())
+      )))
+      ( (TGround( tag _ )) (tail(
+         (let tc (typecheck-classof-tag tag))
+         (match tc (
+            ()
+            ( TAny () )
+            ( (TGround( 'Reg8_s _ )) () )
+            ( (TGround( 'Reg16_s _ )) () )
+            ( (TGround( 'Reg32_s _ )) () )
+            ( (TGround( 'Reg64_s _ )) () )
+            ( _ (set rt tc) )
+         ))
+      )))
+      ( _ () )
+   ))
+   (if (non-zero rt) (tail(
+      (print 'Class\s_s)(print rt)(print '\n_s)
+   )) ())
    rt
+)) Type);
+
+typecheck-annotate-fields := λ(: tt Type). (: (tail(
+   (match (typecheck-slot( tt 'Fields_s )) (
+      ()
+      ( (TGround( 'Fields_s _ )) () )
+      ( _ (tail(
+         (let class (with-only-class tt))
+         ()
+         (if (non-zero class) (tail(
+            (print 'Class\s_s)(print class)(print '\n_s)
+         )) ())
+      )))
+   ))
+   tt
 )) Type);
 
 typecheck-annotate-size := λ(: tt Type). (: (tail(
