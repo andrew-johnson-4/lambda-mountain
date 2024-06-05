@@ -838,15 +838,8 @@ typecheck-annotate-fields := λ(: tt Type). (: (tail(
       ( _ (tail(
          (let class (with-only-class tt))
          (let tag (with-only-tag tt))
-         (match (typecheck-slot( tt 'SPointer_s )) (
-            ()
-            ( (TGround( 'SPointer_s _ )) (tail(
-               (print 'TODO:AnnotateFieldsOfClass\s_s)(print tt)(print '\sin\s_s)(print tag)(print '\sx\s_s)(print class)(print '\n_s)
-            )))
-            ( _ () )
-         ))
-         (if (&&( (non-zero tag) (non-zero class) )) (tail(
-            (print 'Class\s_s)(print tag)(print '\sx\s_s)(print class)(print '\n_s)
+         (if (non-zero class) (tail(
+            (print 'Class\s_s)(print tag)(print '\sx\s_s)(print class)(print 'in\s_s)(print tt)(print '\n_s)
          )) ())
       )))
    ))
