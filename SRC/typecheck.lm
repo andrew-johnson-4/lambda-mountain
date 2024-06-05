@@ -776,21 +776,22 @@ with-only-class := λ(: tt Type). (: (tail(
       ()
       ( (TAnd( lt1 rt1 )) (tail(
          (let lc (with-only-class lt1))
-         (if (non-zero lc) (set rt1 lc) ())
+         (if (non-zero lc) (set rt lc) ())
          (let rc (with-only-class rt1))
-         (if (non-zero rc) (set rt1 rc) ())
+         (if (non-zero rc) (set rt rc) ())
       )))
       ( (TGround( tag _ )) (tail(
          (let classes typecheck-classes-of-tag)
-         (while classes (match classes (
+         (while (non-zero classes) (match classes (
             ()
-            ( (TConSeq( rst k (TGround( ctag _ )) )) (
+            ( (TConSeq( rst k (TGround( ctag _ )) )) (tail(
                (if (==( tag ctag )) (
                   (if (is-fragment-type tt) () (
                      (set rt tt)
                   ))
                ) ())
-            ))
+               (set classes rst)
+            )))
          )))
       )))
       ( _ () )
@@ -803,9 +804,9 @@ with-only-tag := λ(: tt Type). (: (tail(
    (match tt (
       ()
       ( (TAnd( lt1 rt1 )) (tail(
-         (let lc (with-only-class lt1))
+         (let lc (with-only-tag lt1))
          (if (non-zero lc) (set rt1 lc) ())
-         (let rc (with-only-class rt1))
+         (let rc (with-only-tag rt1))
          (if (non-zero rc) (set rt1 rc) ())
       )))
       ( (TGround( tag _ )) (tail(
@@ -832,9 +833,13 @@ typecheck-annotate-fields := λ(: tt Type). (: (tail(
       ( _ (tail(
          (let class (with-only-class tt))
          (let tag (with-only-tag tt))
-         (if (non-zero tag) (tail(
-            (print 'Class\s_s)(print tt)(print '\sin\s_s)(print tag)(print '\sx\s_s)(print class)(print '\n_s)
-         )) ())
+         (match (typecheck-slot( tt 'SPointer_s )) (
+            ()
+            ( (TGround( 'SPointer_s _ )) (tail(
+               (print 'Class\s_s)(print tt)(print '\sin\s_s)(print tag)(print '\sx\s_s)(print class)(print '\n_s)
+            )))
+            ( _ () )
+         ))
          (if (&&( (non-zero tag) (non-zero class) )) (tail(
             (print 'Class\s_s)(print tag)(print '\sx\s_s)(print class)(print '\n_s)
          )) ())
