@@ -770,6 +770,11 @@ with-size := λ(: tt Type). (: (tail(
    rt
 )) Type);
 
+typecheck-annotate-fields := λ(: tt Type). (: (tail(
+   (let rt tt)
+   rt
+)) Type);
+
 typecheck-annotate-size := λ(: tt Type). (: (tail(
    (if (&&( (not(typecheck-is-sized tt)) (!=( (typecheck-is-sized tt) typecheck-do-not-size )) )) (tail(
       (let sz (typecheck-annotate-size-inner tt))
@@ -789,6 +794,7 @@ typecheck-annotate-size := λ(: tt Type). (: (tail(
       ))))
       (set tt tt3)
    )) ())
+   (set tt (typecheck-annotate-fields tt))
    tt
 )) Type);
 
