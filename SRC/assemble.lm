@@ -169,7 +169,6 @@ compile-type-case := λ(: ctx CCContext)(: base-type Type)(: rhs AST)(: case-num
          (let rtype (TAnd( (close base-type) (close(parse-type tag)) )))
          (let ctx-3 (maybe-deref(compile-define-tag-constructor( ctx tag atype base-type rtype case-number ))))(set ctx ctx-3)
          (if (is-open base-type) (
-            (print 'TODO\sParametric\sField\sAccessors\n_s)
          ) (tail(
             (let ctx-4 (maybe-deref(compile-define-field-accessors( ctx (maybe-deref(parse-type tag)) atype case-number ))))(set ctx ctx-4)
          )))
@@ -279,7 +278,6 @@ compile-define-head-accessor := λ(: ctx CCContext)(: base-type Type). (: (tail(
 
 compile-define-field-accessor := λ(: ctx CCContext)(: base-type Type)(: field-types Type)(: case-number U64)(: field-offset U64)(: field-number U64)(: case-type Type). (: (tail(
    (if (is-open base-type) (
-      (print 'TODO:\sParametric\sField\sAccessors\n_s)
    ) (tail(
       (let ctx-2 (maybe-deref(compile-define-field-accessor-simple( ctx base-type field-types case-number field-offset field-number case-type ))))
       (set ctx ctx-2)
