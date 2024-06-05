@@ -770,7 +770,53 @@ with-size := λ(: tt Type). (: (tail(
    rt
 )) Type);
 
+with-only-class-inner := λ(: tt Type). (: (tail(
+   (let rt TAny)
+   (match tt (
+      ()
+      ( (TAnd( lt1 rt1 )) (tail(
+         (let lc (with-only-class-inner lt1))
+         (if (non-zero lc) (set rt1 lc) ())
+         (let rc (with-only-class-inner rt1))
+         (if (non-zero rc) (set rt1 rc) ())
+      )))
+      ( (TGround( tag _ )) (tail(
+         (let tc (typecheck-classof-tag tag))
+         (match tc (
+            ()
+            ( TAny () )
+            ( (TGround( 'Reg8_s _ )) () )
+            ( (TGround( 'Reg16_s _ )) () )
+            ( (TGround( 'Reg32_s _ )) () )
+            ( (TGround( 'Reg64_s _ )) () )
+            ( _ (set rt tc) )
+         ))
+      )))
+      ( _ () )
+   ))
+   rt
+)) Type);
 with-only-class := λ(: tt Type). (: (tail(
+   (let ct (with-only-class-inner tt))
+   (match ct (
+      ()
+      ( TAny (set tt TAny) )
+      ( (TGround( base _ )) (
+         (match (typecheck-slot( tt base )) (
+            ()
+            ( (TGround( base2 ps )) (
+               (if (==( base base2 )) (
+                  (set tt (TGround( base (close ps) )))
+               ) ())
+            ))
+            ( _ (set tt TAny) )
+         ))
+      ))
+   ))
+   tt
+)) Type);
+
+with-only-tag := λ(: tt Type). (: (tail(
    (let rt TAny)
    (match tt (
       ()
@@ -789,14 +835,11 @@ with-only-class := λ(: tt Type). (: (tail(
             ( (TGround( 'Reg16_s _ )) () )
             ( (TGround( 'Reg32_s _ )) () )
             ( (TGround( 'Reg64_s _ )) () )
-            ( _ (set rt tc) )
+            ( _ (set rt tt) )
          ))
       )))
       ( _ () )
    ))
-   (if (non-zero rt) (tail(
-      (print 'Class\s_s)(print rt)(print '\n_s)
-   )) ())
    rt
 )) Type);
 
@@ -806,9 +849,10 @@ typecheck-annotate-fields := λ(: tt Type). (: (tail(
       ( (TGround( 'Fields_s _ )) () )
       ( _ (tail(
          (let class (with-only-class tt))
-         ()
-         (if (non-zero class) (tail(
-            (print 'Class\s_s)(print class)(print '\n_s)
+         (let tag (with-only-tag tt))
+         (print 'Class\s_s)(print tt)(print '\sin\s_s)(print tag)(print '\sx\s_s)(print class)(print '\n_s)
+         (if (&&( (non-zero tag) (non-zero class) )) (tail(
+            (print 'Class\s_s)(print tag)(print '\sx\s_s)(print class)(print '\n_s)
          )) ())
       )))
    ))
