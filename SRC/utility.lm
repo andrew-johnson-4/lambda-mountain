@@ -264,6 +264,11 @@ max := λ(: l U64)(: r U64). (: (tail(
    l
 )) U64);
 
+max := λ(: l I64)(: r I64). (: (tail(
+   (if (<( l r )) (set l r) ())
+   l
+)) I64);
+
 mangle-identifier := λ(: kt Type). (: (tail(
    (let r SNil)
    (match kt (

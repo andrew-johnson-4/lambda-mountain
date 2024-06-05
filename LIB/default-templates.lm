@@ -45,10 +45,10 @@ fragment .1 := λ(: src LocalVariable+Fields<Cons<_,Sized<size1>>>). (: (
 
 fragment .2 := λ(: src LocalVariable+Fields<Cons<Cons<_,Sized<size2>>,Sized<size1>>>). (: (
    (.program(
-      (if-eq (.expression size2) 1 ( \t 'mov \s (+( (.expression src) (+( (.expression size1) 8 )) )) \[ '%rbp \] , \s '%al \n ))
-      (if-eq (.expression size2) 2 ( \t 'mov \s (+( (.expression src) (+( (.expression size1) 8 )) )) \[ '%rbp \] , \s '%ax \n ))
-      (if-eq (.expression size2) 4 ( \t 'mov \s (+( (.expression src) (+( (.expression size1) 8 )) )) \[ '%rbp \] , \s '%eax \n ))
-      (if-eq (.expression size2) 8 ( \t 'mov \s (+( (.expression src) (+( (.expression size1) 8 )) )) \[ '%rbp \] , \s '%rax \n ))
+      (if-eq (.expression size2) 1 ( \t 'mov \s (+( (.expression src) (+( (max( (.expression size1) 8 )) 8 )) )) \[ '%rbp \] , \s '%al \n ))
+      (if-eq (.expression size2) 2 ( \t 'mov \s (+( (.expression src) (+( (max( (.expression size1) 8 )) 8 )) )) \[ '%rbp \] , \s '%ax \n ))
+      (if-eq (.expression size2) 4 ( \t 'mov \s (+( (.expression src) (+( (max( (.expression size1) 8 )) 8 )) )) \[ '%rbp \] , \s '%eax \n ))
+      (if-eq (.expression size2) 8 ( \t 'mov \s (+( (.expression src) (+( (max( (.expression size1) 8 )) 8 )) )) \[ '%rbp \] , \s '%rax \n ))
    ))
    (.expression(
       (if-eq (.expression size2) 1 'al)
