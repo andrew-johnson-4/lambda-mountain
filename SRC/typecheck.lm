@@ -770,50 +770,32 @@ with-size := λ(: tt Type). (: (tail(
    rt
 )) Type);
 
-with-only-class-inner := λ(: tt Type). (: (tail(
+with-only-class := λ(: tt Type). (: (tail(
    (let rt TAny)
    (match tt (
       ()
       ( (TAnd( lt1 rt1 )) (tail(
-         (let lc (with-only-class-inner lt1))
+         (let lc (with-only-class lt1))
          (if (non-zero lc) (set rt1 lc) ())
-         (let rc (with-only-class-inner rt1))
+         (let rc (with-only-class rt1))
          (if (non-zero rc) (set rt1 rc) ())
       )))
       ( (TGround( tag _ )) (tail(
-         (let tc (typecheck-classof-tag tag))
-         (match tc (
+         (let classes typecheck-classes-of-tag)
+         (while classes (match classes (
             ()
-            ( TAny () )
-            ( (TGround( 'Reg8_s _ )) () )
-            ( (TGround( 'Reg16_s _ )) () )
-            ( (TGround( 'Reg32_s _ )) () )
-            ( (TGround( 'Reg64_s _ )) () )
-            ( _ (set rt tc) )
-         ))
+            ( (TConSeq( rst k (TGround( ctag _ )) )) (
+               (if (==( tag ctag )) (
+                  (if (is-fragment-type tt) () (
+                     (set rt tt)
+                  ))
+               ) ())
+            ))
+         )))
       )))
       ( _ () )
    ))
    rt
-)) Type);
-with-only-class := λ(: tt Type). (: (tail(
-   (let ct (with-only-class-inner tt))
-   (match ct (
-      ()
-      ( TAny (set tt TAny) )
-      ( (TGround( base _ )) (
-         (match (typecheck-slot( tt base )) (
-            ()
-            ( (TGround( base2 ps )) (
-               (if (==( base base2 )) (
-                  (set tt (TGround( base (close ps) )))
-               ) ())
-            ))
-            ( _ (set tt TAny) )
-         ))
-      ))
-   ))
-   tt
 )) Type);
 
 with-only-tag := λ(: tt Type). (: (tail(
@@ -850,7 +832,9 @@ typecheck-annotate-fields := λ(: tt Type). (: (tail(
       ( _ (tail(
          (let class (with-only-class tt))
          (let tag (with-only-tag tt))
-         (print 'Class\s_s)(print tt)(print '\sin\s_s)(print tag)(print '\sx\s_s)(print class)(print '\n_s)
+         (if (non-zero tag) (tail(
+            (print 'Class\s_s)(print tt)(print '\sin\s_s)(print tag)(print '\sx\s_s)(print class)(print '\n_s)
+         )) ())
          (if (&&( (non-zero tag) (non-zero class) )) (tail(
             (print 'Class\s_s)(print tag)(print '\sx\s_s)(print class)(print '\n_s)
          )) ())
@@ -1036,6 +1020,14 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
          (let inner-tt (maybe-deref(typecheck-lookup t)))
          (if (non-zero inner-tt) (tail(
             (let nn (maybe-deref(with-only-representation inner-tt)))
+            (if (non-zero nn) (tail(
+               (let tt-2 (maybe-deref(tand(
+                  tt
+                  nn
+               ))))
+               (set tt tt-2)
+            )) ())
+            (let nn (maybe-deref(with-only-class inner-tt)))
             (if (non-zero nn) (tail(
                (let tt-2 (maybe-deref(tand(
                   tt
