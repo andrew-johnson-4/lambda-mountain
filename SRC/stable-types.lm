@@ -39,3 +39,110 @@ range := λ(: tt Type). (: (tail(
    ))
    r
 )) Type);
+
+is-open := λ(: tt Type). (: (tail(
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( TAny () )
+      ( (TVar _) (set r 1_u64) )
+      ( (TAnd( lt rt )) (tail(
+         (if (is-open lt) (set r 1_u64) ())
+         (if (is-open rt) (set r 1_u64) ())
+      )))
+      ( (TGround( _ pars )) (
+         (while (non-zero pars) (match pars (
+            ()
+            ( (TypeSeq( rst p1 )) (tail(
+               (if (is-open p1) (set r 1_u64) ())
+               (set pars rst)
+            )))
+         )))
+      ))
+   ))
+   r
+)) U64);
+
+is-arrow := λ(: tt Type). (: (tail(
+   (let r 0_u64)
+   (match (slot( tt 'Arrow_s )) (
+      ()
+      ( (TGround( 'Arrow_s _ )) (set r 1_u64) )
+      ( _ () )
+   ))
+   r
+)) U64);
+
+t3 := λ(: tag String)(: p1 Type)(: p2 Type). (: (tail(
+   (let tt (TGround(
+      tag
+      (close(TypeSeq( (close(TypeSeq( (close TypeEOF) p1 ))) p2 )))
+   )))
+   tt
+)) Type);
+
+t2 := λ(: tag String)(: p1 Type). (: (tail(
+   (let tt (TGround(
+      tag
+      (close(TypeSeq( (close TypeEOF) p1 )))
+   )))
+   tt
+)) Type);
+
+t1 := λ(: tag String). (: (tail(
+   (let tt (TGround(
+      tag
+      (close TypeEOF)
+   )))
+   tt
+)) Type);
+
+tsized :=  λ(: tag String). (: (tail(
+   (let tt (t2( 'Sized_s (t1 tag) )))
+   tt
+)) Type);
+
+substitute := λ(: tctx TContext)(: tt TypeList). (: (tail(
+   (match tt (
+      ()
+      ( TypeEOF () )
+      ( (TypeSeq( rst par )) (
+         (set tt (TypeSeq(
+            (close(substitute( tctx rst )))
+            (substitute( tctx par ))
+         )))
+      ))
+   ))
+   tt
+)) TypeList);
+
+substitute := λ(: tctx TContext)(: tt Type). (: (tail(
+   (match tt (
+      ()
+      ( (TVar v) (
+         (while (non-zero tctx) (match tctx (
+            ()
+            ( (TCtxBind( rst tk tv _ )) (
+               (if (==( tk v )) (tail(
+                  (set tt tv)
+                  (set tctx TCtxEOF)
+               )) (set tctx rst))
+            ))
+         )))
+      ))
+      ( (TGround( tag pars )) (
+         (set tt (TGround(
+            tag
+            (close(substitute( tctx pars )))
+         )))
+      ))
+      ( (TAnd( lt rt )) (
+         (set tt (TAnd(
+            (close(substitute( tctx lt )))
+            (close(substitute( tctx rt )))
+         )))
+      ))
+      ( _ () )
+   ))
+   tt
+)) Type);

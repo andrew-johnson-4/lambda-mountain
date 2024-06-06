@@ -1,8 +1,4 @@
 
-type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] ))
-                | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Fragment( String , AST[] ))
-                | (Asc( AST[] , Type[] )) | (As( AST[] , Type[] )) | (Sizeof( Type[] )); zero AST ASTEOF;
-
 type ASTList ASTLEOF | (ASTSeq( ASTList[] , AST )); zero ASTList ASTLEOF;
 
 type StringStringList SSEOF | (SSSeq( StringStringList[] , String , String )); zero StringStringList SSEOF;
@@ -11,7 +7,6 @@ type StringSList SSLEOF | (SSLSeq( StringSList[] , String , S )); zero StringSLi
 type IsUsed Used | Unused | Tail | Return;
 
 type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST[] )); zero Context CtxEOF;
-type TContext TCtxEOF | (TCtxBind( TContext[] , String , Type , AST )); zero TContext TCtxEOF;
 type Pair (Pair( AST , AST ));
 type CPair (CPair( Context , Context ));
 type TPair (TPair( Type , Type ));
