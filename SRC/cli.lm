@@ -5,6 +5,7 @@ import LIB/default-rules.lm;
 import LIB/default-stdlib.lm;
 import LIB/default-templates.lm;
 
+import SRC/stable.lm;
 import SRC/ast.lm;
 import SRC/utility.lm;
 import SRC/tokenize.lm;
