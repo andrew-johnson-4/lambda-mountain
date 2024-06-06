@@ -149,26 +149,6 @@ merge := λ(: lctx TContext)(: rctx TContext). (: (tail(
    lctx
 )) TContext);
 
-tsized := λ(: sz String). (: (tail(
-   (let sz (TGround(
-      sz
-      (close TypeEOF)
-   )))
-   (let tt (TGround(
-      'Sized_s
-      (close(TypeSeq( (close TypeEOF) sz )))
-   )))
-   tt
-)) Type);
-
-t1 := λ(: s String). (: (tail(
-   (let tt (TGround(
-      s
-      (close TypeEOF)
-   )))
-   tt
-)) Type);
-
 type TermTypeList TTEOF | (TTSeq( TermTypeList[] , AST , Type )); zero TermTypeList TTEOF;
 type STypeList STEOF | (STSeq( STypeList[] , S , Type )); zero STypeList STEOF;
 
