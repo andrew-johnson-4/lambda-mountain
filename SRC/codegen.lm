@@ -154,7 +154,7 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
                   (let e1 (maybe-deref(ccfragment::expression val)))
                   (set e e1)
                )) (
-                  (if (non-zero(maybe-deref(typecheck-classof-tag val))) (tail(
+                  (if (non-zero(class-of-tag val)) (tail(
                      (let tag-index (preprocess-index-of-tag val))
                      (let e1 (maybe-deref(ccfragment::expression(to-string tag-index))))
                      (let e2 (maybe-deref(ccfragment::set( e1 'program_s (SCons( (close SNil) (close SNil) )) ))))

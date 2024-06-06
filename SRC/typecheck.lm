@@ -540,7 +540,7 @@ without-tag := λ(: tt Type). (: (tail(
       ( (TGround( possibly-tag-name ps )) (tail(
          (set tt (TGround( possibly-tag-name (close(without-tag ps)) )))
          #if this is a tag and not a class, then remove from normal form
-         (let class-type (maybe-deref(typecheck-classof-tag possibly-tag-name)))
+         (let class-type (class-of-tag possibly-tag-name))
          (let iso False_u8)
          (match class-type (
             ()
@@ -777,7 +777,7 @@ with-only-tag := λ(: tt Type). (: (tail(
          (if (non-zero rc) (set rt rc) ())
       )))
       ( (TGround( tag _ )) (tail(
-         (let tc (typecheck-classof-tag tag))
+         (let tc (class-of-tag tag))
          (match tc (
             ()
             ( TAny () )
@@ -1148,23 +1148,6 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
 typecheck-typeof-tag := λ(: tag String). (: (tail(
    (let r TAny)
    (let tag-list typecheck-type-constructors)
-   (while (non-zero tag-list) (match tag-list (
-      ()
-      ( (TConSeq( rst k kt )) (
-         (if (==( k tag )) (tail(
-            (set r kt)
-            (set tag-list TConEOF)
-         )) (
-            (set tag-list rst)
-         ))
-      ))
-   )))
-   r
-)) Type);
-
-typecheck-classof-tag := λ(: tag String). (: (tail(
-   (let r TAny)
-   (let tag-list tag-to-class-index)
    (while (non-zero tag-list) (match tag-list (
       ()
       ( (TConSeq( rst k kt )) (
