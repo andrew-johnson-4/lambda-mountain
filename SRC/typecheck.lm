@@ -942,7 +942,6 @@ typecheck-annotate-size := λ(: tt Type). (: (tail(
       ))))
       (set tt tt3)
    )) ())
-   (set tt (typecheck-annotate-fields tt))
    tt
 )) Type);
 
@@ -1115,6 +1114,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
                ))))
                (set tt tt-2)
             )) ())
+            (let tt-3 (typecheck-annotate-fields( tt )))(set tt tt-3)
             (typecheck-ascript( term tt ))
          )) ())
       )))
