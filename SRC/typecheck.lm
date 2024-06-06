@@ -756,20 +756,11 @@ with-only-class := λ(: tt Type). (: (tail(
          (let rc (with-only-class rt1))
          (if (non-zero rc) (set rt rc) ())
       )))
-      ( (TGround( tag _ )) (tail(
-         (let classes tag-to-class-index)
-         (while (non-zero classes) (match classes (
-            ()
-            ( (TConSeq( rst k (TGround( ctag _ )) )) (tail(
-               (if (==( tag ctag )) (
-                  (if (is-fragment-type tt) () (
-                     (set rt tt)
-                  ))
-               ) ())
-               (set classes rst)
-            )))
-         )))
-      )))
+      ( (TGround( tag _ )) (
+         (if (is-class tag) (
+            (if (is-fragment-type tt) () (set rt tt))
+         ) ())
+      ))
       ( _ () )
    ))
    rt
