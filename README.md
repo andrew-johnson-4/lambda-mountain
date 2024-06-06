@@ -3,7 +3,7 @@
 λ☶ (pronounced Lambda Mountain) is a compiler backend that provides a relatively clean implementation of **System F<: with Specialization**.
 The whole compiler is only 5000 lines of code, so this could be a good starting point for projects in need of codegen for JIT or AOT compilation.
 
-λ☶ (LM) is a programming system that intends to provide everything you want in a programming language *except* the language frontend.
+λ☶ (LM) is a programming system that provides a platform for other programming languages to build on.
 Defining your own language should be easier to do in LM than with similar projects such as YACC/Bison/ANTLR+GCC framework.
 For comparison LM is 5000 Lines of Code whereas GCC is 15 MILLION.
 That is not really a fair comparison, but also it sort of is.
