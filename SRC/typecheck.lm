@@ -907,7 +907,7 @@ fields-of-tag := λ(: tag Type)(: class Type). (: (tail(
 )) Type);
 
 typecheck-annotate-fields := λ(: tt Type). (: (tail(
-   (match (typecheck-slot( tt 'Fields_s )) (
+   (match (slot( tt 'Fields_s )) (
       ()
       ( (TGround( 'Fields_s _ )) () )
       ( _ (tail(
@@ -942,7 +942,6 @@ typecheck-annotate-size := λ(: tt Type). (: (tail(
       ))))
       (set tt tt3)
    )) ())
-   (set tt (typecheck-annotate-fields tt))
    tt
 )) Type);
 
@@ -1023,7 +1022,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
                (if (is-parameterized tt) (
                   (typecheck-ascript( t tt ))
                ) ())
-               (match (maybe-deref(typecheck-slot( tt 'String_s ))) (
+               (match (slot( tt 'String_s )) (
                   ()
                   ( (TGround( 'String_s _ )) () )
                   ( _ (typecheck-infer-expr( tctx t used )) )
@@ -1115,6 +1114,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
                ))))
                (set tt tt-2)
             )) ())
+            (let tt-3 (typecheck-annotate-fields( tt )))(set tt tt-3)
             (typecheck-ascript( term tt ))
          )) ())
       )))
@@ -1125,7 +1125,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx r used ))))
          (set tctx tctx2)
          (let deref-type (maybe-deref(typecheck-lookup r)))
-         (match (typecheck-slot( deref-type 'Array_s )) (
+         (match (slot( deref-type 'Array_s )) (
             ()
             ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF TAny )) _ )) )) () )
             ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF array-base )) TAny )) )) (
@@ -1193,35 +1193,6 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
    ))
    (close tctx)
 )) TContext[]);
-
-typecheck-slot := λ(: tt Type)(: slot String). (: (tail(
-   (let rt (maybe-deref(typecheck-slot-inner( tt slot ))))
-   (if (non-zero rt) () (
-      (set rt tt)
-   ))
-   rt
-)) Type);
-
-typecheck-slot-inner := λ(: tt Type)(: slot String). (: (tail(
-   (let rt TAny)
-   (match tt (
-      ()
-      ( (TGround( bt _ )) (
-         (if (==( bt slot )) (set rt tt) ())
-      ))
-      ( (TAnd( ltt rtt )) (tail(
-         (let lt2 (maybe-deref(typecheck-slot-inner( ltt slot ))))
-         (if (non-zero lt2) (
-            (set rt lt2)
-         ) (tail(
-            (let rt2 (maybe-deref(typecheck-slot-inner( rtt slot ))))
-            (set rt rt2)
-         )))
-      )))
-      ( _ () )
-   ))
-   rt
-)) Type);
 
 typecheck-typeof-tag := λ(: tag String). (: (tail(
    (let r TAny)
@@ -2078,26 +2049,6 @@ typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tai
    ))
    (close found)
 )) Type[]);
-
-typecheck-domain := λ(: tt Type). (: (tail(
-   (let r TAny)
-   (match (maybe-deref(typecheck-slot( tt 'Arrow_s ))) (
-      ()
-      ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (set r p1) )
-      ( _ () )
-   ))
-   r
-)) Type);
-
-typecheck-range := λ(: tt Type). (: (tail(
-   (let r TAny)
-   (match (maybe-deref(typecheck-slot( tt 'Arrow_s ))) (
-      ()
-      ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (set r p2) )
-      ( _ () )
-   ))
-   r
-)) Type);
 
 is-fragment-type := λ(: tt Type). (: (tail(
    (let tt-s '_s)

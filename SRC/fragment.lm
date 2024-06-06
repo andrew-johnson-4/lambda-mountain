@@ -223,10 +223,10 @@ fragment-apply := λ(: ctx CCContext)(: offset I64)(: k String)(: args FragList)
    (let arrow-tt (maybe-deref(ccfragment::get-type arrow)))
 
    (let return-tt TAny)
-   (match (maybe-deref(typecheck-slot( (maybe-deref(ccfragment::get-type arrow)) 'Arrow_s ))) (
+   (match (slot( arrow-tt 'Arrow_s )) (
       ()
       ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF lt )) rt )) )) (set return-tt rt) )
-      ( arrow-tt (tail(
+      ( _ (tail(
          (print 'Apply\sDirect\sFragment\sIs\sNot\sAn\sArrow:\s_s)
          (print k)(print '\s:\s_s)
          (print arrow-tt)(print '\n_s)
@@ -234,7 +234,7 @@ fragment-apply := λ(: ctx CCContext)(: offset I64)(: k String)(: args FragList)
    ))
 
    (let chain True_u8)
-   (match (maybe-deref(typecheck-slot( arrow-tt 'DontChain_s ))) (
+   (match (slot( arrow-tt 'DontChain_s )) (
       ()
       ( (TGround( 'DontChain_s _ )) (set chain False_u8) )
       ( _ () )
