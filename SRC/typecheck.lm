@@ -870,7 +870,7 @@ fields-of-tag := λ(: tag Type)(: class Type). (: (tail(
                ()
                ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (tail(
                   (let tctx (maybe-deref(typecheck-unify-args( p1 class ))))
-                  (let closed-type (maybe-deref(typecheck-unify-ctx( tctx p2 ))))
+                  (let closed-type (substitute( tctx p2 )))
                   (set rhst closed-type)
                )))
                ( _ () )
@@ -1302,8 +1302,8 @@ typecheck-apply-hard := λ(: sloc AST)(: ft Type)(: pt Type)(: do-specialize U8)
             (let ctx (maybe-deref(typecheck-unify-args( fpt pt ))))
             (if (non-zero ctx) (tail(
                (let ctx-2 (normalize ctx))(set ctx ctx-2)
-               (let closed-type (maybe-deref(typecheck-unify-ctx( ctx ft ))))
-               (let rt1 (maybe-deref(as-return(maybe-deref(typecheck-unify-ctx( ctx frt ))))))
+               (let closed-type (substitute( ctx ft )))
+               (let rt1 (maybe-deref(as-return(substitute( ctx frt )))))
                (set rt rt1)
                (if (==( do-specialize True_u8 )) (
                   (if (head-string key) (
@@ -1358,17 +1358,17 @@ specialize-term := λ(: tctx TContext)(: t AST). (: (tail(
       )))
       ( (Asc( lt tt )) (tail(
          (let lt2 (specialize-term( tctx lt )))
-         (let tt2 (typecheck-unify-ctx( tctx tt )))
-         (set t (Asc( (close lt2) tt2 )))
+         (let tt2 (substitute( tctx tt )))
+         (set t (Asc( (close lt2) (close tt2) )))
       )))
       ( (As( lt tt )) (tail(
          (let lt2 (specialize-term( tctx lt )))
-         (let tt2 (typecheck-unify-ctx( tctx tt )))
-         (set t (As( (close lt2) tt2 )))
+         (let tt2 (substitute( tctx tt )))
+         (set t (As( (close lt2) (close tt2) )))
       )))
       ( (Sizeof( tt )) (tail(
-         (let tt2 (typecheck-unify-ctx( tctx tt )))
-         (set t (Sizeof( tt2 )))
+         (let tt2 (substitute( tctx tt )))
+         (set t (Sizeof( (close tt2) )))
       )))
       ( (Glb( k v )) (tail(
          (let k2 (clone-rope(SAtom k)))
@@ -1477,68 +1477,6 @@ try-specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-typ
       )))
    ))
 )) Nil);
-
-typecheck-unify-ctx := λ(: ctx TContext)(: tt Type). (: (tail(
-   (match tt (
-      ()
-      ( (TVar v) (
-         (while (non-zero ctx) (match ctx (
-            ()
-            ( (TCtxBind( rst tk tv _ )) (tail(
-               (if (==( tk v )) (
-                  (set tt tv)
-               ) ())
-               (set ctx rst)
-            )))
-         )))
-      ))
-      ( (TGround( tag (TypeSeq( TypeEOF p1 )) )) (
-         (set tt (TGround(
-            tag
-            (close(TypeSeq(
-               (close TypeEOF)
-               (maybe-deref(typecheck-unify-ctx( ctx p1 )))
-            )))
-         )))
-      ))
-      ( (TGround( tag (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
-         (set tt (TGround(
-            tag
-            (close(TypeSeq(
-               (close(TypeSeq(
-                  (close TypeEOF)
-                  (maybe-deref(typecheck-unify-ctx( ctx p1 )))
-               )))
-               (maybe-deref(typecheck-unify-ctx( ctx p2 )))
-            )))
-         )))
-      ))
-      ( (TGround( tag (TypeSeq( (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) p3 )) )) (
-         (set tt (TGround(
-            tag
-            (close(TypeSeq(
-               (close(TypeSeq(
-                  (close(TypeSeq(
-                     (close TypeEOF)
-                     (maybe-deref(typecheck-unify-ctx( ctx p1 )))
-                  )))
-                  (maybe-deref(typecheck-unify-ctx( ctx p2 )))
-               )))
-               (maybe-deref(typecheck-unify-ctx( ctx p3 )))
-            )))
-         )))
-      ))
-      ( (TAnd( lt rt )) (tail(
-         (let tt-2 (maybe-deref(tand(
-            (maybe-deref(typecheck-unify-ctx( ctx lt )))
-            (maybe-deref(typecheck-unify-ctx( ctx rt )))
-         ))))
-         (set tt tt-2)
-      )))
-      ( _ () )
-   ))
-   (close tt)
-)) Type[]);
 
 tcontext-accept := λ. (: (tail(
    (let r (TCtxBind(
@@ -2084,7 +2022,7 @@ typecheck-get-size := λ(: tt Type). (: (tail(
       ( (TSz2Seq( rst kt bt at )) (tail(
          (if (==( kt tag )) (tail(
             (let ctx (maybe-deref(typecheck-unify-args( bt tt ))))
-            (let arg-types (maybe-deref(typecheck-unify-ctx( ctx at ))))
+            (let arg-types (substitute( ctx at )))
             (set sz (max(
                sz
                (+( 8_u64 (typecheck-aligned-sizeof arg-types) ))
