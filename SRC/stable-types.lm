@@ -101,3 +101,48 @@ tsized :=  λ(: tag String). (: (tail(
    (let tt (t2( 'Sized_s (t1 tag) )))
    tt
 )) Type);
+
+substitute := λ(: tctx TContext)(: tt TypeList). (: (tail(
+   (match tt (
+      ()
+      ( TypeEOF () )
+      ( (TypeSeq( rst par )) (
+         (set tt (TypeSeq(
+            (close(substitute( tctx rst )))
+            (substitute( tctx par ))
+         )))
+      ))
+   ))
+   tt
+)) TypeList);
+
+substitute := λ(: tctx TContext)(: tt Type). (: (tail(
+   (match tt (
+      ()
+      ( (TVar v) (
+         (while (non-zero tctx) (match tctx (
+            ()
+            ( (TCtxBind( rst tk tv _ )) (
+               (if (==( tk v )) (tail(
+                  (set tt tv)
+                  (set tctx TCtxEOF)
+               )) (set tctx rst))
+            ))
+         )))
+      ))
+      ( (TGround( tag pars )) (
+         (set tt (TGround(
+            tag
+            (close(substitute( tctx pars )))
+         )))
+      ))
+      ( (TAnd( lt rt )) (
+         (set tt (TAnd(
+            (close(substitute( tctx lt )))
+            (close(substitute( tctx rt )))
+         )))
+      ))
+      ( _ () )
+   ))
+   tt
+)) Type);
