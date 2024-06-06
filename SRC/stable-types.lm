@@ -2,8 +2,20 @@
 # global Tag -> Class map, mutable
 tag-to-class-index := (: TConEOF TypeConstructorList);
 
+index-class-of-tag := λ(: tag String)(: class Type). (: (
+   (set tag-to-class-index (TConSeq(
+      (close tag-to-class-index) tag class
+   )))
+) Nil);
+
 # global Tag -> Fields map, mutable
 tag-to-fields-index := (: TConEOF TypeConstructorList);
+
+index-fields-of-tag := λ(: tag String)(: fields Type). (: (
+   (set tag-to-fields-index (TConSeq(
+      (close tag-to-fields-index) tag fields
+   )))
+) Nil);
 
 slot := λ(: tt Type)(: sl String). (: (tail(
    (let rt TAny)

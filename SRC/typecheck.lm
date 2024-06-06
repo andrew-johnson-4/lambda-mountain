@@ -224,16 +224,8 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
          (typecheck-set-size( base-type (maybe-deref(t1 'Nil_s)) ))
          (typecheck-annotate-head-accessor( base-type ))
          (let rtype (maybe-deref(tand( base-type (maybe-deref(t1 tag)) ))))
-         (set tag-to-class-index (TConSeq(
-            (close tag-to-class-index)
-            tag
-            base-type
-         )))
-         (set tag-to-fields-index (TConSeq(
-            (close tag-to-fields-index)
-            tag
-            TAny
-         )))
+         (index-class-of-tag( tag base-type ))
+         (index-fields-of-tag( tag TAny ))
          (set typecheck-type-constructors (TConSeq(
             (close typecheck-type-constructors)
             tag
@@ -247,16 +239,8 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
          (let rtype (maybe-deref(tand( base-type (maybe-deref(t1 tag)) ))))
          (typecheck-annotate-head-accessor( base-type ))
          (typecheck-annotate-accessors( base-type (maybe-deref(parse-type tag)) atype ))
-         (set tag-to-class-index (TConSeq(
-            (close tag-to-class-index)
-            tag
-            base-type
-         )))
-         (set tag-to-fields-index (TConSeq(
-            (close tag-to-fields-index)
-            tag
-            (maybe-deref(tcons( base-type atype )))
-         )))
+         (index-class-of-tag( tag base-type ))
+         (index-fields-of-tag( tag (maybe-deref(tcons( base-type atype ))) ))
          (set typecheck-type-constructors (TConSeq(
             (close typecheck-type-constructors)
             tag
