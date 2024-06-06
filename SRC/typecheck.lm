@@ -1268,23 +1268,6 @@ as-return := λ(: tt Type). (: (tail(
    (close tt)
 )) Type[]);
 
-is-arrow := λ(: tt Type). (: (tail(
-   (let r 0_u64)
-   (match tt (
-      ()
-      ( (TAnd( lt rt )) (
-         (if (is-arrow lt) (
-            (set r 1_u64)
-         ) (
-            (set r (is-arrow rt))
-         ))
-      ))
-      ( (TGround( 'Arrow_s _ )) (set r 1_u64) )
-      ( _ () )
-   ))
-   r
-)) U64);
-
 typecheck-apply-plural := λ(: sloc AST)(: many Type)(: pt Type). (: (tail(
    (let tt (typecheck-apply-plural( sloc many pt True_u8 )))
    tt

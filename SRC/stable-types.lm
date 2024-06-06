@@ -62,3 +62,13 @@ is-open := λ(: tt Type). (: (tail(
    ))
    r
 )) U64);
+
+is-arrow := λ(: tt Type). (: (tail(
+   (let r 0_u64)
+   (match (slot( tt 'Arrow_s )) (
+      ()
+      ( (TGround( 'Arrow_s _ )) (set r 1_u64) )
+      ( _ () )
+   ))
+   r
+)) U64);
