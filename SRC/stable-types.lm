@@ -1,0 +1,41 @@
+
+slot := λ(: tt Type)(: sl String). (: (tail(
+   (let rt TAny)
+   (match tt (
+      ()
+      ( (TGround( bt _ )) (
+         (if (==( bt sl )) (set rt tt) ())
+      ))
+      ( (TAnd( ltt rtt )) (tail(
+         (let lt2 (slot( ltt sl )))
+         (if (non-zero lt2) (
+            (set rt lt2)
+         ) (tail(
+            (let rt2 (slot( rtt sl )))
+            (set rt rt2)
+         )))
+      )))
+      ( _ () )
+   ))
+   rt
+)) Type);
+
+domain := λ(: tt Type). (: (tail(
+   (let r TAny)
+   (match (slot( tt 'Arrow_s )) (
+      ()
+      ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (set r p1) )
+      ( _ () )
+   ))
+   r
+)) Type);
+
+range := λ(: tt Type). (: (tail(
+   (let r TAny)
+   (match (slot( tt 'Arrow_s )) (
+      ()
+      ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (set r p2) )
+      ( _ () )
+   ))
+   r
+)) Type);

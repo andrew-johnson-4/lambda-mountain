@@ -57,7 +57,7 @@ compile := λ(). (: (tail(
             (let fragment (maybe-deref(ccfragment::new())))
             (let fragment-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Global_s) ))))
             (let rhs-tt (maybe-deref(typecheck-lookup rhs)))
-            (match (typecheck-slot( rhs-tt '->_s )) (
+            (match (slot( rhs-tt '->_s )) (
                ()
                ( (TGround( '->_s _ )) (tail(
                   (let fragment-3 (maybe-deref(ccfragment::set-type( fragment-2 rhs-tt ))))
@@ -479,7 +479,7 @@ compile-define-field-accessor-simple := λ(: ctx CCContext)(: base-type Type)(: 
 compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-types Type)(: case-number U64). (: (tail(
    (let field-offset 8_u64)
    (let field-number 1_u64)
-   (while (non-zero field-types) (match (maybe-deref(typecheck-slot( field-types 'Cons_s ))) (
+   (while (non-zero field-types) (match (slot( field-types 'Cons_s )) (
       ()
       ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (tail(
          (let ctx-2 (maybe-deref(compile-define-field-accessor( ctx base-type field-types case-number field-offset field-number p2 ))))
@@ -488,8 +488,8 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
          (set field-offset (+( field-offset (typecheck-aligned-sizeof p2) )))
          (set field-number (+( field-number 1_u64 )))
       )))
-      ( p2 (tail(
-         (let ctx-2 (maybe-deref(compile-define-field-accessor( ctx base-type field-types case-number field-offset field-number p2 ))))
+      ( _ (tail(
+         (let ctx-2 (maybe-deref(compile-define-field-accessor( ctx base-type field-types case-number field-offset field-number field-types ))))
          (set ctx ctx-2)
          (set field-types TAny)
       )))
