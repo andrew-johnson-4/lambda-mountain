@@ -1,4 +1,10 @@
 
+# global Tag -> Class map, mutable
+tag-to-class-index := (: TConEOF TypeConstructorList);
+
+# global Tag -> Fields map, mutable
+tag-to-fields-index := (: TConEOF TypeConstructorList);
+
 slot := λ(: tt Type)(: sl String). (: (tail(
    (let rt TAny)
    (match tt (
