@@ -1228,32 +1228,6 @@ typecheck-classof-tag := λ(: tag String). (: (tail(
    r
 )) Type);
 
-is-open := λ(: tt Type). (: (tail(
-   (let r 0_u64)
-   (match tt (
-      ()
-      ( TAny () )
-      ( (TVar _) (set r 1_u64) )
-      ( (TAnd( lt rt )) (tail(
-         (if (is-open lt) (set r 1_u64) ())
-         (if (is-open rt) (set r 1_u64) ())
-      )))
-      ( (TGround( _ TypeEOF )) () )
-      ( (TGround( _ (TypeSeq( TypeEOF p1 )) )) (
-         (if (is-open p1) (set r 1_u64) ())
-      ))
-      ( (TGround( _ (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (tail(
-         (if (is-open p1) (set r 1_u64) ())
-         (if (is-open p2) (set r 1_u64) ())
-      )))
-      ( tt (tail(
-         (print 'Is\sOpen\n_s)
-         (exit 1_u64)
-      )))
-   ))
-   r
-)) U64);
-
 as-local-variable := λ(: tt Type). (: (tail(
    (let tt2 (maybe-deref(normalize tt)))
    (if (non-zero tt2) (tail(

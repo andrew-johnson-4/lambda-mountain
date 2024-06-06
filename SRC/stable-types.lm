@@ -39,3 +39,26 @@ range := λ(: tt Type). (: (tail(
    ))
    r
 )) Type);
+
+is-open := λ(: tt Type). (: (tail(
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( TAny () )
+      ( (TVar _) (set r 1_u64) )
+      ( (TAnd( lt rt )) (tail(
+         (if (is-open lt) (set r 1_u64) ())
+         (if (is-open rt) (set r 1_u64) ())
+      )))
+      ( (TGround( _ pars )) (
+         (while (non-zero pars) (match pars (
+            ()
+            ( (TypeSeq( rst p1 )) (tail(
+               (if (is-open p1) (set r 1_u64) ())
+               (set pars rst)
+            )))
+         )))
+      ))
+   ))
+   r
+)) U64);
