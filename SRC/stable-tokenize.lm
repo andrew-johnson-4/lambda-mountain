@@ -3,3 +3,19 @@ type SourceLocation (SourceLocation( String , U64 , U64 ));
 type SourceMap SourceMapEOF | (SourceMapSeq( SourceMap[] , String , SourceLocation )); zero SourceMap SourceMapEOF;
 
 source-map := (: SourceMapEOF SourceMap);
+
+map-location := λ(: tok String)(: loc SourceLocation). (: (
+   (set source-map (SourceMapSeq(
+      (close source-map)
+      tok
+      loc
+   )))
+) Nil);
+
+map-location := λ(: tok String)(: file String)(: line U64)(: column U64). (: (
+   (set source-map (SourceMapSeq(
+      (close source-map)
+      tok
+      (SourceLocation( file line column ))
+   )))
+) Nil);
