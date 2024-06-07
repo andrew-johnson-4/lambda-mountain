@@ -408,3 +408,46 @@ write-file := λ(: fp String)(: data String). (: (tail(
    #close file
    (system-call( 3_u64 fd 0_u64 0_u64 )) ()
 )) Nil);
+
+to-string := λ(: i U64). (: (tail(
+   (let r SNil)
+   (let c 0_u8)
+   (while (not(==( i 0_u64 ))) (
+      (let ci (+( (%( i 10_u64 )) 48_u64 )))
+      (set i (/( i 10_u64 )))
+      (mov( ci R8 ))
+      (mov( R8B c ))
+      (set r (SCons(
+         (close(SAtom(clone-rope c)))
+         (close r)
+      )))
+   ))
+   (if (non-zero r) () (
+      (set r (SAtom '0_s))
+   ))
+   (clone-rope r)
+)) String);
+
+to-string := λ(: i I64). (: (tail(
+   (let sign SNil)
+   (let r SNil)
+   (if (<( i 0_i64 )) (tail(
+      (set sign (SAtom '-_s))
+      (set i (-( 0_i64 i )))
+   )) ())
+   (let c 0_u8)
+   (while (not(==( i 0_i64 ))) (
+      (let ci (+( (%( i 10_i64 )) 48_i64 )))
+      (set i (/( i 10_i64 )))
+      (mov( ci R8 ))
+      (mov( R8B c ))
+      (set r (SCons(
+         (close(SAtom(clone-rope c)))
+         (close r)
+      )))
+   ))
+   (if (non-zero r) () (
+      (set r (SAtom '0_s))
+   ))
+   (clone-rope(SCons( (close sign) (close r) )))
+)) String);
