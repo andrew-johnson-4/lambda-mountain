@@ -54,3 +54,12 @@ is-variable := λ(: s String). (: (tail(
    ))
    (==( r True_u8 ))
 )) U64);
+
+uuid-counter := 0_u64;
+uuid := λ . (: (tail(
+   (set uuid-counter (+( uuid-counter 1_u64 )))
+   (clone-rope (SCons(
+      (close(SAtom 'uuid__s))
+      (close(SAtom(to-hex uuid-counter)))
+   )))
+)) String);
