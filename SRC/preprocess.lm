@@ -110,7 +110,7 @@ preprocess-apply := λ(: program AST). (: (tail(
          (while (non-zero suffixes) (match suffixes (
             ()
             ( (SfxSeq( rst sfxs sfxtt )) (
-               (if (is-suffix( l sfxs )) (tail(
+               (if (has-suffix( l sfxs )) (tail(
                   (let lloc (maybe-deref(location l)))
                   (let lpfx (remove-suffix( l sfxs )))
                   (add-location( lpfx lloc ))
@@ -127,7 +127,7 @@ preprocess-apply := λ(: program AST). (: (tail(
          (while (non-zero suffixes) (match suffixes (
             ()
             ( (SfxSeq( rst sfxs sfxtt )) (
-               (if (is-suffix( l sfxs )) (tail(
+               (if (has-suffix( l sfxs )) (tail(
                   (let lloc (maybe-deref(location l)))
                   (let lpfx (remove-suffix( l sfxs )))
                   (add-location( lpfx lloc ))
