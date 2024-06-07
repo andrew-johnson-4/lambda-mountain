@@ -306,3 +306,26 @@ without-tag := λ(: tt TypeList). (: (tail(
    ))
    tt
 )) TypeList);
+
+with-only-tag := λ(: tt Type). (: (tail(
+   (let rt TAny)
+   (match tt (
+      ()
+      ( (TAnd( lt1 rt1 )) (tail(
+         (let lc (with-only-tag lt1))
+         (if (non-zero lc) (set rt lc) ())
+         (let rc (with-only-tag rt1))
+         (if (non-zero rc) (set rt rc) ())
+      )))
+      ( (TGround( tag _ )) (tail(
+         (let class (class-of-tag tag))
+         (if (non-zero class) (
+            (if (not(is-fragment tag)) (
+               (set rt tt)
+            ) ())
+         ) ())
+      )))
+      ( _ () )
+   ))
+   rt
+)) Type);
