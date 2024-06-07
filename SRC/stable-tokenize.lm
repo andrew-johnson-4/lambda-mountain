@@ -19,3 +19,28 @@ map-location := λ(: tok String)(: file String)(: line U64)(: column U64). (: (
       (SourceLocation( file line column ))
    )))
 ) Nil);
+
+non-zero := λ(: loc SourceLocation). (: (tail(
+   (let r 0_u64)
+   (match loc (
+      ()
+      ( (SourceLocation( fp line col )) (
+         (if (!=( line 0_u64 )) (set r 1_u64) ())
+      ))
+   ))
+   r
+)) U64);
+
+print := λ(: loc SourceLocation). (: (
+   (match loc (
+      ()
+      ( (SourceLocation( fp ln cl )) (tail(
+         (print 'In\sFile\s_s)
+         (print fp)
+         (print '\sLine\s_s)
+         (print ln)
+         (print '\sColumn\s_s)
+         (print cl)
+      )))
+   ))
+) Nil);
