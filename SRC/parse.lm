@@ -56,10 +56,8 @@ parse := λ. (: (tail(
                            (close e2)
                         )))
                      )))
-                     (set typecheck-fragment-types (TypeSeq(
-                        (close typecheck-fragment-types)
-                        (maybe-deref(typecheck-infer-type-compound e1))
-                     )))
+                     (let base-type (typecheck-infer-type-compound e1))
+                     (index-tag-is-fragment(tag-of base-type))
                      (set tokens r2)
                   )))
                )))

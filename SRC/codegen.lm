@@ -129,32 +129,32 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
                (set e e1)
             )))
             ( _ (tail(
-               (let is-fragment False_u8)
+               (let isa-fragment False_u8)
                (match (slot( ltype 'Reg8_s )) (
                   ()
-                  ( (TGround( 'Reg8_s _ )) (set is-fragment True_u8) )
+                  ( (TGround( 'Reg8_s _ )) (set isa-fragment True_u8) )
                   ( _ () )
                ))
                (match (slot( ltype 'Reg16_s )) (
                   ()
-                  ( (TGround( 'Reg16_s _ )) (set is-fragment True_u8) )
+                  ( (TGround( 'Reg16_s _ )) (set isa-fragment True_u8) )
                   ( _ () )
                ))
                (match (slot( ltype 'Reg32_s )) (
                   ()
-                  ( (TGround( 'Reg32_s _ )) (set is-fragment True_u8) )
+                  ( (TGround( 'Reg32_s _ )) (set isa-fragment True_u8) )
                   ( _ () )
                ))
                (match (slot( ltype 'Reg64_s )) (
                   ()
-                  ( (TGround( 'Reg64_s _ )) (set is-fragment True_u8) )
+                  ( (TGround( 'Reg64_s _ )) (set isa-fragment True_u8) )
                   ( _ () )
                ))
-               (if (==( is-fragment True_u8 )) (tail(
+               (if (==( isa-fragment True_u8 )) (tail(
                   (let e1 (maybe-deref(ccfragment::expression val)))
                   (set e e1)
                )) (
-                  (if (non-zero(maybe-deref(typecheck-classof-tag val))) (tail(
+                  (if (non-zero(class-of-tag val)) (tail(
                      (let tag-index (preprocess-index-of-tag val))
                      (let e1 (maybe-deref(ccfragment::expression(to-string tag-index))))
                      (let e2 (maybe-deref(ccfragment::set( e1 'program_s (SCons( (close SNil) (close SNil) )) ))))

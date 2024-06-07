@@ -1,10 +1,5 @@
 
-type TypeConstructorList (TConEOF) | (TConSeq( TypeConstructorList[] , String , Type )); zero TypeConstructorList TConEOF;
-
 typecheck-type-constructors := (: TConEOF TypeConstructorList);
-typecheck-classes-of-tag := (: TConEOF TypeConstructorList);
-typecheck-fields-of-tag := (: TConEOF TypeConstructorList);
-typecheck-fragment-types := (: TypeEOF TypeList);
 
 type TypeSizeList (TSzEOF) | (TSzSeq( TypeSizeList[] , String , U64 )); zero TypeSizeList TSzEOF;
 type TypeSizeList2 (TSz2EOF) | (TSz2Seq( TypeSizeList2[] , String , Type , Type )); zero TypeSizeList2 TSz2EOF;
@@ -228,16 +223,8 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
          (typecheck-set-size( base-type (maybe-deref(t1 'Nil_s)) ))
          (typecheck-annotate-head-accessor( base-type ))
          (let rtype (maybe-deref(tand( base-type (maybe-deref(t1 tag)) ))))
-         (set typecheck-classes-of-tag (TConSeq(
-            (close typecheck-classes-of-tag)
-            tag
-            base-type
-         )))
-         (set typecheck-fields-of-tag (TConSeq(
-            (close typecheck-fields-of-tag)
-            tag
-            TAny
-         )))
+         (index-class-of-tag( tag base-type ))
+         (index-fields-of-tag( tag TAny ))
          (set typecheck-type-constructors (TConSeq(
             (close typecheck-type-constructors)
             tag
@@ -251,16 +238,8 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
          (let rtype (maybe-deref(tand( base-type (maybe-deref(t1 tag)) ))))
          (typecheck-annotate-head-accessor( base-type ))
          (typecheck-annotate-accessors( base-type (maybe-deref(parse-type tag)) atype ))
-         (set typecheck-classes-of-tag (TConSeq(
-            (close typecheck-classes-of-tag)
-            tag
-            base-type
-         )))
-         (set typecheck-fields-of-tag (TConSeq(
-            (close typecheck-fields-of-tag)
-            tag
-            (maybe-deref(tcons( base-type atype )))
-         )))
+         (index-class-of-tag( tag base-type ))
+         (index-fields-of-tag( tag (maybe-deref(tcons( base-type atype ))) ))
          (set typecheck-type-constructors (TConSeq(
             (close typecheck-type-constructors)
             tag
@@ -560,7 +539,7 @@ without-tag := λ(: tt Type). (: (tail(
       ( (TGround( possibly-tag-name ps )) (tail(
          (set tt (TGround( possibly-tag-name (close(without-tag ps)) )))
          #if this is a tag and not a class, then remove from normal form
-         (let class-type (maybe-deref(typecheck-classof-tag possibly-tag-name)))
+         (let class-type (class-of-tag possibly-tag-name))
          (let iso False_u8)
          (match class-type (
             ()
@@ -776,20 +755,11 @@ with-only-class := λ(: tt Type). (: (tail(
          (let rc (with-only-class rt1))
          (if (non-zero rc) (set rt rc) ())
       )))
-      ( (TGround( tag _ )) (tail(
-         (let classes typecheck-classes-of-tag)
-         (while (non-zero classes) (match classes (
-            ()
-            ( (TConSeq( rst k (TGround( ctag _ )) )) (tail(
-               (if (==( tag ctag )) (
-                  (if (is-fragment-type tt) () (
-                     (set rt tt)
-                  ))
-               ) ())
-               (set classes rst)
-            )))
-         )))
-      )))
+      ( (TGround( tag _ )) (
+         (if (is-class tag) (
+            (if (is-fragment tag) () (set rt tt))
+         ) ())
+      ))
       ( _ () )
    ))
    rt
@@ -806,7 +776,7 @@ with-only-tag := λ(: tt Type). (: (tail(
          (if (non-zero rc) (set rt rc) ())
       )))
       ( (TGround( tag _ )) (tail(
-         (let tc (typecheck-classof-tag tag))
+         (let tc (class-of-tag tag))
          (match tc (
             ()
             ( TAny () )
@@ -860,7 +830,7 @@ fields-of-tag := λ(: tag Type)(: class Type). (: (tail(
       ()
       ( (TGround( ts _ )) (set tag-s ts) )
    ))
-   (let field-list typecheck-fields-of-tag)
+   (let field-list tag-to-fields-index)
    (let rhst TAny)
    (while (non-zero field-list) (match field-list (
       ()
@@ -1177,23 +1147,6 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
 typecheck-typeof-tag := λ(: tag String). (: (tail(
    (let r TAny)
    (let tag-list typecheck-type-constructors)
-   (while (non-zero tag-list) (match tag-list (
-      ()
-      ( (TConSeq( rst k kt )) (
-         (if (==( k tag )) (tail(
-            (set r kt)
-            (set tag-list TConEOF)
-         )) (
-            (set tag-list rst)
-         ))
-      ))
-   )))
-   r
-)) Type);
-
-typecheck-classof-tag := λ(: tag String). (: (tail(
-   (let r TAny)
-   (let tag-list typecheck-classes-of-tag)
    (while (non-zero tag-list) (match tag-list (
       ()
       ( (TConSeq( rst k kt )) (
@@ -1924,26 +1877,6 @@ typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tai
    ))
    (close found)
 )) Type[]);
-
-is-fragment-type := λ(: tt Type). (: (tail(
-   (let tt-s '_s)
-   (match tt (
-      ()
-      ( (TGround( p _ )) (set tt-s p) )
-      ( _ () )
-   ))
-   (let r 0_u64)
-   (let fs typecheck-fragment-types)
-   (while (non-zero fs) (match fs (
-      ()
-      ( (TypeSeq( rst (TGround( p2 _ )) )) (tail(
-         (if (==( tt-s p2 )) (set r 1_u64) ())
-         (set fs rst)
-      )))
-      ( (TypeSeq( rst _ )) (set fs rst) )
-   )))
-   r
-)) U64);
 
 to-s := λ(: term AST). (: (tail(
    (let s SNil)
