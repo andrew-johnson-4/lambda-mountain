@@ -2,10 +2,10 @@
 macro ( ('let x y) )
       ( (λ x . ()) y );
 
-macro ('match t ps) (tail(
+macro ('match t ps) (scope(tail(
    (let (uuid term) (maybe-deref t))
    (match-pats( (uuid term) ps (fail 'PatternMatchFailure_s) ))
-));
+)));
 
 macro ('match-pats( term () remainder )) (
    remainder
@@ -13,7 +13,7 @@ macro ('match-pats( term () remainder )) (
 
 macro ('match-pats( term (ps (lhs rhs)) remainder )) (
    (match-pats( term ps
-      (if (match-pats-arm( term lhs )) rhs remainder)
+      (scope(if (match-pats-arm( term lhs )) rhs remainder))
    ))
 );
 

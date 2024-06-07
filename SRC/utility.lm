@@ -14,59 +14,6 @@ list-tail-order-to-head-order := λ(: s S). (: (tail(
    new
 )) S);
 
-is-variable := λ(: s String). (: (tail(
-   (let r False_u8)
-   (match (head-string s) (
-      ()
-      ( 46_u8 ( if (==( s '._s )) () (set r True_u8) ))
-      ( 64_u8 (set r True_u8) )
-      ( 91_u8 (set r True_u8) )
-      ( 63_u8 (set r True_u8) )
-      ( 33_u8 (set r True_u8) )
-      ( 37_u8 (set r True_u8) )
-      ( 61_u8 (set r True_u8) )
-      ( 62_u8 (set r True_u8) )
-      ( 60_u8 (set r True_u8) )
-      ( 47_u8 (set r True_u8) )
-      ( 42_u8 (set r True_u8) )
-      ( 43_u8 (set r True_u8) )
-      ( 45_u8 (set r True_u8) )
-      ( 36_u8 (set r True_u8) )
-      ( 38_u8 (set r True_u8) )
-      ( 94_u8 (set r True_u8) )
-      ( 95_u8 (set r True_u8) )
-      ( 97_u8 (set r True_u8) )
-      ( 98_u8 (set r True_u8) )
-      ( 99_u8 (set r True_u8) )
-      ( 100_u8 (set r True_u8) )
-      ( 101_u8 (set r True_u8) )
-      ( 102_u8 (set r True_u8) )
-      ( 103_u8 (set r True_u8) )
-      ( 104_u8 (set r True_u8) )
-      ( 105_u8 (set r True_u8) )
-      ( 106_u8 (set r True_u8) )
-      ( 107_u8 (set r True_u8) )
-      ( 108_u8 (set r True_u8) )
-      ( 109_u8 (set r True_u8) )
-      ( 110_u8 (set r True_u8) )
-      ( 111_u8 (set r True_u8) )
-      ( 112_u8 (set r True_u8) )
-      ( 113_u8 (set r True_u8) )
-      ( 114_u8 (set r True_u8) )
-      ( 115_u8 (set r True_u8) )
-      ( 116_u8 (set r True_u8) )
-      ( 117_u8 (set r True_u8) )
-      ( 118_u8 (set r True_u8) )
-      ( 119_u8 (set r True_u8) )
-      ( 120_u8 (set r True_u8) )
-      ( 121_u8 (set r True_u8) )
-      ( 122_u8 (set r True_u8) )
-      ( 124_u8 (set r True_u8) )
-      (_ ())
-   ))
-   (==( r True_u8 ))
-)) U64);
-
 is-suffix := λ(: base String)(: sfx String). (: (tail(
    (let r 0_u64)
    (while (head-string base) (tail(
@@ -92,49 +39,6 @@ remove-suffix := λ(: base String)(: sfx String). (: (tail(
       (set base (tail-string base))
    )))
    (clone-rope r)
-)) String);
-
-to-string := λ(: i U64). (: (tail(
-   (let r SNil)
-   (let c 0_u8)
-   (while (not(==( i 0_u64 ))) (
-      (let ci (+( (%( i 10_u64 )) 48_u64 )))
-      (set i (/( i 10_u64 )))
-      (mov( ci R8 ))
-      (mov( R8B c ))
-      (set r (SCons(
-         (close(SAtom(clone-rope c)))
-         (close r)
-      )))
-   ))
-   (if (non-zero r) () (
-      (set r (SAtom '0_s))
-   ))
-   (clone-rope r)
-)) String);
-
-to-string := λ(: i I64). (: (tail(
-   (let sign SNil)
-   (let r SNil)
-   (if (<( i 0_i64 )) (tail(
-      (set sign (SAtom '-_s))
-      (set i (-( 0_i64 i )))
-   )) ())
-   (let c 0_u8)
-   (while (not(==( i 0_i64 ))) (
-      (let ci (+( (%( i 10_i64 )) 48_i64 )))
-      (set i (/( i 10_i64 )))
-      (mov( ci R8 ))
-      (mov( R8B c ))
-      (set r (SCons(
-         (close(SAtom(clone-rope c)))
-         (close r)
-      )))
-   ))
-   (if (non-zero r) () (
-      (set r (SAtom '0_s))
-   ))
-   (clone-rope(SCons( (close sign) (close r) )))
 )) String);
 
 uuid-counter := 0_u64;
@@ -222,52 +126,6 @@ dump-i := λ(: i U64). (: (tail(
    ))
    (clone-rope buff)
 )) String);
-
-to-i64 := λ(: s String). (: (tail(
-   (let negative False_u8)
-   (if (==( (head-string s) 45_u8 )) (tail(
-      (set negative True_u8)
-      (set s (tail-string s))
-   )) ())
-   (let base (as (to-u64 s) I64))
-   (if (==( negative True_u8 )) (
-      (set base (-( 0_i64 base )))
-   ) ())
-   base
-)) I64);
-
-to-u64 := λ(: s String). (: (tail(
-   (let i 0_u64)
-   (while (head-string s) (tail(
-      (set i (*( i 10_u64 )))
-      (match (head-string s) (
-         ()
-         ( 48_u8 () )
-         ( 49_u8 (set i (+( i 1_u64 ))) )
-         ( 50_u8 (set i (+( i 2_u64 ))) )
-         ( 51_u8 (set i (+( i 3_u64 ))) )
-         ( 52_u8 (set i (+( i 4_u64 ))) )
-         ( 53_u8 (set i (+( i 5_u64 ))) )
-         ( 54_u8 (set i (+( i 6_u64 ))) )
-         ( 55_u8 (set i (+( i 7_u64 ))) )
-         ( 56_u8 (set i (+( i 8_u64 ))) )
-         ( 57_u8 (set i (+( i 9_u64 ))) )
-         ( _ () )
-      ))
-      (set s (tail-string s))
-   )))
-   i
-)) U64);
-
-max := λ(: l U64)(: r U64). (: (tail(
-   (if (<( l r )) (set l r) ())
-   l
-)) U64);
-
-max := λ(: l I64)(: r I64). (: (tail(
-   (if (<( l r )) (set l r) ())
-   l
-)) I64);
 
 mangle-identifier := λ(: kt Type). (: (tail(
    (let r SNil)

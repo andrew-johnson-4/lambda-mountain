@@ -439,6 +439,10 @@ typecheck-assert-complete := λ(: term AST). (: (
          (typecheck-assert-complete rterm)
          (typecheck-assert-one term)
       )))
+      ( (App( (Var 'scope_s) rterm )) (tail(
+         (typecheck-assert-complete rterm)
+         (typecheck-assert-one term)
+      )))
       ( (Asc( t tt )) (tail(
          (typecheck-assert-complete t)
          (typecheck-assert-one term)
@@ -961,6 +965,10 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
       ( (Sizeof( _ )) (
          (typecheck-ascript( term (maybe-deref(as-constant(maybe-deref(parse-type 'U64_s)))) ))
       ))
+      ( (App( (Var 'scope_s) r )) (tail(
+         (typecheck-infer-expr( tctx r used ))
+         (typecheck-ascript( term (typecheck-lookup r) ))
+      )))
       ( (App( (Var 'maybe-deref_s) r )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx r used ))))
          (set tctx tctx2)
