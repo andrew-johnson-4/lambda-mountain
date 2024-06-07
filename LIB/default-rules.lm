@@ -13,7 +13,7 @@ macro ('match-pats( term () remainder )) (
 
 macro ('match-pats( term (ps (lhs rhs)) remainder )) (
    (match-pats( term ps
-      (if (match-pats-arm( term lhs )) rhs remainder)
+      (scope(if (match-pats-arm( term lhs )) rhs remainder))
    ))
 );
 
