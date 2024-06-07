@@ -11,3 +11,5 @@ type TContext TCtxEOF | (TCtxBind( TContext[] , String , Type , AST )); zero TCo
 type TypeConstructorList (TConEOF) | (TConSeq( TypeConstructorList[] , String , Type )); zero TypeConstructorList TConEOF;
 
 type StringList SLEOF | (SLSeq( StringList[] , String )); zero StringList SLEOF;
+
+type TPair (TPair( Type , Type ));

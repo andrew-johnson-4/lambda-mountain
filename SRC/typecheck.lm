@@ -131,19 +131,6 @@ typecheck-set-size := λ(: tag String)(: size U64). (: (
    ))
 ) Nil);
 
-merge := λ(: lctx TContext)(: rctx TContext). (: (tail(
-   (match rctx (
-      ()
-      ( (TCtxBind( rst k v _ )) (tail(
-         (let lctx2 (TCtxBind( (close lctx) k v ASTEOF )))
-         (let lctx3 (maybe-deref(merge( lctx2 rst ))))
-         (set lctx lctx3)
-      )))
-      ( _ () )
-   ))
-   lctx
-)) TContext);
-
 type TermTypeList TTEOF | (TTSeq( TermTypeList[] , AST , Type )); zero TermTypeList TTEOF;
 type STypeList STEOF | (STSeq( STypeList[] , S , Type )); zero STypeList STEOF;
 
@@ -520,56 +507,6 @@ exit-error := λ(: msg String)(: t AST). (: (tail(
    (exit 1_u64)
 )) Nil);
 
-without-tag := λ(: tt Type). (: (tail(
-   (match tt (
-      ()
-      ( (TAnd( lt rt )) (tail(
-         (let lt1 (maybe-deref(without-tag lt )))
-         (let rt1 (maybe-deref(without-tag rt )))
-         (match (TPair( lt1 rt1 )) (
-            ()
-            ( (TPair( TAny rt2 )) (set tt rt2) )
-            ( (TPair( lt2 TAny )) (set tt lt2) )
-            ( (TPair( lt2 rt2 )) (tail(
-               (let tt-2 (maybe-deref(tand( lt2 rt2 ))))
-               (set tt tt-2)
-            )))
-         ))
-      )))
-      ( (TGround( possibly-tag-name ps )) (tail(
-         (set tt (TGround( possibly-tag-name (close(without-tag ps)) )))
-         #if this is a tag and not a class, then remove from normal form
-         (let class-type (class-of-tag possibly-tag-name))
-         (let iso False_u8)
-         (match class-type (
-            ()
-            ( (TGround( class-name _ )) (
-               (if (==( possibly-tag-name class-name )) (
-                  (set iso True_u8)
-               ) ())
-            ))
-            ( _ () )
-         ))
-         (if (non-zero class-type) (
-            (if (==( iso True_u8 )) () (set tt TAny))
-         ) ())
-      )))
-      ( tt () )
-   ))
-   tt
-)) Type);
-
-without-tag := λ(: tt TypeList). (: (tail(
-   (match tt (
-      ()
-      ( (TypeSeq( rst p1 )) (
-         (set tt (TypeSeq( (close(without-tag rst)) (maybe-deref(without-tag p1)) )))
-      ))
-      ( TypeEOF () )
-   ))
-   tt
-)) TypeList);
-
 normalize := λ(: tctx TContext). (: (tail(
    (match tctx (
       ()
@@ -742,53 +679,6 @@ typecheck-annotate-size-recurse := λ(: tt Type). (: (tail(
 
 with-size := λ(: tt Type). (: (tail(
    (let rt (typecheck-annotate-size tt))
-   rt
-)) Type);
-
-with-only-class := λ(: tt Type). (: (tail(
-   (let rt TAny)
-   (match tt (
-      ()
-      ( (TAnd( lt1 rt1 )) (tail(
-         (let lc (with-only-class lt1))
-         (if (non-zero lc) (set rt lc) ())
-         (let rc (with-only-class rt1))
-         (if (non-zero rc) (set rt rc) ())
-      )))
-      ( (TGround( tag _ )) (
-         (if (is-class tag) (
-            (if (is-fragment tag) () (set rt tt))
-         ) ())
-      ))
-      ( _ () )
-   ))
-   rt
-)) Type);
-
-with-only-tag := λ(: tt Type). (: (tail(
-   (let rt TAny)
-   (match tt (
-      ()
-      ( (TAnd( lt1 rt1 )) (tail(
-         (let lc (with-only-tag lt1))
-         (if (non-zero lc) (set rt lc) ())
-         (let rc (with-only-tag rt1))
-         (if (non-zero rc) (set rt rc) ())
-      )))
-      ( (TGround( tag _ )) (tail(
-         (let tc (class-of-tag tag))
-         (match tc (
-            ()
-            ( TAny () )
-            ( (TGround( 'Reg8_s _ )) () )
-            ( (TGround( 'Reg16_s _ )) () )
-            ( (TGround( 'Reg32_s _ )) () )
-            ( (TGround( 'Reg64_s _ )) () )
-            ( _ (set rt tt) )
-         ))
-      )))
-      ( _ () )
-   ))
    rt
 )) Type);
 
@@ -1485,7 +1375,7 @@ typecheck-unify-args-inner := λ(: fpt Type)(: pt Type). (: (tail(
             ( (TCPair( TCtxEOF _ )) () )
             ( (TCPair( _ TCtxEOF )) () )
             ( (TCPair( lctx rctx )) (tail(
-               (let nctx (maybe-deref(merge( lctx rctx ))))
+               (let nctx (union( lctx rctx )))
                (set ctx nctx)
             )))
          ))
@@ -1497,7 +1387,7 @@ typecheck-unify-args-inner := λ(: fpt Type)(: pt Type). (: (tail(
             ( (TCPair( lctx TCtxEOF )) (set ctx lctx) )
             ( (TCPair( TCtxEOF rctx )) (set ctx rctx) )
             ( (TCPair( lctx rctx )) (tail(
-               (let nctx (maybe-deref(merge( lctx rctx ))))
+               (let nctx (union( lctx rctx )))
                (set ctx nctx)
             )))
          ))
@@ -1520,7 +1410,7 @@ typecheck-unify-args-inner := λ(: fpt Type)(: pt Type). (: (tail(
             (if (non-zero ctx2) (tail(
                (let ctx3 (maybe-deref(typecheck-unify-args-inner( lt2 rt2 ))))
                (if (non-zero ctx3) (tail(
-                  (let ctx4 (maybe-deref(merge( ctx2 ctx3 ))))
+                  (let ctx4 (union( ctx2 ctx3 )))
                   (set ctx ctx4)
                )) ())
             )) ())
@@ -1593,7 +1483,7 @@ typecheck-unify-generous := λ(: fpt Type)(: pt Type). (: (tail(
             ( (TCPair( lctx TCtxEOF )) (set ctx lctx) )
             ( (TCPair( TCtxEOF rctx )) (set ctx rctx) )
             ( (TCPair( lctx rctx )) (tail(
-               (let nctx (maybe-deref(merge( lctx rctx ))))
+               (let nctx (union( lctx rctx )))
                (set ctx nctx)
             )))
          ))
@@ -1605,7 +1495,7 @@ typecheck-unify-generous := λ(: fpt Type)(: pt Type). (: (tail(
             ( (TCPair( lctx TCtxEOF )) (set ctx lctx) )
             ( (TCPair( TCtxEOF rctx )) (set ctx rctx) )
             ( (TCPair( lctx rctx )) (tail(
-               (let nctx (maybe-deref(merge( lctx rctx ))))
+               (let nctx (union( lctx rctx )))
                (set ctx nctx)
             )))
          ))
@@ -1627,7 +1517,7 @@ typecheck-unify-generous := λ(: fpt Type)(: pt Type). (: (tail(
             (let ctx2 (maybe-deref(typecheck-unify-args( lt1 rt1 ))))
             (if (non-zero ctx2) (tail(
                (let ctx3 (maybe-deref(typecheck-unify-args( lt2 rt2 ))))
-               (let ctx4 (maybe-deref(merge( ctx2 ctx3 ))))
+               (let ctx4 (union( ctx2 ctx3 )))
                (set ctx ctx4)
             )) ())
          )) ())

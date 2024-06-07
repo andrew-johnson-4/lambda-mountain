@@ -263,6 +263,8 @@ print := λ(: x I8). (: (tail(
    (as RAX U64)
 )) U64);
 
+!= := λ(: l String)(: r String). (: (not(==( l r ))) U64);
+
 cons-page-head := 0_u64;
 cons-page-tail := 0_u64;
 malloc := λ (: sz U64) . (: (tail(

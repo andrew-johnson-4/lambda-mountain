@@ -9,7 +9,6 @@ type IsUsed Used | Unused | Tail | Return;
 type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST[] )); zero Context CtxEOF;
 type Pair (Pair( AST , AST ));
 type CPair (CPair( Context , Context ));
-type TPair (TPair( Type , Type ));
 type TCPair (TCPair( TContext , TContext ));
 type UPair (UPair( IsUsed , IsUsed ));
 
