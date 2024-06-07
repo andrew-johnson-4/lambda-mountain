@@ -2,6 +2,54 @@
 # global Tag -> Class map, mutable
 tag-to-class-index := (: TConEOF TypeConstructorList);
 
+# global Tag -> Fields map, mutable
+tag-to-fields-index := (: TConEOF TypeConstructorList);
+
+# global Tag -> IsFragment? map, mutable
+tag-is-fragment-index := (: SLEOF StringList);
+
+index-tag-is-fragment := λ(: tag String). (: (
+   (set tag-is-fragment-index (SLSeq(
+      (close tag-is-fragment-index) tag
+   )))
+) Nil);
+
+is-fragment := λ(: tag String). (: (tail(
+   (let index tag-is-fragment-index)
+   (let rt 0_u64)
+   (while (non-zero index) (match index (
+      ()
+      ( (SLSeq( rst itag )) (
+         (if (==( tag itag )) (tail(
+            (set rt 1_u64)
+            (set index SLEOF)
+         )) (set index rst))
+      ))
+   )))
+   rt
+)) U64);
+
+is-fragment := λ(: tt Type). (: (tail(
+   (let r (is-fragment(tag-of tt)))
+   r
+)) U64);
+
+tag-of := λ(: tt Type). (: (tail(
+   (let tag '_s)
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (tail(
+         (let ltag (tag-of lt))
+         (if (non-zero ltag) (set tag ltag) ())
+         (let rtag (tag-of rt))
+         (if (non-zero rtag) (set tag rtag) ())
+      )))
+      ( (TGround( tg _ )) (set tag tg) )
+      ( _ () )
+   ))
+   tag
+)) String);
+
 index-class-of-tag := λ(: tag String)(: class Type). (: (
    (set tag-to-class-index (TConSeq(
       (close tag-to-class-index) tag class
@@ -37,9 +85,6 @@ is-class := λ(: tag String). (: (tail(
    )))
    rt
 )) U64);
-
-# global Tag -> Fields map, mutable
-tag-to-fields-index := (: TConEOF TypeConstructorList);
 
 index-fields-of-tag := λ(: tag String)(: fields Type). (: (
    (set tag-to-fields-index (TConSeq(

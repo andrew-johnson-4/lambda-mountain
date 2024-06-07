@@ -1,6 +1,5 @@
 
 typecheck-type-constructors := (: TConEOF TypeConstructorList);
-typecheck-fragment-types := (: TypeEOF TypeList);
 
 type TypeSizeList (TSzEOF) | (TSzSeq( TypeSizeList[] , String , U64 )); zero TypeSizeList TSzEOF;
 type TypeSizeList2 (TSz2EOF) | (TSz2Seq( TypeSizeList2[] , String , Type , Type )); zero TypeSizeList2 TSz2EOF;
@@ -758,7 +757,7 @@ with-only-class := λ(: tt Type). (: (tail(
       )))
       ( (TGround( tag _ )) (
          (if (is-class tag) (
-            (if (is-fragment-type tt) () (set rt tt))
+            (if (is-fragment tag) () (set rt tt))
          ) ())
       ))
       ( _ () )
@@ -1878,26 +1877,6 @@ typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tai
    ))
    (close found)
 )) Type[]);
-
-is-fragment-type := λ(: tt Type). (: (tail(
-   (let tt-s '_s)
-   (match tt (
-      ()
-      ( (TGround( p _ )) (set tt-s p) )
-      ( _ () )
-   ))
-   (let r 0_u64)
-   (let fs typecheck-fragment-types)
-   (while (non-zero fs) (match fs (
-      ()
-      ( (TypeSeq( rst (TGround( p2 _ )) )) (tail(
-         (if (==( tt-s p2 )) (set r 1_u64) ())
-         (set fs rst)
-      )))
-      ( (TypeSeq( rst _ )) (set fs rst) )
-   )))
-   r
-)) U64);
 
 to-s := λ(: term AST). (: (tail(
    (let s SNil)
