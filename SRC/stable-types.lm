@@ -254,3 +254,15 @@ substitute := λ(: tctx TContext)(: tt Type). (: (tail(
    ))
    tt
 )) Type);
+
+union := λ(: lctx TContext)(: rctx TContext). (: (tail(
+   (match rctx (
+      ()
+      ( (TCtxBind( rst k v t )) (tail(
+         (set lctx (union( lctx rst )))
+         (set lctx (TCtxBind( (close lctx) k v t )))
+      )))
+      ( _ () )
+   ))
+   lctx
+)) TContext);

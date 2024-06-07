@@ -131,19 +131,6 @@ typecheck-set-size := λ(: tag String)(: size U64). (: (
    ))
 ) Nil);
 
-merge := λ(: lctx TContext)(: rctx TContext). (: (tail(
-   (match rctx (
-      ()
-      ( (TCtxBind( rst k v _ )) (tail(
-         (let lctx2 (TCtxBind( (close lctx) k v ASTEOF )))
-         (let lctx3 (maybe-deref(merge( lctx2 rst ))))
-         (set lctx lctx3)
-      )))
-      ( _ () )
-   ))
-   lctx
-)) TContext);
-
 type TermTypeList TTEOF | (TTSeq( TermTypeList[] , AST , Type )); zero TermTypeList TTEOF;
 type STypeList STEOF | (STSeq( STypeList[] , S , Type )); zero STypeList STEOF;
 
@@ -1485,7 +1472,7 @@ typecheck-unify-args-inner := λ(: fpt Type)(: pt Type). (: (tail(
             ( (TCPair( TCtxEOF _ )) () )
             ( (TCPair( _ TCtxEOF )) () )
             ( (TCPair( lctx rctx )) (tail(
-               (let nctx (maybe-deref(merge( lctx rctx ))))
+               (let nctx (union( lctx rctx )))
                (set ctx nctx)
             )))
          ))
@@ -1497,7 +1484,7 @@ typecheck-unify-args-inner := λ(: fpt Type)(: pt Type). (: (tail(
             ( (TCPair( lctx TCtxEOF )) (set ctx lctx) )
             ( (TCPair( TCtxEOF rctx )) (set ctx rctx) )
             ( (TCPair( lctx rctx )) (tail(
-               (let nctx (maybe-deref(merge( lctx rctx ))))
+               (let nctx (union( lctx rctx )))
                (set ctx nctx)
             )))
          ))
@@ -1520,7 +1507,7 @@ typecheck-unify-args-inner := λ(: fpt Type)(: pt Type). (: (tail(
             (if (non-zero ctx2) (tail(
                (let ctx3 (maybe-deref(typecheck-unify-args-inner( lt2 rt2 ))))
                (if (non-zero ctx3) (tail(
-                  (let ctx4 (maybe-deref(merge( ctx2 ctx3 ))))
+                  (let ctx4 (union( ctx2 ctx3 )))
                   (set ctx ctx4)
                )) ())
             )) ())
@@ -1593,7 +1580,7 @@ typecheck-unify-generous := λ(: fpt Type)(: pt Type). (: (tail(
             ( (TCPair( lctx TCtxEOF )) (set ctx lctx) )
             ( (TCPair( TCtxEOF rctx )) (set ctx rctx) )
             ( (TCPair( lctx rctx )) (tail(
-               (let nctx (maybe-deref(merge( lctx rctx ))))
+               (let nctx (union( lctx rctx )))
                (set ctx nctx)
             )))
          ))
@@ -1605,7 +1592,7 @@ typecheck-unify-generous := λ(: fpt Type)(: pt Type). (: (tail(
             ( (TCPair( lctx TCtxEOF )) (set ctx lctx) )
             ( (TCPair( TCtxEOF rctx )) (set ctx rctx) )
             ( (TCPair( lctx rctx )) (tail(
-               (let nctx (maybe-deref(merge( lctx rctx ))))
+               (let nctx (union( lctx rctx )))
                (set ctx nctx)
             )))
          ))
@@ -1627,7 +1614,7 @@ typecheck-unify-generous := λ(: fpt Type)(: pt Type). (: (tail(
             (let ctx2 (maybe-deref(typecheck-unify-args( lt1 rt1 ))))
             (if (non-zero ctx2) (tail(
                (let ctx3 (maybe-deref(typecheck-unify-args( lt2 rt2 ))))
-               (let ctx4 (maybe-deref(merge( ctx2 ctx3 ))))
+               (let ctx4 (union( ctx2 ctx3 )))
                (set ctx ctx4)
             )) ())
          )) ())
