@@ -209,6 +209,11 @@ compile-expr-direct := λ(: ctx CCContext)(: term AST)(: stack-offset I64)(: use
          (let e-2 (maybe-deref(ccfragment::set( e 'program_s prog ))))(set e e-2)
          (let e-3 (maybe-deref(ccfragment::set-type( e (maybe-deref(t1 'Nil_s)) ))))(set e e-3)
       )))
+      ( (App( (Var 'scope_s) t )) (tail(
+         (let e1 (maybe-deref(compile-expr( ctx t stack-offset Used ))))
+         (let e1-2 (maybe-deref(ccfragment::set-context( e1 ctx ))))
+         (set e e1-2)
+      )))
       ( (App( (Var 'maybe-deref_s) t )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset Used ))))
          (set e e1)
