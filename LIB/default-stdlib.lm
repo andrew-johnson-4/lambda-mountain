@@ -451,3 +451,49 @@ to-string := λ(: i I64). (: (tail(
    ))
    (clone-rope(SCons( (close sign) (close r) )))
 )) String);
+
+to-i64 := λ(: s String). (: (tail(
+   (let negative False_u8)
+   (if (==( (head-string s) 45_u8 )) (tail(
+      (set negative True_u8)
+      (set s (tail-string s))
+   )) ())
+   (let base (as (to-u64 s) I64))
+   (if (==( negative True_u8 )) (
+      (set base (-( 0_i64 base )))
+   ) ())
+   base
+)) I64);
+
+to-u64 := λ(: s String). (: (tail(
+   (let i 0_u64)
+   (while (head-string s) (tail(
+      (set i (*( i 10_u64 )))
+      (match (head-string s) (
+         ()
+         ( 48_u8 () )
+         ( 49_u8 (set i (+( i 1_u64 ))) )
+         ( 50_u8 (set i (+( i 2_u64 ))) )
+         ( 51_u8 (set i (+( i 3_u64 ))) )
+         ( 52_u8 (set i (+( i 4_u64 ))) )
+         ( 53_u8 (set i (+( i 5_u64 ))) )
+         ( 54_u8 (set i (+( i 6_u64 ))) )
+         ( 55_u8 (set i (+( i 7_u64 ))) )
+         ( 56_u8 (set i (+( i 8_u64 ))) )
+         ( 57_u8 (set i (+( i 9_u64 ))) )
+         ( _ () )
+      ))
+      (set s (tail-string s))
+   )))
+   i
+)) U64);
+
+max := λ(: l U64)(: r U64). (: (tail(
+   (if (<( l r )) (set l r) ())
+   l
+)) U64);
+
+max := λ(: l I64)(: r I64). (: (tail(
+   (if (<( l r )) (set l r) ())
+   l
+)) I64);
