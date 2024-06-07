@@ -507,56 +507,6 @@ exit-error := λ(: msg String)(: t AST). (: (tail(
    (exit 1_u64)
 )) Nil);
 
-without-tag := λ(: tt Type). (: (tail(
-   (match tt (
-      ()
-      ( (TAnd( lt rt )) (tail(
-         (let lt1 (maybe-deref(without-tag lt )))
-         (let rt1 (maybe-deref(without-tag rt )))
-         (match (TPair( lt1 rt1 )) (
-            ()
-            ( (TPair( TAny rt2 )) (set tt rt2) )
-            ( (TPair( lt2 TAny )) (set tt lt2) )
-            ( (TPair( lt2 rt2 )) (tail(
-               (let tt-2 (maybe-deref(tand( lt2 rt2 ))))
-               (set tt tt-2)
-            )))
-         ))
-      )))
-      ( (TGround( possibly-tag-name ps )) (tail(
-         (set tt (TGround( possibly-tag-name (close(without-tag ps)) )))
-         #if this is a tag and not a class, then remove from normal form
-         (let class-type (class-of-tag possibly-tag-name))
-         (let iso False_u8)
-         (match class-type (
-            ()
-            ( (TGround( class-name _ )) (
-               (if (==( possibly-tag-name class-name )) (
-                  (set iso True_u8)
-               ) ())
-            ))
-            ( _ () )
-         ))
-         (if (non-zero class-type) (
-            (if (==( iso True_u8 )) () (set tt TAny))
-         ) ())
-      )))
-      ( tt () )
-   ))
-   tt
-)) Type);
-
-without-tag := λ(: tt TypeList). (: (tail(
-   (match tt (
-      ()
-      ( (TypeSeq( rst p1 )) (
-         (set tt (TypeSeq( (close(without-tag rst)) (maybe-deref(without-tag p1)) )))
-      ))
-      ( TypeEOF () )
-   ))
-   tt
-)) TypeList);
-
 normalize := λ(: tctx TContext). (: (tail(
    (match tctx (
       ()
