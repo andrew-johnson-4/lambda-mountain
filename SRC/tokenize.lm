@@ -1,12 +1,7 @@
 
-type SourceLocation (SourceLocation( String , U64 , U64 ));
-type SourceMap SourceMapEOF | (SourceMapSeq( SourceMap[] , String , SourceLocation )); zero SourceMap SourceMapEOF;
-
-token-source-location := (: SourceMapEOF SourceMap);
-
 location := λ(: tok String). (: (tail(
    (let loc SourceMapEOF)
-   (let locs token-source-location)
+   (let locs source-map)
    (while (non-zero locs) (match locs (
       ()
       ( (SourceMapSeq( rst k vl )) (tail(
@@ -20,8 +15,8 @@ location := λ(: tok String). (: (tail(
 )) SourceMap);
 
 add-location := λ(: tok String)(: loc SourceLocation). (: (
-   (set token-source-location (SourceMapSeq(
-      (close token-source-location)
+   (set source-map (SourceMapSeq(
+      (close source-map)
       tok
       loc
    )))
@@ -38,8 +33,8 @@ add-location := λ(: tok String)(: loc SourceMap). (: (
 ) Nil);
 
 add-location := λ(: tok String)(: file String)(: line U64)(: column U64). (: (
-   (set token-source-location (SourceMapSeq(
-      (close token-source-location)
+   (set source-map (SourceMapSeq(
+      (close source-map)
       tok
       (SourceLocation( file line column ))
    )))
