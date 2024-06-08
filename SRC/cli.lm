@@ -10,7 +10,6 @@ import SRC/ast.lm;
 import SRC/utility.lm;
 import SRC/parse.lm;
 import SRC/typecheck.lm;
-import SRC/type-index.lm;
 import SRC/preprocess.lm;
 import SRC/codegen.lm;
 import SRC/fragment.lm;
