@@ -438,7 +438,7 @@ without-size := λ(: tt Type). (: (tail(
             ))
          ))
       )))
-      ( (TGround( 'Sized_s _ )) (set tt TAny) )
+      ( (TGround( 'Sized_s sz )) (set tt TAny) )
       ( (TGround( tag ps )) (
          (set tt (TGround( tag (close(without-size ps)) )))
       ))
@@ -448,3 +448,9 @@ without-size := λ(: tt Type). (: (tail(
    tt
 )) Type);
 
+normalize := λ(: tt Type). (: (tail(
+   (let rt tt)
+   (set rt (without-representation rt))
+   (set rt (without-size rt))
+   rt
+)) Type);

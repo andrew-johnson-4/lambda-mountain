@@ -519,7 +519,7 @@ normalize := λ(: tctx TContext). (: (tail(
          (set rst (normalize rst))
          (set tctx (TCtxBind(
             (close rst)
-            k (maybe-deref(normalize kt)) t
+            k (normalize kt) t
          )))
       )))
    ))
@@ -768,11 +768,11 @@ typecheck-lookup := λ(: term S). (: (tail(
 
 typecheck-ascript := λ(: t AST)(: tt Type). (: (
    (if (non-zero tt) (tail(
-      (let ot-normal (maybe-deref(normalize(maybe-deref(typecheck-lookup t)))))
+      (let ot-normal (normalize(maybe-deref(typecheck-lookup t))))
       (if (non-zero ot-normal) (
          (if (is-arrow tt) () (tail(
             (let tt2 (maybe-deref(typecheck-annotate-size tt)))
-            (let tt-normal (maybe-deref(normalize( tt2 ))))
+            (let tt-normal (normalize( tt2 )))
             (let ot-supernormal (maybe-deref(without-tag ot-normal)))
             (let tt-supernormal (maybe-deref(without-tag tt-normal)))
             (if (==( ot-supernormal tt-supernormal )) () (tail(
@@ -1011,7 +1011,7 @@ typecheck-typeof-tag := λ(: tag String). (: (tail(
 )) Type);
 
 as-local-variable := λ(: tt Type). (: (tail(
-   (let tt2 (maybe-deref(normalize tt)))
+   (let tt2 (normalize tt))
    (if (non-zero tt2) (tail(
       (let tt3 (maybe-deref(tand( tt2 (TGround( 'LocalVariable_s (close TypeEOF) )) ))))
       (set tt2 tt3)
@@ -1259,7 +1259,7 @@ already-special := λ(: key String)(: key-type Type). (: (tail(
 )) U64);
 
 try-specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
-   (let result-type-2 (maybe-deref(normalize result-type)))(set result-type result-type-2)
+   (let result-type-2 (normalize result-type))(set result-type result-type-2)
    (let global-ctx global-type-context)
    (if (already-special( key result-type )) () (
       (while (non-zero global-ctx) (match global-ctx (
@@ -1796,51 +1796,3 @@ typecheck-set-size := λ(: base-type Type)(: args-type Type). (: (tail(
 )) Nil);
 
 
-normalize := λ(: tt Type). (: (tail(
-   (match tt (
-      ()
-      ( (TGround( 'Constant_s TypeEOF )) (set tt TAny) )
-      ( (TGround( 'Literal_s TypeEOF )) (set tt TAny) )
-      ( (TGround( 'StackVariable_s TypeEOF )) (set tt TAny) )
-      ( (TGround( 'LocalVariable_s TypeEOF )) (set tt TAny) )
-      ( (TGround( 'GlobalVariable_s TypeEOF )) (set tt TAny) )
-      ( (TGround( 'Reg8_s TypeEOF )) (set tt TAny) )
-      ( (TGround( 'Reg16_s TypeEOF )) (set tt TAny) )
-      ( (TGround( 'Reg32_s TypeEOF )) (set tt TAny) )
-      ( (TGround( 'Reg64_s TypeEOF )) (set tt TAny) )
-      ( (TGround( 'Sized_s _ )) (set tt TAny) )
-      ( (TAnd( lt rt )) (tail(
-         (let lt1 (maybe-deref(normalize lt )))
-         (let rt1 (maybe-deref(normalize rt )))
-         (match (TPair( lt1 rt1 )) (
-            ()
-            ( (TPair( TAny rt2 )) (set tt rt2) )
-            ( (TPair( lt2 TAny )) (set tt lt2) )
-            ( (TPair( lt2 rt2 )) (tail(
-               (let tt-2 (maybe-deref(tand( lt2 rt2 ))))
-               (set tt tt-2)
-            )))
-         ))
-      )))
-      ( (TGround( gt TypeEOF )) () )
-      ( (TGround( gt (TypeSeq( TypeEOF p1 )) )) (
-         (set tt (TGround(
-            gt (close(TypeSeq(
-               (close TypeEOF) (maybe-deref(normalize p1))
-            )))
-         )))
-      ))
-      ( (TGround( gt (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
-         (set tt (TGround(
-            gt (close(TypeSeq(
-               (close(TypeSeq(
-                  (close TypeEOF) (maybe-deref(normalize p1))
-               )))
-               (maybe-deref(normalize p2))
-            )))
-         )))
-      ))
-      ( _ () )
-   ))
-   tt
-)) Type);
