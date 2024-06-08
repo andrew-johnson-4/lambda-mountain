@@ -14,19 +14,6 @@ type UPair (UPair( IsUsed , IsUsed ));
 
 ast-parsed-program := (: ASTEOF AST);
 
-== := λ(: lu IsUsed)(: ru IsUsed). (: (tail(
-   (let r 0_u64)
-   (match (UPair( lu ru )) (
-      ()
-      ( (UPair( Used Used )) (set r 1_u64) )
-      ( (UPair( Unused Unused )) (set r 1_u64) )
-      ( (UPair( Tail Tail )) (set r 1_u64) )
-      ( (UPair( Return Return )) (set r 1_u64) )
-      ( _ () )
-   ))
-   r
-)) U64);
-
 == := λ(: lt Type)(: rt Type). (: (tail(
    (let r 0_u64)
    (match (TPair( lt rt )) (
@@ -60,33 +47,6 @@ ast-parsed-program := (: ASTEOF AST);
          ) ())
       ))
       ( _ () )
-   ))
-   r
-)) U64);
-
-== := λ(: lterm AST)(: rterm AST). (: (tail(
-   (let r 0_u64)
-   (match (Pair( lterm rterm )) (
-      ()
-      ( (Pair( ASTEOF ASTEOF )) (set r 1_u64) )
-      ( (Pair( ASTNil ASTNil )) (set r 1_u64) )
-      ( (Pair( (Var lv) (Var rv) )) (
-         (if (==( (as lv U64) (as rv U64) )) (
-            (set r 1_u64)
-         ) ())
-      ))
-      ( (Pair( (Lit lv) (Lit rv) )) (
-         (if (==( (as lv U64) (as rv U64) )) (
-            (set r 1_u64)
-         ) ())
-      ))
-      ( _ (
-        (if (==( (.0 lterm) (.0 rterm) )) (
-           (if (==( (as (.1 (as lterm App)) U64) (as (.1 (as rterm App)) U64) )) (
-              (if (==( (as (.2 (as lterm App)) U64) (as (.2 (as rterm App)) U64) )) (set r 1_u64) () )
-           ) ())
-        ) ())
-      ))
    ))
    r
 )) U64);
