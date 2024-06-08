@@ -51,33 +51,6 @@ ast-parsed-program := (: ASTEOF AST);
    r
 )) U64);
 
-== := λ(: lterm AST)(: rterm AST). (: (tail(
-   (let r 0_u64)
-   (match (Pair( lterm rterm )) (
-      ()
-      ( (Pair( ASTEOF ASTEOF )) (set r 1_u64) )
-      ( (Pair( ASTNil ASTNil )) (set r 1_u64) )
-      ( (Pair( (Var lv) (Var rv) )) (
-         (if (==( (as lv U64) (as rv U64) )) (
-            (set r 1_u64)
-         ) ())
-      ))
-      ( (Pair( (Lit lv) (Lit rv) )) (
-         (if (==( (as lv U64) (as rv U64) )) (
-            (set r 1_u64)
-         ) ())
-      ))
-      ( _ (
-        (if (==( (.0 lterm) (.0 rterm) )) (
-           (if (==( (as (.1 (as lterm App)) U64) (as (.1 (as rterm App)) U64) )) (
-              (if (==( (as (.2 (as lterm App)) U64) (as (.2 (as rterm App)) U64) )) (set r 1_u64) () )
-           ) ())
-        ) ())
-      ))
-   ))
-   r
-)) U64);
-
 print := λ(: t Context). (: (tail(
    (match t (
       ()
