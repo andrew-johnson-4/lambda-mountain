@@ -154,3 +154,79 @@ mangle-identifier := λ(: k String)(: kt Type). (: (tail(
    )))
    (clone-rope cs)
 )) String);
+
+escape-string := λ(: s S). (: (tail(
+   (match s (
+      ()
+      ( (SAtom a) (set s (SAtom(escape-string a))) )
+      ( (SCons( l r )) (set s (SCons(
+         (close(escape-string l))
+         (close(escape-string r))
+      ))))
+      ( _ () )
+   ))
+   s
+)) S);
+
+escape-string := λ(: s String). (: (tail(
+   (let e SNil)
+   (while (head-string s) (
+      (if (==( (head-string s) 92_u8 )) (tail(
+         (set s (tail-string s))
+         (match (head-string s) (
+            ()
+            ( 91_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 40_u8) ))) ))) )  # \[ -> (
+            ( 92_u8 (set e (SCons( (close e) (close(SAtom( '\\_s ))) ))) )               # \\ -> \
+            ( 93_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 41_u8) ))) ))) )  # \] -> )
+            ( 96_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 39_u8) ))) ))) )  # \` -> '
+            ( 110_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 10_u8) ))) ))) ) # \n -> [newline]
+            ( 116_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 9_u8) ))) ))) )  # \t -> [tab]
+            ( 115_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 32_u8) ))) ))) ) # \s -> [space]
+            ( _ (fail 'Illegal\sEscape\sSequence\sIn\sString\n_s) )                      # invalid escape sequence
+         ))
+         (set s (tail-string s))
+      )) (tail(
+         (set e (SCons( (close e) (close(SAtom( (clone-rope(head-string s)) ))) )))
+         (set s (tail-string s))
+      )))
+   ))
+   (clone-rope e)
+)) String);
+
+escape-literal := λ(: s String). (: (tail(
+   (let cs SNil)
+   (while (head-string s) (tail(
+      (match (head-string s) (
+         ()
+         ( 34_u8 (set cs (SCons( (close cs) (close(SAtom '\\\\"_s)) ))))
+         ( 92_u8 (tail(
+            (let escaped_string '_s)
+            (match (head-string(tail-string s)) (
+               ()
+               ( 58_u8 (set escaped_string '\:_s) )
+               ( 91_u8 (set escaped_string '\[_s) )
+               ( 92_u8 (set escaped_string '\\\\\\\\_s) )
+               ( 93_u8 (set escaped_string '\]_s) )
+               ( 96_u8 (set escaped_string '\`_s) )
+               ( 108_u8 (set escaped_string '\l_s) )
+               ( 110_u8 (set escaped_string '\\\\n_s) )
+               ( 111_u8 (set escaped_string '\o_s) )
+               ( 115_u8 (set escaped_string '\s_s) )
+               ( 116_u8 (set escaped_string '\t_s) )
+               ( _ () )
+            ))
+            (if (head-string escaped_string) (tail(
+               (set cs (SCons( (close cs) (close(SAtom escaped_string)) )))
+               (set s (tail-string s))
+            )) (
+               (set cs (SCons( (close cs) (close(SAtom '\\\\_s)) )))
+            ))
+         )))
+         ( 10_u8 (set cs (SCons( (close cs) (close(SAtom '\\n_s)) ))))
+         ( c (set cs (SCons( (close cs) (close(SAtom(clone-rope c))) ))))
+      ))
+      (set s (tail-string s))
+   )))
+   (clone-rope cs)
+)) String);
+

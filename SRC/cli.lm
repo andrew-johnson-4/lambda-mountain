@@ -7,7 +7,6 @@ import LIB/default-templates.lm;
 
 import SRC/stable.lm;
 import SRC/ast.lm;
-import SRC/utility.lm;
 import SRC/parse.lm;
 import SRC/typecheck.lm;
 import SRC/preprocess.lm;
