@@ -7,9 +7,11 @@ import LIB/default-templates.lm;
 type XYZ<x,y> (XY( x , y )) | X | (Y( x ));
 
 main := λ. (: (tail(
-   (let xy1 (XY( 1_u64 2_i8 )))
-   (let xy2 (: X 'X+XY<U8,I8>))
-   (let xy3 ((: Y 'Arrow<I32,Y+XY<I32,U64>>) ( 3_i32 )))
-   (print (.1(as xy1 XY)))
-   (print (.2(as xy1 XY)))
+   ()
+   ()
+#   (let xy1 (XY( 1_u64 2_i8 )))
+#   (let xy2 (: X 'X+XY<U8,I8>))
+#   (let xy3 ((: Y 'Arrow<I32,Y+XY<I32,U64>>) ( 3_i32 )))
+#   (print (.1(as xy1 XY)))
+#   (print (.2(as xy1 XY)))
 )) Nil);

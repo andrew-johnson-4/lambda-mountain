@@ -452,5 +452,6 @@ normalize := λ(: tt Type). (: (tail(
    (let rt tt)
    (set rt (without-representation rt))
    (set rt (without-size rt))
+   (set rt (without-tag rt))
    rt
 )) Type);
