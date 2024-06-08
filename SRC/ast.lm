@@ -12,7 +12,6 @@ type CPair (CPair( Context , Context ));
 type TCPair (TCPair( TContext , TContext ));
 type UPair (UPair( IsUsed , IsUsed ));
 
-ast-tokenized-program := (: SNil S);
 ast-parsed-program := (: ASTEOF AST);
 
 == := λ(: lu IsUsed)(: ru IsUsed). (: (tail(
