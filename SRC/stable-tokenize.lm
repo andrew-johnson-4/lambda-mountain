@@ -2,91 +2,39 @@
 type SourceLocation (SourceLocation( String , U64 , U64 ));
 type SourceMap SourceMapEOF | (SourceMapSeq( SourceMap[] , String , SourceLocation )); zero SourceMap SourceMapEOF;
 
-token-source-location := (: SourceMapEOF SourceMap);
+source-map := (: SourceMapEOF SourceMap);
 
-location := λ(: tok String). (: (tail(
-   (let loc SourceMapEOF)
-   (let locs token-source-location)
-   (while (non-zero locs) (match locs (
-      ()
-      ( (SourceMapSeq( rst k vl )) (tail(
-         (if (==( (as k U64) (as tok U64) )) (
-            (set loc locs)
-         ) ())
-         (set locs rst)
-      )))
-   )))
-   loc
-)) SourceMap);
-
-add-location := λ(: tok String)(: loc SourceLocation). (: (
-   (set token-source-location (SourceMapSeq(
-      (close token-source-location)
+map-location := λ(: tok String)(: loc SourceLocation). (: (
+   (set source-map (SourceMapSeq(
+      (close source-map)
       tok
       loc
    )))
 ) Nil);
 
-add-location := λ(: tok String)(: loc SourceMap). (: (
-   (match loc (
-      ()
-      ( (SourceMapSeq( _ _ sloc )) (
-         (add-location( tok sloc ))
-      ))
-      ( _ () )
-   ))
-) Nil);
-
-add-location := λ(: tok String)(: file String)(: line U64)(: column U64). (: (
-   (set token-source-location (SourceMapSeq(
-      (close token-source-location)
+map-location := λ(: tok String)(: file String)(: line U64)(: column U64). (: (
+   (set source-map (SourceMapSeq(
+      (close source-map)
       tok
       (SourceLocation( file line column ))
    )))
 ) Nil);
 
-location := λ(: term AST). (: (tail(
-   (let r SourceMapEOF)
-   (match term (
-      ()
-      ( (Var v) (set r (location v)) )
-      ( (Lit v) (set r (location v)) )
-      ( (App( tl tr )) (tail(
-         (set r (location tl))
-         (if (non-zero(maybe-deref r)) () (set r (location tr)))
-      )))
-      ( (Abs( tl tr )) (tail(
-         (set r (location tl))
-         (if (non-zero(maybe-deref r)) () (set r (location tr)))
-      )))
-      ( (Seq( tl tr )) (tail(
-         (set r (location tl))
-         (if (non-zero(maybe-deref r)) () (set r (location tr)))
-      )))
-      ( (Glb( k v )) (
-         (set r (location v))
-      ))
-      ( (ASTType( tl tr )) (tail(
-         (set r (location tl))
-         (if (non-zero(maybe-deref r)) () (set r (location tr)))
-      )))
-      ( (Fragment( tl tr )) (tail(
-         (set r (location tl))
-         (if (non-zero(maybe-deref r)) () (set r (location tr)))
-      )))
-      ( (Asc( t tt )) (
-         (set r (location t))
-      ))
-      ( _ () )
-   ))
-   r
-)) SourceMap);
-
-print := λ(: loc SourceMap). (: (
+non-zero := λ(: loc SourceLocation). (: (tail(
+   (let r 0_u64)
    (match loc (
       ()
-      (SourceMapEOF (print 'Location\sUnknown_s))
-      ( (SourceMapSeq( _ _ (SourceLocation( fp ln cl )) )) (tail(
+      ( (SourceLocation( fp line col )) (
+         (if (!=( line 0_u64 )) (set r 1_u64) ())
+      ))
+   ))
+   r
+)) U64);
+
+print := λ(: loc SourceLocation). (: (
+   (match loc (
+      ()
+      ( (SourceLocation( fp ln cl )) (tail(
          (print 'In\sFile\s_s)
          (print fp)
          (print '\sLine\s_s)
@@ -96,6 +44,63 @@ print := λ(: loc SourceMap). (: (
       )))
    ))
 ) Nil);
+
+location-of := λ(: tok String). (: (tail(
+   (let r (SourceLocation( 'Unknown_s 0_u64 0_u64 )))
+   (let index source-map)
+   (while (non-zero index) (match index (
+      ()
+      ( (SourceMapSeq( rst k vl )) (
+         (if (==( (as k U64) (as tok U64) )) (tail(
+            (set r vl)
+            (set index SourceMapEOF)
+         )) (set index rst))
+      ))
+   )))
+   r
+)) SourceLocation);
+
+location-of := λ(: term AST). (: (tail(
+   (let r (SourceLocation( 'Unknown_s 0_u64 0_u64 )))
+   (match term (
+      ()
+      ( (Var v) (set r (location-of v)) )
+      ( (Lit v) (set r (location-of v)) )
+      ( (App( tl tr )) (tail(
+         (set r (location-of tl))
+         (if (not(non-zero r)) (set r (location-of tr)) ())
+      )))
+      ( (Abs( tl tr )) (tail(
+         (set r (location-of tl))
+         (if (not(non-zero r)) (set r (location-of tr)) ())
+      )))
+      ( (Seq( tl tr )) (tail(
+         (set r (location-of tl))
+         (if (not(non-zero r)) (set r (location-of tr)) ())
+      )))
+      ( (Glb( tl tr )) (tail(
+         (set r (location-of tl))
+         (if (not(non-zero r)) (set r (location-of tr)) ())
+      )))
+      ( (ASTType( tl tr )) (tail(
+         (set r (location-of tl))
+         (if (not(non-zero r)) (set r (location-of tr)) ())
+      )))
+      ( (Fragment( tl tr )) (tail(
+         (set r (location-of tl))
+         (if (not(non-zero r)) (set r (location-of tr)) ())
+      )))
+      ( (Asc( t tt )) (
+         (set r (location-of t))
+      ))
+      ( (As( t tt )) (
+         (set r (location-of t))
+      ))
+      ( _ () )
+   ))
+   r
+)) SourceLocation);
+
 
 tokenize := λ(: fp String). (: (tail(
    (let text (read-file fp))
@@ -122,7 +127,7 @@ tokenize := λ(: fp String). (: (tail(
          ( \o_u8 (tail(
             (if (non-zero buffer) (tail(
                (let tk (clone-rope buffer))
-               (add-location( tk fp token-line token-column ))
+               (map-location( tk fp token-line token-column ))
                (set ast-tokenized-program (SCons(
                   (close ast-tokenized-program)
                   (close (SAtom tk))
@@ -136,7 +141,7 @@ tokenize := λ(: fp String). (: (tail(
          ( \n_u8 (tail(
             (if (non-zero buffer) (tail(
                (let tk (clone-rope buffer))
-               (add-location( tk fp token-line token-column ))
+               (map-location( tk fp token-line token-column ))
                (set ast-tokenized-program (SCons(
                   (close ast-tokenized-program)
                   (close (SAtom tk))
@@ -150,7 +155,7 @@ tokenize := λ(: fp String). (: (tail(
          ( \t_u8 (tail(
             (if (non-zero buffer) (tail(
                (let tk (clone-rope buffer))
-               (add-location( tk fp token-line token-column ))
+               (map-location( tk fp token-line token-column ))
                (set ast-tokenized-program (SCons(
                   (close ast-tokenized-program)
                   (close (SAtom tk))
@@ -163,7 +168,7 @@ tokenize := λ(: fp String). (: (tail(
          ( \s_u8 (tail(
             (if (non-zero buffer) (tail(
                (let tk (clone-rope buffer))
-               (add-location( tk fp token-line token-column ))
+               (map-location( tk fp token-line token-column ))
                (set ast-tokenized-program (SCons(
                   (close ast-tokenized-program)
                   (close (SAtom tk))
@@ -177,7 +182,7 @@ tokenize := λ(: fp String). (: (tail(
          ( \[_u8 (if (==( in_comment True_u8 )) () (tail(
             (if (non-zero buffer) (tail(
                (let tk (clone-rope buffer))
-               (add-location( tk fp token-line token-column ))
+               (map-location( tk fp token-line token-column ))
                (set ast-tokenized-program (SCons(
                   (close ast-tokenized-program)
                   (close (SAtom tk))
@@ -195,7 +200,7 @@ tokenize := λ(: fp String). (: (tail(
          ( \]_u8 (if (==( in_comment True_u8 )) () (tail(
             (if (non-zero buffer) (tail(
                (let tk (clone-rope buffer))
-               (add-location( tk fp token-line token-column ))
+               (map-location( tk fp token-line token-column ))
                (set ast-tokenized-program (SCons(
                   (close ast-tokenized-program)
                   (close (SAtom tk))
@@ -211,7 +216,7 @@ tokenize := λ(: fp String). (: (tail(
          ( \`_u8 (if (==( in_comment True_u8 )) () (tail(
             (if (non-zero buffer) (tail(
                (let tk (clone-rope buffer))
-               (add-location( tk fp token-line token-column ))
+               (map-location( tk fp token-line token-column ))
                (set ast-tokenized-program (SCons(
                   (close ast-tokenized-program)
                   (close (SAtom tk))
@@ -226,7 +231,7 @@ tokenize := λ(: fp String). (: (tail(
          ( \:_u8 (if (==( in_comment True_u8 )) () (tail(
             (if (non-zero buffer) (tail(
                (let tk (clone-rope buffer))
-               (add-location( tk fp token-line token-column ))
+               (map-location( tk fp token-line token-column ))
                (set ast-tokenized-program (SCons(
                   (close ast-tokenized-program)
                   (close (SAtom tk))
@@ -272,7 +277,7 @@ tokenize := λ(: fp String). (: (tail(
       (exit 1_u64)
    )))
 
-   (let r (maybe-deref(list-tail-order-to-head-order ast-tokenized-program)))
+   (let r (list-tail-order-to-head-order ast-tokenized-program))
    (set ast-tokenized-program r)
 )) Nil);
 

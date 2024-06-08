@@ -110,10 +110,10 @@ preprocess-apply := λ(: program AST). (: (tail(
          (while (non-zero suffixes) (match suffixes (
             ()
             ( (SfxSeq( rst sfxs sfxtt )) (
-               (if (is-suffix( l sfxs )) (tail(
-                  (let lloc (maybe-deref(location l)))
+               (if (has-suffix( l sfxs )) (tail(
+                  (let lloc (maybe-deref(location-of l)))
                   (let lpfx (remove-suffix( l sfxs )))
-                  (add-location( lpfx lloc ))
+                  (map-location( lpfx lloc ))
                   (set r (Asc( (close (Lit lpfx)) (close sfxtt) )))
                   (set suffixes SfxEOF)
                )) (
@@ -127,10 +127,10 @@ preprocess-apply := λ(: program AST). (: (tail(
          (while (non-zero suffixes) (match suffixes (
             ()
             ( (SfxSeq( rst sfxs sfxtt )) (
-               (if (is-suffix( l sfxs )) (tail(
-                  (let lloc (maybe-deref(location l)))
+               (if (has-suffix( l sfxs )) (tail(
+                  (let lloc (maybe-deref(location-of l)))
                   (let lpfx (remove-suffix( l sfxs )))
-                  (add-location( lpfx lloc ))
+                  (map-location( lpfx lloc ))
                   (set r (Asc( (close (Lit lpfx)) (close sfxtt) )))
                   (set suffixes SfxEOF)
                )) (
@@ -320,12 +320,12 @@ replace-loc := λ(: loc AST)(: term AST). (: (tail(
       ( ASTNil () )
       ( (Var v) (tail(
          (let new-v (clone-rope(SAtom v)))
-         (add-location( new-v (maybe-deref(location loc)) ))
+         (map-location( new-v (maybe-deref(location-of loc)) ))
          (set term (Var new-v))
       )))
       ( (Lit v) (tail(
          (let new-v (clone-rope(SAtom v)))
-         (add-location( new-v (maybe-deref(location loc)) ))
+         (map-location( new-v (maybe-deref(location-of loc)) ))
          (set term (Lit new-v))
       )))
       ( (App( lt rt )) (
@@ -436,8 +436,8 @@ extract-uuids := λ(: sloc AST)(: ctx Context)(: term AST). (: (tail(
       ()
       ( (App( (Var 'uuid_s) (Var x) )) (tail(
          (let id (uuid()))
-         (let loc (maybe-deref(location sloc)))
-         (add-location( id loc ))
+         (let loc (maybe-deref(location-of sloc)))
+         (map-location( id loc ))
          (let lctx (CtxBind( (close ctx) x (close(Var id)) )))
          (set ctx lctx)
       )))
