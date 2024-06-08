@@ -1,19 +1,4 @@
 
-list-tail-order-to-head-order := λ(: s S). (: (tail(
-   (let new SNil)
-   (while (non-zero s) (match s (
-      ()
-      ( (SCons( l r )) (tail(
-         (set new (SCons(
-            (close r)
-            (close new)
-         )))
-         (set s l)
-      )))
-   )))
-   new
-)) S);
-
 mangle-identifier := λ(: kt Type). (: (tail(
    (let r SNil)
    (match kt (

@@ -67,3 +67,18 @@ uuid := λ . (: (tail(
       (close(SAtom(to-hex uuid-counter)))
    )))
 )) String);
+
+list-tail-order-to-head-order := λ(: s S). (: (tail(
+   (let new SNil)
+   (while (non-zero s) (match s (
+      ()
+      ( (SCons( l r )) (tail(
+         (set new (SCons(
+            (close r)
+            (close new)
+         )))
+         (set s l)
+      )))
+   )))
+   new
+)) S);
