@@ -14,19 +14,6 @@ type UPair (UPair( IsUsed , IsUsed ));
 
 ast-parsed-program := (: ASTEOF AST);
 
-== := λ(: lu IsUsed)(: ru IsUsed). (: (tail(
-   (let r 0_u64)
-   (match (UPair( lu ru )) (
-      ()
-      ( (UPair( Used Used )) (set r 1_u64) )
-      ( (UPair( Unused Unused )) (set r 1_u64) )
-      ( (UPair( Tail Tail )) (set r 1_u64) )
-      ( (UPair( Return Return )) (set r 1_u64) )
-      ( _ () )
-   ))
-   r
-)) U64);
-
 == := λ(: lt Type)(: rt Type). (: (tail(
    (let r 0_u64)
    (match (TPair( lt rt )) (
