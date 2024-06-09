@@ -6,6 +6,7 @@ type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( Stri
                 | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Fragment( String , AST[] ))
                 | (Asc( AST[] , Type[] )) | (As( AST[] , Type[] )) | (Sizeof( Type[] )); zero AST ASTEOF;
 
+type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST[] )); zero Context CtxEOF;
 type TContext TCtxEOF | (TCtxBind( TContext[] , String , Type , AST )); zero TContext TCtxEOF;
 
 type TypeConstructorList (TConEOF) | (TConSeq( TypeConstructorList[] , String , Type )); zero TypeConstructorList TConEOF;
@@ -17,3 +18,34 @@ type TLPair (TLPair( TypeList , TypeList ));
 
 ast-tokenized-program := (: SNil S);
 ast-parsed-program := (: ASTEOF AST);
+
+print := λ(: t Context). (: (tail(
+   (match t (
+      ()
+      ( CtxEOF () )
+      ( CtxNil () )
+      ( (CtxBind( rst k v )) (tail(
+         (print rst)
+         (print k)
+         (print '\s=\s_s)
+         (print v)
+         (print '\:\n_s)
+      )))
+   ))
+   ()
+)) Nil);
+
+print := λ(: t TContext). (: (tail(
+   (match t (
+      ()
+      ( TCtxEOF () )
+      ( (TCtxBind( rst k v )) (tail(
+         (print rst)
+         (print k)
+         (print '\s:\s_s)
+         (print v)
+         (print '\:\n_s)
+      )))
+   ))
+   ()
+)) Nil);

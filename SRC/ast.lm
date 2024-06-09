@@ -6,42 +6,10 @@ type StringSList SSLEOF | (SSLSeq( StringSList[] , String , S )); zero StringSLi
 
 type IsUsed Used | Unused | Tail | Return;
 
-type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST[] )); zero Context CtxEOF;
 type Pair (Pair( AST , AST ));
 type CPair (CPair( Context , Context ));
 type TCPair (TCPair( TContext , TContext ));
 type UPair (UPair( IsUsed , IsUsed ));
-
-print := λ(: t Context). (: (tail(
-   (match t (
-      ()
-      ( CtxEOF () )
-      ( CtxNil () )
-      ( (CtxBind( rst k v )) (tail(
-         (print rst)
-         (print k)
-         (print '\s=\s_s)
-         (print v)
-         (print '\:\n_s)
-      )))
-   ))
-   ()
-)) Nil);
-
-print := λ(: t TContext). (: (tail(
-   (match t (
-      ()
-      ( TCtxEOF () )
-      ( (TCtxBind( rst k v )) (tail(
-         (print rst)
-         (print k)
-         (print '\s=\s_s)
-         (print v)
-         (print '\:\n_s)
-      )))
-   ))
-   ()
-)) Nil);
 
 print := λ(: t AST). (: (tail(
    (match t (
