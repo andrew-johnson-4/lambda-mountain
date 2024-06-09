@@ -554,3 +554,49 @@ print := λ(: tt TypeList). (: (match tt (
    ))
    r
 )) U64);
+
+can-unify := λ(: fpt TypeList)(: pt TypeList). (: (tail(
+   (let r 0_u64)
+   (match (TLPair( fpt pt )) (
+      ()
+      ( (TLPair( TypeEOF TypeEOF )) (set r 1_u64) )
+      ( (TLPair( (TypeSeq( lpr lp1 )) (TypeSeq( rpr rp1 )) )) (
+         (if (can-unify( lp1 rp1 )) (
+            (if (can-unify( lpr rpr )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+      ))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+can-unify := λ(: fpt Type)(: pt Type). (: (tail(
+   (let r 0_u64)
+   (match (TPair( fpt pt )) (
+      ()
+      ( (TPair( TAny _ )) (set r 1_u64) )
+      ( (TPair( (TVar( ltv )) rt )) (set r 1_u64) )
+      ( (TPair( (TAnd( lt1 lt2 )) rt )) (
+         (if (can-unify( lt1 rt )) (
+            (if (can-unify( lt2 rt )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+      ))
+      ( (TPair( lt (TAnd( rt1 rt2 )) )) (tail(
+         (if (can-unify( lt rt1 )) (set r 1_u64) ())
+         (if (can-unify( lt rt2 )) (set r 1_u64) ())
+      )))
+      ( (TPair( (TGround( ltn lps )) (TGround( rtn rps )) )) (
+         (if (==( ltn rtn )) (
+            (if (can-unify( lps rps )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+      ))
+      ( _ () )
+   ))
+   r
+)) U64);
