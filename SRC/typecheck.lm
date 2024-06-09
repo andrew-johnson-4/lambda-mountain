@@ -1,10 +1,8 @@
 
 typecheck-type-constructors := (: TConEOF TypeConstructorList);
 
-type TypeSizeList (TSzEOF) | (TSzSeq( TypeSizeList[] , String , U64 )); zero TypeSizeList TSzEOF;
 type TypeSizeList2 (TSz2EOF) | (TSz2Seq( TypeSizeList2[] , String , Type , Type )); zero TypeSizeList2 TSz2EOF;
 
-typecheck-type-sizes := (: TSzEOF TypeSizeList);
 typecheck-type-sizes2 := (: TSz2EOF TypeSizeList2);
 
 type ParametricIndex PIEOF | (PISeq( ParametricIndex[] , String , Type ));
@@ -60,7 +58,7 @@ typecheck-sizeof := λ(: tt Type). (: (tail(
       ()
       ( TAny () )
       ( (TVar _) () )
-      ( (TGround( tag TypeEOF )) (set sz (typecheck-get-size tag)) )
+      ( (TGround( class TypeEOF )) (set sz (size-of-class class)) )
       ( (TGround( 'Sized_s (TypeSeq( TypeEOF (TGround( szp TypeEOF )) )) )) (
          (set sz (to-u64 szp))
       ))
@@ -105,31 +103,6 @@ typecheck-aligned-sizeof := λ(: tt Type). (: (tail(
    (if (==( sz 0_u64 )) () (set sz (max( 8_u64 sz ))))
    sz
 )) U64);
-
-typecheck-get-size := λ(: tag String). (: (tail(
-   (let sz 0_u64)
-   (let sizes typecheck-type-sizes)
-   (while (non-zero sizes) (match sizes (
-      ()
-      ( (TSzSeq( rst kt ks )) (tail(
-         (if (==( kt tag )) (
-            (set sz ks)
-         ) ())
-         (set sizes rst)
-      )))
-   )))
-   sz
-)) U64);
-
-index-size-of-class := λ(: class String)(: size U64). (: (
-   (if (typecheck-get-size class) () (
-      (set typecheck-type-sizes (TSzSeq(
-         (close typecheck-type-sizes)
-         class
-         size
-      )))
-   ))
-) Nil);
 
 type TermTypeList TTEOF | (TTSeq( TermTypeList[] , AST , Type )); zero TermTypeList TTEOF;
 type STypeList STEOF | (STSeq( STypeList[] , S , Type )); zero STypeList STEOF;
@@ -583,7 +556,7 @@ typecheck-annotate-size-inner := λ(: tt Type). (: (tail(
       ()
       ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF _ )) TAny )) )) (set sz 8_u64) )
       ( (TGround( tag (TypeSeq( _ _ )) )) (set sz (typecheck-get-size tt)) )
-      ( (TGround( tag _ )) (set sz (typecheck-get-size tag)) )
+      ( (TGround( class _ )) (set sz (size-of-class class)) )
       ( (TAnd( lt rt )) (
          (set sz (max(
             (typecheck-annotate-size-inner lt)
