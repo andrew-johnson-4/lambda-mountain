@@ -478,8 +478,8 @@ parse := λ. (: (tail(
             ()
             (set tokens remainder)
          )))
-         ( (SCons( (SAtom 'size_s) (SCons( (SAtom tt) (SCons( (SAtom sz) remainder )) )) )) (tail(
-            (typecheck-set-size( tt (to-u64 sz) ))
+         ( (SCons( (SAtom 'size_s) (SCons( (SAtom class) (SCons( (SAtom sz) remainder )) )) )) (tail(
+            (index-size-of-class( class (to-u64 sz) ))
             (set tokens remainder)
          )))
          ( (SCons( (SAtom 'import_s) (SCons( (SAtom relative-path) remainder )) )) (tail(

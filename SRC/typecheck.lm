@@ -121,11 +121,11 @@ typecheck-get-size := λ(: tag String). (: (tail(
    sz
 )) U64);
 
-typecheck-set-size := λ(: tag String)(: size U64). (: (
-   (if (typecheck-get-size tag) () (
+index-size-of-class := λ(: class String)(: size U64). (: (
+   (if (typecheck-get-size class) () (
       (set typecheck-type-sizes (TSzSeq(
          (close typecheck-type-sizes)
-         tag
+         class
          size
       )))
    ))
@@ -336,7 +336,7 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
          (let size (typecheck-infer-type-definition( bt case-constructors )))
          (match bt (
             ()
-            ( (TGround( tag TypeEOF )) (typecheck-set-size( tag size )) )
+            ( (TGround( class TypeEOF )) (index-size-of-class( class size )) )
             ( _ () )
          ))
       )))
