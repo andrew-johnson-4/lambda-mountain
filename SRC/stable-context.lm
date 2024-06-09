@@ -1,6 +1,6 @@
 
 print := λ(: ctx FContext). (: (tail(
-   (print 'Context:\n_s)
+   (print 'Fragment\sContext:\n_s)
    (while (non-zero ctx) (match ctx (
       ()
       ( (FCtxBind( rst k kt kf )) (tail(
@@ -10,13 +10,13 @@ print := λ(: ctx FContext). (: (tail(
    )))
 )) Nil);
 
-cccontext::new := λ. (: (tail(
+fragment-context::new := λ. (: (tail(
    (let r FCtxEOF)
    r
 )) FContext);
 
-cccontext::lookup := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST). (: (tail(
-   (let r (maybe-deref(ccfragment::new())))
+fragment-context::lookup := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST). (: (tail(
+   (let r (fragment::new()))
    (let found False_u8)
    (while (non-zero ctx) (match ctx (
       ()
@@ -49,11 +49,10 @@ cccontext::lookup := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST). (: (
    r
 )) Fragment);
 
-cccontext::bind := λ(: ctx FContext)(: k String)(: kt Type)(: f Fragment). (: (tail(
+fragment-context::bind := λ(: ctx FContext)(: k String)(: kt Type)(: f Fragment). (: (tail(
    (let new-ctx (FCtxBind(
       (close ctx)
       k kt f
    )))
    new-ctx
 )) FContext);
-

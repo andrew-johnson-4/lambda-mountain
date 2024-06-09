@@ -29,12 +29,12 @@ print := λ(: x FragList). (: (
    ))
 ) Nil);
 
-ccfragment::new := λ . (: (tail(
+fragment::new := λ . (: (tail(
    (let r (Fragment(
       (close FKVEOF)
       0_i64
       TAny
-      (close(cccontext::new()))
+      (close(fragment-context::new()))
    )))
    r
 )) Fragment);
@@ -48,7 +48,7 @@ ccfragment::local-variable := λ(: offset I64)(: tt Type). (: (tail(
       )))
       0_i64
       tt
-      (close(cccontext::new()))
+      (close(fragment-context::new()))
    )))
    (let r-2 (maybe-deref(ccfragment::set( r 'fragment-type_s (SAtom 'Local_s) ))))(set r r-2)
    r
@@ -63,7 +63,7 @@ ccfragment::label := λ(: id String). (: (tail(
       )))
       0_i64
       (maybe-deref(tlabel()))
-      (close(cccontext::new()))
+      (close(fragment-context::new()))
    )))
    r
 )) Fragment);
@@ -77,7 +77,7 @@ ccfragment::expression := λ(: val String) . (: (tail(
       )))
       0_i64
       TAny
-      (close(cccontext::new()))
+      (close(fragment-context::new()))
    )))
    r
 )) Fragment);
@@ -205,7 +205,7 @@ fragment-size-args := λ(: args FragList). (: (tail(
 
 fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragList)(: direct-type Type)(: sloc AST). (: (tail(
    (let args-sized (maybe-deref(fragment-size-args args)))(set args args-sized)
-   (let e-proto (maybe-deref(ccfragment::new())))
+   (let e-proto (maybe-deref(fragment::new())))
    (let e-proto-2 (maybe-deref(ccfragment::set-context( e-proto ctx ))))(set e-proto e-proto-2)
    (let e-proto-3 (maybe-deref(ccfragment::set-offset( e-proto offset ))))(set e-proto e-proto-3)
 
@@ -215,7 +215,7 @@ fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragList)(
       (let msg (clone-rope(SCons( (close(SAtom 'Untyped\sFragment\sArguments:\s_s)) (close(SAtom k)) ))))
       (exit-error( msg sloc ))
    )))
-   (let arrow (maybe-deref(cccontext::lookup( ctx k at sloc ))))
+   (let arrow (maybe-deref(fragment-context::lookup( ctx k at sloc ))))
    (let arrow-tt (maybe-deref(ccfragment::get-type arrow)))
 
    (let return-tt TAny)
@@ -349,7 +349,7 @@ fragment-render := λ(: mode String)(: ctx FContext)(: s S). (: (tail(
       )))
       ( (SCons( (SAtom 'Lit_s) (SAtom v) )) (set r (SAtom v)) )
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '.expression_s) )) (SCons( (SAtom 'Var_s) (SAtom v) )) )) )) (tail(
-         (let f (maybe-deref(cccontext::lookup( ctx v TAny ASTEOF ))))
+         (let f (maybe-deref(fragment-context::lookup( ctx v TAny ASTEOF ))))
          (let fe (maybe-deref(ccfragment::get( f 'expression_s ))))
          (if (non-zero fe) () (tail(
             (print 'Referenced\sVariable\sIn\sFragment\sWas\sNull\s_s)
@@ -358,7 +358,7 @@ fragment-render := λ(: mode String)(: ctx FContext)(: s S). (: (tail(
          (set r fe)
       )))
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '.program_s) )) (SCons( (SAtom 'Var_s) (SAtom v) )) )) )) (tail(
-         (let f (maybe-deref(cccontext::lookup( ctx v TAny ASTEOF ))))
+         (let f (maybe-deref(fragment-context::lookup( ctx v TAny ASTEOF ))))
          (let fe (maybe-deref(ccfragment::get( f 'program_s ))))
          (if (non-zero fe) () (tail(
             (print 'Referenced\sVariable\sIn\sFragment\sWas\sNull\s_s)
@@ -606,7 +606,7 @@ fragment-apply-context := λ(: ctx FContext)(: rhs S)(: e Fragment). (: (tail(
          (set e e-rst)
       )))
       ( SNil (tail(
-         (let f (maybe-deref(ccfragment::new())))
+         (let f (maybe-deref(fragment::new())))
          (set e f)
       )))
       ( prg (tail(
