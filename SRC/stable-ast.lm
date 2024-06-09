@@ -18,6 +18,10 @@ type StringList SLEOF | (SLSeq( StringList[] , String )); zero StringList SLEOF;
 type TPair (TPair( Type , Type ));
 type TLPair (TLPair( TypeList , TypeList ));
 
+type Macro (Macro( AST , AST ));
+type MacroList MEOF | (MSeq( MacroList[] , Macro )); zero MacroList MEOF;
+
+preprocess-macros := (: MEOF MacroList);
 ast-tokenized-program := (: SNil S);
 ast-parsed-program := (: ASTEOF AST);
 
