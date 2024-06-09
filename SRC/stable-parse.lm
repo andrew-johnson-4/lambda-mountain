@@ -421,7 +421,7 @@ parse := λ. (: (tail(
                            (close e2)
                         )))
                      )))
-                     (let base-type (typecheck-infer-type-compound e1))
+                     (let base-type (type-of-s e1))
                      (index-tag-is-fragment(tag-of base-type))
                      (set tokens r2)
                   )))

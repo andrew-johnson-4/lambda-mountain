@@ -136,7 +136,7 @@ compile-program-ordered := λ(: global-ctx CCContext)(: program AST). (: (tail(
 
 compile-type := λ(: ctx CCContext)(: lhs AST)(: rhs AST). (: (tail(
    (let def rhs)
-   (let base-type (maybe-deref(typecheck-infer-type-compound( lhs ))))
+   (let base-type (maybe-deref(type-of-s( lhs ))))
    (let case-number 0_u64)
    (if (is-fragment base-type) () (tail(
       (while (non-zero def) (match def (
@@ -165,7 +165,7 @@ compile-type-case := λ(: ctx CCContext)(: base-type Type)(: rhs AST)(: case-num
          (let ctx-3 (maybe-deref(compile-define-tag-constructor( ctx tag TAny base-type rtype case-number ))))(set ctx ctx-3)
       )))
       ( (App( (Lit tag) args )) (tail(
-         (let atype (maybe-deref(typecheck-infer-type-compound args)))
+         (let atype (maybe-deref(type-of-s args)))
          (let rtype (TAnd( (close base-type) (close(parse-type tag)) )))
          (let ctx-3 (maybe-deref(compile-define-tag-constructor( ctx tag atype base-type rtype case-number ))))(set ctx ctx-3)
          (if (is-open base-type) (
