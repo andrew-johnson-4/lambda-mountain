@@ -15,3 +15,4 @@ type StringList SLEOF | (SLSeq( StringList[] , String )); zero StringList SLEOF;
 type TPair (TPair( Type , Type ));
 
 ast-tokenized-program := (: SNil S);
+ast-parsed-program := (: ASTEOF AST);

@@ -12,8 +12,6 @@ type CPair (CPair( Context , Context ));
 type TCPair (TCPair( TContext , TContext ));
 type UPair (UPair( IsUsed , IsUsed ));
 
-ast-parsed-program := (: ASTEOF AST);
-
 == := λ(: lt Type)(: rt Type). (: (tail(
    (let r 0_u64)
    (match (TPair( lt rt )) (
@@ -273,59 +271,6 @@ s-lit := λ(: s String). (: (
       (close(SAtom s))
    )))
 ) S[]);
-
-print := λ(: tt Type). (: (match tt (
-   ()
-   ( TAny (print '?_s) )
-   ( (TVar( vn )) (tail( (print '`_s) (print vn) )) )
-   ( (TGround( tag TypeEOF )) (print tag) )
-   ( (TGround( tag (TypeSeq( TypeEOF p1 )) )) (tail(
-      (print tag)
-      (print '<_s)
-      (print p1)
-      (print '>_s)
-   )))
-   ( (TGround( tag (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (tail(
-      (print tag)
-      (print '<_s)
-      (print p1)
-      (print ',_s)
-      (print p2)
-      (print '>_s)
-   )))
-   ( (TGround( tag (TypeSeq( (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) p3 )) )) (tail(
-      (print tag)
-      (print '<_s)
-      (print p1)
-      (print ',_s)
-      (print p2)
-      (print ',_s)
-      (print p3)
-      (print '>_s)
-   )))
-   ( (TAnd( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) rt )) (tail(
-      (print 'Arrow<_s)
-      (print p1)
-      (print ',_s)
-      (print p2)
-      (print '>\n_s)
-      (print rt)
-   )))
-   ( (TAnd( lt (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) )) (tail(
-      (print lt)
-      (print '\n_s)
-      (print 'Arrow<_s)
-      (print p1)
-      (print ',_s)
-      (print p2)
-      (print '>_s)
-   )))
-   ( (TAnd( lt rt )) (tail(
-      (print lt)
-      (print '\s+\s_s)
-      (print rt)
-   )))
-)) Nil);
 
 serialize-ast := λ(: tt Type). (: (match tt (
    ()

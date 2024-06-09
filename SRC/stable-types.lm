@@ -455,3 +455,32 @@ normalize := λ(: tt Type). (: (tail(
    (set rt (without-tag rt))
    rt
 )) Type);
+
+print := λ(: tt Type). (: (match tt (
+   ()
+   ( TAny (print '?_s) )
+   ( (TVar( vn )) (print vn) )
+   ( (TGround( tag TypeEOF )) (print tag) )
+   ( (TAnd( lt rt )) (tail(
+      (print lt)
+      (print '\s+\s_s)
+      (print rt)
+   )))
+   ( (TGround( tag ps )) (tail(
+      (print tag)
+      (print '<_s)
+      (print ps)
+      (print '>_s)
+   )))
+)) Nil);
+
+print := λ(: tt TypeList). (: (match tt (
+   ()
+   ( TypeEOF () )
+   ( (TypeSeq( TypeEOF p1 )) (print p1) )
+   ( (TypeSeq( rst p1 )) (tail(
+      (print rst)
+      (print ',_s)
+      (print p1)
+   )))
+)) Nil);
