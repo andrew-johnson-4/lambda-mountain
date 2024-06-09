@@ -1,42 +1,4 @@
 
-ccfragment::get-context := λ(: e Fragment) . (: (tail(
-   (let ctx (maybe-deref(.1( e ))))
-   ctx
-)) FContext);
-
-ccfragment::set-context := λ(: e Fragment)(: ctx FContext). (: (tail(
-   (match e (
-      ()
-      ( (Fragment( e-kvs e-offset e-tt e-ctx )) (
-         (set e (Fragment( (close e-kvs) e-offset e-tt (close ctx) ))) 
-      ))
-   ))
-   e
-)) Fragment);
-
-ccfragment::get-offset := λ(: e Fragment). (: (tail(
-   (let offset 0_i64)
-   (match e (
-      ()
-      ( (Fragment( e-kvs e-offset e-tt e-ctx )) (
-         (set offset e-offset)
-      ))
-   ))
-   offset
-)) I64);
-
-ccfragment::set-offset := λ(: e Fragment)(: offset I64). (: (tail(
-   (match e (
-      ()
-      ( (Fragment( e-kvs e-offset e-tt e-ctx )) (
-         (set e (Fragment(
-            (close e-kvs) offset e-tt (close e-ctx)
-         )))
-      ))
-   ))
-   e
-)) Fragment);
-
 typeof := λ(: args FragmentList). (: (tail(
    (let r TAny)
    (match args (
@@ -76,8 +38,8 @@ fragment-size-args := λ(: args FragmentList). (: (tail(
 fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentList)(: direct-type Type)(: sloc AST). (: (tail(
    (let args-sized (maybe-deref(fragment-size-args args)))(set args args-sized)
    (let e-proto (maybe-deref(fragment::new())))
-   (let e-proto-2 (maybe-deref(ccfragment::set-context( e-proto ctx ))))(set e-proto e-proto-2)
-   (let e-proto-3 (maybe-deref(ccfragment::set-offset( e-proto offset ))))(set e-proto e-proto-3)
+   (let e-proto-2 (maybe-deref(fragment::set-context( e-proto ctx ))))(set e-proto e-proto-2)
+   (let e-proto-3 (maybe-deref(fragment::set-offset( e-proto offset ))))(set e-proto e-proto-3)
 
    (let at (maybe-deref(typeof args)))
    (if (non-zero at) () (tail(
@@ -508,10 +470,10 @@ fragment-apply-direct := λ(: ctx FContext)(: arrow Fragment)(: args FragmentLis
    e-proto
 )) Fragment);
 
-ccfragment::chain := λ(: l Fragment)(: r Fragment). (: (tail(
-   (let e1 (maybe-deref(ccfragment::set-context(
+fragment::chain := λ(: l Fragment)(: r Fragment). (: (tail(
+   (let e1 (maybe-deref(fragment::set-context(
       l
-      (maybe-deref(ccfragment::get-context( r )))
+      (maybe-deref(fragment::get-context( r )))
    ))))
    (if (non-zero(fragment::get( r 'frame_s ))) (tail(
       (let e1-2 (maybe-deref(fragment::set(
@@ -543,11 +505,11 @@ ccfragment::chain := λ(: l Fragment)(: r Fragment). (: (tail(
       ))))
       (set e1 e1-4)
    )) ())
-   (let e1-5 (maybe-deref(ccfragment::set-context( e1
-      (maybe-deref(ccfragment::get-context r))
+   (let e1-5 (maybe-deref(fragment::set-context( e1
+      (maybe-deref(fragment::get-context r))
    ))))(set e1 e1-5)
-   (let e1-6 (maybe-deref(ccfragment::set-offset( e1
-      (maybe-deref(ccfragment::get-offset r))
+   (let e1-6 (maybe-deref(fragment::set-offset( e1
+      (maybe-deref(fragment::get-offset r))
    ))))(set e1 e1-6)
    (let e1-7 (maybe-deref(fragment::set(
       e1 'expression_s
@@ -561,7 +523,7 @@ fragment-chain := λ(: fragment-ctx FragmentList)(: e Fragment). (: (tail(
    (while (non-zero fragment-ctx) (match fragment-ctx (
       ()
       ( (FLSeq( rst cf )) (tail(
-         (let e1 (maybe-deref(ccfragment::chain( cf e ))))
+         (let e1 (maybe-deref(fragment::chain( cf e ))))
          (set e e1)
          (set fragment-ctx rst)
       )))

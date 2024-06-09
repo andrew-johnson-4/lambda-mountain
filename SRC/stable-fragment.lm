@@ -108,3 +108,43 @@ fragment::expression := λ(: val String). (: (tail(
    r
 )) Fragment);
 
+
+fragment::get-context := λ(: e Fragment) . (: (tail(
+   (let ctx (maybe-deref(.1( e ))))
+   ctx
+)) FContext);
+
+fragment::set-context := λ(: e Fragment)(: ctx FContext). (: (tail(
+   (let r e)
+   (match e (
+      ()
+      ( (Fragment( e-kvs e-offset e-tt e-ctx )) (
+         (set r (Fragment( (close e-kvs) e-offset e-tt (close ctx) )))
+      ))
+   ))
+   r
+)) Fragment);
+
+fragment::get-offset := λ(: e Fragment). (: (tail(
+   (let offset 0_i64)
+   (match e (
+      ()
+      ( (Fragment( e-kvs e-offset e-tt e-ctx )) (
+         (set offset e-offset)
+      ))
+   ))
+   offset
+)) I64);
+
+fragment::set-offset := λ(: e Fragment)(: offset I64). (: (tail(
+   (let r e)
+   (match e (
+      ()
+      ( (Fragment( e-kvs e-offset e-tt e-ctx )) (
+         (set r (Fragment(
+            (close e-kvs) offset e-tt (close e-ctx)
+         )))
+      ))
+   ))
+   r
+)) Fragment);
