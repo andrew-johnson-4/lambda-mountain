@@ -1,119 +1,4 @@
 
-type FragList (FLEOF) | (FLSeq( FragList[] , Fragment )); zero FragList FLEOF;
-
-print := λ(: x Fragment). (: (
-   (match x ( 
-      ()
-      ( (Fragment( kvs offset xtt ctx )) (tail(
-         (print 'Fragment\n_s)
-         (print '\tOffset\s=\s_s)(print offset)(print '\n_s)
-         (while (non-zero kvs) (match kvs (
-            ()
-            ( (FKVSeq( rst k v )) (tail(
-               (print '\t_s)(print k)(print '\s=\s_s)(print v)(print '\n_s)
-               (set kvs rst)
-            )))
-         )))
-      )))
-   ))
-) Nil);
-
-print := λ(: x FragList). (: (
-   (match x ( 
-      ()
-      ( (FLSeq( rst f )) (tail(
-         (print rst)
-         (print f)
-      )))
-      ( _ () )
-   ))
-) Nil);
-
-fragment::new := λ . (: (tail(
-   (let r (Fragment(
-      (close FKVEOF)
-      0_i64
-      TAny
-      (close(fragment-context::new()))
-   )))
-   r
-)) Fragment);
-
-ccfragment::local-variable := λ(: offset I64)(: tt Type). (: (tail(
-   (let r (Fragment(
-      (close(FKVSeq(
-         (close FKVEOF)
-         'expression_s
-         (SAtom(to-string offset))
-      )))
-      0_i64
-      tt
-      (close(fragment-context::new()))
-   )))
-   (let r-2 (maybe-deref(ccfragment::set( r 'fragment-type_s (SAtom 'Local_s) ))))(set r r-2)
-   r
-)) Fragment);
-
-ccfragment::label := λ(: id String). (: (tail(
-   (let r (Fragment(
-      (close(FKVSeq(
-         (close FKVEOF)
-         'expression_s
-         (SAtom id)
-      )))
-      0_i64
-      (maybe-deref(tlabel()))
-      (close(fragment-context::new()))
-   )))
-   r
-)) Fragment);
-
-ccfragment::expression := λ(: val String) . (: (tail(
-   (let r (Fragment(
-      (close(FKVSeq(
-         (close FKVEOF)
-         'expression_s
-         (SAtom( val ))
-      )))
-      0_i64
-      TAny
-      (close(fragment-context::new()))
-   )))
-   r
-)) Fragment);
-
-ccfragment::get := λ(: e Fragment)(: k String). (: (tail(
-   (let r SNil)
-   (match e (
-      ()
-      ( (Fragment( kvs offset ft ctx )) (
-         (while (non-zero kvs) (match kvs (
-            ()
-            ( (FKVSeq( rst kvs-k kvs-v )) (
-               (if (==( k kvs-k )) (tail(
-                  (set r kvs-v)
-                  (set kvs FKVEOF)
-               )) (set kvs rst))
-            ))
-         )))
-      ))
-   ))
-   r
-)) S);
-
-ccfragment::set := λ(: e Fragment)(: k String)(: v S). (: (tail(
-   (match e (
-      ()
-      ( (Fragment( kvs offset ft ctx )) (
-         (set e (Fragment(
-            (close(FKVSeq( (close kvs) k v )))
-            offset ft (close ctx)
-         )))
-      ))
-   ))
-   e
-)) Fragment);
-
 ccfragment::get-context := λ(: e Fragment) . (: (tail(
    (let ctx (maybe-deref(.1( e ))))
    ctx
@@ -124,21 +9,6 @@ ccfragment::set-context := λ(: e Fragment)(: ctx FContext). (: (tail(
       ()
       ( (Fragment( e-kvs e-offset e-tt e-ctx )) (
          (set e (Fragment( (close e-kvs) e-offset e-tt (close ctx) ))) 
-      ))
-   ))
-   e
-)) Fragment);
-
-ccfragment::get-type := λ(: e Fragment) . (: (tail(
-   (let tt (maybe-deref(.2( e ))))
-   tt
-)) Type);
-
-ccfragment::set-type := λ(: e Fragment)(: tt Type). (: (tail(
-   (match e (
-      ()
-      ( (Fragment( e-kvs e-offset e-tt e-ctx )) (
-         (set e (Fragment( (close e-kvs) e-offset tt (close e-ctx) ))) 
       ))
    ))
    e
@@ -167,13 +37,13 @@ ccfragment::set-offset := λ(: e Fragment)(: offset I64). (: (tail(
    e
 )) Fragment);
 
-typeof := λ(: args FragList). (: (tail(
+typeof := λ(: args FragmentList). (: (tail(
    (let r TAny)
    (match args (
       ()
       ( (FLSeq( rst f )) (tail(
          (let rst-tt (maybe-deref(typeof rst)))
-         (let f-tt (maybe-deref(ccfragment::get-type f)))
+         (let f-tt (maybe-deref(fragment::get-type f)))
          (if (non-zero rst-tt) (tail(
             (let r2 (maybe-deref(tcons( rst-tt f-tt ))))
             (set r r2)
@@ -186,13 +56,13 @@ typeof := λ(: args FragList). (: (tail(
    r
 )) Type);
 
-fragment-size-args := λ(: args FragList). (: (tail(
+fragment-size-args := λ(: args FragmentList). (: (tail(
    (match args (
       ()
       ( (FLSeq( rst f )) (tail(
-         (let f-tt (maybe-deref(ccfragment::get-type f)))
+         (let f-tt (maybe-deref(fragment::get-type f)))
          (let f-tt-sized (maybe-deref(typecheck-annotate-size f-tt)))
-         (let f-sized (maybe-deref(ccfragment::set-type( f f-tt-sized ))))(set f f-sized)
+         (let f-sized (maybe-deref(fragment::set-type( f f-tt-sized ))))(set f f-sized)
          (set args (FLSeq(
             (close(fragment-size-args rst))
             f
@@ -201,9 +71,9 @@ fragment-size-args := λ(: args FragList). (: (tail(
       ( _ () )
    ))
    args
-)) FragList);
+)) FragmentList);
 
-fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragList)(: direct-type Type)(: sloc AST). (: (tail(
+fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentList)(: direct-type Type)(: sloc AST). (: (tail(
    (let args-sized (maybe-deref(fragment-size-args args)))(set args args-sized)
    (let e-proto (maybe-deref(fragment::new())))
    (let e-proto-2 (maybe-deref(ccfragment::set-context( e-proto ctx ))))(set e-proto e-proto-2)
@@ -216,7 +86,7 @@ fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragList)(
       (exit-error( msg sloc ))
    )))
    (let arrow (maybe-deref(fragment-context::lookup( ctx k at sloc ))))
-   (let arrow-tt (maybe-deref(ccfragment::get-type arrow)))
+   (let arrow-tt (maybe-deref(fragment::get-type arrow)))
 
    (let return-tt TAny)
    (match (slot( arrow-tt 'Arrow_s )) (
@@ -236,7 +106,7 @@ fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragList)(
       ( _ () )
    ))
 
-   (let lhs-type (typecheck-lookup(ccfragment::get( arrow 'fragment_s ))))
+   (let lhs-type (typecheck-lookup(fragment::get( arrow 'fragment_s ))))
    (let tctx (maybe-deref(typecheck-unify-generous( lhs-type direct-type ))))
    (let ctx-2 (maybe-deref(fragment-destructure-tctx( ctx tctx ))))(set ctx ctx-2)
 
@@ -256,11 +126,11 @@ fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragList)(
    (set comment (SCons( (close comment) (close(SAtom '\s:\s_s)) )))
    (set comment (SCons( (close comment) (close(SAtom(to-string return-tt))) )))
    (set comment (SCons( (close comment) (close(SAtom '\n_s)) )))
-   (let r2 (maybe-deref(ccfragment::set( return 'program_s (SCons(
+   (let r2 (maybe-deref(fragment::set( return 'program_s (SCons(
       (close comment)
-      (close(ccfragment::get( return 'program_s )))
+      (close(fragment::get( return 'program_s )))
    ))))))(set return r2)
-   (let r3 (maybe-deref(ccfragment::set-type( return return-tt ))))(set return r3)
+   (let r3 (maybe-deref(fragment::set-type( return return-tt ))))(set return r3)
 
    return
 )) Fragment);
@@ -270,8 +140,8 @@ fragment-destructure-tctx := λ(: ctx FContext)(: tctx TContext). (: (tail(
    (while (non-zero tctx) (match tctx (
       ()
       ( (TCtxBind( rst k vt _ )) (tail(
-         (let fragment (maybe-deref(ccfragment::expression(to-string vt))))
-         (let fragment-2 (maybe-deref(ccfragment::set( fragment 'program_s (SAtom(to-string vt)) ))))(set fragment fragment-2)
+         (let fragment (maybe-deref(fragment::expression(to-string vt))))
+         (let fragment-2 (maybe-deref(fragment::set( fragment 'program_s (SAtom(to-string vt)) ))))(set fragment fragment-2)
          (set ctx (FCtxBind(
             (close ctx) k TAny fragment
          )))
@@ -281,7 +151,7 @@ fragment-destructure-tctx := λ(: ctx FContext)(: tctx TContext). (: (tail(
    (close ctx)
 )) FContext[]);
 
-fragment-destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragList). (: (tail(
+fragment-destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragmentList). (: (tail(
    (match lhs (
       ()
       ( (SCons( (SAtom 'Var_s) (SAtom k) )) (tail(
@@ -289,7 +159,7 @@ fragment-destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragList). (: (ta
          (match args (
             ()
             ( (FLSeq( _ f )) (tail(
-               (let ft (maybe-deref(ccfragment::get-type f)))
+               (let ft (maybe-deref(fragment::get-type f)))
                (if (non-zero ft) () (tail(
                   (print 'Fragment\sHas\sNo\sType:\n_s)
                   (print f)
@@ -313,7 +183,7 @@ fragment-destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragList). (: (ta
          (match args (
             ()
             ( (FLSeq( fl-rst f )) (tail(
-               (let ft (maybe-deref(ccfragment::get-type f)))
+               (let ft (maybe-deref(fragment::get-type f)))
                (if (non-zero ft) () (tail(
                   (print 'Fragment\sHas\sNo\sType:\n_s)
                   (print f)
@@ -350,7 +220,7 @@ fragment-render := λ(: mode String)(: ctx FContext)(: s S). (: (tail(
       ( (SCons( (SAtom 'Lit_s) (SAtom v) )) (set r (SAtom v)) )
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '.expression_s) )) (SCons( (SAtom 'Var_s) (SAtom v) )) )) )) (tail(
          (let f (maybe-deref(fragment-context::lookup( ctx v TAny ASTEOF ))))
-         (let fe (maybe-deref(ccfragment::get( f 'expression_s ))))
+         (let fe (maybe-deref(fragment::get( f 'expression_s ))))
          (if (non-zero fe) () (tail(
             (print 'Referenced\sVariable\sIn\sFragment\sWas\sNull\s_s)
             (print v)(print '\n_s)(exit 1_u64)
@@ -359,7 +229,7 @@ fragment-render := λ(: mode String)(: ctx FContext)(: s S). (: (tail(
       )))
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '.program_s) )) (SCons( (SAtom 'Var_s) (SAtom v) )) )) )) (tail(
          (let f (maybe-deref(fragment-context::lookup( ctx v TAny ASTEOF ))))
-         (let fe (maybe-deref(ccfragment::get( f 'program_s ))))
+         (let fe (maybe-deref(fragment::get( f 'program_s ))))
          (if (non-zero fe) () (tail(
             (print 'Referenced\sVariable\sIn\sFragment\sWas\sNull\s_s)
             (print v)(print '\n_s)(exit 1_u64)
@@ -552,8 +422,8 @@ fragment-render := λ(: mode String)(: ctx FContext)(: s S). (: (tail(
          (while (non-zero iter-result) (match iter-result (
             ()
             ( (SCons( (SAtom i) rst )) (tail(
-               (let fi (maybe-deref(ccfragment::expression i)))
-               (let fi-2 (maybe-deref(ccfragment::set( fi 'program_s (SAtom i) ))))(set fi fi-2)
+               (let fi (maybe-deref(fragment::expression i)))
+               (let fi-2 (maybe-deref(fragment::set( fi 'program_s (SAtom i) ))))(set fi fi-2)
                (let inner-ctx (FCtxBind(
                   (close ctx) binding TAny fi
                )))
@@ -583,24 +453,24 @@ fragment-apply-context := λ(: ctx FContext)(: rhs S)(: e Fragment). (: (tail(
       ()
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '.program_s) )) prg )) )) (tail(
          (let s (maybe-deref(fragment-render( 'program_s ctx prg ))))
-         (let f (maybe-deref(ccfragment::set( e 'program_s s ))))
+         (let f (maybe-deref(fragment::set( e 'program_s s ))))
          (set e f)
       )))
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '.expression_s) )) prg )) )) (tail(
          (let s (maybe-deref(fragment-render( 'expression_s ctx prg ))))
-         (let f (maybe-deref(ccfragment::set( e 'expression_s s ))))
+         (let f (maybe-deref(fragment::set( e 'expression_s s ))))
          (set e f)
       )))
       ( (SCons( (SAtom 'App_s) (SCons( rst (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '.program_s) )) prg )) )) )) )) (tail(
          (let s (maybe-deref(fragment-render( 'program_s ctx prg ))))
-         (let f (maybe-deref(ccfragment::set( e 'program_s s ))))
+         (let f (maybe-deref(fragment::set( e 'program_s s ))))
          (set e f)
          (let e-rst (maybe-deref(fragment-apply-context( ctx rst e ))))
          (set e e-rst)
       )))
       ( (SCons( (SAtom 'App_s) (SCons( rst (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '.expression_s) )) prg )) )) )) )) (tail(
          (let s (maybe-deref(fragment-render( 'expression_s ctx prg ))))
-         (let f (maybe-deref(ccfragment::set( e 'expression_s s ))))
+         (let f (maybe-deref(fragment::set( e 'expression_s s ))))
          (set e f)
          (let e-rst (maybe-deref(fragment-apply-context( ctx rst e ))))
          (set e e-rst)
@@ -618,8 +488,8 @@ fragment-apply-context := λ(: ctx FContext)(: rhs S)(: e Fragment). (: (tail(
    e
 )) Fragment);
 
-fragment-apply-direct := λ(: ctx FContext)(: arrow Fragment)(: args FragList)(: e-proto Fragment)(: chain U8). (: (tail(
-   (match (maybe-deref(ccfragment::get( arrow 'fragment_s ))) (
+fragment-apply-direct := λ(: ctx FContext)(: arrow Fragment)(: args FragmentList)(: e-proto Fragment)(: chain U8). (: (tail(
+   (match (maybe-deref(fragment::get( arrow 'fragment_s ))) (
       ()
       ( (SCons( (SAtom 'Abs_s) (SCons( lhs rhs )) )) (tail(
          (let f-ctx-2 (maybe-deref(fragment-destructure-lhs( ctx lhs args ))))
@@ -643,32 +513,32 @@ ccfragment::chain := λ(: l Fragment)(: r Fragment). (: (tail(
       l
       (maybe-deref(ccfragment::get-context( r )))
    ))))
-   (if (non-zero(ccfragment::get( r 'frame_s ))) (tail(
-      (let e1-2 (maybe-deref(ccfragment::set(
+   (if (non-zero(fragment::get( r 'frame_s ))) (tail(
+      (let e1-2 (maybe-deref(fragment::set(
          e1 'frame_s
          (SCons(
-            (close(ccfragment::get( l 'frame_s )))
-            (close(ccfragment::get( r 'frame_s )))
+            (close(fragment::get( l 'frame_s )))
+            (close(fragment::get( r 'frame_s )))
          ))
       ))))
       (set e1 e1-2)
    )) ())
-   (if (non-zero(ccfragment::get( r 'unframe_s ))) (tail(
-      (let e1-3 (maybe-deref(ccfragment::set(
+   (if (non-zero(fragment::get( r 'unframe_s ))) (tail(
+      (let e1-3 (maybe-deref(fragment::set(
          e1 'unframe_s
          (SCons(
-            (close(ccfragment::get( l 'unframe_s )))
-            (close(ccfragment::get( r 'unframe_s )))
+            (close(fragment::get( l 'unframe_s )))
+            (close(fragment::get( r 'unframe_s )))
          ))
       ))))
       (set e1 e1-3)
    )) ())
-   (if (non-zero(ccfragment::get( r 'program_s ))) (tail(
-      (let e1-4 (maybe-deref(ccfragment::set(
+   (if (non-zero(fragment::get( r 'program_s ))) (tail(
+      (let e1-4 (maybe-deref(fragment::set(
          e1 'program_s
          (SCons(
-            (close(ccfragment::get( l 'program_s )))
-            (close(ccfragment::get( r 'program_s )))
+            (close(fragment::get( l 'program_s )))
+            (close(fragment::get( r 'program_s )))
          ))
       ))))
       (set e1 e1-4)
@@ -679,15 +549,15 @@ ccfragment::chain := λ(: l Fragment)(: r Fragment). (: (tail(
    (let e1-6 (maybe-deref(ccfragment::set-offset( e1
       (maybe-deref(ccfragment::get-offset r))
    ))))(set e1 e1-6)
-   (let e1-7 (maybe-deref(ccfragment::set(
+   (let e1-7 (maybe-deref(fragment::set(
       e1 'expression_s
-     (maybe-deref(ccfragment::get( r 'expression_s )))
+     (maybe-deref(fragment::get( r 'expression_s )))
    ))))(set e1 e1-7)
    e1
 )) Fragment);
 
 #TODO remove indirect reference of return value
-fragment-chain := λ(: fragment-ctx FragList)(: e Fragment). (: (tail(
+fragment-chain := λ(: fragment-ctx FragmentList)(: e Fragment). (: (tail(
    (while (non-zero fragment-ctx) (match fragment-ctx (
       ()
       ( (FLSeq( rst cf )) (tail(

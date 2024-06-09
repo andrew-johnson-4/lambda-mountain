@@ -1353,45 +1353,6 @@ typecheck-unify-args-inner := λ(: fpt Type)(: pt Type). (: (tail(
    (close ctx)
 )) TContext[]);
 
-can-unify := λ(: fpt Type)(: pt Type). (: (tail(
-   (let r 0_u64)
-   (match (TPair( fpt pt )) (
-      ()
-      ( (TPair( TAny _ )) (set r 1_u64) )
-      ( (TPair( (TVar( ltv )) rt )) (set r 1_u64) )
-      ( (TPair( (TAnd( lt1 lt2 )) rt )) (
-         (if (can-unify( lt1 rt )) (
-            (if (can-unify( lt2 rt )) (
-               (set r 1_u64)
-            ) ())
-         ) ())
-      ))
-      ( (TPair( lt (TAnd( rt1 rt2 )) )) (tail(
-         (if (can-unify( lt rt1 )) (set r 1_u64) ())
-         (if (can-unify( lt rt2 )) (set r 1_u64) ())
-      )))
-      ( (TPair( (TGround( ltn TypeEOF )) (TGround( rtn TypeEOF )) )) (
-         (if (==( ltn rtn )) (set r 1_u64) ())
-      ))
-      ( (TPair( (TGround( ltn (TypeSeq( TypeEOF lt1 )) )) (TGround( rtn (TypeSeq( TypeEOF rt1 )) )) )) (
-         (if (==( ltn rtn )) (
-            (if (can-unify( lt1 rt1 )) (set r 1_u64) ())
-         ) ())
-      ))
-      ( (TPair( (TGround( ltn (TypeSeq( (TypeSeq( TypeEOF lt1 )) lt2 )) )) (TGround( rtn (TypeSeq( (TypeSeq( TypeEOF rt1 )) rt2 )) )) )) (
-         (if (==( ltn rtn )) (
-            (if (can-unify( lt1 rt1 )) (
-               (if (can-unify( lt2 rt2 )) (
-                  (set r 1_u64)
-               ) ())
-            ) ())
-         ) ())
-      ))
-      ( _ () )
-   ))
-   r
-)) U64);
-
 typecheck-unify-generous := λ(: fpt Type)(: pt Type). (: (tail(
    (let ctx TCtxEOF)
    (match (TPair( fpt pt )) (
