@@ -1,0 +1,5 @@
+
+type ParsePartial (PME( AST , S )); # term, remainder
+type SfxList SfxEOF | (SfxSeq( SfxList[] , String , Type )); zero SfxList SfxEOF;
+
+parse-suffixes := (: SfxEOF SfxList);
