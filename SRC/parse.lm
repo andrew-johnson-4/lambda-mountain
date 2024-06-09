@@ -300,21 +300,7 @@ parse-lambda := λ(: tokens S). (: (tail(
    pp
 )) ParsePartial);
 
-parse-type-cache := (: TCtxEOF TContext);
 parse-type := λ(: tt String). (: (tail(
-   (let original-type tt)
-   (let cache-found TAny)
-   (let cache parse-type-cache)
-   (while (non-zero cache) (match cache (
-      ()
-      ( (TCtxBind( rst k kt _ )) (tail(
-         (if (==( k tt )) (
-            (set cache-found kt)
-         ) ())
-         (set cache rst)
-      )))
-   )))
-   (if (non-zero cache-found) () (tail(
       (let depth 0_u64)
       (let buff SNil)
       (let base-type (maybe-deref(t1 'Nil_s)))
@@ -372,15 +358,7 @@ parse-type := λ(: tt String). (: (tail(
             ))
          ))
       ) ())
-      (set parse-type-cache (TCtxBind(
-         (close parse-type-cache)
-         original-type
-         base-type
-         ASTEOF
-      )))
-      (set cache-found base-type)
-   )))
-   cache-found
+   base-type
 )) Type);
 
 parse-type-single := λ(: tt String). (: (tail(
