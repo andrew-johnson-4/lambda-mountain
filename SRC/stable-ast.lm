@@ -6,6 +6,8 @@ type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( Stri
                 | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Fragment( String , AST[] ))
                 | (Asc( AST[] , Type[] )) | (As( AST[] , Type[] )) | (Sizeof( Type[] )); zero AST ASTEOF;
 
+type IsUsed Used | Unused | Tail | Return;
+
 type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST[] )); zero Context CtxEOF;
 type TContext TCtxEOF | (TCtxBind( TContext[] , String , Type , AST )); zero TContext TCtxEOF;
 
@@ -48,4 +50,204 @@ print := λ(: t TContext). (: (tail(
       )))
    ))
    ()
+)) Nil);
+
+print := λ(: t AST). (: (tail(
+   (match t (
+      ()
+      ( ASTEOF (print 'EOF_s) )
+      ( ASTNil (print '\[\]_s) )
+      ( (Var a) (print a) )
+      ( (Lit a) (tail( (print '\`_s) (print a) )))
+      ( (ASTType( lhs rhs )) (tail(
+         (print 'type\s_s)
+         (print lhs)
+         (print '\s=\s_s)
+         (print rhs)
+      )))
+      ( (Glb( k v )) (tail(
+         (print k)
+         (print '\s:=\s_s)
+         (print v)
+      )))
+      ( (Fragment( k v )) (tail(
+         (print 'fragment\s_s)
+         (print k)
+         (print '\s:=\s_s)
+         (print v)
+      )))
+      ( (App( l r )) (tail(
+         (print '\[_s)
+         (print l)
+         (print '\s_s)
+         (print r)
+         (print '\]_s)
+      )))
+      ( (Abs( lhs rhs )) (tail(
+         (print '\[_s)
+         (print '\l_s)
+         (print lhs)
+         (print '._s)
+         (print rhs)
+         (print '\]_s)
+      )))
+      ( (Asc( t tt )) (tail(
+         (print '\[:\s_s)
+         (print t)
+         (print '\s_s)
+         (print tt)
+         (print '\]_s)
+      )))
+      ( (As( t tt )) (tail(
+         (print '\[as\s_s)
+         (print t)
+         (print '\s_s)
+         (print tt)
+         (print '\]_s)
+      )))
+      ( (Sizeof( tt )) (tail(
+         (print '\[sizeof\s_s)
+         (print tt)
+         (print '\]_s)
+      )))
+      ( (Seq( l r )) (tail(
+         (print l)
+         (print '\:\n_s)
+         (print r)
+      )))
+   ))
+   ()
+)) Nil);
+
+serialize-ast := λ(: t AST). (: (tail(
+   (match t (
+      ()
+      ( ASTEOF (print '\[\]_s) )
+      ( ASTNil (print 'Nil_s) )
+      ( (Var a) (tail(
+         (print '\[Variable\s_s)
+         (print a)
+         (print '\]_s)
+      )))
+      ( (Lit a) (tail(
+         (print '\[Literal\s_s)
+         (print a)
+         (print '\]_s)
+      )))
+      ( (ASTType( lhs rhs )) (tail(
+         (print '\[Type\s\[_s)
+         (serialize-ast lhs)
+         (print '\s_s)
+         (serialize-ast rhs)
+         (print '\]\]_s)
+      )))
+      ( (Glb( lhs rhs )) (tail(
+         (print '\[Global\s\[_s)
+         (print lhs)
+         (print '\s_s)
+         (serialize-ast rhs)
+         (print '\]\]_s)
+      )))
+      ( (Fragment( lhs rhs )) (tail(
+         (print '\[Fragment\s\[_s)
+         (print lhs)
+         (print '\s_s)
+         (serialize-ast rhs)
+         (print '\]\]_s)
+      )))
+      ( (App( lhs rhs )) (tail(
+         (print '\[App\s\[_s)
+         (serialize-ast lhs)
+         (print '\s_s)
+         (serialize-ast rhs)
+         (print '\]\]_s)
+      )))
+      ( (Abs( lhs rhs )) (tail(
+         (print '\[Lambda\s\[_s)
+         (serialize-ast lhs)
+         (print '\s_s)
+         (serialize-ast rhs)
+         (print '\]\]_s)
+      )))
+      ( (Seq( ASTEOF r )) (tail(
+         (serialize-ast r)
+         (print '\n_s)
+      )))
+      ( (Seq( l r )) (tail(
+         (serialize-ast l)
+         (serialize-ast r)
+         (print '\n_s)
+      )))
+      ( (Asc( t tt )) (tail(
+         (print '\[App\s\[_s)
+         (print '\[App\s\[_s)
+         (print '\[Literal\s:\]\s_s)
+         (serialize-ast t)
+         (print '\]\]\s_s)
+         (serialize-ast tt)
+         (print '\]\]_s)
+      )))
+      ( (As( t tt )) (tail(
+         (print '\[App\s\[_s)
+         (print '\[App\s\[_s)
+         (print '\[Var\sas\]\s_s)
+         (serialize-ast t)
+         (print '\]\]\s_s)
+         (serialize-ast tt)
+         (print '\]\]_s)
+      )))
+      ( (Sizeof( tt )) (tail(
+         (print '\[App\s\[_s)
+         (print '\[Var\ssizeof\]\s_s)
+         (serialize-ast tt)
+         (print '\]\]_s)
+      )))
+   ))
+   ()
+)) Nil);
+
+serialize-ast := λ(: tt TypeList). (: (match tt (
+   ()
+   ( TypeEOF () )
+   ( (TypeSeq( TypeEOF p1 )) (serialize-ast p1) )
+   ( (TypeSeq( rst p1 )) (tail(
+      (print '\[App\s\[_s)
+      (serialize-ast rst)
+      (print '\s_s)
+      (serialize-ast p1)
+      (print '\]\]_s)
+   )))
+)) Nil);
+
+serialize-ast := λ(: tt Type). (: (match tt (
+   ()
+   ( TAny (print '\[Variable\s?\]_s) )
+   ( (TVar( vn )) (tail(
+      (print '\[Variable\s_s)
+      (print vn)
+      (print '\]_s)
+   )))
+   ( (TAnd( lt rt )) (tail(
+      (print '\[App\s\[_s)
+      (print '\[Literal\sAnd\]\s_s)
+      (print '\[App\s\[_s)
+      (serialize-ast lt)
+      (print '\s_s)
+      (serialize-ast rt)
+      (print '\]\]_s)
+      (print '\]\]_s)
+   )))
+   ( (TGround( tag TypeEOF )) (tail(
+      (print '\[Literal\s_s)
+      (print tag)
+      (print '\]_s)
+   )))
+   ( (TGround( tag ps )) (tail(
+      (print '\[App\s\[_s)
+      (print '\[Literal\s_s)
+      (print tag)
+      (print '\]\s_s)
+      (serialize-ast ps)
+      (print '\]\]_s)
+   )))
 )) Nil);
