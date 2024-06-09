@@ -1,6 +1,4 @@
 
-type CCFragKV (CCKVEOF) | (CCKVSeq( CCFragKV[] , String , S )); zero CCFragKV CCKVEOF;
-
 type FragList (FLEOF) | (FLSeq( FragList[] , Fragment )); zero FragList FLEOF;
 
 print := λ(: x Fragment). (: (
@@ -11,7 +9,7 @@ print := λ(: x Fragment). (: (
          (print '\tOffset\s=\s_s)(print offset)(print '\n_s)
          (while (non-zero kvs) (match kvs (
             ()
-            ( (CCKVSeq( rst k v )) (tail(
+            ( (FKVSeq( rst k v )) (tail(
                (print '\t_s)(print k)(print '\s=\s_s)(print v)(print '\n_s)
                (set kvs rst)
             )))
@@ -33,7 +31,7 @@ print := λ(: x FragList). (: (
 
 ccfragment::new := λ . (: (tail(
    (let r (Fragment(
-      (close CCKVEOF)
+      (close FKVEOF)
       0_i64
       TAny
       (close(cccontext::new()))
@@ -43,8 +41,8 @@ ccfragment::new := λ . (: (tail(
 
 ccfragment::local-variable := λ(: offset I64)(: tt Type). (: (tail(
    (let r (Fragment(
-      (close(CCKVSeq(
-         (close CCKVEOF)
+      (close(FKVSeq(
+         (close FKVEOF)
          'expression_s
          (SAtom(to-string offset))
       )))
@@ -58,8 +56,8 @@ ccfragment::local-variable := λ(: offset I64)(: tt Type). (: (tail(
 
 ccfragment::label := λ(: id String). (: (tail(
    (let r (Fragment(
-      (close(CCKVSeq(
-         (close CCKVEOF)
+      (close(FKVSeq(
+         (close FKVEOF)
          'expression_s
          (SAtom id)
       )))
@@ -72,8 +70,8 @@ ccfragment::label := λ(: id String). (: (tail(
 
 ccfragment::expression := λ(: val String) . (: (tail(
    (let r (Fragment(
-      (close(CCKVSeq(
-         (close CCKVEOF)
+      (close(FKVSeq(
+         (close FKVEOF)
          'expression_s
          (SAtom( val ))
       )))
@@ -91,10 +89,10 @@ ccfragment::get := λ(: e Fragment)(: k String). (: (tail(
       ( (Fragment( kvs offset ft ctx )) (
          (while (non-zero kvs) (match kvs (
             ()
-            ( (CCKVSeq( rst kvs-k kvs-v )) (
+            ( (FKVSeq( rst kvs-k kvs-v )) (
                (if (==( k kvs-k )) (tail(
                   (set r kvs-v)
-                  (set kvs CCKVEOF)
+                  (set kvs FKVEOF)
                )) (set kvs rst))
             ))
          )))
@@ -108,7 +106,7 @@ ccfragment::set := λ(: e Fragment)(: k String)(: v S). (: (tail(
       ()
       ( (Fragment( kvs offset ft ctx )) (
          (set e (Fragment(
-            (close(CCKVSeq( (close kvs) k v )))
+            (close(FKVSeq( (close kvs) k v )))
             offset ft (close ctx)
          )))
       ))
