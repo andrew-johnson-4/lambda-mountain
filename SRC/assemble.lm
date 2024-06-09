@@ -109,7 +109,7 @@ compile := λ(). (: (tail(
    (compile-write())
 )) Nil);
 
-compile-program-ordered := λ(: global-ctx CCContext)(: program AST). (: (tail(
+compile-program-ordered := λ(: global-ctx FContext)(: program AST). (: (tail(
    (let open False_u8)
    (match program (
       ()
@@ -134,7 +134,7 @@ compile-program-ordered := λ(: global-ctx CCContext)(: program AST). (: (tail(
    ))
 )) Nil);
 
-compile-type := λ(: ctx CCContext)(: lhs AST)(: rhs AST). (: (tail(
+compile-type := λ(: ctx FContext)(: lhs AST)(: rhs AST). (: (tail(
    (let def rhs)
    (let base-type (maybe-deref(type-of-s( lhs ))))
    (let case-number 0_u64)
@@ -155,9 +155,9 @@ compile-type := λ(: ctx CCContext)(: lhs AST)(: rhs AST). (: (tail(
       (let ctx-3 (maybe-deref(compile-define-head-accessor( ctx base-type ))))(set ctx ctx-3)
    )))
    (close ctx)
-)) CCContext[]);
+)) FContext[]);
 
-compile-type-case := λ(: ctx CCContext)(: base-type Type)(: rhs AST)(: case-number U64). (: (tail(
+compile-type-case := λ(: ctx FContext)(: base-type Type)(: rhs AST)(: case-number U64). (: (tail(
    (match rhs (
       ()
       ( (Lit tag) (tail(
@@ -176,9 +176,9 @@ compile-type-case := λ(: ctx CCContext)(: base-type Type)(: rhs AST)(: case-num
       ( _ () )
    ))
    (close ctx)
-)) CCContext[]);
+)) FContext[]);
 
-compile-define-head-accessor := λ(: ctx CCContext)(: base-type Type). (: (tail(
+compile-define-head-accessor := λ(: ctx FContext)(: base-type Type). (: (tail(
 
    (let arrow-tt (maybe-deref(tarrow( (TAnd( (close base-type) (close(t1 'Constant_s)) )) (maybe-deref(t1 'Reg64_s)) ))))
    (let arrow-dc (TAnd( (close arrow-tt) (close(t1 'DontChain_s)) )))(set arrow-tt arrow-dc)
@@ -274,18 +274,18 @@ compile-define-head-accessor := λ(: ctx CCContext)(: base-type Type). (: (tail(
    ))))(set ctx ctx-2)
 
    (close ctx)
-)) CCContext[]);
+)) FContext[]);
 
-compile-define-field-accessor := λ(: ctx CCContext)(: base-type Type)(: field-types Type)(: case-number U64)(: field-offset U64)(: field-number U64)(: case-type Type). (: (tail(
+compile-define-field-accessor := λ(: ctx FContext)(: base-type Type)(: field-types Type)(: case-number U64)(: field-offset U64)(: field-number U64)(: case-type Type). (: (tail(
    (if (is-open base-type) (
    ) (tail(
       (let ctx-2 (maybe-deref(compile-define-field-accessor-simple( ctx base-type field-types case-number field-offset field-number case-type ))))
       (set ctx ctx-2)
    )))
    (close ctx)
-)) CCContext[]);
+)) FContext[]);
 
-compile-define-field-accessor-simple := λ(: ctx CCContext)(: base-type Type)(: field-types Type)(: case-number U64)(: field-offset U64)(: field-number U64)(: case-type Type). (: (tail(
+compile-define-field-accessor-simple := λ(: ctx FContext)(: base-type Type)(: field-types Type)(: case-number U64)(: field-offset U64)(: field-number U64)(: case-type Type). (: (tail(
    (let accessor-name (clone-rope (SCons(
       (close(SAtom '._s))
       (close(SAtom(to-string field-number)))
@@ -474,9 +474,9 @@ compile-define-field-accessor-simple := λ(: ctx CCContext)(: base-type Type)(: 
    (set ctx ctx-2)
 
    (close ctx)
-)) CCContext[]);
+)) FContext[]);
 
-compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-types Type)(: case-number U64). (: (tail(
+compile-define-field-accessors := λ(: ctx FContext)(: base-type Type)(: field-types Type)(: case-number U64). (: (tail(
    (let field-offset 8_u64)
    (let field-number 1_u64)
    (while (non-zero field-types) (match (slot( field-types 'Cons_s )) (
@@ -495,10 +495,10 @@ compile-define-field-accessors := λ(: ctx CCContext)(: base-type Type)(: field-
       )))
    )))
    (close ctx)
-)) CCContext[]);
+)) FContext[]);
 
 
-compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types Type)(: base-type Type)(: rtype Type)(: case-number U64). (: (tail(
+compile-define-tag-constructor := λ(: ctx FContext)(: tag String)(: arg-types Type)(: base-type Type)(: rtype Type)(: case-number U64). (: (tail(
    (if (is-open base-type) (tail(
       (let ctx-2 (maybe-deref(compile-define-tag-constructor-parametric( ctx tag arg-types base-type rtype case-number ))))
       (set ctx ctx-2)
@@ -507,9 +507,9 @@ compile-define-tag-constructor := λ(: ctx CCContext)(: tag String)(: arg-types 
       (set ctx ctx-2)
    )))
    (close ctx)
-)) CCContext[]);
+)) FContext[]);
 
-compile-define-tag-constructor-parametric := λ(: ctx CCContext)(: tag String)(: arg-types Type)(: base-type Type)(: rtype Type)(: case-number U64). (: (tail(
+compile-define-tag-constructor-parametric := λ(: ctx FContext)(: tag String)(: arg-types Type)(: base-type Type)(: rtype Type)(: case-number U64). (: (tail(
    (let tg (maybe-deref(tand( (t1 tag) (tsized '0_s) ))))
    (let push-template (cccontext::lookup( ctx 'template::push_s tg ASTEOF )))
    (let movl-template (cccontext::lookup( ctx 'template::mov_s (maybe-deref(tcons( tg (t1 'LocalVariable_s) ))) ASTEOF )))
@@ -558,9 +558,9 @@ compile-define-tag-constructor-parametric := λ(: ctx CCContext)(: tag String)(:
    ))))(set ctx ctx-2)
 
    (close ctx)
-)) CCContext[]);
+)) FContext[]);
 
-compile-define-tag-constructor-simple := λ(: ctx CCContext)(: tag String)(: arg-types Type)(: base-type Type)(: rtype Type)(: case-number U64). (: (tail(
+compile-define-tag-constructor-simple := λ(: ctx FContext)(: tag String)(: arg-types Type)(: base-type Type)(: rtype Type)(: case-number U64). (: (tail(
    (if (non-zero arg-types) (tail(
       (let base-type-sz (typecheck-aligned-sizeof base-type))
       (let args-sz (typecheck-aligned-sizeof arg-types))
@@ -827,7 +827,7 @@ compile-define-tag-constructor-simple := λ(: ctx CCContext)(: tag String)(: arg
       ))))(set ctx ctx-2)
    )))
    (close ctx)
-)) CCContext[]);
+)) FContext[]);
 
 compile-finish := λ. (: (tail(
    (let output SNil)

@@ -1,11 +1,9 @@
 
-type CCContext (CCCEOF) | (CCCtxBind( CCContext[] , String , Type , Fragment )); zero CCContext CCCEOF;
-
-print := λ(: ctx CCContext). (: (tail(
+print := λ(: ctx FContext). (: (tail(
    (print 'Context:\n_s)
    (while (non-zero ctx) (match ctx (
       ()
-      ( (CCCtxBind( rst k kt kf )) (tail(
+      ( (FCtxBind( rst k kt kf )) (tail(
          (print k)(print '\s:\s_s)(print kt)(print '\n_s)(print kf)
          (set ctx rst)
       )))
@@ -13,16 +11,16 @@ print := λ(: ctx CCContext). (: (tail(
 )) Nil);
 
 cccontext::new := λ. (: (tail(
-   (let r CCCEOF)
+   (let r FCtxEOF)
    r
-)) CCContext);
+)) FContext);
 
-cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST). (: (tail(
+cccontext::lookup := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST). (: (tail(
    (let r (maybe-deref(ccfragment::new())))
    (let found False_u8)
    (while (non-zero ctx) (match ctx (
       ()
-      ( (CCCtxBind( rst rk rt rf )) (
+      ( (FCtxBind( rst rk rt rf )) (
          (if (==( k rk )) (
             (match (slot( rt 'Arrow_s )) (
                ()
@@ -30,13 +28,13 @@ cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST). (: 
                   (if (can-unify( domaint kt )) (tail(
                      (set r rf)
                      (set found True_u8)
-                     (set ctx CCCEOF)
+                     (set ctx FCtxEOF)
                   )) (set ctx rst))
                ))
                ( _ (tail(
                   (set r rf)
                   (set found True_u8)
-                  (set ctx CCCEOF)
+                  (set ctx FCtxEOF)
                )))
             ))
          ) (
@@ -51,11 +49,11 @@ cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST). (: 
    r
 )) Fragment);
 
-cccontext::bind := λ(: ctx CCContext)(: k String)(: kt Type)(: f Fragment). (: (tail(
-   (let new-ctx (CCCtxBind(
+cccontext::bind := λ(: ctx FContext)(: k String)(: kt Type)(: f Fragment). (: (tail(
+   (let new-ctx (FCtxBind(
       (close ctx)
       k kt f
    )))
    new-ctx
-)) CCContext);
+)) FContext);
 

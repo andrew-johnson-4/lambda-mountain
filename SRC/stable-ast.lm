@@ -6,10 +6,13 @@ type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( Stri
                 | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Frg( String , AST[] ))
                 | (Asc( AST[] , Type[] )) | (As( AST[] , Type[] )) | (Sizeof( Type[] )); zero AST ASTEOF;
 
+type Fragment (Fragment( CCFragKV[] , I64 , Type , FContext[] ));
+
 type IsUsed Used | Unused | Tail | Return;
 
 type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST[] )); zero Context CtxEOF;
 type TContext TCtxEOF | (TCtxBind( TContext[] , String , Type , AST )); zero TContext TCtxEOF;
+type FContext FCtxEOF | (FCtxBind( FContext[] , String , Type , Fragment )); zero FContext FCtxEOF;
 
 type TypeConstructorList (TConEOF) | (TConSeq( TypeConstructorList[] , String , Type )); zero TypeConstructorList TConEOF;
 
