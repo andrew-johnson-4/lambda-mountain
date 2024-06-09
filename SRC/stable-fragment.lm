@@ -26,3 +26,45 @@ print := λ(: x FragmentList). (: (
       ( _ () )
    ))
 ) Nil);
+
+fragment::new := λ . (: (tail(
+   (let r (Fragment(
+      (close FKVEOF)
+      0_i64
+      TAny
+      (close(fragment-context::new()))
+   )))
+   r
+)) Fragment);
+
+fragment::get := λ(: e Fragment)(: k String). (: (tail(
+   (let r SNil)
+   (match e (
+      ()
+      ( (Fragment( kvs offset ft ctx )) (
+         (while (non-zero kvs) (match kvs (
+            ()
+            ( (FKVSeq( rst kvs-k kvs-v )) (
+               (if (==( k kvs-k )) (tail(
+                  (set r kvs-v)
+                  (set kvs FKVEOF)
+               )) (set kvs rst))
+            ))
+         )))
+      ))
+   ))
+   r
+)) S);
+
+fragment::set := λ(: e Fragment)(: k String)(: v S). (: (tail(
+   (match e (
+      ()
+      ( (Fragment( kvs offset ft ctx )) (
+         (set e (Fragment(
+            (close(FKVSeq( (close kvs) k v )))
+            offset ft (close ctx)
+         )))
+      ))
+   ))
+   e
+)) Fragment);
