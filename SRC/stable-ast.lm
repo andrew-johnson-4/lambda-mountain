@@ -3,17 +3,22 @@ type Type TAny | (TVar String) | (TGround( String , TypeList[] )) | (TAnd( Type[
 type TypeList TypeEOF | (TypeSeq( TypeList[] , Type )); zero TypeList TypeEOF;
 
 type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] ))
-                | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Fragment( String , AST[] ))
+                | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Frg( String , AST[] ))
                 | (Asc( AST[] , Type[] )) | (As( AST[] , Type[] )) | (Sizeof( Type[] )); zero AST ASTEOF;
+
+type FragmentKV (FKVEOF) | (FKVSeq( FragmentKV[] , String , S )); zero FragmentKV FKVEOF;
+type Fragment (Fragment( FragmentKV[] , I64 , Type , FContext[] ));
 
 type IsUsed Used | Unused | Tail | Return;
 
 type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST[] )); zero Context CtxEOF;
 type TContext TCtxEOF | (TCtxBind( TContext[] , String , Type , AST )); zero TContext TCtxEOF;
+type FContext FCtxEOF | (FCtxBind( FContext[] , String , Type , Fragment )); zero FContext FCtxEOF;
 
 type TypeConstructorList (TConEOF) | (TConSeq( TypeConstructorList[] , String , Type )); zero TypeConstructorList TConEOF;
 
 type StringList SLEOF | (SLSeq( StringList[] , String )); zero StringList SLEOF;
+type StringU64List (SUEOF) | (SUSeq( StringU64List[] , String , U64 )); zero StringU64List SUEOF;
 
 type TPair (TPair( Type , Type ));
 type TLPair (TLPair( TypeList , TypeList ));
@@ -74,7 +79,7 @@ print := λ(: t AST). (: (tail(
          (print '\s:=\s_s)
          (print v)
       )))
-      ( (Fragment( k v )) (tail(
+      ( (Frg( k v )) (tail(
          (print 'fragment\s_s)
          (print k)
          (print '\s:=\s_s)
@@ -152,7 +157,7 @@ serialize-ast := λ(: t AST). (: (tail(
          (serialize-ast rhs)
          (print '\]\]_s)
       )))
-      ( (Fragment( lhs rhs )) (tail(
+      ( (Frg( lhs rhs )) (tail(
          (print '\[Fragment\s\[_s)
          (print lhs)
          (print '\s_s)

@@ -8,6 +8,34 @@ tag-to-fields-index := (: TConEOF TypeConstructorList);
 # global Tag -> IsFragment? map, mutable
 tag-is-fragment-index := (: SLEOF StringList);
 
+# global Class -> Size map, mutable
+class-to-size-index := (: SUEOF StringU64List);
+
+index-size-of-class := λ(: class String)(: size U64). (: (
+   (if (size-of-class class) () (
+      (set class-to-size-index (SUSeq(
+         (close class-to-size-index)
+         class
+         size
+      )))
+   ))
+) Nil);
+
+size-of-class := λ(: class String). (: (tail(
+   (let sz 0_u64)
+   (let index class-to-size-index)
+   (while (non-zero index) (match index (
+      ()
+      ( (SUSeq( rst kclass ksize )) (
+         (if (==( kclass class )) (tail(
+            (set sz ksize)
+            (set index SUEOF)
+         )) (set index rst))
+      ))
+   )))
+   sz
+)) U64);
+
 index-tag-is-fragment := λ(: tag String). (: (
    (set tag-is-fragment-index (SLSeq(
       (close tag-is-fragment-index) tag
