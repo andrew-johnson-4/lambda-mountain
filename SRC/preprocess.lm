@@ -1,9 +1,6 @@
 
-type Macro (Macro( AST , AST ));
-type MacroList MEOF | (MSeq( MacroList[] , Macro )); zero MacroList MEOF;
 type IndexList IEOF | (ISeq( IndexList[] , String , U64 )); zero IndexList IEOF;
 
-preprocess-macros := (: MEOF MacroList);
 preprocess-tag-indices := (: IEOF IndexList);
 preprocess-tag-index-eof := 99999_u64;
 

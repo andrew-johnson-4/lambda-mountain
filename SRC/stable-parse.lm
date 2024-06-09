@@ -1,0 +1,541 @@
+
+type ParsePartial (PME( AST , S )); # term, remainder
+type SfxList SfxEOF | (SfxSeq( SfxList[] , String , Type )); zero SfxList SfxEOF;
+
+parse-suffixes := (: SfxEOF SfxList);
+
+parse-lambda := λ(: tokens S). (: (tail(
+   (let expr ASTEOF)
+   (let remainder SNil)
+   (match (parse-one-expression tokens) (
+      ()
+      ( (PME( (Lit '._s) pr )) (match (parse-many-expressions pr) (
+         ()
+         ( (PME( le lr )) (tail(
+            (set expr (Abs( (close ASTNil) (close le) )))
+            (set tokens SNil)
+            (set remainder lr)
+         )))
+      )))
+      ( (PME( pe pr )) (tail(
+         (set expr pe)
+         (set tokens pr)
+      )))
+   ))
+   (while (non-zero tokens) (
+      (match (parse-one-expression tokens) (
+         ()
+         ( (PME( (Lit '._s) r )) (
+            (match (parse-many-expressions r) (
+               ()
+               ( (PME( le lr )) (tail(
+                  (set expr (Abs( (close expr) (close le) )))
+                  (set remainder lr)
+                  (set tokens SNil)
+               )))
+            ))
+         ))
+         ( (PME( le SNil )) (
+            (parse-expect( 'Expected\sDot\sFor\sLambda\sBody\n_s tokens ))
+         ))
+         ( (PME( le lr )) (tail(
+            (set expr (App( (close expr) (close le) )))
+            (set tokens lr)
+         )))
+      ))
+   ))
+   (let pp ( (PME( expr remainder )) ))
+   pp
+)) ParsePartial);
+
+parse-type-comma-sep := λ(: tt String). (: (tail(
+   (let buff SNil)
+   (let depth 0_u64)
+   (let base TypeEOF)
+   (while (head-string tt) (tail(
+      (match (head-string tt) (
+         ()
+         ( 60_u8 (set depth (+( depth 1_u64 )) ))
+         ( 62_u8 (set depth (-( depth 1_u64 )) ))
+         ( 91_u8 (set depth (+( depth 1_u64 )) ))
+         ( 93_u8 (set depth (-( depth 1_u64 )) ))
+         ( _ () )
+      ))
+      (if (==( depth 0_u64 )) (
+         (if (==( (head-string tt) 44_u8 )) (tail(
+            (set base (TypeSeq(
+               (close base)
+               (parse-type(clone-rope buff))
+            )))
+            (set buff SNil)
+         )) (
+            (set buff (SCons(
+               (close buff)
+               (close (SAtom (clone-rope (head-string tt))))
+            )))
+         ))
+      ) (
+         (set buff (SCons(
+            (close buff)
+            (close (SAtom (clone-rope (head-string tt))))
+         )))
+      ))
+      (set tt (tail-string tt))
+   )))
+   (set base (TypeSeq(
+      (close base)
+      (parse-type(clone-rope buff))
+   )))
+   base
+)) TypeList);
+
+parse-type := λ(: tt String). (: (tail(
+   (let depth 0_u64)
+   (let buff SNil)
+   (let base-type (t1 'Nil_s))
+   (while (head-string tt) (tail(
+      (match (head-string tt) (
+         ()
+         ( 60_u8 (set depth (+( depth 1_u64 )) ))
+         ( 62_u8 (set depth (-( depth 1_u64 )) ))
+         ( 91_u8 (set depth (+( depth 1_u64 )) ))
+         ( 93_u8 (set depth (-( depth 1_u64 )) ))
+         ( _ () )
+      ))
+      (if (==( depth 0_u64 )) (
+         (if (==( (head-string tt) 43_u8 )) (tail(
+            (match base-type (
+               ()
+               ( (TGround( 'Nil_s TypeEOF )) (tail(
+                  (let bt (parse-type-single (clone-rope buff)))
+                  (set base-type bt)
+               )))
+               ( _ (
+                  (set base-type (TAnd(
+                     (close base-type)
+                     (close(parse-type-single (clone-rope buff)))
+                  )))
+               ))
+            ))
+            (set buff SNil)
+         )) (
+            (set buff (SCons(
+               (close buff)
+               (close (SAtom (clone-rope (head-string tt))))
+            )))
+         ))
+      ) (
+         (set buff (SCons(
+            (close buff)
+            (close (SAtom (clone-rope (head-string tt))))
+         )))
+      ))
+      (set tt (tail-string tt))
+   )))
+   (if (non-zero buff) (
+      (match base-type (
+         ()
+         ( (TGround( 'Nil_s TypeEOF )) (tail(
+            (let bt (parse-type-single (clone-rope buff)))
+            (set base-type bt)
+         )))
+         ( _ (
+            (set base-type (TAnd(
+               (close base-type)
+               (close(parse-type-single (clone-rope buff)))
+            )))
+         ))
+      ))
+   ) ())
+   base-type
+)) Type);
+
+parse-many-expressions := λ(: tokens S). (: (tail(
+   (let expr ASTEOF)
+   (let remainder SNil)
+   (while (non-zero tokens) (
+      (match tokens (
+         ()
+         ( (SCons( (SAtom '\:_s) tl )) (tail(
+            (set remainder tokens)
+            (set tokens SNil)
+         )))
+         ( (SCons( (SAtom '\]_s) tl )) (tail(
+            (if (non-zero expr) () (set expr ASTNil))
+            (set remainder tl)
+            (set tokens SNil)
+         )))
+         ( _ (
+            (match (parse-one-expression tokens) (
+               ()
+               ( (PME( pe pr )) (tail(
+                  (if (non-zero expr) (
+                     (set expr (App(
+                        (close expr)
+                        (close pe)
+                     )))
+                  ) (
+                     (set expr pe)
+                  ))
+                  (set tokens pr)
+               )))
+            ))
+         ))
+      ))
+   ))
+   (let pp ( (PME( expr remainder )) ))
+   pp
+)) ParsePartial);
+
+parse-one-expression := λ(: tokens S). (: (tail(
+   (let expr ASTEOF)
+   (let remainder SNil)
+   (match tokens (
+      ()
+      ( SNil (tail(
+         (set expr ASTNil)
+         (set remainder SNil)
+      )))
+      ( (SCons( (SAtom '\l_s) r )) (
+         (match (parse-lambda r) (
+            ()
+            ( (PME( le lr )) (tail(
+               (set expr le)
+               (set remainder lr)
+            )))
+         ))
+      ))
+      ( (SCons( (SAtom '\]_s) r )) (
+         (parse-unexpect( 'Unexpected\sClosing\sParentheses_s tokens ))
+      ))
+      ( (SCons( (SAtom '\[_s) r )) (
+         (match (parse-many-expressions r) (
+            ()
+            ( (PME( me mr )) (tail(
+               (set expr me)
+               (set remainder mr)
+            )))
+         ))
+      ))
+      ( (SCons( (SAtom '\`_s)
+                (SCons( (SAtom i) r ))
+        )) (tail(
+         (set expr (Lit i))
+         (set remainder r)
+      )))
+      ( (SCons( (SAtom a) r )) (tail(
+         (if (is-variable a) (
+            (set expr (Var a))
+         ) (
+            (set expr (Lit a))
+         ))
+         (set remainder r)
+      )))
+   ))
+   (let pp ( (PME( expr remainder )) ))
+   pp
+)) ParsePartial);
+
+parse-unexpect := λ(: msg String)(: tokens S). (: (tail(
+   ()
+   (fail msg)
+)) Nil);
+parse-expect := λ(: msg String)(: tokens S). (: (tail(
+   ()
+   (eprint msg)
+   (print '\n_s)
+   (print tokens)
+   (exit 1_u64)
+)) Nil);
+
+parse-type-single := λ(: tt String). (: (tail(
+   (let depth 0_u64)
+   (let mode 0_u8)
+   (let buff SNil)
+   (let base-type (t1 'Nil_s))
+   (while (head-string tt) (tail(
+      (if (==( depth 0_u64 )) (
+         (match (head-string tt) (
+            ()
+            ( 91_u8 (tail(
+               (set mode 91_u8)
+               (set depth 1_u64)
+               (if (non-zero buff) (tail(
+                  (let vn (clone-rope buff))
+                  (if (==( vn '?_s )) (
+                     (set base-type TAny)
+                  ) (
+                     (if (is-variable vn) (
+                        (set base-type (TVar vn))
+                     ) (
+                        (set base-type (TGround(
+                           (clone-rope buff)
+                           (close TypeEOF)
+                        )))
+                     ))
+                  ))
+               )) ())
+               (set buff SNil)
+            )))
+            ( 60_u8 (tail(
+               (set mode 60_u8)
+               (set depth 1_u64)
+               (if (non-zero buff) (tail(
+                  (let vn (clone-rope buff))
+                  (if (==( vn '?_s )) (
+                     (set base-type TAny)
+                  ) (
+                     (if (is-variable vn) (
+                        (set base-type (TVar vn))
+                     ) (
+                        (set base-type (TGround(
+                           (clone-rope buff)
+                           (close TypeEOF)
+                        )))
+                     ))
+                  ))
+               )) ())
+               (set buff SNil)
+            )))
+            ( c (
+               (set buff (SCons(
+                  (close buff)
+                  (close (SAtom (clone-rope c)))
+               )))
+            ))
+         ))
+      ) (tail(
+         (match (head-string tt) (
+            ()
+            ( 60_u8 (set depth (+( depth 1_u64 )) ))
+            ( 62_u8 (set depth (-( depth 1_u64 )) ))
+            ( 91_u8 (set depth (+( depth 1_u64 )) ))
+            ( 93_u8 (set depth (-( depth 1_u64 )) ))
+            ( _ () )
+         ))
+         (if (==( depth 0_u64 )) (
+            (match mode (
+               ()
+               ( 91_u8 (
+                  (if (non-zero buff) (tail(
+                     (let base-type-2 (tarray(
+                        base-type
+                        (parse-type(clone-rope buff))
+                     )))
+                     (set base-type base-type-2)
+                     (set buff SNil)
+                  )) (tail(
+                     (let base-type-2 (tarray(
+                        base-type
+                        TAny
+                     )))
+                     (set base-type base-type-2)
+                  )))
+               ))
+               ( 60_u8 (match base-type (
+                  ()
+                  ( (TGround( tag TypeEOF )) (tail(
+                     (set base-type (TGround(
+                        tag
+                        (close(parse-type-comma-sep(clone-rope buff)))
+                     )))
+                     (set buff SNil)
+                  )))
+                  ( (TVar( tag )) (tail(
+                     (set base-type (TGround(
+                        tag
+                        (close(parse-type-comma-sep(clone-rope buff)))
+                     )))
+                     (set buff SNil)
+                  )))
+                  ( _ (tail(
+                     (eprint 'Unexpected\sParameterized\sType:\s_s)
+                     (print base-type)
+                     (exit 1_u64)
+                  )))
+               )))
+            ))
+         ) (
+            (set buff (SCons(
+               (close buff)
+               (close (SAtom (clone-rope (head-string tt))))
+            )))
+         ))
+      )))
+      (set tt (tail-string tt))
+   )))
+   (if (non-zero buff) (tail(
+      (let vn (clone-rope buff))
+      (if (==( vn '?_s )) (
+         (set base-type TAny)
+      ) (
+         (if (is-variable vn) (
+            (set base-type (TVar vn))
+         ) (
+            (set base-type (TGround(
+               (clone-rope buff)
+               (close TypeEOF)
+            )))
+         ))
+      ))
+   )) ())
+   base-type
+)) Type);
+
+parse := λ. (: (tail(
+   (let tokens ast-tokenized-program)
+   (set ast-tokenized-program SNil)
+   (while (non-zero tokens) (
+      (match tokens (
+         ()
+         ( (SCons( (SAtom '\:_s) remainder )) (
+            (set tokens remainder)
+         ))
+         ( (SCons( (SAtom 'macro_s) remainder )) (
+            (match (parse-one-expression remainder) (
+               ()
+               ( (PME( mlhs mremainder1 )) (
+                  (match (parse-one-expression mremainder1) (
+                     ()
+                     ( (PME( mrhs mremainder2 )) (tail(
+                        (set preprocess-macros (MSeq(
+                           (close preprocess-macros)
+                           (Macro( mlhs mrhs ))
+                        )))
+                        (set tokens mremainder2)
+                     )))
+                  ))
+               ))
+            ))
+         ))
+         ( (SCons( (SAtom 'fragment_s) (SCons( (SAtom 'type_s) remainder )) )) (
+            (match (parse-one-expression remainder) (
+               ()
+               ( (PME( e1 r1 )) (match (parse-many-expressions r1) (
+                  ()
+                  ( (PME( e2 r2 )) (tail(
+                     (set ast-parsed-program (Seq(
+                        (close ast-parsed-program)
+                        (close (ASTType(
+                           (close e1)
+                           (close e2)
+                        )))
+                     )))
+                     (let base-type (type-of-s e1))
+                     (index-tag-is-fragment(tag-of base-type))
+                     (set tokens r2)
+                  )))
+               )))
+            ))
+         ))
+         ( (SCons( (SAtom 'fragment_s) (SCons( (SAtom key ) (SCons( (SAtom ':=_s) remainder )) )) )) (
+            (match (parse-many-expressions remainder) (
+               ()
+               ( (PME( re rr )) (tail(
+                  (set ast-parsed-program (Seq(
+                     (close ast-parsed-program)
+                     (close (Fragment(
+                        key
+                        (close re)
+                     )))
+                  )))
+                  (set tokens rr)
+               )))
+            ))
+         ))
+         ( (SCons( (SAtom 'type_s) remainder )) (
+            (match (parse-one-expression remainder) (
+               ()
+               ( (PME( e1 r1 )) (match (parse-many-expressions r1) (
+                  ()
+                  ( (PME( e2 r2 )) (tail(
+                     (set ast-parsed-program (Seq(
+                        (close ast-parsed-program)
+                        (close (ASTType(
+                           (close e1)
+                           (close e2)
+                        )))
+                     )))
+                     (set tokens r2)
+                  )))
+               )))
+            ))
+         ))
+         ( (SCons( (SAtom 'atom_s) (SCons( (SAtom 'suffix_s)
+                   (SCons( (SAtom atype) (SCons( (SAtom suffix) remainder )) ))
+           )) )) (tail(
+            (set parse-suffixes (SfxSeq(
+               (close parse-suffixes)
+               suffix
+               (TAnd(
+                  (close(TAnd(
+                     (close(TGround( 'Constant_s (close TypeEOF) )))
+                     (close(TGround( 'Literal_s (close TypeEOF) )))
+                  )))
+                  (close(parse-type atype))
+               ))
+            )))
+            ()
+            (set tokens remainder)
+         )))
+         ( (SCons( (SAtom 'size_s) (SCons( (SAtom class) (SCons( (SAtom sz) remainder )) )) )) (tail(
+            (index-size-of-class( class (to-u64 sz) ))
+            (set tokens remainder)
+         )))
+         ( (SCons( (SAtom 'import_s) (SCons( (SAtom relative-path) remainder )) )) (tail(
+            (tokenize relative-path)
+            (parse ())
+            (set tokens remainder)
+         )))
+         ( (SCons( (SAtom 'zero_s) (SCons( (SAtom base-type) (SCons( (SAtom tag-type) remainder )) )) )) (tail(
+            (set ast-parsed-program (Seq(
+               (close ast-parsed-program)
+               (close (Glb( 'non-zero_s (close(Abs(
+                  (close(Asc( (close(Var(clone-rope(SAtom 't_s)))) (close(parse-type base-type)) )))
+                  (close(Asc(
+                     (close(App(
+                        (close(Var(clone-rope(SAtom '!=_s))))
+                        (close(App(
+                           (close(App(
+                              (close(Var(clone-rope(SAtom '.0_s))))
+                              (close(Var(clone-rope(SAtom 't_s))))
+                           )))
+                           (close(App(
+                              (close(Var(clone-rope(SAtom '.0_s))))
+                              (close(Lit tag-type))
+                           )))
+                        )))
+                     )))
+                     (close(t1 'U64_s))
+                  )))
+               ))) )))
+            )))
+            (set tokens remainder)
+         )))
+         ( (SCons( (SAtom key) (SCons( (SAtom ':=_s) remainder )) )) (
+            (match (parse-many-expressions remainder) (
+               ()
+               ( (PME( re rr )) (tail(
+                  (set ast-parsed-program (Seq(
+                     (close ast-parsed-program)
+                     (close (Glb( key (close re) )))
+                  )))
+                  (set tokens rr)
+               )))
+            ))
+         ))
+         (remainder (
+            (match (parse-many-expressions remainder) (
+               ()
+               ( (PME( term remainder )) (tail(
+                  (set ast-parsed-program (Seq(
+                     (close ast-parsed-program)
+                     (close term)
+                  )))
+                  (set tokens remainder)
+               )))
+            ))
+         ))
+      ))
+   ))
+)) Nil);

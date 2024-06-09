@@ -121,11 +121,11 @@ typecheck-get-size := λ(: tag String). (: (tail(
    sz
 )) U64);
 
-typecheck-set-size := λ(: tag String)(: size U64). (: (
-   (if (typecheck-get-size tag) () (
+index-size-of-class := λ(: class String)(: size U64). (: (
+   (if (typecheck-get-size class) () (
       (set typecheck-type-sizes (TSzSeq(
          (close typecheck-type-sizes)
-         tag
+         class
          size
       )))
    ))
@@ -220,7 +220,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
          (set r 8_u64)
       )))
       ( (App( (Lit tag) args )) (tail(
-         (let atype (maybe-deref(typecheck-infer-type-compound args)))
+         (let atype (maybe-deref(type-of-s args)))
          (typecheck-set-size( base-type atype ))
          (let rtype (maybe-deref(tand( base-type (maybe-deref(t1 tag)) ))))
          (typecheck-annotate-head-accessor( base-type ))
@@ -291,7 +291,7 @@ typecheck-annotate-accessors := λ(: base-type Type)(: tag-type Type)(: args-typ
    )))
 )) Nil);
 
-typecheck-infer-type-compound := λ(: compound AST). (: (tail(
+type-of-s := λ(: compound AST). (: (tail(
    (let r TAny)
    (match compound (
       ()
@@ -304,14 +304,14 @@ typecheck-infer-type-compound := λ(: compound AST). (: (tail(
          (set r nt)
       )))
       ( (App( (Lit 'And_s) (App( lt rt )) )) (tail(
-         (let ltt (maybe-deref(typecheck-infer-type-compound lt)))
-         (let rtt (maybe-deref(typecheck-infer-type-compound rt)))
+         (let ltt (maybe-deref(type-of-s lt)))
+         (let rtt (maybe-deref(type-of-s rt)))
          (let r-2 (maybe-deref(tand( ltt rtt ))))
          (set r r-2)
       )))
       ( (App( (App( lt (Lit ',_s) )) rt )) (tail(
-         (let ltt (maybe-deref(typecheck-infer-type-compound lt)))
-         (let rtt (maybe-deref(typecheck-infer-type-compound rt)))
+         (let ltt (maybe-deref(type-of-s lt)))
+         (let rtt (maybe-deref(type-of-s rt)))
          (set r (TGround(
             'Cons_s
             (close(TypeSeq(
@@ -336,7 +336,7 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
          (let size (typecheck-infer-type-definition( bt case-constructors )))
          (match bt (
             ()
-            ( (TGround( tag TypeEOF )) (typecheck-set-size( tag size )) )
+            ( (TGround( class TypeEOF )) (index-size-of-class( class size )) )
             ( _ () )
          ))
       )))
