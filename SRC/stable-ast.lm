@@ -13,6 +13,7 @@ type TypeConstructorList (TConEOF) | (TConSeq( TypeConstructorList[] , String , 
 type StringList SLEOF | (SLSeq( StringList[] , String )); zero StringList SLEOF;
 
 type TPair (TPair( Type , Type ));
+type TLPair (TLPair( TypeList , TypeList ));
 
 ast-tokenized-program := (: SNil S);
 ast-parsed-program := (: ASTEOF AST);

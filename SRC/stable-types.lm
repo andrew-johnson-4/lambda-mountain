@@ -484,3 +484,45 @@ print := λ(: tt TypeList). (: (match tt (
       (print p1)
    )))
 )) Nil);
+
+== := λ(: lt Type)(: rt Type). (: (tail(
+   (let r 0_u64)
+   (match (TPair( lt rt )) (
+      ()
+      ( (TPair( TAny TAny )) (set r 1_u64) )
+      ( (TPair( (TVar lv) (TVar rv) )) (set r (==( lv rv ))) )
+      ( (TPair( (TAnd( llt rlt )) (TAnd( lrt rrt )) )) (
+         (if (==( llt lrt )) (
+            (if (==( rlt rrt )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+      ))
+      ( (TPair( (TGround( ln lps )) (TGround( rn rps )) )) (
+         (if (==( ln rn )) (
+            (if (==( lps rps )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+      ))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+== := λ(: lt TypeList)(: rt TypeList). (: (tail(
+   (let r 0_u64)
+   (match (TLPair( lt rt )) (
+      ()
+      ( (TLPair( TypeEOF TypeEOF )) (set r 1_u64) )
+      ( (TLPair( (TypeSeq( ltr lt1 )) (TypeSeq( rtr rt1 )) )) (
+         (if (==( lt1 rt1 )) (
+            (if (==( ltr rtr )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+      ))
+      ( _ () )
+   ))
+   r
+)) U64);
