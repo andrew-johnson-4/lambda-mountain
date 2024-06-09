@@ -1,34 +1,4 @@
 
-type FragList (FLEOF) | (FLSeq( FragList[] , Fragment )); zero FragList FLEOF;
-
-print := λ(: x Fragment). (: (
-   (match x ( 
-      ()
-      ( (Fragment( kvs offset xtt ctx )) (tail(
-         (print 'Fragment\n_s)
-         (print '\tOffset\s=\s_s)(print offset)(print '\n_s)
-         (while (non-zero kvs) (match kvs (
-            ()
-            ( (FKVSeq( rst k v )) (tail(
-               (print '\t_s)(print k)(print '\s=\s_s)(print v)(print '\n_s)
-               (set kvs rst)
-            )))
-         )))
-      )))
-   ))
-) Nil);
-
-print := λ(: x FragList). (: (
-   (match x ( 
-      ()
-      ( (FLSeq( rst f )) (tail(
-         (print rst)
-         (print f)
-      )))
-      ( _ () )
-   ))
-) Nil);
-
 fragment::new := λ . (: (tail(
    (let r (Fragment(
       (close FKVEOF)
@@ -167,7 +137,7 @@ ccfragment::set-offset := λ(: e Fragment)(: offset I64). (: (tail(
    e
 )) Fragment);
 
-typeof := λ(: args FragList). (: (tail(
+typeof := λ(: args FragmentList). (: (tail(
    (let r TAny)
    (match args (
       ()
@@ -186,7 +156,7 @@ typeof := λ(: args FragList). (: (tail(
    r
 )) Type);
 
-fragment-size-args := λ(: args FragList). (: (tail(
+fragment-size-args := λ(: args FragmentList). (: (tail(
    (match args (
       ()
       ( (FLSeq( rst f )) (tail(
@@ -201,9 +171,9 @@ fragment-size-args := λ(: args FragList). (: (tail(
       ( _ () )
    ))
    args
-)) FragList);
+)) FragmentList);
 
-fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragList)(: direct-type Type)(: sloc AST). (: (tail(
+fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentList)(: direct-type Type)(: sloc AST). (: (tail(
    (let args-sized (maybe-deref(fragment-size-args args)))(set args args-sized)
    (let e-proto (maybe-deref(fragment::new())))
    (let e-proto-2 (maybe-deref(ccfragment::set-context( e-proto ctx ))))(set e-proto e-proto-2)
@@ -281,7 +251,7 @@ fragment-destructure-tctx := λ(: ctx FContext)(: tctx TContext). (: (tail(
    (close ctx)
 )) FContext[]);
 
-fragment-destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragList). (: (tail(
+fragment-destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragmentList). (: (tail(
    (match lhs (
       ()
       ( (SCons( (SAtom 'Var_s) (SAtom k) )) (tail(
@@ -618,7 +588,7 @@ fragment-apply-context := λ(: ctx FContext)(: rhs S)(: e Fragment). (: (tail(
    e
 )) Fragment);
 
-fragment-apply-direct := λ(: ctx FContext)(: arrow Fragment)(: args FragList)(: e-proto Fragment)(: chain U8). (: (tail(
+fragment-apply-direct := λ(: ctx FContext)(: arrow Fragment)(: args FragmentList)(: e-proto Fragment)(: chain U8). (: (tail(
    (match (maybe-deref(ccfragment::get( arrow 'fragment_s ))) (
       ()
       ( (SCons( (SAtom 'Abs_s) (SCons( lhs rhs )) )) (tail(
@@ -687,7 +657,7 @@ ccfragment::chain := λ(: l Fragment)(: r Fragment). (: (tail(
 )) Fragment);
 
 #TODO remove indirect reference of return value
-fragment-chain := λ(: fragment-ctx FragList)(: e Fragment). (: (tail(
+fragment-chain := λ(: fragment-ctx FragmentList)(: e Fragment). (: (tail(
    (while (non-zero fragment-ctx) (match fragment-ctx (
       ()
       ( (FLSeq( rst cf )) (tail(

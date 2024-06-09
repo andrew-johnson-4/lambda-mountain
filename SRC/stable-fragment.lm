@@ -1,0 +1,28 @@
+
+print := λ(: x Fragment). (: (
+   (match x (
+      ()
+      ( (Fragment( kvs offset xtt ctx )) (tail(
+         (print 'Fragment\n_s)
+         (print '\tOffset\s=\s_s)(print offset)(print '\n_s)
+         (while (non-zero kvs) (match kvs (
+            ()
+            ( (FKVSeq( rst k v )) (tail(
+               (print '\t_s)(print k)(print '\s=\s_s)(print v)(print '\n_s)
+               (set kvs rst)
+            )))
+         )))
+      )))
+   ))
+) Nil);
+
+print := λ(: x FragmentList). (: (
+   (match x (
+      ()
+      ( (FLSeq( rst f )) (tail(
+         (print rst)
+         (print f)
+      )))
+      ( _ () )
+   ))
+) Nil);
