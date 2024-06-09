@@ -1,5 +1,5 @@
 
-type CCContext (CCCEOF) | (CCCtxBind( CCContext[] , String , Type , CCFragment )); zero CCContext CCCEOF;
+type CCContext (CCCEOF) | (CCCtxBind( CCContext[] , String , Type , Fragment )); zero CCContext CCCEOF;
 
 print := λ(: ctx CCContext). (: (tail(
    (print 'Context:\n_s)
@@ -49,9 +49,9 @@ cccontext::lookup := λ(: ctx CCContext)(: k String)(: kt Type)(: sloc AST). (: 
       (exit-error( 'Context::lookup\sCould\sNot\sFind\sSymbol_s sloc ))
    )))
    r
-)) CCFragment);
+)) Fragment);
 
-cccontext::bind := λ(: ctx CCContext)(: k String)(: kt Type)(: f CCFragment). (: (tail(
+cccontext::bind := λ(: ctx CCContext)(: k String)(: kt Type)(: f Fragment). (: (tail(
    (let new-ctx (CCCtxBind(
       (close ctx)
       k kt f
