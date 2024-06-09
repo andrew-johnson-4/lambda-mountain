@@ -10,7 +10,7 @@ compile := λ(). (: (tail(
    (let preview-program ast-parsed-program)
    (while (non-zero preview-program) (match preview-program (
       ()
-      ( (Seq( rst (Fragment( k rhs )) )) (tail(
+      ( (Seq( rst (Frg( k rhs )) )) (tail(
          (let is-template False_u8)
          (match k (
             ()
@@ -81,7 +81,7 @@ compile := λ(). (: (tail(
          )))
          (set preview-program rst)
       )))
-      ( (Seq( rst (Fragment( k rhs )) )) (tail(
+      ( (Seq( rst (Frg( k rhs )) )) (tail(
          (let fragment (maybe-deref(ccfragment::new())))
          (let fragment-2 (maybe-deref(ccfragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))
          (let fragment-3 (maybe-deref(ccfragment::set( fragment-2 'fragment_s (maybe-deref(to-s rhs)) ))))

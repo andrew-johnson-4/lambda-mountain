@@ -326,7 +326,7 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
             td
          )))
       )))
-      ( (Fragment( k (Abs( lhs (Asc( rhs rhst )) )) )) (tail(
+      ( (Frg( k (Abs( lhs (Asc( rhs rhst )) )) )) (tail(
          (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
          (let ft (maybe-deref(tarrow( lt rhst ))))
          (typecheck-ascript( td ft ))
@@ -343,7 +343,7 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
             (close global-type-context) k kt ASTEOF
          )))
       )))
-      ( (Fragment( k (Asc( rhs rhst )) )) (
+      ( (Frg( k (Asc( rhs rhst )) )) (
          (set global-type-context (TCtxBind(
             (close global-type-context)
             k
@@ -353,7 +353,7 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
       ( (Glb( k _ )) (
          (exit-error( 'Global\sBindings\sMust\sBe\sAscripted_s td ))
       ))
-      ( (Fragment( k _ )) (
+      ( (Frg( k _ )) (
          (exit-error( 'Global\sBindings\sMust\sBe\sAscripted_s td ))
       ))
       ( _ () )
@@ -371,7 +371,7 @@ typecheck-assert-complete := λ(: term AST). (: (
             (typecheck-assert-complete v)
          ))
       ))
-      ( (Fragment( k v )) (
+      ( (Frg( k v )) (
          (typecheck-assert-one v)
       ))
       ( (ASTType( _ _ )) () )
@@ -779,7 +779,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
             (typecheck-infer-expr( tctx v Used ))
          ))
       ))
-      ( (Fragment( k v )) (tail(
+      ( (Frg( k v )) (tail(
          (typecheck-ascript( v (maybe-deref(typecheck-lookup term)) ))
          ()
       )))

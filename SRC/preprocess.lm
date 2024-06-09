@@ -184,7 +184,7 @@ preprocess-apply := λ(: program AST). (: (tail(
          (close(preprocess-apply al))
          (close at)
       ))))
-      ( (Fragment( al ar )) (set r (Fragment(
+      ( (Frg( al ar )) (set r (Frg(
          al
          (close(preprocess-apply ar))
       ))))

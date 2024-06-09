@@ -3,7 +3,7 @@ type Type TAny | (TVar String) | (TGround( String , TypeList[] )) | (TAnd( Type[
 type TypeList TypeEOF | (TypeSeq( TypeList[] , Type )); zero TypeList TypeEOF;
 
 type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] ))
-                | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Fragment( String , AST[] ))
+                | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Frg( String , AST[] ))
                 | (Asc( AST[] , Type[] )) | (As( AST[] , Type[] )) | (Sizeof( Type[] )); zero AST ASTEOF;
 
 type IsUsed Used | Unused | Tail | Return;
@@ -75,7 +75,7 @@ print := λ(: t AST). (: (tail(
          (print '\s:=\s_s)
          (print v)
       )))
-      ( (Fragment( k v )) (tail(
+      ( (Frg( k v )) (tail(
          (print 'fragment\s_s)
          (print k)
          (print '\s:=\s_s)
@@ -153,7 +153,7 @@ serialize-ast := λ(: t AST). (: (tail(
          (serialize-ast rhs)
          (print '\]\]_s)
       )))
-      ( (Fragment( lhs rhs )) (tail(
+      ( (Frg( lhs rhs )) (tail(
          (print '\[Fragment\s\[_s)
          (print lhs)
          (print '\s_s)
