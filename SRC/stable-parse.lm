@@ -3,3 +3,149 @@ type ParsePartial (PME( AST , S )); # term, remainder
 type SfxList SfxEOF | (SfxSeq( SfxList[] , String , Type )); zero SfxList SfxEOF;
 
 parse-suffixes := (: SfxEOF SfxList);
+
+parse-lambda := λ(: tokens S). (: (tail(
+   (let expr ASTEOF)
+   (let remainder SNil)
+   (match (parse-one-expression tokens) (
+      ()
+      ( (PME( (Lit '._s) pr )) (match (parse-many-expressions pr) (
+         ()
+         ( (PME( le lr )) (tail(
+            (set expr (Abs( (close ASTNil) (close le) )))
+            (set tokens SNil)
+            (set remainder lr)
+         )))
+      )))
+      ( (PME( pe pr )) (tail(
+         (set expr pe)
+         (set tokens pr)
+      )))
+   ))
+   (while (non-zero tokens) (
+      (match (parse-one-expression tokens) (
+         ()
+         ( (PME( (Lit '._s) r )) (
+            (match (parse-many-expressions r) (
+               ()
+               ( (PME( le lr )) (tail(
+                  (set expr (Abs( (close expr) (close le) )))
+                  (set remainder lr)
+                  (set tokens SNil)
+               )))
+            ))
+         ))
+         ( (PME( le SNil )) (
+            (parse-expect( 'Expected\sDot\sFor\sLambda\sBody\n_s tokens ))
+         ))
+         ( (PME( le lr )) (tail(
+            (set expr (App( (close expr) (close le) )))
+            (set tokens lr)
+         )))
+      ))
+   ))
+   (let pp ( (PME( expr remainder )) ))
+   pp
+)) ParsePartial);
+
+parse-type-comma-sep := λ(: tt String). (: (tail(
+   (let buff SNil)
+   (let depth 0_u64)
+   (let base TypeEOF)
+   (while (head-string tt) (tail(
+      (match (head-string tt) (
+         ()
+         ( 60_u8 (set depth (+( depth 1_u64 )) ))
+         ( 62_u8 (set depth (-( depth 1_u64 )) ))
+         ( 91_u8 (set depth (+( depth 1_u64 )) ))
+         ( 93_u8 (set depth (-( depth 1_u64 )) ))
+         ( _ () )
+      ))
+      (if (==( depth 0_u64 )) (
+         (if (==( (head-string tt) 44_u8 )) (tail(
+            (set base (TypeSeq(
+               (close base)
+               (parse-type(clone-rope buff))
+            )))
+            (set buff SNil)
+         )) (
+            (set buff (SCons(
+               (close buff)
+               (close (SAtom (clone-rope (head-string tt))))
+            )))
+         ))
+      ) (
+         (set buff (SCons(
+            (close buff)
+            (close (SAtom (clone-rope (head-string tt))))
+         )))
+      ))
+      (set tt (tail-string tt))
+   )))
+   (set base (TypeSeq(
+      (close base)
+      (parse-type(clone-rope buff))
+   )))
+   base
+)) TypeList);
+
+parse-type := λ(: tt String). (: (tail(
+   (let depth 0_u64)
+   (let buff SNil)
+   (let base-type (t1 'Nil_s))
+   (while (head-string tt) (tail(
+      (match (head-string tt) (
+         ()
+         ( 60_u8 (set depth (+( depth 1_u64 )) ))
+         ( 62_u8 (set depth (-( depth 1_u64 )) ))
+         ( 91_u8 (set depth (+( depth 1_u64 )) ))
+         ( 93_u8 (set depth (-( depth 1_u64 )) ))
+         ( _ () )
+      ))
+      (if (==( depth 0_u64 )) (
+         (if (==( (head-string tt) 43_u8 )) (tail(
+            (match base-type (
+               ()
+               ( (TGround( 'Nil_s TypeEOF )) (tail(
+                  (let bt (parse-type-single (clone-rope buff)))
+                  (set base-type bt)
+               )))
+               ( _ (
+                  (set base-type (TAnd(
+                     (close base-type)
+                     (close(parse-type-single (clone-rope buff)))
+                  )))
+               ))
+            ))
+            (set buff SNil)
+         )) (
+            (set buff (SCons(
+               (close buff)
+               (close (SAtom (clone-rope (head-string tt))))
+            )))
+         ))
+      ) (
+         (set buff (SCons(
+            (close buff)
+            (close (SAtom (clone-rope (head-string tt))))
+         )))
+      ))
+      (set tt (tail-string tt))
+   )))
+   (if (non-zero buff) (
+      (match base-type (
+         ()
+         ( (TGround( 'Nil_s TypeEOF )) (tail(
+            (let bt (parse-type-single (clone-rope buff)))
+            (set base-type bt)
+         )))
+         ( _ (
+            (set base-type (TAnd(
+               (close base-type)
+               (close(parse-type-single (clone-rope buff)))
+            )))
+         ))
+      ))
+   ) ())
+   base-type
+)) Type);
