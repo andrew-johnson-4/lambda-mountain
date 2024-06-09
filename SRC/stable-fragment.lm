@@ -57,14 +57,54 @@ fragment::get := λ(: e Fragment)(: k String). (: (tail(
 )) S);
 
 fragment::set := λ(: e Fragment)(: k String)(: v S). (: (tail(
+   (let r e)
    (match e (
       ()
       ( (Fragment( kvs offset ft ctx )) (
-         (set e (Fragment(
+         (set r (Fragment(
             (close(FKVSeq( (close kvs) k v )))
             offset ft (close ctx)
          )))
       ))
    ))
-   e
+   r
 )) Fragment);
+
+fragment::get-type := λ(: e Fragment) . (: (tail(
+   (let tt (maybe-deref(.2( e ))))
+   tt
+)) Type);
+
+fragment::set-type := λ(: e Fragment)(: tt Type). (: (tail(
+   (let r e)
+   (match e (
+      ()
+      ( (Fragment( e-kvs e-offset e-tt e-ctx )) (
+         (set r (Fragment( (close e-kvs) e-offset tt (close e-ctx) )))
+      ))
+   ))
+   r
+)) Fragment);
+
+fragment::local-variable := λ(: offset I64)(: tt Type). (: (tail(
+   (let r (fragment::new()))
+   (set r (fragment::set( r 'expression_s (SAtom(to-string offset)) )))
+   (set r (fragment::set( r 'fragment-type_s (SAtom 'LocalVariable_s) )))
+   (set r (fragment::set-type( r tt )))
+   r
+)) Fragment);
+
+fragment::label := λ(: id String). (: (tail(
+   (let r (fragment::new()))
+   (set r (fragment::set( r 'expression_s (SAtom id) )))
+   (set r (fragment::set( r 'fragment-type_s (SAtom 'Label_s) )))
+   (set r (fragment::set-type( r (t1 'Label_s) )))
+   r
+)) Fragment);
+
+fragment::expression := λ(: val String). (: (tail(
+   (let r (fragment::new()))
+   (set r (fragment::set( r 'expression_s (SAtom val) )))
+   r
+)) Fragment);
+
