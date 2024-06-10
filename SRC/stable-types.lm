@@ -699,3 +699,103 @@ can-unify := λ(: fpt Type)(: pt Type). (: (tail(
    ))
    r
 )) U64);
+
+to-string := λ(: tt Type). (: (tail(
+   (let r (to-string-impl tt))
+   (clone-rope r)
+)) String);
+
+to-string := λ(: tt TypeList). (: (tail(
+   (let r SNil)
+   (match tt (
+      ()
+      ( TypeEOF () )
+      ( (TypeSeq( TypeEOF p1 )) (set r (to-string-impl p1)) )
+      ( (TypeSeq( rst p1 )) (
+         (set r (SCons(
+            (close(to-string rst))
+            (close(SCons(
+               (close(SAtom ',_s))
+               (close(to-string-impl p1))
+            )))
+         )))
+      ))
+   ))
+   r
+)) S);
+
+to-string-impl := λ(: tt Type). (: (tail(
+   (let r SNil)
+   (match tt (
+      ()
+      ( TAny (set r (SAtom '?_s)) )
+      ( (TVar v) (set r (SAtom v)) )
+      ( (TAnd( lt rt )) (tail(
+         (let ls (to-string-impl lt))
+         (let rs (to-string-impl rt))
+         (set r (SCons(
+            (close ls)
+            (close(SCons(
+               (close(SAtom '+_s))
+               (close rs)
+            )))
+         )))
+      )))
+      ( (TGround( tag TypeEOF )) (
+        (set r (SAtom tag))
+      ))
+      ( (TGround( tag ps )) (tail(
+        (set r (SAtom tag))
+        (set r (SCons( (close r) (close(SAtom '<_s)) )))
+        (set r (SCons( (close r) (close(to-string ps)) )))
+        (set r (SCons( (close r) (close(SAtom '>_s)) )))
+      )))
+   ))
+   r
+)) S);
+
+type-of-s := λ(: compound AST). (: (tail(
+   (let r TAny)
+   (match compound (
+      ()
+      ( (Lit tt) (tail(
+         (let nt (parse-type tt))
+         (set r nt)
+      )))
+      ( (Var tt) (tail(
+         (let nt (parse-type tt))
+         (set r nt)
+      )))
+      ( (App( (App( lt (Lit ',_s) )) rt )) (tail(
+         (let ltt (type-of-s lt))
+         (let rtt (type-of-s rt))
+         (set r (TGround(
+            'Cons_s
+            (close(TypeSeq(
+               (close(TypeSeq(
+                  (close TypeEOF)
+                  ltt
+               )))
+               rtt
+            )))
+         )))
+      )))
+      ( _ (exit-error( 'Malformed\sType\sDefinition_s compound )))
+   ))
+   r
+)) Type);
+
+normalize := λ(: tctx TContext). (: (tail(
+   (match tctx (
+      ()
+      ( TCtxEOF () )
+      ( (TCtxBind( rst k kt t )) (tail(
+         (set rst (normalize rst))
+         (set tctx (TCtxBind(
+            (close rst)
+            k (normalize kt) t
+         )))
+      )))
+   ))
+   tctx
+)) TContext);

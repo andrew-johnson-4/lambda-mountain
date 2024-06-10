@@ -386,3 +386,19 @@ fragment::render := λ(: ctx FContext)(: s S). (: (tail(
    ))
    r
 )) S);
+
+union := λ(: ctx FContext)(: tctx TContext). (: (tail(
+   (let r ctx)
+   (while (non-zero tctx) (match tctx (
+      ()
+      ( (TCtxBind( rst k vt _ )) (tail(
+         (let fragment (fragment::expression(to-string vt)))
+         (set fragment (fragment::set( fragment 'program_s (SAtom(to-string vt)) )))
+         (set r (FCtxBind(
+            (close r) k TAny fragment
+         )))
+         (set tctx rst)
+      )))
+   )))
+   r
+)) FContext);
