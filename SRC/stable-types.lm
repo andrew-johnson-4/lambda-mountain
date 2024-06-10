@@ -501,15 +501,85 @@ without-size := λ(: tt Type). (: (tail(
    tt
 )) Type);
 
+without-size-unless-class := λ(: tt TypeList). (: (tail(
+   (match tt (
+      ()
+      ( (TypeSeq( rst p1 )) (
+         (set tt (TypeSeq(
+            (close(without-size-unless-class rst))
+            (without-size-unless-class p1)
+         )))
+      ))
+      ( TypeEOF () )
+   ))
+   tt
+)) TypeList);
+
+without-size-unless-class := λ(: tt Type). (: (tail(
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (tail(
+         (let lt2 (without-size-unless-class-inner lt))
+         (let rt2 (without-size-unless-class-inner rt))
+         (if (non-zero lt2) (
+            (if (non-zero rt2) (
+               (set tt (TAnd( (close lt2) (close rt2) )))
+            ) (
+               (set tt lt2)
+            ))
+         ) (
+            (if (non-zero rt2) (
+               (set tt rt2)
+            ) (
+               (set tt TAny)
+            ))
+         ))
+      )))
+      ( (TGround( tag ps )) (
+         (set tt (TGround( tag (close(without-size-unless-class ps)) )))
+      ))
+      ( TAny () )
+      ( (TVar _) () )
+   ))
+   tt
+)) Type);
+
+without-size-unless-class-inner := λ(: tt Type). (: (tail(
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (tail(
+         (let lt2 (without-size-unless-class-inner lt))
+         (let rt2 (without-size-unless-class-inner rt))
+         (if (non-zero lt2) (
+            (if (non-zero rt2) (
+               (set tt (TAnd( (close lt2) (close rt2) )))
+            ) (
+               (set tt lt2)
+            ))
+         ) (
+            (if (non-zero rt2) (
+               (set tt rt2)
+            ) (
+               (set tt TAny)
+            ))
+         ))
+      )))
+      ( (TGround( 'Sized_s _ )) (set tt TAny) )
+      ( (TGround( tag ps )) (
+         (set tt (TGround( tag (close(without-size-unless-class ps)) )))
+      ))
+      ( TAny () )
+      ( (TVar _) () )
+   ))
+   tt
+)) Type);
+
 normalize := λ(: tt Type). (: (tail(
    (let rt tt)
    (set rt (without-representation rt))
    (set rt (without-tag rt))
-   (let rt-without-size (without-size rt))
    # Sized can serve as a datatype if nothing else is available
-   (if (non-zero rt-without-size) (
-      (set rt rt-without-size)
-   ) ())
+   (set rt (without-size-unless-class rt))
    rt
 )) Type);
 
