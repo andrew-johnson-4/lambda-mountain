@@ -367,37 +367,6 @@ typecheck-assert-one := λ(: term AST). (: (
    ))
 ) Nil);
 
-exit-error := λ(: msg String)(: t AST). (: (tail(
-   (print msg)
-   (print '\n_s)
-   (print (maybe-deref(location-of( t ))))
-   (print '\n_s)
-   (match t (
-      ()
-      ( (As( inner cast )) (tail(
-         (print 'In\sCoercion\n_s)
-         (print inner)(print ':\n_s)
-         (print (maybe-deref(typeof inner)))(print '\n_s)
-         (print 'As:\s_s)(print cast)(print '\n_s)
-      )))
-      ( (App( f a )) (tail(
-         (print 'In\sFunction\sApplication\n_s)
-         (print f)(print ':\n_s)
-         (print (maybe-deref(typeof f)))(print '\n_s)
-         (print a)(print ':\n_s)
-         (print (maybe-deref(typeof a)))(print '\n_s)
-         (print 'Return:\n_s)
-         (print (maybe-deref(typeof t)))(print '\n_s)
-      )))
-      ( _ (tail(
-         (print t)
-         (print '\n_s)
-      )))
-   ))
-   (print '\n_s)
-   (exit 1_u64)
-)) Nil);
-
 normalize := λ(: tctx TContext). (: (tail(
    (match tctx (
       ()
