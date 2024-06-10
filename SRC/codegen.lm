@@ -1,7 +1,7 @@
 
 #global binding
 compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (tail(
-   (let kt (maybe-deref(typecheck-lookup term)))
+   (let kt (maybe-deref(typeof term)))
    (match term (
       ()
       ( (Abs( lhs rhs )) (if (is-open kt) () (tail(
@@ -61,13 +61,13 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (tail(
             (close(SAtom '\n_s))
          )))
 
-         (let kt (maybe-deref(typecheck-lookup term)))
+         (let kt (maybe-deref(typeof term)))
          (let e1 (maybe-deref(compile-expr( ctx term -8_i64 Used ))))
          (let e1-2 (maybe-deref(fragment::set-type( e1 kt ))))(set e1 e1-2)
          (let e2 (maybe-deref(fragment-context::lookup( ctx k kt term ))))
          (let e3 (maybe-deref(fragment-apply( ctx -8_i64 'mov_s
             (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
-            (typecheck-lookup term)
+            (typeof term)
             term
          ))))
          (set assemble-init-section (SCons(
@@ -95,7 +95,7 @@ compile-expr := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used IsUsed
          (let e-1 (maybe-deref(compile-expr-direct( ctx term stack-offset Used ))))(set e e-1)
          (let e-2 (maybe-deref(fragment-apply( ctx stack-offset 'cdecl::return_s
             (FLSeq( (close FLEOF) e ))
-            (typecheck-lookup term)
+            (typeof term)
             term
          ))))(set e e-2)
       )))
@@ -116,12 +116,12 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ( ASTNil () )
       ( ASTEOF () )
       ( (Var( id )) (tail(
-         (let e-1 (maybe-deref(fragment-context::lookup( ctx id (maybe-deref(typecheck-lookup term)) term ))))(set e e-1)
+         (let e-1 (maybe-deref(fragment-context::lookup( ctx id (maybe-deref(typeof term)) term ))))(set e e-1)
          (let e-2 (maybe-deref(fragment::set-context( e ctx ))))(set e e-2)
          (let e-3 (maybe-deref(fragment::set-offset( e stack-offset ))))(set e e-3)
       )))
       ( (Lit( val )) (tail(
-         (let ltype (maybe-deref(typecheck-lookup term)))
+         (let ltype (maybe-deref(typeof term)))
          (match (slot( ltype 'String_s )) (
             ()
             ( (TGround( 'String_s _ )) (tail(
@@ -183,14 +183,14 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       )))
       ( (Asc( t tt )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset used ))))
-         (let e1-2 (maybe-deref(fragment::set-type( e1 (maybe-deref(typecheck-lookup term)) ))))(set e1 e1-2)
+         (let e1-2 (maybe-deref(fragment::set-type( e1 (maybe-deref(typeof term)) ))))(set e1 e1-2)
          (set e e1)
       )))
       ( (App( (Var 'tail_s) (App( lt rt )) )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx lt stack-offset Unused ))))
          (let e2 (maybe-deref(compile-expr( (maybe-deref(fragment::get-context e1)) rt (fragment::get-offset e1) Used ))))
          (let e12 (maybe-deref(fragment::chain( e1 e2 ))))
-         (let e12-2 (maybe-deref(fragment::set-type( e12 (maybe-deref(typecheck-lookup term)) ))))(set e12 e12-2)
+         (let e12-2 (maybe-deref(fragment::set-type( e12 (maybe-deref(typeof term)) ))))(set e12 e12-2)
          (set e e12)
       )))
       ( (App( (Var 'gensym-label_s) (Var id) )) (tail(
@@ -217,7 +217,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ( (App( (Var 'maybe-deref_s) t )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset Used ))))
          (set e e1)
-         (let tt (maybe-deref(typecheck-lookup t)))
+         (let tt (maybe-deref(typeof t)))
          (match (slot( tt 'Array_s )) (
             ()
             ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF TAny )) _ )) )) () )
@@ -233,7 +233,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                ))))(set e2 e2-3)
                (let e3 (maybe-deref(fragment-apply( ctx stack-offset 'push_s
                   (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
-                  (typecheck-lookup term)
+                  (typeof term)
                   term
                ))))
                (let e3-2 (maybe-deref(fragment::set-type( e3 (maybe-deref(tand( inner-tt (maybe-deref(t1 'StackVariable_s)) ))) ))))(set e3 e3-2)
@@ -264,17 +264,17 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       )))
       ( (As( t tt )) (tail(
          (let e-1 (maybe-deref(compile-expr( ctx t stack-offset used ))))(set e e-1)
-         (let e-2 (maybe-deref(fragment::set-type( e (maybe-deref(typecheck-lookup term)) ))))(set e e-2)
+         (let e-2 (maybe-deref(fragment::set-type( e (maybe-deref(typeof term)) ))))(set e e-2)
       )))
       ( (App( (App( (Var 'set_s) (Var k) )) rhs )) (tail(
-         (let kt (maybe-deref(typecheck-lookup rhs)))
+         (let kt (maybe-deref(typeof rhs)))
 
          (let e1 (maybe-deref(compile-expr( ctx rhs stack-offset Used ))))
          (let e1-2 (maybe-deref(fragment::set-type( e1 kt ))))(set e1 e1-2)
          (let e2 (maybe-deref(fragment-context::lookup( ctx k kt term ))))
          (let e3 (maybe-deref(fragment-apply( ctx stack-offset 'mov_s
             (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
-            (typecheck-lookup term)
+            (typeof term)
             term
          ))))(set e e3)
          (let e3-2 (maybe-deref(fragment::set-context( e ctx ))))(set e e3-2)
@@ -319,7 +319,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (let e3-4 (maybe-deref(fragment::set( e3 'unframe_s SNil ))))(set e3 e3-4)
          (let e3-5 (maybe-deref(fragment::set-context( e3 ctx ))))(set e3 e3-5)
          (let e3-6 (maybe-deref(fragment::set-offset( e3 stack-offset ))))(set e3 e3-6)
-         (let e3-7 (maybe-deref(fragment::set-type( e3 (maybe-deref(typecheck-lookup term)) ))))(set e3 e3-7)
+         (let e3-7 (maybe-deref(fragment::set-type( e3 (maybe-deref(typeof term)) ))))(set e3 e3-7)
          (set e e3)
       )))
       ( (App( (App( (App( (Var 'if_s) cond )) t )) f )) (tail(
@@ -372,11 +372,11 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                )))
             ))
          ))))(set e1 e1-9)
-         (let e1-10 (maybe-deref(fragment::set-type( e1 (maybe-deref(typecheck-lookup term)) ))))(set e1 e1-10)
+         (let e1-10 (maybe-deref(fragment::set-type( e1 (maybe-deref(typeof term)) ))))(set e1 e1-10)
          (set e e1)
       )))
       ( (App( (Abs( (Var lhs) ASTNil )) rhs )) (tail(
-         (let rtype (maybe-deref(typecheck-lookup rhs)))
+         (let rtype (maybe-deref(typeof rhs)))
          (let rtype-clean (maybe-deref(without-representation rtype)))(set rtype rtype-clean)
          (let rtype-2 (TAnd( (close rtype) (close(t1 'LocalVariable_s)) )))(set rtype rtype-2)
          (let rtype-3 (maybe-deref(typecheck-annotate-size( rtype ))))(set rtype rtype-3)
@@ -400,29 +400,29 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          ))))
          (let e1-3 (maybe-deref(fragment::set-context( e1-2 new-ctx ))))
          (let e1-4 (maybe-deref(fragment::set-offset( e1-3 bind-offset ))))
-         (let e1-5 (maybe-deref(fragment::set-type( e1-4 (maybe-deref(typecheck-lookup term)) ))))
+         (let e1-5 (maybe-deref(fragment::set-type( e1-4 (maybe-deref(typeof term)) ))))
          (set e e1-5)
       )))
       ( (App( f a )) (
-         (match (slot( (maybe-deref(typecheck-lookup f)) 'Arrow_s )) (
+         (match (slot( (maybe-deref(typeof f)) 'Arrow_s )) (
             ()
             ( (TGround( 'Arrow_s _ )) (
                (match f (
                   ()
                   ( (Var fname) (tail(
-                     (let e1 (maybe-deref(compile-stack-call( ctx fname (maybe-deref(typecheck-lookup term)) a stack-offset used ))))
+                     (let e1 (maybe-deref(compile-stack-call( ctx fname (maybe-deref(typeof term)) a stack-offset used ))))
                      (set e e1)
                   )))
                   ( (Asc( (Var fname) ft )) (tail(
-                     (let e1 (maybe-deref(compile-stack-call( ctx fname (maybe-deref(typecheck-lookup term)) a stack-offset used ))))
+                     (let e1 (maybe-deref(compile-stack-call( ctx fname (maybe-deref(typeof term)) a stack-offset used ))))
                      (set e e1)
                   )))
                   ( (Lit fname) (tail(
-                     (let e1 (maybe-deref(compile-constructor( ctx fname (maybe-deref(typecheck-lookup term)) (maybe-deref(typecheck-lookup a)) a stack-offset ))))
+                     (let e1 (maybe-deref(compile-constructor( ctx fname (maybe-deref(typeof term)) (maybe-deref(typeof a)) a stack-offset ))))
                      (set e e1)
                   )))
                   ( (Asc( (Lit fname) ft )) (tail(
-                     (let e1 (maybe-deref(compile-constructor( ctx fname (maybe-deref(typecheck-lookup term)) (maybe-deref(typecheck-lookup a)) a stack-offset ))))
+                     (let e1 (maybe-deref(compile-constructor( ctx fname (maybe-deref(typeof term)) (maybe-deref(typeof a)) a stack-offset ))))
                      (set e e1)
                   )))
                   ( _ (
@@ -486,7 +486,7 @@ compile-destructure-args := λ(: tt Type)(: ctx FContext)(: lhs AST)(: offset I6
 )) FContext);
 
 compile-stack-call := λ(: ctx FContext)(: function-name String)(: return-type Type)(: args AST)(: offset I64)(: used IsUsed). (: (tail(
-   (let f (maybe-deref(fragment-context::lookup( ctx function-name (maybe-deref(typecheck-lookup args)) args ))))
+   (let f (maybe-deref(fragment-context::lookup( ctx function-name (maybe-deref(typeof args)) args ))))
    (let function-type (maybe-deref(fragment::get-type f)))
    (let r (maybe-deref(fragment::new())))
 
@@ -510,7 +510,7 @@ compile-stack-call := λ(: ctx FContext)(: function-name String)(: return-type T
          (set call (SCons( (close call) (close(SAtom '\n\oArgument:\s_s)) )))
          (set call (SCons( (close call) (close(SAtom function-name)) )))
          (set call (SCons( (close call) (close(SAtom '\s:\s_s)) )))
-         (set call (SCons( (close call) (close(SAtom(to-string (maybe-deref(typecheck-lookup args))))) )))
+         (set call (SCons( (close call) (close(SAtom(to-string (maybe-deref(typeof args))))) )))
          (set call (SCons( (close call) (close(SAtom '\n_s)) )))
          (set call (SCons( (close call) (close(SAtom '\oReturn:\s_s)) )))
          (set call (SCons( (close call) (close(SAtom function-name)) )))
@@ -541,7 +541,7 @@ compile-stack-call := λ(: ctx FContext)(: function-name String)(: return-type T
             ( rsz (
                (if (is( used Used )) (tail(
                   (let rsi 0_u64)
-                  (let args-size (typecheck-sizeof(maybe-deref(typecheck-lookup args))))
+                  (let args-size (typecheck-sizeof(maybe-deref(typeof args))))
                   (let rel-off (-( -24_i64 (as args-size I64) )))
                   (while (<( rsi rsz )) (tail(
                      (set call (SCons( (close call) (close(SAtom '\tpush\s_s)) )))
@@ -592,7 +592,7 @@ compile-translate-local-variables := λ(: ctx FContext)(: delta I64). (: (tail(
 )) FContext[]);
 
 compile-stack-call-push-args := λ(: ctx FContext)(: args AST)(: inner-offset I64). (: (tail(
-   (let args-type (maybe-deref(typecheck-lookup args)))
+   (let args-type (maybe-deref(typeof args)))
    (let args-size (typecheck-aligned-sizeof args-type))
    (let stack-offset 0_i64)
    # is stack-offset really just zero here? TODO confirm
@@ -676,7 +676,7 @@ compile-maybe-push-stack := λ(: ctx FContext)(: offset I64)(: fragment Fragment
 
 compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
    (let r (maybe-deref(fragment::new())))
-   (let et (maybe-deref(typecheck-lookup rval)))
+   (let et (maybe-deref(typeof rval)))
    (match (slot( et 'Cons_s )) (
       ()
       ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
@@ -686,7 +686,7 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
                (let e1 (maybe-deref(compile-push-rvalue( ctx le offset ))))
                (let e2 (maybe-deref(compile-expr( ctx re (fragment::get-offset e1) Used ))))
                (let e2-2 (maybe-deref(compile-maybe-push-stack( ctx (fragment::get-offset e2) e2 p2 rval ))))(set e2 e2-2)
-               (let sz (typecheck-sizeof(maybe-deref(typecheck-lookup rval))))
+               (let sz (typecheck-sizeof(maybe-deref(typeof rval))))
                (let e2-3 (maybe-deref(fragment::set-offset( e2 (-( offset (as sz I64) )) ))))(set e2 e2-3)
                (set r (maybe-deref(fragment::chain( e1 e2 ))))
             )))
@@ -694,7 +694,7 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
          ))
       ))
       ( _ (tail(
-         (let sz (typecheck-sizeof(maybe-deref(typecheck-lookup rval))))
+         (let sz (typecheck-sizeof(maybe-deref(typeof rval))))
          (if (==( sz 0_u64 )) (tail(
             (let r-1 (maybe-deref(fragment::set-context( r ctx ))))(set r r-1)
             (let r-2 (maybe-deref(fragment::set-offset( r offset ))))(set r r-2)
@@ -712,7 +712,7 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
 
 compile-fragment-args := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
    (let r FLEOF)
-   (let et (maybe-deref(typecheck-lookup rval)))
+   (let et (maybe-deref(typeof rval)))
    (match (slot( et 'Cons_s )) (
       ()
       ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (

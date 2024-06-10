@@ -68,7 +68,7 @@ fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentLi
       ( _ () )
    ))
 
-   (let lhs-type (typecheck-lookup(fragment::get( arrow 'fragment_s ))))
+   (let lhs-type (typeof(fragment::get( arrow 'fragment_s ))))
    (let tctx (maybe-deref(typecheck-unify-generous( lhs-type direct-type ))))
    (let ctx-2 (union( ctx tctx )))(set ctx ctx-2)
 
@@ -101,7 +101,7 @@ fragment-destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragmentList). (:
    (match lhs (
       ()
       ( (SCons( (SAtom 'Var_s) (SAtom k) )) (tail(
-         (let a-type (maybe-deref(typecheck-lookup lhs)))
+         (let a-type (maybe-deref(typeof lhs)))
          (match args (
             ()
             ( (FLSeq( _ f )) (tail(
@@ -122,7 +122,7 @@ fragment-destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragmentList). (:
          (match lhs (
             ()
             ( (SCons( (SAtom 'App_s) (SCons( _ binding )) )) (tail(
-               (let a-type-2 (maybe-deref(typecheck-lookup binding)))
+               (let a-type-2 (maybe-deref(typeof binding)))
                (set a-type a-type-2)
             )))
          ))

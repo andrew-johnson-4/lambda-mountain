@@ -22,16 +22,16 @@ compile := λ(). (: (tail(
             (let fragment (maybe-deref(fragment::new())))
             (let fragment-2 (maybe-deref(fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))
             (let fragment-3 (maybe-deref(fragment::set( fragment-2 'fragment_s (maybe-deref(to-s rhs)) ))))
-            (let fragment-4 (maybe-deref(fragment::set-type( fragment-3 (maybe-deref(typecheck-lookup rhs)) ))))
+            (let fragment-4 (maybe-deref(fragment::set-type( fragment-3 (maybe-deref(typeof rhs)) ))))
             (let global-ctx-2 (maybe-deref(fragment-context::bind(
                global-ctx
                k
-               (maybe-deref(typecheck-lookup rhs))
+               (maybe-deref(typeof rhs))
                fragment-4
             ))))
             (match preview-program (
                ()
-               ( (Seq( _ frg )) (typecheck-ascript( (fragment::get( fragment-4 'fragment_s )) (typecheck-lookup frg) )) )
+               ( (Seq( _ frg )) (typecheck-ascript( (fragment::get( fragment-4 'fragment_s )) (typeof frg) )) )
             ))
             (set global-ctx global-ctx-2)
          )) ())
@@ -50,13 +50,13 @@ compile := λ(). (: (tail(
          (match preview-program (
             ()
             ( (Seq( _ term )) (
-               (if (is-open(typecheck-lookup term)) (set open True_u8) ())
+               (if (is-open(typeof term)) (set open True_u8) ())
             ))
          ))
          (if (==( open True_u8 )) () (tail(
             (let fragment (maybe-deref(fragment::new())))
             (let fragment-2 (maybe-deref(fragment::set( fragment 'fragment-type_s (SAtom 'Global_s) ))))
-            (let rhs-tt (maybe-deref(typecheck-lookup rhs)))
+            (let rhs-tt (maybe-deref(typeof rhs)))
             (match (slot( rhs-tt '->_s )) (
                ()
                ( (TGround( '->_s _ )) (tail(
@@ -85,11 +85,11 @@ compile := λ(). (: (tail(
          (let fragment (maybe-deref(fragment::new())))
          (let fragment-2 (maybe-deref(fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))
          (let fragment-3 (maybe-deref(fragment::set( fragment-2 'fragment_s (maybe-deref(to-s rhs)) ))))
-         (let fragment-4 (maybe-deref(fragment::set-type( fragment-3 (maybe-deref(typecheck-lookup rhs)) ))))
+         (let fragment-4 (maybe-deref(fragment::set-type( fragment-3 (maybe-deref(typeof rhs)) ))))
          (let global-ctx-2 (maybe-deref(fragment-context::bind(
             global-ctx
             k
-            (maybe-deref(typecheck-lookup rhs))
+            (maybe-deref(typeof rhs))
             fragment-4
          ))))
          (set global-ctx global-ctx-2)
@@ -114,7 +114,7 @@ compile-program-ordered := λ(: global-ctx FContext)(: program AST). (: (tail(
    (match program (
       ()
       ( (Seq( _ e )) (
-         (if (is-open(typecheck-lookup e)) (set open True_u8) ())
+         (if (is-open(typeof e)) (set open True_u8) ())
       ))
       ( _ () )
    ))
@@ -527,7 +527,7 @@ compile-define-tag-constructor-parametric := λ(: ctx FContext)(: tag String)(: 
    (let fragment-1 (maybe-deref(fragment::set-type( fragment arrow-dc ))))(set fragment fragment-1)
    (let fragment-2 (maybe-deref(fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment fragment-2)
    (let spt (specialize-term( tctx (fragment::get( fragment 'fragment_s )) )))
-   (typecheck-ascript( spt (typecheck-lookup( (fragment::get( fragment 'fragment_s )) )) ))
+   (typecheck-ascript( spt (typeof( (fragment::get( fragment 'fragment_s )) )) ))
    (let fragment-3 (maybe-deref(fragment::set( fragment 'fragment_s spt ))))(set fragment fragment-3)
    (let ctx-2 (maybe-deref(fragment-context::bind(
       ctx 'push_s arrow-tt fragment
@@ -539,7 +539,7 @@ compile-define-tag-constructor-parametric := λ(: ctx FContext)(: tag String)(: 
    (let fragment-1 (maybe-deref(fragment::set-type( fragment arrow-dc ))))(set fragment fragment-1)
    (let fragment-2 (maybe-deref(fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment fragment-2)
    (let spt (specialize-term( tctx (fragment::get( fragment 'fragment_s )) )))
-   (typecheck-ascript( spt (typecheck-lookup( (fragment::get( fragment 'fragment_s )) )) ))
+   (typecheck-ascript( spt (typeof( (fragment::get( fragment 'fragment_s )) )) ))
    (let fragment-3 (maybe-deref(fragment::set( fragment 'fragment_s spt ))))(set fragment fragment-3)
    (let ctx-2 (maybe-deref(fragment-context::bind(
       ctx 'push_s arrow-tt fragment
@@ -551,7 +551,7 @@ compile-define-tag-constructor-parametric := λ(: ctx FContext)(: tag String)(: 
    (let fragment-1 (maybe-deref(fragment::set-type( fragment arrow-dc ))))(set fragment fragment-1)
    (let fragment-2 (maybe-deref(fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))(set fragment fragment-2)
    (let spt (specialize-term( tctx (fragment::get( fragment 'fragment_s )) )))
-   (typecheck-ascript( spt (typecheck-lookup( (fragment::get( fragment 'fragment_s )) )) ))
+   (typecheck-ascript( spt (typeof( (fragment::get( fragment 'fragment_s )) )) ))
    (let fragment-3 (maybe-deref(fragment::set( fragment 'fragment_s spt ))))(set fragment fragment-3)
    (let ctx-2 (maybe-deref(fragment-context::bind(
       ctx 'push_s arrow-tt fragment
