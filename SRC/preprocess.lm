@@ -1,83 +1,8 @@
 
-type IndexList IEOF | (ISeq( IndexList[] , String , U64 )); zero IndexList IEOF;
-
-preprocess-tag-indices := (: IEOF IndexList);
-preprocess-tag-index-eof := 99999_u64;
-
-preprocess-index-of-tag := λ(: tag String). (: (tail(
-   (let index preprocess-tag-index-eof)
-   (let indices preprocess-tag-indices)
-   (while (non-zero indices) (match indices (
-      ()
-      ( (ISeq( rst tag-name tag-index )) (tail(
-         (if (==( tag tag-name )) (
-            (set index tag-index)
-         ) ())
-         (set indices rst)
-      )))
-   )))
-   index
-)) U64);
-
 preprocess := λ. (: (tail(
-   (preprocess-index-typedefs ast-parsed-program)
+   (index-typedefs ast-parsed-program)
    (let program (maybe-deref(preprocess-apply ast-parsed-program)))
    (set ast-parsed-program program)
-)) Nil);
-
-preprocess-index-typedefs := λ(: program AST). (: (
-   (while (non-zero program) (match program (
-      ()
-      ( (Seq( rst term )) (tail(
-         (preprocess-index-typedef term)
-         (set program rst)
-      )))
-      ( _ (set program ASTEOF) )
-   )))
-) Nil);
-
-preprocess-index-typedef := λ(: term AST). (: (match term (
-   ()
-   ( (ASTType( lhs rhs )) (
-      (preprocess-index-indices( rhs 0_u64 ))
-   ))
-   ( _ () )
-)) Nil);
-
-preprocess-index-indices := λ(: def AST)(: index U64) . (: (tail(
-   ()
-   (match def (
-      ()
-      ( (App( (App( tds (Var '|_s) )) body )) (tail(
-         (preprocess-index-indices( tds (+( index 1_u64 )) ))
-         (preprocess-index-index( body index ))
-      )))
-      ( body (
-         (preprocess-index-index( body index ))
-      ))
-   ))
-)) Nil);
-
-preprocess-index-index := λ(: body AST)(: index U64). (: (tail(
-   (match body (
-      ()
-      ( (Lit tag) (
-         (set preprocess-tag-indices (ISeq(
-            (close preprocess-tag-indices)
-            tag
-            index
-         )))
-      ))
-      ( (App( (Lit tag) args )) (
-         (set preprocess-tag-indices (ISeq(
-            (close preprocess-tag-indices)
-            tag
-            index
-         )))
-      ))
-      ( _ () )
-   ))
-   ()
 )) Nil);
 
 preprocess-apply := λ(: program AST). (: (tail(
@@ -279,7 +204,7 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
          (if (==( pl el )) (set r CtxNil) ())
       ))
       ( (Pair( (App( (Lit ':Literal:_s) (Var pv) )) (Lit el) )) (
-         (if (==( (preprocess-index-of-tag el) preprocess-tag-index-eof ))
+         (if (==( (index-of-tag el) unknown-index-of-tag ))
              (set r (CtxBind( (close CtxNil) pv (close term) )))
              ()
          )
@@ -291,11 +216,11 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
          (set r (CtxBind( (close CtxNil) pv (close term) )))
       ))
       ( (Pair( (App( (App( (Lit ':Tag:_s) (Var pv) )) (Var pt) )) (Lit el) )) (
-         (if (==( (preprocess-index-of-tag el) preprocess-tag-index-eof )) () (tail(
+         (if (==( (index-of-tag el) unknown-index-of-tag )) () (tail(
             (set r CtxNil)
             (set r (CtxBind( (close r) pv (close(
                (Asc(
-                  (close(Lit (to-string(preprocess-index-of-tag el)) ))
+                  (close(Lit (to-string(index-of-tag el)) ))
                   (close(parse-type 'Constant+Literal+U64_s))
                ))
             )) )))

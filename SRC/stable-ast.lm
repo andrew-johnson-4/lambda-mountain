@@ -19,7 +19,7 @@ type FContext FCtxEOF | (FCtxBind( FContext[] , String , Type , Fragment )); zer
 type TypeConstructorList (TConEOF) | (TConSeq( TypeConstructorList[] , String , Type )); zero TypeConstructorList TConEOF;
 
 type StringList SLEOF | (SLSeq( StringList[] , String )); zero StringList SLEOF;
-type StringU64List (SUEOF) | (SUSeq( StringU64List[] , String , U64 )); zero StringU64List SUEOF;
+type StringU64List SUEOF | (SUSeq( StringU64List[] , String , U64 )); zero StringU64List SUEOF;
 
 type TPair (TPair( Type , Type ));
 type TLPair (TLPair( TypeList , TypeList ));

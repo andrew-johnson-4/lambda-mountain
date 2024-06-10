@@ -1,7 +1,7 @@
 
 develop: compile-production
 	rm -f tmp tmp.o tmp.s
-	./production -o tmp.s tests/regress/paradata.lm
+	./production -o tmp.s tests/regress/simple-sized.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp

@@ -1,0 +1,15 @@
+
+import LIB/default-instruction-set.lm;
+import LIB/default-primitives.lm;
+import LIB/default-rules.lm;
+import LIB/default-stdlib.lm;
+
+f := λ(: x Sized<8>). (: (
+  ()
+) Nil);
+
+main := λ. (: (tail(
+  (f 1_u64)
+  (f 1_i64)
+)) Nil);
+

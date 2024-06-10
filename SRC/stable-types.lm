@@ -11,6 +11,31 @@ tag-is-fragment-index := (: SLEOF StringList);
 # global Class -> Size map, mutable
 class-to-size-index := (: SUEOF StringU64List);
 
+# global Tag -> Index map, mutable
+tag-to-index-index := (: SUEOF StringU64List);
+unknown-index-of-tag := 99999_u64;
+
+index-of-tag := λ(: tag String). (: (tail(
+   (let r unknown-index-of-tag)
+   (let index tag-to-index-index)
+   (while (non-zero index) (match index (
+      ()
+      ( (SUSeq( rst tag-name tag-index )) (
+         (if (==( tag tag-name )) (tail(
+            (set r tag-index)
+            (set index SUEOF)
+         )) (set index rst))
+      ))
+   )))
+   r
+)) U64);
+
+index-index-of-tag := λ(: tag String)(: index U64). (: (
+   (set tag-to-index-index (SUSeq(
+      (close tag-to-index-index) tag index
+   )))
+) Nil);
+
 index-size-of-class := λ(: class String)(: size U64). (: (
    (if (size-of-class class) () (
       (set class-to-size-index (SUSeq(
@@ -476,11 +501,85 @@ without-size := λ(: tt Type). (: (tail(
    tt
 )) Type);
 
+without-size-unless-class := λ(: tt TypeList). (: (tail(
+   (match tt (
+      ()
+      ( (TypeSeq( rst p1 )) (
+         (set tt (TypeSeq(
+            (close(without-size-unless-class rst))
+            (without-size-unless-class p1)
+         )))
+      ))
+      ( TypeEOF () )
+   ))
+   tt
+)) TypeList);
+
+without-size-unless-class := λ(: tt Type). (: (tail(
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (tail(
+         (let lt2 (without-size-unless-class-inner lt))
+         (let rt2 (without-size-unless-class-inner rt))
+         (if (non-zero lt2) (
+            (if (non-zero rt2) (
+               (set tt (TAnd( (close lt2) (close rt2) )))
+            ) (
+               (set tt lt2)
+            ))
+         ) (
+            (if (non-zero rt2) (
+               (set tt rt2)
+            ) (
+               (set tt TAny)
+            ))
+         ))
+      )))
+      ( (TGround( tag ps )) (
+         (set tt (TGround( tag (close(without-size-unless-class ps)) )))
+      ))
+      ( TAny () )
+      ( (TVar _) () )
+   ))
+   tt
+)) Type);
+
+without-size-unless-class-inner := λ(: tt Type). (: (tail(
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (tail(
+         (let lt2 (without-size-unless-class-inner lt))
+         (let rt2 (without-size-unless-class-inner rt))
+         (if (non-zero lt2) (
+            (if (non-zero rt2) (
+               (set tt (TAnd( (close lt2) (close rt2) )))
+            ) (
+               (set tt lt2)
+            ))
+         ) (
+            (if (non-zero rt2) (
+               (set tt rt2)
+            ) (
+               (set tt TAny)
+            ))
+         ))
+      )))
+      ( (TGround( 'Sized_s _ )) (set tt TAny) )
+      ( (TGround( tag ps )) (
+         (set tt (TGround( tag (close(without-size-unless-class ps)) )))
+      ))
+      ( TAny () )
+      ( (TVar _) () )
+   ))
+   tt
+)) Type);
+
 normalize := λ(: tt Type). (: (tail(
    (let rt tt)
    (set rt (without-representation rt))
-   (set rt (without-size rt))
    (set rt (without-tag rt))
+   # Sized can serve as a datatype if nothing else is available
+   (set rt (without-size-unless-class rt))
    rt
 )) Type);
 
