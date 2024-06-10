@@ -504,8 +504,12 @@ without-size := λ(: tt Type). (: (tail(
 normalize := λ(: tt Type). (: (tail(
    (let rt tt)
    (set rt (without-representation rt))
-   (set rt (without-size rt))
    (set rt (without-tag rt))
+   (let rt-without-size (without-size rt))
+   # Sized can serve as a datatype if nothing else is available
+   (if (non-zero rt-without-size) (
+      (set rt rt-without-size)
+   ) ())
    rt
 )) Type);
 
