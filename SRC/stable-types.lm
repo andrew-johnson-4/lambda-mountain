@@ -784,3 +784,18 @@ type-of-s := λ(: compound AST). (: (tail(
    ))
    r
 )) Type);
+
+normalize := λ(: tctx TContext). (: (tail(
+   (match tctx (
+      ()
+      ( TCtxEOF () )
+      ( (TCtxBind( rst k kt t )) (tail(
+         (set rst (normalize rst))
+         (set tctx (TCtxBind(
+            (close rst)
+            k (normalize kt) t
+         )))
+      )))
+   ))
+   tctx
+)) TContext);

@@ -367,21 +367,6 @@ typecheck-assert-one := λ(: term AST). (: (
    ))
 ) Nil);
 
-normalize := λ(: tctx TContext). (: (tail(
-   (match tctx (
-      ()
-      ( TCtxEOF () )
-      ( (TCtxBind( rst k kt t )) (tail(
-         (set rst (normalize rst))
-         (set tctx (TCtxBind(
-            (close rst)
-            k (normalize kt) t
-         )))
-      )))
-   ))
-   tctx
-)) TContext);
-
 nonnormal := λ(: tt Type). (: (tail(
    (let rt TAny)
    (match tt (
