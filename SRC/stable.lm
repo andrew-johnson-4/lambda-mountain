@@ -10,6 +10,7 @@ import SRC/stable-types.lm;
 import SRC/stable-utility.lm;
 import SRC/stable-tokenize.lm;
 import SRC/stable-parse.lm;
+import SRC/stable-preprocess.lm;
 import SRC/stable-fragment.lm;
 import SRC/stable-context.lm;
 import SRC/stable-index.lm;

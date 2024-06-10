@@ -1,55 +1,8 @@
 
 preprocess := λ. (: (tail(
-   (preprocess-index-typedefs ast-parsed-program)
+   (index-typedefs ast-parsed-program)
    (let program (maybe-deref(preprocess-apply ast-parsed-program)))
    (set ast-parsed-program program)
-)) Nil);
-
-preprocess-index-typedefs := λ(: program AST). (: (
-   (while (non-zero program) (match program (
-      ()
-      ( (Seq( rst term )) (tail(
-         (preprocess-index-typedef term)
-         (set program rst)
-      )))
-      ( _ (set program ASTEOF) )
-   )))
-) Nil);
-
-preprocess-index-typedef := λ(: term AST). (: (match term (
-   ()
-   ( (ASTType( lhs rhs )) (
-      (preprocess-index-indices( rhs 0_u64 ))
-   ))
-   ( _ () )
-)) Nil);
-
-preprocess-index-indices := λ(: def AST)(: index U64) . (: (tail(
-   ()
-   (match def (
-      ()
-      ( (App( (App( tds (Var '|_s) )) body )) (tail(
-         (preprocess-index-indices( tds (+( index 1_u64 )) ))
-         (preprocess-index-index( body index ))
-      )))
-      ( body (
-         (preprocess-index-index( body index ))
-      ))
-   ))
-)) Nil);
-
-preprocess-index-index := λ(: body AST)(: index U64). (: (tail(
-   (match body (
-      ()
-      ( (Lit tag) (
-         (index-index-of-tag( tag index ))
-      ))
-      ( (App( (Lit tag) args )) (
-         (index-index-of-tag( tag index ))
-      ))
-      ( _ () )
-   ))
-   ()
 )) Nil);
 
 preprocess-apply := λ(: program AST). (: (tail(
