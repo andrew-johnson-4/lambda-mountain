@@ -116,34 +116,6 @@ preprocess-apply := λ(: program AST). (: (tail(
    r
 )) AST);
 
-is-macro-head := λ(: s String)(: m AST). (: (tail(
-   (let r 0_u64)
-   (match m (
-      ()
-      ( (Lit mv) (set r (==( s mv ))) )
-      ( (App( l1 l2 )) (set r (is-macro-head( s l1 ))) )
-      ( _ (exit-error( 'Unrecognized\sMacro\sLHS_s m )) )
-   ))
-   r
-)) U64);
-
-is-macro-head := λ(: s String). (: (tail(
-   (let macros preprocess-macros)
-   (let found 0_u64)
-   (while (non-zero macros) (match macros (
-      ()
-      ( (MSeq( rst (Macro( mlhs mrhs )) )) (
-         (if (is-macro-head( s mlhs )) (tail(
-            (set found 1_u64)
-            (set macros MEOF)
-         )) (
-            (set macros rst)
-         ))
-      ))
-   )))
-   found
-)) U64);
-
 try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
    (let r CtxEOF)
    (match (Pair( lhs term )) (
