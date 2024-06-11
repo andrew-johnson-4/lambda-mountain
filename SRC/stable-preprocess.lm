@@ -113,7 +113,7 @@ preprocess-apply := λ(: program AST). (: (tail(
             ()
             ( (SfxSeq( rst sfxs sfxtt )) (
                (if (has-suffix( l sfxs )) (tail(
-                  (let lloc (maybe-deref(location-of l)))
+                  (let lloc (location-of l))
                   (let lpfx (remove-suffix( l sfxs )))
                   (map-location( lpfx lloc ))
                   (set r (Asc( (close (Lit lpfx)) (close sfxtt) )))
@@ -130,7 +130,7 @@ preprocess-apply := λ(: program AST). (: (tail(
             ()
             ( (SfxSeq( rst sfxs sfxtt )) (
                (if (has-suffix( l sfxs )) (tail(
-                  (let lloc (maybe-deref(location-of l)))
+                  (let lloc (location-of l))
                   (let lpfx (remove-suffix( l sfxs )))
                   (map-location( lpfx lloc ))
                   (set r (Asc( (close (Lit lpfx)) (close sfxtt) )))
@@ -213,7 +213,7 @@ preprocess-apply-maybe := λ(: program AST). (: (tail(
             ()
             ( CtxEOF (set macros rst) )
             ( ctx (tail(
-               (let p (maybe-deref(apply( ctx rhs ))))
+               (let p (apply( ctx rhs )))
                (let c (maybe-deref(extract-uuids( program CtxEOF p ))))
                (let u (maybe-deref(substitute-uuids( c p ))))
                (let n (preprocess-apply u))
