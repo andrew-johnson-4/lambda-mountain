@@ -181,7 +181,7 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
       ))
       ( (Pair( (App( (Lit ':Literal:_s) (Var pv) )) (Lit el) )) (
          (if (==( (index-of-tag el) unknown-index-of-tag ))
-             (set r (CtxBind( (close CtxNil) pv (close term) )))
+             (set r (CtxBind( (close CtxNil) pv term )))
              ()
          )
       ))
@@ -189,22 +189,22 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
          ()
       ))
       ( (Pair( (App( (Lit ':Variable:_s) (Var pv) )) (Var el) )) (
-         (set r (CtxBind( (close CtxNil) pv (close term) )))
+         (set r (CtxBind( (close CtxNil) pv term )))
       ))
       ( (Pair( (App( (App( (Lit ':Tag:_s) (Var pv) )) (Var pt) )) (Lit el) )) (
          (if (==( (index-of-tag el) unknown-index-of-tag )) () (tail(
             (set r CtxNil)
-            (set r (CtxBind( (close r) pv (close(
+            (set r (CtxBind( (close r) pv (
                (Asc(
                   (close(Lit (to-string(index-of-tag el)) ))
                   (close(parse-type 'Constant+Literal+U64_s))
                ))
-            )) )))
-            (set r (CtxBind( (close r) pt (close(Lit el)) )))
+            ) )))
+            (set r (CtxBind( (close r) pt (Lit el) )))
          )))
       ))
       ( (Pair( (Var pv) _ )) (
-         (set r (CtxBind( (close CtxNil) pv (close term) )))
+         (set r (CtxBind( (close CtxNil) pv term )))
       ))
       ( _ () )
    ))
@@ -336,7 +336,7 @@ extract-uuids := λ(: sloc AST)(: ctx Context)(: term AST). (: (tail(
          (let id (uuid()))
          (let loc (maybe-deref(location-of sloc)))
          (map-location( id loc ))
-         (let lctx (CtxBind( (close ctx) x (close(Var id)) )))
+         (let lctx (CtxBind( (close ctx) x (Var id) )))
          (set ctx lctx)
       )))
       ( (App( l r )) (tail(

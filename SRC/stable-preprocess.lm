@@ -48,7 +48,7 @@ union := λ(: l Context)(: r Context). (: (tail(
          ()
          ( (CtxBind( rst k v )) (
             (set return (CtxBind(
-               (close(union( l rst ))) k (close v)
+               (close(union( l rst ))) k v
             )))
          ))
          ( _ (set r CtxEOF) )
