@@ -85,7 +85,6 @@ typecheck-typeof-lhs := λ(: lhs AST). (: (tail(
    r
 )) Type);
 
-typecheck-types-have-changed := True_u8;
 typecheck := λ. (: (tail(
    (let p ast-parsed-program)
    (let ordered-type-exprs ASTEOF)
@@ -231,7 +230,7 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
          (let return-type (maybe-deref(without-representation rhst)))
          (let return-type-2 (maybe-deref(with-representation return-type)))
          (let ft (t3( 'Arrow_s lt return-type-2 )))
-         (typecheck-ascript( td ft ))
+         (ascript-normal( td ft ))
          (set global-type-context (TCtxBind(
             (close global-type-context)
             k
@@ -242,7 +241,7 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
       ( (Frg( k (Abs( lhs (Asc( rhs rhst )) )) )) (tail(
          (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
          (let ft (t3( 'Arrow_s lt rhst )))
-         (typecheck-ascript( td ft ))
+         (ascript-normal( td ft ))
          (set global-type-context (TCtxBind(
             (close global-type-context)
             k
@@ -480,36 +479,11 @@ typecheck-annotate-size := λ(: tt Type). (: (tail(
    tt
 )) Type);
 
-typecheck-ascript := λ(: t AST)(: tt Type). (: (
-   (if (non-zero tt) (tail(
-      (let ot-normal (normalize(maybe-deref(typeof t))))
-      (if (non-zero ot-normal) (
-         (if (is-arrow tt) () (tail(
-            (let tt2 (maybe-deref(typecheck-annotate-size tt)))
-            (let tt-normal (normalize( tt2 )))
-            (let ot-supernormal (maybe-deref(without-tag ot-normal)))
-            (let tt-supernormal (maybe-deref(without-tag tt-normal)))
-            (if (==( ot-supernormal tt-supernormal )) () (tail(
-               (print ot-supernormal)
-               (print '\s!=\s_s)
-               (print tt-supernormal)
-               (print '\n_s)
-               (exit-error( 'Type\sAscription\sInequality_s t ))
-            )))
-         )))
-      ) (tail(
-         (let stt (maybe-deref(typecheck-annotate-size tt)))
-         (ascript( t stt ))
-         (set typecheck-types-have-changed True_u8)
-      )))
-   )) ())
-) Nil);
-
 typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail(
    (match term (
       ()
-      ( ASTNil (typecheck-ascript( term (maybe-deref(t1 'Nil_s)) )) )
-      ( ASTEOF (typecheck-ascript( term (maybe-deref(t1 'Nil_s)) )) )
+      ( ASTNil (ascript-normal( term (maybe-deref(t1 'Nil_s)) )) )
+      ( ASTEOF (ascript-normal( term (maybe-deref(t1 'Nil_s)) )) )
       ( (Seq( l r )) (tail(
          (typecheck-infer-expr( tctx l used ))
          (typecheck-infer-expr( tctx r used ))
@@ -521,7 +495,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
          ))
       ))
       ( (Frg( k v )) (tail(
-         (typecheck-ascript( v (maybe-deref(typeof term)) ))
+         (ascript-normal( v (maybe-deref(typeof term)) ))
          ()
       )))
       ( (Asc( (Lit _) tt )) (
@@ -529,7 +503,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
             ()
             ( (Asc( t _ )) (tail(
                (if (is-parameterized tt) (
-                  (typecheck-ascript( t tt ))
+                  (ascript-normal( t tt ))
                ) ())
                (match (slot( tt 'String_s )) (
                   ()
@@ -542,9 +516,9 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
                   (set it it-2)
                )) (tail(
                   (set it tt)
-                  (typecheck-ascript( t it ))
+                  (ascript-normal( t it ))
                )))
-               (typecheck-ascript( term it ))
+               (ascript-normal( term it ))
             )))
          ))
       ))
@@ -561,8 +535,8 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
                ))))
                (set tt tt-2)
             )) ())
-            (typecheck-ascript( t tt ))
-            (typecheck-ascript( term tt ))
+            (ascript-normal( t tt ))
+            (ascript-normal( term tt ))
          )) ())
       )))
       ( (App( (Var 'gensym-label_s) (Var lname) )) (tail(
@@ -573,34 +547,34 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
             ASTEOF
          )))
          (set tctx tctx2)
-         (typecheck-ascript( term (maybe-deref(t1 'Nil_s)) ))
+         (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
       )))
       ( (App( (App( (Var 'set_s) (Var v) )) rhs )) (tail(
          (typecheck-infer-expr( tctx rhs Used ))
-         (typecheck-ascript( rhs (maybe-deref(typecheck-typeof-var( term tctx v ))) ))
-         (typecheck-ascript( term (maybe-deref(t1 'Nil_s)) ))
+         (ascript-normal( rhs (maybe-deref(typecheck-typeof-var( term tctx v ))) ))
+         (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
       )))
       ( (App( (Var 'label_s) (Var lname) )) (
-         (typecheck-ascript( term (maybe-deref(t1 'Nil_s)) ))
+         (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
       ))
       ( (App( (App( (App( (Var 'if_s) cond )) t )) f )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx cond Used ))))
          (let tctx3 (maybe-deref(typecheck-infer-expr( tctx2 t Used ))))
          (set tctx tctx3)
          (typecheck-infer-expr( tctx f Used ))
-         (typecheck-ascript( term (maybe-deref(typeof t)) ))
+         (ascript-normal( term (maybe-deref(typeof t)) ))
       )))
       ( (App( (App( (Var 'while_s) cond )) body )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx cond Used ))))
          (set tctx tctx2)
          (typecheck-infer-expr( tctx body Used ))
-         (typecheck-ascript( term (maybe-deref(t1 'Nil_s)) ))
+         (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
       )))
       ( (App( (Var 'tail_s) (App( l r )) )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx l Unused ))))
          (let tctx3 (maybe-deref(typecheck-infer-expr( tctx2 r used ))))
          (set tctx tctx3)
-         (typecheck-ascript( term (maybe-deref(typeof r)) ))
+         (ascript-normal( term (maybe-deref(typeof r)) ))
       )))
       ( (As( t tt )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx t used ))))
@@ -624,15 +598,15 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
                (set tt tt-2)
             )) ())
             (let tt-3 (typecheck-annotate-fields( tt )))(set tt tt-3)
-            (typecheck-ascript( term tt ))
+            (ascript-normal( term tt ))
          )) ())
       )))
       ( (Sizeof( _ )) (
-         (typecheck-ascript( term (maybe-deref(as-constant(maybe-deref(parse-type 'U64_s)))) ))
+         (ascript-normal( term (maybe-deref(as-constant(maybe-deref(parse-type 'U64_s)))) ))
       ))
       ( (App( (Var 'scope_s) r )) (tail(
          (typecheck-infer-expr( tctx r used ))
-         (typecheck-ascript( term (typeof r) ))
+         (ascript-normal( term (typeof r) ))
       )))
       ( (App( (Var 'maybe-deref_s) r )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx r used ))))
@@ -646,7 +620,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
             ))
             ( _ () )
          ))
-         (typecheck-ascript( term deref-type ))
+         (ascript-normal( term deref-type ))
       )))
       ( (App( (Abs( (Var lname) ASTNil )) rhs )) (tail(
          (typecheck-infer-expr( tctx rhs Used ))
@@ -664,7 +638,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
             rt
             ASTEOF
          )))
-         (typecheck-ascript( term (maybe-deref(t1 'Nil_s)) ))
+         (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
       )))
       ( (App( l r )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-expr( tctx l Used ))))
@@ -675,7 +649,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
             (maybe-deref(typeof l))
             (maybe-deref(typeof r))
          ))))
-         (typecheck-ascript( term rt ))
+         (ascript-normal( term rt ))
       )))
       ( (Abs( lhs rhs )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-ctx( tctx lhs ))))
@@ -683,17 +657,17 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
          (typecheck-infer-expr( tctx rhs Used ))
          (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
          (let rt (maybe-deref(typeof rhs)))
-         (typecheck-ascript( term (t3( 'Arrow_s lt rt )) ))
+         (ascript-normal( term (t3( 'Arrow_s lt rt )) ))
       )))
       ( (Var v) (
-         (typecheck-ascript( term (maybe-deref(typecheck-typeof-var( term tctx v ))) ))
+         (ascript-normal( term (maybe-deref(typecheck-typeof-var( term tctx v ))) ))
       ))
       ( (Lit l) (
          (if (non-zero(typeof term)) () (tail(
             (let tt (maybe-deref(typecheck-typeof-tag l)))
             (if (non-zero tt) (tail(
                (let tt2 (maybe-deref(as-constant tt)))(set tt tt2)
-               (typecheck-ascript( term tt ))
+               (ascript-normal( term tt ))
             )) ())
          )))
       ))
