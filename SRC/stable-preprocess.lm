@@ -34,3 +34,25 @@ index-typedefs := λ(: def AST)(: index U64) . (: (
       ( _ (exit-error( 'Invalid\sTypedef_s def )) )
    ))
 ) Nil);
+
+preprocess := λ. (: (tail(
+   (index-typedefs ast-parsed-program)
+   (set ast-parsed-program (preprocess-apply ast-parsed-program))
+)) Nil);
+
+union := λ(: l Context)(: r Context). (: (tail(
+   (let return l)
+   (if (not(non-zero r)) (set return CtxEOF) ())
+   (if (non-zero return) (
+      (match r (
+         ()
+         ( (CtxBind( rst k v )) (
+            (set return (CtxBind(
+               (close(union( l rst ))) k (close v)
+            )))
+         ))
+         ( _ (set r CtxEOF) )
+      ))
+   ) ())
+   return
+)) Context);

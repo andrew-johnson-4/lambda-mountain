@@ -1,10 +1,4 @@
 
-preprocess := λ. (: (tail(
-   (index-typedefs ast-parsed-program)
-   (let program (maybe-deref(preprocess-apply ast-parsed-program)))
-   (set ast-parsed-program program)
-)) Nil);
-
 preprocess-apply := λ(: program AST). (: (tail(
    (let r program)
    (match program (
@@ -150,24 +144,6 @@ is-macro-head := λ(: s String). (: (tail(
    found
 )) U64);
 
-merge := λ(: l Context)(: r Context). (: (tail(
-   (match (CPair( l r )) (
-      ()
-      ( (CPair( CtxEOF _ )) (set l CtxEOF ) )
-      ( (CPair( _ CtxEOF )) (set l CtxEOF ) )
-      ( (CPair( CtxNil cr )) (set l cr) )
-      ( (CPair( cl CtxNil )) (set l cl) )
-      ( (CPair( (CtxBind( cl kl vl ))
-                (CtxBind( cr kr vr )) )) (tail(
-         (let c1 (merge( cl cr )))
-         (let c2 (close(CtxBind( c1 kl (close vl) ))))
-         (let c3 (CtxBind( c2 kr (close vr) )))
-         (set l c3)
-      )))
-   ))
-   (close l)
-)) Context[]);
-
 try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
    (let r CtxEOF)
    (match (Pair( lhs term )) (
@@ -179,7 +155,7 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
          (if (non-zero ll) (tail(
             (let rl (maybe-deref(try-destructure-macro( pr er ))))
             (if (non-zero rl) (tail(
-               (let m (maybe-deref(merge( ll rl ))))
+               (let m (maybe-deref(union( ll rl ))))
                (set r m)
             )) ())
          )) ())
@@ -189,7 +165,7 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
          (if (non-zero ll) (tail(
             (let rl (maybe-deref(try-destructure-macro( pr er ))))
             (if (non-zero rl) (tail(
-               (let m (maybe-deref(merge( ll rl ))))
+               (let m (maybe-deref(union( ll rl ))))
                (set r m)
             )) ())
          )) ())
