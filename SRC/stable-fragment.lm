@@ -151,6 +151,17 @@ fragment::set-offset := λ(: e Fragment)(: offset I64). (: (tail(
 
 fragment::unlet := λ(: s S). (: (tail(
    (let return s)
+   (match s (
+      ()
+      ( (SCons( (SAtom 'App_s) (SCons(
+           (SCons( (SAtom 'App_s) (SCons(
+              (SCons( (SAtom 'Var_s) (SAtom 'let_s) ))
+              k
+           )) ))
+           v
+        )) )) (set return v) )
+      ( _ () )
+   ))
    return
 )) S);
 
