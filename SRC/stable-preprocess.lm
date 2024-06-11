@@ -113,7 +113,7 @@ preprocess-apply := λ(: program AST). (: (tail(
             ()
             ( (SfxSeq( rst sfxs sfxtt )) (
                (if (has-suffix( l sfxs )) (tail(
-                  (let lloc (maybe-deref(location-of l)))
+                  (let lloc (location-of l))
                   (let lpfx (remove-suffix( l sfxs )))
                   (map-location( lpfx lloc ))
                   (set r (Asc( (close (Lit lpfx)) (close sfxtt) )))
@@ -130,7 +130,7 @@ preprocess-apply := λ(: program AST). (: (tail(
             ()
             ( (SfxSeq( rst sfxs sfxtt )) (
                (if (has-suffix( l sfxs )) (tail(
-                  (let lloc (maybe-deref(location-of l)))
+                  (let lloc (location-of l))
                   (let lpfx (remove-suffix( l sfxs )))
                   (map-location( lpfx lloc ))
                   (set r (Asc( (close (Lit lpfx)) (close sfxtt) )))
@@ -213,11 +213,11 @@ preprocess-apply-maybe := λ(: program AST). (: (tail(
             ()
             ( CtxEOF (set macros rst) )
             ( ctx (tail(
-               (let p (maybe-deref(apply( ctx rhs ))))
+               (let p (apply( ctx rhs )))
                (let c (maybe-deref(extract-uuids( program CtxEOF p ))))
                (let u (maybe-deref(substitute-uuids( c p ))))
                (let n (preprocess-apply u))
-               (set return n)
+               (set return (relocate( n (location-of program) )))
                (set macros MEOF)
                (set matched True_u8)
             )))
@@ -308,6 +308,144 @@ apply := λ(: ctx Context)(: term AST). (: (tail(
             (close tt)
          )))
       ))
+   ))
+   return
+)) AST);
+
+try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
+   (let r CtxEOF)
+   (match (APair( lhs term )) (
+      ()
+      ( (APair( ASTNil ASTNil )) (set r CtxNil) )
+      ( (APair( (App( (App( (Var _) (Var _) )) (Var _) )) (App( (App( (Lit _) _ )) _ )) )) () )
+      ( (APair( (App(pl pr)) (App(el er)) )) (tail(
+         (let ll (try-destructure-macro( pl el )))
+         (if (non-zero ll) (tail(
+            (let rl (try-destructure-macro( pr er )))
+            (if (non-zero rl) (
+               (set r (union( ll rl )))
+            ) ())
+         )) ())
+      )))
+      ( (APair( (Abs(pl pr)) (Abs(el er)) )) (tail(
+         (let ll (try-destructure-macro( pl el )))
+         (if (non-zero ll) (tail(
+            (let rl (try-destructure-macro( pr er )))
+            (if (non-zero rl) (
+               (set r (union( ll rl )))
+            ) ())
+         )) ())
+      )))
+      ( (APair( (Lit ':Any:_s) (Var '__s) )) (
+         (set r CtxNil)
+      ))
+      ( (APair( (Lit pl) (Var el) )) (
+         (if (==( pl el )) (set r CtxNil) ())
+      ))
+      ( (APair( (Lit pl) (Lit el) )) (
+         (if (==( pl el )) (set r CtxNil) ())
+      ))
+      ( (APair( (App( (Lit ':Literal:_s) (Var pv) )) (Lit el) )) (
+         (if (==( (index-of-tag el) unknown-index-of-tag ))
+             (set r (CtxBind( (close CtxNil) pv term )))
+             ()
+         )
+      ))
+      ( (APair( (App( (Lit ':Variable:_s) _ )) (Var '__s) )) (
+         ()
+      ))
+      ( (APair( (App( (Lit ':Variable:_s) (Var pv) )) (Var el) )) (
+         (set r (CtxBind( (close CtxNil) pv term )))
+      ))
+      ( (APair( (App( (App( (Lit ':Tag:_s) (Var pv) )) (Var pt) )) (Lit el) )) (
+         (if (==( (index-of-tag el) unknown-index-of-tag )) () (tail(
+            (set r CtxNil)
+            (set r (CtxBind( (close r) pv (
+               (Asc(
+                  (close(Lit (to-string(index-of-tag el)) ))
+                  (close(parse-type 'Constant+Literal+U64_s))
+               ))
+            ) )))
+            (set r (CtxBind( (close r) pt (Lit el) )))
+         )))
+      ))
+      ( (APair( (Var pv) _ )) (
+         (set r (CtxBind( (close CtxNil) pv term )))
+      ))
+      ( _ () )
+   ))
+   r
+)) Context);
+
+relocate := λ(: term AST)(: loc SourceLocation). (: (tail(
+   (let return term)
+   (match term (
+      ()
+      ( ASTEOF () )
+      ( ASTNil () )
+      ( (Sizeof _) () )
+      ( (Var v) (tail(
+         (set v (clone-rope(SAtom v)))
+         (map-location( v loc ))
+         (set return (Var v))
+      )))
+      ( (Lit v) (tail(
+         (set v (clone-rope(SAtom v)))
+         (map-location( v loc ))
+         (set return (Lit v))
+      )))
+      ( (App( lt rt )) (
+         (set return (App(
+            (close(relocate( lt loc )))
+            (close(relocate( rt loc )))
+         )))
+      ))
+      ( (Abs( lt rt )) (
+         (set return (Abs(
+            (close(relocate( lt loc )))
+            (close(relocate( rt loc )))
+         )))
+      ))
+      ( (Seq( lt rt )) (
+         (set return (Seq(
+            (close(relocate( lt loc )))
+            (close(relocate( rt loc )))
+         )))
+      ))
+      ( (ASTType( lt rt )) (
+         (set return (ASTType(
+            (close(relocate( lt loc )))
+            (close(relocate( rt loc )))
+         )))
+      ))
+      ( (Asc( lt rt )) (
+         (set return (Asc(
+            (close(relocate( lt loc )))
+            (close rt)
+         )))
+      ))
+      ( (As( lt rt )) (
+         (set return (As(
+            (close(relocate( lt loc )))
+            (close rt)
+         )))
+      ))
+      ( (Glb( k t )) (tail(
+         (set k (clone-rope(SAtom k)))
+         (map-location( k loc ))
+         (set return (Glb(
+            k
+            (close(relocate( t loc )))
+         )))
+      )))
+      ( (Frg( k t )) (tail(
+         (set k (clone-rope(SAtom k)))
+         (map-location( k loc ))
+         (set return (Glb(
+            k
+            (close(relocate( t loc )))
+         )))
+      )))
    ))
    return
 )) AST);

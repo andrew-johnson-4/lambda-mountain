@@ -153,52 +153,12 @@ fragment-destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragmentList). (:
    ctx
 )) FContext);
 
-fragment-apply-context := λ(: ctx FContext)(: rhs S)(: e Fragment). (: (tail(
-   (match rhs (
-      ()
-      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '.program_s) )) prg )) )) (tail(
-         (let s (maybe-deref(fragment::render( ctx prg ))))
-         (let f (maybe-deref(fragment::set( e 'program_s s ))))
-         (set e f)
-      )))
-      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '.expression_s) )) prg )) )) (tail(
-         (let s (maybe-deref(fragment::render( ctx prg ))))
-         (let f (maybe-deref(fragment::set( e 'expression_s s ))))
-         (set e f)
-      )))
-      ( (SCons( (SAtom 'App_s) (SCons( rst (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '.program_s) )) prg )) )) )) )) (tail(
-         (let s (maybe-deref(fragment::render( ctx prg ))))
-         (let f (maybe-deref(fragment::set( e 'program_s s ))))
-         (set e f)
-         (let e-rst (maybe-deref(fragment-apply-context( ctx rst e ))))
-         (set e e-rst)
-      )))
-      ( (SCons( (SAtom 'App_s) (SCons( rst (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '.expression_s) )) prg )) )) )) )) (tail(
-         (let s (maybe-deref(fragment::render( ctx prg ))))
-         (let f (maybe-deref(fragment::set( e 'expression_s s ))))
-         (set e f)
-         (let e-rst (maybe-deref(fragment-apply-context( ctx rst e ))))
-         (set e e-rst)
-      )))
-      ( SNil (tail(
-         (let f (maybe-deref(fragment::new())))
-         (set e f)
-      )))
-      ( prg (tail(
-         (print 'Invalid\sApply\sFragment\s_s)
-         (print prg)
-         (exit 1_u64)
-      )))
-   ))
-   e
-)) Fragment);
-
 fragment-apply-direct := λ(: ctx FContext)(: arrow Fragment)(: args FragmentList)(: e-proto Fragment)(: chain U8). (: (tail(
    (match (maybe-deref(fragment::get( arrow 'fragment_s ))) (
       ()
       ( (SCons( (SAtom 'Abs_s) (SCons( lhs rhs )) )) (tail(
          (let f-ctx-2 (maybe-deref(fragment-destructure-lhs( ctx lhs args ))))
-         (let f-app (maybe-deref(fragment-apply-context( f-ctx-2 rhs e-proto ))))
+         (let f-app (maybe-deref(fragment::render( f-ctx-2 rhs e-proto ))))
          (set e-proto f-app)
       )))
       ( _ (tail(

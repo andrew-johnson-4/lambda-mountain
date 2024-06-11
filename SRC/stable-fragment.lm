@@ -403,3 +403,28 @@ union := λ(: ctx FContext)(: tctx TContext). (: (tail(
    )))
    r
 )) FContext);
+
+fragment::render := λ(: ctx FContext)(: rhs S)(: prototype Fragment). (: (tail(
+   (let return prototype)
+   (match rhs (
+      ()
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom mode) )) prg )) )) (tail(
+         (if (!=( (head-string mode) 46_u8 )) (fail 'Invalid\sMode\sIn\sfragment::render_s) ())
+         (let s (fragment::render( ctx prg )))
+         (set return (fragment::set( return (tail-string mode) s )))
+      )))
+      ( (SCons( (SAtom 'App_s) (SCons( rst (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom mode) )) prg )) )) )) )) (tail(
+         (if (!=( (head-string mode) 46_u8 )) (fail 'Invalid\sMode\sIn\sfragment::render_s) ())
+         (let s (fragment::render( ctx prg )))
+         (set return (fragment::set( return (tail-string mode) s )))
+         (set return (fragment::render( ctx rst return )))
+      )))
+      ( SNil () )
+      ( prg (tail(
+         (print 'Invalid\sRHS\sIn\sfragment::render\s_s)
+         (print prg)
+         (exit 1_u64)
+      )))
+   ))
+   return
+)) Fragment);

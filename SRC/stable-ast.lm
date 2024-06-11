@@ -21,7 +21,12 @@ type StringTypeList StrTEOF | (StrTSeq( StringTypeList[] , String , Type )); zer
 
 type StringList SLEOF | (SLSeq( StringList[] , String )); zero StringList SLEOF;
 type StringU64List SUEOF | (SUSeq( StringU64List[] , String , U64 )); zero StringU64List SUEOF;
+type StringStringList SSEOF | (SSSeq( StringStringList[] , String , String )); zero StringStringList SSEOF;
+type StringSList SSLEOF | (SSLSeq( StringSList[] , String , S )); zero StringSList SSLEOF;
 
+type APair (APair( AST , AST ));
+type CPair (CPair( Context , Context ));
+type TCPair (TCPair( TContext , TContext ));
 type TPair (TPair( Type , Type ));
 type TLPair (TLPair( TypeList , TypeList ));
 

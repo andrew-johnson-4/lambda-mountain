@@ -15,6 +15,9 @@ class-to-size-index := (: SUEOF StringU64List);
 tag-to-index-index := (: SUEOF StringU64List);
 unknown-index-of-tag := 99999_u64;
 
+# has typechecking finished? boolean, mutable
+types-have-changed := True_u8;
+
 index-of-tag := λ(: tag String). (: (tail(
    (let r unknown-index-of-tag)
    (let index tag-to-index-index)
@@ -1059,3 +1062,25 @@ to-s := λ(: term AST). (: (tail(
    ))
    s
 )) S);
+
+ascript-normal := λ(: t AST)(: tt Type). (: (
+   (if (non-zero tt) (tail(
+      (let prev-tt (normalize(typeof t)))
+      (if (non-zero prev-tt) (
+         (if (is-arrow tt) () (tail(
+            (let norm-tt (normalize tt))
+            (if (==( prev-tt norm-tt )) () (tail(
+               (print prev-tt)
+               (print '\s!=\s_s)
+               (print norm-tt)
+               (print '\n_s)
+               (exit-error( 'Type\sAscription\sInequality_s t ))
+            )))
+         )))
+      ) (tail(
+         (let sized-tt (with-size tt))
+         (ascript( t sized-tt ))
+         (set types-have-changed True_u8)
+      )))
+   )) ())
+) Nil)
