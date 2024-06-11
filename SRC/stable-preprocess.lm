@@ -213,10 +213,10 @@ preprocess-apply-maybe := λ(: program AST). (: (tail(
             ()
             ( CtxEOF (set macros rst) )
             ( ctx (tail(
-               (let p (maybe-deref(apply-context( ctx rhs ))))
+               (let p (maybe-deref(apply( ctx rhs ))))
                (let c (maybe-deref(extract-uuids( program CtxEOF p ))))
                (let u (maybe-deref(substitute-uuids( c p ))))
-               (let n (maybe-deref(preprocess-apply u)))
+               (let n (preprocess-apply u))
                (set return n)
                (set macros MEOF)
                (set matched True_u8)
@@ -234,6 +234,80 @@ preprocess-apply-maybe := λ(: program AST). (: (tail(
          )))
       ))
       ( _ () )
+   ))
+   return
+)) AST);
+
+apply := λ(: ctx Context)(: term AST). (: (tail(
+   (let return term)
+   (match term (
+      ()
+      ( ASTEOF () )
+      ( ASTNil () )
+      ( (Lit _) () )
+      ( (Sizeof _) () )
+      ( (Var n) (
+         (while (non-zero ctx) (match ctx (
+            ()
+            ( (CtxBind( rst k v )) (
+               (if (==( k n )) (tail(
+                  (set return v)
+                  (set ctx CtxEOF)
+               )) (
+                  (set ctx rst)
+               ))
+            ))
+            ( _ (set ctx CtxEOF))
+         )))
+      ))
+      ( (App( vl vr )) (
+         (set return (App(
+            (close(apply( ctx vl )))
+            (close(apply( ctx vr )))
+         )))
+      ))
+      ( (Abs( vl vr )) (
+         (set return (Abs(
+            (close(apply( ctx vl )))
+            (close(apply( ctx vr )))
+         )))
+      ))
+      ( (Seq( vl vr )) (
+         (set return (Seq(
+            (close(apply( ctx vl )))
+            (close(apply( ctx vr )))
+         )))
+      ))
+      ( (ASTType( vl vr )) (
+         (set return (ASTType(
+            (close(apply( ctx vl )))
+            (close(apply( ctx vr )))
+         )))
+      ))
+      ( (Glb( k vr )) (
+         (set return (Glb(
+            k
+            (close(apply( ctx vr )))
+         )))
+      ))
+      ( (Frg( k vr )) (
+         (set return (Frg(
+            k
+            (close(apply( ctx vr )))
+         )))
+      ))
+      ( (Asc( t tt )) (
+         (set return (Asc(
+            (close(apply( ctx t )))
+            (close tt)
+         )))
+      ))
+      ( (As( t tt )) (
+         (set return (As(
+            (close(apply( ctx t )))
+            (close tt)
+         )))
+      ))
    ))
    return
 )) AST);
