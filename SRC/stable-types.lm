@@ -283,6 +283,7 @@ substitute := λ(: tctx TContext)(: tt Type). (: (tail(
       ( (TVar v) (
          (while (non-zero tctx) (match tctx (
             ()
+            ( TCtxNil (set tctx TCtxEOF) )
             ( (TCtxBind( rst tk tv _ )) (
                (if (==( tk v )) (tail(
                   (set tt tv)
@@ -311,6 +312,7 @@ substitute := λ(: tctx TContext)(: tt Type). (: (tail(
 union := λ(: lctx TContext)(: rctx TContext). (: (tail(
    (match rctx (
       ()
+      ( TCtxNil (set rctx TCtxEOF) )
       ( (TCtxBind( rst k v t )) (tail(
          (set lctx (union( lctx rst )))
          (set lctx (TCtxBind( (close lctx) k v t )))
@@ -789,6 +791,7 @@ normalize := λ(: tctx TContext). (: (tail(
    (match tctx (
       ()
       ( TCtxEOF () )
+      ( TCtxNil (set tctx TCtxEOF) )
       ( (TCtxBind( rst k kt t )) (tail(
          (set rst (normalize rst))
          (set tctx (TCtxBind(
@@ -798,4 +801,126 @@ normalize := λ(: tctx TContext). (: (tail(
       )))
    ))
    tctx
+)) TContext);
+
+with-only-representation := λ(: tt TypeList). (: (tail(
+   (let rt tt)
+   (match tt (
+      ()
+      ( (TypeSeq( rst p1 )) (
+         (set rt (TypeSeq(
+            (close(with-only-representation rst))
+            (with-only-representation p1)
+         )))
+      ))
+      ( TypeEOF () )
+   ))
+   rt
+)) TypeList);
+
+with-only-representation := λ(: tt Type). (: (tail(
+   (let return tt)
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (tail(
+         (let lt2 (with-only-representation lt))
+         (let rt2 (with-only-representation rt))
+         (if (non-zero lt2) (
+            (if (non-zero rt2) (
+               (set return (TAnd( (close lt2) (close rt2) )))
+            ) (
+               (set return lt2)
+            ))
+         ) (
+            (if (non-zero rt2) (
+               (set return rt2)
+            ) (
+               (set return TAny)
+            ))
+         ))
+      )))
+      ( (TGround( 'Constant_s TypeEOF )) () )
+      ( (TGround( 'Literal_s TypeEOF )) () )
+      ( (TGround( 'StackVariable_s TypeEOF )) () )
+      ( (TGround( 'LocalVariable_s TypeEOF )) () )
+      ( (TGround( 'GlobalVariable_s TypeEOF )) () )
+      ( (TGround( 'Reg8_s TypeEOF )) () )
+      ( (TGround( 'Reg16_s TypeEOF )) () )
+      ( (TGround( 'Reg32_s TypeEOF )) () )
+      ( (TGround( 'Reg64_s TypeEOF )) () )
+      ( (TGround( tag ps )) (set return TAny) )
+      ( TAny () )
+      ( (TVar _) (set return TAny) )
+   ))
+   return
+)) Type);
+
+unify := λ(: fpt Type)(: pt Type). (: (tail(
+   (let ctx TCtxEOF)
+   (if (can-unify( fpt pt )) (
+      (set ctx (unify-inner( fpt pt )))
+   ) ())
+   ctx
+)) TContext);
+
+unify-inner := λ(: fpt Type)(: pt Type). (: (tail(
+   (let ctx TCtxEOF)
+   (match (TPair( fpt pt )) (
+      ()
+      ( (TPair( TAny _ )) (
+         (set ctx TCtxNil)
+      ))
+      ( (TPair( (TVar( ltv )) rt )) (
+         (set ctx (TCtxBind(
+            (close TCtxEOF)
+            ltv
+            rt
+            ASTEOF
+         )))
+      ))
+      ( (TPair( (TAnd( lt1 lt2 )) rt )) (
+         (match (TCPair( (unify-inner( lt1 rt )) (unify-inner( lt2 rt )) )) (
+            ()
+            ( (TCPair( TCtxEOF _ )) () )
+            ( (TCPair( _ TCtxEOF )) () )
+            ( (TCPair( lctx rctx )) (
+               (set ctx (union( lctx rctx )))
+            ))
+         ))
+      ))
+      ( (TPair( lt (TAnd( rt1 rt2 )) )) (
+         (match (TCPair( (unify-inner( lt rt1 )) (unify-inner( lt rt2 )) )) (
+            ()
+            ( (TCPair( TCtxEOF TCtxEOF )) () )
+            ( (TCPair( lctx TCtxEOF )) (set ctx lctx) )
+            ( (TCPair( TCtxEOF rctx )) (set ctx rctx) )
+            ( (TCPair( lctx rctx )) (
+               (set ctx (union( lctx rctx )))
+            ))
+         ))
+      ))
+      ( (TPair( (TGround( ltn lps )) (TGround( rtn rps )) )) (
+         (if (==( ltn rtn )) (
+            (set ctx (unify( lps rps )))
+         ) ())
+      ))
+      ( _ () )
+   ))
+   ctx
+)) TContext);
+
+unify := λ(: fpt TypeList)(: pt TypeList). (: (tail(
+   (let ctx TCtxEOF)
+   (match (TLPair( fpt pt )) (
+      ()
+      ( (TLPair( TypeEOF TypeEOF )) (set ctx TCtxNil) )
+      ( (TLPair( (TypeSeq( lps lp1 )) (TypeSeq( rps rp1 )) )) (tail(
+         (set ctx (unify( lp1 rp1 )))
+         (if (non-zero ctx) (
+            (set ctx (union( ctx (unify( lps rps )) )))
+         ) ())
+      )))
+      ( _ () )
+   ))
+   ctx
 )) TContext);

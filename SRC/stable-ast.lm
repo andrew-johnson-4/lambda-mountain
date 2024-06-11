@@ -51,6 +51,7 @@ print := λ(: t TContext). (: (tail(
    (match t (
       ()
       ( TCtxEOF () )
+      ( TCtxNil () )
       ( (TCtxBind( rst k v )) (tail(
          (print rst)
          (print k)

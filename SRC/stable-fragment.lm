@@ -391,6 +391,7 @@ union := λ(: ctx FContext)(: tctx TContext). (: (tail(
    (let r ctx)
    (while (non-zero tctx) (match tctx (
       ()
+      ( TCtxNil (set tctx TCtxEOF) )
       ( (TCtxBind( rst k vt _ )) (tail(
          (let fragment (fragment::expression(to-string vt)))
          (set fragment (fragment::set( fragment 'program_s (SAtom(to-string vt)) )))
