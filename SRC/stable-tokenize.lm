@@ -1,23 +1,8 @@
 
 type SourceLocation (SourceLocation( String , U64 , U64 ));
-type SourceMap SourceMapEOF | (SourceMapSeq( SourceMap[] , String , SourceLocation )); zero SourceMap SourceMapEOF;
-
-source-map := (: SourceMapEOF SourceMap);
-
-map-location := λ(: tok String)(: loc SourceLocation). (: (
-   (set source-map (SourceMapSeq(
-      (close source-map)
-      tok
-      loc
-   )))
-) Nil);
 
 map-location := λ(: tok String)(: file String)(: line U64)(: column U64). (: (
-   (set source-map (SourceMapSeq(
-      (close source-map)
-      tok
-      (SourceLocation( file line column ))
-   )))
+   (map-location( tok (SourceLocation( file line column )) ))
 ) Nil);
 
 non-zero := λ(: loc SourceLocation). (: (tail(
@@ -44,21 +29,6 @@ print := λ(: loc SourceLocation). (: (
       )))
    ))
 ) Nil);
-
-location-of := λ(: tok String). (: (tail(
-   (let r (SourceLocation( 'Unknown_s 0_u64 0_u64 )))
-   (let index source-map)
-   (while (non-zero index) (match index (
-      ()
-      ( (SourceMapSeq( rst k vl )) (
-         (if (==( (as k U64) (as tok U64) )) (tail(
-            (set r vl)
-            (set index SourceMapEOF)
-         )) (set index rst))
-      ))
-   )))
-   r
-)) SourceLocation);
 
 location-of := λ(: term AST). (: (tail(
    (let r (SourceLocation( 'Unknown_s 0_u64 0_u64 )))
