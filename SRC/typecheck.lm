@@ -367,37 +367,6 @@ typecheck-assert-one := λ(: term AST). (: (
    ))
 ) Nil);
 
-nonnormal := λ(: tt Type). (: (tail(
-   (let rt TAny)
-   (match tt (
-      ()
-      ( (TGround( 'Constant_s TypeEOF )) (set rt tt) )
-      ( (TGround( 'Literal_s TypeEOF )) (set rt tt) )
-      ( (TGround( 'StackVariable_s TypeEOF )) (set rt tt) )
-      ( (TGround( 'LocalVariable_s TypeEOF )) (set rt tt) )
-      ( (TGround( 'GlobalVariable_s TypeEOF )) (set rt tt) )
-      ( (TGround( 'Reg8_s TypeEOF )) (set rt tt) )
-      ( (TGround( 'Reg16_s TypeEOF )) (set rt tt) )
-      ( (TGround( 'Reg32_s TypeEOF )) (set rt tt) )
-      ( (TGround( 'Reg64_s TypeEOF )) (set rt tt) )
-      ( (TAnd( ltt rtt )) (tail(
-         (let lt1 (maybe-deref(nonnormal ltt )))
-         (let rt1 (maybe-deref(nonnormal rtt )))
-         (match (TPair( lt1 rt1 )) (
-            ()
-            ( (TPair( TAny rt2 )) (set rt rt2) )
-            ( (TPair( lt2 TAny )) (set rt lt2) )
-            ( (TPair( lt2 rt2 )) (tail(
-               (let rt-2 (maybe-deref(tand( lt2 rt2 ))))
-               (set rt rt-2)
-            )))
-         ))
-      )))
-      ( _ () )
-   ))
-   rt
-)) Type);
-
 typecheck-do-not-size := 99999_u64;
 typecheck-is-sized := λ(: tt Type). (: (tail(
    (let r 0_u64)
@@ -680,7 +649,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
          (set tctx tctx2)
          (let inner-tt (maybe-deref(typeof t)))
          (if (non-zero inner-tt) (tail(
-            (let nn (maybe-deref(nonnormal inner-tt)))
+            (let nn (with-only-representation inner-tt))
             (if (non-zero nn) (tail(
                (let tt-2 (maybe-deref(tand(
                   tt
@@ -734,7 +703,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
          (set tctx tctx2)
          (let inner-tt (maybe-deref(typeof t)))
          (if (non-zero inner-tt) (tail(
-            (let nn (maybe-deref(with-only-representation inner-tt)))
+            (let nn (with-only-representation inner-tt))
             (if (non-zero nn) (tail(
                (let tt-2 (maybe-deref(tand(
                   tt
@@ -1364,38 +1333,6 @@ tlabel := λ. (: (tail(
    (let tt (TGround( 'Label_s (close TypeEOF) )))
    tt
 )) Type);
-
-with-only-representation := λ(: tt Type). (: (tail(
-   (let rt TAny)
-   (match tt (
-      ()
-      ( (TGround( 'Constant_s TypeEOF )) (set rt tt) )
-      ( (TGround( 'Literal_s TypeEOF )) (set rt tt) )
-      ( (TGround( 'StackVariable_s TypeEOF )) (set rt tt) )
-      ( (TGround( 'LocalVariable_s TypeEOF )) (set rt tt) )
-      ( (TGround( 'GlobalVariable_s TypeEOF )) (set rt tt) )
-      ( (TGround( 'Reg8_s TypeEOF )) (set rt tt) )
-      ( (TGround( 'Reg16_s TypeEOF )) (set rt tt) )
-      ( (TGround( 'Reg32_s TypeEOF )) (set rt tt) )
-      ( (TGround( 'Reg64_s TypeEOF )) (set rt tt) )
-      ( (TAnd( ltt rtt )) (tail(
-         (let lt1 (maybe-deref(with-only-representation ltt)))
-         (let rt1 (maybe-deref(with-only-representation rtt)))
-         (match (TPair( lt1 rt1 )) (
-            ()
-            ( (TPair( TAny rt2 )) (set rt rt2) )
-            ( (TPair( lt2 TAny )) (set rt lt2) )
-            ( (TPair( lt2 rt2 )) (tail(
-               (let rt-2 (maybe-deref(tand( lt2 rt2 ))))
-               (set rt rt-2)
-            )))
-         ))
-      )))
-      ( _ () )
-   ))
-   (close rt)
-)) Type[]);
-
 
 with-representation := λ(: tt Type). (: (tail(
    (let sz (typecheck-sizeof tt))
