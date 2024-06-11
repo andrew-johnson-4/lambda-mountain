@@ -924,3 +924,58 @@ unify := λ(: fpt TypeList)(: pt TypeList). (: (tail(
    ))
    ctx
 )) TContext);
+
+fields-of-tag := λ(: tag Type)(: class Type). (: (tail(
+   (let rhst TAny)
+   (match tag (
+      ()
+      ( (TGround( ts _ )) (match (fields-of-tag ts) (
+         ()
+         ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF fields-lhs )) fields-rhs )) )) (
+            (set rhst (substitute( (unify( fields-lhs class )) fields-rhs )))
+         ))
+      )))
+      ( _ (tail(
+         (print 'Invalid\sTag\sIn\sfields-of-tag\s_s)
+         (print tag)(print '\n_s)
+         (exit 1_u64)
+      )))
+   ))
+   (let rt (TGround( 'Fields_s (close(TypeSeq(
+      (close TypeEOF)
+      (fields-of-type rhst)
+   ))))))
+   rt
+)) Type);
+
+fields-of-type := λ(: tt Type). (: (tail(
+   (match tt (
+      ()
+      ( TAny (set tt (t1 'Nil_s)) )
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (set tt (TGround(
+            'Cons_s
+            (close(TypeSeq(
+               (close(TypeSeq(
+                  (close TypeEOF)
+                  (fields-of-type p1)
+               )))
+               p2
+            )))
+         )))
+      ))
+      ( _ (
+         (set tt (TGround(
+            'Cons_s
+            (close(TypeSeq(
+               (close(TypeSeq(
+                  (close TypeEOF)
+                  (t1 'Nil_s)
+               )))
+               tt
+            )))
+         )))
+      ))
+   ))
+   tt
+)) Type);
