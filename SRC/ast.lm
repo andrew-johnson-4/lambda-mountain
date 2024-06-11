@@ -1,11 +1,4 @@
 
-type StringStringList SSEOF | (SSSeq( StringStringList[] , String , String )); zero StringStringList SSEOF;
-type StringSList SSLEOF | (SSLSeq( StringSList[] , String , S )); zero StringSList SSLEOF;
-
-type Pair (Pair( AST , AST ));
-type CPair (CPair( Context , Context ));
-type TCPair (TCPair( TContext , TContext ));
-
 s-abs := λ(: lhs S[])(: rhs S[]). (: (
    (close(SCons(
       (close(SAtom 'Abs_s))
