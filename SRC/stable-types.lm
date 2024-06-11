@@ -1004,3 +1004,58 @@ typeof := λ(: term S). (: (tail(
    )))
    found
 )) Type);
+
+to-s := λ(: term AST). (: (tail(
+   (let s SNil)
+   (match term (
+      ()
+      ( (Var v) (
+         (set s (SCons(
+            (close(SAtom 'Var_s))
+            (close(SAtom v))
+         )))
+      ))
+      ( (Lit v) (
+         (set s (SCons(
+            (close(SAtom 'Lit_s))
+            (close(SAtom v))
+         )))
+      ))
+      ( (App( lt rt )) (
+         (set s (SCons(
+            (close(SAtom 'App_s))
+            (close(SCons(
+               (close(to-s lt))
+               (close(to-s rt))
+            )))
+         )))
+      ))
+      ( (Abs( lt rt )) (
+         (set s (SCons(
+            (close(SAtom 'Abs_s))
+            (close(SCons(
+               (close(to-s lt))
+               (close(to-s rt))
+            )))
+         )))
+      ))
+      ( (Sizeof( tt )) (tail(
+         (set s (SAtom( (clone-rope(SAtom('Sizeof_s))) )))
+         (ascript( s tt ))
+      )))
+      ( (Asc( t tt )) (tail(
+         (set s (to-s t))
+         (ascript( s tt ))
+      )))
+      ( (As( t tt )) (tail(
+         (set s (to-s t))
+         (ascript( s tt ))
+      )))
+      ( (As( t tt )) (tail(
+         (set s (to-s t))
+         (ascript( s tt ))
+      )))
+      ( _ () )
+   ))
+   s
+)) S);

@@ -1163,50 +1163,6 @@ typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tai
    (close found)
 )) Type[]);
 
-to-s := λ(: term AST). (: (tail(
-   (let s SNil)
-   (match term (
-      ()
-      ( (Var v) (
-         (set s (SCons(
-            (close(SAtom 'Var_s))
-            (close(SAtom v))
-         )))
-      ))
-      ( (Lit v) (
-         (set s (SCons(
-            (close(SAtom 'Lit_s))
-            (close(SAtom v))
-         )))
-      ))
-      ( (App( lt rt )) (
-         (set s (SCons(
-            (close(SAtom 'App_s))
-            (close(SCons(
-               (to-s lt)
-               (to-s rt)
-            )))
-         )))
-      ))
-      ( (Abs( lt rt )) (
-         (set s (SCons(
-            (close(SAtom 'Abs_s))
-            (close(SCons(
-               (to-s lt)
-               (to-s rt)
-            )))
-         )))
-      ))
-      ( (Asc( t tt )) (tail(
-         (let st1 (maybe-deref(to-s t)))
-         (ascript( st1 tt ))
-         (set s st1)
-      )))
-      ( _ () )
-   ))
-   (close s)
-)) S[]);
-
 is-parameterized := λ(: tt Type). (: (tail(
    (let r 0_u64)
    (match tt (
