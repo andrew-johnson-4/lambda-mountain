@@ -979,3 +979,28 @@ fields-of-type := λ(: tt Type). (: (tail(
    ))
    tt
 )) Type);
+
+s-type-list := (: STEOF STypeList);
+ascript := λ(: t S)(: tt Type). (: (
+   (set s-type-list (STSeq(
+      (close s-type-list)
+      t tt
+   )))
+) Nil);
+
+typeof := λ(: term S). (: (tail(
+   (let found TAny)
+   (let tctx s-type-list)
+   (while (non-zero tctx) (match tctx (
+      ()
+      ( (STSeq( rst s tt )) (
+         (if (is( s term )) (tail(
+            (set found tt)
+            (set tctx STEOF)
+         )) (
+            (set tctx rst)
+         ))
+      ))
+   )))
+   found
+)) Type);

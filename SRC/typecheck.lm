@@ -57,9 +57,6 @@ typecheck-aligned-sizeof := λ(: tt Type). (: (tail(
    sz
 )) U64);
 
-type TermTypeList TTEOF | (TTSeq( TermTypeList[] , AST , Type )); zero TermTypeList TTEOF;
-type STypeList STEOF | (STSeq( STypeList[] , S , Type )); zero STypeList STEOF;
-
 typecheck-typeof-lhs := λ(: lhs AST). (: (tail(
    (let r TAny)
    (match lhs (
@@ -482,32 +479,6 @@ typecheck-annotate-size := λ(: tt Type). (: (tail(
    )) ())
    tt
 )) Type);
-
-typecheck-s-type-list := (: STEOF STypeList);
-typecheck-ascript := λ(: t S)(: tt Type). (: (
-   (set typecheck-s-type-list (STSeq(
-      (close typecheck-s-type-list)
-      t tt
-   )))
-) Nil);
-
-typeof := λ(: term S). (: (tail(
-   (let found TAny)
-   (let tctx typecheck-s-type-list)
-   (while (non-zero tctx) (match tctx (
-      ()
-      ( (STSeq( rst s tt )) (
-         (if (is( s term )) (tail(
-            (set found tt)
-            (set tctx STEOF)
-         )) (
-            (set tctx rst)
-         ))
-      ))
-   )))
-   found
-)) Type);
-
 
 typecheck-ascript := λ(: t AST)(: tt Type). (: (
    (if (non-zero tt) (tail(
@@ -1228,7 +1199,7 @@ to-s := λ(: term AST). (: (tail(
       ))
       ( (Asc( t tt )) (tail(
          (let st1 (maybe-deref(to-s t)))
-         (typecheck-ascript( st1 tt ))
+         (ascript( st1 tt ))
          (set s st1)
       )))
       ( _ () )
