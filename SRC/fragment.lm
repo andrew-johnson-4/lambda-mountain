@@ -69,7 +69,7 @@ fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentLi
    ))
 
    (let lhs-type (typeof(fragment::get( arrow 'fragment_s ))))
-   (let tctx (maybe-deref(typecheck-unify-generous( lhs-type direct-type ))))
+   (let tctx (unify( lhs-type direct-type )))
    (let ctx-2 (union( ctx tctx )))(set ctx ctx-2)
 
    (let return (maybe-deref(fragment-apply-direct( ctx arrow args e-proto chain ))))
@@ -111,7 +111,7 @@ fragment-destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragmentList). (:
                   (print f)
                   (exit 1_u64)
                )))
-               (let tctx (maybe-deref(typecheck-unify-generous( a-type ft ))))
+               (let tctx (unify( a-type ft )))
                (let ctx-2 (union( ctx tctx )))(set ctx ctx-2)
                (let new-ctx (FCtxBind( (close ctx) k ft f )))(set ctx new-ctx)
             )))
@@ -135,7 +135,7 @@ fragment-destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragmentList). (:
                   (print f)
                   (exit 1_u64)
                )))
-               (let tctx (maybe-deref(typecheck-unify-generous( a-type ft ))))
+               (let tctx (unify( a-type ft )))
                (let ctx-2 (union( ctx tctx )))(set ctx ctx-2)
                (let new-ctx (FCtxBind( (close ctx) k ft f )))(set ctx new-ctx)
                (set args fl-rst)
