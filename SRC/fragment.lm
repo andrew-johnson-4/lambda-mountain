@@ -7,7 +7,7 @@ typeof := λ(: args FragmentList). (: (tail(
          (let rst-tt (maybe-deref(typeof rst)))
          (let f-tt (maybe-deref(fragment::get-type f)))
          (if (non-zero rst-tt) (tail(
-            (let r2 (maybe-deref(tcons( rst-tt f-tt ))))
+            (let r2 (t3( 'Cons_s rst-tt f-tt )))
             (set r r2)
          )) (
             (set r f-tt)

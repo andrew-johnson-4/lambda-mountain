@@ -155,7 +155,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
          (typecheck-annotate-head-accessor( base-type ))
          (typecheck-annotate-accessors( base-type (maybe-deref(parse-type tag)) atype ))
          (index-class-of-tag( tag base-type ))
-         (index-fields-of-tag( tag (maybe-deref(tcons( base-type atype ))) ))
+         (index-fields-of-tag( tag (t3( 'Cons_s base-type atype )) ))
          (set typecheck-type-constructors (TConSeq(
             (close typecheck-type-constructors)
             tag
@@ -1105,13 +1105,6 @@ is-closing := λ(: tctx TContext). (: (tail(
    )))
    r
 )) U64);
-
-tcons := λ(: lt Type)(: rt Type). (: (tail(
-   (let tt (TGround( 'Cons_s
-      (close(TypeSeq( (close(TypeSeq( (close TypeEOF) lt ))) rt )))
-   )))
-   (close tt)
-)) Type[]);
 
 right-if-not-left := λ(: lt Type)(: rt Type). (: (tail(
    (match (TPair( lt rt )) (
