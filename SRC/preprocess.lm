@@ -1,48 +1,4 @@
 
-replace-loc := λ(: loc AST)(: term AST). (: (tail(
-   (match term (
-      ()
-      ( ASTEOF () )
-      ( ASTNil () )
-      ( (Var v) (tail(
-         (let new-v (clone-rope(SAtom v)))
-         (map-location( new-v (maybe-deref(location-of loc)) ))
-         (set term (Var new-v))
-      )))
-      ( (Lit v) (tail(
-         (let new-v (clone-rope(SAtom v)))
-         (map-location( new-v (maybe-deref(location-of loc)) ))
-         (set term (Lit new-v))
-      )))
-      ( (App( lt rt )) (
-         (set term (App(
-            (replace-loc( loc lt ))
-            (replace-loc( loc rt ))
-         )))
-      ))
-      ( (Abs( lt rt )) (
-         (set term (Abs(
-            (replace-loc( loc lt ))
-            (replace-loc( loc rt ))
-         )))
-      ))
-      ( (Seq( lt rt )) (
-         (set term (Seq(
-            (replace-loc( loc lt ))
-            (replace-loc( loc rt ))
-         )))
-      ))
-      ( (Asc( lt rt )) (
-         (set term (Asc(
-            (replace-loc( loc lt ))
-            (close rt)
-         )))
-      ))
-      ( _ (exit-error( 'preprocess::replace-loc\sUnexpected\sTerm_s term )) )
-   ))
-   (close term)
-)) AST[]);
-
 substitute-uuids := λ(: ctx Context)(: term AST). (: (tail( 
    (match term (
       ()

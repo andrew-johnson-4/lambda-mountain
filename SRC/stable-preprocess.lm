@@ -218,6 +218,7 @@ preprocess-apply-maybe := λ(: program AST). (: (tail(
                (let u (maybe-deref(substitute-uuids( c p ))))
                (let n (preprocess-apply u))
                (set return n)
+               # TODO (set return (relocate( n (location-of program) )))
                (set macros MEOF)
                (set matched True_u8)
             )))
@@ -376,3 +377,76 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
    ))
    r
 )) Context);
+
+relocate := λ(: term AST)(: loc SourceLocation). (: (tail(
+   (let return term)
+   (match term (
+      ()
+      ( ASTEOF () )
+      ( ASTNil () )
+      ( (Sizeof _) () )
+      ( (Var v) (tail(
+         (set v (clone-rope(SAtom v)))
+         (map-location( v loc ))
+         (set return (Var v))
+      )))
+      ( (Lit v) (tail(
+         (set v (clone-rope(SAtom v)))
+         (map-location( v loc ))
+         (set return (Lit v))
+      )))
+      ( (App( lt rt )) (
+         (set return (App(
+            (close(relocate( lt loc )))
+            (close(relocate( rt loc )))
+         )))
+      ))
+      ( (Abs( lt rt )) (
+         (set return (Abs(
+            (close(relocate( lt loc )))
+            (close(relocate( rt loc )))
+         )))
+      ))
+      ( (Seq( lt rt )) (
+         (set return (Seq(
+            (close(relocate( lt loc )))
+            (close(relocate( rt loc )))
+         )))
+      ))
+      ( (ASTType( lt rt )) (
+         (set return (ASTType(
+            (close(relocate( lt loc )))
+            (close(relocate( rt loc )))
+         )))
+      ))
+      ( (Asc( lt rt )) (
+         (set return (Asc(
+            (close(relocate( lt loc )))
+            (close rt)
+         )))
+      ))
+      ( (As( lt rt )) (
+         (set return (As(
+            (close(relocate( lt loc )))
+            (close rt)
+         )))
+      ))
+      ( (Glb( k t )) (tail(
+         (set k (clone-rope(SAtom k)))
+         (map-location( k loc ))
+         (set return (Glb(
+            k
+            (close(relocate( t loc )))
+         )))
+      )))
+      ( (Frg( k t )) (tail(
+         (set k (clone-rope(SAtom k)))
+         (map-location( k loc ))
+         (set return (Glb(
+            k
+            (close(relocate( t loc )))
+         )))
+      )))
+   ))
+   return
+)) AST);
