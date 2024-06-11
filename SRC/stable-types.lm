@@ -1,9 +1,9 @@
 
 # global Tag -> Class map, mutable
-tag-to-class-index := (: TConEOF TypeConstructorList);
+tag-to-class-index := (: StrTEOF StringTypeList);
 
 # global Tag -> Fields map, mutable
-tag-to-fields-index := (: TConEOF TypeConstructorList);
+tag-to-fields-index := (: StrTEOF StringTypeList);
 
 # global Tag -> IsFragment? map, mutable
 tag-is-fragment-index := (: SLEOF StringList);
@@ -104,7 +104,7 @@ tag-of := λ(: tt Type). (: (tail(
 )) String);
 
 index-class-of-tag := λ(: tag String)(: class Type). (: (
-   (set tag-to-class-index (TConSeq(
+   (set tag-to-class-index (StrTSeq(
       (close tag-to-class-index) tag class
    )))
 ) Nil);
@@ -114,10 +114,10 @@ class-of-tag := λ(: tag String). (: (tail(
    (let rt TAny)
    (while (non-zero index) (match index (
       ()
-      ( (TConSeq( rst itag iclass )) (
+      ( (StrTSeq( rst itag iclass )) (
          (if (==( tag itag )) (tail(
             (set rt iclass)
-            (set index TConEOF)
+            (set index StrTEOF)
          )) (set index rst))
       ))
    )))
@@ -129,10 +129,10 @@ is-class := λ(: tag String). (: (tail(
    (let rt 0_u64)
    (while (non-zero index) (match index (
       ()
-      ( (TConSeq( rst itag (TGround( ctag _ )) )) (
+      ( (StrTSeq( rst itag (TGround( ctag _ )) )) (
          (if (==( tag ctag )) (tail(
             (set rt 1_u64)
-            (set index TConEOF)
+            (set index StrTEOF)
          )) (set index rst))
       ))
    )))
@@ -140,7 +140,7 @@ is-class := λ(: tag String). (: (tail(
 )) U64);
 
 index-fields-of-tag := λ(: tag String)(: fields Type). (: (
-   (set tag-to-fields-index (TConSeq(
+   (set tag-to-fields-index (StrTSeq(
       (close tag-to-fields-index) tag fields
    )))
 ) Nil);
@@ -150,10 +150,10 @@ fields-of-tag := λ(: tag String). (: (tail(
    (let rt TAny)
    (while (non-zero index) (match index (
       ()
-      ( (TConSeq( rst itag ifields )) (
+      ( (StrTSeq( rst itag ifields )) (
          (if (==( tag itag )) (tail(
             (set rt ifields)
-            (set index TConEOF)
+            (set index StrTEOF)
          )) (set index rst))
       ))
    )))

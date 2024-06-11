@@ -1,12 +1,9 @@
 
-typecheck-type-constructors := (: TConEOF TypeConstructorList);
+typecheck-type-constructors := (: StrTEOF StringTypeList);
 
 type TypeSizeList2 (TSz2EOF) | (TSz2Seq( TypeSizeList2[] , String , Type , Type )); zero TypeSizeList2 TSz2EOF;
 
 typecheck-type-sizes2 := (: TSz2EOF TypeSizeList2);
-
-type ParametricIndex PIEOF | (PISeq( ParametricIndex[] , String , Type ));
-parametric-index := (: PIEOF ParametricIndex);
 
 typecheck-sizeof := λ(: tt Type). (: (tail(
    (let sz 0_u64)
@@ -141,7 +138,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
          (let rtype (maybe-deref(tand( base-type (maybe-deref(t1 tag)) ))))
          (index-class-of-tag( tag base-type ))
          (index-fields-of-tag( tag TAny ))
-         (set typecheck-type-constructors (TConSeq(
+         (set typecheck-type-constructors (StrTSeq(
             (close typecheck-type-constructors)
             tag
             rtype
@@ -156,7 +153,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
          (typecheck-annotate-accessors( base-type (maybe-deref(parse-type tag)) atype ))
          (index-class-of-tag( tag base-type ))
          (index-fields-of-tag( tag (t3( 'Cons_s base-type atype )) ))
-         (set typecheck-type-constructors (TConSeq(
+         (set typecheck-type-constructors (StrTSeq(
             (close typecheck-type-constructors)
             tag
             (t3( 'Arrow_s atype rtype ))
@@ -744,10 +741,10 @@ typecheck-typeof-tag := λ(: tag String). (: (tail(
    (let tag-list typecheck-type-constructors)
    (while (non-zero tag-list) (match tag-list (
       ()
-      ( (TConSeq( rst k kt )) (
+      ( (StrTSeq( rst k kt )) (
          (if (==( k tag )) (tail(
             (set r kt)
-            (set tag-list TConEOF)
+            (set tag-list StrTEOF)
          )) (
             (set tag-list rst)
          ))

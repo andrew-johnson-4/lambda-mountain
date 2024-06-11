@@ -16,7 +16,7 @@ type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST )); zero Conte
 type TContext TCtxEOF | TCtxNil | (TCtxBind( TContext[] , String , Type , AST )); zero TContext TCtxEOF;
 type FContext FCtxEOF | (FCtxBind( FContext[] , String , Type , Fragment )); zero FContext FCtxEOF;
 
-type TypeConstructorList (TConEOF) | (TConSeq( TypeConstructorList[] , String , Type )); zero TypeConstructorList TConEOF;
+type StringTypeList StrTEOF | (StrTSeq( StringTypeList[] , String , Type )); zero StringTypeList StrTEOF;
 
 type StringList SLEOF | (SLSeq( StringList[] , String )); zero StringList SLEOF;
 type StringU64List SUEOF | (SUSeq( StringU64List[] , String , U64 )); zero StringU64List SUEOF;
