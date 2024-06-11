@@ -159,7 +159,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
          (set typecheck-type-constructors (TConSeq(
             (close typecheck-type-constructors)
             tag
-            (maybe-deref(tarrow( atype rtype )))
+            (t3( 'Arrow_s atype rtype ))
          )))
          (set r (typecheck-aligned-sizeof atype))
          (set r (+( r 8_u64 )))
@@ -174,7 +174,7 @@ typecheck-annotate-head-accessor := λ(: base-type Type). (: (tail(
    (set global-type-context (TCtxBind(
       (close global-type-context)
       '.0_s
-      (maybe-deref(tarrow( base-type tt )))
+      (t3( 'Arrow_s base-type tt ))
       ASTEOF
    )))
 )) Nil);
@@ -197,7 +197,7 @@ typecheck-annotate-accessors := λ(: base-type Type)(: tag-type Type)(: args-typ
          (set global-type-context (TCtxBind(
             (close global-type-context)
             accessor-name
-            (maybe-deref(tarrow( base-type rt )))
+            (t3( 'Arrow_s base-type rt ))
             ASTEOF
          )))
          (set field-number (+( field-number 1_u64 )))
@@ -212,7 +212,7 @@ typecheck-annotate-accessors := λ(: base-type Type)(: tag-type Type)(: args-typ
          (set global-type-context (TCtxBind(
             (close global-type-context)
             accessor-name
-            (maybe-deref(tarrow( base-type rt )))
+            (t3( 'Arrow_s base-type rt ))
             ASTEOF
          )))
          (set args-type TAny)
@@ -236,7 +236,7 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
          (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
          (let return-type (maybe-deref(without-representation rhst)))
          (let return-type-2 (maybe-deref(with-representation return-type)))
-         (let ft (maybe-deref(tarrow( lt return-type-2 ))))
+         (let ft (t3( 'Arrow_s lt return-type-2 )))
          (typecheck-ascript( td ft ))
          (set global-type-context (TCtxBind(
             (close global-type-context)
@@ -247,7 +247,7 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
       )))
       ( (Frg( k (Abs( lhs (Asc( rhs rhst )) )) )) (tail(
          (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
-         (let ft (maybe-deref(tarrow( lt rhst ))))
+         (let ft (t3( 'Arrow_s lt rhst )))
          (typecheck-ascript( td ft ))
          (set global-type-context (TCtxBind(
             (close global-type-context)
@@ -779,7 +779,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
          (typecheck-infer-expr( tctx rhs Used ))
          (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
          (let rt (maybe-deref(typeof rhs)))
-         (typecheck-ascript( term (maybe-deref(tarrow( lt rt ))) ))
+         (typecheck-ascript( term (t3( 'Arrow_s lt rt )) ))
       )))
       ( (Var v) (
          (typecheck-ascript( term (maybe-deref(typecheck-typeof-var( term tctx v ))) ))
@@ -1105,13 +1105,6 @@ is-closing := λ(: tctx TContext). (: (tail(
    )))
    r
 )) U64);
-
-tarrow := λ(: lt Type)(: rt Type). (: (tail(
-   (let tt (TGround( 'Arrow_s
-      (close(TypeSeq( (close(TypeSeq( (close TypeEOF) lt ))) rt )))
-   )))
-   (close tt)
-)) Type[]);
 
 tcons := λ(: lt Type)(: rt Type). (: (tail(
    (let tt (TGround( 'Cons_s
