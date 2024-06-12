@@ -909,7 +909,7 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (tail(
       ))
       ( (TPair( (TGround( 'GT_s (TypeSeq( TypeEOF (TGround( lbase TypeEOF )) )) )) (TGround( rbase TypeEOF )) )) (
          (if (>( (to-i64 rbase) (to-i64 lbase) )) (
-            (set ctx TCtxEOF)
+            (set ctx TCtxNil)
          ) ())
       ))
       ( (TPair( (TGround( ltn lps )) (TGround( rtn rps )) )) (

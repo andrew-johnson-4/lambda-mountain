@@ -450,7 +450,6 @@ typecheck-annotate-fields := λ(: tt Type). (: (tail(
          (if (&&( (non-zero tag) (non-zero class) )) (tail(
             (let ft (fields-of-tag( tag class )))
             (set tt (TAnd( (close tt) (close ft) )))
-            (print 'Fields\s_s)(print tt)(print '\n_s)
          )) ())
       )))
    ))
@@ -476,6 +475,21 @@ typecheck-annotate-size := λ(: tt Type). (: (tail(
          )))
       )))
    )) ())
+   (match return (
+      ()
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (set return (TGround(
+            'Cons_s (close(TypeSeq(
+               (close(TypeSeq(
+                  (close TypeEOF)
+                  (typecheck-annotate-size p1)
+               )))
+               (typecheck-annotate-size p2)
+            )))
+         )))
+      ))
+      ( _ () )
+   ))
    return
 )) Type);
 

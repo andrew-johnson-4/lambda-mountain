@@ -58,8 +58,9 @@ fragment .1 := λ(: src LocalVariable+Fields<Cons<_,f1+Sized<8>>>). (: (
 
 fragment .1 := λ(: src LocalVariable+Fields<Cons<_,f1+Sized<size1+GT<8>>>>). (: (
    (.program(
-      (for index (range( 0 (/( (.expression size1) '8 )) )) (
-         (let word-offset (-( (-( (+( (.expression src) (.expression size1) )) '8 )) (*( (.expression index) '8 )) )) )
+      (for index in (range( 0 (/( (.expression size1) '8 )) )) (
+         # + 8 (head tag) - 8 (index overbite) = 0
+         (let word-offset (-( (+( (.expression src) (.expression size1) )) (*( (.expression index) '8 )) )) )
          \t 'pushq \s (.expression word-offset) \[ '%rbp \] \n
       ))
    ))
