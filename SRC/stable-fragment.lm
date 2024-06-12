@@ -71,7 +71,7 @@ fragment::set := λ(: e Fragment)(: k String)(: v S). (: (tail(
 )) Fragment);
 
 fragment::get-type := λ(: e Fragment) . (: (tail(
-   (let tt (maybe-deref(.2( e ))))
+   (let tt (maybe-deref(.2( (as e Fragment) ))))
    tt
 )) Type);
 
@@ -115,7 +115,7 @@ fragment::expression := λ(: val S). (: (tail(
 )) Fragment);
 
 fragment::get-context := λ(: e Fragment) . (: (tail(
-   (let ctx (maybe-deref(.1( e ))))
+   (let ctx (maybe-deref(.1( (as e Fragment) ))))
    ctx
 )) FContext);
 
