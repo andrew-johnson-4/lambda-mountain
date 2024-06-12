@@ -160,6 +160,16 @@ fragment::unlet := λ(: s S). (: (tail(
            )) ))
            v
         )) )) (set return v) )
+      ( (SCons( (SAtom 'App_s) (SCons(
+          ls rs
+        )) )) (tail(
+         (let ls-2 (fragment::unlet( ls )))
+         (if (not(is( ls ls-2 ))) (
+            (set return (SCons( (close(SAtom 'App_s)) (close(SCons(
+               (close ls-2) (close rs)
+            ))) )) )
+         ) ())
+      )))
       ( _ () )
    ))
    return
