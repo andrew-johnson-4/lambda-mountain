@@ -1,7 +1,7 @@
 
 develop: compile-production
 	rm -f tmp tmp.o tmp.s
-	./production -o tmp.s tests/regress/simple-sized.lm
+	./production -o tmp.s tests/regress/big-return.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp

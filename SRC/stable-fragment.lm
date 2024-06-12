@@ -190,11 +190,12 @@ fragment::let := λ(: ctx FContext)(: s S). (: (tail(
               SNil
            )) ))
            v
-        )) )) (
+        )) )) (tail(
+         (set v (fragment::render( return v )))
          (set return (FCtxBind(
-            (close return) k TAny (fragment::expression(fragment::render( return v )))
+            (close return) k TAny (fragment::expression( v ))
          )))
-      ))
+      )))
       ( (SCons( (SAtom 'App_s) (SCons(
           ls rs
         )) )) (

@@ -86,6 +86,7 @@ typecheck-typeof-lhs := λ(: lhs AST). (: (tail(
 )) Type);
 
 typecheck := λ. (: (tail(
+   (print 'Start\sTypecheck\n_s)
    (let p ast-parsed-program)
    (let ordered-type-exprs ASTEOF)
    (while (non-zero p) (match p (
@@ -104,6 +105,7 @@ typecheck := λ. (: (tail(
    )))
    (typecheck-infer-expr( global-type-context ast-parsed-program Unused))
    (typecheck-assert-complete ast-parsed-program)
+   (print 'End\Typecheck\n_s)
 )) Nil);
 
 global-type-context := (: TCtxEOF TContext);

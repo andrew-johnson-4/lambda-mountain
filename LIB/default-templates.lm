@@ -100,7 +100,7 @@ fragment .1 := λ(: src LocalVariable+Fields<Cons<_,f1+Sized<size1+GT<8>>>>). (:
 
 #fragment .2 := λ(: src LocalVariable+Fields<Cons<Cons<_,f2+Sized<size2+GT<8>>>,Sized<size1>>>). (: (
 #   (.program(
-#      (let base-offset (+( (.expression src) (.expression size1) )))
+#      (let base-offset (+( (.expression src) (align( (.expression size1) )) )))
 #      (for index in (range( 0 (/( (.expression size1) '8 )) )) (
 #         # + 8 (head tag) - 8 (index overbite) = 0
 #         (let word-offset (-( (+( (.expression base-offset) (.expression size2) )) (*( (.expression index) '8 )) )) )
