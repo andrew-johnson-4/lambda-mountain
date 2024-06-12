@@ -154,9 +154,9 @@ fragment::unlet := λ(: s S). (: (tail(
    (match s (
       ()
       ( (SCons( (SAtom 'App_s) (SCons(
-           (SCons( (SAtom 'App_s) (SCons(
-              (SCons( (SAtom 'Var_s) (SAtom 'let_s) ))
-              k
+           (SCons( (SAtom 'Abs_s) (SCons(
+              (SCons( (SAtom 'Var_s) (SAtom _) ))
+              SNil
            )) ))
            v
         )) )) (set return v) )
