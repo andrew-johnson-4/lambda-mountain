@@ -693,6 +693,11 @@ can-unify := λ(: fpt Type)(: pt Type). (: (tail(
          (if (can-unify( lt rt1 )) (set r 1_u64) ())
          (if (can-unify( lt rt2 )) (set r 1_u64) ())
       )))
+      ( (TPair( (TGround( 'GT_s (TypeSeq( TypeEOF (TGround( lbase TypeEOF )) )) )) (TGround( rbase TypeEOF )) )) (
+         (if (>( (to-i64 rbase) (to-i64 lbase) )) (
+            (set r 1_u64)
+         ) ())
+      ))
       ( (TPair( (TGround( ltn lps )) (TGround( rtn rps )) )) (
          (if (==( ltn rtn )) (
             (if (can-unify( lps rps )) (
@@ -902,6 +907,11 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (tail(
             ))
          ))
       ))
+      ( (TPair( (TGround( 'GT_s (TypeSeq( TypeEOF (TGround( lbase TypeEOF )) )) )) (TGround( rbase TypeEOF )) )) (
+         (if (>( (to-i64 rbase) (to-i64 lbase) )) (
+            (set ctx TCtxNil)
+         ) ())
+      ))
       ( (TPair( (TGround( ltn lps )) (TGround( rtn rps )) )) (
          (if (==( ltn rtn )) (
             (set ctx (unify( lps rps )))
@@ -944,6 +954,7 @@ fields-of-tag := λ(: tag Type)(: class Type). (: (tail(
          (exit 1_u64)
       )))
    ))
+   (set rhst (with-size rhst))
    (let rt (TGround( 'Fields_s (close(TypeSeq(
       (close TypeEOF)
       (fields-of-type rhst)

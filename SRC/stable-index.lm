@@ -60,26 +60,26 @@ typeof := λ(: t AST). (: (tail(
    (let index type-index)
    (let continue True_u8)
    (while (==( continue True_u8 )) (
-      (let ih (.5 index))
+      (let ih (.5 (as index TTBTree)))
       (if (==( th ih )) (
-         (if (is( t (.4 index) )) (tail(
-            (let tt-2 (.3 index))
+         (if (is( t (.4 (as index TTBTree)) )) (tail(
+            (let tt-2 (.3 (as index TTBTree)))
             (set tt tt-2)
             (set continue False_u8)
          )) ())
       ) ())
       (if (==( continue True_u8 )) (
          (if (<( ih th )) (
-            (if (==( (as (.1 index) U64) 0_u64 )) (
+            (if (==( (as (.1 (as index TTBTree)) U64) 0_u64 )) (
                (set continue False_u8)
             ) (
-               (set index (maybe-deref(.1 index)))
+               (set index (maybe-deref(.1 (as index TTBTree))))
             ))
          ) (
-            (if (==( (as (.2 index) U64) 0_u64 )) (
+            (if (==( (as (.2 (as index TTBTree)) U64) 0_u64 )) (
                (set continue False_u8)
             ) (
-               (set index (maybe-deref(.2 index)))
+               (set index (maybe-deref(.2 (as index TTBTree))))
             ))
          ))
       ) ())
@@ -94,21 +94,21 @@ ascript := λ(: t AST)(: tt Type). (: (tail(
    (let cell (close(TTBTree( ht t tt (as 0_u64 TTBTree[]) (as 0_u64 TTBTree[]) ))))
    (while (==( continue True_u8 )) (tail(
       (let flat-index (maybe-deref index))
-      (if (<( (.5 flat-index) ht )) (
-         (if (==( (as (.1 flat-index) U64) 0_u64 )) (tail(
+      (if (<( (.5 (as flat-index TTBTree)) ht )) (
+         (if (==( (as (.1 (as flat-index TTBTree)) U64) 0_u64 )) (tail(
             (mov( (as cell U64) R8 ))
             (set[]( (as index Field<Sized<8>,1>[]) 1_u64 R8 ))
             (set continue False_u8)
          )) (
-            (set index (.1 flat-index))
+            (set index (.1 (as flat-index TTBTree)))
          ))
       ) (
-         (if (==( (as (.2 flat-index) U64) 0_u64 )) (tail(
+         (if (==( (as (.2 (as flat-index TTBTree)) U64) 0_u64 )) (tail(
             (mov( (as cell U64) R8 ))
             (set[]( (as index Field<Sized<8>,1>[]) 2_u64 R8 ))
             (set continue False_u8)
          )) (
-            (set index (.2 flat-index))
+            (set index (.2 (as flat-index TTBTree)))
          ))
       ))
    )))
@@ -124,26 +124,26 @@ location-of := λ(: t String). (: (tail(
    (let index location-index)
    (let continue True_u8)
    (while (==( continue True_u8 )) (
-      (let ih (.5 index))
+      (let ih (.5 (as index SLBTree)))
       (if (==( th ih )) (
-         (if (is( t (.4 index) )) (tail(
-            (let tt-2 (.3 index))
+         (if (is( t (.4 (as index SLBTree)) )) (tail(
+            (let tt-2 (.3 (as index SLBTree)))
             (set tt tt-2)
             (set continue False_u8)
          )) ())
       ) ())
       (if (==( continue True_u8 )) (
          (if (<( ih th )) (
-            (if (==( (as (.1 index) U64) 0_u64 )) (
+            (if (==( (as (.1 (as index SLBTree)) U64) 0_u64 )) (
                (set continue False_u8)
             ) (
-               (set index (maybe-deref(.1 index)))
+               (set index (maybe-deref(.1 (as index SLBTree))))
             ))
          ) (
-            (if (==( (as (.2 index) U64) 0_u64 )) (
+            (if (==( (as (.2 (as index SLBTree)) U64) 0_u64 )) (
                (set continue False_u8)
             ) (
-               (set index (maybe-deref(.2 index)))
+               (set index (maybe-deref(.2 (as index SLBTree))))
             ))
          ))
       ) ())
@@ -158,21 +158,21 @@ map-location := λ(: t String)(: tt SourceLocation). (: (tail(
    (let cell (close(SLBTree( ht t tt (as 0_u64 SLBTree[]) (as 0_u64 SLBTree[]) ))))
    (while (==( continue True_u8 )) (tail(
       (let flat-index (maybe-deref index))
-      (if (<( (.5 flat-index) ht )) (
-         (if (==( (as (.1 flat-index) U64) 0_u64 )) (tail(
+      (if (<( (.5 (as flat-index SLBTree)) ht )) (
+         (if (==( (as (.1 (as flat-index SLBTree)) U64) 0_u64 )) (tail(
             (mov( (as cell U64) R8 ))
             (set[]( (as index Field<Sized<8>,1>[]) 1_u64 R8 ))
             (set continue False_u8)
          )) (
-            (set index (.1 flat-index))
+            (set index (.1 (as flat-index SLBTree)))
          ))
       ) (
-         (if (==( (as (.2 flat-index) U64) 0_u64 )) (tail(
+         (if (==( (as (.2 (as flat-index SLBTree)) U64) 0_u64 )) (tail(
             (mov( (as cell U64) R8 ))
             (set[]( (as index Field<Sized<8>,1>[]) 2_u64 R8 ))
             (set continue False_u8)
          )) (
-            (set index (.2 flat-index))
+            (set index (.2 (as flat-index SLBTree)))
          ))
       ))
    )))

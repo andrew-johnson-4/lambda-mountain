@@ -71,7 +71,7 @@ fragment::set := λ(: e Fragment)(: k String)(: v S). (: (tail(
 )) Fragment);
 
 fragment::get-type := λ(: e Fragment) . (: (tail(
-   (let tt (maybe-deref(.2( e ))))
+   (let tt (maybe-deref(.2( (as e Fragment) ))))
    tt
 )) Type);
 
@@ -115,7 +115,7 @@ fragment::expression := λ(: val S). (: (tail(
 )) Fragment);
 
 fragment::get-context := λ(: e Fragment) . (: (tail(
-   (let ctx (maybe-deref(.1( e ))))
+   (let ctx (maybe-deref(.1( (as e Fragment) ))))
    ctx
 )) FContext);
 
@@ -190,11 +190,12 @@ fragment::let := λ(: ctx FContext)(: s S). (: (tail(
               SNil
            )) ))
            v
-        )) )) (
+        )) )) (tail(
+         (set v (fragment::render( return v )))
          (set return (FCtxBind(
-            (close return) k TAny (fragment::expression(fragment::render( return v )))
+            (close return) k TAny (fragment::expression( v ))
          )))
-      ))
+      )))
       ( (SCons( (SAtom 'App_s) (SCons(
           ls rs
         )) )) (
@@ -236,6 +237,16 @@ fragment::render-impl := λ(: ctx FContext)(: s S). (: (tail(
             ( _ () )
          ))
          (set r (SAtom(to-string (-( 0_i64 li )) )))
+      )))
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom 'align_s) )) lc )) )) (tail(
+         (let lt (fragment::render-impl( ctx lc )))
+         (let li 0_i64)
+         (match lt (
+            ()
+            ( (SAtom lai) (set li (max( (to-i64 lai) 8_i64 ))) )
+            ( _ () )
+         ))
+         (set r (SAtom(to-string li)))
       )))
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '>_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (tail(
          (let lt (fragment::render-impl( ctx lc )))
