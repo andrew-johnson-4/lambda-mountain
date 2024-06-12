@@ -944,6 +944,7 @@ fields-of-tag := λ(: tag Type)(: class Type). (: (tail(
          (exit 1_u64)
       )))
    ))
+   (set rhst (with-size rhst))
    (let rt (TGround( 'Fields_s (close(TypeSeq(
       (close TypeEOF)
       (fields-of-type rhst)
