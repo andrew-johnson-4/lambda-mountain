@@ -56,26 +56,14 @@ fragment .1 := λ(: src LocalVariable+Fields<Cons<_,f1+Sized<8>>>). (: (
    (.expression( 'rax ))
 ) f1+Reg64);
 
-#fragment .1 := λ(: src LocalVariable+Fields<Cons<_,f1+Sized<size1>>>). (: (
-#   (.program(
-#      (if-eq (.expression size1) 1 ( \t 'mov \s (+( (.expression src) 8 )) \[ '%rbp \] , \s '%al \n ))
-#      (if-eq (.expression size1) 2 ( \t 'mov \s (+( (.expression src) 8 )) \[ '%rbp \] , \s '%ax \n ))
-#      (if-eq (.expression size1) 4 ( \t 'mov \s (+( (.expression src) 8 )) \[ '%rbp \] , \s '%eax \n ))
-#      (if-eq (.expression size1) 8 ( \t 'mov \s (+( (.expression src) 8 )) \[ '%rbp \] , \s '%rax \n ))
-#      (if-eq 1 (>( (.expression size1) 8 )) (
-#         (for index (range( 0 (/( (.expression size1) '8 )) )) (
-#            (let word-offset (-( (-( (+( (.expression src) (.expression size1) )) '8 )) (*( (.expression index) '8 )) )) )
-#            \t 'pushq \s (.expression word-offset) \[ '%rbp \] \n
-#         ))
-#      ))
-#   ))
-#   (.expression(
-#      (if-eq (.expression size1) 1 'al)
-#      (if-eq (.expression size1) 2 'ax)
-#      (if-eq (.expression size1) 4 'eal)
-#      (if-eq (.expression size1) 8 'rax)
-#   ))
-#) f1);
+fragment .1 := λ(: src LocalVariable+Fields<Cons<_,f1+Sized<size1+GT<8>>>>). (: (
+   (.program(
+      (for index (range( 0 (/( (.expression size1) '8 )) )) (
+         (let word-offset (-( (-( (+( (.expression src) (.expression size1) )) '8 )) (*( (.expression index) '8 )) )) )
+         \t 'pushq \s (.expression word-offset) \[ '%rbp \] \n
+      ))
+   ))
+) f1+StackVariable);
 
 #fragment .2 := λ(: src LocalVariable+Fields<Cons<Cons<_,Sized<size2>>,Sized<size1>>>). (: (
 #   (.program(

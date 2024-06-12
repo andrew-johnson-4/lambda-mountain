@@ -449,8 +449,8 @@ typecheck-annotate-fields := λ(: tt Type). (: (tail(
          (let tag (with-only-tag tt))
          (if (&&( (non-zero tag) (non-zero class) )) (tail(
             (let ft (fields-of-tag( tag class )))
-            (let tt-2 (maybe-deref(tand( tt ft ))))
-            (set tt tt-2)
+            (set tt (TAnd( (close tt) (close ft) )))
+            (print 'Fields\s_s)(print tt)(print '\n_s)
          )) ())
       )))
    ))
@@ -458,12 +458,13 @@ typecheck-annotate-fields := λ(: tt Type). (: (tail(
 )) Type);
 
 typecheck-annotate-size := λ(: tt Type). (: (tail(
-   (if (&&( (not(typecheck-is-sized tt)) (!=( (typecheck-is-sized tt) typecheck-do-not-size )) )) (tail(
-      (let sz (typecheck-annotate-size-inner tt))
-      (let tt2 (maybe-deref(typecheck-annotate-size-recurse tt)))
-      (let tt3 (maybe-deref(tand(
-         tt2
-         (TGround(
+   (let return tt)
+   (if (&&( (not(typecheck-is-sized return)) (!=( (typecheck-is-sized return) typecheck-do-not-size )) )) (tail(
+      (let sz (typecheck-annotate-size-inner return))
+      (set return (typecheck-annotate-size-recurse return))
+      (set return (TAnd(
+         (close return)
+         (close(TGround(
             'Sized_s
             (close (TypeSeq(
                (close TypeEOF)
@@ -472,11 +473,10 @@ typecheck-annotate-size := λ(: tt Type). (: (tail(
                   (close TypeEOF)
                ))
             )))
-         ))
-      ))))
-      (set tt tt3)
+         )))
+      )))
    )) ())
-   tt
+   return
 )) Type);
 
 typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail(

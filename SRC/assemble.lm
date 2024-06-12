@@ -277,11 +277,13 @@ compile-define-head-accessor := λ(: ctx FContext)(: base-type Type). (: (tail(
 )) FContext[]);
 
 compile-define-field-accessor := λ(: ctx FContext)(: base-type Type)(: field-types Type)(: case-number U64)(: field-offset U64)(: field-number U64)(: case-type Type). (: (tail(
-   (if (is-open base-type) (
-   ) (tail(
-      (let ctx-2 (maybe-deref(compile-define-field-accessor-simple( ctx base-type field-types case-number field-offset field-number case-type ))))
-      (set ctx ctx-2)
-   )))
+   #(if (!=( field-number 1_u64 )) (
+      (if (is-open base-type) (
+      ) (tail(
+         (let ctx-2 (maybe-deref(compile-define-field-accessor-simple( ctx base-type field-types case-number field-offset field-number case-type ))))
+         (set ctx ctx-2)
+      )))
+   #) ())
    (close ctx)
 )) FContext[]);
 

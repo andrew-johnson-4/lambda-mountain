@@ -693,6 +693,11 @@ can-unify := λ(: fpt Type)(: pt Type). (: (tail(
          (if (can-unify( lt rt1 )) (set r 1_u64) ())
          (if (can-unify( lt rt2 )) (set r 1_u64) ())
       )))
+      ( (TPair( (TGround( 'GT_s (TypeSeq( TypeEOF (TGround( lbase TypeEOF )) )) )) (TGround( rbase TypeEOF )) )) (
+         (if (>( (to-i64 rbase) (to-i64 lbase) )) (
+            (set r 1_u64)
+         ) ())
+      ))
       ( (TPair( (TGround( ltn lps )) (TGround( rtn rps )) )) (
          (if (==( ltn rtn )) (
             (if (can-unify( lps rps )) (
@@ -901,6 +906,11 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (tail(
                (set ctx (union( lctx rctx )))
             ))
          ))
+      ))
+      ( (TPair( (TGround( 'GT_s (TypeSeq( TypeEOF (TGround( lbase TypeEOF )) )) )) (TGround( rbase TypeEOF )) )) (
+         (if (>( (to-i64 rbase) (to-i64 lbase) )) (
+            (set ctx TCtxEOF)
+         ) ())
       ))
       ( (TPair( (TGround( ltn lps )) (TGround( rtn rps )) )) (
          (if (==( ltn rtn )) (
