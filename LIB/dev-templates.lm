@@ -106,3 +106,87 @@ fragment .2 := λ(: src LocalVariable+Fields<Cons<Cons<_,f2+Sized<size2+GT<8>>>,
       ))
    ))
 ) f2+StackVariable);
+
+fragment .3 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<_,f3+Sized<1>>,Sized<size2>>,Sized<size1>>>). (: (
+   (.program(
+      (let base-offset (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )))
+      \t 'mov \s (+( (.expression base-offset) 8 )) \[ '%rbp \] , \s '%al \n
+   ))
+   (.expression( 'al ))
+) f3+Reg8);
+
+fragment .3 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<_,f3+Sized<2>>,Sized<size2>>,Sized<size1>>>). (: (
+   (.program(
+      (let base-offset (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )))
+      \t 'mov \s (+( (.expression base-offset) 8 )) \[ '%rbp \] , \s '%ax \n
+   ))
+   (.expression( 'ax ))
+) f3+Reg16);
+
+fragment .3 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<_,f3+Sized<4>>,Sized<size2>>,Sized<size1>>>). (: (
+   (.program(
+      (let base-offset (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )))
+      \t 'mov \s (+( (.expression base-offset) 8 )) \[ '%rbp \] , \s '%eax \n
+   ))
+   (.expression( 'eax ))
+) f3+Reg32);
+
+fragment .3 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<_,f3+Sized<8>>,Sized<size2>>,Sized<size1>>>). (: (
+   (.program(
+      (let base-offset (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )))
+      \t 'mov \s (+( (.expression base-offset) 8 )) \[ '%rbp \] , \s '%rax \n
+   ))
+   (.expression( 'rax ))
+) f3+Reg64);
+
+fragment .3 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<_,f3+Sized<size3+GT<8>>>,Sized<size2>>,Sized<size1>>>). (: (
+   (.program(
+      (let base-offset (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )))
+      (for index in (range( 0 (/( (.expression size3) '8 )) )) (
+         (let word-offset (-( (+( (.expression base-offset) (.expression size3) )) (+( (*( (.expression index) '8 )) '8 )) )) )
+         \t 'pushq \s (.expression word-offset) \[ '%rbp \] \n
+      ))
+   ))
+) f3+StackVariable);
+
+fragment .4 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<_,f4+Sized<1>>,Sized<size3>>,Sized<size2>>,Sized<size1>>>). (: (
+   (.program(
+      (let base-offset (+( (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )))
+      \t 'mov \s (+( (.expression base-offset) 8 )) \[ '%rbp \] , \s '%al \n
+   ))
+   (.expression( 'al ))
+) f4+Reg8);
+
+fragment .4 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<_,f4+Sized<2>>,Sized<size3>>,Sized<size2>>,Sized<size1>>>). (: (
+   (.program(
+      (let base-offset (+( (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )))
+      \t 'mov \s (+( (.expression base-offset) 8 )) \[ '%rbp \] , \s '%ax \n
+   ))
+   (.expression( 'ax ))
+) f4+Reg16);
+
+fragment .4 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<_,f4+Sized<4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>>). (: (
+   (.program(
+      (let base-offset (+( (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )))
+      \t 'mov \s (+( (.expression base-offset) 8 )) \[ '%rbp \] , \s '%eax \n
+   ))
+   (.expression( 'eax ))
+) f4+Reg32);
+
+fragment .4 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<_,f4+Sized<8>>,Sized<size3>>,Sized<size2>>,Sized<size1>>>). (: (
+   (.program(
+      (let base-offset (+( (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )))
+      \t 'mov \s (+( (.expression base-offset) 8 )) \[ '%rbp \] , \s '%rax \n
+   ))
+   (.expression( 'rax ))
+) f4+Reg64);
+
+fragment .4 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<_,f4+Sized<size4+GT<8>>>,Sized<size3>>,Sized<size2>>,Sized<size1>>>). (: (
+   (.program(
+      (let base-offset (+( (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )))
+      (for index in (range( 0 (/( (.expression size4) '8 )) )) (
+         (let word-offset (-( (+( (.expression base-offset) (.expression size4) )) (+( (*( (.expression index) '8 )) '8 )) )) )
+         \t 'pushq \s (.expression word-offset) \[ '%rbp \] \n
+      ))
+   ))
+) f4+StackVariable);
