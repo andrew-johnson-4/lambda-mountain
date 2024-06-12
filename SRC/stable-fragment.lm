@@ -108,6 +108,11 @@ fragment::expression := λ(: val String). (: (tail(
    r
 )) Fragment);
 
+fragment::expression := λ(: val S). (: (tail(
+   (let r (fragment::new()))
+   (set r (fragment::set( r 'expression_s val )))
+   r
+)) Fragment);
 
 fragment::get-context := λ(: e Fragment) . (: (tail(
    (let ctx (maybe-deref(.1( e ))))
@@ -177,6 +182,26 @@ fragment::unlet := λ(: s S). (: (tail(
 
 fragment::let := λ(: ctx FContext)(: s S). (: (tail(
    (let return ctx)
+   (match s (
+      ()
+      ( (SCons( (SAtom 'App_s) (SCons(
+           (SCons( (SAtom 'Abs_s) (SCons(
+              (SCons( (SAtom 'Var_s) (SAtom k) ))
+              SNil
+           )) ))
+           v
+        )) )) (
+         (set return (FCtxBind(
+            (close return) k TAny (fragment::expression(fragment::render( return v )))
+         )))
+      ))
+      ( (SCons( (SAtom 'App_s) (SCons(
+          ls rs
+        )) )) (
+         (set return (fragment::let( return ls )))
+      ))
+      ( _ () )
+   ))
    return
 )) FContext);
 
