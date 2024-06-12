@@ -101,7 +101,7 @@ fragment .2 := λ(: src LocalVariable+Fields<Cons<Cons<_,f2+Sized<size2+GT<8>>>,
    (.program(
       (let base-offset (+( (.expression src) (align( (.expression size1) )) )))
       (for index in (range( 0 (/( (.expression size2) '8 )) )) (
-         (let word-offset (-( (+( (.expression base-offset) (.expression size2) )) (+( (*( (.expression index) '8 )) '8 )) )) )
+         (let word-offset (-( (+( (.expression base-offset) (.expression size2) )) (*( (.expression index) '8 )) )) )
          \t 'pushq \s (.expression word-offset) \[ '%rbp \] \n
       ))
    ))
@@ -143,7 +143,7 @@ fragment .3 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<_,f3+Sized<size3+GT<
    (.program(
       (let base-offset (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )))
       (for index in (range( 0 (/( (.expression size3) '8 )) )) (
-         (let word-offset (-( (+( (.expression base-offset) (.expression size3) )) (+( (*( (.expression index) '8 )) '8 )) )) )
+         (let word-offset (-( (+( (.expression base-offset) (.expression size3) )) (*( (.expression index) '8 )) )) )
          \t 'pushq \s (.expression word-offset) \[ '%rbp \] \n
       ))
    ))
@@ -185,7 +185,7 @@ fragment .4 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<_,f4+Sized<size
    (.program(
       (let base-offset (+( (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )))
       (for index in (range( 0 (/( (.expression size4) '8 )) )) (
-         (let word-offset (-( (+( (.expression base-offset) (.expression size4) )) (+( (*( (.expression index) '8 )) '8 )) )) )
+         (let word-offset (-( (+( (.expression base-offset) (.expression size4) )) (*( (.expression index) '8 )) )) )
          \t 'pushq \s (.expression word-offset) \[ '%rbp \] \n
       ))
    ))
