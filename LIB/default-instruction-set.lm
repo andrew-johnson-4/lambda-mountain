@@ -18,6 +18,7 @@ fragment cdecl::return := λ(: l Constant+Literal+Sized<8>). (: (  (.program( \t
 
 fragment cdecl::return := λ(: src LocalVariable+Sized<size>). (: (
    (.program(
+      (let xyz 456)
       (if-eq (.expression size) 1 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%al \n))
       (if-eq (.expression size) 2 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%ax \n))
       (if-eq (.expression size) 4 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%eax \n))
