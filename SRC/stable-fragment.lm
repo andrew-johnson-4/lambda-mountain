@@ -237,6 +237,16 @@ fragment::render-impl := λ(: ctx FContext)(: s S). (: (tail(
          ))
          (set r (SAtom(to-string (-( 0_i64 li )) )))
       )))
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom 'align_s) )) lc )) )) (tail(
+         (let lt (fragment::render-impl( ctx lc )))
+         (let li 0_i64)
+         (match lt (
+            ()
+            ( (SAtom lai) (set li (max( (to-i64 lai) 8_i64 ))) )
+            ( _ () )
+         ))
+         (set r (SAtom(to-string (-( 0_i64 li )) )))
+      )))
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '>_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (tail(
          (let lt (fragment::render-impl( ctx lc )))
          (let li 0_i64)
