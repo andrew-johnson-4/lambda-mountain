@@ -1,7 +1,14 @@
 
 develop: compile-production
 	rm -f tmp tmp.o tmp.s
-	./production -o tmp.s tests/regress/big-return.lm
+	./production -o tmp.s tests/regress/big_return.lm
+	as tmp.s -o tmp.o
+	ld tmp.o -o tmp
+	./tmp
+
+state: compile-bootstrap
+	rm -f tmp tmp.o tmp.s
+	./bootstrap -o tmp.s tests/regress/big_return.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp
