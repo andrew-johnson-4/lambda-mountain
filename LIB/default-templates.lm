@@ -233,7 +233,7 @@ fragment .5 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+
    ))
 ) f5+StackVariable);
 
-fragment .1 := λ(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<1>,Sized<size0>>>). (: (
+fragment .1 := λ(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<1>>,Sized<size0>>>). (: (
    (.program(
       \t 'mov \s '$ (.expression src) , \s '%r15 \n
       \t 'mov \s (+( '0 (.expression size0) )) \[ '%r15 \] , \s '%al \n
@@ -241,7 +241,7 @@ fragment .1 := λ(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<1>,Sized<size
    (.expression( 'al ))
 ) f1+Reg8);
 
-fragment .1 := λ(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<2>,Sized<size0>>>). (: (
+fragment .1 := λ(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<2>>,Sized<size0>>>). (: (
    (.program(
       \t 'mov \s '$ (.expression src) , \s '%r15 \n
       \t 'mov \s (+( '0 (.expression size0) )) \[ '%r15 \] , \s '%ax \n
@@ -249,7 +249,7 @@ fragment .1 := λ(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<2>,Sized<size
    (.expression( 'ax ))
 ) f1+Reg16);
 
-fragment .1 := λ(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<4>,Sized<size0>>>). (: (
+fragment .1 := λ(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<4>>,Sized<size0>>>). (: (
    (.program(
       \t 'mov \s '$ (.expression src) , \s '%r15 \n
       \t 'mov \s (+( '0 (.expression size0) )) \[ '%r15 \] , \s '%eax \n
@@ -257,7 +257,7 @@ fragment .1 := λ(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<4>,Sized<size
    (.expression( 'eax ))
 ) f1+Reg32);
 
-fragment .1 := λ(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<8>,Sized<size0>>>). (: (
+fragment .1 := λ(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<8>>,Sized<size0>>>). (: (
    (.program(
       \t 'mov \s '$ (.expression src) , \s '%r15 \n
       \t 'mov \s (+( '0 (.expression size0) )) \[ '%r15 \] , \s '%rax \n
@@ -265,7 +265,7 @@ fragment .1 := λ(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<8>,Sized<size
    (.expression( 'rax ))
 ) f1+Reg64);
 
-fragment .1 := λ(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<size1+GT<8>>,Sized<size0>>>). (: (
+fragment .1 := λ(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<size1+GT<8>>>,Sized<size0>>>). (: (
    (.program(
       \t 'mov \s '$ (.expression src) , \s '%r15 \n
       (for index in (range( 0 (/( (.expression size1) '8 )) )) (
