@@ -10,7 +10,7 @@ fragment type I64;    size I64 8;    atom suffix I64    _i64;
 fragment type ASCII;  size ASCII 1;  atom suffix ASCII  _c;
 fragment type String; size String 8; atom suffix String _s;
 
-fragment [] := λ(: l LocalVariable+Array<x+Sized<1>,?>)(: r LocalVariable+U64). (: (
+fragment : DontChain [] := λ(: l LocalVariable+Array<x+Sized<1>,?>)(: r LocalVariable+U64). (: (
    (.program (
       \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
       \t 'mov \s (.expression r) \[ '%rbp \] , \s '%r14 \n
@@ -20,7 +20,7 @@ fragment [] := λ(: l LocalVariable+Array<x+Sized<1>,?>)(: r LocalVariable+U64).
    (.expression( 'r15b ))
 ) x+Reg8);
 
-fragment [] := λ(: l LocalVariable+Array<x+Sized<8>,?>)(: r LocalVariable+U64). (: (
+fragment : DontChain [] := λ(: l LocalVariable+Array<x+Sized<8>,?>)(: r LocalVariable+U64). (: (
    (.program (
       \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
       \t 'mov \s (.expression r) \[ '%rbp \] , \s '%r14 \n
@@ -31,7 +31,7 @@ fragment [] := λ(: l LocalVariable+Array<x+Sized<8>,?>)(: r LocalVariable+U64).
    (.expression( 'r15 ))
 ) x+Reg64);
 
-fragment [] := λ(: l LocalVariable+Field<x+Sized<8>,?>)(: r LocalVariable+U64). (: (
+fragment : DontChain [] := λ(: l LocalVariable+Field<x+Sized<8>,?>)(: r LocalVariable+U64). (: (
    (.program (
       \t 'mov \s '%rbp , \s '%r15 \n
       \t 'add \s '$ (.expression l) , \s '%r15 \n
@@ -43,7 +43,7 @@ fragment [] := λ(: l LocalVariable+Field<x+Sized<8>,?>)(: r LocalVariable+U64).
    (.expression( 'r15 ))
 ) x+Reg64);
 
-fragment [] := λ(: l LocalVariable+Array<x,?>)(: r GlobalVariable+U64). (: (
+fragment : DontChain [] := λ(: l LocalVariable+Array<x,?>)(: r GlobalVariable+U64). (: (
    (.program (
       \t 'mov \s '$ (.expression l) , \s '%r15 \n
       \t 'mov \s '$ (.expression r) , \s '%r14 \n
@@ -55,14 +55,14 @@ fragment [] := λ(: l LocalVariable+Array<x,?>)(: r GlobalVariable+U64). (: (
    (.expression( 'r15 ))
 ) x+Reg64);
 
-fragment set[] := λ(: l LocalVariable+Array<Field<Sized<8>,?>,?>)(: i Literal+Constant+U64)(: v Reg64). (: (
+fragment : DontChain set[] := λ(: l LocalVariable+Array<Field<Sized<8>,?>,?>)(: i Literal+Constant+U64)(: v Reg64). (: (
    (.program (
       \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
       \t 'mov \s '% (.expression v) , \s (*( '8 (.expression i) )) \[ '%r15 \] \n
    ))
 ) Nil);
 
-fragment [] := λ(: l GlobalVariable+Array<x,?>)(: r GlobalVariable+U64). (: (
+fragment : DontChain [] := λ(: l GlobalVariable+Array<x,?>)(: r GlobalVariable+U64). (: (
    (.program (
       \t 'mov \s '$ (.expression l) , \s '%r15 \n
       \t 'mov \s '$ (.expression r) , \s '%r14 \n
@@ -73,7 +73,7 @@ fragment [] := λ(: l GlobalVariable+Array<x,?>)(: r GlobalVariable+U64). (: (
    ))
    (.expression( 'r15 ))
 ) x+Reg64);
-fragment [] := λ(: l GlobalVariable+Array<x,?>)(: r LocalVariable+U64). (: (
+fragment : DontChain [] := λ(: l GlobalVariable+Array<x,?>)(: r LocalVariable+U64). (: (
    (.program (
       \t 'mov \s '$ (.expression l) , \s '%r15 \n
       \t 'mov \s (.expression r) \[ '%rbp \] , \s '%r14 \n
@@ -83,7 +83,7 @@ fragment [] := λ(: l GlobalVariable+Array<x,?>)(: r LocalVariable+U64). (: (
    ))
    (.expression( 'r15 ))
 ) x+Reg64);
-fragment [] := λ(: l GlobalVariable+Array<x,?>)(: r Constant+U64). (: (
+fragment : DontChain [] := λ(: l GlobalVariable+Array<x,?>)(: r Constant+U64). (: (
    (.program (
       \t 'mov \s '$ (.expression l) , \s '%r15 \n
       \t 'mov \s '$ (.expression r) , \s '%r14 \n
@@ -94,7 +94,7 @@ fragment [] := λ(: l GlobalVariable+Array<x,?>)(: r Constant+U64). (: (
    (.expression( 'r15 ))
 ) x+Reg64);
 
-fragment > := λ(: l GlobalVariable+U64)(: r Constant+U64). (: (
+fragment : DontChain > := λ(: l GlobalVariable+U64)(: r Constant+U64). (: (
    (.program (
       \t 'mov \s '$ (.expression l) , \s '%r15 \n
       \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
@@ -102,7 +102,7 @@ fragment > := λ(: l GlobalVariable+U64)(: r Constant+U64). (: (
    ))
    (.expression( 'ja ))
 ) BranchConditional);
-fragment > := λ(: l LocalVariable+U64)(: r Constant+U64). (: (
+fragment : DontChain > := λ(: l LocalVariable+U64)(: r Constant+U64). (: (
    (.program (
       \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
       \t 'cmp \s '$ (.expression r) , '%r15 \n
@@ -110,7 +110,7 @@ fragment > := λ(: l LocalVariable+U64)(: r Constant+U64). (: (
    (.expression( 'ja ))
 ) BranchConditional);
 
-fragment > := λ(: l LocalVariable+U64)(: r LocalVariable+U64). (: (
+fragment : DontChain > := λ(: l LocalVariable+U64)(: r LocalVariable+U64). (: (
    (.program (
       \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
       \t 'mov \s (.expression r) \[ '%rbp \] , \s '%r14 \n
@@ -119,7 +119,7 @@ fragment > := λ(: l LocalVariable+U64)(: r LocalVariable+U64). (: (
    (.expression( 'ja ))
 ) BranchConditional);
 
-fragment > := λ(: l LocalVariable+I64)(: r LocalVariable+I64). (: (
+fragment : DontChain > := λ(: l LocalVariable+I64)(: r LocalVariable+I64). (: (
    (.program (
       \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
       \t 'mov \s (.expression r) \[ '%rbp \] , \s '%r14 \n
@@ -128,7 +128,7 @@ fragment > := λ(: l LocalVariable+I64)(: r LocalVariable+I64). (: (
    (.expression( 'jg ))
 ) BranchConditional);
 
-fragment > := λ(: l GlobalVariable+I64)(: r Constant+I64). (: (
+fragment : DontChain > := λ(: l GlobalVariable+I64)(: r Constant+I64). (: (
    (.program (
       \t 'mov \s '$ (.expression l) , \s '%r15 \n
       \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
@@ -136,7 +136,7 @@ fragment > := λ(: l GlobalVariable+I64)(: r Constant+I64). (: (
    ))
    (.expression( 'jg ))
 ) BranchConditional);
-fragment > := λ(: l LocalVariable+I64)(: r Constant+I64). (: (
+fragment : DontChain > := λ(: l LocalVariable+I64)(: r Constant+I64). (: (
    (.program (
       \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
       \t 'cmp \s '$ (.expression r) , '%r15 \n
@@ -330,7 +330,7 @@ fragment > := λ(: l LocalVariable+I64)(: r Constant+I64). (: (
    (as RAX I64)
 )) I64);
 
-fragment << := λ(: l U64+LocalVariable)(: r U64+Constant+Literal). (: (
+fragment : DontChain << := λ(: l U64+LocalVariable)(: r U64+Constant+Literal). (: (
    (.program(
       \t 'mov \s (.expression l) \[ '%rbp \] , '%rax \n
       \t 'shl \s '$ (.expression r) , '%rax \n
@@ -338,7 +338,7 @@ fragment << := λ(: l U64+LocalVariable)(: r U64+Constant+Literal). (: (
    (.expression 'rax)
 ) U64+Reg64);
 
-fragment >> := λ(: l U64+LocalVariable)(: r U64+Constant+Literal). (: (
+fragment : DontChain >> := λ(: l U64+LocalVariable)(: r U64+Constant+Literal). (: (
    (.program(
       \t 'mov \s (.expression l) \[ '%rbp \] , '%rax \n
       \t 'shr \s '$ (.expression r) , '%rax \n
@@ -399,10 +399,10 @@ fragment >> := λ(: l U64+LocalVariable)(: r U64+Constant+Literal). (: (
    (as RAX I64)
 )) I64);
 
-fragment branchtrue := λ(: _ Nil). (: (
+fragment : DontChain branchtrue := λ(: _ Nil). (: (
    (.expression( 'jmp ))
 ) BranchConditional);
-fragment branchfalse := λ(: _ Nil). (: (
+fragment : DontChain branchfalse := λ(: _ Nil). (: (
    (.program( \t 'cmp \s '%rsp, \s '%rsp \n ))
    (.expression( 'jne ))
 ) BranchConditional);
@@ -572,30 +572,30 @@ not := λ(: x U64). (: (tail(
    (as RAX U64)
 )) U64);
 
-fragment non-zero := λ(: l Reg64+U64). (: (
+fragment : DontChain non-zero := λ(: l Reg64+U64). (: (
    (.program (
       \t 'cmp \s '$0 , \s '% (.expression l) \n
    ))
    (.expression( 'jne ))
 ) BranchConditional);
-fragment non-zero := λ(: l Reg32+U32). (: (
+fragment : DontChain non-zero := λ(: l Reg32+U32). (: (
    (.program (
       \t 'cmp \s '$0 , \s '% (.expression l) \n
    ))
    (.expression( 'jne ))
 ) BranchConditional);
-fragment non-zero := λ(: l Reg16+U16). (: (
+fragment : DontChain non-zero := λ(: l Reg16+U16). (: (
    (.program (
       \t 'cmp \s '$0 , \s '% (.expression l) \n
    ))
    (.expression( 'jne ))
 ) BranchConditional);
-fragment non-zero := λ(: l Reg8+U8). (: (
+fragment : DontChain non-zero := λ(: l Reg8+U8). (: (
    (.program (
       \t 'cmp \s '$0 , \s '% (.expression l) \n
    ))
    (.expression( 'jne ))
 ) BranchConditional);
-fragment non-zero := λ(: l BranchConditional). (: (
+fragment : DontChain non-zero := λ(: l BranchConditional). (: (
    (.expression( (.expression l) ))
 ) BranchConditional);

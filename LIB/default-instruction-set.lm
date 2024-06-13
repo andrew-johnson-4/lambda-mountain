@@ -4,19 +4,19 @@ fragment type Reg16 AX  | BX  | CX  | DX  | SI  | DI  | BP  | SP  | R8W | R9W | 
 fragment type Reg32 EAX | EBX | ECX | EDX | ESI | EDI | EBP | ESP | R8D | R9D | R10D | R11D | R12D | R13D | R14D | R15D; size Reg32 4;
 fragment type Reg64 RAX | RBX | RCX | RDX | RSI | RDI | RBP | RSP | R8  | R9  | R10  | R11  | R12  | R13  | R14  | R15;  size Reg64 8;
 
-fragment syscall := λ. (: (.program( \t 'syscall \n )) Nil);
+fragment : DontChain syscall := λ. (: (.program( \t 'syscall \n )) Nil);
 
-fragment cdecl::return := λ(: l Nil). (: () Nil);
-fragment cdecl::return := λ(: l Reg8). (: (  (.program( \t 'mov \t '% (.expression l) , '%al \n))  (.expression 'al)  ) Nil);
-fragment cdecl::return := λ(: l Reg16). (: (  (.program( \t 'mov \t '% (.expression l) , '%ax \n))  (.expression 'ax)  ) Nil);
-fragment cdecl::return := λ(: l Reg32). (: (  (.program( \t 'mov \t '% (.expression l) , '%eax \n))  (.expression 'eax)  ) Nil);
-fragment cdecl::return := λ(: l Reg64). (: (  (.program( \t 'mov \t '% (.expression l) , '%rax \n))  (.expression 'rax)  ) Nil);
-fragment cdecl::return := λ(: l Constant+Literal+Sized<1>). (: (  (.program( \t 'mov \t '$ (.expression l) , '%al \n))  (.expression 'al)  ) Nil);
-fragment cdecl::return := λ(: l Constant+Literal+Sized<2>). (: (  (.program( \t 'mov \t '$ (.expression l) , '%ax \n))  (.expression 'ax)  ) Nil);
-fragment cdecl::return := λ(: l Constant+Literal+Sized<4>). (: (  (.program( \t 'mov \t '$ (.expression l) , '%eax \n))  (.expression 'eax)  ) Nil);
-fragment cdecl::return := λ(: l Constant+Literal+Sized<8>). (: (  (.program( \t 'mov \t '$ (.expression l) , '%rax \n))  (.expression 'rax)  ) Nil);
+fragment : DontChain cdecl::return := λ(: l Nil). (: () Nil);
+fragment : DontChain cdecl::return := λ(: l Reg8). (: (  (.program( \t 'mov \t '% (.expression l) , '%al \n))  (.expression 'al)  ) Nil);
+fragment : DontChain cdecl::return := λ(: l Reg16). (: (  (.program( \t 'mov \t '% (.expression l) , '%ax \n))  (.expression 'ax)  ) Nil);
+fragment : DontChain cdecl::return := λ(: l Reg32). (: (  (.program( \t 'mov \t '% (.expression l) , '%eax \n))  (.expression 'eax)  ) Nil);
+fragment : DontChain cdecl::return := λ(: l Reg64). (: (  (.program( \t 'mov \t '% (.expression l) , '%rax \n))  (.expression 'rax)  ) Nil);
+fragment : DontChain cdecl::return := λ(: l Constant+Literal+Sized<1>). (: (  (.program( \t 'mov \t '$ (.expression l) , '%al \n))  (.expression 'al)  ) Nil);
+fragment : DontChain cdecl::return := λ(: l Constant+Literal+Sized<2>). (: (  (.program( \t 'mov \t '$ (.expression l) , '%ax \n))  (.expression 'ax)  ) Nil);
+fragment : DontChain cdecl::return := λ(: l Constant+Literal+Sized<4>). (: (  (.program( \t 'mov \t '$ (.expression l) , '%eax \n))  (.expression 'eax)  ) Nil);
+fragment : DontChain cdecl::return := λ(: l Constant+Literal+Sized<8>). (: (  (.program( \t 'mov \t '$ (.expression l) , '%rax \n))  (.expression 'rax)  ) Nil);
 
-fragment cdecl::return := λ(: src LocalVariable+Sized<size>). (: (
+fragment : DontChain cdecl::return := λ(: src LocalVariable+Sized<size>). (: (
    (.program(
       (if-eq (.expression size) 1 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%al \n))
       (if-eq (.expression size) 2 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%ax \n))
@@ -39,11 +39,11 @@ fragment cdecl::return := λ(: src LocalVariable+Sized<size>). (: (
    ))
 ) Nil);
 
-fragment & := λ(: src LocalVariable). (: ( (.program( \t 'mov \t '%rbp , \s '%r12 \n \t 'add \s '$ (.expression src) , \s '%r12 \n) (.expression( 'r12 ))) ) Reg64);
-fragment & := λ(: src GlobalVariable). (: ( (.program( \t 'mov \t '$ (.expression src) , \s '%r12 \n) (.expression( 'r12 ))) ) Reg64);
+fragment : DontChain & := λ(: src LocalVariable). (: ( (.program( \t 'mov \t '%rbp , \s '%r12 \n \t 'add \s '$ (.expression src) , \s '%r12 \n) (.expression( 'r12 ))) ) Reg64);
+fragment : DontChain & := λ(: src GlobalVariable). (: ( (.program( \t 'mov \t '$ (.expression src) , \s '%r12 \n) (.expression( 'r12 ))) ) Reg64);
 
 # Generic 'mov Semantics
-fragment mov := λ(: src LocalVariable+Sized<size>)(: dst LocalVariable). (: (
+fragment : DontChain mov := λ(: src LocalVariable+Sized<size>)(: dst LocalVariable). (: (
    (.program (
       (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
          \t 'movq \s (+( (.expression src) (*( (.expression word-offset) 8 )) )) \[ '%rbp \] , \s '%r15 \n
@@ -66,7 +66,7 @@ fragment mov := λ(: src LocalVariable+Sized<size>)(: dst LocalVariable). (: (
       ))
    ))
 ) Nil);
-fragment mov := λ(: src LocalVariable+Sized<size>)(: dst GlobalVariable). (: (
+fragment : DontChain mov := λ(: src LocalVariable+Sized<size>)(: dst GlobalVariable). (: (
    (.program (
       \t 'mov \s '$ (.expression dst) , \s '%r14 \n
       (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
@@ -88,7 +88,7 @@ fragment mov := λ(: src LocalVariable+Sized<size>)(: dst GlobalVariable). (: (
    ))
 ) Nil);
 
-fragment mov := λ(: src StackVariable+Sized<size>)(: dst GlobalVariable+Sized<size>). (: (
+fragment : DontChain mov := λ(: src StackVariable+Sized<size>)(: dst GlobalVariable+Sized<size>). (: (
    (.program (
       \t 'mov \s '$ (.expression dst) , \s '%r15 \n
       (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
@@ -100,7 +100,7 @@ fragment mov := λ(: src StackVariable+Sized<size>)(: dst GlobalVariable+Sized<s
    ))
 ) Nil);
 
-fragment mov := λ(: src StackVariable+Sized<size>)(: dst LocalVariable+Sized<size>). (: (
+fragment : DontChain mov := λ(: src StackVariable+Sized<size>)(: dst LocalVariable+Sized<size>). (: (
    (.program (
       (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
          \t 'pop \s (+( (.expression dst) (*( (.expression word-offset) 8 )) )) \[ '%rbp \] \n
@@ -112,7 +112,7 @@ fragment mov := λ(: src StackVariable+Sized<size>)(: dst LocalVariable+Sized<si
 ) Nil);
 
 
-fragment push := λ(: src GlobalVariable+Sized<size>). (: (
+fragment : DontChain push := λ(: src GlobalVariable+Sized<size>). (: (
    (.program (
       (\t 'mov \s '$ (.expression src) , \s '%r15 \n)
       (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
@@ -132,7 +132,7 @@ fragment push := λ(: src GlobalVariable+Sized<size>). (: (
       ))
    ))
 ) Nil);
-fragment push := λ(: src LocalVariable+Sized<size>). (: (
+fragment : DontChain push := λ(: src LocalVariable+Sized<size>). (: (
    (.program (
       (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
          \t 'pushq \s (+(
@@ -154,7 +154,7 @@ fragment push := λ(: src LocalVariable+Sized<size>). (: (
       ))
    ))
 ) Nil);
-fragment push := λ(: src Reg64+Array<Sized<size>,max>)(: index Literal+Constant). (: (
+fragment : DontChain push := λ(: src Reg64+Array<Sized<size>,max>)(: index Literal+Constant). (: (
    (.program (
       (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
          \t 'pushq \s (+(
@@ -176,7 +176,7 @@ fragment push := λ(: src Reg64+Array<Sized<size>,max>)(: index Literal+Constant
       ))
    ))
 ) Nil);
-fragment push := λ(: src LocalVariable+Array<Sized<size>,max>)(: index Literal+Constant). (: (
+fragment : DontChain push := λ(: src LocalVariable+Array<Sized<size>,max>)(: index Literal+Constant). (: (
    (.program (
       \t 'mov \s (.expression src) \[ '%rbp \] , \s '%r15 \n
       (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
@@ -200,13 +200,13 @@ fragment push := λ(: src LocalVariable+Array<Sized<size>,max>)(: index Literal+
    ))
 ) Nil);
 
-fragment pop := λ(: src LocalVariable+Sized<size>). (: (
+fragment : DontChain pop := λ(: src LocalVariable+Sized<size>). (: (
    (.program ( for word-offset in (range( 1 (+( (/( (.expression size) 8 )) 1 )) )) (
       \t 'popq \s (-( (.expression src) (*( (.expression word-offset) 8 )) )) \[ '%rbp \] \n
    )))
 ) Nil);
 
-fragment mov := λ(: src LocalVariable+Sized<size>)(: index Literal+Constant)(: dst Reg64+x[]). (: (
+fragment : DontChain mov := λ(: src LocalVariable+Sized<size>)(: index Literal+Constant)(: dst Reg64+x[]). (: (
    (.program (
       (\t 'mov \s '% (.expression dst) , \s '%r14 \n)
       (\t 'add \s '$ (*( (.expression index) (.expression size) )) , \s '%r14 \n)
@@ -228,7 +228,7 @@ fragment mov := λ(: src LocalVariable+Sized<size>)(: index Literal+Constant)(: 
       ))
    ))
 ) Nil);
-fragment mov := λ(: src LocalVariable+Sized<size>)(: index Literal+Constant)(: dst LocalVariable+Array<Sized<size>,?>). (: (
+fragment : DontChain mov := λ(: src LocalVariable+Sized<size>)(: index Literal+Constant)(: dst LocalVariable+Array<Sized<size>,?>). (: (
    (.program (
       \t 'mov \s (.expression dst) \[ '%rbp \] , \s '%r14 \n
       (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
@@ -249,7 +249,7 @@ fragment mov := λ(: src LocalVariable+Sized<size>)(: index Literal+Constant)(: 
       ))
    ))
 ) Nil);
-fragment mov := λ(: src Reg64)(: index Literal+Constant)(: dst LocalVariable+Sized<size>). (: (
+fragment : DontChain mov := λ(: src Reg64)(: index Literal+Constant)(: dst LocalVariable+Sized<size>). (: (
    (.program (
       (\t 'mov \s '% (.expression src) , \s '%r14 \n)
       (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
@@ -270,7 +270,7 @@ fragment mov := λ(: src Reg64)(: index Literal+Constant)(: dst LocalVariable+Si
       ))
    ))
 ) Nil);
-fragment mov := λ(: src Literal+Constant)(: index Literal+Constant)(: dst LocalVariable+Array<Sized<size>,?>). (: (
+fragment : DontChain mov := λ(: src Literal+Constant)(: index Literal+Constant)(: dst LocalVariable+Array<Sized<size>,?>). (: (
    (.program (
       \t 'mov \s (.expression dst) \[ '%rbp \] , \s '%r15 \n
       (if-eq (.expression size) 8 (
@@ -288,159 +288,159 @@ fragment mov := λ(: src Literal+Constant)(: index Literal+Constant)(: dst Local
    ))
 ) Nil);
 
-fragment mov := λ(: src Sized<1>[]+LocalVariable)(: index Literal+Constant)(: dst Reg8). (: (
+fragment : DontChain mov := λ(: src Sized<1>[]+LocalVariable)(: index Literal+Constant)(: dst Reg8). (: (
    (.program(
       \t 'mov \s (.expression src) \[ '%rbp \] , \s '%r15 \n
       \t 'mov \s (.expression index) \[ '%r15 \] , \s '% (.expression dst) \n
    ))
 ) Nil);
 
-fragment mov := λ(: src LocalVariable)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n)) ) Nil);
-fragment mov := λ(: src GlobalVariable)(: dst Constant+Reg64). (: ( (.program(
+fragment : DontChain mov := λ(: src LocalVariable)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n)) ) Nil);
+fragment : DontChain mov := λ(: src GlobalVariable)(: dst Constant+Reg64). (: ( (.program(
    \t 'mov \t '$ (.expression src) , \s '% (.expression dst) \n
    \t 'mov \t '0 \[ '% (.expression dst) \] , \s '% (.expression dst) \n
 )) ) Nil);
-fragment mov := λ(: src Constant+Literal+Sized<8>)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t '$ (.expression src) , \s '% (.expression dst) \n)) ) Nil);
-fragment mov := λ(: src Reg64)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t '% (.expression src) , \s '% (.expression dst) \n)) ) Nil);
-fragment mov := λ(: src Reg8)(: dst Constant+Reg8). (: ( (.program( \t 'mov \t '% (.expression src) , \s '% (.expression dst) \n)) ) Nil);
+fragment : DontChain mov := λ(: src Constant+Literal+Sized<8>)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t '$ (.expression src) , \s '% (.expression dst) \n)) ) Nil);
+fragment : DontChain mov := λ(: src Reg64)(: dst Constant+Reg64). (: ( (.program( \t 'mov \t '% (.expression src) , \s '% (.expression dst) \n)) ) Nil);
+fragment : DontChain mov := λ(: src Reg8)(: dst Constant+Reg8). (: ( (.program( \t 'mov \t '% (.expression src) , \s '% (.expression dst) \n)) ) Nil);
 
-fragment mov := λ(: src Constant+Literal+Sized<1>)(: dst LocalVariable). (: (.program( \t 'movb \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
-fragment mov := λ(: src Constant+Literal+Sized<2>)(: dst LocalVariable). (: (.program( \t 'movw \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
-fragment mov := λ(: src Constant+Literal+Sized<4>)(: dst LocalVariable). (: (.program( \t 'movl \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
-fragment mov := λ(: src Constant+Literal+Sized<8>)(: dst LocalVariable). (: (.program( \t 'movq \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
+fragment : DontChain mov := λ(: src Constant+Literal+Sized<1>)(: dst LocalVariable). (: (.program( \t 'movb \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
+fragment : DontChain mov := λ(: src Constant+Literal+Sized<2>)(: dst LocalVariable). (: (.program( \t 'movw \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
+fragment : DontChain mov := λ(: src Constant+Literal+Sized<4>)(: dst LocalVariable). (: (.program( \t 'movl \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
+fragment : DontChain mov := λ(: src Constant+Literal+Sized<8>)(: dst LocalVariable). (: (.program( \t 'movq \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
 
-fragment mov := λ(: src Constant+Literal+Sized<1>)(: dst GlobalVariable). (: (.program(
+fragment : DontChain mov := λ(: src Constant+Literal+Sized<1>)(: dst GlobalVariable). (: (.program(
    \t 'mov \s '$ (.expression dst) , \s '%r15 \n
    \t 'movb \s '$ (.expression src) , \s '0 \[ '%r15 \] \n
 )) Nil);
-fragment mov := λ(: src Constant+Literal+Sized<2>)(: dst GlobalVariable). (: (.program(
+fragment : DontChain mov := λ(: src Constant+Literal+Sized<2>)(: dst GlobalVariable). (: (.program(
    \t 'mov \s '$ (.expression dst) , \s '%r15 \n
    \t 'movw \s '$ (.expression src) , \s '0 \[ '%r15 \] \n
 )) Nil);
-fragment mov := λ(: src Constant+Literal+Sized<4>)(: dst GlobalVariable). (: (.program(
+fragment : DontChain mov := λ(: src Constant+Literal+Sized<4>)(: dst GlobalVariable). (: (.program(
    \t 'mov \s '$ (.expression dst) , \s '%r15 \n
    \t 'movl \s '$ (.expression src) , \s '0 \[ '%r15 \] \n
 )) Nil);
-fragment mov := λ(: src Constant+Literal+Sized<8>)(: dst GlobalVariable). (: (.program(
+fragment : DontChain mov := λ(: src Constant+Literal+Sized<8>)(: dst GlobalVariable). (: (.program(
    \t 'mov \s '$ (.expression dst) , \s '%r15 \n
    \t 'movq \s '$ (.expression src) , \s '0 \[ '%r15 \] \n
 )) Nil);
 
-fragment push := λ(: src Constant+Literal+Sized<1>). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
-fragment push := λ(: src Constant+Literal+Sized<2>). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
-fragment push := λ(: src Constant+Literal+Sized<4>). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
-fragment push := λ(: src Constant+Literal+Sized<8>). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
+fragment : DontChain push := λ(: src Constant+Literal+Sized<1>). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
+fragment : DontChain push := λ(: src Constant+Literal+Sized<2>). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
+fragment : DontChain push := λ(: src Constant+Literal+Sized<4>). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
+fragment : DontChain push := λ(: src Constant+Literal+Sized<8>). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
 
-fragment mov := λ(: src Reg8)(: dst LocalVariable). (: (.program( \t 'mov \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
-fragment mov := λ(: src Reg16)(: dst LocalVariable). (: (.program( \t 'mov \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
-fragment mov := λ(: src Reg32)(: dst LocalVariable). (: (.program( \t 'mov \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
-fragment mov := λ(: src Reg64)(: dst LocalVariable). (: (.program( \t 'mov \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
+fragment : DontChain mov := λ(: src Reg8)(: dst LocalVariable). (: (.program( \t 'mov \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
+fragment : DontChain mov := λ(: src Reg16)(: dst LocalVariable). (: (.program( \t 'mov \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
+fragment : DontChain mov := λ(: src Reg32)(: dst LocalVariable). (: (.program( \t 'mov \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
+fragment : DontChain mov := λ(: src Reg64)(: dst LocalVariable). (: (.program( \t 'mov \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
 
-fragment mov := λ(: src Constant+String)(: dst LocalVariable). (: (.program(
+fragment : DontChain mov := λ(: src Constant+String)(: dst LocalVariable). (: (.program(
    \t 'movq \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n
 )) Nil);
 
-fragment mov := λ(: src Reg64)(: dst GlobalVariable). (: (.program(
+fragment : DontChain mov := λ(: src Reg64)(: dst GlobalVariable). (: (.program(
    \t 'mov \s '% (.expression src) , \s '%r15 \n
    \t 'mov \s '$ (.expression dst) , \s '%r14 \n
    \t 'mov \s '%r15 , \s '0 \[ '%r14 \] \n
 )) Nil);
 
-fragment mov := λ(: src GlobalVariable+Sized<1>)(: dst LocalVariable). (: (.program(
+fragment : DontChain mov := λ(: src GlobalVariable+Sized<1>)(: dst LocalVariable). (: (.program(
    \t 'mov \s '$ (.expression src) , \s '%r15 \n
    \t 'mov \s '0 \[ '%r15 \] , \s '%r15b \n
    \t 'mov \s '%r15b , \s (.expression dst) \[ '%rbp \] \n
 )) Nil);
-fragment mov := λ(: src GlobalVariable+Sized<2>)(: dst LocalVariable). (: (.program(
+fragment : DontChain mov := λ(: src GlobalVariable+Sized<2>)(: dst LocalVariable). (: (.program(
    \t 'mov \s '$ (.expression src) , \s '%r15 \n
    \t 'mov \s '0 \[ '%r15 \] , \s '%r15w \n
    \t 'mov \s '%r15w , \s (.expression dst) \[ '%rbp \] \n
 )) Nil);
-fragment mov := λ(: src GlobalVariable+Sized<4>)(: dst LocalVariable). (: (.program(
+fragment : DontChain mov := λ(: src GlobalVariable+Sized<4>)(: dst LocalVariable). (: (.program(
    \t 'mov \s '$ (.expression src) , \s '%r15 \n
    \t 'mov \s '0 \[ '%r15 \] , \s '%r15d \n
    \t 'mov \s '%r15d , \s (.expression dst) \[ '%rbp \] \n
 )) Nil);
-fragment mov := λ(: src GlobalVariable+Sized<8>)(: dst LocalVariable). (: (.program(
+fragment : DontChain mov := λ(: src GlobalVariable+Sized<8>)(: dst LocalVariable). (: (.program(
    \t 'mov \s '$ (.expression src) , \s '%r15 \n
    \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
    \t 'mov \s '%r15 , \s (.expression dst) \[ '%rbp \] \n
 )) Nil);
 
-fragment mov := λ(: src LocalVariable)(: dst Reg8). (: (.program( \t 'mov \s (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n )) Nil);
-fragment mov := λ(: src LocalVariable)(: dst Reg16). (: (.program( \t 'mov \s (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n )) Nil);
-fragment mov := λ(: src LocalVariable)(: dst Reg32). (: (.program( \t 'mov \s (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n )) Nil);
-fragment mov := λ(: src LocalVariable)(: dst Reg64). (: (.program( \t 'mov \s (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n )) Nil);
+fragment : DontChain mov := λ(: src LocalVariable)(: dst Reg8). (: (.program( \t 'mov \s (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n )) Nil);
+fragment : DontChain mov := λ(: src LocalVariable)(: dst Reg16). (: (.program( \t 'mov \s (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n )) Nil);
+fragment : DontChain mov := λ(: src LocalVariable)(: dst Reg32). (: (.program( \t 'mov \s (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n )) Nil);
+fragment : DontChain mov := λ(: src LocalVariable)(: dst Reg64). (: (.program( \t 'mov \s (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n )) Nil);
 
-fragment mov := λ(: src Constant+Literal+Sized<1>)(: dst Reg8). (: (.program( \t 'mov \s '$ (.expression src) , \s '% (.expression dst) \n )) Nil);
-fragment mov := λ(: src Constant+Literal+Sized<2>)(: dst Reg16). (: (.program( \t 'mov \s '$ (.expression src) , \s '% (.expression dst) \n )) Nil);
-fragment mov := λ(: src Constant+Literal+Sized<4>)(: dst Reg32). (: (.program( \t 'mov \s '$ (.expression src) , \s '% (.expression dst) \n )) Nil);
-fragment mov := λ(: src Constant+Literal+Sized<8>)(: dst Reg64). (: (.program( \t 'mov \s '$ (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment : DontChain mov := λ(: src Constant+Literal+Sized<1>)(: dst Reg8). (: (.program( \t 'mov \s '$ (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment : DontChain mov := λ(: src Constant+Literal+Sized<2>)(: dst Reg16). (: (.program( \t 'mov \s '$ (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment : DontChain mov := λ(: src Constant+Literal+Sized<4>)(: dst Reg32). (: (.program( \t 'mov \s '$ (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment : DontChain mov := λ(: src Constant+Literal+Sized<8>)(: dst Reg64). (: (.program( \t 'mov \s '$ (.expression src) , \s '% (.expression dst) \n )) Nil);
 
-fragment push := λ(: dst Reg8). (: (.program( \t 'mov \s '% (.expression dst) , '%r15b \n \t 'push \s '%r15 \n )) Nil);
-fragment push := λ(: dst Reg16). (: (.program( \t 'mov \s '% (.expression dst) , '%r15w \n \t 'push \s '%r15 \n )) Nil);
-fragment push := λ(: dst Reg32). (: (.program( \t 'mov \s '% (.expression dst) , '%r15d \n \t 'push \s '%r15 \n )) Nil);
-fragment push := λ(: dst Reg64). (: (.program( \t 'push \s '% (.expression dst) \n )) Nil);
+fragment : DontChain push := λ(: dst Reg8). (: (.program( \t 'mov \s '% (.expression dst) , '%r15b \n \t 'push \s '%r15 \n )) Nil);
+fragment : DontChain push := λ(: dst Reg16). (: (.program( \t 'mov \s '% (.expression dst) , '%r15w \n \t 'push \s '%r15 \n )) Nil);
+fragment : DontChain push := λ(: dst Reg32). (: (.program( \t 'mov \s '% (.expression dst) , '%r15d \n \t 'push \s '%r15 \n )) Nil);
+fragment : DontChain push := λ(: dst Reg64). (: (.program( \t 'push \s '% (.expression dst) \n )) Nil);
 
-fragment mov := λ(: offset Constant)(: src Reg64)(: dst Reg8). (: (.program( \t 'mov \s (.expression offset) \[ '% (.expression src) \] , \s '% (.expression dst) \n )) Nil);
+fragment : DontChain mov := λ(: offset Constant)(: src Reg64)(: dst Reg8). (: (.program( \t 'mov \s (.expression offset) \[ '% (.expression src) \] , \s '% (.expression dst) \n )) Nil);
 
-fragment cmp := λ(: imm Constant+Literal+Sized<8>)(: r Constant+Reg64). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
-fragment cmp := λ(: imm Constant+Literal+Sized<4>)(: r Constant+Reg32). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
-fragment cmp := λ(: imm Constant+Literal+Sized<2>)(: r Constant+Reg16). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
-fragment cmp := λ(: imm Constant+Literal+Sized<1>)(: r Constant+Reg8). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
+fragment : DontChain cmp := λ(: imm Constant+Literal+Sized<8>)(: r Constant+Reg64). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
+fragment : DontChain cmp := λ(: imm Constant+Literal+Sized<4>)(: r Constant+Reg32). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
+fragment : DontChain cmp := λ(: imm Constant+Literal+Sized<2>)(: r Constant+Reg16). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
+fragment : DontChain cmp := λ(: imm Constant+Literal+Sized<1>)(: r Constant+Reg8). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
 
-fragment cmp := λ(: l Constant+Reg8)(: r Constant+Reg8). (: (.program( \t 'cmp \s '% (.expression l) , '% (.expression r) \n )) Nil);
-fragment cmp := λ(: l Constant+Reg16)(: r Constant+Reg16). (: (.program( \t 'cmp \s '% (.expression l) , '% (.expression r) \n )) Nil);
-fragment cmp := λ(: l Constant+Reg32)(: r Constant+Reg32). (: (.program( \t 'cmp \s '% (.expression l) , '% (.expression r) \n )) Nil);
-fragment cmp := λ(: l Constant+Reg64)(: r Constant+Reg64). (: (.program( \t 'cmp \s '% (.expression l) , '% (.expression r) \n )) Nil);
+fragment : DontChain cmp := λ(: l Constant+Reg8)(: r Constant+Reg8). (: (.program( \t 'cmp \s '% (.expression l) , '% (.expression r) \n )) Nil);
+fragment : DontChain cmp := λ(: l Constant+Reg16)(: r Constant+Reg16). (: (.program( \t 'cmp \s '% (.expression l) , '% (.expression r) \n )) Nil);
+fragment : DontChain cmp := λ(: l Constant+Reg32)(: r Constant+Reg32). (: (.program( \t 'cmp \s '% (.expression l) , '% (.expression r) \n )) Nil);
+fragment : DontChain cmp := λ(: l Constant+Reg64)(: r Constant+Reg64). (: (.program( \t 'cmp \s '% (.expression l) , '% (.expression r) \n )) Nil);
 
-fragment movsx := λ(: src Constant+Reg8)(: dst Constant+Reg64). (: (.program( \t 'movsx \s '% (.expression src) , '% (.expression dst) \n )) Nil);
-fragment movsx := λ(: src Constant+Reg16)(: dst Constant+Reg64). (: (.program( \t 'movsx \s '% (.expression src) , '% (.expression dst) \n )) Nil);
-fragment movsx := λ(: src Constant+Reg32)(: dst Constant+Reg64). (: (.program( \t 'movsx \s '% (.expression src) , '% (.expression dst) \n )) Nil);
+fragment : DontChain movsx := λ(: src Constant+Reg8)(: dst Constant+Reg64). (: (.program( \t 'movsx \s '% (.expression src) , '% (.expression dst) \n )) Nil);
+fragment : DontChain movsx := λ(: src Constant+Reg16)(: dst Constant+Reg64). (: (.program( \t 'movsx \s '% (.expression src) , '% (.expression dst) \n )) Nil);
+fragment : DontChain movsx := λ(: src Constant+Reg32)(: dst Constant+Reg64). (: (.program( \t 'movsx \s '% (.expression src) , '% (.expression dst) \n )) Nil);
 
-fragment jb := λ(: dst Label). (: (.program( \t 'jb \s (.expression dst) \n )) Nil);
-fragment jg := λ(: dst Label). (: (.program( \t 'jg \s (.expression dst) \n )) Nil);
-fragment jge := λ(: dst Label). (: (.program( \t 'jge \s (.expression dst) \n )) Nil);
-fragment jb := λ(: dst Label). (: (.program( \t 'jb \s (.expression dst) \n )) Nil);
-fragment jbe := λ(: dst Label). (: (.program( \t 'jbe \s (.expression dst) \n )) Nil);
-fragment ja := λ(: dst Label). (: (.program( \t 'ja \s (.expression dst) \n )) Nil);
-fragment jae := λ(: dst Label). (: (.program( \t 'jae \s (.expression dst) \n )) Nil);
-fragment jl := λ(: dst Label). (: (.program( \t 'jl \s (.expression dst) \n )) Nil);
-fragment jle := λ(: dst Label). (: (.program( \t 'jle \s (.expression dst) \n )) Nil);
-fragment je := λ(: dst Label). (: (.program( \t 'je \s (.expression dst) \n )) Nil);
-fragment jne := λ(: dst Label). (: (.program( \t 'jne \s (.expression dst) \n )) Nil);
-fragment jmp := λ(: dst Label). (: (.program( \t 'jmp \s (.expression dst) \n )) Nil);
+fragment : DontChain jb := λ(: dst Label). (: (.program( \t 'jb \s (.expression dst) \n )) Nil);
+fragment : DontChain jg := λ(: dst Label). (: (.program( \t 'jg \s (.expression dst) \n )) Nil);
+fragment : DontChain jge := λ(: dst Label). (: (.program( \t 'jge \s (.expression dst) \n )) Nil);
+fragment : DontChain jb := λ(: dst Label). (: (.program( \t 'jb \s (.expression dst) \n )) Nil);
+fragment : DontChain jbe := λ(: dst Label). (: (.program( \t 'jbe \s (.expression dst) \n )) Nil);
+fragment : DontChain ja := λ(: dst Label). (: (.program( \t 'ja \s (.expression dst) \n )) Nil);
+fragment : DontChain jae := λ(: dst Label). (: (.program( \t 'jae \s (.expression dst) \n )) Nil);
+fragment : DontChain jl := λ(: dst Label). (: (.program( \t 'jl \s (.expression dst) \n )) Nil);
+fragment : DontChain jle := λ(: dst Label). (: (.program( \t 'jle \s (.expression dst) \n )) Nil);
+fragment : DontChain je := λ(: dst Label). (: (.program( \t 'je \s (.expression dst) \n )) Nil);
+fragment : DontChain jne := λ(: dst Label). (: (.program( \t 'jne \s (.expression dst) \n )) Nil);
+fragment : DontChain jmp := λ(: dst Label). (: (.program( \t 'jmp \s (.expression dst) \n )) Nil);
 
-fragment neg := λ(: l Reg64). (: (.program( \t 'neg \s '% (.expression l) \n )) Nil);
+fragment : DontChain neg := λ(: l Reg64). (: (.program( \t 'neg \s '% (.expression l) \n )) Nil);
 
-fragment inc := λ(: l Reg64). (: (.program( \t 'inc \s '% (.expression l) \n )) Nil);
+fragment : DontChain inc := λ(: l Reg64). (: (.program( \t 'inc \s '% (.expression l) \n )) Nil);
 
-fragment dec := λ(: l Reg64). (: (.program( \t 'dec \s '% (.expression l) \n )) Nil);
+fragment : DontChain dec := λ(: l Reg64). (: (.program( \t 'dec \s '% (.expression l) \n )) Nil);
 
-fragment div := λ(: l Reg64). (: (.program( \t 'div \s '% (.expression l) \n )) Nil);
-fragment idiv := λ(: l Reg64). (: (.program( \t 'idiv \s '% (.expression l) \n )) Nil);
+fragment : DontChain div := λ(: l Reg64). (: (.program( \t 'div \s '% (.expression l) \n )) Nil);
+fragment : DontChain idiv := λ(: l Reg64). (: (.program( \t 'idiv \s '% (.expression l) \n )) Nil);
 
-fragment mul := λ(: l Reg64). (: (.program( \t 'mul \s '% (.expression l) \n )) Nil);
-fragment imul := λ(: l Reg64). (: (.program( \t 'imul \s '% (.expression l) \n )) Nil);
+fragment : DontChain mul := λ(: l Reg64). (: (.program( \t 'mul \s '% (.expression l) \n )) Nil);
+fragment : DontChain imul := λ(: l Reg64). (: (.program( \t 'imul \s '% (.expression l) \n )) Nil);
 
-fragment add := λ(: src Constant+Literal+Sized<1>)(: dst LocalVariable). (: (.program( \t 'addb \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
-fragment add := λ(: src Constant+Literal+Sized<8>)(: dst Reg64). (: (.program( \t 'addq \s '$ (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment : DontChain add := λ(: src Constant+Literal+Sized<1>)(: dst LocalVariable). (: (.program( \t 'addb \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
+fragment : DontChain add := λ(: src Constant+Literal+Sized<8>)(: dst Reg64). (: (.program( \t 'addq \s '$ (.expression src) , \s '% (.expression dst) \n )) Nil);
 
-fragment add := λ(: src LocalVariable+Sized<8>)(: dst Reg64). (: (.program( \t 'addq \s (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n )) Nil);
+fragment : DontChain add := λ(: src LocalVariable+Sized<8>)(: dst Reg64). (: (.program( \t 'addq \s (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n )) Nil);
 
-fragment add := λ(: src Reg8)(: dst Reg8). (: (.program( \t 'add \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
-fragment add := λ(: src Reg16)(: dst Reg16). (: (.program( \t 'add \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
-fragment add := λ(: src Reg32)(: dst Reg32). (: (.program( \t 'add \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
-fragment add := λ(: src Reg64)(: dst Reg64). (: (.program( \t 'add \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment : DontChain add := λ(: src Reg8)(: dst Reg8). (: (.program( \t 'add \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment : DontChain add := λ(: src Reg16)(: dst Reg16). (: (.program( \t 'add \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment : DontChain add := λ(: src Reg32)(: dst Reg32). (: (.program( \t 'add \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment : DontChain add := λ(: src Reg64)(: dst Reg64). (: (.program( \t 'add \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
 
-fragment sub := λ(: src Reg8)(: dst Reg8). (: (.program( \t 'sub \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
-fragment sub := λ(: src Reg16)(: dst Reg16). (: (.program( \t 'sub \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
-fragment sub := λ(: src Reg32)(: dst Reg32). (: (.program( \t 'sub \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
-fragment sub := λ(: src Reg64)(: dst Reg64). (: (.program( \t 'sub \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment : DontChain sub := λ(: src Reg8)(: dst Reg8). (: (.program( \t 'sub \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment : DontChain sub := λ(: src Reg16)(: dst Reg16). (: (.program( \t 'sub \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment : DontChain sub := λ(: src Reg32)(: dst Reg32). (: (.program( \t 'sub \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
+fragment : DontChain sub := λ(: src Reg64)(: dst Reg64). (: (.program( \t 'sub \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
 
-fragment push := λ(: l Reg64). (: (.program( \t 'push \s '% (.expression l) \n )) Nil);
-fragment pop := λ(: l Reg64). (: (.program( \t 'pop \s '% (.expression l) \n )) Nil);
+fragment : DontChain push := λ(: l Reg64). (: (.program( \t 'push \s '% (.expression l) \n )) Nil);
+fragment : DontChain pop := λ(: l Reg64). (: (.program( \t 'pop \s '% (.expression l) \n )) Nil);
 
-fragment shl := λ(: c Literal+Constant)(: l Reg64). (: (.program( \t 'shl \s '$ (.expression c) , \s '% (.expression l) \n )) Nil);
-fragment shr := λ(: c Literal+Constant)(: l Reg64). (: (.program( \t 'shr \s '$ (.expression c) , \s '% (.expression l) \n )) Nil);
-fragment xor := λ(: c Reg64)(: l Reg64). (: (.program( \t 'xor \s '% (.expression c) , \s '% (.expression l) \n )) Nil);
+fragment : DontChain shl := λ(: c Literal+Constant)(: l Reg64). (: (.program( \t 'shl \s '$ (.expression c) , \s '% (.expression l) \n )) Nil);
+fragment : DontChain shr := λ(: c Literal+Constant)(: l Reg64). (: (.program( \t 'shr \s '$ (.expression c) , \s '% (.expression l) \n )) Nil);
+fragment : DontChain xor := λ(: c Reg64)(: l Reg64). (: (.program( \t 'xor \s '% (.expression c) , \s '% (.expression l) \n )) Nil);

@@ -15,8 +15,32 @@ class-to-size-index := (: SUEOF StringU64List);
 tag-to-index-index := (: SUEOF StringU64List);
 unknown-index-of-tag := 99999_u64;
 
+# global AST(arrow) -> Type map, mutable
+arrow-to-type-index := (: ATEOF ATypeList);
+
 # has typechecking finished? boolean, mutable
 types-have-changed := True_u8;
+
+type-of-arrow := λ(: t AST). (: (tail(
+   (let r TAny)
+   (let index arrow-to-type-index)
+   (while (non-zero index) (match index (
+      ()
+      ( (ATSeq( rst a at )) (
+         (if (is( a t )) (tail(
+            (set r at)
+            (set index ATEOF)
+         )) (set index rst))
+      ))
+   )))
+   r
+)) Type);
+
+index-type-of-arrow := λ(: t AST)(: tt Type). (: (
+   (set arrow-to-type-index (ATSeq(
+      (close arrow-to-type-index) t tt
+   )))
+) Nil);
 
 index-of-tag := λ(: tag String). (: (tail(
    (let r unknown-index-of-tag)
