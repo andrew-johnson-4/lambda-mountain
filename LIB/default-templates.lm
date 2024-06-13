@@ -28,6 +28,65 @@ fragment template::mov := λ(: src Sized<size>)(: dst GlobalVariable). (: (
    ))
 ) Nil);
 
+fragment .0 := λ(: src Constant). (: (
+   (.program(
+      \t 'mov \s '$ (.expression src) , \s '%rax \n
+   ))
+   (.expression( 'rax ))
+) U64+Reg64);
+
+fragment .0 := λ(: src LocalVariable). (: (
+   (.program(
+      \t 'mov \s (.expression src) \[ '%rbp \] , \s '%rax \n
+   ))
+   (.expression( 'rax ))
+) U64+Reg64);
+
+fragment .0 := λ(: src GlobalVariable). (: (
+   (.program(
+      \t 'mov \s '$ (.expression src) , \s '%r15 \n
+      \t 'mov \s '0 \[ '%r15 \] , \s '%rax \n
+   ))
+   (.expression( 'rax ))
+) U64+Reg64);
+
+fragment .0 := λ(: src LocalVariable+Fields<Cons<_,f0+Sized<1>>>). (: (
+   (.program(
+      \t 'mov \s (.expression src) \[ '%rbp \] , \s '%al \n
+   ))
+   (.expression( 'al ))
+) f0+Reg8);
+
+fragment .0 := λ(: src LocalVariable+Fields<Cons<_,f0+Sized<2>>>). (: (
+   (.program(
+      \t 'mov \s (.expression src) \[ '%rbp \] , \s '%ax \n
+   ))
+   (.expression( 'ax ))
+) f0+Reg16);
+
+fragment .0 := λ(: src LocalVariable+Fields<Cons<_,f0+Sized<4>>>). (: (
+   (.program(
+      \t 'mov \s (.expression src) \[ '%rbp \] , \s '%eax \n
+   ))
+   (.expression( 'eax ))
+) f0+Reg32);
+
+fragment .0 := λ(: src LocalVariable+Fields<Cons<_,f0+Sized<8>>>). (: (
+   (.program(
+      \t 'mov \s (.expression src) \[ '%rbp \] , \s '%rax \n
+   ))
+   (.expression( 'rax ))
+) f0+Reg64);
+
+fragment .0 := λ(: src LocalVariable+Fields<Cons<_,f0+Sized<size0+GT<8>>>>). (: (
+   (.program(
+      (for index in (range( 0 (/( (.expression size0) '8 )) )) (
+         (let word-offset (-( (-( (+( (.expression src) (.expression size0) )) (*( (.expression index) '8 )) )) '8 )) )
+         \t 'pushq \s (.expression word-offset) \[ '%rbp \] \n
+      ))
+   ))
+) f0+StackVariable);
+
 fragment .1 := λ(: src LocalVariable+Fields<Cons<Cons<_,f1+Sized<1>>,Sized<size0>>>). (: (
    (.program(
       \t 'mov \s (+( (.expression src) (.expression size0) )) \[ '%rbp \] , \s '%al \n
@@ -232,6 +291,48 @@ fragment .5 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+
       ))
    ))
 ) f5+StackVariable);
+
+fragment .0 := λ(: src GlobalVariable+Fields<Cons<_,f0+Sized<1>>>). (: (
+   (.program(
+      \t 'mov \s '$ (.expression src) , \s '%r15 \n
+      \t 'mov \s '0 \[ '%r15 \] , \s '%al \n
+   ))
+   (.expression( 'al ))
+) f0+Reg8);
+
+fragment .0 := λ(: src GlobalVariable+Fields<Cons<_,f0+Sized<2>>>). (: (
+   (.program(
+      \t 'mov \s '$ (.expression src) , \s '%r15 \n
+      \t 'mov \s '0 \[ '%r15 \] , \s '%ax \n
+   ))
+   (.expression( 'ax ))
+) f0+Reg16);
+
+fragment .0 := λ(: src GlobalVariable+Fields<Cons<_,f0+Sized<4>>>). (: (
+   (.program(
+      \t 'mov \s '$ (.expression src) , \s '%r15 \n
+      \t 'mov \s '0 \[ '%r15 \] , \s '%eax \n
+   ))
+   (.expression( 'eax ))
+) f0+Reg32);
+
+fragment .0 := λ(: src GlobalVariable+Fields<Cons<_,f0+Sized<8>>>). (: (
+   (.program(
+      \t 'mov \s '$ (.expression src) , \s '%r15 \n
+      \t 'mov \s '0 \[ '%r15 \] , \s '%rax \n
+   ))
+   (.expression( 'rax ))
+) f0+Reg64);
+
+fragment .0 := λ(: src GlobalVariable+Fields<Cons<_,f0+Sized<size0+GT<8>>>>). (: (
+   (.program(
+      \t 'mov \s '$ (.expression src) , \s '%r15 \n
+      (for index in (range( 0 (/( (.expression size0) '8 )) )) (
+         (let word-offset (-( (-( (.expression size0) (*( (.expression index) '8 )) )) '8 )) )
+         \t 'pushq \s (.expression word-offset) \[ '%r15 \] \n
+      ))
+   ))
+) f0+StackVariable);
 
 fragment .1 := λ(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<1>>,Sized<size0>>>). (: (
    (.program(
