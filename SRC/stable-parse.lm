@@ -428,21 +428,36 @@ parse := λ. (: (tail(
                )))
             ))
          ))
-         ( (SCons( (SAtom 'fragment_s) (SCons( (SAtom key ) (SCons( (SAtom ':=_s) remainder )) )) )) (
-            (match (parse-many-expressions remainder) (
+         ( (SCons( (SAtom 'fragment_s) remainder-ext )) (tail(
+            (let tt-ext TAny)
+            (match remainder-ext (
                ()
-               ( (PME( re rr )) (tail(
-                  (set ast-parsed-program (Seq(
-                     (close ast-parsed-program)
-                     (close (Frg(
-                        key
-                        (close re)
-                     )))
-                  )))
-                  (set tokens rr)
+               ( (SCons( (SAtom ':_s) (SCons( (SAtom tt-lit) rr )) )) (tail(
+                  (set tt-ext (parse-type tt-lit))
+                  (set remainder-ext rr)
                )))
+               ( _ () )
             ))
-         ))
+            (match remainder-ext (
+               ()
+               ( (SCons( (SAtom key ) (SCons( (SAtom ':=_s) remainder )) )) (
+                  (match (parse-many-expressions remainder) (
+                     ()
+                     ( (PME( re rr )) (tail(
+                        (let frg (Frg( key (close re) )))
+                        (if (non-zero tt-ext) (
+                           (index-type-of-arrow( frg tt-ext ))
+                        ) ())
+                        (set ast-parsed-program (Seq(
+                           (close ast-parsed-program)
+                           (close frg)
+                        )))
+                        (set tokens rr)
+                     )))
+                  ))
+               ))
+            ))
+         )))
          ( (SCons( (SAtom 'type_s) remainder )) (
             (match (parse-one-expression remainder) (
                ()
