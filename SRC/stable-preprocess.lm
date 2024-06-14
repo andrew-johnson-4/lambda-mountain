@@ -181,9 +181,10 @@ preprocess-apply := λ(: program AST). (: (tail(
          (close(preprocess-apply al))
          (close(preprocess-apply ar))
       ))))
-      ( (Abs( al ar )) (set r (Abs(
+      ( (Abs( al ar tlt )) (set r (Abs(
          (close(preprocess-apply al))
          (close(preprocess-apply ar))
+         tlt
       ))))
       ( (Asc( al at )) (set r (Asc(
          (close(preprocess-apply al))
@@ -269,10 +270,11 @@ apply := λ(: ctx Context)(: term AST). (: (tail(
             (close(apply( ctx vr )))
          )))
       ))
-      ( (Abs( vl vr )) (
+      ( (Abs( vl vr tlt )) (
          (set return (Abs(
             (close(apply( ctx vl )))
             (close(apply( ctx vr )))
+            tlt
          )))
       ))
       ( (Seq( vl vr )) (
@@ -331,7 +333,7 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
             ) ())
          )) ())
       )))
-      ( (APair( (Abs(pl pr)) (Abs(el er)) )) (tail(
+      ( (APair( (Abs(pl pr ptlt)) (Abs(el er etlt)) )) (tail(
          (let ll (try-destructure-macro( pl el )))
          (if (non-zero ll) (tail(
             (let rl (try-destructure-macro( pr er )))
@@ -404,10 +406,11 @@ relocate := λ(: term AST)(: loc SourceLocation). (: (tail(
             (close(relocate( rt loc )))
          )))
       ))
-      ( (Abs( lt rt )) (
+      ( (Abs( lt rt tlt )) (
          (set return (Abs(
             (close(relocate( lt loc )))
             (close(relocate( rt loc )))
+            tlt
          )))
       ))
       ( (Seq( lt rt )) (

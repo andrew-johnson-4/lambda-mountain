@@ -225,7 +225,7 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
             ( _ () )
          ))
       )))
-      ( (Glb( k (Abs( lhs (Asc( rhs rhst )) )) )) (tail(
+      ( (Glb( k (Abs( lhs (Asc( rhs rhst )) tlt )) )) (tail(
          (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
          (let return-type (maybe-deref(without-representation rhst)))
          (let return-type-2 (maybe-deref(with-representation return-type)))
@@ -238,7 +238,7 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
             td
          )))
       )))
-      ( (Frg( k (Abs( lhs (Asc( rhs rhst )) )) tlt )) (tail(
+      ( (Frg( k (Abs( lhs (Asc( rhs rhst )) atlt )) tlt )) (tail(
          (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
          (let ft (t3( 'Arrow_s lt rhst )))
          (ascript-normal( td ft ))
@@ -287,7 +287,7 @@ typecheck-assert-complete := λ(: term AST). (: (
          (typecheck-assert-one v)
       ))
       ( (ASTType( _ _ )) () )
-      ( (App( (Abs( (Var lname) ASTNil )) rhs )) (tail(
+      ( (App( (Abs( (Var lname) ASTNil tlt )) rhs )) (tail(
          (typecheck-assert-complete rhs)
          (typecheck-assert-one term)
       )))
@@ -334,7 +334,7 @@ typecheck-assert-complete := λ(: term AST). (: (
       )))
       ( (Lit l) (typecheck-assert-one term) )
       ( (Var l) (typecheck-assert-one term) )
-      ( (Abs( lhs rhs )) (tail(
+      ( (Abs( lhs rhs tlt )) (tail(
          (typecheck-assert-complete rhs)
          (typecheck-assert-one term)
       )))
@@ -636,7 +636,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
          ))
          (ascript-normal( term deref-type ))
       )))
-      ( (App( (Abs( (Var lname) ASTNil )) rhs )) (tail(
+      ( (App( (Abs( (Var lname) ASTNil tlt )) rhs )) (tail(
          (typecheck-infer-expr( tctx rhs Used ))
          (let tt (maybe-deref(typeof rhs)))
          (let rt (maybe-deref(as-local-variable(tt))))
@@ -665,7 +665,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
          ))))
          (ascript-normal( term rt ))
       )))
-      ( (Abs( lhs rhs )) (tail(
+      ( (Abs( lhs rhs tlt )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-ctx( tctx lhs ))))
          (set tctx tctx2)
          (typecheck-infer-expr( tctx rhs Used ))
@@ -855,10 +855,10 @@ specialize-term := λ(: tctx TContext)(: t AST). (: (tail(
          (let rt2 (specialize-term( tctx rt )))
          (set t (App( (close lt2) (close rt2) )))
       )))
-      ( (Abs( lt rt )) (tail(
+      ( (Abs( lt rt tlt )) (tail(
          (let lt2 (specialize-term( tctx lt )))
          (let rt2 (specialize-term( tctx rt )))
-         (set t (Abs( (close lt2) (close rt2) )))
+         (set t (Abs( (close lt2) (close rt2) tlt )))
       )))
       ( (Asc( lt tt )) (tail(
          (let lt2 (specialize-term( tctx lt )))
@@ -924,7 +924,7 @@ specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Ty
          (if (is( ft kt )) (
             (match t (
                ()
-               ( (Glb( _ (Abs( _ _ )) )) (set term t) )
+               ( (Glb( _ (Abs( _ _ _ )) )) (set term t) )
                ( _ () )
             ))
          ) ())
@@ -972,7 +972,7 @@ try-specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-typ
             (if (is( ft kt )) (
                (match t (
                   ()
-                  ( (Glb( _ (Abs( _ _ )) )) (
+                  ( (Glb( _ (Abs( _ _ _ )) )) (
                      (specialize( key ft unify-ctx result-type ))
                   ))
                   ( _ () )

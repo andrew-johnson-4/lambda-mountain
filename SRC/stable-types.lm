@@ -1044,7 +1044,7 @@ to-s := λ(: term AST). (: (tail(
             )))
          )))
       ))
-      ( (Abs( lt rt )) (
+      ( (Abs( lt rt tlt )) (
          (set s (SCons(
             (close(SAtom 'Abs_s))
             (close(SCons(
