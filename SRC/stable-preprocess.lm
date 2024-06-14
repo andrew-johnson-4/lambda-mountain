@@ -189,16 +189,13 @@ preprocess-apply := λ(: program AST). (: (tail(
          (close(preprocess-apply al))
          (close at)
       ))))
-      ( (Frg( al ar )) (tail(
-         (let tlt (type-of-arrow r))
+      ( (Frg( al ar atlt )) (
          (set r (Frg(
             al
             (close(preprocess-apply ar))
+            atlt
          )))
-         (if (non-zero tlt) (
-            (index-type-of-arrow( r tlt ))
-         ) ())
-      )))
+      ))
       ( (Glb( k ar )) (set r (Glb(
          k
          (close(preprocess-apply ar))
@@ -296,10 +293,11 @@ apply := λ(: ctx Context)(: term AST). (: (tail(
             (close(apply( ctx vr )))
          )))
       ))
-      ( (Frg( k vr )) (
+      ( (Frg( k vr tlt )) (
          (set return (Frg(
             k
             (close(apply( ctx vr )))
+            tlt
          )))
       ))
       ( (Asc( t tt )) (
@@ -444,12 +442,13 @@ relocate := λ(: term AST)(: loc SourceLocation). (: (tail(
             (close(relocate( t loc )))
          )))
       )))
-      ( (Frg( k t )) (tail(
+      ( (Frg( k t tlt )) (tail(
          (set k (clone-rope(SAtom k)))
          (map-location( k loc ))
-         (set return (Glb(
+         (set return (Frg(
             k
             (close(relocate( t loc )))
+            tlt
          )))
       )))
    ))
