@@ -4,7 +4,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (tail(
    (let kt (maybe-deref(typeof term)))
    (match term (
       ()
-      ( (Abs( lhs rhs )) (if (is-open kt) () (tail(
+      ( (Abs( lhs rhs tlt )) (if (is-open kt) () (tail(
          (let args-type (domain kt))
          (let args-size (typecheck-aligned-sizeof args-type))
          (let ctx-2 (maybe-deref(compile-destructure-args( args-type ctx lhs 0_i64 ))))
@@ -375,7 +375,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (let e1-10 (maybe-deref(fragment::set-type( e1 (maybe-deref(typeof term)) ))))(set e1 e1-10)
          (set e e1)
       )))
-      ( (App( (Abs( (Var lhs) ASTNil )) rhs )) (tail(
+      ( (App( (Abs( (Var lhs) ASTNil tlt )) rhs )) (tail(
          (let rtype (maybe-deref(typeof rhs)))
          (let rtype-clean (maybe-deref(without-representation rtype)))(set rtype rtype-clean)
          (let rtype-2 (TAnd( (close rtype) (close(t1 'LocalVariable_s)) )))(set rtype rtype-2)

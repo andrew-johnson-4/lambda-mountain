@@ -12,7 +12,7 @@ parse-lambda := λ(: tokens S). (: (tail(
       ( (PME( (Lit '._s) pr )) (match (parse-many-expressions pr) (
          ()
          ( (PME( le lr )) (tail(
-            (set expr (Abs( (close ASTNil) (close le) )))
+            (set expr (Abs( (close ASTNil) (close le) TAny )))
             (set tokens SNil)
             (set remainder lr)
          )))
@@ -29,7 +29,7 @@ parse-lambda := λ(: tokens S). (: (tail(
             (match (parse-many-expressions r) (
                ()
                ( (PME( le lr )) (tail(
-                  (set expr (Abs( (close expr) (close le) )))
+                  (set expr (Abs( (close expr) (close le) TAny )))
                   (set remainder lr)
                   (set tokens SNil)
                )))
@@ -444,13 +444,9 @@ parse := λ. (: (tail(
                   (match (parse-many-expressions remainder) (
                      ()
                      ( (PME( re rr )) (tail(
-                        (let frg (Frg( key (close re) )))
-                        (if (non-zero tt-ext) (
-                           (index-type-of-arrow( frg tt-ext ))
-                        ) ())
                         (set ast-parsed-program (Seq(
                            (close ast-parsed-program)
-                           (close frg)
+                           (close(Frg( key (close re) tt-ext )))
                         )))
                         (set tokens rr)
                      )))
@@ -523,6 +519,7 @@ parse := λ. (: (tail(
                      )))
                      (close(t1 'U64_s))
                   )))
+                  TAny
                ))) )))
             )))
             (set tokens remainder)

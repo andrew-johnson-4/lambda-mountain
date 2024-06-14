@@ -40,7 +40,7 @@ location-of := λ(: term AST). (: (tail(
          (set r (location-of tl))
          (if (not(non-zero r)) (set r (location-of tr)) ())
       )))
-      ( (Abs( tl tr )) (tail(
+      ( (Abs( tl tr tlt )) (tail(
          (set r (location-of tl))
          (if (not(non-zero r)) (set r (location-of tr)) ())
       )))
@@ -56,7 +56,7 @@ location-of := λ(: term AST). (: (tail(
          (set r (location-of tl))
          (if (not(non-zero r)) (set r (location-of tr)) ())
       )))
-      ( (Frg( tl tr )) (tail(
+      ( (Frg( tl tr tlt )) (tail(
          (set r (location-of tl))
          (if (not(non-zero r)) (set r (location-of tr)) ())
       )))
