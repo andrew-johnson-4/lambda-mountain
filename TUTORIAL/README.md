@@ -12,11 +12,11 @@ import LIB/default-instruction-set.lm;
 
 A variable starts with a lower case letter usually.
 Anything that isn't a variable will become a Literal.
-Variable names can be turned into Literals by prefixed them with a single quote/tick mark: `'abc`.
+Variable names can be turned into Literals by prefixing them with a single quote/tick mark: `'abc`.
 
 ### Basic Term Syntax
 
-A term is either a Variable, a Literal, a Function Abstraction, or a Function Application, or Nil.
+A term is either a Variable, a Literal, a Function Abstraction, a Function Application, or Nil.
 
 Variables and Literals are individual tokens:
 ```
