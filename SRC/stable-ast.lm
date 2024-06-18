@@ -2,8 +2,8 @@
 type Type TAny | (TVar String) | (TGround( String , TypeList[] )) | (TAnd( Type[] , Type[] )); zero Type TAny;
 type TypeList TypeEOF | (TypeSeq( TypeList[] , Type )); zero TypeList TypeEOF;
 
-type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] , Type ))
-                | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (ASTType( AST[] , AST[] )) | (Frg( String , AST[] , Type ))
+type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] , Type )) | (AType( Type ))
+                | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (Typedef( AST[] , AST[] )) | (Frg( String , AST[] , Type ))
                 | (Asc( AST[] , Type[] )) | (As( AST[] , Type[] )) | (Sizeof( Type[] )); zero AST ASTEOF;
 
 type FragmentKV (FKVEOF) | (FKVSeq( FragmentKV[] , String , S )); zero FragmentKV FKVEOF;
@@ -77,7 +77,8 @@ print := λ(: t AST). (: (tail(
       ( ASTNil (print '\[\]_s) )
       ( (Var a) (print a) )
       ( (Lit a) (tail( (print '\`_s) (print a) )))
-      ( (ASTType( lhs rhs )) (tail(
+      ( (AType a) (print a) )
+      ( (Typedef( lhs rhs )) (tail(
          (print 'type\s_s)
          (print lhs)
          (print '\s=\s_s)
@@ -152,7 +153,8 @@ serialize-ast := λ(: t AST). (: (tail(
          (print a)
          (print '\]_s)
       )))
-      ( (ASTType( lhs rhs )) (tail(
+      ( (AType a) (serialize-ast a) )
+      ( (Typedef( lhs rhs )) (tail(
          (print '\[Type\s\[_s)
          (serialize-ast lhs)
          (print '\s_s)

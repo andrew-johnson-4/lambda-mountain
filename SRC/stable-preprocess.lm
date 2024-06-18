@@ -2,7 +2,7 @@
 index-typedefs := λ(: program AST). (: (
    (while (non-zero program) (match program (
       ()
-      ( (Seq( rst (ASTType( lhs rhs )) )) (tail(
+      ( (Seq( rst (Typedef( lhs rhs )) )) (tail(
          (index-typedefs( rhs 0_u64 ))
          (set program rst)
       )))
@@ -283,8 +283,8 @@ apply := λ(: ctx Context)(: term AST). (: (tail(
             (close(apply( ctx vr )))
          )))
       ))
-      ( (ASTType( vl vr )) (
-         (set return (ASTType(
+      ( (Typedef( vl vr )) (
+         (set return (Typedef(
             (close(apply( ctx vl )))
             (close(apply( ctx vr )))
          )))
@@ -419,8 +419,8 @@ relocate := λ(: term AST)(: loc SourceLocation). (: (tail(
             (close(relocate( rt loc )))
          )))
       ))
-      ( (ASTType( lt rt )) (
-         (set return (ASTType(
+      ( (Typedef( lt rt )) (
+         (set return (Typedef(
             (close(relocate( lt loc )))
             (close(relocate( rt loc )))
          )))

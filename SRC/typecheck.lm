@@ -216,7 +216,7 @@ typecheck-annotate-accessors := λ(: base-type Type)(: tag-type Type)(: args-typ
 typecheck-infer-global-context := λ(: td AST). (: (tail(
    (match td (
       ()
-      ( (ASTType( (Lit base-type) case-constructors )) (tail(
+      ( (Typedef( (Lit base-type) case-constructors )) (tail(
          (let bt (maybe-deref(parse-type base-type)))
          (let size (typecheck-infer-type-definition( bt case-constructors )))
          (match bt (
@@ -286,7 +286,7 @@ typecheck-assert-complete := λ(: term AST). (: (
       ( (Frg( k v tlt )) (
          (typecheck-assert-one v)
       ))
-      ( (ASTType( _ _ )) () )
+      ( (Typedef( _ _ )) () )
       ( (App( (Abs( (Var lname) ASTNil tlt )) rhs )) (tail(
          (typecheck-assert-complete rhs)
          (typecheck-assert-one term)
@@ -502,7 +502,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
          (typecheck-infer-expr( tctx l used ))
          (typecheck-infer-expr( tctx r used ))
       )))
-      ( (ASTType( _ _ )) () )
+      ( (Typedef( _ _ )) () )
       ( (Glb( k v )) (
          (if (is-open(typeof term)) () (
             (typecheck-infer-expr( tctx v Used ))

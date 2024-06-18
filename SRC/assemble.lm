@@ -95,7 +95,7 @@ compile := λ(). (: (tail(
          (set global-ctx global-ctx-2)
          (set preview-program rst)
       )))
-      ( (Seq( rst (ASTType( lhs rhs )) )) (tail(
+      ( (Seq( rst (Typedef( lhs rhs )) )) (tail(
          (let global-ctx-2 (maybe-deref(compile-type( global-ctx lhs rhs ))))
          (set global-ctx global-ctx-2)
          (set preview-program rst)
