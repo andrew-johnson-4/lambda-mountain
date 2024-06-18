@@ -29,12 +29,6 @@ substitute-uuids := λ(: ctx Context)(: term AST). (: (tail(
             tlt
          )))
       ))
-      ( (Asc( l rt )) (
-         (set term (Asc(
-            (substitute-uuids( ctx l ))
-            (close rt)
-         )))
-      ))
       ( _ () )
    ))
    (close term)
@@ -59,10 +53,6 @@ extract-uuids := λ(: sloc AST)(: ctx Context)(: term AST). (: (tail(
          (let lctx (maybe-deref(extract-uuids( sloc ctx l ))))
          (let rctx (maybe-deref(extract-uuids( sloc lctx r ))))
          (set ctx rctx)
-      )))
-      ( (Asc( l rt )) (tail(
-         (let lctx (maybe-deref(extract-uuids( sloc ctx l ))))
-         (set ctx lctx)
       )))
       ( _ () )
    ))

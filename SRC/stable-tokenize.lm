@@ -60,9 +60,6 @@ location-of := λ(: term AST). (: (tail(
          (set r (location-of tl))
          (if (not(non-zero r)) (set r (location-of tr)) ())
       )))
-      ( (Asc( t tt )) (
-         (set r (location-of t))
-      ))
       ( _ () )
    ))
    r
