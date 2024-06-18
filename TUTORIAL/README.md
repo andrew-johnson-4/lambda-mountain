@@ -1,5 +1,43 @@
 This tutorial is very short and assumes familiarity with programming in general.
 
+### Cheatsheet
+
+<table>
+   <tr>
+      <td><pre>import LIB/default-instruction-set.lm</pre></td>
+      <td>Import a Library</td>
+   </tr>
+   <tr>
+      <td><pre>abc</pre></td>
+      <td>A Variable</td>
+   </tr>
+   <tr>
+      <td><pre>ABC</pre></td>
+      <td>A Literal Value</td>
+   </tr>
+   <tr>
+      <td><pre>'abc</pre></td>
+      <td>A Literal Value</td>
+   </tr>
+   <tr>
+      <td><pre>λlhs . rhs</pre></td>
+      <td>A Function</td>
+   </tr>
+   <tr>
+      <td><pre>f (a b)</pre></td>
+      <td>A Function Application</td>
+   </tr>
+   <tr>
+      <td><pre>f : Arrow&LT;Cons&LT;A,B&GT;,C&GT;&GT;</pre></td>
+      <td>A Type Annotation</td>
+   </tr>
+   <tr>
+      <td><pre>f := λlhs . rhs;</pre></td>
+      <td>A Global Function Binding</td>
+   </tr>
+</table>
+
+
 ### Import a Library
 
 Libraries are files relative to the current working directory.
