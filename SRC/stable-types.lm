@@ -1035,6 +1035,14 @@ to-s := λ(: term AST). (: (tail(
             (close(SAtom v))
          )))
       ))
+      ( (App( (Lit ':_s) (App( t (AType tt) )) )) (tail(
+         (set s (to-s t))
+         (ascript( s tt ))
+      )))
+      ( (App( (Var 'as_s) (App( t (AType tt) )) )) (tail(
+         (set s (to-s t))
+         (ascript( s tt ))
+      )))
       ( (App( lt rt )) (
          (set s (SCons(
             (close(SAtom 'App_s))
@@ -1053,14 +1061,6 @@ to-s := λ(: term AST). (: (tail(
             )))
          )))
       ))
-      ( (Asc( t tt )) (tail(
-         (set s (to-s t))
-         (ascript( s tt ))
-      )))
-      ( (App( (Var 'as_s) (App( t (AType tt) )) )) (tail(
-         (set s (to-s t))
-         (ascript( s tt ))
-      )))
       ( _ () )
    ))
    s

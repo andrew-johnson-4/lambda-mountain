@@ -89,11 +89,17 @@ preprocess-apply := λ(: program AST). (: (tail(
    (let r program)
    (match program (
       ()
+      ( (App( (App( (Lit ':_s) (App( t (AType tt) )) )) nt )) (
+         (set r (App(
+            (close(App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App( (close(preprocess-apply t)) (close(AType tt)) ))) )))
+            (close(preprocess-apply( nt )))
+         )))
+      ))
       ( (App( (App( (Lit ':_s) mvar )) (Lit mtype) )) (
-         (set r (Asc( (close(preprocess-apply mvar)) (close(parse-type mtype)) )))
+         (set r (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
       ))
       ( (App( (App( (Lit ':_s) mvar )) (Var mtype) )) (
-         (set r (Asc( (close(preprocess-apply mvar)) (close(parse-type mtype)) )))
+         (set r (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
       ))
       ( (App( (App( (Var 'as_s) (App( t (AType tt) )) )) nt )) (
          (set r (App(
@@ -122,7 +128,10 @@ preprocess-apply := λ(: program AST). (: (tail(
                   (let lloc (location-of l))
                   (let lpfx (remove-suffix( l sfxs )))
                   (map-location( lpfx lloc ))
-                  (set r (Asc( (close (Lit lpfx)) (close sfxtt) )))
+                  (set r (App(
+                     (close(Lit(clone-rope(SAtom ':_s))))
+                     (close(App( (close (Lit lpfx)) (close(AType sfxtt)) )))
+                  )))
                   (set suffixes SfxEOF)
                )) (
                   (set suffixes rst)
@@ -139,7 +148,10 @@ preprocess-apply := λ(: program AST). (: (tail(
                   (let lloc (location-of l))
                   (let lpfx (remove-suffix( l sfxs )))
                   (map-location( lpfx lloc ))
-                  (set r (Asc( (close (Lit lpfx)) (close sfxtt) )))
+                  (set r (App(
+                     (close(Lit(clone-rope(SAtom ':_s))))
+                     (close(App( (close (Lit lpfx)) (close(AType sfxtt)) )))
+                  )))
                   (set suffixes SfxEOF)
                )) (
                   (set suffixes rst)
@@ -191,10 +203,6 @@ preprocess-apply := λ(: program AST). (: (tail(
          (close(preprocess-apply al))
          (close(preprocess-apply ar))
          tlt
-      ))))
-      ( (Asc( al at )) (set r (Asc(
-         (close(preprocess-apply al))
-         (close at)
       ))))
       ( (Frg( al ar atlt )) (
          (set r (Frg(
@@ -308,12 +316,6 @@ apply := λ(: ctx Context)(: term AST). (: (tail(
             tlt
          )))
       ))
-      ( (Asc( t tt )) (
-         (set return (Asc(
-            (close(apply( ctx t )))
-            (close tt)
-         )))
-      ))
    ))
    return
 )) AST);
@@ -367,9 +369,12 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
          (if (==( (index-of-tag el) unknown-index-of-tag )) () (tail(
             (set r CtxNil)
             (set r (CtxBind( (close r) pv (
-               (Asc(
-                  (close(Lit (to-string(index-of-tag el)) ))
-                  (close(parse-type 'Constant+Literal+U64_s))
+               (App(
+                  (close(Lit(clone-rope(SAtom ':_s))))
+                  (close(App(
+                     (close(Lit (to-string(index-of-tag el)) ))
+                     (close(AType(parse-type 'Constant+Literal+U64_s)))
+                  )))
                ))
             ) )))
             (set r (CtxBind( (close r) pt (Lit el) )))
@@ -423,12 +428,6 @@ relocate := λ(: term AST)(: loc SourceLocation). (: (tail(
          (set return (Typedef(
             (close(relocate( lt loc )))
             (close(relocate( rt loc )))
-         )))
-      ))
-      ( (Asc( lt rt )) (
-         (set return (Asc(
-            (close(relocate( lt loc )))
-            (close rt)
          )))
       ))
       ( (Glb( k t )) (tail(
