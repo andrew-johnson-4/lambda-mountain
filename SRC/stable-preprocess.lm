@@ -102,10 +102,10 @@ preprocess-apply := λ(: program AST). (: (tail(
          (set r (As( (close(preprocess-apply mvar)) (close(parse-type mtype)) )))
       ))
       ( (App( (Var 'sizeof_s) (Var mtype) )) (
-         (set r (Sizeof( (close(parse-type mtype)) )))
+         (set r (App( (close(Var 'sizeof_s)) (close(AType(parse-type mtype))) )))
       ))
       ( (App( (Var 'sizeof_s) (Lit mtype) )) (
-         (set r (Sizeof( (close(parse-type mtype)) )))
+         (set r (App( (close(Var 'sizeof_s)) (close(AType(parse-type mtype))) )))
       ))
       ( (Lit l) (tail(
          (let suffixes parse-suffixes)
@@ -249,7 +249,7 @@ apply := λ(: ctx Context)(: term AST). (: (tail(
       ( ASTEOF () )
       ( ASTNil () )
       ( (Lit _) () )
-      ( (Sizeof _) () )
+      ( (AType _) () )
       ( (Var n) (
          (while (non-zero ctx) (match ctx (
             ()
@@ -389,7 +389,6 @@ relocate := λ(: term AST)(: loc SourceLocation). (: (tail(
       ()
       ( ASTEOF () )
       ( ASTNil () )
-      ( (Sizeof _) () )
       ( (Var v) (tail(
          (set v (clone-rope(SAtom v)))
          (map-location( v loc ))
@@ -400,6 +399,7 @@ relocate := λ(: term AST)(: loc SourceLocation). (: (tail(
          (map-location( v loc ))
          (set return (Lit v))
       )))
+      ( (AType _) () )
       ( (App( lt rt )) (
          (set return (App(
             (close(relocate( lt loc )))

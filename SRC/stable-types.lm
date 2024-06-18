@@ -1053,10 +1053,6 @@ to-s := λ(: term AST). (: (tail(
             )))
          )))
       ))
-      ( (Sizeof( tt )) (tail(
-         (set s (SAtom( (clone-rope(SAtom('Sizeof_s))) )))
-         (ascript( s tt ))
-      )))
       ( (Asc( t tt )) (tail(
          (set s (to-s t))
          (ascript( s tt ))

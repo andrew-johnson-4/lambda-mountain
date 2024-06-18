@@ -4,7 +4,7 @@ type TypeList TypeEOF | (TypeSeq( TypeList[] , Type )); zero TypeList TypeEOF;
 
 type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String )) | (Lit( String )) | (Abs( AST[] , AST[] , Type )) | (AType( Type ))
                 | (Seq( AST[] , AST[] )) | (Glb( String , AST[] )) | (Typedef( AST[] , AST[] )) | (Frg( String , AST[] , Type ))
-                | (Asc( AST[] , Type[] )) | (As( AST[] , Type[] )) | (Sizeof( Type[] )); zero AST ASTEOF;
+                | (Asc( AST[] , Type[] )) | (As( AST[] , Type[] )); zero AST ASTEOF;
 
 type FragmentKV (FKVEOF) | (FKVSeq( FragmentKV[] , String , S )); zero FragmentKV FKVEOF;
 type Fragment (Fragment( FragmentKV[] , I64 , Type , FContext[] ));
@@ -124,11 +124,6 @@ print := λ(: t AST). (: (tail(
          (print tt)
          (print '\]_s)
       )))
-      ( (Sizeof( tt )) (tail(
-         (print '\[sizeof\s_s)
-         (print tt)
-         (print '\]_s)
-      )))
       ( (Seq( l r )) (tail(
          (print l)
          (print '\:\n_s)
@@ -213,12 +208,6 @@ serialize-ast := λ(: t AST). (: (tail(
          (print '\[Var\sas\]\s_s)
          (serialize-ast t)
          (print '\]\]\s_s)
-         (serialize-ast tt)
-         (print '\]\]_s)
-      )))
-      ( (Sizeof( tt )) (tail(
-         (print '\[App\s\[_s)
-         (print '\[Var\ssizeof\]\s_s)
          (serialize-ast tt)
          (print '\]\]_s)
       )))

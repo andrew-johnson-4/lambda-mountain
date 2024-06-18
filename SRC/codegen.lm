@@ -244,7 +244,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             ( _ () )
          ))
       )))
-      ( (Sizeof( tt )) (tail(
+      ( (App( (Var 'sizeof_s) (AType tt) )) (tail(
          (let sz (typecheck-sizeof( tt )))
          (let e1 (maybe-deref(fragment::expression(to-string sz))))
          (let et (TAnd( 

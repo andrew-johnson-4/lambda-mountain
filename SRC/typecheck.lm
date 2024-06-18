@@ -312,9 +312,7 @@ typecheck-assert-complete := λ(: term AST). (: (
          (typecheck-assert-complete t)
          (typecheck-assert-one term)
       )))
-      ( (Sizeof( _ )) (
-         (typecheck-assert-one term)
-      ))
+      ( (AType _) () )
       ( (App( (Var 'tail_s) (App( lterm rterm )) )) (tail(
          (typecheck-assert-complete lterm)
          (typecheck-assert-complete rterm)
@@ -615,9 +613,14 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
             (ascript-normal( term tt ))
          )) ())
       )))
-      ( (Sizeof( _ )) (
-         (ascript-normal( term (maybe-deref(as-constant(maybe-deref(parse-type 'U64_s)))) ))
-      ))
+      ( (App( (Var 'sizeof_s) (AType _) )) (tail(
+         (let tt (maybe-deref(as-constant(maybe-deref(parse-type 'U64_s)))))
+         (ascript-normal( term tt ))
+         (match term (
+            ()
+            ( (App( s _ )) (ascript-normal( s tt )) )
+         ))
+      )))
       ( (App( (Var 'scope_s) r )) (tail(
          (typecheck-infer-expr( tctx r used ))
          (ascript-normal( term (typeof r) ))
@@ -870,10 +873,9 @@ specialize-term := λ(: tctx TContext)(: t AST). (: (tail(
          (let tt2 (substitute( tctx tt )))
          (set t (As( (close lt2) (close tt2) )))
       )))
-      ( (Sizeof( tt )) (tail(
-         (let tt2 (substitute( tctx tt )))
-         (set t (Sizeof( (close tt2) )))
-      )))
+      ( (AType( tt )) (
+         (set t (AType( (substitute( tctx tt )) )))
+      ))
       ( (Glb( k v )) (tail(
          (let k2 (clone-rope(SAtom k)))
          (let v2 (specialize-term( tctx v )))
