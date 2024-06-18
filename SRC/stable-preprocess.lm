@@ -95,17 +95,23 @@ preprocess-apply := λ(: program AST). (: (tail(
       ( (App( (App( (Lit ':_s) mvar )) (Var mtype) )) (
          (set r (Asc( (close(preprocess-apply mvar)) (close(parse-type mtype)) )))
       ))
+      ( (App( (App( (Var 'as_s) (App( t (AType tt) )) )) nt )) (
+         (set r (App(
+            (close(App( (close(Var(clone-rope(SAtom 'as_s)))) (close(App( (close(preprocess-apply t)) (close(AType tt)) ))) )))
+            (close(preprocess-apply( nt )))
+         )))
+      ))
       ( (App( (App( (Var 'as_s) mvar )) (Lit mtype) )) (
-         (set r (As( (close(preprocess-apply mvar)) (close(parse-type mtype)) )))
+         (set r (App( (close(Var(clone-rope(SAtom 'as_s)))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
       ))
       ( (App( (App( (Var 'as_s) mvar )) (Var mtype) )) (
-         (set r (As( (close(preprocess-apply mvar)) (close(parse-type mtype)) )))
+         (set r (App( (close(Var(clone-rope(SAtom 'as_s)))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
       ))
       ( (App( (Var 'sizeof_s) (Var mtype) )) (
-         (set r (App( (close(Var 'sizeof_s)) (close(AType(parse-type mtype))) )))
+         (set r (App( (close(Var(clone-rope(SAtom 'sizeof_s)))) (close(AType(parse-type mtype))) )))
       ))
       ( (App( (Var 'sizeof_s) (Lit mtype) )) (
-         (set r (App( (close(Var 'sizeof_s)) (close(AType(parse-type mtype))) )))
+         (set r (App( (close(Var(clone-rope(SAtom 'sizeof_s)))) (close(AType(parse-type mtype))) )))
       ))
       ( (Lit l) (tail(
          (let suffixes parse-suffixes)
@@ -308,12 +314,6 @@ apply := λ(: ctx Context)(: term AST). (: (tail(
             (close tt)
          )))
       ))
-      ( (As( t tt )) (
-         (set return (As(
-            (close(apply( ctx t )))
-            (close tt)
-         )))
-      ))
    ))
    return
 )) AST);
@@ -427,12 +427,6 @@ relocate := λ(: term AST)(: loc SourceLocation). (: (tail(
       ))
       ( (Asc( lt rt )) (
          (set return (Asc(
-            (close(relocate( lt loc )))
-            (close rt)
-         )))
-      ))
-      ( (As( lt rt )) (
-         (set return (As(
             (close(relocate( lt loc )))
             (close rt)
          )))

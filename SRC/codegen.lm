@@ -262,7 +262,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (let e1-4 (maybe-deref(fragment::set-offset( e1 stack-offset ))))(set e1 e1-4)
          (set e e1)
       )))
-      ( (As( t tt )) (tail(
+      ( (App( (Var 'as_s) (App( t (AType tt) )) )) (tail(
          (let e-1 (maybe-deref(compile-expr( ctx t stack-offset used ))))(set e e-1)
          (let e-2 (maybe-deref(fragment::set-type( e (maybe-deref(typeof term)) ))))(set e e-2)
       )))

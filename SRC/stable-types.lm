@@ -1057,11 +1057,7 @@ to-s := λ(: term AST). (: (tail(
          (set s (to-s t))
          (ascript( s tt ))
       )))
-      ( (As( t tt )) (tail(
-         (set s (to-s t))
-         (ascript( s tt ))
-      )))
-      ( (As( t tt )) (tail(
+      ( (App( (Var 'as_s) (App( t (AType tt) )) )) (tail(
          (set s (to-s t))
          (ascript( s tt ))
       )))
