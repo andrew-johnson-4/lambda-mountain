@@ -52,7 +52,7 @@ location-of := λ(: term AST). (: (tail(
          (set r (location-of tl))
          (if (not(non-zero r)) (set r (location-of tr)) ())
       )))
-      ( (ASTType( tl tr )) (tail(
+      ( (Typedef( tl tr )) (tail(
          (set r (location-of tl))
          (if (not(non-zero r)) (set r (location-of tr)) ())
       )))
@@ -61,9 +61,6 @@ location-of := λ(: term AST). (: (tail(
          (if (not(non-zero r)) (set r (location-of tr)) ())
       )))
       ( (Asc( t tt )) (
-         (set r (location-of t))
-      ))
-      ( (As( t tt )) (
          (set r (location-of t))
       ))
       ( _ () )

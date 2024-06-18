@@ -416,7 +416,7 @@ parse := λ. (: (tail(
                   ( (PME( e2 r2 )) (tail(
                      (set ast-parsed-program (Seq(
                         (close ast-parsed-program)
-                        (close (ASTType(
+                        (close (Typedef(
                            (close e1)
                            (close e2)
                         )))
@@ -462,7 +462,7 @@ parse := λ. (: (tail(
                   ( (PME( e2 r2 )) (tail(
                      (set ast-parsed-program (Seq(
                         (close ast-parsed-program)
-                        (close (ASTType(
+                        (close (Typedef(
                            (close e1)
                            (close e2)
                         )))
