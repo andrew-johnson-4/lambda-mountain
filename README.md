@@ -4,7 +4,7 @@
 The whole compiler is only 5000 lines of code, so this could be a good starting point for projects in need of codegen for JIT or AOT compilation.
 
 * [TUTORIAL](https://github.com/andrew-johnson-4/lambda-mountain/blob/main/TUTORIAL/hello-world.md)
-* [WIKI](https://github.com/andrew-johnson-4/-/wiki).
+* [WIKI](https://github.com/andrew-johnson-4/-/wiki)
 * [ASK A QUESTION](https://github.com/andrew-johnson-4/lambda-mountain/discussions/categories/q-a)
 
 ### What is a Fragment Assembler?
