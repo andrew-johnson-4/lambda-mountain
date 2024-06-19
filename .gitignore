@@ -11,7 +11,7 @@ a.out
 *.log
 bootstrap
 bootstrap.s
-bootstrap.o
+hello_world.s
 bbootstrap
 bin/lm_raw
 production

@@ -1,25 +1,10 @@
 
 develop: compile-production
-	rm -f tmp tmp.o tmp.s
-	./bootstrap -o tmp-stable.s big_return_stable.lm
-	./production -o tmp.s tests/regress/big_return.lm
-	as tmp.s -o tmp.o
-	ld tmp.o -o tmp
-	./tmp
-
-state: compile-bootstrap
-	rm -f tmp tmp.o tmp.s
-	./bootstrap -o tmp.s tests/regress/big_return.lm
-	as tmp.s -o tmp.o
-	ld tmp.o -o tmp
-	./tmp
-
-re: compile-production
-	rm -f tmp tmp.o tmp.s
-	./re-production -o tmp.s tests/regress/parametric.lm
-	as tmp.s -o tmp.o
-	ld tmp.o -o tmp
-	./tmp
+	rm -f hello_world hello_world.o hello_world.s
+	./production -o hello_world.s tests/regress/hello_world.lm
+	as hello_world.s -o hello_world.o
+	ld hello_world.o -o hello_world
+	./hello_world
 
 deploy: compile-production
 	time ./production -o deploy.s SRC/cli.lm
