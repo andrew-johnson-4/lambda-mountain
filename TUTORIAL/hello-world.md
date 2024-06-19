@@ -18,17 +18,17 @@ The goal of this project will be to produce the following file:
 _start:
   jmp main
 main:
-  mov $1, %rax
-  mov $1, %rdi
-  mov $hello_world_string, %rsi
-  mov $11, %rdx
-  syscall
-  mov $60, %rax
-  mov $0, %rdi
-  syscall
+    mov $1, %rax
+    mov $1, %rdi
+    mov $hello_world_string, %rsi
+    mov $11, %rdx
+    syscall
+    mov $60, %rax
+    mov $0, %rdi
+    syscall
 .data
 hello_world_string:
-  .ascii "hello world"
+    .ascii "hello world"
 ```
 
 This file contains GNU Assembly describing a file with two sections.
