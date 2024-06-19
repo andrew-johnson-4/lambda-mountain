@@ -116,3 +116,6 @@ main:
         ret
 ```
 
+The main function itself is pretty simple, it just returns immediately.
+The pushing and popping from `%rbp` (base pointer) and `%rsp` (stack pointer) are part of the standard cdecl calling convention.
+This calling convention allows us to store local variable in functions.
