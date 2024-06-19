@@ -18,7 +18,15 @@ main:
   mov $1, %rdi
   mov $hello_world_string, %rsi
   mov $11, %rdx
+  syscall
+  mov $60, %rax
+  mov $0, %rdi
+  syscall
 .data
 hello_world_string:
   .ascii "hello world"
 ```
+
+This file contains GNU Assembly describing a file with two sections.
+The data section contains an ASCII literal value for the string "hello world".
+The text section contains a short program that prints the string to STDOUT then exits.
