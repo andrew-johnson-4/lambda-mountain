@@ -9,7 +9,7 @@ For comparison LM is 5000 Lines of Code whereas GCC is 15 MILLION.
 That is not really a fair comparison, but also it sort of is.
 Design goals for the projects are polar opposites so pick your favorite flavor.
 
-Currently the best example code is the compiler itself, which is located in the SRC folder. There also is a short introduction in the TUTORIAL folder.
+Currently the best example code is the compiler itself, which is located in the SRC folder. There also is a short introduction in the [TUTORIAL](https://github.com/andrew-johnson-4/lambda-mountain/blob/main/TUTORIAL/hello-world.md) folder.
 
 More information is available on the [λ☶ Wiki](https://github.com/andrew-johnson-4/-/wiki).
 
