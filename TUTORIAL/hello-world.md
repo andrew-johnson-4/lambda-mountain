@@ -97,3 +97,22 @@ Our main function does not need to accept any arguments so the left-hand-side is
 The right-hand-side is defined as an empty `()` Nil term that has been ascripted `(: term Type)` with the type Nil.
 All global bindings must be explicitly typed, this is a limitation of the type inference algorithm.
 
+Compiling this we will get:
+```
+.global _start
+.text
+_start:
+        push %rbp
+        mov %rsp, %rbp
+        call main
+        mov %rbp, %rsp
+        pop %rbp
+        mov $60, %rax
+        mov $0, %rdi
+        syscall
+main:
+        mov %rbp, %rsp
+        sub $8, %rsp
+        ret
+```
+
