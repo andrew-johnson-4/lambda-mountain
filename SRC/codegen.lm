@@ -18,6 +18,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (tail(
          (let e (maybe-deref(compile-expr( ctx rhs stack-offset Return ))))
          (let text SNil)
          (if (==( k 'main_s )) (tail(
+            (set main-with True_u8)
             (match lhs (
                ()
                ( ASTNil () )
