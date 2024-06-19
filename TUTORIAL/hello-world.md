@@ -33,7 +33,7 @@ The text section contains a short program that prints the string to STDOUT then 
 
 ### Installing LM
 
-First to use LM we should install the compiler on our system.
+First, to use LM we should install the compiler on our system.
 To build and install LM we can move into the project directory and run `make install`.
 
 ```
