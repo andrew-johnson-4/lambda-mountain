@@ -30,3 +30,14 @@ hello_world_string:
 This file contains GNU Assembly describing a file with two sections.
 The data section contains an ASCII literal value for the string "hello world".
 The text section contains a short program that prints the string to STDOUT then exits.
+
+### The simplest LM Program
+
+The simplest program in LM is an empty file.
+
+``` hello_world.lm
+# there is nothing here except for this comment
+```
+
+
+
