@@ -88,7 +88,7 @@ We don't need to handle command line arguments so our new file is pretty simple.
 main := λ. (: () Nil);
 ```
 
-This line is a little bittle complicated so let's unpack this.
+This line is a little bit complicated so let's unpack this.
 The first token is variable that will become the function name: `main`.
 The next token `:=` is called a "binding" and is used to declare global variables.
 The rest of the line is the function definition.
