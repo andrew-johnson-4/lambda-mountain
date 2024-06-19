@@ -4,6 +4,10 @@
 LM is a fragment assembler, which means it produces object files or flat human-readable assembly.
 For this lesson we will be producing human-readable assembly files.
 
+### Prerequisites
+
+LM currently only supports x86-64 Linux platform. So you will need access to a Linux box to complete the tutorial.
+
 ### Desired Output
 
 The goal of this project will be to produce the following file:
