@@ -70,7 +70,7 @@ _start:
         syscall
 ```
 
-We can see that the code loads the value `$60` into register `%rax`, this corresponds to the Linux x86-64 system call "sys-exit".
+We can see that the code loads the value `$60` into register `%rax`, this corresponds to the Linux x86-64 system call `sys-exit`.
 The value `$0` into register `%rdi` will indicate a successful exit.
 The `syscall` interrupt will invoke the operating system to perform the system call.
 This is the shortest possible well-formed program that exits successfully.
