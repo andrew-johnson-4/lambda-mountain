@@ -16,7 +16,7 @@ The goal of this project will be to produce the following file:
 .global _start
 .text
 _start:
-  jmp main
+    jmp main
 main:
     mov $1, %rax
     mov $1, %rdi
