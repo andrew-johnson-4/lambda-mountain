@@ -6,7 +6,7 @@ For this lesson we will be producing human-readable assembly files.
 
 ### Prerequisites
 
-LM currently only supports x86-64 Linux platform. So you will need access to a Linux box to complete the tutorial.
+LM currently only supports the x86-64 Linux platform. So you will need access to a Linux box to complete the tutorial.
 
 ### Desired Output
 
