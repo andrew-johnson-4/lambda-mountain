@@ -31,13 +31,33 @@ This file contains GNU Assembly describing a file with two sections.
 The data section contains an ASCII literal value for the string "hello world".
 The text section contains a short program that prints the string to STDOUT then exits.
 
+### Installing LM
+
+First to use LM we should install the compiler on our system.
+To build and install LM we can move into the project directory and run `make install`.
+
+```
+git clone https://github.com/andrew-johnson-4/lambda-mountain.git
+cd lambda-mountain
+sudo make install
+```
+
 ### The simplest LM Program
 
 The simplest program in LM is an empty file.
+Let's create a file called `hello_world.lm`.
 
-``` hello_world.lm
+```
 # there is nothing here except for this comment
 ```
 
+To compile this we should first run lm to produce the assembly file.
+
+```
+lm -o hello_world.s hello_world.lm
+```
+
+Now the compiler should produce the output `hello_world.s` assembly file.
+Let's look inside:
 
 
