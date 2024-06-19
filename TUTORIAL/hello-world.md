@@ -55,7 +55,7 @@ Let's create a file called `hello_world.lm`.
 # there is nothing here except for this comment
 ```
 
-To compile this we should first run lm to produce the assembly file.
+To compile this we should first run `lm` to produce the assembly file.
 
 ```
 lm -o hello_world.s hello_world.lm
@@ -78,4 +78,22 @@ We can see that the code loads the value `$60` into register `%rax`, this corres
 The value `$0` into register `%rdi` will indicate a successful exit.
 The `syscall` interrupt will invoke the operating system to perform the system call.
 This is the shortest possible LM program that exits successfully.
+
+### Including a Main Function
+
+A `main` function is a function that will be called after initialization.
+We don't need to handle command line arguments so our new file is pretty simple.
+
+```
+main := λ. (: () Nil);
+```
+
+This line is a little bittle complicated so let's unpack this.
+The first token is variable that will become the function name: `main`.
+The next token `:=` is called a "binding" and is used to declare global variables.
+The rest of the line is the function definition.
+Functions are also called lambdas, and are declared with a λ (lambda) token, followed by the left-hand-side, a `.` dot, then the right hand side.
+Our main function does not need to accept any arguments so the left-hand-side is left blank.
+The right-hand-side is defined as an empty `()` Nil term that has been ascripted `(: term Type)` with the type Nil.
+All global bindings must be explicitly typed, this is a limitation of the type inference algorithm.
 
