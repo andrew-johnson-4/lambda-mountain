@@ -129,11 +129,11 @@ The hello world program can then be completed as below.
 import LIB/default-minimal.lm;
 
 main := λ. (: (tail(
-   (mov( 1_u64 RAX ))          # 1 is sys_write
-   (mov( 1_u64 RDI ))          # 1 is STDOUT
-   (mov( 'hello_world_s RSI )) # character buffer
-   (mov( 11_u64 RDX ))         # length of data to write
-   (syscall())                 # syscall
+       (mov( 1_u64 RAX ))          # 1 is sys_write
+       (mov( 1_u64 RDI ))          # 1 is STDOUT
+       (mov( 'hello_world_s RSI )) # character buffer
+       (mov( 11_u64 RDX ))         # length of data to write
+       (syscall())                 # syscall
 )) Nil);
 ```
 
@@ -141,7 +141,31 @@ Literal suffix notation is used to declare the type of unsigned integers such as
 This suffix notation is implemented as a macro that expands to `(: 11 U64)`.
 Similarly `hello_world_s` indicates a string literal.
 
-Aside from these conventions the program corresponds directly to the generated assembly:
+Aside from these conventions the program is very similar to the generated assembly:
 
 ```
+.global _start
+.text
+_start:
+        push %rbp
+        mov %rsp, %rbp
+        call main
+        mov %rbp, %rsp
+        pop %rbp
+        mov $60, %rax
+        mov $0, %rdi
+        syscall
+main:
+        mov     $1, %RAX
+        mov     $1, %RDI
+        mov     $uuid_0000000000000001, %RSI
+        mov     $11, %RDX
+        syscall
+        mov %rbp, %rsp
+        sub $8, %rsp
+        ret
+.data
+uuid_0000000000000001:
+        .ascii "hello_world"
+        .zero 1
 ```
