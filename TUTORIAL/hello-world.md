@@ -119,3 +119,20 @@ main:
 The main function itself is pretty simple, it just returns immediately.
 The pushing and popping from `%rbp` (base pointer) and `%rsp` (stack pointer) are part of the standard cdecl calling convention.
 This calling convention allows us to store local variable in functions.
+
+### Printing to Stdout
+
+To define our instruction set and some basic concepts like integers and named registers we will import the default library.
+The hello world program can then be completed as below.
+
+```
+import LIB/default.lm;
+
+main := λ. (: (tail(
+   (mov( 1_u64 RAX ))          # 1 is sys_write
+   (mov( 1_u64 RDI ))          # 1 is STDOUT
+   (mov( 'hello_world_s RSI )) # character buffer
+   (mov( 11_u64 RDX ))         # length of data to write
+   (syscall())                 # syscall
+)) Nil);
+```
