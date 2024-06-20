@@ -136,3 +136,12 @@ main := λ. (: (tail(
    (syscall())                 # syscall
 )) Nil);
 ```
+
+Literal suffix notation is used to declare the type of unsigned integers such as `11_u64`.
+This suffix notation is implemented as a macro that expands to `(: 11 U64)`.
+Similarly `hello_world_s` indicates a string literal.
+
+Aside from these conventions the program corresponds directly to the generated assembly:
+
+```
+```
