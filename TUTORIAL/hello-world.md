@@ -169,3 +169,5 @@ uuid_0000000000000001:
         .ascii "hello_world"
         .zero 1
 ```
+
+### [Next Chapter: Grep](https://github.com/andrew-johnson-4/lambda-mountain/blob/main/TUTORIAL/grep.md)
