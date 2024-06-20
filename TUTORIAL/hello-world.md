@@ -1,5 +1,5 @@
 
-### Hello World, from scratch
+# Hello World, from scratch
 
 LM is a fragment assembler, which means it produces object files or flat human-readable assembly.
 For this lesson we will be producing human-readable assembly files.
