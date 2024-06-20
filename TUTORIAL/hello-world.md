@@ -8,6 +8,17 @@ For this lesson we will be producing human-readable assembly files.
 
 LM currently only supports the x86-64 Linux platform. So you will need access to a Linux box to complete the tutorial.
 
+### Installing LM
+
+First, to use LM we should install the compiler on our system.
+To build and install LM we can move into the project directory and run `make install`.
+
+```
+git clone https://github.com/andrew-johnson-4/lambda-mountain.git
+cd lambda-mountain
+sudo make install
+```
+
 ### Desired Output
 
 The goal of this project will be to produce the following file:
@@ -34,17 +45,6 @@ hello_world_string:
 This file contains GNU Assembly describing a file with two sections.
 The data section contains an ASCII literal value for the string "hello world".
 The text section contains a short program that prints the string to STDOUT then exits.
-
-### Installing LM
-
-First, to use LM we should install the compiler on our system.
-To build and install LM we can move into the project directory and run `make install`.
-
-```
-git clone https://github.com/andrew-johnson-4/lambda-mountain.git
-cd lambda-mountain
-sudo make install
-```
 
 ### The simplest LM Program
 
