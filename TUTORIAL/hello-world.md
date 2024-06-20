@@ -170,4 +170,4 @@ uuid_0000000000000001:
         .zero 1
 ```
 
-### [Next Chapter: Grep](https://github.com/andrew-johnson-4/lambda-mountain/blob/main/TUTORIAL/grep.md)
+### [Next Chapter: Grep, with library support](https://github.com/andrew-johnson-4/lambda-mountain/blob/main/TUTORIAL/grep.md)
