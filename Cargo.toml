@@ -1,6 +1,6 @@
 [package]
 name = "lambda_mountain"
-version = "1.13.58"
+version = "1.13.59"
 authors = ["Andrew <andrew@subarctic.org>"]
 license = "MIT"
 description = "Compiler Backend / Programming Language Scaffolding"
