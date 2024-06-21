@@ -450,3 +450,116 @@ relocate := λ(: term AST)(: loc SourceLocation). (: (tail(
    ))
    return
 )) AST);
+
+substitute-uuids := λ(: ctx Context)(: term AST). (: (tail(
+   (let return term)
+   (match return (
+      ()
+      ( (App( (Var 'uuid_s) (Var x ) )) (
+         (while (non-zero ctx) (match ctx (
+            ()
+            ( (CtxBind( rst k v )) (
+               (if (==( x k )) (tail(
+                  (set return v)
+                  (set ctx rst)
+               )) (
+                  (set ctx rst)
+               ))
+            ))
+            ( _ (set ctx CtxEOF) )
+         )))
+      ))
+      ( (App( l r )) (
+         (set return (App(
+            (close(substitute-uuids( ctx l )))
+            (close(substitute-uuids( ctx r )))
+         )))
+      ))
+      ( (Abs( l r tlt )) (
+         (set return (Abs(
+            (close(substitute-uuids( ctx l )))
+            (close(substitute-uuids( ctx r )))
+            tlt
+         )))
+      ))
+      ( ASTEOF () )
+      ( ASTNil () )
+      ( (AType _) () )
+      ( (Var v) () )
+      ( (Lit v) () )
+      ( (Seq( lt rt )) (
+         (set return (Seq(
+            (close(substitute-uuids( ctx lt )))
+            (close(substitute-uuids( ctx rt )))
+         )))
+      ))
+      ( (Typedef( lt rt )) (
+         (set return (Typedef(
+            (close(substitute-uuids( ctx lt )))
+            (close(substitute-uuids( ctx rt )))
+         )))
+      ))
+      ( (Glb( k t )) (
+         (set return (Glb(
+            k
+            (close(substitute-uuids( ctx t )))
+         )))
+      ))
+      ( (Frg( k t tlt )) (
+         (set return (Frg(
+            k
+            (close(substitute-uuids( ctx t )))
+            tlt
+         )))
+      ))
+   ))
+   return
+)) AST);
+
+extract-uuids := λ(: sloc AST)(: ctx Context)(: term AST). (: (tail(
+   (let return ctx)
+   (match term (
+      ()
+      ( (App( (Var 'uuid_s) (Var x) )) (tail(
+         (let id (uuid()))
+         (let loc (location-of sloc))
+         (map-location( id loc ))
+         (let lctx (CtxBind( (close ctx) x (Var id) )))
+         (set return lctx)
+      )))
+      ( (App( l r )) (tail(
+         (let lctx (extract-uuids( sloc ctx l )))
+         (let rctx (extract-uuids( sloc lctx r )))
+         (set return rctx)
+      )))
+      ( (Abs( l r tlt )) (tail(
+         (let lctx (extract-uuids( sloc ctx l )))
+         (let rctx (extract-uuids( sloc lctx r )))
+         (set return rctx)
+      )))
+      ( ASTEOF () )
+      ( ASTNil () )
+      ( (AType _) () )
+      ( (Var v) () )
+      ( (Lit v) () )
+      ( (Seq( lt rt )) (tail(
+         (let lctx (extract-uuids( sloc ctx lt )))
+         (let rctx (extract-uuids( sloc lctx rt )))
+         (set return rctx)
+      )))
+      ( (Typedef( lt rt )) (tail(
+         (let lctx (extract-uuids( sloc ctx lt )))
+         (let rctx (extract-uuids( sloc lctx rt )))
+         (set return rctx)
+      )))
+      ( (Glb( k t )) (tail(
+         (let rctx (extract-uuids( sloc ctx t )))
+         (set return rctx)
+      )))
+      ( (Frg( k t tlt )) (tail(
+         (let rctx (extract-uuids( sloc ctx t )))
+         (set return rctx)
+      )))
+   ))
+   return
+)) Context);

@@ -1,7 +1,6 @@
 
 import SRC/ast.lm;
 import SRC/typecheck.lm;
-import SRC/preprocess.lm;
 import SRC/codegen.lm;
 import SRC/fragment.lm;
 import SRC/assemble.lm;
