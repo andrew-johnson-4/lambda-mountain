@@ -7,6 +7,12 @@ The whole compiler is only 5000 lines of code, so this could be a good starting 
 * [WIKI](https://github.com/andrew-johnson-4/-/wiki)
 * [ASK A QUESTION](https://github.com/andrew-johnson-4/lambda-mountain/discussions/categories/q-a)
 
+### "Portable" Assembler
+
+LM provides abstraction up to the level that you want and down to the level that you want.
+Code that is not platform specific will not be platform specific.
+By selectively applying specialization for platform specific optimizations it becomes possible to utilize the best features of each platform *serendipitously*.
+
 ### What is a Fragment Assembler?
 
 An assembler takes pieces of data and sticks them together. Assemblers don't always understand the meaning of what they do, they just do it.
