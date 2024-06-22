@@ -13,6 +13,11 @@ LM provides abstraction up to the level that you want and down to the level that
 Code that is not platform specific will not be platform specific.
 By selectively applying specialization for platform specific optimizations it becomes possible to utilize the best features of each platform *serendipitously*.
 
+### Why Such a Small Codebase?
+
+LM solves an N by M Problem with language frontends vs language backends.
+The LM project might interface with larger codebases that define frontends or backends, but the core LM Calculus can stay small.
+
 ### What is a Fragment Assembler?
 
 An assembler takes pieces of data and sticks them together. Assemblers don't always understand the meaning of what they do, they just do it.
