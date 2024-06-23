@@ -36,6 +36,7 @@ fragment-size-args := λ(: args FragmentList). (: (tail(
 )) FragmentList);
 
 fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentList)(: direct-type Type)(: sloc AST). (: (tail(
+   (print 'Fragment\s_s)(print k)(print '\n_s)
    (let args-sized (maybe-deref(fragment-size-args args)))(set args args-sized)
    (let e-proto (maybe-deref(fragment::new())))
    (let e-proto-2 (maybe-deref(fragment::set-context( e-proto ctx ))))(set e-proto e-proto-2)
@@ -97,6 +98,7 @@ fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentLi
    ))))))(set return r2)
    (let r3 (maybe-deref(fragment::set-type( return return-tt ))))(set return r3)
 
+   (print 'Fragmented\s_s)(print k)(print '\n_s)
    return
 )) Fragment);
 

@@ -236,7 +236,9 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                (let e2-3 (maybe-deref(fragment::set-type( e2 c-tt ))))(set e2 e2-3)
                (let e3 (maybe-deref(fragment-apply( ctx stack-offset 'push_s
                   (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
-                  (t3( 'Arrow_s (t3( 'Cons_s tt c-tt )) (t1 'StackVariable_s) ))
+                  (t3( 'Arrow_s (t3( 'Cons_s tt c-tt ))
+                                (maybe-deref(tand( (t1 'StackVariable_s) (t2( 'Sized_s (t1(to-string(typecheck-aligned-sizeof inner-tt))) )) )))
+                  ))
                   term
                ))))
                (let e3-2 (maybe-deref(fragment::set-type( e3 (maybe-deref(tand( inner-tt (maybe-deref(t1 'StackVariable_s)) ))) ))))(set e3 e3-2)
@@ -665,10 +667,12 @@ compile-maybe-push-stack := λ(: ctx FContext)(: offset I64)(: fragment Fragment
          (let f-1 (maybe-deref(fragment-apply(
             ctx offset 'push_s
             (FLSeq( (close FLEOF) fragment ))
-            (t3( 'Arrow_s ft (t1 'StackVariable_s) ))
+            (t3( 'Arrow_s ft
+                          (maybe-deref(tand( (t1 'StackVariable_s) (t2( 'Sized_s (t1(to-string(typecheck-aligned-sizeof ft))) )) )))
+            ))
             sloc
          ))))(set fragment f-1)
-         (let f-sz (as (typecheck-sizeof ft) I64))
+         (let f-sz (as (typecheck-aligned-sizeof ft) I64))
          (let f-2 (maybe-deref(fragment::set-offset( fragment (-( offset f-sz )) ))))(set fragment f-2)
       )))
    ))
