@@ -72,8 +72,7 @@ fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentLi
       ( _ () )
    ))
 
-   (let lhs-type (typeof(fragment::get( arrow 'fragment_s ))))
-   (let tctx (unify( lhs-type direct-type )))
+   (let tctx (unify( arrow-tt direct-type )))
    (let ctx-2 (union( ctx tctx )))(set ctx ctx-2)
 
    (let return (maybe-deref(fragment-apply-direct( ctx arrow args e-proto chain ))))
