@@ -1,10 +1,9 @@
 
 develop: compile-production
-	rm -f hello_world hello_world.o hello_world.s
-	./production -o hello_world.s tests/regress/hello_world.lm
-	as hello_world.s -o hello_world.o
-	ld hello_world.o -o hello_world
-	./hello_world
+	time ./production -o tmp.s tests/regress/poly_mov.lm
+	as tmp.s -o tmp.o
+	ld tmp.o -o tmp
+	./tmp
 
 deploy: compile-production
 	time ./production -o deploy.s SRC/cli.lm
