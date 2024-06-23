@@ -7,7 +7,7 @@ fragment : DontChain template::push := λ(: src tag+Sized<size>). (: (
       (.program src)
       \t 'pushq \s '$ 'case-number \n
    ))
-) Sized<return-size>);
+) Sized<return-size>+StackVariable);
 
 fragment : DontChain template::mov := λ(: src tag+Sized<size>)(: dst LocalVariable). (: (
    (.program(

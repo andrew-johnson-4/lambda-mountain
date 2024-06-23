@@ -746,8 +746,11 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
    (let e1 (maybe-deref(compile-push-rvalue( ctx args (-( offset (as whitespace-sz I64) )) ))))
    (let e1-2 (maybe-deref(fragment::set-type( e1 (maybe-deref(t1 tag-name)) ))))(set e1 e1-2)
    (let args-type-sized (maybe-deref(tand(
-      args-type
-      (maybe-deref(tsized(to-string(typecheck-sizeof args-type))))
+      (t1 tag-name)
+      (maybe-deref(tand(
+         args-type
+         (maybe-deref(tsized(to-string(typecheck-sizeof args-type))))
+      )))
    ))))
    (print 'Constructor\s_s)(print args-type-sized)(print '\n_s)
    (let r (maybe-deref(fragment-apply(
