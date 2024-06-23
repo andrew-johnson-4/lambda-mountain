@@ -192,6 +192,7 @@ compile-define-tag-constructor-parametric := λ(: ctx FContext)(: tag String)(: 
 
    (let tag-tctx (TCtxBind( (close TCtxEOF) 'tag_s (t1 tag) ASTEOF )))
    (let case-tctx (SSLSeq( (close SSLEOF) 'case-number_s (SAtom(to-string case-number)) )))
+   (set case-tctx (SSLSeq( (close case-tctx) 'fields-size_s (SAtom(to-string(typecheck-aligned-sizeof arg-types))) )))
 
    (let fragment push-template)
    (let arrow-tt (substitute( tag-tctx (fragment::get-type fragment) )))

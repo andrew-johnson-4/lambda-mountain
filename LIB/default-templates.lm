@@ -1,5 +1,5 @@
 
-fragment : DontChain template::push := λ(: src tag+FieldSize<fields-size>). (: (
+fragment : DontChain template::push := λ(: src tag). (: (
    (.program(
       (for wsz in (range( '0 (/( (-( (-( (.expression return-size) (.expression fields-size) )) '8 )) '8 )) )) (
          \t 'pushq \s '$0 \n
