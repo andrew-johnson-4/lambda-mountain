@@ -1,5 +1,5 @@
 
-fragment : DontChain template::push := λ(: src tag). (: (
+fragment : DontChain template::push := λ(: src Constructor<tag>). (: (
    (.program(
       (for wsz in (range( '0 (/( (-( (-( 'struct-size 'fields-size )) '8 )) '8 )) )) (
          \t 'pushq \s '$0 \n
@@ -9,7 +9,7 @@ fragment : DontChain template::push := λ(: src tag). (: (
    ))
 ) StackVariable);
 
-fragment : DontChain template::mov := λ(: src tag)(: dst LocalVariable). (: (
+fragment : DontChain template::mov := λ(: src Constructor<tag>)(: dst LocalVariable). (: (
    (.program(
       (for wsz in (range( '0 (/( (-( (-( 'struct-size 'fields-size )) '8 )) '8 )) )) (
          \t 'pushq \s '$0 \n
@@ -22,7 +22,7 @@ fragment : DontChain template::mov := λ(: src tag)(: dst LocalVariable). (: (
    ))
 ) Nil);
 
-fragment : DontChain template::mov := λ(: src tag)(: dst GlobalVariable). (: (
+fragment : DontChain template::mov := λ(: src Constructor<tag>)(: dst GlobalVariable). (: (
    (.program(
       (for wsz in (range( '0 (/( (-( (-( 'struct-size 'fields-size )) '8 )) '8 )) )) (
          \t 'pushq \s '$0 \n
