@@ -41,6 +41,8 @@ fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentLi
    (let e-proto-2 (maybe-deref(fragment::set-context( e-proto ctx ))))(set e-proto e-proto-2)
    (let e-proto-3 (maybe-deref(fragment::set-offset( e-proto offset ))))(set e-proto e-proto-3)
 
+   (print 'Apply\sFragment\s_s)(print k)(print '\s:\s_s)(print direct-type)(print '\n_s)
+
    (let at (maybe-deref(typeof args)))
    (if (non-zero at) () (tail(
       (print 'Apply\s_s)(print k)(print args)
