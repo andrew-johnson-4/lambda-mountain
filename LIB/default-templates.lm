@@ -1,7 +1,7 @@
 
 fragment : DontChain template::push := λ(: src tag). (: (
    (.program(
-      (for wsz in (range( '0 (/( (-( (-( (.expression return-size) (.expression fields-size) )) '8 )) '8 )) )) (
+      (for wsz in (range( '0 (/( (-( (-( (.expression return-size) 'fields-size )) '8 )) '8 )) )) (
          \t 'pushq \s '$0 \n
       ))
       (.program src)

@@ -756,7 +756,6 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
          (maybe-deref(tsized(to-string(typecheck-sizeof args-type))))
       )))
    ))))
-   (print 'Constructor\s_s)(print args-type-sized)(print '\n_s)
    (let r (maybe-deref(fragment-apply(
       ctx offset 'push_s
       (FLSeq( (close FLEOF) e1 )) (t3( 'Arrow_s args-type-sized return-type )) args
