@@ -68,7 +68,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (tail(
          (let e2 (maybe-deref(fragment-context::lookup( ctx k kt term ))))
          (let e3 (maybe-deref(fragment-apply( ctx -8_i64 'mov_s
             (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
-            (typeof term)
+            (t3( 'Cons_s (typeof term) (t1 'GlobalVariable_s) ))
             term
          ))))
          (set assemble-init-section (SCons(
@@ -278,7 +278,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (let e2 (maybe-deref(fragment-context::lookup( ctx k kt term ))))
          (let e3 (maybe-deref(fragment-apply( ctx stack-offset 'mov_s
             (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
-            (typeof term)
+            (t3( 'Cons_s (typeof rhs) (fragment::get-type e2) ))
             term
          ))))(set e e3)
          (let e3-2 (maybe-deref(fragment::set-context( e ctx ))))(set e e3-2)
