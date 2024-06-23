@@ -98,7 +98,6 @@ fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentLi
    ))))))(set return r2)
    (let r3 (maybe-deref(fragment::set-type( return return-tt ))))(set return r3)
 
-   (print 'Fragmented\s_s)(print k)(print '\n_s)
    return
 )) Fragment);
 
