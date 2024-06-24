@@ -182,6 +182,8 @@ compile-define-tag-constructor := λ(: ctx FContext)(: tag String)(: arg-types T
    (let tag-tctx (TCtxBind( (close TCtxEOF) 'tag_s (t1 tag) ASTEOF )))
    (let case-tctx (SSLSeq( (close SSLEOF) 'case-number_s (SAtom(to-string case-number)) )))
    (set case-tctx (SSLSeq( (close case-tctx) 'fields-size_s (SAtom(to-string(typecheck-aligned-sizeof arg-types))) )))
+   (print 'Base\s_s)(print base-type)(print '\n_s)
+   (print 'Fields\s_s)(print arg-types)(print '\n_s)
    (set case-tctx (SSLSeq( (close case-tctx) 'struct-size_s (SAtom(to-string(typecheck-aligned-sizeof base-type))) )))
 
    (let fragment push-template)
