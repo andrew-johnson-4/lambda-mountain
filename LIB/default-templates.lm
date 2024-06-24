@@ -1,28 +1,36 @@
 
-fragment : DontChain template::push := λ(: src Sized<size>). (: (
+fragment : DontChain template::push := λ(: src Constructor<tag>). (: (
    (.program(
-      (for wsz in (range( '0 (/( (-( (-( (.expression return-size) (.expression size) )) '8 )) '8 )) )) (
+      (for wsz in (range( '0 (/( (-( (-( 'struct-size 'fields-size )) '8 )) '8 )) )) (
          \t 'pushq \s '$0 \n
       ))
       (.program src)
       \t 'pushq \s '$ 'case-number \n
    ))
-) Sized<return-size>);
+) StackVariable);
 
-fragment : DontChain template::mov := λ(: src Sized<size>)(: dst LocalVariable). (: (
+fragment : DontChain template::mov := λ(: src Constructor<tag>)(: dst LocalVariable). (: (
    (.program(
+      (for wsz in (range( '0 (/( (-( (-( 'struct-size 'fields-size )) '8 )) '8 )) )) (
+         \t 'pushq \s '$0 \n
+      ))
       (.program src)
-      (for index in (range( 0 (/( (.expression size) '8 )) )) (
+      \t 'pushq \s '$ 'case-number \n
+      (for index in (range( 0 (/( 'struct-size '8 )) )) (
          \t 'popq \s (+( (.expression dst) (*( '8 (.expression index) )) )) \[ '%rbp \] \n
       ))
    ))
 ) Nil);
 
-fragment : DontChain template::mov := λ(: src Sized<size>)(: dst GlobalVariable). (: (
+fragment : DontChain template::mov := λ(: src Constructor<tag>)(: dst GlobalVariable). (: (
    (.program(
+      (for wsz in (range( '0 (/( (-( (-( 'struct-size 'fields-size )) '8 )) '8 )) )) (
+         \t 'pushq \s '$0 \n
+      ))
       (.program src)
+      \t 'pushq \s '$ 'case-number \n
       \t 'movq \s '$ (.expression dst) , \s '%r15 \n
-      (for index in (range( 0 (/( (.expression size) '8 )) )) (
+      (for index in (range( 0 (/( 'struct-size '8 )) )) (
          \t 'popq \s (*( '8 (.expression index) )) \[ '%r15 \] \n
       ))
    ))

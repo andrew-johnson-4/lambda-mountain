@@ -2,6 +2,7 @@
 #global binding
 compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (tail(
    (let kt (maybe-deref(typeof term)))
+   (print 'Compile\sGlobal\s_s)(print k)(print '\s:\s_s)(print kt)(print '\n_s)
    (match term (
       ()
       ( (Abs( lhs rhs tlt )) (if (is-open kt) () (tail(
@@ -68,7 +69,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (tail(
          (let e2 (maybe-deref(fragment-context::lookup( ctx k kt term ))))
          (let e3 (maybe-deref(fragment-apply( ctx -8_i64 'mov_s
             (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
-            (typeof term)
+            (t3( 'Arrow_s (t3( 'Cons_s (typeof t) (t1 'GlobalVariable_s) )) (t1 'Nil_s) ))
             term
          ))))
          (set assemble-init-section (SCons(
@@ -229,15 +230,16 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                (let e1-2 (maybe-deref(fragment::set-type( e1 tt ))))(set e1 e1-2)
                (let e2 (maybe-deref(fragment::new())))
                (let e2-2 (maybe-deref(fragment::set( e2 'expression_s (SAtom '0_s) ))))(set e2 e2-2)
-               (let e2-3 (maybe-deref(fragment::set-type( e2
-                  (maybe-deref(tand(
-                     (maybe-deref(t1 'Literal_s))
-                     (maybe-deref(t1 'Constant_s))
-                  )))
-               ))))(set e2 e2-3)
+               (let c-tt (maybe-deref(tand(
+                  (maybe-deref(t1 'Literal_s))
+                  (maybe-deref(t1 'Constant_s))
+               ))))
+               (let e2-3 (maybe-deref(fragment::set-type( e2 c-tt ))))(set e2 e2-3)
                (let e3 (maybe-deref(fragment-apply( ctx stack-offset 'push_s
                   (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
-                  (typeof term)
+                  (t3( 'Arrow_s (t3( 'Cons_s tt c-tt ))
+                                (maybe-deref(tand( (t1 'StackVariable_s) (t2( 'Sized_s (t1(to-string(typecheck-aligned-sizeof inner-tt))) )) )))
+                  ))
                   term
                ))))
                (let e3-2 (maybe-deref(fragment::set-type( e3 (maybe-deref(tand( inner-tt (maybe-deref(t1 'StackVariable_s)) ))) ))))(set e3 e3-2)
@@ -278,7 +280,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (let e2 (maybe-deref(fragment-context::lookup( ctx k kt term ))))
          (let e3 (maybe-deref(fragment-apply( ctx stack-offset 'mov_s
             (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
-            (typeof term)
+            (t3( 'Arrow_s (t3( 'Cons_s (fragment::get-type e1) (fragment::get-type e2) )) (t1 'Nil_s) ))
             term
          ))))(set e e3)
          (let e3-2 (maybe-deref(fragment::set-context( e ctx ))))(set e e3-2)
@@ -663,15 +665,15 @@ compile-maybe-push-stack := λ(: ctx FContext)(: offset I64)(: fragment Fragment
       ( (TGround( 'StackVariable_s _ )) () )
       ( _ (tail(
          (let f-arg (maybe-deref(fragment::set-type( fragment ft ))))(set fragment f-arg)
-         (let direct-type (t3( 'Arrow_s
-            (maybe-deref(tand( (t1 'Nil_s) (maybe-deref(tsized '0_s)) )))
-            ft
-         )))
          (let f-1 (maybe-deref(fragment-apply(
             ctx offset 'push_s
-            (FLSeq( (close FLEOF) fragment )) direct-type sloc
+            (FLSeq( (close FLEOF) fragment ))
+            (t3( 'Arrow_s ft
+                          (maybe-deref(tand( (t1 'StackVariable_s) (t2( 'Sized_s (t1(to-string(typecheck-aligned-sizeof ft))) )) )))
+            ))
+            sloc
          ))))(set fragment f-1)
-         (let f-sz (as (typecheck-sizeof ft) I64))
+         (let f-sz (as (typecheck-aligned-sizeof ft) I64))
          (let f-2 (maybe-deref(fragment::set-offset( fragment (-( offset f-sz )) ))))(set fragment f-2)
       )))
    ))
@@ -747,10 +749,13 @@ compile-fragment-args := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
 compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)(: args-type Type)(: args AST)(: offset I64). (: (tail(
    (let whitespace-sz (-( (-( (typecheck-sizeof return-type) (typecheck-sizeof args-type) )) 8_u64 )))
    (let e1 (maybe-deref(compile-push-rvalue( ctx args (-( offset (as whitespace-sz I64) )) ))))
-   (let e1-2 (maybe-deref(fragment::set-type( e1 (maybe-deref(t1 tag-name)) ))))(set e1 e1-2)
+   (let e1-2 (maybe-deref(fragment::set-type( e1 (t2( 'Constructor_s (t1 tag-name) )) ))))(set e1 e1-2)
    (let args-type-sized (maybe-deref(tand(
-      args-type
-      (maybe-deref(tsized(to-string(typecheck-sizeof args-type))))
+      (t2( 'Constructor_s (t1 tag-name) ))
+      (maybe-deref(tand(
+         args-type
+         (maybe-deref(tsized(to-string(typecheck-sizeof args-type))))
+      )))
    ))))
    (let r (maybe-deref(fragment-apply(
       ctx offset 'push_s
@@ -760,6 +765,7 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
    (let r-2 (maybe-deref(fragment::set-type( r return-type ))))(set r r-2)
    (let new-offset (-( offset (as (typecheck-sizeof return-type) I64) )))
    (let r-3 (maybe-deref(fragment::set-offset( r new-offset ))))(set r r-3)
+   (print 'Constructed\n_s)
    r
 )) Fragment);
 
