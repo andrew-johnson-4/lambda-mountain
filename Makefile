@@ -1,6 +1,6 @@
 
 develop: compile-production
-	time ./production -o tmp.s tests/regress/poly_mov.lm
+	time ./production -o tmp.s tests/regress/big_return.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp
