@@ -50,6 +50,17 @@ f4 := λ(: x U64). (: (tail(
    xyz
 )) XY);
 
+f5 := λ(: xyz XYZ). (: (tail(
+   (print 'F5_s)
+   (print (.0 xyz))
+   (print (.1 (as xyz Z)))
+   (let xy (.2 (as xyz Z)))
+   (print (.0 xy))
+   (print (.1(as xy Y)))
+   (print '\n_s)
+   xyz
+)) XYZ);
+
 main := λ. (: (tail(
   (let xyz (f( 123_u64 456_u64 )))
   (print (.0 xyz))
@@ -101,5 +112,12 @@ main := λ. (: (tail(
         (print '\n_s)
      )))
   ))
+  (let xyz (f5( (Z( (Y( 123_u64 )) 456_u64 )) )))
+  (print (.0 xyz))
+  (print (.1 (as xyz Z)))
+  (let xy (.2 (as xyz Z)))
+  (print (.0 xy))
+  (print (.1(as xy Y)))
+  (print '\n_s)
 )) Nil);
 
