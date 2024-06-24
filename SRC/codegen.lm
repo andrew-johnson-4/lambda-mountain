@@ -2,7 +2,6 @@
 #global binding
 compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (tail(
    (let kt (maybe-deref(typeof term)))
-   (print 'Compile\sGlobal\s_s)(print k)(print '\s:\s_s)(print kt)(print '\n_s)
    (match term (
       ()
       ( (Abs( lhs rhs tlt )) (if (is-open kt) () (tail(
@@ -765,7 +764,6 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
    (let r-2 (maybe-deref(fragment::set-type( r return-type ))))(set r r-2)
    (let new-offset (-( offset (as (typecheck-sizeof return-type) I64) )))
    (let r-3 (maybe-deref(fragment::set-offset( r new-offset ))))(set r r-3)
-   (print 'Constructed\n_s)
    r
 )) Fragment);
 
