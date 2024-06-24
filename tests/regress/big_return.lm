@@ -61,7 +61,7 @@ f5 := λ(: xyz XYZ). (: (tail(
    xyz
 )) XYZ);
 
-f6 := λ. (: (tail(
+f6 := λ(: abc XYZ). (: (tail(
    (let xyz (Z( (Y( 123_u64 )) 456_u64 )))
    (print 'F6_s)
    (print (.0 xyz))
@@ -131,7 +131,7 @@ main := λ. (: (tail(
   (print (.0 xy))
   (print (.1(as xy Y)))
   (print '\n_s)
-  (let xyz (f6()))
+  (let xyz (f6( (Z( (Y( 777_u64 )) 888_u64 )) )))
   (print (.0 xyz))
   (print (.1 (as xyz Z)))
   (let xy (.2 (as xyz Z)))
