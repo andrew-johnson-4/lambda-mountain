@@ -68,7 +68,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (tail(
          (let e2 (maybe-deref(fragment-context::lookup( ctx k kt term ))))
          (let e3 (maybe-deref(fragment-apply( ctx -8_i64 'mov_s
             (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
-            (t3( 'Arrow_s (t3( 'Cons_s (typeof term) (t1 'GlobalVariable_s) )) (t1 'Nil_s) ))
+            (t3( 'Arrow_s (t3( 'Cons_s (typeof t) (t1 'GlobalVariable_s) )) (t1 'Nil_s) ))
             term
          ))))
          (set assemble-init-section (SCons(
@@ -89,6 +89,7 @@ compile-global := λ(: ctx FContext)(: term AST). (: (tail(
 )) Nil);
 
 compile-expr := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used IsUsed). (: (tail(
+   (print 'Compile\s_s)(print term)(print '\n_s)
    (let e (maybe-deref(fragment::new())))
    (match used (
       ()
@@ -746,11 +747,12 @@ compile-fragment-args := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
 )) FragmentList);
 
 compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)(: args-type Type)(: args AST)(: offset I64). (: (tail(
+   (print 'Constructor\n_s)
    (let whitespace-sz (-( (-( (typecheck-sizeof return-type) (typecheck-sizeof args-type) )) 8_u64 )))
    (let e1 (maybe-deref(compile-push-rvalue( ctx args (-( offset (as whitespace-sz I64) )) ))))
-   (let e1-2 (maybe-deref(fragment::set-type( e1 (maybe-deref(t1 tag-name)) ))))(set e1 e1-2)
+   (let e1-2 (maybe-deref(fragment::set-type( e1 (t2( 'Constructor_s (t1 tag-name)) )) ))))(set e1 e1-2)
    (let args-type-sized (maybe-deref(tand(
-      (t1 tag-name)
+      (t2( 'Constructor_s (t1 tag-name) ))
       (maybe-deref(tand(
          args-type
          (maybe-deref(tsized(to-string(typecheck-sizeof args-type))))
@@ -764,6 +766,7 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
    (let r-2 (maybe-deref(fragment::set-type( r return-type ))))(set r r-2)
    (let new-offset (-( offset (as (typecheck-sizeof return-type) I64) )))
    (let r-3 (maybe-deref(fragment::set-offset( r new-offset ))))(set r r-3)
+   (print 'Constructed\n_s)
    r
 )) Fragment);
 

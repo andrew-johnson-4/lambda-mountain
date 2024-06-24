@@ -131,7 +131,14 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
       ( (Lit tag) (tail(
          (typecheck-set-size( base-type (maybe-deref(t1 'Nil_s)) ))
          (typecheck-annotate-head-accessor( base-type ))
-         (let rtype (maybe-deref(tand( base-type (t1 tag) ))))
+         (let rtype (maybe-deref(tand(
+            (maybe-deref(tand(
+               base-type (t1 tag)
+            )))
+            (maybe-deref(tand(
+               (t1 'Constant_s) (t2( 'Constructor_s (t1 tag) ))
+            )))
+         ))))
          (index-class-of-tag( tag base-type ))
          (index-fields-of-tag( tag TAny ))
          (set typecheck-type-constructors (StrTSeq(
@@ -143,8 +150,8 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
       )))
       ( (App( (Lit tag) args )) (tail(
          (let atype (maybe-deref(type-of-s args)))
-         (typecheck-set-size( base-type atype ))
          (let rtype (maybe-deref(tand( base-type (t1 tag) ))))
+         (typecheck-set-size( base-type atype ))
          (typecheck-annotate-head-accessor( base-type ))
          (typecheck-annotate-accessors( base-type (maybe-deref(parse-type tag)) atype ))
          (index-class-of-tag( tag base-type ))
@@ -692,10 +699,9 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail
       ( (Lit l) (
          (if (non-zero(typeof term)) () (tail(
             (let tt (maybe-deref(typecheck-typeof-tag l)))
-            (if (non-zero tt) (tail(
-               (let tt2 (maybe-deref(as-constant tt)))(set tt tt2)
+            (if (non-zero tt) (
                (ascript-normal( term tt ))
-            )) ())
+            ) ())
          )))
       ))
       ( _ (tail(
