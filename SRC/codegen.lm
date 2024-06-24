@@ -1,6 +1,8 @@
 
 #global binding
 compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (tail(
+   (print 'Compile\sGlobal\s_s)(print k)(print '\n_s)
+   (print 'Memory:\s_s)(print (-( cons-page-tail cons-page-head )))(print '\n_s)
    (let kt (maybe-deref(typeof term)))
    (match term (
       ()
