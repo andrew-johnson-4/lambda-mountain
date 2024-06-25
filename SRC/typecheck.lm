@@ -522,9 +522,6 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Ty
          (match term (
             ()
             ( (App( _ (App( t _ )) )) (tail(
-               (if (is-parameterized tt) (
-                  (ascript-normal( t tt ))
-               ) ())
                (match (slot( tt 'String_s )) (
                   ()
                   ( (TGround( 'String_s _ )) () )
@@ -712,6 +709,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Ty
             (if (non-zero tt) (tail(
                (if (non-zero hint) (tail(
                   (let tt-2 (maybe-deref(tand( tt hint ))))(set tt tt-2)
+                  (print 'Hinted\s_s)(print tt)(print '\n_s)
                )) ())
                (ascript-normal( term tt ))
             )) ())
