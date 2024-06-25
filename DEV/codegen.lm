@@ -90,6 +90,7 @@ compile-global := λ(: ctx FContext)(: term AST). (: (tail(
 )) Nil);
 
 compile-expr := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used IsUsed). (: (tail(
+   (print 'Compile\sExpression\s_s)(print term)(print '\n_s)
    (let e (maybe-deref(fragment::new())))
    (match used (
       ()

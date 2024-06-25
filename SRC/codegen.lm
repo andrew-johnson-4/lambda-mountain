@@ -219,9 +219,12 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set e e1-2)
       )))
       ( (App( (Var 'maybe-deref_s) t )) (tail(
+         (print 'MaybeDeref\s1\n_s)
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset Used ))))
+         (print 'MaybeDeref\s2\n_s)
          (set e e1)
          (let tt (maybe-deref(typeof t)))
+         (print 'MaybeDeref\s3\n_s)
          (match (slot( tt 'Array_s )) (
             ()
             ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF TAny )) _ )) )) () )
@@ -248,6 +251,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             )))
             ( _ () )
          ))
+         (print 'MaybeDeref\s4\n_s)
       )))
       ( (App( (Var 'sizeof_s) (AType tt) )) (tail(
          (let sz (typecheck-sizeof( tt )))
@@ -746,9 +750,11 @@ compile-fragment-args := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
 )) FragmentList);
 
 compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)(: args-type Type)(: args AST)(: offset I64). (: (tail(
+   (print 'Constructor\s1\n_s)
    (let whitespace-sz (-( (-( (typecheck-sizeof return-type) (typecheck-sizeof args-type) )) 8_u64 )))
    (let e1 (maybe-deref(compile-push-rvalue( ctx args (-( offset (as whitespace-sz I64) )) ))))
    (let e1-2 (maybe-deref(fragment::set-type( e1 (t2( 'Constructor_s (t1 tag-name) )) ))))(set e1 e1-2)
+   (print 'Constructor\s2\n_s)
    (let args-type-sized (maybe-deref(tand(
       (t2( 'Constructor_s (t1 tag-name) ))
       (maybe-deref(tand(
@@ -756,14 +762,17 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
          (maybe-deref(tsized(to-string(typecheck-sizeof args-type))))
       )))
    ))))
+   (print 'Constructor\s3\s_s)(print tag-name)(print '\s_s)(print args-type-sized)(print '\n_s)
    (let r (maybe-deref(fragment-apply(
       ctx offset 'push_s
       (FLSeq( (close FLEOF) e1 )) (t3( 'Arrow_s args-type-sized return-type )) args
    ))))
+   (print 'Constructor\s4\n_s)
    (let r-1 (maybe-deref(fragment::set-context( r ctx ))))(set r r-1)
    (let r-2 (maybe-deref(fragment::set-type( r return-type ))))(set r r-2)
    (let new-offset (-( offset (as (typecheck-sizeof return-type) I64) )))
    (let r-3 (maybe-deref(fragment::set-offset( r new-offset ))))(set r r-3)
+   (print 'Constructor\s5\n_s)
    r
 )) Fragment);
 
