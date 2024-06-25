@@ -1,0 +1,39 @@
+
+s-abs := λ(: lhs S[])(: rhs S[]). (: (
+   (close(SCons(
+      (close(SAtom 'Abs_s))
+      (close(SCons(
+         lhs
+         rhs
+      )))
+   )))
+) S[]);
+
+s-app := λ(: lhs S[])(: rhs S[]). (: (
+   (close(SCons(
+      (close(SAtom 'App_s))
+      (close(SCons(
+         lhs
+         rhs
+      )))
+   )))
+) S[]);
+
+s-nil := λ. (: (
+   (close SNil)
+) S[]);
+
+s-var := λ(: s String). (: (
+   (close(SCons(
+      (close(SAtom 'Var_s))
+      (close(SAtom s))
+   )))
+) S[]);
+
+s-lit := λ(: s String). (: (
+   (close(SCons(
+      (close(SAtom 'Lit_s))
+      (close(SAtom s))
+   )))
+) S[]);
+

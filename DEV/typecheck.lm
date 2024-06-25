@@ -1,0 +1,1231 @@
+
+typecheck-type-constructors := (: StrTEOF StringTypeList);
+
+type TypeSizeList2 (TSz2EOF) | (TSz2Seq( TypeSizeList2[] , String , Type , Type )); zero TypeSizeList2 TSz2EOF;
+
+typecheck-type-sizes2 := (: TSz2EOF TypeSizeList2);
+
+typecheck-sizeof := λ(: tt Type). (: (tail(
+   (let sz 0_u64)
+   (match tt (
+      ()
+      ( TAny () )
+      ( (TVar _) () )
+      ( (TGround( class TypeEOF )) (set sz (size-of-class class)) )
+      ( (TGround( 'Sized_s (TypeSeq( TypeEOF (TGround( szp TypeEOF )) )) )) (
+         (set sz (to-u64 szp))
+      ))
+      ( (TGround( tag (TypeSeq( TypeEOF p1 )) )) (
+         (set sz (typecheck-get-size tt))
+      ))
+      ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF p1 )) TAny )) )) (
+         (set sz 8_u64)
+      ))
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (set sz (+(
+            (typecheck-aligned-sizeof p1)
+            (typecheck-aligned-sizeof p2)
+         )))
+      ))
+      ( (TGround( 'Field_s (TypeSeq( (TypeSeq( TypeEOF p1 )) (TGround( szp TypeEOF )) )) )) (
+         (set sz (*( (typecheck-sizeof p1) (to-u64 szp) )))
+      ))
+      ( (TGround( tag (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (set sz (typecheck-get-size tt))
+      ))
+      ( (TGround( tag (TypeSeq( (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) p3 )) )) (
+         (set sz (typecheck-get-size tt))
+      ))
+      ( (TAnd( lt rt )) (
+         (if (typecheck-sizeof lt) (
+            (set sz (typecheck-sizeof lt))
+         ) (
+            (set sz (typecheck-sizeof rt))
+         ))
+      ))
+      ( _ (tail(
+         (print 'Unexpected\sType\stypecheck-sizeof\s_s)
+         (print tt)(print '\n_s)(exit 1_u64)
+      )))
+   ))
+   sz
+)) U64);
+
+typecheck-aligned-sizeof := λ(: tt Type). (: (tail(
+   (let sz (typecheck-sizeof tt))
+   (if (==( sz 0_u64 )) () (set sz (max( 8_u64 sz ))))
+   sz
+)) U64);
+
+typecheck-typeof-lhs := λ(: lhs AST). (: (tail(
+   (let r TAny)
+   (match lhs (
+      ()
+      ( (App( (Lit ':_s) (App( _ (AType tt) )) )) (
+         (set r tt)
+      ))
+      ( (App( ps (App( (Lit ':_s) (App( _ (AType tt) )) )) )) (
+         (set r (TGround(
+            'Cons_s
+            (close(TypeSeq(
+               (close(TypeSeq(
+                  (close TypeEOF)
+                  (maybe-deref(typecheck-typeof-lhs( ps )))
+               )))
+               tt
+            )))
+         )))
+      ))
+      ( ASTNil (tail(
+         (let r2 (maybe-deref(t1 'Nil_s)))
+         (set r r2)
+      )))
+      ( _ (exit-error( 'Unknown\sLHS_s lhs )))
+   ))
+   r
+)) Type);
+
+typecheck := λ. (: (tail(
+   (let p ast-parsed-program)
+   (let ordered-type-exprs ASTEOF)
+   (while (non-zero p) (match p (
+      ()
+      ( (Seq( rst r )) (tail(
+         (set ordered-type-exprs (Seq( (close ordered-type-exprs) (close r) )))
+         (set p rst)
+      )))
+   )))
+   (while (non-zero ordered-type-exprs) (match ordered-type-exprs (
+      ()
+      ( (Seq( rst r )) (tail(
+         (typecheck-infer-global-context( r ))
+         (set ordered-type-exprs rst)
+      )))
+   )))
+   (typecheck-infer-expr( global-type-context ast-parsed-program Unused))
+   (typecheck-assert-complete ast-parsed-program)
+)) Nil);
+
+global-type-context := (: TCtxEOF TContext);
+
+typecheck-infer-type-definition := λ(: base-type Type)(: body AST). (: (tail(
+   (let r 0_u64)
+   (match body (
+      ()
+      ( (App( (App( tds (Var '|_s) )) case )) (tail(
+         (let r1 (typecheck-infer-type-definition( base-type tds )))
+         (let r2 (typecheck-infer-type-constructor( base-type case )))
+         (set r (max( r1 r2 )))
+      )))
+      ( case (
+         (set r (typecheck-infer-type-constructor( base-type case )))
+      ))
+   ))
+   r
+)) U64);
+
+typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
+   (let r 0_u64)
+   (match body (
+      ()
+      ( (Lit tag) (tail(
+         (typecheck-set-size( base-type (maybe-deref(t1 'Nil_s)) ))
+         (typecheck-annotate-head-accessor( base-type ))
+         (let rtype (maybe-deref(tand(
+            (maybe-deref(tand(
+               base-type (t1 tag)
+            )))
+            (maybe-deref(tand(
+               (t1 'Constant_s) (t2( 'Constructor_s (t1 tag) ))
+            )))
+         ))))
+         (index-class-of-tag( tag base-type ))
+         (index-fields-of-tag( tag TAny ))
+         (set typecheck-type-constructors (StrTSeq(
+            (close typecheck-type-constructors)
+            tag
+            rtype
+         )))
+         (set r 8_u64)
+      )))
+      ( (App( (Lit tag) args )) (tail(
+         (let atype (maybe-deref(type-of-s args)))
+         (let rtype (maybe-deref(tand( base-type (t1 tag) ))))
+         (typecheck-set-size( base-type atype ))
+         (typecheck-annotate-head-accessor( base-type ))
+         (typecheck-annotate-accessors( base-type (maybe-deref(parse-type tag)) atype ))
+         (index-class-of-tag( tag base-type ))
+         (index-fields-of-tag( tag (t3( 'Cons_s base-type atype )) ))
+         (set typecheck-type-constructors (StrTSeq(
+            (close typecheck-type-constructors)
+            tag
+            (t3( 'Arrow_s atype rtype ))
+         )))
+         (set r (typecheck-aligned-sizeof atype))
+         (set r (+( r 8_u64 )))
+      )))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+typecheck-annotate-head-accessor := λ(: base-type Type). (: (tail(
+   (let tt (maybe-deref(tand( (maybe-deref(t1 'U64_s)) (maybe-deref(t1 'Reg64_s)) ))))
+   (set global-type-context (TCtxBind(
+      (close global-type-context)
+      '.0_s
+      (t3( 'Arrow_s base-type tt ))
+      ASTEOF
+   )))
+)) Nil);
+
+typecheck-annotate-accessors := λ(: base-type Type)(: tag-type Type)(: args-type Type). (: (tail(
+   (let base-type-2 (maybe-deref(tand(
+      base-type
+      tag-type
+   ))))
+   (set base-type base-type-2)
+   (let field-number 1_u64)
+   (while (non-zero args-type) (match args-type (
+      ()
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF lt )) rt )) )) (tail(
+         (let rt-s (maybe-deref(with-representation rt)))(set rt rt-s)
+         (let accessor-name (clone-rope(SCons(
+            (close (SAtom '._s))
+            (close (SAtom (to-string field-number)))
+         ))))
+         (set global-type-context (TCtxBind(
+            (close global-type-context)
+            accessor-name
+            (t3( 'Arrow_s base-type rt ))
+            ASTEOF
+         )))
+         (set field-number (+( field-number 1_u64 )))
+         (set args-type lt)
+      )))
+      ( rt (tail(
+         (let rt-s (maybe-deref(with-representation rt)))(set rt rt-s)
+         (let accessor-name (clone-rope(SCons(
+            (close (SAtom '._s))
+            (close (SAtom (to-string field-number)))
+         ))))
+         (set global-type-context (TCtxBind(
+            (close global-type-context)
+            accessor-name
+            (t3( 'Arrow_s base-type rt ))
+            ASTEOF
+         )))
+         (set args-type TAny)
+      )))
+   )))
+)) Nil);
+
+typecheck-infer-global-context := λ(: td AST). (: (tail(
+   (match td (
+      ()
+      ( (Typedef( (Lit base-type) case-constructors )) (tail(
+         (let bt (maybe-deref(parse-type base-type)))
+         (let size (typecheck-infer-type-definition( bt case-constructors )))
+         (match bt (
+            ()
+            ( (TGround( class TypeEOF )) (index-size-of-class( class size )) )
+            ( _ () )
+         ))
+      )))
+      ( (Glb( k (Abs( lhs (App( (Lit ':_s) (App( rhs (AType rhst) )) )) tlt )) )) (tail(
+         (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
+         (let return-type (maybe-deref(without-representation rhst)))
+         (let return-type-2 (maybe-deref(with-representation return-type)))
+         (let ft (t3( 'Arrow_s lt return-type-2 )))
+         (ascript-normal( td ft ))
+         (set global-type-context (TCtxBind(
+            (close global-type-context)
+            k
+            ft
+            td
+         )))
+      )))
+      ( (Frg( k (Abs( lhs (App( (Lit ':_s) (App( rhs (AType rhst) )) )) atlt )) tlt )) (tail(
+         (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
+         (let ft (t3( 'Arrow_s lt rhst )))
+         (ascript-normal( td ft ))
+         (set global-type-context (TCtxBind(
+            (close global-type-context)
+            k
+            ft
+            ASTEOF
+         )))
+      )))
+      ( (Glb( k (App( (Lit ':_s) (App( rhs (AType rhst) )) )) )) (tail(
+         (let kt (maybe-deref(tand( rhst (maybe-deref(t1 'GlobalVariable_s)) ))))
+         (set global-type-context (TCtxBind(
+            (close global-type-context) k kt ASTEOF
+         )))
+      )))
+      ( (Frg( k (App( (Lit ':_s) (App( rhs (AType rhst) )) )) tlt )) (
+         (set global-type-context (TCtxBind(
+            (close global-type-context)
+            k
+            rhst ASTEOF
+         )))
+      ))
+      ( (Glb( k _ )) (
+         (exit-error( 'Global\sBindings\sMust\sBe\sAscripted_s td ))
+      ))
+      ( (Frg( k _ tlt )) (
+         (exit-error( 'Global\sBindings\sMust\sBe\sAscripted_s td ))
+      ))
+      ( _ () )
+   ))
+   ()
+)) Nil);
+
+typecheck-assert-complete := λ(: term AST). (: (
+   (match term (
+      ()
+      ( ASTEOF (typecheck-assert-one term) )
+      ( ASTNil (typecheck-assert-one term) )
+      ( (Glb( k v )) (
+         (if (is-open(typeof term)) () (
+            (typecheck-assert-complete v)
+         ))
+      ))
+      ( (Frg( k v tlt )) (
+         (typecheck-assert-one v)
+      ))
+      ( (Typedef( _ _ )) () )
+      ( (App( (Abs( (Var lname) ASTNil tlt )) rhs )) (tail(
+         (typecheck-assert-complete rhs)
+         (typecheck-assert-one term)
+      )))
+      ( (App( (Var 'gensym-label_s) _ )) () )
+      ( (App( (Var 'label_s) (Var _) )) () )
+      ( (App( (App( (Var 'while_s) cond )) body )) (tail(
+         (typecheck-assert-complete cond)
+         (typecheck-assert-complete body)
+         (typecheck-assert-one term)
+      )))
+      ( (App( (App( (App( (Var 'if_s) cond )) t )) f )) (tail(
+         (typecheck-assert-complete cond)
+         (typecheck-assert-complete t)
+         (typecheck-assert-complete f)
+         (typecheck-assert-one term)
+      )))
+      ( (App( (App( (Var 'set_s) lhs )) rhs )) (tail(
+         (typecheck-assert-complete rhs)
+         (typecheck-assert-one term)
+      )))
+      ( (AType _) () )
+      ( (App( (Var 'tail_s) (App( lterm rterm )) )) (tail(
+         (typecheck-assert-complete lterm)
+         (typecheck-assert-complete rterm)
+         (typecheck-assert-one term)
+      )))
+      ( (App( (Var 'maybe-deref_s) rterm )) (tail(
+         (typecheck-assert-complete rterm)
+         (typecheck-assert-one term)
+      )))
+      ( (App( (Var 'scope_s) rterm )) (tail(
+         (typecheck-assert-complete rterm)
+         (typecheck-assert-one term)
+      )))
+      ( (Lit l) (typecheck-assert-one term) )
+      ( (Var l) (typecheck-assert-one term) )
+      ( (Abs( lhs rhs tlt )) (tail(
+         (typecheck-assert-complete rhs)
+         (typecheck-assert-one term)
+      )))
+      ( (App( l r )) (tail(
+         (typecheck-assert-complete l)
+         (typecheck-assert-complete r)
+         (typecheck-assert-one term)
+      )))
+      ( (Seq( l r )) (tail(
+         (typecheck-assert-complete l)
+         (typecheck-assert-complete r)
+      )))
+      ( term (tail(
+         (print 'Typecheck\sAssert\sComplete\n_s)
+         (exit 1_u64)
+      )))
+   ))
+) Nil);
+
+typecheck-assert-one := λ(: term AST). (: (
+   (if (non-zero(maybe-deref(typeof term))) () (
+      (exit-error( 'Unable\sto\sinfer\stype\sof\sexpression_s term ))
+   ))
+) Nil);
+
+typecheck-do-not-size := 99999_u64;
+typecheck-is-sized := λ(: tt Type). (: (tail(
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( TAny (set r typecheck-do-not-size) )
+      ( (TGround( 'Cons_s _ )) (set r typecheck-do-not-size) )
+      ( (TGround( 'Arrow_s _ )) (set r typecheck-do-not-size) )
+      ( (TAnd( lt rt )) (
+         (set r (max(
+            (typecheck-is-sized lt)
+            (typecheck-is-sized rt)
+         )))
+      ))
+      ( (TGround( 'Sized_s _ )) (set r 1_u64) )
+      ( _ () )
+   ))
+   r
+)) U64);
+
+typecheck-annotate-size-inner := λ(: tt Type). (: (tail(
+   (let sz 0_u64)
+   (match tt (
+      ()
+      ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF _ )) TAny )) )) (set sz 8_u64) )
+      ( (TGround( tag (TypeSeq( _ _ )) )) (set sz (typecheck-get-size tt)) )
+      ( (TGround( class _ )) (set sz (size-of-class class)) )
+      ( (TAnd( lt rt )) (
+         (set sz (max(
+            (typecheck-annotate-size-inner lt)
+            (typecheck-annotate-size-inner rt)
+         )))
+      ))
+      ( _ () )
+   ))
+   sz
+)) U64);
+
+typecheck-annotate-size-recurse := λ(: tt Type). (: (tail(
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (tail(
+         (let lt2 (maybe-deref(typecheck-annotate-size-recurse lt)))
+         (let rt2 (maybe-deref(typecheck-annotate-size-recurse rt)))
+         (let tt-2 (maybe-deref(tand( lt2 rt2 ))))
+         (set tt tt-2)
+      )))
+      ( (TGround( _ TypeEOF )) () )
+      ( (TGround( tag (TypeSeq( TypeEOF pt1 )) )) (tail(
+         (let pt1t (maybe-deref(typecheck-annotate-size pt1)))
+         (set tt (TGround( tag (
+            (close(TypeSeq(
+               (close TypeEOF)
+               pt1t
+            )))
+         ))))
+      )))
+      ( (TGround( tag (TypeSeq( (TypeSeq( TypeEOF pt1 )) pt2 )) )) (tail(
+         (let pt1t (maybe-deref(typecheck-annotate-size pt1)))
+         (let pt2t (maybe-deref(typecheck-annotate-size pt2)))
+         (set tt (TGround( tag (
+            (close(TypeSeq(
+               (close(TypeSeq(
+                  (close TypeEOF)
+                  pt1t
+               )))
+               pt2t
+            )))
+         ))))
+      )))
+      ( _ () )
+   ))
+   tt
+)) Type);
+
+with-size := λ(: tt Type). (: (tail(
+   (let rt (typecheck-annotate-size tt))
+   rt
+)) Type);
+
+typecheck-annotate-fields := λ(: tt Type). (: (tail(
+   (match (slot( tt 'Fields_s )) (
+      ()
+      ( (TGround( 'Fields_s _ )) () )
+      ( _ (tail(
+         (let class (with-only-class tt))
+         (let tag (with-only-tag tt))
+         (if (&&( (non-zero tag) (non-zero class) )) (tail(
+            (let ft (fields-of-tag( tag class )))
+            (set tt (TAnd( (close tt) (close ft) )))
+         )) ())
+      )))
+   ))
+   tt
+)) Type);
+
+typecheck-annotate-size := λ(: tt Type). (: (tail(
+   (let return tt)
+   (if (&&( (not(typecheck-is-sized return)) (!=( (typecheck-is-sized return) typecheck-do-not-size )) )) (tail(
+      (let sz (typecheck-annotate-size-inner return))
+      (set return (typecheck-annotate-size-recurse return))
+      (set return (TAnd(
+         (close return)
+         (close(TGround(
+            'Sized_s
+            (close (TypeSeq(
+               (close TypeEOF)
+               (TGround(
+                  (to-string sz)
+                  (close TypeEOF)
+               ))
+            )))
+         )))
+      )))
+   )) ())
+   (match return (
+      ()
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (set return (TGround(
+            'Cons_s (close(TypeSeq(
+               (close(TypeSeq(
+                  (close TypeEOF)
+                  (typecheck-annotate-size p1)
+               )))
+               (typecheck-annotate-size p2)
+            )))
+         )))
+      ))
+      ( _ () )
+   ))
+   return
+)) Type);
+
+typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed). (: (tail(
+   (match term (
+      ()
+      ( ASTNil (ascript-normal( term (maybe-deref(t1 'Nil_s)) )) )
+      ( ASTEOF (ascript-normal( term (maybe-deref(t1 'Nil_s)) )) )
+      ( (Seq( l r )) (tail(
+         (typecheck-infer-expr( tctx l used ))
+         (typecheck-infer-expr( tctx r used ))
+      )))
+      ( (Typedef( _ _ )) () )
+      ( (Glb( k v )) (
+         (if (is-open(typeof term)) () (
+            (typecheck-infer-expr( tctx v Used ))
+         ))
+      ))
+      ( (Frg( k v tlt )) (tail(
+         (ascript-normal( v (maybe-deref(typeof term)) ))
+         ()
+      )))
+      ( (App( (Lit ':_s) (App( (Lit _) (AType tt) )) )) (
+         (match term (
+            ()
+            ( (App( _ (App( t _ )) )) (tail(
+               (if (is-parameterized tt) (
+                  (ascript-normal( t tt ))
+               ) ())
+               (match (slot( tt 'String_s )) (
+                  ()
+                  ( (TGround( 'String_s _ )) () )
+                  ( _ (typecheck-infer-expr( tctx t used )) )
+               ))
+               (let it (maybe-deref(typeof t)))
+               (if (non-zero it) (tail(
+                  (let it-2 (maybe-deref(tand( it tt ))))
+                  (set it it-2)
+               )) (tail(
+                  (set it tt)
+                  (ascript-normal( t it ))
+               )))
+               (ascript-normal( term it ))
+               (match term (
+                  ()
+                  ( (App( las ras )) (tail(
+                     (ascript-normal( las it ))
+                     (ascript-normal( ras it ))
+                  )))
+               ))
+            )))
+         ))
+      ))
+      ( (App( (Lit ':_s) (App( t (AType tt) )) )) (tail(
+         (let tctx2 (maybe-deref(typecheck-infer-expr( tctx t used ))))
+         (set tctx tctx2)
+         (let inner-tt (maybe-deref(typeof t)))
+         (if (non-zero inner-tt) (tail(
+            (let nn (with-only-representation inner-tt))
+            (if (non-zero nn) (tail(
+               (let tt-2 (maybe-deref(tand(
+                  tt
+                  nn
+               ))))
+               (set tt tt-2)
+            )) ())
+            (ascript-normal( t tt ))
+            (ascript-normal( term tt ))
+            (match term (
+               ()
+               ( (App( las ras )) (tail(
+                  (ascript-normal( las tt ))
+                  (ascript-normal( ras tt ))
+               )))
+            ))
+         )) ())
+      )))
+      ( (App( (Var 'gensym-label_s) (Var lname) )) (tail(
+         (let tctx2 (TCtxBind(
+            (close tctx)
+            lname
+            (maybe-deref(tlabel()))
+            ASTEOF
+         )))
+         (set tctx tctx2)
+         (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
+      )))
+      ( (App( (App( (Var 'set_s) (Var v) )) rhs )) (tail(
+         (typecheck-infer-expr( tctx rhs Used ))
+         (ascript-normal( rhs (maybe-deref(typecheck-typeof-var( term tctx v ))) ))
+         (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
+      )))
+      ( (App( (Var 'label_s) (Var lname) )) (
+         (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
+      ))
+      ( (App( (App( (App( (Var 'if_s) cond )) t )) f )) (tail(
+         (let tctx2 (maybe-deref(typecheck-infer-expr( tctx cond Used ))))
+         (let tctx3 (maybe-deref(typecheck-infer-expr( tctx2 t Used ))))
+         (set tctx tctx3)
+         (typecheck-infer-expr( tctx f Used ))
+         (ascript-normal( term (maybe-deref(typeof t)) ))
+      )))
+      ( (App( (App( (Var 'while_s) cond )) body )) (tail(
+         (let tctx2 (maybe-deref(typecheck-infer-expr( tctx cond Used ))))
+         (set tctx tctx2)
+         (typecheck-infer-expr( tctx body Used ))
+         (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
+      )))
+      ( (App( (Var 'tail_s) (App( l r )) )) (tail(
+         (let tctx2 (maybe-deref(typecheck-infer-expr( tctx l Unused ))))
+         (let tctx3 (maybe-deref(typecheck-infer-expr( tctx2 r used ))))
+         (set tctx tctx3)
+         (ascript-normal( term (maybe-deref(typeof r)) ))
+      )))
+      ( (App( (Var 'as_s) (App( t (AType tt) )) )) (tail(
+         (let tctx2 (maybe-deref(typecheck-infer-expr( tctx t used ))))
+         (set tctx tctx2)
+         (let inner-tt (maybe-deref(typeof t)))
+         (if (non-zero inner-tt) (tail(
+            (let nn (with-only-representation inner-tt))
+            (if (non-zero nn) (tail(
+               (let tt-2 (maybe-deref(tand(
+                  tt
+                  nn
+               ))))
+               (set tt tt-2)
+            )) ())
+            (let nn (maybe-deref(with-only-class inner-tt)))
+            (if (non-zero nn) (tail(
+               (let tt-2 (maybe-deref(tand(
+                  tt
+                  nn
+               ))))
+               (set tt tt-2)
+            )) ())
+            (let tt-3 (typecheck-annotate-fields( tt )))(set tt tt-3)
+            (ascript-normal( term tt ))
+            (match term (
+               ()
+               ( (App( a b )) (tail( (ascript-normal( a tt )) (ascript-normal( b tt )) )) )
+            ))
+         )) ())
+      )))
+      ( (App( (Var 'sizeof_s) (AType _) )) (tail(
+         (let tt (maybe-deref(as-constant(maybe-deref(parse-type 'U64_s)))))
+         (ascript-normal( term tt ))
+         (match term (
+            ()
+            ( (App( s _ )) (ascript-normal( s tt )) )
+         ))
+      )))
+      ( (App( (Var 'scope_s) r )) (tail(
+         (typecheck-infer-expr( tctx r used ))
+         (ascript-normal( term (typeof r) ))
+      )))
+      ( (App( (Var 'maybe-deref_s) r )) (tail(
+         (let tctx2 (maybe-deref(typecheck-infer-expr( tctx r used ))))
+         (set tctx tctx2)
+         (let deref-type (maybe-deref(typeof r)))
+         (match (slot( deref-type 'Array_s )) (
+            ()
+            ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF TAny )) _ )) )) () )
+            ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF array-base )) TAny )) )) (tail(
+               (let deref-type-2 (maybe-deref(tand( array-base (t1 'StackVariable_s) ))))
+               (set deref-type deref-type-2)
+            )))
+            ( _ () )
+         ))
+         (ascript-normal( term deref-type ))
+      )))
+      ( (App( (Abs( (Var lname) ASTNil tlt )) rhs )) (tail(
+         (typecheck-infer-expr( tctx rhs Used ))
+         (let tt (maybe-deref(typeof rhs)))
+         (let rt (maybe-deref(as-local-variable(tt))))
+         (if (non-zero tt) () (
+            (exit-error( 'Unable\sto\sinfer\stype\sof\sexpression_s rhs ))
+         ))
+         (if (non-zero rt) () (
+            (exit-error( 'Unable\sto\sinfer\stype\sof\sexpression_s rhs ))
+         ))
+         (set tctx (TCtxBind(
+            (close tctx)
+            lname
+            rt
+            ASTEOF
+         )))
+         (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
+      )))
+      ( (App( l r )) (tail(
+         (let tctx2 (maybe-deref(typecheck-infer-expr( tctx l Used ))))
+         (let tctx3 (maybe-deref(typecheck-infer-expr( tctx2 r Used ))))
+         (set tctx tctx3)
+         (let rt (maybe-deref(typecheck-apply-hard(
+            term
+            (maybe-deref(typeof l))
+            (maybe-deref(typeof r))
+         ))))
+         (ascript-normal( term rt ))
+      )))
+      ( (Abs( lhs rhs tlt )) (tail(
+         (let tctx2 (maybe-deref(typecheck-infer-ctx( tctx lhs ))))
+         (set tctx tctx2)
+         (typecheck-infer-expr( tctx rhs Used ))
+         (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
+         (let rt (maybe-deref(typeof rhs)))
+         (ascript-normal( term (t3( 'Arrow_s lt rt )) ))
+      )))
+      ( (Var v) (
+         (ascript-normal( term (maybe-deref(typecheck-typeof-var( term tctx v ))) ))
+      ))
+      ( (Lit l) (
+         (if (non-zero(typeof term)) () (tail(
+            (let tt (maybe-deref(typecheck-typeof-tag l)))
+            (if (non-zero tt) (
+               (ascript-normal( term tt ))
+            ) ())
+         )))
+      ))
+      ( _ (tail(
+         (print 'Unknown\sTerm\sIn\sType\sInference\n_s)
+         (print term)
+         (print '\n_s)
+         (exit 1_u64)
+      )))
+   ))
+   (close tctx)
+)) TContext[]);
+
+typecheck-typeof-tag := λ(: tag String). (: (tail(
+   (let r TAny)
+   (let tag-list typecheck-type-constructors)
+   (while (non-zero tag-list) (match tag-list (
+      ()
+      ( (StrTSeq( rst k kt )) (
+         (if (==( k tag )) (tail(
+            (set r kt)
+            (set tag-list StrTEOF)
+         )) (
+            (set tag-list rst)
+         ))
+      ))
+   )))
+   r
+)) Type);
+
+as-local-variable := λ(: tt Type). (: (tail(
+   (let tt2 (normalize tt))
+   (if (non-zero tt2) (tail(
+      (let tt3 (maybe-deref(tand( tt2 (TGround( 'LocalVariable_s (close TypeEOF) )) ))))
+      (set tt2 tt3)
+   )) ())
+   (let tt3 (maybe-deref(typecheck-annotate-size tt2)))
+   (close tt3)
+)) Type[]);
+
+as-constant := λ(: tt Type). (: (tail(
+   (if (non-zero tt) (tail(
+      (let tt2 (maybe-deref(tand( tt (TGround( 'Constant_s (close TypeEOF) )) ))))
+      (set tt tt2)
+   )) ())
+   (close tt2)
+)) Type[]);
+
+as-return := λ(: tt Type). (: (tail(
+   (let sz (typecheck-sizeof tt))
+   (let rtrep '_s)
+   (match sz (
+      ()
+      ( 0_u64 () )
+      ( 1_u64 (set rtrep 'Reg8_s) )
+      ( 2_u64 (set rtrep 'Reg16_s) )
+      ( 4_u64 (set rtrep 'Reg32_s) )
+      ( 8_u64 (set rtrep 'Reg64_s) )
+      ( _ (set rtrep 'StackVariable_s) )
+   ))
+   (if (head-string rtrep) (tail(
+      (let tt-2 (maybe-deref(tand(
+         tt
+         (TGround( rtrep (close TypeEOF) ))
+      ))))
+      (set tt tt-2)
+   )) ())
+   (close tt)
+)) Type[]);
+
+typecheck-apply-plural := λ(: sloc AST)(: many Type)(: pt Type). (: (tail(
+   (let tt (typecheck-apply-plural( sloc many pt True_u8 )))
+   tt
+)) Type);
+
+typecheck-apply-plural := λ(: sloc AST)(: many Type)(: pt Type)(: do-specialize U8). (: (tail(
+   (let r TAny)
+   (match many(
+      ()
+      ( (TAnd( t1 t2 )) (tail(
+         (let r1 (maybe-deref(typecheck-apply-plural( sloc t1 pt do-specialize ))))
+         (if (non-zero r1) (set r r1) (tail(
+            (let r2 (maybe-deref(typecheck-apply-plural( sloc t2 pt do-specialize ))))
+            (set r r2)
+         )))
+      )))
+      ( (TGround( 'Arrow_s _ )) (tail(
+         (let r1 (maybe-deref(typecheck-apply-hard( sloc many pt do-specialize ))))
+         (set r r1)
+      )))
+      ( _ () )
+   ))
+   r
+)) Type);
+
+typecheck-apply-hard := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
+   (let tt (typecheck-apply-hard( sloc ft pt True_u8 )))
+   tt
+)) Type[]);
+
+typecheck-apply-hard := λ(: sloc AST)(: ft Type)(: pt Type)(: do-specialize U8). (: (tail(
+   (let key '_s)
+   (match sloc (
+      ()
+      ( (App( (Var k) _ )) (set key k) )
+      ( _ () )
+   ))
+   (let rt TAny)
+   (if (is-arrow ft) (
+      (match ft (
+         ()
+         ( (TAnd( ft1 ft2 )) (tail(
+            (let rt1 (maybe-deref(typecheck-apply-hard( sloc ft1 pt ))))
+            (if (non-zero rt1) (
+               (set rt rt1)
+            ) (tail(
+               (let rt2 (maybe-deref(typecheck-apply-hard( sloc ft2 pt ))))
+               (set rt rt2)
+            )))
+         )))
+         ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (tail(
+            (let ctx (unify( fpt pt )))
+            (if (non-zero ctx) (tail(
+               (let ctx-2 (normalize ctx))(set ctx ctx-2)
+               (let closed-type (substitute( ctx ft )))
+               (let rt1 (maybe-deref(as-return(substitute( ctx frt )))))
+               (set rt rt1)
+               (if (==( do-specialize True_u8 )) (
+                  (if (head-string key) (
+                     (if (is-closing ctx) (
+                        (try-specialize( key ft ctx closed-type ))
+                     ) ())
+                  ) ())
+               ) ())
+            )) ())
+         )))
+         ( _ () )
+      ))
+   ) (
+      (if (non-zero ft) (
+         (if (non-zero pt) (tail(
+            (let rt2 (TGround(
+               'Cons_s
+               (close(TypeSeq(
+                  (close(TypeSeq(
+                     (close TypeEOF)
+                     ft
+                  )))
+                  pt
+               )))
+            )))
+            (set rt rt2)
+         )) ())
+      ) ())
+   ))
+   (close rt)
+)) Type[]);
+
+type SpecialRegistry SREOF | (SRSeq( SpecialRegistry[] , String , Type )); zero SpecialRegistry SREOF;
+special-registry := (: SREOF SpecialRegistry);
+
+specialize-term := λ(: tctx TContext)(: t AST). (: (tail(
+   (match t (
+      ()
+      ( ASTEOF (set t ASTEOF) )
+      ( ASTNil (set t ASTNil) )
+      ( (Var l) (set t (Var(clone-rope(SAtom l)))) )
+      ( (Lit l) (set t (Lit(clone-rope(SAtom l)))) )
+      ( (App( lt rt )) (tail(
+         (let lt2 (specialize-term( tctx lt )))
+         (let rt2 (specialize-term( tctx rt )))
+         (set t (App( (close lt2) (close rt2) )))
+      )))
+      ( (Abs( lt rt tlt )) (tail(
+         (let lt2 (specialize-term( tctx lt )))
+         (let rt2 (specialize-term( tctx rt )))
+         (set t (Abs( (close lt2) (close rt2) tlt )))
+      )))
+      ( (AType( tt )) (
+         (set t (AType( (substitute( tctx tt )) )))
+      ))
+      ( (Glb( k v )) (tail(
+         (let k2 (clone-rope(SAtom k)))
+         (let v2 (specialize-term( tctx v )))
+         (set t (Glb( k2 (close v2) )))
+      )))
+      ( _ (tail(
+         (print 'Unexpected\sSpecialize\sTerm:\s_s)(print t)(print '\n_s)
+         (exit 1_u64)
+      )))
+   ))
+   t
+)) AST);
+
+specialize-term := λ(: tctx StringSList)(: t S). (: (tail(
+   (match t (
+      ()
+      ( SNil (set t SNil) )
+      ( (SAtom a) (
+         (while (non-zero tctx) (match tctx (
+            ()
+            ( (SSLSeq( rst k v )) (tail(
+               (if (==( a k )) (
+                  (set t v)
+               ) ())
+               (set tctx rst)
+            )))
+         )))
+      ))
+      ( (SCons( lt rt )) (
+         (set t (SCons(
+            (close(specialize-term( tctx lt )))
+            (close(specialize-term( tctx rt )))
+         )))
+      ))
+   ))
+   (let rt t)
+   rt
+)) S);
+
+specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
+   (let unify-ctx-2 (normalize unify-ctx))(set unify-ctx unify-ctx-2)
+   (let term ASTEOF)
+   (let global-ctx global-type-context)
+   (while (non-zero global-ctx) (match global-ctx (
+      ()
+      ( TCtxNil (set global-ctx TCtxEOF) )
+      ( (TCtxBind( rst k kt t )) (tail(
+         (if (is( ft kt )) (
+            (match t (
+               ()
+               ( (Glb( _ (Abs( _ _ _ )) )) (set term t) )
+               ( _ () )
+            ))
+         ) ())
+         (set global-ctx rst)
+      )))
+   )))
+   (set special-registry (SRSeq(
+      (close special-registry)
+      key result-type
+   )))
+   (let special-term (specialize-term( unify-ctx term )))
+   (typecheck-infer-global-context( special-term ))
+   (typecheck-infer-expr( global-type-context special-term Unused ))
+   (set ast-parsed-program (Seq(
+      (close ast-parsed-program)
+      (close special-term)
+   )))
+)) Nil);
+
+already-special := λ(: key String)(: key-type Type). (: (tail(
+   (let r 0_u64)
+   (let registry special-registry)
+   (while (non-zero registry) (match registry (
+      ()
+      ( (SRSeq( rst k kt )) (tail(
+         (if (==( k key )) (
+            (if (==( kt key-type )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+         (set registry rst)
+      )))
+   )))
+   r
+)) U64);
+
+try-specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
+   (let result-type-2 (normalize result-type))(set result-type result-type-2)
+   (let global-ctx global-type-context)
+   (if (already-special( key result-type )) () (
+      (while (non-zero global-ctx) (match global-ctx (
+         ()
+         ( TCtxNil (set global-ctx TCtxEOF) )
+         ( (TCtxBind( rst k kt t )) (tail(
+            (if (is( ft kt )) (
+               (match t (
+                  ()
+                  ( (Glb( _ (Abs( _ _ _ )) )) (
+                     (specialize( key ft unify-ctx result-type ))
+                  ))
+                  ( _ () )
+               ))
+            ) ())
+            (set global-ctx rst)
+         )))
+      )))
+   ))
+)) Nil);
+
+is-closing := λ(: tctx TContext). (: (tail(
+   (let r 0_u64)
+   (while (non-zero tctx) (match tctx (
+      ()
+      ( TCtxNil (set tctx TCtxEOF) )
+      ( (TCtxBind( rst 'Accept_s _ _ )) (set tctx rst) )
+      ( (TCtxBind( rst _ _ _ )) (tail(
+         (set r 1_u64)
+         (set tctx TCtxEOF)
+      )))
+   )))
+   r
+)) U64);
+
+right-if-not-left := λ(: lt Type)(: rt Type). (: (tail(
+   (match (TPair( lt rt )) (
+      ()
+      ( (TPair( _ (TGround( 'Arrow_s _ )) )) () )
+      ( (TPair( (TGround( ltag _ )) (TGround( rtag _ )) )) (
+         (if (==( ltag rtag )) (set rt TAny) ())
+      ))
+      ( (TPair( (TAnd( lt1 lt2 )) (TGround( rtag _ )) )) (tail(
+         (let llt1 (maybe-deref(right-if-not-left( lt1 rt ))))
+         (let llt2 (maybe-deref(right-if-not-left( lt2 rt ))))
+         (if (non-zero llt1) () (set rt TAny))
+         (if (non-zero llt2) () (set rt TAny))
+      )))
+      ( (TPair( _ (TAnd( rt1 rt2 )) )) (tail(
+         (let rrt1 (maybe-deref(right-if-not-left( lt rt1 ))))
+         (let rrt2 (maybe-deref(right-if-not-left( lt rt2 ))))
+         (if (non-zero rrt1) (
+            (if (non-zero rrt2) (
+               (set rt (TAnd(
+                  (close rrt1)
+                  (close rrt2)
+               )))
+            ) (
+               (set rt rrt1)
+            ))
+         ) (
+            (if (non-zero rrt2) (
+               (set rt rrt2)
+            ) (
+               (set rt TAny)
+            ))
+         ))
+      )))
+      ( _ () )
+   ))
+   (close rt)
+)) Type[]);
+
+tand := λ(: lt Type)(: rt Type). (: (tail(
+   (if (non-zero lt) (tail(
+      (let only-rt (maybe-deref(right-if-not-left( lt rt ))))
+      (if (non-zero only-rt) (
+         (set lt (TAnd(
+            (close lt)
+            (close only-rt)
+         )))
+      ) ())
+   )) (set lt rt))
+   (close lt)
+)) Type[]);
+
+tarray := λ(: lt Type)(: rt Type). (: (tail(
+   (let tt (TGround( 'Array_s
+      (close(TypeSeq( (close(TypeSeq( (close TypeEOF) lt ))) rt )))
+   )))
+   tt
+)) Type);
+
+tlabel := λ. (: (tail(
+   (let tt (TGround( 'Label_s (close TypeEOF) )))
+   tt
+)) Type);
+
+with-representation := λ(: tt Type). (: (tail(
+   (let sz (typecheck-sizeof tt))
+   (match sz (
+      ()
+      ( 0_u64 () )
+      ( 1_u64 (tail( (let tt-2 (maybe-deref(tand( tt (TGround( 'Reg8_s (close TypeEOF) )) )))) (set tt tt-2) )))
+      ( 2_u64 (tail( (let tt-2 (maybe-deref(tand( tt (TGround( 'Reg16_s (close TypeEOF) )) )))) (set tt tt-2) )))
+      ( 4_u64 (tail( (let tt-2 (maybe-deref(tand( tt (TGround( 'Reg32_s (close TypeEOF) )) )))) (set tt tt-2) )))
+      ( 8_u64 (tail( (let tt-2 (maybe-deref(tand( tt (TGround( 'Reg64_s (close TypeEOF) )) )))) (set tt tt-2) )))
+      ( _ (tail( (let tt-2 (maybe-deref(tand( tt (TGround( 'StackVariable_s (close TypeEOF) )) )))) (set tt tt-2) )))
+   ))
+   (close tt)
+)) Type[]);
+
+guess-only-representation := λ(: tt Type). (: (tail(
+   (let sz (typecheck-sizeof tt))
+   (match sz (
+      ()
+      ( 0_u64 (set tt TAny) )
+      ( 1_u64 (set tt (TGround( 'Reg8_s (close TypeEOF) ))) )
+      ( 2_u64 (set tt (TGround( 'Reg16_s (close TypeEOF) ))) )
+      ( 4_u64 (set tt (TGround( 'Reg32_s (close TypeEOF) ))) )
+      ( 8_u64 (set tt (TGround( 'Reg64_s (close TypeEOF) ))) )
+      ( _ (set tt (TGround( 'StackVariable_s (close TypeEOF) ))) )
+   ))
+   (close tt)
+)) Type[]);
+
+typecheck-infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
+   (match lhs (
+      ()
+      ( (App( (Lit ':_s) (App( (Var v) (AType tt) )) )) (
+         (set tctx (TCtxBind(
+            (close tctx)
+            v
+            (maybe-deref(as-local-variable tt))
+            ASTEOF
+         )))
+      ))
+      ( (App( ps (App( (Lit ':_s) (App( (Var v) (AType tt) )) )) )) (tail(
+         (set tctx (TCtxBind(
+            (close tctx)
+            v
+            (maybe-deref(as-local-variable tt))
+            ASTEOF
+         )))
+         (let tctx2 (maybe-deref(typecheck-infer-ctx( tctx ps ))))
+         (set tctx tctx2)
+      )))
+      ( ASTNil () )
+      ( _ (exit-error( 'Invalid\sLHS_s lhs )) )
+   ))
+   (close tctx)
+)) TContext[]);
+
+typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tail(
+   (let found TAny)
+   (while (non-zero tctx) (match tctx (
+      ()
+      ( TCtxNil (set tctx TCtxEOF) )
+      ( (TCtxBind( rst k vt _ )) (
+         (if (==( k vname )) (tail(
+            (if (non-zero found) (
+               (if (is-arrow vt) (tail(
+                  (let found-2 (maybe-deref(tand(
+                     found
+                     vt
+                  ))))
+                  (set found found-2)
+               )) (
+                  (set found vt)
+               ))
+            ) (
+               (set found vt)
+            ))
+            (if (is-arrow vt) (
+               (set tctx rst)
+            ) (
+               (set tctx TCtxEOF)
+            ))
+         )) (
+            (set tctx rst)
+         ))
+      ))
+   )))
+   (if (non-zero found) () (
+      (exit-error( 'Unknown\sReferenced\sVariable_s sloc ))
+   ))
+   (close found)
+)) Type[]);
+
+is-parameterized := λ(: tt Type). (: (tail(
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( (TGround( _ (TypeSeq( _ _ )) )) (set r 1_u64) )
+      ( (TAnd( lt rt )) (tail(
+         (if (is-parameterized lt) (set r 1_u64) ())
+         (if (is-parameterized rt) (set r 1_u64) ())
+      )))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+typecheck-get-size := λ(: tt Type). (: (tail(
+   (if (is-open tt) (tail(
+      (print 'Cannot\sGet\sSizeof\sOpen\sType:\s_s)
+      (print tt)(print '\n_s)
+      (exit 1_u64)
+   )) ())
+   (let tag '_s)
+   (match tt (
+      ()
+      ( (TGround( tg _ )) (set tag tg) )
+      ( _ () )
+   ))
+   (let sz 0_u64)
+   (let sizes typecheck-type-sizes2)
+   (while (non-zero sizes) (match sizes (
+      ()
+      ( (TSz2Seq( rst kt bt at )) (tail(
+         (if (==( kt tag )) (tail(
+            (let ctx (unify( bt tt )))
+            (let arg-types (substitute( ctx at )))
+            (set sz (max(
+               sz
+               (+( 8_u64 (typecheck-aligned-sizeof arg-types) ))
+            )))
+         )) ())
+         (set sizes rst)
+      )))
+   )))
+   sz
+)) U64);
+
+typecheck-set-size := λ(: base-type Type)(: args-type Type). (: (tail(
+   (let tag '_s)
+   (let simple False_u8)
+   (match base-type (
+      ()
+      ( (TGround( tg TypeEOF )) (tail( (set tag tg) (set simple True_u8) )) )
+      ( (TGround( tg _ )) (set tag tg) )
+      ( _ (tail(
+         (print 'ERROR:\stypecheck-set-size\n_s)
+         (exit 1_u64)
+      )))
+   ))
+   (if (==( simple True_u8 )) () (
+      (set typecheck-type-sizes2 (TSz2Seq(
+         (close typecheck-type-sizes2)
+         tag
+         base-type
+         args-type
+      )))
+   ))
+)) Nil);
+
+

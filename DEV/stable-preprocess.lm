@@ -1,0 +1,565 @@
+
+index-typedefs := λ(: program AST). (: (
+   (while (non-zero program) (match program (
+      ()
+      ( (Seq( rst (Typedef( lhs rhs )) )) (tail(
+         (index-typedefs( rhs 0_u64 ))
+         (set program rst)
+      )))
+      ( (Seq( rst _ )) (
+         (set program rst)
+      ))
+      ( _ (set program ASTEOF) )
+   )))
+) Nil);
+
+index-typedefs := λ(: def AST)(: index U64) . (: (
+   (match def (
+      ()
+      ( (App( (App( tds (Var '|_s) )) (Lit tag) )) (tail(
+         (index-index-of-tag( tag index ))
+         (index-typedefs( tds (+( index 1_u64 )) ))
+      )))
+      ( (App( (App( tds (Var '|_s) )) (App( (Lit tag) _ )) )) (tail(
+         (index-index-of-tag( tag index ))
+         (index-typedefs( tds (+( index 1_u64 )) ))
+      )))
+      ( (Lit tag) (
+         (index-index-of-tag( tag index ))
+      ))
+      ( (App( (Lit tag) _ )) (
+         (index-index-of-tag( tag index ))
+      ))
+      ( ASTEOF () )
+      ( _ (exit-error( 'Invalid\sTypedef_s def )) )
+   ))
+) Nil);
+
+preprocess := λ. (: (tail(
+   (index-typedefs ast-parsed-program)
+   (set ast-parsed-program (preprocess-apply ast-parsed-program))
+)) Nil);
+
+union := λ(: l Context)(: r Context). (: (tail(
+   (let return l)
+   (if (not(non-zero r)) (set return CtxEOF) ())
+   (if (non-zero return) (
+      (match r (
+         ()
+         ( (CtxBind( rst k v )) (
+            (set return (CtxBind(
+               (close(union( l rst ))) k v
+            )))
+         ))
+         ( _ (set r CtxEOF) )
+      ))
+   ) ())
+   return
+)) Context);
+
+is-macro-head := λ(: s String)(: m AST). (: (tail(
+   (let r 0_u64)
+   (match m (
+      ()
+      ( (Lit mv) (set r (==( s mv ))) )
+      ( (App( l1 l2 )) (set r (is-macro-head( s l1 ))) )
+      ( _ (exit-error( 'Unrecognized\sMacro\sLHS_s m )) )
+   ))
+   r
+)) U64);
+
+is-macro-head := λ(: s String). (: (tail(
+   (let macros preprocess-macros)
+   (let found 0_u64)
+   (while (non-zero macros) (match macros (
+      ()
+      ( (MSeq( rst (Macro( mlhs mrhs )) )) (
+         (if (is-macro-head( s mlhs )) (tail(
+            (set found 1_u64)
+            (set macros MEOF)
+         )) (
+            (set macros rst)
+         ))
+      ))
+   )))
+   found
+)) U64);
+
+preprocess-apply := λ(: program AST). (: (tail(
+   (let r program)
+   (match program (
+      ()
+      ( (App( (App( (Lit ':_s) (App( t (AType tt) )) )) nt )) (
+         (set r (App(
+            (close(App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App( (close(preprocess-apply t)) (close(AType tt)) ))) )))
+            (close(preprocess-apply( nt )))
+         )))
+      ))
+      ( (App( (App( (Lit ':_s) mvar )) (Lit mtype) )) (
+         (set r (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
+      ))
+      ( (App( (App( (Lit ':_s) mvar )) (Var mtype) )) (
+         (set r (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
+      ))
+      ( (App( (App( (Var 'as_s) (App( t (AType tt) )) )) nt )) (
+         (set r (App(
+            (close(App( (close(Var(clone-rope(SAtom 'as_s)))) (close(App( (close(preprocess-apply t)) (close(AType tt)) ))) )))
+            (close(preprocess-apply( nt )))
+         )))
+      ))
+      ( (App( (App( (Var 'as_s) mvar )) (Lit mtype) )) (
+         (set r (App( (close(Var(clone-rope(SAtom 'as_s)))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
+      ))
+      ( (App( (App( (Var 'as_s) mvar )) (Var mtype) )) (
+         (set r (App( (close(Var(clone-rope(SAtom 'as_s)))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
+      ))
+      ( (App( (Var 'sizeof_s) (Var mtype) )) (
+         (set r (App( (close(Var(clone-rope(SAtom 'sizeof_s)))) (close(AType(parse-type mtype))) )))
+      ))
+      ( (App( (Var 'sizeof_s) (Lit mtype) )) (
+         (set r (App( (close(Var(clone-rope(SAtom 'sizeof_s)))) (close(AType(parse-type mtype))) )))
+      ))
+      ( (Lit l) (tail(
+         (let suffixes parse-suffixes)
+         (while (non-zero suffixes) (match suffixes (
+            ()
+            ( (SfxSeq( rst sfxs sfxtt )) (
+               (if (has-suffix( l sfxs )) (tail(
+                  (let lloc (location-of l))
+                  (let lpfx (remove-suffix( l sfxs )))
+                  (map-location( lpfx lloc ))
+                  (set r (App(
+                     (close(Lit(clone-rope(SAtom ':_s))))
+                     (close(App( (close (Lit lpfx)) (close(AType sfxtt)) )))
+                  )))
+                  (set suffixes SfxEOF)
+               )) (
+                  (set suffixes rst)
+               ))
+            ))
+         )))
+      )))
+      ( (Var l) (tail(
+         (let suffixes parse-suffixes)
+         (while (non-zero suffixes) (match suffixes (
+            ()
+            ( (SfxSeq( rst sfxs sfxtt )) (
+               (if (has-suffix( l sfxs )) (tail(
+                  (let lloc (location-of l))
+                  (let lpfx (remove-suffix( l sfxs )))
+                  (map-location( lpfx lloc ))
+                  (set r (App(
+                     (close(Lit(clone-rope(SAtom ':_s))))
+                     (close(App( (close (Lit lpfx)) (close(AType sfxtt)) )))
+                  )))
+                  (set suffixes SfxEOF)
+               )) (
+                  (set suffixes rst)
+               ))
+            ))
+         )))
+      )))
+      ( (App( (Var vn) vt )) (
+         if (is-macro-head vn) (tail(
+            (let applied (preprocess-apply-maybe program))
+            (set r applied)
+         )) (
+            (match program (
+               ()
+               ( (App( v1 v2 )) (
+                  (set r (App( (close(preprocess-apply v1)) (close(preprocess-apply v2)) )))
+               ))
+            ))
+         )
+      ))
+      ( (App( (App( (Var vn) vt1 )) vt2 )) (
+         if (is-macro-head vn) (tail(
+            (let applied (preprocess-apply-maybe program))
+            (set r applied)
+         )) (
+            (match program (
+               ()
+               ( (App( (App( v1 v2 )) v3 )) (
+                  (set r (App(
+                     (close(App(
+                        (close(preprocess-apply v1))
+                        (close(preprocess-apply v2))
+                     )))
+                     (close(preprocess-apply v3))
+                  )))
+               ))
+            ))
+         )
+      ))
+      ( (Seq( al ar )) (set r (Seq(
+         (close(preprocess-apply al))
+         (close(preprocess-apply ar))
+      ))))
+      ( (App( al ar )) (set r (App(
+         (close(preprocess-apply al))
+         (close(preprocess-apply ar))
+      ))))
+      ( (Abs( al ar tlt )) (set r (Abs(
+         (close(preprocess-apply al))
+         (close(preprocess-apply ar))
+         tlt
+      ))))
+      ( (Frg( al ar atlt )) (
+         (set r (Frg(
+            al
+            (close(preprocess-apply ar))
+            atlt
+         )))
+      ))
+      ( (Glb( k ar )) (set r (Glb(
+         k
+         (close(preprocess-apply ar))
+      ))))
+      ( u (set r u))
+   ))
+   r
+)) AST);
+
+preprocess-apply-maybe := λ(: program AST). (: (tail(
+   (let return program)
+   (let macros preprocess-macros)
+   (let matched False_u8)
+   (while (non-zero macros) (match macros (
+      ()
+      ( (MSeq( rst (Macro( lhs rhs )) )) (
+         (match (try-destructure-macro( lhs program )) (
+            ()
+            ( CtxEOF (set macros rst) )
+            ( ctx (tail(
+               (let p (apply( ctx rhs )))
+               (let c (maybe-deref(extract-uuids( program CtxEOF p ))))
+               (let u (maybe-deref(substitute-uuids( c p ))))
+               (let n (preprocess-apply u))
+               (set return (relocate( n (location-of program) )))
+               (set macros MEOF)
+               (set matched True_u8)
+            )))
+         ))
+      ))
+      ( _ (set macros MEOF) )
+   )))
+   (match return (
+      ()
+      ( (App( l r )) (
+         (set return (App(
+            (close(preprocess-apply l))
+            (close(preprocess-apply r))
+         )))
+      ))
+      ( _ () )
+   ))
+   return
+)) AST);
+
+apply := λ(: ctx Context)(: term AST). (: (tail(
+   (let return term)
+   (match term (
+      ()
+      ( ASTEOF () )
+      ( ASTNil () )
+      ( (Lit _) () )
+      ( (AType _) () )
+      ( (Var n) (
+         (while (non-zero ctx) (match ctx (
+            ()
+            ( (CtxBind( rst k v )) (
+               (if (==( k n )) (tail(
+                  (set return v)
+                  (set ctx CtxEOF)
+               )) (
+                  (set ctx rst)
+               ))
+            ))
+            ( _ (set ctx CtxEOF))
+         )))
+      ))
+      ( (App( vl vr )) (
+         (set return (App(
+            (close(apply( ctx vl )))
+            (close(apply( ctx vr )))
+         )))
+      ))
+      ( (Abs( vl vr tlt )) (
+         (set return (Abs(
+            (close(apply( ctx vl )))
+            (close(apply( ctx vr )))
+            tlt
+         )))
+      ))
+      ( (Seq( vl vr )) (
+         (set return (Seq(
+            (close(apply( ctx vl )))
+            (close(apply( ctx vr )))
+         )))
+      ))
+      ( (Typedef( vl vr )) (
+         (set return (Typedef(
+            (close(apply( ctx vl )))
+            (close(apply( ctx vr )))
+         )))
+      ))
+      ( (Glb( k vr )) (
+         (set return (Glb(
+            k
+            (close(apply( ctx vr )))
+         )))
+      ))
+      ( (Frg( k vr tlt )) (
+         (set return (Frg(
+            k
+            (close(apply( ctx vr )))
+            tlt
+         )))
+      ))
+   ))
+   return
+)) AST);
+
+try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
+   (let r CtxEOF)
+   (match (APair( lhs term )) (
+      ()
+      ( (APair( ASTNil ASTNil )) (set r CtxNil) )
+      ( (APair( (App( (App( (Var _) (Var _) )) (Var _) )) (App( (App( (Lit _) _ )) _ )) )) () )
+      ( (APair( (App(pl pr)) (App(el er)) )) (tail(
+         (let ll (try-destructure-macro( pl el )))
+         (if (non-zero ll) (tail(
+            (let rl (try-destructure-macro( pr er )))
+            (if (non-zero rl) (
+               (set r (union( ll rl )))
+            ) ())
+         )) ())
+      )))
+      ( (APair( (Abs(pl pr ptlt)) (Abs(el er etlt)) )) (tail(
+         (let ll (try-destructure-macro( pl el )))
+         (if (non-zero ll) (tail(
+            (let rl (try-destructure-macro( pr er )))
+            (if (non-zero rl) (
+               (set r (union( ll rl )))
+            ) ())
+         )) ())
+      )))
+      ( (APair( (Lit ':Any:_s) (Var '__s) )) (
+         (set r CtxNil)
+      ))
+      ( (APair( (Lit pl) (Var el) )) (
+         (if (==( pl el )) (set r CtxNil) ())
+      ))
+      ( (APair( (Lit pl) (Lit el) )) (
+         (if (==( pl el )) (set r CtxNil) ())
+      ))
+      ( (APair( (App( (Lit ':Literal:_s) (Var pv) )) (Lit el) )) (
+         (if (==( (index-of-tag el) unknown-index-of-tag ))
+             (set r (CtxBind( (close CtxNil) pv term )))
+             ()
+         )
+      ))
+      ( (APair( (App( (Lit ':Variable:_s) _ )) (Var '__s) )) (
+         ()
+      ))
+      ( (APair( (App( (Lit ':Variable:_s) (Var pv) )) (Var el) )) (
+         (set r (CtxBind( (close CtxNil) pv term )))
+      ))
+      ( (APair( (App( (App( (Lit ':Tag:_s) (Var pv) )) (Var pt) )) (Lit el) )) (
+         (if (==( (index-of-tag el) unknown-index-of-tag )) () (tail(
+            (set r CtxNil)
+            (set r (CtxBind( (close r) pv (
+               (App(
+                  (close(Lit(clone-rope(SAtom ':_s))))
+                  (close(App(
+                     (close(Lit (to-string(index-of-tag el)) ))
+                     (close(AType(parse-type 'Constant+Literal+U64_s)))
+                  )))
+               ))
+            ) )))
+            (set r (CtxBind( (close r) pt (Lit el) )))
+         )))
+      ))
+      ( (APair( (Var pv) _ )) (
+         (set r (CtxBind( (close CtxNil) pv term )))
+      ))
+      ( _ () )
+   ))
+   r
+)) Context);
+
+relocate := λ(: term AST)(: loc SourceLocation). (: (tail(
+   (let return term)
+   (match term (
+      ()
+      ( ASTEOF () )
+      ( ASTNil () )
+      ( (Var v) (tail(
+         (set v (clone-rope(SAtom v)))
+         (map-location( v loc ))
+         (set return (Var v))
+      )))
+      ( (Lit v) (tail(
+         (set v (clone-rope(SAtom v)))
+         (map-location( v loc ))
+         (set return (Lit v))
+      )))
+      ( (AType _) () )
+      ( (App( lt rt )) (
+         (set return (App(
+            (close(relocate( lt loc )))
+            (close(relocate( rt loc )))
+         )))
+      ))
+      ( (Abs( lt rt tlt )) (
+         (set return (Abs(
+            (close(relocate( lt loc )))
+            (close(relocate( rt loc )))
+            tlt
+         )))
+      ))
+      ( (Seq( lt rt )) (
+         (set return (Seq(
+            (close(relocate( lt loc )))
+            (close(relocate( rt loc )))
+         )))
+      ))
+      ( (Typedef( lt rt )) (
+         (set return (Typedef(
+            (close(relocate( lt loc )))
+            (close(relocate( rt loc )))
+         )))
+      ))
+      ( (Glb( k t )) (tail(
+         (set k (clone-rope(SAtom k)))
+         (map-location( k loc ))
+         (set return (Glb(
+            k
+            (close(relocate( t loc )))
+         )))
+      )))
+      ( (Frg( k t tlt )) (tail(
+         (set k (clone-rope(SAtom k)))
+         (map-location( k loc ))
+         (set return (Frg(
+            k
+            (close(relocate( t loc )))
+            tlt
+         )))
+      )))
+   ))
+   return
+)) AST);
+
+substitute-uuids := λ(: ctx Context)(: term AST). (: (tail(
+   (let return term)
+   (match return (
+      ()
+      ( (App( (Var 'uuid_s) (Var x ) )) (
+         (while (non-zero ctx) (match ctx (
+            ()
+            ( (CtxBind( rst k v )) (
+               (if (==( x k )) (tail(
+                  (set return v)
+                  (set ctx rst)
+               )) (
+                  (set ctx rst)
+               ))
+            ))
+            ( _ (set ctx CtxEOF) )
+         )))
+      ))
+      ( (App( l r )) (
+         (set return (App(
+            (close(substitute-uuids( ctx l )))
+            (close(substitute-uuids( ctx r )))
+         )))
+      ))
+      ( (Abs( l r tlt )) (
+         (set return (Abs(
+            (close(substitute-uuids( ctx l )))
+            (close(substitute-uuids( ctx r )))
+            tlt
+         )))
+      ))
+      ( ASTEOF () )
+      ( ASTNil () )
+      ( (AType _) () )
+      ( (Var v) () )
+      ( (Lit v) () )
+      ( (Seq( lt rt )) (
+         (set return (Seq(
+            (close(substitute-uuids( ctx lt )))
+            (close(substitute-uuids( ctx rt )))
+         )))
+      ))
+      ( (Typedef( lt rt )) (
+         (set return (Typedef(
+            (close(substitute-uuids( ctx lt )))
+            (close(substitute-uuids( ctx rt )))
+         )))
+      ))
+      ( (Glb( k t )) (
+         (set return (Glb(
+            k
+            (close(substitute-uuids( ctx t )))
+         )))
+      ))
+      ( (Frg( k t tlt )) (
+         (set return (Frg(
+            k
+            (close(substitute-uuids( ctx t )))
+            tlt
+         )))
+      ))
+   ))
+   return
+)) AST);
+
+extract-uuids := λ(: sloc AST)(: ctx Context)(: term AST). (: (tail(
+   (let return ctx)
+   (match term (
+      ()
+      ( (App( (Var 'uuid_s) (Var x) )) (tail(
+         (let id (uuid()))
+         (let loc (location-of sloc))
+         (map-location( id loc ))
+         (let lctx (CtxBind( (close ctx) x (Var id) )))
+         (set return lctx)
+      )))
+      ( (App( l r )) (tail(
+         (let lctx (extract-uuids( sloc ctx l )))
+         (let rctx (extract-uuids( sloc lctx r )))
+         (set return rctx)
+      )))
+      ( (Abs( l r tlt )) (tail(
+         (let lctx (extract-uuids( sloc ctx l )))
+         (let rctx (extract-uuids( sloc lctx r )))
+         (set return rctx)
+      )))
+      ( ASTEOF () )
+      ( ASTNil () )
+      ( (AType _) () )
+      ( (Var v) () )
+      ( (Lit v) () )
+      ( (Seq( lt rt )) (tail(
+         (let lctx (extract-uuids( sloc ctx lt )))
+         (let rctx (extract-uuids( sloc lctx rt )))
+         (set return rctx)
+      )))
+      ( (Typedef( lt rt )) (tail(
+         (let lctx (extract-uuids( sloc ctx lt )))
+         (let rctx (extract-uuids( sloc lctx rt )))
+         (set return rctx)
+      )))
+      ( (Glb( k t )) (tail(
+         (let rctx (extract-uuids( sloc ctx t )))
+         (set return rctx)
+      )))
+      ( (Frg( k t tlt )) (tail(
+         (let rctx (extract-uuids( sloc ctx t )))
+         (set return rctx)
+      )))
+   ))
+   return
+)) Context);

@@ -1,0 +1,261 @@
+
+
+is-variable := λ(: s String). (: (tail(
+   (let r False_u8)
+   (match (head-string s) (
+      ()
+      ( 33_u8 (set r True_u8) )   # !
+      ( 36_u8 (set r True_u8) )   # $
+      ( 37_u8 (set r True_u8) )   # %
+      ( 38_u8 (set r True_u8) )   # &
+      ( 42_u8 (set r True_u8) )   # *
+      ( 43_u8 (set r True_u8) )   # +
+      ( 45_u8 (set r True_u8) )   # -
+      ( 46_u8 ( if (==( s '._s )) () (set r True_u8) ))
+      ( 47_u8 (set r True_u8) )   # /
+      ( 58_u8 (tail(              # :
+         (if (==( (head-string(tail-string s)) 58_u8 )) (set r True_u8) ())
+         (if (is-variable(tail-string s)) (set r True_u8) ())
+      )))
+      ( 59_u8 (set r True_u8) )   # ;
+      ( 60_u8 (set r True_u8) )   # <
+      ( 61_u8 (set r True_u8) )   # =
+      ( 62_u8 (set r True_u8) )   # >
+      ( 63_u8 (set r True_u8) )   # ?
+      ( 64_u8 (set r True_u8) )   # @
+      ( 91_u8 (set r True_u8) )   # [
+      ( 93_u8 (set r True_u8) )   # ]
+      ( 94_u8 (set r True_u8) )   # ^
+      ( 95_u8 (set r True_u8) )   # _
+      ( 97_u8 (set r True_u8) )   # a
+      ( 98_u8 (set r True_u8) )   # b
+      ( 99_u8 (set r True_u8) )   # c
+      ( 100_u8 (set r True_u8) )  # d
+      ( 101_u8 (set r True_u8) )  # e
+      ( 102_u8 (set r True_u8) )  # f
+      ( 103_u8 (set r True_u8) )  # g
+      ( 104_u8 (set r True_u8) )  # h
+      ( 105_u8 (set r True_u8) )  # i
+      ( 106_u8 (set r True_u8) )  # j
+      ( 107_u8 (set r True_u8) )  # k
+      ( 108_u8 (set r True_u8) )  # l
+      ( 109_u8 (set r True_u8) )  # m
+      ( 110_u8 (set r True_u8) )  # n
+      ( 111_u8 (set r True_u8) )  # o
+      ( 112_u8 (set r True_u8) )  # p
+      ( 113_u8 (set r True_u8) )  # q
+      ( 114_u8 (set r True_u8) )  # r
+      ( 115_u8 (set r True_u8) )  # s
+      ( 116_u8 (set r True_u8) )  # t
+      ( 117_u8 (set r True_u8) )  # u
+      ( 118_u8 (set r True_u8) )  # v
+      ( 119_u8 (set r True_u8) )  # w
+      ( 120_u8 (set r True_u8) )  # x
+      ( 121_u8 (set r True_u8) )  # y
+      ( 122_u8 (set r True_u8) )  # z
+      ( 124_u8 (set r True_u8) )  # |
+      ( 126_u8 (set r True_u8) )  # ~
+      (_ ())
+   ))
+   (==( r True_u8 ))
+)) U64);
+
+uuid-counter := 0_u64;
+uuid := λ . (: (tail(
+   (set uuid-counter (+( uuid-counter 1_u64 )))
+   (clone-rope (SCons(
+      (close(SAtom 'uuid__s))
+      (close(SAtom(to-hex uuid-counter)))
+   )))
+)) String);
+
+list-tail-order-to-head-order := λ(: s S). (: (tail(
+   (let new SNil)
+   (while (non-zero s) (match s (
+      ()
+      ( (SCons( l r )) (tail(
+         (set new (SCons(
+            (close r)
+            (close new)
+         )))
+         (set s l)
+      )))
+   )))
+   new
+)) S);
+
+mangle-identifier := λ(: kt Type). (: (tail(
+   (let r SNil)
+   (match kt (
+      ()
+      ( TAny (set r (mangle-identifier '?_s)) )
+      ( (TVar v) (set r (mangle-identifier v)) )
+      ( (TGround( tv ps )) (tail(
+         (set r (mangle-identifier tv))
+         (while (non-zero ps) (match ps (
+            ()
+            ( (TypeSeq( rst p1 )) (tail(
+               (set r (SCons( (close r) (close(mangle-identifier p1)) )))
+               (set ps rst)
+            )))
+         )))
+      )))
+      ( (TAnd( tl tr )) (
+         (set r (SCons( 
+            (close(mangle-identifier tl))
+            (close(mangle-identifier tr))
+         )))
+      ))
+   ))
+   r
+)) S);
+
+mangle-identifier := λ(: k String). (: (tail(
+   (let cs SNil)
+   (while (head-string k) (tail(
+      (match (head-string k) (
+         ()
+         ( 33_u8 (set cs (SCons( (close cs) (close(SAtom( '_EX__s ))) ))))   # !
+         ( 36_u8 (set cs (SCons( (close cs) (close(SAtom( '_DL__s ))) ))))   # $
+         ( 37_u8 (set cs (SCons( (close cs) (close(SAtom( '_MD__s ))) ))))   # %
+         ( 38_u8 (set cs (SCons( (close cs) (close(SAtom( '_AM__s ))) ))))   # &
+         ( 42_u8 (set cs (SCons( (close cs) (close(SAtom( '_ML__s ))) ))))   # *
+         ( 43_u8 (set cs (SCons( (close cs) (close(SAtom( '_AD__s ))) ))))   # +
+         ( 45_u8 (set cs (SCons( (close cs) (close(SAtom( '_SB__s ))) ))))   # -
+         ( 46_u8 (set cs (SCons( (close cs) (close(SAtom( '_DT__s ))) ))))   # .
+         ( 47_u8 (set cs (SCons( (close cs) (close(SAtom( '_DV__s ))) ))))   # /
+         ( 58_u8 (set cs (SCons( (close cs) (close(SAtom( '_CL__s ))) ))))   # :
+         ( 59_u8 (set cs (SCons( (close cs) (close(SAtom( '_SC__s ))) ))))   # ;
+         ( 60_u8 (set cs (SCons( (close cs) (close(SAtom( '_LT__s ))) ))))   # <
+         ( 61_u8 (set cs (SCons( (close cs) (close(SAtom( '_EQ__s ))) ))))   # =
+         ( 62_u8 (set cs (SCons( (close cs) (close(SAtom( '_GT__s ))) ))))   # >
+         ( 63_u8 (set cs (SCons( (close cs) (close(SAtom( '_QM__s ))) ))))   # ?
+         ( 64_u8 (set cs (SCons( (close cs) (close(SAtom( '_AT__s ))) ))))   # @
+         ( 91_u8 (set cs (SCons( (close cs) (close(SAtom( '_LB__s ))) ))))   # [
+         ( 93_u8 (set cs (SCons( (close cs) (close(SAtom( '_RB__s ))) ))))   # ]
+         ( 94_u8 (set cs (SCons( (close cs) (close(SAtom( '_HT__s ))) ))))   # ^
+         ( 95_u8 (set cs (SCons( (close cs) (close(SAtom( '_US__s ))) ))))   # _
+         ( 124_u8 (set cs (SCons( (close cs) (close(SAtom( '_BR__s ))) ))))  # |
+         ( 126_u8 (set cs (SCons( (close cs) (close(SAtom( '_TL__s ))) ))))  # ~
+         ( c (set cs (SCons( (close cs) (close(SAtom(clone-rope c))) ))))
+      ))
+      (set k (tail-string k))
+   )))
+   cs
+)) S);
+
+mangle-identifier := λ(: k String)(: kt Type). (: (tail(
+   (let cs (SCons(
+      (close(mangle-identifier k))
+      (close(SCons(
+         (close(SAtom( '_CL__s )))
+         (close(mangle-identifier(normalize kt)))
+      )))
+   )))
+   (clone-rope cs)
+)) String);
+
+escape-string := λ(: s S). (: (tail(
+   (match s (
+      ()
+      ( (SAtom a) (set s (SAtom(escape-string a))) )
+      ( (SCons( l r )) (set s (SCons(
+         (close(escape-string l))
+         (close(escape-string r))
+      ))))
+      ( _ () )
+   ))
+   s
+)) S);
+
+escape-string := λ(: s String). (: (tail(
+   (let e SNil)
+   (while (head-string s) (
+      (if (==( (head-string s) 92_u8 )) (tail(
+         (set s (tail-string s))
+         (match (head-string s) (
+            ()
+            ( 91_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 40_u8) ))) ))) )  # \[ -> (
+            ( 92_u8 (set e (SCons( (close e) (close(SAtom( '\\_s ))) ))) )               # \\ -> \
+            ( 93_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 41_u8) ))) ))) )  # \] -> )
+            ( 96_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 39_u8) ))) ))) )  # \` -> '
+            ( 110_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 10_u8) ))) ))) ) # \n -> [newline]
+            ( 116_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 9_u8) ))) ))) )  # \t -> [tab]
+            ( 115_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 32_u8) ))) ))) ) # \s -> [space]
+            ( _ (fail 'Illegal\sEscape\sSequence\sIn\sString\n_s) )                      # invalid escape sequence
+         ))
+         (set s (tail-string s))
+      )) (tail(
+         (set e (SCons( (close e) (close(SAtom( (clone-rope(head-string s)) ))) )))
+         (set s (tail-string s))
+      )))
+   ))
+   (clone-rope e)
+)) String);
+
+escape-literal := λ(: s String). (: (tail(
+   (let cs SNil)
+   (while (head-string s) (tail(
+      (match (head-string s) (
+         ()
+         ( 34_u8 (set cs (SCons( (close cs) (close(SAtom '\\\\"_s)) ))))
+         ( 92_u8 (tail(
+            (let escaped_string '_s)
+            (match (head-string(tail-string s)) (
+               ()
+               ( 58_u8 (set escaped_string '\:_s) )
+               ( 91_u8 (set escaped_string '\[_s) )
+               ( 92_u8 (set escaped_string '\\\\\\\\_s) )
+               ( 93_u8 (set escaped_string '\]_s) )
+               ( 96_u8 (set escaped_string '\`_s) )
+               ( 108_u8 (set escaped_string '\l_s) )
+               ( 110_u8 (set escaped_string '\\\\n_s) )
+               ( 111_u8 (set escaped_string '\o_s) )
+               ( 115_u8 (set escaped_string '\s_s) )
+               ( 116_u8 (set escaped_string '\t_s) )
+               ( _ () )
+            ))
+            (if (head-string escaped_string) (tail(
+               (set cs (SCons( (close cs) (close(SAtom escaped_string)) )))
+               (set s (tail-string s))
+            )) (
+               (set cs (SCons( (close cs) (close(SAtom '\\\\_s)) )))
+            ))
+         )))
+         ( 10_u8 (set cs (SCons( (close cs) (close(SAtom '\\n_s)) ))))
+         ( c (set cs (SCons( (close cs) (close(SAtom(clone-rope c))) ))))
+      ))
+      (set s (tail-string s))
+   )))
+   (clone-rope cs)
+)) String);
+
+exit-error := λ(: msg String)(: t AST). (: (tail(
+   (print msg)
+   (print '\n_s)
+   (print (location-of( t )))
+   (print '\n_s)
+   (match t (
+      ()
+      ( (App( (Var 'as_s) (App( inner (AType cast) )) )) (tail(
+         (print 'In\sCoercion\n_s)
+         (print inner)(print ':\n_s)
+         (print (typeof inner))(print '\n_s)
+         (print 'As:\s_s)(print cast)(print '\n_s)
+      )))
+      ( (App( f a )) (tail(
+         (print 'In\sFunction\sApplication\n_s)
+         (print f)(print ':\n_s)
+         (print (typeof f))(print '\n_s)
+         (print a)(print ':\n_s)
+         (print (typeof a))(print '\n_s)
+         (print 'Return:\n_s)
+         (print (typeof t))(print '\n_s)
+      )))
+      ( _ (tail(
+         (print t)
+         (print '\n_s)
+      )))
+   ))
+   (exit 1_u64)
+)) Nil);
