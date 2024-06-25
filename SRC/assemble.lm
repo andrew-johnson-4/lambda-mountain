@@ -174,7 +174,7 @@ compile-type-case := λ(: ctx FContext)(: base-type Type)(: rhs AST)(: case-numb
 )) FContext[]);
 
 compile-define-tag-constructor := λ(: ctx FContext)(: tag String)(: arg-types Type)(: base-type Type)(: rtype Type)(: case-number U64). (: (tail(
-   (let tg (maybe-deref(tand( (t2( 'Constructor_s (t1 tag) )) (tsized '0_s) ))))
+   (let tg (maybe-deref(tand( (t2( 'Constructor_s (t1 tag) )) (maybe-deref(tand( (t2( 'Sized_s (t1 '0_s) )) (t2( 'FieldsSized_s (t1 '0_s) )) ))) ))))
    (let push-template (fragment-context::lookup( ctx 'template::push_s tg ASTEOF )))
    (let movl-template (fragment-context::lookup( ctx 'template::mov_s (t3( 'Cons_s tg (t1 'LocalVariable_s) )) ASTEOF )))
    (let movg-template (fragment-context::lookup( ctx 'template::mov_s (t3( 'Cons_s tg (t1 'GlobalVariable_s) )) ASTEOF )))
