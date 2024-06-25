@@ -1242,7 +1242,7 @@ typecheck-set-size := λ(: base-type Type)(: args-type Type). (: (tail(
 unify-hint := λ(: hint Type)(: tt Type). (: (tail(
    (match (TPair( hint tt )) (
       ()
-      ( (TPair( (TGround( hint-tag hint-args )) (TGround( tt-tag tt-args )) (
+      ( (TPair( (TGround( hint-tag hint-args )) (TGround( tt-tag tt-args )) )) (
          (if (==( hint-tag tt-tag )) (
             (set tt hint)
          ) ())
