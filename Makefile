@@ -19,7 +19,6 @@ compile-dev: compile-bootstrap
 	./bootstrap -o dev.s DEV/cli.lm
 	as -o dev.o dev.s
 	ld -o dev   dev.o
-	cp dev re-dev
 
 compile-production: compile-bootstrap
 	rm -f production production.o production.s
