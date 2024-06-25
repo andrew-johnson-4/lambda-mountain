@@ -1,5 +1,5 @@
 
-import LIB/default.lm;
+import LIB/dev.lm;
 
 type XYZ<x,y> (XY( x , y )) | X | (Y( x ));
 
