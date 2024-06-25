@@ -758,6 +758,7 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
          )))
       )))
    ))))
+   (print 'Constructor\s_s)(print tag-name)(print '+_s)(print args-type-sized)(print '\n_s)
    (let e1-2 (maybe-deref(fragment::set-type( e1 args-type-sized ))))(set e1 e1-2)
    (let r (maybe-deref(fragment-apply(
       ctx offset 'push_s
