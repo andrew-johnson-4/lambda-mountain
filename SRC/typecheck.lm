@@ -707,10 +707,11 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Ty
          (if (non-zero(typeof term)) () (tail(
             (let tt (maybe-deref(typecheck-typeof-tag l)))
             (if (non-zero tt) (tail(
-               (if (non-zero hint) (tail(
-                  (let tt-2 (maybe-deref(tand( (without-open tt) hint ))))(set tt tt-2)
-                  (print l)(print 'Hinted\s_s)(print tt)(print '\n_s)
-               )) ())
+               (print l)(print 'Hint\sOn\s_s)(print tt)(print '\n_s)
+               (print l)(print 'Hinting\s_s)(print hint)(print '\n_s)
+               (if (non-zero hint) (
+                  (set tt (unify-hint( hint tt )))
+               ) ())
                (ascript-normal( term tt ))
             )) ())
          )))
@@ -1238,4 +1239,21 @@ typecheck-set-size := λ(: base-type Type)(: args-type Type). (: (tail(
    ))
 )) Nil);
 
-
+unify-hint := λ(: hint Type)(: tt Type). (: (tail(
+   (match (TPair( hint tt )) (
+      ()
+      ( (TPair( (TGround( hint-tag hint-args )) (TGround( tt-tag tt-args )) (
+         (if (==( hint-tag tt-tag )) (
+            (set tt hint)
+         ) ())
+      ))
+      ( (TPair( _ (TAnd( lt rt )) )) (
+         (set tt (TAnd(
+            (unify-hint( hint lt ))
+            (unify-hint( hint rt ))
+         )))
+      ))
+      ( _ () )
+   ))
+   tt
+)) Type);
