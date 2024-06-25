@@ -1,14 +1,14 @@
 
 import LIB/default.lm;
 
-import SRC/stable-ast.lm;
-import SRC/stable-types.lm;
-import SRC/stable-utility.lm;
-import SRC/stable-tokenize.lm;
-import SRC/stable-parse.lm;
-import SRC/stable-preprocess.lm;
-import SRC/stable-fragment.lm;
-import SRC/stable-context.lm;
-import SRC/stable-index.lm;
-import SRC/stable-cli.lm;
+import DEV/stable-ast.lm;
+import DEV/stable-types.lm;
+import DEV/stable-utility.lm;
+import DEV/stable-tokenize.lm;
+import DEV/stable-parse.lm;
+import DEV/stable-preprocess.lm;
+import DEV/stable-fragment.lm;
+import DEV/stable-context.lm;
+import DEV/stable-index.lm;
+import DEV/stable-cli.lm;
 

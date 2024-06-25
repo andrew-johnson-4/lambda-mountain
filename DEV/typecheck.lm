@@ -1176,33 +1176,32 @@ is-parameterized := λ(: tt Type). (: (tail(
 )) U64);
 
 typecheck-get-size := λ(: tt Type). (: (tail(
-   (if (is-open tt) (tail(
-      (print 'Cannot\sGet\sSizeof\sOpen\sType:\s_s)
-      (print tt)(print '\n_s)
-      (exit 1_u64)
-   )) ())
-   (let tag '_s)
-   (match tt (
-      ()
-      ( (TGround( tg _ )) (set tag tg) )
-      ( _ () )
-   ))
-   (let sz 0_u64)
-   (let sizes typecheck-type-sizes2)
-   (while (non-zero sizes) (match sizes (
-      ()
-      ( (TSz2Seq( rst kt bt at )) (tail(
-         (if (==( kt tag )) (tail(
-            (let ctx (unify( bt tt )))
-            (let arg-types (substitute( ctx at )))
-            (set sz (max(
-               sz
-               (+( 8_u64 (typecheck-aligned-sizeof arg-types) ))
-            )))
-         )) ())
-         (set sizes rst)
+   (if (is-open tt) (
+      (set sz 0_u64)
+   ) (
+      (let tag '_s)
+      (match tt (
+         ()
+         ( (TGround( tg _ )) (set tag tg) )
+         ( _ () )
+      ))
+      (let sz 0_u64)
+      (let sizes typecheck-type-sizes2)
+      (while (non-zero sizes) (match sizes (
+         ()
+         ( (TSz2Seq( rst kt bt at )) (tail(
+            (if (==( kt tag )) (tail(
+               (let ctx (unify( bt tt )))
+               (let arg-types (substitute( ctx at )))
+               (set sz (max(
+                  sz
+                  (+( 8_u64 (typecheck-aligned-sizeof arg-types) ))
+               )))
+            )) ())
+            (set sizes rst)
+         )))
       )))
-   )))
+   ))
    sz
 )) U64);
 

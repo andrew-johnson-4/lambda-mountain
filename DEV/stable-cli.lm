@@ -1,10 +1,10 @@
 
-import SRC/ast.lm;
-import SRC/typecheck.lm;
-import SRC/codegen.lm;
-import SRC/fragment.lm;
-import SRC/assemble.lm;
-import SRC/data.lm;
+import DEV/ast.lm;
+import DEV/typecheck.lm;
+import DEV/codegen.lm;
+import DEV/fragment.lm;
+import DEV/assemble.lm;
+import DEV/data.lm;
 
 config-strict                := True_u8;
 config-preprocess            := True_u8;
