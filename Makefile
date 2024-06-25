@@ -1,6 +1,6 @@
 
 develop: compile-production
-	time ./production -o tmp.s tests/regress/big_return.lm
+	time ./production -o tmp.s tests/regress/paradata.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp

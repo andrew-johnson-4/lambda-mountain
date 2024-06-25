@@ -1,7 +1,7 @@
 
 import LIB/default.lm;
 
-#type XYZ<x,y> (XY( x , y )) | X | (Y( x ));
+type XYZ<x,y> (XY( x , y )) | X | (Y( x ));
 
 main := λ. (: (tail(
    ()
