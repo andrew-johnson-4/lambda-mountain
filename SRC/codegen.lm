@@ -750,8 +750,8 @@ compile-fragment-args := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
 )) FragmentList);
 
 compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)(: args-type Type)(: args AST)(: offset I64). (: (tail(
-   (print 'Constructor\s1\n_s)
-   (let whitespace-sz (-( (-( (typecheck-sizeof return-type) (typecheck-sizeof args-type) )) 8_u64 )))
+   (print 'Constructor\s1\n_s)(print args-type)
+   (let whitespace-sz (-( (-( (typecheck-aligned-sizeof return-type) (typecheck-aligned-sizeof args-type) )) 8_u64 )))
    (let e1 (maybe-deref(compile-push-rvalue( ctx args (-( offset (as whitespace-sz I64) )) ))))
    (let e1-2 (maybe-deref(fragment::set-type( e1 (t2( 'Constructor_s (t1 tag-name) )) ))))(set e1 e1-2)
    (print 'Constructor\s2\n_s)
@@ -759,7 +759,10 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
       (t2( 'Constructor_s (t1 tag-name) ))
       (maybe-deref(tand(
          args-type
-         (maybe-deref(tsized(to-string(typecheck-sizeof args-type))))
+         (maybe-deref(tand(
+            (t2( 'Sized_s (t1(to-string(typecheck-aligned-sizeof return-type))) ))
+            (t2( 'FieldsSized_s (t1(to-string(typecheck-aligned-sizeof args-type))) ))
+         )))
       )))
    ))))
    (print 'Constructor\s3\s_s)(print tag-name)(print '\s_s)(print args-type-sized)(print '\n_s)
