@@ -370,9 +370,7 @@ without-open := λ(: tt Type). (: (tail(
             ))
          ))
       )))
-      ( _ (if (is-open tt) (tail(
-         (set tt TAny)
-      )) ()))
+      ( _ (if (is-open tt) (set tt TAny) ()))
    ))
    tt
 )) Type);
