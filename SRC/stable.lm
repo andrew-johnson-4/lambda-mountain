@@ -1,5 +1,5 @@
 
-import LIB/default.lm;
+import LIB/dev.lm;
 
 import SRC/stable-ast.lm;
 import SRC/stable-types.lm;
