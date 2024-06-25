@@ -709,12 +709,12 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Ty
       ( (Lit l) (
          (if (non-zero(typeof term)) () (tail(
             (let tt (maybe-deref(typecheck-typeof-tag l)))
-            (if (non-zero tt) (
+            (if (non-zero tt) (tail(
                (if (non-zero hint) (tail(
                   (let tt-2 (maybe-deref(tand( tt hint ))))(set tt tt-2)
                )) ())
                (ascript-normal( term tt ))
-            ) ())
+            )) ())
          )))
       ))
       ( _ (tail(
