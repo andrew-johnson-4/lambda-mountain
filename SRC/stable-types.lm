@@ -312,6 +312,128 @@ substitute := λ(: tctx TContext)(: tt Type). (: (tail(
    tt
 )) Type);
 
+substitute-lhs := λ(: tctx TContext)(: t AST). (: (tail(
+   (match t (
+      ()
+      ( (App( ps (App( (Lit ':_s) (App( (Var v) (AType vt) )) )) )) (
+         (set t (App(
+            (close(substitute-lhs( tctx ps )))
+            (close(App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
+               (close(Var(clone-rope(SAtom v))))
+               (close(AType( (substitute( tctx vt )) )))
+            ))) )))
+         )))
+      ))
+      ( (App( (Lit ':_s) (App( (Var v) (AType vt) )) )) (
+         (set t (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
+            (close(Var(clone-rope(SAtom v))))
+            (close(AType( (substitute( tctx vt )) )))
+         ))) )))
+      ))
+      ( (App( ps (Var v) )) (
+         (set t (App(
+            (close(substitute-lhs( tctx ps )))
+            (close(Var(clone-rope(SAtom v))))
+         )))
+      ))
+      ( (Var v) (set t (Var(clone-rope(SAtom v)))) )
+      ( ASTNil () )
+      ( _ (exit-error( 'Unexpected\sSubstitute\sLHS_s t )) )
+   ))
+   t
+)) AST);
+
+substitute := λ(: tctx TContext)(: t AST). (: (tail(
+   (match t (
+      ()
+      ( ASTEOF () )
+      ( ASTNil () )
+      ( (App( (Lit ':_s) (App( (Lit v) (AType vt) )) )) (tail(
+         (set t (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
+            (close(Lit(clone-rope(SAtom v))))
+            (close(AType( (substitute( tctx vt )) )))
+         ))) )))
+         (while (non-zero tctx) (match tctx (
+            ()
+            ( TCtxNil (set tctx TCtxEOF) )
+            ( (TCtxBind( rst tk tv ta )) (
+               (if (==( tk v )) (tail(
+                  (set t (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
+                     (close(substitute( tctx ta )))
+                     (close(AType( (substitute( tctx vt )) )))
+                  ))) )))
+                  (set tctx TCtxEOF)
+               )) (set tctx rst))
+            ))
+         )))
+      )))
+      ( (App( (Lit ':_s) (App( (Var v) (AType vt) )) )) (tail(
+         (set t (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
+            (close(Var(clone-rope(SAtom v))))
+            (close(AType( (substitute( tctx vt )) )))
+         ))) )))
+         (while (non-zero tctx) (match tctx (
+            ()
+            ( TCtxNil (set tctx TCtxEOF) )
+            ( (TCtxBind( rst tk tv ta )) (
+               (if (==( tk v )) (tail(
+                  (set t (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
+                     (close(substitute( tctx ta )))
+                     (close(AType( (substitute( tctx vt )) )))
+                  ))) )))
+                  (set tctx TCtxEOF)
+               )) (set tctx rst))
+            ))
+         )))
+      )))
+      ( (Lit v) (set t (Lit(clone-rope(SAtom v)))) )
+      ( (Var v) (set t (Var(clone-rope(SAtom v)))) )
+      ( (Abs( lhs rhs tt )) (
+         (set t (Abs(
+            (close(substitute-lhs( tctx lhs )))
+            (close(substitute( tctx rhs )))
+            (substitute( tctx tt ))
+         )))
+      ))
+      ( (AType( tt )) (
+         (set t (AType( (substitute( tctx tt )) )))
+      ))
+      ( (App( lt rt )) (
+         (set t (App(
+            (close(substitute( tctx lt )))
+            (close(substitute( tctx rt )))
+         )))
+      ))
+      ( (Seq( lt rt )) (
+         (set t (Seq(
+            (close(substitute( tctx lt )))
+            (close(substitute( tctx rt )))
+         )))
+      ))
+      ( (Glb( k rt )) (
+         (set t (Glb(
+            k
+            (close(substitute( tctx rt )))
+         )))
+      ))
+      ( (Typedef( lt rt )) (
+         (set t (Typedef(
+            (close(substitute( tctx lt )))
+            (close(substitute( tctx rt )))
+         )))
+      ))
+      ( (Frg( k lt tt )) (
+         (set t (Frg(
+            k
+            (close(substitute( tctx lt )))
+            (substitute( tctx tt ))
+         )))
+      ))
+   ))
+   ()
+   t
+)) AST);
+
 union := λ(: lctx TContext)(: rctx TContext). (: (tail(
    (match rctx (
       ()
@@ -901,11 +1023,19 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (tail(
       ( (TPair( TAny _ )) (
          (set ctx TCtxNil)
       ))
+      ( (TPair( (TVar( ltv )) (TGround( tg TypeEOF )) )) (
+         (set ctx (TCtxBind(
+            (close TCtxEOF)
+            ltv
+            pt
+            (Lit tg)
+         )))
+      ))
       ( (TPair( (TVar( ltv )) rt )) (
          (set ctx (TCtxBind(
             (close TCtxEOF)
             ltv
-            rt
+            pt
             ASTEOF
          )))
       ))

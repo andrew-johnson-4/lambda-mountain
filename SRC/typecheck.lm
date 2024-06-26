@@ -511,10 +511,9 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Ty
             (typecheck-infer-expr( tctx v Used TAny ))
          ))
       ))
-      ( (Frg( k v tlt )) (tail(
+      ( (Frg( k v tlt )) (
          (ascript-normal( v (maybe-deref(typeof term)) ))
-         ()
-      )))
+      ))
       ( (App( (Lit ':_s) (App( (Lit _) (AType tt) )) )) (
          (match term (
             ()
@@ -869,39 +868,6 @@ typecheck-apply-hard := λ(: sloc AST)(: ft Type)(: pt Type)(: do-specialize U8)
 type SpecialRegistry SREOF | (SRSeq( SpecialRegistry[] , String , Type )); zero SpecialRegistry SREOF;
 special-registry := (: SREOF SpecialRegistry);
 
-specialize-term := λ(: tctx TContext)(: t AST). (: (tail(
-   (match t (
-      ()
-      ( ASTEOF (set t ASTEOF) )
-      ( ASTNil (set t ASTNil) )
-      ( (Var l) (set t (Var(clone-rope(SAtom l)))) )
-      ( (Lit l) (set t (Lit(clone-rope(SAtom l)))) )
-      ( (App( lt rt )) (tail(
-         (let lt2 (specialize-term( tctx lt )))
-         (let rt2 (specialize-term( tctx rt )))
-         (set t (App( (close lt2) (close rt2) )))
-      )))
-      ( (Abs( lt rt tlt )) (tail(
-         (let lt2 (specialize-term( tctx lt )))
-         (let rt2 (specialize-term( tctx rt )))
-         (set t (Abs( (close lt2) (close rt2) tlt )))
-      )))
-      ( (AType( tt )) (
-         (set t (AType( (substitute( tctx tt )) )))
-      ))
-      ( (Glb( k v )) (tail(
-         (let k2 (clone-rope(SAtom k)))
-         (let v2 (specialize-term( tctx v )))
-         (set t (Glb( k2 (close v2) )))
-      )))
-      ( _ (tail(
-         (print 'Unexpected\sSpecialize\sTerm:\s_s)(print t)(print '\n_s)
-         (exit 1_u64)
-      )))
-   ))
-   t
-)) AST);
-
 specialize-term := λ(: tctx StringSList)(: t S). (: (tail(
    (match t (
       ()
@@ -950,7 +916,7 @@ specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Ty
       (close special-registry)
       key result-type
    )))
-   (let special-term (specialize-term( unify-ctx term )))
+   (let special-term (substitute( unify-ctx term )))
    (typecheck-infer-global-context( special-term ))
    (typecheck-infer-expr( global-type-context special-term Unused TAny ))
    (set ast-parsed-program (Seq(
@@ -1104,17 +1070,53 @@ guess-only-representation := λ(: tt Type). (: (tail(
    (close tt)
 )) Type[]);
 
+typecheck-infer-tctx := λ(: tctx TContext)(: tt TypeList). (: (tail(
+   (match tt (
+      ()
+      ( TypeEOF () )
+      ( (TypeSeq( rst p1 )) (tail(
+         (set tctx (typecheck-infer-tctx( tctx rst )))
+         (set tctx (typecheck-infer-tctx( tctx p1 )))
+      )))
+   ))
+   tctx
+)) TContext);
+
+typecheck-infer-tctx := λ(: tctx TContext)(: tt Type). (: (tail(
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (tail(
+         (set tctx (typecheck-infer-tctx( tctx lt )))
+         (set tctx (typecheck-infer-tctx( tctx rt )))
+      )))
+      ( (TVar( tv )) (
+         (set tctx (TCtxBind(
+            (close tctx)
+            tv
+            (t1 'Constant_s)
+            ASTEOF
+         )))
+      ))
+      ( (TGround( _ ts )) (
+         (set tctx (typecheck-infer-tctx( tctx ts )))
+      ))
+      ( TAny () )
+   ))
+   tctx
+)) TContext);
+
 typecheck-infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
    (match lhs (
       ()
-      ( (App( (Lit ':_s) (App( (Var v) (AType tt) )) )) (
+      ( (App( (Lit ':_s) (App( (Var v) (AType tt) )) )) (tail(
          (set tctx (TCtxBind(
             (close tctx)
             v
             (maybe-deref(as-local-variable tt))
             ASTEOF
          )))
-      ))
+         (set tctx (typecheck-infer-tctx( tctx tt )))
+      )))
       ( (App( ps (App( (Lit ':_s) (App( (Var v) (AType tt) )) )) )) (tail(
          (set tctx (TCtxBind(
             (close tctx)
@@ -1124,6 +1126,7 @@ typecheck-infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
          )))
          (let tctx2 (maybe-deref(typecheck-infer-ctx( tctx ps ))))
          (set tctx tctx2)
+         (set tctx (typecheck-infer-tctx( tctx tt )))
       )))
       ( ASTNil () )
       ( _ (exit-error( 'Invalid\sLHS_s lhs )) )
