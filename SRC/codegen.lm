@@ -162,6 +162,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                      (let tag-index (index-of-tag val))
                      (let e1 (maybe-deref(fragment::expression(to-string tag-index))))
                      (let e2 (maybe-deref(fragment::set( e1 'program_s (SCons( (close SNil) (close SNil) )) ))))
+                     (set ltype (maybe-deref(tand( ltype (t2( 'FieldsSized_s (t1 '0_s) )) ))))
                      (set e e2)
                   )) (
                      (match val (
