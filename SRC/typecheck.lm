@@ -1104,17 +1104,53 @@ guess-only-representation := λ(: tt Type). (: (tail(
    (close tt)
 )) Type[]);
 
+typecheck-infer-tctx := λ(: tctx TContext)(: tt TypeList). (: (tail(
+   (match tt (
+      ()
+      ( TypeEOF () )
+      ( (TypeSeq( rst p1 )) (tail(
+         (set tctx (typecheck-infer-tctx( tctx rst )))
+         (set tctx (typecheck-infer-tctx( tctx p1 )))
+      )))
+   ))
+   tctx
+)) TContext);
+
+typecheck-infer-tctx := λ(: tctx TContext)(: tt Type). (: (tail(
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (tail(
+         (set tctx (typecheck-infer-tctx( tctx lt )))
+         (set tctx (typecheck-infer-tctx( tctx rt )))
+      )))
+      ( (TVar( tv )) (
+         (set tctx (TCtxBind(
+            (close tctx)
+            tv
+            (t1 'Constant_s)
+            ASTEOF
+         )))
+      ))
+      ( (TGround( _ ts )) (
+         (set tctx (typecheck-infer-tctx( tctx ts )))
+      ))
+      ( TAny () )
+   ))
+   tctx
+)) TContext);
+
 typecheck-infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
    (match lhs (
       ()
-      ( (App( (Lit ':_s) (App( (Var v) (AType tt) )) )) (
+      ( (App( (Lit ':_s) (App( (Var v) (AType tt) )) )) (tail(
          (set tctx (TCtxBind(
             (close tctx)
             v
             (maybe-deref(as-local-variable tt))
             ASTEOF
          )))
-      ))
+         (set tctx (typecheck-infer-tctx( tctx tt )))
+      )))
       ( (App( ps (App( (Lit ':_s) (App( (Var v) (AType tt) )) )) )) (tail(
          (set tctx (TCtxBind(
             (close tctx)
@@ -1124,6 +1160,7 @@ typecheck-infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
          )))
          (let tctx2 (maybe-deref(typecheck-infer-ctx( tctx ps ))))
          (set tctx tctx2)
+         (set tctx (typecheck-infer-tctx( tctx tt )))
       )))
       ( ASTNil () )
       ( _ (exit-error( 'Invalid\sLHS_s lhs )) )
