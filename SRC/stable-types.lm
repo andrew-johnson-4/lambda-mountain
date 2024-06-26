@@ -317,30 +317,38 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
       ()
       ( ASTEOF () )
       ( ASTNil () )
-      ( (Lit v) (
+      ( (App( (Lit ':_s) (App( (Lit v) (AType vt) )) )) (
          (while (non-zero tctx) (match tctx (
             ()
             ( TCtxNil (set tctx TCtxEOF) )
             ( (TCtxBind( rst tk tv ta )) (
                (if (==( tk v )) (tail(
-                  (set t ta)
+                  (set t (App( (close(Lit ':_s)) (close(App(
+                     (close ta)
+                     (close(AType( (substitute( tctx vt )) )))
+                  ))) )))
                   (set tctx TCtxEOF)
                )) (set tctx rst))
             ))
          )))
       ))
-      ( (Var v) (
+      ( (App( (Lit ':_s) (App( (Var v) (AType vt) )) )) (
          (while (non-zero tctx) (match tctx (
             ()
             ( TCtxNil (set tctx TCtxEOF) )
             ( (TCtxBind( rst tk tv ta )) (
                (if (==( tk v )) (tail(
-                  (set t ta)
+                  (set t (App( (close(Lit ':_s)) (close(App(
+                     (close ta)
+                     (close(AType( (substitute( tctx vt )) )))
+                  ))) )))
                   (set tctx TCtxEOF)
                )) (set tctx rst))
             ))
          )))
       ))
+      ( (Lit _) () )
+      ( (Var _) () )
       ( (Abs( lhs rhs tt )) (
          (set t (Abs(
             (close(substitute( tctx lhs )))
