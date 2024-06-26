@@ -1085,7 +1085,6 @@ typecheck-infer-tctx := λ(: tctx TContext)(: tt TypeList). (: (tail(
 )) TContext);
 
 typecheck-infer-tctx := λ(: tctx TContext)(: tt Type). (: (tail(
-   (print 'Infer\sTctx\s_s)(print tt)(print '\n_s)
    (match tt (
       ()
       ( (TAnd( lt rt )) (tail(

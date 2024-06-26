@@ -341,14 +341,21 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
             ))
          )))
       ))
-      ( (Abs( lhs rhs )) (
+      ( (Abs( lhs rhs tt )) (
          (set t (Abs(
             (close(substitute( tctx lhs )))
             (close(substitute( tctx rhs )))
+            (substitute( tctx tt ))
          )))
       ))
       ( (AType( tt )) (
          (set t (AType( (substitute( tctx tt )) )))
+      ))
+      ( (App( lt rt )) (
+         (set t (App(
+            (close(substitute( tctx lt )))
+            (close(substitute( tctx rt )))
+         )))
       ))
       ( (Seq( lt rt )) (
          (set t (Seq(
@@ -369,12 +376,14 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
          )))
       ))
       ( (Frg( k lt tt )) (
-         (set t (Typedef(
+         (set t (Frg(
+            k
             (close(substitute( tctx lt )))
             (substitute( tctx tt ))
          )))
       ))
    ))
+   ()
    t
 )) AST);
 
