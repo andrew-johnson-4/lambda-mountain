@@ -1,7 +1,0 @@
-
-import LIB/default-instruction-set.lm;
-import LIB/default-primitives.lm;
-import LIB/default-rules.lm;
-import LIB/dev-templates.lm;
-import LIB/default-stdlib.lm;
-import LIB/default-numerical-methods.lm;
