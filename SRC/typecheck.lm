@@ -710,8 +710,6 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Ty
                (if (non-zero hint) (
                   (set tt (unify-hint( hint tt )))
                ) ())
-               (print l)(print 'Hint\sOn\s_s)(print tt)(print '\n_s)
-               (print l)(print 'Hinting\s_s)(print hint)(print '\n_s)
                (ascript-normal( term tt ))
             )) ())
          )))
@@ -1245,16 +1243,32 @@ unify-hint := λ(: hint Type)(: tt Type). (: (tail(
       ( (TPair( (TGround( hint-tag hint-args )) (TGround( tt-tag tt-args )) )) (
          (if (==( hint-tag tt-tag )) (
             (set tt hint)
-         ) ())
+         ) (
+            (set tt (TGround( tt-tag (close(unify-hint( hint tt-args ))) )))
+         ))
       ))
-      ( (TPair( _ (TAnd( lt rt )) )) (tail(
-         (let tt-2 (TAnd(
-            (unify-hint( hint lt ))
-            (unify-hint( hint rt ))
+      ( (TPair( _ (TAnd( lt rt )) )) (
+         (set tt (TAnd(
+            (close(unify-hint( hint lt )))
+            (close(unify-hint( hint rt )))
          )))
-         (set tt-2 tt)
-      )))
+      ))
       ( _ () )
    ))
    tt
 )) Type);
+
+unify-hint := λ(: hint Type)(: tt TypeList). (: (tail(
+   (match tt (
+      ()
+      ( TypeEOF () )
+      ( (TypeSeq( rst p1 )) (
+         (set tt (TypeSeq(
+            (close(unify-hint( hint rst )))
+            (unify-hint( hint p1 ))
+         )))
+      ))
+      ( _ () )
+   ))
+   tt
+)) TypeList);
