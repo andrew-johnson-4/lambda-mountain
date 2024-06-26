@@ -323,7 +323,7 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
             ( TCtxNil (set tctx TCtxEOF) )
             ( (TCtxBind( rst tk tv ta )) (
                (if (==( tk v )) (tail(
-                  (set tt ta)
+                  (set t ta)
                   (set tctx TCtxEOF)
                )) (set tctx rst))
             ))
@@ -335,7 +335,7 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
             ( TCtxNil (set tctx TCtxEOF) )
             ( (TCtxBind( rst tk tv ta )) (
                (if (==( tk v )) (tail(
-                  (set tt ta)
+                  (set t ta)
                   (set tctx TCtxEOF)
                )) (set tctx rst))
             ))
