@@ -4,7 +4,7 @@ import LIB/default.lm;
 generic-hash := λ(: x Sized<data-size>). (: (
   (let di 0_u64)
   (let x 2_u64)
-  (while (<( di data-size )) (
+  (while (<( di data-size_u64 )) (
      (set x (+( x di )))
   ))
   x
