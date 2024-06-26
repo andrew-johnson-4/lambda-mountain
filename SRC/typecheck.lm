@@ -692,7 +692,6 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Ty
       ( (Abs( lhs rhs tlt )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-ctx( tctx lhs ))))
          (set tctx tctx2)
-         (print 'Inferred\sContext\s_s)(print tctx)
          (typecheck-infer-expr( tctx rhs Used TAny ))
          (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
          (let rt (maybe-deref(typeof rhs)))

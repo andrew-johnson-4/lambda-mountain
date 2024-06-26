@@ -6,9 +6,9 @@ type S (SNil)
 
 type SPair (SPair( S , S ));
 
-close := λ(: x x). (: (tail(
+close := λ(: c x). (: (tail(
    (mov( (malloc(sizeof x)) R8 ))
-   (mov( x 0_u64 (as R8 x[]) ))
+   (mov( c 0_u64 (as R8 x[]) ))
    (as R8 x[])
 )) x[]);
 
