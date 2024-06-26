@@ -1,7 +1,7 @@
 
-fragment : DontChain template::push := λ(: src Constructor<tag>). (: (
+fragment : DontChain template::push := λ(: src Constructor<tag>+Sized<struct-size>+FieldsSized<fields-size>). (: (
    (.program(
-      (for wsz in (range( '0 (/( (-( (-( 'struct-size 'fields-size )) '8 )) '8 )) )) (
+      (for wsz in (range( '0 (/( (-( (-( (.expression struct-size) (.expression fields-size) )) '8 )) '8 )) )) (
          \t 'pushq \s '$0 \n
       ))
       (.program src)
@@ -9,28 +9,28 @@ fragment : DontChain template::push := λ(: src Constructor<tag>). (: (
    ))
 ) StackVariable);
 
-fragment : DontChain template::mov := λ(: src Constructor<tag>)(: dst LocalVariable). (: (
+fragment : DontChain template::mov := λ(: src Constructor<tag>+Sized<struct-size>+FieldsSized<fields-size>)(: dst LocalVariable). (: (
    (.program(
-      (for wsz in (range( '0 (/( (-( (-( 'struct-size 'fields-size )) '8 )) '8 )) )) (
+      (for wsz in (range( '0 (/( (-( (-( (.expression struct-size) (.expression fields-size) )) '8 )) '8 )) )) (
          \t 'pushq \s '$0 \n
       ))
       (.program src)
       \t 'pushq \s '$ 'case-number \n
-      (for index in (range( 0 (/( 'struct-size '8 )) )) (
+      (for index in (range( 0 (/( (.expression struct-size) '8 )) )) (
          \t 'popq \s (+( (.expression dst) (*( '8 (.expression index) )) )) \[ '%rbp \] \n
       ))
    ))
 ) Nil);
 
-fragment : DontChain template::mov := λ(: src Constructor<tag>)(: dst GlobalVariable). (: (
+fragment : DontChain template::mov := λ(: src Constructor<tag>+Sized<struct-size>+FieldsSized<fields-size>)(: dst GlobalVariable). (: (
    (.program(
-      (for wsz in (range( '0 (/( (-( (-( 'struct-size 'fields-size )) '8 )) '8 )) )) (
+      (for wsz in (range( '0 (/( (-( (-( (.expression struct-size) (.expression fields-size) )) '8 )) '8 )) )) (
          \t 'pushq \s '$0 \n
       ))
       (.program src)
       \t 'pushq \s '$ 'case-number \n
       \t 'movq \s '$ (.expression dst) , \s '%r15 \n
-      (for index in (range( 0 (/( 'struct-size '8 )) )) (
+      (for index in (range( 0 (/( (.expression struct-size) '8 )) )) (
          \t 'popq \s (*( '8 (.expression index) )) \[ '%r15 \] \n
       ))
    ))
