@@ -312,6 +312,30 @@ substitute := λ(: tctx TContext)(: tt Type). (: (tail(
    tt
 )) Type);
 
+substitute-lhs := λ(: tctx TContext)(: t AST). (: (tail(
+   (match t (
+      ()
+      ( (App( (Lit ':_s) (App( (Var v) (AType vt) )) )) (
+         (set t (App( (close(Lit ':_s)) (close(App(
+            (close(Var v))
+            (close(AType( (substitute( tctx vt )) )))
+         ))) )))
+      ))
+      ( (App( ps (App( (Lit ':_s) (App( (Var v) (AType vt) )) )) )) (
+         (set t (close(App(
+            (close(substitute-lhs ps))
+            (close(App( (close(Lit ':_s)) (close(App(
+               (close(Var v))
+               (close(AType( (substitute( tctx vt )) )))
+            ))) )))
+         ))))
+      ))
+      ( ASTNil () )
+      ( _ (exit-error( 'Unexpected\sSubstitute\sLHS_s t )) )
+   ))
+   t
+)) AST);
+
 substitute := λ(: tctx TContext)(: t AST). (: (tail(
    (match t (
       ()
@@ -351,7 +375,7 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
       ( (Var _) () )
       ( (Abs( lhs rhs tt )) (
          (set t (Abs(
-            (close lhs) # dont substitute lhs or else things get weird
+            (close(substitute-lhs( tctx lhs )))
             (close(substitute( tctx rhs )))
             (substitute( tctx tt ))
          )))
