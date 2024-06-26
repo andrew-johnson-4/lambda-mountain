@@ -317,7 +317,18 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
       ()
       ( ASTEOF () )
       ( ASTNil () )
-      ( (Lit _) () )
+      ( (Lit v) (
+         (while (non-zero tctx) (match tctx (
+            ()
+            ( TCtxNil (set tctx TCtxEOF) )
+            ( (TCtxBind( rst tk tv ta )) (
+               (if (==( tk v )) (tail(
+                  (set tt ta)
+                  (set tctx TCtxEOF)
+               )) (set tctx rst))
+            ))
+         )))
+      ))
       ( (Var v) (
          (while (non-zero tctx) (match tctx (
             ()
