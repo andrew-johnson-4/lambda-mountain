@@ -89,7 +89,7 @@ main := λ. (: () Nil);
 ```
 
 This line is a little bit complicated so let's unpack this.
-The first token is variable that will become the function name: `main`.
+The first token is a variable that will become the function name: `main`.
 The next token `:=` is called a "binding" and is used to declare global variables.
 The rest of the line is the function definition.
 Functions are also called lambdas, and are declared with a λ (lambda) token, followed by the left-hand-side, a `.` dot, then the right hand side.
@@ -118,7 +118,7 @@ main:
 
 The main function itself is pretty simple, it just returns immediately.
 The pushing and popping from `%rbp` (base pointer) and `%rsp` (stack pointer) are part of the standard cdecl calling convention.
-This calling convention allows us to store local variable in functions.
+This calling convention allows us to store local variables in functions.
 
 ### Printing to Stdout
 
