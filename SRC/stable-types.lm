@@ -322,13 +322,13 @@ substitute-lhs := λ(: tctx TContext)(: t AST). (: (tail(
          ))) )))
       ))
       ( (App( ps (App( (Lit ':_s) (App( (Var v) (AType vt) )) )) )) (
-         (set t (close(App(
+         (set t (App(
             (close(substitute-lhs ps))
             (close(App( (close(Lit ':_s)) (close(App(
                (close(Var v))
                (close(AType( (substitute( tctx vt )) )))
             ))) )))
-         ))))
+         )))
       ))
       ( ASTNil () )
       ( _ (exit-error( 'Unexpected\sSubstitute\sLHS_s t )) )
