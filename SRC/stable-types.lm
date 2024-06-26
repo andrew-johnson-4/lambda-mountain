@@ -318,15 +318,15 @@ substitute-lhs := λ(: tctx TContext)(: t AST). (: (tail(
       ( (App( ps (App( (Lit ':_s) (App( (Var v) (AType vt) )) )) )) (
          (set t (App(
             (close(substitute-lhs( tctx ps )))
-            (close(App( (close(Lit ':_s)) (close(App(
-               (close(Var v))
+            (close(App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
+               (close(Var(clone-rope(SAtom v))))
                (close(AType( (substitute( tctx vt )) )))
             ))) )))
          )))
       ))
       ( (App( (Lit ':_s) (App( (Var v) (AType vt) )) )) (
-         (set t (App( (close(Lit ':_s)) (close(App(
-            (close(Var v))
+         (set t (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
+            (close(Var(clone-rope(SAtom v))))
             (close(AType( (substitute( tctx vt )) )))
          ))) )))
       ))
