@@ -330,8 +330,13 @@ substitute-lhs := λ(: tctx TContext)(: t AST). (: (tail(
             (close(AType( (substitute( tctx vt )) )))
          ))) )))
       ))
-      ( (App( _ (Var _) )) () )
-      ( (Var _) () )
+      ( (App( ps (Var v) )) (
+         (set t (App(
+            (close(substitute-lhs( tctx ps )))
+            (close(Var(clone-rope(SAtom v))))
+         )))
+      ))
+      ( (Var v) (set t (Var(clone-rope(SAtom v)))) )
       ( ASTNil () )
       ( _ (exit-error( 'Unexpected\sSubstitute\sLHS_s t )) )
    ))
@@ -343,38 +348,46 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
       ()
       ( ASTEOF () )
       ( ASTNil () )
-      ( (App( (Lit ':_s) (App( (Lit v) (AType vt) )) )) (
+      ( (App( (Lit ':_s) (App( (Lit v) (AType vt) )) )) (tail(
+         (set t (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
+            (close(Lit(clone-rope(SAtom v))))
+            (close(AType( (substitute( tctx vt )) )))
+         ))) )))
          (while (non-zero tctx) (match tctx (
             ()
             ( TCtxNil (set tctx TCtxEOF) )
             ( (TCtxBind( rst tk tv ta )) (
                (if (==( tk v )) (tail(
-                  (set t (App( (close(Lit ':_s)) (close(App(
-                     (close ta)
+                  (set t (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
+                     (close(substitute( tctx ta )))
                      (close(AType( (substitute( tctx vt )) )))
                   ))) )))
                   (set tctx TCtxEOF)
                )) (set tctx rst))
             ))
          )))
-      ))
-      ( (App( (Lit ':_s) (App( (Var v) (AType vt) )) )) (
+      )))
+      ( (App( (Lit ':_s) (App( (Var v) (AType vt) )) )) (tail(
+         (set t (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
+            (close(Var(clone-rope(SAtom v))))
+            (close(AType( (substitute( tctx vt )) )))
+         ))) )))
          (while (non-zero tctx) (match tctx (
             ()
             ( TCtxNil (set tctx TCtxEOF) )
             ( (TCtxBind( rst tk tv ta )) (
                (if (==( tk v )) (tail(
-                  (set t (App( (close(Lit ':_s)) (close(App(
-                     (close ta)
+                  (set t (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
+                     (close(substitute( tctx ta )))
                      (close(AType( (substitute( tctx vt )) )))
                   ))) )))
                   (set tctx TCtxEOF)
                )) (set tctx rst))
             ))
          )))
-      ))
-      ( (Lit _) () )
-      ( (Var _) () )
+      )))
+      ( (Lit v) (set t (Lit(clone-rope(SAtom v)))) )
+      ( (Var v) (set t (Var(clone-rope(SAtom v)))) )
       ( (Abs( lhs rhs tt )) (
          (set t (Abs(
             (close(substitute-lhs( tctx lhs )))
