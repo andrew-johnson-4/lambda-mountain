@@ -315,21 +315,23 @@ substitute := λ(: tctx TContext)(: tt Type). (: (tail(
 substitute-lhs := λ(: tctx TContext)(: t AST). (: (tail(
    (match t (
       ()
-      ( (App( (Lit ':_s) (App( (Var v) (AType vt) )) )) (
-         (set t (App( (close(Lit ':_s)) (close(App(
-            (close(Var v))
-            (close(AType( (substitute( tctx vt )) )))
-         ))) )))
-      ))
       ( (App( ps (App( (Lit ':_s) (App( (Var v) (AType vt) )) )) )) (
          (set t (App(
-            (close(substitute-lhs ps))
+            (close(substitute-lhs( tctx ps )))
             (close(App( (close(Lit ':_s)) (close(App(
                (close(Var v))
                (close(AType( (substitute( tctx vt )) )))
             ))) )))
          )))
       ))
+      ( (App( (Lit ':_s) (App( (Var v) (AType vt) )) )) (
+         (set t (App( (close(Lit ':_s)) (close(App(
+            (close(Var v))
+            (close(AType( (substitute( tctx vt )) )))
+         ))) )))
+      ))
+      ( (App( _ (Var _) )) () )
+      ( (Var _) () )
       ( ASTNil () )
       ( _ (exit-error( 'Unexpected\sSubstitute\sLHS_s t )) )
    ))
