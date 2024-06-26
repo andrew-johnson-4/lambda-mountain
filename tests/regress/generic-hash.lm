@@ -1,0 +1,17 @@
+
+import LIB/default.lm;
+
+generic-hash := λ(: x Sized<data-size>). (: (
+  (let di 0_u64)
+  (let x 2_u64)
+  (while (<( di data-size )) (
+     (set x (+( x di )))
+  ))
+  x
+) U64);
+
+main := λ. (: (tail(
+  (print(generic-hash( SNil )))
+  (print(generic-hash( (SAtom 'abc_s) )))
+)) Nil);
+
