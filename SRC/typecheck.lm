@@ -137,7 +137,10 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
             )))
             (maybe-deref(tand(
                (t1 'Constant_s)
-               (t2( 'Constructor_s (t1 tag) ))
+               (maybe-deref(tand(
+                  (t2( 'Constructor_s (t1 tag) ))
+                  (t2( 'FieldsSized_s (t1 '0_s) ))
+               )))
             )))
          ))))
          (index-class-of-tag( tag base-type ))
