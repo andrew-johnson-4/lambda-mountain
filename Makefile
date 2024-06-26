@@ -1,6 +1,6 @@
 
 develop: compile-production
-	time ./production -o tmp.s tests/regress/paradata.lm
+	time ./production -o tmp.s tests/regress/poly_mov.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp
@@ -13,6 +13,12 @@ deploy: compile-production
 	diff deploy.s deploy2.s
 	mv deploy.s BOOTSTRAP/cli.s
 	cargo test regression_tests
+
+compile-dev: compile-bootstrap
+	rm -f dev dev.o dev.s
+	./bootstrap -o dev.s DEV/cli.lm
+	as -o dev.o dev.s
+	ld -o dev   dev.o
 
 compile-production: compile-bootstrap
 	rm -f production production.o production.s

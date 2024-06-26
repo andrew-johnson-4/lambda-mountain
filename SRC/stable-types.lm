@@ -355,6 +355,26 @@ without-tag := λ(: tt Type). (: (tail(
    tt
 )) Type);
 
+without-open := λ(: tt Type). (: (tail(
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (tail(
+         (let lt1 (without-open lt))
+         (let rt1 (without-open rt))
+         (match (TPair( lt1 rt1 )) (
+            ()
+            ( (TPair( TAny rt2 )) (set tt rt2) )
+            ( (TPair( lt2 TAny )) (set tt lt2) )
+            ( (TPair( lt2 rt2 )) (
+               (set tt (TAnd( (close lt2) (close rt2) )))
+            ))
+         ))
+      )))
+      ( _ (if (is-open tt) (set tt TAny) ()))
+   ))
+   tt
+)) Type);
+
 without-tag := λ(: tt TypeList). (: (tail(
    (match tt (
       ()
@@ -498,6 +518,7 @@ without-size := λ(: tt Type). (: (tail(
          ))
       )))
       ( (TGround( 'Sized_s sz )) (set tt TAny) )
+      ( (TGround( 'FieldsSized_s sz )) (set tt TAny) )
       ( (TGround( tag ps )) (
          (set tt (TGround( tag (close(without-size ps)) )))
       ))
@@ -570,6 +591,7 @@ without-size-unless-class-inner := λ(: tt Type). (: (tail(
             ))
          ))
       )))
+      ( (TGround( 'FieldsSized_s _ )) (set tt TAny) )
       ( (TGround( 'Sized_s _ )) (set tt TAny) )
       ( (TGround( tag ps )) (
          (set tt (TGround( tag (close(without-size-unless-class ps)) )))
