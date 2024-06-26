@@ -312,6 +312,61 @@ substitute := λ(: tctx TContext)(: tt Type). (: (tail(
    tt
 )) Type);
 
+substitute := λ(: tctx TContext)(: t AST). (: (tail(
+   (match t (
+      ()
+      ( ASTEOF () )
+      ( ASTNil () )
+      ( (Lit _) () )
+      ( (Var v) (
+         (while (non-zero tctx) (match tctx (
+            ()
+            ( TCtxNil (set tctx TCtxEOF) )
+            ( (TCtxBind( rst tk tv ta )) (
+               (if (==( tk v )) (tail(
+                  (set tt ta)
+                  (set tctx TCtxEOF)
+               )) (set tctx rst))
+            ))
+         )))
+      ))
+      ( (Abs( lhs rhs )) (
+         (set t (Abs(
+            (close(substitute( tctx lhs )))
+            (close(substitute( tctx rhs )))
+         )))
+      ))
+      ( (AType( tt )) (
+         (set t (AType( (substitute( tctx tt )) )))
+      ))
+      ( (Seq( lt rt )) (
+         (set t (Seq(
+            (close(substitute( tctx lt )))
+            (close(substitute( tctx rt )))
+         )))
+      ))
+      ( (Glb( k rt )) (
+         (set t (Glb(
+            k
+            (close(substitute( tctx rt )))
+         )))
+      ))
+      ( (Typedef( lt rt )) (
+         (set t (Typedef(
+            (close(substitute( tctx lt )))
+            (close(substitute( tctx rt )))
+         )))
+      ))
+      ( (Frg( k lt tt )) (
+         (set t (Typedef(
+            (close(substitute( tctx lt )))
+            (substitute( tctx tt ))
+         )))
+      ))
+   ))
+   t
+)) AST);
+
 union := λ(: lctx TContext)(: rctx TContext). (: (tail(
    (match rctx (
       ()
@@ -901,11 +956,19 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (tail(
       ( (TPair( TAny _ )) (
          (set ctx TCtxNil)
       ))
+      ( (TPair( (TVar( ltv )) (TGround( tg TypeEOF )) )) (
+         (set ctx (TCtxBind(
+            (close TCtxEOF)
+            ltv
+            pt
+            (Lit tg)
+         )))
+      ))
       ( (TPair( (TVar( ltv )) rt )) (
          (set ctx (TCtxBind(
             (close TCtxEOF)
             ltv
-            rt
+            pt
             ASTEOF
          )))
       ))

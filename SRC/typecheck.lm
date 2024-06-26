@@ -692,6 +692,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Ty
       ( (Abs( lhs rhs tlt )) (tail(
          (let tctx2 (maybe-deref(typecheck-infer-ctx( tctx lhs ))))
          (set tctx tctx2)
+         (print 'Inferred\sContext\s_s)(print tctx)
          (typecheck-infer-expr( tctx rhs Used TAny ))
          (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
          (let rt (maybe-deref(typeof rhs)))
@@ -869,39 +870,6 @@ typecheck-apply-hard := λ(: sloc AST)(: ft Type)(: pt Type)(: do-specialize U8)
 type SpecialRegistry SREOF | (SRSeq( SpecialRegistry[] , String , Type )); zero SpecialRegistry SREOF;
 special-registry := (: SREOF SpecialRegistry);
 
-specialize-term := λ(: tctx TContext)(: t AST). (: (tail(
-   (match t (
-      ()
-      ( ASTEOF (set t ASTEOF) )
-      ( ASTNil (set t ASTNil) )
-      ( (Var l) (set t (Var(clone-rope(SAtom l)))) )
-      ( (Lit l) (set t (Lit(clone-rope(SAtom l)))) )
-      ( (App( lt rt )) (tail(
-         (let lt2 (specialize-term( tctx lt )))
-         (let rt2 (specialize-term( tctx rt )))
-         (set t (App( (close lt2) (close rt2) )))
-      )))
-      ( (Abs( lt rt tlt )) (tail(
-         (let lt2 (specialize-term( tctx lt )))
-         (let rt2 (specialize-term( tctx rt )))
-         (set t (Abs( (close lt2) (close rt2) tlt )))
-      )))
-      ( (AType( tt )) (
-         (set t (AType( (substitute( tctx tt )) )))
-      ))
-      ( (Glb( k v )) (tail(
-         (let k2 (clone-rope(SAtom k)))
-         (let v2 (specialize-term( tctx v )))
-         (set t (Glb( k2 (close v2) )))
-      )))
-      ( _ (tail(
-         (print 'Unexpected\sSpecialize\sTerm:\s_s)(print t)(print '\n_s)
-         (exit 1_u64)
-      )))
-   ))
-   t
-)) AST);
-
 specialize-term := λ(: tctx StringSList)(: t S). (: (tail(
    (match t (
       ()
@@ -950,7 +918,7 @@ specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Ty
       (close special-registry)
       key result-type
    )))
-   (let special-term (specialize-term( unify-ctx term )))
+   (let special-term (substitute( unify-ctx term )))
    (typecheck-infer-global-context( special-term ))
    (typecheck-infer-expr( global-type-context special-term Unused TAny ))
    (set ast-parsed-program (Seq(
@@ -1117,6 +1085,7 @@ typecheck-infer-tctx := λ(: tctx TContext)(: tt TypeList). (: (tail(
 )) TContext);
 
 typecheck-infer-tctx := λ(: tctx TContext)(: tt Type). (: (tail(
+   (print 'Infer\sTctx\s_s)(print tt)(print '\n_s)
    (match tt (
       ()
       ( (TAnd( lt rt )) (tail(
