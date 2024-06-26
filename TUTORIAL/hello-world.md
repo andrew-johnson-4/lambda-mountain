@@ -142,7 +142,7 @@ The last value of the tail block is `syscall()` which returns Nil, so this match
 
 Literal suffix notation is used to declare the type of unsigned integers such as `11_u64`.
 This suffix notation is implemented as a macro that expands to `(: 11 U64)`.
-Similarly `hello_world_s` indicates a string literal.
+Similarly `hello_world_s` indicates a String literal.
 
 Aside from these conventions the program is very similar to the generated assembly:
 
