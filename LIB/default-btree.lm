@@ -1,0 +1,2 @@
+
+type BTree<K,V> (BTree( U64 , K , V , BTree<K,V>[] , BTree<K,V>[] )) | BTreeEOF;
