@@ -738,11 +738,11 @@ print := λ(: tt Type). (: (match tt (
    ( TAny (print '?_s) )
    ( (TVar( vn )) (print vn) )
    ( (TGround( tag TypeEOF )) (print tag) )
-   ( (TAnd( (TGround( 'Arrow_s ls )) rt )) (tail(
-      (print 'Arrow<_s)
-      (print ls)
-      (print '>\s+\n_s)
-      (print rt)
+   ( (TAnd( lt (TGround( 'Arrow_s rs )) )) (tail(
+      (print lt)
+      (print '\s+\sArrow<_s)
+      (print rs)
+      (print '>_s)
    )))
    ( (TAnd( lt rt )) (tail(
       (print lt)
