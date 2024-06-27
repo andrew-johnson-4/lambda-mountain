@@ -1,0 +1,58 @@
+
+type BTree<k,v> (BTreeBranch( U64 , k , v , BTree<k,v>[] , BTree<k,v>[] )) | BTreeEOF;
+
+.lookup := λ(: index BTree<k,v>)(: k k)(: default v). (: (tail(
+   (let th (hash k))
+   (let continue True_u8)
+   (while (==( continue True_u8 )) (
+      (let ih (.5 (as index BTreeBranch)))
+      (if (==( th ih )) (
+         (if (is( k (.4 (as index BTreeBranch)) )) (tail(
+            (set default (.3 (as index BTreeBranch)))
+            (set continue False_u8)
+         )) ())
+      ) ())
+      (if (==( continue True_u8 )) (
+         (if (<( ih th )) (
+            (if (==( (as (.1 (as index BTreeBranch)) U64) 0_u64 )) (
+               (set continue False_u8)
+            ) (
+               (set index (maybe-deref(.1 (as index BTreeBranch))))
+            ))
+         ) (
+            (if (==( (as (.2 (as index BTreeBranch)) U64) 0_u64 )) (
+               (set continue False_u8)
+            ) (
+               (set index (maybe-deref(.2 (as index BTreeBranch))))
+            ))
+         ))
+      ) ())
+   ))
+   default
+)) v);
+
+.bind := λ(: index BTree<k,v>[])(: k k)(: v v). (: (tail(
+   (let ht (hash k))
+   (let continue True_u8)
+   (let cell (close(BTreeBranch( ht k v (as 0_u64 BTree<k,v>[]) (as 0_u64 BTree<k,v>[]) ))))
+   (while (==( continue True_u8 )) (tail(
+      (let flat-index (maybe-deref index))
+      (if (<( (.5 (as flat-index BTreeBranch)) ht )) (
+         (if (==( (as (.1 (as flat-index BTreeBranch)) U64) 0_u64 )) (tail(
+            (mov( (as cell U64) R8 ))
+            (set[]( (as index Field<Sized<8>,1>[]) 1_u64 R8 ))
+            (set continue False_u8)
+         )) (
+            (set index (.1 (as flat-index BTreeBranch)))
+         ))
+      ) (
+         (if (==( (as (.2 (as flat-index BTreeBranch)) U64) 0_u64 )) (tail(
+            (mov( (as cell U64) R8 ))
+            (set[]( (as index Field<Sized<8>,1>[]) 2_u64 R8 ))
+            (set continue False_u8)
+         )) (
+            (set index (.2 (as flat-index BTreeBranch)))
+         ))
+      ))
+   )))
+)) Nil);
