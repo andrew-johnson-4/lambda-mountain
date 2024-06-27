@@ -286,16 +286,18 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
    ()
 )) Nil);
 
-typecheck-assert-complete := λ(: term AST). (: (
+typecheck-assert-complete := λ(: term AST). (: (tail(
+   ()
    (match term (
       ()
       ( ASTEOF (typecheck-assert-one term) )
       ( ASTNil (typecheck-assert-one term) )
-      ( (Glb( k v )) (
+      ( (Glb( k v )) (tail(
+         (print 'Assert\sComplete\s_s)(print k)(print(typeof term))(print '\n_s)
          (if (is-open(typeof term)) () (
             (typecheck-assert-complete v)
          ))
-      ))
+      )))
       ( (Frg( k v tlt )) (
          (typecheck-assert-one v)
       ))
@@ -355,7 +357,7 @@ typecheck-assert-complete := λ(: term AST). (: (
          (exit 1_u64)
       )))
    ))
-) Nil);
+)) Nil);
 
 typecheck-assert-one := λ(: term AST). (: (
    (if (non-zero(maybe-deref(typeof term))) () (
