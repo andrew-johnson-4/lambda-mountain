@@ -5,25 +5,25 @@ type BTree<k,v> (BTreeBranch( U64 , k , v , BTree<k,v>[] , BTree<k,v>[] )) | BTr
    (let th (hash k))
    (let continue True_u8)
    (while (==( continue True_u8 )) (
-      (let ih (.5 (as index BTree<k,v>)))
+      (let ih (.5 (as index BTreeBranch)))
       (if (==( th ih )) (
-         (if (is( k (.4 (as index BTree<k,v>)) )) (tail(
-            (set default (.3 (as index BTree<k,v>)))
+         (if (is( k (.4 (as index BTreeBranch)) )) (tail(
+            (set default (.3 (as index BTreeBranch)))
             (set continue False_u8)
          )) ())
       ) ())
       (if (==( continue True_u8 )) (
          (if (<( ih th )) (
-            (if (==( (as (.1 (as index BTree<k,v>)) U64) 0_u64 )) (
+            (if (==( (as (.1 (as index BTreeBranch)) U64) 0_u64 )) (
                (set continue False_u8)
             ) (
-               (set index (maybe-deref(.1 (as index BTree<k,v>))))
+               (set index (maybe-deref(.1 (as index BTreeBranch))))
             ))
          ) (
             (if (==( (as (.2 (as index BTree<k,v>)) U64) 0_u64 )) (
                (set continue False_u8)
             ) (
-               (set index (maybe-deref(.2 (as index BTree<k,v>))))
+               (set index (maybe-deref(.2 (as index BTreeBranch))))
             ))
          ))
       ) ())
