@@ -1,5 +1,5 @@
 
-type-index := (: BTreeEOF BTree<AST,Type>);
+type-index := (: BTreeIsEOF BTreeIs<AST,Type>);
 
 typeof := λ(: t AST). (: (tail(
    (let tt (.lookup( type-index t TAny )))
@@ -7,10 +7,10 @@ typeof := λ(: t AST). (: (tail(
 )) Type);
 
 ascript := λ(: t AST)(: tt Type). (: (
-   (.bind( (as (& type-index) BTree<AST,Type>[]) t tt ))
+   (.bind( (as (& type-index) BTreeIs<AST,Type>[]) t tt ))
 ) Nil);
 
-location-index := (: BTreeEOF BTree<String,SourceLocation>);
+location-index := (: BTreeIsEOF BTreeIs<String,SourceLocation>);
 
 location-of := λ(: t String). (: (tail(
    (let loc (.lookup( location-index t (SourceLocation( 'Unknown_s 0_u64 0_u64 )) )))
@@ -18,6 +18,6 @@ location-of := λ(: t String). (: (tail(
 )) SourceLocation);
 
 map-location := λ(: t String)(: tt SourceLocation). (: (
-   (.bind( (as (& location-index) BTree<String,SourceLocation>[]) t tt ))
+   (.bind( (as (& location-index) BTreeIs<String,SourceLocation>[]) t tt ))
 ) Nil);
 
