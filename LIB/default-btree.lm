@@ -1,6 +1,6 @@
 
-type BTreeIs<k,v> (BTreeISBranch( U64 , k , v , BTree<k,v>[] , BTree<k,v>[] )) | BTreeIsEOF;
-type BTreeEq<k,v> (BTreeEqBranch( U64 , k , v , BTree<k,v>[] , BTree<k,v>[] )) | BTreeEqEOF;
+type BTreeIs<k,v> (BTreeISBranch( U64 , k , v , BTreeIs<k,v>[] , BTreeIs<k,v>[] )) | BTreeIsEOF;
+type BTreeEq<k,v> (BTreeEqBranch( U64 , k , v , BTreeEq<k,v>[] , BTreeEq<k,v>[] )) | BTreeEqEOF;
 
 .lookup := λ(: index BTreeIs<k,v>)(: k k)(: default v). (: (tail(
    (let th (hash k))
