@@ -33,7 +33,7 @@ type BTreeEq<k,v> (BTreeEqBranch( U64 , k , v , BTreeEq<k,v>[] , BTreeEq<k,v>[] 
 )) v);
 
 .lookup := λ(: index BTreeEq<k,v>)(: k k)(: default v). (: (tail(
-   (let th (hash k))
+   (let th (deep-hash k))
    (let continue True_u8)
    (while (==( continue True_u8 )) (
       (let ih (.5 (as index BTreeEqBranch)))
