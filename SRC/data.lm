@@ -7,11 +7,15 @@ compile-text-header := λ . (: (tail(
    (set output (SCons( (close output) (close(SAtom '.global\s_start\n_s )) )))
    (set output (SCons( (close output) (close(SAtom '.text\n_s )) )))
    (set output (SCons( (close output) (close(SAtom '_start:\n_s )) )))
+   (if (non-zero assemble-init-section) (tail(
+      (set output (SCons( (close output) (close(SAtom '\tmov\s%rsp,%rbp\n_s )) )))
+      (set output (SCons( (close output) (close assemble-init-section) )))
+      (set output (SCons( (close output) (close(SAtom '\tmov\s%rbp,%rsp\n_s )) )))
+   )) ())
    (if (==( main-with-argv True_u8 )) (tail(
       (set output (SCons( (close output) (close(SAtom '\tpopq\s%r8\n_s )) )))
       (set output (SCons( (close output) (close(SAtom '\tmovq\s%rsp,\s%r9\n_s )) )))
    )) ())
-   (set output (SCons( (close output) (close assemble-init-section) )))
    (if (==( main-with True_u8 )) (tail(
       (set output (SCons( (close output) (close(SAtom '\tpush\s%rbp\n_s )) )))
       (set output (SCons( (close output) (close(SAtom '\tmov\s%rsp,\s%rbp\n_s )) )))
