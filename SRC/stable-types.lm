@@ -3,7 +3,7 @@
 tag-to-class-index := (: StrTEOF StringTypeList);
 
 # global Tag -> Fields map, mutable
-tag-to-fields-index := (: StrTEOF StringTypeList);
+tag-to-fields-index := (: BTreeEqEOF BTreeEq<String,Type>);
 
 # global Tag -> IsFragment? map, mutable
 tag-is-fragment-index := (: SLEOF StringList);
@@ -114,24 +114,12 @@ is-class := λ(: tag String). (: (tail(
 )) U64);
 
 index-fields-of-tag := λ(: tag String)(: fields Type). (: (
-   (set tag-to-fields-index (StrTSeq(
-      (close tag-to-fields-index) tag fields
-   )))
+   (.bind( (as (& tag-to-fields-index) BTreeEq<String,Type>[]) tag fields ))
 ) Nil);
 
 fields-of-tag := λ(: tag String). (: (tail(
-   (let index tag-to-fields-index)
-   (let rt TAny)
-   (while (non-zero index) (match index (
-      ()
-      ( (StrTSeq( rst itag ifields )) (
-         (if (==( tag itag )) (tail(
-            (set rt ifields)
-            (set index StrTEOF)
-         )) (set index rst))
-      ))
-   )))
-   rt
+   (let r (.lookup( tag-to-fields-index tag TAny )))
+   r
 )) Type);
 
 slot := λ(: tt Type)(: sl String). (: (tail(
