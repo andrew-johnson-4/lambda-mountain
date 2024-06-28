@@ -9,7 +9,7 @@ tag-to-fields-index := (: StrTEOF StringTypeList);
 tag-is-fragment-index := (: SLEOF StringList);
 
 # global Class -> Size map, mutable
-class-to-size-index := (: BTreeEqEOF BTree<String,U64>);
+class-to-size-index := (: BTreeEqEOF BTreeEq<String,U64>);
 
 # global Tag -> Index map, mutable
 tag-to-index-index := (: SUEOF StringU64List);
