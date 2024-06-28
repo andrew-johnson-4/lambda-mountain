@@ -12,31 +12,19 @@ tag-is-fragment-index := (: SLEOF StringList);
 class-to-size-index := (: BTreeEqEOF BTreeEq<String,U64>);
 
 # global Tag -> Index map, mutable
-tag-to-index-index := (: SUEOF StringU64List);
+tag-to-index-index := (: BTreeEqEOF BTreeEq<String,U64>);
 unknown-index-of-tag := 99999_u64;
 
 # has typechecking finished? boolean, mutable
 types-have-changed := True_u8;
 
 index-of-tag := λ(: tag String). (: (tail(
-   (let r unknown-index-of-tag)
-   (let index tag-to-index-index)
-   (while (non-zero index) (match index (
-      ()
-      ( (SUSeq( rst tag-name tag-index )) (
-         (if (==( tag tag-name )) (tail(
-            (set r tag-index)
-            (set index SUEOF)
-         )) (set index rst))
-      ))
-   )))
+   (let r (.lookup( tag-to-index-index tag unknown-index-of-tag )))
    r
 )) U64);
 
 index-index-of-tag := λ(: tag String)(: index U64). (: (
-   (set tag-to-index-index (SUSeq(
-      (close tag-to-index-index) tag index
-   )))
+   (.bind( (as (& tag-to-index-index) BTreeEq<String,U64>[]) tag index ))
 ) Nil);
 
 index-size-of-class := λ(: class String)(: size U64). (: (
