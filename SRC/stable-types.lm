@@ -1,6 +1,9 @@
 
 # global Tag -> Class map, mutable
-tag-to-class-index := (: StrTEOF StringTypeList);
+tag-to-class-index := (: BTreeEqEOF BTreeEq<String,Type>);
+
+# global Class -> Yes/No map, mutable
+class-to-yes-index := (: BTreeEqEOF BTreeEq<String,U64>);
 
 # global Tag -> Fields map, mutable
 tag-to-fields-index := (: BTreeEqEOF BTreeEq<String,Type>);
@@ -77,40 +80,28 @@ tag-of := λ(: tt Type). (: (tail(
    tag
 )) String);
 
-index-class-of-tag := λ(: tag String)(: class Type). (: (
-   (set tag-to-class-index (StrTSeq(
-      (close tag-to-class-index) tag class
-   )))
-) Nil);
+index-class-of-tag := λ(: tag String)(: class Type). (: (tail(
+   (.bind( (as (& tag-to-class-index) BTreeEq<String,Type>[]) tag class ))
+   (match class (
+      ()
+      ( (TGround( cls _ )) (
+         (.bind( (as (& class-to-yes-index) BTreeEq<String,U64>[]) cls 1_u64 ))
+      ))
+      ( _ (tail(
+         (print 'Unexpected\sClass\sIn\sindex-class-of-tag:\s_s)(print class)(print '\n_s)
+         (exit 1_u64)
+      )))
+   ))
+)) Nil);
 
 class-of-tag := λ(: tag String). (: (tail(
-   (let index tag-to-class-index)
-   (let rt TAny)
-   (while (non-zero index) (match index (
-      ()
-      ( (StrTSeq( rst itag iclass )) (
-         (if (==( tag itag )) (tail(
-            (set rt iclass)
-            (set index StrTEOF)
-         )) (set index rst))
-      ))
-   )))
-   rt
+   (let r (.lookup( tag-to-class-index tag TAny )))
+   r
 )) Type);
 
 is-class := λ(: tag String). (: (tail(
-   (let index tag-to-class-index)
-   (let rt 0_u64)
-   (while (non-zero index) (match index (
-      ()
-      ( (StrTSeq( rst itag (TGround( ctag _ )) )) (
-         (if (==( tag ctag )) (tail(
-            (set rt 1_u64)
-            (set index StrTEOF)
-         )) (set index rst))
-      ))
-   )))
-   rt
+   (let r (.lookup( class-to-yes-index tag 0_u64 )))
+   r
 )) U64);
 
 index-fields-of-tag := λ(: tag String)(: fields Type). (: (
