@@ -9,7 +9,7 @@ class-to-yes-index := (: BTreeEqEOF BTreeEq<String,U64>);
 tag-to-fields-index := (: BTreeEqEOF BTreeEq<String,Type>);
 
 # global Tag -> IsFragment? map, mutable
-tag-is-fragment-index := (: SLEOF StringList);
+tag-is-fragment-index := (: BTreeEqEOF BTreeEq<String,U64>);
 
 # global Class -> Size map, mutable
 class-to-size-index := (: BTreeEqEOF BTreeEq<String,U64>);
@@ -39,30 +39,16 @@ size-of-class := λ(: class String). (: (
 ) U64);
 
 index-tag-is-fragment := λ(: tag String). (: (
-   (set tag-is-fragment-index (SLSeq(
-      (close tag-is-fragment-index) tag
-   )))
+   (.bind( (as (& tag-is-fragment-index) BTreeEq<String,U64>[]) tag 1_u64 ))
 ) Nil);
 
-is-fragment := λ(: tag String). (: (tail(
-   (let index tag-is-fragment-index)
-   (let rt 0_u64)
-   (while (non-zero index) (match index (
-      ()
-      ( (SLSeq( rst itag )) (
-         (if (==( tag itag )) (tail(
-            (set rt 1_u64)
-            (set index SLEOF)
-         )) (set index rst))
-      ))
-   )))
-   rt
-)) U64);
+is-fragment := λ(: tag String). (: (
+   (.lookup( tag-is-fragment-index tag 0_u64 ))
+) U64);
 
-is-fragment := λ(: tt Type). (: (tail(
-   (let r (is-fragment(tag-of tt)))
-   r
-)) U64);
+is-fragment := λ(: tt Type). (: (
+   (is-fragment(tag-of tt))
+) U64);
 
 tag-of := λ(: tt Type). (: (tail(
    (let tag '_s)
