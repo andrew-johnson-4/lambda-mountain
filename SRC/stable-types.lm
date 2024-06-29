@@ -1,42 +1,33 @@
 
 # global Tag -> Class map, mutable
-tag-to-class-index := (: StrTEOF StringTypeList);
+tag-to-class-index := (: BTreeEqEOF BTreeEq<String,Type>);
+
+# global Class -> Yes/No map, mutable
+class-to-yes-index := (: BTreeEqEOF BTreeEq<String,U64>);
 
 # global Tag -> Fields map, mutable
-tag-to-fields-index := (: StrTEOF StringTypeList);
+tag-to-fields-index := (: BTreeEqEOF BTreeEq<String,Type>);
 
 # global Tag -> IsFragment? map, mutable
-tag-is-fragment-index := (: SLEOF StringList);
+tag-is-fragment-index := (: BTreeEqEOF BTreeEq<String,U64>);
 
 # global Class -> Size map, mutable
 class-to-size-index := (: BTreeEqEOF BTreeEq<String,U64>);
 
 # global Tag -> Index map, mutable
-tag-to-index-index := (: SUEOF StringU64List);
+tag-to-index-index := (: BTreeEqEOF BTreeEq<String,U64>);
 unknown-index-of-tag := 99999_u64;
 
 # has typechecking finished? boolean, mutable
 types-have-changed := True_u8;
 
 index-of-tag := λ(: tag String). (: (tail(
-   (let r unknown-index-of-tag)
-   (let index tag-to-index-index)
-   (while (non-zero index) (match index (
-      ()
-      ( (SUSeq( rst tag-name tag-index )) (
-         (if (==( tag tag-name )) (tail(
-            (set r tag-index)
-            (set index SUEOF)
-         )) (set index rst))
-      ))
-   )))
+   (let r (.lookup( tag-to-index-index tag unknown-index-of-tag )))
    r
 )) U64);
 
 index-index-of-tag := λ(: tag String)(: index U64). (: (
-   (set tag-to-index-index (SUSeq(
-      (close tag-to-index-index) tag index
-   )))
+   (.bind( (as (& tag-to-index-index) BTreeEq<String,U64>[]) tag index ))
 ) Nil);
 
 index-size-of-class := λ(: class String)(: size U64). (: (
@@ -48,30 +39,16 @@ size-of-class := λ(: class String). (: (
 ) U64);
 
 index-tag-is-fragment := λ(: tag String). (: (
-   (set tag-is-fragment-index (SLSeq(
-      (close tag-is-fragment-index) tag
-   )))
+   (.bind( (as (& tag-is-fragment-index) BTreeEq<String,U64>[]) tag 1_u64 ))
 ) Nil);
 
-is-fragment := λ(: tag String). (: (tail(
-   (let index tag-is-fragment-index)
-   (let rt 0_u64)
-   (while (non-zero index) (match index (
-      ()
-      ( (SLSeq( rst itag )) (
-         (if (==( tag itag )) (tail(
-            (set rt 1_u64)
-            (set index SLEOF)
-         )) (set index rst))
-      ))
-   )))
-   rt
-)) U64);
+is-fragment := λ(: tag String). (: (
+   (.lookup( tag-is-fragment-index tag 0_u64 ))
+) U64);
 
-is-fragment := λ(: tt Type). (: (tail(
-   (let r (is-fragment(tag-of tt)))
-   r
-)) U64);
+is-fragment := λ(: tt Type). (: (
+   (is-fragment(tag-of tt))
+) U64);
 
 tag-of := λ(: tt Type). (: (tail(
    (let tag '_s)
@@ -89,61 +66,37 @@ tag-of := λ(: tt Type). (: (tail(
    tag
 )) String);
 
-index-class-of-tag := λ(: tag String)(: class Type). (: (
-   (set tag-to-class-index (StrTSeq(
-      (close tag-to-class-index) tag class
-   )))
-) Nil);
+index-class-of-tag := λ(: tag String)(: class Type). (: (tail(
+   (.bind( (as (& tag-to-class-index) BTreeEq<String,Type>[]) tag class ))
+   (match class (
+      ()
+      ( (TGround( cls _ )) (
+         (.bind( (as (& class-to-yes-index) BTreeEq<String,U64>[]) cls 1_u64 ))
+      ))
+      ( _ (tail(
+         (print 'Unexpected\sClass\sIn\sindex-class-of-tag:\s_s)(print class)(print '\n_s)
+         (exit 1_u64)
+      )))
+   ))
+)) Nil);
 
 class-of-tag := λ(: tag String). (: (tail(
-   (let index tag-to-class-index)
-   (let rt TAny)
-   (while (non-zero index) (match index (
-      ()
-      ( (StrTSeq( rst itag iclass )) (
-         (if (==( tag itag )) (tail(
-            (set rt iclass)
-            (set index StrTEOF)
-         )) (set index rst))
-      ))
-   )))
-   rt
+   (let r (.lookup( tag-to-class-index tag TAny )))
+   r
 )) Type);
 
 is-class := λ(: tag String). (: (tail(
-   (let index tag-to-class-index)
-   (let rt 0_u64)
-   (while (non-zero index) (match index (
-      ()
-      ( (StrTSeq( rst itag (TGround( ctag _ )) )) (
-         (if (==( tag ctag )) (tail(
-            (set rt 1_u64)
-            (set index StrTEOF)
-         )) (set index rst))
-      ))
-   )))
-   rt
+   (let r (.lookup( class-to-yes-index tag 0_u64 )))
+   r
 )) U64);
 
 index-fields-of-tag := λ(: tag String)(: fields Type). (: (
-   (set tag-to-fields-index (StrTSeq(
-      (close tag-to-fields-index) tag fields
-   )))
+   (.bind( (as (& tag-to-fields-index) BTreeEq<String,Type>[]) tag fields ))
 ) Nil);
 
 fields-of-tag := λ(: tag String). (: (tail(
-   (let index tag-to-fields-index)
-   (let rt TAny)
-   (while (non-zero index) (match index (
-      ()
-      ( (StrTSeq( rst itag ifields )) (
-         (if (==( tag itag )) (tail(
-            (set rt ifields)
-            (set index StrTEOF)
-         )) (set index rst))
-      ))
-   )))
-   rt
+   (let r (.lookup( tag-to-fields-index tag TAny )))
+   r
 )) Type);
 
 slot := λ(: tt Type)(: sl String). (: (tail(

@@ -239,6 +239,10 @@ print := λ(: x I8). (: (tail(
    (gensym-label end)
    (mov( l R8 ))
    (mov( r R9 ))
+   (cmp( 0_u64 R8 )) # nil strings are never equal
+   (je( end-false ))
+   (cmp( 0_u64 R9 ))
+   (je( end-false ))
    (label start )
    (mov( R8 0_u64 c1 ))
    (mov( R9 0_u64 c2 ))
