@@ -322,11 +322,11 @@ apply := λ(: ctx Context)(: term AST). (: (tail(
 
 try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
    (let r CtxEOF)
-   (match (APair( lhs term )) (
+   (match (Pair( lhs term )) (
       ()
-      ( (APair( ASTNil ASTNil )) (set r CtxNil) )
-      ( (APair( (App( (App( (Var _) (Var _) )) (Var _) )) (App( (App( (Lit _) _ )) _ )) )) () )
-      ( (APair( (App(pl pr)) (App(el er)) )) (tail(
+      ( (Pair( ASTNil ASTNil )) (set r CtxNil) )
+      ( (Pair( (App( (App( (Var _) (Var _) )) (Var _) )) (App( (App( (Lit _) _ )) _ )) )) () )
+      ( (Pair( (App(pl pr)) (App(el er)) )) (tail(
          (let ll (try-destructure-macro( pl el )))
          (if (non-zero ll) (tail(
             (let rl (try-destructure-macro( pr er )))
@@ -335,7 +335,7 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
             ) ())
          )) ())
       )))
-      ( (APair( (Abs(pl pr ptlt)) (Abs(el er etlt)) )) (tail(
+      ( (Pair( (Abs(pl pr ptlt)) (Abs(el er etlt)) )) (tail(
          (let ll (try-destructure-macro( pl el )))
          (if (non-zero ll) (tail(
             (let rl (try-destructure-macro( pr er )))
@@ -344,28 +344,28 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
             ) ())
          )) ())
       )))
-      ( (APair( (Lit ':Any:_s) (Var '__s) )) (
+      ( (Pair( (Lit ':Any:_s) (Var '__s) )) (
          (set r CtxNil)
       ))
-      ( (APair( (Lit pl) (Var el) )) (
+      ( (Pair( (Lit pl) (Var el) )) (
          (if (==( pl el )) (set r CtxNil) ())
       ))
-      ( (APair( (Lit pl) (Lit el) )) (
+      ( (Pair( (Lit pl) (Lit el) )) (
          (if (==( pl el )) (set r CtxNil) ())
       ))
-      ( (APair( (App( (Lit ':Literal:_s) (Var pv) )) (Lit el) )) (
+      ( (Pair( (App( (Lit ':Literal:_s) (Var pv) )) (Lit el) )) (
          (if (==( (index-of-tag el) unknown-index-of-tag ))
              (set r (CtxBind( (close CtxNil) pv term )))
              ()
          )
       ))
-      ( (APair( (App( (Lit ':Variable:_s) _ )) (Var '__s) )) (
+      ( (Pair( (App( (Lit ':Variable:_s) _ )) (Var '__s) )) (
          ()
       ))
-      ( (APair( (App( (Lit ':Variable:_s) (Var pv) )) (Var el) )) (
+      ( (Pair( (App( (Lit ':Variable:_s) (Var pv) )) (Var el) )) (
          (set r (CtxBind( (close CtxNil) pv term )))
       ))
-      ( (APair( (App( (App( (Lit ':Tag:_s) (Var pv) )) (Var pt) )) (Lit el) )) (
+      ( (Pair( (App( (App( (Lit ':Tag:_s) (Var pv) )) (Var pt) )) (Lit el) )) (
          (if (==( (index-of-tag el) unknown-index-of-tag )) () (tail(
             (set r CtxNil)
             (set r (CtxBind( (close r) pv (
@@ -380,7 +380,7 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
             (set r (CtxBind( (close r) pt (Lit el) )))
          )))
       ))
-      ( (APair( (Var pv) _ )) (
+      ( (Pair( (Var pv) _ )) (
          (set r (CtxBind( (close CtxNil) pv term )))
       ))
       ( _ () )

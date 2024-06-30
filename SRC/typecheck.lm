@@ -960,19 +960,19 @@ is-closing := λ(: tctx TContext). (: (tail(
 )) U64);
 
 right-if-not-left := λ(: lt Type)(: rt Type). (: (tail(
-   (match (TPair( lt rt )) (
+   (match (Pair( lt rt )) (
       ()
-      ( (TPair( _ (TGround( 'Arrow_s _ )) )) () )
-      ( (TPair( (TGround( ltag _ )) (TGround( rtag _ )) )) (
+      ( (Pair( _ (TGround( 'Arrow_s _ )) )) () )
+      ( (Pair( (TGround( ltag _ )) (TGround( rtag _ )) )) (
          (if (==( ltag rtag )) (set rt TAny) ())
       ))
-      ( (TPair( (TAnd( lt1 lt2 )) (TGround( rtag _ )) )) (tail(
+      ( (Pair( (TAnd( lt1 lt2 )) (TGround( rtag _ )) )) (tail(
          (let llt1 (maybe-deref(right-if-not-left( lt1 rt ))))
          (let llt2 (maybe-deref(right-if-not-left( lt2 rt ))))
          (if (non-zero llt1) () (set rt TAny))
          (if (non-zero llt2) () (set rt TAny))
       )))
-      ( (TPair( _ (TAnd( rt1 rt2 )) )) (tail(
+      ( (Pair( _ (TAnd( rt1 rt2 )) )) (tail(
          (let rrt1 (maybe-deref(right-if-not-left( lt rt1 ))))
          (let rrt2 (maybe-deref(right-if-not-left( lt rt2 ))))
          (if (non-zero rrt1) (
@@ -1218,16 +1218,16 @@ typecheck-set-size := λ(: base-type Type)(: args-type Type). (: (tail(
 )) Nil);
 
 unify-hint := λ(: hint Type)(: tt Type). (: (tail(
-   (match (TPair( hint tt )) (
+   (match (Pair( hint tt )) (
       ()
-      ( (TPair( (TGround( hint-tag hint-args )) (TGround( tt-tag tt-args )) )) (
+      ( (Pair( (TGround( hint-tag hint-args )) (TGround( tt-tag tt-args )) )) (
          (if (==( hint-tag tt-tag )) (
             (set tt hint)
          ) (
             (set tt (TGround( tt-tag (close(unify-hint( hint tt-args ))) )))
          ))
       ))
-      ( (TPair( _ (TAnd( lt rt )) )) (
+      ( (Pair( _ (TAnd( lt rt )) )) (
          (set tt (TAnd(
             (close(unify-hint( hint lt )))
             (close(unify-hint( hint rt )))
