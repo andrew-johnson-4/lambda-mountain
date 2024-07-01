@@ -9,10 +9,10 @@ f := λ(: x U64)(: y U64). (: (tail(
    (print 'F1_s)
    (let xyz (Z( (Y( x )) y )))
    (print (.0 xyz))
-   (print (.1 (as xyz Z)))
-   (let xy (.2 (as xyz Z)))
+   (print (.1 (as xyz Tag<Z>)))
+   (let xy (.2 (as xyz Tag<Z>)))
    (print (.0 xy))
-   (print (.1(as xy Y)))
+   (print (.1(as xy Tag<Y>)))
    (print '\n_s)
    xyz
 )) XYZ);
@@ -22,10 +22,10 @@ f2 := λ(: x U64). (: (tail(
    (print 'F2_s)
    (let xyz (Z( (Y( x )) 456_u64 )))
    (print (.0 xyz))
-   (print (.1 (as xyz Z)))
-   (let xy (.2 (as xyz Z)))
+   (print (.1 (as xyz Tag<Z>)))
+   (let xy (.2 (as xyz Tag<Z>)))
    (print (.0 xy))
-   (print (.1(as xy Y)))
+   (print (.1(as xy Tag<Y>)))
    (print '\n_s)
    xyz
 )) XYZ);
@@ -35,7 +35,7 @@ f3 := λ(: x U64)(: y U64). (: (tail(
    (print 'F3_s)
    (let xyz (Y( x )))
    (print (.0 xyz))
-   (print (.1 (as xyz Y)))
+   (print (.1 (as xyz Tag<Y>)))
    (print '\n_s)
    xyz
 )) XY);
@@ -45,7 +45,7 @@ f4 := λ(: x U64). (: (tail(
    (print 'F4_s)
    (let xyz (Y( x )))
    (print (.0 xyz))
-   (print (.1 (as xyz Y)))
+   (print (.1 (as xyz Tag<Y>)))
    (print '\n_s)
    xyz
 )) XY);
@@ -53,10 +53,10 @@ f4 := λ(: x U64). (: (tail(
 f5 := λ(: xyz XYZ). (: (tail(
    (print 'F5_s)
    (print (.0 xyz))
-   (print (.1 (as xyz Z)))
-   (let xy (.2 (as xyz Z)))
+   (print (.1 (as xyz Tag<Z>)))
+   (let xy (.2 (as xyz Tag<Z>)))
    (print (.0 xy))
-   (print (.1(as xy Y)))
+   (print (.1(as xy Tag<Y>)))
    (print '\n_s)
    xyz
 )) XYZ);
@@ -65,10 +65,10 @@ f6 := λ(: abc XYZ). (: (tail(
    (let xyz (Z( (Y( 123_u64 )) 456_u64 )))
    (print 'F6_s)
    (print (.0 xyz))
-   (print (.1 (as xyz Z)))
-   (let xy (.2 (as xyz Z)))
+   (print (.1 (as xyz Tag<Z>)))
+   (let xy (.2 (as xyz Tag<Z>)))
    (print (.0 xy))
-   (print (.1(as xy Y)))
+   (print (.1(as xy Tag<Y>)))
    (print '\n_s)
    xyz
 )) XYZ);
@@ -76,10 +76,10 @@ f6 := λ(: abc XYZ). (: (tail(
 main := λ. (: (tail(
   (let xyz (f( 123_u64 456_u64 )))
   (print (.0 xyz))
-  (print (.1 (as xyz Z)))
-  (let xy (.2 (as xyz Z)))
+  (print (.1 (as xyz Tag<Z>)))
+  (let xy (.2 (as xyz Tag<Z>)))
   (print (.0 xy))
-  (print (.1(as xy Y)))
+  (print (.1(as xy Tag<Y>)))
   (print '\n_s)
   (match (f( 123_u64 456_u64 )) (
      ()
@@ -91,7 +91,7 @@ main := λ. (: (tail(
   ))
   (let xyz (f3( 123_u64 456_u64 )))
   (print (.0 xyz))
-  (print (.1 (as xyz Y)))
+  (print (.1 (as xyz Tag<Y>)))
   (match (f3( 123_u64 456_u64 )) (
      ()
      ( (Y( x )) (tail(
@@ -101,7 +101,7 @@ main := λ. (: (tail(
   ))
   (let xyz (f4( 123_u64 )))
   (print (.0 xyz))
-  (print (.1 (as xyz Y)))
+  (print (.1 (as xyz Tag<Y>)))
   (match (f4( 123_u64 )) (
      ()
      ( (Y( x )) (tail(
@@ -111,10 +111,10 @@ main := λ. (: (tail(
   ))
   (let xyz (f2( 123_u64 )))
   (print (.0 xyz))
-  (print (.1 (as xyz Z)))
-  (let xy (.2 (as xyz Z)))
+  (print (.1 (as xyz Tag<Z>)))
+  (let xy (.2 (as xyz Tag<Z>)))
   (print (.0 xy))
-  (print (.1(as xy Y)))
+  (print (.1(as xy Tag<Y>)))
   (print '\n_s)
   (match (f2( 123_u64 )) (
      ()
@@ -126,17 +126,17 @@ main := λ. (: (tail(
   ))
   (let xyz (f5( (Z( (Y( 123_u64 )) 456_u64 )) )))
   (print (.0 xyz))
-  (print (.1 (as xyz Z)))
-  (let xy (.2 (as xyz Z)))
+  (print (.1 (as xyz Tag<Z>)))
+  (let xy (.2 (as xyz Tag<Z>)))
   (print (.0 xy))
-  (print (.1(as xy Y)))
+  (print (.1(as xy Tag<Y>)))
   (print '\n_s)
   (let xyz (f6( (Z( (Y( 777_u64 )) 888_u64 )) )))
   (print (.0 xyz))
-  (print (.1 (as xyz Z)))
-  (let xy (.2 (as xyz Z)))
+  (print (.1 (as xyz Tag<Z>)))
+  (let xy (.2 (as xyz Tag<Z>)))
   (print (.0 xy))
-  (print (.1(as xy Y)))
+  (print (.1(as xy Tag<Y>)))
   (print '\n_s)
 )) Nil);
 
