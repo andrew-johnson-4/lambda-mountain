@@ -1172,4 +1172,50 @@ ascript-normal := λ(: t AST)(: tt Type). (: (
          (set types-have-changed True_u8)
       )))
    )) ())
-) Nil)
+) Nil);
+
+sizeof-type := λ(: tt Type). (: (tail(
+   (let sz 0_u64)
+   (match tt (
+      ()
+      ( TAny () )
+      ( (TVar _) () )
+      ( (TGround( class TypeEOF )) (set sz (size-of-class class)) )
+      ( (TGround( 'Sized_s (TypeSeq( TypeEOF (TGround( szp TypeEOF )) )) )) (
+         (set sz (to-u64 szp))
+      ))
+      ( (TGround( tag (TypeSeq( TypeEOF p1 )) )) (
+         (set sz (typecheck-get-size tt))
+      ))
+      ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF p1 )) TAny )) )) (
+         (set sz 8_u64)
+      ))
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (set sz (+(
+            (typecheck-aligned-sizeof p1)
+            (typecheck-aligned-sizeof p2)
+         )))
+      ))
+      ( (TGround( 'Field_s (TypeSeq( (TypeSeq( TypeEOF p1 )) (TGround( szp TypeEOF )) )) )) (
+         (set sz (*( (sizeof-type p1) (to-u64 szp) )))
+      ))
+      ( (TGround( tag (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (set sz (typecheck-get-size tt))
+      ))
+      ( (TGround( tag (TypeSeq( (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) p3 )) )) (
+         (set sz (typecheck-get-size tt))
+      ))
+      ( (TAnd( lt rt )) (
+         (if (sizeof-type lt) (
+            (set sz (sizeof-type lt))
+         ) (
+            (set sz (sizeof-type rt))
+         ))
+      ))
+      ( _ (tail(
+         (print 'Unexpected\sType\ssizeof-type\s_s)
+         (print tt)(print '\n_s)(exit 1_u64)
+      )))
+   ))
+   sz
+)) U64);
