@@ -6,25 +6,25 @@ type BTreeEq<k,v> (BTreeEqBranch( U64 , k , v , BTreeEq<k,v>[] , BTreeEq<k,v>[] 
    (let th (hash k))
    (let continue True_u8)
    (while (==( continue True_u8 )) (
-      (let ih (.5 (as index BTreeIsBranch)))
+      (let ih (.5 (as index Tag<BTreeIsBranch>)))
       (if (==( th ih )) (
-         (if (is( k (.4 (as index BTreeIsBranch)) )) (tail(
-            (set default (.3 (as index BTreeIsBranch)))
+         (if (is( k (.4 (as index Tag<BTreeIsBranch>)) )) (tail(
+            (set default (.3 (as index Tag<BTreeIsBranch>)))
             (set continue False_u8)
          )) ())
       ) ())
       (if (==( continue True_u8 )) (
          (if (<( ih th )) (
-            (if (==( (as (.1 (as index BTreeIsBranch)) U64) 0_u64 )) (
+            (if (==( (as (.1 (as index Tag<BTreeIsBranch>)) U64) 0_u64 )) (
                (set continue False_u8)
             ) (
-               (set index (maybe-deref(.1 (as index BTreeIsBranch))))
+               (set index (maybe-deref(.1 (as index Tag<BTreeIsBranch>))))
             ))
          ) (
-            (if (==( (as (.2 (as index BTreeIsBranch)) U64) 0_u64 )) (
+            (if (==( (as (.2 (as index Tag<BTreeIsBranch>)) U64) 0_u64 )) (
                (set continue False_u8)
             ) (
-               (set index (maybe-deref(.2 (as index BTreeIsBranch))))
+               (set index (maybe-deref(.2 (as index Tag<BTreeIsBranch>))))
             ))
          ))
       ) ())
@@ -36,25 +36,25 @@ type BTreeEq<k,v> (BTreeEqBranch( U64 , k , v , BTreeEq<k,v>[] , BTreeEq<k,v>[] 
    (let th (deep-hash k))
    (let continue True_u8)
    (while (==( continue True_u8 )) (
-      (let ih (.5 (as index BTreeEqBranch)))
+      (let ih (.5 (as index Tag<BTreeEqBranch>)))
       (if (==( th ih )) (
-         (if (==( k (.4 (as index BTreeEqBranch)) )) (tail(
-            (set default (.3 (as index BTreeEqBranch)))
+         (if (==( k (.4 (as index Tag<BTreeEqBranch>)) )) (tail(
+            (set default (.3 (as index Tag<BTreeEqBranch>)))
             (set continue False_u8)
          )) ())
       ) ())
       (if (==( continue True_u8 )) (
          (if (<( ih th )) (
-            (if (==( (as (.1 (as index BTreeEqBranch)) U64) 0_u64 )) (
+            (if (==( (as (.1 (as index Tag<BTreeEqBranch>)) U64) 0_u64 )) (
                (set continue False_u8)
             ) (
-               (set index (maybe-deref(.1 (as index BTreeEqBranch))))
+               (set index (maybe-deref(.1 (as index Tag<BTreeEqBranch>))))
             ))
          ) (
-            (if (==( (as (.2 (as index BTreeEqBranch)) U64) 0_u64 )) (
+            (if (==( (as (.2 (as index Tag<BTreeEqBranch>)) U64) 0_u64 )) (
                (set continue False_u8)
             ) (
-               (set index (maybe-deref(.2 (as index BTreeEqBranch))))
+               (set index (maybe-deref(.2 (as index Tag<BTreeEqBranch>))))
             ))
          ))
       ) ())
@@ -68,21 +68,21 @@ type BTreeEq<k,v> (BTreeEqBranch( U64 , k , v , BTreeEq<k,v>[] , BTreeEq<k,v>[] 
    (let cell (close(BTreeIsBranch( ht k v (as 0_u64 BTreeIs<k,v>[]) (as 0_u64 BTreeIs<k,v>[]) ))))
    (while (==( continue True_u8 )) (tail(
       (let flat-index (maybe-deref index))
-      (if (<( (.5 (as flat-index BTreeIsBranch)) ht )) (
-         (if (==( (as (.1 (as flat-index BTreeIsBranch)) U64) 0_u64 )) (tail(
+      (if (<( (.5 (as flat-index Tag<BTreeIsBranch>)) ht )) (
+         (if (==( (as (.1 (as flat-index Tag<BTreeIsBranch>)) U64) 0_u64 )) (tail(
             (mov( (as cell U64) R8 ))
             (set[]( (as index Field<Sized<8>,1>[]) 1_u64 R8 ))
             (set continue False_u8)
          )) (
-            (set index (.1 (as flat-index BTreeIsBranch)))
+            (set index (.1 (as flat-index Tag<BTreeIsBranch>)))
          ))
       ) (
-         (if (==( (as (.2 (as flat-index BTreeIsBranch)) U64) 0_u64 )) (tail(
+         (if (==( (as (.2 (as flat-index Tag<BTreeIsBranch>)) U64) 0_u64 )) (tail(
             (mov( (as cell U64) R8 ))
             (set[]( (as index Field<Sized<8>,1>[]) 2_u64 R8 ))
             (set continue False_u8)
          )) (
-            (set index (.2 (as flat-index BTreeIsBranch)))
+            (set index (.2 (as flat-index Tag<BTreeIsBranch>)))
          ))
       ))
    )))
@@ -95,21 +95,21 @@ type BTreeEq<k,v> (BTreeEqBranch( U64 , k , v , BTreeEq<k,v>[] , BTreeEq<k,v>[] 
    (let cell (close(BTreeEqBranch( ht k v (as 0_u64 BTreeEq<k,v>[]) (as 0_u64 BTreeEq<k,v>[]) ))))
    (while (==( continue True_u8 )) (tail(
       (let flat-index (maybe-deref index))
-      (if (<( (.5 (as flat-index BTreeEqBranch)) ht )) (
-         (if (==( (as (.1 (as flat-index BTreeEqBranch)) U64) 0_u64 )) (tail(
+      (if (<( (.5 (as flat-index Tag<BTreeEqBranch>)) ht )) (
+         (if (==( (as (.1 (as flat-index Tag<BTreeEqBranch>)) U64) 0_u64 )) (tail(
             (mov( (as cell U64) R8 ))
             (set[]( (as index Field<Sized<8>,1>[]) 1_u64 R8 ))
             (set continue False_u8)
          )) (
-            (set index (.1 (as flat-index BTreeEqBranch)))
+            (set index (.1 (as flat-index Tag<BTreeEqBranch>)))
          ))
       ) (
-         (if (==( (as (.2 (as flat-index BTreeEqBranch)) U64) 0_u64 )) (tail(
+         (if (==( (as (.2 (as flat-index Tag<BTreeEqBranch>)) U64) 0_u64 )) (tail(
             (mov( (as cell U64) R8 ))
             (set[]( (as index Field<Sized<8>,1>[]) 2_u64 R8 ))
             (set continue False_u8)
          )) (
-            (set index (.2 (as flat-index BTreeEqBranch)))
+            (set index (.2 (as flat-index Tag<BTreeEqBranch>)))
          ))
       ))
    )))

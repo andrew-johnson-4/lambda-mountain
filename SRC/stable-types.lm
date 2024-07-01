@@ -400,15 +400,6 @@ without-tag := λ(: tt Type). (: (tail(
       )))
       ( (TGround( 'Constructor_s _ )) (set tt TAny) )
       ( (TGround( 'Tag_s _ )) (set tt TAny) )
-      ( (TGround( possibly-tag-name ps )) (tail(
-         (set tt (TGround( possibly-tag-name (close(without-tag ps)) )))
-         (let class (class-of-tag possibly-tag-name))
-         (if (non-zero class) ( # This tag has a class
-            (if (!=( (tag-of class) possibly-tag-name )) ( # This tag is not a class
-               (set tt TAny) # So remove this tag
-            ) ())
-         ) ())
-      )))
       ( tt () )
    ))
    tt
@@ -456,14 +447,6 @@ with-only-tag := λ(: tt Type). (: (tail(
          (if (non-zero rc) (set rt rc) ())
       )))
       ( (TGround( 'Tag_s _ )) (set rt tt) )
-      ( (TGround( tag _ )) (tail(
-         (let class (class-of-tag tag))
-         (if (non-zero class) (
-            (if (not(is-fragment tag)) (
-               (set rt tt)
-            ) ())
-         ) ())
-      )))
       ( _ () )
    ))
    rt
@@ -1040,12 +1023,6 @@ fields-of-tag := λ(: tag Type)(: class Type). (: (tail(
    (match tag (
       ()
       ( (TGround( 'Tag_s (TypeSeq( TypeEOF (TGround( ts _ )) )) )) (match (fields-of-tag ts) (
-         ()
-         ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF fields-lhs )) fields-rhs )) )) (
-            (set rhst (substitute( (unify( fields-lhs class )) fields-rhs )))
-         ))
-      )))
-      ( (TGround( ts _ )) (match (fields-of-tag ts) (
          ()
          ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF fields-lhs )) fields-rhs )) )) (
             (set rhst (substitute( (unify( fields-lhs class )) fields-rhs )))
