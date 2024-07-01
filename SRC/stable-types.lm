@@ -1184,9 +1184,6 @@ sizeof-type := λ(: tt Type). (: (tail(
       ( (TGround( 'Sized_s (TypeSeq( TypeEOF (TGround( szp TypeEOF )) )) )) (
          (set sz (to-u64 szp))
       ))
-      ( (TGround( tag (TypeSeq( TypeEOF p1 )) )) (
-         (set sz (typecheck-get-size tt))
-      ))
       ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF p1 )) TAny )) )) (
          (set sz 8_u64)
       ))
@@ -1199,11 +1196,16 @@ sizeof-type := λ(: tt Type). (: (tail(
       ( (TGround( 'Field_s (TypeSeq( (TypeSeq( TypeEOF p1 )) (TGround( szp TypeEOF )) )) )) (
          (set sz (*( (sizeof-type p1) (to-u64 szp) )))
       ))
-      ( (TGround( tag (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
-         (set sz (typecheck-get-size tt))
-      ))
-      ( (TGround( tag (TypeSeq( (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) p3 )) )) (
-         (set sz (typecheck-get-size tt))
+      ( (TGround( tag _ )) (
+         (match (.lookup( type-complex-fields-index tag (Pair( TAny TAny )) )) (
+            ()
+            ( (Pair( TAny TAny )) () )
+            ( (Pair( bt at )) (tail(
+               (let ctx (unify( bt tt )))
+               (let arg-types (substitute( ctx at )))
+               (set sz (+( 8_u64 (sizeof-aligned arg-types) )))
+            )))
+         ))
       ))
       ( (TAnd( lt rt )) (
          (if (sizeof-type lt) (
@@ -1225,3 +1227,4 @@ sizeof-aligned := λ(: tt Type). (: (tail(
    (if (==( sz 0_u64 )) () (set sz (max( 8_u64 sz ))))
    sz
 )) U64)
+

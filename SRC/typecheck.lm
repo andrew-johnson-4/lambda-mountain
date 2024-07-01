@@ -324,7 +324,7 @@ typecheck-annotate-size-inner := λ(: tt Type). (: (tail(
    (match tt (
       ()
       ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF _ )) TAny )) )) (set sz 8_u64) )
-      ( (TGround( tag (TypeSeq( _ _ )) )) (set sz (typecheck-get-size tt)) )
+      ( (TGround( tag (TypeSeq( _ _ )) )) (set sz (sizeof-type tt)) )
       ( (TGround( class _ )) (set sz (size-of-class class)) )
       ( (TAnd( lt rt )) (
          (set sz (max(
@@ -1106,34 +1106,6 @@ is-parameterized := λ(: tt Type). (: (tail(
       ( _ () )
    ))
    r
-)) U64);
-
-typecheck-get-size := λ(: tt Type). (: (tail(
-   (if (is-open tt) (tail(
-      (print 'Cannot\sGet\sSizeof\sOpen\sType:\s_s)
-      (print tt)(print '\n_s)
-      (exit 1_u64)
-   )) ())
-   (let tag '_s)
-   (match tt (
-      ()
-      ( (TGround( tg _ )) (set tag tg) )
-      ( _ () )
-   ))
-   (let sz 0_u64)
-   (match (.lookup( type-complex-fields-index tag (Pair( TAny TAny )) )) (
-      ()
-      ( (Pair( TAny TAny )) () )
-      ( (Pair( bt at )) (tail(
-         (let ctx (unify( bt tt )))
-         (let arg-types (substitute( ctx at )))
-         (set sz (max(
-            sz
-            (+( 8_u64 (sizeof-aligned arg-types) ))
-         )))
-      )))
-   ))
-   sz
 )) U64);
 
 typecheck-set-size := λ(: base-type Type)(: args-type Type). (: (tail(
