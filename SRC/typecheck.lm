@@ -71,7 +71,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
    (match body (
       ()
       ( (Lit tag) (tail(
-         (typecheck-set-size( base-type (maybe-deref(t1 'Nil_s)) ))
+         (set-size( base-type (maybe-deref(t1 'Nil_s)) ))
          (typecheck-annotate-head-accessor( base-type ))
          (let rtype (maybe-deref(tand(
             (maybe-deref(tand(
@@ -97,7 +97,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
             base-type
             (t2( 'Tag_s (t1 tag) ))
          ))))
-         (typecheck-set-size( base-type atype ))
+         (set-size( base-type atype ))
          (typecheck-annotate-head-accessor( base-type ))
          (typecheck-annotate-accessors( base-type (t2( 'Tag_s (maybe-deref(parse-type tag)) )) atype ))
          (index-class-of-tag( tag base-type ))
@@ -1107,23 +1107,6 @@ is-parameterized := λ(: tt Type). (: (tail(
    ))
    r
 )) U64);
-
-typecheck-set-size := λ(: base-type Type)(: args-type Type). (: (tail(
-   (let tag '_s)
-   (let simple False_u8)
-   (match base-type (
-      ()
-      ( (TGround( tg TypeEOF )) (tail( (set tag tg) (set simple True_u8) )) )
-      ( (TGround( tg _ )) (set tag tg) )
-      ( _ (tail(
-         (print 'ERROR:\stypecheck-set-size\n_s)
-         (exit 1_u64)
-      )))
-   ))
-   (if (==( simple True_u8 )) () (
-      (.bind( (as (& type-complex-fields-index) BTreeEq<String,Tuple<Type,Type>>[]) tag (Pair( base-type args-type )) ))
-   ))
-)) Nil);
 
 unify-hint := λ(: hint Type)(: tt Type). (: (tail(
    (match (Pair( hint tt )) (

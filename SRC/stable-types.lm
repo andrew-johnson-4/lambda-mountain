@@ -1226,5 +1226,21 @@ sizeof-aligned := λ(: tt Type). (: (tail(
    (let sz (sizeof-type tt))
    (if (==( sz 0_u64 )) () (set sz (max( 8_u64 sz ))))
    sz
-)) U64)
+)) U64);
 
+set-size := λ(: base-type Type)(: args-type Type). (: (tail(
+   (let tag '_s)
+   (let simple False_u8)
+   (match base-type (
+      ()
+      ( (TGround( tg TypeEOF )) (tail( (set tag tg) (set simple True_u8) )) )
+      ( (TGround( tg _ )) (set tag tg) )
+      ( _ (tail(
+         (print 'ERROR:\stypecheck-set-size\n_s)
+         (exit 1_u64)
+      )))
+   ))
+   (if (==( simple True_u8 )) () (
+      (.bind( (as (& type-complex-fields-index) BTreeEq<String,Tuple<Type,Type>>[]) tag (Pair( base-type args-type )) ))
+   ))
+)) Nil);
