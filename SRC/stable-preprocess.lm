@@ -377,7 +377,15 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
                   )))
                ))
             ) )))
-            (set r (CtxBind( (close r) pt (Lit el) )))
+            (set r (CtxBind( (close r) pt
+               (Lit(clone-rope(SCons(
+                  (close(SAtom 'Tag<_s))
+                  (close(SCons(
+                     (close(SAtom el))
+                     (close(SAtom '>_s))
+                  )))
+               ))))
+            )))
          )))
       ))
       ( (Pair( (Var pv) _ )) (

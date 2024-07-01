@@ -455,6 +455,7 @@ with-only-tag := λ(: tt Type). (: (tail(
          (let rc (with-only-tag rt1))
          (if (non-zero rc) (set rt rc) ())
       )))
+      ( (TGround( 'Tag_s _ )) (set rt tt) )
       ( (TGround( tag _ )) (tail(
          (let class (class-of-tag tag))
          (if (non-zero class) (
@@ -1038,6 +1039,12 @@ fields-of-tag := λ(: tag Type)(: class Type). (: (tail(
    (let rhst TAny)
    (match tag (
       ()
+      ( (TGround( 'Tag_s (TypeSeq( TypeEOF (TGround( ts _ )) )) )) (match (fields-of-tag ts) (
+         ()
+         ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF fields-lhs )) fields-rhs )) )) (
+            (set rhst (substitute( (unify( fields-lhs class )) fields-rhs )))
+         ))
+      )))
       ( (TGround( ts _ )) (match (fields-of-tag ts) (
          ()
          ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF fields-lhs )) fields-rhs )) )) (
