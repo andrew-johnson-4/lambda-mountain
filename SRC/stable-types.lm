@@ -1192,8 +1192,8 @@ sizeof-type := λ(: tt Type). (: (tail(
       ))
       ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
          (set sz (+(
-            (typecheck-aligned-sizeof p1)
-            (typecheck-aligned-sizeof p2)
+            (sizeof-aligned p1)
+            (sizeof-aligned p2)
          )))
       ))
       ( (TGround( 'Field_s (TypeSeq( (TypeSeq( TypeEOF p1 )) (TGround( szp TypeEOF )) )) )) (
@@ -1219,3 +1219,9 @@ sizeof-type := λ(: tt Type). (: (tail(
    ))
    sz
 )) U64);
+
+sizeof-aligned := λ(: tt Type). (: (tail(
+   (let sz (sizeof-type tt))
+   (if (==( sz 0_u64 )) () (set sz (max( 8_u64 sz ))))
+   sz
+)) U64)

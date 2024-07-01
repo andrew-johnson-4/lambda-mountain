@@ -6,7 +6,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (tail(
       ()
       ( (Abs( lhs rhs tlt )) (if (is-open kt) () (tail(
          (let args-type (domain kt))
-         (let args-size (typecheck-aligned-sizeof args-type))
+         (let args-size (sizeof-aligned args-type))
          (let ctx-2 (maybe-deref(compile-destructure-args( args-type ctx lhs 0_i64 ))))
          (set ctx ctx-2)
          (let ctx-3 (FCtxBind( (close ctx) 'cdecl::args-size_s TAny
@@ -55,7 +55,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (tail(
          )))
          (set assemble-data-section (SCons(
             (close assemble-data-section)
-            (close(SAtom (to-string(typecheck-aligned-sizeof kt))))
+            (close(SAtom (to-string(sizeof-aligned kt))))
          )))
          (set assemble-data-section (SCons(
             (close assemble-data-section)
@@ -236,12 +236,12 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                (let e3 (maybe-deref(fragment-apply( ctx stack-offset 'push_s
                   (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
                   (t3( 'Arrow_s (t3( 'Cons_s tt c-tt ))
-                                (maybe-deref(tand( (t1 'StackVariable_s) (t2( 'Sized_s (t1(to-string(typecheck-aligned-sizeof inner-tt))) )) )))
+                                (maybe-deref(tand( (t1 'StackVariable_s) (t2( 'Sized_s (t1(to-string(sizeof-aligned inner-tt))) )) )))
                   ))
                   term
                ))))
                (let e3-2 (maybe-deref(fragment::set-type( e3 (maybe-deref(tand( inner-tt (maybe-deref(t1 'StackVariable_s)) ))) ))))(set e3 e3-2)
-               (let new-offset (-( stack-offset (as (typecheck-aligned-sizeof inner-tt) I64) )))
+               (let new-offset (-( stack-offset (as (sizeof-aligned inner-tt) I64) )))
                (let e3-3 (maybe-deref(fragment::set-offset( e3 new-offset ))))(set e3 e3-3)
                (set e e3)
             )))
@@ -384,7 +384,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (let rtype-clean (maybe-deref(without-representation rtype)))(set rtype rtype-clean)
          (let rtype-2 (TAnd( (close rtype) (close(t1 'LocalVariable_s)) )))(set rtype rtype-2)
          (let rtype-3 (maybe-deref(typecheck-annotate-size( rtype ))))(set rtype rtype-3)
-         (let size (typecheck-aligned-sizeof rtype))
+         (let size (sizeof-aligned rtype))
          (let e1 (maybe-deref(compile-push-rvalue( ctx rhs stack-offset ))))
          (let bind-offset (-( stack-offset (as size I64) )))
          (let e1-2 (maybe-deref(fragment::set( e1 'unframe_s
@@ -462,10 +462,10 @@ compile-destructure-args := λ(: tt Type)(: ctx FContext)(: lhs AST)(: offset I6
             ()
             ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF rst-tt )) p2 )) )) (tail(
                (let new-ctx-2 (maybe-deref(compile-destructure-args( rst-tt ctx rst offset ))))
-               (let rst-sz (typecheck-aligned-sizeof rst-tt))
+               (let rst-sz (sizeof-aligned rst-tt))
                (let rst-offset (-( offset (as rst-sz I64) )))
                (let kt-2 (TAnd( (close kt) (close(t1 'LocalVariable_s)) )))(set kt kt-2)
-               (let sz (typecheck-aligned-sizeof kt))
+               (let sz (sizeof-aligned kt))
                (let new-offset (-( rst-offset (as sz I64) )))
                (let new-ctx (maybe-deref(fragment-context::bind(
                   new-ctx-2 k kt (maybe-deref(fragment::local-variable( new-offset kt )))
@@ -477,7 +477,7 @@ compile-destructure-args := λ(: tt Type)(: ctx FContext)(: lhs AST)(: offset I6
       ))
       ( (App( (Lit ':_s) (App( (Var k) (AType kt) )) )) (tail(
          (let kt-2 (TAnd( (close kt) (close(t1 'LocalVariable_s)) )))(set kt kt-2)
-         (let sz (typecheck-aligned-sizeof kt))
+         (let sz (sizeof-aligned kt))
          (let new-offset (-( offset (as sz I64) )))
          (let new-ctx (maybe-deref(fragment-context::bind(
             ctx k kt (maybe-deref(fragment::local-variable( new-offset kt )))
@@ -597,7 +597,7 @@ compile-translate-local-variables := λ(: ctx FContext)(: delta I64). (: (tail(
 
 compile-stack-call-push-args := λ(: ctx FContext)(: args AST)(: inner-offset I64). (: (tail(
    (let args-type (maybe-deref(typeof args)))
-   (let args-size (typecheck-aligned-sizeof args-type))
+   (let args-size (sizeof-aligned args-type))
    (let stack-offset 0_i64)
    # is stack-offset really just zero here? TODO confirm
    (let translate-delta (-( 8_i64 inner-offset )))
@@ -667,11 +667,11 @@ compile-maybe-push-stack := λ(: ctx FContext)(: offset I64)(: fragment Fragment
             ctx offset 'push_s
             (FLSeq( (close FLEOF) fragment ))
             (t3( 'Arrow_s ft
-                          (maybe-deref(tand( (t1 'StackVariable_s) (t2( 'Sized_s (t1(to-string(typecheck-aligned-sizeof ft))) )) )))
+                          (maybe-deref(tand( (t1 'StackVariable_s) (t2( 'Sized_s (t1(to-string(sizeof-aligned ft))) )) )))
             ))
             sloc
          ))))(set fragment f-1)
-         (let f-sz (as (typecheck-aligned-sizeof ft) I64))
+         (let f-sz (as (sizeof-aligned ft) I64))
          (let f-2 (maybe-deref(fragment::set-offset( fragment (-( offset f-sz )) ))))(set fragment f-2)
       )))
    ))
@@ -745,13 +745,13 @@ compile-fragment-args := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
 )) FragmentList);
 
 compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)(: args-type Type)(: args AST)(: offset I64). (: (tail(
-   (let whitespace-sz (-( (-( (typecheck-aligned-sizeof return-type) (typecheck-aligned-sizeof args-type) )) 8_u64 )))
+   (let whitespace-sz (-( (-( (sizeof-aligned return-type) (sizeof-aligned args-type) )) 8_u64 )))
    (let e1 (maybe-deref(compile-push-rvalue( ctx args (-( offset (as whitespace-sz I64) )) ))))
    (let constructor-parms (maybe-deref(tand(
       (t2( 'Constructor_s (t1 tag-name) ))
       (maybe-deref(tand(
-         (t2( 'Sized_s (t1(to-string(typecheck-aligned-sizeof return-type))) ))
-         (t2( 'FieldsSized_s (t1(to-string(typecheck-aligned-sizeof args-type))) ))
+         (t2( 'Sized_s (t1(to-string(sizeof-aligned return-type))) ))
+         (t2( 'FieldsSized_s (t1(to-string(sizeof-aligned args-type))) ))
       )))
    ))))
    (let e1-2 (maybe-deref(fragment::set-type( e1 constructor-parms ))))(set e1 e1-2)
