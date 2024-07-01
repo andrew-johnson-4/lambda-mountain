@@ -18,6 +18,12 @@ class-to-size-index := (: BTreeEqEOF BTreeEq<String,U64>);
 tag-to-index-index := (: BTreeEqEOF BTreeEq<String,U64>);
 unknown-index-of-tag := 99999_u64;
 
+# Global Tag -> Type map, mutable
+type-constructors-index := (: BTreeEqEOF BTreeEq<String,Type>);
+
+# Global Tag -> (Type,Type) base-type to fields-type map, mutable
+type-complex-fields-index := (: BTreeEqEOF BTreeEq<String,Tuple<Type,Type>>);
+
 # has typechecking finished? boolean, mutable
 types-have-changed := True_u8;
 
@@ -1166,4 +1172,75 @@ ascript-normal := λ(: t AST)(: tt Type). (: (
          (set types-have-changed True_u8)
       )))
    )) ())
-) Nil)
+) Nil);
+
+sizeof-type := λ(: tt Type). (: (tail(
+   (let sz 0_u64)
+   (match tt (
+      ()
+      ( TAny () )
+      ( (TVar _) () )
+      ( (TGround( class TypeEOF )) (set sz (size-of-class class)) )
+      ( (TGround( 'Sized_s (TypeSeq( TypeEOF (TGround( szp TypeEOF )) )) )) (
+         (set sz (to-u64 szp))
+      ))
+      ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF p1 )) TAny )) )) (
+         (set sz 8_u64)
+      ))
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (set sz (+(
+            (sizeof-aligned p1)
+            (sizeof-aligned p2)
+         )))
+      ))
+      ( (TGround( 'Field_s (TypeSeq( (TypeSeq( TypeEOF p1 )) (TGround( szp TypeEOF )) )) )) (
+         (set sz (*( (sizeof-type p1) (to-u64 szp) )))
+      ))
+      ( (TGround( tag _ )) (
+         (match (.lookup( type-complex-fields-index tag (Pair( TAny TAny )) )) (
+            ()
+            ( (Pair( TAny TAny )) () )
+            ( (Pair( bt at )) (tail(
+               (let ctx (unify( bt tt )))
+               (let arg-types (substitute( ctx at )))
+               (set sz (+( 8_u64 (sizeof-aligned arg-types) )))
+            )))
+         ))
+      ))
+      ( (TAnd( lt rt )) (
+         (if (sizeof-type lt) (
+            (set sz (sizeof-type lt))
+         ) (
+            (set sz (sizeof-type rt))
+         ))
+      ))
+      ( _ (tail(
+         (print 'Unexpected\sType\ssizeof-type\s_s)
+         (print tt)(print '\n_s)(exit 1_u64)
+      )))
+   ))
+   sz
+)) U64);
+
+sizeof-aligned := λ(: tt Type). (: (tail(
+   (let sz (sizeof-type tt))
+   (if (==( sz 0_u64 )) () (set sz (max( 8_u64 sz ))))
+   sz
+)) U64);
+
+set-size := λ(: base-type Type)(: args-type Type). (: (tail(
+   (let tag '_s)
+   (let simple False_u8)
+   (match base-type (
+      ()
+      ( (TGround( tg TypeEOF )) (tail( (set tag tg) (set simple True_u8) )) )
+      ( (TGround( tg _ )) (set tag tg) )
+      ( _ (tail(
+         (print 'ERROR:\stypecheck-set-size\n_s)
+         (exit 1_u64)
+      )))
+   ))
+   (if (==( simple True_u8 )) () (
+      (.bind( (as (& type-complex-fields-index) BTreeEq<String,Tuple<Type,Type>>[]) tag (Pair( base-type args-type )) ))
+   ))
+)) Nil);

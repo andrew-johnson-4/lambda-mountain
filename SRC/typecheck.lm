@@ -1,62 +1,4 @@
 
-typecheck-type-constructors := (: BTreeEqEOF BTreeEq<String,Type>);
-
-type TypeSizeList2 (TSz2EOF) | (TSz2Seq( TypeSizeList2[] , String , Type , Type )); zero TypeSizeList2 TSz2EOF;
-
-typecheck-type-sizes2 := (: TSz2EOF TypeSizeList2);
-
-typecheck-sizeof := λ(: tt Type). (: (tail(
-   (let sz 0_u64)
-   (match tt (
-      ()
-      ( TAny () )
-      ( (TVar _) () )
-      ( (TGround( class TypeEOF )) (set sz (size-of-class class)) )
-      ( (TGround( 'Sized_s (TypeSeq( TypeEOF (TGround( szp TypeEOF )) )) )) (
-         (set sz (to-u64 szp))
-      ))
-      ( (TGround( tag (TypeSeq( TypeEOF p1 )) )) (
-         (set sz (typecheck-get-size tt))
-      ))
-      ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF p1 )) TAny )) )) (
-         (set sz 8_u64)
-      ))
-      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
-         (set sz (+(
-            (typecheck-aligned-sizeof p1)
-            (typecheck-aligned-sizeof p2)
-         )))
-      ))
-      ( (TGround( 'Field_s (TypeSeq( (TypeSeq( TypeEOF p1 )) (TGround( szp TypeEOF )) )) )) (
-         (set sz (*( (typecheck-sizeof p1) (to-u64 szp) )))
-      ))
-      ( (TGround( tag (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
-         (set sz (typecheck-get-size tt))
-      ))
-      ( (TGround( tag (TypeSeq( (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) p3 )) )) (
-         (set sz (typecheck-get-size tt))
-      ))
-      ( (TAnd( lt rt )) (
-         (if (typecheck-sizeof lt) (
-            (set sz (typecheck-sizeof lt))
-         ) (
-            (set sz (typecheck-sizeof rt))
-         ))
-      ))
-      ( _ (tail(
-         (print 'Unexpected\sType\stypecheck-sizeof\s_s)
-         (print tt)(print '\n_s)(exit 1_u64)
-      )))
-   ))
-   sz
-)) U64);
-
-typecheck-aligned-sizeof := λ(: tt Type). (: (tail(
-   (let sz (typecheck-sizeof tt))
-   (if (==( sz 0_u64 )) () (set sz (max( 8_u64 sz ))))
-   sz
-)) U64);
-
 typecheck-typeof-lhs := λ(: lhs AST). (: (tail(
    (let r TAny)
    (match lhs (
@@ -129,7 +71,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
    (match body (
       ()
       ( (Lit tag) (tail(
-         (typecheck-set-size( base-type (maybe-deref(t1 'Nil_s)) ))
+         (set-size( base-type (maybe-deref(t1 'Nil_s)) ))
          (typecheck-annotate-head-accessor( base-type ))
          (let rtype (maybe-deref(tand(
             (maybe-deref(tand(
@@ -146,7 +88,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
          ))))
          (index-class-of-tag( tag base-type ))
          (index-fields-of-tag( tag TAny ))
-         (.bind( (as (& typecheck-type-constructors) BTreeEq<String,Type>[]) tag rtype ))
+         (.bind( (as (& type-constructors-index) BTreeEq<String,Type>[]) tag rtype ))
          (set r 8_u64)
       )))
       ( (App( (Lit tag) args )) (tail(
@@ -155,13 +97,13 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
             base-type
             (t2( 'Tag_s (t1 tag) ))
          ))))
-         (typecheck-set-size( base-type atype ))
+         (set-size( base-type atype ))
          (typecheck-annotate-head-accessor( base-type ))
          (typecheck-annotate-accessors( base-type (t2( 'Tag_s (maybe-deref(parse-type tag)) )) atype ))
          (index-class-of-tag( tag base-type ))
          (index-fields-of-tag( tag (t3( 'Cons_s base-type atype )) ))
-         (.bind( (as (& typecheck-type-constructors) BTreeEq<String,Type>[]) tag (t3( 'Arrow_s atype rtype )) ))
-         (set r (typecheck-aligned-sizeof atype))
+         (.bind( (as (& type-constructors-index) BTreeEq<String,Type>[]) tag (t3( 'Arrow_s atype rtype )) ))
+         (set r (sizeof-aligned atype))
          (set r (+( r 8_u64 )))
       )))
       ( _ () )
@@ -382,7 +324,7 @@ typecheck-annotate-size-inner := λ(: tt Type). (: (tail(
    (match tt (
       ()
       ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF _ )) TAny )) )) (set sz 8_u64) )
-      ( (TGround( tag (TypeSeq( _ _ )) )) (set sz (typecheck-get-size tt)) )
+      ( (TGround( tag (TypeSeq( _ _ )) )) (set sz (sizeof-type tt)) )
       ( (TGround( class _ )) (set sz (size-of-class class)) )
       ( (TAnd( lt rt )) (
          (set sz (max(
@@ -715,7 +657,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Ty
 )) TContext[]);
 
 typecheck-typeof-tag := λ(: tag String). (: (tail(
-   (let r (.lookup( typecheck-type-constructors tag TAny )))
+   (let r (.lookup( type-constructors-index tag TAny )))
    r
 )) Type);
 
@@ -738,7 +680,7 @@ as-constant := λ(: tt Type). (: (tail(
 )) Type[]);
 
 as-return := λ(: tt Type). (: (tail(
-   (let sz (typecheck-sizeof tt))
+   (let sz (sizeof-type tt))
    (let rtrep '_s)
    (match sz (
       ()
@@ -1025,7 +967,7 @@ tlabel := λ. (: (tail(
 )) Type);
 
 with-representation := λ(: tt Type). (: (tail(
-   (let sz (typecheck-sizeof tt))
+   (let sz (sizeof-type tt))
    (match sz (
       ()
       ( 0_u64 () )
@@ -1039,7 +981,7 @@ with-representation := λ(: tt Type). (: (tail(
 )) Type[]);
 
 guess-only-representation := λ(: tt Type). (: (tail(
-   (let sz (typecheck-sizeof tt))
+   (let sz (sizeof-type tt))
    (match sz (
       ()
       ( 0_u64 (set tt TAny) )
@@ -1165,59 +1107,6 @@ is-parameterized := λ(: tt Type). (: (tail(
    ))
    r
 )) U64);
-
-typecheck-get-size := λ(: tt Type). (: (tail(
-   (if (is-open tt) (tail(
-      (print 'Cannot\sGet\sSizeof\sOpen\sType:\s_s)
-      (print tt)(print '\n_s)
-      (exit 1_u64)
-   )) ())
-   (let tag '_s)
-   (match tt (
-      ()
-      ( (TGround( tg _ )) (set tag tg) )
-      ( _ () )
-   ))
-   (let sz 0_u64)
-   (let sizes typecheck-type-sizes2)
-   (while (non-zero sizes) (match sizes (
-      ()
-      ( (TSz2Seq( rst kt bt at )) (tail(
-         (if (==( kt tag )) (tail(
-            (let ctx (unify( bt tt )))
-            (let arg-types (substitute( ctx at )))
-            (set sz (max(
-               sz
-               (+( 8_u64 (typecheck-aligned-sizeof arg-types) ))
-            )))
-         )) ())
-         (set sizes rst)
-      )))
-   )))
-   sz
-)) U64);
-
-typecheck-set-size := λ(: base-type Type)(: args-type Type). (: (tail(
-   (let tag '_s)
-   (let simple False_u8)
-   (match base-type (
-      ()
-      ( (TGround( tg TypeEOF )) (tail( (set tag tg) (set simple True_u8) )) )
-      ( (TGround( tg _ )) (set tag tg) )
-      ( _ (tail(
-         (print 'ERROR:\stypecheck-set-size\n_s)
-         (exit 1_u64)
-      )))
-   ))
-   (if (==( simple True_u8 )) () (
-      (set typecheck-type-sizes2 (TSz2Seq(
-         (close typecheck-type-sizes2)
-         tag
-         base-type
-         args-type
-      )))
-   ))
-)) Nil);
 
 unify-hint := λ(: hint Type)(: tt Type). (: (tail(
    (match (Pair( hint tt )) (
