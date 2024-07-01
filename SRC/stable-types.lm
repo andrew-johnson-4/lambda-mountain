@@ -399,6 +399,7 @@ without-tag := λ(: tt Type). (: (tail(
          ))
       )))
       ( (TGround( 'Constructor_s _ )) (set tt TAny) )
+      ( (TGround( 'Tag_s _ )) (set tt TAny) )
       ( (TGround( possibly-tag-name ps )) (tail(
          (set tt (TGround( possibly-tag-name (close(without-tag ps)) )))
          (let class (class-of-tag possibly-tag-name))

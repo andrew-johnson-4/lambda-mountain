@@ -133,7 +133,8 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
          (typecheck-annotate-head-accessor( base-type ))
          (let rtype (maybe-deref(tand(
             (maybe-deref(tand(
-               base-type (t1 tag)
+               base-type
+               (maybe-deref(tand( (t1 tag) (t2( 'Tag_s (t1 tag) )) )))
             )))
             (maybe-deref(tand(
                (t1 'Constant_s)
@@ -151,7 +152,8 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
       ( (App( (Lit tag) args )) (tail(
          (let atype (maybe-deref(type-of-s args)))
          (let rtype (maybe-deref(tand(
-            base-type (t1 tag)
+            base-type
+            (maybe-deref(tand( (t1 tag) (t2( 'Tag_s (t1 tag) )) )))
          ))))
          (typecheck-set-size( base-type atype ))
          (typecheck-annotate-head-accessor( base-type ))
