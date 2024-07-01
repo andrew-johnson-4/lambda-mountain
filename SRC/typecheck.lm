@@ -1,8 +1,4 @@
 
-type TypeSizeList2 (TSz2EOF) | (TSz2Seq( TypeSizeList2[] , String , Type , Type )); zero TypeSizeList2 TSz2EOF;
-
-typecheck-type-sizes2 := (: TSz2EOF TypeSizeList2);
-
 typecheck-sizeof := λ(: tt Type). (: (tail(
    (let sz 0_u64)
    (match tt (
@@ -1177,21 +1173,18 @@ typecheck-get-size := λ(: tt Type). (: (tail(
       ( _ () )
    ))
    (let sz 0_u64)
-   (let sizes typecheck-type-sizes2)
-   (while (non-zero sizes) (match sizes (
+   (match (.lookup( type-complex-fields-index tag (Pair( TAny TAny )) )) (
       ()
-      ( (TSz2Seq( rst kt bt at )) (tail(
-         (if (==( kt tag )) (tail(
-            (let ctx (unify( bt tt )))
-            (let arg-types (substitute( ctx at )))
-            (set sz (max(
-               sz
-               (+( 8_u64 (typecheck-aligned-sizeof arg-types) ))
-            )))
-         )) ())
-         (set sizes rst)
+      ( (Pair( TAny TAny )) () )
+      ( (Pair( bt at )) (tail(
+         (let ctx (unify( bt tt )))
+         (let arg-types (substitute( ctx at )))
+         (set sz (max(
+            sz
+            (+( 8_u64 (typecheck-aligned-sizeof arg-types) ))
+         )))
       )))
-   )))
+   ))
    sz
 )) U64);
 
@@ -1208,12 +1201,7 @@ typecheck-set-size := λ(: base-type Type)(: args-type Type). (: (tail(
       )))
    ))
    (if (==( simple True_u8 )) () (
-      (set typecheck-type-sizes2 (TSz2Seq(
-         (close typecheck-type-sizes2)
-         tag
-         base-type
-         args-type
-      )))
+      (.bind( (as (& type-complex-fields-index) BTreeEq<String,Tuple<Type,Type>>[]) tag (Pair( base-type args-type )) ))
    ))
 )) Nil);
 
