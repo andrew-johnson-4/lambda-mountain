@@ -1,6 +1,4 @@
 
-typecheck-type-constructors := (: BTreeEqEOF BTreeEq<String,Type>);
-
 type TypeSizeList2 (TSz2EOF) | (TSz2Seq( TypeSizeList2[] , String , Type , Type )); zero TypeSizeList2 TSz2EOF;
 
 typecheck-type-sizes2 := (: TSz2EOF TypeSizeList2);
@@ -146,7 +144,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
          ))))
          (index-class-of-tag( tag base-type ))
          (index-fields-of-tag( tag TAny ))
-         (.bind( (as (& typecheck-type-constructors) BTreeEq<String,Type>[]) tag rtype ))
+         (.bind( (as (& type-constructors-index) BTreeEq<String,Type>[]) tag rtype ))
          (set r 8_u64)
       )))
       ( (App( (Lit tag) args )) (tail(
@@ -160,7 +158,7 @@ typecheck-infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
          (typecheck-annotate-accessors( base-type (t2( 'Tag_s (maybe-deref(parse-type tag)) )) atype ))
          (index-class-of-tag( tag base-type ))
          (index-fields-of-tag( tag (t3( 'Cons_s base-type atype )) ))
-         (.bind( (as (& typecheck-type-constructors) BTreeEq<String,Type>[]) tag (t3( 'Arrow_s atype rtype )) ))
+         (.bind( (as (& type-constructors-index) BTreeEq<String,Type>[]) tag (t3( 'Arrow_s atype rtype )) ))
          (set r (typecheck-aligned-sizeof atype))
          (set r (+( r 8_u64 )))
       )))
@@ -715,7 +713,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Ty
 )) TContext[]);
 
 typecheck-typeof-tag := λ(: tag String). (: (tail(
-   (let r (.lookup( typecheck-type-constructors tag TAny )))
+   (let r (.lookup( type-constructors-index tag TAny )))
    r
 )) Type);
 

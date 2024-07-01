@@ -18,6 +18,9 @@ class-to-size-index := (: BTreeEqEOF BTreeEq<String,U64>);
 tag-to-index-index := (: BTreeEqEOF BTreeEq<String,U64>);
 unknown-index-of-tag := 99999_u64;
 
+# Global Tag -> Type map, muable
+type-constructors-index := (: BTreeEqEOF BTreeEq<String,Type>);
+
 # has typechecking finished? boolean, mutable
 types-have-changed := True_u8;
 
