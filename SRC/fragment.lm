@@ -23,7 +23,7 @@ fragment-size-args := λ(: args FragmentList). (: (tail(
       ()
       ( (FLSeq( rst f )) (tail(
          (let f-tt (maybe-deref(fragment::get-type f)))
-         (let f-tt-sized (maybe-deref(typecheck-annotate-size f-tt)))
+         (let f-tt-sized (maybe-deref(with-size f-tt)))
          (let f-sized (maybe-deref(fragment::set-type( f f-tt-sized ))))(set f f-sized)
          (set args (FLSeq(
             (close(fragment-size-args rst))

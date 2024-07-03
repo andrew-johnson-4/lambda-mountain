@@ -30,6 +30,7 @@ type MacroList MEOF | (MSeq( MacroList[] , Macro )); zero MacroList MEOF;
 preprocess-macros := (: MEOF MacroList);
 ast-tokenized-program := (: SNil S);
 ast-parsed-program := (: ASTEOF AST);
+global-type-context := (: TCtxEOF TContext);
 
 print := λ(: t Context). (: (tail(
    (match t (

@@ -1,32 +1,4 @@
 
-typecheck-typeof-lhs := λ(: lhs AST). (: (tail(
-   (let r TAny)
-   (match lhs (
-      ()
-      ( (App( (Lit ':_s) (App( _ (AType tt) )) )) (
-         (set r tt)
-      ))
-      ( (App( ps (App( (Lit ':_s) (App( _ (AType tt) )) )) )) (
-         (set r (TGround(
-            'Cons_s
-            (close(TypeSeq(
-               (close(TypeSeq(
-                  (close TypeEOF)
-                  (maybe-deref(typecheck-typeof-lhs( ps )))
-               )))
-               tt
-            )))
-         )))
-      ))
-      ( ASTNil (tail(
-         (let r2 (maybe-deref(t1 'Nil_s)))
-         (set r r2)
-      )))
-      ( _ (exit-error( 'Unknown\sLHS_s lhs )))
-   ))
-   r
-)) Type);
-
 typecheck := λ. (: (tail(
    (let p ast-parsed-program)
    (let ordered-type-exprs ASTEOF)
@@ -47,8 +19,6 @@ typecheck := λ. (: (tail(
    (typecheck-infer-expr( global-type-context ast-parsed-program Unused TAny))
    (typecheck-assert-complete ast-parsed-program)
 )) Nil);
-
-global-type-context := (: TCtxEOF TContext);
 
 typecheck-infer-type-definition := λ(: base-type Type)(: body AST). (: (tail(
    (let r 0_u64)
@@ -175,7 +145,7 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
          ))
       )))
       ( (Glb( k (Abs( lhs (App( (Lit ':_s) (App( rhs (AType rhst) )) )) tlt )) )) (tail(
-         (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
+         (let lt (maybe-deref(typeof-lhs lhs)))
          (let return-type (maybe-deref(without-representation rhst)))
          (let return-type-2 (maybe-deref(with-representation return-type)))
          (let ft (t3( 'Arrow_s lt return-type-2 )))
@@ -188,7 +158,7 @@ typecheck-infer-global-context := λ(: td AST). (: (tail(
          )))
       )))
       ( (Frg( k (Abs( lhs (App( (Lit ':_s) (App( rhs (AType rhst) )) )) atlt )) tlt )) (tail(
-         (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
+         (let lt (maybe-deref(typeof-lhs lhs)))
          (let ft (t3( 'Arrow_s lt rhst )))
          (ascript-normal( td ft ))
          (set global-type-context (TCtxBind(
@@ -299,86 +269,6 @@ typecheck-assert-one := λ(: term AST). (: (
    ))
 ) Nil);
 
-typecheck-do-not-size := 99999_u64;
-typecheck-is-sized := λ(: tt Type). (: (tail(
-   (let r 0_u64)
-   (match tt (
-      ()
-      ( TAny (set r typecheck-do-not-size) )
-      ( (TGround( 'Cons_s _ )) (set r typecheck-do-not-size) )
-      ( (TGround( 'Arrow_s _ )) (set r typecheck-do-not-size) )
-      ( (TAnd( lt rt )) (
-         (set r (max(
-            (typecheck-is-sized lt)
-            (typecheck-is-sized rt)
-         )))
-      ))
-      ( (TGround( 'Sized_s _ )) (set r 1_u64) )
-      ( _ () )
-   ))
-   r
-)) U64);
-
-typecheck-annotate-size-inner := λ(: tt Type). (: (tail(
-   (let sz 0_u64)
-   (match tt (
-      ()
-      ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF _ )) TAny )) )) (set sz 8_u64) )
-      ( (TGround( tag (TypeSeq( _ _ )) )) (set sz (sizeof-type tt)) )
-      ( (TGround( class _ )) (set sz (size-of-class class)) )
-      ( (TAnd( lt rt )) (
-         (set sz (max(
-            (typecheck-annotate-size-inner lt)
-            (typecheck-annotate-size-inner rt)
-         )))
-      ))
-      ( _ () )
-   ))
-   sz
-)) U64);
-
-typecheck-annotate-size-recurse := λ(: tt Type). (: (tail(
-   (match tt (
-      ()
-      ( (TAnd( lt rt )) (tail(
-         (let lt2 (maybe-deref(typecheck-annotate-size-recurse lt)))
-         (let rt2 (maybe-deref(typecheck-annotate-size-recurse rt)))
-         (let tt-2 (maybe-deref(tand( lt2 rt2 ))))
-         (set tt tt-2)
-      )))
-      ( (TGround( _ TypeEOF )) () )
-      ( (TGround( tag (TypeSeq( TypeEOF pt1 )) )) (tail(
-         (let pt1t (maybe-deref(typecheck-annotate-size pt1)))
-         (set tt (TGround( tag (
-            (close(TypeSeq(
-               (close TypeEOF)
-               pt1t
-            )))
-         ))))
-      )))
-      ( (TGround( tag (TypeSeq( (TypeSeq( TypeEOF pt1 )) pt2 )) )) (tail(
-         (let pt1t (maybe-deref(typecheck-annotate-size pt1)))
-         (let pt2t (maybe-deref(typecheck-annotate-size pt2)))
-         (set tt (TGround( tag (
-            (close(TypeSeq(
-               (close(TypeSeq(
-                  (close TypeEOF)
-                  pt1t
-               )))
-               pt2t
-            )))
-         ))))
-      )))
-      ( _ () )
-   ))
-   tt
-)) Type);
-
-with-size := λ(: tt Type). (: (tail(
-   (let rt (typecheck-annotate-size tt))
-   rt
-)) Type);
-
 typecheck-annotate-fields := λ(: tt Type). (: (tail(
    (match (slot( tt 'Fields_s )) (
       ()
@@ -393,43 +283,6 @@ typecheck-annotate-fields := λ(: tt Type). (: (tail(
       )))
    ))
    tt
-)) Type);
-
-typecheck-annotate-size := λ(: tt Type). (: (tail(
-   (let return tt)
-   (if (&&( (not(typecheck-is-sized return)) (!=( (typecheck-is-sized return) typecheck-do-not-size )) )) (tail(
-      (let sz (typecheck-annotate-size-inner return))
-      (set return (typecheck-annotate-size-recurse return))
-      (set return (TAnd(
-         (close return)
-         (close(TGround(
-            'Sized_s
-            (close (TypeSeq(
-               (close TypeEOF)
-               (TGround(
-                  (to-string sz)
-                  (close TypeEOF)
-               ))
-            )))
-         )))
-      )))
-   )) ())
-   (match return (
-      ()
-      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
-         (set return (TGround(
-            'Cons_s (close(TypeSeq(
-               (close(TypeSeq(
-                  (close TypeEOF)
-                  (typecheck-annotate-size p1)
-               )))
-               (typecheck-annotate-size p2)
-            )))
-         )))
-      ))
-      ( _ () )
-   ))
-   return
 )) Type);
 
 typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (tail(
@@ -628,7 +481,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Ty
          (let tctx2 (maybe-deref(typecheck-infer-ctx( tctx lhs ))))
          (set tctx tctx2)
          (typecheck-infer-expr( tctx rhs Used TAny ))
-         (let lt (maybe-deref(typecheck-typeof-lhs lhs)))
+         (let lt (maybe-deref(typeof-lhs lhs)))
          (let rt (maybe-deref(typeof rhs)))
          (ascript-normal( term (t3( 'Arrow_s lt rt )) ))
       )))
@@ -637,7 +490,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Ty
       ))
       ( (Lit l) (
          (if (non-zero(typeof term)) () (tail(
-            (let tt (maybe-deref(typecheck-typeof-tag l)))
+            (let tt (maybe-deref(typeof-tag l)))
             (if (non-zero tt) (tail(
                (if (non-zero hint) (
                   (set tt (unify-hint( hint tt )))
@@ -655,29 +508,6 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Ty
    ))
    (close tctx)
 )) TContext[]);
-
-typecheck-typeof-tag := λ(: tag String). (: (tail(
-   (let r (.lookup( type-constructors-index tag TAny )))
-   r
-)) Type);
-
-as-local-variable := λ(: tt Type). (: (tail(
-   (let tt2 (normalize tt))
-   (if (non-zero tt2) (tail(
-      (let tt3 (maybe-deref(tand( tt2 (TGround( 'LocalVariable_s (close TypeEOF) )) ))))
-      (set tt2 tt3)
-   )) ())
-   (let tt3 (maybe-deref(typecheck-annotate-size tt2)))
-   (close tt3)
-)) Type[]);
-
-as-constant := λ(: tt Type). (: (tail(
-   (if (non-zero tt) (tail(
-      (let tt2 (maybe-deref(tand( tt (TGround( 'Constant_s (close TypeEOF) )) ))))
-      (set tt tt2)
-   )) ())
-   (close tt2)
-)) Type[]);
 
 as-return := λ(: tt Type). (: (tail(
    (let sz (sizeof-type tt))

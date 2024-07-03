@@ -665,6 +665,12 @@ print := λ(: tt Type). (: (match tt (
    ( TAny (print '?_s) )
    ( (TVar( vn )) (print vn) )
    ( (TGround( tag TypeEOF )) (print tag) )
+   ( (TAnd( (TGround( 'Arrow_s ls )) rt )) (tail(
+      (print 'Arrow<_s)
+      (print ls)
+      (print '>\s+\n_s)
+      (print rt)
+   )))
    ( (TAnd( lt (TGround( 'Arrow_s rs )) )) (tail(
       (print lt)
       (print '\s+\sArrow<_s)
@@ -1244,3 +1250,110 @@ set-size := λ(: base-type Type)(: args-type Type). (: (tail(
       (.bind( (as (& type-complex-fields-index) BTreeEq<String,Tuple<Type,Type>>[]) tag (Pair( base-type args-type )) ))
    ))
 )) Nil);
+
+typeof-lhs := λ(: lhs AST). (: (tail(
+   (let r TAny)
+   (match lhs (
+      ()
+      ( (App( (Lit ':_s) (App( _ (AType tt) )) )) (
+         (set r tt)
+      ))
+      ( (App( ps (App( (Lit ':_s) (App( _ (AType tt) )) )) )) (
+         (set r (t3( 'Cons_s (typeof-lhs ps) tt )))
+      ))
+      ( ASTNil (
+         (set r (t1 'Nil_s))
+      ))
+      ( _ (exit-error( 'Unknown\sLHS_s lhs )))
+   ))
+   r
+)) Type);
+
+typeof-tag := λ(: tag String). (: (tail(
+   (let r (.lookup( type-constructors-index tag TAny )))
+   r
+)) Type);
+
+as-local-variable := λ(: tt Type). (: (tail(
+   (set tt (normalize tt))
+   (if (non-zero tt) (
+      (set tt (TAnd( (close tt) (close(t1 'LocalVariable_s)) )))
+   ) ())
+   (set tt (with-size tt))
+   tt
+)) Type);
+
+as-constant := λ(: tt Type). (: (tail(
+   (if (non-zero tt) (
+      (set tt (TAnd( (close tt) (close(t1 'Constant_s)) )))
+   ) ())
+   tt
+)) Type);
+
+with-size := λ(: tt Type). (: (tail(
+   (if (not(is-sized tt)) (tail(
+      (let sz (sizeof-type tt))
+      (set tt (with-size-recurse tt))
+      (set tt (and( tt (t2( 'Sized_s (t1(to-string sz)) )) )))
+   )) ())
+   (match tt (
+      ()
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (set tt (t3( 'Cons_s (with-size p1) (with-size p2) )))
+      ))
+      ( _ () )
+   ))
+   tt
+)) Type);
+
+with-size := λ(: tt TypeList). (: (tail(
+   (match tt (
+      ()
+      ( TypeEOF () )
+      ( (TypeSeq( ps p1 )) (
+         (set tt (TypeSeq( (close(with-size ps)) (with-size p1) )))
+      ))
+   ))
+   tt
+)) TypeList);
+
+with-size-recurse := λ(: tt Type). (: (tail(
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (
+         (set tt (and(
+            (with-size-recurse lt)
+            (with-size-recurse rt)
+         )))
+      ))
+      ( (TGround( tag ps )) (
+         (set tt (TGround( tag (close(with-size ps)) )))
+      ))
+      ( _ () )
+   ))
+   tt
+)) Type);
+
+is-sized := λ(: tt Type). (: (tail(
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( TAny (set r 1_u64) )
+      ( (TGround( 'Cons_s _ )) (set r 1_u64) )
+      ( (TGround( 'Arrow_s _ )) (set r 1_u64) )
+      ( (TGround( 'Sized_s _ )) (set r 1_u64) )
+      ( (TAnd( lt rt )) (
+         (set r (max(
+            (is-sized lt)
+            (is-sized rt)
+         )))
+      ))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+and := λ(: lt Type)(: rt Type). (: (tail(
+   (let tt (TAnd( (close lt) (close rt) )))
+   tt
+)) Type);
