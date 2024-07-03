@@ -20,8 +20,6 @@ typecheck := λ. (: (tail(
    (typecheck-assert-complete ast-parsed-program)
 )) Nil);
 
-global-type-context := (: TCtxEOF TContext);
-
 typecheck-infer-type-definition := λ(: base-type Type)(: body AST). (: (tail(
    (let r 0_u64)
    (match body (
@@ -609,7 +607,7 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Ty
       ))
       ( (Lit l) (
          (if (non-zero(typeof term)) () (tail(
-            (let tt (maybe-deref(typecheck-typeof-tag l)))
+            (let tt (maybe-deref(typeof-tag l)))
             (if (non-zero tt) (tail(
                (if (non-zero hint) (
                   (set tt (unify-hint( hint tt )))
@@ -627,29 +625,6 @@ typecheck-infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Ty
    ))
    (close tctx)
 )) TContext[]);
-
-typecheck-typeof-tag := λ(: tag String). (: (tail(
-   (let r (.lookup( type-constructors-index tag TAny )))
-   r
-)) Type);
-
-as-local-variable := λ(: tt Type). (: (tail(
-   (let tt2 (normalize tt))
-   (if (non-zero tt2) (tail(
-      (let tt3 (maybe-deref(tand( tt2 (TGround( 'LocalVariable_s (close TypeEOF) )) ))))
-      (set tt2 tt3)
-   )) ())
-   (let tt3 (maybe-deref(typecheck-annotate-size tt2)))
-   (close tt3)
-)) Type[]);
-
-as-constant := λ(: tt Type). (: (tail(
-   (if (non-zero tt) (tail(
-      (let tt2 (maybe-deref(tand( tt (TGround( 'Constant_s (close TypeEOF) )) ))))
-      (set tt tt2)
-   )) ())
-   (close tt2)
-)) Type[]);
 
 as-return := λ(: tt Type). (: (tail(
    (let sz (sizeof-type tt))

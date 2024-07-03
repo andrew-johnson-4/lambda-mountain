@@ -1262,3 +1262,24 @@ typeof-lhs := λ(: lhs AST). (: (tail(
    ))
    r
 )) Type);
+
+typeof-tag := λ(: tag String). (: (tail(
+   (let r (.lookup( type-constructors-index tag TAny )))
+   r
+)) Type);
+
+as-local-variable := λ(: tt Type). (: (tail(
+   (set tt (normalize tt))
+   (if (non-zero tt) (
+      (set tt (TAnd( (close tt) (close(t1 'LocalVariable_s)) )))
+   ) ())
+   (set tt (with-size tt))
+   tt
+)) Type);
+
+as-constant := λ(: tt Type). (: (tail(
+   (if (non-zero tt) (
+      (set tt (TAnd( (close tt) (close(t1 'Constant_s)) )))
+   ) ())
+   tt
+)) Type);
