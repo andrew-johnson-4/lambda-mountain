@@ -492,15 +492,15 @@ to-u64 := λ(: s String). (: (tail(
    i
 )) U64);
 
-max := λ(: l U64)(: r U64). (: (tail(
+max := λ(: l x)(: r x). (: (tail(
    (if (<( l r )) (set l r) ())
    l
-)) U64);
+)) x);
 
-max := λ(: l I64)(: r I64). (: (tail(
-   (if (<( l r )) (set l r) ())
+min := λ(: l x)(: r x). (: (tail(
+   (if (>( l r )) (set l r) ())
    l
-)) I64);
+)) x);
 
 to-hex := λ(: i U64). (: (tail(
    (let buff SNil)

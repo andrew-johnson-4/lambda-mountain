@@ -383,7 +383,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (let rtype (maybe-deref(typeof rhs)))
          (let rtype-clean (maybe-deref(without-representation rtype)))(set rtype rtype-clean)
          (let rtype-2 (TAnd( (close rtype) (close(t1 'LocalVariable_s)) )))(set rtype rtype-2)
-         (let rtype-3 (maybe-deref(typecheck-annotate-size( rtype ))))(set rtype rtype-3)
+         (let rtype-3 (maybe-deref(with-size( rtype ))))(set rtype rtype-3)
          (let size (sizeof-aligned rtype))
          (let e1 (maybe-deref(compile-push-rvalue( ctx rhs stack-offset ))))
          (let bind-offset (-( stack-offset (as size I64) )))
