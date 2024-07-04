@@ -6,6 +6,35 @@ type S (SNil)
 
 type Tuple<x,y> (Pair( x , y ));
 
+== := λ(: l Tuple<x,y>)(: r Tuple<x,y>). (: (tail(
+   (let return 0_u64)
+   (match (Pair( l r )) (
+      ()
+      ( (Pair( (Pair( lx ly )) (Pair( rx ry )) )) (
+         (if (==( lx rx )) (
+            (if (==( ly ry )) (
+               (set return 1_u64)
+            ) ())
+         ) ())
+      ))
+   ))
+   return
+)) U64);
+
+deep-hash := λ(: l Tuple<x,y>). (: (tail(
+   (let return 0_u64)
+   (match l (
+      ()
+      ( (Pair( lx ly )) (
+         (set return (+(
+            (deep-hash lx)
+            (deep-hash ly)
+         )))
+      ))
+   ))
+   return
+)) U64);
+
 close := λ(: x x). (: (tail(
    (mov( (malloc(sizeof x)) R8 ))
    (mov( x 0_u64 (as R8 x[]) ))

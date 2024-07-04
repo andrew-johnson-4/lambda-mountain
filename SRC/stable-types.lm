@@ -27,6 +27,17 @@ type-complex-fields-index := (: BTreeEqEOF BTreeEq<String,Tuple<Type,Type>>);
 # has typechecking finished? boolean, mutable
 types-have-changed := True_u8;
 
+is-special-index := (: BTreeEqEOF BTreeEq<Tuple<String,Type>,U64>);
+
+mark-as-special := λ(: name String)(: tt Type). (: (
+   (.bind( (as (& is-special-index) BTreeEq<Tuple<String,Type>,U64>[]) (Pair( name tt )) 1_u64 ))
+) Nil);
+
+is-special := λ(: name String)(: tt Type). (: (tail(
+   (let r (.lookup( is-special-index (Pair( name tt )) 0_u64 )))
+   r
+)) U64);
+
 index-of-tag := λ(: tag String). (: (tail(
    (let r (.lookup( tag-to-index-index tag unknown-index-of-tag )))
    r
@@ -1355,5 +1366,122 @@ is-sized := λ(: tt Type). (: (tail(
 
 and := λ(: lt Type)(: rt Type). (: (tail(
    (let tt (TAnd( (close lt) (close rt) )))
+   tt
+)) Type);
+
+is-parameterized := λ(: tt Type). (: (tail(
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( (TGround( _ (TypeSeq( _ _ )) )) (set r 1_u64) )
+      ( (TAnd( lt rt )) (tail(
+         (if (is-parameterized lt) (set r 1_u64) ())
+         (if (is-parameterized rt) (set r 1_u64) ())
+      )))
+      ( _ () )
+   ))
+   r
+)) U64);
+
+deep-hash := λ(: tt Type). (: (tail(
+   (let return 0_u64)
+   (match tt (
+      ()
+      ( TAny () )
+      ( (TAnd( lt rt )) (
+         (set return (+(
+            (deep-hash lt)
+            (deep-hash rt)
+         )))
+      ))
+      ( (TGround( tag ps )) (
+         (set return (+(
+            (deep-hash tag)
+            (deep-hash ps)
+         )))
+      ))
+   ))
+   return
+)) U64);
+
+deep-hash := λ(: tt TypeList). (: (tail(
+   (let return 0_u64)
+   (match tt (
+      ()
+      ( TypeEOF () )
+      ( (TypeSeq( ts t1 )) (
+         (set return (+(
+            (deep-hash ts)
+            (deep-hash t1)
+         )))
+      ))
+   ))
+   return
+)) U64);
+
+specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
+   (set unify-ctx (normalize unify-ctx))
+   (let term ASTEOF)
+   (let global-ctx global-type-context)
+   (while (non-zero global-ctx) (match global-ctx (
+      ()
+      ( TCtxNil (set global-ctx TCtxEOF) )
+      ( (TCtxBind( rst k kt t )) (tail(
+         (if (==( k key )) (
+            (if (==( ft kt )) (
+               (match t (
+                  ()
+                  ( (Glb( _ (Abs( _ _ _ )) )) (set term t) )
+                  ( _ () )
+               ))
+            ) ())
+         ) ())
+         (set global-ctx rst)
+      )))
+   )))
+   (mark-as-special( key result-type ))
+   (let special-term (substitute( unify-ctx term )))
+   (infer-global-context( special-term ))
+   (infer-expr( global-type-context special-term Unused TAny ))
+   (set ast-parsed-program (Seq(
+      (close ast-parsed-program)
+      (close special-term)
+   )))
+)) Nil);
+
+has-representation := λ(: tt Type). (: (tail(
+   (let return 0_u64)
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (
+         (set return (max(
+            (has-representation lt)
+            (has-representation rt)
+         )))
+      ))
+      ( (TGround( 'Constant_s _ )) (set return 1_u64) )
+      ( (TGround( 'Reg8_s _ )) (set return 1_u64) )
+      ( (TGround( 'Reg16_s _ )) (set return 1_u64) )
+      ( (TGround( 'Reg32_s _ )) (set return 1_u64) )
+      ( (TGround( 'Reg64_s _ )) (set return 1_u64) )
+      ( (TGround( 'StackVariable_s _ )) (set return 1_u64) )
+      ( _ () )
+   ))
+   return
+)) U64);
+
+guess-representation := λ(: tt Type). (: (tail(
+   (if (has-representation tt) () (tail(
+      (let sz (sizeof-type tt))
+      (match sz (
+         ()
+         ( 0_u64 () )
+         ( 1_u64 (set tt (and( tt (t1( 'Reg8_s )) ))) )
+         ( 2_u64 (set tt (and( tt (t1( 'Reg16_s )) ))) )
+         ( 4_u64 (set tt (and( tt (t1( 'Reg32_s )) ))) )
+         ( 8_u64 (set tt (and( tt (t1( 'Reg64_s )) ))) )
+         ( _ (set tt (and( tt (t1( 'StackVariable_s )) ))) )
+      ))
+   )))
    tt
 )) Type);
