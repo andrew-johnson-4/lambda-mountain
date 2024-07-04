@@ -509,28 +509,6 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
    (close tctx)
 )) TContext[]);
 
-as-return := λ(: tt Type). (: (tail(
-   (let sz (sizeof-type tt))
-   (let rtrep '_s)
-   (match sz (
-      ()
-      ( 0_u64 () )
-      ( 1_u64 (set rtrep 'Reg8_s) )
-      ( 2_u64 (set rtrep 'Reg16_s) )
-      ( 4_u64 (set rtrep 'Reg32_s) )
-      ( 8_u64 (set rtrep 'Reg64_s) )
-      ( _ (set rtrep 'StackVariable_s) )
-   ))
-   (if (head-string rtrep) (tail(
-      (let tt-2 (maybe-deref(tand(
-         tt
-         (TGround( rtrep (close TypeEOF) ))
-      ))))
-      (set tt tt-2)
-   )) ())
-   (close tt)
-)) Type[]);
-
 typecheck-apply-plural := λ(: sloc AST)(: many Type)(: pt Type). (: (tail(
    (let tt (typecheck-apply-plural( sloc many pt True_u8 )))
    tt
@@ -586,7 +564,7 @@ typecheck-apply-hard := λ(: sloc AST)(: ft Type)(: pt Type)(: do-specialize U8)
             (if (non-zero ctx) (tail(
                (let ctx-2 (normalize ctx))(set ctx ctx-2)
                (let closed-type (substitute( ctx ft )))
-               (let rt1 (maybe-deref(as-return(substitute( ctx frt )))))
+               (let rt1 (maybe-deref(with-representation(substitute( ctx frt )))))
                (set rt rt1)
                (if (==( do-specialize True_u8 )) (
                   (if (head-string key) (
