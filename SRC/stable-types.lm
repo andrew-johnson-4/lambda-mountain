@@ -1448,3 +1448,40 @@ specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Ty
       (close special-term)
    )))
 )) Nil);
+
+has-representation := λ(: tt Type). (: (tail(
+   (let return 0_u64)
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (
+         (set return (max(
+            (has-representation lt)
+            (has-representation rt)
+         )))
+      ))
+      ( (TGround( 'Constant_s _ )) (set return 1_u64) )
+      ( (TGround( 'Reg8_s _ )) (set return 1_u64) )
+      ( (TGround( 'Reg16_s _ )) (set return 1_u64) )
+      ( (TGround( 'Reg32_s _ )) (set return 1_u64) )
+      ( (TGround( 'Reg64_s _ )) (set return 1_u64) )
+      ( (TGround( 'StackVariable_s _ )) (set return 1_u64) )
+      ( _ () )
+   ))
+   return
+)) U64);
+
+guess-representation := λ(: tt Type). (: (tail(
+   (if (has-representation tt) () (tail(
+      (let sz (sizeof-type tt))
+      (match sz (
+         ()
+         ( 0_u64 () )
+         ( 1_u64 (set tt (and( tt (t1( 'Reg8_s )) ))) )
+         ( 2_u64 (set tt (and( tt (t1( 'Reg16_s )) ))) )
+         ( 4_u64 (set tt (and( tt (t1( 'Reg32_s )) ))) )
+         ( 8_u64 (set tt (and( tt (t1( 'Reg64_s )) ))) )
+         ( _ (set tt (and( tt (t1( 'StackVariable_s )) ))) )
+      ))
+   )))
+   tt
+)) Type);
