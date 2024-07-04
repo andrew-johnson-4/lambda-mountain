@@ -1418,3 +1418,33 @@ deep-hash := λ(: tt TypeList). (: (tail(
    ))
    return
 )) U64);
+
+specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
+   (set unify-ctx (normalize unify-ctx))
+   (let term ASTEOF)
+   (let global-ctx global-type-context)
+   (while (non-zero global-ctx) (match global-ctx (
+      ()
+      ( TCtxNil (set global-ctx TCtxEOF) )
+      ( (TCtxBind( rst k kt t )) (tail(
+         (if (==( k key )) (
+            (if (==( ft kt )) (
+               (match t (
+                  ()
+                  ( (Glb( _ (Abs( _ _ _ )) )) (set term t) )
+                  ( _ () )
+               ))
+            ) ())
+         ) ())
+         (set global-ctx rst)
+      )))
+   )))
+   (mark-as-special( key result-type ))
+   (let special-term (substitute( unify-ctx term )))
+   (infer-global-context( special-term ))
+   (infer-expr( global-type-context special-term Unused TAny ))
+   (set ast-parsed-program (Seq(
+      (close ast-parsed-program)
+      (close special-term)
+   )))
+)) Nil);
