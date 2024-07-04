@@ -27,6 +27,17 @@ type-complex-fields-index := (: BTreeEqEOF BTreeEq<String,Tuple<Type,Type>>);
 # has typechecking finished? boolean, mutable
 types-have-changed := True_u8;
 
+is-special-index := (: BTreeEqEOF BTreeEq<Tuple<String,Type>,U64>);
+
+mark-as-special := λ(: name String)(: tt Type). (: (
+   (.bind( (as (& is-special-index) BTreeEq<Tuple<String,Type>,U64>[]) (Pair( name tt )) 1_u64 ))
+) Nil);
+
+is-special := λ(: name String)(: tt Type). (: (tail(
+   (let r (.lookup( is-special-index (Pair( name tt )) 0_u64 )))
+   r
+)) U64);
+
 index-of-tag := λ(: tag String). (: (tail(
    (let r (.lookup( tag-to-index-index tag unknown-index-of-tag )))
    r
@@ -1370,4 +1381,40 @@ is-parameterized := λ(: tt Type). (: (tail(
       ( _ () )
    ))
    r
+)) U64);
+
+deep-hash := λ(: tt Type). (: (tail(
+   (let return 0_u64)
+   (match tt (
+      ()
+      ( TAny () )
+      ( (TAnd( lt rt )) (
+         (set return (+(
+            (deep-hash lt)
+            (deep-hash rt)
+         )))
+      ))
+      ( (TGround( tag ps )) (
+         (set return (+(
+            (deep-hash tag)
+            (deep-hash ps)
+         )))
+      ))
+   ))
+   return
+)) U64);
+
+deep-hash := λ(: tt TypeList). (: (tail(
+   (let return 0_u64)
+   (match tt (
+      ()
+      ( TypeEOF () )
+      ( (TypeSeq( ts t1 )) (
+         (set return (+(
+            (deep-hash ts)
+            (deep-hash t1)
+         )))
+      ))
+   ))
+   return
 )) U64);

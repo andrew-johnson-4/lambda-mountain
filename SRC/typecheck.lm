@@ -619,9 +619,6 @@ typecheck-apply-hard := λ(: sloc AST)(: ft Type)(: pt Type)(: do-specialize U8)
    (close rt)
 )) Type[]);
 
-type SpecialRegistry SREOF | (SRSeq( SpecialRegistry[] , String , Type )); zero SpecialRegistry SREOF;
-special-registry := (: SREOF SpecialRegistry);
-
 specialize-term := λ(: tctx StringSList)(: t S). (: (tail(
    (match t (
       ()
@@ -666,10 +663,7 @@ specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Ty
          (set global-ctx rst)
       )))
    )))
-   (set special-registry (SRSeq(
-      (close special-registry)
-      key result-type
-   )))
+   (mark-as-special( key result-type ))
    (let special-term (substitute( unify-ctx term )))
    (typecheck-infer-global-context( special-term ))
    (typecheck-infer-expr( global-type-context special-term Unused TAny ))
@@ -679,27 +673,10 @@ specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Ty
    )))
 )) Nil);
 
-already-special := λ(: key String)(: key-type Type). (: (tail(
-   (let r 0_u64)
-   (let registry special-registry)
-   (while (non-zero registry) (match registry (
-      ()
-      ( (SRSeq( rst k kt )) (tail(
-         (if (==( k key )) (
-            (if (==( kt key-type )) (
-               (set r 1_u64)
-            ) ())
-         ) ())
-         (set registry rst)
-      )))
-   )))
-   r
-)) U64);
-
 try-specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
    (let result-type-2 (normalize result-type))(set result-type result-type-2)
    (let global-ctx global-type-context)
-   (if (already-special( key result-type )) () (
+   (if (is-special( key result-type )) () (
       (while (non-zero global-ctx) (match global-ctx (
          ()
          ( TCtxNil (set global-ctx TCtxEOF) )
