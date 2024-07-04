@@ -47,11 +47,9 @@ fn run_bootstrap(target: &str) -> String {
    rm("tmp.o");
    rm("a.out");
    
-   let exit = Command::new("timeout")
+   let exit = Command::new("./bootstrap")
            .stdout(std::process::Stdio::piped())
            .stderr(std::process::Stdio::piped())
-           .arg("600")
-           .arg("./bootstrap")
            .arg("-o")
            .arg("tmp.s")
            .arg(target)
@@ -60,11 +58,13 @@ fn run_bootstrap(target: &str) -> String {
            .wait_with_output()
            .expect("failed to wait for process");
 
+   let mut output = "".to_string();
    if !exit.status.success() {
-      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      return format!("timeout 600 ./bootstrap error code: {} on target {}", stderr, target);
+      output = "Error: ".to_owned() + &String::from_utf8_lossy(&exit.stdout).to_string()
+                                    + &String::from_utf8_lossy(&exit.stderr).to_string();
    };
-   let exit = Command::new("as")
+   if output=="" {
+      let exit = Command::new("as")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
                       .arg("-o")
@@ -74,10 +74,11 @@ fn run_bootstrap(target: &str) -> String {
                       .expect("failed to execute process")
                       .wait_with_output()
                       .expect("failed to wait for process");
-   if !exit.status.success() {
-      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      return format!("as error code: {} on target {}", stderr, target);
-   };
+      if !exit.status.success() {
+         let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
+         return format!("as error code: {} on target {}", stderr, target);
+      };
+   
    let exit = Command::new("ld")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
@@ -88,11 +89,11 @@ fn run_bootstrap(target: &str) -> String {
                       .expect("failed to execute process")
                       .wait_with_output()
                       .expect("failed to wait for process");
-   if !exit.status.success() {
-      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      return format!("ld error code: {} on target {}", stderr, target);
-   };
-   let exit = Command::new("timeout")
+      if !exit.status.success() {
+         let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
+         return format!("ld error code: {} on target {}", stderr, target);
+      };
+      let exit = Command::new("timeout")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
                       .arg("30")
@@ -101,15 +102,17 @@ fn run_bootstrap(target: &str) -> String {
                       .expect("failed to execute process")
                       .wait_with_output()
                       .expect("failed to wait for process");
-   if !exit.status.success() {
-      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      return format!("timeout 30 ./a.out error code: {} on target {}", stderr, target);
-   };
-   let actual = String::from_utf8_lossy(&exit.stdout).to_string();
+      output = if exit.status.success() {
+         String::from_utf8_lossy(&exit.stdout).to_string()
+      } else {
+         "Error: ".to_owned() + &String::from_utf8_lossy(&exit.stdout).to_string()
+                              + &String::from_utf8_lossy(&exit.stderr).to_string()
+      };
+   }
    rm("tmp.s");
    rm("tmp.o");
    rm("a.out");
-   actual
+   output
 }
 
 #[test]

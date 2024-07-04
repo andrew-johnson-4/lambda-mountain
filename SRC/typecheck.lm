@@ -63,6 +63,11 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
       )))
       ( (App( (Lit tag) args )) (tail(
          (let atype (maybe-deref(type-of-s args)))
+         (if (has-forward atype) (tail(
+            (print 'Size\sOf\sType\sCannot\sBe\sDetermined\sDue\sTo\sForward\sReference:\s_s)
+            (print tag)(print '\n_s)
+            (exit 1_u64)
+         )) ())
          (let rtype (maybe-deref(tand(
             base-type
             (t2( 'Tag_s (t1 tag) ))
