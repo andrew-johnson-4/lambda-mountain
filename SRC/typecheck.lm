@@ -924,20 +924,6 @@ typecheck-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tai
    (close found)
 )) Type[]);
 
-is-parameterized := λ(: tt Type). (: (tail(
-   (let r 0_u64)
-   (match tt (
-      ()
-      ( (TGround( _ (TypeSeq( _ _ )) )) (set r 1_u64) )
-      ( (TAnd( lt rt )) (tail(
-         (if (is-parameterized lt) (set r 1_u64) ())
-         (if (is-parameterized rt) (set r 1_u64) ())
-      )))
-      ( _ () )
-   ))
-   r
-)) U64);
-
 unify-hint := λ(: hint Type)(: tt Type). (: (tail(
    (match (Pair( hint tt )) (
       ()
@@ -973,3 +959,4 @@ unify-hint := λ(: hint Type)(: tt TypeList). (: (tail(
    ))
    tt
 )) TypeList);
+

@@ -1357,3 +1357,17 @@ and := λ(: lt Type)(: rt Type). (: (tail(
    (let tt (TAnd( (close lt) (close rt) )))
    tt
 )) Type);
+
+is-parameterized := λ(: tt Type). (: (tail(
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( (TGround( _ (TypeSeq( _ _ )) )) (set r 1_u64) )
+      ( (TAnd( lt rt )) (tail(
+         (if (is-parameterized lt) (set r 1_u64) ())
+         (if (is-parameterized rt) (set r 1_u64) ())
+      )))
+      ( _ () )
+   ))
+   r
+)) U64);
