@@ -167,69 +167,9 @@ fragment-apply-direct := λ(: ctx FContext)(: arrow Fragment)(: args FragmentLis
       )))
    ))
    (if (==( chain True_u8 )) (tail(
-      (let r (maybe-deref(fragment-chain( args e-proto ))))
+      (let r (maybe-deref(fragment::chain( args e-proto ))))
       (set e-proto r)
    )) ())
    e-proto
 )) Fragment);
 
-fragment::chain := λ(: l Fragment)(: r Fragment). (: (tail(
-   (let e1 (maybe-deref(fragment::set-context(
-      l
-      (maybe-deref(fragment::get-context( r )))
-   ))))
-   (if (non-zero(fragment::get( r 'frame_s ))) (tail(
-      (let e1-2 (maybe-deref(fragment::set(
-         e1 'frame_s
-         (SCons(
-            (close(fragment::get( l 'frame_s )))
-            (close(fragment::get( r 'frame_s )))
-         ))
-      ))))
-      (set e1 e1-2)
-   )) ())
-   (if (non-zero(fragment::get( r 'unframe_s ))) (tail(
-      (let e1-3 (maybe-deref(fragment::set(
-         e1 'unframe_s
-         (SCons(
-            (close(fragment::get( l 'unframe_s )))
-            (close(fragment::get( r 'unframe_s )))
-         ))
-      ))))
-      (set e1 e1-3)
-   )) ())
-   (if (non-zero(fragment::get( r 'program_s ))) (tail(
-      (let e1-4 (maybe-deref(fragment::set(
-         e1 'program_s
-         (SCons(
-            (close(fragment::get( l 'program_s )))
-            (close(fragment::get( r 'program_s )))
-         ))
-      ))))
-      (set e1 e1-4)
-   )) ())
-   (let e1-5 (maybe-deref(fragment::set-context( e1
-      (maybe-deref(fragment::get-context r))
-   ))))(set e1 e1-5)
-   (let e1-6 (maybe-deref(fragment::set-offset( e1
-      (maybe-deref(fragment::get-offset r))
-   ))))(set e1 e1-6)
-   (let e1-7 (maybe-deref(fragment::set(
-      e1 'expression_s
-     (maybe-deref(fragment::get( r 'expression_s )))
-   ))))(set e1 e1-7)
-   e1
-)) Fragment);
-
-#TODO remove indirect reference of return value
-fragment-chain := λ(: fragment-ctx FragmentList)(: e Fragment). (: (tail(
-   (while (non-zero fragment-ctx) (match fragment-ctx (
-      ()
-      ( (FLSeq( rst cf )) (tail(
-         (let e1 (maybe-deref(fragment::chain( cf e ))))
-         (set e e1)
-         (set fragment-ctx rst)
-      )))
-   )))
-   (close e)
-)) Fragment[]);
