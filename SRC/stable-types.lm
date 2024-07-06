@@ -2030,3 +2030,228 @@ typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tail(
    ))
    found
 )) Type);
+
+infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (tail(
+   (match term (
+      ()
+      ( ASTNil (ascript-normal( term (maybe-deref(t1 'Nil_s)) )) )
+      ( ASTEOF (ascript-normal( term (maybe-deref(t1 'Nil_s)) )) )
+      ( (Seq( l r )) (tail(
+         (infer-expr( tctx l used TAny ))
+         (infer-expr( tctx r used TAny ))
+      )))
+      ( (Typedef( _ _ )) () )
+      ( (Glb( k v )) (
+         (if (is-open(typeof term)) () (
+            (infer-expr( tctx v Used TAny ))
+         ))
+      ))
+      ( (Frg( k v tlt )) (
+         (ascript-normal( v (maybe-deref(typeof term)) ))
+      ))
+      ( (App( (Lit ':_s) (App( (Lit _) (AType tt) )) )) (
+         (match term (
+            ()
+            ( (App( _ (App( t _ )) )) (tail(
+               (match (slot( tt 'String_s )) (
+                  ()
+                  ( (TGround( 'String_s _ )) () )
+                  ( _ (infer-expr( tctx t used tt )) )
+               ))
+               (let it (maybe-deref(typeof t)))
+               (if (non-zero it) (tail(
+                  (let it-2 (and( it tt )))
+                  (set it it-2)
+               )) (tail(
+                  (set it tt)
+                  (ascript-normal( t it ))
+               )))
+               (ascript-normal( term it ))
+               (match term (
+                  ()
+                  ( (App( las ras )) (tail(
+                     (ascript-normal( las it ))
+                     (ascript-normal( ras it ))
+                  )))
+               ))
+            )))
+         ))
+      ))
+      ( (App( (Lit ':_s) (App( t (AType tt) )) )) (tail(
+         (let tctx2 (maybe-deref(infer-expr( tctx t used tt ))))
+         (set tctx tctx2)
+         (let inner-tt (maybe-deref(typeof t)))
+         (if (non-zero inner-tt) (tail(
+            (let nn (with-only-representation inner-tt))
+            (if (non-zero nn) (tail(
+               (let tt-2 (and(
+                  tt
+                  nn
+               )))
+               (set tt tt-2)
+            )) ())
+            (ascript-normal( t tt ))
+            (ascript-normal( term tt ))
+            (match term (
+               ()
+               ( (App( las ras )) (tail(
+                  (ascript-normal( las tt ))
+                  (ascript-normal( ras tt ))
+               )))
+            ))
+         )) ())
+      )))
+      ( (App( (Var 'gensym-label_s) (Var lname) )) (tail(
+         (let tctx2 (TCtxBind(
+            (close tctx)
+            lname
+            (t1 'Label_s)
+            ASTEOF
+         )))
+         (set tctx tctx2)
+         (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
+      )))
+      ( (App( (App( (Var 'set_s) (Var v) )) rhs )) (tail(
+         (infer-expr( tctx rhs Used TAny ))
+         (ascript-normal( rhs (maybe-deref(typeof-var( term tctx v ))) ))
+         (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
+      )))
+      ( (App( (Var 'label_s) (Var lname) )) (
+         (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
+      ))
+      ( (App( (App( (App( (Var 'if_s) cond )) t )) f )) (tail(
+         (let tctx2 (maybe-deref(infer-expr( tctx cond Used TAny ))))
+         (let tctx3 (maybe-deref(infer-expr( tctx2 t Used TAny ))))
+         (set tctx tctx3)
+         (infer-expr( tctx f Used TAny ))
+         (ascript-normal( term (maybe-deref(typeof t)) ))
+      )))
+      ( (App( (App( (Var 'while_s) cond )) body )) (tail(
+         (let tctx2 (maybe-deref(infer-expr( tctx cond Used TAny ))))
+         (set tctx tctx2)
+         (infer-expr( tctx body Used TAny ))
+         (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
+      )))
+      ( (App( (Var 'tail_s) (App( l r )) )) (tail(
+         (let tctx2 (maybe-deref(infer-expr( tctx l Unused TAny ))))
+         (let tctx3 (maybe-deref(infer-expr( tctx2 r used TAny ))))
+         (set tctx tctx3)
+         (ascript-normal( term (maybe-deref(typeof r)) ))
+      )))
+      ( (App( (Var 'as_s) (App( t (AType tt) )) )) (tail(
+         (let tctx2 (maybe-deref(infer-expr( tctx t used TAny ))))
+         (set tctx tctx2)
+         (let inner-tt (maybe-deref(typeof t)))
+         (if (non-zero inner-tt) (tail(
+            (let nn (with-only-representation inner-tt))
+            (if (non-zero nn) (tail(
+               (let tt-2 (and(
+                  tt
+                  nn
+               )))
+               (set tt tt-2)
+            )) ())
+            (let nn (maybe-deref(with-only-class inner-tt)))
+            (if (non-zero nn) (tail(
+               (let tt-2 (and(
+                  tt
+                  nn
+               )))
+               (set tt tt-2)
+            )) ())
+            (set tt (with-fields( tt )))
+            (ascript-normal( term tt ))
+            (match term (
+               ()
+               ( (App( a b )) (tail( (ascript-normal( a tt )) (ascript-normal( b tt )) )) )
+            ))
+         )) ())
+      )))
+      ( (App( (Var 'sizeof_s) (AType _) )) (tail(
+         (let tt (maybe-deref(as-constant(maybe-deref(parse-type 'U64_s)))))
+         (ascript-normal( term tt ))
+         (match term (
+            ()
+            ( (App( s _ )) (ascript-normal( s tt )) )
+         ))
+      )))
+      ( (App( (Var 'scope_s) r )) (tail(
+         (infer-expr( tctx r used TAny ))
+         (ascript-normal( term (typeof r) ))
+      )))
+      ( (App( (Var 'maybe-deref_s) r )) (tail(
+         (let tctx2 (maybe-deref(infer-expr( tctx r used TAny ))))
+         (set tctx tctx2)
+         (let deref-type (maybe-deref(typeof r)))
+         (match (slot( deref-type 'Array_s )) (
+            ()
+            ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF TAny )) _ )) )) () )
+            ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF array-base )) TAny )) )) (tail(
+               (let deref-type-2 (and( array-base (t1 'StackVariable_s) )))
+               (set deref-type deref-type-2)
+            )))
+            ( _ () )
+         ))
+         (ascript-normal( term deref-type ))
+      )))
+      ( (App( (Abs( (Var lname) ASTNil tlt )) rhs )) (tail(
+         (infer-expr( tctx rhs Used TAny ))
+         (let tt (maybe-deref(typeof rhs)))
+         (let rt (maybe-deref(as-local-variable(tt))))
+         (if (non-zero tt) () (
+            (exit-error( 'Unable\sto\sinfer\stype\sof\sexpression_s rhs ))
+         ))
+         (if (non-zero rt) () (
+            (exit-error( 'Unable\sto\sinfer\stype\sof\sexpression_s rhs ))
+         ))
+         (set tctx (TCtxBind(
+            (close tctx)
+            lname
+            rt
+            ASTEOF
+         )))
+         (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
+      )))
+      ( (App( l r )) (tail(
+         (let tctx2 (maybe-deref(infer-expr( tctx l Used TAny ))))
+         (let tctx3 (maybe-deref(infer-expr( tctx2 r Used TAny ))))
+         (set tctx tctx3)
+         (let rt (apply-or-cons-and-specialize(
+            (var-name-if-var l)
+            (typeof l)
+            (typeof r)
+         )))
+         (ascript-normal( term rt ))
+      )))
+      ( (Abs( lhs rhs tlt )) (tail(
+         (let tctx2 (maybe-deref(infer-ctx( tctx lhs ))))
+         (set tctx tctx2)
+         (infer-expr( tctx rhs Used TAny ))
+         (let lt (maybe-deref(typeof-lhs lhs)))
+         (let rt (maybe-deref(typeof rhs)))
+         (ascript-normal( term (t3( 'Arrow_s lt rt )) ))
+      )))
+      ( (Var v) (
+         (ascript-normal( term (maybe-deref(typeof-var( term tctx v ))) ))
+      ))
+      ( (Lit l) (
+         (if (non-zero(typeof term)) () (tail(
+            (let tt (maybe-deref(typeof-tag l)))
+            (if (non-zero tt) (tail(
+               (if (non-zero hint) (
+                  (set tt (unify-hint( hint tt )))
+               ) ())
+               (ascript-normal( term tt ))
+            )) ())
+         )))
+      ))
+      ( _ (tail(
+         (print 'Unknown\sTerm\sIn\sType\sInference\n_s)
+         (print term)
+         (print '\n_s)
+         (exit 1_u64)
+      )))
+   ))
+   tctx
+)) TContext);
+
