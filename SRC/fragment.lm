@@ -72,7 +72,7 @@ fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentLi
    (let tctx (unify( (slot( arrow-tt 'Arrow_s )) direct-type )))
    (let ctx-2 (union( ctx tctx )))(set ctx ctx-2)
 
-   (let return (maybe-deref(fragment-apply-direct( ctx arrow args e-proto chain ))))
+   (let return (maybe-deref(apply-direct( ctx arrow args e-proto chain ))))
 
    (let comment (SAtom '\oCall\sFragment\s_s))
    (set comment (SCons( (close comment) (close(SAtom k)) )))
@@ -95,81 +95,5 @@ fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentLi
    (let r3 (maybe-deref(fragment::set-type( return return-tt ))))(set return r3)
 
    return
-)) Fragment);
-
-fragment-destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragmentList). (: (tail(
-   (match lhs (
-      ()
-      ( (SCons( (SAtom 'Var_s) (SAtom k) )) (tail(
-         (let a-type (maybe-deref(typeof lhs)))
-         (match args (
-            ()
-            ( (FLSeq( _ f )) (tail(
-               (let ft (maybe-deref(fragment::get-type f)))
-               (if (non-zero ft) () (tail(
-                  (print 'Fragment\sHas\sNo\sType:\n_s)
-                  (print f)
-                  (exit 1_u64)
-               )))
-               (let tctx (unify( a-type ft )))
-               (let ctx-2 (union( ctx tctx )))(set ctx ctx-2)
-               (let new-ctx (FCtxBind( (close ctx) k ft f )))(set ctx new-ctx)
-            )))
-         ))
-      )))
-      ( (SCons( (SAtom 'App_s) (SCons( lhs-rst (SCons( (SAtom 'Var_s) (SAtom k) )) )) )) (tail(
-         (let a-type TAny)
-         (match lhs (
-            ()
-            ( (SCons( (SAtom 'App_s) (SCons( _ binding )) )) (tail(
-               (let a-type-2 (maybe-deref(typeof binding)))
-               (set a-type a-type-2)
-            )))
-         ))
-         (match args (
-            ()
-            ( (FLSeq( fl-rst f )) (tail(
-               (let ft (maybe-deref(fragment::get-type f)))
-               (if (non-zero ft) () (tail(
-                  (print 'Fragment\sHas\sNo\sType:\n_s)
-                  (print f)
-                  (exit 1_u64)
-               )))
-               (let tctx (unify( a-type ft )))
-               (let ctx-2 (union( ctx tctx )))(set ctx ctx-2)
-               (let new-ctx (FCtxBind( (close ctx) k ft f )))(set ctx new-ctx)
-               (set args fl-rst)
-            )))
-         ))
-         (let ctx-3 (maybe-deref(fragment-destructure-lhs( ctx lhs-rst args ))))(set ctx ctx-3)
-      )))
-      ( SNil () )
-      ( _ (tail(
-         (print 'Unexpected\sDestructure\sLHS:\s_s)
-         (print lhs)(print '\n_s)
-         (exit 1_u64)
-      )))
-   ))
-   ctx
-)) FContext);
-
-fragment-apply-direct := λ(: ctx FContext)(: arrow Fragment)(: args FragmentList)(: e-proto Fragment)(: chain U8). (: (tail(
-   (match (maybe-deref(fragment::get( arrow 'fragment_s ))) (
-      ()
-      ( (SCons( (SAtom 'Abs_s) (SCons( lhs rhs )) )) (tail(
-         (let f-ctx-2 (maybe-deref(fragment-destructure-lhs( ctx lhs args ))))
-         (let f-app (maybe-deref(fragment::render( f-ctx-2 rhs e-proto ))))
-         (set e-proto f-app)
-      )))
-      ( _ (tail(
-         (print 'Invalid\sFragment\sApplied:\n_s)
-         (print arrow)(print '\n_s)
-      )))
-   ))
-   (if (==( chain True_u8 )) (tail(
-      (let r (maybe-deref(fragment::chain( args e-proto ))))
-      (set e-proto r)
-   )) ())
-   e-proto
 )) Fragment);
 

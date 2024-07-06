@@ -536,3 +536,74 @@ fragment::chain := λ(: fragment-ctx FragmentList)(: e Fragment). (: (tail(
    )))
    e
 )) Fragment);
+
+apply-direct := λ(: ctx FContext)(: arrow Fragment)(: args FragmentList)(: e-proto Fragment)(: chain U8). (: (tail(
+   (match (maybe-deref(fragment::get( arrow 'fragment_s ))) (
+      ()
+      ( (SCons( (SAtom 'Abs_s) (SCons( lhs rhs )) )) (tail(
+         (set ctx (destructure-lhs( ctx lhs args )))
+         (set e-proto (fragment::render( ctx rhs e-proto )))
+      )))
+      ( _ (tail(
+         (print 'Invalid\sFragment\sApplied:\n_s)
+         (print arrow)(print '\n_s)
+      )))
+   ))
+   (if (==( chain True_u8 )) (
+      (set e-proto (fragment::chain( args e-proto )))
+   ) ())
+   e-proto
+)) Fragment);
+
+destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragmentList). (: (tail(
+   (match lhs (
+      ()
+      ( (SCons( (SAtom 'Var_s) (SAtom k) )) (tail(
+         (let a-type (typeof lhs))
+         (match args (
+            ()
+            ( (FLSeq( _ f )) (tail(
+               (let ft (fragment::get-type f))
+               (if (non-zero ft) () (tail(
+                  (print 'Fragment\sHas\sNo\sType:\n_s)
+                  (print f)
+                  (exit 1_u64)
+               )))
+               (set ctx (union( ctx (unify( a-type ft )) ))) # destructure tctx
+               (set ctx (FCtxBind( (close ctx) k ft f )))
+            )))
+         ))
+      )))
+      ( (SCons( (SAtom 'App_s) (SCons( lhs-rst (SCons( (SAtom 'Var_s) (SAtom k) )) )) )) (tail(
+         (let a-type TAny)
+         (match lhs (
+            ()
+            ( (SCons( (SAtom 'App_s) (SCons( _ binding )) )) (
+               (set a-type (typeof binding))
+            ))
+         ))
+         (match args (
+            ()
+            ( (FLSeq( fl-rst f )) (tail(
+               (let ft (fragment::get-type f))
+               (if (non-zero ft) () (tail(
+                  (print 'Fragment\sHas\sNo\sType:\n_s)
+                  (print f)
+                  (exit 1_u64)
+               )))
+               (set ctx (union( ctx (unify( a-type ft )) )))
+               (set ctx (FCtxBind( (close ctx) k ft f )))
+               (set args fl-rst)
+            )))
+         ))
+         (set ctx (destructure-lhs( ctx lhs-rst args )))
+      )))
+      ( SNil () )
+      ( _ (tail(
+         (print 'Unexpected\sDestructure\sLHS:\s_s)
+         (print lhs)(print '\n_s)
+         (exit 1_u64)
+      )))
+   ))
+   ctx
+)) FContext);
