@@ -1870,3 +1870,74 @@ with-fields := λ(: tt Type). (: (tail(
    ))
    tt
 )) Type);
+
+apply := λ(: function-name String)(: ft Type)(: pt Type). (: (tail(
+   (let tt (apply( function-name ft pt False_u8 )))
+   tt
+)) Type);
+
+apply-and-specialize := λ(: function-name String)(: ft Type)(: pt Type). (: (tail(
+   (let tt (apply( function-name ft pt True_u8 )))
+   tt
+)) Type);
+
+apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (: (tail(
+   (let r TAny)
+   (match ft (
+      ()
+      ( (TAnd( t1 t2 )) (tail(
+         (set r (apply( function-name t1 pt do-specialize )))
+         (if (non-zero r) () (
+            (set r (apply( function-name t2 pt do-specialize )))
+         ))
+      )))
+      ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (tail(
+         (let ctx (unify( fpt pt )))
+         (if (non-zero ctx) (tail(
+            (set ctx (normalize ctx))
+            (let closed-type (substitute( ctx ft )))
+            (set r (guess-representation(substitute( ctx frt ))))
+            (if (&&( (==( do-specialize True_u8 )) (is-open fpt) )) (
+               (try-specialize( function-name ft ctx closed-type ))
+            ) ())
+         )) ())
+      )))
+      ( _ () )
+   ))
+   r
+)) Type);
+
+apply-or-cons-and-specialize := λ(: function-name String)(: ft Type)(: pt Type). (: (tail(
+   (let r TAny)
+   (if (is-arrow ft) (
+      (set r (apply( function-name ft pt True_u8 )))
+   ) (
+      (if (&&( (non-zero ft) (non-zero pt) )) (
+         (set r (t3( 'Cons_s ft pt )))
+      ) ())
+   ))
+   r
+)) Type);
+
+try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
+   (set result-type (normalize result-type))
+   (let global-ctx global-type-context)
+   (if (is-special( function-name result-type )) () (
+      (while (non-zero global-ctx) (match global-ctx (
+         ()
+         ( TCtxNil (set global-ctx TCtxEOF) )
+         ( (TCtxBind( rst k kt t )) (tail(
+            (if (&&( (==( function-name k )) (==( ft kt )) )) (
+               (match t (
+                  ()
+                  ( (Glb( _ (Abs( _ _ _ )) )) (
+                     (specialize( function-name ft unify-ctx result-type ))
+                  ))
+                  ( _ () )
+               ))
+            ) ())
+            (set global-ctx rst)
+         )))
+      )))
+   ))
+)) Nil);

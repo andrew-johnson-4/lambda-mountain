@@ -32,6 +32,16 @@ ast-tokenized-program := (: SNil S);
 ast-parsed-program := (: ASTEOF AST);
 global-type-context := (: TCtxEOF TContext);
 
+var-name-if-var := λ(: t AST). (: (tail(
+   (let k '_s)
+   (match t (
+      ()
+      ( (Var nk) (set k nk) )
+      ( _ () )
+   ))
+   k
+)) String);
+
 print := λ(: t Context). (: (tail(
    (match t (
       ()

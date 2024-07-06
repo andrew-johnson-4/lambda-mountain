@@ -184,11 +184,11 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
          (let tctx2 (maybe-deref(infer-expr( tctx l Used TAny ))))
          (let tctx3 (maybe-deref(infer-expr( tctx2 r Used TAny ))))
          (set tctx tctx3)
-         (let rt (maybe-deref(apply-hard(
-            term
-            (maybe-deref(typeof l))
-            (maybe-deref(typeof r))
-         ))))
+         (let rt (apply-or-cons-and-specialize(
+            (var-name-if-var l)
+            (typeof l)
+            (typeof r)
+         )))
          (ascript-normal( term rt ))
       )))
       ( (Abs( lhs rhs tlt )) (tail(
@@ -222,131 +222,6 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
    ))
    (close tctx)
 )) TContext[]);
-
-apply-plural := λ(: sloc AST)(: many Type)(: pt Type). (: (tail(
-   (let tt (apply-plural( sloc many pt True_u8 )))
-   tt
-)) Type);
-
-apply-plural := λ(: sloc AST)(: many Type)(: pt Type)(: do-specialize U8). (: (tail(
-   (let r TAny)
-   (match many(
-      ()
-      ( (TAnd( t1 t2 )) (tail(
-         (let r1 (maybe-deref(apply-plural( sloc t1 pt do-specialize ))))
-         (if (non-zero r1) (set r r1) (tail(
-            (let r2 (maybe-deref(apply-plural( sloc t2 pt do-specialize ))))
-            (set r r2)
-         )))
-      )))
-      ( (TGround( 'Arrow_s _ )) (tail(
-         (let r1 (maybe-deref(apply-hard( sloc many pt do-specialize ))))
-         (set r r1)
-      )))
-      ( _ () )
-   ))
-   r
-)) Type);
-
-apply-hard := λ(: sloc AST)(: ft Type)(: pt Type). (: (tail(
-   (let tt (apply-hard( sloc ft pt True_u8 )))
-   tt
-)) Type[]);
-
-apply-hard := λ(: sloc AST)(: ft Type)(: pt Type)(: do-specialize U8). (: (tail(
-   (let key '_s)
-   (match sloc (
-      ()
-      ( (App( (Var k) _ )) (set key k) )
-      ( _ () )
-   ))
-   (let rt TAny)
-   (if (is-arrow ft) (
-      (match ft (
-         ()
-         ( (TAnd( ft1 ft2 )) (tail(
-            (let rt1 (maybe-deref(apply-hard( sloc ft1 pt ))))
-            (if (non-zero rt1) (
-               (set rt rt1)
-            ) (tail(
-               (let rt2 (maybe-deref(apply-hard( sloc ft2 pt ))))
-               (set rt rt2)
-            )))
-         )))
-         ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (tail(
-            (let ctx (unify( fpt pt )))
-            (if (non-zero ctx) (tail(
-               (let ctx-2 (normalize ctx))(set ctx ctx-2)
-               (let closed-type (substitute( ctx ft )))
-               (let rt1 (maybe-deref(guess-representation(substitute( ctx frt )))))
-               (set rt rt1)
-               (if (==( do-specialize True_u8 )) (
-                  (if (head-string key) (
-                     (if (is-closing ctx) (
-                        (try-specialize( key ft ctx closed-type ))
-                     ) ())
-                  ) ())
-               ) ())
-            )) ())
-         )))
-         ( _ () )
-      ))
-   ) (
-      (if (non-zero ft) (
-         (if (non-zero pt) (tail(
-            (let rt2 (TGround(
-               'Cons_s
-               (close(TypeSeq(
-                  (close(TypeSeq(
-                     (close TypeEOF)
-                     ft
-                  )))
-                  pt
-               )))
-            )))
-            (set rt rt2)
-         )) ())
-      ) ())
-   ))
-   (close rt)
-)) Type[]);
-
-try-specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
-   (let result-type-2 (normalize result-type))(set result-type result-type-2)
-   (let global-ctx global-type-context)
-   (if (is-special( key result-type )) () (
-      (while (non-zero global-ctx) (match global-ctx (
-         ()
-         ( TCtxNil (set global-ctx TCtxEOF) )
-         ( (TCtxBind( rst k kt t )) (tail(
-            (if (is( ft kt )) (
-               (match t (
-                  ()
-                  ( (Glb( _ (Abs( _ _ _ )) )) (
-                     (specialize( key ft unify-ctx result-type ))
-                  ))
-                  ( _ () )
-               ))
-            ) ())
-            (set global-ctx rst)
-         )))
-      )))
-   ))
-)) Nil);
-
-is-closing := λ(: tctx TContext). (: (tail(
-   (let r 0_u64)
-   (while (non-zero tctx) (match tctx (
-      ()
-      ( TCtxNil (set tctx TCtxEOF) )
-      ( (TCtxBind( rst 'Accept_s _ _ )) (set tctx rst) )
-      ( (TCtxBind( rst _ _ _ )) (tail(
-         (set r 1_u64)
-         (set tctx TCtxEOF)
-      )))
-   )))
-   r
-)) U64);
 
 infer-tctx := λ(: tctx TContext)(: tt TypeList). (: (tail(
    (match tt (
