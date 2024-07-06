@@ -563,7 +563,7 @@ destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragmentList). (: (tail(
          (match args (
             ()
             ( (FLSeq( _ f )) (tail(
-               (let ft (fragment::get-type f))
+               (let ft (with-size(fragment::get-type f)))
                (if (non-zero ft) () (tail(
                   (print 'Fragment\sHas\sNo\sType:\n_s)
                   (print f)
@@ -585,7 +585,7 @@ destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragmentList). (: (tail(
          (match args (
             ()
             ( (FLSeq( fl-rst f )) (tail(
-               (let ft (fragment::get-type f))
+               (let ft (with-size(fragment::get-type f)))
                (if (non-zero ft) () (tail(
                   (print 'Fragment\sHas\sNo\sType:\n_s)
                   (print f)
@@ -607,3 +607,20 @@ destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragmentList). (: (tail(
    ))
    ctx
 )) FContext);
+
+typeof := λ(: args FragmentList). (: (tail(
+   (let r TAny)
+   (match args (
+      ()
+      ( (FLSeq( rst f )) (tail(
+         (set r (typeof rst))
+         (if (non-zero r) (
+            (set r (t3( 'Cons_s r (with-size(fragment::get-type f)) )))
+         ) (
+            (set r (with-size(fragment::get-type f)))
+         ))
+      )))
+      ( _ () )
+   ))
+   r
+)) Type);

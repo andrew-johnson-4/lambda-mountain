@@ -1,42 +1,5 @@
 
-typeof := λ(: args FragmentList). (: (tail(
-   (let r TAny)
-   (match args (
-      ()
-      ( (FLSeq( rst f )) (tail(
-         (let rst-tt (maybe-deref(typeof rst)))
-         (let f-tt (maybe-deref(fragment::get-type f)))
-         (if (non-zero rst-tt) (tail(
-            (let r2 (t3( 'Cons_s rst-tt f-tt )))
-            (set r r2)
-         )) (
-            (set r f-tt)
-         ))
-      )))
-      ( _ () )
-   ))
-   r
-)) Type);
-
-fragment-size-args := λ(: args FragmentList). (: (tail(
-   (match args (
-      ()
-      ( (FLSeq( rst f )) (tail(
-         (let f-tt (maybe-deref(fragment::get-type f)))
-         (let f-tt-sized (maybe-deref(with-size f-tt)))
-         (let f-sized (maybe-deref(fragment::set-type( f f-tt-sized ))))(set f f-sized)
-         (set args (FLSeq(
-            (close(fragment-size-args rst))
-            f
-         )))
-      )))
-      ( _ () )
-   ))
-   args
-)) FragmentList);
-
 fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentList)(: direct-type Type)(: sloc AST). (: (tail(
-   (let args-sized (maybe-deref(fragment-size-args args)))(set args args-sized)
    (let e-proto (maybe-deref(fragment::new())))
    (let e-proto-2 (maybe-deref(fragment::set-context( e-proto ctx ))))(set e-proto e-proto-2)
    (let e-proto-3 (maybe-deref(fragment::set-offset( e-proto offset ))))(set e-proto e-proto-3)
