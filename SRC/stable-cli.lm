@@ -1,6 +1,5 @@
 
 import SRC/codegen.lm;
-import SRC/fragment.lm;
 import SRC/assemble.lm;
 import SRC/data.lm;
 
