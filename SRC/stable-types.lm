@@ -1803,6 +1803,12 @@ assert-well-typed := λ(: term AST). (: (
          (assert-well-typed body)
          (assert-one-typed term)
       )))
+      ( (App( (Var 'as_s) (App( t (AType tt) )) )) (
+         (assert-well-typed t)
+      ))
+      ( (App( (Lit ':_s) (App( t (AType tt) )) )) (
+         (assert-well-typed t)
+      ))
       ( (App( (App( (App( (Var 'if_s) cond )) t )) f )) (tail(
          (assert-well-typed cond)
          (assert-well-typed t)
@@ -2034,8 +2040,8 @@ typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tail(
 infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (tail(
    (match term (
       ()
-      ( ASTNil (ascript-normal( term (maybe-deref(t1 'Nil_s)) )) )
-      ( ASTEOF (ascript-normal( term (maybe-deref(t1 'Nil_s)) )) )
+      ( ASTNil (ascript-normal( term (t1 'Nil_s) )) )
+      ( ASTEOF (ascript-normal( term (t1 'Nil_s) )) )
       ( (Seq( l r )) (tail(
          (infer-expr( tctx l used TAny ))
          (infer-expr( tctx r used TAny ))
@@ -2047,7 +2053,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
          ))
       ))
       ( (Frg( k v tlt )) (
-         (ascript-normal( v (maybe-deref(typeof term)) ))
+         (ascript-normal( v (typeof term) ))
       ))
       ( (App( (Lit ':_s) (App( (Lit _) (AType tt) )) )) (
          (match term (
@@ -2058,22 +2064,13 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
                   ( (TGround( 'String_s _ )) () )
                   ( _ (infer-expr( tctx t used tt )) )
                ))
-               (let it (maybe-deref(typeof t)))
-               (if (non-zero it) (tail(
-                  (let it-2 (and( it tt )))
-                  (set it it-2)
-               )) (tail(
-                  (set it tt)
-                  (ascript-normal( t it ))
-               )))
-               (ascript-normal( term it ))
-               (match term (
-                  ()
-                  ( (App( las ras )) (tail(
-                     (ascript-normal( las it ))
-                     (ascript-normal( ras it ))
-                  )))
+               (let inner-tt (typeof t))
+               (if (non-zero inner-tt) (
+                  (set tt (and( tt inner-tt )))
+               ) (
+                  (ascript-normal( t tt ))
                ))
+               (ascript-normal( term tt ))
             )))
          ))
       ))
@@ -2102,73 +2099,53 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
          )) ())
       )))
       ( (App( (Var 'gensym-label_s) (Var lname) )) (tail(
-         (let tctx2 (TCtxBind(
-            (close tctx)
-            lname
-            (t1 'Label_s)
-            ASTEOF
+         (set tctx (TCtxBind(
+            (close tctx) lname (t1 'Label_s) ASTEOF
          )))
-         (set tctx tctx2)
-         (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
+         (ascript-normal( term (t1 'Nil_s) ))
       )))
       ( (App( (App( (Var 'set_s) (Var v) )) rhs )) (tail(
          (infer-expr( tctx rhs Used TAny ))
-         (ascript-normal( rhs (maybe-deref(typeof-var( term tctx v ))) ))
-         (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
+         (ascript-normal( rhs (typeof-var( term tctx v )) ))
+         (ascript-normal( term (t1 'Nil_s) ))
       )))
       ( (App( (Var 'label_s) (Var lname) )) (
-         (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
+         (ascript-normal( term (t1 'Nil_s) ))
       ))
       ( (App( (App( (App( (Var 'if_s) cond )) t )) f )) (tail(
-         (let tctx2 (maybe-deref(infer-expr( tctx cond Used TAny ))))
-         (let tctx3 (maybe-deref(infer-expr( tctx2 t Used TAny ))))
-         (set tctx tctx3)
+         (set tctx (infer-expr( tctx cond Used TAny )))
+         (set tctx (infer-expr( tctx t Used TAny )))
          (infer-expr( tctx f Used TAny ))
-         (ascript-normal( term (maybe-deref(typeof t)) ))
+         (ascript-normal( term (typeof t) ))
       )))
       ( (App( (App( (Var 'while_s) cond )) body )) (tail(
-         (let tctx2 (maybe-deref(infer-expr( tctx cond Used TAny ))))
-         (set tctx tctx2)
+         (set tctx (infer-expr( tctx cond Used TAny )))
          (infer-expr( tctx body Used TAny ))
-         (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
+         (ascript-normal( term (t1 'Nil_s) ))
       )))
       ( (App( (Var 'tail_s) (App( l r )) )) (tail(
-         (let tctx2 (maybe-deref(infer-expr( tctx l Unused TAny ))))
-         (let tctx3 (maybe-deref(infer-expr( tctx2 r used TAny ))))
-         (set tctx tctx3)
-         (ascript-normal( term (maybe-deref(typeof r)) ))
+         (set tctx (infer-expr( tctx l Unused TAny )))
+         (set tctx (infer-expr( tctx r used TAny )))
+         (ascript-normal( term (typeof r) ))
       )))
       ( (App( (Var 'as_s) (App( t (AType tt) )) )) (tail(
-         (let tctx2 (maybe-deref(infer-expr( tctx t used TAny ))))
-         (set tctx tctx2)
-         (let inner-tt (maybe-deref(typeof t)))
+         (set tctx (infer-expr( tctx t used TAny )))
+         (let inner-tt (typeof t))
          (if (non-zero inner-tt) (tail(
             (let nn (with-only-representation inner-tt))
-            (if (non-zero nn) (tail(
-               (let tt-2 (and(
-                  tt
-                  nn
-               )))
-               (set tt tt-2)
-            )) ())
-            (let nn (maybe-deref(with-only-class inner-tt)))
-            (if (non-zero nn) (tail(
-               (let tt-2 (and(
-                  tt
-                  nn
-               )))
-               (set tt tt-2)
-            )) ())
+            (if (non-zero nn) (
+               (set tt (and( tt nn )))
+            ) ())
+            (let nn (with-only-class inner-tt))
+            (if (non-zero nn) (
+               (set tt (and( tt nn )))
+            ) ())
             (set tt (with-fields( tt )))
             (ascript-normal( term tt ))
-            (match term (
-               ()
-               ( (App( a b )) (tail( (ascript-normal( a tt )) (ascript-normal( b tt )) )) )
-            ))
          )) ())
       )))
       ( (App( (Var 'sizeof_s) (AType _) )) (tail(
-         (let tt (maybe-deref(as-constant(maybe-deref(parse-type 'U64_s)))))
+         (let tt (as-constant(parse-type 'U64_s)))
          (ascript-normal( term tt ))
          (match term (
             ()
@@ -2180,24 +2157,22 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
          (ascript-normal( term (typeof r) ))
       )))
       ( (App( (Var 'maybe-deref_s) r )) (tail(
-         (let tctx2 (maybe-deref(infer-expr( tctx r used TAny ))))
-         (set tctx tctx2)
-         (let deref-type (maybe-deref(typeof r)))
+         (set tctx (infer-expr( tctx r used TAny )))
+         (let deref-type (typeof r))
          (match (slot( deref-type 'Array_s )) (
             ()
             ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF TAny )) _ )) )) () )
-            ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF array-base )) TAny )) )) (tail(
-               (let deref-type-2 (and( array-base (t1 'StackVariable_s) )))
-               (set deref-type deref-type-2)
-            )))
+            ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF array-base )) TAny )) )) (
+               (set deref-type (and( array-base (t1 'StackVariable_s) )))
+            ))
             ( _ () )
          ))
          (ascript-normal( term deref-type ))
       )))
       ( (App( (Abs( (Var lname) ASTNil tlt )) rhs )) (tail(
          (infer-expr( tctx rhs Used TAny ))
-         (let tt (maybe-deref(typeof rhs)))
-         (let rt (maybe-deref(as-local-variable(tt))))
+         (let tt (typeof rhs))
+         (let rt (as-local-variable tt))
          (if (non-zero tt) () (
             (exit-error( 'Unable\sto\sinfer\stype\sof\sexpression_s rhs ))
          ))
@@ -2205,17 +2180,13 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
             (exit-error( 'Unable\sto\sinfer\stype\sof\sexpression_s rhs ))
          ))
          (set tctx (TCtxBind(
-            (close tctx)
-            lname
-            rt
-            ASTEOF
+            (close tctx) lname rt ASTEOF
          )))
          (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
       )))
       ( (App( l r )) (tail(
-         (let tctx2 (maybe-deref(infer-expr( tctx l Used TAny ))))
-         (let tctx3 (maybe-deref(infer-expr( tctx2 r Used TAny ))))
-         (set tctx tctx3)
+         (set tctx (infer-expr( tctx l Used TAny )))
+         (set tctx (infer-expr( tctx r Used TAny )))
          (let rt (apply-or-cons-and-specialize(
             (var-name-if-var l)
             (typeof l)
@@ -2224,19 +2195,18 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
          (ascript-normal( term rt ))
       )))
       ( (Abs( lhs rhs tlt )) (tail(
-         (let tctx2 (maybe-deref(infer-ctx( tctx lhs ))))
-         (set tctx tctx2)
+         (set tctx (infer-ctx( tctx lhs )))
          (infer-expr( tctx rhs Used TAny ))
-         (let lt (maybe-deref(typeof-lhs lhs)))
-         (let rt (maybe-deref(typeof rhs)))
+         (let lt (typeof-lhs lhs))
+         (let rt (typeof rhs))
          (ascript-normal( term (t3( 'Arrow_s lt rt )) ))
       )))
       ( (Var v) (
-         (ascript-normal( term (maybe-deref(typeof-var( term tctx v ))) ))
+         (ascript-normal( term (typeof-var( term tctx v )) ))
       ))
       ( (Lit l) (
          (if (non-zero(typeof term)) () (tail(
-            (let tt (maybe-deref(typeof-tag l)))
+            (let tt (typeof-tag l))
             (if (non-zero tt) (tail(
                (if (non-zero hint) (
                   (set tt (unify-hint( hint tt )))
