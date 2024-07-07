@@ -336,6 +336,14 @@ not := λ(: x U64). (: (tail(
    r
 )) U64);
 
+not := λ(: x U8). (: (tail(
+   (let r 0_u64)
+   (if (==( x 0_u8 )) (
+      (set r 1_u64)
+   ) ())
+   r
+)) U64);
+
 == := λ(: l I8)(: r I8). (: (tail(
    (push R14)
    (push R15)

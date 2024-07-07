@@ -57,29 +57,25 @@ union := λ(: l Context)(: r Context). (: (tail(
    return
 )) Context);
 
-is-macro-head := λ(: s String)(: m AST). (: (tail(
-   (let r 0_u64)
-   (match m (
-      ()
-      ( (Lit mv) (set r (==( s mv ))) )
-      ( (App( l1 l2 )) (set r (is-macro-head( s l1 ))) )
-      ( _ (exit-error( 'Unrecognized\sMacro\sLHS_s m )) )
-   ))
-   r
-)) U64);
-
-is-macro-head := λ(: s String). (: (tail(
+is-macro-head := λ(: s String)(: arity U64). (: (tail(
    (let macros preprocess-macros)
    (let found 0_u64)
    (while (non-zero macros) (match macros (
       ()
-      ( (MSeq( rst (Macro( mlhs mrhs )) )) (
-         (if (is-macro-head( s mlhs )) (tail(
+      ( (MSeq( rst (Macro( (App( (Lit mv) p1 )) mrhs )) )) (tail(
+         (if (&&( (==( arity 1_u64 )) (==( s mv )) )) (
             (set found 1_u64)
-            (set macros MEOF)
-         )) (
-            (set macros rst)
-         ))
+         ) ())
+         (set macros rst)
+      )))
+      ( (MSeq( rst (Macro( (App( (App( (Lit mv) p1 )) p2 )) mrhs )) )) (tail(
+         (if (&&( (==( arity 2_u64 )) (==( s mv )) )) (
+            (set found 1_u64)
+         ) ())
+         (set macros rst)
+      )))
+      ( (MSeq( rst (Macro( mlhs mrhs )) )) (
+         (exit-error( 'Unrecognized\sMacro\sPattern\n_s mlhs ))
       ))
    )))
    found
@@ -160,35 +156,28 @@ preprocess-apply := λ(: program AST). (: (tail(
          )))
       )))
       ( (App( (Var vn) vt )) (
-         if (is-macro-head vn) (tail(
-            (let applied (preprocess-apply-maybe program))
+         if (is-macro-head( vn 1_u64 )) (tail(
+            (let applied (preprocess-apply-hard program))
             (set r applied)
          )) (
-            (match program (
-               ()
-               ( (App( v1 v2 )) (
-                  (set r (App( (close(preprocess-apply v1)) (close(preprocess-apply v2)) )))
-               ))
-            ))
+            (set r (App(
+               (close(preprocess-apply(Var vn)))
+               (close(preprocess-apply vt))
+            )))
          )
       ))
       ( (App( (App( (Var vn) vt1 )) vt2 )) (
-         if (is-macro-head vn) (tail(
-            (let applied (preprocess-apply-maybe program))
+         if (is-macro-head( vn 2_u64 )) (tail(
+            (let applied (preprocess-apply-hard program))
             (set r applied)
          )) (
-            (match program (
-               ()
-               ( (App( (App( v1 v2 )) v3 )) (
-                  (set r (App(
-                     (close(App(
-                        (close(preprocess-apply v1))
-                        (close(preprocess-apply v2))
-                     )))
-                     (close(preprocess-apply v3))
-                  )))
-               ))
-            ))
+            (set r (App(
+               (close(preprocess-apply(App(
+                  (close(Var vn))
+                  (close vt1)
+               ))))
+               (close(preprocess-apply vt2))
+            )))
          )
       ))
       ( (Seq( al ar )) (set r (Seq(
@@ -220,7 +209,7 @@ preprocess-apply := λ(: program AST). (: (tail(
    r
 )) AST);
 
-preprocess-apply-maybe := λ(: program AST). (: (tail(
+preprocess-apply-hard := λ(: program AST). (: (tail(
    (let return program)
    (let macros preprocess-macros)
    (let matched False_u8)
@@ -243,16 +232,9 @@ preprocess-apply-maybe := λ(: program AST). (: (tail(
       ))
       ( _ (set macros MEOF) )
    )))
-   (match return (
-      ()
-      ( (App( l r )) (
-         (set return (App(
-            (close(preprocess-apply l))
-            (close(preprocess-apply r))
-         )))
-      ))
-      ( _ () )
-   ))
+   (if (not matched) (
+      (exit-error( 'Invalid\sMacro\sApplication\n_s program ))
+   ) ())
    return
 )) AST);
 
