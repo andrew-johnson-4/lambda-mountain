@@ -37,6 +37,7 @@ index-typedefs := λ(: def AST)(: index U64) . (: (
 
 preprocess := λ. (: (tail(
    (index-typedefs ast-parsed-program)
+   (set ast-parsed-program (preprocess-apply-literals ast-parsed-program))
    (set ast-parsed-program (preprocess-apply ast-parsed-program))
 )) Nil);
 
@@ -80,6 +81,65 @@ is-macro-head := λ(: s String)(: arity U64). (: (tail(
    )))
    found
 )) U64);
+
+preprocess-apply-literals := λ(: program AST). (: (tail(
+   (let r program)
+   (match program (
+      ()
+      ( (Lit l) (
+         (if (has-suffix( l '_t_s )) (tail(
+            (let lloc (location-of l))
+            (let lpfx (remove-suffix( l '_t_s )))
+            (set r (App(
+               (close(Lit(unique 'Token_s)))
+               (close(App(
+                  (close(App(
+                     (close(App(
+                        (close(Lit(clone-rope(SAtom ':_s))))
+                        (close(App( (close(Lit(unique lpfx))) (close(AType(parse-type 'Literal+Constant+String_s))) )))
+                     )))
+                     (close(Var(unique '__s)))
+                  )))
+                  (close(Var(unique '__s)))
+               )))
+            )))
+         )) ())
+      ))
+      ( (Var l) () )
+      ( (App( t1 t2 )) (
+         (set r (App(
+            (close(preprocess-apply-literals t1))
+            (close(preprocess-apply-literals t2))
+         )))
+      ))
+      ( (Seq( al ar )) (set r (Seq(
+         (close(preprocess-apply-literals al))
+         (close(preprocess-apply-literals ar))
+      ))))
+      ( (App( al ar )) (set r (App(
+         (close(preprocess-apply-literals al))
+         (close(preprocess-apply-literals ar))
+      ))))
+      ( (Abs( al ar tlt )) (set r (Abs(
+         (close(preprocess-apply-literals al))
+         (close(preprocess-apply-literals ar))
+         tlt
+      ))))
+      ( (Frg( al ar atlt )) (
+         (set r (Frg(
+            al
+            (close(preprocess-apply-literals ar))
+            atlt
+         )))
+      ))
+      ( (Glb( k ar )) (set r (Glb(
+         k
+         (close(preprocess-apply-literals ar))
+      ))))
+      ( u (set r u))
+   ))
+   r
+)) AST);
 
 preprocess-apply := λ(: program AST). (: (tail(
    (let r program)
@@ -326,6 +386,9 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (ta
       ()
       ( (Pair( ASTNil ASTNil )) (set r CtxNil) )
       ( (Pair( (App( (App( (Var _) (Var _) )) (Var _) )) (App( (App( (Lit _) _ )) _ )) )) () )
+      ( (Pair( (App( (Lit ':Literal:_s) (Var pv) )) (App( (Lit ':_s) (App( (Lit _) (AType _) )) )) )) (
+         (set r (CtxBind( (close CtxNil) pv (relocate( term loc )) )))
+      ))
       ( (Pair( (App(pl pr)) (App(el er)) )) (tail(
          (let ll (try-destructure-macro( loc pl el )))
          (if (non-zero ll) (tail(

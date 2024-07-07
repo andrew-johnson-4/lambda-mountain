@@ -1,5 +1,6 @@
 
 type SourceLocation (SourceLocation( String , U64 , U64 ));
+type Token (Token( String , U64 , SourceLocation ));
 
 map-location := λ(: tok String)(: file String)(: line U64)(: column U64). (: (
    (map-location( tok (SourceLocation( file line column )) ))

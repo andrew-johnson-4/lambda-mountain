@@ -68,6 +68,10 @@ uuid := λ . (: (tail(
       (close(SAtom(to-hex uuid-counter)))
    )))
 )) String);
+iuid := λ . (: (tail(
+   (set uuid-counter (+( uuid-counter 1_u64 )))
+   uuid-counter
+)) U64);
 
 list-tail-order-to-head-order := λ(: s S). (: (tail(
    (let new SNil)
@@ -259,3 +263,8 @@ exit-error := λ(: msg String)(: t AST). (: (tail(
    ))
    (exit 1_u64)
 )) Nil);
+
+unique := λ(: s String). (: (tail(
+   (set s (clone-rope(SAtom s)))
+   s
+)) String);

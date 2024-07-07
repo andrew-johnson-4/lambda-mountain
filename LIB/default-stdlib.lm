@@ -5,6 +5,19 @@ type S (SNil)
      | (SPointer( ?[] ));
 
 type Tuple<x,y> (Pair( x , y ));
+type List<x> LEOF | (LCons( x , List<x>[] )); zero List<x> LEOF;
+
+reverse := λ(: l List<x>). (: (tail(
+   (let r (: LEOF List<x>))
+   (while (non-zero l) (match l (
+      ()
+      ( (LCons( v rst )) (tail(
+         (set r (LCons( v r )))
+         (set l rst)
+      )))
+   )))
+   r
+)) List<x>);
 
 == := λ(: l Tuple<x,y>)(: r Tuple<x,y>). (: (tail(
    (let return 0_u64)
