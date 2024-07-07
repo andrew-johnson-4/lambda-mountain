@@ -263,3 +263,8 @@ exit-error := λ(: msg String)(: t AST). (: (tail(
    ))
    (exit 1_u64)
 )) Nil);
+
+unique := λ(: s String). (: (tail(
+   (set s (clone-rope(SAtom s)))
+   s
+)) String);
