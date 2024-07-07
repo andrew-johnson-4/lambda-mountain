@@ -105,7 +105,22 @@ preprocess-apply-literals := λ(: program AST). (: (tail(
             )))
          )) ())
       ))
-      ( (Var l) () )
+      ( (Var l) (
+         (if (has-suffix( l '_t_s )) (tail(
+            (let lloc (location-of l))
+            (let lpfx (remove-suffix( l '_t_s )))
+            (set r (App(
+               (close(Lit(unique 'Token_s)))
+               (close(App(
+                  (close(App(
+                     (close(Var(unique lpfx)))
+                     (close(Var(unique '__s)))
+                  )))
+                  (close(Var(unique '__s)))
+               )))
+            )))
+         )) ())
+      ))
       ( (App( t1 t2 )) (
          (set r (App(
             (close(preprocess-apply-literals t1))
@@ -302,6 +317,7 @@ preprocess-apply-hard := λ(: macro-name String)(: arity U64)(: program AST). (:
                      (set p (substitute-uuids( c p )))
                   ) ())
                   (set return (preprocess-apply p))
+                  (set return (relocate( return (location-of program) )))
                   (set macros MEOF)
                   (set matched True_u8)
                )))
