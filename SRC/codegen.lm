@@ -82,12 +82,6 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (tail(
    ))
 )) Nil);
 
-#top expression
-compile-global := λ(: ctx FContext)(: term AST). (: (tail(
-   ()
-   ()
-)) Nil);
-
 compile-expr := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used IsUsed). (: (tail(
    (let e (maybe-deref(fragment::new())))
    (match used (

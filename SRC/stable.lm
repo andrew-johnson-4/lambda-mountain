@@ -11,4 +11,5 @@ import SRC/stable-fragment.lm;
 import SRC/stable-context.lm;
 import SRC/stable-index.lm;
 import SRC/stable-cli.lm;
+import SRC/stable-codegen.lm;
 

@@ -126,10 +126,7 @@ compile-program-ordered := λ(: global-ctx FContext)(: program AST). (: (tail(
             (compile-global( global-ctx k rhs ))
          ))
       )))
-      ( (Seq( rst e )) (tail(
-         (compile-program-ordered( global-ctx rst ))
-         (compile-global( global-ctx e ))
-      ))) 
+      ( (Seq( rst _ )) (compile-program-ordered( global-ctx rst )) )
       ( ASTEOF () )
    ))
 )) Nil);
