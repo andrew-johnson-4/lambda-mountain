@@ -9,4 +9,8 @@ main := λ. (: (tail(
     ()
     ( 'A_t (print 'OK_s) )
   ))
+  (match t (
+    ()
+    ( a_t (print a) )
+  ))
 )) Nil);

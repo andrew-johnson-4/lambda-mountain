@@ -1201,7 +1201,7 @@ ascript-normal := λ(: t AST)(: tt Type). (: (
       (if (non-zero prev-tt) (
          (if (is-arrow tt) () (tail(
             (let norm-tt (normalize tt))
-            (if (==( prev-tt norm-tt )) () (tail(
+            (if (&&( (can-unify( prev-tt norm-tt )) (can-unify( norm-tt prev-tt )) )) () (tail(
                (print prev-tt)
                (print '\s!=\s_s)
                (print norm-tt)
