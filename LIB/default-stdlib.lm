@@ -12,12 +12,27 @@ reverse := λ(: l List<x>). (: (tail(
    (while (non-zero l) (match l (
       ()
       ( (LCons( v rst )) (tail(
-         (set r (LCons( v r )))
+         (set r (LCons( v (close r) )))
          (set l rst)
       )))
    )))
    r
 )) List<x>);
+
+print := λ(: l List<x>). (: (tail(
+   (print '[_s)
+   (let some False_u8)
+   (while (non-zero l) (match l (
+      ()
+      ( (LCons( v rst )) (tail(
+         (if (==( some True_u8 )) (print ',_s) ())
+         (print v)
+         (set some True_u8)
+         (set l rst)
+      )))
+   )))
+   (print ']_s)
+)) Nil);
 
 == := λ(: l Tuple<x,y>)(: r Tuple<x,y>). (: (tail(
    (let return 0_u64)
