@@ -563,39 +563,13 @@ compile-stack-call := λ(: ctx FContext)(: function-name String)(: return-type T
    r
 )) Fragment);
 
-compile-translate-local-variables := λ(: ctx FContext)(: delta I64). (: (tail(
-   (match ctx (
-      ()
-      ( FCtxEOF () )
-      ( (FCtxBind( rst k kt f )) (tail(
-         (let rst (maybe-deref(compile-translate-local-variables( rst delta ))))
-         (match (maybe-deref(fragment::get( f 'fragment-type_s ))) (
-            ()
-            ( (SAtom 'LocalVariable_s) (
-               (match (maybe-deref(fragment::get( f 'expression_s ))) (
-                  ()
-                  ( (SAtom previous-offset) (tail(
-                     (let p-offset (to-i64 previous-offset))
-                     (let new-offset (+( p-offset delta )))
-                     (let new-f (maybe-deref(fragment::set( f 'expression_s (SAtom(to-string new-offset)) ))))
-                     (set ctx (FCtxBind( (close rst) k kt new-f )))
-                  )))
-               ))
-            ))
-            ( _ (set ctx (FCtxBind( (close rst) k kt f ))) )
-         ))
-      )))
-   ))
-   (close ctx)
-)) FContext[]);
-
 compile-stack-call-push-args := λ(: ctx FContext)(: args AST)(: inner-offset I64). (: (tail(
    (let args-type (maybe-deref(typeof args)))
    (let args-size (sizeof-aligned args-type))
    (let stack-offset 0_i64)
    # is stack-offset really just zero here? TODO confirm
    (let translate-delta (-( 8_i64 inner-offset )))
-   (let ctx-2 (maybe-deref(compile-translate-local-variables( ctx translate-delta ))))(set ctx ctx-2)
+   (let ctx-2 (maybe-deref(translate-local-variables( ctx translate-delta ))))(set ctx ctx-2)
    (let r (maybe-deref(fragment::new())))
    (let e1 (maybe-deref(compile-push-rvalue( ctx args stack-offset ))))
    (set r e1)
