@@ -232,17 +232,16 @@ preprocess-apply-hard := λ(: macro-name String)(: arity U64)(: program AST). (:
             ))
          ))
          (if (==( go True_u8 )) (
-            (match (try-destructure-macro( lhs program )) (
+            (match (try-destructure-macro( (location-of program) lhs program )) (
                ()
                ( CtxEOF (set macros rst) )
                ( ctx (tail(
                   (let p (apply( ctx rhs )))
-                  (let c (extract-uuids( program CtxEOF p )))
+                  (let c (extract-uuids( (location-of program) CtxEOF p )))
                   (if (non-zero c) (
                      (set p (substitute-uuids( c p )))
                   ) ())
-                  (let n (preprocess-apply p))
-                  (set return (relocate( n (location-of program) )))
+                  (set return (preprocess-apply p))
                   (set macros MEOF)
                   (set matched True_u8)
                )))
@@ -321,25 +320,25 @@ apply := λ(: ctx Context)(: term AST). (: (tail(
    return
 )) AST);
 
-try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
+try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (tail(
    (let r CtxEOF)
    (match (Pair( lhs term )) (
       ()
       ( (Pair( ASTNil ASTNil )) (set r CtxNil) )
       ( (Pair( (App( (App( (Var _) (Var _) )) (Var _) )) (App( (App( (Lit _) _ )) _ )) )) () )
       ( (Pair( (App(pl pr)) (App(el er)) )) (tail(
-         (let ll (try-destructure-macro( pl el )))
+         (let ll (try-destructure-macro( loc pl el )))
          (if (non-zero ll) (tail(
-            (let rl (try-destructure-macro( pr er )))
+            (let rl (try-destructure-macro( loc pr er )))
             (if (non-zero rl) (
                (set r (union( ll rl )))
             ) ())
          )) ())
       )))
       ( (Pair( (Abs(pl pr ptlt)) (Abs(el er etlt)) )) (tail(
-         (let ll (try-destructure-macro( pl el )))
+         (let ll (try-destructure-macro( loc pl el )))
          (if (non-zero ll) (tail(
-            (let rl (try-destructure-macro( pr er )))
+            (let rl (try-destructure-macro( loc pr er )))
             (if (non-zero rl) (
                (set r (union( ll rl )))
             ) ())
@@ -356,7 +355,7 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
       ))
       ( (Pair( (App( (Lit ':Literal:_s) (Var pv) )) (Lit el) )) (
          (if (==( (index-of-tag el) unknown-index-of-tag ))
-             (set r (CtxBind( (close CtxNil) pv term )))
+             (set r (CtxBind( (close CtxNil) pv (relocate( term loc )) )))
              ()
          )
       ))
@@ -364,12 +363,12 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
          ()
       ))
       ( (Pair( (App( (Lit ':Variable:_s) (Var pv) )) (Var el) )) (
-         (set r (CtxBind( (close CtxNil) pv term )))
+         (set r (CtxBind( (close CtxNil) pv (relocate( term loc )) )))
       ))
       ( (Pair( (App( (App( (Lit ':Tag:_s) (Var pv) )) (Var pt) )) (Lit el) )) (
          (if (==( (index-of-tag el) unknown-index-of-tag )) () (tail(
             (set r CtxNil)
-            (set r (CtxBind( (close r) pv (
+            (set r (CtxBind( (close r) pv (relocate( (
                (App(
                   (close(Lit(clone-rope(SAtom ':_s))))
                   (close(App(
@@ -377,20 +376,20 @@ try-destructure-macro := λ(: lhs AST)(: term AST). (: (tail(
                      (close(AType(parse-type 'Constant+Literal+U64_s)))
                   )))
                ))
-            ) )))
+            ) loc )) )))
             (set r (CtxBind( (close r) pt
-               (Lit(clone-rope(SCons(
+               (relocate( (Lit(clone-rope(SCons(
                   (close(SAtom 'Tag<_s))
                   (close(SCons(
                      (close(SAtom el))
                      (close(SAtom '>_s))
                   )))
-               ))))
+               )))) loc ))
             )))
          )))
       ))
       ( (Pair( (Var pv) _ )) (
-         (set r (CtxBind( (close CtxNil) pv term )))
+         (set r (CtxBind( (close CtxNil) pv (relocate( term loc )) )))
       ))
       ( _ () )
    ))
@@ -525,25 +524,24 @@ substitute-uuids := λ(: ctx Context)(: term AST). (: (tail(
    return
 )) AST);
 
-extract-uuids := λ(: sloc AST)(: ctx Context)(: term AST). (: (tail(
+extract-uuids := λ(: loc SourceLocation)(: ctx Context)(: term AST). (: (tail(
    (let return ctx)
    (match term (
       ()
       ( (App( (Var 'uuid_s) (Var x) )) (tail(
          (let id (uuid()))
-         (let loc (location-of sloc))
          (map-location( id loc ))
          (let lctx (CtxBind( (close ctx) x (Var id) )))
          (set return lctx)
       )))
       ( (App( l r )) (tail(
-         (let lctx (extract-uuids( sloc ctx l )))
-         (let rctx (extract-uuids( sloc lctx r )))
+         (let lctx (extract-uuids( loc ctx l )))
+         (let rctx (extract-uuids( loc lctx r )))
          (set return rctx)
       )))
       ( (Abs( l r tlt )) (tail(
-         (let lctx (extract-uuids( sloc ctx l )))
-         (let rctx (extract-uuids( sloc lctx r )))
+         (let lctx (extract-uuids( loc ctx l )))
+         (let rctx (extract-uuids( loc lctx r )))
          (set return rctx)
       )))
       ( ASTEOF () )
@@ -552,21 +550,21 @@ extract-uuids := λ(: sloc AST)(: ctx Context)(: term AST). (: (tail(
       ( (Var v) () )
       ( (Lit v) () )
       ( (Seq( lt rt )) (tail(
-         (let lctx (extract-uuids( sloc ctx lt )))
-         (let rctx (extract-uuids( sloc lctx rt )))
+         (let lctx (extract-uuids( loc ctx lt )))
+         (let rctx (extract-uuids( loc lctx rt )))
          (set return rctx)
       )))
       ( (Typedef( lt rt )) (tail(
-         (let lctx (extract-uuids( sloc ctx lt )))
-         (let rctx (extract-uuids( sloc lctx rt )))
+         (let lctx (extract-uuids( loc ctx lt )))
+         (let rctx (extract-uuids( loc lctx rt )))
          (set return rctx)
       )))
       ( (Glb( k t )) (tail(
-         (let rctx (extract-uuids( sloc ctx t )))
+         (let rctx (extract-uuids( loc ctx t )))
          (set return rctx)
       )))
       ( (Frg( k t tlt )) (tail(
-         (let rctx (extract-uuids( sloc ctx t )))
+         (let rctx (extract-uuids( loc ctx t )))
          (set return rctx)
       )))
    ))
