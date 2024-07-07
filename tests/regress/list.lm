@@ -1,0 +1,11 @@
+
+import LIB/default.lm;
+
+main := λ. (: (tail(
+   (let l1 (: LEOF List<U64>))
+   (let l2 (LCons( 1_u64 (close l1) )))
+   (let l3 (LCons( 2_u64 (close l2) )))
+   (if (non-zero l1) (print 'L1\n_s) ())
+   (if (non-zero l2) (print 'L2\n_s) ())
+   (if (non-zero l3) (print 'L3\n_s) ())
+)) Nil);

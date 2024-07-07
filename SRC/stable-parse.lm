@@ -520,7 +520,13 @@ parse := λ. (: (tail(
                               )))
                               (close(App(
                                  (close(Var(clone-rope(SAtom '.0_s))))
-                                 (close(Lit tag-type))
+                                 (close(App(
+                                    (close(Lit ':_s))
+                                    (close(App(
+                                       (close(Lit tag-type))
+                                       (close(AType(parse-type base-type)))
+                                    )))
+                                 )))
                               )))
                            )))
                         )))
