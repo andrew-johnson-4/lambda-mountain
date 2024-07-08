@@ -202,7 +202,7 @@ tokenize := λ(: fp String). (: (tail(
          ))))
 
          ( c (if (==( in_comment True_u8 )) () (tail(
-            (set buffer (LCons(
+            (set buffer (SCons(
                (close buffer)
                (close (SAtom (clone-rope c)))
             )))
