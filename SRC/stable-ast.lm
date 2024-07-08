@@ -42,6 +42,13 @@ var-name-if-var := λ(: t AST). (: (tail(
    k
 )) String);
 
+print := λ(: t Token). (: (
+   (match t (
+      ()
+      ( (Token( v _ _ )) (print v) )
+   ))
+) Nil);
+
 print := λ(: t Context). (: (tail(
    (match t (
       ()
