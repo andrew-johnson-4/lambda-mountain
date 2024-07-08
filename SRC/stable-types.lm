@@ -1723,7 +1723,7 @@ annotate-accessors := λ(: base-type Type)(: tag-type Type)(: args-type Type). (
 infer-global-context := λ(: td AST). (: (
    (match td (
       ()
-      ( (Typedef( (Lit base-type) case-constructors )) (tail(
+      ( (Typedef( (Lit( base-type _ )) case-constructors )) (tail(
          (let bt (parse-type base-type))
          (let size (infer-type-definition( bt case-constructors )))
          (match bt (
@@ -1732,7 +1732,7 @@ infer-global-context := λ(: td AST). (: (
             ( _ () )
          ))
       )))
-      ( (Glb( k (Abs( lhs (App( (Lit ':_s) (App( rhs (AType rhst) )) )) tlt )) )) (tail(
+      ( (Glb( k (Abs( lhs (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) tlt )) )) (tail(
          (let lt (typeof-lhs lhs))
          (let return-type (guess-representation(without-representation rhst)))
          (let ft (t3( 'Arrow_s lt return-type )))
@@ -1744,7 +1744,7 @@ infer-global-context := λ(: td AST). (: (
             td
          )))
       )))
-      ( (Frg( k_t (Abs( lhs (App( (Lit ':_s) (App( rhs (AType rhst) )) )) atlt )) tlt )) (tail(
+      ( (Frg( k_t (Abs( lhs (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) atlt )) tlt )) (tail(
          (let lt (typeof-lhs lhs))
          (let ft (t3( 'Arrow_s lt rhst )))
          (ascript-normal( td ft ))
@@ -1755,14 +1755,14 @@ infer-global-context := λ(: td AST). (: (
             ASTEOF
          )))
       )))
-      ( (Glb( k (App( (Lit ':_s) (App( rhs (AType rhst) )) )) )) (tail(
+      ( (Glb( k (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) )) (tail(
          (let kt (and( rhst (t1 'GlobalVariable_s) )))
          (set global-type-context (TCtxBind(
             (close global-type-context) k kt ASTEOF
          )))
          (ascript-normal( td kt ))
       )))
-      ( (Frg( k_t (App( (Lit ':_s) (App( rhs (AType rhst) )) )) tlt )) (
+      ( (Frg( k_t (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) tlt )) (
          (set global-type-context (TCtxBind(
             (close global-type-context)
             k
