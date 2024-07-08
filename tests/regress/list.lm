@@ -1,6 +1,9 @@
 
 import LIB/default.lm;
 
+type A (AA( U64 ));
+type B (B( List<A> ));
+
 main := λ. (: (tail(
    (let l1 (: LEOF List<U64>))
    (let l2 (LCons( 1_u64 (close l1) )))
@@ -12,4 +15,5 @@ main := λ. (: (tail(
    (if (non-zero l4) (print 'L4\n_s) ())
    (print l4)
    (print(reverse l4))
+   (let b (B( (: LEOF List<A>) )))
 )) Nil);

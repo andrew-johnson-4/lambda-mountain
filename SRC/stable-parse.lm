@@ -1,19 +1,19 @@
 
-type ParsePartial (PME( AST , S )); # term, remainder
+type ParsePartial (PME( AST , List<Token> )); # term, remainder
 type SfxList SfxEOF | (SfxSeq( SfxList[] , String , Type )); zero SfxList SfxEOF;
 
 parse-suffixes := (: SfxEOF SfxList);
 
-parse-lambda := λ(: tokens S). (: (tail(
+parse-lambda := λ(: tokens List<Token>). (: (tail(
    (let expr ASTEOF)
-   (let remainder SNil)
+   (let remainder (: LEOF List<Token>))
    (match (parse-one-expression tokens) (
       ()
       ( (PME( (Lit '._s) pr )) (match (parse-many-expressions pr) (
          ()
          ( (PME( le lr )) (tail(
             (set expr (Abs( (close ASTNil) (close le) TAny )))
-            (set tokens SNil)
+            (set tokens (: LEOF List<Token>))
             (set remainder lr)
          )))
       )))
@@ -31,11 +31,11 @@ parse-lambda := λ(: tokens S). (: (tail(
                ( (PME( le lr )) (tail(
                   (set expr (Abs( (close expr) (close le) TAny )))
                   (set remainder lr)
-                  (set tokens SNil)
+                  (set tokens (: LEOF List<Token>))
                )))
             ))
          ))
-         ( (PME( le SNil )) (
+         ( (PME( le LEOF )) (
             (parse-expect( 'Expected\sDot\sFor\sLambda\sBody\n_s tokens ))
          ))
          ( (PME( le lr )) (tail(
@@ -150,20 +150,20 @@ parse-type := λ(: tt String). (: (tail(
    base-type
 )) Type);
 
-parse-many-expressions := λ(: tokens S). (: (tail(
+parse-many-expressions := λ(: tokens List<Token>). (: (tail(
    (let expr ASTEOF)
-   (let remainder SNil)
+   (let remainder (: LEOF List<Token>))
    (while (non-zero tokens) (
       (match tokens (
          ()
-         ( (SCons( (SAtom '\:_s) tl )) (tail(
+         ( (LCons( '\:_t tl )) (tail(
             (set remainder tokens)
-            (set tokens SNil)
+            (set tokens (: LEOF List<Token>))
          )))
-         ( (SCons( (SAtom '\]_s) tl )) (tail(
+         ( (LCons( '\]_t tl )) (tail(
             (if (non-zero expr) () (set expr ASTNil))
             (set remainder tl)
-            (set tokens SNil)
+            (set tokens (: LEOF List<Token>))
          )))
          ( _ (
             (match (parse-one-expression tokens) (
@@ -187,16 +187,16 @@ parse-many-expressions := λ(: tokens S). (: (tail(
    pp
 )) ParsePartial);
 
-parse-one-expression := λ(: tokens S). (: (tail(
+parse-one-expression := λ(: tokens List<Token>). (: (tail(
    (let expr ASTEOF)
-   (let remainder SNil)
+   (let remainder (: LEOF List<Token>))
    (match tokens (
       ()
-      ( SNil (tail(
+      ( LEOF (tail(
          (set expr ASTNil)
-         (set remainder SNil)
+         (set remainder (: LEOF List<Token>))
       )))
-      ( (SCons( (SAtom '\l_s) r )) (
+      ( (LCons( '\l_t r )) (
          (match (parse-lambda r) (
             ()
             ( (PME( le lr )) (tail(
@@ -205,10 +205,10 @@ parse-one-expression := λ(: tokens S). (: (tail(
             )))
          ))
       ))
-      ( (SCons( (SAtom '\]_s) r )) (
+      ( (LCons( '\]_t r )) (
          (parse-unexpect( 'Unexpected\sClosing\sParentheses_s tokens ))
       ))
-      ( (SCons( (SAtom '\[_s) r )) (
+      ( (LCons( '\[_t r )) (
          (match (parse-many-expressions r) (
             ()
             ( (PME( me mr )) (tail(
@@ -217,13 +217,13 @@ parse-one-expression := λ(: tokens S). (: (tail(
             )))
          ))
       ))
-      ( (SCons( (SAtom '\`_s)
-                (SCons( (SAtom i) r ))
+      ( (LCons( '\`_t
+                (LCons( i_t r ))
         )) (tail(
          (set expr (Lit i))
          (set remainder r)
       )))
-      ( (SCons( (SAtom a) r )) (tail(
+      ( (LCons( a_t r )) (tail(
          (if (is-variable a) (
             (set expr (Var a))
          ) (
@@ -236,11 +236,11 @@ parse-one-expression := λ(: tokens S). (: (tail(
    pp
 )) ParsePartial);
 
-parse-unexpect := λ(: msg String)(: tokens S). (: (tail(
+parse-unexpect := λ(: msg String)(: tokens List<Token>). (: (tail(
    ()
    (fail msg)
 )) Nil);
-parse-expect := λ(: msg String)(: tokens S). (: (tail(
+parse-expect := λ(: msg String)(: tokens List<Token>). (: (tail(
    ()
    (eprint msg)
    (print '\n_s)
@@ -386,14 +386,14 @@ parse-type-single := λ(: tt String). (: (tail(
 
 parse := λ. (: (tail(
    (let tokens ast-tokenized-program)
-   (set ast-tokenized-program SNil)
+   (set ast-tokenized-program (: LEOF List<Token>))
    (while (non-zero tokens) (
       (match tokens (
          ()
-         ( (SCons( (SAtom '\:_s) remainder )) (
+         ( (LCons( '\:_t remainder )) (
             (set tokens remainder)
          ))
-         ( (SCons( (SAtom 'macro_s) remainder )) (
+         ( (LCons( 'macro_t remainder )) (
             (match (parse-one-expression remainder) (
                ()
                ( (PME( mlhs mremainder1 )) (
@@ -410,7 +410,7 @@ parse := λ. (: (tail(
                ))
             ))
          ))
-         ( (SCons( (SAtom 'fragment_s) (SCons( (SAtom 'type_s) remainder )) )) (
+         ( (LCons( 'fragment_t (LCons( 'type_t remainder )) )) (
             (match (parse-one-expression remainder) (
                ()
                ( (PME( e1 r1 )) (match (parse-many-expressions r1) (
@@ -430,11 +430,11 @@ parse := λ. (: (tail(
                )))
             ))
          ))
-         ( (SCons( (SAtom 'fragment_s) remainder-ext )) (tail(
+         ( (LCons( 'fragment_t remainder-ext )) (tail(
             (let tt-ext TAny)
             (match remainder-ext (
                ()
-               ( (SCons( (SAtom ':_s) (SCons( (SAtom tt-lit) rr )) )) (tail(
+               ( (LCons( ':_t (LCons( tt-lit_t rr )) )) (tail(
                   (set tt-ext (parse-type tt-lit))
                   (set remainder-ext rr)
                )))
@@ -442,7 +442,7 @@ parse := λ. (: (tail(
             ))
             (match remainder-ext (
                ()
-               ( (SCons( (SAtom key ) (SCons( (SAtom ':=_s) remainder )) )) (
+               ( (LCons( key_t (LCons( ':=_t remainder )) )) (
                   (match (parse-many-expressions remainder) (
                      ()
                      ( (PME( re rr )) (tail(
@@ -456,7 +456,7 @@ parse := λ. (: (tail(
                ))
             ))
          )))
-         ( (SCons( (SAtom 'type_s) remainder )) (
+         ( (LCons( 'type_t remainder )) (
             (match (parse-one-expression remainder) (
                ()
                ( (PME( e1 r1 )) (match (parse-many-expressions r1) (
@@ -474,8 +474,8 @@ parse := λ. (: (tail(
                )))
             ))
          ))
-         ( (SCons( (SAtom 'atom_s) (SCons( (SAtom 'suffix_s)
-                   (SCons( (SAtom atype) (SCons( (SAtom suffix) remainder )) ))
+         ( (LCons( 'atom_t (LCons( 'suffix_t
+                   (LCons( atype_t (LCons( suffix_t remainder )) ))
            )) )) (tail(
             (set parse-suffixes (SfxSeq(
                (close parse-suffixes)
@@ -491,16 +491,16 @@ parse := λ. (: (tail(
             ()
             (set tokens remainder)
          )))
-         ( (SCons( (SAtom 'size_s) (SCons( (SAtom class) (SCons( (SAtom sz) remainder )) )) )) (tail(
+         ( (LCons( 'size_t (LCons( class_t (LCons( sz_t remainder )) )) )) (tail(
             (index-size-of-class( class (to-u64 sz) ))
             (set tokens remainder)
          )))
-         ( (SCons( (SAtom 'import_s) (SCons( (SAtom relative-path) remainder )) )) (tail(
+         ( (LCons( 'import_t (LCons( relative-path_t remainder )) )) (tail(
             (tokenize relative-path)
             (parse ())
             (set tokens remainder)
          )))
-         ( (SCons( (SAtom 'zero_s) (SCons( (SAtom base-type) (SCons( (SAtom tag-type) remainder )) )) )) (tail(
+         ( (LCons( 'zero_t (LCons( base-type_t (LCons( tag-type_t remainder )) )) )) (tail(
             (set ast-parsed-program (Seq(
                (close ast-parsed-program)
                (close (Glb( 'non-zero_s (close(Abs(
@@ -538,7 +538,7 @@ parse := λ. (: (tail(
             )))
             (set tokens remainder)
          )))
-         ( (SCons( (SAtom key) (SCons( (SAtom ':=_s) remainder )) )) (
+         ( (LCons( key_t (LCons( ':=_t remainder )) )) (
             (match (parse-many-expressions remainder) (
                ()
                ( (PME( re rr )) (tail(

@@ -2,10 +2,6 @@
 type SourceLocation (SourceLocation( String , U64 , U64 ));
 type Token (Token( String , U64 , SourceLocation ));
 
-map-location := λ(: tok String)(: file String)(: line U64)(: column U64). (: (
-   (map-location( tok (SourceLocation( file line column )) ))
-) Nil);
-
 non-zero := λ(: loc SourceLocation). (: (tail(
    (let r 0_u64)
    (match loc (
@@ -91,11 +87,10 @@ tokenize := λ(: fp String). (: (tail(
          ()
          ( \o_u8 (tail(
             (if (non-zero buffer) (tail(
-               (let tk (clone-rope buffer))
-               (map-location( tk fp token-line token-column ))
-               (set ast-tokenized-program (SCons(
+               (let tk (Token( (clone-rope buffer) (iuid()) (SourceLocation( fp token-line token-column )) )))
+               (set ast-tokenized-program (LCons(
+                  tk
                   (close ast-tokenized-program)
-                  (close (SAtom tk))
                )))
                (set buffer SNil)
             )) ())
@@ -105,11 +100,10 @@ tokenize := λ(: fp String). (: (tail(
          )))
          ( \n_u8 (tail(
             (if (non-zero buffer) (tail(
-               (let tk (clone-rope buffer))
-               (map-location( tk fp token-line token-column ))
-               (set ast-tokenized-program (SCons(
+               (let tk (Token( (clone-rope buffer) (iuid()) (SourceLocation( fp token-line token-column )) )))
+               (set ast-tokenized-program (LCons(
+                  tk
                   (close ast-tokenized-program)
-                  (close (SAtom tk))
                )))
                (set buffer SNil)
             )) ())
@@ -119,11 +113,10 @@ tokenize := λ(: fp String). (: (tail(
          )))
          ( \t_u8 (tail(
             (if (non-zero buffer) (tail(
-               (let tk (clone-rope buffer))
-               (map-location( tk fp token-line token-column ))
-               (set ast-tokenized-program (SCons(
+               (let tk (Token( (clone-rope buffer) (iuid()) (SourceLocation( fp token-line token-column )) )))
+               (set ast-tokenized-program (LCons(
+                  tk
                   (close ast-tokenized-program)
-                  (close (SAtom tk))
                )))
                (set buffer SNil)
             )) ())
@@ -132,11 +125,10 @@ tokenize := λ(: fp String). (: (tail(
          )))
          ( \s_u8 (tail(
             (if (non-zero buffer) (tail(
-               (let tk (clone-rope buffer))
-               (map-location( tk fp token-line token-column ))
-               (set ast-tokenized-program (SCons(
+               (let tk (Token( (clone-rope buffer) (iuid()) (SourceLocation( fp token-line token-column )) )))
+               (set ast-tokenized-program (LCons(
+                  tk
                   (close ast-tokenized-program)
-                  (close (SAtom tk))
                )))
                (set buffer SNil)
             )) ())
@@ -146,66 +138,66 @@ tokenize := λ(: fp String). (: (tail(
 
          ( \[_u8 (if (==( in_comment True_u8 )) () (tail(
             (if (non-zero buffer) (tail(
-               (let tk (clone-rope buffer))
-               (map-location( tk fp token-line token-column ))
-               (set ast-tokenized-program (SCons(
+               (let tk (Token( (clone-rope buffer) (iuid()) (SourceLocation( fp token-line token-column )) )))
+               (set ast-tokenized-program (LCons(
+                  tk
                   (close ast-tokenized-program)
-                  (close (SAtom tk))
                )))
                (set buffer SNil)
             )) ())
             (set parens-counter (+( parens-counter 1_u64 )))
-            (set ast-tokenized-program (SCons(
+            (let tk (Token( '\[_s (iuid()) (SourceLocation( fp token-line token-column )) )))
+            (set ast-tokenized-program (LCons(
+               tk
                (close ast-tokenized-program)
-               (close (SAtom '\[_s))
             )))
             (set token-line current-line)
             (set token-column current-column)
          ))))
          ( \]_u8 (if (==( in_comment True_u8 )) () (tail(
             (if (non-zero buffer) (tail(
-               (let tk (clone-rope buffer))
-               (map-location( tk fp token-line token-column ))
-               (set ast-tokenized-program (SCons(
+               (let tk (Token( (clone-rope buffer) (iuid()) (SourceLocation( fp token-line token-column )) )))
+               (set ast-tokenized-program (LCons(
+                  tk
                   (close ast-tokenized-program)
-                  (close (SAtom tk))
                )))
                (set buffer SNil)
             )) ())
             (set parens-counter (-( parens-counter 1_u64 )))
-            (set ast-tokenized-program (SCons(
+            (let tk (Token( '\]_s (iuid()) (SourceLocation( fp token-line token-column )) )))
+            (set ast-tokenized-program (LCons(
+               tk
                (close ast-tokenized-program)
-               (close (SAtom '\]_s))
             )))
          ))))
          ( \`_u8 (if (==( in_comment True_u8 )) () (tail(
             (if (non-zero buffer) (tail(
-               (let tk (clone-rope buffer))
-               (map-location( tk fp token-line token-column ))
-               (set ast-tokenized-program (SCons(
+               (let tk (Token( (clone-rope buffer) (iuid()) (SourceLocation( fp token-line token-column )) )))
+               (set ast-tokenized-program (LCons(
+                  tk
                   (close ast-tokenized-program)
-                  (close (SAtom tk))
                )))
                (set buffer SNil)
             )) ())
-            (set ast-tokenized-program (SCons(
+            (let tk (Token( '\`_s (iuid()) (SourceLocation( fp token-line token-column )) )))
+            (set ast-tokenized-program (LCons(
+               tk
                (close ast-tokenized-program)
-               (close (SAtom \`_s))
             )))
          ))))
          ( \:_u8 (if (==( in_comment True_u8 )) () (tail(
             (if (non-zero buffer) (tail(
-               (let tk (clone-rope buffer))
-               (map-location( tk fp token-line token-column ))
-               (set ast-tokenized-program (SCons(
+               (let tk (Token( (clone-rope buffer) (iuid()) (SourceLocation( fp token-line token-column )) )))
+               (set ast-tokenized-program (LCons(
+                  tk
                   (close ast-tokenized-program)
-                  (close (SAtom tk))
                )))
                (set buffer SNil)
             )) ())
-            (set ast-tokenized-program (SCons(
+            (let tk (Token( '\:_s (iuid()) (SourceLocation( fp token-line token-column )) )))
+            (set ast-tokenized-program (LCons(
+               tk
                (close ast-tokenized-program)
-               (close (SAtom '\:_s))
             )))
          ))))
 
@@ -215,9 +207,10 @@ tokenize := λ(: fp String). (: (tail(
                (close (SAtom (clone-rope c)))
             )))
             (if (==( '\l_s (clone-rope buffer) )) (tail(
-               (set ast-tokenized-program (SCons(
+               (let tk (Token( '\l_s (iuid()) (SourceLocation( fp token-line token-column )) )))
+               (set ast-tokenized-program (LCons(
+                  tk
                   (close ast-tokenized-program)
-                  (close (SAtom '\l_s))
                )))
                (set buffer SNil)
            )) ())
@@ -226,12 +219,13 @@ tokenize := λ(: fp String). (: (tail(
       (set text (tail-string text))
    )))
 
-   (if (non-zero buffer) (
-      (set ast-tokenized-program (SCons(
+   (if (non-zero buffer) (tail(
+      (let tk (Token( (clone-rope buffer) (iuid()) (SourceLocation( fp token-line token-column )) )))
+      (set ast-tokenized-program (LCons(
+         tk
          (close ast-tokenized-program)
-         (close (SAtom (clone-rope buffer)))
       )))
-   ) ())
+   )) ())
 
    (if (==( parens-counter 0_u64 )) () (tail(
       (eprint 'Hanging\sParentheses\sIn\sFile:\s_s)
@@ -242,7 +236,6 @@ tokenize := λ(: fp String). (: (tail(
       (exit 1_u64)
    )))
 
-   (let r (list-tail-order-to-head-order ast-tokenized-program))
-   (set ast-tokenized-program r)
+   (set ast-tokenized-program (reverse ast-tokenized-program))
 )) Nil);
 

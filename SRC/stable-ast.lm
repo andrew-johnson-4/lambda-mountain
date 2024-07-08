@@ -28,7 +28,7 @@ type Macro (Macro( AST , AST ));
 type MacroList MEOF | (MSeq( MacroList[] , Macro )); zero MacroList MEOF;
 
 preprocess-macros := (: MEOF MacroList);
-ast-tokenized-program := (: SNil S);
+ast-tokenized-program := (: LEOF List<Token>);
 ast-parsed-program := (: ASTEOF AST);
 global-type-context := (: TCtxEOF TContext);
 
@@ -41,6 +41,13 @@ var-name-if-var := λ(: t AST). (: (tail(
    ))
    k
 )) String);
+
+print := λ(: t Token). (: (
+   (match t (
+      ()
+      ( (Token( v _ _ )) (print v) )
+   ))
+) Nil);
 
 print := λ(: t Context). (: (tail(
    (match t (
