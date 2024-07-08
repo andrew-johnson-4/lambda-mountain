@@ -2053,9 +2053,10 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
       )))
       ( (Typedef( _ _ )) () )
       ( (Glb( k v )) (
-         (if (is-open(typeof term)) () (
+         (if (is-open(typeof term)) () (tail(
+            (print 'Infer\sGlobal\s_s)(print k)(print '\n_s)
             (infer-expr( tctx v Used TAny ))
-         ))
+         )))
       ))
       ( (Frg( _ v _ )) (
          (ascript-normal( v (typeof term) ))
