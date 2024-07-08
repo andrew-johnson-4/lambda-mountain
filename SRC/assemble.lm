@@ -10,7 +10,7 @@ compile := λ(). (: (tail(
    (let preview-program ast-parsed-program)
    (while (non-zero preview-program) (match preview-program (
       ()
-      ( (Seq( rst (Frg( k rhs _ )) )) (tail(
+      ( (Seq( rst (Frg( k_t rhs _ )) )) (tail(
          (let is-template False_u8)
          (match k (
             ()
@@ -47,27 +47,22 @@ compile := λ(). (: (tail(
       ( (Seq( rst (Glb( k rhs )) )) (tail(
          (if (==( k 'main_s )) (set assemble-argv-referenced True_u8) ())
          (let open False_u8)
-         (match preview-program (
-            ()
-            ( (Seq( _ term )) (
-               (if (is-open(typeof term)) (set open True_u8) ())
-            ))
-         ))
-         (if (==( open True_u8 )) () (tail(
+         (let kt (typeof rhs))
+         (print 'Global\s_s)(print k)(print '\s:\s_s)(print kt)(print '\n_s)
+         (if (is-open kt) () (tail(
             (let fragment (maybe-deref(fragment::new())))
             (let fragment-2 (maybe-deref(fragment::set( fragment 'fragment-type_s (SAtom 'Global_s) ))))
-            (let rhs-tt (maybe-deref(typeof rhs)))
-            (match (slot( rhs-tt '->_s )) (
+            (match (slot( kt '->_s )) (
                ()
                ( (TGround( '->_s _ )) (tail(
-                  (let fragment-3 (maybe-deref(fragment::set-type( fragment-2 rhs-tt ))))
+                  (let fragment-3 (maybe-deref(fragment::set-type( fragment-2 kt ))))
                   (let global-ctx-2 (maybe-deref(fragment-context::bind(
-                     global-ctx k rhs-tt fragment-3
+                     global-ctx k kt fragment-3
                   ))))
                   (set global-ctx global-ctx-2)
                )))
                ( _ (tail(
-                  (let clean-tt (maybe-deref(without-representation rhs-tt)))
+                  (let clean-tt (maybe-deref(without-representation kt)))
                   (let repr-tt (and( clean-tt (t1 'GlobalVariable_s) )))
                   (let fragment-3 (maybe-deref(fragment::set-type( fragment-2 repr-tt ))))
                   (let mid (mangle-identifier( k clean-tt )))
@@ -81,7 +76,7 @@ compile := λ(). (: (tail(
          )))
          (set preview-program rst)
       )))
-      ( (Seq( rst (Frg( k rhs _ )) )) (tail(
+      ( (Seq( rst (Frg( k_t rhs _ )) )) (tail(
          (let fragment (maybe-deref(fragment::new())))
          (let fragment-2 (maybe-deref(fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))
          (let fragment-3 (maybe-deref(fragment::set( fragment-2 'fragment_s (maybe-deref(to-s rhs)) ))))

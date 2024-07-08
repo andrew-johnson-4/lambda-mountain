@@ -161,12 +161,16 @@ is-open := λ(: tt Type). (: (tail(
    (let r 0_u64)
    (match tt (
       ()
-      ( TAny () )
+      ( TAny (set r 1_u64) )
       ( (TVar _) (set r 1_u64) )
       ( (TAnd( lt rt )) (tail(
          (if (is-open lt) (set r 1_u64) ())
          (if (is-open rt) (set r 1_u64) ())
       )))
+      ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF _ )) _ )) )) () )
+      ( (TGround( 'Field_s (TypeSeq( (TypeSeq( TypeEOF base-type )) _ )) )) (
+         (set r (is-open base-type))
+      ))
       ( (TGround( _ pars )) (
          (while (non-zero pars) (match pars (
             ()
@@ -1749,7 +1753,7 @@ infer-global-context := λ(: td AST). (: (
             td
          )))
       )))
-      ( (Frg( k (Abs( lhs (App( (Lit ':_s) (App( rhs (AType rhst) )) )) atlt )) tlt )) (tail(
+      ( (Frg( k_t (Abs( lhs (App( (Lit ':_s) (App( rhs (AType rhst) )) )) atlt )) tlt )) (tail(
          (let lt (typeof-lhs lhs))
          (let ft (t3( 'Arrow_s lt rhst )))
          (ascript-normal( td ft ))
@@ -1765,18 +1769,19 @@ infer-global-context := λ(: td AST). (: (
          (set global-type-context (TCtxBind(
             (close global-type-context) k kt ASTEOF
          )))
+         (ascript-normal( td kt ))
       )))
-      ( (Frg( k (App( (Lit ':_s) (App( rhs (AType rhst) )) )) tlt )) (
+      ( (Frg( k_t (App( (Lit ':_s) (App( rhs (AType rhst) )) )) tlt )) (
          (set global-type-context (TCtxBind(
             (close global-type-context)
             k
             rhst ASTEOF
          )))
       ))
-      ( (Glb( k _ )) (
+      ( (Glb( _ _ )) (
          (exit-error( 'Global\sBindings\sMust\sBe\sAscripted_s td ))
       ))
-      ( (Frg( k _ tlt )) (
+      ( (Frg( _ _ _ )) (
          (exit-error( 'Global\sBindings\sMust\sBe\sAscripted_s td ))
       ))
       ( _ () )
@@ -1793,7 +1798,7 @@ assert-well-typed := λ(: term AST). (: (
             (assert-well-typed v)
          ))
       ))
-      ( (Frg( k v tlt )) (
+      ( (Frg( _ v _ )) (
          (assert-one-typed v)
       ))
       ( (Typedef( _ _ )) () )
@@ -1908,9 +1913,15 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (
             (set ctx (normalize ctx))
             (let closed-type (substitute( ctx ft )))
             (set r (guess-representation(substitute( ctx frt ))))
-            (if (&&( (==( do-specialize True_u8 )) (is-open fpt) )) (
+            (if (&&( (==( do-specialize True_u8 )) (is-open fpt) )) (tail(
+               (if (is-open closed-type) (tail(
+                  (print 'Application\sDid\sNot\sClose\sBefore\sSpecialization:\n_s)
+                  (print 'Function\s_s)(print function-name)(print '\s:\s_s)(print ft)(print '\n_s)
+                  (print 'Argument\s_s)(print pt)(print '\n_s)
+                  (exit 1_u64)
+               )) ())
                (try-specialize( function-name ft ctx closed-type ))
-            ) ())
+            )) ())
          )) ())
       )))
       ( _ () )
@@ -2053,11 +2064,12 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
       )))
       ( (Typedef( _ _ )) () )
       ( (Glb( k v )) (
-         (if (is-open(typeof term)) () (
+         (if (is-open(typeof term)) () (tail(
+            (print 'Infer\sGlobal\s_s)(print k)(print '\n_s)
             (infer-expr( tctx v Used TAny ))
-         ))
+         )))
       ))
-      ( (Frg( k v tlt )) (
+      ( (Frg( _ v _ )) (
          (ascript-normal( v (typeof term) ))
       ))
       ( (App( (Lit ':_s) (App( (Lit _) (AType tt) )) )) (
@@ -2080,6 +2092,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
          ))
       ))
       ( (App( (Lit ':_s) (App( t (AType tt) )) )) (tail(
+         (print 'Infer\sAscript\s_s)(print term)(print '\n_s)
          (let tctx2 (maybe-deref(infer-expr( tctx t used tt ))))
          (set tctx tctx2)
          (let inner-tt (maybe-deref(typeof t)))

@@ -1,6 +1,38 @@
 
-type SourceLocation (SourceLocation( String , U64 , U64 ));
-type Token (Token( String , U64 , SourceLocation ));
+with-location := λ(: t Token)(: loc SourceLocation). (: (tail(
+   (match t (
+      ()
+      ( (Token( k _ _ )) (
+         (set t (Token( k (iuid()) loc )))
+      ))
+   ))
+   t
+)) Token);
+
+with-key := λ(: t Token)(: k String). (: (tail(
+   (match t (
+      ()
+      ( (Token( _ _ loc )) (
+         (set t (Token( k (iuid()) loc )))
+      ))
+   ))
+   t
+)) Token);
+
+location-of := λ(: t Token). (: (tail(
+   (let loc (.1( (as t Tag<Token>) )))
+   loc
+)) SourceLocation);
+
+id-of := λ(: t Token). (: (tail(
+   (let id (.2( (as t Tag<Token>) )))
+   id
+)) U64);
+
+key-of := λ(: t Token). (: (tail(
+   (let key (.3( (as t Tag<Token>) )))
+   key
+)) String);
 
 non-zero := λ(: loc SourceLocation). (: (tail(
    (let r 0_u64)
