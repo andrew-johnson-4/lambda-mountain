@@ -1,19 +1,19 @@
 
-type ParsePartial (PME( AST , S )); # term, remainder
+type ParsePartial (PME( AST , List<Token> )); # term, remainder
 type SfxList SfxEOF | (SfxSeq( SfxList[] , String , Type )); zero SfxList SfxEOF;
 
 parse-suffixes := (: SfxEOF SfxList);
 
-parse-lambda := λ(: tokens S). (: (tail(
+parse-lambda := λ(: tokens List<Token>). (: (tail(
    (let expr ASTEOF)
-   (let remainder SNil)
+   (let remainder (: LEOF List<Token>))
    (match (parse-one-expression tokens) (
       ()
       ( (PME( (Lit '._s) pr )) (match (parse-many-expressions pr) (
          ()
          ( (PME( le lr )) (tail(
             (set expr (Abs( (close ASTNil) (close le) TAny )))
-            (set tokens SNil)
+            (set tokens (: LEOF List<Token>))
             (set remainder lr)
          )))
       )))
@@ -31,11 +31,11 @@ parse-lambda := λ(: tokens S). (: (tail(
                ( (PME( le lr )) (tail(
                   (set expr (Abs( (close expr) (close le) TAny )))
                   (set remainder lr)
-                  (set tokens SNil)
+                  (set tokens (: LEOF List<Token>))
                )))
             ))
          ))
-         ( (PME( le SNil )) (
+         ( (PME( le LEOF )) (
             (parse-expect( 'Expected\sDot\sFor\sLambda\sBody\n_s tokens ))
          ))
          ( (PME( le lr )) (tail(
@@ -150,20 +150,20 @@ parse-type := λ(: tt String). (: (tail(
    base-type
 )) Type);
 
-parse-many-expressions := λ(: tokens S). (: (tail(
+parse-many-expressions := λ(: tokens List<Token>). (: (tail(
    (let expr ASTEOF)
-   (let remainder SNil)
+   (let remainder (: LEOF List<Token>))
    (while (non-zero tokens) (
       (match tokens (
          ()
          ( (LCons( '\:_t tl )) (tail(
             (set remainder tokens)
-            (set tokens SNil)
+            (set tokens (: LEOF List<Token>))
          )))
          ( (LCons( '\]_t tl )) (tail(
             (if (non-zero expr) () (set expr ASTNil))
             (set remainder tl)
-            (set tokens SNil)
+            (set tokens (: LEOF List<Token>))
          )))
          ( _ (
             (match (parse-one-expression tokens) (
@@ -187,14 +187,14 @@ parse-many-expressions := λ(: tokens S). (: (tail(
    pp
 )) ParsePartial);
 
-parse-one-expression := λ(: tokens S). (: (tail(
+parse-one-expression := λ(: tokens List<Token>). (: (tail(
    (let expr ASTEOF)
-   (let remainder SNil)
+   (let remainder (: LEOF List<Token>))
    (match tokens (
       ()
       ( LEOF (tail(
          (set expr ASTNil)
-         (set remainder SNil)
+         (set remainder (: LEOF List<Token>))
       )))
       ( (LCons( '\l_t r )) (
          (match (parse-lambda r) (
@@ -236,11 +236,11 @@ parse-one-expression := λ(: tokens S). (: (tail(
    pp
 )) ParsePartial);
 
-parse-unexpect := λ(: msg String)(: tokens S). (: (tail(
+parse-unexpect := λ(: msg String)(: tokens List<Token>). (: (tail(
    ()
    (fail msg)
 )) Nil);
-parse-expect := λ(: msg String)(: tokens S). (: (tail(
+parse-expect := λ(: msg String)(: tokens List<Token>). (: (tail(
    ()
    (eprint msg)
    (print '\n_s)
