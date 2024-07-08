@@ -1749,7 +1749,7 @@ infer-global-context := λ(: td AST). (: (
             td
          )))
       )))
-      ( (Frg( k (Abs( lhs (App( (Lit ':_s) (App( rhs (AType rhst) )) )) atlt )) tlt )) (tail(
+      ( (Frg( k_t (Abs( lhs (App( (Lit ':_s) (App( rhs (AType rhst) )) )) atlt )) tlt )) (tail(
          (let lt (typeof-lhs lhs))
          (let ft (t3( 'Arrow_s lt rhst )))
          (ascript-normal( td ft ))
@@ -1766,17 +1766,17 @@ infer-global-context := λ(: td AST). (: (
             (close global-type-context) k kt ASTEOF
          )))
       )))
-      ( (Frg( k (App( (Lit ':_s) (App( rhs (AType rhst) )) )) tlt )) (
+      ( (Frg( k_t (App( (Lit ':_s) (App( rhs (AType rhst) )) )) tlt )) (
          (set global-type-context (TCtxBind(
             (close global-type-context)
             k
             rhst ASTEOF
          )))
       ))
-      ( (Glb( k _ )) (
+      ( (Glb( _ _ )) (
          (exit-error( 'Global\sBindings\sMust\sBe\sAscripted_s td ))
       ))
-      ( (Frg( k _ tlt )) (
+      ( (Frg( _ _ _ )) (
          (exit-error( 'Global\sBindings\sMust\sBe\sAscripted_s td ))
       ))
       ( _ () )
@@ -1793,7 +1793,7 @@ assert-well-typed := λ(: term AST). (: (
             (assert-well-typed v)
          ))
       ))
-      ( (Frg( k v tlt )) (
+      ( (Frg( _ v _ )) (
          (assert-one-typed v)
       ))
       ( (Typedef( _ _ )) () )
@@ -2057,7 +2057,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
             (infer-expr( tctx v Used TAny ))
          ))
       ))
-      ( (Frg( k v tlt )) (
+      ( (Frg( _ v _ )) (
          (ascript-normal( v (typeof term) ))
       ))
       ( (App( (Lit ':_s) (App( (Lit _) (AType tt) )) )) (

@@ -442,7 +442,7 @@ parse := λ. (: (tail(
             ))
             (match remainder-ext (
                ()
-               ( (LCons( key_t (LCons( ':=_t remainder )) )) (
+               ( (LCons( key (LCons( ':=_t remainder )) )) (
                   (match (parse-many-expressions remainder) (
                      ()
                      ( (PME( re rr )) (tail(

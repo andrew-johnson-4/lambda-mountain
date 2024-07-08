@@ -525,15 +525,13 @@ relocate := λ(: term AST)(: loc SourceLocation). (: (tail(
             (close(relocate( t loc )))
          )))
       )))
-      ( (Frg( k t tlt )) (tail(
-         (set k (clone-rope(SAtom k)))
-         (map-location( k loc ))
+      ( (Frg( k t tlt )) (
          (set return (Frg(
-            k
+            (with-location( k loc ))
             (close(relocate( t loc )))
             tlt
          )))
-      )))
+      ))
    ))
    return
 )) AST);
