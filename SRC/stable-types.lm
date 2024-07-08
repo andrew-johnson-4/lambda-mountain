@@ -1908,9 +1908,15 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (
             (set ctx (normalize ctx))
             (let closed-type (substitute( ctx ft )))
             (set r (guess-representation(substitute( ctx frt ))))
-            (if (&&( (==( do-specialize True_u8 )) (is-open fpt) )) (
+            (if (&&( (==( do-specialize True_u8 )) (is-open fpt) )) (tail(
+               (if (is-open closed-type) (tail(
+                  (print 'Application\sDid\sNot\sClose\sBefore\sSpecialization:\n_s)
+                  (print 'Function\s_s)(print function-name)(print '\s:\s_s)(print ft)(print '\n_s)
+                  (print 'Argument\s_s)(print pt)(print '\n_s)
+                  (exit 1_u64)
+               )) ())
                (try-specialize( function-name ft ctx closed-type ))
-            ) ())
+            )) ())
          )) ())
       )))
       ( _ () )
