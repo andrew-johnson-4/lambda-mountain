@@ -500,30 +500,30 @@ parse := λ. (: (tail(
             (parse ())
             (set tokens remainder)
          )))
-         ( (LCons( 'zero_t (LCons( base-type_t (LCons( tag-type_t remainder )) )) )) (tail(
+         ( (LCons( 'zero_t (LCons( base-type (LCons( tag-type_t remainder )) )) )) (tail(
             (set ast-parsed-program (Seq(
                (close ast-parsed-program)
-               (close (Glb( 'non-zero_s (close(Abs(
+               (close (Glb( (with-key( base-type 'non-zero_s )) (close(Abs(
                   (close(App(
-                     (close(Lit(clone-rope(SAtom ':_s))))
-                     (close(App( (close(Var(clone-rope(SAtom 't_s)))) (close(AType(parse-type base-type))) )))
+                     (close(Lit( ':_s (with-key( base-type ':_s )) )))
+                     (close(App( (close(Var( 't_s (with-key( base-type 't_s )) ))) (close(AType(parse-type base-type))) )))
                   )))
                   (close(App(
-                     (close(Lit(clone-rope(SAtom ':_s))))
+                     (close(Lit( ':_s (with-key( base-type ':_s )) )))
                      (close(App(
                         (close(App(
-                           (close(Var(clone-rope(SAtom '!=_s))))
+                           (close(Var( '!=_s (with-key( base-type '!=_s )) )))
                            (close(App(
                               (close(App(
-                                 (close(Var(clone-rope(SAtom '.0_s))))
-                                 (close(Var(clone-rope(SAtom 't_s))))
+                                 (close(Var( '.0_s (with-key( base-type '.0_s )) )))
+                                 (close(Var( 't_s (with-key( base-type 't_s )) )))
                               )))
                               (close(App(
-                                 (close(Var(clone-rope(SAtom '.0_s))))
+                                 (close(Var( '.0_s (with-key( base-type '.0_s )) )))
                                  (close(App(
-                                    (close(Lit ':_s))
+                                    (close(Lit( ':_s (with-key( base-type ':_s )) )))
                                     (close(App(
-                                       (close(Lit tag-type))
+                                       (close(Lit( tag-type (with-key( base-type tag-type)) )))
                                        (close(AType(parse-type base-type)))
                                     )))
                                  )))
@@ -538,7 +538,7 @@ parse := λ. (: (tail(
             )))
             (set tokens remainder)
          )))
-         ( (LCons( key_t (LCons( ':=_t remainder )) )) (
+         ( (LCons( key (LCons( ':=_t remainder )) )) (
             (match (parse-many-expressions remainder) (
                ()
                ( (PME( re rr )) (tail(
