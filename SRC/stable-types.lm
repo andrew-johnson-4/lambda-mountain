@@ -305,9 +305,9 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
       ()
       ( ASTEOF () )
       ( ASTNil () )
-      ( (App( (Lit ':_s) (App( (Lit v) (AType vt) )) )) (tail(
-         (set t (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
-            (close(Lit(clone-rope(SAtom v))))
+      ( (App( (Lit( ':_s ctk )) (App( (Lit( v vtk )) (AType vt) )) )) (tail(
+         (set t (App( (close(Lit( ':_s ctk ))) (close(App(
+            (close(Lit( v vtk )))
             (close(AType( (substitute( tctx vt )) )))
          ))) )))
          (while (non-zero tctx) (match tctx (
@@ -315,7 +315,7 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
             ( TCtxNil (set tctx TCtxEOF) )
             ( (TCtxBind( rst tk tv ta )) (
                (if (==( tk v )) (tail(
-                  (set t (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
+                  (set t (App( (close(Lit( ':_s ctk ))) (close(App(
                      (close(substitute( tctx ta )))
                      (close(AType( (substitute( tctx vt )) )))
                   ))) )))
@@ -324,9 +324,9 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
             ))
          )))
       )))
-      ( (App( (Lit ':_s) (App( (Var v) (AType vt) )) )) (tail(
-         (set t (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
-            (close(Var(clone-rope(SAtom v))))
+      ( (App( (Lit( ':_s ctk )) (App( (Var( v vtk )) (AType vt) )) )) (tail(
+         (set t (App( (close(Lit( ':_s ctk ))) (close(App(
+            (close(Var( v vtk )))
             (close(AType( (substitute( tctx vt )) )))
          ))) )))
          (while (non-zero tctx) (match tctx (
@@ -334,7 +334,7 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
             ( TCtxNil (set tctx TCtxEOF) )
             ( (TCtxBind( rst tk tv ta )) (
                (if (==( tk v )) (tail(
-                  (set t (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
+                  (set t (App( (close(Lit( ':_s ctk ))) (close(App(
                      (close(substitute( tctx ta )))
                      (close(AType( (substitute( tctx vt )) )))
                   ))) )))
@@ -343,8 +343,8 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
             ))
          )))
       )))
-      ( (Lit v) (set t (Lit(clone-rope(SAtom v)))) )
-      ( (Var v) (set t (Var(clone-rope(SAtom v)))) )
+      ( (Lit v) () )
+      ( (Var v) () )
       ( (Abs( lhs rhs tt )) (
          (set t (Abs(
             (close(substitute-lhs( tctx lhs )))
