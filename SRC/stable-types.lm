@@ -1644,7 +1644,7 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
          (.bind( (as (& type-constructors-index) BTreeEq<String,Type>[]) tag rtype ))
          (set r 8_u64)
       )))
-      ( (App( (Lit( tag )) args )) (tail(
+      ( (App( (Lit( tag _ )) args )) (tail(
          (let atype (type-of-s args))
          (if (has-forward atype) (tail(
             (print 'Size\sOf\sType\sCannot\sBe\sDetermined\sDue\sTo\sForward\sReference:\s_s)
