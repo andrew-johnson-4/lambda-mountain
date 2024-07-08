@@ -9,6 +9,16 @@ with-location := λ(: t Token)(: loc SourceLocation). (: (tail(
    t
 )) Token);
 
+with-key := λ(: t Token)(: k String). (: (tail(
+   (match t (
+      ()
+      ( (Token( _ _ loc )) (
+         (set t (Token( k (iuid()) loc )))
+      ))
+   ))
+   t
+)) Token);
+
 location-of := λ(: t Token). (: (tail(
    (let loc (.1( (as t Tag<Token>) )))
    loc
