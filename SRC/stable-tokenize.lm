@@ -34,6 +34,16 @@ key-of := λ(: t Token). (: (tail(
    key
 )) String);
 
+token::new := λ(: s String). (: (tail(
+   (let tk (Token( s (uuid()) (location::new()) )))
+   tk
+)) Token);
+
+location::new := λ. (: (tail(
+   (let loc (SourceLocation( 'Unknown_s 0_u64 0_u64 )))
+   loc
+)) SourceLocation);
+
 non-zero := λ(: loc SourceLocation). (: (tail(
    (let r 0_u64)
    (match loc (

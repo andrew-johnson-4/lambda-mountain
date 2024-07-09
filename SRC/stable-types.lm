@@ -999,7 +999,7 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (tail(
             (close TCtxEOF)
             ltv
             pt
-            (Lit tg)
+            (Lit( tg (token::new tg) ))
          )))
       ))
       ( (Pair( (TVar( ltv )) rt )) (
