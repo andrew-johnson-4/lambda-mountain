@@ -70,7 +70,8 @@ uuid := λ . (: (tail(
 )) String);
 iuid := λ . (: (tail(
    (set uuid-counter (+( uuid-counter 1_u64 )))
-   uuid-counter
+   (let id uuid-counter)
+   id
 )) U64);
 
 list-tail-order-to-head-order := λ(: s S). (: (tail(
@@ -241,7 +242,7 @@ exit-error := λ(: msg String)(: t AST). (: (tail(
    (print '\n_s)
    (match t (
       ()
-      ( (App( (Var 'as_s) (App( inner (AType cast) )) )) (tail(
+      ( (App( (Var( 'as_s _ )) (App( inner (AType cast) )) )) (tail(
          (print 'In\sCoercion\n_s)
          (print inner)(print ':\n_s)
          (print (typeof inner))(print '\n_s)
@@ -264,7 +265,3 @@ exit-error := λ(: msg String)(: t AST). (: (tail(
    (exit 1_u64)
 )) Nil);
 
-unique := λ(: s String). (: (tail(
-   (set s (clone-rope(SAtom s)))
-   s
-)) String);

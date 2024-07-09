@@ -272,28 +272,28 @@ substitute := λ(: tctx TContext)(: tt Type). (: (tail(
 substitute-lhs := λ(: tctx TContext)(: t AST). (: (tail(
    (match t (
       ()
-      ( (App( ps (App( (Lit ':_s) (App( (Var v) (AType vt) )) )) )) (
+      ( (App( ps (App( (Lit( ':_s ctk )) (App( (Var( v vtk )) (AType vt) )) )) )) (
          (set t (App(
             (close(substitute-lhs( tctx ps )))
-            (close(App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
-               (close(Var(clone-rope(SAtom v))))
+            (close(App( (close(Lit( ':_s (unique ctk) ))) (close(App(
+               (close(Var( v (unique vtk) )))
                (close(AType( (substitute( tctx vt )) )))
             ))) )))
          )))
       ))
-      ( (App( (Lit ':_s) (App( (Var v) (AType vt) )) )) (
-         (set t (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
-            (close(Var(clone-rope(SAtom v))))
+      ( (App( (Lit( ':_s ctk )) (App( (Var( v vtk )) (AType vt) )) )) (
+         (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
+            (close(Var( v (unique vtk) )))
             (close(AType( (substitute( tctx vt )) )))
          ))) )))
       ))
-      ( (App( ps (Var v) )) (
+      ( (App( ps (Var( v vtk )) )) (
          (set t (App(
             (close(substitute-lhs( tctx ps )))
-            (close(Var(clone-rope(SAtom v))))
+            (close(Var( v (unique vtk) )))
          )))
       ))
-      ( (Var v) (set t (Var(clone-rope(SAtom v)))) )
+      ( (Var( v vtk )) (set t (Var( v (unique vtk) ))) )
       ( ASTNil () )
       ( _ (exit-error( 'Unexpected\sSubstitute\sLHS_s t )) )
    ))
@@ -305,9 +305,9 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
       ()
       ( ASTEOF () )
       ( ASTNil () )
-      ( (App( (Lit ':_s) (App( (Lit v) (AType vt) )) )) (tail(
-         (set t (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
-            (close(Lit(clone-rope(SAtom v))))
+      ( (App( (Lit( ':_s ctk )) (App( (Lit( v vtk )) (AType vt) )) )) (tail(
+         (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
+            (close(Lit( v (unique vtk) )))
             (close(AType( (substitute( tctx vt )) )))
          ))) )))
          (while (non-zero tctx) (match tctx (
@@ -315,7 +315,7 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
             ( TCtxNil (set tctx TCtxEOF) )
             ( (TCtxBind( rst tk tv ta )) (
                (if (==( tk v )) (tail(
-                  (set t (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
+                  (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
                      (close(substitute( tctx ta )))
                      (close(AType( (substitute( tctx vt )) )))
                   ))) )))
@@ -324,9 +324,9 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
             ))
          )))
       )))
-      ( (App( (Lit ':_s) (App( (Var v) (AType vt) )) )) (tail(
-         (set t (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
-            (close(Var(clone-rope(SAtom v))))
+      ( (App( (Lit( ':_s ctk )) (App( (Var( v vtk )) (AType vt) )) )) (tail(
+         (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
+            (close(Var( v (unique vtk) )))
             (close(AType( (substitute( tctx vt )) )))
          ))) )))
          (while (non-zero tctx) (match tctx (
@@ -334,7 +334,7 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
             ( TCtxNil (set tctx TCtxEOF) )
             ( (TCtxBind( rst tk tv ta )) (
                (if (==( tk v )) (tail(
-                  (set t (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App(
+                  (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
                      (close(substitute( tctx ta )))
                      (close(AType( (substitute( tctx vt )) )))
                   ))) )))
@@ -343,8 +343,8 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
             ))
          )))
       )))
-      ( (Lit v) (set t (Lit(clone-rope(SAtom v)))) )
-      ( (Var v) (set t (Var(clone-rope(SAtom v)))) )
+      ( (Lit( v vtk )) (set t (Lit( v (unique vtk) ))) )
+      ( (Var( v vtk )) (set t (Var( v (unique vtk) ))) )
       ( (Abs( lhs rhs tt )) (
          (set t (Abs(
             (close(substitute-lhs( tctx lhs )))
@@ -369,7 +369,7 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
       ))
       ( (Glb( k rt )) (
          (set t (Glb(
-            k
+            (unique k)
             (close(substitute( tctx rt )))
          )))
       ))
@@ -381,13 +381,13 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
       ))
       ( (Frg( k lt tt )) (
          (set t (Frg(
-            k
+            (unique k)
             (close(substitute( tctx lt )))
             (substitute( tctx tt ))
          )))
       ))
+      ( _ (exit-error( 'Unexpected\sSubstitution\sTerm:_s t )) )
    ))
-   ()
    t
 )) AST);
 
@@ -893,27 +893,18 @@ type-of-s := λ(: compound AST). (: (tail(
    (let r TAny)
    (match compound (
       ()
-      ( (Lit tt) (tail(
+      ( (Lit( tt _ )) (tail(
          (let nt (parse-type tt))
          (set r nt)
       )))
-      ( (Var tt) (tail(
+      ( (Var( tt _ )) (tail(
          (let nt (parse-type tt))
          (set r nt)
       )))
-      ( (App( (App( lt (Lit ',_s) )) rt )) (tail(
+      ( (App( (App( lt (Lit( ',_s _ )) )) rt )) (tail(
          (let ltt (type-of-s lt))
          (let rtt (type-of-s rt))
-         (set r (TGround(
-            'Cons_s
-            (close(TypeSeq(
-               (close(TypeSeq(
-                  (close TypeEOF)
-                  ltt
-               )))
-               rtt
-            )))
-         )))
+         (set r (t3( 'Cons_s ltt rtt )))
       )))
       ( _ (exit-error( 'Malformed\sType\sDefinition_s compound )))
    ))
@@ -1008,7 +999,7 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (tail(
             (close TCtxEOF)
             ltv
             pt
-            (Lit tg)
+            (Lit( tg (token::new tg) ))
          )))
       ))
       ( (Pair( (TVar( ltv )) rt )) (
@@ -1156,23 +1147,23 @@ to-s := λ(: term AST). (: (tail(
    (let s SNil)
    (match term (
       ()
-      ( (Var v) (
+      ( (Var( v _ )) (
          (set s (SCons(
             (close(SAtom 'Var_s))
             (close(SAtom v))
          )))
       ))
-      ( (Lit v) (
+      ( (Lit( v _ )) (
          (set s (SCons(
             (close(SAtom 'Lit_s))
             (close(SAtom v))
          )))
       ))
-      ( (App( (Lit ':_s) (App( t (AType tt) )) )) (tail(
+      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (tail(
          (set s (to-s t))
          (ascript( s tt ))
       )))
-      ( (App( (Var 'as_s) (App( t (AType tt) )) )) (tail(
+      ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (tail(
          (set s (to-s t))
          (ascript( s tt ))
       )))
@@ -1334,10 +1325,10 @@ typeof-lhs := λ(: lhs AST). (: (tail(
    (let r TAny)
    (match lhs (
       ()
-      ( (App( (Lit ':_s) (App( _ (AType tt) )) )) (
+      ( (App( (Lit( ':_s _ )) (App( _ (AType tt) )) )) (
          (set r tt)
       ))
-      ( (App( ps (App( (Lit ':_s) (App( _ (AType tt) )) )) )) (
+      ( (App( ps (App( (Lit( ':_s _ )) (App( _ (AType tt) )) )) )) (
          (set r (t3( 'Cons_s (typeof-lhs ps) tt )))
       ))
       ( ASTNil (
@@ -1617,7 +1608,7 @@ infer-type-definition := λ(: base-type Type)(: body AST). (: (tail(
    (let r 0_u64)
    (match body (
       ()
-      ( (App( (App( tds (Var '|_s) )) case )) (tail(
+      ( (App( (App( tds (Var( '|_s _ )) )) case )) (tail(
          (let r1 (infer-type-definition( base-type tds )))
          (let r2 (infer-type-constructor( base-type case )))
          (set r (max( r1 r2 )))
@@ -1633,7 +1624,7 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
    (let r 0_u64)
    (match body (
       ()
-      ( (Lit tag) (tail(
+      ( (Lit( tag _ )) (tail(
          (annotate-head-accessor( base-type ))
          (let rtype (and(
             (and(
@@ -1653,7 +1644,7 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
          (.bind( (as (& type-constructors-index) BTreeEq<String,Type>[]) tag rtype ))
          (set r 8_u64)
       )))
-      ( (App( (Lit tag) args )) (tail(
+      ( (App( (Lit( tag _ )) args )) (tail(
          (let atype (type-of-s args))
          (if (has-forward atype) (tail(
             (print 'Size\sOf\sType\sCannot\sBe\sDetermined\sDue\sTo\sForward\sReference:\s_s)
@@ -1732,7 +1723,7 @@ annotate-accessors := λ(: base-type Type)(: tag-type Type)(: args-type Type). (
 infer-global-context := λ(: td AST). (: (
    (match td (
       ()
-      ( (Typedef( (Lit base-type) case-constructors )) (tail(
+      ( (Typedef( (Lit( base-type _ )) case-constructors )) (tail(
          (let bt (parse-type base-type))
          (let size (infer-type-definition( bt case-constructors )))
          (match bt (
@@ -1741,7 +1732,7 @@ infer-global-context := λ(: td AST). (: (
             ( _ () )
          ))
       )))
-      ( (Glb( k (Abs( lhs (App( (Lit ':_s) (App( rhs (AType rhst) )) )) tlt )) )) (tail(
+      ( (Glb( k_t (Abs( lhs (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) tlt )) )) (tail(
          (let lt (typeof-lhs lhs))
          (let return-type (guess-representation(without-representation rhst)))
          (let ft (t3( 'Arrow_s lt return-type )))
@@ -1753,7 +1744,7 @@ infer-global-context := λ(: td AST). (: (
             td
          )))
       )))
-      ( (Frg( k_t (Abs( lhs (App( (Lit ':_s) (App( rhs (AType rhst) )) )) atlt )) tlt )) (tail(
+      ( (Frg( k_t (Abs( lhs (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) atlt )) tlt )) (tail(
          (let lt (typeof-lhs lhs))
          (let ft (t3( 'Arrow_s lt rhst )))
          (ascript-normal( td ft ))
@@ -1764,14 +1755,14 @@ infer-global-context := λ(: td AST). (: (
             ASTEOF
          )))
       )))
-      ( (Glb( k (App( (Lit ':_s) (App( rhs (AType rhst) )) )) )) (tail(
+      ( (Glb( k_t (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) )) (tail(
          (let kt (and( rhst (t1 'GlobalVariable_s) )))
          (set global-type-context (TCtxBind(
             (close global-type-context) k kt ASTEOF
          )))
          (ascript-normal( td kt ))
       )))
-      ( (Frg( k_t (App( (Lit ':_s) (App( rhs (AType rhst) )) )) tlt )) (
+      ( (Frg( k_t (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) tlt )) (
          (set global-type-context (TCtxBind(
             (close global-type-context)
             k
@@ -1802,49 +1793,49 @@ assert-well-typed := λ(: term AST). (: (
          (assert-one-typed v)
       ))
       ( (Typedef( _ _ )) () )
-      ( (App( (Abs( (Var lname) ASTNil tlt )) rhs )) (tail(
+      ( (App( (Abs( (Var( lname _ )) ASTNil tlt )) rhs )) (tail(
          (assert-well-typed rhs)
          (assert-one-typed term)
       )))
-      ( (App( (Var 'gensym-label_s) _ )) () )
-      ( (App( (Var 'label_s) (Var _) )) () )
-      ( (App( (App( (Var 'while_s) cond )) body )) (tail(
+      ( (App( (Var( 'gensym-label_s _ )) _ )) () )
+      ( (App( (Var( 'label_s _ )) (Var( _ _ )) )) () )
+      ( (App( (App( (Var( 'while_s _ )) cond )) body )) (tail(
          (assert-well-typed cond)
          (assert-well-typed body)
          (assert-one-typed term)
       )))
-      ( (App( (Var 'as_s) (App( t (AType tt) )) )) (
+      ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
          (assert-well-typed t)
       ))
-      ( (App( (Lit ':_s) (App( t (AType tt) )) )) (
+      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
          (assert-well-typed t)
       ))
-      ( (App( (App( (App( (Var 'if_s) cond )) t )) f )) (tail(
+      ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (tail(
          (assert-well-typed cond)
          (assert-well-typed t)
          (assert-well-typed f)
          (assert-one-typed term)
       )))
-      ( (App( (App( (Var 'set_s) lhs )) rhs )) (tail(
+      ( (App( (App( (Var( 'set_s _ )) lhs )) rhs )) (tail(
          (assert-well-typed rhs)
          (assert-one-typed term)
       )))
       ( (AType _) () )
-      ( (App( (Var 'tail_s) (App( lterm rterm )) )) (tail(
+      ( (App( (Var( 'tail_s _ )) (App( lterm rterm )) )) (tail(
          (assert-well-typed lterm)
          (assert-well-typed rterm)
          (assert-one-typed term)
       )))
-      ( (App( (Var 'maybe-deref_s) rterm )) (tail(
+      ( (App( (Var( 'maybe-deref_s _ )) rterm )) (tail(
          (assert-well-typed rterm)
          (assert-one-typed term)
       )))
-      ( (App( (Var 'scope_s) rterm )) (tail(
+      ( (App( (Var( 'scope_s _ )) rterm )) (tail(
          (assert-well-typed rterm)
          (assert-one-typed term)
       )))
-      ( (Lit l) (assert-one-typed term) )
-      ( (Var l) (assert-one-typed term) )
+      ( (Lit( l _ )) (assert-one-typed term) )
+      ( (Var( l _ )) (assert-one-typed term) )
       ( (Abs( lhs rhs tlt )) (tail(
          (assert-well-typed rhs)
          (assert-one-typed term)
@@ -2002,15 +1993,15 @@ infer-tctx := λ(: tctx TContext)(: tt Type). (: (tail(
 infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
    (match lhs (
       ()
-      ( (App( (Lit ':_s) (App( (Var v) (AType tt) )) )) (tail(
+      ( (App( (Lit( ':_s _ )) (App( (Var( v vtk )) (AType tt) )) )) (tail(
          (set tctx (TCtxBind(
-            (close tctx) v (as-local-variable tt) ASTEOF
+            (close tctx) v (as-local-variable tt) (Var( v vtk ))
          )))
          (set tctx (infer-tctx( tctx tt )))
       )))
-      ( (App( ps (App( (Lit ':_s) (App( (Var v) (AType tt) )) )) )) (tail(
+      ( (App( ps (App( (Lit( ':_s _ )) (App( (Var( v vtk )) (AType tt) )) )) )) (tail(
          (set tctx (TCtxBind(
-            (close tctx) v (as-local-variable tt) ASTEOF
+            (close tctx) v (as-local-variable tt) (Var( v vtk ))
          )))
          (set tctx (infer-ctx( tctx ps )))
          (set tctx (infer-tctx( tctx tt )))
@@ -2064,15 +2055,14 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
       )))
       ( (Typedef( _ _ )) () )
       ( (Glb( k v )) (
-         (if (is-open(typeof term)) () (tail(
-            (print 'Infer\sGlobal\s_s)(print k)(print '\n_s)
+         (if (is-open(typeof term)) () (
             (infer-expr( tctx v Used TAny ))
-         )))
+         ))
       ))
       ( (Frg( _ v _ )) (
          (ascript-normal( v (typeof term) ))
       ))
-      ( (App( (Lit ':_s) (App( (Lit _) (AType tt) )) )) (
+      ( (App( (Lit( ':_s _ )) (App( (Lit( _ _ )) (AType tt) )) )) (
          (match term (
             ()
             ( (App( _ (App( t _ )) )) (tail(
@@ -2091,8 +2081,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
             )))
          ))
       ))
-      ( (App( (Lit ':_s) (App( t (AType tt) )) )) (tail(
-         (print 'Infer\sAscript\s_s)(print term)(print '\n_s)
+      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (tail(
          (let tctx2 (maybe-deref(infer-expr( tctx t used tt ))))
          (set tctx tctx2)
          (let inner-tt (maybe-deref(typeof t)))
@@ -2116,37 +2105,37 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
             ))
          )) ())
       )))
-      ( (App( (Var 'gensym-label_s) (Var lname) )) (tail(
+      ( (App( (Var( 'gensym-label_s _ )) (Var( lname _ )) )) (tail(
          (set tctx (TCtxBind(
             (close tctx) lname (t1 'Label_s) ASTEOF
          )))
          (ascript-normal( term (t1 'Nil_s) ))
       )))
-      ( (App( (App( (Var 'set_s) (Var v) )) rhs )) (tail(
+      ( (App( (App( (Var( 'set_s _ )) (Var( v _ )) )) rhs )) (tail(
          (infer-expr( tctx rhs Used TAny ))
          (ascript-normal( rhs (typeof-var( term tctx v )) ))
          (ascript-normal( term (t1 'Nil_s) ))
       )))
-      ( (App( (Var 'label_s) (Var lname) )) (
+      ( (App( (Var( 'label_s _ )) (Var( lname _ )) )) (
          (ascript-normal( term (t1 'Nil_s) ))
       ))
-      ( (App( (App( (App( (Var 'if_s) cond )) t )) f )) (tail(
+      ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (tail(
          (set tctx (infer-expr( tctx cond Used TAny )))
          (set tctx (infer-expr( tctx t Used TAny )))
          (infer-expr( tctx f Used TAny ))
          (ascript-normal( term (typeof t) ))
       )))
-      ( (App( (App( (Var 'while_s) cond )) body )) (tail(
+      ( (App( (App( (Var( 'while_s _ )) cond )) body )) (tail(
          (set tctx (infer-expr( tctx cond Used TAny )))
          (infer-expr( tctx body Used TAny ))
          (ascript-normal( term (t1 'Nil_s) ))
       )))
-      ( (App( (Var 'tail_s) (App( l r )) )) (tail(
+      ( (App( (Var( 'tail_s _ )) (App( l r )) )) (tail(
          (set tctx (infer-expr( tctx l Unused TAny )))
          (set tctx (infer-expr( tctx r used TAny )))
          (ascript-normal( term (typeof r) ))
       )))
-      ( (App( (Var 'as_s) (App( t (AType tt) )) )) (tail(
+      ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (tail(
          (set tctx (infer-expr( tctx t used TAny )))
          (let inner-tt (typeof t))
          (if (non-zero inner-tt) (tail(
@@ -2162,7 +2151,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
             (ascript-normal( term tt ))
          )) ())
       )))
-      ( (App( (Var 'sizeof_s) (AType _) )) (tail(
+      ( (App( (Var( 'sizeof_s _ )) (AType _) )) (tail(
          (let tt (as-constant(parse-type 'U64_s)))
          (ascript-normal( term tt ))
          (match term (
@@ -2170,11 +2159,11 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
             ( (App( s _ )) (ascript-normal( s tt )) )
          ))
       )))
-      ( (App( (Var 'scope_s) r )) (tail(
+      ( (App( (Var( 'scope_s _ )) r )) (tail(
          (infer-expr( tctx r used TAny ))
          (ascript-normal( term (typeof r) ))
       )))
-      ( (App( (Var 'maybe-deref_s) r )) (tail(
+      ( (App( (Var( 'maybe-deref_s _ )) r )) (tail(
          (set tctx (infer-expr( tctx r used TAny )))
          (let deref-type (typeof r))
          (match (slot( deref-type 'Array_s )) (
@@ -2187,7 +2176,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
          ))
          (ascript-normal( term deref-type ))
       )))
-      ( (App( (Abs( (Var lname) ASTNil tlt )) rhs )) (tail(
+      ( (App( (Abs( (Var( lname _ )) ASTNil tlt )) rhs )) (tail(
          (infer-expr( tctx rhs Used TAny ))
          (let tt (typeof rhs))
          (let rt (as-local-variable tt))
@@ -2219,10 +2208,11 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
          (let rt (typeof rhs))
          (ascript-normal( term (t3( 'Arrow_s lt rt )) ))
       )))
-      ( (Var v) (
+      ( (Var( v vtk )) (tail(
+         (let vt (typeof-var( term tctx v )))
          (ascript-normal( term (typeof-var( term tctx v )) ))
-      ))
-      ( (Lit l) (
+      )))
+      ( (Lit( l _ )) (
          (if (non-zero(typeof term)) () (tail(
             (let tt (typeof-tag l))
             (if (non-zero tt) (tail(

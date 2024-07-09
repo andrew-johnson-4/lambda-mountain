@@ -34,6 +34,35 @@ key-of := λ(: t Token). (: (tail(
    key
 )) String);
 
+unique := λ(: t Token). (: (tail(
+   (match t (
+      ()
+      ( (Token( s id loc )) (
+         (set t (Token( s (iuid()) loc )))
+      ))
+   ))
+   t
+)) Token);
+
+print-verbose := λ(: t Token). (: (
+   (match t (
+      ()
+      ( (Token( s id loc )) (tail(
+         (print s)(print '\o_s)(print id)
+      )))
+   ))
+) Nil);
+
+token::new := λ(: s String). (: (tail(
+   (let tk (Token( s (iuid()) (location::new()) )))
+   tk
+)) Token);
+
+location::new := λ. (: (tail(
+   (let loc (SourceLocation( 'Unknown_s 0_u64 0_u64 )))
+   loc
+)) SourceLocation);
+
 non-zero := λ(: loc SourceLocation). (: (tail(
    (let r 0_u64)
    (match loc (
@@ -63,8 +92,8 @@ location-of := λ(: term AST). (: (tail(
    (let r (SourceLocation( 'Unknown_s 0_u64 0_u64 )))
    (match term (
       ()
-      ( (Var v) (set r (location-of v)) )
-      ( (Lit v) (set r (location-of v)) )
+      ( (Var( _ v )) (set r (location-of v)) )
+      ( (Lit( _ v )) (set r (location-of v)) )
       ( (App( tl tr )) (tail(
          (set r (location-of tl))
          (if (not(non-zero r)) (set r (location-of tr)) ())
