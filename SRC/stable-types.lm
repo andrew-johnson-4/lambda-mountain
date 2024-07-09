@@ -2214,7 +2214,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
          (let rt (typeof rhs))
          (ascript-normal( term (t3( 'Arrow_s lt rt )) ))
       )))
-      ( (Var( v _ )) (tail(
+      ( (Var( v vtk )) (tail(
          (let vt (typeof-var( term tctx v )))
          (print 'VType\s_s)(print v)(print '\s:\s_s)(print (typeof term))(print '\n_s)
          (print 'Ascript\s_s)(print v)(print '\s:\s_s)(print vt)(print '\n_s)
