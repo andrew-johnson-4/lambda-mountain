@@ -140,13 +140,13 @@ preprocess-apply-literals := λ(: program AST). (: (tail(
       ))))
       ( (Frg( al ar atlt )) (
          (set r (Frg(
-            al
+            (unique al)
             (close(preprocess-apply-literals ar))
             atlt
          )))
       ))
       ( (Glb( k ar )) (set r (Glb(
-         k
+         (unique k)
          (close(preprocess-apply-literals ar))
       ))))
       ( u (set r u))
@@ -160,33 +160,33 @@ preprocess-apply := λ(: program AST). (: (tail(
       ()
       ( (App( (App( (Lit( ':_s ctk )) (App( t (AType tt) )) )) nt )) (
          (set r (App(
-            (close(App( (close(Lit( ':_s ctk ))) (close(App( (close(preprocess-apply t)) (close(AType tt)) ))) )))
+            (close(App( (close(Lit( ':_s (unique ctk) ))) (close(App( (close(preprocess-apply t)) (close(AType tt)) ))) )))
             (close(preprocess-apply( nt )))
          )))
       ))
       ( (App( (App( (Lit( ':_s ctk )) mvar )) (Lit( mtype _ )) )) (
-         (set r (App( (close(Lit( ':_s ctk ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
+         (set r (App( (close(Lit( ':_s (unique ctk) ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
       ))
       ( (App( (App( (Lit( ':_s ctk )) mvar )) (Var( mtype _ )) )) (
-         (set r (App( (close(Lit( ':_s ctk ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
+         (set r (App( (close(Lit( ':_s (unique ctk) ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
       ))
       ( (App( (App( (Var( 'as_s atk )) (App( t (AType tt) )) )) nt )) (
          (set r (App(
-            (close(App( (close(Var( 'as_s atk ))) (close(App( (close(preprocess-apply t)) (close(AType tt)) ))) )))
+            (close(App( (close(Var( 'as_s (unique atk) ))) (close(App( (close(preprocess-apply t)) (close(AType tt)) ))) )))
             (close(preprocess-apply( nt )))
          )))
       ))
       ( (App( (App( (Var( 'as_s atk )) mvar )) (Lit( mtype _ )) )) (
-         (set r (App( (close(Var( 'as_s atk ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
+         (set r (App( (close(Var( 'as_s (unique atk) ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
       ))
       ( (App( (App( (Var( 'as_s atk )) mvar )) (Var( mtype _ )) )) (
-         (set r (App( (close(Var( 'as_s atk ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
+         (set r (App( (close(Var( 'as_s (unique atk) ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
       ))
       ( (App( (Var( 'sizeof_s stk )) (Var( mtype _ )) )) (
-         (set r (App( (close(Var( 'sizeof_s stk ))) (close(AType(parse-type mtype))) )))
+         (set r (App( (close(Var( 'sizeof_s (unique stk) ))) (close(AType(parse-type mtype))) )))
       ))
       ( (App( (Var( 'sizeof_s stk )) (Lit( mtype _ )) )) (
-         (set r (App( (close(Var( 'sizeof_s stk ))) (close(AType(parse-type mtype))) )))
+         (set r (App( (close(Var( 'sizeof_s (unique stk) ))) (close(AType(parse-type mtype))) )))
       ))
       ( (Lit( l ltk )) (tail(
          (let suffixes parse-suffixes)
@@ -230,7 +230,7 @@ preprocess-apply := λ(: program AST). (: (tail(
             (set r applied)
          )) (
             (set r (App(
-               (close(preprocess-apply(Var( vn vntk ))))
+               (close(preprocess-apply(Var( vn (unique vntk) ))))
                (close(preprocess-apply vt))
             )))
          )
@@ -242,7 +242,7 @@ preprocess-apply := λ(: program AST). (: (tail(
          )) (
             (set r (App(
                (close(preprocess-apply(App(
-                  (close(Var( vn vntk )))
+                  (close(Var( vn (unique vntk) )))
                   (close vt1)
                ))))
                (close(preprocess-apply vt2))
@@ -264,13 +264,13 @@ preprocess-apply := λ(: program AST). (: (tail(
       ))))
       ( (Frg( al ar atlt )) (
          (set r (Frg(
-            al
+            (unique al)
             (close(preprocess-apply ar))
             atlt
          )))
       ))
       ( (Glb( k ar )) (set r (Glb(
-         k
+         (unique k)
          (close(preprocess-apply ar))
       ))))
       ( u (set r u))
@@ -461,8 +461,8 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (ta
             (set r (CtxBind( (close r) pt (Lit( tag-tt (with-key( eltk tag-tt )) )) )))
          )))
       ))
-      ( (Pair( (Var( pv _ )) _ )) (
-         (set r (CtxBind( (close CtxNil) pv term )))
+      ( (Pair( (Var( pv _ )) t )) (
+         (set r (CtxBind( (close CtxNil) pv (relocate( term (location-of t) )) )))
       ))
       ( _ () )
    ))
@@ -509,7 +509,7 @@ relocate := λ(: term AST)(: loc SourceLocation). (: (tail(
       ))
       ( (Glb( k t )) (
          (set return (Glb(
-            k
+            (with-location( k loc ))
             (close(relocate( t loc )))
          )))
       ))
