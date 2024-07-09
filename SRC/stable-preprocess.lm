@@ -39,6 +39,7 @@ preprocess := λ. (: (tail(
    (index-typedefs ast-parsed-program)
    (set ast-parsed-program (preprocess-apply-literals ast-parsed-program))
    (set ast-parsed-program (preprocess-apply ast-parsed-program))
+   (set ast-parsed-program (preprocess-apply-locations ast-parsed-program))
 )) Nil);
 
 union := λ(: l Context)(: r Context). (: (tail(
@@ -119,6 +120,76 @@ preprocess-apply-literals := λ(: program AST). (: (tail(
             )))
          )) ())
       ))
+      ( (App( t1 t2 )) (
+         (set r (App(
+            (close(preprocess-apply-literals t1))
+            (close(preprocess-apply-literals t2))
+         )))
+      ))
+      ( (Seq( al ar )) (set r (Seq(
+         (close(preprocess-apply-literals al))
+         (close(preprocess-apply-literals ar))
+      ))))
+      ( (App( al ar )) (set r (App(
+         (close(preprocess-apply-literals al))
+         (close(preprocess-apply-literals ar))
+      ))))
+      ( (Abs( al ar tlt )) (set r (Abs(
+         (close(preprocess-apply-literals al))
+         (close(preprocess-apply-literals ar))
+         tlt
+      ))))
+      ( (Frg( al ar atlt )) (
+         (set r (Frg(
+            (unique al)
+            (close(preprocess-apply-literals ar))
+            atlt
+         )))
+      ))
+      ( (Glb( k ar )) (set r (Glb(
+         (unique k)
+         (close(preprocess-apply-literals ar))
+      ))))
+      ( u (set r u))
+   ))
+   r
+)) AST);
+
+preprocess-apply-locations := λ(: program AST). (: (tail(
+   (let r program)
+   (match program (
+      ()
+      ( (App( (Var( 'p_s _ )) (Lit( ':Location:_s ltk )) )) (tail(
+         (let l 'Location\sUnknown_s)
+         (match (get-location ltk) (
+            ()
+            ( (SourceLocation( fp ln cl )) (tail(
+               (set l (clone-rope(SCons(
+                  (close(SCons(
+                     (close(SAtom 'File:\s_s))
+                     (close(SAtom fp))
+                  )))
+                  (close(SCons(
+                     (close(SCons(
+                        (close(SAtom '\sLine:\s_s))
+                        (close(SAtom(to-string ln)))
+                     )))
+                     (close(SCons(
+                        (close(SAtom '\sColumn:\s_s))
+                        (close(SAtom(to-string cl)))
+                     )))
+                  )))
+               ))))
+            )))
+         ))
+         (set r (Lit( l (unique ltk) )))
+      )))
+      ( (Lit( l ltk )) (
+         (set r (Lit( l (unique ltk) )))
+      ))
+      ( (Var( l ltk )) (
+         (set r (Var( l (unique ltk) )))
+      ) )
       ( (App( t1 t2 )) (
          (set r (App(
             (close(preprocess-apply-literals t1))
