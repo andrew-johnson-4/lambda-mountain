@@ -4,7 +4,7 @@ macro ( ('let x y) )
 
 macro ('match t ps) (scope(tail(
    (let (uuid term) (maybe-deref t))
-   (match-pats( (uuid term) ps (fail 'PatternMatchFailure_s) ))
+   (match-pats( (uuid term) ps (fail( 'Pattern\sMatch\sFailure_s (: (p :Location:) Constant+Literal+String) )) ))
 )));
 
 macro ('match-pats( term () remainder )) (

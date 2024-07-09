@@ -130,6 +130,11 @@ fail := λ(: msg String). (: (tail(
    (exit 1_u64)
 )) Nil);
 
+fail := λ(: msg String)(: loc String). (: (tail(
+   (print msg)(print '\sat\s_s)(print loc)
+   (exit 1_u64)
+)) Nil);
+
 exit := λ(: code U64). (: (tail(
    (mov( 60_u64 RAX ))
    (mov( code RDI ))
