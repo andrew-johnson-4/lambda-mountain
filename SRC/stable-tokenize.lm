@@ -44,6 +44,15 @@ unique := λ(: t Token). (: (tail(
    t
 )) Token);
 
+print-verbose := λ(: t Token). (: (
+   (match t (
+      ()
+      ( (Token( s id loc )) (tail(
+         (print s)(print '\o_s)(print id)
+      )))
+   ))
+) Nil);
+
 token::new := λ(: s String). (: (tail(
    (let tk (Token( s (iuid()) (location::new()) )))
    tk
