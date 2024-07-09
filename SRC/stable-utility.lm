@@ -70,7 +70,6 @@ uuid := λ . (: (tail(
 )) String);
 iuid := λ . (: (tail(
    (set uuid-counter (+( uuid-counter 1_u64 )))
-   (print 'UUID\sCounter\s_s)(print uuid-counter)(print '\n_s)
    uuid-counter
 )) U64);
 

@@ -39,9 +39,9 @@ unique := λ(: t Token). (: (tail(
       ()
       ( (Token( s id loc )) (tail(
          (print 'Old\sId\s_s)(print id)(print '\n_s)
-         (set id (iuid()))
-         (print 'New\sId\s_s)(print id)(print '\n_s)
-         (set t (Token( s id loc )))
+         (let id-2 (iuid()))
+         (print 'New\sId\s_s)(print id-2)(print '\n_s)
+         (set t (Token( s id-2 loc )))
       )))
    ))
    t
