@@ -158,48 +158,46 @@ preprocess-apply := λ(: program AST). (: (tail(
    (let r program)
    (match program (
       ()
-      ( (App( (App( (Lit ':_s) (App( t (AType tt) )) )) nt )) (
+      ( (App( (App( (Lit( ':_s ctk )) (App( t (AType tt) )) )) nt )) (
          (set r (App(
-            (close(App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App( (close(preprocess-apply t)) (close(AType tt)) ))) )))
+            (close(App( (close(Lit( ':_s ctk ))) (close(App( (close(preprocess-apply t)) (close(AType tt)) ))) )))
             (close(preprocess-apply( nt )))
          )))
       ))
-      ( (App( (App( (Lit ':_s) mvar )) (Lit mtype) )) (
-         (set r (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
+      ( (App( (App( (Lit( ':_s ctk )) mvar )) (Lit mtype) )) (
+         (set r (App( (close(Lit( ':_s ctk ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
       ))
-      ( (App( (App( (Lit ':_s) mvar )) (Var mtype) )) (
-         (set r (App( (close(Lit(clone-rope(SAtom ':_s)))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
+      ( (App( (App( (Lit( ':_s ctk )) mvar )) (Var mtype) )) (
+         (set r (App( (close(Lit( ':_s ctk ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
       ))
-      ( (App( (App( (Var 'as_s) (App( t (AType tt) )) )) nt )) (
+      ( (App( (App( (Var( 'as_s atk )) (App( t (AType tt) )) )) nt )) (
          (set r (App(
-            (close(App( (close(Var(clone-rope(SAtom 'as_s)))) (close(App( (close(preprocess-apply t)) (close(AType tt)) ))) )))
+            (close(App( (close(Var( 'as_s atk ))) (close(App( (close(preprocess-apply t)) (close(AType tt)) ))) )))
             (close(preprocess-apply( nt )))
          )))
       ))
-      ( (App( (App( (Var 'as_s) mvar )) (Lit mtype) )) (
-         (set r (App( (close(Var(clone-rope(SAtom 'as_s)))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
+      ( (App( (App( (Var( 'as_s atk )) mvar )) (Lit mtype) )) (
+         (set r (App( (close(Var( 'as_s atk ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
       ))
-      ( (App( (App( (Var 'as_s) mvar )) (Var mtype) )) (
-         (set r (App( (close(Var(clone-rope(SAtom 'as_s)))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
+      ( (App( (App( (Var( 'as_s atk )) mvar )) (Var mtype) )) (
+         (set r (App( (close(Var( 'as_s atk ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
       ))
-      ( (App( (Var 'sizeof_s) (Var mtype) )) (
-         (set r (App( (close(Var(clone-rope(SAtom 'sizeof_s)))) (close(AType(parse-type mtype))) )))
+      ( (App( (Var( 'sizeof_s stk )) (Var mtype) )) (
+         (set r (App( (close(Var( 'sizeof_s stk ))) (close(AType(parse-type mtype))) )))
       ))
-      ( (App( (Var 'sizeof_s) (Lit mtype) )) (
-         (set r (App( (close(Var(clone-rope(SAtom 'sizeof_s)))) (close(AType(parse-type mtype))) )))
+      ( (App( (Var( 'sizeof_s stk )) (Lit mtype) )) (
+         (set r (App( (close(Var( 'sizeof_s stk ))) (close(AType(parse-type mtype))) )))
       ))
-      ( (Lit l) (tail(
+      ( (Lit( l ltk )) (tail(
          (let suffixes parse-suffixes)
          (while (non-zero suffixes) (match suffixes (
             ()
             ( (SfxSeq( rst sfxs sfxtt )) (
                (if (has-suffix( l sfxs )) (tail(
-                  (let lloc (location-of l))
                   (let lpfx (remove-suffix( l sfxs )))
-                  (map-location( lpfx lloc ))
                   (set r (App(
-                     (close(Lit(clone-rope(SAtom ':_s))))
-                     (close(App( (close (Lit lpfx)) (close(AType sfxtt)) )))
+                     (close(Lit( ':_s (with-key( ltk ':_s )) )))
+                     (close(App( (close (Lit( lpfx (with-key( ltk lpfx )) ))) (close(AType sfxtt)) )))
                   )))
                   (set suffixes SfxEOF)
                )) (
@@ -208,18 +206,16 @@ preprocess-apply := λ(: program AST). (: (tail(
             ))
          )))
       )))
-      ( (Var l) (tail(
+      ( (Var( l ltk )) (tail(
          (let suffixes parse-suffixes)
          (while (non-zero suffixes) (match suffixes (
             ()
             ( (SfxSeq( rst sfxs sfxtt )) (
                (if (has-suffix( l sfxs )) (tail(
-                  (let lloc (location-of l))
                   (let lpfx (remove-suffix( l sfxs )))
-                  (map-location( lpfx lloc ))
                   (set r (App(
-                     (close(Lit(clone-rope(SAtom ':_s))))
-                     (close(App( (close (Lit lpfx)) (close(AType sfxtt)) )))
+                     (close(Lit( ':_s (with-key( ltk ':_s )) )))
+                     (close(App( (close (Lit( lpfx (with-key( ltk lpfx )) ))) (close(AType sfxtt)) )))
                   )))
                   (set suffixes SfxEOF)
                )) (
@@ -228,25 +224,25 @@ preprocess-apply := λ(: program AST). (: (tail(
             ))
          )))
       )))
-      ( (App( (Var vn) vt )) (
+      ( (App( (Var( vn vntk )) vt )) (
          if (is-macro-head( vn 1_u64 )) (tail(
             (let applied (preprocess-apply-hard( vn 1_u64 program )))
             (set r applied)
          )) (
             (set r (App(
-               (close(preprocess-apply(Var vn)))
+               (close(preprocess-apply(Var( vn vntk ))))
                (close(preprocess-apply vt))
             )))
          )
       ))
-      ( (App( (App( (Var vn) vt1 )) vt2 )) (
+      ( (App( (App( (Var( vn vntk )) vt1 )) vt2 )) (
          if (is-macro-head( vn 2_u64 )) (tail(
             (let applied (preprocess-apply-hard( vn 2_u64 program )))
             (set r applied)
          )) (
             (set r (App(
                (close(preprocess-apply(App(
-                  (close(Var vn))
+                  (close(Var( vn vntk )))
                   (close vt1)
                ))))
                (close(preprocess-apply vt2))
