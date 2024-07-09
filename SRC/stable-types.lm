@@ -1720,7 +1720,8 @@ annotate-accessors := λ(: base-type Type)(: tag-type Type)(: args-type Type). (
    )))
 )) Nil);
 
-infer-global-context := λ(: td AST). (: (
+infer-global-context := λ(: td AST). (: (tail(
+   (print 'Infer\sGlobal\sContext\s_s)(print td)(print '\n_s)
    (match td (
       ()
       ( (Typedef( (Lit( base-type _ )) case-constructors )) (tail(
@@ -1777,7 +1778,7 @@ infer-global-context := λ(: td AST). (: (
       ))
       ( _ () )
    ))
-) Nil);
+)) Nil);
 
 assert-well-typed := λ(: term AST). (: (
    (match term (
