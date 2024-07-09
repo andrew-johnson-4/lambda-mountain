@@ -275,14 +275,14 @@ substitute-lhs := λ(: tctx TContext)(: t AST). (: (tail(
       ( (App( ps (App( (Lit( ':_s ctk )) (App( (Var( v vtk )) (AType vt) )) )) )) (
          (set t (App(
             (close(substitute-lhs( tctx ps )))
-            (close(App( (close(Lit( ':_s ctk ))) (close(App(
+            (close(App( (close(Lit( ':_s (unique ctk) ))) (close(App(
                (close(Var( v (unique vtk) )))
                (close(AType( (substitute( tctx vt )) )))
             ))) )))
          )))
       ))
       ( (App( (Lit( ':_s _ )) (App( (Var( v vtk )) (AType vt) )) )) (
-         (set t (App( (close(Lit( ':_s ctk ))) (close(App(
+         (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
             (close(Var( v (unique vtk) )))
             (close(AType( (substitute( tctx vt )) )))
          ))) )))
@@ -369,7 +369,7 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
       ))
       ( (Glb( k rt )) (
          (set t (Glb(
-            k
+            (unique k)
             (close(substitute( tctx rt )))
          )))
       ))
@@ -381,13 +381,12 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
       ))
       ( (Frg( k lt tt )) (
          (set t (Frg(
-            k
+            (unique k)
             (close(substitute( tctx lt )))
             (substitute( tctx tt ))
          )))
       ))
    ))
-   ()
    t
 )) AST);
 
