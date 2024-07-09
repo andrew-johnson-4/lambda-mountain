@@ -35,7 +35,7 @@ key-of := λ(: t Token). (: (tail(
 )) String);
 
 token::new := λ(: s String). (: (tail(
-   (let tk (Token( s (uuid()) (location::new()) )))
+   (let tk (Token( s (iuid()) (location::new()) )))
    tk
 )) Token);
 
