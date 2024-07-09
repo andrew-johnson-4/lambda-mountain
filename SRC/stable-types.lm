@@ -1480,6 +1480,7 @@ deep-hash := λ(: tt TypeList). (: (tail(
 )) U64);
 
 specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
+   (print 'Specialize\s_s)(print key)(print '\s:\s_s)(print ft)(print '\n_s)
    (set unify-ctx (normalize unify-ctx))
    (let term ASTEOF)
    (let global-ctx global-type-context)
@@ -1890,8 +1891,6 @@ apply-and-specialize := λ(: function-name String)(: ft Type)(: pt Type). (: (ta
 )) Type);
 
 apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (: (tail(
-   (print 'Apply\s_s)(print function-name)(print '\s:\s_s)(print ft)(print '\n_s)
-   (print 'With\sArgument\s_s)(print pt)(print '\n_s)
    (let r TAny)
    (match ft (
       ()
@@ -1902,9 +1901,7 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (
          ))
       )))
       ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (tail(
-         (print 'Apply.1\n_s)
          (let ctx (unify( fpt pt )))
-         (print 'Apply.2\n_s)
          (if (non-zero ctx) (tail(
             (set ctx (normalize ctx))
             (print 'Apply.3\n_s)
