@@ -161,7 +161,7 @@ preprocess-apply-locations := λ(: program AST). (: (tail(
       ()
       ( (App( (Var( 'p_s _ )) (Lit( ':Location:_s ltk )) )) (tail(
          (let l 'Location\sUnknown_s)
-         (match (get-location ltk) (
+         (match (location-of ltk) (
             ()
             ( (SourceLocation( fp ln cl )) (tail(
                (set l (clone-rope(SCons(
