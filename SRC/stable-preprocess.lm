@@ -163,7 +163,7 @@ preprocess-apply-locations := λ(: program AST). (: (tail(
          (let l 'Location\sUnknown_s)
          (match (location-of ltk) (
             ()
-            ( (SourceLocation( fp ln cl )) (tail(
+            ( (SourceLocation( fp ln cl )) (
                (set l (clone-rope(SCons(
                   (close(SCons(
                      (close(SAtom 'File:\s_s))
@@ -180,7 +180,7 @@ preprocess-apply-locations := λ(: program AST). (: (tail(
                      )))
                   )))
                ))))
-            )))
+            ))
          ))
          (set r (Lit( l (unique ltk) )))
       )))
