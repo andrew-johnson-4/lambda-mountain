@@ -41,7 +41,7 @@ unique := λ(: t Token). (: (tail(
          (print 'Old\sId\s_s)(print id)(print '\n_s)
          (set id (iuid()))
          (print 'New\sId\s_s)(print id)(print '\n_s)
-         (set return (Token( s id loc )))
+         (set t (Token( s id loc )))
       )))
    ))
    t
