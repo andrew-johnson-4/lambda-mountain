@@ -2198,12 +2198,15 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
          (print 'Infer\s_s)(print term)(print '\n_s)
          (set tctx (infer-expr( tctx l Used TAny )))
          (set tctx (infer-expr( tctx r Used TAny )))
+         (print 'Infer.2\s_s)(print term)(print '\n_s)
          (let rt (apply-or-cons-and-specialize(
             (var-name-if-var l)
             (typeof l)
             (typeof r)
          )))
+         (print 'Infer.3\s_s)(print term)(print '\n_s)
          (ascript-normal( term rt ))
+         (print 'Infer.4\s_s)(print term)(print '\n_s)
       )))
       ( (Abs( lhs rhs tlt )) (tail(
          (set tctx (infer-ctx( tctx lhs )))
