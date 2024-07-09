@@ -408,19 +408,19 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             ( (TGround( 'Arrow_s _ )) (
                (match f (
                   ()
-                  ( (Var fname) (tail(
+                  ( (Var( fname _ )) (tail(
                      (let e1 (maybe-deref(compile-stack-call( ctx fname (maybe-deref(typeof term)) a stack-offset used ))))
                      (set e e1)
                   )))
-                  ( (App( (Lit ':_s) (App( (Var fname) (AType ft) )) )) (tail(
+                  ( (App( (Lit( ':_s _ )) (App( (Var( fname _ )) (AType ft) )) )) (tail(
                      (let e1 (maybe-deref(compile-stack-call( ctx fname (maybe-deref(typeof term)) a stack-offset used ))))
                      (set e e1)
                   )))
-                  ( (Lit fname) (tail(
+                  ( (Lit( fname _ )) (tail(
                      (let e1 (maybe-deref(compile-constructor( ctx fname (maybe-deref(typeof term)) (maybe-deref(typeof a)) a stack-offset ))))
                      (set e e1)
                   )))
-                  ( (App( (Lit ':_s) (App( (Lit fname) (AType ft) )) )) (tail(
+                  ( (App( (Lit( ':_s _ )) (App( (Lit( fname _ )) (AType ft) )) )) (tail(
                      (let e1 (maybe-deref(compile-constructor( ctx fname (maybe-deref(typeof term)) (maybe-deref(typeof a)) a stack-offset ))))
                      (set e e1)
                   )))
