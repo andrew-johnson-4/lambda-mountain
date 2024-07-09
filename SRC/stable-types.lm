@@ -386,6 +386,7 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
             (substitute( tctx tt ))
          )))
       ))
+      ( _ (exit-error( 'Unexpected\sSubstitution\sTerm:_s t )) )
    ))
    t
 )) AST);
