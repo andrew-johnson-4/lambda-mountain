@@ -1480,7 +1480,7 @@ deep-hash := λ(: tt TypeList). (: (tail(
 )) U64);
 
 specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
-   (print 'Specialize\s_s)(print key)(print '\s:\s_s)(print ft)(print '\n_s)
+   (print 'Specialize\s_s)(print key)(print '\s:\s_s)(print result-type)(print '\n_s)
    (set unify-ctx (normalize unify-ctx))
    (let term ASTEOF)
    (let global-ctx global-type-context)
@@ -2217,9 +2217,12 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
          (let rt (typeof rhs))
          (ascript-normal( term (t3( 'Arrow_s lt rt )) ))
       )))
-      ( (Var( v _ )) (
+      ( (Var( v _ )) (tail(
+         (let vt (typeof-var( term tctx v )))
+         (print 'VType\s_s)(print v)(print '\s:\s_s)(print (typeof term))(print '\n_s)
+         (print 'Ascript\s_s)(print v)(print '\s:\s_s)(print vt)(print '\n_s)
          (ascript-normal( term (typeof-var( term tctx v )) ))
-      ))
+      )))
       ( (Lit( l _ )) (
          (if (non-zero(typeof term)) () (tail(
             (let tt (typeof-tag l))
