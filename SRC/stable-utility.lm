@@ -70,7 +70,8 @@ uuid := λ . (: (tail(
 )) String);
 iuid := λ . (: (tail(
    (set uuid-counter (+( uuid-counter 1_u64 )))
-   uuid-counter
+   (let id uuid-counter)
+   id
 )) U64);
 
 list-tail-order-to-head-order := λ(: s S). (: (tail(

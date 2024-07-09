@@ -41,6 +41,32 @@ fragment : DontChain cdecl::return := λ(: src LocalVariable+Sized<size>). (: (
    ))
 ) Nil);
 
+fragment : DontChain cdecl::return := λ(: src GlobalVariable+Sized<size>). (: (
+   (.program(
+      (\t 'mov \t (.expression src) \s , \s '%r12 \n)
+      (if-eq (.expression size) 1 (\t 'mov \t '0 \[ '%r12 \] , \s '%al \n))
+      (if-eq (.expression size) 2 (\t 'mov \t '0 \[ '%r12 \] , \s '%ax \n))
+      (if-eq (.expression size) 4 (\t 'mov \t '0 \[ '%r12 \] , \s '%eax \n))
+      (if-eq (.expression size) 8 (\t 'mov \t '0 \[ '%r12 \] , \s '%rax \n))
+      (if-eq 1 (>( (.expression size) 8 )) (
+         \t 'subq \s '$ (.expression cdecl::args-size) , \s '%rsp \n
+         (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
+            \t 'pushq \s (+( '0 (*( (.expression word-offset) 8 )) )) \[ '%r12 \] \n
+         ))
+         (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
+            \t 'popq \s (-( (-( '-16 (*( (.expression word-offset) 8 )) )) (.expression cdecl::args-size) )) \[ '%rbp \] \n
+         ))
+         \t 'addq \s '$ (.expression cdecl::args-size) , \s '%rsp \n
+      ))
+   ))
+   (.expression(
+      (if-eq (.expression size) 1 'al)
+      (if-eq (.expression size) 2 'ax)
+      (if-eq (.expression size) 4 'eax)
+      (if-eq (.expression size) 8 'rax)
+   ))
+) Nil);
+
 fragment : DontChain & := λ(: src LocalVariable). (: ( (.program( \t 'mov \t '%rbp , \s '%r12 \n \t 'add \s '$ (.expression src) , \s '%r12 \n) (.expression( 'r12 ))) ) Reg64);
 fragment : DontChain & := λ(: src GlobalVariable). (: ( (.program( \t 'mov \t '$ (.expression src) , \s '%r12 \n) (.expression( 'r12 ))) ) Reg64);
 

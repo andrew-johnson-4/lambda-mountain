@@ -37,12 +37,9 @@ key-of := λ(: t Token). (: (tail(
 unique := λ(: t Token). (: (tail(
    (match t (
       ()
-      ( (Token( s id loc )) (tail(
-         (print 'Old\sId\s_s)(print id)(print '\n_s)
-         (let id-2 (iuid()))
-         (print 'New\sId\s_s)(print id-2)(print '\n_s)
-         (set t (Token( s id-2 loc )))
-      )))
+      ( (Token( s id loc )) (
+         (set t (Token( s (iuid()) loc )))
+      ))
    ))
    t
 )) Token);
