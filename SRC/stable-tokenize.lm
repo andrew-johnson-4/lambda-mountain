@@ -34,6 +34,16 @@ key-of := λ(: t Token). (: (tail(
    key
 )) String);
 
+unique := λ(: t Token). (: (tail(
+   (match t (
+      ()
+      ( (Token( s id loc )) (
+         (set t (Token( s (iuid()) loc )))
+      ))
+   ))
+   t
+)) Token);
+
 token::new := λ(: s String). (: (tail(
    (let tk (Token( s (iuid()) (location::new()) )))
    tk
