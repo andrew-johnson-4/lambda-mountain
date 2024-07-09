@@ -48,7 +48,6 @@ compile := λ(). (: (tail(
          (if (==( k 'main_s )) (set assemble-argv-referenced True_u8) ())
          (let open False_u8)
          (let kt (typeof rhs))
-         (print 'Global\s_s)(print k)(print '\s:\s_s)(print kt)(print '\n_s)
          (if (is-open kt) () (tail(
             (let fragment (maybe-deref(fragment::new())))
             (let fragment-2 (maybe-deref(fragment::set( fragment 'fragment-type_s (SAtom 'Global_s) ))))
