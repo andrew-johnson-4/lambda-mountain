@@ -1480,7 +1480,6 @@ deep-hash := λ(: tt TypeList). (: (tail(
 )) U64);
 
 specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
-   (print 'Specialize\s_s)(print key)(print '\s:\s_s)(print result-type)(print '\n_s)
    (set unify-ctx (normalize unify-ctx))
    (let term ASTEOF)
    (let global-ctx global-type-context)
