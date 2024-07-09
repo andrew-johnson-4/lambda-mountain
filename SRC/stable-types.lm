@@ -238,7 +238,6 @@ substitute := λ(: tctx TContext)(: tt TypeList). (: (tail(
 )) TypeList);
 
 substitute := λ(: tctx TContext)(: tt Type). (: (tail(
-   (print 'Substitute\sType\s_s)(print tt)(print '\n_s)
    (match tt (
       ()
       ( (TVar v) (
@@ -1481,6 +1480,7 @@ deep-hash := λ(: tt TypeList). (: (tail(
 )) U64);
 
 specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
+   (print 'Specialize\s_s)(print key)(print '\s:\s_s)(print ft)(print '\n_s)
    (set unify-ctx (normalize unify-ctx))
    (let term ASTEOF)
    (let global-ctx global-type-context)
