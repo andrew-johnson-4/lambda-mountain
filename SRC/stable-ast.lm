@@ -13,6 +13,7 @@ type Fragment (Fragment( FragmentKV[] , I64 , Type , FContext[] ));
 type FragmentList (FLEOF) | (FLSeq( FragmentList[] , Fragment )); zero FragmentList FLEOF;
 
 type IsUsed Used | Unused | Tail | Return;
+type IsScoped Scoped | Unscoped;
 
 type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST )); zero Context CtxEOF;
 type TContext TCtxEOF | TCtxNil | (TCtxBind( TContext[] , String , Type , AST )); zero TContext TCtxEOF;

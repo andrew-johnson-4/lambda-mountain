@@ -1,1 +1,3 @@
-Error:
+Error: Unknown Referenced Variable
+In File tests/regress/enforce-scope.lm Line 6 Column 5
+a
