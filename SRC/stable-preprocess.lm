@@ -395,9 +395,9 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (ta
    (match (Pair( lhs term )) (
       ()
       ( (Pair( ASTNil ASTNil )) (set r CtxNil) )
-      ( (Pair( (App( (App( (Var _) (Var _) )) (Var _) )) (App( (App( (Lit _) _ )) _ )) )) () )
-      ( (Pair( (App( (Lit ':Literal:_s) (Var pv) )) (App( (Lit ':_s) (App( (Lit _) (AType _) )) )) )) (
-         (set r (CtxBind( (close CtxNil) pv (relocate( term loc )) )))
+      ( (Pair( (App( (App( (Var( _ _ )) (Var( _ _ )) )) (Var( _ _ )) )) (App( (App( (Lit( _ _ )) _ )) _ )) )) () )
+      ( (Pair( (App( (Lit( ':Literal:_s _ )) (Var( pv _ )) )) (App( (Lit( ':_s ctk )) (App( (Lit( _ _ )) (AType _) )) )) )) (
+         (set r (CtxBind( (close CtxNil) pv (relocate( term (location-of ctk) )) )))
       ))
       ( (Pair( (App(pl pr)) (App(el er)) )) (tail(
          (let ll (try-destructure-macro( loc pl el )))
@@ -417,52 +417,52 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (ta
             ) ())
          )) ())
       )))
-      ( (Pair( (Lit ':Any:_s) (Var '__s) )) (
+      ( (Pair( (Lit( ':Any:_s _ )) (Var( '__s _ )) )) (
          (set r CtxNil)
       ))
-      ( (Pair( (Lit pl) (Var el) )) (
+      ( (Pair( (Lit( pl _ )) (Var( el _ )) )) (
          (if (==( pl el )) (set r CtxNil) ())
       ))
-      ( (Pair( (Lit pl) (Lit el) )) (
+      ( (Pair( (Lit( pl _ )) (Lit( el _ )) )) (
          (if (==( pl el )) (set r CtxNil) ())
       ))
-      ( (Pair( (App( (Lit ':Literal:_s) (Var pv) )) (Lit el) )) (
+      ( (Pair( (App( (Lit( ':Literal:_s _ )) (Var( pv _ )) )) (Lit( el eltk )) )) (
          (if (==( (index-of-tag el) unknown-index-of-tag ))
-             (set r (CtxBind( (close CtxNil) pv (relocate( term loc )) )))
+             (set r (CtxBind( (close CtxNil) pv (relocate( term (location-of eltk) )) )))
              ()
          )
       ))
-      ( (Pair( (App( (Lit ':Variable:_s) _ )) (Var '__s) )) (
+      ( (Pair( (App( (Lit( ':Variable:_s _ )) _ )) (Var( '__s _ )) )) (
          ()
       ))
-      ( (Pair( (App( (Lit ':Variable:_s) (Var pv) )) (Var el) )) (
-         (set r (CtxBind( (close CtxNil) pv (relocate( term loc )) )))
+      ( (Pair( (App( (Lit( ':Variable:_s _ )) (Var( pv _ )) )) (Var( el eltk )) )) (
+         (set r (CtxBind( (close CtxNil) pv (relocate( term (location-of eltk) )) )))
       ))
-      ( (Pair( (App( (App( (Lit ':Tag:_s) (Var pv) )) (Var pt) )) (Lit el) )) (
+      ( (Pair( (App( (App( (Lit( ':Tag:_s _ )) (Var( pv _ )) )) (Var( pt _ )) )) (Lit( el eltk )) )) (
          (if (==( (index-of-tag el) unknown-index-of-tag )) () (tail(
             (set r CtxNil)
-            (set r (CtxBind( (close r) pv (relocate( (
+            (let tag-i (to-string(index-of-tag el)))
+            (set r (CtxBind( (close r) pv (
                (App(
-                  (close(Lit(clone-rope(SAtom ':_s))))
+                  (close(Lit( ':_s (with-key( eltk ':_s )) )))
                   (close(App(
-                     (close(Lit (to-string(index-of-tag el)) ))
+                     (close(Lit( tag-i (with-key( eltk tag-i )) )))
                      (close(AType(parse-type 'Constant+Literal+U64_s)))
                   )))
                ))
-            ) loc )) )))
-            (set r (CtxBind( (close r) pt
-               (relocate( (Lit(clone-rope(SCons(
-                  (close(SAtom 'Tag<_s))
-                  (close(SCons(
-                     (close(SAtom el))
-                     (close(SAtom '>_s))
-                  )))
-               )))) loc ))
-            )))
+            ) )))
+            (let tag-tt (clone-rope(SCons(
+               (close(SAtom 'Tag<_s))
+               (close(SCons(
+                  (close(SAtom el))
+                  (close(SAtom '>_s))
+               )))
+            ))))
+            (set r (CtxBind( (close r) pt (Lit( tag-tt (with-key( eltk tag-tt )) )) )))
          )))
       ))
-      ( (Pair( (Var pv) _ )) (
-         (set r (CtxBind( (close CtxNil) pv (relocate( term loc )) )))
+      ( (Pair( (Var( pv _ )) _ )) (
+         (set r (CtxBind( (close CtxNil) pv term )))
       ))
       ( _ () )
    ))
