@@ -1732,7 +1732,7 @@ infer-global-context := λ(: td AST). (: (
             ( _ () )
          ))
       )))
-      ( (Glb( k (Abs( lhs (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) tlt )) )) (tail(
+      ( (Glb( k_t (Abs( lhs (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) tlt )) )) (tail(
          (let lt (typeof-lhs lhs))
          (let return-type (guess-representation(without-representation rhst)))
          (let ft (t3( 'Arrow_s lt return-type )))
@@ -1755,7 +1755,7 @@ infer-global-context := λ(: td AST). (: (
             ASTEOF
          )))
       )))
-      ( (Glb( k (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) )) (tail(
+      ( (Glb( k_t (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) )) (tail(
          (let kt (and( rhst (t1 'GlobalVariable_s) )))
          (set global-type-context (TCtxBind(
             (close global-type-context) k kt ASTEOF
