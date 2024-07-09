@@ -35,14 +35,16 @@ key-of := λ(: t Token). (: (tail(
 )) String);
 
 unique := λ(: t Token). (: (tail(
-   (let return t)
    (match t (
       ()
-      ( (Token( s id loc )) (
-         (set return (Token( s (iuid()) loc )))
-      ))
+      ( (Token( s id loc )) (tail(
+         (print 'Old\sId\s_s)(print id)(print '\n_s)
+         (set id (iuid()))
+         (print 'New\sId\s_s)(print id)(print '\n_s)
+         (set return (Token( s id loc )))
+      )))
    ))
-   return
+   t
 )) Token);
 
 print-verbose := λ(: t Token). (: (
