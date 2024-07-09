@@ -238,6 +238,7 @@ substitute := λ(: tctx TContext)(: tt TypeList). (: (tail(
 )) TypeList);
 
 substitute := λ(: tctx TContext)(: tt Type). (: (tail(
+   (print 'Substitute\sType\s_s)(print tt)(print '\n_s)
    (match tt (
       ()
       ( (TVar v) (
@@ -281,7 +282,7 @@ substitute-lhs := λ(: tctx TContext)(: t AST). (: (tail(
             ))) )))
          )))
       ))
-      ( (App( (Lit( ':_s _ )) (App( (Var( v vtk )) (AType vt) )) )) (
+      ( (App( (Lit( ':_s ctk )) (App( (Var( v vtk )) (AType vt) )) )) (
          (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
             (close(Var( v (unique vtk) )))
             (close(AType( (substitute( tctx vt )) )))
@@ -1480,7 +1481,6 @@ deep-hash := λ(: tt TypeList). (: (tail(
 )) U64);
 
 specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
-   (print 'Specialize\s_s)(print key)(print '\s:\s_s)(print ft)(print '\n_s)
    (set unify-ctx (normalize unify-ctx))
    (let term ASTEOF)
    (let global-ctx global-type-context)
@@ -1721,8 +1721,7 @@ annotate-accessors := λ(: base-type Type)(: tag-type Type)(: args-type Type). (
    )))
 )) Nil);
 
-infer-global-context := λ(: td AST). (: (tail(
-   (print 'Infer\sGlobal\sContext\s_s)(print td)(print '\n_s)
+infer-global-context := λ(: td AST). (: (
    (match td (
       ()
       ( (Typedef( (Lit( base-type _ )) case-constructors )) (tail(
@@ -1779,7 +1778,7 @@ infer-global-context := λ(: td AST). (: (tail(
       ))
       ( _ () )
    ))
-)) Nil);
+) Nil);
 
 assert-well-typed := λ(: term AST). (: (
    (match term (
@@ -1904,11 +1903,8 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (
          (let ctx (unify( fpt pt )))
          (if (non-zero ctx) (tail(
             (set ctx (normalize ctx))
-            (print 'Apply.3\n_s)
             (let closed-type (substitute( ctx ft )))
-            (print 'Apply.4\n_s)
             (set r (guess-representation(substitute( ctx frt ))))
-            (print 'Apply.5\n_s)
             (if (&&( (==( do-specialize True_u8 )) (is-open fpt) )) (tail(
                (print 'Apply.6\n_s)
                (if (is-open closed-type) (tail(
@@ -1917,9 +1913,7 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (
                   (print 'Argument\s_s)(print pt)(print '\n_s)
                   (exit 1_u64)
                )) ())
-               (print 'Apply.7\n_s)
                (try-specialize( function-name ft ctx closed-type ))
-               (print 'Apply.8\n_s)
             )) ())
          )) ())
       )))
