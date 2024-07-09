@@ -534,7 +534,7 @@ substitute-uuids := λ(: ctx Context)(: term AST). (: (tail(
    (let return term)
    (match return (
       ()
-      ( (App( (Var 'uuid_s) (Var x ) )) (
+      ( (App( (Var( 'uuid_s _ )) (Var( x _ )) )) (
          (while (non-zero ctx) (match ctx (
             ()
             ( (CtxBind( rst k v )) (
@@ -564,8 +564,8 @@ substitute-uuids := λ(: ctx Context)(: term AST). (: (tail(
       ( ASTEOF () )
       ( ASTNil () )
       ( (AType _) () )
-      ( (Var v) () )
-      ( (Lit v) () )
+      ( (Var( v _ )) () )
+      ( (Lit( v _ )) () )
       ( (Seq( lt rt )) (
          (set return (Seq(
             (close(substitute-uuids( ctx lt )))
@@ -599,10 +599,9 @@ extract-uuids := λ(: loc SourceLocation)(: ctx Context)(: term AST). (: (tail(
    (let return ctx)
    (match term (
       ()
-      ( (App( (Var 'uuid_s) (Var x) )) (tail(
+      ( (App( (Var( 'uuid_s _ )) (Var( x xtk )) )) (tail(
          (let id (uuid()))
-         (map-location( id loc ))
-         (let lctx (CtxBind( (close ctx) x (Var id) )))
+         (let lctx (CtxBind( (close ctx) x (Var( id (with-key( xtk id )) )) )))
          (set return lctx)
       )))
       ( (App( l r )) (tail(
@@ -618,8 +617,8 @@ extract-uuids := λ(: loc SourceLocation)(: ctx Context)(: term AST). (: (tail(
       ( ASTEOF () )
       ( ASTNil () )
       ( (AType _) () )
-      ( (Var v) () )
-      ( (Lit v) () )
+      ( (Var( v _ )) () )
+      ( (Lit( v _ )) () )
       ( (Seq( lt rt )) (tail(
          (let lctx (extract-uuids( loc ctx lt )))
          (let rctx (extract-uuids( loc lctx rt )))
