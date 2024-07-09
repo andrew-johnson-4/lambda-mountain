@@ -86,37 +86,35 @@ preprocess-apply-literals := λ(: program AST). (: (tail(
    (let r program)
    (match program (
       ()
-      ( (Lit l) (
+      ( (Lit( l ltk )) (
          (if (has-suffix( l '_t_s )) (tail(
-            (let lloc (location-of l))
             (let lpfx (remove-suffix( l '_t_s )))
             (set r (App(
-               (close(Lit(unique 'Token_s)))
+               (close(Lit( 'Token_s (with-key( ltk 'Token_s )) )))
                (close(App(
                   (close(App(
                      (close(App(
-                        (close(Lit(clone-rope(SAtom ':_s))))
-                        (close(App( (close(Lit(unique lpfx))) (close(AType(parse-type 'Literal+Constant+String_s))) )))
+                        (close(Lit( ':_s (with-key( ltk ':_s )) )))
+                        (close(App( (close(Lit( lpfx (with-key( ltk lpfx )) ))) (close(AType(parse-type 'Literal+Constant+String_s))) )))
                      )))
-                     (close(Var(unique '__s)))
+                     (close(Var( '__s (with-key( ltk '__s )) )))
                   )))
-                  (close(Var(unique '__s)))
+                  (close(Var( '__s (with-key( ltk '__s )) )))
                )))
             )))
          )) ())
       ))
-      ( (Var l) (
+      ( (Var( l ltk )) (
          (if (has-suffix( l '_t_s )) (tail(
-            (let lloc (location-of l))
             (let lpfx (remove-suffix( l '_t_s )))
             (set r (App(
-               (close(Lit(unique 'Token_s)))
+               (close(Lit( 'Token_s (with-key( ltk 'Token_s )) )))
                (close(App(
                   (close(App(
-                     (close(Var(unique lpfx)))
-                     (close(Var(unique '__s)))
+                     (close(Var( lpfx (with-key( ltk lpfx )) )))
+                     (close(Var( '__s (with-key( ltk '__s )) )))
                   )))
-                  (close(Var(unique '__s)))
+                  (close(Var( '__s (with-key( ltk '__s )) )))
                )))
             )))
          )) ())
