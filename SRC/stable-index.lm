@@ -10,14 +10,3 @@ ascript := λ(: t AST)(: tt Type). (: (
    (.bind( (as (& type-index) BTreeIs<AST,Type>[]) t tt ))
 ) Nil);
 
-location-index := (: BTreeIsEOF BTreeIs<String,SourceLocation>);
-
-location-of := λ(: t String). (: (tail(
-   (let loc (.lookup( location-index t (SourceLocation( 'Unknown_s 0_u64 0_u64 )) )))
-   loc
-)) SourceLocation);
-
-map-location := λ(: t String)(: tt SourceLocation). (: (
-   (.bind( (as (& location-index) BTreeIs<String,SourceLocation>[]) t tt ))
-) Nil);
-
