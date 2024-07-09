@@ -241,7 +241,7 @@ exit-error := λ(: msg String)(: t AST). (: (tail(
    (print '\n_s)
    (match t (
       ()
-      ( (App( (Var 'as_s) (App( inner (AType cast) )) )) (tail(
+      ( (App( (Var( 'as_s _ )) (App( inner (AType cast) )) )) (tail(
          (print 'In\sCoercion\n_s)
          (print inner)(print ':\n_s)
          (print (typeof inner))(print '\n_s)

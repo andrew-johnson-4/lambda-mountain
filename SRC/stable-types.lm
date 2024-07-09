@@ -343,8 +343,8 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
             ))
          )))
       )))
-      ( (Lit v) () )
-      ( (Var v) () )
+      ( (Lit( _ _ )) () )
+      ( (Var( _ _ )) () )
       ( (Abs( lhs rhs tt )) (
          (set t (Abs(
             (close(substitute-lhs( tctx lhs )))
@@ -1325,10 +1325,10 @@ typeof-lhs := λ(: lhs AST). (: (tail(
    (let r TAny)
    (match lhs (
       ()
-      ( (App( (Lit ':_s) (App( _ (AType tt) )) )) (
+      ( (App( (Lit( ':_s _ )) (App( _ (AType tt) )) )) (
          (set r tt)
       ))
-      ( (App( ps (App( (Lit ':_s) (App( _ (AType tt) )) )) )) (
+      ( (App( ps (App( (Lit( ':_s _ )) (App( _ (AType tt) )) )) )) (
          (set r (t3( 'Cons_s (typeof-lhs ps) tt )))
       ))
       ( ASTNil (
@@ -1793,49 +1793,49 @@ assert-well-typed := λ(: term AST). (: (
          (assert-one-typed v)
       ))
       ( (Typedef( _ _ )) () )
-      ( (App( (Abs( (Var lname) ASTNil tlt )) rhs )) (tail(
+      ( (App( (Abs( (Var( lname _ )) ASTNil tlt )) rhs )) (tail(
          (assert-well-typed rhs)
          (assert-one-typed term)
       )))
-      ( (App( (Var 'gensym-label_s) _ )) () )
-      ( (App( (Var 'label_s) (Var _) )) () )
-      ( (App( (App( (Var 'while_s) cond )) body )) (tail(
+      ( (App( (Var( 'gensym-label_s _ )) _ )) () )
+      ( (App( (Var( 'label_s _ )) (Var( _ _ )) )) () )
+      ( (App( (App( (Var( 'while_s _ )) cond )) body )) (tail(
          (assert-well-typed cond)
          (assert-well-typed body)
          (assert-one-typed term)
       )))
-      ( (App( (Var 'as_s) (App( t (AType tt) )) )) (
+      ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
          (assert-well-typed t)
       ))
-      ( (App( (Lit ':_s) (App( t (AType tt) )) )) (
+      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
          (assert-well-typed t)
       ))
-      ( (App( (App( (App( (Var 'if_s) cond )) t )) f )) (tail(
+      ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (tail(
          (assert-well-typed cond)
          (assert-well-typed t)
          (assert-well-typed f)
          (assert-one-typed term)
       )))
-      ( (App( (App( (Var 'set_s) lhs )) rhs )) (tail(
+      ( (App( (App( (Var( 'set_s _ )) lhs )) rhs )) (tail(
          (assert-well-typed rhs)
          (assert-one-typed term)
       )))
       ( (AType _) () )
-      ( (App( (Var 'tail_s) (App( lterm rterm )) )) (tail(
+      ( (App( (Var( 'tail_s _ )) (App( lterm rterm )) )) (tail(
          (assert-well-typed lterm)
          (assert-well-typed rterm)
          (assert-one-typed term)
       )))
-      ( (App( (Var 'maybe-deref_s) rterm )) (tail(
+      ( (App( (Var( 'maybe-deref_s _ )) rterm )) (tail(
          (assert-well-typed rterm)
          (assert-one-typed term)
       )))
-      ( (App( (Var 'scope_s) rterm )) (tail(
+      ( (App( (Var( 'scope_s _ )) rterm )) (tail(
          (assert-well-typed rterm)
          (assert-one-typed term)
       )))
-      ( (Lit l) (assert-one-typed term) )
-      ( (Var l) (assert-one-typed term) )
+      ( (Lit( l _ )) (assert-one-typed term) )
+      ( (Var( l _ )) (assert-one-typed term) )
       ( (Abs( lhs rhs tlt )) (tail(
          (assert-well-typed rhs)
          (assert-one-typed term)
@@ -1993,15 +1993,15 @@ infer-tctx := λ(: tctx TContext)(: tt Type). (: (tail(
 infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
    (match lhs (
       ()
-      ( (App( (Lit ':_s) (App( (Var v) (AType tt) )) )) (tail(
+      ( (App( (Lit( ':_s _ )) (App( (Var( v vtk )) (AType tt) )) )) (tail(
          (set tctx (TCtxBind(
-            (close tctx) v (as-local-variable tt) ASTEOF
+            (close tctx) v (as-local-variable tt) (Var( v vtk ))
          )))
          (set tctx (infer-tctx( tctx tt )))
       )))
-      ( (App( ps (App( (Lit ':_s) (App( (Var v) (AType tt) )) )) )) (tail(
+      ( (App( ps (App( (Lit( ':_s _ )) (App( (Var( v vtk )) (AType tt) )) )) )) (tail(
          (set tctx (TCtxBind(
-            (close tctx) v (as-local-variable tt) ASTEOF
+            (close tctx) v (as-local-variable tt) (Var( v vtk ))
          )))
          (set tctx (infer-ctx( tctx ps )))
          (set tctx (infer-tctx( tctx tt )))
