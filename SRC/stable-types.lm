@@ -276,24 +276,24 @@ substitute-lhs := λ(: tctx TContext)(: t AST). (: (tail(
          (set t (App(
             (close(substitute-lhs( tctx ps )))
             (close(App( (close(Lit( ':_s ctk ))) (close(App(
-               (close(Var( v vtk )))
+               (close(Var( v (unique vtk) )))
                (close(AType( (substitute( tctx vt )) )))
             ))) )))
          )))
       ))
       ( (App( (Lit( ':_s _ )) (App( (Var( v vtk )) (AType vt) )) )) (
          (set t (App( (close(Lit( ':_s ctk ))) (close(App(
-            (close(Var( v vtk )))
+            (close(Var( v (unique vtk) )))
             (close(AType( (substitute( tctx vt )) )))
          ))) )))
       ))
       ( (App( ps (Var( v vtk )) )) (
          (set t (App(
             (close(substitute-lhs( tctx ps )))
-            (close(Var( v vtk )))
+            (close(Var( v (unique vtk) )))
          )))
       ))
-      ( (Var( v vtk )) (set t (Var( v vtk ))) )
+      ( (Var( v vtk )) (set t (Var( v (unique vtk) ))) )
       ( ASTNil () )
       ( _ (exit-error( 'Unexpected\sSubstitute\sLHS_s t )) )
    ))
@@ -306,8 +306,8 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
       ( ASTEOF () )
       ( ASTNil () )
       ( (App( (Lit( ':_s ctk )) (App( (Lit( v vtk )) (AType vt) )) )) (tail(
-         (set t (App( (close(Lit( ':_s ctk ))) (close(App(
-            (close(Lit( v vtk )))
+         (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
+            (close(Lit( v (unique vtk) )))
             (close(AType( (substitute( tctx vt )) )))
          ))) )))
          (while (non-zero tctx) (match tctx (
@@ -315,7 +315,7 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
             ( TCtxNil (set tctx TCtxEOF) )
             ( (TCtxBind( rst tk tv ta )) (
                (if (==( tk v )) (tail(
-                  (set t (App( (close(Lit( ':_s ctk ))) (close(App(
+                  (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
                      (close(substitute( tctx ta )))
                      (close(AType( (substitute( tctx vt )) )))
                   ))) )))
@@ -325,8 +325,8 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
          )))
       )))
       ( (App( (Lit( ':_s ctk )) (App( (Var( v vtk )) (AType vt) )) )) (tail(
-         (set t (App( (close(Lit( ':_s ctk ))) (close(App(
-            (close(Var( v vtk )))
+         (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
+            (close(Var( v (unique vtk) )))
             (close(AType( (substitute( tctx vt )) )))
          ))) )))
          (while (non-zero tctx) (match tctx (
@@ -334,7 +334,7 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
             ( TCtxNil (set tctx TCtxEOF) )
             ( (TCtxBind( rst tk tv ta )) (
                (if (==( tk v )) (tail(
-                  (set t (App( (close(Lit( ':_s ctk ))) (close(App(
+                  (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
                      (close(substitute( tctx ta )))
                      (close(AType( (substitute( tctx vt )) )))
                   ))) )))
@@ -343,8 +343,8 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
             ))
          )))
       )))
-      ( (Lit( _ _ )) () )
-      ( (Var( _ _ )) () )
+      ( (Lit( v vtk )) (set t (Lit( v (unique vtk) ))) )
+      ( (Var( v vtk )) (set t (Var( v (unique vtk) ))) )
       ( (Abs( lhs rhs tt )) (
          (set t (Abs(
             (close(substitute-lhs( tctx lhs )))
