@@ -164,10 +164,10 @@ preprocess-apply := λ(: program AST). (: (tail(
             (close(preprocess-apply( nt )))
          )))
       ))
-      ( (App( (App( (Lit( ':_s ctk )) mvar )) (Lit mtype) )) (
+      ( (App( (App( (Lit( ':_s ctk )) mvar )) (Lit( mtype _ )) )) (
          (set r (App( (close(Lit( ':_s ctk ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
       ))
-      ( (App( (App( (Lit( ':_s ctk )) mvar )) (Var mtype) )) (
+      ( (App( (App( (Lit( ':_s ctk )) mvar )) (Var( mtype _ )) )) (
          (set r (App( (close(Lit( ':_s ctk ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
       ))
       ( (App( (App( (Var( 'as_s atk )) (App( t (AType tt) )) )) nt )) (
@@ -176,16 +176,16 @@ preprocess-apply := λ(: program AST). (: (tail(
             (close(preprocess-apply( nt )))
          )))
       ))
-      ( (App( (App( (Var( 'as_s atk )) mvar )) (Lit mtype) )) (
+      ( (App( (App( (Var( 'as_s atk )) mvar )) (Lit( mtype _ )) )) (
          (set r (App( (close(Var( 'as_s atk ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
       ))
-      ( (App( (App( (Var( 'as_s atk )) mvar )) (Var mtype) )) (
+      ( (App( (App( (Var( 'as_s atk )) mvar )) (Var( mtype _ )) )) (
          (set r (App( (close(Var( 'as_s atk ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
       ))
-      ( (App( (Var( 'sizeof_s stk )) (Var mtype) )) (
+      ( (App( (Var( 'sizeof_s stk )) (Var( mtype _ )) )) (
          (set r (App( (close(Var( 'sizeof_s stk ))) (close(AType(parse-type mtype))) )))
       ))
-      ( (App( (Var( 'sizeof_s stk )) (Lit mtype) )) (
+      ( (App( (Var( 'sizeof_s stk )) (Lit( mtype _ )) )) (
          (set r (App( (close(Var( 'sizeof_s stk ))) (close(AType(parse-type mtype))) )))
       ))
       ( (Lit( l ltk )) (tail(
@@ -197,7 +197,7 @@ preprocess-apply := λ(: program AST). (: (tail(
                   (let lpfx (remove-suffix( l sfxs )))
                   (set r (App(
                      (close(Lit( ':_s (with-key( ltk ':_s )) )))
-                     (close(App( (close (Lit( lpfx (with-key( ltk lpfx )) ))) (close(AType sfxtt)) )))
+                     (close(App( (close(Lit( lpfx (with-key( ltk lpfx )) ))) (close(AType sfxtt)) )))
                   )))
                   (set suffixes SfxEOF)
                )) (
@@ -215,7 +215,7 @@ preprocess-apply := λ(: program AST). (: (tail(
                   (let lpfx (remove-suffix( l sfxs )))
                   (set r (App(
                      (close(Lit( ':_s (with-key( ltk ':_s )) )))
-                     (close(App( (close (Lit( lpfx (with-key( ltk lpfx )) ))) (close(AType sfxtt)) )))
+                     (close(App( (close(Lit( lpfx (with-key( ltk lpfx )) ))) (close(AType sfxtt)) )))
                   )))
                   (set suffixes SfxEOF)
                )) (
