@@ -43,7 +43,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (tail(
          (set text (SCons( (close text) (close text-etc) )))
          (set assemble-text-section (SCons( (close assemble-text-section) (close text) )))
       ))))
-      ( (App( (Lit ':_s) (App( t (AType tt) )) )) (tail(
+      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (tail(
          (let clean-tt (maybe-deref(without-representation kt)))
          (let mid (mangle-identifier( k clean-tt )))
          (set assemble-data-section (SCons(
@@ -452,7 +452,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
 compile-destructure-args := λ(: tt Type)(: ctx FContext)(: lhs AST)(: offset I64). (: (tail(
    (match lhs (
       ()
-      ( (App( rst (App( (Lit ':_s) (App( (Var k) (AType kt) )) )) )) (
+      ( (App( rst (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) )) (
          (match (slot( tt 'Cons_s )) (
             ()
             ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF rst-tt )) p2 )) )) (tail(
@@ -470,7 +470,7 @@ compile-destructure-args := λ(: tt Type)(: ctx FContext)(: lhs AST)(: offset I6
             ( _ (exit-error( 'Destructure\sExpected\sCons_s lhs )))
          ))
       ))
-      ( (App( (Lit ':_s) (App( (Var k) (AType kt) )) )) (tail(
+      ( (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) (tail(
          (let kt-2 (TAnd( (close kt) (close(t1 'LocalVariable_s)) )))(set kt kt-2)
          (let sz (sizeof-aligned kt))
          (let new-offset (-( offset (as sz I64) )))
