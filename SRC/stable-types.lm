@@ -2044,7 +2044,6 @@ typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tail(
 )) Type);
 
 infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (tail(
-   (print 'Infer\s_s)(print term)(print '\n_s)
    (match term (
       ()
       ( ASTNil (ascript-normal( term (t1 'Nil_s) )) )
@@ -2194,6 +2193,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
          (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
       )))
       ( (App( l r )) (tail(
+         (print 'Infer\s_s)(print term)(print '\n_s)
          (set tctx (infer-expr( tctx l Used TAny )))
          (set tctx (infer-expr( tctx r Used TAny )))
          (let rt (apply-or-cons-and-specialize(
