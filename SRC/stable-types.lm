@@ -2086,7 +2086,6 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
          ))
       ))
       ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (tail(
-         (print 'Infer\sAscript\s_s)(print term)(print '\n_s)
          (let tctx2 (maybe-deref(infer-expr( tctx t used tt ))))
          (set tctx tctx2)
          (let inner-tt (maybe-deref(typeof t)))
@@ -2197,7 +2196,6 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
          (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
       )))
       ( (App( l r )) (tail(
-         (print 'Infer\s_s)(print term)(print '\n_s)
          (set tctx (infer-expr( tctx l Used TAny )))
          (set tctx (infer-expr( tctx r Used TAny )))
          (let rt (apply-or-cons-and-specialize(
@@ -2216,10 +2214,6 @@ infer-expr := λ(: tctx TContext)(: term AST)(: used IsUsed)(: hint Type). (: (t
       )))
       ( (Var( v vtk )) (tail(
          (let vt (typeof-var( term tctx v )))
-         (print 'VType\s_s)(print v)(print '\s:\s_s)(print (typeof term))(print '\n_s)
-         (print 'Ascript\s_s)(print v)(print '\s:\s_s)(print vt)(print '\n_s)
-         (print 'Token\s_s)(print-verbose vtk)(print '\n_s)
-         (print 'Token\s_s)(print-verbose (unique vtk))(print '\n_s)
          (ascript-normal( term (typeof-var( term tctx v )) ))
       )))
       ( (Lit( l _ )) (
