@@ -23,14 +23,14 @@ fragment : DontChain cdecl::return := λ(: src LocalVariable+Sized<size>). (: (
       (if-eq (.expression size) 4 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%eax \n))
       (if-eq (.expression size) 8 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%rax \n))
       (if-eq 1 (>( (.expression size) 8 )) (
-         \t 'subq \s '$ (.expression cdecl::args-size) , \s '%rsp \n
+         \t 'subq \s '$ (.expression size) , \s '%rsp \n
          (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
             \t 'pushq \s (+( (.expression src) (*( (.expression word-offset) 8 )) )) \[ '%rbp \] \n
          ))
          (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
             \t 'popq \s (-( (-( '-16 (*( (.expression word-offset) 8 )) )) (.expression cdecl::args-size) )) \[ '%rbp \] \n
          ))
-         \t 'addq \s '$ (.expression cdecl::args-size) , \s '%rsp \n
+         \t 'addq \s '$ (.expression size) , \s '%rsp \n
       ))
    ))
    (.expression(
@@ -49,14 +49,14 @@ fragment : DontChain cdecl::return := λ(: src GlobalVariable+Sized<size>). (: (
       (if-eq (.expression size) 4 (\t 'mov \t '0 \[ '%r12 \] , \s '%eax \n))
       (if-eq (.expression size) 8 (\t 'mov \t '0 \[ '%r12 \] , \s '%rax \n))
       (if-eq 1 (>( (.expression size) 8 )) (
-         \t 'subq \s '$ (.expression cdecl::args-size) , \s '%rsp \n
+         \t 'subq \s '$ (.expression size) , \s '%rsp \n
          (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
             \t 'pushq \s (+( '0 (*( (.expression word-offset) 8 )) )) \[ '%r12 \] \n
          ))
          (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
             \t 'popq \s (-( (-( '-16 (*( (.expression word-offset) 8 )) )) (.expression cdecl::args-size) )) \[ '%rbp \] \n
          ))
-         \t 'addq \s '$ (.expression cdecl::args-size) , \s '%rsp \n
+         \t 'addq \s '$ (.expression size) , \s '%rsp \n
       ))
    ))
    (.expression(
