@@ -27,6 +27,22 @@ type-complex-fields-index := (: BTreeEqEOF BTreeEq<String,Tuple<Type,Type>>);
 # has typechecking finished? boolean, mutable
 types-have-changed := True_u8;
 
+global-symbol-registry := (: BTreeEqEOF BTreeEq<Tuple<String,Type>,U64>);
+
+mark-global-as-seen := λ(: name String)(: tt Type). (: (
+   (if (global-is-seen( name tt )) (tail(
+      (print 'Duplicate\sGlobal\sSymbol\s_s)(print name)(print '\s:\s_s)(print tt)(print '\n_s)
+      (exit 1_u64)
+   )) (
+      (.bind( (as (& global-symbol-registry) BTreeEq<Tuple<String,Type>,U64>[]) (Pair( name tt )) 1_u64 ))
+   ))
+) Nil);
+
+global-is-seen := λ(: name String)(: tt Type). (: (tail(
+   (let r (.lookup( global-symbol-registry (Pair( name tt )) 0_u64 )))
+   r
+)) U64);
+
 is-special-index := (: BTreeEqEOF BTreeEq<Tuple<String,Type>,U64>);
 
 mark-as-special := λ(: name String)(: tt Type). (: (
@@ -1736,6 +1752,7 @@ infer-global-context := λ(: td AST). (: (
          (let lt (typeof-lhs lhs))
          (let return-type (guess-representation(without-representation rhst)))
          (let ft (t3( 'Arrow_s lt return-type )))
+         (mark-global-as-seen( k ft ))
          (ascript-normal( td ft ))
          (set global-type-context (TCtxBind(
             (close global-type-context)
@@ -1747,6 +1764,7 @@ infer-global-context := λ(: td AST). (: (
       ( (Frg( k_t (Abs( lhs (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) atlt )) tlt )) (tail(
          (let lt (typeof-lhs lhs))
          (let ft (t3( 'Arrow_s lt rhst )))
+         (mark-global-as-seen( k ft ))
          (ascript-normal( td ft ))
          (set global-type-context (TCtxBind(
             (close global-type-context)
@@ -1760,15 +1778,17 @@ infer-global-context := λ(: td AST). (: (
          (set global-type-context (TCtxBind(
             (close global-type-context) k kt ASTEOF
          )))
+         (mark-global-as-seen( k kt ))
          (ascript-normal( td kt ))
       )))
-      ( (Frg( k_t (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) tlt )) (
+      ( (Frg( k_t (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) tlt )) (tail(
          (set global-type-context (TCtxBind(
             (close global-type-context)
             k
             rhst ASTEOF
          )))
-      ))
+         (mark-global-as-seen( k rhst ))
+      )))
       ( (Glb( _ _ )) (
          (exit-error( 'Global\sBindings\sMust\sBe\sAscripted_s td ))
       ))

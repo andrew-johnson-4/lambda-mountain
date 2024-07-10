@@ -451,7 +451,6 @@ fragment : DontChain movsx := λ(: src Constant+Reg8)(: dst Constant+Reg64). (: 
 fragment : DontChain movsx := λ(: src Constant+Reg16)(: dst Constant+Reg64). (: (.program( \t 'movsx \s '% (.expression src) , '% (.expression dst) \n )) Nil);
 fragment : DontChain movsx := λ(: src Constant+Reg32)(: dst Constant+Reg64). (: (.program( \t 'movsx \s '% (.expression src) , '% (.expression dst) \n )) Nil);
 
-fragment : DontChain jb := λ(: dst Label). (: (.program( \t 'jb \s (.expression dst) \n )) Nil);
 fragment : DontChain jg := λ(: dst Label). (: (.program( \t 'jg \s (.expression dst) \n )) Nil);
 fragment : DontChain jge := λ(: dst Label). (: (.program( \t 'jge \s (.expression dst) \n )) Nil);
 fragment : DontChain jb := λ(: dst Label). (: (.program( \t 'jb \s (.expression dst) \n )) Nil);
@@ -491,7 +490,6 @@ fragment : DontChain sub := λ(: src Reg16)(: dst Reg16). (: (.program( \t 'sub 
 fragment : DontChain sub := λ(: src Reg32)(: dst Reg32). (: (.program( \t 'sub \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
 fragment : DontChain sub := λ(: src Reg64)(: dst Reg64). (: (.program( \t 'sub \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
 
-fragment : DontChain push := λ(: l Reg64). (: (.program( \t 'push \s '% (.expression l) \n )) Nil);
 fragment : DontChain pop := λ(: l Reg64). (: (.program( \t 'pop \s '% (.expression l) \n )) Nil);
 
 fragment : DontChain shl := λ(: c Literal+Constant)(: l Reg64). (: (.program( \t 'shl \s '$ (.expression c) , \s '% (.expression l) \n )) Nil);
