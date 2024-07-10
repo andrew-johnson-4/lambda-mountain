@@ -6,7 +6,11 @@ type XYZ (Z( XY , U64 ));
 
 x1 := (: (Z( X 1_u64 )) XYZ);
 
-f1 := λ. (: (
+f1 := λ(: abc XYZ). (: (
+   abc
+) XYZ);
+
+f2 := λ. (: (
    x1
 ) XYZ);
 
@@ -24,9 +28,9 @@ print := λ(: abc XYZ). (: (
 ) Nil);
 
 main := λ. (: (tail(
-   (print 'Begin\n_s)
-   (let abc (f1()))
-   (print 'ABC\n_s)
-   (print abc)
+   (print 'F1\s_s)
+   (print(f1 x1))
+   (print '\nF2\s_s)
+   (print(f2()))
 )) Nil);
 
