@@ -1,0 +1,32 @@
+
+import LIB/default.lm;
+
+type XY X | (Y( U64 ));
+type XYZ (Z( XY , U64 ));
+
+x1 := (: (Z( X 1_u64 )) XYZ);
+
+f1 := λ. (: (
+   x1
+) XYZ);
+
+print := λ(: abc XYZ). (: (
+   (match abc (
+      ()
+      ( (Z( X x )) (
+         (print x)
+      ))
+      ( (Z( (Y( x )) y )) (tail(
+         (print x)
+         (print y)
+      )))
+   ))
+) Nil);
+
+main := λ. (: (tail(
+   (print 'Begin\n_s)
+   (let abc (f1()))
+   (print 'ABC\n_s)
+   (print abc)
+)) Nil);
+
