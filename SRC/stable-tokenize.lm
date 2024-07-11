@@ -207,9 +207,9 @@ tokenize := λ(: fp String). (: (tail(
                (set buffer SNil)
             )) ())
             (set parens-counter (+( parens-counter 1_u64 )))
-            (let tk (Token( '\[_s (iuid()) (SourceLocation( fp token-line token-column )) )))
+            (let tk-2 (Token( '\[_s (iuid()) (SourceLocation( fp token-line token-column )) )))
             (set ast-tokenized-program (LCons(
-               tk
+               tk-2
                (close ast-tokenized-program)
             )))
             (set token-line current-line)
@@ -225,9 +225,9 @@ tokenize := λ(: fp String). (: (tail(
                (set buffer SNil)
             )) ())
             (set parens-counter (-( parens-counter 1_u64 )))
-            (let tk (Token( '\]_s (iuid()) (SourceLocation( fp token-line token-column )) )))
+            (let tk-2 (Token( '\]_s (iuid()) (SourceLocation( fp token-line token-column )) )))
             (set ast-tokenized-program (LCons(
-               tk
+               tk-2
                (close ast-tokenized-program)
             )))
          ))))
@@ -240,9 +240,9 @@ tokenize := λ(: fp String). (: (tail(
                )))
                (set buffer SNil)
             )) ())
-            (let tk (Token( '\`_s (iuid()) (SourceLocation( fp token-line token-column )) )))
+            (let tk-2 (Token( '\`_s (iuid()) (SourceLocation( fp token-line token-column )) )))
             (set ast-tokenized-program (LCons(
-               tk
+               tk-2
                (close ast-tokenized-program)
             )))
          ))))
@@ -255,9 +255,9 @@ tokenize := λ(: fp String). (: (tail(
                )))
                (set buffer SNil)
             )) ())
-            (let tk (Token( '\:_s (iuid()) (SourceLocation( fp token-line token-column )) )))
+            (let tk-2 (Token( '\:_s (iuid()) (SourceLocation( fp token-line token-column )) )))
             (set ast-tokenized-program (LCons(
-               tk
+               tk-2
                (close ast-tokenized-program)
             )))
          ))))

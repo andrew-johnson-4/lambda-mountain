@@ -1869,7 +1869,7 @@ assert-well-typed := λ(: term AST). (: (
          (assert-well-typed l)
          (assert-well-typed r)
       )))
-      ( term (tail(
+      ( _ (tail(
          (print 'Unknown\sTerm\sIn\sAssert\sWell\sTyped\s_s)(print term)(print '\n_s)
          (exit 1_u64)
       )))
@@ -2168,13 +2168,13 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type). (
          (set tctx (infer-expr( tctx t Unscoped TAny )))
          (let inner-tt (typeof t))
          (if (non-zero inner-tt) (tail(
-            (let nn (with-only-representation inner-tt))
-            (if (non-zero nn) (
-               (set tt (and( tt nn )))
+            (let inner-repr (with-only-representation inner-tt))
+            (if (non-zero inner-repr) (
+               (set tt (and( tt inner-repr )))
             ) ())
-            (let nn (with-only-class inner-tt))
-            (if (non-zero nn) (
-               (set tt (and( tt nn )))
+            (let inner-class (with-only-class inner-tt))
+            (if (non-zero inner-class) (
+               (set tt (and( tt inner-class )))
             ) ())
             (set tt (with-fields( tt )))
             (ascript-normal( term tt ))

@@ -318,21 +318,19 @@ parse-type-single := λ(: tt String). (: (tail(
                ()
                ( 91_u8 (
                   (if (non-zero buff) (tail(
-                     (let base-type-2 (t3(
+                     (set base-type (t3(
                         'Array_s
                         base-type
                         (parse-type(clone-rope buff))
                      )))
-                     (set base-type base-type-2)
                      (set buff SNil)
-                  )) (tail(
-                     (let base-type-2 (t3(
+                  )) (
+                     (set base-type (t3(
                         'Array_s
                         base-type
                         TAny
                      )))
-                     (set base-type base-type-2)
-                  )))
+                  ))
                ))
                ( 60_u8 (match base-type (
                   ()
@@ -553,12 +551,12 @@ parse := λ. (: (tail(
          (remainder (
             (match (parse-many-expressions remainder) (
                ()
-               ( (PME( term remainder )) (tail(
+               ( (PME( term r1 )) (tail(
                   (set ast-parsed-program (Seq(
                      (close ast-parsed-program)
                      (close term)
                   )))
-                  (set tokens remainder)
+                  (set tokens r1)
                )))
             ))
          ))
