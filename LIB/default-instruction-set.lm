@@ -140,6 +140,27 @@ fragment : DontChain mov := λ(: src LocalVariable+Sized<size>)(: dst GlobalVari
       ))
    ))
 ) Nil);
+fragment : DontChain mov := λ(: src GlobalVariable+Sized<size>)(: dst LocalVariable). (: (
+   (.program (
+      \t 'mov \s '$ (.expression src) , \s '%r14 \n
+      (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
+         \t 'movq \s (*( (.expression word-offset) 8 )) \[ '%r14 \] , \s '%r15 \n
+         \t 'movq \s '%r15 , \s (+( (.expression dst) (*( (.expression word-offset) 8 )) )) \[ '%rbp \] \n
+      ))
+      (if-eq (.expression size) 4 (
+         \t 'mov \s 0 \[ '%r14 \] , \s '%r15d \n
+         \t 'mov \s '%r15d , \s (.expression dst) \[ '%rbp \] \n
+      ))
+      (if-eq (.expression size) 2 (
+         \t 'mov \s 0 \[ '%r14 \] , \s '%r15w \n
+         \t 'mov \s '%r15w , \s (.expression dst) \[ '%rbp \] \n
+      ))
+      (if-eq (.expression size) 1 (
+         \t 'mov \s 0 \[ '%r14 \] , \s '%r15b \n
+         \t 'mov \s '%r15b , \s (.expression dst) \[ '%rbp \] \n
+      ))
+   ))
+) Nil);
 
 fragment : DontChain mov := λ(: src StackVariable+Sized<size>)(: dst GlobalVariable+Sized<size>). (: (
    (.program (

@@ -41,7 +41,7 @@ compile := λ(). (: (tail(
          (set preview-program rst)
       ))
    )))
-   (let preview-program ast-parsed-program)
+   (set preview-program ast-parsed-program)
    (while (non-zero preview-program) (match preview-program (
       ()
       ( (Seq( rst (Glb( k_t rhs )) )) (tail(
