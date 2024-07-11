@@ -4,7 +4,7 @@ translate-local-variables := λ(: ctx FContext)(: delta I64). (: (tail(
       ()
       ( FCtxEOF () )
       ( (FCtxBind( rst k kt f )) (tail(
-         (let rst (translate-local-variables( rst delta )))
+         (set rst (translate-local-variables( rst delta )))
          (match (fragment::get( f 'fragment-type_s )) (
             ()
             ( (SAtom 'LocalVariable_s) (
