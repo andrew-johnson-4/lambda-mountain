@@ -463,7 +463,7 @@ without-tag := λ(: tt Type). (: (tail(
       )))
       ( (TGround( 'Constructor_s _ )) (set tt TAny) )
       ( (TGround( 'Tag_s _ )) (set tt TAny) )
-      ( tt () )
+      ( _ () )
    ))
    tt
 )) Type);
@@ -2033,6 +2033,14 @@ infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
 )) TContext);
 
 typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tail(
+   (let found (typeof-var-raw( sloc tctx vname )))
+   (if (non-zero found) () (
+      (exit-error( 'Unknown\sReferenced\sVariable_s sloc ))
+   ))
+   found
+)) Type);
+
+typeof-var-raw := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tail(
    (let found TAny)
    (while (non-zero tctx) (match tctx (
       ()
@@ -2058,9 +2066,6 @@ typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tail(
          ))
       ))
    )))
-   (if (non-zero found) () (
-      (exit-error( 'Unknown\sReferenced\sVariable_s sloc ))
-   ))
    found
 )) Type);
 
@@ -2201,6 +2206,12 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type). (
          (ascript-normal( term deref-type ))
       )))
       ( (App( (Abs( (Var( lname _ )) ASTNil tlt )) rhs )) (tail(
+         (let prev-tt (typeof-var-raw( term tctx lname )))
+         (if (non-zero prev-tt) (
+            (if (not(is-arrow prev-tt)) (
+               (exit-error( 'Variable\sName\sIs\sAlready\sBound\sIn\sOuter\sScope_s term ))
+            ) ())
+         ) ())
          (infer-expr( tctx rhs Unscoped TAny ))
          (let tt (typeof rhs))
          (let rt (as-local-variable tt))
