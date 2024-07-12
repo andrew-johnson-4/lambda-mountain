@@ -7,7 +7,8 @@ cell := λ(: x x). (: (tail(
 )) Cell<x>);
 
 deref := λ(: c Cell<x>). (: (tail(
-   (let x (maybe-deref (.1 c)))
+   (let ci (.1 (as c Tag<Cell>)))
+   (let x (maybe-deref ci))
    x
 )) x);
 
