@@ -135,9 +135,10 @@ is-class := λ(: tag String). (: (tail(
    r
 )) U64);
 
-index-fields-of-tag := λ(: tag String)(: fields Type). (: (
+index-fields-of-tag := λ(: tag String)(: fields Type). (: (tail(
+   (print 'Index\s_s)(print tag)(print '\n_s)
    (.bind( (as (& tag-to-fields-index) BTreeEq<String,Type>[]) tag fields ))
-) Nil);
+)) Nil);
 
 fields-of-tag := λ(: tag String). (: (tail(
    (let r (.lookup( tag-to-fields-index tag TAny )))
@@ -1111,9 +1112,6 @@ fields-of-tag := λ(: tag Type)(: class Type). (: (tail(
          ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF fields-lhs )) fields-rhs )) )) (
             (set rhst (substitute( (unify( fields-lhs class )) fields-rhs )))
          ))
-         ( fields-tt (tail(
-            (print 'Invalid\sField\sRHS\s_s)(print fields-tt)(print '\sfor\stag\s_s)(print tag)(print '\n_s)
-         )))
       )))
       ( _ (tail(
          (print 'Invalid\sTag\sIn\sfields-of-tag\s_s)
@@ -1706,7 +1704,7 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
             ))
          )))
          (index-class-of-tag( tag base-type ))
-         (index-fields-of-tag( tag TAny ))
+         (index-fields-of-tag( tag (t1 'Nil_s) ))
          (.bind( (as (& type-constructors-index) BTreeEq<String,Type>[]) tag rtype ))
          (set r 8_u64)
       )))
