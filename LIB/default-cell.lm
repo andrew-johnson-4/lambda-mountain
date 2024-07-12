@@ -7,11 +7,10 @@ cell := λ(: x x). (: (tail(
 )) Cell<x>);
 
 deref := λ(: c Cell<x>). (: (tail(
-   (let ci (.1 (as c Tag<Cell>)))
-   (let x (maybe-deref ci))
+   (let x (maybe-deref(.1(as c Tag<Cell>))))
    x
 )) x);
 
 set[] := λ(: c Cell<x>)(: x x). (: (
-   (set[]( (.1 c) 0_u64 x ))
+   (set[]( (.1(as c Tag<Cell>)) x ))
 ) Nil);

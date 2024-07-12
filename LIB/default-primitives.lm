@@ -62,6 +62,33 @@ fragment : DontChain set[] := λ(: l LocalVariable+Array<Field<Sized<8>,?>,?>)(:
    ))
 ) Nil);
 
+fragment : DontChain set[] := λ(: dst Reg64+Array<Sized<size>,?>)(: src LocalVariable+Sized<size>). (: (
+   (.program (
+      (if-eq (.expression size) 1 (
+         \t 'mov \t (.expression src) \[ '%rbp \] , \s '%r15b \n
+         \t 'mov \s '%r15b , \s 0 \[ '% (.expression dst) \] \n
+      ))
+      (if-eq (.expression size) 2 (
+         \t 'mov \t (.expression src) \[ '%rbp \] , \s '%r15w \n
+         \t 'mov \s '%r15w , \s 0 \[ '% (.expression dst) \] \n
+      ))
+      (if-eq (.expression size) 4 (
+         \t 'mov \t (.expression src) \[ '%rbp \] , \s '%r15d \n
+         \t 'mov \s '%r15d , \s 0 \[ '% (.expression dst) \] \n
+      ))
+      (if-eq (.expression size) 8 (
+         \t 'mov \t (.expression src) \[ '%rbp \] , \s '%r15 \n
+         \t 'mov \s '%r15 , \s 0 \[ '% (.expression dst) \] \n
+      ))
+      (if-eq 1 (>( (.expression size) 8 )) (
+         (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
+            \t 'mov \t (+( (.expression src) (*( 8 (.expression word-offset) )) )) \[ '%rbp \] , \s '%r15 \n
+            \t 'mov \s '%r15 , \s (*( 8 (.expression word-offset) )) \[ '% (.expression dst) \] \n
+         ))
+      ))
+   ))
+) Nil);
+
 fragment : DontChain [] := λ(: l GlobalVariable+Array<x,?>)(: r GlobalVariable+U64). (: (
    (.program (
       \t 'mov \s '$ (.expression l) , \s '%r15 \n
