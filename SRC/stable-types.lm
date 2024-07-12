@@ -6,13 +6,16 @@ tag-to-class-index := (: BTreeEqEOF BTreeEq<String,Type>);
 class-to-yes-index := (: BTreeEqEOF BTreeEq<String,U64>);
 
 # global Tag -> Fields map, mutable
-tag-to-fields-index := (: BTreeEqEOF BTreeEq<String,Type>);
+tag-to-fields-index := (: BTreeEqEOF BTreeEq<String,Tuple<Type,Type>>);
 
 # global Tag -> IsFragment? map, mutable
 tag-is-fragment-index := (: BTreeEqEOF BTreeEq<String,U64>);
 
 # global Class -> Size map, mutable
 class-to-size-index := (: BTreeEqEOF BTreeEq<String,U64>);
+
+# global Class -> Tag map, mutable
+class-to-only-child := (: BTreeEqEOF BTreeEq<String,String>);
 
 # global Tag -> Index map, mutable
 tag-to-index-index := (: BTreeEqEOF BTreeEq<String,U64>);
@@ -28,6 +31,15 @@ type-complex-fields-index := (: BTreeEqEOF BTreeEq<String,Tuple<Type,Type>>);
 types-have-changed := True_u8;
 
 global-symbol-registry := (: BTreeEqEOF BTreeEq<Tuple<String,Type>,U64>);
+
+has-only-child := λ(: class String)(: tag String). (: (
+   (.bind( (as (& class-to-only-child) BTreeEq<String,String>[]) class tag ))
+) Nil);
+
+get-only-child := λ(: class String). (: (tail(
+   (let r (.lookup( class-to-only-child class '_s )))
+   r
+)) String);
 
 mark-global-as-seen := λ(: name String)(: tt Type). (: (
    (if (global-is-seen( name tt )) (tail(
@@ -123,14 +135,14 @@ is-class := λ(: tag String). (: (tail(
    r
 )) U64);
 
-index-fields-of-tag := λ(: tag String)(: fields Type). (: (
-   (.bind( (as (& tag-to-fields-index) BTreeEq<String,Type>[]) tag fields ))
+index-fields-of-tag := λ(: tag String)(: fields-params Type)(: fields-rhs Type). (: (
+   (.bind( (as (& tag-to-fields-index) BTreeEq<String,Tuple<Type,Type>>[]) tag (Pair( fields-params fields-rhs )) ))
 ) Nil);
 
 fields-of-tag := λ(: tag String). (: (tail(
-   (let r (.lookup( tag-to-fields-index tag TAny )))
+   (let r (.lookup( tag-to-fields-index tag (Pair( TAny TAny )) )))
    r
-)) Type);
+)) Tuple<Type,Type>);
 
 slot := λ(: tt Type)(: sl String). (: (tail(
    (let rt TAny)
@@ -446,6 +458,23 @@ union := λ(: lctx TContext)(: rctx TContext). (: (tail(
    lctx
 )) TContext);
 
+with-tag := λ(: tt Type). (: (tail(
+   (let cls-tt (with-only-class tt))
+   (if (non-zero cls-tt) (
+      (match cls-tt (
+         ()
+         ( (TGround( cls _ )) (tail(
+            (let tag (get-only-child cls))
+            (if (head-string tag) (
+               (set tt (and( tt (t2( 'Tag_s (t1 tag) )) )))
+            ) ())
+         )))
+         ( _ () )
+      ))
+   ) ())
+   tt
+)) Type);
+
 without-tag := λ(: tt Type). (: (tail(
    (match tt (
       ()
@@ -463,6 +492,8 @@ without-tag := λ(: tt Type). (: (tail(
       )))
       ( (TGround( 'Constructor_s _ )) (set tt TAny) )
       ( (TGround( 'Tag_s _ )) (set tt TAny) )
+      ( (TGround( 'Fields_s _ )) (set tt TAny) )
+      ( (TGround( 'FieldsSized_s _ )) (set tt TAny) )
       ( _ () )
    ))
    tt
@@ -505,9 +536,10 @@ with-only-tag := λ(: tt Type). (: (tail(
       ()
       ( (TAnd( lt1 rt1 )) (tail(
          (let lc (with-only-tag lt1))
-         (if (non-zero lc) (set rt lc) ())
-         (let rc (with-only-tag rt1))
-         (if (non-zero rc) (set rt rc) ())
+         (if (non-zero lc) (set rt lc) (tail(
+            (let rc (with-only-tag rt1))
+            (if (non-zero rc) (set rt rc) ())
+         )))
       )))
       ( (TGround( 'Tag_s _ )) (set rt tt) )
       ( _ () )
@@ -1078,7 +1110,8 @@ fields-of-tag := λ(: tag Type)(: class Type). (: (tail(
       ()
       ( (TGround( 'Tag_s (TypeSeq( TypeEOF (TGround( ts _ )) )) )) (match (fields-of-tag ts) (
          ()
-         ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF fields-lhs )) fields-rhs )) )) (
+         ( (Pair( TAny TAny )) () )
+         ( (Pair( fields-lhs fields-rhs )) (
             (set rhst (substitute( (unify( fields-lhs class )) fields-rhs )))
          ))
       )))
@@ -1215,8 +1248,10 @@ ascript-normal := λ(: t AST)(: tt Type). (: (
             )))
          )))
       ) (tail(
-         (let sized-tt (with-size tt))
-         (ascript( t sized-tt ))
+         (set tt (with-size tt))
+         (set tt (with-tag tt))
+         (set tt (with-fields tt))
+         (ascript( t tt ))
          (set types-have-changed True_u8)
       )))
    )) ())
@@ -1406,6 +1441,10 @@ with-size-recurse := λ(: tt Type). (: (tail(
             (with-size-recurse rt)
          )))
       ))
+      ( (TGround( 'Tag_s _ )) () )
+      ( (TGround( 'Sized_s _ )) () )
+      ( (TGround( 'Fields_s _ )) () )
+      ( (TGround( 'FieldsSized_s _ )) () )
       ( (TGround( tag ps )) (
          (set tt (TGround( tag (close(with-size ps)) )))
       ))
@@ -1614,18 +1653,35 @@ typecheck := λ. (: (tail(
    (assert-well-typed ast-parsed-program)
 )) Nil);
 
-infer-type-definition := λ(: base-type Type)(: body AST). (: (tail(
+infer-type-definition := λ(: base-type Type)(: body AST)(: case-number U64). (: (tail(
    (let r 0_u64)
    (match body (
       ()
       ( (App( (App( tds (Var( '|_s _ )) )) case )) (tail(
-         (let r1 (infer-type-definition( base-type tds )))
+         (let r1 (infer-type-definition( base-type tds (+( case-number 1_u64 )) )))
          (let r2 (infer-type-constructor( base-type case )))
          (set r (max( r1 r2 )))
       )))
-      ( case (
+      ( case (tail(
          (set r (infer-type-constructor( base-type case )))
-      ))
+         (if (==( case-number 0_u64 )) (tail(
+            (let tag '_s)
+            (match case (
+               ()
+               ( (Lit( tg _ )) (set tag tg) )
+               ( (App( (Lit( tg _ )) args )) (set tag tg) )
+               ( _ () )
+            ))
+            (if (head-string tag) (
+               (match base-type (
+                  ()
+                  ( (TGround( cls _ )) (
+                     (has-only-child( cls tag ))
+                  ))
+               ))
+            ) ())
+         )) ())
+      )))
    ))
    r
 )) U64);
@@ -1650,7 +1706,7 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
             ))
          )))
          (index-class-of-tag( tag base-type ))
-         (index-fields-of-tag( tag TAny ))
+         (index-fields-of-tag( tag TAny (t1 'Nil_s) ))
          (.bind( (as (& type-constructors-index) BTreeEq<String,Type>[]) tag rtype ))
          (set r 8_u64)
       )))
@@ -1669,7 +1725,7 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
          (annotate-head-accessor( base-type ))
          (annotate-accessors( base-type (t2( 'Tag_s (parse-type tag) )) atype ))
          (index-class-of-tag( tag base-type ))
-         (index-fields-of-tag( tag (t3( 'Cons_s base-type atype )) ))
+         (index-fields-of-tag( tag base-type atype ))
          (.bind( (as (& type-constructors-index) BTreeEq<String,Type>[]) tag (t3( 'Arrow_s atype rtype )) ))
          (set r (sizeof-aligned atype))
          (set r (+( r 8_u64 )))
@@ -1735,7 +1791,7 @@ infer-global-context := λ(: td AST). (: (
       ()
       ( (Typedef( (Lit( base-type _ )) case-constructors )) (tail(
          (let bt (parse-type base-type))
-         (let size (infer-type-definition( bt case-constructors )))
+         (let size (infer-type-definition( bt case-constructors 0_u64 )))
          (match bt (
             ()
             ( (TGround( class TypeEOF )) (index-size-of-class( class size )) )
