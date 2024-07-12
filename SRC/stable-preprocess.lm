@@ -463,14 +463,14 @@ apply := λ(: ctx Context)(: term AST). (: (tail(
 
 try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (tail(
    (let r CtxEOF)
-   (match (Pair( lhs term )) (
+   (match (Tuple( lhs term )) (
       ()
-      ( (Pair( ASTNil ASTNil )) (set r CtxNil) )
-      ( (Pair( (App( (App( (Var( _ _ )) (Var( _ _ )) )) (Var( _ _ )) )) (App( (App( (Lit( _ _ )) _ )) _ )) )) () )
-      ( (Pair( (App( (Lit( ':Literal:_s _ )) (Var( pv _ )) )) (App( (Lit( ':_s ctk )) (App( (Lit( _ _ )) (AType _) )) )) )) (
+      ( (Tuple( ASTNil ASTNil )) (set r CtxNil) )
+      ( (Tuple( (App( (App( (Var( _ _ )) (Var( _ _ )) )) (Var( _ _ )) )) (App( (App( (Lit( _ _ )) _ )) _ )) )) () )
+      ( (Tuple( (App( (Lit( ':Literal:_s _ )) (Var( pv _ )) )) (App( (Lit( ':_s ctk )) (App( (Lit( _ _ )) (AType _) )) )) )) (
          (set r (CtxBind( (close CtxNil) pv (relocate( term (location-of ctk) )) )))
       ))
-      ( (Pair( (App(pl pr)) (App(el er)) )) (tail(
+      ( (Tuple( (App(pl pr)) (App(el er)) )) (tail(
          (let ll (try-destructure-macro( loc pl el )))
          (if (non-zero ll) (tail(
             (let rl (try-destructure-macro( loc pr er )))
@@ -479,7 +479,7 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (ta
             ) ())
          )) ())
       )))
-      ( (Pair( (Abs(pl pr ptlt)) (Abs(el er etlt)) )) (tail(
+      ( (Tuple( (Abs(pl pr ptlt)) (Abs(el er etlt)) )) (tail(
          (let ll (try-destructure-macro( loc pl el )))
          (if (non-zero ll) (tail(
             (let rl (try-destructure-macro( loc pr er )))
@@ -488,28 +488,28 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (ta
             ) ())
          )) ())
       )))
-      ( (Pair( (Lit( ':Any:_s _ )) (Var( '__s _ )) )) (
+      ( (Tuple( (Lit( ':Any:_s _ )) (Var( '__s _ )) )) (
          (set r CtxNil)
       ))
-      ( (Pair( (Lit( pl _ )) (Var( el _ )) )) (
+      ( (Tuple( (Lit( pl _ )) (Var( el _ )) )) (
          (if (==( pl el )) (set r CtxNil) ())
       ))
-      ( (Pair( (Lit( pl _ )) (Lit( el _ )) )) (
+      ( (Tuple( (Lit( pl _ )) (Lit( el _ )) )) (
          (if (==( pl el )) (set r CtxNil) ())
       ))
-      ( (Pair( (App( (Lit( ':Literal:_s _ )) (Var( pv _ )) )) (Lit( el eltk )) )) (
+      ( (Tuple( (App( (Lit( ':Literal:_s _ )) (Var( pv _ )) )) (Lit( el eltk )) )) (
          (if (==( (index-of-tag el) unknown-index-of-tag ))
              (set r (CtxBind( (close CtxNil) pv (relocate( term (location-of eltk) )) )))
              ()
          )
       ))
-      ( (Pair( (App( (Lit( ':Variable:_s _ )) _ )) (Var( '__s _ )) )) (
+      ( (Tuple( (App( (Lit( ':Variable:_s _ )) _ )) (Var( '__s _ )) )) (
          ()
       ))
-      ( (Pair( (App( (Lit( ':Variable:_s _ )) (Var( pv _ )) )) (Var( el eltk )) )) (
+      ( (Tuple( (App( (Lit( ':Variable:_s _ )) (Var( pv _ )) )) (Var( el eltk )) )) (
          (set r (CtxBind( (close CtxNil) pv (relocate( term (location-of eltk) )) )))
       ))
-      ( (Pair( (App( (App( (Lit( ':Tag:_s _ )) (Var( pv _ )) )) (Var( pt _ )) )) (Lit( el eltk )) )) (
+      ( (Tuple( (App( (App( (Lit( ':Tag:_s _ )) (Var( pv _ )) )) (Var( pt _ )) )) (Lit( el eltk )) )) (
          (if (==( (index-of-tag el) unknown-index-of-tag )) () (tail(
             (set r CtxNil)
             (let tag-i (to-string(index-of-tag el)))
@@ -532,7 +532,7 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (ta
             (set r (CtxBind( (close r) pt (Lit( tag-tt (with-key( eltk tag-tt )) )) )))
          )))
       ))
-      ( (Pair( (Var( pv _ )) t )) (
+      ( (Tuple( (Var( pv _ )) t )) (
          (set r (CtxBind( (close CtxNil) pv (relocate( term (location-of t) )) )))
       ))
       ( _ () )
