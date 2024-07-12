@@ -459,7 +459,19 @@ union := λ(: lctx TContext)(: rctx TContext). (: (tail(
 )) TContext);
 
 with-tag := λ(: tt Type). (: (tail(
-   ()
+   (let cls-tt (with-only-class tt))
+   (if (non-zero cls-tt) (
+      (match cls-tt (
+         ()
+         ( (TGround( cls _ )) (tail(
+            (let tag (get-only-child cls))
+            (if (head-string tag) (
+               (set tt (and( tt (t2( 'Tag_s (t1 tag) )) )))
+            ) ())
+         )))
+         ( _ () )
+      ))
+   ) ())
    tt
 )) Type);
 
@@ -522,9 +534,10 @@ with-only-tag := λ(: tt Type). (: (tail(
       ()
       ( (TAnd( lt1 rt1 )) (tail(
          (let lc (with-only-tag lt1))
-         (if (non-zero lc) (set rt lc) ())
-         (let rc (with-only-tag rt1))
-         (if (non-zero rc) (set rt rc) ())
+         (if (non-zero lc) (set rt lc) (tail(
+            (let rc (with-only-tag rt1))
+            (if (non-zero rc) (set rt rc) ())
+         )))
       )))
       ( (TGround( 'Tag_s _ )) (set rt tt) )
       ( _ () )
@@ -728,8 +741,7 @@ without-size-unless-class-inner := λ(: tt Type). (: (tail(
 normalize := λ(: tt Type). (: (tail(
    (let rt tt)
    (set rt (without-representation rt))
-   (set rt (without-tag rt)) # removes this information, if it is potentially surprising
-   (set rt (with-tag rt))    # adds back information if it is not surprising
+   (set rt (without-tag rt))
    # Sized can serve as a datatype if nothing else is available
    (set rt (without-size-unless-class rt))
    rt
@@ -1099,6 +1111,9 @@ fields-of-tag := λ(: tag Type)(: class Type). (: (tail(
          ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF fields-lhs )) fields-rhs )) )) (
             (set rhst (substitute( (unify( fields-lhs class )) fields-rhs )))
          ))
+         ( fields-tt (tail(
+            (print 'Invalid\sField\sRHS\s_s)(print fields-tt)(print '\sfor\stag\s_s)(print tag)(print '\n_s)
+         )))
       )))
       ( _ (tail(
          (print 'Invalid\sTag\sIn\sfields-of-tag\s_s)
@@ -1233,8 +1248,10 @@ ascript-normal := λ(: t AST)(: tt Type). (: (
             )))
          )))
       ) (tail(
-         (let sized-tt (with-size tt))
-         (ascript( t sized-tt ))
+         (set tt (with-size tt))
+         (set tt (with-tag tt))
+         (set tt (with-fields tt))
+         (ascript( t tt ))
          (set types-have-changed True_u8)
       )))
    )) ())
@@ -1424,6 +1441,10 @@ with-size-recurse := λ(: tt Type). (: (tail(
             (with-size-recurse rt)
          )))
       ))
+      ( (TGround( 'Tag_s _ )) () )
+      ( (TGround( 'Sized_s _ )) () )
+      ( (TGround( 'Fields_s _ )) () )
+      ( (TGround( 'FieldsSized_s _ )) () )
       ( (TGround( tag ps )) (
          (set tt (TGround( tag (close(with-size ps)) )))
       ))
