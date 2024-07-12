@@ -6,7 +6,7 @@ tag-to-class-index := (: BTreeEqEOF BTreeEq<String,Type>);
 class-to-yes-index := (: BTreeEqEOF BTreeEq<String,U64>);
 
 # global Tag -> Fields map, mutable
-tag-to-fields-index := (: BTreeEqEOF BTreeEq<String,Type>);
+tag-to-fields-index := (: BTreeEqEOF BTreeEq<String,Tuple<Type,Type>>);
 
 # global Tag -> IsFragment? map, mutable
 tag-is-fragment-index := (: BTreeEqEOF BTreeEq<String,U64>);
@@ -135,15 +135,14 @@ is-class := λ(: tag String). (: (tail(
    r
 )) U64);
 
-index-fields-of-tag := λ(: tag String)(: fields Type). (: (tail(
-   (print 'Index\s_s)(print tag)(print '\n_s)
-   (.bind( (as (& tag-to-fields-index) BTreeEq<String,Type>[]) tag fields ))
-)) Nil);
+index-fields-of-tag := λ(: tag String)(: fields-params Type)(: fields-rhs Type). (: (
+   (.bind( (as (& tag-to-fields-index) BTreeEq<String,Tuple<Type,Type>>[]) tag (Pair( fields-params fields-rhs )) ))
+) Nil);
 
 fields-of-tag := λ(: tag String). (: (tail(
-   (let r (.lookup( tag-to-fields-index tag TAny )))
+   (let r (.lookup( tag-to-fields-index tag (Pair( TAny TAny )) )))
    r
-)) Type);
+)) Tuple<Type,Type>);
 
 slot := λ(: tt Type)(: sl String). (: (tail(
    (let rt TAny)
@@ -493,6 +492,8 @@ without-tag := λ(: tt Type). (: (tail(
       )))
       ( (TGround( 'Constructor_s _ )) (set tt TAny) )
       ( (TGround( 'Tag_s _ )) (set tt TAny) )
+      ( (TGround( 'Fields_s _ )) (set tt TAny) )
+      ( (TGround( 'FieldsSized_s _ )) (set tt TAny) )
       ( _ () )
    ))
    tt
@@ -1109,7 +1110,8 @@ fields-of-tag := λ(: tag Type)(: class Type). (: (tail(
       ()
       ( (TGround( 'Tag_s (TypeSeq( TypeEOF (TGround( ts _ )) )) )) (match (fields-of-tag ts) (
          ()
-         ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF fields-lhs )) fields-rhs )) )) (
+         ( (Pair( TAny TAny )) () )
+         ( (Pair( fields-lhs fields-rhs )) (
             (set rhst (substitute( (unify( fields-lhs class )) fields-rhs )))
          ))
       )))
@@ -1704,7 +1706,7 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
             ))
          )))
          (index-class-of-tag( tag base-type ))
-         (index-fields-of-tag( tag (t1 'Nil_s) ))
+         (index-fields-of-tag( tag TAny (t1 'Nil_s) ))
          (.bind( (as (& type-constructors-index) BTreeEq<String,Type>[]) tag rtype ))
          (set r 8_u64)
       )))
@@ -1723,7 +1725,7 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
          (annotate-head-accessor( base-type ))
          (annotate-accessors( base-type (t2( 'Tag_s (parse-type tag) )) atype ))
          (index-class-of-tag( tag base-type ))
-         (index-fields-of-tag( tag (t3( 'Cons_s base-type atype )) ))
+         (index-fields-of-tag( tag base-type atype ))
          (.bind( (as (& type-constructors-index) BTreeEq<String,Type>[]) tag (t3( 'Arrow_s atype rtype )) ))
          (set r (sizeof-aligned atype))
          (set r (+( r 8_u64 )))
