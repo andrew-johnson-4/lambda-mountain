@@ -132,8 +132,8 @@ fn regression_tests() {
    }
    for (mode,path,expected,actual) in &failures {
       eprintln!("TEST {} {}", mode, path);
-      eprintln!("Expected: '{}'", &expected[..std::cmp::min(400,expected.len())] );
-      eprintln!("Actual: '{}'", &actual[..std::cmp::min(400,actual.len())] );
+      eprintln!("Expected: '{}'", &expected[..std::cmp::min(4000,expected.len())] );
+      eprintln!("Actual: '{}'", &actual[..std::cmp::min(4000,actual.len())] );
    }
    assert_eq!( failures.len(), 0 );
 }
