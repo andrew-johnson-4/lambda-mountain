@@ -9,7 +9,7 @@ f := λ(: x U64)(: y U64). (: (tail(
    (print 'F1_s)
    (let xyz (Z( (Y( x )) y )))
    (print (.0 xyz))
-   (print (.1 (as xyz Tag<Z>)))
+   (print (.1 xyz))
    (let xy (.2 (as xyz Tag<Z>)))
    (print (.0 xy))
    (print (.1(as xy Tag<Y>)))
