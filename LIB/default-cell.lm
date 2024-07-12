@@ -1,0 +1,16 @@
+
+type Cell<x> (Cell( x[] ));
+
+cell := λ(: x x). (: (tail(
+   (let c (Cell( (close x) )))
+   c
+)) Cell<x>);
+
+deref := λ(: c Cell<x>). (: (tail(
+   (let x (maybe-deref (.1 c)))
+   x
+)) x);
+
+set[] := λ(: c Cell<x>)(: x x). (: (
+   (set[]( (.1 c) 0_u64 x ))
+) Nil);
