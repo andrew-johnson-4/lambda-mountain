@@ -14,6 +14,9 @@ tag-is-fragment-index := (: BTreeEqEOF BTreeEq<String,U64>);
 # global Class -> Size map, mutable
 class-to-size-index := (: BTreeEqEOF BTreeEq<String,U64>);
 
+# global Class -> Tag map, mutable
+class-to-only-child := (: BTreeEqEOF BTreeEq<String,String>);
+
 # global Tag -> Index map, mutable
 tag-to-index-index := (: BTreeEqEOF BTreeEq<String,U64>);
 unknown-index-of-tag := 99999_u64;
@@ -28,6 +31,15 @@ type-complex-fields-index := (: BTreeEqEOF BTreeEq<String,Tuple<Type,Type>>);
 types-have-changed := True_u8;
 
 global-symbol-registry := (: BTreeEqEOF BTreeEq<Tuple<String,Type>,U64>);
+
+has-only-child := λ(: class String)(: tag String). (: (
+   (.bind( (as (& class-to-only-child) BTreeEq<String,String>[]) class tag ))
+) Nil);
+
+get-only-child := λ(: class String). (: (tail(
+   (let r (.lookup( class-to-only-child class '_s )))
+   r
+)) String);
 
 mark-global-as-seen := λ(: name String)(: tt Type). (: (
    (if (global-is-seen( name tt )) (tail(
@@ -446,6 +458,11 @@ union := λ(: lctx TContext)(: rctx TContext). (: (tail(
    lctx
 )) TContext);
 
+with-tag := λ(: tt Type). (: (tail(
+   ()
+   tt
+)) Type);
+
 without-tag := λ(: tt Type). (: (tail(
    (match tt (
       ()
@@ -711,7 +728,8 @@ without-size-unless-class-inner := λ(: tt Type). (: (tail(
 normalize := λ(: tt Type). (: (tail(
    (let rt tt)
    (set rt (without-representation rt))
-   (set rt (without-tag rt))
+   (set rt (without-tag rt)) # removes this information, if it is potentially surprising
+   (set rt (with-tag rt))    # adds back information if it is not surprising
    # Sized can serve as a datatype if nothing else is available
    (set rt (without-size-unless-class rt))
    rt
