@@ -318,24 +318,24 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (tail(
 )) Nil);
 
 compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used IsUsed). (: (tail(
-   (let e (maybe-deref(fragment::new())))
-   (set e (maybe-deref(fragment::set-context( e ctx ))))
-   (set e (maybe-deref(fragment::set-offset( e stack-offset ))))
+   (let e (fragment::new()))
+   (set e (fragment::set-context( e ctx )))
+   (set e (fragment::set-offset( e stack-offset )))
    (match term (
       ()
       ( ASTNil () )
       ( ASTEOF () )
       ( (Var( id _ )) (tail(
-         (set e (maybe-deref(fragment-context::lookup( ctx id (maybe-deref(typeof term)) term ))))
-         (set e (maybe-deref(fragment::set-context( e ctx ))))
-         (set e (maybe-deref(fragment::set-offset( e stack-offset ))))
+         (set e (fragment-context::lookup( ctx id (typeof term) term )))
+         (set e (fragment::set-context( e ctx )))
+         (set e (fragment::set-offset( e stack-offset )))
       )))
       ( (Lit( val _ )) (tail(
-         (let ltype (maybe-deref(typeof term)))
+         (let ltype (typeof term))
          (match (slot( ltype 'String_s )) (
             ()
             ( (TGround( 'String_s _ )) (
-               (set e (maybe-deref(compile-declare-cstring( val ))))
+               (set e (compile-declare-cstring( val )))
             ))
             ( _ (tail(
                (let isa-fragment False_u8)
@@ -360,33 +360,33 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                   ( _ () )
                ))
                (if (==( isa-fragment True_u8 )) (
-                  (set e (maybe-deref(fragment::expression val)))
+                  (set e (fragment::expression val))
                ) (
                   (if (non-zero(class-of-tag val)) (tail(
                      (let tag-index (index-of-tag val))
-                     (set e (maybe-deref(fragment::expression(to-string tag-index))))
-                     (set e (maybe-deref(fragment::set( e 'program_s (SCons( (close SNil) (close SNil) )) ))))
+                     (set e (fragment::expression(to-string tag-index)))
+                     (set e (fragment::set( e 'program_s (SCons( (close SNil) (close SNil) )) )))
                   )) (
                      (match val (
                         ()
-                        ( 'True_s (tail( (let e1 (maybe-deref(fragment::expression '1_s))) (set e e1) )))
-                        ( 'False_s (tail( (let e1 (maybe-deref(fragment::expression '0_s))) (set e e1) )))
-                        ( '\\t_s (tail( (let e1 (maybe-deref(fragment::expression '9_s))) (set e e1) )))
-                        ( '\\n_s (tail( (let e1 (maybe-deref(fragment::expression '10_s))) (set e e1) )))
-                        ( '\\s_s (tail( (let e1 (maybe-deref(fragment::expression '32_s))) (set e e1) )))
-                        ( '\\o_s (tail( (let e1 (maybe-deref(fragment::expression '35_s))) (set e e1) )))
-                        ( '\\`_s (tail( (let e1 (maybe-deref(fragment::expression '39_s))) (set e e1) )))
-                        ( '\\[_s (tail( (let e1 (maybe-deref(fragment::expression '40_s))) (set e e1) )))
-                        ( '\\]_s (tail( (let e1 (maybe-deref(fragment::expression '41_s))) (set e e1) )))
-                        ( '\\:_s (tail( (let e1 (maybe-deref(fragment::expression '59_s))) (set e e1) )))
-                        ( _ (tail( (let e1 (maybe-deref(fragment::expression val))) (set e e1) )))
+                        ( 'True_s (set e (fragment::expression '1_s)) )
+                        ( 'False_s (set e (fragment::expression '0_s)) )
+                        ( '\\t_s (set e (fragment::expression '9_s)) )
+                        ( '\\n_s (set e (fragment::expression '10_s)) )
+                        ( '\\s_s (set e (fragment::expression '32_s)) )
+                        ( '\\o_s (set e (fragment::expression '35_s)) )
+                        ( '\\`_s (set e (fragment::expression '39_s)) )
+                        ( '\\[_s (set e (fragment::expression '40_s)) )
+                        ( '\\]_s (set e (fragment::expression '41_s)) )
+                        ( '\\:_s (set e (fragment::expression '59_s)) )
+                        ( _ (set e (fragment::expression val)) )
                      ))
                   ))
                ))
             )))
          ))
-         (let e-2 (maybe-deref(fragment::set-context( e ctx ))))(set e e-2)
-         (let e-3 (maybe-deref(fragment::set-type( e ltype ))))(set e e-3)
+         (set e (fragment::set-context( e ctx )))
+         (set e (fragment::set-type( e ltype )))
       )))
       ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset used ))))
