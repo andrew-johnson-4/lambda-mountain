@@ -405,8 +405,8 @@ clone-rope-impl := λ(: s S). (: (match s (
    ()
    ( SNil () )
    ( (SCons( l r )) (tail(
-      (clone-rope-impl (maybe-deref l))
-      (clone-rope-impl (maybe-deref r))
+      (clone-rope-impl (open l))
+      (clone-rope-impl (open r))
    )))
    ( (SAtom a) (tail(
       (let ci 0_u64)
