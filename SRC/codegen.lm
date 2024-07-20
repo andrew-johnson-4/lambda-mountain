@@ -421,41 +421,6 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
    e
 )) Fragment);
 
-compile-destructure-args := λ(: tt Type)(: ctx FContext)(: lhs AST)(: offset I64). (: (tail(
-   (match lhs (
-      ()
-      ( (App( rst (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) )) (
-         (match (slot( tt 'Cons_s )) (
-            ()
-            ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF rst-tt )) p2 )) )) (tail(
-               (let new-ctx-2 (maybe-deref(compile-destructure-args( rst-tt ctx rst offset ))))
-               (let rst-sz (sizeof-aligned rst-tt))
-               (let rst-offset (-( offset (as rst-sz I64) )))
-               (let kt-2 (TAnd( (close kt) (close(t1 'LocalVariable_s)) )))(set kt kt-2)
-               (let sz (sizeof-aligned kt))
-               (let new-offset (-( rst-offset (as sz I64) )))
-               (let new-ctx (maybe-deref(fragment-context::bind(
-                  new-ctx-2 k kt (maybe-deref(fragment::local-variable( new-offset kt )))
-               ))))
-               (set ctx new-ctx)
-            )))
-            ( _ (exit-error( 'Destructure\sExpected\sCons_s lhs )))
-         ))
-      ))
-      ( (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) (tail(
-         (let kt-2 (TAnd( (close kt) (close(t1 'LocalVariable_s)) )))(set kt kt-2)
-         (let sz (sizeof-aligned kt))
-         (let new-offset (-( offset (as sz I64) )))
-         (let new-ctx (maybe-deref(fragment-context::bind(
-            ctx k kt (maybe-deref(fragment::local-variable( new-offset kt )))
-         ))))
-         (set ctx new-ctx)
-      )))
-      ( _ () )
-   ))
-   ctx
-)) FContext);
-
 compile-stack-call := λ(: ctx FContext)(: function-name String)(: return-type Type)(: args AST)(: offset I64)(: used IsUsed). (: (tail(
    (let f (maybe-deref(fragment-context::lookup( ctx function-name (maybe-deref(typeof args)) args ))))
    (let function-type (maybe-deref(fragment::get-type f)))

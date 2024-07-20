@@ -54,3 +54,35 @@ compile-stack-call-push-args := λ(: ctx FContext)(: args AST)(: inner-offset I6
    (let r (compile-push-rvalue( ctx args stack-offset )))
    r
 )) Fragment);
+
+compile-destructure-args := λ(: tt Type)(: ctx FContext)(: lhs AST)(: offset I64). (: (tail(
+   (match lhs (
+      ()
+      ( (App( rst (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) )) (
+         (match (slot( tt 'Cons_s )) (
+            ()
+            ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF rst-tt )) p2 )) )) (tail(
+               (set ctx (compile-destructure-args( rst-tt ctx rst offset )))
+               (let rst-sz (sizeof-aligned rst-tt))
+               (let rst-offset (-( offset (as rst-sz I64) )))
+               (set kt (and( kt (t1 'LocalVariable_s) )))
+               (let sz (sizeof-aligned kt))
+               (let new-offset (-( rst-offset (as sz I64) )))
+               (set ctx (fragment-context::bind(
+                  ctx k kt (fragment::local-variable( new-offset kt ))
+               )))
+            )))
+         ))
+      ))
+      ( (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) (tail(
+         (set kt (and( kt (t1 'LocalVariable_s) )))
+         (let sz (sizeof-aligned kt))
+         (let new-offset (-( offset (as sz I64) )))
+         (set ctx (fragment-context::bind(
+            ctx k kt (fragment::local-variable( new-offset kt ))
+         )))
+      )))
+      ( _ () )
+   ))
+   ctx
+)) FContext);
