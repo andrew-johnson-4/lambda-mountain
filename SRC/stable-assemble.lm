@@ -70,22 +70,17 @@ compile := λ(). (: (tail(
          (set preview-program rst)
       )))
       ( (Seq( rst (Frg( k_t rhs _ )) )) (tail(
-         (let fragment (maybe-deref(fragment::new())))
-         (let fragment-2 (maybe-deref(fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))
-         (let fragment-3 (maybe-deref(fragment::set( fragment-2 'fragment_s (maybe-deref(to-s rhs)) ))))
-         (let fragment-4 (maybe-deref(fragment::set-type( fragment-3 (maybe-deref(typeof rhs)) ))))
-         (let global-ctx-2 (maybe-deref(fragment-context::bind(
-            global-ctx
-            k
-            (maybe-deref(typeof rhs))
-            fragment-4
-         ))))
-         (set global-ctx global-ctx-2)
+         (let fragment (fragment::new()))
+         (set fragment (fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) )))
+         (set fragment (fragment::set( fragment 'fragment_s (to-s rhs) )))
+         (set fragment (fragment::set-type( fragment (typeof rhs) )))
+         (set global-ctx (fragment-context::bind(
+            global-ctx k (typeof rhs) fragment
+         )))
          (set preview-program rst)
       )))
       ( (Seq( rst (Typedef( lhs rhs )) )) (tail(
-         (let global-ctx-2 (maybe-deref(compile-type( global-ctx lhs rhs ))))
-         (set global-ctx global-ctx-2)
+         (set global-ctx (compile-type( global-ctx lhs rhs )))
          (set preview-program rst)
       )))
       ( (Seq( rst _ )) (
@@ -121,42 +116,42 @@ compile-program-ordered := λ(: global-ctx FContext)(: program AST). (: (tail(
 
 compile-type := λ(: ctx FContext)(: lhs AST)(: rhs AST). (: (tail(
    (let def rhs)
-   (let base-type (maybe-deref(type-of-s( lhs ))))
+   (let base-type (type-of-s( lhs )))
    (let case-number 0_u64)
    (if (is-fragment base-type) () (
       (while (non-zero def) (match def (
          ()
          ( (App( (App( tds (Var( '|_s _ )) )) body )) (tail(
-            (let ctx-2 (maybe-deref(compile-type-case( ctx base-type body case-number ))))(set ctx ctx-2)
+            (set ctx (compile-type-case( ctx base-type body case-number )))
             (set case-number (+( case-number 1_u64 )))
             (set def tds)
          )))
          ( body (tail(
-            (let ctx-2 (maybe-deref(compile-type-case( ctx base-type body case-number ))))(set ctx ctx-2)
+            (set ctx (compile-type-case( ctx base-type body case-number )))
             (set case-number (+( case-number 1_u64 )))
             (set def ASTEOF)
          ))) 
       )))
    ))
-   (close ctx)
-)) FContext[]);
+   ctx
+)) FContext);
 
 compile-type-case := λ(: ctx FContext)(: base-type Type)(: rhs AST)(: case-number U64). (: (tail(
    (match rhs (
       ()
       ( (Lit( tag _ )) (tail(
          (let rtype (TAnd( (close base-type) (close(parse-type tag)) )) )
-         (let ctx-3 (maybe-deref(compile-define-tag-constructor( ctx tag TAny base-type rtype case-number ))))(set ctx ctx-3)
+         (set ctx (compile-define-tag-constructor( ctx tag TAny base-type rtype case-number )))
       )))
       ( (App( (Lit( tag _ )) args )) (tail(
          (let atype (maybe-deref(type-of-s args)))
          (let rtype (TAnd( (close base-type) (close(parse-type tag)) )))
-         (let ctx-3 (maybe-deref(compile-define-tag-constructor( ctx tag atype base-type rtype case-number ))))(set ctx ctx-3)
+         (set ctx (compile-define-tag-constructor( ctx tag atype base-type rtype case-number )))
       )))
       ( _ () )
    ))
-   (close ctx)
-)) FContext[]);
+   ctx
+)) FContext);
 
 compile-define-tag-constructor := λ(: ctx FContext)(: tag String)(: arg-types Type)(: base-type Type)(: rtype Type)(: case-number U64). (: (tail(
    (let tg (and( (t2( 'Constructor_s (t1 tag) )) (and( (t2( 'Sized_s (t1 '0_s) )) (t2( 'FieldsSized_s (t1 '0_s) )) )) )))
@@ -203,8 +198,8 @@ compile-define-tag-constructor := λ(: ctx FContext)(: tag String)(: arg-types T
       ctx 'mov_s arrow-tt fragment
    ))))
 
-   (close ctx)
-)) FContext[]);
+   ctx
+)) FContext);
 
 compile-finish := λ. (: (tail(
    (let output SNil)
