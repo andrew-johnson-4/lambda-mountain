@@ -132,7 +132,7 @@ tokenize := λ(: fp String). (: (tail(
    (let current-column 1_u64)
    (let token-line 1_u64)
    (let token-column 1_u64)
-   (let parens-counter 0_u64)
+   (let parens-counter 0_i64)
    (while (head-string text) (tail(
       (match (head-string text) (
          ()
@@ -206,7 +206,7 @@ tokenize := λ(: fp String). (: (tail(
                )))
                (set buffer SNil)
             )) ())
-            (set parens-counter (+( parens-counter 1_u64 )))
+            (set parens-counter (+( parens-counter 1_i64 )))
             (let tk-2 (Token( '\[_s (iuid()) (SourceLocation( fp token-line token-column )) )))
             (set ast-tokenized-program (LCons(
                tk-2
@@ -224,7 +224,7 @@ tokenize := λ(: fp String). (: (tail(
                )))
                (set buffer SNil)
             )) ())
-            (set parens-counter (-( parens-counter 1_u64 )))
+            (set parens-counter (-( parens-counter 1_i64 )))
             (let tk-2 (Token( '\]_s (iuid()) (SourceLocation( fp token-line token-column )) )))
             (set ast-tokenized-program (LCons(
                tk-2
@@ -288,7 +288,7 @@ tokenize := λ(: fp String). (: (tail(
       )))
    )) ())
 
-   (if (==( parens-counter 0_u64 )) () (tail(
+   (if (==( parens-counter 0_i64 )) () (tail(
       (eprint 'Hanging\sParentheses\sIn\sFile:\s_s)
       (eprint fp)
       (eprint '\sCount:\s_s)
