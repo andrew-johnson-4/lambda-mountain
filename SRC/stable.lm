@@ -12,4 +12,6 @@ import SRC/stable-context.lm;
 import SRC/stable-index.lm;
 import SRC/stable-cli.lm;
 import SRC/stable-codegen.lm;
+import SRC/stable-data.lm;
+import SRC/stable-assemble.lm;
 

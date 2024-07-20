@@ -24,3 +24,694 @@ translate-local-variables := λ(: ctx FContext)(: delta I64). (: (tail(
    ))
    ctx
 )) FContext);
+
+compile-expr := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used IsUsed). (: (tail(
+   (let e (fragment::new()))
+   (match used (
+      ()
+      ( Return (tail(
+         (set e (compile-expr-direct( ctx term stack-offset Used )))
+         (let term-tt (typeof term))
+         (if (==( (sizeof-type term-tt) 0_u64 )) () (
+            (set e (fragment-apply( ctx stack-offset 'cdecl::return_s
+               (FLSeq( (close FLEOF) e ))
+               (typeof term)
+               term
+            )))
+         ))
+      )))
+      ( _ (
+         (set e (compile-expr-direct( ctx term stack-offset used )))
+      ))
+   ))
+   e
+)) Fragment);
+
+compile-stack-call-push-args := λ(: ctx FContext)(: args AST)(: inner-offset I64). (: (tail(
+   (let stack-offset 0_i64)
+   (let translate-delta (-( 8_i64 inner-offset )))
+   (set ctx (translate-local-variables( ctx translate-delta )))
+   (let r (compile-push-rvalue( ctx args stack-offset )))
+   r
+)) Fragment);
+
+compile-destructure-args := λ(: tt Type)(: ctx FContext)(: lhs AST)(: offset I64). (: (tail(
+   (match lhs (
+      ()
+      ( (App( rst (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) )) (
+         (match (slot( tt 'Cons_s )) (
+            ()
+            ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF rst-tt )) p2 )) )) (tail(
+               (set ctx (compile-destructure-args( rst-tt ctx rst offset )))
+               (let rst-sz (sizeof-aligned rst-tt))
+               (let rst-offset (-( offset (as rst-sz I64) )))
+               (set kt (and( kt (t1 'LocalVariable_s) )))
+               (let sz (sizeof-aligned kt))
+               (let new-offset (-( rst-offset (as sz I64) )))
+               (set ctx (fragment-context::bind(
+                  ctx k kt (fragment::local-variable( new-offset kt ))
+               )))
+            )))
+         ))
+      ))
+      ( (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) (tail(
+         (set kt (and( kt (t1 'LocalVariable_s) )))
+         (let sz (sizeof-aligned kt))
+         (let new-offset (-( offset (as sz I64) )))
+         (set ctx (fragment-context::bind(
+            ctx k kt (fragment::local-variable( new-offset kt ))
+         )))
+      )))
+      ( _ () )
+   ))
+   ctx
+)) FContext);
+
+as-branch-conditional := λ(: f Fragment). (: (tail(
+   (let ft (fragment::get-type f))
+   (match (slot( ft 'BranchConditional_s )) (
+      ()
+      ( (TGround( 'BranchConditional_s _ )) () )
+      ( _ (tail(
+         (set f (fragment::set-type( f (t1 'BranchConditional_s) )))
+         (set f (fragment::set( f 'expression_s (SAtom 'jne_s) )))
+         (set f (fragment::set( f 'program_s
+            (SCons(
+               (close(fragment::get( f 'program_s )))
+               (close(SAtom '\tcmp\s$0,\s%rax\n_s))
+            ))
+         )))
+      )))
+   ))
+   f
+)) Fragment);
+
+cstring-cache := (: SSEOF StringStringList);
+compile-declare-cstring := λ(: val String). (: (tail(
+   (let cache cstring-cache)
+   (let id '_s)
+   (while (non-zero cache) (match cache (
+      ()
+      ( (SSSeq( rst k v )) (
+         (if (==( k val )) (tail(
+            (set id v)
+            (set cache SSEOF)
+         )) (set cache rst))
+      ))
+   )))
+   (if (head-string id) () (tail(
+      (set id (uuid()))
+      (set assemble-data-section (SCons( (close assemble-data-section) (close(SAtom id)) )))
+      (set assemble-data-section (SCons( (close assemble-data-section) (close(SAtom ':\n\t.ascii\s"_s)) )))
+      (set assemble-data-section (SCons( (close assemble-data-section) (close(SAtom( escape-literal val ))) )))
+      (set assemble-data-section (SCons( (close assemble-data-section) (close(SAtom '"\n\t.zero\s1\n_s)) )))
+      (set cstring-cache (SSSeq(
+         (close cstring-cache) val id
+      )))
+   )))
+   (let r (fragment::new()))
+   (set r (fragment::set( r 'expression_s (SAtom id) )))
+   r
+)) Fragment);
+
+compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)(: args-type Type)(: args AST)(: offset I64). (: (tail(
+   (let whitespace-sz (-( (-( (sizeof-aligned return-type) (sizeof-aligned args-type) )) 8_u64 )))
+   (let e (compile-push-rvalue( ctx args (-( offset (as whitespace-sz I64) )) )))
+   (let constructor-parms (and(
+      (t2( 'Constructor_s (t1 tag-name) ))
+      (and(
+         (t2( 'Sized_s (t1(to-string(sizeof-aligned return-type))) ))
+         (t2( 'FieldsSized_s (t1(to-string(sizeof-aligned args-type))) ))
+      ))
+   )))
+   (set e (fragment::set-type( e constructor-parms )))
+   (let r (fragment-apply(
+      ctx offset 'push_s
+      (FLSeq( (close FLEOF) e )) (t3( 'Arrow_s constructor-parms return-type )) args
+   )))
+   (set r (fragment::set-context( r ctx )))
+   (set r (fragment::set-type( r return-type )))
+   (let new-offset (-( offset (as (sizeof-type return-type) I64) )))
+   (set r (fragment::set-offset( r new-offset )))
+   r
+)) Fragment);
+
+compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
+   (let r (fragment::new()))
+   (match (slot( (typeof rval) 'Cons_s )) (
+      ()
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (match rval (
+            ()
+            ( (App( le re )) (tail(
+               (let e1 (compile-push-rvalue( ctx le offset )))
+               (let e2 (compile-expr( ctx re (fragment::get-offset e1) Used )))
+               (set e2 (compile-maybe-push-stack( ctx (fragment::get-offset e2) e2 p2 rval )))
+               (let sz (sizeof-type(typeof rval)))
+               (set e2 (fragment::set-offset( e2 (-( offset (as sz I64) )) )))
+               (set r (fragment::chain( e1 e2 )))
+            )))
+         ))
+      ))
+      ( _ (tail(
+         (let sz (sizeof-type(typeof rval)))
+         (if (==( sz 0_u64 )) (tail(
+            (set r (fragment::set-context( r ctx )))
+            (set r (fragment::set-offset( r offset )))
+            (set r (fragment::set( r 'program_s (SCons( (close SNil) (close SNil) )) )))
+         )) (tail(
+            (set r (compile-expr( ctx rval offset Used )))
+            (set r (compile-maybe-push-stack( ctx (fragment::get-offset r) r (typeof rval) rval )))
+            (set r (fragment::set-offset( r (-( offset (as sz I64) )) )))
+         )))
+      )))
+   ))
+   r
+)) Fragment);
+
+compile-fragment-args := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
+   (let r FLEOF)
+   (match (slot( (typeof rval) 'Cons_s )) (
+      ()
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (match rval (
+            ()
+            ( (App( le re )) (tail(
+               (let e1 (compile-fragment-args( ctx le offset )))
+               (let e2 (compile-expr( ctx re offset Used )))
+               (if (non-zero(fragment::get-type e2)) () (
+                  (set e2 (fragment::set-type( e2 p2 )))
+               ))
+               (set r (FLSeq( (close e1) e2 )))
+            )))
+         ))
+      ))
+      ( _ (tail(
+         (let e1 (compile-expr( ctx rval offset Used )))
+         (if (non-zero(fragment::get-type e1)) () (
+            (set e1 (fragment::set-type( e1 (typeof rval) )))
+         ))
+         (set r (FLSeq( (close FLEOF) e1 )))
+      )))
+   ))
+   r
+)) FragmentList);
+
+compile-maybe-push-stack := λ(: ctx FContext)(: offset I64)(: fragment Fragment)(: expression-type Type)(: sloc AST). (: (tail(
+   (let ft (fragment::get-type( fragment )))
+   (if (non-zero ft) () (set ft expression-type))
+   (match (slot( ft 'StackVariable_s )) (
+      ()
+      ( (TGround( 'StackVariable_s _ )) () )
+      ( _ (tail(
+         (set fragment (fragment::set-type( fragment ft )))
+         (set fragment (fragment-apply(
+            ctx offset 'push_s
+            (FLSeq( (close FLEOF) fragment ))
+            (t3( 'Arrow_s ft
+                          (and( (t1 'StackVariable_s) (t2( 'Sized_s (t1(to-string(sizeof-aligned ft))) )) ))
+            ))
+            sloc
+         )))
+         (let f-sz (as (sizeof-aligned ft) I64))
+         (set fragment (fragment::set-offset( fragment (-( offset f-sz )) )))
+      )))
+   ))
+   fragment
+)) Fragment);
+
+compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (tail(
+   (let kt (typeof term))
+   (match term (
+      ()
+      ( (Abs( lhs rhs tlt )) (if (is-open kt) () (tail(
+         (let args-type (domain kt))
+         (let args-size (sizeof-aligned args-type))
+         (set ctx (compile-destructure-args( args-type ctx lhs 0_i64 )))
+         (set ctx (FCtxBind( (close ctx) 'cdecl::args-size_s TAny
+            (fragment::expression(to-string args-size))
+         )))
+         (let stack-offset 0_i64)
+         (set stack-offset (-( stack-offset 8_i64 )))
+         (set stack-offset (-( stack-offset (as args-size I64) )))
+         (let e (compile-expr( ctx rhs stack-offset Return )))
+         (let text SNil)
+         (if (==( k 'main_s )) (tail(
+            (set main-with True_u8)
+            (match lhs (
+               ()
+               ( ASTNil () )
+               ( _ (set main-with-argv True_u8) )
+            ))
+            (set text (SCons( (close text) (close(SAtom( 'main_s ))) )))
+         )) (
+            (set text (SCons( (close text) (close(SAtom( (mangle-identifier( k kt )) ))) )))
+         ))
+         (set text (SCons( (close text) (close(SAtom( ':\n_s ))) )))
+         (let frame (fragment::get( e 'frame_s )))
+         (set text (SCons( (close text) (close frame) )))
+         (let program (fragment::get( e 'program_s )))
+         (set text (SCons( (close text) (close program) )))
+         (set text (SCons( (close text) (close(SAtom '\tmov\s%rbp,\s%rsp\n_s)) )))
+         (set text (SCons( (close text) (close(SAtom '\tsub\s$_s)) )))
+         (set text (SCons( (close text) (close(SAtom (to-string(+( args-size 8_u64 ))) )) )))
+         (set text (SCons( (close text) (close(SAtom ',\s%rsp\n_s)) )))
+         (set text (SCons( (close text) (close(SAtom '\tret\n_s)) )))
+         (let text-etc (fragment::get( e 'text_s )))
+         (set text (SCons( (close text) (close text-etc) )))
+         (set assemble-text-section (SCons( (close assemble-text-section) (close text) )))
+      ))))
+      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (tail(
+         (let clean-tt (without-representation kt))
+         (let mid (mangle-identifier( k clean-tt )))
+         (set assemble-data-section (SCons(
+            (close assemble-data-section)
+            (close(SAtom mid))
+         )))
+         (set assemble-data-section (SCons(
+            (close assemble-data-section)
+            (close(SAtom ':\n.zero\s_s))
+         )))
+         (set assemble-data-section (SCons(
+            (close assemble-data-section)
+            (close(SAtom (to-string(sizeof-aligned kt))))
+         )))
+         (set assemble-data-section (SCons(
+            (close assemble-data-section)
+            (close(SAtom '\n_s))
+         )))
+
+         (let e1 (compile-expr( ctx term -8_i64 Used )))
+         (set e1 (fragment::set-type( e1 kt )))
+         (let e2 (fragment-context::lookup( ctx k kt term )))
+         (let e3 (fragment-apply( ctx -8_i64 'mov_s
+            (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
+            (t3( 'Arrow_s (t3( 'Cons_s (typeof t) (t1 'GlobalVariable_s) )) (t1 'Nil_s) ))
+            term
+         )))
+         (set assemble-init-section (SCons(
+            (close assemble-init-section)
+            (close(fragment::get( e3 'program_s )))
+         )))
+      )))
+   ))
+)) Nil);
+
+compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used IsUsed). (: (tail(
+   (let e (fragment::new()))
+   (set e (fragment::set-context( e ctx )))
+   (set e (fragment::set-offset( e stack-offset )))
+   (match term (
+      ()
+      ( ASTNil () )
+      ( ASTEOF () )
+      ( (Var( id _ )) (tail(
+         (set e (fragment-context::lookup( ctx id (typeof term) term )))
+         (set e (fragment::set-context( e ctx )))
+         (set e (fragment::set-offset( e stack-offset )))
+      )))
+      ( (Lit( val _ )) (tail(
+         (let ltype (typeof term))
+         (match (slot( ltype 'String_s )) (
+            ()
+            ( (TGround( 'String_s _ )) (
+               (set e (compile-declare-cstring( val )))
+            ))
+            ( _ (tail(
+               (let isa-fragment False_u8)
+               (match (slot( ltype 'Reg8_s )) (
+                  ()
+                  ( (TGround( 'Reg8_s _ )) (set isa-fragment True_u8) )
+                  ( _ () )
+               ))
+               (match (slot( ltype 'Reg16_s )) (
+                  ()
+                  ( (TGround( 'Reg16_s _ )) (set isa-fragment True_u8) )
+                  ( _ () )
+               ))
+               (match (slot( ltype 'Reg32_s )) (
+                  ()
+                  ( (TGround( 'Reg32_s _ )) (set isa-fragment True_u8) )
+                  ( _ () )
+               ))
+               (match (slot( ltype 'Reg64_s )) (
+                  ()
+                  ( (TGround( 'Reg64_s _ )) (set isa-fragment True_u8) )
+                  ( _ () )
+               ))
+               (if (==( isa-fragment True_u8 )) (
+                  (set e (fragment::expression val))
+               ) (
+                  (if (non-zero(class-of-tag val)) (tail(
+                     (let tag-index (index-of-tag val))
+                     (set e (fragment::expression(to-string tag-index)))
+                     (set e (fragment::set( e 'program_s (SCons( (close SNil) (close SNil) )) )))
+                  )) (
+                     (match val (
+                        ()
+                        ( 'True_s (set e (fragment::expression '1_s)) )
+                        ( 'False_s (set e (fragment::expression '0_s)) )
+                        ( '\\t_s (set e (fragment::expression '9_s)) )
+                        ( '\\n_s (set e (fragment::expression '10_s)) )
+                        ( '\\s_s (set e (fragment::expression '32_s)) )
+                        ( '\\o_s (set e (fragment::expression '35_s)) )
+                        ( '\\`_s (set e (fragment::expression '39_s)) )
+                        ( '\\[_s (set e (fragment::expression '40_s)) )
+                        ( '\\]_s (set e (fragment::expression '41_s)) )
+                        ( '\\:_s (set e (fragment::expression '59_s)) )
+                        ( _ (set e (fragment::expression val)) )
+                     ))
+                  ))
+               ))
+            )))
+         ))
+         (set e (fragment::set-context( e ctx )))
+         (set e (fragment::set-type( e ltype )))
+      )))
+      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
+         (set e (compile-expr( ctx t stack-offset used )))
+      ))
+      ( (App( (Var( 'tail_s _ )) (App( lt rt )) )) (tail(
+         (let e1 (compile-expr( ctx lt stack-offset Unused )))
+         (let e2 (compile-expr( (fragment::get-context e1) rt (fragment::get-offset e1) Used )))
+         (set e (fragment::chain( e1 e2 )))
+         (set e (fragment::set-type( e (typeof term) )))
+      )))
+      ( (App( (Var( 'gensym-label_s _ )) (Var( id _ )) )) (tail(
+         (set ctx (fragment-context::bind(
+            ctx id (t1 'Label_s) (fragment::label( (uuid()) ))
+         )))
+         (set e (fragment::set-context( e ctx )))
+         (set e (fragment::set-type( e (t1 'Nil_s) )))
+      )))
+      ( (App( (Var( 'label_s _ )) (Var( id _ )) )) (tail(
+         (let l (fragment-context::lookup( ctx id (t1 'Label_s) term )))
+         (let prog (SCons(
+            (close(fragment::get( l 'expression_s )))
+            (close(SAtom ':\n_s))
+         )))
+         (set e (fragment::set( e 'program_s prog )))
+         (set e (fragment::set-type( e (t1 'Nil_s) )))
+      )))
+      ( (App( (Var( 'scope_s _ )) t )) (tail(
+         (set e (compile-expr( ctx t stack-offset Used )))
+         (set e (fragment::set-context( e ctx )))
+      )))
+      ( (App( (Var( 'maybe-deref_s _ )) t )) (tail(
+         (set e (compile-expr( ctx t stack-offset Used )))
+         (let tt (typeof t))
+         (match (slot( tt 'Array_s )) (
+            ()
+            ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF TAny )) _ )) )) () )
+            ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF inner-tt )) TAny )) )) (tail(
+               (let e1 (fragment::set-type( e tt )))
+               (let e2 (fragment::new()))
+               (set e2 (fragment::set( e2 'expression_s (SAtom '0_s) )))
+               (let c-tt (and(
+                  (t1 'Literal_s)
+                  (t1 'Constant_s)
+               )))
+               (set e2 (fragment::set-type( e2 c-tt )))
+               (set e (fragment-apply( ctx stack-offset 'push_s
+                  (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
+                  (t3( 'Arrow_s (t3( 'Cons_s tt c-tt ))
+                                (and( (t1 'StackVariable_s) (t2( 'Sized_s (t1(to-string(sizeof-aligned inner-tt))) )) ))
+                  ))
+                  term
+               )))
+               (set e (fragment::set-type( e (and( inner-tt (t1 'StackVariable_s) )) )))
+               (let new-offset (-( stack-offset (as (sizeof-aligned inner-tt) I64) )))
+               (set e (fragment::set-offset( e new-offset )))
+            )))
+            ( _ () )
+         ))
+      )))
+      ( (App( (Var( 'sizeof_s _ )) (AType tt) )) (tail(
+         (let sz (sizeof-type( tt )))
+         (set e (fragment::expression(to-string sz)))
+         (let et (TAnd( 
+            (close(t1 'Literal_s))
+            (close(TAnd(
+               (close(t1 'Constant_s))
+               (close(TAnd(
+                  (close(t1 'U64_s))
+                  (close(tsized '8_s))
+               )))
+            )))
+         )))
+         (set e (fragment::set-type( e et )))
+         (set e (fragment::set-context( e ctx )))
+         (set e (fragment::set-offset( e stack-offset )))
+      )))
+      ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (tail(
+         (set e (compile-expr( ctx t stack-offset used )))
+         (set e (fragment::set-type( e (typeof term) )))
+      )))
+      ( (App( (App( (Var( 'set_s _ )) (Var( k _ )) )) rhs )) (tail(
+         (let kt (typeof rhs))
+
+         (let e1 (compile-expr( ctx rhs stack-offset Used )))
+         (set e1 (fragment::set-type( e1 kt )))
+         (let e2 (fragment-context::lookup( ctx k kt term )))
+         (set e (fragment-apply( ctx stack-offset 'mov_s
+            (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
+            (t3( 'Arrow_s (t3( 'Cons_s (fragment::get-type e1) (fragment::get-type e2) )) (t1 'Nil_s) ))
+            term
+         )))
+         (set e (fragment::set-context( e ctx )))
+         (set e (fragment::set-offset( e stack-offset )))
+      )))
+      ( (App( (App( (Var( 'while_s _ )) cond )) body )) (tail(
+         (let e1 (compile-expr( ctx cond stack-offset Used )))
+         (set e1 (as-branch-conditional e1))
+         (let e2 (compile-expr( (fragment::get-context e1) body (fragment::get-offset e1) Unused )))
+         (let label-begin-loop (uuid()))
+         (let label-do-loop (uuid()))
+         (let label-end-loop (uuid()))
+         (set e (fragment::chain( e1 e2 )))
+
+         (let text SNil)
+         (set text (SCons( (close text) (close(SAtom label-begin-loop)) )))
+         (set text (SCons( (close text) (close(SAtom ':\n_s)) )))
+         (set text (SCons( (close text) (close(fragment::get( e1 'frame_s ))) )))
+         (set text (SCons( (close text) (close(fragment::get( e1 'program_s ))) )))
+         (set text (SCons( (close text) (close(SAtom '\t_s)) )))
+         (set text (SCons( (close text) (close(fragment::get( e1 'expression_s ))) )))
+         (set text (SCons( (close text) (close(SAtom '\s_s)) )))
+         (set text (SCons( (close text) (close(SAtom label-do-loop)) )))
+         (set text (SCons( (close text) (close(SAtom '\n\tjmp\s_s)) )))
+         (set text (SCons( (close text) (close(SAtom label-end-loop)) )))
+         (set text (SCons( (close text) (close(SAtom '\n_s)) )))
+         (set text (SCons( (close text) (close(SAtom label-do-loop)) )))
+         (set text (SCons( (close text) (close(SAtom ':\n_s)) )))
+         (set text (SCons( (close text) (close(fragment::get( e2 'frame_s ))) )))
+         (set text (SCons( (close text) (close(fragment::get( e2 'program_s ))) )))
+         (set text (SCons( (close text) (close(fragment::get( e2 'unframe_s ))) )))
+         (set text (SCons( (close text) (close(fragment::get( e1 'unframe_s ))) )))
+         (set text (SCons( (close text) (close(SAtom '\tjmp\s_s)) )))
+         (set text (SCons( (close text) (close(SAtom label-begin-loop)) )))
+         (set text (SCons( (close text) (close(SAtom '\n_s)) )))
+         (set text (SCons( (close text) (close(SAtom label-end-loop)) )))
+         (set text (SCons( (close text) (close(SAtom ':\n_s)) )))
+         (set text (SCons( (close text) (close(fragment::get( e1 'unframe_s ))) )))
+
+         (set e (fragment::set( e 'program_s text )))
+         (set e (fragment::set( e 'frame_s SNil )))
+         (set e (fragment::set( e 'unframe_s SNil )))
+         (set e (fragment::set-context( e ctx )))
+         (set e (fragment::set-offset( e stack-offset )))
+         (set e (fragment::set-type( e (typeof term) )))
+      )))
+      ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (tail(
+         (let rsp-offset (+( stack-offset -8_i64 )))
+         (let e1 (as-branch-conditional(compile-expr( ctx cond rsp-offset Used ))))
+         (let e2 (compile-expr( (fragment::get-context e1) t (fragment::get-offset e1) used )))
+         (let e3 (compile-expr( (fragment::get-context e1) f (fragment::get-offset e1) used )))
+         (let end-offset (fragment::get-offset e2))
+         (let label-true-branch (uuid()))
+         (let label-end (uuid()))
+
+         (let text SNil)
+         (set text (SCons( (close text) (close(SAtom '\tpush\s%rbp\n_s)) )))
+         (set text (SCons( (close text) (close(fragment::get( e1 'frame_s ))) )))
+         (set text (SCons( (close text) (close(fragment::get( e1 'program_s ))) )))
+         (set text (SCons( (close text) (close(SAtom '\t_s)) )))
+         (set text (SCons( (close text) (close(fragment::get( e1 'expression_s ))) )))
+         (set text (SCons( (close text) (close(SAtom '\s_s)) )))
+         (set text (SCons( (close text) (close(SAtom label-true-branch)) )))
+         (set text (SCons( (close text) (close(SAtom '\n_s)) )))
+         (set text (SCons( (close text) (close(fragment::get( e3 'frame_s ))) )))
+         (set text (SCons( (close text) (close(fragment::get( e3 'program_s ))) )))
+         (set text (SCons( (close text) (close(fragment::get( e3 'unframe_s ))) )))
+         (set text (SCons( (close text) (close(SAtom '\tjmp\s_s)) )))
+         (set text (SCons( (close text) (close(SAtom label-end)) )))
+         (set text (SCons( (close text) (close(SAtom '\n_s)) )))
+         (set text (SCons( (close text) (close(SAtom label-true-branch)) )))
+         (set text (SCons( (close text) (close(SAtom ':\n_s)) )))
+         (set text (SCons( (close text) (close(fragment::get( e2 'frame_s ))) )))
+         (set text (SCons( (close text) (close(fragment::get( e2 'program_s ))) )))
+         (set text (SCons( (close text) (close(SAtom label-end)) )))
+         (set text (SCons( (close text) (close(SAtom ':\n_s)) )))
+         (set text (SCons( (close text) (close(SAtom '\tmov\s_s)) )))
+         (set text (SCons( (close text) (close(SAtom (to-string rsp-offset))) )))
+         (set text (SCons( (close text) (close(SAtom '\[%rbp\],\s%rsp\n_s)) )))
+         (set text (SCons( (close text) (close(SAtom '\tadd\s$_s)) )))
+         (set text (SCons( (close text) (close(SAtom (to-string end-offset))) )))
+         (set text (SCons( (close text) (close(SAtom ',\s%rsp\n_s)) )))
+         (set e (fragment::set( e1 'program_s text )))
+         (set e (fragment::set-context( e (fragment::get-context e2) )))
+         (set e (fragment::set-offset( e end-offset )))
+         (set e (fragment::set( e 'frame_s SNil )))
+         (set e (fragment::set( e 'unframe_s
+            (SCons(
+               (close(fragment::get( e1 'unframe_s )))
+               (close(SCons(
+                  (close(fragment::get( e2 'unframe_s )))
+                  (close(SAtom '\tadd\s$8,\s%rsp\n_s ))
+               )))
+            ))
+         )))
+         (set e (fragment::set-type( e (typeof term) )))
+      )))
+      ( (App( (Abs( (Var( lhs _ )) ASTNil tlt )) rhs )) (tail(
+         (let rtype (typeof rhs))
+         (set rtype (without-representation rtype))
+         (set rtype (and( rtype (t1 'LocalVariable_s) )))
+         (set rtype (with-size( rtype )))
+         (let size (sizeof-aligned rtype))
+         (set e (compile-push-rvalue( ctx rhs stack-offset )))
+         (let bind-offset (-( stack-offset (as size I64) )))
+         (set e (fragment::set( e 'unframe_s
+            (SCons(
+               (close(fragment::get( e 'unframe_s )))
+               (close(SCons(
+                  (close(SAtom '\tadd\s$_s))
+                  (close(SCons(
+                     (close(SAtom(to-string size)))
+                     (close(SAtom ',\s%rsp\n_s))
+                  )))
+               )))
+            ))
+         )))
+         (set ctx (fragment-context::bind(
+            ctx lhs rtype (fragment::local-variable( bind-offset rtype ))
+         )))
+         (set e (fragment::set-context( e ctx )))
+         (set e (fragment::set-offset( e bind-offset )))
+         (set e (fragment::set-type( e (typeof term) )))
+      )))
+      ( (App( f a )) (
+         (match (slot( (typeof f) 'Arrow_s )) (
+            ()
+            ( (TGround( 'Arrow_s _ )) (
+               (match f (
+                  ()
+                  ( (Var( fname _ )) (
+                     (set e (compile-stack-call( ctx fname (typeof term) a stack-offset used )))
+                  ))
+                  ( (App( (Lit( ':_s _ )) (App( (Var( fname _ )) (AType ft) )) )) (
+                     (set e (compile-stack-call( ctx fname (typeof term) a stack-offset used )))
+                  ))
+                  ( (Lit( fname _ )) (
+                     (set e (compile-constructor( ctx fname (typeof term) (typeof a) a stack-offset )))
+                  ))
+                  ( (App( (Lit( ':_s _ )) (App( (Lit( fname _ )) (AType ft) )) )) (
+                     (set e (compile-constructor( ctx fname (typeof term) (typeof a) a stack-offset )))
+                  ))
+               ))
+            ))
+            ( _ (
+               (if (is( used Used )) (
+                  (exit-error( 'Raw\sCons\sCells\sNot\sPermitted\sIn\sStrict\sMode_s term ))
+               ) (tail(
+                  (let e1 (compile-expr( ctx f stack-offset Unused )))
+                  (let e2 (compile-expr( (fragment::get-context e1) a (fragment::get-offset e1) used )))
+                  (set e (fragment::chain( e1 e2 )))
+               ))) 
+            ))
+         ))
+      ))
+   ))
+   e
+)) Fragment);
+
+compile-stack-call := λ(: ctx FContext)(: function-name String)(: return-type Type)(: args AST)(: offset I64)(: used IsUsed). (: (tail(
+   (let f (fragment-context::lookup( ctx function-name (typeof args) args )))
+   (let function-type (fragment::get-type f))
+   (let r (fragment::new()))
+
+   (match (fragment::get( f 'fragment-type_s )) (
+      ()
+      ( (SAtom 'Fragment_s) (tail(
+         (let f-args (compile-fragment-args( ctx args offset )))
+         (set r (fragment-apply( ctx offset function-name f-args return-type args )))
+         (set r (fragment::set-offset( r offset )))
+         (set r (fragment::set-type( r return-type )))
+      )))
+      ( _ (tail(
+         (let push-args (compile-stack-call-push-args( ctx args offset )))
+         (let call SNil)
+         (let function-id (mangle-identifier( function-name function-type )))
+
+         (set call (SCons( (close call) (close(SAtom '\oCall\sFunction\s_s)) )))
+         (set call (SCons( (close call) (close(SAtom function-name)) )))
+         (set call (SCons( (close call) (close(SAtom '\s:\s_s)) )))
+         (set call (SCons( (close call) (close(SAtom(to-string (fragment::get-type f)))) )))
+         (set call (SCons( (close call) (close(SAtom '\n\oArgument:\s_s)) )))
+         (set call (SCons( (close call) (close(SAtom function-name)) )))
+         (set call (SCons( (close call) (close(SAtom '\s:\s_s)) )))
+         (set call (SCons( (close call) (close(SAtom(to-string (typeof args)))) )))
+         (set call (SCons( (close call) (close(SAtom '\n_s)) )))
+         (set call (SCons( (close call) (close(SAtom '\oReturn:\s_s)) )))
+         (set call (SCons( (close call) (close(SAtom function-name)) )))
+         (set call (SCons( (close call) (close(SAtom '\s:\s_s)) )))
+         (set call (SCons( (close call) (close(SAtom(to-string return-type))) )))
+         (set call (SCons( (close call) (close(SAtom '\n_s)) )))
+
+         (set call (SCons( (close call) (close(SAtom '\tpush\s%rbp\n_s)) )))
+         (set call (SCons( (close call) (close(SAtom '\tmov\s%rsp,\s%rbp\n_s)) )))
+         (set call (SCons( (close call) (close(fragment::get( push-args 'program_s ))) )))
+         (set call (SCons( (close call) (close(SAtom '\tcall\s_s)) )))
+         (set call (SCons( (close call) (close(SAtom function-id)) )))
+         (set call (SCons( (close call) (close(SAtom '\n_s)) )))
+
+         (set call (SCons( (close call) (close(SAtom '\tmov\s%rbp,\s%rsp\n_s)) )))
+         (set call (SCons( (close call) (close(SAtom '\tpop\s%rbp\n_s)) )))
+
+         (set r (fragment::set-offset( r offset )))
+
+         (let expr 'Invalid\sExpression_s)
+         (match (sizeof-type return-type) (
+            ()
+            ( 0_u64 ())
+            ( 1_u64 (set expr 'al_s))
+            ( 2_u64 (set expr 'ax_s))
+            ( 4_u64 (set expr 'eax_s))
+            ( 8_u64 (set expr 'rax_s))
+            ( rsz (
+               (if (is( used Used )) (tail(
+                  (let rsi 0_u64)
+                  (let args-size (sizeof-type(typeof args)))
+                  (let rel-off (-( -24_i64 (as args-size I64) )))
+                  (while (<( rsi rsz )) (tail(
+                     (set call (SCons( (close call) (close(SAtom '\tpush\s_s)) )))
+                     (set call (SCons( (close call) (close(SAtom(to-string rel-off))) )))
+                     (set call (SCons( (close call) (close(SAtom '\[%rsp\]\n_s)) )))
+                     (set rsi (+( rsi 8_u64 )))
+                  )))
+                  (set r (fragment::set-offset( r (-( offset (as rsz I64) )) )))
+               )) (
+                  (set r (fragment::set-offset( r offset )))
+               ))
+            ))
+         ))
+
+         (set r (fragment::set( r 'program_s call )))
+         (set r (fragment::set( r 'expression_s (SAtom expr) )))
+         (set r (fragment::set-type( r return-type )))
+      )))
+   ))
+   (set r (fragment::set-context( r ctx )))
+   r
+)) Fragment);
+
