@@ -524,42 +524,6 @@ compile-maybe-push-stack := λ(: ctx FContext)(: offset I64)(: fragment Fragment
    fragment
 )) Fragment);
 
-compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
-   (let r (maybe-deref(fragment::new())))
-   (let et (maybe-deref(typeof rval)))
-   (match (slot( et 'Cons_s )) (
-      ()
-      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
-         (match rval (
-            ()
-            ( (App( le re )) (tail(
-               (let e1 (maybe-deref(compile-push-rvalue( ctx le offset ))))
-               (let e2 (maybe-deref(compile-expr( ctx re (fragment::get-offset e1) Used ))))
-               (let e2-2 (maybe-deref(compile-maybe-push-stack( ctx (fragment::get-offset e2) e2 p2 rval ))))(set e2 e2-2)
-               (let sz (sizeof-type(maybe-deref(typeof rval))))
-               (let e2-3 (maybe-deref(fragment::set-offset( e2 (-( offset (as sz I64) )) ))))(set e2 e2-3)
-               (set r (maybe-deref(fragment::chain( e1 e2 ))))
-            )))
-            ( u (exit-error( 'Invalid\sRvalue_s rval )))
-         ))
-      ))
-      ( _ (tail(
-         (let sz (sizeof-type(maybe-deref(typeof rval))))
-         (if (==( sz 0_u64 )) (tail(
-            (let r-1 (maybe-deref(fragment::set-context( r ctx ))))(set r r-1)
-            (let r-2 (maybe-deref(fragment::set-offset( r offset ))))(set r r-2)
-            (let r-3 (maybe-deref(fragment::set( r 'program_s (SCons( (close SNil) (close SNil) )) ))))(set r r-3)
-         )) (tail(
-            (let e1 (maybe-deref(compile-expr( ctx rval offset Used ))))
-            (let e1-2 (maybe-deref(compile-maybe-push-stack( ctx (fragment::get-offset e1) e1 et rval ))))(set e1 e1-2)
-            (let e1-3 (maybe-deref(fragment::set-offset( e1 (-( offset (as sz I64) )) ))))(set e1 e1-3)
-            (set r e1)
-         )))
-      )))
-   ))
-   r
-)) Fragment);
-
 compile-fragment-args := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
    (let r FLEOF)
    (let et (maybe-deref(typeof rval)))

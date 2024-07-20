@@ -155,3 +155,36 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
    (set r (fragment::set-offset( r new-offset )))
    r
 )) Fragment);
+
+compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
+   (let r (fragment::new()))
+   (match (slot( (typeof rval) 'Cons_s )) (
+      ()
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (match rval (
+            ()
+            ( (App( le re )) (tail(
+               (let e1 (compile-push-rvalue( ctx le offset )))
+               (let e2 (compile-expr( ctx re (fragment::get-offset e1) Used )))
+               (set e2 (compile-maybe-push-stack( ctx (fragment::get-offset e2) e2 p2 rval )))
+               (let sz (sizeof-type(maybe-deref(typeof rval))))
+               (set e2 (fragment::set-offset( e2 (-( offset (as sz I64) )) )))
+               (set r (fragment::chain( e1 e2 )))
+            )))
+         ))
+      ))
+      ( _ (tail(
+         (let sz (sizeof-type(typeof rval)))
+         (if (==( sz 0_u64 )) (tail(
+            (set r (fragment::set-context( r ctx )))
+            (set r (fragment::set-offset( r offset )))
+            (set r (fragment::set( r 'program_s (SCons( (close SNil) (close SNil) )) )))
+         )) (tail(
+            (set r (compile-expr( ctx rval offset Used )))
+            (set r (compile-maybe-push-stack( ctx (fragment::get-offset r) r (typeof rval) rval )))
+            (set r (fragment::set-offset( r (-( offset (as sz I64) )) )))
+         )))
+      )))
+   ))
+   r
+)) Fragment);
