@@ -524,33 +524,3 @@ compile-maybe-push-stack := λ(: ctx FContext)(: offset I64)(: fragment Fragment
    fragment
 )) Fragment);
 
-compile-fragment-args := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
-   (let r FLEOF)
-   (let et (maybe-deref(typeof rval)))
-   (match (slot( et 'Cons_s )) (
-      ()
-      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
-         (match rval (
-            ()
-            ( (App( le re )) (tail(
-               (let e1 (maybe-deref(compile-fragment-args( ctx le offset ))))
-               (let e2 (maybe-deref(compile-expr( ctx re offset Used ))))
-               (if (non-zero(maybe-deref(fragment::get-type e2))) () (tail(
-                  (let e2-2 (maybe-deref(fragment::set-type( e2 p2 ))))(set e2 e2-2)
-               )))
-               (set r (FLSeq( (close e1) e2 )))
-            )))
-            ( u (exit-error( 'Invalid\sRvalue_s rval )))
-         ))
-      ))
-      ( _ (tail(
-         (let e1 (maybe-deref(compile-expr( ctx rval offset Used ))))
-         (if (non-zero(maybe-deref(fragment::get-type e1))) () (tail(
-            (let e1-2 (maybe-deref(fragment::set-type( e1 et ))))(set e1 e1-2)
-         )))
-         (set r (FLSeq( (close FLEOF) e1 )))
-      )))
-   ))
-   r
-)) FragmentList);
-

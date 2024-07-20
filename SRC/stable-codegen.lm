@@ -188,3 +188,31 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
    ))
    r
 )) Fragment);
+
+compile-fragment-args := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
+   (let r FLEOF)
+   (match (slot( (typeof rval) 'Cons_s )) (
+      ()
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (match rval (
+            ()
+            ( (App( le re )) (tail(
+               (let e1 (compile-fragment-args( ctx le offset )))
+               (let e2 (compile-expr( ctx re offset Used )))
+               (if (non-zero(fragment::get-type e2)) () (
+                  (set e2 (fragment::set-type( e2 p2 )))
+               ))
+               (set r (FLSeq( (close e1) e2 )))
+            )))
+         ))
+      ))
+      ( _ (tail(
+         (let e1 (compile-expr( ctx rval offset Used )))
+         (if (non-zero(fragment::get-type e1)) () (
+            (set e1 (fragment::set-type( e1 (typeof rval) )))
+         ))
+         (set r (FLSeq( (close FLEOF) e1 )))
+      )))
+   ))
+   r
+)) FragmentList);
