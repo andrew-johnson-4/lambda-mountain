@@ -86,3 +86,22 @@ compile-destructure-args := λ(: tt Type)(: ctx FContext)(: lhs AST)(: offset I6
    ))
    ctx
 )) FContext);
+
+as-branch-conditional := λ(: f Fragment). (: (tail(
+   (let ft (fragment::get-type f))
+   (match (slot( ft 'BranchConditional_s )) (
+      ()
+      ( (TGround( 'BranchConditional_s _ )) () )
+      ( _ (tail(
+         (set f (fragment::set-type( f (maybe-deref(t1 'BranchConditional_s)) )))
+         (set f (fragment::set( f 'expression_s (SAtom 'jne_s) )))
+         (set f (fragment::set( f 'program_s
+            (SCons(
+               (close(fragment::get( f 'program_s )))
+               (close(SAtom '\tcmp\s$0,\s%rax\n_s))
+            ))
+         )))
+      )))
+   ))
+   f
+)) Fragment);
