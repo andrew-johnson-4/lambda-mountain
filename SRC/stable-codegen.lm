@@ -93,7 +93,7 @@ as-branch-conditional := λ(: f Fragment). (: (tail(
       ()
       ( (TGround( 'BranchConditional_s _ )) () )
       ( _ (tail(
-         (set f (fragment::set-type( f (maybe-deref(t1 'BranchConditional_s)) )))
+         (set f (fragment::set-type( f (t1 'BranchConditional_s) )))
          (set f (fragment::set( f 'expression_s (SAtom 'jne_s) )))
          (set f (fragment::set( f 'program_s
             (SCons(
@@ -129,7 +129,7 @@ compile-declare-cstring := λ(: val String). (: (tail(
          (close cstring-cache) val id
       )))
    )))
-   (let r (maybe-deref(fragment::new())))
+   (let r (fragment::new()))
    (set r (fragment::set( r 'expression_s (SAtom id) )))
    r
 )) Fragment);
@@ -167,7 +167,7 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
                (let e1 (compile-push-rvalue( ctx le offset )))
                (let e2 (compile-expr( ctx re (fragment::get-offset e1) Used )))
                (set e2 (compile-maybe-push-stack( ctx (fragment::get-offset e2) e2 p2 rval )))
-               (let sz (sizeof-type(maybe-deref(typeof rval))))
+               (let sz (sizeof-type(typeof rval)))
                (set e2 (fragment::set-offset( e2 (-( offset (as sz I64) )) )))
                (set r (fragment::chain( e1 e2 )))
             )))
@@ -414,37 +414,34 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set e (fragment::set-type( e (t1 'Nil_s) )))
       )))
       ( (App( (Var( 'scope_s _ )) t )) (tail(
-         (let e1 (maybe-deref(compile-expr( ctx t stack-offset Used ))))
-         (let e1-2 (maybe-deref(fragment::set-context( e1 ctx ))))
-         (set e e1-2)
+         (set e (compile-expr( ctx t stack-offset Used )))
+         (set e (fragment::set-context( e ctx )))
       )))
       ( (App( (Var( 'maybe-deref_s _ )) t )) (tail(
-         (let e1 (maybe-deref(compile-expr( ctx t stack-offset Used ))))
-         (set e e1)
-         (let tt (maybe-deref(typeof t)))
+         (set e (compile-expr( ctx t stack-offset Used )))
+         (let tt (typeof t))
          (match (slot( tt 'Array_s )) (
             ()
             ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF TAny )) _ )) )) () )
             ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF inner-tt )) TAny )) )) (tail(
-               (let e1-2 (maybe-deref(fragment::set-type( e1 tt ))))(set e1 e1-2)
-               (let e2 (maybe-deref(fragment::new())))
-               (let e2-2 (maybe-deref(fragment::set( e2 'expression_s (SAtom '0_s) ))))(set e2 e2-2)
+               (let e1 (fragment::set-type( e tt )))
+               (let e2 (fragment::new()))
+               (set e2 (fragment::set( e2 'expression_s (SAtom '0_s) )))
                (let c-tt (and(
                   (t1 'Literal_s)
                   (t1 'Constant_s)
                )))
-               (let e2-3 (maybe-deref(fragment::set-type( e2 c-tt ))))(set e2 e2-3)
-               (let e3 (maybe-deref(fragment-apply( ctx stack-offset 'push_s
+               (set e2 (fragment::set-type( e2 c-tt )))
+               (set e (fragment-apply( ctx stack-offset 'push_s
                   (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
                   (t3( 'Arrow_s (t3( 'Cons_s tt c-tt ))
                                 (and( (t1 'StackVariable_s) (t2( 'Sized_s (t1(to-string(sizeof-aligned inner-tt))) )) ))
                   ))
                   term
-               ))))
-               (let e3-2 (maybe-deref(fragment::set-type( e3 (and( inner-tt (maybe-deref(t1 'StackVariable_s)) )) ))))(set e3 e3-2)
+               )))
+               (set e (fragment::set-type( e (and( inner-tt (t1 'StackVariable_s) )) )))
                (let new-offset (-( stack-offset (as (sizeof-aligned inner-tt) I64) )))
-               (let e3-3 (maybe-deref(fragment::set-offset( e3 new-offset ))))(set e3 e3-3)
-               (set e e3)
+               (set e (fragment::set-offset( e new-offset )))
             )))
             ( _ () )
          ))
