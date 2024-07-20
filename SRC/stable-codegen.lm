@@ -388,32 +388,30 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set e (fragment::set-context( e ctx )))
          (set e (fragment::set-type( e ltype )))
       )))
-      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (tail(
-         (let e1 (maybe-deref(compile-expr( ctx t stack-offset used ))))
-         (set e e1)
-      )))
+      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
+         (set e (compile-expr( ctx t stack-offset used )))
+      ))
       ( (App( (Var( 'tail_s _ )) (App( lt rt )) )) (tail(
-         (let e1 (maybe-deref(compile-expr( ctx lt stack-offset Unused ))))
-         (let e2 (maybe-deref(compile-expr( (maybe-deref(fragment::get-context e1)) rt (fragment::get-offset e1) Used ))))
-         (let e12 (maybe-deref(fragment::chain( e1 e2 ))))
-         (let e12-2 (maybe-deref(fragment::set-type( e12 (maybe-deref(typeof term)) ))))(set e12 e12-2)
-         (set e e12)
+         (let e1 (compile-expr( ctx lt stack-offset Unused )))
+         (let e2 (compile-expr( (fragment::get-context e1) rt (fragment::get-offset e1) Used )))
+         (set e (fragment::chain( e1 e2 )))
+         (set e (fragment::set-type( e (typeof term) )))
       )))
       ( (App( (Var( 'gensym-label_s _ )) (Var( id _ )) )) (tail(
-         (let new-ctx (maybe-deref(fragment-context::bind(
-            ctx id (t1 'Label_s) (maybe-deref(fragment::label( (uuid()) )))
-         ))))
-         (let e-1 (maybe-deref(fragment::set-context( e new-ctx ))))(set e e-1)
-         (let e-2 (maybe-deref(fragment::set-type( e (maybe-deref(t1 'Nil_s)) ))))(set e e-2)
+         (let new-ctx (fragment-context::bind(
+            ctx id (t1 'Label_s) (fragment::label( (uuid()) ))
+         )))
+         (set e (fragment::set-context( e new-ctx )))
+         (set e (fragment::set-type( e (t1 'Nil_s) )))
       )))
       ( (App( (Var( 'label_s _ )) (Var( id _ )) )) (tail(
-         (let l (maybe-deref(fragment-context::lookup( ctx id (t1 'Label_s) term ))))
+         (let l (fragment-context::lookup( ctx id (t1 'Label_s) term )))
          (let prog (SCons(
             (close(fragment::get( l 'expression_s )))
             (close(SAtom ':\n_s))
          )))
-         (let e-2 (maybe-deref(fragment::set( e 'program_s prog ))))(set e e-2)
-         (let e-3 (maybe-deref(fragment::set-type( e (maybe-deref(t1 'Nil_s)) ))))(set e e-3)
+         (set e (fragment::set( e 'program_s prog )))
+         (set e (fragment::set-type( e (t1 'Nil_s) )))
       )))
       ( (App( (Var( 'scope_s _ )) t )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx t stack-offset Used ))))
