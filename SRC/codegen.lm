@@ -590,25 +590,3 @@ compile-fragment-args := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
    r
 )) FragmentList);
 
-compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)(: args-type Type)(: args AST)(: offset I64). (: (tail(
-   (let whitespace-sz (-( (-( (sizeof-aligned return-type) (sizeof-aligned args-type) )) 8_u64 )))
-   (let e1 (maybe-deref(compile-push-rvalue( ctx args (-( offset (as whitespace-sz I64) )) ))))
-   (let constructor-parms (and(
-      (t2( 'Constructor_s (t1 tag-name) ))
-      (and(
-         (t2( 'Sized_s (t1(to-string(sizeof-aligned return-type))) ))
-         (t2( 'FieldsSized_s (t1(to-string(sizeof-aligned args-type))) ))
-      ))
-   )))
-   (let e1-2 (maybe-deref(fragment::set-type( e1 constructor-parms ))))(set e1 e1-2)
-   (let r (maybe-deref(fragment-apply(
-      ctx offset 'push_s
-      (FLSeq( (close FLEOF) e1 )) (t3( 'Arrow_s constructor-parms return-type )) args
-   ))))
-   (let r-1 (maybe-deref(fragment::set-context( r ctx ))))(set r r-1)
-   (let r-2 (maybe-deref(fragment::set-type( r return-type ))))(set r r-2)
-   (let new-offset (-( offset (as (sizeof-type return-type) I64) )))
-   (let r-3 (maybe-deref(fragment::set-offset( r new-offset ))))(set r r-3)
-   r
-)) Fragment);
-

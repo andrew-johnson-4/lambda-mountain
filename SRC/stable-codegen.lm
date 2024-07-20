@@ -133,3 +133,25 @@ compile-declare-cstring := λ(: val String). (: (tail(
    (set r (fragment::set( r 'expression_s (SAtom id) )))
    r
 )) Fragment);
+
+compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)(: args-type Type)(: args AST)(: offset I64). (: (tail(
+   (let whitespace-sz (-( (-( (sizeof-aligned return-type) (sizeof-aligned args-type) )) 8_u64 )))
+   (let e (compile-push-rvalue( ctx args (-( offset (as whitespace-sz I64) )) )))
+   (let constructor-parms (and(
+      (t2( 'Constructor_s (t1 tag-name) ))
+      (and(
+         (t2( 'Sized_s (t1(to-string(sizeof-aligned return-type))) ))
+         (t2( 'FieldsSized_s (t1(to-string(sizeof-aligned args-type))) ))
+      ))
+   )))
+   (set e (fragment::set-type( e constructor-parms )))
+   (let r (fragment-apply(
+      ctx offset 'push_s
+      (FLSeq( (close FLEOF) e )) (t3( 'Arrow_s constructor-parms return-type )) args
+   )))
+   (set r (fragment::set-context( r ctx )))
+   (set r (fragment::set-type( r return-type )))
+   (let new-offset (-( offset (as (sizeof-type return-type) I64) )))
+   (set r (fragment::set-offset( r new-offset )))
+   r
+)) Fragment);
