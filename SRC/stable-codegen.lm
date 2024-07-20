@@ -636,20 +636,20 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
 )) Fragment);
 
 compile-stack-call := λ(: ctx FContext)(: function-name String)(: return-type Type)(: args AST)(: offset I64)(: used IsUsed). (: (tail(
-   (let f (maybe-deref(fragment-context::lookup( ctx function-name (maybe-deref(typeof args)) args ))))
-   (let function-type (maybe-deref(fragment::get-type f)))
-   (let r (maybe-deref(fragment::new())))
+   (let f (fragment-context::lookup( ctx function-name (typeof args) args )))
+   (let function-type (fragment::get-type f))
+   (let r (fragment::new()))
 
-   (match (maybe-deref(fragment::get( f 'fragment-type_s ))) (
+   (match (fragment::get( f 'fragment-type_s )) (
       ()
       ( (SAtom 'Fragment_s) (tail(
-         (let f-args (maybe-deref(compile-fragment-args( ctx args offset ))))
-         (set r (maybe-deref(fragment-apply( ctx offset function-name f-args return-type args ))))
-         (set r (maybe-deref(fragment::set-offset( r offset ))))
-         (set r (maybe-deref(fragment::set-type( r return-type ))))
+         (let f-args (compile-fragment-args( ctx args offset )))
+         (set r (fragment-apply( ctx offset function-name f-args return-type args )))
+         (set r (fragment::set-offset( r offset )))
+         (set r (fragment::set-type( r return-type )))
       )))
       ( _ (tail(
-         (let push-args (maybe-deref(compile-stack-call-push-args( ctx args offset ))))
+         (let push-args (compile-stack-call-push-args( ctx args offset )))
          (let call SNil)
          (let function-id (mangle-identifier( function-name function-type )))
 
@@ -678,7 +678,7 @@ compile-stack-call := λ(: ctx FContext)(: function-name String)(: return-type T
          (set call (SCons( (close call) (close(SAtom '\tmov\s%rbp,\s%rsp\n_s)) )))
          (set call (SCons( (close call) (close(SAtom '\tpop\s%rbp\n_s)) )))
 
-         (set r (maybe-deref(fragment::set-offset( r offset ))))
+         (set r (fragment::set-offset( r offset )))
 
          (let expr 'Invalid\sExpression_s)
          (match (sizeof-type return-type) (
@@ -699,19 +699,19 @@ compile-stack-call := λ(: ctx FContext)(: function-name String)(: return-type T
                      (set call (SCons( (close call) (close(SAtom '\[%rsp\]\n_s)) )))
                      (set rsi (+( rsi 8_u64 )))
                   )))
-                  (set r (maybe-deref(fragment::set-offset( r (-( offset (as rsz I64) )) ))))
+                  (set r (fragment::set-offset( r (-( offset (as rsz I64) )) )))
                )) (
-                  (set r (maybe-deref(fragment::set-offset( r offset ))))
+                  (set r (fragment::set-offset( r offset )))
                ))
             ))
          ))
 
-         (set r (maybe-deref(fragment::set( r 'program_s call ))))
-         (set r (maybe-deref(fragment::set( r 'expression_s (SAtom expr) ))))
-         (set r (maybe-deref(fragment::set-type( r return-type ))))
+         (set r (fragment::set( r 'program_s call )))
+         (set r (fragment::set( r 'expression_s (SAtom expr) )))
+         (set r (fragment::set-type( r return-type )))
       )))
    ))
-   (set r (maybe-deref(fragment::set-context( r ctx ))))
+   (set r (fragment::set-context( r ctx )))
    r
 )) Fragment);
 
