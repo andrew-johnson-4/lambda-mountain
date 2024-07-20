@@ -656,11 +656,11 @@ compile-stack-call := λ(: ctx FContext)(: function-name String)(: return-type T
          (set call (SCons( (close call) (close(SAtom '\oCall\sFunction\s_s)) )))
          (set call (SCons( (close call) (close(SAtom function-name)) )))
          (set call (SCons( (close call) (close(SAtom '\s:\s_s)) )))
-         (set call (SCons( (close call) (close(SAtom(to-string (maybe-deref(fragment::get-type f))))) )))
+         (set call (SCons( (close call) (close(SAtom(to-string (fragment::get-type f)))) )))
          (set call (SCons( (close call) (close(SAtom '\n\oArgument:\s_s)) )))
          (set call (SCons( (close call) (close(SAtom function-name)) )))
          (set call (SCons( (close call) (close(SAtom '\s:\s_s)) )))
-         (set call (SCons( (close call) (close(SAtom(to-string (maybe-deref(typeof args))))) )))
+         (set call (SCons( (close call) (close(SAtom(to-string (typeof args)))) )))
          (set call (SCons( (close call) (close(SAtom '\n_s)) )))
          (set call (SCons( (close call) (close(SAtom '\oReturn:\s_s)) )))
          (set call (SCons( (close call) (close(SAtom function-name)) )))
@@ -691,7 +691,7 @@ compile-stack-call := λ(: ctx FContext)(: function-name String)(: return-type T
             ( rsz (
                (if (is( used Used )) (tail(
                   (let rsi 0_u64)
-                  (let args-size (sizeof-type(maybe-deref(typeof args))))
+                  (let args-size (sizeof-type(typeof args)))
                   (let rel-off (-( -24_i64 (as args-size I64) )))
                   (while (<( rsi rsz )) (tail(
                      (set call (SCons( (close call) (close(SAtom '\tpush\s_s)) )))

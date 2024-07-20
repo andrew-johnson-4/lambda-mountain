@@ -2274,7 +2274,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type). (
          (set tctx (TCtxBind(
             (close tctx) lname rt ASTEOF
          )))
-         (ascript-normal( term (maybe-deref(t1 'Nil_s)) ))
+         (ascript-normal( term (t1 'Nil_s) ))
       )))
       ( (App( l r )) (tail(
          (set tctx (infer-expr( tctx l Unscoped TAny )))

@@ -71,7 +71,7 @@ fragment::set := λ(: e Fragment)(: k String)(: v S). (: (tail(
 )) Fragment);
 
 fragment::get-type := λ(: e Fragment) . (: (tail(
-   (let tt (maybe-deref(.2( (as e Tag<Fragment>) ))))
+   (let tt (.2( (as e Tag<Fragment>) )))
    tt
 )) Type);
 
