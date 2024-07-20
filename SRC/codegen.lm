@@ -501,26 +501,3 @@ compile-stack-call := λ(: ctx FContext)(: function-name String)(: return-type T
    r
 )) Fragment);
 
-compile-maybe-push-stack := λ(: ctx FContext)(: offset I64)(: fragment Fragment)(: expression-type Type)(: sloc AST). (: (tail(
-   (let ft (maybe-deref(fragment::get-type( fragment ))))
-   (if (non-zero ft) () (set ft expression-type))
-   (match (slot( ft 'StackVariable_s )) (
-      ()
-      ( (TGround( 'StackVariable_s _ )) () )
-      ( _ (tail(
-         (let f-arg (maybe-deref(fragment::set-type( fragment ft ))))(set fragment f-arg)
-         (let f-1 (maybe-deref(fragment-apply(
-            ctx offset 'push_s
-            (FLSeq( (close FLEOF) fragment ))
-            (t3( 'Arrow_s ft
-                          (and( (t1 'StackVariable_s) (t2( 'Sized_s (t1(to-string(sizeof-aligned ft))) )) ))
-            ))
-            sloc
-         ))))(set fragment f-1)
-         (let f-sz (as (sizeof-aligned ft) I64))
-         (let f-2 (maybe-deref(fragment::set-offset( fragment (-( offset f-sz )) ))))(set fragment f-2)
-      )))
-   ))
-   fragment
-)) Fragment);
-
