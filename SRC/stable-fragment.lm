@@ -115,7 +115,7 @@ fragment::expression := λ(: val S). (: (tail(
 )) Fragment);
 
 fragment::get-context := λ(: e Fragment) . (: (tail(
-   (let ctx (maybe-deref(.1( (as e Tag<Fragment>) ))))
+   (let ctx (open(.1( (as e Tag<Fragment>) ))))
    ctx
 )) FContext);
 
@@ -538,7 +538,7 @@ fragment::chain := λ(: fragment-ctx FragmentList)(: e Fragment). (: (tail(
 )) Fragment);
 
 apply-direct := λ(: ctx FContext)(: arrow Fragment)(: args FragmentList)(: e-proto Fragment)(: chain U8). (: (tail(
-   (match (maybe-deref(fragment::get( arrow 'fragment_s ))) (
+   (match (fragment::get( arrow 'fragment_s )) (
       ()
       ( (SCons( (SAtom 'Abs_s) (SCons( lhs rhs )) )) (tail(
          (set ctx (destructure-lhs( ctx lhs args )))

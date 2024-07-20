@@ -417,7 +417,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set e (compile-expr( ctx t stack-offset Used )))
          (set e (fragment::set-context( e ctx )))
       )))
-      ( (App( (Var( 'maybe-deref_s _ )) t )) (tail(
+      ( (App( (Var( 'open_s _ )) t )) (tail(
          (set e (compile-expr( ctx t stack-offset Used )))
          (let tt (typeof t))
          (match (slot( tt 'Array_s )) (

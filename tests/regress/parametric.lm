@@ -16,7 +16,7 @@ main := λ. (: (tail(
   (print (f -5_i64))(print '\n_s)
   (print (f 5_u64))(print '\n_s)
   (print (f -5_i64))(print '\n_s)
-  (print (maybe-deref(custom-close(SAtom 'X_s))))(print '\n_s)
-  (print (maybe-deref(custom-close(SAtom 'Y_s))))(print '\n_s)
+  (print (open(custom-close(SAtom 'X_s))))(print '\n_s)
+  (print (open(custom-close(SAtom 'Y_s))))(print '\n_s)
 )) Nil);
 

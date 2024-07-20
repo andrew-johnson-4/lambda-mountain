@@ -1896,7 +1896,7 @@ assert-well-typed := λ(: term AST). (: (
          (assert-well-typed rterm)
          (assert-one-typed term)
       )))
-      ( (App( (Var( 'maybe-deref_s _ )) rterm )) (tail(
+      ( (App( (Var( 'open_s _ )) rterm )) (tail(
          (assert-well-typed rterm)
          (assert-one-typed term)
       )))
@@ -2242,7 +2242,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type). (
          (infer-expr( tctx r Scoped TAny ))
          (ascript-normal( term (typeof r) ))
       )))
-      ( (App( (Var( 'maybe-deref_s _ )) r )) (tail(
+      ( (App( (Var( 'open_s _ )) r )) (tail(
          (set tctx (infer-expr( tctx r Unscoped TAny )))
          (let deref-type (typeof r))
          (match (slot( deref-type 'Array_s )) (
