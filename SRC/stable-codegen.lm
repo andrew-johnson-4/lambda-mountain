@@ -46,3 +46,11 @@ compile-expr := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used IsUsed
    ))
    e
 )) Fragment);
+
+compile-stack-call-push-args := λ(: ctx FContext)(: args AST)(: inner-offset I64). (: (tail(
+   (let stack-offset 0_i64)
+   (let translate-delta (-( 8_i64 inner-offset )))
+   (set ctx (translate-local-variables( ctx translate-delta )))
+   (let r (compile-push-rvalue( ctx args stack-offset )))
+   r
+)) Fragment);
