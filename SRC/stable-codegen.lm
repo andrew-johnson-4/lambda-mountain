@@ -448,7 +448,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       )))
       ( (App( (Var( 'sizeof_s _ )) (AType tt) )) (tail(
          (let sz (sizeof-type( tt )))
-         (let e1 (maybe-deref(fragment::expression(to-string sz))))
+         (set e (fragment::expression(to-string sz)))
          (let et (TAnd( 
             (close(t1 'Literal_s))
             (close(TAnd(
@@ -459,28 +459,27 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                )))
             )))
          )))
-         (let e1-2 (maybe-deref(fragment::set-type( e1 et ))))(set e1 e1-2)
-         (let e1-3 (maybe-deref(fragment::set-context( e1 ctx ))))(set e1 e1-3)
-         (let e1-4 (maybe-deref(fragment::set-offset( e1 stack-offset ))))(set e1 e1-4)
-         (set e e1)
+         (set e (fragment::set-type( e et )))
+         (set e (fragment::set-context( e ctx )))
+         (set e (fragment::set-offset( e stack-offset )))
       )))
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (tail(
-         (let e-1 (maybe-deref(compile-expr( ctx t stack-offset used ))))(set e e-1)
-         (let e-2 (maybe-deref(fragment::set-type( e (maybe-deref(typeof term)) ))))(set e e-2)
+         (set e (compile-expr( ctx t stack-offset used )))
+         (set e (fragment::set-type( e (typeof term) )))
       )))
       ( (App( (App( (Var( 'set_s _ )) (Var( k _ )) )) rhs )) (tail(
-         (let kt (maybe-deref(typeof rhs)))
+         (let kt (typeof rhs))
 
-         (let e1 (maybe-deref(compile-expr( ctx rhs stack-offset Used ))))
-         (let e1-2 (maybe-deref(fragment::set-type( e1 kt ))))(set e1 e1-2)
-         (let e2 (maybe-deref(fragment-context::lookup( ctx k kt term ))))
-         (let e3 (maybe-deref(fragment-apply( ctx stack-offset 'mov_s
+         (let e1 (compile-expr( ctx rhs stack-offset Used )))
+         (set e1 (fragment::set-type( e1 kt )))
+         (let e2 (fragment-context::lookup( ctx k kt term )))
+         (set e (fragment-apply( ctx stack-offset 'mov_s
             (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
             (t3( 'Arrow_s (t3( 'Cons_s (fragment::get-type e1) (fragment::get-type e2) )) (t1 'Nil_s) ))
             term
-         ))))(set e e3)
-         (let e3-2 (maybe-deref(fragment::set-context( e ctx ))))(set e e3-2)
-         (let e3-3 (maybe-deref(fragment::set-offset( e stack-offset ))))(set e e3-3)
+         )))
+         (set e (fragment::set-context( e ctx )))
+         (set e (fragment::set-offset( e stack-offset )))
       )))
       ( (App( (App( (Var( 'while_s _ )) cond )) body )) (tail(
          (let e1 (maybe-deref(compile-expr( ctx cond stack-offset Used ))))
