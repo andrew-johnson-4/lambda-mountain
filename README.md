@@ -10,8 +10,9 @@ The whole compiler is only 5000 lines of code, so this could be a good starting 
 ### "Portable" Assembler
 
 LM provides abstraction up to the level that you want and down to the level that you want.
-Code that is not platform specific will not be platform specific.
-By selectively applying specialization for platform specific optimizations it becomes possible to utilize the best features of each platform *serendipitously*.
+Each LM program specifies the exact binary object to be created, so there is zero room for interpretation by the compiler.
+Platform specific functionality can be provided by libraries.
+The compiler has zero hard-coded logic for how to deal with platform architecture.
 
 ### Why Such a Small Codebase?
 
