@@ -1,5 +1,4 @@
 
-import SRC/codegen.lm;
 import SRC/assemble.lm;
 
 config-strict                := True_u8;
