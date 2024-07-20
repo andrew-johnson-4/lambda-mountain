@@ -6,7 +6,7 @@ assemble-final                           := '_s;
 assemble-argv-referenced                 := False_u8;
 
 compile := λ(). (: (tail(
-   (let global-ctx (maybe-deref(fragment-context::new())))
+   (let global-ctx (fragment-context::new()))
    (let preview-program ast-parsed-program)
    (while (non-zero preview-program) (match preview-program (
       ()
@@ -19,21 +19,17 @@ compile := λ(). (: (tail(
             ( _ () )
          ))
          (if (==( is-template True_u8 )) (tail(
-            (let fragment (maybe-deref(fragment::new())))
-            (let fragment-2 (maybe-deref(fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))
-            (let fragment-3 (maybe-deref(fragment::set( fragment-2 'fragment_s (maybe-deref(to-s rhs)) ))))
-            (let fragment-4 (maybe-deref(fragment::set-type( fragment-3 (maybe-deref(typeof rhs)) ))))
-            (let global-ctx-2 (maybe-deref(fragment-context::bind(
-               global-ctx
-               k
-               (maybe-deref(typeof rhs))
-               fragment-4
-            ))))
+            (let fragment (fragment::new()))
+            (set fragment (fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) )))
+            (set fragment (fragment::set( fragment 'fragment_s (maybe-deref(to-s rhs)) )))
+            (set fragment (fragment::set-type( fragment (typeof rhs) )))
+            (set global-ctx (fragment-context::bind(
+               global-ctx k (typeof rhs) fragment
+            )))
             (match preview-program (
                ()
-               ( (Seq( _ frg )) (ascript( (fragment::get( fragment-4 'fragment_s )) (typeof frg) )) )
+               ( (Seq( _ frg )) (ascript( (fragment::get( fragment 'fragment_s )) (typeof frg) )) )
             ))
-            (set global-ctx global-ctx-2)
          )) ())
          (set preview-program rst)
       )))
