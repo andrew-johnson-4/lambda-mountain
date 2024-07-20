@@ -81,29 +81,6 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (tail(
    ))
 )) Nil);
 
-compile-expr := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used IsUsed). (: (tail(
-   (let e (maybe-deref(fragment::new())))
-   (match used (
-      ()
-      ( Return (tail(
-         (let e-1 (maybe-deref(compile-expr-direct( ctx term stack-offset Used ))))(set e e-1)
-         (let term-tt (typeof term))
-         (if (==( (sizeof-type term-tt) 0_u64 )) () (tail(
-            (let e-2 (maybe-deref(fragment-apply( ctx stack-offset 'cdecl::return_s
-               (FLSeq( (close FLEOF) e ))
-               (typeof term)
-               term
-            ))))(set e e-2)
-         )))
-      )))
-      ( _ (tail(
-         (let e-1 (maybe-deref(compile-expr-direct( ctx term stack-offset used ))))
-         (set e e-1)
-      )))
-   ))
-   e
-)) Fragment);
-
 compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used IsUsed). (: (tail(
    (let e (maybe-deref(fragment::new())))
    (set e (maybe-deref(fragment::set-context( e ctx ))))

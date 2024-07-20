@@ -24,3 +24,25 @@ translate-local-variables := λ(: ctx FContext)(: delta I64). (: (tail(
    ))
    ctx
 )) FContext);
+
+compile-expr := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used IsUsed). (: (tail(
+   (let e (fragment::new()))
+   (match used (
+      ()
+      ( Return (tail(
+         (set e (compile-expr-direct( ctx term stack-offset Used )))
+         (let term-tt (typeof term))
+         (if (==( (sizeof-type term-tt) 0_u64 )) () (
+            (set e (fragment-apply( ctx stack-offset 'cdecl::return_s
+               (FLSeq( (close FLEOF) e ))
+               (typeof term)
+               term
+            )))
+         ))
+      )))
+      ( _ (
+         (set e (compile-expr-direct( ctx term stack-offset used )))
+      ))
+   ))
+   e
+)) Fragment);
