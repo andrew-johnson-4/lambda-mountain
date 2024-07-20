@@ -601,29 +601,22 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set e (fragment::set-type( e (typeof term) )))
       )))
       ( (App( f a )) (
-         (match (slot( (maybe-deref(typeof f)) 'Arrow_s )) (
+         (match (slot( (typeof f) 'Arrow_s )) (
             ()
             ( (TGround( 'Arrow_s _ )) (
                (match f (
                   ()
-                  ( (Var( fname _ )) (tail(
-                     (let e1 (maybe-deref(compile-stack-call( ctx fname (maybe-deref(typeof term)) a stack-offset used ))))
-                     (set e e1)
-                  )))
-                  ( (App( (Lit( ':_s _ )) (App( (Var( fname _ )) (AType ft) )) )) (tail(
-                     (let e1 (maybe-deref(compile-stack-call( ctx fname (maybe-deref(typeof term)) a stack-offset used ))))
-                     (set e e1)
-                  )))
-                  ( (Lit( fname _ )) (tail(
-                     (let e1 (maybe-deref(compile-constructor( ctx fname (maybe-deref(typeof term)) (maybe-deref(typeof a)) a stack-offset ))))
-                     (set e e1)
-                  )))
-                  ( (App( (Lit( ':_s _ )) (App( (Lit( fname _ )) (AType ft) )) )) (tail(
-                     (let e1 (maybe-deref(compile-constructor( ctx fname (maybe-deref(typeof term)) (maybe-deref(typeof a)) a stack-offset ))))
-                     (set e e1)
-                  )))
-                  ( _ (
-                     (exit-error( 'Unexpected\sApplication\sTerm_s term ))
+                  ( (Var( fname _ )) (
+                     (set e (compile-stack-call( ctx fname (typeof term) a stack-offset used )))
+                  ))
+                  ( (App( (Lit( ':_s _ )) (App( (Var( fname _ )) (AType ft) )) )) (
+                     (set e (compile-stack-call( ctx fname (typeof term) a stack-offset used )))
+                  ))
+                  ( (Lit( fname _ )) (
+                     (set e (compile-constructor( ctx fname (typeof term) (typeof a) a stack-offset )))
+                  ))
+                  ( (App( (Lit( ':_s _ )) (App( (Lit( fname _ )) (AType ft) )) )) (
+                     (set e (compile-constructor( ctx fname (typeof term) (typeof a) a stack-offset )))
                   ))
                ))
             ))
@@ -631,18 +624,13 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                (if (is( used Used )) (
                   (exit-error( 'Raw\sCons\sCells\sNot\sPermitted\sIn\sStrict\sMode_s term ))
                ) (tail(
-                  (let e1 (maybe-deref(compile-expr( ctx f stack-offset Unused ))))
-                  (let e2 (maybe-deref(compile-expr( (maybe-deref(fragment::get-context e1)) a (fragment::get-offset e1) used ))))
-                  (let e12 (maybe-deref(fragment::chain( e1 e2 ))))
-                  (set e e12)
+                  (let e1 (compile-expr( ctx f stack-offset Unused )))
+                  (let e2 (compile-expr( (fragment::get-context e1) a (fragment::get-offset e1) used )))
+                  (set e (fragment::chain( e1 e2 )))
                ))) 
             ))
          ))
       ))
-      ( u (exit-error( 'compile-expr\sUnsupported\sExpression_s term )))
-   ))
-   (if (non-zero(maybe-deref(fragment::get-context( e )))) () (
-      (exit-error( 'Context\sBecame\sNull_s term ))
    ))
    e
 )) Fragment);
