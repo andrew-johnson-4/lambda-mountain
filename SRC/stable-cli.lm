@@ -1,6 +1,4 @@
 
-import SRC/assemble.lm;
-
 config-strict                := True_u8;
 config-preprocess            := True_u8;
 config-target                := 'tmp.s_s;
