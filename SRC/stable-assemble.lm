@@ -144,7 +144,7 @@ compile-type-case := λ(: ctx FContext)(: base-type Type)(: rhs AST)(: case-numb
          (set ctx (compile-define-tag-constructor( ctx tag TAny base-type rtype case-number )))
       )))
       ( (App( (Lit( tag _ )) args )) (tail(
-         (let atype (maybe-deref(type-of-s args)))
+         (let atype (type-of-s args))
          (let rtype (TAnd( (close base-type) (close(parse-type tag)) )))
          (set ctx (compile-define-tag-constructor( ctx tag atype base-type rtype case-number )))
       )))
@@ -165,38 +165,38 @@ compile-define-tag-constructor := λ(: ctx FContext)(: tag String)(: arg-types T
    (let fragment push-template)
    (let arrow-tt (substitute( tag-tctx (fragment::get-type fragment) )))
    (set arrow-tt (TAnd( (close arrow-tt) (close(t1 'DontChain_s)) )))
-   (set fragment (maybe-deref(fragment::set-type( fragment arrow-tt ))))
-   (set fragment (maybe-deref(fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))
+   (set fragment (fragment::set-type( fragment arrow-tt )))
+   (set fragment (fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) )))
    (let spt (substitute( case-tctx (fragment::get( fragment 'fragment_s )) )))
    (ascript( spt (typeof( (fragment::get( fragment 'fragment_s )) )) ))
-   (set fragment (maybe-deref(fragment::set( fragment 'fragment_s spt ))))
-   (set ctx (maybe-deref(fragment-context::bind(
+   (set fragment (fragment::set( fragment 'fragment_s spt )))
+   (set ctx (fragment-context::bind(
       ctx 'push_s arrow-tt fragment
-   ))))
+   )))
 
    (set fragment movl-template)
    (set arrow-tt (substitute( tag-tctx (fragment::get-type fragment) )))
    (set arrow-tt (TAnd( (close arrow-tt) (close(t1 'DontChain_s)) )))
-   (set fragment (maybe-deref(fragment::set-type( fragment arrow-tt ))))
-   (set fragment (maybe-deref(fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))
+   (set fragment (fragment::set-type( fragment arrow-tt )))
+   (set fragment (fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) )))
    (set spt (substitute( case-tctx (fragment::get( fragment 'fragment_s )) )))
    (ascript( spt (typeof( (fragment::get( fragment 'fragment_s )) )) ))
-   (set fragment (maybe-deref(fragment::set( fragment 'fragment_s spt ))))
-   (set ctx (maybe-deref(fragment-context::bind(
+   (set fragment (fragment::set( fragment 'fragment_s spt )))
+   (set ctx (fragment-context::bind(
       ctx 'mov_s arrow-tt fragment
-   ))))
+   )))
 
    (set fragment movg-template)
    (set arrow-tt (substitute( tag-tctx (fragment::get-type fragment) )))
    (set arrow-tt (TAnd( (close arrow-tt) (close(t1 'DontChain_s)) )))
-   (set fragment (maybe-deref(fragment::set-type( fragment arrow-tt ))))
-   (set fragment (maybe-deref(fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) ))))
+   (set fragment (fragment::set-type( fragment arrow-tt )))
+   (set fragment (fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) )))
    (set spt (substitute( case-tctx (fragment::get( fragment 'fragment_s )) )))
    (ascript( spt (typeof( (fragment::get( fragment 'fragment_s )) )) ))
-   (set fragment (maybe-deref(fragment::set( fragment 'fragment_s spt ))))
-   (set ctx (maybe-deref(fragment-context::bind(
+   (set fragment (fragment::set( fragment 'fragment_s spt )))
+   (set ctx (fragment-context::bind(
       ctx 'mov_s arrow-tt fragment
-   ))))
+   )))
 
    ctx
 )) FContext);
@@ -210,7 +210,7 @@ compile-finish := λ. (: (tail(
       (set output (SCons( (close output) (close(compile-data-header())) )))
       (set output (SCons( (close output) (close assemble-data-section) )))
    )) ())
-   (set assemble-final (clone-rope(maybe-deref(escape-string output))))
+   (set assemble-final (clone-rope(escape-string output)))
 )) Nil);
 
 compile-write := λ. (: (tail(
