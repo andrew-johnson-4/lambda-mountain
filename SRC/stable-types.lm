@@ -1770,7 +1770,7 @@ infer-global-context := λ(: td AST). (: (
          )))
       )))
       ( (Glb( k_t (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) )) (tail(
-         (let kt (and( rhst (t1 'GlobalVariable_s) )))
+         (let kt (and( (without-representation rhst) (t1 'GlobalVariable_s) )))
          (set global-type-context (TCtxBind(
             (close global-type-context) k kt ASTEOF
          )))
@@ -1998,7 +1998,7 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (
          ))
          (print '\n_s)
       )))
-      #(exit 1_u64)      
+      (exit 1_u64)      
    )) ())
    (match rs (
       ()
