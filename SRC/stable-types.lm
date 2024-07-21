@@ -1983,12 +1983,13 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (
    (let rs (apply-plural( function-name ft pt do-specialize )))
    (if (==( (.length rs) 0_u64 )) (tail(
       (print 'Function\sApplication\sYielded\sNo\sMatches\n_s)
-      (print function-name)(print '\s:\s_s)(print pt)(print '\n_s)
+      (print function-name)(print '\nWith\sArgument\s:\s_s)(print pt)(print '\n_s)
       (exit 1_u64)
    )) ())
    (if (>( (.length rs) 1_u64 )) (tail(
       (print 'Function\sApplication\sYielded\sAn\sIrreducible\sPlurality\sOf\sMatches\n_s)
-      (print function-name)(print '\s:\s_s)(print pt)(print '\n_s)
+      (print function-name)(print '\s:\s_s)(print ft)(print '\n_s)
+      (print 'With\sArgument\s_s)(print pt)(print '\n_s)
       (let rs-copy rs)
       (while (non-zero( rs-copy )) (tail(
          (print 'Matched\s_s)
