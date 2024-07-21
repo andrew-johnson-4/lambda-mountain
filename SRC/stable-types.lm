@@ -1958,22 +1958,25 @@ apply-and-specialize := λ(: function-name String)(: ft Type)(: pt Type). (: (ta
    tt
 )) Type);
 
-apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (: (tail(
-   (let r TAny)
+apply-plural := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (: (tail(
+   (let r (list::new()))
    (match ft (
       ()
-      ( (TAnd( t1 t2 )) (tail(
-         (set r (apply( function-name t1 pt do-specialize )))
-         (if (non-zero r) () (
-            (set r (apply( function-name t2 pt do-specialize )))
-         ))
-      )))
+      ( (TAnd( t1 t2 )) (
+         (set r (+(
+            (apply-plural( function-name t1 pt do-specialize ))
+            (apply-plural( function-name t2 pt do-specialize ))
+         )))
+      ))
       ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (tail(
          (let ctx (unify( fpt pt )))
          (if (non-zero ctx) (tail(
             (set ctx (normalize ctx))
             (let closed-type (substitute( ctx ft )))
-            (set r (guess-representation(substitute( ctx frt ))))
+            (set r (cons(
+               (guess-representation(substitute( ctx frt )))
+               r
+            )))
             (if (&&( (==( do-specialize True_u8 )) (is-open fpt) )) (tail(
                (if (is-open closed-type) (tail(
                   (print 'Application\sDid\sNot\sClose\sBefore\sSpecialization:\n_s)
@@ -1987,6 +1990,29 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (
       )))
       ( _ () )
    ))
+   r
+)) List<Type>);
+
+apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (: (tail(
+   (let r TAny)
+   (let rs (apply-plural( function-name ft pt do-specialize )))
+   (if (>( (.length rs) 1_u64 )) (tail(
+      (print 'Function\sApplication\sYielded\sAn\sIrreducible\sPlurality\sOf\sMatches\n_s)
+      (print function-name)(print '\s:\s_s)(print pt)(print '\n_s)
+      (while (>( (.length rs) 0_u64 )) (tail(
+         (print 'Matched\s_s)(print (head rs))(print '\n_s)
+         (set rs (tail rs))
+      )))
+      (exit 1_u64)      
+   )) ())
+   (if (==( (.length rs) 0_u64 )) (tail(
+      (print 'Function\sApplication\sYielded\sNo\sMatches\n_s)
+      (print function-name)(print '\s:\s_s)(print pt)(print '\n_s)
+      (exit 1_u64)
+   )) ())
+   (if (==( (.length rs) 1_u64 )) (
+      (set r (head rs))
+   ) ())
    r
 )) Type);
 
