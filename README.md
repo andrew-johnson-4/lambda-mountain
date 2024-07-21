@@ -10,7 +10,7 @@ The whole compiler is only 5000 lines of code, so this could be a good starting 
 ### "Portable" Assembler
 
 LM provides abstraction up to the level that you want and down to the level that you want.
-Each LM program specifies the exact binary object to be created, so there is zero room for interpretation by the compiler.
+Each LM program specifies the exact binary objects to be created, so there is zero room for interpretation by the compiler.
 Platform specific functionality can be provided by libraries.
 The compiler therefore has zero hard-coded logic for how to deal with platform architecture.
 
