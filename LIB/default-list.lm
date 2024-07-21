@@ -1,6 +1,35 @@
 
 type List<x> LEOF | (LCons( x , List<x>[] )); zero List<x> LEOF;
 
+cons := λ(: hd x)(: tl List<x>). (: (tail(
+   (set tl (LCons( hd (close tl) )))
+   tl
+)) List<x>);
+
++ := λ(: hd List<x>)(: tl List<x>). (: (tail(
+   (set hd (reverse hd))
+   (while (non-zero hd) (match hd (
+      ()
+      ( (LCons( hdhd tlhd )) (tail(
+         (set tl (cons( hdhd tl )))
+         (set hd tlhd)
+      )))
+   )))
+   tl
+)) List<x>);
+
+.length := λ(: list List<x>). (: (tail(
+   (let l 0_u64)
+   (while (non-zero list) (tail(
+      (match list (
+         ()
+         ( (LCons( _ tl )) (set list tl) )
+      ))
+      (set l (+( l 1_u64 )))
+   )))
+   l
+)) U64);
+
 reverse := λ(: l List<x>). (: (tail(
    (let r (: LEOF List<x>))
    (while (non-zero l) (match l (

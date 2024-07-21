@@ -1691,7 +1691,6 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
    (match body (
       ()
       ( (Lit( tag _ )) (tail(
-         (annotate-head-accessor( base-type ))
          (let rtype (and(
             (and(
                base-type
@@ -1722,8 +1721,6 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
             (t2( 'Tag_s (t1 tag) ))
          )))
          (set-type-fields( base-type atype ))
-         (annotate-head-accessor( base-type ))
-         (annotate-accessors( base-type (t2( 'Tag_s (parse-type tag) )) atype ))
          (index-class-of-tag( tag base-type ))
          (index-fields-of-tag( tag base-type atype ))
          (.bind( (as (& type-constructors-index) BTreeEq<String,Type>[]) tag (t3( 'Arrow_s atype rtype )) ))
@@ -1734,57 +1731,6 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
    ))
    r
 )) U64);
-
-annotate-head-accessor := λ(: base-type Type). (: (tail(
-   (let tt (and( (t1 'U64_s) (t1 'Reg64_s) )))
-   (set global-type-context (TCtxBind(
-      (close global-type-context)
-      '.0_s
-      (t3( 'Arrow_s base-type tt ))
-      ASTEOF
-   )))
-)) Nil);
-
-annotate-accessors := λ(: base-type Type)(: tag-type Type)(: args-type Type). (: (tail(
-   (let base-type-2 (and(
-      base-type
-      tag-type
-   )))
-   (set base-type base-type-2)
-   (let field-number 1_u64)
-   (while (non-zero args-type) (match args-type (
-      ()
-      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF lt )) rt )) )) (tail(
-         (set rt (guess-representation rt))
-         (let accessor-name (clone-rope(SCons(
-            (close (SAtom '._s))
-            (close (SAtom (to-string field-number)))
-         ))))
-         (set global-type-context (TCtxBind(
-            (close global-type-context)
-            accessor-name
-            (t3( 'Arrow_s base-type rt ))
-            ASTEOF
-         )))
-         (set field-number (+( field-number 1_u64 )))
-         (set args-type lt)
-      )))
-      ( rt (tail(
-         (set rt (guess-representation rt))
-         (let accessor-name (clone-rope(SCons(
-            (close (SAtom '._s))
-            (close (SAtom (to-string field-number)))
-         ))))
-         (set global-type-context (TCtxBind(
-            (close global-type-context)
-            accessor-name
-            (t3( 'Arrow_s base-type rt ))
-            ASTEOF
-         )))
-         (set args-type TAny)
-      )))
-   )))
-)) Nil);
 
 infer-global-context := λ(: td AST). (: (
    (match td (
@@ -1824,7 +1770,7 @@ infer-global-context := λ(: td AST). (: (
          )))
       )))
       ( (Glb( k_t (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) )) (tail(
-         (let kt (and( rhst (t1 'GlobalVariable_s) )))
+         (let kt (and( (without-representation rhst) (t1 'GlobalVariable_s) )))
          (set global-type-context (TCtxBind(
             (close global-type-context) k kt ASTEOF
          )))
@@ -1958,34 +1904,128 @@ apply-and-specialize := λ(: function-name String)(: ft Type)(: pt Type). (: (ta
    tt
 )) Type);
 
-apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (: (tail(
-   (let r TAny)
+apply-plural := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (: (tail(
+   (let r (: LEOF List<Type>))
    (match ft (
       ()
-      ( (TAnd( t1 t2 )) (tail(
-         (set r (apply( function-name t1 pt do-specialize )))
-         (if (non-zero r) () (
-            (set r (apply( function-name t2 pt do-specialize )))
-         ))
-      )))
-      ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (tail(
-         (let ctx (unify( fpt pt )))
-         (if (non-zero ctx) (tail(
-            (set ctx (normalize ctx))
-            (let closed-type (substitute( ctx ft )))
-            (set r (guess-representation(substitute( ctx frt ))))
-            (if (&&( (==( do-specialize True_u8 )) (is-open fpt) )) (tail(
-               (if (is-open closed-type) (tail(
-                  (print 'Application\sDid\sNot\sClose\sBefore\sSpecialization:\n_s)
-                  (print 'Function\s_s)(print function-name)(print '\s:\s_s)(print ft)(print '\n_s)
-                  (print 'Argument\s_s)(print pt)(print '\n_s)
-                  (exit 1_u64)
-               )) ())
-               (try-specialize( function-name ft ctx closed-type ))
-            )) ())
-         )) ())
-      )))
+      ( (TAnd( t1 t2 )) (
+         (set r (+(
+            (apply-plural( function-name t1 pt do-specialize ))
+            (apply-plural( function-name t2 pt do-specialize ))
+         )))
+      ))
+      ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (
+         (if (can-unify( fpt pt )) (
+            (set r (cons( ft r )))
+         ) ())
+      ))
       ( _ () )
+   ))
+   r
+)) List<Type>);
+
+reduce-plural := λ(: pts List<Type>). (: (tail(
+   (let r (: LEOF List<Type>))
+   (while (non-zero pts) (match pts (
+      ()
+      ( (LCons( try tlt )) (tail(
+         (let maybes tlt)
+         (set pts tlt)
+         (while (non-zero maybes) (match maybes (
+            ()
+            ( (LCons( tst mrst )) (tail(
+               (if (non-zero try) (
+                  (if (can-unify( (domain tst) (domain try) )) (
+                     (set try TAny)
+                  ) ())
+               ) ())
+               (set maybes mrst)
+            )))
+         )))
+         (if (non-zero try) (
+            (set r (cons( try r )))
+         ) ())
+      )))
+   )))
+   (set pts r)
+   (set r (: LEOF List<Type>))
+   (while (non-zero pts) (match pts (
+      ()
+      ( (LCons( try tlt )) (tail(
+         (let maybes tlt)
+         (set pts tlt)
+         (while (non-zero maybes) (match maybes (
+            ()
+            ( (LCons( tst mrst )) (tail(
+               (if (non-zero try) (
+                  (if (can-unify( (domain tst) (domain try) )) (
+                     (set try TAny)
+                  ) ())
+               ) ())
+               (set maybes mrst)
+            )))
+         )))
+         (if (non-zero try) (
+            (set r (cons( try r )))
+         ) ())
+      )))
+   )))
+   r
+)) List<Type>);
+
+apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (: (tail(
+   (let r TAny)
+   (let rs (apply-plural( function-name ft pt do-specialize )))
+   (set rs (reduce-plural rs))
+   (if (==( (.length rs) 0_u64 )) (tail(
+      (print 'Function\sApplication\sYielded\sNo\sMatches\n_s)
+      (print function-name)(print '\nWith\sArgument\s:\s_s)(print pt)(print '\n_s)
+      (exit 1_u64)
+   )) ())
+   (if (>( (.length rs) 1_u64 )) (tail(
+      (print 'Function\sApplication\sYielded\sAn\sIrreducible\sPlurality\sOf\sMatches\n_s)
+      (print function-name)(print '\s:\s_s)(print ft)(print '\n_s)
+      (print 'With\sArgument\s_s)(print pt)(print '\n_s)
+      (let rs-copy rs)
+      (while (non-zero( rs-copy )) (tail(
+         (print 'Matched\s_s)
+         (match rs-copy (
+            ()
+            ( (LCons( hd tl )) (tail(
+               (print hd)
+               (set rs-copy tl)
+            )))
+         ))
+         (print '\n_s)
+      )))
+      (exit 1_u64)      
+   )) ())
+   (match rs (
+      ()
+      ( (LCons( sft _ )) (
+         (match sft (
+            ()
+            ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (tail(
+               (let ctx (unify( fpt pt )))
+               (set ctx (normalize ctx))
+               (let closed-type (substitute( ctx sft )))
+               (set r (guess-representation(substitute( ctx frt ))))
+               (if (&&( (==( do-specialize True_u8 )) (is-open sft) )) (tail(
+                  (if (is-open closed-type) (tail(
+                     (print 'Application\sDid\sNot\sClose\sBefore\sSpecialization:\n_s)
+                     (print 'Function\s_s)(print function-name)(print '\s:\s_s)(print sft)(print '\n_s)
+                     (print 'Argument\s_s)(print pt)(print '\n_s)
+                     (exit 1_u64)
+                  )) ())
+                  (try-specialize( function-name sft ctx closed-type ))
+               )) ())
+            )))
+            ( _ (tail(
+               (print 'Function\sNot\sSimple\sArrow:\s_s)(print sft)(print '\n_s)
+               (exit 1_u64)
+            )))
+         ))
+      ))
    ))
    r
 )) Type);
