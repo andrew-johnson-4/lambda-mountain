@@ -1968,26 +1968,11 @@ apply-plural := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize
             (apply-plural( function-name t2 pt do-specialize ))
          )))
       ))
-      ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (tail(
-         (let ctx (unify( fpt pt )))
-         (if (non-zero ctx) (tail(
-            (set ctx (normalize ctx))
-            (let closed-type (substitute( ctx ft )))
-            (set r (cons(
-               (guess-representation(substitute( ctx frt )))
-               r
-            )))
-            (if (&&( (==( do-specialize True_u8 )) (is-open fpt) )) (tail(
-               (if (is-open closed-type) (tail(
-                  (print 'Application\sDid\sNot\sClose\sBefore\sSpecialization:\n_s)
-                  (print 'Function\s_s)(print function-name)(print '\s:\s_s)(print ft)(print '\n_s)
-                  (print 'Argument\s_s)(print pt)(print '\n_s)
-                  (exit 1_u64)
-               )) ())
-               (try-specialize( function-name ft ctx closed-type ))
-            )) ())
-         )) ())
-      )))
+      ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (
+         (if (can-unify( fpt pt )) (
+            (set r (cons( ft r )))
+         ) ())
+      ))
       ( _ () )
    ))
    r
@@ -2020,7 +2005,30 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (
    )) ())
    (match rs (
       ()
-      ( (LCons( hd _ )) (set r hd) )
+      ( (LCons( sft _ )) (
+         (match sft (
+            ()
+            ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (tail(
+               (let ctx (unify( fpt pt )))
+               (set ctx (normalize ctx))
+               (let closed-type (substitute( ctx sft )))
+               (set r (guess-representation(substitute( ctx frt ))))
+               (if (&&( (==( do-specialize True_u8 )) (is-open sft) )) (tail(
+                  (if (is-open closed-type) (tail(
+                     (print 'Application\sDid\sNot\sClose\sBefore\sSpecialization:\n_s)
+                     (print 'Function\s_s)(print function-name)(print '\s:\s_s)(print sft)(print '\n_s)
+                     (print 'Argument\s_s)(print pt)(print '\n_s)
+                     (exit 1_u64)
+                  )) ())
+                  (try-specialize( function-name sft ctx closed-type ))
+               )) ())
+            )))
+            ( _ (tail(
+               (print 'Function\sNot\sSimple\sArrow:\s_s)(print sft)(print '\n_s)
+               (exit 1_u64)
+            )))
+         ))
+      ))
    ))
    r
 )) Type);
