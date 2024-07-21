@@ -1924,9 +1924,36 @@ apply-plural := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize
    r
 )) List<Type>);
 
+reduce-plural := λ(: pts List<Type>). (: (tail(
+   (let r (: LEOF List<Type>))
+   (while (non-zero pts) (match pts (
+      ()
+      ( (LCons( try tlt )) (tail(
+         (let maybes tlt)
+         (set pts tlt)
+         (while (non-zero maybes) (match maybes (
+            ()
+            ( (LCons( tst mrst )) (tail(
+               (if (non-zero try) (
+                  (if (can-unify( (domain tst) (domain try) )) (
+                     (set try TAny)
+                  ) ())
+               ) ())
+               (set maybes mrst)
+            )))
+         )))
+         (if (non-zero try) (
+            (set r (cons( try r )))
+         ) ())
+      )))
+   )))
+   r
+)) List<Type>);
+
 apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (: (tail(
    (let r TAny)
    (let rs (apply-plural( function-name ft pt do-specialize )))
+   (set rs (reduce-plural rs))
    (if (==( (.length rs) 0_u64 )) (tail(
       (print 'Function\sApplication\sYielded\sNo\sMatches\n_s)
       (print function-name)(print '\nWith\sArgument\s:\s_s)(print pt)(print '\n_s)
