@@ -195,30 +195,27 @@ fragment : DontChain branchfalse := λ(: _ Nil). (: (
    (.expression( 'jne ))
 ) BranchConditional);
 
-fragment : DontChain non-zero := λ(: l Reg64+U64). (: (
+fragment : DontChain as-branch-conditional := λ(: l Reg64). (: (
    (.program (
       \t 'cmp \s '$0 , \s '% (.expression l) \n
    ))
    (.expression( 'jne ))
 ) BranchConditional);
-fragment : DontChain non-zero := λ(: l Reg32+U32). (: (
+fragment : DontChain as-branch-conditional := λ(: l Reg32). (: (
    (.program (
       \t 'cmp \s '$0 , \s '% (.expression l) \n
    ))
    (.expression( 'jne ))
 ) BranchConditional);
-fragment : DontChain non-zero := λ(: l Reg16+U16). (: (
+fragment : DontChain as-branch-conditional := λ(: l Reg16). (: (
    (.program (
       \t 'cmp \s '$0 , \s '% (.expression l) \n
    ))
    (.expression( 'jne ))
 ) BranchConditional);
-fragment : DontChain non-zero := λ(: l Reg8+U8). (: (
+fragment : DontChain as-branch-conditional := λ(: l Reg8). (: (
    (.program (
       \t 'cmp \s '$0 , \s '% (.expression l) \n
    ))
    (.expression( 'jne ))
-) BranchConditional);
-fragment : DontChain non-zero := λ(: l BranchConditional). (: (
-   (.expression( (.expression l) ))
 ) BranchConditional);
