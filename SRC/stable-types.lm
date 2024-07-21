@@ -1935,7 +1935,7 @@ reduce-plural := λ(: pts List<Type>). (: (tail(
             ()
             ( (LCons( tst mrst )) (tail(
                (if (non-zero try) (
-                  (if (can-unify( (domain tst) (domain try) )) (
+                  (if (can-unify( (domain try) (domain tst) )) (
                      (set try TAny)
                   ) ())
                ) ())
@@ -1958,7 +1958,7 @@ reduce-plural := λ(: pts List<Type>). (: (tail(
             ()
             ( (LCons( tst mrst )) (tail(
                (if (non-zero try) (
-                  (if (can-unify( (domain tst) (domain try) )) (
+                  (if (can-unify( (domain try) (domain tst) )) (
                      (set try TAny)
                   ) ())
                ) ())

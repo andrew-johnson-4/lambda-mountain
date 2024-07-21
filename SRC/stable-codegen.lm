@@ -87,21 +87,17 @@ compile-destructure-args := λ(: tt Type)(: ctx FContext)(: lhs AST)(: offset I6
    ctx
 )) FContext);
 
-as-branch-conditional := λ(: f Fragment). (: (tail(
+as-branch-conditional := λ(: f Fragment)(: sloc AST). (: (tail(
    (let ft (fragment::get-type f))
    (match (slot( ft 'BranchConditional_s )) (
       ()
       ( (TGround( 'BranchConditional_s _ )) () )
-      ( _ (tail(
-         (set f (fragment::set-type( f (t1 'BranchConditional_s) )))
-         (set f (fragment::set( f 'expression_s (SAtom 'jne_s) )))
-         (set f (fragment::set( f 'program_s
-            (SCons(
-               (close(fragment::get( f 'program_s )))
-               (close(SAtom '\tcmp\s$0,\s%rax\n_s))
-            ))
+      ( _ (
+         (set f (fragment-apply(
+            (fragment::get-context f) (fragment::get-offset f) 'as-branch-conditional_s
+            (FLSeq( (close FLEOF) f )) (t3( 'Arrow_s ft (t1 'BranchConditional_s) )) sloc
          )))
-      )))
+      ))
    ))
    f
 )) Fragment);
@@ -229,7 +225,7 @@ compile-maybe-push-stack := λ(: ctx FContext)(: offset I64)(: fragment Fragment
             ctx offset 'push_s
             (FLSeq( (close FLEOF) fragment ))
             (t3( 'Arrow_s ft
-                          (and( (t1 'StackVariable_s) (t2( 'Sized_s (t1(to-string(sizeof-aligned ft))) )) ))
+               (and( (t1 'StackVariable_s) (t2( 'Sized_s (t1(to-string(sizeof-aligned ft))) )) ))
             ))
             sloc
          )))
@@ -483,7 +479,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       )))
       ( (App( (App( (Var( 'while_s _ )) cond )) body )) (tail(
          (let e1 (compile-expr( ctx cond stack-offset Used )))
-         (set e1 (as-branch-conditional e1))
+         (set e1 (as-branch-conditional( e1 cond )))
          (let e2 (compile-expr( (fragment::get-context e1) body (fragment::get-offset e1) Unused )))
          (let label-begin-loop (uuid()))
          (let label-do-loop (uuid()))
@@ -524,7 +520,9 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       )))
       ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (tail(
          (let rsp-offset (+( stack-offset -8_i64 )))
-         (let e1 (as-branch-conditional(compile-expr( ctx cond rsp-offset Used ))))
+         (let e1 (as-branch-conditional(
+            (compile-expr( ctx cond rsp-offset Used )) cond
+         )))
          (let e2 (compile-expr( (fragment::get-context e1) t (fragment::get-offset e1) used )))
          (let e3 (compile-expr( (fragment::get-context e1) f (fragment::get-offset e1) used )))
          (let end-offset (fragment::get-offset e2))
