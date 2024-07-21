@@ -1959,7 +1959,7 @@ apply-and-specialize := λ(: function-name String)(: ft Type)(: pt Type). (: (ta
 )) Type);
 
 apply-plural := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (: (tail(
-   (let r (list::new()))
+   (let r (: LEOF List<Type>))
    (match ft (
       ()
       ( (TAnd( t1 t2 )) (
@@ -1996,23 +1996,32 @@ apply-plural := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize
 apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (: (tail(
    (let r TAny)
    (let rs (apply-plural( function-name ft pt do-specialize )))
-   (if (>( (.length rs) 1_u64 )) (tail(
-      (print 'Function\sApplication\sYielded\sAn\sIrreducible\sPlurality\sOf\sMatches\n_s)
-      (print function-name)(print '\s:\s_s)(print pt)(print '\n_s)
-      (while (>( (.length rs) 0_u64 )) (tail(
-         (print 'Matched\s_s)(print (head rs))(print '\n_s)
-         (set rs (tail rs))
-      )))
-      (exit 1_u64)      
-   )) ())
    (if (==( (.length rs) 0_u64 )) (tail(
       (print 'Function\sApplication\sYielded\sNo\sMatches\n_s)
       (print function-name)(print '\s:\s_s)(print pt)(print '\n_s)
       (exit 1_u64)
    )) ())
-   (if (==( (.length rs) 1_u64 )) (
-      (set r (head rs))
-   ) ())
+   (if (>( (.length rs) 1_u64 )) (tail(
+      (print 'Function\sApplication\sYielded\sAn\sIrreducible\sPlurality\sOf\sMatches\n_s)
+      (print function-name)(print '\s:\s_s)(print pt)(print '\n_s)
+      (let rs-copy rs)
+      (while (non-zero( rs-copy )) (tail(
+         (print 'Matched\s_s)
+         (match rs-copy (
+            ()
+            ( (LCons( hd tl )) (tail(
+               (print hd)
+               (set rs-copy tl)
+            )))
+         ))
+         (print '\n_s)
+      )))
+      #(exit 1_u64)      
+   )) ())
+   (match rs (
+      ()
+      ( (LCons( hd _ )) (set r hd) )
+   ))
    r
 )) Type);
 
