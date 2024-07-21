@@ -1691,7 +1691,6 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
    (match body (
       ()
       ( (Lit( tag _ )) (tail(
-         (annotate-head-accessor( base-type ))
          (let rtype (and(
             (and(
                base-type
@@ -1722,7 +1721,6 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (tail(
             (t2( 'Tag_s (t1 tag) ))
          )))
          (set-type-fields( base-type atype ))
-         (annotate-head-accessor( base-type ))
          (annotate-accessors( base-type (t2( 'Tag_s (parse-type tag) )) atype ))
          (index-class-of-tag( tag base-type ))
          (index-fields-of-tag( tag base-type atype ))
@@ -1740,7 +1738,25 @@ annotate-head-accessor := λ(: base-type Type). (: (tail(
    (set global-type-context (TCtxBind(
       (close global-type-context)
       '.0_s
-      (t3( 'Arrow_s base-type tt ))
+      (t3( 'Arrow_s (and( base-type (t1 'LocalVariable_s) )) tt ))
+      ASTEOF
+   )))
+   (set global-type-context (TCtxBind(
+      (close global-type-context)
+      '.0_s
+      (t3( 'Arrow_s (and( base-type (t1 'GlobalVariable_s) )) tt ))
+      ASTEOF
+   )))
+   (set global-type-context (TCtxBind(
+      (close global-type-context)
+      '.0_s
+      (t3( 'Arrow_s (and( base-type (t1 'StackVariable_s) )) tt ))
+      ASTEOF
+   )))
+   (set global-type-context (TCtxBind(
+      (close global-type-context)
+      '.0_s
+      (t3( 'Arrow_s (and( base-type (t1 'Constant_s) )) tt ))
       ASTEOF
    )))
 )) Nil);
@@ -1791,6 +1807,7 @@ infer-global-context := λ(: td AST). (: (
       ()
       ( (Typedef( (Lit( base-type _ )) case-constructors )) (tail(
          (let bt (parse-type base-type))
+         (annotate-head-accessor( bt ))
          (let size (infer-type-definition( bt case-constructors 0_u64 )))
          (match bt (
             ()
