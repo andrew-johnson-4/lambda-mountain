@@ -24,9 +24,10 @@ index-typedefs := λ(: def AST)(: index U64) . (: (
          (index-index-of-tag( tag index ))
          (index-typedefs( tds (+( index 1_u64 )) ))
       )))
-      ( (Lit( tag _ )) (
+      ( (Lit( tag _ )) (tail(
          (index-index-of-tag( tag index ))
-      ))
+         (index-lone-tag( tag ))
+      )))
       ( (App( (Lit( tag _ )) _ )) (
          (index-index-of-tag( tag index ))
       ))
@@ -466,7 +467,10 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (ta
    (match (Tuple( lhs term )) (
       ()
       ( (Tuple( ASTNil ASTNil )) (set r CtxNil) )
-      ( (Tuple( (App( (App( (Var( _ _ )) (Var( _ _ )) )) (Var( _ _ )) )) (App( (App( (Lit( _ _ )) _ )) _ )) )) () )
+      ( (Tuple( (App(pl pr)) (App( (Lit( tag _ )) (App( (Lit( possibly-tag _ )) _ )) )) )) (tail(
+         (print 'Nesting\s_s)(print tag)(print '\s,\s_s)(print possibly-tag)(print '\n_s)
+      )))
+      ( (Tuple( (App( (App( (Var( _ _ )) (Var( _ _ )) )) (Var( _ _ )) )) (App( (App( (Lit( possibly-tag _ )) _ )) _ )) )) () )
       ( (Tuple( (App( (Lit( ':Literal:_s _ )) (Var( pv _ )) )) (App( (Lit( ':_s ctk )) (App( (Lit( _ _ )) (AType _) )) )) )) (
          (set r (CtxBind( (close CtxNil) pv (relocate( term (location-of ctk) )) )))
       ))
