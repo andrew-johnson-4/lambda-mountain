@@ -467,12 +467,25 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (ta
    (match (Tuple( lhs term )) (
       ()
       ( (Tuple( ASTNil ASTNil )) (set r CtxNil) )
-      ( (Tuple( (App(pl pr)) (App( (Lit( tag _ )) (App( (Lit( possibly-tag _ )) _ )) )) )) (tail(
-         (print 'Nesting\s_s)(print tag)(print '\s,\s_s)(print possibly-tag)(print '\n_s)
-      )))
       ( (Tuple( (App( (App( (Var( _ _ )) (Var( _ _ )) )) (Var( _ _ )) )) (App( (App( (Lit( possibly-tag _ )) _ )) _ )) )) () )
       ( (Tuple( (App( (Lit( ':Literal:_s _ )) (Var( pv _ )) )) (App( (Lit( ':_s ctk )) (App( (Lit( _ _ )) (AType _) )) )) )) (
          (set r (CtxBind( (close CtxNil) pv (relocate( term (location-of ctk) )) )))
+      ))
+      ( (Tuple( (App( (Var( _ _ )) (Var( _ _ )) )) (App( (Lit( tag _ )) _ )) )) (
+         (if (is-lone-tag tag) (
+            (match (Tuple( lhs term )) (
+               ()
+               ( (Tuple( (App(pl pr)) (App(el er)) )) (tail(
+                  (let ll (try-destructure-macro( loc pl el )))
+                  (if (non-zero ll) (tail(
+                     (let rl (try-destructure-macro( loc pr er )))
+                     (if (non-zero rl) (
+                        (set r (union( ll rl )))
+                     ) ())
+                  )) ())
+               )))
+            ))
+         ) ())
       ))
       ( (Tuple( (App(pl pr)) (App(el er)) )) (tail(
          (let ll (try-destructure-macro( loc pl el )))
