@@ -18,15 +18,17 @@ index-typedefs := λ(: def AST)(: index U64) . (: (
       ()
       ( (App( (App( tds (Var( '|_s _ )) )) (Lit( tag _ )) )) (tail(
          (index-index-of-tag( tag index ))
+         (index-lone-tag( tag ))
          (index-typedefs( tds (+( index 1_u64 )) ))
       )))
       ( (App( (App( tds (Var( '|_s _ )) )) (App( (Lit( tag _ )) _ )) )) (tail(
          (index-index-of-tag( tag index ))
          (index-typedefs( tds (+( index 1_u64 )) ))
       )))
-      ( (Lit( tag _ )) (
+      ( (Lit( tag _ )) (tail(
          (index-index-of-tag( tag index ))
-      ))
+         (index-lone-tag( tag ))
+      )))
       ( (App( (Lit( tag _ )) _ )) (
          (index-index-of-tag( tag index ))
       ))
@@ -349,6 +351,19 @@ preprocess-apply := λ(: program AST). (: (tail(
    r
 )) AST);
 
+preprocess-is-suffixed := λ(: l String). (: (tail(
+   (let r 0_u64)
+   (let suffixes parse-suffixes)
+   (while (non-zero suffixes) (match suffixes (
+      ()
+      ( (SfxSeq( rst sfxs sfxtt )) (tail(
+         (if (has-suffix( l sfxs )) (set r 1_u64) ())
+         (set suffixes rst)
+      )))
+   )))
+   r
+)) U64);
+
 preprocess-apply-hard := λ(: macro-name String)(: arity U64)(: program AST). (: (tail(
    (let return program)
    (let macros preprocess-macros)
@@ -466,9 +481,28 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (ta
    (match (Tuple( lhs term )) (
       ()
       ( (Tuple( ASTNil ASTNil )) (set r CtxNil) )
-      ( (Tuple( (App( (App( (Var( _ _ )) (Var( _ _ )) )) (Var( _ _ )) )) (App( (App( (Lit( _ _ )) _ )) _ )) )) () )
+      ( (Tuple( (App( (App( (Var( _ _ )) (Var( _ _ )) )) (Var( _ _ )) )) (App( (App( (Lit( possibly-tag _ )) _ )) _ )) )) () )
       ( (Tuple( (App( (Lit( ':Literal:_s _ )) (Var( pv _ )) )) (App( (Lit( ':_s ctk )) (App( (Lit( _ _ )) (AType _) )) )) )) (
          (set r (CtxBind( (close CtxNil) pv (relocate( term (location-of ctk) )) )))
+      ))
+      ( (Tuple( (App( (Var( _ _ )) (Var( _ _ )) )) (App( (Lit( tag _ )) _ )) )) (
+         (if (||( (is-lone-tag tag) (preprocess-is-suffixed tag) )) (
+            (match (Tuple( lhs term )) (
+               ()
+               ( (Tuple( (App(pl pr)) (App(el er)) )) (tail(
+                  (let ll (try-destructure-macro( loc pl el )))
+                  (if (non-zero ll) (tail(
+                     (let rl (try-destructure-macro( loc pr er )))
+                     (if (non-zero rl) (
+                        (set r (union( ll rl )))
+                     ) ())
+                  )) ())
+               )))
+            ))
+         ) ())
+      ))
+      ( (Tuple( (App( (Lit( ':Term:_s _ )) (Var( pv _ )) )) t )) (
+         (set r (CtxBind( (close CtxNil) pv (relocate( term (location-of t) )) )))
       ))
       ( (Tuple( (App(pl pr)) (App(el er)) )) (tail(
          (let ll (try-destructure-macro( loc pl el )))

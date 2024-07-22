@@ -21,6 +21,8 @@ class-to-only-child := (: BTreeEqEOF BTreeEq<String,String>);
 tag-to-index-index := (: BTreeEqEOF BTreeEq<String,U64>);
 unknown-index-of-tag := 99999_u64;
 
+lone-index := (: BTreeEqEOF BTreeEq<String,U64>);
+
 # Global Tag -> Type map, mutable
 type-constructors-index := (: BTreeEqEOF BTreeEq<String,Type>);
 
@@ -74,6 +76,14 @@ index-of-tag := λ(: tag String). (: (tail(
 index-index-of-tag := λ(: tag String)(: index U64). (: (
    (.bind( (as (& tag-to-index-index) BTreeEq<String,U64>[]) tag index ))
 ) Nil);
+
+index-lone-tag := λ(: tag String). (: (
+   (.bind( (as (& lone-index) BTreeEq<String,U64>[]) tag 1_u64 ))
+) Nil);
+
+is-lone-tag := λ(: tag String). (: (
+   (.lookup( lone-index tag 0_u64 ))
+) U64);
 
 index-size-of-class := λ(: class String)(: size U64). (: (
    (.bind( (as (& class-to-size-index) BTreeEq<String,U64>[]) class size ))
