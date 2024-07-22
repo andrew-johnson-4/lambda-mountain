@@ -501,9 +501,6 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (ta
             ))
          ) ())
       ))
-      ( (Tuple( (App( (Lit( ':Term:_s _ )) (Var( pv _ )) )) t )) (
-         (set r (CtxBind( (close CtxNil) pv (relocate( term (location-of t) )) )))
-      ))
       ( (Tuple( (App(pl pr)) (App(el er)) )) (tail(
          (let ll (try-destructure-macro( loc pl el )))
          (if (non-zero ll) (tail(

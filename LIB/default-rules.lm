@@ -11,7 +11,7 @@ macro ('match-pats( term () remainder )) (
    remainder
 );
 
-macro ('match-pats( term (ps ((:Term: lhs) rhs)) remainder )) (
+macro ('match-pats( term (ps (lhs rhs)) remainder )) (
    (match-pats( term ps
       (scope(if (match-pats-arm( term lhs )) rhs remainder))
    ))
