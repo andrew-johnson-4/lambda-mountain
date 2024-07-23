@@ -228,7 +228,6 @@ fragment : DontChain primitive::if := λ(: ictx ImplicitContext)(: e1 BranchCond
       \t (.expression e1) \s (uuid label-true-branch) \n
       (.frame e3)
       (.program e3)
-      (.unframe e3)
       \t 'jmp \s (uuid label-end) \n
       (uuid label-true-branch) ': \n
       (.frame e2)
