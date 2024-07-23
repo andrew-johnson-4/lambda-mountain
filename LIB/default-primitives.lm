@@ -229,11 +229,23 @@ fragment : DontChain primitive::if := λ(: ictx ImplicitContext)(: e1 BranchCond
       (.frame e3)
       (.program e3)
       (.unframe e3)
+      (if-eq (.return-size ictx) 1 (\t 'push \s (.expression e3) \n))
+      (if-eq (.return-size ictx) 2 (\t 'push \s (.expression e3) \n))
+      (if-eq (.return-size ictx) 4 (\t 'push \s (.expression e3) \n))
+      (if-eq (.return-size ictx) 8 (\t 'push \s (.expression e3) \n))
       \t 'jmp \s (uuid label-end) \n
       (uuid label-true-branch) ': \n
       (.frame e2)
       (.program e2)
+      (if-eq (.return-size ictx) 1 (\t 'push \s (.expression e2) \n))
+      (if-eq (.return-size ictx) 2 (\t 'push \s (.expression e2) \n))
+      (if-eq (.return-size ictx) 4 (\t 'push \s (.expression e2) \n))
+      (if-eq (.return-size ictx) 8 (\t 'push \s (.expression e2) \n))
       (uuid label-end) ': \n
+      (if-eq (.return-size ictx) 1 (\t 'pop \s '%rax \n))
+      (if-eq (.return-size ictx) 2 (\t 'pop \s '%rax \n))
+      (if-eq (.return-size ictx) 4 (\t 'pop \s '%rax \n))
+      (if-eq (.return-size ictx) 8 (\t 'pop \s '%rax \n))
       \t 'mov \s (.rsp-offset ictx) \[ '%rbp \] , '%rsp \n
       \t 'add \s '$ (.end-offset ictx) ', \s '%rsp \n
    ))
@@ -242,6 +254,7 @@ fragment : DontChain primitive::if := λ(: ictx ImplicitContext)(: e1 BranchCond
       (.unframe e2)
       \t 'add \s '$8 , \s '%rsp \n
    ))
+   (.expression 'rax)
 ) Nil);
 
 fragment : DontChain primitive::while := λ(: ictx ImplicitContext)(: e1 BranchConditional)(: e2 ?). (: (

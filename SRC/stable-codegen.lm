@@ -507,6 +507,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (let ectx (fragment::new()))
          (set ectx (fragment::set( ectx 'rsp-offset_s (SAtom(to-string rsp-offset)) ))) 
          (set ectx (fragment::set( ectx 'end-offset_s (SAtom(to-string end-offset)) ))) 
+         (set ectx (fragment::set( ectx 'return-size_s (SAtom(to-string(sizeof-type(typeof term)))) ))) 
          (set ectx (fragment::set-type( ectx (t1( 'ImplicitContext_s )) )))
 
          (set e (fragment-apply( ctx stack-offset 'primitive::if_s
