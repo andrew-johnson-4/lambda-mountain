@@ -615,7 +615,9 @@ compile-stack-call := λ(: ctx FContext)(: function-name String)(: return-type T
 
          (set r (fragment::set-offset( r offset )))
          (if (>( return-size 8_u64 )) (
-            (set r (fragment::set-offset( r (-( offset (as return-size I64) )) )))
+            (if (is( used Used )) (
+               (set r (fragment::set-offset( r (-( offset (as return-size I64) )) )))
+            ) ())
          ) ())
          (set r (fragment::set-type( r return-type )))
       )))

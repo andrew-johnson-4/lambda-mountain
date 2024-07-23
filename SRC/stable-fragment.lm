@@ -668,6 +668,9 @@ fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentLi
    (if (==( k 'primitive::while_s )) (
       (set chain False_u8)
    ) ())
+   (if (==( k 'cdecl::call_s )) (
+      (set chain False_u8)
+   ) ())
 
    (let tctx (unify( (slot( arrow-tt 'Arrow_s )) direct-type )))
    (set ctx (union( ctx tctx )))
