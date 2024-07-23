@@ -243,3 +243,21 @@ fragment : DontChain primitive::if := λ(: ictx ImplicitContext)(: e1 BranchCond
       \t 'add \s '$8 , \s '%rsp \n
    ))
 ) Nil);
+
+fragment : DontChain primitive::while := λ(: ictx ImplicitContext)(: e1 BranchConditional)(: e2 ?). (: (
+   (.program(
+      (uuid label-begin-loop) ': \n
+      (.frame e1)
+      (.program e1)
+      \t (.expression e1) \s (uuid label-do-loop) \n
+      \t 'jmp \s (uuid label-end-loop) \n
+      (uuid label-do-loop) ': \n
+      (.frame e2)
+      (.program e2)
+      (.unframe e2)
+      (.unframe e1)
+      \t 'jmp \s (uuid label-begin-loop) \n
+      (uuid label-end-loop) ': \n
+      (.unframe e1)
+   ))
+) Nil);
