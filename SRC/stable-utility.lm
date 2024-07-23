@@ -89,6 +89,18 @@ list-tail-order-to-head-order := λ(: s S). (: (tail(
    new
 )) S);
 
+to-string := λ(: is-used IsUsed). (: (tail(
+   (let r '_s)
+   (match is-used (
+      ()
+      ( Used (set r 'Used_s) )
+      ( Unused (set r 'Unused_s) )
+      ( Return (set r 'Return_s) )
+      ( Tail (set r 'Tail_s) )
+   ))
+   r
+)) String);
+
 mangle-identifier := λ(: kt Type). (: (tail(
    (let r SNil)
    (match kt (
@@ -185,9 +197,13 @@ escape-string := λ(: s String). (: (tail(
             ( 93_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 41_u8) ))) ))) )  # \] -> )
             ( 96_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 39_u8) ))) ))) )  # \` -> '
             ( 110_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 10_u8) ))) ))) ) # \n -> [newline]
+            ( 111_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 35_u8) ))) ))) ) # \o -> [comment]
             ( 116_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 9_u8) ))) ))) )  # \t -> [tab]
             ( 115_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 32_u8) ))) ))) ) # \s -> [space]
-            ( _ (fail 'Illegal\sEscape\sSequence\sIn\sString\n_s) )                      # invalid escape sequence
+            ( c (tail(
+               (print 'Illegal\sCharacter:\s_s)(print c)(print '\n_s)
+               (fail 'Illegal\sEscape\sSequence\sIn\sString\s_s)
+            )))
          ))
          (set s (tail-string s))
       )) (tail(

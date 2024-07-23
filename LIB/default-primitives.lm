@@ -261,3 +261,27 @@ fragment : DontChain primitive::while := λ(: ictx ImplicitContext)(: e1 BranchC
       (.unframe e1)
    ))
 ) Nil);
+
+fragment : DontChain cdecl::call := λ(: ictx ImplicitContext)(: args ?). (: (
+   (.program(
+      \o 'call \s 'function \s (.function-name ictx) \s ': \s (.function-type ictx) \n
+      \t 'push \s '%rbp \n
+      \t 'mov \s '%rsp , \s '%rbp \n
+      (.program args)
+      \t 'call \s (.function-id ictx) \n
+      \t 'mov \s '%rbp , \s '%rsp \n
+      \t 'pop \s '%rbp \n
+      (if-eq '1 (>( (.return-size ictx) '8 )) (
+      (if-eq Used (.used ictx) (
+         (for rsi in (range( '0 (/( (.return-size ictx) '8 )) )) (
+            \t 'push \s (-( '-24 (.args-size ictx) )) \[ '%rsp \] \n
+         ))
+      ))))
+   ))
+   (.expression(
+      (if-eq (.return-size ictx) 1 'al)
+      (if-eq (.return-size ictx) 2 'ax)
+      (if-eq (.return-size ictx) 4 'eax)
+      (if-eq (.return-size ictx) 8 'rax)
+   ))
+) Nil);
