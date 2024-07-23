@@ -1904,24 +1904,24 @@ with-fields := λ(: tt Type). (: (tail(
    tt
 )) Type);
 
-apply := λ(: function-name String)(: ft Type)(: pt Type). (: (tail(
-   (let tt (apply( function-name ft pt False_u8 )))
+apply := λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (tail(
+   (let tt (apply( function-name ft pt False_u8 blame )))
    tt
 )) Type);
 
-apply-and-specialize := λ(: function-name String)(: ft Type)(: pt Type). (: (tail(
-   (let tt (apply( function-name ft pt True_u8 )))
+apply-and-specialize := λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (tail(
+   (let tt (apply( function-name ft pt True_u8 blame )))
    tt
 )) Type);
 
-apply-plural := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (: (tail(
+apply-plural := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: blame AST). (: (tail(
    (let r (: LEOF List<Type>))
    (match ft (
       ()
       ( (TAnd( t1 t2 )) (
          (set r (+(
-            (apply-plural( function-name t1 pt do-specialize ))
-            (apply-plural( function-name t2 pt do-specialize ))
+            (apply-plural( function-name t1 pt do-specialize blame ))
+            (apply-plural( function-name t2 pt do-specialize blame ))
          )))
       ))
       ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (
@@ -1983,19 +1983,21 @@ reduce-plural := λ(: pts List<Type>). (: (tail(
    r
 )) List<Type>);
 
-apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (: (tail(
+apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: blame AST). (: (tail(
    (let r TAny)
-   (let rs (apply-plural( function-name ft pt do-specialize )))
+   (let rs (apply-plural( function-name ft pt do-specialize blame )))
    (set rs (reduce-plural rs))
    (if (==( (.length rs) 0_u64 )) (tail(
       (print 'Function\sApplication\sYielded\sNo\sMatches\n_s)
       (print function-name)(print '\nWith\sArgument\s:\s_s)(print pt)(print '\n_s)
+      (print (location-of( blame )))(print '\n_s)
       (exit 1_u64)
    )) ())
    (if (>( (.length rs) 1_u64 )) (tail(
       (print 'Function\sApplication\sYielded\sAn\sIrreducible\sPlurality\sOf\sMatches\n_s)
       (print function-name)(print '\s:\s_s)(print ft)(print '\n_s)
       (print 'With\sArgument\s_s)(print pt)(print '\n_s)
+      (print (location-of( blame )))(print '\n_s)
       (let rs-copy rs)
       (while (non-zero( rs-copy )) (tail(
          (print 'Matched\s_s)
@@ -2025,6 +2027,7 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (
                      (print 'Application\sDid\sNot\sClose\sBefore\sSpecialization:\n_s)
                      (print 'Function\s_s)(print function-name)(print '\s:\s_s)(print sft)(print '\n_s)
                      (print 'Argument\s_s)(print pt)(print '\n_s)
+                     (print (location-of( blame )))(print '\n_s)
                      (exit 1_u64)
                   )) ())
                   (try-specialize( function-name sft ctx closed-type ))
@@ -2040,10 +2043,10 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8). (
    r
 )) Type);
 
-apply-or-cons-and-specialize := λ(: function-name String)(: ft Type)(: pt Type). (: (tail(
+apply-or-cons-and-specialize := λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (tail(
    (let r TAny)
    (if (is-arrow ft) (
-      (set r (apply( function-name ft pt True_u8 )))
+      (set r (apply( function-name ft pt True_u8 blame )))
    ) (
       (if (&&( (non-zero ft) (non-zero pt) )) (
          (set r (t3( 'Cons_s ft pt )))
@@ -2333,6 +2336,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type). (
             (var-name-if-var l)
             (typeof l)
             (typeof r)
+            term
          )))
          (ascript-normal( term rt ))
       )))
