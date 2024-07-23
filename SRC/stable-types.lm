@@ -2255,7 +2255,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type). (
             (set tctx (infer-expr( tctx t Unscoped TAny )))
          ))
          (infer-expr( tctx f Unscoped TAny ))
-         (ascript-normal( term (typeof t) ))
+         (ascript-normal( term (guess-representation(without-representation(typeof t))) ))
       )))
       ( (App( (App( (Var( 'while_s _ )) cond )) body )) (tail(
          (set tctx (infer-expr( tctx cond Unscoped TAny )))

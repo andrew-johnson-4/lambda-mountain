@@ -185,6 +185,7 @@ fragment : DontChain mov := λ(: src StackVariable+Sized<size>)(: dst LocalVaria
    ))
 ) Nil);
 
+fragment : DontChain push := λ(: src Sized<0>). (: () Nil);
 
 fragment : DontChain push := λ(: src GlobalVariable+Sized<size>). (: (
    (.program (
