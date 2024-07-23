@@ -503,8 +503,6 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (let e3 (compile-expr( (fragment::get-context e1) f (fragment::get-offset e1) used )))
          (set e3 (fragment::set-type( e3 (typeof f) )))
          (let end-offset (fragment::get-offset e2))
-         (let label-true-branch (uuid()))
-         (let label-end (uuid()))
 
          (let ectx (fragment::new()))
          (set ectx (fragment::set( ectx 'rsp-offset_s (SAtom(to-string rsp-offset)) ))) 
@@ -596,64 +594,31 @@ compile-stack-call := λ(: ctx FContext)(: function-name String)(: return-type T
       )))
       ( _ (tail(
          (let push-args (compile-stack-call-push-args( ctx args offset )))
+         (set push-args (fragment::set-type( push-args (t1( 'FunctionArguments_s )) )))
          (let call SNil)
          (let function-id (mangle-identifier( function-name function-type )))
+         (let return-size (sizeof-type return-type))
 
-         (set call (SCons( (close call) (close(SAtom '\oCall\sFunction\s_s)) )))
-         (set call (SCons( (close call) (close(SAtom function-name)) )))
-         (set call (SCons( (close call) (close(SAtom '\s:\s_s)) )))
-         (set call (SCons( (close call) (close(SAtom(to-string (fragment::get-type f)))) )))
-         (set call (SCons( (close call) (close(SAtom '\n\oArgument:\s_s)) )))
-         (set call (SCons( (close call) (close(SAtom function-name)) )))
-         (set call (SCons( (close call) (close(SAtom '\s:\s_s)) )))
-         (set call (SCons( (close call) (close(SAtom(to-string (typeof args)))) )))
-         (set call (SCons( (close call) (close(SAtom '\n_s)) )))
-         (set call (SCons( (close call) (close(SAtom '\oReturn:\s_s)) )))
-         (set call (SCons( (close call) (close(SAtom function-name)) )))
-         (set call (SCons( (close call) (close(SAtom '\s:\s_s)) )))
-         (set call (SCons( (close call) (close(SAtom(to-string return-type))) )))
-         (set call (SCons( (close call) (close(SAtom '\n_s)) )))
+         (let ectx (fragment::new()))
+         (set ectx (fragment::set( ectx 'function-id_s (SAtom function-id) )))
+         (set ectx (fragment::set( ectx 'function-name_s (SAtom function-name) )))
+         (set ectx (fragment::set( ectx 'function-type_s (SAtom(to-string(fragment::get-type f))) )))
+         (set ectx (fragment::set( ectx 'function-id_s (SAtom function-id) )))
+         (set ectx (fragment::set( ectx 'return-size_s (SAtom(to-string return-size)) )))
+         (set ectx (fragment::set( ectx 'args-size_s (SAtom(to-string(sizeof-type(typeof args)))) )))
+         (set ectx (fragment::set( ectx 'used_s (SAtom(to-string used)) )))
+         (set ectx (fragment::set-type( ectx (t1( 'ImplicitContext_s )) )))
 
-         (set call (SCons( (close call) (close(SAtom '\tpush\s%rbp\n_s)) )))
-         (set call (SCons( (close call) (close(SAtom '\tmov\s%rsp,\s%rbp\n_s)) )))
-         (set call (SCons( (close call) (close(fragment::get( push-args 'program_s ))) )))
-         (set call (SCons( (close call) (close(SAtom '\tcall\s_s)) )))
-         (set call (SCons( (close call) (close(SAtom function-id)) )))
-         (set call (SCons( (close call) (close(SAtom '\n_s)) )))
-
-         (set call (SCons( (close call) (close(SAtom '\tmov\s%rbp,\s%rsp\n_s)) )))
-         (set call (SCons( (close call) (close(SAtom '\tpop\s%rbp\n_s)) )))
+         (set r (fragment-apply( ctx offset 'cdecl::call_s
+            (FLSeq( (close(FLSeq( (close FLEOF) ectx ))) push-args )) (typeof args) args
+         )))
 
          (set r (fragment::set-offset( r offset )))
-
-         (let expr 'Invalid\sExpression_s)
-         (match (sizeof-type return-type) (
-            ()
-            ( 0_u64 ())
-            ( 1_u64 (set expr 'al_s))
-            ( 2_u64 (set expr 'ax_s))
-            ( 4_u64 (set expr 'eax_s))
-            ( 8_u64 (set expr 'rax_s))
-            ( rsz (
-               (if (is( used Used )) (tail(
-                  (let rsi 0_u64)
-                  (let args-size (sizeof-type(typeof args)))
-                  (let rel-off (-( -24_i64 (as args-size I64) )))
-                  (while (<( rsi rsz )) (tail(
-                     (set call (SCons( (close call) (close(SAtom '\tpush\s_s)) )))
-                     (set call (SCons( (close call) (close(SAtom(to-string rel-off))) )))
-                     (set call (SCons( (close call) (close(SAtom '\[%rsp\]\n_s)) )))
-                     (set rsi (+( rsi 8_u64 )))
-                  )))
-                  (set r (fragment::set-offset( r (-( offset (as rsz I64) )) )))
-               )) (
-                  (set r (fragment::set-offset( r offset )))
-               ))
-            ))
-         ))
-
-         (set r (fragment::set( r 'program_s call )))
-         (set r (fragment::set( r 'expression_s (SAtom expr) )))
+         (if (>( return-size 8_u64 )) (
+            (if (is( used Used )) (
+               (set r (fragment::set-offset( r (-( offset (as return-size I64) )) )))
+            ) ())
+         ) ())
          (set r (fragment::set-type( r return-type )))
       )))
    ))
