@@ -246,7 +246,12 @@ fragment : DontChain primitive::if := λ(: ictx ImplicitContext)(: e1 BranchCond
       (.unframe e2)
       \t 'add \s '$8 , \s '%rsp \n
    ))
-   (.expression 'rax)
+   (.expression(
+      (if-eq (.return-size ictx) 1 'al)
+      (if-eq (.return-size ictx) 2 'ax)
+      (if-eq (.return-size ictx) 4 'eax)
+      (if-eq (.return-size ictx) 8 'rax)
+   ))
 ) Nil);
 
 fragment : DontChain primitive::while := λ(: ictx ImplicitContext)(: e1 BranchConditional)(: e2 ?). (: (
