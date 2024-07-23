@@ -228,12 +228,15 @@ fragment : DontChain primitive::if := λ(: ictx ImplicitContext)(: e1 BranchCond
       \t (.expression e1) \s (uuid label-true-branch) \n
       (.frame e3)
       (.program e3)
-      (.unframe e3)
       \t 'jmp \s (uuid label-end) \n
       (uuid label-true-branch) ': \n
       (.frame e2)
       (.program e2)
       (uuid label-end) ': \n
+      (if-eq (.return-size ictx) 1 (\t 'pop \s '%rax \n))
+      (if-eq (.return-size ictx) 2 (\t 'pop \s '%rax \n))
+      (if-eq (.return-size ictx) 4 (\t 'pop \s '%rax \n))
+      (if-eq (.return-size ictx) 8 (\t 'pop \s '%rax \n))
       \t 'mov \s (.rsp-offset ictx) \[ '%rbp \] , '%rsp \n
       \t 'add \s '$ (.end-offset ictx) ', \s '%rsp \n
    ))
@@ -241,6 +244,12 @@ fragment : DontChain primitive::if := λ(: ictx ImplicitContext)(: e1 BranchCond
       (.unframe e1)
       (.unframe e2)
       \t 'add \s '$8 , \s '%rsp \n
+   ))
+   (.expression(
+      (if-eq (.return-size ictx) 1 'al)
+      (if-eq (.return-size ictx) 2 'ax)
+      (if-eq (.return-size ictx) 4 'eax)
+      (if-eq (.return-size ictx) 8 'rax)
    ))
 ) Nil);
 
