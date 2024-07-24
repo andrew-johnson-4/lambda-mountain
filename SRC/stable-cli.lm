@@ -6,7 +6,7 @@ config-target                := 'tmp.s_s;
 type CompileMode ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 config-mode                  := (: ModeCompile CompileMode);
 
-main := λ(: argc U64)(: argv String[]). (: (tail(
+main := λ(: argc U64)(: argv String[]). (: (
    (let argi 1_u64)
    (let input SNil)
    (while (<( argi argc )) (
@@ -21,10 +21,10 @@ main := λ(: argc U64)(: argv String[]). (: (tail(
          ('--gradual_s (set config-strict False_u8))
          ('--macro_s (set config-preprocess True_u8))
          ('--nomacro_s (set config-preprocess False_u8))
-         ('-o_s (tail(
+         ('-o_s (
             (set argi (+( argi 1_u64 )))
             (set config-target ([]( argv argi )))
-         )))
+         ))
          (fp (
             (set input (SCons(
                (close input)
@@ -40,33 +40,33 @@ main := λ(: argc U64)(: argv String[]). (: (tail(
       ()
       ( SNil (set continue False_u8) )
       ( (SCons( rst SNil )) (set input rst) )
-      ( (SCons( rst (SAtom( fp )) )) (tail( (tokenize fp) (set input rst) )))
-      ( (SAtom( fp )) (tail( (tokenize fp) (set continue False_u8) )))
+      ( (SCons( rst (SAtom( fp )) )) ( (tokenize fp) (set input rst) ))
+      ( (SAtom( fp )) ( (tokenize fp) (set continue False_u8) ))
    )))
 
    (match config-mode (
       ()
       ( ModeTokenize (print ast-tokenized-program) )
-      ( ModeParse (tail(
+      ( ModeParse (
          (parse())
          (serialize-ast ast-parsed-program)
-      )))
-      ( ModePreprocess (tail(
+      ))
+      ( ModePreprocess (
          (parse())
          (preprocess())
          (serialize-ast ast-parsed-program)
-      )))
-      ( ModeTypecheck (tail(
+      ))
+      ( ModeTypecheck (
          (parse())
          (preprocess())
          (typecheck())
-      )))
-      ( ModeCompile (tail(
+      ))
+      ( ModeCompile (
          (parse())
          (preprocess())
          (typecheck())
          (compile())
-      )))
+      ))
    ))
-)) Nil);
+) Nil);
 
