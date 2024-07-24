@@ -352,13 +352,13 @@ substitute := λ(: tctx TContext)(: t AST). (: (
             ()
             ( TCtxNil (set tctx TCtxEOF) )
             ( (TCtxBind( rst tk tv ta )) (
-               (if (==( tk v )) (tail(
+               (if (==( tk v )) (
                   (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
                      (close(substitute( tctx ta )))
                      (close(AType( (substitute( tctx vt )) )))
                   ))) )))
                   (set tctx TCtxEOF)
-               )) (set tctx rst))
+               ) (set tctx rst))
             ))
          )))
       ))
@@ -371,13 +371,13 @@ substitute := λ(: tctx TContext)(: t AST). (: (
             ()
             ( TCtxNil (set tctx TCtxEOF) )
             ( (TCtxBind( rst tk tv ta )) (
-               (if (==( tk v )) (tail(
+               (if (==( tk v )) (
                   (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
                      (close(substitute( tctx ta )))
                      (close(AType( (substitute( tctx vt )) )))
                   ))) )))
                   (set tctx TCtxEOF)
-               )) (set tctx rst))
+               ) (set tctx rst))
             ))
          )))
       ))
@@ -455,37 +455,37 @@ substitute := λ(: tctx StringSList)(: t S). (: (
    rt
 ) S);
 
-union := λ(: lctx TContext)(: rctx TContext). (: (tail(
+union := λ(: lctx TContext)(: rctx TContext). (: (
    (match rctx (
       ()
       ( TCtxNil (set rctx TCtxEOF) )
-      ( (TCtxBind( rst k v t )) (tail(
+      ( (TCtxBind( rst k v t )) (
          (set lctx (union( lctx rst )))
          (set lctx (TCtxBind( (close lctx) k v t )))
-      )))
+      ))
       ( _ () )
    ))
    lctx
-)) TContext);
+) TContext);
 
-with-tag := λ(: tt Type). (: (tail(
+with-tag := λ(: tt Type). (: (
    (let cls-tt (with-only-class tt))
    (if (non-zero cls-tt) (
       (match cls-tt (
          ()
-         ( (TGround( cls _ )) (tail(
+         ( (TGround( cls _ )) (
             (let tag (get-only-child cls))
             (if (head-string tag) (
                (set tt (and( tt (t2( 'Tag_s (t1 tag) )) )))
             ) ())
-         )))
+         ))
          ( _ () )
       ))
    ) ())
    tt
-)) Type);
+) Type);
 
-without-tag := λ(: tt Type). (: (tail(
+without-tag := λ(: tt Type). (: (
    (match tt (
       ()
       ( (TAnd( lt rt )) (tail(
@@ -507,12 +507,12 @@ without-tag := λ(: tt Type). (: (tail(
       ( _ () )
    ))
    tt
-)) Type);
+) Type);
 
-without-open := λ(: tt Type). (: (tail(
+without-open := λ(: tt Type). (: (
    (match tt (
       ()
-      ( (TAnd( lt rt )) (tail(
+      ( (TAnd( lt rt )) (
          (let lt1 (without-open lt))
          (let rt1 (without-open rt))
          (match (Tuple( lt1 rt1 )) (
@@ -523,13 +523,13 @@ without-open := λ(: tt Type). (: (tail(
                (set tt (TAnd( (close lt2) (close rt2) )))
             ))
          ))
-      )))
+      ))
       ( _ (if (is-open tt) (set tt TAny) ()))
    ))
    tt
-)) Type);
+) Type);
 
-without-tag := λ(: tt TypeList). (: (tail(
+without-tag := λ(: tt TypeList). (: (
    (match tt (
       ()
       ( (TypeSeq( rst p1 )) (
@@ -538,35 +538,35 @@ without-tag := λ(: tt TypeList). (: (tail(
       ( TypeEOF () )
    ))
    tt
-)) TypeList);
+) TypeList);
 
-with-only-tag := λ(: tt Type). (: (tail(
+with-only-tag := λ(: tt Type). (: (
    (let rt TAny)
    (match tt (
       ()
-      ( (TAnd( lt1 rt1 )) (tail(
+      ( (TAnd( lt1 rt1 )) (
          (let lc (with-only-tag lt1))
-         (if (non-zero lc) (set rt lc) (tail(
+         (if (non-zero lc) (set rt lc) (
             (let rc (with-only-tag rt1))
             (if (non-zero rc) (set rt rc) ())
-         )))
-      )))
+         ))
+      ))
       ( (TGround( 'Tag_s _ )) (set rt tt) )
       ( _ () )
    ))
    rt
-)) Type);
+) Type);
 
-with-only-class := λ(: tt Type). (: (tail(
+with-only-class := λ(: tt Type). (: (
    (let rt TAny)
    (match tt (
       ()
-      ( (TAnd( lt1 rt1 )) (tail(
+      ( (TAnd( lt1 rt1 )) (
          (let lc (with-only-class lt1))
          (if (non-zero lc) (set rt lc) ())
          (let rc (with-only-class rt1))
          (if (non-zero rc) (set rt rc) ())
-      )))
+      ))
       ( (TGround( tag _ )) (
          (if (is-class tag) (
             (if (not(is-fragment tag)) (
@@ -577,9 +577,9 @@ with-only-class := λ(: tt Type). (: (tail(
       ( _ () )
    ))
    rt
-)) Type);
+) Type);
 
-without-representation := λ(: tt TypeList). (: (tail(
+without-representation := λ(: tt TypeList). (: (
    (match tt (
       ()
       ( (TypeSeq( rst p1 )) (
@@ -591,12 +591,12 @@ without-representation := λ(: tt TypeList). (: (tail(
       ( TypeEOF () )
    ))
    tt
-)) TypeList);
+) TypeList);
 
-without-representation := λ(: tt Type). (: (tail(
+without-representation := λ(: tt Type). (: (
    (match tt (
       ()
-      ( (TAnd( lt rt )) (tail(
+      ( (TAnd( lt rt )) (
          (let lt2 (without-representation lt))
          (let rt2 (without-representation rt))
          (if (non-zero lt2) (
@@ -612,7 +612,7 @@ without-representation := λ(: tt Type). (: (tail(
                (set tt TAny)
             ))
          ))
-      )))
+      ))
       ( (TGround( 'Constant_s TypeEOF )) (set tt TAny) )
       ( (TGround( 'Literal_s TypeEOF )) (set tt TAny) )
       ( (TGround( 'StackVariable_s TypeEOF )) (set tt TAny) )
@@ -629,7 +629,7 @@ without-representation := λ(: tt Type). (: (tail(
       ( (TVar _) () )
    ))
    tt
-)) Type);
+) Type);
 
 without-size := λ(: tt TypeList). (: (tail(
    (match tt (
