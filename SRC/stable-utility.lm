@@ -13,10 +13,10 @@ is-variable := λ(: s String). (: (
       ( 45_u8 (set r True_u8) )   # -
       ( 46_u8 ( if (==( s '._s )) () (set r True_u8) ))
       ( 47_u8 (set r True_u8) )   # /
-      ( 58_u8 (tail(              # :
+      ( 58_u8 (                   # :
          (if (==( (head-string(tail-string s)) 58_u8 )) (set r True_u8) ())
          (if (is-variable(tail-string s)) (set r True_u8) ())
-      )))
+      ))
       ( 59_u8 (set r True_u8) )   # ;
       ( 60_u8 (set r True_u8) )   # <
       ( 61_u8 (set r True_u8) )   # =

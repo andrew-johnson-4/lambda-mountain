@@ -232,36 +232,36 @@ is-arrow := λ(: tt Type). (: (
    r
 ) U64);
 
-t3 := λ(: tag String)(: p1 Type)(: p2 Type). (: (tail(
+t3 := λ(: tag String)(: p1 Type)(: p2 Type). (: (
    (let tt (TGround(
       tag
       (close(TypeSeq( (close(TypeSeq( (close TypeEOF) p1 ))) p2 )))
    )))
    tt
-)) Type);
+) Type);
 
-t2 := λ(: tag String)(: p1 Type). (: (tail(
+t2 := λ(: tag String)(: p1 Type). (: (
    (let tt (TGround(
       tag
       (close(TypeSeq( (close TypeEOF) p1 )))
    )))
    tt
-)) Type);
+) Type);
 
-t1 := λ(: tag String). (: (tail(
+t1 := λ(: tag String). (: (
    (let tt (TGround(
       tag
       (close TypeEOF)
    )))
    tt
-)) Type);
+) Type);
 
-tsized :=  λ(: tag String). (: (tail(
+tsized :=  λ(: tag String). (: (
    (let tt (t2( 'Sized_s (t1 tag) )))
    tt
-)) Type);
+) Type);
 
-substitute := λ(: tctx TContext)(: tt TypeList). (: (tail(
+substitute := λ(: tctx TContext)(: tt TypeList). (: (
    (match tt (
       ()
       ( TypeEOF () )
@@ -273,9 +273,9 @@ substitute := λ(: tctx TContext)(: tt TypeList). (: (tail(
       ))
    ))
    tt
-)) TypeList);
+) TypeList);
 
-substitute := λ(: tctx TContext)(: tt Type). (: (tail(
+substitute := λ(: tctx TContext)(: tt Type). (: (
    (match tt (
       ()
       ( (TVar v) (
@@ -283,10 +283,10 @@ substitute := λ(: tctx TContext)(: tt Type). (: (tail(
             ()
             ( TCtxNil (set tctx TCtxEOF) )
             ( (TCtxBind( rst tk tv _ )) (
-               (if (==( tk v )) (tail(
+               (if (==( tk v )) (
                   (set tt tv)
                   (set tctx TCtxEOF)
-               )) (set tctx rst))
+               ) (set tctx rst))
             ))
          )))
       ))
@@ -305,9 +305,9 @@ substitute := λ(: tctx TContext)(: tt Type). (: (tail(
       ( _ () )
    ))
    tt
-)) Type);
+) Type);
 
-substitute-lhs := λ(: tctx TContext)(: t AST). (: (tail(
+substitute-lhs := λ(: tctx TContext)(: t AST). (: (
    (match t (
       ()
       ( (App( ps (App( (Lit( ':_s ctk )) (App( (Var( v vtk )) (AType vt) )) )) )) (
@@ -336,14 +336,14 @@ substitute-lhs := λ(: tctx TContext)(: t AST). (: (tail(
       ( _ (exit-error( 'Unexpected\sSubstitute\sLHS_s t )) )
    ))
    t
-)) AST);
+) AST);
 
-substitute := λ(: tctx TContext)(: t AST). (: (tail(
+substitute := λ(: tctx TContext)(: t AST). (: (
    (match t (
       ()
       ( ASTEOF () )
       ( ASTNil () )
-      ( (App( (Lit( ':_s ctk )) (App( (Lit( v vtk )) (AType vt) )) )) (tail(
+      ( (App( (Lit( ':_s ctk )) (App( (Lit( v vtk )) (AType vt) )) )) (
          (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
             (close(Lit( v (unique vtk) )))
             (close(AType( (substitute( tctx vt )) )))
@@ -361,8 +361,8 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
                )) (set tctx rst))
             ))
          )))
-      )))
-      ( (App( (Lit( ':_s ctk )) (App( (Var( v vtk )) (AType vt) )) )) (tail(
+      ))
+      ( (App( (Lit( ':_s ctk )) (App( (Var( v vtk )) (AType vt) )) )) (
          (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
             (close(Var( v (unique vtk) )))
             (close(AType( (substitute( tctx vt )) )))
@@ -380,7 +380,7 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
                )) (set tctx rst))
             ))
          )))
-      )))
+      ))
       ( (Lit( v vtk )) (set t (Lit( v (unique vtk) ))) )
       ( (Var( v vtk )) (set t (Var( v (unique vtk) ))) )
       ( (Abs( lhs rhs tt )) (
@@ -427,22 +427,22 @@ substitute := λ(: tctx TContext)(: t AST). (: (tail(
       ( _ (exit-error( 'Unexpected\sSubstitution\sTerm:_s t )) )
    ))
    t
-)) AST);
+) AST);
 
-substitute := λ(: tctx StringSList)(: t S). (: (tail(
+substitute := λ(: tctx StringSList)(: t S). (: (
    (match t (
       ()
       ( SNil (set t SNil) )
       ( (SAtom a) (
          (while (non-zero tctx) (match tctx (
             ()
-            ( (SSLSeq( rst k v )) (tail(
+            ( (SSLSeq( rst k v )) (
                (if (==( a k )) (
                   (set t v)
                ) ())
                (set tctx rst)
             )))
-         )))
+         ))
       ))
       ( (SCons( lt rt )) (
          (set t (SCons(
@@ -453,7 +453,7 @@ substitute := λ(: tctx StringSList)(: t S). (: (tail(
    ))
    (let rt t)
    rt
-)) S);
+) S);
 
 union := λ(: lctx TContext)(: rctx TContext). (: (tail(
    (match rctx (
