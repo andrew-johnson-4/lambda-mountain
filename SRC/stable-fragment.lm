@@ -7,10 +7,10 @@ print := λ(: x Fragment). (: (
          (print '\tOffset\s=\s_s)(print offset)(print '\n_s)
          (while (non-zero kvs) (match kvs (
             ()
-            ( (FKVSeq( rst k v )) (tail(
+            ( (FKVSeq( rst k v )) (
                (print '\t_s)(print k)(print '\s=\s_s)(print v)(print '\n_s)
                (set kvs rst)
-            )))
+            ))
          )))
       ))
    ))
@@ -230,24 +230,24 @@ fragment::render-impl := λ(: s S). (: (
       ( (SCons( (SAtom 'App_s) (SCons(
            (SCons( (SAtom 'Var_s) (SAtom 'uuid_s) ))
            (SCons( (SAtom 'Var_s) (SAtom v) ))
-        )) )) (tail(
+        )) )) (
          (let f (fragment-context::lookup-soft( ctx v TAny ASTEOF )))
          (set r (fragment::get( f 'expression_s )))
-         (if (non-zero r) () (tail(
+         (if (non-zero r) () (
             (set f (fragment::expression(uuid())))
             (set fragment::render-ctx (FCtxBind(
                (close fragment::render-ctx) v TAny f
             )))
             (set r (fragment::get( f 'expression_s )))
-         )))
-      )))
-      ( (SCons( (SAtom 'Var_s) (SAtom v) )) (tail(
+         ))
+      ))
+      ( (SCons( (SAtom 'Var_s) (SAtom v) )) (
          (print 'Raw\sVariables\sNot\sPermitted\sIn\sFragments:\s_s)
          (print v)(print '\n_s)
          (exit 1_u64)
-      )))
+      ))
       ( (SCons( (SAtom 'Lit_s) (SAtom v) )) (set r (SAtom v)) )
-      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom 'inv_s) )) lc )) )) (tail(
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom 'inv_s) )) lc )) )) (
          (let lt (fragment::render-impl( lc )))
          (let li 0_i64)
          (match lt (
@@ -256,8 +256,8 @@ fragment::render-impl := λ(: s S). (: (
             ( _ () )
          ))
          (set r (SAtom(to-string (-( 0_i64 li )) )))
-      )))
-      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom 'align_s) )) lc )) )) (tail(
+      ))
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom 'align_s) )) lc )) )) (
          (let lt (fragment::render-impl( lc )))
          (let li 0_i64)
          (match lt (
@@ -266,8 +266,8 @@ fragment::render-impl := λ(: s S). (: (
             ( _ () )
          ))
          (set r (SAtom(to-string li)))
-      )))
-      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '>_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (tail(
+      ))
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '>_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (
          (let lt (fragment::render-impl( lc )))
          (let li 0_i64)
          (match lt (
@@ -287,8 +287,8 @@ fragment::render-impl := λ(: s S). (: (
          ) (
             (set r (SAtom '0_s))
          ))
-      )))
-      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom 'max_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (tail(
+      ))
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom 'max_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (
          (let lt (fragment::render-impl( lc )))
          (let li 0_i64)
          (match lt (
@@ -304,8 +304,8 @@ fragment::render-impl := λ(: s S). (: (
             ( _ () )
          ))
          (set r (SAtom(to-string(max( li ri )))))
-      )))
-      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '+_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (tail(
+      ))
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '+_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (
          (let lt (fragment::render-impl( lc )))
          (let li 0_i64)
          (match lt (
@@ -321,8 +321,8 @@ fragment::render-impl := λ(: s S). (: (
             ( _ () )
          ))
          (set r (SAtom(to-string(+( li ri )))))
-      )))
-      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '-_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (tail(
+      ))
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '-_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (
          (let lt (fragment::render-impl( lc )))
          (let li 0_i64)
          (match lt (
@@ -338,8 +338,8 @@ fragment::render-impl := λ(: s S). (: (
             ( _ () )
          ))
          (set r (SAtom(to-string(-( li ri )))))
-      )))
-      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '*_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (tail(
+      ))
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '*_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (
          (let lt (fragment::render-impl( lc )))
          (let li 0_i64)
          (match lt (
@@ -355,8 +355,8 @@ fragment::render-impl := λ(: s S). (: (
             ( _ () )
          ))
          (set r (SAtom(to-string(*( li ri )))))
-      )))
-      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '/_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (tail(
+      ))
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '/_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (
          (let lt (fragment::render-impl( lc )))
          (let li 0_i64)
          (match lt (
@@ -374,8 +374,8 @@ fragment::render-impl := λ(: s S). (: (
          (if (>( ri 0_i64 )) (
             (set r (SAtom(to-string(/( li ri )))))
          ) ())
-      )))
-      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '%_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (tail(
+      ))
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom '%_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (
          (let lt (fragment::render-impl( lc )))
          (let li 0_i64)
          (match lt (
@@ -393,8 +393,8 @@ fragment::render-impl := λ(: s S). (: (
          (if (>( ri 0_i64 )) (
             (set r (SAtom(to-string(%( li ri )))))
          ) ())
-      )))
-      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom 'range_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (tail(
+      ))
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom 'range_s) )) (SCons( (SAtom 'App_s) (SCons( lc rc )) )) )) )) (
          (let lt (fragment::render-impl( lc )))
          (let li 0_i64)
          (match lt (
@@ -409,25 +409,25 @@ fragment::render-impl := λ(: s S). (: (
             ( (SAtom rai) (set ri (to-i64 rai)) )
             ( _ () )
          ))
-         (while (<( li ri )) (tail(
+         (while (<( li ri )) (
             (set ri (-( ri 1_i64 )))
             (set r (SCons( (close(SAtom(to-string ri))) (close r) )))
-         )))
-      )))
+         ))
+      ))
       ( (SCons( (SAtom 'App_s) (SCons(
          (SCons( (SAtom 'App_s) (SCons(
             (SCons( (SAtom 'App_s) (SCons(
                (SCons( (SAtom 'Var_s) (SAtom 'if-eq_s) )) lc
             )) )) rc
          )) )) body
-      )) )) (tail(
+      )) )) (
          (let lt (fragment::render-impl( lc )))
          (let rt (fragment::render-impl( rc )))
-         (if (==( lt rt )) (tail(
+         (if (==( lt rt )) (
             (let bodyt (fragment::render-impl( body )))
             (set r bodyt)
-         )) ())
-      )))
+         ) ())
+      ))
       ( (SCons( (SAtom 'App_s) (SCons(
          (SCons( (SAtom 'App_s) (SCons(
             (SCons( (SAtom 'App_s) (SCons(
@@ -438,11 +438,11 @@ fragment::render-impl := λ(: s S). (: (
                (SCons( (SAtom 'Var_s) (SAtom 'in_s) ))
             )) )) iter
          )) )) body
-      )) )) (tail(
+      )) )) (
          (let iter-result (fragment::render-impl( iter )))
          (while (non-zero iter-result) (match iter-result (
             ()
-            ( (SCons( (SAtom i) rst )) (tail(
+            ( (SCons( (SAtom i) rst )) (
                (let fi (fragment::expression i))
                (let fi-2 (fragment::set( fi 'program_s (SAtom i) )))(set fi fi-2)
                (let inner-ctx (FCtxBind(
@@ -454,75 +454,75 @@ fragment::render-impl := λ(: s S). (: (
                   (close body-instance)
                )))
                (set iter-result rst)
-            )))
+            ))
          )))
-      )))
+      ))
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom op) )) (SCons( (SAtom 'Var_s) (SAtom v) )) )) )) (
-         (if (==( (head-string op) 46_u8 )) (tail(
+         (if (==( (head-string op) 46_u8 )) (
             (let f (fragment-context::lookup( ctx v TAny ASTEOF )))
             (let fe (fragment::get( f (tail-string op) )))
             (set r fe)
-         )) (tail(
+         ) (
             (print 'Raw\sVariables\sNot\sPermitted\sIn\sFragments:\s_s)
             (print op)(print '\n_s)
             (exit 1_u64)
-         )))
+         ))
       ))
-      ( (SCons( (SAtom 'App_s) (SCons( ls rs )) )) (tail(
+      ( (SCons( (SAtom 'App_s) (SCons( ls rs )) )) (
          (let lf (fragment::render-impl( ls )))
          (let rf (fragment::render-impl( rs )))
          (set r (SCons( (close lf) (close rf) )))
-      )))
-      ( u (tail(
+      ))
+      ( u (
          (print 'Fragment\sRender\sUnknown\s_s)(print u)(print '\n_s)(exit 1_u64)
-      )))
+      ))
    ))
    r
 ) S);
 
-union := λ(: ctx FContext)(: tctx TContext). (: (tail(
+union := λ(: ctx FContext)(: tctx TContext). (: (
    (let r ctx)
    (while (non-zero tctx) (match tctx (
       ()
       ( TCtxNil (set tctx TCtxEOF) )
-      ( (TCtxBind( rst k vt _ )) (tail(
+      ( (TCtxBind( rst k vt _ )) (
          (let fragment (fragment::expression(to-string vt)))
          (set fragment (fragment::set( fragment 'program_s (SAtom(to-string vt)) )))
          (set r (FCtxBind(
             (close r) k TAny fragment
          )))
          (set tctx rst)
-      )))
+      ))
    )))
    r
-)) FContext);
+) FContext);
 
-fragment::render := λ(: ctx FContext)(: rhs S)(: prototype Fragment). (: (tail(
+fragment::render := λ(: ctx FContext)(: rhs S)(: prototype Fragment). (: (
    (let return prototype)
    (match rhs (
       ()
-      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom mode) )) prg )) )) (tail(
+      ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom mode) )) prg )) )) (
          (if (!=( (head-string mode) 46_u8 )) (fail 'Invalid\sMode\sIn\sfragment::render_s) ())
          (let s (fragment::render( ctx prg )))
          (set return (fragment::set( return (tail-string mode) s )))
-      )))
-      ( (SCons( (SAtom 'App_s) (SCons( rst (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom mode) )) prg )) )) )) )) (tail(
+      ))
+      ( (SCons( (SAtom 'App_s) (SCons( rst (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom mode) )) prg )) )) )) )) (
          (if (!=( (head-string mode) 46_u8 )) (fail 'Invalid\sMode\sIn\sfragment::render_s) ())
          (let s (fragment::render( ctx prg )))
          (set return (fragment::set( return (tail-string mode) s )))
          (set return (fragment::render( ctx rst return )))
-      )))
+      ))
       ( SNil () )
-      ( prg (tail(
+      ( prg (
          (print 'Invalid\sRHS\sIn\sfragment::render\s_s)
          (print prg)
          (exit 1_u64)
-      )))
+      ))
    ))
    return
-)) Fragment);
+) Fragment);
 
-fragment::chain := λ(: l Fragment)(: r Fragment). (: (tail(
+fragment::chain := λ(: l Fragment)(: r Fragment). (: (
    (set l (fragment::set-context( l (fragment::get-context r) )))
    (set l (fragment::set-offset( l (fragment::get-offset r) )))
    (set l (fragment::set( l 'expression_s (fragment::get( r 'expression_s )) )))
@@ -539,57 +539,57 @@ fragment::chain := λ(: l Fragment)(: r Fragment). (: (tail(
       (close(fragment::get( r 'program_s )))
    )) )))
    l
-)) Fragment);
+) Fragment);
 
-fragment::chain := λ(: fragment-ctx FragmentList)(: e Fragment). (: (tail(
+fragment::chain := λ(: fragment-ctx FragmentList)(: e Fragment). (: (
    (while (non-zero fragment-ctx) (match fragment-ctx (
       ()
-      ( (FLSeq( rst cf )) (tail(
+      ( (FLSeq( rst cf )) (
          (set e (fragment::chain( cf e )))
          (set fragment-ctx rst)
-      )))
+      ))
    )))
    e
-)) Fragment);
+) Fragment);
 
-apply-direct := λ(: ctx FContext)(: arrow Fragment)(: args FragmentList)(: e-proto Fragment)(: chain U8). (: (tail(
+apply-direct := λ(: ctx FContext)(: arrow Fragment)(: args FragmentList)(: e-proto Fragment)(: chain U8). (: (
    (match (fragment::get( arrow 'fragment_s )) (
       ()
-      ( (SCons( (SAtom 'Abs_s) (SCons( lhs rhs )) )) (tail(
+      ( (SCons( (SAtom 'Abs_s) (SCons( lhs rhs )) )) (
          (set ctx (destructure-lhs( ctx lhs args )))
          (set e-proto (fragment::render( ctx rhs e-proto )))
-      )))
-      ( _ (tail(
+      ))
+      ( _ (
          (print 'Invalid\sFragment\sApplied:\n_s)
          (print arrow)(print '\n_s)
-      )))
+      ))
    ))
    (if (==( chain True_u8 )) (
       (set e-proto (fragment::chain( args e-proto )))
    ) ())
    e-proto
-)) Fragment);
+) Fragment);
 
-destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragmentList). (: (tail(
+destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragmentList). (: (
    (match lhs (
       ()
-      ( (SCons( (SAtom 'Var_s) (SAtom k) )) (tail(
+      ( (SCons( (SAtom 'Var_s) (SAtom k) )) (
          (let a-type (typeof lhs))
          (match args (
             ()
-            ( (FLSeq( _ f )) (tail(
+            ( (FLSeq( _ f )) (
                (let ft (with-size(fragment::get-type f)))
-               (if (non-zero ft) () (tail(
+               (if (non-zero ft) () (
                   (print 'Fragment\sHas\sNo\sType:\n_s)
                   (print f)
                   (exit 1_u64)
-               )))
+               ))
                (set ctx (union( ctx (unify( a-type ft )) ))) # destructure tctx
                (set ctx (FCtxBind( (close ctx) k ft f )))
-            )))
+            ))
          ))
-      )))
-      ( (SCons( (SAtom 'App_s) (SCons( lhs-rst (SCons( (SAtom 'Var_s) (SAtom k) )) )) )) (tail(
+      ))
+      ( (SCons( (SAtom 'App_s) (SCons( lhs-rst (SCons( (SAtom 'Var_s) (SAtom k) )) )) )) (
          (let a-type TAny)
          (match lhs (
             ()
@@ -599,58 +599,58 @@ destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragmentList). (: (tail(
          ))
          (match args (
             ()
-            ( (FLSeq( fl-rst f )) (tail(
+            ( (FLSeq( fl-rst f )) (
                (let ft (with-size(fragment::get-type f)))
-               (if (non-zero ft) () (tail(
+               (if (non-zero ft) () (
                   (print 'Fragment\sHas\sNo\sType:\n_s)
                   (print f)
                   (exit 1_u64)
-               )))
+               ))
                (set ctx (union( ctx (unify( a-type ft )) )))
                (set ctx (FCtxBind( (close ctx) k ft f )))
                (set args fl-rst)
-            )))
+            ))
          ))
          (set ctx (destructure-lhs( ctx lhs-rst args )))
-      )))
+      ))
       ( SNil () )
-      ( _ (tail(
+      ( _ (
          (print 'Unexpected\sDestructure\sLHS:\s_s)
          (print lhs)(print '\n_s)
          (exit 1_u64)
-      )))
+      ))
    ))
    ctx
-)) FContext);
+) FContext);
 
-typeof := λ(: args FragmentList). (: (tail(
+typeof := λ(: args FragmentList). (: (
    (let r TAny)
    (match args (
       ()
-      ( (FLSeq( rst f )) (tail(
+      ( (FLSeq( rst f )) (
          (set r (typeof rst))
          (if (non-zero r) (
             (set r (t3( 'Cons_s r (with-size(fragment::get-type f)) )))
          ) (
             (set r (with-size(fragment::get-type f)))
          ))
-      )))
+      ))
       ( _ () )
    ))
    r
-)) Type);
+) Type);
 
-fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentList)(: direct-type Type)(: sloc AST). (: (tail(
+fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentList)(: direct-type Type)(: sloc AST). (: (
    (let e-proto (fragment::new()))
    (set e-proto (fragment::set-context( e-proto ctx )))
    (set e-proto (fragment::set-offset( e-proto offset )))
 
    (let args-tt (typeof args))
-   (if (non-zero args-tt) () (tail(
+   (if (non-zero args-tt) () (
       (print 'Apply\s_s)(print k)(print args-tt)
       (let msg (clone-rope(SCons( (close(SAtom 'Untyped\sFragment\sArguments:\s_s)) (close(SAtom k)) ))))
       (exit-error( msg sloc ))
-   )))
+   ))
    (let arrow (fragment-context::lookup( ctx k args-tt sloc )))
    (let arrow-tt (fragment::get-type arrow))
 
@@ -687,5 +687,5 @@ fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentLi
    (set return (fragment::set-type( return (range arrow-tt) )))
 
    return
-)) Fragment);
+) Fragment);
 
