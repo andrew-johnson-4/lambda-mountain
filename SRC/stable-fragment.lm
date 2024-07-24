@@ -27,7 +27,7 @@ print := λ(: x FragmentList). (: (
    ))
 ) Nil);
 
-fragment::new := λ . (: (tail(
+fragment::new := λ . (: (
    (let r (Fragment(
       (close FKVEOF)
       0_i64
@@ -35,7 +35,7 @@ fragment::new := λ . (: (tail(
       (close(fragment-context::new()))
    )))
    r
-)) Fragment);
+) Fragment);
 
 fragment::get := λ(: e Fragment)(: k String). (: (tail(
    (let r SNil)
