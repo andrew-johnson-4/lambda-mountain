@@ -518,7 +518,11 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
 
          (set e (fragment::set-context( e (fragment::get-context e2) )))
          (set e (fragment::set-offset( e end-offset )))
-         (set e (fragment::set-type( e (typeof term) )))
+         (if (>( (sizeof-type(typeof term)) 8_u64 )) (
+            (set e (fragment::set-type( e (and( (typeof term) (t1 'StackVariable_s) )) )))
+         ) (
+            (set e (fragment::set-type( e (typeof term) )))
+         ))
       )))
       ( (App( (Abs( (Var( lhs _ )) ASTNil tlt )) rhs )) (tail(
          (let rtype (typeof rhs))
