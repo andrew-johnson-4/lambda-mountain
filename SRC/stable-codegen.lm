@@ -30,7 +30,7 @@ compile-expr := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used IsUsed
    (match used (
       ()
       ( Return (tail(
-         (set e (compile-expr-direct( ctx term stack-offset Used )))
+         (set e (compile-expr-direct( ctx term stack-offset Tail )))
          (let term-tt (typeof term))
          (if (==( (sizeof-type term-tt) 0_u64 )) () (
             (set e (fragment-apply( ctx stack-offset 'cdecl::return_s
@@ -622,9 +622,9 @@ compile-stack-call := λ(: ctx FContext)(: function-name String)(: return-type T
 
          (set r (fragment::set-offset( r offset )))
          (if (>( return-size 8_u64 )) (
-            (if (is( used Used )) (
+            (if (is( used Unused )) () (
                (set r (fragment::set-offset( r (-( offset (as return-size I64) )) )))
-            ) ())
+            ))
          ) ())
          (set r (fragment::set-type( r return-type )))
       )))
