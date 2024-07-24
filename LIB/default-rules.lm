@@ -18,7 +18,7 @@ macro ('match-pats( term (ps (lhs rhs)) remainder )) (
 );
 
 macro ('match-pats-arm( term (:Variable: v) )) (
-   (tail( (let v term) (branchtrue()) ))
+   ( (let v term) (branchtrue()) )
 );
 
 macro ('match-pats-arm( term :Any: )) (

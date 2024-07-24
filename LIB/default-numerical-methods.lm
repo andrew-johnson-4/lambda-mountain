@@ -1,5 +1,5 @@
 
-< := λ(: l U64)(: r U64). (: (tail(
+< := λ(: l U64)(: r U64). (: (
    (gensym-label end)
    (mov( 1_u64 RAX ))
    (mov( l R8 ))
@@ -9,9 +9,9 @@
    (mov( 0_u64 RAX ))
    (label end)
    (as RAX U64)
-)) U64);
+) U64);
 
-< := λ(: l I64)(: r I64). (: (tail(
+< := λ(: l I64)(: r I64). (: (
    (gensym-label end)
    (mov( 1_u64 RAX ))
    (mov( l R8 ))
@@ -21,9 +21,9 @@
    (mov( 0_u64 RAX ))
    (label end)
    (as RAX U64)
-)) U64);
+) U64);
 
-<= := λ(: l U64)(: r U64). (: (tail(
+<= := λ(: l U64)(: r U64). (: (
    (gensym-label end)
    (mov( 1_u64 RAX ))
    (mov( l R8 ))
@@ -33,9 +33,9 @@
    (mov( 0_u64 RAX ))
    (label end)
    (as RAX U64)
-)) U64);
+) U64);
 
-<= := λ(: l I64)(: r I64). (: (tail(
+<= := λ(: l I64)(: r I64). (: (
    (gensym-label end)
    (mov( 1_u64 RAX ))
    (mov( l R8 ))
@@ -45,9 +45,9 @@
    (mov( 0_u64 RAX ))
    (label end)
    (as RAX U64)
-)) U64);
+) U64);
 
-> := λ(: l U64)(: r U64). (: (tail(
+> := λ(: l U64)(: r U64). (: (
    (gensym-label end)
    (mov( 1_u64 RAX ))
    (mov( l R8 ))
@@ -57,9 +57,9 @@
    (mov( 0_u64 RAX ))
    (label end)
    (as RAX U64)
-)) U64);
+) U64);
 
-> := λ(: l I64)(: r I64). (: (tail(
+> := λ(: l I64)(: r I64). (: (
    (gensym-label end)
    (mov( 1_u64 RAX ))
    (mov( l R8 ))
@@ -69,9 +69,9 @@
    (mov( 0_u64 RAX ))
    (label end)
    (as RAX U64)
-)) U64);
+) U64);
 
->= := λ(: l U64)(: r U64). (: (tail(
+>= := λ(: l U64)(: r U64). (: (
    (gensym-label end)
    (mov( 1_u64 RAX ))
    (mov( l R8 ))
@@ -81,9 +81,9 @@
    (mov( 0_u64 RAX ))
    (label end)
    (as RAX U64)
-)) U64);
+) U64);
 
->= := λ(: l I64)(: r I64). (: (tail(
+>= := λ(: l I64)(: r I64). (: (
    (gensym-label end)
    (mov( 1_u64 RAX ))
    (mov( l R8 ))
@@ -93,9 +93,9 @@
    (mov( 0_u64 RAX ))
    (label end)
    (as RAX U64)
-)) U64);
+) U64);
 
-== := λ(: l U64)(: r U64). (: (tail(
+== := λ(: l U64)(: r U64). (: (
    (gensym-label end)
    (mov( 1_u64 RAX ))
    (mov( l R8 ))
@@ -105,9 +105,9 @@
    (mov( 0_u64 RAX ))
    (label end)
    (as RAX U64)
-)) U64);
+) U64);
 
-== := λ(: l I64)(: r I64). (: (tail(
+== := λ(: l I64)(: r I64). (: (
    (gensym-label end)
    (mov( 1_u64 RAX ))
    (mov( l R8 ))
@@ -117,9 +117,9 @@
    (mov( 0_u64 RAX ))
    (label end)
    (as RAX U64)
-)) U64);
+) U64);
 
-!= := λ(: l U64)(: r U64). (: (tail(
+!= := λ(: l U64)(: r U64). (: (
    (gensym-label end)
    (mov( 1_u64 RAX ))
    (mov( l R8 ))
@@ -129,9 +129,9 @@
    (mov( 0_u64 RAX ))
    (label end)
    (as RAX U64)
-)) U64);
+) U64);
 
-&& := λ(: l U64)(: r U64). (: (tail(
+&& := λ(: l U64)(: r U64). (: (
    (gensym-label end)
    (mov( 0_u64 RAX ))
    (mov( l R8 ))
@@ -143,9 +143,9 @@
    (mov( 1_u64 RAX ))
    (label end)
    (as RAX U64)
-)) U64);
+) U64);
 
-|| := λ(: l U64)(: r U64). (: (tail(
+|| := λ(: l U64)(: r U64). (: (
    (gensym-label end)
    (gensym-label end-true)
    (mov( 0_u64 RAX ))
@@ -160,9 +160,9 @@
    (mov( 1_u64 RAX ))
    (label end)
    (as RAX U64)
-)) U64);
+) U64);
 
-!= := λ(: l I64)(: r I64). (: (tail(
+!= := λ(: l I64)(: r I64). (: (
    (gensym-label end)
    (mov( 1_u64 RAX ))
    (mov( l R8 ))
@@ -172,90 +172,90 @@
    (mov( 0_u64 RAX ))
    (label end)
    (as RAX U64)
-)) U64);
+) U64);
 
-+ := λ(: l U64)(: r U64). (: (tail(
++ := λ(: l U64)(: r U64). (: (
    (mov( l R8 ))
    (mov( r RAX ))
    (add( R8 RAX ))
    (as RAX U64)
-)) U64);
+) U64);
 
-+ := λ(: l I64)(: r I64). (: (tail(
++ := λ(: l I64)(: r I64). (: (
    (mov( l R8 ))
    (mov( r RAX ))
    (add( R8 RAX ))
    (as RAX I64)
-)) I64);
+) I64);
 
-- := λ(: l U64)(: r U64). (: (tail(
+- := λ(: l U64)(: r U64). (: (
    (mov( r R8 ))
    (mov( l RAX ))
    (sub( R8 RAX ))
    (as RAX U64)
-)) U64);
+) U64);
 
-- := λ(: l I64)(: r I64). (: (tail(
+- := λ(: l I64)(: r I64). (: (
    (mov( r R8 ))
    (mov( l RAX ))
    (sub( R8 RAX ))
    (as RAX I64)
-)) I64);
+) I64);
 
-^ := λ(: l U64)(: r U64). (: (tail(
+^ := λ(: l U64)(: r U64). (: (
    (mov( r R8 ))
    (mov( l RAX ))
    (xor( R8 RAX ))
    (as RAX U64)
-)) U64);
+) U64);
 
-% := λ(: l U64)(: r U64). (: (tail(
+% := λ(: l U64)(: r U64). (: (
    (mov( 0_u64 RDX ))
    (mov( l RAX ))
    (mov( r R8 ))
    (div( R8 ))
    (as RDX U64)
-)) U64);
+) U64);
 
-% := λ(: l I64)(: r I64). (: (tail(
+% := λ(: l I64)(: r I64). (: (
    (mov( 0_u64 RDX ))
    (mov( l RAX ))
    (mov( r R8 ))
    (idiv( R8 ))
    (as RDX I64)
-)) I64);
+) I64);
 
-/ := λ(: l U64)(: r U64). (: (tail(
+/ := λ(: l U64)(: r U64). (: (
    (mov( 0_u64 RDX ))
    (mov( l RAX ))
    (mov( r R8 ))
    (div( R8 ))
    (as RAX U64)
-)) U64);
+) U64);
 
-/ := λ(: l I64)(: r I64). (: (tail(
+/ := λ(: l I64)(: r I64). (: (
    (mov( 0_u64 RDX ))
    (mov( l RAX ))
    (mov( r R8 ))
    (idiv( R8 ))
    (as RAX I64)
-)) I64);
+) I64);
 
-* := λ(: l U64)(: r U64). (: (tail(
+* := λ(: l U64)(: r U64). (: (
    (mov( r RAX ))
    (mov( l R8 ))
    (mul( R8 ))
    (as RAX U64)
-)) U64);
+) U64);
 
-* := λ(: l I64)(: r I64). (: (tail(
+* := λ(: l I64)(: r I64). (: (
    (mov( r RAX ))
    (mov( l R8 ))
    (imul( R8 ))
    (as RAX I64)
-)) I64);
+) I64);
 
-!= := λ(: l U8)(: r U8). (: (tail(
+!= := λ(: l U8)(: r U8). (: (
    (push R14)
    (push R15)
    (gensym-label end-true)
@@ -276,9 +276,9 @@
    (pop R15)
    (pop R14)
    (as RAX U64)
-)) U64);
+) U64);
 
-== := λ(: l U8)(: r U8). (: (tail(
+== := λ(: l U8)(: r U8). (: (
    (push R14)
    (push R15)
    (gensym-label end-true)
@@ -299,8 +299,8 @@
    (pop R15)
    (pop R14)
    (as RAX U64)
-)) U64);
-== := λ(: l U16)(: r U16). (: (tail(
+) U64);
+== := λ(: l U16)(: r U16). (: (
    (push R14)
    (push R15)
    (gensym-label end-true)
@@ -321,8 +321,8 @@
    (pop R15)
    (pop R14)
    (as RAX U64)
-)) U64);
-== := λ(: l U32)(: r U32). (: (tail(
+) U64);
+== := λ(: l U32)(: r U32). (: (
    (push R14)
    (push R15)
    (gensym-label end-true)
@@ -343,25 +343,25 @@
    (pop R15)
    (pop R14)
    (as RAX U64)
-)) U64);
+) U64);
 
-not := λ(: x U64). (: (tail(
+not := λ(: x U64). (: (
    (let r 0_u64)
    (if (==( x 0_u64 )) (
       (set r 1_u64)
    ) ())
    r
-)) U64);
+) U64);
 
-not := λ(: x U8). (: (tail(
+not := λ(: x U8). (: (
    (let r 0_u64)
    (if (==( x 0_u8 )) (
       (set r 1_u64)
    ) ())
    r
-)) U64);
+) U64);
 
-== := λ(: l I8)(: r I8). (: (tail(
+== := λ(: l I8)(: r I8). (: (
    (push R14)
    (push R15)
    (gensym-label end-true)
@@ -382,8 +382,8 @@ not := λ(: x U8). (: (tail(
    (pop R15)
    (pop R14)
    (as RAX U64)
-)) U64);
-== := λ(: l I16)(: r I16). (: (tail(
+) U64);
+== := λ(: l I16)(: r I16). (: (
    (push R14)
    (push R15)
    (gensym-label end-true)
@@ -404,8 +404,8 @@ not := λ(: x U8). (: (tail(
    (pop R15)
    (pop R14)
    (as RAX U64)
-)) U64);
-== := λ(: l I32)(: r I32). (: (tail(
+) U64);
+== := λ(: l I32)(: r I32). (: (
    (push R14)
    (push R15)
    (gensym-label end-true)
@@ -426,5 +426,5 @@ not := λ(: x U8). (: (tail(
    (pop R15)
    (pop R14)
    (as RAX U64)
-)) U64);
+) U64);
 
