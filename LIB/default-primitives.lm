@@ -226,6 +226,7 @@ fragment : DontChain primitive::if := λ(: ictx ImplicitContext)(: e1 BranchCond
       (.frame e1)
       (.program e1)
       \t (.expression e1) \s (uuid label-true-branch) \n
+      (.frame e2)
       (.frame e3)
       (.program e3)
       (if-eq (>( (.return-size ictx) 8 )) 1 (
