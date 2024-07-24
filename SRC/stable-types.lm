@@ -1244,30 +1244,30 @@ to-s := λ(: term AST). (: (
 ) S);
 
 ascript-normal := λ(: t AST)(: tt Type). (: (
-   (if (non-zero tt) (tail(
+   (if (non-zero tt) (
       (let prev-tt (normalize(typeof t)))
       (if (non-zero prev-tt) (
-         (if (is-arrow tt) () (tail(
+         (if (is-arrow tt) () (
             (let norm-tt (normalize tt))
-            (if (&&( (can-unify( prev-tt norm-tt )) (can-unify( norm-tt prev-tt )) )) () (tail(
+            (if (&&( (can-unify( prev-tt norm-tt )) (can-unify( norm-tt prev-tt )) )) () (
                (print prev-tt)
                (print '\s!=\s_s)
                (print norm-tt)
                (print '\n_s)
                (exit-error( 'Type\sAscription\sInequality_s t ))
-            )))
-         )))
-      ) (tail(
+            ))
+         ))
+      ) (
          (set tt (with-size tt))
          (set tt (with-tag tt))
          (set tt (with-fields tt))
          (ascript( t tt ))
          (set types-have-changed True_u8)
-      )))
-   )) ())
+      ))
+   ) ())
 ) Nil);
 
-sizeof-type := λ(: tt Type). (: (tail(
+sizeof-type := λ(: tt Type). (: (
    (let sz 0_u64)
    (match tt (
       ()
@@ -1293,11 +1293,11 @@ sizeof-type := λ(: tt Type). (: (tail(
          (match (.lookup( type-complex-fields-index tag (Tuple( TAny TAny )) )) (
             ()
             ( (Tuple( TAny TAny )) () )
-            ( (Tuple( bt at )) (tail(
+            ( (Tuple( bt at )) (
                (let ctx (unify( bt tt )))
                (let arg-types (substitute( ctx at )))
                (set sz (+( 8_u64 (sizeof-aligned arg-types) )))
-            )))
+            ))
          ))
       ))
       ( (TAnd( lt rt )) (
@@ -1307,15 +1307,15 @@ sizeof-type := λ(: tt Type). (: (tail(
             (set sz (sizeof-type rt))
          ))
       ))
-      ( _ (tail(
+      ( _ (
          (print 'Unexpected\sType\ssizeof-type\s_s)
          (print tt)(print '\n_s)(exit 1_u64)
-      )))
+      ))
    ))
    sz
-)) U64);
+) U64);
 
-has-forward := λ(: tt TypeList). (: (tail(
+has-forward := λ(: tt TypeList). (: (
    (let return 0_u64)
    (match tt (
       ()
@@ -1328,9 +1328,9 @@ has-forward := λ(: tt TypeList). (: (tail(
       ))
    ))
    return
-)) U64);
+) U64);
 
-has-forward := λ(: tt Type). (: (tail(
+has-forward := λ(: tt Type). (: (
    (let return 0_u64)
    (match tt (
       ()
@@ -1355,28 +1355,28 @@ has-forward := λ(: tt Type). (: (tail(
       ( _ () )
    ))
    return
-)) U64);
+) U64);
 
-sizeof-aligned := λ(: tt Type). (: (tail(
+sizeof-aligned := λ(: tt Type). (: (
    (let sz (sizeof-type tt))
    (if (==( sz 0_u64 )) () (set sz (max( 8_u64 sz ))))
    sz
-)) U64);
+) U64);
 
-set-type-fields := λ(: base-type Type)(: args-type Type). (: (tail(
+set-type-fields := λ(: base-type Type)(: args-type Type). (: (
    (let tag '_s)
    (match base-type (
       ()
       ( (TGround( tg _ )) (set tag tg) )
-      ( _ (tail(
+      ( _ (
          (print 'ERROR:\sset-type-fields\n_s)(print base-type)(print '\n_s)
          (exit 1_u64)
-      )))
+      ))
    ))
    (.bind( (as (& type-complex-fields-index) BTreeEq<String,Tuple<Type,Type>>[]) tag (Tuple( base-type args-type )) ))
-)) Nil);
+) Nil);
 
-typeof-lhs := λ(: lhs AST). (: (tail(
+typeof-lhs := λ(: lhs AST). (: (
    (let r TAny)
    (match lhs (
       ()
@@ -1392,35 +1392,35 @@ typeof-lhs := λ(: lhs AST). (: (tail(
       ( _ (exit-error( 'Unknown\sLHS_s lhs )))
    ))
    r
-)) Type);
+) Type);
 
-typeof-tag := λ(: tag String). (: (tail(
+typeof-tag := λ(: tag String). (: (
    (let r (.lookup( type-constructors-index tag TAny )))
    r
-)) Type);
+) Type);
 
-as-local-variable := λ(: tt Type). (: (tail(
+as-local-variable := λ(: tt Type). (: (
    (set tt (normalize tt))
    (if (non-zero tt) (
       (set tt (TAnd( (close tt) (close(t1 'LocalVariable_s)) )))
    ) ())
    (set tt (with-size tt))
    tt
-)) Type);
+) Type);
 
-as-constant := λ(: tt Type). (: (tail(
+as-constant := λ(: tt Type). (: (
    (if (non-zero tt) (
       (set tt (TAnd( (close tt) (close(t1 'Constant_s)) )))
    ) ())
    tt
-)) Type);
+) Type);
 
-with-size := λ(: tt Type). (: (tail(
-   (if (not(is-sized tt)) (tail(
+with-size := λ(: tt Type). (: (
+   (if (not(is-sized tt)) (
       (let sz (sizeof-type tt))
       (set tt (with-size-recurse tt))
       (set tt (and( tt (t2( 'Sized_s (t1(to-string sz)) )) )))
-   )) ())
+   ) ())
    (match tt (
       ()
       ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
@@ -1429,9 +1429,9 @@ with-size := λ(: tt Type). (: (tail(
       ( _ () )
    ))
    tt
-)) Type);
+) Type);
 
-with-size := λ(: tt TypeList). (: (tail(
+with-size := λ(: tt TypeList). (: (
    (match tt (
       ()
       ( TypeEOF () )
@@ -1440,9 +1440,9 @@ with-size := λ(: tt TypeList). (: (tail(
       ))
    ))
    tt
-)) TypeList);
+) TypeList);
 
-with-size-recurse := λ(: tt Type). (: (tail(
+with-size-recurse := λ(: tt Type). (: (
    (match tt (
       ()
       ( (TAnd( lt rt )) (
@@ -1461,9 +1461,9 @@ with-size-recurse := λ(: tt Type). (: (tail(
       ( _ () )
    ))
    tt
-)) Type);
+) Type);
 
-is-sized := λ(: tt Type). (: (tail(
+is-sized := λ(: tt Type). (: (
    (let r 0_u64)
    (match tt (
       ()
@@ -1480,28 +1480,28 @@ is-sized := λ(: tt Type). (: (tail(
       ( _ () )
    ))
    r
-)) U64);
+) U64);
 
-and := λ(: lt Type)(: rt Type). (: (tail(
+and := λ(: lt Type)(: rt Type). (: (
    (let tt (TAnd( (close lt) (close rt) )))
    tt
-)) Type);
+) Type);
 
-is-parameterized := λ(: tt Type). (: (tail(
+is-parameterized := λ(: tt Type). (: (
    (let r 0_u64)
    (match tt (
       ()
       ( (TGround( _ (TypeSeq( _ _ )) )) (set r 1_u64) )
-      ( (TAnd( lt rt )) (tail(
+      ( (TAnd( lt rt )) (
          (if (is-parameterized lt) (set r 1_u64) ())
          (if (is-parameterized rt) (set r 1_u64) ())
-      )))
+      ))
       ( _ () )
    ))
    r
-)) U64);
+) U64);
 
-deep-hash := λ(: tt Type). (: (tail(
+deep-hash := λ(: tt Type). (: (
    (let return 0_u64)
    (match tt (
       ()
@@ -1521,9 +1521,9 @@ deep-hash := λ(: tt Type). (: (tail(
       ))
    ))
    return
-)) U64);
+) U64);
 
-deep-hash := λ(: tt TypeList). (: (tail(
+deep-hash := λ(: tt TypeList). (: (
    (let return 0_u64)
    (match tt (
       ()
@@ -1536,16 +1536,16 @@ deep-hash := λ(: tt TypeList). (: (tail(
       ))
    ))
    return
-)) U64);
+) U64);
 
-specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
+specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (
    (set unify-ctx (normalize unify-ctx))
    (let term ASTEOF)
    (let global-ctx global-type-context)
    (while (non-zero global-ctx) (match global-ctx (
       ()
       ( TCtxNil (set global-ctx TCtxEOF) )
-      ( (TCtxBind( rst k kt t )) (tail(
+      ( (TCtxBind( rst k kt t )) (
          (if (==( k key )) (
             (if (==( ft kt )) (
                (match t (
@@ -1556,7 +1556,7 @@ specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Ty
             ) ())
          ) ())
          (set global-ctx rst)
-      )))
+      ))
    )))
    (mark-as-special( key result-type ))
    (let special-term (substitute( unify-ctx term )))
@@ -1566,9 +1566,9 @@ specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Ty
       (close ast-parsed-program)
       (close special-term)
    )))
-)) Nil);
+) Nil);
 
-has-representation := λ(: tt Type). (: (tail(
+has-representation := λ(: tt Type). (: (
    (let return 0_u64)
    (match tt (
       ()
@@ -1587,10 +1587,10 @@ has-representation := λ(: tt Type). (: (tail(
       ( _ () )
    ))
    return
-)) U64);
+) U64);
 
-guess-representation := λ(: tt Type). (: (tail(
-   (if (has-representation tt) () (tail(
+guess-representation := λ(: tt Type). (: (
+   (if (has-representation tt) () (
       (let sz (sizeof-type tt))
       (match sz (
          ()
@@ -1601,11 +1601,11 @@ guess-representation := λ(: tt Type). (: (tail(
          ( 8_u64 (set tt (and( tt (t1( 'Reg64_s )) ))) )
          ( _ (set tt (and( tt (t1( 'StackVariable_s )) ))) )
       ))
-   )))
+   ))
    tt
-)) Type);
+) Type);
 
-unify-hint := λ(: hint Type)(: tt Type). (: (tail(
+unify-hint := λ(: hint Type)(: tt Type). (: (
    (match (Tuple( hint tt )) (
       ()
       ( (Tuple( (TGround( hint-tag hint-args )) (TGround( tt-tag tt-args )) )) (
@@ -1624,9 +1624,9 @@ unify-hint := λ(: hint Type)(: tt Type). (: (tail(
       ( _ () )
    ))
    tt
-)) Type);
+) Type);
 
-unify-hint := λ(: hint Type)(: tt TypeList). (: (tail(
+unify-hint := λ(: hint Type)(: tt TypeList). (: (
    (match tt (
       ()
       ( TypeEOF () )
@@ -1639,29 +1639,29 @@ unify-hint := λ(: hint Type)(: tt TypeList). (: (tail(
       ( _ () )
    ))
    tt
-)) TypeList);
+) TypeList);
 
 
-typecheck := λ. (: (tail(
+typecheck := λ. (: (
    (let p ast-parsed-program)
    (let ordered-type-exprs ASTEOF)
    (while (non-zero p) (match p (
       ()
-      ( (Seq( rst r )) (tail(
+      ( (Seq( rst r )) (
          (set ordered-type-exprs (Seq( (close ordered-type-exprs) (close r) )))
          (set p rst)
-      )))
+      ))
    )))
    (while (non-zero ordered-type-exprs) (match ordered-type-exprs (
       ()
-      ( (Seq( rst r )) (tail(
+      ( (Seq( rst r )) (
          (infer-global-context( r ))
          (set ordered-type-exprs rst)
-      )))
+      ))
    )))
    (infer-expr( global-type-context ast-parsed-program Unscoped TAny Used ))
    (assert-well-typed ast-parsed-program)
-)) Nil);
+) Nil);
 
 infer-type-definition := λ(: base-type Type)(: body AST)(: case-number U64). (: (tail(
    (let r 0_u64)
