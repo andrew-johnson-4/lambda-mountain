@@ -45,18 +45,10 @@ main := λ. (: (tail(
         (print x)
         (print y)
      )))
-     ( (B( x y )) (tail(
-        (print x)
-        (print y)
-     )))
   ))
   (match (e3 5_u64) (
      ()
      ( (A( x y )) (tail(
-        (print x)
-        (print y)
-     )))
-     ( (B( x y )) (tail(
         (print x)
         (print y)
      )))
@@ -69,18 +61,10 @@ main := λ. (: (tail(
         (print x)
         (print y)
      )))
-     ( (B( x y )) (tail(
-        (print x)
-        (print y)
-     )))
   ))
   (match (e4 5_u64) (
      ()
      ( (A( x y )) (tail(
-        (print x)
-        (print y)
-     )))
-     ( (B( x y )) (tail(
         (print x)
         (print y)
      )))
