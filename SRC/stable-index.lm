@@ -1,10 +1,9 @@
 
 type-index := (: BTreeIsEOF BTreeIs<AST,Type>);
 
-typeof := λ(: t AST). (: (tail(
-   (let tt (.lookup( type-index t TAny )))
-   tt
-)) Type);
+typeof := λ(: t AST). (: (
+   (.lookup( type-index t TAny ))
+) Type);
 
 ascript := λ(: t AST)(: tt Type). (: (
    (.bind( (as (& type-index) BTreeIs<AST,Type>[]) t tt ))
