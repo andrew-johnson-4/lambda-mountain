@@ -1938,112 +1938,112 @@ reduce-plural := λ(: pts List<Type>). (: (
    (let r (: LEOF List<Type>))
    (while (non-zero pts) (match pts (
       ()
-      ( (LCons( try tlt )) (tail(
+      ( (LCons( try tlt )) (
          (let maybes tlt)
          (set pts tlt)
          (while (non-zero maybes) (match maybes (
             ()
-            ( (LCons( tst mrst )) (tail(
+            ( (LCons( tst mrst )) (
                (if (non-zero try) (
                   (if (can-unify( (domain try) (domain tst) )) (
                      (set try TAny)
                   ) ())
                ) ())
                (set maybes mrst)
-            )))
+            ))
          )))
          (if (non-zero try) (
             (set r (cons( try r )))
          ) ())
-      )))
+      ))
    )))
    (set pts r)
    (set r (: LEOF List<Type>))
    (while (non-zero pts) (match pts (
       ()
-      ( (LCons( try tlt )) (tail(
+      ( (LCons( try tlt )) (
          (let maybes tlt)
          (set pts tlt)
          (while (non-zero maybes) (match maybes (
             ()
-            ( (LCons( tst mrst )) (tail(
+            ( (LCons( tst mrst )) (
                (if (non-zero try) (
                   (if (can-unify( (domain try) (domain tst) )) (
                      (set try TAny)
                   ) ())
                ) ())
                (set maybes mrst)
-            )))
+            ))
          )))
          (if (non-zero try) (
             (set r (cons( try r )))
          ) ())
-      )))
+      ))
    )))
    r
 ) List<Type>);
 
-apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: blame AST). (: (tail(
+apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: blame AST). (: (
    (let r TAny)
    (let rs (apply-plural( function-name ft pt do-specialize blame )))
    (set rs (reduce-plural rs))
-   (if (==( (.length rs) 0_u64 )) (tail(
+   (if (==( (.length rs) 0_u64 )) (
       (print 'Function\sApplication\sYielded\sNo\sMatches\n_s)
       (print function-name)(print '\nWith\sArgument\s:\s_s)(print pt)(print '\n_s)
       (print (location-of( blame )))(print '\n_s)
       (exit 1_u64)
-   )) ())
-   (if (>( (.length rs) 1_u64 )) (tail(
+   ) ())
+   (if (>( (.length rs) 1_u64 )) (
       (print 'Function\sApplication\sYielded\sAn\sIrreducible\sPlurality\sOf\sMatches\n_s)
       (print function-name)(print '\s:\s_s)(print ft)(print '\n_s)
       (print 'With\sArgument\s_s)(print pt)(print '\n_s)
       (print (location-of( blame )))(print '\n_s)
       (let rs-copy rs)
-      (while (non-zero( rs-copy )) (tail(
+      (while (non-zero( rs-copy )) (
          (print 'Matched\s_s)
          (match rs-copy (
             ()
-            ( (LCons( hd tl )) (tail(
+            ( (LCons( hd tl )) (
                (print hd)
                (set rs-copy tl)
-            )))
+            ))
          ))
          (print '\n_s)
-      )))
+      ))
       (exit 1_u64)      
-   )) ())
+   ) ())
    (match rs (
       ()
       ( (LCons( sft _ )) (
          (match sft (
             ()
-            ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (tail(
+            ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (
                (let ctx (unify( fpt pt )))
                (set ctx (normalize ctx))
                (let closed-type (substitute( ctx sft )))
                (set r (guess-representation(substitute( ctx frt ))))
-               (if (&&( (==( do-specialize True_u8 )) (is-open sft) )) (tail(
-                  (if (is-open closed-type) (tail(
+               (if (&&( (==( do-specialize True_u8 )) (is-open sft) )) (
+                  (if (is-open closed-type) (
                      (print 'Application\sDid\sNot\sClose\sBefore\sSpecialization:\n_s)
                      (print 'Function\s_s)(print function-name)(print '\s:\s_s)(print sft)(print '\n_s)
                      (print 'Argument\s_s)(print pt)(print '\n_s)
                      (print (location-of( blame )))(print '\n_s)
                      (exit 1_u64)
-                  )) ())
+                  ) ())
                   (try-specialize( function-name sft ctx closed-type ))
-               )) ())
-            )))
-            ( _ (tail(
+               ) ())
+            ))
+            ( _ (
                (print 'Function\sNot\sSimple\sArrow:\s_s)(print sft)(print '\n_s)
                (exit 1_u64)
-            )))
+            ))
          ))
       ))
    ))
    r
-)) Type);
+) Type);
 
-apply-or-cons-and-specialize := λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (tail(
+apply-or-cons-and-specialize := λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (
    (let r TAny)
    (if (is-arrow ft) (
       (set r (apply( function-name ft pt True_u8 blame )))
@@ -2053,16 +2053,16 @@ apply-or-cons-and-specialize := λ(: function-name String)(: ft Type)(: pt Type)
       ) ())
    ))
    r
-)) Type);
+) Type);
 
-try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (tail(
+try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (
    (set result-type (normalize result-type))
    (let global-ctx global-type-context)
    (if (is-special( function-name result-type )) () (
       (while (non-zero global-ctx) (match global-ctx (
          ()
          ( TCtxNil (set global-ctx TCtxEOF) )
-         ( (TCtxBind( rst k kt t )) (tail(
+         ( (TCtxBind( rst k kt t )) (
             (if (&&( (==( function-name k )) (==( ft kt )) )) (
                (match t (
                   ()
@@ -2073,30 +2073,30 @@ try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: 
                ))
             ) ())
             (set global-ctx rst)
-         )))
+         ))
       )))
    ))
-)) Nil);
+) Nil);
 
-infer-tctx := λ(: tctx TContext)(: tt TypeList). (: (tail(
+infer-tctx := λ(: tctx TContext)(: tt TypeList). (: (
    (match tt (
       ()
       ( TypeEOF () )
-      ( (TypeSeq( rst p1 )) (tail(
+      ( (TypeSeq( rst p1 )) (
          (set tctx (infer-tctx( tctx rst )))
          (set tctx (infer-tctx( tctx p1 )))
-      )))
+      ))
    ))
    tctx
-)) TContext);
+) TContext);
 
-infer-tctx := λ(: tctx TContext)(: tt Type). (: (tail(
+infer-tctx := λ(: tctx TContext)(: tt Type). (: (
    (match tt (
       ()
-      ( (TAnd( lt rt )) (tail(
+      ( (TAnd( lt rt )) (
          (set tctx (infer-tctx( tctx lt )))
          (set tctx (infer-tctx( tctx rt )))
-      )))
+      ))
       ( (TVar( tv )) (
          (set tctx (TCtxBind(
             (close tctx)
@@ -2111,31 +2111,31 @@ infer-tctx := λ(: tctx TContext)(: tt Type). (: (tail(
       ( TAny () )
    ))
    tctx
-)) TContext);
+) TContext);
 
-infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
+infer-ctx := λ(: tctx TContext)(: lhs AST). (: (
    (match lhs (
       ()
-      ( (App( (Lit( ':_s _ )) (App( (Var( v vtk )) (AType tt) )) )) (tail(
+      ( (App( (Lit( ':_s _ )) (App( (Var( v vtk )) (AType tt) )) )) (
          (set tctx (TCtxBind(
             (close tctx) v (as-local-variable tt) (Var( v vtk ))
          )))
          (set tctx (infer-tctx( tctx tt )))
-      )))
-      ( (App( ps (App( (Lit( ':_s _ )) (App( (Var( v vtk )) (AType tt) )) )) )) (tail(
+      ))
+      ( (App( ps (App( (Lit( ':_s _ )) (App( (Var( v vtk )) (AType tt) )) )) )) (
          (set tctx (TCtxBind(
             (close tctx) v (as-local-variable tt) (Var( v vtk ))
          )))
          (set tctx (infer-ctx( tctx ps )))
          (set tctx (infer-tctx( tctx tt )))
-      )))
+      ))
       ( ASTNil () )
       ( _ (exit-error( 'Invalid\sLHS_s lhs )) )
    ))
    tctx
-)) TContext);
+) TContext);
 
-implicit-tail := λ(: tt Type). (: (tail(
+implicit-tail := λ(: tt Type). (: (
    (match tt (
       ()
       ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF hd )) tl )) )) (
@@ -2144,23 +2144,23 @@ implicit-tail := λ(: tt Type). (: (tail(
       ( _ () )
    ))
    tt
-)) Type);
+) Type);
 
-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tail(
+typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (
    (let found (typeof-var-raw( sloc tctx vname )))
    (if (non-zero found) () (
       (exit-error( 'Unknown\sReferenced\sVariable_s sloc ))
    ))
    found
-)) Type);
+) Type);
 
-typeof-var-raw := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tail(
+typeof-var-raw := λ(: sloc AST)(: tctx TContext)(: vname String). (: (
    (let found TAny)
    (while (non-zero tctx) (match tctx (
       ()
       ( TCtxNil (set tctx TCtxEOF) )
       ( (TCtxBind( rst k vt _ )) (
-         (if (==( k vname )) (tail(
+         (if (==( k vname )) (
             (if (non-zero found) (
                (if (is-arrow vt) (
                   (set found (and( found vt )))
@@ -2175,15 +2175,15 @@ typeof-var-raw := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tail(
             ) (
                (set tctx TCtxEOF)
             ))
-         )) (
+         ) (
             (set tctx rst)
          ))
       ))
    )))
    found
-)) Type);
+) Type);
 
-infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: used IsUsed). (: (tail(
+infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: used IsUsed). (: (
    (match term (
       ()
       ( ASTNil (ascript-normal( term (t1 'Nil_s) )) )
@@ -2384,5 +2384,5 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
       )))
    ))
    tctx
-)) TContext);
+) TContext);
 
