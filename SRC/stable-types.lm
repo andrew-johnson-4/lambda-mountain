@@ -892,7 +892,7 @@ to-string := λ(: tt Type). (: (
    (clone-rope r)
 ) String);
 
-to-string := λ(: tt TypeList). (: (tail(
+to-string := λ(: tt TypeList). (: (
    (let r SNil)
    (match tt (
       ()
@@ -909,15 +909,15 @@ to-string := λ(: tt TypeList). (: (tail(
       ))
    ))
    r
-)) S);
+) S);
 
-to-string-impl := λ(: tt Type). (: (tail(
+to-string-impl := λ(: tt Type). (: (
    (let r SNil)
    (match tt (
       ()
       ( TAny (set r (SAtom '?_s)) )
       ( (TVar v) (set r (SAtom v)) )
-      ( (TAnd( lt rt )) (tail(
+      ( (TAnd( lt rt )) (
          (let ls (to-string-impl lt))
          (let rs (to-string-impl rt))
          (set r (SCons(
@@ -927,59 +927,59 @@ to-string-impl := λ(: tt Type). (: (tail(
                (close rs)
             )))
          )))
-      )))
+      ))
       ( (TGround( tag TypeEOF )) (
         (set r (SAtom tag))
       ))
-      ( (TGround( tag ps )) (tail(
+      ( (TGround( tag ps )) (
         (set r (SAtom tag))
         (set r (SCons( (close r) (close(SAtom '<_s)) )))
         (set r (SCons( (close r) (close(to-string ps)) )))
         (set r (SCons( (close r) (close(SAtom '>_s)) )))
-      )))
+      ))
    ))
    r
-)) S);
+) S);
 
-type-of-s := λ(: compound AST). (: (tail(
+type-of-s := λ(: compound AST). (: (
    (let r TAny)
    (match compound (
       ()
-      ( (Lit( tt _ )) (tail(
+      ( (Lit( tt _ )) (
          (let nt (parse-type tt))
          (set r nt)
-      )))
-      ( (Var( tt _ )) (tail(
+      ))
+      ( (Var( tt _ )) (
          (let nt (parse-type tt))
          (set r nt)
-      )))
-      ( (App( (App( lt (Lit( ',_s _ )) )) rt )) (tail(
+      ))
+      ( (App( (App( lt (Lit( ',_s _ )) )) rt )) (
          (let ltt (type-of-s lt))
          (let rtt (type-of-s rt))
          (set r (t3( 'Cons_s ltt rtt )))
-      )))
+      ))
       ( _ (exit-error( 'Malformed\sType\sDefinition_s compound )))
    ))
    r
-)) Type);
+) Type);
 
-normalize := λ(: tctx TContext). (: (tail(
+normalize := λ(: tctx TContext). (: (
    (match tctx (
       ()
       ( TCtxEOF () )
       ( TCtxNil (set tctx TCtxEOF) )
-      ( (TCtxBind( rst k kt t )) (tail(
+      ( (TCtxBind( rst k kt t )) (
          (set rst (normalize rst))
          (set tctx (TCtxBind(
             (close rst)
             k (normalize kt) t
          )))
-      )))
+      ))
    ))
    tctx
-)) TContext);
+) TContext);
 
-with-only-representation := λ(: tt TypeList). (: (tail(
+with-only-representation := λ(: tt TypeList). (: (
    (let rt tt)
    (match tt (
       ()
@@ -992,13 +992,13 @@ with-only-representation := λ(: tt TypeList). (: (tail(
       ( TypeEOF () )
    ))
    rt
-)) TypeList);
+) TypeList);
 
-with-only-representation := λ(: tt Type). (: (tail(
+with-only-representation := λ(: tt Type). (: (
    (let return tt)
    (match tt (
       ()
-      ( (TAnd( lt rt )) (tail(
+      ( (TAnd( lt rt )) (
          (let lt2 (with-only-representation lt))
          (let rt2 (with-only-representation rt))
          (if (non-zero lt2) (
@@ -1014,7 +1014,7 @@ with-only-representation := λ(: tt Type). (: (tail(
                (set return TAny)
             ))
          ))
-      )))
+      ))
       ( (TGround( 'Constant_s TypeEOF )) () )
       ( (TGround( 'Literal_s TypeEOF )) () )
       ( (TGround( 'StackVariable_s TypeEOF )) () )
@@ -1029,17 +1029,17 @@ with-only-representation := λ(: tt Type). (: (tail(
       ( (TVar _) (set return TAny) )
    ))
    return
-)) Type);
+) Type);
 
-unify := λ(: fpt Type)(: pt Type). (: (tail(
+unify := λ(: fpt Type)(: pt Type). (: (
    (let ctx TCtxEOF)
    (if (can-unify( fpt pt )) (
       (set ctx (unify-inner( fpt pt )))
    ) ())
    ctx
-)) TContext);
+) TContext);
 
-unify-inner := λ(: fpt Type)(: pt Type). (: (tail(
+unify-inner := λ(: fpt Type)(: pt Type). (: (
    (let ctx TCtxEOF)
    (match (Tuple( fpt pt )) (
       ()
@@ -1096,25 +1096,25 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (tail(
       ( _ () )
    ))
    ctx
-)) TContext);
+) TContext);
 
-unify := λ(: fpt TypeList)(: pt TypeList). (: (tail(
+unify := λ(: fpt TypeList)(: pt TypeList). (: (
    (let ctx TCtxEOF)
    (match (Tuple( fpt pt )) (
       ()
       ( (Tuple( TypeEOF TypeEOF )) (set ctx TCtxNil) )
-      ( (Tuple( (TypeSeq( lps lp1 )) (TypeSeq( rps rp1 )) )) (tail(
+      ( (Tuple( (TypeSeq( lps lp1 )) (TypeSeq( rps rp1 )) )) (
          (set ctx (unify( lp1 rp1 )))
          (if (non-zero ctx) (
             (set ctx (union( ctx (unify( lps rps )) )))
          ) ())
-      )))
+      ))
       ( _ () )
    ))
    ctx
-)) TContext);
+) TContext);
 
-fields-of-tag := λ(: tag Type)(: class Type). (: (tail(
+fields-of-tag := λ(: tag Type)(: class Type). (: (
    (let rhst TAny)
    (match tag (
       ()
@@ -1125,11 +1125,11 @@ fields-of-tag := λ(: tag Type)(: class Type). (: (tail(
             (set rhst (substitute( (unify( fields-lhs class )) fields-rhs )))
          ))
       )))
-      ( _ (tail(
+      ( _ (
          (print 'Invalid\sTag\sIn\sfields-of-tag\s_s)
          (print tag)(print '\n_s)
          (exit 1_u64)
-      )))
+      ))
    ))
    (set rhst (with-size rhst))
    (let rt (TGround( 'Fields_s (close(TypeSeq(
@@ -1137,9 +1137,9 @@ fields-of-tag := λ(: tag Type)(: class Type). (: (tail(
       (fields-of-type( (t3( 'Cons_s rhst (TAnd( (close(t1 'U64_s)) (close(t2( 'Sized_s (t1 '8_s) ))) )) )) ))
    ))))))
    rt
-)) Type);
+) Type);
 
-fields-of-type := λ(: tt Type). (: (tail(
+fields-of-type := λ(: tt Type). (: (
    (match tt (
       ()
       ( TAny (set tt (t1 'Nil_s)) )
@@ -1169,7 +1169,7 @@ fields-of-type := λ(: tt Type). (: (tail(
       ))
    ))
    tt
-)) Type);
+) Type);
 
 s-type-list := (: STEOF STypeList);
 ascript := λ(: t S)(: tt Type). (: (
@@ -1179,24 +1179,24 @@ ascript := λ(: t S)(: tt Type). (: (
    )))
 ) Nil);
 
-typeof := λ(: term S). (: (tail(
+typeof := λ(: term S). (: (
    (let found TAny)
    (let tctx s-type-list)
    (while (non-zero tctx) (match tctx (
       ()
       ( (STSeq( rst s tt )) (
-         (if (is( s term )) (tail(
+         (if (is( s term )) (
             (set found tt)
             (set tctx STEOF)
-         )) (
+         ) (
             (set tctx rst)
          ))
       ))
    )))
    found
-)) Type);
+) Type);
 
-to-s := λ(: term AST). (: (tail(
+to-s := λ(: term AST). (: (
    (let s SNil)
    (match term (
       ()
@@ -1212,14 +1212,14 @@ to-s := λ(: term AST). (: (tail(
             (close(SAtom v))
          )))
       ))
-      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (tail(
+      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
          (set s (to-s t))
          (ascript( s tt ))
-      )))
-      ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (tail(
+      ))
+      ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
          (set s (to-s t))
          (ascript( s tt ))
-      )))
+      ))
       ( (App( lt rt )) (
          (set s (SCons(
             (close(SAtom 'App_s))
@@ -1241,7 +1241,7 @@ to-s := λ(: term AST). (: (tail(
       ( _ () )
    ))
    s
-)) S);
+) S);
 
 ascript-normal := λ(: t AST)(: tt Type). (: (
    (if (non-zero tt) (tail(
