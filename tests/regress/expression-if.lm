@@ -1,7 +1,7 @@
 
 import LIB/default.lm;
 
-type A (A( U64 , U64 ));
+type A (A( U64 , U64 )) | (B( U64 , U64 ));
 
 e1 := λ(: x U64). (: (
   (if (==( x 0_u64 )) 1_u64 2_u64)

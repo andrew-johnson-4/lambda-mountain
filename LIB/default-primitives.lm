@@ -232,8 +232,8 @@ fragment : DontChain primitive::if := λ(: ictx ImplicitContext)(: e1 BranchCond
          \t 'mov \s '%rsp , \s '%r14 \n
          (.unframe e3)
          (for ri in (range( 0 (/( (.return-size ictx) 8 )) )) (
-            \t 'mov \s (*( (.expression ri) 8 )) \[ '%r14 \] , \s '%r15 \n
-            \t 'mov \s '%r15 , \s (*( (.expression ri) 8 )) \[ '%rsp \] \n
+            \t 'movq \s (*( (.expression ri) '8 )) \[ '%r14 \] , \s '%r15 \n
+            \t 'movq \s '%r15 , \s (*( (.expression ri) '8 )) \[ '%rsp \] \n
          ))
       ))
       \t 'jmp \s (uuid label-end) \n
