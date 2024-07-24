@@ -6,7 +6,7 @@ type S (SNil)
 
 type Tuple<x,y> (Tuple( x , y ));
 
-== := λ(: l Tuple<x,y>)(: r Tuple<x,y>). (: (tail(
+== := λ(: l Tuple<x,y>)(: r Tuple<x,y>). (: (
    (let return 0_u64)
    (match (Tuple( l r )) (
       ()
@@ -19,9 +19,9 @@ type Tuple<x,y> (Tuple( x , y ));
       ))
    ))
    return
-)) U64);
+) U64);
 
-deep-hash := λ(: l Tuple<x,y>). (: (tail(
+deep-hash := λ(: l Tuple<x,y>). (: (
    (let return 0_u64)
    (match l (
       ()
@@ -33,15 +33,15 @@ deep-hash := λ(: l Tuple<x,y>). (: (tail(
       ))
    ))
    return
-)) U64);
+) U64);
 
-close := λ(: x x). (: (tail(
+close := λ(: x x). (: (
    (mov( (malloc(sizeof x)) R8 ))
    (mov( x 0_u64 (as R8 x[]) ))
    (as R8 x[])
-)) x[]);
+) x[]);
 
-non-zero := λ(: s S). (: (tail(
+non-zero := λ(: s S). (: (
    (let r 1_u64)
    (match s (
       ()
@@ -49,15 +49,15 @@ non-zero := λ(: s S). (: (tail(
       (_ ())
    ))
    r
-)) U64);
+) U64);
 
-non-zero := λ(: s String). (: (tail(
+non-zero := λ(: s String). (: (
    (let r 0_u64)
    (if (head-string s) (set r 1_u64) ())
    r
-)) U64);
+) U64);
 
-== := λ(: ls S)(: rs S). (: (tail(
+== := λ(: ls S)(: rs S). (: (
    (let r 0_u64)
    (match (Tuple( ls rs )) (
       ()
@@ -74,46 +74,46 @@ non-zero := λ(: s String). (: (tail(
       ( _ () )
    ))
    r
-)) U64);
+) U64);
 
-print := λ(: x S). (: (tail(
+print := λ(: x S). (: (
    (match x (
       ()
       ( SNil (print '\[\]_s) )
       ( (SAtom a) (print a))
-      ( (SCons( l r )) (tail(
+      ( (SCons( l r )) (
          (print '\[_s)
          (print l)
          (print '\s_s)
          (print r)
          (print '\]_s)
-      )))
-      ( (SPointer p) (tail(
+      ))
+      ( (SPointer p) (
          (print '[_s)
          (print (as p U64))
          (print ']_s)
-      )))
+      ))
    ))
    ()
-)) Nil);
+) Nil);
 
-fail := λ(: msg String). (: (tail(
+fail := λ(: msg String). (: (
    (print msg)
    (exit 1_u64)
-)) Nil);
+) Nil);
 
-fail := λ(: msg String)(: loc String). (: (tail(
+fail := λ(: msg String)(: loc String). (: (
    (print msg)(print '\sat\s_s)(print loc)
    (exit 1_u64)
-)) Nil);
+) Nil);
 
-exit := λ(: code U64). (: (tail(
+exit := λ(: code U64). (: (
    (mov( 60_u64 RAX ))
    (mov( code RDI ))
    (syscall())
-)) Nil);
+) Nil);
 
-print := λ(: x String). (: (tail(
+print := λ(: x String). (: (
    (mov( x R15 ))
    (mov( 0_u64 RDX )) # data length
    (gensym-label begin-count)
@@ -128,9 +128,9 @@ print := λ(: x String). (: (tail(
    (label end-count)
    (system-call( 1_u64 1_u64 (as x U64) (as RDX U64) ))
    ()
-)) Nil);
+) Nil);
 
-eprint := λ(: x String). (: (tail(
+eprint := λ(: x String). (: (
    (mov( x R15 ))
    (mov( 0_u64 RDX )) # data length
    (gensym-label begin-count)
@@ -145,9 +145,9 @@ eprint := λ(: x String). (: (tail(
    (label end-count)
    (system-call( 1_u64 2_u64 (as x U64) (as RDX U64) ))
    ()
-)) Nil);
+) Nil);
 
-print := λ(: x U64). (: (tail(
+print := λ(: x U64). (: (
    (let cs 0_u8)
    (gensym-label unsigned)
    (gensym-label pdigits)
@@ -177,14 +177,14 @@ print := λ(: x U64). (: (tail(
    (syscall())
    (cmp( 0_u64 R14 ))
    (jne( pdigits ))
-)) Nil);
+) Nil);
 
-print := λ(: cs ASCII). (: (tail(
+print := λ(: cs ASCII). (: (
    (system-call( 1_u64 1_u64 (as (& cs) U64) 1_u64 ))
    ()
-)) Nil);
+) Nil);
 
-print := λ(: x I64). (: (tail(
+print := λ(: x I64). (: (
    (let cs 0_u8)
    (gensym-label unsigned)
    (gensym-label pdigits)
@@ -219,51 +219,51 @@ print := λ(: x I64). (: (tail(
    (syscall())
    (cmp( 0_u64 R14 ))
    (jne( pdigits ))
-)) Nil);
+) Nil);
 
-print := λ(: x U32). (: (tail(
+print := λ(: x U32). (: (
    (mov( 0_u64 R15 ))
    (mov( x R15D ))
    (print( (: R15 Reg64+U64) ))
-)) Nil);
+) Nil);
 
-print := λ(: x U16). (: (tail(
+print := λ(: x U16). (: (
    (mov( 0_u64 R15 ))
    (mov( x R15W ))
    (print( (: R15 Reg64+U64) ))
-)) Nil);
+) Nil);
 
-print := λ(: x U8). (: (tail(
+print := λ(: x U8). (: (
    (mov( 0_u64 R15 ))
    (mov( x R15B ))
    (print( (: R15 Reg64+U64) ))
-)) Nil);
+) Nil);
 
-print := λ(: x I32). (: (tail(
+print := λ(: x I32). (: (
    (gensym-label unsigned)
    (mov( 0_u64 R15 ))
    (mov( x R15D ))
    (movsx( R15D R15 ))
    (print( (: R15 Reg64+I64) ))
-)) Nil);
+) Nil);
 
-print := λ(: x I16). (: (tail(
+print := λ(: x I16). (: (
    (gensym-label unsigned)
    (mov( 0_u64 R15 ))
    (mov( x R15W ))
    (movsx( R15W R15 ))
    (print( (: R15 Reg64+I64) ))
-)) Nil);
+) Nil);
 
-print := λ(: x I8). (: (tail(
+print := λ(: x I8). (: (
    (gensym-label unsigned)
    (mov( 0_u64 R15 ))
    (mov( x R15B ))
    (movsx( R15B R15 ))
    (print( (: R15 Reg64+I64) ))
-)) Nil);
+) Nil);
 
-== := λ(: l String)(: r String). (: (tail(
+== := λ(: l String)(: r String). (: (
    (let c1 0_u8)
    (let c2 0_u8)
    (let cc 0_u64)
@@ -299,14 +299,14 @@ print := λ(: x I8). (: (tail(
    (jmp end)
    (label end)
    (as RAX U64)
-)) U64);
+) U64);
 
 != := λ(: l String)(: r String). (: (not(==( l r ))) U64);
 
 cons-page-head := 0_u64;
 cons-page-tail := 0_u64;
-malloc := λ (: sz U64) . (: (tail(
-   (if (==( cons-page-tail 0_u64 )) (tail(
+malloc := λ (: sz U64) . (: (
+   (if (==( cons-page-tail 0_u64 )) (
       (mov( 12_u64 RAX ))
       (mov( 0_u64 RDI ))
       (syscall())
@@ -325,36 +325,36 @@ malloc := λ (: sz U64) . (: (tail(
       (mov( 12_u64 RAX ))
       (mov( R8 RDI ))
       (syscall())
-   )) ())
+   ) ())
    (let curr cons-page-tail)
    (mov( cons-page-tail R8 ))
    (add( sz R8 ))
    (set cons-page-tail (as R8 U64))
    (as curr ?[])
-)) ?[]);
+) ?[]);
 
-system-call := λ(: rax U64)(: rdi U64)(: rsi U64)(: rdx U64). (: (tail(
+system-call := λ(: rax U64)(: rdi U64)(: rsi U64)(: rdx U64). (: (
    (mov( rax RAX ))
    (mov( rdi RDI ))
    (mov( rsi RSI ))
    (mov( rdx RDX ))
    (syscall())
    (as RAX U64)
-)) U64);
+) U64);
 
-read-file := λ(: fp String). (: (tail(
+read-file := λ(: fp String). (: (
    (let fd (system-call( 2_u64 (as fp U64) 0_u64 0_u64 )))
    (mov( fd RAX ))
-   (if (==( (as AL U8) 254_u8 )) (tail(
+   (if (==( (as AL U8) 254_u8 )) (
       (eprint 'Unable\sto\sopen\sfile:\s_s)
       (eprint fp)
       (eprint '\n_s)
       (exit 1_u64)
-   )) ())
+   ) ())
    (let shead (as (malloc( 0_u64 )) U8[]))
    (let stail shead)
    (let more True_u8)
-   (while (==( more True_u8 )) (tail(
+   (while (==( more True_u8 )) (
       (let rdsz (system-call( 0_u64 fd (as stail U64) 1024_u64 )))
       (malloc( rdsz ))
       (if (==( rdsz 0_u64 )) (
@@ -364,51 +364,51 @@ read-file := λ(: fp String). (: (tail(
            (+( (as stail U64) rdsz ))
          ) U8[]))
       ))
-   )))
+   ))
    (system-call( 3_u64 fd 0_u64 0_u64 ))
    (let eos (as (malloc( 1_u64 )) U8[]))
    (mov( 0_u8 0_u64 eos ))
    (as shead String)
-)) String);
+) String);
 
-head-string := λ(: s String). (: (tail(
+head-string := λ(: s String). (: (
    (if (==( (as s U64) 0_u64 )) (
       (mov( 0_u8 AL ))
    ) (
       (mov( (as s U8[]) 0_u64 AL ))
    ))
    (as AL U8)
-)) U8);
+) U8);
 
-tail-string := λ(: s String). (: (tail(
+tail-string := λ(: s String). (: (
    (if (==( (as s U64) 0_u64 )) (
       (mov( 0_u64 RAX ))
    ) (
-      (if (head-string s) (tail(
+      (if (head-string s) (
          (mov( (as s U64) RAX ))
          (inc( RAX ))
-      )) (
+      ) (
          (mov( 0_u64 RAX ))
       ))
    ))
    (as RAX String)
-)) String);
+) String);
 
-clone-rope := λ(: s S). (: (tail(
+clone-rope := λ(: s S). (: (
    (let r (malloc( 0_u64 )))
    (clone-rope-impl s )
    (let rtail (as (malloc( 1_u64 )) U8[]))
    (mov( 0_u8 0_u64 rtail ))
    (as r String)
-)) String);
+) String);
 clone-rope-impl := λ(: s S). (: (match s (
    ()
    ( SNil () )
-   ( (SCons( l r )) (tail(
+   ( (SCons( l r )) (
       (clone-rope-impl (open l))
       (clone-rope-impl (open r))
-   )))
-   ( (SAtom a) (tail(
+   ))
+   ( (SAtom a) (
       (let ci 0_u64)
       (let c ([]( (as a U8[]) ci )))
       (while (!=( c 0_u8 )) (
@@ -417,26 +417,26 @@ clone-rope-impl := λ(: s S). (: (match s (
          (set ci (+( ci 1_u64 )))
          (set c ([]( (as a U8[]) ci )))
       ))
-   )))
+   ))
 )) Nil);
 
-clone-rope := λ(: s U8). (: (tail(
+clone-rope := λ(: s U8). (: (
    (let x (as (malloc 2_u64) U8[]))
    (mov( s 0_u64 x ))
    (mov( 0_u8 1_u64 x ))
    (as x String)
-)) String);
+) String);
 
-length := λ(: s String). (: (tail(
+length := λ(: s String). (: (
    (let sz 0_u64)
-   (while (head-string s) (tail(
+   (while (head-string s) (
       (set sz (+( sz 1_u64 )))
       (set s (tail-string s))
-   )))
+   ))
    sz
-)) U64);
+) U64);
 
-write-file := λ(: fp String)(: data String). (: (tail(
+write-file := λ(: fp String)(: data String). (: (
    #open file
    (let fd (system-call( 2_u64 (as fp U64) 577_u64 420_u64 )))
 
@@ -445,9 +445,9 @@ write-file := λ(: fp String)(: data String). (: (tail(
 
    #close file
    (system-call( 3_u64 fd 0_u64 0_u64 )) ()
-)) Nil);
+) Nil);
 
-to-string := λ(: i U64). (: (tail(
+to-string := λ(: i U64). (: (
    (let r SNil)
    (let c 0_u8)
    (while (not(==( i 0_u64 ))) (
@@ -464,15 +464,15 @@ to-string := λ(: i U64). (: (tail(
       (set r (SAtom '0_s))
    ))
    (clone-rope r)
-)) String);
+) String);
 
-to-string := λ(: i I64). (: (tail(
+to-string := λ(: i I64). (: (
    (let sign SNil)
    (let r SNil)
-   (if (<( i 0_i64 )) (tail(
+   (if (<( i 0_i64 )) (
       (set sign (SAtom '-_s))
       (set i (-( 0_i64 i )))
-   )) ())
+   ) ())
    (let c 0_u8)
    (while (not(==( i 0_i64 ))) (
       (let ci (+( (%( i 10_i64 )) 48_i64 )))
@@ -488,24 +488,24 @@ to-string := λ(: i I64). (: (tail(
       (set r (SAtom '0_s))
    ))
    (clone-rope(SCons( (close sign) (close r) )))
-)) String);
+) String);
 
-to-i64 := λ(: s String). (: (tail(
+to-i64 := λ(: s String). (: (
    (let negative False_u8)
-   (if (==( (head-string s) 45_u8 )) (tail(
+   (if (==( (head-string s) 45_u8 )) (
       (set negative True_u8)
       (set s (tail-string s))
-   )) ())
+   ) ())
    (let base (as (to-u64 s) I64))
    (if (==( negative True_u8 )) (
       (set base (-( 0_i64 base )))
    ) ())
    base
-)) I64);
+) I64);
 
-to-u64 := λ(: s String). (: (tail(
+to-u64 := λ(: s String). (: (
    (let i 0_u64)
-   (while (head-string s) (tail(
+   (while (head-string s) (
       (set i (*( i 10_u64 )))
       (match (head-string s) (
          ()
@@ -522,21 +522,21 @@ to-u64 := λ(: s String). (: (tail(
          ( _ () )
       ))
       (set s (tail-string s))
-   )))
+   ))
    i
-)) U64);
+) U64);
 
-max := λ(: l x)(: r x). (: (tail(
+max := λ(: l x)(: r x). (: (
    (if (<( l r )) (set l r) ())
    l
-)) x);
+) x);
 
-min := λ(: l x)(: r x). (: (tail(
+min := λ(: l x)(: r x). (: (
    (if (>( l r )) (set l r) ())
    l
-)) x);
+) x);
 
-to-hex := λ(: i U64). (: (tail(
+to-hex := λ(: i U64). (: (
    (let buff SNil)
    (let rpt 16_u64)
    (while (>( rpt 0_u64 )) (
@@ -611,22 +611,22 @@ to-hex := λ(: i U64). (: (tail(
       (set rpt (-( rpt 1_u64 )))
    ))
    (clone-rope buff)
-)) String);
+) String);
 
-has-suffix := λ(: base String)(: sfx String). (: (tail(
+has-suffix := λ(: base String)(: sfx String). (: (
    (let r 0_u64)
-   (while (head-string base) (tail(
+   (while (head-string base) (
       (if (==( base sfx )) (
          (set r 1_u64)
       ) ())
       (set base (tail-string base))
-   )))
+   ))
    r
-)) U64);
+) U64);
 
-remove-suffix := λ(: base String)(: sfx String). (: (tail(
+remove-suffix := λ(: base String)(: sfx String). (: (
    (let r SNil)
-   (while (head-string base) (tail(
+   (while (head-string base) (
       (if (==( base sfx )) (
          (set base '0_s)
       ) (
@@ -636,42 +636,42 @@ remove-suffix := λ(: base String)(: sfx String). (: (tail(
          )))
       ))
       (set base (tail-string base))
-   )))
+   ))
    (clone-rope r)
-)) String);
+) String);
 
 # Jenkins One at a Time Hash
-hash := λ(: key Sized<key-size>). (: (tail(
+hash := λ(: key Sized<key-size>). (: (
    (let i 0_u64)
    (let hash 0_u64)
-   (while (not(==( i (/( key-size_u64 8_u64 )) ))) (tail(
+   (while (not(==( i (/( key-size_u64 8_u64 )) ))) (
       (set hash (+( hash ([]( (as key Field<U64,3>) i )) )))
       (set i (+( i 1_u64 )))
       (set hash (+( hash (<<( hash 10_u64 )) )))
       (set hash (^( hash (>>( hash 6_u64 )) )))
-   )))
+   ))
    (set hash (+( hash (<<( hash 3_u64 )) )))
    (set hash (^( hash (>>( hash 11_u64 )) )))
    (set hash (+( hash (<<( hash 15_u64 )) )))
    hash
-)) U64);
+) U64);
 
-is := λ(: l Sized<key-size>)(: r Sized<key-size>). (: (tail(
+is := λ(: l Sized<key-size>)(: r Sized<key-size>). (: (
    (let i 0_u64)
    (let return 1_u64)
-   (while (<( i (/( key-size_u64 8_u64 )) )) (tail(
+   (while (<( i (/( key-size_u64 8_u64 )) )) (
       (let li ([]( (as l Field<U64,3>) i )))
       (let ri ([]( (as r Field<U64,3>) i )))
       (if (==( li ri )) () (set return 0_u64))
       (set i (+( i 1_u64 )))
-   )))
+   ))
    return
-)) U64);
+) U64);
 
-deep-hash := λ(: key String). (: (tail(
+deep-hash := λ(: key String). (: (
    (let i 0_u64)
    (let hash 0_u64)
-   (while (head-string key) (tail(
+   (while (head-string key) (
       (mov( 0_u64 R14 ))
       (let ki (head-string key))
       (mov( ki R14B ))
@@ -679,9 +679,9 @@ deep-hash := λ(: key String). (: (tail(
       (set key (tail-string key))
       (set hash (+( hash (<<( hash 10_u64 )) )))
       (set hash (^( hash (>>( hash 6_u64 )) )))
-   )))
+   ))
    (set hash (+( hash (<<( hash 3_u64 )) )))
    (set hash (^( hash (>>( hash 11_u64 )) )))
    (set hash (+( hash (<<( hash 15_u64 )) )))
    hash
-)) U64);
+) U64);

@@ -30,7 +30,7 @@ e4 := λ(: x U64). (: (
   ))
 ) A);
 
-main := λ. (: (tail(
+main := λ. (: (
   (print (e1 0_u64))
   (print (e1 5_u64))
   (print '\n_s)
@@ -41,34 +41,34 @@ main := λ. (: (tail(
 
   (match (e3 0_u64) (
      ()
-     ( (A( x y )) (tail(
+     ( (A( x y )) (
         (print x)
         (print y)
-     )))
+     ))
   ))
   (match (e3 5_u64) (
      ()
-     ( (A( x y )) (tail(
+     ( (A( x y )) (
         (print x)
         (print y)
-     )))
+     ))
   ))
   (print '\n_s)
 
   (match (e4 0_u64) (
      ()
-     ( (A( x y )) (tail(
+     ( (A( x y )) (
         (print x)
         (print y)
-     )))
+     ))
   ))
   (match (e4 5_u64) (
      ()
-     ( (A( x y )) (tail(
+     ( (A( x y )) (
         (print x)
         (print y)
-     )))
+     ))
   ))
   (print '\n_s)
-)) Nil);
+) Nil);
 

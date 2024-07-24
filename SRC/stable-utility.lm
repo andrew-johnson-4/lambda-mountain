@@ -1,6 +1,6 @@
 
 
-is-variable := λ(: s String). (: (tail(
+is-variable := λ(: s String). (: (
    (let r False_u8)
    (match (head-string s) (
       ()
@@ -13,10 +13,10 @@ is-variable := λ(: s String). (: (tail(
       ( 45_u8 (set r True_u8) )   # -
       ( 46_u8 ( if (==( s '._s )) () (set r True_u8) ))
       ( 47_u8 (set r True_u8) )   # /
-      ( 58_u8 (tail(              # :
+      ( 58_u8 (                   # :
          (if (==( (head-string(tail-string s)) 58_u8 )) (set r True_u8) ())
          (if (is-variable(tail-string s)) (set r True_u8) ())
-      )))
+      ))
       ( 59_u8 (set r True_u8) )   # ;
       ( 60_u8 (set r True_u8) )   # <
       ( 61_u8 (set r True_u8) )   # =
@@ -58,38 +58,38 @@ is-variable := λ(: s String). (: (tail(
       (_ ())
    ))
    (==( r True_u8 ))
-)) U64);
+) U64);
 
 uuid-counter := 0_u64;
-uuid := λ . (: (tail(
+uuid := λ . (: (
    (set uuid-counter (+( uuid-counter 1_u64 )))
    (clone-rope (SCons(
       (close(SAtom 'uuid__s))
       (close(SAtom(to-hex uuid-counter)))
    )))
-)) String);
-iuid := λ . (: (tail(
+) String);
+iuid := λ . (: (
    (set uuid-counter (+( uuid-counter 1_u64 )))
    (let id uuid-counter)
    id
-)) U64);
+) U64);
 
-list-tail-order-to-head-order := λ(: s S). (: (tail(
+list-tail-order-to-head-order := λ(: s S). (: (
    (let new SNil)
    (while (non-zero s) (match s (
       ()
-      ( (SCons( l r )) (tail(
+      ( (SCons( l r )) (
          (set new (SCons(
             (close r)
             (close new)
          )))
          (set s l)
-      )))
+      ))
    )))
    new
-)) S);
+) S);
 
-to-string := λ(: is-used IsUsed). (: (tail(
+to-string := λ(: is-used IsUsed). (: (
    (let r '_s)
    (match is-used (
       ()
@@ -97,26 +97,27 @@ to-string := λ(: is-used IsUsed). (: (tail(
       ( Unused (set r 'Unused_s) )
       ( Return (set r 'Return_s) )
       ( Tail (set r 'Tail_s) )
+      ( Call (set r 'Call_s) )
    ))
    r
-)) String);
+) String);
 
-mangle-identifier := λ(: kt Type). (: (tail(
+mangle-identifier := λ(: kt Type). (: (
    (let r SNil)
    (match kt (
       ()
       ( TAny (set r (mangle-identifier '?_s)) )
       ( (TVar v) (set r (mangle-identifier v)) )
-      ( (TGround( tv ps )) (tail(
+      ( (TGround( tv ps )) (
          (set r (mangle-identifier tv))
          (while (non-zero ps) (match ps (
             ()
-            ( (TypeSeq( rst p1 )) (tail(
+            ( (TypeSeq( rst p1 )) (
                (set r (SCons( (close r) (close(mangle-identifier p1)) )))
                (set ps rst)
             )))
-         )))
-      )))
+         ))
+      ))
       ( (TAnd( tl tr )) (
          (set r (SCons( 
             (close(mangle-identifier tl))
@@ -125,11 +126,11 @@ mangle-identifier := λ(: kt Type). (: (tail(
       ))
    ))
    r
-)) S);
+) S);
 
-mangle-identifier := λ(: k String). (: (tail(
+mangle-identifier := λ(: k String). (: (
    (let cs SNil)
-   (while (head-string k) (tail(
+   (while (head-string k) (
       (match (head-string k) (
          ()
          ( 33_u8 (set cs (SCons( (close cs) (close(SAtom( '_EX__s ))) ))))   # !
@@ -157,11 +158,11 @@ mangle-identifier := λ(: k String). (: (tail(
          ( c (set cs (SCons( (close cs) (close(SAtom(clone-rope c))) ))))
       ))
       (set k (tail-string k))
-   )))
+   ))
    cs
-)) S);
+) S);
 
-mangle-identifier := λ(: k String)(: kt Type). (: (tail(
+mangle-identifier := λ(: k String)(: kt Type). (: (
    (let cs (SCons(
       (close(mangle-identifier k))
       (close(SCons(
@@ -170,9 +171,9 @@ mangle-identifier := λ(: k String)(: kt Type). (: (tail(
       )))
    )))
    (clone-rope cs)
-)) String);
+) String);
 
-escape-string := λ(: s S). (: (tail(
+escape-string := λ(: s S). (: (
    (match s (
       ()
       ( (SAtom a) (set s (SAtom(escape-string a))) )
@@ -183,12 +184,12 @@ escape-string := λ(: s S). (: (tail(
       ( _ () )
    ))
    s
-)) S);
+) S);
 
-escape-string := λ(: s String). (: (tail(
+escape-string := λ(: s String). (: (
    (let e SNil)
    (while (head-string s) (
-      (if (==( (head-string s) 92_u8 )) (tail(
+      (if (==( (head-string s) 92_u8 )) (
          (set s (tail-string s))
          (match (head-string s) (
             ()
@@ -200,27 +201,27 @@ escape-string := λ(: s String). (: (tail(
             ( 111_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 35_u8) ))) ))) ) # \o -> [comment]
             ( 116_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 9_u8) ))) ))) )  # \t -> [tab]
             ( 115_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 32_u8) ))) ))) ) # \s -> [space]
-            ( c (tail(
+            ( c (
                (print 'Illegal\sCharacter:\s_s)(print c)(print '\n_s)
                (fail 'Illegal\sEscape\sSequence\sIn\sString\s_s)
-            )))
+            ))
          ))
          (set s (tail-string s))
-      )) (tail(
+      ) (
          (set e (SCons( (close e) (close(SAtom( (clone-rope(head-string s)) ))) )))
          (set s (tail-string s))
-      )))
+      ))
    ))
    (clone-rope e)
-)) String);
+) String);
 
-escape-literal := λ(: s String). (: (tail(
+escape-literal := λ(: s String). (: (
    (let cs SNil)
-   (while (head-string s) (tail(
+   (while (head-string s) (
       (match (head-string s) (
          ()
          ( 34_u8 (set cs (SCons( (close cs) (close(SAtom '\\\\"_s)) ))))
-         ( 92_u8 (tail(
+         ( 92_u8 (
             (let escaped_string '_s)
             (match (head-string(tail-string s)) (
                ()
@@ -236,35 +237,35 @@ escape-literal := λ(: s String). (: (tail(
                ( 116_u8 (set escaped_string '\t_s) )
                ( _ () )
             ))
-            (if (head-string escaped_string) (tail(
+            (if (head-string escaped_string) (
                (set cs (SCons( (close cs) (close(SAtom escaped_string)) )))
                (set s (tail-string s))
-            )) (
+            ) (
                (set cs (SCons( (close cs) (close(SAtom '\\\\_s)) )))
             ))
-         )))
+         ))
          ( 10_u8 (set cs (SCons( (close cs) (close(SAtom '\\n_s)) ))))
          ( c (set cs (SCons( (close cs) (close(SAtom(clone-rope c))) ))))
       ))
       (set s (tail-string s))
-   )))
+   ))
    (clone-rope cs)
-)) String);
+) String);
 
-exit-error := λ(: msg String)(: t AST). (: (tail(
+exit-error := λ(: msg String)(: t AST). (: (
    (print msg)
    (print '\n_s)
    (print (location-of( t )))
    (print '\n_s)
    (match t (
       ()
-      ( (App( (Var( 'as_s _ )) (App( inner (AType cast) )) )) (tail(
+      ( (App( (Var( 'as_s _ )) (App( inner (AType cast) )) )) (
          (print 'In\sCoercion\n_s)
          (print inner)(print ':\n_s)
          (print (typeof inner))(print '\n_s)
          (print 'As:\s_s)(print cast)(print '\n_s)
-      )))
-      ( (App( f a )) (tail(
+      ))
+      ( (App( f a )) (
          (print 'In\sFunction\sApplication\n_s)
          (print f)(print ':\n_s)
          (print (typeof f))(print '\n_s)
@@ -272,12 +273,12 @@ exit-error := λ(: msg String)(: t AST). (: (tail(
          (print (typeof a))(print '\n_s)
          (print 'Return:\n_s)
          (print (typeof t))(print '\n_s)
-      )))
-      ( _ (tail(
+      ))
+      ( _ (
          (print t)
          (print '\n_s)
-      )))
+      ))
    ))
    (exit 1_u64)
-)) Nil);
+) Nil);
 

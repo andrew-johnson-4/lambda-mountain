@@ -8,7 +8,7 @@ xy := (: X XY);
 xy2 := (: (Y( 12_u64 )) XY);
 xyz := (: (Z( (Y( 123_u64 )) 456_u64 )) XYZ);
 
-main := λ. (: (tail(
+main := λ. (: (
   (let x X)
   (print (.0 x))
   (set x X)
@@ -51,5 +51,5 @@ main := λ. (: (tail(
   (print (.0 ixy))
   (print (.1 (as ixy Tag<Y>)))
   (print '\n_s)
-)) Nil);
+) Nil);
 

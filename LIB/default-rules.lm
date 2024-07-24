@@ -2,10 +2,10 @@
 macro ( ('let x y) )
       ( (λ x . ()) y );
 
-macro ('match t ps) (scope(tail(
+macro ('match t ps) (scope(
    (let (uuid term) (open t))
    (match-pats( (uuid term) ps (fail( 'Pattern\sMatch\sFailure_s (: (p :Location:) Constant+Literal+String) )) ))
-)));
+));
 
 macro ('match-pats( term () remainder )) (
    remainder
@@ -18,7 +18,7 @@ macro ('match-pats( term (ps (lhs rhs)) remainder )) (
 );
 
 macro ('match-pats-arm( term (:Variable: v) )) (
-   (tail( (let v term) (branchtrue()) ))
+   ( (let v term) (branchtrue()) )
 );
 
 macro ('match-pats-arm( term :Any: )) (
@@ -26,15 +26,15 @@ macro ('match-pats-arm( term :Any: )) (
 );
 
 macro ('match-pats-arm( term (:Literal: l) )) (
-   (tail( (let (uuid v) term) (==( (uuid v) l )) ))
+   ( (let (uuid v) term) (==( (uuid v) l )) )
 );
 
 macro ('match-pats-arm( term (:Tag: l lt) )) (
-   (tail( (let (uuid v) term) (==( (.0( (uuid v) )) l )) ))
+   ( (let (uuid v) term) (==( (.0( (uuid v) )) l )) )
 );
 
 macro ('match-pats-arm( term ((:Tag: l lt) ( x1 )) )) (
-   (tail(
+   (
       (let (uuid v) term)
       (let (uuid m) 0_u8)
       (if (==( (.0( (uuid v) )) l ))
@@ -45,11 +45,11 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( x1 )) )) (
           ()
       )
       (==( (uuid m) 1_u8 ))
-   ))
+   )
 );
 
 macro ('match-pats-arm( term ((:Tag: l lt) ( x2 x1 )) )) (
-   (tail(
+   (
       (let (uuid v) term)
       (let (uuid m) 0_u8)
       (if (==( (.0( (uuid v) )) l ))
@@ -63,11 +63,11 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( x2 x1 )) )) (
           ()
       )
       (==( (uuid m) 1_u8 ))
-   ))
+   )
 );
 
 macro ('match-pats-arm( term ((:Tag: l lt) ( x3 x2 x1 )) )) (
-   (tail(
+   (
       (let (uuid v) term)
       (let (uuid m) 0_u8)
       (if (==( (.0( (uuid v) )) l ))
@@ -84,11 +84,11 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( x3 x2 x1 )) )) (
           ()
       )
       (==( (uuid m) 1_u8 ))
-   ))
+   )
 );
 
 macro ('match-pats-arm( term ((:Tag: l lt) ( x4 x3 x2 x1 )) )) (
-   (tail(
+   (
       (let (uuid v) term)
       (let (uuid m) 0_u8)
       (if (==( (.0( (uuid v) )) l ))
@@ -108,11 +108,11 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( x4 x3 x2 x1 )) )) (
           ()
       )
       (==( (uuid m) 1_u8 ))
-   ))
+   )
 );
 
 macro ('match-pats-arm( term ((:Tag: l lt) ( x5 x4 x3 x2 x1 )) )) (
-   (tail(
+   (
       (let (uuid v) term)
       (let (uuid m) 0_u8)
       (if (==( (.0( (uuid v) )) l ))
@@ -135,5 +135,5 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( x5 x4 x3 x2 x1 )) )) (
           ()
       )
       (==( (uuid m) 1_u8 ))
-   ))
+   )
 );

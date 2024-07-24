@@ -5,8 +5,8 @@ f := λ(: x Sized<8>). (: (
   ()
 ) Nil);
 
-main := λ. (: (tail(
+main := λ. (: (
   (f 1_u64)
   (f 1_i64)
-)) Nil);
+) Nil);
 
