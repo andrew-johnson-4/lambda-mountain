@@ -295,11 +295,6 @@ fragment : DontChain cdecl::call := λ(: ictx ImplicitContext)(: args ?). (: (
                \t 'push \s (-( '-24 (.args-size ictx) )) \[ '%rsp \] \n
             ))
          ))
-         (if-eq Tail (.used ictx) (
-            (for rsi in (range( '0 (/( (.return-size ictx) '8 )) )) (
-               \t 'push \s (-( '-24 (.args-size ictx) )) \[ '%rsp \] \n
-            ))
-         ))
       ))
    ))
    (.expression(
