@@ -38,24 +38,24 @@ has-only-child := λ(: class String)(: tag String). (: (
    (.bind( (as (& class-to-only-child) BTreeEq<String,String>[]) class tag ))
 ) Nil);
 
-get-only-child := λ(: class String). (: (tail(
+get-only-child := λ(: class String). (: (
    (let r (.lookup( class-to-only-child class '_s )))
    r
-)) String);
+) String);
 
 mark-global-as-seen := λ(: name String)(: tt Type). (: (
-   (if (global-is-seen( name tt )) (tail(
+   (if (global-is-seen( name tt )) (
       (print 'Duplicate\sGlobal\sSymbol\s_s)(print name)(print '\s:\s_s)(print tt)(print '\n_s)
       (exit 1_u64)
-   )) (
+   ) (
       (.bind( (as (& global-symbol-registry) BTreeEq<Tuple<String,Type>,U64>[]) (Tuple( name tt )) 1_u64 ))
    ))
 ) Nil);
 
-global-is-seen := λ(: name String)(: tt Type). (: (tail(
+global-is-seen := λ(: name String)(: tt Type). (: (
    (let r (.lookup( global-symbol-registry (Tuple( name tt )) 0_u64 )))
    r
-)) U64);
+) U64);
 
 is-special-index := (: BTreeEqEOF BTreeEq<Tuple<String,Type>,U64>);
 
@@ -63,15 +63,15 @@ mark-as-special := λ(: name String)(: tt Type). (: (
    (.bind( (as (& is-special-index) BTreeEq<Tuple<String,Type>,U64>[]) (Tuple( name tt )) 1_u64 ))
 ) Nil);
 
-is-special := λ(: name String)(: tt Type). (: (tail(
+is-special := λ(: name String)(: tt Type). (: (
    (let r (.lookup( is-special-index (Tuple( name tt )) 0_u64 )))
    r
-)) U64);
+) U64);
 
-index-of-tag := λ(: tag String). (: (tail(
+index-of-tag := λ(: tag String). (: (
    (let r (.lookup( tag-to-index-index tag unknown-index-of-tag )))
    r
-)) U64);
+) U64);
 
 index-index-of-tag := λ(: tag String)(: index U64). (: (
    (.bind( (as (& tag-to-index-index) BTreeEq<String,U64>[]) tag index ))
@@ -105,54 +105,54 @@ is-fragment := λ(: tt Type). (: (
    (is-fragment(tag-of tt))
 ) U64);
 
-tag-of := λ(: tt Type). (: (tail(
+tag-of := λ(: tt Type). (: (
    (let tag '_s)
    (match tt (
       ()
-      ( (TAnd( lt rt )) (tail(
+      ( (TAnd( lt rt )) (
          (let ltag (tag-of lt))
          (if (non-zero ltag) (set tag ltag) ())
          (let rtag (tag-of rt))
          (if (non-zero rtag) (set tag rtag) ())
-      )))
+      ))
       ( (TGround( tg _ )) (set tag tg) )
       ( _ () )
    ))
    tag
-)) String);
+) String);
 
-index-class-of-tag := λ(: tag String)(: class Type). (: (tail(
+index-class-of-tag := λ(: tag String)(: class Type). (: (
    (.bind( (as (& tag-to-class-index) BTreeEq<String,Type>[]) tag class ))
    (match class (
       ()
       ( (TGround( cls _ )) (
          (.bind( (as (& class-to-yes-index) BTreeEq<String,U64>[]) cls 1_u64 ))
       ))
-      ( _ (tail(
+      ( _ (
          (print 'Unexpected\sClass\sIn\sindex-class-of-tag:\s_s)(print class)(print '\n_s)
          (exit 1_u64)
-      )))
+      ))
    ))
-)) Nil);
+) Nil);
 
-class-of-tag := λ(: tag String). (: (tail(
+class-of-tag := λ(: tag String). (: (
    (let r (.lookup( tag-to-class-index tag TAny )))
    r
-)) Type);
+) Type);
 
-is-class := λ(: tag String). (: (tail(
+is-class := λ(: tag String). (: (
    (let r (.lookup( class-to-yes-index tag 0_u64 )))
    r
-)) U64);
+) U64);
 
 index-fields-of-tag := λ(: tag String)(: fields-params Type)(: fields-rhs Type). (: (
    (.bind( (as (& tag-to-fields-index) BTreeEq<String,Tuple<Type,Type>>[]) tag (Tuple( fields-params fields-rhs )) ))
 ) Nil);
 
-fields-of-tag := λ(: tag String). (: (tail(
+fields-of-tag := λ(: tag String). (: (
    (let r (.lookup( tag-to-fields-index tag (Tuple( TAny TAny )) )))
    r
-)) Tuple<Type,Type>);
+) Tuple<Type,Type>);
 
 slot := λ(: tt Type)(: sl String). (: (tail(
    (let rt TAny)
