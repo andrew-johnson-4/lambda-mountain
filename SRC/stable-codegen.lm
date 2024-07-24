@@ -574,11 +574,17 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             ( _ (
                (if (is( used Used )) (
                   (exit-error( 'Raw\sCons\sCells\sNot\sPermitted\sIn\sStrict\sMode_s term ))
-               ) (tail(
-                  (let e1 (compile-expr( ctx f stack-offset Unused )))
-                  (let e2 (compile-expr( (fragment::get-context e1) a (fragment::get-offset e1) used )))
-                  (set e (fragment::chain( e1 e2 )))
-               ))) 
+               ) (
+                  (if (is( used Unused )) (scope(tail(
+                     (let e1 (compile-expr( ctx f stack-offset Unused )))
+                     (let e2 (compile-expr( (fragment::get-context e1) a (fragment::get-offset e1) Unused )))
+                     (set e (fragment::chain( e1 e2 )))
+                  ))) (scope(tail(
+                     (let e1 (compile-expr( ctx f stack-offset Unused )))
+                     (let e2 (compile-expr( (fragment::get-context e1) a (fragment::get-offset e1) Used )))
+                     (set e (fragment::chain( e1 e2 )))
+                  ))))
+               ))
             ))
          ))
       ))
