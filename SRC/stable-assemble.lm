@@ -113,7 +113,7 @@ compile-program-ordered := λ(: global-ctx FContext)(: program AST). (: (
    ))
 ) Nil);
 
-compile-type := λ(: ctx FContext)(: lhs AST)(: rhs AST). (: (tail(
+compile-type := λ(: ctx FContext)(: lhs AST)(: rhs AST). (: (
    (let def rhs)
    (let base-type (type-of-s( lhs )))
    (let case-number 0_u64)
@@ -133,7 +133,7 @@ compile-type := λ(: ctx FContext)(: lhs AST)(: rhs AST). (: (tail(
       )))
    ))
    ctx
-)) FContext);
+) FContext);
 
 compile-type-case := λ(: ctx FContext)(: base-type Type)(: rhs AST)(: case-number U64). (: (
    (match rhs (
