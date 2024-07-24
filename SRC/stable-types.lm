@@ -2258,13 +2258,13 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (ascript-normal( term (t1 'Nil_s) ))
       ))
       ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (tail(
-         (if (is( scoped Scoped )) (
+         (if (is( scoped Scoped )) (tail(
             (let tctx-inner (infer-expr( tctx cond Unscoped TAny Used )))
             (infer-expr( tctx-inner t Unscoped TAny Tail ))
-         ) (
+         )) (tail(
             (set tctx (infer-expr( tctx cond Unscoped TAny Used )))
             (set tctx (infer-expr( tctx t Unscoped TAny Tail )))
-         ))
+         )))
          (infer-expr( tctx f Unscoped TAny Tail ))
          (ascript-normal( term (guess-representation(without-representation(typeof t))) ))
       )))
