@@ -109,13 +109,13 @@ compile-declare-cstring := λ(: val String). (: (
    (while (non-zero cache) (match cache (
       ()
       ( (SSSeq( rst k v )) (
-         (if (==( k val )) (tail(
+         (if (==( k val )) (
             (set id v)
             (set cache SSEOF)
-         )) (set cache rst))
+         ) (set cache rst))
       ))
    )))
-   (if (head-string id) () (tail(
+   (if (head-string id) () (
       (set id (uuid()))
       (set assemble-data-section (SCons( (close assemble-data-section) (close(SAtom id)) )))
       (set assemble-data-section (SCons( (close assemble-data-section) (close(SAtom ':\n\t.ascii\s"_s)) )))
@@ -124,13 +124,13 @@ compile-declare-cstring := λ(: val String). (: (
       (set cstring-cache (SSSeq(
          (close cstring-cache) val id
       )))
-   )))
+   ))
    (let r (fragment::new()))
    (set r (fragment::set( r 'expression_s (SAtom id) )))
    r
 ) Fragment);
 
-compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)(: args-type Type)(: args AST)(: offset I64). (: (tail(
+compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)(: args-type Type)(: args AST)(: offset I64). (: (
    (let whitespace-sz (-( (-( (sizeof-aligned return-type) (sizeof-aligned args-type) )) 8_u64 )))
    (let e (compile-push-rvalue( ctx args (-( offset (as whitespace-sz I64) )) )))
    (let constructor-parms (and(
@@ -150,7 +150,7 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
    (let new-offset (-( offset (as (sizeof-type return-type) I64) )))
    (set r (fragment::set-offset( r new-offset )))
    r
-)) Fragment);
+) Fragment);
 
 compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64). (: (
    (let r (fragment::new()))
@@ -159,28 +159,28 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64). (: (
       ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
          (match rval (
             ()
-            ( (App( le re )) (tail(
+            ( (App( le re )) (
                (let e1 (compile-push-rvalue( ctx le offset )))
                (let e2 (compile-expr( ctx re (fragment::get-offset e1) Used )))
                (set e2 (compile-maybe-push-stack( ctx (fragment::get-offset e2) e2 p2 rval )))
                (let sz (sizeof-type(typeof rval)))
                (set e2 (fragment::set-offset( e2 (-( offset (as sz I64) )) )))
                (set r (fragment::chain( e1 e2 )))
-            )))
+            ))
          ))
       ))
-      ( _ (tail(
+      ( _ (
          (let sz (sizeof-type(typeof rval)))
-         (if (==( sz 0_u64 )) (tail(
+         (if (==( sz 0_u64 )) (
             (set r (fragment::set-context( r ctx )))
             (set r (fragment::set-offset( r offset )))
             (set r (fragment::set( r 'program_s (SCons( (close SNil) (close SNil) )) )))
-         )) (tail(
+         ) (
             (set r (compile-expr( ctx rval offset Used )))
             (set r (compile-maybe-push-stack( ctx (fragment::get-offset r) r (typeof rval) rval )))
             (set r (fragment::set-offset( r (-( offset (as sz I64) )) )))
-         )))
-      )))
+         ))
+      ))
    ))
    r
 ) Fragment);
@@ -219,7 +219,7 @@ compile-maybe-push-stack := λ(: ctx FContext)(: offset I64)(: fragment Fragment
    (match (slot( ft 'StackVariable_s )) (
       ()
       ( (TGround( 'StackVariable_s _ )) () )
-      ( _ (tail(
+      ( _ (
          (set fragment (fragment::set-type( fragment ft )))
          (set fragment (fragment-apply(
             ctx offset 'push_s
@@ -231,7 +231,7 @@ compile-maybe-push-stack := λ(: ctx FContext)(: offset I64)(: fragment Fragment
          )))
          (let f-sz (as (sizeof-aligned ft) I64))
          (set fragment (fragment::set-offset( fragment (-( offset f-sz )) )))
-      )))
+      ))
    ))
    fragment
 ) Fragment);
@@ -240,7 +240,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
    (let kt (typeof term))
    (match term (
       ()
-      ( (Abs( lhs rhs tlt )) (if (is-open kt) () (tail(
+      ( (Abs( lhs rhs tlt )) (if (is-open kt) () (
          (let args-type (domain kt))
          (let args-size (sizeof-aligned args-type))
          (set ctx (compile-destructure-args( args-type ctx lhs 0_i64 )))
@@ -252,7 +252,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
          (set stack-offset (-( stack-offset (as args-size I64) )))
          (let e (compile-expr( ctx rhs stack-offset Return )))
          (let text SNil)
-         (if (==( k 'main_s )) (tail(
+         (if (==( k 'main_s )) (
             (set main-with True_u8)
             (match lhs (
                ()
@@ -260,7 +260,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
                ( _ (set main-with-argv True_u8) )
             ))
             (set text (SCons( (close text) (close(SAtom( 'main_s ))) )))
-         )) (
+         ) (
             (set text (SCons( (close text) (close(SAtom( (mangle-identifier( k kt )) ))) )))
          ))
          (set text (SCons( (close text) (close(SAtom( ':\n_s ))) )))
@@ -276,8 +276,8 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
          (let text-etc (fragment::get( e 'text_s )))
          (set text (SCons( (close text) (close text-etc) )))
          (set assemble-text-section (SCons( (close assemble-text-section) (close text) )))
-      ))))
-      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (tail(
+      )))
+      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
          (let clean-tt (without-representation kt))
          (let mid (mangle-identifier( k clean-tt )))
          (set assemble-data-section (SCons(
@@ -309,7 +309,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
             (close assemble-init-section)
             (close(fragment::get( e3 'program_s )))
          )))
-      )))
+      ))
    ))
 ) Nil);
 
@@ -321,12 +321,12 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ()
       ( ASTNil () )
       ( ASTEOF () )
-      ( (Var( id _ )) (tail(
+      ( (Var( id _ )) (
          (set e (fragment-context::lookup( ctx id (typeof term) term )))
          (set e (fragment::set-context( e ctx )))
          (set e (fragment::set-offset( e stack-offset )))
-      )))
-      ( (Lit( val _ )) (tail(
+      ))
+      ( (Lit( val _ )) (
          (let ltype (typeof term))
          (match (slot( ltype 'String_s )) (
             ()
@@ -383,7 +383,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          ))
          (set e (fragment::set-context( e ctx )))
          (set e (fragment::set-type( e ltype )))
-      )))
+      ))
       ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
          (set e (compile-expr( ctx t stack-offset used )))
       ))
