@@ -3,7 +3,7 @@ import LIB/default.lm;
 
 type XYZ<x,y> (XY( x , y )) | X | (Y( x ));
 
-main := λ. (: (tail(
+main := λ. (: (
    (let xy1 (XY( 1_u64 2_i8 )))
    (print (.1(as xy1 Tag<XY>)))
    (print (.2(as xy1 Tag<XY>)))
@@ -12,4 +12,4 @@ main := λ. (: (tail(
    (let xy3 ((: Y XYZ<I32,I32>)( 3_i32 )))
    (print (.0 xy3))
    (print (.1(as xy3 Tag<Y>)))
-)) Nil);
+) Nil);

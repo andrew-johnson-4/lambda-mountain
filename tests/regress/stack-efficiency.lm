@@ -3,13 +3,13 @@ import LIB/default.lm;
 
 type XY (XY( U64 , U64 ));
 
-f := λ. (: (tail(
+f := λ. (: (
    (let x (XY( 1_u64 2_u64 )))
    x
-)) XY);
+) XY);
 
-main := λ. (: (tail(
+main := λ. (: (
   (f())
   (f())
   ()
-)) Nil);
+) Nil);

@@ -1,11 +1,11 @@
 
 import LIB/default.lm;
 
-main := λ. (: (tail(
+main := λ. (: (
    ()
    (match (SAtom( 'A_s )) (
       ()
       ( (SCons( a b )) () )
       ( (SAtom _) (print a) )
    ))
-)) Nil);
+) Nil);

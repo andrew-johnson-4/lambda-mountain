@@ -1,7 +1,7 @@
 
 import LIB/default.lm;
 
-main := λ. (: (tail(
+main := λ. (: (
    (let x (Satom 'abc_s))
    (print x)
-)) Nil);
+) Nil);

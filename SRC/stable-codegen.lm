@@ -579,11 +579,13 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                      (let e1 (compile-expr( ctx f stack-offset Unused )))
                      (let e2 (compile-expr( (fragment::get-context e1) a (fragment::get-offset e1) Unused )))
                      (set e (fragment::chain( e1 e2 )))
+                     (set e (fragment::set-type( e (typeof term) )))
                   ))) (scope(tail(
                      (print 'Implicit\sUsed:\s_s)(print term)(print '\n_s)
                      (let e1 (compile-expr( ctx f stack-offset Unused )))
                      (let e2 (compile-expr( (fragment::get-context e1) a (fragment::get-offset e1) Used )))
                      (set e (fragment::chain( e1 e2 )))
+                     (set e (fragment::set-type( e (typeof term) )))
                   ))))
                ))
             ))

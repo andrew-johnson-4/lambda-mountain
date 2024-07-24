@@ -3,7 +3,7 @@ import LIB/default.lm;
 
 type Token (Token( String , U64 , U64 ));
 
-main := λ. (: (tail(
+main := λ. (: (
   (let t (Token( 'A_s 1_u64 2_u64 )))
   (match t (
     ()
@@ -13,4 +13,4 @@ main := λ. (: (tail(
     ()
     ( a_t (print a) )
   ))
-)) Nil);
+) Nil);

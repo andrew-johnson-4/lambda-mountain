@@ -3,7 +3,7 @@ import LIB/default.lm;
 
 type AB A | B; zero AB B;
 
-main := λ. (: (tail(
+main := λ. (: (
   (print (non-zero A))
   (print (non-zero B))
-)) Nil);
+) Nil);
