@@ -135,7 +135,7 @@ compile-type := λ(: ctx FContext)(: lhs AST)(: rhs AST). (: (tail(
    ctx
 )) FContext);
 
-compile-type-case := λ(: ctx FContext)(: base-type Type)(: rhs AST)(: case-number U64). (: (tail(
+compile-type-case := λ(: ctx FContext)(: base-type Type)(: rhs AST)(: case-number U64). (: (
    (match rhs (
       ()
       ( (Lit( tag _ )) (
@@ -150,7 +150,7 @@ compile-type-case := λ(: ctx FContext)(: base-type Type)(: rhs AST)(: case-numb
       ( _ () )
    ))
    ctx
-)) FContext);
+) FContext);
 
 compile-define-tag-constructor := λ(: ctx FContext)(: tag String)(: arg-types Type)(: base-type Type)(: rtype Type)(: case-number U64). (: (tail(
    (let tg (and( (t2( 'Constructor_s (t1 tag) )) (and( (t2( 'Sized_s (t1 '0_s) )) (t2( 'FieldsSized_s (t1 '0_s) )) )) )))
