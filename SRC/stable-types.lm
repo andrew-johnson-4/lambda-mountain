@@ -154,28 +154,28 @@ fields-of-tag := λ(: tag String). (: (
    r
 ) Tuple<Type,Type>);
 
-slot := λ(: tt Type)(: sl String). (: (tail(
+slot := λ(: tt Type)(: sl String). (: (
    (let rt TAny)
    (match tt (
       ()
       ( (TGround( bt _ )) (
          (if (==( bt sl )) (set rt tt) ())
       ))
-      ( (TAnd( ltt rtt )) (tail(
+      ( (TAnd( ltt rtt )) (
          (let lt2 (slot( ltt sl )))
          (if (non-zero lt2) (
             (set rt lt2)
-         ) (tail(
+         ) (
             (let rt2 (slot( rtt sl )))
             (set rt rt2)
-         )))
-      )))
+         ))
+      ))
       ( _ () )
    ))
    rt
-)) Type);
+) Type);
 
-domain := λ(: tt Type). (: (tail(
+domain := λ(: tt Type). (: (
    (let r TAny)
    (match (slot( tt 'Arrow_s )) (
       ()
@@ -183,9 +183,9 @@ domain := λ(: tt Type). (: (tail(
       ( _ () )
    ))
    r
-)) Type);
+) Type);
 
-range := λ(: tt Type). (: (tail(
+range := λ(: tt Type). (: (
    (let r TAny)
    (match (slot( tt 'Arrow_s )) (
       ()
@@ -193,18 +193,18 @@ range := λ(: tt Type). (: (tail(
       ( _ () )
    ))
    r
-)) Type);
+) Type);
 
-is-open := λ(: tt Type). (: (tail(
+is-open := λ(: tt Type). (: (
    (let r 0_u64)
    (match tt (
       ()
       ( TAny (set r 1_u64) )
       ( (TVar _) (set r 1_u64) )
-      ( (TAnd( lt rt )) (tail(
+      ( (TAnd( lt rt )) (
          (if (is-open lt) (set r 1_u64) ())
          (if (is-open rt) (set r 1_u64) ())
-      )))
+      ))
       ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF _ )) _ )) )) () )
       ( (TGround( 'Field_s (TypeSeq( (TypeSeq( TypeEOF base-type )) _ )) )) (
          (set r (is-open base-type))
@@ -212,17 +212,17 @@ is-open := λ(: tt Type). (: (tail(
       ( (TGround( _ pars )) (
          (while (non-zero pars) (match pars (
             ()
-            ( (TypeSeq( rst p1 )) (tail(
+            ( (TypeSeq( rst p1 )) (
                (if (is-open p1) (set r 1_u64) ())
                (set pars rst)
-            )))
+            ))
          )))
       ))
    ))
    r
-)) U64);
+) U64);
 
-is-arrow := λ(: tt Type). (: (tail(
+is-arrow := λ(: tt Type). (: (
    (let r 0_u64)
    (match (slot( tt 'Arrow_s )) (
       ()
@@ -230,7 +230,7 @@ is-arrow := λ(: tt Type). (: (tail(
       ( _ () )
    ))
    r
-)) U64);
+) U64);
 
 t3 := λ(: tag String)(: p1 Type)(: p2 Type). (: (tail(
    (let tt (TGround(
