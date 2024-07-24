@@ -1561,7 +1561,7 @@ specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Ty
    (mark-as-special( key result-type ))
    (let special-term (substitute( unify-ctx term )))
    (infer-global-context( special-term ))
-   (infer-expr( global-type-context special-term Unscoped TAny ))
+   (infer-expr( global-type-context special-term Unscoped TAny Used ))
    (set ast-parsed-program (Seq(
       (close ast-parsed-program)
       (close special-term)
@@ -1659,7 +1659,7 @@ typecheck := λ. (: (tail(
          (set ordered-type-exprs rst)
       )))
    )))
-   (infer-expr( global-type-context ast-parsed-program Unscoped TAny ))
+   (infer-expr( global-type-context ast-parsed-program Unscoped TAny Used ))
    (assert-well-typed ast-parsed-program)
 )) Nil);
 
@@ -2135,6 +2135,17 @@ infer-ctx := λ(: tctx TContext)(: lhs AST). (: (tail(
    tctx
 )) TContext);
 
+implicit-tail := λ(: tt Type). (: (tail(
+   (match tt (
+      ()
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF hd )) tl )) )) (
+         (set tt tl)
+      ))
+      ( _ () )
+   ))
+   tt
+)) Type);
+
 typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tail(
    (let found (typeof-var-raw( sloc tctx vname )))
    (if (non-zero found) () (
@@ -2172,19 +2183,19 @@ typeof-var-raw := λ(: sloc AST)(: tctx TContext)(: vname String). (: (tail(
    found
 )) Type);
 
-infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type). (: (tail(
+infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: used IsUsed). (: (tail(
    (match term (
       ()
       ( ASTNil (ascript-normal( term (t1 'Nil_s) )) )
       ( ASTEOF (ascript-normal( term (t1 'Nil_s) )) )
       ( (Seq( l r )) (tail(
-         (infer-expr( tctx l Unscoped TAny ))
-         (infer-expr( tctx r Unscoped TAny ))
+         (infer-expr( tctx l Unscoped TAny Used ))
+         (infer-expr( tctx r Unscoped TAny Used ))
       )))
       ( (Typedef( _ _ )) () )
       ( (Glb( k v )) (
          (if (is-open(typeof term)) () (
-            (infer-expr( tctx v Unscoped TAny ))
+            (infer-expr( tctx v Unscoped TAny Used ))
          ))
       ))
       ( (Frg( _ v _ )) (
@@ -2197,7 +2208,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type). (
                (match (slot( tt 'String_s )) (
                   ()
                   ( (TGround( 'String_s _ )) () )
-                  ( _ (infer-expr( tctx t Unscoped tt )) )
+                  ( _ (infer-expr( tctx t Unscoped tt used )) )
                ))
                (let inner-tt (typeof t))
                (if (non-zero inner-tt) (
@@ -2210,7 +2221,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type). (
          ))
       ))
       ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (tail(
-         (set tctx (infer-expr( tctx t Unscoped tt )))
+         (set tctx (infer-expr( tctx t Unscoped tt used )))
          (let inner-tt (typeof t))
          (if (non-zero inner-tt) (tail(
             (let nn (with-only-representation inner-tt))
@@ -2239,7 +2250,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type). (
          (ascript-normal( term (t1 'Nil_s) ))
       )))
       ( (App( (App( (Var( 'set_s _ )) (Var( v _ )) )) rhs )) (tail(
-         (infer-expr( tctx rhs Unscoped TAny ))
+         (infer-expr( tctx rhs Unscoped TAny Tail ))
          (ascript-normal( rhs (typeof-var( term tctx v )) ))
          (ascript-normal( term (t1 'Nil_s) ))
       )))
@@ -2248,27 +2259,27 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type). (
       ))
       ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (tail(
          (if (is( scoped Scoped )) (
-            (let tctx-inner (infer-expr( tctx cond Unscoped TAny )))
-            (infer-expr( tctx-inner t Unscoped TAny ))
+            (let tctx-inner (infer-expr( tctx cond Unscoped TAny Used )))
+            (infer-expr( tctx-inner t Unscoped TAny Tail ))
          ) (
-            (set tctx (infer-expr( tctx cond Unscoped TAny )))
-            (set tctx (infer-expr( tctx t Unscoped TAny )))
+            (set tctx (infer-expr( tctx cond Unscoped TAny Used )))
+            (set tctx (infer-expr( tctx t Unscoped TAny Tail )))
          ))
-         (infer-expr( tctx f Unscoped TAny ))
+         (infer-expr( tctx f Unscoped TAny Tail ))
          (ascript-normal( term (guess-representation(without-representation(typeof t))) ))
       )))
       ( (App( (App( (Var( 'while_s _ )) cond )) body )) (tail(
-         (set tctx (infer-expr( tctx cond Unscoped TAny )))
-         (infer-expr( tctx body Unscoped TAny ))
+         (set tctx (infer-expr( tctx cond Unscoped TAny Used )))
+         (infer-expr( tctx body Unscoped TAny Tail ))
          (ascript-normal( term (t1 'Nil_s) ))
       )))
       ( (App( (Var( 'tail_s _ )) (App( l r )) )) (tail(
-         (set tctx (infer-expr( tctx l Unscoped TAny )))
-         (set tctx (infer-expr( tctx r Unscoped TAny )))
+         (set tctx (infer-expr( tctx l Unscoped TAny Tail )))
+         (set tctx (infer-expr( tctx r Unscoped TAny Used )))
          (ascript-normal( term (typeof r) ))
       )))
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (tail(
-         (set tctx (infer-expr( tctx t Unscoped TAny )))
+         (set tctx (infer-expr( tctx t Unscoped TAny used )))
          (let inner-tt (typeof t))
          (if (non-zero inner-tt) (tail(
             (let inner-repr (with-only-representation inner-tt))
@@ -2292,11 +2303,11 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type). (
          ))
       )))
       ( (App( (Var( 'scope_s _ )) r )) (tail(
-         (infer-expr( tctx r Scoped TAny ))
+         (infer-expr( tctx r Scoped TAny Tail ))
          (ascript-normal( term (typeof r) ))
       )))
       ( (App( (Var( 'open_s _ )) r )) (tail(
-         (set tctx (infer-expr( tctx r Unscoped TAny )))
+         (set tctx (infer-expr( tctx r Unscoped TAny Used )))
          (let deref-type (typeof r))
          (match (slot( deref-type 'Array_s )) (
             ()
@@ -2315,7 +2326,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type). (
                (exit-error( 'Variable\sName\sIs\sAlready\sBound\sIn\sOuter\sScope_s term ))
             ) ())
          ) ())
-         (infer-expr( tctx rhs Unscoped TAny ))
+         (infer-expr( tctx rhs Unscoped TAny Tail ))
          (let tt (typeof rhs))
          (let rt (as-local-variable tt))
          (if (non-zero tt) () (
@@ -2330,19 +2341,22 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type). (
          (ascript-normal( term (t1 'Nil_s) ))
       )))
       ( (App( l r )) (tail(
-         (set tctx (infer-expr( tctx l Unscoped TAny )))
-         (set tctx (infer-expr( tctx r Unscoped TAny )))
+         (set tctx (infer-expr( tctx l Unscoped TAny used )))
+         (set tctx (infer-expr( tctx r Unscoped TAny Used )))
          (let rt (apply-or-cons-and-specialize(
             (var-name-if-var l)
             (typeof l)
             (typeof r)
             term
          )))
+         (if (is( used Tail )) (
+            (set rt (implicit-tail rt))
+         ) ())
          (ascript-normal( term rt ))
       )))
       ( (Abs( lhs rhs tlt )) (tail(
          (set tctx (infer-ctx( tctx lhs )))
-         (infer-expr( tctx rhs Unscoped TAny ))
+         (infer-expr( tctx rhs Unscoped TAny Tail ))
          (let lt (typeof-lhs lhs))
          (let rt (typeof rhs))
          (ascript-normal( term (t3( 'Arrow_s lt rt )) ))
