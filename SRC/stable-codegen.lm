@@ -387,12 +387,6 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
          (set e (compile-expr( ctx t stack-offset used )))
       ))
-      ( (App( (Var( 'tail_s _ )) (App( lt rt )) )) (
-         (let e1 (compile-expr( ctx lt stack-offset Unused )))
-         (let e2 (compile-expr( (fragment::get-context e1) rt (fragment::get-offset e1) Used )))
-         (set e (fragment::chain( e1 e2 )))
-         (set e (fragment::set-type( e (typeof term) )))
-      ))
       ( (App( (Var( 'gensym-label_s _ )) (Var( id _ )) )) (
          (set ctx (fragment-context::bind(
             ctx id (t1 'Label_s) (fragment::label( (uuid()) ))

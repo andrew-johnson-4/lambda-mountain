@@ -1847,11 +1847,6 @@ assert-well-typed := λ(: term AST). (: (
          (assert-one-typed term)
       ))
       ( (AType _) () )
-      ( (App( (Var( 'tail_s _ )) (App( lterm rterm )) )) (
-         (assert-well-typed lterm)
-         (assert-well-typed rterm)
-         (assert-one-typed term)
-      ))
       ( (App( (Var( 'open_s _ )) rterm )) (
          (assert-well-typed rterm)
          (assert-one-typed term)
@@ -2272,11 +2267,6 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (set tctx (infer-expr( tctx cond Unscoped TAny Used )))
          (infer-expr( tctx body Unscoped TAny Tail ))
          (ascript-normal( term (t1 'Nil_s) ))
-      ))
-      ( (App( (Var( 'tail_s _ )) (App( l r )) )) (
-         (set tctx (infer-expr( tctx l Unscoped TAny Tail )))
-         (set tctx (infer-expr( tctx r Unscoped TAny Used )))
-         (ascript-normal( term (typeof r) ))
       ))
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
          (set tctx (infer-expr( tctx t Unscoped TAny used )))
