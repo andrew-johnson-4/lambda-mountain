@@ -161,7 +161,7 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
             ()
             ( (App( le re )) (tail(
                (let e1 (compile-push-rvalue( ctx le offset )))
-               (let e2 (compile-expr( ctx re (fragment::get-offset e1) Used )))
+               (let e2 (compile-expr( ctx re (fragment::get-offset e1) Tail )))
                (set e2 (compile-maybe-push-stack( ctx (fragment::get-offset e2) e2 p2 rval )))
                (let sz (sizeof-type(typeof rval)))
                (set e2 (fragment::set-offset( e2 (-( offset (as sz I64) )) )))
@@ -176,7 +176,7 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64). (: (tail(
             (set r (fragment::set-offset( r offset )))
             (set r (fragment::set( r 'program_s (SCons( (close SNil) (close SNil) )) )))
          )) (tail(
-            (set r (compile-expr( ctx rval offset Used )))
+            (set r (compile-expr( ctx rval offset Tail )))
             (set r (compile-maybe-push-stack( ctx (fragment::get-offset r) r (typeof rval) rval )))
             (set r (fragment::set-offset( r (-( offset (as sz I64) )) )))
          )))
@@ -410,7 +410,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set e (fragment::set-type( e (t1 'Nil_s) )))
       )))
       ( (App( (Var( 'scope_s _ )) t )) (tail(
-         (set e (compile-expr( ctx t stack-offset Used )))
+         (set e (compile-expr( ctx t stack-offset Tail )))
          (set e (fragment::set-context( e ctx )))
       )))
       ( (App( (Var( 'open_s _ )) t )) (tail(
@@ -466,7 +466,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ( (App( (App( (Var( 'set_s _ )) (Var( k _ )) )) rhs )) (tail(
          (let kt (typeof rhs))
 
-         (let e1 (compile-expr( ctx rhs stack-offset Used )))
+         (let e1 (compile-expr( ctx rhs stack-offset Tail )))
          (set e1 (fragment::set-type( e1 kt )))
          (let e2 (fragment-context::lookup( ctx k kt term )))
          (set e (fragment-apply( ctx stack-offset 'mov_s
@@ -498,11 +498,11 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (let e1 (as-branch-conditional(
             (compile-expr( ctx cond rsp-offset Used )) cond
          )))
-         (let e2 (compile-expr( (fragment::get-context e1) t (fragment::get-offset e1) used )))
+         (let e2 (compile-expr( (fragment::get-context e1) t (fragment::get-offset e1) Tail )))
          (let end-offset (fragment::get-offset e2))
          (set e2 (compile-maybe-push-stack( (fragment::get-context e2) (fragment::get-offset e2) e2 (typeof term) term )))
          (set e2 (fragment::set-type( e2 (typeof t) )))
-         (let e3 (compile-expr( (fragment::get-context e1) f (fragment::get-offset e1) used )))
+         (let e3 (compile-expr( (fragment::get-context e1) f (fragment::get-offset e1) Tail )))
          (set e3 (compile-maybe-push-stack( (fragment::get-context e3) (fragment::get-offset e3) e3 (typeof term) term )))
          (set e3 (fragment::set-type( e3 (typeof f) )))
 
