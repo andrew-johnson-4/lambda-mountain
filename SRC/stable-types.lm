@@ -2341,15 +2341,20 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (ascript-normal( term (t1 'Nil_s) ))
       ))
       ( (App( l r )) (
-         (set tctx (infer-expr( tctx l Unscoped TAny used )))
-         (set tctx (infer-expr( tctx r Unscoped TAny Used )))
+         (let l-used Unused)
+         (if (is( used Call )) (set l-used Call) ())
+         (let r-used Used)
+         (if (is( used Unused )) (set r-used Unused) ())
+         (set tctx (infer-expr( tctx l Unscoped TAny l-used )))
+         (if (is-arrow(typeof l)) (set r-used Call) ())
+         (set tctx (infer-expr( tctx r Unscoped TAny r-used )))
          (let rt (apply-or-cons-and-specialize(
             (var-name-if-var l)
             (typeof l)
             (typeof r)
             term
          )))
-         (if (is( used Tail )) (
+         (if (is( l-used Unused )) (
             (set rt (implicit-tail rt))
          ) ())
          (ascript-normal( term rt ))

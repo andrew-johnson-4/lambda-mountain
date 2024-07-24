@@ -605,6 +605,7 @@ compile-stack-call := λ(: ctx FContext)(: function-name String)(: return-type T
       ))
       ( _ (
          (if (is( used Tail )) (set used Used) ())
+         (if (is( used Call )) (set used Used) ())
          (let push-args (compile-stack-call-push-args( ctx args offset )))
          (set push-args (fragment::set-type( push-args (t1( 'FunctionArguments_s )) )))
          (let call SNil)

@@ -97,6 +97,7 @@ to-string := λ(: is-used IsUsed). (: (
       ( Unused (set r 'Unused_s) )
       ( Return (set r 'Return_s) )
       ( Tail (set r 'Tail_s) )
+      ( Call (set r 'Call_s) )
    ))
    r
 ) String);
