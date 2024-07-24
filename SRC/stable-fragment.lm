@@ -2,7 +2,7 @@
 print := λ(: x Fragment). (: (
    (match x (
       ()
-      ( (Fragment( kvs offset xtt ctx )) (tail(
+      ( (Fragment( kvs offset xtt ctx )) (
          (print 'Fragment\n_s)
          (print '\tOffset\s=\s_s)(print offset)(print '\n_s)
          (while (non-zero kvs) (match kvs (
@@ -12,17 +12,17 @@ print := λ(: x Fragment). (: (
                (set kvs rst)
             )))
          )))
-      )))
+      ))
    ))
 ) Nil);
 
 print := λ(: x FragmentList). (: (
    (match x (
       ()
-      ( (FLSeq( rst f )) (tail(
+      ( (FLSeq( rst f )) (
          (print rst)
          (print f)
-      )))
+      ))
       ( _ () )
    ))
 ) Nil);
@@ -37,7 +37,7 @@ fragment::new := λ . (: (
    r
 ) Fragment);
 
-fragment::get := λ(: e Fragment)(: k String). (: (tail(
+fragment::get := λ(: e Fragment)(: k String). (: (
    (let r SNil)
    (match e (
       ()
@@ -45,81 +45,79 @@ fragment::get := λ(: e Fragment)(: k String). (: (tail(
          (while (non-zero kvs) (match kvs (
             ()
             ( (FKVSeq( rst kvs-k kvs-v )) (
-               (if (==( k kvs-k )) (tail(
+               (if (==( k kvs-k )) (
                   (set r kvs-v)
                   (set kvs FKVEOF)
-               )) (set kvs rst))
+               ) (set kvs rst))
             ))
          )))
       ))
    ))
    r
-)) S);
+) S);
 
-fragment::set := λ(: e Fragment)(: k String)(: v S). (: (tail(
-   (let r e)
+fragment::set := λ(: e Fragment)(: k String)(: v S). (: (
    (match e (
       ()
       ( (Fragment( kvs offset ft ctx )) (
-         (set r (Fragment(
+         (set e (Fragment(
             (close(FKVSeq( (close kvs) k v )))
             offset ft (close ctx)
          )))
       ))
    ))
-   r
-)) Fragment);
+   e
+) Fragment);
 
-fragment::get-type := λ(: e Fragment) . (: (tail(
+fragment::get-type := λ(: e Fragment) . (: (
    (let tt (.2( (as e Tag<Fragment>) )))
    tt
-)) Type);
+) Type);
 
-fragment::set-type := λ(: e Fragment)(: tt Type). (: (tail(
-   (let r e)
+fragment::set-type := λ(: e Fragment)(: tt Type). (: (
    (match e (
       ()
       ( (Fragment( e-kvs e-offset e-tt e-ctx )) (
-         (set r (Fragment( (close e-kvs) e-offset tt (close e-ctx) )))
+         (set e (Fragment( (close e-kvs) e-offset tt (close e-ctx) )))
       ))
    ))
-   r
-)) Fragment);
+   e
+) Fragment);
 
-fragment::local-variable := λ(: offset I64)(: tt Type). (: (tail(
+fragment::local-variable := λ(: offset I64)(: tt Type). (: (
    (let r (fragment::new()))
    (set r (fragment::set( r 'expression_s (SAtom(to-string offset)) )))
    (set r (fragment::set( r 'fragment-type_s (SAtom 'LocalVariable_s) )))
    (set r (fragment::set-type( r tt )))
    r
-)) Fragment);
+) Fragment);
 
-fragment::label := λ(: id String). (: (tail(
+fragment::label := λ(: id String). (: (
    (let r (fragment::new()))
    (set r (fragment::set( r 'expression_s (SAtom id) )))
    (set r (fragment::set( r 'fragment-type_s (SAtom 'Label_s) )))
    (set r (fragment::set-type( r (t1 'Label_s) )))
    r
-)) Fragment);
+) Fragment);
 
-fragment::expression := λ(: val String). (: (tail(
+fragment::expression := λ(: val String). (: (
    (let r (fragment::new()))
    (set r (fragment::set( r 'expression_s (SAtom val) )))
    r
-)) Fragment);
+) Fragment);
 
-fragment::expression := λ(: val S). (: (tail(
+fragment::expression := λ(: val S). (: (
    (let r (fragment::new()))
    (set r (fragment::set( r 'expression_s val )))
    r
-)) Fragment);
+) Fragment);
 
-fragment::get-context := λ(: e Fragment) . (: (tail(
+fragment::get-context := λ(: e Fragment) . (: (
    (let ctx (open(.1( (as e Tag<Fragment>) ))))
    ctx
-)) FContext);
+) FContext);
 
-fragment::set-context := λ(: e Fragment)(: ctx FContext). (: (tail(
+fragment::set-context := λ(: e Fragment)(: ctx FContext). (: (
    (let r e)
    (match e (
       ()
@@ -128,9 +126,9 @@ fragment::set-context := λ(: e Fragment)(: ctx FContext). (: (tail(
       ))
    ))
    r
-)) Fragment);
+) Fragment);
 
-fragment::get-offset := λ(: e Fragment). (: (tail(
+fragment::get-offset := λ(: e Fragment). (: (
    (let offset 0_i64)
    (match e (
       ()
@@ -139,9 +137,9 @@ fragment::get-offset := λ(: e Fragment). (: (tail(
       ))
    ))
    offset
-)) I64);
+) I64);
 
-fragment::set-offset := λ(: e Fragment)(: offset I64). (: (tail(
+fragment::set-offset := λ(: e Fragment)(: offset I64). (: (
    (let r e)
    (match e (
       ()
@@ -152,9 +150,9 @@ fragment::set-offset := λ(: e Fragment)(: offset I64). (: (tail(
       ))
    ))
    r
-)) Fragment);
+) Fragment);
 
-fragment::unlet := λ(: s S). (: (tail(
+fragment::unlet := λ(: s S). (: (
    (let return s)
    (match s (
       ()
@@ -167,20 +165,20 @@ fragment::unlet := λ(: s S). (: (tail(
         )) )) (set return SNil) )
       ( (SCons( (SAtom 'App_s) (SCons(
           ls rs
-        )) )) (tail(
+        )) )) (
          (let ls-2 (fragment::unlet( ls )))
          (if (not(is( ls ls-2 ))) (
             (set return (SCons( (close(SAtom 'App_s)) (close(SCons(
                (close ls-2) (close rs)
             ))) )) )
          ) ())
-      )))
+      ))
       ( _ () )
    ))
    return
-)) S);
+) S);
 
-fragment::let := λ(: ctx FContext)(: s S). (: (tail(
+fragment::let := λ(: ctx FContext)(: s S). (: (
    (let return ctx)
    (match s (
       ()
@@ -190,12 +188,12 @@ fragment::let := λ(: ctx FContext)(: s S). (: (tail(
               SNil
            )) ))
            v
-        )) )) (tail(
+        )) )) (
          (set v (fragment::render( return v )))
          (set return (FCtxBind(
             (close return) k TAny (fragment::expression( v ))
          )))
-      )))
+      ))
       ( (SCons( (SAtom 'App_s) (SCons(
           ls rs
         )) )) (
@@ -204,9 +202,9 @@ fragment::let := λ(: ctx FContext)(: s S). (: (tail(
       ( _ () )
    ))
    return
-)) FContext);
+) FContext);
 
-fragment::render := λ(: ctx FContext)(: s S). (: (tail(
+fragment::render := λ(: ctx FContext)(: s S). (: (
    (let s-2 (fragment::unlet( s )))
    (while (not(is( s s-2 ))) (
       (set ctx (fragment::let( ctx s )))
@@ -215,15 +213,15 @@ fragment::render := λ(: ctx FContext)(: s S). (: (tail(
    ) ())
    (let return (fragment::render-impl( ctx s )))
    return
-)) S);
+) S);
 
 fragment::render-ctx := (: FCtxEOF FContext);
-fragment::render-impl := λ(: ctx FContext)(: s S). (: (tail(
+fragment::render-impl := λ(: ctx FContext)(: s S). (: (
    (set fragment::render-ctx ctx)
    (let r (fragment::render-impl( s )))
    r
-)) S);
-fragment::render-impl := λ(: s S). (: (tail(
+) S);
+fragment::render-impl := λ(: s S). (: (
    (let ctx fragment::render-ctx)
    (let r SNil)
    (match s (
@@ -480,7 +478,7 @@ fragment::render-impl := λ(: s S). (: (tail(
       )))
    ))
    r
-)) S);
+) S);
 
 union := λ(: ctx FContext)(: tctx TContext). (: (tail(
    (let r ctx)
