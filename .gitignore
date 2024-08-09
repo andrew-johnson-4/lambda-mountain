@@ -35,3 +35,8 @@ deploy.s
 deploy2.s
 dev
 dev.s
+*.vo
+*.aux
+*.glob
+*.vok
+*.vos

@@ -37,3 +37,7 @@ install:
 	ld -o lm lm_raw.o
 	mv lm /usr/local/bin/
 	rm lm_raw.o
+
+validate:
+	coqc LIB/default_validator.v
+	coqchk LIB/default_validator.vo
