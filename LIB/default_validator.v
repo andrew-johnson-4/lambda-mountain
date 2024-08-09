@@ -10,3 +10,8 @@ Structure Region := {
     known : Z -> RegionSlot;
 }.
 
+Structure MemoryState := {
+    stack_state : Region;
+    heap_state : Region;
+    heap_tail : N;
+}.
