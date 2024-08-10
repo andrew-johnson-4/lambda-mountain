@@ -37,6 +37,11 @@ install:
 	ld -o lm lm_raw.o
 	mv lm /usr/local/bin/
 	rm lm_raw.o
+	lm LMV/cli.lm -o lmv.s
+	as -o lmv.o lmv.s
+	ld -o lmv   lmv.o
+	mv lmv /usr/local/bin
+	rm lmv.s lmv.o
 
 validate:
 	coqc LIB/default_validator.v
