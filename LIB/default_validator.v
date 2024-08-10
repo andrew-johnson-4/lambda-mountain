@@ -17,6 +17,7 @@ Structure Region := {
    2. sys_brk always succeeds at acquiring more memory (effectively infinite)
  *)
 Structure MemoryState := {
+    register_state : Region;
     stack_state : Region;
     heap_state : Region;
 }.
