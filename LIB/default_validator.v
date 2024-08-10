@@ -19,6 +19,7 @@ Structure Region := {
 Structure MemoryState := {
     register_state : Region;
     stack_state : Region;
+    frame_state : Region;
     heap_state : Region;
 }.
 
