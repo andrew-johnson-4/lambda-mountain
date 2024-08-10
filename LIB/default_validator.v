@@ -4,7 +4,7 @@ Require Import Coq.Numbers.BinNums.
 (* Memory Is Denominated in Bytes *)
 Structure RegionByte := { 
     tt : N;      (* The type of this region represented as an Ordinal *)
-    tt_byte : N; (* The type-byte-index of this slot *)
+    tt_byte : N; (* The type-byte-index of this byte *)
 }.
 
 (* Knowledge of a Memory Region is a Partial Function *)
