@@ -43,10 +43,11 @@ Definition push_stack (st: MemoryState)(tt: nat)(tt_byte: nat): MemoryState :=
    mkMemoryState st.(register_state) new_stack st.(frame_state) st.(heap_state).
 
 (* This is for internal use, it does not directly correspond to the actual instruction *)
-Definition pop_stack (st: MemoryState)(tt: nat)(tt_byte: nat): (MemoryState * RegionByte) :=
+Definition pop_stack (st: MemoryState): (MemoryState * RegionByte) :=
    let rb := region_lookup st.(stack_state) (BinInt.Z.zero) in
    let new_stack := mkRegion (ZM.fold (fun k e m => ZM.add (BinInt.Z.sub k (BinInt.Z.one)) e m) st.(stack_state).(known) ZM.empty) in
    let st := mkMemoryState st.(register_state) new_stack st.(frame_state) st.(heap_state) in
    (st , rb).
 
-
+Check eq_refl : ((pop_stack initial_memory_state) = (_ , {| tt := 0; tt_byte := 0; |})).
+Check eq_refl : (pop_stack (push_stack initial_memory_state 123 456) = (_ , {| tt := 123; tt_byte := 456; |})).
