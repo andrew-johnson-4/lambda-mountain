@@ -38,13 +38,14 @@ Definition initial_memory_state := mkMemoryState (mkRegion ZM.empty) (mkRegion Z
 (* This is for internal use, it does not directly correspond to the actual instruction *)
 Definition push_stack (st: MemoryState)(tt: nat)(tt_byte: nat): MemoryState :=
    let rb := mkRegionByte tt tt_byte in
-   let new_stack := mkRegion (ZM.fold (fun k e m => ZM.add (BinInt.Z.sub k (BinInt.Z.one)) e m) st.(stack_state).(known) ZM.empty) in
-   mkMemoryState st.(register_state) st.(stack_state) st.(frame_state) st.(heap_state).
+   let new_stack := (ZM.fold (fun k e m => ZM.add (BinInt.Z.add k BinInt.Z.one) e m) st.(stack_state).(known) ZM.empty) in
+   let new_stack := mkRegion (ZM.add BinInt.Z.zero rb new_stack) in
+   mkMemoryState st.(register_state) new_stack st.(frame_state) st.(heap_state).
 
 (* This is for internal use, it does not directly correspond to the actual instruction *)
 Definition pop_stack (st: MemoryState)(tt: nat)(tt_byte: nat): (MemoryState * RegionByte) :=
    let rb := region_lookup st.(stack_state) (BinInt.Z.zero) in
-   let new_stack := mkRegion (ZM.fold (fun k e m => ZM.add (BinInt.Z.add k (BinInt.Z.one)) e m) st.(stack_state).(known) ZM.empty) in
+   let new_stack := mkRegion (ZM.fold (fun k e m => ZM.add (BinInt.Z.sub k (BinInt.Z.one)) e m) st.(stack_state).(known) ZM.empty) in
    let st := mkMemoryState st.(register_state) new_stack st.(frame_state) st.(heap_state) in
    (st , rb).
 
