@@ -170,4 +170,4 @@ uuid_0000000000000001:
         .zero 1
 ```
 
-### [Next Chapter: A Command Line Utility, with library support](https://github.com/andrew-johnson-4/lambda-mountain/blob/main/TUTORIAL/command-line-utility.md)
+### [Next Chapter: Verify Hello World Binary With LM Verifier And Coq](https://github.com/andrew-johnson-4/lambda-mountain/blob/main/TUTORIAL/verify-hello-world-with-coq.md)
