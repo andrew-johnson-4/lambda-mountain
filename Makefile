@@ -1,6 +1,6 @@
 
 develop: install
-	lmv t.s
+	lmv tests/regress/hello_world.s.v
 
 deploy: compile-production
 	time ./production -o deploy.s SRC/cli.lm
