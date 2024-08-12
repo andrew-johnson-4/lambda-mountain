@@ -3,7 +3,7 @@
 
 When LM code is compiled there is an option to produce verifiable GNU assembly.
 When assembly is annotated this way it can be verified with the `lmv` verifier and some assistance from the Coq Theorem Prover.
-The lmv tool produces a coq proof that can be verified automatically.
+The lmv tool produces a Coq proof that can be verified automatically.
 This proof models things such as memory safety and is provable for most LM code including the standard library.
 
 For starters we will verify the hello world program.
