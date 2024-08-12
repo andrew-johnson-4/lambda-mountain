@@ -43,6 +43,6 @@ uuid_0000000000007838:
 However, if we look closely at the program you may notice that there is a Trojan Horse.
 We have slighly changed the data message from our previous example from "hello_world" to "Hello World\n".
 Both the string constant AND the expected output have been changed correctly, however we have forgotten to update the system call.
-The system call still is configured to print 11 characters of output instead of the new 12 byte "Hello World\n" that includes a newline character.
+The system call is still configured to print 11 characters of output instead of the new 12 byte "Hello World\n" that includes a newline character.
 
 Sneaky! Let's see what happens when we try to verify this.
