@@ -1,9 +1,6 @@
 
-develop: compile-production
-	time ./production -o tmp.s tests/regress/forward-type-definition.lm
-	as tmp.s -o tmp.o
-	ld tmp.o -o tmp
-	./tmp
+develop: install
+	lmv t.s
 
 deploy: compile-production
 	time ./production -o deploy.s SRC/cli.lm

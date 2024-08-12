@@ -1,5 +1,7 @@
 
 import LIB/default.lm;
+import LMV/parse.lm;
+
 type VerifyMode ModeVerifyGNU;
 
 config-target                := 'tmp.v_s;
@@ -38,6 +40,3 @@ main := λ(: argc U64)(: argv String[]). (: (
    (print 'Verify\n_s)
 ) Nil);
 
-parse-gnu := λ(: fp String). (: (
-   (print 'Parse\s_s)(print fp)(print '\n_s)
-) Nil)
