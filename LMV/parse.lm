@@ -137,5 +137,25 @@ tokenize := λ(: file-contents String). (: (
 parse-gnu := λ(: fp String). (: (
    (print 'Parse\s_s)(print fp)(print '\n_s)
    (let tk (tokenize(read-file fp)))
+   (let linebuff (: LEOF List<String>))
+   (while (non-zero tk) (match tk (
+      ()
+      ( (LCons( '\n_s tl )) (
+         (parse-gnu-line (reverse linebuff))
+         (set linebuff (: LEOF List<String>))
+         (set tk tl)
+      ))
+      ( (LCons( hd tl )) (
+         (set linebuff (LCons( hd (close linebuff) )))
+         (set tk tl)
+      ))
+   )))
+   (parse-gnu-line (reverse linebuff))
    (print tk)(print '\n_s)
+) Nil);
+
+parse-gnu-line := λ(: line List<String>). (: (
+   (if (non-zero line) (
+      (print 'GNU\sLine:\s_s)(print line)(print '\n_s)
+   ) ())
 ) Nil);
