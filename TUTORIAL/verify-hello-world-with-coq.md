@@ -47,3 +47,8 @@ Both the string constant AND the expected output have been changed correctly, ho
 The system call is still configured to print 11 characters of output instead of the new 12 byte "Hello World\n" that includes a newline character.
 
 Sneaky! Let's see what happens when we try to verify this.
+
+### References
+* [Using Coq as an Assembler](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/12/coqasm.pdf)
+  Previous work has already been directed at modelling assembler in Coq.
+  However there were some restrictions in the work, namely you had to learn Coq.
