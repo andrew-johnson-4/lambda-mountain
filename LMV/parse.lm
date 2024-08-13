@@ -1,0 +1,4 @@
+
+parse-gnu := λ(: fp String). (: (
+   (print 'Parse\s_s)(print fp)(print '\n_s)
+) Nil);
