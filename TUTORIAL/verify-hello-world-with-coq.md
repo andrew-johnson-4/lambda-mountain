@@ -52,3 +52,6 @@ Sneaky! Let's see what happens when we try to verify this.
 * [Using Coq as an Assembler](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/12/coqasm.pdf)
   Previous work has already been directed at modelling assembler in Coq.
   However there were some restrictions in the work, namely you had to learn Coq.
+* [An encoding of X86 in Coq](https://github.com/maximedenes/coq-amd64)
+  This project encodes some x86 instructions in Coq, however it does not do much for interpreting the meaning of those instructions.
+  It looks like this project is again more tuned towards using Coq as a macro assembler instead of extending the assembler itself.
