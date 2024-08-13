@@ -1,4 +1,50 @@
 
+flush-buff := λ(: tks List<String>)(: buff S). (: (
+   (match buff (
+      ()
+      ( SNil () )
+      ( _ (set tks (LCons(
+         (clone-rope buff)
+         (close tks)
+      ))))
+   ))
+   tks
+) List<String>);
+
+tokenize := λ(: file-contents String). (: (
+   (let tks (: LEOF List<String>))
+   (let buff SNil)
+   (while (head-string file-contents) (
+      (let c (head-string file-contents))
+      (if (||( (==( c 33_u8 ))
+       (||( (==( c 34_u8 ))
+        (||( (==( c 35_u8 ))
+         (||( (==( c 36_u8 ))
+          (||( (==( c 37_u8 ))
+           (||( (==( c 38_u8 ))
+                (==( 1_u8 0_u8 ))
+           ))
+          ))
+         ))
+        ))
+       ))
+      )) (
+         (set tks (flush-buff( tks buff )))
+         (set tks (flush-buff( tks (SAtom(clone-rope c)) )))
+         (set buff SNil)
+      ) (
+         (set buff (SCons( 
+            (close buff)
+            (close(SAtom(clone-rope c)))
+         )))
+      ))
+      (set file-contents (tail-string file-contents))
+   ))
+   (reverse tks)
+) List<String>);
+
 parse-gnu := λ(: fp String). (: (
    (print 'Parse\s_s)(print fp)(print '\n_s)
+   (let tk (tokenize(read-file fp)))
+   (print tk)(print '\n_s)
 ) Nil);
