@@ -135,7 +135,231 @@ tokenize := λ(: file-contents String). (: (
 ) List<String>);
 
 parse-gnu := λ(: fp String). (: (
-   (print 'Parse\s_s)(print fp)(print '\n_s)
+   (let r SNil)
    (let tk (tokenize(read-file fp)))
-   (print tk)(print '\n_s)
-) Nil);
+   (let linebuff (: LEOF List<String>))
+   (while (non-zero tk) (match tk (
+      ()
+      ( (LCons( '\n_s tl )) (
+         (set r (SCons(
+            (close r)
+            (close(parse-gnu-line (reverse linebuff)))
+         )))
+         (set linebuff (: LEOF List<String>))
+         (set tk tl)
+      ))
+      ( (LCons( hd tl )) (
+         (set linebuff (LCons( hd (close linebuff) )))
+         (set tk tl)
+      ))
+   )))
+   (set r (SCons(
+      (close r)
+      (close(parse-gnu-line (reverse linebuff)))
+   )))
+   r
+) S);
+
+parse-gnu-line := λ(: line List<String>). (: (
+   (let r SNil)
+   (if (non-zero line) (match line (
+      ()
+      ( (LCons( '._s (LCons( 'global_s (LCons( glb LEOF )) )) )) (
+         (set r (SCons(
+            (close r)
+            (close(SCons(
+               (close(SAtom '\tlet\scfg\s:=\s\[declare_global\scfg\s"_s))
+               (close(SCons(
+                  (close(SAtom glb))
+                  (close(SAtom '"\]\sin\n_s))
+               )))
+            )))
+         )))
+      ))
+      ( (LCons( '._s (LCons( 'text_s LEOF )) )) (
+         (set r (SCons(
+            (close r)
+            (close(SAtom '\tlet\scfg\s:=\s\[declare_text\scfg\]\sin\n"_s))
+         )))
+      ))
+      ( (LCons( lbl (LCons( ':_s LEOF )) )) (
+         (set r (SCons(
+            (close r)
+            (close(SCons(
+               (close(SAtom '\tlet\scfg\s:=\s\[declare_label\scfg\s"_s))
+               (close(SCons(
+                  (close(SAtom lbl))
+                  (close(SAtom '"\]\sin\n_s))
+               )))
+            )))
+         )))
+      ))
+
+      ( (LCons( 'call_s tl )) (set r (parse-gnu-uop( 'call_s tl ))) )
+      ( (LCons( 'ret_s LEOF )) (set r (parse-gnu-zop( 'ret_s ))) )
+      ( (LCons( 'syscall_s LEOF )) (set r (parse-gnu-zop( 'syscall_s ))) )
+
+      ( (LCons( 'push_s tl )) (set r (parse-gnu-uop( 'push_s tl ))) )
+      ( (LCons( 'pushb_s tl )) (set r (parse-gnu-uop( 'pushb_s tl ))) )
+      ( (LCons( 'pushs_s tl )) (set r (parse-gnu-uop( 'pushs_s tl ))) )
+      ( (LCons( 'pushw_s tl )) (set r (parse-gnu-uop( 'pushw_s tl ))) )
+      ( (LCons( 'pushl_s tl )) (set r (parse-gnu-uop( 'pushl_s tl ))) )
+      ( (LCons( 'pushq_s tl )) (set r (parse-gnu-uop( 'pushq_s tl ))) )
+      ( (LCons( 'pusht_s tl )) (set r (parse-gnu-uop( 'pusht_s tl ))) )
+
+      ( (LCons( 'pop_s tl )) (set r (parse-gnu-uop( 'pop_s tl ))) )
+      ( (LCons( 'popb_s tl )) (set r (parse-gnu-uop( 'popb_s tl ))) )
+      ( (LCons( 'pops_s tl )) (set r (parse-gnu-uop( 'pops_s tl ))) )
+      ( (LCons( 'popw_s tl )) (set r (parse-gnu-uop( 'popw_s tl ))) )
+      ( (LCons( 'popl_s tl )) (set r (parse-gnu-uop( 'popl_s tl ))) )
+      ( (LCons( 'popq_s tl )) (set r (parse-gnu-uop( 'popq_s tl ))) )
+      ( (LCons( 'popt_s tl )) (set r (parse-gnu-uop( 'popt_s tl ))) )
+
+      ( (LCons( 'mov_s tl )) (set r (parse-gnu-binop( 'movh_s tl ))) )
+      ( (LCons( 'movb_s tl )) (set r (parse-gnu-binop( 'movb_s tl ))) )
+      ( (LCons( 'movs_s tl )) (set r (parse-gnu-binop( 'movs_s tl ))) )
+      ( (LCons( 'movw_s tl )) (set r (parse-gnu-binop( 'movw_s tl ))) )
+      ( (LCons( 'movl_s tl )) (set r (parse-gnu-binop( 'movl_s tl ))) )
+      ( (LCons( 'movq_s tl )) (set r (parse-gnu-binop( 'movq_s tl ))) )
+      ( (LCons( 'movt_s tl )) (set r (parse-gnu-binop( 'movt_s tl ))) )
+
+      ( u (
+         (print 'Unexpected\sLine\s_s)
+         (while (non-zero u) (match u (
+            ()
+            ( (LCons( hd tl )) (
+               (print hd)(print '\s_s)
+               (set u tl)
+            ))
+         )))
+         (print '\n_s)
+         (exit 1_u64)
+      ) )
+   )) ())
+   r
+) S);
+
+parse-gnu-zop := λ(: op String). (: (
+   (let r (SCons(
+      (close(SAtom '\tlet\scfg\s:=\s\[zero_op\scfg\s"_s))
+      (close(SCons(
+         (close(SAtom op))
+         (close(SAtom '"\]\sin\n_s))
+      )))
+   )))
+   r
+) S);
+
+parse-gnu-uop := λ(: op String)(: arg List<String>). (: (
+   (let coq-arg (parse-gnu-arg arg))
+   (let r (SCons(
+      (close(SAtom '\tlet\scfg\s:=\s\[unary_op\scfg\s"_s))
+      (close(SCons(
+         (close(SAtom op))
+         (close(SCons(
+            (close(SAtom '"\s_s))
+            (close(SCons(
+               (close coq-arg)
+               (close(SAtom '\]\sin\n_s))
+            )))
+         )))
+      )))
+   )))
+   r
+) S);
+
+parse-gnu-binop := λ(: op String)(: arg List<String>). (: (
+   (let coq-arg-1 SNil)
+   (let coq-arg-2 SNil)
+   (match arg (
+      ()
+      ( (LCons( a1 (LCons( a2 (LCons( ',_s rst )) )) )) (
+         (set coq-arg-1 (parse-gnu-arg (LCons(
+            a1
+            (close(LCons(
+               a2
+               (close(: LEOF List<String>))
+            )))
+         ))))
+         (set coq-arg-2 (parse-gnu-arg rst))
+      ))
+      ( _ (
+         (print 'Unexpected\sBinary\sOperation\sSplit\s_s)
+         (print arg)
+         (exit 1_u64)
+      ))
+   ))
+   (let r (SCons(
+      (close(SAtom '\tlet\scfg\s:=\s\[binary_op\scfg\s"_s))
+      (close(SCons(
+         (close(SAtom op))
+         (close(SCons(
+            (close(SAtom '"\s_s))
+            (close(SCons(
+               (close coq-arg-1)
+               (close(SCons(
+                  (close(SAtom '\s_s))
+                  (close(SCons(
+                     (close coq-arg-2)
+                     (close(SAtom '\]\sin\n_s))
+                  )))
+               )))
+            )))
+         )))
+      )))
+   )))
+   r
+) S);
+
+parse-gnu-arg := λ(: arg List<String>). (: (
+   (let r SNil)
+   (match arg (
+      ()
+      ( (LCons( val LEOF )) (
+         (set r (SCons(
+            (close(SAtom '\[raw_value\s"_s))
+            (close(SCons(
+               (close(SAtom val))
+               (close(SAtom '"]_s))
+            )))
+         )))
+      ))
+      ( (LCons( '%_s (LCons( rg LEOF )) )) (
+         (set r (SCons(
+            (close(SAtom '\[register\s"_s))
+            (close(SCons(
+               (close(SAtom rg))
+               (close(SAtom '"]_s))
+            )))
+         )))
+      ))
+      ( (LCons( '$_s (LCons( val LEOF )) )) (
+         (set r (SCons(
+            (close(SAtom '\[address\s"_s))
+            (close(SCons(
+               (close(SAtom val))
+               (close(SAtom '"]_s))
+            )))
+         )))
+      ))
+      ( (LCons( offset (LCons( '\[_s (LCons( '%_s (LCons( rg (LCons( '\]_s LEOF )) )) )) )) )) (
+         (set r (SCons(
+            (close(SAtom '\[register_offset\s"_s))
+            (close(SCons(
+               (close(SAtom offset))
+               (close(SCons(
+                  (close(SAtom '"\s"_s))
+                  (close(SCons(
+                     (close(SAtom rg))
+                     (close(SAtom '"\]_s))
+                  )))
+               )))
+            )))
+         )))
+      ))
+      ( _ (
+         (print 'Unexpected\sArgument\s_s)(print arg)(print '\n_s)
+      ))
+   ))
+   r
+) S);
