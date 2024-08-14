@@ -29,14 +29,16 @@ main := λ(: argc U64)(: argv String[]). (: (
    ))
 
    (let continue True_u8)
+   (let v SNil)
    (while (==( continue True_u8 )) (match input (
       ()
       ( SNil (set continue False_u8) )
       ( (SCons( rst SNil )) (set input rst) )
-      ( (SCons( rst (SAtom( fp )) )) ( (parse-gnu fp) (set input rst) ))
-      ( (SAtom( fp )) ( (parse-gnu fp) (set continue False_u8) ))
+      ( (SCons( rst (SAtom( fp )) )) ( (set v (parse-gnu fp)) (set input rst) ))
+      ( (SAtom( fp )) ( (set v (parse-gnu fp)) (set continue False_u8) ))
    )))
 
    (print 'Verify\n_s)
+   (print v)
 ) Nil);
 

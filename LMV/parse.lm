@@ -135,13 +135,16 @@ tokenize := λ(: file-contents String). (: (
 ) List<String>);
 
 parse-gnu := λ(: fp String). (: (
-   (print 'Parse\s_s)(print fp)(print '\n_s)
+   (let r SNil)
    (let tk (tokenize(read-file fp)))
    (let linebuff (: LEOF List<String>))
    (while (non-zero tk) (match tk (
       ()
       ( (LCons( '\n_s tl )) (
-         (parse-gnu-line (reverse linebuff))
+         (set r (SCons(
+            (close r)
+            (close(parse-gnu-line (reverse linebuff)))
+         )))
          (set linebuff (: LEOF List<String>))
          (set tk tl)
       ))
@@ -150,13 +153,35 @@ parse-gnu := λ(: fp String). (: (
          (set tk tl)
       ))
    )))
-   (parse-gnu-line (reverse linebuff))
-   (print tk)(print '\n_s)
-) Nil);
+   (set r (SCons(
+      (close r)
+      (close(parse-gnu-line (reverse linebuff)))
+   )))
+   r
+) S);
 
 parse-gnu-line := λ(: line List<String>). (: (
+   (let r SNil)
    (if (non-zero line) (match line (
       ()
+      ( (LCons( '._s (LCons( 'global_s (LCons( glb LEOF )) )) )) (
+         (set r (SCons(
+            (close r)
+            (close(SCons(
+               (close(SAtom '\tlet\scfg\s:=\s\[declare_global\scfg\s"_s))
+               (close(SCons(
+                  (close(SAtom glb))
+                  (close(SAtom '"\]\sin\n_s))
+               )))
+            )))
+         )))
+      ))
+      ( (LCons( '._s (LCons( 'text_s LEOF )) )) (
+         (set r (SCons(
+            (close r)
+            (close(SAtom '\tlet\scfg\s:=\s\[declare_text\scfg\]\sin\n"_s))
+         )))
+      ))
       ( u (
          (print 'Unexpected\sLine\s_s)
          (while (non-zero u) (match u (
@@ -170,4 +195,5 @@ parse-gnu-line := λ(: line List<String>). (: (
          (exit 1_u64)
       ) )
    )) ())
-) Nil);
+   r
+) S);
