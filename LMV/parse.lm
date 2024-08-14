@@ -194,6 +194,13 @@ parse-gnu-line := λ(: line List<String>). (: (
             )))
          )))
       ))
+      ( (LCons( 'push_s tl )) (set r (parse-gnu-uop( 'push_s tl ))) )
+      ( (LCons( 'pushb_s tl )) (set r (parse-gnu-uop( 'pushb_s tl ))) )
+      ( (LCons( 'pushs_s tl )) (set r (parse-gnu-uop( 'pushs_s tl ))) )
+      ( (LCons( 'pushw_s tl )) (set r (parse-gnu-uop( 'pushw_s tl ))) )
+      ( (LCons( 'pushl_s tl )) (set r (parse-gnu-uop( 'pushl_s tl ))) )
+      ( (LCons( 'pushq_s tl )) (set r (parse-gnu-uop( 'pushq_s tl ))) )
+      ( (LCons( 'pusht_s tl )) (set r (parse-gnu-uop( 'pusht_s tl ))) )
       ( u (
          (print 'Unexpected\sLine\s_s)
          (while (non-zero u) (match u (
@@ -207,5 +214,58 @@ parse-gnu-line := λ(: line List<String>). (: (
          (exit 1_u64)
       ) )
    )) ())
+   r
+) S);
+
+parse-gnu-uop := λ(: op String)(: arg List<String>). (: (
+   (let coq-arg (parse-gnu-arg arg))
+   (let r (SCons(
+      (close(SAtom '\tlet\scfg\s:=\s\[unary_op\scfg\s"_s))
+      (close(SCons(
+         (close(SAtom op))
+         (close(SCons(
+            (close(SAtom '"\s_s))
+            (close(SCons(
+               (close coq-arg)
+               (close(SAtom '\]\sin\n_s))
+            )))
+         )))
+      )))
+   )))
+   r
+) S);
+
+parse-gnu-arg := λ(: arg List<String>). (: (
+   (let r SNil)
+   (match arg (
+      ()
+      ( (LCons( '%_s (LCons( rg LEOF )) )) (
+         (set r (SCons(
+            (close(SAtom '\[register\s"_s))
+            (close(SCons(
+               (close(SAtom rg))
+               (close(SAtom '"]_s))
+            )))
+         )))
+      ))
+      ( (LCons( offset (LCons( '\[_s (LCons( '%_s (LCons( rg (LCons( '\]_s LEOF )) )) )) )) )) (
+         (set r (SCons(
+            (close(SAtom '\[register_offset\s"_s))
+            (close(SCons(
+               (close(SAtom offset))
+               (close(SCons(
+                  (close(SAtom '"\s"_s))
+                  (close(SCons(
+                     (close(SAtom rg))
+                     (close(SAtom '"\]_s))
+                  )))
+               )))
+            )))
+         )))
+      ))
+      ( _ (
+         (print 'Unexpected\sArgument\s_s)(print arg)(print '\n_s)
+      ))
+   ))
    r
 ) S);
