@@ -155,7 +155,19 @@ parse-gnu := λ(: fp String). (: (
 ) Nil);
 
 parse-gnu-line := λ(: line List<String>). (: (
-   (if (non-zero line) (
-      (print 'GNU\sLine:\s_s)(print line)(print '\n_s)
-   ) ())
+   (if (non-zero line) (match line (
+      ()
+      ( u (
+         (print 'Unexpected\sLine\s_s)
+         (while (non-zero u) (match u (
+            ()
+            ( (LCons( hd tl )) (
+               (print hd)(print '\s_s)
+               (set u tl)
+            ))
+         )))
+         (print '\n_s)
+         (exit 1_u64)
+      ) )
+   )) ())
 ) Nil);
