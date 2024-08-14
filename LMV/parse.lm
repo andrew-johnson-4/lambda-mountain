@@ -194,6 +194,7 @@ parse-gnu-line := λ(: line List<String>). (: (
             )))
          )))
       ))
+
       ( (LCons( 'push_s tl )) (set r (parse-gnu-uop( 'push_s tl ))) )
       ( (LCons( 'pushb_s tl )) (set r (parse-gnu-uop( 'pushb_s tl ))) )
       ( (LCons( 'pushs_s tl )) (set r (parse-gnu-uop( 'pushs_s tl ))) )
@@ -201,6 +202,15 @@ parse-gnu-line := λ(: line List<String>). (: (
       ( (LCons( 'pushl_s tl )) (set r (parse-gnu-uop( 'pushl_s tl ))) )
       ( (LCons( 'pushq_s tl )) (set r (parse-gnu-uop( 'pushq_s tl ))) )
       ( (LCons( 'pusht_s tl )) (set r (parse-gnu-uop( 'pusht_s tl ))) )
+
+      ( (LCons( 'mov_s tl )) (set r (parse-gnu-binop( 'movh_s tl ))) )
+      ( (LCons( 'movb_s tl )) (set r (parse-gnu-binop( 'movb_s tl ))) )
+      ( (LCons( 'movs_s tl )) (set r (parse-gnu-binop( 'movs_s tl ))) )
+      ( (LCons( 'movw_s tl )) (set r (parse-gnu-binop( 'movw_s tl ))) )
+      ( (LCons( 'movl_s tl )) (set r (parse-gnu-binop( 'movl_s tl ))) )
+      ( (LCons( 'movq_s tl )) (set r (parse-gnu-binop( 'movq_s tl ))) )
+      ( (LCons( 'movt_s tl )) (set r (parse-gnu-binop( 'movt_s tl ))) )
+
       ( u (
          (print 'Unexpected\sLine\s_s)
          (while (non-zero u) (match u (
@@ -228,6 +238,49 @@ parse-gnu-uop := λ(: op String)(: arg List<String>). (: (
             (close(SCons(
                (close coq-arg)
                (close(SAtom '\]\sin\n_s))
+            )))
+         )))
+      )))
+   )))
+   r
+) S);
+
+parse-gnu-binop := λ(: op String)(: arg List<String>). (: (
+   (let coq-arg-1 SNil)
+   (let coq-arg-2 SNil)
+   (match arg (
+      ()
+      ( (LCons( a1 (LCons( a2 (LCons( ',_s rst )) )) )) (
+         (set coq-arg-1 (parse-gnu-arg (LCons(
+            a1
+            (close(LCons(
+               a2
+               (close(: LEOF List<String>))
+            )))
+         ))))
+         (set coq-arg-2 (parse-gnu-arg rst))
+      ))
+      ( _ (
+         (print 'Unexpected\sBinary\sOperation\sSplit\s_s)
+         (print arg)
+         (exit 1_u64)
+      ))
+   ))
+   (let r (SCons(
+      (close(SAtom '\tlet\scfg\s:=\s\[binary_op\scfg\s"_s))
+      (close(SCons(
+         (close(SAtom op))
+         (close(SCons(
+            (close(SAtom '"\s_s))
+            (close(SCons(
+               (close coq-arg-1)
+               (close(SCons(
+                  (close(SAtom '\s_s))
+                  (close(SCons(
+                     (close coq-arg-2)
+                     (close(SAtom '\]\sin\n_s))
+                  )))
+               )))
             )))
          )))
       )))
