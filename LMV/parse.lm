@@ -195,6 +195,10 @@ parse-gnu-line := λ(: line List<String>). (: (
          )))
       ))
 
+      ( (LCons( 'call_s tl )) (set r (parse-gnu-uop( 'call_s tl ))) )
+      ( (LCons( 'ret_s LEOF )) (set r (parse-gnu-zop( 'ret_s ))) )
+      ( (LCons( 'syscall_s LEOF )) (set r (parse-gnu-zop( 'syscall_s ))) )
+
       ( (LCons( 'push_s tl )) (set r (parse-gnu-uop( 'push_s tl ))) )
       ( (LCons( 'pushb_s tl )) (set r (parse-gnu-uop( 'pushb_s tl ))) )
       ( (LCons( 'pushs_s tl )) (set r (parse-gnu-uop( 'pushs_s tl ))) )
@@ -202,6 +206,14 @@ parse-gnu-line := λ(: line List<String>). (: (
       ( (LCons( 'pushl_s tl )) (set r (parse-gnu-uop( 'pushl_s tl ))) )
       ( (LCons( 'pushq_s tl )) (set r (parse-gnu-uop( 'pushq_s tl ))) )
       ( (LCons( 'pusht_s tl )) (set r (parse-gnu-uop( 'pusht_s tl ))) )
+
+      ( (LCons( 'pop_s tl )) (set r (parse-gnu-uop( 'pop_s tl ))) )
+      ( (LCons( 'popb_s tl )) (set r (parse-gnu-uop( 'popb_s tl ))) )
+      ( (LCons( 'pops_s tl )) (set r (parse-gnu-uop( 'pops_s tl ))) )
+      ( (LCons( 'popw_s tl )) (set r (parse-gnu-uop( 'popw_s tl ))) )
+      ( (LCons( 'popl_s tl )) (set r (parse-gnu-uop( 'popl_s tl ))) )
+      ( (LCons( 'popq_s tl )) (set r (parse-gnu-uop( 'popq_s tl ))) )
+      ( (LCons( 'popt_s tl )) (set r (parse-gnu-uop( 'popt_s tl ))) )
 
       ( (LCons( 'mov_s tl )) (set r (parse-gnu-binop( 'movh_s tl ))) )
       ( (LCons( 'movb_s tl )) (set r (parse-gnu-binop( 'movb_s tl ))) )
@@ -224,6 +236,17 @@ parse-gnu-line := λ(: line List<String>). (: (
          (exit 1_u64)
       ) )
    )) ())
+   r
+) S);
+
+parse-gnu-zop := λ(: op String). (: (
+   (let r (SCons(
+      (close(SAtom '\tlet\scfg\s:=\s\[zero_op\scfg\s"_s))
+      (close(SCons(
+         (close(SAtom op))
+         (close(SAtom '"\]\sin\n_s))
+      )))
+   )))
    r
 ) S);
 
@@ -292,11 +315,29 @@ parse-gnu-arg := λ(: arg List<String>). (: (
    (let r SNil)
    (match arg (
       ()
+      ( (LCons( val LEOF )) (
+         (set r (SCons(
+            (close(SAtom '\[raw_value\s"_s))
+            (close(SCons(
+               (close(SAtom val))
+               (close(SAtom '"]_s))
+            )))
+         )))
+      ))
       ( (LCons( '%_s (LCons( rg LEOF )) )) (
          (set r (SCons(
             (close(SAtom '\[register\s"_s))
             (close(SCons(
                (close(SAtom rg))
+               (close(SAtom '"]_s))
+            )))
+         )))
+      ))
+      ( (LCons( '$_s (LCons( val LEOF )) )) (
+         (set r (SCons(
+            (close(SAtom '\[address\s"_s))
+            (close(SCons(
+               (close(SAtom val))
                (close(SAtom '"]_s))
             )))
          )))
