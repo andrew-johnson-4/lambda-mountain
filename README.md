@@ -77,7 +77,7 @@ The programmer gets to inspect and verify *every single transformation down to i
 
 ### More About The Type System
 
-The type system is strongly normalizing and decidable as long as all overloaded functions are given explicit types.
+The type system is strongly normalizing and decidable as long as all overloaded functions are given acceptable explicit types.
 
 Prominent Features include:
 
