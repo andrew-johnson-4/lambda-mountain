@@ -1,12 +1,15 @@
 
-Require Coq.Numbers.BinNums.
+From Coq Require Import ZArith String List.
 From MMaps Require Import MMaps.
+Open Scope string.
+Open Scope Z.
+
 Module ZM := MMaps.RBT.Make(BinInt.Z).
 
 (* Memory Is Denominated in Bytes *)
 Record RegionByte := mkRegionByte { 
-    tt : nat;      (* The type of this region represented as an Ordinal *)
-    tt_byte : nat; (* The type-byte-index of this byte *)
+   tt : nat;      (* The type of this region represented as an Ordinal *)
+   tt_byte : nat; (* The type-byte-index of this byte *)
 }.
 Definition beq_rb (l: RegionByte)(r: RegionByte): bool :=
    (Nat.eqb l.(tt) r.(tt)) && (Nat.eqb l.(tt_byte) r.(tt_byte)).
@@ -16,7 +19,7 @@ Definition beqo_rb (l: option RegionByte)(r: RegionByte): bool := match l with
 
 (* Knowledge of a Memory Region is a Partial Function *)
 Record Region := mkRegion {
-    known : ZM.t RegionByte;
+   known : ZM.t RegionByte;
 }.
 
 (* Simplified Memory State assumes that
@@ -24,10 +27,27 @@ Record Region := mkRegion {
    2. sys_brk always succeeds at acquiring more memory (effectively infinite)
  *)
 Record MemoryState := mkMemoryState {
-    register_state : Region;
-    stack_state : Region;
-    frame_state : Region;
-    heap_state : Region;
+   register_state : Region;
+   stack_state : Region;
+   frame_state : Region;
+   heap_state : Region;
+}.
+
+(* An Instruction is defined by its mnemonic and effect *)
+Record Instruction := mkInstruction {
+   mnemonic : string;
+   effect : MemoryState -> MemoryState;
+}.
+
+(* A Basic Block is a list of instructions with no branches *)
+Record BasicBlock := mkBasicBlock {
+   instructions : list Instruction;
+}.
+
+(* A Control Flow Graph is a list of basic blocks with transitions *)
+Record ControlFlowGraph := mkCFG {
+   blocks : ZM.t BasicBlock;
+   labels : ZM.t string;
 }.
 
 (* The Type of an unknown RegionByte is Ordinal 0 *)
