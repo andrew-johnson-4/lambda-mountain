@@ -182,6 +182,36 @@ parse-gnu-line := λ(: line List<String>). (: (
             (close(SAtom '\tlet\scfg\s:=\s\[declare_text\scfg\]\sin\n"_s))
          )))
       ))
+      ( (LCons( '._s (LCons( 'data_s LEOF )) )) (
+         (set r (SCons(
+            (close r)
+            (close(SAtom '\tlet\scfg\s:=\s\[declare_data\scfg\]\sin\n"_s))
+         )))
+      ))
+      ( (LCons( '._s (LCons( 'ascii_s (LCons( lit LEOF )) )) )) (
+         (set r (SCons(
+            (close r)
+            (close(SCons(
+               (close(SAtom '\tlet\scfg\s:=\s\[commit_ascii\scfg\s_s))
+               (close(SCons(
+                  (close(SAtom lit))
+                  (close(SAtom '\]\sin\n"_s))
+               )))
+            )))
+         )))
+      ))
+      ( (LCons( '._s (LCons( 'zero_s (LCons( lit LEOF )) )) )) (
+         (set r (SCons(
+            (close r)
+            (close(SCons(
+               (close(SAtom '\tlet\scfg\s:=\s\[commit_zero\scfg\s_s))
+               (close(SCons(
+                  (close(SAtom lit))
+                  (close(SAtom '\]\sin\n"_s))
+               )))
+            )))
+         )))
+      ))
       ( (LCons( lbl (LCons( ':_s LEOF )) )) (
          (set r (SCons(
             (close r)
@@ -217,13 +247,29 @@ parse-gnu-line := λ(: line List<String>). (: (
       ( (LCons( 'popq_s tl )) (set r (parse-gnu-uop( 'popq_s tl ))) )
       ( (LCons( 'popt_s tl )) (set r (parse-gnu-uop( 'popt_s tl ))) )
 
-      ( (LCons( 'mov_s tl )) (set r (parse-gnu-binop( 'movh_s tl ))) )
+      ( (LCons( 'mov_s tl )) (set r (parse-gnu-binop( 'mov_s tl ))) )
       ( (LCons( 'movb_s tl )) (set r (parse-gnu-binop( 'movb_s tl ))) )
       ( (LCons( 'movs_s tl )) (set r (parse-gnu-binop( 'movs_s tl ))) )
       ( (LCons( 'movw_s tl )) (set r (parse-gnu-binop( 'movw_s tl ))) )
       ( (LCons( 'movl_s tl )) (set r (parse-gnu-binop( 'movl_s tl ))) )
       ( (LCons( 'movq_s tl )) (set r (parse-gnu-binop( 'movq_s tl ))) )
       ( (LCons( 'movt_s tl )) (set r (parse-gnu-binop( 'movt_s tl ))) )
+
+      ( (LCons( 'sub_s tl )) (set r (parse-gnu-binop( 'sub_s tl ))) )
+      ( (LCons( 'subb_s tl )) (set r (parse-gnu-binop( 'subb_s tl ))) )
+      ( (LCons( 'subs_s tl )) (set r (parse-gnu-binop( 'subs_s tl ))) )
+      ( (LCons( 'subw_s tl )) (set r (parse-gnu-binop( 'subw_s tl ))) )
+      ( (LCons( 'subl_s tl )) (set r (parse-gnu-binop( 'subl_s tl ))) )
+      ( (LCons( 'subq_s tl )) (set r (parse-gnu-binop( 'subq_s tl ))) )
+      ( (LCons( 'subt_s tl )) (set r (parse-gnu-binop( 'subt_s tl ))) )
+
+      ( (LCons( 'add_s tl )) (set r (parse-gnu-binop( 'add_s tl ))) )
+      ( (LCons( 'addb_s tl )) (set r (parse-gnu-binop( 'addb_s tl ))) )
+      ( (LCons( 'adds_s tl )) (set r (parse-gnu-binop( 'adds_s tl ))) )
+      ( (LCons( 'addw_s tl )) (set r (parse-gnu-binop( 'addw_s tl ))) )
+      ( (LCons( 'addl_s tl )) (set r (parse-gnu-binop( 'addl_s tl ))) )
+      ( (LCons( 'addq_s tl )) (set r (parse-gnu-binop( 'addq_s tl ))) )
+      ( (LCons( 'addt_s tl )) (set r (parse-gnu-binop( 'addt_s tl ))) )
 
       ( u (
          (print 'Unexpected\sLine\s_s)
