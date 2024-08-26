@@ -66,3 +66,4 @@ Definition mem_is_subset (lo: MemoryState)(hi: MemoryState): bool :=
    rt_register_state && rt_stack_state && rt_frame_state && rt_heap_state.
 
 Check eq_refl : (mem_is_subset initial_memory_state initial_memory_state) = true.
+

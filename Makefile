@@ -1,6 +1,8 @@
 
 develop: install
 	lmv tests/regress/hello_world.s.v
+	coqc tmp.v
+	coqchk tmp.v
 
 deploy: compile-production
 	time ./production -o deploy.s SRC/cli.lm

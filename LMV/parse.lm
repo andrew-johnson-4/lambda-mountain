@@ -135,7 +135,11 @@ tokenize := λ(: file-contents String). (: (
 ) List<String>);
 
 parse-gnu := λ(: fp String). (: (
-   (let r SNil)
+   (let r (SAtom(read-file 'LIB/default_validator.v_s)))
+   (set r (SCons(
+      (close r)
+      (close(SAtom 'Compute\n\tlet\scfg\s:=\sempty_control_flow_graph\sin\n_s))
+   )))
    (let tk (tokenize(read-file fp)))
    (let linebuff (: LEOF List<String>))
    (while (non-zero tk) (match tk (
@@ -156,6 +160,10 @@ parse-gnu := λ(: fp String). (: (
    (set r (SCons(
       (close r)
       (close(parse-gnu-line (reverse linebuff)))
+   )))
+   (set r (SCons(
+      (close r)
+      (close(SAtom '\tverify_control_flow_graph\scfg.\n_s))
    )))
    r
 ) S);
@@ -179,13 +187,13 @@ parse-gnu-line := λ(: line List<String>). (: (
       ( (LCons( '._s (LCons( 'text_s LEOF )) )) (
          (set r (SCons(
             (close r)
-            (close(SAtom '\tlet\scfg\s:=\s\[declare_text\scfg\]\sin\n"_s))
+            (close(SAtom '\tlet\scfg\s:=\s\[declare_text\scfg\]\sin\n_s))
          )))
       ))
       ( (LCons( '._s (LCons( 'data_s LEOF )) )) (
          (set r (SCons(
             (close r)
-            (close(SAtom '\tlet\scfg\s:=\s\[declare_data\scfg\]\sin\n"_s))
+            (close(SAtom '\tlet\scfg\s:=\s\[declare_data\scfg\]\sin\n_s))
          )))
       ))
       ( (LCons( '._s (LCons( 'ascii_s (LCons( lit LEOF )) )) )) (
@@ -195,7 +203,7 @@ parse-gnu-line := λ(: line List<String>). (: (
                (close(SAtom '\tlet\scfg\s:=\s\[commit_ascii\scfg\s_s))
                (close(SCons(
                   (close(SAtom lit))
-                  (close(SAtom '\]\sin\n"_s))
+                  (close(SAtom '\]\sin\n_s))
                )))
             )))
          )))
@@ -207,7 +215,7 @@ parse-gnu-line := λ(: line List<String>). (: (
                (close(SAtom '\tlet\scfg\s:=\s\[commit_zero\scfg\s_s))
                (close(SCons(
                   (close(SAtom lit))
-                  (close(SAtom '\]\sin\n"_s))
+                  (close(SAtom '\]\sin\n_s))
                )))
             )))
          )))
@@ -368,7 +376,7 @@ parse-gnu-arg := λ(: arg List<String>). (: (
             (close(SAtom '\[raw_value\s"_s))
             (close(SCons(
                (close(SAtom val))
-               (close(SAtom '"]_s))
+               (close(SAtom '"\]_s))
             )))
          )))
       ))
@@ -377,7 +385,7 @@ parse-gnu-arg := λ(: arg List<String>). (: (
             (close(SAtom '\[register\s"_s))
             (close(SCons(
                (close(SAtom rg))
-               (close(SAtom '"]_s))
+               (close(SAtom '"\]_s))
             )))
          )))
       ))
@@ -386,7 +394,7 @@ parse-gnu-arg := λ(: arg List<String>). (: (
             (close(SAtom '\[address\s"_s))
             (close(SCons(
                (close(SAtom val))
-               (close(SAtom '"]_s))
+               (close(SAtom '"\]_s))
             )))
          )))
       ))
