@@ -40,3 +40,4 @@ dev.s
 *.glob
 *.vok
 *.vos
+tmp.v

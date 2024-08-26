@@ -135,7 +135,11 @@ tokenize := λ(: file-contents String). (: (
 ) List<String>);
 
 parse-gnu := λ(: fp String). (: (
-   (let r SNil)
+   (let r (SAtom(read-file 'LIB/default_validator.v_s)))
+   (set r (SCons(
+      (close r)
+      (close(SAtom 'Compute\n\s\s\slet\scfg\s:=\sempty_control_flow_graph\sin\n_s))
+   )))
    (let tk (tokenize(read-file fp)))
    (let linebuff (: LEOF List<String>))
    (while (non-zero tk) (match tk (
@@ -157,6 +161,10 @@ parse-gnu := λ(: fp String). (: (
       (close r)
       (close(parse-gnu-line (reverse linebuff)))
    )))
+   (set r (SCons(
+      (close r)
+      (close(SAtom '\s\s\sverify_control_flow_graph\scfg.\n_s))
+   )))
    r
 ) S);
 
@@ -168,7 +176,7 @@ parse-gnu-line := λ(: line List<String>). (: (
          (set r (SCons(
             (close r)
             (close(SCons(
-               (close(SAtom '\tlet\scfg\s:=\s\[declare_global\scfg\s"_s))
+               (close(SAtom '\s\s\slet\scfg\s:=\s\[declare_global\scfg\s"_s))
                (close(SCons(
                   (close(SAtom glb))
                   (close(SAtom '"\]\sin\n_s))
@@ -179,14 +187,44 @@ parse-gnu-line := λ(: line List<String>). (: (
       ( (LCons( '._s (LCons( 'text_s LEOF )) )) (
          (set r (SCons(
             (close r)
-            (close(SAtom '\tlet\scfg\s:=\s\[declare_text\scfg\]\sin\n"_s))
+            (close(SAtom '\s\s\slet\scfg\s:=\s\[declare_text\scfg\]\sin\n_s))
+         )))
+      ))
+      ( (LCons( '._s (LCons( 'data_s LEOF )) )) (
+         (set r (SCons(
+            (close r)
+            (close(SAtom '\s\s\slet\scfg\s:=\s\[declare_data\scfg\]\sin\n_s))
+         )))
+      ))
+      ( (LCons( '._s (LCons( 'ascii_s (LCons( lit LEOF )) )) )) (
+         (set r (SCons(
+            (close r)
+            (close(SCons(
+               (close(SAtom '\s\s\slet\scfg\s:=\s\[commit_ascii\scfg\s_s))
+               (close(SCons(
+                  (close(SAtom lit))
+                  (close(SAtom '\]\sin\n_s))
+               )))
+            )))
+         )))
+      ))
+      ( (LCons( '._s (LCons( 'zero_s (LCons( lit LEOF )) )) )) (
+         (set r (SCons(
+            (close r)
+            (close(SCons(
+               (close(SAtom '\s\s\slet\scfg\s:=\s\[commit_zero\scfg\s_s))
+               (close(SCons(
+                  (close(SAtom lit))
+                  (close(SAtom '\]\sin\n_s))
+               )))
+            )))
          )))
       ))
       ( (LCons( lbl (LCons( ':_s LEOF )) )) (
          (set r (SCons(
             (close r)
             (close(SCons(
-               (close(SAtom '\tlet\scfg\s:=\s\[declare_label\scfg\s"_s))
+               (close(SAtom '\s\s\slet\scfg\s:=\s\[declare_label\scfg\s"_s))
                (close(SCons(
                   (close(SAtom lbl))
                   (close(SAtom '"\]\sin\n_s))
@@ -194,6 +232,8 @@ parse-gnu-line := λ(: line List<String>). (: (
             )))
          )))
       ))
+
+      ( (LCons( '\o_s (LCons( 'expect_s tl )) )) (print 'Ignoring\sAssertion\n_s) )
 
       ( (LCons( 'call_s tl )) (set r (parse-gnu-uop( 'call_s tl ))) )
       ( (LCons( 'ret_s LEOF )) (set r (parse-gnu-zop( 'ret_s ))) )
@@ -215,13 +255,29 @@ parse-gnu-line := λ(: line List<String>). (: (
       ( (LCons( 'popq_s tl )) (set r (parse-gnu-uop( 'popq_s tl ))) )
       ( (LCons( 'popt_s tl )) (set r (parse-gnu-uop( 'popt_s tl ))) )
 
-      ( (LCons( 'mov_s tl )) (set r (parse-gnu-binop( 'movh_s tl ))) )
+      ( (LCons( 'mov_s tl )) (set r (parse-gnu-binop( 'mov_s tl ))) )
       ( (LCons( 'movb_s tl )) (set r (parse-gnu-binop( 'movb_s tl ))) )
       ( (LCons( 'movs_s tl )) (set r (parse-gnu-binop( 'movs_s tl ))) )
       ( (LCons( 'movw_s tl )) (set r (parse-gnu-binop( 'movw_s tl ))) )
       ( (LCons( 'movl_s tl )) (set r (parse-gnu-binop( 'movl_s tl ))) )
       ( (LCons( 'movq_s tl )) (set r (parse-gnu-binop( 'movq_s tl ))) )
       ( (LCons( 'movt_s tl )) (set r (parse-gnu-binop( 'movt_s tl ))) )
+
+      ( (LCons( 'sub_s tl )) (set r (parse-gnu-binop( 'sub_s tl ))) )
+      ( (LCons( 'subb_s tl )) (set r (parse-gnu-binop( 'subb_s tl ))) )
+      ( (LCons( 'subs_s tl )) (set r (parse-gnu-binop( 'subs_s tl ))) )
+      ( (LCons( 'subw_s tl )) (set r (parse-gnu-binop( 'subw_s tl ))) )
+      ( (LCons( 'subl_s tl )) (set r (parse-gnu-binop( 'subl_s tl ))) )
+      ( (LCons( 'subq_s tl )) (set r (parse-gnu-binop( 'subq_s tl ))) )
+      ( (LCons( 'subt_s tl )) (set r (parse-gnu-binop( 'subt_s tl ))) )
+
+      ( (LCons( 'add_s tl )) (set r (parse-gnu-binop( 'add_s tl ))) )
+      ( (LCons( 'addb_s tl )) (set r (parse-gnu-binop( 'addb_s tl ))) )
+      ( (LCons( 'adds_s tl )) (set r (parse-gnu-binop( 'adds_s tl ))) )
+      ( (LCons( 'addw_s tl )) (set r (parse-gnu-binop( 'addw_s tl ))) )
+      ( (LCons( 'addl_s tl )) (set r (parse-gnu-binop( 'addl_s tl ))) )
+      ( (LCons( 'addq_s tl )) (set r (parse-gnu-binop( 'addq_s tl ))) )
+      ( (LCons( 'addt_s tl )) (set r (parse-gnu-binop( 'addt_s tl ))) )
 
       ( u (
          (print 'Unexpected\sLine\s_s)
@@ -241,7 +297,7 @@ parse-gnu-line := λ(: line List<String>). (: (
 
 parse-gnu-zop := λ(: op String). (: (
    (let r (SCons(
-      (close(SAtom '\tlet\scfg\s:=\s\[zero_op\scfg\s"_s))
+      (close(SAtom '\s\s\slet\scfg\s:=\s\[zero_op\scfg\s"_s))
       (close(SCons(
          (close(SAtom op))
          (close(SAtom '"\]\sin\n_s))
@@ -253,7 +309,7 @@ parse-gnu-zop := λ(: op String). (: (
 parse-gnu-uop := λ(: op String)(: arg List<String>). (: (
    (let coq-arg (parse-gnu-arg arg))
    (let r (SCons(
-      (close(SAtom '\tlet\scfg\s:=\s\[unary_op\scfg\s"_s))
+      (close(SAtom '\s\s\slet\scfg\s:=\s\[unary_op\scfg\s"_s))
       (close(SCons(
          (close(SAtom op))
          (close(SCons(
@@ -290,7 +346,7 @@ parse-gnu-binop := λ(: op String)(: arg List<String>). (: (
       ))
    ))
    (let r (SCons(
-      (close(SAtom '\tlet\scfg\s:=\s\[binary_op\scfg\s"_s))
+      (close(SAtom '\s\s\slet\scfg\s:=\s\[binary_op\scfg\s"_s))
       (close(SCons(
          (close(SAtom op))
          (close(SCons(
@@ -320,7 +376,7 @@ parse-gnu-arg := λ(: arg List<String>). (: (
             (close(SAtom '\[raw_value\s"_s))
             (close(SCons(
                (close(SAtom val))
-               (close(SAtom '"]_s))
+               (close(SAtom '"\]_s))
             )))
          )))
       ))
@@ -329,7 +385,7 @@ parse-gnu-arg := λ(: arg List<String>). (: (
             (close(SAtom '\[register\s"_s))
             (close(SCons(
                (close(SAtom rg))
-               (close(SAtom '"]_s))
+               (close(SAtom '"\]_s))
             )))
          )))
       ))
@@ -338,7 +394,7 @@ parse-gnu-arg := λ(: arg List<String>). (: (
             (close(SAtom '\[address\s"_s))
             (close(SCons(
                (close(SAtom val))
-               (close(SAtom '"]_s))
+               (close(SAtom '"\]_s))
             )))
          )))
       ))

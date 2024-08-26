@@ -39,6 +39,6 @@ main := λ(: argc U64)(: argv String[]). (: (
    )))
 
    (print 'Verify\n_s)
-   (print v)
+   (write-file( config-target (clone-rope v) ))
 ) Nil);
 
