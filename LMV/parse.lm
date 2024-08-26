@@ -195,6 +195,8 @@ parse-gnu-line := λ(: line List<String>). (: (
          )))
       ))
 
+      ( (LCons( '\o_s (LCons( 'expect_s tl )) )) (print 'Ignoring\sAssertion\n_s) )
+
       ( (LCons( 'call_s tl )) (set r (parse-gnu-uop( 'call_s tl ))) )
       ( (LCons( 'ret_s LEOF )) (set r (parse-gnu-zop( 'ret_s ))) )
       ( (LCons( 'syscall_s LEOF )) (set r (parse-gnu-zop( 'syscall_s ))) )
