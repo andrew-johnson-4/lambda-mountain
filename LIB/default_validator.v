@@ -44,10 +44,17 @@ Record BasicBlock := mkBasicBlock {
    instructions : list Instruction;
 }.
 
+(* A Jmp Instruction *)
+Record JmpInstruction := mkJmp {
+   dst : string;
+   condition : MemoryState;
+}.
+
 (* A Control Flow Graph is a list of basic blocks with transitions *)
 Record ControlFlowGraph := mkCFG {
    blocks : ZM.t BasicBlock;
    labels : ZM.t string;
+   transitions : list JmpInstruction;
 }.
 
 (* The Type of an unknown RegionByte is Ordinal 0 *)
