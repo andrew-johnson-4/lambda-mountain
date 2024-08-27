@@ -45,3 +45,6 @@ install:
 validate:
 	coqc LIB/default_validator.v
 	coqchk LIB/default_validator.vo
+
+disassemble:
+	objdump -S hello_world
