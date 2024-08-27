@@ -51,7 +51,7 @@ Record BasicBlock := mkBasicBlock {
    tail : list JmpInstruction;
 }.
 
-(* A Control Flow Graph is a list of basic blocks with transitions *)
+(* A Control Flow Graph is a set of labelled blocks *)
 Record ControlFlowGraph := mkCFG {
    blocks : ZM.t BasicBlock;
    labels : ZM.t string;
