@@ -55,3 +55,8 @@ Sneaky! Let's see what happens when we try to verify this.
 * [An encoding of X86 in Coq](https://github.com/maximedenes/coq-amd64)
   This project encodes some x86 instructions in Coq, however it does not do much for interpreting the meaning of those instructions.
   It looks like this project is again more tuned towards using Coq as a macro assembler instead of extending the assembler itself.
+* [RockSalt Software Fault Isolation](https://www.cse.psu.edu/~gxt29/papers/rocksalt.pdf)
+  The RockSalt Coq program checks an entire application and attempts to prove non-existence of certain faults.
+  The program is effective but also very rigid;
+  it is very hard to extend what faults are being checked.
+  However, the model of processor instruction behaviour is *very* solid and granular.
