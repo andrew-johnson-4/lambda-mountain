@@ -46,9 +46,13 @@ Definition empty_memory_state := mkMemoryState empty_region empty_region empty_r
 
 (* An Instruction argument can be part of an opcode *)
 Inductive InstructionArgument : Type :=
+   | Address : string -> InstructionArgument
+   | RawValue : string -> InstructionArgument
    | Register : string -> InstructionArgument.
 Definition print_arg (arg: InstructionArgument): string :=
    match arg with
+   | Address r => "$" ++ r
+   | RawValue r => r
    | Register r => "%" ++ r
    end.
 
@@ -57,6 +61,8 @@ Record Instruction := mkInstruction {
    mnemonic : string;
    effect : MemoryState -> MemoryState;
 }.
+Definition unknown_effect (st: MemoryState): MemoryState :=
+   empty_memory_state.
 
 (* A Jmp Instruction *)
 Record JmpInstruction := mkJmp {
@@ -140,4 +146,29 @@ Definition declare_label (cfg: ControlFlowGraph) (glb: string): ControlFlowGraph
    match cfg.(section) with
    | TextSection => mkCFG cfg.(section) glb (cons (glb , empty_block) cfg.(blocks)) cfg.(data) cfg.(globals)
    | DataSection => mkCFG cfg.(section) glb cfg.(blocks) (cons (glb , empty_data) cfg.(data)) cfg.(globals)
+   end.
+
+Definition register (register_name: string): InstructionArgument :=
+   Register register_name.
+
+Definition raw_value (value_name: string): InstructionArgument :=
+   RawValue value_name.
+
+Definition address (value_name: string): InstructionArgument :=
+   Address value_name.
+
+Definition zero_op (ins: string): Instruction :=
+   match ins with
+   | _ => mkInstruction "?" unknown_effect
+   end.
+
+Definition unary_op (ins: string) (arg: InstructionArgument): Instruction :=
+   match (ins , arg) with
+   | ("push" , (Register "al")) => mkInstruction "pushb %al" unknown_effect
+   | _ => mkInstruction "?" unknown_effect
+   end.
+
+Definition binary_op (ins: string) (arg1: InstructionArgument) (arg2: InstructionArgument): Instruction :=
+   match (ins , arg1 , arg2) with
+   | _ => mkInstruction "?" unknown_effect
    end.
