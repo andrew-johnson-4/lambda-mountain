@@ -1,9 +1,9 @@
 [package]
 name = "lambda_mountain"
-version = "1.15.28"
+version = "1.15.29"
 authors = ["Andrew <andrew@subarctic.org>"]
 license = "MIT"
-description = "Compiler Backend / Programming Language Scaffolding"
+description = "Typed Macro Assembler (backed by Coq proofs-of-correctness)"
 edition = "2018"
 readme = "README.md"
 repository = "https://github.com/andrew-johnson-4/-"
