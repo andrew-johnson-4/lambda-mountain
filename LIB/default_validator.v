@@ -44,11 +44,25 @@ Record MemoryState := mkMemoryState {
 }.
 Definition empty_memory_state := mkMemoryState empty_region empty_region empty_region empty_region.
 
+(* An Instruction argument can be part of an opcode *)
+Inductive InstructionArgument : Type :=
+   | Address : string -> InstructionArgument
+   | RawValue : string -> InstructionArgument
+   | Register : string -> InstructionArgument.
+Definition print_arg (arg: InstructionArgument): string :=
+   match arg with
+   | Address r => "$" ++ r
+   | RawValue r => r
+   | Register r => "%" ++ r
+   end.
+
 (* An Instruction is defined by its mnemonic and effect *)
 Record Instruction := mkInstruction {
    mnemonic : string;
    effect : MemoryState -> MemoryState;
 }.
+Definition unknown_effect (st: MemoryState): MemoryState :=
+   empty_memory_state.
 
 (* A Jmp Instruction *)
 Record JmpInstruction := mkJmp {
@@ -133,3 +147,38 @@ Definition declare_label (cfg: ControlFlowGraph) (glb: string): ControlFlowGraph
    | TextSection => mkCFG cfg.(section) glb (cons (glb , empty_block) cfg.(blocks)) cfg.(data) cfg.(globals)
    | DataSection => mkCFG cfg.(section) glb cfg.(blocks) (cons (glb , empty_data) cfg.(data)) cfg.(globals)
    end.
+
+Definition commit_ascii (cfg: ControlFlowGraph) (lit: string): ControlFlowGraph :=
+   cfg.
+
+Definition commit_zero (cfg: ControlFlowGraph) (len: nat): ControlFlowGraph :=
+   cfg.
+
+Definition register (register_name: string): InstructionArgument :=
+   Register register_name.
+
+Definition raw_value (value_name: string): InstructionArgument :=
+   RawValue value_name.
+
+Definition address (value_name: string): InstructionArgument :=
+   Address value_name.
+
+Definition append_instruction (cfg: ControlFlowGraph) (ins: Instruction): ControlFlowGraph :=
+   cfg.
+
+Definition zero_op (cfg: ControlFlowGraph) (ins: string): ControlFlowGraph :=
+   let i := match ins with
+   | _ => mkInstruction "?" unknown_effect
+   end in append_instruction cfg i.
+
+Definition unary_op (cfg: ControlFlowGraph) (ins: string) (arg1: InstructionArgument): ControlFlowGraph :=
+   let i := match (ins, arg1) with
+   | _ => mkInstruction "?" unknown_effect
+   end in append_instruction cfg i.
+
+Definition binary_op (cfg: ControlFlowGraph) (ins: string) (arg1: InstructionArgument) (arg2: InstructionArgument): ControlFlowGraph :=
+   let i := match (ins, arg1, arg2) with
+   | _ => mkInstruction "?" unknown_effect
+   end in append_instruction cfg i.
+
+
