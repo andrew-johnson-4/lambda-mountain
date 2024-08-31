@@ -7,6 +7,15 @@ The whole compiler is only 5000 lines of code, so this could be a good starting 
 * [WIKI](https://github.com/andrew-johnson-4/-/wiki)
 * [ASK A QUESTION](https://github.com/andrew-johnson-4/lambda-mountain/discussions/categories/q-a)
 
+### Verification
+
+Verification is backed by a Coq model of supported platform architectures.
+However, it is not necessary to learn Coq to program in LM.
+LM programs correspond to *proof tactics* in Coq.
+So programming normally in LM will automatically yield a corresponding proof without any extra effort.
+The LM type checker is simply backed by a very meticulous formal model.
+This is done to keep the LM assembler more honest and prevent model bugs from yielding invalid programs.
+
 ### "Portable" Assembler
 
 LM provides abstraction up to the level that you want and down to the level that you want.
