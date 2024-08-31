@@ -44,6 +44,14 @@ Record MemoryState := mkMemoryState {
 }.
 Definition empty_memory_state := mkMemoryState empty_region empty_region empty_region empty_region.
 
+(* An Instruction argument can be part of an opcode *)
+Inductive InstructionArgument : Type :=
+   | Register : string -> InstructionArgument.
+Definition print_arg (arg: InstructionArgument): string :=
+   match arg with
+   | Register r => "%" ++ r
+   end.
+
 (* An Instruction is defined by its mnemonic and effect *)
 Record Instruction := mkInstruction {
    mnemonic : string;
