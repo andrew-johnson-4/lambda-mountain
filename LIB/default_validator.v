@@ -53,11 +53,11 @@ Record BasicBlock := mkBasicBlock {
 
 (* A Control Flow Graph is a set of labelled blocks *)
 Record ControlFlowGraph := mkCFG {
-   blocks : ZM.t BasicBlock;
-   labels : ZM.t string;
+   blocks : list (string * BasicBlock);
+   globals : list string;
 }.
 
-Definition empty_control_flow_graph := mkCFG ZM.empty ZM.empty.
+Definition empty_control_flow_graph := mkCFG nil nil.
 
 (* The Type of an unknown RegionByte is Ordinal 0 *)
 Definition region_lookup (r: Region)(i: BinInt.Z): RegionByte := 
@@ -96,3 +96,8 @@ Definition mem_is_subset (lo: MemoryState)(hi: MemoryState): bool :=
 
 Check eq_refl : (mem_is_subset initial_memory_state initial_memory_state) = true.
 
+Definition declare_global (cfg: ControlFlowGraph) (glb: string): ControlFlowGraph :=
+   mkCFG cfg.(blocks) (cons glb cfg.(globals)).
+
+Definition declare_label (cfg: ControlFlowGraph) (glb: string): ControlFlowGraph :=
+   mkCFG (cons (glb , (mkBasicBlock nil nil)) cfg.(blocks)) cfg.(globals).
