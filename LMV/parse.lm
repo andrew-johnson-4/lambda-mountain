@@ -138,7 +138,7 @@ parse-gnu := λ(: fp String). (: (
    (let r (SAtom(read-file 'LIB/default_validator.v_s)))
    (set r (SCons(
       (close r)
-      (close(SAtom 'Compute\n\s\s\slet\scfg\s:=\sempty_control_flow_graph\sin\n_s))
+      (close(SAtom 'Definition\scontrol_flow_graph\s:=\n\s\s\slet\scfg\s:=\sempty_control_flow_graph\sin\n_s))
    )))
    (let tk (tokenize(read-file fp)))
    (let linebuff (: LEOF List<String>))
@@ -163,7 +163,7 @@ parse-gnu := λ(: fp String). (: (
    )))
    (set r (SCons(
       (close r)
-      (close(SAtom '\s\s\sverify_control_flow_graph\scfg.\n_s))
+      (close(SAtom '\s\s\scfg.\n\nLemma\sverify_control_flow_graph\s:\sFalse.\nProof.\nQed.\n_s))
    )))
    r
 ) S);

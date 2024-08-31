@@ -148,6 +148,12 @@ Definition declare_label (cfg: ControlFlowGraph) (glb: string): ControlFlowGraph
    | DataSection => mkCFG cfg.(section) glb cfg.(blocks) (cons (glb , empty_data) cfg.(data)) cfg.(globals)
    end.
 
+Definition commit_ascii (cfg: ControlFlowGraph) (lit: string): ControlFlowGraph :=
+   cfg.
+
+Definition commit_zero (cfg: ControlFlowGraph) (len: nat): ControlFlowGraph :=
+   cfg.
+
 Definition register (register_name: string): InstructionArgument :=
    Register register_name.
 
@@ -157,18 +163,22 @@ Definition raw_value (value_name: string): InstructionArgument :=
 Definition address (value_name: string): InstructionArgument :=
    Address value_name.
 
-Definition zero_op (ins: string): Instruction :=
-   match ins with
-   | _ => mkInstruction "?" unknown_effect
-   end.
+Definition append_instruction (cfg: ControlFlowGraph) (ins: Instruction): ControlFlowGraph :=
+   cfg.
 
-Definition unary_op (ins: string) (arg: InstructionArgument): Instruction :=
-   match (ins , arg) with
-   | ("push" , (Register "al")) => mkInstruction "pushb %al" unknown_effect
+Definition zero_op (cfg: ControlFlowGraph) (ins: string): ControlFlowGraph :=
+   let i := match ins with
    | _ => mkInstruction "?" unknown_effect
-   end.
+   end in append_instruction cfg i.
 
-Definition binary_op (ins: string) (arg1: InstructionArgument) (arg2: InstructionArgument): Instruction :=
-   match (ins , arg1 , arg2) with
+Definition unary_op (cfg: ControlFlowGraph) (ins: string) (arg1: InstructionArgument): ControlFlowGraph :=
+   let i := match (ins, arg1) with
    | _ => mkInstruction "?" unknown_effect
-   end.
+   end in append_instruction cfg i.
+
+Definition binary_op (cfg: ControlFlowGraph) (ins: string) (arg1: InstructionArgument) (arg2: InstructionArgument): ControlFlowGraph :=
+   let i := match (ins, arg1, arg2) with
+   | _ => mkInstruction "?" unknown_effect
+   end in append_instruction cfg i.
+
+
