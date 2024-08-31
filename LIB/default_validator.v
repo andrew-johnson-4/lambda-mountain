@@ -57,6 +57,8 @@ Record ControlFlowGraph := mkCFG {
    labels : ZM.t string;
 }.
 
+Definition empty_control_flow_graph := mkCFG ZM.empty ZM.empty.
+
 (* The Type of an unknown RegionByte is Ordinal 0 *)
 Definition region_lookup (r: Region)(i: BinInt.Z): RegionByte := 
    match ZM.find i r.(known) with
