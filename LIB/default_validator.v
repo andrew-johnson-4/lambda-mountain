@@ -112,22 +112,22 @@ Definition mem_is_subset (lo: MemoryState)(hi: MemoryState): bool :=
 
 Check eq_refl : (mem_is_subset initial_memory_state initial_memory_state) = true.
 
-(*
 Definition declare_global (cfg: ControlFlowGraph) (glb: string): ControlFlowGraph :=
    mkCFG cfg.(section) cfg.(current_label) cfg.(blocks) cfg.(data) (cons glb cfg.(globals)).
 
+(* This changes the program section to text mode *)
+Definition declare_text (cfg: ControlFlowGraph) := 
+   mkCFG "text" cfg.(current_label) cfg.(blocks) cfg.(data) cfg.(globals).
+
+(* This changes the program section to text mode *)
+Definition declare_data (cfg: ControlFlowGraph) := 
+   mkCFG "data" cfg.(current_label) cfg.(blocks) cfg.(data) cfg.(globals).
+
+(*
 Definition declare_label (cfg: ControlFlowGraph) (glb: string): ControlFlowGraph :=
    match cfg.(section) with
    | "text" => match 
  mkCFG cfg.(section) glb (cons (glb , (mkBasicBlock nil nil)) cfg.(blocks)) cfg.(data) cfg.(globals)
    | "data" => mkCFG cfg.(section) glb cfg.(blocks) (cons (glb , (mkBasicBlock nil nil)) cfg.(data)) cfg.(globals)
    end.
-
-(* This changes the program section to text mode *)
-Definition declare_text (cfg: ControlFlowGraph) := 
-   cfg.
-
-(* This changes the program section to text mode *)
-Definition declare_data (cfg: ControlFlowGraph) := 
-   cfg.
 *)
