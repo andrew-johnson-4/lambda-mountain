@@ -4,7 +4,15 @@ From MMaps Require Import MMaps.
 Open Scope string.
 Open Scope Z.
 
+Variable K V : Type.
+
 Module ZM := MMaps.RBT.Make(BinInt.Z).
+
+Fixpoint list_assoc (kv: list (K * V)) (beq: K -> K -> bool) (k: K) (default: V): V := 
+   match kv with
+   | cons (lk , lv) kvs => if beq k lk then lv else (list_assoc kvs beq k default)
+   | nil => default
+   end.
 
 (* Memory Is Denominated in Bytes *)
 Record RegionByte := mkRegionByte { 
@@ -45,6 +53,11 @@ Record JmpInstruction := mkJmp {
    condition : MemoryState;
 }.
 
+(* A Data Block is a list of bytes *)
+Record BasicData := mkData {
+   bytes : list nat;
+}.
+
 (* A Basic Block is a list of instructions with no branches *)
 Record BasicBlock := mkBasicBlock {
    instructions : list Instruction;
@@ -53,11 +66,14 @@ Record BasicBlock := mkBasicBlock {
 
 (* A Control Flow Graph is a set of labelled blocks *)
 Record ControlFlowGraph := mkCFG {
+   section : string;
+   current_label : string;
    blocks : list (string * BasicBlock);
+   data : list (string * BasicData);
    globals : list string;
 }.
 
-Definition empty_control_flow_graph := mkCFG nil nil.
+Definition empty_control_flow_graph := mkCFG "text" "_start" nil nil nil.
 
 (* The Type of an unknown RegionByte is Ordinal 0 *)
 Definition region_lookup (r: Region)(i: BinInt.Z): RegionByte := 
@@ -96,8 +112,22 @@ Definition mem_is_subset (lo: MemoryState)(hi: MemoryState): bool :=
 
 Check eq_refl : (mem_is_subset initial_memory_state initial_memory_state) = true.
 
+(*
 Definition declare_global (cfg: ControlFlowGraph) (glb: string): ControlFlowGraph :=
-   mkCFG cfg.(blocks) (cons glb cfg.(globals)).
+   mkCFG cfg.(section) cfg.(current_label) cfg.(blocks) cfg.(data) (cons glb cfg.(globals)).
 
 Definition declare_label (cfg: ControlFlowGraph) (glb: string): ControlFlowGraph :=
-   mkCFG (cons (glb , (mkBasicBlock nil nil)) cfg.(blocks)) cfg.(globals).
+   match cfg.(section) with
+   | "text" => match 
+ mkCFG cfg.(section) glb (cons (glb , (mkBasicBlock nil nil)) cfg.(blocks)) cfg.(data) cfg.(globals)
+   | "data" => mkCFG cfg.(section) glb cfg.(blocks) (cons (glb , (mkBasicBlock nil nil)) cfg.(data)) cfg.(globals)
+   end.
+
+(* This changes the program section to text mode *)
+Definition declare_text (cfg: ControlFlowGraph) := 
+   cfg.
+
+(* This changes the program section to text mode *)
+Definition declare_data (cfg: ControlFlowGraph) := 
+   cfg.
+*)
