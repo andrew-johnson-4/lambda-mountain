@@ -1,5 +1,6 @@
 
 From Coq Require Import ZArith String List.
+Require Import Coq.Program.Tactics.
 From MMaps Require Import MMaps.
 Open Scope string.
 Open Scope Z.
@@ -16,15 +17,16 @@ Fixpoint list_assoc (kv: list (K * V)) (beq: K -> K -> bool) (k: K) (default: V)
 
 (* Memory Is Denominated in Bytes *)
 Record RegionByte := mkRegionByte { 
-   tt : nat;      (* The type of this region represented as an Ordinal *)
-   tt_byte : nat; (* The type-byte-index of this byte *)
+   tt : Prop;      (* The type of this region is a Property *)
 }.
-Definition unknown_region_byte := mkRegionByte 0 0.
-Definition beq_rb (l: RegionByte)(r: RegionByte): bool :=
-   (Nat.eqb l.(tt) r.(tt)) && (Nat.eqb l.(tt_byte) r.(tt_byte)).
-Definition beqo_rb (l: option RegionByte)(r: RegionByte): bool := match l with
-   | Some lo => (Nat.eqb lo.(tt) r.(tt)) && (Nat.eqb lo.(tt_byte) r.(tt_byte))
-   | None => false end.
+Definition unknown_region_byte := mkRegionByte False.
+Definition rb_implies (known: RegionByte) (expect: RegionByte): Prop :=
+   known.(tt) -> expect.(tt).
+Definition rbo_implies (known: option RegionByte) (expect: RegionByte): Prop :=
+   match known with
+   | Some rb => rb_implies rb expect
+   | None => False
+   end.
 
 (* Knowledge of a Memory Region is a Partial Function *)
 Record Region := mkRegion {
@@ -105,8 +107,7 @@ Definition region_lookup (r: Region)(i: BinInt.Z): RegionByte :=
    end.
 
 (* This is for internal use, it does not directly correspond to the actual instruction *)
-Definition push_stack (st: MemoryState)(tt: nat)(tt_byte: nat): MemoryState :=
-   let rb := mkRegionByte tt tt_byte in
+Definition push_stack (st: MemoryState)(rb: RegionByte): MemoryState :=
    let new_stack := (ZM.fold (fun k e m => ZM.add (BinInt.Z.add k BinInt.Z.one) e m) st.(stack_state).(known) ZM.empty) in
    let new_stack := mkRegion (ZM.add BinInt.Z.zero rb new_stack) in
    mkMemoryState st.(register_state) new_stack st.(frame_state) st.(heap_state).
@@ -118,18 +119,19 @@ Definition pop_stack (st: MemoryState): (MemoryState * RegionByte) :=
    let st := mkMemoryState st.(register_state) new_stack st.(frame_state) st.(heap_state) in
    (st , rb).
 
-Check eq_refl : ((pop_stack empty_memory_state) = (_ , {| tt := 0; tt_byte := 0; |})).
-Check eq_refl : (pop_stack (push_stack empty_memory_state 123 456) = (_ , {| tt := 123; tt_byte := 456; |})).
+Check eq_refl : ((pop_stack empty_memory_state) = (_ , {| tt := False; |})).
+Check eq_refl : (pop_stack (push_stack empty_memory_state (mkRegionByte True)) = (_ , {| tt := True; |})).
 
 (* Check if one memory state is a subset of another memory state *)
-Definition mem_is_subset (lo: MemoryState)(hi: MemoryState): bool := 
-   let rt_register_state := ZM.fold (fun k e b => b && (beqo_rb (ZM.find k hi.(register_state).(known)) e)) lo.(register_state).(known) true in
-   let rt_stack_state := ZM.fold (fun k e b => b && (beqo_rb (ZM.find k hi.(stack_state).(known)) e)) lo.(stack_state).(known) true in
-   let rt_frame_state := ZM.fold (fun k e b => b && (beqo_rb (ZM.find k hi.(frame_state).(known)) e)) lo.(frame_state).(known) true in
-   let rt_heap_state := ZM.fold (fun k e b => b && (beqo_rb (ZM.find k hi.(heap_state).(known)) e)) lo.(heap_state).(known) true in
-   rt_register_state && rt_stack_state && rt_frame_state && rt_heap_state.
+Definition mem_is_subset (lo: MemoryState)(hi: MemoryState): Prop := 
+   let rt_register_state := ZM.fold (fun k e b => b /\ (rbo_implies (ZM.find k hi.(register_state).(known)) e)) lo.(register_state).(known) True in
+   let rt_stack_state := ZM.fold (fun k e b => b /\ (rbo_implies (ZM.find k hi.(stack_state).(known)) e)) lo.(stack_state).(known) True in
+   let rt_frame_state := ZM.fold (fun k e b => b /\ (rbo_implies (ZM.find k hi.(frame_state).(known)) e)) lo.(frame_state).(known) True in
+   let rt_heap_state := ZM.fold (fun k e b => b /\ (rbo_implies (ZM.find k hi.(heap_state).(known)) e)) lo.(heap_state).(known) True in
+   rt_register_state /\ rt_stack_state /\ rt_frame_state /\ rt_heap_state.
 
-Check eq_refl : (mem_is_subset empty_memory_state empty_memory_state) = true.
+Theorem mem_is_subset_check : (mem_is_subset empty_memory_state empty_memory_state) = True.
+Proof. simpl. reflexivity. Qed.
 
 Definition declare_global (cfg: ControlFlowGraph) (glb: string): ControlFlowGraph :=
    mkCFG cfg.(section) cfg.(current_label) cfg.(blocks) cfg.(data) (cons glb cfg.(globals)).
