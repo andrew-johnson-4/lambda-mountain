@@ -1,6 +1,6 @@
 # [Lambda Mountain](https://github.com/andrew-johnson-4/-/wiki)
 
-λ☶ (pronounced Lambda Mountain) is a compiler backend that provides a relatively clean implementation of **System F<: with Specialization**.
+λ☶ (pronounced Lambda Mountain) is a typed macro assembler that provides a relatively clean implementation of **System F<: with Specialization**.
 The whole compiler is only 5000 lines of code, so this could be a good starting point for projects in need of codegen for JIT or AOT compilation.
 
 * [TUTORIAL](https://github.com/andrew-johnson-4/lambda-mountain/blob/main/TUTORIAL/hello-world.md)
