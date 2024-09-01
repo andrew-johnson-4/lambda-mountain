@@ -15,17 +15,31 @@ Fixpoint list_assoc (kv: list (K * V)) (beq: K -> K -> bool) (k: K) (default: V)
    | nil => default
    end.
 
+Fixpoint list_contains (known: list string) (expect: string): bool :=
+   match known with
+   | cons kk kvs => if String.eqb expect kk then true else (list_contains kvs expect)
+   | nil => false
+   end.
+
+Fixpoint list_implies (known: list string) (expect: list string): bool :=
+   match expect with
+   | cons kk kvs => if list_contains known kk then (list_implies known kvs) else false
+   | nil => true
+   end.
+
 (* Memory Is Denominated in Bytes *)
 Record RegionByte := mkRegionByte { 
-   tt : Prop;      (* The type of this region is a Property *)
+   tt : list string; (* The types of this region *)
+   byte_no : nat; (* What byte is this *)
 }.
-Definition unknown_region_byte := mkRegionByte False.
-Definition rb_implies (known: RegionByte) (expect: RegionByte): Prop :=
-   known.(tt) -> expect.(tt).
-Definition rbo_implies (known: option RegionByte) (expect: RegionByte): Prop :=
+Definition unknown_region_byte := mkRegionByte nil 0.
+Definition rb_implies (known: RegionByte) (expect: RegionByte): bool :=
+   (Nat.eqb known.(byte_no) expect.(byte_no)) &&
+   (list_implies known.(tt) expect.(tt)).
+Definition rbo_implies (known: option RegionByte) (expect: RegionByte): bool :=
    match known with
    | Some rb => rb_implies rb expect
-   | None => False
+   | None => false
    end.
 
 (* Knowledge of a Memory Region is a Partial Function *)
@@ -119,19 +133,18 @@ Definition pop_stack (st: MemoryState): (MemoryState * RegionByte) :=
    let st := mkMemoryState st.(register_state) new_stack st.(frame_state) st.(heap_state) in
    (st , rb).
 
-Check eq_refl : ((pop_stack empty_memory_state) = (_ , {| tt := False; |})).
-Check eq_refl : (pop_stack (push_stack empty_memory_state (mkRegionByte True)) = (_ , {| tt := True; |})).
+Check eq_refl : ((pop_stack empty_memory_state) = (_ , {| tt := nil; |})).
+Check eq_refl : (pop_stack (push_stack empty_memory_state (mkRegionByte (cons "A" nil) 3)) = (_ , {| tt := (cons "A" nil); byte_no := 3; |})).
 
 (* Check if one memory state is a subset of another memory state *)
-Definition mem_is_subset (lo: MemoryState)(hi: MemoryState): Prop := 
-   let rt_register_state := ZM.fold (fun k e b => b /\ (rbo_implies (ZM.find k hi.(register_state).(known)) e)) lo.(register_state).(known) True in
-   let rt_stack_state := ZM.fold (fun k e b => b /\ (rbo_implies (ZM.find k hi.(stack_state).(known)) e)) lo.(stack_state).(known) True in
-   let rt_frame_state := ZM.fold (fun k e b => b /\ (rbo_implies (ZM.find k hi.(frame_state).(known)) e)) lo.(frame_state).(known) True in
-   let rt_heap_state := ZM.fold (fun k e b => b /\ (rbo_implies (ZM.find k hi.(heap_state).(known)) e)) lo.(heap_state).(known) True in
-   rt_register_state /\ rt_stack_state /\ rt_frame_state /\ rt_heap_state.
+Definition mem_is_subset (lo: MemoryState)(hi: MemoryState): bool := 
+   let rt_register_state := ZM.fold (fun k e b => b && (rbo_implies (ZM.find k hi.(register_state).(known)) e)) lo.(register_state).(known) true in
+   let rt_stack_state := ZM.fold (fun k e b => b && (rbo_implies (ZM.find k hi.(stack_state).(known)) e)) lo.(stack_state).(known) true in
+   let rt_frame_state := ZM.fold (fun k e b => b && (rbo_implies (ZM.find k hi.(frame_state).(known)) e)) lo.(frame_state).(known) true in
+   let rt_heap_state := ZM.fold (fun k e b => b && (rbo_implies (ZM.find k hi.(heap_state).(known)) e)) lo.(heap_state).(known) true in
+   rt_register_state && rt_stack_state && rt_frame_state && rt_heap_state.
 
-Theorem mem_is_subset_check : (mem_is_subset empty_memory_state empty_memory_state) = True.
-Proof. simpl. reflexivity. Qed.
+Check eq_refl : (mem_is_subset empty_memory_state empty_memory_state) = true.
 
 Definition declare_global (cfg: ControlFlowGraph) (glb: string): ControlFlowGraph :=
    mkCFG cfg.(section) cfg.(current_label) cfg.(blocks) cfg.(data) (cons glb cfg.(globals)).
