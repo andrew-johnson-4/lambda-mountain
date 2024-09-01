@@ -9,12 +9,7 @@ The whole compiler is only 5000 lines of code, so this could be a good starting 
 
 ### Verification
 
-Verification is backed by a Coq model of supported platform architectures.
-However, it is not necessary to learn Coq to program in LM.
-LM programs correspond to *proof tactics* in Coq.
-So programming normally in LM will automatically yield a corresponding proof without any extra effort.
-The LM type checker is simply backed by a very meticulous formal model.
-This is done to keep the LM assembler more honest and prevent model bugs from yielding invalid programs.
+LM produces annotated object files or human readable assembly. These annotations can then be sent to the attached Coq verifier to check logical consistency.
 
 ### "Portable" Assembler
 
