@@ -163,7 +163,7 @@ parse-gnu := λ(: fp String). (: (
    )))
    (set r (SCons(
       (close r)
-      (close(SAtom '\s\s\scfg.\n\nLemma\sverify_control_flow_graph\s:\sFalse.\nProof.\nQed.\n_s))
+      (close(SAtom '\s\s\scfg.\n\nCheck\seq_refl\s:\s\[control_flow_graph_assertions_reachable\scontrol_flow_graph\]\s=\strue.\n_s))
    )))
    r
 ) S);

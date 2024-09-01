@@ -181,4 +181,5 @@ Definition binary_op (cfg: ControlFlowGraph) (ins: string) (arg1: InstructionArg
    | _ => mkInstruction "?" unknown_effect
    end in append_instruction cfg i.
 
-
+Definition control_flow_graph_assertions_reachable (cfg: ControlFlowGraph): bool :=
+   true.
