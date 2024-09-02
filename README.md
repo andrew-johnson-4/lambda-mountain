@@ -7,6 +7,12 @@ The whole compiler is only 5000 lines of code, so this could be a good starting 
 * [WIKI](https://github.com/andrew-johnson-4/-/wiki)
 * [ASK A QUESTION](https://github.com/andrew-johnson-4/lambda-mountain/discussions/categories/q-a)
 
+### Supported Platforms
+
+Currently Supported assembler formats:
+* GNU x86 assembly with annotations for `lmv` Coq-based semantic verifier
+* Blob rendering for miscellaneous data such as statically rendered HTML
+
 ### Verification
 
 LM produces annotated object files or human readable assembly. These annotations can then be sent to the attached Coq verifier to check logical consistency.
