@@ -11,7 +11,7 @@ The whole compiler is only 5000 lines of code, so this could be a good starting 
 
 Currently supported output format:
 * GNU x86 assembly with annotations for `lmv` Coq-based semantic verifier
-* Blob rendering for miscellaneous data such as statically rendered HTML
+* Blob rendering for miscellaneous data such as [statically rendered HTML](https://andrew-johnson-4.github.io/lambda-mountain/)
 
 ### Verification
 
