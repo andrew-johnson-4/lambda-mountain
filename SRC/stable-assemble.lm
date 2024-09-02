@@ -5,7 +5,58 @@ assemble-data-section                    := (: SNil S);
 assemble-final                           := '_s;
 assemble-argv-referenced                 := False_u8;
 
-compile := λ(). (: (
+compile := λ. (: (match config-assemble-mode (
+   ()
+   ( AssembleGNU (compile-gnu()) )
+   ( AssembleBlob (compile-blob()) )
+)) Nil);
+
+compile-blob := λ. (: (
+   (let global-ctx (fragment-context::new()))
+   (set preview-program ast-parsed-program)
+   (while (non-zero preview-program) (match preview-program (
+      ()
+      # blob globals could provide mutable compile-time state or something?
+      ( (Seq( rst (Frg( k_t rhs _ )) )) (
+         (let fragment (fragment::new()))
+         (set fragment (fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) )))
+         (set fragment (fragment::set( fragment 'fragment_s (to-s rhs) )))
+         (set fragment (fragment::set-type( fragment (typeof rhs) )))
+         (set global-ctx (fragment-context::bind(
+            global-ctx k (typeof rhs) fragment
+         )))
+         (set preview-program rst)
+      ))
+      ( (Seq( rst (Typedef( lhs rhs )) )) (
+         (set global-ctx (compile-type( global-ctx lhs rhs )))
+         (set preview-program rst)
+      ))
+      ( (Seq( rst _ )) (
+         (set preview-program rst)
+      ))
+   )))
+   (set preview-program ast-parsed-program)
+   (while (non-zero preview-program) (match preview-program (
+      ()
+      ( (Seq( rst (Glb( k_t rhs )) )) (
+         (set preview-program rst)
+      ))
+      ( (Seq( rst (Frg( k_t rhs _ )) )) (
+         (set preview-program rst)
+      ))
+      ( (Seq( rst (Typedef( lhs rhs )) )) (
+         (set preview-program rst)
+      ))
+      ( (Seq( rst expr )) (
+         (blob-expr( global-ctx expr ))
+         (set preview-program rst)
+      ))
+   )))
+   (compile-finish())
+   (compile-write())
+) Nil);
+
+compile-gnu := λ. (: (
    (let global-ctx (fragment-context::new()))
    (let preview-program ast-parsed-program)
    (while (non-zero preview-program) (match preview-program (
