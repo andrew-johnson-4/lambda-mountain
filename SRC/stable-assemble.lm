@@ -13,7 +13,7 @@ compile := λ. (: (match config-assemble-mode (
 
 compile-blob := λ. (: (
    (let global-ctx (fragment-context::new()))
-   (set preview-program ast-parsed-program)
+   (let preview-program ast-parsed-program)
    (while (non-zero preview-program) (match preview-program (
       ()
       # blob globals could provide mutable compile-time state or something?
@@ -35,6 +35,7 @@ compile-blob := λ. (: (
          (set preview-program rst)
       ))
    )))
+   (let blob SNil)
    (set preview-program ast-parsed-program)
    (while (non-zero preview-program) (match preview-program (
       ()
@@ -48,10 +49,15 @@ compile-blob := λ. (: (
          (set preview-program rst)
       ))
       ( (Seq( rst expr )) (
-         (blob-expr( global-ctx expr ))
+         (let f (blob-expr( global-ctx expr )))
+         (set blob (SCons(
+             (close blob)
+             (close(fragment::get( f 'program_s )))
+         )))
          (set preview-program rst)
       ))
    )))
+   (set assemble-final (clone-rope(escape-string blob)))
    (compile-finish())
    (compile-write())
 ) Nil);

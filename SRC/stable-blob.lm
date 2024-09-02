@@ -1,4 +1,7 @@
 
 blob-expr := λ(: ctx FContext)(: term AST). (: (
+   (let e (fragment::new()))
+   (set e (fragment::set-context( e ctx )))
+   e
 ) Fragment);
 
