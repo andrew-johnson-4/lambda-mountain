@@ -1,4 +1,7 @@
 
+build-docs:
+	lm --blob -o docs/index.html docs/index.html.lm
+
 develop:
 	lmv tests/regress/hello_world.s.v
 	coqc tmp.v
