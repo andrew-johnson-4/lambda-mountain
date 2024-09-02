@@ -2,6 +2,50 @@
 blob-expr := λ(: ctx FContext)(: term AST). (: (
    (let e (fragment::new()))
    (set e (fragment::set-context( e ctx )))
+   (match term (
+      ()
+      ( ASTNil () )
+      ( ASTEOF () )
+      ( (Var( id _ )) (
+         (set e (fragment-context::lookup( ctx id (typeof term) term )))
+      ))
+      ( (Lit( val _ )) (
+         (set e (fragment::set( e 'program_s (SAtom val) )))
+      ))
+      ( (App( (Abs( (Var( lhs _ )) ASTNil tlt )) rhs )) (
+         (let rtype (typeof rhs))
+         (set ctx (fragment-context::bind(
+            ctx lhs rtype (blob-expr( ctx rhs ))
+         )))
+         (set e (fragment::set-context( e ctx )))
+      ))
+      ( (App( f a )) (
+         (match (slot( (typeof f) 'Arrow_s )) (
+            ()
+            ( (TGround( 'Arrow_s _ )) (
+               (match f (
+                  ()
+                  ( (Var( fname _ )) (
+                     (set e (blob-call( ctx fname a )))
+                  ))
+               ))
+            ))
+            ( _ (
+               (let e1 (blob-expr( ctx f )))
+               (let e2 (blob-expr( ctx a )))
+               (set e (fragment::chain( e1 e2 )))
+               (set e (fragment::set-type( e (typeof term) )))
+            ))
+         ))
+      ))
+   ))
    e
 ) Fragment);
 
+blob-call := λ(: ctx FContext)(: fname String)(: term AST). (: (
+   (let e (fragment::new()))
+   (set e (fragment::set-context( e ctx )))
+   (print 'TODO\scall\s_s)
+   (print fname)(print '\n_s)
+   e
+) Fragment);

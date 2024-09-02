@@ -58,7 +58,6 @@ compile-blob := λ. (: (
       ))
    )))
    (set assemble-final (clone-rope(escape-string blob)))
-   (compile-finish())
    (compile-write())
 ) Nil);
 
