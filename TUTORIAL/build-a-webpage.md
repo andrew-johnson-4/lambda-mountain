@@ -8,8 +8,12 @@ To create a blob webpage we can use the `LIB/default.html` library to help us ge
 import LIB/default.html;
 
 (html(
-   (title 'Hello\sWorld_s)
-   (h2( 'Hello_s ))
+   (head(
+      (title 'Hello\sWorld_s)
+   ))
+   (body(
+      (h2( 'Hello_s ))
+   ))
 ))
 ```
 
