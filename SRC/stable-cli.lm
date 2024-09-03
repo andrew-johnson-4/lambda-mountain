@@ -3,6 +3,9 @@ config-strict                := True_u8;
 config-preprocess            := True_u8;
 config-target                := 'tmp.s_s;
 
+type AssembleMode AssembleGNU | AssembleBlob;
+config-assemble-mode         := (: AssembleGNU AssembleMode);
+
 type CompileMode ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 config-mode                  := (: ModeCompile CompileMode);
 
@@ -12,6 +15,8 @@ main := λ(: argc U64)(: argv String[]). (: (
    (while (<( argi argc )) (
       (match ([]( argv argi )) (
          ()
+         ('--blob_s (set config-assemble-mode AssembleBlob))
+         ('--gnu_s (set config-assemble-mode AssembleGNU))
          ('--tokenize_s (set config-mode ModeTokenize))
          ('--parse_s (set config-mode ModeParse))
          ('--preprocess_s (set config-mode ModePreprocess))
