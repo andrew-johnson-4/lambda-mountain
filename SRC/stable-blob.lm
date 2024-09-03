@@ -16,6 +16,10 @@ blob-expr := λ(: ctx FContext)(: term AST). (: (
       ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
          (set e (blob-expr( ctx t )))
       ))
+      ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
+         (set e (blob-expr( ctx t )))
+         (set e (fragment::set-type( e (typeof term) )))
+      ))
       ( (App( (Abs( (Var( lhs _ )) ASTNil tlt )) rhs )) (
          (let rtype (typeof rhs))
          (set ctx (fragment-context::bind(
@@ -50,7 +54,7 @@ blob-call := λ(: ctx FContext)(: function-name String)(: args AST). (: (
    (let f (fragment-context::lookup( ctx function-name (typeof args) args )))
    (let f-args (blob-args( ctx args )))
    (let r (fragment::new()))
-   (match (fragment::get 'fragment-type_s) (
+   (match (fragment::get( f 'fragment-type_s )) (
       ()
       ( (SAtom 'Fragment_s) (
          (set r (fragment-apply( ctx 0_i64 function-name f-args (range(fragment::get-type f)) args )))
