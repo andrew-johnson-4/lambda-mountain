@@ -323,6 +323,14 @@ fragment a := λ(: a1 Attribute)(: a2 Attribute)(: f1 HTML). (: (
       '</a>\n
    ))
 ) HTML);
+fragment a := λ(: a1 Attribute)(: a2 Attribute)(: f1 HTML)(: f2 HTML). (: (
+   (.program(
+      '<a\s (.program a1) (.program a2) '>
+      (.program f1)
+      (.program f2)
+      '</a>\n
+   ))
+) HTML);
 
 fragment span := λ(: a1 Attribute)(: f1 HTML). (: (
    (.program(
