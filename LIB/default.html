@@ -243,6 +243,23 @@ fragment header := λ(: a1 Attribute)(: a2 Attribute)(: f1 HTML). (: (
    ))
 ) HTML);
 
+fragment header := λ(: a1 Attribute)(: a2 Attribute)(: f1 HTML)(: f2 HTML). (: (
+   (.program(
+      '<header\s (.program a1) (.program a2) '>\n
+      (.program f1)
+      (.program f2)
+      '</header>\n
+   ))
+) HTML);
+
+fragment nav := λ(: a1 Attribute)(: f1 HTML). (: (
+   (.program(
+      '<nav\s (.program a1) '>\n
+      (.program f1)
+      '</nav>\n
+   ))
+) HTML);
+
 fragment ul := λ(: f1 HTML). (: (
    (.program(
       '<ul>\n
@@ -260,9 +277,33 @@ fragment ul := λ(: f1 HTML)(: f2 HTML). (: (
    ))
 ) HTML);
 
+fragment ul := λ(: a1 Attribute)(: f1 HTML). (: (
+   (.program(
+      '<ul (.program a1) '>\n
+      (.program f1)
+      '</ul>\n
+   ))
+) HTML);
+
+fragment ul := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML). (: (
+   (.program(
+      '<ul (.program a1) '>\n
+      (.program f1)
+      (.program f2)
+      '</ul>\n
+   ))
+) HTML);
+
 fragment li := λ(: f1 HTML). (: (
    (.program(
       '<li>
+      (.program f1)
+      '</li>\n
+   ))
+) HTML);
+fragment li := λ(: a1 Attribute)(: f1 HTML). (: (
+   (.program(
+      '<li\s (.program a1) '>
       (.program f1)
       '</li>\n
    ))

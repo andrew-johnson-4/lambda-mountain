@@ -34,12 +34,28 @@ docs-header := λ. (: (as
             (div( (class 'l-docs__sidebar_s)
                (div( (class 'p-navigation__banner_s)
                   (div( (class 'p-navigation__tagged-logo_s)
-                     (a( (class 'p-navigation__link_s) (href 'https://andrew-johnson-4.github.io/lambda_mountain/_s)
+                     (a( (class 'p-navigation__link_s) (href 'https://andrew-johnson-4.github.io/lambda-mountain/_s)
                         (div( (class 'p-navigation__logo-tag_s)
                            (img( (class 'p-navigation__logo-icon_s) (src 'https://github.com/andrew-johnson-4/lambda-mountain/blob/main/DOBYLOGO.png?raw=true_s) ))
                         ))
                      ))
                      (span( (class( 'p-navigation__logo-title_s )) (text 'Lambda\sMountain_s) ))
+                  ))
+               ))
+            ))
+         ))
+         (div( (class 'l-docs__subgrid_s)
+            (div( (class 'l-docs__main_s)
+               (div( (class 'p-navigation__row\su-fixed-width_s)
+                  (nav( (class 'p-navigation__nav_s)
+                     (ul( (class 'p-navigation__items_s)
+                        (li( (class 'p-navigation__item_s)
+                           (a( (class 'p-navigation__link_s) (href 'https://andrew-johnson-4.github.io/lambda_mountain/default.lm.html_s) (text 'default.lm_s) ))
+                        ))
+                        (li( (class 'p-navigation__item_s)
+                           (a( (class 'p-navigation__link_s) (href 'https://andrew-johnson-4.github.io/lambda_mountain/default.html.html_s) (text 'default.html_s) ))
+                        ))
+                     ))
                   ))
                ))
             ))
@@ -67,28 +83,6 @@ fragment docs-footer := λ. (: () DocsFooter+HTML);
 #<div class="l-docs">
 #  <div class="l-docs__header">
 #    <header id="navigation" class="p-navigation is-dark">
-#      <div class="l-docs__subgrid">
-#        <div class="l-docs__main">
-#          <div class="p-navigation__row u-fixed-width">
-#            <nav class="p-navigation__nav" aria-label="Example main">
-#              <ul class="p-navigation__items">
-#                <li class="p-navigation__item">
-#                  <a class="p-navigation__link" href="#">Products</a>
-#                </li>
-#                <li class="p-navigation__item">
-#                  <a class="p-navigation__link" href="#">Services</a>
-#                </li>
-#                <li class="p-navigation__item">
-#                  <a class="p-navigation__link" href="#">Partners</a>
-#                </li>
-#                <li class="p-navigation__item is-selected">
-#                  <a class="p-navigation__link" href="#">Docs</a>
-#                </li>
-#              </ul>
-#            </nav>
-#          </div>
-#        </div>
-#      </div>
 #    </header>
 #    <section id="search-docs" class="p-strip is-bordered is-shallow l-docs__subgrid">
 #      <div class="l-docs__sidebar u-hide--medium u-hide--small">
