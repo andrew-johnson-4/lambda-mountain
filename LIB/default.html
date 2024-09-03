@@ -9,3 +9,135 @@ fragment html := λ. (: (
    ))
 ) HTML);
 
+fragment html := λ(: f1 HTML). (: (
+   (.program(
+      '<!DOCTYPE\shtml>\n
+      '<html>\n
+      (.program f1)
+      '</html>\n
+   ))
+) HTML);
+
+fragment html := λ(: f1 HTML)(: f2 HTML). (: (
+   (.program(
+      '<!DOCTYPE\shtml>\n
+      '<html>\n
+      (.program f1)
+      (.program f2)
+      '</html>\n
+   ))
+) HTML);
+
+fragment head := λ(: f1 HTML). (: (
+   (.program(
+      '<head>\n
+      (.program f1)
+      '</head>\n
+   ))
+) HTML);
+
+fragment title := λ(: f1 String). (: (
+   (.program(
+      '<title>
+      (.program f1)
+      '</title>\n
+   ))
+) HTML);
+
+fragment body := λ(: f1 HTML). (: (
+   (.program(
+      '<body>\n
+      (.program f1)
+      '</body>\n
+   ))
+) HTML);
+
+fragment body := λ(: f1 HTML)(: f2 HTML). (: (
+   (.program(
+      '<body>\n
+      (.program f1)
+      (.program f2)
+      '</body>\n
+   ))
+) HTML);
+
+fragment h1 := λ(: f1 String). (: (
+   (.program(
+      '<h1>
+      (.program f1)
+      '</h1>\n
+   ))
+) HTML);
+
+fragment h2 := λ(: f1 String). (: (
+   (.program(
+      '<h2>
+      (.program f1)
+      '</h2>\n
+   ))
+) HTML);
+
+fragment h3 := λ(: f1 String). (: (
+   (.program(
+      '<h3>
+      (.program f1)
+      '</h3>\n
+   ))
+) HTML);
+
+fragment h4 := λ(: f1 String). (: (
+   (.program(
+      '<h4>
+      (.program f1)
+      '</h4>\n
+   ))
+) HTML);
+
+fragment h5 := λ(: f1 String). (: (
+   (.program(
+      '<h5>
+      (.program f1)
+      '</h5>\n
+   ))
+) HTML);
+
+fragment h6 := λ(: f1 String). (: (
+   (.program(
+      '<h6>
+      (.program f1)
+      '</h6>\n
+   ))
+) HTML);
+
+fragment ul := λ(: f1 HTML). (: (
+   (.program(
+      '<ul>\n
+      (.program f1)
+      '</ul>\n
+   ))
+) HTML);
+
+fragment ul := λ(: f1 HTML)(: f2 HTML). (: (
+   (.program(
+      '<ul>\n
+      (.program f1)
+      (.program f2)
+      '</ul>\n
+   ))
+) HTML);
+
+fragment li := λ(: f1 HTML). (: (
+   (.program(
+      '<li>
+      (.program f1)
+      '</li>\n
+   ))
+) HTML);
+
+fragment a := λ(: txt String)(: href String). (: (
+   (.program(
+      '<a\shref=" (.program href) '">
+      (.program txt)
+      '</a>
+   ))
+) HTML);
