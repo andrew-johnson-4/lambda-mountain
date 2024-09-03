@@ -15,7 +15,6 @@ Currently supported output formats:
    * HTML
    * CSS
    * WASM
-   * [add your own here]
 
 ### Verification
 
