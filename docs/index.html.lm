@@ -3,13 +3,14 @@ import LIB/default.html;
 
 (html(
    (head(
+      (link( 'stylesheet_s (url 'https://assets.ubuntu.com/v1/vanilla-framework-version-4.15.0.min.css_s) ))
       (title( 'Lambda\sMountain\sDocumentation_s ))
    ))
    (body(
       (h2( 'Libraries_s ))
       (ul(
-         (li(a( 'default.lm_s 'https://andrew-johnson-4.github.io/lambda_mountain/default.lm.html_s )))
-         (li(a( 'default.html_s 'https://andrew-johnson-4.github.io/lambda_mountain/default.html.html_s )))
+         (li(a( 'default.lm_s (url 'https://andrew-johnson-4.github.io/lambda_mountain/default.lm.html_s) )))
+         (li(a( 'default.html_s (url 'https://andrew-johnson-4.github.io/lambda_mountain/default.html.html_s) )))
       ))
    ))
 ))

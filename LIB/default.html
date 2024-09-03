@@ -1,6 +1,12 @@
 
 fragment type String; size String 8; atom suffix String _s;
 
+fragment url := λ(: url String). (: (
+   (.program(
+      (.program url)
+   ))
+) URL);
+
 fragment html := λ. (: (
    (.program(
       '<!DOCTYPE\shtml>\n
@@ -32,6 +38,15 @@ fragment head := λ(: f1 HTML). (: (
    (.program(
       '<head>\n
       (.program f1)
+      '</head>\n
+   ))
+) HTML);
+
+fragment head := λ(: f1 HTML)(: f2 HTML). (: (
+   (.program(
+      '<head>\n
+      (.program f1)
+      (.program f2)
       '</head>\n
    ))
 ) HTML);
@@ -134,10 +149,16 @@ fragment li := λ(: f1 HTML). (: (
    ))
 ) HTML);
 
-fragment a := λ(: txt String)(: href String). (: (
+fragment a := λ(: txt String)(: href URL). (: (
    (.program(
       '<a\shref=" (.program href) '">
       (.program txt)
       '</a>
+   ))
+) HTML);
+
+fragment link := λ(: rel String)(: href URL). (: (
+   (.program(
+      '<link\srel=" (.program rel) '"\shref=" (.program href) '"\\>\n
    ))
 ) HTML);
