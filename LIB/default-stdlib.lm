@@ -6,6 +6,11 @@ type S (SNil)
 
 type Tuple<x,y> (Tuple( x , y ));
 
++ := λ(: l S)(: r S). (: (
+   (let return (SCons( (close l) (close r) )))
+   return
+) S);
+
 == := λ(: l Tuple<x,y>)(: r Tuple<x,y>). (: (
    (let return 0_u64)
    (match (Tuple( l r )) (
