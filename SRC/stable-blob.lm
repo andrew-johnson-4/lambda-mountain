@@ -42,10 +42,32 @@ blob-expr := λ(: ctx FContext)(: term AST). (: (
    e
 ) Fragment);
 
-blob-call := λ(: ctx FContext)(: fname String)(: term AST). (: (
-   (let e (fragment::new()))
-   (set e (fragment::set-context( e ctx )))
-   (print 'TODO\scall\s_s)
-   (print fname)(print '\n_s)
-   e
+blob-call := λ(: ctx FContext)(: function-name String)(: args AST). (: (
+   (let f (fragment-context::lookup( ctx function-name (typeof args) args )))
+   (let f-args (blob-args( ctx args )))
+   (let r (fragment-apply( ctx 0_i64 function-name f-args (range(fragment::get-type f)) args )))
+   (set r (fragment::set-context( r ctx )))
+   r
 ) Fragment);
+
+blob-args := λ(: ctx FContext)(: rval AST). (: (
+   (let r FLEOF)
+   (match (slot( (typeof rval) 'Cons_s )) (
+      ()
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (match rval (
+            ()
+            ( (App( le re )) (
+               (let e1 (blob-args( ctx le )))
+               (let e2 (blob-expr( ctx re )))
+               (set r (FLSeq( (close e1) e2 )))
+            ))
+         ))
+      ))
+      ( _ (
+         (let e1 (blob-expr( ctx rval )))
+         (set r (FLSeq( (close FLEOF) e1 )))
+      ))
+   ))
+   r
+) FragmentList);
