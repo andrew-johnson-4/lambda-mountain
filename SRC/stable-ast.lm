@@ -9,7 +9,7 @@ type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String , Token )) | (L
                 | (Seq( AST[] , AST[] )) | (Glb( Token , AST[] )) | (Typedef( AST[] , AST[] )) | (Frg( Token , AST[] , Type )); zero AST ASTEOF;
 
 type FragmentKV (FKVEOF) | (FKVSeq( FragmentKV[] , String , S )); zero FragmentKV FKVEOF;
-type Fragment (Fragment( FragmentKV[] , I64 , Type , FContext[] ));
+type Fragment (Fragment( AST , FragmentKV[] , I64 , Type , FContext[] ));
 type FragmentList (FLEOF) | (FLSeq( FragmentList[] , Fragment )); zero FragmentList FLEOF;
 
 type IsUsed Used | Unused | Tail | Return | Call;

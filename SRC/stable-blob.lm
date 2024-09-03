@@ -49,10 +49,54 @@ blob-expr := λ(: ctx FContext)(: term AST). (: (
 blob-call := λ(: ctx FContext)(: function-name String)(: args AST). (: (
    (let f (fragment-context::lookup( ctx function-name (typeof args) args )))
    (let f-args (blob-args( ctx args )))
-   (let r (fragment-apply( ctx 0_i64 function-name f-args (range(fragment::get-type f)) args )))
+   (let r (fragment::new()))
+   (match (fragment::get 'fragment-type_s) (
+      ()
+      ( (SAtom 'Fragment_s) (
+         (set r (fragment-apply( ctx 0_i64 function-name f-args (range(fragment::get-type f)) args )))
+      ))
+      ( (SAtom 'Function_s) (
+         (match (fragment::get-term f) (
+            ()
+            ( (Abs( lhs rhs _ )) (
+               (let inner-ctx (blob-destructure( ctx lhs f-args )))
+               (set r (blob-expr( inner-ctx rhs )))
+            ))
+         ))
+      ))
+   ))
    (set r (fragment::set-context( r ctx )))
    r
 ) Fragment);
+
+blob-destructure := λ(: ctx FContext)(: lhs AST)(: args FragmentList). (: (
+   (match lhs (
+      ()
+      ( (App( lhs-rst (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) )) (
+         (match args (
+            ()
+            ( (FLSeq( args-rst args-f )) (
+               (set ctx (blob-destructure( ctx lhs-rst args-rst )))
+               (set ctx (fragment-context::bind(
+                  ctx k kt args-f
+               )))
+            ))
+         ))
+      ))
+      ( (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) (
+         (match args (
+            ()
+            ( (FLSeq( args-rst args-f )) (
+               (set ctx (fragment-context::bind(
+                  ctx k kt args-f
+               )))
+            ))
+         ))
+      ))
+      ( _ () )
+   ))
+   ctx
+) FContext);
 
 blob-args := λ(: ctx FContext)(: rval AST). (: (
    (let r FLEOF)
