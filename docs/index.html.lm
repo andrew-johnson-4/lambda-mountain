@@ -6,7 +6,7 @@ docs-html := λ(: page-title String)(: d-header DocsHeader+HTML)(: d-sidebar Doc
                        (: d-footer DocsFooter+HTML). (: (
    (html(
       (head(
-         (link( 'stylesheet_s (url 'https://assets.ubuntu.com/v1/vanilla-framework-version-4.15.0.min.css_s) ))
+         (link( (rel 'stylesheet_s) (href 'https://assets.ubuntu.com/v1/vanilla-framework-version-4.15.0.min.css_s) ))
          (title( page-title ))
       ))
       (body(
@@ -31,7 +31,18 @@ docs-header := λ. (: (as
    (div( (class 'l-docs__header_s)
       (header( (id 'navigation_s) (class 'p-navigation\sis-dark_s)
          (div( (class 'l-docs__subgrid_s)
-            (h2 'Hello_s)
+            (div( (class 'l-docs__sidebar_s)
+               (div( (class 'p-navigation__banner_s)
+                  (div( (class 'p-navigation__tagged-logo_s)
+                     (a( (class 'p-navigation__link_s) (href 'https://andrew-johnson-4.github.io/lambda_mountain/_s)
+                        (div( (class 'p-navigation__logo-tag_s)
+                           (img( (class 'p-navigation__logo-icon_s) (src 'https://github.com/andrew-johnson-4/lambda-mountain/blob/main/DOBYLOGO.png?raw=true_s) ))
+                        ))
+                     ))
+                     (span( (class( 'p-navigation__logo-title_s )) (text 'Lambda\sMountain_s) ))
+                  ))
+               ))
+            ))
          ))
       ))
    ))
@@ -57,20 +68,6 @@ fragment docs-footer := λ. (: () DocsFooter+HTML);
 #  <div class="l-docs__header">
 #    <header id="navigation" class="p-navigation is-dark">
 #      <div class="l-docs__subgrid">
-#        <div class="l-docs__sidebar">
-#          <div class="p-navigation__banner">
-#            <div class="p-navigation__tagged-logo">
-#              <a class="p-navigation__link" href="#">
-#                <div class="p-navigation__logo-tag">
-#                  <img class="p-navigation__logo-icon" src="https://assets.ubuntu.com/v1/82818827-CoF_white.svg" alt="">
-#                </div>
-#                <span class="p-navigation__logo-title">Ubuntu</span>
-#              </a>
-#            </div>
-#            <a href="#navigation" class="p-navigation__toggle--open" title="menu">Menu</a>
-#            <a href="#navigation-closed" class="p-navigation__toggle--close" title="close menu">Close menu</a>
-#          </div>
-#        </div>
 #        <div class="l-docs__main">
 #          <div class="p-navigation__row u-fixed-width">
 #            <nav class="p-navigation__nav" aria-label="Example main">

@@ -1,15 +1,15 @@
 
 fragment type String; size String 8; atom suffix String _s;
 
-fragment url := λ(: url String). (: (
-   (.program(
-      (.program url)
-   ))
-) URL);
-
 fragment class := λ(: cls String). (: (
    (.program(
       '\sclass=" (.program cls) '"\s
+   ))
+) Attribute);
+
+fragment src := λ(: s String). (: (
+   (.program(
+      '\ssrc=" (.program s) '"\s
    ))
 ) Attribute);
 
@@ -19,11 +19,23 @@ fragment id := λ(: i String). (: (
    ))
 ) Attribute);
 
-fragment href := λ(: a URL). (: (
+fragment rel := λ(: i String). (: (
+   (.program(
+      '\srel=" (.program i) '"\s
+   ))
+) Attribute);
+
+fragment href := λ(: a String). (: (
    (.program(
       '\shref=" (.program a) '"\s
    ))
 ) Attribute);
+
+fragment text := λ(: t String). (: (
+   (.program(
+      (.program t)
+   ))
+) HTML);
 
 fragment html := λ. (: (
    (.program(
@@ -144,14 +156,14 @@ fragment h6 := λ(: f1 String). (: (
 
 fragment div := λ(: f1 HTML). (: (
    (.program(
-      '<div>
+      '<div>\n
       (.program f1)
       '</div>\n
    ))
 ) HTML);
 fragment div := λ(: f1 HTML)(: f2 HTML). (: (
    (.program(
-      '<div>
+      '<div>\n
       (.program f1)
       (.program f2)
       '</div>\n
@@ -159,14 +171,14 @@ fragment div := λ(: f1 HTML)(: f2 HTML). (: (
 ) HTML);
 fragment div := λ(: a1 Attribute)(: f1 HTML). (: (
    (.program(
-      '<div\s (.program a1) '>
+      '<div\s (.program a1) '>\n
       (.program f1)
       '</div>\n
    ))
 ) HTML);
 fragment div := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML). (: (
    (.program(
-      '<div\s (.program a1) '>
+      '<div\s (.program a1) '>\n
       (.program f1)
       (.program f2)
       '</div>\n
@@ -174,7 +186,7 @@ fragment div := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML). (: (
 ) HTML);
 fragment div := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML)(: f3 HTML). (: (
    (.program(
-      '<div\s (.program a1) '>
+      '<div\s (.program a1) '>\n
       (.program f1)
       (.program f2)
       (.program f3)
@@ -183,7 +195,7 @@ fragment div := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML)(: f3 HTML). (: (
 ) HTML);
 fragment div := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML)(: f3 HTML)(: f4 HTML). (: (
    (.program(
-      '<div\s (.program a1) '>
+      '<div\s (.program a1) '>\n
       (.program f1)
       (.program f2)
       (.program f3)
@@ -193,7 +205,7 @@ fragment div := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML)(: f3 HTML)(: f4 HTML). 
 ) HTML);
 fragment div := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML)(: f3 HTML)(: f4 HTML)(: f5 HTML). (: (
    (.program(
-      '<div\s (.program a1) '>
+      '<div\s (.program a1) '>\n
       (.program f1)
       (.program f2)
       (.program f3)
@@ -204,7 +216,7 @@ fragment div := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML)(: f3 HTML)(: f4 HTML)(:
 ) HTML);
 fragment div := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML)(: f3 HTML)(: f4 HTML)(: f5 HTML)(: f6 HTML). (: (
    (.program(
-      '<div\s (.program a1) '>
+      '<div\s (.program a1) '>\n
       (.program f1)
       (.program f2)
       (.program f3)
@@ -217,17 +229,17 @@ fragment div := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML)(: f3 HTML)(: f4 HTML)(:
 
 fragment header := λ(: a1 Attribute)(: f1 HTML). (: (
    (.program(
-      '<header\s (.program a1) '>
+      '<header\s (.program a1) '>\n
       (.program f1)
-      '</div>\n
+      '</header>\n
    ))
 ) HTML);
 
 fragment header := λ(: a1 Attribute)(: a2 Attribute)(: f1 HTML). (: (
    (.program(
-      '<header\s (.program a1) (.program a2) '>
+      '<header\s (.program a1) (.program a2) '>\n
       (.program f1)
-      '</div>\n
+      '</header>\n
    ))
 ) HTML);
 
@@ -256,16 +268,42 @@ fragment li := λ(: f1 HTML). (: (
    ))
 ) HTML);
 
-fragment a := λ(: txt String)(: href URL). (: (
+fragment a := λ(: a1 Attribute)(: f1 HTML). (: (
    (.program(
-      '<a\shref=" (.program href) '">
-      (.program txt)
-      '</a>
+      '<a\s (.program a1) '>
+      (.program f1)
+      '</a>\n
+   ))
+) HTML);
+fragment a := λ(: a1 Attribute)(: a2 Attribute)(: f1 HTML). (: (
+   (.program(
+      '<a\s (.program a1) (.program a2) '>
+      (.program f1)
+      '</a>\n
    ))
 ) HTML);
 
-fragment link := λ(: rel String)(: href URL). (: (
+fragment span := λ(: a1 Attribute)(: f1 HTML). (: (
    (.program(
-      '<link\srel=" (.program rel) '"\shref=" (.program href) '"\\>\n
+      '<span\s (.program a1) '>
+      (.program f1)
+      '</span>
+   ))
+) HTML);
+
+fragment img := λ(: a1 Attribute). (: (
+   (.program(
+      '<img\s (.program a1) '\\>\n
+   ))
+) HTML);
+fragment img := λ(: a1 Attribute)(: a2 Attribute). (: (
+   (.program(
+      '<img\s (.program a1) (.program a2) '\\>\n
+   ))
+) HTML);
+
+fragment link := λ(: a1 Attribute)(: a2 Attribute). (: (
+   (.program(
+      '<link\s (.program a1) (.program a2) '\\>\n
    ))
 ) HTML);
