@@ -1,7 +1,7 @@
 
 fragment type String; size String 8; atom suffix String _s;
 
-fragment html := λ. (: (
+fragment : DontChain html := λ. (: (
    (.program(
       '<!DOCTYPE\shtml>\n
       '<html>\n
@@ -9,3 +9,135 @@ fragment html := λ. (: (
    ))
 ) HTML);
 
+fragment : DontChain html := λ(: f1 HTML). (: (
+   (.program(
+      '<!DOCTYPE\shtml>\n
+      '<html>\n
+      (.program f1)
+      '</html>\n
+   ))
+) HTML);
+
+fragment : DontChain html := λ(: f1 HTML)(: f2 HTML). (: (
+   (.program(
+      '<!DOCTYPE\shtml>\n
+      '<html>\n
+      (.program f1)
+      (.program f2)
+      '</html>\n
+   ))
+) HTML);
+
+fragment : DontChain head := λ(: f1 HTML). (: (
+   (.program(
+      '<head>\n
+      (.program f1)
+      '</head>\n
+   ))
+) HTML);
+
+fragment : DontChain title := λ(: f1 String). (: (
+   (.program(
+      '<title>
+      (.expression f1)
+      '</title>
+   ))
+) HTML);
+
+fragment : DontChain body := λ(: f1 HTML). (: (
+   (.program(
+      '<body>\n
+      (.program f1)
+      '</body>\n
+   ))
+) HTML);
+
+fragment : DontChain body := λ(: f1 HTML)(: f2 HTML). (: (
+   (.program(
+      '<body>\n
+      (.program f1)
+      (.program f2)
+      '</body>\n
+   ))
+) HTML);
+
+fragment : DontChain h1 := λ(: f1 String). (: (
+   (.program(
+      '<h1>\n
+      (.expression f1)
+      '</h1>\n
+   ))
+) HTML);
+
+fragment : DontChain h2 := λ(: f1 String). (: (
+   (.program(
+      '<h2>\n
+      (.expression f1)
+      '</h2>\n
+   ))
+) HTML);
+
+fragment : DontChain h3 := λ(: f1 String). (: (
+   (.program(
+      '<h3>\n
+      (.expression f1)
+      '</h3>\n
+   ))
+) HTML);
+
+fragment : DontChain h4 := λ(: f1 String). (: (
+   (.program(
+      '<h4>\n
+      (.expression f1)
+      '</h4>\n
+   ))
+) HTML);
+
+fragment : DontChain h5 := λ(: f1 String). (: (
+   (.program(
+      '<h5>\n
+      (.expression f1)
+      '</h5>\n
+   ))
+) HTML);
+
+fragment : DontChain h6 := λ(: f1 String). (: (
+   (.program(
+      '<h6>\n
+      (.expression f1)
+      '</h6>\n
+   ))
+) HTML);
+
+fragment : DontChain ul := λ(: f1 HTML). (: (
+   (.program(
+      '<ul>\n
+      (.program f1)
+      '</ul>\n
+   ))
+) HTML);
+
+fragment : DontChain ul := λ(: f1 HTML)(: f2 HTML). (: (
+   (.program(
+      '<ul>\n
+      (.program f1)
+      (.program f2)
+      '</ul>\n
+   ))
+) HTML);
+
+fragment : DontChain li := λ(: f1 HTML). (: (
+   (.program(
+      '<li>\n
+      (.program f1)
+      '</li>\n
+   ))
+) HTML);
+
+fragment : DontChain a := λ(: txt String)(: href String). (: (
+   (.program(
+      '<a\shref=" (.expression href) '">
+      (.expression txt)
+      '</a>
+   ))
+) HTML);
