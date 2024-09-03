@@ -1,12 +1,13 @@
 [package]
 name = "lambda_mountain"
-version = "1.16.0"
+version = "1.16.1"
 authors = ["Andrew <andrew@subarctic.org>"]
 license = "MIT"
 description = "Typed Macro Assembler (backed by Coq proofs-of-correctness)"
 edition = "2018"
 readme = "README.md"
 repository = "https://github.com/andrew-johnson-4/-"
+documentation = "https://andrew-johnson-4.github.io/lambda-mountain/"
 keywords = ["programming-language","interpreter","compiler"]
 
 [dependencies]
