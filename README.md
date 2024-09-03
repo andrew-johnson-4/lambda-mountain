@@ -5,7 +5,7 @@ The whole compiler is only 5000 lines of code, so this could be a good starting 
 
 * [TUTORIAL](https://github.com/andrew-johnson-4/lambda-mountain/blob/main/TUTORIAL/hello-world.md)
 * [WIKI](https://github.com/andrew-johnson-4/-/wiki)
-* [DOCS](https://andrew-johnson-4.github.io/lambda-mountain/
+* [DOCS](https://andrew-johnson-4.github.io/lambda-mountain/)
 
 ### Supported Platforms
 
