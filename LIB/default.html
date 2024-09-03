@@ -2,6 +2,10 @@
 fragment type String; size String 8; atom suffix String _s;
 
 fragment html := λ. (: (
-   <!DOCTYPE\shtml>\n
+   (.program(
+      '<!DOCTYPE\shtml>\n
+      '<html>\n
+      '</html>\n
+   ))
 ) HTML);
 

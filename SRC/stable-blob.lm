@@ -2,6 +2,7 @@
 blob-expr := λ(: ctx FContext)(: term AST). (: (
    (let e (fragment::new()))
    (set e (fragment::set-context( e ctx )))
+   (set e (fragment::set-type( e (typeof term) )))
    (match term (
       ()
       ( ASTNil () )
@@ -11,6 +12,9 @@ blob-expr := λ(: ctx FContext)(: term AST). (: (
       ))
       ( (Lit( val _ )) (
          (set e (fragment::set( e 'program_s (SAtom val) )))
+      ))
+      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
+         (set e (blob-expr( ctx t )))
       ))
       ( (App( (Abs( (Var( lhs _ )) ASTNil tlt )) rhs )) (
          (let rtype (typeof rhs))
