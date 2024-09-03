@@ -7,6 +7,24 @@ fragment url := λ(: url String). (: (
    ))
 ) URL);
 
+fragment class := λ(: cls String). (: (
+   (.program(
+      '\sclass=" (.program cls) '"\s
+   ))
+) Attribute);
+
+fragment id := λ(: i String). (: (
+   (.program(
+      '\sid=" (.program i) '"\s
+   ))
+) Attribute);
+
+fragment href := λ(: a URL). (: (
+   (.program(
+      '\shref=" (.program a) '"\s
+   ))
+) Attribute);
+
 fragment html := λ. (: (
    (.program(
       '<!DOCTYPE\shtml>\n
@@ -121,6 +139,95 @@ fragment h6 := λ(: f1 String). (: (
       '<h6>
       (.program f1)
       '</h6>\n
+   ))
+) HTML);
+
+fragment div := λ(: f1 HTML). (: (
+   (.program(
+      '<div>
+      (.program f1)
+      '</div>\n
+   ))
+) HTML);
+fragment div := λ(: f1 HTML)(: f2 HTML). (: (
+   (.program(
+      '<div>
+      (.program f1)
+      (.program f2)
+      '</div>\n
+   ))
+) HTML);
+fragment div := λ(: a1 Attribute)(: f1 HTML). (: (
+   (.program(
+      '<div\s (.program a1) '>
+      (.program f1)
+      '</div>\n
+   ))
+) HTML);
+fragment div := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML). (: (
+   (.program(
+      '<div\s (.program a1) '>
+      (.program f1)
+      (.program f2)
+      '</div>\n
+   ))
+) HTML);
+fragment div := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML)(: f3 HTML). (: (
+   (.program(
+      '<div\s (.program a1) '>
+      (.program f1)
+      (.program f2)
+      (.program f3)
+      '</div>\n
+   ))
+) HTML);
+fragment div := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML)(: f3 HTML)(: f4 HTML). (: (
+   (.program(
+      '<div\s (.program a1) '>
+      (.program f1)
+      (.program f2)
+      (.program f3)
+      (.program f4)
+      '</div>\n
+   ))
+) HTML);
+fragment div := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML)(: f3 HTML)(: f4 HTML)(: f5 HTML). (: (
+   (.program(
+      '<div\s (.program a1) '>
+      (.program f1)
+      (.program f2)
+      (.program f3)
+      (.program f4)
+      (.program f5)
+      '</div>\n
+   ))
+) HTML);
+fragment div := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML)(: f3 HTML)(: f4 HTML)(: f5 HTML)(: f6 HTML). (: (
+   (.program(
+      '<div\s (.program a1) '>
+      (.program f1)
+      (.program f2)
+      (.program f3)
+      (.program f4)
+      (.program f5)
+      (.program f6)
+      '</div>\n
+   ))
+) HTML);
+
+fragment header := λ(: a1 Attribute)(: f1 HTML). (: (
+   (.program(
+      '<header\s (.program a1) '>
+      (.program f1)
+      '</div>\n
+   ))
+) HTML);
+
+fragment header := λ(: a1 Attribute)(: a2 Attribute)(: f1 HTML). (: (
+   (.program(
+      '<header\s (.program a1) (.program a2) '>
+      (.program f1)
+      '</div>\n
    ))
 ) HTML);
 

@@ -1,16 +1,113 @@
 
 import LIB/default.html;
 
-(html(
-   (head(
-      (link( 'stylesheet_s (url 'https://assets.ubuntu.com/v1/vanilla-framework-version-4.15.0.min.css_s) ))
-      (title( 'Lambda\sMountain\sDocumentation_s ))
+docs-html := λ(: page-title String)(: d-header DocsHeader+HTML)(: d-sidebar DocsSidebar+HTML)
+                       (: d-title DocsTitle+HTML)(: d-content DocsContent+HTML)(: d-meta DocsMeta+HTML)
+                       (: d-footer DocsFooter+HTML). (: (
+   (html(
+      (head(
+         (link( 'stylesheet_s (url 'https://assets.ubuntu.com/v1/vanilla-framework-version-4.15.0.min.css_s) ))
+         (title( page-title ))
+      ))
+      (body(
+         (div( (class 'l-docs_s)
+            d-header
+            d-sidebar
+            d-title
+            d-content
+            d-meta
+            d-footer
+         ))
+      ))
+#         (h2( 'Libraries_s ))
+#         (ul(
+#            (li(a( 'default.lm_s (url 'https://andrew-johnson-4.github.io/lambda_mountain/default.lm.html_s) )))
+#            (li(a( 'default.html_s (url 'https://andrew-johnson-4.github.io/lambda_mountain/default.html.html_s) )))
+#         ))
    ))
-   (body(
-      (h2( 'Libraries_s ))
-      (ul(
-         (li(a( 'default.lm_s (url 'https://andrew-johnson-4.github.io/lambda_mountain/default.lm.html_s) )))
-         (li(a( 'default.html_s (url 'https://andrew-johnson-4.github.io/lambda_mountain/default.html.html_s) )))
+) HTML);
+
+docs-header := λ. (: (as 
+   (div( (class 'l-docs__header_s)
+      (header( (id 'navigation_s) (class 'p-navigation\sis-dark_s)
+         (div( (class 'l-docs__subgrid_s)
+            (h2 'Hello_s)
+         ))
       ))
    ))
+DocsHeader+HTML) DocsHeader+HTML);
+
+fragment docs-sidebar := λ. (: () DocsSidebar+HTML);
+fragment docs-title := λ(: title-text String). (: () DocsTitle+HTML);
+fragment docs-content := λ. (: () DocsContent+HTML);
+fragment docs-meta := λ. (: () DocsMeta+HTML);
+fragment docs-footer := λ. (: () DocsFooter+HTML);
+
+(docs-html(
+   'LM\sDocumentation_s
+   (docs-header())
+   (docs-sidebar())
+   (docs-title 'LM\sDocumentation_s)
+   (docs-content())
+   (docs-meta())
+   (docs-footer())
 ))
+
+#<div class="l-docs">
+#  <div class="l-docs__header">
+#    <header id="navigation" class="p-navigation is-dark">
+#      <div class="l-docs__subgrid">
+#        <div class="l-docs__sidebar">
+#          <div class="p-navigation__banner">
+#            <div class="p-navigation__tagged-logo">
+#              <a class="p-navigation__link" href="#">
+#                <div class="p-navigation__logo-tag">
+#                  <img class="p-navigation__logo-icon" src="https://assets.ubuntu.com/v1/82818827-CoF_white.svg" alt="">
+#                </div>
+#                <span class="p-navigation__logo-title">Ubuntu</span>
+#              </a>
+#            </div>
+#            <a href="#navigation" class="p-navigation__toggle--open" title="menu">Menu</a>
+#            <a href="#navigation-closed" class="p-navigation__toggle--close" title="close menu">Close menu</a>
+#          </div>
+#        </div>
+#        <div class="l-docs__main">
+#          <div class="p-navigation__row u-fixed-width">
+#            <nav class="p-navigation__nav" aria-label="Example main">
+#              <ul class="p-navigation__items">
+#                <li class="p-navigation__item">
+#                  <a class="p-navigation__link" href="#">Products</a>
+#                </li>
+#                <li class="p-navigation__item">
+#                  <a class="p-navigation__link" href="#">Services</a>
+#                </li>
+#                <li class="p-navigation__item">
+#                  <a class="p-navigation__link" href="#">Partners</a>
+#                </li>
+#                <li class="p-navigation__item is-selected">
+#                  <a class="p-navigation__link" href="#">Docs</a>
+#                </li>
+#              </ul>
+#            </nav>
+#          </div>
+#        </div>
+#      </div>
+#    </header>
+#    <section id="search-docs" class="p-strip is-bordered is-shallow l-docs__subgrid">
+#      <div class="l-docs__sidebar u-hide--medium u-hide--small">
+#        <div class="u-fixed-width">
+#          <h5 class="u-sv-2">Documentation example</h5>
+#        </div>
+#      </div>
+#      <div class="l-docs__main">
+#        <div class="row">
+#          <form class="p-search-box u-no-margin--bottom">
+#            <input type="search" class="p-search-box__input" name="q" placeholder="Search documentation" required="" autocomplete="on">
+#            <button type="reset" class="p-search-box__reset" name="close"><i class="p-icon--close">Close</i></button>
+#            <button type="submit" class="p-search-box__button" name="submitSearch"><i class="p-icon--search">Search</i></button>
+#          </form>
+#        </div>
+#      </div>
+#    </section>
+#  </div>
+

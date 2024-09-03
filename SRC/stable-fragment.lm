@@ -2,7 +2,7 @@
 print := λ(: x Fragment). (: (
    (match x (
       ()
-      ( (Fragment( kvs offset xtt ctx )) (
+      ( (Fragment( e-t kvs offset xtt ctx )) (
          (print 'Fragment\n_s)
          (print '\tOffset\s=\s_s)(print offset)(print '\n_s)
          (while (non-zero kvs) (match kvs (
@@ -29,6 +29,7 @@ print := λ(: x FragmentList). (: (
 
 fragment::new := λ . (: (
    (let r (Fragment(
+      ASTEOF
       (close FKVEOF)
       0_i64
       TAny
@@ -41,7 +42,7 @@ fragment::get := λ(: e Fragment)(: k String). (: (
    (let r SNil)
    (match e (
       ()
-      ( (Fragment( kvs offset ft ctx )) (
+      ( (Fragment( e-t kvs offset ft ctx )) (
          (while (non-zero kvs) (match kvs (
             ()
             ( (FKVSeq( rst kvs-k kvs-v )) (
@@ -59,8 +60,9 @@ fragment::get := λ(: e Fragment)(: k String). (: (
 fragment::set := λ(: e Fragment)(: k String)(: v S). (: (
    (match e (
       ()
-      ( (Fragment( kvs offset ft ctx )) (
+      ( (Fragment( e-t kvs offset ft ctx )) (
          (set e (Fragment(
+            e-t
             (close(FKVSeq( (close kvs) k v )))
             offset ft (close ctx)
          )))
@@ -77,8 +79,23 @@ fragment::get-type := λ(: e Fragment) . (: (
 fragment::set-type := λ(: e Fragment)(: tt Type). (: (
    (match e (
       ()
-      ( (Fragment( e-kvs e-offset e-tt e-ctx )) (
-         (set e (Fragment( (close e-kvs) e-offset tt (close e-ctx) )))
+      ( (Fragment( e-t e-kvs e-offset e-tt e-ctx )) (
+         (set e (Fragment( e-t (close e-kvs) e-offset tt (close e-ctx) )))
+      ))
+   ))
+   e
+) Fragment);
+
+fragment::get-term := λ(: e Fragment) . (: (
+   (let t (.5( (as e Tag<Fragment>) )))
+   t
+) AST);
+
+fragment::set-term := λ(: e Fragment)(: t AST). (: (
+   (match e (
+      ()
+      ( (Fragment( e-t e-kvs e-offset e-tt e-ctx )) (
+         (set e (Fragment( t (close e-kvs) e-offset e-tt (close e-ctx) )))
       ))
    ))
    e
@@ -121,8 +138,8 @@ fragment::set-context := λ(: e Fragment)(: ctx FContext). (: (
    (let r e)
    (match e (
       ()
-      ( (Fragment( e-kvs e-offset e-tt e-ctx )) (
-         (set r (Fragment( (close e-kvs) e-offset e-tt (close ctx) )))
+      ( (Fragment( e-t e-kvs e-offset e-tt e-ctx )) (
+         (set r (Fragment( e-t (close e-kvs) e-offset e-tt (close ctx) )))
       ))
    ))
    r
@@ -132,7 +149,7 @@ fragment::get-offset := λ(: e Fragment). (: (
    (let offset 0_i64)
    (match e (
       ()
-      ( (Fragment( e-kvs e-offset e-tt e-ctx )) (
+      ( (Fragment( e-t e-kvs e-offset e-tt e-ctx )) (
          (set offset e-offset)
       ))
    ))
@@ -143,9 +160,9 @@ fragment::set-offset := λ(: e Fragment)(: offset I64). (: (
    (let r e)
    (match e (
       ()
-      ( (Fragment( e-kvs e-offset e-tt e-ctx )) (
+      ( (Fragment( e-t e-kvs e-offset e-tt e-ctx )) (
          (set r (Fragment(
-            (close e-kvs) offset e-tt (close e-ctx)
+            e-t (close e-kvs) offset e-tt (close e-ctx)
          )))
       ))
    ))
