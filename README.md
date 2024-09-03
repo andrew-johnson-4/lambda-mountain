@@ -16,17 +16,6 @@ Currently supported output formats:
    * CSS
    * WASM
 
-### Verification
-
-LM produces annotated object files or human readable assembly. These annotations can then be sent to the attached Coq verifier to check logical consistency.
-
-### "Portable" Assembler
-
-LM provides abstraction up to the level that you want and down to the level that you want.
-Each LM program specifies the exact binary objects to be created, so there is zero room for interpretation by the compiler.
-Platform specific definitions and functionality are provided by libraries.
-Therefore the compiler has zero hard-coded logic for how to deal with platform architecture.
-
 ### Why Such a Small Codebase?
 
 LM solves an N by M Problem with language frontends vs language backends.
