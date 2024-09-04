@@ -7,6 +7,36 @@ fragment class := λ(: cls String). (: (
    ))
 ) Attribute);
 
+fragment name := λ(: cls String). (: (
+   (.program(
+      '\sname=" (.program cls) '"\s
+   ))
+) Attribute);
+
+fragment autocomplete := λ(: cls String). (: (
+   (.program(
+      '\sautocomplete=" (.program cls) '"\s
+   ))
+) Attribute);
+
+fragment required := λ(: cls String). (: (
+   (.program(
+      '\srequired=" (.program cls) '"\s
+   ))
+) Attribute);
+
+fragment placeholder := λ(: cls String). (: (
+   (.program(
+      '\splaceholder=" (.program cls) '"\s
+   ))
+) Attribute);
+
+fragment type_ := λ(: cls String). (: (
+   (.program(
+      '\stype=" (.program cls) '"\s
+   ))
+) Attribute);
+
 fragment src := λ(: s String). (: (
    (.program(
       '\ssrc=" (.program s) '"\s
@@ -106,7 +136,7 @@ fragment body := λ(: f1 HTML)(: f2 HTML). (: (
    ))
 ) HTML);
 
-fragment h1 := λ(: f1 String). (: (
+fragment h1 := λ(: f1 HTML). (: (
    (.program(
       '<h1>
       (.program f1)
@@ -114,7 +144,7 @@ fragment h1 := λ(: f1 String). (: (
    ))
 ) HTML);
 
-fragment h2 := λ(: f1 String). (: (
+fragment h2 := λ(: f1 HTML). (: (
    (.program(
       '<h2>
       (.program f1)
@@ -122,7 +152,7 @@ fragment h2 := λ(: f1 String). (: (
    ))
 ) HTML);
 
-fragment h3 := λ(: f1 String). (: (
+fragment h3 := λ(: f1 HTML). (: (
    (.program(
       '<h3>
       (.program f1)
@@ -130,7 +160,7 @@ fragment h3 := λ(: f1 String). (: (
    ))
 ) HTML);
 
-fragment h4 := λ(: f1 String). (: (
+fragment h4 := λ(: f1 HTML). (: (
    (.program(
       '<h4>
       (.program f1)
@@ -138,15 +168,22 @@ fragment h4 := λ(: f1 String). (: (
    ))
 ) HTML);
 
-fragment h5 := λ(: f1 String). (: (
+fragment h5 := λ(: f1 HTML). (: (
    (.program(
       '<h5>
       (.program f1)
       '</h5>\n
    ))
 ) HTML);
+fragment h5 := λ(: a1 Attribute)(: f1 HTML). (: (
+   (.program(
+      '<h5\s (.program a1) '>
+      (.program f1)
+      '</h5>\n
+   ))
+) HTML);
 
-fragment h6 := λ(: f1 String). (: (
+fragment h6 := λ(: f1 HTML). (: (
    (.program(
       '<h6>
       (.program f1)
@@ -340,6 +377,14 @@ fragment span := λ(: a1 Attribute)(: f1 HTML). (: (
    ))
 ) HTML);
 
+fragment i := λ(: a1 Attribute)(: f1 HTML). (: (
+   (.program(
+      '<i\s (.program a1) '>
+      (.program f1)
+      '</i>
+   ))
+) HTML);
+
 fragment img := λ(: a1 Attribute). (: (
    (.program(
       '<img\s (.program a1) '\\>\n
@@ -354,5 +399,43 @@ fragment img := λ(: a1 Attribute)(: a2 Attribute). (: (
 fragment link := λ(: a1 Attribute)(: a2 Attribute). (: (
    (.program(
       '<link\s (.program a1) (.program a2) '\\>\n
+   ))
+) HTML);
+
+fragment section := λ(: a1 Attribute)(: a2 Attribute)(: f1 HTML)(: f2 HTML). (: (
+   (.program(
+      '<section\s (.program a1) (.program a2) '>\n
+      (.program f1)
+      (.program f2)
+      '</section>\n
+   ))
+) HTML);
+
+fragment form := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML)(: f3 HTML). (: (
+   (.program(
+      '<form\s (.program a1) '>\n
+      (.program f1)
+      (.program f2)
+      (.program f3)
+      '</form>\n
+   ))
+) HTML);
+
+fragment input := λ(: a1 Attribute)(: a2 Attribute)(: a3 Attribute)(: a4 Attribute)(: a5 Attribute). (: (
+   (.program(
+      '<input\s (.program a1) (.program a2) (.program a3) (.program a4) (.program a5) '>\n
+   ))
+) HTML);
+fragment input := λ(: a1 Attribute)(: a2 Attribute)(: a3 Attribute)(: a4 Attribute)(: a5 Attribute)(: a6 Attribute). (: (
+   (.program(
+      '<input\s (.program a1) (.program a2) (.program a3) (.program a4) (.program a5) (.program a6) '>\n
+   ))
+) HTML);
+
+fragment button := λ(: a1 Attribute)(: a2 Attribute)(: a3 Attribute)(: f1 HTML). (: (
+   (.program(
+      '<button\s (.program a1) (.program a2) (.program a3) '>\n
+      (.program f1)
+      '</button>\n
    ))
 ) HTML);
