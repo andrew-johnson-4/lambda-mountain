@@ -1,0 +1,65 @@
+
+import LIB/default.html;
+
+docs-html := λ(: page-title String)(: d-header DocsHeader+HTML)(: d-sidebar DocsSidebar+HTML)
+                       (: d-title DocsTitle+HTML)(: d-content DocsContent+HTML)(: d-meta DocsMeta+HTML)
+                       (: d-footer DocsFooter+HTML). (: (
+   (html(
+      (head(
+         (link( (rel 'stylesheet_s) (href 'https://assets.ubuntu.com/v1/vanilla-framework-version-4.15.0.min.css_s) ))
+         (title( page-title ))
+      ))
+      (body(
+         (div( (class 'l-docs_s)
+            d-header
+            d-sidebar
+            d-title
+            d-content
+            d-meta
+            d-footer
+         ))
+      ))
+   ))
+) HTML);
+
+docs-header := λ. (: (as 
+   (div( (class 'l-docs__header_s)
+      (header( (id 'navigation_s) (class 'p-navigation\sis-dark_s)
+         (div( (class 'l-docs__subgrid_s)
+            (div( (class 'l-docs__sidebar_s)
+               (div( (class 'p-navigation__banner_s)
+                  (div( (class 'p-navigation__tagged-logo_s)
+                     (a( (class 'p-navigation__link_s) (href '/lambda-mountain/_s)
+                        (div( (class 'p-navigation__logo-tag_s)
+                           (img( (class 'p-navigation__logo-icon_s) (src 'https://github.com/andrew-johnson-4/lambda-mountain/blob/main/DOBYLOGO.png?raw=true_s) ))
+                        ))
+                        (span( (class( 'p-navigation__logo-title_s )) (text 'Lambda\sMountain_s) ))
+                     ))
+                  ))
+               ))
+            ))
+            (div( (class 'l-docs__main_s)
+               (div( (class 'p-navigation__row\su-fixed-width_s)
+                  (nav( (class 'p-navigation__nav_s)
+                     (ul( (class 'p-navigation__items_s)
+                        (li( (class 'p-navigation__item_s)
+                           (a( (class 'p-navigation__link_s) (href '/lambda-mountain/default.lm.html_s) (text 'default.lm_s) ))
+                        ))
+                        (li( (class 'p-navigation__item_s)
+                           (a( (class 'p-navigation__link_s) (href '/lambda-mountain/default.html.html_s) (text 'default.html_s) ))
+                        ))
+                     ))
+                  ))
+               ))
+            ))
+         ))
+      ))
+   ))
+DocsHeader+HTML) DocsHeader+HTML);
+
+fragment docs-sidebar := λ. (: () DocsSidebar+HTML);
+fragment docs-title := λ(: title-text String). (: () DocsTitle+HTML);
+fragment docs-content := λ. (: () DocsContent+HTML);
+fragment docs-meta := λ. (: () DocsMeta+HTML);
+fragment docs-footer := λ. (: () DocsFooter+HTML);
+
