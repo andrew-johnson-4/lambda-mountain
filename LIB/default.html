@@ -94,6 +94,14 @@ fragment html := λ(: f1 HTML)(: f2 HTML). (: (
    ))
 ) HTML);
 
+fragment main := λ(: a1 Attribute)(: f1 HTML). (: (
+   (.program(
+      '<main (.program a1) '>\n
+      (.program f1)
+      '</main>\n
+   ))
+) HTML);
+
 fragment head := λ(: f1 HTML). (: (
    (.program(
       '<head>\n
@@ -389,6 +397,14 @@ fragment i := λ(: a1 Attribute)(: f1 HTML). (: (
       '<i\s (.program a1) '>
       (.program f1)
       '</i>
+   ))
+) HTML);
+
+fragment p := λ(: f1 HTML). (: (
+   (.program(
+      '<p>
+      (.program f1)
+      '</p>
    ))
 ) HTML);
 
