@@ -2,6 +2,7 @@
 build-docs:
 	lm --blob -o docs/index.html docs/index.html.lm
 	lm --blob -o docs/default.html.html docs/default.html.html.lm
+	lm --blob -o docs/default.lm.html docs/default.lm.html.lm
 
 develop:
 	lmv tests/regress/hello_world.s.v
