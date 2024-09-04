@@ -213,6 +213,13 @@ fragment div := λ(: a1 Attribute)(: f1 HTML). (: (
       '</div>\n
    ))
 ) HTML);
+fragment div := λ(: a1 Attribute)(: a2 Attribute)(: f1 HTML). (: (
+   (.program(
+      '<div\s (.program a1) (.program a2) '>\n
+      (.program f1)
+      '</div>\n
+   ))
+) HTML);
 fragment div := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML). (: (
    (.program(
       '<div\s (.program a1) '>\n

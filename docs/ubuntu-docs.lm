@@ -57,7 +57,7 @@ docs-header := λ. (: (as
       (section( (id 'search-docs_s) (class 'p-strip\sis-bordered\sis-shallow\sl-docs__subgrid_s)
          (div( (class 'l-docs__sidebar\su-hide--medium\su-hide--small_s)
             (div( (class 'u-fixed-width_s)
-               (h5( (class 'u-sv-2_s) (text 'Lambda\sMountain\sDocumentation_s) ))
+               (h5( (class 'u-sv-2_s) (text 'LM\sDocumentation_s) ))
             ))
          ))
          (div( (class 'l-docs__main_s)
@@ -74,7 +74,17 @@ docs-header := λ. (: (as
 DocsHeader+HTML) DocsHeader+HTML);
 
 fragment docs-sidebar := λ. (: () DocsSidebar+HTML);
-fragment docs-title := λ(: title-text String). (: () DocsTitle+HTML);
+docs-title := λ(: title-text String). (: (as (
+   (div( (class 'l-docs__title_s) (id 'main-content_s)
+      (div( (class 'p-section--shallow_s)
+         (div( (class 'row_s)
+            (div( (class 'col-12_s)
+               (h1( (text title-text) ))
+            ))
+         ))
+      ))
+   ))
+) DocsTitle+HTML) DocsTitle+HTML);
 fragment docs-content := λ. (: () DocsContent+HTML);
 fragment docs-meta := λ. (: () DocsMeta+HTML);
 fragment docs-footer := λ. (: () DocsFooter+HTML);
