@@ -28,7 +28,7 @@ fragment-context::lookup := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST
    (let found TAny)
    (while (non-zero ctx) (match ctx (
       ()
-      ( (FCtxBind( rst rk rt rf )) (
+      ( (FCtxBind( is-vararg rst rk rt rf )) (
          (if (==( k rk )) (
             (match (slot( rt 'Arrow_s )) (
                ()
@@ -64,8 +64,33 @@ fragment-context::lookup := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST
    r
 ) Fragment);
 
+fragment-context::lookup-vararg := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST). (: (
+   (let r FLEOF)
+   (while (non-zero ctx) (match ctx (
+      ()
+      ( (FCtxBind( is-vararg rst rk rt rf )) (
+         (if (&&( (==( k rk )) (==( is-vararg True_u8 )) )) (
+            (set r (FLSeq( (close r) rf )))
+         ) (
+            (set ctx rst)
+         ))
+      ))
+   )))
+   r
+) FragmentList);
+
 fragment-context::bind := λ(: ctx FContext)(: k String)(: kt Type)(: f Fragment). (: (
    (let new-ctx (FCtxBind(
+      False_u8
+      (close ctx)
+      k kt f
+   )))
+   new-ctx
+) FContext);
+
+fragment-context::bind-vararg := λ(: ctx FContext)(: k String)(: kt Type)(: f Fragment). (: (
+   (let new-ctx (FCtxBind(
+      True_u8
       (close ctx)
       k kt f
    )))

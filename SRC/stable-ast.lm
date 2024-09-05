@@ -17,7 +17,7 @@ type IsScoped Scoped | Unscoped;
 
 type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST )); zero Context CtxEOF;
 type TContext TCtxEOF | TCtxNil | (TCtxBind( TContext[] , String , Type , AST )); zero TContext TCtxEOF;
-type FContext FCtxEOF | (FCtxBind( FContext[] , String , Type , Fragment )); zero FContext FCtxEOF;
+type FContext FCtxEOF | (FCtxBind( U8 , FContext[] , String , Type , Fragment )); zero FContext FCtxEOF;
 
 type STypeList STEOF | (STSeq( STypeList[] , S , Type )); zero STypeList STEOF;
 type ATypeList ATEOF | (ATSeq( ATypeList[] , AST , Type )); zero ATypeList ATEOF;
