@@ -1986,6 +1986,7 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: 
       (print 'Function\sApplication\sYielded\sNo\sMatches\n_s)
       (print function-name)(print '\nWith\sArgument\s:\s_s)(print pt)(print '\n_s)
       (print (location-of( blame )))(print '\n_s)
+      (print 'Options:\s_s)(print ft)(print '\n_s)
       (exit 1_u64)
    ) ())
    (if (>( (.length rs) 1_u64 )) (
