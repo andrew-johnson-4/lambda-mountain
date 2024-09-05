@@ -1143,6 +1143,60 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          ))
       ))
 
+      # Varargs
+      ( (Tuple(
+         (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF lpr ))
+            (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         )) ))
+         (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF rpr )) rp1 )) ))
+      )) (
+         
+         (if (can-unify( lp1 rp1 )) (
+            (set ctx (and(
+               (unify-inner( lpr rpr ))
+               (unify-inner( lp1 rp1 ))
+            )))
+         ) (
+            (set ctx (unify-inner( lpr pt )))
+         ))
+      ))
+      ( (Tuple(
+         (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF lpr ))
+            (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         )) ))
+         rp1
+      )) (
+         (if (can-unify( lp1 rp1 )) (
+            (set ctx (and(
+               (unify-inner( lp1 rp1 ))
+               (unify-inner( lpr (t1 'Nil_s) ))
+            )))
+         ) (
+            (set ctx (unify-inner( lpr rp1 )))
+         ))
+      ))
+      ( (Tuple(
+         (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF rpr )) rp1 )) ))
+      )) (
+         (if (can-unify( lp1 rp1 )) (
+            (set ctx (and(
+               (unify-inner( fpt rpr ))
+               (unify-inner( lp1 rp1 ))
+            )))
+         ) ())
+      ))
+      ( (Tuple(
+         (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         (TGround( 'Nil_s TypeEOF ))
+      )) ())
+      ( (Tuple(
+         (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         rp1
+      )) (
+         (set ctx (unify-inner( lp1 rp1 )))
+      ))
+
       ( (Tuple( (TGround( 'GT_s (TypeSeq( TypeEOF (TGround( lbase TypeEOF )) )) )) (TGround( rbase TypeEOF )) )) (
          (if (>( (to-i64 rbase) (to-i64 lbase) )) (
             (set ctx TCtxNil)
