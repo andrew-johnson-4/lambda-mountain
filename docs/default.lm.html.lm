@@ -10,7 +10,6 @@ import docs/ubuntu-docs.lm;
       (main( (class 'l-docs__main_s)
          (div( (class 'row_s)
             (div( (class 'col-12_s)
-               (h2( (text 'Bound\sSymbols_s) ))
             ))
          ))
       ))
