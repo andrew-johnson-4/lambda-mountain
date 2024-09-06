@@ -131,6 +131,18 @@ print := λ(: t AST). (: (
    ))
 ) Nil);
 
+reverse := λ(: fl FragmentList). (: (
+   (let r FLEOF)
+   (while (non-zero fl) (match fl (
+      ()
+      ( (FLSeq( rst fi )) (
+         (set r (FLSeq( (close r) fi )))
+         (set fl rst)
+      ))
+   )))
+   r
+) FragmentList);
+
 serialize-ast := λ(: t AST). (: (
    (match t (
       ()
