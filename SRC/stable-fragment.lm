@@ -208,7 +208,7 @@ fragment::let := λ(: ctx FContext)(: s S). (: (
         )) )) (
          (set v (fragment::render( return v )))
          (set return (FCtxBind(
-            False_u8 (close return) k TAny (fragment::expression( v ))
+            (close return) k TAny (fragment::expression( v ))
          )))
       ))
       ( (SCons( (SAtom 'App_s) (SCons(
@@ -253,7 +253,7 @@ fragment::render-impl := λ(: s S). (: (
          (if (non-zero r) () (
             (set f (fragment::expression(uuid())))
             (set fragment::render-ctx (FCtxBind(
-               False_u8 (close fragment::render-ctx) v TAny f
+              (close fragment::render-ctx) v TAny f
             )))
             (set r (fragment::get( f 'expression_s )))
          ))
@@ -463,7 +463,7 @@ fragment::render-impl := λ(: s S). (: (
                (let fi (fragment::expression i))
                (let fi-2 (fragment::set( fi 'program_s (SAtom i) )))(set fi fi-2)
                (let inner-ctx (FCtxBind(
-                  False_u8 (close ctx) binding TAny fi
+                  (close ctx) binding TAny fi
                )))
                (let body-instance (fragment::render( inner-ctx body )))
                (set r (SCons(
@@ -506,7 +506,7 @@ union := λ(: ctx FContext)(: tctx TContext). (: (
          (let fragment (fragment::expression(to-string vt)))
          (set fragment (fragment::set( fragment 'program_s (SAtom(to-string vt)) )))
          (set r (FCtxBind(
-            False_u8 (close r) k TAny fragment
+            (close r) k TAny fragment
          )))
          (set tctx rst)
       ))
@@ -604,7 +604,7 @@ destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragmentList). (: (
                   (exit 1_u64)
                ))
                (set ctx (union( ctx (unify( a-type ft )) ))) # destructure tctx
-               (set ctx (FCtxBind( False_u8 (close ctx) k ft f )))
+               (set ctx (FCtxBind( (close ctx) k ft f )))
             ))
          ))
       ))
@@ -626,7 +626,7 @@ destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragmentList). (: (
                   (exit 1_u64)
                ))
                (set ctx (union( ctx (unify( a-type ft )) )))
-               (set ctx (FCtxBind( False_u8 (close ctx) k ft f )))
+               (set ctx (FCtxBind( (close ctx) k ft f )))
                (set args fl-rst)
             ))
          ))

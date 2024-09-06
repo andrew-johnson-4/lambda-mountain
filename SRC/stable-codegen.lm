@@ -3,7 +3,7 @@ translate-local-variables := λ(: ctx FContext)(: delta I64). (: (
    (match ctx (
       ()
       ( FCtxEOF () )
-      ( (FCtxBind( is-vararg rst k kt f )) (
+      ( (FCtxBind( rst k kt f )) (
          (set rst (translate-local-variables( rst delta )))
          (match (fragment::get( f 'fragment-type_s )) (
             ()
@@ -14,11 +14,11 @@ translate-local-variables := λ(: ctx FContext)(: delta I64). (: (
                      (let p-offset (to-i64 previous-offset))
                      (let new-offset (+( p-offset delta )))
                      (set f (fragment::set( f 'expression_s (SAtom(to-string new-offset)) )))
-                     (set ctx (FCtxBind( is-vararg (close rst) k kt f )))
+                     (set ctx (FCtxBind( (close rst) k kt f )))
                   ))
                ))
             ))
-            ( _ (set ctx (FCtxBind( is-vararg (close rst) k kt f ))) )
+            ( _ (set ctx (FCtxBind( (close rst) k kt f ))) )
          ))
       ))
    ))
@@ -244,7 +244,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
          (let args-type (domain kt))
          (let args-size (sizeof-aligned args-type))
          (set ctx (compile-destructure-args( args-type ctx lhs 0_i64 )))
-         (set ctx (FCtxBind( False_u8 (close ctx) 'cdecl::args-size_s TAny
+         (set ctx (FCtxBind( (close ctx) 'cdecl::args-size_s TAny
             (fragment::expression(to-string args-size))
          )))
          (let stack-offset 0_i64)
