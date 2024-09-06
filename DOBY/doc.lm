@@ -82,16 +82,51 @@ doc-signature := λ(: abs AST). (: (
    (let r SNil)
    (match abs (
       ()
-      ( (Abs( lhs (App( (Lit ':_t) (App( _ (AType tt) )) )) )) (
+      ( (Abs( lhs (App( (Lit ':_t) (App( _ (AType tt) )) )) _ )) (
          (set r (+(
             (doc-signature( lhs ))
             (+(
-               (SAtom ':\s_s)
+               (SAtom ':\\s_s)
                (SAtom(to-string tt))
             ))
          )))
       ))
-      ( _ () )
+      ( (App( rst (App( (Lit ':_t) (App( (Var k_t) (AType tt) )) )) )) (
+         (set r (+(
+            (doc-signature( rst ))
+            (+(
+               (SAtom '\\[_s)
+               (+(
+                  (+(
+                     (SAtom k)
+                     (SAtom ':\\s_s)
+                  ))
+                  (+(
+                     (SAtom(to-string tt))
+                     (SAtom '\\]_s)
+                  ))
+               ))
+            ))
+         )))
+      ))
+      ( (App( (Lit ':_t) (App( (Var k_t) (AType tt) )) )) (
+         (set r (+(
+            (SAtom '\\[_s)
+            (+(
+               (+(
+                  (SAtom k)
+                  (SAtom ':\\s_s)
+               ))
+               (+(
+                  (SAtom(to-string tt))
+                  (SAtom '\\]_s)
+               ))
+            ))
+         )))
+      ))
+      ( _ (
+         (print 'Invalid\sSignature:\s_s)(print abs)(print '\n_s)
+      ))
    ))
    r
 ) S);
