@@ -158,10 +158,81 @@ doc-meta-item := λ(: m-key String)(: m-item AST). (: (
          (set doc (+( doc (SAtom '_s\]\]\]\n_s) )))
       ))
       ( (Tuple( 'example_s term )) (
-         (print 'TODO\srender\sexample\n_s)
+         (set doc (+( doc (SAtom '\[pre\[\s\[code\[\s\[text\s\`_s) )))
+         (set doc (+( doc (doc-code term) )))
+         (set doc (+( doc (SAtom '_s\]\]\]\]\]\n_s) )))
       ))
       ( _ (
          (print 'Unrecognized\sMeta\sItem:\s_s)(print m-key)(print '\n_s)
+      ))
+   ))
+   doc
+) S);
+
+doc-code := λ(: term AST). (: (doc-code( 0_u64 term )) S);
+doc-code := λ(: indent U64)(: term AST). (: (
+   (let doc SNil)
+   (match term (
+      ()
+      ( (App( (Var( f-name _ )) args )) (
+         (set doc (+(
+            (+(
+               (SAtom '\\n_s)
+               (+(
+                  (SAtom(*( '\\s_s indent )))
+                  (SAtom '\\[_s)
+               ))
+            ))
+            (+(
+               (+(
+                  (SAtom f-name)
+                  (SAtom '\\[\\n_s)
+               ))
+               (+(
+                  (doc-code( indent args ))
+                  (SAtom '\\]\\]\\n_s)
+               ))
+            ))
+         )))
+      ))
+      ( (App( arg1 arg2 )) (
+         (set doc (+(
+            (+(
+               (+(
+                  (SAtom(*( '\s_s indent )))
+                  (doc-code( indent arg1 ))
+               ))
+               (SAtom '\\n_s)
+            ))
+            (+(
+               (+(
+                  (SAtom(*( '\s_s indent )))
+                  (doc-code( indent arg2 ))
+               ))
+               (SAtom '\\n_s)
+            ))
+         )))
+      ))
+      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
+         (set doc (+(
+            (+(
+               (SAtom '\\[:\\s_s)
+               (doc-code( indent t ))
+            ))
+            (+(
+               (SAtom '\\s_s)
+               (+(
+                  (SAtom(to-string tt))
+                  (SAtom '\\]_s)
+               ))
+            ))
+         )))
+      ))
+      ( (Lit( l _ )) (
+         (set doc (SAtom l))
+      ))
+      ( t (
+         (print 'Unmatched\sTerm\sIn\sdoc-code:\s_s)(print t)(print '\n_s)
       ))
    ))
    doc

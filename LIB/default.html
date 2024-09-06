@@ -287,3 +287,19 @@ fragment button := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
       '</button>\n
    ))
 ) HTMLElement);
+
+fragment pre := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (.program(
+      '<pre\s (for-arg a in attrs (.program a)) '>\n
+      (for-arg e in es (.program e))
+      '</pre>\n
+   ))
+) HTMLElement);
+
+fragment code := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (.program(
+      '<code\s (for-arg a in attrs (.program a)) '>\n
+      (for-arg e in es (.program e))
+      '</code>\n
+   ))
+) HTMLElement);
