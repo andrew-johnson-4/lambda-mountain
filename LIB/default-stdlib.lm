@@ -690,3 +690,12 @@ deep-hash := λ(: key String). (: (
    (set hash (+( hash (<<( hash 15_u64 )) )))
    hash
 ) U64);
+
+* := λ(: s String)(: i U64). (: (
+   (let r SNil)
+   (while (>( i 0_u64 )) (
+      (set r (+( r (SAtom s) )))
+      (set i (-( i 1_u64 )))
+   ))
+   (clone-rope r)
+) String);

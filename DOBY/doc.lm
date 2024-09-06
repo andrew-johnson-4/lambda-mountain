@@ -19,6 +19,8 @@ doc-render := λ. (: (
 
    (set doc (+( doc (SAtom '\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\[h2\[\s\[text\s\`Bound\\sSymbols_s\]\s\]\]\n_s) )))
 
+   (set doc (+( doc (doc-bound-symbols()) )))
+
    (set doc (+( doc (SAtom '\s\s\s\s\s\s\s\s\s\s\s\s\]\]\n_s) )))
    (set doc (+( doc (SAtom '\s\s\s\s\s\s\s\s\s\]\]\n_s) )))
    (set doc (+( doc (SAtom '\s\s\s\s\s\s\]\]\n_s) )))
@@ -31,3 +33,207 @@ doc-render := λ. (: (
    (clone-rope doc)
 ) String);
 
+doc-bound-symbols := λ. (: (
+   (let doc SNil)
+   (let program ast-parsed-program)
+   (while (non-zero program) (match program (
+      ()
+      ( (Seq( (Seq( rst (Meta m) )) f )) (
+         (set doc (+( doc (doc-symbol( m f )) )))
+         (set program rst)
+      ))
+      ( (Seq( rst _ )) (
+         (set program rst)
+      ))
+   )))
+   doc
+) S);
+
+doc-symbol := λ(: meta AST)(: binding AST). (: (
+   (let doc SNil)
+   (match binding (
+      ()
+      ( (Frg( k_t abs kt )) (
+         (set doc (+( doc (SAtom '\[h2\[\s\[text\s\`_s) )))
+         (set doc (+( doc (doc-signature( k abs )) )))
+         (set doc (+( doc (SAtom '_s\]\]\]\n_s) )))
+         (set doc (+( doc (doc-meta meta) )))
+      ))
+      ( _ (
+         (print 'Unknown\sSymbol\sBinding\sin\sdoc-symbol:\s_s)
+         (print binding)
+         (exit 1_u64)
+      ))
+   ))
+   doc
+) S);
+
+doc-signature := λ(: k String)(: abs AST). (: (
+   (+(
+      (SAtom k)
+      (+(
+         (SAtom '\\s:\\s_s)
+         (doc-signature abs)
+      ))
+   ))
+) S);
+
+doc-signature := λ(: abs AST). (: (
+   (let r SNil)
+   (match abs (
+      ()
+      ( (Abs( lhs (App( (Lit ':_t) (App( _ (AType tt) )) )) _ )) (
+         (set r (+(
+            (doc-signature( lhs ))
+            (+(
+               (SAtom ':\\s_s)
+               (SAtom(to-string tt))
+            ))
+         )))
+      ))
+      ( (App( rst (App( (Lit ':_t) (App( (Var k_t) (AType tt) )) )) )) (
+         (set r (+(
+            (doc-signature( rst ))
+            (+(
+               (SAtom '\\[_s)
+               (+(
+                  (+(
+                     (SAtom k)
+                     (SAtom ':\\s_s)
+                  ))
+                  (+(
+                     (SAtom(to-string tt))
+                     (SAtom '\\]_s)
+                  ))
+               ))
+            ))
+         )))
+      ))
+      ( (App( (Lit ':_t) (App( (Var k_t) (AType tt) )) )) (
+         (set r (+(
+            (SAtom '\\[_s)
+            (+(
+               (+(
+                  (SAtom k)
+                  (SAtom ':\\s_s)
+               ))
+               (+(
+                  (SAtom(to-string tt))
+                  (SAtom '\\]_s)
+               ))
+            ))
+         )))
+      ))
+      ( _ (
+         (print 'Invalid\sSignature:\s_s)(print abs)(print '\n_s)
+      ))
+   ))
+   r
+) S);
+
+doc-meta := λ(: meta AST). (: (
+   (let doc SNil)
+   (match meta (
+      ()
+      ( (App( (Var m-key_t) m-item )) (
+         (set doc (doc-meta-item( m-key m-item )))
+      ))
+      ( (App( m-rst (App( (Var m-key_t) m-item )) )) (
+         (set doc (+(
+            (doc-meta( m-rst ))
+            (doc-meta-item( m-key m-item ))
+         )))
+      ))
+   ))
+   doc
+) S);
+
+doc-meta-item := λ(: m-key String)(: m-item AST). (: (
+   (let doc SNil)
+   (match (Tuple( m-key m-item )) (
+      ()
+      ( (Tuple( 'description_s (Lit description_t) )) (
+         (set doc (+( doc (SAtom '\[p\[\s\[text\s\`_s) )))
+         (set doc (+( doc (SAtom description) )))
+         (set doc (+( doc (SAtom '_s\]\]\]\n_s) )))
+      ))
+      ( (Tuple( 'example_s term )) (
+         (set doc (+( doc (SAtom '\[pre\[\s\[code\[\s\[text\s\`_s) )))
+         (set doc (+( doc (doc-code term) )))
+         (set doc (+( doc (SAtom '_s\]\]\]\]\]\n_s) )))
+      ))
+      ( _ (
+         (print 'Unrecognized\sMeta\sItem:\s_s)(print m-key)(print '\n_s)
+      ))
+   ))
+   doc
+) S);
+
+doc-code := λ(: term AST). (: (doc-code( 0_u64 term )) S);
+doc-code := λ(: indent U64)(: term AST). (: (
+   (let doc SNil)
+   (match term (
+      ()
+      ( (App( (Var( f-name _ )) args )) (
+         (set doc (+(
+            (+(
+               (SAtom '\\n_s)
+               (+(
+                  (SAtom(*( '\\s_s indent )))
+                  (SAtom '\\[_s)
+               ))
+            ))
+            (+(
+               (+(
+                  (SAtom f-name)
+                  (SAtom '\\[\\n_s)
+               ))
+               (+(
+                  (doc-code( indent args ))
+                  (SAtom '\\]\\]\\n_s)
+               ))
+            ))
+         )))
+      ))
+      ( (App( arg1 arg2 )) (
+         (set doc (+(
+            (+(
+               (+(
+                  (SAtom(*( '\s_s indent )))
+                  (doc-code( indent arg1 ))
+               ))
+               (SAtom '\\n_s)
+            ))
+            (+(
+               (+(
+                  (SAtom(*( '\s_s indent )))
+                  (doc-code( indent arg2 ))
+               ))
+               (SAtom '\\n_s)
+            ))
+         )))
+      ))
+      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
+         (set doc (+(
+            (+(
+               (SAtom '\\[:\\s_s)
+               (doc-code( indent t ))
+            ))
+            (+(
+               (SAtom '\\s_s)
+               (+(
+                  (SAtom(to-string tt))
+                  (SAtom '\\]_s)
+               ))
+            ))
+         )))
+      ))
+      ( (Lit( l _ )) (
+         (set doc (SAtom l))
+      ))
+      ( t (
+         (print 'Unmatched\sTerm\sIn\sdoc-code:\s_s)(print t)(print '\n_s)
+      ))
+   ))
+   doc
+) S);

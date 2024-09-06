@@ -3,7 +3,7 @@ fragment type String; size String 8; atom suffix String _s;
 
 meta 
    (description (
-      'A\sclass\sattribute\scan\sbe\sadded\sto\most\shtml\selements.
+      'A\sclass\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
    ))
    (example (
       (div( (class 'p-data_s) (id 'p-id_s)
@@ -285,5 +285,21 @@ fragment button := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
       '<button\s (for-arg a in attrs (.program a)) '>\n
       (for-arg e in es (.program e))
       '</button>\n
+   ))
+) HTMLElement);
+
+fragment pre := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (.program(
+      '<pre\s (for-arg a in attrs (.program a)) '>\n
+      (for-arg e in es (.program e))
+      '</pre>\n
+   ))
+) HTMLElement);
+
+fragment code := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (.program(
+      '<code\s (for-arg a in attrs (.program a)) '>\n
+      (for-arg e in es (.program e))
+      '</code>\n
    ))
 ) HTMLElement);
