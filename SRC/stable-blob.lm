@@ -83,9 +83,11 @@ blob-bind-one := λ(: ctx FContext)(: k String)(: kt Type)(: arg Fragment). (: (
    (match kt (
       ()
       ( (TGround( '..._s (TypeSeq( TypeEOF p1 )) )) (
-         (set ctx (fragment-context::bind-vararg(
-            ctx k kt arg
-         )))
+         (if (can-unify( p1 (fragment::get-type arg) )) (
+            (set ctx (fragment-context::bind-vararg(
+               ctx k kt arg
+            )))
+         ) ())
       ))
       ( _ (
          (set ctx (fragment-context::bind(
@@ -103,11 +105,20 @@ blob-destructure := λ(: ctx FContext)(: lhs AST)(: args FragmentList). (: (
          (match args (
             ()
             ( (FLSeq( args-rst args-f )) (
-               (let m-ctx (blob-bind-one( ctx k kt args-f )))
-               (if (is( ctx m-ctx )) ( # rejected binding
-                  (set ctx (blob-destructure( ctx lhs-rst args )))
-               ) ( # accepted binding
-                  (set ctx (blob-destructure( m-ctx lhs args-rst )))
+               (match kt (
+                  ()
+                  ( (TGround( '..._s _ )) (
+                     (let m-ctx (blob-bind-one( ctx k kt args-f )))
+                     (if (is( ctx m-ctx )) ( # rejected binding
+                        (set ctx (blob-destructure( ctx lhs-rst args )))
+                     ) ( # accepted binding
+                        (set ctx (blob-destructure( m-ctx lhs args-rst )))
+                     ))
+                  ))
+                  ( _ (
+                     (set ctx (blob-bind-one( ctx k kt args-f )))
+                     (set ctx (blob-destructure( ctx lhs-rst args-rst )))
+                  ))
                ))
             ))
             ( _ () )
