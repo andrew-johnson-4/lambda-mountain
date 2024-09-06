@@ -19,6 +19,8 @@ doc-render := λ. (: (
 
    (set doc (+( doc (SAtom '\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\[h2\[\s\[text\s\`Bound\\sSymbols_s\]\s\]\]\n_s) )))
 
+   (set doc (+( doc (doc-bound-symbols()) )))
+
    (set doc (+( doc (SAtom '\s\s\s\s\s\s\s\s\s\s\s\s\]\]\n_s) )))
    (set doc (+( doc (SAtom '\s\s\s\s\s\s\s\s\s\]\]\n_s) )))
    (set doc (+( doc (SAtom '\s\s\s\s\s\s\]\]\n_s) )))
@@ -31,3 +33,58 @@ doc-render := λ. (: (
    (clone-rope doc)
 ) String);
 
+doc-bound-symbols := λ. (: (
+   (let doc SNil)
+   (let program ast-parsed-program)
+   (while (non-zero program) (match program (
+      ()
+      ( (Seq( (Seq( rst (Meta m) )) f )) (
+         (set doc (+( doc (doc-symbol( m f )) )))
+         (set program rst)
+      ))
+      ( (Seq( rst _ )) (
+         (set program rst)
+      ))
+   )))
+   doc
+) S);
+
+doc-symbol := λ(: meta AST)(: binding AST). (: (
+   (let doc SNil)
+   (match binding (
+      ()
+      ( (Frg( k (Abs( lhs rhs )) kt )) (
+         (print 'TODO\sdoc\s_s)(print k)(print '\s:=\s_s)(print lhs)(print '\n_s)
+         (set doc (+( doc (doc-meta meta) )))
+      ))
+      ( _ (
+         (print 'Unknown\sSymbol\sBinding\sin\sdoc-symbol:\s_s)
+         (print binding)
+         (exit 1_u64)
+      ))
+   ))
+   doc
+) S);
+
+doc-meta := λ(: meta AST). (: (
+   (let doc SNil)
+   (match meta (
+      ()
+      ( (App( (Var m-key_t) m-item )) (
+         (set doc (doc-meta-item( m-key m-item )))
+      ))
+      ( (App( m-rst (App( (Var m-key_t) m-item )) )) (
+         (set doc (+(
+            (doc-meta( m-rst ))
+            (doc-meta-item( m-key m-item ))
+         )))
+      ))
+   ))
+   doc
+) S);
+
+doc-meta-item := λ(: m-key String)(: m-item AST). (: (
+   (let doc SNil)
+   (print 'doc-meta-item\s_s)(print m-key)(print m-item)(print '\n_s)
+   doc
+) S);
