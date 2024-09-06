@@ -1,0 +1,54 @@
+
+import LIB/default.lm;
+import SRC/stable-ast.lm;
+import SRC/stable-tokenize.lm;
+
+config-target                := 'doby.html_s;
+
+type CLIMode ModeHelp | ModeDoc;
+config-mode                  := (: ModeHelp CLIMode);
+
+main := λ(: argc U64)(: argv String[]). (: (
+   (let argi 1_u64)
+   (let input SNil)
+   (while (<( argi argc )) (
+      (match ([]( argv argi )) (
+         ()
+         ('doc_s (set config-mode ModeDoc))
+         ('help_s (set config-mode ModeHelp))
+         ('-o_s (
+            (set argi (+( argi 1_u64 )))
+            (set config-target ([]( argv argi )))
+         ))
+         (fp (
+            (set input (SCons(
+               (close input)
+               (close (SAtom( fp )))
+            )))
+         ))
+      ))
+      (set argi (+( argi 1_u64 )))
+   ))
+
+   (let continue True_u8)
+   (while (==( continue True_u8 )) (match input (
+      ()
+      ( SNil (set continue False_u8) )
+      ( (SCons( rst SNil )) (set input rst) )
+      ( (SCons( rst (SAtom( fp )) )) ( (tokenize fp) (set input rst) ))
+      ( (SAtom( fp )) ( (tokenize fp) (set continue False_u8) ))
+   )))
+
+   (match config-mode (
+      ()
+      ( ModeHelp (
+         (print 'doby\shelp\s--\sDisplay\sCommand\sLine\sOptions\n_s)
+         (print 'doby\sdoc\s[input]--\sGenerate\sDocumentation\n_s)
+         (print '\t-o\s[target]\s--\sOutput\sDestination\n_s)
+      ))
+      ( ModeDoc (
+         (print 'TODO\sgenerate\sdocumentation\n_s)
+      ))
+   ))
+) Nil);
+

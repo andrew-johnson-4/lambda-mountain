@@ -154,27 +154,6 @@ fields-of-tag := λ(: tag String). (: (
    r
 ) Tuple<Type,Type>);
 
-slot := λ(: tt Type)(: sl String). (: (
-   (let rt TAny)
-   (match tt (
-      ()
-      ( (TGround( bt _ )) (
-         (if (==( bt sl )) (set rt tt) ())
-      ))
-      ( (TAnd( ltt rtt )) (
-         (let lt2 (slot( ltt sl )))
-         (if (non-zero lt2) (
-            (set rt lt2)
-         ) (
-            (let rt2 (slot( rtt sl )))
-            (set rt rt2)
-         ))
-      ))
-      ( _ () )
-   ))
-   rt
-) Type);
-
 domain := λ(: tt Type). (: (
    (let r TAny)
    (match (slot( tt 'Arrow_s )) (
@@ -218,16 +197,6 @@ is-open := λ(: tt Type). (: (
             ))
          )))
       ))
-   ))
-   r
-) U64);
-
-is-arrow := λ(: tt Type). (: (
-   (let r 0_u64)
-   (match (slot( tt 'Arrow_s )) (
-      ()
-      ( (TGround( 'Arrow_s _ )) (set r 1_u64) )
-      ( _ () )
    ))
    r
 ) U64);
@@ -770,41 +739,6 @@ normalize := λ(: tt Type). (: (
    (set rt (without-size-unless-class rt))
    rt
 ) Type);
-
-print := λ(: tt Type). (: (match tt (
-   ()
-   ( TAny (print '?_s) )
-   ( (TVar( vn )) (print vn) )
-   ( (TGround( tag TypeEOF )) (print tag) )
-   ( (TAnd( lt rt )) (
-      (if (is-arrow lt) (
-         (print lt)
-         (print '\s+\n_s)
-         (print rt)
-      ) (
-         (print lt)
-         (print '\s+\s_s)
-         (print rt)
-      ))
-   ))
-   ( (TGround( tag ps )) (
-      (print tag)
-      (print '<_s)
-      (print ps)
-      (print '>_s)
-   ))
-)) Nil);
-
-print := λ(: tt TypeList). (: (match tt (
-   ()
-   ( TypeEOF () )
-   ( (TypeSeq( TypeEOF p1 )) (print p1) )
-   ( (TypeSeq( rst p1 )) (
-      (print rst)
-      (print ',_s)
-      (print p1)
-   ))
-)) Nil);
 
 == := λ(: lt Type)(: rt Type). (: (
    (let r 0_u64)

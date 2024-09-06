@@ -1,6 +1,8 @@
 
 build-docs:
 	lm --blob -o docs/index.html docs/index.html.lm
+	doby doc -o docs/default.html.html.lm LIB/default.html
+	doby doc -o docs/default.lm.html.lm LIB/default.lm
 	lm --blob -o docs/default.html.html docs/default.html.html.lm
 	lm --blob -o docs/default.lm.html docs/default.lm.html.lm
 
