@@ -11,6 +11,8 @@ import docs/ubuntu-docs.lm;
          (div( (class 'row_s)
             (div( (class 'col-12_s)
                (h2( (text 'Bound\sSymbols_s) ))
+(h2( (text 'class\s:\s_s)))
+(p( (text 'A\sclass\sattribute\scan\sbe\sadded\sto\smost\shtml\selements._s)))
             ))
          ))
       ))

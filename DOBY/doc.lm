@@ -53,8 +53,10 @@ doc-symbol := λ(: meta AST)(: binding AST). (: (
    (let doc SNil)
    (match binding (
       ()
-      ( (Frg( k (Abs( lhs rhs )) kt )) (
-         (print 'TODO\sdoc\s_s)(print k)(print '\s:=\s_s)(print lhs)(print '\n_s)
+      ( (Frg( k_t abs kt )) (
+         (set doc (+( doc (SAtom '\[h2\[\s\[text\s\`_s) )))
+         (set doc (+( doc (doc-signature( k abs )) )))
+         (set doc (+( doc (SAtom '_s\]\]\]\n_s) )))
          (set doc (+( doc (doc-meta meta) )))
       ))
       ( _ (
@@ -64,6 +66,34 @@ doc-symbol := λ(: meta AST)(: binding AST). (: (
       ))
    ))
    doc
+) S);
+
+doc-signature := λ(: k String)(: abs AST). (: (
+   (+(
+      (SAtom k)
+      (+(
+         (SAtom '\\s:\\s_s)
+         (doc-signature abs)
+      ))
+   ))
+) S);
+
+doc-signature := λ(: abs AST). (: (
+   (let r SNil)
+   (match abs (
+      ()
+      ( (Abs( lhs (App( (Lit ':_t) (App( _ (AType tt) )) )) )) (
+         (set r (+(
+            (doc-signature( lhs ))
+            (+(
+               (SAtom ':\s_s)
+               (SAtom(to-string tt))
+            ))
+         )))
+      ))
+      ( _ () )
+   ))
+   r
 ) S);
 
 doc-meta := λ(: meta AST). (: (
@@ -85,6 +115,19 @@ doc-meta := λ(: meta AST). (: (
 
 doc-meta-item := λ(: m-key String)(: m-item AST). (: (
    (let doc SNil)
-   (print 'doc-meta-item\s_s)(print m-key)(print m-item)(print '\n_s)
+   (match (Tuple( m-key m-item )) (
+      ()
+      ( (Tuple( 'description_s (Lit description_t) )) (
+         (set doc (+( doc (SAtom '\[p\[\s\[text\s\`_s) )))
+         (set doc (+( doc (SAtom description) )))
+         (set doc (+( doc (SAtom '_s\]\]\]\n_s) )))
+      ))
+      ( (Tuple( 'example_s term )) (
+         (print 'TODO\srender\sexample\n_s)
+      ))
+      ( _ (
+         (print 'Unrecognized\sMeta\sItem:\s_s)(print m-key)(print '\n_s)
+      ))
+   ))
    doc
 ) S);
