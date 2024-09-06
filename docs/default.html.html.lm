@@ -2,15 +2,14 @@
 import docs/ubuntu-docs.lm;
 
 (docs-html(
-   'LM\sDocumentation:\sdefault.html_s
+   'Documentation:\sLIB/default.html_s
    (docs-header())
    (docs-sidebar())
-   (docs-title 'default.html\sDocumentation_s)
+   (docs-title 'LIB/default.html\sDocumentation_s)
    (as(
       (main( (class 'l-docs__main_s)
          (div( (class 'row_s)
             (div( (class 'col-12_s)
-               (p( (text 'default.html\sdefines\sutilities\sto\smanipulate\shtml\selements\sthrough\sblob\srendering._s) ))
                (h2( (text 'Bound\sSymbols_s) ))
             ))
          ))

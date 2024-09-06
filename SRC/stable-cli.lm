@@ -1,14 +1,4 @@
 
-config-strict                := True_u8;
-config-preprocess            := True_u8;
-config-target                := 'tmp.s_s;
-
-type AssembleMode AssembleGNU | AssembleBlob;
-config-assemble-mode         := (: AssembleGNU AssembleMode);
-
-type CompileMode ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
-config-mode                  := (: ModeCompile CompileMode);
-
 main := λ(: argc U64)(: argv String[]). (: (
    (let argi 1_u64)
    (let input SNil)

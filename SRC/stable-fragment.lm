@@ -1,32 +1,4 @@
 
-print := λ(: x Fragment). (: (
-   (match x (
-      ()
-      ( (Fragment( e-t kvs offset xtt ctx )) (
-         (print 'Fragment\n_s)
-         (print '\tOffset\s=\s_s)(print offset)(print '\n_s)
-         (while (non-zero kvs) (match kvs (
-            ()
-            ( (FKVSeq( rst k v )) (
-               (print '\t_s)(print k)(print '\s=\s_s)(print v)(print '\n_s)
-               (set kvs rst)
-            ))
-         )))
-      ))
-   ))
-) Nil);
-
-print := λ(: x FragmentList). (: (
-   (match x (
-      ()
-      ( (FLSeq( rst f )) (
-         (print rst)
-         (print f)
-      ))
-      ( _ () )
-   ))
-) Nil);
-
 fragment::new := λ . (: (
    (let r (Fragment(
       ASTEOF

@@ -74,20 +74,6 @@ non-zero := λ(: loc SourceLocation). (: (
    r
 ) U64);
 
-print := λ(: loc SourceLocation). (: (
-   (match loc (
-      ()
-      ( (SourceLocation( fp ln cl )) (
-         (print 'In\sFile\s_s)
-         (print fp)
-         (print '\sLine\s_s)
-         (print ln)
-         (print '\sColumn\s_s)
-         (print cl)
-      ))
-   ))
-) Nil);
-
 location-of := λ(: term AST). (: (
    (let r (SourceLocation( 'Unknown_s 0_u64 0_u64 )))
    (match term (
