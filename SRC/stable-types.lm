@@ -459,11 +459,23 @@ union := λ(: lctx TContext)(: rctx TContext). (: (
    (match rctx (
       ()
       ( TCtxNil (set rctx TCtxEOF) )
+      ( TCtxEOF () )
       ( (TCtxBind( rst k v t )) (
          (set lctx (union( lctx rst )))
          (set lctx (TCtxBind( (close lctx) k v t )))
       ))
-      ( _ () )
+   ))
+   lctx
+) TContext);
+
+and := λ(: lctx TContext)(: rctx TContext). (: (
+   (match (Tuple( lctx rctx )) (
+      ()
+      ( (Tuple( TCtxEOF _ )) (set lctx TCtxEOF) )
+      ( (Tuple( _ TCtxEOF )) (set lctx TCtxEOF) )
+      ( _ (
+         (set lctx (union( lctx rctx )))
+      ))
    ))
    lctx
 ) TContext);
@@ -870,6 +882,53 @@ can-unify := λ(: fpt Type)(: pt Type). (: (
          (if (can-unify( lt rt1 )) (set r 1_u64) ())
          (if (can-unify( lt rt2 )) (set r 1_u64) ())
       ))
+
+      # Varargs
+      ( (Tuple(
+         (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF lpr ))
+            (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         )) ))
+         (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF rpr )) rp1 )) ))
+      )) (
+         (if (can-unify( lp1 rp1 )) (
+            (set r (can-unify( fpt rpr )))
+         ) (
+            (set r (can-unify( lpr pt )))
+         ))
+      ))
+      ( (Tuple(
+         (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF lpr ))
+            (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         )) ))
+         rp1
+      )) (
+         (if (can-unify( lp1 rp1 )) (
+            (set r (can-unify( lpr (t1 'Nil_s) )))
+         ) (
+            (set r (can-unify( lpr rp1 )))
+         ))
+      ))
+      ( (Tuple(
+         (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF rpr )) rp1 )) ))
+      )) (
+         (if (can-unify( lp1 rp1 )) (
+            (set r (can-unify( fpt rpr )))
+         ) ())
+      ))
+      ( (Tuple(
+         (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         (TGround( 'Nil_s TypeEOF ))
+      )) (
+         (set r 1_u64)
+      ))
+      ( (Tuple(
+         (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         rp1
+      )) (
+         (set r (can-unify( lp1 rp1 )))
+      ))
+
       ( (Tuple( (TGround( 'GT_s (TypeSeq( TypeEOF (TGround( lbase TypeEOF )) )) )) (TGround( rbase TypeEOF )) )) (
          (if (>( (to-i64 rbase) (to-i64 lbase) )) (
             (set r 1_u64)
@@ -1083,6 +1142,61 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
             ))
          ))
       ))
+
+      # Varargs
+      ( (Tuple(
+         (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF lpr ))
+            (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         )) ))
+         (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF rpr )) rp1 )) ))
+      )) (
+         
+         (if (can-unify( lp1 rp1 )) (
+            (set ctx (and(
+               (unify-inner( lpr rpr ))
+               (unify-inner( lp1 rp1 ))
+            )))
+         ) (
+            (set ctx (unify-inner( lpr pt )))
+         ))
+      ))
+      ( (Tuple(
+         (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF lpr ))
+            (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         )) ))
+         rp1
+      )) (
+         (if (can-unify( lp1 rp1 )) (
+            (set ctx (and(
+               (unify-inner( lp1 rp1 ))
+               (unify-inner( lpr (t1 'Nil_s) ))
+            )))
+         ) (
+            (set ctx (unify-inner( lpr rp1 )))
+         ))
+      ))
+      ( (Tuple(
+         (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF rpr )) rp1 )) ))
+      )) (
+         (if (can-unify( lp1 rp1 )) (
+            (set ctx (and(
+               (unify-inner( fpt rpr ))
+               (unify-inner( lp1 rp1 ))
+            )))
+         ) ())
+      ))
+      ( (Tuple(
+         (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         (TGround( 'Nil_s TypeEOF ))
+      )) ())
+      ( (Tuple(
+         (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         rp1
+      )) (
+         (set ctx (unify-inner( lp1 rp1 )))
+      ))
+
       ( (Tuple( (TGround( 'GT_s (TypeSeq( TypeEOF (TGround( lbase TypeEOF )) )) )) (TGround( rbase TypeEOF )) )) (
          (if (>( (to-i64 rbase) (to-i64 lbase) )) (
             (set ctx TCtxNil)
@@ -1986,6 +2100,7 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: 
       (print 'Function\sApplication\sYielded\sNo\sMatches\n_s)
       (print function-name)(print '\nWith\sArgument\s:\s_s)(print pt)(print '\n_s)
       (print (location-of( blame )))(print '\n_s)
+      (print 'Options:\s_s)(print ft)(print '\n_s)
       (exit 1_u64)
    ) ())
    (if (>( (.length rs) 1_u64 )) (

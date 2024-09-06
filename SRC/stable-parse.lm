@@ -90,6 +90,11 @@ parse-type-comma-sep := λ(: tt String). (: (
 ) TypeList);
 
 parse-type := λ(: tt String). (: (
+   (let is-vararg False_u8)
+   (if (has-suffix( tt '..._s )) (
+      (set tt (remove-suffix( tt '..._s )))
+      (set is-vararg True_u8)
+   ) ())
    (let depth 0_u64)
    (let buff SNil)
    (let base-type (t1 'Nil_s))
@@ -146,6 +151,11 @@ parse-type := λ(: tt String). (: (
             )))
          ))
       ))
+   ) ())
+   (if (==( is-vararg True_u8 )) (
+      (set base-type (TGround( '..._s (close(TypeSeq(
+         (close TypeEOF) base-type
+      ))))))
    ) ())
    base-type
 ) Type);

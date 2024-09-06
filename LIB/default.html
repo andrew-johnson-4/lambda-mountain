@@ -5,468 +5,275 @@ fragment class := λ(: cls String). (: (
    (.program(
       '\sclass=" (.program cls) '"\s
    ))
-) Attribute);
+) HTMLAttribute);
 
 fragment name := λ(: cls String). (: (
    (.program(
       '\sname=" (.program cls) '"\s
    ))
-) Attribute);
+) HTMLAttribute);
 
 fragment autocomplete := λ(: cls String). (: (
    (.program(
       '\sautocomplete=" (.program cls) '"\s
    ))
-) Attribute);
+) HTMLAttribute);
 
 fragment required := λ(: cls String). (: (
    (.program(
       '\srequired=" (.program cls) '"\s
    ))
-) Attribute);
+) HTMLAttribute);
 
 fragment placeholder := λ(: cls String). (: (
    (.program(
       '\splaceholder=" (.program cls) '"\s
    ))
-) Attribute);
+) HTMLAttribute);
 
 fragment type_ := λ(: cls String). (: (
    (.program(
       '\stype=" (.program cls) '"\s
    ))
-) Attribute);
+) HTMLAttribute);
 
 fragment src := λ(: s String). (: (
    (.program(
       '\ssrc=" (.program s) '"\s
    ))
-) Attribute);
+) HTMLAttribute);
 
 fragment id := λ(: i String). (: (
    (.program(
       '\sid=" (.program i) '"\s
    ))
-) Attribute);
+) HTMLAttribute);
 
 fragment rel := λ(: i String). (: (
    (.program(
       '\srel=" (.program i) '"\s
    ))
-) Attribute);
+) HTMLAttribute);
 
 fragment href := λ(: a String). (: (
    (.program(
       '\shref=" (.program a) '"\s
    ))
-) Attribute);
+) HTMLAttribute);
 
 fragment text := λ(: t String). (: (
    (.program(
       (.program t)
    ))
-) HTML);
+) HTMLElement);
 
-fragment html := λ. (: (
+fragment html := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<!DOCTYPE\shtml>\n
-      '<html>\n
+      '<html (for a in attrs (.program a)) '>\n
+      (for e in es (.program e))
       '</html>\n
    ))
-) HTML);
+) HTMLElement);
 
-fragment html := λ(: f1 HTML). (: (
+fragment main := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<!DOCTYPE\shtml>\n
-      '<html>\n
-      (.program f1)
-      '</html>\n
-   ))
-) HTML);
-
-fragment html := λ(: f1 HTML)(: f2 HTML). (: (
-   (.program(
-      '<!DOCTYPE\shtml>\n
-      '<html>\n
-      (.program f1)
-      (.program f2)
-      '</html>\n
-   ))
-) HTML);
-
-fragment main := λ(: a1 Attribute)(: f1 HTML). (: (
-   (.program(
-      '<main (.program a1) '>\n
-      (.program f1)
+      '<main (for a in attrs (.program a)) '>\n
+      (for e in es (.program e))
       '</main>\n
    ))
-) HTML);
+) HTMLElement);
 
-fragment head := λ(: f1 HTML). (: (
+fragment head := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<head>\n
-      (.program f1)
+      '<head\s (for a in attrs (.program a)) '>
+      (for e in es (.program e))
       '</head>\n
    ))
-) HTML);
+) HTMLElement);
 
-fragment head := λ(: f1 HTML)(: f2 HTML). (: (
+fragment title := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<head>\n
-      (.program f1)
-      (.program f2)
-      '</head>\n
-   ))
-) HTML);
-
-fragment title := λ(: f1 String). (: (
-   (.program(
-      '<title>
-      (.program f1)
+      '<title\s (for a in attrs (.program a)) '>
+      (for e in es (.program e))
       '</title>\n
    ))
-) HTML);
+) HTMLElement);
 
-fragment body := λ(: f1 HTML). (: (
+fragment body := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<body>\n
-      (.program f1)
+      '<body\s (for a in attrs (.program a)) '>
+      (for e in es (.program e))
       '</body>\n
    ))
-) HTML);
+) HTMLElement);
 
-fragment body := λ(: f1 HTML)(: f2 HTML). (: (
+fragment h1 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<body>\n
-      (.program f1)
-      (.program f2)
-      '</body>\n
-   ))
-) HTML);
-
-fragment h1 := λ(: f1 HTML). (: (
-   (.program(
-      '<h1>
-      (.program f1)
+      '<h1\s (for a in attrs (.program a)) '>
+      (for e in es (.program e))
       '</h1>\n
    ))
-) HTML);
+) HTMLElement);
 
-fragment h2 := λ(: f1 HTML). (: (
+fragment h2 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<h2>
-      (.program f1)
+      '<h2\s (for a in attrs (.program a)) '>
+      (for e in es (.program e))
       '</h2>\n
    ))
-) HTML);
+) HTMLElement);
 
-fragment h3 := λ(: f1 HTML). (: (
+fragment h3 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<h3>
-      (.program f1)
+      '<h3\s (for a in attrs (.program a)) '>
+      (for e in es (.program e))
       '</h3>\n
    ))
-) HTML);
+) HTMLElement);
 
-fragment h4 := λ(: f1 HTML). (: (
+fragment h4 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<h4>
-      (.program f1)
+      '<h4\s (for a in attrs (.program a)) '>
+      (for e in es (.program e))
       '</h4>\n
    ))
-) HTML);
+) HTMLElement);
 
-fragment h5 := λ(: f1 HTML). (: (
+fragment h5 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<h5>
-      (.program f1)
+      '<h5\s (for a in attrs (.program a)) '>
+      (for e in es (.program e))
       '</h5>\n
    ))
-) HTML);
-fragment h5 := λ(: a1 Attribute)(: f1 HTML). (: (
-   (.program(
-      '<h5\s (.program a1) '>
-      (.program f1)
-      '</h5>\n
-   ))
-) HTML);
+) HTMLElement);
 
-fragment h6 := λ(: f1 HTML). (: (
+fragment h6 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<h6>
-      (.program f1)
+      '<h6\s (for a in attrs (.program a)) '>
+      (for e in es (.program e))
       '</h6>\n
    ))
-) HTML);
+) HTMLElement);
 
-fragment div := λ(: f1 HTML). (: (
+fragment div := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<div>\n
-      (.program f1)
+      '<div\s (for a in attrs (.program a)) '>
+      (for e in es (.program e))
       '</div>\n
    ))
-) HTML);
-fragment div := λ(: f1 HTML)(: f2 HTML). (: (
-   (.program(
-      '<div>\n
-      (.program f1)
-      (.program f2)
-      '</div>\n
-   ))
-) HTML);
-fragment div := λ(: a1 Attribute)(: f1 HTML). (: (
-   (.program(
-      '<div\s (.program a1) '>\n
-      (.program f1)
-      '</div>\n
-   ))
-) HTML);
-fragment div := λ(: a1 Attribute)(: a2 Attribute)(: f1 HTML). (: (
-   (.program(
-      '<div\s (.program a1) (.program a2) '>\n
-      (.program f1)
-      '</div>\n
-   ))
-) HTML);
-fragment div := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML). (: (
-   (.program(
-      '<div\s (.program a1) '>\n
-      (.program f1)
-      (.program f2)
-      '</div>\n
-   ))
-) HTML);
-fragment div := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML)(: f3 HTML). (: (
-   (.program(
-      '<div\s (.program a1) '>\n
-      (.program f1)
-      (.program f2)
-      (.program f3)
-      '</div>\n
-   ))
-) HTML);
-fragment div := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML)(: f3 HTML)(: f4 HTML). (: (
-   (.program(
-      '<div\s (.program a1) '>\n
-      (.program f1)
-      (.program f2)
-      (.program f3)
-      (.program f4)
-      '</div>\n
-   ))
-) HTML);
-fragment div := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML)(: f3 HTML)(: f4 HTML)(: f5 HTML). (: (
-   (.program(
-      '<div\s (.program a1) '>\n
-      (.program f1)
-      (.program f2)
-      (.program f3)
-      (.program f4)
-      (.program f5)
-      '</div>\n
-   ))
-) HTML);
-fragment div := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML)(: f3 HTML)(: f4 HTML)(: f5 HTML)(: f6 HTML). (: (
-   (.program(
-      '<div\s (.program a1) '>\n
-      (.program f1)
-      (.program f2)
-      (.program f3)
-      (.program f4)
-      (.program f5)
-      (.program f6)
-      '</div>\n
-   ))
-) HTML);
+) HTMLElement);
 
-fragment header := λ(: a1 Attribute)(: f1 HTML). (: (
+fragment header := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<header\s (.program a1) '>\n
-      (.program f1)
+      '<header\s (for a in attrs (.program a)) '>
+      (for e in es (.program e))
       '</header>\n
    ))
-) HTML);
+) HTMLElement);
 
-fragment header := λ(: a1 Attribute)(: a2 Attribute)(: f1 HTML). (: (
+fragment nav := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<header\s (.program a1) (.program a2) '>\n
-      (.program f1)
-      '</header>\n
-   ))
-) HTML);
-
-fragment header := λ(: a1 Attribute)(: a2 Attribute)(: f1 HTML)(: f2 HTML). (: (
-   (.program(
-      '<header\s (.program a1) (.program a2) '>\n
-      (.program f1)
-      (.program f2)
-      '</header>\n
-   ))
-) HTML);
-
-fragment nav := λ(: a1 Attribute)(: f1 HTML). (: (
-   (.program(
-      '<nav\s (.program a1) '>\n
-      (.program f1)
+      '<nav\s (for a in attrs (.program a)) '>
+      (for e in es (.program e))
       '</nav>\n
    ))
-) HTML);
+) HTMLElement);
 
-fragment ul := λ(: f1 HTML). (: (
+fragment ul := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<ul>\n
-      (.program f1)
+      '<ul\s (for a in attrs (.program a)) '>
+      (for e in es (.program e))
       '</ul>\n
    ))
-) HTML);
+) HTMLElement);
 
-fragment ul := λ(: f1 HTML)(: f2 HTML). (: (
+fragment ol := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<ul>\n
-      (.program f1)
-      (.program f2)
-      '</ul>\n
+      '<ol\s (for a in attrs (.program a)) '>
+      (for e in es (.program e))
+      '</ol>\n
    ))
-) HTML);
+) HTMLElement);
 
-fragment ul := λ(: a1 Attribute)(: f1 HTML). (: (
+fragment li := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<ul (.program a1) '>\n
-      (.program f1)
-      '</ul>\n
-   ))
-) HTML);
-
-fragment ul := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML). (: (
-   (.program(
-      '<ul (.program a1) '>\n
-      (.program f1)
-      (.program f2)
-      '</ul>\n
-   ))
-) HTML);
-
-fragment li := λ(: f1 HTML). (: (
-   (.program(
-      '<li>
-      (.program f1)
+      '<li\s (for a in attrs (.program a)) '>
+      (for e in es (.program e))
       '</li>\n
    ))
-) HTML);
-fragment li := λ(: a1 Attribute)(: f1 HTML). (: (
-   (.program(
-      '<li\s (.program a1) '>
-      (.program f1)
-      '</li>\n
-   ))
-) HTML);
+) HTMLElement);
 
-fragment a := λ(: a1 Attribute)(: f1 HTML). (: (
+fragment a := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<a\s (.program a1) '>
-      (.program f1)
+      '<a\s (for a in attrs (.program a)) '>
+      (for e in es (.program e))
       '</a>\n
    ))
-) HTML);
-fragment a := λ(: a1 Attribute)(: a2 Attribute)(: f1 HTML). (: (
-   (.program(
-      '<a\s (.program a1) (.program a2) '>
-      (.program f1)
-      '</a>\n
-   ))
-) HTML);
-fragment a := λ(: a1 Attribute)(: a2 Attribute)(: f1 HTML)(: f2 HTML). (: (
-   (.program(
-      '<a\s (.program a1) (.program a2) '>
-      (.program f1)
-      (.program f2)
-      '</a>\n
-   ))
-) HTML);
+) HTMLElement);
 
-fragment span := λ(: a1 Attribute)(: f1 HTML). (: (
+fragment span := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<span\s (.program a1) '>
-      (.program f1)
+      '<span\s (for a in attrs (.program a)) '>
+      (for e in es (.program e))
       '</span>
    ))
-) HTML);
+) HTMLElement);
 
-fragment i := λ(: a1 Attribute)(: f1 HTML). (: (
+fragment i := λ(: attrs HTMLAttribute...)(: f1 HTMLElement). (: (
    (.program(
-      '<i\s (.program a1) '>
-      (.program f1)
+      '<i\s (for a in attrs (.program a)) '>
+      (for e in es (.program e))
       '</i>
    ))
-) HTML);
+) HTMLElement);
 
-fragment p := λ(: f1 HTML). (: (
+fragment p := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<p>
-      (.program f1)
+      '<p\s (for a in attrs (.program a)) '>
+      (for e in es (.program e))
       '</p>
    ))
-) HTML);
-fragment p := λ(: f1 HTML)(: f2 HTML). (: (
-   (.program(
-      '<p>
-      (.program f1)
-      (.program f2)
-      '</p>
-   ))
-) HTML);
+) HTMLElement);
 
-fragment img := λ(: a1 Attribute). (: (
+fragment img := λ(: attrs HTMLAttribute...). (: (
    (.program(
-      '<img\s (.program a1) '\\>\n
+      '<img\s (for a in attrs (.program a)) '\\>\n
    ))
-) HTML);
-fragment img := λ(: a1 Attribute)(: a2 Attribute). (: (
-   (.program(
-      '<img\s (.program a1) (.program a2) '\\>\n
-   ))
-) HTML);
+) HTMLElement);
 
-fragment link := λ(: a1 Attribute)(: a2 Attribute). (: (
+fragment link := λ(: attrs HTMLAttribute...). (: (
    (.program(
-      '<link\s (.program a1) (.program a2) '\\>\n
+      '<link\s (for a in attrs (.program a)) '\\>\n
    ))
-) HTML);
+) HTMLElement);
 
-fragment section := λ(: a1 Attribute)(: a2 Attribute)(: f1 HTML)(: f2 HTML). (: (
+fragment section := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<section\s (.program a1) (.program a2) '>\n
-      (.program f1)
-      (.program f2)
+      '<section\s (for a in attrs (.program a)) '>\n
+      (for e in es (.program e))
       '</section>\n
    ))
-) HTML);
+) HTMLElement);
 
-fragment form := λ(: a1 Attribute)(: f1 HTML)(: f2 HTML)(: f3 HTML). (: (
+fragment form := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<form\s (.program a1) '>\n
-      (.program f1)
-      (.program f2)
-      (.program f3)
+      '<form\s (for a in attrs (.program a)) '>\n
+      (for e in es (.program e))
       '</form>\n
    ))
-) HTML);
+) HTMLElement);
 
-fragment input := λ(: a1 Attribute)(: a2 Attribute)(: a3 Attribute)(: a4 Attribute)(: a5 Attribute). (: (
+fragment input := λ(: attrs HTMLAttribute...). (: (
    (.program(
-      '<input\s (.program a1) (.program a2) (.program a3) (.program a4) (.program a5) '>\n
+      '<input\s (for a in attrs (.program a)) '>\n
    ))
-) HTML);
-fragment input := λ(: a1 Attribute)(: a2 Attribute)(: a3 Attribute)(: a4 Attribute)(: a5 Attribute)(: a6 Attribute). (: (
-   (.program(
-      '<input\s (.program a1) (.program a2) (.program a3) (.program a4) (.program a5) (.program a6) '>\n
-   ))
-) HTML);
+) HTMLElement);
 
-fragment button := λ(: a1 Attribute)(: a2 Attribute)(: a3 Attribute)(: f1 HTML). (: (
+fragment button := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<button\s (.program a1) (.program a2) (.program a3) '>\n
-      (.program f1)
+      '<button\s (for a in attrs (.program a)) '>\n
+      (for e in es (.program e))
       '</button>\n
    ))
-) HTML);
+) HTMLElement);

@@ -64,7 +64,30 @@ fragment-context::lookup := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST
    r
 ) Fragment);
 
+fragment-context::lookup-vararg := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST). (: (
+   (let r FLEOF)
+   (while (non-zero ctx) (match ctx (
+      ()
+      ( (FCtxBind( rst rk rt rf )) (
+         (if (==( k rk )) (
+            (set r (FLSeq( (close r) rf )))
+         ) (
+            (set ctx rst)
+         ))
+      ))
+   )))
+   r
+) FragmentList);
+
 fragment-context::bind := λ(: ctx FContext)(: k String)(: kt Type)(: f Fragment). (: (
+   (let new-ctx (FCtxBind(
+      (close ctx)
+      k kt f
+   )))
+   new-ctx
+) FContext);
+
+fragment-context::bind-vararg := λ(: ctx FContext)(: k String)(: kt Type)(: f Fragment). (: (
    (let new-ctx (FCtxBind(
       (close ctx)
       k kt f

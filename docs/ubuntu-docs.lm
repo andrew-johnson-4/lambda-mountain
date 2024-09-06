@@ -1,13 +1,13 @@
 
 import LIB/default.html;
 
-docs-html := λ(: page-title String)(: d-header DocsHeader+HTML)(: d-sidebar DocsSidebar+HTML)
-                       (: d-title DocsTitle+HTML)(: d-content DocsContent+HTML)(: d-meta DocsMeta+HTML)
-                       (: d-footer DocsFooter+HTML). (: (
+docs-html := λ(: page-title String)(: d-header DocsHeader+HTMLElement)(: d-sidebar DocsSidebar+HTMLElement)
+                       (: d-title DocsTitle+HTMLElement)(: d-content DocsContent+HTMLElement)(: d-meta DocsMeta+HTMLElement)
+                       (: d-footer DocsFooter+HTMLElement). (: (
    (html(
       (head(
          (link( (rel 'stylesheet_s) (href 'https://assets.ubuntu.com/v1/vanilla-framework-version-4.15.0.min.css_s) ))
-         (title( page-title ))
+         (title( (text page-title) ))
       ))
       (body(
          (div( (class 'l-docs_s)
@@ -20,7 +20,7 @@ docs-html := λ(: page-title String)(: d-header DocsHeader+HTML)(: d-sidebar Doc
          ))
       ))
    ))
-) HTML);
+) HTMLElement);
 
 docs-header := λ. (: (as 
    (div( (class 'l-docs__header_s)
@@ -71,9 +71,9 @@ docs-header := λ. (: (as
          ))
       ))
    ))
-DocsHeader+HTML) DocsHeader+HTML);
+DocsHeader+HTMLElement) DocsHeader+HTMLElement);
 
-fragment docs-sidebar := λ. (: () DocsSidebar+HTML);
+fragment docs-sidebar := λ. (: () DocsSidebar+HTMLElement);
 docs-title := λ(: title-text String). (: (as (
    (div( (class 'l-docs__title_s) (id 'main-content_s)
       (div( (class 'p-section--shallow_s)
@@ -84,8 +84,8 @@ docs-title := λ(: title-text String). (: (as (
          ))
       ))
    ))
-) DocsTitle+HTML) DocsTitle+HTML);
-fragment docs-content := λ. (: () DocsContent+HTML);
-fragment docs-meta := λ. (: () DocsMeta+HTML);
-fragment docs-footer := λ. (: () DocsFooter+HTML);
+) DocsTitle+HTMLElement) DocsTitle+HTMLElement);
+fragment docs-content := λ. (: () DocsContent+HTMLElement);
+fragment docs-meta := λ. (: () DocsMeta+HTMLElement);
+fragment docs-footer := λ. (: () DocsFooter+HTMLElement);
 

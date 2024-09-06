@@ -253,7 +253,7 @@ fragment::render-impl := λ(: s S). (: (
          (if (non-zero r) () (
             (set f (fragment::expression(uuid())))
             (set fragment::render-ctx (FCtxBind(
-               (close fragment::render-ctx) v TAny f
+              (close fragment::render-ctx) v TAny f
             )))
             (set r (fragment::get( f 'expression_s )))
          ))
@@ -569,11 +569,13 @@ fragment::chain := λ(: fragment-ctx FragmentList)(: e Fragment). (: (
    e
 ) Fragment);
 
-apply-direct := λ(: ctx FContext)(: arrow Fragment)(: args FragmentList)(: e-proto Fragment)(: chain U8). (: (
+apply-direct := λ(: ctx FContext)(: arrow Fragment)(: args FragmentList)(: e-proto Fragment)(: chain U8)(: already-destructured U8). (: (
    (match (fragment::get( arrow 'fragment_s )) (
       ()
       ( (SCons( (SAtom 'Abs_s) (SCons( lhs rhs )) )) (
-         (set ctx (destructure-lhs( ctx lhs args )))
+         (if (==( already-destructured True_u8 )) () (
+            (set ctx (destructure-lhs( ctx lhs args )))
+         ))
          (set e-proto (fragment::render( ctx rhs e-proto )))
       ))
       ( _ (
@@ -658,6 +660,10 @@ typeof := λ(: args FragmentList). (: (
 ) Type);
 
 fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentList)(: direct-type Type)(: sloc AST). (: (
+   (fragment-apply( ctx offset k args direct-type sloc False_u8 ))
+) Fragment);
+
+fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentList)(: direct-type Type)(: sloc AST)(: already-destructured U8). (: (
    (let e-proto (fragment::new()))
    (set e-proto (fragment::set-context( e-proto ctx )))
    (set e-proto (fragment::set-offset( e-proto offset )))
@@ -690,7 +696,7 @@ fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentLi
    (let tctx (unify( (slot( arrow-tt 'Arrow_s )) direct-type )))
    (set ctx (union( ctx tctx )))
 
-   (let return (apply-direct( ctx arrow args e-proto chain )))
+   (let return (apply-direct( ctx arrow args e-proto chain already-destructured )))
 
    # add comments if in GNU mode
    (if (is( config-assemble-mode AssembleGNU )) (
