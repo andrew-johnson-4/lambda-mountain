@@ -1,0 +1,36 @@
+
+doc-render := λ. (: (
+   (let doc SNil)
+   (set doc (+( doc (SAtom '\nimport\sdocs/ubuntu-docs.lm\:\n\n_s) )))
+   (set doc (+( doc (SAtom '\[docs-html\[\n_s) )))
+   (set doc (+( doc (SAtom '\s\s\s\\"Documentation:\\s_s) )))
+   (set doc (+( doc (SAtom config-doby-input) )))
+   (set doc (+( doc (SAtom '_s\]\n_s) )))
+   (set doc (+( doc (SAtom '\s\s\s\[docs-header\[\]\]\n_s) )))
+   (set doc (+( doc (SAtom '\s\s\s\[docs-sidebar\[\]\]\n_s) )))
+
+   (set doc (+( doc (SAtom '\s\s\s\[docs-meta\[\]\]\n_s) )))
+   (set doc (+( doc (SAtom '\s\s\s\[docs-footer\[\]\]\n_s) )))
+   (set doc (+( doc (SAtom '\]\]\n_s) )))
+   
+   (clone-rope doc)
+) String);
+
+#-(docs-html(
+#-   'LM\sDocumentation:\sdefault.html_s
+#-   (docs-header())
+#-   (docs-sidebar())
+#-   (docs-title 'default.html\sDocumentation_s)
+#-   (as(
+#-      (main( (class 'l-docs__main_s)
+#-         (div( (class 'row_s)
+#-            (div( (class 'col-12_s)
+#-               (p( (text 'default.html\sdefines\sutilities\sto\smanipulate\shtml\selements\sthrough\sblob\srendering._s) ))
+#-               (h2( (text 'Bound\sSymbols_s) ))
+#-            ))
+#-         ))
+#-      ))
+#-   ) DocsContent+HTMLElement)
+#-   (docs-meta())
+#-   (docs-footer())
+#-))
