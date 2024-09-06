@@ -416,6 +416,18 @@ parse := λ. (: (
                ))
             ))
          ))
+         ( (LCons( 'meta_t remainder )) (
+            (match (parse-many-expressions remainder) (
+               ()
+               ( (PME( m r1 )) (
+                  (set ast-parsed-program (Seq(
+                     (close ast-parsed-program)
+                     (close (Meta( (close m) )))
+                  )))
+                  (set tokens r1)
+               ))
+            ))
+         ))
          ( (LCons( 'fragment_t (LCons( 'type_t remainder )) )) (
             (match (parse-one-expression remainder) (
                ()

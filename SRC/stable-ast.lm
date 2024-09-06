@@ -7,7 +7,7 @@ type Token (Token( String , U64 , SourceLocation ));
 
 type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String , Token )) | (Lit( String , Token )) | (Abs( AST[] , AST[] , Type )) | (AType( Type ))
                 | (Seq( AST[] , AST[] )) | (Glb( Token , AST[] )) | (Typedef( AST[] , AST[] )) | (Frg( Token , AST[] , Type ))
-                | (Meta( List<Tuple<String,S>> )); zero AST ASTEOF;
+                | (Meta( AST[] )); zero AST ASTEOF;
 
 type FragmentKV (FKVEOF) | (FKVSeq( FragmentKV[] , String , S )); zero FragmentKV FKVEOF;
 type Fragment (Fragment( AST , FragmentKV[] , I64 , Type , FContext[] ));

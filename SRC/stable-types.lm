@@ -1984,6 +1984,7 @@ assert-well-typed := λ(: term AST). (: (
          (assert-well-typed l)
          (assert-well-typed r)
       ))
+      ( (Meta( _ )) () )
       ( _ (
          (print 'Unknown\sTerm\sIn\sAssert\sWell\sTyped\s_s)(print term)(print '\n_s)
          (exit 1_u64)
@@ -2486,6 +2487,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
             ) ())
          ))
       ))
+      ( (Meta( _ )) (ascript-normal( term (t1 'Nil_s) )) )
       ( _ (
          (print 'Unknown\sTerm\sIn\sType\sInference\n_s)
          (print term)

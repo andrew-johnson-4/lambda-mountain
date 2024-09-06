@@ -7,6 +7,7 @@ blob-expr := λ(: ctx FContext)(: term AST). (: (
       ()
       ( ASTNil () )
       ( ASTEOF () )
+      ( (Meta _) () )
       ( (Var( id _ )) (
          (set e (fragment-context::lookup( ctx id (typeof term) term )))
       ))
