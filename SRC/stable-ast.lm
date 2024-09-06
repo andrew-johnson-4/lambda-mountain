@@ -6,7 +6,8 @@ type SourceLocation (SourceLocation( String , U64 , U64 ));
 type Token (Token( String , U64 , SourceLocation ));
 
 type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String , Token )) | (Lit( String , Token )) | (Abs( AST[] , AST[] , Type )) | (AType( Type ))
-                | (Seq( AST[] , AST[] )) | (Glb( Token , AST[] )) | (Typedef( AST[] , AST[] )) | (Frg( Token , AST[] , Type )); zero AST ASTEOF;
+                | (Seq( AST[] , AST[] )) | (Glb( Token , AST[] )) | (Typedef( AST[] , AST[] )) | (Frg( Token , AST[] , Type ))
+                | (Meta( List<Tuple<String,S>> )); zero AST ASTEOF;
 
 type FragmentKV (FKVEOF) | (FKVSeq( FragmentKV[] , String , S )); zero FragmentKV FKVEOF;
 type Fragment (Fragment( AST , FragmentKV[] , I64 , Type , FContext[] ));
@@ -91,6 +92,7 @@ print := λ(: t AST). (: (
       ( (Var( a _ )) (print a) )
       ( (Lit( a _ )) ( (print '\`_s) (print a) ))
       ( (AType a) (print a) )
+      ( (Meta _) (print 'Meta_s) )
       ( (Typedef( lhs rhs )) (
          (print 'type\s_s)
          (print lhs)
@@ -148,6 +150,7 @@ serialize-ast := λ(: t AST). (: (
       ()
       ( ASTEOF (print '\[\]_s) )
       ( ASTNil (print 'Nil_s) )
+      ( (Meta _) (print 'Meta_s) )
       ( (Var( a _ )) (
          (print '\[Variable\s_s)
          (print a)
