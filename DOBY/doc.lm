@@ -17,8 +17,6 @@ doc-render := λ. (: (
    (set doc (+( doc (SAtom '\s\s\s\s\s\s\s\s\s\[div\[\s\[class\s\`row_s\]\n_s) )))
    (set doc (+( doc (SAtom '\s\s\s\s\s\s\s\s\s\s\s\s\[div\[\s\[class\s\`col-12_s\]\n_s) )))
 
-   (set doc (+( doc (SAtom '\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\[h2\[\s\[text\s\`Bound\\sSymbols_s\]\s\]\]\n_s) )))
-
    (set doc (+( doc (doc-bound-symbols()) )))
 
    (set doc (+( doc (SAtom '\s\s\s\s\s\s\s\s\s\s\s\s\]\]\n_s) )))
@@ -86,7 +84,7 @@ doc-signature := λ(: abs AST). (: (
          (set r (+(
             (doc-signature( lhs ))
             (+(
-               (SAtom ':\\s_s)
+               (SAtom '\\s->\\s_s)
                (SAtom(to-string tt))
             ))
          )))
@@ -169,44 +167,67 @@ doc-meta-item := λ(: m-key String)(: m-item AST). (: (
    doc
 ) S);
 
+doc-code-arg-is-simple := λ(: term AST). (: (
+   (let r 1_u64)
+   (match term (
+      ()
+      ( (App( _ _ )) (set r 0_u64) )
+      ( _ () )
+   ))
+   r
+) U64);
+
 doc-code := λ(: term AST). (: (doc-code( 0_u64 term )) S);
 doc-code := λ(: indent U64)(: term AST). (: (
    (let doc SNil)
    (match term (
       ()
       ( (App( (Var( f-name _ )) args )) (
-         (set doc (+(
-            (+(
-               (SAtom '\\n_s)
+         (if (doc-code-arg-is-simple( args )) (
+            (set doc (+(
+               (SAtom '\\[_s)
+               (+(
+                  (+(
+                     (SAtom f-name)
+                     (SAtom '\\[\\s_s)
+                  ))
+                  (+(
+                     (doc-code( indent args ))
+                     (SAtom '\\]\\]\\n_s)
+                  ))
+               ))
+            )))
+         ) (
+            (set doc (+(
                (+(
                   (SAtom(*( '\\s_s indent )))
                   (SAtom '\\[_s)
                ))
-            ))
-            (+(
                (+(
-                  (SAtom f-name)
-                  (SAtom '\\[\\n_s)
+                  (+(
+                     (SAtom f-name)
+                     (SAtom '\\[\\n_s)
+                  ))
+                  (+(
+                     (doc-code( (+( indent 1_u64 )) args ))
+                     (SAtom '\\]\\]\\n_s)
+                  ))
                ))
-               (+(
-                  (doc-code( indent args ))
-                  (SAtom '\\]\\]\\n_s)
-               ))
-            ))
-         )))
+            )))
+         ))
       ))
       ( (App( arg1 arg2 )) (
          (set doc (+(
             (+(
                (+(
-                  (SAtom(*( '\s_s indent )))
+                  (SAtom(*( '\\s_s indent )))
                   (doc-code( indent arg1 ))
                ))
                (SAtom '\\n_s)
             ))
             (+(
                (+(
-                  (SAtom(*( '\s_s indent )))
+                  (SAtom(*( '\\s_s indent )))
                   (doc-code( indent arg2 ))
                ))
                (SAtom '\\n_s)
@@ -229,7 +250,10 @@ doc-code := λ(: indent U64)(: term AST). (: (
          )))
       ))
       ( (Lit( l _ )) (
-         (set doc (SAtom l))
+         (set doc (+(
+            (SAtom '\\`_s)
+            (SAtom l)
+         )))
       ))
       ( t (
          (print 'Unmatched\sTerm\sIn\sdoc-code:\s_s)(print t)(print '\n_s)
