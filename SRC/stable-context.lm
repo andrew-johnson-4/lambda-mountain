@@ -71,9 +71,8 @@ fragment-context::lookup-vararg := λ(: ctx FContext)(: k String)(: kt Type)(: s
       ( (FCtxBind( rst rk rt rf )) (
          (if (==( k rk )) (
             (set r (FLSeq( (close r) rf )))
-         ) (
-            (set ctx rst)
-         ))
+         ) ())
+         (set ctx rst)
       ))
    )))
    r

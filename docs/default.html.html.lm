@@ -15,7 +15,7 @@ import docs/ubuntu-docs.lm;
             ))
          ))
       ))
-   ) DocsContent+HTML)
+   ) DocsContent+HTMLElement)
    (docs-meta())
    (docs-footer())
 ))

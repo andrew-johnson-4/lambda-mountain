@@ -70,210 +70,210 @@ fragment text := λ(: t String). (: (
 fragment html := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<!DOCTYPE\shtml>\n
-      '<html (for a in attrs (.program a)) '>\n
-      (for e in es (.program e))
+      '<html (for-arg a in attrs (.program a)) '>\n
+      (for-arg e in es (.program e))
       '</html>\n
    ))
 ) HTMLElement);
 
 fragment main := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<main (for a in attrs (.program a)) '>\n
-      (for e in es (.program e))
+      '<main (for-arg a in attrs (.program a)) '>\n
+      (for-arg e in es (.program e))
       '</main>\n
    ))
 ) HTMLElement);
 
 fragment head := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<head\s (for a in attrs (.program a)) '>
-      (for e in es (.program e))
+      '<head\s (for-arg a in attrs (.program a)) '>
+      (for-arg e in es (.program e))
       '</head>\n
    ))
 ) HTMLElement);
 
 fragment title := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<title\s (for a in attrs (.program a)) '>
-      (for e in es (.program e))
+      '<title\s (for-arg a in attrs (.program a)) '>
+      (for-arg e in es (.program e))
       '</title>\n
    ))
 ) HTMLElement);
 
 fragment body := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<body\s (for a in attrs (.program a)) '>
-      (for e in es (.program e))
+      '<body\s (for-arg a in attrs (.program a)) '>
+      (for-arg e in es (.program e))
       '</body>\n
    ))
 ) HTMLElement);
 
 fragment h1 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<h1\s (for a in attrs (.program a)) '>
-      (for e in es (.program e))
+      '<h1\s (for-arg a in attrs (.program a)) '>
+      (for-arg e in es (.program e))
       '</h1>\n
    ))
 ) HTMLElement);
 
 fragment h2 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<h2\s (for a in attrs (.program a)) '>
-      (for e in es (.program e))
+      '<h2\s (for-arg a in attrs (.program a)) '>
+      (for-arg e in es (.program e))
       '</h2>\n
    ))
 ) HTMLElement);
 
 fragment h3 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<h3\s (for a in attrs (.program a)) '>
-      (for e in es (.program e))
+      '<h3\s (for-arg a in attrs (.program a)) '>
+      (for-arg e in es (.program e))
       '</h3>\n
    ))
 ) HTMLElement);
 
 fragment h4 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<h4\s (for a in attrs (.program a)) '>
-      (for e in es (.program e))
+      '<h4\s (for-arg a in attrs (.program a)) '>
+      (for-arg e in es (.program e))
       '</h4>\n
    ))
 ) HTMLElement);
 
 fragment h5 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<h5\s (for a in attrs (.program a)) '>
-      (for e in es (.program e))
+      '<h5\s (for-arg a in attrs (.program a)) '>
+      (for-arg e in es (.program e))
       '</h5>\n
    ))
 ) HTMLElement);
 
 fragment h6 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<h6\s (for a in attrs (.program a)) '>
-      (for e in es (.program e))
+      '<h6\s (for-arg a in attrs (.program a)) '>
+      (for-arg e in es (.program e))
       '</h6>\n
    ))
 ) HTMLElement);
 
 fragment div := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<div\s (for a in attrs (.program a)) '>
-      (for e in es (.program e))
+      '<div\s (for-arg a in attrs (.program a)) '>
+      (for-arg e in es (.program e))
       '</div>\n
    ))
 ) HTMLElement);
 
 fragment header := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<header\s (for a in attrs (.program a)) '>
-      (for e in es (.program e))
+      '<header\s (for-arg a in attrs (.program a)) '>
+      (for-arg e in es (.program e))
       '</header>\n
    ))
 ) HTMLElement);
 
 fragment nav := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<nav\s (for a in attrs (.program a)) '>
-      (for e in es (.program e))
+      '<nav\s (for-arg a in attrs (.program a)) '>
+      (for-arg e in es (.program e))
       '</nav>\n
    ))
 ) HTMLElement);
 
 fragment ul := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<ul\s (for a in attrs (.program a)) '>
-      (for e in es (.program e))
+      '<ul\s (for-arg a in attrs (.program a)) '>
+      (for-arg e in es (.program e))
       '</ul>\n
    ))
 ) HTMLElement);
 
 fragment ol := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<ol\s (for a in attrs (.program a)) '>
-      (for e in es (.program e))
+      '<ol\s (for-arg a in attrs (.program a)) '>
+      (for-arg e in es (.program e))
       '</ol>\n
    ))
 ) HTMLElement);
 
 fragment li := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<li\s (for a in attrs (.program a)) '>
-      (for e in es (.program e))
+      '<li\s (for-arg a in attrs (.program a)) '>
+      (for-arg e in es (.program e))
       '</li>\n
    ))
 ) HTMLElement);
 
 fragment a := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<a\s (for a in attrs (.program a)) '>
-      (for e in es (.program e))
+      '<a\s (for-arg a in attrs (.program a)) '>
+      (for-arg e in es (.program e))
       '</a>\n
    ))
 ) HTMLElement);
 
 fragment span := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<span\s (for a in attrs (.program a)) '>
-      (for e in es (.program e))
+      '<span\s (for-arg a in attrs (.program a)) '>
+      (for-arg e in es (.program e))
       '</span>
    ))
 ) HTMLElement);
 
 fragment i := λ(: attrs HTMLAttribute...)(: f1 HTMLElement). (: (
    (.program(
-      '<i\s (for a in attrs (.program a)) '>
-      (for e in es (.program e))
+      '<i\s (for-arg a in attrs (.program a)) '>
+      (for-arg e in es (.program e))
       '</i>
    ))
 ) HTMLElement);
 
 fragment p := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<p\s (for a in attrs (.program a)) '>
-      (for e in es (.program e))
+      '<p\s (for-arg a in attrs (.program a)) '>
+      (for-arg e in es (.program e))
       '</p>
    ))
 ) HTMLElement);
 
 fragment img := λ(: attrs HTMLAttribute...). (: (
    (.program(
-      '<img\s (for a in attrs (.program a)) '\\>\n
+      '<img\s (for-arg a in attrs (.program a)) '\\>\n
    ))
 ) HTMLElement);
 
 fragment link := λ(: attrs HTMLAttribute...). (: (
    (.program(
-      '<link\s (for a in attrs (.program a)) '\\>\n
+      '<link\s (for-arg a in attrs (.program a)) '\\>\n
    ))
 ) HTMLElement);
 
 fragment section := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<section\s (for a in attrs (.program a)) '>\n
-      (for e in es (.program e))
+      '<section\s (for-arg a in attrs (.program a)) '>\n
+      (for-arg e in es (.program e))
       '</section>\n
    ))
 ) HTMLElement);
 
 fragment form := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<form\s (for a in attrs (.program a)) '>\n
-      (for e in es (.program e))
-      '</form>\n
+      '<for-argm\s (for-arg a in attrs (.program a)) '>\n
+      (for-arg e in es (.program e))
+      '</for-argm>\n
    ))
 ) HTMLElement);
 
 fragment input := λ(: attrs HTMLAttribute...). (: (
    (.program(
-      '<input\s (for a in attrs (.program a)) '>\n
+      '<input\s (for-arg a in attrs (.program a)) '>\n
    ))
 ) HTMLElement);
 
 fragment button := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<button\s (for a in attrs (.program a)) '>\n
-      (for e in es (.program e))
+      '<button\s (for-arg a in attrs (.program a)) '>\n
+      (for-arg e in es (.program e))
       '</button>\n
    ))
 ) HTMLElement);
