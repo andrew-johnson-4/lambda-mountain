@@ -1,6 +1,16 @@
 
 fragment type String; size String 8; atom suffix String _s;
 
+meta 
+   (description (
+      'A\sclass\sattribute\scan\sbe\sadded\sto\most\shtml\selements.
+   ))
+   (example (
+      (div( (class 'p-data_s) (id 'p-id_s)
+         (h2( 'Hello_s ))
+      ))
+   ))
+;
 fragment class := λ(: cls String). (: (
    (.program(
       '\sclass=" (.program cls) '"\s
