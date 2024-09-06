@@ -1,12 +1,18 @@
 
 import LIB/default.lm;
+
 import SRC/stable-ast.lm;
+import SRC/stable-types.lm;
+import SRC/stable-utility.lm;
 import SRC/stable-tokenize.lm;
+import SRC/stable-parse.lm;
+import SRC/stable-preprocess.lm;
+import SRC/stable-fragment.lm;
+import SRC/stable-context.lm;
+import SRC/stable-index.lm;
 
-config-target                := 'doby.html_s;
-
-type CLIMode ModeHelp | ModeDoc;
-config-mode                  := (: ModeHelp CLIMode);
+type DobyMode DobyModeHelp | DobyModeDoc;
+config-doby-mode                  := (: DobyModeHelp DobyMode);
 
 main := λ(: argc U64)(: argv String[]). (: (
    (let argi 1_u64)
@@ -14,8 +20,8 @@ main := λ(: argc U64)(: argv String[]). (: (
    (while (<( argi argc )) (
       (match ([]( argv argi )) (
          ()
-         ('doc_s (set config-mode ModeDoc))
-         ('help_s (set config-mode ModeHelp))
+         ('doc_s (set config-doby-mode DobyModeDoc))
+         ('help_s (set config-doby-mode DobyModeHelp))
          ('-o_s (
             (set argi (+( argi 1_u64 )))
             (set config-target ([]( argv argi )))
@@ -39,14 +45,15 @@ main := λ(: argc U64)(: argv String[]). (: (
       ( (SAtom( fp )) ( (tokenize fp) (set continue False_u8) ))
    )))
 
-   (match config-mode (
+   (match config-doby-mode (
       ()
-      ( ModeHelp (
+      ( DobyModeHelp (
          (print 'doby\shelp\s--\sDisplay\sCommand\sLine\sOptions\n_s)
          (print 'doby\sdoc\s[input]--\sGenerate\sDocumentation\n_s)
-         (print '\t-o\s[target]\s--\sOutput\sDestination\n_s)
+         (print '\s\s\s\s\s-o\s[target]\s--\sOutput\sDestination\n_s)
       ))
-      ( ModeDoc (
+      ( DobyModeDoc (
+         (parse())
          (print 'TODO\sgenerate\sdocumentation\n_s)
       ))
    ))
