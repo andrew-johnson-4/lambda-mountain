@@ -2,18 +2,14 @@
 import docs/ubuntu-docs.lm;
 
 (docs-html(
-   'LM\sDocumentation:\sdefault.lm_s
+   'Documentation:\sLIB/default.lm_s
    (docs-header())
    (docs-sidebar())
-   (docs-title 'default.lm\sDocumentation_s)
+   (docs-title 'LIB/default.lm\sDocumentation_s)
    (as(
       (main( (class 'l-docs__main_s)
          (div( (class 'row_s)
             (div( (class 'col-12_s)
-               (p(
-                  (text 'default.lm\sdefines\sa\scommon\sruntime\sfor\sLM\sapplications.\s_s)
-                  (text 'Platform\sspecific\sfunctionality\smay\sbe\shidden\sbehind\sthis\scommon\sinterface._s)
-               ))
                (h2( (text 'Bound\sSymbols_s) ))
             ))
          ))

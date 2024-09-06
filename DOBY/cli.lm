@@ -29,6 +29,7 @@ main := λ(: argc U64)(: argv String[]). (: (
             (set config-target ([]( argv argi )))
          ))
          (fp (
+            (set config-doby-input fp)
             (set input (SCons(
                (close input)
                (close (SAtom( fp )))
