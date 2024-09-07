@@ -20,7 +20,7 @@ import docs/ubuntu-docs.lm;
 (h4( (text 'type\s<b>U32</b>_s)))(p( (text 'U32\sis\san\sinteger\sof\sthe\srange\s0\sto\s4294967295._s)))
 (pre( (code( (text '\[print\[\s\`123_u32\s\]\]\n_s)))))
 (hr())
-(h4( (text 'type\s<b>U64</b>_s)))(p( (text 'U8\sis\san\sinteger\sof\sthe\srange\s0\sto\s18446744073709551615._s)))
+(h4( (text 'type\s<b>U64</b>_s)))(p( (text 'U64\sis\san\sinteger\sof\sthe\srange\s0\sto\s18446744073709551615._s)))
 (pre( (code( (text '\[print\[\s\`123_u64\s\]\]\n_s)))))
 (hr())
 (h4( (text 'type\s<b>I8</b>_s)))(p( (text 'I8\sis\san\sinteger\sof\sthe\srange\s-128\sto\s127._s)))

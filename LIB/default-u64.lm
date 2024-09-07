@@ -1,7 +1,7 @@
 
 meta
    (description (
-      'U8\sis\san\sinteger\sof\sthe\srange\s0\sto\s18446744073709551615.
+      'U64\sis\san\sinteger\sof\sthe\srange\s0\sto\s18446744073709551615.
    ))
    (example (print '123_u64))
 ;
