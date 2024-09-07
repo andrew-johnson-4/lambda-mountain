@@ -68,9 +68,12 @@ doc-symbol := λ(: meta AST)(: binding AST). (: (
 
 doc-signature := λ(: k String)(: abs AST). (: (
    (+(
-      (SAtom k)
       (+(
-         (SAtom '\\s:\\s_s)
+         (SAtom '<b>_s)
+         (SAtom k)
+      ))
+      (+(
+         (SAtom '<\\\\b>\\s:\\s_s)
          (doc-signature abs)
       ))
    ))
