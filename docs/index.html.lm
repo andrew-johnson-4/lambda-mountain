@@ -10,7 +10,7 @@ import docs/ubuntu-docs.lm;
       (main( (class 'l-docs__main_s)
          (div( (class 'row_s)
             (div( (class 'col-12_s)
-               (p( (text 'Lambda\sMountain\sis\sa\smacro\sassembler\ssuitable\sfor\sa\svariety\sof\starget\sdomains._s) ))
+               (p( (text 'Lambda\sMountain\sis\sa\styped\smacro\sassembler\ssuitable\sfor\sa\svariety\sof\starget\sdomains._s) ))
                (ul(
                   (li(a( (href '/lambda-mountain/default.lm.html_s) (text 'default.lm\s-\ssystems\sprogramming_s) )))
                   (li(a( (href '/lambda-mountain/default.html.html_s) (text 'default.html\s-\sweb\stemplating_s) )))
