@@ -73,7 +73,7 @@ doc-signature := λ(: k String)(: abs AST). (: (
          (SAtom k)
       ))
       (+(
-         (SAtom '<\\\\b>\\s:\\s_s)
+         (SAtom '</b>\\s:\\s_s)
          (doc-signature abs)
       ))
    ))
