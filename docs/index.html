@@ -23,13 +23,14 @@
 <div  class="l-docs__sidebar u-hide--medium u-hide--small" ><div  class="u-fixed-width" ><h5  class="u-sv-2" >LM Documentation</h5>
 </div>
 </div>
-<div  class="l-docs__main" ><div  class="row" ><for-argm  class="p-search-box u-no-margin-bottom" >
-<input  type="search"  class="p-search-box__input"  name="q"  placeholder="Search documentation "  required=""  autocomplete="on" >
+<div  class="l-docs__main" ><div  class="row" ><form  class="p-search-box u-no-margin-bottom"  method="get"  action="http://www.google.com/search" >
+<input  type="text"  class="p-search-box__input"  name="q"  placeholder="Search documentation "  required=""  autocomplete="on" >
+<input  type="checkbox"  name="sitesearch"  value="https://andrew-johnson-4.github.io/lambda-mountain/"  checked  hidden >
 <button  type="reset"  class="p-search-box__reset"  name="close" >
 <i  class="p-icon--close" ></i></button>
 <button  type="submit"  class="p-search-box__button"  name="submitSearch" >
 <i  class="p-icon--search" ></i></button>
-</for-argm>
+</form>
 </div>
 </div>
 </section>

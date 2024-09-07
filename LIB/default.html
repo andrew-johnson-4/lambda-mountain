@@ -19,6 +19,76 @@ fragment class := λ(: cls String). (: (
 
 meta 
    (description (
+      'An\saction\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (form( (action 'http://site_s) ))
+   ))
+;
+fragment action := λ(: cls String). (: (
+   (.program(
+      '\saction=" (.program cls) '"\s
+   ))
+) HTMLAttribute);
+
+meta 
+   (description (
+      'A\svalue\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (input( (value 'http://site_s) ))
+   ))
+;
+fragment value := λ(: cls String). (: (
+   (.program(
+      '\svalue=" (.program cls) '"\s
+   ))
+) HTMLAttribute);
+
+meta 
+   (description (
+      'A\schecked\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (form( (checked()) ))
+   ))
+;
+fragment checked := λ. (: (
+   (.program(
+      '\schecked\s
+   ))
+) HTMLAttribute);
+
+meta 
+   (description (
+      'A\shidden\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (form( (hidden()) ))
+   ))
+;
+fragment hidden := λ. (: (
+   (.program(
+      '\shidden\s
+   ))
+) HTMLAttribute);
+
+meta
+   (description (
+      'A\smethod\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (form( (method 'get_s) ))
+   ))
+;
+fragment method := λ(: cls String). (: (
+   (.program(
+      '\smethod=" (.program cls) '"\s
+   ))
+) HTMLAttribute);
+
+meta 
+   (description (
       'A\sname\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
    ))
    (example (
@@ -558,9 +628,9 @@ meta
 ;
 fragment form := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
-      '<for-argm\s (for-arg a in attrs (.program a)) '>\n
+      '<form\s (for-arg a in attrs (.program a)) '>\n
       (for-arg e in es (.program e))
-      '</for-argm>\n
+      '</form>\n
    ))
 ) HTMLElement);
 

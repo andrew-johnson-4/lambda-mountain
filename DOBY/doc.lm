@@ -148,6 +148,9 @@ doc-signature := λ(: abs AST). (: (
             ))
          )))
       ))
+      ( ASTNil (
+         (set r (SAtom '\\[\\]_s))
+      ))
       ( _ (
          (print 'Invalid\sSignature:\s_s)(print abs)(print '\n_s)
       ))
@@ -278,6 +281,9 @@ doc-code := λ(: indent U64)(: term AST). (: (
                ))
             ))
          )))
+      ))
+      ( ASTNil (
+         (set doc (SAtom '\\[\\]_s))
       ))
       ( (Lit( l _ )) (
          (set doc (+(
