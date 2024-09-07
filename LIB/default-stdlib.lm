@@ -618,6 +618,50 @@ to-hex := λ(: i U64). (: (
    (clone-rope buff)
 ) String);
 
+has-prefix := λ(: base String)(: pfx String). (: (
+   (let r 1_u64)
+   (while (head-string pfx) (
+      (if (==( (head-string base) (head-string pfx) )) (
+         (set base (tail-string base))
+         (set pfx (tail-string pfx))
+      ) (
+         (set r 0_u64)
+         (set pfx '_s)
+      ))
+   ))
+   r
+) U64);
+
+remove-prefix := λ(: base String)(: pfx String). (: (
+   (if (has-prefix( base pfx )) (
+      (while (head-string pfx) (
+         (set base (tail-string base))
+         (set pfx (tail-string pfx))
+      ))
+   ) ())
+   base
+) String);
+
+replace := λ(: base String)(: pat String)(: sub String). (: (
+   (let r SNil)
+   (while (head-string base) (
+      (if (has-prefix( base pat )) (
+         (set r (SCons(
+            (close r)
+            (close(SAtom sub))
+         )))
+         (set base (remove-prefix( base pat )))
+      ) (
+         (set r (SCons(
+            (close r)
+            (close(SAtom(clone-rope(head-string base))))
+         )))
+         (set base (tail-string base))
+      ))
+   ))
+   (clone-rope r)
+) String);
+
 has-suffix := λ(: base String)(: sfx String). (: (
    (let r 0_u64)
    (while (head-string base) (
@@ -699,3 +743,4 @@ deep-hash := λ(: key String). (: (
    ))
    (clone-rope r)
 ) String);
+
