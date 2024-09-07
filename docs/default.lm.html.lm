@@ -10,6 +10,8 @@ import docs/ubuntu-docs.lm;
       (main( (class 'l-docs__main_s)
          (div( (class 'row_s)
             (div( (class 'col-12_s)
+(hr())
+(hr( (text 'type\s<b>\s=\sString</b>\s=\s_s)))
             ))
          ))
       ))

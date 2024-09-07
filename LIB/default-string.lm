@@ -1,2 +1,9 @@
 
+
+meta
+   (description (
+      'A\sString\sis\sa\ssequence\sof\sbytes\sterminated\sby\sa\snull\scharacter.
+   ))
+   (example (print 'hello_s))
+;
 fragment type String; size String 8; atom suffix String _s;
