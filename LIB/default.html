@@ -625,3 +625,17 @@ fragment code := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
       '</code>\n
    ))
 ) HTMLElement);
+
+meta 
+   (description (
+      'hr\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (hr( (class 't_s) ))
+   ))
+;
+fragment hr := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (.program(
+      '<hr\s (for-arg a in attrs (.program a)) '>\n
+   ))
+) HTMLElement);
