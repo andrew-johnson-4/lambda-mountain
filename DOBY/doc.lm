@@ -64,10 +64,10 @@ doc-symbol := λ(: meta AST)(: binding AST). (: (
          (set doc (+( doc (doc-meta meta) )))
       ))
       ( (Typedef( lhs rhs )) (
-         (set doc (+( doc (SAtom '\[hr\[\]\]\n\[hr\[\s\[text\s\`type\\s<b>\\s=\\s_s) )))
+         (set doc (+( doc (SAtom '\[hr\[\]\]\n\[h4\[\s\[text\s\`type\\s<b>_s) )))
          (set doc (+( doc (doc-type-lhs( lhs )) )))
-         (set doc (+( doc (SAtom '</b>\\s=\\s_s) )))
-         (set doc (+( doc (SAtom '_s\]\]\]\n_s) )))
+         (set doc (+( doc (SAtom '</b>_s\]\]\]_s) )))
+         (set doc (+( doc (doc-meta meta) )))
       ))
       ( _ (
          (print 'Unknown\sSymbol\sBinding\sin\sdoc-symbol:\s_s)
