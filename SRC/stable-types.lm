@@ -900,6 +900,10 @@ to-string-impl := λ(: tt Type). (: (
       ( (TGround( tag TypeEOF )) (
         (set r (SAtom tag))
       ))
+      ( (TGround( '..._s (TypeSeq( TypeEOF p1 )) )) (
+        (set r (SCons( (close r) (close(to-string-impl p1)) )))
+        (set r (SCons( (close r) (close(SAtom '..._s)) )))
+      ))
       ( (TGround( tag ps )) (
         (set r (SAtom tag))
         (set r (SCons( (close r) (close(SAtom '<_s)) )))

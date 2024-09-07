@@ -58,7 +58,7 @@ doc-symbol := λ(: meta AST)(: binding AST). (: (
    (match binding (
       ()
       ( (Frg( k_t abs kt )) (
-         (set doc (+( doc (SAtom '\[hr\[\]\]\n\[h2\[\s\[text\s\`_s) )))
+         (set doc (+( doc (SAtom '\[hr\[\]\]\n\[h4\[\s\[text\s\`_s) )))
          (set doc (+( doc (doc-signature( k abs )) )))
          (set doc (+( doc (SAtom '_s\]\]\]\n_s) )))
          (set doc (+( doc (doc-meta meta) )))
