@@ -3,6 +3,6 @@ meta
    (description (
       'I16\sis\san\sinteger\sof\sthe\srange\s-32768\sto\s32767.
    ))
-   (example (print '123_u8))
+   (example (print '123_i16))
 ;
 fragment type I16;    size I16 2;    atom suffix I16    _i16;

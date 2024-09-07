@@ -27,7 +27,7 @@ import docs/ubuntu-docs.lm;
 (pre( (code( (text '\[print\[\s\`123_i8\s\]\]\n_s)))))
 (hr())
 (h4( (text 'type\s<b>I16</b>_s)))(p( (text 'I16\sis\san\sinteger\sof\sthe\srange\s-32768\sto\s32767._s)))
-(pre( (code( (text '\[print\[\s\`123_u8\s\]\]\n_s)))))
+(pre( (code( (text '\[print\[\s\`123_i16\s\]\]\n_s)))))
 (hr())
 (h4( (text 'type\s<b>I32</b>_s)))(p( (text 'I32\sis\san\sinteger\sof\sthe\srange\s-21474823648\sto\s21474823647._s)))
 (pre( (code( (text '\[print\[\s\`123_i32\s\]\]\n_s)))))
