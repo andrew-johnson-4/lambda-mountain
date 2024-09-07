@@ -6,30 +6,20 @@ import docs/ubuntu-docs.lm;
    (docs-header())
    (docs-sidebar())
    (docs-title 'LM\sDocumentation_s)
-   (docs-content())
+   (as(
+      (main( (class 'l-docs__main_s)
+         (div( (class 'row_s)
+            (div( (class 'col-12_s)
+               (p( (text 'Lambda\sMountain\sis\sa\smacro\sassembler\ssuitable\sfor\sa\svariety\sof\starget\sdomains._s) ))
+               (ul(
+                  (li(a( (href '/lambda-mountain/default.lm.html_s) (text 'default.lm\s-\ssystems\sprogramming_s) )))
+                  (li(a( (href '/lambda-mountain/default.html.html_s) (text 'default.html\s-\sweb\stemplating_s) )))
+               ))
+            ))
+         ))
+      ))
+   ) DocsContent+HTMLElement)
    (docs-meta())
    (docs-footer())
 ))
-
-#<div class="l-docs">
-#  <div class="l-docs__header">
-#    <header id="navigation" class="p-navigation is-dark">
-#    </header>
-#    <section id="search-docs" class="p-strip is-bordered is-shallow l-docs__subgrid">
-#      <div class="l-docs__sidebar u-hide--medium u-hide--small">
-#        <div class="u-fixed-width">
-#          <h5 class="u-sv-2">Documentation example</h5>
-#        </div>
-#      </div>
-#      <div class="l-docs__main">
-#        <div class="row">
-#          <form class="p-search-box u-no-margin--bottom">
-#            <input type="search" class="p-search-box__input" name="q" placeholder="Search documentation" required="" autocomplete="on">
-#            <button type="reset" class="p-search-box__reset" name="close"><i class="p-icon--close">Close</i></button>
-#            <button type="submit" class="p-search-box__button" name="submitSearch"><i class="p-icon--search">Search</i></button>
-#          </form>
-#        </div>
-#      </div>
-#    </section>
-#  </div>
 
