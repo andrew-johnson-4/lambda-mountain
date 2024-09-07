@@ -1,2 +1,8 @@
 
+meta
+   (description (
+      'U8\sis\san\sinteger\sof\sthe\srange\s0\sto\s18446744073709551615.
+   ))
+   (example (print '123_u64))
+;
 fragment type U64;    size U64 8;    atom suffix U64    _u64;

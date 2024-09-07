@@ -43,7 +43,7 @@ doc-bound-symbols := λ. (: (
    (while (non-zero program) (match program (
       ()
       ( (Seq( (Seq( rst (Meta m) )) f )) (
-         (set doc (+( doc (doc-symbol( m f )) )))
+         (set doc (+( (doc-symbol( m f )) doc )))
          (set program rst)
       ))
       ( (Seq( rst _ )) (

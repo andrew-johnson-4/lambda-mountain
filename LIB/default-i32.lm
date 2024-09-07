@@ -1,2 +1,8 @@
 
+meta
+   (description (
+      'I32\sis\san\sinteger\sof\sthe\srange\s-21474823648\sto\s21474823647.
+   ))
+   (example (print '123_i32))
+;
 fragment type I32;    size I32 4;    atom suffix I32    _i32;

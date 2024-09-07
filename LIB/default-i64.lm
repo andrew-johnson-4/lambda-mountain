@@ -1,2 +1,8 @@
 
+meta
+   (description (
+      'I64\sis\san\sinteger\sof\sthe\srange\s-9223372036854775808\sto\s9223372036854775807.
+   ))
+   (example (print '123_i64))
+;
 fragment type I64;    size I64 8;    atom suffix I64    _i64;
