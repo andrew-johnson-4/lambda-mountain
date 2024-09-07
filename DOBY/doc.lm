@@ -1,4 +1,10 @@
 
+sanitize-html := λ(: s String). (: (
+   (set s (replace( s '<_s '&lt\\:_s )))
+   (set s (replace( s '>_s '&gt\\:_s )))
+   s
+) String);
+
 doc-render := λ. (: (
    (let doc SNil)
    (set doc (+( doc (SAtom '\nimport\sdocs/ubuntu-docs.lm\:\n\n_s) )))
@@ -70,11 +76,11 @@ doc-signature := λ(: k String)(: abs AST). (: (
    (+(
       (+(
          (SAtom '<b>_s)
-         (SAtom k)
+         (SAtom(sanitize-html( k )))
       ))
       (+(
          (SAtom '</b>\\s:\\s_s)
-         (doc-signature abs)
+         (SAtom(sanitize-html(clone-rope(doc-signature abs))))
       ))
    ))
 ) S);

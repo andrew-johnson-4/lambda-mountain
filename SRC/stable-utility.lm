@@ -179,6 +179,7 @@ escape-string := λ(: s String). (: (
          (set s (tail-string s))
          (match (head-string s) (
             ()
+            ( 58_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 59_u8) ))) ))) )  # \: -> ;
             ( 91_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 40_u8) ))) ))) )  # \[ -> (
             ( 92_u8 (set e (SCons( (close e) (close(SAtom( '\\_s ))) ))) )               # \\ -> \
             ( 93_u8 (set e (SCons( (close e) (close(SAtom( (clone-rope 41_u8) ))) ))) )  # \] -> )
