@@ -1,0 +1,2 @@
+
+fragment type String; size String 8; atom suffix String _s;

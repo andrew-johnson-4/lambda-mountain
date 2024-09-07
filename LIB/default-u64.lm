@@ -1,0 +1,2 @@
+
+fragment type U64;    size U64 8;    atom suffix U64    _u64;
