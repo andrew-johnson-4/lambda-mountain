@@ -40,12 +40,325 @@
 </div>
 </div>
 <main class="l-docs__main" >
-<div  class="row" ><div  class="col-12" ><h2 >class : (cls: String) -> HTMLAttribute</h2>
+<div  class="row" ><div  class="col-12" ><h2 >code : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >code is a semantic html element.</p><pre >
+<code >
+(code(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >pre : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >pre is a semantic html element.</p><pre >
+<code >
+(pre(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >button : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >button is a semantic html element.</p><pre >
+<code >
+(button(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >input : (attrs: ...<HTMLAttribute>) -> HTMLElement</h2>
+<p >input is a semantic html element.</p><pre >
+<code >
+(input(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >form : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >form is a semantic html element.</p><pre >
+<code >
+(form(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >section : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >section is a semantic html element.</p><pre >
+<code >
+(section(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >link : (attrs: ...<HTMLAttribute>) -> HTMLElement</h2>
+<p >link is a semantic html element.</p><pre >
+<code >
+(link(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >img : (attrs: ...<HTMLAttribute>) -> HTMLElement</h2>
+<p >img is a semantic html element.</p><pre >
+<code >
+(img(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >p : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >p is a semantic html element.</p><pre >
+<code >
+(p(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >i : (attrs: ...<HTMLAttribute>)(f1: HTMLElement) -> HTMLElement</h2>
+<p >i is a semantic html element.</p><pre >
+<code >
+(i(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >span : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >span is a semantic html element.</p><pre >
+<code >
+(span(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >a : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >a is a semantic html element.</p><pre >
+<code >
+(a(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >li : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >li is a semantic html element.</p><pre >
+<code >
+(li(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >ol : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >ol is a semantic html element.</p><pre >
+<code >
+(ol(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >ul : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >ul is a semantic html element.</p><pre >
+<code >
+(ul(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >nav : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >nav is a semantic html element.</p><pre >
+<code >
+(nav(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >header : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >header is a semantic html element.</p><pre >
+<code >
+(header(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >div : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >div is a semantic html element.</p><pre >
+<code >
+(div(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >h6 : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >h6 is a semantic html element.</p><pre >
+<code >
+(h6(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >h5 : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >h5 is a semantic html element.</p><pre >
+<code >
+(h5(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >h4 : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >h4 is a semantic html element.</p><pre >
+<code >
+(h4(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >h3 : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >h3 is a semantic html element.</p><pre >
+<code >
+(h3(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >h2 : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >h2 is a semantic html element.</p><pre >
+<code >
+(h2(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >h1 : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >h1 is a semantic html element.</p><pre >
+<code >
+(h1(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >body : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >body is where visual html elements go.</p><pre >
+<code >
+(body(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >title : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >title is a semantic html element.</p><pre >
+<code >
+(title(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >head : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >head is a semantic html element.</p><pre >
+<code >
+(head(
+   (title( 'The page title_s ))
+))
+</code>
+</pre>
+<h2 >main : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >main is a semantic html element.</p><pre >
+<code >
+(main(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >html : (attrs: ...<HTMLAttribute>)(es: ...<HTMLElement>) -> HTMLElement</h2>
+<p >html is the document root .</p><pre >
+<code >
+(html(
+   (text( 'hello_s ))
+))
+</code>
+</pre>
+<h2 >text : (t: String) -> HTMLElement</h2>
+<p >text is a typesafe plaintext element.</p><pre >
+<code >
+(text( 'hello_s ))
+</code>
+</pre>
+<h2 >href : (a: String) -> HTMLAttribute</h2>
+<p >An href attribute can be added to most html elements.</p><pre >
+<code >
+(input(
+   (rel( 'http://site_s ))
+))
+</code>
+</pre>
+<h2 >rel : (i: String) -> HTMLAttribute</h2>
+<p >A rel attribute can be added to most html elements.</p><pre >
+<code >
+(input(
+   (rel( 'ident_s ))
+))
+</code>
+</pre>
+<h2 >id : (i: String) -> HTMLAttribute</h2>
+<p >An id attribute can be added to most html elements.</p><pre >
+<code >
+(input(
+   (id( 'ident_s ))
+))
+</code>
+</pre>
+<h2 >src : (s: String) -> HTMLAttribute</h2>
+<p >A src attribute can be added to most html elements.</p><pre >
+<code >
+(input(
+   (src( 'http://site_s ))
+))
+</code>
+</pre>
+<h2 >type_ : (cls: String) -> HTMLAttribute</h2>
+<p >A type attribute can be added to most html elements.</p><pre >
+<code >
+(input(
+   (type_( 'text_s ))
+))
+</code>
+</pre>
+<h2 >placeholder : (cls: String) -> HTMLAttribute</h2>
+<p >A placeholder attribute can be added to most html elements.</p><pre >
+<code >
+(input(
+   (type_( 'text_s ))
+   (placeholder( 'temporary value_s ))
+))
+</code>
+</pre>
+<h2 >required : (cls: String) -> HTMLAttribute</h2>
+<p >A required attribute can be added to most html elements.</p><pre >
+<code >
+(input(
+   (type_( 'text_s ))
+   (required( 'yes_s ))
+))
+</code>
+</pre>
+<h2 >autocomplete : (cls: String) -> HTMLAttribute</h2>
+<p >An autocomplete attribute can be added to most html elements.</p><pre >
+<code >
+(input(
+   (type_( 'text_s ))
+   (autocomplete( 'default value_s ))
+))
+</code>
+</pre>
+<h2 >name : (cls: String) -> HTMLAttribute</h2>
+<p >A name attribute can be added to most html elements.</p><pre >
+<code >
+(div(
+   (name( 'data_s ))
+   (h2( 'Hello_s ))
+))
+</code>
+</pre>
+<h2 >class : (cls: String) -> HTMLAttribute</h2>
 <p >A class attribute can be added to most html elements.</p><pre >
 <code >
 (div(
    (class( 'p-data_s ))
-   (id( 'p-id_s ))
    (h2( 'Hello_s ))
 ))
 </code>

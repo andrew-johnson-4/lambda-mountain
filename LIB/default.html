@@ -6,7 +6,7 @@ meta
       'A\sclass\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
    ))
    (example (
-      (div( (class 'p-data_s) (id 'p-id_s)
+      (div( (class 'p-data_s)
          (h2( 'Hello_s ))
       ))
    ))
@@ -17,66 +17,164 @@ fragment class := λ(: cls String). (: (
    ))
 ) HTMLAttribute);
 
+meta 
+   (description (
+      'A\sname\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (div( (name 'data_s)
+         (h2( 'Hello_s ))
+      ))
+   ))
+;
 fragment name := λ(: cls String). (: (
    (.program(
       '\sname=" (.program cls) '"\s
    ))
 ) HTMLAttribute);
 
+meta 
+   (description (
+      'An\sautocomplete\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (input( (type_ 'text_s) (autocomplete 'default\svalue_s)
+      ))
+   ))
+;
 fragment autocomplete := λ(: cls String). (: (
    (.program(
       '\sautocomplete=" (.program cls) '"\s
    ))
 ) HTMLAttribute);
 
+meta 
+   (description (
+      'A\srequired\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (input( (type_ 'text_s) (required 'yes_s)
+      ))
+   ))
+;
 fragment required := λ(: cls String). (: (
    (.program(
       '\srequired=" (.program cls) '"\s
    ))
 ) HTMLAttribute);
 
+meta 
+   (description (
+      'A\splaceholder\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (input( (type_ 'text_s) (placeholder 'temporary\svalue_s)
+      ))
+   ))
+;
 fragment placeholder := λ(: cls String). (: (
    (.program(
       '\splaceholder=" (.program cls) '"\s
    ))
 ) HTMLAttribute);
 
+meta 
+   (description (
+      'A\stype\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (input( (type_ 'text_s)
+      ))
+   ))
+;
 fragment type_ := λ(: cls String). (: (
    (.program(
       '\stype=" (.program cls) '"\s
    ))
 ) HTMLAttribute);
 
+meta 
+   (description (
+      'A\ssrc\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (input( (src 'http://site_s)
+      ))
+   ))
+;
 fragment src := λ(: s String). (: (
    (.program(
       '\ssrc=" (.program s) '"\s
    ))
 ) HTMLAttribute);
 
+meta 
+   (description (
+      'An\sid\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (input( (id 'ident_s)
+      ))
+   ))
+;
 fragment id := λ(: i String). (: (
    (.program(
       '\sid=" (.program i) '"\s
    ))
 ) HTMLAttribute);
 
+meta 
+   (description (
+      'A\srel\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (input( (rel 'ident_s)
+      ))
+   ))
+;
 fragment rel := λ(: i String). (: (
    (.program(
       '\srel=" (.program i) '"\s
    ))
 ) HTMLAttribute);
 
+meta 
+   (description (
+      'An\shref\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (input( (rel 'http://site_s)
+      ))
+   ))
+;
 fragment href := λ(: a String). (: (
    (.program(
       '\shref=" (.program a) '"\s
    ))
 ) HTMLAttribute);
 
+meta 
+   (description (
+      'text\sis\sa\stypesafe\splaintext\selement.
+   ))
+   (example (
+      (text 'hello_s)
+   ))
+;
 fragment text := λ(: t String). (: (
    (.program(
       (.program t)
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'html\sis\sthe\sdocument\sroot\s.
+   ))
+   (example (
+      (html( (text( 'hello_s )) ))
+   ))
+;
 fragment html := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<!DOCTYPE\shtml>\n
@@ -86,6 +184,14 @@ fragment html := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'main\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (main( (text( 'hello_s )) ))
+   ))
+;
 fragment main := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<main (for-arg a in attrs (.program a)) '>\n
@@ -94,6 +200,14 @@ fragment main := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'head\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (head( (title( 'The\spage\stitle_s )) ))
+   ))
+;
 fragment head := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<head\s (for-arg a in attrs (.program a)) '>
@@ -102,6 +216,14 @@ fragment head := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'title\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (title( (text( 'hello_s )) ))
+   ))
+;
 fragment title := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<title\s (for-arg a in attrs (.program a)) '>
@@ -110,6 +232,14 @@ fragment title := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'body\sis\swhere\svisual\shtml\selements\sgo.
+   ))
+   (example (
+      (body( (text( 'hello_s )) ))
+   ))
+;
 fragment body := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<body\s (for-arg a in attrs (.program a)) '>
@@ -118,6 +248,14 @@ fragment body := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'h1\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (h1( (text( 'hello_s )) ))
+   ))
+;
 fragment h1 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<h1\s (for-arg a in attrs (.program a)) '>
@@ -126,6 +264,14 @@ fragment h1 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'h2\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (h2( (text( 'hello_s )) ))
+   ))
+;
 fragment h2 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<h2\s (for-arg a in attrs (.program a)) '>
@@ -134,6 +280,14 @@ fragment h2 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'h3\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (h3( (text( 'hello_s )) ))
+   ))
+;
 fragment h3 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<h3\s (for-arg a in attrs (.program a)) '>
@@ -142,6 +296,14 @@ fragment h3 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'h4\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (h4( (text( 'hello_s )) ))
+   ))
+;
 fragment h4 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<h4\s (for-arg a in attrs (.program a)) '>
@@ -150,6 +312,14 @@ fragment h4 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'h5\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (h5( (text( 'hello_s )) ))
+   ))
+;
 fragment h5 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<h5\s (for-arg a in attrs (.program a)) '>
@@ -158,6 +328,14 @@ fragment h5 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'h6\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (h6( (text( 'hello_s )) ))
+   ))
+;
 fragment h6 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<h6\s (for-arg a in attrs (.program a)) '>
@@ -166,6 +344,14 @@ fragment h6 := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'div\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (div( (text( 'hello_s )) ))
+   ))
+;
 fragment div := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<div\s (for-arg a in attrs (.program a)) '>
@@ -174,6 +360,14 @@ fragment div := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'header\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (header( (text( 'hello_s )) ))
+   ))
+;
 fragment header := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<header\s (for-arg a in attrs (.program a)) '>
@@ -182,6 +376,14 @@ fragment header := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'nav\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (nav( (text( 'hello_s )) ))
+   ))
+;
 fragment nav := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<nav\s (for-arg a in attrs (.program a)) '>
@@ -190,6 +392,14 @@ fragment nav := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'ul\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (ul( (text( 'hello_s )) ))
+   ))
+;
 fragment ul := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<ul\s (for-arg a in attrs (.program a)) '>
@@ -198,6 +408,14 @@ fragment ul := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'ol\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (ol( (text( 'hello_s )) ))
+   ))
+;
 fragment ol := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<ol\s (for-arg a in attrs (.program a)) '>
@@ -206,6 +424,14 @@ fragment ol := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'li\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (li( (text( 'hello_s )) ))
+   ))
+;
 fragment li := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<li\s (for-arg a in attrs (.program a)) '>
@@ -214,6 +440,14 @@ fragment li := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'a\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (a( (text( 'hello_s )) ))
+   ))
+;
 fragment a := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<a\s (for-arg a in attrs (.program a)) '>
@@ -222,6 +456,14 @@ fragment a := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'span\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (span( (text( 'hello_s )) ))
+   ))
+;
 fragment span := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<span\s (for-arg a in attrs (.program a)) '>
@@ -230,6 +472,14 @@ fragment span := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'i\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (i( (text( 'hello_s )) ))
+   ))
+;
 fragment i := λ(: attrs HTMLAttribute...)(: f1 HTMLElement). (: (
    (.program(
       '<i\s (for-arg a in attrs (.program a)) '>
@@ -238,6 +488,14 @@ fragment i := λ(: attrs HTMLAttribute...)(: f1 HTMLElement). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'p\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (p( (text( 'hello_s )) ))
+   ))
+;
 fragment p := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<p\s (for-arg a in attrs (.program a)) '>
@@ -246,18 +504,42 @@ fragment p := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'img\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (img( (text( 'hello_s )) ))
+   ))
+;
 fragment img := λ(: attrs HTMLAttribute...). (: (
    (.program(
       '<img\s (for-arg a in attrs (.program a)) '\\>\n
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'link\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (link( (text( 'hello_s )) ))
+   ))
+;
 fragment link := λ(: attrs HTMLAttribute...). (: (
    (.program(
       '<link\s (for-arg a in attrs (.program a)) '\\>\n
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'section\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (section( (text( 'hello_s )) ))
+   ))
+;
 fragment section := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<section\s (for-arg a in attrs (.program a)) '>\n
@@ -266,6 +548,14 @@ fragment section := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'form\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (form( (text( 'hello_s )) ))
+   ))
+;
 fragment form := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<for-argm\s (for-arg a in attrs (.program a)) '>\n
@@ -274,12 +564,28 @@ fragment form := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'input\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (input( (text( 'hello_s )) ))
+   ))
+;
 fragment input := λ(: attrs HTMLAttribute...). (: (
    (.program(
       '<input\s (for-arg a in attrs (.program a)) '>\n
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'button\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (button( (text( 'hello_s )) ))
+   ))
+;
 fragment button := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<button\s (for-arg a in attrs (.program a)) '>\n
@@ -288,6 +594,14 @@ fragment button := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'pre\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (pre( (text( 'hello_s )) ))
+   ))
+;
 fragment pre := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<pre\s (for-arg a in attrs (.program a)) '>\n
@@ -296,6 +610,14 @@ fragment pre := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    ))
 ) HTMLElement);
 
+meta 
+   (description (
+      'code\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (code( (text( 'hello_s )) ))
+   ))
+;
 fragment code := λ(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (.program(
       '<code\s (for-arg a in attrs (.program a)) '>\n
