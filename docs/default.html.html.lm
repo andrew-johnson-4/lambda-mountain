@@ -12,7 +12,7 @@ import docs/ubuntu-docs.lm;
             (div( (class 'col-12_s)
 (h2( (text 'class\s:\s\[cls:\sString\]\s->\sHTMLAttribute_s)))
 (p( (text 'A\sclass\sattribute\scan\sbe\sadded\sto\smost\shtml\selements._s)))
-(pre( (code( (text '\[div\[\n\s\s\s\s\s\s\[class\[\s\`p-data_s\]\]\n\s\s\s\[id\[\s\`p-id_s\]\]\n\n\s\s\s\[h2\[\s\`Hello_s\]\]\n\n\]\]\n_s)))))
+(pre( (code( (text '\[div\[\n\s\s\s\s\s\s\[class\[\s\`p-data_s\s\]\]\n\s\s\s\[id\[\s\`p-id_s\s\]\]\n\s\s\s\[h2\[\s\`Hello_s\s\]\]\n\]\]\n_s)))))
             ))
          ))
       ))

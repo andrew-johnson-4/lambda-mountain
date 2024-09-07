@@ -193,16 +193,13 @@ doc-code := λ(: indent U64)(: term AST). (: (
                   ))
                   (+(
                      (doc-code( indent args ))
-                     (SAtom '\\]\\]\\n_s)
+                     (SAtom '\\s\\]\\]\\n_s)
                   ))
                ))
             )))
          ) (
             (set doc (+(
-               (+(
-                  (SAtom(*( '\\s\\s\\s_s indent )))
-                  (SAtom '\\[_s)
-               ))
+               (SAtom '\\[_s)
                (+(
                   (+(
                      (SAtom f-name)
@@ -223,11 +220,8 @@ doc-code := λ(: indent U64)(: term AST). (: (
                (doc-code( indent arg1 ))
             ))
             (+(
-               (+(
-                  (SAtom(*( '\\s\\s\\s_s indent )))
-                  (doc-code( indent arg2 ))
-               ))
-               (SAtom '\\n_s)
+               (SAtom(*( '\\s\\s\\s_s indent )))
+               (doc-code( indent arg2 ))
             ))
          )))
       ))
