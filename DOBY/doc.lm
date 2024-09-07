@@ -185,7 +185,10 @@ doc-code := λ(: indent U64)(: term AST). (: (
       ( (App( (Var( f-name _ )) args )) (
          (if (doc-code-arg-is-simple( args )) (
             (set doc (+(
-               (SAtom '\\[_s)
+               (+( 
+                  (SAtom(*( '\\s\\s\\s_s indent )))
+                  (SAtom '\\[_s)
+               ))
                (+(
                   (+(
                      (SAtom f-name)
@@ -199,7 +202,10 @@ doc-code := λ(: indent U64)(: term AST). (: (
             )))
          ) (
             (set doc (+(
-               (SAtom '\\[_s)
+               (+( 
+                  (SAtom(*( '\\s\\s\\s_s indent )))
+                  (SAtom '\\[_s)
+               ))
                (+(
                   (+(
                      (SAtom f-name)
@@ -214,16 +220,23 @@ doc-code := λ(: indent U64)(: term AST). (: (
          ))
       ))
       ( (App( arg1 arg2 )) (
-         (set doc (+(
-            (+(
-               (SAtom(*( '\\s\\s\\s_s indent )))
+         (if (doc-code-arg-is-simple( arg1 )) (
+            (set doc (+(
                (doc-code( indent arg1 ))
-            ))
-            (+(
-               (SAtom(*( '\\s\\s\\s_s indent )))
+               (+( 
+                  (+( 
+                     (SAtom '\\n_s)
+                     (SAtom(*( '\\s\\s\\s_s indent )))
+                  ))
+                  (doc-code( indent arg2 ))
+               ))
+            )))
+         ) (
+            (set doc (+(
+               (doc-code( indent arg1 ))
                (doc-code( indent arg2 ))
-            ))
-         )))
+            )))
+         ))
       ))
       ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
          (set doc (+(
