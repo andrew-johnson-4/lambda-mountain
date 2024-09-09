@@ -17,3 +17,8 @@ import LIB/default.html;
 ))
 ```
 
+to compile this we use the `--blob` option on the command line.
+
+```
+lm --blob hello.html.lm -o hello.html
+```
