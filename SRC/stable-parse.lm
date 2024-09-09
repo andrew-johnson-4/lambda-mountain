@@ -406,6 +406,8 @@ parse := λ. (: (
                   (match (parse-one-expression mremainder1) (
                      ()
                      ( (PME( mrhs mremainder2 )) (
+                        (print 'Bind\sMacro\sLHS:\s_s)(print mlhs)(print '\n_s)
+                        (print 'Bind\sMacro\sRHS:\s_s)(print mrhs)(print '\n_s)
                         (set preprocess-macros (MSeq(
                            (close preprocess-macros)
                            (Macro( mlhs mrhs ))
