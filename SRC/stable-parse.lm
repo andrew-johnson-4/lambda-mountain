@@ -390,9 +390,26 @@ parse-type-single := λ(: tt String). (: (
    base-type
 ) Type);
 
-parse := λ. (: (
-   (let tokens ast-tokenized-program)
-   (set ast-tokenized-program (: LEOF List<Token>))
+take-one-expr := λ(: tokens List<Token>). (: (
+   (let taken (: LEOF List<Token>))
+   (let remainder (: LEOF List<Token>))
+   (while (non-zero tokens) (match tokens (
+      ()
+      ( (LCons( '\:_t rem )) (
+         (set remainder tokens)
+         (set tokens (: LEOF List<Token>))
+      ))
+      ( (LCons( hd rem )) (
+         (set taken (cons( hd taken )))
+         (set remainder rem)
+         (set tokens rem)
+      ))
+   )))
+   (Tuple( taken remainder ))
+) Tuple<List<Token>,List<Token>>);
+
+parse-toplevel := λ(: tokens List<Token>). (: (
+   (let program ASTEOF)
    (while (non-zero tokens) (
       (match tokens (
          ()
@@ -400,12 +417,21 @@ parse := λ. (: (
             (set tokens remainder)
          ))
          ( (LCons( 'macro_t remainder )) (
+            (print 'Macro\n_s)
             (match (parse-one-expression remainder) (
                ()
                ( (PME( mlhs mremainder1 )) (
-                  (match (parse-one-expression mremainder1) (
+                  (match (take-one-expr mremainder1) (
                      ()
-                     ( (PME( mrhs mremainder2 )) (
+                     ( (Tuple( mrhs-tokens mremainder2 )) (
+                        (let mrhs (parse-toplevel mrhs-tokens))
+                        (match mrhs (
+                           ()
+                           ( (Seq( ASTEOF m-expr )) (
+                              (set mrhs m-expr)
+                           ))
+                           ( _ () )
+                        ))
                         (print 'Bind\sMacro\sLHS:\s_s)(print mlhs)(print '\n_s)
                         (print 'Bind\sMacro\sRHS:\s_s)(print mrhs)(print '\n_s)
                         (set preprocess-macros (MSeq(
@@ -422,8 +448,8 @@ parse := λ. (: (
             (match (parse-many-expressions remainder) (
                ()
                ( (PME( m r1 )) (
-                  (set ast-parsed-program (Seq(
-                     (close ast-parsed-program)
+                  (set program (Seq(
+                     (close program)
                      (close (Meta( (close m) )))
                   )))
                   (set tokens r1)
@@ -436,8 +462,8 @@ parse := λ. (: (
                ( (PME( e1 r1 )) (match (parse-many-expressions r1) (
                   ()
                   ( (PME( e2 r2 )) (
-                     (set ast-parsed-program (Seq(
-                        (close ast-parsed-program)
+                     (set program (Seq(
+                        (close program)
                         (close (Typedef(
                            (close e1)
                            (close e2)
@@ -466,8 +492,8 @@ parse := λ. (: (
                   (match (parse-many-expressions remainder) (
                      ()
                      ( (PME( re rr )) (
-                        (set ast-parsed-program (Seq(
-                           (close ast-parsed-program)
+                        (set program (Seq(
+                           (close program)
                            (close(Frg( key (close re) tt-ext )))
                         )))
                         (set tokens rr)
@@ -482,8 +508,8 @@ parse := λ. (: (
                ( (PME( e1 r1 )) (match (parse-many-expressions r1) (
                   ()
                   ( (PME( e2 r2 )) (
-                     (set ast-parsed-program (Seq(
-                        (close ast-parsed-program)
+                     (set program (Seq(
+                        (close program)
                         (close (Typedef(
                            (close e1)
                            (close e2)
@@ -521,8 +547,8 @@ parse := λ. (: (
             (set tokens remainder)
          ))
          ( (LCons( 'zero_t (LCons( base-type (LCons( tag-type_t remainder )) )) )) (
-            (set ast-parsed-program (Seq(
-               (close ast-parsed-program)
+            (set program (Seq(
+               (close program)
                (close (Glb( (with-key( base-type 'non-zero_s )) (close(Abs(
                   (close(App(
                      (close(Lit( ':_s (with-key( base-type ':_s )) )))
@@ -562,8 +588,8 @@ parse := λ. (: (
             (match (parse-many-expressions remainder) (
                ()
                ( (PME( re rr )) (
-                  (set ast-parsed-program (Seq(
-                     (close ast-parsed-program)
+                  (set program (Seq(
+                     (close program)
                      (close (Glb( key (close re) )))
                   )))
                   (set tokens rr)
@@ -574,8 +600,8 @@ parse := λ. (: (
             (match (parse-many-expressions remainder) (
                ()
                ( (PME( term r1 )) (
-                  (set ast-parsed-program (Seq(
-                     (close ast-parsed-program)
+                  (set program (Seq(
+                     (close program)
                      (close term)
                   )))
                   (set tokens r1)
@@ -584,4 +610,14 @@ parse := λ. (: (
          ))
       ))
    ))
+   program
+) AST);
+
+parse := λ. (: (
+   (let tokens ast-tokenized-program)
+   (set ast-tokenized-program (: LEOF List<Token>))
+   (set ast-parsed-program (+(
+      ast-parsed-program
+      (parse-toplevel tokens)
+   )))
 ) Nil);
