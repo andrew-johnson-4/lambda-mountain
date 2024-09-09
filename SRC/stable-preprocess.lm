@@ -322,9 +322,9 @@ preprocess-apply := λ(: program AST). (: (
             )))
          )
       ))
-      ( (Seq( al ar )) (set r (Seq(
-         (close(preprocess-apply al))
-         (close(preprocess-apply ar))
+      ( (Seq( al ar )) (set r (+(
+         (preprocess-apply al)
+         (preprocess-apply ar)
       ))))
       ( (App( al ar )) (set r (App(
          (close(preprocess-apply al))

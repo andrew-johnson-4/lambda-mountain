@@ -1,0 +1,14 @@
+
+import LIB/default.lm;
+
+macro ('my-seq x) (
+   a := λ. 1_u64;
+   b := λ. 2_u64;
+);
+
+my-seq();
+
+main := λ.(: (
+   (print(a()))
+   (print(b()))
+) Nil);
