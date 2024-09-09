@@ -6,9 +6,9 @@ macro (my-seq ()) (
    b := λ. 1_u64;
 );
 
-my-seq();
+#my-seq();
 
 main := λ.(: (
-   (print(a()))
-   (print(b()))
+#   (print(a()))
+#   (print(b()))
 ) Nil);

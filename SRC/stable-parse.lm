@@ -405,7 +405,7 @@ take-one-expr := λ(: tokens List<Token>). (: (
          (set tokens rem)
       ))
    )))
-   (Tuple( taken remainder ))
+   (Tuple( (reverse taken) remainder ))
 ) Tuple<List<Token>,List<Token>>);
 
 parse-toplevel := λ(: tokens List<Token>). (: (
@@ -417,7 +417,6 @@ parse-toplevel := λ(: tokens List<Token>). (: (
             (set tokens remainder)
          ))
          ( (LCons( 'macro_t remainder )) (
-            (print 'Macro\n_s)
             (match (parse-one-expression remainder) (
                ()
                ( (PME( mlhs mremainder1 )) (
@@ -432,8 +431,6 @@ parse-toplevel := λ(: tokens List<Token>). (: (
                            ))
                            ( _ () )
                         ))
-                        (print 'Bind\sMacro\sLHS:\s_s)(print mlhs)(print '\n_s)
-                        (print 'Bind\sMacro\sRHS:\s_s)(print mrhs)(print '\n_s)
                         (set preprocess-macros (MSeq(
                            (close preprocess-macros)
                            (Macro( mlhs mrhs ))
@@ -616,8 +613,6 @@ parse-toplevel := λ(: tokens List<Token>). (: (
 parse := λ. (: (
    (let tokens ast-tokenized-program)
    (set ast-tokenized-program (: LEOF List<Token>))
-   (set ast-parsed-program (+(
-      ast-parsed-program
-      (parse-toplevel tokens)
-   )))
+   (let tl (parse-toplevel tokens))
+   (set ast-parsed-program (+( ast-parsed-program tl )))
 ) Nil);
