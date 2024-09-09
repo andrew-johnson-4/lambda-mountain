@@ -6,6 +6,15 @@ cons := λ(: hd x)(: tl List<x>). (: (
    tl
 ) List<x>);
 
+head := λ(: l List<x>). (: (
+   (match l (
+      ()
+      ( LEOF (fail 'List::head\sis\sfallible\n_s) )
+      ( _ () )
+   ))
+   (.2(as l List<x>+Tag<LCons>))
+) x);
+
 + := λ(: hd List<x>)(: tl List<x>). (: (
    (set hd (reverse hd))
    (while (non-zero hd) (match hd (
