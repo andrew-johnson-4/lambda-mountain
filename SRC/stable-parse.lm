@@ -418,8 +418,29 @@ take-one-expr := λ(: tokens List<Token>). (: (
          (set tokens rem)
       ))
    )))
-   (Tuple( (reverse taken) remainder ))
+   (Tuple( (remove-parens(reverse taken)) remainder ))
 ) Tuple<List<Token>,List<Token>>);
+
+remove-parens := λ(: tokens List<Token>). (: (
+   (match tokens (
+      ()
+      ( (LCons( '\[_t rst )) (
+         (let r (: LEOF List<Token>))
+         (while (non-zero rst) (match rst (
+            ()
+            ( (LCons( '\]_t LEOF )) (
+               (set rst (: LEOF List<Token>))
+            ))
+            ( (LCons( tk trst )) (
+               (set r (cons( tk r )))
+               (set rst trst)
+            ))
+         )))
+         (set tokens (reverse r))
+      ))
+   ))
+   tokens
+) List<Token>);
 
 parse-toplevel := λ(: tokens List<Token>). (: (
    (let program ASTEOF)
@@ -448,8 +469,6 @@ parse-toplevel := λ(: tokens List<Token>). (: (
                            (close preprocess-macros)
                            (Macro( mlhs mrhs ))
                         )))
-                        (print 'Bind\sMacro\sLHS\s_s)(print mlhs)(print '\n_s)
-                        (print 'Bind\sMacro\sRHS\s_s)(print mrhs)(print '\n_s)
                         (set tokens mremainder2)
                      ))
                   ))
