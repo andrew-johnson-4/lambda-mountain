@@ -2,7 +2,7 @@
 import LIB/default.lm;
 
 macro ('my-seq base-type v ) (
-   a := λ(: t base-type). v;
+   a := λ(: t base-type+base-type). v;
 );
 
 a := λ(: t t). 3_u64;
