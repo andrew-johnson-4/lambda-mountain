@@ -6,3 +6,5 @@ meta
    (example (print '123_u64))
 ;
 fragment type U64;    size U64 8;    atom suffix U64    _u64;
+
+(declare-simple-instruction-alias-64( && 'and U64 ));

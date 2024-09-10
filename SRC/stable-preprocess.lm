@@ -89,6 +89,12 @@ preprocess-apply-literals := λ(: program AST). (: (
    (let r program)
    (match program (
       ()
+      ( (App( (App( (Lit( ':_s ctk )) mvar )) (Lit( mtype _ )) )) (
+         (set r (App( (close(Lit( ':_s (unique ctk) ))) (close(App( (close(preprocess-apply-literals mvar)) (close(AType(parse-type mtype))) ))) )))
+      ))
+      ( (App( (App( (Lit( ':_s ctk )) mvar )) (Var( mtype _ )) )) (
+         (set r (App( (close(Lit( ':_s (unique ctk) ))) (close(App( (close(preprocess-apply-literals mvar)) (close(AType(parse-type mtype))) ))) )))
+      ))
       ( (Lit( l ltk )) (
          (if (has-suffix( l '_t_s )) (
             (let lpfx (remove-suffix( l '_t_s )))
@@ -392,6 +398,7 @@ preprocess-apply-hard := λ(: macro-name String)(: arity U64)(: program AST). (:
                ( CtxEOF (set macros rst) )
                ( ctx (
                   (set rhs (relocate( rhs (location-of program) )))
+                  (set rhs (preprocess-apply-literals( rhs )))
                   (let p (apply( ctx rhs )))
                   (let c (extract-uuids( (location-of program) CtxEOF p )))
                   (if (non-zero c) (
@@ -419,7 +426,9 @@ apply := λ(: ctx Context)(: term AST). (: (
       ( ASTEOF () )
       ( ASTNil () )
       ( (Lit( _ _ )) () )
-      ( (AType _) () )
+      ( (AType tt) (
+         (set return (AType( (substitute( ctx tt )) )))
+      ))
       ( (Var( n _ )) (
          (while (non-zero ctx) (match ctx (
             ()
