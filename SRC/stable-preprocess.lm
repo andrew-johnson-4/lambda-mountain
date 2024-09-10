@@ -398,6 +398,7 @@ preprocess-apply-hard := λ(: macro-name String)(: arity U64)(: program AST). (:
                ( CtxEOF (set macros rst) )
                ( ctx (
                   (set rhs (relocate( rhs (location-of program) )))
+                  (set rhs (preprocess-apply-literals( rhs )))
                   (let p (apply( ctx rhs )))
                   (let c (extract-uuids( (location-of program) CtxEOF p )))
                   (if (non-zero c) (
@@ -425,7 +426,9 @@ apply := λ(: ctx Context)(: term AST). (: (
       ( ASTEOF () )
       ( ASTNil () )
       ( (Lit( _ _ )) () )
-      ( (AType _) () )
+      ( (AType tt) (
+         (set return (AType( (substitute( ctx tt )) )))
+      ))
       ( (Var( n _ )) (
          (while (non-zero ctx) (match ctx (
             ()
