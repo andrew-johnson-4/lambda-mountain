@@ -89,6 +89,12 @@ preprocess-apply-literals := λ(: program AST). (: (
    (let r program)
    (match program (
       ()
+      ( (App( (App( (Lit( ':_s ctk )) mvar )) (Lit( mtype _ )) )) (
+         (set r (App( (close(Lit( ':_s (unique ctk) ))) (close(App( (close(preprocess-apply-literals mvar)) (close(AType(parse-type mtype))) ))) )))
+      ))
+      ( (App( (App( (Lit( ':_s ctk )) mvar )) (Var( mtype _ )) )) (
+         (set r (App( (close(Lit( ':_s (unique ctk) ))) (close(App( (close(preprocess-apply-literals mvar)) (close(AType(parse-type mtype))) ))) )))
+      ))
       ( (Lit( l ltk )) (
          (if (has-suffix( l '_t_s )) (
             (let lpfx (remove-suffix( l '_t_s )))
