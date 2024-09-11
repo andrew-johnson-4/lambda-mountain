@@ -5,38 +5,10 @@ fragment type Reg32 EAX | EBX | ECX | EDX | ESI | EDI | EBP | ESP | R8D | R9D | 
 fragment type Reg64 RAX | RBX | RCX | RDX | RSI | RDI | RBP | RSP | R8  | R9  | R10  | R11  | R12  | R13  | R14  | R15;  size Reg64 8;
 
 macro ('declare-simple-instruction-alias-64 (op-alias op-code op-type)) (
-#   fragment op-alias := λ(: l op-type+Reg64)(: r op-type+Reg64). (: (
-#      (.program(
-#         (if-eq (.expression l) (.expression r) (
-#            (.program l)
-#            \t 'pushq \s '% (.expression l) \n
-#            (.program r)
-#            \t 'pushq \s '% (.expression r) \n
-#            \t 'popq \s '%r9 \n
-#            \t 'popq \s '%r8 \n
-#            \t op-code \s '%r8 , \s '%r9 \n
-#         ))
-#         (if-neq (.expression l) (.expression r) (
-#            \t op-code \s '% (.expression l) , \s '% (.expression r) \n
-#         ))
-#      ))
-#      (.data( (.data l) (.data r) ))
-#      (.frame( (.text l) (.text r) ))
-#      (.frame( (.frame l) (.frame r) ))
-#      (.unframe( (.unframe l) (.frame r) ))
-#      (.expression(
-#         (if-eq (.expression l) (.expression r) (
-#            'R9
-#         ))
-#         (if-neq (.expression l) (.expression r) (
-#            (.expression r)
-#         ))
-#      ))
-#   ) op-type+Reg64);
    fragment : DontChain op-alias := λ(: l op-type+Constant)(: r op-type+Reg64). (: (
       (.program(
          (.program r)
-         \t op-code \s '$ (.expression l) , \s '% (.expression r) \o 'op-left \n
+         \t op-code \s '$ (.expression l) , \s '% (.expression r) \n
       ))
       (.data( (.data l) (.data r) ))
       (.frame( (.text l) (.text r) ))
@@ -49,7 +21,7 @@ macro ('declare-simple-instruction-alias-64 (op-alias op-code op-type)) (
    fragment : DontChain op-alias := λ(: l op-type+Reg64)(: r op-type+Constant). (: (
       (.program(
          (.program l)
-         \t op-code \s '$ (.expression r) , \s '% (.expression l) \o 'op-right \n
+         \t op-code \s '$ (.expression r) , \s '% (.expression l) \n
       ))
       (.data( (.data l) (.data r) ))
       (.frame( (.text l) (.text r) ))
