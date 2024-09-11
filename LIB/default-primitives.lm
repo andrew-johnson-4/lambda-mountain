@@ -11,78 +11,78 @@ import LIB/default-string.lm;
 
 fragment : DontChain [] := λ(: l LocalVariable+Array<x+Sized<1>,?>)(: r LocalVariable+U64). (: (
    (.program (
-      \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
-      \t 'mov \s (.expression r) \[ '%rbp \] , \s '%r14 \n
-      \t 'add \s '%r14 , \s '%r15 \n
-      \t 'mov \s '0 \[ '%r15 \] , \s '%r15b \n
+      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
+      \t 'mov \s (.expression r) \[ '%RBP \] , \s '%R14 \n
+      \t 'add \s '%R14 , \s '%R15 \n
+      \t 'mov \s '0 \[ '%R15 \] , \s '%R15B \n
    ))
-   (.expression( 'r15b ))
+   (.expression( 'R15B ))
 ) x+Reg8);
 
 fragment : DontChain [] := λ(: l LocalVariable+Array<x+Sized<8>,?>)(: r LocalVariable+U64). (: (
    (.program (
-      \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
-      \t 'mov \s (.expression r) \[ '%rbp \] , \s '%r14 \n
-      \t 'shl \s '$3, '%r14 \n
-      \t 'add \s '%r14 , \s '%r15 \n
-      \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
+      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
+      \t 'mov \s (.expression r) \[ '%RBP \] , \s '%R14 \n
+      \t 'shl \s '$3, '%R14 \n
+      \t 'add \s '%R14 , \s '%R15 \n
+      \t 'mov \s '0 \[ '%R15 \] , \s '%R15 \n
    ))
-   (.expression( 'r15 ))
+   (.expression( 'R15 ))
 ) x+Reg64);
 
 fragment : DontChain [] := λ(: l LocalVariable+Field<x+Sized<8>,?>)(: r LocalVariable+U64). (: (
    (.program (
-      \t 'mov \s '%rbp , \s '%r15 \n
-      \t 'add \s '$ (.expression l) , \s '%r15 \n
-      \t 'mov \s (.expression r) \[ '%rbp \] , \s '%r14 \n
-      \t 'shl \s '$3, '%r14 \n
-      \t 'add \s '%r14 , \s '%r15 \n
-      \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
+      \t 'mov \s '%RBP , \s '%R15 \n
+      \t 'add \s '$ (.expression l) , \s '%R15 \n
+      \t 'mov \s (.expression r) \[ '%RBP \] , \s '%R14 \n
+      \t 'shl \s '$3, '%R14 \n
+      \t 'add \s '%R14 , \s '%R15 \n
+      \t 'mov \s '0 \[ '%R15 \] , \s '%R15 \n
    ))
-   (.expression( 'r15 ))
+   (.expression( 'R15 ))
 ) x+Reg64);
 
 fragment : DontChain [] := λ(: l LocalVariable+Array<x,?>)(: r GlobalVariable+U64). (: (
    (.program (
-      \t 'mov \s '$ (.expression l) , \s '%r15 \n
-      \t 'mov \s '$ (.expression r) , \s '%r14 \n
-      \t 'mov \s '0 \[ '%r14 \] , \s '%r14 \n
-      \t 'shl \s '$3 , \s '%r14 \n
-      \t 'add \s '%r14 , \s '%r15 \n
-      \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
+      \t 'mov \s '$ (.expression l) , \s '%R15 \n
+      \t 'mov \s '$ (.expression r) , \s '%R14 \n
+      \t 'mov \s '0 \[ '%R14 \] , \s '%R14 \n
+      \t 'shl \s '$3 , \s '%R14 \n
+      \t 'add \s '%R14 , \s '%R15 \n
+      \t 'mov \s '0 \[ '%R15 \] , \s '%R15 \n
    ))
-   (.expression( 'r15 ))
+   (.expression( 'R15 ))
 ) x+Reg64);
 
 fragment : DontChain set[] := λ(: l LocalVariable+Array<Field<Sized<8>,?>,?>)(: i Literal+Constant+U64)(: v Reg64). (: (
    (.program (
-      \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
-      \t 'mov \s '% (.expression v) , \s (*( '8 (.expression i) )) \[ '%r15 \] \n
+      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
+      \t 'mov \s '% (.expression v) , \s (*( '8 (.expression i) )) \[ '%R15 \] \n
    ))
 ) Nil);
 
 fragment : DontChain set[] := λ(: dst Reg64+Array<Sized<size>,?>)(: src LocalVariable+Sized<size>). (: (
    (.program (
       (if-eq (.expression size) 1 (
-         \t 'mov \t (.expression src) \[ '%rbp \] , \s '%r15b \n
-         \t 'mov \s '%r15b , \s 0 \[ '% (.expression dst) \] \n
+         \t 'mov \t (.expression src) \[ '%RBP \] , \s '%R15B \n
+         \t 'mov \s '%R15B , \s 0 \[ '% (.expression dst) \] \n
       ))
       (if-eq (.expression size) 2 (
-         \t 'mov \t (.expression src) \[ '%rbp \] , \s '%r15w \n
-         \t 'mov \s '%r15w , \s 0 \[ '% (.expression dst) \] \n
+         \t 'mov \t (.expression src) \[ '%RBP \] , \s '%R15W \n
+         \t 'mov \s '%R15W , \s 0 \[ '% (.expression dst) \] \n
       ))
       (if-eq (.expression size) 4 (
-         \t 'mov \t (.expression src) \[ '%rbp \] , \s '%r15d \n
-         \t 'mov \s '%r15d , \s 0 \[ '% (.expression dst) \] \n
+         \t 'mov \t (.expression src) \[ '%RBP \] , \s '%R15D \n
+         \t 'mov \s '%R15D , \s 0 \[ '% (.expression dst) \] \n
       ))
       (if-eq (.expression size) 8 (
-         \t 'mov \t (.expression src) \[ '%rbp \] , \s '%r15 \n
-         \t 'mov \s '%r15 , \s 0 \[ '% (.expression dst) \] \n
+         \t 'mov \t (.expression src) \[ '%RBP \] , \s '%R15 \n
+         \t 'mov \s '%R15 , \s 0 \[ '% (.expression dst) \] \n
       ))
       (if-eq 1 (>( (.expression size) 8 )) (
          (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
-            \t 'mov \t (+( (.expression src) (*( 8 (.expression word-offset) )) )) \[ '%rbp \] , \s '%r15 \n
-            \t 'mov \s '%r15 , \s (*( 8 (.expression word-offset) )) \[ '% (.expression dst) \] \n
+            \t 'mov \t (+( (.expression src) (*( 8 (.expression word-offset) )) )) \[ '%RBP \] , \s '%R15 \n
+            \t 'mov \s '%R15 , \s (*( 8 (.expression word-offset) )) \[ '% (.expression dst) \] \n
          ))
       ))
    ))
@@ -90,107 +90,107 @@ fragment : DontChain set[] := λ(: dst Reg64+Array<Sized<size>,?>)(: src LocalVa
 
 fragment : DontChain [] := λ(: l GlobalVariable+Array<x,?>)(: r GlobalVariable+U64). (: (
    (.program (
-      \t 'mov \s '$ (.expression l) , \s '%r15 \n
-      \t 'mov \s '$ (.expression r) , \s '%r14 \n
-      \t 'mov \s '0 \[ '%r14 \] , \s '%r14 \n
-      \t 'shl \s '$3 , \s '%r14 \n
-      \t 'add \s '%r14 , \s '%r15 \n
-      \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
+      \t 'mov \s '$ (.expression l) , \s '%R15 \n
+      \t 'mov \s '$ (.expression r) , \s '%R14 \n
+      \t 'mov \s '0 \[ '%R14 \] , \s '%R14 \n
+      \t 'shl \s '$3 , \s '%R14 \n
+      \t 'add \s '%R14 , \s '%R15 \n
+      \t 'mov \s '0 \[ '%R15 \] , \s '%R15 \n
    ))
-   (.expression( 'r15 ))
+   (.expression( 'R15 ))
 ) x+Reg64);
 fragment : DontChain [] := λ(: l GlobalVariable+Array<x,?>)(: r LocalVariable+U64). (: (
    (.program (
-      \t 'mov \s '$ (.expression l) , \s '%r15 \n
-      \t 'mov \s (.expression r) \[ '%rbp \] , \s '%r14 \n
-      \t 'shl \s '$3 , \s '%r14 \n
-      \t 'add \s '%r14 , \s '%r15 \n
-      \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
+      \t 'mov \s '$ (.expression l) , \s '%R15 \n
+      \t 'mov \s (.expression r) \[ '%RBP \] , \s '%R14 \n
+      \t 'shl \s '$3 , \s '%R14 \n
+      \t 'add \s '%R14 , \s '%R15 \n
+      \t 'mov \s '0 \[ '%R15 \] , \s '%R15 \n
    ))
-   (.expression( 'r15 ))
+   (.expression( 'R15 ))
 ) x+Reg64);
 fragment : DontChain [] := λ(: l GlobalVariable+Array<x,?>)(: r Constant+U64). (: (
    (.program (
-      \t 'mov \s '$ (.expression l) , \s '%r15 \n
-      \t 'mov \s '$ (.expression r) , \s '%r14 \n
-      \t 'shl \s '$3 , \s '%r14 \n
-      \t 'add \s '%r14 , \s '%r15 \n
-      \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
+      \t 'mov \s '$ (.expression l) , \s '%R15 \n
+      \t 'mov \s '$ (.expression r) , \s '%R14 \n
+      \t 'shl \s '$3 , \s '%R14 \n
+      \t 'add \s '%R14 , \s '%R15 \n
+      \t 'mov \s '0 \[ '%R15 \] , \s '%R15 \n
    ))
-   (.expression( 'r15 ))
+   (.expression( 'R15 ))
 ) x+Reg64);
 
 fragment : DontChain > := λ(: l GlobalVariable+U64)(: r Constant+U64). (: (
    (.program (
-      \t 'mov \s '$ (.expression l) , \s '%r15 \n
-      \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
-      \t 'cmp \s '$ (.expression r) , '%r15 \n
+      \t 'mov \s '$ (.expression l) , \s '%R15 \n
+      \t 'mov \s '0 \[ '%R15 \] , \s '%R15 \n
+      \t 'cmp \s '$ (.expression r) , '%R15 \n
    ))
    (.expression( 'ja ))
 ) BranchConditional);
 fragment : DontChain > := λ(: l LocalVariable+U64)(: r Constant+U64). (: (
    (.program (
-      \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
-      \t 'cmp \s '$ (.expression r) , '%r15 \n
+      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
+      \t 'cmp \s '$ (.expression r) , '%R15 \n
    ))
    (.expression( 'ja ))
 ) BranchConditional);
 
 fragment : DontChain > := λ(: l LocalVariable+U64)(: r LocalVariable+U64). (: (
    (.program (
-      \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
-      \t 'mov \s (.expression r) \[ '%rbp \] , \s '%r14 \n
-      \t 'cmp \s '%r14 , '%r15 \n
+      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
+      \t 'mov \s (.expression r) \[ '%RBP \] , \s '%R14 \n
+      \t 'cmp \s '%R14 , '%R15 \n
    ))
    (.expression( 'ja ))
 ) BranchConditional);
 
 fragment : DontChain > := λ(: l LocalVariable+I64)(: r LocalVariable+I64). (: (
    (.program (
-      \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
-      \t 'mov \s (.expression r) \[ '%rbp \] , \s '%r14 \n
-      \t 'cmp \s '%r14 , '%r15 \n
+      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
+      \t 'mov \s (.expression r) \[ '%RBP \] , \s '%R14 \n
+      \t 'cmp \s '%R14 , '%R15 \n
    ))
    (.expression( 'jg ))
 ) BranchConditional);
 
 fragment : DontChain > := λ(: l GlobalVariable+I64)(: r Constant+I64). (: (
    (.program (
-      \t 'mov \s '$ (.expression l) , \s '%r15 \n
-      \t 'mov \s '0 \[ '%r15 \] , \s '%r15 \n
-      \t 'cmp \s '$ (.expression r) , '%r15 \n
+      \t 'mov \s '$ (.expression l) , \s '%R15 \n
+      \t 'mov \s '0 \[ '%R15 \] , \s '%R15 \n
+      \t 'cmp \s '$ (.expression r) , '%R15 \n
    ))
    (.expression( 'jg ))
 ) BranchConditional);
 fragment : DontChain > := λ(: l LocalVariable+I64)(: r Constant+I64). (: (
    (.program (
-      \t 'mov \s (.expression l) \[ '%rbp \] , \s '%r15 \n
-      \t 'cmp \s '$ (.expression r) , '%r15 \n
+      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
+      \t 'cmp \s '$ (.expression r) , '%R15 \n
    ))
    (.expression( 'jg ))
 ) BranchConditional);
 
 fragment : DontChain << := λ(: l U64+LocalVariable)(: r U64+Constant+Literal). (: (
    (.program(
-      \t 'mov \s (.expression l) \[ '%rbp \] , '%rax \n
-      \t 'shl \s '$ (.expression r) , '%rax \n
+      \t 'mov \s (.expression l) \[ '%RBP \] , '%RAX \n
+      \t 'shl \s '$ (.expression r) , '%RAX \n
    ))
-   (.expression 'rax)
+   (.expression 'RAX)
 ) U64+Reg64);
 
 fragment : DontChain >> := λ(: l U64+LocalVariable)(: r U64+Constant+Literal). (: (
    (.program(
-      \t 'mov \s (.expression l) \[ '%rbp \] , '%rax \n
-      \t 'shr \s '$ (.expression r) , '%rax \n
+      \t 'mov \s (.expression l) \[ '%RBP \] , '%RAX \n
+      \t 'shr \s '$ (.expression r) , '%RAX \n
    ))
-   (.expression 'rax)
+   (.expression 'RAX)
 ) U64+Reg64);
 
 fragment : DontChain branchtrue := λ(: _ Nil). (: (
    (.expression( 'jmp ))
 ) BranchConditional);
 fragment : DontChain branchfalse := λ(: _ Nil). (: (
-   (.program( \t 'cmp \s '%rsp, \s '%rsp \n ))
+   (.program( \t 'cmp \s '%RSP, \s '%RSP \n ))
    (.expression( 'jne ))
 ) BranchConditional);
 
@@ -221,7 +221,7 @@ fragment : DontChain as-branch-conditional := λ(: l Reg8). (: (
 
 fragment : DontChain primitive::if := λ(: ictx ImplicitContext)(: e1 BranchConditional)(: e2 ?)(: e3 ?). (: (
    (.program (
-      \t 'push \s '%rbp \n
+      \t 'push \s '%RBP \n
       (.frame e1)
       (.program e1)
       \t (.expression e1) \s (uuid label-true-branch) \n
@@ -229,11 +229,11 @@ fragment : DontChain primitive::if := λ(: ictx ImplicitContext)(: e1 BranchCond
       (.frame e3)
       (.program e3)
       (if-eq (>( (.return-size ictx) 8 )) 1 (
-         \t 'mov \s '%rsp , \s '%r14 \n
+         \t 'mov \s '%RSP , \s '%R14 \n
          (.unframe e3)
          (for ri in (range( 0 (/( (.return-size ictx) 8 )) )) (
-            \t 'movq \s (-( (-( (.return-size ictx) 8 )) (*( (.expression ri) '8 )) )) \[ '%r14 \] , \s '%r15 \n
-            \t 'movq \s '%r15 , \s (-( (-( (.return-size ictx) 8 )) (*( (.expression ri) '8 )) )) \[ '%rsp \] \n
+            \t 'movq \s (-( (-( (.return-size ictx) 8 )) (*( (.expression ri) '8 )) )) \[ '%R14 \] , \s '%R15 \n
+            \t 'movq \s '%R15 , \s (-( (-( (.return-size ictx) 8 )) (*( (.expression ri) '8 )) )) \[ '%RSP \] \n
          ))
       ))
       \t 'jmp \s (uuid label-end) \n
@@ -241,23 +241,23 @@ fragment : DontChain primitive::if := λ(: ictx ImplicitContext)(: e1 BranchCond
       (.frame e2)
       (.program e2)
       (uuid label-end) ': \n
-      (if-eq (.return-size ictx) 1 (\t 'pop \s '%rax \n))
-      (if-eq (.return-size ictx) 2 (\t 'pop \s '%rax \n))
-      (if-eq (.return-size ictx) 4 (\t 'pop \s '%rax \n))
-      (if-eq (.return-size ictx) 8 (\t 'pop \s '%rax \n))
-      \t 'mov \s (.rsp-offset ictx) \[ '%rbp \] , '%rsp \n
-      \t 'add \s '$ (.end-offset ictx) ', \s '%rsp \n
+      (if-eq (.return-size ictx) 1 (\t 'pop \s '%RAX \n))
+      (if-eq (.return-size ictx) 2 (\t 'pop \s '%RAX \n))
+      (if-eq (.return-size ictx) 4 (\t 'pop \s '%RAX \n))
+      (if-eq (.return-size ictx) 8 (\t 'pop \s '%RAX \n))
+      \t 'mov \s (.rsp-offset ictx) \[ '%RBP \] , '%RSP \n
+      \t 'add \s '$ (.end-offset ictx) ', \s '%RSP \n
    ))
    (.unframe(
       (.unframe e1)
       (.unframe e2)
-      \t 'add \s '$8 , \s '%rsp \n
+      \t 'add \s '$8 , \s '%RSP \n
    ))
    (.expression(
-      (if-eq (.return-size ictx) 1 'al)
-      (if-eq (.return-size ictx) 2 'ax)
-      (if-eq (.return-size ictx) 4 'eax)
-      (if-eq (.return-size ictx) 8 'rax)
+      (if-eq (.return-size ictx) 1 'AL)
+      (if-eq (.return-size ictx) 2 'AX)
+      (if-eq (.return-size ictx) 4 'EAX)
+      (if-eq (.return-size ictx) 8 'RAX)
    ))
 ) Nil);
 
@@ -282,24 +282,24 @@ fragment : DontChain primitive::while := λ(: ictx ImplicitContext)(: e1 BranchC
 fragment : DontChain cdecl::call := λ(: ictx ImplicitContext)(: args ?). (: (
    (.program(
       \o 'call \s 'function \s (.function-name ictx) \s ': \s (.function-type ictx) \n
-      \t 'push \s '%rbp \n
-      \t 'mov \s '%rsp , \s '%rbp \n
+      \t 'push \s '%RBP \n
+      \t 'mov \s '%RSP , \s '%RBP \n
       (.program args)
       \t 'call \s (.function-id ictx) \n
-      \t 'mov \s '%rbp , \s '%rsp \n
-      \t 'pop \s '%rbp \n
+      \t 'mov \s '%RBP , \s '%RSP \n
+      \t 'pop \s '%RBP \n
       (if-eq '1 (>( (.return-size ictx) '8 )) (
          (if-eq Used (.used ictx) (
             (for rsi in (range( '0 (/( (.return-size ictx) '8 )) )) (
-               \t 'push \s (-( '-24 (.args-size ictx) )) \[ '%rsp \] \n
+               \t 'push \s (-( '-24 (.args-size ictx) )) \[ '%RSP \] \n
             ))
          ))
       ))
    ))
    (.expression(
-      (if-eq (.return-size ictx) 1 'al)
-      (if-eq (.return-size ictx) 2 'ax)
-      (if-eq (.return-size ictx) 4 'eax)
-      (if-eq (.return-size ictx) 8 'rax)
+      (if-eq (.return-size ictx) 1 'AL)
+      (if-eq (.return-size ictx) 2 'AX)
+      (if-eq (.return-size ictx) 4 'EAX)
+      (if-eq (.return-size ictx) 8 'RAX)
    ))
 ) Nil);
