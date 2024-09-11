@@ -279,6 +279,12 @@ substitute := λ(: tctx Context)(: tt Type). (: (
                   (set tctx CtxEOF)
                ) (set tctx rst))
             ))
+            ( (CtxBind( rst tk (Var( tv _ )) )) (
+               (if (==( tk v )) (
+                  (set tt (parse-type tv))
+                  (set tctx CtxEOF)
+               ) (set tctx rst))
+            ))
             ( (CtxBind( rst tk tv )) (
                (set tctx rst)
             ))

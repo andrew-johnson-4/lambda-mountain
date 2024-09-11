@@ -470,13 +470,13 @@ apply := λ(: ctx Context)(: term AST). (: (
       ))
       ( (Glb( k vr )) (
          (set return (Glb(
-            k
+            (substitute( ctx k ))
             (close(apply( ctx vr )))
          )))
       ))
       ( (Frg( k vr tlt )) (
          (set return (Frg(
-            k
+            (substitute( ctx k ))
             (close(apply( ctx vr )))
             tlt
          )))
@@ -745,3 +745,27 @@ extract-uuids := λ(: loc SourceLocation)(: ctx Context)(: term AST). (: (
    ))
    return
 ) Context);
+
+substitute := λ(: ctx Context)(: v Token). (: (
+   (let vk (key-of v))
+   (while (non-zero ctx) (match ctx (
+      ()
+      ( CtxNil (set ctx CtxEOF) )
+      ( (CtxBind( rst tk (Lit( _ tv )) )) (
+         (if (==( tk vk )) (
+            (set v tv)
+            (set ctx CtxEOF)
+         ) (set ctx rst))
+      ))
+      ( (CtxBind( rst tk (Var( _ tv )) )) (
+         (if (==( tk vk )) (
+            (set v tv)
+            (set ctx CtxEOF)
+         ) (set ctx rst))
+      ))
+      ( (CtxBind( rst tk tv )) (
+         (set ctx rst)
+      ))
+   )))
+   v
+) Token);
