@@ -8,7 +8,10 @@ meta
 fragment type U64;    size U64 8;    atom suffix U64    _u64;
 
 (declare-simple-instruction-alias-binop-64( && 'andq U64 ));
+(declare-simple-instruction-alias-binop-64( || 'orq U64 ));
 (declare-simple-instruction-alias-binop-64( + 'addq U64 ));
+(declare-simple-instruction-alias-binop-64( - 'subq U64 ));
+(declare-simple-instruction-alias-binop-64( ^ 'xorq U64 ));
 
 # <
 # <=
@@ -16,11 +19,6 @@ fragment type U64;    size U64 8;    atom suffix U64    _u64;
 # >=
 # ==
 # !=
-# &&
-# ||
-# +
-# -
-# ^
 # %
 # /
 # *
