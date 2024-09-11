@@ -7,19 +7,58 @@ fragment type Reg64 RAX | RBX | RCX | RDX | RSI | RDI | RBP | RSP | R8  | R9  | 
 macro ('declare-simple-instruction-alias-64 (op-alias op-code op-type)) (
 #   fragment op-alias := λ(: l op-type+Reg64)(: r op-type+Reg64). (: (
 #      (.program(
-#         (if-eq (.expression l) (.expression 
-#         (.program l)
-#         \t 'pushq \s '% (.expression l) \n
-#         (.program r)
-#         \t 'movq \s '% (.expression r) , '% (.expression 
-#         \t op-code \s '% (.expression l) , \s '% (.expression r) \n
+#         (if-eq (.expression l) (.expression r) (
+#            (.program l)
+#            \t 'pushq \s '% (.expression l) \n
+#            (.program r)
+#            \t 'pushq \s '% (.expression r) \n
+#            \t 'popq \s '%r9 \n
+#            \t 'popq \s '%r8 \n
+#            \t op-code \s '%r8 , \s '%r9 \n
+#         ))
+#         (if-neq (.expression l) (.expression r) (
+#            \t op-code \s '% (.expression l) , \s '% (.expression r) \n
+#         ))
 #      ))
 #      (.data( (.data l) (.data r) ))
 #      (.frame( (.text l) (.text r) ))
 #      (.frame( (.frame l) (.frame r) ))
 #      (.unframe( (.unframe l) (.frame r) ))
-#      (.expression( (.expression r) ))
+#      (.expression(
+#         (if-eq (.expression l) (.expression r) (
+#            'R9
+#         ))
+#         (if-neq (.expression l) (.expression r) (
+#            (.expression r)
+#         ))
+#      ))
 #   ) op-type+Reg64);
+   fragment : DontChain op-alias := λ(: l op-type+Constant)(: r op-type+Reg64). (: (
+      (.program(
+         (.program r)
+         \t op-code \s '$ (.expression l) , \s '% (.expression r) \o 'op-left \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.frame r) ))
+      (.expression(
+         (.expression r)
+      ))
+   ) op-type+Reg64);
+   fragment : DontChain op-alias := λ(: l op-type+Reg64)(: r op-type+Constant). (: (
+      (.program(
+         (.program l)
+         \t op-code \s '$ (.expression r) , \s '% (.expression l) \o 'op-right \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.frame r) ))
+      (.expression(
+         (.expression l)
+      ))
+   ) op-type+Reg64);
 );
 
 fragment : DontChain syscall := λ. (: (.program( \t 'syscall \n )) Nil);
