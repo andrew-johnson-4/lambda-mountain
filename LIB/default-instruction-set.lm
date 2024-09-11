@@ -5,12 +5,21 @@ fragment type Reg32 EAX | EBX | ECX | EDX | ESI | EDI | EBP | ESP | R8D | R9D | 
 fragment type Reg64 RAX | RBX | RCX | RDX | RSI | RDI | RBP | RSP | R8  | R9  | R10  | R11  | R12  | R13  | R14  | R15;  size Reg64 8;
 
 macro ('declare-simple-instruction-alias-64 (op-alias op-code op-type)) (
-   fragment op-alias := λ(: l op-type+Reg64)(: r op-type+Reg64). (: (
-      (.program(
-         \t op-code \s '% (.expression l) , \s '% (.expression r) \n
-      ))
-      (.expression( (.expression r) ))
-   ) op-type+Reg64);
+#   fragment op-alias := λ(: l op-type+Reg64)(: r op-type+Reg64). (: (
+#      (.program(
+#         (if-eq (.expression l) (.expression 
+#         (.program l)
+#         \t 'pushq \s '% (.expression l) \n
+#         (.program r)
+#         \t 'movq \s '% (.expression r) , '% (.expression 
+#         \t op-code \s '% (.expression l) , \s '% (.expression r) \n
+#      ))
+#      (.data( (.data l) (.data r) ))
+#      (.frame( (.text l) (.text r) ))
+#      (.frame( (.frame l) (.frame r) ))
+#      (.unframe( (.unframe l) (.frame r) ))
+#      (.expression( (.expression r) ))
+#   ) op-type+Reg64);
 );
 
 fragment : DontChain syscall := λ. (: (.program( \t 'syscall \n )) Nil);

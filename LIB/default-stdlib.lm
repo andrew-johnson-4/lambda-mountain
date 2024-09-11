@@ -81,6 +81,10 @@ non-zero := λ(: s String). (: (
    r
 ) U64);
 
+!= := λ(: ls S)(: rs S). (: (
+   (not(==( ls rs )))
+) U64);
+
 print := λ(: x S). (: (
    (match x (
       ()
