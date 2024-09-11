@@ -420,6 +420,20 @@ fragment::render-impl := λ(: s S). (: (
       ( (SCons( (SAtom 'App_s) (SCons(
          (SCons( (SAtom 'App_s) (SCons(
             (SCons( (SAtom 'App_s) (SCons(
+               (SCons( (SAtom 'Var_s) (SAtom 'if-neq_s) )) lc
+            )) )) rc
+         )) )) body
+      )) )) (
+         (let lt (fragment::render-impl( lc )))
+         (let rt (fragment::render-impl( rc )))
+         (if (!=( lt rt )) (
+            (let bodyt (fragment::render-impl( body )))
+            (set r bodyt)
+         ) ())
+      ))
+      ( (SCons( (SAtom 'App_s) (SCons(
+         (SCons( (SAtom 'App_s) (SCons(
+            (SCons( (SAtom 'App_s) (SCons(
                (SCons( (SAtom 'App_s) (SCons(
                   (SCons( (SAtom 'Var_s) (SAtom 'for_s) ))
                   (SCons( (SAtom 'Var_s) (SAtom binding) ))

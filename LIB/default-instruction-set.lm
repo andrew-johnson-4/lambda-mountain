@@ -5,11 +5,31 @@ fragment type Reg32 EAX | EBX | ECX | EDX | ESI | EDI | EBP | ESP | R8D | R9D | 
 fragment type Reg64 RAX | RBX | RCX | RDX | RSI | RDI | RBP | RSP | R8  | R9  | R10  | R11  | R12  | R13  | R14  | R15;  size Reg64 8;
 
 macro ('declare-simple-instruction-alias-64 (op-alias op-code op-type)) (
-   fragment op-alias := λ(: l op-type+Reg64)(: r op-type+Reg64). (: (
+   fragment : DontChain op-alias := λ(: l op-type+Constant)(: r op-type+Reg64). (: (
       (.program(
-         \t op-code \s '% (.expression l) , \s '% (.expression r) \n
+         (.program r)
+         \t op-code \s '$ (.expression l) , \s '% (.expression r) \n
       ))
-      (.expression( (.expression r) ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.frame r) ))
+      (.expression(
+         (.expression r)
+      ))
+   ) op-type+Reg64);
+   fragment : DontChain op-alias := λ(: l op-type+Reg64)(: r op-type+Constant). (: (
+      (.program(
+         (.program l)
+         \t op-code \s '$ (.expression r) , \s '% (.expression l) \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.frame r) ))
+      (.expression(
+         (.expression l)
+      ))
    ) op-type+Reg64);
 );
 
