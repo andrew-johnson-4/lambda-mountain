@@ -1,0 +1,288 @@
+
+import LIB/default.lm;
+
+macro ('test-declare-simple-instruction-alias-binop-64 (op-alias op-code op-type)) (
+   fragment : DontChain op-alias := λ(: l op-type+Constant)(: r op-type+Constant). (: (
+      (.program(
+         \t 'movq \s '$ (.expression l) , \s '%R15 \n
+         \t 'movq \s '$ (.expression r) , \s '%R14 \n
+         \t op-code \s '%R14 , \s '%R15 \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.unframe r) ))
+      (.expression(
+         'R15
+      ))
+   ) op-type+Reg64);
+   fragment : DontChain op-alias := λ(: l op-type+Constant)(: r op-type+LocalVariable). (: (
+      (.program(
+         \t 'movq \s '$ (.expression l) , \s '%R15 \n
+         \t 'movq \s (.expression r) \[ '%RBP \] , \s '%R14 \n
+         \t op-code \s '%R14 , \s '%R15 \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.unframe r) ))
+      (.expression(
+         'R15
+      ))
+   ) op-type+Reg64);
+   fragment : DontChain op-alias := λ(: l op-type+Constant)(: r op-type+GlobalVariable). (: (
+      (.program(
+         \t 'movq \s '$ (.expression l) , \s '%R15 \n
+         \t 'movq \s '$ (.expression r) , \s '%R14 \n
+         \t 'movq \s '0 \[ '%R14 \] , \s '%R14 \n
+         \t op-code \s '%R14 , \s '%R15 \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.unframe r) ))
+      (.expression(
+         'R15
+      ))
+   ) op-type+Reg64);
+   fragment : DontChain op-alias := λ(: l op-type+Constant)(: r op-type+Reg64). (: (
+      (.program(
+         (.program r)
+         \t 'movq \s '% (.expression r) , \s '%R14 \n
+         \t 'movq \s '$ (.expression l) , \s '%R15 \n
+         \t op-code \s '%R14 , \s '%R15 \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.unframe r) ))
+      (.expression(
+         'R15
+      ))
+   ) op-type+Reg64);
+
+   fragment : DontChain op-alias := λ(: l op-type+LocalVariable)(: r op-type+Constant). (: (
+      (.program(
+         \t 'movq \s (.expression l) \[ '%RBP \] , \s '%R15 \n
+         \t 'movq \s '$ (.expression r) , \s '%R14 \n
+         \t op-code \s '%R14 , \s '%R15 \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.unframe r) ))
+      (.expression(
+         'R15
+      ))
+   ) op-type+Reg64);
+   fragment : DontChain op-alias := λ(: l op-type+LocalVariable)(: r op-type+LocalVariable). (: (
+      (.program(
+         \t 'movq \s (.expression l) \[ '%RBP \] , \s '%R15 \n
+         \t 'movq \s (.expression r) \[ '%RBP \] , \s '%R14 \n
+         \t op-code \s '%R14 , \s '%R15 \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.unframe r) ))
+      (.expression(
+         'R15
+      ))
+   ) op-type+Reg64);
+   fragment : DontChain op-alias := λ(: l op-type+LocalVariable)(: r op-type+GlobalVariable). (: (
+      (.program(
+         \t 'movq \s (.expression l) \[ '%RBP \] , \s '%R15 \n
+         \t 'movq \s '$ (.expression r) , \s '%R14 \n
+         \t 'movq \s '0 \[ '%R14 \] , \s '%R14 \n
+         \t op-code \s '%R14 , \s '%R15 \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.unframe r) ))
+      (.expression(
+         'R15
+      ))
+   ) op-type+Reg64);
+   fragment : DontChain op-alias := λ(: l op-type+LocalVariable)(: r op-type+Reg64). (: (
+      (.program(
+         (.program r)
+         \t 'movq \s '% (.expression r) , \s '%R14 \n
+         \t 'movq \s (.expression l) \[ '%RBP \] , \s '%R15 \n
+         \t op-code \s '%R14 , \s '%R15 \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.unframe r) ))
+      (.expression(
+         'R15
+      ))
+   ) op-type+Reg64);
+
+   fragment : DontChain op-alias := λ(: l op-type+GlobalVariable)(: r op-type+Constant). (: (
+      (.program(
+         \t 'movq \s '$ (.expression l) , \s '%R15 \n
+         \t 'movq \s '0 \[ '%R15 \] , \s '%R15 \n
+         \t 'movq \s '$ (.expression r) , \s '%R14 \n
+         \t op-code \s '%R14 , \s '%R15 \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.unframe r) ))
+      (.expression(
+         'R15
+      ))
+   ) op-type+Reg64);
+   fragment : DontChain op-alias := λ(: l op-type+GlobalVariable)(: r op-type+LocalVariable). (: (
+      (.program(
+         \t 'movq \s '$ (.expression l) , \s '%R15 \n
+         \t 'movq \s '0 \[ '%R15 \] , \s '%R15 \n
+         \t 'movq \s (.expression r) \[ '%RBP \] , \s '%R14 \n
+         \t op-code \s '%R14 , \s '%R15 \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.unframe r) ))
+      (.expression(
+         'R15
+      ))
+   ) op-type+Reg64);
+   fragment : DontChain op-alias := λ(: l op-type+GlobalVariable)(: r op-type+GlobalVariable). (: (
+      (.program(
+         \t 'movq \s '$ (.expression l) , \s '%R15 \n
+         \t 'movq \s '0 \[ '%R15 \] , \s '%R15 \n
+         \t 'movq \s '$ (.expression r) , \s '%R14 \n
+         \t 'movq \s '0 \[ '%R14 \] , \s '%R14 \n
+         \t op-code \s '%R14 , \s '%R15 \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.unframe r) ))
+      (.expression(
+         'R15
+      ))
+   ) op-type+Reg64);
+   fragment : DontChain op-alias := λ(: l op-type+GlobalVariable)(: r op-type+Reg64). (: (
+      (.program(
+         (.program r)
+         \t 'movq \s '% (.expression r) , \s '%R14 \n
+         \t 'movq \s '$ (.expression l) , \s '%R15 \n
+         \t 'movq \s '0 \[ '%R15 \] , \s '%R15 \n
+         \t op-code \s '%R14 , \s '%R15 \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.unframe r) ))
+      (.expression(
+         'R15
+      ))
+   ) op-type+Reg64);
+
+   fragment : DontChain op-alias := λ(: l op-type+Reg64)(: r op-type+Constant). (: (
+      (.program(
+         (.program l)
+         \t 'movq \s '% (.expression l) , \s '%R15 \n
+         \t 'movq \s '$ (.expression r) , \s '%R14 \n
+         \t op-code \s '%R14 , \s '%R15 \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.unframe r) ))
+      (.expression(
+         'R15
+      ))
+   ) op-type+Reg64);
+   fragment : DontChain op-alias := λ(: l op-type+Reg64)(: r op-type+LocalVariable). (: (
+      (.program(
+         (.program l)
+         \t 'movq \s '% (.expression l) , \s '%R15 \n
+         \t 'movq \s (.expression r) \[ '%RBP \] , \s '%R14 \n
+         \t op-code \s '%R14 , \s '%R15 \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.unframe r) ))
+      (.expression(
+         'R15
+      ))
+   ) op-type+Reg64);
+   fragment : DontChain op-alias := λ(: l op-type+Reg64)(: r op-type+GlobalVariable). (: (
+      (.program(
+         (.program l)
+         \t 'movq \s '% (.expression l) , \s '%R15 \n
+         \t 'movq \s '$ (.expression r) , \s '%R14 \n
+         \t 'movq \s '0 \[ '%R14 \] , \s '%R14 \n
+         \t op-code \s '%R14 , \s '%R15 \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.unframe r) ))
+      (.expression(
+         'R15
+      ))
+   ) op-type+Reg64);
+   fragment : DontChain op-alias := λ(: l op-type+Reg64)(: r op-type+Reg64). (: (
+      (.program(
+         (.program l)
+         \t 'pushq \s '% (.expression l) \n
+         (.program r)
+         \t 'movq \s '% (.expression r) , \s '%R14 \n
+         \t 'popq \s '%R15 \n
+         \t op-code \s '%R14 , \s '%R15 \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.unframe r) ))
+      (.expression(
+         'R15
+      ))
+   ) op-type+Reg64);
+);
+
+(test-declare-simple-instruction-alias-binop-64( do-sub 'subq U64 ));
+
+g1 := 1_u64;
+g2 := 2_u64;
+
+f := λ(: l U64)(: r U64). (: (
+   (+( l r ))
+) U64);
+
+main := λ. (: (
+   (let l1 1_u64)
+   (let l2 2_u64)
+
+   # L Constant
+   (print(do-sub( 2_u64 1_u64 )))
+   (print(do-sub( 2_u64 l1 )))
+   (print(do-sub( 2_u64 g1 )))
+   (print(do-sub( 2_u64 (f( 1_u64 0_u64 )) )))
+
+   # L LocalVariable
+   (print(do-sub( l2 1_u64 )))
+   (print(do-sub( l2 l1 )))
+   (print(do-sub( l2 g1 )))
+   (print(do-sub( l2 (f( 1_u64 0_u64 )) )))
+
+   # L GlobalVariable
+   (print(do-sub( g2 1_u64 )))
+   (print(do-sub( g2 l1 )))
+   (print(do-sub( g2 g1 )))
+   (print(do-sub( g2 (f( 1_u64 0_u64 )) )))
+
+   # L Reg64
+   (print(do-sub( (f( 1_u64 1_u64 )) 1_u64 )))
+   (print(do-sub( (f( 1_u64 1_u64 )) l1 )))
+   (print(do-sub( (f( 1_u64 1_u64 )) g1 )))
+   (print(do-sub( (f( 1_u64 1_u64 )) (f( 1_u64 0_u64 )) )))
+
+) Nil);

@@ -17,7 +17,7 @@ fragment : DontChain template::mov := λ(: src Constructor<tag>+Sized<struct-siz
       (.program src)
       \t 'pushq \s '$ 'case-number \n
       (for index in (range( 0 (/( (.expression struct-size) '8 )) )) (
-         \t 'popq \s (+( (.expression dst) (*( '8 (.expression index) )) )) \[ '%rbp \] \n
+         \t 'popq \s (+( (.expression dst) (*( '8 (.expression index) )) )) \[ '%RBP \] \n
       ))
    ))
 ) Nil);
@@ -29,105 +29,105 @@ fragment : DontChain template::mov := λ(: src Constructor<tag>+Sized<struct-siz
       ))
       (.program src)
       \t 'pushq \s '$ 'case-number \n
-      \t 'movq \s '$ (.expression dst) , \s '%r15 \n
+      \t 'movq \s '$ (.expression dst) , \s '%R15 \n
       (for index in (range( 0 (/( (.expression struct-size) '8 )) )) (
-         \t 'popq \s (*( '8 (.expression index) )) \[ '%r15 \] \n
+         \t 'popq \s (*( '8 (.expression index) )) \[ '%R15 \] \n
       ))
    ))
 ) Nil);
 
 fragment : DontChain .0 := λ(: src Constant). (: (
    (.program(
-      \t 'mov \s '$ (.expression src) , \s '%rax \n
+      \t 'mov \s '$ (.expression src) , \s '%RAX \n
    ))
-   (.expression( 'rax ))
+   (.expression( 'RAX ))
 ) U64+Reg64);
 
 fragment : DontChain .0 := λ(: src LocalVariable). (: (
    (.program(
-      \t 'mov \s (.expression src) \[ '%rbp \] , \s '%rax \n
+      \t 'mov \s (.expression src) \[ '%RBP \] , \s '%RAX \n
    ))
-   (.expression( 'rax ))
+   (.expression( 'RAX ))
 ) U64+Reg64);
 
 fragment : DontChain .0 := λ(: src GlobalVariable). (: (
    (.program(
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s '0 \[ '%r15 \] , \s '%rax \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s '0 \[ '%R15 \] , \s '%RAX \n
    ))
-   (.expression( 'rax ))
+   (.expression( 'RAX ))
 ) U64+Reg64);
 
 fragment : DontChain .0 := λ(: src LocalVariable+Fields<Cons<_,f0+Sized<1>>>). (: (
    (.program(
-      \t 'mov \s (.expression src) \[ '%rbp \] , \s '%al \n
+      \t 'mov \s (.expression src) \[ '%RBP \] , \s '%AL \n
    ))
-   (.expression( 'al ))
+   (.expression( 'AL ))
 ) f0+Reg8);
 
 fragment : DontChain .0 := λ(: src LocalVariable+Fields<Cons<_,f0+Sized<2>>>). (: (
    (.program(
-      \t 'mov \s (.expression src) \[ '%rbp \] , \s '%ax \n
+      \t 'mov \s (.expression src) \[ '%RBP \] , \s '%AX \n
    ))
-   (.expression( 'ax ))
+   (.expression( 'AX ))
 ) f0+Reg16);
 
 fragment : DontChain .0 := λ(: src LocalVariable+Fields<Cons<_,f0+Sized<4>>>). (: (
    (.program(
-      \t 'mov \s (.expression src) \[ '%rbp \] , \s '%eax \n
+      \t 'mov \s (.expression src) \[ '%RBP \] , \s '%EAX \n
    ))
-   (.expression( 'eax ))
+   (.expression( 'EAX ))
 ) f0+Reg32);
 
 fragment : DontChain .0 := λ(: src LocalVariable+Fields<Cons<_,f0+Sized<8>>>). (: (
    (.program(
-      \t 'mov \s (.expression src) \[ '%rbp \] , \s '%rax \n
+      \t 'mov \s (.expression src) \[ '%RBP \] , \s '%RAX \n
    ))
-   (.expression( 'rax ))
+   (.expression( 'RAX ))
 ) f0+Reg64);
 
 fragment : DontChain .0 := λ(: src LocalVariable+Fields<Cons<_,f0+Sized<size0+GT<8>>>>). (: (
    (.program(
       (for index in (range( 0 (/( (.expression size0) '8 )) )) (
          (let word-offset (-( (-( (+( (.expression src) (.expression size0) )) (*( (.expression index) '8 )) )) '8 )) )
-         \t 'pushq \s (.expression word-offset) \[ '%rbp \] \n
+         \t 'pushq \s (.expression word-offset) \[ '%RBP \] \n
       ))
    ))
 ) f0+StackVariable);
 
 fragment : DontChain .1 := λ(: src LocalVariable+Fields<Cons<Cons<_,f1+Sized<1>>,Sized<size0>>>). (: (
    (.program(
-      \t 'mov \s (+( (.expression src) (.expression size0) )) \[ '%rbp \] , \s '%al \n
+      \t 'mov \s (+( (.expression src) (.expression size0) )) \[ '%RBP \] , \s '%AL \n
    ))
-   (.expression( 'al ))
+   (.expression( 'AL ))
 ) f1+Reg8);
 
 fragment : DontChain .1 := λ(: src LocalVariable+Fields<Cons<Cons<_,f1+Sized<2>>,Sized<size0>>>). (: (
    (.program(
-      \t 'mov \s (+( (.expression src) (.expression size0) )) \[ '%rbp \] , \s '%ax \n
+      \t 'mov \s (+( (.expression src) (.expression size0) )) \[ '%RBP \] , \s '%AX \n
    ))
-   (.expression( 'ax ))
+   (.expression( 'AX ))
 ) f1+Reg16);
 
 fragment : DontChain .1 := λ(: src LocalVariable+Fields<Cons<Cons<_,f1+Sized<4>>,Sized<size0>>>). (: (
    (.program(
-      \t 'mov \s (+( (.expression src) (.expression size0) )) \[ '%rbp \] , \s '%eax \n
+      \t 'mov \s (+( (.expression src) (.expression size0) )) \[ '%RBP \] , \s '%EAX \n
    ))
-   (.expression( 'eax ))
+   (.expression( 'EAX ))
 ) f1+Reg32);
 
 fragment : DontChain .1 := λ(: src LocalVariable+Fields<Cons<Cons<_,f1+Sized<8>>,Sized<size0>>>). (: (
    (.program(
-      \t 'mov \s (+( (.expression src) (.expression size0) )) \[ '%rbp \] , \s '%rax \n
+      \t 'mov \s (+( (.expression src) (.expression size0) )) \[ '%RBP \] , \s '%RAX \n
    ))
-   (.expression( 'rax ))
+   (.expression( 'RAX ))
 ) f1+Reg64);
 
 fragment : DontChain .1 := λ(: src LocalVariable+Fields<Cons<Cons<_,f1+Sized<size1+GT<8>>>,Sized<size0>>>). (: (
    (.program(
       (for index in (range( 0 (/( (.expression size1) '8 )) )) (
          (let word-offset (-( (+( (-( (+( (.expression src) (.expression size1) )) (*( (.expression index) '8 )) )) (align(.expression size0)) )) '8 )) )
-         \t 'pushq \s (.expression word-offset) \[ '%rbp \] \n
+         \t 'pushq \s (.expression word-offset) \[ '%RBP \] \n
       ))
    ))
 ) f1+StackVariable);
@@ -135,33 +135,33 @@ fragment : DontChain .1 := λ(: src LocalVariable+Fields<Cons<Cons<_,f1+Sized<si
 fragment : DontChain .2 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<_,f2+Sized<1>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (.expression src) (align( (.expression size1) )) )))
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%rbp \] , \s '%al \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%RBP \] , \s '%AL \n
    ))
-   (.expression( 'al ))
+   (.expression( 'AL ))
 ) f2+Reg8);
 
 fragment : DontChain .2 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<_,f2+Sized<2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (.expression src) (align( (.expression size1) )) )))
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%rbp \] , \s '%ax \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%RBP \] , \s '%AX \n
    ))
-   (.expression( 'ax ))
+   (.expression( 'AX ))
 ) f2+Reg16);
 
 fragment : DontChain .2 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<_,f2+Sized<4>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (.expression src) (align( (.expression size1) )) )))
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%rbp \] , \s '%eax \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%RBP \] , \s '%EAX \n
    ))
-   (.expression( 'eax ))
+   (.expression( 'EAX ))
 ) f2+Reg32);
 
 fragment : DontChain .2 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<_,f2+Sized<8>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (.expression src) (align( (.expression size1) )) )))
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%rbp \] , \s '%rax \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%RBP \] , \s '%RAX \n
    ))
-   (.expression( 'rax ))
+   (.expression( 'RAX ))
 ) f2+Reg64);
 
 fragment : DontChain .2 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<_,f2+Sized<size2+GT<8>>>,Sized<size1>>,Sized<size0>>>). (: (
@@ -169,7 +169,7 @@ fragment : DontChain .2 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<_,f2+Siz
       (let base-offset (+( (.expression src) (align( (.expression size1) )) )))
       (for index in (range( 0 (/( (.expression size2) '8 )) )) (
          (let word-offset (-( (+( (-( (+( (.expression base-offset) (.expression size2) )) (*( (.expression index) '8 )) )) (align(.expression size0)) )) '8 )) )
-         \t 'pushq \s (.expression word-offset) \[ '%rbp \] \n
+         \t 'pushq \s (.expression word-offset) \[ '%RBP \] \n
       ))
    ))
 ) f2+StackVariable);
@@ -177,33 +177,33 @@ fragment : DontChain .2 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<_,f2+Siz
 fragment : DontChain .3 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<_,f3+Sized<1>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )))
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%rbp \] , \s '%al \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%RBP \] , \s '%AL \n
    ))
-   (.expression( 'al ))
+   (.expression( 'AL ))
 ) f3+Reg8);
 
 fragment : DontChain .3 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<_,f3+Sized<2>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )))
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%rbp \] , \s '%ax \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%RBP \] , \s '%AX \n
    ))
-   (.expression( 'ax ))
+   (.expression( 'AX ))
 ) f3+Reg16);
 
 fragment : DontChain .3 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<_,f3+Sized<4>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )))
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%rbp \] , \s '%eax \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%RBP \] , \s '%EAX \n
    ))
-   (.expression( 'eax ))
+   (.expression( 'EAX ))
 ) f3+Reg32);
 
 fragment : DontChain .3 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<_,f3+Sized<8>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )))
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%rbp \] , \s '%rax \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%RBP \] , \s '%RAX \n
    ))
-   (.expression( 'rax ))
+   (.expression( 'RAX ))
 ) f3+Reg64);
 
 fragment : DontChain .3 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<_,f3+Sized<size3+GT<8>>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
@@ -211,7 +211,7 @@ fragment : DontChain .3 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<_,f
       (let base-offset (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )))
       (for index in (range( 0 (/( (.expression size3) '8 )) )) (
          (let word-offset (-( (+( (-( (+( (.expression base-offset) (.expression size3) )) (*( (.expression index) '8 )) )) (align(.expression size0)) )) '8 )) )
-         \t 'pushq \s (.expression word-offset) \[ '%rbp \] \n
+         \t 'pushq \s (.expression word-offset) \[ '%RBP \] \n
       ))
    ))
 ) f3+StackVariable);
@@ -219,33 +219,33 @@ fragment : DontChain .3 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<_,f
 fragment : DontChain .4 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<Cons<_,f4+Sized<1>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )))
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%rbp \] , \s '%al \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%RBP \] , \s '%AL \n
    ))
-   (.expression( 'al ))
+   (.expression( 'AL ))
 ) f4+Reg8);
 
 fragment : DontChain .4 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<Cons<_,f4+Sized<2>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )))
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%rbp \] , \s '%ax \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%RBP \] , \s '%AX \n
    ))
-   (.expression( 'ax ))
+   (.expression( 'AX ))
 ) f4+Reg16);
 
 fragment : DontChain .4 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<Cons<_,f4+Sized<4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )))
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%rbp \] , \s '%eax \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%RBP \] , \s '%EAX \n
    ))
-   (.expression( 'eax ))
+   (.expression( 'EAX ))
 ) f4+Reg32);
 
 fragment : DontChain .4 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<Cons<_,f4+Sized<8>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )))
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%rbp \] , \s '%rax \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%RBP \] , \s '%RAX \n
    ))
-   (.expression( 'rax ))
+   (.expression( 'RAX ))
 ) f4+Reg64);
 
 fragment : DontChain .4 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<Cons<_,f4+Sized<size4+GT<8>>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
@@ -253,7 +253,7 @@ fragment : DontChain .4 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<Con
       (let base-offset (+( (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )))
       (for index in (range( 0 (/( (.expression size4) '8 )) )) (
          (let word-offset (-( (+( (-( (+( (.expression base-offset) (.expression size4) )) (*( (.expression index) '8 )) )) (align(.expression size0)) )) '8 )) )
-         \t 'pushq \s (.expression word-offset) \[ '%rbp \] \n
+         \t 'pushq \s (.expression word-offset) \[ '%RBP \] \n
       ))
    ))
 ) f4+StackVariable);
@@ -261,33 +261,33 @@ fragment : DontChain .4 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<Con
 fragment : DontChain .5 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<1>>,Sized<size4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )) (align( (.expression size4) )) )))
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%rbp \] , \s '%al \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%RBP \] , \s '%AL \n
    ))
-   (.expression( 'al ))
+   (.expression( 'AL ))
 ) f5+Reg8);
 
 fragment : DontChain .5 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<2>>,Sized<size4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )) (align( (.expression size4) )) )))
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%rbp \] , \s '%ax \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%RBP \] , \s '%AX \n
    ))
-   (.expression( 'ax ))
+   (.expression( 'AX ))
 ) f5+Reg16);
 
 fragment : DontChain .5 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<4>>,Sized<size4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )) (align( (.expression size4) )) )))
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%rbp \] , \s '%eax \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%RBP \] , \s '%EAX \n
    ))
-   (.expression( 'eax ))
+   (.expression( 'EAX ))
 ) f5+Reg32);
 
 fragment : DontChain .5 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<8>>,Sized<size4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )) (align( (.expression size4) )) )))
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%rbp \] , \s '%rax \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%RBP \] , \s '%RAX \n
    ))
-   (.expression( 'rax ))
+   (.expression( 'RAX ))
 ) f5+Reg64);
 
 fragment : DontChain .5 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<size5+GT<8>>>,Sized<size4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
@@ -295,91 +295,91 @@ fragment : DontChain .5 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<Con
       (let base-offset (+( (+( (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )) (align( (.expression size4) )) )))
       (for index in (range( 0 (/( (.expression size5) '8 )) )) (
          (let word-offset (-( (+( (-( (+( (.expression base-offset) (.expression size5) )) (*( (.expression index) '8 )) )) (align(.expression size0)) )) '8 )) )
-         \t 'pushq \s (.expression word-offset) \[ '%rbp \] \n
+         \t 'pushq \s (.expression word-offset) \[ '%RBP \] \n
       ))
    ))
 ) f5+StackVariable);
 
 fragment : DontChain .0 := λ(: src GlobalVariable+Fields<Cons<_,f0+Sized<1>>>). (: (
    (.program(
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s '0 \[ '%r15 \] , \s '%al \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s '0 \[ '%R15 \] , \s '%AL \n
    ))
-   (.expression( 'al ))
+   (.expression( 'AL ))
 ) f0+Reg8);
 
 fragment : DontChain .0 := λ(: src GlobalVariable+Fields<Cons<_,f0+Sized<2>>>). (: (
    (.program(
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s '0 \[ '%r15 \] , \s '%ax \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s '0 \[ '%R15 \] , \s '%AX \n
    ))
-   (.expression( 'ax ))
+   (.expression( 'AX ))
 ) f0+Reg16);
 
 fragment : DontChain .0 := λ(: src GlobalVariable+Fields<Cons<_,f0+Sized<4>>>). (: (
    (.program(
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s '0 \[ '%r15 \] , \s '%eax \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s '0 \[ '%R15 \] , \s '%EAX \n
    ))
-   (.expression( 'eax ))
+   (.expression( 'EAX ))
 ) f0+Reg32);
 
 fragment : DontChain .0 := λ(: src GlobalVariable+Fields<Cons<_,f0+Sized<8>>>). (: (
    (.program(
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s '0 \[ '%r15 \] , \s '%rax \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s '0 \[ '%R15 \] , \s '%RAX \n
    ))
-   (.expression( 'rax ))
+   (.expression( 'RAX ))
 ) f0+Reg64);
 
 fragment : DontChain .0 := λ(: src GlobalVariable+Fields<Cons<_,f0+Sized<size0+GT<8>>>>). (: (
    (.program(
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
       (for index in (range( 0 (/( (.expression size0) '8 )) )) (
          (let word-offset (-( (-( (.expression size0) (*( (.expression index) '8 )) )) '8 )) )
-         \t 'pushq \s (.expression word-offset) \[ '%r15 \] \n
+         \t 'pushq \s (.expression word-offset) \[ '%R15 \] \n
       ))
    ))
 ) f0+StackVariable);
 
 fragment : DontChain .1 := λ(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<1>>,Sized<size0>>>). (: (
    (.program(
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s (+( '0 (.expression size0) )) \[ '%r15 \] , \s '%al \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s (+( '0 (.expression size0) )) \[ '%R15 \] , \s '%AL \n
    ))
-   (.expression( 'al ))
+   (.expression( 'AL ))
 ) f1+Reg8);
 
 fragment : DontChain .1 := λ(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<2>>,Sized<size0>>>). (: (
    (.program(
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s (+( '0 (.expression size0) )) \[ '%r15 \] , \s '%ax \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s (+( '0 (.expression size0) )) \[ '%R15 \] , \s '%AX \n
    ))
-   (.expression( 'ax ))
+   (.expression( 'AX ))
 ) f1+Reg16);
 
 fragment : DontChain .1 := λ(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<4>>,Sized<size0>>>). (: (
    (.program(
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s (+( '0 (.expression size0) )) \[ '%r15 \] , \s '%eax \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s (+( '0 (.expression size0) )) \[ '%R15 \] , \s '%EAX \n
    ))
-   (.expression( 'eax ))
+   (.expression( 'EAX ))
 ) f1+Reg32);
 
 fragment : DontChain .1 := λ(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<8>>,Sized<size0>>>). (: (
    (.program(
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s (+( '0 (.expression size0) )) \[ '%r15 \] , \s '%rax \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s (+( '0 (.expression size0) )) \[ '%R15 \] , \s '%RAX \n
    ))
-   (.expression( 'rax ))
+   (.expression( 'RAX ))
 ) f1+Reg64);
 
 fragment : DontChain .1 := λ(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<size1+GT<8>>>,Sized<size0>>>). (: (
    (.program(
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
       (for index in (range( 0 (/( (.expression size1) '8 )) )) (
          (let word-offset (-( (+( (-( (+( '0 (.expression size1) )) (*( (.expression index) '8 )) )) (align(.expression size0)) )) '8 )) )
-         \t 'pushq \s (.expression word-offset) \[ '%r15 \] \n
+         \t 'pushq \s (.expression word-offset) \[ '%R15 \] \n
       ))
    ))
 ) f1+StackVariable);
@@ -387,46 +387,46 @@ fragment : DontChain .1 := λ(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<s
 fragment : DontChain .2 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<_,f2+Sized<1>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( '0 (align( (.expression size1) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%r15 \] , \s '%al \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%R15 \] , \s '%AL \n
    ))
-   (.expression( 'al ))
+   (.expression( 'AL ))
 ) f2+Reg8);
 
 fragment : DontChain .2 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<_,f2+Sized<2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( '0 (align( (.expression size1) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%r15 \] , \s '%ax \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%R15 \] , \s '%AX \n
    ))
-   (.expression( 'ax ))
+   (.expression( 'AX ))
 ) f2+Reg16);
 
 fragment : DontChain .2 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<_,f2+Sized<4>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( '0 (align( (.expression size1) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%r15 \] , \s '%eax \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%R15 \] , \s '%EAX \n
    ))
-   (.expression( 'eax ))
+   (.expression( 'EAX ))
 ) f2+Reg32);
 
 fragment : DontChain .2 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<_,f2+Sized<8>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( '0 (align( (.expression size1) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%r15 \] , \s '%rax \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%R15 \] , \s '%RAX \n
    ))
-   (.expression( 'rax ))
+   (.expression( 'RAX ))
 ) f2+Reg64);
 
 fragment : DontChain .2 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<_,f2+Sized<size2+GT<8>>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( '0 (align( (.expression size1) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
       (for index in (range( 0 (/( (.expression size2) '8 )) )) (
          (let word-offset (-( (+( (-( (+( (.expression base-offset) (.expression size2) )) (*( (.expression index) '8 )) )) (align(.expression size0)) )) '8 )) )
-         \t 'pushq \s (.expression word-offset) \[ '%r15 \] \n
+         \t 'pushq \s (.expression word-offset) \[ '%R15 \] \n
       ))
    ))
 ) f2+StackVariable);
@@ -434,46 +434,46 @@ fragment : DontChain .2 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<_,f2+Si
 fragment : DontChain .3 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<_,f3+Sized<1>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( '0 (align( (.expression size1) )) )) (align( (.expression size2) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%r15 \] , \s '%al \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%R15 \] , \s '%AL \n
    ))
-   (.expression( 'al ))
+   (.expression( 'AL ))
 ) f3+Reg8);
 
 fragment : DontChain .3 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<_,f3+Sized<2>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( '0 (align( (.expression size1) )) )) (align( (.expression size2) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%r15 \] , \s '%ax \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%R15 \] , \s '%AX \n
    ))
-   (.expression( 'ax ))
+   (.expression( 'AX ))
 ) f3+Reg16);
 
 fragment : DontChain .3 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<_,f3+Sized<4>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( '0 (align( (.expression size1) )) )) (align( (.expression size2) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%r15 \] , \s '%eax \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%R15 \] , \s '%EAX \n
    ))
-   (.expression( 'eax ))
+   (.expression( 'EAX ))
 ) f3+Reg32);
 
 fragment : DontChain .3 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<_,f3+Sized<8>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( '0 (align( (.expression size1) )) )) (align( (.expression size2) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%r15 \] , \s '%rax \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%R15 \] , \s '%RAX \n
    ))
-   (.expression( 'rax ))
+   (.expression( 'RAX ))
 ) f3+Reg64);
 
 fragment : DontChain .3 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<_,f3+Sized<size3+GT<8>>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( '0 (align( (.expression size1) )) )) (align( (.expression size2) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
       (for index in (range( 0 (/( (.expression size3) '8 )) )) (
          (let word-offset (-( (+( (-( (+( (.expression base-offset) (.expression size3) )) (*( (.expression index) '8 )) )) (align(.expression size0)) )) '8 )) )
-         \t 'pushq \s (.expression word-offset) \[ '%r15 \] \n
+         \t 'pushq \s (.expression word-offset) \[ '%R15 \] \n
       ))
    ))
 ) f3+StackVariable);
@@ -481,37 +481,37 @@ fragment : DontChain .3 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<_,
 fragment : DontChain .4 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Cons<_,f4+Sized<1>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( (+( '0 (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%r15 \] , \s '%al \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%R15 \] , \s '%AL \n
    ))
-   (.expression( 'al ))
+   (.expression( 'AL ))
 ) f4+Reg8);
 
 fragment : DontChain .4 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Cons<_,f4+Sized<2>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( (+( '0 (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%r15 \] , \s '%ax \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%R15 \] , \s '%AX \n
    ))
-   (.expression( 'ax ))
+   (.expression( 'AX ))
 ) f4+Reg16);
 
 fragment : DontChain .4 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Cons<_,f4+Sized<4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( (+( '0 (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%r15 \] , \s '%eax \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%R15 \] , \s '%EAX \n
    ))
-   (.expression( 'eax ))
+   (.expression( 'EAX ))
 ) f4+Reg32);
 
 fragment : DontChain .4 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Cons<_,f4+Sized<8>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( (+( '0 (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%r15 \] , \s '%rax \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%R15 \] , \s '%RAX \n
    ))
-   (.expression( 'rax ))
+   (.expression( 'RAX ))
 ) f4+Reg64);
 
 fragment : DontChain .4 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Cons<_,f4+Sized<size4+GT<8>>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
@@ -519,8 +519,8 @@ fragment : DontChain .4 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Co
       (let base-offset (+( (+( (+( '0 (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )))
       (for index in (range( 0 (/( (.expression size4) '8 )) )) (
          (let word-offset (-( (+( (-( (+( (.expression base-offset) (.expression size4) )) (*( (.expression index) '8 )) )) (align(.expression size0)) )) '8 )) )
-         \t 'mov \s '$ (.expression src) , \s '%r15 \n
-         \t 'pushq \s (.expression word-offset) \[ '%r15 \] \n
+         \t 'mov \s '$ (.expression src) , \s '%R15 \n
+         \t 'pushq \s (.expression word-offset) \[ '%R15 \] \n
       ))
    ))
 ) f4+StackVariable);
@@ -528,46 +528,46 @@ fragment : DontChain .4 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Co
 fragment : DontChain .5 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<1>>,Sized<size4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( (+( (+( '0 (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )) (align( (.expression size4) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%r15 \] , \s '%al \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%R15 \] , \s '%AL \n
    ))
-   (.expression( 'al ))
+   (.expression( 'AL ))
 ) f5+Reg8);
 
 fragment : DontChain .5 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<2>>,Sized<size4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( (+( (+( '0 (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )) (align( (.expression size4) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%r15 \] , \s '%ax \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%R15 \] , \s '%AX \n
    ))
-   (.expression( 'ax ))
+   (.expression( 'AX ))
 ) f5+Reg16);
 
 fragment : DontChain .5 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<4>>,Sized<size4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( (+( (+( '0 (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )) (align( (.expression size4) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%r15 \] , \s '%eax \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%R15 \] , \s '%EAX \n
    ))
-   (.expression( 'eax ))
+   (.expression( 'EAX ))
 ) f5+Reg32);
 
 fragment : DontChain .5 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<8>>,Sized<size4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( (+( (+( '0 (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )) (align( (.expression size4) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%r15 \] , \s '%rax \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
+      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%R15 \] , \s '%RAX \n
    ))
-   (.expression( 'rax ))
+   (.expression( 'RAX ))
 ) f5+Reg64);
 
 fragment : DontChain .5 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<size5+GT<8>>>,Sized<size4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (+( (+( (+( '0 (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )) (align( (.expression size4) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%r15 \n
+      \t 'mov \s '$ (.expression src) , \s '%R15 \n
       (for index in (range( 0 (/( (.expression size5) '8 )) )) (
          (let word-offset (-( (+( (-( (+( (.expression base-offset) (.expression size5) )) (*( (.expression index) '8 )) )) (.expression size0) )) '8 )) )
-         \t 'pushq \s (.expression word-offset) \[ '%r15 \] \n
+         \t 'pushq \s (.expression word-offset) \[ '%R15 \] \n
       ))
    ))
 ) f5+StackVariable);

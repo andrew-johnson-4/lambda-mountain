@@ -6,3 +6,9 @@ meta
    (example (print '123_i64))
 ;
 fragment type I64;    size I64 8;    atom suffix I64    _i64;
+
+(declare-simple-instruction-alias-binop-64( && 'andq I64 ));
+(declare-simple-instruction-alias-binop-64( || 'orq I64 ));
+(declare-simple-instruction-alias-binop-64( + 'addq I64 ));
+(declare-simple-instruction-alias-binop-64( - 'subq I64 ));
+(declare-simple-instruction-alias-binop-64( ^ 'xorq I64 ));
