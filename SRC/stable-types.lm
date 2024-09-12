@@ -835,6 +835,7 @@ can-unify := λ(: fpt Type)(: pt Type). (: (
    (match (Tuple( fpt pt )) (
       ()
       ( (Tuple( TAny _ )) (set r 1_u64) )
+      ( (Tuple( (TGround( 'Meta_s (TypeSeq( TypeEOF _ )) )) _ )) (set r 1_u64) )
       ( (Tuple( (TVar( ltv )) rt )) (set r 1_u64) )
       ( (Tuple( (TAnd( lt1 lt2 )) rt )) (
          (if (can-unify( lt1 rt )) (
@@ -1080,6 +1081,14 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
             ltv
             pt
             (Lit( tg (token::new tg) ))
+         )))
+      ))
+      ( (Tuple( (TGround( 'Meta_s (TypeSeq( TypeEOF mt )) )) _ )) (
+         (set ctx (TCtxBind(
+            (close TCtxEOF)
+            'Meta_s
+            mt
+            ASTEOF
          )))
       ))
       ( (Tuple( (TVar( ltv )) rt )) (

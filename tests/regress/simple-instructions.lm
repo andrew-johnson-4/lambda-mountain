@@ -229,7 +229,7 @@ macro ('test-declare-simple-instruction-alias-binop-64 (op-alias op-code op-type
          'R15
       ))
    ) op-type+Reg64);
-   fragment : DontChain op-alias := λ(: l op-type+Reg64)(: r op-type+Reg64). (: (
+   fragment : DontChain op-alias := λ(: l op-type+Reg64+Meta<OntoStack>)(: r op-type+Reg64). (: (
       (.program(
          (.program l)
          \t 'pushq \s '% (.expression l) \n
