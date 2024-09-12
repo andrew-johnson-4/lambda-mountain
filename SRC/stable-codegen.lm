@@ -186,7 +186,6 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64). (: (
 ) Fragment);
 
 compile-fragment-args := λ(: ctx FContext)(: function-args-type Type)(: rval AST)(: offset I64). (: (
-   # TODO
    (let r FLEOF)
    (match (slot( (typeof rval) 'Cons_s )) (
       ()
@@ -195,25 +194,25 @@ compile-fragment-args := λ(: ctx FContext)(: function-args-type Type)(: rval AS
             ()
             ( (App( le re )) (
                (let e1 (compile-fragment-args( ctx (cons-head function-args-type) le offset )))
+               (if (non-zero(slot( (cons-head function-args-type) 'Meta_s 'OntoStack_s ))) (
+                  (set offset (-( offset (as (sizeof-aligned(cons-head function-args-type)) I64) )))
+               ) ())
+               (if (non-zero(slot( (cons-tail(cons-head function-args-type)) 'Meta_s 'OntoStack_s ))) (
+                  (set offset (-( offset (as (sizeof-aligned(cons-tail(cons-head function-args-type))) I64) )))
+               ) ())
                (let e2 (compile-expr( ctx re offset Used )))
                (if (non-zero(fragment::get-type e2)) () (
                   (set e2 (fragment::set-type( e2 p2 )))
                ))
-               (if (non-zero(slot( (cons-tail function-args-type) 'Meta_s 'OntoStack_s ))) (
-                  (print 'Move\sArg\sOnto\sStack\s_s)(print p2)(print '\n_s)
-               ) ())
                (set r (FLSeq( (close e1) e2 )))
             ))
          ))
       ))
-      ( pt (
+      ( _ (
          (let e1 (compile-expr( ctx rval offset Used )))
          (if (non-zero(fragment::get-type e1)) () (
             (set e1 (fragment::set-type( e1 (typeof rval) )))
          ))
-         (if (non-zero(slot( function-args-type 'Meta_s 'OntoStack_s ))) (
-            (print 'Move\sArg\sOnto\sStack\s_s)(print pt)(print '\n_s)
-         ) ())
          (set r (FLSeq( (close FLEOF) e1 )))
       ))
    ))
