@@ -283,6 +283,6 @@ main := λ. (: (
    (print(do-sub( (f( 1_u64 1_u64 )) 1_u64 )))
    (print(do-sub( (f( 1_u64 1_u64 )) l1 )))
    (print(do-sub( (f( 1_u64 1_u64 )) g1 )))
-   (print(do-sub( (f( 1_u64 1_u64 )) (f( 1_u64 0_u64 )) )))
+   (print(do-sub( (f( l1 l1 )) (f( l1 0_u64 )) )))
 
 ) Nil);
