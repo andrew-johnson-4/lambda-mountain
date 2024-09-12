@@ -1,0 +1,88 @@
+
+import LIB/default.lm;
+
+macro ('test-declare-simple-instruction-alias-binop-64 (op-alias op-code op-type)) (
+   fragment : DontChain op-alias := λ(: l op-type+Constant)(: r op-type+Reg64). (: (
+      (.program(
+         (.program r)
+         \t op-code \s '$ (.expression l) , \s '% (.expression r) \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.unframe r) ))
+      (.expression(
+         (.expression r)
+      ))
+   ) op-type+Reg64);
+   fragment : DontChain op-alias := λ(: l op-type+Reg64)(: r op-type+Constant). (: (
+      (.program(
+         (.program l)
+         \t op-code \s '$ (.expression r) , \s '% (.expression l) \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.unframe r) ))
+      (.expression(
+         (.expression l)
+      ))
+   ) op-type+Reg64);
+   fragment : DontChain op-alias := λ(: l op-type+LocalVariable)(: r op-type+LocalVariable). (: (
+      (.program(
+         \t 'movq \s (.expression l) \[ '%RBP \] , \s '%R14 \n
+         \t 'movq \s (.expression r) \[ '%RBP \] , \s '%R15 \n
+         \t op-code \s '%R14 , \s '%R15 \n
+      ))
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.unframe r) ))
+      (.expression(
+         'R15
+      ))
+   ) op-type+Reg64);
+#   fragment : DontChain op-alias := λ(: l op-type+LocalVariable)(: r op-type+Constant). (: (
+#      (.program(
+#         \t 'movq \s (.expression l) \[ '%RBP \] , \s '%R14 \n
+#         \t 'movq \s '$ (.expression r) , \s '%R15 \n
+#         \t op-code \s '%R14 , \s '%R15 \n
+#      ))
+#      (.data( (.data l) (.data r) ))
+#      (.frame( (.text l) (.text r) ))
+#      (.frame( (.frame l) (.frame r) ))
+#      (.unframe( (.unframe l) (.unframe r) ))
+#      (.expression(
+#         'R15
+#      ))
+#   ) op-type+Reg64);
+#   fragment : DontChain op-alias := λ(: l op-type+Constant)(: r op-type+LocalVariable). (: (
+#      (.program(
+#         \t 'movq \s '$ (.expression l) , \s '%R14 \n
+#         \t 'movq \s (.expression r) \[ '%RBP \] , \s '%R15 \n
+#         \t op-code \s '%R14 , \s '%R15 \n
+#      ))
+#      (.data( (.data l) (.data r) ))
+#      (.frame( (.text l) (.text r) ))
+#      (.frame( (.frame l) (.frame r) ))
+#      (.unframe( (.unframe l) (.unframe r) ))
+#      (.expression(
+#         'R15
+#      ))
+#   ) op-type+Reg64);
+);
+
+(test-declare-simple-instruction-alias-binop-64( do-sub 'subq U64 ));
+
+gx := 1_u64;
+gy := 2_u64;
+
+f := λ(: l U64)(: r U64). (: (
+   (+( l r ))
+) U64);
+
+main := λ. (: (
+   (let lx 3_u64)
+   (let ly 4_u64)
+   (print(do-sub( ly lx )))(print '\n_s) # 1
+) Nil);
