@@ -1084,12 +1084,7 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          )))
       ))
       ( (Tuple( (TGround( 'Meta_s (TypeSeq( TypeEOF mt )) )) _ )) (
-         (set ctx (TCtxBind(
-            (close TCtxEOF)
-            'Meta_s
-            mt
-            ASTEOF
-         )))
+         (set ctx TCtxNil)
       ))
       ( (Tuple( (TVar( ltv )) rt )) (
          (set ctx (TCtxBind(
@@ -1592,6 +1587,26 @@ is-parameterized := λ(: tt Type). (: (
    ))
    r
 ) U64);
+
+cons-head := λ(: tt Type). (: (
+   (let r TAny)
+   (match tt (
+      ()
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF hd )) tl )) )) (set r hd) )
+      ( _ () )
+   ))
+   r
+) Type);
+
+cons-tail := λ(: tt Type). (: (
+   (let r TAny)
+   (match tt (
+      ()
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF hd )) tl )) )) (set r tl) )
+      ( _ () )
+   ))
+   r
+) Type);
 
 deep-hash := λ(: tt Type). (: (
    (let return 0_u64)
