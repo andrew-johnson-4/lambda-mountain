@@ -6,3 +6,9 @@ meta
    (example (print '123_i32))
 ;
 fragment type I32;    size I32 4;    atom suffix I32    _i32;
+
+#(declare-simple-instruction-alias-binop-32( && 'andl I32 ));
+#(declare-simple-instruction-alias-binop-32( || 'orl I32 ));
+#(declare-simple-instruction-alias-binop-32( + 'addl I32 ));
+#(declare-simple-instruction-alias-binop-32( - 'subl I32 ));
+#(declare-simple-instruction-alias-binop-32( ^ 'xorl I32 ));
