@@ -185,7 +185,7 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64). (: (
    r
 ) Fragment);
 
-compile-fragment-args := λ(: ctx FContext)(: rval AST)(: offset I64). (: (
+compile-fragment-args := λ(: ctx FContext)(: function-args-type Type)(: rval AST)(: offset I64). (: (
    (let r FLEOF)
    (match (slot( (typeof rval) 'Cons_s )) (
       ()
@@ -193,7 +193,13 @@ compile-fragment-args := λ(: ctx FContext)(: rval AST)(: offset I64). (: (
          (match rval (
             ()
             ( (App( le re )) (
-               (let e1 (compile-fragment-args( ctx le offset )))
+               (let e1 (compile-fragment-args( ctx (cons-head function-args-type) le offset )))
+               (if (non-zero(slot( (cons-head function-args-type) 'Meta_s 'OntoStack_s ))) (
+                  (set offset (-( offset (as (sizeof-aligned(cons-head function-args-type)) I64) )))
+               ) ())
+               (if (non-zero(slot( (cons-tail(cons-head function-args-type)) 'Meta_s 'OntoStack_s ))) (
+                  (set offset (-( offset (as (sizeof-aligned(cons-tail(cons-head function-args-type))) I64) )))
+               ) ())
                (let e2 (compile-expr( ctx re offset Used )))
                (if (non-zero(fragment::get-type e2)) () (
                   (set e2 (fragment::set-type( e2 p2 )))
@@ -592,7 +598,7 @@ compile-stack-call := λ(: ctx FContext)(: function-name String)(: return-type T
    (match (fragment::get( f 'fragment-type_s )) (
       ()
       ( (SAtom 'Fragment_s) (
-         (let f-args (compile-fragment-args( ctx args offset )))
+         (let f-args (compile-fragment-args( ctx (domain function-type) args offset )))
          (set r (fragment-apply( ctx offset function-name f-args return-type args )))
          (set r (fragment::set-offset( r offset )))
          (set r (fragment::set-type( r return-type )))
