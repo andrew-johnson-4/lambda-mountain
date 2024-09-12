@@ -131,7 +131,8 @@ compile-declare-cstring := λ(: val String). (: (
 ) Fragment);
 
 compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)(: args-type Type)(: args AST)(: offset I64). (: (
-   (let whitespace-sz (-( (-( (sizeof-aligned return-type) (sizeof-aligned args-type) )) 8_u64 )))
+   (let sizeof-return-type (sizeof-aligned return-type)) # TODO fold into next statement
+   (let whitespace-sz (-( (-( sizeof-return-type (sizeof-aligned args-type) )) 8_u64 )))
    (let e (compile-push-rvalue( ctx args (-( offset (as whitespace-sz I64) )) )))
    (let constructor-parms (and(
       (t2( 'Constructor_s (t1 tag-name) ))
