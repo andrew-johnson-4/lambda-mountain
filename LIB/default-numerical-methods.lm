@@ -188,13 +188,6 @@
    (as RAX I64)
 ) I64);
 
-- := λ(: l U64)(: r U64). (: (
-   (mov( r R8 ))
-   (mov( l RAX ))
-   (sub( R8 RAX ))
-   (as RAX U64)
-) U64);
-
 - := λ(: l I64)(: r I64). (: (
    (mov( r R8 ))
    (mov( l RAX ))
