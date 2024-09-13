@@ -29,5 +29,33 @@
 ) ?[]);
 
 malloc-block-head := 0_u64;
-# malloc-block-tail : call sys_brk for this information
+malloc-block-tail := 0_u64;
 malloc-first-free := 0_u64;
+
+malloc := λ (: sz U64) . (: (
+   (if (==( malloc-block-tail 0_u64 )) (
+      (mov( 12_u64 RAX ))
+      (mov( 0_u64 RDI ))
+      (syscall())
+      (mov( RAX R8 )) #current page break in R8
+      (set malloc-block-head (as R8 U64))
+      (set malloc-block-tail (as R8 U64))
+      # 4 GB
+      (add( 1073741824_u64 R8 ))
+      (add( 1073741824_u64 R8 ))
+      (add( 1073741824_u64 R8 ))
+      (add( 1073741824_u64 R8 ))
+      (add( 1073741824_u64 R8 ))
+      (add( 1073741824_u64 R8 ))
+      (add( 1073741824_u64 R8 ))
+      (add( 1073741824_u64 R8 ))
+      (mov( 12_u64 RAX ))
+      (mov( R8 RDI ))
+      (syscall())
+   ) ())
+   (let curr malloc-block-tail)
+   (mov( malloc-block-tail R8 ))
+   (add( sz R8 ))
+   (set malloc-block-tail (as R8 U64))
+   (as curr ?[])
+) ?[]);
