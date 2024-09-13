@@ -59,7 +59,7 @@ malloc := λ (: sz U64) . (: (
    (if (==( malloc-block-tail 0_u64 )) (malloc-new-page()) ())
    (let block malloc-block-tail)
    (let data block)
-   #(let data (+( block 24_u64 )))
+   #(+( block 24_u64 )))
    (set malloc-block-tail (+( data sz )))
-   (as data ?[])
+   (as block ?[])
 ) ?[]);
