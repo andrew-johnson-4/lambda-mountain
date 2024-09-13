@@ -1,10 +1,35 @@
 
-# type block = {
+# type MallocBlock = {
 #    block-size : U64
-#    block-prev : *block
-#    block-next : *block
+#    block-prev : *MallocBlock
+#    block-next : *MallocBlock
 #    [data] : U8[block-size]
 # }
+
+.block-size := λ(: b MallocBlock[]). (: (
+   (let r 0_u64)
+   (mov( b R8 ))
+   (mov( R8 0_u64 r ))
+   r
+) U64);
+.block-prev := λ(: b MallocBlock[]). (: (
+   (let r 0_u64)
+   (mov( b R8 ))
+   (mov( R8 1_u64 r ))
+   (as r MallocBlock[])
+) MallocBlock[]);
+.block-next := λ(: b MallocBlock[]). (: (
+   (let r 0_u64)
+   (mov( b R8 ))
+   (mov( R8 2_u64 r ))
+   (as r MallocBlock[])
+) MallocBlock[]);
+.block-data := λ(: b MallocBlock[]). (: (
+   (let r 0_u64)
+   (mov( b R8 ))
+   (mov( R8 3_u64 r ))
+   (as r ?[])
+) ?[]);
 
 malloc-block-head := 0_u64;
 # malloc-block-tail : call sys_brk for this information

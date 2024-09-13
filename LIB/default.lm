@@ -8,3 +8,4 @@ import LIB/default-numerical-methods.lm;
 import LIB/default-btree.lm;
 import LIB/default-cell.lm;
 import LIB/default-list.lm;
+import LIB/default-malloc.lm;
