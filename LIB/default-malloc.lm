@@ -55,11 +55,20 @@ malloc-new-page := λ. (: (
    (syscall())
 ) Nil);
 
+# increase size of data of previous allocated memory
+malloc-bump := λ (: sz U64). (: (
+   (let data malloc-block-tail)
+   (set malloc-block-tail (+( malloc-block-tail sz )))
+   (as data ?[])
+) ?[]);
+
 malloc := λ (: sz U64) . (: (
    (if (==( malloc-block-tail 0_u64 )) (malloc-new-page()) ())
+   (let misalignment (%( malloc-block-tail 8_u64 )))
+   (let alignment (%( (-( 8_u64 misalignment )) 8_u64 )))
+   (set malloc-block-tail (+( malloc-block-tail alignment )))
    (let block malloc-block-tail)
-   (let data block)
-   #(+( block 24_u64 )))
+   (let data (+( block 24_u64 )))
    (set malloc-block-tail (+( data sz )))
-   (as block ?[])
+   (as data ?[])
 ) ?[]);

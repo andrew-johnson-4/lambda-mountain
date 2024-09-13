@@ -335,7 +335,7 @@ read-file := λ(: fp String). (: (
    (let more True_u8)
    (while (==( more True_u8 )) (
       (let rdsz (system-call( 0_u64 fd (as stail U64) 1024_u64 )))
-      (malloc( rdsz ))
+      (malloc-bump( rdsz ))
       (if (==( rdsz 0_u64 )) (
          (set more False_u8)
       ) (
@@ -345,7 +345,7 @@ read-file := λ(: fp String). (: (
       ))
    ))
    (system-call( 3_u64 fd 0_u64 0_u64 ))
-   (let eos (as (malloc( 1_u64 )) U8[]))
+   (let eos (as (malloc-bump( 1_u64 )) U8[]))
    (mov( 0_u8 0_u64 eos ))
    (as shead String)
 ) String);
@@ -376,7 +376,7 @@ tail-string := λ(: s String). (: (
 clone-rope := λ(: s S). (: (
    (let r (malloc( 0_u64 )))
    (clone-rope-impl s )
-   (let rtail (as (malloc( 1_u64 )) U8[]))
+   (let rtail (as (malloc-bump( 1_u64 )) U8[]))
    (mov( 0_u8 0_u64 rtail ))
    (as r String)
 ) String);
@@ -391,7 +391,7 @@ clone-rope-impl := λ(: s S). (: (match s (
       (let ci 0_u64)
       (let c ([]( (as a U8[]) ci )))
       (while (!=( c 0_u8 )) (
-         (let t (as (malloc( 1_u64 )) U8[]))
+         (let t (as (malloc-bump( 1_u64 )) U8[]))
          (mov( c 0_u64 t ))
          (set ci (+( ci 1_u64 )))
          (set c ([]( (as a U8[]) ci )))
