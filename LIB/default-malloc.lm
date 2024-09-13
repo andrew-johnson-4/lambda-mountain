@@ -1,0 +1,74 @@
+
+# type MallocBlock = {
+#    block-size : U64
+#    block-prev : *MallocBlock
+#    block-next : *MallocBlock
+#    [data] : U8[block-size]
+# }
+
+.block-size := λ(: b MallocBlock[]). (: (
+   (let r 0_u64)
+   (mov( b R8 ))
+   (mov( R8 0_u64 r ))
+   r
+) U64);
+.block-prev := λ(: b MallocBlock[]). (: (
+   (let r 0_u64)
+   (mov( b R8 ))
+   (mov( R8 1_u64 r ))
+   (as r MallocBlock[])
+) MallocBlock[]);
+.block-next := λ(: b MallocBlock[]). (: (
+   (let r 0_u64)
+   (mov( b R8 ))
+   (mov( R8 2_u64 r ))
+   (as r MallocBlock[])
+) MallocBlock[]);
+.block-data := λ(: b MallocBlock[]). (: (
+   (as (+( (as b U64) 24_u64 )) ?[])
+) ?[]);
+
+malloc-block-head := 0_u64;
+malloc-block-tail := 0_u64;
+malloc-first-free := 0_u64;
+
+malloc-new-page := λ. (: (
+   (mov( 12_u64 RAX ))
+   (mov( 0_u64 RDI ))
+   (syscall())
+
+   (mov( RAX R8 )) #current page break in R8
+   (set malloc-block-head (as R8 U64))
+   (set malloc-block-tail (as R8 U64))
+
+   # 8 GB
+   (add( 1073741824_u64 R8 ))
+   (add( 1073741824_u64 R8 ))
+   (add( 1073741824_u64 R8 ))
+   (add( 1073741824_u64 R8 ))
+   (add( 1073741824_u64 R8 ))
+   (add( 1073741824_u64 R8 ))
+   (add( 1073741824_u64 R8 ))
+   (add( 1073741824_u64 R8 ))
+   (mov( 12_u64 RAX ))
+   (mov( R8 RDI ))
+   (syscall())
+) Nil);
+
+# increase size of data of previous allocated memory
+malloc-bump := λ (: sz U64). (: (
+   (let data malloc-block-tail)
+   (set malloc-block-tail (+( malloc-block-tail sz )))
+   (as data ?[])
+) ?[]);
+
+malloc := λ (: sz U64) . (: (
+   (if (==( malloc-block-tail 0_u64 )) (malloc-new-page()) ())
+   (let misalignment (%( malloc-block-tail 8_u64 )))
+   (let alignment (%( (-( 8_u64 misalignment )) 8_u64 )))
+   (set malloc-block-tail (+( malloc-block-tail alignment )))
+   (let block malloc-block-tail)
+   (let data (+( block 24_u64 )))
+   (set malloc-block-tail (+( data sz )))
+   (as data ?[])
+) ?[]);

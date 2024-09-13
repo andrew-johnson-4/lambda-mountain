@@ -312,36 +312,6 @@ print := λ(: x I8). (: (
 
 != := λ(: l String)(: r String). (: (not(==( l r ))) U64);
 
-cons-page-head := 0_u64;
-cons-page-tail := 0_u64;
-malloc := λ (: sz U64) . (: (
-   (if (==( cons-page-tail 0_u64 )) (
-      (mov( 12_u64 RAX ))
-      (mov( 0_u64 RDI ))
-      (syscall())
-      (mov( RAX R8 )) #current page break in R8
-      (set cons-page-head (as R8 U64))
-      (set cons-page-tail (as R8 U64))
-      # 4 GB
-      (add( 1073741824_u64 R8 ))
-      (add( 1073741824_u64 R8 ))
-      (add( 1073741824_u64 R8 ))
-      (add( 1073741824_u64 R8 ))
-      (add( 1073741824_u64 R8 ))
-      (add( 1073741824_u64 R8 ))
-      (add( 1073741824_u64 R8 ))
-      (add( 1073741824_u64 R8 ))
-      (mov( 12_u64 RAX ))
-      (mov( R8 RDI ))
-      (syscall())
-   ) ())
-   (let curr cons-page-tail)
-   (mov( cons-page-tail R8 ))
-   (add( sz R8 ))
-   (set cons-page-tail (as R8 U64))
-   (as curr ?[])
-) ?[]);
-
 system-call := λ(: rax U64)(: rdi U64)(: rsi U64)(: rdx U64). (: (
    (mov( rax RAX ))
    (mov( rdi RDI ))
@@ -365,7 +335,7 @@ read-file := λ(: fp String). (: (
    (let more True_u8)
    (while (==( more True_u8 )) (
       (let rdsz (system-call( 0_u64 fd (as stail U64) 1024_u64 )))
-      (malloc( rdsz ))
+      (malloc-bump( rdsz ))
       (if (==( rdsz 0_u64 )) (
          (set more False_u8)
       ) (
@@ -375,7 +345,7 @@ read-file := λ(: fp String). (: (
       ))
    ))
    (system-call( 3_u64 fd 0_u64 0_u64 ))
-   (let eos (as (malloc( 1_u64 )) U8[]))
+   (let eos (as (malloc-bump( 1_u64 )) U8[]))
    (mov( 0_u8 0_u64 eos ))
    (as shead String)
 ) String);
@@ -406,7 +376,7 @@ tail-string := λ(: s String). (: (
 clone-rope := λ(: s S). (: (
    (let r (malloc( 0_u64 )))
    (clone-rope-impl s )
-   (let rtail (as (malloc( 1_u64 )) U8[]))
+   (let rtail (as (malloc-bump( 1_u64 )) U8[]))
    (mov( 0_u8 0_u64 rtail ))
    (as r String)
 ) String);
@@ -421,7 +391,7 @@ clone-rope-impl := λ(: s S). (: (match s (
       (let ci 0_u64)
       (let c ([]( (as a U8[]) ci )))
       (while (!=( c 0_u8 )) (
-         (let t (as (malloc( 1_u64 )) U8[]))
+         (let t (as (malloc-bump( 1_u64 )) U8[]))
          (mov( c 0_u64 t ))
          (set ci (+( ci 1_u64 )))
          (set c ([]( (as a U8[]) ci )))
