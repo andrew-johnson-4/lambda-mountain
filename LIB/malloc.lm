@@ -1,0 +1,11 @@
+
+# type block = {
+#    block-size : U64
+#    block-prev : *block
+#    block-next : *block
+#    [data] : U8[block-size]
+# }
+
+malloc-block-head := 0_u64;
+# malloc-block-tail : call sys_brk for this information
+malloc-first-free := 0_u64;
