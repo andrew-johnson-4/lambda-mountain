@@ -54,21 +54,6 @@ Now both candidate functions “fit”, however X is a narrower type than Y.
 All X are Y, but not all Y are X.
 In this case we say that X is a “better fit” than Y.
 
----
-
-```
-f := λ(: x X). form 1;
-f := λ(: x X). form 2;
-
-f (: x X)
-```
-
-In this example both candidate functions “fit” AND are equivalent.
-In this case we apply *metrics* to determine the best fit.
-A metric is an order that can be applied to term/type pairs to determine which is a “better fit” in non-semantic cases.
-Metrics are very useful when there exist multiple equivalent forms of code representation that have different performance characteristics.
-Equivalence classes are another high-level concept and are not required to be nominally equivalent.
-
 ### Why is Ad-Hoc Specialization so Important For an Assembler?
 
 Specialization allows us to express high-level ideas at the level of a generic functional language
