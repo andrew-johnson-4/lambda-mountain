@@ -25,10 +25,7 @@
    (as r MallocBlock[])
 ) MallocBlock[]);
 .block-data := λ(: b MallocBlock[]). (: (
-   (let r 0_u64)
-   (mov( b R8 ))
-   (mov( R8 3_u64 r ))
-   (as r ?[])
+   (as (+( (as b U64) 24_u64 )) ?[])
 ) ?[]);
 
 malloc-block-head := 0_u64;
