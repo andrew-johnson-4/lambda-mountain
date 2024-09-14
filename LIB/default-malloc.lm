@@ -7,26 +7,30 @@
 # }
 
 .block-size := λ(: b MallocBlock[]). (: (
-   (let r 0_u64)
-   (mov( b R8 ))
-   (mov( R8 0_u64 r ))
+   (let r ([]( (as b U64[]) 0_u64 )))
    r
 ) U64);
 .block-prev := λ(: b MallocBlock[]). (: (
-   (let r 0_u64)
-   (mov( b R8 ))
-   (mov( R8 1_u64 r ))
+   (let r ([]( (as b U64[]) 1_u64 )))
    (as r MallocBlock[])
 ) MallocBlock[]);
 .block-next := λ(: b MallocBlock[]). (: (
-   (let r 0_u64)
-   (mov( b R8 ))
-   (mov( R8 2_u64 r ))
+   (let r ([]( (as b U64[]) 2_u64 )))
    (as r MallocBlock[])
 ) MallocBlock[]);
 .block-data := λ(: b MallocBlock[]). (: (
    (as (+( (as b U64) 24_u64 )) ?[])
 ) ?[]);
+
+set.block-size := λ(: b MallocBlock[])(: sz U64). (: (
+   (mov( sz 0_u64 (as b U64[]) ))
+) Nil);
+set.block-prev := λ(: b MallocBlock[])(: n MallocBlock[]). (: (
+   (mov( (as n U64) 1_u64 (as b U64[]) ))
+) Nil);
+set.block-next := λ(: b MallocBlock[])(: n MallocBlock[]). (: (
+   (mov( (as n U64) 2_u64 (as b U64[]) ))
+) Nil);
 
 malloc-block-head := 0_u64;
 malloc-block-tail := 0_u64;
@@ -92,6 +96,7 @@ malloc := λ (: sz U64) . (: (
    (if (==( (as scan-head U64) 0_u64 )) (set scan-head (as malloc-block-head MallocBlock[])) ())
 
    (while (not(can-fit( (as scan-head MallocBlock[]) sz ))) (
+      (set scan-head (.block-next scan-head))
       (print 'Cant\sFit\n_s)
       (print 'Block\sHead:\s_s)(print (as scan-head U64))(print '\n_s)
       (print 'Block\sSize:\s_s)(print (.block-size scan-head))(print '\n_s)
@@ -118,8 +123,15 @@ malloc := λ (: sz U64) . (: (
    (let misalignment (%( malloc-block-tail 8_u64 )))
    (let alignment (%( (-( 8_u64 misalignment )) 8_u64 )))
    (set malloc-block-tail (+( malloc-block-tail alignment )))
-   (let block malloc-block-tail)
-   (let data (+( block 24_u64 )))
+   (let block (as malloc-block-tail MallocBlock[]))
+   (let data (+( (as block U64) 24_u64 )))
    (set malloc-block-tail (+( data sz )))
+
+   # initialize block
+   (set.block-next( scan-head block ))
+   (set.block-size( block sz ))
+   (set.block-next( block (as 0_u64 MallocBlock[]) ))
+   (set.block-prev( block scan-head ))
+
    (as data ?[])
 ) ?[]);
