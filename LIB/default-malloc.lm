@@ -102,7 +102,7 @@ mextend := λ(: ptr ?[])(: sz U64). (: (
    space
 ) U64);
 
-malloc-sliver-size := 24_u64; # need to tune this to find empirical optima
+malloc-large-size := 1024_u64; # need to tune this to find empirical optima
 
 malloc := λ (: sz U64) . (: (
    (if (==( malloc-block-head 0_u64 )) (malloc-new-page()) ())
@@ -110,13 +110,15 @@ malloc := λ (: sz U64) . (: (
    (let scan-head (as malloc-first-free MallocBlock[]))
    (if (==( (as scan-head U64) 0_u64 )) (set scan-head (as malloc-block-head MallocBlock[])) ())
 
+   (let scan-count 0_u64)
    (while (>( (+( sz 24_u64 )) (.free-space scan-head) )) (
       (set scan-head (.block-next scan-head))
-      (if (<=( sz malloc-sliver-size )) (
-         (set malloc-first-free (as scan-head U64)) # don't scan for slivers
-      ) ())
+      (set malloc-first-free (as scan-head U64))
+      (if (>=( sz malloc-large-size )) () (
+         (set scan-count (+( scan-count 1_u64 )))
+      ))
    ))
-
+   
    # if no free space, then add new page to end
    # create new block
    #    block-size = sz
@@ -134,6 +136,10 @@ malloc := λ (: sz U64) . (: (
    (set malloc-block-tail (+( data sz )))
 
    # initialize block
+   (let block-next (.block-next scan-head))
+   (if (!=( (as block-next U64) 0_u64 )) (
+      (set.block-prev( block-next block ))
+   ) ())
    (set.block-next( scan-head block ))
    (set.block-size( block sz ))
    (set.block-next( block (as 0_u64 MallocBlock[]) ))
