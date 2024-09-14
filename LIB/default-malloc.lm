@@ -57,12 +57,25 @@ malloc-new-page := λ. (: (
 
 # increase size of data of previous allocated memory
 malloc-bump := λ (: sz U64). (: (
+   # if room to bump before next block, then do bump
+   # else fail
+
    (let data malloc-block-tail)
    (set malloc-block-tail (+( malloc-block-tail sz )))
    (as data ?[])
 ) ?[]);
 
 malloc := λ (: sz U64) . (: (
+   # scan for existing free space starting from malloc-first-free | malloc-block-head
+   # if no free space, then add new page to end
+   # create new block
+   #    block-size = sz
+   #    block-prev = prev
+   #    block-next = next
+   # update prev.block-next = this
+   # update next.block-prev = this
+   # update malloc-first-free
+
    (if (==( malloc-block-tail 0_u64 )) (malloc-new-page()) ())
    (let misalignment (%( malloc-block-tail 8_u64 )))
    (let alignment (%( (-( 8_u64 misalignment )) 8_u64 )))
