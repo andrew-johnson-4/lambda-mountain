@@ -70,6 +70,14 @@ fragment : DontChain set[] := λ(: l LocalVariable+Array<Field<Sized<8>,?>,?>)(:
    ))
 ) Nil);
 
+fragment : DontChain set[] := λ(: l LocalVariable+Array<Sized<8>,?>)(: i Literal+Constant+U64)(: v LocalVariable+Sized<8>). (: (
+   (.program (
+      \t 'mov \s (.expression v) \[ '%RBP \] , \s '%R14 \n
+      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
+      \t 'mov \s '%R14 , \s (*( '8 (.expression i) )) \[ '%R15 \] \n
+   ))
+) Nil);
+
 fragment : DontChain set[] := λ(: dst Reg64+Array<Sized<size>,?>)(: src LocalVariable+Sized<size>). (: (
    (.program (
       (if-eq (.expression size) 1 (

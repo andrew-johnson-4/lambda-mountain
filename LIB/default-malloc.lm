@@ -23,13 +23,13 @@
 ) ?[]);
 
 set.block-size := λ(: b MallocBlock[])(: sz U64). (: (
-   (mov( sz 0_u64 (as b U64[]) ))
+   (set[]( (as b U64[]) 0_u64 sz ))
 ) Nil);
 set.block-prev := λ(: b MallocBlock[])(: n MallocBlock[]). (: (
-   (mov( (as n U64) 1_u64 (as b U64[]) ))
+   (set[]( (as b U64[]) 1_u64 (as n U64) ))
 ) Nil);
 set.block-next := λ(: b MallocBlock[])(: n MallocBlock[]). (: (
-   (mov( (as n U64) 2_u64 (as b U64[]) ))
+   (set[]( (as b U64[]) 2_u64 (as n U64) ))
 ) Nil);
 
 malloc-block-head := 0_u64;
@@ -76,56 +76,49 @@ mextend := λ (: sz U64). (: (
    (as data ?[])
 ) ?[]);
 
-can-fit := λ(: head MallocBlock[])(: sz U64). (: (
-   (let fit 0_u64)
+.free-space := λ(: head MallocBlock[]). (: (
+   (let space 0_u64)
    (if (==( (as (.block-next head) U64) 0_u64 )) (
-      (set fit 1_u64) # if there is no next block, then there is always room to extend memory
+      (set space 1073741824_u64)
    ) (
-      (set fit (<=(
+      (set space (-(
+         (as (.block-next head) U64)
          (+(
             (as head U64)
-            (+(
-               (+( 24_u64 (.block-size head) ))
-               (+( 24_u64 sz ))
-            ))
+            (+( 24_u64 (.block-size head) ))
          ))
-         (as (.block-next head) U64)
       )))
+      (if (>( space 24_u64 )) (
+        (set space (-( space 24_u64 )))
+      ) (set space 0_u64))
    ))
-   fit
+   space
 ) U64);
 
-print-count-malloc := 0_u64;
+malloc-sliver-size := 24_u64; # need to tune this to find empirical optima
+
+malloc-print-counter := 0_u64;
 
 malloc := λ (: sz U64) . (: (
    (if (==( malloc-block-head 0_u64 )) (malloc-new-page()) ())
 
-   #(let scan-head (as malloc-first-free MallocBlock[]))
-   #(if (==( (as scan-head U64) 0_u64 )) (set scan-head (as malloc-block-head MallocBlock[])) ())
-   (let scan-head (as malloc-block-head MallocBlock[]))
+   (let scan-head (as malloc-first-free MallocBlock[]))
+   (if (==( (as scan-head U64) 0_u64 )) (set scan-head (as malloc-block-head MallocBlock[])) ())
 
-   (while (not(can-fit( (as scan-head MallocBlock[]) sz ))) (
+   (while (>( sz (.free-space scan-head) )) (
       (print 'Cant\sFit\n_s)
-      (print 'Block\sHead:\s_s)(print (as scan-head U64))(print '\n_s)
-      (print 'Block\sSize:\s_s)(print (.block-size scan-head))(print '\n_s)
-      (print 'Block\sPrev:\s_s)(print (as (.block-prev scan-head) U64))(print '\n_s)
-      (print 'Block\sNext:\s_s)(print (as (.block-next scan-head) U64))(print '\n_s)
       (set scan-head (.block-next scan-head))
+      (if (<=( sz malloc-sliver-size )) (
+         (set malloc-first-free (as scan-head U64)) # don't scan for slivers
+      ) ())
    ))
 
-   (print 'Can\sFit\n_s)
-   (print 'Block\sHead:\s_s)(print (as scan-head U64))(print '\n_s)
-   (print 'Block\sSize:\s_s)(print (.block-size scan-head))(print '\n_s)
-   (print 'Block\sPrev:\s_s)(print (as (.block-prev scan-head) U64))(print '\n_s)
-   (print 'Block\sNext:\s_s)(print (as (.block-next scan-head) U64))(print '\n_s)
-
-   (if (<( print-count-malloc 5_u64 )) (
-      (set print-count-malloc (+( print-count-malloc 1_u64 )))
+   (if (<( malloc-print-counter 5_u64 )) (
+      (set malloc-print-counter (+( malloc-print-counter 1_u64 )))
    ) (
       (exit 1_u64)
    ))
 
-   # scan for existing free space starting from malloc-first-free | malloc-block-head
    # if no free space, then add new page to end
    # create new block
    #    block-size = sz
@@ -138,19 +131,27 @@ malloc := λ (: sz U64) . (: (
    (let misalignment (%( malloc-block-tail 8_u64 )))
    (let alignment (%( (-( 8_u64 misalignment )) 8_u64 )))
    (set malloc-block-tail (+( malloc-block-tail alignment )))
-   (print 'Tail\s_s)(print malloc-block-tail)(print '\n_s)
    (let block (as malloc-block-tail MallocBlock[]))
    (let data (+( (as block U64) 24_u64 )))
    (set malloc-block-tail (+( data sz )))
-
-   (print 'Tail\s_s)(print malloc-block-tail)(print '\n_s)
-   (print 'Block\s_s)(print (as block U64))(print '\n_s)
 
    # initialize block
    (set.block-next( scan-head block ))
    (set.block-size( block sz ))
    (set.block-next( block (as 0_u64 MallocBlock[]) ))
-   (set.block-prev( block scan-head ))
+   (if (==( (as block U64) (as scan-head U64) )) (
+      (set.block-prev( block (as 0_u64 MallocBlock[]) ))
+   ) (
+      (set.block-prev( block scan-head ))
+   ))
+
+   (print 'Can\sFit\n_s)
+   (print 'Space:\s_s)(print (.free-space block))(print '\n_s)
+   (print 'Block\sHead:\s_s)(print (as block U64))(print '\n_s)
+   (print 'Block\sSize:\s_s)(print (.block-size block))(print '\n_s)
+   (print 'Block\sPrev:\s_s)(print (as (.block-prev block) U64))(print '\n_s)
+   (print 'Block\sNext:\s_s)(print (as (.block-next block) U64))(print '\n_s)
+
 
    (as data ?[])
 ) ?[]);
