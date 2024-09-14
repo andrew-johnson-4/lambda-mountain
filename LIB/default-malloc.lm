@@ -56,7 +56,7 @@ malloc-new-page := λ. (: (
 ) Nil);
 
 # increase size of data of previous allocated memory
-malloc-bump := λ (: sz U64). (: (
+mextend := λ (: sz U64). (: (
    # if room to bump before next block, then do bump
    # else fail
 
