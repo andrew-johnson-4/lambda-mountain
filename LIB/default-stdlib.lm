@@ -330,7 +330,7 @@ read-file := λ(: fp String). (: (
       (eprint '\n_s)
       (exit 1_u64)
    ) ())
-   (let shead (as (malloc( 0_u64 )) U8[]))
+   (let shead (as (malloc( 0_u64 1024_u64 )) U8[]))
    (let stail shead)
    (let more True_u8)
    (while (==( more True_u8 )) (
@@ -374,7 +374,7 @@ tail-string := λ(: s String). (: (
 ) String);
 
 clone-rope := λ(: s S). (: (
-   (let r (malloc( 0_u64 )))
+   (let r (malloc( 0_u64 1024_u64 )))
    (clone-rope-impl( r s ))
    (let rtail (as (mextend( r 1_u64 )) U8[]))
    (mov( 0_u8 0_u64 rtail ))
