@@ -33,9 +33,7 @@ fragment : DontChain [] := λ(: l LocalVariable+Array<x+Sized<8>,?>)(: r LocalVa
 fragment : DontChain [] := λ(: l LocalVariable+Array<x+Sized<8>,?>)(: r Constant+U64). (: (
    (.program (
       \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
-      \t 'mov \s '$ (.expression r) , \s '%R14 \n
-      \t 'shl \s '$3, '%R14 \n
-      \t 'add \s '%R14 , \s '%R15 \n
+      \t 'add \s '$ (*( (.expression r) '8 )) , \s '%R15 \n
       \t 'mov \s '0 \[ '%R15 \] , \s '%R15 \n
    ))
    (.expression( 'R15 ))

@@ -95,19 +95,22 @@ can-fit := λ(: head MallocBlock[])(: sz U64). (: (
    fit
 ) U64);
 
+print-count-malloc := 0_u64;
+
 malloc := λ (: sz U64) . (: (
    (if (==( malloc-block-head 0_u64 )) (malloc-new-page()) ())
 
-   (let scan-head (as malloc-first-free MallocBlock[]))
-   (if (==( (as scan-head U64) 0_u64 )) (set scan-head (as malloc-block-head MallocBlock[])) ())
+   #(let scan-head (as malloc-first-free MallocBlock[]))
+   #(if (==( (as scan-head U64) 0_u64 )) (set scan-head (as malloc-block-head MallocBlock[])) ())
+   (let scan-head (as malloc-block-head MallocBlock[]))
 
    (while (not(can-fit( (as scan-head MallocBlock[]) sz ))) (
-      (set scan-head (.block-next scan-head))
       (print 'Cant\sFit\n_s)
       (print 'Block\sHead:\s_s)(print (as scan-head U64))(print '\n_s)
       (print 'Block\sSize:\s_s)(print (.block-size scan-head))(print '\n_s)
       (print 'Block\sPrev:\s_s)(print (as (.block-prev scan-head) U64))(print '\n_s)
       (print 'Block\sNext:\s_s)(print (as (.block-next scan-head) U64))(print '\n_s)
+      (set scan-head (.block-next scan-head))
    ))
 
    (print 'Can\sFit\n_s)
@@ -116,9 +119,11 @@ malloc := λ (: sz U64) . (: (
    (print 'Block\sPrev:\s_s)(print (as (.block-prev scan-head) U64))(print '\n_s)
    (print 'Block\sNext:\s_s)(print (as (.block-next scan-head) U64))(print '\n_s)
 
-   (if (!=( (as scan-head U64) (as malloc-block-head U64) )) (
+   (if (<( print-count-malloc 5_u64 )) (
+      (set print-count-malloc (+( print-count-malloc 1_u64 )))
+   ) (
       (exit 1_u64)
-   ) ())
+   ))
 
    # scan for existing free space starting from malloc-first-free | malloc-block-head
    # if no free space, then add new page to end
@@ -133,9 +138,13 @@ malloc := λ (: sz U64) . (: (
    (let misalignment (%( malloc-block-tail 8_u64 )))
    (let alignment (%( (-( 8_u64 misalignment )) 8_u64 )))
    (set malloc-block-tail (+( malloc-block-tail alignment )))
+   (print 'Tail\s_s)(print malloc-block-tail)(print '\n_s)
    (let block (as malloc-block-tail MallocBlock[]))
    (let data (+( (as block U64) 24_u64 )))
    (set malloc-block-tail (+( data sz )))
+
+   (print 'Tail\s_s)(print malloc-block-tail)(print '\n_s)
+   (print 'Block\s_s)(print (as block U64))(print '\n_s)
 
    # initialize block
    (set.block-next( scan-head block ))
