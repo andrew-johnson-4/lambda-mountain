@@ -70,9 +70,19 @@ mextend := λ(: ptr ?[])(: sz U64). (: (
    # add parameter for base data pointer that should be extended
    # if room to bump before next block, then do bump
    # else fail
+   (let block (as (-( (as ptr U64) 24_u64 )) MallocBlock[]))
 
    (let data malloc-block-tail)
-   (set malloc-block-tail (+( malloc-block-tail sz )))
+
+   (if (<=( sz (.free-space block) )) (
+      (set.block-size( block (+( (.block-size block) sz )) ))
+      (if (==( (as (.block-next block) U64) 0_u64 )) (
+         (set malloc-block-tail (+( malloc-block-tail sz )))
+      ) ())
+   ) (
+      (set data 0_u64)
+   ))
+
    (as data ?[])
 ) ?[]);
 
@@ -88,16 +98,11 @@ mextend := λ(: ptr ?[])(: sz U64). (: (
             (+( 24_u64 (.block-size head) ))
          ))
       )))
-      (if (>( space 24_u64 )) (
-        (set space (-( space 24_u64 )))
-      ) (set space 0_u64))
    ))
    space
 ) U64);
 
 malloc-sliver-size := 24_u64; # need to tune this to find empirical optima
-
-malloc-print-counter := 0_u64;
 
 malloc := λ (: sz U64) . (: (
    (if (==( malloc-block-head 0_u64 )) (malloc-new-page()) ())
@@ -105,18 +110,11 @@ malloc := λ (: sz U64) . (: (
    (let scan-head (as malloc-first-free MallocBlock[]))
    (if (==( (as scan-head U64) 0_u64 )) (set scan-head (as malloc-block-head MallocBlock[])) ())
 
-   (while (>( sz (.free-space scan-head) )) (
-      (print 'Cant\sFit\n_s)
+   (while (>( (+( sz 24_u64 )) (.free-space scan-head) )) (
       (set scan-head (.block-next scan-head))
       (if (<=( sz malloc-sliver-size )) (
          (set malloc-first-free (as scan-head U64)) # don't scan for slivers
       ) ())
-   ))
-
-   (if (<( malloc-print-counter 5_u64 )) (
-      (set malloc-print-counter (+( malloc-print-counter 1_u64 )))
-   ) (
-      (exit 1_u64)
    ))
 
    # if no free space, then add new page to end
@@ -144,14 +142,6 @@ malloc := λ (: sz U64) . (: (
    ) (
       (set.block-prev( block scan-head ))
    ))
-
-   (print 'Can\sFit\n_s)
-   (print 'Space:\s_s)(print (.free-space block))(print '\n_s)
-   (print 'Block\sHead:\s_s)(print (as block U64))(print '\n_s)
-   (print 'Block\sSize:\s_s)(print (.block-size block))(print '\n_s)
-   (print 'Block\sPrev:\s_s)(print (as (.block-prev block) U64))(print '\n_s)
-   (print 'Block\sNext:\s_s)(print (as (.block-next block) U64))(print '\n_s)
-
 
    (as data ?[])
 ) ?[]);
