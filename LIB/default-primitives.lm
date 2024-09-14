@@ -30,6 +30,15 @@ fragment : DontChain [] := λ(: l LocalVariable+Array<x+Sized<8>,?>)(: r LocalVa
    (.expression( 'R15 ))
 ) x+Reg64);
 
+fragment : DontChain [] := λ(: l LocalVariable+Array<x+Sized<8>,?>)(: r Constant+U64). (: (
+   (.program (
+      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
+      \t 'add \s '$ (*( (.expression r) '8 )) , \s '%R15 \n
+      \t 'mov \s '0 \[ '%R15 \] , \s '%R15 \n
+   ))
+   (.expression( 'R15 ))
+) x+Reg64);
+
 fragment : DontChain [] := λ(: l LocalVariable+Field<x+Sized<8>,?>)(: r LocalVariable+U64). (: (
    (.program (
       \t 'mov \s '%RBP , \s '%R15 \n
@@ -58,6 +67,14 @@ fragment : DontChain set[] := λ(: l LocalVariable+Array<Field<Sized<8>,?>,?>)(:
    (.program (
       \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
       \t 'mov \s '% (.expression v) , \s (*( '8 (.expression i) )) \[ '%R15 \] \n
+   ))
+) Nil);
+
+fragment : DontChain set[] := λ(: l LocalVariable+Array<Sized<8>,?>)(: i Literal+Constant+U64)(: v LocalVariable+Sized<8>). (: (
+   (.program (
+      \t 'mov \s (.expression v) \[ '%RBP \] , \s '%R14 \n
+      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
+      \t 'mov \s '%R14 , \s (*( '8 (.expression i) )) \[ '%R15 \] \n
    ))
 ) Nil);
 
