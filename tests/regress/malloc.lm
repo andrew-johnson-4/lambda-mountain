@@ -7,12 +7,12 @@ main := λ. (: (
    (print (-( (as region1 U64) malloc-block-head )))(print '\n_s) # sizeof(MallocBlock::header) = 24
    (print (-( (as region2 U64) malloc-block-head )))(print '\n_s) # sizeof(MallocBlock::header)*2 + 16 = 64
 
-   #(let loop-counter 0_u64)
-   #(while (<( loop-counter 1000000_u64 )) (
-   #   (let region3 (malloc 111_u64))
-   #   (let region4 (malloc 55_u64))
-   #   (free region3)
-   #   (free region4)
-   #   (set loop-counter (+( loop-counter 1_u64 )))
-   #))
+   (let loop-counter 0_u64)
+   (while (<( loop-counter 1000000_u64 )) (
+      (let region3 (malloc 111_u64))
+      (let region4 (malloc 55_u64))
+      (free region3)
+      (free region4)
+      (set loop-counter (+( loop-counter 1_u64 )))
+   ))
 ) Nil);
