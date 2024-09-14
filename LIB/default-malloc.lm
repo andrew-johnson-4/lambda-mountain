@@ -31,6 +31,7 @@
 malloc-block-head := 0_u64;
 malloc-block-tail := 0_u64;
 malloc-first-free := 0_u64;
+malloc-page-tail := 0_u64;
 
 malloc-new-page := λ. (: (
    (mov( 12_u64 RAX ))
@@ -53,6 +54,14 @@ malloc-new-page := λ. (: (
    (mov( 12_u64 RAX ))
    (mov( R8 RDI ))
    (syscall())
+
+   (set malloc-page-tail (as R8 U64))
+
+   # zero initialize block head (this may be unnecessary)
+   (let block-head malloc-block-head)
+   (mov( 0_u64 0_u64 (as block-head U64[]) ))
+   (mov( 0_u64 1_u64 (as block-head U64[]) ))
+   (mov( 0_u64 2_u64 (as block-head U64[]) ))
 ) Nil);
 
 # increase size of data of previous allocated memory
@@ -66,11 +75,22 @@ mextend := λ (: sz U64). (: (
    (as data ?[])
 ) ?[]);
 
+can-fit := λ(: head MallocBlock[])(: sz U64). (: (
+   0_u64
+) U64);
+
 malloc := λ (: sz U64) . (: (
    (if (==( malloc-block-head 0_u64 )) (malloc-new-page()) ())
 
-   (let scan-head malloc-first-free)
-   (if (==( scan-head 0_u64 )) (set scan-head malloc-block-head) ())
+   (let scan-head (as malloc-first-free MallocBlock[]))
+   (if (==( (as scan-head U64) 0_u64 )) (set scan-head (as malloc-block-head MallocBlock[])) ())
+
+   (while (not(can-fit( (as scan-head MallocBlock[]) sz ))) (
+      (print 'Cant\sFit\n_s)
+      (print 'Block\sSize:\s_s)(print (.block-size scan-head))(print '\n_s)
+      (print 'Block\sPrev:\s_s)(print (as (.block-prev scan-head) U64))(print '\n_s)
+      (print 'Block\sNext:\s_s)(print (as (.block-next scan-head) U64))(print '\n_s)
+   ))
 
    # scan for existing free space starting from malloc-first-free | malloc-block-head
    # if no free space, then add new page to end
