@@ -57,6 +57,7 @@ malloc-new-page := λ. (: (
 
 # increase size of data of previous allocated memory
 mextend := λ (: sz U64). (: (
+   # add parameter for base data pointer that should be extended
    # if room to bump before next block, then do bump
    # else fail
 
