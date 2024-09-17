@@ -65,27 +65,6 @@ malloc-new-page := λ. (: (
    # so the first MallocBlock::header will be zero initialized
 ) Nil);
 
-# increase size of data of previous allocated memory
-mextend := λ(: ptr ?[])(: sz U64). (: (
-   # add parameter for base data pointer that should be extended
-   # if room to bump before next block, then do bump
-   # else fail
-   (let block (as (-( (as ptr U64) 24_u64 )) MallocBlock[]))
-
-   (let data malloc-block-tail)
-
-   (if (<=( (+( sz 24_u64 )) (.free-space block) )) (
-      (set.block-size( block (+( (.block-size block) sz )) ))
-      (if (==( (as (.block-next block) U64) 0_u64 )) (
-         (set malloc-block-tail (+( malloc-block-tail sz )))
-      ) ())
-   ) (
-      (set data 0_u64)
-   ))
-
-   (as data ?[])
-) ?[]);
-
 realloc := λ(: ptr ?[])(: sz U64). (: (
    (let block (as (-( (as ptr U64) 24_u64 )) MallocBlock[]))
    (let delta (-( (as sz I64) (as (.block-size block) I64) )))
