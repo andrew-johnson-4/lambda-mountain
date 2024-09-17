@@ -350,6 +350,11 @@ read-file := λ(: fp String). (: (
    (system-call( 3_u64 fd 0_u64 0_u64 ))
    (set[]( shead ssize 0_u8 ))
    (print 'Read:\s_s)(print (as shead String))(print '\n_s)
+   (let block (as (-( (as shead U64) 24_u64 )) MallocBlock[]))
+   (print 'Data\sSize:\s_s)(print (.block-size block))(print '\n_s)
+   (print 'Head:\s_s)(print (as shead U64))(print '\n_s)
+   (print 'Tail:\s_s)(print malloc-block-tail)(print '\n_s)
+ 
    (as shead String)
 ) String);
 

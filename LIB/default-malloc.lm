@@ -90,15 +90,16 @@ realloc := λ(: ptr ?[])(: sz U64). (: (
    (let block (as (-( (as ptr U64) 24_u64 )) MallocBlock[]))
 
    (let data malloc-block-tail)
-
+   (let delta (-( (as sz I64) (as (.block-size block) I64) )))
    (if (||(
       (>=( (.block-size block) sz ))
-      (<=( (-( sz (.block-size block) )) (.free-space block) ))
+      (<=( delta (as (.free-space block) I64) ))
    )) (
       (set.block-size( block sz ))
-      (if (&&( (==( (as (.block-next block) U64) 0_u64 ))
-               (<( (.block-size block) sz ))
-          )) (
+      #(if (&&( (==( (as (.block-next block) U64) 0_u64 ))
+      #         (<( (.block-size block) sz ))
+      #    )) (
+      (if (>( delta 0_i64 )) (
          (set malloc-block-tail (+( malloc-block-tail (-( sz (.block-size block) )) )))
       ) ())
    ) (
@@ -111,7 +112,7 @@ realloc := λ(: ptr ?[])(: sz U64). (: (
          (set[]( dst bi ([]( src bi )) ))
          (set bi (+( bi 1_u64 )))
       ))
-      (free(.block-data block))
+      #(free(.block-data block))
       (set block new-block)
    ))
 
