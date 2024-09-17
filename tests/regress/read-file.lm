@@ -2,5 +2,6 @@
 import LIB/default.lm;
 
 main := λ.(: (
-   (print(read-file( 'tests/regress/hello-world.lm.out_s )))
+   (print(read-file( 'tests/regress/read-file.lm.out_s )))
 ) Nil);
+
