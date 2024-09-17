@@ -88,18 +88,18 @@ mextend := λ(: ptr ?[])(: sz U64). (: (
 
 realloc := λ(: ptr ?[])(: sz U64). (: (
    (let block (as (-( (as ptr U64) 24_u64 )) MallocBlock[]))
-
-   (let data malloc-block-tail)
+   (let delta (-( (as sz I64) (as (.block-size block) I64) )))
 
    (if (||(
       (>=( (.block-size block) sz ))
-      (<=( (-( sz (.block-size block) )) (.free-space block) ))
+      (<=( delta (as (.free-space block) I64) ))
    )) (
       (set.block-size( block sz ))
-      (if (&&( (==( (as (.block-next block) U64) 0_u64 ))
-               (<( (.block-size block) sz ))
-          )) (
-         (set malloc-block-tail (+( malloc-block-tail (-( sz (.block-size block) )) )))
+      #(if (&&( (==( (as (.block-next block) U64) 0_u64 ))
+      #         (<( (.block-size block) sz ))
+      #    )) (
+      (if (>( delta 0_i64 )) (
+         (set malloc-block-tail (+( malloc-block-tail (as delta U64) )))
       ) ())
    ) (
       (let new-data (malloc sz))

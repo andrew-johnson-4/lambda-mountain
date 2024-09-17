@@ -323,30 +323,33 @@ system-call := λ(: rax U64)(: rdi U64)(: rsi U64)(: rdx U64). (: (
 
 read-file := λ(: fp String). (: (
    (let fd (system-call( 2_u64 (as fp U64) 0_u64 0_u64 )))
-   (mov( fd RAX ))
-   (if (==( (as AL U8) 254_u8 )) (
+   (if (<( (as fd I64) 0_i64 )) (
       (eprint 'Unable\sto\sopen\sfile:\s_s)
       (eprint fp)
       (eprint '\n_s)
       (exit 1_u64)
    ) ())
-   (let shead (as (malloc( 0_u64 1024_u64 )) U8[]))
-   (let stail shead)
-   (let more True_u8)
-   (while (==( more True_u8 )) (
-      (let rdsz (system-call( 0_u64 fd (as stail U64) 1024_u64 )))
-      (mextend( shead rdsz ))
-      (if (==( rdsz 0_u64 )) (
-         (set more False_u8)
-      ) (
-         (set stail (as (
-           (+( (as stail U64) rdsz ))
-         ) U8[]))
-      ))
+   (let shead (as (malloc( 1025_u64 )) U8[]))
+   (let ssize 0_u64)
+   (let rdsz 1024_u64)
+   (while (==( rdsz 1024_u64 )) (
+      (set rdsz (system-call( 0_u64 fd (+( (as shead U64) ssize )) 1024_u64 )))
+      (if (<( (as rdsz I64) 0_i64 )) (
+         (eprint 'File\sRead\sError\s[_s)
+         (print (as rdsz I64))
+         (eprint ']:\s_s)
+         (eprint fp)
+         (eprint '\n_s)
+         (exit 1_u64)
+      ) ())
+      (set ssize (+( ssize rdsz )))
+      (set shead (as (realloc(
+         shead (+( ssize 1025_u64 ))
+      )) U8[]))
    ))
    (system-call( 3_u64 fd 0_u64 0_u64 ))
-   (let eos (as (mextend( shead 1_u64 )) U8[]))
-   (mov( 0_u8 0_u64 eos ))
+   (set[]( shead ssize 0_u8 ))
+ 
    (as shead String)
 ) String);
 
