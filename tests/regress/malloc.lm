@@ -4,8 +4,12 @@ import LIB/default.lm;
 main := λ. (: (
    (let region1 (malloc 11_u64))
    (let region2 (malloc 5_u64))
+   (let region12 (realloc( region1 12_u64 )))
+   (let region13 (realloc( region1 25_u64 )))
    (print (-( (as region1 U64) malloc-block-head )))(print '\n_s) # sizeof(MallocBlock::header) = 24
    (print (-( (as region2 U64) malloc-block-head )))(print '\n_s) # sizeof(MallocBlock::header)*2 + 16 = 64
+   (print (-( (as region12 U64) malloc-block-head )))(print '\n_s) # new region = ?
+   (print (-( (as region13 U64) malloc-block-head )))(print '\n_s) # new region = ?
 
    (let loop-counter 0_u64)
    (while (<( loop-counter 1000000_u64 )) (
