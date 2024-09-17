@@ -112,6 +112,7 @@ location-of := λ(: term AST). (: (
 
 tokenize := λ(: fp String). (: (
    (let text (read-file fp))
+   (print 'Tokenize:\s_s)(print text)
    (let in_comment False_u8)
    (let buffer SNil)
    (let current-line 1_u64)
@@ -274,7 +275,10 @@ tokenize := λ(: fp String). (: (
       )))
    ) ())
 
+   (set ast-tokenized-program (reverse ast-tokenized-program))
+
    (if (==( parens-counter 0_i64 )) () (
+      (print ast-tokenized-program)
       (eprint 'Hanging\sParentheses\sIn\sFile:\s_s)
       (eprint fp)
       (eprint '\sCount:\s_s)
@@ -283,6 +287,5 @@ tokenize := λ(: fp String). (: (
       (exit 1_u64)
    ))
 
-   (set ast-tokenized-program (reverse ast-tokenized-program))
 ) Nil);
 
