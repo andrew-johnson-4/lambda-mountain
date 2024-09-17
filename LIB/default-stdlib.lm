@@ -323,8 +323,7 @@ system-call := λ(: rax U64)(: rdi U64)(: rsi U64)(: rdx U64). (: (
 
 read-file := λ(: fp String). (: (
    (let fd (system-call( 2_u64 (as fp U64) 0_u64 0_u64 )))
-   (mov( fd RAX ))
-   (if (==( (as AL U8) 254_u8 )) (
+   (if (==( fd 254_u64 )) (
       (eprint 'Unable\sto\sopen\sfile:\s_s)
       (eprint fp)
       (eprint '\n_s)
