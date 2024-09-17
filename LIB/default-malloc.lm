@@ -74,13 +74,35 @@ mextend := λ(: ptr ?[])(: sz U64). (: (
 
    (let data malloc-block-tail)
 
-   (if (<=( sz (.free-space block) )) (
+   (if (<=( (+( sz 24_u64 )) (.free-space block) )) (
       (set.block-size( block (+( (.block-size block) sz )) ))
       (if (==( (as (.block-next block) U64) 0_u64 )) (
          (set malloc-block-tail (+( malloc-block-tail sz )))
       ) ())
    ) (
       (set data 0_u64)
+   ))
+
+   (as data ?[])
+) ?[]);
+
+realloc := λ(: ptr ?[])(: sz U64). (: (
+   (let block (as (-( (as ptr U64) 24_u64 )) MallocBlock[]))
+
+   (let data malloc-block-tail)
+
+   (if (||(
+      (>=( (.block-size block) sz ))
+      (<=( (+( sz 24_u64 )) (.free-space block) ))
+   )) (
+      (set.block-size( block sz ))
+      (if (&&( (==( (as (.block-next block) U64) 0_u64 ))
+               (<( (.block-size block) sz ))
+          )) (
+         (set malloc-block-tail (+( malloc-block-tail (-( sz (.block-size block) )) )))
+      ) ())
+   ) (
+      (print 'TODO\srealloc\n_s)
    ))
 
    (as data ?[])
