@@ -343,14 +343,13 @@ read-file := λ(: fp String). (: (
          (exit 1_u64)
       ) ())
       (set ssize (+( ssize rdsz )))
-      (if (==( rdsz 1024_u64 )) (
-         (set shead (as (realloc(
-            shead (+( ssize 1025_u64 ))
-         )) U8[]))
-      ) ())
+      (set shead (as (realloc(
+         shead (+( ssize 1025_u64 ))
+      )) U8[]))
    ))
    (system-call( 3_u64 fd 0_u64 0_u64 ))
    (set[]( shead ssize 0_u8 ))
+   (print 'Read:\s_s)(print (as shead String))(print '\n_s)
    (as shead String)
 ) String);
 
