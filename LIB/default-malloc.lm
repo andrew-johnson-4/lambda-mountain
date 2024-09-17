@@ -93,7 +93,7 @@ realloc := λ(: ptr ?[])(: sz U64). (: (
 
    (if (||(
       (>=( (.block-size block) sz ))
-      (<=( (+( sz 24_u64 )) (.free-space block) ))
+      (<=( (-( sz (.block-size block) )) (.free-space block) ))
    )) (
       (set.block-size( block sz ))
       (if (&&( (==( (as (.block-next block) U64) 0_u64 ))
@@ -105,7 +105,7 @@ realloc := λ(: ptr ?[])(: sz U64). (: (
       (print 'TODO\srealloc\n_s)
    ))
 
-   (as data ?[])
+   (.block-data block)
 ) ?[]);
 
 .free-space := λ(: head MallocBlock[]). (: (

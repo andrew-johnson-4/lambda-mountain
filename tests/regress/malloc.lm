@@ -8,7 +8,7 @@ main := λ. (: (
    (let region13 (realloc( region1 25_u64 )))
    (print (-( (as region1 U64) malloc-block-head )))(print '\n_s) # sizeof(MallocBlock::header) = 24
    (print (-( (as region2 U64) malloc-block-head )))(print '\n_s) # sizeof(MallocBlock::header)*2 + 16 = 64
-   (print (-( (as region12 U64) malloc-block-head )))(print '\n_s) # sizeof(MallocBlock::header) = 24
+   (print (-( (as region12 U64) malloc-block-head )))(print '\n_s) # new region = ?
    (print (-( (as region13 U64) malloc-block-head )))(print '\n_s) # new region = ?
 
    (let loop-counter 0_u64)
