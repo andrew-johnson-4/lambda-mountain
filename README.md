@@ -9,7 +9,7 @@
 ### Supported Platforms
 
 Currently supported output formats:
-* GNU x86 assembly with annotations for `lmv` Coq-based semantic verifier
+* GNU x86 assembly with (some) annotations for `lmv` Coq-based semantic verifier
 * Blob rendering for miscellaneous data such as [statically rendered HTML](https://andrew-johnson-4.github.io/lambda-mountain/)
    * HTML
    * CSS
