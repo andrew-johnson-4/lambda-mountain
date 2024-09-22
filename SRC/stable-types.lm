@@ -1416,39 +1416,39 @@ sizeof-type := λ(: tt Type). (: (
    sz
 ) U64);
 
-has-forward := λ(: class Type)(: tt TypeList). (: (
+has-infinite := λ(: class Type)(: tt TypeList). (: (
    (let return 0_u64)
    (match tt (
       ()
       ( TypeEOF () )
       ( (TypeSeq( ts (TVar v) )) (
          (set return (max(
-            (has-forward( class ts ))
+            (has-infinite( class ts ))
             (is-parameter-flat( (tag-of class) (arity class) (parameter-number( class v )) ))
          )))
       ))
       ( (TypeSeq( ts _ )) (
-         (set return (has-forward( class ts )))
+         (set return (has-infinite( class ts )))
       ))
    ))
    return
 ) U64);
 
-has-forward := λ(: class Type)(: tt Type). (: (
+has-infinite := λ(: class Type)(: tt Type). (: (
    (let return 0_u64)
    (match tt (
       ()
       ( (TGround( 'Array_s _ )) () )
-      ( (TGround( 'Field_s (TypeSeq( (TypeSeq( TypeEOF p1 )) _ )) )) (set return (has-forward( class p1 ))) )
+      ( (TGround( 'Field_s (TypeSeq( (TypeSeq( TypeEOF p1 )) _ )) )) (set return (has-infinite( class p1 ))) )
       ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2  )) )) (
          (set return (max(
-            (has-forward( class p1 ))
-            (has-forward( class p2 ))
+            (has-infinite( class p1 ))
+            (has-infinite( class p2 ))
          )))
       ))
       ( (TGround( cls ps )) (
          (if (non-zero ps) (
-            (set return (has-forward( tt ps )))
+            (set return (has-infinite( tt ps )))
          ) (
             (if (not(.lookup( class-to-size-index cls 0_u64 ))) (
                (set return 1_u64)
@@ -1457,8 +1457,44 @@ has-forward := λ(: class Type)(: tt Type). (: (
       ))
       ( (TAnd( lt rt )) (
          (set return (max(
-            (has-forward( class lt ))
-            (has-forward( class rt ))
+            (has-infinite( class lt ))
+            (has-infinite( class rt ))
+         )))
+      ))
+      ( _ () )
+   ))
+   return
+) U64);
+
+has-forward := λ(: tt TypeList). (: (
+   (let return 0_u64)
+   (match tt (
+      ()
+      ( TypeEOF () )
+      ( (TypeSeq( ts p1 )) (
+         (set return (max(
+            (has-forward( ts ))
+            (has-forward( p1 ))
+         )))
+      ))
+   ))
+   return
+) U64);
+
+has-forward := λ(: tt Type). (: (
+   (let return 0_u64)
+   (match tt (
+      ()
+      ( (TGround( cls ps )) (
+         (set return (has-forward( ps )))
+         (if (not(.lookup( class-exists-index cls 0_u64 ))) (
+            (set return 1_u64)
+         ) ())
+      ))
+      ( (TAnd( lt rt )) (
+         (set return (max(
+            (has-forward( lt ))
+            (has-forward( rt ))
          )))
       ))
       ( _ () )
@@ -1943,8 +1979,13 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
       ( (App( (Lit( tag _ )) args )) (
          (let atype (type-of-s args))
          (mark-constructor-flat-parameters( base-type atype ))
-         (if (has-forward( base-type atype )) (
+         (if (has-forward( atype )) (
             (print 'Size\sOf\sType\sCannot\sBe\sDetermined\sDue\sTo\sForward\sReference:\s_s)
+            (print tag)(print '\n_s)
+            (exit 1_u64)
+         ) ())
+         (if (has-infinite( base-type atype )) (
+            (print 'Size\sOf\sType\sIs\sInfinite:\s_s)
             (print tag)(print '\n_s)
             (exit 1_u64)
          ) ())
