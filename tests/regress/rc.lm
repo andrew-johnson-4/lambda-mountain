@@ -3,7 +3,7 @@ import LIB/default.lm;
 
 type A (ACons( Rc<A> , Rc<A> )) | (AAtom( String ));
 
-destroy := λ(: a A). (: (
+before-del := λ(: a A). (: (
    (match a (
       ()
       ( (ACons( l r )) (
