@@ -1,0 +1,2 @@
+
+type Rc<a> (Rc( Tuple<U64,a>[] ));
