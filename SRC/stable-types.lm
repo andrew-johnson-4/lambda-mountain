@@ -1851,11 +1851,11 @@ cons-arity := λ(: tt Type). (: (
 ) U64);
 
 parameter-number := λ(: tt Type)(: parameter-name String). (: (
-   (let a 1_u64)
+   (let a 0_u64)
    (match tt (
       ()
       ( (TGround( _ ps )) (
-         (set a (parameter-number( ps parameter-name 0_u64 )))
+         (set a (parameter-number( ps parameter-name 1_u64 )))
       ))
       ( _ () )
    ))
@@ -1863,7 +1863,7 @@ parameter-number := λ(: tt Type)(: parameter-name String). (: (
 ) U64);
 
 parameter-number := λ(: tt TypeList)(: parameter-name String)(: pi U64). (: (
-   (let a (as -1_i64 U64))
+   (let a 0_u64)
    (match tt (
       ()
       ( (TypeSeq( rst (TVar v) )) (
@@ -1877,6 +1877,11 @@ parameter-number := λ(: tt TypeList)(: parameter-name String)(: pi U64). (: (
    ))
    a
 ) U64);
+
+mark-constructor-flat-parameters := λ(: base-type Type)(: tag String)(: flat-type Type). (: (
+   (print 'Mark\sFlat\s_s)(print base-type)(print '._s)(print tag)
+   (print '\s->\s_s)(print flat-type)(print '\n_s)
+) Nil);
 
 infer-type-constructor := λ(: base-type Type)(: body AST). (: (
    (let r 0_u64)
@@ -1903,9 +1908,8 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
       ))
       ( (App( (Lit( tag _ )) args )) (
          (let atype (type-of-s args))
-         (let base-arity (arity base-type))
+         (mark-constructor-flat-parameters( base-type tag atype ))
          #TODO mark-parameter-flat tag arity parameter-no 
-         (print 'Arity\s_s)(print base-type)(print '\s_s)(print base-arity)(print '\n_s)
          (if (has-forward atype) (
             (print 'Size\sOf\sType\sCannot\sBe\sDetermined\sDue\sTo\sForward\sReference:\s_s)
             (print tag)(print '\n_s)
