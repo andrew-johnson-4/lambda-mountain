@@ -1,0 +1,27 @@
+
+import LIB/default.lm;
+
+type A (ACons( Rc<A> , Rc<A> )) | (AAtom( String ));
+
+destroy := λ(: a A). (: (
+   (match a (
+      ()
+      ( (ACons( l r )) (
+         (print 'Destroy\sCons\n_s)
+      ))
+      ( (AAtom( s )) (
+         (print 'Destroy\sAtom\s_s)
+         (print (.1 a))
+         (print '\n_s)
+      ))
+   ))
+) Nil);
+
+main := λ. (: (
+   (let a (AAtom 'A_s))
+   (let b (AAtom 'B_s))
+   (let c (ACons( (Rc::new a) (Rc::new b) )))
+   (let d (ACons( (Rc::new a) (Rc::new a) )))
+   (del c)
+) Nil);
+
