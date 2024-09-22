@@ -1416,31 +1416,39 @@ sizeof-type := λ(: tt Type). (: (
    sz
 ) U64);
 
-has-forward := λ(: tt TypeList). (: (
+has-forward := λ(: class Type)(: tt TypeList). (: (
    (let return 0_u64)
    (match tt (
       ()
       ( TypeEOF () )
-      ( (TypeSeq( ts t1 )) (
+      ( (TypeSeq( ts (TVar v) )) (
          (set return (max(
-            (has-forward ts)
-            (has-forward t1)
+            (has-forward( class ts ))
+            (is-parameter-flat( (tag-of class) (arity class) (parameter-number( class v )) ))
          )))
+      ))
+      ( (TypeSeq( ts _ )) (
+         (set return (has-forward( class ts )))
       ))
    ))
    return
 ) U64);
 
-has-forward := λ(: tt Type). (: (
+has-forward := λ(: class Type)(: tt Type). (: (
    (let return 0_u64)
    (match tt (
       ()
       ( (TGround( 'Array_s _ )) () )
-      ( (TGround( 'Field_s ps )) (set return (has-forward ps)) )
-      ( (TGround( 'Cons_s ps )) (set return (has-forward ps)) )
+      ( (TGround( 'Field_s (TypeSeq( (TypeSeq( TypeEOF p1 )) _ )) )) (set return (has-forward( class p1 ))) )
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2  )) )) (
+         (set return (max(
+            (has-forward( class p1 ))
+            (has-forward( class p2 ))
+         )))
+      ))
       ( (TGround( cls ps )) (
          (if (non-zero ps) (
-            (set return (has-forward ps))
+            (set return (has-forward( tt ps )))
          ) (
             (if (not(.lookup( class-to-size-index cls 0_u64 ))) (
                (set return 1_u64)
@@ -1449,8 +1457,8 @@ has-forward := λ(: tt Type). (: (
       ))
       ( (TAnd( lt rt )) (
          (set return (max(
-            (has-forward lt)
-            (has-forward rt)
+            (has-forward( class lt ))
+            (has-forward( class rt ))
          )))
       ))
       ( _ () )
@@ -1935,7 +1943,7 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
       ( (App( (Lit( tag _ )) args )) (
          (let atype (type-of-s args))
          (mark-constructor-flat-parameters( base-type atype ))
-         (if (has-forward atype) (
+         (if (has-forward( base-type atype )) (
             (print 'Size\sOf\sType\sCannot\sBe\sDetermined\sDue\sTo\sForward\sReference:\s_s)
             (print tag)(print '\n_s)
             (exit 1_u64)
