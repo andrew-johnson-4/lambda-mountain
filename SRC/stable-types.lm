@@ -37,6 +37,12 @@ global-symbol-registry := (: BTreeEqEOF BTreeEq<Tuple<String,Type>,U64>);
 # Global (type-base-name: String, parameter: String) -> Yes/No, mutable
 parameter-is-flat-index := (: BTreeEqEOF BTreeEq<Tuple<Tuple<String,U64>,U64>,U64>);
 
+class-exists-index := (: BTreeEqEOF BTreeEq<String,U64>);
+
+mark-class-exists := λ(: class String). (: (
+   (.bind( (as (& class-exists-index) BTreeEq<String,U64>[]) class 1_u64 ))
+) Nil);
+
 mark-parameter-flat := λ(: type-base-name String)(: type-arity U64)(: parameter U64). (: (
    (print 'Parameter\sIs\sFlat:\s_s)(print type-base-name)(print '\o_s)(print type-arity)(print '._s)(print parameter)(print '\n_s)
    (.bind( (as (& parameter-is-flat-index) BTreeEq<Tuple<Tuple<String,U64>,U64>,U64>[])
@@ -1488,6 +1494,7 @@ has-forward := λ(: tt Type). (: (
       ( (TGround( cls ps )) (
          (set return (has-forward( ps )))
          (if (not(.lookup( class-exists-index cls 0_u64 ))) (
+            (print 'Does\sNot\sExist:\s_s)(print tt)(print '\n_s)
             (set return 1_u64)
          ) ())
       ))
@@ -1829,6 +1836,7 @@ typecheck := λ. (: (
 ) Nil);
 
 infer-type-definition := λ(: base-type Type)(: body AST)(: case-number U64). (: (
+   (mark-class-exists( (tag-of base-type) ))
    (let r 0_u64)
    (match body (
       ()
