@@ -1491,7 +1491,10 @@ has-forward := λ(: tt Type). (: (
    (let return 0_u64)
    (match tt (
       ()
-      ( (TGround( cls ps )) (
+      ( (TGround( 'Array_s ps )) () )
+      ( (TGround( 'Cons_s ps )) (set return (has-forward( ps ))) )
+      ( (TGround( 'Field_s (TypeSeq( (TypeSeq( TypeEOF p1 )) n )) )) (set return (has-forward( p1 ))) )
+      ( (TGround( cls ps )) (            
          (set return (has-forward( ps )))
          (if (not(.lookup( class-exists-index cls 0_u64 ))) (
             (print 'Does\sNot\sExist:\s_s)(print tt)(print '\n_s)
