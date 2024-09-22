@@ -35,14 +35,14 @@ types-have-changed := True_u8;
 global-symbol-registry := (: BTreeEqEOF BTreeEq<Tuple<String,Type>,U64>);
 
 # Global (type-base-name: String, parameter: String) -> Yes/No, mutable
-parameter-is-flat-index := (: BTreeEqEOF BTreeEq<Tuple<Tuple<String,U64>,String>,U64>);
+parameter-is-flat-index := (: BTreeEqEOF BTreeEq<Tuple<Tuple<String,U64>,U64>,U64>);
 
-mark-parameter-flat := λ(: type-base-name String)(: type-arity U64)(: parameter String). (: (
-   (.bind( (as (& parameter-is-flat-index) BTreeEq<Tuple<Tuple<String,U64>,String>,U64>[])
+mark-parameter-flat := λ(: type-base-name String)(: type-arity U64)(: parameter U64). (: (
+   (.bind( (as (& parameter-is-flat-index) BTreeEq<Tuple<Tuple<String,U64>,U64>,U64>[])
            (Tuple( (Tuple( type-base-name type-arity )) parameter )) 1_u64 ))
 ) Nil);
 
-is-parameter-flat := λ(: type-base-name String)(: type-arity U64)(: parameter String). (: (
+is-parameter-flat := λ(: type-base-name String)(: type-arity U64)(: parameter U64). (: (
    (let r (.lookup( parameter-is-flat-index (Tuple( (Tuple( type-base-name type-arity )) parameter )) 0_u64 )))
    r
 ) U64);
