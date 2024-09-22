@@ -38,6 +38,7 @@ global-symbol-registry := (: BTreeEqEOF BTreeEq<Tuple<String,Type>,U64>);
 parameter-is-flat-index := (: BTreeEqEOF BTreeEq<Tuple<Tuple<String,U64>,U64>,U64>);
 
 mark-parameter-flat := λ(: type-base-name String)(: type-arity U64)(: parameter U64). (: (
+   (print 'Parameter\sIs\sFlat:\s_s)(print type-base-name)(print '\o_s)(print type-arity)(print '._s)(print parameter)(print '\n_s)
    (.bind( (as (& parameter-is-flat-index) BTreeEq<Tuple<Tuple<String,U64>,U64>,U64>[])
            (Tuple( (Tuple( type-base-name type-arity )) parameter )) 1_u64 ))
 ) Nil);
@@ -1879,8 +1880,21 @@ parameter-number := λ(: tt TypeList)(: parameter-name String)(: pi U64). (: (
 ) U64);
 
 mark-constructor-flat-parameters := λ(: base-type Type)(: tag String)(: flat-type Type). (: (
-   (print 'Mark\sFlat\s_s)(print base-type)(print '._s)(print tag)
-   (print '\s->\s_s)(print flat-type)(print '\n_s)
+   (match flat-type (
+      ()
+      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+         (mark-constructor-flat-parameters( base-type tag p1 ))
+         (mark-constructor-flat-parameters( base-type tag p2 ))
+      ))
+      ( (TGround( flat-tag flat-ps )) (
+         (print 'Analyze\sFlat\s_s)(print base-type)(print '._s)(print tag)
+         (print '\s->\s_s)(print flat-type)(print '\n_s)
+      ))
+      ( (TVar v) (
+         (mark-parameter-flat( (tag-of base-type) (arity base-type) (parameter-number( base-type v )) ))
+      ))
+      ( _ () )
+   ))
 ) Nil);
 
 infer-type-constructor := λ(: base-type Type)(: body AST). (: (
