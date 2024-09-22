@@ -6,6 +6,8 @@ type S (SNil)
 
 type Tuple<x,y> (Tuple( x , y ));
 
+type TestFlat<x,y> (TestFlat( Tuple<x,y> ));
+
 + := λ(: l S)(: r S). (: (
    (let return (SCons( (close l) (close r) )))
    return
