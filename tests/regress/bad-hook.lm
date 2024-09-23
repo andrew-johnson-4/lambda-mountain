@@ -1,0 +1,13 @@
+
+import LIB/default.lm;
+
+f := λ: Hook+HookPriority<-1>(: a U64). (: (
+   a
+) U64);
+f := λ: Hook+HookPriority<1>(: a U64). (: (
+   (print (+( a 2_u64 )))
+) Nil);
+
+main := λ. (: (
+   (f 1_u64)
+) Nil);

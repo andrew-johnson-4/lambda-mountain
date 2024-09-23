@@ -559,10 +559,10 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                (match f (
                   ()
                   ( (Var( fname _ )) (
-                     (set e (compile-stack-call( ctx fname (typeof term) a stack-offset used )))
+                     (set e (compile-stack-calls( ctx fname (typeof term) a stack-offset used )))
                   ))
                   ( (App( (Lit( ':_s _ )) (App( (Var( fname _ )) (AType ft) )) )) (
-                     (set e (compile-stack-call( ctx fname (typeof term) a stack-offset used )))
+                     (set e (compile-stack-calls( ctx fname (typeof term) a stack-offset used )))
                   ))
                   ( (Lit( fname _ )) (
                      (set e (compile-constructor( ctx fname (typeof term) (typeof a) a stack-offset )))
@@ -591,8 +591,27 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
    e
 ) Fragment);
 
-compile-stack-call := λ(: ctx FContext)(: function-name String)(: return-type Type)(: args AST)(: offset I64)(: used IsUsed). (: (
-   (let f (fragment-context::lookup( ctx function-name (typeof args) args )))
+compile-stack-calls := λ(: ctx FContext)(: function-name String)(: return-type Type)(: args AST)(: offset I64)(: used IsUsed). (: (
+   (let r (fragment::new()))
+   (set r (fragment::set-context( r ctx )))
+   (set r (fragment::set-offset( r offset )))
+   (let fs (fragment-context::lookups( ctx function-name (typeof args) args )))
+   (while (non-zero fs) (
+      (match fs (
+         ()
+         ( (LCons( f rst )) (
+            (set r (fragment::chain(
+               r
+               (compile-stack-call( ctx f function-name return-type args offset used ))
+            )))
+            (set fs rst)
+         ))
+      ))
+   ))
+   r
+) Fragment);
+
+compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(: return-type Type)(: args AST)(: offset I64)(: used IsUsed). (: (
    (let function-type (fragment::get-type f))
    (let r (fragment::new()))
 
