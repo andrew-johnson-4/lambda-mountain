@@ -1,16 +1,16 @@
 A
-AAtom A
+AAtom count=1 A
 B
-AAtom B
+AAtom count=1 B
 C
-ACons
-L Count: 1
-AAtom A
-R Count: 1
-AAtom B
+ACons count=1
+AAtom count=1 A
+AAtom count=1 B
 D
-ACons
-L Count: 1
-AAtom A
-R Count: 1
-AAtom A
+ACons count=1
+AAtom count=1 A
+AAtom count=1 A
+Del A
+Del B
+Del C
+Del D

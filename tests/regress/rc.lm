@@ -3,12 +3,12 @@ import LIB/default.lm;
 
 type A (ACons( Rc<A> , Rc<A> )) | (AAtom( String ));
 
-del := λ: Hook(: a Rc<A>). (: (
-   (print 'Del\sA\o1\n_s)
-) Nil);
-del := λ: Hook(: a Rc<A>). (: (
-   (print 'Del\sA\o2\n_s)
-) Nil);
+#del := λ: Hook(: a Rc<A>). (: (
+#   (print 'Del\sA\o1\n_s)
+#) Nil);
+#del := λ: Hook(: a Rc<A>). (: (
+#   (print 'Del\sA\o2\n_s)
+#) Nil);
 
 print := λ(: a Rc<A>). (: (
    (match a (
@@ -27,8 +27,8 @@ print := λ(: a Rc<A>). (: (
 main := λ. (: (
    (let a (rc::new(AAtom 'A_s)))
    (let b (rc::new(AAtom 'B_s)))
-   (let c (ACons( a b )))
-   (let d (ACons( a a )))
+   (let c (rc::new(ACons( a b ))))
+   (let d (rc::new(ACons( a a ))))
    (print 'A\n_s)
    (print a)
    (print 'B\n_s)
