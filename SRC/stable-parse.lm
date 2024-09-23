@@ -38,7 +38,7 @@ parse-lambda := λ(: tokens List<Token>). (: (
             (match (parse-many-expressions r) (
                ()
                ( (PME( le lr )) (
-                  (set expr (Abs( (close expr) (close le) TAny )))
+                  (set expr (Abs( (close expr) (close le) tt-ext )))
                   (set remainder lr)
                   (set tokens (: LEOF List<Token>))
                ))
