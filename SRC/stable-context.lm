@@ -65,9 +65,6 @@ fragment-context::lookups := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AS
       ( (FCtxBind( rst rk rt rf )) (
          (let is-hook (non-zero(slot( rt 'Hook_s ))))
          (if (==( k rk )) (
-            (if (==( k 'f_s )) (
-               (print 'f\sis-hook\s_s)(print is-hook)(print rt)(print '\n_s)
-            ) ())
             (match (slot( rt 'Arrow_s )) (
                ()
                ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF domaint )) ranget )) )) (

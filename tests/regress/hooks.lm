@@ -1,7 +1,7 @@
 
 import LIB/default.lm;
 
-f := λ: Hook+HookPriority<-1>(: a U64). (: (
+f := λ: Hook+HookPriority<Neg<1>>(: a U64). (: (
    (print (+( a 1_u64 )))
 ) Nil);
 f := λ: Hook+HookPriority<1>(: a U64). (: (
