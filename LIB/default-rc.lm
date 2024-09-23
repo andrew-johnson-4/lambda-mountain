@@ -1,2 +1,8 @@
 
 type Rc<a> (Rc( Tuple<U64,a>[] ));
+
+rc::new := λ(: v x). (: (
+   (let inner (Tuple( 1_u64 v )))
+   (let rc (Rc( (close inner) )))
+   rc
+) Rc<x>);
