@@ -5,6 +5,15 @@ type SfxList SfxEOF | (SfxSeq( SfxList[] , String , Type )); zero SfxList SfxEOF
 parse-suffixes := (: SfxEOF SfxList);
 
 parse-lambda := λ(: tokens List<Token>). (: (
+   (let tt-ext TAny)
+   (match tokens (
+      ()
+      ( (LCons( ':_t (LCons( tt-lit_t rr )) )) (
+         (set tt-ext (parse-type tt-lit))
+         (set tokens rr)
+      ))
+      ( _ () )
+   ))
    (let expr ASTEOF)
    (let remainder (: LEOF List<Token>))
    (match (parse-one-expression tokens) (
@@ -12,7 +21,7 @@ parse-lambda := λ(: tokens List<Token>). (: (
       ( (PME( (Lit( '._s _ )) pr )) (match (parse-many-expressions pr) (
          ()
          ( (PME( le lr )) (
-            (set expr (Abs( (close ASTNil) (close le) TAny )))
+            (set expr (Abs( (close ASTNil) (close le) tt-ext )))
             (set tokens (: LEOF List<Token>))
             (set remainder lr)
          ))
@@ -29,7 +38,7 @@ parse-lambda := λ(: tokens List<Token>). (: (
             (match (parse-many-expressions r) (
                ()
                ( (PME( le lr )) (
-                  (set expr (Abs( (close expr) (close le) TAny )))
+                  (set expr (Abs( (close expr) (close le) tt-ext )))
                   (set remainder lr)
                   (set tokens (: LEOF List<Token>))
                ))

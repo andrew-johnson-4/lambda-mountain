@@ -1,4 +1,16 @@
-Destroy Cons
-Destroy Atom B
-Destroy Cons
-Destroy Atom A
+A
+AAtom count=1 A
+B
+AAtom count=1 B
+C
+ACons count=1
+AAtom count=1 A
+AAtom count=1 B
+D
+ACons count=1
+AAtom count=1 A
+AAtom count=1 A
+Del A
+Del B
+Del C
+Del D

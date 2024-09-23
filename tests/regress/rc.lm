@@ -3,25 +3,47 @@ import LIB/default.lm;
 
 type A (ACons( Rc<A> , Rc<A> )) | (AAtom( String ));
 
-before-del := λ(: a A). (: (
+#del := λ: Hook(: a Rc<A>). (: (
+#   (print 'Del\sA\o1\n_s)
+#) Nil);
+#del := λ: Hook(: a Rc<A>). (: (
+#   (print 'Del\sA\o2\n_s)
+#) Nil);
+
+print := λ(: a Rc<A>). (: (
    (match a (
       ()
-      ( (ACons( l r )) (
-         (print 'Destroy\sCons\n_s)
+      ( (Rc(Tuple( c (ACons( l r )) ))) (
+         (print 'ACons\scount=_s)(print c)(print '\n_s)
+         (print l)
+         (print r)
       ))
-      ( (AAtom( s )) (
-         (print 'Destroy\sAtom\s_s)
-         (print (.1 a))
-         (print '\n_s)
+      ( (Rc(Tuple( c (AAtom( v )) ))) (
+         (print 'AAtom\scount=_s)(print c)(print '\s_s)(print v)(print '\n_s)
       ))
    ))
 ) Nil);
 
 main := λ. (: (
-   (let a (AAtom 'A_s))
-   (let b (AAtom 'B_s))
-   (let c (ACons( (Rc::new a) (Rc::new b) )))
-   (let d (ACons( (Rc::new a) (Rc::new a) )))
-   (del c)
+   (let a (rc::new(AAtom 'A_s)))
+   (let b (rc::new(AAtom 'B_s)))
+   (let c (rc::new(ACons( a b ))))
+   (let d (rc::new(ACons( a a ))))
+   (print 'A\n_s)
+   (print a)
+   (print 'B\n_s)
+   (print b)
+   (print 'C\n_s)
+   (print c)
+   (print 'D\n_s)
+   (print d)
+   (print 'Del\sA\n_s)
+   #(del a)
+   (print 'Del\sB\n_s)
+   #(del b)
+   (print 'Del\sC\n_s)
+   #(del c)
+   (print 'Del\sD\n_s)
+   #(del d)
 ) Nil);
 

@@ -62,8 +62,8 @@ get-only-child := λ(: class String). (: (
    r
 ) String);
 
-mark-global-as-seen := λ(: name String)(: tt Type). (: (
-   (if (global-is-seen( name tt )) (
+mark-global-as-seen := λ(: name String)(: tt Type)(: tlt Type). (: (
+   (if (&&( (global-is-seen( name tt )) (not(non-zero(slot( tlt 'Hook_s )))) )) (
       (print 'Duplicate\sGlobal\sSymbol\s_s)(print name)(print '\s:\s_s)(print tt)(print '\n_s)
       (exit 1_u64)
    ) (
@@ -1497,7 +1497,6 @@ has-forward := λ(: tt Type). (: (
       ( (TGround( cls ps )) (            
          (set return (has-forward( ps )))
          (if (not(.lookup( class-exists-index cls 0_u64 ))) (
-            (print 'Does\sNot\sExist:\s_s)(print tt)(print '\n_s)
             (set return 1_u64)
          ) ())
       ))
@@ -2032,7 +2031,7 @@ infer-global-context := λ(: td AST). (: (
          (let lt (typeof-lhs lhs))
          (let return-type (guess-representation(without-representation rhst)))
          (let ft (t3( 'Arrow_s lt return-type )))
-         (mark-global-as-seen( k ft ))
+         (mark-global-as-seen( k ft tlt ))
          (ascript-normal( td ft ))
          (set global-type-context (TCtxBind(
             (close global-type-context)
@@ -2044,7 +2043,7 @@ infer-global-context := λ(: td AST). (: (
       ( (Frg( k_t (Abs( lhs (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) atlt )) tlt )) (
          (let lt (typeof-lhs lhs))
          (let ft (t3( 'Arrow_s lt rhst )))
-         (mark-global-as-seen( k ft ))
+         (mark-global-as-seen( k ft atlt ))
          (ascript-normal( td ft ))
          (set global-type-context (TCtxBind(
             (close global-type-context)
@@ -2058,7 +2057,7 @@ infer-global-context := λ(: td AST). (: (
          (set global-type-context (TCtxBind(
             (close global-type-context) k kt ASTEOF
          )))
-         (mark-global-as-seen( k kt ))
+         (mark-global-as-seen( k kt TAny ))
          (ascript-normal( td kt ))
       ))
       ( (Frg( k_t (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) tlt )) (
@@ -2067,7 +2066,7 @@ infer-global-context := λ(: td AST). (: (
             k
             rhst ASTEOF
          )))
-         (mark-global-as-seen( k rhst ))
+         (mark-global-as-seen( k rhst tlt ))
       ))
       ( (Glb( _ _ )) (
          (exit-error( 'Global\sBindings\sMust\sBe\sAscripted_s td ))
