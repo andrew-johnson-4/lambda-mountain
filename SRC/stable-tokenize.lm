@@ -100,7 +100,7 @@ location-of := λ(: term AST). (: (
          (set r (location-of tl))
          (if (not(non-zero r)) (set r (location-of tr)) ())
       ))
-      ( (Frg( tl tr tlt )) (
+      ( (Frg( tl tr )) (
          (set r (location-of tl))
          (if (not(non-zero r)) (set r (location-of tr)) ())
       ))
