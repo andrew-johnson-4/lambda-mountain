@@ -2263,6 +2263,9 @@ reduce-plural := λ(: pts List<Type>). (: (
 apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: blame AST). (: (
    (let r TAny)
    (let rs (apply-plural( function-name ft pt do-specialize blame )))
+   (if (==( function-name 'f_s )) (
+      (print 'Reduce\sPlural\s_s)(print rs)(print '\n_s)
+   ) ())
    (set rs (reduce-plural rs))
    (if (==( (.length rs) 0_u64 )) (
       (print 'Function\sApplication\sYielded\sNo\sMatches\n_s)
