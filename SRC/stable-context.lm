@@ -65,6 +65,9 @@ fragment-context::lookups := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AS
       ( (FCtxBind( rst rk rt rf )) (
          (let is-hook (non-zero(slot( rt 'Hook_s ))))
          (if (==( k rk )) (
+            (if (==( k 'f_s )) (
+               (print 'f\sis-hook\s_s)(print is-hook)(print rt)(print '\n_s)
+            ) ())
             (match (slot( rt 'Arrow_s )) (
                ()
                ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF domaint )) ranget )) )) (
@@ -75,16 +78,16 @@ fragment-context::lookups := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AS
                               (set r (cons( rf r )))
                            ) (
                               (set r (cons( rf (: LEOF List<Fragment>) )))
+                              (set found domaint)
                            ))
-                           (set found domaint)
                         ) ())
                      ) (
                         (if (!=( is-hook 0_u64 )) (
                            (set r (cons( rf r )))
                         ) (
                            (set r (cons( rf (: LEOF List<Fragment>) )))
+                           (set found domaint)
                         ))
-                        (set found domaint)
                      ))
                   ) ())
                   (set ctx rst)
@@ -94,9 +97,9 @@ fragment-context::lookups := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AS
                      (set r (cons( rf r )))
                   ) (
                      (set r (cons( rf (: LEOF List<Fragment>) )))
+                     (set ctx FCtxEOF)
+                     (set found (t1 'LocalVariable_s))
                   ))
-                  (set found (t1 'LocalVariable_s))
-                  (set ctx FCtxEOF)
                ))
             ))
          ) (
@@ -104,7 +107,7 @@ fragment-context::lookups := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AS
          ))
       ))
    )))
-   (if (||( (non-zero( found )) (==( hard False_u8 )) )) () (
+   (if (||( (!=( (.length r) 0_u64 )) (==( hard False_u8 )) )) () (
       (print 'Context::lookup\s_s)(print k)(print '\s:\s_s)(print kt)(print '\n_s)
       (exit-error( 'Context::lookup\sCould\sNot\sFind\sSymbol_s sloc ))
    ))

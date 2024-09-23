@@ -2750,7 +2750,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (infer-expr( tctx rhs Unscoped TAny Tail ))
          (let lt (typeof-lhs lhs))
          (let rt (typeof rhs))
-         (ascript-normal( term (t3( 'Arrow_s lt rt )) ))
+         (ascript-normal( term (enrich( (t3( 'Arrow_s lt rt )) tlt )) ))
       ))
       ( (Var( v vtk )) (
          (let vt (typeof-var( term tctx v )))
