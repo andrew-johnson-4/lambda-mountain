@@ -17,7 +17,7 @@ compile-blob := λ. (: (
    (while (non-zero preview-program) (match preview-program (
       ()
       # blob globals could provide mutable compile-time state or something?
-      ( (Seq( rst (Frg( k_t rhs _ )) )) (
+      ( (Seq( rst (Frg( k_t rhs )) )) (
          (let fragment (fragment::new()))
          (set fragment (fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) )))
          (set fragment (fragment::set( fragment 'fragment_s (to-s rhs) )))
@@ -28,7 +28,7 @@ compile-blob := λ. (: (
          )))
          (set preview-program rst)
       ))
-      ( (Seq( rst (Frg( k_t (Abs( _ _ _ )) _ )) )) (
+      ( (Seq( rst (Frg( k_t (Abs( _ _ _ )) )) )) (
          (set preview-program rst)
       ))
       ( (Seq( rst (Typedef( lhs rhs )) )) (
@@ -62,7 +62,7 @@ compile-blob := λ. (: (
       ( (Seq( rst (Glb( k_t rhs )) )) (
          (set preview-program rst)
       ))
-      ( (Seq( rst (Frg( k_t rhs _ )) )) (
+      ( (Seq( rst (Frg( k_t rhs )) )) (
          (set preview-program rst)
       ))
       ( (Seq( rst (Typedef( lhs rhs )) )) (
@@ -86,7 +86,7 @@ compile-gnu := λ. (: (
    (let preview-program ast-parsed-program)
    (while (non-zero preview-program) (match preview-program (
       ()
-      ( (Seq( rst (Frg( k_t rhs _ )) )) (
+      ( (Seq( rst (Frg( k_t rhs )) )) (
          (let is-template False_u8)
          (match k (
             ()
@@ -144,7 +144,7 @@ compile-gnu := λ. (: (
          ))
          (set preview-program rst)
       ))
-      ( (Seq( rst (Frg( k_t rhs _ )) )) (
+      ( (Seq( rst (Frg( k_t rhs )) )) (
          (let fragment (fragment::new()))
          (set fragment (fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) )))
          (set fragment (fragment::set( fragment 'fragment_s (to-s rhs) )))

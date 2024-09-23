@@ -436,11 +436,10 @@ substitute := λ(: tctx TContext)(: t AST). (: (
             (close(substitute( tctx rt )))
          )))
       ))
-      ( (Frg( k lt tt )) (
+      ( (Frg( k lt )) (
          (set t (Frg(
             (unique k)
             (close(substitute( tctx lt )))
-            (substitute( tctx tt ))
          )))
       ))
       ( _ (exit-error( 'Unexpected\sSubstitution\sTerm:_s t )) )
@@ -2040,10 +2039,10 @@ infer-global-context := λ(: td AST). (: (
             td
          )))
       ))
-      ( (Frg( k_t (Abs( lhs (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) atlt )) tlt )) (
+      ( (Frg( k_t (Abs( lhs (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) tlt )) )) (
          (let lt (typeof-lhs lhs))
          (let ft (t3( 'Arrow_s lt rhst )))
-         (mark-global-as-seen( k ft atlt ))
+         (mark-global-as-seen( k ft tlt ))
          (ascript-normal( td ft ))
          (set global-type-context (TCtxBind(
             (close global-type-context)
@@ -2060,18 +2059,18 @@ infer-global-context := λ(: td AST). (: (
          (mark-global-as-seen( k kt TAny ))
          (ascript-normal( td kt ))
       ))
-      ( (Frg( k_t (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) tlt )) (
+      ( (Frg( k_t (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) )) (
          (set global-type-context (TCtxBind(
             (close global-type-context)
             k
             rhst ASTEOF
          )))
-         (mark-global-as-seen( k rhst tlt ))
+         (mark-global-as-seen( k rhst TAny ))
       ))
       ( (Glb( _ _ )) (
          (exit-error( 'Global\sBindings\sMust\sBe\sAscripted_s td ))
       ))
-      ( (Frg( _ _ _ )) (
+      ( (Frg( _ _ )) (
          (exit-error( 'Global\sBindings\sMust\sBe\sAscripted_s td ))
       ))
       ( _ () )
@@ -2088,7 +2087,7 @@ assert-well-typed := λ(: term AST). (: (
             (assert-well-typed v)
          ))
       ))
-      ( (Frg( _ v _ )) (
+      ( (Frg( _ v )) (
          (assert-one-typed v)
       ))
       ( (Typedef( _ _ )) () )
@@ -2565,7 +2564,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
             (infer-expr( tctx v Unscoped TAny Used ))
          ))
       ))
-      ( (Frg( _ v _ )) (
+      ( (Frg( _ v )) (
          (ascript-normal( v (typeof term) ))
       ))
       ( (App( (Lit( ':_s _ )) (App( (Lit( _ _ )) (AType tt) )) )) (

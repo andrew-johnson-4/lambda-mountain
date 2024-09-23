@@ -147,11 +147,10 @@ preprocess-apply-literals := λ(: program AST). (: (
          (close(preprocess-apply-literals ar))
          tlt
       ))))
-      ( (Frg( al ar atlt )) (
+      ( (Frg( al ar )) (
          (set r (Frg(
             (unique al)
             (close(preprocess-apply-literals ar))
-            atlt
          )))
       ))
       ( (Glb( k ar )) (set r (Glb(
@@ -217,11 +216,10 @@ preprocess-apply-locations := λ(: program AST). (: (
          (close(preprocess-apply-locations ar))
          tlt
       ))))
-      ( (Frg( al ar atlt )) (
+      ( (Frg( al ar )) (
          (set r (Frg(
             (unique al)
             (close(preprocess-apply-locations ar))
-            atlt
          )))
       ))
       ( (Glb( k ar )) (set r (Glb(
@@ -341,11 +339,10 @@ preprocess-apply := λ(: program AST). (: (
          (close(preprocess-apply ar))
          tlt
       ))))
-      ( (Frg( al ar atlt )) (
+      ( (Frg( al ar )) (
          (set r (Frg(
             (unique al)
             (close(preprocess-apply ar))
-            atlt
          )))
       ))
       ( (Glb( k ar )) (set r (Glb(
@@ -474,11 +471,10 @@ apply := λ(: ctx Context)(: term AST). (: (
             (close(apply( ctx vr )))
          )))
       ))
-      ( (Frg( k vr tlt )) (
+      ( (Frg( k vr )) (
          (set return (Frg(
             (substitute( ctx k ))
             (close(apply( ctx vr )))
-            tlt
          )))
       ))
    ))
@@ -624,11 +620,10 @@ relocate := λ(: term AST)(: loc SourceLocation). (: (
             (close(relocate( t loc )))
          )))
       ))
-      ( (Frg( k t tlt )) (
+      ( (Frg( k t )) (
          (set return (Frg(
             (with-location( k loc ))
             (close(relocate( t loc )))
-            tlt
          )))
       ))
    ))
@@ -689,11 +684,10 @@ substitute-uuids := λ(: ctx Context)(: term AST). (: (
             (close(substitute-uuids( ctx t )))
          )))
       ))
-      ( (Frg( k t tlt )) (
+      ( (Frg( k t )) (
          (set return (Frg(
             k
             (close(substitute-uuids( ctx t )))
-            tlt
          )))
       ))
    ))
@@ -738,7 +732,7 @@ extract-uuids := λ(: loc SourceLocation)(: ctx Context)(: term AST). (: (
          (let rctx (extract-uuids( loc ctx t )))
          (set return rctx)
       ))
-      ( (Frg( k t tlt )) (
+      ( (Frg( k t )) (
          (let rctx (extract-uuids( loc ctx t )))
          (set return rctx)
       ))

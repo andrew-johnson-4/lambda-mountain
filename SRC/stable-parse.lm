@@ -517,15 +517,6 @@ parse-toplevel := λ(: tokens List<Token>). (: (
             ))
          ))
          ( (LCons( 'fragment_t remainder-ext )) (
-            (let tt-ext TAny)
-            (match remainder-ext (
-               ()
-               ( (LCons( ':_t (LCons( tt-lit_t rr )) )) (
-                  (set tt-ext (parse-type tt-lit))
-                  (set remainder-ext rr)
-               ))
-               ( _ () )
-            ))
             (match remainder-ext (
                ()
                ( (LCons( key (LCons( ':=_t remainder )) )) (
@@ -534,7 +525,7 @@ parse-toplevel := λ(: tokens List<Token>). (: (
                      ( (PME( re rr )) (
                         (set program (Seq(
                            (close program)
-                           (close(Frg( key (close re) tt-ext )))
+                           (close(Frg( key (close re) )))
                         )))
                         (set tokens rr)
                      ))
