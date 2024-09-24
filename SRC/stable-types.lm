@@ -1352,6 +1352,9 @@ denormalize := λ(: tt Type). (: (
    (set tt (with-size tt))
    (set tt (with-tag tt))
    (set tt (with-fields tt))
+   (if (non-zero(slot( tt 'Rc_s ))) (
+      (print 'Denormalize\s_s)(print tt)(print '\n_s)
+   ) ())
    tt
 ) Type);
 
