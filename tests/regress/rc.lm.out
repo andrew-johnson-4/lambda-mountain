@@ -1,24 +1,32 @@
 Inc Count 1
+Inc Count 2
 Inc Count 1
+Inc Count 2
 Inc Count 1
+Inc Count 2
 Inc Count 1
+Inc Count 2
 A
-AAtom count=1 A
+AAtom count=2 A
 B
-AAtom count=1 B
+AAtom count=2 B
 C
-ACons count=1
-AAtom count=1 A
-AAtom count=1 B
+ACons count=2
+AAtom count=2 A
+AAtom count=2 B
 D
-ACons count=1
-AAtom count=1 A
-AAtom count=1 A
+ACons count=2
+AAtom count=2 A
+AAtom count=2 A
 Del A
+Del Count 2
 Del Count 1
 Del B
+Del Count 2
 Del Count 1
 Del C
+Del Count 2
 Del Count 1
 Del D
+Del Count 2
 Del Count 1

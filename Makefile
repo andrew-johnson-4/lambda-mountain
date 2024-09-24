@@ -1,6 +1,9 @@
 
 work: compile-production
 	./production tests/regress/rc.lm
+	as tmp.s -o tmp.o
+	ld tmp.o -o tmp
+	./tmp
 
 build-docs:
 	lm --blob -o docs/index.html docs/index.html.lm

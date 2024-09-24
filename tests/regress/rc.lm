@@ -13,12 +13,12 @@ type A (ACons( Rc<A> , Rc<A> )) | (AAtom( String ));
 print := λ(: a Rc<A>). (: (
    (match a (
       ()
-      ( (Rc(Tuple( c (ACons( l r )) ))) (
+      ( (Rc(Tuple( (ACons( l r )) c ))) (
          (print 'ACons\scount=_s)(print c)(print '\n_s)
          (print l)
          (print r)
       ))
-      ( (Rc(Tuple( c (AAtom( v )) ))) (
+      ( (Rc(Tuple( (AAtom( v )) c ))) (
          (print 'AAtom\scount=_s)(print c)(print '\s_s)(print v)(print '\n_s)
       ))
    ))

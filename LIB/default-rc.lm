@@ -1,18 +1,22 @@
 
-type Rc<a> (Rc( Tuple<U64,a>[] ));
+type Rc<a> (Rc( Tuple<a,I64>[] ));
 
 rc::new := λ(: v x). (: (
-   (let inner (Tuple( 1_u64 v )))
+   (let inner (Tuple( v 1_i64 )))
    (let rc (Rc( (close inner) )))
    rc
 ) Rc<x>);
 
 del := λ(: v Rc<x>). (: (
-   (let c (.2(open(.1 v))) )
-   (print 'Del\sCount\s_s)(print c)(print '\n_s)
+   (let c (-( (.1(open(.1 v))) 1_i64 )))
+   (print 'Del\sCount\s_s)(print (.1(open(.1 v))))(print '\n_s)
+   (set[]( (as (.1 v) I64[]+AsOnly) 1_u64 c ))
+   (print 'Del\sCount\s_s)(print (.1(open(.1 v))))(print '\n_s)
 ) Nil);
 
 inc := λ(: v Rc<x>). (: (
-   (let c (.2(open(.1 v))) )
-   (print 'Inc\sCount\s_s)(print c)(print '\n_s)
+   (let c (+( (.1(open(.1 v))) 1_i64 )))
+   (print 'Inc\sCount\s_s)(print (.1(open(.1 v))))(print '\n_s)
+   (set[]( (as (.1 v) I64[]+AsOnly) 1_u64 c ))
+   (print 'Inc\sCount\s_s)(print (.1(open(.1 v))))(print '\n_s)
 ) Nil);
