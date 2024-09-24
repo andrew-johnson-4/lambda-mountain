@@ -6,6 +6,7 @@ type B (B( A ));
 
 main := λ. (: (
    (let b (B( (A( 1_u64 2_u64 3_u64 4_u64 5_u64 )) )))
+   (print (.0(.1 b)))
    (print (.1(.1 b)))
    (print (.2(.1 b)))
    (print (.3(.1 b)))
