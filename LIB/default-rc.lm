@@ -7,7 +7,12 @@ rc::new := λ(: v x). (: (
    rc
 ) Rc<x>);
 
-del := λ(: v Rc<x>). (: (
-   (let c (.2(open(.1 v))) )
-   (print 'Del\sCount\s_s)(print c)(print '\n_s)
-) Rc<x>);
+#del := λ(: v Rc<x>). (: (
+#   (let c (.2(open(.1 v))) )
+#   (print 'Del\sCount\s_s)(print c)(print '\n_s)
+#) Rc<x>);
+
+#inc := λ(: v Rc<x>). (: (
+#   (let c (.2(open(.1 v))) )
+#   (print 'Inc\sCount\s_s)(print c)(print '\n_s)
+#) Rc<x>);
