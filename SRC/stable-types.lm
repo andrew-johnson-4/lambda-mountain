@@ -2679,11 +2679,13 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
             (if (non-zero inner-repr) (
                (set tt (and( tt inner-repr )))
             ) ())
-            (let inner-class (with-only-class inner-tt))
-            (if (non-zero inner-class) (
-               (set tt (and( tt inner-class )))
-            ) ())
-            (set tt (with-fields( tt )))
+            (if (non-zero(slot( tt 'AsOnly_s ))) () (
+               (let inner-class (with-only-class inner-tt))
+               (if (non-zero inner-class) (
+                  (set tt (and( tt inner-class )))
+               ) ())
+               (set tt (with-fields( tt )))
+            ))
             (ascript-normal( term tt ))
          ) ())
       ))

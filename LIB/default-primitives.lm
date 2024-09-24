@@ -77,6 +77,13 @@ fragment  set[] := λ(: l LocalVariable+Array<Sized<8>,?>)(: i Literal+Constant+
       \t 'mov \s '%R14 , \s (*( '8 (.expression i) )) \[ '%R15 \] \n
    ))
 ) Nil);
+fragment  set[] := λ(: l Reg64+Array<Sized<8>,?>)(: i Literal+Constant+U64)(: v LocalVariable+Sized<8>). (: (
+   (.program (
+      \t 'mov \s '% (.expression l) , \s '%R15 \n
+      \t 'mov \s (.expression v) \[ '%RBP \] , \s '%R14 \n
+      \t 'mov \s '%R14 , \s (*( '8 (.expression i) )) \[ '%R15 \] \n
+   ))
+) Nil);
 fragment  set[] := λ(: l LocalVariable+Array<Sized<1>,?>)(: i LocalVariable+U64)(: v Reg8+Sized<1>). (: (
    (.program (
       \t 'mov \s '% (.expression v) , \s '%R14B \n
