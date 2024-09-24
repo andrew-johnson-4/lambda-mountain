@@ -1348,6 +1348,13 @@ to-s := λ(: term AST). (: (
    s
 ) S);
 
+denormalize := λ(: tt Type). (: (
+   (set tt (with-size tt))
+   (set tt (with-tag tt))
+   (set tt (with-fields tt))
+   tt
+) Type);
+
 ascript-normal := λ(: t AST)(: tt Type). (: (
    (if (non-zero tt) (
       (let prev-tt (normalize(typeof t)))
@@ -1363,9 +1370,7 @@ ascript-normal := λ(: t AST)(: tt Type). (: (
             ))
          ))
       ) (
-         (set tt (with-size tt))
-         (set tt (with-tag tt))
-         (set tt (with-fields tt))
+         (set tt (denormalize tt))
          (ascript( t tt ))
          (set types-have-changed True_u8)
       ))
@@ -2401,12 +2406,14 @@ infer-ctx := λ(: tctx TContext)(: lhs AST). (: (
    (match lhs (
       ()
       ( (App( (Lit( ':_s _ )) (App( (Var( v vtk )) (AType tt) )) )) (
+         (set tt (denormalize tt))
          (set tctx (TCtxBind(
             (close tctx) v (as-local-variable tt) (Var( v vtk ))
          )))
          (set tctx (infer-tctx( tctx tt )))
       ))
       ( (App( ps (App( (Lit( ':_s _ )) (App( (Var( v vtk )) (AType tt) )) )) )) (
+         (set tt (denormalize tt))
          (set tctx (TCtxBind(
             (close tctx) v (as-local-variable tt) (Var( v vtk ))
          )))

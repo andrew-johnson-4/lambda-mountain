@@ -1,4 +1,7 @@
 
+work: compile-production
+	./production tests/regress/rc.lm
+
 build-docs:
 	lm --blob -o docs/index.html docs/index.html.lm
 	doby doc -o docs/default.html.html.lm LIB/default.html
