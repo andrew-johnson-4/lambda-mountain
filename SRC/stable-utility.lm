@@ -139,6 +139,7 @@ mangle-identifier := λ(: k String). (: (
          ( 93_u8 (set cs (SCons( (close cs) (close(SAtom( '_RB__s ))) ))))   # ]
          ( 94_u8 (set cs (SCons( (close cs) (close(SAtom( '_HT__s ))) ))))   # ^
          ( 95_u8 (set cs (SCons( (close cs) (close(SAtom( '_US__s ))) ))))   # _
+         ( 96_u8 (set cs (SCons( (close cs) (close(SAtom( '_TK__s ))) ))))   # `
          ( 124_u8 (set cs (SCons( (close cs) (close(SAtom( '_BR__s ))) ))))  # |
          ( 126_u8 (set cs (SCons( (close cs) (close(SAtom( '_TL__s ))) ))))  # ~
          ( c (set cs (SCons( (close cs) (close(SAtom(clone-rope c))) ))))
