@@ -1,12 +1,14 @@
 
 import LIB/default.lm;
 
-type A (A( U64 ));
+type A (A( U64 , U64 , U64 , U64 , U64 ));
 type B (B( A ));
 
 main := λ. (: (
-   (let a (A( 3_u64 )))
-   (let b (B( a )))
-   (print (.1 a))
+   (let b (B( (A( 1_u64 2_u64 3_u64 4_u64 5_u64 )) )))
    (print (.1(.1 b)))
+   (print (.2(.1 b)))
+   (print (.3(.1 b)))
+   (print (.4(.1 b)))
+   (print (.5(.1 b)))
 ) Nil);

@@ -1,4 +1,6 @@
 
+import LIB/default-templates-stackvariable.lm;
+
 fragment  template::push := λ(: src Constructor<tag>+Sized<struct-size>+FieldsSized<fields-size>). (: (
    (.program(
       (for wsz in (range( '0 (/( (-( (-( (.expression struct-size) (.expression fields-size) )) '8 )) '8 )) )) (
