@@ -38,12 +38,12 @@ main := λ. (: (
    (print 'D\n_s)
    (print d)
    (print 'Del\sA\n_s)
-   (del a)
+   #(del a)
    (print 'Del\sB\n_s)
-   (del b)
+   #(del b)
    (print 'Del\sC\n_s)
-   (del c)
+   #(del c)
    (print 'Del\sD\n_s)
-   (del d)
+   #(del d)
 ) Nil);
 
