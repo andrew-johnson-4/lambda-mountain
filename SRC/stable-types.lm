@@ -54,7 +54,6 @@ is-parameter-flat := λ(: type-base-name String)(: type-arity U64)(: parameter U
 ) U64);
 
 has-only-child := λ(: class String)(: tag String). (: (
-   (print 'Has\sOnly\sChild\s_s)(print class)(print '\s->\s_s)(print tag)(print '\n_s)
    (.bind( (as (& class-to-only-child) BTreeEq<String,String>[]) class tag ))
 ) Nil);
 
@@ -506,14 +505,8 @@ with-tag := λ(: tt Type). (: (
          ()
          ( (TGround( cls _ )) (
             (let tag (get-only-child cls))
-            (if (==( cls 'Rc_s )) (
-               (print 'Classed\s_s)(print tag)(print '\n_s)
-            ) ())
             (if (head-string tag) (
                (set tt (and( tt (t2( 'Tag_s (t1 tag) )) )))
-               (if (==( tag 'Rc_s )) (
-                  (print 'Tagged\s_s)(print tt)(print '\n_s)
-               ) ())
             ) ())
          ))
          ( _ () )
@@ -1356,15 +1349,6 @@ to-s := λ(: term AST). (: (
 ) S);
 
 denormalize := λ(: tt Type). (: (
-   (match (slot( tt 'Rc_s )) (
-      ()
-      ( (TGround( tag _ )) (
-         (if (==( tag 'Rc_s )) (
-            (print 'Denormalize\sRc\n_s)
-         ) ())
-      ))
-      ( _ () )
-   ))
    (set tt (with-size tt))
    (set tt (with-tag tt))
    (set tt (with-fields tt))
@@ -1837,7 +1821,6 @@ unify-hint := λ(: hint Type)(: tt TypeList). (: (
 
 
 typecheck := λ. (: (
-   (denormalize( (t2( 'Rc_s (t1 'Nil_s) )) ))
    (let p ast-parsed-program)
    (let ordered-type-exprs ASTEOF)
    (while (non-zero p) (match p (
