@@ -26,9 +26,13 @@ print := λ(: a Rc<A>). (: (
 
 main := λ. (: (
    (let a (rc::new(AAtom 'A_s)))
+   (inc a)
    (let b (rc::new(AAtom 'B_s)))
+   (inc b)
    (let c (rc::new(ACons( a b ))))
+   (inc c)
    (let d (rc::new(ACons( a a ))))
+   (inc d)
    (print 'A\n_s)
    (print a)
    (print 'B\n_s)

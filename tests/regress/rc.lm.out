@@ -1,3 +1,7 @@
+Inc Count 1
+Inc Count 1
+Inc Count 1
+Inc Count 1
 A
 AAtom count=1 A
 B
@@ -11,6 +15,10 @@ ACons count=1
 AAtom count=1 A
 AAtom count=1 A
 Del A
+Del Count 1
 Del B
+Del Count 1
 Del C
+Del Count 1
 Del D
+Del Count 1

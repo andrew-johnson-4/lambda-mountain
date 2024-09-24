@@ -141,13 +141,13 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
          (t2( 'FieldsSized_s (t1(to-string(sizeof-aligned args-type))) ))
       ))
    )))
-   (set e (fragment::set-type( e constructor-parms )))
+   (set e (fragment::set-type( e (denormalize constructor-parms) )))
    (let r (fragment-apply(
       ctx offset 'push_s
       (FLSeq( (close FLEOF) e )) (t3( 'Arrow_s constructor-parms return-type )) args
    )))
    (set r (fragment::set-context( r ctx )))
-   (set r (fragment::set-type( r return-type )))
+   (set r (fragment::set-type( r (denormalize return-type) )))
    (let new-offset (-( offset (as (sizeof-type return-type) I64) )))
    (set r (fragment::set-offset( r new-offset )))
    r
@@ -203,7 +203,7 @@ compile-fragment-args := λ(: ctx FContext)(: function-args-type Type)(: rval AS
                ) ())
                (let e2 (compile-expr( ctx re offset Used )))
                (if (non-zero(fragment::get-type e2)) () (
-                  (set e2 (fragment::set-type( e2 p2 )))
+                  (set e2 (fragment::set-type( e2 (denormalize p2) )))
                ))
                (set r (FLSeq( (close e1) e2 )))
             ))
@@ -227,7 +227,7 @@ compile-maybe-push-stack := λ(: ctx FContext)(: offset I64)(: fragment Fragment
       ()
       ( (TGround( 'StackVariable_s _ )) () )
       ( _ (
-         (set fragment (fragment::set-type( fragment ft )))
+         (set fragment (fragment::set-type( fragment (denormalize ft) )))
          (set fragment (fragment-apply(
             ctx offset 'push_s
             (FLSeq( (close FLEOF) fragment ))
@@ -305,7 +305,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
          )))
 
          (let e1 (compile-expr( ctx term -8_i64 Used )))
-         (set e1 (fragment::set-type( e1 kt )))
+         (set e1 (fragment::set-type( e1 (denormalize kt) )))
          (let e2 (fragment-context::lookup( ctx k kt term )))
          (let e3 (fragment-apply( ctx -8_i64 'mov_s
             (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
@@ -389,7 +389,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             ))
          ))
          (set e (fragment::set-context( e ctx )))
-         (set e (fragment::set-type( e ltype )))
+         (set e (fragment::set-type( e (denormalize ltype) )))
       ))
       ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
          (set e (compile-expr( ctx t stack-offset used )))
@@ -399,7 +399,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             ctx id (t1 'Label_s) (fragment::label( (uuid()) ))
          )))
          (set e (fragment::set-context( e ctx )))
-         (set e (fragment::set-type( e (t1 'Nil_s) )))
+         (set e (fragment::set-type( e (denormalize(t1 'Nil_s)) )))
       ))
       ( (App( (Var( 'label_s _ )) (Var( id _ )) )) (
          (let l (fragment-context::lookup( ctx id (t1 'Label_s) term )))
@@ -408,7 +408,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             (close(SAtom ':\n_s))
          )))
          (set e (fragment::set( e 'program_s prog )))
-         (set e (fragment::set-type( e (t1 'Nil_s) )))
+         (set e (fragment::set-type( e (denormalize(t1 'Nil_s)) )))
       ))
       ( (App( (Var( 'scope_s _ )) t )) (
          (set e (compile-expr( ctx t stack-offset Tail )))
@@ -421,14 +421,14 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             ()
             ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF TAny )) _ )) )) () )
             ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF inner-tt )) TAny )) )) (
-               (let e1 (fragment::set-type( e tt )))
+               (let e1 (fragment::set-type( e (denormalize tt) )))
                (let e2 (fragment::new()))
                (set e2 (fragment::set( e2 'expression_s (SAtom '0_s) )))
                (let c-tt (and(
                   (t1 'Literal_s)
                   (t1 'Constant_s)
                )))
-               (set e2 (fragment::set-type( e2 c-tt )))
+               (set e2 (fragment::set-type( e2 (denormalize c-tt) )))
                (set e (fragment-apply( ctx stack-offset 'push_s
                   (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
                   (t3( 'Arrow_s (t3( 'Cons_s tt c-tt ))
@@ -436,7 +436,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                   ))
                   term
                )))
-               (set e (fragment::set-type( e (and( inner-tt (t1 'StackVariable_s) )) )))
+               (set e (fragment::set-type( e (and( (denormalize inner-tt) (t1 'StackVariable_s) )) )))
                (let new-offset (-( stack-offset (as (sizeof-aligned inner-tt) I64) )))
                (set e (fragment::set-offset( e new-offset )))
             ))
@@ -621,7 +621,7 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
          (let f-args (compile-fragment-args( ctx (domain function-type) args offset )))
          (set r (fragment-apply( ctx offset function-name f-args return-type args )))
          (set r (fragment::set-offset( r offset )))
-         (set r (fragment::set-type( r return-type )))
+         (set r (fragment::set-type( r (denormalize return-type) )))
       ))
       ( _ (
          (if (is( used Tail )) (set used Used) ())
@@ -652,7 +652,7 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
                (set r (fragment::set-offset( r (-( offset (as return-size I64) )) )))
             ) ())
          ) ())
-         (set r (fragment::set-type( r return-type )))
+         (set r (fragment::set-type( r (denormalize return-type) )))
       ))
    ))
    (set r (fragment::set-context( r ctx )))
