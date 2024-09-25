@@ -1724,6 +1724,7 @@ specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Ty
       ()
       ( TCtxNil (set global-ctx TCtxEOF) )
       ( (TCtxBind( rst k kt t )) (
+         (set kt (slot( kt 'Arrow_s )))
          (if (==( k key )) (
             (if (==( ft kt )) (
                (match t (
@@ -2036,9 +2037,6 @@ infer-global-context := λ(: td AST). (: (
          (let return-type (guess-representation(without-representation rhst)))
          (let ft (t3( 'Arrow_s lt return-type )))
          (set ft (enrich( ft tlt )))
-         (if (==( k 'del_s )) (
-            (print 'Bind\sDel\s_s)(print ft)(print '\n_s)
-         ) ())
          (if (&&( (non-zero(slot( tlt 'Hook_s ))) (not(non-zero(slot( rhst 'Nil_s )))) )) (
             (exit-error( 'Hooks\sMust\sNot\sReturn\sValues._s td ))
          ) ())

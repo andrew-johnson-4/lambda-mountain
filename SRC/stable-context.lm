@@ -19,9 +19,6 @@ fragment-context::lookup := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST
       ()
       ( (FCtxBind( rst rk rt rf )) (
          (if (==( k rk )) (
-            (if (&&( (==( k 'del_s )) (==( rk 'del_s )) )) (
-               (print 'Lookup\sDel\n_s)
-            ) ())
             (match (slot( rt 'Arrow_s )) (
                ()
                ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF domaint )) ranget )) )) (
