@@ -1,32 +1,6 @@
-Inc Count 1
-Inc Count 2
-Inc Count 1
-Inc Count 2
-Inc Count 1
-Inc Count 2
-Inc Count 1
-Inc Count 2
-A
-AAtom count=2 A
-B
-AAtom count=2 B
-C
-ACons count=2
-AAtom count=2 A
-AAtom count=2 B
-D
-ACons count=2
-AAtom count=2 A
-AAtom count=2 A
-Del A
-Del Count 2
+AAtom count=1 A
 Del Count 1
-Del B
-Del Count 2
+Del Count 0
+AAtom count=1 B
 Del Count 1
-Del C
-Del Count 2
-Del Count 1
-Del D
-Del Count 2
-Del Count 1
+Del Count 0
