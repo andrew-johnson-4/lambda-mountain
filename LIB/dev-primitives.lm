@@ -334,8 +334,9 @@ fragment  cdecl::call := λ(: ictx ImplicitContext)(: args ?). (: (
    (.program(
       \o 'call \s 'function \s (.function-name ictx) \s ': \s (.function-type ictx) \n
       \t 'push \s '%RBP \n
-      \t 'mov \s '%RSP , \s '%RBP \n
+      \t 'mov \s '%RSP , \s '%RBX \n
       (.program args)
+      \t 'mov \s '%RBX , \s '%RBP \n
       \t 'call \s (.function-id ictx) \n
       \t 'mov \s '%RBP , \s '%RSP \n
       \t 'pop \s '%RBP \n
