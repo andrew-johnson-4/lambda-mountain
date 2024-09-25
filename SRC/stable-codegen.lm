@@ -623,6 +623,9 @@ compile-stack-calls := λ(: ctx FContext)(: function-name String)(: return-type 
 
 compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(: return-type Type)(: args AST)(: offset I64)(: used IsUsed). (: (
    (let function-type (fragment::get-type f))
+   (if (non-zero(slot( function-type 'NoDecl_s ))) (
+      (print 'TODO:\sNoDecl\sCalling\sConvention\n_s)
+   ) ())
    (let r (fragment::new()))
 
    (match (fragment::get( f 'fragment-type_s )) (
