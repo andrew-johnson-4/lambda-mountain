@@ -562,6 +562,10 @@ fragment::chain := λ(: l Fragment)(: r Fragment). (: (
       (close(fragment::get( l 'frame_s )))
       (close(fragment::get( r 'frame_s )))
    )) )))
+   (set l (fragment::set( l 'del_s (SCons(
+      (close(fragment::get( l 'del_s )))
+      (close(fragment::get( r 'del_s )))
+   )) )))
    (set l (fragment::set( l 'unframe_s (SCons(
       (close(fragment::get( l 'unframe_s )))
       (close(fragment::get( r 'unframe_s )))

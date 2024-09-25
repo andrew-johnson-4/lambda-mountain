@@ -1724,6 +1724,7 @@ specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Ty
       ()
       ( TCtxNil (set global-ctx TCtxEOF) )
       ( (TCtxBind( rst k kt t )) (
+         (set kt (slot( kt 'Arrow_s )))
          (if (==( k key )) (
             (if (==( ft kt )) (
                (match t (
@@ -2275,7 +2276,7 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: 
    (let r TAny)
    (let rs (apply-plural( function-name ft pt do-specialize blame )))
    (set rs (reduce-plural rs))
-   (if (==( (.length rs) 0_u64 )) (
+   (if (&&( (==( (.length rs) 0_u64 )) (!=( function-name 'del_s )) )) (
       (print 'Function\sApplication\sYielded\sNo\sMatches\n_s)
       (print function-name)(print '\nWith\sArgument\s:\s_s)(print pt)(print '\n_s)
       (print (location-of( blame )))(print '\n_s)
@@ -2328,6 +2329,7 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: 
             ))
          ))
       ))
+      ( _ () )
    ))
    r
 ) Type);
@@ -2352,6 +2354,7 @@ try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: 
          ()
          ( TCtxNil (set global-ctx TCtxEOF) )
          ( (TCtxBind( rst k kt t )) (
+            (set kt (slot( kt 'Arrow_s )))
             (if (&&( (==( function-name k )) (==( ft kt )) )) (
                (match t (
                   ()
@@ -2730,10 +2733,24 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (if (non-zero rt) () (
             (exit-error( 'Unable\sto\sinfer\stype\sof\sexpression_s rhs ))
          ))
+         (match term (
+            ()
+            ( (App( (Abs( lname-var _ _ )) _ )) (
+               (ascript-normal( lname-var rt ))
+            ))
+         ))
          (set tctx (TCtxBind(
             (close tctx) lname rt ASTEOF
          )))
          (ascript-normal( term (t1 'Nil_s) ))
+
+         (let destructors-tt (typeof-var( term tctx 'del_s )))
+         (apply-or-cons-and-specialize(
+            'del_s
+            (typeof-var( term tctx 'del_s ))
+            rt
+            term
+         ))
       ))
       ( (App( l r )) (
          (let l-used Unused)

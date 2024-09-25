@@ -321,6 +321,7 @@ fragment  primitive::while := λ(: ictx ImplicitContext)(: e1 BranchConditional)
       (uuid label-do-loop) ': \n
       (.frame e2)
       (.program e2)
+      (.del e2)
       (.unframe e2)
       (.unframe e1)
       \t 'jmp \s (uuid label-begin-loop) \n
