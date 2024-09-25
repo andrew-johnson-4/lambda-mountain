@@ -2275,15 +2275,7 @@ reduce-plural := λ(: pts List<Type>). (: (
 apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: blame AST). (: (
    (let r TAny)
    (let rs (apply-plural( function-name ft pt do-specialize blame )))
-   (let is-hook 0_u64)
-   (let check-rs rs)
-   (while (non-zero check-rs) (match check-rs (
-      ()
-      ( (LCons( check-rt check-rst )) (
-         (set is-hook (||( is-hook (non-zero(slot( check-rt 'Hook_s ))) )))
-         (set check-rs check-rst)
-      ))
-   )))
+   (let is-hook (non-zero(slot( ft 'Hook_s ))))
    (if (==( is-hook 0_u64 )) (
       (set rs (reduce-plural rs))
    ) ())
