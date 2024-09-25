@@ -5,8 +5,7 @@ rc-magic-number := 423809104_u64;
 
 rc::new := λ(: v x). (: (
    (let inner (Tuple( v 1_i64 )))
-   (let rc (Rc( rc-magic-number (close inner) )))
-   rc
+   (Rc( rc-magic-number (close inner) ))
 ) Rc<x>);
 
 del := λ: Hook+HookPriority<0>(: v Rc<x>). (: (

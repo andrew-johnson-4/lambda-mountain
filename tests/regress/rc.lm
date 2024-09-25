@@ -8,9 +8,6 @@ del := λ: Hook+HookPriority<1>(: a Rc<A>). (: (
       (print 'Del\sRc\sNot\sMagic\s_s)(print (.2 a))(print '\n_s)
    ) (
       (let c (.1(open(.1 a))))
-      (if (>=( c 0_i64 )) (
-         (print a)
-      ) ())
       (print 'Del\sRc\sIs\sMagic\s_s)(print (.2 a))(print '\n_s)
    ))
 ) Nil);
@@ -43,12 +40,12 @@ countf := λ. (: (
    #(if ((let c (rc::new(AAtom 'C_s))) (branchtrue())) (
    #   (let c2 (rc::new(AAtom 'C2_s)))
    #) ())
-   (if ((let d (rc::new(AAtom 'D_s))) (branchfalse())) (
-      (let d2 (rc::new(AAtom 'D2_s)))
-   ) ())
+   #(if ((let d (rc::new(AAtom 'D_s))) (branchfalse())) (
+   #   (let d2 (rc::new(AAtom 'D2_s)))
+   #) ())
    (print 'F2\n_s)
-   (del d2)
-   (del d2)
+   #(del d)
+   #(del d2)
    #(let e (rc::new(ACons( a b ))))
    #(let f (rc::new(ACons( a a ))))
 ) Nil);
