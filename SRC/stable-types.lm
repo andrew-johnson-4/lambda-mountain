@@ -1717,7 +1717,6 @@ deep-hash := λ(: tt TypeList). (: (
 ) U64);
 
 specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (
-   (print 'Specialize\s_s)(print key)(print ft)(print result-type)(print '\n_s)
    (set unify-ctx (normalize unify-ctx))
    (let term ASTEOF)
    (let global-ctx global-type-context)
@@ -2276,7 +2275,7 @@ reduce-plural := λ(: pts List<Type>). (: (
 apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: blame AST). (: (
    (let r TAny)
    (let rs (apply-plural( function-name ft pt do-specialize blame )))
-   (let is-hook 1_u64)
+   (let is-hook 0_u64)
    (let check-rs rs)
    (while (non-zero check-rs) (match check-rs (
       ()
@@ -2295,7 +2294,7 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: 
       (print 'Options:\s_s)(print ft)(print '\n_s)
       (exit 1_u64)
    ) ())
-   (if (>( (.length rs) 1_u64 )) (
+   (if (&&( (>( (.length rs) 1_u64 )) (==( is-hook 0_u64 )) )) (
       (print 'Function\sApplication\sYielded\sAn\sIrreducible\sPlurality\sOf\sMatches\n_s)
       (print function-name)(print '\s:\s_s)(print ft)(print '\n_s)
       (print 'With\sArgument\s_s)(print pt)(print '\n_s)
@@ -2314,9 +2313,9 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: 
       ))
       (exit 1_u64)      
    ) ())
-   (match rs (
+   (while (non-zero rs) (match rs (
       ()
-      ( (LCons( sft _ )) (
+      ( (LCons( sft sft-rst )) (
          (match sft (
             ()
             ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (
@@ -2340,9 +2339,9 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: 
                (exit 1_u64)
             ))
          ))
+         (set rs sft-rst)
       ))
-      ( _ () )
-   ))
+   )))
    r
 ) Type);
 
@@ -2359,9 +2358,6 @@ apply-or-cons-and-specialize := λ(: function-name String)(: ft Type)(: pt Type)
 ) Type);
 
 try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (
-   (if (==( function-name 'del_s )) (
-      (print 'Try\sSpecialize\s_s)(print ft)(print '\n_s)
-   ) ())
    (set result-type (normalize result-type))
    (let global-ctx global-type-context)
    (if (is-special( function-name result-type )) () (
