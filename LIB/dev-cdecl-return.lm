@@ -1,7 +1,6 @@
 
 fragment  cdecl::return := λ(: l Nil). (: (
    (.program(
-      EFADF
       (.program l)
       (.del l)
    ))
