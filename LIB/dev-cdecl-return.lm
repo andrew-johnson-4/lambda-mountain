@@ -4,7 +4,6 @@ fragment  cdecl::return := λ(: l Nil). (: (
       (.program l)
       (.del l)
    ))
-   (.frame (.frame l))
 ) Nil);
 fragment  cdecl::return := λ(: l Reg8). (: (
    (.program(
