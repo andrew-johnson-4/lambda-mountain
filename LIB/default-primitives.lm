@@ -278,6 +278,7 @@ fragment  primitive::if := λ(: ictx ImplicitContext)(: e1 BranchConditional)(: 
       (.frame e2)
       (.frame e3)
       (.program e3)
+      (.del e3)
       (if-eq (>( (.return-size ictx) 8 )) 1 (
          \t 'mov \s '%RSP , \s '%R14 \n
          (.unframe e3)
@@ -297,6 +298,10 @@ fragment  primitive::if := λ(: ictx ImplicitContext)(: e1 BranchConditional)(: 
       (if-eq (.return-size ictx) 8 (\t 'pop \s '%RAX \n))
       \t 'mov \s (.rsp-offset ictx) \[ '%RBP \] , '%RSP \n
       \t 'add \s '$ (.end-offset ictx) ', \s '%RSP \n
+   ))
+   (.del(
+      (.del e1)
+      (.del e2)
    ))
    (.unframe(
       (.unframe e1)

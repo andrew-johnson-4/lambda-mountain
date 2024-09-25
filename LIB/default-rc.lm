@@ -20,7 +20,9 @@ del := λ: Hook+HookPriority<0>(: v Rc<x>). (: (
       (if (!=( (.2 v) 0_u64 )) (
          (print 'del\[Rc\]\sIs\sNot\sMagic\sAnd\sNot\sNull:\sMemory\sIs\sCorrupt\n_s)
          (exit 1_u64)
-      ) ())
+      ) (
+         (print 'del\[Rc\]\sIs\sNull\n_s)
+      ))
    ))
 ) Nil);
 

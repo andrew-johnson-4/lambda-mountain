@@ -25,13 +25,28 @@ print := λ(: a Rc<A>). (: (
    ))
 ) Nil);
 
-main := λ. (: (
+dirty := λ(: r U64). (: (
+   (if (!=( r 0_u64 )) (
+      (let a (-( r 1_u64 )))
+      (dirty a)
+   ) ())
+) Nil);
+
+f := λ. (: (
    (let a (rc::new(AAtom 'A_s)))
    (let b (rc::new(AAtom 'B_s)))
-   (if (branchfalse()) (
-      (let c (rc::new(AAtom 'C_s)))
+   (if ((let c (rc::new(AAtom 'C_s))) (branchtrue())) (
+      (let c2 (rc::new(AAtom 'C2_s)))
+   ) ())
+   (if ((let d (rc::new(AAtom 'D_s))) (branchfalse())) (
+      (let d2 (rc::new(AAtom 'D2_s)))
    ) ())
    #(let c (rc::new(ACons( a b ))))
    #(let d (rc::new(ACons( a a ))))
+) Nil);
+
+main := λ. (: (
+   (dirty 50_u64)
+   (f())
 ) Nil);
 
