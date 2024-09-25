@@ -17,7 +17,10 @@ del := λ: Hook+HookPriority<0>(: v Rc<x>). (: (
       (set[]( (as (.1 v) I64[]) 1_u64 c ))
       (print 'Del\sCount\s_s)(print (.1(open(.1 v))))(print '\n_s)
    ) (
-      (print 'Rc\sNot\sMagic\sNumber\s_s)(print (.2 v))(print '\n_s)
+      (if (!=( (.2 v) 0_u64 )) (
+         (print 'del\[Rc\]\sIs\sNot\sMagic\sAnd\sNot\sNull:\sMemory\sIs\sCorrupt\n_s)
+         (exit 1_u64)
+      ) ())
    ))
 ) Nil);
 

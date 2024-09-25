@@ -1,5 +1,5 @@
 
-import LIB/default.lm;
+import LIB/dev.lm;
 
 type A (ACons( Rc<A> , Rc<A> )) | (AAtom( String ));
 
