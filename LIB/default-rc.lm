@@ -11,18 +11,13 @@ rc::new := λ(: v x). (: (
 
 del := λ: Hook+HookPriority<0>(: v Rc<x>). (: (
    (if (==( (.2 v) rc-magic-number )) (
-      (print v)
       (let c (-( (.1(open(.1 v))) 1_i64 )))
-      (print 'Del\sCount\s_s)(print (.1(open(.1 v))))(print '\n_s)
       (set[]( (as (.1 v) I64[]) 1_u64 c ))
-      (print 'Del\sCount\s_s)(print (.1(open(.1 v))))(print '\n_s)
    ) (
       (if (!=( (.2 v) 0_u64 )) (
          (print 'del\[Rc\]\sIs\sNot\sMagic\sAnd\sNot\sNull:\sMemory\sIs\sCorrupt\n_s)
          (exit 1_u64)
-      ) (
-         (print 'del\[Rc\]\sIs\sNull\n_s)
-      ))
+      ) ())
    ))
 ) Nil);
 
