@@ -8,6 +8,7 @@ import LIB/default-i16.lm;
 import LIB/default-i32.lm;
 import LIB/default-i64.lm;
 import LIB/default-string.lm;
+import LIB/default-cdecl-return.lm;
 
 fragment  [] := λ(: l LocalVariable+Array<x+Sized<1>,?>)(: r LocalVariable+U64). (: (
    (.program (

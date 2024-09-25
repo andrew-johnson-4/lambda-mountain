@@ -3,22 +3,23 @@ import LIB/default.lm;
 
 type A (ACons( Rc<A> , Rc<A> )) | (AAtom( String ));
 
-#del := λ: Hook(: a Rc<A>). (: (
-#   (print 'Del\sA\o1\n_s)
-#) Nil);
-#del := λ: Hook(: a Rc<A>). (: (
-#   (print 'Del\sA\o2\n_s)
-#) Nil);
+del := λ: Hook+HookPriority<1>(: a Rc<A>). (: (
+   (if (!=( (.2 a) rc-magic-number )) (
+      (print 'Del\sRc\sNot\sMagic\s_s)(print (.2 a))(print '\n_s)
+   ) (
+      (print 'Del\sRc\sIs\sMagic\s_s)(print (.2 a))(print '\n_s)
+   ))
+) Nil);
 
 print := λ(: a Rc<A>). (: (
    (match a (
       ()
-      ( (Rc(Tuple( (ACons( l r )) c ))) (
+      ( (Rc( m (Tuple( (ACons( l r )) c )) )) (
          (print 'ACons\scount=_s)(print c)(print '\n_s)
          (print l)
          (print r)
       ))
-      ( (Rc(Tuple( (AAtom( v )) c ))) (
+      ( (Rc( m (Tuple( (AAtom( v )) c )) )) (
          (print 'AAtom\scount=_s)(print c)(print '\s_s)(print v)(print '\n_s)
       ))
    ))
@@ -29,6 +30,9 @@ main := λ. (: (
    (while (<( i 1_u64 )) (
       (let a (rc::new(AAtom 'A_s)))
       (let b (rc::new(AAtom 'B_s)))
+      (if (branchfalse()) (
+         (let c (rc::new(AAtom 'C_s)))
+      ) ())
       #(let c (rc::new(ACons( a b ))))
       #(let d (rc::new(ACons( a a ))))
       (set i (+( i 1_u64 )))
