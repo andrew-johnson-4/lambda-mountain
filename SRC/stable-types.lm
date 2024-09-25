@@ -2744,10 +2744,9 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          )))
          (ascript-normal( term (t1 'Nil_s) ))
 
-         (let destructors-tt (typeof-var( term tctx 'del_s )))
          (apply-or-cons-and-specialize(
             'del_s
-            (typeof-var( term tctx 'del_s ))
+            (typeof-var-raw( term tctx 'del_s ))
             rt
             term
          ))

@@ -1,19 +1,23 @@
 
-type Rc<a> (Rc( Tuple<a,I64>[] ));
+type Rc<a> (Rc( U64 , Tuple<a,I64>[] ));
+
+rc-magic-number := 423809104_u64;
 
 rc::new := λ(: v x). (: (
    (let inner (Tuple( v 1_i64 )))
-   (let rc (Rc( (close inner) )))
+   (let rc (Rc( rc-magic-number (close inner) )))
    rc
 ) Rc<x>);
 
-del := λ: Hook(: v Rc<x>). (: (
-   (print v)
-   (let c (-( (.1(open(.1 v))) 1_i64 )))
-   (print 'Del\sCount\s_s)(print (.1(open(.1 v))))(print '\n_s)
-   (set[]( (as (.1 v) I64[]+AsOnly) 1_u64 c ))
-   (print 'Del\sCount\s_s)(print (.1(open(.1 v))))(print '\n_s)
-) Nil);
+#del := λ: Hook(: v Rc<x>). (: (
+#   (if (==( (.2 v) rc-magic-number )) (
+#      (print v)
+#      (let c (-( (.1(open(.1 v))) 1_i64 )))
+#      (print 'Del\sCount\s_s)(print (.1(open(.1 v))))(print '\n_s)
+#      (set[]( (as (.1 v) I64[]+AsOnly) 1_u64 c ))
+#      (print 'Del\sCount\s_s)(print (.1(open(.1 v))))(print '\n_s)
+#   ) ())
+#) Nil);
 
 inc := λ(: v Rc<x>). (: (
    (let c (+( (.1(open(.1 v))) 1_i64 )))
