@@ -706,6 +706,7 @@ fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentLi
       ()
       ( 'primitive::if_s (set chain False_u8) )
       ( 'primitive::while_s (set chain False_u8) )
+      ( 'cdecl::return_s (set chain False_u8) )
       ( 'cdecl::call_s (set chain False_u8) )
       ( '-_s (set chain False_u8) )
       ( '+_s (set chain False_u8) )

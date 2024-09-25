@@ -26,16 +26,12 @@ print := λ(: a Rc<A>). (: (
 ) Nil);
 
 main := λ. (: (
-   (let i 0_u64)
-   (while (<( i 1_u64 )) (
-      (let a (rc::new(AAtom 'A_s)))
-      (let b (rc::new(AAtom 'B_s)))
-      (if (branchfalse()) (
-         (let c (rc::new(AAtom 'C_s)))
-      ) ())
-      #(let c (rc::new(ACons( a b ))))
-      #(let d (rc::new(ACons( a a ))))
-      (set i (+( i 1_u64 )))
-   ))
+   (let a (rc::new(AAtom 'A_s)))
+   (let b (rc::new(AAtom 'B_s)))
+   (if (branchfalse()) (
+      (let c (rc::new(AAtom 'C_s)))
+   ) ())
+   #(let c (rc::new(ACons( a b ))))
+   #(let d (rc::new(ACons( a a ))))
 ) Nil);
 
