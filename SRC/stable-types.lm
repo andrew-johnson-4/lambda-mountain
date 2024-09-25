@@ -2276,7 +2276,18 @@ reduce-plural := λ(: pts List<Type>). (: (
 apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: blame AST). (: (
    (let r TAny)
    (let rs (apply-plural( function-name ft pt do-specialize blame )))
-   (set rs (reduce-plural rs))
+   (let is-hook 1_u64)
+   (let check-rs rs)
+   (while (non-zero check-rs) (match check-rs (
+      ()
+      ( (LCons( check-rt check-rst )) (
+         (set is-hook (||( is-hook (non-zero(slot( check-rt 'Hook_s ))) )))
+         (set check-rs check-rst)
+      ))
+   )))
+   (if (==( is-hook 0_u64 )) (
+      (set rs (reduce-plural rs))
+   ) ())
    (if (&&( (==( (.length rs) 0_u64 )) (!=( function-name 'del_s )) )) (
       (print 'Function\sApplication\sYielded\sNo\sMatches\n_s)
       (print function-name)(print '\nWith\sArgument\s:\s_s)(print pt)(print '\n_s)
@@ -2348,6 +2359,9 @@ apply-or-cons-and-specialize := λ(: function-name String)(: ft Type)(: pt Type)
 ) Type);
 
 try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (
+   (if (==( function-name 'del_s )) (
+      (print 'Try\sSpecialize\s_s)(print ft)(print '\n_s)
+   ) ())
    (set result-type (normalize result-type))
    (let global-ctx global-type-context)
    (if (is-special( function-name result-type )) () (
