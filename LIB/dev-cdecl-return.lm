@@ -8,32 +8,40 @@ fragment  cdecl::return := λ(: l Nil). (: (
 fragment  cdecl::return := λ(: l Reg8). (: (
    (.program(
       (.program l)
-      (.del l)
       \t 'mov \t '% (.expression l) , '%AL \n
+      \t 'push \s '%RAX \n
+      (.del l)
+      \t 'pop \s '%RAX \n
    ))
    (.expression 'AL)
 ) Nil);
 fragment  cdecl::return := λ(: l Reg16). (: (
    (.program(
       (.program l)
-      (.del l)
       \t 'mov \t '% (.expression l) , '%AX \n
+      \t 'push \s '%RAX \n
+      (.del l)
+      \t 'pop \s '%RAX \n
    ))
    (.expression 'AX)
 ) Nil);
 fragment  cdecl::return := λ(: l Reg32). (: (
    (.program(
       (.program l)
-      (.del l)
       \t 'mov \t '% (.expression l) , '%EAX \n
+      \t 'push \s '%RAX \n
+      (.del l)
+      \t 'pop \s '%RAX \n
    ))
    (.expression 'EAX)
 ) Nil);
 fragment  cdecl::return := λ(: l Reg64). (: (
    (.program(
       (.program l)
-      (.del l)
       \t 'mov \t '% (.expression l) , '%RAX \n
+      \t 'push \s '%RAX \n
+      (.del l)
+      \t 'pop \s '%RAX \n
    ))
    (.expression 'RAX)
 ) Nil);
