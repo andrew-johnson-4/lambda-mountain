@@ -537,6 +537,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             ()
             ( (App( (Abs( lhs-var _ _ )) _ )) (
                (if (non-zero(fragment::get-type(fragment-context::lookup-soft( ctx 'del_s (typeof lhs-var) term )))) (
+                  (print 'del\scounter\s_s)(print (.length(fragment-context::lookups( ctx 'del_s (typeof lhs-var) term ))))(print '\n_s)
                   (let del-call (compile-stack-calls( ctx 'del_s rtype lhs-var stack-offset used )))
                   (set unframe-del (fragment::get( del-call 'program_s )))
                ) ())

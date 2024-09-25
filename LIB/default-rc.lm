@@ -9,19 +9,21 @@ rc::new := λ(: v x). (: (
    rc
 ) Rc<x>);
 
-#del := λ: Hook(: v Rc<x>). (: (
-#   (if (==( (.2 v) rc-magic-number )) (
-#      (print v)
-#      (let c (-( (.1(open(.1 v))) 1_i64 )))
-#      (print 'Del\sCount\s_s)(print (.1(open(.1 v))))(print '\n_s)
-#      (set[]( (as (.1 v) I64[]+AsOnly) 1_u64 c ))
-#      (print 'Del\sCount\s_s)(print (.1(open(.1 v))))(print '\n_s)
-#   ) ())
-#) Nil);
+del := λ: Hook+HookPriority<0>(: v Rc<x>). (: (
+   (if (==( (.2 v) rc-magic-number )) (
+      (print v)
+      (let c (-( (.1(open(.1 v))) 1_i64 )))
+      (print 'Del\sCount\s_s)(print (.1(open(.1 v))))(print '\n_s)
+      (set[]( (as (.1 v) I64[]) 1_u64 c ))
+      (print 'Del\sCount\s_s)(print (.1(open(.1 v))))(print '\n_s)
+   ) (
+      (print 'Rc\sNot\sMagic\sNumber\s_s)(print (.2 v))(print '\n_s)
+   ))
+) Nil);
 
 inc := λ(: v Rc<x>). (: (
    (let c (+( (.1(open(.1 v))) 1_i64 )))
    (print 'Inc\sCount\s_s)(print (.1(open(.1 v))))(print '\n_s)
-   (set[]( (as (.1 v) I64[]+AsOnly) 1_u64 c ))
+   (set[]( (as (.1 v) I64[]) 1_u64 c ))
    (print 'Inc\sCount\s_s)(print (.1(open(.1 v))))(print '\n_s)
 ) Nil);
