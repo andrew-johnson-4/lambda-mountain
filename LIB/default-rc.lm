@@ -8,6 +8,7 @@ rc::new := λ(: v x). (: (
 ) Rc<x>);
 
 del := λ(: v Rc<x>). (: (
+   (print v)
    (let c (-( (.1(open(.1 v))) 1_i64 )))
    (print 'Del\sCount\s_s)(print (.1(open(.1 v))))(print '\n_s)
    (set[]( (as (.1 v) I64[]+AsOnly) 1_u64 c ))

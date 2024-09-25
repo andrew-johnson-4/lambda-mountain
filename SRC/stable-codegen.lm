@@ -545,12 +545,10 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                ) ())
             ))
          ))
+         (set e (fragment::set( e 'del_s unframe-del )))
          (set e (fragment::set( e 'unframe_s
             (SCons(
-               (close(SCons(
-                  (close(fragment::get( e 'unframe_s )))
-                  (close unframe-del)
-               )))
+               (close(fragment::get( e 'unframe_s )))
                (close(SCons(
                   (close(SAtom '\tadd\s$_s))
                   (close(SCons(
