@@ -4,6 +4,7 @@ fragment  cdecl::return := λ(: l Nil). (: (
       (.program l)
       (.del l)
    ))
+   (.frame (.frame l))
 ) Nil);
 fragment  cdecl::return := λ(: l Reg8). (: (
    (.program(
@@ -13,6 +14,7 @@ fragment  cdecl::return := λ(: l Reg8). (: (
       (.del l)
       \t 'pop \s '%RAX \n
    ))
+   (.frame (.frame l))
    (.expression 'AL)
 ) Nil);
 fragment  cdecl::return := λ(: l Reg16). (: (
@@ -23,6 +25,7 @@ fragment  cdecl::return := λ(: l Reg16). (: (
       (.del l)
       \t 'pop \s '%RAX \n
    ))
+   (.frame (.frame l))
    (.expression 'AX)
 ) Nil);
 fragment  cdecl::return := λ(: l Reg32). (: (
@@ -33,6 +36,7 @@ fragment  cdecl::return := λ(: l Reg32). (: (
       (.del l)
       \t 'pop \s '%RAX \n
    ))
+   (.frame (.frame l))
    (.expression 'EAX)
 ) Nil);
 fragment  cdecl::return := λ(: l Reg64). (: (
@@ -43,6 +47,7 @@ fragment  cdecl::return := λ(: l Reg64). (: (
       (.del l)
       \t 'pop \s '%RAX \n
    ))
+   (.frame (.frame l))
    (.expression 'RAX)
 ) Nil);
 fragment  cdecl::return := λ(: l Constant+Literal+Sized<1>). (: (
@@ -51,6 +56,7 @@ fragment  cdecl::return := λ(: l Constant+Literal+Sized<1>). (: (
       (.del l)
       \t 'mov \t '$ (.expression l) , '%AL \n
    ))
+   (.frame (.frame l))
    (.expression 'AL)
 ) Nil);
 fragment  cdecl::return := λ(: l Constant+Literal+Sized<2>). (: (
@@ -59,6 +65,7 @@ fragment  cdecl::return := λ(: l Constant+Literal+Sized<2>). (: (
       (.del l)
       \t 'mov \t '$ (.expression l) , '%AX \n
    ))
+   (.frame (.frame l))
    (.expression 'AX)
 ) Nil);
 fragment  cdecl::return := λ(: l Constant+Literal+Sized<4>). (: (
@@ -67,6 +74,7 @@ fragment  cdecl::return := λ(: l Constant+Literal+Sized<4>). (: (
       (.del l)
       \t 'mov \t '$ (.expression l) , '%EAX \n
    ))
+   (.frame (.frame l))
    (.expression 'EAX)
 ) Nil);
 fragment  cdecl::return := λ(: l Constant+Literal+Sized<8>). (: (
@@ -75,6 +83,7 @@ fragment  cdecl::return := λ(: l Constant+Literal+Sized<8>). (: (
       (.del l)
       \t 'mov \t '$ (.expression l) , '%RAX \n
    ))
+   (.frame (.frame l))
    (.expression 'RAX)
 ) Nil);
 
@@ -97,6 +106,7 @@ fragment  cdecl::return := λ(: src LocalVariable+Sized<size>). (: (
          \t 'addq \s '$ (.expression size) , \s '%rsp \n
       ))
    ))
+   (.frame (.frame src))
    (.expression(
       (if-eq (.expression size) 1 'AL)
       (if-eq (.expression size) 2 'AX)

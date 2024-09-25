@@ -1,5 +1,9 @@
 
 work: compile-production
+	./production tests/regress/cdecl.lm
+	as tmp.s -o tmp.o
+	ld tmp.o -o tmp
+	./tmp
 	./production tests/regress/rc.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
