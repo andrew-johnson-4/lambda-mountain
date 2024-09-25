@@ -25,6 +25,7 @@ print := λ(: a Rc<A>). (: (
 ) Nil);
 
 main := λ. (: (
+   (if (branchtrue()) (
    (let a (rc::new(AAtom 'A_s)))
    (inc a)
    (let b (rc::new(AAtom 'B_s)))
@@ -41,13 +42,6 @@ main := λ. (: (
    (print c)
    (print 'D\n_s)
    (print d)
-   (print 'Del\sA\n_s)
-   (del a)
-   (print 'Del\sB\n_s)
-   (del b)
-   (print 'Del\sC\n_s)
-   (del c)
-   (print 'Del\sD\n_s)
-   (del d)
+   ) ())
 ) Nil);
 

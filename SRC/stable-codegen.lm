@@ -131,7 +131,6 @@ compile-declare-cstring := λ(: val String). (: (
 ) Fragment);
 
 compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)(: args-type Type)(: args AST)(: offset I64). (: (
-   # TODO
    (let whitespace-sz (-( (-( (sizeof-aligned return-type) (sizeof-aligned args-type) )) 8_u64 )))
    (let e (compile-push-rvalue( ctx args (-( offset (as whitespace-sz I64) )) )))
    (let constructor-parms (and(
@@ -533,9 +532,26 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (let size (sizeof-aligned rtype))
          (set e (compile-push-rvalue( ctx rhs stack-offset )))
          (let bind-offset (-( stack-offset (as size I64) )))
+         (let unframe-del SNil)
+         (set ctx (fragment-context::bind(
+            ctx lhs rtype (fragment::local-variable( bind-offset rtype ))
+         )))
+         (if (non-zero(fragment::get-type(fragment-context::lookup-soft( ctx 'del_s rtype term )))) (
+            (match term (
+               ()
+               ( (App( (Abs( lhs-var _ _ )) _ )) (
+                  (let del-call (compile-stack-calls( ctx 'del_s rtype lhs-var stack-offset used )))
+                  (set unframe-del (fragment::get( del-call 'program_s )))
+                  (print 'Unframe\sNot\sEmpty\s_s)(print lhs)(print '\n_s)
+               ))
+            ))
+         ) ())
          (set e (fragment::set( e 'unframe_s
             (SCons(
-               (close(fragment::get( e 'unframe_s )))
+               (close(SCons(
+                  (close(fragment::get( e 'unframe_s )))
+                  (close unframe-del)
+               )))
                (close(SCons(
                   (close(SAtom '\tadd\s$_s))
                   (close(SCons(
@@ -544,9 +560,6 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                   )))
                )))
             ))
-         )))
-         (set ctx (fragment-context::bind(
-            ctx lhs rtype (fragment::local-variable( bind-offset rtype ))
          )))
          (set e (fragment::set-context( e ctx )))
          (set e (fragment::set-offset( e bind-offset )))

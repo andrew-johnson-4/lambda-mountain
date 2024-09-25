@@ -2730,6 +2730,12 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (if (non-zero rt) () (
             (exit-error( 'Unable\sto\sinfer\stype\sof\sexpression_s rhs ))
          ))
+         (match term (
+            ()
+            ( (App( (Abs( lname-var _ _ )) _ )) (
+               (ascript-normal( lname-var rt ))
+            ))
+         ))
          (set tctx (TCtxBind(
             (close tctx) lname rt ASTEOF
          )))
