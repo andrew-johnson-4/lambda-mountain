@@ -536,16 +536,19 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set ctx (fragment-context::bind(
             ctx lhs rtype (fragment::local-variable( bind-offset rtype ))
          )))
-         (if (non-zero(fragment::get-type(fragment-context::lookup-soft( ctx 'del_s rtype term )))) (
-            (match term (
-               ()
-               ( (App( (Abs( lhs-var _ _ )) _ )) (
+         (match term (
+            ()
+            ( (App( (Abs( lhs-var _ _ )) _ )) (
+               (if (==( lhs 'a_s )) (
+                  (print 'a:\s_s)(print (typeof lhs-var))(print '\n_s)
+               ) ())
+               (if (non-zero(fragment::get-type(fragment-context::lookup-soft( ctx 'del_s (typeof lhs-var) term )))) (
                   (let del-call (compile-stack-calls( ctx 'del_s rtype lhs-var stack-offset used )))
                   (set unframe-del (fragment::get( del-call 'program_s )))
                   (print 'Unframe\sNot\sEmpty\s_s)(print lhs)(print '\n_s)
-               ))
+               ) ())
             ))
-         ) ())
+         ))
          (set e (fragment::set( e 'unframe_s
             (SCons(
                (close(SCons(
