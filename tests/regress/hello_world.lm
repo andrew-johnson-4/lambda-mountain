@@ -1,6 +1,14 @@
 
 import LIB/default-minimal.lm;
 
+fragment  cdecl::return := λ(: l Nil). (: (
+   (.program(
+      (.program l)
+      (.del l)
+   ))
+   (.frame( (.frame l) ))
+) Nil);
+
 main := λ. (: (
    (mov( 1_u64 RAX ))          # 1 is sys_write
    (mov( 1_u64 RDI ))          # 1 is STDOUT

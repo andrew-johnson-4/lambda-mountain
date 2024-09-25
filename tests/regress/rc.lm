@@ -7,35 +7,47 @@ del := λ: Hook+HookPriority<1>(: a Rc<A>). (: (
    (if (!=( (.2 a) rc-magic-number )) (
       (print 'Del\sRc\sNot\sMagic\s_s)(print (.2 a))(print '\n_s)
    ) (
+      (let c (.1(open(.1 a))))
       (print 'Del\sRc\sIs\sMagic\s_s)(print (.2 a))(print '\n_s)
    ))
 ) Nil);
 
-print := λ(: a Rc<A>). (: (
-   (match a (
-      ()
-      ( (Rc( m (Tuple( (ACons( l r )) c )) )) (
-         (print 'ACons\scount=_s)(print c)(print '\n_s)
-         (print l)
-         (print r)
-      ))
-      ( (Rc( m (Tuple( (AAtom( v )) c )) )) (
-         (print 'AAtom\scount=_s)(print c)(print '\s_s)(print v)(print '\n_s)
-      ))
-   ))
+#print := λ(: a Rc<A>). (: (
+#   (match a (
+#      ()
+#      ( (Rc( m (Tuple( (ACons( l r )) c )) )) (
+#         (print 'ACons\scount=_s)(print c)(print '\n_s)
+#         (print l)
+#         (print r)
+#      ))
+#      ( (Rc( m (Tuple( (AAtom( v )) c )) )) (
+#         (print 'AAtom\scount=_s)(print c)(print '\s_s)(print v)(print '\n_s)
+#      ))
+#   ))
+#) Nil);
+
+dirty := λ(: r U64). (: (
+   (if (!=( r 0_u64 )) (
+      (let a (-( r 1_u64 )))
+      (dirty a)
+   ) ())
+) Nil);
+
+countf := λ. (: (
+   (let a (rc::new(AAtom 'A_s)))
+   (let b (rc::new(AAtom 'B_s)))
+   (if ((let c (rc::new(AAtom 'C_s))) (branchtrue())) (
+      (let c2 (rc::new(AAtom 'C2_s)))
+   ) ())
+   (if ((let d (rc::new(AAtom 'D_s))) (branchfalse())) (
+      (let d2 (rc::new(AAtom 'D2_s)))
+   ) ())
+   (let e (rc::new(ACons( a b ))))
+   (let f (rc::new(ACons( a a ))))
 ) Nil);
 
 main := λ. (: (
-   (let i 0_u64)
-   (while (<( i 1_u64 )) (
-      (let a (rc::new(AAtom 'A_s)))
-      (let b (rc::new(AAtom 'B_s)))
-      (if (branchfalse()) (
-         (let c (rc::new(AAtom 'C_s)))
-      ) ())
-      #(let c (rc::new(ACons( a b ))))
-      #(let d (rc::new(ACons( a a ))))
-      (set i (+( i 1_u64 )))
-   ))
+   (dirty 50_u64)
+   (countf())
 ) Nil);
 
