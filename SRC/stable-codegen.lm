@@ -47,10 +47,7 @@ compile-expr := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used IsUsed
    e
 ) Fragment);
 
-compile-stack-call-push-args := λ(: ctx FContext)(: args AST)(: inner-offset I64). (: (
-   (let stack-offset 0_i64)
-   (let translate-delta (-( 8_i64 inner-offset )))
-   (set ctx (translate-local-variables( ctx translate-delta )))
+compile-stack-call-push-args := λ(: ctx FContext)(: args AST)(: stack-offset I64). (: (
    (let r (compile-push-rvalue( ctx args stack-offset )))
    r
 ) Fragment);
@@ -623,9 +620,6 @@ compile-stack-calls := λ(: ctx FContext)(: function-name String)(: return-type 
 
 compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(: return-type Type)(: args AST)(: offset I64)(: used IsUsed). (: (
    (let function-type (fragment::get-type f))
-   (if (non-zero(slot( function-type 'NoDecl_s ))) (
-      (print 'TODO:\sNoDecl\sCalling\sConvention\n_s)
-   ) ())
    (let r (fragment::new()))
 
    (match (fragment::get( f 'fragment-type_s )) (
