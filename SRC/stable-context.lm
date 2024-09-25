@@ -126,9 +126,6 @@ fragment-context::lookup-vararg := λ(: ctx FContext)(: k String)(: kt Type)(: s
 ) FragmentList);
 
 fragment-context::bind := λ(: ctx FContext)(: k String)(: kt Type)(: f Fragment). (: (
-   (if (==( k 'del_s )) (
-      (print 'Bind\sdel\n_s)
-   ) ())
    (let new-ctx (FCtxBind(
       (close ctx)
       k kt f
