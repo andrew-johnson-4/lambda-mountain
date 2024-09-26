@@ -6,17 +6,17 @@
 * [WIKI](https://github.com/andrew-johnson-4/-/wiki)
 * [DOCS](https://andrew-johnson-4.github.io/lambda-mountain/)
 
-### Supported Platforms
+### Not Your Average Assembler
 
-Currently supported output formats:
-* GNU x86 assembly with (some) annotations for `lmv` Coq-based semantic verifier
-* Blob rendering for miscellaneous data such as [statically rendered HTML](https://andrew-johnson-4.github.io/lambda-mountain/)
-   * HTML
-   * CSS
-   * WASM
+Despite being an assembler, LM provides
+* algebraic data types
+* parameterized code and data
+* hygienic macros
+* platform agnostic standard libraries
 
 ### Why Such a Small Codebase?
 
+LM is currenlty about 6000 lines of code.
 LM solves an N by M Problem with language frontends vs language backends.
 The LM project might interface with larger codebases that define frontends or backends, but the core LM Calculus can stay small.
 
