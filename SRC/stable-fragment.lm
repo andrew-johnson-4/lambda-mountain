@@ -413,7 +413,7 @@ fragment::render-impl := λ(: s S). (: (
          (let lt (fragment::render-impl( lc )))
          (let rt (fragment::render-impl( rc )))
          (if (==( lt rt )) (
-            (let bodyt (fragment::render-impl( body )))
+            (let bodyt (fragment::render( ctx body )))
             (set r bodyt)
          ) ())
       ))
@@ -427,7 +427,7 @@ fragment::render-impl := λ(: s S). (: (
          (let lt (fragment::render-impl( lc )))
          (let rt (fragment::render-impl( rc )))
          (if (!=( lt rt )) (
-            (let bodyt (fragment::render-impl( body )))
+            (let bodyt (fragment::render( ctx body )))
             (set r bodyt)
          ) ())
       ))
