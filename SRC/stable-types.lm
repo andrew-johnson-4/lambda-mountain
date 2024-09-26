@@ -225,6 +225,30 @@ tsized :=  λ(: tag String). (: (
    tt
 ) Type);
 
+p1 := λ(: tt Type). (: (
+   (let r TAny)
+   (match tt (
+      ()
+      ( (TGround( _ (TypeSeq( _ p1t )) )) (
+         (set r p1t)
+      ))
+      ( _ () )
+   ))
+   r
+) Type);
+
+p2 := λ(: tt Type). (: (
+   (let r TAny)
+   (match tt (
+      ()
+      ( (TGround( _ (TypeSeq( (TypeSeq( _ p2t )) _ )) )) (
+         (set r p2t)
+      ))
+      ( _ () )
+   ))
+   r
+) Type);
+
 substitute := λ(: tctx TContext)(: tt TypeList). (: (
    (match tt (
       ()
@@ -2780,7 +2804,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
             (apply-or-cons-and-specialize(
                'inc_s
                (typeof-var-raw( term tctx 'inc_s ))
-               (t2( 'Rc_s (typeof r) ))
+               (t2( 'Rc_s (p2(slot( (p2(slot( (p1 (typeof r)) 'Array_s ))) 'Tuple_s ))) )) # invert Rc constructor to get type parameter
                term
             ))
          ) ())
