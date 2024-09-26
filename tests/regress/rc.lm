@@ -8,7 +8,7 @@ del := λ: Hook+HookPriority<1>(: a Rc<A>). (: (
       (print 'Del\sRc\sNot\sMagic\s_s)(print (.2 a))(print '\n_s)
    ) (
       (let c (.1(open(.1 a))))
-      (print 'Del\sRc\sIs\sMagic\s_s)(print (.2 a))(print '\n_s)
+      (print 'Del\sRc\sIs\sMagic\s_s)(print c)(print '\n_s)
    ))
 ) Nil);
 
