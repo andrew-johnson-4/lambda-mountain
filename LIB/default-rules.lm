@@ -2,6 +2,17 @@
 macro ( ('let x y) )
       ( (λ x . ()) y );
 
+macro ( ('for-each (item 'in iter) loop) ) (
+   (let (uuid iter-term) iter)
+   (while (non-zero (uuid iter-term)) (match (uuid iter-term) (
+      ()
+      ( (LCons( item (uuid iter-rst) )) (
+         loop
+         (set (uuid iter-term) (uuid iter-rst))
+      ))
+   )))
+);
+
 macro ('match t ps) (scope(
    (let (uuid term) (open t))
    (match-pats( (uuid term) ps (fail( 'Pattern\sMatch\sFailure_s (: (p :Location:) Constant+Literal+String) )) ))
