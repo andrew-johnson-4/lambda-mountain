@@ -22,7 +22,5 @@ del := λ: Hook+HookPriority<0>(: v Rc<x>). (: (
 
 inc := λ(: v Rc<x>). (: (
    (let c (+( (.1(open(.1 v))) 1_i64 )))
-   (print 'Inc\sCount\s_s)(print (.1(open(.1 v))))(print '\n_s)
    (set[]( (as (.1 v) I64[]) 1_u64 c ))
-   (print 'Inc\sCount\s_s)(print (.1(open(.1 v))))(print '\n_s)
 ) Nil);
