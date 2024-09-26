@@ -47,7 +47,7 @@ fragment  .5 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<Co
    (.expression( 'RAX ))
 ) f5+Reg64);
 
-fragment  .0 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<_,Sized<f0-size>>>). (: (
+fragment  .0 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<_,f0+Sized<f0-size>>>). (: (
    (.program(
       (let pre-size 0) (if-eq 1 1 (
       (let tail-size (+( (.expression pre-size) (.expression f0-size) ))) (if-eq 1 1 (
@@ -60,7 +60,7 @@ fragment  .0 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<_,Sized<f0-s
       \t 'addq \s '$ (+( (.expression pre-size) (.expression post-size) )) , \s '%RSP \n
       )) ))
    ))
-) f2+StackVariable);
+) f0+StackVariable);
 
 fragment  .1 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<_,f1+Sized<f1-size+GT<8>>>,Sized<f0-size>>>). (: (
    (.program(
@@ -75,7 +75,7 @@ fragment  .1 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<_,f1+Si
       \t 'addq \s '$ (+( (.expression pre-size) (.expression post-size) )) , \s '%RSP \n
       )) ))
    ))
-) f2+StackVariable);
+) f1+StackVariable);
 
 fragment  .2 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<_,f2+Sized<f2-size+GT<8>>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
    (.program(
