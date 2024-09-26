@@ -3,7 +3,7 @@ type Rc<a> (Rc( U64 , Tuple<a,I64>[] ));
 
 rc-magic-number := 423809104_u64;
 
-fragment del := λ: Hook+Priority<0>(: x x). (: () Nil);
+fragment del := λ: Hook+Priority<0>(: x x). (: (.program()) Nil);
 
 rc := λ(: v x). (: (
    (let inner (Tuple( v 1_i64 )))

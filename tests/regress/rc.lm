@@ -21,7 +21,7 @@ print := λ(: a A). (: (
          (print r)
       ))
       ( (AAtom( v )) (
-         (print 'AAtom\scount=_s)(print c)(print '\s_s)(print v)(print '\n_s)
+         (print 'AAtom\s_s)(print v)(print '\n_s)
       ))
    ))
 ) Nil);
