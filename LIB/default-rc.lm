@@ -20,32 +20,7 @@ del := λ: Hook+HookPriority<0>(: v Rc<x>). (: (
    ))
 ) Nil);
 
-inc-refcount := λ(: v LocalVariable+Rc<x>). (: (
+inc := λ(: v Rc<x>). (: (
    (let c (+( (.1(open(.1 v))) 1_i64 )))
    (set[]( (as (.1 v) I64[]) 1_u64 c ))
 ) Nil);
-
-fragment inc-refcount := λ(: v Reg8). (: (
-   (.expression( (.expression v) ))
-) Reg8);
-fragment inc-refcount := λ(: v Reg16). (: (
-   (.expression( (.expression v) ))
-) Reg16);
-fragment inc-refcount := λ(: v Reg32). (: (
-   (.expression( (.expression v) ))
-) Reg32);
-fragment inc-refcount := λ(: v Reg64). (: (
-   (.expression( (.expression v) ))
-) Reg64);
-fragment inc-refcount := λ(: v LocalVariable). (: (
-   (.expression( (.expression v) ))
-) LocalVariable);
-fragment inc-refcount := λ(: v GlobalVariable). (: (
-   (.expression( (.expression v) ))
-) GlobalVariable);
-fragment inc-refcount := λ(: v StackVariable). (: (
-   (.expression( (.expression v) ))
-) StackVariable);
-fragment inc-refcount := λ(: v Constant). (: (
-   (.expression( (.expression v) ))
-) Constant);
