@@ -52,6 +52,7 @@ var-name-if-var := λ(: t AST). (: (
    (match t (
       ()
       ( (Var( nk _ )) (set k nk) )
+      ( (Lit( nk _ )) (set k nk) )
       ( _ () )
    ))
    k

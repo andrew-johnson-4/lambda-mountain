@@ -2338,6 +2338,10 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: 
 ) Type);
 
 apply-or-cons-and-specialize := λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (
+   (if (==( function-name 'inc_s )) (
+      (print 'Apply\sFunction\s_s)(print ft)(print '\n_s)
+      (print 'Apply\sArg_s)(print pt)(print '\n_s)
+   ) ())
    (let r TAny)
    (if (is-arrow ft) (
       (set r (apply( function-name ft pt True_u8 blame )))
@@ -2772,6 +2776,14 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
             (set rt (implicit-tail rt))
          ) ())
          (ascript-normal( term rt ))
+         (if (==( (var-name-if-var l) 'Rc_s )) (
+            (apply-or-cons-and-specialize(
+               'inc_s
+               (typeof-var-raw( term tctx 'inc_s ))
+               (t2( 'Rc_s (typeof r) ))
+               term
+            ))
+         ) ())
       ))
       ( (Abs( lhs rhs tlt )) (
          (set tctx (infer-ctx( tctx lhs )))
