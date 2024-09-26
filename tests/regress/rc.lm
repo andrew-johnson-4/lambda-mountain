@@ -17,29 +17,12 @@ print := λ(: a A). (: (
       ()
       ( (ACons( l r )) (
          (print 'ACons\n_s)
-         (print l)
-         (print r)
       ))
       ( (AAtom( v )) (
          (print 'AAtom\s_s)(print v)(print '\n_s)
       ))
    ))
 ) Nil);
-
-print := λ(: a Rc<A>). (: (
-   (match a (
-      ()
-      ( (Rc( (Tuple( (ACons( l r )) c )) )) (
-         (print 'ACons\scount=_s)(print c)(print '\n_s)
-         (print l)
-         (print r)
-      ))
-      ( (Rc( m (Tuple( (AAtom( v )) c )) )) (
-         (print 'AAtom\scount=_s)(print c)(print '\s_s)(print v)(print '\n_s)
-      ))
-   ))
-) Nil);
-
 
 dirty := λ(: r U64). (: (
    (if (!=( r 0_u64 )) (

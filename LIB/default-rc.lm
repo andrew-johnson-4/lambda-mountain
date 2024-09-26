@@ -4,7 +4,7 @@ type Rc<a> (Rc( U64 , Tuple<a,I64>[] ));
 rc-magic-number := 423809104_u64;
 
 # TODO, if this is a fragment then the hook doesn't work
-del := λ: Hook+Priority<0>(: x x). (: () Nil);
+del := λ: Hook+Priority<9999>(: x x). (: () Nil);
 
 rc := λ(: v x). (: (
    (let inner (Tuple( v 1_i64 )))
@@ -12,19 +12,19 @@ rc := λ(: v x). (: (
 ) Rc<x>);
 
 del := λ: Hook+HookPriority<0>(: v Rc<x>). (: (
-   (if (==( (.2 v) rc-magic-number )) (
-      (let c (-( (.1(open(.1 v))) 1_i64 )))
-      (set[]( (as (.1 v) I64[]) 1_u64 c ))
-   ) (
-      (if (!=( (.2 v) 0_u64 )) (
-         (print 'del\[Rc\]\sIs\sNot\sMagic\sAnd\sNot\sNull:\sMemory\sIs\sCorrupt\n_s)
-         (exit 1_u64)
-      ) (
+   #(if (==( (.2 v) rc-magic-number )) (
+   #   (let c (-( (.1(open(.1 v))) 1_i64 )))
+   #   (set[]( (as (.1 v) I64[]) 1_u64 c ))
+   #) (
+   #   (if (!=( (.2 v) 0_u64 )) (
+   #      (print 'del\[Rc\]\sIs\sNot\sMagic\sAnd\sNot\sNull:\sMemory\sIs\sCorrupt\n_s)
+   #      (exit 1_u64)
+   #   ) (
         (print (.2(open(.1 v))))
-        (del (.2(open(.1 v)))) # maybe it does something, maybe not
-        #TODO free
-      ))
-   ))
+   #     (del (.2(open(.1 v)))) # maybe it does something, maybe not
+   #     #TODO free
+   #   ))
+   #))
 ) Nil);
 
 inc := λ(: v Rc<x>). (: (

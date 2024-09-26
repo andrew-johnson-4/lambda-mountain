@@ -50,8 +50,8 @@ fragment  .5 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<Co
 fragment  .2 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<_,f2+Sized<f2-size+GT<8>>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
    (.program(
       (let pre-size (+( (.expression f0-size) (.expression f1-size) ))) (if-eq 1 1 (
-      (let post-size (-( (.expression base-size) (.expression pre-size) ))) (if-eq 1 1 (
-      (let tail-size (+( (.expression pre-size) (.expression f2-size) )))
+      (let tail-size (+( (.expression pre-size) (.expression f2-size) ))) (if-eq 1 1 (
+      (let post-size (-( (.expression base-size) (.expression tail-size) )))
       # [0]  base.0
       # [8]  base.1
       # [16] base.2 f0.0
