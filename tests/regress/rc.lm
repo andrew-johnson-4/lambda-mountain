@@ -15,14 +15,13 @@ del := λ: Hook+HookPriority<1>(: a Rc<A>). (: (
 print := λ(: a A). (: (
    (match a (
       ()
-      ( (ACons( l r )) (
+      ( (ACons( _ _ )) (
          (print 'ACons\n_s)
       ))
-      ( (AAtom( v )) (
-         (print 'AAtom\s_s)(print v)(print '\n_s)
+      ( (AAtom( _ )) (
+         (print 'AAtom\n_s)
       ))
    ))
-   (print 'End\sPrint\n_s)
 ) Nil);
 
 dirty := λ(: r U64). (: (
