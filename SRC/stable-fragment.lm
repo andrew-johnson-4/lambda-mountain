@@ -145,13 +145,6 @@ fragment::unlet := λ(: s S). (: (
    (let return s)
    (match s (
       ()
-      ( (SCons( SNil (SCons( (SAtom 'App_s) (SCons(
-           (SCons( (SAtom 'Abs_s) (SCons(
-              (SCons( (SAtom 'Var_s) (SAtom _) ))
-              SNil
-           )) ))
-           v
-        )) )) )) (set return SNil) )
       ( (SCons( (SAtom 'App_s) (SCons(
            (SCons( (SAtom 'Abs_s) (SCons(
               (SCons( (SAtom 'Var_s) (SAtom _) ))
@@ -185,22 +178,6 @@ fragment::let := λ(: ctx FContext)(: s S). (: (
            )) ))
            v
         )) )) (
-         (set v (fragment::render( return v )))
-         (set return (FCtxBind(
-            (close return) k TAny (fragment::expression( v ))
-         )))
-      ))
-      ( (SCons( (SAtom 'App_s) (SCons(
-           ls
-           (SCons( (SAtom 'App_s) (SCons(
-              (SCons( (SAtom 'Abs_s) (SCons(
-                 (SCons( (SAtom 'Var_s) (SAtom k) ))
-                 SNil
-              )) ))
-              v
-           )) ))
-        )) )) (
-         (set return (fragment::let( return ls )))
          (set v (fragment::render( return v )))
          (set return (FCtxBind(
             (close return) k TAny (fragment::expression( v ))
@@ -436,7 +413,7 @@ fragment::render-impl := λ(: s S). (: (
          (let lt (fragment::render-impl( lc )))
          (let rt (fragment::render-impl( rc )))
          (if (==( lt rt )) (
-            (let bodyt (fragment::render-impl( body )))
+            (let bodyt (fragment::render( ctx body )))
             (set r bodyt)
          ) ())
       ))
@@ -450,7 +427,7 @@ fragment::render-impl := λ(: s S). (: (
          (let lt (fragment::render-impl( lc )))
          (let rt (fragment::render-impl( rc )))
          (if (!=( lt rt )) (
-            (let bodyt (fragment::render-impl( body )))
+            (let bodyt (fragment::render( ctx body )))
             (set r bodyt)
          ) ())
       ))
