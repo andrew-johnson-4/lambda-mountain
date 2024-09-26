@@ -2252,19 +2252,14 @@ reduce-plural := λ(: pts List<Type>). (: (
    (while (non-zero pts) (match pts (
       ()
       ( (LCons( try tlt )) (
-         (let maybes tlt)
          (set pts tlt)
-         (while (non-zero maybes) (match maybes (
-            ()
-            ( (LCons( tst mrst )) (
-               (if (non-zero try) (
-                  (if (can-unify( (domain try) (domain tst) )) (
-                     (set try TAny)
-                  ) ())
+         (for-each (tst in tlt) (
+            (if (non-zero try) (
+               (if (can-unify( (domain try) (domain tst) )) (
+                  (set try TAny)
                ) ())
-               (set maybes mrst)
-            ))
-         )))
+            ) ())
+         ))
          (if (non-zero try) (
             (set r (cons( try r )))
          ) ())
@@ -2275,19 +2270,14 @@ reduce-plural := λ(: pts List<Type>). (: (
    (while (non-zero pts) (match pts (
       ()
       ( (LCons( try tlt )) (
-         (let maybes tlt)
          (set pts tlt)
-         (while (non-zero maybes) (match maybes (
-            ()
-            ( (LCons( tst mrst )) (
-               (if (non-zero try) (
-                  (if (can-unify( (domain try) (domain tst) )) (
-                     (set try TAny)
-                  ) ())
+         (for-each (tst in tlt) (
+            (if (non-zero try) (
+               (if (can-unify( (domain try) (domain tst) )) (
+                  (set try TAny)
                ) ())
-               (set maybes mrst)
-            ))
-         )))
+            ) ())
+         ))
          (if (non-zero try) (
             (set r (cons( try r )))
          ) ())
