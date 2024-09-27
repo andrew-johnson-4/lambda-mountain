@@ -47,24 +47,37 @@ add-alias := λ(: from String)(: to String)(: tt Type). (: (
 
 find-alias := λ(: from String)(: pars Type). (: (
    (let to from)
-   (for-each ((Tuple( (Tuple( alt-from alt-to )) (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF alt-domain )) _ )) )) in alias-index) (
-      (if (&&( (==( from alt-from )) (can-unify( alt-domain pars )) )) (
-         (set to alt-to)
-      ) ())
+   (for-each (alias in alias-index) (
+      (match alias (
+         ()
+         ( (Tuple(
+              (Tuple( alt-from alt-to ))
+              (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF alt-domain )) _ )) ))
+           )) (
+            (if (&&( (==( from alt-from )) (can-unify( alt-domain pars )) )) (
+               (set to alt-to)
+            ) ())
+         ))
+      ))
    ))
    to
 ) String);
 
 find-alias-type := λ(: from String). (: (
    (let to TAny)
-   (for-each ((Tuple( (Tuple( alt-from alt-to )) alt-tt )) in alias-index) (
-      (if (==( from alt-from )) )) (
-         (if (non-zero to) (
-            (set to (and( to alt-tt )))
-         ) (
-            (set to alt-to)
+   (for-each (alias in alias-index) (
+      (match alias (
+         ()
+         ( (Tuple( (Tuple( alt-from alt-to )) alt-tt )) (
+            (if (==( from alt-from )) (
+               (if (non-zero to) (
+                  (set to (and( to alt-tt )))
+               ) (
+                  (set to alt-tt)
+               ))
+            ) ())
          ))
-      ) ())
+      ))
    ))
    to
 ) Type);
@@ -1075,7 +1088,7 @@ type-of-s-with-fields := λ(: base-type Type)(: tag String)(: compound AST)(: fi
             ( (Tuple( '_s ft )) (set nt ft) )
             ( (Tuple( fn ft )) (
                (add-alias(
-                  fn
+                  (clone-rope(SCons( (close(SAtom '._s)) (close(SAtom fn)) )))
                   (clone-rope(SCons( (close(SAtom '._s)) (close(SAtom(to-string field-index))) )))
                   (t3( 'Arrow_s (and( (t1 tag) base-type )) ft ))
                ))
@@ -1092,7 +1105,7 @@ type-of-s-with-fields := λ(: base-type Type)(: tag String)(: compound AST)(: fi
             ( (Tuple( '_s ft )) (set nt ft) )
             ( (Tuple( fn ft )) (
                (add-alias(
-                  fn
+                  (clone-rope(SCons( (close(SAtom '._s)) (close(SAtom fn)) )))
                   (clone-rope(SCons( (close(SAtom '._s)) (close(SAtom(to-string field-index))) )))
                   (t3( 'Arrow_s (and( (t1 tag) base-type )) ft ))
                ))
