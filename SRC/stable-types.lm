@@ -1034,6 +1034,44 @@ type-of-s := λ(: compound AST). (: (
    r
 ) Type);
 
+type-of-s-with-fields := λ(: base-type Type)(: tag String)(: compound AST)(: field-index U64). (: (
+   (let r TAny)
+   (match compound (
+      ()
+      ( (Lit( tt _ )) (
+         (let nt TAny)
+         (match (field-of tt) (
+            ()
+            ( (Tuple( '_s ft )) (set nt ft) )
+            ( (Tuple( fn ft )) (
+               (print 'Mark\sField\s_s)(print fn)(print '\s:\s_s)(print ft)(print '\n_s)
+               (set nt ft)
+            ))
+         ))
+         (set r nt)
+      ))
+      ( (Var( tt _ )) (
+         (let nt TAny)
+         (match (field-of tt) (
+            ()
+            ( (Tuple( '_s ft )) (set nt ft) )
+            ( (Tuple( fn ft )) (
+               (print 'Mark\sField\s_s)(print fn)(print '\s:\s_s)(print ft)(print '\n_s)
+               (set nt ft)
+            ))
+         ))
+         (set r nt)
+      ))
+      ( (App( (App( lt (Lit( ',_s _ )) )) rt )) (
+         (let ltt (type-of-s-with-fields( base-type tag lt (+( field-index 1_u64 )) )))
+         (let rtt (type-of-s-with-fields( base-type tag rt field-index )))
+         (set r (t3( 'Cons_s ltt rtt )))
+      ))
+      ( _ (exit-error( 'Malformed\sType\sDefinition_s compound )))
+   ))
+   r
+) Type);
+
 normalize := λ(: tctx TContext). (: (
    (match tctx (
       ()
@@ -1992,60 +2030,25 @@ mark-constructor-flat-parameters := λ(: base-type Type)(: flat-type Type). (: (
    ))
 ) Nil);
 
-field-of := λ(: tt Type). (: (
+field-of := λ(: type-name String). (: (
+   (let tt (parse-type type-name))
    (let field-name '_s)
-   (let type-name '_s)
-   (match tt (
-      ()
-      ( (TGround( tn _ )) (set type-name tn) )
-      ( (TVar( tn )) (set type-name tn) )
-      ( _ () )
-   ))
    (let field-name-s SNil)
    (while (!=( (head-string type-name) 0_u8 )) (
       (if (==( (head-string type-name) 58_u8 )) (
-         (set field-name-s (clone-rope field-name-s))
-         (set tt (t1(tail-string type-name)))
+         (set field-name (clone-rope field-name-s))
+         (set tt (parse-type(tail-string type-name)))
          (set type-name '_s)
       ) (
          (set field-name-s (SCons(
             (close field-name-s)
-            (close(SAtom(to-string(head-string type-name))))
+            (close(SAtom(clone-rope(head-string type-name))))
          )))
          (set type-name (tail-string type-name))
       ))
    ))
    (Tuple( field-name tt ))
 ) Tuple<String,Type>);
-
-remove-constructor-field-names := λ(: base-type Type)(: tag String)(: args Type)(: field-index U64). (: (
-   (match args (
-      ()
-      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
-         (set p1 (remove-constructor-field-names( base-type tag p1 (+( field-index 1_u64 )) )))
-         (match (field-of p2) (
-            ()
-            ( (Tuple( '_s _ )) () )
-            ( (Tuple( fn ft )) (
-               (print 'Mark\sField\s_s)(print fn)(print '\s:\s_s)(print ft)(print '\n_s)
-               (set p2 ft)
-            ))
-         ))
-         (set args (t3( 'Cons_s p1 p2 )))
-      ))
-      ( _ (
-         (match (field-of args) (
-            ()
-            ( (Tuple( '_s _ )) () )
-            ( (Tuple( fn ft )) (
-               (print 'Mark\sField\s_s)(print fn)(print '\s:\s_s)(print ft)(print '\n_s)
-               (set args ft)
-            ))
-         ))
-      ))
-   ))
-   args
-) Type);
 
 infer-type-constructor := λ(: base-type Type)(: body AST). (: (
    (let r 0_u64)
@@ -2071,8 +2074,7 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
          (set r 8_u64)
       ))
       ( (App( (Lit( tag _ )) args )) (
-         (let atype (type-of-s args))
-         (set atype (remove-constructor-field-names( base-type tag atype 1_u64 )))
+         (let atype (type-of-s-with-fields( base-type tag args 1_u64 )))
          (mark-constructor-flat-parameters( base-type atype ))
          (if (has-forward( atype )) (
             (print 'Size\sOf\sType\sCannot\sBe\sDetermined\sDue\sTo\sForward\sReference:\s_s)
