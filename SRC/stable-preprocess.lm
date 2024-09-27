@@ -583,10 +583,14 @@ with-location := λ(: term AST)(: loc SourceLocation). (: (
       ( ASTEOF () )
       ( ASTNil () )
       ( (Var( v vtk )) (
-         (set return (Var( v (with-location( vtk loc )) )))
+         (if (non-zero(location-of vtk)) () (
+            (set return (Var( v (with-location( vtk loc )) )))
+         ))
       ))
       ( (Lit( v vtk )) (
-         (set return (Lit( v (with-location( vtk loc )) )))
+         (if (non-zero(location-of vtk)) () (
+            (set return (Lit( v (with-location( vtk loc )) )))
+         ))
       ))
       ( (AType _) () )
       ( (App( lt rt )) (
@@ -615,16 +619,18 @@ with-location := λ(: term AST)(: loc SourceLocation). (: (
          )))
       ))
       ( (Glb( k t )) (
-         (set return (Glb(
-            (with-location( k loc ))
-            (close(with-location( t loc )))
-         )))
+         (if (non-zero(location-of t)) () (
+            (set k (with-location( k loc )))
+            (set t (with-location( t loc )))
+         ))
+         (set return (Glb( k (close t) )))
       ))
       ( (Frg( k t )) (
-         (set return (Frg(
-            (with-location( k loc ))
-            (close(with-location( t loc )))
-         )))
+         (if (non-zero(location-of t)) () (
+            (set k (with-location( k loc )))
+            (set t (with-location( t loc )))
+         ))
+         (set return (Frg( k (close t) )))
       ))
    ))
    return
