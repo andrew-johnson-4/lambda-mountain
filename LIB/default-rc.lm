@@ -4,7 +4,7 @@ type Rc<a> (Rc( U64 , Tuple<a,I64>[] ));
 rc-magic-number := 423809104_u64;
 
 # TODO, if this is a fragment then the hook doesn't work
-fragment del := λ: Hook+Priority<9999>(: x x). (: () Nil);
+fragment del := λ: Hook+Priority<9999>(: x Sized<size>). (: () Nil);
 
 rc := λ(: v x). (: (
    (let inner (Tuple( v 1_i64 )))
