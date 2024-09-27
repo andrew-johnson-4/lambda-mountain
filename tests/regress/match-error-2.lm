@@ -1,0 +1,11 @@
+
+import LIB/default.lm;
+
+main := λ. (: (
+   ()
+   (match 1_u64 (
+      ()
+      ( 2_u64 () )
+      ( 3_i64 () )
+   ))
+) Nil);
