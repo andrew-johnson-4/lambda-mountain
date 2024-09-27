@@ -34,10 +34,53 @@ types-have-changed := True_u8;
 
 global-symbol-registry := (: BTreeEqEOF BTreeEq<Tuple<String,Type>,U64>);
 
+alias-index := (: LEOF List<Tuple<Tuple<String,String>,Type>>);
+
 # Global (type-base-name: String, parameter: String) -> Yes/No, mutable
 parameter-is-flat-index := (: BTreeEqEOF BTreeEq<Tuple<Tuple<String,U64>,U64>,U64>);
 
 class-exists-index := (: BTreeEqEOF BTreeEq<String,U64>);
+
+add-alias := λ(: from String)(: to String)(: tt Type). (: (
+   (set alias-index (cons( (Tuple( (Tuple( from to )) tt )) alias-index )))
+) Nil);
+
+find-alias := λ(: from String)(: pars Type). (: (
+   (let to from)
+   (for-each (alias in alias-index) (
+      (match alias (
+         ()
+         ( (Tuple(
+              (Tuple( alt-from alt-to ))
+              (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF alt-domain )) _ )) ))
+           )) (
+            (if (&&( (==( from alt-from )) (can-unify( alt-domain pars )) )) (
+               (set to alt-to)
+            ) ())
+         ))
+      ))
+   ))
+   to
+) String);
+
+find-alias-type := λ(: from String). (: (
+   (let to TAny)
+   (for-each (alias in alias-index) (
+      (match alias (
+         ()
+         ( (Tuple( (Tuple( alt-from alt-to )) alt-tt )) (
+            (if (==( from alt-from )) (
+               (if (non-zero to) (
+                  (set to (and( to alt-tt )))
+               ) (
+                  (set to alt-tt)
+               ))
+            ) ())
+         ))
+      ))
+   ))
+   to
+) Type);
 
 mark-class-exists := λ(: class String). (: (
    (.bind( (as (& class-exists-index) BTreeEq<String,U64>[]) class 1_u64 ))
@@ -1034,6 +1077,53 @@ type-of-s := λ(: compound AST). (: (
    r
 ) Type);
 
+type-of-s-with-fields := λ(: base-type Type)(: tag String)(: compound AST)(: field-index U64). (: (
+   (let r TAny)
+   (match compound (
+      ()
+      ( (Lit( tt _ )) (
+         (let nt TAny)
+         (match (field-of tt) (
+            ()
+            ( (Tuple( '_s ft )) (set nt ft) )
+            ( (Tuple( fn ft )) (
+               (add-alias(
+                  (clone-rope(SCons( (close(SAtom '._s)) (close(SAtom fn)) )))
+                  (clone-rope(SCons( (close(SAtom '._s)) (close(SAtom(to-string field-index))) )))
+                  (t3( 'Arrow_s (and( (t1 tag) base-type )) ft ))
+               ))
+               (print 'Mark\sField\s_s)(print fn)(print '\s:\s_s)(print ft)(print '\n_s)
+               (set nt ft)
+            ))
+         ))
+         (set r nt)
+      ))
+      ( (Var( tt _ )) (
+         (let nt TAny)
+         (match (field-of tt) (
+            ()
+            ( (Tuple( '_s ft )) (set nt ft) )
+            ( (Tuple( fn ft )) (
+               (add-alias(
+                  (clone-rope(SCons( (close(SAtom '._s)) (close(SAtom fn)) )))
+                  (clone-rope(SCons( (close(SAtom '._s)) (close(SAtom(to-string field-index))) )))
+                  (t3( 'Arrow_s (and( (t1 tag) base-type )) ft ))
+               ))
+               (set nt ft)
+            ))
+         ))
+         (set r nt)
+      ))
+      ( (App( (App( lt (Lit( ',_s _ )) )) rt )) (
+         (let ltt (type-of-s-with-fields( base-type tag lt (+( field-index 1_u64 )) )))
+         (let rtt (type-of-s-with-fields( base-type tag rt field-index )))
+         (set r (t3( 'Cons_s ltt rtt )))
+      ))
+      ( _ (exit-error( 'Malformed\sType\sDefinition_s compound )))
+   ))
+   r
+) Type);
+
 normalize := λ(: tctx TContext). (: (
    (match tctx (
       ()
@@ -1992,6 +2082,26 @@ mark-constructor-flat-parameters := λ(: base-type Type)(: flat-type Type). (: (
    ))
 ) Nil);
 
+field-of := λ(: type-name String). (: (
+   (let tt (parse-type type-name))
+   (let field-name '_s)
+   (let field-name-s SNil)
+   (while (!=( (head-string type-name) 0_u8 )) (
+      (if (==( (head-string type-name) 58_u8 )) (
+         (set field-name (clone-rope field-name-s))
+         (set tt (parse-type(tail-string type-name)))
+         (set type-name '_s)
+      ) (
+         (set field-name-s (SCons(
+            (close field-name-s)
+            (close(SAtom(clone-rope(head-string type-name))))
+         )))
+         (set type-name (tail-string type-name))
+      ))
+   ))
+   (Tuple( field-name tt ))
+) Tuple<String,Type>);
+
 infer-type-constructor := λ(: base-type Type)(: body AST). (: (
    (let r 0_u64)
    (match body (
@@ -2016,7 +2126,7 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
          (set r 8_u64)
       ))
       ( (App( (Lit( tag _ )) args )) (
-         (let atype (type-of-s args))
+         (let atype (type-of-s-with-fields( base-type tag args 1_u64 )))
          (mark-constructor-flat-parameters( base-type atype ))
          (if (has-forward( atype )) (
             (print 'Size\sOf\sType\sCannot\sBe\sDetermined\sDue\sTo\sForward\sReference:\s_s)
@@ -2462,7 +2572,7 @@ typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (
 ) Type);
 
 typeof-var-raw := λ(: sloc AST)(: tctx TContext)(: vname String). (: (
-   (let found TAny)
+   (let found (find-alias-type vname))
    (while (non-zero tctx) (match tctx (
       ()
       ( TCtxNil (set tctx TCtxEOF) )
