@@ -394,7 +394,7 @@ preprocess-apply-hard := λ(: macro-name String)(: arity U64)(: program AST). (:
                ()
                ( CtxEOF (set macros rst) )
                ( ctx (
-                  (set rhs (relocate( rhs (location-of program) )))
+                  (set rhs (with-location( rhs (location-of program) )))
                   (set rhs (preprocess-apply-literals( rhs )))
                   (let p (apply( ctx rhs )))
                   (let c (extract-uuids( (location-of program) CtxEOF p )))
@@ -488,7 +488,7 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (
       ( (Tuple( ASTNil ASTNil )) (set r CtxNil) )
       ( (Tuple( (App( (App( (Var( _ _ )) (Var( _ _ )) )) (Var( _ _ )) )) (App( (App( (Lit( possibly-tag _ )) _ )) _ )) )) () )
       ( (Tuple( (App( (Lit( ':Literal:_s _ )) (Var( pv _ )) )) (App( (Lit( ':_s ctk )) (App( (Lit( _ _ )) (AType _) )) )) )) (
-         (set r (CtxBind( (close CtxNil) pv (relocate( term (location-of ctk) )) )))
+         (set r (CtxBind( (close CtxNil) pv (with-location( term (location-of ctk) )) )))
       ))
       ( (Tuple( (App( (Var( _ _ )) (Var( _ _ )) )) (App( (Lit( tag _ )) _ )) )) (
          (if (||( (is-lone-tag tag) (preprocess-is-suffixed tag) )) (
@@ -535,7 +535,7 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (
       ))
       ( (Tuple( (App( (Lit( ':Literal:_s _ )) (Var( pv _ )) )) (Lit( el eltk )) )) (
          (if (==( (index-of-tag el) unknown-index-of-tag ))
-             (set r (CtxBind( (close CtxNil) pv (relocate( term (location-of eltk) )) )))
+             (set r (CtxBind( (close CtxNil) pv (with-location( term (location-of eltk) )) )))
              ()
          )
       ))
@@ -543,7 +543,7 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (
          ()
       ))
       ( (Tuple( (App( (Lit( ':Variable:_s _ )) (Var( pv _ )) )) (Var( el eltk )) )) (
-         (set r (CtxBind( (close CtxNil) pv (relocate( term (location-of eltk) )) )))
+         (set r (CtxBind( (close CtxNil) pv (with-location( term (location-of eltk) )) )))
       ))
       ( (Tuple( (App( (App( (Lit( ':Tag:_s _ )) (Var( pv _ )) )) (Var( pt _ )) )) (Lit( el eltk )) )) (
          (if (==( (index-of-tag el) unknown-index-of-tag )) () (
@@ -569,61 +569,121 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (
          ))
       ))
       ( (Tuple( (Var( pv _ )) t )) (
-         (set r (CtxBind( (close CtxNil) pv (relocate( term (location-of t) )) )))
+         (set r (CtxBind( (close CtxNil) pv (with-location( term (location-of t) )) )))
       ))
       ( _ () )
    ))
    r
 ) Context);
 
-relocate := λ(: term AST)(: loc SourceLocation). (: (
+with-location := λ(: term AST)(: loc SourceLocation). (: (
    (let return term)
    (match term (
       ()
       ( ASTEOF () )
       ( ASTNil () )
       ( (Var( v vtk )) (
-         (set return (Var( v (with-location( vtk loc )) )))
+         (if (non-zero(location-of vtk)) () (
+            (set return (Var( v (with-location( vtk loc )) )))
+         ))
       ))
       ( (Lit( v vtk )) (
-         (set return (Lit( v (with-location( vtk loc )) )))
+         (if (non-zero(location-of vtk)) () (
+            (set return (Lit( v (with-location( vtk loc )) )))
+         ))
       ))
       ( (AType _) () )
       ( (App( lt rt )) (
          (set return (App(
-            (close(relocate( lt loc )))
-            (close(relocate( rt loc )))
+            (close(with-location( lt loc )))
+            (close(with-location( rt loc )))
          )))
       ))
       ( (Abs( lt rt tlt )) (
          (set return (Abs(
-            (close(relocate( lt loc )))
-            (close(relocate( rt loc )))
+            (close(with-location( lt loc )))
+            (close(with-location( rt loc )))
             tlt
          )))
       ))
       ( (Seq( lt rt )) (
          (set return (Seq(
-            (close(relocate( lt loc )))
-            (close(relocate( rt loc )))
+            (close(with-location( lt loc )))
+            (close(with-location( rt loc )))
          )))
       ))
       ( (Typedef( lt rt )) (
          (set return (Typedef(
-            (close(relocate( lt loc )))
-            (close(relocate( rt loc )))
+            (close(with-location( lt loc )))
+            (close(with-location( rt loc )))
+         )))
+      ))
+      ( (Glb( k t )) (
+         (if (non-zero(location-of t)) () (
+            (set k (with-location( k loc )))
+            (set t (with-location( t loc )))
+         ))
+         (set return (Glb( k (close t) )))
+      ))
+      ( (Frg( k t )) (
+         (if (non-zero(location-of t)) () (
+            (set k (with-location( k loc )))
+            (set t (with-location( t loc )))
+         ))
+         (set return (Frg( k (close t) )))
+      ))
+   ))
+   return
+) AST);
+
+without-location := λ(: term AST). (: (
+   (let return term)
+   (match term (
+      ()
+      ( ASTEOF () )
+      ( ASTNil () )
+      ( (Var( v vtk )) (
+         (set return (Var( v (without-location( vtk )) )))
+      ))
+      ( (Lit( v vtk )) (
+         (set return (Lit( v (without-location( vtk )) )))
+      ))
+      ( (AType _) () )
+      ( (App( lt rt )) (
+         (set return (App(
+            (close(without-location( lt )))
+            (close(without-location( rt )))
+         )))
+      ))
+      ( (Abs( lt rt tlt )) (
+         (set return (Abs(
+            (close(without-location( lt )))
+            (close(without-location( rt )))
+            tlt
+         )))
+      ))
+      ( (Seq( lt rt )) (
+         (set return (Seq(
+            (close(without-location( lt )))
+            (close(without-location( rt )))
+         )))
+      ))
+      ( (Typedef( lt rt )) (
+         (set return (Typedef(
+            (close(without-location( lt )))
+            (close(without-location( rt )))
          )))
       ))
       ( (Glb( k t )) (
          (set return (Glb(
-            (with-location( k loc ))
-            (close(relocate( t loc )))
+            (without-location( k ))
+            (close(without-location( t )))
          )))
       ))
       ( (Frg( k t )) (
          (set return (Frg(
-            (with-location( k loc ))
-            (close(relocate( t loc )))
+            (without-location( k ))
+            (close(without-location( t )))
          )))
       ))
    ))
