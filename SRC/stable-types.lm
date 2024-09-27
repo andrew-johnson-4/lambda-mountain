@@ -34,10 +34,26 @@ types-have-changed := True_u8;
 
 global-symbol-registry := (: BTreeEqEOF BTreeEq<Tuple<String,Type>,U64>);
 
+alias-index := (: LEOF List<Tuple<Tuple<String,String>,Type>>);
+
 # Global (type-base-name: String, parameter: String) -> Yes/No, mutable
 parameter-is-flat-index := (: BTreeEqEOF BTreeEq<Tuple<Tuple<String,U64>,U64>,U64>);
 
 class-exists-index := (: BTreeEqEOF BTreeEq<String,U64>);
+
+add-alias := λ(: from String)(: to String)(: tt Type). (: (
+   (set alias-index (cons( (Tuple( (Tuple( from to )) tt )) alias-index )))
+) Nil);
+
+find-alias := λ(: from String)(: pars Type). (: (
+   (let to from)
+   (for-each ((Tuple( (Tuple( alt-from alt-to )) alt-domain )) in alias-index) (
+      (if (&&( (==( from alt-from )) (can-unify( alt-domain pars )) )) (
+         (set to alt-to)
+      ) ())
+   ))
+   to
+) String);
 
 mark-class-exists := λ(: class String). (: (
    (.bind( (as (& class-exists-index) BTreeEq<String,U64>[]) class 1_u64 ))
