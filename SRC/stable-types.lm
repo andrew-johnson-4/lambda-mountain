@@ -2002,7 +2002,7 @@ field-of := λ(: tt Type). (: (
       ( _ () )
    ))
    (let field-name-s SNil)
-   (while (!=( (head-string type-name)) 0_u8 )) (
+   (while (!=( (head-string type-name) 0_u8 )) (
       (if (==( (head-string type-name) 58_u8 )) (
          (set field-name-s (clone-rope field-name-s))
          (set tt (t1(tail-string type-name)))
