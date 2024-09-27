@@ -1,15 +1,15 @@
 
 import LIB/default.lm;
 
-type A (A( U64 , U64 , U64 , U64 , U64 ));
-type B (B( A ));
+type A (A( a:U64 , b:U64 , c:U64 , d:U64 , e:U64 ));
+type B (B( f:A ));
 
 main := λ. (: (
    (let b (B( (A( 1_u64 2_u64 3_u64 4_u64 5_u64 )) )))
-   (print (.0(.1 b)))
-   (print (.1(.1 b)))
-   (print (.2(.1 b)))
-   (print (.3(.1 b)))
-   (print (.4(.1 b)))
-   (print (.5(.1 b)))
+   (print (.0(.f b)))
+   (print (.e(.f b)))
+   (print (.d(.f b)))
+   (print (.c(.f b)))
+   (print (.b(.f b)))
+   (print (.a(.f b)))
 ) Nil);
