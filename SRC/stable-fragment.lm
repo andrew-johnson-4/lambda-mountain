@@ -728,6 +728,17 @@ fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentLi
    (let tctx (unify( (slot( arrow-tt 'Arrow_s )) direct-type )))
    (set ctx (union( ctx tctx )))
 
+   (match (fragment::get( arrow 'fragment_s )) (
+      ()
+      ( (SCons( (SAtom 'Abs_s) (SCons( lhs rhs )) )) () )
+      ( _ (
+         (print 'Fragment\sWas\sNot\sAn\sArrow:\s_s)
+         (print k)(print '\s:\s_s)(print arrow-tt)(print '\n_s)
+         (print (fragment::get( arrow 'fragment_s )))
+         (exit 1_u64)
+      ))
+   ))
+
    (let return (apply-direct( ctx arrow args e-proto chain already-destructured )))
 
    # add comments if in GNU mode
