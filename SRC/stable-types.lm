@@ -47,15 +47,17 @@ add-alias := λ(: from String)(: to String)(: tt Type). (: (
 
 find-alias := λ(: from String)(: pars Type). (: (
    (let to from)
-   (match alias (
-      ()
-      ( (Tuple(
-           (Tuple( alt-from alt-to ))
-           (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF alt-domain )) _ )) ))
-        )) (
-         (if (&&( (==( from alt-from )) (can-unify( alt-domain pars )) )) (
-            (set to alt-to)
-         ) ())
+   (for-each (alias in alias-index) (
+      (match alias (
+         ()
+         ( (Tuple(
+              (Tuple( alt-from alt-to ))
+              (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF alt-domain )) _ )) ))
+           )) (
+            (if (&&( (==( from alt-from )) (can-unify( alt-domain pars )) )) (
+               (set to alt-to)
+            ) ())
+         ))
       ))
    ))
    to
