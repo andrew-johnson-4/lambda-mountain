@@ -47,17 +47,15 @@ add-alias := λ(: from String)(: to String)(: tt Type). (: (
 
 find-alias := λ(: from String)(: pars Type). (: (
    (let to from)
-   (for-each (alias in alias-index) (
-      (match alias (
-         ()
-         ( (Tuple(
-              (Tuple( alt-from alt-to ))
-              (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF alt-domain )) _ )) ))
-           )) (
-            (if (&&( (==( from alt-from )) (can-unify( alt-domain pars )) )) (
-               (set to alt-to)
-            ) ())
-         ))
+   (match alias (
+      ()
+      ( (Tuple(
+           (Tuple( alt-from alt-to ))
+           (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF alt-domain )) _ )) ))
+        )) (
+         (if (&&( (==( from alt-from )) (can-unify( alt-domain pars )) )) (
+            (set to alt-to)
+         ) ())
       ))
    ))
    to
@@ -1957,6 +1955,8 @@ typecheck := λ. (: (
 ) Nil);
 
 infer-type-definition := λ(: base-type Type)(: body AST)(: case-number U64). (: (
+   # This works but is too slow
+   # (add-alias( '.tag_s '.0_s (t3( 'Arrow_s base-type (t1 'U64_s) )) ))
    (mark-class-exists( (tag-of base-type) ))
    (let r 0_u64)
    (match body (
