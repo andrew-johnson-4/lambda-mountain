@@ -88,43 +88,6 @@ to-string := λ(: is-used IsUsed). (: (
    r
 ) String);
 
-mangle-identifier := λ(: kt Type). (: (
-   (let r SNil)
-   (match kt (
-      ()
-      ( TAny (set r (mangle-identifier '?_s)) )
-      ( (TVar v) (set r (mangle-identifier v)) )
-      ( (TGround( tv ps )) (
-         (set r (mangle-identifier tv))
-         (while (non-zero ps) (match ps (
-            ()
-            ( (TypeSeq( rst p1 )) (
-               (set r (SCons( (close r) (close(mangle-identifier p1)) )))
-               (set ps rst)
-            )))
-         ))
-      ))
-      ( (TAnd( tl tr )) (
-         (set r (SCons( 
-            (close(mangle-identifier tl))
-            (close(mangle-identifier tr))
-         )))
-      ))
-   ))
-   r
-) S);
-
-mangle-identifier := λ(: k String)(: kt Type). (: (
-   (let cs (SCons(
-      (close(mangle-identifier k))
-      (close(SCons(
-         (close(SAtom( '_CL__s )))
-         (close(mangle-identifier(normalize kt)))
-      )))
-   )))
-   (clone-rope cs)
-) String);
-
 escape-string := λ(: s S). (: (
    (match s (
       ()
