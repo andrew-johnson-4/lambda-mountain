@@ -2,6 +2,9 @@
 import LIB/default.lm;
 
 import SRC/stable-ast.lm;
+
+import SRC/index-utility.lm;
+
 import SRC/stable-types.lm;
 import SRC/stable-utility.lm;
 import SRC/stable-tokenize.lm;

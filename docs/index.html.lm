@@ -17,6 +17,7 @@ import docs/ubuntu-docs.lm;
                (ul(
                   (li(a( (href '/lambda-mountain/default.lm.html_s) (text 'default.lm\s-\ssystems\sprogramming_s) )))
                   (li(a( (href '/lambda-mountain/default.html.html_s) (text 'default.html\s-\sweb\stemplating_s) )))
+                  (li(a( (href '/lambda-mountain/lm.lm.html_s) (text 'lm.lm\s-\sinternal\scompiler\sAPIs_s) )))
                ))
             ))
          ))
