@@ -8,7 +8,7 @@ main := λ. (: (
   (let bb (B( (A( 1_u64 )) )))
   (match bb (
      ()
-     ( (B( ('@( ba (A( a )) )) )) (
+     ( (B( (@( ba (A( a )) )) )) (
         (print a)
         (match ba (
            ()

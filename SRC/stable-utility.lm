@@ -57,6 +57,7 @@ is-variable := λ(: s String). (: (
       ( 126_u8 (set r True_u8) )  # ~
       (_ ())
    ))
+   (if (==( s '@_s )) (set r False_u8) ())
    (==( r True_u8 ))
 ) U64);
 
