@@ -2,3 +2,4 @@
 import SRC/infer-expr.lm;
 import SRC/alias.lm;
 import SRC/class-exists.lm;
+import SRC/is-parameter-flat.lm;
