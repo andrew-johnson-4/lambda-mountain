@@ -1,0 +1,67 @@
+
+meta
+   (description (
+      'Test\swhether\sa\sstring\sis\sa\ssimple\svariable\sname.
+   ))
+;
+is-variable := λ(: s String). (: (
+   (let r False_u8)
+   (match (head-string s) (
+      ()
+      ( 33_u8 (set r True_u8) )   # !
+      ( 36_u8 (set r True_u8) )   # $
+      ( 37_u8 (set r True_u8) )   # %
+      ( 38_u8 (set r True_u8) )   # &
+      ( 42_u8 (set r True_u8) )   # *
+      ( 43_u8 (set r True_u8) )   # +
+      ( 45_u8 (set r True_u8) )   # -
+      ( 46_u8 ( if (==( s '._s )) () (set r True_u8) ))
+      ( 47_u8 (set r True_u8) )   # /
+      ( 58_u8 (                   # :
+         (if (==( (head-string(tail-string s)) 58_u8 )) (set r True_u8) ())
+         (if (is-variable(tail-string s)) (set r True_u8) ())
+      ))
+      ( 59_u8 (set r True_u8) )   # ;
+      ( 60_u8 (set r True_u8) )   # <
+      ( 61_u8 (set r True_u8) )   # =
+      ( 62_u8 (set r True_u8) )   # >
+      ( 63_u8 (set r True_u8) )   # ?
+      ( 64_u8 (set r True_u8) )   # @
+      ( 91_u8 (set r True_u8) )   # [
+      ( 93_u8 (set r True_u8) )   # ]
+      ( 94_u8 (set r True_u8) )   # ^
+      ( 95_u8 (set r True_u8) )   # _
+      ( 97_u8 (set r True_u8) )   # a
+      ( 98_u8 (set r True_u8) )   # b
+      ( 99_u8 (set r True_u8) )   # c
+      ( 100_u8 (set r True_u8) )  # d
+      ( 101_u8 (set r True_u8) )  # e
+      ( 102_u8 (set r True_u8) )  # f
+      ( 103_u8 (set r True_u8) )  # g
+      ( 104_u8 (set r True_u8) )  # h
+      ( 105_u8 (set r True_u8) )  # i
+      ( 106_u8 (set r True_u8) )  # j
+      ( 107_u8 (set r True_u8) )  # k
+      ( 108_u8 (set r True_u8) )  # l
+      ( 109_u8 (set r True_u8) )  # m
+      ( 110_u8 (set r True_u8) )  # n
+      ( 111_u8 (set r True_u8) )  # o
+      ( 112_u8 (set r True_u8) )  # p
+      ( 113_u8 (set r True_u8) )  # q
+      ( 114_u8 (set r True_u8) )  # r
+      ( 115_u8 (set r True_u8) )  # s
+      ( 116_u8 (set r True_u8) )  # t
+      ( 117_u8 (set r True_u8) )  # u
+      ( 118_u8 (set r True_u8) )  # v
+      ( 119_u8 (set r True_u8) )  # w
+      ( 120_u8 (set r True_u8) )  # x
+      ( 121_u8 (set r True_u8) )  # y
+      ( 122_u8 (set r True_u8) )  # z
+      ( 124_u8 (set r True_u8) )  # |
+      ( 126_u8 (set r True_u8) )  # ~
+      (_ ())
+   ))
+   (if (==( s '@_s )) (set r False_u8) ())
+   (==( r True_u8 ))
+) U64);
+
