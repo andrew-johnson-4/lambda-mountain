@@ -269,7 +269,7 @@ fragment  as-branch-conditional := λ(: l Reg8). (: (
    (.expression( 'jne ))
 ) BranchConditional);
 
-fragment  primitive::if := λ(: ictx ImplicitContext)(: e1 BranchConditional)(: e2 ?)(: e3 ?). (: (
+fragment  primitive::if := λ: DontChain(: ictx ImplicitContext)(: e1 BranchConditional)(: e2 ?)(: e3 ?). (: (
    (.program (
       \t 'push \s '%RBP \n
       (.frame e1)
@@ -316,7 +316,7 @@ fragment  primitive::if := λ(: ictx ImplicitContext)(: e1 BranchConditional)(: 
    ))
 ) Nil);
 
-fragment  primitive::while := λ(: ictx ImplicitContext)(: e1 BranchConditional)(: e2 ?). (: (
+fragment  primitive::while := λ: DontChain(: ictx ImplicitContext)(: e1 BranchConditional)(: e2 ?). (: (
    (.program(
       (uuid label-begin-loop) ': \n
       (.frame e1)
@@ -335,7 +335,7 @@ fragment  primitive::while := λ(: ictx ImplicitContext)(: e1 BranchConditional)
    ))
 ) Nil);
 
-fragment  cdecl::call := λ(: ictx ImplicitContext)(: args ?). (: (
+fragment  cdecl::call := λ: DontChain(: ictx ImplicitContext)(: args ?). (: (
    (.program(
       \o 'call \s 'function \s (.function-name ictx) \s ': \s (.function-type ictx) \n
       \t 'push \s '%RBX \n

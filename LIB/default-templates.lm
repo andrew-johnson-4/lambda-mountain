@@ -1,7 +1,7 @@
 
 import LIB/default-templates-stackvariable.lm;
 
-fragment  template::push := λ(: src Constructor<tag>+Sized<struct-size>+FieldsSized<fields-size>). (: (
+fragment  template::push := λ: DontChain(: src Constructor<tag>+Sized<struct-size>+FieldsSized<fields-size>). (: (
    (.program(
       (for wsz in (range( '0 (/( (-( (-( (.expression struct-size) (.expression fields-size) )) '8 )) '8 )) )) (
          \t 'pushq \s '$0 \n
@@ -11,7 +11,7 @@ fragment  template::push := λ(: src Constructor<tag>+Sized<struct-size>+FieldsS
    ))
 ) StackVariable);
 
-fragment  template::mov := λ(: src Constructor<tag>+Sized<struct-size>+FieldsSized<fields-size>)(: dst LocalVariable). (: (
+fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-size>+FieldsSized<fields-size>)(: dst LocalVariable). (: (
    (.program(
       (for wsz in (range( '0 (/( (-( (-( (.expression struct-size) (.expression fields-size) )) '8 )) '8 )) )) (
          \t 'pushq \s '$0 \n
@@ -24,7 +24,7 @@ fragment  template::mov := λ(: src Constructor<tag>+Sized<struct-size>+FieldsSi
    ))
 ) Nil);
 
-fragment  template::mov := λ(: src Constructor<tag>+Sized<struct-size>+FieldsSized<fields-size>)(: dst GlobalVariable). (: (
+fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-size>+FieldsSized<fields-size>)(: dst GlobalVariable). (: (
    (.program(
       (for wsz in (range( '0 (/( (-( (-( (.expression struct-size) (.expression fields-size) )) '8 )) '8 )) )) (
          \t 'pushq \s '$0 \n
