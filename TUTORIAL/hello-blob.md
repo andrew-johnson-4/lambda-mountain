@@ -26,11 +26,11 @@ A function can be declared by binding a lambda expression to a symbol.
 
 ```
 in file: hello-blob.lm
-ab := λ(: a A)(: b B). (
+f := λ(: a A)(: b B). (
    b a
 );
 
-(a( A B ))
+(f( A B ))
 ```
 
 ```
