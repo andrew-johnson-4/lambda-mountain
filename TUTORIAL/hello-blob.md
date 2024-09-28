@@ -6,8 +6,8 @@ When complex assembly is not necessary, we can say that data is a "blob".
 ```
 in file: hello-blob.lm
 ----------------------
-'A
-'B
+A
+B
 ```
 
 In this file we declare two literals A and B.
