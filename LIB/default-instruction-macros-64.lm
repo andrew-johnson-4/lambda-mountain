@@ -1,6 +1,6 @@
 
 macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-type)) (
-   fragment  op-alias := λ(: l op-type+Constant)(: r op-type+Constant). (: (
+   fragment  op-alias := λ: DontChain(: l op-type+Constant)(: r op-type+Constant). (: (
       (.program(
          \t 'movq \s '$ (.expression l) , \s '%RAX \n
          \t 'movq \s '$ (.expression r) , \s '%R14 \n
@@ -14,7 +14,7 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-type)) (
          'RAX
       ))
    ) op-type+Reg64);
-   fragment  op-alias := λ(: l op-type+Constant)(: r op-type+LocalVariable). (: (
+   fragment  op-alias := λ: DontChain(: l op-type+Constant)(: r op-type+LocalVariable). (: (
       (.program(
          \t 'movq \s '$ (.expression l) , \s '%RAX \n
          \t 'movq \s (.expression r) \[ '%RBP \] , \s '%R14 \n
@@ -28,7 +28,7 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-type)) (
          'RAX
       ))
    ) op-type+Reg64);
-   fragment  op-alias := λ(: l op-type+Constant)(: r op-type+GlobalVariable). (: (
+   fragment  op-alias := λ: DontChain(: l op-type+Constant)(: r op-type+GlobalVariable). (: (
       (.program(
          \t 'movq \s '$ (.expression l) , \s '%RAX \n
          \t 'movq \s '$ (.expression r) , \s '%R14 \n
@@ -43,7 +43,7 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-type)) (
          'RAX
       ))
    ) op-type+Reg64);
-   fragment  op-alias := λ(: l op-type+Constant)(: r op-type+Reg64). (: (
+   fragment  op-alias := λ: DontChain(: l op-type+Constant)(: r op-type+Reg64). (: (
       (.program(
          (.program r)
          \t 'movq \s '% (.expression r) , \s '%R14 \n
@@ -59,7 +59,7 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-type)) (
       ))
    ) op-type+Reg64);
 
-   fragment  op-alias := λ(: l op-type+LocalVariable)(: r op-type+Constant). (: (
+   fragment  op-alias := λ: DontChain(: l op-type+LocalVariable)(: r op-type+Constant). (: (
       (.program(
          \t 'movq \s (.expression l) \[ '%RBP \] , \s '%RAX \n
          \t 'movq \s '$ (.expression r) , \s '%R14 \n
@@ -73,7 +73,7 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-type)) (
          'RAX
       ))
    ) op-type+Reg64);
-   fragment  op-alias := λ(: l op-type+LocalVariable)(: r op-type+LocalVariable). (: (
+   fragment  op-alias := λ: DontChain(: l op-type+LocalVariable)(: r op-type+LocalVariable). (: (
       (.program(
          \t 'movq \s (.expression l) \[ '%RBP \] , \s '%RAX \n
          \t 'movq \s (.expression r) \[ '%RBP \] , \s '%R14 \n
@@ -87,7 +87,7 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-type)) (
          'RAX
       ))
    ) op-type+Reg64);
-   fragment  op-alias := λ(: l op-type+LocalVariable)(: r op-type+GlobalVariable). (: (
+   fragment  op-alias := λ: DontChain(: l op-type+LocalVariable)(: r op-type+GlobalVariable). (: (
       (.program(
          \t 'movq \s (.expression l) \[ '%RBP \] , \s '%RAX \n
          \t 'movq \s '$ (.expression r) , \s '%R14 \n
@@ -102,7 +102,7 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-type)) (
          'RAX
       ))
    ) op-type+Reg64);
-   fragment  op-alias := λ(: l op-type+LocalVariable)(: r op-type+Reg64). (: (
+   fragment  op-alias := λ: DontChain(: l op-type+LocalVariable)(: r op-type+Reg64). (: (
       (.program(
          (.program r)
          \t 'movq \s '% (.expression r) , \s '%R14 \n
@@ -118,7 +118,7 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-type)) (
       ))
    ) op-type+Reg64);
 
-   fragment  op-alias := λ(: l op-type+GlobalVariable)(: r op-type+Constant). (: (
+   fragment  op-alias := λ: DontChain(: l op-type+GlobalVariable)(: r op-type+Constant). (: (
       (.program(
          \t 'movq \s '$ (.expression l) , \s '%RAX \n
          \t 'movq \s '0 \[ '%RAX \] , \s '%RAX \n
@@ -133,7 +133,7 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-type)) (
          'RAX
       ))
    ) op-type+Reg64);
-   fragment  op-alias := λ(: l op-type+GlobalVariable)(: r op-type+LocalVariable). (: (
+   fragment  op-alias := λ: DontChain(: l op-type+GlobalVariable)(: r op-type+LocalVariable). (: (
       (.program(
          \t 'movq \s '$ (.expression l) , \s '%RAX \n
          \t 'movq \s '0 \[ '%RAX \] , \s '%RAX \n
@@ -148,7 +148,7 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-type)) (
          'RAX
       ))
    ) op-type+Reg64);
-   fragment  op-alias := λ(: l op-type+GlobalVariable)(: r op-type+GlobalVariable). (: (
+   fragment  op-alias := λ: DontChain(: l op-type+GlobalVariable)(: r op-type+GlobalVariable). (: (
       (.program(
          \t 'movq \s '$ (.expression l) , \s '%RAX \n
          \t 'movq \s '0 \[ '%RAX \] , \s '%RAX \n
@@ -164,7 +164,7 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-type)) (
          'RAX
       ))
    ) op-type+Reg64);
-   fragment  op-alias := λ(: l op-type+GlobalVariable)(: r op-type+Reg64). (: (
+   fragment  op-alias := λ: DontChain(: l op-type+GlobalVariable)(: r op-type+Reg64). (: (
       (.program(
          (.program r)
          \t 'movq \s '% (.expression r) , \s '%R14 \n
@@ -181,7 +181,7 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-type)) (
       ))
    ) op-type+Reg64);
 
-   fragment  op-alias := λ(: l op-type+Reg64)(: r op-type+Constant). (: (
+   fragment  op-alias := λ: DontChain(: l op-type+Reg64)(: r op-type+Constant). (: (
       (.program(
          (.program l)
          \t 'movq \s '% (.expression l) , \s '%RAX \n
@@ -196,7 +196,7 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-type)) (
          'RAX
       ))
    ) op-type+Reg64);
-   fragment  op-alias := λ(: l op-type+Reg64)(: r op-type+LocalVariable). (: (
+   fragment  op-alias := λ: DontChain(: l op-type+Reg64)(: r op-type+LocalVariable). (: (
       (.program(
          (.program l)
          \t 'movq \s '% (.expression l) , \s '%RAX \n
@@ -211,7 +211,7 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-type)) (
          'RAX
       ))
    ) op-type+Reg64);
-   fragment  op-alias := λ(: l op-type+Reg64)(: r op-type+GlobalVariable). (: (
+   fragment  op-alias := λ: DontChain(: l op-type+Reg64)(: r op-type+GlobalVariable). (: (
       (.program(
          (.program l)
          \t 'movq \s '% (.expression l) , \s '%RAX \n
@@ -227,7 +227,7 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-type)) (
          'RAX
       ))
    ) op-type+Reg64);
-   fragment  op-alias := λ(: l op-type+Reg64+Meta<OntoStack>)(: r op-type+Reg64). (: (
+   fragment  op-alias := λ: DontChain(: l op-type+Reg64+Meta<OntoStack>)(: r op-type+Reg64). (: (
       (.program(
          (.program l)
          \t 'pushq \s '% (.expression l) \n

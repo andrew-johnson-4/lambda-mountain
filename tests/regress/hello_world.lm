@@ -1,7 +1,7 @@
 
 import LIB/default-minimal.lm;
 
-fragment  cdecl::return := λ(: l Nil). (: (
+fragment  cdecl::return := λ: DontChain(: l Nil). (: (
    (.program(
       (.program l)
       (.del l)
