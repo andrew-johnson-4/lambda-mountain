@@ -51,11 +51,11 @@ install:
 	ld -o lm lm_raw.o
 	mv lm /usr/local/bin/
 	rm lm_raw.o
-	lm LMV/cli.lm -o lmv.s
-	as -o lmv.o lmv.s
-	ld -o lmv   lmv.o
-	mv lmv /usr/local/bin
-	rm lmv.s lmv.o
+	#lm LMV/cli.lm -o lmv.s
+	#as -o lmv.o lmv.s
+	#ld -o lmv   lmv.o
+	#mv lmv /usr/local/bin
+	#rm lmv.s lmv.o
 	lm DOBY/cli.lm -o doby.s
 	as -o doby.o doby.s
 	ld -o doby   doby.o
