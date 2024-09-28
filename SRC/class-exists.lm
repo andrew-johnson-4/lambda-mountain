@@ -1,0 +1,6 @@
+
+class-exists-index := (: BTreeEqEOF BTreeEq<String,U64>);
+
+mark-class-exists := λ(: class String). (: (
+   (.bind( (as (& class-exists-index) BTreeEq<String,U64>[]) class 1_u64 ))
+) Nil);

@@ -37,14 +37,6 @@ global-symbol-registry := (: BTreeEqEOF BTreeEq<Tuple<String,Type>,U64>);
 # Global (type-base-name: String, parameter: String) -> Yes/No, mutable
 parameter-is-flat-index := (: BTreeEqEOF BTreeEq<Tuple<Tuple<String,U64>,U64>,U64>);
 
-class-exists-index := (: BTreeEqEOF BTreeEq<String,U64>);
-
-alias-index := (: LEOF List<Tuple<Tuple<String,String>,Type>>);
-
-mark-class-exists := λ(: class String). (: (
-   (.bind( (as (& class-exists-index) BTreeEq<String,U64>[]) class 1_u64 ))
-) Nil);
-
 mark-parameter-flat := λ(: type-base-name String)(: type-arity U64)(: parameter U64). (: (
    (.bind( (as (& parameter-is-flat-index) BTreeEq<Tuple<Tuple<String,U64>,U64>,U64>[])
            (Tuple( (Tuple( type-base-name type-arity )) parameter )) 1_u64 ))

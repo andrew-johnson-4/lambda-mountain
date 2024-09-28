@@ -1,4 +1,6 @@
 
+alias-index := (: LEOF List<Tuple<Tuple<String,String>,Type>>);
+
 add-alias := λ(: from String)(: to String)(: tt Type). (: (
    (set alias-index (cons( (Tuple( (Tuple( from to )) tt )) alias-index )))
 ) Nil);
