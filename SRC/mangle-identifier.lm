@@ -41,7 +41,7 @@ mangle-identifier := λ(: k String). (: (
 
 meta
    (description (
-      'Mangle\sa\sstring\sso\sthat\sit\scan\sbecome\sa\ssymbol\sin\san\sobject\sfile.
+      'Mangle\sa\stype\sso\sthat\sit\scan\sbecome\sa\ssymbol\sin\san\sobject\sfile.
    ))
 ;
 mangle-identifier := λ(: kt Type). (: (
@@ -72,7 +72,7 @@ mangle-identifier := λ(: kt Type). (: (
 
 meta
    (description (
-      'Mangle\sa\sstring\sso\sthat\sit\scan\sbecome\sa\ssymbol\sin\san\sobject\sfile.
+      'Mangle\sa\styped\svariable\sso\sthat\sit\scan\sbecome\sa\ssymbol\sin\san\sobject\sfile.
    ))
 ;
 mangle-identifier := λ(: k String)(: kt Type). (: (
