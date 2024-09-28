@@ -19,7 +19,7 @@ develop:
 	coqc tmp.v
 	coqchk tmp.vo
 
-deploy: compile-production
+deploy: compile-production build-docs
 	time ./production -o deploy.s SRC/cli.lm
 	as deploy.s -o deploy.o
 	ld deploy.o -o deploy
