@@ -2,3 +2,5 @@
 import SRC/mangle-identifier.lm;
 import SRC/escape-string.lm;
 import SRC/error-formatting.lm;
+import SRC/is-variable.lm;
+import SRC/to-string.lm;

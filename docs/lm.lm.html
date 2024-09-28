@@ -118,7 +118,11 @@
 <h4 ><b>escape-string</b> : (s: S) -&gt; S</h4>
 <p >Escape a string to be sent to GNU assembly output.</p><hr >
 <h4 ><b>exit-error</b> : (msg: String)(t: AST) -&gt; Nil</h4>
-<p >Exit with a simple message and associated blame.</p></div>
+<p >Exit with a simple message and associated blame.</p><hr >
+<h4 ><b>is-variable</b> : (s: String) -&gt; U64</h4>
+<p >Test whether a string is a simple variable name.</p><hr >
+<h4 ><b>to-string</b> : (is-used: IsUsed) -&gt; String</h4>
+<p >Convert a Used type into a String.</p></div>
 </div>
 </main>
 </div>
