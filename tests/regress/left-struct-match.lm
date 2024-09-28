@@ -8,8 +8,14 @@ main := λ. (: (
   (let bb (B( (A( 1_u64 )) )))
   (match bb (
      ()
-     ( (B( (A( a )) )) (
+     ( (B( (@ ba (A( a ))) )) (
         (print a)
+        (match ba (
+           ()
+           ( (A( baa )) (
+              (print baa)
+           ))
+        ))
      ))
   ))
 ) Nil);
