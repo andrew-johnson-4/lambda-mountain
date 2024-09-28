@@ -122,7 +122,9 @@
 <h4 ><b>is-variable</b> : (s: String) -&gt; U64</h4>
 <p >Test whether a string is a simple variable name.</p><hr >
 <h4 ><b>to-string</b> : (is-used: IsUsed) -&gt; String</h4>
-<p >Convert a Used type into a String.</p></div>
+<p >Convert a Used type into a String.</p><hr >
+<h4 ><b>infer-expr</b> : (tctx: TContext)(term: AST)(scoped: IsScoped)(hint: Type)(used: IsUsed) -&gt; TContext</h4>
+<p >Use a Context to infer the type of an expression.</p></div>
 </div>
 </main>
 </div>
