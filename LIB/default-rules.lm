@@ -32,6 +32,10 @@ macro ('match-pats-arm( term (:Variable: v) )) (
    ( (let v term) (branchtrue()) )
 );
 
+macro ('match-pats-arm( term ('@( v more )) )) (
+   ( (let v term) (match-pats-arm( v more )) )
+);
+
 macro ('match-pats-arm( term :Any: )) (
    (branchtrue())
 );

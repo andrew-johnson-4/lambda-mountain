@@ -539,7 +539,7 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (
              ()
          )
       ))
-      ( (Tuple( (App( (Lit( ':Variable:_s _ )) _ )) (Var( '__s _ )) )) (
+      ( (Tuple( (App( (Lit( ':Variable:_s _ )) (Var( _ _ )) )) (Var( '__s _ )) )) (
          ()
       ))
       ( (Tuple( (App( (Lit( ':Variable:_s _ )) (Var( pv _ )) )) (Var( el eltk )) )) (
