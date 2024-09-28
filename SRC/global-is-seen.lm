@@ -1,0 +1,16 @@
+
+global-symbol-registry := (: BTreeEqEOF BTreeEq<Tuple<String,Type>,U64>);
+
+mark-global-as-seen := λ(: name String)(: tt Type)(: tlt Type). (: (
+   (if (&&( (global-is-seen( name tt )) (not(non-zero(slot( tlt 'Hook_s )))) )) (
+      (print 'Duplicate\sGlobal\sSymbol\s_s)(print name)(print '\s:\s_s)(print tt)(print '\n_s)
+      (exit 1_u64)
+   ) (
+      (.bind( (as (& global-symbol-registry) BTreeEq<Tuple<String,Type>,U64>[]) (Tuple( name tt )) 1_u64 ))
+   ))
+) Nil);
+
+global-is-seen := λ(: name String)(: tt Type). (: (
+   (let r (.lookup( global-symbol-registry (Tuple( name tt )) 0_u64 )))
+   r
+) U64);

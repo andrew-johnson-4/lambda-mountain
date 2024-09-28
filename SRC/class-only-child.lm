@@ -1,0 +1,11 @@
+
+class-to-only-child := (: BTreeEqEOF BTreeEq<String,String>);
+
+has-only-child := λ(: class String)(: tag String). (: (
+   (.bind( (as (& class-to-only-child) BTreeEq<String,String>[]) class tag ))
+) Nil);
+
+get-only-child := λ(: class String). (: (
+   (let r (.lookup( class-to-only-child class '_s )))
+   r
+) String);

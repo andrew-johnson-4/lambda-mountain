@@ -3,3 +3,6 @@ import SRC/infer-expr.lm;
 import SRC/alias.lm;
 import SRC/class-exists.lm;
 import SRC/is-parameter-flat.lm;
+import SRC/is-special.lm;
+import SRC/global-is-seen.lm;
+import SRC/class-only-child.lm;
