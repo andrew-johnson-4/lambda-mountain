@@ -1,0 +1,10 @@
+
+lone-index := (: BTreeEqEOF BTreeEq<String,U64>);
+
+index-lone-tag := λ(: tag String). (: (
+   (.bind( (as (& lone-index) BTreeEq<String,U64>[]) tag 1_u64 ))
+) Nil);
+
+is-lone-tag := λ(: tag String). (: (
+   (.lookup( lone-index tag 0_u64 ))
+) U64);

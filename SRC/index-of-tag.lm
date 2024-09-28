@@ -1,0 +1,12 @@
+
+tag-to-index-index := (: BTreeEqEOF BTreeEq<String,U64>);
+unknown-index-of-tag := 99999_u64;
+
+index-of-tag := λ(: tag String). (: (
+   (let r (.lookup( tag-to-index-index tag unknown-index-of-tag )))
+   r
+) U64);
+
+index-index-of-tag := λ(: tag String)(: index U64). (: (
+   (.bind( (as (& tag-to-index-index) BTreeEq<String,U64>[]) tag index ))
+) Nil);

@@ -1,0 +1,14 @@
+
+tag-is-fragment-index := (: BTreeEqEOF BTreeEq<String,U64>);
+
+index-tag-is-fragment := λ(: tag String). (: (
+   (.bind( (as (& tag-is-fragment-index) BTreeEq<String,U64>[]) tag 1_u64 ))
+) Nil);
+
+is-fragment := λ(: tag String). (: (
+   (.lookup( tag-is-fragment-index tag 0_u64 ))
+) U64);
+
+is-fragment := λ(: tt Type). (: (
+   (is-fragment(tag-of tt))
+) U64);

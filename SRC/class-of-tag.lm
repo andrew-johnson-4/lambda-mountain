@@ -1,0 +1,21 @@
+
+tag-to-class-index := (: BTreeEqEOF BTreeEq<String,Type>);
+
+index-class-of-tag := λ(: tag String)(: class Type). (: (
+   (.bind( (as (& tag-to-class-index) BTreeEq<String,Type>[]) tag class ))
+   (match class (
+      ()
+      ( (TGround( cls _ )) (
+         (.bind( (as (& class-to-yes-index) BTreeEq<String,U64>[]) cls 1_u64 ))
+      ))
+      ( _ (
+         (print 'Unexpected\sClass\sIn\sindex-class-of-tag:\s_s)(print class)(print '\n_s)
+         (exit 1_u64)
+      ))
+   ))
+) Nil);
+
+class-of-tag := λ(: tag String). (: (
+   (let r (.lookup( tag-to-class-index tag TAny )))
+   r
+) Type);
