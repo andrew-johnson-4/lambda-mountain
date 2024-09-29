@@ -1,0 +1,23 @@
+
+types-have-changed := True_u8;
+
+typecheck := λ. (: (
+   (let p ast-parsed-program)
+   (let ordered-type-exprs ASTEOF)
+   (while (non-zero p) (match p (
+      ()
+      ( (Seq( rst r )) (
+         (set ordered-type-exprs (Seq( (close ordered-type-exprs) (close r) )))
+         (set p rst)
+      ))
+   )))
+   (while (non-zero ordered-type-exprs) (match ordered-type-exprs (
+      ()
+      ( (Seq( rst r )) (
+         (infer-global-context( r ))
+         (set ordered-type-exprs rst)
+      ))
+   )))
+   (infer-expr( global-type-context ast-parsed-program Unscoped TAny Used ))
+   (assert-well-typed ast-parsed-program)
+) Nil);

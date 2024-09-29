@@ -1,0 +1,11 @@
+
+is-special-index := (: BTreeEqEOF BTreeEq<Tuple<String,Type>,U64>);
+
+mark-as-special := λ(: name String)(: tt Type). (: (
+   (.bind( (as (& is-special-index) BTreeEq<Tuple<String,Type>,U64>[]) (Tuple( name tt )) 1_u64 ))
+) Nil);
+
+is-special := λ(: name String)(: tt Type). (: (
+   (let r (.lookup( is-special-index (Tuple( name tt )) 0_u64 )))
+   r
+) U64);

@@ -1,0 +1,2 @@
+
+type-complex-fields-index := (: BTreeEqEOF BTreeEq<String,Tuple<Type,Type>>);
