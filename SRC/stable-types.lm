@@ -1,29 +1,4 @@
 
-union := λ(: lctx TContext)(: rctx TContext). (: (
-   (match rctx (
-      ()
-      ( TCtxNil (set rctx TCtxEOF) )
-      ( TCtxEOF () )
-      ( (TCtxBind( rst k v t )) (
-         (set lctx (union( lctx rst )))
-         (set lctx (TCtxBind( (close lctx) k v t )))
-      ))
-   ))
-   lctx
-) TContext);
-
-and := λ(: lctx TContext)(: rctx TContext). (: (
-   (match (Tuple( lctx rctx )) (
-      ()
-      ( (Tuple( TCtxEOF _ )) (set lctx TCtxEOF) )
-      ( (Tuple( _ TCtxEOF )) (set lctx TCtxEOF) )
-      ( _ (
-         (set lctx (union( lctx rctx )))
-      ))
-   ))
-   lctx
-) TContext);
-
 with-tag := λ(: tt Type). (: (
    (let cls-tt (with-only-class tt))
    (if (non-zero cls-tt) (
@@ -1193,25 +1168,6 @@ is-sized := λ(: tt Type). (: (
             (is-sized lt)
             (is-sized rt)
          )))
-      ))
-      ( _ () )
-   ))
-   r
-) U64);
-
-and := λ(: lt Type)(: rt Type). (: (
-   (let tt (TAnd( (close lt) (close rt) )))
-   tt
-) Type);
-
-is-parameterized := λ(: tt Type). (: (
-   (let r 0_u64)
-   (match tt (
-      ()
-      ( (TGround( _ (LCons( _ _ )) )) (set r 1_u64) )
-      ( (TAnd( lt rt )) (
-         (if (is-parameterized lt) (set r 1_u64) ())
-         (if (is-parameterized rt) (set r 1_u64) ())
       ))
       ( _ () )
    ))

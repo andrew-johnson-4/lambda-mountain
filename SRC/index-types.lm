@@ -20,8 +20,11 @@ import SRC/domain.lm;
 import SRC/range.lm;
 import SRC/t.lm;
 import SRC/p.lm;
+import SRC/and.lm;
+import SRC/union.lm;
 import SRC/tag-of.lm;
 import SRC/is-open.lm;
+import SRC/is-parameterized.lm;
 
 import SRC/typecheck.lm;
 import SRC/substitute.lm;
