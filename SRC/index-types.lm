@@ -24,3 +24,4 @@ import SRC/tag-of.lm;
 import SRC/is-open.lm;
 
 import SRC/typecheck.lm;
+import SRC/substitute.lm;
