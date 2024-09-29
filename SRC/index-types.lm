@@ -44,6 +44,8 @@ import SRC/with-only-representation.lm;
 import SRC/normalize.lm;
 import SRC/denormalize.lm;
 import SRC/enrich.lm;
+import SRC/type-of-s.lm;
+import SRC/type-of-s-with-fields.lm;
 
 import SRC/typecheck.lm;
 import SRC/substitute.lm;
