@@ -1,6 +1,6 @@
 
 t1 := λ(: tag String). (: (
-   (TGround( tag (close(: TypeEOF List<Type>)) ))
+   (TGround( tag (close(: LEOF List<Type>)) ))
 ) Type);
 
 t2 := λ(: tag String)(: p1 Type). (: (
