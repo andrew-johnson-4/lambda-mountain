@@ -9,7 +9,6 @@ import SRC/index-assemble.lm;
 
 import SRC/main.lm;
 
-import SRC/stable-assemble.lm;
 import SRC/stable-blob.lm;
 import SRC/stable-codegen.lm;
 import SRC/stable-preprocess.lm;
