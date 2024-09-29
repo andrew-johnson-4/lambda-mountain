@@ -1,0 +1,29 @@
+
+typeof-var-raw := λ(: sloc AST)(: tctx TContext)(: vname String). (: (
+   (let found (find-alias-type vname))
+   (while (non-zero tctx) (match tctx (
+      ()
+      ( TCtxNil (set tctx TCtxEOF) )
+      ( (TCtxBind( rst k vt _ )) (
+         (if (==( k vname )) (
+            (if (non-zero found) (
+               (if (is-arrow vt) (
+                  (set found (and( found vt )))
+               ) (
+                  (set found vt)
+               ))
+            ) (
+               (set found vt)
+            ))
+            (if (is-arrow vt) (
+               (set tctx rst)
+            ) (
+               (set tctx TCtxEOF)
+            ))
+         ) (
+            (set tctx rst)
+         ))
+      ))
+   )))
+   found
+) Type);
