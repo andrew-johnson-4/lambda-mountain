@@ -4,19 +4,19 @@ tsized :=  λ(: tag String). (: (
    tt
 ) Type);
 
-substitute := λ(: tctx TContext)(: tt TypeList). (: (
+substitute := λ(: tctx TContext)(: tt List<Type>). (: (
    (match tt (
       ()
-      ( TypeEOF () )
-      ( (TypeSeq( rst par )) (
-         (set tt (TypeSeq(
-            (close(substitute( tctx rst )))
+      ( LEOF () )
+      ( (LCons( par rst )) (
+         (set tt (cons(
             (substitute( tctx par ))
+            (substitute( tctx rst ))
          )))
       ))
    ))
    tt
-) TypeList);
+) List<Type>);
 
 substitute := λ(: tctx TContext)(: tt Type). (: (
    (match tt (
@@ -50,19 +50,19 @@ substitute := λ(: tctx TContext)(: tt Type). (: (
    tt
 ) Type);
 
-substitute := λ(: tctx Context)(: tt TypeList). (: (
+substitute := λ(: tctx Context)(: tt List<Type>). (: (
    (match tt (
       ()
-      ( TypeEOF () )
-      ( (TypeSeq( rst par )) (
-         (set tt (TypeSeq(
-            (close(substitute( tctx rst )))
+      ( LEOF () )
+      ( (LCons( par rst )) (
+         (set tt (cons(
             (substitute( tctx par ))
+            (substitute( tctx rst ))
          )))
       ))
    ))
    tt
-) TypeList);
+) List<Type>);
 
 substitute := λ(: tctx Context)(: tt Type). (: (
    (match tt (
@@ -338,16 +338,16 @@ without-open := λ(: tt Type). (: (
    tt
 ) Type);
 
-without-tag := λ(: tt TypeList). (: (
+without-tag := λ(: tt List<Type>). (: (
    (match tt (
       ()
-      ( (TypeSeq( rst p1 )) (
-         (set tt (TypeSeq( (close(without-tag rst)) (without-tag p1) )))
+      ( (LCons( p1 rst )) (
+         (set tt (cons( (without-tag p1) (without-tag rst) )))
       ))
-      ( TypeEOF () )
+      ( LEOF () )
    ))
    tt
-) TypeList);
+) List<Type>);
 
 with-only-tag := λ(: tt Type). (: (
    (let rt TAny)
@@ -388,19 +388,19 @@ with-only-class := λ(: tt Type). (: (
    rt
 ) Type);
 
-without-representation := λ(: tt TypeList). (: (
+without-representation := λ(: tt List<Type>). (: (
    (match tt (
       ()
-      ( (TypeSeq( rst p1 )) (
-         (set tt (TypeSeq(
-            (close(without-representation rst))
+      ( (LCons( p1 rst )) (
+         (set tt (cons(
             (without-representation p1)
+            (without-representation rst)
          )))
       ))
-      ( TypeEOF () )
+      ( LEOF () )
    ))
    tt
-) TypeList);
+) List<Type>);
 
 without-representation := λ(: tt Type). (: (
    (match tt (
@@ -440,19 +440,19 @@ without-representation := λ(: tt Type). (: (
    tt
 ) Type);
 
-without-size := λ(: tt TypeList). (: (
+without-size := λ(: tt List<Type>). (: (
    (match tt (
       ()
-      ( (TypeSeq( rst p1 )) (
-         (set tt (TypeSeq(
-            (close(without-size rst))
+      ( (LCons( p1 rst )) (
+         (set tt (cons(
             (without-size p1)
+            (without-size rst)
          )))
       ))
-      ( TypeEOF () )
+      ( LEOF () )
    ))
    tt
-) TypeList);
+) List<Type>);
 
 without-size := λ(: tt Type). (: (
    (match tt (
@@ -485,19 +485,19 @@ without-size := λ(: tt Type). (: (
    tt
 ) Type);
 
-without-size-unless-class := λ(: tt TypeList). (: (
+without-size-unless-class := λ(: tt List<Type>). (: (
    (match tt (
       ()
-      ( (TypeSeq( rst p1 )) (
-         (set tt (TypeSeq(
-            (close(without-size-unless-class rst))
+      ( (LCons( p1 rst )) (
+         (set tt (cons(
             (without-size-unless-class p1)
+            (without-size-unless-class rst)
          )))
       ))
-      ( TypeEOF () )
+      ( LEOF () )
    ))
    tt
-) TypeList);
+) List<Type>);
 
 without-size-unless-class := λ(: tt Type). (: (
    (match tt (
@@ -584,23 +584,6 @@ normalize := λ(: tt Type). (: (
       ( (Tuple( (TGround( ln lps )) (TGround( rn rps )) )) (
          (if (==( ln rn )) (
             (if (==( lps rps )) (
-               (set r 1_u64)
-            ) ())
-         ) ())
-      ))
-      ( _ () )
-   ))
-   r
-) U64);
-
-== := λ(: lt TypeList)(: rt TypeList). (: (
-   (let r 0_u64)
-   (match (Tuple( lt rt )) (
-      ()
-      ( (Tuple( TypeEOF TypeEOF )) (set r 1_u64) )
-      ( (Tuple( (TypeSeq( ltr lt1 )) (TypeSeq( rtr rt1 )) )) (
-         (if (==( lt1 rt1 )) (
-            (if (==( ltr rtr )) (
                (set r 1_u64)
             ) ())
          ) ())

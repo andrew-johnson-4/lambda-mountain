@@ -9,8 +9,7 @@ config-assemble-mode         := (: AssembleGNU AssembleMode);
 type CompileMode ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 config-mode                  := (: ModeCompile CompileMode);
 
-type Type TAny | (TVar String) | (TGround( String , TypeList[] )) | (TAnd( Type[] , Type[] )); zero Type TAny;
-type TypeList TypeEOF | (TypeSeq( TypeList[] , Type )); zero TypeList TypeEOF;
+type Type TAny | (TVar String) | (TGround( String , List<Type>[] )) | (TAnd( Type[] , Type[] )); zero Type TAny;
 
 type SourceLocation (SourceLocation( String , U64 , U64 ));
 type Token (Token( String , U64 , SourceLocation ));
@@ -238,11 +237,11 @@ serialize-ast := λ(: t AST). (: (
    ))
 ) Nil);
 
-serialize-ast := λ(: tt TypeList). (: (match tt (
+serialize-ast := λ(: tt List<Type>). (: (match tt (
    ()
-   ( TypeEOF () )
-   ( (TypeSeq( TypeEOF p1 )) (serialize-ast p1) )
-   ( (TypeSeq( rst p1 )) (
+   ( LEOF () )
+   ( (LCons( p1 LEOF )) (serialize-ast p1) )
+   ( (LCons( p1 rst )) (
       (print '\[App\s\[_s)
       (serialize-ast rst)
       (print '\s_s)
@@ -361,11 +360,11 @@ print := λ(: tt Type). (: (match tt (
    ))
 )) Nil);
 
-print := λ(: tt TypeList). (: (match tt (
+print := λ(: tt List<Type>). (: (match tt (
    ()
-   ( TypeEOF () )
-   ( (TypeSeq( TypeEOF p1 )) (print p1) )
-   ( (TypeSeq( rst p1 )) (
+   ( LEOF () )
+   ( (LCons( p1 LEOF )) (print p1) )
+   ( (LCons( p1 rst )) (
       (print rst)
       (print ',_s)
       (print p1)
