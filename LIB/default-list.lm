@@ -66,7 +66,7 @@ print := λ(: l List<x>). (: (
    (print ']_s)
 ) Nil);
 
-nth := λ(: tt List<x>)(: i U64)(: default x). (: (
+.nth := λ(: tt List<x>)(: i U64)(: default x). (: (
    (while (>( i 0_u64 )) (
       (match tt (
          ()
