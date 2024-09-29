@@ -18,6 +18,9 @@ import SRC/fields-of-tag.lm;
 import SRC/type-constructors.lm;
 import SRC/type-complex-fields.lm;
 
+import SRC/ascript.lm;
+import SRC/typeof.lm;
+import SRC/to-s.lm;
 import SRC/domain.lm;
 import SRC/range.lm;
 import SRC/t.lm;
@@ -29,6 +32,7 @@ import SRC/is-open.lm;
 import SRC/is-parameterized.lm;
 import SRC/can-unify.lm;
 import SRC/unify.lm;
+import SRC/fields-of-type.lm;
 
 import SRC/with-tag.lm;
 import SRC/with-size.lm;
