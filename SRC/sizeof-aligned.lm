@@ -1,0 +1,6 @@
+
+sizeof-aligned := λ(: tt Type). (: (
+   (let sz (sizeof-type tt))
+   (if (==( sz 0_u64 )) () (set sz (max( 8_u64 sz ))))
+   sz
+) U64);

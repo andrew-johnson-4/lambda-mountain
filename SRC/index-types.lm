@@ -35,6 +35,7 @@ import SRC/can-unify.lm;
 import SRC/unify.lm;
 import SRC/fields-of-type.lm;
 import SRC/sizeof-type.lm;
+import SRC/sizeof-aligned.lm;
 import SRC/has-infinite.lm;
 import SRC/has-forward.lm;
 
