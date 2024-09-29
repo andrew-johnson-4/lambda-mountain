@@ -21,5 +21,6 @@ import SRC/range.lm;
 import SRC/t.lm;
 import SRC/p.lm;
 import SRC/tag-of.lm;
+import SRC/is-open.lm;
 
 import SRC/typecheck.lm;
