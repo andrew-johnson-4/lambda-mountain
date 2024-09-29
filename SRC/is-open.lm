@@ -1,0 +1,27 @@
+
+is-open := λ(: tt Type). (: (
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( TAny (set r 1_u64) )
+      ( (TVar _) (set r 1_u64) )
+      ( (TAnd( lt rt )) (
+         (if (is-open lt) (set r 1_u64) ())
+         (if (is-open rt) (set r 1_u64) ())
+      ))
+      ( (TGround( 'Array_s (LCons( _ (LCons( _ LEOF )) )) )) () )
+      ( (TGround( 'Field_s (LCons( _ (LCons( base-type LEOF )) )) )) (
+         (set r (is-open base-type))
+      ))
+      ( (TGround( _ pars )) (
+         (while (non-zero pars) (match pars (
+            ()
+            ( (LCons( p1 rst )) (
+               (if (is-open p1) (set r 1_u64) ())
+               (set pars rst)
+            ))
+         )))
+      ))
+   ))
+   r
+) U64);

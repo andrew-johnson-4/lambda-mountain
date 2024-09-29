@@ -9,8 +9,7 @@ config-assemble-mode         := (: AssembleGNU AssembleMode);
 type CompileMode ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 config-mode                  := (: ModeCompile CompileMode);
 
-type Type TAny | (TVar String) | (TGround( String , TypeList[] )) | (TAnd( Type[] , Type[] )); zero Type TAny;
-type TypeList TypeEOF | (TypeSeq( TypeList[] , Type )); zero TypeList TypeEOF;
+type Type TAny | (TVar String) | (TGround( String , List<Type>[] )) | (TAnd( Type[] , Type[] )); zero Type TAny;
 
 type SourceLocation (SourceLocation( String , U64 , U64 ));
 type Token (Token( String , U64 , SourceLocation ));
@@ -31,7 +30,6 @@ type TContext TCtxEOF | TCtxNil | (TCtxBind( TContext[] , String , Type , AST ))
 type FContext FCtxEOF | (FCtxBind( FContext[] , String , Type , Fragment )); zero FContext FCtxEOF;
 
 type STypeList STEOF | (STSeq( STypeList[] , S , Type )); zero STypeList STEOF;
-type ATypeList ATEOF | (ATSeq( ATypeList[] , AST , Type )); zero ATypeList ATEOF;
 type StringTypeList StrTEOF | (StrTSeq( StringTypeList[] , String , Type )); zero StringTypeList StrTEOF;
 
 type StringList SLEOF | (SLSeq( StringList[] , String )); zero StringList SLEOF;
@@ -238,11 +236,11 @@ serialize-ast := λ(: t AST). (: (
    ))
 ) Nil);
 
-serialize-ast := λ(: tt TypeList). (: (match tt (
+serialize-ast := λ(: tt List<Type>). (: (match tt (
    ()
-   ( TypeEOF () )
-   ( (TypeSeq( TypeEOF p1 )) (serialize-ast p1) )
-   ( (TypeSeq( rst p1 )) (
+   ( LEOF () )
+   ( (LCons( p1 LEOF )) (serialize-ast p1) )
+   ( (LCons( p1 rst )) (
       (print '\[App\s\[_s)
       (serialize-ast rst)
       (print '\s_s)
@@ -269,7 +267,7 @@ serialize-ast := λ(: tt Type). (: (match tt (
       (print '\]\]_s)
       (print '\]\]_s)
    ))
-   ( (TGround( tag TypeEOF )) (
+   ( (TGround( tag LEOF )) (
       (print '\[Literal\s_s)
       (print tag)
       (print '\]_s)
@@ -341,7 +339,7 @@ print := λ(: tt Type). (: (match tt (
    ()
    ( TAny (print '?_s) )
    ( (TVar( vn )) (print vn) )
-   ( (TGround( tag TypeEOF )) (print tag) )
+   ( (TGround( tag LEOF )) (print tag) )
    ( (TAnd( lt rt )) (
       (if (is-arrow lt) (
          (print lt)
@@ -361,11 +359,11 @@ print := λ(: tt Type). (: (match tt (
    ))
 )) Nil);
 
-print := λ(: tt TypeList). (: (match tt (
+print := λ(: tt List<Type>). (: (match tt (
    ()
-   ( TypeEOF () )
-   ( (TypeSeq( TypeEOF p1 )) (print p1) )
-   ( (TypeSeq( rst p1 )) (
+   ( LEOF () )
+   ( (LCons( p1 LEOF )) (print p1) )
+   ( (LCons( p1 rst )) (
       (print rst)
       (print ',_s)
       (print p1)

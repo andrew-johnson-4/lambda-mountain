@@ -83,7 +83,7 @@ blob-call := λ(: ctx FContext)(: function-name String)(: args AST). (: (
 blob-bind-one := λ(: ctx FContext)(: k String)(: kt Type)(: arg Fragment). (: (
    (match kt (
       ()
-      ( (TGround( '..._s (TypeSeq( TypeEOF p1 )) )) (
+      ( (TGround( '..._s (LCons( p1 LEOF )) )) (
          (if (can-unify( p1 (fragment::get-type arg) )) (
             (set ctx (fragment-context::bind-vararg(
                ctx k kt arg
@@ -144,7 +144,7 @@ blob-args := λ(: ctx FContext)(: rval AST). (: (
    (let r FLEOF)
    (match (slot( (typeof rval) 'Cons_s )) (
       ()
-      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+      ( (TGround( 'Cons_s (LCons( p2 (LCons( p1 LEOF )) )) )) (
          (match rval (
             ()
             ( (App( le re )) (

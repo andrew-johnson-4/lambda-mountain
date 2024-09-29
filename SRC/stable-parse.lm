@@ -60,7 +60,7 @@ parse-lambda := λ(: tokens List<Token>). (: (
 parse-type-comma-sep := λ(: tt String). (: (
    (let buff SNil)
    (let depth 0_u64)
-   (let base TypeEOF)
+   (let base (: LEOF List<Type>))
    (while (head-string tt) (
       (match (head-string tt) (
          ()
@@ -72,9 +72,9 @@ parse-type-comma-sep := λ(: tt String). (: (
       ))
       (if (==( depth 0_u64 )) (
          (if (==( (head-string tt) 44_u8 )) (
-            (set base (TypeSeq(
-               (close base)
+            (set base (cons(
                (parse-type(clone-rope buff))
+               base
             )))
             (set buff SNil)
          ) (
@@ -91,12 +91,12 @@ parse-type-comma-sep := λ(: tt String). (: (
       ))
       (set tt (tail-string tt))
    ))
-   (set base (TypeSeq(
-      (close base)
+   (set base (cons(
       (parse-type(clone-rope buff))
+      base
    )))
    base
-) TypeList);
+) List<Type>);
 
 parse-type := λ(: tt String). (: (
    (let is-vararg False_u8)
@@ -120,7 +120,7 @@ parse-type := λ(: tt String). (: (
          (if (==( (head-string tt) 43_u8 )) (
             (match base-type (
                ()
-               ( (TGround( 'Nil_s TypeEOF )) (
+               ( (TGround( 'Nil_s LEOF )) (
                   (let bt (parse-type-single (clone-rope buff)))
                   (set base-type bt)
                ))
@@ -149,7 +149,7 @@ parse-type := λ(: tt String). (: (
    (if (non-zero buff) (
       (match base-type (
          ()
-         ( (TGround( 'Nil_s TypeEOF )) (
+         ( (TGround( 'Nil_s LEOF )) (
             (let bt (parse-type-single (clone-rope buff)))
             (set base-type bt)
          ))
@@ -162,8 +162,8 @@ parse-type := λ(: tt String). (: (
       ))
    ) ())
    (if (==( is-vararg True_u8 )) (
-      (set base-type (TGround( '..._s (close(TypeSeq(
-         (close TypeEOF) base-type
+      (set base-type (TGround( '..._s (close(cons(
+         base-type (: LEOF List<Type>)
       ))))))
    ) ())
    base-type
@@ -287,7 +287,7 @@ parse-type-single := λ(: tt String). (: (
                      ) (
                         (set base-type (TGround(
                            (clone-rope buff)
-                           (close TypeEOF)
+                           (close(: LEOF List<Type>))
                         )))
                      ))
                   ))
@@ -307,7 +307,7 @@ parse-type-single := λ(: tt String). (: (
                      ) (
                         (set base-type (TGround(
                            (clone-rope buff)
-                           (close TypeEOF)
+                           (close(: LEOF List<Type>))
                         )))
                      ))
                   ))
@@ -351,7 +351,7 @@ parse-type-single := λ(: tt String). (: (
                ))
                ( 60_u8 (match base-type (
                   ()
-                  ( (TGround( tag TypeEOF )) (
+                  ( (TGround( tag LEOF )) (
                      (set base-type (TGround(
                         tag
                         (close(parse-type-comma-sep(clone-rope buff)))
@@ -391,7 +391,7 @@ parse-type-single := λ(: tt String). (: (
          ) (
             (set base-type (TGround(
                (clone-rope buff)
-               (close TypeEOF)
+               (close(: LEOF List<Type>))
             )))
          ))
       ))
@@ -559,8 +559,8 @@ parse-toplevel := λ(: tokens List<Token>). (: (
                suffix
                (TAnd(
                   (close(TAnd(
-                     (close(TGround( 'Constant_s (close TypeEOF) )))
-                     (close(TGround( 'Literal_s (close TypeEOF) )))
+                     (close(TGround( 'Constant_s (close(: LEOF List<Type>)) )))
+                     (close(TGround( 'Literal_s (close(: LEOF List<Type>)) )))
                   )))
                   (close(parse-type atype))
                ))
