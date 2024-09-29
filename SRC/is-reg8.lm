@@ -1,0 +1,25 @@
+
+is-reg8 := λ(: s String). (: (
+   (let r 0_u64)
+   (match s (
+      ()
+      ( 'AL_s (set r 1_u64))
+      ( 'BL_s (set r 1_u64))
+      ( 'CL_s (set r 1_u64))
+      ( 'DL_s (set r 1_u64))
+      ( 'SIL_s (set r 1_u64))
+      ( 'DIL_s (set r 1_u64))
+      ( 'BPL_s (set r 1_u64))
+      ( 'SPL_s (set r 1_u64))
+      ( 'R8B_s (set r 1_u64))
+      ( 'R9B_s (set r 1_u64))
+      ( 'R10B_s (set r 1_u64))
+      ( 'R11B_s (set r 1_u64))
+      ( 'R12B_s (set r 1_u64))
+      ( 'R13B_s (set r 1_u64))
+      ( 'R14B_s (set r 1_u64))
+      ( 'R15B_s (set r 1_u64))
+      ( _ () )
+   ))
+   r
+) U64);

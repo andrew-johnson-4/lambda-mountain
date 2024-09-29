@@ -1,0 +1,22 @@
+
+arity := λ(: tt List<Type>). (: (
+   (let a 0_u64)
+   (match tt (
+      ()
+      ( LEOF () )
+      ( (LCons( _ rst )) (
+         (set a (+( (arity rst) 1_u64 )))
+      ))
+   ))
+   a
+) U64);
+
+arity := λ(: tt Type). (: (
+   (let a 0_u64)
+   (match tt (
+      ()
+      ( (TGround( _ ps )) (set a (arity ps)) )
+      ( _ () )
+   ))
+   a
+) U64);

@@ -1,0 +1,143 @@
+
+unify := λ(: fpt Type)(: pt Type). (: (
+   (let ctx TCtxEOF)
+   (if (can-unify( fpt pt )) (
+      (set ctx (unify-inner( fpt pt )))
+   ) ())
+   ctx
+) TContext);
+
+unify-inner := λ(: fpt Type)(: pt Type). (: (
+   (let ctx TCtxEOF)
+   (match (Tuple( fpt pt )) (
+      ()
+      ( (Tuple( TAny _ )) (
+         (set ctx TCtxNil)
+      ))
+      ( (Tuple( (TVar( ltv )) (TGround( tg LEOF )) )) (
+         (set ctx (TCtxBind(
+            (close TCtxEOF)
+            ltv
+            pt
+            (Lit( tg (token::new tg) ))
+         )))
+      ))
+      ( (Tuple( (TGround( 'Meta_s (LCons( mt LEOF )) )) _ )) (
+         (set ctx TCtxNil)
+      ))
+      ( (Tuple( (TVar( ltv )) rt )) (
+         (set ctx (TCtxBind(
+            (close TCtxEOF)
+            ltv
+            pt
+            ASTEOF
+         )))
+      ))
+      ( (Tuple( (TAnd( lt1 lt2 )) rt )) (
+         (match (Tuple( (unify-inner( lt1 rt )) (unify-inner( lt2 rt )) )) (
+            ()
+            ( (Tuple( TCtxEOF _ )) () )
+            ( (Tuple( _ TCtxEOF )) () )
+            ( (Tuple( lctx rctx )) (
+               (set ctx (union( lctx rctx )))
+            ))
+         ))
+      ))
+      ( (Tuple( lt (TAnd( rt1 rt2 )) )) (
+         (match (Tuple( (unify-inner( lt rt1 )) (unify-inner( lt rt2 )) )) (
+            ()
+            ( (Tuple( TCtxEOF TCtxEOF )) () )
+            ( (Tuple( lctx TCtxEOF )) (set ctx lctx) )
+            ( (Tuple( TCtxEOF rctx )) (set ctx rctx) )
+            ( (Tuple( lctx rctx )) (
+               (set ctx (union( lctx rctx )))
+            ))
+         ))
+      ))
+
+      # Varargs
+      ( (Tuple(
+         (TGround( 'Cons_s (LCons(
+            (TGround( '..._s (LCons( lp1 LEOF )) ))
+            (LCons( lpr LEOF ))
+         )) ))
+         (TGround( 'Cons_s (LCons( rp1 (LCons( rpr LEOF )) )) ))
+      )) (
+         (if (can-unify( lp1 rp1 )) (
+            (set ctx (and(
+               (unify-inner( lpr rpr ))
+               (unify-inner( lp1 rp1 ))
+            )))
+         ) (
+            (set ctx (unify-inner( lpr pt )))
+         ))
+      ))
+      ( (Tuple(
+         (TGround( 'Cons_s (LCons(
+            (TGround( '..._s (LCons( lp1 LEOF )) ))
+            (LCons( lpr LEOF ))
+         )) ))
+         rp1
+      )) (
+         (if (can-unify( lp1 rp1 )) (
+            (set ctx (and(
+               (unify-inner( lp1 rp1 ))
+               (unify-inner( lpr (t1 'Nil_s) ))
+            )))
+         ) (
+            (set ctx (unify-inner( lpr rp1 )))
+         ))
+      ))
+      ( (Tuple(
+         (TGround( '..._s (LCons( lp1 LEOF )) ))
+         (TGround( 'Cons_s (LCons( rp1 (LCons( rpr LEOF )) )) ))
+      )) (
+         (if (can-unify( lp1 rp1 )) (
+            (set ctx (and(
+               (unify-inner( fpt rpr ))
+               (unify-inner( lp1 rp1 ))
+            )))
+         ) ())
+      ))
+      ( (Tuple(
+         (TGround( '..._s (LCons( lp1 LEOF )) ))
+         (TGround( 'Nil_s LEOF ))
+      )) ())
+      ( (Tuple(
+         (TGround( '..._s (LCons( lp1 LEOF )) ))
+         rp1
+      )) (
+         (set ctx (unify-inner( lp1 rp1 )))
+      ))
+
+      ( (Tuple( (TGround( 'GT_s (LCons( (TGround( lbase LEOF )) LEOF )) )) (TGround( rbase LEOF )) )) (
+         (if (>( (to-i64 rbase) (to-i64 lbase) )) (
+            (set ctx TCtxNil)
+         ) ())
+      ))
+      ( (Tuple( (TGround( ltn lps )) (TGround( rtn rps )) )) (
+         (if (==( ltn rtn )) (
+            (set ctx (unify( lps rps )))
+         ) ())
+      ))
+      ( _ () )
+   ))
+   ctx
+) TContext);
+
+unify := λ(: fpt List<Type>)(: pt List<Type>). (: (
+   (let ctx TCtxEOF)
+   (match (Tuple( fpt pt )) (
+      ()
+      ( (Tuple( LEOF LEOF )) (set ctx TCtxNil) )
+      ( (Tuple( (LCons( lp1 lps )) (LCons( rp1 rps )) )) (
+         (set ctx (unify( lp1 rp1 )))
+         (if (non-zero ctx) (
+            (set ctx (union( ctx (unify( lps rps )) )))
+         ) ())
+      ))
+      ( _ () )
+   ))
+   ctx
+) TContext);
+

@@ -1,0 +1,35 @@
+
+infer-tctx := λ(: tctx TContext)(: tt List<Type>). (: (
+   (match tt (
+      ()
+      ( LEOF () )
+      ( (LCons( p1 rst )) (
+         (set tctx (infer-tctx( tctx rst )))
+         (set tctx (infer-tctx( tctx p1 )))
+      ))
+   ))
+   tctx
+) TContext);
+
+infer-tctx := λ(: tctx TContext)(: tt Type). (: (
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (
+         (set tctx (infer-tctx( tctx lt )))
+         (set tctx (infer-tctx( tctx rt )))
+      ))
+      ( (TVar( tv )) (
+         (set tctx (TCtxBind(
+            (close tctx)
+            tv
+            (t1 'Constant_s)
+            ASTEOF
+         )))
+      ))
+      ( (TGround( _ ts )) (
+         (set tctx (infer-tctx( tctx ts )))
+      ))
+      ( TAny () )
+   ))
+   tctx
+) TContext);

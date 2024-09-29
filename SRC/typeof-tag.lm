@@ -1,0 +1,5 @@
+
+typeof-tag := λ(: tag String). (: (
+   (let r (.lookup( type-constructors-index tag TAny )))
+   r
+) Type);

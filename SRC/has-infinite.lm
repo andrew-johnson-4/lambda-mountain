@@ -1,0 +1,51 @@
+
+has-infinite := λ(: base-type Type)(: tag String)(: arity U64)(: tt List<Type>)(: pi U64). (: (
+   # a type is infinite if it contains a reference to itself at the top (flat) level
+   (let return 0_u64)
+   (match tt (
+      ()
+      ( LEOF () )
+      ( (LCons( p1 ts )) (
+         (if (is-parameter-flat( tag arity pi )) (
+            (if (==( base-type p1 )) (
+               (set return 1_u64)
+            ) ())
+         ) ())
+         (set return (max(
+            (has-infinite( base-type tag arity ts (+( pi 1_u64 )) ))
+            return
+         )))
+      ))
+   ))
+   return
+) U64);
+
+has-infinite := λ(: base-type Type)(: active Type). (: (
+   # a type is infinite if it contains a reference to itself at the top (flat) level
+   (let return 0_u64)
+   (match active (
+      ()
+      ( (TGround( 'Array_s _ )) () )
+      ( (TGround( 'Field_s (LCons( _ (LCons( p1 LEOF )) )) )) (set return (has-infinite( base-type active ))) )
+      ( (TGround( 'Cons_s (LCons( p2 (LCons( p1 LEOF )) )) )) (
+         (set return (max(
+            (has-infinite( base-type p1 ))
+            (has-infinite( base-type p2 ))
+         )))
+      ))
+      ( (TGround( cls ps )) (
+         (set return (has-infinite( base-type (tag-of active) (arity active) ps 1_u64 )))
+      ))
+      ( (TAnd( lt rt )) (
+         (set return (max(
+            (has-infinite( base-type lt ))
+            (has-infinite( base-type rt ))
+         )))
+      ))
+      ( _ () )
+   ))
+   (if (==( base-type active )) (
+      (set return 1_u64)
+   ) ())
+   return
+) U64);

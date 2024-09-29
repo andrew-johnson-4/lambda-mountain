@@ -1,0 +1,16 @@
+
+guess-representation := λ(: tt Type). (: (
+   (if (has-representation tt) () (
+      (let sz (sizeof-type tt))
+      (match sz (
+         ()
+         ( 0_u64 () )
+         ( 1_u64 (set tt (and( tt (t1( 'Reg8_s )) ))) )
+         ( 2_u64 (set tt (and( tt (t1( 'Reg16_s )) ))) )
+         ( 4_u64 (set tt (and( tt (t1( 'Reg32_s )) ))) )
+         ( 8_u64 (set tt (and( tt (t1( 'Reg64_s )) ))) )
+         ( _ (set tt (and( tt (t1( 'StackVariable_s )) ))) )
+      ))
+   ))
+   tt
+) Type);

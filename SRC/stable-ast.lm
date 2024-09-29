@@ -2,48 +2,12 @@
 config-strict                := True_u8;
 config-preprocess            := True_u8;
 config-target                := 'tmp.s_s;
-
-type AssembleMode AssembleGNU | AssembleBlob;
 config-assemble-mode         := (: AssembleGNU AssembleMode);
-
-type CompileMode ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 config-mode                  := (: ModeCompile CompileMode);
-
-type Type TAny | (TVar String) | (TGround( String , List<Type>[] )) | (TAnd( Type[] , Type[] )); zero Type TAny;
-
-type SourceLocation (SourceLocation( String , U64 , U64 ));
-type Token (Token( String , U64 , SourceLocation ));
-
-type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String , Token )) | (Lit( String , Token )) | (Abs( AST[] , AST[] , Type )) | (AType( Type ))
-                | (Seq( AST[] , AST[] )) | (Glb( Token , AST[] )) | (Typedef( AST[] , AST[] )) | (Frg( Token , AST[] ))
-                | (Meta( AST[] )); zero AST ASTEOF;
-
-type FragmentKV (FKVEOF) | (FKVSeq( FragmentKV[] , String , S )); zero FragmentKV FKVEOF;
-type Fragment (Fragment( AST , FragmentKV[] , I64 , Type , FContext[] ));
-type FragmentList (FLEOF) | (FLSeq( FragmentList[] , Fragment )); zero FragmentList FLEOF;
-
-type IsUsed Used | Unused | Tail | Return | Call;
-type IsScoped Scoped | Unscoped;
-
-type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST )); zero Context CtxEOF;
-type TContext TCtxEOF | TCtxNil | (TCtxBind( TContext[] , String , Type , AST )); zero TContext TCtxEOF;
-type FContext FCtxEOF | (FCtxBind( FContext[] , String , Type , Fragment )); zero FContext FCtxEOF;
-
-type STypeList STEOF | (STSeq( STypeList[] , S , Type )); zero STypeList STEOF;
-type StringTypeList StrTEOF | (StrTSeq( StringTypeList[] , String , Type )); zero StringTypeList StrTEOF;
-
-type StringList SLEOF | (SLSeq( StringList[] , String )); zero StringList SLEOF;
-type StringU64List SUEOF | (SUSeq( StringU64List[] , String , U64 )); zero StringU64List SUEOF;
-type StringStringList SSEOF | (SSSeq( StringStringList[] , String , String )); zero StringStringList SSEOF;
-type StringSList SSLEOF | (SSLSeq( StringSList[] , String , S )); zero StringSList SSLEOF;
-
-type Macro (Macro( AST , AST ));
-type MacroList MEOF | (MSeq( MacroList[] , Macro )); zero MacroList MEOF;
-
-preprocess-macros := (: MEOF MacroList);
-ast-tokenized-program := (: LEOF List<Token>);
-ast-parsed-program := (: ASTEOF AST);
-global-type-context := (: TCtxEOF TContext);
+preprocess-macros            := (: MEOF MacroList);
+ast-tokenized-program        := (: LEOF List<Token>);
+ast-parsed-program           := (: ASTEOF AST);
+global-type-context          := (: TCtxEOF TContext);
 
 var-name-if-var := λ(: t AST). (: (
    (let k '_s)

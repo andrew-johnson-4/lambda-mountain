@@ -1,2 +1,15 @@
 
 type-complex-fields-index := (: BTreeEqEOF BTreeEq<String,Tuple<Type,Type>>);
+
+set-type-fields := λ(: base-type Type)(: args-type Type). (: (
+   (let tag '_s)
+   (match base-type (
+      ()
+      ( (TGround( tg _ )) (set tag tg) )
+      ( _ (
+         (print 'ERROR:\sset-type-fields\n_s)(print base-type)(print '\n_s)
+         (exit 1_u64)
+      ))
+   ))
+   (.bind( (as (& type-complex-fields-index) BTreeEq<String,Tuple<Type,Type>>[]) tag (Tuple( base-type args-type )) ))
+) Nil);
