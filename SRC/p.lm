@@ -1,5 +1,5 @@
 
-p := λ(: tt TypeList)(: default Type)(: i U64). (: (
+p := λ(: tt List<Type>)(: default Type)(: i U64). (: (
    (match tt (
       ()
       ( (LCons( pt rst )) ((if (==( i 0_u64 ))
