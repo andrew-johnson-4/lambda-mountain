@@ -1,4 +1,6 @@
 
+import SRC/index-definitions.lm;
+
 import SRC/infer-expr.lm;
 import SRC/alias.lm;
 import SRC/class-exists.lm;
