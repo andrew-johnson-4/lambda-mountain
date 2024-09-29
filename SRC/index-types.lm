@@ -26,5 +26,12 @@ import SRC/tag-of.lm;
 import SRC/is-open.lm;
 import SRC/is-parameterized.lm;
 
+import SRC/with-tag.lm;
+import SRC/without-tag.lm;
+import SRC/with-only-tag.lm;
+import SRC/with-only-class.lm;
+import SRC/without-representation.lm;
+import SRC/without-size.lm;
+
 import SRC/typecheck.lm;
 import SRC/substitute.lm;
