@@ -1,0 +1,11 @@
+
+tag-to-fields-index := (: BTreeEqEOF BTreeEq<String,Tuple<Type,Type>>);
+
+index-fields-of-tag := λ(: tag String)(: fields-params Type)(: fields-rhs Type). (: (
+   (.bind( (as (& tag-to-fields-index) BTreeEq<String,Tuple<Type,Type>>[]) tag (Tuple( fields-params fields-rhs )) ))
+) Nil);
+
+fields-of-tag := λ(: tag String). (: (
+   (let r (.lookup( tag-to-fields-index tag (Tuple( TAny TAny )) )))
+   r
+) Tuple<Type,Type>);

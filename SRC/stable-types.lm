@@ -1,10 +1,4 @@
 
-# global Class -> Yes/No map, mutable
-class-to-yes-index := (: BTreeEqEOF BTreeEq<String,U64>);
-
-# global Tag -> Fields map, mutable
-tag-to-fields-index := (: BTreeEqEOF BTreeEq<String,Tuple<Type,Type>>);
-
 # Global Tag -> Type map, mutable
 type-constructors-index := (: BTreeEqEOF BTreeEq<String,Type>);
 
@@ -13,20 +7,6 @@ type-complex-fields-index := (: BTreeEqEOF BTreeEq<String,Tuple<Type,Type>>);
 
 # has typechecking finished? boolean, mutable
 types-have-changed := True_u8;
-
-is-class := λ(: tag String). (: (
-   (let r (.lookup( class-to-yes-index tag 0_u64 )))
-   r
-) U64);
-
-index-fields-of-tag := λ(: tag String)(: fields-params Type)(: fields-rhs Type). (: (
-   (.bind( (as (& tag-to-fields-index) BTreeEq<String,Tuple<Type,Type>>[]) tag (Tuple( fields-params fields-rhs )) ))
-) Nil);
-
-fields-of-tag := λ(: tag String). (: (
-   (let r (.lookup( tag-to-fields-index tag (Tuple( TAny TAny )) )))
-   r
-) Tuple<Type,Type>);
 
 tag-of := λ(: tt Type). (: (
    (let tag '_s)
