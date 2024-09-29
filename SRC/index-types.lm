@@ -19,6 +19,7 @@ import SRC/type-constructors.lm;
 import SRC/type-complex-fields.lm;
 
 import SRC/ascript.lm;
+import SRC/ascript-normal.lm;
 import SRC/typeof.lm;
 import SRC/to-s.lm;
 import SRC/domain.lm;
@@ -33,6 +34,9 @@ import SRC/is-parameterized.lm;
 import SRC/can-unify.lm;
 import SRC/unify.lm;
 import SRC/fields-of-type.lm;
+import SRC/sizeof-type.lm;
+import SRC/has-infinite.lm;
+import SRC/has-forward.lm;
 
 import SRC/with-tag.lm;
 import SRC/with-size.lm;

@@ -1,0 +1,39 @@
+
+has-forward := λ(: tt List<Type>). (: (
+   (let return 0_u64)
+   (match tt (
+      ()
+      ( LEOF () )
+      ( (LCons( p1 ts )) (
+         (set return (max(
+            (has-forward( ts ))
+            (has-forward( p1 ))
+         )))
+      ))
+   ))
+   return
+) U64);
+
+has-forward := λ(: tt Type). (: (
+   (let return 0_u64)
+   (match tt (
+      ()
+      ( (TGround( 'Array_s ps )) () )
+      ( (TGround( 'Cons_s ps )) (set return (has-forward( ps ))) )
+      ( (TGround( 'Field_s (LCons( n (LCons( p1 LEOF )) )) )) (set return (has-forward( p1 ))) )
+      ( (TGround( cls ps )) (
+         (set return (has-forward( ps )))
+         (if (not(.lookup( class-exists-index cls 0_u64 ))) (
+            (set return 1_u64)
+         ) ())
+      ))
+      ( (TAnd( lt rt )) (
+         (set return (max(
+            (has-forward( lt ))
+            (has-forward( rt ))
+         )))
+      ))
+      ( _ () )
+   ))
+   return
+) U64);
