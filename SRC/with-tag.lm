@@ -1,0 +1,17 @@
+
+with-tag := λ(: tt Type). (: (
+   (let cls-tt (with-only-class tt))
+   (if (non-zero cls-tt) (
+      (match cls-tt (
+         ()
+         ( (TGround( cls _ )) (
+            (let tag (get-only-child cls))
+            (if (head-string tag) (
+               (set tt (and( tt (t2( 'Tag_s (t1 tag) )) )))
+            ) ())
+         ))
+         ( _ () )
+      ))
+   ) ())
+   tt
+) Type);
