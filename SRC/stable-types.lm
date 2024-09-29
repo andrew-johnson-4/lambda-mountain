@@ -1192,13 +1192,6 @@ infer-global-context := λ(: td AST). (: (
    ))
 ) Nil);
 
-enrich := λ(: base-tt Type)(: new-tt Type). (: (
-   (if (non-zero new-tt) (
-      (set base-tt (and( base-tt new-tt )))
-   ) ())
-   base-tt
-) Type);
-
 assert-well-typed := λ(: term AST). (: (
    (match term (
       ()
