@@ -5,7 +5,7 @@ type-of-s-with-fields := λ(: base-type Type)(: tag String)(: compound AST)(: fi
       ()
       ( (Lit( tt _ )) (
          (let nt TAny)
-         (match (field-of tt) (
+         (match (parse-field-of tt) (
             ()
             ( (Tuple( '_s ft )) (set nt ft) )
             ( (Tuple( fn ft )) (
@@ -22,7 +22,7 @@ type-of-s-with-fields := λ(: base-type Type)(: tag String)(: compound AST)(: fi
       ))
       ( (Var( tt _ )) (
          (let nt TAny)
-         (match (field-of tt) (
+         (match (parse-field-of tt) (
             ()
             ( (Tuple( '_s ft )) (set nt ft) )
             ( (Tuple( fn ft )) (

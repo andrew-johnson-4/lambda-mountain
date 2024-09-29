@@ -69,7 +69,15 @@ import SRC/typeof-lhs.lm;
 import SRC/typeof-tag.lm;
 import SRC/cons-head.lm;
 import SRC/cons-tail.lm;
+import SRC/parameter-number.lm;
+
+import SRC/unify-hint.lm;
+import SRC/infer-type-definition.lm;
+import SRC/arity.lm;
+import SRC/cons-arity.lm;
+import SRC/parse-field-of.lm;
 
 import SRC/typecheck.lm;
 import SRC/substitute.lm;
 import SRC/specialize.lm;
+import SRC/mark-constructor-flat-parameters.lm;
