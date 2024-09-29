@@ -1,0 +1,10 @@
+
+tag-of := λ(: tt Type). (: (
+   (let tag '_s)
+   (match tt (
+      ()
+      ( (TGround( tg _ )) (set tag tg) )
+      ( _ () )
+   ))
+   tag
+) String);

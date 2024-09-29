@@ -1,20 +1,4 @@
 
-tag-of := λ(: tt Type). (: (
-   (let tag '_s)
-   (match tt (
-      ()
-      ( (TAnd( lt rt )) (
-         (let ltag (tag-of lt))
-         (if (non-zero ltag) (set tag ltag) ())
-         (let rtag (tag-of rt))
-         (if (non-zero rtag) (set tag rtag) ())
-      ))
-      ( (TGround( tg _ )) (set tag tg) )
-      ( _ () )
-   ))
-   tag
-) String);
-
 is-open := λ(: tt Type). (: (
    (let r 0_u64)
    (match tt (
