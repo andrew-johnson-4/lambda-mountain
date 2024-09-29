@@ -1,0 +1,24 @@
+
+p := λ(: tt TypeList)(: default Type)(: i U64). (: (
+   (match tt (
+      ()
+      ( (TypeSeq( rst pt )) ((if (==( i 0_u64 ))
+         (set default pt)
+         (set default (p( rst default (-( i 1_u64 )) )))
+      )))
+      ( _ () )
+   ))
+   default
+) Type);
+
+p := λ(: tt Type)(: i U64). (: (
+   (match tt (
+      ()
+      ( (TGround( _ ts )) (set tt (p( ts TAny i ))) )
+      ( _ () )
+   ))
+   tt
+) Type);
+
+p1 := λ(: tt Type). (: (p( tt 0_u64 )) Type);
+p2 := λ(: tt Type). (: (p( tt 1_u64 )) Type);

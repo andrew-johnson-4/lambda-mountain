@@ -447,28 +447,3 @@ iuid := λ . (: (
    (let id uuid-counter)
    id
 ) U64);
-
-t3 := λ(: tag String)(: p1 Type)(: p2 Type). (: (
-   (let tt (TGround(
-      tag
-      (close(TypeSeq( (close(TypeSeq( (close TypeEOF) p1 ))) p2 )))
-   )))
-   tt
-) Type);
-
-t2 := λ(: tag String)(: p1 Type). (: (
-   (let tt (TGround(
-      tag
-      (close(TypeSeq( (close TypeEOF) p1 )))
-   )))
-   tt
-) Type);
-
-t1 := λ(: tag String). (: (
-   (let tt (TGround(
-      tag
-      (close TypeEOF)
-   )))
-   tt
-) Type);
-

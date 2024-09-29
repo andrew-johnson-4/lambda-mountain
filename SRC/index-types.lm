@@ -18,5 +18,7 @@ import SRC/type-complex-fields.lm;
 
 import SRC/domain.lm;
 import SRC/range.lm;
+import SRC/t.lm;
+import SRC/p.lm;
 
 import SRC/typecheck.lm;

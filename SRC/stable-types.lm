@@ -47,30 +47,6 @@ tsized :=  λ(: tag String). (: (
    tt
 ) Type);
 
-p1 := λ(: tt Type). (: (
-   (let r TAny)
-   (match tt (
-      ()
-      ( (TGround( _ (TypeSeq( _ p1t )) )) (
-         (set r p1t)
-      ))
-      ( _ () )
-   ))
-   r
-) Type);
-
-p2 := λ(: tt Type). (: (
-   (let r TAny)
-   (match tt (
-      ()
-      ( (TGround( _ (TypeSeq( (TypeSeq( _ p2t )) _ )) )) (
-         (set r p2t)
-      ))
-      ( _ () )
-   ))
-   r
-) Type);
-
 substitute := λ(: tctx TContext)(: tt TypeList). (: (
    (match tt (
       ()
