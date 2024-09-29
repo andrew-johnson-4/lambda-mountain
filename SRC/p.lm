@@ -2,7 +2,7 @@
 p := λ(: tt TypeList)(: default Type)(: i U64). (: (
    (match tt (
       ()
-      ( (TypeSeq( rst pt )) ((if (==( i 0_u64 ))
+      ( (LCons( pt rst )) ((if (==( i 0_u64 ))
          (set default pt)
          (set default (p( rst default (-( i 1_u64 )) )))
       )))

@@ -54,7 +54,7 @@ mangle-identifier := λ(: kt Type). (: (
          (set r (mangle-identifier tv))
          (while (non-zero ps) (match ps (
             ()
-            ( (TypeSeq( rst p1 )) (
+            ( (LCons( p1 rst )) (
                (set r (SCons( (close r) (close(mangle-identifier p1)) )))
                (set ps rst)
             )))

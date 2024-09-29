@@ -56,7 +56,7 @@ compile-destructure-args := λ(: tt Type)(: ctx FContext)(: lhs AST)(: offset I6
       ( (App( rst (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) )) (
          (match (slot( tt 'Cons_s )) (
             ()
-            ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF rst-tt )) p2 )) )) (
+            ( (TGround( 'Cons_s (LCons( p2 (LCons( rst-tt LEOF )) )) )) (
                (set ctx (compile-destructure-args( rst-tt ctx rst offset )))
                (let rst-sz (sizeof-aligned rst-tt))
                (let rst-offset (-( offset (as rst-sz I64) )))
@@ -155,7 +155,7 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64)(: count U64)
    (let r (fragment::new()))
    (match (slot( (typeof rval) 'Cons_s )) (
       ()
-      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+      ( (TGround( 'Cons_s (LCons( p2 (LCons( p1 LEOF )) )) )) (
          (match rval (
             ()
             ( (App( le re )) (
@@ -208,7 +208,7 @@ compile-fragment-args := λ(: ctx FContext)(: function-args-type Type)(: rval AS
    (let r FLEOF)
    (match (slot( (typeof rval) 'Cons_s )) (
       ()
-      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+      ( (TGround( 'Cons_s (LCons( p2 (LCons( p1 LEOF )) )) )) (
          (match rval (
             ()
             ( (App( le re )) (
@@ -439,8 +439,8 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (let tt (typeof t))
          (match (slot( tt 'Array_s )) (
             ()
-            ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF TAny )) _ )) )) () )
-            ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF inner-tt )) TAny )) )) (
+            ( (TGround( 'Array_s (LCons( _ (LCons( TAny LEOF )) )) )) () )
+            ( (TGround( 'Array_s (LCons( TAny (LCons( inner-tt LEOF )) )) )) (
                (let e1 (fragment::set-type( e (denormalize tt) )))
                (let e2 (fragment::new()))
                (set e2 (fragment::set( e2 'expression_s (SAtom '0_s) )))

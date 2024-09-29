@@ -22,7 +22,7 @@ fragment-context::lookup := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST
          (if (==( k rk )) (
             (match (slot( rt 'Arrow_s )) (
                ()
-               ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF domaint )) ranget )) )) (
+               ( (TGround( 'Arrow_s (LCons( ranget (LCons( domaint LEOF )) )) )) (
                   (if (can-unify( domaint kt )) (
                      (if (non-zero found) (
                         (if (can-unify( found domaint )) (
@@ -69,7 +69,7 @@ fragment-context::lookups := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AS
          (if (==( k rk )) (
             (match (slot( rt 'Arrow_s )) (
                ()
-               ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF domaint )) ranget )) )) (
+               ( (TGround( 'Arrow_s (LCons( ranget (LCons( domaint LEOF )) )) )) (
                   (if (can-unify( domaint kt )) (
                      (if (non-zero found) (
                         (if (can-unify( found domaint )) (

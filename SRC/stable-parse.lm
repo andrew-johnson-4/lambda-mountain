@@ -60,7 +60,7 @@ parse-lambda := λ(: tokens List<Token>). (: (
 parse-type-comma-sep := λ(: tt String). (: (
    (let buff SNil)
    (let depth 0_u64)
-   (let base TypeEOF)
+   (let base (: LEOF List<Type>))
    (while (head-string tt) (
       (match (head-string tt) (
          ()
@@ -72,9 +72,9 @@ parse-type-comma-sep := λ(: tt String). (: (
       ))
       (if (==( depth 0_u64 )) (
          (if (==( (head-string tt) 44_u8 )) (
-            (set base (TypeSeq(
-               (close base)
+            (set base (cons(
                (parse-type(clone-rope buff))
+               base
             )))
             (set buff SNil)
          ) (
@@ -91,9 +91,9 @@ parse-type-comma-sep := λ(: tt String). (: (
       ))
       (set tt (tail-string tt))
    ))
-   (set base (TypeSeq(
-      (close base)
+   (set base (cons(
       (parse-type(clone-rope buff))
+      base
    )))
    base
 ) TypeList);
@@ -162,8 +162,8 @@ parse-type := λ(: tt String). (: (
       ))
    ) ())
    (if (==( is-vararg True_u8 )) (
-      (set base-type (TGround( '..._s (close(TypeSeq(
-         (close TypeEOF) base-type
+      (set base-type (TGround( '..._s (close(cons(
+         base-type (: LEOF List<Type>)
       ))))))
    ) ())
    base-type
