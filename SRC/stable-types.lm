@@ -597,8 +597,8 @@ can-unify := λ(: fpt TypeList)(: pt TypeList). (: (
    (let r 0_u64)
    (match (Tuple( fpt pt )) (
       ()
-      ( (Tuple( TypeEOF TypeEOF )) (set r 1_u64) )
-      ( (Tuple( (TypeSeq( lpr lp1 )) (TypeSeq( rpr rp1 )) )) (
+      ( (Tuple( LEOF LEOF )) (set r 1_u64) )
+      ( (Tuple( (LCons( lp1 lpr )) (LCons( rp1 rpr )) )) (
          (if (can-unify( lp1 rp1 )) (
             (if (can-unify( lpr rpr )) (
                (set r 1_u64)
@@ -615,7 +615,7 @@ can-unify := λ(: fpt Type)(: pt Type). (: (
    (match (Tuple( fpt pt )) (
       ()
       ( (Tuple( TAny _ )) (set r 1_u64) )
-      ( (Tuple( (TGround( 'Meta_s (TypeSeq( TypeEOF _ )) )) _ )) (set r 1_u64) )
+      ( (Tuple( (TGround( 'Meta_s _ )) _ )) (set r 1_u64) )
       ( (Tuple( (TVar( ltv )) rt )) (set r 1_u64) )
       ( (Tuple( (TAnd( lt1 lt2 )) rt )) (
          (if (can-unify( lt1 rt )) (
@@ -631,10 +631,11 @@ can-unify := λ(: fpt Type)(: pt Type). (: (
 
       # Varargs
       ( (Tuple(
-         (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF lpr ))
-            (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         (TGround( 'Cons_s (LCons(
+            (TGround( '..._s (LCons( lp1 LEOF )) ))
+            (LCons( lpr LEOF ))
          )) ))
-         (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF rpr )) rp1 )) ))
+         (TGround( 'Cons_s (LCons( rp1 (LCons( rpr LEOF )) )) ))
       )) (
          (if (can-unify( lp1 rp1 )) (
             (set r (can-unify( fpt rpr )))
@@ -643,8 +644,9 @@ can-unify := λ(: fpt Type)(: pt Type). (: (
          ))
       ))
       ( (Tuple(
-         (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF lpr ))
-            (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         (TGround( 'Cons_s (LCons(
+            (TGround( '..._s (LCons( lp1 LEOF )) ))
+            (LCons( lpr LEOF ))
          )) ))
          rp1
       )) (
@@ -655,27 +657,27 @@ can-unify := λ(: fpt Type)(: pt Type). (: (
          ))
       ))
       ( (Tuple(
-         (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
-         (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF rpr )) rp1 )) ))
+         (TGround( '..._s (LCons( lp1 LEOF )) ))
+         (TGround( 'Cons_s (LCons( rp1 (LCons( rpr LEOF )) )) ))
       )) (
          (if (can-unify( lp1 rp1 )) (
             (set r (can-unify( fpt rpr )))
          ) ())
       ))
       ( (Tuple(
-         (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         (TGround( '..._s (LCons( lp1 LEOF )) ))
          (TGround( 'Nil_s TypeEOF ))
       )) (
          (set r 1_u64)
       ))
       ( (Tuple(
-         (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         (TGround( '..._s (LCons( lp1 LEOF )) ))
          rp1
       )) (
          (set r (can-unify( lp1 rp1 )))
       ))
 
-      ( (Tuple( (TGround( 'GT_s (TypeSeq( TypeEOF (TGround( lbase TypeEOF )) )) )) (TGround( rbase TypeEOF )) )) (
+      ( (Tuple( (TGround( 'GT_s (LCons( (TGround( lbase LEOF )) LEOF )) )) (TGround( rbase LEOF )) )) (
          (if (>( (to-i64 rbase) (to-i64 lbase) )) (
             (set r 1_u64)
          ) ())
@@ -701,9 +703,9 @@ to-string := λ(: tt TypeList). (: (
    (let r SNil)
    (match tt (
       ()
-      ( TypeEOF () )
-      ( (TypeSeq( TypeEOF p1 )) (set r (to-string-impl p1)) )
-      ( (TypeSeq( rst p1 )) (
+      ( LEOF () )
+      ( (LCons( p1 LEOF )) (set r (to-string-impl p1)) )
+      ( (LCons( p1 rst )) (
          (set r (SCons(
             (close(to-string rst))
             (close(SCons(
@@ -733,10 +735,10 @@ to-string-impl := λ(: tt Type). (: (
             )))
          )))
       ))
-      ( (TGround( tag TypeEOF )) (
+      ( (TGround( tag LEOF )) (
         (set r (SAtom tag))
       ))
-      ( (TGround( '..._s (TypeSeq( TypeEOF p1 )) )) (
+      ( (TGround( '..._s (LCons( p1 LEOF )) )) (
         (set r (SCons( (close r) (close(to-string-impl p1)) )))
         (set r (SCons( (close r) (close(SAtom '..._s)) )))
       ))
@@ -839,13 +841,13 @@ with-only-representation := λ(: tt TypeList). (: (
    (let rt tt)
    (match tt (
       ()
-      ( (TypeSeq( rst p1 )) (
-         (set rt (TypeSeq(
-            (close(with-only-representation rst))
+      ( (LCons( p1 rst )) (
+         (set rt (cons(
             (with-only-representation p1)
+            (with-only-representation rst)
          )))
       ))
-      ( TypeEOF () )
+      ( LEOF () )
    ))
    rt
 ) TypeList);
@@ -910,7 +912,7 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
             (Lit( tg (token::new tg) ))
          )))
       ))
-      ( (Tuple( (TGround( 'Meta_s (TypeSeq( TypeEOF mt )) )) _ )) (
+      ( (Tuple( (TGround( 'Meta_s (LCons( mt LEOF )) )) _ )) (
          (set ctx TCtxNil)
       ))
       ( (Tuple( (TVar( ltv )) rt )) (
@@ -945,12 +947,12 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
 
       # Varargs
       ( (Tuple(
-         (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF lpr ))
-            (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         (TGround( 'Cons_s (LCons(
+            (TGround( '..._s (LCons( lp1 LEOF )) ))
+            (LCons( lpr LEOF ))
          )) ))
-         (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF rpr )) rp1 )) ))
+         (TGround( 'Cons_s (LCons( rp1 (LCons( rpr LEOF )) )) ))
       )) (
-         
          (if (can-unify( lp1 rp1 )) (
             (set ctx (and(
                (unify-inner( lpr rpr ))
@@ -961,8 +963,9 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          ))
       ))
       ( (Tuple(
-         (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF lpr ))
-            (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         (TGround( 'Cons_s (LCons(
+            (TGround( '..._s (LCons( lp1 LEOF )) ))
+            (LCons( lpr LEOF ))
          )) ))
          rp1
       )) (
@@ -976,8 +979,8 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          ))
       ))
       ( (Tuple(
-         (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
-         (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF rpr )) rp1 )) ))
+         (TGround( '..._s (LCons( lp1 LEOF )) ))
+         (TGround( 'Cons_s (LCons( rp1 (LCons( rpr LEOF )) )) ))
       )) (
          (if (can-unify( lp1 rp1 )) (
             (set ctx (and(
@@ -987,17 +990,17 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          ) ())
       ))
       ( (Tuple(
-         (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         (TGround( '..._s (LCons( lp1 LEOF )) ))
          (TGround( 'Nil_s TypeEOF ))
       )) ())
       ( (Tuple(
-         (TGround( '..._s (TypeSeq( TypeEOF lp1 )) ))
+         (TGround( '..._s (LCons( lp1 LEOF )) ))
          rp1
       )) (
          (set ctx (unify-inner( lp1 rp1 )))
       ))
 
-      ( (Tuple( (TGround( 'GT_s (TypeSeq( TypeEOF (TGround( lbase TypeEOF )) )) )) (TGround( rbase TypeEOF )) )) (
+      ( (Tuple( (TGround( 'GT_s (LCons( (TGround( lbase LEOF )) LEOF )) )) (TGround( rbase TypeEOF )) )) (
          (if (>( (to-i64 rbase) (to-i64 lbase) )) (
             (set ctx TCtxNil)
          ) ())
@@ -1016,8 +1019,8 @@ unify := λ(: fpt TypeList)(: pt TypeList). (: (
    (let ctx TCtxEOF)
    (match (Tuple( fpt pt )) (
       ()
-      ( (Tuple( TypeEOF TypeEOF )) (set ctx TCtxNil) )
-      ( (Tuple( (TypeSeq( lps lp1 )) (TypeSeq( rps rp1 )) )) (
+      ( (Tuple( LEOF LEOF )) (set ctx TCtxNil) )
+      ( (Tuple( (LCons( lp1 lps )) (LCons( rp1 rps )) )) (
          (set ctx (unify( lp1 rp1 )))
          (if (non-zero ctx) (
             (set ctx (union( ctx (unify( lps rps )) )))
@@ -1032,7 +1035,7 @@ fields-of-tag := λ(: tag Type)(: class Type). (: (
    (let rhst TAny)
    (match tag (
       ()
-      ( (TGround( 'Tag_s (TypeSeq( TypeEOF (TGround( ts _ )) )) )) (match (fields-of-tag ts) (
+      ( (TGround( 'Tag_s (LCons( (TGround( ts _ )) LEOF )) )) (match (fields-of-tag ts) (
          ()
          ( (Tuple( TAny TAny )) () )
          ( (Tuple( fields-lhs fields-rhs )) (
@@ -1046,9 +1049,9 @@ fields-of-tag := λ(: tag Type)(: class Type). (: (
       ))
    ))
    (set rhst (with-size rhst))
-   (let rt (TGround( 'Fields_s (close(TypeSeq(
-      (close TypeEOF)
+   (let rt (TGround( 'Fields_s (close(cons(
       (fields-of-type( (t3( 'Cons_s rhst (TAnd( (close(t1 'U64_s)) (close(t2( 'Sized_s (t1 '8_s) ))) )) )) ))
+      (: LEOF List<Type>)
    ))))))
    rt
 ) Type);
@@ -1057,27 +1060,27 @@ fields-of-type := λ(: tt Type). (: (
    (match tt (
       ()
       ( TAny (set tt (t1 'Nil_s)) )
-      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+      ( (TGround( 'Cons_s (LCons( p2 (LCons( p1 LEOF )) )) )) (
          (set tt (TGround(
             'Cons_s
-            (close(TypeSeq(
-               (close(TypeSeq(
-                  (close TypeEOF)
-                  (fields-of-type p1)
-               )))
+            (close(cons(
                p2
+               (cons(
+                  (fields-of-type p1)
+                  (: LEOF List<Type>)
+               ))
             )))
          )))
       ))
       ( _ (
          (set tt (TGround(
             'Cons_s
-            (close(TypeSeq(
-               (close(TypeSeq(
-                  (close TypeEOF)
-                  (t1 'Nil_s)
-               )))
+            (close(cons(
                tt
+               (cons(
+                  (t1 'Nil_s)
+                  (: LEOF List<Type>)
+               ))
             )))
          )))
       ))
@@ -1192,7 +1195,7 @@ sizeof-type := λ(: tt Type). (: (
       ()
       ( TAny () )
       ( (TVar _) () )
-      ( (TGround( class TypeEOF )) (set sz (size-of-class class)) )
+      ( (TGround( class LEOF )) (set sz (size-of-class class)) )
       ( (TGround( 'Sized_s (TypeSeq( TypeEOF (TGround( szp TypeEOF )) )) )) (
          (set sz (to-u64 szp))
       ))
