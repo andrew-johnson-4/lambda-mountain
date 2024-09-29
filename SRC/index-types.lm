@@ -49,6 +49,7 @@ import SRC/has-forward.lm;
 
 import SRC/with-tag.lm;
 import SRC/with-size.lm;
+import SRC/with-fields.lm;
 
 import SRC/without-tag.lm;
 import SRC/without-representation.lm;
@@ -81,3 +82,7 @@ import SRC/typecheck.lm;
 import SRC/substitute.lm;
 import SRC/specialize.lm;
 import SRC/mark-constructor-flat-parameters.lm;
+import SRC/infer-type-constructor.lm;
+import SRC/infer-global-context.lm;
+import SRC/assert-well-typed.lm;
+import SRC/assert-one-typed.lm;
