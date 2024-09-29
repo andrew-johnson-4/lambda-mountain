@@ -1,10 +1,4 @@
 
-assemble-text-section                    := (: SNil S);
-assemble-init-section                    := (: SNil S);
-assemble-data-section                    := (: SNil S);
-assemble-final                           := '_s;
-assemble-argv-referenced                 := False_u8;
-
 compile := λ. (: (match config-assemble-mode (
    ()
    ( AssembleGNU (compile-gnu()) )

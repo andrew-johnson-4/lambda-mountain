@@ -20,23 +20,17 @@ develop:
 	coqchk tmp.vo
 
 deploy: compile-production build-docs
-	time ./production -o deploy.s SRC/cli.lm
+	time ./production -o deploy.s SRC/index-index.lm
 	as deploy.s -o deploy.o
 	ld deploy.o -o deploy
-	time ./deploy -o deploy2.s SRC/cli.lm
+	time ./deploy -o deploy2.s SRC/index-index.lm
 	diff deploy.s deploy2.s
 	mv deploy.s BOOTSTRAP/cli.s
 	cargo test regression_tests
 
-compile-dev: compile-bootstrap
-	rm -f dev dev.o dev.s
-	./bootstrap -o dev.s DEV/cli.lm
-	as -o dev.o dev.s
-	ld -o dev   dev.o
-
 compile-production: compile-bootstrap
 	rm -f production production.o production.s
-	./bootstrap -o production.s SRC/cli.lm
+	./bootstrap -o production.s SRC/index-index.lm
 	as -o production.o production.s
 	ld -o production   production.o
 	cp production re-production
