@@ -1,0 +1,25 @@
+
+== := λ(: lt Type)(: rt Type). (: (
+   (let r 0_u64)
+   (match (Tuple( lt rt )) (
+      ()
+      ( (Tuple( TAny TAny )) (set r 1_u64) )
+      ( (Tuple( (TVar lv) (TVar rv) )) (set r (==( lv rv ))) )
+      ( (Tuple( (TAnd( llt rlt )) (TAnd( lrt rrt )) )) (
+         (if (==( llt lrt )) (
+            (if (==( rlt rrt )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+      ))
+      ( (Tuple( (TGround( ln lps )) (TGround( rn rps )) )) (
+         (if (==( ln rn )) (
+            (if (==( lps rps )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+      ))
+      ( _ () )
+   ))
+   r
+) U64);
