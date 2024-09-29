@@ -1,0 +1,7 @@
+
+denormalize := λ(: tt Type). (: (
+   (set tt (with-size tt))
+   (set tt (with-tag tt))
+   (set tt (with-fields tt))
+   tt
+) Type);
