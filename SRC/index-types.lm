@@ -28,6 +28,7 @@ import SRC/tag-of.lm;
 import SRC/is-open.lm;
 import SRC/is-parameterized.lm;
 import SRC/can-unify.lm;
+import SRC/unify.lm;
 
 import SRC/with-tag.lm;
 import SRC/with-size.lm;
