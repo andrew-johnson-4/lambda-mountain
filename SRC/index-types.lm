@@ -16,4 +16,7 @@ import SRC/fields-of-tag.lm;
 import SRC/type-constructors.lm;
 import SRC/type-complex-fields.lm;
 
+import SRC/domain.lm;
+import SRC/range.lm;
+
 import SRC/typecheck.lm;

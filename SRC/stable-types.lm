@@ -15,26 +15,6 @@ tag-of := λ(: tt Type). (: (
    tag
 ) String);
 
-domain := λ(: tt Type). (: (
-   (let r TAny)
-   (match (slot( tt 'Arrow_s )) (
-      ()
-      ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (set r p1) )
-      ( _ () )
-   ))
-   r
-) Type);
-
-range := λ(: tt Type). (: (
-   (let r TAny)
-   (match (slot( tt 'Arrow_s )) (
-      ()
-      ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (set r p2) )
-      ( _ () )
-   ))
-   r
-) Type);
-
 is-open := λ(: tt Type). (: (
    (let r 0_u64)
    (match tt (
