@@ -1,7 +1,4 @@
 
-type ParsePartial (PME( AST , List<Token> )); # term, remainder
-type SfxList SfxEOF | (SfxSeq( SfxList[] , String , Type )); zero SfxList SfxEOF;
-
 parse-suffixes := (: SfxEOF SfxList);
 
 parse-lambda := λ(: tokens List<Token>). (: (

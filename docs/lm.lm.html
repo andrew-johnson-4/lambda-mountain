@@ -104,7 +104,27 @@
 (print( 'hello_s ))
 </code>
 </pre>
-</div>
+<hr >
+<h4 ><b>mangle-identifier</b> : (k: String) -&gt; S</h4>
+<p >Mangle a string so that it can become a symbol in an object file.</p><hr >
+<h4 ><b>mangle-identifier</b> : (kt: Type) -&gt; S</h4>
+<p >Mangle a type so that it can become a symbol in an object file.</p><hr >
+<h4 ><b>mangle-identifier</b> : (k: String)(kt: Type) -&gt; String</h4>
+<p >Mangle a typed variable so that it can become a symbol in an object file.</p><hr >
+<h4 ><b>escape-string</b> : (s: String) -&gt; String</h4>
+<p >Escape a string to be sent to GNU assembly output.</p><hr >
+<h4 ><b>escape-literal</b> : (s: String) -&gt; String</h4>
+<p >Escape a string literal to be sent to GNU assembly output.</p><hr >
+<h4 ><b>escape-string</b> : (s: S) -&gt; S</h4>
+<p >Escape a string to be sent to GNU assembly output.</p><hr >
+<h4 ><b>exit-error</b> : (msg: String)(t: AST) -&gt; Nil</h4>
+<p >Exit with a simple message and associated blame.</p><hr >
+<h4 ><b>is-variable</b> : (s: String) -&gt; U64</h4>
+<p >Test whether a string is a simple variable name.</p><hr >
+<h4 ><b>to-string</b> : (is-used: IsUsed) -&gt; String</h4>
+<p >Convert a Used type into a String.</p><hr >
+<h4 ><b>infer-expr</b> : (tctx: TContext)(term: AST)(scoped: IsScoped)(hint: Type)(used: IsUsed) -&gt; TContext</h4>
+<p >Use a Context to infer the type of an expression.</p></div>
 </div>
 </main>
 </div>
