@@ -422,15 +422,15 @@ without-representation := λ(: tt Type). (: (
             ))
          ))
       ))
-      ( (TGround( 'Constant_s TypeEOF )) (set tt TAny) )
-      ( (TGround( 'Literal_s TypeEOF )) (set tt TAny) )
-      ( (TGround( 'StackVariable_s TypeEOF )) (set tt TAny) )
-      ( (TGround( 'LocalVariable_s TypeEOF )) (set tt TAny) )
-      ( (TGround( 'GlobalVariable_s TypeEOF )) (set tt TAny) )
-      ( (TGround( 'Reg8_s TypeEOF )) (set tt TAny) )
-      ( (TGround( 'Reg16_s TypeEOF )) (set tt TAny) )
-      ( (TGround( 'Reg32_s TypeEOF )) (set tt TAny) )
-      ( (TGround( 'Reg64_s TypeEOF )) (set tt TAny) )
+      ( (TGround( 'Constant_s LEOF )) (set tt TAny) )
+      ( (TGround( 'Literal_s LEOF )) (set tt TAny) )
+      ( (TGround( 'StackVariable_s LEOF )) (set tt TAny) )
+      ( (TGround( 'LocalVariable_s LEOF )) (set tt TAny) )
+      ( (TGround( 'GlobalVariable_s LEOF )) (set tt TAny) )
+      ( (TGround( 'Reg8_s LEOF )) (set tt TAny) )
+      ( (TGround( 'Reg16_s LEOF )) (set tt TAny) )
+      ( (TGround( 'Reg32_s LEOF )) (set tt TAny) )
+      ( (TGround( 'Reg64_s LEOF )) (set tt TAny) )
       ( (TGround( tag ps )) (
          (set tt (TGround( tag (close(without-representation ps)) )))
       ))
@@ -593,7 +593,7 @@ normalize := λ(: tt Type). (: (
    r
 ) U64);
 
-can-unify := λ(: fpt TypeList)(: pt TypeList). (: (
+can-unify := λ(: fpt List<Type>)(: pt List<Type>). (: (
    (let r 0_u64)
    (match (Tuple( fpt pt )) (
       ()
@@ -666,7 +666,7 @@ can-unify := λ(: fpt Type)(: pt Type). (: (
       ))
       ( (Tuple(
          (TGround( '..._s (LCons( lp1 LEOF )) ))
-         (TGround( 'Nil_s TypeEOF ))
+         (TGround( 'Nil_s LEOF ))
       )) (
          (set r 1_u64)
       ))
@@ -699,7 +699,7 @@ to-string := λ(: tt Type). (: (
    (clone-rope r)
 ) String);
 
-to-string := λ(: tt TypeList). (: (
+to-string := λ(: tt List<Type>). (: (
    (let r SNil)
    (match tt (
       ()
@@ -837,7 +837,7 @@ normalize := λ(: tctx TContext). (: (
    tctx
 ) TContext);
 
-with-only-representation := λ(: tt TypeList). (: (
+with-only-representation := λ(: tt List<Type>). (: (
    (let rt tt)
    (match tt (
       ()
@@ -850,7 +850,7 @@ with-only-representation := λ(: tt TypeList). (: (
       ( LEOF () )
    ))
    rt
-) TypeList);
+) List<Type>);
 
 with-only-representation := λ(: tt Type). (: (
    (let return tt)
@@ -873,15 +873,15 @@ with-only-representation := λ(: tt Type). (: (
             ))
          ))
       ))
-      ( (TGround( 'Constant_s TypeEOF )) () )
-      ( (TGround( 'Literal_s TypeEOF )) () )
-      ( (TGround( 'StackVariable_s TypeEOF )) () )
-      ( (TGround( 'LocalVariable_s TypeEOF )) () )
-      ( (TGround( 'GlobalVariable_s TypeEOF )) () )
-      ( (TGround( 'Reg8_s TypeEOF )) () )
-      ( (TGround( 'Reg16_s TypeEOF )) () )
-      ( (TGround( 'Reg32_s TypeEOF )) () )
-      ( (TGround( 'Reg64_s TypeEOF )) () )
+      ( (TGround( 'Constant_s LEOF )) () )
+      ( (TGround( 'Literal_s LEOF )) () )
+      ( (TGround( 'StackVariable_s LEOF )) () )
+      ( (TGround( 'LocalVariable_s LEOF )) () )
+      ( (TGround( 'GlobalVariable_s LEOF )) () )
+      ( (TGround( 'Reg8_s LEOF )) () )
+      ( (TGround( 'Reg16_s LEOF )) () )
+      ( (TGround( 'Reg32_s LEOF )) () )
+      ( (TGround( 'Reg64_s LEOF )) () )
       ( (TGround( tag ps )) (set return TAny) )
       ( TAny () )
       ( (TVar _) (set return TAny) )
@@ -904,7 +904,7 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
       ( (Tuple( TAny _ )) (
          (set ctx TCtxNil)
       ))
-      ( (Tuple( (TVar( ltv )) (TGround( tg TypeEOF )) )) (
+      ( (Tuple( (TVar( ltv )) (TGround( tg LEOF )) )) (
          (set ctx (TCtxBind(
             (close TCtxEOF)
             ltv
@@ -991,7 +991,7 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
       ))
       ( (Tuple(
          (TGround( '..._s (LCons( lp1 LEOF )) ))
-         (TGround( 'Nil_s TypeEOF ))
+         (TGround( 'Nil_s LEOF ))
       )) ())
       ( (Tuple(
          (TGround( '..._s (LCons( lp1 LEOF )) ))
@@ -1000,7 +1000,7 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          (set ctx (unify-inner( lp1 rp1 )))
       ))
 
-      ( (Tuple( (TGround( 'GT_s (LCons( (TGround( lbase LEOF )) LEOF )) )) (TGround( rbase TypeEOF )) )) (
+      ( (Tuple( (TGround( 'GT_s (LCons( (TGround( lbase LEOF )) LEOF )) )) (TGround( rbase LEOF )) )) (
          (if (>( (to-i64 rbase) (to-i64 lbase) )) (
             (set ctx TCtxNil)
          ) ())
@@ -1015,7 +1015,7 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
    ctx
 ) TContext);
 
-unify := λ(: fpt TypeList)(: pt TypeList). (: (
+unify := λ(: fpt List<Type>)(: pt List<Type>). (: (
    (let ctx TCtxEOF)
    (match (Tuple( fpt pt )) (
       ()
@@ -1088,7 +1088,7 @@ fields-of-type := λ(: tt Type). (: (
    tt
 ) Type);
 
-s-type-list := (: STEOF STypeList);
+s-type-list := (: STEOF SList<Type>);
 ascript := λ(: t S)(: tt Type). (: (
    (set s-type-list (STSeq(
       (close s-type-list)
@@ -1196,19 +1196,19 @@ sizeof-type := λ(: tt Type). (: (
       ( TAny () )
       ( (TVar _) () )
       ( (TGround( class LEOF )) (set sz (size-of-class class)) )
-      ( (TGround( 'Sized_s (TypeSeq( TypeEOF (TGround( szp TypeEOF )) )) )) (
+      ( (TGround( 'Sized_s (LCons( (TGround( szp LEOF )) LEOF )) )) (
          (set sz (to-u64 szp))
       ))
-      ( (TGround( 'Array_s (TypeSeq( (TypeSeq( TypeEOF p1 )) TAny )) )) (
+      ( (TGround( 'Array_s (LCons( TAny (LCons( p1 LEOF )) )) )) (
          (set sz 8_u64)
       ))
-      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+      ( (TGround( 'Cons_s (LCons( p2 (LCons( p1 LEOF )) )) )) (
          (set sz (+(
             (sizeof-aligned p1)
             (sizeof-aligned p2)
          )))
       ))
-      ( (TGround( 'Field_s (TypeSeq( (TypeSeq( TypeEOF p1 )) (TGround( szp TypeEOF )) )) )) (
+      ( (TGround( 'Field_s (LCons( (TGround( szp LEOF )) (LCons( p1 LEOF )) )) )) (
          (set sz (*( (sizeof-type p1) (to-u64 szp) )))
       ))
       ( (TGround( tag _ )) (
@@ -1237,13 +1237,13 @@ sizeof-type := λ(: tt Type). (: (
    sz
 ) U64);
 
-has-infinite := λ(: base-type Type)(: tag String)(: arity U64)(: tt TypeList)(: pi U64). (: (
+has-infinite := λ(: base-type Type)(: tag String)(: arity U64)(: tt List<Type>)(: pi U64). (: (
    # a type is infinite if it contains a reference to itself at the top (flat) level
    (let return 0_u64)
    (match tt (
       ()
-      ( TypeEOF () )
-      ( (TypeSeq( ts p1 )) (
+      ( LEOF () )
+      ( (LCons( p1 ts )) (
          (if (is-parameter-flat( tag arity pi )) (
             (if (==( base-type p1 )) (
                (set return 1_u64)
@@ -1264,8 +1264,8 @@ has-infinite := λ(: base-type Type)(: active Type). (: (
    (match active (
       ()
       ( (TGround( 'Array_s _ )) () )
-      ( (TGround( 'Field_s (TypeSeq( (TypeSeq( TypeEOF p1 )) _ )) )) (set return (has-infinite( base-type active ))) )
-      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2  )) )) (
+      ( (TGround( 'Field_s (LCons( _ (LCons( p1 LEOF )) )) )) (set return (has-infinite( base-type active ))) )
+      ( (TGround( 'Cons_s (LCons( p2 (LCons( p1 LEOF )) )) )) (
          (set return (max(
             (has-infinite( base-type p1 ))
             (has-infinite( base-type p2 ))
@@ -1288,12 +1288,12 @@ has-infinite := λ(: base-type Type)(: active Type). (: (
    return
 ) U64);
 
-has-forward := λ(: tt TypeList). (: (
+has-forward := λ(: tt List<Type>). (: (
    (let return 0_u64)
    (match tt (
       ()
-      ( TypeEOF () )
-      ( (TypeSeq( ts p1 )) (
+      ( LEOF () )
+      ( (LCons( p1 ts )) (
          (set return (max(
             (has-forward( ts ))
             (has-forward( p1 ))
@@ -1309,7 +1309,7 @@ has-forward := λ(: tt Type). (: (
       ()
       ( (TGround( 'Array_s ps )) () )
       ( (TGround( 'Cons_s ps )) (set return (has-forward( ps ))) )
-      ( (TGround( 'Field_s (TypeSeq( (TypeSeq( TypeEOF p1 )) n )) )) (set return (has-forward( p1 ))) )
+      ( (TGround( 'Field_s (LCons( n (LCons( p1 LEOF )) )) )) (set return (has-forward( p1 ))) )
       ( (TGround( cls ps )) (            
          (set return (has-forward( ps )))
          (if (not(.lookup( class-exists-index cls 0_u64 ))) (
@@ -1393,7 +1393,7 @@ with-size := λ(: tt Type). (: (
    ) ())
    (match tt (
       ()
-      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+      ( (TGround( 'Cons_s (LCons( p2 (LCons( p1 LEOF )) )) )) (
          (set tt (t3( 'Cons_s (with-size p1) (with-size p2) )))
       ))
       ( _ () )
@@ -1401,16 +1401,16 @@ with-size := λ(: tt Type). (: (
    tt
 ) Type);
 
-with-size := λ(: tt TypeList). (: (
+with-size := λ(: tt List<Type>). (: (
    (match tt (
       ()
-      ( TypeEOF () )
-      ( (TypeSeq( ps p1 )) (
-         (set tt (TypeSeq( (close(with-size ps)) (with-size p1) )))
+      ( LEOF () )
+      ( (LCons( p1 ps )) (
+         (set tt (cons( (with-size p1) (with-size ps) )))
       ))
    ))
    tt
-) TypeList);
+) List<Type>);
 
 with-size-recurse := λ(: tt Type). (: (
    (match tt (
@@ -1461,7 +1461,7 @@ is-parameterized := λ(: tt Type). (: (
    (let r 0_u64)
    (match tt (
       ()
-      ( (TGround( _ (TypeSeq( _ _ )) )) (set r 1_u64) )
+      ( (TGround( _ (LCons( _ _ )) )) (set r 1_u64) )
       ( (TAnd( lt rt )) (
          (if (is-parameterized lt) (set r 1_u64) ())
          (if (is-parameterized rt) (set r 1_u64) ())
@@ -1475,7 +1475,7 @@ cons-head := λ(: tt Type). (: (
    (let r TAny)
    (match tt (
       ()
-      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF hd )) tl )) )) (set r hd) )
+      ( (TGround( 'Cons_s (LCons( tl (LCons( hd LEOF )) )) )) (set r hd) )
       ( _ () )
    ))
    r
@@ -1485,7 +1485,7 @@ cons-tail := λ(: tt Type). (: (
    (let r TAny)
    (match tt (
       ()
-      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF hd )) tl )) )) (set r tl) )
+      ( (TGround( 'Cons_s (LCons( tl (LCons( hd LEOF )) )) )) (set r tl) )
       ( _ () )
    ))
    r
@@ -1513,12 +1513,12 @@ deep-hash := λ(: tt Type). (: (
    return
 ) U64);
 
-deep-hash := λ(: tt TypeList). (: (
+deep-hash := λ(: tt List<Type>). (: (
    (let return 0_u64)
    (match tt (
       ()
-      ( TypeEOF () )
-      ( (TypeSeq( ts t1 )) (
+      ( LEOF () )
+      ( (LCons( t1 ts )) (
          (set return (+(
             (deep-hash ts)
             (deep-hash t1)
@@ -1617,20 +1617,20 @@ unify-hint := λ(: hint Type)(: tt Type). (: (
    tt
 ) Type);
 
-unify-hint := λ(: hint Type)(: tt TypeList). (: (
+unify-hint := λ(: hint Type)(: tt List<Type>). (: (
    (match tt (
       ()
-      ( TypeEOF () )
-      ( (TypeSeq( rst p1 )) (
-         (set tt (TypeSeq(
-            (close(unify-hint( hint rst )))
+      ( LEOF () )
+      ( (LCons( p1 rst )) (
+         (set tt (cons(
             (unify-hint( hint p1 ))
+            (unify-hint( hint rst ))
          )))
       ))
       ( _ () )
    ))
    tt
-) TypeList);
+) List<Type>);
 
 infer-type-definition := λ(: base-type Type)(: body AST)(: case-number U64). (: (
    # This works but is too slow
@@ -1668,12 +1668,12 @@ infer-type-definition := λ(: base-type Type)(: body AST)(: case-number U64). (:
    r
 ) U64);
 
-arity := λ(: tt TypeList). (: (
+arity := λ(: tt List<Type>). (: (
    (let a 0_u64)
    (match tt (
       ()
-      ( TypeEOF () )
-      ( (TypeSeq( rst _ )) (
+      ( LEOF () )
+      ( (LCons( _ rst )) (
          (set a (+( (arity rst) 1_u64 )))
       ))
    ))
@@ -1694,7 +1694,7 @@ cons-arity := λ(: tt Type). (: (
    (let a 1_u64)
    (match tt (
       ()
-      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF ltt )) rtt )) )) (
+      ( (TGround( 'Cons_s (LCons( rtt (LCons( ltt LEOF )) )) )) (
          (set a (+( (cons-arity ltt) 1_u64 )))
       ))
       ( _ () )
@@ -1714,11 +1714,11 @@ parameter-number := λ(: tt Type)(: parameter-name String). (: (
    a
 ) U64);
 
-parameter-number := λ(: tt TypeList)(: parameter-name String)(: pi U64). (: (
+parameter-number := λ(: tt List<Type>)(: parameter-name String)(: pi U64). (: (
    (let a 0_u64)
    (match tt (
       ()
-      ( (TypeSeq( rst (TVar v) )) (
+      ( (LCons( (TVar v) rst )) (
          (if (==( v parameter-name )) (
             (set a pi)
          ) (
@@ -1730,11 +1730,11 @@ parameter-number := λ(: tt TypeList)(: parameter-name String)(: pi U64). (: (
    a
 ) U64);
 
-mark-constructor-flat-parameters := λ(: base-type Type)(: flat-tag String)(: flat-arity U64)(: flat-type TypeList)(: pi U64). (: (
+mark-constructor-flat-parameters := λ(: base-type Type)(: flat-tag String)(: flat-arity U64)(: flat-type List<Type>)(: pi U64). (: (
    (match flat-type (
       ()
-      ( TypeEOF () )
-      ( (TypeSeq( rst p1 )) (
+      ( LEOF () )
+      ( (LCons( p1 rst )) (
          (if (is-parameter-flat( flat-tag flat-arity pi )) (
             (mark-constructor-flat-parameters( base-type p1 ))
          ) ())
@@ -1746,7 +1746,7 @@ mark-constructor-flat-parameters := λ(: base-type Type)(: flat-tag String)(: fl
 mark-constructor-flat-parameters := λ(: base-type Type)(: flat-type Type). (: (
    (match flat-type (
       ()
-      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF p1 )) p2 )) )) (
+      ( (TGround( 'Cons_s (LCons( p2 (LCons( p1 LEOF )) )) )) (
          (mark-constructor-flat-parameters( base-type p1 ))
          (mark-constructor-flat-parameters( base-type p2 ))
       ))
@@ -1840,7 +1840,7 @@ infer-global-context := λ(: td AST). (: (
          (let size (infer-type-definition( bt case-constructors 0_u64 )))
          (match bt (
             ()
-            ( (TGround( class TypeEOF )) (index-size-of-class( class size )) )
+            ( (TGround( class LEOF )) (index-size-of-class( class size )) )
             ( _ () )
          ))
       ))
@@ -2025,7 +2025,7 @@ apply-plural := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize
             (apply-plural( function-name t2 pt do-specialize blame ))
          )))
       ))
-      ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (
+      ( (TGround( 'Arrow_s (LCons( frt (LCons( fpt LEOF )) )) )) (
          (if (can-unify( fpt pt )) (
             (set r (cons( ft r )))
          ) ())
@@ -2110,7 +2110,7 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: 
    (for-each (sft in rs) (
       (match sft (
          ()
-         ( (TGround( 'Arrow_s (TypeSeq( (TypeSeq( TypeEOF fpt )) frt )) )) (
+         ( (TGround( 'Arrow_s (LCons( frt (LCons( fpt LEOF )) )) )) (
             (let ctx (unify( fpt pt )))
             (set ctx (normalize ctx))
             (let closed-type (substitute( ctx sft )))
@@ -2171,11 +2171,11 @@ try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: 
    ))
 ) Nil);
 
-infer-tctx := λ(: tctx TContext)(: tt TypeList). (: (
+infer-tctx := λ(: tctx TContext)(: tt List<Type>). (: (
    (match tt (
       ()
-      ( TypeEOF () )
-      ( (TypeSeq( rst p1 )) (
+      ( LEOF () )
+      ( (LCons( p1 rst )) (
          (set tctx (infer-tctx( tctx rst )))
          (set tctx (infer-tctx( tctx p1 )))
       ))
@@ -2233,7 +2233,7 @@ infer-ctx := λ(: tctx TContext)(: lhs AST). (: (
 implicit-tail := λ(: tt Type). (: (
    (match tt (
       ()
-      ( (TGround( 'Cons_s (TypeSeq( (TypeSeq( TypeEOF hd )) tl )) )) (
+      ( (TGround( 'Cons_s (LCons( tl (LCons( hd LEOF )) )) )) (
          (set tt tl)
       ))
       ( _ () )
