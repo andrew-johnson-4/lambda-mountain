@@ -2,9 +2,11 @@
 import LIB/default.lm;
 
 import SRC/stable-ast.lm;
-import SRC/stable-types.lm;
+
 import SRC/index-utility.lm;
-import SRC/stable-utility.lm;
+import SRC/index-types.lm;
+
+import SRC/stable-types.lm;
 import SRC/stable-tokenize.lm;
 import SRC/stable-parse.lm;
 import SRC/stable-preprocess.lm;

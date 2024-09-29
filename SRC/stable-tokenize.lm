@@ -119,9 +119,21 @@ location-of := λ(: term AST). (: (
    r
 ) SourceLocation);
 
+already-tokenized := (: LEOF List<String>);
+is-already-tokenized := λ(: fp String). (: (
+   (let r 0_u64)
+   (for-each (fpt in already-tokenized) (
+      (if (==( fp fpt )) (set r 1_u64) ())
+   ))
+   r
+) U64);
 
 tokenize := λ(: fp String). (: (
-   (let text (read-file fp))
+   (let text '_s)
+   (if (is-already-tokenized fp) () (
+      (set text (read-file fp))
+      (set already-tokenized (cons( fp already-tokenized )))
+   ))
    (let in_comment False_u8)
    (let buffer SNil)
    (let current-line 1_u64)
