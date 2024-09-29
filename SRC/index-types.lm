@@ -18,6 +18,16 @@ import SRC/fields-of-tag.lm;
 import SRC/type-constructors.lm;
 import SRC/type-complex-fields.lm;
 
+import SRC/is-open.lm;
+import SRC/is-parameterized.lm;
+import SRC/is-sized.lm;
+import SRC/has-representation.lm;
+import SRC/guess-representation.lm;
+
+import SRC/as-local-variable.lm;
+import SRC/as-constant.lm;
+import SRC/deep-hash.lm;
+
 import SRC/ascript.lm;
 import SRC/ascript-normal.lm;
 import SRC/typeof.lm;
@@ -29,8 +39,6 @@ import SRC/p.lm;
 import SRC/and.lm;
 import SRC/union.lm;
 import SRC/tag-of.lm;
-import SRC/is-open.lm;
-import SRC/is-parameterized.lm;
 import SRC/can-unify.lm;
 import SRC/unify.lm;
 import SRC/fields-of-type.lm;
@@ -57,5 +65,11 @@ import SRC/enrich.lm;
 import SRC/type-of-s.lm;
 import SRC/type-of-s-with-fields.lm;
 
+import SRC/typeof-lhs.lm;
+import SRC/typeof-tag.lm;
+import SRC/cons-head.lm;
+import SRC/cons-tail.lm;
+
 import SRC/typecheck.lm;
 import SRC/substitute.lm;
+import SRC/specialize.lm;
