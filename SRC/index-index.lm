@@ -6,10 +6,10 @@ import SRC/index-globals.lm;
 import SRC/index-utility.lm;
 import SRC/index-types.lm;
 import SRC/index-assemble.lm;
+import SRC/index-blob.lm;
 
 import SRC/main.lm;
 
-import SRC/stable-blob.lm;
 import SRC/stable-codegen.lm;
 import SRC/stable-preprocess.lm;
 import SRC/stable-ast.lm;
