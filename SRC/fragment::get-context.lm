@@ -1,0 +1,5 @@
+
+fragment::get-context := λ(: e Fragment) . (: (
+   (let ctx (open(.1( (as e Tag<Fragment>) ))))
+   ctx
+) FContext);

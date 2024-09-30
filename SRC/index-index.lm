@@ -13,8 +13,6 @@ import SRC/index-ast.lm;
 import SRC/index-parse.lm;
 import SRC/index-codegen.lm;
 import SRC/index-preprocess.lm;
+import SRC/index-fragment.lm;
 
 import SRC/main.lm;
-
-import SRC/stable-fragment.lm;
-

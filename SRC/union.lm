@@ -30,3 +30,20 @@ union := λ(: l Context)(: r Context). (: (
    ) ())
    return
 ) Context);
+
+union := λ(: ctx FContext)(: tctx TContext). (: (
+   (let r ctx)
+   (while (non-zero tctx) (match tctx (
+      ()
+      ( TCtxNil (set tctx TCtxEOF) )
+      ( (TCtxBind( rst k vt _ )) (
+         (let fragment (fragment::expression(to-string vt)))
+         (set fragment (fragment::set( fragment 'program_s (SAtom(to-string vt)) )))
+         (set r (FCtxBind(
+            (close r) k TAny fragment
+         )))
+         (set tctx rst)
+      ))
+   )))
+   r
+) FContext);

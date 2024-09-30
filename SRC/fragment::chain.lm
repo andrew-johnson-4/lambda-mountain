@@ -1,0 +1,35 @@
+
+fragment::chain := λ(: l Fragment)(: r Fragment). (: (
+   (set l (fragment::set-context( l (fragment::get-context r) )))
+   (set l (fragment::set-offset( l (fragment::get-offset r) )))
+   (set l (fragment::set-type( l (fragment::get-type r) )))
+   (set l (fragment::set( l 'expression_s (fragment::get( r 'expression_s )) )))
+   (set l (fragment::set( l 'frame_s (SCons(
+      (close(fragment::get( l 'frame_s )))
+      (close(fragment::get( r 'frame_s )))
+   )) )))
+   (set l (fragment::set( l 'del_s (SCons(
+      (close(fragment::get( l 'del_s )))
+      (close(fragment::get( r 'del_s )))
+   )) )))
+   (set l (fragment::set( l 'unframe_s (SCons(
+      (close(fragment::get( l 'unframe_s )))
+      (close(fragment::get( r 'unframe_s )))
+   )) )))
+   (set l (fragment::set( l 'program_s (SCons(
+      (close(fragment::get( l 'program_s )))
+      (close(fragment::get( r 'program_s )))
+   )) )))
+   l
+) Fragment);
+
+fragment::chain := λ(: fragment-ctx FragmentList)(: e Fragment). (: (
+   (while (non-zero fragment-ctx) (match fragment-ctx (
+      ()
+      ( (FLSeq( rst cf )) (
+         (set e (fragment::chain( cf e )))
+         (set fragment-ctx rst)
+      ))
+   )))
+   e
+) Fragment);
