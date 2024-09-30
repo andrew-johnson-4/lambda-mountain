@@ -1,0 +1,38 @@
+
+index-typedefs := λ(: program AST). (: (
+   (while (non-zero program) (match program (
+      ()
+      ( (Seq( rst (Typedef( lhs rhs )) )) (
+         (index-typedefs( rhs 0_u64 ))
+         (set program rst)
+      ))
+      ( (Seq( rst _ )) (
+         (set program rst)
+      ))
+      ( _ (set program ASTEOF) )
+   )))
+) Nil);
+
+index-typedefs := λ(: def AST)(: index U64) . (: (
+   (match def (
+      ()
+      ( (App( (App( tds (Var( '|_s _ )) )) (Lit( tag _ )) )) (
+         (index-index-of-tag( tag index ))
+         (index-lone-tag( tag ))
+         (index-typedefs( tds (+( index 1_u64 )) ))
+      ))
+      ( (App( (App( tds (Var( '|_s _ )) )) (App( (Lit( tag _ )) _ )) )) (
+         (index-index-of-tag( tag index ))
+         (index-typedefs( tds (+( index 1_u64 )) ))
+      ))
+      ( (Lit( tag _ )) (
+         (index-index-of-tag( tag index ))
+         (index-lone-tag( tag ))
+      ))
+      ( (App( (Lit( tag _ )) _ )) (
+         (index-index-of-tag( tag index ))
+      ))
+      ( ASTEOF () )
+      ( _ (exit-error( 'Invalid\sTypedef_s def )) )
+   ))
+) Nil);

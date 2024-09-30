@@ -13,3 +13,20 @@ union := λ(: lctx TContext)(: rctx TContext). (: (
    lctx
 ) TContext);
 
+
+union := λ(: l Context)(: r Context). (: (
+   (let return l)
+   (if (not(non-zero r)) (set return CtxEOF) ())
+   (if (non-zero return) (
+      (match r (
+         ()
+         ( (CtxBind( rst k v )) (
+            (set return (CtxBind(
+               (close(union( l rst ))) k v
+            )))
+         ))
+         ( _ (set r CtxEOF) )
+      ))
+   ) ())
+   return
+) Context);

@@ -1,0 +1,7 @@
+
+preprocess := λ. (: (
+   (index-typedefs ast-parsed-program)
+   (set ast-parsed-program (preprocess-apply-literals ast-parsed-program))
+   (set ast-parsed-program (preprocess-apply ast-parsed-program))
+   (set ast-parsed-program (preprocess-apply-locations ast-parsed-program))
+) Nil);
