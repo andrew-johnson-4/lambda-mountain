@@ -2,10 +2,10 @@
 import docs/ubuntu-docs.lm;
 
 (docs-html(
-   'Documentation:\sSRC/cli.lm_s
+   'Documentation:\sSRC/index-index.lm_s
    (docs-header())
    (docs-sidebar())
-   (docs-title 'SRC/cli.lm\sDocumentation_s)
+   (docs-title 'SRC/index-index.lm\sDocumentation_s)
    (as(
       (main( (class 'l-docs__main_s)
          (div( (class 'row_s)

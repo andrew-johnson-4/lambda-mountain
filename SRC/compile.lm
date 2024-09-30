@@ -1,0 +1,6 @@
+
+compile := λ. (: (match config-assemble-mode (
+   ()
+   ( AssembleGNU (compile-gnu()) )
+   ( AssembleBlob (compile-blob()) )
+)) Nil);

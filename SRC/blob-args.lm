@@ -1,0 +1,22 @@
+
+blob-args := λ(: ctx FContext)(: rval AST). (: (
+   (let r FLEOF)
+   (match (slot( (typeof rval) 'Cons_s )) (
+      ()
+      ( (TGround( 'Cons_s (LCons( p2 (LCons( p1 LEOF )) )) )) (
+         (match rval (
+            ()
+            ( (App( le re )) (
+               (let e1 (blob-args( ctx le )))
+               (let e2 (blob-expr( ctx re )))
+               (set r (FLSeq( (close e1) e2 )))
+            ))
+         ))
+      ))
+      ( _ (
+         (let e1 (blob-expr( ctx rval )))
+         (set r (FLSeq( (close FLEOF) e1 )))
+      ))
+   ))
+   r
+) FragmentList);

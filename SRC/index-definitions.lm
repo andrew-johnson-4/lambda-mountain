@@ -33,3 +33,6 @@ type StringSList SSLEOF | (SSLSeq( StringSList[] , String , S )); zero StringSLi
 
 type Macro (Macro( AST , AST ));
 type MacroList MEOF | (MSeq( MacroList[] , Macro )); zero MacroList MEOF;
+
+type ParsePartial (PME( AST , List<Token> )); # term, remainder
+type SfxList SfxEOF | (SfxSeq( SfxList[] , String , Type )); zero SfxList SfxEOF;

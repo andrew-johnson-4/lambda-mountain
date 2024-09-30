@@ -1,0 +1,19 @@
+
+blob-bind-one := λ(: ctx FContext)(: k String)(: kt Type)(: arg Fragment). (: (
+   (match kt (
+      ()
+      ( (TGround( '..._s (LCons( p1 LEOF )) )) (
+         (if (can-unify( p1 (fragment::get-type arg) )) (
+            (set ctx (fragment-context::bind-vararg(
+               ctx k kt arg
+            )))
+         ) ())
+      ))
+      ( _ (
+         (set ctx (fragment-context::bind(
+            ctx k kt arg
+         )))
+      ))
+   ))
+   ctx
+) FContext);
