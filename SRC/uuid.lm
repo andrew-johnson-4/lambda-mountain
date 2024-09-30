@@ -1,0 +1,14 @@
+
+uuid-counter := 0_u64;
+uuid := λ . (: (
+   (set uuid-counter (+( uuid-counter 1_u64 )))
+   (clone-rope (SCons(
+      (close(SAtom 'uuid__s))
+      (close(SAtom(to-hex uuid-counter)))
+   )))
+) String);
+iuid := λ . (: (
+   (set uuid-counter (+( uuid-counter 1_u64 )))
+   (let id uuid-counter)
+   id
+) U64);

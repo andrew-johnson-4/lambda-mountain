@@ -1,0 +1,18 @@
+
++ := λ(: l AST)(: r AST). (: (
+   (match r (
+      ()
+      ( ASTEOF () )
+      ( (Seq( rl rr )) (
+         (set l (+( l rl )))
+         (set l (+( l rr )))
+      ))
+      ( re (
+         (set l (Seq(
+            (close l)
+            (close re)
+         )))
+      ))
+   ))
+   l
+) AST);
