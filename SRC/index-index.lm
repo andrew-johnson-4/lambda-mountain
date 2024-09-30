@@ -7,13 +7,13 @@ import SRC/index-utility.lm;
 import SRC/index-types.lm;
 import SRC/index-assemble.lm;
 import SRC/index-blob.lm;
+import SRC/index-context.lm;
 
 import SRC/main.lm;
 
 import SRC/stable-codegen.lm;
 import SRC/stable-preprocess.lm;
 import SRC/stable-ast.lm;
-import SRC/stable-context.lm;
 import SRC/stable-fragment.lm;
 import SRC/stable-parse.lm;
 import SRC/stable-tokenize.lm;

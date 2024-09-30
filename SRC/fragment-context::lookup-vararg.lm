@@ -1,0 +1,14 @@
+
+fragment-context::lookup-vararg := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST). (: (
+   (let r FLEOF)
+   (while (non-zero ctx) (match ctx (
+      ()
+      ( (FCtxBind( rst rk rt rf )) (
+         (if (==( k rk )) (
+            (set r (FLSeq( (close r) rf )))
+         ) ())
+         (set ctx rst)
+      ))
+   )))
+   r
+) FragmentList);

@@ -1,0 +1,5 @@
+
+fragment-context::new := λ. (: (
+   (let r FCtxEOF)
+   r
+) FContext);
