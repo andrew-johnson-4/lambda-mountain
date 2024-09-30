@@ -1,0 +1,10 @@
+
+unique := λ(: t Token). (: (
+   (match t (
+      ()
+      ( (Token( s id loc )) (
+         (set t (Token( s (iuid()) loc )))
+      ))
+   ))
+   t
+) Token);

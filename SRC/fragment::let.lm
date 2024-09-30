@@ -1,0 +1,26 @@
+
+fragment::let := λ(: ctx FContext)(: s S). (: (
+   (let return ctx)
+   (match s (
+      ()
+      ( (SCons( (SAtom 'App_s) (SCons(
+           (SCons( (SAtom 'Abs_s) (SCons(
+              (SCons( (SAtom 'Var_s) (SAtom k) ))
+              SNil
+           )) ))
+           v
+        )) )) (
+         (set v (fragment::render( return v )))
+         (set return (FCtxBind(
+            (close return) k TAny (fragment::expression( v ))
+         )))
+      ))
+      ( (SCons( (SAtom 'App_s) (SCons(
+          ls rs
+        )) )) (
+         (set return (fragment::let( return ls )))
+      ))
+      ( _ () )
+   ))
+   return
+) FContext);

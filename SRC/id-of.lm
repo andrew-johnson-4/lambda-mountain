@@ -1,0 +1,5 @@
+
+id-of := λ(: t Token). (: (
+   (let id (.2( (as t Tag<Token>) )))
+   id
+) U64);

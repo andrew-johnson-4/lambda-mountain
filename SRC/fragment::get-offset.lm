@@ -1,0 +1,11 @@
+
+fragment::get-offset := λ(: e Fragment). (: (
+   (let offset 0_i64)
+   (match e (
+      ()
+      ( (Fragment( e-t e-kvs e-offset e-tt e-ctx )) (
+         (set offset e-offset)
+      ))
+   ))
+   offset
+) I64);

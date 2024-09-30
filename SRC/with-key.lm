@@ -1,0 +1,10 @@
+
+with-key := λ(: t Token)(: k String). (: (
+   (match t (
+      ()
+      ( (Token( _ _ loc )) (
+         (set t (Token( k (iuid()) loc )))
+      ))
+   ))
+   t
+) Token);

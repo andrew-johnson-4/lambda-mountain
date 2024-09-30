@@ -1,0 +1,40 @@
+
+location-of := λ(: t Token). (: (
+   (let loc (.1( (as t Tag<Token>) )))
+   loc
+) SourceLocation);
+
+location-of := λ(: term AST). (: (
+   (let r (SourceLocation( 'Unknown_s 0_u64 0_u64 )))
+   (match term (
+      ()
+      ( (Var( _ v )) (set r (location-of v)) )
+      ( (Lit( _ v )) (set r (location-of v)) )
+      ( (App( tl tr )) (
+         (set r (location-of tl))
+         (if (not(non-zero r)) (set r (location-of tr)) ())
+      ))
+      ( (Abs( tl tr tlt )) (
+         (set r (location-of tl))
+         (if (not(non-zero r)) (set r (location-of tr)) ())
+      ))
+      ( (Seq( tl tr )) (
+         (set r (location-of tl))
+         (if (not(non-zero r)) (set r (location-of tr)) ())
+      ))
+      ( (Glb( tl tr )) (
+         (set r (location-of tl))
+         (if (not(non-zero r)) (set r (location-of tr)) ())
+      ))
+      ( (Typedef( tl tr )) (
+         (set r (location-of tl))
+         (if (not(non-zero r)) (set r (location-of tr)) ())
+      ))
+      ( (Frg( tl tr )) (
+         (set r (location-of tl))
+         (if (not(non-zero r)) (set r (location-of tr)) ())
+      ))
+      ( _ () )
+   ))
+   r
+) SourceLocation);

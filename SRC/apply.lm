@@ -1,4 +1,3 @@
-
 apply := λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (
    (let tt (apply( function-name ft pt False_u8 blame )))
    tt
@@ -64,4 +63,69 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: 
    ))
    r
 ) Type);
+
+apply := λ(: ctx Context)(: term AST). (: (
+   (let return term)
+   (match term (
+      ()
+      ( ASTEOF () )
+      ( ASTNil () )
+      ( (Lit( _ _ )) () )
+      ( (AType tt) (
+         (set return (AType( (substitute( ctx tt )) )))
+      ))
+      ( (Var( n _ )) (
+         (while (non-zero ctx) (match ctx (
+            ()
+            ( (CtxBind( rst k v )) (
+               (if (==( k n )) (
+                  (set return v)
+                  (set ctx CtxEOF)
+               ) (
+                  (set ctx rst)
+               ))
+            ))
+            ( _ (set ctx CtxEOF))
+         )))
+      ))
+      ( (App( vl vr )) (
+         (set return (App(
+            (close(apply( ctx vl )))
+            (close(apply( ctx vr )))
+         )))
+      ))
+      ( (Abs( vl vr tlt )) (
+         (set return (Abs(
+            (close(apply( ctx vl )))
+            (close(apply( ctx vr )))
+            tlt
+         )))
+      ))
+      ( (Seq( vl vr )) (
+         (set return (Seq(
+            (close(apply( ctx vl )))
+            (close(apply( ctx vr )))
+         )))
+      ))
+      ( (Typedef( vl vr )) (
+         (set return (Typedef(
+            (close(apply( ctx vl )))
+            (close(apply( ctx vr )))
+         )))
+      ))
+      ( (Glb( k vr )) (
+         (set return (Glb(
+            (substitute( ctx k ))
+            (close(apply( ctx vr )))
+         )))
+      ))
+      ( (Frg( k vr )) (
+         (set return (Frg(
+            (substitute( ctx k ))
+            (close(apply( ctx vr )))
+         )))
+      ))
+   ))
+   return
+) AST);
 
