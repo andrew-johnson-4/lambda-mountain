@@ -1,0 +1,10 @@
+
+with-location := λ(: t Token)(: loc SourceLocation). (: (
+   (match t (
+      ()
+      ( (Token( k _ _ )) (
+         (set t (Token( k (iuid()) loc )))
+      ))
+   ))
+   t
+) Token);

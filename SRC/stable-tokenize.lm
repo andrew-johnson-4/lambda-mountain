@@ -1,49 +1,4 @@
 
-with-location := λ(: t Token)(: loc SourceLocation). (: (
-   (match t (
-      ()
-      ( (Token( k _ _ )) (
-         (set t (Token( k (iuid()) loc )))
-      ))
-   ))
-   t
-) Token);
-
-without-location := λ(: t Token). (: (
-   (match t (
-      ()
-      ( (Token( k ki _ )) (
-         (set t (Token( k ki (SourceLocation( '_s 0_u64 0_u64 )) )))
-      ))
-   ))
-   t
-) Token);
-
-with-key := λ(: t Token)(: k String). (: (
-   (match t (
-      ()
-      ( (Token( _ _ loc )) (
-         (set t (Token( k (iuid()) loc )))
-      ))
-   ))
-   t
-) Token);
-
-location-of := λ(: t Token). (: (
-   (let loc (.1( (as t Tag<Token>) )))
-   loc
-) SourceLocation);
-
-id-of := λ(: t Token). (: (
-   (let id (.2( (as t Tag<Token>) )))
-   id
-) U64);
-
-key-of := λ(: t Token). (: (
-   (let key (.3( (as t Tag<Token>) )))
-   key
-) String);
-
 unique := λ(: t Token). (: (
    (match t (
       ()

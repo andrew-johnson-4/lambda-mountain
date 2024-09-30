@@ -1,0 +1,10 @@
+
+without-location := λ(: t Token). (: (
+   (match t (
+      ()
+      ( (Token( k ki _ )) (
+         (set t (Token( k ki (SourceLocation( '_s 0_u64 0_u64 )) )))
+      ))
+   ))
+   t
+) Token);

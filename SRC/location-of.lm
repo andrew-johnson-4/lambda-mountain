@@ -1,0 +1,5 @@
+
+location-of := λ(: t Token). (: (
+   (let loc (.1( (as t Tag<Token>) )))
+   loc
+) SourceLocation);
