@@ -17,3 +17,5 @@ preprocess-macros            := (: MEOF MacroList);
 ast-tokenized-program        := (: LEOF List<Token>);
 ast-parsed-program           := (: ASTEOF AST);
 global-type-context          := (: TCtxEOF TContext);
+
+parse-suffixes := (: SfxEOF SfxList);
