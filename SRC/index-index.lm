@@ -17,5 +17,4 @@ import SRC/stable-preprocess.lm;
 import SRC/stable-ast.lm;
 import SRC/stable-fragment.lm;
 import SRC/stable-parse.lm;
-import SRC/stable-tokenize.lm;
 
