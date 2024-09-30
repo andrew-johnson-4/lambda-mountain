@@ -1,0 +1,5 @@
+
+compile-stack-call-push-args := λ(: ctx FContext)(: args AST)(: stack-offset I64). (: (
+   (let r (compile-push-rvalue( ctx args stack-offset )))
+   r
+) Fragment);

@@ -1,0 +1,15 @@
+
+as-branch-conditional := λ(: f Fragment)(: sloc AST). (: (
+   (let ft (fragment::get-type f))
+   (match (slot( ft 'BranchConditional_s )) (
+      ()
+      ( (TGround( 'BranchConditional_s _ )) () )
+      ( _ (
+         (set f (fragment-apply(
+            (fragment::get-context f) (fragment::get-offset f) 'as-branch-conditional_s
+            (FLSeq( (close FLEOF) f )) (t3( 'Arrow_s ft (t1 'BranchConditional_s) )) sloc
+         )))
+      ))
+   ))
+   f
+) Fragment);

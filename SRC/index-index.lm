@@ -11,10 +11,10 @@ import SRC/index-context.lm;
 import SRC/index-tokenize.lm;
 import SRC/index-ast.lm;
 import SRC/index-parse.lm;
+import SRC/index-codegen.lm;
 
 import SRC/main.lm;
 
-import SRC/stable-codegen.lm;
 import SRC/stable-preprocess.lm;
 import SRC/stable-fragment.lm;
 

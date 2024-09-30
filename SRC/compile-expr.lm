@@ -1,0 +1,20 @@
+
+compile-expr := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used IsUsed). (: (
+   (let e (fragment::new()))
+   (match used (
+      ()
+      ( Return (
+         (set e (compile-expr-direct( ctx term stack-offset Tail )))
+         (let term-tt (typeof term))
+         (set e (fragment-apply( ctx stack-offset 'cdecl::return_s
+            (FLSeq( (close FLEOF) e ))
+            (typeof term)
+            term
+         )))
+      ))
+      ( _ (
+         (set e (compile-expr-direct( ctx term stack-offset used )))
+      ))
+   ))
+   e
+) Fragment);
