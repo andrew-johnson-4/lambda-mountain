@@ -1,6 +1,6 @@
 
 substitute := λ(: ctx Context)(: v Token). (: (
-   (let vk (key-of v))
+   (let vk (.key v))
    (while (non-zero ctx) (match ctx (
       ()
       ( CtxNil (set ctx CtxEOF) )

@@ -6,7 +6,7 @@ type CompileMode ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | Mod
 type Type TAny | (TVar String) | (TGround( String , List<Type>[] )) | (TAnd( Type[] , Type[] )); zero Type TAny;
 
 type SourceLocation (SourceLocation( filename:String , U64 , U64 ));
-type Token (Token( value:String , nonce:U64 , location:SourceLocation ));
+type Token (Token( key:String , nonce:U64 , location:SourceLocation ));
 
 type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String , Token )) | (Lit( String , Token )) | (Abs( AST[] , AST[] , Type )) | (AType( Type ))
                 | (Seq( AST[] , AST[] )) | (Glb( Token , AST[] )) | (Typedef( AST[] , AST[] )) | (Frg( Token , AST[] ))
