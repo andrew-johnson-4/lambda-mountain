@@ -1,6 +1,6 @@
 
 compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(: return-type Type)(: args AST)(: offset I64)(: used IsUsed). (: (
-   (let function-type (fragment::get-type f))
+   (let function-type (.type f))
    (let r (fragment::new()))
 
    (match (fragment::get( f 'fragment-type_s )) (
@@ -23,7 +23,7 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
          (let ectx (fragment::new()))
          (set ectx (fragment::set( ectx 'function-id_s (SAtom function-id) )))
          (set ectx (fragment::set( ectx 'function-name_s (SAtom function-name) )))
-         (set ectx (fragment::set( ectx 'function-type_s (SAtom(to-string(fragment::get-type f))) )))
+         (set ectx (fragment::set( ectx 'function-type_s (SAtom(to-string(.type f))) )))
          (set ectx (fragment::set( ectx 'function-id_s (SAtom function-id) )))
          (set ectx (fragment::set( ectx 'return-size_s (SAtom(to-string return-size)) )))
          (set ectx (fragment::set( ectx 'args-size_s (SAtom(to-string(sizeof-type(typeof args)))) )))

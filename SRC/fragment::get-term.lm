@@ -1,5 +1,0 @@
-
-fragment::get-term := λ(: e Fragment) . (: (
-   (let t (.5( (as e Tag<Fragment>) )))
-   t
-) AST);

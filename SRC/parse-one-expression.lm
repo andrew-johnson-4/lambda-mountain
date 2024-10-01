@@ -32,14 +32,14 @@ parse-one-expression := λ(: tokens List<Token>). (: (
       ( (LCons( '\`_t
                 (LCons( i r ))
         )) (
-         (set expr (Lit( (key-of i) i )))
+         (set expr (Lit( (.key i) i )))
          (set remainder r)
       ))
       ( (LCons( a r )) (
-         (if (is-variable (key-of a)) (
-            (set expr (Var( (key-of a) a )))
+         (if (is-variable (.key a)) (
+            (set expr (Var( (.key a) a )))
          ) (
-            (set expr (Lit( (key-of a) a )))
+            (set expr (Lit( (.key a) a )))
          ))
          (set remainder r)
       ))

@@ -15,7 +15,7 @@ compile-fragment-args := λ(: ctx FContext)(: function-args-type Type)(: rval AS
                   (set offset (-( offset (as (sizeof-aligned(cons-tail(cons-head function-args-type))) I64) )))
                ) ())
                (let e2 (compile-expr( ctx re offset Used )))
-               (if (non-zero(fragment::get-type e2)) () (
+               (if (non-zero(.type e2)) () (
                   (set e2 (fragment::set-type( e2 (denormalize p2) )))
                ))
                (set r (FLSeq( (close e1) e2 )))
@@ -24,7 +24,7 @@ compile-fragment-args := λ(: ctx FContext)(: function-args-type Type)(: rval AS
       ))
       ( _ (
          (let e1 (compile-expr( ctx rval offset Used )))
-         (if (non-zero(fragment::get-type e1)) () (
+         (if (non-zero(.type e1)) () (
             (set e1 (fragment::set-type( e1 (typeof rval) )))
          ))
          (set r (FLSeq( (close FLEOF) e1 )))

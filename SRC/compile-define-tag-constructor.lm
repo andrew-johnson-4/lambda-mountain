@@ -9,7 +9,7 @@ compile-define-tag-constructor := λ(: ctx FContext)(: tag String)(: arg-types T
    (let case-tctx (SSLSeq( (close SSLEOF) 'case-number_s (SAtom(to-string case-number)) )))
 
    (let fragment push-template)
-   (let arrow-tt (substitute( tag-tctx (fragment::get-type fragment) )))
+   (let arrow-tt (substitute( tag-tctx (.type fragment) )))
    (set fragment (fragment::set-type( fragment arrow-tt )))
    (set fragment (fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) )))
    (let spt (substitute( case-tctx (fragment::get( fragment 'fragment_s )) )))
@@ -20,7 +20,7 @@ compile-define-tag-constructor := λ(: ctx FContext)(: tag String)(: arg-types T
    )))
 
    (set fragment movl-template)
-   (set arrow-tt (substitute( tag-tctx (fragment::get-type fragment) )))
+   (set arrow-tt (substitute( tag-tctx (.type fragment) )))
    (set fragment (fragment::set-type( fragment arrow-tt )))
    (set fragment (fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) )))
    (set spt (substitute( case-tctx (fragment::get( fragment 'fragment_s )) )))
@@ -31,7 +31,7 @@ compile-define-tag-constructor := λ(: ctx FContext)(: tag String)(: arg-types T
    )))
 
    (set fragment movg-template)
-   (set arrow-tt (substitute( tag-tctx (fragment::get-type fragment) )))
+   (set arrow-tt (substitute( tag-tctx (.type fragment) )))
    (set fragment (fragment::set-type( fragment arrow-tt )))
    (set fragment (fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) )))
    (set spt (substitute( case-tctx (fragment::get( fragment 'fragment_s )) )))

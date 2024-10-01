@@ -1,5 +1,0 @@
-
-key-of := λ(: t Token). (: (
-   (let key (.3( (as t Tag<Token>) )))
-   key
-) String);
