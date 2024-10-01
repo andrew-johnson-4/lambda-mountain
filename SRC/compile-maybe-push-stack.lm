@@ -1,6 +1,6 @@
 
 compile-maybe-push-stack := λ(: ctx FContext)(: offset I64)(: fragment Fragment)(: expression-type Type)(: sloc AST). (: (
-   (let ft (fragment::get-type( fragment )))
+   (let ft (.type( fragment )))
    (if (non-zero ft) () (set ft expression-type))
    (match (slot( ft 'StackVariable_s )) (
       ()

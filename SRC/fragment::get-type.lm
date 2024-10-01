@@ -1,5 +1,0 @@
-
-fragment::get-type := λ(: e Fragment) . (: (
-   (let tt (.2( (as e Tag<Fragment>) )))
-   tt
-) Type);

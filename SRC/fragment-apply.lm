@@ -15,7 +15,7 @@ fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentLi
       (exit-error( msg sloc ))
    ))
    (let arrow (fragment-context::lookup( ctx k args-tt sloc )))
-   (let arrow-tt (fragment::get-type arrow))
+   (let arrow-tt (.type arrow))
 
    (let chain True_u8)
    (if (non-zero(slot( arrow-tt 'DontChain_s ))) (
