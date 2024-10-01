@@ -6,12 +6,12 @@ with-location := λ(: term AST)(: loc SourceLocation). (: (
       ( ASTEOF () )
       ( ASTNil () )
       ( (Var( v vtk )) (
-         (if (non-zero(location-of vtk)) () (
+         (if (non-zero(.location vtk)) () (
             (set return (Var( v (with-location( vtk loc )) )))
          ))
       ))
       ( (Lit( v vtk )) (
-         (if (non-zero(location-of vtk)) () (
+         (if (non-zero(.location vtk)) () (
             (set return (Lit( v (with-location( vtk loc )) )))
          ))
       ))

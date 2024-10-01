@@ -6,7 +6,7 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (
       ( (Tuple( ASTNil ASTNil )) (set r CtxNil) )
       ( (Tuple( (App( (App( (Var( _ _ )) (Var( _ _ )) )) (Var( _ _ )) )) (App( (App( (Lit( possibly-tag _ )) _ )) _ )) )) () )
       ( (Tuple( (App( (Lit( ':Literal:_s _ )) (Var( pv _ )) )) (App( (Lit( ':_s ctk )) (App( (Lit( _ _ )) (AType _) )) )) )) (
-         (set r (CtxBind( (close CtxNil) pv (with-location( term (location-of ctk) )) )))
+         (set r (CtxBind( (close CtxNil) pv (with-location( term (.location ctk) )) )))
       ))
       ( (Tuple( (App( (Var( _ _ )) (Var( _ _ )) )) (App( (Lit( tag _ )) _ )) )) (
          (if (||( (is-lone-tag tag) (preprocess-is-suffixed tag) )) (
@@ -53,7 +53,7 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (
       ))
       ( (Tuple( (App( (Lit( ':Literal:_s _ )) (Var( pv _ )) )) (Lit( el eltk )) )) (
          (if (==( (index-of-tag el) unknown-index-of-tag ))
-             (set r (CtxBind( (close CtxNil) pv (with-location( term (location-of eltk) )) )))
+             (set r (CtxBind( (close CtxNil) pv (with-location( term (.location eltk) )) )))
              ()
          )
       ))
@@ -61,7 +61,7 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (
          ()
       ))
       ( (Tuple( (App( (Lit( ':Variable:_s _ )) (Var( pv _ )) )) (Var( el eltk )) )) (
-         (set r (CtxBind( (close CtxNil) pv (with-location( term (location-of eltk) )) )))
+         (set r (CtxBind( (close CtxNil) pv (with-location( term (.location eltk) )) )))
       ))
       ( (Tuple( (App( (App( (Lit( ':Tag:_s _ )) (Var( pv _ )) )) (Var( pt _ )) )) (Lit( el eltk )) )) (
          (if (==( (index-of-tag el) unknown-index-of-tag )) () (
