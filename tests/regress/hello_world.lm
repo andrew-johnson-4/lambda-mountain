@@ -2,9 +2,7 @@
 import LIB/default-minimal.lm;
 
 cdecl::return := λ: Blob(: l Nil). (: (
-   (:program(
-      (.program l)
-   ))
+   (:program l)
 ) Nil);
 
 main := λ. (: (
