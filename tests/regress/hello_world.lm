@@ -1,12 +1,10 @@
 
 import LIB/default-minimal.lm;
 
-fragment  cdecl::return := λ: DontChain(: l Nil). (: (
-   (.program(
+cdecl::return := λ: Blob(: l Nil). (: (
+   (:program(
       (.program l)
-      (.del l)
    ))
-   (.frame( (.frame l) ))
 ) Nil);
 
 main := λ. (: (
