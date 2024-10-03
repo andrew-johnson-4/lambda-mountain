@@ -5,7 +5,9 @@ cc-blob := λ(: ctx FContext)(: function-name String)(: args AST)(: offset I64).
    (match (.term f) (
       ()
       ( (Abs( lhs rhs tlt )) (
-         (set ctx (cc-args( ctx lhs args offset )))
+         (let e1 (cc-args( ctx lhs args offset )))
+         (set ctx (.1 e1))
+         (set offset (.2 e1))
       ))
    ))
    r
