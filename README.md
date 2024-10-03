@@ -9,6 +9,7 @@
 ### Not Your Average Assembler
 
 Despite being an assembler, LM provides
+* self-hosting (LM is written in LM)
 * algebraic data types
 * parameterized code and data
 * hygienic macros
