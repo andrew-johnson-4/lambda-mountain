@@ -13,3 +13,4 @@ import SRC/compile-stack-call-push-args.lm;
 import SRC/compile-stack-call.lm;
 import SRC/compile-stack-calls.lm;
 import SRC/translate-local-variables.lm;
+import SRC/cc-blob.lm;

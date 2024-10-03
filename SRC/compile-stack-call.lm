@@ -7,7 +7,7 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
       (print 'Call\sName\s_s)(print function-name)(print '\n_s)
       (print 'Call\sType\s_s)(print function-type)(print '\n_s)
       (print 'Call\sType\s_s)(print (slot( function-type 'Blob_s )))(print '\n_s)
-      (set r (blob-call( ctx function-name args )))
+      (set r (cc-blob( ctx function-name args )))
    ) (
       (match (fragment::get( f 'fragment-type_s )) (
          ()

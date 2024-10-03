@@ -3,8 +3,6 @@ blob-call := λ(: ctx FContext)(: function-name String)(: args AST). (: (
    (let f (fragment-context::lookup( ctx function-name (typeof args) args )))
    (let f-args (blob-args( ctx args )))
    (let r (fragment::new()))
-   (print 'Blob\sCall\s_s)(print function-name)(print '\n_s)
-   (print 'Fragment\sType:\s_s)(print (fragment::get( f 'fragment-type_s )))(print '\n_s)
    (match (fragment::get( f 'fragment-type_s )) (
       ()
       ( (SAtom 'Fragment_s) (
@@ -29,4 +27,3 @@ blob-call := λ(: ctx FContext)(: function-name String)(: args AST). (: (
    (set r (fragment::set-context( r ctx )))
    r
 ) Fragment);
-
