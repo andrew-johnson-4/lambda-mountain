@@ -7,3 +7,4 @@ cc-blob := λ(: ctx FContext)(: function-name String)(: args AST). (: (
    (print 'CC\sBlob\sTerm:\s_s)(print (.term f))(print '\n_s)
    r
 ) Fragment);
+
