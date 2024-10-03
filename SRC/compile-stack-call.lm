@@ -4,7 +4,10 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
    (let r (fragment::new()))
 
    (if (non-zero(slot( function-type 'Blob_s ))) (
-      (print 'TODO:\sCall\sBlob\n_s)(exit 1_u64)
+      (print 'Call\sName\s_s)(print function-name)(print '\n_s)
+      (print 'Call\sType\s_s)(print function-type)(print '\n_s)
+      (print 'Call\sType\s_s)(print (slot( function-type 'Blob_s )))(print '\n_s)
+      (set r (blob-call( ctx function-name args )))
    ) (
       (match (fragment::get( f 'fragment-type_s )) (
          ()
