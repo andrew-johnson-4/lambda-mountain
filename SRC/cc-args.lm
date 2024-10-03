@@ -1,0 +1,36 @@
+
+cc-args := λ(: ctx FContext)(: lhs AST)(: rhs AST)(: offset I64). (: (
+   (print 'Destructure\s_s)(print lhs)(print '\n_s)
+   (match lhs (
+      ()
+      ( (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) (
+         (set ctx (FCtxBind( (close ctx) k kt (compile-expr( ctx rhs offset Used )) )))
+      ))
+      ( ASTNil () )
+      ( _ (
+         (print 'cc-args\sunrecognized\slhs:\s_s)(print lhs)(exit 1_u64)
+      ))
+   ))
+#   (match (slot( (typeof rval) 'Cons_s )) (
+#      ()
+#      ( (TGround( 'Cons_s (LCons( p2 (LCons( p1 LEOF )) )) )) (
+#         (match rval (
+#            ()
+#            ( (App( le re )) (
+#               (let e1 (compile-fragment-args( ctx (cons-head function-args-type) le offset )))
+#               (if (non-zero(slot( (cons-head function-args-type) 'Meta_s 'OntoStack_s ))) (
+#                  (set offset (-( offset (as (sizeof-aligned(cons-head function-args-type)) I64) )))
+#               ) ())
+#               (if (non-zero(slot( (cons-tail(cons-head function-args-type)) 'Meta_s 'OntoStack_s ))) (
+#                  (set offset (-( offset (as (sizeof-aligned(cons-tail(cons-head function-args-type))) I64) )))
+#               ) ())
+#               (let e2 (compile-expr( ctx re offset Used )))
+#               (if (non-zero(.type e2)) () (
+#                  (set e2 (fragment::set-type( e2 (denormalize p2) )))
+#               ))
+#               (set r (FLSeq( (close e1) e2 )))
+#            ))
+#         ))
+#      ))
+   ctx
+) FContext);
