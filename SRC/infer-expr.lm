@@ -212,9 +212,9 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (if (non-zero(slot( tlt 'Blob_s ))) (
             (match rhs (
                ()
-               ( (App( (Lit( ':_s _ )) (App( inner-rhs (AType _) )) )) (
+               ( (App( (Lit( ':_s _ )) (App( inner-rhs (AType return-type) )) )) (
                   (infer-expr( tctx inner-rhs Unscoped TAny Tail ))
-                  (ascript-normal( rhs (range tlt) ))
+                  (ascript-normal( rhs return-type ))
                ))
             ))
          ) (
