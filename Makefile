@@ -19,7 +19,7 @@ develop:
 	coqc tmp.v
 	coqchk tmp.vo
 
-deploy: compile-production build-docs
+build: compile-production
 	time ./production -o deploy.s SRC/index-index.lm
 	as deploy.s -o deploy.o
 	ld deploy.o -o deploy
@@ -27,6 +27,8 @@ deploy: compile-production build-docs
 	diff deploy.s deploy2.s
 	mv deploy.s BOOTSTRAP/cli.s
 	cargo test regression_tests
+
+deploy: build build-docs
 
 compile-production: compile-bootstrap
 	rm -f production production.o production.s

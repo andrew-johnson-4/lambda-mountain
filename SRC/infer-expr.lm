@@ -53,7 +53,6 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
                )))
                (set tt tt-2)
             ) ())
-            (ascript-normal( t tt ))
             (ascript-normal( term tt ))
             (match term (
                ()
@@ -210,7 +209,17 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
       ))
       ( (Abs( lhs rhs tlt )) (
          (set tctx (infer-ctx( tctx lhs )))
-         (infer-expr( tctx rhs Unscoped TAny Tail ))
+         (if (non-zero(slot( tlt 'Blob_s ))) (
+            (match rhs (
+               ()
+               ( (App( (Lit( ':_s _ )) (App( inner-rhs (AType _) )) )) (
+                  (infer-expr( tctx inner-rhs Unscoped TAny Tail ))
+                  (ascript-normal( rhs (range tlt) ))
+               ))
+            ))
+         ) (
+            (infer-expr( tctx rhs Unscoped TAny Tail ))
+         ))
          (let lt (typeof-lhs lhs))
          (let rt (typeof rhs))
          (ascript-normal( term (enrich( (t3( 'Arrow_s lt rt )) tlt )) ))
