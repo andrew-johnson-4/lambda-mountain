@@ -21,7 +21,9 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
       ))
       ( (App( (Abs( (Var( lhs _ )) ASTNil tlt )) rhs )) (
          (let f (fragment::new()))
-         (set f (fragment::set( f context-key (.1( (blob-render-simple( ctx context-key rhs )) )) )))
+         (let cs (blob-render-simple( ctx context-key rhs )))
+         (let s (.1 cs))
+         (set f (fragment::set( f context-key s )))
          (set ctx (fragment-context::bind(
             ctx lhs (typeof rhs) f
          ))) # TODO, render the binding as non-simple blob?
@@ -38,46 +40,45 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
          ) (
             (let e1 (blob-render-simple( ctx context-key f )))
             (let e2 (blob-render-simple( ctx context-key a )))
+            (let s1 (.1 e1))
+            (let s2 (.1 e2))
             (set ctx (.2 e2))
-            (set r (+( (.1 e1) (.1 e2) )))
+            (set r (+( s1 s2 )))
          ))
       ))
    ))
-   (print 'Blob\srender\ssimple\s_s)(print term)(print r)
    (Tuple( ctx r ))
 ) Tuple<FContext,S>);
 
 blob-render := λ(: ctx FContext)(: term AST)(: f Fragment). (: (
-   (print 'Render:\s_s)(print term)(print '\n_s)
    (match term (
       ()
       ( (App( (Lit( ':_s _ )) (App( t (AType _) )) )) (
          (set f (blob-render( ctx t f )))
       ))
       ( (App( (Var( k _ )) a )) (
-         (if (has-prefix( k ':_s )) (
-            (set f (fragment::set( f (tail-string k)
-               (.1 (blob-render-simple( ctx (tail-string k) a )))
-            )))
+         (if (has-prefix( k ':_s )) (            
+            (let cs1 (blob-render-simple( ctx (tail-string k) a )))
+            (let s1 (.1 cs1))
+            (set f (fragment::set( f (tail-string k) s1 )))
          ) (
-            (set f (fragment::set( f 'program_s
-               (.1 (blob-render-simple( ctx (tail-string k) term )))
-            )))
+            (let cs2 (blob-render-simple( ctx 'program_s term )))
+            (let s2 (.1 cs2))
+            (set f (fragment::set( f 'program_s s2 )))
          ))
       ))
       ( (App( rst (App( (Var( k _ )) a )) )) (
          (set f (blob-render( ctx rst f )))
-         (if (has-prefix( k ':_s )) (
-            (set f (fragment::set( f (tail-string k)
-               (.1 (blob-render-simple( ctx (tail-string k) a )))
-            )))
+         (if (has-prefix( k ':_s )) (            
+            (let cs1 (blob-render-simple( ctx (tail-string k) a )))
+            (let s1 (.1 cs1))
+            (set f (fragment::set( f (tail-string k) s1 )))
          ) (
-            (set f (fragment::set( f 'program_s
-               (.1 (blob-render-simple( ctx (tail-string k) term )))
-            )))
+            (let cs2 (blob-render-simple( ctx 'program_s term )))
+            (let s2 (.1 cs2))
+            (set f (fragment::set( f 'program_s s2 )))
          ))
       ))
    ))
-   (print 'Rendered:\s_s)(print f)
    f
 ) Fragment);
