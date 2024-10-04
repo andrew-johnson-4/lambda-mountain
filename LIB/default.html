@@ -1,5 +1,6 @@
 
 import LIB/default-blobs.lm;
+import LIB/default-rules.lm;
 
 fragment type String; size String 8; atom suffix String _s;
 
@@ -250,8 +251,8 @@ meta
 html := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
       '<!DOCTYPE\shtml>\n_s
-      '<html_s (for-arg a in attrs (:program a)) '>\n_s
-      (for-arg e in es (:program e))
+      '<html_s (for-arg (a in attrs) (:program a)) '>\n_s
+      (for-arg (e in es) (:program e))
       '</html>\n_s
    ))
 ) HTMLElement);
@@ -266,8 +267,8 @@ meta
 ;
 main := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<main_s (for-arg a in attrs (:program a)) '>\n_s
-      (for-arg e in es (:program e))
+      '<main_s (for-arg (a in attrs) (:program a)) '>\n_s
+      (for-arg (e in es) (:program e))
       '</main>\n_s
    ))
 ) HTMLElement);
@@ -282,8 +283,8 @@ meta
 ;
 head := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<head\s (for-arg a in attrs (:program a)) '>_s
-      (for-arg e in es (:program e))
+      '<head\s (for-arg (a in attrs) (:program a)) '>_s
+      (for-arg (e in es) (:program e))
       '</head>\n_s
    ))
 ) HTMLElement);
@@ -298,8 +299,8 @@ meta
 ;
 title := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<title\s_s (for-arg a in attrs (:program a)) '>_s
-      (for-arg e in es (:program e))
+      '<title\s_s (for-arg (a in attrs) (:program a)) '>_s
+      (for-arg (e in es) (:program e))
       '</title>\n_s
    ))
 ) HTMLElement);
@@ -314,8 +315,8 @@ meta
 ;
 body := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<body\s_s (for-arg a in attrs (:program a)) '>_s
-      (for-arg e in es (:program e))
+      '<body\s_s (for-arg (a in attrs) (:program a)) '>_s
+      (for-arg (e in es) (:program e))
       '</body>\n_s
    ))
 ) HTMLElement);
@@ -330,8 +331,8 @@ meta
 ;
 h1 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<h1\s (for-arg a in attrs (:program a)) '>_s
-      (for-arg e in es (:program e))
+      '<h1\s (for-arg (a in attrs) (:program a)) '>_s
+      (for-arg (e in es) (:program e))
       '</h1>\n_s
    ))
 ) HTMLElement);
@@ -346,8 +347,8 @@ meta
 ;
 h2 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<h2\s (for-arg a in attrs (:program a)) '>_s
-      (for-arg e in es (:program e))
+      '<h2\s (for-arg (a in attrs) (:program a)) '>_s
+      (for-arg (e in es) (:program e))
       '</h2>\n_s
    ))
 ) HTMLElement);
@@ -362,8 +363,8 @@ meta
 ;
 h3 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<h3\s_s (for-arg a in attrs (:program a)) '>_s
-      (for-arg e in es (:program e))
+      '<h3\s_s (for-arg (a in attrs) (:program a)) '>_s
+      (for-arg (e in es) (:program e))
       '</h3>\n_s
    ))
 ) HTMLElement);
@@ -378,8 +379,8 @@ meta
 ;
 h4 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<h4\s_s (for-arg a in attrs (:program a)) '>_s
-      (for-arg e in es (:program e))
+      '<h4\s_s (for-arg (a in attrs) (:program a)) '>_s
+      (for-arg (e in es) (:program e))
       '</h4>\n_s
    ))
 ) HTMLElement);
@@ -394,8 +395,8 @@ meta
 ;
 h5 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<h5\s_s (for-arg a in attrs (:program a)) '>_s
-      (for-arg e in es (:program e))
+      '<h5\s_s (for-arg (a in attrs) (:program a)) '>_s
+      (for-arg (e in es) (:program e))
       '</h5>\n_s
    ))
 ) HTMLElement);
@@ -410,8 +411,8 @@ meta
 ;
 h6 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<h6\s_s (for-arg a in attrs (:program a)) '>_s
-      (for-arg e in es (:program e))
+      '<h6\s_s (for-arg (a in attrs) (:program a)) '>_s
+      (for-arg (e in es) (:program e))
       '</h6>\n_s
    ))
 ) HTMLElement);
@@ -426,8 +427,8 @@ meta
 ;
 div := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<div\s_s (for-arg a in attrs (:program a)) '>_s
-      (for-arg e in es (:program e))
+      '<div\s_s (for-arg (a in attrs) (:program a)) '>_s
+      (for-arg (e in es) (:program e))
       '</div>\n_s
    ))
 ) HTMLElement);
@@ -442,8 +443,8 @@ meta
 ;
 header := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<header\s_s (for-arg a in attrs (:program a)) '>_s
-      (for-arg e in es (:program e))
+      '<header\s_s (for-arg (a in attrs) (:program a)) '>_s
+      (for-arg (e in es) (:program e))
       '</header>\n_s
    ))
 ) HTMLElement);
@@ -458,8 +459,8 @@ meta
 ;
 nav := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<nav\s_s (for-arg a in attrs (:program a)) '>_s
-      (for-arg e in es (:program e))
+      '<nav\s_s (for-arg (a in attrs) (:program a)) '>_s
+      (for-arg (e in es) (:program e))
       '</nav>\n_s
    ))
 ) HTMLElement);
@@ -474,8 +475,8 @@ meta
 ;
 ul := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<ul\s_s (for-arg a in attrs (:program a)) '>_s
-      (for-arg e in es (:program e))
+      '<ul\s_s (for-arg (a in attrs) (:program a)) '>_s
+      (for-arg (e in es) (:program e))
       '</ul>\n_s
    ))
 ) HTMLElement);
@@ -490,8 +491,8 @@ meta
 ;
 ol := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<ol\s_s (for-arg a in attrs (:program a)) '>_s
-      (for-arg e in es (:program e))
+      '<ol\s_s (for-arg (a in attrs) (:program a)) '>_s
+      (for-arg (e in es) (:program e))
       '</ol>\n_s
    ))
 ) HTMLElement);
@@ -506,8 +507,8 @@ meta
 ;
 li := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<li\s_s (for-arg a in attrs (:program a)) '>_s
-      (for-arg e in es (:program e))
+      '<li\s_s (for-arg (a in attrs) (:program a)) '>_s
+      (for-arg (e in es) (:program e))
       '</li>\n_s
    ))
 ) HTMLElement);
@@ -522,8 +523,8 @@ meta
 ;
 a := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<a\s_s (for-arg a in attrs (:program a)) '>_s
-      (for-arg e in es (:program e))
+      '<a\s_s (for-arg (a in attrs) (:program a)) '>_s
+      (for-arg (e in es) (:program e))
       '</a>\n_s
    ))
 ) HTMLElement);
@@ -538,8 +539,8 @@ meta
 ;
 span := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<span\s_s (for-arg a in attrs (:program a)) '>_s
-      (for-arg e in es (:program e))
+      '<span\s_s (for-arg (a in attrs) (:program a)) '>_s
+      (for-arg (e in es) (:program e))
       '</span>_s
    ))
 ) HTMLElement);
@@ -554,8 +555,8 @@ meta
 ;
 i := λ: Blob(: attrs HTMLAttribute...)(: f1 HTMLElement). (: (
    (:program(
-      '<i\s_s (for-arg a in attrs (:program a)) '>_s
-      (for-arg e in es (:program e))
+      '<i\s_s (for-arg (a in attrs) (:program a)) '>_s
+      (for-arg (e in es) (:program e))
       '</i>_s
    ))
 ) HTMLElement);
@@ -570,8 +571,8 @@ meta
 ;
 p := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<p\s_s (for-arg a in attrs (:program a)) '>_s
-      (for-arg e in es (:program e))
+      '<p\s_s (for-arg (a in attrs) (:program a)) '>_s
+      (for-arg (e in es) (:program e))
       '</p>_s
    ))
 ) HTMLElement);
@@ -586,7 +587,7 @@ meta
 ;
 img := λ: Blob(: attrs HTMLAttribute...). (: (
    (:program(
-      '<img\s_s (for-arg a in attrs (:program a)) '\\>\n_s
+      '<img\s_s (for-arg (a in attrs) (:program a)) '\\>\n_s
    ))
 ) HTMLElement);
 
@@ -600,7 +601,7 @@ meta
 ;
 link := λ: Blob(: attrs HTMLAttribute...). (: (
    (:program(
-      '<link\s_s (for-arg a in attrs (:program a)) '\\>\n_s
+      '<link\s_s (for-arg (a in attrs) (:program a)) '\\>\n_s
    ))
 ) HTMLElement);
 
@@ -614,8 +615,8 @@ meta
 ;
 section := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<section\s_s (for-arg a in attrs (:program a)) '>\n_s
-      (for-arg e in es (:program e))
+      '<section\s_s (for-arg (a in attrs) (:program a)) '>\n_s
+      (for-arg (e in es) (:program e))
       '</section>\n_s
    ))
 ) HTMLElement);
@@ -630,8 +631,8 @@ meta
 ;
 form := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<form\s_s (for-arg a in attrs (:program a)) '>\n_s
-      (for-arg e in es (:program e))
+      '<form\s_s (for-arg (a in attrs) (:program a)) '>\n_s
+      (for-arg (e in es) (:program e))
       '</form>\n_s
    ))
 ) HTMLElement);
@@ -646,7 +647,7 @@ meta
 ;
 input := λ: Blob(: attrs HTMLAttribute...). (: (
    (:program(
-      '<input\s_s (for-arg a in attrs (:program a)) '>\n_s
+      '<input\s_s (for-arg (a in attrs) (:program a)) '>\n_s
    ))
 ) HTMLElement);
 
@@ -660,8 +661,8 @@ meta
 ;
 button := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<button\s_s (for-arg a in attrs (:program a)) '>\n_s
-      (for-arg e in es (:program e))
+      '<button\s_s (for-arg (a in attrs) (:program a)) '>\n_s
+      (for-arg (e in es) (:program e))
       '</button>\n_s
    ))
 ) HTMLElement);
@@ -676,8 +677,8 @@ meta
 ;
 pre := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<pre\s_s (for-arg a in attrs (:program a)) '>\n_s
-      (for-arg e in es (:program e))
+      '<pre\s_s (for-arg (a in attrs) (:program a)) '>\n_s
+      (for-arg (e in es) (:program e))
       '</pre>\n_s
    ))
 ) HTMLElement);
@@ -692,8 +693,8 @@ meta
 ;
 code := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<code\s_s (for-arg a in attrs (:program a)) '>\n_s
-      (for-arg e in es (:program e))
+      '<code\s_s (for-arg (a in attrs) (:program a)) '>\n_s
+      (for-arg (e in es) (:program e))
       '</code>\n_s
    ))
 ) HTMLElement);
@@ -708,6 +709,6 @@ meta
 ;
 hr := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<hr\s_s (for-arg a in attrs (:program a)) '>\n_s
+      '<hr\s_s (for-arg (a in attrs) (:program a)) '>\n_s
    ))
 ) HTMLElement);

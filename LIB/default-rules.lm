@@ -13,6 +13,10 @@ macro ( ('for-each (item 'in iter) loop) ) (
    )))
 );
 
+macro ( ('for-arg (item 'in iter) loop) ) (
+   (let (uuid iter-term) iter)
+);
+
 macro ('match t ps) (scope(
    (let (uuid term) (open t))
    (match-pats( (uuid term) ps (fail( 'Pattern\sMatch\sFailure_s (: (p :Location:) Constant+Literal+String) )) ))
