@@ -7,8 +7,7 @@ type S (SNil)
 type Tuple<x,y> (Tuple( x , y ));
 
 + := λ(: l S)(: r S). (: (
-   (let return (SCons( (close l) (close r) )))
-   return
+   (SCons( (close l) (close r) ))
 ) S);
 
 == := λ(: l Tuple<x,y>)(: r Tuple<x,y>). (: (

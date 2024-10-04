@@ -3,46 +3,55 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
    (let function-type (.type f))
    (let r (fragment::new()))
 
-   (match (fragment::get( f 'fragment-type_s )) (
-      ()
-      ( (SAtom 'Fragment_s) (
-         (let f-args (compile-fragment-args( ctx (domain function-type) args offset )))
-         (set r (fragment-apply( ctx offset function-name f-args return-type args )))
-         (set r (fragment::set-offset( r offset )))
-         (set r (fragment::set-type( r (denormalize return-type) )))
-      ))
-      ( _ (
-         (if (is( used Tail )) (set used Used) ())
-         (if (is( used Call )) (set used Used) ())
-         (let push-args (compile-stack-call-push-args( ctx args offset )))
-         (set push-args (fragment::set-type( push-args (t1( 'FunctionArguments_s )) )))
-         (let call SNil)
-         (let function-id (mangle-identifier( function-name function-type )))
-         (let return-size (sizeof-type return-type))
+   (if (non-zero(slot( function-type 'Blob_s ))) (
+      (set r (cc-blob( ctx function-name args offset )))
+   ) (
+      (match (fragment::get( f 'fragment-type_s )) (
+         ()
+         ( (SAtom 'Fragment_s) (
+            (let f-args (compile-fragment-args( ctx (domain function-type) args offset )))
+            (set r (fragment-apply( ctx offset function-name f-args return-type args )))
+            (set r (fragment::set-offset( r offset )))
+            (set r (fragment::set-type( r (denormalize return-type) )))
+         ))
+         ( _ (
+            (if (is( used Tail )) (set used Used) ())
+            (if (is( used Call )) (set used Used) ())
+            (let push-args (compile-stack-call-push-args( ctx args offset )))
+            (set push-args (fragment::set-type( push-args (t1( 'FunctionArguments_s )) )))
+            (let call SNil)
+            (let function-id (mangle-identifier( function-name function-type )))
+            (let return-size (sizeof-type return-type))
 
-         (let ectx (fragment::new()))
-         (set ectx (fragment::set( ectx 'function-id_s (SAtom function-id) )))
-         (set ectx (fragment::set( ectx 'function-name_s (SAtom function-name) )))
-         (set ectx (fragment::set( ectx 'function-type_s (SAtom(to-string(.type f))) )))
-         (set ectx (fragment::set( ectx 'function-id_s (SAtom function-id) )))
-         (set ectx (fragment::set( ectx 'return-size_s (SAtom(to-string return-size)) )))
-         (set ectx (fragment::set( ectx 'args-size_s (SAtom(to-string(sizeof-type(typeof args)))) )))
-         (set ectx (fragment::set( ectx 'used_s (SAtom(to-string used)) )))
-         (set ectx (fragment::set-type( ectx (t1( 'ImplicitContext_s )) )))
+            (let ectx (fragment::new()))
+            (set ectx (fragment::set( ectx 'function-id_s (SAtom function-id) )))
+            (set ectx (fragment::set( ectx 'function-name_s (SAtom function-name) )))
+            (set ectx (fragment::set( ectx 'function-type_s (SAtom(to-string(.type f))) )))
+            (set ectx (fragment::set( ectx 'function-id_s (SAtom function-id) )))
+            (set ectx (fragment::set( ectx 'return-size_s (SAtom(to-string return-size)) )))
+            (set ectx (fragment::set( ectx 'args-size_s (SAtom(to-string(sizeof-type(typeof args)))) )))
+            (set ectx (fragment::set( ectx 'used_s (SAtom(to-string used)) )))
+            (set ectx (fragment::set-type( ectx (t1( 'ImplicitContext_s )) )))
 
-         (set r (fragment-apply( ctx offset 'cdecl::call_s
-            (FLSeq( (close(FLSeq( (close FLEOF) ectx ))) push-args )) (typeof args) args
-         )))
+            (set r (fragment-apply( ctx offset 'cdecl::call_s
+               (FLSeq( (close(FLSeq( (close FLEOF) ectx ))) push-args )) (typeof args) args
+            )))
 
-         (set r (fragment::set-offset( r offset )))
-         (if (>( return-size 8_u64 )) (
-            (if (is( used Used )) (
-               (set r (fragment::set-offset( r (-( offset (as return-size I64) )) )))
+            (set r (fragment::set-offset( r offset )))
+            (if (>( return-size 8_u64 )) (
+               (if (is( used Used )) (
+                  (set r (fragment::set-offset( r (-( offset (as return-size I64) )) )))
+               ) ())
             ) ())
-         ) ())
-         (set r (fragment::set-type( r (denormalize return-type) )))
+            (set r (fragment::set-type( r (denormalize return-type) )))
+         ))
       ))
    ))
    (set r (fragment::set-context( r ctx )))
    r
+) Fragment);
+
+compile-stack-call := λ(: ctx FContext)(: function-name String)(: return-type Type)(: args AST)(: offset I64)(: used IsUsed). (: (
+   (let f (fragment-context::lookup( ctx function-name (typeof args) args )))
+   (compile-stack-call( ctx f function-name return-type args offset used ))
 ) Fragment);

@@ -1,6 +1,6 @@
 
 work: compile-production
-	./production tests/regress/mono-struct.lm
+	./production tests/regress/hello-world.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp

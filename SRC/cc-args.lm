@@ -1,0 +1,28 @@
+
+cc-args := λ(: ctx FContext)(: lhs AST)(: rhs AST)(: offset I64). (: (
+   (match lhs (
+      ()
+      ( (App( lhs-rst (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) )) (
+         (match rhs (
+            ()
+            ( (App( le re )) (
+               (let e1 (cc-args( ctx lhs-rst le offset )))
+               (set ctx (.1 e1))
+               (set offset (.2 e1))
+               (set ctx (FCtxBind( (close ctx) k kt (compile-expr( ctx re offset Used )) )))
+               (if (non-zero(slot( kt 'Meta_s 'OntoStack_s ))) (
+                  (set offset (-( offset (as (sizeof-aligned kt) I64) )))
+               ) ())
+            ))
+         ))
+      ))
+      ( (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) (
+         (set ctx (FCtxBind( (close ctx) k kt (compile-expr( ctx rhs offset Used )) )))
+         (if (non-zero(slot( kt 'Meta_s 'OntoStack_s ))) (
+            (set offset (-( offset (as (sizeof-aligned kt) I64) )))
+         ) ())
+      ))
+      ( ASTNil () )
+   ))
+   (Tuple( offset ctx ))
+) Tuple<I64,FContext>);

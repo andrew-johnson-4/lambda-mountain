@@ -1,0 +1,7 @@
+
+:program := λ: Blob(: x x). (: () Nil);
+:frame := λ: Blob(: x x). (: () Nil);
+:unframe := λ: Blob(: x x). (: () Nil);
+:text := λ: Blob(: x x). (: () Nil);
+:data := λ: Blob(: x x). (: () Nil);
+:del := λ: Blob(: x x). (: () Nil);
