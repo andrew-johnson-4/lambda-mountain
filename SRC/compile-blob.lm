@@ -57,10 +57,11 @@ compile-blob := λ. (: (
          (set preview-program rst)
       ))
       ( (Seq( rst expr )) (
-         (let f (blob-expr( global-ctx expr )))
+         (let cs (blob-render-simple( global-ctx 'program_s expr )))
+         (let s (.1 cs))
          (set blob (SCons(
              (close blob)
-             (close(fragment::get( f 'program_s )))
+             (close s)
          )))
          (set preview-program rst)
       ))
