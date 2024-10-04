@@ -43,6 +43,41 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
          ))
       ))
    ))
+   (print 'Blob\srender\ssimple\s_s)(print term)(print r)
    (Tuple( ctx r ))
 ) Tuple<FContext,S>);
 
+blob-render := λ(: ctx FContext)(: term AST)(: f Fragment). (: (
+   (print 'Render:\s_s)(print term)(print '\n_s)
+   (match term (
+      ()
+      ( (App( (Lit( ':_s _ )) (App( t (AType _) )) )) (
+         (set f (blob-render( ctx t f )))
+      ))
+      ( (App( (Var( k _ )) a )) (
+         (if (has-prefix( k ':_s )) (
+            (set f (fragment::set( f (tail-string k)
+               (.1 (blob-render-simple( ctx (tail-string k) a )))
+            )))
+         ) (
+            (set f (fragment::set( f 'program_s
+               (.1 (blob-render-simple( ctx (tail-string k) term )))
+            )))
+         ))
+      ))
+      ( (App( rst (App( (Var( k _ )) a )) )) (
+         (set f (blob-render( ctx rst f )))
+         (if (has-prefix( k ':_s )) (
+            (set f (fragment::set( f (tail-string k)
+               (.1 (blob-render-simple( ctx (tail-string k) a )))
+            )))
+         ) (
+            (set f (fragment::set( f 'program_s
+               (.1 (blob-render-simple( ctx (tail-string k) term )))
+            )))
+         ))
+      ))
+   ))
+   (print 'Rendered:\s_s)(print f)
+   f
+) Fragment);
