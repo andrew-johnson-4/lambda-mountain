@@ -283,7 +283,7 @@ meta
 ;
 head := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<head\s (for-arg (a in attrs) (:program a)) '>_s
+      '<head\s_s (for-arg (a in attrs) (:program a)) '>_s
       (for-arg (e in es) (:program e))
       '</head>\n_s
    ))
@@ -331,7 +331,7 @@ meta
 ;
 h1 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<h1\s (for-arg (a in attrs) (:program a)) '>_s
+      '<h1\s_s (for-arg (a in attrs) (:program a)) '>_s
       (for-arg (e in es) (:program e))
       '</h1>\n_s
    ))
@@ -347,7 +347,7 @@ meta
 ;
 h2 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:program(
-      '<h2\s (for-arg (a in attrs) (:program a)) '>_s
+      '<h2\s_s (for-arg (a in attrs) (:program a)) '>_s
       (for-arg (e in es) (:program e))
       '</h2>\n_s
    ))
@@ -553,7 +553,7 @@ meta
       (i( (text( 'hello_s )) ))
    ))
 ;
-i := λ: Blob(: attrs HTMLAttribute...)(: f1 HTMLElement). (: (
+i := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement). (: (
    (:program(
       '<i\s_s (for-arg (a in attrs) (:program a)) '>_s
       (for-arg (e in es) (:program e))
