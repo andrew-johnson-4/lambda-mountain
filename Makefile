@@ -37,6 +37,9 @@ compile-production: compile-bootstrap
 	ld -o production   production.o
 	cp production re-production
 
+install-production: compile-production
+	mv production /usr/local/bin/lm
+
 compile-bootstrap:
 	rm -f bootstrap bootstrap.o
 	as -o bootstrap.o BOOTSTRAP/cli.s
