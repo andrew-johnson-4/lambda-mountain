@@ -1,4 +1,6 @@
 
+fragment type ReservedWord; atom suffix ReservedWord _r;
+
 macro ( ('let x y) )
       ( (λ x . ()) y );
 
@@ -11,6 +13,12 @@ macro ( ('for-each (item 'in iter) loop) ) (
          (set (uuid iter-term) (uuid iter-rst))
       ))
    )))
+);
+
+macro ( ('for-arg (item 'in iter) loop) ) (
+   ('for-arg_r (
+      (let item iter) loop
+   ))
 );
 
 macro ('match t ps) (scope(

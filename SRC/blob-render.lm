@@ -13,6 +13,12 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
       ( (Lit( val _ )) (
          (set r (SAtom val))
       ))
+      ( (App(
+        (App( (Lit( ':_s _ )) (App( (Lit( 'for-arg_s _ )) (AType _) )) )) 
+        fs
+      )) (
+         (print 'Render\sSimple\sFor\sArg\s_s)(print fs)(exit 1_u64)
+      ))
       ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
          (set r (.1( (blob-render-simple( ctx context-key t )) )))
       ))
