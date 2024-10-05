@@ -9,12 +9,12 @@ cc-args := λ(: ctx FContext)(: lhs AST)(: rhs AST)(: offset I64). (: (
             ( (App( le re )) (
                (if (is-vararg kt) (scope(
                   (if (can-unify( kt (typeof re) )) (scope(
-                     (set ctx (bind-vararg( ctx k kt (compile-expr( ctx re offset Used )) )))
+                     (set ctx (bind-vararg( ctx k (p1(slot( kt '..._s ))) (compile-expr( ctx re offset Used )) )))
                      (let e1 (cc-args( ctx lhs le offset )))
                      (set ctx (.1 e1))
                      (set offset (.2 e1))
                   )) (scope(
-                     (set ctx (bind-vararg( ctx k kt )))
+                     (set ctx (bind-vararg( ctx k (p1(slot( kt '..._s ))) )))
                      (let e1 (cc-args( ctx lhs-rst le offset )))
                      (set ctx (.1 e1))
                      (set offset (.2 e1))
@@ -34,9 +34,9 @@ cc-args := λ(: ctx FContext)(: lhs AST)(: rhs AST)(: offset I64). (: (
       ( (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) (
          (if (is-vararg kt) (scope(
             (if (can-unify( kt (typeof rhs) )) (scope(
-               (set ctx (bind-vararg( ctx k kt (compile-expr( ctx rhs offset Used )) )))
+               (set ctx (bind-vararg( ctx k (p1(slot( kt '..._s ))) (compile-expr( ctx rhs offset Used )) )))
             )) (scope(
-               (set ctx (bind-vararg( ctx k kt )))
+               (set ctx (bind-vararg( ctx k (p1(slot( kt '..._s ))) )))
             )))
          )) (scope(
             (set ctx (FCtxBind( (close ctx) k kt (compile-expr( ctx rhs offset Used )) )))
