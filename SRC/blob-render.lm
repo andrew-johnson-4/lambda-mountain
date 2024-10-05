@@ -29,8 +29,7 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
          ))) # TODO, render the binding as non-simple blob?
       ))
       ( (App( f a )) (
-         (print 'Typeof\sf\s_s)(print(typeof f))(print '\n_s)
-         (if (non-zero(slot( (typeof f) 'Arrow_s ))) (
+         (if (is-arrow(typeof f)) (
             (match f (
                ()
                ( (Var( fname _ )) (
