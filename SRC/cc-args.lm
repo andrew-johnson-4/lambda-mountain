@@ -9,43 +9,41 @@ cc-args := λ(: ctx FContext)(: lhs AST)(: rhs AST)(: offset I64). (: (
             ( (App( le re )) (
                (if (is-vararg kt) (scope(
                   (if (can-unify( kt (typeof re) )) (scope(
-                     (print 'Accept\sVararg\s_s)(print (typeof re))(print '\s<:\s_s)(print kt)(print '\n_s)(exit 1_u64)
+                     (set ctx (bind-vararg( ctx k kt (compile-expr( ctx re offset Used )) )))
+                     (let e1 (cc-args( ctx lhs le offset )))
+                     (set ctx (.1 e1))
+                     (set offset (.2 e1))
                   )) (scope(
-                     #(let e1 (cc-args( ctx lhs-rst le offset )))
-                     #(set ctx (.1 e1))
-                     #(set offset (.2 e1))
-                     # TODO bind empty vararg if not bound
-                     (print 'Reject\sVararg\s_s)(print (typeof re))(print '\s<:\s_s)(print kt)(print '\n_s)(exit 1_u64)
+                     (set ctx (bind-vararg( ctx k kt )))
+                     (let e1 (cc-args( ctx lhs-rst le offset )))
+                     (set ctx (.1 e1))
+                     (set offset (.2 e1))
                   )))
                )) (scope(
                   (let e1 (cc-args( ctx lhs-rst le offset )))
                   (set ctx (.1 e1))
                   (set offset (.2 e1))
                   (set ctx (FCtxBind( (close ctx) k kt (compile-expr( ctx re offset Used )) )))
-                  (if (non-zero(slot( kt 'Meta_s 'OntoStack_s ))) (
-                     (set offset (-( offset (as (sizeof-aligned kt) I64) )))
-                  ) ())
                )))
+               (if (non-zero(slot( kt 'Meta_s 'OntoStack_s ))) (
+                  (set offset (-( offset (as (sizeof-aligned kt) I64) )))
+               ) ())
             ))
          ))
       ))
       ( (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) (
          (if (is-vararg kt) (scope(
             (if (can-unify( kt (typeof rhs) )) (scope(
-               (print 'Accept\sVararg\s_s)(print rhs)(print '\s<:\s_s)(print kt)(print '\n_s)(exit 1_u64)
+               (set ctx (bind-vararg( ctx k kt (compile-expr( ctx rhs offset Used )) )))
             )) (scope(
-               #(let e1 (cc-args( ctx lhs-rst le offset )))
-               #(set ctx (.1 e1))
-               #(set offset (.2 e1))
-               # TODO bind empty vararg if not bound
-               (print 'Reject\sVararg\s_s)(print rhs)(print '\s<:\s_s)(print kt)(print '\n_s)(exit 1_u64)
+               (set ctx (bind-vararg( ctx k kt )))
             )))
          )) (scope(
             (set ctx (FCtxBind( (close ctx) k kt (compile-expr( ctx rhs offset Used )) )))
-            (if (non-zero(slot( kt 'Meta_s 'OntoStack_s ))) (
-               (set offset (-( offset (as (sizeof-aligned kt) I64) )))
-            ) ())
          )))
+         (if (non-zero(slot( kt 'Meta_s 'OntoStack_s ))) (
+            (set offset (-( offset (as (sizeof-aligned kt) I64) )))
+         ) ())
       ))
       ( ASTNil () )
    ))

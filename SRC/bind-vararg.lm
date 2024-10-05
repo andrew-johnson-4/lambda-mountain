@@ -1,0 +1,11 @@
+
+
+bind-vararg := λ(: ctx FContext)(: k String)(: kt Type)(: f Fragment). (: (
+   (print 'Bind\sFull\s_s)(print k)(print kt)(print '\n_s)
+   ctx
+) FContext);
+
+bind-vararg := λ(: ctx FContext)(: k String)(: kt Type). (: (
+   (print 'Bind\sEmpty\s_s)(print k)(print kt)(print '\n_s)
+   ctx
+) FContext);
