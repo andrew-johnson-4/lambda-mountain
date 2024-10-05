@@ -2,8 +2,8 @@
 fragment::set-type := λ(: e Fragment)(: tt Type). (: (
    (match e (
       ()
-      ( (Fragment( e-t e-kvs e-offset e-tt e-ctx )) (
-         (set e (Fragment( e-t (close e-kvs) e-offset tt (close e-ctx) )))
+      ( (Fragment( e-t e-kvs e-offset e-tt e-ctx e-vs )) (
+         (set e (Fragment( e-t (close e-kvs) e-offset tt (close e-ctx) e-vs )))
       ))
    ))
    e

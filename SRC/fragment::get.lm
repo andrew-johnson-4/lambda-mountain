@@ -3,7 +3,7 @@ fragment::get := λ(: e Fragment)(: k String). (: (
    (let r SNil)
    (match e (
       ()
-      ( (Fragment( e-t kvs offset ft ctx )) (
+      ( (Fragment( e-t kvs offset ft ctx vs )) (
          (while (non-zero kvs) (match kvs (
             ()
             ( (FKVSeq( rst kvs-k kvs-v )) (
