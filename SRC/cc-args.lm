@@ -14,7 +14,6 @@ cc-args := λ(: ctx FContext)(: lhs AST)(: rhs AST)(: offset I64). (: (
                      (set ctx (.1 e1))
                      (set offset (.2 e1))
                   )) (scope(
-                     (set ctx (bind-vararg( ctx k (p1(slot( kt '..._s ))) )))
                      (let e1 (cc-args( ctx lhs-rst le offset )))
                      (set ctx (.1 e1))
                      (set offset (.2 e1))
@@ -33,11 +32,9 @@ cc-args := λ(: ctx FContext)(: lhs AST)(: rhs AST)(: offset I64). (: (
       ))
       ( (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) (
          (if (is-vararg kt) (scope(
-            (if (can-unify( kt (typeof rhs) )) (scope(
+            (if (can-unify( kt (typeof rhs) )) (
                (set ctx (bind-vararg( ctx k (p1(slot( kt '..._s ))) (compile-expr( ctx rhs offset Used )) )))
-            )) (scope(
-               (set ctx (bind-vararg( ctx k (p1(slot( kt '..._s ))) )))
-            )))
+            ) ())
          )) (scope(
             (set ctx (FCtxBind( (close ctx) k kt (compile-expr( ctx rhs offset Used )) )))
          )))

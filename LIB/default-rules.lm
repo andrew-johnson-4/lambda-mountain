@@ -15,9 +15,10 @@ macro ( ('for-each (item 'in iter) loop) ) (
    )))
 );
 
+for-arg-i := λ: Blob(: vi x...). (: () x);
 macro ( ('for-arg (item 'in iter) loop) ) (
    ('for-arg_r (
-      (let item iter) loop
+      (let item (for-arg-i iter)) loop
    ))
 );
 
