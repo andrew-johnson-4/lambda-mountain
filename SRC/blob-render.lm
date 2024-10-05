@@ -79,6 +79,11 @@ blob-render := λ(: ctx FContext)(: term AST)(: f Fragment). (: (
             (set f (fragment::set( f 'program_s s2 )))
          ))
       ))
+      ( _ (
+         (let cs2 (blob-render-simple( ctx 'program_s term )))
+         (let s2 (.1 cs2))
+         (set f (fragment::set( f 'program_s s2 )))
+      ))
    ))
    f
 ) Fragment);

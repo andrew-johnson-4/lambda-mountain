@@ -1,7 +1,7 @@
 
 import LIB/default.html;
 
-docs-html := λ(: page-title String)(: d-header DocsHeader+HTMLElement)(: d-sidebar DocsSidebar+HTMLElement)
+docs-html := λ: Blob(: page-title String)(: d-header DocsHeader+HTMLElement)(: d-sidebar DocsSidebar+HTMLElement)
                        (: d-title DocsTitle+HTMLElement)(: d-content DocsContent+HTMLElement)(: d-meta DocsMeta+HTMLElement)
                        (: d-footer DocsFooter+HTMLElement). (: (
    (html(
@@ -22,7 +22,7 @@ docs-html := λ(: page-title String)(: d-header DocsHeader+HTMLElement)(: d-side
    ))
 ) HTMLElement);
 
-docs-header := λ. (: (as 
+docs-header := λ: Blob . (: (as 
    (div( (class 'l-docs__header_s)
       (header( (id 'navigation_s) (class 'p-navigation\sis-dark_s)
          (div( (class 'l-docs__subgrid_s)
@@ -74,8 +74,8 @@ docs-header := λ. (: (as
    ))
 DocsHeader+HTMLElement) DocsHeader+HTMLElement);
 
-fragment docs-sidebar := λ. (: () DocsSidebar+HTMLElement);
-docs-title := λ(: title-text String). (: (as (
+docs-sidebar := λ: Blob . (: () DocsSidebar+HTMLElement);
+docs-title := λ: Blob(: title-text String). (: (as (
    (div( (class 'l-docs__title_s) (id 'main-content_s)
       (div( (class 'p-section--shallow_s)
          (div( (class 'row_s)
@@ -86,7 +86,7 @@ docs-title := λ(: title-text String). (: (as (
       ))
    ))
 ) DocsTitle+HTMLElement) DocsTitle+HTMLElement);
-fragment docs-content := λ. (: () DocsContent+HTMLElement);
-fragment docs-meta := λ. (: () DocsMeta+HTMLElement);
-fragment docs-footer := λ. (: () DocsFooter+HTMLElement);
+docs-content := λ: Blob . (: () DocsContent+HTMLElement);
+docs-meta := λ: Blob . (: () DocsMeta+HTMLElement);
+docs-footer := λ: Blob . (: () DocsFooter+HTMLElement);
 
