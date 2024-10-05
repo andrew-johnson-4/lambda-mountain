@@ -2,6 +2,7 @@
 cc-blob := λ(: ctx FContext)(: function-name String)(: args AST)(: offset I64). (: (
    (let f (fragment-context::lookup( ctx function-name (typeof args) args )))
    (let r (fragment::new()))
+   (print 'Apply\sBlob\s_s)(print function-name)(print '\n_s)(print (.term f))
    (match (.term f) (
       ()
       ( (Abs( lhs rhs tlt )) (

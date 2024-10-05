@@ -376,7 +376,7 @@ fragment  .6 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<Cons
    (.program(
       (let base-offset (+( (+( (+( (+( (+( (.expression src) (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )) (align( (.expression size4) )) )) (align( (.expression size5) )) )))
       (for index in (range( 0 (/( (.expression size6) '8 )) )) (
-         (let word-offset (-( (+( (-( (+( (.expression base-offset) (.expression size5) )) (*( (.expression index) '8 )) )) (align(.expression size0)) )) '8 )) )
+         (let word-offset (-( (+( (-( (+( (.expression base-offset) (.expression size6) )) (*( (.expression index) '8 )) )) (align(.expression size0)) )) '8 )) )
          \t 'pushq \s (.expression word-offset) \[ '%RBP \] \n
       ))
    ))
