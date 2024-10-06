@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html>
-<head ><link  rel="uuid_00000000000024a3"  href="uuid_00000000000024a2" \>
-<title >uuid_000000000000244c</title>
+<head ><link  rel="stylesheet"  href="https://assets.ubuntu.com/v1/vanilla-framework-version-4.15.0.min.css" \>
+<title >Documentation: LIB/default.lm</title>
 </head>
-<body ><div > class="uuid_00000000000024a1" <div > class="uuid_0000000000002480" <header > id="uuid_000000000000247f"  class="uuid_000000000000247e" <div > class="uuid_000000000000247d" <div > class="uuid_000000000000247c" <div > class="uuid_000000000000247b" <div > class="uuid_000000000000247a" <a > class="uuid_000000000000246d"  href="uuid_0000000000002479" <div > class="uuid_0000000000002478" <img  class="uuid_0000000000002477"  src="uuid_0000000000002476" \>
+<body ><div > class="l-docs" <div > class="l-docs__header" <header > id="navigation"  class="p-navigation is-dark" <div > class="l-docs__subgrid" <div > class="l-docs__sidebar" <div > class="p-navigation__banner" <div > class="p-navigation__tagged-logo" <a > class="p-navigation__link"  href="/lambda-mountain/" <div > class="p-navigation__logo-tag" <img  class="p-navigation__logo-icon"  src="https://github.com/andrew-johnson-4/lambda-mountain/blob/main/DOBYLOGO.png?raw=true" \>
 </div>
-<span > class="uuid_0000000000002475" uuid_0000000000002474</span></a>
+<span > class="p-navigation__logo-title" Lambda Mountain</span></a>
 </div>
 </div>
 </div>
-<div > class="uuid_0000000000002464" <div > class="uuid_0000000000002473" <nav > class="uuid_0000000000002472" <ul > class="uuid_0000000000002471" <li > class="uuid_000000000000246e" <a > class="uuid_000000000000246d"  href="uuid_0000000000002470" uuid_000000000000246f</a>
+<div > class="l-docs__main" <div > class="p-navigation__row u-fixed-width" <nav > class="p-navigation__nav" <ul > class="p-navigation__items" <li > class="p-navigation__item" <a > class="p-navigation__link"  href="/lambda-mountain/default.lm.html" default.lm</a>
 </li>
-<li > class="uuid_000000000000246e" <a > class="uuid_000000000000246d"  href="uuid_000000000000246c" uuid_000000000000246b</a>
+<li > class="p-navigation__item" <a > class="p-navigation__link"  href="/lambda-mountain/default.html.html" default.html</a>
 </li>
 </ul>
 </nav>
@@ -20,80 +20,89 @@
 </div>
 </header>
 <section >
- id="uuid_000000000000246a"  class="uuid_0000000000002469" <div > class="uuid_0000000000002468" <div > class="uuid_0000000000002467" <h5 > class="uuid_0000000000002466" uuid_0000000000002465</h5>
+ id="search-docs"  class="p-strip is-bordered is-shallow l-docs__subgrid" <div > class="l-docs__sidebar u-hide--medium u-hide--small" <div > class="u-fixed-width" <h5 > class="u-sv-2" LM Documentation</h5>
 </div>
 </div>
-<div > class="uuid_0000000000002464" <div > class="uuid_0000000000002463" <form >
- class="uuid_0000000000002462"  method="uuid_0000000000002461"  action="uuid_0000000000002460" <input  type="uuid_000000000000245f"  class="uuid_000000000000245e"  name="uuid_000000000000245d"  placeholder="uuid_000000000000245c"  required="uuid_000000000000245b"  autocomplete="uuid_000000000000245a" >
-<input  type="uuid_0000000000002459"  name="uuid_0000000000002458"  value="uuid_0000000000002457"  checked  hidden >
+<div > class="l-docs__main" <div > class="row" <form >
+ class="p-search-box u-no-margin-bottom"  method="get"  action="https://www.google.com/search" <input  type="text"  class="p-search-box__input"  name="q"  placeholder="Search documentation "  required=""  autocomplete="on" >
+<input  type="checkbox"  name="sitesearch"  value="https://andrew-johnson-4.github.io/lambda-mountain/"  checked  hidden >
 <button >
- type="uuid_0000000000002456"  class="uuid_0000000000002455"  name="uuid_0000000000002454" <i  class="uuid_0000000000002452" ></i></button>
+ type="reset"  class="p-search-box__reset"  name="close" <i  class="p-icon--close" ></i></button>
 <button >
- type="uuid_0000000000002451"  class="uuid_0000000000002450"  name="uuid_000000000000244f" <i  class="uuid_000000000000244d" ></i></button>
+ type="submit"  class="p-search-box__button"  name="submitSearch" <i  class="p-icon--search" ></i></button>
 </form>
 </div>
 </div>
 </section>
 </div>
-<div > class="uuid_0000000000002485"  id="uuid_0000000000002484" <div > class="uuid_0000000000002483" <div > class="uuid_0000000000002463" <div > class="uuid_0000000000002482" <h1 >uuid_0000000000002481</h1>
+<div > class="l-docs__title"  id="main-content" <div > class="p-section--shallow" <div > class="row" <div > class="col-12" <h1 >LIB/default.lm Documentation</h1>
 </div>
 </div>
 </div>
 </div>
 <main>
- class="uuid_0000000000002464" <div > class="uuid_0000000000002463" <div > class="uuid_0000000000002482" <hr >
-<h4 >uuid_00000000000024a0</h4>
-<p >uuid_000000000000249f</p><pre >
+ class="l-docs__main" <div > class="row" <div > class="col-12" <hr >
+<h4 >type <b>U8</b></h4>
+<p >U8 is an integer of the range 0 to 255.</p><pre >
 <code >
-uuid_000000000000249e</code>
+(print( '123_u8 ))
+</code>
 </pre>
 <hr >
-<h4 >uuid_000000000000249d</h4>
-<p >uuid_000000000000249c</p><pre >
+<h4 >type <b>U16</b></h4>
+<p >U16 is an integer of the range 0 to 65535.</p><pre >
 <code >
-uuid_000000000000249b</code>
+(print( '123_u16 ))
+</code>
 </pre>
 <hr >
-<h4 >uuid_000000000000249a</h4>
-<p >uuid_0000000000002499</p><pre >
+<h4 >type <b>U32</b></h4>
+<p >U32 is an integer of the range 0 to 4294967295.</p><pre >
 <code >
-uuid_0000000000002498</code>
+(print( '123_u32 ))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002497</h4>
-<p >uuid_0000000000002496</p><pre >
+<h4 >type <b>U64</b></h4>
+<p >U64 is an integer of the range 0 to 18446744073709551615.</p><pre >
 <code >
-uuid_0000000000002495</code>
+(print( '123_u64 ))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002494</h4>
-<p >uuid_0000000000002493</p><pre >
+<h4 >type <b>I8</b></h4>
+<p >I8 is an integer of the range -128 to 127.</p><pre >
 <code >
-uuid_0000000000002492</code>
+(print( '123_i8 ))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002491</h4>
-<p >uuid_0000000000002490</p><pre >
+<h4 >type <b>I16</b></h4>
+<p >I16 is an integer of the range -32768 to 32767.</p><pre >
 <code >
-uuid_000000000000248f</code>
+(print( '123_i16 ))
+</code>
 </pre>
 <hr >
-<h4 >uuid_000000000000248e</h4>
-<p >uuid_000000000000248d</p><pre >
+<h4 >type <b>I32</b></h4>
+<p >I32 is an integer of the range -21474823648 to 21474823647.</p><pre >
 <code >
-uuid_000000000000248c</code>
+(print( '123_i32 ))
+</code>
 </pre>
 <hr >
-<h4 >uuid_000000000000248b</h4>
-<p >uuid_000000000000248a</p><pre >
+<h4 >type <b>I64</b></h4>
+<p >I64 is an integer of the range -9223372036854775808 to 9223372036854775807.</p><pre >
 <code >
-uuid_0000000000002489</code>
+(print( '123_i64 ))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002488</h4>
-<p >uuid_0000000000002487</p><pre >
+<h4 >type <b>String</b></h4>
+<p >A String is a sequence of bytes terminated by a null character.</p><pre >
 <code >
-uuid_0000000000002486</code>
+(print( 'hello_s ))
+</code>
 </pre>
 </div>
 </div>

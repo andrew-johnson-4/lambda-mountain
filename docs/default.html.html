@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html>
-<head ><link  rel="uuid_0000000000002ee6"  href="uuid_0000000000002ee5" \>
-<title >uuid_0000000000002e20</title>
+<head ><link  rel="stylesheet"  href="https://assets.ubuntu.com/v1/vanilla-framework-version-4.15.0.min.css" \>
+<title >Documentation: LIB/default.html</title>
 </head>
-<body ><div > class="uuid_0000000000002ee4" <div > class="uuid_0000000000002e54" <header > id="uuid_0000000000002e53"  class="uuid_0000000000002e52" <div > class="uuid_0000000000002e51" <div > class="uuid_0000000000002e50" <div > class="uuid_0000000000002e4f" <div > class="uuid_0000000000002e4e" <a > class="uuid_0000000000002e41"  href="uuid_0000000000002e4d" <div > class="uuid_0000000000002e4c" <img  class="uuid_0000000000002e4b"  src="uuid_0000000000002e4a" \>
+<body ><div > class="l-docs" <div > class="l-docs__header" <header > id="navigation"  class="p-navigation is-dark" <div > class="l-docs__subgrid" <div > class="l-docs__sidebar" <div > class="p-navigation__banner" <div > class="p-navigation__tagged-logo" <a > class="p-navigation__link"  href="/lambda-mountain/" <div > class="p-navigation__logo-tag" <img  class="p-navigation__logo-icon"  src="https://github.com/andrew-johnson-4/lambda-mountain/blob/main/DOBYLOGO.png?raw=true" \>
 </div>
-<span > class="uuid_0000000000002e49" uuid_0000000000002e48</span></a>
+<span > class="p-navigation__logo-title" Lambda Mountain</span></a>
 </div>
 </div>
 </div>
-<div > class="uuid_0000000000002e38" <div > class="uuid_0000000000002e47" <nav > class="uuid_0000000000002e46" <ul > class="uuid_0000000000002e45" <li > class="uuid_0000000000002e42" <a > class="uuid_0000000000002e41"  href="uuid_0000000000002e44" uuid_0000000000002e43</a>
+<div > class="l-docs__main" <div > class="p-navigation__row u-fixed-width" <nav > class="p-navigation__nav" <ul > class="p-navigation__items" <li > class="p-navigation__item" <a > class="p-navigation__link"  href="/lambda-mountain/default.lm.html" default.lm</a>
 </li>
-<li > class="uuid_0000000000002e42" <a > class="uuid_0000000000002e41"  href="uuid_0000000000002e40" uuid_0000000000002e3f</a>
+<li > class="p-navigation__item" <a > class="p-navigation__link"  href="/lambda-mountain/default.html.html" default.html</a>
 </li>
 </ul>
 </nav>
@@ -20,302 +20,443 @@
 </div>
 </header>
 <section >
- id="uuid_0000000000002e3e"  class="uuid_0000000000002e3d" <div > class="uuid_0000000000002e3c" <div > class="uuid_0000000000002e3b" <h5 > class="uuid_0000000000002e3a" uuid_0000000000002e39</h5>
+ id="search-docs"  class="p-strip is-bordered is-shallow l-docs__subgrid" <div > class="l-docs__sidebar u-hide--medium u-hide--small" <div > class="u-fixed-width" <h5 > class="u-sv-2" LM Documentation</h5>
 </div>
 </div>
-<div > class="uuid_0000000000002e38" <div > class="uuid_0000000000002e37" <form >
- class="uuid_0000000000002e36"  method="uuid_0000000000002e35"  action="uuid_0000000000002e34" <input  type="uuid_0000000000002e33"  class="uuid_0000000000002e32"  name="uuid_0000000000002e31"  placeholder="uuid_0000000000002e30"  required="uuid_0000000000002e2f"  autocomplete="uuid_0000000000002e2e" >
-<input  type="uuid_0000000000002e2d"  name="uuid_0000000000002e2c"  value="uuid_0000000000002e2b"  checked  hidden >
+<div > class="l-docs__main" <div > class="row" <form >
+ class="p-search-box u-no-margin-bottom"  method="get"  action="https://www.google.com/search" <input  type="text"  class="p-search-box__input"  name="q"  placeholder="Search documentation "  required=""  autocomplete="on" >
+<input  type="checkbox"  name="sitesearch"  value="https://andrew-johnson-4.github.io/lambda-mountain/"  checked  hidden >
 <button >
- type="uuid_0000000000002e2a"  class="uuid_0000000000002e29"  name="uuid_0000000000002e28" <i  class="uuid_0000000000002e26" ></i></button>
+ type="reset"  class="p-search-box__reset"  name="close" <i  class="p-icon--close" ></i></button>
 <button >
- type="uuid_0000000000002e25"  class="uuid_0000000000002e24"  name="uuid_0000000000002e23" <i  class="uuid_0000000000002e21" ></i></button>
+ type="submit"  class="p-search-box__button"  name="submitSearch" <i  class="p-icon--search" ></i></button>
 </form>
 </div>
 </div>
 </section>
 </div>
-<div > class="uuid_0000000000002e59"  id="uuid_0000000000002e58" <div > class="uuid_0000000000002e57" <div > class="uuid_0000000000002e37" <div > class="uuid_0000000000002e56" <h1 >uuid_0000000000002e55</h1>
+<div > class="l-docs__title"  id="main-content" <div > class="p-section--shallow" <div > class="row" <div > class="col-12" <h1 >LIB/default.html Documentation</h1>
 </div>
 </div>
 </div>
 </div>
 <main>
- class="uuid_0000000000002e38" <div > class="uuid_0000000000002e37" <div > class="uuid_0000000000002e56" <hr >
-<h4 >uuid_0000000000002ee3</h4>
-<p >uuid_0000000000002ee2</p><pre >
+ class="l-docs__main" <div > class="row" <div > class="col-12" <hr >
+<h4 ><b>class</b> : (cls: String) -&gt; HTMLAttribute</h4>
+<p >A class attribute can be added to most html elements.</p><pre >
 <code >
-uuid_0000000000002ee1</code>
+(div(
+   (class( 'p-data_s ))
+   (h2( 'Hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002ee0</h4>
-<p >uuid_0000000000002edf</p><pre >
+<h4 ><b>action</b> : (cls: String) -&gt; HTMLAttribute</h4>
+<p >An action attribute can be added to most html elements.</p><pre >
 <code >
-uuid_0000000000002ede</code>
+(form(
+   (action( 'http://site_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002edd</h4>
-<p >uuid_0000000000002edc</p><pre >
+<h4 ><b>value</b> : (cls: String) -&gt; HTMLAttribute</h4>
+<p >A value attribute can be added to most html elements.</p><pre >
 <code >
-uuid_0000000000002edb</code>
+(input(
+   (value( 'http://site_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002eda</h4>
-<p >uuid_0000000000002ed9</p><pre >
+<h4 ><b>checked</b> : () -&gt; HTMLAttribute</h4>
+<p >A checked attribute can be added to most html elements.</p><pre >
 <code >
-uuid_0000000000002ed8</code>
+(form(
+   (checked( () ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002ed7</h4>
-<p >uuid_0000000000002ed6</p><pre >
+<h4 ><b>hidden</b> : () -&gt; HTMLAttribute</h4>
+<p >A hidden attribute can be added to most html elements.</p><pre >
 <code >
-uuid_0000000000002ed5</code>
+(form(
+   (hidden( () ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002ed4</h4>
-<p >uuid_0000000000002ed3</p><pre >
+<h4 ><b>method</b> : (cls: String) -&gt; HTMLAttribute</h4>
+<p >A method attribute can be added to most html elements.</p><pre >
 <code >
-uuid_0000000000002ed2</code>
+(form(
+   (method( 'get_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002ed1</h4>
-<p >uuid_0000000000002ed0</p><pre >
+<h4 ><b>name</b> : (cls: String) -&gt; HTMLAttribute</h4>
+<p >A name attribute can be added to most html elements.</p><pre >
 <code >
-uuid_0000000000002ecf</code>
+(div(
+   (name( 'data_s ))
+   (h2( 'Hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002ece</h4>
-<p >uuid_0000000000002ecd</p><pre >
+<h4 ><b>autocomplete</b> : (cls: String) -&gt; HTMLAttribute</h4>
+<p >An autocomplete attribute can be added to most html elements.</p><pre >
 <code >
-uuid_0000000000002ecc</code>
+(input(
+   (type_( 'text_s ))
+   (autocomplete( 'default value_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002ecb</h4>
-<p >uuid_0000000000002eca</p><pre >
+<h4 ><b>required</b> : (cls: String) -&gt; HTMLAttribute</h4>
+<p >A required attribute can be added to most html elements.</p><pre >
 <code >
-uuid_0000000000002ec9</code>
+(input(
+   (type_( 'text_s ))
+   (required( 'yes_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002ec8</h4>
-<p >uuid_0000000000002ec7</p><pre >
+<h4 ><b>placeholder</b> : (cls: String) -&gt; HTMLAttribute</h4>
+<p >A placeholder attribute can be added to most html elements.</p><pre >
 <code >
-uuid_0000000000002ec6</code>
+(input(
+   (type_( 'text_s ))
+   (placeholder( 'temporary value_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002ec5</h4>
-<p >uuid_0000000000002ec4</p><pre >
+<h4 ><b>type_</b> : (cls: String) -&gt; HTMLAttribute</h4>
+<p >A type attribute can be added to most html elements.</p><pre >
 <code >
-uuid_0000000000002ec3</code>
+(input(
+   (type_( 'text_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002ec2</h4>
-<p >uuid_0000000000002ec1</p><pre >
+<h4 ><b>src</b> : (s: String) -&gt; HTMLAttribute</h4>
+<p >A src attribute can be added to most html elements.</p><pre >
 <code >
-uuid_0000000000002ec0</code>
+(input(
+   (src( 'http://site_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002ebf</h4>
-<p >uuid_0000000000002ebe</p><pre >
+<h4 ><b>id</b> : (i: String) -&gt; HTMLAttribute</h4>
+<p >An id attribute can be added to most html elements.</p><pre >
 <code >
-uuid_0000000000002ebd</code>
+(input(
+   (id( 'ident_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002ebc</h4>
-<p >uuid_0000000000002ebb</p><pre >
+<h4 ><b>rel</b> : (i: String) -&gt; HTMLAttribute</h4>
+<p >A rel attribute can be added to most html elements.</p><pre >
 <code >
-uuid_0000000000002eba</code>
+(input(
+   (rel( 'ident_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002eb9</h4>
-<p >uuid_0000000000002eb8</p><pre >
+<h4 ><b>href</b> : (a: String) -&gt; HTMLAttribute</h4>
+<p >An href attribute can be added to most html elements.</p><pre >
 <code >
-uuid_0000000000002eb7</code>
+(input(
+   (rel( 'http://site_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002eb6</h4>
-<p >uuid_0000000000002eb5</p><pre >
+<h4 ><b>text</b> : (t: String) -&gt; HTMLElement</h4>
+<p >text is a typesafe plaintext element.</p><pre >
 <code >
-uuid_0000000000002eb4</code>
+(text( 'hello_s ))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002eb3</h4>
-<p >uuid_0000000000002eb2</p><pre >
+<h4 ><b>html</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >html is the document root .</p><pre >
 <code >
-uuid_0000000000002eb1</code>
+(html(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002eb0</h4>
-<p >uuid_0000000000002eaf</p><pre >
+<h4 ><b>main</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >main is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002eae</code>
+(main(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002ead</h4>
-<p >uuid_0000000000002eac</p><pre >
+<h4 ><b>head</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >head is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002eab</code>
+(head(
+   (title( 'The page title_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002eaa</h4>
-<p >uuid_0000000000002ea9</p><pre >
+<h4 ><b>title</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >title is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002ea8</code>
+(title(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002ea7</h4>
-<p >uuid_0000000000002ea6</p><pre >
+<h4 ><b>body</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >body is where visual html elements go.</p><pre >
 <code >
-uuid_0000000000002ea5</code>
+(body(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002ea4</h4>
-<p >uuid_0000000000002ea3</p><pre >
+<h4 ><b>h1</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >h1 is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002ea2</code>
+(h1(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002ea1</h4>
-<p >uuid_0000000000002ea0</p><pre >
+<h4 ><b>h2</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >h2 is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e9f</code>
+(h2(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e9e</h4>
-<p >uuid_0000000000002e9d</p><pre >
+<h4 ><b>h3</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >h3 is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e9c</code>
+(h3(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e9b</h4>
-<p >uuid_0000000000002e9a</p><pre >
+<h4 ><b>h4</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >h4 is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e99</code>
+(h4(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e98</h4>
-<p >uuid_0000000000002e97</p><pre >
+<h4 ><b>h5</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >h5 is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e96</code>
+(h5(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e95</h4>
-<p >uuid_0000000000002e94</p><pre >
+<h4 ><b>h6</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >h6 is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e93</code>
+(h6(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e92</h4>
-<p >uuid_0000000000002e91</p><pre >
+<h4 ><b>div</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >div is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e90</code>
+(div(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e8f</h4>
-<p >uuid_0000000000002e8e</p><pre >
+<h4 ><b>header</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >header is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e8d</code>
+(header(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e8c</h4>
-<p >uuid_0000000000002e8b</p><pre >
+<h4 ><b>nav</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >nav is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e8a</code>
+(nav(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e89</h4>
-<p >uuid_0000000000002e88</p><pre >
+<h4 ><b>ul</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >ul is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e87</code>
+(ul(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e86</h4>
-<p >uuid_0000000000002e85</p><pre >
+<h4 ><b>ol</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >ol is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e84</code>
+(ol(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e83</h4>
-<p >uuid_0000000000002e82</p><pre >
+<h4 ><b>li</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >li is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e81</code>
+(li(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e80</h4>
-<p >uuid_0000000000002e7f</p><pre >
+<h4 ><b>a</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >a is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e7e</code>
+(a(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e7d</h4>
-<p >uuid_0000000000002e7c</p><pre >
+<h4 ><b>span</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >span is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e7b</code>
+(span(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e7a</h4>
-<p >uuid_0000000000002e79</p><pre >
+<h4 ><b>i</b> : (attrs: HTMLAttribute...)(es: HTMLElement) -&gt; HTMLElement</h4>
+<p >i is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e78</code>
+(i(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e77</h4>
-<p >uuid_0000000000002e76</p><pre >
+<h4 ><b>p</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >p is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e75</code>
+(p(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e74</h4>
-<p >uuid_0000000000002e73</p><pre >
+<h4 ><b>img</b> : (attrs: HTMLAttribute...) -&gt; HTMLElement</h4>
+<p >img is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e72</code>
+(img(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e71</h4>
-<p >uuid_0000000000002e70</p><pre >
+<h4 ><b>link</b> : (attrs: HTMLAttribute...) -&gt; HTMLElement</h4>
+<p >link is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e6f</code>
+(link(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e6e</h4>
-<p >uuid_0000000000002e6d</p><pre >
+<h4 ><b>section</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >section is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e6c</code>
+(section(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e6b</h4>
-<p >uuid_0000000000002e6a</p><pre >
+<h4 ><b>form</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >form is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e69</code>
+(form(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e68</h4>
-<p >uuid_0000000000002e67</p><pre >
+<h4 ><b>input</b> : (attrs: HTMLAttribute...) -&gt; HTMLElement</h4>
+<p >input is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e66</code>
+(input(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e65</h4>
-<p >uuid_0000000000002e64</p><pre >
+<h4 ><b>button</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >button is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e63</code>
+(button(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e62</h4>
-<p >uuid_0000000000002e61</p><pre >
+<h4 ><b>pre</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >pre is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e60</code>
+(pre(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e5f</h4>
-<p >uuid_0000000000002e5e</p><pre >
+<h4 ><b>code</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >code is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e5d</code>
+(code(
+   (text( 'hello_s ))
+))
+</code>
 </pre>
 <hr >
-<h4 >uuid_0000000000002e5c</h4>
-<p >uuid_0000000000002e5b</p><pre >
+<h4 ><b>hr</b> : (attrs: HTMLAttribute...)(es: HTMLElement...) -&gt; HTMLElement</h4>
+<p >hr is a semantic html element.</p><pre >
 <code >
-uuid_0000000000002e5a</code>
+(hr(
+   (class( 't_s ))
+))
+</code>
 </pre>
 </div>
 </div>
