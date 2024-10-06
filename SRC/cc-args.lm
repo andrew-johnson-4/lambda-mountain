@@ -4,37 +4,30 @@ cc-args := λ(: ctx FContext)(: lhs AST)(: rhs AST)(: offset I64). (: (
    (match lhs (
       ()
       ( (App( lhs-rst (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) )) (
-         (if (is-vararg kt) (scope(
-            (set kt (p1(slot( kt '..._s ))))
-            (if (can-unify( kt (typeof rhs) )) (scope(
-               (set ctx (bind-vararg( ctx k kt (compile-expr( ctx rhs offset Used )) )))
-            )) (
-               (print 'Cant\sUnify\s_s)(print kt)(print '\s_s)(print (typeof rhs))(print '\n_s)
-               (match rhs (
-                  ()
-                  ( (App( le re )) (
-                     (if (can-unify( kt (typeof re) )) (scope(
-                        (set ctx (bind-vararg( ctx k kt (compile-expr( ctx re offset Used )) )))
-                        (let e1 (cc-args( ctx lhs le offset )))
-                        (set ctx (.1 e1))
-                        (set offset (.2 e1))
-                     )) (scope(
-                        (let e1 (cc-args( ctx lhs-rst le offset )))
-                        (set ctx (.1 e1))
-                        (set offset (.2 e1))
-                     )))
-                  ))
-               ))
-            ))
-         )) (
+         (if (non-zero(slot( (typeof rhs) 'Cons_s ))) (
             (match rhs (
                ()
                ( (App( le re )) (
-                  (let e1 (cc-args( ctx lhs-rst le offset )))
-                  (set ctx (.1 e1))
-                  (set offset (.2 e1))
-                  (set ctx (FCtxBind( (close ctx) k kt (compile-expr( ctx re offset Used )) )))
+                  (if (is-vararg kt) (
+                     (set kt (p1(slot( kt '..._s ))))
+                     (set ctx (bind-vararg( ctx k kt (compile-expr( ctx re offset Used )) )))
+                     (let e1 (cc-args( ctx lhs le offset )))
+                     (set ctx (.1 e1))
+                     (set offset (.2 e1))
+                  ) (
+                     (let e1 (cc-args( ctx lhs-rst le offset )))
+                     (set ctx (.1 e1))
+                     (set offset (.2 e1))
+                     (set ctx (FCtxBind( (close ctx) k kt (compile-expr( ctx re offset Used )) )))
+                  ))
                ))
+            ))
+         ) (
+            (if (is-vararg kt) (
+               (set kt (p1(slot( kt '..._s ))))
+               (set ctx (bind-vararg( ctx k kt (compile-expr( ctx rhs offset Used )) )))
+            ) (
+               (set ctx (FCtxBind( (close ctx) k kt (compile-expr( ctx rhs offset Used )) )))
             ))
          ))
          (if (non-zero(slot( kt 'Meta_s 'OntoStack_s ))) (
@@ -42,28 +35,30 @@ cc-args := λ(: ctx FContext)(: lhs AST)(: rhs AST)(: offset I64). (: (
          ) ())
       ))
       ( (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) (
-         (if (is-vararg kt) (scope(
-            (set kt (p1(slot( kt '..._s ))))
-            (if (can-unify( kt (typeof rhs) )) (
-               (set ctx (bind-vararg( ctx k kt (compile-expr( ctx rhs offset Used )) )))
-            ) (
-               (match rhs (
-                  ()
-                  ( (App( le re )) (
+         (if (non-zero(slot( (typeof rhs) 'Cons_s ))) (
+            (match rhs (
+               ()
+               ( (App( le re )) (
+                  (if (is-vararg kt) (
+                     (set kt (p1(slot( kt '..._s ))))
                      (set ctx (bind-vararg( ctx k kt (compile-expr( ctx re offset Used )) )))
                      (let e1 (cc-args( ctx lhs le offset )))
                      (set ctx (.1 e1))
                      (set offset (.2 e1))
-                  ))
-                  ( ASTNil () )
-                  ( _ (
-                     (print 'Error\sBinding\s_s)(print k)(print kt)(print rhs)(print (typeof rhs))(print '\n_s)(exit 1_u64)
+                  ) (
+                     (print (typeof rhs))
+                     (exit-error( 'Codegen\sUnexpected\sRHS_s rhs ))
                   ))
                ))
             ))
-         )) (scope(
-            (set ctx (FCtxBind( (close ctx) k kt (compile-expr( ctx rhs offset Used )) )))
-         )))
+         ) (
+            (if (is-vararg kt) (
+               (set kt (p1(slot( kt '..._s ))))
+               (set ctx (bind-vararg( ctx k kt (compile-expr( ctx rhs offset Used )) )))
+            ) (
+               (set ctx (FCtxBind( (close ctx) k kt (compile-expr( ctx rhs offset Used )) )))
+            ))
+         ))
          (if (non-zero(slot( kt 'Meta_s 'OntoStack_s ))) (
             (set offset (-( offset (as (sizeof-aligned kt) I64) )))
          ) ())
