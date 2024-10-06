@@ -22,7 +22,12 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
         ))
       )) (
          (let vs (fragment-context::lookup-soft( ctx vsk TAny ASTEOF )))
-         (print 'Render\sSimple\sFor\sArg\s_s)(print lhs)(print iter)(exit 1_u64)
+         (for-each (vi in (.vararg vs)) (
+            (let inner-ctx (fragment-context::bind( ctx lhs (.type vs) vi )))
+            (let fs (blob-render-simple( inner-ctx context-key iter )))
+            (let s (.1 fs))
+            (set r (+( r s )))
+         ))
       ))
       ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
          (set r (.1( (blob-render-simple( ctx context-key t )) )))
