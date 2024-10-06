@@ -10,15 +10,15 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                ( (App( le re )) (
                   (if (is-vararg kt) (scope(
                      (set kt (p1(slot( kt '..._s ))))
-                     (set callee-ctx (bind-vararg( callee-ctx k kt (compile-expr( caller-ctx re offset Used )) )))
                      (let e1 (cc-args( callee-ctx caller-ctx lhs le offset )))
                      (set callee-ctx (.1 e1))
                      (set offset (.2 e1))
+                     (set callee-ctx (bind-vararg( callee-ctx k kt (compile-expr( caller-ctx re offset Used )) )))
                   )) (scope(
-                     (set callee-ctx (FCtxBind( (close callee-ctx) k kt (compile-expr( caller-ctx re offset Used )) )))
                      (let e1 (cc-args( callee-ctx caller-ctx lhs-rst le offset )))
                      (set callee-ctx (.1 e1))
                      (set offset (.2 e1))
+                     (set callee-ctx (FCtxBind( (close callee-ctx) k kt (compile-expr( caller-ctx re offset Used )) )))
                   )))
                ))
             ))
@@ -41,10 +41,10 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                ( (App( le re )) (
                   (if (is-vararg kt) (scope(
                      (set kt (p1(slot( kt '..._s ))))
-                     (set callee-ctx (bind-vararg( callee-ctx k kt (compile-expr( caller-ctx re offset Used )) )))
                      (let e1 (cc-args( callee-ctx caller-ctx lhs le offset )))
                      (set callee-ctx (.1 e1))
                      (set offset (.2 e1))
+                     (set callee-ctx (bind-vararg( callee-ctx k kt (compile-expr( caller-ctx re offset Used )) )))
                   )) (
                      (print (typeof rhs))
                      (exit-error( 'Codegen\sUnexpected\sRHS_s rhs ))
