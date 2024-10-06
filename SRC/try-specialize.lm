@@ -3,7 +3,7 @@ try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: 
    (set result-type (normalize result-type))
    (let global-tctx global-type-context)
    (if (is-special( function-name result-type )) () (
-      (while (non-zero global-tctx) (match global-ctx (
+      (while (non-zero global-tctx) (match global-tctx (
          ()
          ( TCtxNil (set global-tctx TCtxEOF) )
          ( (TCtxBind( rst k kt t )) (
