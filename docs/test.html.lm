@@ -1,0 +1,18 @@
+
+import docs/ubuntu-docs.lm;
+
+(docs-html(
+   'Documentation:\sLIB/default.html_s
+   (docs-header())
+   (docs-sidebar())
+   (docs-title 'LIB/default.html\sDocumentation_s)
+   (as(
+      (main( (class 'l-docs__main_s)
+         (div( (class 'row_s)
+            (div( (class 'col-12_s) ))
+         ))
+      ))
+   ) DocsContent+HTMLElement)
+   (docs-meta())
+   (docs-footer())
+))

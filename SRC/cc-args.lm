@@ -15,10 +15,10 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                      (set callee-ctx (.1 e1))
                      (set offset (.2 e1))
                   )) (scope(
+                     (set callee-ctx (FCtxBind( (close callee-ctx) k kt (compile-expr( caller-ctx re offset Used )) )))
                      (let e1 (cc-args( callee-ctx caller-ctx lhs-rst le offset )))
                      (set callee-ctx (.1 e1))
                      (set offset (.2 e1))
-                     (set callee-ctx (FCtxBind( (close callee-ctx) k kt (compile-expr( caller-ctx re offset Used )) )))
                   )))
                ))
             ))
