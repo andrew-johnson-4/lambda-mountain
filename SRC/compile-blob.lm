@@ -56,6 +56,9 @@ compile-blob := λ. (: (
       ( (Seq( rst (Typedef( lhs rhs )) )) (
          (set preview-program rst)
       ))
+      ( (Seq( rst (Meta( _ )) )) (
+         (set preview-program rst)
+      ))
       ( (Seq( rst expr )) (
          (let cs (blob-render-simple( global-ctx 'program_s expr )))
          (let s (.1 cs))
