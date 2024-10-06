@@ -65,5 +65,5 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
       ))
       ( ASTNil () )
    ))
-   (Tuple( offset ctx ))
+   (Tuple( offset callee-ctx ))
 ) Tuple<I64,FContext>);
