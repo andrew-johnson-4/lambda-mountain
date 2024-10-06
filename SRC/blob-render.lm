@@ -30,10 +30,12 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
          ))
       ))
       ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
-         (set r (.1( (blob-render-simple( ctx context-key t )) )))
+         (let rs (blob-render-simple( ctx context-key t )))
+         (set r (.1( rs )))
       ))
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
-         (set r (.1( (blob-render-simple( ctx context-key t )) )))
+         (let rs (blob-render-simple( ctx context-key t )))
+         (set r (.1( rs )))
       ))
       ( (App( (Abs( (Var( lhs _ )) ASTNil tlt )) rhs )) (
          (let f (fragment::new()))

@@ -151,7 +151,7 @@ import docs/ubuntu-docs.lm;
 (p( (text 'span\sis\sa\ssemantic\shtml\selement._s)))
 (pre( (code( (text '\[span\[\n\s\s\s\[text\[\s\`hello_s\s\]\]\n\]\]\n_s)))))
 (hr())
-(h4( (text '<b>i</b>\s:\s\[attrs:\sHTMLAttribute...\]\[f1:\sHTMLElement\]\s-&gt\:\sHTMLElement_s)))
+(h4( (text '<b>i</b>\s:\s\[attrs:\sHTMLAttribute...\]\[es:\sHTMLElement\]\s-&gt\:\sHTMLElement_s)))
 (p( (text 'i\sis\sa\ssemantic\shtml\selement._s)))
 (pre( (code( (text '\[i\[\n\s\s\s\[text\[\s\`hello_s\s\]\]\n\]\]\n_s)))))
 (hr())
