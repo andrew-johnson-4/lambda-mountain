@@ -37,14 +37,14 @@ compile-gnu := λ. (: (
          (if (==( k 'main_s )) (set assemble-argv-referenced True_u8) ())
          (let kt (typeof rhs))
          (let fragment (fragment::new()))
-         (if (non-zero(slot( kt 'Blob_s ))) (
-            (set fragment (fragment::set-term( fragment rhs )))
-            (set fragment (fragment::set-type( fragment kt )))
-            (set global-ctx (fragment-context::bind(
-               global-ctx k kt fragment
-            )))
-         ) (
-            (if (is-open kt) () (
+         (if (is-open kt) () (
+            (if (non-zero(slot( kt 'Blob_s ))) (
+               (set fragment (fragment::set-term( fragment rhs )))
+               (set fragment (fragment::set-type( fragment kt )))
+               (set global-ctx (fragment-context::bind(
+                  global-ctx k kt fragment
+               )))
+            ) (
                (set fragment (fragment::set( fragment 'fragment-type_s (SAtom 'Global_s) )))
                (match (slot( kt '->_s )) (
                   ()
