@@ -1,2 +1,9 @@
 
 fragment type L; atom suffix L _l;
+
+== := λ: Blob(: l L)(: r L). (: () L);
+!= := λ: Blob(: l L)(: r L). (: () L);
+< := λ: Blob(: l L)(: r L). (: () L);
+<= := λ: Blob(: l L)(: r L). (: () L);
+> := λ: Blob(: l L)(: r L). (: () L);
+>= := λ: Blob(: l L)(: r L). (: () L);

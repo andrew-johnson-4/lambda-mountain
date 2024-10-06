@@ -220,8 +220,10 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (let lt (typeof-lhs lhs))
          (let rt (typeof rhs))
          (ascript-normal( term (enrich( (t3( 'Arrow_s lt rt )) tlt )) ))
-         (apply-or-cons-and-specialize(
-            'cdecl::return_s (typeof-var-raw( term tctx 'cdecl::return_s )) rt term
+         (if (non-zero(slot( tlt 'Blob_s ))) () (
+            (apply-or-cons-and-specialize(
+               'cdecl::return_s (typeof-var-raw( term tctx 'cdecl::return_s )) rt term
+            ))
          ))
       ))
       ( (Var( v vtk )) (
