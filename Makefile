@@ -1,6 +1,6 @@
 
 work: compile-production
-	./production tests/regress/hello-world.lm
+	./production tests/regress/cdecl.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp
