@@ -9,7 +9,6 @@ import SRC/compile-blob.lm;
 import SRC/compile-gnu.lm;
 import SRC/compile-define-tag-constructor.lm;
 import SRC/compile-finish.lm;
-import SRC/compile-gnu.lm;
 import SRC/compile-program-ordered.lm;
 import SRC/compile-type-case.lm;
 import SRC/compile-type.lm;

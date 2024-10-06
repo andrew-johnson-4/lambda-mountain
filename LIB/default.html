@@ -1,5 +1,8 @@
 
-fragment type String; size String 8; atom suffix String _s;
+import LIB/default-blobs.lm;
+import LIB/default-rules.lm;
+
+fragment type String; atom suffix String _s;
 
 meta 
    (description (
@@ -11,9 +14,9 @@ meta
       ))
    ))
 ;
-fragment class := λ: DontChain(: cls String). (: (
-   (.program(
-      '\sclass=" (.program cls) '"\s
+class := λ: Blob(: cls String). (: (
+   (:expression(
+      '\sclass="_s (:expression cls) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -25,9 +28,9 @@ meta
       (form( (action 'http://site_s) ))
    ))
 ;
-fragment action := λ: DontChain(: cls String). (: (
-   (.program(
-      '\saction=" (.program cls) '"\s
+action := λ: Blob(: cls String). (: (
+   (:expression(
+      '\saction="_s (:expression cls) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -39,9 +42,9 @@ meta
       (input( (value 'http://site_s) ))
    ))
 ;
-fragment value := λ: DontChain(: cls String). (: (
-   (.program(
-      '\svalue=" (.program cls) '"\s
+value := λ: Blob(: cls String). (: (
+   (:expression(
+      '\svalue="_s (:expression cls) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -53,9 +56,9 @@ meta
       (form( (checked()) ))
    ))
 ;
-fragment checked := λ: DontChain . (: (
-   (.program(
-      '\schecked\s
+checked := λ: Blob . (: (
+   (:expression(
+      '\schecked\s_s
    ))
 ) HTMLAttribute);
 
@@ -67,9 +70,9 @@ meta
       (form( (hidden()) ))
    ))
 ;
-fragment hidden := λ: DontChain . (: (
-   (.program(
-      '\shidden\s
+hidden := λ: Blob . (: (
+   (:expression(
+      '\shidden\s_s
    ))
 ) HTMLAttribute);
 
@@ -81,9 +84,9 @@ meta
       (form( (method 'get_s) ))
    ))
 ;
-fragment method := λ: DontChain(: cls String). (: (
-   (.program(
-      '\smethod=" (.program cls) '"\s
+method := λ: Blob(: cls String). (: (
+   (:expression(
+      '\smethod="_s (:expression cls) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -97,9 +100,9 @@ meta
       ))
    ))
 ;
-fragment name := λ: DontChain(: cls String). (: (
-   (.program(
-      '\sname=" (.program cls) '"\s
+name := λ: Blob(: cls String). (: (
+   (:expression(
+      '\sname="_s (:expression cls) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -112,9 +115,9 @@ meta
       ))
    ))
 ;
-fragment autocomplete := λ: DontChain(: cls String). (: (
-   (.program(
-      '\sautocomplete=" (.program cls) '"\s
+autocomplete := λ: Blob(: cls String). (: (
+   (:expression(
+      '\sautocomplete="_s (:expression cls) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -127,9 +130,9 @@ meta
       ))
    ))
 ;
-fragment required := λ: DontChain(: cls String). (: (
-   (.program(
-      '\srequired=" (.program cls) '"\s
+required := λ: Blob(: cls String). (: (
+   (:expression(
+      '\srequired="_s (:expression cls) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -142,9 +145,9 @@ meta
       ))
    ))
 ;
-fragment placeholder := λ: DontChain(: cls String). (: (
-   (.program(
-      '\splaceholder=" (.program cls) '"\s
+placeholder := λ: Blob(: cls String). (: (
+   (:expression(
+      '\splaceholder="_s (:expression cls) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -157,9 +160,9 @@ meta
       ))
    ))
 ;
-fragment type_ := λ: DontChain(: cls String). (: (
-   (.program(
-      '\stype=" (.program cls) '"\s
+type_ := λ: Blob(: cls String). (: (
+   (:expression(
+      '\stype="_s (:expression cls) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -172,9 +175,9 @@ meta
       ))
    ))
 ;
-fragment src := λ: DontChain(: s String). (: (
-   (.program(
-      '\ssrc=" (.program s) '"\s
+src := λ: Blob(: s String). (: (
+   (:expression(
+      '\ssrc="_s (:expression s) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -187,9 +190,9 @@ meta
       ))
    ))
 ;
-fragment id := λ: DontChain(: i String). (: (
-   (.program(
-      '\sid=" (.program i) '"\s
+id := λ: Blob(: i String). (: (
+   (:expression(
+      '\sid="_s (:expression i) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -202,9 +205,9 @@ meta
       ))
    ))
 ;
-fragment rel := λ: DontChain(: i String). (: (
-   (.program(
-      '\srel=" (.program i) '"\s
+rel := λ: Blob(: i String). (: (
+   (:expression(
+      '\srel="_s (:expression i) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -217,9 +220,9 @@ meta
       ))
    ))
 ;
-fragment href := λ: DontChain(: a String). (: (
-   (.program(
-      '\shref=" (.program a) '"\s
+href := λ: Blob(: a String). (: (
+   (:expression(
+      '\shref="_s (:expression a) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -231,9 +234,9 @@ meta
       (text 'hello_s)
    ))
 ;
-fragment text := λ: DontChain(: t String). (: (
-   (.program(
-      (.program t)
+text := λ: Blob(: t String). (: (
+   (:expression(
+      (:expression t)
    ))
 ) HTMLElement);
 
@@ -245,12 +248,12 @@ meta
       (html( (text( 'hello_s )) ))
    ))
 ;
-fragment html := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<!DOCTYPE\shtml>\n
-      '<html (for-arg a in attrs (.program a)) '>\n
-      (for-arg e in es (.program e))
-      '</html>\n
+html := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<!DOCTYPE\shtml>\n_s
+      '<html_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      (for-arg (e in es) (:expression e))
+      '</html>\n_s
    ))
 ) HTMLElement);
 
@@ -262,11 +265,11 @@ meta
       (main( (text( 'hello_s )) ))
    ))
 ;
-fragment main := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<main (for-arg a in attrs (.program a)) '>\n
-      (for-arg e in es (.program e))
-      '</main>\n
+main := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<main_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      (for-arg (e in es) (:expression e))
+      '</main>\n_s
    ))
 ) HTMLElement);
 
@@ -278,11 +281,11 @@ meta
       (head( (title( 'The\spage\stitle_s )) ))
    ))
 ;
-fragment head := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<head\s (for-arg a in attrs (.program a)) '>
-      (for-arg e in es (.program e))
-      '</head>\n
+head := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<head\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
+      '</head>\n_s
    ))
 ) HTMLElement);
 
@@ -294,11 +297,11 @@ meta
       (title( (text( 'hello_s )) ))
    ))
 ;
-fragment title := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<title\s (for-arg a in attrs (.program a)) '>
-      (for-arg e in es (.program e))
-      '</title>\n
+title := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<title\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
+      '</title>\n_s
    ))
 ) HTMLElement);
 
@@ -310,11 +313,11 @@ meta
       (body( (text( 'hello_s )) ))
    ))
 ;
-fragment body := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<body\s (for-arg a in attrs (.program a)) '>
-      (for-arg e in es (.program e))
-      '</body>\n
+body := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<body\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
+      '</body>\n_s
    ))
 ) HTMLElement);
 
@@ -326,11 +329,11 @@ meta
       (h1( (text( 'hello_s )) ))
    ))
 ;
-fragment h1 := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<h1\s (for-arg a in attrs (.program a)) '>
-      (for-arg e in es (.program e))
-      '</h1>\n
+h1 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<h1\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
+      '</h1>\n_s
    ))
 ) HTMLElement);
 
@@ -342,11 +345,11 @@ meta
       (h2( (text( 'hello_s )) ))
    ))
 ;
-fragment h2 := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<h2\s (for-arg a in attrs (.program a)) '>
-      (for-arg e in es (.program e))
-      '</h2>\n
+h2 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<h2\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
+      '</h2>\n_s
    ))
 ) HTMLElement);
 
@@ -358,11 +361,11 @@ meta
       (h3( (text( 'hello_s )) ))
    ))
 ;
-fragment h3 := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<h3\s (for-arg a in attrs (.program a)) '>
-      (for-arg e in es (.program e))
-      '</h3>\n
+h3 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<h3\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
+      '</h3>\n_s
    ))
 ) HTMLElement);
 
@@ -374,11 +377,11 @@ meta
       (h4( (text( 'hello_s )) ))
    ))
 ;
-fragment h4 := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<h4\s (for-arg a in attrs (.program a)) '>
-      (for-arg e in es (.program e))
-      '</h4>\n
+h4 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<h4\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
+      '</h4>\n_s
    ))
 ) HTMLElement);
 
@@ -390,11 +393,11 @@ meta
       (h5( (text( 'hello_s )) ))
    ))
 ;
-fragment h5 := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<h5\s (for-arg a in attrs (.program a)) '>
-      (for-arg e in es (.program e))
-      '</h5>\n
+h5 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<h5\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
+      '</h5>\n_s
    ))
 ) HTMLElement);
 
@@ -406,11 +409,11 @@ meta
       (h6( (text( 'hello_s )) ))
    ))
 ;
-fragment h6 := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<h6\s (for-arg a in attrs (.program a)) '>
-      (for-arg e in es (.program e))
-      '</h6>\n
+h6 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<h6\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
+      '</h6>\n_s
    ))
 ) HTMLElement);
 
@@ -422,11 +425,11 @@ meta
       (div( (text( 'hello_s )) ))
    ))
 ;
-fragment div := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<div\s (for-arg a in attrs (.program a)) '>
-      (for-arg e in es (.program e))
-      '</div>\n
+div := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<div\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
+      '</div>\n_s
    ))
 ) HTMLElement);
 
@@ -438,11 +441,11 @@ meta
       (header( (text( 'hello_s )) ))
    ))
 ;
-fragment header := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<header\s (for-arg a in attrs (.program a)) '>
-      (for-arg e in es (.program e))
-      '</header>\n
+header := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<header\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
+      '</header>\n_s
    ))
 ) HTMLElement);
 
@@ -454,11 +457,11 @@ meta
       (nav( (text( 'hello_s )) ))
    ))
 ;
-fragment nav := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<nav\s (for-arg a in attrs (.program a)) '>
-      (for-arg e in es (.program e))
-      '</nav>\n
+nav := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<nav\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
+      '</nav>\n_s
    ))
 ) HTMLElement);
 
@@ -470,11 +473,11 @@ meta
       (ul( (text( 'hello_s )) ))
    ))
 ;
-fragment ul := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<ul\s (for-arg a in attrs (.program a)) '>
-      (for-arg e in es (.program e))
-      '</ul>\n
+ul := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<ul\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
+      '</ul>\n_s
    ))
 ) HTMLElement);
 
@@ -486,11 +489,11 @@ meta
       (ol( (text( 'hello_s )) ))
    ))
 ;
-fragment ol := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<ol\s (for-arg a in attrs (.program a)) '>
-      (for-arg e in es (.program e))
-      '</ol>\n
+ol := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<ol\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
+      '</ol>\n_s
    ))
 ) HTMLElement);
 
@@ -502,11 +505,11 @@ meta
       (li( (text( 'hello_s )) ))
    ))
 ;
-fragment li := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<li\s (for-arg a in attrs (.program a)) '>
-      (for-arg e in es (.program e))
-      '</li>\n
+li := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<li\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
+      '</li>\n_s
    ))
 ) HTMLElement);
 
@@ -518,11 +521,11 @@ meta
       (a( (text( 'hello_s )) ))
    ))
 ;
-fragment a := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<a\s (for-arg a in attrs (.program a)) '>
-      (for-arg e in es (.program e))
-      '</a>\n
+a := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<a\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
+      '</a>\n_s
    ))
 ) HTMLElement);
 
@@ -534,11 +537,11 @@ meta
       (span( (text( 'hello_s )) ))
    ))
 ;
-fragment span := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<span\s (for-arg a in attrs (.program a)) '>
-      (for-arg e in es (.program e))
-      '</span>
+span := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<span\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
+      '</span>_s
    ))
 ) HTMLElement);
 
@@ -550,11 +553,11 @@ meta
       (i( (text( 'hello_s )) ))
    ))
 ;
-fragment i := λ: DontChain(: attrs HTMLAttribute...)(: f1 HTMLElement). (: (
-   (.program(
-      '<i\s (for-arg a in attrs (.program a)) '>
-      (for-arg e in es (.program e))
-      '</i>
+i := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement). (: (
+   (:expression(
+      '<i\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
+      '</i>_s
    ))
 ) HTMLElement);
 
@@ -566,11 +569,11 @@ meta
       (p( (text( 'hello_s )) ))
    ))
 ;
-fragment p := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<p\s (for-arg a in attrs (.program a)) '>
-      (for-arg e in es (.program e))
-      '</p>
+p := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<p\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
+      '</p>_s
    ))
 ) HTMLElement);
 
@@ -582,9 +585,9 @@ meta
       (img( (text( 'hello_s )) ))
    ))
 ;
-fragment img := λ: DontChain(: attrs HTMLAttribute...). (: (
-   (.program(
-      '<img\s (for-arg a in attrs (.program a)) '\\>\n
+img := λ: Blob(: attrs HTMLAttribute...). (: (
+   (:expression(
+      '<img\s_s (for-arg (a in attrs) (:expression a)) '\\>\n_s
    ))
 ) HTMLElement);
 
@@ -596,9 +599,9 @@ meta
       (link( (text( 'hello_s )) ))
    ))
 ;
-fragment link := λ: DontChain(: attrs HTMLAttribute...). (: (
-   (.program(
-      '<link\s (for-arg a in attrs (.program a)) '\\>\n
+link := λ: Blob(: attrs HTMLAttribute...). (: (
+   (:expression(
+      '<link\s_s (for-arg (a in attrs) (:expression a)) '\\>\n_s
    ))
 ) HTMLElement);
 
@@ -610,11 +613,11 @@ meta
       (section( (text( 'hello_s )) ))
    ))
 ;
-fragment section := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<section\s (for-arg a in attrs (.program a)) '>\n
-      (for-arg e in es (.program e))
-      '</section>\n
+section := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<section\s_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      (for-arg (e in es) (:expression e))
+      '</section>\n_s
    ))
 ) HTMLElement);
 
@@ -626,11 +629,11 @@ meta
       (form( (text( 'hello_s )) ))
    ))
 ;
-fragment form := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<form\s (for-arg a in attrs (.program a)) '>\n
-      (for-arg e in es (.program e))
-      '</form>\n
+form := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<form\s_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      (for-arg (e in es) (:expression e))
+      '</form>\n_s
    ))
 ) HTMLElement);
 
@@ -642,9 +645,9 @@ meta
       (input( (text( 'hello_s )) ))
    ))
 ;
-fragment input := λ: DontChain(: attrs HTMLAttribute...). (: (
-   (.program(
-      '<input\s (for-arg a in attrs (.program a)) '>\n
+input := λ: Blob(: attrs HTMLAttribute...). (: (
+   (:expression(
+      '<input\s_s (for-arg (a in attrs) (:expression a)) '>\n_s
    ))
 ) HTMLElement);
 
@@ -656,11 +659,11 @@ meta
       (button( (text( 'hello_s )) ))
    ))
 ;
-fragment button := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<button\s (for-arg a in attrs (.program a)) '>\n
-      (for-arg e in es (.program e))
-      '</button>\n
+button := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<button\s_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      (for-arg (e in es) (:expression e))
+      '</button>\n_s
    ))
 ) HTMLElement);
 
@@ -672,11 +675,11 @@ meta
       (pre( (text( 'hello_s )) ))
    ))
 ;
-fragment pre := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<pre\s (for-arg a in attrs (.program a)) '>\n
-      (for-arg e in es (.program e))
-      '</pre>\n
+pre := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<pre\s_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      (for-arg (e in es) (:expression e))
+      '</pre>\n_s
    ))
 ) HTMLElement);
 
@@ -688,11 +691,11 @@ meta
       (code( (text( 'hello_s )) ))
    ))
 ;
-fragment code := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<code\s (for-arg a in attrs (.program a)) '>\n
-      (for-arg e in es (.program e))
-      '</code>\n
+code := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<code\s_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      (for-arg (e in es) (:expression e))
+      '</code>\n_s
    ))
 ) HTMLElement);
 
@@ -704,8 +707,8 @@ meta
       (hr( (class 't_s) ))
    ))
 ;
-fragment hr := λ: DontChain(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (.program(
-      '<hr\s (for-arg a in attrs (.program a)) '>\n
+hr := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<hr\s_s (for-arg (a in attrs) (:expression a)) '>\n_s
    ))
 ) HTMLElement);

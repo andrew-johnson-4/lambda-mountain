@@ -20,6 +20,7 @@ import SRC/type-constructors.lm;
 import SRC/type-complex-fields.lm;
 
 import SRC/is-open.lm;
+import SRC/is-vararg.lm;
 import SRC/is-parameterized.lm;
 import SRC/is-sized.lm;
 import SRC/has-representation.lm;

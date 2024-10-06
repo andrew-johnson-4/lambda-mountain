@@ -99,7 +99,7 @@ print := λ(: ctx FContext). (: (
 print := λ(: x Fragment). (: (
    (match x (
       ()
-      ( (Fragment( e-t kvs offset xtt ctx )) (
+      ( (Fragment( e-t kvs offset xtt ctx vs )) (
          (print 'Fragment\n_s)
          (print '\tOffset\s=\s_s)(print offset)(print '\n_s)
          (while (non-zero kvs) (match kvs (

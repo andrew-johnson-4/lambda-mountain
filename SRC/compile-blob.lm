@@ -1,6 +1,5 @@
 
 compile-blob := λ. (: (
-   (let global-ctx (fragment-context::new()))
    (let preview-program ast-parsed-program)
    (while (non-zero preview-program) (match preview-program (
       ()
@@ -56,11 +55,15 @@ compile-blob := λ. (: (
       ( (Seq( rst (Typedef( lhs rhs )) )) (
          (set preview-program rst)
       ))
+      ( (Seq( rst (Meta( _ )) )) (
+         (set preview-program rst)
+      ))
       ( (Seq( rst expr )) (
-         (let f (blob-expr( global-ctx expr )))
+         (let cs (blob-render-simple( global-ctx 'expression_s expr )))
+         (let s (.1 cs))
          (set blob (SCons(
              (close blob)
-             (close(fragment::get( f 'program_s )))
+             (close s)
          )))
          (set preview-program rst)
       ))

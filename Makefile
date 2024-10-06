@@ -19,7 +19,7 @@ develop:
 	coqc tmp.v
 	coqchk tmp.vo
 
-deploy: compile-production build-docs
+build: compile-production
 	time ./production -o deploy.s SRC/index-index.lm
 	as deploy.s -o deploy.o
 	ld deploy.o -o deploy
@@ -28,12 +28,17 @@ deploy: compile-production build-docs
 	mv deploy.s BOOTSTRAP/cli.s
 	cargo test regression_tests
 
+deploy: build build-docs
+
 compile-production: compile-bootstrap
 	rm -f production production.o production.s
 	./bootstrap -o production.s SRC/index-index.lm
 	as -o production.o production.s
 	ld -o production   production.o
 	cp production re-production
+
+install-production: compile-production
+	mv production /usr/local/bin/lm
 
 compile-bootstrap:
 	rm -f bootstrap bootstrap.o
@@ -50,11 +55,11 @@ install:
 	#ld -o lmv   lmv.o
 	#mv lmv /usr/local/bin
 	#rm lmv.s lmv.o
-	lm DOBY/cli.lm -o doby.s
-	as -o doby.o doby.s
-	ld -o doby   doby.o
-	mv doby /usr/local/bin
-	rm doby.s doby.o
+	#lm DOBY/cli.lm -o doby.s
+	#as -o doby.o doby.s
+	#ld -o doby   doby.o
+	#mv doby /usr/local/bin
+	#rm doby.s doby.o
 
 validate:
 	coqc LIB/default_validator.v

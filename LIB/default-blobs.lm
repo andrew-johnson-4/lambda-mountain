@@ -1,4 +1,5 @@
 
+:expression := λ: Blob(: x x). (: () Nil);
 :program := λ: Blob(: x x). (: () Nil);
 :frame := λ: Blob(: x x). (: () Nil);
 :unframe := λ: Blob(: x x). (: () Nil);

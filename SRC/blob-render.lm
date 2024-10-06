@@ -13,11 +13,29 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
       ( (Lit( val _ )) (
          (set r (SAtom val))
       ))
+      ( (App(
+        (App( (Lit( ':_s _ )) (App( (Lit( 'for-arg_s _ )) (AType _) )) )) 
+        (App(
+           (App( (Abs( (Var( lhs _ )) ASTNil _ ))
+                 (App( (Var( 'for-arg-i_s _ )) (Var( vsk _ )) )) ))
+           iter
+        ))
+      )) (
+         (let vs (fragment-context::lookup-soft( ctx vsk TAny ASTEOF )))
+         (for-each (vi in (.vararg vs)) (
+            (let inner-ctx (fragment-context::bind( ctx lhs (.type vs) vi )))
+            (let fs (blob-render-simple( inner-ctx context-key iter )))
+            (let s (.1 fs))
+            (set r (+( r s )))
+         ))
+      ))
       ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
-         (set r (.1( (blob-render-simple( ctx context-key t )) )))
+         (let rs (blob-render-simple( ctx context-key t )))
+         (set r (.1( rs )))
       ))
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
-         (set r (.1( (blob-render-simple( ctx context-key t )) )))
+         (let rs (blob-render-simple( ctx context-key t )))
+         (set r (.1( rs )))
       ))
       ( (App( (Abs( (Var( lhs _ )) ASTNil tlt )) rhs )) (
          (let f (fragment::new()))
@@ -29,12 +47,17 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
          ))) # TODO, render the binding as non-simple blob?
       ))
       ( (App( f a )) (
-         (if (non-zero(slot( (typeof f) 'Arrow_s ))) (
+         (if (is-arrow(typeof f)) (
             (match f (
                ()
                ( (Var( fname _ )) (
-                  (let e (cc-blob( ctx fname a 0_i64 )))
-                  (set r (fragment::get( e context-key )))
+                  (if (has-prefix( fname ':_s )) (
+                     (let e1 (blob-render-simple( ctx (tail-string fname) a )))
+                     (set r (.1 e1))
+                  ) (
+                     (let e (cc-blob( ctx fname a 0_i64 )))
+                     (set r (fragment::get( e context-key )))
+                  ))
                ))
             ))
          ) (
@@ -45,6 +68,9 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
             (set ctx (.2 e2))
             (set r (+( s1 s2 )))
          ))
+      ))
+      ( _ (
+         (print 'Unknown\sRender\sTerm\s_s)(print term)(exit 1_u64)
       ))
    ))
    (Tuple( ctx r ))
@@ -62,9 +88,9 @@ blob-render := λ(: ctx FContext)(: term AST)(: f Fragment). (: (
             (let s1 (.1 cs1))
             (set f (fragment::set( f (tail-string k) s1 )))
          ) (
-            (let cs2 (blob-render-simple( ctx 'program_s term )))
+            (let cs2 (blob-render-simple( ctx 'expression_s term )))
             (let s2 (.1 cs2))
-            (set f (fragment::set( f 'program_s s2 )))
+            (set f (fragment::set( f 'expression_s s2 )))
          ))
       ))
       ( (App( rst (App( (Var( k _ )) a )) )) (
@@ -74,10 +100,15 @@ blob-render := λ(: ctx FContext)(: term AST)(: f Fragment). (: (
             (let s1 (.1 cs1))
             (set f (fragment::set( f (tail-string k) s1 )))
          ) (
-            (let cs2 (blob-render-simple( ctx 'program_s term )))
+            (let cs2 (blob-render-simple( ctx 'expression_s term )))
             (let s2 (.1 cs2))
-            (set f (fragment::set( f 'program_s s2 )))
+            (set f (fragment::set( f 'expression_s s2 )))
          ))
+      ))
+      ( _ (
+         (let cs2 (blob-render-simple( ctx 'expression_s term )))
+         (let s2 (.1 cs2))
+         (set f (fragment::set( f 'expression_s s2 )))
       ))
    ))
    f

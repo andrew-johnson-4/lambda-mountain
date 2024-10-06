@@ -10,6 +10,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ))
       ( ASTEOF () )
       ( (Var( id _ )) (
+         # TODO, this is being called instead of function
          (set e (fragment-context::lookup( ctx id (typeof term) term )))
          (set e (fragment::set-context( e ctx )))
          (set e (fragment::set-offset( e stack-offset )))
@@ -245,38 +246,34 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set e (fragment::set-type( e (typeof term) )))
       ))
       ( (App( f a )) (
-         (match (slot( (typeof f) 'Arrow_s )) (
-            ()
-            ( (TGround( 'Arrow_s _ )) (
-               (match f (
-                  ()
-                  ( (Var( fname _ )) (
-                     (set e (compile-stack-calls( ctx fname (typeof term) a stack-offset used )))
-                  ))
-                  ( (App( (Lit( ':_s _ )) (App( (Var( fname _ )) (AType ft) )) )) (
-                     (set e (compile-stack-calls( ctx fname (typeof term) a stack-offset used )))
-                  ))
-                  ( (Lit( fname _ )) (
-                     (set e (compile-constructor( ctx fname (typeof term) (typeof a) a stack-offset )))
-                  ))
-                  ( (App( (Lit( ':_s _ )) (App( (Lit( fname _ )) (AType ft) )) )) (
-                     (set e (compile-constructor( ctx fname (typeof term) (typeof a) a stack-offset )))
-                  ))
+         (if (is-arrow(typeof f)) (
+            (match f (
+               ()
+               ( (Var( fname _ )) (
+                  (set e (compile-stack-calls( ctx fname (typeof term) a stack-offset used )))
+               ))
+               ( (App( (Lit( ':_s _ )) (App( (Var( fname _ )) (AType ft) )) )) (
+                  (set e (compile-stack-calls( ctx fname (typeof term) a stack-offset used )))
+               ))
+               ( (Lit( fname _ )) (
+                  (set e (compile-constructor( ctx fname (typeof term) (typeof a) a stack-offset )))
+               ))
+               ( (App( (Lit( ':_s _ )) (App( (Lit( fname _ )) (AType ft) )) )) (
+                  (set e (compile-constructor( ctx fname (typeof term) (typeof a) a stack-offset )))
                ))
             ))
-            ( _ (
-               (if (is( used Unused )) (scope(
-                  (let e1 (compile-expr( ctx f stack-offset Unused )))
-                  (let e2 (compile-expr( (open(.context e1)) a (.offset e1) Unused )))
-                  (set e (fragment::chain( e1 e2 )))
-                  (set e (fragment::set-type( e (typeof term) )))
-               )) (scope(
-                  (let e1 (compile-expr( ctx f stack-offset Unused )))
-                  (let e2 (compile-expr( (open(.context e1)) a (.offset e1) Used )))
-                  (set e (fragment::chain( e1 e2 )))
-                  (set e (fragment::set-type( e (typeof term) )))
-               )))
-            ))
+         ) (
+            (if (is( used Unused )) (scope(
+               (let e1 (compile-expr( ctx f stack-offset Unused )))
+               (let e2 (compile-expr( (open(.context e1)) a (.offset e1) Unused )))
+               (set e (fragment::chain( e1 e2 )))
+               (set e (fragment::set-type( e (typeof term) )))
+            )) (scope(
+               (let e1 (compile-expr( ctx f stack-offset Unused )))
+               (let e2 (compile-expr( (open(.context e1)) a (.offset e1) Used )))
+               (set e (fragment::chain( e1 e2 )))
+               (set e (fragment::set-type( e (typeof term) )))
+            )))
          ))
       ))
    ))

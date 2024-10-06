@@ -1,4 +1,6 @@
 
+fragment type ReservedWord; atom suffix ReservedWord _r;
+
 macro ( ('let x y) )
       ( (λ x . ()) y );
 
@@ -11,6 +13,13 @@ macro ( ('for-each (item 'in iter) loop) ) (
          (set (uuid iter-term) (uuid iter-rst))
       ))
    )))
+);
+
+for-arg-i := λ: Blob(: vi x...). (: () x);
+macro ( ('for-arg (item 'in iter) loop) ) (
+   ('for-arg_r (
+      (let item (for-arg-i iter)) loop
+   ))
 );
 
 macro ('match t ps) (scope(
@@ -137,6 +146,36 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( x5 x4 x3 x2 x1 )) )) (
                      (if (match-pats-arm( (open(.4( (as (uuid v) lt) ))) x4 ))
                         (if (match-pats-arm( (open(.5( (as (uuid v) lt) ))) x5 ))
                            (set (uuid m) 1_u8)
+                           ()
+                        )
+                        ()
+                     )
+                     ()
+                  )
+                  ()
+              )
+              ()
+          )
+          ()
+      )
+      (==( (uuid m) 1_u8 ))
+   )
+);
+
+macro ('match-pats-arm( term ((:Tag: l lt) ( x6 x5 x4 x3 x2 x1 )) )) (
+   (
+      (let (uuid v) term)
+      (let (uuid m) 0_u8)
+      (if (==( (.0( (uuid v) )) l ))
+          (if (match-pats-arm( (open(.1( (as (uuid v) lt) ))) x1 ))
+              (if (match-pats-arm( (open(.2( (as (uuid v) lt) ))) x2 ))
+                  (if (match-pats-arm( (open(.3( (as (uuid v) lt) ))) x3 ))
+                     (if (match-pats-arm( (open(.4( (as (uuid v) lt) ))) x4 ))
+                        (if (match-pats-arm( (open(.5( (as (uuid v) lt) ))) x5 ))
+                           (if (match-pats-arm( (open(.6( (as (uuid v) lt) ))) x6 ))
+                              (set (uuid m) 1_u8)
+                              ()
+                           )
                            ()
                         )
                         ()
