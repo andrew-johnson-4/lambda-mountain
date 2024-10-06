@@ -1,4 +1,6 @@
 
+fragment type L; atom suffix L _l;
+
 :expression := λ: Blob(: x x). (: () L);
 :program := λ: Blob(: x x). (: () L);
 :frame := λ: Blob(: x x). (: () L);
@@ -7,7 +9,7 @@
 :data := λ: Blob(: x x). (: () L);
 :del := λ: Blob(: x x). (: () L);
 
-fragment type L; atom suffix L _l;
+cdecl::args-size := λ: Blob . (: () L);
 
 == := λ: Blob(: l L)(: r L). (: () L);
 != := λ: Blob(: l L)(: r L). (: () L);

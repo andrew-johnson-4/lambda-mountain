@@ -9,6 +9,12 @@ cc-blob := λ(: caller-ctx FContext)(: function-name String)(: args AST)(: offse
       ( (Abs( lhs rhs tlt )) (
          (let e1 (cc-args( global-ctx caller-ctx lhs args offset )))
          (let callee-ctx (.1 e1))
+         (if (==( function-name 'cdecl::return_s )) (
+            (print 'CC\sBlob\sReturn\n_s)
+            (let args-size (fragment-context::lookup( caller-ctx 'cdecl::args-size_s TAny args )))
+            (print args-size)
+            (set callee-ctx (fragment-context::bind( callee-ctx 'cdecl::args-size_s (t1 'L_s) args-size )))
+         ) ())
          (set r (blob-render( callee-ctx rhs r )))
       ))
    ))
