@@ -15,8 +15,8 @@ meta
    ))
 ;
 class := λ: Blob(: cls String). (: (
-   (:program(
-      '\sclass="_s (:program cls) '"\s_s
+   (:expression(
+      '\sclass="_s (:expression cls) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -29,8 +29,8 @@ meta
    ))
 ;
 action := λ: Blob(: cls String). (: (
-   (:program(
-      '\saction="_s (:program cls) '"\s_s
+   (:expression(
+      '\saction="_s (:expression cls) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -43,8 +43,8 @@ meta
    ))
 ;
 value := λ: Blob(: cls String). (: (
-   (:program(
-      '\svalue="_s (:program cls) '"\s_s
+   (:expression(
+      '\svalue="_s (:expression cls) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -57,7 +57,7 @@ meta
    ))
 ;
 checked := λ: Blob . (: (
-   (:program(
+   (:expression(
       '\schecked\s_s
    ))
 ) HTMLAttribute);
@@ -71,7 +71,7 @@ meta
    ))
 ;
 hidden := λ: Blob . (: (
-   (:program(
+   (:expression(
       '\shidden\s_s
    ))
 ) HTMLAttribute);
@@ -85,8 +85,8 @@ meta
    ))
 ;
 method := λ: Blob(: cls String). (: (
-   (:program(
-      '\smethod="_s (:program cls) '"\s_s
+   (:expression(
+      '\smethod="_s (:expression cls) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -101,8 +101,8 @@ meta
    ))
 ;
 name := λ: Blob(: cls String). (: (
-   (:program(
-      '\sname="_s (:program cls) '"\s_s
+   (:expression(
+      '\sname="_s (:expression cls) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -116,8 +116,8 @@ meta
    ))
 ;
 autocomplete := λ: Blob(: cls String). (: (
-   (:program(
-      '\sautocomplete="_s (:program cls) '"\s_s
+   (:expression(
+      '\sautocomplete="_s (:expression cls) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -131,8 +131,8 @@ meta
    ))
 ;
 required := λ: Blob(: cls String). (: (
-   (:program(
-      '\srequired="_s (:program cls) '"\s_s
+   (:expression(
+      '\srequired="_s (:expression cls) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -146,8 +146,8 @@ meta
    ))
 ;
 placeholder := λ: Blob(: cls String). (: (
-   (:program(
-      '\splaceholder="_s (:program cls) '"\s_s
+   (:expression(
+      '\splaceholder="_s (:expression cls) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -161,8 +161,8 @@ meta
    ))
 ;
 type_ := λ: Blob(: cls String). (: (
-   (:program(
-      '\stype="_s (:program cls) '"\s_s
+   (:expression(
+      '\stype="_s (:expression cls) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -176,8 +176,8 @@ meta
    ))
 ;
 src := λ: Blob(: s String). (: (
-   (:program(
-      '\ssrc="_s (:program s) '"\s_s
+   (:expression(
+      '\ssrc="_s (:expression s) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -191,8 +191,8 @@ meta
    ))
 ;
 id := λ: Blob(: i String). (: (
-   (:program(
-      '\sid="_s (:program i) '"\s_s
+   (:expression(
+      '\sid="_s (:expression i) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -206,8 +206,8 @@ meta
    ))
 ;
 rel := λ: Blob(: i String). (: (
-   (:program(
-      '\srel="_s (:program i) '"\s_s
+   (:expression(
+      '\srel="_s (:expression i) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -221,8 +221,8 @@ meta
    ))
 ;
 href := λ: Blob(: a String). (: (
-   (:program(
-      '\shref="_s (:program a) '"\s_s
+   (:expression(
+      '\shref="_s (:expression a) '"\s_s
    ))
 ) HTMLAttribute);
 
@@ -235,8 +235,8 @@ meta
    ))
 ;
 text := λ: Blob(: t String). (: (
-   (:program(
-      (:program t)
+   (:expression(
+      (:expression t)
    ))
 ) HTMLElement);
 
@@ -249,10 +249,10 @@ meta
    ))
 ;
 html := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
+   (:expression(
       '<!DOCTYPE\shtml>\n_s
-      '<html_s (for-arg (a in attrs) (:program a)) '>\n_s
-      (for-arg (e in es) (:program e))
+      '<html_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      (for-arg (e in es) (:expression e))
       '</html>\n_s
    ))
 ) HTMLElement);
@@ -266,9 +266,9 @@ meta
    ))
 ;
 main := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<main_s (for-arg (a in attrs) (:program a)) '>\n_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<main_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      (for-arg (e in es) (:expression e))
       '</main>\n_s
    ))
 ) HTMLElement);
@@ -282,9 +282,9 @@ meta
    ))
 ;
 head := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<head\s_s (for-arg (a in attrs) (:program a)) '>_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<head\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
       '</head>\n_s
    ))
 ) HTMLElement);
@@ -298,9 +298,9 @@ meta
    ))
 ;
 title := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<title\s_s (for-arg (a in attrs) (:program a)) '>_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<title\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
       '</title>\n_s
    ))
 ) HTMLElement);
@@ -314,9 +314,9 @@ meta
    ))
 ;
 body := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<body\s_s (for-arg (a in attrs) (:program a)) '>_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<body\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
       '</body>\n_s
    ))
 ) HTMLElement);
@@ -330,9 +330,9 @@ meta
    ))
 ;
 h1 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<h1\s_s (for-arg (a in attrs) (:program a)) '>_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<h1\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
       '</h1>\n_s
    ))
 ) HTMLElement);
@@ -346,9 +346,9 @@ meta
    ))
 ;
 h2 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<h2\s_s (for-arg (a in attrs) (:program a)) '>_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<h2\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
       '</h2>\n_s
    ))
 ) HTMLElement);
@@ -362,9 +362,9 @@ meta
    ))
 ;
 h3 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<h3\s_s (for-arg (a in attrs) (:program a)) '>_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<h3\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
       '</h3>\n_s
    ))
 ) HTMLElement);
@@ -378,9 +378,9 @@ meta
    ))
 ;
 h4 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<h4\s_s (for-arg (a in attrs) (:program a)) '>_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<h4\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
       '</h4>\n_s
    ))
 ) HTMLElement);
@@ -394,9 +394,9 @@ meta
    ))
 ;
 h5 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<h5\s_s (for-arg (a in attrs) (:program a)) '>_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<h5\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
       '</h5>\n_s
    ))
 ) HTMLElement);
@@ -410,9 +410,9 @@ meta
    ))
 ;
 h6 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<h6\s_s (for-arg (a in attrs) (:program a)) '>_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<h6\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
       '</h6>\n_s
    ))
 ) HTMLElement);
@@ -426,9 +426,9 @@ meta
    ))
 ;
 div := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<div\s_s (for-arg (a in attrs) (:program a)) '>_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<div\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
       '</div>\n_s
    ))
 ) HTMLElement);
@@ -442,9 +442,9 @@ meta
    ))
 ;
 header := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<header\s_s (for-arg (a in attrs) (:program a)) '>_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<header\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
       '</header>\n_s
    ))
 ) HTMLElement);
@@ -458,9 +458,9 @@ meta
    ))
 ;
 nav := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<nav\s_s (for-arg (a in attrs) (:program a)) '>_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<nav\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
       '</nav>\n_s
    ))
 ) HTMLElement);
@@ -474,9 +474,9 @@ meta
    ))
 ;
 ul := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<ul\s_s (for-arg (a in attrs) (:program a)) '>_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<ul\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
       '</ul>\n_s
    ))
 ) HTMLElement);
@@ -490,9 +490,9 @@ meta
    ))
 ;
 ol := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<ol\s_s (for-arg (a in attrs) (:program a)) '>_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<ol\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
       '</ol>\n_s
    ))
 ) HTMLElement);
@@ -506,9 +506,9 @@ meta
    ))
 ;
 li := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<li\s_s (for-arg (a in attrs) (:program a)) '>_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<li\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
       '</li>\n_s
    ))
 ) HTMLElement);
@@ -522,9 +522,9 @@ meta
    ))
 ;
 a := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<a\s_s (for-arg (a in attrs) (:program a)) '>_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<a\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
       '</a>\n_s
    ))
 ) HTMLElement);
@@ -538,9 +538,9 @@ meta
    ))
 ;
 span := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<span\s_s (for-arg (a in attrs) (:program a)) '>_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<span\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
       '</span>_s
    ))
 ) HTMLElement);
@@ -554,9 +554,9 @@ meta
    ))
 ;
 i := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement). (: (
-   (:program(
-      '<i\s_s (for-arg (a in attrs) (:program a)) '>_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<i\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
       '</i>_s
    ))
 ) HTMLElement);
@@ -570,9 +570,9 @@ meta
    ))
 ;
 p := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<p\s_s (for-arg (a in attrs) (:program a)) '>_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<p\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      (for-arg (e in es) (:expression e))
       '</p>_s
    ))
 ) HTMLElement);
@@ -586,8 +586,8 @@ meta
    ))
 ;
 img := λ: Blob(: attrs HTMLAttribute...). (: (
-   (:program(
-      '<img\s_s (for-arg (a in attrs) (:program a)) '\\>\n_s
+   (:expression(
+      '<img\s_s (for-arg (a in attrs) (:expression a)) '\\>\n_s
    ))
 ) HTMLElement);
 
@@ -600,8 +600,8 @@ meta
    ))
 ;
 link := λ: Blob(: attrs HTMLAttribute...). (: (
-   (:program(
-      '<link\s_s (for-arg (a in attrs) (:program a)) '\\>\n_s
+   (:expression(
+      '<link\s_s (for-arg (a in attrs) (:expression a)) '\\>\n_s
    ))
 ) HTMLElement);
 
@@ -614,9 +614,9 @@ meta
    ))
 ;
 section := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<section\s_s (for-arg (a in attrs) (:program a)) '>\n_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<section\s_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      (for-arg (e in es) (:expression e))
       '</section>\n_s
    ))
 ) HTMLElement);
@@ -630,9 +630,9 @@ meta
    ))
 ;
 form := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<form\s_s (for-arg (a in attrs) (:program a)) '>\n_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<form\s_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      (for-arg (e in es) (:expression e))
       '</form>\n_s
    ))
 ) HTMLElement);
@@ -646,8 +646,8 @@ meta
    ))
 ;
 input := λ: Blob(: attrs HTMLAttribute...). (: (
-   (:program(
-      '<input\s_s (for-arg (a in attrs) (:program a)) '>\n_s
+   (:expression(
+      '<input\s_s (for-arg (a in attrs) (:expression a)) '>\n_s
    ))
 ) HTMLElement);
 
@@ -660,9 +660,9 @@ meta
    ))
 ;
 button := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<button\s_s (for-arg (a in attrs) (:program a)) '>\n_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<button\s_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      (for-arg (e in es) (:expression e))
       '</button>\n_s
    ))
 ) HTMLElement);
@@ -676,9 +676,9 @@ meta
    ))
 ;
 pre := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<pre\s_s (for-arg (a in attrs) (:program a)) '>\n_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<pre\s_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      (for-arg (e in es) (:expression e))
       '</pre>\n_s
    ))
 ) HTMLElement);
@@ -692,9 +692,9 @@ meta
    ))
 ;
 code := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<code\s_s (for-arg (a in attrs) (:program a)) '>\n_s
-      (for-arg (e in es) (:program e))
+   (:expression(
+      '<code\s_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      (for-arg (e in es) (:expression e))
       '</code>\n_s
    ))
 ) HTMLElement);
@@ -708,7 +708,7 @@ meta
    ))
 ;
 hr := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
-   (:program(
-      '<hr\s_s (for-arg (a in attrs) (:program a)) '>\n_s
+   (:expression(
+      '<hr\s_s (for-arg (a in attrs) (:expression a)) '>\n_s
    ))
 ) HTMLElement);

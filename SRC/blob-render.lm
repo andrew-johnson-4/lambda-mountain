@@ -88,9 +88,9 @@ blob-render := λ(: ctx FContext)(: term AST)(: f Fragment). (: (
             (let s1 (.1 cs1))
             (set f (fragment::set( f (tail-string k) s1 )))
          ) (
-            (let cs2 (blob-render-simple( ctx 'program_s term )))
+            (let cs2 (blob-render-simple( ctx 'expression_s term )))
             (let s2 (.1 cs2))
-            (set f (fragment::set( f 'program_s s2 )))
+            (set f (fragment::set( f 'expression_s s2 )))
          ))
       ))
       ( (App( rst (App( (Var( k _ )) a )) )) (
@@ -100,15 +100,15 @@ blob-render := λ(: ctx FContext)(: term AST)(: f Fragment). (: (
             (let s1 (.1 cs1))
             (set f (fragment::set( f (tail-string k) s1 )))
          ) (
-            (let cs2 (blob-render-simple( ctx 'program_s term )))
+            (let cs2 (blob-render-simple( ctx 'expression_s term )))
             (let s2 (.1 cs2))
-            (set f (fragment::set( f 'program_s s2 )))
+            (set f (fragment::set( f 'expression_s s2 )))
          ))
       ))
       ( _ (
-         (let cs2 (blob-render-simple( ctx 'program_s term )))
+         (let cs2 (blob-render-simple( ctx 'expression_s term )))
          (let s2 (.1 cs2))
-         (set f (fragment::set( f 'program_s s2 )))
+         (set f (fragment::set( f 'expression_s s2 )))
       ))
    ))
    f
