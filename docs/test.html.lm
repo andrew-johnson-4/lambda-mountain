@@ -21,33 +21,12 @@ docs-html := λ: Blob(: page-title String)(: d-header DocsHeader+HTMLElement)(: 
 docs-header := λ: Blob . (: () DocsHeader+HTMLElement);
 
 docs-sidebar := λ: Blob . (: () DocsSidebar+HTMLElement);
-docs-title := λ: Blob(: title-text String). (: (as (
-   (div( (class 'l-docs__title_s) (id 'main-content_s)
-      (div( (class 'p-section--shallow_s)
-         (div( (class 'row_s)
-            (div( (class 'col-12_s)
-               (h1( (text title-text) ))
-            ))
-         ))
-      ))
-   ))
-) DocsTitle+HTMLElement) DocsTitle+HTMLElement);
+docs-title := λ: Blob(: title-text String). (: () DocsTitle+HTMLElement);
 docs-content := λ: Blob . (: () DocsContent+HTMLElement);
 docs-meta := λ: Blob . (: () DocsMeta+HTMLElement);
 docs-footer := λ: Blob . (: () DocsFooter+HTMLElement);
 
-(docs-html(
-   'Documentation:\sLIB/default.html_s
-   (docs-header())
-   (docs-sidebar())
-   (docs-title 'LIB/default.html\sDocumentation_s)
-   (as(
-      (main( (class 'l-docs__main_s)
-         (div( (class 'row_s)
-            (div( (class 'col-12_s) ))
-         ))
-      ))
-   ) DocsContent+HTMLElement)
-   (docs-meta())
-   (docs-footer())
+(main( (class 'l-docs__main_s)
+   (div( (class 'row_s) ))
+   (div( (class 'col-12_s) ))
 ))
