@@ -22,6 +22,12 @@ macro ( ('for-arg (item 'in iter) loop) ) (
    ))
 );
 
+macro ( ('for-atom (item 'in iter) loop) ) (
+   ('for-atom_r (
+      (let item iter) loop
+   ))
+);
+
 macro ('match t ps) (scope(
    (let (uuid term) (open t))
    (match-pats( (uuid term) ps (fail( 'Pattern\sMatch\sFailure_s (: (p :Location:) Constant+Literal+String) )) ))
