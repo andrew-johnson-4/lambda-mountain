@@ -55,7 +55,7 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
                      (let e1 (blob-render-simple( ctx (tail-string fname) a )))
                      (set r (.1 e1))
                   ) (
-                     (let e (cc-blob( fname a 0_i64 )))
+                     (let e (cc-blob( ctx fname a 0_i64 )))
                      (set r (fragment::get( e context-key )))
                   ))
                ))

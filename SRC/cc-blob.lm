@@ -1,13 +1,15 @@
 
-cc-blob := λ(: function-name String)(: args AST)(: offset I64). (: (
-   (let f (fragment-context::lookup( global-ctx function-name (typeof args) args )))
+cc-blob := λ(: caller-ctx FContext)(: function-name String)(: args AST)(: offset I64). (: (
+   # callee context starts as global-ctx
+   # caller context is provided but not propagated
+   (let f (fragment-context::lookup( caller-ctx function-name (typeof args) args )))
    (let r (fragment::new()))
    (match (.term f) (
       ()
       ( (Abs( lhs rhs tlt )) (
-         (let e1 (cc-args( global-ctx lhs args offset )))
-         (let ctx (.1 e1))
-         (set r (blob-render( ctx rhs r )))
+         (let e1 (cc-args( global-ctx caller-context lhs args offset )))
+         (let callee-ctx (.1 e1))
+         (set r (blob-render( callee-ctx rhs r )))
       ))
    ))
    r
