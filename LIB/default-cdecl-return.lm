@@ -1,7 +1,7 @@
 
 cdecl::return := λ: Blob(: l Nil). (: (
    (:frame( (:frame l) ))
-   (:program( (:program l) (: del l) ))
+   (:program( (:program l) (:del l) ))
 ) Nil);
 cdecl::return := λ: Blob(: l Reg8). (: (
    (:frame( (:frame l) ))
