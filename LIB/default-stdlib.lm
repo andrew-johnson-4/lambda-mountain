@@ -8,7 +8,7 @@ type Tuple<x,y> (Tuple( x , y ));
 
 + := λ(: l S)(: r S). (: (
    (if (non-zero r) (
-      (if (non-zero r) (
+      (if (non-zero l) (
          (set l (SCons( (close l) (close r) )))
       ) (set l r))
    ) ())

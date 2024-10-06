@@ -174,10 +174,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (ascript-normal( term (t1 'Nil_s) ))
 
          (apply-or-cons-and-specialize(
-            'del_s
-            (typeof-var-raw( term tctx 'del_s ))
-            rt
-            term
+            'del_s (typeof-var-raw( term tctx 'del_s )) rt term
          ))
       ))
       ( (App( l r )) (
@@ -223,6 +220,9 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (let lt (typeof-lhs lhs))
          (let rt (typeof rhs))
          (ascript-normal( term (enrich( (t3( 'Arrow_s lt rt )) tlt )) ))
+         (apply-or-cons-and-specialize(
+            'cdecl::return_s (typeof-var-raw( term tctx 'cdecl::return_s )) rt term
+         ))
       ))
       ( (Var( v vtk )) (
          (let vt (typeof-var( term tctx v )))
