@@ -8,18 +8,18 @@ cc-args := λ(: ctx FContext)(: lhs AST)(: rhs AST)(: offset I64). (: (
             (match rhs (
                ()
                ( (App( le re )) (
-                  (if (is-vararg kt) (
+                  (if (is-vararg kt) (scope(
                      (set kt (p1(slot( kt '..._s ))))
                      (set ctx (bind-vararg( ctx k kt (compile-expr( ctx re offset Used )) )))
                      (let e1 (cc-args( ctx lhs le offset )))
                      (set ctx (.1 e1))
                      (set offset (.2 e1))
-                  ) (
+                  )) (scope(
                      (let e1 (cc-args( ctx lhs-rst le offset )))
                      (set ctx (.1 e1))
                      (set offset (.2 e1))
                      (set ctx (FCtxBind( (close ctx) k kt (compile-expr( ctx re offset Used )) )))
-                  ))
+                  )))
                ))
             ))
          ) (
@@ -39,13 +39,13 @@ cc-args := λ(: ctx FContext)(: lhs AST)(: rhs AST)(: offset I64). (: (
             (match rhs (
                ()
                ( (App( le re )) (
-                  (if (is-vararg kt) (
+                  (if (is-vararg kt) (scope(
                      (set kt (p1(slot( kt '..._s ))))
                      (set ctx (bind-vararg( ctx k kt (compile-expr( ctx re offset Used )) )))
                      (let e1 (cc-args( ctx lhs le offset )))
                      (set ctx (.1 e1))
                      (set offset (.2 e1))
-                  ) (
+                  )) (
                      (print (typeof rhs))
                      (exit-error( 'Codegen\sUnexpected\sRHS_s rhs ))
                   ))
