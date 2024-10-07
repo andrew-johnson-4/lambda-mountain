@@ -14,7 +14,7 @@ cc-blob := λ(: caller-ctx FContext)(: function-name String)(: args AST)(: offse
             (set callee-ctx (fragment-context::bind( callee-ctx 'cdecl::args-size_s (t1 'L_s) args-size )))
          ) ())
          (set r (blob-render( callee-ctx rhs r )))
-         (set f (fragment::set-type( f (typeof rhs) )))
+         (set r (fragment::set-type( r (typeof rhs) )))
       ))
    ))
    r
