@@ -21,11 +21,13 @@ specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Ty
       ))
    )))
    (mark-as-special( key result-type ))
-   (let special-term (substitute( unify-ctx term )))
-   (infer-global-context( special-term ))
-   (infer-expr( global-type-context special-term Unscoped TAny Used ))
-   (set ast-parsed-program (Seq(
-      (close ast-parsed-program)
-      (close special-term)
-   )))
+   (if (non-zero term) (
+      (let special-term (substitute( unify-ctx term )))
+      (infer-global-context( special-term ))
+      (infer-expr( global-type-context special-term Unscoped TAny Used ))
+      (set ast-parsed-program (Seq(
+         (close ast-parsed-program)
+         (close special-term)
+      )))
+   ) ())
 ) Nil);

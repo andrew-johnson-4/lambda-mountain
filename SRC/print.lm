@@ -26,7 +26,7 @@ print := λ(: t TContext). (: (
       ()
       ( TCtxEOF () )
       ( TCtxNil () )
-      ( (TCtxBind( rst k v )) (
+      ( (TCtxBind( rst k v _ )) (
          (print rst)
          (print k)
          (print '\s:\s_s)
