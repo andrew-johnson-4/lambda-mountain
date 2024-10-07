@@ -150,14 +150,14 @@ cdecl::return := λ: Blob(: src StackVariable+Sized<size>). (: (
       (if (==( (: size L) 8_l )) ('\tmov\t_s (:expression src) '\[%rbp\],\s%RAX\n_s) ())
       (if (>( (: size L) 8_l )) (
          '\tsubq\s$_s (: size L) ',\s%rsp\n_s
-         (for (word-offset in (range( 0_l (/( (: size L) 8_l )) )) ) (
+         (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) )) ) (
             '\tpushq\s_s (+( (: size L) (*( (:expression word-offset) 16_l )) )) '\[%rsp\]\n_s
          ))
-         (for (word-offset in (range( 0_l (/( (: size L) 8_l )) )) ) (
+         (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) )) ) (
             '\tpopq\s_s (-( (-( -16_l (*( (:expression word-offset) 8_l )) )) (:expression cdecl::args-size) )) '\[%rbp\]\n_s
          ))
          '\taddq\s$_s (: size L) ',\s%rsp\n_s
-      ))
+      ) ())
    ))
    (:expression(
       (if (==( (: size L) 1_l )) 'AL_s ())
