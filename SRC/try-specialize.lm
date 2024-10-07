@@ -1,9 +1,9 @@
 
-try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (
-   (set result-type (normalize result-type))
+try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: result-type Type)(: is-blob U64). (: (
    (if (==( function-name 'cdecl::return_s )) (
       (print 'TrySpecialize\s_s)(print ft)(print result-type)(print '\n_s)
    ) ())
+   (set result-type (normalize result-type))
    (let global-tctx global-type-context)
    (if (is-special( function-name result-type )) (
       (if (==( function-name 'cdecl::return_s )) (

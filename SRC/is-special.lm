@@ -2,7 +2,7 @@
 is-special-index := (: BTreeEqEOF BTreeEq<Tuple<String,Type>,U64>);
 
 mark-as-special := λ(: name String)(: tt Type). (: (
-   (if (==( name 'cdecl::return )) (
+   (if (==( name 'cdecl::return_s )) (
       (print 'Mark\sas\sspecial:\s_s)(print tt)(print '\n_s)
    ) ())
    (.bind( (as (& is-special-index) BTreeEq<Tuple<String,Type>,U64>[]) (Tuple( name tt )) 1_u64 ))
@@ -10,7 +10,7 @@ mark-as-special := λ(: name String)(: tt Type). (: (
 
 is-special := λ(: name String)(: tt Type). (: (
    (let r (.lookup( is-special-index (Tuple( name tt )) 0_u64 )))
-   (if (==( name 'cdecl::return )) (
+   (if (==( name 'cdecl::return_s )) (
       (print 'Is\sspecial:\s_s)(print tt)(print r)(print '\n_s)
    ) ())
    r
