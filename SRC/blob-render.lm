@@ -13,6 +13,14 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
       ( (Lit( val _ )) (
          (set r (SAtom val))
       ))
+      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
+         (let rs (blob-render-simple( ctx context-key t )))
+         (set r (.1( rs )))
+      ))
+      ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
+         (let rs (blob-render-simple( ctx context-key t )))
+         (set r (.1( rs )))
+      ))
       ( (App( (Var( 'scope_s _ )) t )) (
          (let cs (blob-render-simple( ctx context-key t )))
          (set r (.1 cs))
@@ -63,14 +71,15 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
          (let rs (.1 rcs))
          (set r (SAtom(to-string(==( ls rs )))))
       ))
-      ( (App( (Var( '<_s _ )) (App( le re )) )) (
+      ( (App( (Var( '>_s _ )) (App( le re )) )) (
          (let lcs (blob-render-simple( ctx context-key le )))
          (let ls (.1 lcs))
          (let rcs (blob-render-simple( ctx context-key re )))
          (let rs (.1 rcs))
          (let li (to-i64(clone-rope ls)))
          (let ri (to-i64(clone-rope rs)))
-         (set r (SAtom(to-string(<( li ri )))))
+         (print '!!!>\s_s)(print li)(print ',_s)(print ri)(print '\n_s)
+         (set r (SAtom(to-string(>( li ri )))))
       ))
       ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (
          (let ccs (blob-render-simple( ctx context-key cond )))
@@ -78,24 +87,16 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
          (match cs (
             ()
             ( (SAtom '1_s) (
-               (print 'True\s_s)(print cond)(print '\n_s)
+               (print 'True\s_s)(print cond)(print cs)(print '\n_s)
                (let rcs (blob-render-simple( ctx context-key t )))
                (set r (.1 rcs))
             ))
             ( _ (
-               (print 'False\s_s)(print cond)(print '\n_s)
+               (print 'False\s_s)(print cond)(print cs)(print '\n_s)
                (let rcs (blob-render-simple( ctx context-key f )))
                (set r (.1 rcs))
             ))
          ))
-      ))
-      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
-         (let rs (blob-render-simple( ctx context-key t )))
-         (set r (.1( rs )))
-      ))
-      ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
-         (let rs (blob-render-simple( ctx context-key t )))
-         (set r (.1( rs )))
       ))
       ( (App( (Abs( (Var( lhs _ )) ASTNil tlt )) rhs )) (
          (let f (fragment::new()))
