@@ -50,7 +50,18 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
       )) (
          (let rngcs (blob-render-simple( ctx context-key rng )))
          (let rngs (.1 rngcs))
-         (print 'TODO:\sfor-atom\n_s)(print r)(print rngs)(exit 1_u64)
+         (while (non-zero rngs) (match rngs (
+            ()
+            ( (SCons( a rst )) (
+               (let f (fragment::expression a))
+               (let inner-ctx (fragment-context::bind( ctx lhs (t1 'L_s) f )))
+               (let cs (blob-render-simple( inner-ctx context-key iter )))
+               (let s (.1 cs))
+               (set r (+( r s )))
+               (set rngs rst)
+            ))
+            ( _ (set rngs SNil) )
+         )))
       ))
       ( (App( (Var( 'range_s _ )) (App( le re )) )) (
          (let lcs (blob-render-simple( ctx context-key le )))
@@ -59,13 +70,10 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
          (let rs (.1 rcs))
          (let li (to-i64(clone-rope ls)))
          (let ri (to-i64(clone-rope rs)))
-         (print 'Range\s_s)(print le)(print li)
-         (print '\nto\s_s)(print re)(print ri)(print '\n_s)
          (while (<( li ri )) (
             (set ri (-( ri 1_i64 )))
             (set r (SCons( (close(SAtom(to-string ri))) (close r) )))
          ))
-         (print r)(print '\n_s)
       ))
       ( (App( (Var( '==_s _ )) (App( le re )) )) (
          (let lcs (blob-render-simple( ctx context-key le )))
