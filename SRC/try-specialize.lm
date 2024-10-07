@@ -1,23 +1,21 @@
 
-try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: result-type Type)(: is-blob U64). (: (
+try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (
    (if (==( function-name 'cdecl::return_s )) (
       (print 'TrySpecialize\s_s)(print ft)(print result-type)(print '\n_s)
    ) ())
-   (set result-type (normalize result-type))
    (let global-tctx global-type-context)
-   (if (is-special( function-name result-type )) (
-      (if (==( function-name 'cdecl::return_s )) (
-         (print 'Is\sspecial\n_s)
-      ) ())
-   ) (
-      (while (non-zero global-tctx) (match global-tctx (
-         ()
-         ( TCtxNil (set global-tctx TCtxEOF) )
-         ( (TCtxBind( rst k kt t )) (
-            (set kt (slot( kt 'Arrow_s )))
-            (if (&&( (==( function-name 'cdecl::return_s )) (==( k 'cdecl::return_s )) )) (
-               (print 'TrySpecialize\sCandidate\s_s)(print kt)(print '\n_s)
-            ) ())
+   (while (non-zero global-tctx) (match global-tctx (
+      ()
+      ( TCtxNil (set global-tctx TCtxEOF) )
+      ( (TCtxBind( rst k kt t )) (
+         (if (non-zero(slot( kt 'Blob_s ))) () (
+            (set result-type (normalize result-type))
+         ))
+         (set kt (slot( kt 'Arrow_s )))
+         (if (&&( (==( function-name 'cdecl::return_s )) (==( k 'cdecl::return_s )) )) (
+            (print 'TrySpecialize\sCandidate\s_s)(print kt)(print '\n_s)
+         ) ())
+         (if (is-special( function-name result-type )) () (
             (if (&&( (==( function-name k )) (==( ft kt )) )) (
                (match t (
                   ()
@@ -27,8 +25,8 @@ try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: 
                   ( _ () )
                ))
             ) ())
-            (set global-tctx rst)
          ))
-      )))
-   ))
+         (set global-tctx rst)
+      ))
+   )))
 ) Nil);
