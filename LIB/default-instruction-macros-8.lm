@@ -11,7 +11,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
-   ) op-type+Reg64);
+   ) op-type+Reg8);
    op-alias := λ: Blob(: l op-type+Constant)(: r op-type+LocalVariable). (: (
       (:program(
          '\tmovq\s$_s (:expression l) ',\s%AL\n_s
@@ -23,7 +23,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
-   ) op-type+Reg64);
+   ) op-type+Reg8);
    op-alias := λ: Blob(: l op-type+Constant)(: r op-type+GlobalVariable). (: (
       (:program(
          '\tmovq\s$_s (:expression l) ',\s%AL\n_s
@@ -36,8 +36,8 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
-   ) op-type+Reg64);
-   op-alias := λ: Blob(: l op-type+Constant)(: r op-type+Reg64). (: (
+   ) op-type+Reg8);
+   op-alias := λ: Blob(: l op-type+Constant)(: r op-type+Reg8). (: (
       (:program(
          (:program r)
          '\tmovq\s%_s (:expression r) ',\s%R14B\n_s
@@ -49,7 +49,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
-   ) op-type+Reg64);
+   ) op-type+Reg8);
 
    op-alias := λ: Blob(: l op-type+LocalVariable)(: r op-type+Constant). (: (
       (:program(
@@ -62,7 +62,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
-   ) op-type+Reg64);
+   ) op-type+Reg8);
    op-alias := λ: Blob(: l op-type+LocalVariable)(: r op-type+LocalVariable). (: (
       (:program(
          '\tmovq\s_s (:expression l) '\[%RBP\],\s%AL\n_s
@@ -74,7 +74,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
-   ) op-type+Reg64);
+   ) op-type+Reg8);
    op-alias := λ: Blob(: l op-type+LocalVariable)(: r op-type+GlobalVariable). (: (
       (:program(
          '\tmovq\s_s (:expression l) '\[%RBP\],\s%AL\n_s
@@ -87,8 +87,8 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
-   ) op-type+Reg64);
-   op-alias := λ: Blob(: l op-type+LocalVariable)(: r op-type+Reg64). (: (
+   ) op-type+Reg8);
+   op-alias := λ: Blob(: l op-type+LocalVariable)(: r op-type+Reg8). (: (
       (:program(
          (:program r)
          '\tmovq\s%_s (:expression r) ',\s%R14B\n_s
@@ -100,7 +100,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
-   ) op-type+Reg64);
+   ) op-type+Reg8);
 
    op-alias := λ: Blob(: l op-type+GlobalVariable)(: r op-type+Constant). (: (
       (:program(
@@ -114,7 +114,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
-   ) op-type+Reg64);
+   ) op-type+Reg8);
    op-alias := λ: Blob(: l op-type+GlobalVariable)(: r op-type+LocalVariable). (: (
       (:program(
          '\tmovq\s$_s (:expression l) ',\s%AL\n_s
@@ -127,7 +127,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
-   ) op-type+Reg64);
+   ) op-type+Reg8);
    op-alias := λ: Blob(: l op-type+GlobalVariable)(: r op-type+GlobalVariable). (: (
       (:program(
          '\tmovq\s$_s (:expression l) ',\s%AL\n_s
@@ -141,8 +141,8 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
-   ) op-type+Reg64);
-   op-alias := λ: Blob(: l op-type+GlobalVariable)(: r op-type+Reg64). (: (
+   ) op-type+Reg8);
+   op-alias := λ: Blob(: l op-type+GlobalVariable)(: r op-type+Reg8). (: (
       (:program(
          (:program r)
          '\tmovq\s%_s (:expression r) ',\s%R14B\n_s
@@ -155,9 +155,9 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
-   ) op-type+Reg64);
+   ) op-type+Reg8);
 
-   op-alias := λ: Blob(: l op-type+Reg64)(: r op-type+Constant). (: (
+   op-alias := λ: Blob(: l op-type+Reg8)(: r op-type+Constant). (: (
       (:program(
          (:program l)
          '\tmovq\s%_s (:expression l) ',\s%AL\n_s
@@ -169,8 +169,8 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
-   ) op-type+Reg64);
-   op-alias := λ: Blob(: l op-type+Reg64)(: r op-type+LocalVariable). (: (
+   ) op-type+Reg8);
+   op-alias := λ: Blob(: l op-type+Reg8)(: r op-type+LocalVariable). (: (
       (:program(
          (:program l)
          '\tmovq\s%_s (:expression l) ',\s%AL\n_s
@@ -182,8 +182,8 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
-   ) op-type+Reg64);
-   op-alias := λ: Blob(: l op-type+Reg64)(: r op-type+GlobalVariable). (: (
+   ) op-type+Reg8);
+   op-alias := λ: Blob(: l op-type+Reg8)(: r op-type+GlobalVariable). (: (
       (:program(
          (:program l)
          '\tmovq\s%_s (:expression l) ',\s%AL\n_s
@@ -196,8 +196,8 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
-   ) op-type+Reg64);
-   op-alias := λ: Blob(: l op-type+Reg64+Meta<OntoStack>)(: r op-type+Reg64). (: (
+   ) op-type+Reg8);
+   op-alias := λ: Blob(: l op-type+Reg8+Meta<OntoStack>)(: r op-type+Reg8). (: (
       (:program(
          (:program l)
          '\tpushq\s%_s (:expression l) '\n_s
@@ -211,6 +211,6 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
-   ) op-type+Reg64);
+   ) op-type+Reg8);
 );
 
