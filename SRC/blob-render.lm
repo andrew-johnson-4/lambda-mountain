@@ -86,12 +86,10 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
          (match cs (
             ()
             ( (SAtom '1_s) (
-               (print 'True\s_s)(print cond)(print cs)(print '\n_s)
                (let rcs (blob-render-simple( ctx context-key t )))
                (set r (.1 rcs))
             ))
             ( _ (
-               (print 'False\s_s)(print cond)(print cs)(print '\n_s)
                (let rcs (blob-render-simple( ctx context-key f )))
                (set r (.1 rcs))
             ))
