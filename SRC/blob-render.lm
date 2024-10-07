@@ -33,6 +33,29 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
             (set r (+( r s )))
          ))
       ))
+      ( (App(
+        (App( (Lit( ':_s _ )) (App( (Lit( 'for-atom_s _ )) (AType _) )) )) 
+        (App(
+           (App( (Abs( (Var( lhs _ )) ASTNil _ )) rng ))
+           iter
+        ))
+      )) (
+         (let rngcs (blob-render-simple( ctx context-key rng )))
+         (let rngs (.1 rngcs))
+         (print 'TODO:\sfor-atom\n_s)(print r)(print rngs)(exit 1_u64)
+      ))
+      ( (App( (Var( 'range_s _ )) (App( le re )) )) (
+         (let lcs (blob-render-simple( ctx context-key le )))
+         (let ls (.1 lcs))
+         (let rcs (blob-render-simple( ctx context-key re )))
+         (let rs (.1 rcs))
+         (let li (to-i64(clone-rope ls)))
+         (let ri (to-i64(clone-rope rs)))
+         (while (<( li ri )) (
+            (set ri (-( ri 1_i64 )))
+            (set r (SCons( (close(SAtom(to-string ri))) (close r) )))
+         ))
+      ))
       ( (App( (Var( '==_s _ )) (App( le re )) )) (
          (let lcs (blob-render-simple( ctx context-key le )))
          (let ls (.1 lcs))
