@@ -75,13 +75,15 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
       ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (
          (let ccs (blob-render-simple( ctx context-key cond )))
          (let cs (.1 ccs))
-         (match cond (
+         (match cs (
             ()
             ( (SAtom '1_s) (
+               (print 'True\s_s)(print cond)(print '\n_s)
                (let rcs (blob-render-simple( ctx context-key t )))
                (set r (.1 rcs))
             ))
             ( _ (
+               (print 'False\s_s)(print cond)(print '\n_s)
                (let rcs (blob-render-simple( ctx context-key f )))
                (set r (.1 rcs))
             ))
@@ -131,7 +133,6 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
       ))
    ))
    (print 'Render\s_s)(print term)(print '\n_s)
-   (print 'Rendered\s_s)(print r)(print '\n_s)
    (Tuple( ctx r ))
 ) Tuple<FContext,S>);
 
