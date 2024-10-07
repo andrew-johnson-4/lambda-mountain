@@ -1,6 +1,5 @@
 
 specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (
-   (print 'Specialize\s_s)(print key)(print result-type)(print '\n_s)
    (set unify-ctx (normalize unify-ctx))
    (let term ASTEOF)
    (let global-tctx global-type-context)

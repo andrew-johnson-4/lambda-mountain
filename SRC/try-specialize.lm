@@ -29,26 +29,3 @@ try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: 
    )))
 ) Nil);
 
-#try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (
-#   (set result-type (normalize result-type))
-#   (let global-tctx global-type-context)
-#   (if (is-special( function-name result-type )) () (
-#      (while (non-zero global-tctx) (match global-tctx (
-#         ()
-#         ( TCtxNil (set global-tctx TCtxEOF) )
-#         ( (TCtxBind( rst k kt t )) (
-#            (set kt (slot( kt 'Arrow_s )))
-#            (if (&&( (==( function-name k )) (==( ft kt )) )) (
-#               (match t (
-#                  ()
-#                  ( (Glb( _ (Abs( _ _ _ )) )) (
-#                     (specialize( function-name ft unify-ctx result-type ))
-#                  ))
-#                  ( _ () )
-#               ))
-#            ) ())
-#            (set global-tctx rst)
-#         ))
-#      )))
-#   ))
-#) Nil);
