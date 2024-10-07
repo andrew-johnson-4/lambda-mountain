@@ -3,7 +3,6 @@ cc-blob := λ(: caller-ctx FContext)(: function-name String)(: args AST)(: offse
    # callee context starts as global-ctx
    # caller context is provided but not propagated
    (let f (fragment-context::lookup( caller-ctx function-name (typeof args) args )))
-   (print 'Render\s_s)(print function-name)(print (.term f))(print '\n_s)
    (let r (fragment::new()))
    (match (.term f) (
       ()
