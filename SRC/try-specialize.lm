@@ -1,28 +1,29 @@
 
 
 try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (
-   (print 'Try\sSpecialize\s_s)(print function-name)(print ft)(print result-type)(print '\n_s)
    (let global-tctx global-type-context)
    (while (non-zero global-tctx) (match global-tctx (
       ()
       ( TCtxNil (set global-tctx TCtxEOF) )
       ( (TCtxBind( rst k kt t )) (
-         (let special-type result-type)
-         (if (non-zero(slot( kt 'Blob_s ))) () (
-            (set special-type (normalize special-type))
-         ))
-         (set kt (slot( kt 'Arrow_s )))
-         (if (is-special( function-name special-type )) () (
-            (if (&&( (==( function-name k )) (==( ft kt )) )) (
-               (match t (
-                  ()
-                  ( (Glb( _ (Abs( _ _ _ )) )) (
-                     (specialize( function-name ft unify-ctx special-type ))
+         (if (==( function-name k )) (
+            (let special-type result-type)
+            (if (non-zero(slot( kt 'Blob_s ))) () (
+               (set special-type (normalize special-type))
+            ))
+            (set kt (slot( kt 'Arrow_s )))
+            (if (is-special( function-name special-type )) () (
+               (if (==( ft kt )) (
+                  (match t (
+                     ()
+                     ( (Glb( _ (Abs( _ _ _ )) )) (
+                        (specialize( function-name ft unify-ctx special-type ))
+                     ))
+                     ( _ () )
                   ))
-                  ( _ () )
-               ))
-            ) ())
-         ))
+               ) ())
+            ))
+         ) ())
          (set global-tctx rst)
       ))
    )))
