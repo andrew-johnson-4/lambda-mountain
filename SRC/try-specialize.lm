@@ -11,10 +11,10 @@ try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: 
          (if (non-zero(slot( kt 'Blob_s ))) () (
             (set result-type (normalize result-type))
          ))
-         (set kt (slot( kt 'Arrow_s )))
          (if (&&( (==( function-name 'cdecl::return_s )) (==( k 'cdecl::return_s )) )) (
             (print 'TrySpecialize\sCandidate\s_s)(print kt)(print '\n_s)
          ) ())
+         (set kt (slot( kt 'Arrow_s )))
          (if (is-special( function-name result-type )) () (
             (if (&&( (==( function-name k )) (==( ft kt )) )) (
                (match t (
