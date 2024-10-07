@@ -7,12 +7,10 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
       ( ASTNil () )
       ( ASTEOF () )
       ( (Var( id _ )) (
-         (if (==( id 'range_s )) (print 'Range\swas\sVar\n_s) ())
          (let e (fragment-context::lookup( ctx id (typeof term) term )))
          (set r (fragment::get( e context-key )))
       ))
       ( (Lit( val _ )) (
-         (if (==( val 'for-arg_s )) (print 'for-arg\swas\sLit\n_s) ())
          (set r (SAtom val))
       ))
       ( (App( (Var( 'scope_s _ )) t )) (
@@ -132,6 +130,8 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
          (print 'Unknown\sRender\sTerm\s_s)(print term)(exit 1_u64)
       ))
    ))
+   (print 'Render\s_s)(print term)(print '\n_s)
+   (print 'Rendered\s_s)(print r)(print '\n_s)
    (Tuple( ctx r ))
 ) Tuple<FContext,S>);
 
