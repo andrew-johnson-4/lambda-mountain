@@ -8,14 +8,14 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
             (match rhs (
                ()
                ( (App( le re )) (
-                  (let rel-offset (+( offset (as (onto-stack-size (typeof le)) I64) )))
                   (if (is-vararg kt) (
                      (set kt (get-vararg-inner kt))
                      (if (can-unify( kt (typeof re) )) (scope(
                         (if (is-open kt) (
                            (set callee-ctx (union( callee-ctx (unify( kt (typeof re) )) )))
                         ) ())
-                        (set callee-ctx (bind-vararg( callee-ctx k kt (compile-expr( caller-ctx re rel-offset Used )) )))
+                        (set callee-ctx (bind-vararg( callee-ctx k kt (compile-expr( caller-ctx re offset Used )) )))
+                        (if (is-onto-stack kt) (set offset (+( offset (as (sizeof-aligned kt) I64) ))) ())
                         (let e1 (cc-args( callee-ctx caller-ctx lhs le offset )))
                         (set callee-ctx (.1 e1))
                         (set offset (.2 e1))
@@ -28,7 +28,8 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                      (if (is-open kt) (
                         (set callee-ctx (union( callee-ctx (unify( kt (typeof re) )) )))
                      ) ())
-                     (set callee-ctx (FCtxBind( (close callee-ctx) k kt (compile-expr( caller-ctx re rel-offset Used )) )))
+                     (set callee-ctx (FCtxBind( (close callee-ctx) k kt (compile-expr( caller-ctx re offset Used )) )))
+                     (if (is-onto-stack kt) (set offset (+( offset (as (sizeof-aligned kt) I64) ))) ())
                      (let e1 (cc-args( callee-ctx caller-ctx lhs-rst le offset )))
                      (set callee-ctx (.1 e1))
                      (set offset (.2 e1))
@@ -61,13 +62,13 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
             (match rhs (
                ()
                ( (App( le re )) (
-                  (let rel-offset (+( offset (as (onto-stack-size (typeof le)) I64) )))
                   (if (is-vararg kt) (scope(
                      (set kt (get-vararg-inner kt))
                      (if (is-open kt) (
                         (set callee-ctx (union( callee-ctx (unify( kt (typeof re) )) )))
                      ) ())
-                     (set callee-ctx (bind-vararg( callee-ctx k kt (compile-expr( caller-ctx re rel-offset Used )) )))
+                     (set callee-ctx (bind-vararg( callee-ctx k kt (compile-expr( caller-ctx re offset Used )) )))
+                     (if (is-onto-stack kt) (set offset (+( offset (as (sizeof-aligned kt) I64) ))) ())
                      (let e1 (cc-args( callee-ctx caller-ctx lhs le offset )))
                      (set callee-ctx (.1 e1))
                      (set offset (.2 e1))
