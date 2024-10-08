@@ -91,7 +91,7 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
    (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
-   (.expression 'AX_s )
+   (:expression 'AX_s )
 ) f0+Reg16);
 
 .0 := λ: Blob(: src LocalVariable+Fields<Cons<_,f0+Sized<4>>>). (: (
@@ -148,7 +148,7 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
    (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
-   (.expression 'AX_s )
+   (:expression 'AX_s )
 ) f0+Reg16);
 
 .tag := λ: Blob(: src LocalVariable+Fields<Cons<_,f0+Sized<4>>>). (: (
@@ -186,42 +186,71 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
    (:unframe( (:unframe src) ))
 ) f0+StackVariable);
 
-fragment  .1 := λ(: src LocalVariable+Fields<Cons<Cons<_,f1+Sized<1>>,Sized<size0>>>). (: (
-   (.program(
-      \t 'mov \s (+( (.expression src) (.expression size0) )) \[ '%RBP \] , \s '%AL \n
+.1 := λ: Blob(: src LocalVariable+Fields<Cons<Cons<_,f1+Sized<1>>,Sized<size0>>>). (: (
+   (:program(
+      '\tmov\s_l (+( (:expression src) (: size0 L) )) '\[%RBP\],\s%AL\n_l
    ))
-   (.expression( 'AL ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
+   (:expression( 'AL_l ))
 ) f1+Reg8);
 
-fragment  .1 := λ(: src LocalVariable+Fields<Cons<Cons<_,f1+Sized<2>>,Sized<size0>>>). (: (
-   (.program(
-      \t 'mov \s (+( (.expression src) (.expression size0) )) \[ '%RBP \] , \s '%AX \n
+.1 := λ: Blob(: src LocalVariable+Fields<Cons<Cons<_,f1+Sized<2>>,Sized<size0>>>). (: (
+   (:program(
+      '\tmov\s_l (+( (:expression src) (: size0 L) )) '\[%RBP\],\s%AX\n_l
    ))
-   (.expression( 'AX ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
+   (:expression( 'AX_l ))
 ) f1+Reg16);
 
-fragment  .1 := λ(: src LocalVariable+Fields<Cons<Cons<_,f1+Sized<4>>,Sized<size0>>>). (: (
-   (.program(
-      \t 'mov \s (+( (.expression src) (.expression size0) )) \[ '%RBP \] , \s '%EAX \n
+.1 := λ: Blob(: src LocalVariable+Fields<Cons<Cons<_,f1+Sized<4>>,Sized<size0>>>). (: (
+   (:program(
+      '\tmov\s_l (+( (:expression src) (: size0 L) )) '\[%RBP\],\s%EAX\n_l
    ))
-   (.expression( 'EAX ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
+   (:expression( 'EAX_l ))
 ) f1+Reg32);
 
-fragment  .1 := λ(: src LocalVariable+Fields<Cons<Cons<_,f1+Sized<8>>,Sized<size0>>>). (: (
-   (.program(
-      \t 'mov \s (+( (.expression src) (.expression size0) )) \[ '%RBP \] , \s '%RAX \n
+.1 := λ: Blob(: src LocalVariable+Fields<Cons<Cons<_,f1+Sized<8>>,Sized<size0>>>). (: (
+   (:program(
+      '\tmov\s_l (+( (:expression src) (: size0 L) )) '\[%RBP\],\s%RAX\n_l
    ))
-   (.expression( 'RAX ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
+   (:expression( 'RAX_l ))
 ) f1+Reg64);
 
-fragment  .1 := λ(: src LocalVariable+Fields<Cons<Cons<_,f1+Sized<size1+GT<8>>>,Sized<size0>>>). (: (
-   (.program(
-      (for index in (range( 0 (/( (.expression size1) '8 )) )) (
-         (let word-offset (-( (+( (-( (+( (.expression src) (.expression size1) )) (*( (.expression index) '8 )) )) (align(.expression size0)) )) '8 )) )
-         \t 'pushq \s (.expression word-offset) \[ '%RBP \] \n
+.1 := λ: Blob(: src LocalVariable+Fields<Cons<Cons<_,f1+Sized<size1+GT<8>>>,Sized<size0>>>). (: (
+   (:program(
+      (for-atom (index in (range( 0_l (/( (: size1 L) 8_l )) ))) (
+         (let word-offset (-( (+( (-( (+( (:expression src) (: size1 L) )) (*( (:expression index) 8_l )) )) (align(: size0 L)) )) 8_l )) )
+         '\tpushq\s_l (:expression word-offset) '\[%RBP\]\n_s
       ))
    ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
 ) f1+StackVariable);
+
+#fragment  .1 := λ(: src LocalVariable+Fields<Cons<Cons<_,f1+Sized<size1+GT<8>>>,Sized<size0>>>). (: (
+#   (.program(
+#      (for index in (range( 0 (/( (.expression size1) '8 )) )) (
+#         (let word-offset (-( (+( (-( (+( (.expression src) (.expression size1) )) (*( (.expression index) '8 )) )) (align(.expression size0)) )) '8 )) )
+#         \t 'pushq \s (.expression word-offset) \[ '%RBP \] \n
+#      ))
+#   ))
+#) f1+StackVariable);
 
 fragment  .2 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<_,f2+Sized<1>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
