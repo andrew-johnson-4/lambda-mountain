@@ -4,7 +4,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
    (match lhs (
       ()
       ( (App( lhs-rst (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) )) (
-         (if (non-zero(slot( (typeof rhs) 'Cons_s ))) (scope(
+         (if (is-cons(typeof rhs)) (scope(
             (match rhs (
                ()
                ( (App( le re )) (
@@ -51,7 +51,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
          ) ())
       ))
       ( (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) (
-         (if (non-zero(slot( (typeof rhs) 'Cons_s ))) (
+         (if (is-cons(typeof rhs)) (
             (match rhs (
                ()
                ( (App( le re )) (
