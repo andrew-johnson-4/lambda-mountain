@@ -5,6 +5,8 @@ import SRC/is-hook.lm;
 import SRC/is-blob.lm;
 import SRC/is-cons.lm;
 import SRC/is-string.lm;
+import SRC/is-onto-stack.lm;
+import SRC/onto-stack-size.lm;
 import SRC/is-branchconditional.lm;
 import SRC/plus.lm;
 import SRC/print.lm;
