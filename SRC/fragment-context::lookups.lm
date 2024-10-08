@@ -10,7 +10,6 @@ fragment-context::lookups := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AS
    (while (non-zero ctx) (match ctx (
       ()
       ( (FCtxBind( rst rk rt rf )) (
-         (let is-hook (non-zero(slot( rt 'Hook_s ))))
          (if (==( k rk )) (
             (match (slot( rt 'Arrow_s )) (
                ()
@@ -18,7 +17,7 @@ fragment-context::lookups := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AS
                   (if (can-unify( domaint kt )) (
                      (if (non-zero found) (
                         (if (can-unify( found domaint )) (
-                           (if (!=( is-hook 0_u64 )) (
+                           (if (!=( (is-hook rt) 0_u64 )) (
                               (set r (cons( rf r )))
                            ) (
                               (set r (cons( rf (: LEOF List<Fragment>) )))
@@ -26,7 +25,7 @@ fragment-context::lookups := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AS
                            ))
                         ) ())
                      ) (
-                        (if (!=( is-hook 0_u64 )) (
+                        (if (!=( (is-hook rt) 0_u64 )) (
                            (set r (cons( rf r )))
                         ) (
                            (set r (cons( rf (: LEOF List<Fragment>) )))
@@ -37,7 +36,7 @@ fragment-context::lookups := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AS
                   (set ctx rst)
                ))
                ( _ (
-                  (if (!=( is-hook 0_u64 )) (
+                  (if (!=( (is-hook rt) 0_u64 )) (
                      (set r (cons( rf r )))
                   ) (
                      (set r (cons( rf (: LEOF List<Fragment>) )))

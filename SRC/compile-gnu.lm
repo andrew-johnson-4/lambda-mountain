@@ -38,7 +38,7 @@ compile-gnu := λ. (: (
          (let kt (typeof rhs))
          (let fragment (fragment::new()))
          (if (is-open kt) () (
-            (if (non-zero(slot( kt 'Blob_s ))) (
+            (if (is-blob kt) (
                (set fragment (fragment::set-term( fragment rhs )))
                (set fragment (fragment::set-type( fragment kt )))
                (set global-ctx (fragment-context::bind(
