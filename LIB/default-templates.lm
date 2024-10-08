@@ -243,15 +243,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
    (:unframe( (:unframe src) ))
 ) f1+StackVariable);
 
-#fragment  .1 := λ(: src LocalVariable+Fields<Cons<Cons<_,f1+Sized<size1+GT<8>>>,Sized<size0>>>). (: (
-#   (.program(
-#      (for index in (range( 0 (/( (.expression size1) '8 )) )) (
-#         (let word-offset (-( (+( (-( (+( (.expression src) (.expression size1) )) (*( (.expression index) '8 )) )) (align(.expression size0)) )) '8 )) )
-#         \t 'pushq \s (.expression word-offset) \[ '%RBP \] \n
-#      ))
-#   ))
-#) f1+StackVariable);
-
 fragment  .2 := λ(: src LocalVariable+Fields<Cons<Cons<Cons<_,f2+Sized<1>>,Sized<size1>>,Sized<size0>>>). (: (
    (.program(
       (let base-offset (+( (.expression src) (align( (.expression size1) )) )))
