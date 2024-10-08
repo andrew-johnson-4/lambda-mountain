@@ -158,46 +158,47 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-type)) (
       (:expression 'RAX_s)
    ) op-type+Reg64);
 
-   #op-alias := λ: Blob(: l op-type+Reg64)(: r op-type+Constant). (: (
-   #   (:program(
-   #      (:program l)
-   #      '\tmovq\s%_s (:expression l) ',\s%RAX\n_s
-   #      '\tmovq\s$_s (:expression r) ',\s%R14\n_s
-   #      '\t_s op-code '\s%R14,\s%RAX\n_s
-   #   ))
-   #   (:data( (:data l) (:data r) ))
-   #   (:text( (:text l) (:text r) ))
-   #   (:frame( (:frame l) (:frame r) ))
-   #   (:unframe( (:unframe l) (:unframe r) ))
-   #   (:expression 'RAX_s)
-   #) op-type+Reg64);
-   #op-alias := λ: Blob(: l op-type+Reg64)(: r op-type+LocalVariable). (: (
-   #   (:program(
-   #      (:program l)
-   #      '\tmovq\s%_s (:expression l) ',\s%RAX\n_s
-   #      '\tmovq\s_s (:expression r) '\[%RBP\],\s%R14\n_s
-   #      '\t_s op-code '\s%R14,\s%RAX\n_s
-   #   ))
-   #   (:data( (:data l) (:data r) ))
-   #   (:text( (:text l) (:text r) ))
-   #   (:frame( (:frame l) (:frame r) ))
-   #   (:unframe( (:unframe l) (:unframe r) ))
-   #   (:expression 'RAX_s)
-   #) op-type+Reg64);
-   #op-alias := λ: Blob(: l op-type+Reg64)(: r op-type+GlobalVariable). (: (
-   #   (:program(
-   #      (:program l)
-   #      '\tmovq\s%_s (:expression l) ',\s%RAX\n_s
-   #      '\tmovq\s$_s (:expression r) ',\s%R14\n_s
-   #      '\tmovq\s0\[%R14\],\s%R14\n_s
-   #      '\t_s op-code '\s%R14,\s%RAX\n_s
-   #   ))
-   #   (:data( (:data l) (:data r) ))
-   #   (:text( (:text l) (:text r) ))
-   #   (:frame( (:frame l) (:frame r) ))
-   #   (:unframe( (:unframe l) (:unframe r) ))
-   #   (:expression 'RAX_s)
-   #) op-type+Reg64);
+   op-alias := λ: Blob(: l op-type+Reg64)(: r op-type+Constant). (: (
+      (:program(
+         (:program l)
+         '\tmovq\s%_s (:expression l) ',\s%RAX\n_s
+         '\tmovq\s$_s (:expression r) ',\s%R14\n_s
+         '\t_s op-code '\s%R14,\s%RAX\n_s
+      ))
+      (:data( (:data l) (:data r) ))
+      (:text( (:text l) (:text r) ))
+      (:frame( (:frame l) (:frame r) ))
+      (:unframe( (:unframe l) (:unframe r) ))
+      (:expression 'RAX_s)
+   ) op-type+Reg64);
+   op-alias := λ: Blob(: l op-type+Reg64)(: r op-type+LocalVariable). (: (
+      (:program(
+         (:program l)
+         '\tmovq\s%_s (:expression l) ',\s%RAX\n_s
+         '\tmovq\s_s (:expression r) '\[%RBP\],\s%R14\n_s
+         '\t_s op-code '\s%R14,\s%RAX\n_s
+      ))
+      (:data( (:data l) (:data r) ))
+      (:text( (:text l) (:text r) ))
+      (:frame( (:frame l) (:frame r) ))
+      (:unframe( (:unframe l) (:unframe r) ))
+      (:expression 'RAX_s)
+   ) op-type+Reg64);
+   op-alias := λ: Blob(: l op-type+Reg64)(: r op-type+GlobalVariable). (: (
+      (:program(
+         (:program l)
+         '\tmovq\s%_s (:expression l) ',\s%RAX\n_s
+         '\tmovq\s$_s (:expression r) ',\s%R14\n_s
+         '\tmovq\s0\[%R14\],\s%R14\n_s
+         '\t_s op-code '\s%R14,\s%RAX\n_s
+      ))
+      (:data( (:data l) (:data r) ))
+      (:text( (:text l) (:text r) ))
+      (:frame( (:frame l) (:frame r) ))
+      (:unframe( (:unframe l) (:unframe r) ))
+      (:expression 'RAX_s)
+   ) op-type+Reg64);
+
    #op-alias := λ: Blob(: l op-type+Reg64+Meta<OntoStack>)(: r op-type+Reg64). (: (
    #   (:program(
    #      (:program l)
@@ -214,52 +215,6 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-type)) (
    #   (:expression 'RAX_s)
    #) op-type+Reg64);
 
-   fragment  op-alias := λ: DontChain(: l op-type+Reg64)(: r op-type+Constant). (: (
-      (.program(
-         (.program l)
-         \t 'movq \s '% (.expression l) , \s '%RAX \n
-         \t 'movq \s '$ (.expression r) , \s '%R14 \n
-         \t op-code \s '%R14 , \s '%RAX \n
-      ))
-      (.data( (.data l) (.data r) ))
-      (.frame( (.text l) (.text r) ))
-      (.frame( (.frame l) (.frame r) ))
-      (.unframe( (.unframe l) (.unframe r) ))
-      (.expression(
-         'RAX
-      ))
-   ) op-type+Reg64);
-   fragment  op-alias := λ: DontChain(: l op-type+Reg64)(: r op-type+LocalVariable). (: (
-      (.program(
-         (.program l)
-         \t 'movq \s '% (.expression l) , \s '%RAX \n
-         \t 'movq \s (.expression r) \[ '%RBP \] , \s '%R14 \n
-         \t op-code \s '%R14 , \s '%RAX \n
-      ))
-      (.data( (.data l) (.data r) ))
-      (.frame( (.text l) (.text r) ))
-      (.frame( (.frame l) (.frame r) ))
-      (.unframe( (.unframe l) (.unframe r) ))
-      (.expression(
-         'RAX
-      ))
-   ) op-type+Reg64);
-   fragment  op-alias := λ: DontChain(: l op-type+Reg64)(: r op-type+GlobalVariable). (: (
-      (.program(
-         (.program l)
-         \t 'movq \s '% (.expression l) , \s '%RAX \n
-         \t 'movq \s '$ (.expression r) , \s '%R14 \n
-         \t 'movq \s '0 \[ '%R14 \] , \s '%R14 \n
-         \t op-code \s '%R14 , \s '%RAX \n
-      ))
-      (.data( (.data l) (.data r) ))
-      (.frame( (.text l) (.text r) ))
-      (.frame( (.frame l) (.frame r) ))
-      (.unframe( (.unframe l) (.unframe r) ))
-      (.expression(
-         'RAX
-      ))
-   ) op-type+Reg64);
    fragment  op-alias := λ: DontChain(: l op-type+Reg64+Meta<OntoStack>)(: r op-type+Reg64). (: (
       (.program(
          (.program l)
