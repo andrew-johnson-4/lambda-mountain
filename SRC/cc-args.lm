@@ -4,15 +4,18 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
    (match lhs (
       ()
       ( (App( lhs-rst (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) )) (
-         (if (non-zero(slot( (typeof rhs) 'Cons_s ))) (scope(
+         (if (is-cons(typeof rhs)) (scope(
             (match rhs (
                ()
                ( (App( le re )) (
                   (if (is-vararg kt) (
-                     (set kt (p1(slot( kt '..._s ))))
+                     (set kt (get-vararg-inner kt))
                      (if (can-unify( kt (typeof re) )) (scope(
-                        (set callee-ctx (union( callee-ctx (unify( kt (typeof re) )) )))
+                        (if (is-open kt) (
+                           (set callee-ctx (union( callee-ctx (unify( kt (typeof re) )) )))
+                        ) ())
                         (set callee-ctx (bind-vararg( callee-ctx k kt (compile-expr( caller-ctx re offset Used )) )))
+                        (if (is-onto-stack kt) (set offset (-( offset (as (sizeof-aligned kt) I64) ))) ())
                         (let e1 (cc-args( callee-ctx caller-ctx lhs le offset )))
                         (set callee-ctx (.1 e1))
                         (set offset (.2 e1))
@@ -22,8 +25,11 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                         (set offset (.2 e1))
                      ))
                   ) (scope(
-                     (set callee-ctx (union( callee-ctx (unify( kt (typeof re) )) )))
+                     (if (is-open kt) (
+                        (set callee-ctx (union( callee-ctx (unify( kt (typeof re) )) )))
+                     ) ())
                      (set callee-ctx (FCtxBind( (close callee-ctx) k kt (compile-expr( caller-ctx re offset Used )) )))
+                     (if (is-onto-stack kt) (set offset (-( offset (as (sizeof-aligned kt) I64) ))) ())
                      (let e1 (cc-args( callee-ctx caller-ctx lhs-rst le offset )))
                      (set callee-ctx (.1 e1))
                      (set offset (.2 e1))
@@ -32,9 +38,11 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
             ))
          )) (
             (if (is-vararg kt) (
-               (set kt (p1(slot( kt '..._s ))))
+               (set kt (get-vararg-inner kt))
                (if (can-unify( kt (typeof rhs) )) (scope(
-                  (set callee-ctx (union( callee-ctx (unify( kt (typeof rhs) )) )))
+                  (if (is-open kt) (
+                     (set callee-ctx (union( callee-ctx (unify( kt (typeof rhs) )) )))
+                  ) ())
                   (set callee-ctx (bind-vararg( callee-ctx k kt (compile-expr( caller-ctx rhs offset Used )) )))
                )) (
                   (let e1 (cc-args( callee-ctx caller-ctx lhs-rst rhs offset )))
@@ -42,23 +50,25 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                   (set offset (.2 e1))
                ))
             ) (
-               (set callee-ctx (union( callee-ctx (unify( kt (typeof rhs) )) )))
+               (if (is-open kt) (
+                  (set callee-ctx (union( callee-ctx (unify( kt (typeof rhs) )) )))
+               ) ())
                (set callee-ctx (FCtxBind( (close callee-ctx) k kt (compile-expr( caller-ctx rhs offset Used )) )))
             ))
          ))
-         (if (non-zero(slot( kt 'Meta_s 'OntoStack_s ))) (
-            (set offset (-( offset (as (sizeof-aligned kt) I64) )))
-         ) ())
       ))
       ( (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) (
-         (if (non-zero(slot( (typeof rhs) 'Cons_s ))) (
+         (if (is-cons(typeof rhs)) (
             (match rhs (
                ()
                ( (App( le re )) (
                   (if (is-vararg kt) (scope(
-                     (set kt (p1(slot( kt '..._s ))))
-                     (set callee-ctx (union( callee-ctx (unify( kt (typeof re) )) )))
+                     (set kt (get-vararg-inner kt))
+                     (if (is-open kt) (
+                        (set callee-ctx (union( callee-ctx (unify( kt (typeof re) )) )))
+                     ) ())
                      (set callee-ctx (bind-vararg( callee-ctx k kt (compile-expr( caller-ctx re offset Used )) )))
+                     (if (is-onto-stack kt) (set offset (-( offset (as (sizeof-aligned kt) I64) ))) ())
                      (let e1 (cc-args( callee-ctx caller-ctx lhs le offset )))
                      (set callee-ctx (.1 e1))
                      (set offset (.2 e1))
@@ -70,17 +80,18 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
             ))
          ) (
             (if (is-vararg kt) (
-               (set kt (p1(slot( kt '..._s ))))
-               (set callee-ctx (union( callee-ctx (unify( kt (typeof rhs) )) )))
+               (set kt (get-vararg-inner kt))
+               (if (is-open kt) (
+                  (set callee-ctx (union( callee-ctx (unify( kt (typeof rhs) )) )))
+               ) ())
                (set callee-ctx (bind-vararg( callee-ctx k kt (compile-expr( caller-ctx rhs offset Used )) )))
             ) (
-               (set callee-ctx (union( callee-ctx (unify( kt (typeof rhs) )) )))
+               (if (is-open kt) (
+                  (set callee-ctx (union( callee-ctx (unify( kt (typeof rhs) )) )))
+               ) ())
                (set callee-ctx (FCtxBind( (close callee-ctx) k kt (compile-expr( caller-ctx rhs offset Used )) )))
             ))
          ))
-         (if (non-zero(slot( kt 'Meta_s 'OntoStack_s ))) (
-            (set offset (-( offset (as (sizeof-aligned kt) I64) )))
-         ) ())
       ))
       ( ASTNil () )
    ))

@@ -23,3 +23,14 @@ is-reg32 := λ(: s String). (: (
    ))
    r
 ) U64);
+
+is-reg32 := λ(: tt Type). (: (
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( (TAnd( t1 t2 )) (set r (||( (is-reg32 t1) (is-reg32 t2) ))) )
+      ( (TGround( 'Reg32_s _ )) (set r 1_u64) )
+      ( _ () )
+   ))
+   r
+) U64);

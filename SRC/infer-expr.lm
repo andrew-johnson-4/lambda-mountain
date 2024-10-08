@@ -26,10 +26,8 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (match term (
             ()
             ( (App( _ (App( t _ )) )) (
-               (match (slot( tt 'String_s )) (
-                  ()
-                  ( (TGround( 'String_s _ )) () )
-                  ( _ (infer-expr( tctx t Unscoped tt used )) )
+               (if (is-string tt) () (
+                  (infer-expr( tctx t Unscoped tt used ))
                ))
                (let inner-tt (typeof t))
                (if (non-zero inner-tt) (
@@ -206,7 +204,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
       ))
       ( (Abs( lhs rhs tlt )) (
          (set tctx (infer-ctx( tctx lhs )))
-         (if (non-zero(slot( tlt 'Blob_s ))) (
+         (if (is-blob tlt) (
             (match rhs (
                ()
                ( (App( (Lit( ':_s _ )) (App( inner-rhs (AType return-type) )) )) (
@@ -220,7 +218,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (let lt (typeof-lhs lhs))
          (let rt (typeof rhs))
          (ascript-normal( term (enrich( (t3( 'Arrow_s lt rt )) tlt )) ))
-         (if (non-zero(slot( tlt 'Blob_s ))) () (
+         (if (is-blob tlt) () (
             (apply-or-cons-and-specialize(
                'cdecl::return_s (typeof-var-raw( term tctx 'cdecl::return_s )) rt term
             ))

@@ -17,7 +17,7 @@ infer-global-context := λ(: td AST). (: (
          (let return-type (guess-representation(without-representation rhst)))
          (let ft (t3( 'Arrow_s lt return-type )))
          (set ft (enrich( ft tlt )))
-         (if (&&( (non-zero(slot( tlt 'Hook_s ))) (not(non-zero(slot( rhst 'Nil_s )))) )) (
+         (if (&&( (is-hook tlt) (not(is-nil rhst)) )) (
             (exit-error( 'Hooks\sMust\sNot\sReturn\sValues._s td ))
          ) ())
          (mark-global-as-seen( k ft tlt ))
@@ -33,7 +33,7 @@ infer-global-context := λ(: td AST). (: (
       ( (Frg( k_t (Abs( lhs (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) tlt )) )) (
          (let lt (typeof-lhs lhs))
          (let ft (t3( 'Arrow_s lt rhst )))
-         (if (&&( (non-zero(slot( tlt 'Hook_s ))) (not(non-zero(slot( rhst 'Nil_s )))) )) (
+         (if (&&( (is-hook tlt) (not(is-nil rhst)) )) (
             (exit-error( 'Hooks\sMust\sNot\sReturn\sBalues._s td ))
          ) ())
          (set ft (enrich( ft tlt )))

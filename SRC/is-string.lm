@@ -1,0 +1,11 @@
+
+is-string := λ(: tt Type). (: (
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( (TAnd( t1 t2 )) (set r (||( (is-string t1) (is-string t2) ))) )
+      ( (TGround( 'String_s _ )) (set r 1_u64) )
+      ( _ () )
+   ))
+   r
+) U64);
