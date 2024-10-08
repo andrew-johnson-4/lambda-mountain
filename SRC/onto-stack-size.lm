@@ -5,10 +5,11 @@ onto-stack-size := λ(: tt Type). (: (
       ()
       ( (TAnd( t1 t2 )) (set r (max( (onto-stack-size t1) (onto-stack-size t2) ))) )
       ( (TGround( 'Cons_s (LCons( t1 (LCons( t2 LEOF )) )) )) (
-         (if (is-onto-stack t1) (set r (sizeof-aligned t1)) ())
-         (if (is-onto-stack t2) (set r (+( r (sizeof-aligned t2) ))) ())
+         (set r (+( (onto-stack-size t1) (onto-stack-size t2) )))
       ))
-      ( _ () )
+      ( _ (
+         (if (is-onto-stack tt) (set r (sizeof-aligned tt)) ())
+      ))
    ))
    r
 ) U64);
