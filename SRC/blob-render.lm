@@ -75,6 +75,12 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
             (set r (SCons( (close(SAtom(to-string ri))) (close r) )))
          ))
       ))
+      ( (App( (Var( 'align_s _ )) le )) (
+         (let lcs (blob-render-simple( ctx context-key le )))
+         (let ls (.1 lcs))
+         (let li (to-i64(clone-rope ls)))
+         (set r (SAtom(to-string(align li))))
+      ))
       ( (App( (Var( '==_s _ )) (App( le re )) )) (
          (let lcs (blob-render-simple( ctx context-key le )))
          (let ls (.1 lcs))
@@ -156,6 +162,7 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST). (: (
          (let cs (blob-render-simple( ctx context-key rhs )))
          (let s (.1 cs))
          (set f (fragment::set( f context-key s )))
+         (set f (fragment::set( f 'expression_s s )))
          (set ctx (fragment-context::bind(
             ctx lhs (typeof rhs) f
          ))) # TODO, render the binding as non-simple blob?
