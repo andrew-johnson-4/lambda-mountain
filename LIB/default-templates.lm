@@ -38,26 +38,38 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
    ))
 ) Nil);
 
-fragment  .0 := λ(: src Constant). (: (
-   (.program(
-      \t 'mov \s '$ (.expression src) , \s '%RAX \n
+.0 := λ: Blob(: src Constant). (: (
+   (:program(
+      '\tmov\s$_s (:expression src) ',\s%RAX\n_s
    ))
-   (.expression( 'RAX ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
+   (:expression 'RAX_s )
 ) U64+Reg64);
 
-fragment  .0 := λ(: src LocalVariable). (: (
-   (.program(
-      \t 'mov \s (.expression src) \[ '%RBP \] , \s '%RAX \n
+.0 := λ: Blob(: src LocalVariable). (: (
+   (:program(
+      '\tmov\s_s (:expression src) '\[%RBP\],\s%RAX\n_s
    ))
-   (.expression( 'RAX ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
+   (:expression 'RAX_s )
 ) U64+Reg64);
 
-fragment  .0 := λ(: src GlobalVariable). (: (
-   (.program(
-      \t 'mov \s '$ (.expression src) , \s '%R15 \n
-      \t 'mov \s '0 \[ '%R15 \] , \s '%RAX \n
+.0 := λ: Blob(: src GlobalVariable). (: (
+   (:program(
+      '\tmov\s$_s (:expression src) ',\s%R15\n_s
+      '\tmov\s0\[%R15\],\s%RAX\n_s
    ))
-   (.expression( 'RAX ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
+   (:expression 'RAX_s )
 ) U64+Reg64);
 
 fragment  .0 := λ(: src LocalVariable+Fields<Cons<_,f0+Sized<1>>>). (: (
