@@ -14,13 +14,9 @@ is-open := λ(: tt Type). (: (
          (set r (is-open base-type))
       ))
       ( (TGround( _ pars )) (
-         (while (non-zero pars) (match pars (
-            ()
-            ( (LCons( p1 rst )) (
-               (if (is-open p1) (set r 1_u64) ())
-               (set pars rst)
-            ))
-         )))
+         (for-each (p1 in pars) (
+            (if (is-open p1) (set r 1_u64) ())
+         ))
       ))
    ))
    r
