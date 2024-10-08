@@ -6,8 +6,7 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (
 apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: blame AST). (: (
    (let r TAny)
    (let rs (apply-plural( function-name ft pt do-specialize blame )))
-   (let is-hook (non-zero(slot( ft 'Hook_s ))))
-   (if (==( is-hook 0_u64 )) (
+   (if (==( (is-hook ft) 0_u64 )) (
       (set rs (reduce-plural rs))
    ) ())
    (if (&&( (==( (.length rs) 0_u64 )) (!=( function-name 'del_s )) )) (
@@ -17,7 +16,7 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: 
       (print 'Options:\s_s)(print ft)(print '\n_s)
       (exit 1_u64)
    ) ())
-   (if (&&( (>( (.length rs) 1_u64 )) (==( is-hook 0_u64 )) )) (
+   (if (&&( (>( (.length rs) 1_u64 )) (==( (is-hook ft) 0_u64 )) )) (
       (print 'Function\sApplication\sYielded\sAn\sIrreducible\sPlurality\sOf\sMatches\n_s)
       (print function-name)(print '\s:\s_s)(print ft)(print '\n_s)
       (print 'With\sArgument\s_s)(print pt)(print '\n_s)

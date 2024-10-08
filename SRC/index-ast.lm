@@ -1,5 +1,7 @@
 
 import SRC/is-arrow.lm;
+import SRC/is-hook.lm;
+import SRC/is-blob.lm;
 import SRC/plus.lm;
 import SRC/print.lm;
 import SRC/reverse.lm;
