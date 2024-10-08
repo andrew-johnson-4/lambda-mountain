@@ -17,55 +17,35 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ))
       ( (Lit( val _ )) (
          (let ltype (typeof term))
-         (match (slot( ltype 'String_s )) (
-            ()
-            ( (TGround( 'String_s _ )) (
-               (set e (compile-declare-cstring( val )))
-            ))
-            ( _ (
-               (let isa-fragment False_u8)
-               (match (slot( ltype 'Reg8_s )) (
-                  ()
-                  ( (TGround( 'Reg8_s _ )) (set isa-fragment True_u8) )
-                  ( _ () )
-               ))
-               (match (slot( ltype 'Reg16_s )) (
-                  ()
-                  ( (TGround( 'Reg16_s _ )) (set isa-fragment True_u8) )
-                  ( _ () )
-               ))
-               (match (slot( ltype 'Reg32_s )) (
-                  ()
-                  ( (TGround( 'Reg32_s _ )) (set isa-fragment True_u8) )
-                  ( _ () )
-               ))
-               (match (slot( ltype 'Reg64_s )) (
-                  ()
-                  ( (TGround( 'Reg64_s _ )) (set isa-fragment True_u8) )
-                  ( _ () )
-               ))
-               (if (==( isa-fragment True_u8 )) (
-                  (set e (fragment::expression val))
+         (if (is-string ltype) (
+            (set e (compile-declare-cstring( val )))
+         ) (
+            (let isa-fragment False_u8)
+            (if (is-reg8 ltype) (set isa-fragment True_u8) ())
+            (if (is-reg16 ltype) (set isa-fragment True_u8) ())
+            (if (is-reg32 ltype) (set isa-fragment True_u8) ())
+            (if (is-reg64 ltype) (set isa-fragment True_u8) ())
+            (if (==( isa-fragment True_u8 )) (
+               (set e (fragment::expression val))
+            ) (
+               (if (non-zero(class-of-tag val)) (
+                  (let tag-index (index-of-tag val))
+                  (set e (fragment::expression(to-string tag-index)))
+                  (set e (fragment::set( e 'program_s (SCons( (close SNil) (close SNil) )) )))
                ) (
-                  (if (non-zero(class-of-tag val)) (
-                     (let tag-index (index-of-tag val))
-                     (set e (fragment::expression(to-string tag-index)))
-                     (set e (fragment::set( e 'program_s (SCons( (close SNil) (close SNil) )) )))
-                  ) (
-                     (match val (
-                        ()
-                        ( 'True_s (set e (fragment::expression '1_s)) )
-                        ( 'False_s (set e (fragment::expression '0_s)) )
-                        ( '\\t_s (set e (fragment::expression '9_s)) )
-                        ( '\\n_s (set e (fragment::expression '10_s)) )
-                        ( '\\s_s (set e (fragment::expression '32_s)) )
-                        ( '\\o_s (set e (fragment::expression '35_s)) )
-                        ( '\\`_s (set e (fragment::expression '39_s)) )
-                        ( '\\[_s (set e (fragment::expression '40_s)) )
-                        ( '\\]_s (set e (fragment::expression '41_s)) )
-                        ( '\\:_s (set e (fragment::expression '59_s)) )
-                        ( _ (set e (fragment::expression val)) )
-                     ))
+                  (match val (
+                     ()
+                     ( 'True_s (set e (fragment::expression '1_s)) )
+                     ( 'False_s (set e (fragment::expression '0_s)) )
+                     ( '\\t_s (set e (fragment::expression '9_s)) )
+                     ( '\\n_s (set e (fragment::expression '10_s)) )
+                     ( '\\s_s (set e (fragment::expression '32_s)) )
+                     ( '\\o_s (set e (fragment::expression '35_s)) )
+                     ( '\\`_s (set e (fragment::expression '39_s)) )
+                     ( '\\[_s (set e (fragment::expression '40_s)) )
+                     ( '\\]_s (set e (fragment::expression '41_s)) )
+                     ( '\\:_s (set e (fragment::expression '59_s)) )
+                     ( _ (set e (fragment::expression val)) )
                   ))
                ))
             ))
