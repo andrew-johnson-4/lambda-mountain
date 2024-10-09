@@ -937,49 +937,49 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
    (:unframe( (:unframe src) ))
 ) f4+StackVariable);
 
-fragment  .5 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<1>>,Sized<size4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
-   (.program(
-      (let base-offset (+( (+( (+( (+( '0 (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )) (align( (.expression size4) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%R15 \n
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%R15 \] , \s '%AL \n
+.5 := λ: Blob(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<1>>,Sized<size4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
+   (:program(
+      (let base-offset (+( (+( (+( (+( (align(: size0 L)) (align(: size1 L)) )) (align(: size2 L)) )) (align(: size3 L)) )) (align(: size4 L)) )))
+      '\tmov\s$_l (:expression src) ',\s%R15\n_l
+      '\tmov\s_l (:expression base-offset) '\[%R15\],\s%AL\n_l
    ))
-   (.expression( 'AL ))
+   (:expression( 'AL ))
 ) f5+Reg8);
 
-fragment  .5 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<2>>,Sized<size4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
-   (.program(
-      (let base-offset (+( (+( (+( (+( '0 (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )) (align( (.expression size4) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%R15 \n
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%R15 \] , \s '%AX \n
+.5 := λ: Blob(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<2>>,Sized<size4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
+   (:program(
+      (let base-offset (+( (+( (+( (+( (align(: size0 L)) (align(: size1 L)) )) (align(: size2 L)) )) (align(: size3 L)) )) (align(: size4 L)) )))
+      '\tmov\s$_l (:expression src) ',\s%R15\n_l
+      '\tmov\s_l (:expression base-offset) '\[%R15\],\s%AX\n_l
    ))
-   (.expression( 'AX ))
+   (:expression( 'AX ))
 ) f5+Reg16);
 
-fragment  .5 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<4>>,Sized<size4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
-   (.program(
-      (let base-offset (+( (+( (+( (+( '0 (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )) (align( (.expression size4) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%R15 \n
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%R15 \] , \s '%EAX \n
+.5 := λ: Blob(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<4>>,Sized<size4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
+   (:program(
+      (let base-offset (+( (+( (+( (+( (align(: size0 L)) (align(: size1 L)) )) (align(: size2 L)) )) (align(: size3 L)) )) (align(: size4 L)) )))
+      '\tmov\s$_l (:expression src) ',\s%R15\n_l
+      '\tmov\s_l (:expression base-offset) '\[%R15\],\s%EAX\n_l
    ))
-   (.expression( 'EAX ))
+   (:expression( 'EAX ))
 ) f5+Reg32);
 
-fragment  .5 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<8>>,Sized<size4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
-   (.program(
-      (let base-offset (+( (+( (+( (+( '0 (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )) (align( (.expression size4) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%R15 \n
-      \t 'mov \s (+( (.expression base-offset) (.expression size0) )) \[ '%R15 \] , \s '%RAX \n
+.5 := λ: Blob(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<8>>,Sized<size4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
+   (:program(
+      (let base-offset (+( (+( (+( (+( (align(: size0 L)) (align(: size1 L)) )) (align(: size2 L)) )) (align(: size3 L)) )) (align(: size4 L)) )))
+      '\tmov\s$_l (:expression src) ',\s%R15\n_l
+      '\tmov\s_l (:expression base-offset) '\[%R15\],\s%RAX\n_l
    ))
-   (.expression( 'RAX ))
+   (:expression( 'RAX ))
 ) f5+Reg64);
 
-fragment  .5 := λ(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<size5+GT<8>>>,Sized<size4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
-   (.program(
-      (let base-offset (+( (+( (+( (+( '0 (align( (.expression size1) )) )) (align( (.expression size2) )) )) (align( (.expression size3) )) )) (align( (.expression size4) )) )))
-      \t 'mov \s '$ (.expression src) , \s '%R15 \n
-      (for index in (range( 0 (/( (.expression size5) '8 )) )) (
-         (let word-offset (-( (+( (-( (+( (.expression base-offset) (.expression size5) )) (*( (.expression index) '8 )) )) (.expression size0) )) '8 )) )
-         \t 'pushq \s (.expression word-offset) \[ '%R15 \] \n
+.5 := λ: Blob(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<size5+GT<8>>>,Sized<size4>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
+   (:program(
+      (let base-offset (+( (+( (+( (+( (align(: size0 L)) (align(: size1 L)) )) (align(: size2 L)) )) (align(: size3 L)) )) (align(: size4 L)) )))
+      '\tmov\s$_l (:expression src) ',\s%R15\n_l
+      (for-atom (index in (range( 0_l (/( (: size5 L) 8_l )) ))) (
+         (let word-offset (-( (-( (+( (:expression base-offset) (: size5 L) )) (*( (:expression index) 8_l )) )) 8_l )) )
+         '\tpushq\s_l (:expression word-offset) '\[%R15\]\n_l
       ))
    ))
 ) f5+StackVariable);
