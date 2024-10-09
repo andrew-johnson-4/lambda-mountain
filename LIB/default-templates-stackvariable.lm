@@ -1,56 +1,92 @@
 
 .0 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<_,f0+Sized<8>>>). (: (
    (:program(
+      (:program src)
       '\tmov\s0\[%RSP\],\s%RAX\n_l
       '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
    (:expression( 'RAX_l ))
 ) f0+Reg64);
 
 .tag := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<_,f0+Sized<8>>>). (: (
    (:program(
+      (:program src)
       '\tmov\s0\[%RSP\],\s%RAX\n_l
       '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
    (:expression( 'RAX_l ))
 ) f0+Reg64);
 
 .1 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<_,f1+Sized<8>>,Sized<f0-size>>>). (: (
    (:program(
+      (:program src)
       '\tmov\s_l (align(: f0-size L)) '\[%RSP\],\s%RAX\n_l
       '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
    (:expression( 'RAX_l ))
 ) f1+Reg64);
 
 .2 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<_,f2+Sized<8>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
    (:program(
+      (:program src)
       '\tmov\s_l (+( (align(: f0-size L)) (align(: f1-size L)) )) '\[%RSP\],\s%RAX\n_l
       '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
+   (:expression( 'RAX_l ))
 ) f2+Reg64);
 
 .3 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<Cons<_,f3+Sized<8>>,Sized<f2-size>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
    (:program(
+      (:program src)
       '\tmov\s_l (+( (+( (align(: f0-size L)) (align(: f1-size L)) )) (align(: f2-size L)) )) '\[%RSP\],\s%RAX\n_l
       '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
    (:expression( 'RAX_l ))
 ) f3+Reg64);
 
 .4 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<Cons<Cons<_,f4+Sized<8>>,Sized<f3-size>>,Sized<f2-size>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
    (:program(
+      (:program src)
       '\tmov\s_l (+( (+( (+( (align(: f0-size L)) (align(: f1-size L)) )) (align(: f2-size L)) )) (align(: f3-size L)) )) '\[%RSP\],\s%RAX\n_l
       '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
    (:expression( 'RAX_l ))
 ) f4+Reg64);
 
 .5 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<8>>,Sized<f4-size>>,Sized<f3-size>>,Sized<f2-size>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
    (:program(
+      (:program src)
       '\tmov\s_l (+( (+( (+( (+( (align(: f0-size L)) (align(: f1-size L)) )) (align(: f2-size L)) )) (align(: f3-size L)) )) (align(: f4-size L)) )) '\[%RSP\],\s%RAX\n_l
       '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
    (:expression( 'RAX_l ))
 ) f5+Reg64);
 
