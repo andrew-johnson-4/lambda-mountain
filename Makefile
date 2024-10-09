@@ -1,9 +1,9 @@
 
-work:
-	lm tests/regress/cdecl.lm
+work: install-production
+	lm --profile-invocations SRC/index-index.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
-	./tmp
+	./tmp SRC/index-index.lm
 
 build-docs:
 	lm --blob -o docs/index.html docs/index.html.lm
