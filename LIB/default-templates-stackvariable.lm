@@ -1,58 +1,57 @@
 
-fragment  .0 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<_,f0+Sized<8>>>). (: (
-   (.program(
-      \t 'mov \s '0 \[ '%RSP \] , \s '%RAX \n
-      \t 'addq \s '$ (.expression base-size) , \s '%RSP \n
+.0 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<_,f0+Sized<8>>>). (: (
+   (:program(
+      '\tmov\s0\[%RSP\],\s%RAX\n_l
+      '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
-   (.expression( 'RAX ))
+   (:expression( 'RAX_l ))
 ) f0+Reg64);
 
-fragment  .tag := λ(: src StackVariable+Sized<base-size>+Fields<Cons<_,f0+Sized<8>>>). (: (
-   (.program(
-      \t 'mov \s '0 \[ '%RSP \] , \s '%RAX \n
-      \t 'addq \s '$ (.expression base-size) , \s '%RSP \n
+.tag := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<_,f0+Sized<8>>>). (: (
+   (:program(
+      '\tmov\s0\[%RSP\],\s%RAX\n_l
+      '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
-   (.expression( 'RAX ))
+   (:expression( 'RAX_l ))
 ) f0+Reg64);
 
-fragment  .1 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<_,f1+Sized<8>>,Sized<f0-size>>>). (: (
-   (.program(
-      \t 'mov \s (align(.expression f0-size)) \[ '%RSP \] , \s '%RAX \n
-      \t 'addq \s '$ (.expression base-size) , \s '%RSP \n
+.1 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<_,f1+Sized<8>>,Sized<f0-size>>>). (: (
+   (:program(
+      '\tmov\s_l (align(: f0-size L)) '\[%RSP\],\s%RAX\n_l
+      '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
-   (.expression( 'RAX ))
+   (:expression( 'RAX_l ))
 ) f1+Reg64);
 
-fragment  .2 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<_,f2+Sized<8>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
-   (.program(
-      \t 'mov \s (+( (align(.expression f0-size)) (align(.expression f1-size)) )) \[ '%RSP \] , \s '%RAX \n
-      \t 'addq \s '$ (.expression base-size) , \s '%RSP \n
+.2 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<_,f2+Sized<8>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
+   (:program(
+      '\tmov\s_l (+( (align(: f0-size L)) (align(: f1-size L)) )) '\[%RSP\],\s%RAX\n_l
+      '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
-   (.expression( 'RAX ))
 ) f2+Reg64);
 
-fragment  .3 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<Cons<_,f3+Sized<8>>,Sized<f2-size>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
-   (.program(
-      \t 'mov \s (+( (align(.expression f0-size)) (+( (align(.expression f1-size)) (align(.expression f2-size)) )) )) \[ '%RSP \] , \s '%RAX \n
-      \t 'addq \s '$ (.expression base-size) , \s '%RSP \n
+.3 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<Cons<_,f3+Sized<8>>,Sized<f2-size>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
+   (:program(
+      '\tmov\s_l (+( (+( (align(: f0-size L)) (align(: f1-size L)) )) (align(: f2-size L)) )) '\[%RSP\],\s%RAX\n_l
+      '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
-   (.expression( 'RAX ))
+   (:expression( 'RAX_l ))
 ) f3+Reg64);
 
-fragment  .4 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<Cons<Cons<_,f4+Sized<8>>,Sized<f3-size>>,Sized<f2-size>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
-   (.program(
-      \t 'mov \s (+( (align(.expression f0-size)) (+( (align(.expression f1-size)) (+( (align(.expression f2-size)) (align(.expression f3-size)) )) )) )) \[ '%RSP \] , \s '%RAX \n
-      \t 'addq \s '$ (.expression base-size) , \s '%RSP \n
+.4 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<Cons<Cons<_,f4+Sized<8>>,Sized<f3-size>>,Sized<f2-size>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
+   (:program(
+      '\tmov\s_l (+( (+( (+( (align(: f0-size L)) (align(: f1-size L)) )) (align(: f2-size L)) )) (align(: f3-size L)) )) '\[%RSP\],\s%RAX\n_l
+      '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
-   (.expression( 'RAX ))
+   (:expression( 'RAX_l ))
 ) f4+Reg64);
 
-fragment  .5 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<8>>,Sized<f4-size>>,Sized<f3-size>>,Sized<f2-size>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
-   (.program(
-      \t 'mov \s (+( (align(.expression f0-size)) (+( (align(.expression f1-size)) (+( (align(.expression f2-size)) (+( (align(.expression f3-size)) (align(.expression f4-size)) )) )) )) )) \[ '%RSP \] , \s '%RAX \n
-      \t 'addq \s '$ (.expression base-size) , \s '%RSP \n
+.5 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<8>>,Sized<f4-size>>,Sized<f3-size>>,Sized<f2-size>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
+   (:program(
+      '\tmov\s_l (+( (+( (+( (+( (align(: f0-size L)) (align(: f1-size L)) )) (align(: f2-size L)) )) (align(: f3-size L)) )) (align(: f4-size L)) )) '\[%RSP\],\s%RAX\n_l
+      '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
-   (.expression( 'RAX ))
+   (:expression( 'RAX_l ))
 ) f5+Reg64);
 
 fragment  .0 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<_,f0+Sized<f0-size>>>). (: (
