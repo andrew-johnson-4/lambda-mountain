@@ -34,7 +34,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
             (set assemble-data-section (+(
                (SAtom counter-id) (SAtom ':\n.zero\s8\n_s)
             )))
-            (print 'Declare\sGlobal\sCounter:\s_)(print counter-id)(print '\n_s)
+            (print 'Declare\sGlobal\sCounter:\s_s)(print counter-id)(print '\n_s)
             #assemble-profile-onexit
          ) ())
 
