@@ -679,7 +679,7 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
 ) f0+StackVariable);
 
 .1 := λ: Blob(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<1>>,Sized<size0>>>). (: (
-   (.program(
+   (:program(
       '\tmov\s$_l (:expression src) ',\s%R15\n_l
       '\tmov\s_l (+( 0_l (: size0 L) )) '\[%R15\],\s%AL\n_l
    ))
@@ -687,7 +687,7 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
    (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
-   (.expression( 'AL_l ))
+   (:expression( 'AL_l ))
 ) f1+Reg8);
 
 .1 := λ: Blob(: src GlobalVariable+Fields<Cons<Cons<_,f1+Sized<2>>,Sized<size0>>>). (: (
