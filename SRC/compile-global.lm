@@ -30,10 +30,10 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
          ))
          (set text (SCons( (close text) (close(SAtom( ':\n_s ))) )))
          (if (==( config-profile-invocations True_u8 )) (
-            (let counter-id (mangle-identifier( (+( k '_COUNTER_s )) kt )))
-            (set assemble-data-section (+(
-               (SAtom counter-id) (SAtom ':\n.zero\s8\n_s)
-            )))
+            (let counter-id (mangle-identifier( k kt )))
+            (set assemble-data-section (+( assemble-data-section (+(
+               (SAtom counter-id) (SAtom '_COUNTER:\n.zero\s8\n_s)
+            )) )))
             (print 'Declare\sGlobal\sCounter:\s_s)(print counter-id)(print '\n_s)
             #assemble-profile-onexit
          ) ())
