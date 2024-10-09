@@ -121,13 +121,15 @@ fn regression_tests() {
    let mut failures = Vec::new();
    for entry in glob("tests/regress/*.lm").unwrap() {
       let path = entry.unwrap().display().to_string();
-      let expected = std::fs::read_to_string(path.clone() + ".out")
-                    .expect(&format!("Could not load expected output {}.out", path));
-      let expected = expected.trim().to_string();
-      let actual = run_bootstrap(&path);
-      let actual = actual.trim().to_string();
-      if expected != actual {
-         failures.push(( "--compile", path, expected, actual ));
+      if !std::path::Path::new(&(path.clone() + ".skip")).exists() {
+         let expected = std::fs::read_to_string(path.clone() + ".out")
+                       .expect(&format!("Could not load expected output {}.out", path));
+         let expected = expected.trim().to_string();
+         let actual = run_bootstrap(&path);
+         let actual = actual.trim().to_string();
+         if expected != actual {
+            failures.push(( "--compile", path, expected, actual ));
+         }
       }
    }
    for (mode,path,expected,actual) in &failures {

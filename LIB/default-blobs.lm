@@ -1,13 +1,13 @@
 
-fragment type L; atom suffix L _l;
+fragment type L; size L 0; atom suffix L _l;
 
-:expression := λ: Blob(: x x). (: () L);
-:program := λ: Blob(: x x). (: () L);
-:frame := λ: Blob(: x x). (: () L);
-:unframe := λ: Blob(: x x). (: () L);
-:text := λ: Blob(: x x). (: () L);
-:data := λ: Blob(: x x). (: () L);
-:del := λ: Blob(: x x). (: () L);
+:expression := λ: Blob(: x Meta<Any>). (: () L);
+:program := λ: Blob(: x Meta<Any>). (: () L);
+:frame := λ: Blob(: x Meta<Any>). (: () L);
+:unframe := λ: Blob(: x Meta<Any>). (: () L);
+:text := λ: Blob(: x Meta<Any>). (: () L);
+:data := λ: Blob(: x Meta<Any>). (: () L);
+:del := λ: Blob(: x Meta<Any>). (: () L);
 
 cdecl::args-size := λ: Blob . (: () L);
 
@@ -26,3 +26,5 @@ cdecl::args-size := λ: Blob . (: () L);
 
 range := λ: Blob(: hi L). (: () L);
 range := λ: Blob(: lo L)(: hi L). (: () L);
+
+align := λ: Blob(: hi L). (: () L);

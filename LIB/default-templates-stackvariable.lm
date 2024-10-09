@@ -1,131 +1,186 @@
 
-fragment  .0 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<_,f0+Sized<8>>>). (: (
-   (.program(
-      \t 'mov \s '0 \[ '%RSP \] , \s '%RAX \n
-      \t 'addq \s '$ (.expression base-size) , \s '%RSP \n
+.0 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<_,f0+Sized<8>>>). (: (
+   (:program(
+      (:program src)
+      '\tmov\s0\[%RSP\],\s%RAX\n_l
+      '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
-   (.expression( 'RAX ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
+   (:expression( 'RAX_l ))
 ) f0+Reg64);
 
-fragment  .tag := λ(: src StackVariable+Sized<base-size>+Fields<Cons<_,f0+Sized<8>>>). (: (
-   (.program(
-      \t 'mov \s '0 \[ '%RSP \] , \s '%RAX \n
-      \t 'addq \s '$ (.expression base-size) , \s '%RSP \n
+.tag := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<_,f0+Sized<8>>>). (: (
+   (:program(
+      (:program src)
+      '\tmov\s0\[%RSP\],\s%RAX\n_l
+      '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
-   (.expression( 'RAX ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
+   (:expression( 'RAX_l ))
 ) f0+Reg64);
 
-fragment  .1 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<_,f1+Sized<8>>,Sized<f0-size>>>). (: (
-   (.program(
-      \t 'mov \s (align(.expression f0-size)) \[ '%RSP \] , \s '%RAX \n
-      \t 'addq \s '$ (.expression base-size) , \s '%RSP \n
+.1 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<_,f1+Sized<8>>,Sized<f0-size>>>). (: (
+   (:program(
+      (:program src)
+      '\tmov\s_l (align(: f0-size L)) '\[%RSP\],\s%RAX\n_l
+      '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
-   (.expression( 'RAX ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
+   (:expression( 'RAX_l ))
 ) f1+Reg64);
 
-fragment  .2 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<_,f2+Sized<8>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
-   (.program(
-      \t 'mov \s (+( (align(.expression f0-size)) (align(.expression f1-size)) )) \[ '%RSP \] , \s '%RAX \n
-      \t 'addq \s '$ (.expression base-size) , \s '%RSP \n
+.2 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<_,f2+Sized<8>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
+   (:program(
+      (:program src)
+      '\tmov\s_l (+( (align(: f0-size L)) (align(: f1-size L)) )) '\[%RSP\],\s%RAX\n_l
+      '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
-   (.expression( 'RAX ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
+   (:expression( 'RAX_l ))
 ) f2+Reg64);
 
-fragment  .3 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<Cons<_,f3+Sized<8>>,Sized<f2-size>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
-   (.program(
-      \t 'mov \s (+( (align(.expression f0-size)) (+( (align(.expression f1-size)) (align(.expression f2-size)) )) )) \[ '%RSP \] , \s '%RAX \n
-      \t 'addq \s '$ (.expression base-size) , \s '%RSP \n
+.3 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<Cons<_,f3+Sized<8>>,Sized<f2-size>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
+   (:program(
+      (:program src)
+      '\tmov\s_l (+( (+( (align(: f0-size L)) (align(: f1-size L)) )) (align(: f2-size L)) )) '\[%RSP\],\s%RAX\n_l
+      '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
-   (.expression( 'RAX ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
+   (:expression( 'RAX_l ))
 ) f3+Reg64);
 
-fragment  .4 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<Cons<Cons<_,f4+Sized<8>>,Sized<f3-size>>,Sized<f2-size>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
-   (.program(
-      \t 'mov \s (+( (align(.expression f0-size)) (+( (align(.expression f1-size)) (+( (align(.expression f2-size)) (align(.expression f3-size)) )) )) )) \[ '%RSP \] , \s '%RAX \n
-      \t 'addq \s '$ (.expression base-size) , \s '%RSP \n
+.4 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<Cons<Cons<_,f4+Sized<8>>,Sized<f3-size>>,Sized<f2-size>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
+   (:program(
+      (:program src)
+      '\tmov\s_l (+( (+( (+( (align(: f0-size L)) (align(: f1-size L)) )) (align(: f2-size L)) )) (align(: f3-size L)) )) '\[%RSP\],\s%RAX\n_l
+      '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
-   (.expression( 'RAX ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
+   (:expression( 'RAX_l ))
 ) f4+Reg64);
 
-fragment  .5 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<8>>,Sized<f4-size>>,Sized<f3-size>>,Sized<f2-size>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
-   (.program(
-      \t 'mov \s (+( (align(.expression f0-size)) (+( (align(.expression f1-size)) (+( (align(.expression f2-size)) (+( (align(.expression f3-size)) (align(.expression f4-size)) )) )) )) )) \[ '%RSP \] , \s '%RAX \n
-      \t 'addq \s '$ (.expression base-size) , \s '%RSP \n
+.5 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5+Sized<8>>,Sized<f4-size>>,Sized<f3-size>>,Sized<f2-size>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
+   (:program(
+      (:program src)
+      '\tmov\s_l (+( (+( (+( (+( (align(: f0-size L)) (align(: f1-size L)) )) (align(: f2-size L)) )) (align(: f3-size L)) )) (align(: f4-size L)) )) '\[%RSP\],\s%RAX\n_l
+      '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
-   (.expression( 'RAX ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
+   (:expression( 'RAX_l ))
 ) f5+Reg64);
 
-fragment  .0 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<_,f0+Sized<f0-size>>>). (: (
-   (.program(
-      (let pre-size 0) (if-eq 1 1 (
-      (let tail-size (+( (.expression pre-size) (.expression f0-size) ))) (if-eq 1 1 (
-      (let post-size (-( (.expression base-size) (.expression tail-size) )))
-      (for bi in (range( '0 (/( (.expression f0-size) '8 )) )) (
-         (let reversing-offset (*( 8 (+( (.expression bi) 1 )) ))) 
-         \t 'movq \s (-( (.expression tail-size) (.expression reversing-offset) )) \[ '%RSP \] , \s '%RAX \n
-         \t 'movq \s '%RAX , \s (-( (.expression base-size) (.expression reversing-offset) )) \[ '%RSP \] \n
+.0 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<_,f0+Sized<f0-size>>>). (: (
+   (:program(
+      (:program src)
+      (let pre-size 0_l)
+      (let tail-size (+( (:expression pre-size) (: f0-size L) )))
+      (let post-size (-( (: base-size L) (:expression tail-size) )))
+      (for-atom (bi in (range( 0_l (/( (: f0-size L) 8_l )) ))) (
+         (let reversing-offset (*( 8_l (+( (:expression bi) 1_l )) )))
+         '\tmovq\s_l (-( (:expression tail-size) (:expression reversing-offset) )) '\[%RSP\],\s%RAX\n_l
+         '\tmovq\s%RAX,\s_l (-( (:expression base-size) (:expression reversing-offset) )) '\[%RSP\]\n_l
       ))
-      \t 'addq \s '$ (+( (.expression pre-size) (.expression post-size) )) , \s '%RSP \n
-      )) ))
+      '\taddq\s$_l (+( (:expression pre-size) (:expression post-size) )) ',\s%RSP\n_l
    ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
 ) f0+StackVariable);
 
-fragment  .tag := λ(: src StackVariable+Sized<base-size>+Fields<Cons<_,f0+Sized<f0-size>>>). (: (
-   (.program(
-      (let pre-size 0) (if-eq 1 1 (
-      (let tail-size (+( (.expression pre-size) (.expression f0-size) ))) (if-eq 1 1 (
-      (let post-size (-( (.expression base-size) (.expression tail-size) )))
-      (for bi in (range( '0 (/( (.expression f0-size) '8 )) )) (
-         (let reversing-offset (*( 8 (+( (.expression bi) 1 )) ))) 
-         \t 'movq \s (-( (.expression tail-size) (.expression reversing-offset) )) \[ '%RSP \] , \s '%RAX \n
-         \t 'movq \s '%RAX , \s (-( (.expression base-size) (.expression reversing-offset) )) \[ '%RSP \] \n
+.tag := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<_,f0+Sized<f0-size>>>). (: (
+   (:program(
+      (:program src)
+      (let pre-size 0_l)
+      (let tail-size (+( (:expression pre-size) (: f0-size L) )))
+      (let post-size (-( (: base-size L) (:expression tail-size) )))
+      (for-atom (bi in (range( 0_l (/( (: f0-size L) 8_l )) ))) (
+         (let reversing-offset (*( 8_l (+( (:expression bi) 1_l )) )))
+         '\tmovq\s_l (-( (:expression tail-size) (:expression reversing-offset) )) '\[%RSP\],\s%RAX\n_l
+         '\tmovq\s%RAX,\s_l (-( (:expression base-size) (:expression reversing-offset) )) '\[%RSP\]\n_l
       ))
-      \t 'addq \s '$ (+( (.expression pre-size) (.expression post-size) )) , \s '%RSP \n
-      )) ))
+      '\taddq\s$_l (+( (:expression pre-size) (:expression post-size) )) ',\s%RSP\n_l
    ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
 ) f0+StackVariable);
 
-fragment  .1 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<_,f1+Sized<f1-size+GT<8>>>,Sized<f0-size>>>). (: (
-   (.program(
-      (let pre-size (.expression f0-size)) (if-eq 1 1 (
-      (let tail-size (+( (.expression pre-size) (.expression f1-size) ))) (if-eq 1 1 (
-      (let post-size (-( (.expression base-size) (.expression tail-size) )))
-      (for bi in (range( '0 (/( (.expression f0-size) '8 )) )) (
-         (let reversing-offset (*( 8 (+( (.expression bi) 1 )) ))) 
-         \t 'movq \s (-( (.expression tail-size) (.expression reversing-offset) )) \[ '%RSP \] , \s '%RAX \n
-         \t 'movq \s '%RAX , \s (-( (.expression base-size) (.expression reversing-offset) )) \[ '%RSP \] \n
+.1 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<_,f1+Sized<f1-size+GT<8>>>,Sized<f0-size>>>). (: (
+   (:program(
+      (:program src)
+      (let pre-size (: f0-size L))
+      (let tail-size (+( (:expression pre-size) (: f1-size L) )))
+      (let post-size (-( (: base-size L) (:expression tail-size) )))
+      (for-atom (bi in (range( 0_l (/( (: f1-size L) 8_l )) ))) (
+         (let reversing-offset (*( 8_l (+( (:expression bi) 1_l )) )))
+         '\tmovq\s_l (-( (:expression tail-size) (:expression reversing-offset) )) '\[%RSP\],\s%RAX\n_l
+         '\tmovq\s%RAX,\s_l (-( (:expression base-size) (:expression reversing-offset) )) '\[%RSP\]\n_l
       ))
-      \t 'addq \s '$ (+( (.expression pre-size) (.expression post-size) )) , \s '%RSP \n
-      )) ))
+      '\taddq\s$_l (+( (:expression pre-size) (:expression post-size) )) ',\s%RSP\n_l
    ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
 ) f1+StackVariable);
 
-fragment  .2 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<_,f2+Sized<f2-size+GT<8>>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
-   (.program(
-      (let pre-size (+( (.expression f0-size) (.expression f1-size) ))) (if-eq 1 1 (
-      (let tail-size (+( (.expression pre-size) (.expression f2-size) ))) (if-eq 1 1 (
-      (let post-size (-( (.expression base-size) (.expression tail-size) )))
-      (for bi in (range( '0 (/( (.expression f0-size) '8 )) )) (
-         (let reversing-offset (*( 8 (+( (.expression bi) 1 )) ))) 
-         \t 'movq \s (-( (.expression tail-size) (.expression reversing-offset) )) \[ '%RSP \] , \s '%RAX \n
-         \t 'movq \s '%RAX , \s (-( (.expression base-size) (.expression reversing-offset) )) \[ '%RSP \] \n
+.2 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<_,f2+Sized<f2-size+GT<8>>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
+   (:program(
+      (:program src)
+      (let pre-size (+( (: f0-size L) (: f1-size L) )))
+      (let tail-size (+( (:expression pre-size) (: f2-size L) )))
+      (let post-size (-( (: base-size L) (:expression tail-size) )))
+      (for-atom (bi in (range( 0_l (/( (: f2-size L) 8_l )) ))) (
+         (let reversing-offset (*( 8_l (+( (:expression bi) 1_l )) )))
+         '\tmovq\s_l (-( (:expression tail-size) (:expression reversing-offset) )) '\[%RSP\],\s%RAX\n_l
+         '\tmovq\s%RAX,\s_l (-( (:expression base-size) (:expression reversing-offset) )) '\[%RSP\]\n_l
       ))
-      \t 'addq \s '$ (+( (.expression pre-size) (.expression post-size) )) , \s '%RSP \n
-      )) ))
+      '\taddq\s$_l (+( (:expression pre-size) (:expression post-size) )) ',\s%RSP\n_l
    ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
 ) f2+StackVariable);
 
-fragment  .3 := λ(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<Cons<_,f3+Sized<f3-size+GT<8>>>,Sized<f2-size>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
-   (.program(
-      (let pre-size (+( (+( (.expression f0-size) (.expression f1-size) )) (.expression f2-size) ))) (if-eq 1 1 (
-      (let tail-size (+( (.expression pre-size) (.expression f3-size) ))) (if-eq 1 1 (
-      (let post-size (-( (.expression base-size) (.expression tail-size) )))
-      (for bi in (range( '0 (/( (.expression f0-size) '8 )) )) (
-         (let reversing-offset (*( 8 (+( (.expression bi) 1 )) ))) 
-         \t 'movq \s (-( (.expression tail-size) (.expression reversing-offset) )) \[ '%RSP \] , \s '%RAX \n
-         \t 'movq \s '%RAX , \s (-( (.expression base-size) (.expression reversing-offset) )) \[ '%RSP \] \n
+.3 := λ: Blob(: src StackVariable+Sized<base-size>+Fields<Cons<Cons<Cons<Cons<_,f3+Sized<f3-size+GT<8>>>,Sized<f2-size>>,Sized<f1-size>>,Sized<f0-size>>>). (: (
+   (:program(
+      (:program src)
+      (let pre-size (+( (+( (: f0-size L) (: f1-size L) )) (: f2-size L) )))
+      (let tail-size (+( (:expression pre-size) (: f3-size L) )))
+      (let post-size (-( (: base-size L) (:expression tail-size) )))
+      (for-atom (bi in (range( 0_l (/( (: f3-size L) 8_l )) ))) (
+         (let reversing-offset (*( 8_l (+( (:expression bi) 1_l )) )))
+         '\tmovq\s_l (-( (:expression tail-size) (:expression reversing-offset) )) '\[%RSP\],\s%RAX\n_l
+         '\tmovq\s%RAX,\s_l (-( (:expression base-size) (:expression reversing-offset) )) '\[%RSP\]\n_l
       ))
-      \t 'addq \s '$ (+( (.expression pre-size) (.expression post-size) )) , \s '%RSP \n
-      )) ))
+      '\taddq\s$_l (+( (:expression pre-size) (:expression post-size) )) ',\s%RSP\n_l
    ))
+   (:data( (:data src) ))
+   (:text( (:text src) ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
 ) f3+StackVariable);
