@@ -5,6 +5,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
    (match term (
       ()
       ( (Abs( lhs rhs tlt )) (if (||( (is-open kt) (non-zero(slot( tlt 'Blob_s ))) )) () (
+
          (let args-type (domain kt))
          (let args-size (sizeof-aligned args-type))
          (set ctx (compile-destructure-args( args-type ctx lhs 0_i64 )))
@@ -28,6 +29,15 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
             (set text (SCons( (close text) (close(SAtom( (mangle-identifier( k kt )) ))) )))
          ))
          (set text (SCons( (close text) (close(SAtom( ':\n_s ))) )))
+         (if (==( config-profile-invocations True_u8 )) (
+            (let counter-id (+( (mangle-identifier( (+( k '_COUNTER_s )) kt )) )))
+            (set assemble-data-section (+(
+               (SAtom counter-id) (SAtom ':\n.zero\s8\n_s)
+            )))
+            (print 'Declare\sGlobal\sCounter:\s_)(print counter-id)(print '\n_s)
+            #assemble-profile-onexit
+         ) ())
+
          (let frame (fragment::get( e 'frame_s )))
          (set text (SCons( (close text) (close frame) )))
          (let program (fragment::get( e 'program_s )))
