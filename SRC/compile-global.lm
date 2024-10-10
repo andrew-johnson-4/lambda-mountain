@@ -45,11 +45,11 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
             (set assemble-profile-onexit (+( assemble-profile-onexit (+(
                (+(
                   (+( (SAtom '\tmov\s$_s) (+( counter-id (SAtom ',\s%RBX\n\tmov\s0\[%RBX\],\s%RAX\n_s) )) ))
-                  (SAtom '\tpush\s%RBP\n\tmov\s%RSP,\s%RBP\n\tpush\s%RAX\n\tcall\sprint_CL_ArrowNilU64\nmov\s%RBP,\s%RSP\n\tpop\s%RBP\n_s)
+                  (SAtom '\tpush\s%RBP\n\tpush\s%RAX\n\tmov\s%RSP,\s%RBP\n\tcall\sprint_CL_ArrowNilU64\n\tmov\s%RBP,\s%RSP\n\tpop\s%RBP\n_s)
                ))
                (+(
                   (+( (SAtom '\tmov\s$_s) (+( counter-id (SAtom '_LABEL,\s%RAX\n_s) )) ))
-                  (SAtom '\tpush\s%RBP\n\tmov\s%RSP,\s%RBP\n\tpush\s%RAX\n\tcall\sprint_CL_ArrowNilString\n\tmov\s%RBP,\s%RSP\n\tpop\s%RBP\n_s)
+                  (SAtom '\tpush\s%RBP\n\tpush\s%RAX\n\tmov\s%RSP,\s%RBP\n\tcall\sprint_CL_ArrowNilString\n\tmov\s%RBP,\s%RSP\n\tpop\s%RBP\n_s)
                ))
             )) )))
          ) ())
