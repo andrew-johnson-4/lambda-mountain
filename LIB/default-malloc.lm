@@ -146,15 +146,15 @@ malloc := λ (: sz U64)(: min-capacity U64). (: (
 
    (print 'Malloc.1\n_s)
    # scan-head is 0, but this doesn't accept
-   (print place_of_interest)(print (as scan-head U64))
+   (print place_of_interest)
+   (print 'Scan\sHead\s1\s_s)(print (as scan-head U64))(print '\n_s)
    (if (==( (as scan-head U64) 0_u64 )) (
       (print 'Malloc\sSet\n_s)
-      (print (as scan-head U64))
+      (print 'Scan\sHead\s2\s_s)(print (as scan-head U64))(print '\n_s)
       (set scan-head (as malloc-block-head MallocBlock[]))
-      (print (as scan-head U64))
+      (print 'Scan\sHead\s3\s_s)(print (as scan-head U64))(print '\n_s)
    ) ())
-   (print 'Malloc\sScan\sHead:\s_s)(print (as scan-head U64))(print '\n_s)
-   (print 'Malloc\sBlock\sHead:\s_s)(print (as malloc-block-head U64))(print '\n_s)
+   (print 'Scan\sHead\s4\s_s)(print (as scan-head U64))(print '\n_s)
 
    (print 'Malloc.2\n_s)
    (let scan-count 0_u64)
