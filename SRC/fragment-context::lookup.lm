@@ -50,7 +50,7 @@ fragment-context::lookup := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST
             ) ())
             (set ctx rst)
          ))
-      ))
+      )))
       (exit-error( 'Context::lookup\sCould\sNot\sFind\sSymbol_s sloc ))
    ))
    r
