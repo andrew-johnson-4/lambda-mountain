@@ -3,5 +3,15 @@ import LIB/default.lm;
 import LIB/dev-u64.lm;
 
 main := λ.(: (
-   (print(read-file( 'tests/regress/read-file.lm.out_s )))
+   (let x 0_u64)
+   (while (==( x 0_u64 )) (
+      (print x)
+      (set x (+( x 1_u64 )))
+   ))
+   (while (<( x 3_u64 )) (
+      (print x)
+      (set x (+( x 1_u64 )))
+   ))
+   (malloc( 24_u64 ))
+   ()
 ) Nil)
