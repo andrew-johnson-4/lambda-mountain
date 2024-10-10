@@ -16,6 +16,7 @@ main := λ(: argc U64)(: argv String[]). (: (
          ('--gradual_s (set config-strict False_u8))
          ('--macro_s (set config-preprocess True_u8))
          ('--nomacro_s (set config-preprocess False_u8))
+         ('--profile-invocations_s (set config-profile-invocations True_u8))
          ('-o_s (
             (set argi (+( argi 1_u64 )))
             (set config-target ([]( argv argi )))

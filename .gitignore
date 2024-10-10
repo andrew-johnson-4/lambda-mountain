@@ -30,6 +30,8 @@ benchmarks/*.o
 *.exe
 *.txt
 re-production
+profile
+profile.s
 deploy
 deploy.s
 deploy2.s

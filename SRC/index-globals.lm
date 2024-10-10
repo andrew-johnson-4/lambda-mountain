@@ -2,12 +2,14 @@
 assemble-text-section                    := (: SNil S);
 assemble-init-section                    := (: SNil S);
 assemble-data-section                    := (: SNil S);
+assemble-profile-onexit                  := (: SNil S);
 assemble-final                           := '_s;
 assemble-argv-referenced                 := False_u8;
 
 main-with-argv := False_u8;
 main-with := False_u8;
 
+config-profile-invocations   := False_u8;
 config-strict                := True_u8;
 config-preprocess            := True_u8;
 config-target                := 'tmp.s_s;

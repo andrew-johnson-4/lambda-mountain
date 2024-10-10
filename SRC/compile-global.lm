@@ -5,6 +5,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
    (match term (
       ()
       ( (Abs( lhs rhs tlt )) (if (||( (is-open kt) (non-zero(slot( tlt 'Blob_s ))) )) () (
+
          (let args-type (domain kt))
          (let args-size (sizeof-aligned args-type))
          (set ctx (compile-destructure-args( args-type ctx lhs 0_i64 )))
@@ -28,6 +29,31 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
             (set text (SCons( (close text) (close(SAtom( (mangle-identifier( k kt )) ))) )))
          ))
          (set text (SCons( (close text) (close(SAtom( ':\n_s ))) )))
+         (if (==( config-profile-invocations True_u8 )) (
+            (let counter-id (+( (SAtom(mangle-identifier( k kt ))) (SAtom '_COUNTER_s) )))
+            (set assemble-data-section (+( assemble-data-section (+(
+               (+( counter-id (SAtom ':\n.zero\s8\n_s) ))
+               (+(
+                  (+( counter-id (SAtom '_LABEL:\n\t.ascii\t"\\\\t_s) ))
+                  (+( counter-id (SAtom '\\\\n"\n\t.zero\s1\n_s) ))
+               ))
+            )) )))
+            (set text (+( text (+(
+               (+( (SAtom '\tmov\s$_s) (+( counter-id (SAtom ',\s%RBX\n\tmov\s0\[%RBX\],\s%RAX\n_s) )) ))
+               (SAtom '\tinc\s%RAX\n\tmov\s%RAX,\s0\[%RBX\]\n_s)
+            )) )))
+            (set assemble-profile-onexit (+( assemble-profile-onexit (+(
+               (+(
+                  (+( (SAtom '\tmov\s$_s) (+( counter-id (SAtom ',\s%RBX\n\tmov\s0\[%RBX\],\s%RAX\n_s) )) ))
+                  (SAtom '\tpush\s%RBP\n\tmov\s%RSP,\s%RBP\n\tpush\s%RAX\n\tcall\sprint_CL_ArrowNilU64\n\tmov\s%RBP,\s%RSP\n\tpop\s%RBP\n_s)
+               ))
+               (+(
+                  (+( (SAtom '\tpush\s%RBP\n\tmov\s%RSP,\s%RBP\n\tpush\s$_s) (+( counter-id (SAtom '_LABEL\n_s) )) ))
+                  (SAtom '\tcall\sprint_CL_ArrowNilString\n\tmov\s%RBP,\s%RSP\n\tpop\s%RBP\n_s)
+               ))
+            )) )))
+         ) ())
+
          (let frame (fragment::get( e 'frame_s )))
          (set text (SCons( (close text) (close frame) )))
          (let program (fragment::get( e 'program_s )))
