@@ -56,19 +56,19 @@ macro ('declare-dev-instruction-alias-binop-64 (op-alias op-code op-set op-type)
       (:expression 'RAX_s)
    ) op-type+Reg64);
 
-#   op-alias := λ: Blob(: l op-type+LocalVariable)(: r op-type+Constant). (: (
-#      (:program(
-#         '\tmovq\s_s (:expression l) '\[%RBP\],\s%RAX\n_s
-#         '\tmovq\s$_s (:expression r) ',\s%R14\n_s
-#         '\t_s op-code '\s%R14,\s%RAX\n_s
-#         op-set
-#      ))
-#      (:data( (:data l) (:data r) ))
-#      (:text( (:text l) (:text r) ))
-#      (:frame( (:frame l) (:frame r) ))
-#      (:unframe( (:unframe l) (:unframe r) ))
-#      (:expression 'RAX_s)
-#   ) op-type+Reg64);
+   op-alias := λ: Blob(: l op-type+LocalVariable)(: r op-type+Constant). (: (
+      (:program(
+         '\tmovq\s_s (:expression l) '\[%RBP\],\s%RAX\n_s
+         '\tmovq\s$_s (:expression r) ',\s%R14\n_s
+         '\t_s op-code '\s%R14,\s%RAX\n_s
+         op-set
+      ))
+      (:data( (:data l) (:data r) ))
+      (:text( (:text l) (:text r) ))
+      (:frame( (:frame l) (:frame r) ))
+      (:unframe( (:unframe l) (:unframe r) ))
+      (:expression 'RAX_s)
+   ) op-type+Reg64);
 #   op-alias := λ: Blob(: l op-type+LocalVariable)(: r op-type+LocalVariable). (: (
 #      (:program(
 #         '\tmovq\s_s (:expression l) '\[%RBP\],\s%RAX\n_s
