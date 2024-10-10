@@ -41,7 +41,7 @@ fragment-context::lookup := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST
    )))
    (if (||( (non-zero( found )) (==( hard False_u8 )) )) () (
       (print 'Context::lookup\s_s)(print k)(print '\s:\s_s)(print kt)(print '\nCandidates:\n_s)
-      (set ctx original ctx)
+      (set ctx original-ctx)
       (while (non-zero ctx) (match ctx (
          ()
          ( (FCtxBind( rst rk rt rf )) (
