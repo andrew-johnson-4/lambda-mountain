@@ -98,7 +98,6 @@ realloc := λ(: ptr ?[])(: sz U64). (: (
 ) ?[]);
 
 .free-space := λ(: head MallocBlock[]). (: (
-   (print 'Free\sSpace.0\n_s)(print (as head U64))(print '\n_s)
    (let space 0_u64)
    (if (==( (as (.block-next head) U64) 0_u64 )) (
       (set space 1073741824_u64)
@@ -111,7 +110,6 @@ realloc := λ(: ptr ?[])(: sz U64). (: (
          ))
       )))
    ))
-   (print 'Free\sSpace.1\n_s)
    space
 ) U64);
 
@@ -133,47 +131,21 @@ malloc := λ (: sz U64). (: (
    (malloc( sz sz ))
 ) ?[]);
 
-place_of_interest := 1_u64;
 malloc := λ (: sz U64)(: min-capacity U64). (: (
-   (print 'Malloc.0\n_s)
-   (if (==( malloc-block-head 0_u64 )) (
-      (print 'Malloc\sNew\sPage\n_s)
-      (malloc-new-page())
-   ) ())
-   (print 'Malloc\sBlock\sHead:\s_s)(print (as malloc-block-head U64))(print '\n_s)
+   (if (==( malloc-block-head 0_u64 )) (malloc-new-page()) ())
 
    (let scan-head (as malloc-first-free MallocBlock[]))
+   (if (==( (as scan-head U64) 0_u64 )) (set scan-head (as malloc-block-head MallocBlock[])) ())
 
-   (print 'Malloc.1\n_s)
-   # scan-head is 0, but this doesn't accept
-   (print 'Scan\sHead\s1\s_s)(print (as scan-head U64))(print '\n_s)
-   (print place_of_interest)
-   (if (==( (as scan-head U64) 0_u64 )) (
-      (print 'Malloc\sSet\n_s)
-      (print 'Scan\sHead\s2\s_s)(print (as scan-head U64))(print '\n_s)
-      (set scan-head (as malloc-block-head MallocBlock[]))
-      (print 'Scan\sHead\s3\s_s)(print (as scan-head U64))(print '\n_s)
-      (print 'Block\sHead\s3\s_s)(print (as malloc-block-head U64))(print '\n_s)
-   ) ())
-   (print 'Scan\sHead\s4\s_s)(print (as scan-head U64))(print '\n_s)
-
-   (print 'Malloc.2\n_s)
    (let scan-count 0_u64)
-   (print 'Malloc\sScan\sHead:\s_s)(print (as scan-head U64))(print '\n_s)
-   (.free-space scan-head)
-   (print 'Malloc.2.0\n_s)
    (while (>( (+( min-capacity 24_u64 )) (.free-space scan-head) )) (
-      (print 'Malloc.2.1\n_s)
       (set scan-head (.block-next scan-head))
       (set malloc-first-free (as scan-head U64))
-      (print 'Malloc.2.2\n_s)
       (if (>=( min-capacity malloc-large-size )) () (
          (set scan-count (+( scan-count 1_u64 )))
       ))
-      (print 'Malloc.2.3\n_s)
    ))
    
-   (print 'Malloc.3\n_s)
    (let misalignment (%( malloc-block-tail 8_u64 )))
    (let alignment (%( (-( 8_u64 misalignment )) 8_u64 )))
    (set malloc-block-tail (+( malloc-block-tail alignment )))
