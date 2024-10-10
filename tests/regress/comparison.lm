@@ -1,6 +1,6 @@
 
 import LIB/default.lm;
-import LIB/dev-u64.lm;
+#import LIB/dev-u64.lm;
 
 main := λ.(: (
    (let a1 1_u64)
