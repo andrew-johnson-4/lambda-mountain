@@ -194,6 +194,59 @@ fragment  branchfalse := λ(: _ Nil). (: (
    (.expression( 'jne ))
 ) BranchConditional);
 
+into-branch-conditional := λ: Blob(: l BranchConditional). (: (
+   (:program (:program l))
+   (:text (:text l))
+   (:data (:data l))
+   (:frame (:frame l))
+   (:unframe (:unframe l))
+   (:expression( 'jne_l ))
+) BranchConditional);
+into-branch-conditional := λ: Blob(: l Reg64). (: (
+   (:program (
+      (:program l)
+      '\tcmp\s$0,\s%_l (:expression l) '\n_l
+   ))
+   (:text (:text l))
+   (:data (:data l))
+   (:frame (:frame l))
+   (:unframe (:unframe l))
+   (:expression( 'jne_l ))
+) BranchConditional);
+into-branch-conditional := λ: Blob(: l Reg32). (: (
+   (:program (
+      (:program l)
+      '\tcmp\s$0,\s%_l (:expression l) '\n_l
+   ))
+   (:text (:text l))
+   (:data (:data l))
+   (:frame (:frame l))
+   (:unframe (:unframe l))
+   (:expression( 'jne_l ))
+) BranchConditional);
+into-branch-conditional := λ: Blob(: l Reg16). (: (
+   (:program (
+      (:program l)
+      '\tcmp\s$0,\s%_l (:expression l) '\n_l
+   ))
+   (:text (:text l))
+   (:data (:data l))
+   (:frame (:frame l))
+   (:unframe (:unframe l))
+   (:expression( 'jne_l ))
+) BranchConditional);
+into-branch-conditional := λ: Blob(: l Reg8). (: (
+   (:program (
+      (:program l)
+      '\tcmp\s$0,\s%_l (:expression l) '\n_l
+   ))
+   (:text (:text l))
+   (:data (:data l))
+   (:frame (:frame l))
+   (:unframe (:unframe l))
+   (:expression( 'jne_l ))
+) BranchConditional);
+
 fragment  as-branch-conditional := λ(: l Reg64). (: (
    (.program (
       \t 'cmp \s '$0 , \s '% (.expression l) \n
@@ -214,6 +267,7 @@ fragment  as-branch-conditional := λ(: l Reg16). (: (
 ) BranchConditional);
 fragment  as-branch-conditional := λ(: l Reg8). (: (
    (.program (
+
       \t 'cmp \s '$0 , \s '% (.expression l) \n
    ))
    (.expression( 'jne ))
