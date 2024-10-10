@@ -1,6 +1,7 @@
 
-dev: install-production
-	lm tests/regress/simple-instructions.lm
+dev: compile-production
+	lm -o safe.s tests/regress/simple-instructions.lm
+	./production tests/regress/simple-instructions.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp
