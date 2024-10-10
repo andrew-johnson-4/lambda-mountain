@@ -8,4 +8,3 @@ meta
 ;
 fragment type String; size String 8; atom suffix String _s;
 
-+ := λ(: x String)(: y String). (: (clone-rope(+( (SAtom x) (SAtom y) ))) String); 
