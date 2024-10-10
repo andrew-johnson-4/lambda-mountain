@@ -9,6 +9,7 @@ with-fields := λ(: tt Type). (: (
          (if (&&( (non-zero tag) (non-zero class) )) (
             (let ft (fields-of-tag( tag class )))
             (set tt (and( tt ft )))
+            (set tt (and( tt (t2( 'FieldsSized_s (t1(to-string(sizeof-aligned(p1 ft)))) )) )))
          ) ())
       ))
    ))
