@@ -13,7 +13,7 @@ cc-blob := λ(: caller-ctx FContext)(: function-name String)(: args AST)(: offse
             (let args-size (fragment-context::lookup( caller-ctx 'cdecl::args-size_s TAny args )))
             (set callee-ctx (fragment-context::bind( callee-ctx 'cdecl::args-size_s (t1 'L_s) args-size )))
          ) ())
-         (set r (blob-render( callee-ctx rhs r )))
+         (set r (blob-render( callee-ctx rhs r offset )))
          (let t (.term f))
          (set r (fragment::set-type( r (range(typeof t)) )))
          (set r (fragment::set-offset( r offset )))

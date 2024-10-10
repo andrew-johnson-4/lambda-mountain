@@ -201,7 +201,7 @@ blob-render := λ(: ctx FContext)(: term AST)(: f Fragment)(: offset I64). (: (
    (match term (
       ()
       ( (App( (Lit( ':_s _ )) (App( t (AType _) )) )) (
-         (set f (blob-render( ctx t f )))
+         (set f (blob-render( ctx t f offset )))
       ))
       ( (App( (Var( k _ )) a )) (
          (if (has-prefix( k ':_s )) (            
@@ -215,7 +215,7 @@ blob-render := λ(: ctx FContext)(: term AST)(: f Fragment)(: offset I64). (: (
          ))
       ))
       ( (App( rst (App( (Var( k _ )) a )) )) (
-         (set f (blob-render( ctx rst f )))
+         (set f (blob-render( ctx rst f offset )))
          (if (has-prefix( k ':_s )) (            
             (let cs1 (blob-render-simple( ctx (tail-string k) a offset )))
             (let s1 (.1 cs1))
