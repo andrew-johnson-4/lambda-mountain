@@ -1,4 +1,10 @@
 
+dev: install-production
+	lm tests/regress/simple-instructions.lm
+	as tmp.s -o tmp.o
+	ld tmp.o -o tmp
+	./tmp
+
 profile: install-production
 	lm --profile-invocations SRC/index-index.lm -o profile.s
 	as profile.s -o profile.o
