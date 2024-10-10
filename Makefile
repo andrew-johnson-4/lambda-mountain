@@ -1,10 +1,10 @@
 
 dev: compile-bootstrap
 	lm -o safe.s tests/regress/read-file.lm
-	./bootstrap tests/regress/read-file.lm
-	as tmp.s -o tmp.o
-	ld tmp.o -o tmp
-	./tmp
+	lm -o dev.s tests/regress/dev.lm
+	as dev.s -o dev.o
+	ld dev.o -o dev
+	./dev
 
 profile: install-production
 	lm --profile-invocations SRC/index-index.lm -o profile.s

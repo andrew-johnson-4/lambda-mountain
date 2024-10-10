@@ -1,0 +1,7 @@
+
+import LIB/default.lm;
+import LIB/dev-u64.lm;
+
+main := λ.(: (
+   (print(read-file( 'tests/regress/read-file.lm.out_s )))
+) Nil)
