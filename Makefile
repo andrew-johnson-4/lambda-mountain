@@ -1,7 +1,7 @@
 
 dev: compile-production
-	lm -o safe.s tests/regress/simple-instructions.lm
-	./production tests/regress/simple-instructions.lm
+	lm -o safe.s tests/regress/read-file.lm
+	./production tests/regress/read-file.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp
