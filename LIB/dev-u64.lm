@@ -1,6 +1,4 @@
 
-import LIB/dev-instruction-macros-64.lm;
-
 (declare-simple-instruction-alias-binop-64( == 'cmpq_l '\tsete\s%AL\n\tandq\s$1,\s%RAX\n_l U64 ));
 (declare-simple-instruction-alias-binop-64( != 'cmpq_l '\tsetne\s%AL\n\tandq\s$1,\s%RAX\n_l U64 ));
 (declare-simple-instruction-alias-binop-64( < 'cmpq_l '\tsetl\s%AL\n\tandq\s$1,\s%RAX\n_l U64 ));
