@@ -35,7 +35,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
                (+( counter-id (SAtom ':\n.zero\s8\n_s) ))
                (+(
                   (+( counter-id (SAtom '_LABEL:\n\t.ascii\t"\\\\t_s) ))
-                  (+( counter-id (SAtom '\\\\n\t.zero\s1\n"\n_s) ))
+                  (+( counter-id (SAtom '\\\\n"\n\t.zero\s1\n_s) ))
                ))
             )) )))
             (set text (+( text (+(
