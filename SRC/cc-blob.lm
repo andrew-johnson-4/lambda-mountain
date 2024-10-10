@@ -7,9 +7,7 @@ cc-blob := λ(: caller-ctx FContext)(: function-name String)(: args AST)(: offse
    (match (.term f) (
       ()
       ( (Abs( lhs rhs tlt )) (
-         (let call-ctx global-ctx)
-         (if (is-impure-ctx tlt) (set call-ctx caller-ctx) ())
-         (let e1 (cc-args( call-ctx caller-ctx lhs args offset )))
+         (let e1 (cc-args( global-ctx caller-ctx lhs args offset (is-impure-ctx tlt) )))
          (let callee-ctx (.1 e1))
          (if (==( function-name 'cdecl::return_s )) (
             (let args-size (fragment-context::lookup( caller-ctx 'cdecl::args-size_s TAny args )))
