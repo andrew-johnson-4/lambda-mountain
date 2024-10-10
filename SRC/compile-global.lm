@@ -35,11 +35,13 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
                counter-id (SAtom ':\n.zero\s8\n_s)
             )) )))
             (set text (+( text (+(
-               (+( (SAtom '\tmov\s_s) (+( counter-id (SAtom ',\s%RAX\n_s) )) ))
-               (+( (SAtom '\tinc\s%RAX\n\tmov\s%RAX,\s_s) (+( counter-id (SAtom '\n_s) )) ))
+               (+( (SAtom '\tmov\s$_s) (+( counter-id (SAtom ',\s%RBX\n\tmov\s0\[%RBX\],\s%RAX\n_s) )) ))
+               (SAtom '\tinc\s%RAX\n\tmov\s%RAX,\s0\[%RBX\]\n_s)
             )) )))
-            (print 'Declare\sGlobal\sCounter:\s_s)(print counter-id)(print '\n_s)
-            #assemble-profile-onexit
+            (set assemble-profile-onexit (+( assemble-profile-on-exit (+(
+               (+( (SAtom '\tmov\s$_s) (+( counter-id (SAtom ',\s%RBX\n\tmov\s0\[%RBX\],\s%RAX\n_s) )) ))
+               (SAtom '\tpush\s%RBP\n\tmov\s%RSP,\s%RBP\n\tpush\s%RAX\n\tcall\sprint_CL_ArrowNilU64\n\tpop\s%RBP\n_s)
+            )) )))
          ) ())
 
          (let frame (fragment::get( e 'frame_s )))
