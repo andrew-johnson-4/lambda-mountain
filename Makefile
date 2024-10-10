@@ -3,7 +3,7 @@ work: install-production
 	lm --profile-invocations SRC/index-index.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
-	./tmp SRC/index-index.lm
+	./tmp SRC/index-index.lm | sort
 
 build-docs:
 	lm --blob -o docs/index.html docs/index.html.lm
