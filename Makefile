@@ -1,4 +1,11 @@
 
+dev: compile-bootstrap
+	lm -o safe.s tests/regress/read-file.lm
+	lm -o dev.s tests/regress/dev.lm
+	as dev.s -o dev.o
+	ld dev.o -o dev
+	./dev
+
 profile: install-production
 	lm --profile-invocations SRC/index-index.lm -o profile.s
 	as profile.s -o profile.o
