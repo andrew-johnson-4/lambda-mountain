@@ -382,7 +382,4 @@ main := λ.(: (
    (print (>=( (f1()) (f1()) )))
    (print '\n_s)
    (print '\n_s)
-
-   (malloc( 24_u64 ))
-   ()
 ) Nil)
