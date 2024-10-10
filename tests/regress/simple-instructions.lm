@@ -1,7 +1,7 @@
 
 import LIB/default.lm;
 
-(declare-simple-instruction-alias-binop-64( do-sub 'subq_s U64 ));
+(declare-simple-instruction-alias-binop-64( do-sub 'subq_s '_s U64 ));
 
 g1 := 1_u64;
 g2 := 2_u64;
