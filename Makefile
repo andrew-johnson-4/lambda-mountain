@@ -1,7 +1,7 @@
 
-dev: compile-production
+dev: compile-bootstrap
 	lm -o safe.s tests/regress/read-file.lm
-	./production tests/regress/read-file.lm
+	./bootstrap tests/regress/read-file.lm
 	as tmp.s -o tmp.o
 	ld tmp.o -o tmp
 	./tmp
