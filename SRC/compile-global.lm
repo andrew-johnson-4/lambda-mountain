@@ -36,7 +36,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
             )) )))
             (set text (+( text (+(
                (+( (SAtom '\tmov\s_s) (+( counter-id (SAtom ',\s%RAX\n_s) )) ))
-               (+( (SAtom '\taddq\s%RAX\n\tmov\s%RAX,\s_s) (+( counter-id (SAtom '\n_s) )) ))
+               (+( (SAtom '\tinc\s%RAX\n\tmov\s%RAX,\s_s) (+( counter-id (SAtom '\n_s) )) ))
             )) )))
             (print 'Declare\sGlobal\sCounter:\s_s)(print counter-id)(print '\n_s)
             #assemble-profile-onexit
