@@ -3,15 +3,17 @@ import LIB/default.lm;
 import LIB/dev-u64.lm;
 
 main := λ.(: (
-   (let x 0_u64)
-   (while (==( x 0_u64 )) (
-      (print x)
-      (set x (+( x 1_u64 )))
-   ))
-   (while (<( x 3_u64 )) (
-      (print x)
-      (set x (+( x 1_u64 )))
-   ))
+   (let a1 1_u64)
+   (let a2 2_u64)
+   (let a3 3_u64)
+   (if (==( a1 1_u64 )) () (print 'FAIL\sA1=1\n_s))
+   (if (!=( a1 0_u64 )) () (print 'FAIL\sA1!=0\n_s))
+   (if (<( a1 2_u64 )) () (print 'FAIL\sA1<2\n_s))
+   (if (<=( a1 1_u64 )) () (print 'FAIL\sA1<=1\n_s))
+   (if (<=( a1 2_u64 )) () (print 'FAIL\sA1<=2\n_s))
+   (if (>( a2 1_u64 )) () (print 'FAIL\sA2>1\n_s))
+   (if (>=( a1 1_u64 )) () (print 'FAIL\sA1>=1\n_s))
+   (if (>=( a2 1_u64 )) () (print 'FAIL\sA2>=1\n_s))
    (malloc( 24_u64 ))
    ()
 ) Nil)
