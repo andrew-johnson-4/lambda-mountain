@@ -1,6 +1,6 @@
 
-dev: compile-bootstrap
-	lm -o safe.s tests/regress/read-file.lm
+dev: install-production
+	lm -o safe.s tests/regress/safe.lm
 	lm -o dev.s tests/regress/dev.lm
 	as dev.s -o dev.o
 	ld dev.o -o dev
