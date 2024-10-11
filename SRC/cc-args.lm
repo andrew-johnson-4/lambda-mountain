@@ -17,7 +17,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                         ) ())
                         (if (!=( impure-ctx 0_u64 )) (
                            (let c1 (compile-expr( callee-ctx re offset Used )))
-                           (set callee-ctx (.context c1))
+                           (set callee-ctx (open(.context c1)))
                            (set offset (.offset c1))
                            (set callee-ctx (bind-vararg( callee-ctx k kt c1 )))
                         ) (
@@ -37,7 +37,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                      ) ())
                      (if (!=( impure-ctx 0_u64 )) (
                         (let c1 (compile-expr( callee-ctx re offset Used )))
-                        (set callee-ctx (.context c1))
+                        (set callee-ctx (open(.context c1)))
                         (set offset (.offset c1))
                         (set callee-ctx (FCtxBind( (close callee-ctx) k kt c1 )))
                      ) (
@@ -75,7 +75,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                ) ())
                (if (!=( impure-ctx 0_u64 )) (
                   (let c1 (compile-expr( callee-ctx rhs offset Used )))
-                  (set callee-ctx (.context c1))
+                  (set callee-ctx (open(.context c1)))
                   (set offset (.offset c1))
                   (set callee-ctx (FCtxBind( (close callee-ctx) k kt c1 )))
                ) (
@@ -96,7 +96,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                      ) ())
                      (if (!=( impure-ctx 0_u64 )) (
                         (let c1 (compile-expr( callee-ctx re offset Used )))
-                        (set callee-ctx (.context c1))
+                        (set callee-ctx (open(.context c1)))
                         (set offset (.offset c1))
                         (set callee-ctx (bind-vararg( callee-ctx k kt c1 )))
                      ) (
@@ -125,7 +125,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                ) ())
                (if (!=( impure-ctx 0_u64 )) (
                   (let c1 (compile-expr( callee-ctx rhs offset Used )))
-                  (set callee-ctx (.context c1))
+                  (set callee-ctx (open(.context c1)))
                   (set offset (.offset c1))
                   (set callee-ctx (bind-vararg( callee-ctx k kt c1 )))
                ) (
