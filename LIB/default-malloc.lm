@@ -131,11 +131,14 @@ malloc := λ (: sz U64). (: (
    (malloc( sz sz ))
 ) ?[]);
 
+point-of-interest := 0_u64;
 malloc := λ (: sz U64)(: min-capacity U64). (: (
    (if (==( malloc-block-head 0_u64 )) (malloc-new-page()) ())
 
    (let scan-head (as malloc-first-free MallocBlock[]))
-   (if (==( (as scan-head U64) 0_u64 )) (set scan-head (as malloc-block-head MallocBlock[])) ())
+   (if (==( (as scan-head U64) 0_u64 )) (
+      (set scan-head (as malloc-block-head MallocBlock[]))
+   ) ())
 
    (let scan-count 0_u64)
    (while (>( (+( min-capacity 24_u64 )) (.free-space scan-head) )) (

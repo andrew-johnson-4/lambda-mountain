@@ -1,5 +1,5 @@
 
-cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST)(: offset I64). (: (
+cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST)(: offset I64)(: is-impure U64). (: (
    # for varargs, even if there is nothing to bind, the binding still needs to exist as an empty vararg list
    (match lhs (
       ()
@@ -15,12 +15,11 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                            (set callee-ctx (union( callee-ctx (unify( kt (typeof re) )) )))
                         ) ())
                         (set callee-ctx (bind-vararg( callee-ctx k kt (compile-expr( caller-ctx re offset Used )) )))
-                        (if (is-onto-stack kt) (set offset (-( offset (as (sizeof-aligned kt) I64) ))) ())
-                        (let e1 (cc-args( callee-ctx caller-ctx lhs le offset )))
+                        (let e1 (cc-args( callee-ctx caller-ctx lhs le offset is-impure )))
                         (set callee-ctx (.1 e1))
                         (set offset (.2 e1))
                      )) (
-                        (let e1 (cc-args( callee-ctx caller-ctx lhs-rst rhs offset )))
+                        (let e1 (cc-args( callee-ctx caller-ctx lhs-rst rhs offset is-impure )))
                         (set callee-ctx (.1 e1))
                         (set offset (.2 e1))
                      ))
@@ -29,8 +28,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                         (set callee-ctx (union( callee-ctx (unify( kt (typeof re) )) )))
                      ) ())
                      (set callee-ctx (FCtxBind( (close callee-ctx) k kt (compile-expr( caller-ctx re offset Used )) )))
-                     (if (is-onto-stack kt) (set offset (-( offset (as (sizeof-aligned kt) I64) ))) ())
-                     (let e1 (cc-args( callee-ctx caller-ctx lhs-rst le offset )))
+                     (let e1 (cc-args( callee-ctx caller-ctx lhs-rst le offset is-impure )))
                      (set callee-ctx (.1 e1))
                      (set offset (.2 e1))
                   )))
@@ -45,7 +43,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                   ) ())
                   (set callee-ctx (bind-vararg( callee-ctx k kt (compile-expr( caller-ctx rhs offset Used )) )))
                )) (
-                  (let e1 (cc-args( callee-ctx caller-ctx lhs-rst rhs offset )))
+                  (let e1 (cc-args( callee-ctx caller-ctx lhs-rst rhs offset is-impure )))
                   (set callee-ctx (.1 e1))
                   (set offset (.2 e1))
                ))
@@ -68,8 +66,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                         (set callee-ctx (union( callee-ctx (unify( kt (typeof re) )) )))
                      ) ())
                      (set callee-ctx (bind-vararg( callee-ctx k kt (compile-expr( caller-ctx re offset Used )) )))
-                     (if (is-onto-stack kt) (set offset (-( offset (as (sizeof-aligned kt) I64) ))) ())
-                     (let e1 (cc-args( callee-ctx caller-ctx lhs le offset )))
+                     (let e1 (cc-args( callee-ctx caller-ctx lhs le offset is-impure )))
                      (set callee-ctx (.1 e1))
                      (set offset (.2 e1))
                   )) (

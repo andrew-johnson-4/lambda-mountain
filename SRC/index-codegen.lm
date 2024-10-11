@@ -1,5 +1,4 @@
 
-import SRC/as-branch-conditional.lm;
 import SRC/compile-constructor.lm;
 import SRC/compile-declare-cstring.lm;
 import SRC/compile-destructure-args.lm;
@@ -16,3 +15,4 @@ import SRC/translate-local-variables.lm;
 import SRC/cc-blob.lm;
 import SRC/cc-args.lm;
 import SRC/blob-render.lm;
+import SRC/as-branch-conditional.lm;

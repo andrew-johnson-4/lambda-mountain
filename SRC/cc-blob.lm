@@ -7,15 +7,18 @@ cc-blob := λ(: caller-ctx FContext)(: function-name String)(: args AST)(: offse
    (match (.term f) (
       ()
       ( (Abs( lhs rhs tlt )) (
-         (let e1 (cc-args( global-ctx caller-ctx lhs args offset )))
+         (let e1 (cc-args( global-ctx caller-ctx lhs args offset (is-impure-ctx tlt) )))
          (let callee-ctx (.1 e1))
          (if (==( function-name 'cdecl::return_s )) (
             (let args-size (fragment-context::lookup( caller-ctx 'cdecl::args-size_s TAny args )))
             (set callee-ctx (fragment-context::bind( callee-ctx 'cdecl::args-size_s (t1 'L_s) args-size )))
          ) ())
-         (set r (blob-render( callee-ctx rhs r )))
+         (set r (blob-render( callee-ctx rhs r offset )))
          (let t (.term f))
          (set r (fragment::set-type( r (range(typeof t)) )))
+         (set r (fragment::set-offset( r offset )))
+         (if (is-impure-ctx tlt) (set caller-ctx callee-ctx) ())
+         (set r (fragment::set-context( r caller-ctx )))
       ))
    ))
    r

@@ -1,0 +1,34 @@
+
+import LIB/default.lm;
+import LIB/dev-u64.lm;
+
+main := λ.(: (
+   (let a1 1_u64)
+   (let a2 2_u64)
+   (let a3 3_u64)
+
+   # LocalVariable, Constant
+   (print (==( a1 1_u64 )))
+   (print (==( a1 0_u64 )))
+   (print '\n_s)
+   (print (!=( a1 1_u64 )))
+   (print (!=( a1 0_u64 )))
+   (print '\n_s)
+   (print (<( a1 1_u64 )))
+   (print (<( a1 2_u64 )))
+   (print '\n_s)
+   (print (<=( a1 0_u64 )))
+   (print (<=( a1 1_u64 )))
+   (print (<=( a1 2_u64 )))
+   (print '\n_s)
+   (print (>( a1 0_u64 )))
+   (print (>( a1 1_u64 )))
+   (print '\n_s)
+   (print (>=( a1 0_u64 )))
+   (print (>=( a1 1_u64 )))
+   (print (>=( a1 2_u64 )))
+   (print '\n_s)
+
+   (malloc( 24_u64 ))
+   ()
+) Nil)

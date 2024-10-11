@@ -35,6 +35,7 @@ profile.s
 deploy
 deploy.s
 deploy2.s
+safe.s
 dev
 dev.s
 *.vo

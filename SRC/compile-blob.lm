@@ -59,7 +59,7 @@ compile-blob := λ. (: (
          (set preview-program rst)
       ))
       ( (Seq( rst expr )) (
-         (let cs (blob-render-simple( global-ctx 'expression_s expr )))
+         (let cs (blob-render-simple( global-ctx 'expression_s expr 0_i64 )))
          (let s (.1 cs))
          (set blob (SCons(
              (close blob)
