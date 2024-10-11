@@ -133,20 +133,12 @@ malloc := λ (: sz U64). (: (
 
 point-of-interest := 0_u64;
 malloc := λ (: sz U64)(: min-capacity U64). (: (
-   #(print 'Malloc.1\n_s)
    (if (==( malloc-block-head 0_u64 )) (malloc-new-page()) ())
 
    (let scan-head (as malloc-first-free MallocBlock[]))
-   #(print 'Scan\sHead\s_s)(print (as scan-head U64))(print '\n_s)
-   (print point-of-interest)
    (if (==( (as scan-head U64) 0_u64 )) (
-      #(print 'Scan\sHead\s_s)(print (as scan-head U64))(print '\n_s)
-      #(print 'Block\sHead\s_s)(print (as malloc-block-head U64))(print '\n_s)
       (set scan-head (as malloc-block-head MallocBlock[]))
-      #(print 'Scan\sHead\s_s)(print (as scan-head U64))(print '\n_s)
    ) ())
-   #(print 'Scan\sHead\s_s)(print (as scan-head U64))(print '\n_s)
-   #(print 'Malloc.2\n_s)
 
    (let scan-count 0_u64)
    (while (>( (+( min-capacity 24_u64 )) (.free-space scan-head) )) (
@@ -156,7 +148,6 @@ malloc := λ (: sz U64)(: min-capacity U64). (: (
          (set scan-count (+( scan-count 1_u64 )))
       ))
    ))
-   #(print 'Malloc.3\n_s)
    
    (let misalignment (%( malloc-block-tail 8_u64 )))
    (let alignment (%( (-( 8_u64 misalignment )) 8_u64 )))
@@ -164,7 +155,6 @@ malloc := λ (: sz U64)(: min-capacity U64). (: (
    (let block (as malloc-block-tail MallocBlock[]))
    (let data (+( (as block U64) 24_u64 )))
    (set malloc-block-tail (+( data sz )))
-   #(print 'Malloc.4\n_s)
 
    # initialize block
    (let block-next (.block-next scan-head))
@@ -179,7 +169,6 @@ malloc := λ (: sz U64)(: min-capacity U64). (: (
    ) (
       (set.block-prev( block scan-head ))
    ))
-   #(print 'Malloc.5\n_s)
 
    (as data ?[])
 ) ?[]);
