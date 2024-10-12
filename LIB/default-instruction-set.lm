@@ -7,10 +7,10 @@ fragment type Reg64 RAX | RBX | RCX | RDX | RSI | RDI | RBP | RSP | R8  | R9  | 
 import LIB/default-instruction-macros-8.lm;
 import LIB/default-instruction-macros-64.lm;
 
-fragment  syscall := λ. (: (.program( \t 'syscall \n )) Nil);
+syscall := λ: Blob . (: (:program( '\tsyscall\n_l )) Nil);
 
-fragment  & := λ(: src LocalVariable). (: ( (.program( \t 'mov \t '%rbp , \s '%r12 \n \t 'add \s '$ (.expression src) , \s '%r12 \n) (.expression( 'r12 ))) ) Reg64);
-fragment  & := λ(: src GlobalVariable). (: ( (.program( \t 'mov \t '$ (.expression src) , \s '%r12 \n) (.expression( 'r12 ))) ) Reg64);
+& := λ: Blob(: src LocalVariable). (: ( (:program( '\tmov\t%rbp,\s%r12\n\taddq\s$_l (:expression src) ',\s%r12\n_l )) (:expression( 'R12_l )) ) Reg64);
+& := λ: Blob(: src GlobalVariable). (: ( (:program( '\tmov\t$_l (:expression src) ',\s%r12\n_l )) (:expression( 'R12_l )) ) Reg64);
 
 # Generic 'mov Semantics
 fragment  mov := λ(: src LocalVariable+Sized<size>)(: dst LocalVariable). (: (
