@@ -1,11 +1,12 @@
 
-fragment  cdecl::return := λ: DontChain(: l Nil). (: (
-   (.program(
-      (.program l)
-      (.del l)
-   ))
-   (.frame( (.frame l) ))
+cdecl::return := λ: Blob(: l Nil). (: (
+   (:frame( (:frame l) ))
+   (:unframe( (:unframe l) ))
+   (:text( (:text l) ))
+   (:data( (:data l) ))
+   (:program( (:program l) (:del l) ))
 ) Nil);
+
 fragment  cdecl::return := λ: DontChain(: l Reg8). (: (
    (.program(
       (.program l)
