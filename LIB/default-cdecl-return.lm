@@ -2,15 +2,11 @@
 cdecl::return := λ: Blob(: l Nil). (: (
    (:frame( (:frame l) ))
    (:unframe( (:unframe l) ))
-   (:text( (:text l) ))
-   (:data( (:data l) ))
    (:program( (:program l) (:del l) ))
 ) Nil);
 cdecl::return := λ: Blob(: l Reg8). (: (
    (:frame( (:frame l) ))
    (:unframe( (:unframe l) ))
-   (:text( (:text l) ))
-   (:data( (:data l) ))
    (:expression( 'AL_s ))
    (:program(
       (:program l)
@@ -23,8 +19,6 @@ cdecl::return := λ: Blob(: l Reg8). (: (
 cdecl::return := λ: Blob(: l Reg16). (: (
    (:frame( (:frame l) ))
    (:unframe( (:unframe l) ))
-   (:text( (:text l) ))
-   (:data( (:data l) ))
    (:expression( 'AX_s ))
    (:program(
       (:program l)
@@ -37,8 +31,6 @@ cdecl::return := λ: Blob(: l Reg16). (: (
 cdecl::return := λ: Blob(: l Reg32). (: (
    (:frame (:frame l))
    (:unframe( (:unframe l) ))
-   (:text( (:text l) ))
-   (:data( (:data l) ))
    (:expression 'EAX_s)
    (:program(
       (:program l)
@@ -51,8 +43,6 @@ cdecl::return := λ: Blob(: l Reg32). (: (
 cdecl::return := λ: Blob(: l Reg64). (: (
    (:frame (:frame l))
    (:unframe( (:unframe l) ))
-   (:text( (:text l) ))
-   (:data( (:data l) ))
    (:expression 'RAX_s)
    (:program(
       (:program l)

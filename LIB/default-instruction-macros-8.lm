@@ -6,8 +6,6 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s$_s (:expression r) ',\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
@@ -18,8 +16,6 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s_s (:expression r) '\[%RBP\],\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
@@ -31,8 +27,6 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s0\[%R14B\],\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
@@ -44,8 +38,6 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s$_s (:expression l) ',\s%AL\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
@@ -57,8 +49,6 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s$_s (:expression r) ',\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
@@ -69,8 +59,6 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s_s (:expression r) '\[%RBP\],\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
@@ -82,8 +70,6 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s0\[%R14B\],\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
@@ -95,8 +81,6 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s_s (:expression l) '\[%RBP\],\s%AL\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
@@ -109,8 +93,6 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s$_s (:expression r) ',\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
@@ -122,8 +104,6 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s_s (:expression r) '\[%RBP\],\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
@@ -136,8 +116,6 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s0\[%R14B\],\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
@@ -150,8 +128,6 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s0\[%AL\],\s%AL\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
@@ -164,8 +140,6 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s$_s (:expression r) ',\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
@@ -177,8 +151,6 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s_s (:expression r) '\[%RBP\],\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
@@ -191,8 +163,6 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s0\[%R14B\],\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
@@ -206,8 +176,6 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tpopq\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)

@@ -5,8 +5,6 @@
       '\tmov\s0\[%RSP\],\s%RAX\n_l
       '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'RAX_l ))
@@ -18,8 +16,6 @@
       '\tmov\s0\[%RSP\],\s%RAX\n_l
       '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'RAX_l ))
@@ -31,8 +27,6 @@
       '\tmov\s_l (align(: f0-size L)) '\[%RSP\],\s%RAX\n_l
       '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'RAX_l ))
@@ -44,8 +38,6 @@
       '\tmov\s_l (+( (align(: f0-size L)) (align(: f1-size L)) )) '\[%RSP\],\s%RAX\n_l
       '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'RAX_l ))
@@ -57,8 +49,6 @@
       '\tmov\s_l (+( (+( (align(: f0-size L)) (align(: f1-size L)) )) (align(: f2-size L)) )) '\[%RSP\],\s%RAX\n_l
       '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'RAX_l ))
@@ -70,8 +60,6 @@
       '\tmov\s_l (+( (+( (+( (align(: f0-size L)) (align(: f1-size L)) )) (align(: f2-size L)) )) (align(: f3-size L)) )) '\[%RSP\],\s%RAX\n_l
       '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'RAX_l ))
@@ -83,8 +71,6 @@
       '\tmov\s_l (+( (+( (+( (+( (align(: f0-size L)) (align(: f1-size L)) )) (align(: f2-size L)) )) (align(: f3-size L)) )) (align(: f4-size L)) )) '\[%RSP\],\s%RAX\n_l
       '\taddq\s$_l (: base-size L) ',\s%RSP\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'RAX_l ))
@@ -103,8 +89,6 @@
       ))
       '\taddq\s$_l (+( (:expression pre-size) (:expression post-size) )) ',\s%RSP\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
 ) f0+StackVariable);
@@ -122,8 +106,6 @@
       ))
       '\taddq\s$_l (+( (:expression pre-size) (:expression post-size) )) ',\s%RSP\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
 ) f0+StackVariable);
@@ -141,8 +123,6 @@
       ))
       '\taddq\s$_l (+( (:expression pre-size) (:expression post-size) )) ',\s%RSP\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
 ) f1+StackVariable);
@@ -160,8 +140,6 @@
       ))
       '\taddq\s$_l (+( (:expression pre-size) (:expression post-size) )) ',\s%RSP\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
 ) f2+StackVariable);
@@ -179,8 +157,6 @@
       ))
       '\taddq\s$_l (+( (:expression pre-size) (:expression post-size) )) ',\s%RSP\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
 ) f3+StackVariable);

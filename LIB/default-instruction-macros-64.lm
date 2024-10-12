@@ -7,8 +7,6 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-set op-ty
          '\t_s op-code '\s%R14,\s%RAX\n_s
          op-set
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'RAX_s)
@@ -21,8 +19,6 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-set op-ty
          '\t_s op-code '\s%R14,\s%RAX\n_s
          op-set
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'RAX_s)
@@ -35,8 +31,6 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-set op-ty
          '\t_s op-code '\s%R14,\s%RAX\n_s
          op-set
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'RAX_s)
@@ -49,8 +43,6 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-set op-ty
          '\t_s op-code '\s%R14,\s%RAX\n_s
          op-set
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'RAX_s)
@@ -63,8 +55,6 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-set op-ty
          '\t_s op-code '\s%R14,\s%RAX\n_s
          op-set
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'RAX_s)
@@ -76,8 +66,6 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-set op-ty
          '\t_s op-code '\s%R14,\s%RAX\n_s
          op-set
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'RAX_s)
@@ -90,8 +78,6 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-set op-ty
          '\t_s op-code '\s%R14,\s%RAX\n_s
          op-set
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'RAX_s)
@@ -104,8 +90,6 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-set op-ty
          '\t_s op-code '\s%R14,\s%RAX\n_s
          op-set
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'RAX_s)
@@ -119,8 +103,6 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-set op-ty
          '\t_s op-code '\s%R14,\s%RAX\n_s
          op-set
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'RAX_s)
@@ -133,8 +115,6 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-set op-ty
          '\t_s op-code '\s%R14,\s%RAX\n_s
          op-set
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'RAX_s)
@@ -148,8 +128,6 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-set op-ty
          '\t_s op-code '\s%R14,\s%RAX\n_s
          op-set
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'RAX_s)
@@ -163,8 +141,6 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-set op-ty
          '\t_s op-code '\s%R14,\s%RAX\n_s
          op-set
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'RAX_s)
@@ -178,8 +154,6 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-set op-ty
          '\t_s op-code '\s%R14,\s%RAX\n_s
          op-set
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'RAX_s)
@@ -192,8 +166,6 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-set op-ty
          '\t_s op-code '\s%R14,\s%RAX\n_s
          op-set
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'RAX_s)
@@ -207,8 +179,6 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-set op-ty
          '\t_s op-code '\s%R14,\s%RAX\n_s
          op-set
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'RAX_s)
@@ -224,8 +194,6 @@ macro ('declare-simple-instruction-alias-binop-64 (op-alias op-code op-set op-ty
          '\t_s op-code '\s%R14,\s%RAX\n_s
          op-set
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'RAX_s)
