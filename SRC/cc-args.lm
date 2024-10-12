@@ -86,7 +86,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                ))
             ))
          ) (
-            (if (is-vararg kt) (
+            (if (is-vararg kt) (scope(
                (set kt (get-vararg-inner kt))
                (if (is-open kt) (
                   (set callee-ctx (union( callee-ctx (unify( kt (typeof rhs) )) )))
@@ -94,14 +94,14 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                (let c1 (compile-expr( caller-ctx rhs offset Used )))
                (set caller-ctx (open(.context c1)))
                (set callee-ctx (bind-vararg( callee-ctx k kt c1 )))
-            ) (
+            )) (scope(
                (if (is-open kt) (
                   (set callee-ctx (union( callee-ctx (unify( kt (typeof rhs) )) )))
                ) ())
                (let c1 (compile-expr( caller-ctx rhs offset Used )))
                (set caller-ctx (open(.context c1)))
                (set callee-ctx (FCtxBind( (close callee-ctx) k kt c1 )))
-            ))
+            )))
          ))
       ))
       ( ASTNil () )
