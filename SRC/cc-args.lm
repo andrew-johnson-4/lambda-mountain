@@ -18,8 +18,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                         (set caller-ctx (open(.context c1)))
                         (set callee-ctx (bind-vararg( callee-ctx k kt c1 )))
                         (let e1 (cc-args( callee-ctx caller-ctx lhs le offset )))
-                        (set callee-ctx (.2(.1 e1)))
-                        (set caller-ctx (.1(.1 e1)))
+                        (let tmp-cc-e1 (.1 e1)) (set callee-ctx (.2 tmp-cc-e1)) (set caller-ctx (.1 tmp-cc-e1))
                         (set offset (.2 e1))
                      )) (
                         (let e1 (cc-args( callee-ctx caller-ctx lhs-rst rhs offset )))
@@ -35,8 +34,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                      (set caller-ctx (open(.context c1)))
                      (set callee-ctx (FCtxBind( (close callee-ctx) k kt c1 )))
                      (let e1 (cc-args( callee-ctx caller-ctx lhs-rst le offset )))
-                     (set callee-ctx (.2(.1 e1)))
-                     (set caller-ctx (.1(.1 e1)))
+                     (let tmp-cc-e1 (.1 e1)) (set callee-ctx (.2 tmp-cc-e1)) (set caller-ctx (.1 tmp-cc-e1))
                      (set offset (.2 e1))
                   )))
                ))
@@ -53,8 +51,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                   (set callee-ctx (bind-vararg( callee-ctx k kt c1 )))
                )) (
                   (let e1 (cc-args( callee-ctx caller-ctx lhs-rst rhs offset )))
-                  (set callee-ctx (.2(.1 e1)))
-                  (set caller-ctx (.1(.1 e1)))
+                  (let tmp-cc-e1 (.1 e1)) (set callee-ctx (.2 tmp-cc-e1)) (set caller-ctx (.1 tmp-cc-e1))
                   (set offset (.2 e1))
                ))
             ) (
@@ -81,8 +78,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                      (set caller-ctx (open(.context c1)))
                      (set callee-ctx (bind-vararg( callee-ctx k kt c1 )))
                      (let e1 (cc-args( callee-ctx caller-ctx lhs le offset )))
-                     (set callee-ctx (.2(.1 e1)))
-                     (set caller-ctx (.1(.1 e1)))
+                     (let tmp-cc-e1 (.1 e1)) (set callee-ctx (.2 tmp-cc-e1)) (set caller-ctx (.1 tmp-cc-e1))
                      (set offset (.2 e1))
                   )) (
                      (print (typeof rhs))
