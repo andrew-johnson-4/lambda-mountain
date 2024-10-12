@@ -13,6 +13,31 @@ syscall := λ: Blob . (: (:program( '\tsyscall\n_l )) Nil);
 & := λ: Blob(: src GlobalVariable). (: ( (:program( '\tmov\t$_l (:expression src) ',\s%r12\n_l )) (:expression( 'R12_l )) ) Reg64);
 
 # Generic 'mov Semantics
+#mov := λ: Blob(: src LocalVariable+Sized<size>)(: dst LocalVariable). (: (
+#   (:program (
+#      (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) ))) (
+#         '\tmovq\s_l (+( (:expression src) (*( (:expression word-offset) 8_l )) )) '\[%rbp\],\s%r15\n_l
+#         '\tmovq\s%r15,\s_l (+( (:expression dst) (*( (:expression word-offset) 8_l )) )) '\[%rbp\]\n_l
+#      ))
+#      (if (==( (: size L) 8_l )) (
+#         '\tmov\s_l (:expression src) \[ '%rbp \] ',\s%r15\n_l
+#         '\tmov\s%r15,\s_l (:expression dst) '\[%rbp\]\n_l
+#      ) ())
+#      (if (==( (: size L) 4_l )) (
+#         '\tmov\s_l (:expression src) \[ '%rbp \] ',\s%r15l\n_l
+#         '\tmov\s%r15l,\s_l (:expression dst) '\[%rbp\]\n_l
+#      ) ())
+#      (if (==( (: size L) 2_l )) (
+#         '\tmov\s_l (:expression src) \[ '%rbp \] ',\s%r15w\n_l
+#         '\tmov\s%r15w,\s_l (:expression dst) '\[%rbp\]\n_l
+#      ) ())
+#      (if (==( (: size L) 1_l )) (
+#         '\tmov\s_l (:expression src) \[ '%rbp \] ',\s%r15b\n_l
+#         '\tmov\s%r15b,\s_l (:expression dst) '\[%rbp\]\n_l
+#      ) ())
+#   ))
+#) Nil);
+
 fragment  mov := λ(: src LocalVariable+Sized<size>)(: dst LocalVariable). (: (
    (.program (
       (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
@@ -36,6 +61,7 @@ fragment  mov := λ(: src LocalVariable+Sized<size>)(: dst LocalVariable). (: (
       ))
    ))
 ) Nil);
+
 fragment  mov := λ(: src LocalVariable+Sized<size>)(: dst GlobalVariable). (: (
    (.program (
       \t 'mov \s '$ (.expression dst) , \s '%r14 \n
@@ -326,7 +352,7 @@ fragment  mov := λ(: src Reg16)(: dst LocalVariable). (: (.program( \t 'mov \s 
 fragment  mov := λ(: src Reg32)(: dst LocalVariable). (: (.program( \t 'mov \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
 fragment  mov := λ(: src Reg64)(: dst LocalVariable). (: (.program( \t 'mov \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
 
-fragment  mov := λ(: src Constant+String)(: dst LocalVariable). (: (.program(
+fragment  mov := λ(: src Literal+Constant+String+Sized<8>)(: dst LocalVariable). (: (.program(
    \t 'movq \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n
 )) Nil);
 
