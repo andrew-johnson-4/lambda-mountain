@@ -63,8 +63,6 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
          (set text (SCons( (close text) (close(SAtom (to-string(+( args-size 8_u64 ))) )) )))
          (set text (SCons( (close text) (close(SAtom ',\s%rsp\n_s)) )))
          (set text (SCons( (close text) (close(SAtom '\tret\n_s)) )))
-         (let text-etc (fragment::get( e 'text_s )))
-         (set text (SCons( (close text) (close text-etc) )))
          (set assemble-text-section (SCons( (close assemble-text-section) (close text) )))
       )))
       ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (

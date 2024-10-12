@@ -194,54 +194,44 @@ fragment  branchfalse := λ(: _ Nil). (: (
    (.expression( 'jne ))
 ) BranchConditional);
 
-into-branch-conditional := λ: Blob(: l BranchConditional). (: (
+into-branch-conditional := λ: Blob(: l BranchConditional+Meta<ImpureOffset>). (: (
    (:program (:program l))
-   (:text (:text l))
-   (:data (:data l))
    (:frame (:frame l))
    (:unframe (:unframe l))
    (:expression( (:expression l) ))
 ) BranchConditional);
-into-branch-conditional := λ: Blob(: l Reg64). (: (
+into-branch-conditional := λ: Blob(: l Reg64+Meta<ImpureOffset>). (: (
    (:program (
       (:program l)
       '\tcmp\s$0,\s%_l (:expression l) '\n_l
    ))
-   (:text (:text l))
-   (:data (:data l))
    (:frame (:frame l))
    (:unframe (:unframe l))
    (:expression( 'jne_l ))
 ) BranchConditional);
-into-branch-conditional := λ: Blob(: l Reg32). (: (
+into-branch-conditional := λ: Blob(: l Reg32+Meta<ImpureOffset>). (: (
    (:program (
       (:program l)
       '\tcmp\s$0,\s%_l (:expression l) '\n_l
    ))
-   (:text (:text l))
-   (:data (:data l))
    (:frame (:frame l))
    (:unframe (:unframe l))
    (:expression( 'jne_l ))
 ) BranchConditional);
-into-branch-conditional := λ: Blob(: l Reg16). (: (
+into-branch-conditional := λ: Blob(: l Reg16+Meta<ImpureOffset>). (: (
    (:program (
       (:program l)
       '\tcmp\s$0,\s%_l (:expression l) '\n_l
    ))
-   (:text (:text l))
-   (:data (:data l))
    (:frame (:frame l))
    (:unframe (:unframe l))
    (:expression( 'jne_l ))
 ) BranchConditional);
-into-branch-conditional := λ: Blob(: l Reg8). (: (
+into-branch-conditional := λ: Blob(: l Reg8+Meta<ImpureOffset>). (: (
    (:program (
       (:program l)
       '\tcmp\s$0,\s%_l (:expression l) '\n_l
    ))
-   (:text (:text l))
-   (:data (:data l))
    (:frame (:frame l))
    (:unframe (:unframe l))
    (:expression( 'jne_l ))

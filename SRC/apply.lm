@@ -4,12 +4,16 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (
 ) Type);
 
 apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: blame AST). (: (
+   (apply( function-name ft pt do-specialize blame True_u8 ))
+) Type);
+
+apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: blame AST)(: hard U8). (: (
    (let r TAny)
    (let rs (apply-plural( function-name ft pt do-specialize blame )))
    (if (==( (is-hook ft) 0_u64 )) (
       (set rs (reduce-plural rs))
    ) ())
-   (if (&&( (==( (.length rs) 0_u64 )) (!=( function-name 'del_s )) )) (
+   (if (&&( (==( (.length rs) 0_u64 )) (==( hard True_u8 )) )) (
       (print 'Function\sApplication\sYielded\sNo\sMatches\n_s)
       (print function-name)(print '\nWith\sArgument\s:\s_s)(print pt)(print '\n_s)
       (print (location-of( blame )))(print '\n_s)

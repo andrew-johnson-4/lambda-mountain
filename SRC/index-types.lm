@@ -19,6 +19,7 @@ import SRC/fields-of-tag.lm;
 import SRC/type-constructors.lm;
 import SRC/type-complex-fields.lm;
 import SRC/get-vararg-inner.lm;
+import SRC/maybe-specialize.lm;
 
 import SRC/is-open.lm;
 import SRC/is-vararg.lm;

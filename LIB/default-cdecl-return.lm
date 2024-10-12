@@ -1,55 +1,58 @@
 
-fragment  cdecl::return := λ: DontChain(: l Nil). (: (
-   (.program(
-      (.program l)
-      (.del l)
-   ))
-   (.frame( (.frame l) ))
+cdecl::return := λ: Blob(: l Nil). (: (
+   (:frame( (:frame l) ))
+   (:unframe( (:unframe l) ))
+   (:program( (:program l) (:del l) ))
 ) Nil);
-fragment  cdecl::return := λ: DontChain(: l Reg8). (: (
-   (.program(
-      (.program l)
-      \t 'mov \t '% (.expression l) , '%AL \n
-      \t 'push \s '%RAX \n
-      (.del l)
-      \t 'pop \s '%RAX \n
+cdecl::return := λ: Blob(: l Reg8). (: (
+   (:frame( (:frame l) ))
+   (:unframe( (:unframe l) ))
+   (:expression( 'AL_s ))
+   (:program(
+      (:program l)
+      '\tmov\t%_s (:expression l) ',%AL\n_s
+      '\tpush\s%RAX\n_s
+      (:del l)
+      '\tpop\s%RAX\n_s
    ))
-   (.frame (.frame l))
-   (.expression 'AL)
 ) Nil);
-fragment  cdecl::return := λ: DontChain(: l Reg16). (: (
-   (.program(
-      (.program l)
-      \t 'mov \t '% (.expression l) , '%AX \n
-      \t 'push \s '%RAX \n
-      (.del l)
-      \t 'pop \s '%RAX \n
+cdecl::return := λ: Blob(: l Reg16). (: (
+   (:frame( (:frame l) ))
+   (:unframe( (:unframe l) ))
+   (:expression( 'AX_s ))
+   (:program(
+      (:program l)
+      '\tmov\t%_s (:expression l) ',%AX\n_s
+      '\tpush\s%RAX\n_s
+      (:del l)
+      '\tpop\s%RAX\n_s
    ))
-   (.frame (.frame l))
-   (.expression 'AX)
 ) Nil);
-fragment  cdecl::return := λ: DontChain(: l Reg32). (: (
-   (.program(
-      (.program l)
-      \t 'mov \t '% (.expression l) , '%EAX \n
-      \t 'push \s '%RAX \n
-      (.del l)
-      \t 'pop \s '%RAX \n
+cdecl::return := λ: Blob(: l Reg32). (: (
+   (:frame (:frame l))
+   (:unframe( (:unframe l) ))
+   (:expression 'EAX_s)
+   (:program(
+      (:program l)
+      '\tmov\t%_s (:expression l) ',%EAX\n_s
+      '\tpush\s%RAX\n_s
+      (:del l)
+      '\tpop\s%RAX\n_s
    ))
-   (.frame (.frame l))
-   (.expression 'EAX)
 ) Nil);
-fragment  cdecl::return := λ: DontChain(: l Reg64). (: (
-   (.program(
-      (.program l)
-      \t 'mov \t '% (.expression l) , '%RAX \n
-      \t 'push \s '%RAX \n
-      (.del l)
-      \t 'pop \s '%RAX \n
+cdecl::return := λ: Blob(: l Reg64). (: (
+   (:frame (:frame l))
+   (:unframe( (:unframe l) ))
+   (:expression 'RAX_s)
+   (:program(
+      (:program l)
+      '\tmov\t%_s (:expression l) ',%RAX\n_s
+      '\tpush\s%RAX\n_s
+      (:del l)
+      '\tpop\s%RAX\n_s
    ))
-   (.frame (.frame l))
-   (.expression 'RAX)
 ) Nil);
+
 fragment  cdecl::return := λ: DontChain(: l Constant+Literal+Sized<1>). (: (
    (.program(
       (.program l)

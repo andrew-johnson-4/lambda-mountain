@@ -1,0 +1,4 @@
+
+maybe-specialize := λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (
+   (apply( function-name ft pt True_u8 blame False_u8 ))
+) Type);

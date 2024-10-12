@@ -14,7 +14,8 @@ infer-global-context := λ(: td AST). (: (
       ))
       ( (Glb( k_t (@( frhs (Abs( lhs (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) tlt )) )) )) (
          (let lt (typeof-lhs lhs))
-         (let return-type (guess-representation(without-representation rhst)))
+         (let return-type rhst)
+         (if (is-blob tlt) () (set return-type (guess-representation(without-representation rhst))))
          (let ft (t3( 'Arrow_s lt return-type )))
          (set ft (enrich( ft tlt )))
          (if (&&( (is-hook tlt) (not(is-nil rhst)) )) (
