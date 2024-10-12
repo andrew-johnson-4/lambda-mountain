@@ -173,9 +173,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          )))
          (ascript-normal( term (t1 'Nil_s) ))
 
-         (apply-or-cons-and-specialize(
-            'del_s (typeof-var-raw( term tctx 'del_s )) rt term
-         ))
+         (maybe-specialize( 'del_s (typeof-var-raw( term tctx 'del_s )) rt term ))
       ))
       ( (App( l r )) (
          (let l-used Unused)
@@ -196,9 +194,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          ) ())
          (ascript-normal( term rt ))
          (if (==( (var-name-if-var l) 'Rc_s )) (
-            (apply-or-cons-and-specialize(
-               'inc_s
-               (typeof-var-raw( term tctx 'inc_s ))
+            (maybe-specialize( 'inc_s (typeof-var-raw( term tctx 'inc_s ))
                (t2( 'Rc_s (p2(slot( (p2(slot( (p1 (typeof r)) 'Array_s ))) 'Tuple_s ))) )) # invert Rc constructor to get type parameter
                term
             ))
@@ -221,9 +217,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (let rt (typeof rhs))
          (ascript-normal( term (enrich( (t3( 'Arrow_s lt rt )) tlt )) ))
          (if (is-blob tlt) () (
-            (apply-or-cons-and-specialize(
-               'cdecl::return_s (typeof-var-raw( term tctx 'cdecl::return_s )) rt term
-            ))
+            (maybe-specialize( 'cdecl::return_s (typeof-var-raw( term tctx 'cdecl::return_s )) rt term ))
          ))
       ))
       ( (Var( v vtk )) (
