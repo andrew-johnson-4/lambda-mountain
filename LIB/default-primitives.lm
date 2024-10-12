@@ -247,32 +247,6 @@ into-branch-conditional := λ: Blob(: l Reg8). (: (
    (:expression( 'jne_l ))
 ) BranchConditional);
 
-fragment  as-branch-conditional := λ(: l Reg64). (: (
-   (.program (
-      \t 'cmp \s '$0 , \s '% (.expression l) \n
-   ))
-   (.expression( 'jne ))
-) BranchConditional);
-fragment  as-branch-conditional := λ(: l Reg32). (: (
-   (.program (
-      \t 'cmp \s '$0 , \s '% (.expression l) \n
-   ))
-   (.expression( 'jne ))
-) BranchConditional);
-fragment  as-branch-conditional := λ(: l Reg16). (: (
-   (.program (
-      \t 'cmp \s '$0 , \s '% (.expression l) \n
-   ))
-   (.expression( 'jne ))
-) BranchConditional);
-fragment  as-branch-conditional := λ(: l Reg8). (: (
-   (.program (
-
-      \t 'cmp \s '$0 , \s '% (.expression l) \n
-   ))
-   (.expression( 'jne ))
-) BranchConditional);
-
 fragment  primitive::if := λ: DontChain(: ictx ImplicitContext)(: e1 BranchConditional)(: e2 ?)(: e3 ?). (: (
    (.program (
       \t 'push \s '%RBP \n
