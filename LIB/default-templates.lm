@@ -42,8 +42,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
    (:program(
       '\tmov\s$_s (:expression src) ',\s%RAX\n_s
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression 'RAX_s )
@@ -53,8 +51,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
    (:program(
       '\tmov\s_s (:expression src) '\[%RBP\],\s%RAX\n_s
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression 'RAX_s )
@@ -65,8 +61,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_s (:expression src) ',\s%R15\n_s
       '\tmov\s0\[%R15\],\s%RAX\n_s
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression 'RAX_s )
@@ -76,8 +70,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
    (:program(
       '\tmov\s_s (:expression src) '\[%RBP\],\s%AL\n_s
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression 'AL_s )
@@ -87,8 +79,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
    (:program(
       '\tmov\s_s (:expression src) '\[%RBP\],\s%AX\n_s
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression 'AX_s )
@@ -98,8 +88,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
    (:program(
       '\tmov\s_s (:expression src) '\[%RBP\],\s%EAX\n_s
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression 'EAX_s )
@@ -109,8 +97,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
    (:program(
       '\tmov\s_s (:expression src) '\[%RBP\],\s%RAX\n_s
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression 'RAX_s )
@@ -123,8 +109,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
          '\tpushq\s_s (:expression word-offset) '\[%RBP\]\n_s
       ))
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
 ) f0+StackVariable);
@@ -133,8 +117,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
    (:program(
       '\tmov\s_s (:expression src) '\[%RBP\],\s%AL\n_s
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression 'AL_s )
@@ -144,8 +126,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
    (:program(
       '\tmov\s_s (:expression src) '\[%RBP\],\s%AX\n_s
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression 'AX_s )
@@ -155,8 +135,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
    (:program(
       '\tmov\s_s (:expression src) '\[%RBP\],\s%EAX\n_s
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression 'EAX_s )
@@ -166,8 +144,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
    (:program(
       '\tmov\s_s (:expression src) '\[%RBP\],\s%RAX\n_s
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression 'RAX_s )
@@ -180,8 +156,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
          '\tpushq\s_s (:expression word-offset) '\[%RBP\]\n_s
       ))
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
 ) f0+StackVariable);
@@ -190,8 +164,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
    (:program(
       '\tmov\s_l (+( (:expression src) (: size0 L) )) '\[%RBP\],\s%AL\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AL_l ))
@@ -201,8 +173,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
    (:program(
       '\tmov\s_l (+( (:expression src) (: size0 L) )) '\[%RBP\],\s%AX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AX_l ))
@@ -212,8 +182,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
    (:program(
       '\tmov\s_l (+( (:expression src) (: size0 L) )) '\[%RBP\],\s%EAX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'EAX_l ))
@@ -223,8 +191,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
    (:program(
       '\tmov\s_l (+( (:expression src) (: size0 L) )) '\[%RBP\],\s%RAX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'RAX_l ))
@@ -237,8 +203,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
          '\tpushq\s_l (:expression word-offset) '\[%RBP\]\n_s
       ))
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
 ) f1+StackVariable);
@@ -248,8 +212,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       (let base-offset (+( (+( (:expression src) (align(: size0 L)) )) (align(: size1 L)) )))
       '\tmov\s_s (:expression base-offset) '\[%RBP\],\s%AL\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AL_l ))
@@ -260,8 +222,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       (let base-offset (+( (+( (:expression src) (align(: size0 L)) )) (align(: size1 L)) )))
       '\tmov\s_s (:expression base-offset) '\[%RBP\],\s%AX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AX_l ))
@@ -272,8 +232,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       (let base-offset (+( (+( (:expression src) (align(: size0 L)) )) (align(: size1 L)) )))
       '\tmov\s_s (:expression base-offset) '\[%RBP\],\s%EAX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'EAX_l ))
@@ -284,8 +242,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       (let base-offset (+( (+( (:expression src) (align(: size0 L)) )) (align(: size1 L)) )))
       '\tmov\s_s (:expression base-offset) '\[%RBP\],\s%RAX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'RAX_l ))
@@ -299,8 +255,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
          '\tpushq\s_l (:expression word-offset) '\[%RBP\]\n_s
       ))
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
 ) f2+StackVariable);
@@ -310,8 +264,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       (let base-offset (+( (+( (+( (:expression src) (align(: size1 L)) )) (align(: size2 L)) )) (align(: size0 L)) )))
       '\tmov\s_l (:expression base-offset) '\[%RBP\],\s%AL\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AL_l ))
@@ -322,8 +274,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       (let base-offset (+( (+( (+( (:expression src) (align(: size1 L)) )) (align(: size2 L)) )) (align(: size0 L)) )))
       '\tmov\s_l (:expression base-offset) '\[%RBP\],\s%AX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AX_l ))
@@ -334,8 +284,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       (let base-offset (+( (+( (+( (:expression src) (align(: size1 L)) )) (align(: size2 L)) )) (align(: size0 L)) )))
       '\tmov\s_l (:expression base-offset) '\[%RBP\],\s%EAX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'EAX_l ))
@@ -346,8 +294,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       (let base-offset (+( (+( (+( (:expression src) (align(: size1 L)) )) (align(: size2 L)) )) (align(: size0 L)) )))
       '\tmov\s_l (:expression base-offset) '\[%RBP\],\s%RAX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'RAX_l ))
@@ -361,8 +307,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
          '\tpushq\s_l (:expression word-offset) '\[%RBP\]\n_l
       ))
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
 ) f3+StackVariable);
@@ -372,8 +316,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       (let base-offset (+( (+( (+( (+( (:expression src) (align(: size1 L)) )) (align(: size2 L)) )) (align(: size3 L)) )) (align(: size0 L)) )))
       '\tmov\s_l (:expression base-offset) '\[%RBP\],\s%AL\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AL_l ))
@@ -384,8 +326,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       (let base-offset (+( (+( (+( (+( (:expression src) (align(: size1 L)) )) (align(: size2 L)) )) (align(: size3 L)) )) (align(: size0 L)) )))
       '\tmov\s_l (:expression base-offset) '\[%RBP\],\s%AX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AX_l ))
@@ -396,8 +336,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       (let base-offset (+( (+( (+( (+( (:expression src) (align(: size1 L)) )) (align(: size2 L)) )) (align(: size3 L)) )) (align(: size0 L)) )))
       '\tmov\s_l (:expression base-offset) '\[%RBP\],\s%EAX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'EAX_l ))
@@ -408,8 +346,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       (let base-offset (+( (+( (+( (+( (:expression src) (align(: size1 L)) )) (align(: size2 L)) )) (align(: size3 L)) )) (align(: size0 L)) )))
       '\tmov\s_l (:expression base-offset) '\[%RBP\],\s%RAX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'RAX_l ))
@@ -423,8 +359,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
          '\tpushq\s_l (:expression word-offset) '\[%RBP\]\n_l
       ))
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
 ) f4+StackVariable);
@@ -434,8 +368,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       (let base-offset (+( (+( (+( (+( (+( (:expression src) (align(: size1 L)) )) (align(: size2 L)) )) (align(: size3 L)) )) (align(: size4 L)) )) (align(: size0 L)) )))
       '\tmov\s_l (:expression base-offset) '\[%RBP\],\s%AL\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AL_s ))
@@ -446,8 +378,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       (let base-offset (+( (+( (+( (+( (+( (:expression src) (align(: size1 L)) )) (align(: size2 L)) )) (align(: size3 L)) )) (align(: size4 L)) )) (align(: size0 L)) )))
       '\tmov\s_l (:expression base-offset) '\[%RBP\],\s%AX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AX_s ))
@@ -458,8 +388,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       (let base-offset (+( (+( (+( (+( (+( (:expression src) (align(: size1 L)) )) (align(: size2 L)) )) (align(: size3 L)) )) (align(: size4 L)) )) (align(: size0 L)) )))
       '\tmov\s_l (:expression base-offset) '\[%RBP\],\s%EAX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'EAX_s ))
@@ -470,8 +398,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       (let base-offset (+( (+( (+( (+( (+( (:expression src) (align(: size1 L)) )) (align(: size2 L)) )) (align(: size3 L)) )) (align(: size4 L)) )) (align(: size0 L)) )))
       '\tmov\s_l (:expression base-offset) '\[%RBP\],\s%RAX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'RAX_s ))
@@ -485,8 +411,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
          '\tpushq\s_l (:expression word-offset) '\[%RBP\]\n_l
       ))
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
 ) f5+StackVariable);
@@ -497,8 +421,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       (let base-offset (+( (+( (+( (+( (+( (+( (:expression src) (align(: size1 L)) )) (align(: size2 L)) )) (align(: size3 L)) )) (align(: size4 L)) )) (align(: size5 L)) )) (align(: size0 L)) )))
       '\tmov\s_l (:expression base-offset) '\[%RBP\],\s%AL\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AL_s ))
@@ -509,8 +431,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       (let base-offset (+( (+( (+( (+( (+( (+( (:expression src) (align(: size1 L)) )) (align(: size2 L)) )) (align(: size3 L)) )) (align(: size4 L)) )) (align(: size5 L)) )) (align(: size0 L)) )))
       '\tmov\s_l (:expression base-offset) '\[%RBP\],\s%AX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AX_s ))
@@ -521,8 +441,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       (let base-offset (+( (+( (+( (+( (+( (+( (:expression src) (align(: size1 L)) )) (align(: size2 L)) )) (align(: size3 L)) )) (align(: size4 L)) )) (align(: size5 L)) )) (align(: size0 L)) )))
       '\tmov\s_l (:expression base-offset) '\[%RBP\],\s%EAX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'EAX_s ))
@@ -533,8 +451,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       (let base-offset (+( (+( (+( (+( (+( (+( (:expression src) (align(: size1 L)) )) (align(: size2 L)) )) (align(: size3 L)) )) (align(: size4 L)) )) (align(: size5 L)) )) (align(: size0 L)) )))
       '\tmov\s_l (:expression base-offset) '\[%RBP\],\s%RAX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'RAX_s ))
@@ -548,8 +464,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
          '\tpushq\s_l (:expression word-offset) '\[%RBP\]\n_l
       ))
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
 ) f6+StackVariable);
@@ -559,8 +473,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_s (:expression src) ',\s%R15\n_s
       '\tmov\s0\[%R15\],\s%AL\n_s
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AL_s ))
@@ -571,8 +483,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_s (:expression src) ',\s%R15\n_s
       '\tmov\s0\[%R15\],\s%AX\n_s
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AX_s ))
@@ -583,8 +493,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_s (:expression src) ',\s%R15\n_s
       '\tmov\s0\[%R15\],\s%EAX\n_s
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'EAX_s ))
@@ -595,8 +503,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_s (:expression src) ',\s%R15\n_s
       '\tmov\s0\[%R15\],\s%RAX\n_s
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'RAX_s ))
@@ -610,8 +516,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
          '\tpushq\s_s (:expression word-offset) '\[%R15\]\n_s
       ))
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
 ) f0+StackVariable);
@@ -621,8 +525,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_s (:expression src) ',\s%R15\n_s
       '\tmov\s0\[%R15\],\s%AL\n_s
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AL_s ))
@@ -633,8 +535,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_s (:expression src) ',\s%R15\n_s
       '\tmov\s0\[%R15\],\s%AX\n_s
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AX_s ))
@@ -645,8 +545,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_s (:expression src) ',\s%R15\n_s
       '\tmov\s0\[%R15\],\s%EAX\n_s
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'EAX_s ))
@@ -657,8 +555,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_s (:expression src) ',\s%R15\n_s
       '\tmov\s0\[%R15\],\s%RAX\n_s
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'RAX_s ))
@@ -672,8 +568,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
          '\tpushq\s_s (:expression word-offset) '\[%R15\]\n_s
       ))
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
 ) f0+StackVariable);
@@ -683,8 +577,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_l (:expression src) ',\s%R15\n_l
       '\tmov\s_l (+( 0_l (: size0 L) )) '\[%R15\],\s%AL\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AL_l ))
@@ -695,8 +587,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_l (:expression src) ',\s%R15\n_l
       '\tmov\s_l (+( 0_l (: size0 L) )) '\[%R15\],\s%AX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AX_l ))
@@ -707,8 +597,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_l (:expression src) ',\s%R15\n_l
       '\tmov\s_l (+( 0_l (: size0 L) )) '\[%R15\],\s%EAX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'EAX_l ))
@@ -719,8 +607,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_l (:expression src) ',\s%R15\n_l
       '\tmov\s_l (+( 0_l (: size0 L) )) '\[%R15\],\s%RAX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'RAX_l ))
@@ -734,8 +620,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
          '\tpushq\s_l (:expression word-offset) '\[%R15\]\n_l
       ))
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
 ) f1+StackVariable);
@@ -746,8 +630,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_l (:expression src) ',\s%R15\n_l
       '\tmov\s_l (:expression base-offset) '\[%R15\],\s%AL\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AL_l ))
@@ -759,8 +641,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_l (:expression src) ',\s%R15\n_l
       '\tmov\s_l (:expression base-offset) '\[%R15\],\s%AX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AX_l ))
@@ -772,8 +652,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_l (:expression src) ',\s%R15\n_l
       '\tmov\s_l (:expression base-offset) '\[%R15\],\s%EAX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'EAX_l ))
@@ -785,8 +663,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_l (:expression src) ',\s%R15\n_l
       '\tmov\s_l (:expression base-offset) '\[%R15\],\s%RAX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'RAX_l ))
@@ -801,8 +677,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
          '\tpushq\s_l (:expression word-offset) '\[%R15\]\n_l
       ))
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
 ) f2+StackVariable);
@@ -813,8 +687,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_l (:expression src) ',\s%R15\n_l
       '\tmov\s_l (:expression base-offset) '\[%R15\],\s%AL\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AL_l ))
@@ -826,8 +698,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_l (:expression src) ',\s%R15\n_l
       '\tmov\s_l (:expression base-offset) '\[%R15\],\s%AX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AX_l ))
@@ -839,8 +709,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_l (:expression src) ',\s%R15\n_l
       '\tmov\s_l (:expression base-offset) '\[%R15\],\s%EAX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'EAX_l ))
@@ -852,8 +720,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_l (:expression src) ',\s%R15\n_l
       '\tmov\s_l (:expression base-offset) '\[%R15\],\s%RAX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'RAX_l ))
@@ -868,6 +734,8 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
          '\tpushq\s_l (:expression word-offset) '\[%R15\]\n_l
       ))
    ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
 ) f3+StackVariable);
 
 .4 := λ: Blob(: src GlobalVariable+Fields<Cons<Cons<Cons<Cons<Cons<_,f4+Sized<1>>,Sized<size3>>,Sized<size2>>,Sized<size1>>,Sized<size0>>>). (: (
@@ -876,8 +744,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_l (:expression src) ',\s%R15\n_l
       '\tmov\s_l (:expression base-offset) '\[%R15\],\s%AL\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AL ))
@@ -889,8 +755,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_l (:expression src) ',\s%R15\n_l
       '\tmov\s_l (:expression base-offset) '\[%R15\],\s%AX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'AX ))
@@ -902,8 +766,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_l (:expression src) ',\s%R15\n_l
       '\tmov\s_l (:expression base-offset) '\[%R15\],\s%EAX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'EAX ))
@@ -915,8 +777,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_l (:expression src) ',\s%R15\n_l
       '\tmov\s_l (:expression base-offset) '\[%R15\],\s%RAX\n_l
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
    (:expression( 'RAX ))
@@ -931,8 +791,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
          '\tpushq\s_l (:expression word-offset) '\[%R15\]\n_l
       ))
    ))
-   (:data( (:data src) ))
-   (:text( (:text src) ))
    (:frame( (:frame src) ))
    (:unframe( (:unframe src) ))
 ) f4+StackVariable);
@@ -943,6 +801,8 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_l (:expression src) ',\s%R15\n_l
       '\tmov\s_l (:expression base-offset) '\[%R15\],\s%AL\n_l
    ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
    (:expression( 'AL ))
 ) f5+Reg8);
 
@@ -952,6 +812,8 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_l (:expression src) ',\s%R15\n_l
       '\tmov\s_l (:expression base-offset) '\[%R15\],\s%AX\n_l
    ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
    (:expression( 'AX ))
 ) f5+Reg16);
 
@@ -961,6 +823,8 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_l (:expression src) ',\s%R15\n_l
       '\tmov\s_l (:expression base-offset) '\[%R15\],\s%EAX\n_l
    ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
    (:expression( 'EAX ))
 ) f5+Reg32);
 
@@ -970,6 +834,8 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
       '\tmov\s$_l (:expression src) ',\s%R15\n_l
       '\tmov\s_l (:expression base-offset) '\[%R15\],\s%RAX\n_l
    ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
    (:expression( 'RAX ))
 ) f5+Reg64);
 
@@ -982,4 +848,6 @@ fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-siz
          '\tpushq\s_l (:expression word-offset) '\[%R15\]\n_l
       ))
    ))
+   (:frame( (:frame src) ))
+   (:unframe( (:unframe src) ))
 ) f5+StackVariable);
