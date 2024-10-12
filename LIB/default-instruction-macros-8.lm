@@ -197,20 +197,38 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
       (:unframe( (:unframe l) (:unframe r) ))
       (:expression 'AL_s)
    ) op-type+Reg8);
-   op-alias := λ: Blob(: l op-type+Reg8+Meta<OntoStack>)(: r op-type+Reg8). (: (
-      (:program(
-         (:program l)
-         '\tpushq\s%_s (:expression l) '\n_s
-         (:program r)
-         '\tmovq\s%_s (:expression r) ',\s%R14B\n_s
-         '\tpopq\s%AL\n_s
-         '\t_s op-code '\s%R14B,\s%AL\n_s
+   #op-alias := λ: Blob(: l op-type+Reg8)(: r op-type+Reg8). (: (
+   #   (:program(
+   #      (:program l)
+   #      '\tpushq\s%_s (:expression l) '\n_s
+   #      (:program r)
+   #      '\tmovq\s%_s (:expression r) ',\s%R14B\n_s
+   #      '\tpopq\s%AL\n_s
+   #      '\t_s op-code '\s%R14B,\s%AL\n_s
+   #   ))
+   #   (:data( (:data l) (:data r) ))
+   #   (:text( (:text l) (:text r) ))
+   #   (:frame( (:frame l) (:frame r) ))
+   #   (:unframe( (:unframe l) (:unframe r) ))
+   #   (:expression 'AL_s)
+   #) op-type+Reg8);
+   fragment  op-alias := λ: DontChain(: l op-type+Reg8+Meta<OntoStack>)(: r op-type+Reg8). (: (
+      (.program(
+         (.program l)
+         \t 'push \s '% (.expression l) \n
+         (.program r)
+         \t 'movq \s '% (.expression r) , \s '%R14B \n
+         \t 'popq \s '%RAX \n
+         \t op-code \s '%R14B , \s '%RAXB \n
+         op-set
       ))
-      (:data( (:data l) (:data r) ))
-      (:text( (:text l) (:text r) ))
-      (:frame( (:frame l) (:frame r) ))
-      (:unframe( (:unframe l) (:unframe r) ))
-      (:expression 'AL_s)
+      (.data( (.data l) (.data r) ))
+      (.frame( (.text l) (.text r) ))
+      (.frame( (.frame l) (.frame r) ))
+      (.unframe( (.unframe l) (.unframe r) ))
+      (.expression(
+         'AL
+      ))
    ) op-type+Reg8);
 );
 
