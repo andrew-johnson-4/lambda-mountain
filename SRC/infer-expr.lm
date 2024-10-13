@@ -67,12 +67,17 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          )))
          (ascript-normal( term (t1 'Nil_s) ))
       ))
-      ( (App( (App( (Var( 'set_s _ )) (Var( v _ )) )) rhs )) (
+      ( (App( (@( set-t (Lit( 'set_s _ )) )) (@( set-arg-t (App( (@( v-t (Var( v _ )) )) rhs )) )) )) (
          (infer-expr( tctx rhs Unscoped TAny Tail ))
          (let tlhs (typeof-var( term tctx v )))
+         (let trhs (typeof rhs))
+         (ascript-normal( v-t tlhs ))
          (ascript-normal( rhs tlhs ))
          (ascript-normal( term (t1 'Nil_s) ))
-         (maybe-specialize( 'mov_s (typeof-var-raw( term tctx 'mov_s )) (t3( 'Cons_s (typeof rhs) tlhs )) term ))
+         (ascript-normal( set-t (t1 'Nil_s) ))
+         (let tcons (t3( 'Cons_s trhs tlhs )))
+         (ascript-normal( set-arg-t tcons ))
+         (maybe-specialize( 'mov_s (typeof-var-raw( term tctx 'mov_s )) tcons term ))
       ))
       ( (App( (Var( 'label_s _ )) (Var( lname _ )) )) (
          (ascript-normal( term (t1 'Nil_s) ))

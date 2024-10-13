@@ -126,7 +126,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set e (compile-expr( ctx t stack-offset used )))
          (set e (fragment::set-type( e (typeof term) )))
       ))
-      ( (App( (App( (Var( 'set_s _ )) (Var( k _ )) )) rhs )) (
+      ( (App( (Lit( 'set_s _ )) (App( (Var( k _ )) rhs )) )) (
          (let kt (typeof rhs))
 
          (let e1 (compile-expr( ctx rhs stack-offset Used )))
