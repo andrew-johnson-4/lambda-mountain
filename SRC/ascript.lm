@@ -1,8 +1,1 @@
 
-s-type-list := (: STEOF STypeList);
-ascript := λ(: t S)(: tt Type). (: (
-   (set s-type-list (STSeq(
-      (close s-type-list)
-      t tt
-   )))
-) Nil);

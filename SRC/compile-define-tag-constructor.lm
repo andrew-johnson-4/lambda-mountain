@@ -13,7 +13,6 @@ compile-define-tag-constructor := λ(: ctx FContext)(: tag String)(: arg-types T
    (set fragment (fragment::set-type( fragment arrow-tt )))
    (set fragment (fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) )))
    (let spt (substitute( case-tctx (fragment::get( fragment 'fragment_s )) )))
-   (ascript( spt (typeof( (fragment::get( fragment 'fragment_s )) )) ))
    (set fragment (fragment::set( fragment 'fragment_s spt )))
    (set ctx (fragment-context::bind(
       ctx 'push_s arrow-tt fragment
@@ -24,7 +23,6 @@ compile-define-tag-constructor := λ(: ctx FContext)(: tag String)(: arg-types T
    (set fragment (fragment::set-type( fragment arrow-tt )))
    (set fragment (fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) )))
    (set spt (substitute( case-tctx (fragment::get( fragment 'fragment_s )) )))
-   (ascript( spt (typeof( (fragment::get( fragment 'fragment_s )) )) ))
    (set fragment (fragment::set( fragment 'fragment_s spt )))
    (set ctx (fragment-context::bind(
       ctx 'mov_s arrow-tt fragment
@@ -35,7 +33,6 @@ compile-define-tag-constructor := λ(: ctx FContext)(: tag String)(: arg-types T
    (set fragment (fragment::set-type( fragment arrow-tt )))
    (set fragment (fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) )))
    (set spt (substitute( case-tctx (fragment::get( fragment 'fragment_s )) )))
-   (ascript( spt (typeof( (fragment::get( fragment 'fragment_s )) )) ))
    (set fragment (fragment::set( fragment 'fragment_s spt )))
    (set ctx (fragment-context::bind(
       ctx 'mov_s arrow-tt fragment

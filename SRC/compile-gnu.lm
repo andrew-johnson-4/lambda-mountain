@@ -19,10 +19,6 @@ compile-gnu := λ. (: (
             (set global-ctx (fragment-context::bind(
                global-ctx k (typeof rhs) fragment
             )))
-            (match preview-program (
-               ()
-               ( (Seq( _ frg )) (ascript( (fragment::get( fragment 'fragment_s )) (typeof frg) )) )
-            ))
          ) ())
          (set preview-program rst)
       ))
