@@ -3,15 +3,6 @@ preprocess-apply := λ(: program AST). (: (
    (let r program)
    (match program (
       ()
-      ( (App( (App( (Var( 'set_s ctk )) lhs )) rhs )) (
-         (set r (App(
-            (close(Var( 'mov_s ctk )))
-            (close(App(
-               (close(preprocess-apply( rhs )))
-               (close(preprocess-apply( lhs )))
-            )))
-         )))
-      ))
       ( (App( (App( (Lit( ':_s ctk )) (App( t (AType tt) )) )) nt )) (
          (set r (App(
             (close(App( (close(Lit( ':_s (unique ctk) ))) (close(App( (close(preprocess-apply t)) (close(AType tt)) ))) )))
