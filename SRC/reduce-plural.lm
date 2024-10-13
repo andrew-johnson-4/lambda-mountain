@@ -6,7 +6,6 @@ reduce-plural := λ(: pts List<Type>). (: (
       ()
       ( (LCons( try tlt )) (
          (if (is-constructor try) (
-            (print 'Is\Constructor:\s_s)(print try)(print '\n_s)
             (set r (cons( try r )))
          ) ())
          (set maybe-constructor tlt)
