@@ -278,7 +278,7 @@ fragment::render-impl := λ(: s S)(: blame AST). (: (
             (SCons( (SAtom 'Var_s) (SAtom iter) ))
          )) )) body
       )) )) (
-         (let iter-result (reverse(fragment-context::lookup-vararg( ctx iter TAny ASTEOF ))))
+         (let iter-result (reverse(fragment-context::lookup-vararg( ctx iter TAny blame ))))
          (while (non-zero iter-result) (match iter-result (
             ()
             ( (FLSeq( rst fi )) (
@@ -296,7 +296,7 @@ fragment::render-impl := λ(: s S)(: blame AST). (: (
       ))
       ( (SCons( (SAtom 'App_s) (SCons( (SCons( (SAtom 'Var_s) (SAtom op) )) (SCons( (SAtom 'Var_s) (SAtom v) )) )) )) (
          (if (==( (head-string op) 46_u8 )) (
-            (let f (fragment-context::lookup( ctx v TAny ASTEOF )))
+            (let f (fragment-context::lookup( ctx v TAny blame )))
             (let fe (fragment::get( f (tail-string op) )))
             (set r fe)
          ) (
