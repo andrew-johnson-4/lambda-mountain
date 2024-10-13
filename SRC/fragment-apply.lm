@@ -16,9 +16,6 @@ fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentLi
    ))
    (let arrow (fragment-context::lookup( ctx k args-tt sloc )))
    (let arrow-tt (.type arrow))
-   (print 'Apply\s_s)(print k)(print '\n_s)
-   (print 'Apply\sFragment\s_s)(print args-tt)(print '\n_s)
-   (print 'Apply\sFragment\sFound\s_s)(print arrow-tt)(print '\n_s)
 
    (let chain True_u8)
    (if (non-zero(slot( arrow-tt 'DontChain_s ))) (
