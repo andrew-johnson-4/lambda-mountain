@@ -1,0 +1,11 @@
+
+is-constructor := λ(: tt Type). (: (
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( (TAnd( t1 t2 )) (set r (||( (is-constructor t1) (is-constructor t2) ))) )
+      ( (TGround( 'Constructor_s _ )) (set r 1_u64) )
+      ( _ () )
+   ))
+   r
+) U64);

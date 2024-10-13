@@ -15,6 +15,9 @@ reduce-plural := λ(: pts List<Type>). (: (
          (if (non-zero try) (
             (set r (cons( try r )))
          ) ())
+         (if (is-constructor try) (
+            (set r (cons( try (: LEOF List<Type) )))
+         ) ())
       ))
    )))
    (set pts r)
@@ -32,6 +35,9 @@ reduce-plural := λ(: pts List<Type>). (: (
          ))
          (if (non-zero try) (
             (set r (cons( try r )))
+         ) ())
+         (if (is-constructor try) (
+            (set r (cons( try (: LEOF List<Type) )))
          ) ())
       ))
    )))
