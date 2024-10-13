@@ -1,6 +1,17 @@
 
 reduce-plural := λ(: pts List<Type>). (: (
    (let r (: LEOF List<Type>))
+   (let maybe-constructor pts)
+   (while (non-zero maybe-constructor) (match maybe-constructor (
+      ()
+      ( (LCons( try tlt )) (
+         (if (is-constructor try) (
+            (set r (cons( try r )))
+         ) ())
+         (set maybe-constructor tlt)
+      ))
+   )))
+   (if (non-zero r) (set pts (: LEOF List<Type>)) ())
    (while (non-zero pts) (match pts (
       ()
       ( (LCons( try tlt )) (
@@ -14,9 +25,6 @@ reduce-plural := λ(: pts List<Type>). (: (
          ))
          (if (non-zero try) (
             (set r (cons( try r )))
-         ) ())
-         (if (is-constructor try) (
-            (set r (cons( try (: LEOF List<Type>) )))
          ) ())
       ))
    )))
@@ -35,9 +43,6 @@ reduce-plural := λ(: pts List<Type>). (: (
          ))
          (if (non-zero try) (
             (set r (cons( try r )))
-         ) ())
-         (if (is-constructor try) (
-            (set r (cons( try (: LEOF List<Type>) )))
          ) ())
       ))
    )))
