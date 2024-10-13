@@ -26,7 +26,7 @@ fragment::render-impl := λ(: s S)(: blame AST). (: (
            (SCons( (SAtom 'Var_s) (SAtom 'uuid_s) ))
            (SCons( (SAtom 'Var_s) (SAtom v) ))
         )) )) (
-         (let f (fragment-context::lookup-soft( ctx v TAny ASTEOF )))
+         (let f (fragment-context::lookup-soft( ctx v TAny blame )))
          (set r (fragment::get( f 'expression_s )))
          (if (non-zero r) () (
             (set f (fragment::expression(uuid())))
