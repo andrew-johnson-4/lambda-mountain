@@ -1,21 +1,4 @@
 
-typeof := λ(: term S). (: (
-   (let found TAny)
-   (let tctx s-type-list)
-   (while (non-zero tctx) (match tctx (
-      ()
-      ( (STSeq( rst s tt )) (
-         (if (is( s term )) (
-            (set found tt)
-            (set tctx STEOF)
-         ) (
-            (set tctx rst)
-         ))
-      ))
-   )))
-   found
-) Type);
-
 typeof := λ(: args FragmentList). (: (
    (let r TAny)
    (match args (

@@ -1,5 +1,5 @@
 
-fragment::let := λ(: ctx FContext)(: s S). (: (
+fragment::let := λ(: ctx FContext)(: s S)(: blame AST). (: (
    (let return ctx)
    (match s (
       ()
@@ -10,7 +10,7 @@ fragment::let := λ(: ctx FContext)(: s S). (: (
            )) ))
            v
         )) )) (
-         (set v (fragment::render( return v )))
+         (set v (fragment::render( return v blame )))
          (set return (FCtxBind(
             (close return) k TAny (fragment::expression( v ))
          )))
@@ -18,7 +18,7 @@ fragment::let := λ(: ctx FContext)(: s S). (: (
       ( (SCons( (SAtom 'App_s) (SCons(
           ls rs
         )) )) (
-         (set return (fragment::let( return ls )))
+         (set return (fragment::let( return ls blame )))
       ))
       ( _ () )
    ))

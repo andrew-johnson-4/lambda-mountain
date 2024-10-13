@@ -36,7 +36,7 @@ fragment-apply := λ(: ctx FContext)(: offset I64)(: k String)(: args FragmentLi
       ))
    ))
 
-   (let return (apply-direct( ctx arrow args e-proto chain already-destructured )))
+   (let return (apply-direct( ctx arrow args e-proto chain already-destructured sloc )))
 
    # add comments if in GNU mode
    (if (is( config-assemble-mode AssembleGNU )) (

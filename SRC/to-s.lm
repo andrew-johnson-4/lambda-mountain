@@ -17,11 +17,9 @@ to-s := λ(: term AST). (: (
       ))
       ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
          (set s (to-s t))
-         (ascript( s tt ))
       ))
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
          (set s (to-s t))
-         (ascript( s tt ))
       ))
       ( (App( lt rt )) (
          (set s (SCons(

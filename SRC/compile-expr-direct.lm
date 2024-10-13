@@ -126,20 +126,6 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set e (compile-expr( ctx t stack-offset used )))
          (set e (fragment::set-type( e (typeof term) )))
       ))
-      ( (App( (App( (Var( 'set_s _ )) (Var( k _ )) )) rhs )) (
-         (let kt (typeof rhs))
-
-         (let e1 (compile-expr( ctx rhs stack-offset Used )))
-         (set e1 (fragment::set-type( e1 kt )))
-         (let e2 (fragment-context::lookup( ctx k kt term )))
-         (set e (fragment-apply( ctx stack-offset 'mov_s
-            (FLSeq( (close(FLSeq( (close FLEOF) e1 ))) e2 ))
-            (t3( 'Arrow_s (t3( 'Cons_s (.type e1) (.type e2) )) (t1 'Nil_s) ))
-            term
-         )))
-         (set e (fragment::set-context( e ctx )))
-         (set e (fragment::set-offset( e stack-offset )))
-      ))
       ( (App( (App( (Var( 'while_s _ )) cond )) body )) (
          (let e1 (cc-blob( ctx 'into-branch-conditional_s cond stack-offset )))
          (let e2 (compile-expr( (open(.context e1)) body (.offset e1) Unused )))

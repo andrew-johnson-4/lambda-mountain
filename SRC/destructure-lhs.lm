@@ -1,9 +1,9 @@
 
-destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragmentList). (: (
+destructure-lhs := λ(: ctx FContext)(: tt Type)(: lhs S)(: args FragmentList). (: (
    (match lhs (
       ()
       ( (SCons( (SAtom 'Var_s) (SAtom k) )) (
-         (let a-type (typeof lhs))
+         (let a-type tt)
          (match args (
             ()
             ( (FLSeq( _ f )) (
@@ -13,19 +13,14 @@ destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragmentList). (: (
                   (print f)
                   (exit 1_u64)
                ))
-               (set ctx (union( ctx (unify( a-type ft )) ))) # destructure tctx
+               (let tctx (unify( a-type ft )))
+               (set ctx (union( ctx tctx ))) # destructure tctx
                (set ctx (FCtxBind( (close ctx) k ft f )))
             ))
          ))
       ))
       ( (SCons( (SAtom 'App_s) (SCons( lhs-rst (SCons( (SAtom 'Var_s) (SAtom k) )) )) )) (
-         (let a-type TAny)
-         (match lhs (
-            ()
-            ( (SCons( (SAtom 'App_s) (SCons( _ binding )) )) (
-               (set a-type (typeof binding))
-            ))
-         ))
+         (let a-type (p1 tt))
          (match args (
             ()
             ( (FLSeq( fl-rst f )) (
@@ -35,12 +30,13 @@ destructure-lhs := λ(: ctx FContext)(: lhs S)(: args FragmentList). (: (
                   (print f)
                   (exit 1_u64)
                ))
-               (set ctx (union( ctx (unify( a-type ft )) )))
+               (let tctx (unify( a-type ft )))
+               (set ctx (union( ctx tctx )))
                (set ctx (FCtxBind( (close ctx) k ft f )))
                (set args fl-rst)
             ))
          ))
-         (set ctx (destructure-lhs( ctx lhs-rst args )))
+         (set ctx (destructure-lhs( ctx (p2 tt) lhs-rst args )))
       ))
       ( SNil () )
       ( _ (

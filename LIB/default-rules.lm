@@ -4,6 +4,9 @@ fragment type ReservedWord; atom suffix ReservedWord _r;
 macro ( ('let x y) )
       ( (λ x . ()) y );
 
+macro ( ('set lhs rhs) )
+      ( (mov( rhs lhs )) );
+
 macro ( ('for-each (item 'in iter) loop) ) (
    (let (uuid iter-term) iter)
    (while (non-zero (uuid iter-term)) (match (uuid iter-term) (

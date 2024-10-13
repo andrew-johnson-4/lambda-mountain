@@ -4,12 +4,12 @@ compile-type-case := λ(: ctx FContext)(: base-type Type)(: rhs AST)(: case-numb
       ()
       ( (Lit( tag _ )) (
          (let rtype (TAnd( (close base-type) (close(parse-type tag)) )) )
-         (set ctx (compile-define-tag-constructor( ctx tag TAny base-type rtype case-number )))
+         (set ctx (compile-define-tag-constructor( ctx tag TAny base-type rtype case-number rhs )))
       ))
       ( (App( (Lit( tag _ )) args )) (
          (let atype (type-of-s args))
          (let rtype (TAnd( (close base-type) (close(parse-type tag)) )))
-         (set ctx (compile-define-tag-constructor( ctx tag atype base-type rtype case-number )))
+         (set ctx (compile-define-tag-constructor( ctx tag atype base-type rtype case-number rhs )))
       ))
       ( _ () )
    ))
