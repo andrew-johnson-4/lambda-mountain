@@ -5,7 +5,7 @@ compile-define-tag-constructor := λ(: ctx FContext)(: tag String)(: arg-types T
    (let movl-template (fragment-context::lookup( ctx 'template::mov_s (t3( 'Cons_s tg (t1 'LocalVariable_s) )) blame )))
    (let movg-template (fragment-context::lookup( ctx 'template::mov_s (t3( 'Cons_s tg (t1 'GlobalVariable_s) )) blame )))
 
-   (let tag-tctx (TCtxBind( (close TCtxEOF) 'tag_s (t1 tag) ASTEOF )))
+   (let tag-tctx (TCtxBind( (close TCtxEOF) 'tag_s (t1 tag) blame )))
    (let case-tctx (SSLSeq( (close SSLEOF) 'case-number_s (SAtom(to-string case-number)) )))
 
    (let fragment push-template)
