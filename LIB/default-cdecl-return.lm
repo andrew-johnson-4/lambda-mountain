@@ -141,30 +141,26 @@ cdecl::return := λ: Blob(: src GlobalVariable+Sized<size>). (: (
    (:unframe (:unframe src))
 ) Nil);
 
-fragment  cdecl::return := λ: DontChain(: src StackVariable+Sized<size>). (: (
-   (.program(
-      (.program src)
-      (.del src)
-      (if-eq (.expression size) 1 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%AL \n))
-      (if-eq (.expression size) 2 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%AX \n))
-      (if-eq (.expression size) 4 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%EAX \n))
-      (if-eq (.expression size) 8 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%RAX \n))
-      (if-eq 1 (>( (.expression size) 8 )) (
-         \t 'subq \s '$ (.expression size) , \s '%rsp \n
-         (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
-            \t 'pushq \s (+( (.expression size) (*( (.expression word-offset) 16 )) )) \[ '%rsp \] \n
+cdecl::return := λ: Blob(: src StackVariable+Sized<size>). (: (
+   (:program(
+      (:program src)
+      (:del src)
+      (if (==( (: size L) 1_l )) ( '\tpopq\s%RAX\n_l ) ())
+      (if (==( (: size L) 2_l )) ( '\tpopq\s%RAX\n_l ) ())
+      (if (==( (: size L) 4_l )) ( '\tpopq\s%RAX\n_l ) ())
+      (if (==( (: size L) 8_l )) ( '\tpopq\s%RAX\n_l ) ())
+      (if (>( (: size L) 8_l )) (
+         '\tsubq\s$_l (: size L) ',\s%rsp\n_l
+         (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) ))) (
+            '\tpushq\s_l (+( (: size L) (*( (:expression word-offset) 16_l )) )) '\[%rsp\]\n_l
          ))
-         (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
-            \t 'popq \s (-( (-( '-16 (*( (.expression word-offset) 8 )) )) (.expression cdecl::args-size) )) \[ '%rbp \] \n
+         (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) ))) (
+            '\tpopq\s_l (-( (-( -16_l (*( (:expression word-offset) 8_l )) )) (:expression cdecl::args-size) )) '\[%rbp\]\n_l
          ))
-         \t 'addq \s '$ (.expression size) , \s '%rsp \n
-      ))
+         '\taddq\s$_l (: size L) ',\s%rsp\n_l
+      ) ())
    ))
-   (.expression(
-      (if-eq (.expression size) 1 'AL)
-      (if-eq (.expression size) 2 'AX)
-      (if-eq (.expression size) 4 'EAX)
-      (if-eq (.expression size) 8 'RAX)
-   ))
+   (:frame (:frame src))
+   (:unframe (:unframe src))
 ) Nil);
 
