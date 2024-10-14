@@ -13,54 +13,54 @@ syscall := λ: Blob . (: (:program( '\tsyscall\n_l )) Nil);
 & := λ: Blob(: src GlobalVariable). (: ( (:program( '\tmov\t$_l (:expression src) ',\s%r12\n_l )) (:expression( 'R12_l )) ) Reg64);
 
 # Generic 'mov Semantics
-#mov := λ: Blob(: src LocalVariable+Sized<size>)(: dst LocalVariable). (: (
-#   (:program (
-#      (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) ))) (
-#         '\tmovq\s_l (+( (:expression src) (*( (:expression word-offset) 8_l )) )) '\[%rbp\],\s%r15\n_l
-#         '\tmovq\s%r15,\s_l (+( (:expression dst) (*( (:expression word-offset) 8_l )) )) '\[%rbp\]\n_l
-#      ))
-#      (if (==( (: size L) 8_l )) (
-#         '\tmov\s_l (:expression src) \[ '%rbp \] ',\s%r15\n_l
-#         '\tmov\s%r15,\s_l (:expression dst) '\[%rbp\]\n_l
-#      ) ())
-#      (if (==( (: size L) 4_l )) (
-#         '\tmov\s_l (:expression src) \[ '%rbp \] ',\s%r15l\n_l
-#         '\tmov\s%r15l,\s_l (:expression dst) '\[%rbp\]\n_l
-#      ) ())
-#      (if (==( (: size L) 2_l )) (
-#         '\tmov\s_l (:expression src) \[ '%rbp \] ',\s%r15w\n_l
-#         '\tmov\s%r15w,\s_l (:expression dst) '\[%rbp\]\n_l
-#      ) ())
-#      (if (==( (: size L) 1_l )) (
-#         '\tmov\s_l (:expression src) \[ '%rbp \] ',\s%r15b\n_l
-#         '\tmov\s%r15b,\s_l (:expression dst) '\[%rbp\]\n_l
-#      ) ())
-#   ))
-#) Nil);
-
-fragment  mov := λ(: src LocalVariable+Sized<size>)(: dst LocalVariable). (: (
-   (.program (
-      (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
-         \t 'movq \s (+( (.expression src) (*( (.expression word-offset) 8 )) )) \[ '%rbp \] , \s '%r15 \n
-         \t 'movq \s '%r15 , \s (+(
-            (.expression dst)
-            (*( (.expression word-offset) 8 ))
-         )) \[ '%rbp \] \n      
+mov := λ: Blob(: src LocalVariable+Sized<size>)(: dst LocalVariable). (: (
+   (:program (
+      (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) ))) (
+         '\tmovq\s_l (+( (:expression src) (*( (:expression word-offset) 8_l )) )) '\[%rbp\],\s%r15\n_l
+         '\tmovq\s%r15,\s_l (+( (:expression dst) (*( (:expression word-offset) 8_l )) )) '\[%rbp\]\n_l
       ))
-      (if-eq (.expression size) 4 (
-         \t 'mov \s (+( (.expression src) (*( 4  )) )) \[ '%rbp \] , \s '%r15d \n
-         \t 'mov \s '%r15d , \s (.expression dst) \[ '%rbp \] \n
-      ))
-      (if-eq (.expression size) 2 (
-         \t 'mov \s (.expression src) \[ '%rbp \] , \s '%r15w \n
-         \t 'mov \s '%r15w , \s (.expression dst) \[ '%rbp \] \n
-      ))
-      (if-eq (.expression size) 1 (
-         \t 'mov \s (.expression src) \[ '%rbp \] , \s '%r15b \n
-         \t 'mov \s '%r15b , \s (.expression dst) \[ '%rbp \] \n
-      ))
+      (if (==( (: size L) 8_l )) (
+         '\tmov\s_l (:expression src) '\[%rbp\],\s%r15\n_l
+         '\tmov\s%r15,\s_l (:expression dst) '\[%rbp\]\n_l
+      ) ())
+      (if (==( (: size L) 4_l )) (
+         '\tmov\s_l (:expression src) '\[%rbp\],\s%r15l\n_l
+         '\tmov\s%r15l,\s_l (:expression dst) '\[%rbp\]\n_l
+      ) ())
+      (if (==( (: size L) 2_l )) (
+         '\tmov\s_l (:expression src) '\[%rbp\],\s%r15w\n_l
+         '\tmov\s%r15w,\s_l (:expression dst) '\[%rbp\]\n_l
+      ) ())
+      (if (==( (: size L) 1_l )) (
+         '\tmov\s_l (:expression src) '\[%rbp\],\s%r15b\n_l
+         '\tmov\s%r15b,\s_l (:expression dst) '\[%rbp\]\n_l
+      ) ())
    ))
 ) Nil);
+
+#fragment  mov := λ(: src LocalVariable+Sized<size>)(: dst LocalVariable). (: (
+#   (.program (
+#      (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
+#         \t 'movq \s (+( (.expression src) (*( (.expression word-offset) 8 )) )) \[ '%rbp \] , \s '%r15 \n
+#         \t 'movq \s '%r15 , \s (+(
+#            (.expression dst)
+#            (*( (.expression word-offset) 8 ))
+#         )) \[ '%rbp \] \n      
+#      ))
+#      (if-eq (.expression size) 4 (
+#         \t 'mov \s (+( (.expression src) (*( 4  )) )) \[ '%rbp \] , \s '%r15d \n
+#         \t 'mov \s '%r15d , \s (.expression dst) \[ '%rbp \] \n
+#      ))
+#      (if-eq (.expression size) 2 (
+#         \t 'mov \s (.expression src) \[ '%rbp \] , \s '%r15w \n
+#         \t 'mov \s '%r15w , \s (.expression dst) \[ '%rbp \] \n
+#      ))
+#      (if-eq (.expression size) 1 (
+#         \t 'mov \s (.expression src) \[ '%rbp \] , \s '%r15b \n
+#         \t 'mov \s '%r15b , \s (.expression dst) \[ '%rbp \] \n
+#      ))
+#   ))
+#) Nil);
 
 fragment  mov := λ(: src LocalVariable+Sized<size>)(: dst GlobalVariable). (: (
    (.program (
