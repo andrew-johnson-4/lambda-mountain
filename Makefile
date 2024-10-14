@@ -1,7 +1,6 @@
 
-dev: install-production
-	lm -o safe.s tests/regress/safe.lm
-	lm -o dev.s tests/regress/dev.lm
+dev: install-bootstrap
+	lm -o dev.s tests/regress/cdecl.lm
 	as dev.s -o dev.o
 	ld dev.o -o dev
 	./dev
@@ -47,6 +46,9 @@ compile-production: compile-bootstrap
 
 install-production: compile-production
 	mv production /usr/local/bin/lm
+
+install-bootstrap: compile-bootstrap
+	mv bootstrap /usr/local/bin/lm
 
 compile-bootstrap:
 	rm -f bootstrap bootstrap.o

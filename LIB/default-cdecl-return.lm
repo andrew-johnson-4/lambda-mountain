@@ -53,123 +53,114 @@ cdecl::return := λ: Blob(: l Reg64). (: (
    ))
 ) Nil);
 
-fragment  cdecl::return := λ: DontChain(: l Constant+Literal+Sized<1>). (: (
-   (.program(
-      (.program l)
-      (.del l)
-      \t 'mov \t '$ (.expression l) , '%AL \n
+cdecl::return := λ: Blob(: l Constant+Literal+Sized<1>). (: (
+   (:program(
+      (:program l)
+      (:del l)
+      '\tmov\t$_l (:expression l) ',%AL\n_l
    ))
-   (.frame (.frame l))
-   (.expression 'AL)
+   (:frame (:frame l))
+   (:unframe (:unframe l))
+   (:expression 'AL_l)
 ) Nil);
-fragment  cdecl::return := λ: DontChain(: l Constant+Literal+Sized<2>). (: (
-   (.program(
-      (.program l)
-      (.del l)
-      \t 'mov \t '$ (.expression l) , '%AX \n
+cdecl::return := λ: Blob(: l Constant+Literal+Sized<2>). (: (
+   (:program(
+      (:program l)
+      (:del l)
+      '\tmov\t$_l (:expression l) ',%AX\n_l
    ))
-   (.frame (.frame l))
-   (.expression 'AX)
+   (:frame (:frame l))
+   (:unframe (:unframe l))
+   (:expression 'AX_l)
 ) Nil);
-fragment  cdecl::return := λ: DontChain(: l Constant+Literal+Sized<4>). (: (
-   (.program(
-      (.program l)
-      (.del l)
-      \t 'mov \t '$ (.expression l) , '%EAX \n
+cdecl::return := λ: Blob(: l Constant+Literal+Sized<4>). (: (
+   (:program(
+      (:program l)
+      (:del l)
+      '\tmov\t$_l (:expression l) ',%EAX\n_l
    ))
-   (.frame (.frame l))
-   (.expression 'EAX)
+   (:frame (:frame l))
+   (:unframe (:unframe l))
+   (:expression 'EAX_l)
 ) Nil);
-fragment  cdecl::return := λ: DontChain(: l Constant+Literal+Sized<8>). (: (
-   (.program(
-      (.program l)
-      (.del l)
-      \t 'mov \t '$ (.expression l) , '%RAX \n
+cdecl::return := λ: Blob(: l Constant+Literal+Sized<8>). (: (
+   (:program(
+      (:program l)
+      (:del l)
+      '\tmov\t$_l (:expression l) ',%RAX\n_l
    ))
-   (.frame (.frame l))
-   (.expression 'RAX)
-) Nil);
-
-fragment  cdecl::return := λ: DontChain(: src LocalVariable+Sized<size>). (: (
-   (.program(
-      (.program src)
-      (.del src)
-      (if-eq (.expression size) 1 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%AL \n))
-      (if-eq (.expression size) 2 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%AX \n))
-      (if-eq (.expression size) 4 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%EAX \n))
-      (if-eq (.expression size) 8 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%RAX \n))
-      (if-eq 1 (>( (.expression size) 8 )) (
-         \t 'subq \s '$ (.expression size) , \s '%rsp \n
-         (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
-            \t 'pushq \s (+( (.expression src) (*( (.expression word-offset) 8 )) )) \[ '%rbp \] \n
-         ))
-         (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
-            \t 'popq \s (-( (-( '-16 (*( (.expression word-offset) 8 )) )) (.expression cdecl::args-size) )) \[ '%rbp \] \n
-         ))
-         \t 'addq \s '$ (.expression size) , \s '%rsp \n
-      ))
-   ))
-   (.frame (.frame src))
-   (.expression(
-      (if-eq (.expression size) 1 'AL)
-      (if-eq (.expression size) 2 'AX)
-      (if-eq (.expression size) 4 'EAX)
-      (if-eq (.expression size) 8 'RAX)
-   ))
+   (:frame (:frame l))
+   (:unframe (:unframe l))
+   (:expression 'RAX_l)
 ) Nil);
 
-fragment  cdecl::return := λ: DontChain(: src GlobalVariable+Sized<size>). (: (
-   (.program(
-      (.program src)
-      (.del src)
-      (\t 'mov \t '$ (.expression src) \s , \s '%r15 \n)
-      (if-eq (.expression size) 1 (\t 'mov \t '0 \[ '%r15 \] , \s '%AL \n))
-      (if-eq (.expression size) 2 (\t 'mov \t '0 \[ '%r15 \] , \s '%AX \n))
-      (if-eq (.expression size) 4 (\t 'mov \t '0 \[ '%r15 \] , \s '%EAX \n))
-      (if-eq (.expression size) 8 (\t 'mov \t '0 \[ '%r15 \] , \s '%RAX \n))
-      (if-eq 1 (>( (.expression size) 8 )) (
-         \t 'subq \s '$ (.expression size) , \s '%rsp \n
-         (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
-            \t 'pushq \s (*( (.expression word-offset) 8 )) \[ '%r15 \] \n
+cdecl::return := λ: Blob(: src LocalVariable+Sized<size>). (: (
+   (:program(
+      (:program src)
+      (:del src)
+      (if (==( (: size L) 1_l )) ( '\tmov\s_l (:expression src) '\[%rbp\],\s%AL\n_l ) ())
+      (if (==( (: size L) 2_l )) ( '\tmov\s_l (:expression src) '\[%rbp\],\s%AX\n_l ) ())
+      (if (==( (: size L) 4_l )) ( '\tmov\s_l (:expression src) '\[%rbp\],\s%EAX\n_l ) ())
+      (if (==( (: size L) 8_l )) ( '\tmov\s_l (:expression src) '\[%rbp\],\s%RAX\n_l ) ())
+      (if (>( (: size L) 8_l )) (
+         '\tsubq\s$_l (: size L) ',\s%rsp\n_l
+         (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) ))) (
+            '\tpushq\s_l (+( (:expression src) (*( (:expression word-offset) 8_l )) )) '\[%rbp\]\n_l
          ))
-         (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
-            \t 'popq \s (-( (-( '-16 (*( (.expression word-offset) 8 )) )) (.expression cdecl::args-size) )) \[ '%rbp \] \n
+         (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) ))) (
+            '\tpopq\s_l (-( (-( -16_l (*( (:expression word-offset) 8_l )) )) (:expression cdecl::args-size) )) '\[%rbp\]\n_l
          ))
-         \t 'addq \s '$ (.expression size) , \s '%rsp \n
-      ))
+         '\taddq\s$_l (: size L) ',\s%rsp\n_l
+      ) ())
    ))
-   (.expression(
-      (if-eq (.expression size) 1 'AL)
-      (if-eq (.expression size) 2 'AX)
-      (if-eq (.expression size) 4 'EAX)
-      (if-eq (.expression size) 8 'RAX)
-   ))
+   (:frame (:frame src))
+   (:unframe (:unframe src))
 ) Nil);
 
-fragment  cdecl::return := λ: DontChain(: src StackVariable+Sized<size>). (: (
-   (.program(
-      (.program src)
-      (.del src)
-      (if-eq (.expression size) 1 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%AL \n))
-      (if-eq (.expression size) 2 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%AX \n))
-      (if-eq (.expression size) 4 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%EAX \n))
-      (if-eq (.expression size) 8 (\t 'mov \t (.expression src) \[ '%rbp \] , \s '%RAX \n))
-      (if-eq 1 (>( (.expression size) 8 )) (
-         \t 'subq \s '$ (.expression size) , \s '%rsp \n
-         (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
-            \t 'pushq \s (+( (.expression size) (*( (.expression word-offset) 16 )) )) \[ '%rsp \] \n
+cdecl::return := λ: Blob(: src GlobalVariable+Sized<size>). (: (
+   (:program(
+      (:program src)
+      (:del src)
+      '\tmov\t$_l (:expression src) '\s,\s%r15\n_l
+      (if (==( (: size L) 1_l )) ( '\tmov\s_l (:expression src) '\[%r15\],\s%AL\n_l ) ())
+      (if (==( (: size L) 2_l )) ( '\tmov\s_l (:expression src) '\[%r15\],\s%AX\n_l ) ())
+      (if (==( (: size L) 4_l )) ( '\tmov\s_l (:expression src) '\[%r15\],\s%EAX\n_l ) ())
+      (if (==( (: size L) 8_l )) ( '\tmov\s_l (:expression src) '\[%r15\],\s%RAX\n_l ) ())
+      (if (>( (: size L) 8_l )) (
+         '\tsubq\s$_l (: size L) ',\s%rsp\n_l
+         (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) ))) (
+            '\tpushq\s_l (*( (:expression word-offset) 8_l )) '\[%r15\]\n_l
          ))
-         (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
-            \t 'popq \s (-( (-( '-16 (*( (.expression word-offset) 8 )) )) (.expression cdecl::args-size) )) \[ '%rbp \] \n
+         (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) ))) (
+            '\tpopq\s_l (-( (-( -16_l (*( (:expression word-offset) 8_l )) )) (:expression cdecl::args-size) )) '\[%rbp\]\n_l
          ))
-         \t 'addq \s '$ (.expression size) , \s '%rsp \n
-      ))
+         '\taddq\s$_l (: size L) ',\s%rsp\n_l
+      ) ())
    ))
-   (.expression(
-      (if-eq (.expression size) 1 'AL)
-      (if-eq (.expression size) 2 'AX)
-      (if-eq (.expression size) 4 'EAX)
-      (if-eq (.expression size) 8 'RAX)
+   (:frame (:frame src))
+   (:unframe (:unframe src))
+) Nil);
+
+cdecl::return := λ: Blob(: src StackVariable+Sized<size>). (: (
+   (:program(
+      (:program src)
+      (:del src)
+      (if (==( (: size L) 1_l )) ( '\tpopq\s%RAX\n_l ) ())
+      (if (==( (: size L) 2_l )) ( '\tpopq\s%RAX\n_l ) ())
+      (if (==( (: size L) 4_l )) ( '\tpopq\s%RAX\n_l ) ())
+      (if (==( (: size L) 8_l )) ( '\tpopq\s%RAX\n_l ) ())
+      (if (>( (: size L) 8_l )) (
+         '\tsubq\s$_l (: size L) ',\s%rsp\n_l
+         (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) ))) (
+            '\tpushq\s_l (+( (: size L) (*( (:expression word-offset) 16_l )) )) '\[%rsp\]\n_l
+         ))
+         (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) ))) (
+            '\tpopq\s_l (-( (-( -16_l (*( (:expression word-offset) 8_l )) )) (:expression cdecl::args-size) )) '\[%rbp\]\n_l
+         ))
+         '\taddq\s$_l (: size L) ',\s%rsp\n_l
+      ) ())
    ))
+   (:frame (:frame src))
+   (:unframe (:unframe src))
 ) Nil);
 
