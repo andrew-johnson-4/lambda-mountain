@@ -88,26 +88,32 @@ mov := λ: Blob(: src GlobalVariable+Sized<size>)(: dst LocalVariable+Sized<size
    ))
 ) Nil);
 
-fragment  mov := λ(: src StackVariable+Sized<size>)(: dst GlobalVariable+Sized<size>). (: (
-   (.program (
-      \t 'mov \s '$ (.expression dst) , \s '%r15 \n
-      (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
-         \t 'pop \s (*( (.expression word-offset) 8 )) \[ '%r15 \] \n
+mov := λ: Blob(: src StackVariable+Sized<size>)(: dst GlobalVariable+Sized<size>). (: (
+   (:frame (:frame src))
+   (:unframe (:unframe src))
+   (:program (
+      (:program src)
+      '\tmov\s$_l (:expression dst) ',\s%r15\n_l
+      (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) ))) (
+         '\tpopq\s_l (*( (:expression word-offset) 8_l )) '\[%r15\]\n_l
       ))
-      (if-eq (.expression size) 4 ( \t 'pop \s 0 \[ '%r15 \] \n ))
-      (if-eq (.expression size) 2 ( \t 'pop \s 0 \[ '%r15 \] \n ))
-      (if-eq (.expression size) 1 ( \t 'pop \s 0 \[ '%r15 \] \n ))
+      (if (==( (: size L) 4_l )) '\tpopq\s%RAX\n\tmovl\s%EAX,\s0\[%r15\]\n_l ())
+      (if (==( (: size L) 2_l )) '\tpopq\s%RAX\n\tmovw\s%AX,\s0\[%r15\]\n_l ())
+      (if (==( (: size L) 1_l )) '\tpopq\s%RAX\n\tmovb\s%AL,\s0\[%r15\]\n_l ())
    ))
 ) Nil);
 
-fragment  mov := λ(: src StackVariable+Sized<size>)(: dst LocalVariable+Sized<size>). (: (
-   (.program (
-      (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
-         \t 'pop \s (+( (.expression dst) (*( (.expression word-offset) 8 )) )) \[ '%rbp \] \n
+mov := λ: Blob(: src StackVariable+Sized<size>)(: dst LocalVariable+Sized<size>). (: (
+   (:frame (:frame src))
+   (:unframe (:unframe src))
+   (:program (
+      (:program src)
+      (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) ))) (
+         '\tpopq\s_l (+( (:expression dst) (*( (:expression word-offset) 8_l )) )) '\[%RBP\]\n_l
       ))
-      (if-eq (.expression size) 4 ( \t 'pop \s (.expression dst) \[ '%rbp \] \n ))
-      (if-eq (.expression size) 2 ( \t 'pop \s (.expression dst) \[ '%rbp \] \n ))
-      (if-eq (.expression size) 1 ( \t 'pop \s (.expression dst) \[ '%rbp \] \n ))
+      (if (==( (: size L) 4_l )) ( '\tpopq\s%RAX\n\tmovl\s%EAX,\s_l (:expression dst) '\[%RBP\]_l ) ())
+      (if (==( (: size L) 2_l )) ( '\tpopq\s%RAX\n\tmovw\s%AX,\s_l (:expression dst) '\[%RBP\]_l ) ())
+      (if (==( (: size L) 1_l )) ( '\tpopq\s%RAX\n\tmovb\s%AL,\s_l (:expression dst) '\[%RBP\]_l ) ())
    ))
 ) Nil);
 
