@@ -53,41 +53,45 @@ cdecl::return := λ: Blob(: l Reg64). (: (
    ))
 ) Nil);
 
-fragment  cdecl::return := λ: DontChain(: l Constant+Literal+Sized<1>). (: (
-   (.program(
-      (.program l)
-      (.del l)
-      \t 'mov \t '$ (.expression l) , '%AL \n
+cdecl::return := λ: Blob(: l Constant+Literal+Sized<1>). (: (
+   (:program(
+      (:program l)
+      (:del l)
+      '\tmov\t$_l (:expression l) ',%AL\n_l
    ))
-   (.frame (.frame l))
-   (.expression 'AL)
+   (:frame (:frame l))
+   (:unframe (:unframe l))
+   (:expression 'AL_l)
 ) Nil);
-fragment  cdecl::return := λ: DontChain(: l Constant+Literal+Sized<2>). (: (
-   (.program(
-      (.program l)
-      (.del l)
-      \t 'mov \t '$ (.expression l) , '%AX \n
+cdecl::return := λ: Blob(: l Constant+Literal+Sized<2>). (: (
+   (:program(
+      (:program l)
+      (:del l)
+      '\tmov\t$_l (:expression l) ',%AX\n_l
    ))
-   (.frame (.frame l))
-   (.expression 'AX)
+   (:frame (:frame l))
+   (:unframe (:unframe l))
+   (:expression 'AX_l)
 ) Nil);
-fragment  cdecl::return := λ: DontChain(: l Constant+Literal+Sized<4>). (: (
-   (.program(
-      (.program l)
-      (.del l)
-      \t 'mov \t '$ (.expression l) , '%EAX \n
+cdecl::return := λ: Blob(: l Constant+Literal+Sized<4>). (: (
+   (:program(
+      (:program l)
+      (:del l)
+      '\tmov\t$_l (:expression l) ',%EAX\n_l
    ))
-   (.frame (.frame l))
-   (.expression 'EAX)
+   (:frame (:frame l))
+   (:unframe (:unframe l))
+   (:expression 'EAX_l)
 ) Nil);
-fragment  cdecl::return := λ: DontChain(: l Constant+Literal+Sized<8>). (: (
-   (.program(
-      (.program l)
-      (.del l)
-      \t 'mov \t '$ (.expression l) , '%RAX \n
+cdecl::return := λ: Blob(: l Constant+Literal+Sized<8>). (: (
+   (:program(
+      (:program l)
+      (:del l)
+      '\tmov\t$_l (:expression l) ',%RAX\n_l
    ))
-   (.frame (.frame l))
-   (.expression 'RAX)
+   (:frame (:frame l))
+   (:unframe (:unframe l))
+   (:expression 'RAX_l)
 ) Nil);
 
 fragment  cdecl::return := λ: DontChain(: src LocalVariable+Sized<size>). (: (
