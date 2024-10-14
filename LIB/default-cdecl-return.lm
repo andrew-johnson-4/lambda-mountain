@@ -117,32 +117,28 @@ cdecl::return := λ: Blob(: src LocalVariable+Sized<size>). (: (
    (:unframe (:unframe src))
 ) Nil);
 
-fragment  cdecl::return := λ: DontChain(: src GlobalVariable+Sized<size>). (: (
-   (.program(
-      (.program src)
-      (.del src)
-      (\t 'mov \t '$ (.expression src) \s , \s '%r15 \n)
-      (if-eq (.expression size) 1 (\t 'mov \t '0 \[ '%r15 \] , \s '%AL \n))
-      (if-eq (.expression size) 2 (\t 'mov \t '0 \[ '%r15 \] , \s '%AX \n))
-      (if-eq (.expression size) 4 (\t 'mov \t '0 \[ '%r15 \] , \s '%EAX \n))
-      (if-eq (.expression size) 8 (\t 'mov \t '0 \[ '%r15 \] , \s '%RAX \n))
-      (if-eq 1 (>( (.expression size) 8 )) (
-         \t 'subq \s '$ (.expression size) , \s '%rsp \n
-         (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
-            \t 'pushq \s (*( (.expression word-offset) 8 )) \[ '%r15 \] \n
+cdecl::return := λ: Blob(: src GlobalVariable+Sized<size>). (: (
+   (:program(
+      (:program src)
+      (:del src)
+      '\tmov\t$_l (:expression src) '\s,\s%r15\n_l
+      (if (==( (: size L) 1_l )) ( '\tmov\s_l (:expression src) '\[%r15\],\s%AL\n_l ) ())
+      (if (==( (: size L) 2_l )) ( '\tmov\s_l (:expression src) '\[%r15\],\s%AX\n_l ) ())
+      (if (==( (: size L) 4_l )) ( '\tmov\s_l (:expression src) '\[%r15\],\s%EAX\n_l ) ())
+      (if (==( (: size L) 8_l )) ( '\tmov\s_l (:expression src) '\[%r15\],\s%RAX\n_l ) ())
+      (if (>( (: size L) 8_l )) (
+         '\tsubq\s$_l (: size L) ',\s%rsp\n_l
+         (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) ))) (
+            '\tpushq\s_l (*( (:expression word-offset) 8_l )) '\[%r15\]\n_l
          ))
-         (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
-            \t 'popq \s (-( (-( '-16 (*( (.expression word-offset) 8 )) )) (.expression cdecl::args-size) )) \[ '%rbp \] \n
+         (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) ))) (
+            '\tpopq\s_l (-( (-( -16_l (*( (:expression word-offset) 8_l )) )) (:expression cdecl::args-size) )) '\[%rbp\]\n_l
          ))
-         \t 'addq \s '$ (.expression size) , \s '%rsp \n
-      ))
+         '\taddq\s$_l (: size L) ',\s%rsp\n_l
+      ) ())
    ))
-   (.expression(
-      (if-eq (.expression size) 1 'AL)
-      (if-eq (.expression size) 2 'AX)
-      (if-eq (.expression size) 4 'EAX)
-      (if-eq (.expression size) 8 'RAX)
-   ))
+   (:frame (:frame src))
+   (:unframe (:unframe src))
 ) Nil);
 
 fragment  cdecl::return := λ: DontChain(: src StackVariable+Sized<size>). (: (
