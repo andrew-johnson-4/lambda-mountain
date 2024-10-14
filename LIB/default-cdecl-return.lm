@@ -145,10 +145,6 @@ cdecl::return := λ: Blob(: src StackVariable+Sized<size>). (: (
    (:program(
       (:program src)
       (:del src)
-      (if (==( (: size L) 1_l )) ( '\tpopq\s%RAX\n_l ) ())
-      (if (==( (: size L) 2_l )) ( '\tpopq\s%RAX\n_l ) ())
-      (if (==( (: size L) 4_l )) ( '\tpopq\s%RAX\n_l ) ())
-      (if (==( (: size L) 8_l )) ( '\tpopq\s%RAX\n_l ) ())
       (if (>( (: size L) 8_l )) (
          '\tsubq\s$_l (: size L) ',\s%rsp\n_l
          (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) ))) (
