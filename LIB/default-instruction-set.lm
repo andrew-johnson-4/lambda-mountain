@@ -473,15 +473,15 @@ fragment  push := λ(: dst Reg64). (: (.program( \t 'push \s '% (.expression dst
 
 fragment  mov := λ(: offset Constant)(: src Reg64)(: dst Reg8). (: (.program( \t 'mov \s (.expression offset) \[ '% (.expression src) \] , \s '% (.expression dst) \n )) Nil);
 
-fragment  cmp := λ(: imm Constant+Literal+Sized<8>)(: r Constant+Reg64). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
-fragment  cmp := λ(: imm Constant+Literal+Sized<4>)(: r Constant+Reg32). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
-fragment  cmp := λ(: imm Constant+Literal+Sized<2>)(: r Constant+Reg16). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
-fragment  cmp := λ(: imm Constant+Literal+Sized<1>)(: r Constant+Reg8). (: (.program( \t 'cmp \s '$ (.expression imm) , '% (.expression r) \n )) Nil);
+cmp := λ: Blob(: imm Constant+Literal+Sized<8>)(: r Constant+Reg64). (: (:program( '\tcmp\s$_l (:expression imm) ',%_l (:expression r) '\n_l )) Nil);
+cmp := λ: Blob(: imm Constant+Literal+Sized<4>)(: r Constant+Reg32). (: (:program( '\tcmp\s$_l (:expression imm) ',%_l (:expression r) '\n_l )) Nil);
+cmp := λ: Blob(: imm Constant+Literal+Sized<2>)(: r Constant+Reg16). (: (:program( '\tcmp\s$_l (:expression imm) ',%_l (:expression r) '\n_l )) Nil);
+cmp := λ: Blob(: imm Constant+Literal+Sized<1>)(: r Constant+Reg8). (: (:program( '\tcmp\s$_l (:expression imm) ',%_l (:expression r) '\n_l )) Nil);
 
-fragment  cmp := λ(: l Constant+Reg8)(: r Constant+Reg8). (: (.program( \t 'cmp \s '% (.expression l) , '% (.expression r) \n )) Nil);
-fragment  cmp := λ(: l Constant+Reg16)(: r Constant+Reg16). (: (.program( \t 'cmp \s '% (.expression l) , '% (.expression r) \n )) Nil);
-fragment  cmp := λ(: l Constant+Reg32)(: r Constant+Reg32). (: (.program( \t 'cmp \s '% (.expression l) , '% (.expression r) \n )) Nil);
-fragment  cmp := λ(: l Constant+Reg64)(: r Constant+Reg64). (: (.program( \t 'cmp \s '% (.expression l) , '% (.expression r) \n )) Nil);
+cmp := λ: Blob(: l Constant+Reg64)(: r Constant+Reg64). (: (:program( '\tcmp\s%_l (:expression l) ',%_l (:expression r) '\n_l )) Nil);
+cmp := λ: Blob(: l Constant+Reg32)(: r Constant+Reg32). (: (:program( '\tcmp\s%_l (:expression l) ',%_l (:expression r) '\n_l )) Nil);
+cmp := λ: Blob(: l Constant+Reg16)(: r Constant+Reg16). (: (:program( '\tcmp\s%_l (:expression l) ',%_l (:expression r) '\n_l )) Nil);
+cmp := λ: Blob(: l Constant+Reg8)(: r Constant+Reg8). (: (:program( '\tcmp\s%_l (:expression l) ',%_l (:expression r) '\n_l )) Nil);
 
 fragment  movsx := λ(: src Constant+Reg8)(: dst Constant+Reg64). (: (.program( \t 'movsx \s '% (.expression src) , '% (.expression dst) \n )) Nil);
 fragment  movsx := λ(: src Constant+Reg16)(: dst Constant+Reg64). (: (.program( \t 'movsx \s '% (.expression src) , '% (.expression dst) \n )) Nil);
