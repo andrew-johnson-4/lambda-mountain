@@ -599,29 +599,27 @@ dec := λ: Blob(: l Reg8). (: (
    ))
 ) Nil);
 
-fragment  div := λ(: l Reg64). (: (.program( \t 'div \s '% (.expression l) \n )) Nil);
-fragment  idiv := λ(: l Reg64). (: (.program( \t 'idiv \s '% (.expression l) \n )) Nil);
+div := λ: Blob(: l Reg64+Constant). (: (:program( '\tdiv\s%_l (:expression l) '\n_l )) Nil);
+idiv := λ: Blob(: l Reg64+Constant). (: (:program( '\tidiv\s%_l (:expression l) '\n_l )) Nil);
+mul := λ: Blob(: l Reg64+Constant). (: (:program( '\tmul\s%_l (:expression l) '\n_l )) Nil);
+imul := λ: Blob(: l Reg64+Constant). (: (:program( '\timul\s%_l (:expression l) '\n_l )) Nil);
 
-fragment  mul := λ(: l Reg64). (: (.program( \t 'mul \s '% (.expression l) \n )) Nil);
-fragment  imul := λ(: l Reg64). (: (.program( \t 'imul \s '% (.expression l) \n )) Nil);
+add := λ: Blob(: src Constant+Literal+Sized<1>)(: dst LocalVariable+Sized<1>). (: (:program( '\taddb\s$_l (:expression src) ',\s_l (:expression dst) '\[%rbp\]\n_l )) Nil);
+add := λ: Blob(: src Constant+Literal+Sized<8>)(: dst Reg64+Constant). (: (:program( '\taddq\s$_l (:expression src) ',\s%_l (:expression dst) '\n_l )) Nil);
+add := λ: Blob(: src LocalVariable+Sized<8>)(: dst Reg64+Constant). (: (:program( '\taddq\s_l (:expression src) '\[%rbp\],\s%_l (:expression dst) '\n_l )) Nil);
 
-fragment  add := λ(: src Constant+Literal+Sized<1>)(: dst LocalVariable). (: (.program( \t 'addb \s '$ (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
-fragment  add := λ(: src Constant+Literal+Sized<8>)(: dst Reg64). (: (.program( \t 'addq \s '$ (.expression src) , \s '% (.expression dst) \n )) Nil);
+add := λ: Blob(: src Reg8+Constant)(: dst Reg8+Constant). (: (:program( '\taddb\s%_l (:expression src) ',\s%_l (:expression dst) '\n_l )) Nil);
+add := λ: Blob(: src Reg16+Constant)(: dst Reg16+Constant). (: (:program( '\taddw\s%_l (:expression src) ',\s%_l (:expression dst) '\n_l )) Nil);
+add := λ: Blob(: src Reg32+Constant)(: dst Reg32+Constant). (: (:program( '\taddl\s%_l (:expression src) ',\s%_l (:expression dst) '\n_l )) Nil);
+add := λ: Blob(: src Reg64+Constant)(: dst Reg64+Constant). (: (:program( '\taddq\s%_l (:expression src) ',\s%_l (:expression dst) '\n_l )) Nil);
 
-fragment  add := λ(: src LocalVariable+Sized<8>)(: dst Reg64). (: (.program( \t 'addq \s (.expression src) \[ '%rbp \] , \s '% (.expression dst) \n )) Nil);
+sub := λ: Blob(: src Reg8+Constant)(: dst Reg8+Constant). (: (:program( '\tsubb\s%_l (:expression src) ',\s%_l (:expression dst) '\n_l )) Nil);
+sub := λ: Blob(: src Reg16+Constant)(: dst Reg16+Constant). (: (:program( '\tsubw\s%_l (:expression src) ',\s%_l (:expression dst) '\n_l )) Nil);
+sub := λ: Blob(: src Reg32+Constant)(: dst Reg32+Constant). (: (:program( '\tsubl\s%_l (:expression src) ',\s%_l (:expression dst) '\n_l )) Nil);
+sub := λ: Blob(: src Reg64+Constant)(: dst Reg64+Constant). (: (:program( '\tsubq\s%_l (:expression src) ',\s%_l (:expression dst) '\n_l )) Nil);
 
-fragment  add := λ(: src Reg8)(: dst Reg8). (: (.program( \t 'add \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
-fragment  add := λ(: src Reg16)(: dst Reg16). (: (.program( \t 'add \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
-fragment  add := λ(: src Reg32)(: dst Reg32). (: (.program( \t 'add \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
-fragment  add := λ(: src Reg64)(: dst Reg64). (: (.program( \t 'add \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
+pop := λ: Blob(: l Reg64). (: (:program( '\tpop\s%_l (:expression l) '\n_l )) Nil);
 
-fragment  sub := λ(: src Reg8)(: dst Reg8). (: (.program( \t 'sub \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
-fragment  sub := λ(: src Reg16)(: dst Reg16). (: (.program( \t 'sub \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
-fragment  sub := λ(: src Reg32)(: dst Reg32). (: (.program( \t 'sub \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
-fragment  sub := λ(: src Reg64)(: dst Reg64). (: (.program( \t 'sub \s '% (.expression src) , \s '% (.expression dst) \n )) Nil);
-
-fragment  pop := λ(: l Reg64). (: (.program( \t 'pop \s '% (.expression l) \n )) Nil);
-
-fragment  shl := λ(: c Literal+Constant)(: l Reg64). (: (.program( \t 'shl \s '$ (.expression c) , \s '% (.expression l) \n )) Nil);
-fragment  shr := λ(: c Literal+Constant)(: l Reg64). (: (.program( \t 'shr \s '$ (.expression c) , \s '% (.expression l) \n )) Nil);
-fragment  xor := λ(: c Reg64)(: l Reg64). (: (.program( \t 'xor \s '% (.expression c) , \s '% (.expression l) \n )) Nil);
+shl := λ: Blob(: c Literal+Constant)(: l Reg64). (: (:program( '\tshl\s$_l (:expression c) ',\s%_l (:expression l) '\n_l )) Nil);
+shr := λ: Blob(: c Literal+Constant)(: l Reg64). (: (:program( '\tshr\s$_l (:expression c) ',\s%_l (:expression l) '\n_l )) Nil);
+xor := λ: Blob(: c Reg64+Constant)(: l Reg64+Constant). (: (:program( '\txor\s%_l (:expression c) ',\s%_l (:expression l) '\n_l )) Nil);
