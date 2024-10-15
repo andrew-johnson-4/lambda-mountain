@@ -9,10 +9,9 @@ is-open := λ(: tt Type). (: (
          (if (is-open lt) (set r 1_u64) ())
          (if (is-open rt) (set r 1_u64) ())
       ))
-      ( (TGround( 'Array_s (LCons( _ (LCons( _ LEOF )) )) )) () )
-      ( (TGround( 'Field_s (LCons( _ (LCons( base-type LEOF )) )) )) (
-         (set r (is-open base-type))
-      ))
+      ( (TGround( 'Array_s (LCons( _ (LCons( TAny LEOF )) )) )) () )
+      ( (TGround( 'Array_s (LCons( _ (LCons( base-type LEOF )) )) )) (set r (is-open base-type)) )
+      ( (TGround( 'Field_s (LCons( _ (LCons( base-type LEOF )) )) )) (set r (is-open base-type)) )
       ( (TGround( _ pars )) (
          (for-each (p1 in pars) (
             (if (is-open p1) (set r 1_u64) ())
