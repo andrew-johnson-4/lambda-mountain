@@ -130,30 +130,33 @@ set[] := λ: Blob(: l LocalVariable+Array<Sized<1>,?>)(: i LocalVariable+U64)(: 
    ))
 ) Nil);
 
-fragment  set[] := λ(: dst Reg64+Array<Sized<size>,?>)(: src LocalVariable+Sized<size>). (: (
-   (.program (
-      (if-eq (.expression size) 1 (
-         \t 'mov \t (.expression src) \[ '%RBP \] , \s '%R15B \n
-         \t 'mov \s '%R15B , \s 0 \[ '% (.expression dst) \] \n
-      ))
-      (if-eq (.expression size) 2 (
-         \t 'mov \t (.expression src) \[ '%RBP \] , \s '%R15W \n
-         \t 'mov \s '%R15W , \s 0 \[ '% (.expression dst) \] \n
-      ))
-      (if-eq (.expression size) 4 (
-         \t 'mov \t (.expression src) \[ '%RBP \] , \s '%R15D \n
-         \t 'mov \s '%R15D , \s 0 \[ '% (.expression dst) \] \n
-      ))
-      (if-eq (.expression size) 8 (
-         \t 'mov \t (.expression src) \[ '%RBP \] , \s '%R15 \n
-         \t 'mov \s '%R15 , \s 0 \[ '% (.expression dst) \] \n
-      ))
-      (if-eq 1 (>( (.expression size) 8 )) (
-         (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
-            \t 'mov \t (+( (.expression src) (*( 8 (.expression word-offset) )) )) \[ '%RBP \] , \s '%R15 \n
-            \t 'mov \s '%R15 , \s (*( 8 (.expression word-offset) )) \[ '% (.expression dst) \] \n
+set[] := λ: Blob(: dst Reg64+Array<Sized<size>,?>)(: src LocalVariable+Sized<size>). (: (
+   (:frame (:frame dst))
+   (:unframe (:unframe dst))
+   (:program (
+      (:program dst)
+      (if (==( (: size L) 1_l )) (
+         '\tmov\t_l (:expression src) '\[%RBP\],\s%R15B\n_l
+         '\tmov\s%R15B,\s0\[%_l (:expression dst) '\]\n_l
+      ) ())
+      (if (==( (: size L) 2_l )) (
+         '\tmov\t_l (:expression src) '\[%RBP\],\s%R15W\n_l
+         '\tmov\s%R15W,\s0\[%_l (:expression dst) '\]\n_l
+      ) ())
+      (if (==( (: size L) 4_l )) (
+         '\tmov\t_l (:expression src) '\[%RBP\],\s%R15D\n_l
+         '\tmov\s%R15D,\s0\[%_l (:expression dst) '\]\n_l
+      ) ())
+      (if (==( (: size L) 8_l )) (
+         '\tmov\t_l (:expression src) '\[%RBP\],\s%R15\n_l
+         '\tmov\s%R15,\s0\[%_l (:expression dst) '\]\n_l
+      ) ())
+      (if (>( (: size L) 8_l )) (
+         (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) ))) (
+            '\tmov\t_l (+( (:expression src) (*( 8_l (:expression word-offset) )) )) '\[%RBP\],\s%R15\n_l
+            '\tmov\s%R15,\s_l (*( 8_l (:expression word-offset) )) '\[%_l (:expression dst) '\]\n_l
          ))
-      ))
+      ) ())
    ))
 ) Nil);
 
@@ -205,12 +208,12 @@ fragment  set[] := λ(: dst Reg64+Array<Sized<size>,?>)(: src LocalVariable+Size
    (:expression 'RAX_l)
 ) U64+Reg64);
 
-fragment  branchtrue := λ(: _ Nil). (: (
-   (.expression( 'jmp ))
+branchtrue := λ: Blob(: _ Nil). (: (
+   (:expression( 'jmp_l ))
 ) BranchConditional);
-fragment  branchfalse := λ(: _ Nil). (: (
-   (.program( \t 'cmp \s '%RSP, \s '%RSP \n ))
-   (.expression( 'jne ))
+branchfalse := λ: Blob(: _ Nil). (: (
+   (:program( '\tcmp\s%RSP,\s%RSP\n_l ))
+   (:expression( 'jne_l ))
 ) BranchConditional);
 
 into-branch-conditional := λ: Blob(: l BranchConditional+Meta<ImpureOffset>). (: (
