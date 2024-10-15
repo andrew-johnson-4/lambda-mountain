@@ -191,10 +191,12 @@ fragment  push := λ(: src LocalVariable+Sized<size>). (: (
    ))
 ) Nil);
 
-fragment  pop := λ(: src LocalVariable+Sized<size>). (: (
-   (.program ( for word-offset in (range( 1 (+( (/( (.expression size) 8 )) 1 )) )) (
-      \t 'popq \s (-( (.expression src) (*( (.expression word-offset) 8 )) )) \[ '%rbp \] \n
-   )))
+pop := λ: Blob(: src LocalVariable+Sized<size>). (: (
+   (:program(
+      (for-atom (word-offset in (range( 1_l (+( (/( (: size L) 8_l )) 1_l )) ))) (
+         '\tpopq\s_l (-( (:expression src) (*( (:expression word-offset) 8_l )) )) '\[%rbp\]\n_l
+      ))
+   ))
 ) Nil);
 
 mov := λ: Blob(: src LocalVariable+Sized<size>)(: index Literal+Constant)(: dst Reg64+x[]). (: (
