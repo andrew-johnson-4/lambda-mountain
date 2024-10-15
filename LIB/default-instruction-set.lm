@@ -146,52 +146,6 @@ push-deref := λ: Blob(: src LocalVariable+Array<Sized<size>,?>). (: (
    ))
 ) Nil);
 
-fragment  push := λ(: src Reg64+Array<Sized<size>,max>)(: index Literal+Constant). (: (
-   (.program (
-      (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
-         \t 'pushq \s (+(
-            (*( (.expression index) (.expression size) ))
-            (+(
-               (+( (.expression size) '-8 ))
-               (inv(*( (.expression word-offset) 8 )))
-            ))
-         )) \[ '% (.expression src) \] \n
-      ))
-      (if-eq (.expression size) 4 (
-         \t 'pushq \s (*( (.expression index) (.expression size) )) \[ '% (.expression src) \] \n
-      ))
-      (if-eq (.expression size) 2 (
-         \t 'pushq \s (*( (.expression index) (.expression size) )) \[ '% (.expression src) \] \n
-      ))
-      (if-eq (.expression size) 1 (
-         \t 'pushq \s (*( (.expression index) (.expression size) )) \[ '% (.expression src) \] \n
-      ))
-   ))
-) Nil);
-fragment  push := λ(: src LocalVariable+Array<Sized<size>,max>)(: index Literal+Constant). (: (
-   (.program (
-      \t 'mov \s (.expression src) \[ '%rbp \] , \s '%r15 \n
-      (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
-         \t 'pushq \s (+(
-            (*( (.expression index) (.expression size) ))
-            (+(
-               (+( (.expression size) '-8 ))
-               (inv(*( (.expression word-offset) 8 )))
-            ))
-         )) \[ '%r15 \] \n
-      ))
-      (if-eq (.expression size) 4 (
-         \t 'pushq \s (+( (.expression src) (*( (.expression index) (.expression size) )) )) \[ '%r15 \] \n
-      ))
-      (if-eq (.expression size) 2 (
-         \t 'pushq \s (+( (.expression src) (*( (.expression index) (.expression size) )) )) \[ '%r15 \] \n
-      ))
-      (if-eq (.expression size) 1 (
-         \t 'pushq \s (+( (.expression src) (*( (.expression index) (.expression size) )) )) \[ '%r15 \] \n
-      ))
-   ))
-) Nil);
-
 fragment  push := λ(: src Sized<0>). (: () Nil);
 
 fragment  push := λ(: src GlobalVariable+Sized<size>). (: (
