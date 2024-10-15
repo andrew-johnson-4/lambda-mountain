@@ -352,32 +352,68 @@ mov := λ: Blob(: src Constant+Literal+Sized<8>)(: dst LocalVariable+Sized<8>). 
    ))
 ) Nil);
 
-fragment  mov := λ(: src Constant+Literal+Sized<1>)(: dst GlobalVariable). (: (.program(
-   \t 'mov \s '$ (.expression dst) , \s '%r15 \n
-   \t 'movb \s '$ (.expression src) , \s '0 \[ '%r15 \] \n
-)) Nil);
-fragment  mov := λ(: src Constant+Literal+Sized<2>)(: dst GlobalVariable). (: (.program(
-   \t 'mov \s '$ (.expression dst) , \s '%r15 \n
-   \t 'movw \s '$ (.expression src) , \s '0 \[ '%r15 \] \n
-)) Nil);
-fragment  mov := λ(: src Constant+Literal+Sized<4>)(: dst GlobalVariable). (: (.program(
-   \t 'mov \s '$ (.expression dst) , \s '%r15 \n
-   \t 'movl \s '$ (.expression src) , \s '0 \[ '%r15 \] \n
-)) Nil);
-fragment  mov := λ(: src Constant+Literal+Sized<8>)(: dst GlobalVariable). (: (.program(
-   \t 'mov \s '$ (.expression dst) , \s '%r15 \n
-   \t 'movq \s '$ (.expression src) , \s '0 \[ '%r15 \] \n
-)) Nil);
+mov := λ: Blob(: src Constant+Literal+Sized<1>)(: dst GlobalVariable+Sized<1>). (: (
+   (:program(
+      '\tmov\s$_l (:expression dst) ',\s%r15\n_l
+      '\tmovb\s$_l (:expression src) ',\s0\[%r15\]\n_l
+   ))
+) Nil);
+mov := λ: Blob(: src Constant+Literal+Sized<2>)(: dst GlobalVariable+Sized<2>). (: (
+   (:program(
+      '\tmov\s$_l (:expression dst) ',\s%r15\n_l
+      '\tmovw\s$_l (:expression src) ',\s0\[%r15\]\n_l
+   ))
+) Nil);
+mov := λ: Blob(: src Constant+Literal+Sized<4>)(: dst GlobalVariable+Sized<4>). (: (
+   (:program(
+      '\tmov\s$_l (:expression dst) ',\s%r15\n_l
+      '\tmovl\s$_l (:expression src) ',\s0\[%r15\]\n_l
+   ))
+) Nil);
+mov := λ: Blob(: src Constant+Literal+Sized<8>)(: dst GlobalVariable+Sized<8>). (: (
+   (:program(
+      '\tmov\s$_l (:expression dst) ',\s%r15\n_l
+      '\tmovq\s$_l (:expression src) ',\s0\[%r15\]\n_l
+   ))
+) Nil);
 
 fragment  push := λ(: src Constant+Literal+Sized<1>). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
 fragment  push := λ(: src Constant+Literal+Sized<2>). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
 fragment  push := λ(: src Constant+Literal+Sized<4>). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
 fragment  push := λ(: src Constant+Literal+Sized<8>). (: (.program( \t 'pushq \s '$ (.expression src) \n )) Nil);
 
-fragment  mov := λ(: src Reg8)(: dst LocalVariable). (: (.program( \t 'mov \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
-fragment  mov := λ(: src Reg16)(: dst LocalVariable). (: (.program( \t 'mov \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
-fragment  mov := λ(: src Reg32)(: dst LocalVariable). (: (.program( \t 'mov \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
-fragment  mov := λ(: src Reg64)(: dst LocalVariable). (: (.program( \t 'mov \s '% (.expression src) , \s (.expression dst) \[ '%rbp \] \n )) Nil);
+mov := λ: Blob(: src Reg8)(: dst LocalVariable+Sized<1>). (: (
+   (:frame (:frame src))
+   (:unframe (:unframe src))
+   (:program(
+      (:program src)
+      '\tmovb\s%_l (:expression src) ',\s_l (:expression dst) '\[%rbp\]\n_l
+   ))
+) Nil);
+mov := λ: Blob(: src Reg16)(: dst LocalVariable+Sized<2>). (: (
+   (:frame (:frame src))
+   (:unframe (:unframe src))
+   (:program(
+      (:program src)
+      '\tmovw\s%_l (:expression src) ',\s_l (:expression dst) '\[%rbp\]\n_l
+   ))
+) Nil);
+mov := λ: Blob(: src Reg32)(: dst LocalVariable+Sized<4>). (: (
+   (:frame (:frame src))
+   (:unframe (:unframe src))
+   (:program(
+      (:program src)
+      '\tmovl\s%_l (:expression src) ',\s_l (:expression dst) '\[%rbp\]\n_l
+   ))
+) Nil);
+mov := λ: Blob(: src Reg64)(: dst LocalVariable+Sized<8>). (: (
+   (:frame (:frame src))
+   (:unframe (:unframe src))
+   (:program(
+      (:program src)
+      '\tmovq\s%_l (:expression src) ',\s_l (:expression dst) '\[%rbp\]\n_l
+   ))
+) Nil);
 
 fragment  mov := λ(: src Reg64)(: dst GlobalVariable). (: (.program(
    \t 'mov \s '% (.expression src) , \s '%r15 \n
