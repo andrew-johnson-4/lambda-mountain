@@ -240,49 +240,49 @@ mov := λ: Blob(: src LocalVariable+Sized<size>)(: index Literal+Constant)(: dst
       ) ())
    ))
 ) Nil);
-fragment  mov := λ(: src Reg64)(: index Literal+Constant)(: dst LocalVariable+Sized<size>). (: (
-   (.program (
-      (\t 'mov \s '% (.expression src) , \s '%r14 \n)
-      (for word-offset in (range( 0 (/( (.expression size) 8 )) )) (
-         \t 'movq \s (*( (.expression word-offset) 8 )) \[ '%r14 \] , '%r15 \n
-         \t 'movq \s '%r15 , \s (+( (.expression dst) (*( (.expression word-offset) 8 )) )) \[ '%rbp \] \n
+mov := λ: Blob(: src Reg64+Constant)(: index Literal+Constant)(: dst LocalVariable+Sized<size>). (: (
+   (:program (
+      '\tmov\s%_l (:expression src) ',\s%r14\n_l
+      (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) ))) (
+         '\tmovq\s_l (*( (:expression word-offset) 8_l )) '\[%r14\],%r15\n_l
+         '\tmovq\s%r15,\s_l (+( (:expression dst) (*( (:expression word-offset) 8_l )) )) '\[%rbp\]\n_l
       ))
-      (if-eq (.expression size) 4 (
-         \t 'movq \s '0 \[ '%r14 \] , \s '%r15 \n
-         \t 'movq \s '%r15 , \s (.expression dst) \[ '%rbp \] \n
-      ))
-      (if-eq (.expression size) 2 (
-         \t 'movq \s '0 \[ '%r14 \] , \s '%r15 \n
-         \t 'movq \s '%r15 , \s (.expression dst) \[ '%rbp \] \n
-      ))
-      (if-eq (.expression size) 1 (
-         \t 'movq \s '0 \[ '%r14 \] , \s '%r15 \n
-         \t 'movq \s '%r15 , \s (.expression dst) \[ '%rbp \] \n
-      ))
+      (if (==( (: size L) 4_l )) (
+         '\tmovd\s0\[%r14\],\s%r15d\n_l
+         '\tmovd\s%r15d,\s_l (:expression dst) '\[%rbp\]\n_l
+      ) ())
+      (if (==( (: size L) 2_l )) (
+         '\tmovw\s0\[%r14\],\s%r15w\n_l
+         '\tmovw\s%r15w,\s_l (:expression dst) '\[%rbp\]\n_l
+      ) ())
+      (if (==( (: size L) 1_l )) (
+         '\tmovb\s0\[%r14\],\s%r15b\n_l
+         '\tmovb\s%r15b,\s_l (:expression dst) '\[%rbp\]\n_l
+      ) ())
    ))
 ) Nil);
-fragment  mov := λ(: src Literal+Constant)(: index Literal+Constant)(: dst LocalVariable+Array<Sized<size>,?>). (: (
-   (.program (
-      \t 'mov \s (.expression dst) \[ '%rbp \] , \s '%r15 \n
-      (if-eq (.expression size) 8 (
-         \t 'movq \s '$ (.expression src) , \s (*( (.expression index) (.expression size) )) \[ '%r15 \] \n
-      ))
-      (if-eq (.expression size) 4 (
-         \t 'movl \s '$ (.expression src) , \s (*( (.expression index) (.expression size) )) \[ '%r15 \] \n
-      ))
-      (if-eq (.expression size) 2 (
-         \t 'movw \s '$ (.expression src) , \s (*( (.expression index) (.expression size) )) \[ '%r15 \] \n
-      ))
-      (if-eq (.expression size) 1 (
-         \t 'movb \s '$ (.expression src) , \s (*( (.expression index) (.expression size) )) \[ '%r15 \] \n
-      ))
+mov := λ: Blob(: src Literal+Constant)(: index Literal+Constant)(: dst LocalVariable+Array<Sized<size>,?>). (: (
+   (:program (
+      '\tmov\s_l (:expression dst) '\[%rbp\],\s%r15\n_l
+      (if (==( (: size L) 8_l )) (
+         '\tmovq\s$_l (:expression src) ',\s_l (*( (:expression index) (: size L) )) '\[%r15\]\n_l
+      ) ())
+      (if (==( (: size L) 4_l )) (
+         '\tmovl\s$_l (:expression src) ',\s_l (*( (:expression index) (: size L) )) '\[%r15\]\n_l
+      ) ())
+      (if (==( (: size L) 2_l )) (
+         '\tmovw\s$_l (:expression src) ',\s_l (*( (:expression index) (: size L) )) '\[%r15\]\n_l
+      ) ())
+      (if (==( (: size L) 1_l )) (
+         '\tmovb\s$_l (:expression src) ',\s_l (*( (:expression index) (: size L) )) '\[%r15\]\n_l
+      ) ())
    ))
 ) Nil);
 
-fragment  mov := λ(: src Sized<1>[]+LocalVariable)(: index Literal+Constant)(: dst Reg8). (: (
-   (.program(
-      \t 'mov \s (.expression src) \[ '%rbp \] , \s '%r15 \n
-      \t 'mov \s (.expression index) \[ '%r15 \] , \s '% (.expression dst) \n
+mov := λ: Blob(: src Sized<1>[]+LocalVariable)(: index Literal+Constant)(: dst Reg8+Constant). (: (
+   (:program(
+      '\tmov\s_l (:expression src) '\[%rbp\],\s%r15\n_l
+      '\tmov\s_l (:expression index) '\[%r15\],\s%_l (:expression dst) '\n_l
    ))
 ) Nil);
 
