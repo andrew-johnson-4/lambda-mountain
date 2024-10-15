@@ -306,6 +306,28 @@ fragment  primitive::if := λ: DontChain(: ictx ImplicitContext)(: e1 BranchCond
    ))
 ) Nil);
 
+#primitive::while := λ: Blob(: body Meta<Any>)(: cond BranchConditional). (: (
+#   (:program(
+#      (let label-begin-loop (uuid()))
+#      (let label-do-loop (uuid()))
+#      (let label-end-loop (uuid()))
+#      (:expression label-begin-loop) ':\n_l
+#      (:frame cond)
+#      (:program cond)
+#      '\t_l (:expression cond) '\s_l (:expression label-do-loop) '\n_l
+#      '\tjmp\s_l (:expression label-end-loop) '\n_l
+#      (:expression label-do-loop) ':\n_l
+#      (:frame body)
+#      (:program body)
+#      (:del body)
+#      (:unframe body)
+#      (:unframe cond)
+#      '\tjmp\s_l (:expression label-begin-loop) '\n_l
+#      (:expression label-end-loop) ':\n_l
+#      (:unframe cond)
+#   ))
+#) Nil);
+
 fragment  primitive::while := λ: DontChain(: ictx ImplicitContext)(: e1 BranchConditional)(: e2 ?). (: (
    (.program(
       (uuid label-begin-loop) ': \n
