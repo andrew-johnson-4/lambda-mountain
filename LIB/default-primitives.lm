@@ -9,105 +9,124 @@ import LIB/default-i32.lm;
 import LIB/default-i64.lm;
 import LIB/default-string.lm;
 
-fragment  [] := λ(: l LocalVariable+Array<x+Sized<1>,?>)(: r LocalVariable+U64). (: (
-   (.program (
-      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
-      \t 'mov \s (.expression r) \[ '%RBP \] , \s '%R14 \n
-      \t 'add \s '%R14 , \s '%R15 \n
-      \t 'mov \s '0 \[ '%R15 \] , \s '%R15B \n
+[] := λ: Blob(: l LocalVariable+Array<x+Sized<1>,?>)(: r LocalVariable+U64). (: (
+   (:program (
+      '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
+      '\tmov\s_l (:expression r) '\[%RBP\],\s%R14\n_l
+      '\tadd\s%R14,\s%R15\n_l
+      '\tmov\s0\[%R15\],\s%R15B\n_l
    ))
-   (.expression( 'R15B ))
+   (:expression( 'R15B_l ))
 ) x+Reg8);
-
-fragment  [] := λ(: l LocalVariable+Array<x+Sized<8>,?>)(: r LocalVariable+U64). (: (
-   (.program (
-      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
-      \t 'mov \s (.expression r) \[ '%RBP \] , \s '%R14 \n
-      \t 'shl \s '$3, '%R14 \n
-      \t 'add \s '%R14 , \s '%R15 \n
-      \t 'mov \s '0 \[ '%R15 \] , \s '%R15 \n
+[] := λ: Blob(: l LocalVariable+Array<x+Sized<2>,?>)(: r LocalVariable+U64). (: (
+   (:program (
+      '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
+      '\tmov\s_l (:expression r) '\[%RBP\],\s%R14\n_l
+      '\tshl\s$1,\s%R14\n_l
+      '\tadd\s%R14,\s%R15\n_l
+      '\tmov\s0\[%R15\],\s%R15W\n_l
    ))
-   (.expression( 'R15 ))
+   (:expression( 'R15W_l ))
+) x+Reg16);
+[] := λ: Blob(: l LocalVariable+Array<x+Sized<4>,?>)(: r LocalVariable+U64). (: (
+   (:program (
+      '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
+      '\tmov\s_l (:expression r) '\[%RBP\],\s%R14\n_l
+      '\tshl\s$2,\s%R14\n_l
+      '\tadd\s%R14,\s%R15\n_l
+      '\tmov\s0\[%R15\],\s%R15D\n_l
+   ))
+   (:expression( 'R15D_l ))
+) x+Reg32);
+[] := λ: Blob(: l LocalVariable+Array<x+Sized<8>,?>)(: r LocalVariable+U64). (: (
+   (:program (
+      '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
+      '\tmov\s_l (:expression r) '\[%RBP\],\s%R14\n_l
+      '\tshl\s$3,\s%R14\n_l
+      '\tadd\s%R14,\s%R15\n_l
+      '\tmov\s0\[%R15\],\s%R15\n_l
+   ))
+   (:expression( 'R15_l ))
 ) x+Reg64);
 
-fragment  [] := λ(: l LocalVariable+Array<x+Sized<8>,?>)(: r Constant+U64). (: (
-   (.program (
-      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
-      \t 'add \s '$ (*( (.expression r) '8 )) , \s '%R15 \n
-      \t 'mov \s '0 \[ '%R15 \] , \s '%R15 \n
+[] := λ: Blob(: l LocalVariable+Array<x+Sized<8>,?>)(: r Constant+U64). (: (
+   (:program (
+      '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
+      '\tadd\s$_l (*( 8_l (:expression r) )) ',\s%R15\n_l
+      '\tmov\s0\[%R15\],\s%R15\n_l
    ))
-   (.expression( 'R15 ))
+   (:expression( 'R15_l ))
 ) x+Reg64);
 
-fragment  [] := λ(: l LocalVariable+Field<x+Sized<8>,?>)(: r LocalVariable+U64). (: (
-   (.program (
-      \t 'mov \s '%RBP , \s '%R15 \n
-      \t 'add \s '$ (.expression l) , \s '%R15 \n
-      \t 'mov \s (.expression r) \[ '%RBP \] , \s '%R14 \n
-      \t 'shl \s '$3, '%R14 \n
-      \t 'add \s '%R14 , \s '%R15 \n
-      \t 'mov \s '0 \[ '%R15 \] , \s '%R15 \n
+[] := λ: Blob(: l LocalVariable+Array<x+Sized<8>,?>)(: r GlobalVariable+U64). (: (
+   (:program (
+      '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
+      '\tmov\s$_l (:expression r) ',\s%R15\n_l
+      '\tmov\s0\[%R14\],\s%R14\n_l
+      '\tshl\s$3,\s%R14\n_l
+      '\tadd\s%R14,\s%R15\n_l
+      '\tmov\s0\[%R15\],\s%R15\n_l
    ))
-   (.expression( 'R15 ))
+   (:expression( 'R15_l ))
 ) x+Reg64);
 
-fragment  [] := λ(: l LocalVariable+Array<x,?>)(: r GlobalVariable+U64). (: (
-   (.program (
-      \t 'mov \s '$ (.expression l) , \s '%R15 \n
-      \t 'mov \s '$ (.expression r) , \s '%R14 \n
-      \t 'mov \s '0 \[ '%R14 \] , \s '%R14 \n
-      \t 'shl \s '$3 , \s '%R14 \n
-      \t 'add \s '%R14 , \s '%R15 \n
-      \t 'mov \s '0 \[ '%R15 \] , \s '%R15 \n
+[] := λ: Blob(: l LocalVariable+Field<x+Sized<8>,?>)(: r LocalVariable+U64). (: (
+   (:program (
+      '\tmov\s%RBP,\s%R15\n_l
+      '\tadd\s$_l (:expression l) ',\s%R15\n_l
+      '\tmov\s_l (:expression r) '\[%RBP\],\s%R14\n_l
+      '\tshl\s$3,\s%R14\n_l
+      '\tadd\s%R14,\s%R15\n_l
+      '\tmov\s0\[%R15\],\s%R15\n_l
    ))
-   (.expression( 'R15 ))
+   (:expression( 'R15_l ))
 ) x+Reg64);
 
-fragment  set[] := λ(: l LocalVariable+Array<Field<Sized<8>,?>,?>)(: i Literal+Constant+U64)(: v Reg64). (: (
-   (.program (
-      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
-      \t 'mov \s '% (.expression v) , \s (*( '8 (.expression i) )) \[ '%R15 \] \n
+set[] := λ: Blob(: l LocalVariable+Array<Field<Sized<8>,?>,?>)(: i Literal+Constant+U64)(: v Reg64). (: (
+   (:program (
+      '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
+      '\tmov\s%_l (:expression v) ',\s_l (*( 8_l (:expression i) )) '\[%R15\]\n_l
    ))
 ) Nil);
 
-fragment  set[] := λ(: l LocalVariable+Array<Sized<8>,?>)(: i Literal+Constant+U64)(: v LocalVariable+Sized<8>). (: (
-   (.program (
-      \t 'mov \s (.expression v) \[ '%RBP \] , \s '%R14 \n
-      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
-      \t 'mov \s '%R14 , \s (*( '8 (.expression i) )) \[ '%R15 \] \n
+set[] := λ: Blob(: l LocalVariable+Array<Sized<8>,?>)(: i Literal+Constant+U64)(: v LocalVariable+Sized<8>). (: (
+   (:program (
+      '\tmov\s_l (:expression v) '\[%RBP\],\s%R14\n_l
+      '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
+      '\tmov\s%R14,\s_l (*( 8_l (:expression i) )) '\[%R15\]\n_l
    ))
 ) Nil);
-fragment  set[] := λ(: l Reg64+Array<Sized<8>,?>)(: i Literal+Constant+U64)(: v LocalVariable+Sized<8>). (: (
-   (.program (
-      \t 'mov \s '% (.expression l) , \s '%R15 \n
-      \t 'mov \s (.expression v) \[ '%RBP \] , \s '%R14 \n
-      \t 'mov \s '%R14 , \s (*( '8 (.expression i) )) \[ '%R15 \] \n
+set[] := λ: Blob(: l Reg64+Array<Sized<8>,?>)(: i Literal+Constant+U64)(: v LocalVariable+Sized<8>). (: (
+   (:program (
+      '\tmov\s%_l (:expression l) ',\s%R15\n_l
+      '\tmov\s_l (:expression v) '\[%RBP\],\s%R14\n_l
+      '\tmov\s%R14,\s_l (*( 8_l (:expression i) )) '\[%R15\]\n_l
    ))
 ) Nil);
-fragment  set[] := λ(: l LocalVariable+Array<Sized<1>,?>)(: i LocalVariable+U64)(: v Reg8+Sized<1>). (: (
-   (.program (
-      \t 'mov \s '% (.expression v) , \s '%R14B \n
-      \t 'mov \s (.expression i) \[ '%RBP \] , \s '%R13 \n
-      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
-      \t 'add \s '%R13 , \s '%R15 \n
-      \t 'mov \s '%R14B , \s '0 \[ '%R15 \] \n
+set[] := λ: Blob(: l LocalVariable+Array<Sized<1>,?>)(: i LocalVariable+U64)(: v Reg8+Sized<1>). (: (
+   (:program (
+      '\tmov\s%_l (:expression v) ',\s%R14B\n_l
+      '\tmov\s_l (:expression i) '\[%RBP\],\s%R13\n_l
+      '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
+      '\tadd\s%R13,\s%R15\n_l
+      '\tmov\s%R14B,\s0\[%R15\]\n_l
    ))
 ) Nil);
-fragment  set[] := λ(: l LocalVariable+Array<Sized<1>,?>)(: i LocalVariable+U64)(: v Literal+Constant+Sized<1>). (: (
-   (.program (
-      \t 'mov \s (.expression i) \[ '%RBP \] , \s '%R13 \n
-      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
-      \t 'add \s '%R13 , \s '%R15 \n
-      \t 'movb \s '$ (.expression v) , \s '0 \[ '%R15 \] \n
+set[] := λ: Blob(: l LocalVariable+Array<Sized<1>,?>)(: i LocalVariable+U64)(: v Literal+Constant+Sized<1>). (: (
+   (:program (
+      '\tmov\s_l (:expression i) '\[%RBP\],\s%R13\n_l
+      '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
+      '\tadd\s%R13,\s%R15\n_l
+      '\tmovb\s$_l (:expression v) ',\s0\[%R15\]\n_l
    ))
 ) Nil);
-fragment  set[] := λ(: l LocalVariable+Array<Sized<1>,?>)(: i LocalVariable+U64)(: v LocalVariable+Sized<1>). (: (
-   (.program (
-      \t 'mov \s (.expression v) \[ '%RBP \] , \s '%R14B \n
-      \t 'mov \s (.expression i) \[ '%RBP \] , \s '%R13 \n
-      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
-      \t 'add \s '%R13 , \s '%R15 \n
-      \t 'movb \s '%R14B , \s '0 \[ '%R15 \] \n
+set[] := λ: Blob(: l LocalVariable+Array<Sized<1>,?>)(: i LocalVariable+U64)(: v LocalVariable+Sized<1>). (: (
+   (:program (
+      '\tmov\s_l (:expression v) '\[%RBP\],\s%R14B\n_l
+      '\tmov\s_l (:expression i) '\[%RBP\],\s%R13\n_l
+      '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
+      '\tadd\s%R13,\s%R15\n_l
+      '\tmovb\s%R14B,\s0\[%R15\]\n_l
    ))
 ) Nil);
 
