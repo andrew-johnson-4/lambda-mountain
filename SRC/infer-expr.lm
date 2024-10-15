@@ -17,6 +17,11 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
       ( (Glb( k v )) (
          (if (is-open(typeof term)) () (
             (infer-expr( tctx v Unscoped TAny Used ))
+            (let vt (typeof v))
+            (if (is-arrow vt) () (
+               (let gt (and( (t1 'GlobalVariable_s) (without-representation vt) )))
+               (maybe-specialize( 'mov_s (typeof-var-raw( term tctx 'mov_s )) (t3( 'Cons_s vt gt )) term ))
+            ))
          ))
       ))
       ( (Frg( _ v )) (
