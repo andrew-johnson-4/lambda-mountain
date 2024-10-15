@@ -242,6 +242,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (exit 1_u64)
       ))
    ))
+   (maybe-specialize( 'push_s (typeof-var-raw( term tctx 'push_s )) (typeof term) term ))
    tctx
 ) TContext);
 
