@@ -82,51 +82,51 @@ import LIB/default-string.lm;
    (:expression( 'R15_l ))
 ) x+Reg64);
 
-fragment  set[] := λ(: l LocalVariable+Array<Field<Sized<8>,?>,?>)(: i Literal+Constant+U64)(: v Reg64). (: (
-   (.program (
-      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
-      \t 'mov \s '% (.expression v) , \s (*( '8 (.expression i) )) \[ '%R15 \] \n
+set[] := λ: Blob(: l LocalVariable+Array<Field<Sized<8>,?>,?>)(: i Literal+Constant+U64)(: v Reg64). (: (
+   (:program (
+      '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
+      '\tmov\s%_l (:expression v) ',\s_l (*( 8_l (:expression i) )) '\[%R15\]\n_l
    ))
 ) Nil);
 
-fragment  set[] := λ(: l LocalVariable+Array<Sized<8>,?>)(: i Literal+Constant+U64)(: v LocalVariable+Sized<8>). (: (
-   (.program (
-      \t 'mov \s (.expression v) \[ '%RBP \] , \s '%R14 \n
-      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
-      \t 'mov \s '%R14 , \s (*( '8 (.expression i) )) \[ '%R15 \] \n
+set[] := λ: Blob(: l LocalVariable+Array<Sized<8>,?>)(: i Literal+Constant+U64)(: v LocalVariable+Sized<8>). (: (
+   (:program (
+      '\tmov\s_l (:expression v) '\[%RBP\],\s%R14\n_l
+      '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
+      '\tmov\s%R14,\s_l (*( 8_l (:expression i) )) '\[%R15\]\n_l
    ))
 ) Nil);
-fragment  set[] := λ(: l Reg64+Array<Sized<8>,?>)(: i Literal+Constant+U64)(: v LocalVariable+Sized<8>). (: (
-   (.program (
-      \t 'mov \s '% (.expression l) , \s '%R15 \n
-      \t 'mov \s (.expression v) \[ '%RBP \] , \s '%R14 \n
-      \t 'mov \s '%R14 , \s (*( '8 (.expression i) )) \[ '%R15 \] \n
+set[] := λ: Blob(: l Reg64+Array<Sized<8>,?>)(: i Literal+Constant+U64)(: v LocalVariable+Sized<8>). (: (
+   (:program (
+      '\tmov\s%_l (:expression l) ',\s%R15\n_l
+      '\tmov\s_l (:expression v) '\[%RBP\],\s%R14\n_l
+      '\tmov\s%R14,\s_l (*( 8_l (:expression i) )) '\[%R15\]\n_l
    ))
 ) Nil);
-fragment  set[] := λ(: l LocalVariable+Array<Sized<1>,?>)(: i LocalVariable+U64)(: v Reg8+Sized<1>). (: (
-   (.program (
-      \t 'mov \s '% (.expression v) , \s '%R14B \n
-      \t 'mov \s (.expression i) \[ '%RBP \] , \s '%R13 \n
-      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
-      \t 'add \s '%R13 , \s '%R15 \n
-      \t 'mov \s '%R14B , \s '0 \[ '%R15 \] \n
+set[] := λ: Blob(: l LocalVariable+Array<Sized<1>,?>)(: i LocalVariable+U64)(: v Reg8+Sized<1>). (: (
+   (:program (
+      '\tmov\s%_l (:expression v) ',\s%R14B\n_l
+      '\tmov\s_l (:expression i) '\[%RBP\],\s%R13\n_l
+      '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
+      '\tadd\s%R13,\s%R15\n_l
+      '\tmov\s%R14B,\s0\[%R15\]\n_l
    ))
 ) Nil);
-fragment  set[] := λ(: l LocalVariable+Array<Sized<1>,?>)(: i LocalVariable+U64)(: v Literal+Constant+Sized<1>). (: (
-   (.program (
-      \t 'mov \s (.expression i) \[ '%RBP \] , \s '%R13 \n
-      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
-      \t 'add \s '%R13 , \s '%R15 \n
-      \t 'movb \s '$ (.expression v) , \s '0 \[ '%R15 \] \n
+set[] := λ: Blob(: l LocalVariable+Array<Sized<1>,?>)(: i LocalVariable+U64)(: v Literal+Constant+Sized<1>). (: (
+   (:program (
+      '\tmov\s_l (:expression i) '\[%RBP\],\s%R13\n_l
+      '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
+      '\tadd\s%R13,\s%R15\n_l
+      '\tmovb\s$_l (:expression v) ',\s0\[%R15\]\n_l
    ))
 ) Nil);
-fragment  set[] := λ(: l LocalVariable+Array<Sized<1>,?>)(: i LocalVariable+U64)(: v LocalVariable+Sized<1>). (: (
-   (.program (
-      \t 'mov \s (.expression v) \[ '%RBP \] , \s '%R14B \n
-      \t 'mov \s (.expression i) \[ '%RBP \] , \s '%R13 \n
-      \t 'mov \s (.expression l) \[ '%RBP \] , \s '%R15 \n
-      \t 'add \s '%R13 , \s '%R15 \n
-      \t 'movb \s '%R14B , \s '0 \[ '%R15 \] \n
+set[] := λ: Blob(: l LocalVariable+Array<Sized<1>,?>)(: i LocalVariable+U64)(: v LocalVariable+Sized<1>). (: (
+   (:program (
+      '\tmov\s_l (:expression v) '\[%RBP\],\s%R14B\n_l
+      '\tmov\s_l (:expression i) '\[%RBP\],\s%R13\n_l
+      '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
+      '\tadd\s%R13,\s%R15\n_l
+      '\tmovb\s%R14B,\s0\[%R15\]\n_l
    ))
 ) Nil);
 
