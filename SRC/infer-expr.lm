@@ -195,18 +195,24 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          ) ())
 
          (let lt (typeof l))
-         (if (&&( (is-arrow lt) (is-constructor lt) )) (
-            (print 'Constructor\s_s)
-            (let fields-size (sizeof-aligned rt))
-            (print 'Constructor\s_s)(print l)(print '\n_s)
-            (print rt)(print fields-size)(print '\n_s)
-            (let struct-size (+( fields-size 8_u64 )))
-            (let ct (t2( 'Constructor_s (t1(var-name-if-var l)) )))
-            (set ct (and( ct (t2( 'Sized_s (t1(to-string struct-size)) )) )))
-            (set ct (and( ct (t2( 'FieldsSized_s (t1(to-string fields-size)) )) )))
-            (maybe-specialize( 'dev-push_s (typeof-var-raw( term tctx 'dev-push_s )) ct term ))
-            (maybe-specialize( 'dev-mov_s (typeof-var-raw( term tctx 'dev-mov_s )) (t3( 'Cons_s ct (t1 'LocalVariable_s) )) term ))
-            (maybe-specialize( 'dev-mov_s (typeof-var-raw( term tctx 'dev-mov_s )) (t3( 'Cons_s ct (t1 'GlobalVariable_s) )) term ))
+         (if (&&( (is-arrow lt) (is-simple-constructor(domain lt)) )) (
+            (match l (
+               ()
+               ( (Lit( _ _ )) (
+                  (print 'Constructor\s_s)
+                  (let fields-size (sizeof-aligned rt))
+                  (print 'Constructor\s_s)(print l)(print '\n_s)
+                  (print rt)(print fields-size)(print '\n_s)
+                  (let struct-size (+( fields-size 8_u64 )))
+                  (let ct (t2( 'Constructor_s (t1(var-name-if-var l)) )))
+                  (set ct (and( ct (t2( 'Sized_s (t1(to-string struct-size)) )) )))
+                  (set ct (and( ct (t2( 'FieldsSized_s (t1(to-string fields-size)) )) )))
+                  (maybe-specialize( 'dev-push_s (typeof-var-raw( term tctx 'dev-push_s )) ct term ))
+                  (maybe-specialize( 'dev-mov_s (typeof-var-raw( term tctx 'dev-mov_s )) (t3( 'Cons_s ct (t1 'LocalVariable_s) )) term ))
+                  (maybe-specialize( 'dev-mov_s (typeof-var-raw( term tctx 'dev-mov_s )) (t3( 'Cons_s ct (t1 'GlobalVariable_s) )) term ))
+               ))
+               ( _ () )
+            ))
          ) ())
       ))
       ( (Abs( lhs rhs tlt )) (
