@@ -198,8 +198,8 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (if (is-arrow lt) (
             (match l (
                ()
-               ( (Lit( _ _ )) (
-                  (let fields-size (sizeof-aligned rt))
+               ( (Lit( l-name _ )) (
+                  (let fields-size (sizeof-aligned(typeof r)))
                   (let struct-size (+( fields-size 8_u64 )))
                   (let ct (t2( 'Constructor_s (t1(var-name-if-var l)) )))
                   (set ct (and( ct (t2( 'Sized_s (t1(to-string struct-size)) )) )))
