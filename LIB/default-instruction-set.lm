@@ -197,7 +197,7 @@ dev-push := λ: Blob(: src GlobalVariable+Sized<size>). (: (
    (:program (
       '\tmov\s$_l (:expression src) ',\s%r15\n_l
       (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) ))) (
-         '\tpushq\s_l (-( (-( (: size L) 8_l )) (*( (: word-offset) 8_l )) )) '\[%r15\]\n_l
+         '\tpushq\s_l (-( (-( (: size L) 8_l )) (*( (:expression word-offset) 8_l )) )) '\[%r15\]\n_l
       ))
       (if (==( (: size L) 4_l )) (
          '\tmov\s0\[%r15\],\s%r15d\n_l
@@ -218,7 +218,7 @@ dev-push := λ: Blob(: src LocalVariable+Sized<size>). (: (
       (for-atom (word-offset in (range( 0_l (/( (: size L) 8_l )) ))) (
          '\tpushq\s_l (+(
             (:expression src)
-            (-( (-( (: size L) 8_l )) (*( (: word-offset) 8_l )) ))
+            (-( (-( (: size L) 8_l )) (*( (:expression word-offset) 8_l )) ))
          )) '\[%rbp\]\n_l
      ))
      (if (==( (: size L) 4_l )) (
@@ -431,6 +431,11 @@ dev-push := λ: Blob(: src Constant+Literal+Sized<2>). (: (:program( '\tpushq\s$
 dev-push := λ: Blob(: src Constant+Literal+Sized<4>). (: (:program( '\tpushq\s$_l (:expression src) '\n_l )) Nil);
 dev-push := λ: Blob(: src Constant+Literal+Sized<8>). (: (:program( '\tpushq\s$_l (:expression src) '\n_l )) Nil);
 
+dev-push := λ: Blob(: src Constant+Literal+Sized<1>+Reg8). (: (:program( '\tpushq\s%_l (:expression src) '\n_l )) Nil);
+dev-push := λ: Blob(: src Constant+Literal+Sized<2>+Reg16). (: (:program( '\tpushq\s%_l (:expression src) '\n_l )) Nil);
+dev-push := λ: Blob(: src Constant+Literal+Sized<4>+Reg32). (: (:program( '\tpushq\s%_l (:expression src) '\n_l )) Nil);
+dev-push := λ: Blob(: src Constant+Literal+Sized<8>+Reg64). (: (:program( '\tpushq\s%_l (:expression src) '\n_l )) Nil);
+
 mov := λ: Blob(: src Reg8)(: dst LocalVariable+Sized<1>). (: (
    (:frame (:frame src))
    (:unframe (:unframe src))
@@ -520,10 +525,42 @@ fragment  push := λ(: dst Reg16). (: (.program( \t 'mov \s '% (.expression dst)
 fragment  push := λ(: dst Reg32). (: (.program( \t 'mov \s '% (.expression dst) , '%r15d \n \t 'push \s '%r15 \n )) Nil);
 fragment  push := λ(: dst Reg64). (: (.program( \t 'push \s '% (.expression dst) \n )) Nil);
 
-fragment  dev-push := λ(: dst Reg8). (: (.program( \t 'mov \s '% (.expression dst) , '%r15b \n \t 'push \s '%r15 \n )) Nil);
-fragment  dev-push := λ(: dst Reg16). (: (.program( \t 'mov \s '% (.expression dst) , '%r15w \n \t 'push \s '%r15 \n )) Nil);
-fragment  dev-push := λ(: dst Reg32). (: (.program( \t 'mov \s '% (.expression dst) , '%r15d \n \t 'push \s '%r15 \n )) Nil);
-fragment  dev-push := λ(: dst Reg64). (: (.program( \t 'push \s '% (.expression dst) \n )) Nil);
+dev-push := λ: Blob(: src Reg8). (: (
+   (:frame (:frame src))
+   (:unframe (:unframe src))
+   (:program(
+      (:program src)
+      '\tmov\s%_l (:expression src) ',%r15b\n_l
+      '\tpushq\s%r15\n_l
+   ))
+) Nil);
+dev-push := λ: Blob(: src Reg16). (: (
+   (:frame (:frame src))
+   (:unframe (:unframe src))
+   (:program(
+      (:program src)
+      '\tmov\s%_l (:expression src) ',%r15w\n_l
+      '\tpushq\s%r15\n_l
+   ))
+) Nil);
+dev-push := λ: Blob(: src Reg32). (: (
+   (:frame (:frame src))
+   (:unframe (:unframe src))
+   (:program(
+      (:program src)
+      '\tmov\s%_l (:expression src) ',%r15d\n_l
+      '\tpushq\s%r15\n_l
+   ))
+) Nil);
+dev-push := λ: Blob(: src Reg64). (: (
+   (:frame (:frame src))
+   (:unframe (:unframe src))
+   (:program(
+      (:program src)
+      '\tmov\s%_l (:expression src) ',%r15\n_l
+      '\tpushq\s%r15\n_l
+   ))
+) Nil);
 
 mov := λ: Blob(: offset Literal+Constant+Sized<8>)(: src Reg64)(: dst Reg8). (: (:program( '\tmov\s_l (:expression offset) '\[%_l (:expression src) '\],\s%_l (:expression dst) '\n_l )) Nil);
 
