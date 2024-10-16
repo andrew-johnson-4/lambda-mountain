@@ -9,11 +9,12 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
          (t2( 'FieldsSized_s (t1(to-string(sizeof-aligned args-type))) ))
       ))
    )))
-   (set e (fragment::set-type( e (denormalize constructor-parms) )))
-   (let r (fragment-apply(
-      ctx offset 'push_s
-      (FLSeq( (close FLEOF) e )) (t3( 'Arrow_s constructor-parms return-type )) args
-   )))
+   (set e (fragment::set( e 'case-number_s (SAtom(to-string(index-of-tag tag-name))) )))
+
+   (let callee-ctx ctx)
+   (set callee-ctx (fragment-context::bind( callee-ctx 'src_s (denormalize constructor-parms) e )))
+
+   (let r (cc-blob( callee-ctx 'dev-push_s (denormalize constructor-parms) offset args )))
    (set r (fragment::set-context( r ctx )))
    (set r (fragment::set-type( r (denormalize return-type) )))
    (let new-offset (-( offset (as (sizeof-type return-type) I64) )))
