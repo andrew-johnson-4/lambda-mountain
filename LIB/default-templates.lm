@@ -11,6 +11,33 @@ dev-push := λ: Blob(: src Constructor<tag>+Sized<struct-size>+FieldsSized<field
    ))
 ) StackVariable);
 
+dev-mov := λ: Blob(: src Constructor<tag>+Sized<struct-size>+FieldsSized<fields-size>)(: dst LocalVariable). (: (
+   (:program(
+      (for-atom (wsz in (range( 0_l (/( (-( (-( (: struct-size L) (: fields-size L) )) 8_l )) 8_l )) ))) (
+         '\tpushq\s$0\n_l
+      ))
+      (:program src)
+      '\tpushq\s$_l (:case-number src) '\n_l
+      (for-atom (index in (range( 0_l (/( (: struct-size L) 8_l )) ))) (
+         '\tpopq\s_l (+( (:expression dst) (*( 8_l (:expression index) )) )) '\[%RBP\]\n_l
+      ))
+   ))
+) Nil);
+
+dev-mov := λ: Blob(: src Constructor<tag>+Sized<struct-size>+FieldsSized<fields-size>)(: dst GlobalVariable). (: (
+   (:program(
+      (for-atom (wsz in (range( 0_l (/( (-( (-( (: struct-size L) (: fields-size L) )) 8_l )) 8_l )) ))) (
+         '\tpushq\s$0\n_l
+      ))
+      (:program src)
+      '\tpushq\s$_l (:case-number src) '\n_l
+      '\tmovq\s$_l (:expression dst) ',\s%R15\n_l
+      (for-atom (index in (range( 0_l (/( (: struct-size L) 8_l )) ))) (
+         '\tpopq\s_l (*( 8_l (:expression index) )) '\[%R15\]\n_l
+      ))
+   ))
+) Nil);
+
 fragment  template::push := λ: DontChain(: src Constructor<tag>+Sized<struct-size>+FieldsSized<fields-size>). (: (
    (.program(
       (for wsz in (range( '0 (/( (-( (-( (.expression struct-size) (.expression fields-size) )) '8 )) '8 )) )) (
