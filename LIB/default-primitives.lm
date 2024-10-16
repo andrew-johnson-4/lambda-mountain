@@ -328,30 +328,31 @@ primitive::while := λ: Blob(: body Meta<Any>)(: cond BranchConditional). (: (
    ))
 ) Nil);
 
-fragment  cdecl::call := λ: DontChain(: ictx ImplicitContext)(: args ?). (: (
-   (.program(
-      \o 'call \s 'function \s (.function-name ictx) \s ': \s (.function-type ictx) \n
-      \t 'push \s '%RBX \n
-      \t 'push \s '%RBP \n
-      \t 'mov \s '%RSP , \s '%RBX \n
-      (.program args)
-      \t 'mov \s '%RBX , \s '%RBP \n
-      \t 'call \s (.function-id ictx) \n
-      \t 'mov \s '%RBP , \s '%RSP \n
-      \t 'pop \s '%RBP \n
-      \t 'pop \s '%RBX \n
-      (if-eq '1 (>( (.return-size ictx) '8 )) (
-         (if-eq Used (.used ictx) (
-            (for rsi in (range( '0 (/( (.return-size ictx) '8 )) )) (
-               \t 'push \s (-( '-32 (.args-size ictx) )) \[ '%RSP \] \n
+primitive::call := λ: Blob(: ictx ImplicitContext)(: args Meta<Any>). (: (
+   (:program(
+      '\ocall\sfunction\s_l (:function-name ictx) '\s:\s_l (:function-type ictx) '\n_l
+      '\tpush\s%RBX\n_l
+      '\tpush\s%RBP\n_l
+      '\tmov\s%RSP,\s%RBX\n_l
+      (:program args)
+      '\tmov\s%RBX,\s%RBP\n_l
+      '\tcall\s_l (:function-id ictx) '\n_l
+      '\tmov\s%RBP,\s%RSP\n_l
+      '\tpop\s%RBP\n_l
+      '\tpop\s%RBX\n_l
+      (if (>( (:return-size ictx) 8_l )) (
+         (if (==( Used_l (:used ictx) )) (
+            '\oYesIsUsed\s_l (:used ictx) (:return-size ictx) '\n_l
+            (for-atom (rsi in (range( 0_l (/( (:return-size ictx) 8_l )) ))) (
+               '\tpush\s_l (-( -32_l (:args-size ictx) )) '\[%RSP\]\n_l
             ))
-         ))
-      ))
+         ) ())
+      ) ())
    ))
-   (.expression(
-      (if-eq (.return-size ictx) 1 'AL)
-      (if-eq (.return-size ictx) 2 'AX)
-      (if-eq (.return-size ictx) 4 'EAX)
-      (if-eq (.return-size ictx) 8 'RAX)
+   (:expression(
+      (if (==( (:return-size ictx) 1_l )) 'AL_l ())
+      (if (==( (:return-size ictx) 2_l )) 'AX_l ())
+      (if (==( (:return-size ictx) 4_l )) 'EAX_l ())
+      (if (==( (:return-size ictx) 8_l )) 'RAX_l ())
    ))
 ) Nil);

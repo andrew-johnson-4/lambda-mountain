@@ -24,3 +24,19 @@ cc-blob := λ(: caller-ctx FContext)(: function-name String)(: args AST)(: offse
    r
 ) Fragment);
 
+cc-blob := λ(: callee-ctx FContext)(: function-name String)(: args-tt Type)(: offset I64)(: blame AST). (: (
+   (let f (fragment-context::lookup( callee-ctx function-name args-tt blame )))
+   (let r (fragment::new()))
+   (match (.term f) (
+      ()
+      ( (Abs( lhs rhs tlt )) (
+         (set r (blob-render( callee-ctx rhs r offset )))
+         (let t (.term f))
+         (set r (fragment::set-type( r (range(typeof t)) )))
+         (set r (fragment::set-offset( r offset )))
+         (set r (fragment::set-context( r callee-ctx )))
+      ))
+   ))
+   r
+) Fragment);
+
