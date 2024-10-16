@@ -1,36 +1,36 @@
 
 import LIB/default-templates-stackvariable.lm;
 
-dev-push := λ: Blob(: src Constructor<tag>+Sized<struct-size>+FieldsSized<fields-size>). (: (
+dev-push := λ: Blob(: src Constructor<tag>+CaseNumber<case-number>+Sized<struct-size>+FieldsSized<fields-size>). (: (
    (:program(
       (for-atom (wsz in (range( 0_l (/( (-( (-( (: struct-size L) (: fields-size L) )) 8_l )) 8_l )) ))) (
          '\tpushq\s$0\n_l
       ))
       (:program src)
-      '\tpushq\s$_l (:case-number src) '\n_l
+      '\tpushq\s$_l (: case-number L) '\n_l
    ))
 ) StackVariable);
 
-dev-mov := λ: Blob(: src Constructor<tag>+Sized<struct-size>+FieldsSized<fields-size>)(: dst LocalVariable). (: (
+dev-mov := λ: Blob(: src Constructor<tag>+CaseNumber<case-number>+Sized<struct-size>+FieldsSized<fields-size>)(: dst LocalVariable). (: (
    (:program(
       (for-atom (wsz in (range( 0_l (/( (-( (-( (: struct-size L) (: fields-size L) )) 8_l )) 8_l )) ))) (
          '\tpushq\s$0\n_l
       ))
       (:program src)
-      '\tpushq\s$_l (:case-number src) '\n_l
+      '\tpushq\s$_l (: case-number L) '\n_l
       (for-atom (index in (range( 0_l (/( (: struct-size L) 8_l )) ))) (
          '\tpopq\s_l (+( (:expression dst) (*( 8_l (:expression index) )) )) '\[%RBP\]\n_l
       ))
    ))
 ) Nil);
 
-dev-mov := λ: Blob(: src Constructor<tag>+Sized<struct-size>+FieldsSized<fields-size>)(: dst GlobalVariable). (: (
+dev-mov := λ: Blob(: src Constructor<tag>+CaseNumber<case-number>+Sized<struct-size>+FieldsSized<fields-size>)(: dst GlobalVariable). (: (
    (:program(
       (for-atom (wsz in (range( 0_l (/( (-( (-( (: struct-size L) (: fields-size L) )) 8_l )) 8_l )) ))) (
          '\tpushq\s$0\n_l
       ))
       (:program src)
-      '\tpushq\s$_l (:case-number src) '\n_l
+      '\tpushq\s$_l (: case-number L) '\n_l
       '\tmovq\s$_l (:expression dst) ',\s%R15\n_l
       (for-atom (index in (range( 0_l (/( (: struct-size L) 8_l )) ))) (
          '\tpopq\s_l (*( 8_l (:expression index) )) '\[%R15\]\n_l

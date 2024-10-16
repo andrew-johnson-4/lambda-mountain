@@ -1,9 +1,6 @@
 
 specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (
    (if (is-special( key result-type )) () (
-      (if (==( key 'dev-push_s )) (
-         (print 'dev-push\s_s)(print result-type)(print '\n_s)
-      ) ())
       (set unify-ctx (normalize unify-ctx))
       (let term ASTEOF)
       (let global-tctx global-type-context)

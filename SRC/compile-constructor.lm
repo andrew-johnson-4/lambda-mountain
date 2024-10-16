@@ -6,7 +6,10 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
       (t2( 'Constructor_s (t1 tag-name) ))
       (and(
          (t2( 'Sized_s (t1(to-string(sizeof-aligned return-type))) ))
-         (t2( 'FieldsSized_s (t1(to-string(sizeof-aligned args-type))) ))
+         (and(
+            (t2( 'FieldsSized_s (t1(to-string(sizeof-aligned args-type))) ))
+            (t2( 'CaseNumber_s (t1(to-string(index-of-tag tag-name))) ))
+         ))
       ))
    )))
    (set e (fragment::set( e 'case-number_s (SAtom(to-string(index-of-tag tag-name))) )))
