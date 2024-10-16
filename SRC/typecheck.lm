@@ -26,7 +26,5 @@ typecheck := λ. (: (
          (specialize( function-name ft unify-ctx special-type ))
       ))
    )))
-   (print 'Typechecked\n_s)
    (assert-well-typed ast-parsed-program)
-   (print 'Well\sTyped\n_s)
 ) Nil);
