@@ -193,6 +193,20 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
                term
             ))
          ) ())
+
+         (let lt (typeof l))
+         (if (&&( (is-arrow lt) (is-constructor lt) )) (
+            (let ct (denormalize tt))
+            (let fields-tt (domain tt))
+            (let fields-size (sizeof-aligned rt))
+            (let struct-size (+( fields-size 8_u64 )))
+            (set ct (t2( 'Constructor_s (t1(var-name-if-var l)) )))
+            (set ct (and( ct (t2( 'Sized_s (t1(to-string struct-size)) )) )))
+            (set ct (and( ct (t2( 'FieldsSized_s (t1(to-string fields-size)) )) )))
+            (maybe-specialize( 'dev-push_s (typeof-var-raw( term tctx 'dev-push_s )) ct term ))
+            (maybe-specialize( 'dev-mov_s (typeof-var-raw( term tctx 'dev-mov_s )) (t3( 'Cons_s ct (t1 'LocalVariable_s) )) term ))
+            (maybe-specialize( 'dev-mov_s (typeof-var-raw( term tctx 'dev-mov_s )) (t3( 'Cons_s ct (t1 'GlobalVariable_s) )) term ))
+         ) ())
       ))
       ( (Abs( lhs rhs tlt )) (
          (set tctx (infer-ctx( tctx lhs )))
@@ -227,23 +241,12 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
                ) ())
                (ascript-normal( term tt ))
 
-               (let ct (denormalize tt))
-               (if (is-arrow tt) (
-                  (let fields-tt (domain tt))
-                  (let fields-size (sizeof-aligned fields-tt))
-                  (let struct-size (+( fields-size 8_u64 )))
-                  (set ct (t2( 'Constructor_s (t1 l) )))
-                  (set ct (and( ct (t2( 'Sized_s (t1(to-string struct-size)) )) )))
-                  (set ct (and( ct (t2( 'FieldsSized_s (t1(to-string fields-size)) )) )))
-               ) ())
-
-               (if (==( l 'Tuple_s )) (
-                  (print 'Tuple\s_s)(print ct)(print (is-arrow tt))(print '\n_s)
-               ) ())
-
-               (maybe-specialize( 'dev-push_s (typeof-var-raw( term tctx 'dev-push_s )) ct term ))
-               (maybe-specialize( 'dev-mov_s (typeof-var-raw( term tctx 'dev-mov_s )) (t3( 'Cons_s ct (t1 'LocalVariable_s) )) term ))
-               (maybe-specialize( 'dev-mov_s (typeof-var-raw( term tctx 'dev-mov_s )) (t3( 'Cons_s ct (t1 'GlobalVariable_s) )) term ))
+               (if (is-arrow tt) () (
+                  (let ct (denormalize tt))
+                  (maybe-specialize( 'dev-push_s (typeof-var-raw( term tctx 'dev-push_s )) ct term ))
+                  (maybe-specialize( 'dev-mov_s (typeof-var-raw( term tctx 'dev-mov_s )) (t3( 'Cons_s ct (t1 'LocalVariable_s) )) term ))
+                  (maybe-specialize( 'dev-mov_s (typeof-var-raw( term tctx 'dev-mov_s )) (t3( 'Cons_s ct (t1 'GlobalVariable_s) )) term ))
+               ))
             ) ())
          ))
       ))
