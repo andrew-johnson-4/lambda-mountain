@@ -22,3 +22,14 @@ is-simple-constructor := λ(: tt Type). (: (
    ))
    r
 ) U64);
+
+is-tag := λ(: tt Type). (: (
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( (TAnd( t1 t2 )) (set r (||( (is-tag t1) (is-tag t2) ))) )
+      ( (TGround( 'Tag_s _ )) (set r 1_u64) )
+      ( _ () )
+   ))
+   r
+) U64);

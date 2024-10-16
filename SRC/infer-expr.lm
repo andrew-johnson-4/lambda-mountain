@@ -195,14 +195,11 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          ) ())
 
          (let lt (typeof l))
-         (if (&&( (is-arrow lt) (is-simple-constructor(domain lt)) )) (
+         (if (is-arrow lt) (
             (match l (
                ()
                ( (Lit( _ _ )) (
-                  (print 'Constructor\s_s)
                   (let fields-size (sizeof-aligned rt))
-                  (print 'Constructor\s_s)(print l)(print '\n_s)
-                  (print rt)(print fields-size)(print '\n_s)
                   (let struct-size (+( fields-size 8_u64 )))
                   (let ct (t2( 'Constructor_s (t1(var-name-if-var l)) )))
                   (set ct (and( ct (t2( 'Sized_s (t1(to-string struct-size)) )) )))
