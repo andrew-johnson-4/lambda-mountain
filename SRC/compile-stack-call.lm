@@ -1,10 +1,12 @@
 
 compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(: return-type Type)(: args AST)(: offset I64)(: used IsUsed). (: (
+   (let original-ctx ctx)
    (let function-type (.type f))
    (let r (fragment::new()))
 
    (if (non-zero(slot( function-type 'Blob_s ))) (
       (set r (cc-blob( ctx function-name args offset )))
+      (set r (fragment::set-context( r ctx )))
    ) (
       (match (fragment::get( f 'fragment-type_s )) (
          ()
@@ -13,6 +15,7 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
             (set r (fragment-apply( ctx offset function-name f-args return-type args )))
             (set r (fragment::set-offset( r offset )))
             (set r (fragment::set-type( r (denormalize return-type) )))
+            (set r (fragment::set-context( r ctx )))
          ))
          ( _ (
             (if (is( used Tail )) (set used Used) ())
@@ -40,6 +43,7 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
             (set r (cc-blob( ctx 'primitive::call_s (t3( 'Cons_s (t1 'ImplicitContext_s) args-tt )) offset args )))
 
             (set r (fragment::set-offset( r offset )))
+            (set r (fragment::set-context( r original-ctx )))
             (if (>( return-size 8_u64 )) (
                (if (is( used Used )) (
                   (set r (fragment::set-offset( r (-( offset (as return-size I64) )) )))
@@ -49,7 +53,6 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
          ))
       ))
    ))
-   (set r (fragment::set-context( r ctx )))
    r
 ) Fragment);
 

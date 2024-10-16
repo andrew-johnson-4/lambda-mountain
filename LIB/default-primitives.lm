@@ -370,7 +370,7 @@ primitive::call := λ: Blob(: ictx ImplicitContext)(: args Meta<Any>). (: (
       '\tpop\s%RBX\n_l
       (if (>( (:return-size ictx) 8_l )) (
          (if (==( Used_l (:used ictx) )) (
-            '\oYesIsUsed\s_l (:used ictx) '\n_l
+            '\oYesIsUsed\s_l (:used ictx) (:return-size ictx) '\n_l
             (for-atom (rsi in (range( 0_l (/( (:return-size ictx) 8_l )) ))) (
                '\tpush\s_l (-( -32_l (:args-size ictx) )) '\[%RSP\]\n_l
             ))
