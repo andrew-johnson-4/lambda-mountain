@@ -1,5 +1,12 @@
 
 assert-well-typed := λ(: term AST). (: (
+   (while (is-seq term) (match term (
+      ()
+      ( (Seq( rst t )) (
+         (assert-well-typed t)
+         (set term rst)
+      ))
+   )))
    (match term (
       ()
       ( ASTEOF (assert-one-typed term) )

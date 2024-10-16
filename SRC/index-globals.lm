@@ -22,3 +22,5 @@ global-type-context          := (: TCtxEOF TContext);
 global-ctx                   := (: FCtxEOF FContext);
 
 parse-suffixes := (: SfxEOF SfxList);
+
+stack-to-specialize          := (: LEOF List<StackToSpecialize>);

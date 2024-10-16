@@ -17,7 +17,7 @@ try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: 
                   (match t (
                      ()
                      ( (Glb( _ (Abs( _ _ _ )) )) (
-                        (specialize( function-name ft unify-ctx special-type ))
+                        (set stack-to-specialize (cons( (StackToSpecialize( function-name ft unify-ctx special-type )) stack-to-specialize )))
                      ))
                      ( _ () )
                   ))

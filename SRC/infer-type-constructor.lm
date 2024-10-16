@@ -13,7 +13,10 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
                (t1 'Constant_s)
                (and(
                   (t2( 'Constructor_s (t1 tag) ))
-                  (t2( 'FieldsSized_s (t1 '0_s) ))
+                  (and(
+                     (t2( 'CaseNumber_s (t1(to-string(index-of-tag tag))) ))
+                     (t2( 'FieldsSized_s (t1 '0_s) ))
+                  ))
                ))
             ))
          )))

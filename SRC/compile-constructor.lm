@@ -6,14 +6,20 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
       (t2( 'Constructor_s (t1 tag-name) ))
       (and(
          (t2( 'Sized_s (t1(to-string(sizeof-aligned return-type))) ))
-         (t2( 'FieldsSized_s (t1(to-string(sizeof-aligned args-type))) ))
+         (and(
+            (t2( 'FieldsSized_s (t1(to-string(sizeof-aligned args-type))) ))
+            (t2( 'CaseNumber_s (t1(to-string(index-of-tag tag-name))) ))
+         ))
       ))
    )))
-   (set e (fragment::set-type( e (denormalize constructor-parms) )))
-   (let r (fragment-apply(
-      ctx offset 'push_s
-      (FLSeq( (close FLEOF) e )) (t3( 'Arrow_s constructor-parms return-type )) args
-   )))
+
+#   (print 'Construct\s_s)(print tag-name)(print '\n_s)
+#   (print 'Construct\s_s)(print constructor-parms)(print '\n_s)
+
+   (let callee-ctx ctx)
+   (set callee-ctx (fragment-context::bind( callee-ctx 'src_s constructor-parms e )))
+   (let r (cc-blob( callee-ctx 'dev-push_s constructor-parms offset args )))
+
    (set r (fragment::set-context( r ctx )))
    (set r (fragment::set-type( r (denormalize return-type) )))
    (let new-offset (-( offset (as (sizeof-type return-type) I64) )))
