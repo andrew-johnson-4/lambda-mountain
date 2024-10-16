@@ -19,11 +19,6 @@ assert-well-typed := λ(: term AST). (: (
       ))
       ( (App( (Var( 'gensym-label_s _ )) _ )) () )
       ( (App( (Var( 'label_s _ )) (Var( _ _ )) )) () )
-      ( (App( (App( (Var( 'while_s _ )) cond )) body )) (
-         (assert-well-typed cond)
-         (assert-well-typed body)
-         (assert-one-typed term)
-      ))
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
          (assert-well-typed t)
       ))

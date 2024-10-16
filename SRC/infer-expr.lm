@@ -86,11 +86,6 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (infer-expr( tctx f Unscoped TAny Tail ))
          (ascript-normal( term (guess-representation(without-representation(typeof t))) ))
       ))
-      ( (App( (App( (Var( 'while_s _ )) cond )) body )) (
-         (set tctx (infer-expr( tctx cond Unscoped TAny Used )))
-         (infer-expr( tctx body Unscoped TAny Tail ))
-         (ascript-normal( term (t1 'Nil_s) ))
-      ))
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
          (set tctx (infer-expr( tctx t Unscoped TAny used )))
          (let inner-tt (typeof t))
