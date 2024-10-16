@@ -237,8 +237,8 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
                   (set ct (and( ct (t2( 'FieldsSized_s (t1(to-string fields-size)) )) )))
                ) ())
 
-               (if (==( l 'SCons_s )) (
-                  (print 'SCons\s_s)(print ct)(print '\n_s)
+               (if (==( l 'Tuple_s )) (
+                  (print 'Tuple\s_s)(print ct)(print (is-arrow tt))(print '\n_s)
                ) ())
 
                (maybe-specialize( 'dev-push_s (typeof-var-raw( term tctx 'dev-push_s )) ct term ))
