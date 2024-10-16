@@ -1,6 +1,6 @@
 
-dev: install-bootstrap
-	lm -o dev.s tests/regress/cdecl.lm
+dev: install-production
+	lm -o dev.s tests/regress/arithmetic.lm
 	as dev.s -o dev.o
 	ld dev.o -o dev
 	./dev
