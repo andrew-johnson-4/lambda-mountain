@@ -8,6 +8,12 @@ fragment type L; size L 0; atom suffix L _l;
 :text := λ: Blob(: x Meta<Any>). (: () L);
 :data := λ: Blob(: x Meta<Any>). (: () L);
 :del := λ: Blob(: x Meta<Any>). (: () L);
+:function-name := λ: Blob(: x Meta<Any>). (: () L);
+:function-type := λ: Blob(: x Meta<Any>). (: () L);
+:function-id := λ: Blob(: x Meta<Any>). (: () L);
+:args-size := λ: Blob(: x Meta<Any>). (: () L);
+:return-size := λ: Blob(: x Meta<Any>). (: () L);
+:used := λ: Blob(: x Meta<Any>). (: () L);
 
 cdecl::args-size := λ: Blob . (: () L);
 

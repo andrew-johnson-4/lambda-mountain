@@ -355,3 +355,32 @@ fragment  cdecl::call := λ: DontChain(: ictx ImplicitContext)(: args ?). (: (
       (if-eq (.return-size ictx) 8 'RAX)
    ))
 ) Nil);
+
+primitive::call := λ: Blob(: ictx ImplicitContext)(: args Meta<Any>). (: (
+   (:program(
+      '\ocall\sfunction\s_l (:function-name ictx) '\s:\s_l (:function-type ictx) '\n_l
+      '\tpush\s%RBX\n_l
+      '\tpush\s%RBP\n_l
+      '\tmov\s%RSP,\s%RBX\n_l
+      (:program args)
+      '\tmov\s%RBX,\s%RBP\n_l
+      '\tcall\s_l (:function-id ictx) '\n_l
+      '\tmov\s%RBP,\s%RSP\n_l
+      '\tpop\s%RBP\n_l
+      '\tpop\s%RBX\n_l
+      (if (>( (:return-size ictx) 8_l )) (
+         (if (==( Used_l (:used ictx) )) (
+            '\oYesIsUsed\s_l (:used ictx) '\n_l
+            (for-atom (rsi in (range( 0_l (/( (:return-size ictx) 8_l )) ))) (
+               '\tpush\s_l (-( -32_l (:args-size ictx) )) '\[%RSP\]\n_l
+            ))
+         ) ())
+      ) ())
+   ))
+   (:expression(
+      (if (==( (:return-size ictx) 1_l )) 'AL_l ())
+      (if (==( (:return-size ictx) 2_l )) 'AX_l ())
+      (if (==( (:return-size ictx) 4_l )) 'EAX_l ())
+      (if (==( (:return-size ictx) 8_l )) 'RAX_l ())
+   ))
+) Nil);

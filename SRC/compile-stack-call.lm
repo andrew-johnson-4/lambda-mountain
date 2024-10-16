@@ -23,19 +23,21 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
             (let function-id (mangle-identifier( function-name function-type )))
             (let return-size (sizeof-type return-type))
 
-            (let ectx (fragment::new()))
-            (set ectx (fragment::set( ectx 'function-id_s (SAtom function-id) )))
-            (set ectx (fragment::set( ectx 'function-name_s (SAtom function-name) )))
-            (set ectx (fragment::set( ectx 'function-type_s (SAtom(to-string(.type f))) )))
-            (set ectx (fragment::set( ectx 'function-id_s (SAtom function-id) )))
-            (set ectx (fragment::set( ectx 'return-size_s (SAtom(to-string return-size)) )))
-            (set ectx (fragment::set( ectx 'args-size_s (SAtom(to-string(sizeof-type(typeof args)))) )))
-            (set ectx (fragment::set( ectx 'used_s (SAtom(to-string used)) )))
-            (set ectx (fragment::set-type( ectx (t1( 'ImplicitContext_s )) )))
+            (let ictx (fragment::new()))
+            (set ictx (fragment::set( ictx 'function-id_s (SAtom function-id) )))
+            (set ictx (fragment::set( ictx 'function-name_s (SAtom function-name) )))
+            (set ictx (fragment::set( ictx 'function-type_s (SAtom(to-string(.type f))) )))
+            (set ictx (fragment::set( ictx 'function-id_s (SAtom function-id) )))
+            (set ictx (fragment::set( ictx 'return-size_s (SAtom(to-string return-size)) )))
+            (set ictx (fragment::set( ictx 'args-size_s (SAtom(to-string(sizeof-type(typeof args)))) )))
+            (set ictx (fragment::set( ictx 'used_s (SAtom(to-string used)) )))
+            (set ictx (fragment::set-type( ictx (t1( 'ImplicitContext_s )) )))
+            (set ctx (fragment-context::bind( ctx 'ictx_s (t1 'ImplicitContext_s) ictx )))
 
-            (set r (fragment-apply( ctx offset 'cdecl::call_s
-               (FLSeq( (close(FLSeq( (close FLEOF) ectx ))) push-args )) (typeof args) args
-            )))
+            (let args-tt (.type push-args))
+            (set ctx (fragment-context::bind( ctx 'args_s args-tt push-args )))
+
+            (set r (cc-blob( ctx 'primitive::call_s (t3( 'Cons_s (t1 'ImplicitContext_s) args-tt )) offset args )))
 
             (set r (fragment::set-offset( r offset )))
             (if (>( return-size 8_u64 )) (
