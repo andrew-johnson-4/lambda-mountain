@@ -259,50 +259,50 @@ into-branch-conditional := λ: Blob(: l Reg8+Meta<ImpureOffset>). (: (
    (:expression( 'jne_l ))
 ) BranchConditional);
 
-fragment  primitive::if := λ: DontChain(: ictx ImplicitContext)(: e1 BranchConditional)(: e2 ?)(: e3 ?). (: (
-   (.program (
-      \t 'push \s '%RBP \n
-      (.frame e1)
-      (.program e1)
-      \t (.expression e1) \s (uuid label-true-branch) \n
-      (.frame e2)
-      (.frame e3)
-      (.program e3)
-      (.del e3)
-      (if-eq (>( (.return-size ictx) 8 )) 1 (
-         \t 'mov \s '%RSP , \s '%R14 \n
-         (.unframe e3)
-         (for ri in (range( 0 (/( (.return-size ictx) 8 )) )) (
-            \t 'movq \s (-( (-( (.return-size ictx) 8 )) (*( (.expression ri) '8 )) )) \[ '%R14 \] , \s '%R15 \n
-            \t 'movq \s '%R15 , \s (-( (-( (.return-size ictx) 8 )) (*( (.expression ri) '8 )) )) \[ '%RSP \] \n
+primitive::if := λ: Blob(: ictx ImplicitContext)(: f Meta<Any>)(: t Meta<Any>)(: c BranchConditional). (: (
+   (:program (
+      (let label-true-branch (uuid '_l))
+      (let label-true-end (uuid '_l))
+      (let label-end (uuid '_l))
+      '\tpush\s%RBP\n_l
+      (:frame c)
+      (:program c)
+      '\t_l (:expression c) '\s_l (:expression label-true-branch) '\n_l
+      (:frame t)
+      (:frame f)
+      (:program f)
+      (:del f)
+      (if (>( (:return-size ictx) 8_l )) (
+         '\tmov\s%RSP,\s%R14\n_l
+         (:unframe f)
+         (for-atom (ri in (range( 0_l (/( (:return-size ictx) 8_l )) ))) (
+            '\tmovq\s_l (-( (-( (:return-size ictx) 8_l )) (*( (:expression ri) 8_l )) )) '\[%R14\],\s%R15\n_l
+            '\tmovq\s%R15,\s_l (-( (-( (:return-size ictx) 8_l )) (*( (:expression ri) 8_l )) )) '\[%RSP\]\n_l
          ))
-      ))
-      \t 'jmp \s (uuid label-end) \n
-      (uuid label-true-branch) ': \n
-      (.frame e2)
-      (.program e2)
-      (uuid label-end) ': \n
-      (if-eq (.return-size ictx) 1 (\t 'pop \s '%RAX \n))
-      (if-eq (.return-size ictx) 2 (\t 'pop \s '%RAX \n))
-      (if-eq (.return-size ictx) 4 (\t 'pop \s '%RAX \n))
-      (if-eq (.return-size ictx) 8 (\t 'pop \s '%RAX \n))
-      \t 'mov \s (.rsp-offset ictx) \[ '%RBP \] , '%RSP \n
-      \t 'add \s '$ (.end-offset ictx) ', \s '%RSP \n
+      ) ())
+      '\tjmp\s_l (:expression label-end) '\n_l
+      (:expression label-true-branch) ':\n_l
+      (:frame t)
+      (:program t)
+      (:expression label-end) ':\n_l
+      (if (==( (:return-size ictx) 1_l )) '\tpop\s%RAX\n_l ())
+      (if (==( (:return-size ictx) 2_l )) '\tpop\s%RAX\n_l ())
+      (if (==( (:return-size ictx) 4_l )) '\tpop\s%RAX\n_l ())
+      (if (==( (:return-size ictx) 8_l )) '\tpop\s%RAX\n_l ())
+      '\tmov\s_l (:rsp-offset ictx) '\[%RBP\],%RSP\n_l
+      '\tadd\s$_l (:end-offset ictx) ',\s%RSP\n_l
    ))
-   (.del(
-      (.del e1)
-      (.del e2)
+   (:del( (:del c) (:del t) ))
+   (:unframe(
+      (:unframe c)
+      (:unframe t)
+      '\tadd\s$8,\s%RSP\n_l
    ))
-   (.unframe(
-      (.unframe e1)
-      (.unframe e2)
-      \t 'add \s '$8 , \s '%RSP \n
-   ))
-   (.expression(
-      (if-eq (.return-size ictx) 1 'AL)
-      (if-eq (.return-size ictx) 2 'AX)
-      (if-eq (.return-size ictx) 4 'EAX)
-      (if-eq (.return-size ictx) 8 'RAX)
+   (:expression(
+      (if (==( (:return-size ictx) 1_l )) 'AL_l ())
+      (if (==( (:return-size ictx) 2_l )) 'AX_l ())
+      (if (==( (:return-size ictx) 4_l )) 'EAX_l ())
+      (if (==( (:return-size ictx) 8_l )) 'RAX_l ())
    ))
 ) Nil);
 
