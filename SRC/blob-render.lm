@@ -188,6 +188,7 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: off
             (let e1 (blob-render-simple( ctx context-key f offset )))
             (set ctx (.2 e1))
             (let e2 (blob-render-simple( ctx context-key a offset )))
+            (set ctx (.2 e2))
             (let s1 (.1 e1))
             (let s2 (.1 e2))
             (set r (+( s1 s2 )))

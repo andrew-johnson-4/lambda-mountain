@@ -7,8 +7,8 @@ macro ( ('let x y) )
 macro ( ('set lhs rhs) )
       ( (mov( rhs lhs )) );
 
-#macro ( ('while cond body)
-#        (primitive::while( body (into-branch-conditional cond) )) );
+macro ( ('while cond body) )
+      ( (primitive::while( (as body Nil) (into-branch-conditional cond) )) );
 
 macro ( ('for-each (item 'in iter) loop) ) (
    (let (uuid iter-term) iter)
