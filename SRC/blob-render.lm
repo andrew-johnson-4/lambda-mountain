@@ -75,7 +75,7 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: off
             (set r (SCons( (close(SAtom(to-string ri))) (close r) )))
          ))
       ))
-      ( (App( (Var( 'uuid_s _ )) ASTNil )) (
+      ( (App( (Var( 'uuid_s _ )) _ )) (
          (set r (SAtom(uuid())))
       ))
       ( (App( (Var( 'align_s _ )) le )) (

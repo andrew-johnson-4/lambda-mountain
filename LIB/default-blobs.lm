@@ -28,3 +28,4 @@ range := λ: Blob(: hi L). (: () L);
 range := λ: Blob(: lo L)(: hi L). (: () L);
 
 align := λ: Blob(: hi L). (: () L);
+uuid := λ: Blob(: t L). (: () L);
