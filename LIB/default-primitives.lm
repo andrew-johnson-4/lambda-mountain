@@ -306,7 +306,7 @@ dev-primitive::if := λ: Blob(: ictx ImplicitContext)(: f Meta<Any>)(: t Meta<An
    ))
 ) Nil);
 
-dev-primitive::if := λ: Blob(: ictx ImplicitContext)(: f Meta<Any>)(: t Meta<Any>)(: c BranchConditional). (: (
+primitive::if := λ: Blob(: ictx ImplicitContext)(: f Meta<Any>)(: t Meta<Any>)(: c BranchConditional). (: (
    (:program (
       (let label-true-branch (uuid '_l))
       (let label-true-end (uuid '_l))
