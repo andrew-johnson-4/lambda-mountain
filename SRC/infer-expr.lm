@@ -226,7 +226,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
                   (set tt (unify-hint( hint tt )))
                ) ())
                (ascript-normal( term tt ))
-               (let ct (denormalize tt))
+               #(let ct (denormalize tt))
                #(maybe-specialize( 'dev-push_s (typeof-var-raw( term tctx 'dev-push_s )) ct term ))
                #(maybe-specialize( 'dev-mov_s (typeof-var-raw( term tctx 'dev-mov_s )) (t3( 'Cons_s ct (t1 'LocalVariable_s) )) term ))
                #(maybe-specialize( 'dev-mov_s (typeof-var-raw( term tctx 'dev-mov_s )) (t3( 'Cons_s ct (t1 'GlobalVariable_s) )) term ))
@@ -241,9 +241,9 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (exit 1_u64)
       ))
    ))
-   (if (>( (sizeof-type(typeof term)) 0_u64 )) (
-      (maybe-specialize( 'dev-push_s (typeof-var-raw( term tctx 'dev-push_s )) (typeof term) term ))
-   ) ())
+   #(if (>( (sizeof-type(typeof term)) 0_u64 )) (
+   #   (maybe-specialize( 'dev-push_s (typeof-var-raw( term tctx 'dev-push_s )) (typeof term) term ))
+   #) ())
    tctx
 ) TContext);
 

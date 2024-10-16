@@ -1,33 +1,35 @@
 
 specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (
-   (set unify-ctx (normalize unify-ctx))
-   (let term ASTEOF)
-   (let global-tctx global-type-context)
-   (while (non-zero global-tctx) (match global-tctx (
-      ()
-      ( TCtxNil (set global-tctx TCtxEOF) )
-      ( (TCtxBind( rst k kt t )) (
-         (set kt (slot( kt 'Arrow_s )))
-         (if (==( k key )) (
-            (if (==( ft kt )) (
-               (match t (
-                  ()
-                  ( (Glb( _ (Abs( _ _ _ )) )) (set term t) )
-                  ( _ () )
-               ))
+   (if (is-special( key result-type )) () (
+      (set unify-ctx (normalize unify-ctx))
+      (let term ASTEOF)
+      (let global-tctx global-type-context)
+      (while (non-zero global-tctx) (match global-tctx (
+         ()
+         ( TCtxNil (set global-tctx TCtxEOF) )
+         ( (TCtxBind( rst k kt t )) (
+            (set kt (slot( kt 'Arrow_s )))
+            (if (==( k key )) (
+               (if (==( ft kt )) (
+                  (match t (
+                     ()
+                     ( (Glb( _ (Abs( _ _ _ )) )) (set term t) )
+                     ( _ () )
+                  ))
+               ) ())
             ) ())
-         ) ())
-         (set global-tctx rst)
-      ))
-   )))
-   (mark-as-special( key result-type ))
-   (if (non-zero term) (
-      (let special-term (substitute( unify-ctx term )))
-      (infer-global-context( special-term ))
-      (infer-expr( global-type-context special-term Unscoped TAny Used ))
-      (set ast-parsed-program (Seq(
-         (close ast-parsed-program)
-         (close special-term)
+            (set global-tctx rst)
+         ))
       )))
-   ) ())
+      (mark-as-special( key result-type ))
+      (if (non-zero term) (
+         (let special-term (substitute( unify-ctx term )))
+         (infer-global-context( special-term ))
+         (infer-expr( global-type-context special-term Unscoped TAny Used ))
+         (set ast-parsed-program (Seq(
+            (close ast-parsed-program)
+            (close special-term)
+         )))
+      ) ())
+   ))
 ) Nil);

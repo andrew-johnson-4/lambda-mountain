@@ -36,3 +36,5 @@ type MacroList MEOF | (MSeq( MacroList[] , Macro )); zero MacroList MEOF;
 
 type ParsePartial (PME( AST , List<Token> )); # term, remainder
 type SfxList SfxEOF | (SfxSeq( SfxList[] , String , Type )); zero SfxList SfxEOF;
+
+type StackToSpecialize (StackToSpecialize( String , Type , TContext , Type ));

@@ -19,5 +19,12 @@ typecheck := λ. (: (
       ))
    )))
    (infer-expr( global-type-context ast-parsed-program Unscoped TAny Used ))
+   (while (non-zero stack-to-specialize) (match stack-to-specialize (
+      ()
+      ( (LCons( (StackToSpecialize( function-name ft unify-ctx special-type )) rst )) (
+         (set stack-to-specialize rst)
+         (specialize( function-name ft unify-ctx special-type ))
+      ))
+   )))
    (assert-well-typed ast-parsed-program)
 ) Nil);
