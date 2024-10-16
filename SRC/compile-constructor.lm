@@ -13,8 +13,8 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
       ))
    )))
 
-   (print 'Construct\s_s)(print tag-name)(print '\n_s)
-   (print 'Construct\s_s)(print constructor-parms)(print '\n_s)
+#   (print 'Construct\s_s)(print tag-name)(print '\n_s)
+#   (print 'Construct\s_s)(print constructor-parms)(print '\n_s)
 
    (let callee-ctx ctx)
    (set callee-ctx (fragment-context::bind( callee-ctx 'src_s constructor-parms e )))
