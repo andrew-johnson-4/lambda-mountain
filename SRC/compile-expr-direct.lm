@@ -117,26 +117,36 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ))
       ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (
          (let rsp-offset (+( stack-offset -8_i64 )))
-         (let e1 (cc-blob( ctx 'into-branch-conditional_s cond rsp-offset )))
-         (let e2 (compile-expr( (open(.context e1)) t (.offset e1) Tail )))
-         (let end-offset (.offset e2))
-         (set e2 (compile-maybe-push-stack( (open(.context e2)) (.offset e2) e2 (typeof term) term )))
-         (set e2 (fragment::set-type( e2 (typeof t) )))
-         (let e3 (compile-expr( (open(.context e1)) f (.offset e1) Tail )))
-         (set e3 (compile-maybe-push-stack( (open(.context e3)) (.offset e3) e3 (typeof term) term )))
-         (set e3 (fragment::set-type( e3 (typeof f) )))
+         (let ec (cc-blob( ctx 'into-branch-conditional_s cond rsp-offset )))
+         (let et (compile-expr( (open(.context ec)) t (.offset ec) Tail )))
+         (let end-offset (.offset et))
+         (set et (compile-maybe-push-stack( (open(.context et)) (.offset et) et (typeof term) term )))
+         (set et (fragment::set-type( et (typeof t) )))
+         (let ef (compile-expr( (open(.context ec)) f (.offset ec) Tail )))
+         (set ef (compile-maybe-push-stack( (open(.context ef)) (.offset ef) ef (typeof term) term )))
+         (set ef (fragment::set-type( ef (typeof f) )))
 
-         (let ectx (fragment::new()))
-         (set ectx (fragment::set( ectx 'rsp-offset_s (SAtom(to-string rsp-offset)) ))) 
-         (set ectx (fragment::set( ectx 'end-offset_s (SAtom(to-string end-offset)) ))) 
-         (set ectx (fragment::set( ectx 'return-size_s (SAtom(to-string(sizeof-type(typeof term)))) ))) 
-         (set ectx (fragment::set-type( ectx (t1( 'ImplicitContext_s )) )))
-
-         (set e (fragment-apply( ctx stack-offset 'primitive::if_s
-            (FLSeq( (close(FLSeq( (close(FLSeq( (close(FLSeq( (close FLEOF) ectx ))) e1 ))) e2 ))) e3 )) (typeof term) term
+         (let ictx (fragment::new()))
+         (set ictx (fragment::set( ictx 'rsp-offset_s (SAtom(to-string rsp-offset)) ))) 
+         (set ictx (fragment::set( ictx 'end-offset_s (SAtom(to-string end-offset)) ))) 
+         (set ictx (fragment::set( ictx 'return-size_s (SAtom(to-string(sizeof-type(typeof term)))) ))) 
+         (set ictx (fragment::set-type( ictx (t1( 'ImplicitContext_s )) )))
+         
+         (set ctx (fragment-context::bind( ctx 'ictx_s (t1 'ImplicitContext_s) ictx )))
+         (set ctx (fragment-context::bind( ctx 'c_s (t1 'BranchConditional_s) ictx )))
+         (set ctx (fragment-context::bind( ctx 't_s (typeof t) ictx )))
+         (set ctx (fragment-context::bind( ctx 'f_s (typeof f) ictx )))
+         (let a-tt (t3( 'Cons_s 
+            (t3( 'Cons_s 
+               (t3( 'Cons_s (t1 'ImplicitContext_s) (typeof f) ))
+               (typeof t)
+            ))
+            (t1 'BranchConditional_s)
          )))
 
-         (set e (fragment::set-context( e (open(.context e2)) )))
+         (set e (cc-blob( ctx 'dev-primitive::if_s a-tt stack-offset term )))
+
+         (set e (fragment::set-context( e (open(.context et)) )))
          (set e (fragment::set-offset( e end-offset )))
          (if (>( (sizeof-type(typeof term)) 8_u64 )) (
             (set e (fragment::set-type( e (and( (typeof term) (t1 'StackVariable_s) )) )))
