@@ -37,6 +37,7 @@ with-size-recurse := λ(: tt Type). (: (
       ))
       ( (TGround( 'Tag_s _ )) () )
       ( (TGround( 'Sized_s _ )) () )
+      ( (TGround( 'CaseNumber_s _ )) () )
       ( (TGround( 'Fields_s _ )) () )
       ( (TGround( 'FieldsSized_s _ )) () )
       ( (TGround( tag ps )) (
