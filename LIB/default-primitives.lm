@@ -328,34 +328,6 @@ primitive::while := λ: Blob(: body Meta<Any>)(: cond BranchConditional). (: (
    ))
 ) Nil);
 
-fragment  cdecl::call := λ: DontChain(: ictx ImplicitContext)(: args ?). (: (
-   (.program(
-      \o 'call \s 'function \s (.function-name ictx) \s ': \s (.function-type ictx) \n
-      \t 'push \s '%RBX \n
-      \t 'push \s '%RBP \n
-      \t 'mov \s '%RSP , \s '%RBX \n
-      (.program args)
-      \t 'mov \s '%RBX , \s '%RBP \n
-      \t 'call \s (.function-id ictx) \n
-      \t 'mov \s '%RBP , \s '%RSP \n
-      \t 'pop \s '%RBP \n
-      \t 'pop \s '%RBX \n
-      (if-eq '1 (>( (.return-size ictx) '8 )) (
-         (if-eq Used (.used ictx) (
-            (for rsi in (range( '0 (/( (.return-size ictx) '8 )) )) (
-               \t 'push \s (-( '-32 (.args-size ictx) )) \[ '%RSP \] \n
-            ))
-         ))
-      ))
-   ))
-   (.expression(
-      (if-eq (.return-size ictx) 1 'AL)
-      (if-eq (.return-size ictx) 2 'AX)
-      (if-eq (.return-size ictx) 4 'EAX)
-      (if-eq (.return-size ictx) 8 'RAX)
-   ))
-) Nil);
-
 primitive::call := λ: Blob(: ictx ImplicitContext)(: args Meta<Any>). (: (
    (:program(
       '\ocall\sfunction\s_l (:function-name ictx) '\s:\s_l (:function-type ictx) '\n_l
