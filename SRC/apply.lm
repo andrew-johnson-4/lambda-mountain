@@ -10,6 +10,10 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: 
 apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U8)(: blame AST)(: hard U8). (: (
    (let r TAny)
    (let rs (apply-plural( function-name ft pt do-specialize blame )))
+   (if (&&( (==( function-name 'dev-push_s )) (is-constructor pt) )) (
+      (print 'Apply\sArg\s_s)(print pt)(print '\n_s)
+      (print 'Apply\sMatch\s_s)(print rs)(print '\n_s)
+   ) ())
    (if (==( (is-hook ft) 0_u64 )) (
       (set rs (reduce-plural rs))
    ) ())
