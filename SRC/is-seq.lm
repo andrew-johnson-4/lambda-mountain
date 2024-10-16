@@ -1,0 +1,10 @@
+
+is-seq := λ(: term AST). (: (
+   (let r 0_u64)
+   (match term (
+      ()
+      ( (Seq( _ _ )) (set r 1_u64) )
+      ( _ () )
+   ))
+   r
+) U64);
