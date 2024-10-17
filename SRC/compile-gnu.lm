@@ -50,7 +50,7 @@ compile-gnu := λ. (: (
                      )))
                   ))
                   ( _ (
-                     (let clean-tt (without-representation kt))
+                     (let clean-tt (without-constructor(without-representation kt)))
                      (let repr-tt (and( clean-tt (t1 'GlobalVariable_s) )))
                      (set fragment (fragment::set-type( fragment repr-tt )))
                      (let mid (mangle-identifier( k clean-tt )))
