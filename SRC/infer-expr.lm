@@ -24,9 +24,6 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
             ))
          ))
       ))
-      ( (Frg( _ v )) (
-         (ascript-normal( v (typeof term) ))
-      ))
       ( (App( (Lit( ':_s _ )) (App( (Lit( _ _ )) (AType tt) )) )) (
          (match term (
             ()

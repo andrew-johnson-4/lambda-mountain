@@ -107,12 +107,6 @@ preprocess-apply := λ(: program AST). (: (
          (close(preprocess-apply ar))
          tlt
       ))))
-      ( (Frg( al ar )) (
-         (set r (Frg(
-            (unique al)
-            (close(preprocess-apply ar))
-         )))
-      ))
       ( (Glb( k ar )) (set r (Glb(
          (unique k)
          (close(preprocess-apply ar))

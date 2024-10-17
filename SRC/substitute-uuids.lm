@@ -53,12 +53,6 @@ substitute-uuids := λ(: ctx Context)(: term AST). (: (
             (close(substitute-uuids( ctx t )))
          )))
       ))
-      ( (Frg( k t )) (
-         (set return (Frg(
-            k
-            (close(substitute-uuids( ctx t )))
-         )))
-      ))
    ))
    return
 ) AST);

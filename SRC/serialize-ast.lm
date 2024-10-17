@@ -30,13 +30,6 @@ serialize-ast := λ(: t AST). (: (
          (serialize-ast rhs)
          (print '\]\]_s)
       ))
-      ( (Frg( lhs_t rhs )) (
-         (print '\[Fragment\s\[_s)
-         (print lhs)
-         (print '\s_s)
-         (serialize-ast rhs)
-         (print '\]\]_s)
-      ))
       ( (App( lhs rhs )) (
          (print '\[App\s\[_s)
          (serialize-ast lhs)

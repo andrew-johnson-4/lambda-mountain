@@ -43,12 +43,6 @@ without-location := λ(: term AST). (: (
             (close(without-location( t )))
          )))
       ))
-      ( (Frg( k t )) (
-         (set return (Frg(
-            (without-location( k ))
-            (close(without-location( t )))
-         )))
-      ))
    ))
    return
 ) AST);

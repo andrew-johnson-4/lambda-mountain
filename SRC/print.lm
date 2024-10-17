@@ -56,12 +56,6 @@ print := λ(: t AST). (: (
          (print '\s:=\s_s)
          (print v)
       ))
-      ( (Frg( k_t v )) (
-         (print 'fragment\s_s)
-         (print k)
-         (print '\s:=\s_s)
-         (print v)
-      ))
       ( (App( l r )) (
          (print '\[_s)
          (print l)

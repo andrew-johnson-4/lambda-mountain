@@ -53,12 +53,6 @@ preprocess-apply-locations := λ(: program AST). (: (
          (close(preprocess-apply-locations ar))
          tlt
       ))))
-      ( (Frg( al ar )) (
-         (set r (Frg(
-            (unique al)
-            (close(preprocess-apply-locations ar))
-         )))
-      ))
       ( (Glb( k ar )) (set r (Glb(
          (unique k)
          (close(preprocess-apply-locations ar))

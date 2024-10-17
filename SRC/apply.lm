@@ -122,12 +122,6 @@ apply := λ(: ctx Context)(: term AST). (: (
             (close(apply( ctx vr )))
          )))
       ))
-      ( (Frg( k vr )) (
-         (set return (Frg(
-            (substitute( ctx k ))
-            (close(apply( ctx vr )))
-         )))
-      ))
    ))
    return
 ) AST);

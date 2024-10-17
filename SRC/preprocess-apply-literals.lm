@@ -62,12 +62,6 @@ preprocess-apply-literals := λ(: program AST). (: (
          (close(preprocess-apply-literals ar))
          tlt
       ))))
-      ( (Frg( al ar )) (
-         (set r (Frg(
-            (unique al)
-            (close(preprocess-apply-literals ar))
-         )))
-      ))
       ( (Glb( k ar )) (set r (Glb(
          (unique k)
          (close(preprocess-apply-literals ar))

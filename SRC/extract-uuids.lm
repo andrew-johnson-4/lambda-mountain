@@ -37,10 +37,6 @@ extract-uuids := λ(: loc SourceLocation)(: ctx Context)(: term AST). (: (
          (let rctx (extract-uuids( loc ctx t )))
          (set return rctx)
       ))
-      ( (Frg( k t )) (
-         (let rctx (extract-uuids( loc ctx t )))
-         (set return rctx)
-      ))
    ))
    return
 ) Context);
