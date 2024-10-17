@@ -6,26 +6,25 @@ compile-maybe-push-stack := λ(: ctx FContext)(: offset I64)(: fragment Fragment
       ()
       ( (TGround( 'StackVariable_s _ )) () )
       ( _ (
-         (set fragment (fragment::set-type( fragment (denormalize ft) )))
-         (set fragment (fragment-apply(
-            ctx offset 'push_s
-            (FLSeq( (close FLEOF) fragment ))
-            (t3( 'Arrow_s ft
-               (and( (t1 'StackVariable_s) (t2( 'Sized_s (t1(to-string(sizeof-aligned ft))) )) ))
-            ))
-            sloc
-         )))
-         (let f-sz (as (sizeof-aligned ft) I64))
-         (set fragment (fragment::set-offset( fragment (-( offset f-sz )) )))
-
-         #(set ft (denormalize ft))
-         #(let callee-ctx ctx)
-         #(set callee-ctx (fragment-context::bind( callee-ctx 'src_s ft fragment )))
-         #(set fragment (cc-blob( callee-ctx 'dev-push_s ft offset sloc )))
-         #(set fragment (fragment::set-type( fragment (and( (t1 'StackVariable_s) ft )) )))
-         #(set fragment (fragment::set-context( fragment ctx )))
+         #(set fragment (fragment::set-type( fragment (denormalize ft) )))
+         #(set fragment (fragment-apply(
+         #   ctx offset 'push_s
+         #   (FLSeq( (close FLEOF) fragment ))
+         #   (t3( 'Arrow_s ft
+         #      (and( (t1 'StackVariable_s) (t2( 'Sized_s (t1(to-string(sizeof-aligned ft))) )) ))
+         #   ))
+         #   sloc
+         #)))
          #(let f-sz (as (sizeof-aligned ft) I64))
          #(set fragment (fragment::set-offset( fragment (-( offset f-sz )) )))
+
+         (let callee-ctx ctx)
+         (set callee-ctx (fragment-context::bind( callee-ctx 'src_s (denormalize ft) fragment )))
+         (set fragment (cc-blob( callee-ctx 'dev-push_s (denormalize ft) offset sloc )))
+         (set fragment (fragment::set-type( fragment (and( (t1 'StackVariable_s) ft )) )))
+         (set fragment (fragment::set-context( fragment ctx )))
+         (let f-sz (as (sizeof-aligned ft) I64))
+         (set fragment (fragment::set-offset( fragment (-( offset f-sz )) )))
       ))
    ))
    fragment
