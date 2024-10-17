@@ -1,6 +1,7 @@
 
 dev: install-production
-	lm -o dev.s tests/regress/paradata.lm
+	./bootstrap -o safe.s tests/regress/list.lm
+	lm -o dev.s tests/regress/list.lm
 	as dev.s -o dev.o
 	ld dev.o -o dev
 	./dev

@@ -15,7 +15,7 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
 
    (let callee-ctx ctx)
    (set callee-ctx (fragment-context::bind( callee-ctx 'src_s constructor-parms e )))
-   (let r (cc-blob( callee-ctx 'dev-push_s constructor-parms offset args )))
+   (let r (cc-blob( callee-ctx 'push_s constructor-parms offset args )))
 
    (set r (fragment::set-context( r ctx )))
    (set r (fragment::set-type( r (denormalize return-type) )))

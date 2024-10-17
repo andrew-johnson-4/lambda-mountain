@@ -3,31 +3,6 @@ compile-gnu := λ. (: (
    (let preview-program ast-parsed-program)
    (while (non-zero preview-program) (match preview-program (
       ()
-      ( (Seq( rst (Frg( k_t rhs )) )) (
-         (let is-template False_u8)
-         (match k (
-            ()
-            ( 'template::push_s (set is-template True_u8) )
-            ( _ () )
-         ))
-         (if (==( is-template True_u8 )) (
-            (let fragment (fragment::new()))
-            (set fragment (fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) )))
-            (set fragment (fragment::set( fragment 'fragment_s (to-s rhs) )))
-            (set fragment (fragment::set-type( fragment (typeof rhs) )))
-            (set global-ctx (fragment-context::bind(
-               global-ctx k (typeof rhs) fragment
-            )))
-         ) ())
-         (set preview-program rst)
-      ))
-      ( (Seq( rst _ )) (
-         (set preview-program rst)
-      ))
-   )))
-   (set preview-program ast-parsed-program)
-   (while (non-zero preview-program) (match preview-program (
-      ()
       ( (Seq( rst (Glb( k_t rhs )) )) (
          (if (==( k 'main_s )) (set assemble-argv-referenced True_u8) ())
          (let kt (typeof rhs))
@@ -52,11 +27,11 @@ compile-gnu := λ. (: (
                   ( _ (
                      (let clean-tt (without-representation kt))
                      (let repr-tt (and( clean-tt (t1 'GlobalVariable_s) )))
-                     (set fragment (fragment::set-type( fragment repr-tt )))
+                     (set fragment (fragment::set-type( fragment (without-constructor repr-tt) )))
                      (let mid (mangle-identifier( k clean-tt )))
                      (set fragment (fragment::set( fragment 'expression_s (SAtom mid) )))
                      (set global-ctx (fragment-context::bind(
-                        global-ctx k repr-tt fragment
+                        global-ctx k (without-constructor repr-tt) fragment
                      )))
                   ))
                ))
@@ -75,7 +50,6 @@ compile-gnu := λ. (: (
          (set preview-program rst)
       ))
       ( (Seq( rst (Typedef( lhs rhs )) )) (
-         (set global-ctx (compile-type( global-ctx lhs rhs )))
          (set preview-program rst)
       ))
       ( (Seq( rst _ )) (

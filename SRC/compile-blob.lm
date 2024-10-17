@@ -19,7 +19,6 @@ compile-blob := λ. (: (
          (set preview-program rst)
       ))
       ( (Seq( rst (Typedef( lhs rhs )) )) (
-         (set global-ctx (compile-type( global-ctx lhs rhs )))
          (set preview-program rst)
       ))
       ( (Seq( rst (Glb( k_t rhs )) )) (

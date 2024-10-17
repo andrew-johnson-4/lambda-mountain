@@ -149,25 +149,22 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          ) ())
          (infer-expr( tctx rhs Unscoped TAny Tail ))
          (let tt (typeof rhs))
-         (let rt (as-local-variable tt))
          (if (non-zero tt) () (
             (exit-error( 'Unable\sto\sinfer\stype\sof\sexpression_s rhs ))
          ))
-         (if (non-zero rt) () (
-            (exit-error( 'Unable\sto\sinfer\stype\sof\sexpression_s rhs ))
-         ))
+         (set tt (as-local-variable(without-constructor tt)))
          (match term (
             ()
             ( (App( (Abs( lname-var _ _ )) _ )) (
-               (ascript-normal( lname-var rt ))
+               (ascript-normal( lname-var tt ))
             ))
          ))
          (set tctx (TCtxBind(
-            (close tctx) lname rt ASTEOF
+            (close tctx) lname tt ASTEOF
          )))
          (ascript-normal( term (t1 'Nil_s) ))
 
-         (maybe-specialize( 'del_s (typeof-var-raw( term tctx 'del_s )) rt term ))
+         (maybe-specialize( 'del_s (typeof-var-raw( term tctx 'del_s )) tt term ))
       ))
       ( (App( l r )) (
          (let l-used Unused)
@@ -205,9 +202,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
                   (set ct (and( ct (t2( 'CaseNumber_s (t1(to-string(index-of-tag l-name))) )) )))
                   (set ct (and( ct (t2( 'Sized_s (t1(to-string struct-size)) )) )))
                   (set ct (and( ct (t2( 'FieldsSized_s (t1(to-string fields-size)) )) )))
-                  (maybe-specialize( 'dev-push_s (typeof-var-raw( term tctx 'dev-push_s )) ct term ))
-                  (maybe-specialize( 'dev-mov_s (typeof-var-raw( term tctx 'dev-mov_s )) (t3( 'Cons_s ct (t1 'LocalVariable_s) )) term ))
-                  (maybe-specialize( 'dev-mov_s (typeof-var-raw( term tctx 'dev-mov_s )) (t3( 'Cons_s ct (t1 'GlobalVariable_s) )) term ))
+                  (maybe-specialize( 'push_s (typeof-var-raw( term tctx 'push_s )) ct term ))
                ))
                ( _ () )
             ))
@@ -248,9 +243,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
 
                (if (is-arrow tt) () (
                   (let ct (denormalize tt))
-                  (maybe-specialize( 'dev-push_s (typeof-var-raw( term tctx 'dev-push_s )) ct term ))
-                  (maybe-specialize( 'dev-mov_s (typeof-var-raw( term tctx 'dev-mov_s )) (t3( 'Cons_s ct (t1 'LocalVariable_s) )) term ))
-                  (maybe-specialize( 'dev-mov_s (typeof-var-raw( term tctx 'dev-mov_s )) (t3( 'Cons_s ct (t1 'GlobalVariable_s) )) term ))
+                  (maybe-specialize( 'push_s (typeof-var-raw( term tctx 'push_s )) ct term ))
                ))
             ) ())
          ))
@@ -264,7 +257,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
       ))
    ))
    (if (>( (sizeof-type(typeof term)) 0_u64 )) (
-      (maybe-specialize( 'dev-push_s (typeof-var-raw( term tctx 'dev-push_s )) (typeof term) term ))
+      (maybe-specialize( 'push_s (typeof-var-raw( term tctx 'push_s )) (typeof term) term ))
    ) ())
    tctx
 ) TContext);
