@@ -1,10 +1,11 @@
 
-macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
+macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-set op-type)) (
    op-alias := λ: Blob(: l op-type+Constant)(: r op-type+Constant). (: (
       (:program(
          '\tmovq\s$_s (:expression l) ',\s%AL\n_s
          '\tmovq\s$_s (:expression r) ',\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
+         op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
@@ -15,6 +16,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s$_s (:expression l) ',\s%AL\n_s
          '\tmovq\s_s (:expression r) '\[%RBP\],\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
+         op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
@@ -26,6 +28,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s$_s (:expression r) ',\s%R14B\n_s
          '\tmovq\s0\[%R14B\],\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
+         op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
@@ -37,6 +40,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s%_s (:expression r) ',\s%R14B\n_s
          '\tmovq\s$_s (:expression l) ',\s%AL\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
+         op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
@@ -48,6 +52,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s_s (:expression l) '\[%RBP\],\s%AL\n_s
          '\tmovq\s$_s (:expression r) ',\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
+         op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
@@ -58,6 +63,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s_s (:expression l) '\[%RBP\],\s%AL\n_s
          '\tmovq\s_s (:expression r) '\[%RBP\],\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
+         op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
@@ -69,6 +75,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s$_s (:expression r) ',\s%R14B\n_s
          '\tmovq\s0\[%R14B\],\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
+         op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
@@ -80,6 +87,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s%_s (:expression r) ',\s%R14B\n_s
          '\tmovq\s_s (:expression l) '\[%RBP\],\s%AL\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
+         op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
@@ -92,6 +100,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s0\[%AL\],\s%AL\n_s
          '\tmovq\s$_s (:expression r) ',\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
+         op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
@@ -103,6 +112,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s0\[%AL\],\s%AL\n_s
          '\tmovq\s_s (:expression r) '\[%RBP\],\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
+         op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
@@ -115,6 +125,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s$_s (:expression r) ',\s%R14B\n_s
          '\tmovq\s0\[%R14B\],\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
+         op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
@@ -127,6 +138,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s$_s (:expression l) ',\s%AL\n_s
          '\tmovq\s0\[%AL\],\s%AL\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
+         op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
@@ -139,6 +151,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s%_s (:expression l) ',\s%AL\n_s
          '\tmovq\s$_s (:expression r) ',\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
+         op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
@@ -150,6 +163,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s%_s (:expression l) ',\s%AL\n_s
          '\tmovq\s_s (:expression r) '\[%RBP\],\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
+         op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
@@ -162,6 +176,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s$_s (:expression r) ',\s%R14B\n_s
          '\tmovq\s0\[%R14B\],\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
+         op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
@@ -175,6 +190,7 @@ macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-type)) (
          '\tmovq\s%_s (:expression l) ',\s%AL\n_s
          '\tpopq\s%R14B\n_s
          '\t_s op-code '\s%R14B,\s%AL\n_s
+         op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
