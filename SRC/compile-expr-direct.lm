@@ -154,12 +154,9 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             (set e (fragment::set-type( e (typeof term) )))
          ))
       ))
-      ( (App( (Abs( (Var( lhs _ )) ASTNil tlt )) rhs )) (
-         (let rtype (typeof rhs))
-         (set rtype (without-representation rtype))
-         (set rtype (and( rtype (t1 'LocalVariable_s) )))
-         (set rtype (with-size( rtype )))
-         (set rtype (without-constructor rtype))
+      ( (App( (Abs( (@( lhs-t (Var( lhs _ )) )) ASTNil tlt )) rhs )) (
+         (let rtype (typeof lhs-t))
+         (print 'RType\s_s)(print rtype)(print '\n_s)
          (let size (sizeof-aligned rtype))
          (set e (compile-push-rvalue( ctx rhs stack-offset )))
          (let bind-offset (-( stack-offset (as size I64) )))
