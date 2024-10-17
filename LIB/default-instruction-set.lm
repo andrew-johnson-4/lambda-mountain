@@ -191,7 +191,11 @@ fragment  push := λ(: src LocalVariable+Sized<size>). (: (
    ))
 ) Nil);
 
-dev-push := λ: Blob(: src Sized<0>). (: () Nil);
+dev-push := λ: Blob(: src Sized<0>). (: (
+   (:frame (:frame src))
+   (:unframe (:unframe src))
+   (:program (:program src))
+) Nil);
 
 dev-push := λ: Blob(: src GlobalVariable+Sized<size>). (: (
    (:program (
