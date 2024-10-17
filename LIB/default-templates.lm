@@ -11,7 +11,7 @@ dev-push := λ: Blob(: src Constructor<tag>+CaseNumber<case-number>+Sized<struct
    ))
 ) StackVariable);
 
-dev-mov := λ: Blob(: src Constructor<tag>+CaseNumber<case-number>+Sized<struct-size>+FieldsSized<fields-size>)(: dst LocalVariable). (: (
+mov := λ: Blob(: src Constructor<tag>+CaseNumber<case-number>+Sized<struct-size>+FieldsSized<fields-size>)(: dst LocalVariable). (: (
    (:program(
       (for-atom (wsz in (range( 0_l (/( (-( (-( (: struct-size L) (: fields-size L) )) 8_l )) 8_l )) ))) (
          '\tpushq\s$0\n_l
@@ -24,7 +24,7 @@ dev-mov := λ: Blob(: src Constructor<tag>+CaseNumber<case-number>+Sized<struct-
    ))
 ) Nil);
 
-dev-mov := λ: Blob(: src Constructor<tag>+CaseNumber<case-number>+Sized<struct-size>+FieldsSized<fields-size>)(: dst GlobalVariable). (: (
+mov := λ: Blob(: src Constructor<tag>+CaseNumber<case-number>+Sized<struct-size>+FieldsSized<fields-size>)(: dst GlobalVariable). (: (
    (:program(
       (for-atom (wsz in (range( 0_l (/( (-( (-( (: struct-size L) (: fields-size L) )) 8_l )) 8_l )) ))) (
          '\tpushq\s$0\n_l
@@ -47,33 +47,6 @@ fragment  template::push := λ: DontChain(: src Constructor<tag>+Sized<struct-si
       \t 'pushq \s '$ 'case-number \n
    ))
 ) StackVariable);
-
-fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-size>+FieldsSized<fields-size>)(: dst LocalVariable). (: (
-   (.program(
-      (for wsz in (range( '0 (/( (-( (-( (.expression struct-size) (.expression fields-size) )) '8 )) '8 )) )) (
-         \t 'pushq \s '$0 \n
-      ))
-      (.program src)
-      \t 'pushq \s '$ 'case-number \n
-      (for index in (range( 0 (/( (.expression struct-size) '8 )) )) (
-         \t 'popq \s (+( (.expression dst) (*( '8 (.expression index) )) )) \[ '%RBP \] \n
-      ))
-   ))
-) Nil);
-
-fragment  template::mov := λ: DontChain(: src Constructor<tag>+Sized<struct-size>+FieldsSized<fields-size>)(: dst GlobalVariable). (: (
-   (.program(
-      (for wsz in (range( '0 (/( (-( (-( (.expression struct-size) (.expression fields-size) )) '8 )) '8 )) )) (
-         \t 'pushq \s '$0 \n
-      ))
-      (.program src)
-      \t 'pushq \s '$ 'case-number \n
-      \t 'movq \s '$ (.expression dst) , \s '%R15 \n
-      (for index in (range( 0 (/( (.expression struct-size) '8 )) )) (
-         \t 'popq \s (*( '8 (.expression index) )) \[ '%R15 \] \n
-      ))
-   ))
-) Nil);
 
 .0 := λ: Blob(: src Constant). (: (
    (:program(
