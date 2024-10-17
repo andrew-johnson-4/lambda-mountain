@@ -126,7 +126,6 @@ parse-toplevel := λ(: tokens List<Token>). (: (
             (set tokens remainder)
          ))
          ( (LCons( 'zero_t (LCons( base-type (LCons( tag-type_t remainder )) )) )) (
-            (print 'Zero\s_s)(print base-type)(print '\s.\s_s)(print tag-type)(print '\n_s)
             (set program (Seq(
                (close program)
                (close (Glb( (with-key( base-type 'non-zero_s )) (close(Abs(
