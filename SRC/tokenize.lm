@@ -85,7 +85,7 @@ tokenize := λ(: fp String). (: (
             (set token-column current-column)
          ))
 
-         ( \[_u8 (if (==( in_comment True_u8 )) () (
+         ( \[_u8 (if in_comment () (
             (if (non-zero buffer) (
                (let tk (Token( (clone-rope buffer) (iuid()) (SourceLocation( fp token-line token-column )) )))
                (set ast-tokenized-program (LCons(
@@ -103,7 +103,7 @@ tokenize := λ(: fp String). (: (
             (set token-line current-line)
             (set token-column current-column)
          )))
-         ( \]_u8 (if (==( in_comment True_u8 )) () (
+         ( \]_u8 (if in_comment () (
             (if (non-zero buffer) (
                (let tk (Token( (clone-rope buffer) (iuid()) (SourceLocation( fp token-line token-column )) )))
                (set ast-tokenized-program (LCons(
@@ -119,7 +119,7 @@ tokenize := λ(: fp String). (: (
                (close ast-tokenized-program)
             )))
          )))
-         ( \`_u8 (if (==( in_comment True_u8 )) () (
+         ( \`_u8 (if in_comment () (
             (if (non-zero buffer) (
                (let tk (Token( (clone-rope buffer) (iuid()) (SourceLocation( fp token-line token-column )) )))
                (set ast-tokenized-program (LCons(
@@ -134,7 +134,7 @@ tokenize := λ(: fp String). (: (
                (close ast-tokenized-program)
             )))
          )))
-         ( \:_u8 (if (==( in_comment True_u8 )) () (
+         ( \:_u8 (if in_comment () (
             (if (non-zero buffer) (
                (let tk (Token( (clone-rope buffer) (iuid()) (SourceLocation( fp token-line token-column )) )))
                (set ast-tokenized-program (LCons(
@@ -150,7 +150,7 @@ tokenize := λ(: fp String). (: (
             )))
          )))
 
-         ( c (if (==( in_comment True_u8 )) () (
+         ( c (if in_comment () (
             (set buffer (SCons(
                (close buffer)
                (close (SAtom (clone-rope c)))

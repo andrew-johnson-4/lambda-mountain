@@ -9,14 +9,14 @@ compile-text-header := λ . (: (
       (set output (SCons( (close output) (close assemble-init-section) )))
       (set output (SCons( (close output) (close(SAtom '\tmov\s%rbp,%rsp\n_s )) )))
    ) ())
-   (if (==( main-with-argv True_u8 )) (
+   (if main-with-argv (
       (set output (SCons( (close output) (close(SAtom '\tpopq\s%r8\n_s )) )))
       (set output (SCons( (close output) (close(SAtom '\tmovq\s%rsp,\s%r9\n_s )) )))
    ) ())
-   (if (==( main-with True_u8 )) (
+   (if main-with (
       (set output (SCons( (close output) (close(SAtom '\tpush\s%rbp\n_s )) )))
       (set output (SCons( (close output) (close(SAtom '\tmov\s%rsp,\s%rbp\n_s )) )))
-      (if (==( main-with-argv True_u8 )) (
+      (if main-with-argv (
          (set output (SCons( (close output) (close(SAtom '\tpushq\s%r8\n_s )) )))
          (set output (SCons( (close output) (close(SAtom '\tpushq\s%r9\n_s )) )))
       ) ())

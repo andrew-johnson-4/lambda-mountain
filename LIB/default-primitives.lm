@@ -8,6 +8,7 @@ import LIB/default-i16.lm;
 import LIB/default-i32.lm;
 import LIB/default-i64.lm;
 import LIB/default-string.lm;
+import LIB/default-into-branch-conditional.lm;
 
 [] := λ: Blob(: l LocalVariable+Array<x+Sized<1>,?>)(: r LocalVariable+U64). (: (
    (:program (
@@ -213,49 +214,6 @@ branchtrue := λ: Blob(: _ Nil). (: (
 ) BranchConditional);
 branchfalse := λ: Blob(: _ Nil). (: (
    (:program( '\tcmp\s%RSP,\s%RSP\n_l ))
-   (:expression( 'jne_l ))
-) BranchConditional);
-
-into-branch-conditional := λ: Blob(: l BranchConditional+Meta<ImpureOffset>). (: (
-   (:program (:program l))
-   (:frame (:frame l))
-   (:unframe (:unframe l))
-   (:expression( (:expression l) ))
-) BranchConditional);
-into-branch-conditional := λ: Blob(: l Reg64+Meta<ImpureOffset>). (: (
-   (:program (
-      (:program l)
-      '\tcmp\s$0,\s%_l (:expression l) '\n_l
-   ))
-   (:frame (:frame l))
-   (:unframe (:unframe l))
-   (:expression( 'jne_l ))
-) BranchConditional);
-into-branch-conditional := λ: Blob(: l Reg32+Meta<ImpureOffset>). (: (
-   (:program (
-      (:program l)
-      '\tcmp\s$0,\s%_l (:expression l) '\n_l
-   ))
-   (:frame (:frame l))
-   (:unframe (:unframe l))
-   (:expression( 'jne_l ))
-) BranchConditional);
-into-branch-conditional := λ: Blob(: l Reg16+Meta<ImpureOffset>). (: (
-   (:program (
-      (:program l)
-      '\tcmp\s$0,\s%_l (:expression l) '\n_l
-   ))
-   (:frame (:frame l))
-   (:unframe (:unframe l))
-   (:expression( 'jne_l ))
-) BranchConditional);
-into-branch-conditional := λ: Blob(: l Reg8+Meta<ImpureOffset>). (: (
-   (:program (
-      (:program l)
-      '\tcmp\s$0,\s%_l (:expression l) '\n_l
-   ))
-   (:frame (:frame l))
-   (:unframe (:unframe l))
    (:expression( 'jne_l ))
 ) BranchConditional);
 

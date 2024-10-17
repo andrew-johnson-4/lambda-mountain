@@ -1,10 +1,10 @@
 
 compile-program-ordered := λ(: global-ctx FContext)(: program AST). (: (
-   (let open? False_u8)
+   (let open? 0_u64)
    (match program (
       ()
       ( (Seq( _ e )) (
-         (if (is-open(typeof e)) (set open? True_u8) ())
+         (if (is-open(typeof e)) (set open? 1_u64) ())
       ))
       ( _ () )
    ))
@@ -12,7 +12,7 @@ compile-program-ordered := λ(: global-ctx FContext)(: program AST). (: (
       ()
       ( (Seq( rst (Glb( k_t rhs )) )) (
          (compile-program-ordered( global-ctx rst ))
-         (if (==( open? True_u8 )) () (
+         (if open? () (
             (compile-global( global-ctx k rhs ))
          ))
       ))
