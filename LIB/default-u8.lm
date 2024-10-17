@@ -7,8 +7,15 @@ meta
 ;
 fragment type U8;     size U8 1;     atom suffix U8     _u8;
 
-(declare-simple-instruction-alias-binop-8( && 'andb_l '_l U8 'AL_l U8 ));
-(declare-simple-instruction-alias-binop-8( || 'orb_l '_l U8 'AL_l U8 ));
-(declare-simple-instruction-alias-binop-8( + 'addb_l '_l U8 'AL_l U8 ));
-(declare-simple-instruction-alias-binop-8( - 'subb_l '_l U8 'AL_l U8 ));
-(declare-simple-instruction-alias-binop-8( ^ 'xorb_l '_l U8 'AL_l U8 ));
+(declare-simple-instruction-alias-binop-8( && 'andb_l '_l U8 'AL_l U8+Reg8 ));
+(declare-simple-instruction-alias-binop-8( || 'orb_l '_l U8 'AL_l U8+Reg8 ));
+(declare-simple-instruction-alias-binop-8( + 'addb_l '_l U8 'AL_l U8+Reg8 ));
+(declare-simple-instruction-alias-binop-8( - 'subb_l '_l U8 'AL_l U8+Reg8 ));
+(declare-simple-instruction-alias-binop-8( ^ 'xorb_l '_l U8 'AL_l U8+Reg8 ));
+
+(declare-simple-instruction-alias-binop-8( == 'cmpb_l '\tsete\s%AL\n\tandq\s$1,\s%RAX\n_l U8 'RAX_l U64+Reg64 ));
+(declare-simple-instruction-alias-binop-8( != 'cmpb_l '\tsetne\s%AL\n\tandq\s$1,\s%RAX\n_l U8 'RAX_l U64+Reg64 ));
+(declare-simple-instruction-alias-binop-8( < 'cmpb_l '\tsetl\s%AL\n\tandq\s$1,\s%RAX\n_l U8 'RAX_l U64+Reg64 ));
+(declare-simple-instruction-alias-binop-8( <= 'cmpb_l '\tsetle\s%AL\n\tandq\s$1,\s%RAX\n_l U8 'RAX_l U64+Reg64 ));
+(declare-simple-instruction-alias-binop-8( > 'cmpb_l '\tsetg\s%AL\n\tandq\s$1,\s%RAX\n_l U8 'RAX_l U64+Reg64 ));
+(declare-simple-instruction-alias-binop-8( >= 'cmpb_l '\tsetge\s%AL\n\tandq\s$1,\s%RAX\n_l U8 'RAX_l U64+Reg64 ));
