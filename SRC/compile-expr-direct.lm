@@ -159,6 +159,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set rtype (without-representation rtype))
          (set rtype (and( rtype (t1 'LocalVariable_s) )))
          (set rtype (with-size( rtype )))
+         (set rtype (without-constructor rtype))
          (let size (sizeof-aligned rtype))
          (set e (compile-push-rvalue( ctx rhs stack-offset )))
          (let bind-offset (-( stack-offset (as size I64) )))

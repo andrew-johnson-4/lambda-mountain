@@ -149,25 +149,22 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          ) ())
          (infer-expr( tctx rhs Unscoped TAny Tail ))
          (let tt (typeof rhs))
-         (let rt (as-local-variable(without-constructor tt)))
          (if (non-zero tt) () (
             (exit-error( 'Unable\sto\sinfer\stype\sof\sexpression_s rhs ))
          ))
-         (if (non-zero rt) () (
-            (exit-error( 'Unable\sto\sinfer\stype\sof\sexpression_s rhs ))
-         ))
+         (set tt (as-local-variable(without-constructor tt)))
          (match term (
             ()
             ( (App( (Abs( lname-var _ _ )) _ )) (
-               (ascript-normal( lname-var rt ))
+               (ascript-normal( lname-var tt ))
             ))
          ))
          (set tctx (TCtxBind(
-            (close tctx) lname rt ASTEOF
+            (close tctx) lname tt ASTEOF
          )))
          (ascript-normal( term (t1 'Nil_s) ))
 
-         (maybe-specialize( 'del_s (typeof-var-raw( term tctx 'del_s )) rt term ))
+         (maybe-specialize( 'del_s (typeof-var-raw( term tctx 'del_s )) tt term ))
       ))
       ( (App( l r )) (
          (let l-used Unused)
