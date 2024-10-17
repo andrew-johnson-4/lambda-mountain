@@ -48,13 +48,6 @@ with-location := λ(: term AST)(: loc SourceLocation). (: (
          ))
          (set return (Glb( k (close t) )))
       ))
-      ( (Frg( k t )) (
-         (if (non-zero(location-of t)) () (
-            (set k (with-location( k loc )))
-            (set t (with-location( t loc )))
-         ))
-         (set return (Frg( k (close t) )))
-      ))
    ))
    return
 ) AST);

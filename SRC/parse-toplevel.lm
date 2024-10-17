@@ -64,23 +64,6 @@ parse-toplevel := λ(: tokens List<Token>). (: (
                )))
             ))
          ))
-         ( (LCons( 'fragment_t remainder-ext )) (
-            (match remainder-ext (
-               ()
-               ( (LCons( key (LCons( ':=_t remainder )) )) (
-                  (match (parse-many-expressions remainder) (
-                     ()
-                     ( (PME( re rr )) (
-                        (set program (Seq(
-                           (close program)
-                           (close(Frg( key (close re) )))
-                        )))
-                        (set tokens rr)
-                     ))
-                  ))
-               ))
-            ))
-         ))
          ( (LCons( 'type_t remainder )) (
             (match (parse-one-expression remainder) (
                ()

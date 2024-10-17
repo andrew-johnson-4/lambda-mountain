@@ -31,22 +31,6 @@ infer-global-context := λ(: td AST). (: (
             td
          )))
       ))
-      ( (Frg( k_t (Abs( lhs (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) tlt )) )) (
-         (let lt (typeof-lhs lhs))
-         (let ft (t3( 'Arrow_s lt rhst )))
-         (if (&&( (is-hook tlt) (not(is-nil rhst)) )) (
-            (exit-error( 'Hooks\sMust\sNot\sReturn\sBalues._s td ))
-         ) ())
-         (set ft (enrich( ft tlt )))
-         (mark-global-as-seen( k ft tlt ))
-         (ascript-normal( td ft ))
-         (set global-type-context (TCtxBind(
-            (close global-type-context)
-            k
-            ft
-            ASTEOF
-         )))
-      ))
       ( (Glb( k_t (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) )) (
          (let kt (and( (without-representation rhst) (t1 'GlobalVariable_s) )))
          (set global-type-context (TCtxBind(
@@ -55,18 +39,7 @@ infer-global-context := λ(: td AST). (: (
          (mark-global-as-seen( k kt TAny ))
          (ascript-normal( td kt ))
       ))
-      ( (Frg( k_t (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) )) (
-         (set global-type-context (TCtxBind(
-            (close global-type-context)
-            k
-            rhst ASTEOF
-         )))
-         (mark-global-as-seen( k rhst TAny ))
-      ))
       ( (Glb( _ _ )) (
-         (exit-error( 'Global\sBindings\sMust\sBe\sAscripted_s td ))
-      ))
-      ( (Frg( _ _ )) (
          (exit-error( 'Global\sBindings\sMust\sBe\sAscripted_s td ))
       ))
       ( _ () )

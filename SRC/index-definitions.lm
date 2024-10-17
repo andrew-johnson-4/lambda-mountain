@@ -9,8 +9,7 @@ type SourceLocation (SourceLocation( filename:String , U64 , U64 ));
 type Token (Token( key:String , nonce:U64 , location:SourceLocation ));
 
 type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String , Token )) | (Lit( String , Token )) | (Abs( AST[] , AST[] , Type )) | (AType( Type ))
-                | (Seq( AST[] , AST[] )) | (Glb( Token , AST[] )) | (Typedef( AST[] , AST[] )) | (Frg( Token , AST[] ))
-                | (Meta( AST[] )); zero AST ASTEOF;
+                | (Seq( AST[] , AST[] )) | (Glb( Token , AST[] )) | (Typedef( AST[] , AST[] )) | (Meta( AST[] )); zero AST ASTEOF;
 
 type FragmentKV (FKVEOF) | (FKVSeq( FragmentKV[] , String , S )); zero FragmentKV FKVEOF;
 type Fragment (Fragment( term:AST , FragmentKV[] , offset:I64 , type:Type , context:FContext[] , vararg:List<Fragment[]> ));

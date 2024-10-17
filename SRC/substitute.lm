@@ -234,12 +234,6 @@ substitute := λ(: tctx TContext)(: t AST). (: (
             (close(substitute( tctx rt )))
          )))
       ))
-      ( (Frg( k lt )) (
-         (set t (Frg(
-            (unique k)
-            (close(substitute( tctx lt )))
-         )))
-      ))
       ( _ (exit-error( 'Unexpected\sSubstitution\sTerm:_s t )) )
    ))
    t
