@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm -o dev.s tests/regress/paradata.lm
+	lm -o dev.s tests/regress/arithmetic.lm
 	as dev.s -o dev.o
 	ld dev.o -o dev
 	./dev
