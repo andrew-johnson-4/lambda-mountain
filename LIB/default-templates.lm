@@ -1,16 +1,6 @@
 
 import LIB/default-templates-stackvariable.lm;
 
-dev-push := λ: Blob(: src Constructor<tag>+CaseNumber<case-number>+Sized<struct-size>+FieldsSized<fields-size>). (: (
-   (:program(
-      (for-atom (wsz in (range( 0_l (/( (-( (-( (: struct-size L) (: fields-size L) )) 8_l )) 8_l )) ))) (
-         '\tpushq\s$0\n_l
-      ))
-      (:program src)
-      '\tpushq\s$_l (: case-number L) '\n_l
-   ))
-) StackVariable);
-
 push := λ: Blob(: src Constructor<tag>+CaseNumber<case-number>+Sized<struct-size>+FieldsSized<fields-size>). (: (
    (:program(
       (for-atom (wsz in (range( 0_l (/( (-( (-( (: struct-size L) (: fields-size L) )) 8_l )) 8_l )) ))) (
