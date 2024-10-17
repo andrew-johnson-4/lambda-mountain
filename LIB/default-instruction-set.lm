@@ -530,8 +530,8 @@ dev-push := λ: Blob(: src Reg8). (: (
    (:unframe (:unframe src))
    (:program(
       (:program src)
-      '\tmov\s%_l (:expression src) ',%r15b\n_l
-      '\tpushq\s%r15\n_l
+      '\tmov\s%_l (:expression src) ',\s%AL\n_s
+      '\tpush\s%RAX\n_s
    ))
 ) Nil);
 dev-push := λ: Blob(: src Reg16). (: (
@@ -539,8 +539,8 @@ dev-push := λ: Blob(: src Reg16). (: (
    (:unframe (:unframe src))
    (:program(
       (:program src)
-      '\tmov\s%_l (:expression src) ',%r15w\n_l
-      '\tpushq\s%r15\n_l
+      '\tmov\s%_l (:expression src) ',\s%AX\n_l
+      '\tpush\s%RAX\n_l
    ))
 ) Nil);
 dev-push := λ: Blob(: src Reg32). (: (
@@ -548,8 +548,8 @@ dev-push := λ: Blob(: src Reg32). (: (
    (:unframe (:unframe src))
    (:program(
       (:program src)
-      '\tmov\s%_l (:expression src) ',%r15d\n_l
-      '\tpushq\s%r15\n_l
+      '\tmov\s%_l (:expression src) ',\s%EAX\n_l
+      '\tpush\s%RAX\n_l
    ))
 ) Nil);
 dev-push := λ: Blob(: src Reg64). (: (
@@ -557,8 +557,7 @@ dev-push := λ: Blob(: src Reg64). (: (
    (:unframe (:unframe src))
    (:program(
       (:program src)
-      '\tmov\s%_l (:expression src) ',%r15\n_l
-      '\tpushq\s%r15\n_l
+      '\tpush\s%_l (:expression src) '\n_l
    ))
 ) Nil);
 
