@@ -8,7 +8,6 @@ compile-gnu := λ. (: (
          (match k (
             ()
             ( 'template::push_s (set is-template True_u8) )
-            ( 'template::mov_s (set is-template True_u8) )
             ( _ () )
          ))
          (if (==( is-template True_u8 )) (

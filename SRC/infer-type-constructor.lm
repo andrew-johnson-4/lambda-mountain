@@ -26,7 +26,6 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
          (set r 8_u64)
          (let constructor-tt (t2( 'Constructor_s (t1 tag) )))
          (set global-type-context (TCtxBind( (close global-type-context) 'push_s (t3( 'Arrow_s constructor-tt (t1 'Nil_s) )) body )))
-         (set global-type-context (TCtxBind( (close global-type-context) 'mov_s (t3( 'Arrow_s (t3( 'Cons_s constructor-tt base-type )) (t1 'Nil_s) )) body )))
       ))
       ( (App( (Lit( tag _ )) args )) (
          (let atype (type-of-s-with-fields( base-type tag args 1_u64 )))
@@ -53,7 +52,6 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
          (set r (+( r 8_u64 )))
          (let constructor-tt (t2( 'Constructor_s (t1 tag) )))
          (set global-type-context (TCtxBind( (close global-type-context) 'push_s (t3( 'Arrow_s constructor-tt (t1 'Nil_s) )) body )))
-         (set global-type-context (TCtxBind( (close global-type-context) 'mov_s (t3( 'Arrow_s (t3( 'Cons_s constructor-tt base-type )) (t1 'Nil_s) )) body )))
       ))
       ( _ () )
    ))

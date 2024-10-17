@@ -2,8 +2,6 @@
 compile-define-tag-constructor := λ(: ctx FContext)(: tag String)(: arg-types Type)(: base-type Type)(: rtype Type)(: case-number U64)(: blame AST). (: (
    (let tg (and( (t2( 'Constructor_s (t1 tag) )) (and( (t2( 'Sized_s (t1 '0_s) )) (t2( 'FieldsSized_s (t1 '0_s) )) )) )))
    (let push-template (fragment-context::lookup( ctx 'template::push_s tg blame )))
-   (let movl-template (fragment-context::lookup( ctx 'template::mov_s (t3( 'Cons_s tg (t1 'LocalVariable_s) )) blame )))
-   (let movg-template (fragment-context::lookup( ctx 'template::mov_s (t3( 'Cons_s tg (t1 'GlobalVariable_s) )) blame )))
 
    (let tag-tctx (TCtxBind( (close TCtxEOF) 'tag_s (t1 tag) blame )))
    (let case-tctx (SSLSeq( (close SSLEOF) 'case-number_s (SAtom(to-string case-number)) )))
@@ -16,26 +14,6 @@ compile-define-tag-constructor := λ(: ctx FContext)(: tag String)(: arg-types T
    (set fragment (fragment::set( fragment 'fragment_s spt )))
    (set ctx (fragment-context::bind(
       ctx 'push_s arrow-tt fragment
-   )))
-
-   (set fragment movl-template)
-   (set arrow-tt (substitute( tag-tctx (.type fragment) )))
-   (set fragment (fragment::set-type( fragment arrow-tt )))
-   (set fragment (fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) )))
-   (set spt (substitute( case-tctx (fragment::get( fragment 'fragment_s )) )))
-   (set fragment (fragment::set( fragment 'fragment_s spt )))
-   (set ctx (fragment-context::bind(
-      ctx 'mov_s arrow-tt fragment
-   )))
-
-   (set fragment movg-template)
-   (set arrow-tt (substitute( tag-tctx (.type fragment) )))
-   (set fragment (fragment::set-type( fragment arrow-tt )))
-   (set fragment (fragment::set( fragment 'fragment-type_s (SAtom 'Fragment_s) )))
-   (set spt (substitute( case-tctx (fragment::get( fragment 'fragment_s )) )))
-   (set fragment (fragment::set( fragment 'fragment_s spt )))
-   (set ctx (fragment-context::bind(
-      ctx 'mov_s arrow-tt fragment
    )))
 
    ctx
