@@ -50,13 +50,13 @@ compile-gnu := λ. (: (
                      )))
                   ))
                   ( _ (
-                     (let clean-tt (without-constructor(without-representation kt)))
+                     (let clean-tt (without-representation kt))
                      (let repr-tt (and( clean-tt (t1 'GlobalVariable_s) )))
-                     (set fragment (fragment::set-type( fragment repr-tt )))
+                     (set fragment (fragment::set-type( fragment (without-constructor repr-tt) )))
                      (let mid (mangle-identifier( k clean-tt )))
                      (set fragment (fragment::set( fragment 'expression_s (SAtom mid) )))
                      (set global-ctx (fragment-context::bind(
-                        global-ctx k repr-tt fragment
+                        global-ctx k (without-constructor repr-tt) fragment
                      )))
                   ))
                ))
