@@ -149,7 +149,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          ) ())
          (infer-expr( tctx rhs Unscoped TAny Tail ))
          (let tt (typeof rhs))
-         (let rt (as-local-variable tt))
+         (let rt (as-local-variable(without-constructor tt)))
          (if (non-zero tt) () (
             (exit-error( 'Unable\sto\sinfer\stype\sof\sexpression_s rhs ))
          ))
