@@ -7,8 +7,8 @@ meta
 ;
 fragment type U8;     size U8 1;     atom suffix U8     _u8;
 
-(declare-simple-instruction-alias-binop-8( && 'andb_l '_l U8 ));
-(declare-simple-instruction-alias-binop-8( || 'orb_l '_l U8 ));
-(declare-simple-instruction-alias-binop-8( + 'addb_l '_l U8 ));
-(declare-simple-instruction-alias-binop-8( - 'subb_l '_l U8 ));
-(declare-simple-instruction-alias-binop-8( ^ 'xorb_l '_l U8 ));
+(declare-simple-instruction-alias-binop-8( && 'andb_l '_l U8 'AL_l U8 ));
+(declare-simple-instruction-alias-binop-8( || 'orb_l '_l U8 'AL_l U8 ));
+(declare-simple-instruction-alias-binop-8( + 'addb_l '_l U8 'AL_l U8 ));
+(declare-simple-instruction-alias-binop-8( - 'subb_l '_l U8 'AL_l U8 ));
+(declare-simple-instruction-alias-binop-8( ^ 'xorb_l '_l U8 'AL_l U8 ));
