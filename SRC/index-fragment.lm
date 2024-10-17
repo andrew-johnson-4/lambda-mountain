@@ -1,7 +1,6 @@
 
 import SRC/apply-direct.lm;
 import SRC/destructure-lhs.lm;
-import SRC/fragment-apply.lm;
 import SRC/fragment::chain.lm;
 import SRC/fragment::expression.lm;
 import SRC/fragment::get.lm;
