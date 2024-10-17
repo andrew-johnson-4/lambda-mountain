@@ -8,7 +8,7 @@ compile-maybe-push-stack := λ(: ctx FContext)(: offset I64)(: fragment Fragment
       ( _ (
          (let callee-ctx ctx)
          (set callee-ctx (fragment-context::bind( callee-ctx 'src_s (denormalize ft) fragment )))
-         (set fragment (cc-blob( callee-ctx 'dev-push_s (denormalize ft) offset sloc )))
+         (set fragment (cc-blob( callee-ctx 'push_s (denormalize ft) offset sloc )))
          (set fragment (fragment::set-type( fragment (and( (t1 'StackVariable_s) ft )) )))
          (set fragment (fragment::set-context( fragment ctx )))
          (let f-sz (as (sizeof-aligned ft) I64))
