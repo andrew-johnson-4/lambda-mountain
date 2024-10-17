@@ -2,7 +2,7 @@
 apply-or-cons-and-specialize := λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (
    (let r TAny)
    (if (is-arrow ft) (
-      (set r (apply( function-name ft pt True_u8 blame )))
+      (set r (apply( function-name ft pt 1_u64 blame )))
    ) (
       (if (&&( (non-zero ft) (non-zero pt) )) (
          (set r (t3( 'Cons_s ft pt )))
