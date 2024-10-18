@@ -8,14 +8,43 @@ meta
 ;
 fragment type String; size String 8; atom suffix String _s;
 
-head-string := λ(: s String). (: (
-   #(if (==( (as s U64) 0_u64 )) (
-   #   (mov( 0_u8 AL ))
-   #) (
-      (mov( (as s U8[]) 0_u64 AL ))
-   #))
-   (as AL U8)
-) U8);
+head-string := λ: Blob(: s String+Reg64). (: (
+   (:frame (:frame s))
+   (:unframe (:unframe s))
+   (:program(
+      (:program s)
+      '\tmov\s0\[%_l (:expression s) '\],\s%AL\n_l
+   ))
+   (:expression 'AL_l)
+) U8+Reg8);
+head-string := λ: Blob(: s String+LocalVariable). (: (
+   (:frame (:frame s))
+   (:unframe (:unframe s))
+   (:program(
+      '\tmov\s_l (:expression s) '\[%RBP\],\s%RAX\n_l
+      '\tmov\s0\[%RAX\],\s%AL\n_l
+   ))
+   (:expression 'AL_l)
+) U8+Reg8);
+head-string := λ: Blob(: s String+GlobalVariable). (: (
+   (:frame (:frame s))
+   (:unframe (:unframe s))
+   (:program(
+      '\tmov\s$_l (:expression s) ',\s%RAX\n_l
+      '\tmov\s0\[%RAX\],\s%RAX\n_l
+      '\tmov\s0\[%RAX\],\s%AL\n_l
+   ))
+   (:expression 'AL_l)
+) U8+Reg8);
+head-string := λ: Blob(: s String+Literal+Constant). (: (
+   (:frame (:frame s))
+   (:unframe (:unframe s))
+   (:program(
+      '\tmov\s$_l (:expression s) ',\s%RAX\n_l
+      '\tmov\s0\[%RAX\],\s%AL\n_l
+   ))
+   (:expression 'AL_l)
+) U8+Reg8);
 
 tail-string := λ(: s String). (: (
    (if (==( (as s U64) 0_u64 )) (
