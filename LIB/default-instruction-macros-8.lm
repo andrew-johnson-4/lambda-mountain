@@ -1,200 +1,200 @@
 
-macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-set op-type op-return op-rtype)) (
+macro ('declare-simple-instruction-alias-binop-8 (op-alias op-code op-set op-type op-rtype reg-suffix rreg-suffix)) (
    op-alias := λ: Blob(: l op-type+Constant)(: r op-type+Constant). (: (
       (:program(
-         '\tmov\s$_s (:expression l) ',\s%AL\n_s
-         '\tmov\s$_s (:expression r) ',\s%R14B\n_s
-         '\t_s op-code '\s%R14B,\s%AL\n_s
+         '\tmov\s$_s (:expression l) ',\s%R13_l reg-suffix '\n_s
+         '\tmov\s$_s (:expression r) ',\s%R14_l reg-suffix '\n_s
+         '\t_s op-code '\s%R14_l reg-suffix ',\s%R13_l reg-suffix '\n_s
          op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
-      (:expression op-return)
+      (:expression( 'R13_l rreg-suffix ))
    ) op-rtype);
    op-alias := λ: Blob(: l op-type+Constant)(: r op-type+LocalVariable). (: (
       (:program(
-         '\tmov\s$_s (:expression l) ',\s%AL\n_s
-         '\tmov\s_s (:expression r) '\[%RBP\],\s%R14B\n_s
-         '\t_s op-code '\s%R14B,\s%AL\n_s
+         '\tmov\s$_s (:expression l) ',\s%R13_l reg-suffix '\n_s
+         '\tmov\s_s (:expression r) '\[%RBP\],\s%R14_l reg-suffix '\n_s
+         '\t_s op-code '\s%R14_l reg-suffix ',\s%R13_l reg-suffix '\n_s
          op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
-      (:expression op-return)
+      (:expression( 'R13_l rreg-suffix ))
    ) op-rtype);
    op-alias := λ: Blob(: l op-type+Constant)(: r op-type+GlobalVariable). (: (
       (:program(
-         '\tmov\s$_s (:expression l) ',\s%AL\n_s
+         '\tmov\s$_s (:expression l) ',\s%R13_l reg-suffix '\n_s
          '\tmov\s$_s (:expression r) ',\s%R14\n_s
-         '\tmov\s0\[%R14\],\s%R14B\n_s
-         '\t_s op-code '\s%R14B,\s%AL\n_s
+         '\tmov\s0\[%R14\],\s%R14_l reg-suffix '\n_s
+         '\t_s op-code '\s%R14_l reg-suffix ',\s%R13_l reg-suffix '\n_s
          op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
-      (:expression op-return)
+      (:expression( 'R13_l rreg-suffix ))
    ) op-rtype);
    op-alias := λ: Blob(: l op-type+Constant)(: r op-type+Reg8). (: (
       (:program(
          (:program r)
-         '\tmov\s%_s (:expression r) ',\s%R14B\n_s
-         '\tmov\s$_s (:expression l) ',\s%AL\n_s
-         '\t_s op-code '\s%R14B,\s%AL\n_s
+         '\tmov\s%_s (:expression r) ',\s%R14_l reg-suffix '\n_s
+         '\tmov\s$_s (:expression l) ',\s%R13_l reg-suffix '\n_s
+         '\t_s op-code '\s%R14_l reg-suffix ',\s%R13_l reg-suffix '\n_s
          op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
-      (:expression op-return)
+      (:expression( 'R13_l rreg-suffix ))
    ) op-rtype);
 
    op-alias := λ: Blob(: l op-type+LocalVariable)(: r op-type+Constant). (: (
       (:program(
-         '\tmov\s_s (:expression l) '\[%RBP\],\s%AL\n_s
-         '\tmov\s$_s (:expression r) ',\s%R14B\n_s
-         '\t_s op-code '\s%R14B,\s%AL\n_s
+         '\tmov\s_s (:expression l) '\[%RBP\],\s%R13_l reg-suffix '\n_s
+         '\tmov\s$_s (:expression r) ',\s%R14_l reg-suffix '\n_s
+         '\t_s op-code '\s%R14_l reg-suffix ',\s%R13_l reg-suffix '\n_s
          op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
-      (:expression op-return)
+      (:expression( 'R13_l rreg-suffix ))
    ) op-rtype);
    op-alias := λ: Blob(: l op-type+LocalVariable)(: r op-type+LocalVariable). (: (
       (:program(
-         '\tmov\s_s (:expression l) '\[%RBP\],\s%AL\n_s
-         '\tmov\s_s (:expression r) '\[%RBP\],\s%R14B\n_s
-         '\t_s op-code '\s%R14B,\s%AL\n_s
+         '\tmov\s_s (:expression l) '\[%RBP\],\s%R13_l reg-suffix '\n_s
+         '\tmov\s_s (:expression r) '\[%RBP\],\s%R14_l reg-suffix '\n_s
+         '\t_s op-code '\s%R14_l reg-suffix ',\s%R13_l reg-suffix '\n_s
          op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
-      (:expression op-return)
+      (:expression( 'R13_l rreg-suffix ))
    ) op-rtype);
    op-alias := λ: Blob(: l op-type+LocalVariable)(: r op-type+GlobalVariable). (: (
       (:program(
-         '\tmov\s_s (:expression l) '\[%RBP\],\s%AL\n_s
+         '\tmov\s_s (:expression l) '\[%RBP\],\s%R13_l reg-suffix '\n_s
          '\tmov\s$_s (:expression r) ',\s%R14\n_s
-         '\tmov\s0\[%R14\],\s%R14B\n_s
-         '\t_s op-code '\s%R14B,\s%AL\n_s
+         '\tmov\s0\[%R14\],\s%R14_l reg-suffix '\n_s
+         '\t_s op-code '\s%R14_l reg-suffix ',\s%R13_l reg-suffix '\n_s
          op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
-      (:expression op-return)
+      (:expression( 'R13_l rreg-suffix ))
    ) op-rtype);
    op-alias := λ: Blob(: l op-type+LocalVariable)(: r op-type+Reg8). (: (
       (:program(
          (:program r)
-         '\tmov\s%_s (:expression r) ',\s%R14B\n_s
-         '\tmov\s_s (:expression l) '\[%RBP\],\s%AL\n_s
-         '\t_s op-code '\s%R14B,\s%AL\n_s
+         '\tmov\s%_s (:expression r) ',\s%R14_l reg-suffix '\n_s
+         '\tmov\s_s (:expression l) '\[%RBP\],\s%R13_l reg-suffix '\n_s
+         '\t_s op-code '\s%R14_l reg-suffix ',\s%R13_l reg-suffix '\n_s
          op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
-      (:expression op-return)
+      (:expression( 'R13_l rreg-suffix ))
    ) op-rtype);
 
    op-alias := λ: Blob(: l op-type+GlobalVariable)(: r op-type+Constant). (: (
       (:program(
-         '\tmov\s$_s (:expression l) ',\s%RAX\n_s
-         '\tmov\s0\[%RAX\],\s%AL\n_s
-         '\tmov\s$_s (:expression r) ',\s%R14B\n_s
-         '\t_s op-code '\s%R14B,\s%AL\n_s
+         '\tmov\s$_s (:expression l) ',\s%R13\n_s
+         '\tmov\s0\[%R13\],\s%R13_l reg-suffix '\n_s
+         '\tmov\s$_s (:expression r) ',\s%R14_l reg-suffix '\n_s
+         '\t_s op-code '\s%R14_l reg-suffix ',\s%R13_l reg-suffix '\n_s
          op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
-      (:expression op-return)
+      (:expression( 'R13_l rreg-suffix ))
    ) op-rtype);
    op-alias := λ: Blob(: l op-type+GlobalVariable)(: r op-type+LocalVariable). (: (
       (:program(
-         '\tmov\s$_s (:expression l) ',\s%RAX\n_s
-         '\tmov\s0\[%RAX\],\s%AL\n_s
-         '\tmov\s_s (:expression r) '\[%RBP\],\s%R14B\n_s
-         '\t_s op-code '\s%R14B,\s%AL\n_s
+         '\tmov\s$_s (:expression l) ',\s%R13\n_s
+         '\tmov\s0\[%R13\],\s%R13_l reg-suffix '\n_s
+         '\tmov\s_s (:expression r) '\[%RBP\],\s%R14_l reg-suffix '\n_s
+         '\t_s op-code '\s%R14_l reg-suffix ',\s%R13_l reg-suffix '\n_s
          op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
-      (:expression op-return)
+      (:expression( 'R13_l rreg-suffix ))
    ) op-rtype);
    op-alias := λ: Blob(: l op-type+GlobalVariable)(: r op-type+GlobalVariable). (: (
       (:program(
-         '\tmov\s$_s (:expression l) ',\s%RAX\n_s
-         '\tmov\s0\[%RAX\],\s%AL\n_s
-         '\tmov\s$_s (:expression r) ',\s%R14B\n_s
-         '\tmov\s0\[%R14B\],\s%R14B\n_s
-         '\t_s op-code '\s%R14B,\s%AL\n_s
+         '\tmov\s$_s (:expression l) ',\s%R13\n_s
+         '\tmov\s0\[%R13\],\s%R13_l reg-suffix '\n_s
+         '\tmov\s$_s (:expression r) ',\s%R14\n_s
+         '\tmov\s0\[%R14\],\s%R14_l reg-suffix '\n_s
+         '\t_s op-code '\s%R14_l reg-suffix ',\s%R13_l reg-suffix '\n_s
          op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
-      (:expression op-return)
+      (:expression( 'R13_l rreg-suffix ))
    ) op-rtype);
    op-alias := λ: Blob(: l op-type+GlobalVariable)(: r op-type+Reg8). (: (
       (:program(
          (:program r)
-         '\tmov\s%_s (:expression r) ',\s%R14B\n_s
-         '\tmov\s$_s (:expression l) ',\s%RAX\n_s
-         '\tmov\s0\[%RAX\],\s%AL\n_s
-         '\t_s op-code '\s%R14B,\s%AL\n_s
+         '\tmov\s%_s (:expression r) ',\s%R14_l reg-suffix '\n_s
+         '\tmov\s$_s (:expression l) ',\s%R13\n_s
+         '\tmov\s0\[%R13\],\s%R13_l reg-suffix '\n_s
+         '\t_s op-code '\s%R14_l reg-suffix ',\s%R13_l reg-suffix '\n_s
          op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
-      (:expression op-return)
+      (:expression( 'R13_l rreg-suffix ))
    ) op-rtype);
 
    op-alias := λ: Blob(: l op-type+Reg8)(: r op-type+Constant). (: (
       (:program(
          (:program l)
-         '\tmov\s%_s (:expression l) ',\s%AL\n_s
-         '\tmov\s$_s (:expression r) ',\s%R14B\n_s
-         '\t_s op-code '\s%R14B,\s%AL\n_s
+         '\tmov\s%_s (:expression l) ',\s%R13_l reg-suffix '\n_s
+         '\tmov\s$_s (:expression r) ',\s%R14_l reg-suffix '\n_s
+         '\t_s op-code '\s%R14_l reg-suffix ',\s%R13_l reg-suffix '\n_s
          op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
-      (:expression op-return)
+      (:expression( 'R13_l rreg-suffix ))
    ) op-rtype);
    op-alias := λ: Blob(: l op-type+Reg8)(: r op-type+LocalVariable). (: (
       (:program(
          (:program l)
-         '\tmov\s%_s (:expression l) ',\s%AL\n_s
-         '\tmov\s_s (:expression r) '\[%RBP\],\s%R14B\n_s
-         '\t_s op-code '\s%R14B,\s%AL\n_s
+         '\tmov\s%_s (:expression l) ',\s%R13_l reg-suffix '\n_s
+         '\tmov\s_s (:expression r) '\[%RBP\],\s%R14_l reg-suffix '\n_s
+         '\t_s op-code '\s%R14_l reg-suffix ',\s%R13_l reg-suffix '\n_s
          op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
-      (:expression op-return)
+      (:expression( 'R13_l rreg-suffix ))
    ) op-rtype);
    op-alias := λ: Blob(: l op-type+Reg8)(: r op-type+GlobalVariable). (: (
       (:program(
          (:program l)
-         '\tmov\s%_s (:expression l) ',\s%AL\n_s
+         '\tmov\s%_s (:expression l) ',\s%R13_l reg-suffix '\n_s
          '\tmov\s$_s (:expression r) ',\s%R14\n_s
-         '\tmov\s0\[%R14\],\s%R14B\n_s
-         '\t_s op-code '\s%R14B,\s%AL\n_s
+         '\tmov\s0\[%R14\],\s%R14_l reg-suffix '\n_s
+         '\t_s op-code '\s%R14_l reg-suffix ',\s%R13_l reg-suffix '\n_s
          op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
-      (:expression op-return)
+      (:expression( 'R13_l rreg-suffix ))
    ) op-rtype);
    op-alias := λ: Blob(: l op-type+Reg8)(: r op-type+Reg8+Meta<OntoStack>). (: (
       (:program(
          (:program r)
          '\tpush\s%_s (:expression r) '\n_s
          (:program l)
-         '\tmov\s%_s (:expression l) ',\s%AL\n_s
+         '\tmov\s%_s (:expression l) ',\s%R13_l reg-suffix '\n_s
          '\tpopq\s%R14\n_s
-         '\t_s op-code '\s%R14B,\s%AL\n_s
+         '\t_s op-code '\s%R14_l reg-suffix ',\s%R13_l reg-suffix '\n_s
          op-set
       ))
       (:frame( (:frame l) (:frame r) ))
       (:unframe( (:unframe l) (:unframe r) ))
-      (:expression op-return)
+      (:expression( 'R13_l rreg-suffix ))
    ) op-rtype);
 );
 
