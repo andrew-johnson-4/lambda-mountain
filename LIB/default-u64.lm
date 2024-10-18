@@ -1,4 +1,6 @@
 
+import LIB/binop-macro.lm;
+
 meta
    (description (
       'U64\sis\san\sinteger\sof\sthe\srange\s0\sto\s18446744073709551615.
