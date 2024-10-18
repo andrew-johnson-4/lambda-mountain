@@ -378,29 +378,6 @@ read-file := λ(: fp String). (: (
    (as shead String)
 ) String);
 
-head-string := λ(: s String). (: (
-   (if (==( (as s U64) 0_u64 )) (
-      (mov( 0_u8 AL ))
-   ) (
-      (mov( (as s U8[]) 0_u64 AL ))
-   ))
-   (as AL U8)
-) U8);
-
-tail-string := λ(: s String). (: (
-   (if (==( (as s U64) 0_u64 )) (
-      (mov( 0_u64 RAX ))
-   ) (
-      (if (head-string s) (
-         (mov( (as s U64) RAX ))
-         (inc( RAX ))
-      ) (
-         (mov( 0_u64 RAX ))
-      ))
-   ))
-   (as RAX String)
-) String);
-
 clone-rope := λ(: s S). (: (
    (let r (malloc( 0_u64 1024_u64 )))
    (let len (clone-rope-impl( r s 0_u64 )))
