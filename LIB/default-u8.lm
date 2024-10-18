@@ -7,15 +7,15 @@ meta
 ;
 fragment type U8;     size U8 1;     atom suffix U8     _u8;
 
-(declare-simple-instruction-alias-binop-8( && 'andb_l '_l U8 U8+Reg8 'B_l 'B_l ));
-(declare-simple-instruction-alias-binop-8( || 'orb_l '_l U8 U8+Reg8 'B_l 'B_l ));
-(declare-simple-instruction-alias-binop-8( + 'addb_l '_l U8 U8+Reg8 'B_l 'B_l ));
-(declare-simple-instruction-alias-binop-8( - 'subb_l '_l U8 U8+Reg8 'B_l 'B_l ));
-(declare-simple-instruction-alias-binop-8( ^ 'xorb_l '_l U8 U8+Reg8 'B_l 'B_l ));
+(declare-simple-instruction-alias-binop-8( && '\tandb\s%R14B,%R13B\n_l U8 U8+Reg8 'B_l 'B_l ));
+(declare-simple-instruction-alias-binop-8( || '\torb\s%R14B,%R13B\n_l U8 U8+Reg8 'B_l 'B_l ));
+(declare-simple-instruction-alias-binop-8( + '\taddb\s%R14B,%R13B\n_l U8 U8+Reg8 'B_l 'B_l ));
+(declare-simple-instruction-alias-binop-8( - '\tsubb\s%R14B,%R13B\n_l U8 U8+Reg8 'B_l 'B_l ));
+(declare-simple-instruction-alias-binop-8( ^ '\txorb\s%R14B,%R13B\n_l U8 U8+Reg8 'B_l 'B_l ));
 
-(declare-simple-instruction-alias-binop-8( == 'cmpb_l '\tsete\s%R13B\n\tandq\s$1,\s%R13\n_l U8 U64+Reg64 'B_l '_l ));
-(declare-simple-instruction-alias-binop-8( != 'cmpb_l '\tsetne\s%R13B\n\tandq\s$1,\s%R13\n_l U8 U64+Reg64 'B_l '_l ));
-(declare-simple-instruction-alias-binop-8( < 'cmpb_l '\tsetl\s%R13B\n\tandq\s$1,\s%R13\n_l U8 U64+Reg64 'B_l '_l ));
-(declare-simple-instruction-alias-binop-8( <= 'cmpb_l '\tsetle\s%R13B\n\tandq\s$1,\s%R13\n_l U8 U64+Reg64 'B_l '_l ));
-(declare-simple-instruction-alias-binop-8( > 'cmpb_l '\tsetg\s%R13B\n\tandq\s$1,\s%R13\n_l U8 U64+Reg64 'B_l '_l ));
-(declare-simple-instruction-alias-binop-8( >= 'cmpb_l '\tsetge\s%R13B\n\tandq\s$1,\s%R13\n_l U8 U64+Reg64 'B_l '_l ));
+(declare-simple-instruction-alias-binop-8( == '\tcmpb\s%R14B,%R13B\n\tsete\s%R13B\n\tandq\s$1,\s%R13\n_l U8 U64+Reg64 'B_l '_l ));
+(declare-simple-instruction-alias-binop-8( != '\tcmpb\s%R14B,%R13B\n\tsetne\s%R13B\n\tandq\s$1,\s%R13\n_l U8 U64+Reg64 'B_l '_l ));
+(declare-simple-instruction-alias-binop-8( < '\tcmpb\s%R14B,%R13B\n\tsetl\s%R13B\n\tandq\s$1,\s%R13\n_l U8 U64+Reg64 'B_l '_l ));
+(declare-simple-instruction-alias-binop-8( <= '\tcmpb\s%R14B,%R13B\n\tsetle\s%R13B\n\tandq\s$1,\s%R13\n_l U8 U64+Reg64 'B_l '_l ));
+(declare-simple-instruction-alias-binop-8( > '\tcmpb\s%R14B,%R13B\n\tsetg\s%R13B\n\tandq\s$1,\s%R13\n_l U8 U64+Reg64 'B_l '_l ));
+(declare-simple-instruction-alias-binop-8( >= '\tcmpb\s%R14B,%R13B\n\tsetge\s%R13B\n\tandq\s$1,\s%R13\n_l U8 U64+Reg64 'B_l '_l ));
