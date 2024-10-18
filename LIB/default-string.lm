@@ -46,19 +46,43 @@ head-string := λ: Blob(: s String+Literal+Constant). (: (
    (:expression 'AL_l)
 ) U8+Reg8);
 
-tail-string := λ(: s String). (: (
-   (if (==( (as s U64) 0_u64 )) (
-      (mov( 0_u64 RAX ))
-   ) (
-      (if (head-string s) (
-         (mov( (as s U64) RAX ))
-         (inc( RAX ))
-      ) (
-         (mov( 0_u64 RAX ))
-      ))
+tail-string := λ: Blob(: s String+Reg64). (: (
+   (:frame (:frame s))
+   (:unframe (:unframe s))
+   (:program(
+      (:program s)
+      '\tinc\s%_l (:expression s) '\n_l
    ))
-   (as RAX String)
-) String);
+   (:expression (:expression s))
+) String+Reg64);
+tail-string := λ: Blob(: s String+LocalVariable). (: (
+   (:frame (:frame s))
+   (:unframe (:unframe s))
+   (:program(
+      '\tmov\s_l (:expression s) '\[%RBP\],\s%RAX\n_l
+      '\tinc\s%RAX\n_l
+   ))
+   (:expression 'RAX_l)
+) String+Reg64);
+tail-string := λ: Blob(: s String+GlobalVariable). (: (
+   (:frame (:frame s))
+   (:unframe (:unframe s))
+   (:program(
+      '\tmov\s$_l (:expression s) ',\s%RAX\n_l
+      '\tmov\s0\[%RAX\],\s%RAX\n_s
+      '\tinc\s%RAX\n_l
+   ))
+   (:expression 'RAX_l)
+) String+Reg64);
+tail-string := λ: Blob(: s String+Literal+Constant). (: (
+   (:frame (:frame s))
+   (:unframe (:unframe s))
+   (:program(
+      '\tmov\s$_l (:expression s) ',\s%RAX\n_l
+      '\tinc\s%RAX\n_l
+   ))
+   (:expression 'RAX_l)
+) String+Reg64);
 
 == := λ(: l String)(: r String). (: (
    (let c1 0_u8)
