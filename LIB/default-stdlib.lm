@@ -295,48 +295,6 @@ print := λ(: x I8). (: (
    (print( (: R15 Reg64+I64) ))
 ) Nil);
 
-== := λ(: l String)(: r String). (: (
-   (let c1 0_u8)
-   (let c2 0_u8)
-   (let cc 0_u64)
-   (gensym-label start)
-   (gensym-label end-true)
-   (gensym-label end-false)
-   (gensym-label end)
-   (mov( l R8 ))
-   (mov( r R9 ))
-   (cmp( 0_u64 R8 )) # short-circuit if strings are same pointer
-   (je( end-true ))
-   (cmp( 0_u64 R8 )) # nil strings are never equal
-   (je( end-false ))
-   (cmp( 0_u64 R9 ))
-   (je( end-false ))
-   (label start)
-   (mov( R8 0_u64 c1 ))
-   (mov( R9 0_u64 c2 ))
-   (set cc (==( c1 c2 )))
-   (mov( cc R10 ))
-   (cmp( 0_u64 R10 ))
-   (je end-false)
-   (set cc (==( c1 0_u8 )))
-   (mov( cc R10 ))
-   (cmp( 0_u64 R10 ))
-   (jne end-true)
-   (inc R8)
-   (inc R9)
-   (jmp start)
-   (label end-true)
-   (mov( 1_u64 RAX ))
-   (jmp end)
-   (label end-false)
-   (mov( 0_u64 RAX ))
-   (jmp end)
-   (label end)
-   (as RAX U64)
-) U64);
-
-!= := λ(: l String)(: r String). (: (not(==( l r ))) U64);
-
 system-call := λ(: rax U64)(: rdi U64)(: rsi U64)(: rdx U64). (: (
    (mov( rax RAX ))
    (mov( rdi RDI ))
