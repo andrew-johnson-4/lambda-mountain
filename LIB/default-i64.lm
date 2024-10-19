@@ -7,8 +7,19 @@ meta
 ;
 fragment type I64;    size I64 8;    atom suffix I64    _i64;
 
-#(declare-simple-instruction-alias-binop-64( && 'andq I64 ));
-#(declare-simple-instruction-alias-binop-64( || 'orq I64 ));
-#(declare-simple-instruction-alias-binop-64( + 'addq I64 ));
-#(declare-simple-instruction-alias-binop-64( - 'subq I64 ));
-#(declare-simple-instruction-alias-binop-64( ^ 'xorq I64 ));
+(declare-binop( && '\tandq\s%R14,%RAX\n_l I64 I64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( || '\torq\s%R14,%RAX\n_l I64 I64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( + '\taddq\s%R14,%RAX\n_l I64 I64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( - '\tsubq\s%R14,%RAX\n_l I64 I64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( ^ '\txorq\s%R14,%RAX\n_l I64 I64+Reg64 8_l 8_l Reg64 ));
+
+(declare-binop( * '\tmul\s%R14\n_l I64 I64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( / '\tmov\s$0,\s%RDX\n\tdiv\s%R14\n_l I64 I64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( % '\tmov\s$0,\s%RDX\n\tdiv\s%R14\n\tmov\s%RDX,\s%RAX\n_l I64 I64+Reg64 8_l 8_l Reg64 ));
+
+(declare-binop( == '\tcmp\s%R14,%RAX\n\tsete\s%AL\n\tandq\s$1,%RAX\n_l I64 U64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( != '\tcmp\s%R14,%RAX\n\tsetne\s%AL\n\tandq\s$1,%RAX\n_l I64 U64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( < '\tcmp\s%R14,%RAX\n\tsetl\s%AL\n\tandq\s$1,%RAX\n_l I64 U64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( <= '\tcmp\s%R14,%RAX\n\tsetle\s%AL\n\tandq\s$1,%RAX\n_l I64 U64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( > '\tcmp\s%R14,%RAX\n\tsetg\s%AL\n\tandq\s$1,%RAX\n_l I64 U64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( >= '\tcmp\s%R14,%RAX\n\tsetge\s%AL\n\tandq\s$1,%RAX\n_l I64 U64+Reg64 8_l 8_l Reg64 ));
