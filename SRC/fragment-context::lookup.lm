@@ -12,27 +12,25 @@ fragment-context::lookup := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST
       ()
       ( (FCtxBind( rst rk rt rf )) (
          (if (==( k rk )) (
-            (match (slot( rt 'Arrow_s )) (
-               ()
-               ( (TGround( 'Arrow_s (LCons( ranget (LCons( domaint LEOF )) )) )) (
-                  (if (can-unify( domaint kt )) (
-                     (if (non-zero found) (
-                        (if (can-unify( found domaint )) (
-                           (set r rf)
-                           (set found domaint)
-                        ) ())
-                     ) (
+            (if (is-arrow rt) (
+               (let domaint (domain rt))
+               (let ranget (range rt))
+               (if (can-unify( domaint kt )) (
+                  (if (non-zero found) (
+                     (if (can-unify( found domaint )) (
                         (set r rf)
                         (set found domaint)
-                     ))
-                  ) ())
-                  (set ctx rst)
-               ))
-               ( _ (
-                  (set r rf)
-                  (set found (t1 'LocalVariable_s))
-                  (set ctx FCtxEOF)
-               ))
+                     ) ())
+                  ) (
+                     (set r rf)
+                     (set found domaint)
+                  ))
+               ) ())
+               (set ctx rst)
+            ) (
+               (set r rf)
+               (set found (t1 'LocalVariable_s))
+               (set ctx FCtxEOF)
             ))
          ) (
             (set ctx rst)

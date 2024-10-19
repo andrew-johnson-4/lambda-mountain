@@ -32,7 +32,7 @@ can-unify := λ(: fpt Type)(: pt Type). (: (
       ))
       ( (Tuple( lt (TAnd( rt1 rt2 )) )) (
          (if (can-unify( lt rt1 )) (set r 1_u64) ())
-         (if (can-unify( lt rt2 )) (set r 1_u64) ())
+         (if r () (set r (can-unify( lt rt2 ))))
       ))
 
       # Varargs
@@ -90,9 +90,7 @@ can-unify := λ(: fpt Type)(: pt Type). (: (
       ))
       ( (Tuple( (TGround( ltn lps )) (TGround( rtn rps )) )) (
          (if (==( ltn rtn )) (
-            (if (can-unify( lps rps )) (
-               (set r 1_u64)
-            ) ())
+            (set r (can-unify( lps rps )))
          ) ())
       ))
       ( _ () )

@@ -44,7 +44,3 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
    r
 ) Fragment);
 
-compile-stack-call := λ(: ctx FContext)(: function-name String)(: return-type Type)(: args AST)(: offset I64)(: used IsUsed). (: (
-   (let f (fragment-context::lookup( ctx function-name (typeof args) args )))
-   (compile-stack-call( ctx f function-name return-type args offset used ))
-) Fragment);

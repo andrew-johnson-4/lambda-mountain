@@ -84,7 +84,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                (set e (compile-expr( ctx t stack-offset Used )))
             ) )
             ( (TGround( 'Array_s (LCons( TAny (LCons( inner-tt LEOF )) )) )) (
-               (set e (compile-stack-calls( ctx 'push-deref_s (t1 'Nil_s) t stack-offset Used )))
+               (set e (compile-stack-calls( ctx 'push-deref_s TAny (t1 'Nil_s) t stack-offset Used )))
                (set e (fragment::set-type( e (and( (denormalize inner-tt) (t1 'StackVariable_s) )) )))
                (let new-offset (-( stack-offset (as (sizeof-aligned inner-tt) I64) )))
                (set e (fragment::set-offset( e new-offset )))
@@ -169,7 +169,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                (let tc (fragment-context::lookup-soft( ctx 'del_s (typeof lhs-var) term )))
                (let t (.type tc))
                (if (non-zero t) (
-                  (let del-call (compile-stack-calls( ctx 'del_s rtype lhs-var stack-offset used )))
+                  (let del-call (compile-stack-calls( ctx 'del_s TAny rtype lhs-var stack-offset used )))
                   (set unframe-del (fragment::get( del-call 'program_s )))
                ) ())
             ))
@@ -196,10 +196,10 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             (match f (
                ()
                ( (Var( fname _ )) (
-                  (set e (compile-stack-calls( ctx fname (typeof term) a stack-offset used )))
+                  (set e (compile-stack-calls( ctx fname (typeof f) (typeof term) a stack-offset used )))
                ))
                ( (App( (Lit( ':_s _ )) (App( (Var( fname _ )) (AType ft) )) )) (
-                  (set e (compile-stack-calls( ctx fname (typeof term) a stack-offset used )))
+                  (set e (compile-stack-calls( ctx fname (typeof f) (typeof term) a stack-offset used )))
                ))
                ( (Lit( fname _ )) (
                   (set e (compile-constructor( ctx fname (typeof term) (typeof a) a stack-offset )))

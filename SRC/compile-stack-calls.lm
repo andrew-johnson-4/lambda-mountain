@@ -1,9 +1,9 @@
 
-compile-stack-calls := λ(: ctx FContext)(: function-name String)(: return-type Type)(: args AST)(: offset I64)(: used IsUsed). (: (
+compile-stack-calls := λ(: ctx FContext)(: function-name String)(: function-type Type)(: return-type Type)(: args AST)(: offset I64)(: used IsUsed). (: (
    (let r (fragment::new()))
    (set r (fragment::set-context( r ctx )))
    (set r (fragment::set-offset( r offset )))
-   (let fs (fragment-context::lookups( ctx function-name (typeof args) args )))
+   (let fs (fragment-context::lookups( ctx function-name function-type (typeof args) args )))
    (for-each (f in fs) (
       (set r (fragment::chain(
          r

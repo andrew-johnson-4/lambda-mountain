@@ -1,11 +1,10 @@
 apply := λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (
-   (let tt (apply( function-name ft pt 0_u64 blame )))
-   tt
-) Type);
+   (apply( function-name ft pt 0_u64 blame ))
+) Tuple<Type,Type>);
 
 apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U64)(: blame AST). (: (
    (apply( function-name ft pt do-specialize blame 1_u64 ))
-) Type);
+) Tuple<Type,Type>);
 
 apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U64)(: blame AST)(: hard U64). (: (
    (let r TAny)
@@ -46,6 +45,7 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U64)(:
             (let ctx (unify( fpt pt )))
             (set ctx (normalize ctx))
             (let closed-type (substitute( ctx sft )))
+            (set ft closed-type)
             (set r (guess-representation(substitute( ctx frt ))))
             (if (&&( do-specialize (is-open sft) )) (
                (if (is-open closed-type) (
@@ -64,8 +64,8 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U64)(:
          ))
       ))
    ))
-   r
-) Type);
+   (Tuple( ft r ))
+) Tuple<Type,Type>);
 
 apply := λ(: ctx Context)(: term AST). (: (
    (let return term)
