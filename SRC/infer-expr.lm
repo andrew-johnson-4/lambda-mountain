@@ -171,12 +171,14 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (set tctx (infer-expr( tctx l Unscoped TAny l-used )))
          (if (is-arrow(typeof l)) (set r-used Call) ())
          (set tctx (infer-expr( tctx r Unscoped TAny r-used )))
-         (let rt (apply-or-cons-and-specialize(
+         (let ftrt (apply-or-cons-and-specialize(
             (var-name-if-var l)
             (typeof l)
             (typeof r)
             term
          )))
+         (let function-type (.2 ftrt))
+         (let rt (.1 ftrt))
          (if (is( l-used Unused )) (
             (set rt (implicit-tail rt))
          ) ())
