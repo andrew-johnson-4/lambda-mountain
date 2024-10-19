@@ -4,7 +4,7 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
    (let function-type (.type f))
    (let r (fragment::new()))
 
-   (if (non-zero(slot( function-type 'Blob_s ))) (
+   (if (is-blob function-type) (
       (set r (cc-blob( ctx function-name args offset )))
       (set r (fragment::set-context( r ctx )))
    ) (

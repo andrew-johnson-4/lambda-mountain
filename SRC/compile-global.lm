@@ -4,7 +4,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
    (let kt (typeof term))
    (match term (
       ()
-      ( (Abs( lhs rhs tlt )) (if (||( (is-open kt) (non-zero(slot( tlt 'Blob_s ))) )) () (
+      ( (Abs( lhs rhs tlt )) (if (||( (is-open kt) (is-blob tlt) )) () (
 
          (let args-type (domain kt))
          (let args-size (sizeof-aligned args-type))
