@@ -1,9 +1,9 @@
 
-fragment-context::lookups := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST). (: (
-   (fragment-context::lookups( ctx k kt sloc True_u8 ))
+fragment-context::lookups := λ(: ctx FContext)(: k String)(: ft Type)(: kt Type)(: sloc AST). (: (
+   (fragment-context::lookups( ctx k ft kt sloc True_u8 ))
 ) List<Fragment>);
 
-fragment-context::lookups := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST)(: hard U8). (: (
+fragment-context::lookups := λ(: ctx FContext)(: k String)(: ft Type)(: kt Type)(: sloc AST)(: hard U8). (: (
    (set k (find-alias( k kt )))
    (let r (: LEOF List<Fragment>))
    (let found TAny)
@@ -11,36 +11,41 @@ fragment-context::lookups := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AS
       ()
       ( (FCtxBind( rst rk rt rf )) (
          (if (==( k rk )) (
-            (if (is-arrow rt) (
-               (let domaint (domain rt))
-               (let ranget (range rt))
-               (if (can-unify( domaint kt )) (
-                  (if (non-zero found) (
-                     (if (can-unify( found domaint )) (
+            (if (is( ft rt )) (
+               (set r (cons( rf (: LEOF List<Fragment>) )))
+               (set ctx FCtxEOF)
+            ) (
+               (if (is-arrow rt) (
+                  (let domaint (domain rt))
+                  (let ranget (range rt))
+                  (if (can-unify( domaint kt )) (
+                     (if (non-zero found) (
+                        (if (can-unify( found domaint )) (
+                           (if (!=( (is-hook rt) 0_u64 )) (
+                              (set r (cons( rf r )))
+                           ) (
+                              (set r (cons( rf (: LEOF List<Fragment>) )))
+                              (set found domaint)
+                           ))
+                        ) ())
+                     ) (
                         (if (!=( (is-hook rt) 0_u64 )) (
                            (set r (cons( rf r )))
                         ) (
                            (set r (cons( rf (: LEOF List<Fragment>) )))
                            (set found domaint)
                         ))
-                     ) ())
-                  ) (
-                     (if (!=( (is-hook rt) 0_u64 )) (
-                        (set r (cons( rf r )))
-                     ) (
-                        (set r (cons( rf (: LEOF List<Fragment>) )))
-                        (set found domaint)
                      ))
-                  ))
-               ) ())
-               (set ctx rst)
-            ) (
-               (if (!=( (is-hook rt) 0_u64 )) (
-                  (set r (cons( rf r )))
+                  ) ())
+                  (set ctx rst)
                ) (
-                  (set r (cons( rf (: LEOF List<Fragment>) )))
-                  (set ctx FCtxEOF)
-                  (set found (t1 'LocalVariable_s))
+                  (if (!=( (is-hook rt) 0_u64 )) (
+                     (set r (cons( rf r )))
+                  ) (
+                     (set r (cons( rf (: LEOF List<Fragment>) )))
+                     (set ctx FCtxEOF)
+                     (set found (t1 'LocalVariable_s))
+                  ))
                ))
             ))
          ) (

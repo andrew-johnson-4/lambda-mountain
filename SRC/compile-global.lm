@@ -89,7 +89,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
          (ascript-normal( kterm kt ))
          (let init-app (App( (close term) (close kterm) )))
          (ascript-normal( init-app (t3( 'Cons_s kt (and( (without-representation kt) (t1 'GlobalVariable_s) )) )) ))
-         (let init (compile-stack-calls( ctx 'mov_s (t1 'Nil_s) init-app -8_i64 Used )))
+         (let init (compile-stack-calls( ctx 'mov_s TAny (t1 'Nil_s) init-app -8_i64 Used )))
 
          (set assemble-init-section (SCons(
             (close assemble-init-section)
