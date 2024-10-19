@@ -27,3 +27,4 @@ main := λ. (: (
   (print (>( -1_i64 2_i64 )))(print '\n_s)
   (print (>=( -1_i64 2_i64 )))(print '\n_s)
 ) Nil);
+
