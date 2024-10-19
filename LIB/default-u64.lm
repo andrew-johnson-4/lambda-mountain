@@ -15,11 +15,9 @@ fragment type U64;    size U64 8;    atom suffix U64    _u64;
 (declare-binop( - '\tsubq\s%R14,%RAX\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
 (declare-binop( ^ '\txorq\s%R14,%RAX\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
 
-#   (mov( 0_u64 RDX ))
-#   (mov( l RAX ))
-#   (mov( r R8 ))
-#   (div( R8 ))
-#   (as RAX U64)
+(declare-binop( * '\tmul\s%R14\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( / '\tdiv\s%R14\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( % '\tdiv\s%R14\n\tmov\s%RDX,\s%RAX\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
 
 (declare-binop( == '\tcmp\s%R14,%RAX\n\tsete\s%AL\n\tandq\s$1,%RAX\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
 (declare-binop( != '\tcmp\s%R14,%RAX\n\tsetne\s%AL\n\tandq\s$1,%RAX\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
