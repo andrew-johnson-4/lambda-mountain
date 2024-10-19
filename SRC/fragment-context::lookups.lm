@@ -11,38 +11,36 @@ fragment-context::lookups := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AS
       ()
       ( (FCtxBind( rst rk rt rf )) (
          (if (==( k rk )) (
-            (match (slot( rt 'Arrow_s )) (
-               ()
-               ( (TGround( 'Arrow_s (LCons( ranget (LCons( domaint LEOF )) )) )) (
-                  (if (can-unify( domaint kt )) (
-                     (if (non-zero found) (
-                        (if (can-unify( found domaint )) (
-                           (if (!=( (is-hook rt) 0_u64 )) (
-                              (set r (cons( rf r )))
-                           ) (
-                              (set r (cons( rf (: LEOF List<Fragment>) )))
-                              (set found domaint)
-                           ))
-                        ) ())
-                     ) (
+            (if (is-arrow rt) (
+               (let domaint (domain rt))
+               (let ranget (range rt))
+               (if (can-unify( domaint kt )) (
+                  (if (non-zero found) (
+                     (if (can-unify( found domaint )) (
                         (if (!=( (is-hook rt) 0_u64 )) (
                            (set r (cons( rf r )))
                         ) (
                            (set r (cons( rf (: LEOF List<Fragment>) )))
                            (set found domaint)
                         ))
-                     ))
-                  ) ())
-                  (set ctx rst)
-               ))
-               ( _ (
-                  (if (!=( (is-hook rt) 0_u64 )) (
-                     (set r (cons( rf r )))
+                     ) ())
                   ) (
-                     (set r (cons( rf (: LEOF List<Fragment>) )))
-                     (set ctx FCtxEOF)
-                     (set found (t1 'LocalVariable_s))
+                     (if (!=( (is-hook rt) 0_u64 )) (
+                        (set r (cons( rf r )))
+                     ) (
+                        (set r (cons( rf (: LEOF List<Fragment>) )))
+                        (set found domaint)
+                     ))
                   ))
+               ) ())
+               (set ctx rst)
+            ) (
+               (if (!=( (is-hook rt) 0_u64 )) (
+                  (set r (cons( rf r )))
+               ) (
+                  (set r (cons( rf (: LEOF List<Fragment>) )))
+                  (set ctx FCtxEOF)
+                  (set found (t1 'LocalVariable_s))
                ))
             ))
          ) (
