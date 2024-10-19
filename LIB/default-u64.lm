@@ -1,4 +1,6 @@
 
+import LIB/binop-macro.lm;
+
 meta
    (description (
       'U64\sis\san\sinteger\sof\sthe\srange\s0\sto\s18446744073709551615.
@@ -7,15 +9,19 @@ meta
 ;
 fragment type U64;    size U64 8;    atom suffix U64    _u64;
 
-(declare-simple-instruction-alias-binop-64( && 'andq_l '_l U64 ));
-(declare-simple-instruction-alias-binop-64( || 'orq_l '_l U64 ));
-(declare-simple-instruction-alias-binop-64( + 'addq_l '_l U64 ));
-(declare-simple-instruction-alias-binop-64( - 'subq_l '_l U64 ));
-(declare-simple-instruction-alias-binop-64( ^ 'xorq_l '_l U64 ));
+(declare-binop( && '\tandq\s%R14,%RAX\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( || '\torq\s%R14,%RAX\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( + '\taddq\s%R14,%RAX\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( - '\tsubq\s%R14,%RAX\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( ^ '\txorq\s%R14,%RAX\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
 
-(declare-simple-instruction-alias-binop-64( == 'cmpq_l '\tsete\s%AL\n\tandq\s$1,\s%RAX\n_l U64 ));
-(declare-simple-instruction-alias-binop-64( != 'cmpq_l '\tsetne\s%AL\n\tandq\s$1,\s%RAX\n_l U64 ));
-(declare-simple-instruction-alias-binop-64( < 'cmpq_l '\tsetl\s%AL\n\tandq\s$1,\s%RAX\n_l U64 ));
-(declare-simple-instruction-alias-binop-64( <= 'cmpq_l '\tsetle\s%AL\n\tandq\s$1,\s%RAX\n_l U64 ));
-(declare-simple-instruction-alias-binop-64( > 'cmpq_l '\tsetg\s%AL\n\tandq\s$1,\s%RAX\n_l U64 ));
-(declare-simple-instruction-alias-binop-64( >= 'cmpq_l '\tsetge\s%AL\n\tandq\s$1,\s%RAX\n_l U64 ));
+(declare-binop( * '\tmul\s%R14\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( / '\tmov\s$0,\s%RDX\n\tdiv\s%R14\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( % '\tmov\s$0,\s%RDX\n\tdiv\s%R14\n\tmov\s%RDX,\s%RAX\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
+
+(declare-binop( == '\tcmp\s%R14,%RAX\n\tsete\s%AL\n\tandq\s$1,%RAX\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( != '\tcmp\s%R14,%RAX\n\tsetne\s%AL\n\tandq\s$1,%RAX\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( < '\tcmp\s%R14,%RAX\n\tsetl\s%AL\n\tandq\s$1,%RAX\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( <= '\tcmp\s%R14,%RAX\n\tsetle\s%AL\n\tandq\s$1,%RAX\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( > '\tcmp\s%R14,%RAX\n\tsetg\s%AL\n\tandq\s$1,%RAX\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
+(declare-binop( >= '\tcmp\s%R14,%RAX\n\tsetge\s%AL\n\tandq\s$1,%RAX\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
