@@ -9,15 +9,15 @@ meta
 ;
 fragment type U8;     size U8 1;     atom suffix U8     _u8;
 
-(declare-binop( && '\tandb\s%R14B,%R13B\n_l U8 U8+Reg8 'B_l 'B_l Reg8 ));
-(declare-binop( || '\torb\s%R14B,%R13B\n_l U8 U8+Reg8 'B_l 'B_l Reg8 ));
-(declare-binop( + '\taddb\s%R14B,%R13B\n_l U8 U8+Reg8 'B_l 'B_l Reg8 ));
-(declare-binop( - '\tsubb\s%R14B,%R13B\n_l U8 U8+Reg8 'B_l 'B_l Reg8 ));
-(declare-binop( ^ '\txorb\s%R14B,%R13B\n_l U8 U8+Reg8 'B_l 'B_l Reg8 ));
+(declare-binop( && '\tandb\s%R14B,%AL\n_l U8 U8+Reg8 1_l 1_l Reg8 ));
+(declare-binop( || '\torb\s%R14B,%AL\n_l U8 U8+Reg8 1_l 1_l Reg8 ));
+(declare-binop( + '\taddb\s%R14B,%AL\n_l U8 U8+Reg8 1_l 1_l Reg8 ));
+(declare-binop( - '\tsubb\s%R14B,%AL\n_l U8 U8+Reg8 1_l 1_l Reg8 ));
+(declare-binop( ^ '\txorb\s%R14B,%AL\n_l U8 U8+Reg8 1_l 1_l Reg8 ));
 
-(declare-binop( == '\tcmpb\s%R14B,%R13B\n\tsete\s%R13B\n\tandq\s$1,\s%R13\n_l U8 U64+Reg64 'B_l '_l Reg8 ));
-(declare-binop( != '\tcmpb\s%R14B,%R13B\n\tsetne\s%R13B\n\tandq\s$1,\s%R13\n_l U8 U64+Reg64 'B_l '_l Reg8 ));
-(declare-binop( < '\tcmpb\s%R14B,%R13B\n\tsetl\s%R13B\n\tandq\s$1,\s%R13\n_l U8 U64+Reg64 'B_l '_l Reg8 ));
-(declare-binop( <= '\tcmpb\s%R14B,%R13B\n\tsetle\s%R13B\n\tandq\s$1,\s%R13\n_l U8 U64+Reg64 'B_l '_l Reg8 ));
-(declare-binop( > '\tcmpb\s%R14B,%R13B\n\tsetg\s%R13B\n\tandq\s$1,\s%R13\n_l U8 U64+Reg64 'B_l '_l Reg8 ));
-(declare-binop( >= '\tcmpb\s%R14B,%R13B\n\tsetge\s%R13B\n\tandq\s$1,\s%R13\n_l U8 U64+Reg64 'B_l '_l Reg8 ));
+(declare-binop( == '\tcmpb\s%R14B,%AL\n\tsete\s%AL\n\tandq\s$1,\s%RAX\n_l U8 U64+Reg64 1_l 8_l Reg8 ));
+(declare-binop( != '\tcmpb\s%R14B,%AL\n\tsetne\s%AL\n\tandq\s$1,\s%RAX\n_l U8 U64+Reg64 1_l 8_l Reg8 ));
+(declare-binop( < '\tcmpb\s%R14B,%AL\n\tsetl\s%AL\n\tandq\s$1,\s%RAX\n_l U8 U64+Reg64 1_l 8_l Reg8 ));
+(declare-binop( <= '\tcmpb\s%R14B,%AL\n\tsetle\s%AL\n\tandq\s$1,\s%RAX\n_l U8 U64+Reg64 1_l 8_l Reg8 ));
+(declare-binop( > '\tcmpb\s%R14B,%AL\n\tsetg\s%AL\n\tandq\s$1,\s%RAX\n_l U8 U64+Reg64 1_l 8_l Reg8 ));
+(declare-binop( >= '\tcmpb\s%R14B,%AL\n\tsetge\s%AL\n\tandq\s$1,\s%RAX\n_l U8 U64+Reg64 1_l 8_l Reg8 ));
