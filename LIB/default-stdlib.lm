@@ -653,6 +653,17 @@ hash := λ(: key Sized<key-size>). (: (
    hash
 ) U64);
 
+mem-is-nonzero := λ(: v Sized<key-size>). (: (
+   (let i 0_u64)
+   (let r 0_u64)
+   (while (<( i key-size_u64 )) (
+      (if (!=( ([]( (as v Field<U8,1>) i )) 0_u8 )) (
+         (set r 1_u64)
+      ) ())
+   ))
+   r
+) U64);
+
 is := λ(: l Sized<key-size>)(: r Sized<key-size>). (: (
    (let i 0_u64)
    (let return 1_u64)

@@ -83,6 +83,17 @@ import LIB/default-into-branch-conditional.lm;
    (:expression( 'R15_l ))
 ) x+Reg64);
 
+[] := λ: Blob(: l LocalVariable+Field<x+Sized<1>,?>)(: r LocalVariable+U64). (: (
+   (:program (
+      '\tmov\s%RBP,\s%R15\n_l
+      '\tadd\s$_l (:expression l) ',\s%R15\n_l
+      '\tmov\s_l (:expression r) '\[%RBP\],\s%R14\n_l
+      '\tadd\s%R14,\s%R15\n_l
+      '\tmov\s0\[%R15\],\s%R15B\n_l
+   ))
+   (:expression( 'R15B_l ))
+) x+Reg8);
+
 set[] := λ: Blob(: l LocalVariable+Array<Field<Sized<8>,?>,?>)(: i Literal+Constant+U64)(: v Reg64). (: (
    (:program (
       '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
