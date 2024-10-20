@@ -11,8 +11,8 @@ try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: 
             (if (is-blob kt) () (
                (set special-type (normalize special-type))
             ))
-            (set kt (slot( kt 'Arrow_s )))
             (if (is-special( function-name special-type )) () (
+               (set kt (slot( kt 'Arrow_s )))
                (if (==( ft kt )) (
                   (match t (
                      ()
