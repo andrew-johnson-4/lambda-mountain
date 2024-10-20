@@ -1,5 +1,5 @@
 
-type-index := (: (HashtableIs( 0_u64 0_u64 (as 0_u64 Tuple<k,v>[]) )) HashtableIs<AST,Type>);
+type-index := (: (HashtableIs( 0_u64 0_u64 (as 0_u64 Tuple<AST,Type>[]) )) HashtableIs<AST,Type>);
 
 typeof := λ(: t AST). (: (
    (.lookup( type-index t TAny ))
