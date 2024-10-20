@@ -8,7 +8,8 @@ type HashtableEq<k,v> (HashtableEq( occupied:U64 , capacity:U64 , contents:Tuple
   (print 'TODO\sinsert\skey-value\n_s)(exit 1_u64)
 ) HashtableEq<k,v>);
 
-.lookup := λ(: ptable HashtableEq<k,v>)(: key k). (: (
+.lookup := λ(: ptable HashtableEq<k,v>)(: key k)(: default v). (: (
+   default
 ) v);
 
 type HashtableIs<k,v> (HashtableIs( occupied:U64 , capacity:U64 , contents:Tuple<k,v>[] ));
@@ -20,5 +21,6 @@ type HashtableIs<k,v> (HashtableIs( occupied:U64 , capacity:U64 , contents:Tuple
   (print 'TODO\sinsert\skey-value\n_s)(exit 1_u64)
 ) HashtableIs<k,v>);
 
-.lookup := λ(: ptable HashtableIs<k,v>)(: key k). (: (
+.lookup := λ(: ptable HashtableIs<k,v>)(: key k)(: default v). (: (
+   default
 ) v);
