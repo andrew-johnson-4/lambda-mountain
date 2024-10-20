@@ -49,6 +49,19 @@ import LIB/default-into-branch-conditional.lm;
    ))
    (:expression( 'R15_l ))
 ) x+Reg64);
+[] := λ: Blob(: l LocalVariable+Array<x+Sized<size+GT<8>>,?>)(: r LocalVariable+U64). (: (
+   (:program (
+      '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
+      '\tmov\s_l (:expression r) '\[%RBP\],\s%RAX\n_l
+      '\tmov\s$_l (: size L) ',%R14\n_l
+      '\tmul\s%R14\n_l
+      '\tadd\s%RAX,\s%R15\n_l
+      (for-atom (index in (range( 0_l (/( (: size L) 8_l )) ))) (
+          (let word-offset (-( (-( (: size L) (*( (:expression index) 8_l )) )) 8_l )))
+          '\tpushq\s_l (:expression word-offset) '\[%R14\]\n_l
+      ))
+   ))
+) x+StackVariable);
 
 [] := λ: Blob(: l LocalVariable+Array<x+Sized<8>,?>)(: r Constant+U64). (: (
    (:program (
