@@ -1,0 +1,23 @@
+
+import LIB/default.lm;
+
+b := (: BTreeIsEOF BTreeIs<U64,U64>);
+
+main := λ(: argc U64)(: argv String[]). (: (
+   (let argi 0_u64)
+   (let n 0_u64)
+   (while (<( argi argc )) (
+      (set n (to-u64([]( argv argi ))))
+      (set argi (+( argi 1_u64 )))
+   ))
+   (let inn 0_u64)
+   (while (<( inn n )) (
+      (.bind( (as (& b) BTreeEq<U64,U64>[]) inn inn ))
+      (set inn (+( inn 1_u64 )))
+   ))
+   (let outn 0_u64)
+   (while (<( outn n )) (
+      (.lookup( b outn 0_u64 ))
+      (set outn (+( outn 1_u64 )))
+   ))
+) Nil);
