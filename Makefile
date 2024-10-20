@@ -10,10 +10,6 @@ profile: install-production
 	as profile.s -o profile.o
 	ld profile.o -o profile
 	./profile SRC/index-index.lm | sort -n
-	lm --profile-invocations SRC/index-index.lm -o profile.s
-	as profile.s -o profile.o
-	ld profile.o -o profile
-	./profile --typecheck SRC/index-index.lm | sort -n
 
 build-docs:
 	lm --blob -o docs/index.html docs/index.html.lm
