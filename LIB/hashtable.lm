@@ -1,0 +1,24 @@
+
+type HashtableEq<k,v> (HashtableEq( occupied:U64 , capacity:U64 , contents:Tuple<k,v>[] ));
+
+.bind := λ(: ptable HashtableEq<k,v>)(: key k)(: value v). (: (
+   (if (*( (.occupied table) 3_u64 )) >= (.capacity table) )) (
+      (print 'TODO\sGrow\sTable\n_s)(exit 1_u64)
+   ) ())
+  (print 'TODO\sinsert\skey-value\n_s)(exit 1_u64)
+) HashtableEq<k,v>);
+
+.lookup := λ(: ptable HashtableEq<k,v>)(: key k). (: (
+) v);
+
+type HashtableIs<k,v> (HashtableIs( occupied:U64 , capacity:U64 , contents:Tuple<k,v>[] ));
+
+.bind := λ(: ptable HashtableIs<k,v>)(: key k)(: value v). (: (
+   (if (*( (.occupied table) 3_u64 )) >= (.capacity table) )) (
+      (print 'TODO\sGrow\sTable\n_s)(exit 1_u64)
+   ) ())
+  (print 'TODO\sinsert\skey-value\n_s)(exit 1_u64)
+) HashtableIs<k,v>);
+
+.lookup := λ(: ptable HashtableIs<k,v>)(: key k). (: (
+) v);
