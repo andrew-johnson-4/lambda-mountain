@@ -1,19 +1,21 @@
 
 dev: install-bootstrap
-	lm -o dev.s tests/regress/arithmetic.lm
+	lm -o dev.s tests/perf/btree.lm
 	as dev.s -o dev.o
 	ld dev.o -o dev
-	./dev
+	time ./dev 100
+	time ./dev 1000
+	time ./dev 10000
+	time ./dev 100000
+	time ./dev 1000000
+	time ./dev 10000000
+	time ./dev 100000000
 
 profile: install-production
 	lm --profile-invocations SRC/index-index.lm -o profile.s
 	as profile.s -o profile.o
 	ld profile.o -o profile
-	./profile SRC/index-index.lm | sort -n
-	lm --profile-invocations SRC/index-index.lm -o profile.s
-	as profile.s -o profile.o
-	ld profile.o -o profile
-	./profile --typecheck SRC/index-index.lm | sort -n
+	./profile SRC/index-index.lm --typecheck | sort -n
 
 build-docs:
 	lm --blob -o docs/index.html docs/index.html.lm
