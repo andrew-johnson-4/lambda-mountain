@@ -8,11 +8,11 @@ try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: 
       ( (TCtxBind( rst k kt t )) (
          (if (==( function-name k )) (
             (let special-type result-type)
-            (if (non-zero(slot( kt 'Blob_s ))) () (
+            (if (is-blob kt) () (
                (set special-type (normalize special-type))
             ))
-            (set kt (slot( kt 'Arrow_s )))
             (if (is-special( function-name special-type )) () (
+               (set kt (slot( kt 'Arrow_s )))
                (if (==( ft kt )) (
                   (match t (
                      ()

@@ -14,7 +14,7 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64)(: count U64)
                (let e1 (compile-push-rvalue( ctx le offset count )))
                (if (!=( count 0_u64 )) (
                   (let re-tt (typeof re))
-                  (if (non-zero(slot( re-tt 'Rc_s ))) (
+                  (if (is-rc re-tt) (
                      (let inc-rc (Var( 'inc_s (token::new 'inc_s) )))
                      (set re-tt (guess-representation(without-representation re-tt)))
                      (ascript( inc-rc (t3( 'Arrow_s (typeof re) re-tt )) ))
@@ -39,7 +39,7 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64)(: count U64)
          ) (
             (if (!=( count 0_u64 )) (
                (let rval-tt (typeof rval))
-               (if (non-zero(slot( rval-tt 'Rc_s ))) (
+               (if (is-rc rval-tt) (
                   (let inc-rc (Var( 'inc_s (token::new 'inc_s) )))
                   (set rval-tt (guess-representation(without-representation rval-tt)))
                   (ascript( inc-rc (t3( 'Arrow_s (typeof rval) rval-tt )) ))

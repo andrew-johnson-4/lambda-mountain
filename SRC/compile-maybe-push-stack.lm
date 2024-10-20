@@ -2,18 +2,14 @@
 compile-maybe-push-stack := λ(: ctx FContext)(: offset I64)(: fragment Fragment)(: expression-type Type)(: sloc AST). (: (
    (let ft (.type( fragment )))
    (if (non-zero ft) () (set ft expression-type))
-   (match (slot( ft 'StackVariable_s )) (
-      ()
-      ( (TGround( 'StackVariable_s _ )) () )
-      ( _ (
-         (let callee-ctx ctx)
-         (set callee-ctx (fragment-context::bind( callee-ctx 'src_s (denormalize ft) fragment )))
-         (set fragment (cc-blob( callee-ctx 'push_s (denormalize ft) offset sloc )))
-         (set fragment (fragment::set-type( fragment (and( (t1 'StackVariable_s) ft )) )))
-         (set fragment (fragment::set-context( fragment ctx )))
-         (let f-sz (as (sizeof-aligned ft) I64))
-         (set fragment (fragment::set-offset( fragment (-( offset f-sz )) )))
-      ))
+   (if (is-stack-variable ft) () (
+      (let callee-ctx ctx)
+      (set callee-ctx (fragment-context::bind( callee-ctx 'src_s (denormalize ft) fragment )))
+      (set fragment (cc-blob( callee-ctx 'push_s (denormalize ft) offset sloc )))
+      (set fragment (fragment::set-type( fragment (and( (t1 'StackVariable_s) ft )) )))
+      (set fragment (fragment::set-context( fragment ctx )))
+      (let f-sz (as (sizeof-aligned ft) I64))
+      (set fragment (fragment::set-offset( fragment (-( offset f-sz )) )))
    ))
    fragment
 ) Fragment);

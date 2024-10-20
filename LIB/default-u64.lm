@@ -1,4 +1,5 @@
 
+import LIB/unop-macro.lm;
 import LIB/binop-macro.lm;
 
 meta
@@ -8,6 +9,8 @@ meta
    (example (print '123_u64))
 ;
 fragment type U64;    size U64 8;    atom suffix U64    _u64;
+
+(declare-unop( not '\tandq\s$1,%RAX\n\txor\s$1,%RAX\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
 
 (declare-binop( && '\tandq\s%R14,%RAX\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
 (declare-binop( || '\torq\s%R14,%RAX\n_l U64 U64+Reg64 8_l 8_l Reg64 ));
