@@ -2,10 +2,14 @@
 type HashtableEq<k,v> (HashtableEq( occupied:U64 , capacity:U64 , contents:Tuple<k,v>[] ));
 
 .bind := λ(: table HashtableEq<k,v>)(: key k)(: value v). (: (
-   (if (>=( (*( (.occupied table) 3_u64 )) (.capacity table) )) (
+   (let occupied (.3 table))
+   (let capacity (.2 table))
+   (let contents (.1 table))
+   (if (>=( (*( occupied 3_u64 )) capacity )) (
       (print 'TODO\sGrow\sTable\n_s)(exit 1_u64)
    ) ())
   (print 'TODO\sinsert\skey-value\n_s)(exit 1_u64)
+  table
 ) HashtableEq<k,v>);
 
 .lookup := λ(: table HashtableEq<k,v>)(: key k)(: default v). (: (
@@ -15,10 +19,14 @@ type HashtableEq<k,v> (HashtableEq( occupied:U64 , capacity:U64 , contents:Tuple
 type HashtableIs<k,v> (HashtableIs( occupied:U64 , capacity:U64 , contents:Tuple<k,v>[] ));
 
 .bind := λ(: table HashtableIs<k,v>)(: key k)(: value v). (: (
-   (if (>=( (*( (.occupied table) 3_u64 )) (.capacity table) )) (
+   (let occupied (.3 table))
+   (let capacity (.2 table))
+   (let contents (.1 table))
+   (if (>=( (*( occupied 3_u64 )) capacity )) (
       (print 'TODO\sGrow\sTable\n_s)(exit 1_u64)
    ) ())
-  (print 'TODO\sinsert\skey-value\n_s)(exit 1_u64)
+   (print 'TODO\sinsert\skey-value\n_s)(exit 1_u64)
+   table
 ) HashtableIs<k,v>);
 
 .lookup := λ(: table HashtableIs<k,v>)(: key k)(: default v). (: (
