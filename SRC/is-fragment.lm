@@ -1,8 +1,8 @@
 
-tag-is-fragment-index := (: BTreeEqEOF BTreeEq<String,U64>);
+tag-is-fragment-index := (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<String,U64>[]) )) HashtableEq<String,U64>);
 
 index-tag-is-fragment := λ(: tag String). (: (
-   (.bind( (as (& tag-is-fragment-index) BTreeEq<String,U64>[]) tag 1_u64 ))
+   (set tag-is-fragment-index (.bind( tag-is-fragment-index tag 1_u64 )))
 ) Nil);
 
 is-fragment := λ(: tag String). (: (
