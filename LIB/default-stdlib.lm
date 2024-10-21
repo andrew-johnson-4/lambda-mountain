@@ -70,7 +70,7 @@ deep-hash := λ(: l Tuple<x,y>). (: (
    return
 ) U64);
 
-deep-hash := λ(: x U64). (: x U64);
+deep-hash := λ(: x U64). (: (hash x) U64);
 
 close := λ(: x x). (: (
    (mov( (malloc(sizeof x)) R8 ))

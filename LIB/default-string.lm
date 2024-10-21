@@ -94,7 +94,7 @@ tail-string := λ: Blob(: s String+Literal+Constant). (: (
    (gensym-label end)
    (mov( l R8 ))
    (mov( r R9 ))
-   (cmp( 0_u64 R8 )) # short-circuit if strings are same pointer
+   (cmp( R8 R9 )) # short-circuit if strings are same pointer
    (je( end-true ))
    (cmp( 0_u64 R8 )) # nil strings are never equal
    (je( end-false ))
