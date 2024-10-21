@@ -6,6 +6,15 @@ type S (SNil)
 
 type Tuple<x,y> (Tuple( x , y ));
 
+print := λ(: l Tuple<x,y>). (: (
+   (match l (
+      ()
+      ( (Tuple( x y )) (
+         (print '\[_s)(print x)(print ',_s)(print y)(print '\]_s)
+      ))
+   ))
+) Nil);
+
 + := λ(: l S)(: r S). (: (
    (if (non-zero r) (
       (if (non-zero l) (
@@ -651,6 +660,18 @@ hash := λ(: key Sized<key-size>). (: (
    (set hash (^( hash (>>( hash 11_u64 )) )))
    (set hash (+( hash (<<( hash 15_u64 )) )))
    hash
+) U64);
+
+mem-is-nonzero := λ(: v Sized<key-size>). (: (
+   (let i 0_u64)
+   (let r 0_u64)
+   (while (<( i key-size_u64 )) (
+      (if (!=( ([]( (as v Field<U8,1>) i )) 0_u8 )) (
+         (set r 1_u64)
+      ) ())
+      (set i (+( i 1_u64 )))
+   ))
+   r
 ) U64);
 
 is := λ(: l Sized<key-size>)(: r Sized<key-size>). (: (

@@ -12,3 +12,4 @@ import LIB/default-list.lm;
 import LIB/default-malloc.lm;
 import LIB/default-rc.lm;
 import LIB/default-cdecl-return.lm;
+import LIB/hashtable.lm;

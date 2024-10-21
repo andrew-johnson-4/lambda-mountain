@@ -49,6 +49,19 @@ import LIB/default-into-branch-conditional.lm;
    ))
    (:expression( 'R15_l ))
 ) x+Reg64);
+[] := λ: Blob(: l LocalVariable+Array<x+Sized<size+GT<8>>,?>)(: r LocalVariable+U64). (: (
+   (:program (
+      '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
+      '\tmov\s_l (:expression r) '\[%RBP\],\s%RAX\n_l
+      '\tmov\s$_l (: size L) ',%R14\n_l
+      '\tmul\s%R14\n_l
+      '\tadd\s%RAX,\s%R15\n_l
+      (for-atom (index in (range( 0_l (/( (: size L) 8_l )) ))) (
+          (let word-offset (-( (-( (: size L) (*( (:expression index) 8_l )) )) 8_l )))
+          '\tpushq\s_l (:expression word-offset) '\[%R15\]\n_l
+      ))
+   ))
+) x+StackVariable);
 
 [] := λ: Blob(: l LocalVariable+Array<x+Sized<8>,?>)(: r Constant+U64). (: (
    (:program (
@@ -82,6 +95,17 @@ import LIB/default-into-branch-conditional.lm;
    ))
    (:expression( 'R15_l ))
 ) x+Reg64);
+
+[] := λ: Blob(: l LocalVariable+Field<x+Sized<1>,?>)(: r LocalVariable+U64). (: (
+   (:program (
+      '\tmov\s%RBP,\s%R15\n_l
+      '\tadd\s$_l (:expression l) ',\s%R15\n_l
+      '\tmov\s_l (:expression r) '\[%RBP\],\s%R14\n_l
+      '\tadd\s%R14,\s%R15\n_l
+      '\tmov\s0\[%R15\],\s%R15B\n_l
+   ))
+   (:expression( 'R15B_l ))
+) x+Reg8);
 
 set[] := λ: Blob(: l LocalVariable+Array<Field<Sized<8>,?>,?>)(: i Literal+Constant+U64)(: v Reg64). (: (
    (:program (
@@ -128,6 +152,20 @@ set[] := λ: Blob(: l LocalVariable+Array<Sized<1>,?>)(: i LocalVariable+U64)(: 
       '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
       '\tadd\s%R13,\s%R15\n_l
       '\tmovb\s%R14B,\s0\[%R15\]\n_l
+   ))
+) Nil);
+
+set[] := λ: Blob(: l LocalVariable+Array<Sized<size+GT<8>>,?>)(: i LocalVariable+U64)(: v LocalVariable+Sized<size>). (: (
+   (:program (
+      '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
+      '\tmov\s_l (:expression i) '\[%RBP\],\s%RAX\n_l
+      '\tmov\s$_l (: size L) ',%R14\n_l
+      '\tmul\s%R14\n_l
+      '\tadd\s%RAX,\s%R15\n_l
+      (for-atom (index in (range( 0_l (/( (: size L) 8_l )) ))) (
+         '\tmov\s_l (+( (:expression v) (*( 8_l (:expression index) )) )) '\[%RBP\],\s%RAX\n_l
+         '\tmov\s%RAX,\s_l (*( 8_l (:expression index) )) '\[%R15\]\n_l
+      ))
    ))
 ) Nil);
 
