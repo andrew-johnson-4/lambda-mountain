@@ -1,8 +1,8 @@
 
-tag-to-class-index := (: BTreeEqEOF BTreeEq<String,Type>);
+tag-to-class-index := (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<String,Type>[]) )) HashtableEq<String,Type>);
 
 index-class-of-tag := λ(: tag String)(: class Type). (: (
-   (.bind( (as (& tag-to-class-index) BTreeEq<String,Type>[]) tag class ))
+   (set tag-to-class-index (.bind( tag-to-class-index tag class )))
    (match class (
       ()
       ( (TGround( cls _ )) (
