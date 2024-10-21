@@ -155,6 +155,20 @@ set[] := λ: Blob(: l LocalVariable+Array<Sized<1>,?>)(: i LocalVariable+U64)(: 
    ))
 ) Nil);
 
+set[] := λ: Blob(: l LocalVariable+Array<Sized<size+GT<8>>,?>)(: i LocalVariable+U64)(: v LocalVariable+Sized<size>). (: (
+   (:program (
+      '\tmov\s_l (:expression l) '\[%RBP\],\s%R15\n_l
+      '\tmov\s_l (:expression i) '\[%RBP\],\s%RAX\n_l
+      '\tmov\s$_l (: size L) ',%R14\n_l
+      '\tmul\s%R14\n_l
+      '\tadd\s%RAX,\s%R15\n_l
+      (for-atom (index in (range( 0_l (/( (: size L) 8_l )) ))) (
+         '\tmov\s_l (+( (:expression v) (:expression index) )) '\[%RBP\],\s%RAX\n_l
+         '\tmov\s%RAX,\s_l (:expression index) '\[%R15\]\n_l
+      ))
+   ))
+) Nil);
+
 set[] := λ: Blob(: dst Reg64+Array<Sized<size>,?>)(: src LocalVariable+Sized<size>). (: (
    (:frame (:frame dst))
    (:unframe (:unframe dst))

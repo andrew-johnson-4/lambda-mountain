@@ -6,6 +6,15 @@ type S (SNil)
 
 type Tuple<x,y> (Tuple( x , y ));
 
+print := λ(: l Tuple<x,y>). (: (
+   (match l (
+      ()
+      ( (Tuple( x y )) (
+         (print '\[_s)(print x)(print ',_s)(print y)(print '\]_s)
+      ))
+   ))
+) Nil);
+
 + := λ(: l S)(: r S). (: (
    (if (non-zero r) (
       (if (non-zero l) (
