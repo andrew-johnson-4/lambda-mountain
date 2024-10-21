@@ -188724,7 +188724,7 @@ _DT_bind_CL_ArrowHashtableIsTypeASTConsTypeConsASTHashtableIsTypeAST:
 	push %RAX
 	push %RBP
 	mov -144(%RBP), %RAX
-	mov $2, %R14
+	mov $3, %R14
 	mul %R14
 	mov %RAX, %RAX
 	mov -152(%RBP), %R14
@@ -188741,7 +188741,7 @@ uuid_00000000000c46f7:
 	mov %RSP, %RBX
 	pushq $1000
 	mov -144(%RBP), %RAX
-	mov $3, %R14
+	mov $30, %R14
 	mul %R14
 	push %RAX
 	mov %RBX, %RBP
