@@ -34,7 +34,7 @@ type HashtableIs<k,v> (HashtableIs( occupied:U64 , capacity:U64 , contents:Tuple
             (match old-kv (
                ()
                ( (Tuple( old-k old-v )) (
-                  (.bind-is( new-contents old-k old-v ))
+                  (.bind-is( new-contents new-capacity old-k old-v ))
                ))
             ))
          ) ())
@@ -43,15 +43,21 @@ type HashtableIs<k,v> (HashtableIs( occupied:U64 , capacity:U64 , contents:Tuple
       (set contents new-contents)
       (set capacity new-capacity)
    ) ())
-   (.bind-is( contents key value ))
+   (.bind-is( contents capacity key value ))
    (set occupied (+( occupied 1_u64 )))
    (HashtableIs( occupied capacity contents ))
 ) HashtableIs<k,v>);
 
-.bind-is := λ(: table Tuple<k,v>[])(: key k)(: value v). (: (
-   (print 'TODO\sInsert\sKey\s_s)(print key)(print '\n_s)
-   (print 'TODO\sInsert\sValue\s_s)(print value)(print '\n_s)
-   (exit 1_u64)
+.bind-is := λ(: table Tuple<k,v>[])(: table-capacity U64)(: key k)(: value v). (: (
+   (print 'Hash:\s_s)(print (hash key))(print '\n_s)
+   (let ki (%( (hash key) table-capacity )))
+   (let old-kv ([]( table ki )))
+   (while (mem-is-nonzero old-kv) (
+      (set ki (%( (+( ki 1_u64 )) table-capacity )))
+      (set old-kv ([]( table ki )))
+   ))
+   (let kv (Tuple( key value )))
+   (set[]( table ki kv ))
 ) Nil);
 
 .lookup := λ(: table HashtableIs<k,v>)(: key k)(: default v). (: (
