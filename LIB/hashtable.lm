@@ -49,18 +49,16 @@ type HashtableIs<k,v> (HashtableIs( occupied:U64 , capacity:U64 , contents:Tuple
 ) HashtableIs<k,v>);
 
 .bind-is := λ(: table Tuple<k,v>[])(: table-capacity U64)(: key k)(: value v). (: (
-   (print 'Insert:\s_s)(print key)(print value)(print '\n_s)
-   (print 'Hash:\s_s)(print (hash key))(print '\n_s)
    (let replacing 0_u64)
    (let ki (%( (hash key) table-capacity )))
    (let old-kv ([]( table ki )))
-   (let old-k (.1 old-kv))
-   (if (==( old-k k )) (set replacing 1_u64) ())
+   (let old-k (.2 old-kv))
+   (if (is( old-k key )) (set replacing 1_u64) ())
    (while (&&( (mem-is-nonzero old-kv) (not replacing) )) (
       (set ki (%( (+( ki 1_u64 )) table-capacity )))
       (set old-kv ([]( table ki )))
-      (set old-k (.1 old-kv))
-      (if (==( old-k k )) (set replacing 1_u64) ())
+      (set old-k (.2 old-kv))
+      (if (is( old-k key )) (set replacing 1_u64) ())
    ))
    (let kv (Tuple( key value )))
    (set[]( table ki kv ))
