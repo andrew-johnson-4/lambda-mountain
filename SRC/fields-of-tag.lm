@@ -1,8 +1,8 @@
 
-tag-to-fields-index := (: BTreeEqEOF BTreeEq<String,Tuple<Type,Type>>);
+tag-to-fields-index := (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<String,Tuple<Type,Type>>[]) )) HashtableEq<String,Tuple<Type,Type>>);
 
 index-fields-of-tag := λ(: tag String)(: fields-params Type)(: fields-rhs Type). (: (
-   (.bind( (as (& tag-to-fields-index) BTreeEq<String,Tuple<Type,Type>>[]) tag (Tuple( fields-params fields-rhs )) ))
+   (set tag-to-fields-index (.bind( tag-to-fields-index tag (Tuple( fields-params fields-rhs )) )))
 ) Nil);
 
 fields-of-tag := λ(: tag String). (: (
