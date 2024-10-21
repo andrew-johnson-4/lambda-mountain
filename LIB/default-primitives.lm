@@ -163,8 +163,8 @@ set[] := λ: Blob(: l LocalVariable+Array<Sized<size+GT<8>>,?>)(: i LocalVariabl
       '\tmul\s%R14\n_l
       '\tadd\s%RAX,\s%R15\n_l
       (for-atom (index in (range( 0_l (/( (: size L) 8_l )) ))) (
-         '\tmov\s_l (+( (:expression v) (:expression index) )) '\[%RBP\],\s%RAX\n_l
-         '\tmov\s%RAX,\s_l (:expression index) '\[%R15\]\n_l
+         '\tmov\s_l (+( (:expression v) (*( 8_l (:expression index) )) )) '\[%RBP\],\s%RAX\n_l
+         '\tmov\s%RAX,\s_l (*( 8_l (:expression index) )) '\[%R15\]\n_l
       ))
    ))
 ) Nil);
