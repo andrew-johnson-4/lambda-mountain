@@ -105,7 +105,6 @@ type HashtableEq<k,v> (HashtableEq( occupied:U64 , capacity:U64 , contents:Tuple
 
 .bind-eq := λ(: table Tuple<k,v>[])(: table-capacity U64)(: key k)(: value v). (: (
    (let replacing 0_u64)
-   (print 'Hash:\s_s)(print (deep-hash key))(print '\s_s)(print key)(print '\n_s)
    (let ki (%( (deep-hash key) table-capacity )))
    (let old-kv ([]( table ki )))
    (let old-k (.2 old-kv))
