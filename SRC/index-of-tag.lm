@@ -1,5 +1,6 @@
 
-tag-to-index-index := (: BTreeEqEOF BTreeEq<String,U64>);
+tag-to-index-index := (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<String,U64>[]) )) HashtableEq<String,U64>);
+
 unknown-index-of-tag := 99999_u64;
 
 index-of-tag := λ(: tag String). (: (
@@ -8,5 +9,5 @@ index-of-tag := λ(: tag String). (: (
 ) U64);
 
 index-index-of-tag := λ(: tag String)(: index U64). (: (
-   (.bind( (as (& tag-to-index-index) BTreeEq<String,U64>[]) tag index ))
+   (set tag-to-index-index (.bind( tag-to-index-index tag index )))
 ) Nil);
