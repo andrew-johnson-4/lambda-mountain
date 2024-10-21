@@ -125,7 +125,7 @@ type HashtableEq<k,v> (HashtableEq( occupied:U64 , capacity:U64 , contents:Tuple
    (if (==( capacity 0_u64 )) () (
       (let contents (.1 table))
       (let replacing 0_u64)
-      (let ki (%( (hash key) capacity )))
+      (let ki (%( (deep-hash key) capacity )))
       (let old-kv ([]( contents ki )))
       (let old-k (.2 old-kv))
       (if (==( old-k key )) (set replacing 1_u64) ())
