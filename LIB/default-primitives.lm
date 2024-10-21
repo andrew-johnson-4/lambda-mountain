@@ -58,7 +58,7 @@ import LIB/default-into-branch-conditional.lm;
       '\tadd\s%RAX,\s%R15\n_l
       (for-atom (index in (range( 0_l (/( (: size L) 8_l )) ))) (
           (let word-offset (-( (-( (: size L) (*( (:expression index) 8_l )) )) 8_l )))
-          '\tpushq\s_l (:expression word-offset) '\[%R14\]\n_l
+          '\tpushq\s_l (:expression word-offset) '\[%R15\]\n_l
       ))
    ))
 ) x+StackVariable);
