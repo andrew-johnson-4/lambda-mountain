@@ -6,7 +6,7 @@ index-class-of-tag := λ(: tag String)(: class Type). (: (
    (match class (
       ()
       ( (TGround( cls _ )) (
-         (.bind( (as (& class-to-yes-index) BTreeEq<String,U64>[]) cls 1_u64 ))
+         (set class-to-yes-index (.bind( class-to-yes-index cls 1_u64 )))
       ))
       ( _ (
          (print 'Unexpected\sClass\sIn\sindex-class-of-tag:\s_s)(print class)(print '\n_s)
