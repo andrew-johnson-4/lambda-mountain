@@ -17,7 +17,8 @@ main := λ(: argc U64)(: argv String[]). (: (
    ))
    (let outn 0_u64)
    (while (<( outn n )) (
-      (.lookup( b outn 0_u64 ))
+      (if (==( (.lookup( b outn 0_u64 )) outn )) () (print 'Bad\sLookup\sPositive\n_s))
+      (if (==( (.lookup( b (+( outn (+( n n )) )) 0_u64 )) 0_u64 )) () (print 'Bad\sLookup\sNegative\n_s))
       (set outn (+( outn 1_u64 )))
    ))
 ) Nil);
