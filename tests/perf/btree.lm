@@ -1,7 +1,7 @@
 
 import LIB/default.lm;
 
-b := (: BTreeIsEOF BTreeIs<U64,U64>);
+b := (: (HashtableIs( 0_u64 0_u64 (as 0_u64 Tuple<U64,U64>[]) )) HashtableIs<U64,U64>);
 
 main := λ(: argc U64)(: argv String[]). (: (
    (let argi 0_u64)
@@ -12,7 +12,7 @@ main := λ(: argc U64)(: argv String[]). (: (
    ))
    (let inn 0_u64)
    (while (<( inn n )) (
-      (.bind( (as (& b) BTreeEq<U64,U64>[]) inn inn ))
+      (set b (.bind( b inn inn )))
       (set inn (+( inn 1_u64 )))
    ))
    (let outn 0_u64)
