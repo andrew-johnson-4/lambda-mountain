@@ -1,11 +1,14 @@
 
-class-to-only-child := (: BTreeEqEOF BTreeEq<String,String>);
+class-to-only-child := (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<String,String>[]) )) HashtableEq<String,String>);
 
 has-only-child := λ(: class String)(: tag String). (: (
-   (.bind( (as (& class-to-only-child) BTreeEq<String,String>[]) class tag ))
+   (print 'Has\sOnly\sChild\s_s)(print class)(print tag)(print '\n_s)
+   (set class-to-only-child (.bind( class-to-only-child class tag )))
 ) Nil);
 
 get-only-child := λ(: class String). (: (
+   (print 'Get\sOnly\sChild\s_s)(print class)(print '\n_s)
    (let r (.lookup( class-to-only-child class '_s )))
+   (print 'Got\sOnly\sChild\s_s)(print class)(print r)(print '\n_s)
    r
 ) String);
