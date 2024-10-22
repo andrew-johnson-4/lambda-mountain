@@ -29,7 +29,6 @@ import SRC/is-sized.lm;
 import SRC/has-representation.lm;
 import SRC/guess-representation.lm;
 
-import SRC/as-local-variable.lm;
 import SRC/as-constant.lm;
 import SRC/deep-hash.lm;
 
