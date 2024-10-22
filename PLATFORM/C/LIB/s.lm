@@ -1,0 +1,5 @@
+
+type S (SNil)
+     | (SAtom( String ))
+     | (SCons( S[] , S[] ))
+     | (SPointer( ?[] ));
