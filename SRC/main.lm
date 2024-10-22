@@ -5,9 +5,9 @@ main := λ(: argc U64)(: argv String[]). (: (
    (while (<( argi argc )) (
       (match ([]( argv argi )) (
          ()
-         ('--c_s ( (set config-assemble-mode AssembleC) (set config-platform-prefix 'c/_s) ))
-         ('--blob_s ( (set config-assemble-mode AssembleBlob) (set config-platform-prefix 'blob/_s) ))
-         ('--gnu_s ( (set config-assemble-mode AssembleGNU) (set config-platform-prefix 'gnu-x86/_s) ))
+         ('--c_s ( (set config-assemble-mode AssembleC) (set config-platform-prefix 'PLATFORM/C/_s) ))
+         ('--blob_s ( (set config-assemble-mode AssembleBlob) (set config-platform-prefix 'PLATFORM/BLOB/_s) ))
+         ('--gnu_s ( (set config-assemble-mode AssembleGNU) (set config-platform-prefix 'PLATFORM/GNU-X86/_s) ))
          ('--tokenize_s (set config-mode ModeTokenize))
          ('--parse_s (set config-mode ModeParse))
          ('--preprocess_s (set config-mode ModePreprocess))
