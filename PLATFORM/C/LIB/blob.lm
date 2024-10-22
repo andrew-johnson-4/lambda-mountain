@@ -1,0 +1,26 @@
+
+fragment type L; size L 0; atom suffix L _l;
+
+:expression := λ: Blob(: x Meta<Any>). (: () L);
+:program := λ: Blob(: x Meta<Any>). (: () L);
+:frame := λ: Blob(: x Meta<Any>). (: () L);
+:case-number := λ: Blob(: x Meta<Any>). (: () L);
+
+== := λ: Blob(: l L)(: r L). (: () L);
+!= := λ: Blob(: l L)(: r L). (: () L);
+< := λ: Blob(: l L)(: r L). (: () L);
+<= := λ: Blob(: l L)(: r L). (: () L);
+> := λ: Blob(: l L)(: r L). (: () L);
+>= := λ: Blob(: l L)(: r L). (: () L);
+
+* := λ: Blob(: l L)(: r L). (: () L);
+/ := λ: Blob(: l L)(: r L). (: () L);
+% := λ: Blob(: l L)(: r L). (: () L);
++ := λ: Blob(: l L)(: r L). (: () L);
+- := λ: Blob(: l L)(: r L). (: () L);
+
+range := λ: Blob(: hi L). (: () L);
+range := λ: Blob(: lo L)(: hi L). (: () L);
+
+align := λ: Blob(: hi L). (: () L);
+uuid := λ: Blob(: t L). (: () L);
