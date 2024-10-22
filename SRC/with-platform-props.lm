@@ -1,0 +1,14 @@
+
+with-platform-props := λ(: tt Type). (: (
+   (let cls-tt (with-only-class tt))
+   (if (non-zero cls-tt) (
+      (match cls-tt (
+         ()
+         ( (TGround( cls _ )) (
+            (if (is-lm-struct cls) (set tt (and( tt (t1 'LMStruct_s) ))) ())
+         ))
+         ( _ () )
+      ))
+   ) ())
+   tt
+) Type);
