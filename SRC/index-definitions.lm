@@ -1,5 +1,5 @@
 
-type AssembleMode AssembleGNU | AssembleBlob;
+type AssembleMode AssembleGNU | AssembleBlob | AssembleC;
 
 type CompileMode ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 

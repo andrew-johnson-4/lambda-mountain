@@ -9,6 +9,9 @@ is-already-tokenized := λ(: fp String). (: (
 ) U64);
 
 tokenize := λ(: fp String). (: (
+   (if (has-prefix( fp 'LIB/_s )) (
+      (set fp (clone-rope(+( (SAtom config-platform-prefix) (SAtom fp) ))))
+   ) ())
    (let text '_s)
    (if (is-already-tokenized fp) () (
       (set text (read-file fp))

@@ -1,0 +1,4 @@
+
+compile-c := λ . (: (
+   (print 'TODO:\scompile-c\n_s)(exit 1_u64)
+) Nil);

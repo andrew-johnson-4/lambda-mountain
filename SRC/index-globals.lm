@@ -9,6 +9,7 @@ assemble-argv-referenced                 := False_u8;
 main-with-argv := False_u8;
 main-with := False_u8;
 
+config-platform-prefix       := 'blob/_s;
 config-profile-invocations   := False_u8;
 config-strict                := True_u8;
 config-preprocess            := True_u8;
