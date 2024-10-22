@@ -1,2 +1,2 @@
 
-fragment type I16; atom suffix String _i16;
+fragment type I16; size I16 2; atom suffix String _i16;

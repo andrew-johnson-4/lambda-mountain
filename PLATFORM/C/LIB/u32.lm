@@ -1,2 +1,2 @@
 
-fragment type U32; atom suffix String _u32;
+fragment type U32; size U32 4; atom suffix String _u32;
