@@ -1,0 +1,14 @@
+
+primitive::while := λ: Blob(: body Meta<Any>)(: cond BranchConditional). (: (
+   (:frame( (:frame body) (:frame cond) ))
+   (:program(
+      '\[while\[_l (:program cond) '\]{_l (:program body) '}\]_l
+   ))
+) Nil);
+
+primitive::if := λ: Blob(: ictx ImplicitContext)(: f Meta<Any>)(: t Meta<Any>)(: c BranchConditional). (: (
+   (:frame( (:frame c) (:frame t) (:frame f) ))
+   (:program(
+      '\[ (:program c) '?_l (:program t) ':_l (:program f) '\]_l
+   ))
+) Nil);
