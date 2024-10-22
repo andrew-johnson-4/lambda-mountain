@@ -1,6 +1,6 @@
 
 
-(declare-unop( .0 LMStruct f0 ( '\[_l x '._0\]_l ) ));
+(declare-unop( .0 LMStruct U64 ( '\[_l x '._0\]_l ) ));
 (declare-unop( .1 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<_,f1>,_>> f1 ( '\[_l x '._cl (: cn L) '._1\]_l ) ));
 (declare-unop( .2 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<_,f2>,_>,_>> f2 ( '\[_l x '._cl (: cn L) '._2\]_l ) ));
 (declare-unop( .3 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<_,f3>,_>,_>,_>> f3 ( '\[_l x '._cl (: cn L) '._3\]_l ) ));
