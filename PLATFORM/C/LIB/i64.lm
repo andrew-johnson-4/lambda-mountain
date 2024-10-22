@@ -1,2 +1,17 @@
 
 fragment type I64; size I64 8; atom suffix String _i64;
+
+(declare-binop( != I64 I64 U64 ( '\[_l x '!= y '\]_l ) ));
+(declare-binop( == I64 I64 U64 ( '\[_l x '== y '\]_l ) ));
+(declare-binop( < I64 I64 U64 ( '\[_l x '< y '\]_l ) ));
+(declare-binop( <= I64 I64 U64 ( '\[_l x '<= y '\]_l ) ));
+(declare-binop( > I64 I64 U64 ( '\[_l x '> y '\]_l ) ));
+(declare-binop( >= I64 I64 U64 ( '\[_l x '>= y '\]_l ) ));
+
+(declare-binop( + I64 I64 I64 ( '\[_l x '+ y '\]_l ) ));
+(declare-binop( - I64 I64 I64 ( '\[_l x '- y '\]_l ) ));
+(declare-binop( ^ I64 I64 I64 ( '\[_l x '^ y '\]_l ) ));
+(declare-binop( / I64 I64 I64 ( '\[_l x '/ y '\]_l ) ));
+(declare-binop( % I64 I64 I64 ( '\[_l x '% y '\]_l ) ));
+
+(declare-unop( not I64 U64 ( '\[!_l x '\]_l ) ));

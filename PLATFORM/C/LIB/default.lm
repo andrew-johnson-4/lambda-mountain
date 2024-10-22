@@ -1,4 +1,5 @@
 
+import PLATFORM/C/LIB/helper-macros.lm;
 import PLATFORM/C/LIB/u8.lm;
 import PLATFORM/C/LIB/i8.lm;
 import PLATFORM/C/LIB/u16.lm;
