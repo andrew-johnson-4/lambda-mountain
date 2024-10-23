@@ -21,6 +21,7 @@ mov := λ: Blob(: x datatype)(: y datatype+LocalVariable). (: (
 ) Nil);
 
 (declare-binop( mov datatype datatype Nil ('\[{_l x '=_l y ';\}]_l) ));
+(declare-unop( push t t+StackVariable ( x ) ));
 
 (declare-unop( branchtrue Nil BranchConditional ('1_l) ));
 (declare-unop( branchfalse Nil BranchConditional ('0_l) ));
@@ -28,3 +29,4 @@ mov := λ: Blob(: x datatype)(: y datatype+LocalVariable). (: (
 (declare-unop( as-branch-conditional U8 BranchConditional ( x ) ));
 (declare-unop( as-branch-conditional U64 BranchConditional ( x ) ));
 
+(declare-unop( cdecl::return t Nil ( 'return\s_l x '\:_l ) ));
