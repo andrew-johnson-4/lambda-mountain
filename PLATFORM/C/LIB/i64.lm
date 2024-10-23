@@ -1,5 +1,5 @@
 
-fragment type I64; size I64 8; atom suffix String _i64;
+fragment type I64; size I64 8; atom suffix I64 _i64;
 
 (declare-binop( != I64 I64 U64 ( '\[_l x '!= y '\]_l ) ));
 (declare-binop( == I64 I64 U64 ( '\[_l x '== y '\]_l ) ));
