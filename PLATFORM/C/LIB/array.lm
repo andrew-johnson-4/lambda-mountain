@@ -3,3 +3,8 @@
 (declare-ternop( set[] Array<base-type,?> U64 base-type base-type ('\[_l x '[_l y ']=_l z \]_l) ));
 (declare-binop( + Array<base-type,?> U64 Array<base-type,?> ('\[_l x '+_l y '\]_l) ));
 
+close := λ(: x p). (: (
+   (let r (as (malloc(sizeof p)) p[]))
+   (set[]( r 0_u64 x ))
+   r
+) p[]);
