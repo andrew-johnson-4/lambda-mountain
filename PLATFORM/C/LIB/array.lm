@@ -1,14 +1,5 @@
 
-[] := λ: Blob(: x Array<base-type,?>)(: i U64). (: (
-   (:frame (:frame x))
-   (:program(
-      '\[_l x '[_l i ']\]_l
-   ))
-) base-type);
+(declare-binop( [] Array<base-type,?> U64 base-type ('\[_l x '[_l y ']\]_l) ));
+(declare-ternop( set[] Array<base-type,?> U64 base-type base-type ('\[_l x '[_l y ']=_l z \]_l) ));
+(declare-binop( + Array<base-type,?> U64 Array<base-type,?> ('\[_l x '+_l y '\]_l) ));
 
-set[] := λ: Blob(: x Array<base-type,?>)(: i U64)(: v base-type). (: (
-   (:frame (:frame x))
-   (:program(
-      '\[_l x '[_l i ']=_l v '\]_l
-   ))
-) base-type);

@@ -1,4 +1,13 @@
 
+macro ('declare-unop (op-alias x-type r-type op-expr)) (
+   op-alias := λ: Blob(: x x-type). (: (
+      (:program(
+         op-expr
+      ))
+      (:frame( (:frame x) ))
+   ) r-type);
+);
+
 macro ('declare-binop (op-alias x-type y-type r-type op-expr)) (
    op-alias := λ: Blob(: x x-type)(: y y-type). (: (
       (:program(
@@ -8,12 +17,13 @@ macro ('declare-binop (op-alias x-type y-type r-type op-expr)) (
    ) r-type);
 );
 
-macro ('declare-unop (op-alias x-type r-type op-expr)) (
-   op-alias := λ: Blob(: x x-type). (: (
+macro ('declare-ternop (op-alias x-type y-type z-type r-type op-expr)) (
+   op-alias := λ: Blob(: x x-type)(: y y-type)(: z z-type). (: (
       (:program(
          op-expr
       ))
-      (:frame( (:frame x) ))
+      (:frame( (:frame x) (:frame y) (:frame z) ))
    ) r-type);
 );
+
 
