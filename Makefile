@@ -1,6 +1,9 @@
 
 dev: install-production
-	lm --c SRC/index-index.lm
+	lm --c tests/bootstrap/print.lm
+	as tmp.s -o tmp.o
+	ld tmp.o -o tmp
+	./tmp
 
 profile: install-production
 	lm --profile-invocations SRC/index-index.lm -o profile.s
