@@ -12,3 +12,12 @@ primitive::if := λ: Blob(: ictx ImplicitContext)(: f Meta<Any>)(: t Meta<Any>)(
       '\[ (:program c) '?_l (:program t) ':_l (:program f) '\]_l
    ))
 ) Nil);
+
+mov := λ: Blob(: x datatype)(: y datatype+LocalVariable). (: (
+   (:frame( (:frame x) (:frame y) ))
+   (:program(
+      
+   ))
+) Nil);
+
+(declare-binop( mov datatype datatype Nil ('\[{_l x '=_l y ';\}]_l) ));
