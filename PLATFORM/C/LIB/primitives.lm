@@ -1,21 +1,21 @@
 
 primitive::while := λ: Blob(: body Meta<Any>)(: cond BranchConditional). (: (
    (:frame( (:frame body) (:frame cond) ))
-   (:program(
-      '\[while\[_l (:program cond) '\]{_l (:program body) '}\]_l
+   (:expression(
+      '\[while\[_l (:expression cond) '\]{_l (:expression body) '}\]_l
    ))
 ) Nil);
 
 primitive::if := λ: Blob(: ictx ImplicitContext)(: f Meta<Any>)(: t Meta<Any>)(: c BranchConditional). (: (
    (:frame( (:frame c) (:frame t) (:frame f) ))
-   (:program(
-      '\[_l (:program c) '?_l (:program t) ':_l (:program f) '\]_l
+   (:expression(
+      '\[_l (:expression c) '?_l (:expression t) ':_l (:expression f) '\]_l
    ))
 ) Nil);
 
 mov := λ: Blob(: x datatype)(: y datatype+LocalVariable). (: (
    (:frame( (:frame x) (:frame y) ))
-   (:program(
+   (:expression(
       
    ))
 ) Nil);
@@ -33,7 +33,7 @@ mov := λ: Blob(: x datatype)(: y datatype+LocalVariable). (: (
 
 primitive::call := λ: Blob(: ictx ImplicitContext)(: args Meta<Any>). (: (
    (:frame( (:frame ictx) (:frame args) ))
-   (:program(
-      '\[_l (:function-id ictx) '\[_l (remove-trailing-comma(:program args)) '\]\]_l
+   (:expression(
+      '\[_l (:function-id ictx) '\[_l (remove-trailing-comma(:expression args)) '\]\]_l
    ))
 ) Nil);
