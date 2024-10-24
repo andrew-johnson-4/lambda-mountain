@@ -1,0 +1,4 @@
+
+mangle-c-type := λ(: tt Type). (: (
+   (SAtom 'int_s)
+) S);

@@ -25,7 +25,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
             (set function-name (mangle-identifier( k kt )))
          ))
 
-         (set text (SCons( (close text) (close(SAtom return-type)) )))
+         (set text (SCons( (close text) (close(mangle-c-type(typeof rhs))) )))
          (set text (SCons( (close text) (close(SAtom '\s_s)) )))
          (set text (SCons( (close text) (close(SAtom function-name)) )))
          (set text (SCons( (close text) (close(SAtom '\[_s)) )))

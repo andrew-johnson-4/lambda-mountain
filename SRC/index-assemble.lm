@@ -12,3 +12,4 @@ import SRC/compile-finish.lm;
 import SRC/compile-program-ordered.lm;
 import SRC/compile-write.lm;
 import SRC/compile-c-function-args.lm;
+import SRC/compile-c-text-header.lm;
