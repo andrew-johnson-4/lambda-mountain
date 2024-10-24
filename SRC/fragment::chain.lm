@@ -57,10 +57,10 @@ fragment::chain-c := λ(: l Fragment)(: r Fragment). (: (
       ))
       (+(
          (+(
-            (SAtom ';_s)
+            (SAtom '\:_s)
             (fragment::get( r 'expression_s ))
          ))
-         (SAtom '}\]_s)
+         (SAtom '\:}\]_s)
       ))
    )) )))
    (set l (fragment::set( l 'frame_s (SCons(
