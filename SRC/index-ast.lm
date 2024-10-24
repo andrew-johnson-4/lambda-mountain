@@ -1,5 +1,6 @@
 
 import SRC/align.lm;
+import SRC/is-ffi.lm;
 import SRC/is-nil.lm;
 import SRC/is-seq.lm;
 import SRC/is-arrow.lm;

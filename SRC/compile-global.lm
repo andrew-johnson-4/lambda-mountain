@@ -12,7 +12,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
    (let kt (typeof term))
    (match term (
       ()
-      ( (Abs( lhs rhs tlt )) (if (||( (is-open kt) (is-blob tlt) )) () (
+      ( (Abs( lhs rhs tlt )) (if (||( (is-open kt) (||( (is-blob tlt) (is-ffi tlt) )) )) () (
 
          (let args-type (domain kt))
          (let args-size (sizeof-aligned args-type))
