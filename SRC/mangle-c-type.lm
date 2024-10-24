@@ -9,7 +9,7 @@ mangle-c-type := λ(: tt Type). (: (
          (if (non-zero r) () (set r (mangle-c-type rt)))
       ))
       ( (TVar _) () )
-      ( (TGround( 'Nil_s _ )) (set r (SAtom 'unsigned\schar_s)) )
+      ( (TGround( 'Nil_s _ )) (set r (SAtom 'void_s)) )
       ( (TGround( 'U8_s _ )) (set r (SAtom 'unsigned\schar_s)) )
       ( (TGround( 'U16_s _ )) (set r (SAtom 'unsigned\sshort_s)) )
       ( (TGround( 'U32_s _ )) (set r (SAtom 'unsigned\sint_s)) )
