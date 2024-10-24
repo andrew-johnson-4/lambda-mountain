@@ -15,7 +15,11 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
       ( (Abs( lhs rhs tlt )) (if (||( (is-open kt) (is-blob tlt) )) () (
 
          (let args-type (domain kt))
+         (let args-size (sizeof-aligned args-type))
          (set ctx (compile-destructure-args( args-type ctx lhs 0_i64 )))
+         (set ctx (FCtxBind( (close ctx) 'cdecl::args-size_s TAny
+            (fragment::expression(to-string args-size))
+         )))
          (let e (compile-expr( ctx rhs 0_i64 Return )))
          (let program (fragment::get( e 'expression_s )))
          (let frame (fragment::get( e 'frame_s )))
@@ -29,7 +33,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
          (set text (SCons( (close text) (close(SAtom '\s_s)) )))
          (set text (SCons( (close text) (close(SAtom function-name)) )))
          (set text (SCons( (close text) (close(SAtom '\[_s)) )))
-         (set text (SCons( (close text) (close(SAtom(compile-c-function-args lhs))) )))
+         (set text (SCons( (close text) (close(compile-c-function-args lhs)) )))
          (set text (SCons( (close text) (close(SAtom '\]{_s)) )))
          (set text (SCons( (close text) (close frame) )))
          (set text (SCons( (close text) (close program) )))

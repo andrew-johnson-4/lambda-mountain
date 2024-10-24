@@ -1,4 +1,5 @@
 
-compile-c-function-args := λ(: t Term). (: (
-   SNil
+compile-c-function-args := λ(: t AST). (: (
+   (let r SNil)
+   r
 ) S);
