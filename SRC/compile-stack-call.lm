@@ -8,6 +8,7 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
       (set r (cc-blob( ctx function-name args offset )))
       (set r (fragment::set-context( r ctx )))
    ) (
+      (print 'Call\s_s)(print function-name)(print args)(print '\n_s)
       (if (is( used Tail )) (set used Used) ())
       (if (is( used Call )) (set used Used) ())
       (let push-args (compile-stack-call-push-args( ctx args offset )))

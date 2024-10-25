@@ -51,7 +51,6 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                ))
             ))
          ))
-         (print 'Literal:\s_s)(print (fragment::get( e 'expression_s )))(print '\n_s)
          (set e (fragment::set-context( e ctx )))
          (set e (fragment::set-type( e (denormalize ltype) )))
       ))
