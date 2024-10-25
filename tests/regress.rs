@@ -50,6 +50,7 @@ fn run_bootstrap(target: &str) -> String {
    let exit = Command::new("./bootstrap")
            .stdout(std::process::Stdio::piped())
            .stderr(std::process::Stdio::piped())
+           .arg("--gnu")
            .arg("-o")
            .arg("tmp.s")
            .arg(target)
