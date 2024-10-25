@@ -147,7 +147,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (if (non-zero tt) () (
             (exit-error( 'Unable\sto\sinfer\stype\sof\sexpression_s rhs ))
          ))
-         (set tt (and( (without-constructor tt) (t1 'LocalVariable_s) )))
+         (set tt (maybe-local-variable(without-constructor tt)))
          (match term (
             ()
             ( (App( (Abs( lname-var _ _ )) _ )) (

@@ -29,7 +29,7 @@ build: compile-production
 	time ./production --gnu -o deploy.s SRC/index-index.lm
 	as deploy.s -o deploy.o
 	ld deploy.o -o deploy
-	time ./deploy -o deploy2.s SRC/index-index.lm
+	time ./deploy --gnu -o deploy2.s SRC/index-index.lm
 	diff deploy.s deploy2.s
 	mv deploy.s BOOTSTRAP/cli.s
 	cargo test regression_tests
