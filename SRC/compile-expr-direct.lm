@@ -122,10 +122,14 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (let ec (cc-blob( ctx 'into-branch-conditional_s cond rsp-offset )))
          (let et (compile-expr( (open(.context ec)) t (.offset ec) Tail )))
          (let end-offset (.offset et))
-         (set et (compile-maybe-push-stack( (open(.context et)) (.offset et) et (typeof term) term )))
+         (if (is( config-assemble-mode AssembleC )) () (
+            (set et (compile-maybe-push-stack( (open(.context et)) (.offset et) et (typeof term) term )))
+         ))
          (set et (fragment::set-type( et (typeof t) )))
          (let ef (compile-expr( (open(.context ec)) f (.offset ec) Tail )))
-         (set ef (compile-maybe-push-stack( (open(.context ef)) (.offset ef) ef (typeof term) term )))
+         (if (is( config-assemble-mode AssembleC )) () (
+            (set ef (compile-maybe-push-stack( (open(.context ef)) (.offset ef) ef (typeof term) term )))
+         ))
          (set ef (fragment::set-type( ef (typeof f) )))
 
          (let ictx (fragment::new()))
@@ -174,7 +178,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                      ))
                      (+(
                         (fragment::get( fr 'expression_s ))
-                        (SAtom '\:_s)
+                        (SAtom '\:\n_s)
                      ))
                   ))
                ))
@@ -189,7 +193,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                      (SAtom '=_s)
                      (+(
                         (fragment::get( e 'expression_s ))
-                        (SAtom '\:\[{}\]\:}\]_s)
+                        (SAtom '\:\[{}\]\:}\]\n_s)
                      ))
                   ))
                ))
