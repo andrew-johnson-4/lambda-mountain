@@ -38,14 +38,9 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64)(: count U64)
             ))
          ))
       ))
-      ( rval-type (
+      ( _ (
          (if (is( config-assemble-mode AssembleC )) (
-            (if (is-nil rval-type) (
-               (set r (fragment::set-type( r rval-type )))
-               (set r (fragment::set-context( r ctx )))
-            ) (
-               (set r (compile-expr( ctx rval offset Used )))
-            ))
+            (set r (compile-expr( ctx rval offset Used )))
          ) (
             (let sz (sizeof-type(typeof rval)))
             (if (!=( count 0_u64 )) (
