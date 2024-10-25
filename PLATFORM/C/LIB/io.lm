@@ -1,7 +1,13 @@
 
 puts := λ: FFI(: x U8[]). (: () U32);
+exit := λ: FFI(: x U64). (: () Nil);
 
 print := λ(: x String). (: (
    (puts( (as x U8[]) ))
    ()
+) Nil);
+
+fail := λ(: msg String)(: loc String). (: (
+   (print msg)(print '\sat\s_s)(print loc)
+   (exit 1_u32)
 ) Nil);
