@@ -1,5 +1,6 @@
 
 compile-stack-call-push-args := λ(: ctx FContext)(: args AST)(: stack-offset I64). (: (
    (let r (compile-push-rvalue( ctx args stack-offset )))
+   (print 'Call\s_s)(print (typeof args))(print (fragment::get( r 'expression_s )))(print '\n_s)
    r
 ) Fragment);
