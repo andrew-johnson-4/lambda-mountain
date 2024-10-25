@@ -21,6 +21,10 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: off
          (let rs (blob-render-simple( ctx context-key t offset )))
          (set r (.1( rs )))
       ))
+      ( (App( (Var( 'scope_s _ )) t )) (
+         (let cs (blob-render-simple( ctx context-key t offset )))
+         (set r (.1 cs))
+      ))
       ( (App( (Var( 'remove-trailing-comma_s _ )) t )) (
          (let cs (blob-render-simple( ctx context-key t offset )))
          (set r (remove-trailing-comma(.1 cs)))
