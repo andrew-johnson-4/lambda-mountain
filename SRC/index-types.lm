@@ -20,6 +20,7 @@ import SRC/type-constructors.lm;
 import SRC/type-complex-fields.lm;
 import SRC/get-vararg-inner.lm;
 import SRC/maybe-specialize.lm;
+import SRC/maybe-local-variable.lm;
 
 import SRC/is-constructor.lm;
 import SRC/is-open.lm;
