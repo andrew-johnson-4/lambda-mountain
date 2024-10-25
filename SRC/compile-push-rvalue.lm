@@ -18,7 +18,6 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64)(: count U64)
                   (set r (fragment::set( r 'expression_s (
                      (+( (+( (fragment::get( e1 'expression_s )) (SAtom ',_s) )) (fragment::get( e2 'expression_s )) ))
                   ))))
-                  (print 'RValue\s_s) (print (fragment::get( r 'expression_s)))(print '\n_s)
                )) (scope(
                   (if (!=( count 0_u64 )) (
                      (let re-tt (typeof re))
