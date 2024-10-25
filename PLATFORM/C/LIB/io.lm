@@ -11,3 +11,8 @@ fail := λ(: msg String)(: loc String). (: (
    (print msg)(print '\sat\s_s)(print loc)
    (exit 1_u32)
 ) Nil);
+
+fail := λ(: msg String). (: (
+   (print msg)
+   (exit 1_u32)
+) Nil);

@@ -2,7 +2,7 @@
 primitive::while := λ: Blob(: body Meta<Any>)(: cond BranchConditional). (: (
    (:frame( (:frame body) (:frame cond) ))
    (:expression(
-      '\[{while\[_l (:expression cond) '\]{_l (:expression body) '}\:}\]_l
+      '\[{while\[_l (:expression cond) '\]{_l (:expression body) '\:}\:}\]_l
    ))
 ) Nil);
 
@@ -27,6 +27,6 @@ primitive::if := λ: Blob(: ictx ImplicitContext)(: f Meta<Any>)(: t Meta<Any>)(
 primitive::call := λ: Blob(: ictx ImplicitContext)(: args Meta<Any>). (: (
    (:frame( (:frame ictx) (:frame args) ))
    (:expression(
-      '\[_l (:function-id ictx) '\[_l (remove-trailing-comma(:expression args)) '\]\]_l
+      '\[_l (:function-id ictx) '\[_l (:expression args) '\]\]_l
    ))
 ) Nil);

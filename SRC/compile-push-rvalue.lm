@@ -13,11 +13,12 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64)(: count U64)
             ( (App( le re )) (
                (let e1 (compile-push-rvalue( ctx le offset count )))
                (if (is( config-assemble-mode AssembleC )) (scope(
-                  (set e1 (fragment::set( e1 'expression_s (
-                     (+( (fragment::get( e1 'expression_s )) (SAtom ',_s) ))
-                  ))))
                   (let e2 (compile-expr( ctx re (.offset e1) Used )))
                   (set r (fragment::chain( e1 e2 )))
+                  (set r (fragment::set( r 'expression_s (
+                     (+( (+( (fragment::get( e1 'expression_s )) (SAtom ',_s) )) (fragment::get( e2 'expression_s )) ))
+                  ))))
+                  (print 'RValue\s_s) (print (fragment::get( r 'expression_s)))(print '\n_s)
                )) (scope(
                   (if (!=( count 0_u64 )) (
                      (let re-tt (typeof re))
