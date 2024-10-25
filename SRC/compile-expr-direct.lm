@@ -163,7 +163,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (let fr (fragment::local-variable( bind-offset rtype )))
          (set ctx (fragment-context::bind( ctx lhs rtype fr )))
          (if (is( config-assemble-mode AssembleC )) (
-            (set e (compile-expr( ctx t stack-offset Used )))
+            (set e (compile-expr( ctx rhs stack-offset Used )))
             (set e (fragment::set( e 'frame_s (
                (+(
                   (fragment::get( e 'frame_s ))
@@ -189,7 +189,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                      (SAtom '=_s)
                      (+(
                         (fragment::get( e 'expression_s ))
-                        (SAtom '\:\[{}\]\:}\])
+                        (SAtom '\:\[{}\]\:}\]_s)
                      ))
                   ))
                ))
