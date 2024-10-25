@@ -38,7 +38,7 @@ deploy: build build-docs
 
 compile-production: compile-bootstrap
 	rm -f production production.o production.s
-	./bootstrap -o production.s SRC/index-index.lm
+	./bootstrap --gnu -o production.s SRC/index-index.lm
 	as -o production.o production.s
 	ld -o production   production.o
 	cp production re-production
