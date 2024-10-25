@@ -19,6 +19,8 @@ fragment type U64; size U64 8; atom suffix U64 _u64;
 
 (declare-unop( not U64 U64 ( '\[!_l x '\]_l ) ));
 
+(declare-unop( into-branch-conditional U64 BranchConditional ( x ) ));
+
 print := λ(: x U64). (: (
    (if (==( x 0_u64 )) (
       (print( '0_s ))

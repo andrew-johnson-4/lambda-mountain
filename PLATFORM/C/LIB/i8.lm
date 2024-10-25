@@ -1,2 +1,4 @@
 
 fragment type I8; size I8 1; atom suffix I8 _i8;
+
+(declare-unop( into-branch-conditional I8 BranchConditional ( x ) ));

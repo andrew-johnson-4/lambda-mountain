@@ -1,2 +1,4 @@
 
 fragment type I32; size I32 4; atom suffix I32 _i32;
+
+(declare-unop( into-branch-conditional I32 BranchConditional ( x ) ));

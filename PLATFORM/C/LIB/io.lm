@@ -1,6 +1,6 @@
 
 puts := λ: FFI(: x U8[]). (: () U32);
-exit := λ: FFI(: x U64). (: () Nil);
+exit := λ: FFI(: x U32). (: () Nil);
 
 print := λ(: x String). (: (
    (puts( (as x U8[]) ))
