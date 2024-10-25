@@ -2,7 +2,7 @@
 primitive::while := λ: Blob(: body Meta<Any>)(: cond BranchConditional). (: (
    (:frame( (:frame body) (:frame cond) ))
    (:expression(
-      '\[while\[_l (:expression cond) '\]{_l (:expression body) '}\]_l
+      '\[{while\[_l (:expression cond) '\]{_l (:expression body) '}\:}\]_l
    ))
 ) Nil);
 
@@ -13,7 +13,7 @@ primitive::if := λ: Blob(: ictx ImplicitContext)(: f Meta<Any>)(: t Meta<Any>)(
    ))
 ) Nil);
 
-(declare-binop( mov datatype datatype Nil ('\[{_l x '=_l y '\:}]_l) ));
+(declare-binop( mov datatype datatype Nil ('\[{_l y '=_l x '\:}\]_l) ));
 
 (declare-unop( branchtrue Nil BranchConditional ('1_l) ));
 (declare-unop( branchfalse Nil BranchConditional ('0_l) ));
