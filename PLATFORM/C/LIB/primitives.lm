@@ -13,15 +13,8 @@ primitive::if := λ: Blob(: ictx ImplicitContext)(: f Meta<Any>)(: t Meta<Any>)(
    ))
 ) Nil);
 
-mov := λ: Blob(: x datatype)(: y datatype+LocalVariable). (: (
-   (:frame( (:frame x) (:frame y) ))
-   (:expression(
-      
-   ))
-) Nil);
-
 (declare-binop( mov datatype datatype Nil ('\[{_l x '=_l y ';\}]_l) ));
-(declare-unop( push Meta<Any> Nil ( x '_l ) ));
+(declare-unop( push Meta<Any> Nil ( x ',_l ) ));
 
 (declare-unop( branchtrue Nil BranchConditional ('1_l) ));
 (declare-unop( branchfalse Nil BranchConditional ('0_l) ));
