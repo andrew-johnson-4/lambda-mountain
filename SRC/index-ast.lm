@@ -1,5 +1,6 @@
 
 import SRC/align.lm;
+import SRC/is-ffi.lm;
 import SRC/is-nil.lm;
 import SRC/is-seq.lm;
 import SRC/is-arrow.lm;
@@ -14,6 +15,7 @@ import SRC/is-rc.lm;
 import SRC/is-onto-stack.lm;
 import SRC/is-impure-offset.lm;
 import SRC/is-branchconditional.lm;
+import SRC/is-lm-struct.lm;
 import SRC/plus.lm;
 import SRC/print.lm;
 import SRC/reverse.lm;
@@ -21,3 +23,4 @@ import SRC/serialize-ast.lm;
 import SRC/slot.lm;
 import SRC/uuid.lm;
 import SRC/var-name-if-var.lm;
+import SRC/remove-trailing-comma.lm;

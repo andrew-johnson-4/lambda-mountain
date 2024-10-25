@@ -5,8 +5,11 @@ import SRC/compile-data-header.lm;
 import SRC/compile-text-header.lm;
 
 import SRC/compile.lm;
+import SRC/compile-c.lm;
 import SRC/compile-blob.lm;
 import SRC/compile-gnu.lm;
 import SRC/compile-finish.lm;
 import SRC/compile-program-ordered.lm;
 import SRC/compile-write.lm;
+import SRC/compile-c-function-args.lm;
+import SRC/compile-c-text-header.lm;

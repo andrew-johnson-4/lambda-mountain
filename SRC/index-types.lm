@@ -20,6 +20,7 @@ import SRC/type-constructors.lm;
 import SRC/type-complex-fields.lm;
 import SRC/get-vararg-inner.lm;
 import SRC/maybe-specialize.lm;
+import SRC/maybe-local-variable.lm;
 
 import SRC/is-constructor.lm;
 import SRC/is-open.lm;
@@ -29,7 +30,6 @@ import SRC/is-sized.lm;
 import SRC/has-representation.lm;
 import SRC/guess-representation.lm;
 
-import SRC/as-local-variable.lm;
 import SRC/as-constant.lm;
 import SRC/deep-hash.lm;
 
@@ -59,12 +59,14 @@ import SRC/is-reg64.lm;
 import SRC/with-tag.lm;
 import SRC/with-size.lm;
 import SRC/with-fields.lm;
+import SRC/with-platform-props.lm;
 
 import SRC/without-tag.lm;
 import SRC/without-constructor.lm;
 import SRC/without-representation.lm;
 import SRC/without-size-unless-class.lm;
 import SRC/without-size.lm;
+import SRC/without-platform-props.lm;
 
 import SRC/with-only-tag.lm;
 import SRC/with-only-class.lm;

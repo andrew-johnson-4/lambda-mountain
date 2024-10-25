@@ -1,0 +1,4 @@
+
+type HashtableIs<k,v> (HashtableIs( occupied:U64 , capacity:U64 , contents:Tuple<k,v>[] ));
+
+type HashtableEq<k,v> (HashtableEq( occupied:U64 , capacity:U64 , contents:Tuple<k,v>[] ));

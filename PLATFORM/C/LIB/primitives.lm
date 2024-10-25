@@ -1,0 +1,32 @@
+
+primitive::while := λ: Blob(: body Meta<Any>)(: cond BranchConditional). (: (
+   (:frame( (:frame body) (:frame cond) ))
+   (:expression(
+      '\[while\[_l (:expression cond) '\]{_l (:expression body) '}\]_l
+   ))
+) Nil);
+
+primitive::if := λ: Blob(: ictx ImplicitContext)(: f Meta<Any>)(: t Meta<Any>)(: c BranchConditional). (: (
+   (:frame( (:frame c) (:frame t) (:frame f) ))
+   (:expression(
+      '\[_l (:expression c) '?_l (:expression t) ':_l (:expression f) '\]_l
+   ))
+) Nil);
+
+(declare-binop( mov datatype datatype Nil ('\[{_l x '=_l y ';\}]_l) ));
+
+(declare-unop( branchtrue Nil BranchConditional ('1_l) ));
+(declare-unop( branchfalse Nil BranchConditional ('0_l) ));
+
+(declare-unop( as-branch-conditional U8 BranchConditional ( x ) ));
+(declare-unop( as-branch-conditional U64 BranchConditional ( x ) ));
+
+(declare-unop( cdecl::return Meta<Any> Nil ( 'return\s_l x '\:_l ) ));
+(declare-unop( cdecl::return Nil Nil ( x '\:_l ) ));
+
+primitive::call := λ: Blob(: ictx ImplicitContext)(: args Meta<Any>). (: (
+   (:frame( (:frame ictx) (:frame args) ))
+   (:expression(
+      '\[_l (:function-id ictx) '\[_l (remove-trailing-comma(:expression args)) '\]\]_l
+   ))
+) Nil);

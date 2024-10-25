@@ -1,5 +1,5 @@
 
-as-local-variable := λ(: tt Type). (: (
+maybe-local-variable := λ(: tt Type). (: (
    (set tt (normalize tt))
    (if (non-zero tt) (
       (set tt (TAnd( (close tt) (close(t1 'LocalVariable_s)) )))

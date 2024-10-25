@@ -2,6 +2,7 @@
 import SRC/index-definitions.lm;
 
 import SRC/mangle-identifier.lm;
+import SRC/mangle-c-type.lm;
 import SRC/escape-string.lm;
 import SRC/error-formatting.lm;
 import SRC/is-variable.lm;

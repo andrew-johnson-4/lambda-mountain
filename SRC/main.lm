@@ -5,8 +5,21 @@ main := λ(: argc U64)(: argv String[]). (: (
    (while (<( argi argc )) (
       (match ([]( argv argi )) (
          ()
-         ('--blob_s (set config-assemble-mode AssembleBlob))
-         ('--gnu_s (set config-assemble-mode AssembleGNU))
+         ('--c_s (
+            (set config-assemble-mode AssembleC)
+            (set config-platform-prefix 'PLATFORM/C/_s)
+            (if (==( config-target '_s )) (set config-target 'tmp.c_s) ())
+         ))
+         ('--blob_s (
+            (set config-assemble-mode AssembleBlob)
+            (set config-platform-prefix 'PLATFORM/BLOB/_s)
+            (if (==( config-target '_s )) (set config-target 'tmp.txt_s) ())
+         ))
+         ('--gnu_s (
+            (set config-assemble-mode AssembleGNU)
+            (set config-platform-prefix 'PLATFORM/GNU-X86/_s)
+            (if (==( config-target '_s )) (set config-target 'tmp.s_s) ())
+         ))
          ('--tokenize_s (set config-mode ModeTokenize))
          ('--parse_s (set config-mode ModeParse))
          ('--preprocess_s (set config-mode ModePreprocess))

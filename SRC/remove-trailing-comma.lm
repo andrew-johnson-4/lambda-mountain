@@ -1,0 +1,12 @@
+
+remove-trailing-comma := λ(: x S). (: (
+   (match x (
+      ()
+      ( (SCons( l r )) (
+         (set x (+( (remove-trailing-comma l) (remove-trailing-comma r) )))
+      ))
+      ( (SAtom ',_s) (set x SNil) )
+      ( _ () )
+   ))
+   x
+) S);

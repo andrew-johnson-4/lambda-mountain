@@ -12,31 +12,37 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64)(: count U64)
             ()
             ( (App( le re )) (
                (let e1 (compile-push-rvalue( ctx le offset count )))
-               (if (!=( count 0_u64 )) (
-                  (let re-tt (typeof re))
-                  (if (is-rc re-tt) (
-                     (let inc-rc (Var( 'inc_s (token::new 'inc_s) )))
-                     (set re-tt (guess-representation(without-representation re-tt)))
-                     (ascript( inc-rc (t3( 'Arrow_s (typeof re) re-tt )) ))
-                     (set re (App( (close inc-rc) (close re) )))
-                     (ascript( re re-tt ))
+               (if (is( config-assemble-mode AssembleC )) (scope(
+                  (set e1 (fragment::set( e1 'expression_s (
+                     (+( (fragment::get( e1 'expression_s )) (SAtom ',_s) ))
+                  ))))
+                  (let e2 (compile-expr( ctx re (.offset e1) Used )))
+                  (set r (fragment::chain( e1 e2 )))
+               )) (scope(
+                  (if (!=( count 0_u64 )) (
+                     (let re-tt (typeof re))
+                     (if (is-rc re-tt) (
+                        (let inc-rc (Var( 'inc_s (token::new 'inc_s) )))
+                        (set re-tt (guess-representation(without-representation re-tt)))
+                        (ascript( inc-rc (t3( 'Arrow_s (typeof re) re-tt )) ))
+                        (set re (App( (close inc-rc) (close re) )))
+                        (ascript( re re-tt ))
+                     ) ())
                   ) ())
-               ) ())
-               (let e2 (compile-expr( ctx re (.offset e1) Used )))
-               (set e2 (compile-maybe-push-stack( ctx (.offset e2) e2 p2 rval )))
-               (let sz (sizeof-type(typeof rval)))
-               (set e2 (fragment::set-offset( e2 (-( offset (as sz I64) )) )))
-               (set r (fragment::chain( e1 e2 )))
+                  (let e2 (compile-expr( ctx re (.offset e1) Used )))
+                  (set e2 (compile-maybe-push-stack( ctx (.offset e2) e2 p2 rval )))
+                  (let sz (sizeof-type(typeof rval)))
+                  (set e2 (fragment::set-offset( e2 (-( offset (as sz I64) )) )))
+                  (set r (fragment::chain( e1 e2 )))
+               )))
             ))
          ))
       ))
       ( _ (
-         (let sz (sizeof-type(typeof rval)))
-         (if (==( sz 0_u64 )) (
-            (set r (fragment::set-context( r ctx )))
-            (set r (fragment::set-offset( r offset )))
-            (set r (fragment::set( r 'program_s (SCons( (close SNil) (close SNil) )) )))
+         (if (is( config-assemble-mode AssembleC )) (
+            (set r (compile-expr( ctx rval offset Used )))
          ) (
+            (let sz (sizeof-type(typeof rval)))
             (if (!=( count 0_u64 )) (
                (let rval-tt (typeof rval))
                (if (is-rc rval-tt) (

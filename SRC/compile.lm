@@ -3,4 +3,5 @@ compile := λ. (: (match config-assemble-mode (
    ()
    ( AssembleGNU (compile-gnu()) )
    ( AssembleBlob (compile-blob()) )
+   ( AssembleC (compile-c()) )
 )) Nil);

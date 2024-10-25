@@ -1,0 +1,2 @@
+
+fragment type U32; size U32 4; atom suffix U32 _u32;

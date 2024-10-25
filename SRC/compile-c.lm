@@ -1,0 +1,48 @@
+
+compile-c := λ . (: (
+   (let preview-program ast-parsed-program)
+   (while (non-zero preview-program) (match preview-program (
+      ()
+      ( (Seq( rst (Glb( k_t rhs )) )) (
+         (if (==( k 'main_s )) (set assemble-argv-referenced True_u8) ())
+         (let kt (typeof rhs))
+         (let fragment (fragment::new()))
+         (if (is-open kt) () (
+            (if (is-blob kt) (
+               (set fragment (fragment::set-term( fragment rhs )))
+               (set fragment (fragment::set-type( fragment kt )))
+               (set global-ctx (fragment-context::bind(
+                  global-ctx k kt fragment
+               )))
+            ) (
+               (set fragment (fragment::set( fragment 'fragment-type_s (SAtom 'Global_s) )))
+               (if (is-arrow kt) (
+                  (set fragment (fragment::set-type( fragment kt )))
+                  (set global-ctx (fragment-context::bind(
+                     global-ctx k kt fragment
+                  )))
+               ) (
+                  (let clean-tt (without-representation kt))
+                  (let repr-tt (and( clean-tt (t1 'GlobalVariable_s) )))
+                  (set fragment (fragment::set-type( fragment (without-constructor repr-tt) )))
+                  (let mid (mangle-identifier( k clean-tt )))
+                  (set fragment (fragment::set( fragment 'expression_s (SAtom mid) )))
+                  (set global-ctx (fragment-context::bind(
+                     global-ctx k (without-constructor repr-tt) fragment
+                  )))
+               ))
+            ))
+         ))
+         (set preview-program rst)
+      ))
+      ( (Seq( rst (Typedef( lhs rhs )) )) (
+         (set preview-program rst)
+      ))
+      ( (Seq( rst _ )) (
+         (set preview-program rst)
+      ))
+   )))
+   (compile-program-ordered( global-ctx ast-parsed-program ))
+   (compile-finish())
+   (compile-write())
+) Nil);

@@ -1,6 +1,55 @@
 
-
 compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
+   (match config-assemble-mode (
+      ()
+      ( AssembleC (compile-global-c( ctx k term )))
+      ( AssembleBlob (compile-global-blob( ctx k term )))
+      ( AssembleGNU (compile-global-gnu( ctx k term )))
+   ))
+) Nil);
+
+compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
+   (let kt (typeof term))
+   (match term (
+      ()
+      ( (Abs( lhs rhs tlt )) (if (||( (is-open kt) (||( (is-blob tlt) (is-ffi tlt) )) )) () (
+
+         (let args-type (domain kt))
+         (let args-size (sizeof-aligned args-type))
+         (set ctx (compile-destructure-args( args-type ctx lhs 0_i64 )))
+         (set ctx (FCtxBind( (close ctx) 'cdecl::args-size_s TAny
+            (fragment::expression(to-string args-size))
+         )))
+         (let e (compile-expr( ctx rhs 0_i64 Return )))
+         (let program (fragment::get( e 'expression_s )))
+         (let frame (fragment::get( e 'frame_s )))
+         (let text SNil)
+         (let function-name 'main_s)
+         (if (==( k 'main_s )) () (
+            (set function-name (mangle-identifier( k kt )))
+         ))
+
+         (set text (SCons( (close text) (close(mangle-c-type(typeof rhs))) )))
+         (set text (SCons( (close text) (close(SAtom '\s_s)) )))
+         (set text (SCons( (close text) (close(SAtom function-name)) )))
+         (set text (SCons( (close text) (close(SAtom '\[_s)) )))
+         (set text (SCons( (close text) (close(compile-c-function-args(ctx lhs))) )))
+         (set text (SCons( (close text) (close(SAtom '\]{_s)) )))
+         (set text (SCons( (close text) (close frame) )))
+         (set text (SCons( (close text) (close program) )))
+         (set text (SCons( (close text) (close(SAtom '}\n_s)) )))
+         (set assemble-text-section (SCons( (close assemble-text-section) (close text) )))
+      )))
+      ( (App( (Lit( ':_s ltok )) (App( t (AType tt) )) )) (
+      ))
+   ))
+) Nil);
+
+compile-global-blob := λ(: ctx FContext)(: k String)(: term AST). (: (
+   (print 'TODO\sCompile\sGlobal\sBlob\n_s)(exit 1_u64)
+) Nil);
+
+compile-global-gnu := λ(: ctx FContext)(: k String)(: term AST). (: (
    (let kt (typeof term))
    (match term (
       ()

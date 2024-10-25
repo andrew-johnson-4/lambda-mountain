@@ -1,0 +1,10 @@
+
+fragment type String; atom suffix String _s;
+
+head-string := λ(: x String). (: (
+   ([]( (as x U8[]) 0_u64 ))
+) U8);
+
+tail-string := λ(: x String). (: (
+   (+( (as x U8[]) 1_u64 ))
+) String);

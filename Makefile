@@ -1,15 +1,8 @@
 
-dev: install-bootstrap
-	lm -o dev.s tests/perf/btree.lm
-	as dev.s -o dev.o
-	ld dev.o -o dev
-	time ./dev 100
-	time ./dev 1000
-	time ./dev 10000
-	time ./dev 100000
-	time ./dev 1000000
-	time ./dev 10000000
-	time ./dev 100000000
+dev: install-production
+	lm --c tests/bootstrap/print.lm
+	cc tmp.c
+	./a.out
 
 profile: install-production
 	lm --profile-invocations SRC/index-index.lm -o profile.s
@@ -33,10 +26,10 @@ develop:
 	coqchk tmp.vo
 
 build: compile-production
-	time ./production -o deploy.s SRC/index-index.lm
+	time ./production --gnu -o deploy.s SRC/index-index.lm
 	as deploy.s -o deploy.o
 	ld deploy.o -o deploy
-	time ./deploy -o deploy2.s SRC/index-index.lm
+	time ./deploy --gnu -o deploy2.s SRC/index-index.lm
 	diff deploy.s deploy2.s
 	mv deploy.s BOOTSTRAP/cli.s
 	cargo test regression_tests
@@ -45,7 +38,7 @@ deploy: build build-docs
 
 compile-production: compile-bootstrap
 	rm -f production production.o production.s
-	./bootstrap -o production.s SRC/index-index.lm
+	./bootstrap --gnu -o production.s SRC/index-index.lm
 	as -o production.o production.s
 	ld -o production   production.o
 	cp production re-production
