@@ -30,6 +30,7 @@ mov := λ: Blob(: x datatype)(: y datatype+LocalVariable). (: (
 (declare-unop( as-branch-conditional U64 BranchConditional ( x ) ));
 
 (declare-unop( cdecl::return Meta<Any> Nil ( 'return\s_l x '\:_l ) ));
+(declare-unop( cdecl::return Nil Nil ( x '\:_l ) ));
 
 primitive::call := λ: Blob(: ictx ImplicitContext)(: args Meta<Any>). (: (
    (:frame( (:frame ictx) (:frame args) ))
