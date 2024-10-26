@@ -9,25 +9,37 @@ compile-c-typedef := λ(: base-type Type)(: body AST). (: (
    (while (non-zero body) (match body (
       ()
       ( (App( (App( rst (Var( '|_s _ )) )) case-definition )) (
-         (let fields (type-of-s-with-fields case-definition))
+         (let fields (compile-c-fields-of-case( base-type case-definition case-number )))
          (set cases (+( cases (compile-c-casedef( fields case-number )) )))
          (set case-number (+( case-number 1_u64 )))
          (set body rst)
       ))
       ( case-definition (
-         (let fields (type-of-s-with-fields case-definition))
+         (let fields (compile-c-fields-of-case( base-type case-definition case-number )))
          (set cases (+( cases (compile-c-casedef( fields case-number )) )))
          (set body ASTEOF)
       ))
    )))
-   (set assemble-header-section (SCons( (close assemble-header-section) (close 'struct\s_s) )))
-   (set assemble-header-section (SCons( (close assemble-header-section) (close base-uuid) )))
-   (set assemble-header-section (SCons( (close assemble-header-section) (close '{\n_s) )))
-   (set assemble-header-section (SCons( (close assemble-header-section) (close '\tlong\s_0\:\n_s) )))
-   (set assemble-header-section (SCons( (close assemble-header-section) (close '\tunion\s{\n_s) )))
+   (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom 'struct\s_s)) )))
+   (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom base-uuid)) )))
+   (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '{\n_s)) )))
+   (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\tlong\s_0\:\n_s)) )))
+   (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\tunion\s{\n_s)) )))
    (set assemble-header-section (SCons( (close assemble-header-section) (close cases) )))
-   (set assemble-header-section (SCons( (close assemble-header-section) (close '\t}\:\n}\:\n_s) )))
+   (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\t}\:\n}\:\n_s)) )))
 ) Nil);
+
+compile-c-fields-of-case := λ(: base-type Type)(: tag-definition AST)(: case-number U64). (: (
+   (let ft (t1 'Nil_s))
+   (match tag-definition (
+      ()
+      ( (App( (Lit( tag _ )) case-definition )) (
+         (set ft (type-of-s-with-fields( base-type tag case-definition case-number )))
+      ))
+      ( _ () )
+   ))
+   ft
+) Type);
 
 compile-c-casedef := λ(: fields Type)(: case-number U64). (: (
    (let r (+(
@@ -44,11 +56,12 @@ compile-c-casedef-fields := λ(: fields Type)(: case-number U64)(: field-index U
    (let r SNil)
    (match fields (
       ()
-      ( (TGround( 'cons_s (LCons( rst (LCons( ft _ )) )) )) (
+      ( (TGround( 'Nil_s _ )) () )
+      ( (TGround( 'Cons_s (LCons( rst (LCons( ft _ )) )) )) (
          (set r (+( (+( (mangle-c-type ft) (SAtom '\s__s) )) (+( (SAtom(
             (to-string(+( (*( case-number 1000_u64 )) field-index )))
          )) (SAtom '\:_s) )) )))
-         (set r (+( (compile-casedef-fields( rst case-number (+( field-index 1_u64 )) )) r )))
+         (set r (+( (compile-c-casedef-fields( rst case-number (+( field-index 1_u64 )) )) r )))
       ))
       ( ft (
          (set r (+( (+( (mangle-c-type ft) (SAtom '\s__s) )) (+( (SAtom(
