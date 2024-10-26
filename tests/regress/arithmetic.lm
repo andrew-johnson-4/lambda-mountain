@@ -7,21 +7,25 @@ main := λ. (: (
   (print (+( 1_u64 2_u64 )))(print '\n_s)
   (print (+( 1_i64 -2_i64 )))(print '\n_s)
   (print (-( 2_u64 1_u64 )))(print '\n_s)
+
   (print (-( 1_i64 -2_i64 )))(print '\n_s)
   (print (*( 1_u64 2_u64 )))(print '\n_s)
   (print (*( 1_i64 -2_i64 )))(print '\n_s)
   (print (/( 5_u64 2_u64 )))(print '\n_s)
   (print (/( 5_i64 2_i64 )))(print '\n_s)
+
   (print (%( 5_u64 2_u64 )))(print '\n_s)
   (print (%( -5_i64 2_i64 )))(print '\n_s)
   (print (<( 1_u64 2_u64 )))(print '\n_s)
   (print (<=( 1_u64 2_u64 )))(print '\n_s)
   (print (==( 1_u64 2_u64 )))(print '\n_s)
+
   (print (!=( 1_u64 2_u64 )))(print '\n_s)
   (print (>( 1_u64 2_u64 )))(print '\n_s)
   (print (>=( 1_u64 2_u64 )))(print '\n_s)
   (print (<( -1_i64 2_i64 )))(print '\n_s)
   (print (<=( -1_i64 2_i64 )))(print '\n_s)
+
   (print (==( -1_i64 2_i64 )))(print '\n_s)
   (print (!=( -1_i64 2_i64 )))(print '\n_s)
   (print (>( -1_i64 2_i64 )))(print '\n_s)
