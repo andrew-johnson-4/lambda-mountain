@@ -36,6 +36,7 @@ compile-c := λ . (: (
          (set preview-program rst)
       ))
       ( (Seq( rst (Typedef( lhs rhs )) )) (
+         (compile-c-typedef( lhs rhs ))
          (set preview-program rst)
       ))
       ( (Seq( rst _ )) (

@@ -1,0 +1,5 @@
+
+compile-c-typedef := λ(: lhs AST)(: rhs AST). (: (
+   (print 'Compile\sc\stypedef\s_s)(print lhs)(print '\n_s)
+   (exit 1_u64)
+) Nil);
