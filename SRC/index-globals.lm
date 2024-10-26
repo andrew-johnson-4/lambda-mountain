@@ -1,4 +1,5 @@
 
+assemble-header-section                  := (: SNil S);
 assemble-text-section                    := (: SNil S);
 assemble-init-section                    := (: SNil S);
 assemble-data-section                    := (: SNil S);

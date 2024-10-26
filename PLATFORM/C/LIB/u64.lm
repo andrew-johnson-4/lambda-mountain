@@ -18,3 +18,29 @@ fragment type U64; size U64 8; atom suffix U64 _u64;
 (declare-binop( % U64 U64 U64 ( '\[_l x '%_l y '\]_l ) ));
 
 (declare-unop( not U64 U64 ( '\[!_l x '\]_l ) ));
+
+(declare-unop( into-branch-conditional U64 BranchConditional ( x ) ));
+
+print := λ(: x U64). (: (
+   (if (==( x 0_u64 )) (
+      (print( '0_s ))
+   ) (
+      (while (>( x 0_u64 )) (
+         (let c (%( x 10_u64 )))
+         (set x (/( x 10_u64 )))
+         (match c (
+            ()
+            ( 0_u64 (print( '0_s )))
+            ( 1_u64 (print( '1_s )))
+            ( 2_u64 (print( '2_s )))
+            ( 3_u64 (print( '3_s )))
+            ( 4_u64 (print( '4_s )))
+            ( 5_u64 (print( '5_s )))
+            ( 6_u64 (print( '6_s )))
+            ( 7_u64 (print( '7_s )))
+            ( 8_u64 (print( '8_s )))
+            ( 9_u64 (print( '9_s )))
+         ))
+      ))
+   ))
+) Nil);

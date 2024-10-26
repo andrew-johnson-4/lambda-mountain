@@ -9,5 +9,4 @@ import SRC/parse-type-single.lm;
 import SRC/parse-type.lm;
 import SRC/parse-unexpect.lm;
 import SRC/parse.lm;
-import SRC/remove-parens.lm;
 import SRC/take-one-expr.lm;

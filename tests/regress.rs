@@ -43,16 +43,15 @@ fn compile_bootstrap() {
 }
 
 fn run_bootstrap(target: &str) -> String {
-   rm("tmp.s");
-   rm("tmp.o");
+   rm("tmp.c");
    rm("a.out");
    
    let exit = Command::new("./bootstrap")
            .stdout(std::process::Stdio::piped())
            .stderr(std::process::Stdio::piped())
-           .arg("--gnu")
+           .arg("--c")
            .arg("-o")
-           .arg("tmp.s")
+           .arg("tmp.c")
            .arg(target)
            .spawn()
            .expect("failed to execute process")
@@ -65,34 +64,19 @@ fn run_bootstrap(target: &str) -> String {
                                     + &String::from_utf8_lossy(&exit.stderr).to_string();
    };
    if output=="" {
-      let exit = Command::new("as")
-                      .stdout(std::process::Stdio::piped())
-                      .stderr(std::process::Stdio::piped())
-                      .arg("-o")
-                      .arg("tmp.o")
-                      .arg("tmp.s")
-                      .spawn()
-                      .expect("failed to execute process")
-                      .wait_with_output()
-                      .expect("failed to wait for process");
-      if !exit.status.success() {
-         let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-         return format!("as error code: {} on target {}", stderr, target);
-      };
-   
-   let exit = Command::new("ld")
+      let exit = Command::new("cc")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
                       .arg("-o")
                       .arg("a.out")
-                      .arg("tmp.o")
+                      .arg("tmp.c")
                       .spawn()
                       .expect("failed to execute process")
                       .wait_with_output()
                       .expect("failed to wait for process");
       if !exit.status.success() {
          let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-         return format!("ld error code: {} on target {}", stderr, target);
+         return format!("cc error code: {} on target {}", stderr, target);
       };
       let exit = Command::new("timeout")
                       .stdout(std::process::Stdio::piped())
@@ -110,8 +94,7 @@ fn run_bootstrap(target: &str) -> String {
                               + &String::from_utf8_lossy(&exit.stderr).to_string()
       };
    }
-   rm("tmp.s");
-   rm("tmp.o");
+   rm("tmp.c");
    rm("a.out");
    output
 }

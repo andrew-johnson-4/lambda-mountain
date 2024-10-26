@@ -23,4 +23,4 @@ import SRC/serialize-ast.lm;
 import SRC/slot.lm;
 import SRC/uuid.lm;
 import SRC/var-name-if-var.lm;
-import SRC/remove-trailing-comma.lm;
+import SRC/remove-parens.lm;

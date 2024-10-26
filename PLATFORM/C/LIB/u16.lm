@@ -1,2 +1,4 @@
 
 fragment type U16; size U16 2; atom suffix U16 _u16;
+
+(declare-unop( into-branch-conditional U16 BranchConditional ( x ) ));

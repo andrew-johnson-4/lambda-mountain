@@ -116,16 +116,37 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
          (set e (compile-expr( ctx t stack-offset used )))
          (set e (fragment::set-type( e (typeof term) )))
+         (if (is( config-assemble-mode AssembleC )) (
+            (set e (fragment::set( e 'expression_s (
+               (+(
+                  (+(
+                     (SAtom '\[\[_s)
+                     (mangle-c-type (typeof term))
+                  ))
+                  (+(
+                     (SAtom '\]\[_s)
+                     (+(
+                        (fragment::get( e 'expression_s ))
+                        (SAtom '\]\]_s)
+                     ))
+                  ))
+               ))
+            ))))
+         ) ())
       ))
       ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (
          (let rsp-offset (+( stack-offset -8_i64 )))
          (let ec (cc-blob( ctx 'into-branch-conditional_s cond rsp-offset )))
          (let et (compile-expr( (open(.context ec)) t (.offset ec) Tail )))
          (let end-offset (.offset et))
-         (set et (compile-maybe-push-stack( (open(.context et)) (.offset et) et (typeof term) term )))
+         (if (is( config-assemble-mode AssembleC )) () (
+            (set et (compile-maybe-push-stack( (open(.context et)) (.offset et) et (typeof term) term )))
+         ))
          (set et (fragment::set-type( et (typeof t) )))
          (let ef (compile-expr( (open(.context ec)) f (.offset ec) Tail )))
-         (set ef (compile-maybe-push-stack( (open(.context ef)) (.offset ef) ef (typeof term) term )))
+         (if (is( config-assemble-mode AssembleC )) () (
+            (set ef (compile-maybe-push-stack( (open(.context ef)) (.offset ef) ef (typeof term) term )))
+         ))
          (set ef (fragment::set-type( ef (typeof f) )))
 
          (let ictx (fragment::new()))
@@ -159,36 +180,69 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ( (App( (Abs( (@( lhs-t (Var( lhs _ )) )) ASTNil tlt )) rhs )) (
          (let rtype (typeof lhs-t))
          (let size (sizeof-aligned rtype))
-         (set e (compile-push-rvalue( ctx rhs stack-offset )))
          (let bind-offset (-( stack-offset (as size I64) )))
-         (let unframe-del SNil)
-         (set ctx (fragment-context::bind(
-            ctx lhs rtype (fragment::local-variable( bind-offset rtype ))
-         )))
-         (match term (
-            ()
-            ( (App( (Abs( lhs-var _ _ )) _ )) (
-               (let tc (fragment-context::lookup-soft( ctx 'del_s (typeof lhs-var) term )))
-               (let t (.type tc))
-               (if (non-zero t) (
-                  (let del-call (compile-stack-calls( ctx 'del_s TAny rtype lhs-var stack-offset used )))
-                  (set unframe-del (fragment::get( del-call 'program_s )))
-               ) ())
+         (let fr (fragment::local-variable( bind-offset rtype )))
+         (set ctx (fragment-context::bind( ctx lhs rtype fr )))
+         (if (is( config-assemble-mode AssembleC )) (
+            (set e (compile-expr( ctx rhs stack-offset Used )))
+            (set e (fragment::set( e 'frame_s (
+               (+(
+                  (fragment::get( e 'frame_s ))
+                  (+(
+                     (+(
+                        (mangle-c-type rtype)
+                        (SAtom '\s_s)
+                     ))
+                     (+(
+                        (fragment::get( fr 'expression_s ))
+                        (SAtom '\:\n_s)
+                     ))
+                  ))
+               ))
+            ))))
+            (set e (fragment::set( e 'expression_s (
+               (+(
+                  (+(
+                     (SAtom '\[{_s)
+                     (fragment::get( fr 'expression_s ))
+                  ))
+                  (+(
+                     (SAtom '=_s)
+                     (+(
+                        (fragment::get( e 'expression_s ))
+                        (SAtom '\:\[{}\]\:}\]\n_s)
+                     ))
+                  ))
+               ))
+            ))))
+         ) (
+            (set e (compile-push-rvalue( ctx rhs stack-offset )))
+            (let unframe-del SNil)
+            (match term (
+               ()
+               ( (App( (Abs( lhs-var _ _ )) _ )) (
+                  (let tc (fragment-context::lookup-soft( ctx 'del_s (typeof lhs-var) term )))
+                  (let t (.type tc))
+                  (if (non-zero t) (
+                     (let del-call (compile-stack-calls( ctx 'del_s TAny rtype lhs-var stack-offset used )))
+                     (set unframe-del (fragment::get( del-call 'program_s )))
+                  ) ())
+               ))
             ))
-         ))
-         (set e (fragment::set( e 'del_s unframe-del )))
-         (set e (fragment::set( e 'unframe_s
-            (SCons(
-               (close(fragment::get( e 'unframe_s )))
-               (close(SCons(
-                  (close(SAtom '\tadd\s$_s))
+            (set e (fragment::set( e 'del_s unframe-del )))
+            (set e (fragment::set( e 'unframe_s
+               (SCons(
+                  (close(fragment::get( e 'unframe_s )))
                   (close(SCons(
-                     (close(SAtom(to-string size)))
-                     (close(SAtom ',\s%rsp\n_s))
+                     (close(SAtom '\tadd\s$_s))
+                     (close(SCons(
+                        (close(SAtom(to-string size)))
+                        (close(SAtom ',\s%rsp\n_s))
+                     )))
                   )))
-               )))
-            ))
-         )))
+               ))
+            )))
+         ))
          (set e (fragment::set-context( e ctx )))
          (set e (fragment::set-offset( e bind-offset )))
          (set e (fragment::set-type( e (typeof term) )))

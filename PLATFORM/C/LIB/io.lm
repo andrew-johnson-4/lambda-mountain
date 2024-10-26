@@ -1,7 +1,20 @@
 
-puts := λ: FFI(: x U8[]). (: () U32);
+putchar := λ: FFI(: x U32). (: () U32);
+exit := λ: FFI(: x U32). (: () Nil);
 
 print := λ(: x String). (: (
-   (puts( (as x U8[]) ))
-   ()
+   (while (!=( (head-string x) 0_u8 )) (
+      (putchar( (as (head-string x) U32) ))
+      (set x (tail-string x))
+   ))
+) Nil);
+
+fail := λ(: msg String)(: loc String). (: (
+   (print msg)(print '\sat\s_s)(print loc)
+   (exit 1_u32)
+) Nil);
+
+fail := λ(: msg String). (: (
+   (print msg)
+   (exit 1_u32)
 ) Nil);

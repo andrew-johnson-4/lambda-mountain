@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm --c tests/bootstrap/print.lm
+	lm --c tests/regress/comparison.lm
 	cc tmp.c
 	./a.out
 
@@ -44,10 +44,10 @@ compile-production: compile-bootstrap
 	cp production re-production
 
 install-production: compile-production
-	mv production /usr/local/bin/lm
+	mv production $${HOME}/bin/lm
 
 install-bootstrap: compile-bootstrap
-	mv bootstrap /usr/local/bin/lm
+	mv bootstrap $${HOME}/bin/lm
 
 compile-bootstrap:
 	rm -f bootstrap bootstrap.o
@@ -57,7 +57,7 @@ compile-bootstrap:
 install:
 	as -o lm_raw.o BOOTSTRAP/cli.s
 	ld -o lm lm_raw.o
-	mv lm /usr/local/bin/
+	mv lm $${HOME}/bin/lm
 	rm lm_raw.o
 	#lm LMV/cli.lm -o lmv.s
 	#as -o lmv.o lmv.s
