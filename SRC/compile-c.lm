@@ -35,8 +35,8 @@ compile-c := λ . (: (
          ))
          (set preview-program rst)
       ))
-      ( (Seq( rst (Typedef( lhs rhs )) )) (
-         (compile-c-typedef( lhs rhs ))
+      ( (Seq( rst (Typedef( (Lit( lhs _ )) rhs )) )) (
+         (compile-c-typedef( (parse-type lhs) rhs ))
          (set preview-program rst)
       ))
       ( (Seq( rst _ )) (
