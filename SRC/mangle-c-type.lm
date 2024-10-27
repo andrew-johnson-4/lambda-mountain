@@ -3,11 +3,11 @@ mangle-c-type := λ(: tt Type). (: (
    (let r SNil)
    (match tt (
       ()
-      ( TAny () )
       ( (TAnd( lt rt )) (
          (set r (mangle-c-type lt))
          (if (non-zero r) () (set r (mangle-c-type rt)))
       ))
+      ( TAny (set r (SAtom 'void_s)) )
       ( (TVar _) () )
       ( (TGround( 'Nil_s _ )) (set r (SAtom 'void_s)) )
       ( (TGround( 'U8_s _ )) (set r (SAtom 'unsigned\schar_s)) )
