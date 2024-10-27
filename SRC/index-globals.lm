@@ -4,7 +4,7 @@ assemble-text-section                    := (: SNil S);
 assemble-init-section                    := (: SNil S);
 assemble-data-section                    := (: SNil S);
 assemble-profile-onexit                  := (: SNil S);
-assemble-global-initializer              := (: SNil S);
+assemble-global-initializer-section      := (: SNil S);
 assemble-final                           := '_s;
 assemble-argv-referenced                 := False_u8;
 
