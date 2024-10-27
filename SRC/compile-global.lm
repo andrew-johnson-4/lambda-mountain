@@ -68,7 +68,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
          (set text (SCons( (close text) (close(SAtom '=_s)) )))
          (set text (SCons( (close text) (close(fragment::get( e 'expression_s ))) )))
          (set text (SCons( (close text) (close(SAtom '\:\n_s)) )))
-         (set assemble-global-initializer-section (SCons( (close assemble-global-initializer) (close text) )))
+         (set assemble-global-initializer-section (SCons( (close assemble-global-initializer-section) (close text) )))
       ))
    ))
 ) Nil);
