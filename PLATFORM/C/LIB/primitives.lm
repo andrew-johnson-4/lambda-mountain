@@ -18,8 +18,7 @@ primitive::if := λ: Blob(: ictx ImplicitContext)(: f Meta<Any>)(: t Meta<Any>)(
 (declare-unop( branchtrue Nil BranchConditional ('1_l) ));
 (declare-unop( branchfalse Nil BranchConditional ('0_l) ));
 
-(declare-unop( as-branch-conditional U8 BranchConditional ( x ) ));
-(declare-unop( as-branch-conditional U64 BranchConditional ( x ) ));
+(declare-unop( into-branch-conditional BranchConditional BranchConditional ( x ) ));
 
 (declare-unop( cdecl::return Meta<Any> Nil ( 'return\s_l x '\:_l ) ));
 (declare-unop( cdecl::return Nil Nil ( x '\:_l ) ));
