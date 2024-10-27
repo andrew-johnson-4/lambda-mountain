@@ -50,7 +50,7 @@ compile-c-casedef := λ(: fields Type)(: case-number U64). (: (
       (SAtom 'struct\s{_s)
       (+(
          (compile-c-casedef-fields( fields case-number 1_u64 ))
-         (SAtom '}\n_s)
+         (SAtom '}\:\n_s)
       ))
    )))
    r
