@@ -65,7 +65,7 @@ compile-c-casedef-fields := λ(: fields Type)(: case-number U64)(: field-index U
          (set r (+( (+( (mangle-c-type ft) (SAtom '\s__s) )) (+( (SAtom(
             (to-string(+( (*( case-number 1000_u64 )) field-index )))
          )) (SAtom '\:_s) )) )))
-         (set r (+( (compile-c-casedef-fields( rst case-number (+( field-index 1_u64 )) )) r )))
+         (set r (+( r (compile-c-casedef-fields( rst case-number (+( field-index 1_u64 )) )) )))
       ))
       ( ft (
          (set r (+( (+( (mangle-c-type ft) (SAtom '\s__s) )) (+( (SAtom(
