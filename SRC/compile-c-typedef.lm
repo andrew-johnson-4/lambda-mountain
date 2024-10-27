@@ -3,7 +3,6 @@ index-c-type-ordinal := (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<Type,String
 
 compile-c-typedef := λ(: base-type Type)(: body AST). (: (
    (if (is-open base-type) () (
-      (print 'Compile\s_s)(print base-type)(print '\n_s)
       (let base-uuid (uuid()))
       (set index-c-type-ordinal (.bind( index-c-type-ordinal base-type base-uuid )))
       (let case-number 0_u64)
