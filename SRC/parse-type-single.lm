@@ -37,11 +37,7 @@ parse-type-single := λ(: tt String). (: (
                      (set base-type TAny)
                   ) (
                      (if (is-variable vn) (
-                        (if (==( vn '__s )) (
-                           (set base-type TAny)
-                        ) (
-                           (set base-type (TVar vn))
-                        ))
+                        (set base-type (TVar vn))
                      ) (
                         (set base-type (TGround(
                            (clone-rope buff)
@@ -125,11 +121,7 @@ parse-type-single := λ(: tt String). (: (
          (set base-type TAny)
       ) (
          (if (is-variable vn) (
-            (if (==( vn '__s )) (
-               (set base-type TAny)
-            ) (
-               (set base-type (TVar vn))
-            ))
+            (set base-type (TVar vn))
          ) (
             (set base-type (TGround(
                (clone-rope buff)
