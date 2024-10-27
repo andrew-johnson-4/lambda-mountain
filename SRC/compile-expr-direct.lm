@@ -48,6 +48,11 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                      ( '\\:_s (set e (fragment::expression '59_s)) )
                      ( _ (set e (fragment::expression val)) )
                   ))
+                  (if (is( config-assemble-mode AssembleC )) (
+                     (set e (fragment::set( e 'expression_s (
+                        (+( (+( (SAtom '\[_s) (SAtom val) )) (SAtom '\]_s) ))
+                     ))))
+                  ) ())
                ))
             ))
          ))

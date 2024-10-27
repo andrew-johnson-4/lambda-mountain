@@ -3,11 +3,11 @@ mangle-c-type := λ(: tt Type). (: (
    (let r SNil)
    (match tt (
       ()
-      ( TAny () )
       ( (TAnd( lt rt )) (
          (set r (mangle-c-type lt))
          (if (non-zero r) () (set r (mangle-c-type rt)))
       ))
+      ( TAny (set r (SAtom 'void_s)) )
       ( (TVar _) () )
       ( (TGround( 'Nil_s _ )) (set r (SAtom 'void_s)) )
       ( (TGround( 'U8_s _ )) (set r (SAtom 'unsigned\schar_s)) )
@@ -20,7 +20,12 @@ mangle-c-type := λ(: tt Type). (: (
       ( (TGround( 'I64_s _ )) (set r (SAtom 'signed\slong_s)) )
       ( (TGround( 'String_s _ )) (set r (SAtom 'char*_s)) )
       ( (TGround( 'Array_s (LCons( _ (LCons( array-base _ )) )) )) (set r (+( (mangle-c-type array-base) (SAtom '*_s) ))) )
-      ( (TGround( _ _ )) () )
+      ( (TGround( _ _ )) (
+         (let c-type-name (.lookup( index-c-type-ordinal tt 'UnknownCTypename_s )))
+         (if (==( c-type-name 'UnknownCTypename_s )) () (
+            (set r (+( (SAtom 'struct\s_s) (SAtom c-type-name) )))
+         ))
+      ))
    ))
    r
 ) S);

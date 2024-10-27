@@ -1,9 +1,9 @@
 
 compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64). (: (
-   (compile-push-rvalue( ctx rval offset 0_u64 ))
+   (compile-push-rvalue( ctx rval offset 0_u64 1_u64 ))
 ) Fragment);
 
-compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64)(: count U64). (: (
+compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64)(: count U64)(: left-assoc U64). (: (
    (let r (fragment::new()))
    (match (slot( (typeof rval) 'Cons_s )) (
       ()
@@ -11,13 +11,19 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64)(: count U64)
          (match rval (
             ()
             ( (App( le re )) (
-               (let e1 (compile-push-rvalue( ctx le offset count )))
+               (let e1 (compile-push-rvalue( ctx le offset count left-assoc )))
                (if (is( config-assemble-mode AssembleC )) (scope(
                   (let e2 (compile-expr( ctx re (.offset e1) Used )))
                   (set r (fragment::chain( e1 e2 )))
-                  (set r (fragment::set( r 'expression_s (
-                     (+( (+( (fragment::get( e1 'expression_s )) (SAtom ',_s) )) (fragment::get( e2 'expression_s )) ))
-                  ))))
+                  (if left-assoc (
+                     (set r (fragment::set( r 'expression_s (
+                        (+( (+( (fragment::get( e1 'expression_s )) (SAtom ',_s) )) (fragment::get( e2 'expression_s )) ))
+                     ))))
+                  ) (
+                     (set r (fragment::set( r 'expression_s (
+                        (+( (+( (fragment::get( e2 'expression_s )) (SAtom ',_s) )) (fragment::get( e1 'expression_s )) ))
+                     ))))
+                  ))
                )) (scope(
                   (if (!=( count 0_u64 )) (
                      (let re-tt (typeof re))

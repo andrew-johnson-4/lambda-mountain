@@ -13,7 +13,16 @@ fragment type I64; size I64 8; atom suffix I64 _i64;
 (declare-binop( ^ I64 I64 I64 ( '\[_l x '^_l y '\]_l ) ));
 (declare-binop( / I64 I64 I64 ( '\[_l x '/_l y '\]_l ) ));
 (declare-binop( % I64 I64 I64 ( '\[_l x '%_l y '\]_l ) ));
+(declare-binop( * I64 I64 I64 ( '\[_l x '*_l y '\]_l ) ));
 
 (declare-unop( not I64 U64 ( '\[!_l x '\]_l ) ));
 
 (declare-unop( into-branch-conditional I64 BranchConditional ( x ) ));
+
+print := λ(: x I64). (: (
+   (if (<( x 0_i64 )) (
+      (print '-_s)
+      (set x (-( 0_i64 x )))
+   ) ())
+   (print (as x U64))
+) Nil);

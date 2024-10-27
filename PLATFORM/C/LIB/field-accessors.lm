@@ -1,10 +1,10 @@
 
 
 (declare-unop( .0 LMStruct U64 ( '\[_l x '._0\]_l ) ));
-(declare-unop( .1 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<_,f1>,_>> f1 ( '\[_l x '._cl (: cn L) '._1\]_l ) ));
-(declare-unop( .2 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<_,f2>,_>,_>> f2 ( '\[_l x '._cl (: cn L) '._2\]_l ) ));
-(declare-unop( .3 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<_,f3>,_>,_>,_>> f3 ( '\[_l x '._cl (: cn L) '._3\]_l ) ));
-(declare-unop( .4 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<Cons<_,f4>,_>,_>,_>,_>> f4 ( '\[_l x '._cl (: cn L) '._4\]_l ) ));
-(declare-unop( .5 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_,f5>,_>,_>,_>,_>,_>> f5 ( '\[_l x '._cl (: cn L) '._5\]_l ) ));
-(declare-unop( .6 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<Cons<Cons<Cons<_,f6>,_>,_>,_>,_>,_>,_>> f6 ( '\[_l x '._cl (: cn L) '._6\]_l ) ));
+(declare-unop( .1 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<_r,f1>,_0>> f1 ( '\[_l x '.__l (+( (*( (: cn L) 1000_l )) 1_l )) '\]_l ) ));
+(declare-unop( .2 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<_r,f2>,_1>,_0>> f2 ( '\[_l x '.__l (+( (*( (: cn L) 1000_l )) 2_l )) '\]_l ) ));
+(declare-unop( .3 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<_r,f3>,_2>,_1>,_0>> f3 ( '\[_l x '.__l (+( (*( (: cn L) 1000_l )) 3_l )) '\]_l ) ));
+(declare-unop( .4 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<Cons<_r,f4>,_3>,_2>,_1>,_0>> f4 ( '\[_l x '.__l (+( (*( (: cn L) 1000_l )) 4_l )) '\]_l ) ));
+(declare-unop( .5 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_r,f5>,_4>,_3>,_2>,_1>,_0>> f5 ( '\[_l x '.__l (+( (*( (: cn L) 1000_l )) 5_l )) '\]_l ) ));
+(declare-unop( .6 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<Cons<Cons<Cons<_r,f6>,_5>,_4>,_3>,_2>,_1>,_0>> f6 ( '\[_l x '.__l (+( (*( (: cn L) 1000_l )) 6_l )) '\]_l ) ));
 

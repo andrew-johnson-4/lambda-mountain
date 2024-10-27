@@ -2,3 +2,7 @@
 fragment type U32; size U32 4; atom suffix U32 _u32;
 
 (declare-unop( into-branch-conditional U32 BranchConditional ( x ) ));
+
+print := λ(: x U32). (: (
+   (print (as x U64))
+) Nil);

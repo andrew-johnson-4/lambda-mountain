@@ -2,3 +2,7 @@
 fragment type I16; size I16 2; atom suffix I16 _i16;
 
 (declare-unop( into-branch-conditional I16 BranchConditional ( x ) ));
+
+print := λ(: x I16). (: (
+   (print (as x I64))
+) Nil);
