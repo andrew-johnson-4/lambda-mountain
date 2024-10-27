@@ -21,7 +21,7 @@ compile-c-typedef := λ(: base-type Type)(: body AST). (: (
             (set body ASTEOF)
          ))
       )))
-      (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\odefine\s_s)) )))
+      (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '//define\s_s)) )))
       (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom(to-string base-type))) )))
       (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\nstruct\s_s)) )))
       (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom base-uuid)) )))
