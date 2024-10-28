@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm --c tests/regress/expression-if.lm
+	lm --c tests/regress/read-file.lm
 	cc tmp.c
 	./a.out
 	echo $?
