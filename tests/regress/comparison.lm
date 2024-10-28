@@ -10,7 +10,7 @@ f1 := λ. 1_u64;
 f2 := λ. 2_u64;
 
 main := λ.(: (
-   (let l0 1_u64)
+   (let l0 0_u64)
    (let l1 1_u64)
    (let l2 2_u64)
    (print 'Global\s0\s_s)(print g0)(print '\n_s)

@@ -1,5 +1,5 @@
 
-dev: install-production
+dev:
 	lm --c tests/regress/comparison.lm
 	cc tmp.c
 	./a.out
