@@ -51,7 +51,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
          (set text (SCons( (close text) (close frame) )))
          (set text (SCons( (close text) (close program) )))
          (if (==( k 'main_s )) (
-            (set text (SCons( (close text) (close(SAtom 'return\s0\:\n_s)) )))
+            (set text (SCons( (close text) (close(SAtom '\:return\s0\:\n_s)) )))
          ) ())
          (set text (SCons( (close text) (close(SAtom '}\n_s)) )))
          (set assemble-text-section (SCons( (close assemble-text-section) (close text) )))
