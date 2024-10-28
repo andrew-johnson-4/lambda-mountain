@@ -1,8 +1,9 @@
 
 dev:
-	lm --c tests/regress/comparison.lm
+	lm --c tests/regress/seq-macro.lm
 	cc tmp.c
 	./a.out
+	echo $?
 
 profile: install-production
 	lm --profile-invocations SRC/index-index.lm -o profile.s
