@@ -102,7 +102,7 @@ main := λ.(: (
    (print '\n_s)
    (print (>=( 1_u64 (f0()) )))
    (print (>=( 1_u64 (f1()) )))
-   (print (>=( 1_u64 (f1()) )))
+   (print (>=( 1_u64 (f2()) )))
    (print '\n_s)
    (print '\n_s)
 
@@ -194,7 +194,7 @@ main := λ.(: (
    (print '\n_s)
    (print (>=( l1 (f0()) )))
    (print (>=( l1 (f1()) )))
-   (print (>=( l1 (f1()) )))
+   (print (>=( l1 (f2()) )))
    (print '\n_s)
    (print '\n_s)
 
@@ -286,7 +286,7 @@ main := λ.(: (
    (print '\n_s)
    (print (>=( g1 (f0()) )))
    (print (>=( g1 (f1()) )))
-   (print (>=( g1 (f1()) )))
+   (print (>=( g1 (f2()) )))
    (print '\n_s)
    (print '\n_s)
 
@@ -378,7 +378,8 @@ main := λ.(: (
    (print '\n_s)
    (print (>=( (f1()) (f0()) )))
    (print (>=( (f1()) (f1()) )))
-   (print (>=( (f1()) (f1()) )))
+   (print (>=( (f1()) (f2()) )))
    (print '\n_s)
    (print '\n_s)
 ) Nil)
+
