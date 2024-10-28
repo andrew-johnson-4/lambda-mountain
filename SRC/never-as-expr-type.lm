@@ -1,0 +1,18 @@
+
+never-as-expr-type := λ(: e Fragment)(: et Type). (: (
+   (set e (fragment::set( e 'expression (
+      (+(
+         (+(
+            (SAtom '\[{_s)
+            (fragment::get( e 'expression_s ))
+         ))
+         (+(
+            (SAtom '\:_s)
+            (+(
+               (mangle-c-type et)
+               (SAtom '\srvalue\:rvalue\:}\]_s)
+            ))
+         ))
+      ))
+   ))))
+) Fragment);
