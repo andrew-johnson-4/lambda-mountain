@@ -6,6 +6,7 @@ exit := λ: FFI(: x U32). (: () Nil);
 malloc := λ: FFI(: sz U64). (: () ?[]);
 realloc := λ: FFI(: ptr ?[])(: sz U64). (: () ?[]);
 fopen := λ: FFI(: fp U8[])(: mode U8[]). (: () File[]);
+fread := λ: FFI(: buff ?[])(: size U64)(: count U64)(: f File[]). (: () U64);
 fclose := λ: FFI(: f File[]). (: () U32);
 
 print := λ(: x String). (: (
@@ -26,10 +27,15 @@ fail := λ(: msg String). (: (
 ) Never);
 
 read-file := λ(: fp String). (: (
-   (let buff-sz 1024_u64)
-   (let buff (malloc 1024_u64))
+   (let buff-sz 0_u64)
+   (let buff (as (malloc 1024_u64) U8[]))
    (let f (fopen( (as fp U8[]) (as 'r_s U8[]) )))
+   (let bytes-read 1_u64)
+   (while bytes-read (
+      (set bytes-read (fread( (+( buff buff-sz )) 1_u64 1023_u64 f )))
+      (set buff-sz (+( buff-sz bytes-read )))
+   ))
    (fclose f)
-   (print 'READ\s_s)(print fp)(print '\n_s)(exit 1_u32)
-   'TODO\n_s
+   (set[]( buff buff-sz 0_u8 ))
+   (as buff String)
 ) String);
