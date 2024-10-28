@@ -1,6 +1,6 @@
 
-dev: install-production
-	lm --c tests/regress/cdecl.lm
+dev:
+	lm --c tests/regress/comparison.lm
 	cc tmp.c
 	./a.out
 

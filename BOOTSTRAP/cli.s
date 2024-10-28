@@ -141356,6 +141356,8 @@ uuid_00000000000da48b:
 	pop %RBX
 	cmp $0, %RAX
 	jne uuid_00000000000da48e
+	jmp uuid_00000000000da490
+uuid_00000000000da48e:
 #call function close : Arrow<S,Array<S,?>+Reg64>
 	push %RBX
 	push %RBP
@@ -141387,8 +141389,6 @@ uuid_00000000000da48b:
 	popq -936(%RBP)
 	popq -928(%RBP)
 	popq -920(%RBP)
-	jmp uuid_00000000000da490
-uuid_00000000000da48e:
 uuid_00000000000da490:
 	mov -960(%RBP),%RSP
 	add $-960, %RSP
@@ -209897,7 +209897,7 @@ uuid_00000000000da4bd:
 	.ascii "TODO Compile Global Blob\n"
 	.zero 1
 uuid_00000000000da4ca:
-	.ascii "File: SRC/compile-global.lm Line: 99 Column: 14"
+	.ascii "File: SRC/compile-global.lm Line: 98 Column: 14"
 	.zero 1
 uuid_00000000000da4d4:
 	.ascii "_COUNTER"
@@ -209942,7 +209942,7 @@ uuid_00000000000da508:
 	.ascii ":\n.zero "
 	.zero 1
 uuid_00000000000da509:
-	.ascii "File: SRC/compile-global.lm Line: 82 Column: 5"
+	.ascii "File: SRC/compile-global.lm Line: 81 Column: 5"
 	.zero 1
 uuid_00000000000da546:
 	.ascii "File: SRC/compile-push-rvalue.lm Line: 11 Column: 11"
