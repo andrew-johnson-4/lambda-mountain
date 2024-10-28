@@ -209524,7 +209524,7 @@ uuid_00000000000d9438:
 	.ascii "File: SRC/compile-c-function-args.lm Line: 4 Column: 5"
 	.zero 1
 uuid_00000000000d9442:
-	.ascii "#include <stdio.h>\n#include <stdlib.h>\n\n"
+	.ascii "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\n"
 	.zero 1
 index_SB_c_SB_type_SB_ordinal_CL_HashtableEqStringType:
 .zero 32
