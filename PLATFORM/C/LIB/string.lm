@@ -1,5 +1,5 @@
 
-fragment type String; atom suffix String _s;
+fragment type String; size String 8; atom suffix String _s;
 
 head-string := λ(: x String). (: (
    ([]( (as x U8[]) 0_u64 ))
