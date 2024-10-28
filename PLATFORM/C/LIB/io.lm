@@ -1,4 +1,5 @@
 
+printf := λ: FFI(: format String)(: arg Meta<Any>). (: () U32);
 putchar := λ: FFI(: x U32). (: () U32);
 exit := λ: FFI(: x U32). (: () Nil);
 
