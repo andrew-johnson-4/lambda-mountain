@@ -1,0 +1,11 @@
+
+is-never := λ(: tt Type). (: (
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( (TAnd( t1 t2 )) (set r (||( (is-never t1) (is-never t2) ))) )
+      ( (TGround( 'Never_s _ )) (set r 1_u64) )
+      ( _ () )
+   ))
+   r
+) U64);
