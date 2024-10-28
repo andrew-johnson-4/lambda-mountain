@@ -13,12 +13,6 @@ main := λ.(: (
    (let l0 0_u64)
    (let l1 1_u64)
    (let l2 2_u64)
-   (print 'Global\s0\s_s)(print g0)(print '\n_s)
-   (print 'Global\s1\s_s)(print g1)(print '\n_s)
-   (print 'Global\s2\s_s)(print g2)(print '\n_s)
-   (print 'Local\s0\s_s)(print l0)(print '\n_s)
-   (print 'Local\s1\s_s)(print l1)(print '\n_s)
-   (print 'Local\s2\s_s)(print l2)(print '\n_s)
 
    # Constant, Constant
    (print (==( 1_u64 1_u64 )))
