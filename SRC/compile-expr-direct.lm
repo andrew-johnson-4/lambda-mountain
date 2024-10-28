@@ -31,8 +31,26 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             ) (
                (if (non-zero(class-of-tag val)) (
                   (let tag-index (index-of-tag val))
-                  (set e (fragment::expression(to-string tag-index)))
-                  (set e (fragment::set( e 'program_s (SCons( (close SNil) (close SNil) )) )))
+                  (if (is( config-assemble-mode AssembleC )) (
+                     (set e (fragment::set( e 'expression_s (
+                        (+(
+                           (+(
+                              (SAtom '\[{_s)
+                              (mangle-c-type ltype)
+                           ))
+                           (+(
+                              (SAtom '\srvalue={_s)
+                              (+(
+                                 (SAtom(to-string tag-index))
+                                 (SAtom '}\:rvalue\:}\]_s)
+                              ))
+                           ))
+                        ))
+                     ))))
+                  ) (
+                     (set e (fragment::expression(to-string tag-index)))
+                     (set e (fragment::set( e 'program_s (SCons( (close SNil) (close SNil) )) )))
+                  ))
                ) (
                   (match val (
                      ()
