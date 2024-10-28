@@ -1,19 +1,22 @@
 
 never-as-expr-type := λ(: e Fragment)(: et Type). (: (
-   (set e (fragment::set( e 'expression_s (
-      (+(
+   (let into-c-type (mangle-c-type et))
+   (if (not(==( into-c-type (SAtom 'void_s) ))) (
+      (set e (fragment::set( e 'expression_s (
          (+(
-            (SAtom '\[{_s)
-            (fragment::get( e 'expression_s ))
-         ))
-         (+(
-            (SAtom '\:_s)
             (+(
-               (mangle-c-type et)
-               (SAtom '\srvalue\:rvalue\:}\]_s)
+               (SAtom '\[{_s)
+               (fragment::get( e 'expression_s ))
+            ))
+            (+(
+               (SAtom '\:_s)
+               (+(
+                  into-c-type
+                  (SAtom '\srvalue\:rvalue\:}\]_s)
+               ))
             ))
          ))
-      ))
-   ))))
+      ))))
+   ) ())
    e
 ) Fragment);
