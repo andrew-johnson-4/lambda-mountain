@@ -21,7 +21,7 @@ primitive::if := λ: Blob(: ictx ImplicitContext)(: f Meta<Any>)(: t Meta<Any>)(
 (declare-unop( into-branch-conditional BranchConditional BranchConditional ( x ) ));
 
 (declare-unop( cdecl::return Meta<Any> Nil ( 'return\s_l x '\:_l ) ));
-(declare-unop( cdecl::return Nil Nil ( x '\:_l ) ));
+(declare-unop( cdecl::return Meta<Any>+Nil Nil ( x '\:_l ) ));
 
 primitive::call := λ: Blob(: ictx ImplicitContext)(: args Meta<Any>). (: (
    (:frame( (:frame ictx) (:frame args) ))

@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm --c tests/regress/seq-macro.lm
+	lm --c tests/regress/expression-if.lm
 	cc tmp.c
 	./a.out
 	echo $?
