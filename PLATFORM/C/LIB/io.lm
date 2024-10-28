@@ -3,6 +3,10 @@ strcmp := λ: FFI(: l U8[])(: r U8[]). (: () U32);
 printf := λ: FFI(: format String)(: arg Meta<Any>). (: () U32);
 putchar := λ: FFI(: x U32). (: () U32);
 exit := λ: FFI(: x U32). (: () Nil);
+malloc := λ: FFI(: sz U64). (: () ?[]);
+realloc := λ: FFI(: ptr ?[])(: sz U64). (: () ?[]);
+fopen := λ: FFI(: fp U8[])(: mode U8[]). (: () File[]);
+fclose := λ: FFI(: f File[]). (: () U32);
 
 print := λ(: x String). (: (
    (while (!=( (head-string x) 0_u8 )) (
@@ -20,3 +24,12 @@ fail := λ(: msg String). (: (
    (print msg)
    (exit 1_u32)
 ) Never);
+
+read-file := λ(: fp String). (: (
+   (let buff-sz 1024_u64)
+   (let buff (malloc 1024_u64))
+   (let f (fopen( (as fp U8[]) (as 'r_s U8[]) )))
+   (fclose f)
+   (print 'READ\s_s)(print fp)(print '\n_s)(exit 1_u64)
+   'TODO\n_s
+) String);
