@@ -1,6 +1,6 @@
 
 never-as-expr-type := λ(: e Fragment)(: et Type). (: (
-   (set e (fragment::set( e 'expression (
+   (set e (fragment::set( e 'expression_s (
       (+(
          (+(
             (SAtom '\[{_s)
