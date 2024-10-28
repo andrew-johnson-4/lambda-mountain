@@ -1,5 +1,5 @@
 
-dev:
+dev: install-production
 	lm --c tests/regress/seq-macro.lm
 	cc tmp.c
 	./a.out

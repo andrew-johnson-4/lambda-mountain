@@ -31,7 +31,11 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
          (let frame (fragment::get( e 'frame_s )))
          (let text SNil)
 
-         (set text (SCons( (close text) (close(mangle-c-type(typeof rhs))) )))
+         (if (==( k 'main_s )) (
+            (set text (SCons( (close text) (close(SAtom 'int_s)) )))
+         ) (
+            (set text (SCons( (close text) (close(mangle-c-type(typeof rhs))) )))
+         ))
          (set text (SCons( (close text) (close(SAtom '\s_s)) )))
          (set text (SCons( (close text) (close(SAtom function-name)) )))
          (set text (SCons( (close text) (close(SAtom '\[_s)) )))
@@ -39,7 +43,11 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
          (set text (SCons( (close text) (close(SAtom '\]\:\n_s)) )))
          (set assemble-header-section (SCons( (close assemble-header-section) (close text) )))
 
-         (set text (SCons( (close text) (close(mangle-c-type(typeof rhs))) )))
+         (if (==( k 'main_s )) (
+            (set text (SCons( (close text) (close(SAtom 'int_s)) )))
+         ) (
+            (set text (SCons( (close text) (close(mangle-c-type(typeof rhs))) )))
+         ))
          (set text (SCons( (close text) (close(SAtom '\s_s)) )))
          (set text (SCons( (close text) (close(SAtom function-name)) )))
          (set text (SCons( (close text) (close(SAtom '\[_s)) )))
