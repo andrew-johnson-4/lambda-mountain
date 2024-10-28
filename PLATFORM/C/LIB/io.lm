@@ -30,6 +30,6 @@ read-file := λ(: fp String). (: (
    (let buff (malloc 1024_u64))
    (let f (fopen( (as fp U8[]) (as 'r_s U8[]) )))
    (fclose f)
-   (print 'READ\s_s)(print fp)(print '\n_s)(exit 1_u64)
+   (print 'READ\s_s)(print fp)(print '\n_s)(exit 1_u32)
    'TODO\n_s
 ) String);
