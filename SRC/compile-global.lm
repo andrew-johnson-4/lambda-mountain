@@ -19,16 +19,23 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
          (set ctx (FCtxBind( (close ctx) 'cdecl::args-size_s TAny
             (fragment::expression(to-string args-size))
          )))
-         (let e (compile-expr( ctx rhs 0_i64 Return )))
+         (let e (fragment::new()))
+         (let function-name 'main_s)
+         (if (==( k 'main_s )) (
+            (set e (compile-expr( ctx rhs 0_i64 Unused )))
+         ) (
+            (set e (compile-expr( ctx rhs 0_i64 Return )))
+            (set function-name (mangle-identifier( k kt )))
+         ))
          (let program (fragment::get( e 'expression_s )))
          (let frame (fragment::get( e 'frame_s )))
          (let text SNil)
-         (let function-name 'main_s)
-         (if (==( k 'main_s )) () (
-            (set function-name (mangle-identifier( k kt )))
-         ))
 
-         (set text (SCons( (close text) (close(mangle-c-type(typeof rhs))) )))
+         (if (==( k 'main_s )) (
+            (set text (SCons( (close text) (close(SAtom 'int_s)) )))
+         ) (
+            (set text (SCons( (close text) (close(mangle-c-type(typeof rhs))) )))
+         ))
          (set text (SCons( (close text) (close(SAtom '\s_s)) )))
          (set text (SCons( (close text) (close(SAtom function-name)) )))
          (set text (SCons( (close text) (close(SAtom '\[_s)) )))
@@ -36,7 +43,11 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
          (set text (SCons( (close text) (close(SAtom '\]\:\n_s)) )))
          (set assemble-header-section (SCons( (close assemble-header-section) (close text) )))
 
-         (set text (SCons( (close text) (close(mangle-c-type(typeof rhs))) )))
+         (if (==( k 'main_s )) (
+            (set text (SCons( (close text) (close(SAtom 'int_s)) )))
+         ) (
+            (set text (SCons( (close text) (close(mangle-c-type(typeof rhs))) )))
+         ))
          (set text (SCons( (close text) (close(SAtom '\s_s)) )))
          (set text (SCons( (close text) (close(SAtom function-name)) )))
          (set text (SCons( (close text) (close(SAtom '\[_s)) )))
@@ -47,6 +58,9 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
          ) ())
          (set text (SCons( (close text) (close frame) )))
          (set text (SCons( (close text) (close program) )))
+         (if (==( k 'main_s )) (
+            (set text (SCons( (close text) (close(SAtom '\:return\s0\:\n_s)) )))
+         ) ())
          (set text (SCons( (close text) (close(SAtom '}\n_s)) )))
          (set assemble-text-section (SCons( (close assemble-text-section) (close text) )))
       )))
