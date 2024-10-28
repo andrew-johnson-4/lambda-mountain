@@ -10,6 +10,7 @@ mangle-c-type := λ(: tt Type). (: (
       ( TAny (set r (SAtom 'void_s)) )
       ( (TVar _) () )
       ( (TGround( 'Nil_s _ )) (set r (SAtom 'void_s)) )
+      ( (TGround( 'Never_s _ )) (set r (SAtom 'void_s)) )
       ( (TGround( 'U8_s _ )) (set r (SAtom 'unsigned\schar_s)) )
       ( (TGround( 'U16_s _ )) (set r (SAtom 'unsigned\sshort_s)) )
       ( (TGround( 'U32_s _ )) (set r (SAtom 'unsigned\sint_s)) )
