@@ -34,6 +34,7 @@ read-file := λ(: fp String). (: (
    (while bytes-read (
       (set bytes-read (fread( (+( buff buff-sz )) 1_u64 1023_u64 f )))
       (set buff-sz (+( buff-sz bytes-read )))
+      (set buff (as (realloc( buff (+( buff-sz 1023_u64 )) )) U8[]))
    ))
    (fclose f)
    (set[]( buff buff-sz 0_u8 ))
