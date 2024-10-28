@@ -15,4 +15,5 @@ never-as-expr-type := λ(: e Fragment)(: et Type). (: (
          ))
       ))
    ))))
+   e
 ) Fragment);
