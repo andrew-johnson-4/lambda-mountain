@@ -6,9 +6,9 @@ f := λ(: x x). (: (
 ) x);
 
 custom-close := λ(: x x). (: (
-   (mov( (malloc(sizeof x)) R8 ))
-   (mov( x 0_u64 (as R8 x[]) ))
-   (as R8 x[])
+   (let r (as (malloc(sizeof x)) x[]))
+   (set[]( r 0_u64 x ))
+   r
 ) x[]);
 
 main := λ. (: (
