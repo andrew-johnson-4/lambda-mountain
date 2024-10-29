@@ -124,6 +124,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
       ( (App( (Var( 'open_s _ )) r )) (
          (set tctx (infer-expr( tctx r Unscoped TAny Used )))
          (let deref-type (typeof r))
+         (maybe-specialize( 'open_s (typeof-var-raw( term tctx 'open_s )) deref-type term ))
          (match (slot( deref-type 'Array_s )) (
             ()
             ( (TGround( 'Array_s (LCons( _ (LCons( TAny LEOF )) )) )) () )
