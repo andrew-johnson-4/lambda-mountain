@@ -1,0 +1,11 @@
+
+is-dontopen := λ(: tt Type). (: (
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( (TAnd( t1 t2 )) (set r (||( (is-dontopen t1) (is-dontopen t2) ))) )
+      ( (TGround( 'DontOpen_s _ )) (set r 1_u64) )
+      ( _ () )
+   ))
+   r
+) U64);

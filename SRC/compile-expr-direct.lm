@@ -105,7 +105,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             (set e (compile-stack-calls( ctx 'open_s TAny (t1 'Nil_s) t stack-offset Used )))
          ) (
             (let tt (typeof t))
-            (if (is-array tt) (
+            (if (&&( (is-array tt) (not(is-dontopen tt)) )) (
                (match (slot( tt 'Array_s )) (
                   ()
                   ( (TGround( 'Array_s (LCons( _ (LCons( TAny LEOF )) )) )) (
