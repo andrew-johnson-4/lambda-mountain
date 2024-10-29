@@ -8,3 +8,6 @@ close := λ(: x p). (: (
    (set[]( r 0_u64 x ))
    r
 ) p[]);
+
+(declare-unop( open t t (x) ));
+(declare-unop( open Array<base-type,?> base-type ('\[*_l x '\]_l) ));

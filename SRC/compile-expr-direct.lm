@@ -101,22 +101,26 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set e (fragment::set-context( e ctx )))
       ))
       ( (App( (Var( 'open_s _ )) t )) (
-         (let tt (typeof t))
-         (if (is-array tt) (
-            (match (slot( tt 'Array_s )) (
-               ()
-               ( (TGround( 'Array_s (LCons( _ (LCons( TAny LEOF )) )) )) (
-                  (set e (compile-expr( ctx t stack-offset Used )))
-               ) )
-               ( (TGround( 'Array_s (LCons( TAny (LCons( inner-tt LEOF )) )) )) (
-                  (set e (compile-stack-calls( ctx 'push-deref_s TAny (t1 'Nil_s) t stack-offset Used )))
-                  (set e (fragment::set-type( e (and( (denormalize inner-tt) (t1 'StackVariable_s) )) )))
-                  (let new-offset (-( stack-offset (as (sizeof-aligned inner-tt) I64) )))
-                  (set e (fragment::set-offset( e new-offset )))
-               ))
-            ))
+         (if (is( config-assemble-mode AssembleC )) (
+            (set e (compile-stack-calls( ctx 'open_s TAny (t1 'Nil_s) t stack-offset Used )))
          ) (
-            (set e (compile-expr( ctx t stack-offset Used )))
+            (let tt (typeof t))
+            (if (is-array tt) (
+               (match (slot( tt 'Array_s )) (
+                  ()
+                  ( (TGround( 'Array_s (LCons( _ (LCons( TAny LEOF )) )) )) (
+                     (set e (compile-expr( ctx t stack-offset Used )))
+                  ) )
+                  ( (TGround( 'Array_s (LCons( TAny (LCons( inner-tt LEOF )) )) )) (
+                     (set e (compile-stack-calls( ctx 'push-deref_s TAny (t1 'Nil_s) t stack-offset Used )))
+                     (set e (fragment::set-type( e (and( (denormalize inner-tt) (t1 'StackVariable_s) )) )))
+                     (let new-offset (-( stack-offset (as (sizeof-aligned inner-tt) I64) )))
+                     (set e (fragment::set-offset( e new-offset )))
+                  ))
+               ))
+            ) (
+               (set e (compile-expr( ctx t stack-offset Used )))
+            ))
          ))
       ))
       ( (App( (Var( 'sizeof_s _ )) (AType tt) )) (
