@@ -28,6 +28,7 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
       ))
       ( (App( (Lit( tag _ )) args )) (
          (let atype (type-of-s-with-fields( base-type tag args 1_u64 )))
+         (add-concrete-type-instance atype)
          (mark-constructor-flat-parameters( base-type atype ))
          (if (has-forward( atype )) (
             (print 'Size\sOf\sType\sCannot\sBe\sDetermined\sDue\sTo\sForward\sReference:\s_s)

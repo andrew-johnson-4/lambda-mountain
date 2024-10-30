@@ -14,6 +14,7 @@ add-concrete-type-instance := λ(: tt Type). (: (
                (cons( tt (.lookup( concrete-type-instances-index k (: LEOF List<Type>) )) ))
             )))
          ))
+         (for-each (ct in ts) (add-concrete-type-instance ct))
       ))
    )) ())
 ) Nil);
