@@ -16,7 +16,7 @@ print := λ(: x S). (: (
          (print r)
          (print '\]_s)
       ))
-      ( (SPointer(raw p)) (
+      ( (SPointer p) (
          (print '&[_s)
          (print (as p U64))
          (print ']_s)
