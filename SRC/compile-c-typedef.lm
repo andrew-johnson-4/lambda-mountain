@@ -107,7 +107,7 @@ compile-c-typedef-concrete := λ(: tctx TContext)(: base-type Type)(: body AST).
             continue-compile-c-typedefs-concrete
          )))
       ) (
-         (set is-cstruct-hard-compile-index (.bind( is-cstruct-hard-compiled-index base-type 1_u64 )))
+         (set is-cstruct-hard-compiled-index (.bind( is-cstruct-hard-compiled-index base-type 1_u64 )))
          (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '//define\s_s)) )))
          (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom(to-string base-type))) )))
          (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\nstruct\s_s)) )))
