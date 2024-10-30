@@ -30,6 +30,7 @@ continue-compile-c-typedefs-concrete := (: LEOF List<Tuple<Tuple<TContext,Type>,
 continue-compile-c-typedefs-count := 0_u64;
 try-continue-compile-c-typedefs := λ. (: (
    (let continue continue-compile-c-typedefs-concrete)
+   (set continue-compile-c-typedefs-concrete (: LEOF List<Tuple<Tuple<TContext,Type>,AST>>);
    (while (non-zero continue) (
       (set continue-compile-c-typedefs-count (+( continue-compile-c-typedefs-count 1_u64 )))
       (if (>( continue-compile-c-typedefs-count 100_u64 )) () (
