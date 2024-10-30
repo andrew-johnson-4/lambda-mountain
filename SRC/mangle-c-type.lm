@@ -1,5 +1,11 @@
 
 mangle-c-type := λ(: tt Type). (: (
+   (set tt (normalize tt))
+   (let r (mangle-c-type-internal tt))
+   r
+) S);
+
+mangle-c-type-internal := λ(: tt Type). (: (
    (let r SNil)
    (match tt (
       ()
