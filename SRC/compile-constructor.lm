@@ -3,7 +3,7 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
    (let r (fragment::new()))
    (if (is( config-assemble-mode AssembleC )) (
       (let bare-ordinal (with-only-class return-type))
-      (let c-type-name (.lookup( index-c-type-ordinal bare-ordinal 'UnknownCTypename_s )))
+      (let c-type-name (.lookup( index-c-type-ordinal (normalize bare-ordinal) 'UnknownCTypename_s )))
       (let inner-rvalue (compile-push-rvalue( ctx args 0_i64 0_u64 0_u64 )))
       (let case-number (SAtom(to-string(index-of-tag tag-name))))
       (if (is-nil args-type) () (
