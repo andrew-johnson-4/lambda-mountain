@@ -1,5 +1,11 @@
 
 mangle-c-type := λ(: tt Type). (: (
+   (set tt (normalize tt))
+   (let r (mangle-c-type-internal tt))
+   r
+) S);
+
+mangle-c-type-internal := λ(: tt Type). (: (
    (let r SNil)
    (match tt (
       ()
@@ -25,7 +31,7 @@ mangle-c-type := λ(: tt Type). (: (
       ( (TGround( _ _ )) (
          (let c-type-name (.lookup( index-c-type-ordinal tt 'UnknownCTypename_s )))
          (if (==( c-type-name 'UnknownCTypename_s )) () (
-            (set r (+( (SAtom 'struct\s_s) (SAtom c-type-name) )))
+            (set r (SAtom c-type-name))
          ))
       ))
    ))

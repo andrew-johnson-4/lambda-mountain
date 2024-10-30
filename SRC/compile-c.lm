@@ -44,6 +44,14 @@ compile-c := λ . (: (
          (set preview-program rst)
       ))
    )))
+   (let pre-typedefs typedefs)
+   (while (non-zero pre-typedefs) (match pre-typedefs (
+      ()
+      ( (Seq( rst (Typedef( (Lit( lhs _ )) rhs )) )) (
+         (compile-c-typedef-ordinal(parse-type lhs)) 
+         (set pre-typedefs rst)
+      ))
+   )))
    (while (non-zero typedefs) (match typedefs (
       ()
       ( (Seq( rst (Typedef( (Lit( lhs _ )) rhs )) )) (
@@ -51,6 +59,7 @@ compile-c := λ . (: (
          (set typedefs rst)
       ))
    )))
+   (try-continue-compile-c-typedefs())
    (compile-program-ordered( global-ctx ast-parsed-program ))
    (compile-finish())
    (compile-write())

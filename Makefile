@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm --c tests/regress/parametric.lm
+	lm --c tests/regress/list.lm
 	cc tmp.c
 	./a.out
 	echo $?

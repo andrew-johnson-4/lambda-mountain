@@ -14,6 +14,7 @@ ascript-normal := λ(: t AST)(: tt Type). (: (
             ))
          ))
       ) (
+         (add-concrete-type-instance tt)
          (set tt (denormalize tt))
          (ascript( t tt ))
          (set types-have-changed True_u8)
