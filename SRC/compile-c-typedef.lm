@@ -40,6 +40,7 @@ try-continue-compile-c-typedefs := λ. (: (
          (compile-c-typedef-concrete( tctx base-type body ))
       ))
       (set continue continue-compile-c-typedefs-concrete)
+      (set continue-compile-c-typedefs-concrete (: LEOF List<Tuple<Tuple<TContext,Type>,AST>>))
    ))
 ) Nil);
 
