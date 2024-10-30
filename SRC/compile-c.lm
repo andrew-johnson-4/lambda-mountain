@@ -49,6 +49,7 @@ compile-c := λ . (: (
       ()
       ( (Seq( rst (Typedef( (Lit( lhs _ )) rhs )) )) (
          (compile-c-typedef-ordinal(parse-type lhs)) 
+         (set pre-typedefs rst)
       ))
    )))
    (while (non-zero typedefs) (match typedefs (
