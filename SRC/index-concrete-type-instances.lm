@@ -13,7 +13,6 @@ add-concrete-type-instance := λ(: tt Type). (: (
                concrete-type-instances-index k
                (cons( tt (.lookup( concrete-type-instances-index k (: LEOF List<Type>) )) ))
             )))
-            (print 'Type\sInstance\s_s)(print tt)(print '\n_s)
          ))
       ))
    )) ())
