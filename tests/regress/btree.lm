@@ -2,16 +2,10 @@
 import LIB/default.lm;
 
 main := λ. (: (
-   (let index (: BTreeIsEOF BTreeIs<U64,U64>))
-   (.bind( 
-      (as (& index) BTreeIs<U64,U64>[]) 1_u64 4_u64
-   ))
-   (.bind( 
-      (as (& index) BTreeIs<U64,U64>[]) 2_u64 5_u64
-   ))
-   (.bind( 
-      (as (& index) BTreeIs<U64,U64>[]) 3_u64 6_u64
-   ))
+   (let index (: (HashtableIs( 0_u64 0_u64 (as 0_u64 Tuple<String,U64>[]) )) HashtableIs<String,U64>);
+   (set index (.bind( index 1_u64 4_u64 ))) 
+   (set index (.bind( index 2_u64 5_u64 ))) 
+   (set index (.bind( index 3_u64 6_u64 ))) 
    (print (.lookup( index 1_u64 0_u64 )))
    (print (.lookup( index 2_u64 0_u64 )))
    (print (.lookup( index 3_u64 0_u64 )))
