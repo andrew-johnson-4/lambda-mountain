@@ -59,6 +59,7 @@ compile-c := λ . (: (
          (set typedefs rst)
       ))
    )))
+   (try-continue-compile-c-typedefs())
    (compile-program-ordered( global-ctx ast-parsed-program ))
    (compile-finish())
    (compile-write())

@@ -26,6 +26,22 @@ compile-c-typedef-ordinal := λ(: base-type Type). (: (
    ))
 ) Nil);
 
+continue-compile-c-typedefs-concrete := (: LEOF List<Tuple<Tuple<TContext,Type>,AST>>);
+continue-compile-c-typedefs-count := 0_u64;
+try-continue-compile-c-typedefs := λ. (: (
+   (set continue continue-compile-c-typedefs-concrete)
+   (while (non-zero continue) (
+      (set continue-compile-c-typedefs-count (+( continue-compile-c-typedefs-count 1_u64 )))
+      (if (<( continue-compile-c-typedefs-count 100_u64 )) () (
+         (fail 'Unable\sTo\sResolve\sCircular\sType\sDependency\sDuring\sCompilation_s)
+      ))
+      (for-each ( (Tuple( (Tuple( tctx base-type )) body )) in continue ) (
+         (compile-c-typedef-concrete( tctx base-type body ))
+      ))
+      (set continue continue-compile-c-typedefs-concrete)
+   ))
+) Nil);
+
 compile-c-typedef-concrete := λ(: tctx TContext)(: base-type Type)(: body AST). (: (
       (let base-uuid (.lookup( index-c-type-ordinal base-type 'UnknownCTypename_s )))
       (let case-number 0_u64)
@@ -34,6 +50,7 @@ compile-c-typedef-concrete := λ(: tctx TContext)(: base-type Type)(: body AST).
          ()
          ( (App( (App( rst (Var( '|_s _ )) )) case-definition )) (
             (let fields (compile-c-fields-of-case( base-type case-definition case-number )))
+            
             (set fields (substitute( tctx fields )))
             (set cases (+( cases (compile-c-casedef( fields case-number )) )))
             (set case-number (+( case-number 1_u64 )))
