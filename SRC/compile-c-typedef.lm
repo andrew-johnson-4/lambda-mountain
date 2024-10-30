@@ -52,7 +52,7 @@ is-incomplete-typedef := λ(: tt Type). (: (
       ( (TAnd( lt rt )) (
          (set r (||( (is-incomplete-typedef lt) (is-incomplete-typedef rt) )))
       ))
-      ( TAny (set r (SAtom 'void_s)) )
+      ( TAny () )
       ( (TVar _) () )
       ( (TGround( 'Nil_s _ )) () )
       ( (TGround( 'Never_s _ )) () )
@@ -70,7 +70,7 @@ is-incomplete-typedef := λ(: tt Type). (: (
       ( (TGround( _ _ )) (
          (let c-type-name (.lookup( index-c-type-ordinal tt 'UnknownCTypename_s )))
          (if (==( c-type-name 'UnknownCTypename_s )) () (
-            (set r (+( (SAtom 'struct\s_s) (SAtom c-type-name) )))
+            (set r 1_u64)
          ))
       ))
    ))
