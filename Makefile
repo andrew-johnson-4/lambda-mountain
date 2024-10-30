@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm --c tests/regress/list.lm
+	lm --c tests/regress/poly_mov.lm
 	cc tmp.c
 	./a.out
 	echo $?
