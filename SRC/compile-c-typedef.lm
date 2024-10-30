@@ -72,8 +72,7 @@ is-incomplete-typedef := λ(: tt Type). (: (
       ( (TGround( 'File_s _ )) () )
       ( (TGround( 'Array_s _ )) () )
       ( (TGround( _ _ )) (
-         (let c-type-name (.lookup( index-c-type-ordinal tt 'UnknownCTypename_s )))
-         (if (==( c-type-name 'UnknownCTypename_s )) () (
+         (if (.lookup( is-cstruct-hard-compiled-index tt 0_u64 )) () (
             (set r 1_u64)
          ))
       ))
