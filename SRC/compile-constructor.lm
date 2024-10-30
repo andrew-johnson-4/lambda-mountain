@@ -11,7 +11,7 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
       ))
       (set r (fragment::set( r 'expression_s (
          (+(
-            (+( (+( (SAtom '\[{struct\s_s) (SAtom c-type-name) )) (SAtom '\srvalue={_s) ))
+            (+( (SAtom c-type-name) (SAtom '\srvalue={_s) ))
             (+( (+( case-number (fragment::get( inner-rvalue 'expression_s )) )) (SAtom '}\:rvalue\:}\]_s) ))
          ))
       ))))
