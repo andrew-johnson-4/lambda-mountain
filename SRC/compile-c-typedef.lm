@@ -33,9 +33,9 @@ try-continue-compile-c-typedefs := λ. (: (
    (set continue-compile-c-typedefs-concrete (: LEOF List<Tuple<Tuple<TContext,Type>,AST>>))
    (while (non-zero continue) (
       (set continue-compile-c-typedefs-count (+( continue-compile-c-typedefs-count 1_u64 )))
-      (if (>( continue-compile-c-typedefs-count 100_u64 )) () (
+      (if (>( continue-compile-c-typedefs-count 100_u64 )) (
          (fail 'Unable\sTo\sResolve\sCircular\sType\sDependency\sDuring\sCompilation_s)
-      ))
+      ) ())
       (for-each ( (Tuple( (Tuple( tctx base-type )) body )) in continue ) (
          (compile-c-typedef-concrete( tctx base-type body ))
       ))
