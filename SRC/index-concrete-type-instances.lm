@@ -1,0 +1,11 @@
+
+add-concrete-type-instance := λ(: tt Type). (: (
+   (set tt (with-only-class(normalize tt)))
+   (if (non-zero tt) (match tt (
+      ()
+      ( (TGround( tag LEOF )) () )
+      ( (TGround( tag _ )) (
+         (print 'Type\sInstance\s_s)(print tt)(print '\n_s)
+      ))
+   )) ())
+) Nil);
