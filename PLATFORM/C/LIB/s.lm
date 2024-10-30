@@ -3,3 +3,24 @@ type S (SNil)
      | (SAtom( String ))
      | (SCons( S[] , S[] ))
      | (SPointer( ?[] ));
+
+print := λ(: x S). (: (
+   (match x (
+      ()
+      ( SNil (print '\[\]_s) )
+      ( (SAtom a) (print a))
+      ( (SCons( l r )) (
+         (print '\[_s)
+         (print l)
+         (print '\s_s)
+         (print r)
+         (print '\]_s)
+      ))
+      ( (SPointer p) (
+         (print '&[_s)
+         (print (as p U64))
+         (print ']_s)
+      ))
+   ))
+   ()
+) Nil);
