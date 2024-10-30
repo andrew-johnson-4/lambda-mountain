@@ -32,7 +32,7 @@ try-continue-compile-c-typedefs := λ. (: (
    (let continue continue-compile-c-typedefs-concrete)
    (while (non-zero continue) (
       (set continue-compile-c-typedefs-count (+( continue-compile-c-typedefs-count 1_u64 )))
-      (if (<( continue-compile-c-typedefs-count 100_u64 )) () (
+      (if (>( continue-compile-c-typedefs-count 100_u64 )) () (
          (fail 'Unable\sTo\sResolve\sCircular\sType\sDependency\sDuring\sCompilation_s)
       ))
       (for-each ( (Tuple( (Tuple( tctx base-type )) body )) in continue ) (
@@ -70,6 +70,7 @@ is-incomplete-typedef := λ(: tt Type). (: (
       ( (TGround( _ _ )) (
          (let c-type-name (.lookup( index-c-type-ordinal tt 'UnknownCTypename_s )))
          (if (==( c-type-name 'UnknownCTypename_s )) () (
+            (print 'Incomplete\s_s)(print tt)(print '\n_s)
             (set r 1_u64)
          ))
       ))
