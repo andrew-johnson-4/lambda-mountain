@@ -101,6 +101,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set e (fragment::set-context( e ctx )))
       ))
       ( (App( (Var( 'open_s _ )) t )) (
+         (let tt (typeof t))
          (if (is( config-assemble-mode AssembleC )) (
             (if (is-array tt) (
                (match (slot( tt 'Array_s )) (
@@ -116,7 +117,6 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                (set e (compile-stack-calls( ctx 'open_s TAny (t1 'Nil_s) t stack-offset Used )))
             ))
          ) (
-            (let tt (typeof t))
             (if (is-array tt) (
                (match (slot( tt 'Array_s )) (
                   ()
