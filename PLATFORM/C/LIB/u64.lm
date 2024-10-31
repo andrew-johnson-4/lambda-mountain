@@ -54,3 +54,4 @@ to-string := λ(: i U64). (: (
    (clone-rope r)
 ) String);
 
+deep-hash := λ(: x U64). (: (hash x) U64);

@@ -43,3 +43,18 @@ clone-rope-impl := λ(: ptr ?[])(: s S)(: i U64). (: (
    ))
    i
 ) U64);
+
+deep-hash := λ(: key String). (: (
+   (let i 0_u64)
+   (let hash 0_u64)
+   (while (head-string key) (
+      (set hash (+( hash (as (head-string key) U64) )))
+      (set key (tail-string key))
+      (set hash (+( hash (<<( hash 10_u64 )) )))
+      (set hash (^( hash (>>( hash 6_u64 )) )))
+   ))
+   (set hash (+( hash (<<( hash 3_u64 )) )))
+   (set hash (^( hash (>>( hash 11_u64 )) )))
+   (set hash (+( hash (<<( hash 15_u64 )) )))
+   hash
+) U64);

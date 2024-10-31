@@ -15,3 +15,17 @@ type Tuple<x,y> (Tuple( x , y ));
    ))
    return
 ) U64);
+
+deep-hash := λ(: l Tuple<x,y>). (: (
+   (let return 0_u64)
+   (match l (
+      ()
+      ( (Tuple( lx ly )) (
+         (set return (+(
+            (deep-hash lx)
+            (deep-hash ly)
+         )))
+      ))
+   ))
+   return
+) U64);
