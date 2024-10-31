@@ -3,6 +3,7 @@ type S (SNil)
      | (SAtom( String ))
      | (SCons( S[] , S[] ))
      | (SPointer( ?[] ));
+zero S SNil;
 
 print := λ(: x S). (: (
    (match x (
