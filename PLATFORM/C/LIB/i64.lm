@@ -36,7 +36,7 @@ to-string := λ(: i I64). (: (
    ) ())
    (let c 0_u8)
    (while (not(==( i 0_i64 ))) (
-      (let ci (as (+( (%( i 10_u64 )) 48_u64 )) U8))
+      (let ci (as (+( (%( (as i U64) 10_u64 )) 48_u64 )) U8))
       (set i (/( i 10_i64 )))
       (set r (SCons(
          (close(SAtom(clone-rope ci)))
