@@ -152,7 +152,15 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ))
       ( (App( (Var( 'sizeof_s _ )) (AType tt) )) (
          (let sz (sizeof-type( tt )))
-         (set e (fragment::expression(to-string sz)))
+         (if (is( config-assemble-mode AssembleC )) (
+            (set e (fragment::expression(
+               (+( (SAtom '\[sizeof\[_s)
+                   (+( (mangle-c-type tt) (SAtom '\]\]_s) ))
+               ))
+            )))
+         ) (
+            (set e (fragment::expression(to-string sz)))
+         ))
          (let et (TAnd( 
             (close(t1 'Literal_s))
             (close(TAnd(
