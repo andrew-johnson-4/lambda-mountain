@@ -2,22 +2,22 @@
 import docs/ubuntu-docs.lm;
 
 (docs-html(
-   'LM\sDocumentation_s
+   'LM\sDocumentation_l
    (docs-header())
    (docs-sidebar())
-   (docs-title 'LM\sDocumentation_s)
+   (docs-title 'LM\sDocumentation_l)
    (as(
-      (main( (class 'l-docs__main_s)
-         (div( (class 'row_s)
-            (div( (class 'col-12_s)
+      (main( (class 'l-docs__main_l)
+         (div( (class 'row_l)
+            (div( (class 'col-12_l)
                (p(
-                  (a( (href 'https://github.com/andrew-johnson-4/lambda-mountain/_s) (text 'Lambda\sMountain_s) ))
-                  (text '\sis\sa\styped\smacro\sassembler\ssuitable\sfor\sa\svariety\sof\starget\sdomains._s)
+                  (a( (href 'https://github.com/andrew-johnson-4/lambda-mountain/_l) (text 'Lambda\sMountain_l) ))
+                  (text '\sis\sa\styped\smacro\sassembler\ssuitable\sfor\sa\svariety\sof\starget\sdomains._l)
                ))
                (ul(
-                  (li(a( (href '/lambda-mountain/default.lm.html_s) (text 'default.lm\s-\ssystems\sprogramming_s) )))
-                  (li(a( (href '/lambda-mountain/default.html.html_s) (text 'default.html\s-\sweb\stemplating_s) )))
-                  (li(a( (href '/lambda-mountain/lm.lm.html_s) (text 'lm.lm\s-\sinternal\scompiler\sAPIs_s) )))
+                  (li(a( (href '/lambda-mountain/default.lm.html_l) (text 'default.lm\s-\ssystems\sprogramming_l) )))
+                  (li(a( (href '/lambda-mountain/default.html.html_l) (text 'default.html\s-\sweb\stemplating_l) )))
+                  (li(a( (href '/lambda-mountain/lm.lm.html_l) (text 'lm.lm\s-\sinternal\scompiler\sAPIs_l) )))
                ))
             ))
          ))

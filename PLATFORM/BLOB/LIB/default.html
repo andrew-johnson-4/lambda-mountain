@@ -3,21 +3,19 @@
 import LIB/default-blobs.lm;
 import LIB/default-rules.lm;
 
-fragment type String; atom suffix String _s;
-
 meta 
    (description (
       'A\sclass\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
    ))
    (example (
-      (div( (class 'p-data_s)
-         (h2( 'Hello_s ))
+      (div( (class 'p-data_l)
+         (h2( 'Hello_l ))
       ))
    ))
 ;
-class := λ: Blob(: cls String). (: (
+class := λ: Blob(: cls L). (: (
    (:expression(
-      '\sclass="_s (:expression cls) '"\s_s
+      '\sclass="_l (:expression cls) '"\s_l
    ))
 ) HTMLAttribute);
 
@@ -26,12 +24,12 @@ meta
       'An\saction\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
    ))
    (example (
-      (form( (action 'http://site_s) ))
+      (form( (action 'http://site_l) ))
    ))
 ;
-action := λ: Blob(: cls String). (: (
+action := λ: Blob(: cls L). (: (
    (:expression(
-      '\saction="_s (:expression cls) '"\s_s
+      '\saction="_l (:expression cls) '"\s_l
    ))
 ) HTMLAttribute);
 
@@ -40,12 +38,12 @@ meta
       'A\svalue\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
    ))
    (example (
-      (input( (value 'http://site_s) ))
+      (input( (value 'http://site_l) ))
    ))
 ;
-value := λ: Blob(: cls String). (: (
+value := λ: Blob(: cls L). (: (
    (:expression(
-      '\svalue="_s (:expression cls) '"\s_s
+      '\svalue="_l (:expression cls) '"\s_l
    ))
 ) HTMLAttribute);
 
@@ -59,7 +57,7 @@ meta
 ;
 checked := λ: Blob . (: (
    (:expression(
-      '\schecked\s_s
+      '\schecked\s_l
    ))
 ) HTMLAttribute);
 
@@ -73,7 +71,7 @@ meta
 ;
 hidden := λ: Blob . (: (
    (:expression(
-      '\shidden\s_s
+      '\shidden\s_l
    ))
 ) HTMLAttribute);
 
@@ -82,12 +80,12 @@ meta
       'A\smethod\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
    ))
    (example (
-      (form( (method 'get_s) ))
+      (form( (method 'get_l) ))
    ))
 ;
-method := λ: Blob(: cls String). (: (
+method := λ: Blob(: cls L). (: (
    (:expression(
-      '\smethod="_s (:expression cls) '"\s_s
+      '\smethod="_l (:expression cls) '"\s_l
    ))
 ) HTMLAttribute);
 
@@ -96,14 +94,14 @@ meta
       'A\sname\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
    ))
    (example (
-      (div( (name 'data_s)
-         (h2( 'Hello_s ))
+      (div( (name 'data_l)
+         (h2( 'Hello_l ))
       ))
    ))
 ;
-name := λ: Blob(: cls String). (: (
+name := λ: Blob(: cls L). (: (
    (:expression(
-      '\sname="_s (:expression cls) '"\s_s
+      '\sname="_l (:expression cls) '"\s_l
    ))
 ) HTMLAttribute);
 
@@ -112,13 +110,13 @@ meta
       'An\sautocomplete\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
    ))
    (example (
-      (input( (type_ 'text_s) (autocomplete 'default\svalue_s)
+      (input( (type_ 'text_l) (autocomplete 'default\svalue_l)
       ))
    ))
 ;
-autocomplete := λ: Blob(: cls String). (: (
+autocomplete := λ: Blob(: cls L). (: (
    (:expression(
-      '\sautocomplete="_s (:expression cls) '"\s_s
+      '\sautocomplete="_l (:expression cls) '"\s_l
    ))
 ) HTMLAttribute);
 
@@ -127,13 +125,13 @@ meta
       'A\srequired\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
    ))
    (example (
-      (input( (type_ 'text_s) (required 'yes_s)
+      (input( (type_ 'text_l) (required 'yes_l)
       ))
    ))
 ;
-required := λ: Blob(: cls String). (: (
+required := λ: Blob(: cls L). (: (
    (:expression(
-      '\srequired="_s (:expression cls) '"\s_s
+      '\srequired="_l (:expression cls) '"\s_l
    ))
 ) HTMLAttribute);
 
@@ -142,13 +140,13 @@ meta
       'A\splaceholder\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
    ))
    (example (
-      (input( (type_ 'text_s) (placeholder 'temporary\svalue_s)
+      (input( (type_ 'text_l) (placeholder 'temporary\svalue_l)
       ))
    ))
 ;
-placeholder := λ: Blob(: cls String). (: (
+placeholder := λ: Blob(: cls L). (: (
    (:expression(
-      '\splaceholder="_s (:expression cls) '"\s_s
+      '\splaceholder="_l (:expression cls) '"\s_l
    ))
 ) HTMLAttribute);
 
@@ -157,13 +155,13 @@ meta
       'A\stype\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
    ))
    (example (
-      (input( (type_ 'text_s)
+      (input( (type_ 'text_l)
       ))
    ))
 ;
-type_ := λ: Blob(: cls String). (: (
+type_ := λ: Blob(: cls L). (: (
    (:expression(
-      '\stype="_s (:expression cls) '"\s_s
+      '\stype="_l (:expression cls) '"\s_l
    ))
 ) HTMLAttribute);
 
@@ -172,13 +170,13 @@ meta
       'A\ssrc\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
    ))
    (example (
-      (input( (src 'http://site_s)
+      (input( (src 'http://site_l)
       ))
    ))
 ;
-src := λ: Blob(: s String). (: (
+src := λ: Blob(: s L). (: (
    (:expression(
-      '\ssrc="_s (:expression s) '"\s_s
+      '\ssrc="_l (:expression s) '"\s_l
    ))
 ) HTMLAttribute);
 
@@ -187,13 +185,13 @@ meta
       'An\sid\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
    ))
    (example (
-      (input( (id 'ident_s)
+      (input( (id 'ident_l)
       ))
    ))
 ;
-id := λ: Blob(: i String). (: (
+id := λ: Blob(: i L). (: (
    (:expression(
-      '\sid="_s (:expression i) '"\s_s
+      '\sid="_l (:expression i) '"\s_l
    ))
 ) HTMLAttribute);
 
@@ -202,13 +200,13 @@ meta
       'A\srel\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
    ))
    (example (
-      (input( (rel 'ident_s)
+      (input( (rel 'ident_l)
       ))
    ))
 ;
-rel := λ: Blob(: i String). (: (
+rel := λ: Blob(: i L). (: (
    (:expression(
-      '\srel="_s (:expression i) '"\s_s
+      '\srel="_l (:expression i) '"\s_l
    ))
 ) HTMLAttribute);
 
@@ -217,13 +215,13 @@ meta
       'An\shref\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
    ))
    (example (
-      (input( (rel 'http://site_s)
+      (input( (rel 'http://site_l)
       ))
    ))
 ;
-href := λ: Blob(: a String). (: (
+href := λ: Blob(: a L). (: (
    (:expression(
-      '\shref="_s (:expression a) '"\s_s
+      '\shref="_l (:expression a) '"\s_l
    ))
 ) HTMLAttribute);
 
@@ -232,10 +230,10 @@ meta
       'text\sis\sa\stypesafe\splaintext\selement.
    ))
    (example (
-      (text 'hello_s)
+      (text 'hello_l)
    ))
 ;
-text := λ: Blob(: t String). (: (
+text := λ: Blob(: t L). (: (
    (:expression(
       (:expression t)
    ))
@@ -246,15 +244,15 @@ meta
       'html\sis\sthe\sdocument\sroot\s.
    ))
    (example (
-      (html( (text( 'hello_s )) ))
+      (html( (text( 'hello_l )) ))
    ))
 ;
 html := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<!DOCTYPE\shtml>\n_s
-      '<html_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      '<!DOCTYPE\shtml>\n_l
+      '<html_l (for-arg (a in attrs) (:expression a)) '>\n_l
       (for-arg (e in es) (:expression e))
-      '</html>\n_s
+      '</html>\n_l
    ))
 ) HTMLElement);
 
@@ -263,14 +261,14 @@ meta
       'main\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (main( (text( 'hello_s )) ))
+      (main( (text( 'hello_l )) ))
    ))
 ;
 main := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<main_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      '<main_l (for-arg (a in attrs) (:expression a)) '>\n_l
       (for-arg (e in es) (:expression e))
-      '</main>\n_s
+      '</main>\n_l
    ))
 ) HTMLElement);
 
@@ -279,14 +277,14 @@ meta
       'head\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (head( (title( 'The\spage\stitle_s )) ))
+      (head( (title( 'The\spage\stitle_l )) ))
    ))
 ;
 head := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<head\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      '<head\s_l (for-arg (a in attrs) (:expression a)) '>_l
       (for-arg (e in es) (:expression e))
-      '</head>\n_s
+      '</head>\n_l
    ))
 ) HTMLElement);
 
@@ -295,14 +293,14 @@ meta
       'title\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (title( (text( 'hello_s )) ))
+      (title( (text( 'hello_l )) ))
    ))
 ;
 title := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<title\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      '<title\s_l (for-arg (a in attrs) (:expression a)) '>_l
       (for-arg (e in es) (:expression e))
-      '</title>\n_s
+      '</title>\n_l
    ))
 ) HTMLElement);
 
@@ -311,14 +309,14 @@ meta
       'body\sis\swhere\svisual\shtml\selements\sgo.
    ))
    (example (
-      (body( (text( 'hello_s )) ))
+      (body( (text( 'hello_l )) ))
    ))
 ;
 body := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<body\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      '<body\s_l (for-arg (a in attrs) (:expression a)) '>_l
       (for-arg (e in es) (:expression e))
-      '</body>\n_s
+      '</body>\n_l
    ))
 ) HTMLElement);
 
@@ -327,14 +325,14 @@ meta
       'h1\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (h1( (text( 'hello_s )) ))
+      (h1( (text( 'hello_l )) ))
    ))
 ;
 h1 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<h1\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      '<h1\s_l (for-arg (a in attrs) (:expression a)) '>_l
       (for-arg (e in es) (:expression e))
-      '</h1>\n_s
+      '</h1>\n_l
    ))
 ) HTMLElement);
 
@@ -343,14 +341,14 @@ meta
       'h2\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (h2( (text( 'hello_s )) ))
+      (h2( (text( 'hello_l )) ))
    ))
 ;
 h2 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<h2\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      '<h2\s_l (for-arg (a in attrs) (:expression a)) '>_l
       (for-arg (e in es) (:expression e))
-      '</h2>\n_s
+      '</h2>\n_l
    ))
 ) HTMLElement);
 
@@ -359,14 +357,14 @@ meta
       'h3\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (h3( (text( 'hello_s )) ))
+      (h3( (text( 'hello_l )) ))
    ))
 ;
 h3 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<h3\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      '<h3\s_l (for-arg (a in attrs) (:expression a)) '>_l
       (for-arg (e in es) (:expression e))
-      '</h3>\n_s
+      '</h3>\n_l
    ))
 ) HTMLElement);
 
@@ -375,14 +373,14 @@ meta
       'h4\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (h4( (text( 'hello_s )) ))
+      (h4( (text( 'hello_l )) ))
    ))
 ;
 h4 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<h4\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      '<h4\s_l (for-arg (a in attrs) (:expression a)) '>_l
       (for-arg (e in es) (:expression e))
-      '</h4>\n_s
+      '</h4>\n_l
    ))
 ) HTMLElement);
 
@@ -391,14 +389,14 @@ meta
       'h5\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (h5( (text( 'hello_s )) ))
+      (h5( (text( 'hello_l )) ))
    ))
 ;
 h5 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<h5\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      '<h5\s_l (for-arg (a in attrs) (:expression a)) '>_l
       (for-arg (e in es) (:expression e))
-      '</h5>\n_s
+      '</h5>\n_l
    ))
 ) HTMLElement);
 
@@ -407,14 +405,14 @@ meta
       'h6\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (h6( (text( 'hello_s )) ))
+      (h6( (text( 'hello_l )) ))
    ))
 ;
 h6 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<h6\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      '<h6\s_l (for-arg (a in attrs) (:expression a)) '>_l
       (for-arg (e in es) (:expression e))
-      '</h6>\n_s
+      '</h6>\n_l
    ))
 ) HTMLElement);
 
@@ -423,14 +421,14 @@ meta
       'div\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (div( (text( 'hello_s )) ))
+      (div( (text( 'hello_l )) ))
    ))
 ;
 div := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<div\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      '<div\s_l (for-arg (a in attrs) (:expression a)) '>_l
       (for-arg (e in es) (:expression e))
-      '</div>\n_s
+      '</div>\n_l
    ))
 ) HTMLElement);
 
@@ -439,14 +437,14 @@ meta
       'header\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (header( (text( 'hello_s )) ))
+      (header( (text( 'hello_l )) ))
    ))
 ;
 header := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<header\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      '<header\s_l (for-arg (a in attrs) (:expression a)) '>_l
       (for-arg (e in es) (:expression e))
-      '</header>\n_s
+      '</header>\n_l
    ))
 ) HTMLElement);
 
@@ -455,14 +453,14 @@ meta
       'nav\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (nav( (text( 'hello_s )) ))
+      (nav( (text( 'hello_l )) ))
    ))
 ;
 nav := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<nav\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      '<nav\s_l (for-arg (a in attrs) (:expression a)) '>_l
       (for-arg (e in es) (:expression e))
-      '</nav>\n_s
+      '</nav>\n_l
    ))
 ) HTMLElement);
 
@@ -471,14 +469,14 @@ meta
       'ul\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (ul( (text( 'hello_s )) ))
+      (ul( (text( 'hello_l )) ))
    ))
 ;
 ul := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<ul\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      '<ul\s_l (for-arg (a in attrs) (:expression a)) '>_l
       (for-arg (e in es) (:expression e))
-      '</ul>\n_s
+      '</ul>\n_l
    ))
 ) HTMLElement);
 
@@ -487,14 +485,14 @@ meta
       'ol\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (ol( (text( 'hello_s )) ))
+      (ol( (text( 'hello_l )) ))
    ))
 ;
 ol := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<ol\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      '<ol\s_l (for-arg (a in attrs) (:expression a)) '>_l
       (for-arg (e in es) (:expression e))
-      '</ol>\n_s
+      '</ol>\n_l
    ))
 ) HTMLElement);
 
@@ -503,14 +501,14 @@ meta
       'li\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (li( (text( 'hello_s )) ))
+      (li( (text( 'hello_l )) ))
    ))
 ;
 li := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<li\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      '<li\s_l (for-arg (a in attrs) (:expression a)) '>_l
       (for-arg (e in es) (:expression e))
-      '</li>\n_s
+      '</li>\n_l
    ))
 ) HTMLElement);
 
@@ -519,14 +517,14 @@ meta
       'a\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (a( (text( 'hello_s )) ))
+      (a( (text( 'hello_l )) ))
    ))
 ;
 a := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<a\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      '<a\s_l (for-arg (a in attrs) (:expression a)) '>_l
       (for-arg (e in es) (:expression e))
-      '</a>\n_s
+      '</a>\n_l
    ))
 ) HTMLElement);
 
@@ -535,14 +533,14 @@ meta
       'span\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (span( (text( 'hello_s )) ))
+      (span( (text( 'hello_l )) ))
    ))
 ;
 span := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<span\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      '<span\s_l (for-arg (a in attrs) (:expression a)) '>_l
       (for-arg (e in es) (:expression e))
-      '</span>_s
+      '</span>_l
    ))
 ) HTMLElement);
 
@@ -551,14 +549,14 @@ meta
       'i\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (i( (text( 'hello_s )) ))
+      (i( (text( 'hello_l )) ))
    ))
 ;
 i := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement). (: (
    (:expression(
-      '<i\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      '<i\s_l (for-arg (a in attrs) (:expression a)) '>_l
       (for-arg (e in es) (:expression e))
-      '</i>_s
+      '</i>_l
    ))
 ) HTMLElement);
 
@@ -567,14 +565,14 @@ meta
       'p\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (p( (text( 'hello_s )) ))
+      (p( (text( 'hello_l )) ))
    ))
 ;
 p := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<p\s_s (for-arg (a in attrs) (:expression a)) '>_s
+      '<p\s_l (for-arg (a in attrs) (:expression a)) '>_l
       (for-arg (e in es) (:expression e))
-      '</p>_s
+      '</p>_l
    ))
 ) HTMLElement);
 
@@ -583,12 +581,12 @@ meta
       'img\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (img( (text( 'hello_s )) ))
+      (img( (text( 'hello_l )) ))
    ))
 ;
 img := λ: Blob(: attrs HTMLAttribute...). (: (
    (:expression(
-      '<img\s_s (for-arg (a in attrs) (:expression a)) '\\>\n_s
+      '<img\s_l (for-arg (a in attrs) (:expression a)) '\\>\n_l
    ))
 ) HTMLElement);
 
@@ -597,12 +595,12 @@ meta
       'link\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (link( (text( 'hello_s )) ))
+      (link( (text( 'hello_l )) ))
    ))
 ;
 link := λ: Blob(: attrs HTMLAttribute...). (: (
    (:expression(
-      '<link\s_s (for-arg (a in attrs) (:expression a)) '\\>\n_s
+      '<link\s_l (for-arg (a in attrs) (:expression a)) '\\>\n_l
    ))
 ) HTMLElement);
 
@@ -611,14 +609,14 @@ meta
       'section\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (section( (text( 'hello_s )) ))
+      (section( (text( 'hello_l )) ))
    ))
 ;
 section := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<section\s_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      '<section\s_l (for-arg (a in attrs) (:expression a)) '>\n_l
       (for-arg (e in es) (:expression e))
-      '</section>\n_s
+      '</section>\n_l
    ))
 ) HTMLElement);
 
@@ -627,14 +625,14 @@ meta
       'form\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (form( (text( 'hello_s )) ))
+      (form( (text( 'hello_l )) ))
    ))
 ;
 form := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<form\s_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      '<form\s_l (for-arg (a in attrs) (:expression a)) '>\n_l
       (for-arg (e in es) (:expression e))
-      '</form>\n_s
+      '</form>\n_l
    ))
 ) HTMLElement);
 
@@ -643,12 +641,12 @@ meta
       'input\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (input( (text( 'hello_s )) ))
+      (input( (text( 'hello_l )) ))
    ))
 ;
 input := λ: Blob(: attrs HTMLAttribute...). (: (
    (:expression(
-      '<input\s_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      '<input\s_l (for-arg (a in attrs) (:expression a)) '>\n_l
    ))
 ) HTMLElement);
 
@@ -657,14 +655,14 @@ meta
       'button\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (button( (text( 'hello_s )) ))
+      (button( (text( 'hello_l )) ))
    ))
 ;
 button := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<button\s_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      '<button\s_l (for-arg (a in attrs) (:expression a)) '>\n_l
       (for-arg (e in es) (:expression e))
-      '</button>\n_s
+      '</button>\n_l
    ))
 ) HTMLElement);
 
@@ -673,14 +671,14 @@ meta
       'pre\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (pre( (text( 'hello_s )) ))
+      (pre( (text( 'hello_l )) ))
    ))
 ;
 pre := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<pre\s_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      '<pre\s_l (for-arg (a in attrs) (:expression a)) '>\n_l
       (for-arg (e in es) (:expression e))
-      '</pre>\n_s
+      '</pre>\n_l
    ))
 ) HTMLElement);
 
@@ -689,14 +687,14 @@ meta
       'code\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (code( (text( 'hello_s )) ))
+      (code( (text( 'hello_l )) ))
    ))
 ;
 code := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<code\s_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      '<code\s_l (for-arg (a in attrs) (:expression a)) '>\n_l
       (for-arg (e in es) (:expression e))
-      '</code>\n_s
+      '</code>\n_l
    ))
 ) HTMLElement);
 
@@ -705,12 +703,12 @@ meta
       'hr\sis\sa\ssemantic\shtml\selement.
    ))
    (example (
-      (hr( (class 't_s) ))
+      (hr( (class 't_l) ))
    ))
 ;
 hr := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
    (:expression(
-      '<hr\s_s (for-arg (a in attrs) (:expression a)) '>\n_s
+      '<hr\s_l (for-arg (a in attrs) (:expression a)) '>\n_l
    ))
 ) HTMLElement);
 
