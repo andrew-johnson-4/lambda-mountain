@@ -78,3 +78,80 @@ to-u64 := λ(: s String). (: (
    ))
    i
 ) U64);
+
+to-hex := λ(: i U64). (: (
+   (let buff SNil)
+   (let rpt 16_u64)
+   (while (>( rpt 0_u64 )) (
+      (match (%( i 16_u64 )) (
+         ()
+         ( 0_u64 (set buff (SCons(
+            (close (SAtom( '0_s )))
+            (close buff)
+         ))))
+         ( 1_u64 (set buff (SCons(
+            (close (SAtom( '1_s )))
+            (close buff)
+         ))))
+         ( 2_u64 (set buff (SCons(
+            (close (SAtom( '2_s )))
+            (close buff)
+         ))))
+         ( 3_u64 (set buff (SCons(
+            (close (SAtom( '3_s )))
+            (close buff)
+         ))))
+         ( 4_u64 (set buff (SCons(
+            (close (SAtom( '4_s )))
+            (close buff)
+         ))))
+         ( 5_u64 (set buff (SCons(
+            (close (SAtom( '5_s )))
+            (close buff)
+         ))))
+         ( 6_u64 (set buff (SCons(
+            (close (SAtom( '6_s )))
+            (close buff)
+         ))))
+         ( 7_u64 (set buff (SCons(
+            (close (SAtom( '7_s )))
+            (close buff)
+         ))))
+         ( 8_u64 (set buff (SCons(
+            (close (SAtom( '8_s )))
+            (close buff)
+         ))))
+         ( 9_u64 (set buff (SCons(
+            (close (SAtom( '9_s )))
+            (close buff)
+         ))))
+         ( 10_u64 (set buff (SCons(
+            (close (SAtom( 'a_s )))
+            (close buff)
+         ))))
+         ( 11_u64 (set buff (SCons(
+            (close (SAtom( 'b_s )))
+            (close buff)
+         ))))
+         ( 12_u64 (set buff (SCons(
+            (close (SAtom( 'c_s )))
+            (close buff)
+         ))))
+         ( 13_u64 (set buff (SCons(
+            (close (SAtom( 'd_s )))
+            (close buff)
+         ))))
+         ( 14_u64 (set buff (SCons(
+            (close (SAtom( 'e_s )))
+            (close buff)
+         ))))
+         ( 15_u64 (set buff (SCons(
+            (close (SAtom( 'f_s )))
+            (close buff)
+         ))))
+      ))
+      (set i (/( i 16_u64 )))
+      (set rpt (-( rpt 1_u64 )))
+   ))
+   (clone-rope buff)
+) String);
