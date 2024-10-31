@@ -13,13 +13,12 @@ profile: install-production
 
 build-docs:
 	lm --blob -o docs/index.html docs/index.html.lm
-	doby doc -o docs/default.html.html.lm LIB/default.html
-	doby doc -o docs/default.lm.html.lm LIB/default.lm
-	doby doc -o docs/lm.lm.html.lm SRC/index-index.lm
-	lm --blob -o docs/default.html.html docs/default.html.html.lm
-	lm --blob -o docs/default.lm.html docs/default.lm.html.lm
-	lm --blob -o docs/lm.lm.html docs/lm.lm.html.lm
-	lm --blob -o docs/test.html docs/test.html.lm
+	#doby doc -o docs/default.html.html.lm PLATFORM/BLOB/LIB/default.html
+	#doby doc -o docs/default.lm.html.lm PLATFORM/C/LIB/default.lm
+	#doby doc -o docs/lm.lm.html.lm SRC/index-index.lm
+	#lm --blob -o docs/default.html.html docs/default.html.html.lm
+	#lm --blob -o docs/default.lm.html docs/default.lm.html.lm
+	#lm --blob -o docs/lm.lm.html docs/lm.lm.html.lm
 
 develop:
 	lmv tests/regress/hello_world.s.v

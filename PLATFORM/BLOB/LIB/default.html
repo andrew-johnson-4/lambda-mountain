@@ -1,0 +1,714 @@
+
+
+import LIB/default-blobs.lm;
+import LIB/default-rules.lm;
+
+meta 
+   (description (
+      'A\sclass\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (div( (class 'p-data_l)
+         (h2( 'Hello_l ))
+      ))
+   ))
+;
+class := λ: Blob(: cls L). (: (
+   (:expression(
+      '\sclass="_l (:expression cls) '"\s_l
+   ))
+) HTMLAttribute);
+
+meta 
+   (description (
+      'An\saction\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (form( (action 'http://site_l) ))
+   ))
+;
+action := λ: Blob(: cls L). (: (
+   (:expression(
+      '\saction="_l (:expression cls) '"\s_l
+   ))
+) HTMLAttribute);
+
+meta 
+   (description (
+      'A\svalue\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (input( (value 'http://site_l) ))
+   ))
+;
+value := λ: Blob(: cls L). (: (
+   (:expression(
+      '\svalue="_l (:expression cls) '"\s_l
+   ))
+) HTMLAttribute);
+
+meta 
+   (description (
+      'A\schecked\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (form( (checked()) ))
+   ))
+;
+checked := λ: Blob . (: (
+   (:expression(
+      '\schecked\s_l
+   ))
+) HTMLAttribute);
+
+meta 
+   (description (
+      'A\shidden\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (form( (hidden()) ))
+   ))
+;
+hidden := λ: Blob . (: (
+   (:expression(
+      '\shidden\s_l
+   ))
+) HTMLAttribute);
+
+meta
+   (description (
+      'A\smethod\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (form( (method 'get_l) ))
+   ))
+;
+method := λ: Blob(: cls L). (: (
+   (:expression(
+      '\smethod="_l (:expression cls) '"\s_l
+   ))
+) HTMLAttribute);
+
+meta 
+   (description (
+      'A\sname\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (div( (name 'data_l)
+         (h2( 'Hello_l ))
+      ))
+   ))
+;
+name := λ: Blob(: cls L). (: (
+   (:expression(
+      '\sname="_l (:expression cls) '"\s_l
+   ))
+) HTMLAttribute);
+
+meta 
+   (description (
+      'An\sautocomplete\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (input( (type_ 'text_l) (autocomplete 'default\svalue_l)
+      ))
+   ))
+;
+autocomplete := λ: Blob(: cls L). (: (
+   (:expression(
+      '\sautocomplete="_l (:expression cls) '"\s_l
+   ))
+) HTMLAttribute);
+
+meta 
+   (description (
+      'A\srequired\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (input( (type_ 'text_l) (required 'yes_l)
+      ))
+   ))
+;
+required := λ: Blob(: cls L). (: (
+   (:expression(
+      '\srequired="_l (:expression cls) '"\s_l
+   ))
+) HTMLAttribute);
+
+meta 
+   (description (
+      'A\splaceholder\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (input( (type_ 'text_l) (placeholder 'temporary\svalue_l)
+      ))
+   ))
+;
+placeholder := λ: Blob(: cls L). (: (
+   (:expression(
+      '\splaceholder="_l (:expression cls) '"\s_l
+   ))
+) HTMLAttribute);
+
+meta 
+   (description (
+      'A\stype\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (input( (type_ 'text_l)
+      ))
+   ))
+;
+type_ := λ: Blob(: cls L). (: (
+   (:expression(
+      '\stype="_l (:expression cls) '"\s_l
+   ))
+) HTMLAttribute);
+
+meta 
+   (description (
+      'A\ssrc\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (input( (src 'http://site_l)
+      ))
+   ))
+;
+src := λ: Blob(: s L). (: (
+   (:expression(
+      '\ssrc="_l (:expression s) '"\s_l
+   ))
+) HTMLAttribute);
+
+meta 
+   (description (
+      'An\sid\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (input( (id 'ident_l)
+      ))
+   ))
+;
+id := λ: Blob(: i L). (: (
+   (:expression(
+      '\sid="_l (:expression i) '"\s_l
+   ))
+) HTMLAttribute);
+
+meta 
+   (description (
+      'A\srel\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (input( (rel 'ident_l)
+      ))
+   ))
+;
+rel := λ: Blob(: i L). (: (
+   (:expression(
+      '\srel="_l (:expression i) '"\s_l
+   ))
+) HTMLAttribute);
+
+meta 
+   (description (
+      'An\shref\sattribute\scan\sbe\sadded\sto\smost\shtml\selements.
+   ))
+   (example (
+      (input( (rel 'http://site_l)
+      ))
+   ))
+;
+href := λ: Blob(: a L). (: (
+   (:expression(
+      '\shref="_l (:expression a) '"\s_l
+   ))
+) HTMLAttribute);
+
+meta 
+   (description (
+      'text\sis\sa\stypesafe\splaintext\selement.
+   ))
+   (example (
+      (text 'hello_l)
+   ))
+;
+text := λ: Blob(: t L). (: (
+   (:expression(
+      (:expression t)
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'html\sis\sthe\sdocument\sroot\s.
+   ))
+   (example (
+      (html( (text( 'hello_l )) ))
+   ))
+;
+html := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<!DOCTYPE\shtml>\n_l
+      '<html_l (for-arg (a in attrs) (:expression a)) '>\n_l
+      (for-arg (e in es) (:expression e))
+      '</html>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'main\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (main( (text( 'hello_l )) ))
+   ))
+;
+main := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<main_l (for-arg (a in attrs) (:expression a)) '>\n_l
+      (for-arg (e in es) (:expression e))
+      '</main>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'head\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (head( (title( 'The\spage\stitle_l )) ))
+   ))
+;
+head := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<head\s_l (for-arg (a in attrs) (:expression a)) '>_l
+      (for-arg (e in es) (:expression e))
+      '</head>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'title\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (title( (text( 'hello_l )) ))
+   ))
+;
+title := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<title\s_l (for-arg (a in attrs) (:expression a)) '>_l
+      (for-arg (e in es) (:expression e))
+      '</title>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'body\sis\swhere\svisual\shtml\selements\sgo.
+   ))
+   (example (
+      (body( (text( 'hello_l )) ))
+   ))
+;
+body := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<body\s_l (for-arg (a in attrs) (:expression a)) '>_l
+      (for-arg (e in es) (:expression e))
+      '</body>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'h1\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (h1( (text( 'hello_l )) ))
+   ))
+;
+h1 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<h1\s_l (for-arg (a in attrs) (:expression a)) '>_l
+      (for-arg (e in es) (:expression e))
+      '</h1>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'h2\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (h2( (text( 'hello_l )) ))
+   ))
+;
+h2 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<h2\s_l (for-arg (a in attrs) (:expression a)) '>_l
+      (for-arg (e in es) (:expression e))
+      '</h2>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'h3\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (h3( (text( 'hello_l )) ))
+   ))
+;
+h3 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<h3\s_l (for-arg (a in attrs) (:expression a)) '>_l
+      (for-arg (e in es) (:expression e))
+      '</h3>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'h4\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (h4( (text( 'hello_l )) ))
+   ))
+;
+h4 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<h4\s_l (for-arg (a in attrs) (:expression a)) '>_l
+      (for-arg (e in es) (:expression e))
+      '</h4>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'h5\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (h5( (text( 'hello_l )) ))
+   ))
+;
+h5 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<h5\s_l (for-arg (a in attrs) (:expression a)) '>_l
+      (for-arg (e in es) (:expression e))
+      '</h5>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'h6\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (h6( (text( 'hello_l )) ))
+   ))
+;
+h6 := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<h6\s_l (for-arg (a in attrs) (:expression a)) '>_l
+      (for-arg (e in es) (:expression e))
+      '</h6>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'div\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (div( (text( 'hello_l )) ))
+   ))
+;
+div := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<div\s_l (for-arg (a in attrs) (:expression a)) '>_l
+      (for-arg (e in es) (:expression e))
+      '</div>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'header\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (header( (text( 'hello_l )) ))
+   ))
+;
+header := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<header\s_l (for-arg (a in attrs) (:expression a)) '>_l
+      (for-arg (e in es) (:expression e))
+      '</header>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'nav\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (nav( (text( 'hello_l )) ))
+   ))
+;
+nav := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<nav\s_l (for-arg (a in attrs) (:expression a)) '>_l
+      (for-arg (e in es) (:expression e))
+      '</nav>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'ul\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (ul( (text( 'hello_l )) ))
+   ))
+;
+ul := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<ul\s_l (for-arg (a in attrs) (:expression a)) '>_l
+      (for-arg (e in es) (:expression e))
+      '</ul>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'ol\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (ol( (text( 'hello_l )) ))
+   ))
+;
+ol := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<ol\s_l (for-arg (a in attrs) (:expression a)) '>_l
+      (for-arg (e in es) (:expression e))
+      '</ol>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'li\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (li( (text( 'hello_l )) ))
+   ))
+;
+li := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<li\s_l (for-arg (a in attrs) (:expression a)) '>_l
+      (for-arg (e in es) (:expression e))
+      '</li>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'a\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (a( (text( 'hello_l )) ))
+   ))
+;
+a := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<a\s_l (for-arg (a in attrs) (:expression a)) '>_l
+      (for-arg (e in es) (:expression e))
+      '</a>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'span\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (span( (text( 'hello_l )) ))
+   ))
+;
+span := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<span\s_l (for-arg (a in attrs) (:expression a)) '>_l
+      (for-arg (e in es) (:expression e))
+      '</span>_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'i\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (i( (text( 'hello_l )) ))
+   ))
+;
+i := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement). (: (
+   (:expression(
+      '<i\s_l (for-arg (a in attrs) (:expression a)) '>_l
+      (for-arg (e in es) (:expression e))
+      '</i>_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'p\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (p( (text( 'hello_l )) ))
+   ))
+;
+p := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<p\s_l (for-arg (a in attrs) (:expression a)) '>_l
+      (for-arg (e in es) (:expression e))
+      '</p>_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'img\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (img( (text( 'hello_l )) ))
+   ))
+;
+img := λ: Blob(: attrs HTMLAttribute...). (: (
+   (:expression(
+      '<img\s_l (for-arg (a in attrs) (:expression a)) '\\>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'link\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (link( (text( 'hello_l )) ))
+   ))
+;
+link := λ: Blob(: attrs HTMLAttribute...). (: (
+   (:expression(
+      '<link\s_l (for-arg (a in attrs) (:expression a)) '\\>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'section\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (section( (text( 'hello_l )) ))
+   ))
+;
+section := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<section\s_l (for-arg (a in attrs) (:expression a)) '>\n_l
+      (for-arg (e in es) (:expression e))
+      '</section>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'form\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (form( (text( 'hello_l )) ))
+   ))
+;
+form := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<form\s_l (for-arg (a in attrs) (:expression a)) '>\n_l
+      (for-arg (e in es) (:expression e))
+      '</form>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'input\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (input( (text( 'hello_l )) ))
+   ))
+;
+input := λ: Blob(: attrs HTMLAttribute...). (: (
+   (:expression(
+      '<input\s_l (for-arg (a in attrs) (:expression a)) '>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'button\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (button( (text( 'hello_l )) ))
+   ))
+;
+button := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<button\s_l (for-arg (a in attrs) (:expression a)) '>\n_l
+      (for-arg (e in es) (:expression e))
+      '</button>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'pre\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (pre( (text( 'hello_l )) ))
+   ))
+;
+pre := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<pre\s_l (for-arg (a in attrs) (:expression a)) '>\n_l
+      (for-arg (e in es) (:expression e))
+      '</pre>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'code\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (code( (text( 'hello_l )) ))
+   ))
+;
+code := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<code\s_l (for-arg (a in attrs) (:expression a)) '>\n_l
+      (for-arg (e in es) (:expression e))
+      '</code>\n_l
+   ))
+) HTMLElement);
+
+meta 
+   (description (
+      'hr\sis\sa\ssemantic\shtml\selement.
+   ))
+   (example (
+      (hr( (class 't_l) ))
+   ))
+;
+hr := λ: Blob(: attrs HTMLAttribute...)(: es HTMLElement...). (: (
+   (:expression(
+      '<hr\s_l (for-arg (a in attrs) (:expression a)) '>\n_l
+   ))
+) HTMLElement);
+
