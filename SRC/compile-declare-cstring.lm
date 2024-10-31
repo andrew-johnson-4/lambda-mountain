@@ -40,7 +40,7 @@ escape-c-string := λ(: s String). (: (
             ()
             ( 58_u8 (set e (+( e (SAtom '\:_s) ))) )
             ( 91_u8 (set e (+( e (SAtom '\[_s) ))) )
-            ( 92_u8 (set e (+( e (SAtom '\\_s) ))) )
+            ( 92_u8 (set e (+( e (SAtom '\\\\_s) ))) )
             ( 93_u8 (set e (+( e (SAtom '\]_s) ))) )
             ( 96_u8 (set e (+( e (SAtom '\`_s) ))) )
             ( 108_u8 (set e (+( e (SAtom '\l_s) ))) )
