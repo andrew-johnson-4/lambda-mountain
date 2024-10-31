@@ -58,3 +58,11 @@ deep-hash := λ(: key String). (: (
    (set hash (+( hash (<<( hash 15_u64 )) )))
    hash
 ) U64);
+
+.length := λ(: s String). (: (
+   (let si 0_u64)
+   (while (!=( ([]( (as s U8[]) si )) 0_u8 )) (
+      (set si (+( si 1_u64 )))
+   ))
+   si
+) U64);
