@@ -1,5 +1,5 @@
 
-dev:
+dev: install-production
 	lm --c tests/regress/hashtable.lm
 	cc tmp.c
 	./a.out
