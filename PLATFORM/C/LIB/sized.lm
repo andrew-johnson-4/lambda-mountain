@@ -4,7 +4,7 @@ hash := λ(: key t+Sized<GT<4>>). (: (
    (let i 0_u64)
    (let hash 0_u64)
    (while (<( i (/( (sizeof t) 8_u64 )) )) (
-      (set hash (+( hash ([]( (as key Field<U64,3>) i )) )))
+      (set hash (+( hash ([]( (as (& key) U64[]) i )) )))
       (set i (+( i 1_u64 )))
       (set hash (+( hash (<<( hash 10_u64 )) )))
       (set hash (^( hash (>>( hash 6_u64 )) )))
@@ -13,4 +13,16 @@ hash := λ(: key t+Sized<GT<4>>). (: (
    (set hash (^( hash (>>( hash 11_u64 )) )))
    (set hash (+( hash (<<( hash 15_u64 )) )))
    hash
+) U64);
+
+is := λ(: l t)(: r t). (: (
+   (let i 0_u64)
+   (let return 1_u64)
+   (while (<( i (sizeof t) )) (
+      (let li ([]( (as (& l) U8[]) i )))
+      (let ri ([]( (as (& r) U8[]) i )))
+      (if (==( li ri )) () (set return 0_u64))
+      (set i (+( i 1_u64 )))
+   ))
+   return
 ) U64);
