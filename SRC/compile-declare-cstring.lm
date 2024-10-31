@@ -49,7 +49,7 @@ escape-c-string := λ(: s String). (: (
             ( 115_u8 (set e (+( e (SAtom '\s_s) ))) )
             ( 116_u8 (set e (+( e (SAtom '\\\\t_s) ))) )
             ( c (
-               (print 'Illegal\sCharacter:\s_s)(print c)(print '\n_s)
+               (print 'Illegal\sCharacter:\s_s)(print c)(print '\sin\s_s)(print s)(print '\n_s)
                (fail 'Illegal\sEscape\sSequence\sIn\sString\s_s)
             ))
          ))
