@@ -7,8 +7,8 @@ add-concrete-type-instance := λ(: tt Type). (: (
          ()
          ( (Tuple( lhst rhst )) (if (non-zero lhst) (
             (let tctx (unify( lhst tt )))
-            (set ft (substitute( tctx ft )))
-            (add-concrete-type-instance ft)
+            (set rhst (substitute( tctx rhst )))
+            (add-concrete-type-instance rhst)
          ) ()))
       ))
       (set tt (with-only-class(normalize tt)))
