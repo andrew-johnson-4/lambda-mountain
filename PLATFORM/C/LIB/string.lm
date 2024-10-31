@@ -14,7 +14,7 @@ tail-string := λ(: x String). (: (
 ) U64);
 
 clone-rope := λ(: s S). (: (
-   (let r (malloc( 0_u64 1024_u64 )))
+   (let r (malloc( 0_u64 )))
    (let len (clone-rope-impl( r s 0_u64 )))
    (set r (realloc( r (+( len 1_u64 )) )))
    (set[]( (as r U8[]) len 0_u8 ))
