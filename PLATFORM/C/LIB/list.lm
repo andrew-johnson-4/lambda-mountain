@@ -82,3 +82,20 @@ print := λ(: l List<x>). (: (
    ))
    default
 ) Type);
+
+== := λ(: lt List<x>)(: rt List<x>). (: (
+   (let r 0_u64)
+   (match (Tuple( lt rt )) (
+      ()
+      ( (Tuple( LEOF LEOF )) (set r 1_u64) )
+      ( (Tuple( (LCons( ltr lt1 )) (LCons( rtr rt1 )) )) (
+         (if (==( lt1 rt1 )) (
+            (if (==( ltr rtr )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+      ))
+      ( _ () )
+   ))
+   r
+) U64);
