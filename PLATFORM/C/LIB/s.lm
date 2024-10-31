@@ -25,3 +25,12 @@ print := λ(: x S). (: (
    ))
    ()
 ) Nil);
+
++ := λ(: l S)(: r S). (: (
+   (if (non-zero r) (
+      (if (non-zero l) (
+         (set l (SCons( (close l) (close r) )))
+      ) (set l r))
+   ) ())
+   l
+) S);
