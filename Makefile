@@ -1,6 +1,6 @@
 
-dev: install-production
-	lm --c tests/regress/hashtable.lm
+dev:
+	lm --c tests/regress/token_macro.lm
 	cc tmp.c
 	./a.out
 	echo $?
