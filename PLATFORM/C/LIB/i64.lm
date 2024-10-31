@@ -26,3 +26,25 @@ print := λ(: x I64). (: (
    ) ())
    (print (as x U64))
 ) Nil);
+
+to-string := λ(: i I64). (: (
+   (let sign SNil)
+   (let r SNil)
+   (if (<( i 0_i64 )) (
+      (set sign (SAtom '-_s))
+      (set i (-( 0_i64 i )))
+   ) ())
+   (let c 0_u8)
+   (while (not(==( i 0_i64 ))) (
+      (let ci (as (+( (%( i 10_u64 )) 48_u64 )) U8))
+      (set i (/( i 10_i64 )))
+      (set r (SCons(
+         (close(SAtom(clone-rope ci)))
+         (close r)
+      )))
+   ))
+   (if (non-zero r) () (
+      (set r (SAtom '0_s))
+   ))
+   (clone-rope(SCons( (close sign) (close r) )))
+) String);
