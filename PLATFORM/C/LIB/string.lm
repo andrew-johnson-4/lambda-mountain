@@ -66,3 +66,34 @@ deep-hash := λ(: key String). (: (
    ))
    si
 ) U64);
+
+has-prefix := λ(: base String)(: pfx String). (: (
+   (let r 1_u64)
+   (while (head-string pfx) (
+      (if (head-string base) (
+         (let bc (head-string base))
+         (let pc (head-string pfx))
+         (if (==( bc pc )) (
+            (set base (tail-string base))
+            (set pfx (tail-string pfx))
+         ) (
+            (set r 0_u64)
+            (set pfx '_s)
+         ))
+      ) (
+         (set r 0_u64)
+         (set pfx '_s)
+      ))
+   ))
+   r
+) U64);
+
+remove-prefix := λ(: base String)(: pfx String). (: (
+   (if (has-prefix( base pfx )) (
+      (while (head-string pfx) (
+         (set base (tail-string base))
+         (set pfx (tail-string pfx))
+      ))
+   ) ())
+   base
+) String);
