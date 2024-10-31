@@ -28,3 +28,11 @@ fragment type U64; size U64 8; atom suffix U64 _u64;
 print := λ(: x U64). (: (
    (printf( '%ld_s x )) ()
 ) Nil);
+
+max := λ(: x U64)(: y U64). (: (
+   (if (>=( x y )) x y)
+) U64);
+
+min := λ(: x U64)(: y U64). (: (
+   (if (<=( x y )) x y)
+) U64);
