@@ -5,6 +5,7 @@ putchar := λ: FFI(: x U32). (: () U32);
 exit := λ: FFI(: x U32). (: () Nil);
 malloc := λ: FFI(: sz U64). (: () ?[]);
 realloc := λ: FFI(: ptr ?[])(: sz U64). (: () ?[]);
+memset :=  λ: FFI(: ptr ?[])(: x U32)(: sz U64). (: () ?[]);
 fopen := λ: FFI(: fp U8[])(: mode U8[]). (: () File[]);
 fread := λ: FFI(: buff ?[])(: size U64)(: count U64)(: f File[]). (: () U64);
 fclose := λ: FFI(: f File[]). (: () U32);

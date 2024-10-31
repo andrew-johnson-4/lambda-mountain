@@ -9,7 +9,7 @@ type HashtableIs<k,v> (HashtableIs( occupied:U64 , capacity:U64 , contents:Tuple
       (let new-capacity (max( 1000_u64 (*( occupied 30_u64 )) )))
       (let new-sizeof (*( (sizeof Tuple<k,v>) new-capacity )))
       (let new-contents (as (malloc new-sizeof) Tuple<k,v>[]))
-      (memset( new-contents 0_u8 new-sizeof ))
+      (memset( new-contents 0_u32 new-sizeof ))
       (let old-i 0_u64)
       (while (<( old-i capacity )) (
          (let old-kv ([]( contents old-i )))
@@ -81,7 +81,7 @@ type HashtableEq<k,v> (HashtableEq( occupied:U64 , capacity:U64 , contents:Tuple
       (let new-capacity (max( 1000_u64 (*( occupied 30_u64 )) )))
       (let new-sizeof (*( (sizeof Tuple<k,v>) new-capacity )))
       (let new-contents (as (malloc new-sizeof) Tuple<k,v>[]))
-      (memset( new-contents 0_u8 new-sizeof ))
+      (memset( new-contents 0_u32 new-sizeof ))
       (let old-i 0_u64)
       (while (<( old-i capacity )) (
          (let old-kv ([]( contents old-i )))

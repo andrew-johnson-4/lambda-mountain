@@ -18,6 +18,9 @@ fragment type U64; size U64 8; atom suffix U64 _u64;
 (declare-binop( % U64 U64 U64 ( '\[_l x '%_l y '\]_l ) ));
 (declare-binop( * U64 U64 U64 ( '\[_l x '*_l y '\]_l ) ));
 
+(declare-binop( << U64 U64+Constant U64 ( '\[_l x '<<_l y '\]_l ) ));
+(declare-binop( >> U64 U64+Constant U64 ( '\[_l x '>>_l y '\]_l ) ));
+
 (declare-unop( not U64 U64 ( '\[!_l x '\]_l ) ));
 
 (declare-unop( into-branch-conditional U64 BranchConditional ( x ) ));
@@ -25,3 +28,11 @@ fragment type U64; size U64 8; atom suffix U64 _u64;
 print := λ(: x U64). (: (
    (printf( '%ld_s x )) ()
 ) Nil);
+
+max := λ(: x U64)(: y U64). (: (
+   (if (>=( x y )) x y)
+) U64);
+
+min := λ(: x U64)(: y U64). (: (
+   (if (<=( x y )) x y)
+) U64);
