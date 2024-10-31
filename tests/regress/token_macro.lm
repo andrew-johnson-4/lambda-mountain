@@ -5,13 +5,12 @@ type Token (Token( String , U64 , U64 ));
 
 main := λ. (: (
   (let t (Token( 'A_s 1_u64 2_u64 )))
-  (print (==( 'A_s 'A_s )))
   (match t (
     ()
     ( 'A_t (print 'OK_s) )
   ))
-#  (match t (
-#    ()
-#    ( a_t (print a) )
-#  ))
+  (match t (
+    ()
+    ( a_t (print a) )
+  ))
 ) Nil);

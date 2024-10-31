@@ -140124,7 +140124,7 @@ uuid_00000000000de9f8:
 	push -56(%RSP)
 	push -56(%RSP)
 	pushq $0
-	pushq $uuid_00000000000dafcd
+	pushq $uuid_00000000000de0ea
 	pushq $2
 	mov %RBX, %RBP
 	call _AD__CL_ArrowSConsSS
@@ -218821,7 +218821,7 @@ uuid_00000000000de9d2:
 	.ascii "File: SRC/compile-expr-direct.lm Line: 136 Column: 17"
 	.zero 1
 uuid_00000000000de9f7:
-	.ascii "(sizeof "
+	.ascii "(sizeof("
 	.zero 1
 uuid_00000000000dea1c:
 	.ascii "(("
