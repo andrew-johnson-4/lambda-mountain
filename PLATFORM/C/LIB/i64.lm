@@ -48,3 +48,17 @@ to-string := λ(: i I64). (: (
    ))
    (clone-rope(SCons( (close sign) (close r) )))
 ) String);
+
+to-i64 := λ(: s String). (: (
+   (let negative False_u8)
+   (if (==( (head-string s) 45_u8 )) (
+      (set negative True_u8)
+      (set s (tail-string s))
+   ) ())
+   (let base (as (to-u64 s) I64))
+   (if (==( negative True_u8 )) (
+      (set base (-( 0_i64 base )))
+   ) ())
+   base
+) I64);
+
