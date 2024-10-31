@@ -1,6 +1,6 @@
 
 # Jenkins One at a Time Hash
-hash := λ(: key t+Sized<GT<8>>). (: (
+hash := λ(: key t+Sized<GT<4>>). (: (
    (let i 0_u64)
    (let hash 0_u64)
    (while (<( i (/( (sizeof t) 8_u64 )) )) (
