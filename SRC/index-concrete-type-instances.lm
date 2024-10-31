@@ -3,6 +3,8 @@ concrete-type-instances-index := (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<Tu
 
 add-concrete-type-instance := λ(: tt Type). (: (
    (if (is( config-assemble-mode AssembleC )) (
+      (let ft (fields-of-tag(tag-of tt)))
+      (if (non-zero ft) (add-concrete-type-instance ft) ())
       (set tt (with-only-class(normalize tt)))
       (if (non-zero tt) (match tt (
          ()
