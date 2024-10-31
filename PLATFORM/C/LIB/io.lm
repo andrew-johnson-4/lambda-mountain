@@ -10,6 +10,8 @@ fopen := λ: FFI(: fp U8[])(: mode U8[]). (: () File[]);
 fread := λ: FFI(: buff ?[])(: size U64)(: count U64)(: f File[]). (: () U64);
 fclose := λ: FFI(: f File[]). (: () U32);
 
+exit := λ(: x U64).(: (exit(as x U32)) Nil);
+
 print := λ(: x String). (: (
    (while (!=( (head-string x) 0_u8 )) (
       (putchar( (as (head-string x) U32) ))
