@@ -86,7 +86,6 @@ import SRC/cons-head.lm;
 import SRC/cons-tail.lm;
 import SRC/parameter-number.lm;
 import SRC/apply.lm;
-import SRC/apply-and-specialize.lm;
 import SRC/apply-plural.lm;
 import SRC/reduce-plural.lm;
 import SRC/apply-or-cons-and-specialize.lm;

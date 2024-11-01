@@ -1,5 +1,0 @@
-
-apply-and-specialize := λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (
-   (let tt (apply( function-name ft pt 1_u64 blame )))
-   tt
-) Type);
