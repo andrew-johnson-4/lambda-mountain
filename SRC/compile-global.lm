@@ -43,6 +43,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
          (set text (SCons( (close text) (close(SAtom '\]\:\n_s)) )))
          (set assemble-header-section (SCons( (close assemble-header-section) (close text) )))
 
+         (set text SNil)
          (if (==( k 'main_s )) (
             (set text (SCons( (close text) (close(SAtom 'int_s)) )))
          ) (
