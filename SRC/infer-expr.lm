@@ -33,9 +33,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
                   (infer-expr( tctx t Unscoped tt used ))
                ))
                (let inner-tt (typeof t))
-               (if (non-zero inner-tt) (
-                  (set tt (and( tt inner-tt )))
-               ) (
+               (if (non-zero inner-tt) () (
                   (ascript-normal( t tt ))
                ))
                (ascript-normal( term tt ))
