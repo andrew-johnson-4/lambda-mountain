@@ -27,7 +27,7 @@ develop:
 
 build: compile-production
 	time ./production --c -o deploy.c SRC/index-index.lm
-	cc deploy.c -o deploy
+	cc deploy.c -o deploy 2>err.log
 	time ./deploy --c -o deploy2.c SRC/index-index.lm
 	diff deploy.c deploy2.c
 	mv deploy.c BOOTSTRAP/cli.c
