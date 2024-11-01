@@ -28,7 +28,7 @@ develop:
 build: compile-production
 	time ./production --c -o deploy.c SRC/index-index.lm
 	cc deploy.c -o deploy
-	time ./deploy --gnu -o deploy2.c SRC/index-index.lm
+	time ./deploy --c -o deploy2.c SRC/index-index.lm
 	diff deploy.c deploy2.c
 	mv deploy.c BOOTSTRAP/cli.c
 	cargo test regression_tests
