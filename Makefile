@@ -26,7 +26,7 @@ develop:
 	coqchk tmp.vo
 
 build: compile-production
-	./production --c -o deploy.c SRC/index-index.lm > deploy.log
+	time ./production --c -o deploy.c SRC/index-index.lm
 	cc deploy.c -o deploy
 	time ./deploy --c -o deploy2.c SRC/index-index.lm
 	diff deploy.c deploy2.c
