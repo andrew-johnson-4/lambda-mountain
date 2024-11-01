@@ -25,6 +25,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          ))
       ))
       ( (App( (Lit( ':_s _ )) (App( (Lit( _ _ )) (AType tt) )) )) (
+         (add-concrete-type-instance tt)
          (match term (
             ()
             ( (App( _ (App( t _ )) )) (
@@ -84,6 +85,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (ascript-normal( term (guess-representation(without-representation(typeof t))) ))
       ))
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
+         (add-concrete-type-instance tt)
          (set tctx (infer-expr( tctx t Unscoped TAny used )))
          (let inner-tt (typeof t))
          (match t (
