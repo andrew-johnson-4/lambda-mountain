@@ -12,7 +12,7 @@ add-concrete-type-instance := λ(: tt Type). (: (
          ) ()))
       ))
       (set tt (normalize tt))
-      (set lt (with-only-array tt))
+      (let lt (with-only-array tt))
       (if (non-zero lt) (set tt lt) (set tt (with-only-class tt)))
       (if (non-zero tt) (match tt (
          ()
