@@ -1,10 +1,10 @@
 
 
-(declare-unop( .0 LMStruct U64 ( '\[_l x '._0\]_l ) ));
-(declare-unop( .1 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<_r,f1>,_0>> f1 ( '\[_l x '.__l (+( (*( (: cn L) 1000_l )) 1_l )) '\]_l ) ));
-(declare-unop( .2 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<_r,f2>,_1>,_0>> f2 ( '\[_l x '.__l (+( (*( (: cn L) 1000_l )) 2_l )) '\]_l ) ));
-(declare-unop( .3 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<_r,f3>,_2>,_1>,_0>> f3 ( '\[_l x '.__l (+( (*( (: cn L) 1000_l )) 3_l )) '\]_l ) ));
-(declare-unop( .4 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<Cons<_r,f4>,_3>,_2>,_1>,_0>> f4 ( '\[_l x '.__l (+( (*( (: cn L) 1000_l )) 4_l )) '\]_l ) ));
-(declare-unop( .5 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_r,f5>,_4>,_3>,_2>,_1>,_0>> f5 ( '\[_l x '.__l (+( (*( (: cn L) 1000_l )) 5_l )) '\]_l ) ));
-(declare-unop( .6 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<Cons<Cons<Cons<_r,f6>,_5>,_4>,_3>,_2>,_1>,_0>> f6 ( '\[_l x '.__l (+( (*( (: cn L) 1000_l )) 6_l )) '\]_l ) ));
+(declare-unop( .0 LMStruct U64 ( '\[_l x '.field_0\]_l ) ));
+(declare-unop( .1 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<_r,f1>,_0>> f1 ( '\[_l x '.field__l (+( (*( (: cn L) 1000_l )) 1_l )) '\]_l ) ));
+(declare-unop( .2 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<_r,f2>,_1>,_0>> f2 ( '\[_l x '.field__l (+( (*( (: cn L) 1000_l )) 2_l )) '\]_l ) ));
+(declare-unop( .3 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<_r,f3>,_2>,_1>,_0>> f3 ( '\[_l x '.field__l (+( (*( (: cn L) 1000_l )) 3_l )) '\]_l ) ));
+(declare-unop( .4 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<Cons<_r,f4>,_3>,_2>,_1>,_0>> f4 ( '\[_l x '.field__l (+( (*( (: cn L) 1000_l )) 4_l )) '\]_l ) ));
+(declare-unop( .5 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_r,f5>,_4>,_3>,_2>,_1>,_0>> f5 ( '\[_l x '.field__l (+( (*( (: cn L) 1000_l )) 5_l )) '\]_l ) ));
+(declare-unop( .6 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<Cons<Cons<Cons<_r,f6>,_5>,_4>,_3>,_2>,_1>,_0>> f6 ( '\[_l x '.field__l (+( (*( (: cn L) 1000_l )) 6_l )) '\]_l ) ));
 
