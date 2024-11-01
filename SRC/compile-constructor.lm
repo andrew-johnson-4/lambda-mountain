@@ -4,15 +4,12 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
    (if (is( config-assemble-mode AssembleC )) (
       (let bare-ordinal (with-only-class return-type))
       (let c-type-name (.lookup( index-c-type-ordinal (normalize bare-ordinal) 'UnknownCTypename_s )))
-      (let inner-rvalue (compile-push-rvalue( ctx args 0_i64 0_u64 0_u64 )))
       (let case-number (SAtom(to-string(index-of-tag tag-name))))
-      (if (is-nil args-type) () (
-         (set case-number (+( case-number (SAtom ',_s) )))
-      ))
+      (set r (initialize-c-struct( ctx args case-number 1_u64 )))
       (set r (fragment::set( r 'expression_s (
          (+(
-            (+( (+( (SAtom '\[{_s) (SAtom c-type-name) )) (SAtom '\srvalue={_s) ))
-            (+( (+( case-number (fragment::get( inner-rvalue 'expression_s )) )) (SAtom '}\:rvalue\:}\]_s) ))
+            (+( (+( (SAtom '\[{_s) (SAtom c-type-name) )) (SAtom '\srvalue={.field_0=_s) ))
+            (+( (+( case-number (fragment::get( r 'expression_s )) )) (SAtom '}\:rvalue\:}\]_s) ))
          ))
       ))))
    ) (
