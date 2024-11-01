@@ -1,0 +1,5 @@
+
+type BTreeEq<k,v> BTreeEqEOF;
+
+.bind := λ(: index BTreeEq<k,v>[])(: key k)(: val v). (: () Nil);
+.lookup := λ(: index BTreeEq<k,v>)(: key k)(: default v). (: default v);
