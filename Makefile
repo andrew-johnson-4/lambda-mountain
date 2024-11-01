@@ -42,7 +42,7 @@ build-gnu: compile-production
 	mv deploy.s BOOTSTRAP/cli.s
 	cargo test regression_tests
 
-deploy: build-gnu build-docs
+deploy: build build-docs
 
 compile-production: compile-bootstrap
 	rm -f production production.o production.s
