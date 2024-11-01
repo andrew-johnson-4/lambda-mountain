@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm --c tests/regress/hashtable.lm
+	lm --c tests/regress/paradata.lm
 	cc tmp.c
 	./a.out
 	echo $?
