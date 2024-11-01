@@ -1,5 +1,6 @@
 
 main := λ(: argc U64)(: argv String[]). (: (
+   (print 'main.1\n_s)
    (let argi 1_u64)
    (let input SNil)
    (while (<( argi argc )) (
@@ -43,6 +44,7 @@ main := λ(: argc U64)(: argv String[]). (: (
       ))
       (set argi (+( argi 1_u64 )))
    ))
+   (print 'main.2\n_s)
 
    (let continue True_u8)
    (while (==( continue True_u8 )) (match input (
@@ -53,6 +55,7 @@ main := λ(: argc U64)(: argv String[]). (: (
       ( (SAtom( fp )) ( (tokenize fp) (set continue False_u8) ))
    )))
 
+   (print 'main.3\n_s)
    (match config-mode (
       ()
       ( ModeTokenize (print ast-tokenized-program) )
@@ -71,11 +74,17 @@ main := λ(: argc U64)(: argv String[]). (: (
          (typecheck())
       ))
       ( ModeCompile (
+         (print 'Compile.start\n_s)
          (parse())
+         (print 'Compile.parsed\n_s)
          (preprocess())
+         (print 'Compile.preprocessed\n_s)
          (typecheck())
+         (print 'Compile.typechecked\n_s)
          (compile())
+         (print 'Compile.compiled\n_s)
       ))
    ))
+   (print 'main.4\n_s)
 ) Nil);
 

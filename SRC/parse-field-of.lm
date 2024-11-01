@@ -1,5 +1,6 @@
 
 parse-field-of := λ(: type-name String). (: (
+   (print 'Parse\sField\sOf\n_s)(print type-name)(print '\n_s)
    (let tt (parse-type type-name))
    (let field-name '_s)
    (let field-name-s SNil)

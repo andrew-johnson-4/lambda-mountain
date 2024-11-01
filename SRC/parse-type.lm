@@ -1,5 +1,6 @@
 
 parse-type := λ(: tt String). (: (
+   (print 'Parse\sType\n_s)(print tt)(print '\n_s)
    (let is-vararg False_u8)
    (if (has-suffix( tt '..._s )) (
       (set tt (remove-suffix( tt '..._s )))

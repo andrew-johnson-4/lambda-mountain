@@ -1,5 +1,6 @@
 
 parse-type-single := λ(: tt String). (: (
+   (print 'Parse\sType\sSingle\n_s)(print tt)(print '\n_s)
    (let depth 0_u64)
    (let mode 0_u8)
    (let buff SNil)
@@ -130,6 +131,7 @@ parse-type-single := λ(: tt String). (: (
          ))
       ))
    ) ())
+   (print 'Parsed\sType\s_s)(print base-type)(print '\n_s)
    base-type
 ) Type);
 

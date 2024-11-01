@@ -1,6 +1,7 @@
 
 parse := λ. (: (
    (let tokens ast-tokenized-program)
+   (print 'Parse\sTokens\s_s)(print tokens)(print '\n_s)
    (set ast-tokenized-program (: LEOF List<Token>))
    (let tl (parse-toplevel tokens))
    (set ast-parsed-program (+( ast-parsed-program tl )))

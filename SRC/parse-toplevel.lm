@@ -1,5 +1,6 @@
 
 parse-toplevel := λ(: tokens List<Token>). (: (
+   (print 'Parse\sToplevel\n_s)(print tokens)(print '\n_s)
    (let program ASTEOF)
    (while (non-zero tokens) (
       (match tokens (
