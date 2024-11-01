@@ -12,3 +12,115 @@ tail-string := λ(: x String). (: (
 == := λ(: l String)(: r String). (: (
    (==( (strcmp( (as l U8[]) (as r U8[]) )) 0_u32 ))
 ) U64);
+
+clone-rope := λ(: s S). (: (
+   (let r (malloc( 0_u64 )))
+   (let len (clone-rope-impl( r s 0_u64 )))
+   (set r (realloc( r (+( len 1_u64 )) )))
+   (set[]( (as r U8[]) len 0_u8 ))
+   (as r String)
+) String);
+
+clone-rope-impl := λ(: ptr ?[])(: s S)(: i U64). (: (
+   (match s (
+      ()
+      ( SNil () )
+      ( (SCons( l r )) (
+         (set i (clone-rope-impl( ptr (open l) i )))
+         (set i (clone-rope-impl( ptr (open r) i )))
+      ))
+      ( (SAtom a) (
+         (let ci 0_u64)
+         (let c ([]( (as a U8[]) ci )))
+         (while (!=( c 0_u8 )) (
+            (set ptr (realloc( ptr (+( i 1_u64 )) )))
+            (set[]( (as ptr U8[]) i c ))
+            (set ci (+( ci 1_u64 )))
+            (set i (+( i 1_u64 )))
+            (set c ([]( (as a U8[]) ci )))
+         ))
+      ))
+   ))
+   i
+) U64);
+
+deep-hash := λ(: key String). (: (
+   (let i 0_u64)
+   (let hash 0_u64)
+   (while (head-string key) (
+      (set hash (+( hash (as (head-string key) U64) )))
+      (set key (tail-string key))
+      (set hash (+( hash (<<( hash 10_u64 )) )))
+      (set hash (^( hash (>>( hash 6_u64 )) )))
+   ))
+   (set hash (+( hash (<<( hash 3_u64 )) )))
+   (set hash (^( hash (>>( hash 11_u64 )) )))
+   (set hash (+( hash (<<( hash 15_u64 )) )))
+   hash
+) U64);
+
+.length := λ(: s String). (: (
+   (let si 0_u64)
+   (while (!=( ([]( (as s U8[]) si )) 0_u8 )) (
+      (set si (+( si 1_u64 )))
+   ))
+   si
+) U64);
+
+has-prefix := λ(: base String)(: pfx String). (: (
+   (let r 1_u64)
+   (while (head-string pfx) (
+      (if (head-string base) (
+         (let bc (head-string base))
+         (let pc (head-string pfx))
+         (if (==( bc pc )) (
+            (set base (tail-string base))
+            (set pfx (tail-string pfx))
+         ) (
+            (set r 0_u64)
+            (set pfx '_s)
+         ))
+      ) (
+         (set r 0_u64)
+         (set pfx '_s)
+      ))
+   ))
+   r
+) U64);
+
+remove-prefix := λ(: base String)(: pfx String). (: (
+   (if (has-prefix( base pfx )) (
+      (while (head-string pfx) (
+         (set base (tail-string base))
+         (set pfx (tail-string pfx))
+      ))
+   ) ())
+   base
+) String);
+
+has-suffix := λ(: base String)(: sfx String). (: (
+   (let r 0_u64)
+   (while (head-string base) (
+      (if (==( base sfx )) (
+         (set r 1_u64)
+      ) ())
+      (set base (tail-string base))
+   ))
+   r
+) U64);
+
+remove-suffix := λ(: base String)(: sfx String). (: (
+   (let r SNil)
+   (while (head-string base) (
+      (if (==( base sfx )) (
+         (set base '0_s)
+      ) (
+         (set r (SCons(
+            (close r)
+            (close(SAtom(clone-rope(head-string base))))
+         )))
+      ))
+      (set base (tail-string base))
+   ))
+   (clone-rope r)
+) String);

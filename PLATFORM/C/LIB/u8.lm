@@ -17,3 +17,14 @@ fragment type U8; size U8 1; atom suffix U8 _u8;
 (declare-unop( not U8 U64 ( '\[!_l x '\]_l ) ));
 
 (declare-unop( into-branch-conditional U8 BranchConditional ( x ) ));
+
+print := λ(: x U8). (: (
+   (print (as x U64))
+) Nil);
+
+clone-rope := λ(: s U8). (: (
+   (let x (as (malloc 2_u64) U8[]))
+   (set[]( x 0_u64 s ))
+   (set[]( x 1_u64 0_u8 ))
+   (as x String)
+) String);

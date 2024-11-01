@@ -100,7 +100,7 @@ parse-type-single := λ(: tt String). (: (
                      (set buff SNil)
                   ))
                   ( _ (
-                     (eprint 'Unexpected\sParameterized\sType:\s_s)
+                     (print 'Unexpected\sParameterized\sType:\s_s)
                      (print base-type)
                      (exit 1_u64)
                   ))

@@ -21,33 +21,3 @@ slot := λ(: tt Type)(: sl String). (: (
    rt
 ) Type);
 
-slot := λ(: tt Type)(: s1 String)(: s2 String). (: (
-   (let rt TAny)
-   (match tt (
-      ()
-      ( (TGround( bt mt )) (
-         (if (==( bt s1 )) (
-            (match mt (
-               ()
-               ( (TGround( mtt _ )) (
-                  (if (==( mtt s2 )) (
-                     (set rt tt)
-                  ) ())
-               ))
-               ( _ () )
-            ))
-         ) ())
-      ))
-      ( (TAnd( ltt rtt )) (
-         (let lt2 (slot( ltt s1 )))
-         (if (non-zero lt2) (
-            (set rt lt2)
-         ) (
-            (let rt2 (slot( rtt s1 )))
-            (set rt rt2)
-         ))
-      ))
-      ( _ () )
-   ))
-   rt
-) Type);

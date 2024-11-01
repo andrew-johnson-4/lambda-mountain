@@ -69,6 +69,7 @@ import SRC/without-size-unless-class.lm;
 import SRC/without-size.lm;
 import SRC/without-platform-props.lm;
 
+import SRC/with-only-array.lm;
 import SRC/with-only-tag.lm;
 import SRC/with-only-class.lm;
 import SRC/with-only-representation.lm;
@@ -85,7 +86,6 @@ import SRC/cons-head.lm;
 import SRC/cons-tail.lm;
 import SRC/parameter-number.lm;
 import SRC/apply.lm;
-import SRC/apply-and-specialize.lm;
 import SRC/apply-plural.lm;
 import SRC/reduce-plural.lm;
 import SRC/apply-or-cons-and-specialize.lm;

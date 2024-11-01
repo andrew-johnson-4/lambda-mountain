@@ -8,7 +8,10 @@ realloc := λ: FFI(: ptr ?[])(: sz U64). (: () ?[]);
 memset :=  λ: FFI(: ptr ?[])(: x U32)(: sz U64). (: () ?[]);
 fopen := λ: FFI(: fp U8[])(: mode U8[]). (: () File[]);
 fread := λ: FFI(: buff ?[])(: size U64)(: count U64)(: f File[]). (: () U64);
+fwrite := λ: FFI(: buff ?[])(: size U64)(: count U64)(: f File[]). (: () U64);
 fclose := λ: FFI(: f File[]). (: () U32);
+
+exit := λ(: x U64).(: (exit(as x U32)) Nil);
 
 print := λ(: x String). (: (
    (while (!=( (head-string x) 0_u8 )) (
@@ -41,3 +44,9 @@ read-file := λ(: fp String). (: (
    (set[]( buff buff-sz 0_u8 ))
    (as buff String)
 ) String);
+
+write-file := λ(: fp String)(: contents String). (: (
+   (let f (fopen( (as fp U8[]) (as 'w_s U8[]) )))
+   (fwrite( (as contents U8[]) 1_u64 (.length contents) f ))
+   (fclose f) ()
+) Nil);

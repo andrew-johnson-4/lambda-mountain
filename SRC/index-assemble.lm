@@ -14,3 +14,4 @@ import SRC/compile-write.lm;
 import SRC/compile-c-function-args.lm;
 import SRC/compile-c-text-header.lm;
 import SRC/compile-c-typedef.lm;
+import SRC/initialize-c-struct.lm;

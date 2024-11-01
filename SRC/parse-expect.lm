@@ -1,6 +1,6 @@
 
 parse-expect := λ(: msg String)(: tokens List<Token>). (: (
-   (eprint msg)
+   (print msg)
    (print '\n_s)
    (print tokens)
    (exit 1_u64)

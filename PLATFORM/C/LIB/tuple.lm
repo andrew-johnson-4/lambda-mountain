@@ -1,2 +1,31 @@
 
 type Tuple<x,y> (Tuple( x , y ));
+
+== := λ(: l Tuple<x,y>)(: r Tuple<x,y>). (: (
+   (let return 0_u64)
+   (match (Tuple( l r )) (
+      ()
+      ( (Tuple( (Tuple( lx ly )) (Tuple( rx ry )) )) (
+         (if (==( lx rx )) (
+            (if (==( ly ry )) (
+               (set return 1_u64)
+            ) ())
+         ) ())
+      ))
+   ))
+   return
+) U64);
+
+deep-hash := λ(: l Tuple<x,y>). (: (
+   (let return 0_u64)
+   (match l (
+      ()
+      ( (Tuple( lx ly )) (
+         (set return (+(
+            (deep-hash lx)
+            (deep-hash ly)
+         )))
+      ))
+   ))
+   return
+) U64);

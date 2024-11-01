@@ -32,6 +32,7 @@ infer-global-context := λ(: td AST). (: (
          )))
       ))
       ( (Glb( k_t (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) )) (
+         (add-concrete-type-instance rhst)
          (let kt (and( (without-representation rhst) (t1 'GlobalVariable_s) )))
          (set global-type-context (TCtxBind(
             (close global-type-context) k kt ASTEOF

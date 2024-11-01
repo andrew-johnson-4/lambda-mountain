@@ -182,11 +182,11 @@ tokenize := λ(: fp String). (: (
    (set ast-tokenized-program (reverse ast-tokenized-program))
 
    (if (==( parens-counter 0_i64 )) () (
-      (eprint 'Hanging\sParentheses\sIn\sFile:\s_s)
-      (eprint fp)
-      (eprint '\sCount:\s_s)
+      (print 'Hanging\sParentheses\sIn\sFile:\s_s)
+      (print fp)
+      (print '\sCount:\s_s)
       (print parens-counter)
-      (eprint '\n_s)
+      (print '\n_s)
       (exit 1_u64)
    ))
 
