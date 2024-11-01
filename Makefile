@@ -27,13 +27,22 @@ develop:
 
 build: compile-production
 	time ./production --c -o deploy.c SRC/index-index.lm
-	cc deploy.c -o deploy 2>err.log
-	time ./deploy --c -o deploy2.c SRC/index-index.lm
+	cc deploy.c -o deploy
+	time ./deploy --gnu -o deploy2.c SRC/index-index.lm
 	diff deploy.c deploy2.c
 	mv deploy.c BOOTSTRAP/cli.c
 	cargo test regression_tests
 
-deploy: build build-docs
+build-gnu: compile-production
+	time ./production --gnu -o deploy.s SRC/index-index.lm
+	as -o deploy.o deploy.s
+	ld -o deploy   deploy.o
+	time ./deploy --gnu -o deploy2.s SRC/index-index.lm
+	diff deploy.s deploy2.s
+	mv deploy.s BOOTSTRAP/cli.s
+	cargo test regression_tests
+
+deploy: build-gnu build-docs
 
 compile-production: compile-bootstrap
 	rm -f production production.o production.s
