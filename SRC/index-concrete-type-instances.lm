@@ -12,7 +12,9 @@ add-concrete-type-instance := λ(: tt Type). (: (
             (add-concrete-type-instance rhst)
          ) ()))
       ))
-      (set tt (with-only-class(normalize tt)))
+      (set tt (normalize tt))
+      (set lt (with-only-array tt))
+      (if (non-zero lt) (set tt lt) (set tt (with-only-class tt)))
       (if (non-zero tt) (match tt (
          ()
          ( (TGround( tag LEOF )) () )
