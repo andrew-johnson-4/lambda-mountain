@@ -15,7 +15,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
       ( (Abs( lhs rhs tlt )) (if (||( (is-open kt) (||( (is-blob tlt) (is-ffi tlt) )) )) () (
          (let args-type (domain kt))
          (let args-size (sizeof-aligned args-type))
-         (set ctx (compile-destructure-args( args-type ctx lhs 0_i64 )))
+         (set ctx (compile-destructure-args( args-type ctx lhs 0_i64 (is-blob tlt) )))
          (set ctx (FCtxBind( (close ctx) 'cdecl::args-size_s TAny
             (fragment::expression(to-string args-size))
          )))
@@ -99,7 +99,7 @@ compile-global-gnu := λ(: ctx FContext)(: k String)(: term AST). (: (
 
          (let args-type (domain kt))
          (let args-size (sizeof-aligned args-type))
-         (set ctx (compile-destructure-args( args-type ctx lhs 0_i64 )))
+         (set ctx (compile-destructure-args( args-type ctx lhs 0_i64 (is-blob tlt) )))
          (set ctx (FCtxBind( (close ctx) 'cdecl::args-size_s TAny
             (fragment::expression(to-string args-size))
          )))

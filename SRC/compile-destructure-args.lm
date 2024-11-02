@@ -1,14 +1,18 @@
 
-compile-destructure-args := λ(: tt Type)(: ctx FContext)(: lhs AST)(: offset I64). (: (
+compile-destructure-args := λ(: tt Type)(: ctx FContext)(: lhs AST)(: offset I64)(: is-fragment U64). (: (
    (match lhs (
       ()
       ( (App( rst (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) )) (
          (if (is-cons tt) (
             (let rst-tt (p2 tt))
-            (set ctx (compile-destructure-args( rst-tt ctx rst offset )))
+            (set ctx (compile-destructure-args( rst-tt ctx rst offset is-fragment )))
             (let rst-sz (sizeof-aligned rst-tt))
             (let rst-offset (-( offset (as rst-sz I64) )))
-            (set kt (maybe-local-variable(denormalize kt)))
+            (if is-fragment (
+               (set kt (denormalize kt))
+            ) (
+               (set kt (maybe-local-variable(denormalize kt)))
+            ))
             (let sz (sizeof-aligned kt))
             (let new-offset (-( rst-offset (as sz I64) )))
             (set ctx (fragment-context::bind(
@@ -17,7 +21,11 @@ compile-destructure-args := λ(: tt Type)(: ctx FContext)(: lhs AST)(: offset I6
          ) ())
       ))
       ( (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) (
-         (set kt (maybe-local-variable(denormalize kt)))
+         (if is-fragment (
+            (set kt (denormalize kt))
+         ) (
+            (set kt (maybe-local-variable(denormalize kt)))
+         ))
          (let sz (sizeof-aligned kt))
          (let new-offset (-( offset (as sz I64) )))
          (set ctx (fragment-context::bind(
