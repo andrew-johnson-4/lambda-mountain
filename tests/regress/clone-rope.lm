@@ -5,7 +5,7 @@ main := λ. (: (
    (let s (SAtom 'A_s))
    (let repeat 0_u64)
    (while (<( repeat 1000_u64 )) (
-      (clone-rope s)
+      (print(clone-rope s))(print repeat)(print '\n_s)
       (set s (+( s s )))
       (set repeat (+( repeat 1_u64 )))
    ))

@@ -1,6 +1,8 @@
 
 fragment type String; size String 8; atom suffix String _s;
 
+type VariableData (CRAlloc( ptr:?[] , length:U64 , capacity:U64 ));
+
 head-string := λ(: x String). (: (
    ([]( (as x U8[]) 0_u64 ))
 ) U8);
@@ -14,36 +16,34 @@ tail-string := λ(: x String). (: (
    (==( (strcmp( (as l U8[]) (as r U8[]) )) 0_u32 ))
 ) U64);
 
+
 clone-rope := λ(: s S). (: (
-   (let r (malloc( 0_u64 )))
-   (let len (clone-rope-impl( r s 0_u64 )))
-   (set r (realloc( r (+( len 1_u64 )) )))
-   (set[]( (as r U8[]) len 0_u8 ))
-   (as r String)
+   (let buff (new-buffer 64_u64))
+   (set buff (clone-rope-impl( buff s )))
+   (set buff (.write( buff 0_u8 )))
+   (as (.ptr buff) String)
 ) String);
 
-clone-rope-impl := λ(: ptr ?[])(: s S)(: i U64). (: (
+clone-rope-impl := λ(: buff Buffer)(: s S). (: (
    (match s (
       ()
       ( SNil () )
       ( (SCons( l r )) (
-         (set i (clone-rope-impl( ptr (open l) i )))
-         (set i (clone-rope-impl( ptr (open r) i )))
+         (set buff (clone-rope-impl( ptr l )))
+         (set buff (clone-rope-impl( ptr r )))
       ))
       ( (SAtom a) (
          (let ci 0_u64)
          (let c ([]( (as a U8[]) ci )))
          (while (!=( c 0_u8 )) (
-            (set ptr (realloc( ptr (+( i 1_u64 )) )))
-            (set[]( (as ptr U8[]) i c ))
+            (set buff (.write( buff c )))
             (set ci (+( ci 1_u64 )))
-            (set i (+( i 1_u64 )))
             (set c ([]( (as a U8[]) ci )))
          ))
       ))
    ))
-   i
-) U64);
+   buff
+) Buffer);
 
 deep-hash := λ(: key String). (: (
    (let i 0_u64)
