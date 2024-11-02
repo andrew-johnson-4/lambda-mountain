@@ -10,35 +10,19 @@ fn rm(p: &str) {
 
 fn compile_bootstrap() {
    rm("bootstrap");
-   rm("bootstrap.s");
-   rm("bootstrap.o");
-   let exit = Command::new("as")
-                      .stdout(std::process::Stdio::piped())
-                      .stderr(std::process::Stdio::piped())
-                      .arg("-o")
-                      .arg("bootstrap.o")
-                      .arg("BOOTSTRAP/cli.s")
-                      .spawn()
-                      .expect("failed to execute process")
-                      .wait_with_output()
-                      .expect("failed to wait for process");
-   if !exit.status.success() {
-      let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("as error code: {}", stderr);
-   };
-   let exit = Command::new("ld")
+   let exit = Command::new("cc")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
                       .arg("-o")
                       .arg("bootstrap")
-                      .arg("bootstrap.o")
+                      .arg("BOOTSTRAP/cli.c")
                       .spawn()
                       .expect("failed to execute process")
                       .wait_with_output()
                       .expect("failed to wait for process");
    if !exit.status.success() {
       let stderr = String::from_utf8_lossy(&exit.stderr).to_string();
-      panic!("ld error code: {}", stderr);
+      panic!("cc error code: {}", stderr);
    };
 }
 

@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm --c tests/regress/cdecl.lm
+	lm --c tests/regress/clone-rope.lm
 	cc tmp.c
 	./a.out
 	echo $?
@@ -28,27 +28,19 @@ develop:
 build: compile-production
 	time ./production --c -o deploy.c SRC/index-index.lm
 	cc deploy.c -o deploy
-	time ./deploy --gnu -o deploy2.c SRC/index-index.lm
+	time ./deploy --c -o deploy2.c SRC/index-index.lm
 	diff deploy.c deploy2.c
 	mv deploy.c BOOTSTRAP/cli.c
+	rm -f deploy.c deploy2.c
 	cargo test regression_tests
 
-build-gnu: compile-production
-	time ./production --gnu -o deploy.s SRC/index-index.lm
-	as -o deploy.o deploy.s
-	ld -o deploy   deploy.o
-	time ./deploy --gnu -o deploy2.s SRC/index-index.lm
-	diff deploy.s deploy2.s
-	mv deploy.s BOOTSTRAP/cli.s
-	cargo test regression_tests
-
-deploy: build-gnu build-docs
+deploy: build build-docs
 
 compile-production: compile-bootstrap
 	rm -f production production.o production.s
-	./bootstrap --gnu -o production.s SRC/index-index.lm
-	as -o production.o production.s
-	ld -o production   production.o
+	./bootstrap --c -o production.c SRC/index-index.lm
+	cc -o production production.c
+	rm -f production.c
 	cp production re-production
 
 install-production: compile-production
@@ -58,9 +50,8 @@ install-bootstrap: compile-bootstrap
 	mv bootstrap $${HOME}/bin/lm
 
 compile-bootstrap:
-	rm -f bootstrap bootstrap.o
-	as -o bootstrap.o BOOTSTRAP/cli.s
-	ld -o bootstrap   bootstrap.o
+	rm -f bootstrap
+	cc -o bootstrap BOOTSTRAP/cli.c
 
 install:
 	as -o lm_raw.o BOOTSTRAP/cli.s

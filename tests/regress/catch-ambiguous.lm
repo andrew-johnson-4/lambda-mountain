@@ -1,9 +1,0 @@
-
-import LIB/default.lm;
-
-f := λ(: x U64)(: y Sized<8>). (: () Nil);
-f := λ(: a Sized<8>)(: b U64). (: () Nil);
-
-main := λ. (: (
-   (f( 1_u64 2_u64 ))
-) Nil);
