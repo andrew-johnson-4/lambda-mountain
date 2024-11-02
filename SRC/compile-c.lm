@@ -1,6 +1,5 @@
 
 compile-c := λ . (: (
-   (print 'Compile.C.1\n_s)
    (let preview-program ast-parsed-program)
    (let typedefs ASTEOF)
    (while (non-zero preview-program) (match preview-program (
@@ -45,7 +44,6 @@ compile-c := λ . (: (
          (set preview-program rst)
       ))
    )))
-   (print 'Compile.C.2\n_s)
    (let pre-typedefs typedefs)
    (while (non-zero pre-typedefs) (match pre-typedefs (
       ()
@@ -54,7 +52,6 @@ compile-c := λ . (: (
          (set pre-typedefs rst)
       ))
    )))
-   (print 'Compile.C.3\n_s)
    (while (non-zero typedefs) (match typedefs (
       ()
       ( (Seq( rst (Typedef( (Lit( lhs _ )) rhs )) )) (
@@ -62,13 +59,8 @@ compile-c := λ . (: (
          (set typedefs rst)
       ))
    )))
-   (print 'Compile.C.4\n_s)
    (try-continue-compile-c-typedefs())
-   (print 'Compile.C.5\n_s)
    (compile-program-ordered( global-ctx ast-parsed-program ))
-   (print 'Compile.C.6\n_s)
    (compile-finish())
-   (print 'Compile.C.7\n_s)
    (compile-write())
-   (print 'Compile.C.8\n_s)
 ) Nil);

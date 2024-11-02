@@ -58,9 +58,8 @@ install-bootstrap: compile-bootstrap
 	mv bootstrap $${HOME}/bin/lm
 
 compile-bootstrap:
-	rm -f bootstrap bootstrap.o
-	as -o bootstrap.o BOOTSTRAP/cli.s
-	ld -o bootstrap   bootstrap.o
+	rm -f bootstrap
+	cc -o bootstrap BOOTSTRAP/cli.c
 
 install:
 	as -o lm_raw.o BOOTSTRAP/cli.s
