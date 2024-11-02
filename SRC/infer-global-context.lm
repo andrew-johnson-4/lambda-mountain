@@ -18,6 +18,7 @@ infer-global-context := λ(: td AST). (: (
          (if (is-blob tlt) () (set return-type (guess-representation(without-representation rhst))))
          (let ft (t3( 'Arrow_s lt return-type )))
          (set ft (enrich( ft tlt )))
+         (set ft (and( ft (t1 'GlobalVariable_s) )))
          (if (&&( (is-hook tlt) (not(is-nil rhst)) )) (
             (exit-error( 'Hooks\sMust\sNot\sReturn\sValues._s td ))
          ) ())
