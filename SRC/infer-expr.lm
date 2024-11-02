@@ -183,7 +183,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
                (let lt-fname (find-alias( l-fname (typeof r) )))
                (let ftrt (apply-or-cons-and-specialize(
                   lt-fname
-                  (typeof l)
+                  (typeof-var-raw( term tctx lt-fname ))
                   (typeof r)
                   term
                )))
