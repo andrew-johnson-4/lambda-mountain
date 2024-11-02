@@ -1,6 +1,6 @@
 
-#plugin-null-backend := λ. (: (
-#   (fail 'Cannot\sCompile:\sNo\sBackend\sWas\sSpecified_s)
-#) Nil);
+plugin-null-backend := λ. (: (
+   (fail 'Cannot\sCompile:\sNo\sBackend\sWas\sSpecified_s)
+) Nil);
 
-#plugin-current-backend := (: (& plugin-null-backend) Arrow<Nil,Nil>[]);
+plugin-current-backend := (: (& plugin-null-backend) Arrow<Nil,Nil>[]);
