@@ -12,5 +12,4 @@ close := λ(: x p). (: (
 (declare-unop( open t t (x) ));
 (declare-unop( open Array<base-type,?> base-type ('\[*_l x '\]_l) ));
 
-(declare-unop( & t+GlobalVariable t[] ('\[&_l x '\]_l) ));
-(declare-unop( & t+LocalVariable t[] ('\[&_l x '\]_l) ));
+(declare-unop( & t t[] ('\[&_l x '\]_l) ));
