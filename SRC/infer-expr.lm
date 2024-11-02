@@ -180,9 +180,9 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
                (set tctx (infer-expr( tctx l Unscoped TAny l-used )))
                (if (is-arrow(typeof l)) (set r-used Call) ())
                (set tctx (infer-expr( tctx r Unscoped TAny r-used )))
-               (set l-fname (find-alias( l-fname (typeof r) )))
+               (let lt-fname (find-alias( l-fname (typeof r) )))
                (let ftrt (apply-or-cons-and-specialize(
-                  l-fname
+                  lt-fname
                   (typeof l)
                   (typeof r)
                   term
