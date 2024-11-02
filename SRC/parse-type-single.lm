@@ -130,7 +130,6 @@ parse-type-single := λ(: tt String). (: (
          ))
       ))
    ) ())
-   (print 'Parsed\sType\s_s)(print base-type)(print '\n_s)
    base-type
 ) Type);
 
