@@ -1,6 +1,5 @@
 
 parse-type-comma-sep := λ(: tt String). (: (
-   (print 'Parse\sType\sComma\sSep\n_s)(print tt)(print '\n_s)
    (let buff SNil)
    (let depth 0_u64)
    (let base (: LEOF List<Type>))

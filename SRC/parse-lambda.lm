@@ -1,6 +1,5 @@
 
 parse-lambda := λ(: tokens List<Token>). (: (
-   (print 'Parse\sLambda\n_s)(print tokens)(print '\n_s)
    (let tt-ext TAny)
    (match tokens (
       ()
