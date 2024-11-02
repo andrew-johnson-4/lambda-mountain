@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm --c tests/regress/cdecl.lm
+	lm --c tests/regress/clone-rope.lm
 	cc tmp.c
 	./a.out
 	echo $?
