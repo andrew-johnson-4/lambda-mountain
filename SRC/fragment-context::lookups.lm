@@ -12,7 +12,7 @@ fragment-context::lookups := λ(: ctx FContext)(: k String)(: ft Type)(: kt Type
       ()
       ( (FCtxBind( rst rk rt rf )) (
          (if (==( k rk )) (
-            (if (is( ft rt )) (
+            (if (==( ft rt )) (
                (set r (cons( rf (: LEOF List<Fragment>) )))
                (set ctx FCtxEOF)
             ) (

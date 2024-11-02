@@ -12,7 +12,7 @@ fragment-context::lookup := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST
       ()
       ( (FCtxBind( rst rk rt rf )) (
          (if (==( k rk )) (
-            (if (is( kt rt )) (
+            (if (==( kt rt )) (
                (set r rf)
                (set found (t1 'GlobalVariable_s))
                (set ctx FCtxEOF)
