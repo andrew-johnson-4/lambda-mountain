@@ -113,7 +113,7 @@ type HashtableEq<k,v> (HashtableEq( occupied:U64 , capacity:U64 , contents:Tuple
       (set ki (%( (+( ki 1_u64 )) table-capacity )))
       (set old-kv ([]( table ki )))
       (set old-k (.2 old-kv))
-      (if (==( old-k key )) (set replacing 1_u64) ())
+      (if (&&( (mem-is-nonzero old-kv) (==( old-k key )) )) (set replacing 1_u64) ())
    ))
    (let kv (Tuple( key value )))
    (set[]( table ki kv ))
@@ -133,7 +133,7 @@ type HashtableEq<k,v> (HashtableEq( occupied:U64 , capacity:U64 , contents:Tuple
          (set ki (%( (+( ki 1_u64 )) capacity )))
          (set old-kv ([]( contents ki )))
          (set old-k (.2 old-kv))
-         (if (==( old-k key )) (set replacing 1_u64) ())
+         (if (&&( (mem-is-nonzero old-kv) (==( old-k key )) )) (set replacing 1_u64) ())
       ))
       (if replacing (
          (let old-v (.1 old-kv))
