@@ -7,7 +7,6 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U64)(:
 ) Tuple<Type,Type>);
 
 apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U64)(: blame AST)(: hard U64). (: (
-   (set function-name (find-alias( function-name pt )))
    (let r TAny)
    (let rs (apply-plural( function-name ft pt blame )))
    (if (not(is-hook ft)) (
