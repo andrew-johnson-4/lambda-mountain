@@ -8,10 +8,6 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U64)(:
 
 apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U64)(: blame AST)(: hard U64). (: (
    (let r TAny)
-   (if (==( function-name '.1_s )) (
-      (print '.1\sarg\s_s)(print pt)(print '\n_s)
-      (print '.1\scandidates\s_s)(print ft)(print '\n_s)
-   ) ())
    (let rs (apply-plural( function-name ft pt blame )))
    (if (not(is-hook ft)) (
       (set rs (reduce-plural rs))
