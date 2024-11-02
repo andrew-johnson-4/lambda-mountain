@@ -31,6 +31,7 @@ build: compile-production
 	time ./deploy --c -o deploy2.c SRC/index-index.lm
 	diff deploy.c deploy2.c
 	mv deploy.c BOOTSTRAP/cli.c
+	rm -f deploy.c deploy2.c
 	cargo test regression_tests
 
 deploy: build build-docs
@@ -39,6 +40,7 @@ compile-production: compile-bootstrap
 	rm -f production production.o production.s
 	./bootstrap --c -o production.c SRC/index-index.lm
 	cc -o production production.c
+	rm -f production.c
 	cp production re-production
 
 install-production: compile-production
