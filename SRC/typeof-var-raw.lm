@@ -25,5 +25,5 @@ typeof-var-raw := λ(: sloc AST)(: tctx TContext)(: vname String). (: (
          ))
       ))
    )))
-   found
+   (denormalize found)
 ) Type);
