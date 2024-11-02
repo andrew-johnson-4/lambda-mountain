@@ -1,6 +1,5 @@
 
 parse-many-expressions := λ(: tokens List<Token>). (: (
-   (print 'Parse\sMany\s_s)(print tokens)(print '\n_s)
    (let expr ASTEOF)
    (let remainder (: LEOF List<Token>))
    (while (non-zero tokens) (

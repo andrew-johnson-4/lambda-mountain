@@ -47,11 +47,13 @@ parse-toplevel := λ(: tokens List<Token>). (: (
             ))
          ))
          ( (LCons( 'fragment_t (LCons( 'type_t remainder )) )) (
+            (print 'Parse\sFragment\sType\s_s)(print remainder)(print '\n_s)
             (match (parse-one-expression remainder) (
                ()
                ( (PME( e1 r1 )) (match (parse-many-expressions r1) (
                   ()
                   ( (PME( e2 r2 )) (
+                     (print 'Parse2\sFragment\sType\s_s)(print r2)(print '\n_s)
                      (set program (Seq(
                         (close program)
                         (close (Typedef(
@@ -60,11 +62,14 @@ parse-toplevel := λ(: tokens List<Token>). (: (
                         )))
                      )))
                      (let base-type (type-of-s e1))
+                     (print 'Parse3\sFragment\sType\s_s)(print r2)(print '\n_s)
                      (index-tag-is-fragment(tag-of base-type))
+                     (print 'Parse4\sFragment\sType\s_s)(print r2)(print '\n_s)
                      (set tokens r2)
                   ))
                )))
             ))
+            (print 'Parsed\sFragment\sType\s_s)(print tokens)(print '\n_s)
          ))
          ( (LCons( 'type_t remainder )) (
             (match (parse-one-expression remainder) (
