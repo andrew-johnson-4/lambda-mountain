@@ -1,0 +1,240 @@
+
+# render an expression as an S-Expression blob
+blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: offset I64). (: (
+   (let r SNil)
+   (match term (
+      ()
+      ( ASTNil () )
+      ( ASTEOF () )
+      ( (Var( id _ )) (
+         (let e (fragment-context::lookup( ctx id (typeof term) term )))
+         (set r (fragment::get( e context-key )))
+      ))
+      ( (Lit( val _ )) (
+         (set r (SAtom val))
+      ))
+      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
+         (let rs (blob-render-simple( ctx context-key t offset )))
+         (set r (.1( rs )))
+      ))
+      ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
+         (let rs (blob-render-simple( ctx context-key t offset )))
+         (set r (.1( rs )))
+      ))
+      ( (App( (Var( 'scope_s _ )) t )) (
+         (let cs (blob-render-simple( ctx context-key t offset )))
+         (set r (.1 cs))
+      ))
+      ( (App(
+        (App( (Lit( ':_s _ )) (App( (Lit( 'for-arg_s _ )) (AType _) )) )) 
+        (App(
+           (App( (Abs( (Var( lhs _ )) ASTNil _ ))
+                 (App( (Var( 'for-arg-i_s _ )) (Var( vsk _ )) )) ))
+           iter
+        ))
+      )) (
+         (let vs (fragment-context::lookup-soft( ctx vsk TAny ASTEOF )))
+         (for-each (vi in (.vararg vs)) (
+            (let inner-ctx (fragment-context::bind( ctx lhs (.type vs) vi )))
+            (let fs (blob-render-simple( inner-ctx context-key iter offset )))
+            (let s (.1 fs))
+            (set r (+( r s )))
+         ))
+      ))
+      ( (App(
+        (App( (Lit( ':_s _ )) (App( (Lit( 'for-atom_s _ )) (AType _) )) )) 
+        (App(
+           (App( (Abs( (Var( lhs _ )) ASTNil _ )) rng ))
+           iter
+        ))
+      )) (
+         (let rngcs (blob-render-simple( ctx context-key rng offset )))
+         (let rngs (.1 rngcs))
+         (while (non-zero rngs) (match rngs (
+            ()
+            ( (SCons( a rst )) (
+               (let f (fragment::expression a))
+               (let inner-ctx (fragment-context::bind( ctx lhs (t1 'L_s) f )))
+               (let cs (blob-render-simple( inner-ctx context-key iter offset )))
+               (let s (.1 cs))
+               (set r (+( r s )))
+               (set rngs rst)
+            ))
+            ( _ (set rngs SNil) )
+         )))
+      ))
+      ( (App( (Var( 'range_s _ )) (App( le re )) )) (
+         (let lcs (blob-render-simple( ctx context-key le offset )))
+         (let ls (.1 lcs))
+         (let rcs (blob-render-simple( ctx context-key re offset )))
+         (let rs (.1 rcs))
+         (let li (to-i64(clone-rope ls)))
+         (let ri (to-i64(clone-rope rs)))
+         (while (<( li ri )) (
+            (set ri (-( ri 1_i64 )))
+            (set r (SCons( (close(SAtom(to-string ri))) (close r) )))
+         ))
+      ))
+      ( (App( (Var( 'uuid_s _ )) _ )) (
+         (set r (SAtom(uuid())))
+      ))
+      ( (App( (Var( 'align_s _ )) le )) (
+         (let lcs (blob-render-simple( ctx context-key le offset )))
+         (let ls (.1 lcs))
+         (let li (to-i64(clone-rope ls)))
+         (set r (SAtom(to-string(align li))))
+      ))
+      ( (App( (Var( '==_s _ )) (App( le re )) )) (
+         (let lcs (blob-render-simple( ctx context-key le offset )))
+         (let ls (.1 lcs))
+         (let rcs (blob-render-simple( ctx context-key re offset )))
+         (let rs (.1 rcs))
+         (if (==( ls rs )) (set r (SAtom '1_s)) (set r (SAtom '0_s)) )
+      ))
+      ( (App( (Var( '>_s _ )) (App( le re )) )) (
+         (let lcs (blob-render-simple( ctx context-key le offset )))
+         (let ls (.1 lcs))
+         (let rcs (blob-render-simple( ctx context-key re offset )))
+         (let rs (.1 rcs))
+         (let li (to-i64(clone-rope ls)))
+         (let ri (to-i64(clone-rope rs)))
+         (if (>( li ri )) (set r (SAtom '1_s)) (set r (SAtom '0_s)) )
+      ))
+      ( (App( (Var( '/_s _ )) (App( le re )) )) (
+         (let lcs (blob-render-simple( ctx context-key le offset )))
+         (let ls (.1 lcs))
+         (let rcs (blob-render-simple( ctx context-key re offset )))
+         (let rs (.1 rcs))
+         (let li (to-i64(clone-rope ls)))
+         (let ri (to-i64(clone-rope rs)))
+         (set r (SAtom(to-string(/( li ri )))))
+      ))
+      ( (App( (Var( '*_s _ )) (App( le re )) )) (
+         (let lcs (blob-render-simple( ctx context-key le offset )))
+         (let ls (.1 lcs))
+         (let rcs (blob-render-simple( ctx context-key re offset )))
+         (let rs (.1 rcs))
+         (let li (to-i64(clone-rope ls)))
+         (let ri (to-i64(clone-rope rs)))
+         (set r (SAtom(to-string(*( li ri )))))
+      ))
+      ( (App( (Var( '%_s _ )) (App( le re )) )) (
+         (let lcs (blob-render-simple( ctx context-key le offset )))
+         (let ls (.1 lcs))
+         (let rcs (blob-render-simple( ctx context-key re offset )))
+         (let rs (.1 rcs))
+         (let li (to-i64(clone-rope ls)))
+         (let ri (to-i64(clone-rope rs)))
+         (set r (SAtom(to-string(%( li ri )))))
+      ))
+      ( (App( (Var( '+_s _ )) (App( le re )) )) (
+         (let lcs (blob-render-simple( ctx context-key le offset )))
+         (let ls (.1 lcs))
+         (let rcs (blob-render-simple( ctx context-key re offset )))
+         (let rs (.1 rcs))
+         (let li (to-i64(clone-rope ls)))
+         (let ri (to-i64(clone-rope rs)))
+         (set r (SAtom(to-string(+( li ri )))))
+      ))
+      ( (App( (Var( '-_s _ )) (App( le re )) )) (
+         (let lcs (blob-render-simple( ctx context-key le offset )))
+         (let ls (.1 lcs))
+         (let rcs (blob-render-simple( ctx context-key re offset )))
+         (let rs (.1 rcs))
+         (let li (to-i64(clone-rope ls)))
+         (let ri (to-i64(clone-rope rs)))
+         (set r (SAtom(to-string(-( li ri )))))
+      ))
+      ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (
+         (let ccs (blob-render-simple( ctx context-key cond offset )))
+         (let cs (.1 ccs))
+         (match cs (
+            ()
+            ( (SAtom '1_s) (
+               (let rcs (blob-render-simple( ctx context-key t offset )))
+               (set r (.1 rcs))
+            ))
+            ( _ (
+               (let rcs (blob-render-simple( ctx context-key f offset )))
+               (set r (.1 rcs))
+            ))
+         ))
+      ))
+      ( (App( (Abs( (Var( lhs _ )) ASTNil tlt )) rhs )) (
+         (let f (fragment::new()))
+         (let cs (blob-render-simple( ctx context-key rhs offset )))
+         (let s (.1 cs))
+         (set f (fragment::set( f context-key s )))
+         (set f (fragment::set( f 'expression_s s )))
+         (set ctx (fragment-context::bind(
+            ctx lhs (typeof rhs) f
+         ))) # TODO, render the binding as non-simple blob?
+      ))
+      ( (App( f a )) (
+         (if (is-arrow(typeof f)) (
+            (match f (
+               ()
+               ( (Var( fname _ )) (
+                  (if (has-prefix( fname ':_s )) (
+                     (let e1 (blob-render-simple( ctx (tail-string fname) a offset )))
+                     (set r (.1 e1))
+                  ) (
+                     (let e (cc-blob( ctx fname a offset )))
+                     (set r (fragment::get( e context-key )))
+                  ))
+               ))
+            ))
+         ) (
+            (let e1 (blob-render-simple( ctx context-key f offset )))
+            (set ctx (.2 e1))
+            (let e2 (blob-render-simple( ctx context-key a offset )))
+            (set ctx (.2 e2))
+            (let s1 (.1 e1))
+            (let s2 (.1 e2))
+            (set r (+( s1 s2 )))
+         ))
+      ))
+      ( _ (
+         (print 'Unknown\sRender\sTerm\s_s)(print term)(exit 1_u64)
+      ))
+   ))
+   (Tuple( ctx r ))
+) Tuple<FContext,S>);
+
+blob-render := λ(: ctx FContext)(: term AST)(: f Fragment)(: offset I64). (: (
+   (match term (
+      ()
+      ( (App( (Lit( ':_s _ )) (App( t (AType _) )) )) (
+         (set f (blob-render( ctx t f offset )))
+      ))
+      ( (App( (Var( k _ )) a )) (
+         (if (has-prefix( k ':_s )) (            
+            (let cs1 (blob-render-simple( ctx (tail-string k) a offset )))
+            (let s1 (.1 cs1))
+            (set f (fragment::set( f (tail-string k) s1 )))
+         ) (
+            (let cs2 (blob-render-simple( ctx 'expression_s term offset )))
+            (let s2 (.1 cs2))
+            (set f (fragment::set( f 'expression_s s2 )))
+         ))
+      ))
+      ( (App( rst (App( (Var( k _ )) a )) )) (
+         (set f (blob-render( ctx rst f offset )))
+         (if (has-prefix( k ':_s )) (            
+            (let cs1 (blob-render-simple( ctx (tail-string k) a offset )))
+            (let s1 (.1 cs1))
+            (set f (fragment::set( f (tail-string k) s1 )))
+         ) (
+            (let cs2 (blob-render-simple( ctx 'expression_s term offset )))
+            (let s2 (.1 cs2))
+            (set f (fragment::set( f 'expression_s s2 )))
+         ))
+      ))
+      ( _ (
+         (let cs2 (blob-render-simple( ctx 'expression_s term offset )))
+         (let s2 (.1 cs2))
+         (set f (fragment::set( f 'expression_s s2 )))
+      ))
+   ))
+   f
+) Fragment);

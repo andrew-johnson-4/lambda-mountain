@@ -1,0 +1,50 @@
+
+
+infer-global-context := λ(: td AST). (: (
+   (match td (
+      ()
+      ( (Typedef( (Lit( base-type _ )) case-constructors )) (
+         (let bt (parse-type base-type))
+         (let size (infer-type-definition( bt case-constructors 0_u64 )))
+         (match bt (
+            ()
+            ( (TGround( class LEOF )) (index-size-of-class( class size )) )
+            ( _ () )
+         ))
+      ))
+      ( (Glb( k_t (@( frhs (Abs( lhs (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) tlt )) )) )) (
+         (let lt (typeof-lhs lhs))
+         (let return-type rhst)
+         (if (is-blob tlt) () (set return-type (guess-representation(without-representation rhst))))
+         (let ft (t3( 'Arrow_s lt return-type )))
+         (set ft (enrich( ft tlt )))
+         (set ft (and( ft (t1 'GlobalVariable_s) )))
+         (if (&&( (is-hook tlt) (not(is-nil rhst)) )) (
+            (exit-error( 'Hooks\sMust\sNot\sReturn\sValues._s td ))
+         ) ())
+         (mark-global-as-seen( k ft tlt ))
+         (ascript-normal( td ft ))
+         (ascript-normal( frhs ft ))
+         (set global-type-context (TCtxBind(
+            (close global-type-context)
+            k
+            ft
+            td
+         )))
+      ))
+      ( (Glb( k_t (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) )) (
+         (add-concrete-type-instance rhst)
+         (let kt (and( (without-representation rhst) (t1 'GlobalVariable_s) )))
+         (set global-type-context (TCtxBind(
+            (close global-type-context) k kt ASTEOF
+         )))
+         (mark-global-as-seen( k kt TAny ))
+         (ascript-normal( td kt ))
+      ))
+      ( (Glb( _ _ )) (
+         (exit-error( 'Global\sBindings\sMust\sBe\sAscripted_s td ))
+      ))
+      ( _ () )
+   ))
+) Nil);
+

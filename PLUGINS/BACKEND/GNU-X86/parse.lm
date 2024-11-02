@@ -1,0 +1,7 @@
+
+parse := λ. (: (
+   (let tokens ast-tokenized-program)
+   (set ast-tokenized-program (: LEOF List<Token>))
+   (let tl (parse-toplevel tokens))
+   (set ast-parsed-program (+( ast-parsed-program tl )))
+) Nil);

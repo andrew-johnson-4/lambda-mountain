@@ -1,0 +1,13 @@
+
+fragment::set-offset := λ(: e Fragment)(: offset I64). (: (
+   (let r e)
+   (match e (
+      ()
+      ( (Fragment( e-t e-kvs e-offset e-tt e-ctx e-vs )) (
+         (set r (Fragment(
+            e-t (close e-kvs) offset e-tt (close e-ctx) e-vs
+         )))
+      ))
+   ))
+   r
+) Fragment);

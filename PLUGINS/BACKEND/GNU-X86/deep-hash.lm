@@ -1,0 +1,37 @@
+
+deep-hash := λ(: tt Type). (: (
+   (let return 0_u64)
+   (match tt (
+      ()
+      ( TAny () )
+      ( (TVar v) (set return (deep-hash v)) )
+      ( (TAnd( lt rt )) (
+         (set return (+(
+            (deep-hash lt)
+            (deep-hash rt)
+         )))
+      ))
+      ( (TGround( tag ps )) (
+         (set return (+(
+            (deep-hash tag)
+            (deep-hash ps)
+         )))
+      ))
+   ))
+   return
+) U64);
+
+deep-hash := λ(: tt List<Type>). (: (
+   (let return 0_u64)
+   (match tt (
+      ()
+      ( LEOF () )
+      ( (LCons( t1 ts )) (
+         (set return (+(
+            (deep-hash ts)
+            (deep-hash t1)
+         )))
+      ))
+   ))
+   return
+) U64);

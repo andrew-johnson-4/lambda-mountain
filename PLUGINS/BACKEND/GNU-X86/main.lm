@@ -1,0 +1,81 @@
+
+main := λ(: argc U64)(: argv String[]). (: (
+   (let argi 1_u64)
+   (let input SNil)
+   (while (<( argi argc )) (
+      (match ([]( argv argi )) (
+         ()
+         ('--c_s (
+            (set config-assemble-mode AssembleC)
+            (set config-platform-prefix 'PLATFORM/C/_s)
+            (if (==( config-target '_s )) (set config-target 'tmp.c_s) ())
+         ))
+         ('--blob_s (
+            (set config-assemble-mode AssembleBlob)
+            (set config-platform-prefix 'PLATFORM/BLOB/_s)
+            (if (==( config-target '_s )) (set config-target 'tmp.txt_s) ())
+         ))
+         ('--gnu_s (
+            (set config-assemble-mode AssembleGNU)
+            (set config-platform-prefix 'PLATFORM/GNU-X86/_s)
+            (if (==( config-target '_s )) (set config-target 'tmp.s_s) ())
+         ))
+         ('--tokenize_s (set config-mode ModeTokenize))
+         ('--parse_s (set config-mode ModeParse))
+         ('--preprocess_s (set config-mode ModePreprocess))
+         ('--typecheck_s (set config-mode ModeTypecheck))
+         ('--compile_s (set config-mode ModeCompile))
+         ('--strict_s (set config-strict True_u8))
+         ('--gradual_s (set config-strict False_u8))
+         ('--macro_s (set config-preprocess True_u8))
+         ('--nomacro_s (set config-preprocess False_u8))
+         ('--profile-invocations_s (set config-profile-invocations True_u8))
+         ('-o_s (
+            (set argi (+( argi 1_u64 )))
+            (set config-target ([]( argv argi )))
+         ))
+         (fp (
+            (set input (SCons(
+               (close input)
+               (close (SAtom( fp )))
+            )))
+         ))
+      ))
+      (set argi (+( argi 1_u64 )))
+   ))
+
+   (let continue True_u8)
+   (while (==( continue True_u8 )) (match input (
+      ()
+      ( SNil (set continue False_u8) )
+      ( (SCons( rst SNil )) (set input rst) )
+      ( (SCons( rst (SAtom( fp )) )) ( (tokenize fp) (set input rst) ))
+      ( (SAtom( fp )) ( (tokenize fp) (set continue False_u8) ))
+   )))
+
+   (match config-mode (
+      ()
+      ( ModeTokenize (print ast-tokenized-program) )
+      ( ModeParse (
+         (parse())
+         (serialize-ast ast-parsed-program)
+      ))
+      ( ModePreprocess (
+         (parse())
+         (preprocess())
+         (serialize-ast ast-parsed-program)
+      ))
+      ( ModeTypecheck (
+         (parse())
+         (preprocess())
+         (typecheck())
+      ))
+      ( ModeCompile (
+         (parse())
+         (preprocess())
+         (typecheck())
+         (compile())
+      ))
+   ))
+) Nil);
+

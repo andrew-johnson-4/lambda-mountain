@@ -1,0 +1,37 @@
+
+infer-type-definition := λ(: base-type Type)(: body AST)(: case-number U64). (: (
+   # This works but is too slow
+   # (add-alias( '.tag_s '.0_s (t3( 'Arrow_s base-type (t1 'U64_s) )) ))
+   (mark-class-exists( (tag-of base-type) ))
+   (mark-is-lm-struct( (tag-of base-type) ))
+   (let r 0_u64)
+   (match body (
+      ()
+      ( (App( (App( tds (Var( '|_s _ )) )) case )) (
+         (let r1 (infer-type-definition( base-type tds (+( case-number 1_u64 )) )))
+         (let r2 (infer-type-constructor( base-type case )))
+         (set r (max( r1 r2 )))
+      ))
+      ( case (
+         (set r (infer-type-constructor( base-type case )))
+         (if (==( case-number 0_u64 )) (
+            (let tag '_s)
+            (match case (
+               ()
+               ( (Lit( tg _ )) (set tag tg) )
+               ( (App( (Lit( tg _ )) args )) (set tag tg) )
+               ( _ () )
+            ))
+            (if (head-string tag) (
+               (match base-type (
+                  ()
+                  ( (TGround( cls _ )) (
+                     (has-only-child( cls tag ))
+                  ))
+               ))
+            ) ())
+         ) ())
+      ))
+   ))
+   r
+) U64);

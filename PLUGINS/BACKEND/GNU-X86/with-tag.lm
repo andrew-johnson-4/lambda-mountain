@@ -1,0 +1,38 @@
+
+with-tag := λ(: tt Type). (: (
+   (let cls-tt (with-only-class tt))
+   (if (non-zero cls-tt) (
+      (match cls-tt (
+         ()
+         ( (TGround( cls tl )) (
+            (let tag (get-only-child cls))
+            (if (head-string tag) (
+               (set tt (and( tt (t2( 'Tag_s (t1 tag) )) )))
+            ) ())
+         ))
+         ( _ () )
+      ))
+   ) ())
+   (set tt (with-case-number tt))
+   tt
+) Type);
+
+with-case-number := λ(: tt Type). (: (
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (
+         (set lt (with-case-number lt))
+         (set rt (with-case-number rt))
+         (if (non-zero lt) (
+            (if (non-zero rt) (
+               (set tt (and( lt rt )))
+            ) (set tt lt))
+         ) (set tt rt))
+      ))
+      ( (TGround( 'Tag_s (LCons( (TGround( tag _ )) _ )) )) (
+         (set tt (and( tt (t2( 'CaseNumber_s (t1(to-string(index-of-tag tag))) )) )))
+      ))
+      ( _ () )
+   ))
+   tt
+) Type);

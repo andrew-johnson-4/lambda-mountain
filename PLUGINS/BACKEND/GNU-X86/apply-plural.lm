@@ -1,0 +1,20 @@
+
+apply-plural := λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (
+   (let r (: LEOF List<Type>))
+   (match ft (
+      ()
+      ( (TAnd( t1 t2 )) (
+         (set r (+(
+            (apply-plural( function-name t1 pt blame ))
+            (apply-plural( function-name t2 pt blame ))
+         )))
+      ))
+      ( (TGround( 'Arrow_s (LCons( frt (LCons( fpt LEOF )) )) )) (
+         (if (can-unify( fpt pt )) (
+            (set r (cons( ft r )))
+         ) ())
+      ))
+      ( _ () )
+   ))
+   r
+) List<Type>);

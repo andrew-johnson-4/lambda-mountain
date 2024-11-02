@@ -1,0 +1,45 @@
+
+alias-index := (: LEOF List<Tuple<Tuple<String,String>,Type>>);
+
+add-alias := λ(: from String)(: to String)(: tt Type). (: (
+   (set alias-index (cons( (Tuple( (Tuple( from to )) tt )) alias-index )))
+) Nil);
+
+find-alias := λ(: from String)(: pars Type). (: (
+   (let to from)
+   (for-each (alias in alias-index) (
+      (match alias (
+         ()
+         ( (Tuple(
+              (Tuple( alt-from alt-to ))
+              (TGround( 'Arrow_s (LCons( _ (LCons( alt-domain LEOF )) )) ))
+           )) (
+            (if (==( from alt-from )) (
+               (if (can-unify( alt-domain pars )) (
+                  (set to alt-to)
+               ) ())
+            ) ())
+         ))
+      ))
+   ))
+   to
+) String);
+
+find-alias-type := λ(: from String). (: (
+   (let to TAny)
+   (for-each (alias in alias-index) (
+      (match alias (
+         ()
+         ( (Tuple( (Tuple( alt-from alt-to )) alt-tt )) (
+            (if (==( from alt-from )) (
+               (if (non-zero to) (
+                  (set to (and( to alt-tt )))
+               ) (
+                  (set to alt-tt)
+               ))
+            ) ())
+         ))
+      ))
+   ))
+   to
+) Type);

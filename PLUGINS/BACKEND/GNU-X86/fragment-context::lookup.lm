@@ -1,0 +1,61 @@
+
+fragment-context::lookup := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST). (: (
+   (fragment-context::lookup( ctx k kt sloc True_u8 ))
+) Fragment);
+
+fragment-context::lookup := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST)(: hard U8). (: (
+   (let original-ctx ctx)
+   (set k (find-alias( k kt )))
+   (let r (fragment::new()))
+   (let found TAny)
+   (while (non-zero ctx) (match ctx (
+      ()
+      ( (FCtxBind( rst rk rt rf )) (
+         (if (==( k rk )) (
+            (if (||( (==( rt kt )) (can-unify( rt kt )) )) (
+               (set r rf)
+               (set found (t1 'GlobalVariable_s))
+               (set ctx FCtxEOF)
+            ) (
+               (if (is-arrow rt) (
+                  (let domaint (domain rt))
+                  (let ranget (range rt))
+                  (if (can-unify( domaint kt )) (
+                     (if (non-zero found) (
+                        (if (can-unify( found domaint )) (
+                           (set r rf)
+                           (set found domaint)
+                        ) ())
+                     ) (
+                        (set r rf)
+                        (set found domaint)
+                     ))
+                  ) ())
+                  (set ctx rst)
+               ) (
+                  (set r rf)
+                  (set found (t1 'LocalVariable_s))
+                  (set ctx FCtxEOF)
+               ))
+            ))
+         ) (
+            (set ctx rst)
+         ))
+      ))
+   )))
+   (if (||( (non-zero( found )) (==( hard False_u8 )) )) () (
+      (print 'Context::lookup\s_s)(print k)(print '\s:\s_s)(print kt)(print '\nCandidates:\n_s)
+      (set ctx original-ctx)
+      (while (non-zero ctx) (match ctx (
+         ()
+         ( (FCtxBind( rst rk rt rf )) (
+            (if (==( k rk )) (
+               (print k)(print '\s:\s_s)(print rt)(print '\n_s)
+            ) ())
+            (set ctx rst)
+         ))
+      )))
+      (exit-error( 'Context::lookup\sCould\sNot\sFind\sSymbol_s sloc ))
+   ))
+   r
+) Fragment);

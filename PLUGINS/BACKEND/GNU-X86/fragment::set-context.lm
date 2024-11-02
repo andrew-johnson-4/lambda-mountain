@@ -1,0 +1,11 @@
+
+fragment::set-context := λ(: e Fragment)(: ctx FContext). (: (
+   (let r e)
+   (match e (
+      ()
+      ( (Fragment( e-t e-kvs e-offset e-tt e-ctx e-vs )) (
+         (set r (Fragment( e-t (close e-kvs) e-offset e-tt (close ctx) e-vs )))
+      ))
+   ))
+   r
+) Fragment);

@@ -1,0 +1,4 @@
+
+parse-unexpect := λ(: msg String)(: tokens List<Token>). (: (
+   (fail msg)
+) Nil);

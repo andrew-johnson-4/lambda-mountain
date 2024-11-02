@@ -1,0 +1,177 @@
+
+parse-toplevel := λ(: tokens List<Token>). (: (
+   (let program ASTEOF)
+   (while (non-zero tokens) (
+      (match tokens (
+         ()
+         ( (LCons( '\:_t remainder )) (
+            (set tokens remainder)
+         ))
+         ( (LCons( 'macro_t remainder )) (
+            (match (parse-one-expression remainder) (
+               ()
+               ( (PME( mlhs mremainder1 )) (
+                  (match (take-one-expr mremainder1) (
+                     ()
+                     ( (Tuple( mrhs-tokens mremainder2 )) (
+                        (let mrhs (parse-toplevel mrhs-tokens))
+                        (match mrhs (
+                           ()
+                           ( (Seq( ASTEOF m-expr )) (
+                              (set mrhs m-expr)
+                           ))
+                           ( _ () )
+                        ))
+                        (set preprocess-macros (MSeq(
+                           (close preprocess-macros)
+                           (Macro( (without-location mlhs) (without-location mrhs) ))
+                        )))
+                        (set tokens mremainder2)
+                     ))
+                  ))
+               ))
+            ))
+         ))
+         ( (LCons( 'meta_t remainder )) (
+            (match (parse-many-expressions remainder) (
+               ()
+               ( (PME( m r1 )) (
+                  (set program (Seq(
+                     (close program)
+                     (close (Meta( (close m) )))
+                  )))
+                  (set tokens r1)
+               ))
+            ))
+         ))
+         ( (LCons( 'fragment_t (LCons( 'type_t remainder )) )) (
+            (match (parse-one-expression remainder) (
+               ()
+               ( (PME( e1 r1 )) (match (parse-many-expressions r1) (
+                  ()
+                  ( (PME( e2 r2 )) (
+                     (set program (Seq(
+                        (close program)
+                        (close (Typedef(
+                           (close e1)
+                           (close e2)
+                        )))
+                     )))
+                     (let base-type (type-of-s e1))
+                     (index-tag-is-fragment(tag-of base-type))
+                     (set tokens r2)
+                  ))
+               )))
+            ))
+         ))
+         ( (LCons( 'type_t remainder )) (
+            (match (parse-one-expression remainder) (
+               ()
+               ( (PME( e1 r1 )) (match (parse-many-expressions r1) (
+                  ()
+                  ( (PME( e2 r2 )) (
+                     (set program (Seq(
+                        (close program)
+                        (close (Typedef(
+                           (close e1)
+                           (close e2)
+                        )))
+                     )))
+                     (set tokens r2)
+                  ))
+               )))
+            ))
+         ))
+         ( (LCons( 'atom_t (LCons( 'suffix_t
+                   (LCons( atype_t (LCons( suffix_t remainder )) ))
+           )) )) (
+            (set parse-suffixes (SfxSeq(
+               (close parse-suffixes)
+               suffix
+               (TAnd(
+                  (close(TAnd(
+                     (close(TGround( 'Constant_s (close(: LEOF List<Type>)) )))
+                     (close(TGround( 'Literal_s (close(: LEOF List<Type>)) )))
+                  )))
+                  (close(parse-type atype))
+               ))
+            )))
+            ()
+            (set tokens remainder)
+         ))
+         ( (LCons( 'size_t (LCons( class_t (LCons( sz_t remainder )) )) )) (
+            (index-size-of-class( class (to-u64 sz) ))
+            (set tokens remainder)
+         ))
+         ( (LCons( 'import_t (LCons( relative-path_t remainder )) )) (
+            (tokenize relative-path)
+            (parse ())
+            (set tokens remainder)
+         ))
+         ( (LCons( 'zero_t (LCons( base-type (LCons( tag-type_t remainder )) )) )) (
+            (set program (Seq(
+               (close program)
+               (close (Glb( (with-key( base-type 'non-zero_s )) (close(Abs(
+                  (close(App(
+                     (close(Lit( ':_s (with-key( base-type ':_s )) )))
+                     (close(App( (close(Var( 't_s (with-key( base-type 't_s )) ))) (close(AType(parse-type(.key base-type)))) )))
+                  )))
+                  (close(App(
+                     (close(Lit( ':_s (with-key( base-type ':_s )) )))
+                     (close(App(
+                        (close(App(
+                           (close(Var( '!=_s (with-key( base-type '!=_s )) )))
+                           (close(App(
+                              (close(App(
+                                 (close(Var( '.0_s (with-key( base-type '.0_s )) )))
+                                 (close(Var( 't_s (with-key( base-type 't_s )) )))
+                              )))
+                              (close(App(
+                                 (close(Var( '.0_s (with-key( base-type '.0_s )) )))
+                                 (close(App(
+                                    (close(Lit( ':_s (with-key( base-type ':_s )) )))
+                                    (close(App(
+                                       (close(Lit( tag-type (with-key( base-type tag-type)) )))
+                                       (close(AType(parse-type(.key base-type))))
+                                    )))
+                                 )))
+                              )))
+                           )))
+                        )))
+                        (close(AType(t1 'U64_s)))
+                     )))
+                  )))
+                  TAny
+               ))) )))
+            )))
+            (set tokens remainder)
+         ))
+         ( (LCons( key (LCons( ':=_t remainder )) )) (
+            (match (parse-many-expressions remainder) (
+               ()
+               ( (PME( re rr )) (
+                  (set program (Seq(
+                     (close program)
+                     (close (Glb( key (close re) )))
+                  )))
+                  (set tokens rr)
+               ))
+            ))
+         ))
+         (remainder (
+            (match (parse-many-expressions remainder) (
+               ()
+               ( (PME( term r1 )) (
+                  (set program (Seq(
+                     (close program)
+                     (close term)
+                  )))
+                  (set tokens r1)
+               ))
+            ))
+         ))
+      ))
+   ))
+   program
+) AST);
+

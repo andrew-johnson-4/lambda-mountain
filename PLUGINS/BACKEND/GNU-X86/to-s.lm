@@ -1,0 +1,45 @@
+
+to-s := λ(: term AST). (: (
+   (let s SNil)
+   (match term (
+      ()
+      ( (Var( v _ )) (
+         (set s (SCons(
+            (close(SAtom 'Var_s))
+            (close(SAtom v))
+         )))
+      ))
+      ( (Lit( v _ )) (
+         (set s (SCons(
+            (close(SAtom 'Lit_s))
+            (close(SAtom v))
+         )))
+      ))
+      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
+         (set s (to-s t))
+      ))
+      ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
+         (set s (to-s t))
+      ))
+      ( (App( lt rt )) (
+         (set s (SCons(
+            (close(SAtom 'App_s))
+            (close(SCons(
+               (close(to-s lt))
+               (close(to-s rt))
+            )))
+         )))
+      ))
+      ( (Abs( lt rt tlt )) (
+         (set s (SCons(
+            (close(SAtom 'Abs_s))
+            (close(SCons(
+               (close(to-s lt))
+               (close(to-s rt))
+            )))
+         )))
+      ))
+      ( _ () )
+   ))
+   s
+) S);

@@ -1,0 +1,17 @@
+
+typeof := λ(: args FragmentList). (: (
+   (let r TAny)
+   (match args (
+      ()
+      ( (FLSeq( rst f )) (
+         (set r (typeof rst))
+         (if (non-zero r) (
+            (set r (t3( 'Cons_s r (with-size(.type f)) )))
+         ) (
+            (set r (with-size(.type f)))
+         ))
+      ))
+      ( _ () )
+   ))
+   r
+) Type);

@@ -1,0 +1,26 @@
+
+normalize := λ(: tt Type). (: (
+   (let rt tt)
+   (set rt (without-representation rt))
+   (set rt (without-platform-props rt))
+   (set rt (without-tag rt))
+   # Sized can serve as a datatype if nothing else is available
+   (set rt (without-size-unless-class rt))
+   rt
+) Type);
+
+normalize := λ(: tctx TContext). (: (
+   (match tctx (
+      ()
+      ( TCtxEOF () )
+      ( TCtxNil (set tctx TCtxEOF) )
+      ( (TCtxBind( rst k kt t )) (
+         (set rst (normalize rst))
+         (set tctx (TCtxBind(
+            (close rst)
+            k (normalize kt) t
+         )))
+      ))
+   ))
+   tctx
+) TContext);

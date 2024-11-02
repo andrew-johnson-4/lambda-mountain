@@ -1,0 +1,29 @@
+
+assemble-header-section                  := (: SNil S);
+assemble-text-section                    := (: SNil S);
+assemble-init-section                    := (: SNil S);
+assemble-data-section                    := (: SNil S);
+assemble-profile-onexit                  := (: SNil S);
+assemble-global-initializer-section      := (: SNil S);
+assemble-final                           := '_s;
+assemble-argv-referenced                 := False_u8;
+
+main-with-argv := False_u8;
+main-with := False_u8;
+
+config-platform-prefix       := 'PLATFORM/BLOB/_s;
+config-profile-invocations   := False_u8;
+config-strict                := True_u8;
+config-preprocess            := True_u8;
+config-target                := '_s;
+config-assemble-mode         := (: AssembleGNU AssembleMode);
+config-mode                  := (: ModeCompile CompileMode);
+preprocess-macros            := (: MEOF MacroList);
+ast-tokenized-program        := (: LEOF List<Token>);
+ast-parsed-program           := (: ASTEOF AST);
+global-type-context          := (: TCtxEOF TContext);
+global-ctx                   := (: FCtxEOF FContext);
+
+parse-suffixes := (: SfxEOF SfxList);
+
+stack-to-specialize          := (: LEOF List<StackToSpecialize>);

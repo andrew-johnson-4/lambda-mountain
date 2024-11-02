@@ -1,0 +1,10 @@
+
+cons-head := λ(: tt Type). (: (
+   (let r TAny)
+   (match tt (
+      ()
+      ( (TGround( 'Cons_s (LCons( tl (LCons( hd LEOF )) )) )) (set r hd) )
+      ( _ () )
+   ))
+   r
+) Type);

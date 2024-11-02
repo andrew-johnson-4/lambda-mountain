@@ -1,0 +1,22 @@
+
+compile-program-ordered := λ(: global-ctx FContext)(: program AST). (: (
+   (let open? 0_u64)
+   (match program (
+      ()
+      ( (Seq( _ e )) (
+         (if (is-open(typeof e)) (set open? 1_u64) ())
+      ))
+      ( _ () )
+   ))
+   (match program (
+      ()
+      ( (Seq( rst (Glb( k_t rhs )) )) (
+         (compile-program-ordered( global-ctx rst ))
+         (if open? () (
+            (compile-global( global-ctx k rhs ))
+         ))
+      ))
+      ( (Seq( rst _ )) (compile-program-ordered( global-ctx rst )) )
+      ( ASTEOF () )
+   ))
+) Nil);

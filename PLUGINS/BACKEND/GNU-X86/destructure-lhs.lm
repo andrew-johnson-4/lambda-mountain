@@ -1,0 +1,49 @@
+
+destructure-lhs := λ(: ctx FContext)(: tt Type)(: lhs S)(: args FragmentList). (: (
+   (match lhs (
+      ()
+      ( (SCons( (SAtom 'Var_s) (SAtom k) )) (
+         (let a-type tt)
+         (match args (
+            ()
+            ( (FLSeq( _ f )) (
+               (let ft (with-size(.type f)))
+               (if (non-zero ft) () (
+                  (print 'Fragment\sHas\sNo\sType:\n_s)
+                  (print f)
+                  (exit 1_u64)
+               ))
+               (let tctx (unify( a-type ft )))
+               (set ctx (union( ctx tctx ))) # destructure tctx
+               (set ctx (FCtxBind( (close ctx) k ft f )))
+            ))
+         ))
+      ))
+      ( (SCons( (SAtom 'App_s) (SCons( lhs-rst (SCons( (SAtom 'Var_s) (SAtom k) )) )) )) (
+         (let a-type (p1 tt))
+         (match args (
+            ()
+            ( (FLSeq( fl-rst f )) (
+               (let ft (with-size(.type f)))
+               (if (non-zero ft) () (
+                  (print 'Fragment\sHas\sNo\sType:\n_s)
+                  (print f)
+                  (exit 1_u64)
+               ))
+               (let tctx (unify( a-type ft )))
+               (set ctx (union( ctx tctx )))
+               (set ctx (FCtxBind( (close ctx) k ft f )))
+               (set args fl-rst)
+            ))
+         ))
+         (set ctx (destructure-lhs( ctx (p2 tt) lhs-rst args )))
+      ))
+      ( SNil () )
+      ( _ (
+         (print 'Unexpected\sDestructure\sLHS:\s_s)
+         (print lhs)(print '\n_s)
+         (exit 1_u64)
+      ))
+   ))
+   ctx
+) FContext);

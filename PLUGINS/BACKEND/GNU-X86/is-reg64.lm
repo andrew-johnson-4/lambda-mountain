@@ -1,0 +1,36 @@
+
+is-reg64 := λ(: s String). (: (
+   (let r 0_u64)
+   (match s (
+      ()
+      ( 'RAX_s (set r 1_u64))
+      ( 'RBX_s (set r 1_u64))
+      ( 'RCX_s (set r 1_u64))
+      ( 'RDX_s (set r 1_u64))
+      ( 'RSI_s (set r 1_u64))
+      ( 'RDI_s (set r 1_u64))
+      ( 'RBP_s (set r 1_u64))
+      ( 'RSP_s (set r 1_u64))
+      ( 'R8_s (set r 1_u64))
+      ( 'R9_s (set r 1_u64))
+      ( 'R10_s (set r 1_u64))
+      ( 'R11_s (set r 1_u64))
+      ( 'R12_s (set r 1_u64))
+      ( 'R13_s (set r 1_u64))
+      ( 'R14_s (set r 1_u64))
+      ( 'R15_s (set r 1_u64))
+      ( _ () )
+   ))
+   r
+) U64);
+
+is-reg64 := λ(: tt Type). (: (
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( (TAnd( t1 t2 )) (set r (||( (is-reg64 t1) (is-reg64 t2) ))) )
+      ( (TGround( 'Reg64_s _ )) (set r 1_u64) )
+      ( _ () )
+   ))
+   r
+) U64);

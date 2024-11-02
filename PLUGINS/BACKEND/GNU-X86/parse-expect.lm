@@ -1,0 +1,7 @@
+
+parse-expect := λ(: msg String)(: tokens List<Token>). (: (
+   (print msg)
+   (print '\n_s)
+   (print tokens)
+   (exit 1_u64)
+) Nil);

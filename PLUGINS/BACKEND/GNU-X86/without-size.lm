@@ -1,0 +1,45 @@
+
+without-size := λ(: tt List<Type>). (: (
+   (match tt (
+      ()
+      ( (LCons( p1 rst )) (
+         (set tt (cons(
+            (without-size p1)
+            (without-size rst)
+         )))
+      ))
+      ( LEOF () )
+   ))
+   tt
+) List<Type>);
+
+without-size := λ(: tt Type). (: (
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (
+         (let lt2 (without-size lt))
+         (let rt2 (without-size rt))
+         (if (non-zero lt2) (
+            (if (non-zero rt2) (
+               (set tt (TAnd( (close lt2) (close rt2) )))
+            ) (
+               (set tt lt2)
+            ))
+         ) (
+            (if (non-zero rt2) (
+               (set tt rt2)
+            ) (
+               (set tt TAny)
+            ))
+         ))
+      ))
+      ( (TGround( 'Sized_s sz )) (set tt TAny) )
+      ( (TGround( 'FieldsSized_s sz )) (set tt TAny) )
+      ( (TGround( tag ps )) (
+         (set tt (TGround( tag (close(without-size ps)) )))
+      ))
+      ( TAny () )
+      ( (TVar _) () )
+   ))
+   tt
+) Type);

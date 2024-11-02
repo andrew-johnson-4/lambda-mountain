@@ -1,0 +1,59 @@
+
+without-location := λ(: term AST). (: (
+   (let return term)
+   (match term (
+      ()
+      ( ASTEOF () )
+      ( ASTNil () )
+      ( (Var( v vtk )) (
+         (set return (Var( v (without-location( vtk )) )))
+      ))
+      ( (Lit( v vtk )) (
+         (set return (Lit( v (without-location( vtk )) )))
+      ))
+      ( (AType _) () )
+      ( (App( lt rt )) (
+         (set return (App(
+            (close(without-location( lt )))
+            (close(without-location( rt )))
+         )))
+      ))
+      ( (Abs( lt rt tlt )) (
+         (set return (Abs(
+            (close(without-location( lt )))
+            (close(without-location( rt )))
+            tlt
+         )))
+      ))
+      ( (Seq( lt rt )) (
+         (set return (Seq(
+            (close(without-location( lt )))
+            (close(without-location( rt )))
+         )))
+      ))
+      ( (Typedef( lt rt )) (
+         (set return (Typedef(
+            (close(without-location( lt )))
+            (close(without-location( rt )))
+         )))
+      ))
+      ( (Glb( k t )) (
+         (set return (Glb(
+            (without-location( k ))
+            (close(without-location( t )))
+         )))
+      ))
+   ))
+   return
+) AST);
+
+
+without-location := λ(: t Token). (: (
+   (match t (
+      ()
+      ( (Token( k ki _ )) (
+         (set t (Token( k ki (SourceLocation( '_s 0_u64 0_u64 )) )))
+      ))
+   ))
+   t
+) Token);

@@ -1,0 +1,14 @@
+
+fragment::set := λ(: e Fragment)(: k String)(: v S). (: (
+   (match e (
+      ()
+      ( (Fragment( e-t kvs offset ft ctx vs )) (
+         (set e (Fragment(
+            e-t
+            (close(FKVSeq( (close kvs) k v )))
+            offset ft (close ctx) vs
+         )))
+      ))
+   ))
+   e
+) Fragment);

@@ -1,0 +1,11 @@
+
+is-hook := λ(: tt Type). (: (
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( (TAnd( t1 t2 )) (set r (||( (is-hook t1) (is-hook t2) ))) )
+      ( (TGround( 'Hook_s _ )) (set r 1_u64) )
+      ( _ () )
+   ))
+   r
+) U64);

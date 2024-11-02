@@ -1,0 +1,36 @@
+
+is-reg16 := λ(: s String). (: (
+   (let r 0_u64)
+   (match s (
+      ()
+      ( 'AX_s (set r 1_u64))
+      ( 'BX_s (set r 1_u64))
+      ( 'CX_s (set r 1_u64))
+      ( 'DX_s (set r 1_u64))
+      ( 'SI_s (set r 1_u64))
+      ( 'DI_s (set r 1_u64))
+      ( 'BP_s (set r 1_u64))
+      ( 'SP_s (set r 1_u64))
+      ( 'R8W_s (set r 1_u64))
+      ( 'R9W_s (set r 1_u64))
+      ( 'R10W_s (set r 1_u64))
+      ( 'R11W_s (set r 1_u64))
+      ( 'R12W_s (set r 1_u64))
+      ( 'R13W_s (set r 1_u64))
+      ( 'R14W_s (set r 1_u64))
+      ( 'R15W_s (set r 1_u64))
+      ( _ () )
+   ))
+   r
+) U64);
+
+is-reg16 := λ(: tt Type). (: (
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( (TAnd( t1 t2 )) (set r (||( (is-reg16 t1) (is-reg16 t2) ))) )
+      ( (TGround( 'Reg16_s _ )) (set r 1_u64) )
+      ( _ () )
+   ))
+   r
+) U64);

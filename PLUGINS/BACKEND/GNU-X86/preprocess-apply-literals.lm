@@ -1,0 +1,73 @@
+
+
+preprocess-apply-literals := λ(: program AST). (: (
+   (let r program)
+   (match program (
+      ()
+      ( (App( (App( (Lit( ':_s ctk )) mvar )) (Lit( mtype _ )) )) (
+         (set r (App( (close(Lit( ':_s (unique ctk) ))) (close(App( (close(preprocess-apply-literals mvar)) (close(AType(parse-type mtype))) ))) )))
+      ))
+      ( (App( (App( (Lit( ':_s ctk )) mvar )) (Var( mtype _ )) )) (
+         (set r (App( (close(Lit( ':_s (unique ctk) ))) (close(App( (close(preprocess-apply-literals mvar)) (close(AType(parse-type mtype))) ))) )))
+      ))
+      ( (Lit( l ltk )) (
+         (if (has-suffix( l '_t_s )) (
+            (let lpfx (remove-suffix( l '_t_s )))
+            (set r (App(
+               (close(Lit( 'Token_s (with-key( ltk 'Token_s )) )))
+               (close(App(
+                  (close(App(
+                     (close(App(
+                        (close(Lit( ':_s (with-key( ltk ':_s )) )))
+                        (close(App( (close(Lit( lpfx (with-key( ltk lpfx )) ))) (close(AType(parse-type 'Literal+Constant+String_s))) )))
+                     )))
+                     (close(Var( '__s (with-key( ltk '__s )) )))
+                  )))
+                  (close(Var( '__s (with-key( ltk '__s )) )))
+               )))
+            )))
+         ) ())
+      ))
+      ( (Var( l ltk )) (
+         (if (has-suffix( l '_t_s )) (
+            (let lpfx (remove-suffix( l '_t_s )))
+            (set r (App(
+               (close(Lit( 'Token_s (with-key( ltk 'Token_s )) )))
+               (close(App(
+                  (close(App(
+                     (close(Var( lpfx (with-key( ltk lpfx )) )))
+                     (close(Var( '__s (with-key( ltk '__s )) )))
+                  )))
+                  (close(Var( '__s (with-key( ltk '__s )) )))
+               )))
+            )))
+         ) ())
+      ))
+      ( (App( t1 t2 )) (
+         (set r (App(
+            (close(preprocess-apply-literals t1))
+            (close(preprocess-apply-literals t2))
+         )))
+      ))
+      ( (Seq( al ar )) (set r (Seq(
+         (close(preprocess-apply-literals al))
+         (close(preprocess-apply-literals ar))
+      ))))
+      ( (App( al ar )) (set r (App(
+         (close(preprocess-apply-literals al))
+         (close(preprocess-apply-literals ar))
+      ))))
+      ( (Abs( al ar tlt )) (set r (Abs(
+         (close(preprocess-apply-literals al))
+         (close(preprocess-apply-literals ar))
+         tlt
+      ))))
+      ( (Glb( k ar )) (set r (Glb(
+         (unique k)
+         (close(preprocess-apply-literals ar))
+      ))))
+      ( u (set r u))
+   ))
+   r
+) AST);
+

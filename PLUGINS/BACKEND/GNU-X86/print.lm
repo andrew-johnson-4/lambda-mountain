@@ -1,0 +1,168 @@
+
+print := λ(: t Token). (: (
+   (match t (
+      ()
+      ( (Token( v _ _ )) (print v) )
+   ))
+) Nil);
+
+print := λ(: t Context). (: (
+   (match t (
+      ()
+      ( CtxEOF () )
+      ( CtxNil () )
+      ( (CtxBind( rst k v )) (
+         (print rst)
+         (print k)
+         (print '\s=\s_s)
+         (print v)
+         (print '\:\n_s)
+      ))
+   ))
+) Nil);
+
+print := λ(: t TContext). (: (
+   (match t (
+      ()
+      ( TCtxEOF () )
+      ( TCtxNil () )
+      ( (TCtxBind( rst k v _ )) (
+         (print rst)
+         (print k)
+         (print '\s:\s_s)
+         (print v)
+         (print '\:\n_s)
+      ))
+   ))
+) Nil);
+
+print := λ(: t AST). (: (
+   (match t (
+      ()
+      ( ASTEOF (print 'EOF_s) )
+      ( ASTNil (print '\[\]_s) )
+      ( (Var( a _ )) (print a) )
+      ( (Lit( a _ )) ( (print '\`_s) (print a) ))
+      ( (AType a) (print a) )
+      ( (Meta _) (print 'Meta_s) )
+      ( (Typedef( lhs rhs )) (
+         (print 'type\s_s)
+         (print lhs)
+         (print '\s=\s_s)
+         (print rhs)
+      ))
+      ( (Glb( k v )) (
+         (print k)
+         (print '\s:=\s_s)
+         (print v)
+      ))
+      ( (App( l r )) (
+         (print '\[_s)
+         (print l)
+         (print '\s_s)
+         (print r)
+         (print '\]_s)
+      ))
+      ( (Abs( lhs rhs tlt )) (
+         (print '\[_s)
+         (print '\l_s)
+         (print lhs)
+         (print '._s)
+         (print rhs)
+         (print '\]_s)
+      ))
+      ( (Seq( l r )) (
+         (print l)
+         (print '\:\n_s)
+         (print r)
+      ))
+   ))
+) Nil);
+
+print := λ(: ctx FContext). (: (
+   (print 'Fragment\sContext:\n_s)
+   (while (non-zero ctx) (match ctx (
+      ()
+      ( (FCtxBind( rst k kt kf )) (
+         (print k)(print '\s:\s_s)(print kt)(print '\n_s)(print kf)
+         (set ctx rst)
+      ))
+   )))
+) Nil);
+
+print := λ(: x Fragment). (: (
+   (match x (
+      ()
+      ( (Fragment( e-t kvs offset xtt ctx vs )) (
+         (print 'Fragment\n_s)
+         (print '\tOffset\s=\s_s)(print offset)(print '\n_s)
+         (while (non-zero kvs) (match kvs (
+            ()
+            ( (FKVSeq( rst k v )) (
+               (print '\t_s)(print k)(print '\s=\s_s)(print v)(print '\n_s)
+               (set kvs rst)
+            ))
+         )))
+      ))
+   ))
+) Nil);
+
+print := λ(: x FragmentList). (: (
+   (match x (
+      ()
+      ( (FLSeq( rst f )) (
+         (print rst)
+         (print f)
+      ))
+      ( _ () )
+   ))
+) Nil);
+
+print := λ(: loc SourceLocation). (: (
+   (match loc (
+      ()
+      ( (SourceLocation( fp ln cl )) (
+         (print 'In\sFile\s_s)
+         (print fp)
+         (print '\sLine\s_s)
+         (print ln)
+         (print '\sColumn\s_s)
+         (print cl)
+      ))
+   ))
+) Nil);
+
+print := λ(: tt Type). (: (match tt (
+   ()
+   ( TAny (print '?_s) )
+   ( (TVar( vn )) (print vn) )
+   ( (TGround( tag LEOF )) (print tag) )
+   ( (TAnd( lt rt )) (
+      (if (is-arrow lt) (
+         (print lt)
+         (print '\s+\n_s)
+         (print rt)
+      ) (
+         (print lt)
+         (print '\s+\s_s)
+         (print rt)
+      ))
+   ))
+   ( (TGround( tag ps )) (
+      (print tag)
+      (print '<_s)
+      (print ps)
+      (print '>_s)
+   ))
+)) Nil);
+
+print := λ(: tt List<Type>). (: (match tt (
+   ()
+   ( LEOF () )
+   ( (LCons( p1 LEOF )) (print p1) )
+   ( (LCons( p1 rst )) (
+      (print rst)
+      (print ',_s)
+      (print p1)
+   ))
+)) Nil);

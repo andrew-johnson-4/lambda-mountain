@@ -1,0 +1,53 @@
+
+parse-lambda := λ(: tokens List<Token>). (: (
+   (let tt-ext TAny)
+   (match tokens (
+      ()
+      ( (LCons( ':_t (LCons( tt-lit_t rr )) )) (
+         (set tt-ext (parse-type tt-lit))
+         (set tokens rr)
+      ))
+      ( _ () )
+   ))
+   (let expr ASTEOF)
+   (let remainder (: LEOF List<Token>))
+   (match (parse-one-expression tokens) (
+      ()
+      ( (PME( (Lit( '._s _ )) pr )) (match (parse-many-expressions pr) (
+         ()
+         ( (PME( le lr )) (
+            (set expr (Abs( (close ASTNil) (close le) tt-ext )))
+            (set tokens (: LEOF List<Token>))
+            (set remainder lr)
+         ))
+      )))
+      ( (PME( pe pr )) (
+         (set expr pe)
+         (set tokens pr)
+      ))
+   ))
+   (while (non-zero tokens) (
+      (match (parse-one-expression tokens) (
+         ()
+         ( (PME( (Lit( '._s _ )) r )) (
+            (match (parse-many-expressions r) (
+               ()
+               ( (PME( le lr )) (
+                  (set expr (Abs( (close expr) (close le) tt-ext )))
+                  (set remainder lr)
+                  (set tokens (: LEOF List<Token>))
+               ))
+            ))
+         ))
+         ( (PME( le LEOF )) (
+            (parse-expect( 'Expected\sDot\sFor\sLambda\sBody\n_s tokens ))
+         ))
+         ( (PME( le lr )) (
+            (set expr (App( (close expr) (close le) )))
+            (set tokens lr)
+         ))
+      ))
+   ))
+   (let pp ( (PME( expr remainder )) ))
+   pp
+) ParsePartial);

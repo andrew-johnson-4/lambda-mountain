@@ -1,0 +1,39 @@
+
+type AssembleMode AssembleGNU | AssembleBlob | AssembleC;
+
+type CompileMode ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
+
+type Type TAny | (TVar String) | (TGround( String , List<Type>[] )) | (TAnd( Type[] , Type[] )); zero Type TAny;
+
+type SourceLocation (SourceLocation( filename:String , U64 , U64 ));
+type Token (Token( key:String , nonce:U64 , location:SourceLocation ));
+
+type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String , Token )) | (Lit( String , Token )) | (Abs( AST[] , AST[] , Type )) | (AType( Type ))
+                | (Seq( AST[] , AST[] )) | (Glb( Token , AST[] )) | (Typedef( AST[] , AST[] )) | (Meta( AST[] )); zero AST ASTEOF;
+
+type FragmentKV (FKVEOF) | (FKVSeq( FragmentKV[] , String , S )); zero FragmentKV FKVEOF;
+type Fragment (Fragment( term:AST , FragmentKV[] , offset:I64 , type:Type , context:FContext[] , vararg:List<Fragment[]> ));
+type FragmentList (FLEOF) | (FLSeq( FragmentList[] , Fragment )); zero FragmentList FLEOF;
+
+type IsUsed Used | Unused | Tail | Return | Call;
+type IsScoped Scoped | Unscoped;
+
+type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST )); zero Context CtxEOF;
+type TContext TCtxEOF | TCtxNil | (TCtxBind( TContext[] , String , Type , AST )); zero TContext TCtxEOF;
+type FContext FCtxEOF | (FCtxBind( FContext[] , String , Type , Fragment )); zero FContext FCtxEOF;
+
+type STypeList STEOF | (STSeq( STypeList[] , S , Type )); zero STypeList STEOF;
+type StringTypeList StrTEOF | (StrTSeq( StringTypeList[] , String , Type )); zero StringTypeList StrTEOF;
+
+type StringList SLEOF | (SLSeq( StringList[] , String )); zero StringList SLEOF;
+type StringU64List SUEOF | (SUSeq( StringU64List[] , String , U64 )); zero StringU64List SUEOF;
+type StringStringList SSEOF | (SSSeq( StringStringList[] , String , String )); zero StringStringList SSEOF;
+type StringSList SSLEOF | (SSLSeq( StringSList[] , String , S )); zero StringSList SSLEOF;
+
+type Macro (Macro( AST , AST ));
+type MacroList MEOF | (MSeq( MacroList[] , Macro )); zero MacroList MEOF;
+
+type ParsePartial (PME( AST , List<Token> )); # term, remainder
+type SfxList SfxEOF | (SfxSeq( SfxList[] , String , Type )); zero SfxList SfxEOF;
+
+type StackToSpecialize (StackToSpecialize( String , Type , TContext , Type ));
