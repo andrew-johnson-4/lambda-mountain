@@ -1,7 +1,0 @@
-Error: Function Application Yielded An Irreducible Plurality Of Matches
-f : Arrow<Cons<Sized<8>,U64>,Nil> +
-Arrow<Cons<U64,Sized<8>>,Nil>
-With Argument Cons<Constant + Literal + U64 + Sized<8>,Constant + Literal + U64 + Sized<8>>
-In File tests/regress/catch-ambiguous.lm Line 8 Column 5
-Matched Arrow<Cons<Sized<8>,U64>,Nil>
-Matched Arrow<Cons<U64,Sized<8>>,Nil>

@@ -1,9 +1,0 @@
-Error: Unable to infer type of expression
-In File tests/regress/invalid-constructor.lm Line 5 Column 12
-In Function Application
-'Satom:
-?
-(': ('abc Constant + Literal + String)):
-Constant + Literal + String + Sized<8>
-Return:
-?
