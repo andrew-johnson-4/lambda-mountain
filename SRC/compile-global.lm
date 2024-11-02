@@ -77,9 +77,13 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
             ( (TGround( 'Array_s (LCons( _ (LCons(
                  (TGround( 'Arrow_s (LCons( ranget (LCons( domaint _ )) )) )) _
               )) )) )) (
-               (print 'Range\s_s)(print ranget)(print '\n_s)
-               (print 'Domain\s_s)(print domaint)(print '\n_s)
-               (exit 1_u64)
+               (set text (SCons( (close text) (close(mangle-c-type ranget)) )))
+               (set text (SCons( (close text) (close(SAtom '\s\[*_s)) )))
+               (set text (SCons( (close text) (close(SAtom mid)) )))
+               (set text (SCons( (close text) (close(SAtom '\]\[_s)) )))
+               (set text (SCons( (close text) (close(mangle-c-type domaint)) )))
+               (set text (SCons( (close text) (close(SAtom '\]\:\n_s)) )))
+               (set assemble-header-section (SCons( (close assemble-header-section) (close text) )))
             ))
             ( _ (
                (set text (SCons( (close text) (close(mangle-c-type clean-tt)) )))
