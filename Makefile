@@ -33,22 +33,12 @@ build: compile-production
 	mv deploy.c BOOTSTRAP/cli.c
 	cargo test regression_tests
 
-build-gnu: compile-production
-	time ./production --gnu -o deploy.s SRC/index-index.lm
-	as -o deploy.o deploy.s
-	ld -o deploy   deploy.o
-	time ./deploy --gnu -o deploy2.s SRC/index-index.lm
-	diff deploy.s deploy2.s
-	mv deploy.s BOOTSTRAP/cli.s
-	cargo test regression_tests
-
 deploy: build build-docs
 
 compile-production: compile-bootstrap
 	rm -f production production.o production.s
-	./bootstrap --gnu -o production.s SRC/index-index.lm
-	as -o production.o production.s
-	ld -o production   production.o
+	./bootstrap --c -o production.c SRC/index-index.lm
+	cc -o production production.c
 	cp production re-production
 
 install-production: compile-production
