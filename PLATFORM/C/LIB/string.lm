@@ -28,8 +28,8 @@ clone-rope-impl := λ(: buff Buffer)(: s S). (: (
       ()
       ( SNil () )
       ( (SCons( l r )) (
-         (set buff (clone-rope-impl( ptr l )))
-         (set buff (clone-rope-impl( ptr r )))
+         (set buff (clone-rope-impl( buff l )))
+         (set buff (clone-rope-impl( buff r )))
       ))
       ( (SAtom a) (
          (let ci 0_u64)
