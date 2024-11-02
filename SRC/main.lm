@@ -71,17 +71,11 @@ main := λ(: argc U64)(: argv String[]). (: (
          (typecheck())
       ))
       ( ModeCompile (
-         (print 'Compile.start\n_s)
          (parse())
-         (print 'Compile.parsed\n_s)
          (preprocess())
-         (print 'Compile.preprocessed\n_s)
          (typecheck())
-         (print 'Compile.typechecked\n_s)
          (compile())
-         (print 'Compile.compiled\n_s)
       ))
    ))
-   (print 'main.4\n_s)
 ) Nil);
 
