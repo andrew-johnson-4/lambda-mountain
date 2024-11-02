@@ -254,7 +254,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          ))
       ))
       ( (Var( v vtk )) (
-         (let vt (typeof-var( term tctx v )))
+         (let vt (denormalize(typeof-var( term tctx v ))))
          (ascript-normal( term (typeof-var( term tctx v )) ))
       ))
       ( (Lit( l _ )) (
