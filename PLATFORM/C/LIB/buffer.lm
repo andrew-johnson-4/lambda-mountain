@@ -16,7 +16,7 @@ new-buffer := λ(: capacity U64). (: (
 
 .extend := λ(: buff Buffer)(: sz U64). (: (
    (if (<( (+( (.allocated buff) sz )) (.capacity buff) )) (
-      (set buff (Buffer( (.ptr buff) (+( (.allocated buff) sz )) (.capacity ) )))
+      (set buff (Buffer( (.ptr buff) (+( (.allocated buff) sz )) (.capacity buff) )))
    ) (
       (let new-sz (.calculate-extension-size( (+( (.allocated buff) sz )) )))
       (let new-ptr (realloc( (.ptr buff) new-sz )))
