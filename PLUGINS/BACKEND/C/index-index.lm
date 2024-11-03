@@ -1,2 +1,4 @@
 
 import PLUGINS/BACKEND/C/compile-c.lm;
+import PLUGINS/BACKEND/C/compile-expr.lm;
+import PLUGINS/BACKEND/C/compile-expr-direct.lm;

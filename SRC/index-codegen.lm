@@ -2,8 +2,6 @@
 import SRC/compile-constructor.lm;
 import SRC/compile-declare-cstring.lm;
 import SRC/compile-destructure-args.lm;
-import SRC/compile-expr-direct.lm;
-import SRC/compile-expr.lm;
 import SRC/compile-global.lm;
 import SRC/compile-maybe-push-stack.lm;
 import SRC/compile-push-rvalue.lm;
