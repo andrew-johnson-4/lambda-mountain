@@ -4,3 +4,5 @@ plugin-null-backend := λ. (: (
 ) Nil);
 
 plugin-current-backend := (: (& plugin-null-backend) Arrow<Nil,Nil>[]);
+
+import PLUGINS/BACKEND/C/index-index.lm;

@@ -5,7 +5,6 @@ import SRC/compile-data-header.lm;
 import SRC/compile-text-header.lm;
 
 import SRC/compile.lm;
-import SRC/compile-c.lm;
 import SRC/compile-blob.lm;
 import SRC/compile-gnu.lm;
 import SRC/compile-finish.lm;
