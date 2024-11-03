@@ -9,16 +9,13 @@ main := λ(: argc U64)(: argv String[]). (: (
             (set config-assemble-mode AssembleC)
             (set config-platform-prefix 'PLATFORM/C/_s)
             (if (==( config-target '_s )) (set config-target 'tmp.c_s) ())
+            (set plugin-current-backend (& plugins-backend-c-compile))
          ))
          ('--blob_s (
             (set config-assemble-mode AssembleBlob)
             (set config-platform-prefix 'PLATFORM/BLOB/_s)
             (if (==( config-target '_s )) (set config-target 'tmp.txt_s) ())
-         ))
-         ('--gnu_s (
-            (set config-assemble-mode AssembleGNU)
-            (set config-platform-prefix 'PLATFORM/GNU-X86/_s)
-            (if (==( config-target '_s )) (set config-target 'tmp.s_s) ())
+            (set plugin-current-backend (& plugins-backend-blob-compile))          
          ))
          ('--tokenize_s (set config-mode ModeTokenize))
          ('--parse_s (set config-mode ModeParse))
@@ -74,7 +71,7 @@ main := λ(: argc U64)(: argv String[]). (: (
          (parse())
          (preprocess())
          (typecheck())
-         (compile())
+         (plugin-current-backend())
       ))
    ))
 ) Nil);
