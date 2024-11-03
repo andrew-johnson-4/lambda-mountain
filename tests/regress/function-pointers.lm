@@ -8,6 +8,6 @@ f := (: (& fa) Arrow<Nil,Nil>[]);
 
 main := λ. (: (
    (f())
-   (set f (& fb))
-   (f())
+#   (set f (& fb))
+#   (f())
 ) Nil);
