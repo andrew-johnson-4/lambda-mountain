@@ -1,0 +1,13 @@
+
+import LIB/default.lm;
+
+fa := λ. (: (print 'A_s) Nil);
+fb := λ. (: (print 'B_s) Nil);
+
+f := (: (& fa) Arrow<Nil,Nil>[]);
+
+main := λ. (: (
+   (f())
+   (set f fb)
+   (f())
+) Nil);
