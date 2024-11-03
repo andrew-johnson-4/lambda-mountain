@@ -1,0 +1,50 @@
+
+compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(: return-type Type)(: args AST)(: offset I64)(: used IsUsed). (: (
+   (let original-ctx ctx)
+   (let function-type (.type f))
+   (let r (fragment::new()))
+
+   (if (is-blob function-type) (
+      (set r (cc-blob( ctx function-name args offset )))
+      (set r (fragment::set-context( r ctx )))
+   ) (
+      (if (is( used Tail )) (set used Used) ())
+      (if (is( used Call )) (set used Used) ())
+      (let push-args (compile-stack-call-push-args( ctx args offset )))
+      (set push-args (fragment::set-type( push-args (t1( 'FunctionArguments_s )) )))
+      (let call SNil)
+      (let return-size (sizeof-type return-type))
+
+      (let ictx (fragment::new()))
+
+      (let function-id function-name)
+      (if (is-ffi function-type) () (
+         (set function-id (mangle-identifier( function-name function-type )))
+      ))
+
+      (set ictx (fragment::set( ictx 'function-id_s (SAtom function-id) )))  
+      (set ictx (fragment::set( ictx 'function-name_s (SAtom function-name) )))
+      (set ictx (fragment::set( ictx 'function-type_s (SAtom(to-string(.type f))) )))
+      (set ictx (fragment::set( ictx 'return-size_s (SAtom(to-string return-size)) )))
+      (set ictx (fragment::set( ictx 'args-size_s (SAtom(to-string(sizeof-type(typeof args)))) )))
+      (set ictx (fragment::set( ictx 'used_s (SAtom(to-string used)) )))
+      (set ictx (fragment::set-type( ictx (t1( 'ImplicitContext_s )) )))
+      (set ctx (fragment-context::bind( ctx 'ictx_s (t1 'ImplicitContext_s) ictx )))
+
+      (let args-tt (.type push-args))
+      (set ctx (fragment-context::bind( ctx 'args_s args-tt push-args )))
+
+      (set r (cc-blob( ctx 'primitive::call_s (t3( 'Cons_s (t1 'ImplicitContext_s) args-tt )) offset args )))
+
+      (set r (fragment::set-offset( r offset )))
+      (set r (fragment::set-context( r original-ctx )))
+      (if (>( return-size 8_u64 )) (
+         (if (is( used Used )) (
+            (set r (fragment::set-offset( r (-( offset (as return-size I64) )) )))
+         ) ())
+      ) ())
+      (set r (fragment::set-type( r (denormalize return-type) )))
+   ))
+   r
+) Fragment);
+
