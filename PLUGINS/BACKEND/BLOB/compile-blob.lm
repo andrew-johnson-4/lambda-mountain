@@ -1,5 +1,5 @@
 
-compile-blob := λ. (: (
+plugins-backend-blob-compile := λ. (: (
    (let preview-program ast-parsed-program)
    (while (non-zero preview-program) (match preview-program (
       ()
