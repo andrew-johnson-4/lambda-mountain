@@ -1,0 +1,43 @@
+
+extract-uuids := λ(: loc SourceLocation)(: ctx Context)(: term AST). (: (
+   (let return ctx)
+   (match term (
+      ()
+      ( (App( (Var( 'uuid_s _ )) (Var( x xtk )) )) (
+         (let id (uuid()))
+         (let lctx (CtxBind( (close ctx) x (Var( id (with-key( xtk id )) )) )))
+         (set return lctx)
+      ))
+      ( (App( l r )) (
+         (let lctx (extract-uuids( loc ctx l )))
+         (let rctx (extract-uuids( loc lctx r )))
+         (set return rctx)
+      ))
+      ( (Abs( l r tlt )) (
+         (let lctx (extract-uuids( loc ctx l )))
+         (let rctx (extract-uuids( loc lctx r )))
+         (set return rctx)
+      ))
+      ( ASTEOF () )
+      ( ASTNil () )
+      ( (AType _) () )
+      ( (Var( v _ )) () )
+      ( (Lit( v _ )) () )
+      ( (Seq( lt rt )) (
+         (let lctx (extract-uuids( loc ctx lt )))
+         (let rctx (extract-uuids( loc lctx rt )))
+         (set return rctx)
+      ))
+      ( (Typedef( lt rt )) (
+         (let lctx (extract-uuids( loc ctx lt )))
+         (let rctx (extract-uuids( loc lctx rt )))
+         (set return rctx)
+      ))
+      ( (Glb( k t )) (
+         (let rctx (extract-uuids( loc ctx t )))
+         (set return rctx)
+      ))
+   ))
+   return
+) Context);
+

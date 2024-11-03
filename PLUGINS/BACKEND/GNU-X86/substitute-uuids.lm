@@ -1,0 +1,59 @@
+
+substitute-uuids := λ(: ctx Context)(: term AST). (: (
+   (let return term)
+   (match return (
+      ()
+      ( (App( (Var( 'uuid_s _ )) (Var( x _ )) )) (
+         (while (non-zero ctx) (match ctx (
+            ()
+            ( (CtxBind( rst k v )) (
+               (if (==( x k )) (
+                  (set return v)
+                  (set ctx rst)
+               ) (
+                  (set ctx rst)
+               ))
+            ))
+            ( _ (set ctx CtxEOF) )
+         )))
+      ))
+      ( (App( l r )) (
+         (set return (App(
+            (close(substitute-uuids( ctx l )))
+            (close(substitute-uuids( ctx r )))
+         )))
+      ))
+      ( (Abs( l r tlt )) (
+         (set return (Abs(
+            (close(substitute-uuids( ctx l )))
+            (close(substitute-uuids( ctx r )))
+            tlt
+         )))
+      ))
+      ( ASTEOF () )
+      ( ASTNil () )
+      ( (AType _) () )
+      ( (Var( v _ )) () )
+      ( (Lit( v _ )) () )
+      ( (Seq( lt rt )) (
+         (set return (Seq(
+            (close(substitute-uuids( ctx lt )))
+            (close(substitute-uuids( ctx rt )))
+         )))
+      ))
+      ( (Typedef( lt rt )) (
+         (set return (Typedef(
+            (close(substitute-uuids( ctx lt )))
+            (close(substitute-uuids( ctx rt )))
+         )))
+      ))
+      ( (Glb( k t )) (
+         (set return (Glb(
+            k
+            (close(substitute-uuids( ctx t )))
+         )))
+      ))
+   ))
+   return
+) AST);
+

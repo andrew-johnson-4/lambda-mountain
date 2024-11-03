@@ -1,0 +1,135 @@
+
+parse-type-single := λ(: tt String). (: (
+   (let depth 0_u64)
+   (let mode 0_u8)
+   (let buff SNil)
+   (let base-type (t1 'Nil_s))
+   (while (head-string tt) (
+      (if (==( depth 0_u64 )) (
+         (match (head-string tt) (
+            ()
+            ( 91_u8 (
+               (set mode 91_u8)
+               (set depth 1_u64)
+               (if (non-zero buff) (
+                  (let vn (clone-rope buff))
+                  (if (==( vn '?_s )) (
+                     (set base-type TAny)
+                  ) (
+                     (if (is-variable vn) (
+                        (set base-type (TVar vn))
+                     ) (
+                        (set base-type (TGround(
+                           (clone-rope buff)
+                           (close(: LEOF List<Type>))
+                        )))
+                     ))
+                  ))
+               ) ())
+               (set buff SNil)
+            ))
+            ( 60_u8 (
+               (set mode 60_u8)
+               (set depth 1_u64)
+               (if (non-zero buff) (
+                  (let vn (clone-rope buff))
+                  (if (==( vn '?_s )) (
+                     (set base-type TAny)
+                  ) (
+                     (if (is-variable vn) (
+                        (set base-type (TVar vn))
+                     ) (
+                        (set base-type (TGround(
+                           (clone-rope buff)
+                           (close(: LEOF List<Type>))
+                        )))
+                     ))
+                  ))
+               ) ())
+               (set buff SNil)
+            ))
+            ( c (
+               (set buff (SCons(
+                  (close buff)
+                  (close (SAtom (clone-rope c)))
+               )))
+            ))
+         ))
+      ) (
+         (match (head-string tt) (
+            ()
+            ( 60_u8 (set depth (+( depth 1_u64 )) ))
+            ( 62_u8 (set depth (-( depth 1_u64 )) ))
+            ( 91_u8 (set depth (+( depth 1_u64 )) ))
+            ( 93_u8 (set depth (-( depth 1_u64 )) ))
+            ( _ () )
+         ))
+         (if (==( depth 0_u64 )) (
+            (match mode (
+               ()
+               ( 91_u8 (
+                  (if (non-zero buff) (
+                     (set base-type (t3(
+                        'Array_s
+                        base-type
+                        (parse-type(clone-rope buff))
+                     )))
+                     (set buff SNil)
+                  ) (
+                     (set base-type (t3(
+                        'Array_s
+                        base-type
+                        TAny
+                     )))
+                  ))
+               ))
+               ( 60_u8 (match base-type (
+                  ()
+                  ( (TGround( tag LEOF )) (
+                     (set base-type (TGround(
+                        tag
+                        (close(parse-type-comma-sep(clone-rope buff)))
+                     )))
+                     (set buff SNil)
+                  ))
+                  ( (TVar( tag )) (
+                     (set base-type (TGround(
+                        tag
+                        (close(parse-type-comma-sep(clone-rope buff)))
+                     )))
+                     (set buff SNil)
+                  ))
+                  ( _ (
+                     (print 'Unexpected\sParameterized\sType:\s_s)
+                     (print base-type)
+                     (exit 1_u64)
+                  ))
+               )))
+            ))
+         ) (
+            (set buff (SCons(
+               (close buff)
+               (close (SAtom (clone-rope (head-string tt))))
+            )))
+         ))
+      ))
+      (set tt (tail-string tt))
+   ))
+   (if (non-zero buff) (
+      (let vn (clone-rope buff))
+      (if (==( vn '?_s )) (
+         (set base-type TAny)
+      ) (
+         (if (is-variable vn) (
+            (set base-type (TVar vn))
+         ) (
+            (set base-type (TGround(
+               (clone-rope buff)
+               (close(: LEOF List<Type>))
+            )))
+         ))
+      ))
+   ) ())
+   base-type
+) Type);
+

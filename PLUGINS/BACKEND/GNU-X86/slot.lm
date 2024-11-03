@@ -1,0 +1,23 @@
+
+
+slot := λ(: tt Type)(: sl String). (: (
+   (let rt TAny)
+   (match tt (
+      ()
+      ( (TGround( bt _ )) (
+         (if (==( bt sl )) (set rt tt) ())
+      ))
+      ( (TAnd( ltt rtt )) (
+         (let lt2 (slot( ltt sl )))
+         (if (non-zero lt2) (
+            (set rt lt2)
+         ) (
+            (let rt2 (slot( rtt sl )))
+            (set rt rt2)
+         ))
+      ))
+      ( _ () )
+   ))
+   rt
+) Type);
+

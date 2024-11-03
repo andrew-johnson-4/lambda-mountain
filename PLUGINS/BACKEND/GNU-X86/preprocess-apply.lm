@@ -1,0 +1,118 @@
+
+preprocess-apply := λ(: program AST). (: (
+   (let r program)
+   (match program (
+      ()
+      ( (App( (App( (Lit( ':_s ctk )) (App( t (AType tt) )) )) nt )) (
+         (set r (App(
+            (close(App( (close(Lit( ':_s (unique ctk) ))) (close(App( (close(preprocess-apply t)) (close(AType tt)) ))) )))
+            (close(preprocess-apply( nt )))
+         )))
+      ))
+      ( (App( (App( (Lit( ':_s ctk )) mvar )) (Lit( mtype _ )) )) (
+         (set r (App( (close(Lit( ':_s (unique ctk) ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
+      ))
+      ( (App( (App( (Lit( ':_s ctk )) mvar )) (Var( mtype _ )) )) (
+         (set r (App( (close(Lit( ':_s (unique ctk) ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
+      ))
+      ( (App( (App( (Var( 'as_s atk )) (App( t (AType tt) )) )) nt )) (
+         (set r (App(
+            (close(App( (close(Var( 'as_s (unique atk) ))) (close(App( (close(preprocess-apply t)) (close(AType tt)) ))) )))
+            (close(preprocess-apply( nt )))
+         )))
+      ))
+      ( (App( (App( (Var( 'as_s atk )) mvar )) (Lit( mtype _ )) )) (
+         (set r (App( (close(Var( 'as_s (unique atk) ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
+      ))
+      ( (App( (App( (Var( 'as_s atk )) mvar )) (Var( mtype _ )) )) (
+         (set r (App( (close(Var( 'as_s (unique atk) ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
+      ))
+      ( (App( (Var( 'sizeof_s stk )) (Var( mtype _ )) )) (
+         (set r (App( (close(Var( 'sizeof_s (unique stk) ))) (close(AType(parse-type mtype))) )))
+      ))
+      ( (App( (Var( 'sizeof_s stk )) (Lit( mtype _ )) )) (
+         (set r (App( (close(Var( 'sizeof_s (unique stk) ))) (close(AType(parse-type mtype))) )))
+      ))
+      ( (Lit( l ltk )) (
+         (let suffixes parse-suffixes)
+         (while (non-zero suffixes) (match suffixes (
+            ()
+            ( (SfxSeq( rst sfxs sfxtt )) (
+               (if (has-suffix( l sfxs )) (
+                  (let lpfx (remove-suffix( l sfxs )))
+                  (set r (App(
+                     (close(Lit( ':_s (with-key( ltk ':_s )) )))
+                     (close(App( (close(Lit( lpfx (with-key( ltk lpfx )) ))) (close(AType sfxtt)) )))
+                  )))
+                  (set suffixes SfxEOF)
+               ) (
+                  (set suffixes rst)
+               ))
+            ))
+         )))
+      ))
+      ( (Var( l ltk )) (
+         (let suffixes parse-suffixes)
+         (while (non-zero suffixes) (match suffixes (
+            ()
+            ( (SfxSeq( rst sfxs sfxtt )) (
+               (if (has-suffix( l sfxs )) (
+                  (let lpfx (remove-suffix( l sfxs )))
+                  (set r (App(
+                     (close(Lit( ':_s (with-key( ltk ':_s )) )))
+                     (close(App( (close(Lit( lpfx (with-key( ltk lpfx )) ))) (close(AType sfxtt)) )))
+                  )))
+                  (set suffixes SfxEOF)
+               ) (
+                  (set suffixes rst)
+               ))
+            ))
+         )))
+      ))
+      ( (App( (Var( vn vntk )) vt )) (
+         if (is-macro-head( vn 1_u64 )) (
+            (let applied (preprocess-apply-hard( vn 1_u64 program )))
+            (set r applied)
+         ) (
+            (set r (App(
+               (close(preprocess-apply(Var( vn (unique vntk) ))))
+               (close(preprocess-apply vt))
+            )))
+         )
+      ))
+      ( (App( (App( (Var( vn vntk )) vt1 )) vt2 )) (
+         if (is-macro-head( vn 2_u64 )) (
+            (let applied (preprocess-apply-hard( vn 2_u64 program )))
+            (set r applied)
+         ) (
+            (set r (App(
+               (close(preprocess-apply(App(
+                  (close(Var( vn (unique vntk) )))
+                  (close vt1)
+               ))))
+               (close(preprocess-apply vt2))
+            )))
+         )
+      ))
+      ( (Seq( al ar )) (set r (+(
+         (preprocess-apply al)
+         (preprocess-apply ar)
+      ))))
+      ( (App( al ar )) (set r (App(
+         (close(preprocess-apply al))
+         (close(preprocess-apply ar))
+      ))))
+      ( (Abs( al ar tlt )) (set r (Abs(
+         (close(preprocess-apply al))
+         (close(preprocess-apply ar))
+         tlt
+      ))))
+      ( (Glb( k ar )) (set r (Glb(
+         (unique k)
+         (close(preprocess-apply ar))
+      ))))
+      ( u (set r u))
+   ))
+   r
+) AST);
+

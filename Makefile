@@ -37,7 +37,7 @@ build: compile-production
 deploy: build build-docs
 
 compile-production: compile-bootstrap
-	rm -f production production.o production.s
+	rm -f production
 	./bootstrap --c -o production.c SRC/index-index.lm
 	cc -o production production.c
 	rm -f production.c
@@ -54,10 +54,8 @@ compile-bootstrap:
 	cc -o bootstrap BOOTSTRAP/cli.c
 
 install:
-	as -o lm_raw.o BOOTSTRAP/cli.s
-	ld -o lm lm_raw.o
+	cc -o lm BOOTSTRAP/cli.c
 	mv lm $${HOME}/bin/lm
-	rm lm_raw.o
 	#lm LMV/cli.lm -o lmv.s
 	#as -o lmv.o lmv.s
 	#ld -o lmv   lmv.o

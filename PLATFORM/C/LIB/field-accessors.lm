@@ -8,3 +8,9 @@
 (declare-unop( .5 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_r,f5>,_4>,_3>,_2>,_1>,_0>> f5 ( '\[_l x '.field__l (+( (*( (: cn L) 1000_l )) 5_l )) '\]_l ) ));
 (declare-unop( .6 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<Cons<Cons<Cons<_r,f6>,_5>,_4>,_3>,_2>,_1>,_0>> f6 ( '\[_l x '.field__l (+( (*( (: cn L) 1000_l )) 6_l )) '\]_l ) ));
 
+(declare-binop( set.1 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<_r,f1>,_0>> f1 Nil ( '\[{_l x '.field__l (+( (*( (: cn L) 1000_l )) 1_l )) '=_l y '\:\[{}\]\:}\]_l ) ));
+(declare-binop( set.2 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<_r,f2>,_1>,_0>> f2 Nil ( '\[{_l x '.field__l (+( (*( (: cn L) 1000_l )) 2_l )) '=_l y '\:\[{}\]\:}\]_l ) ));
+(declare-binop( set.3 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<_r,f3>,_2>,_1>,_0>> f3 Nil ( '\[{_l x '.field__l (+( (*( (: cn L) 1000_l )) 3_l )) '=_l y '\:\[{}\]\:}\]_l ) ));
+(declare-binop( set.4 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<Cons<_r,f4>,_3>,_2>,_1>,_0>> f4 Nil ( '\[{_l x '.field__l (+( (*( (: cn L) 1000_l )) 4_l )) '=_l y '\:\[{}\]\:}\]_l ) ));
+(declare-binop( set.5 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<Cons<Cons<_r,f5>,_4>,_3>,_2>,_1>,_0>> f5 Nil ( '\[{_l x '.field__l (+( (*( (: cn L) 1000_l )) 5_l )) '=_l y '\:\[{}\]\:}\]_l ) ));
+(declare-binop( set.6 LMStruct+CaseNumber<cn>+Fields<Cons<Cons<Cons<Cons<Cons<Cons<Cons<_r,f6>,_5>,_4>,_3>,_2>,_1>,_0>> f6 Nil ( '\[{_l x '.field__l (+( (*( (: cn L) 1000_l )) 6_l )) '=_l y '\:\[{}\]\:}\]_l ) ));

@@ -1,0 +1,23 @@
+
+compile-c-function-args := λ(: ctx FContext)(: lhs AST). (: (
+   (let r SNil)
+   (match lhs (
+      ()
+      ( (App( rst (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) )) (
+         (set r (compile-c-function-args(ctx rst)))
+         (set r (+( r (SAtom ',_s) )))
+         (set r (+( r (mangle-c-type kt) )))
+         (set r (+( r (SAtom '\s_s) )))
+         (let kf (fragment-context::lookup( ctx k TAny lhs )))
+         (set r (+( r (fragment::get( kf 'expression_s)) )))
+      ))
+      ( (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) (
+         (set r (mangle-c-type kt))
+         (set r (+( r (SAtom '\s_s) )))
+         (let kf (fragment-context::lookup( ctx k TAny lhs )))
+         (set r (+( r (fragment::get( kf 'expression_s)) )))
+      ))
+      ( _ () )
+   ))
+   r
+) S);

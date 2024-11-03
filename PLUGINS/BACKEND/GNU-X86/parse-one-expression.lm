@@ -1,0 +1,49 @@
+
+parse-one-expression := λ(: tokens List<Token>). (: (
+   (let expr ASTEOF)
+   (let remainder (: LEOF List<Token>))
+   (match tokens (
+      ()
+      ( LEOF (
+         (set expr ASTNil)
+         (set remainder (: LEOF List<Token>))
+      ))
+      ( (LCons( '\l_t r )) (
+         (match (parse-lambda r) (
+            ()
+            ( (PME( le lr )) (
+               (set expr le)
+               (set remainder lr)
+            ))
+         ))
+      ))
+      ( (LCons( '\]_t r )) (
+         (parse-unexpect( 'Unexpected\sClosing\sParentheses_s tokens ))
+      ))
+      ( (LCons( '\[_t r )) (
+         (match (parse-many-expressions r) (
+            ()
+            ( (PME( me mr )) (
+               (set expr me)
+               (set remainder mr)
+            ))
+         ))
+      ))
+      ( (LCons( '\`_t
+                (LCons( i r ))
+        )) (
+         (set expr (Lit( (.key i) i )))
+         (set remainder r)
+      ))
+      ( (LCons( a r )) (
+         (if (is-variable (.key a)) (
+            (set expr (Var( (.key a) a )))
+         ) (
+            (set expr (Lit( (.key a) a )))
+         ))
+         (set remainder r)
+      ))
+   ))
+   (let pp ( (PME( expr remainder )) ))
+   pp
+) ParsePartial);

@@ -1,0 +1,58 @@
+
+infer-type-constructor := λ(: base-type Type)(: body AST). (: (
+   (let r 0_u64)
+   (match body (
+      ()
+      ( (Lit( tag _ )) (
+         (let rtype (and(
+            (and(
+               base-type
+               (t2( 'Tag_s (t1 tag) ))
+            ))
+            (and(
+               (t1 'Constant_s)
+               (and(
+                  (t2( 'Constructor_s (t1 tag) ))
+                  (and(
+                     (t2( 'CaseNumber_s (t1(to-string(index-of-tag tag))) ))
+                     (t2( 'FieldsSized_s (t1 '0_s) ))
+                  ))
+               ))
+            ))
+         )))
+         (index-class-of-tag( tag base-type ))
+         (index-fields-of-tag( tag TAny (t1 'Nil_s) ))
+         (set type-constructors-index (.bind( type-constructors-index tag rtype )))
+         (set r 8_u64)
+         (let constructor-tt (t2( 'Constructor_s (t1 tag) )))
+      ))
+      ( (App( (Lit( tag _ )) args )) (
+         (let atype (type-of-s-with-fields( base-type tag args 1_u64 )))
+         (add-concrete-type-instance atype)
+         (mark-constructor-flat-parameters( base-type atype ))
+         (if (has-forward( atype )) (
+            (print 'Size\sOf\sType\sCannot\sBe\sDetermined\sDue\sTo\sForward\sReference:\s_s)
+            (print tag)(print '\n_s)
+            (exit 1_u64)
+         ) ())
+         (if (has-infinite( base-type atype )) (
+            (print 'Size\sOf\sType\sIs\sInfinite:\s_s)
+            (print tag)(print '\n_s)
+            (exit 1_u64)
+         ) ())
+         (let rtype (and(
+            base-type
+            (t2( 'Tag_s (t1 tag) ))
+         )))
+         (set-type-fields( base-type atype ))
+         (index-class-of-tag( tag base-type ))
+         (index-fields-of-tag( tag base-type atype ))
+         (set type-constructors-index (.bind( type-constructors-index tag (t3( 'Arrow_s atype rtype )) )))
+         (set r (sizeof-aligned atype))
+         (set r (+( r 8_u64 )))
+         (let constructor-tt (t2( 'Constructor_s (t1 tag) )))
+      ))
+      ( _ () )
+   ))
+   r
+) U64);

@@ -1,0 +1,36 @@
+
+without-tag := λ(: tt Type). (: (
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (
+         (let lt1 (without-tag lt))
+         (let rt1 (without-tag rt))
+         (match (Tuple( lt1 rt1 )) (
+            ()
+            ( (Tuple( TAny rt2 )) (set tt rt2) )
+            ( (Tuple( lt2 TAny )) (set tt lt2) )
+            ( (Tuple( lt2 rt2 )) (
+               (set tt (TAnd( (close lt2) (close rt2) )))
+            ))
+         ))
+      ))
+      ( (TGround( 'Constructor_s _ )) (set tt TAny) )
+      ( (TGround( 'Tag_s _ )) (set tt TAny) )
+      ( (TGround( 'CaseNumber_s _ )) (set tt TAny) )
+      ( (TGround( 'Fields_s _ )) (set tt TAny) )
+      ( (TGround( 'FieldsSized_s _ )) (set tt TAny) )
+      ( _ () )
+   ))
+   tt
+) Type);
+
+without-tag := λ(: tt List<Type>). (: (
+   (match tt (
+      ()
+      ( (LCons( p1 rst )) (
+         (set tt (cons( (without-tag p1) (without-tag rst) )))
+      ))
+      ( LEOF () )
+   ))
+   tt
+) List<Type>);

@@ -52,6 +52,7 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U64)(:
                   (print 'Application\sDid\sNot\sClose\sBefore\sSpecialization:\n_s)
                   (print 'Function\s_s)(print function-name)(print '\s:\s_s)(print sft)(print '\n_s)
                   (print 'Argument\s_s)(print pt)(print '\n_s)
+                  (print 'Result\s_s)(print closed-type)(print '\n_s)
                   (print (location-of( blame )))(print '\n_s)
                   (exit 1_u64)
                ) ())

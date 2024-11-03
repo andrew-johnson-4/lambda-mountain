@@ -1,0 +1,35 @@
+
+compile-finish := λ. (: (
+   (match config-assemble-mode (
+      ()
+      ( AssembleC (compile-finish-c()))
+      ( AssembleBlob (compile-finish-blob()))
+      ( AssembleGNU (compile-finish-gnu()))
+   ))
+) Nil);
+
+compile-finish-c := λ. (: (
+   (let output SNil)
+   (set output (SCons( (close output) (close(compile-c-text-header())) )))
+   (set output (SCons( (close output) (close assemble-header-section) )))
+   (set output (SCons( (close output) (close assemble-text-section) )))
+   (set assemble-final (clone-rope(escape-string output)))
+) Nil);
+
+compile-finish-gnu := λ. (: (
+   (let output SNil)
+   (set output (SCons( (close output) (close(compile-text-header())) )))
+   (set output (SCons( (close output) (close assemble-profile-onexit) )))
+   (set output (SCons( (close output) (close(compile-exit-cleanup())) )))
+   (set output (SCons( (close output) (close assemble-text-section) )))
+   (if (non-zero assemble-data-section) (
+      (set output (SCons( (close output) (close(compile-data-header())) )))
+      (set output (SCons( (close output) (close assemble-data-section) )))
+   ) ())
+   (set assemble-final (clone-rope(escape-string output)))
+) Nil);
+
+compile-finish-blob := λ. (: (
+   (print 'TODO:\scompile\sfinish\sblob\n_s)(exit 1_u64)
+) Nil);
+

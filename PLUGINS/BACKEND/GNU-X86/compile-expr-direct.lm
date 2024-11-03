@@ -1,0 +1,349 @@
+
+compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used IsUsed). (: (
+   (let e (fragment::new()))
+   (set e (fragment::set-context( e ctx )))
+   (set e (fragment::set-offset( e stack-offset )))
+   (match term (
+      ()
+      ( ASTNil (
+         (set e (fragment::set-type( e (denormalize(t1 'Nil_s)) )))
+         (set e (fragment::set( e 'expression_s (SAtom '\[{}\]_s) )))
+      ))
+      ( ASTEOF () )
+      ( (Var( id _ )) (
+         # TODO, this is being called instead of function
+         (set e (fragment-context::lookup( ctx id (typeof term) term )))
+         (set e (fragment::set-context( e ctx )))
+         (set e (fragment::set-offset( e stack-offset )))
+      ))
+      ( (Lit( val _ )) (
+         (let ltype (typeof term))
+         (if (is-string ltype) (
+            (set e (compile-declare-cstring( val )))
+         ) (
+            (let isa-fragment False_u8)
+            (if (is-reg8 ltype) (set isa-fragment True_u8) ())
+            (if (is-reg16 ltype) (set isa-fragment True_u8) ())
+            (if (is-reg32 ltype) (set isa-fragment True_u8) ())
+            (if (is-reg64 ltype) (set isa-fragment True_u8) ())
+            (if (==( isa-fragment True_u8 )) (
+               (set e (fragment::expression val))
+            ) (
+               (if (non-zero(class-of-tag val)) (
+                  (let tag-index (index-of-tag val))
+                  (if (is( config-assemble-mode AssembleC )) (
+                     (set e (fragment::set( e 'expression_s (
+                        (+(
+                           (+(
+                              (SAtom '\[{_s)
+                              (mangle-c-type ltype)
+                           ))
+                           (+(
+                              (SAtom '\srvalue={_s)
+                              (+(
+                                 (SAtom(to-string tag-index))
+                                 (SAtom '}\:rvalue\:}\]_s)
+                              ))
+                           ))
+                        ))
+                     ))))
+                  ) (
+                     (set e (fragment::expression(to-string tag-index)))
+                     (set e (fragment::set( e 'program_s (SCons( (close SNil) (close SNil) )) )))
+                  ))
+               ) (
+                  (match val (
+                     ()
+                     ( 'True_s (set e (fragment::expression '1_s)) )
+                     ( 'False_s (set e (fragment::expression '0_s)) )
+                     ( '\\t_s (set e (fragment::expression '9_s)) )
+                     ( '\\n_s (set e (fragment::expression '10_s)) )
+                     ( '\\s_s (set e (fragment::expression '32_s)) )
+                     ( '\\o_s (set e (fragment::expression '35_s)) )
+                     ( '\\`_s (set e (fragment::expression '39_s)) )
+                     ( '\\[_s (set e (fragment::expression '40_s)) )
+                     ( '\\]_s (set e (fragment::expression '41_s)) )
+                     ( '\\:_s (set e (fragment::expression '59_s)) )
+                     ( _ (set e (fragment::expression val)) )
+                  ))
+                  (if (is( config-assemble-mode AssembleC )) (
+                     (match val (
+                        ()
+                        ( 'True_s (set e (fragment::expression '\[1\]_s)) )
+                        ( 'False_s (set e (fragment::expression '\[0\]_s)) )
+                        ( '\\t_s (set e (fragment::expression '\[9\]_s)) )
+                        ( '\\n_s (set e (fragment::expression '\[10\]_s)) )
+                        ( '\\s_s (set e (fragment::expression '\[32\]_s)) )
+                        ( '\\o_s (set e (fragment::expression '\[35\]_s)) )
+                        ( '\\`_s (set e (fragment::expression '\[39\]_s)) )
+                        ( '\\[_s (set e (fragment::expression '\[40\]_s)) )
+                        ( '\\]_s (set e (fragment::expression '\[41\]_s)) )
+                        ( '\\:_s (set e (fragment::expression '\[59\]_s)) )
+                        ( _ (
+                           (set e (fragment::set( e 'expression_s (
+                              (+( (+( (SAtom '\[_s) (SAtom val) )) (SAtom '\]_s) ))
+                           ))))
+                        ))
+                     ))
+                  ) ())
+               ))
+            ))
+         ))
+         (set e (fragment::set-context( e ctx )))
+         (set e (fragment::set-type( e (denormalize ltype) )))
+      ))
+      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
+         (set e (compile-expr( ctx t stack-offset used )))
+      ))
+      ( (App( (Var( 'gensym-label_s _ )) (Var( id _ )) )) (
+         (set ctx (fragment-context::bind(
+            ctx id (t1 'Label_s) (fragment::label( (uuid()) ))
+         )))
+         (set e (fragment::set-context( e ctx )))
+         (set e (fragment::set-type( e (denormalize(t1 'Nil_s)) )))
+      ))
+      ( (App( (Var( 'label_s _ )) (Var( id _ )) )) (
+         (let l (fragment-context::lookup( ctx id (t1 'Label_s) term )))
+         (let prog (SCons(
+            (close(fragment::get( l 'expression_s )))
+            (close(SAtom ':\n_s))
+         )))
+         (set e (fragment::set( e 'program_s prog )))
+         (set e (fragment::set-type( e (denormalize(t1 'Nil_s)) )))
+      ))
+      ( (App( (Var( 'scope_s _ )) t )) (
+         (set e (compile-expr( ctx t stack-offset Tail )))
+         (set e (fragment::set-context( e ctx )))
+      ))
+      ( (App( (Var( 'open_s _ )) t )) (
+         (let tt (typeof t))
+         (if (is( config-assemble-mode AssembleC )) (
+            (if (is-array tt) (
+               (match (slot( tt 'Array_s )) (
+                  ()
+                  ( (TGround( 'Array_s (LCons( _ (LCons( TAny LEOF )) )) )) (
+                     (set e (compile-expr( ctx t stack-offset Used )))
+                  ) )
+                  ( (TGround( 'Array_s (LCons( TAny (LCons( inner-tt LEOF )) )) )) (
+                     (set e (compile-stack-calls( ctx 'open_s TAny (t1 'Nil_s) t stack-offset Used )))
+                  ))
+               ))
+            ) (
+               (set e (compile-stack-calls( ctx 'open_s TAny (t1 'Nil_s) t stack-offset Used )))
+            ))
+         ) (
+            (if (is-array tt) (
+               (match (slot( tt 'Array_s )) (
+                  ()
+                  ( (TGround( 'Array_s (LCons( _ (LCons( TAny LEOF )) )) )) (
+                     (set e (compile-expr( ctx t stack-offset Used )))
+                  ) )
+                  ( (TGround( 'Array_s (LCons( TAny (LCons( inner-tt LEOF )) )) )) (
+                     (set e (compile-stack-calls( ctx 'push-deref_s TAny (t1 'Nil_s) t stack-offset Used )))
+                     (set e (fragment::set-type( e (and( (denormalize inner-tt) (t1 'StackVariable_s) )) )))
+                     (let new-offset (-( stack-offset (as (sizeof-aligned inner-tt) I64) )))
+                     (set e (fragment::set-offset( e new-offset )))
+                  ))
+               ))
+            ) (
+               (set e (compile-expr( ctx t stack-offset Used )))
+            ))
+         ))
+      ))
+      ( (App( (Var( 'sizeof_s _ )) (AType tt) )) (
+         (let sz (sizeof-type( tt )))
+         (if (is( config-assemble-mode AssembleC )) (
+            (set e (fragment::expression(
+               (+( (SAtom '\[sizeof\[_s)
+                   (+( (mangle-c-type tt) (SAtom '\]\]_s) ))
+               ))
+            )))
+         ) (
+            (set e (fragment::expression(to-string sz)))
+         ))
+         (let et (TAnd( 
+            (close(t1 'Literal_s))
+            (close(TAnd(
+               (close(t1 'Constant_s))
+               (close(TAnd(
+                  (close(t1 'U64_s))
+                  (close(t2( 'Sized_s (t1 '8_s) )))
+               )))
+            )))
+         )))
+         (set e (fragment::set-type( e et )))
+         (set e (fragment::set-context( e ctx )))
+         (set e (fragment::set-offset( e stack-offset )))
+      ))
+      ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
+         (set e (compile-expr( ctx t stack-offset used )))
+         (set e (fragment::set-type( e (typeof term) )))
+         (if (is( config-assemble-mode AssembleC )) (
+            (set e (fragment::set( e 'expression_s (
+               (+(
+                  (+(
+                     (SAtom '\[\[_s)
+                     (mangle-c-type (typeof term))
+                  ))
+                  (+(
+                     (SAtom '\]\[_s)
+                     (+(
+                        (fragment::get( e 'expression_s ))
+                        (SAtom '\]\]_s)
+                     ))
+                  ))
+               ))
+            ))))
+         ) ())
+      ))
+      ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (
+         (let rsp-offset (+( stack-offset -8_i64 )))
+         (let ec (cc-blob( ctx 'into-branch-conditional_s cond rsp-offset )))
+         (let et (compile-expr( (open(.context ec)) t (.offset ec) Tail )))
+         (let end-offset (.offset et))
+         (if (is( config-assemble-mode AssembleC )) () (
+            (set et (compile-maybe-push-stack( (open(.context et)) (.offset et) et (typeof term) term )))
+         ))
+         (set et (fragment::set-type( et (typeof t) )))
+         (let ef (compile-expr( (open(.context ec)) f (.offset ec) Tail )))
+         (if (is( config-assemble-mode AssembleC )) () (
+            (set ef (compile-maybe-push-stack( (open(.context ef)) (.offset ef) ef (typeof term) term )))
+         ))
+         (set ef (fragment::set-type( ef (typeof f) )))
+         (if (is-never(typeof f)) (
+            (set ef (never-as-expr-type( ef (typeof t) )))
+         ) ())
+
+         (let ictx (fragment::new()))
+         (set ictx (fragment::set( ictx 'rsp-offset_s (SAtom(to-string rsp-offset)) ))) 
+         (set ictx (fragment::set( ictx 'end-offset_s (SAtom(to-string end-offset)) ))) 
+         (set ictx (fragment::set( ictx 'return-size_s (SAtom(to-string(sizeof-type(typeof term)))) ))) 
+         (set ictx (fragment::set-type( ictx (t1( 'ImplicitContext_s )) )))
+         
+         (set ctx (fragment-context::bind( ctx 'ictx_s (t1 'ImplicitContext_s) ictx )))
+         (set ctx (fragment-context::bind( ctx 'c_s (t1 'BranchConditional_s) ec )))
+         (set ctx (fragment-context::bind( ctx 't_s (typeof t) et )))
+         (set ctx (fragment-context::bind( ctx 'f_s (typeof f) ef )))
+         (let a-tt (t3( 'Cons_s 
+            (t3( 'Cons_s 
+               (t3( 'Cons_s (t1 'ImplicitContext_s) (typeof f) ))
+               (typeof t)
+            ))
+            (t1 'BranchConditional_s)
+         )))
+
+         (set e (cc-blob( ctx 'primitive::if_s a-tt stack-offset term )))
+
+         (set e (fragment::set-context( e (open(.context et)) )))
+         (set e (fragment::set-offset( e end-offset )))
+         (if (>( (sizeof-type(typeof term)) 8_u64 )) (
+            (set e (fragment::set-type( e (and( (typeof term) (t1 'StackVariable_s) )) )))
+         ) (
+            (set e (fragment::set-type( e (typeof term) )))
+         ))
+      ))
+      ( (App( (Abs( (@( lhs-t (Var( lhs _ )) )) ASTNil tlt )) rhs )) (
+         (let rtype (typeof lhs-t))
+         (let size (sizeof-aligned rtype))
+         (let bind-offset (-( stack-offset (as size I64) )))
+         (let fr (fragment::local-variable( bind-offset rtype )))
+         (set ctx (fragment-context::bind( ctx lhs rtype fr )))
+         (if (is( config-assemble-mode AssembleC )) (
+            (set e (compile-expr( ctx rhs stack-offset Used )))
+            (set e (fragment::set( e 'frame_s (
+               (+(
+                  (fragment::get( e 'frame_s ))
+                  (+(
+                     (+(
+                        (mangle-c-type rtype)
+                        (SAtom '\s_s)
+                     ))
+                     (+(
+                        (fragment::get( fr 'expression_s ))
+                        (SAtom '\:\n_s)
+                     ))
+                  ))
+               ))
+            ))))
+            (set e (fragment::set( e 'expression_s (
+               (+(
+                  (+(
+                     (SAtom '\[{_s)
+                     (fragment::get( fr 'expression_s ))
+                  ))
+                  (+(
+                     (SAtom '=_s)
+                     (+(
+                        (fragment::get( e 'expression_s ))
+                        (SAtom '\:\[{}\]\:}\]\n_s)
+                     ))
+                  ))
+               ))
+            ))))
+         ) (
+            (set e (compile-push-rvalue( ctx rhs stack-offset )))
+            (let unframe-del SNil)
+            (match term (
+               ()
+               ( (App( (Abs( lhs-var _ _ )) _ )) (
+                  (let tc (fragment-context::lookup-soft( ctx 'del_s (typeof lhs-var) term )))
+                  (let t (.type tc))
+                  (if (non-zero t) (
+                     (let del-call (compile-stack-calls( ctx 'del_s TAny rtype lhs-var stack-offset used )))
+                     (set unframe-del (fragment::get( del-call 'program_s )))
+                  ) ())
+               ))
+            ))
+            (set e (fragment::set( e 'del_s unframe-del )))
+            (set e (fragment::set( e 'unframe_s
+               (SCons(
+                  (close(fragment::get( e 'unframe_s )))
+                  (close(SCons(
+                     (close(SAtom '\tadd\s$_s))
+                     (close(SCons(
+                        (close(SAtom(to-string size)))
+                        (close(SAtom ',\s%rsp\n_s))
+                     )))
+                  )))
+               ))
+            )))
+         ))
+         (set e (fragment::set-context( e ctx )))
+         (set e (fragment::set-offset( e bind-offset )))
+         (set e (fragment::set-type( e (typeof term) )))
+      ))
+      ( (App( f a )) (
+         (if (is-arrow(typeof f)) (
+            (match f (
+               ()
+               ( (Var( fname _ )) (
+                  (set e (compile-stack-calls( ctx fname (typeof f) (typeof term) a stack-offset used )))
+               ))
+               ( (App( (Lit( ':_s _ )) (App( (Var( fname _ )) (AType ft) )) )) (
+                  (set e (compile-stack-calls( ctx fname (typeof f) (typeof term) a stack-offset used )))
+               ))
+               ( (Lit( fname _ )) (
+                  (set e (compile-constructor( ctx fname (typeof term) (typeof a) a stack-offset )))
+               ))
+               ( (App( (Lit( ':_s _ )) (App( (Lit( fname _ )) (AType ft) )) )) (
+                  (set e (compile-constructor( ctx fname (typeof term) (typeof a) a stack-offset )))
+               ))
+            ))
+         ) (
+            (if (is( used Unused )) (scope(
+               (let e1 (compile-expr( ctx f stack-offset Unused )))
+               (let e2 (compile-expr( (open(.context e1)) a (.offset e1) Unused )))
+               (set e (fragment::chain( e1 e2 )))
+               (set e (fragment::set-type( e (typeof term) )))
+            )) (scope(
+               (let e1 (compile-expr( ctx f stack-offset Unused )))
+               (let e2 (compile-expr( (open(.context e1)) a (.offset e1) Used )))
+               (set e (fragment::chain( e1 e2 )))
+               (set e (fragment::set-type( e (typeof term) )))
+            )))
+         ))
+      ))
+   ))
+   e
+) Fragment);
+

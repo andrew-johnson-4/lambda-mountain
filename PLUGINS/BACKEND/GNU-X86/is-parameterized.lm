@@ -1,0 +1,14 @@
+
+is-parameterized := λ(: tt Type). (: (
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( (TGround( _ (LCons( _ _ )) )) (set r 1_u64) )
+      ( (TAnd( lt rt )) (
+         (if (is-parameterized lt) (set r 1_u64) ())
+         (if (is-parameterized rt) (set r 1_u64) ())
+      ))
+      ( _ () )
+   ))
+   r
+) U64);

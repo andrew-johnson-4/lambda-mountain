@@ -1,0 +1,11 @@
+
+is-special-index := (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<Tuple<String,Type>,U64>[]) )) HashtableEq<Tuple<String,Type>,U64>);
+
+mark-as-special := λ(: name String)(: tt Type). (: (
+   (set is-special-index (.bind( is-special-index (Tuple( name tt )) 1_u64 )))
+) Nil);
+
+is-special := λ(: name String)(: tt Type). (: (
+   (let r (.lookup( is-special-index (Tuple( name tt )) 0_u64 )))
+   r
+) U64);

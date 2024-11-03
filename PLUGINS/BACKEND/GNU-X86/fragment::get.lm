@@ -1,0 +1,19 @@
+
+fragment::get := λ(: e Fragment)(: k String). (: (
+   (let r SNil)
+   (match e (
+      ()
+      ( (Fragment( e-t kvs offset ft ctx vs )) (
+         (while (non-zero kvs) (match kvs (
+            ()
+            ( (FKVSeq( rst kvs-k kvs-v )) (
+               (if (==( k kvs-k )) (
+                  (set r kvs-v)
+                  (set kvs FKVEOF)
+               ) (set kvs rst))
+            ))
+         )))
+      ))
+   ))
+   r
+) S);

@@ -1,0 +1,4 @@
+
+fragment-context::lookup-soft := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST). (: (
+   (fragment-context::lookup( ctx k kt sloc False_u8 ))
+) Fragment);

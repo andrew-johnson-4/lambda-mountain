@@ -1,0 +1,49 @@
+
+# TODO: this stinks
+union := λ(: lctx TContext)(: rctx TContext). (: (
+   (match rctx (
+      ()
+      ( TCtxNil (set rctx TCtxEOF) )
+      ( TCtxEOF () )
+      ( (TCtxBind( rst k v t )) (
+         (set lctx (union( lctx rst )))
+         (set lctx (TCtxBind( (close lctx) k v t )))
+      ))
+   ))
+   lctx
+) TContext);
+
+
+union := λ(: l Context)(: r Context). (: (
+   (let return l)
+   (if (not(non-zero r)) (set return CtxEOF) ())
+   (if (non-zero return) (
+      (match r (
+         ()
+         ( (CtxBind( rst k v )) (
+            (set return (CtxBind(
+               (close(union( l rst ))) k v
+            )))
+         ))
+         ( _ (set r CtxEOF) )
+      ))
+   ) ())
+   return
+) Context);
+
+union := λ(: ctx FContext)(: tctx TContext). (: (
+   (let r ctx)
+   (while (non-zero tctx) (match tctx (
+      ()
+      ( TCtxNil (set tctx TCtxEOF) )
+      ( (TCtxBind( rst k vt _ )) (
+         (let fragment (fragment::expression(to-string vt)))
+         (set fragment (fragment::set( fragment 'program_s (SAtom(to-string vt)) )))
+         (set r (FCtxBind(
+            (close r) k TAny fragment
+         )))
+         (set tctx rst)
+      ))
+   )))
+   r
+) FContext);

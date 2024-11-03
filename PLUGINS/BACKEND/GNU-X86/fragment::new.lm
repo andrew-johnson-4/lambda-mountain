@@ -1,0 +1,12 @@
+
+fragment::new := λ . (: (
+   (let r (Fragment(
+      ASTEOF
+      (close FKVEOF)
+      0_i64
+      TAny
+      (close(fragment-context::new()))
+      (: LEOF List<Fragment[]>)
+   )))
+   r
+) Fragment);
