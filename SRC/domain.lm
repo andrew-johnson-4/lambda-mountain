@@ -1,2 +1,15 @@
 
-domain := λ(: tt Type). (: (p2(slot( tt 'Arrow_s ))) Type);
+domain := λ(: tt Type). (: (
+   (let r TAny)
+   (match tt (
+      ()
+      ( (TAnd( t1 t2 )) (
+         (set r (domain t1))
+         (if (non-zero r) () (set r (domain t2)))
+      ))
+      ( (TGround( 'Arrow_s (LCons( ranget (LCons( domaint _ )) )) )) (set r domaint) )
+      ( (TGround( 'Array_s (LCons( _ (LCons( array-base _ )) )) )) (set r (domain array-base)) )
+      ( _ () )
+   ))
+   r
+) Type);
