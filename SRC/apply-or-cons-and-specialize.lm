@@ -6,10 +6,21 @@ apply-or-cons-and-specialize := λ(: function-name String)(: ft Type)(: pt Type)
    ) (
       (if (&&( (non-zero ft) (non-zero pt) )) (
          (set r (Tuple(
-             ft
-             (t3( 'Cons_s ft pt ))
+            ft
+            (t3( 'Cons_s ft pt ))
          )))
       ) ())
    ))
+   r
+) Tuple<Type,Type>);
+
+apply-cons :=  λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (
+   (let r (Tuple( TAny TAny )))
+   (if (&&( (non-zero ft) (non-zero pt) )) (
+      (set r (Tuple(
+         ft
+         (t3( 'Cons_s ft pt ))
+      )))
+   ) ())
    r
 ) Tuple<Type,Type>);

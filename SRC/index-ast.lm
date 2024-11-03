@@ -12,6 +12,7 @@ import SRC/is-stack-variable.lm;
 import SRC/is-cons.lm;
 import SRC/is-impure-ctx.lm;
 import SRC/is-string.lm;
+import SRC/is-global-variable.lm;
 import SRC/is-rc.lm;
 import SRC/is-onto-stack.lm;
 import SRC/is-impure-offset.lm;

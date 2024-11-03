@@ -1,15 +1,9 @@
 
 dev: install-production
-	lm --c tests/regress/clone-rope.lm
+	lm --c tests/regress/function-pointers.lm
 	cc tmp.c
 	./a.out
 	echo $?
-
-profile: install-production
-	lm --profile-invocations SRC/index-index.lm -o profile.s
-	as profile.s -o profile.o
-	ld profile.o -o profile
-	./profile SRC/index-index.lm --typecheck | sort -n
 
 build-docs:
 	lm --blob -o docs/index.html docs/index.html.lm
@@ -19,11 +13,6 @@ build-docs:
 	#lm --blob -o docs/default.html.html docs/default.html.html.lm
 	#lm --blob -o docs/default.lm.html docs/default.lm.html.lm
 	#lm --blob -o docs/lm.lm.html docs/lm.lm.html.lm
-
-develop:
-	lmv tests/regress/hello_world.s.v
-	coqc tmp.v
-	coqchk tmp.vo
 
 build: compile-production
 	time ./production --c -o deploy.c SRC/index-index.lm
@@ -35,6 +24,10 @@ build: compile-production
 	cargo test regression_tests
 
 deploy: build build-docs
+
+compile-bootstrap:
+	rm -f bootstrap
+	cc -o bootstrap BOOTSTRAP/cli.c
 
 compile-production: compile-bootstrap
 	rm -f production
@@ -49,10 +42,6 @@ install-production: compile-production
 install-bootstrap: compile-bootstrap
 	mv bootstrap $${HOME}/bin/lm
 
-compile-bootstrap:
-	rm -f bootstrap
-	cc -o bootstrap BOOTSTRAP/cli.c
-
 install:
 	cc -o lm BOOTSTRAP/cli.c
 	mv lm $${HOME}/bin/lm
@@ -66,10 +55,3 @@ install:
 	#ld -o doby   doby.o
 	#mv doby /usr/local/bin
 	#rm doby.s doby.o
-
-validate:
-	coqc LIB/default_validator.v
-	coqchk LIB/default_validator.vo
-
-disassemble:
-	objdump -S hello_world

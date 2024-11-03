@@ -145,7 +145,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
       ( (App( (Abs( (Var( lname _ )) ASTNil tlt )) rhs )) (
          (let prev-tt (typeof-var-raw( term tctx lname )))
          (if (non-zero prev-tt) (
-            (if (not(is-arrow prev-tt)) (
+            (if (&&( (not(is-arrow prev-tt)) (not(is-global-variable prev-tt)) )) (
                (exit-error( 'Variable\sName\sIs\sAlready\sBound\sIn\sOuter\sScope_s term ))
             ) ())
          ) ())
@@ -196,12 +196,20 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
                (set tctx (infer-expr( tctx l Unscoped TAny l-used )))
                (if (is-arrow(typeof l)) (set r-used Call) ())
                (set tctx (infer-expr( tctx r Unscoped TAny r-used )))
-               (let ftrt (apply-or-cons-and-specialize(
+               (let ftrt (apply-cons(
                   (var-name-if-var l)
                   (typeof l)
                   (typeof r)
                   term
                )))
+               (if (head-string(var-name-if-var l)) (
+                  (set ftrt (apply-or-cons-and-specialize(
+                     (var-name-if-var l)
+                     (typeof l)
+                     (typeof r)
+                     term
+                  )))
+               ) ())
                (set rt (.1 ftrt))
             ))
          ))
