@@ -1,5 +1,5 @@
 
-compile-c := λ . (: (
+plugins-backend-c-compile := λ . (: (
    (let preview-program ast-parsed-program)
    (let typedefs ASTEOF)
    (while (non-zero preview-program) (match preview-program (
