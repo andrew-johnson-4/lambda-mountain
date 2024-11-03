@@ -1,0 +1,11 @@
+
+is-global-variable := λ(: tt Type). (: (
+   (let r 0_u64)
+   (match tt (
+      ()
+      ( (TAnd( t1 t2 )) (set r (||( (is-global-variable t1) (is-global-variable t2) ))) )
+      ( (TGround( 'GlobalVariable_s _ )) (set r 1_u64) )
+      ( _ () )
+   ))
+   r
+) U64);
