@@ -8,11 +8,12 @@ fragment-context::lookup := λ(: ctx FContext)(: k String)(: kt Type)(: sloc AST
    (set k (find-alias( k kt )))
    (let r (fragment::new()))
    (let found TAny)
+   (if (is-arrow kt) (set kt (normalize kt)) ())
    (while (non-zero ctx) (match ctx (
       ()
       ( (FCtxBind( rst rk rt rf )) (
          (if (==( k rk )) (
-            (if (||( (==( rt kt )) (can-unify( rt kt )) )) (
+            (if (||( (==( rt kt )) (can-unify( kt rt )) )) (
                (set r rf)
                (set found (t1 'GlobalVariable_s))
                (set ctx FCtxEOF)
