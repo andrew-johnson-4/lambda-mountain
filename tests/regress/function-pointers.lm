@@ -9,5 +9,5 @@ f := (: (& fa) Arrow<Nil,Nil>[]);
 main := λ. (: (
    (f())
    (set f (& fb))
-#   (f())
+   (f())
 ) Nil);
