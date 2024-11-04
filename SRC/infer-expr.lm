@@ -92,16 +92,6 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (add-concrete-type-instance tt)
          (set tctx (infer-expr( tctx t Unscoped TAny used )))
          (let inner-tt (typeof t))
-         (match t (
-            ()
-            ( (Lit( l _ )) (
-               (if (is-reg8 l) (set inner-tt (t1 'Reg8_s)) ())
-               (if (is-reg16 l) (set inner-tt (t1 'Reg16_s)) ())
-               (if (is-reg32 l) (set inner-tt (t1 'Reg32_s)) ())
-               (if (is-reg64 l) (set inner-tt (t1 'Reg64_s)) ())
-            ))
-            ( _ () )
-         ))
          (if (non-zero inner-tt) (
             (let inner-repr (with-only-representation inner-tt))
             (if (non-zero inner-repr) (

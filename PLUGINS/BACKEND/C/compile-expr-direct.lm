@@ -20,10 +20,6 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             (set e (compile-declare-cstring( val )))
          ) (
             (let isa-fragment False_u8)
-            (if (is-reg8 ltype) (set isa-fragment True_u8) ())
-            (if (is-reg16 ltype) (set isa-fragment True_u8) ())
-            (if (is-reg32 ltype) (set isa-fragment True_u8) ())
-            (if (is-reg64 ltype) (set isa-fragment True_u8) ())
             (if (==( isa-fragment True_u8 )) (
                (set e (fragment::expression val))
             ) (

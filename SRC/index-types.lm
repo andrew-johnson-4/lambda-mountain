@@ -53,10 +53,6 @@ import SRC/sizeof-type.lm;
 import SRC/sizeof-aligned.lm;
 import SRC/has-infinite.lm;
 import SRC/has-forward.lm;
-import SRC/is-reg8.lm;
-import SRC/is-reg16.lm;
-import SRC/is-reg32.lm;
-import SRC/is-reg64.lm;
 
 import SRC/with-tag.lm;
 import SRC/with-size.lm;
