@@ -31,3 +31,4 @@ import PLUGINS/BACKEND/C/blob-render.lm;
 import PLUGINS/BACKEND/C/mangle-c-type.lm;
 import PLUGINS/BACKEND/C/mangle-identifier.lm;
 import PLUGINS/BACKEND/C/escape-string.lm;
+import PLUGINS/BACKEND/C/fragment::chain.lm;

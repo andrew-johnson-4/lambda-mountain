@@ -6,7 +6,7 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
 
    (if (is-blob function-type) (
       (set r (cc-blob( ctx function-name args offset )))
-      (set r (fragment::set-context( r ctx )))
+      (set.context( r (close ctx) ))
    ) (
       (if (is( used Tail )) (set used Used) ())
       (if (is( used Call )) (set used Used) ())
@@ -36,7 +36,7 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
 
       (set r (cc-blob( ctx 'primitive::call_s (t3( 'Cons_s (t1 'ImplicitContext_s) args-tt )) offset args )))
 
-      (set r (fragment::set-context( r original-ctx )))
+      (set.context( r (close original-ctx) ))
       (set.type( r (denormalize return-type) ))
    ))
    r

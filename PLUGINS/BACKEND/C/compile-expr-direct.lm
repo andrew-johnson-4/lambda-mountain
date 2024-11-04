@@ -1,7 +1,7 @@
 
 compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used IsUsed). (: (
    (let e (fragment::new()))
-   (set e (fragment::set-context( e ctx )))
+   (set.context( e (close ctx) ))
    (match term (
       ()
       ( ASTNil (
@@ -12,7 +12,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ( (Var( id _ )) (
          # TODO, this is being called instead of function
          (set e (fragment-context::lookup( ctx id (typeof term) term )))
-         (set e (fragment::set-context( e ctx )))
+         (set.context( e (close ctx) ))
       ))
       ( (Lit( val _ )) (
          (let ltype (typeof term))
@@ -87,7 +87,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                ))
             ))
          ))
-         (set e (fragment::set-context( e ctx )))
+         (set.context( e (close ctx) ))
          (set.type( e (denormalize ltype) ))
       ))
       ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
@@ -97,7 +97,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set ctx (fragment-context::bind(
             ctx id (t1 'Label_s) (fragment::label( (uuid()) ))
          )))
-         (set e (fragment::set-context( e ctx )))
+         (set.context( e (close ctx) ))
          (set.type( e (denormalize(t1 'Nil_s)) ))
       ))
       ( (App( (Var( 'label_s _ )) (Var( id _ )) )) (
@@ -111,7 +111,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ))
       ( (App( (Var( 'scope_s _ )) t )) (
          (set e (compile-expr( ctx t stack-offset Tail )))
-         (set e (fragment::set-context( e ctx )))
+         (set.context( e (close ctx) ))
       ))
       ( (App( (Var( 'open_s _ )) t )) (
          (let tt (typeof t))
@@ -169,7 +169,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             )))
          )))
          (set.type( e et ))
-         (set e (fragment::set-context( e ctx )))
+         (set.context( e (close ctx) ))
       ))
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
          (set e (compile-expr( ctx t stack-offset used )))
@@ -230,7 +230,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
 
          (set e (cc-blob( ctx 'primitive::if_s a-tt stack-offset term )))
 
-         (set e (fragment::set-context( e (open(.context et)) )))
+         (set.context( e (.context et) ))
          (if (>( (sizeof-type(typeof term)) 8_u64 )) (
             (set.type( e (and( (typeof term) (t1 'StackVariable_s) )) ))
          ) (
@@ -303,7 +303,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                ))
             )))
          ))
-         (set e (fragment::set-context( e ctx )))
+         (set.context( e (close ctx) ))
          (set.type( e (typeof term) ))
       ))
       ( (App( f a )) (

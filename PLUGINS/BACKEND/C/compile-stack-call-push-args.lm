@@ -5,7 +5,7 @@ compile-stack-call-push-args := λ(: ctx FContext)(: args AST)(: stack-offset I6
       ()
       ( ASTNil (
          (set.type( r (t1 'Nil_s) ))
-         (set r (fragment::set-context( r ctx )))
+         (set.context( r (close ctx) ))
       ))
       ( _ (set r (compile-push-rvalue( ctx args stack-offset ))) )
    ))

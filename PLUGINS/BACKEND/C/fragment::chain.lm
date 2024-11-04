@@ -1,6 +1,6 @@
 
 fragment::chain-gnu := λ(: l Fragment)(: r Fragment). (: (
-   (set l (fragment::set-context( l (open(.context r)) )))
+   (set.context( l (.context r) ))
    (set.offset( l (.offset r) ))
    (set.type( l (.type r) ))
    (set l (fragment::set( l 'expression_s (fragment::get( r 'expression_s )) )))
@@ -24,7 +24,7 @@ fragment::chain-gnu := λ(: l Fragment)(: r Fragment). (: (
 ) Fragment);
 
 fragment::chain-blob := λ(: l Fragment)(: r Fragment). (: (
-   (set l (fragment::set-context( l (open(.context r)) )))
+   (set.context( l (.context r) ))
    (set.offset( l (.offset r) ))
    (set.type( l (.type r) ))
    (set l (fragment::set( l 'expression_s (fragment::get( r 'expression_s )) )))
@@ -48,7 +48,7 @@ fragment::chain-blob := λ(: l Fragment)(: r Fragment). (: (
 ) Fragment);
 
 fragment::chain-c := λ(: l Fragment)(: r Fragment). (: (
-   (set l (fragment::set-context( l (open(.context r)) )))
+   (set.context( l (.context r) ))
    (set.type( l (.type r) ))
    (set l (fragment::set( l 'expression_s (+(
       (+(
