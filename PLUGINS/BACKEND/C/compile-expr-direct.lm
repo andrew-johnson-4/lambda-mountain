@@ -116,7 +116,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ( (App( (Var( 'open_s _ )) t )) (
          (let tt (typeof t))
          (if (is( config-assemble-mode AssembleC )) (
-            (if (is-array tt) (
+            (if (is-t( tt 'Array_s )) (
                (match (slot( tt 'Array_s )) (
                   ()
                   ( (TGround( 'Array_s (LCons( _ (LCons( TAny LEOF )) )) )) (
@@ -130,7 +130,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                (set e (compile-stack-calls( ctx 'open_s TAny (t1 'Nil_s) t stack-offset Used )))
             ))
          ) (
-            (if (is-array tt) (
+            (if (is-t( tt 'Array_s )) (
                (match (slot( tt 'Array_s )) (
                   ()
                   ( (TGround( 'Array_s (LCons( _ (LCons( TAny LEOF )) )) )) (
