@@ -1,28 +1,4 @@
 
-fragment::chain-gnu := λ(: l Fragment)(: r Fragment). (: (
-   (set.context( l (.context r) ))
-   (set.offset( l (.offset r) ))
-   (set.type( l (.type r) ))
-   (set l (fragment::set( l 'expression_s (fragment::get( r 'expression_s )) )))
-   (set l (fragment::set( l 'frame_s (SCons(
-      (close(fragment::get( l 'frame_s )))
-      (close(fragment::get( r 'frame_s )))
-   )) )))
-   (set l (fragment::set( l 'del_s (SCons(
-      (close(fragment::get( l 'del_s )))
-      (close(fragment::get( r 'del_s )))
-   )) )))
-   (set l (fragment::set( l 'unframe_s (SCons(
-      (close(fragment::get( l 'unframe_s )))
-      (close(fragment::get( r 'unframe_s )))
-   )) )))
-   (set l (fragment::set( l 'program_s (SCons(
-      (close(fragment::get( l 'program_s )))
-      (close(fragment::get( r 'program_s )))
-   )) )))
-   l
-) Fragment);
-
 fragment::chain-blob := λ(: l Fragment)(: r Fragment). (: (
    (set.context( l (.context r) ))
    (set.offset( l (.offset r) ))
@@ -86,7 +62,6 @@ fragment::chain := λ(: l Fragment)(: r Fragment). (: (
       ()
       ( AssembleC (set l (fragment::chain-c( l r ))))
       ( AssembleBlob (set l (fragment::chain-blob( l r ))))
-      ( AssembleGNU (set l (fragment::chain-gnu( l r ))))
    ))
    l
 ) Fragment);
