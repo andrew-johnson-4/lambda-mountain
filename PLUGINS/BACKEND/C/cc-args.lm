@@ -9,7 +9,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
             (match rhs (
                ()
                ( (App( le re )) (
-                  (if (is-vararg kt) (
+                  (if (is-t( kt '..._s )) (
                      (set kt (get-vararg-inner kt))
                      (if (can-unify( kt (typeof re) )) (scope(
                         (if (is-open kt) (
@@ -40,7 +40,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                ))
             ))
          )) (
-            (if (is-vararg kt) (
+            (if (is-t( kt '..._s )) (
                (set kt (get-vararg-inner kt))
                (if (can-unify( kt (typeof rhs) )) (scope(
                   (if (is-open kt) (
@@ -69,7 +69,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
             (match rhs (
                ()
                ( (App( le re )) (
-                  (if (is-vararg kt) (scope(
+                  (if (is-t( kt '..._s )) (scope(
                      (set kt (get-vararg-inner kt))
                      (if (is-open kt) (
                         (set callee-ctx (union( callee-ctx (unify( kt (typeof re) )) )))
@@ -87,7 +87,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                ))
             ))
          ) (
-            (if (is-vararg kt) (scope(
+            (if (is-t( kt '..._s )) (scope(
                (set kt (get-vararg-inner kt))
                (if (is-open kt) (
                   (set callee-ctx (union( callee-ctx (unify( kt (typeof rhs) )) )))

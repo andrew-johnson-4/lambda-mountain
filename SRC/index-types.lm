@@ -26,7 +26,6 @@ import SRC/maybe-local-variable.lm;
 
 import SRC/is-constructor.lm;
 import SRC/is-open.lm;
-import SRC/is-vararg.lm;
 import SRC/is-parameterized.lm;
 import SRC/is-sized.lm;
 import SRC/has-representation.lm;
