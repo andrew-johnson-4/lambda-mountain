@@ -19,7 +19,6 @@ config-target                := '_s;
 config-assemble-mode         := (: AssembleGNU AssembleMode);
 config-mode                  := (: ModeCompile CompileMode);
 preprocess-macros            := (: MEOF MacroList);
-ast-tokenized-program        := (: LEOF List<Token>);
 ast-parsed-program           := (: ASTEOF AST);
 global-type-context          := (: TCtxEOF TContext);
 global-ctx                   := (: FCtxEOF FContext);

@@ -1,7 +1,7 @@
 
 type AssembleMode AssembleGNU | AssembleBlob | AssembleC;
 
-type CompileMode ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
+type CompileMode ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 
 type Type TAny | (TVar String) | (TGround( String , List<Type>[] )) | (TAnd( Type[] , Type[] )); zero Type TAny;
 
