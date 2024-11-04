@@ -9,7 +9,6 @@ compile-maybe-push-stack := λ(: ctx FContext)(: offset I64)(: fragment Fragment
       (set.type( fragment (and( (t1 'StackVariable_s) ft )) ))
       (set fragment (fragment::set-context( fragment ctx )))
       (let f-sz (as (sizeof-aligned ft) I64))
-      (set fragment (fragment::set-offset( fragment (-( offset f-sz )) )))
    ))
    fragment
 ) Fragment);

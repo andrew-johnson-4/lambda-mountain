@@ -2,7 +2,6 @@
 compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used IsUsed). (: (
    (let e (fragment::new()))
    (set e (fragment::set-context( e ctx )))
-   (set e (fragment::set-offset( e stack-offset )))
    (match term (
       ()
       ( ASTNil (
@@ -14,7 +13,6 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          # TODO, this is being called instead of function
          (set e (fragment-context::lookup( ctx id (typeof term) term )))
          (set e (fragment::set-context( e ctx )))
-         (set e (fragment::set-offset( e stack-offset )))
       ))
       ( (Lit( val _ )) (
          (let ltype (typeof term))
@@ -142,7 +140,6 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                      (set e (compile-stack-calls( ctx 'push-deref_s TAny (t1 'Nil_s) t stack-offset Used )))
                      (set.type( e (and( (denormalize inner-tt) (t1 'StackVariable_s) )) ))
                      (let new-offset (-( stack-offset (as (sizeof-aligned inner-tt) I64) )))
-                     (set e (fragment::set-offset( e new-offset )))
                   ))
                ))
             ) (
@@ -173,7 +170,6 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          )))
          (set.type( e et ))
          (set e (fragment::set-context( e ctx )))
-         (set e (fragment::set-offset( e stack-offset )))
       ))
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
          (set e (compile-expr( ctx t stack-offset used )))
@@ -235,7 +231,6 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set e (cc-blob( ctx 'primitive::if_s a-tt stack-offset term )))
 
          (set e (fragment::set-context( e (open(.context et)) )))
-         (set e (fragment::set-offset( e end-offset )))
          (if (>( (sizeof-type(typeof term)) 8_u64 )) (
             (set.type( e (and( (typeof term) (t1 'StackVariable_s) )) ))
          ) (
@@ -309,7 +304,6 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             )))
          ))
          (set e (fragment::set-context( e ctx )))
-         (set e (fragment::set-offset( e bind-offset )))
          (set.type( e (typeof term) ))
       ))
       ( (App( f a )) (
