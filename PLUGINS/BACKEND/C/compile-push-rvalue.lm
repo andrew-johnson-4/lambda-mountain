@@ -27,13 +27,6 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64)(: count U64)
                )) (scope(
                   (if (!=( count 0_u64 )) (
                      (let re-tt (typeof re))
-                     (if (is-rc re-tt) (
-                        (let inc-rc (Var( 'inc_s (token::new 'inc_s) )))
-                        (set re-tt (guess-representation(without-representation re-tt)))
-                        (ascript( inc-rc (t3( 'Arrow_s (typeof re) re-tt )) ))
-                        (set re (App( (close inc-rc) (close re) )))
-                        (ascript( re re-tt ))
-                     ) ())
                   ) ())
                   (let e2 (compile-expr( ctx re (.offset e1) Used )))
                   (set e2 (compile-maybe-push-stack( ctx (.offset e2) e2 p2 rval )))
@@ -50,13 +43,6 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64)(: count U64)
             (let sz (sizeof-type(typeof rval)))
             (if (!=( count 0_u64 )) (
                (let rval-tt (typeof rval))
-               (if (is-rc rval-tt) (
-                  (let inc-rc (Var( 'inc_s (token::new 'inc_s) )))
-                  (set rval-tt (guess-representation(without-representation rval-tt)))
-                  (ascript( inc-rc (t3( 'Arrow_s (typeof rval) rval-tt )) ))
-                  (set rval (App( (close inc-rc) (close rval) )))
-                  (ascript( rval rval-tt ))
-               ) ())
             ) ())
             (set r (compile-expr( ctx rval offset Used )))
             (set r (compile-maybe-push-stack( ctx (.offset r) r (typeof rval) rval )))
