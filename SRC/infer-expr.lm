@@ -135,7 +135,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
       ( (App( (Abs( (Var( lname _ )) ASTNil tlt )) rhs )) (
          (let prev-tt (typeof-var-raw( term tctx lname )))
          (if (non-zero prev-tt) (
-            (if (&&( (not(is-arrow prev-tt)) (not(is-global-variable prev-tt)) )) (
+            (if (&&( (not(is-arrow prev-tt)) (not(is-t( prev-tt 'GlobalVariable_s ))) )) (
                (exit-error( 'Variable\sName\sIs\sAlready\sBound\sIn\sOuter\sScope_s term ))
             ) ())
          ) ())
