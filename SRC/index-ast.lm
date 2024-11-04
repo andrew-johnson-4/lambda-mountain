@@ -1,6 +1,5 @@
 
 import SRC/align.lm;
-import SRC/is-ffi.lm;
 import SRC/is-nil.lm;
 import SRC/is-never.lm;
 import SRC/is-seq.lm;
@@ -13,7 +12,6 @@ import SRC/is-global-variable.lm;
 import SRC/is-rc.lm;
 import SRC/is-onto-stack.lm;
 import SRC/is-impure-offset.lm;
-import SRC/is-branchconditional.lm;
 import SRC/is-lm-struct.lm;
 import SRC/plus.lm;
 import SRC/print.lm;

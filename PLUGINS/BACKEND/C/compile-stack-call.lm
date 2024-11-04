@@ -18,7 +18,7 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
       (let ictx (fragment::new()))
 
       (let function-id function-name)
-      (if (is-ffi function-type) () (
+      (if (is-t( function-type 'FFI_s )) () (
          (set function-id (mangle-identifier( function-name function-type )))
       ))
 
