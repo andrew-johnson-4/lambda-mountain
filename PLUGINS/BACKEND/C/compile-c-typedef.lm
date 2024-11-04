@@ -4,9 +4,7 @@ index-c-type-ordinal := (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<Type,String
 compile-c-typedef-concrete-ordinal := λ(: base-type Type). (: (
    (let base-uuid (uuid()))
    (set index-c-type-ordinal (.bind( index-c-type-ordinal base-type base-uuid )))
-   (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '//predefine\sdefine\s_s)) )))
-   (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom(to-string base-type))) )))
-   (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\ntypedef\sstruct\s_s)) )))
+   (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom 'typedef\sstruct\s_s)) )))
    (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom base-uuid)) )))
    (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\s_s)) )))
    (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom base-uuid)) )))
@@ -116,9 +114,7 @@ compile-c-typedef-concrete := λ(: tctx TContext)(: base-type Type)(: body AST).
          )))
       ) (
          (set is-cstruct-hard-compiled-index (.bind( is-cstruct-hard-compiled-index base-type 1_u64 )))
-         (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '//define\s_s)) )))
-         (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom(to-string base-type))) )))
-         (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\nstruct\s_s)) )))
+         (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom 'struct\s_s)) )))
          (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom base-uuid)) )))
          (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '{\n_s)) )))
          (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\tlong\sfield_0\:\n_s)) )))

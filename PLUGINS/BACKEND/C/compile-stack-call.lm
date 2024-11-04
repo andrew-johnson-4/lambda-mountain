@@ -24,7 +24,6 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
 
       (set ictx (fragment::set( ictx 'function-id_s (SAtom function-id) )))  
       (set ictx (fragment::set( ictx 'function-name_s (SAtom function-name) )))
-      (set ictx (fragment::set( ictx 'function-type_s (SAtom(to-string(.type f))) )))
       (set ictx (fragment::set( ictx 'return-size_s (SAtom(to-string return-size)) )))
       (set ictx (fragment::set( ictx 'args-size_s (SAtom(to-string(sizeof-type(typeof args)))) )))
       (set ictx (fragment::set( ictx 'used_s (SAtom(to-string used)) )))
