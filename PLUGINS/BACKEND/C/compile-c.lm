@@ -10,7 +10,7 @@ plugins-backend-c-compile := λ . (: (
          (let fragment (fragment::new()))
          (if (is-open kt) () (
             (if (is-t( kt 'Blob_s )) (
-               (set fragment (fragment::set-term( fragment rhs )))
+               (set.term( fragment rhs ))
                (set.type( fragment kt ))
                (set global-ctx (fragment-context::bind(
                   global-ctx k kt fragment
