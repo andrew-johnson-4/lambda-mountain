@@ -6,7 +6,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
    (match term (
       ()
       ( ASTNil (
-         (set e (fragment::set-type( e (denormalize(t1 'Nil_s)) )))
+         (set.type( e (denormalize(t1 'Nil_s)) ))
          (set e (fragment::set( e 'expression_s (SAtom '\[{}\]_s) )))
       ))
       ( ASTEOF () )
@@ -90,7 +90,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             ))
          ))
          (set e (fragment::set-context( e ctx )))
-         (set e (fragment::set-type( e (denormalize ltype) )))
+         (set.type( e (denormalize ltype) ))
       ))
       ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
          (set e (compile-expr( ctx t stack-offset used )))
@@ -100,7 +100,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             ctx id (t1 'Label_s) (fragment::label( (uuid()) ))
          )))
          (set e (fragment::set-context( e ctx )))
-         (set e (fragment::set-type( e (denormalize(t1 'Nil_s)) )))
+         (set.type( e (denormalize(t1 'Nil_s)) ))
       ))
       ( (App( (Var( 'label_s _ )) (Var( id _ )) )) (
          (let l (fragment-context::lookup( ctx id (t1 'Label_s) term )))
@@ -109,7 +109,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             (close(SAtom ':\n_s))
          )))
          (set e (fragment::set( e 'program_s prog )))
-         (set e (fragment::set-type( e (denormalize(t1 'Nil_s)) )))
+         (set.type( e (denormalize(t1 'Nil_s)) ))
       ))
       ( (App( (Var( 'scope_s _ )) t )) (
          (set e (compile-expr( ctx t stack-offset Tail )))
@@ -140,7 +140,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                   ) )
                   ( (TGround( 'Array_s (LCons( TAny (LCons( inner-tt LEOF )) )) )) (
                      (set e (compile-stack-calls( ctx 'push-deref_s TAny (t1 'Nil_s) t stack-offset Used )))
-                     (set e (fragment::set-type( e (and( (denormalize inner-tt) (t1 'StackVariable_s) )) )))
+                     (set.type( e (and( (denormalize inner-tt) (t1 'StackVariable_s) )) ))
                      (let new-offset (-( stack-offset (as (sizeof-aligned inner-tt) I64) )))
                      (set e (fragment::set-offset( e new-offset )))
                   ))
@@ -171,13 +171,13 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                )))
             )))
          )))
-         (set e (fragment::set-type( e et )))
+         (set.type( e et ))
          (set e (fragment::set-context( e ctx )))
          (set e (fragment::set-offset( e stack-offset )))
       ))
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
          (set e (compile-expr( ctx t stack-offset used )))
-         (set e (fragment::set-type( e (typeof term) )))
+         (set.type( e (typeof term) ))
          (if (is( config-assemble-mode AssembleC )) (
             (set e (fragment::set( e 'expression_s (
                (+(
@@ -204,12 +204,12 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (if (is( config-assemble-mode AssembleC )) () (
             (set et (compile-maybe-push-stack( (open(.context et)) (.offset et) et (typeof term) term )))
          ))
-         (set et (fragment::set-type( et (typeof t) )))
+         (set.type( et (typeof t) ))
          (let ef (compile-expr( (open(.context ec)) f (.offset ec) Tail )))
          (if (is( config-assemble-mode AssembleC )) () (
             (set ef (compile-maybe-push-stack( (open(.context ef)) (.offset ef) ef (typeof term) term )))
          ))
-         (set ef (fragment::set-type( ef (typeof f) )))
+         (set.type( ef (typeof f) ))
          (if (is-never(typeof f)) (
             (set ef (never-as-expr-type( ef (typeof t) )))
          ) ())
@@ -218,8 +218,8 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set ictx (fragment::set( ictx 'rsp-offset_s (SAtom(to-string rsp-offset)) ))) 
          (set ictx (fragment::set( ictx 'end-offset_s (SAtom(to-string end-offset)) ))) 
          (set ictx (fragment::set( ictx 'return-size_s (SAtom(to-string(sizeof-type(typeof term)))) ))) 
-         (set ictx (fragment::set-type( ictx (t1( 'ImplicitContext_s )) )))
-         
+         (set.type( ictx (t1( 'ImplicitContext_s )) ))
+        
          (set ctx (fragment-context::bind( ctx 'ictx_s (t1 'ImplicitContext_s) ictx )))
          (set ctx (fragment-context::bind( ctx 'c_s (t1 'BranchConditional_s) ec )))
          (set ctx (fragment-context::bind( ctx 't_s (typeof t) et )))
@@ -237,9 +237,9 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set e (fragment::set-context( e (open(.context et)) )))
          (set e (fragment::set-offset( e end-offset )))
          (if (>( (sizeof-type(typeof term)) 8_u64 )) (
-            (set e (fragment::set-type( e (and( (typeof term) (t1 'StackVariable_s) )) )))
+            (set.type( e (and( (typeof term) (t1 'StackVariable_s) )) ))
          ) (
-            (set e (fragment::set-type( e (typeof term) )))
+            (set.type( e (typeof term) ))
          ))
       ))
       ( (App( (Abs( (@( lhs-t (Var( lhs _ )) )) ASTNil tlt )) rhs )) (
@@ -310,7 +310,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          ))
          (set e (fragment::set-context( e ctx )))
          (set e (fragment::set-offset( e bind-offset )))
-         (set e (fragment::set-type( e (typeof term) )))
+         (set.type( e (typeof term) ))
       ))
       ( (App( f a )) (
          (if (is-arrow(typeof f)) (
@@ -334,12 +334,12 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                (let e1 (compile-expr( ctx f stack-offset Unused )))
                (let e2 (compile-expr( (open(.context e1)) a (.offset e1) Unused )))
                (set e (fragment::chain( e1 e2 )))
-               (set e (fragment::set-type( e (typeof term) )))
+               (set.type( e (typeof term) ))
             )) (scope(
                (let e1 (compile-expr( ctx f stack-offset Unused )))
                (let e2 (compile-expr( (open(.context e1)) a (.offset e1) Used )))
                (set e (fragment::chain( e1 e2 )))
-               (set e (fragment::set-type( e (typeof term) )))
+               (set.type( e (typeof term) ))
             )))
          ))
       ))

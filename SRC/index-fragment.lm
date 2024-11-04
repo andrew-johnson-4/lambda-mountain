@@ -9,6 +9,5 @@ import SRC/fragment::new.lm;
 import SRC/fragment::set-context.lm;
 import SRC/fragment::set-offset.lm;
 import SRC/fragment::set-term.lm;
-import SRC/fragment::set-type.lm;
 import SRC/fragment::set-vararg.lm;
 import SRC/fragment::set.lm;

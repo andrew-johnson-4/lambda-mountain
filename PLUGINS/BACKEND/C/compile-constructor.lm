@@ -33,6 +33,6 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
    (let new-offset (-( offset (as (sizeof-type return-type) I64) )))
    (set r (fragment::set-offset( r new-offset )))
    (set r (fragment::set-context( r ctx )))
-   (set r (fragment::set-type( r (denormalize return-type) )))
+   (set.type( r (denormalize return-type) ))
    r
 ) Fragment);

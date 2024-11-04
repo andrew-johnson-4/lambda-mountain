@@ -2,7 +2,7 @@
 fragment::chain-gnu := λ(: l Fragment)(: r Fragment). (: (
    (set l (fragment::set-context( l (open(.context r)) )))
    (set l (fragment::set-offset( l (.offset r) )))
-   (set l (fragment::set-type( l (.type r) )))
+   (set.type( l (.type r) ))
    (set l (fragment::set( l 'expression_s (fragment::get( r 'expression_s )) )))
    (set l (fragment::set( l 'frame_s (SCons(
       (close(fragment::get( l 'frame_s )))
@@ -26,7 +26,7 @@ fragment::chain-gnu := λ(: l Fragment)(: r Fragment). (: (
 fragment::chain-blob := λ(: l Fragment)(: r Fragment). (: (
    (set l (fragment::set-context( l (open(.context r)) )))
    (set l (fragment::set-offset( l (.offset r) )))
-   (set l (fragment::set-type( l (.type r) )))
+   (set.type( l (.type r) ))
    (set l (fragment::set( l 'expression_s (fragment::get( r 'expression_s )) )))
    (set l (fragment::set( l 'frame_s (SCons(
       (close(fragment::get( l 'frame_s )))
@@ -49,7 +49,7 @@ fragment::chain-blob := λ(: l Fragment)(: r Fragment). (: (
 
 fragment::chain-c := λ(: l Fragment)(: r Fragment). (: (
    (set l (fragment::set-context( l (open(.context r)) )))
-   (set l (fragment::set-type( l (.type r) )))
+   (set.type( l (.type r) ))
    (set l (fragment::set( l 'expression_s (+(
       (+(
          (SAtom '\[{_s)

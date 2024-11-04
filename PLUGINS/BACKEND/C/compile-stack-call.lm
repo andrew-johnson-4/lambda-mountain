@@ -11,7 +11,7 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
       (if (is( used Tail )) (set used Used) ())
       (if (is( used Call )) (set used Used) ())
       (let push-args (compile-stack-call-push-args( ctx args offset )))
-      (set push-args (fragment::set-type( push-args (t1( 'FunctionArguments_s )) )))
+      (set.type( push-args (t1( 'FunctionArguments_s )) ))
       (let call SNil)
       (let return-size (sizeof-type return-type))
 
@@ -28,7 +28,7 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
       (set ictx (fragment::set( ictx 'return-size_s (SAtom(to-string return-size)) )))
       (set ictx (fragment::set( ictx 'args-size_s (SAtom(to-string(sizeof-type(typeof args)))) )))
       (set ictx (fragment::set( ictx 'used_s (SAtom(to-string used)) )))
-      (set ictx (fragment::set-type( ictx (t1( 'ImplicitContext_s )) )))
+      (set.type( ictx (t1( 'ImplicitContext_s )) ))
       (set ctx (fragment-context::bind( ctx 'ictx_s (t1 'ImplicitContext_s) ictx )))
 
       (let args-tt (.type push-args))
@@ -43,7 +43,7 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
             (set r (fragment::set-offset( r (-( offset (as return-size I64) )) )))
          ) ())
       ) ())
-      (set r (fragment::set-type( r (denormalize return-type) )))
+      (set.type( r (denormalize return-type) ))
    ))
    r
 ) Fragment);
