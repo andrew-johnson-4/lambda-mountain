@@ -34,40 +34,26 @@ preprocess-apply := λ(: program AST). (: (
          (set r (App( (close(Var( 'sizeof_s (unique stk) ))) (close(AType(parse-type mtype))) )))
       ))
       ( (Lit( l ltk )) (
-         (let suffixes parse-suffixes)
-         (while (non-zero suffixes) (match suffixes (
-            ()
-            ( (SfxSeq( rst sfxs sfxtt )) (
-               (if (has-suffix( l sfxs )) (
-                  (let lpfx (remove-suffix( l sfxs )))
-                  (set r (App(
-                     (close(Lit( ':_s (with-key( ltk ':_s )) )))
-                     (close(App( (close(Lit( lpfx (with-key( ltk lpfx )) ))) (close(AType sfxtt)) )))
-                  )))
-                  (set suffixes SfxEOF)
-               ) (
-                  (set suffixes rst)
-               ))
-            ))
-         )))
+         (for-each ((Tuple( sfxs sfxtt )) in parse-suffixes) (
+            (if (has-suffix( l sfxs )) (
+               (let lpfx (remove-suffix( l sfxs )))
+               (set r (App(
+                  (close(Lit( ':_s (with-key( ltk ':_s )) )))
+                  (close(App( (close(Lit( lpfx (with-key( ltk lpfx )) ))) (close(AType sfxtt)) )))
+               )))
+            ) ())
+         ))
       ))
       ( (Var( l ltk )) (
-         (let suffixes parse-suffixes)
-         (while (non-zero suffixes) (match suffixes (
-            ()
-            ( (SfxSeq( rst sfxs sfxtt )) (
-               (if (has-suffix( l sfxs )) (
-                  (let lpfx (remove-suffix( l sfxs )))
-                  (set r (App(
-                     (close(Lit( ':_s (with-key( ltk ':_s )) )))
-                     (close(App( (close(Lit( lpfx (with-key( ltk lpfx )) ))) (close(AType sfxtt)) )))
-                  )))
-                  (set suffixes SfxEOF)
-               ) (
-                  (set suffixes rst)
-               ))
-            ))
-         )))
+         (for-each ((Tuple( sfxs sfxtt )) in parse-suffixes) (
+            (if (has-suffix( l sfxs )) (
+               (let lpfx (remove-suffix( l sfxs )))
+               (set r (App(
+                  (close(Lit( ':_s (with-key( ltk ':_s )) )))
+                  (close(App( (close(Lit( lpfx (with-key( ltk lpfx )) ))) (close(AType sfxtt)) )))
+               )))
+            ) ())
+         ))
       ))
       ( (App( (Var( vn vntk )) vt )) (
          if (is-macro-head( vn 1_u64 )) (
