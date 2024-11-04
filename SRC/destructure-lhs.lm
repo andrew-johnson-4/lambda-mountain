@@ -8,11 +8,6 @@ destructure-lhs := λ(: ctx FContext)(: tt Type)(: lhs S)(: args FragmentList). 
             ()
             ( (FLSeq( _ f )) (
                (let ft (with-size(.type f)))
-               (if (non-zero ft) () (
-                  (print 'Fragment\sHas\sNo\sType:\n_s)
-                  (print f)
-                  (exit 1_u64)
-               ))
                (let tctx (unify( a-type ft )))
                (set ctx (union( ctx tctx ))) # destructure tctx
                (set ctx (FCtxBind( (close ctx) k ft f )))
@@ -25,11 +20,6 @@ destructure-lhs := λ(: ctx FContext)(: tt Type)(: lhs S)(: args FragmentList). 
             ()
             ( (FLSeq( fl-rst f )) (
                (let ft (with-size(.type f)))
-               (if (non-zero ft) () (
-                  (print 'Fragment\sHas\sNo\sType:\n_s)
-                  (print f)
-                  (exit 1_u64)
-               ))
                (let tctx (unify( a-type ft )))
                (set ctx (union( ctx tctx )))
                (set ctx (FCtxBind( (close ctx) k ft f )))

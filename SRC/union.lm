@@ -37,10 +37,8 @@ union := λ(: ctx FContext)(: tctx TContext). (: (
       ()
       ( TCtxNil (set tctx TCtxEOF) )
       ( (TCtxBind( rst k vt _ )) (
-         (let fragment (fragment::expression(to-string vt)))
-         (set fragment (fragment::set( fragment 'program_s (SAtom(to-string vt)) )))
          (set r (FCtxBind(
-            (close r) k TAny fragment
+            (close r) k TAny (fragment::new())
          )))
          (set tctx rst)
       ))

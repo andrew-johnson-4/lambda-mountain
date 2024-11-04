@@ -16,7 +16,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ))
       ( (Lit( val _ )) (
          (let ltype (typeof term))
-         (if (is-string ltype) (
+         (if (is-t( ltype 'String_s )) (
             (set e (compile-declare-cstring( val )))
          ) (
             (let isa-fragment False_u8)

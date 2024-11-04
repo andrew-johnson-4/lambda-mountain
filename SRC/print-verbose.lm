@@ -1,9 +1,0 @@
-
-print-verbose := λ(: t Token). (: (
-   (match t (
-      ()
-      ( (Token( s id loc )) (
-         (print s)(print '\o_s)(print id)
-      ))
-   ))
-) Nil);
