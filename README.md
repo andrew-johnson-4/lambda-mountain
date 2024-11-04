@@ -58,7 +58,7 @@ In this case we say that X is a “better fit” than Y.
 ### Why is Ad-Hoc Specialization so Important For an Assembler?
 
 Specialization allows us to express high-level ideas at the level of a generic functional language
-AND compile the code down to machine code transparently.
+AND compile the code down to target objects transparently.
 There are no hidden layers in the compiler.
 The programmer gets to inspect and verify *every single transformation down to individual instructions*.
 
