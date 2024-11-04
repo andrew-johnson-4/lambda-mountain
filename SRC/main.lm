@@ -17,7 +17,6 @@ main := λ(: argc U64)(: argv String[]). (: (
             (if (==( config-target '_s )) (set config-target 'tmp.txt_s) ())
             (set plugin-current-backend (& plugins-backend-blob-compile))          
          ))
-         ('--tokenize_s (set config-mode ModeTokenize))
          ('--parse_s (set config-mode ModeParse))
          ('--preprocess_s (set config-mode ModePreprocess))
          ('--typecheck_s (set config-mode ModeTypecheck))
@@ -46,29 +45,24 @@ main := λ(: argc U64)(: argv String[]). (: (
       ()
       ( SNil (set continue False_u8) )
       ( (SCons( rst SNil )) (set input rst) )
-      ( (SCons( rst (SAtom( fp )) )) ( (tokenize fp) (set input rst) ))
-      ( (SAtom( fp )) ( (tokenize fp) (set continue False_u8) ))
+      ( (SCons( rst (SAtom( fp )) )) ( (frontend fp) (set input rst) ))
+      ( (SAtom( fp )) ( (frontend fp) (set continue False_u8) ))
    )))
 
    (match config-mode (
       ()
-      ( ModeTokenize (print ast-tokenized-program) )
       ( ModeParse (
-         (parse())
          (serialize-ast ast-parsed-program)
       ))
       ( ModePreprocess (
-         (parse())
          (preprocess())
          (serialize-ast ast-parsed-program)
       ))
       ( ModeTypecheck (
-         (parse())
          (preprocess())
          (typecheck())
       ))
       ( ModeCompile (
-         (parse())
          (preprocess())
          (typecheck())
          (plugin-current-backend())

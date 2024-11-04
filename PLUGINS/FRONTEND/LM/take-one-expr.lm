@@ -1,0 +1,31 @@
+
+take-one-expr := λ(: tokens List<Token>). (: (
+   (let taken (: LEOF List<Token>))
+   (let remainder (: LEOF List<Token>))
+   (let depth 0_i64)
+   (while (non-zero tokens) (match tokens (
+      ()
+      ( (LCons( '\:_t rem )) (
+         (if (==( depth 0_i64 )) (
+            (set remainder tokens)
+            (set tokens (: LEOF List<Token>))
+         ) (
+            (set taken (cons( (head tokens) taken )))
+            (set remainder rem)
+            (set tokens rem)
+         ))
+      ))
+      ( (LCons( hd rem )) (
+         (match hd (
+            ()
+            ( '\[_t (set depth (+( depth 1_i64 ))) )
+            ( '\]_t (set depth (-( depth 1_i64 ))) )
+            ( _ () )
+         ))
+         (set taken (cons( hd taken )))
+         (set remainder rem)
+         (set tokens rem)
+      ))
+   )))
+   (Tuple( (remove-parens(reverse taken)) remainder ))
+) Tuple<List<Token>,List<Token>>);

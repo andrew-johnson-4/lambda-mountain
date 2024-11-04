@@ -8,15 +8,8 @@ is-already-tokenized := λ(: fp String). (: (
    r
 ) U64);
 
-tokenize := λ(: fp String). (: (
-   (if (has-prefix( fp 'LIB/_s )) (
-      (set fp (clone-rope(+( (SAtom config-platform-prefix) (SAtom fp) ))))
-   ) ())
-   (let text '_s)
-   (if (is-already-tokenized fp) () (
-      (set text (read-file fp))
-      (set already-tokenized (cons( fp already-tokenized )))
-   ))
+tokenize := λ(: fp String)(: text String). (: (
+   (let ast-tokenized-program (: LEOF List<Token>))
    (let in_comment False_u8)
    (let buffer SNil)
    (let current-line 1_u64)
@@ -179,8 +172,6 @@ tokenize := λ(: fp String). (: (
       )))
    ) ())
 
-   (set ast-tokenized-program (reverse ast-tokenized-program))
-
    (if (==( parens-counter 0_i64 )) () (
       (print 'Hanging\sParentheses\sIn\sFile:\s_s)
       (print fp)
@@ -190,5 +181,6 @@ tokenize := λ(: fp String). (: (
       (exit 1_u64)
    ))
 
-) Nil);
+   (reverse ast-tokenized-program)
+) List<Token>);
 

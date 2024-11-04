@@ -104,8 +104,7 @@ parse-toplevel := λ(: tokens List<Token>). (: (
             (set tokens remainder)
          ))
          ( (LCons( 'import_t (LCons( relative-path_t remainder )) )) (
-            (tokenize relative-path)
-            (parse ())
+            (frontend relative-path)
             (set tokens remainder)
          ))
          ( (LCons( 'zero_t (LCons( base-type (LCons( tag-type_t remainder )) )) )) (
