@@ -16,7 +16,7 @@ To build and install LM we can move into the project directory and run `make ins
 ```
 git clone https://github.com/andrew-johnson-4/lambda-mountain.git
 cd lambda-mountain
-sudo make install
+make install
 ```
 
 ### Desired Output
