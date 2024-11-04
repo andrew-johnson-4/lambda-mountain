@@ -2,7 +2,6 @@
 import SRC/align.lm;
 import SRC/is-seq.lm;
 import SRC/is-arrow.lm;
-import SRC/is-string.lm;
 import SRC/is-lm-struct.lm;
 import SRC/plus.lm;
 import SRC/print.lm;
