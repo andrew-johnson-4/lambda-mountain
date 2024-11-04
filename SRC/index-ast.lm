@@ -5,7 +5,6 @@ import SRC/is-arrow.lm;
 import SRC/is-lm-struct.lm;
 import SRC/plus.lm;
 import SRC/print.lm;
-import SRC/reverse.lm;
 import SRC/serialize-ast.lm;
 import SRC/slot.lm;
 import SRC/uuid.lm;
