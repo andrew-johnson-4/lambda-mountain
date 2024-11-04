@@ -9,7 +9,7 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U64)(:
 apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U64)(: blame AST)(: hard U64). (: (
    (let r TAny)
    (let rs (apply-plural( function-name ft pt blame )))
-   (if (not(is-hook ft)) (
+   (if (not(is-t( ft 'Hook_s ))) (
       (set rs (reduce-plural rs))
    ) ())
    (if (&&( (==( (.length rs) 0_u64 )) hard )) (
@@ -19,7 +19,7 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: do-specialize U64)(:
       (print 'Options:\s_s)(print ft)(print '\n_s)
       (exit 1_u64)
    ) ())
-   (if (&&( (>( (.length rs) 1_u64 )) (not(is-hook ft)) )) (
+   (if (&&( (>( (.length rs) 1_u64 )) (not(is-t( ft 'Hook_s ))) )) (
       (print 'Function\sApplication\sYielded\sAn\sIrreducible\sPlurality\sOf\sMatches\n_s)
       (print function-name)(print '\s:\s_s)(print ft)(print '\n_s)
       (print 'With\sArgument\s_s)(print pt)(print '\n_s)

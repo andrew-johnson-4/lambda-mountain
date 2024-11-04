@@ -1,6 +1,7 @@
 
 import SRC/index-definitions.lm;
 
+import SRC/is-t.lm;
 import SRC/index-concrete-type-instances.lm;
 import SRC/type-index.lm;
 import SRC/infer-expr.lm;
@@ -25,7 +26,6 @@ import SRC/maybe-local-variable.lm;
 
 import SRC/is-constructor.lm;
 import SRC/is-open.lm;
-import SRC/is-vararg.lm;
 import SRC/is-parameterized.lm;
 import SRC/is-sized.lm;
 import SRC/has-representation.lm;
@@ -52,10 +52,6 @@ import SRC/sizeof-type.lm;
 import SRC/sizeof-aligned.lm;
 import SRC/has-infinite.lm;
 import SRC/has-forward.lm;
-import SRC/is-reg8.lm;
-import SRC/is-reg16.lm;
-import SRC/is-reg32.lm;
-import SRC/is-reg64.lm;
 
 import SRC/with-tag.lm;
 import SRC/with-size.lm;

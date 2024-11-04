@@ -92,16 +92,6 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (add-concrete-type-instance tt)
          (set tctx (infer-expr( tctx t Unscoped TAny used )))
          (let inner-tt (typeof t))
-         (match t (
-            ()
-            ( (Lit( l _ )) (
-               (if (is-reg8 l) (set inner-tt (t1 'Reg8_s)) ())
-               (if (is-reg16 l) (set inner-tt (t1 'Reg16_s)) ())
-               (if (is-reg32 l) (set inner-tt (t1 'Reg32_s)) ())
-               (if (is-reg64 l) (set inner-tt (t1 'Reg64_s)) ())
-            ))
-            ( _ () )
-         ))
          (if (non-zero inner-tt) (
             (let inner-repr (with-only-representation inner-tt))
             (if (non-zero inner-repr) (
@@ -145,7 +135,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
       ( (App( (Abs( (Var( lname _ )) ASTNil tlt )) rhs )) (
          (let prev-tt (typeof-var-raw( term tctx lname )))
          (if (non-zero prev-tt) (
-            (if (&&( (not(is-arrow prev-tt)) (not(is-global-variable prev-tt)) )) (
+            (if (&&( (not(is-arrow prev-tt)) (not(is-t( prev-tt 'GlobalVariable_s ))) )) (
                (exit-error( 'Variable\sName\sIs\sAlready\sBound\sIn\sOuter\sScope_s term ))
             ) ())
          ) ())
@@ -243,7 +233,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
       ))
       ( (Abs( lhs rhs tlt )) (
          (set tctx (infer-ctx( tctx lhs )))
-         (if (is-blob tlt) (
+         (if (is-t( tlt 'Blob_s )) (
             (match rhs (
                ()
                ( (App( (Lit( ':_s _ )) (App( inner-rhs (AType return-type) )) )) (
@@ -257,7 +247,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (let lt (typeof-lhs lhs))
          (let rt (typeof rhs))
          (ascript-normal( term (enrich( (t3( 'Arrow_s lt rt )) tlt )) ))
-         (if (is-blob tlt) () (
+         (if (is-t( tlt 'Blob_s )) () (
             (maybe-specialize( 'cdecl::return_s (typeof-var-raw( term tctx 'cdecl::return_s )) rt term ))
          ))
       ))

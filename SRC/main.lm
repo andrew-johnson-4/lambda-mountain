@@ -6,13 +6,11 @@ main := λ(: argc U64)(: argv String[]). (: (
       (match ([]( argv argi )) (
          ()
          ('--c_s (
-            (set config-assemble-mode AssembleC)
             (set config-platform-prefix 'PLATFORM/C/_s)
             (if (==( config-target '_s )) (set config-target 'tmp.c_s) ())
             (set plugin-current-backend (& plugins-backend-c-compile))
          ))
          ('--blob_s (
-            (set config-assemble-mode AssembleBlob)
             (set config-platform-prefix 'PLATFORM/BLOB/_s)
             (if (==( config-target '_s )) (set config-target 'tmp.txt_s) ())
             (set plugin-current-backend (& plugins-backend-blob-compile))          

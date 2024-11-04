@@ -93,7 +93,7 @@ compile-c-typedef-concrete := λ(: tctx TContext)(: base-type Type)(: body AST).
             (let fields (compile-c-fields-of-case( base-type case-definition case-number )))
             (set fields (substitute( tctx fields )))
             (set incomplete (||( incomplete (is-incomplete-typedef fields) )))
-            (if (is-nil fields) () (
+            (if (is-t( fields 'Nil_s )) () (
                (set cases (+( cases (compile-c-casedef( fields case-number )) )))
             ))
             (set case-number (+( case-number 1_u64 )))
@@ -103,7 +103,7 @@ compile-c-typedef-concrete := λ(: tctx TContext)(: base-type Type)(: body AST).
             (let fields (compile-c-fields-of-case( base-type case-definition case-number )))
             (set fields (substitute( tctx fields )))
             (set incomplete (||( incomplete (is-incomplete-typedef fields) )))
-            (if (is-nil fields) () (
+            (if (is-t( fields 'Nil_s )) () (
                (set cases (+( cases (compile-c-casedef( fields case-number )) )))
             ))
             (set body ASTEOF)

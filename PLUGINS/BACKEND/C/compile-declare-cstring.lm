@@ -1,20 +1,8 @@
 
 cstring-cache := (: SSEOF StringStringList);
 compile-declare-cstring := λ(: val String). (: (
-   (let r (fragment::new()))
-   (match config-assemble-mode (
-      ()
-      ( AssembleC (set r (compile-declare-cstring-c( val ))))
-      ( AssembleGNU (set r (compile-declare-cstring-gnu( val ))))
-      ( AssembleBlob (set r (compile-declare-cstring-blob( val ))))
-   ))
+   (let r (compile-declare-cstring-c( val )))
    r
-) Fragment);
-
-compile-declare-cstring-blob := λ(: val String). (: (
-   (let r (fragment::new()))
-   (print 'TODO\sdeclare\scstring\sblob\n_s)(exit 1_u64)
-   r 
 ) Fragment);
 
 compile-declare-cstring-c := λ(: val String). (: (
@@ -66,33 +54,3 @@ escape-c-string := λ(: s String). (: (
    e
 ) S);
 
-compile-declare-cstring-gnu := λ(: val String). (: (
-   (let r (fragment::new()))
-   (if (is( config-assemble-mode AssembleBlob )) (
-      (set r (fragment::set( r 'expression_s (SAtom val) )))
-   ) (
-      (let cache cstring-cache)
-      (let id '_s)
-      (while (non-zero cache) (match cache (
-         ()
-         ( (SSSeq( rst k v )) (
-            (if (==( k val )) (
-               (set id v)
-               (set cache SSEOF)
-            ) (set cache rst))
-         ))
-      )))
-      (if (head-string id) () (
-         (set id (uuid()))
-         (set assemble-data-section (SCons( (close assemble-data-section) (close(SAtom id)) )))
-         (set assemble-data-section (SCons( (close assemble-data-section) (close(SAtom ':\n\t.ascii\s"_s)) )))
-         (set assemble-data-section (SCons( (close assemble-data-section) (close(SAtom( escape-literal val ))) )))
-         (set assemble-data-section (SCons( (close assemble-data-section) (close(SAtom '"\n\t.zero\s1\n_s)) )))
-         (set cstring-cache (SSSeq(
-            (close cstring-cache) val id
-         )))
-      ))
-      (set r (fragment::set( r 'expression_s (SAtom id) )))
-   ))
-   r
-) Fragment);

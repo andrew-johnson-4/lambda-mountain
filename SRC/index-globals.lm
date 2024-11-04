@@ -16,7 +16,6 @@ config-profile-invocations   := False_u8;
 config-strict                := True_u8;
 config-preprocess            := True_u8;
 config-target                := '_s;
-config-assemble-mode         := (: AssembleGNU AssembleMode);
 config-mode                  := (: ModeCompile CompileMode);
 preprocess-macros            := (: MEOF MacroList);
 ast-parsed-program           := (: ASTEOF AST);

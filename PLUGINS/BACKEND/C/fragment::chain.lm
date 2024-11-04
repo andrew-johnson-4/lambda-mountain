@@ -1,0 +1,39 @@
+
+fragment::chain-c := λ(: l Fragment)(: r Fragment). (: (
+   (set.context( l (.context r) ))
+   (set.type( l (.type r) ))
+   (set l (fragment::set( l 'expression_s (+(
+      (+(
+         (SAtom '\[{_s)
+         (fragment::get( l 'expression_s ))
+      ))
+      (+(
+         (+(
+            (SAtom '\:\n_s)
+            (fragment::get( r 'expression_s ))
+         ))
+         (SAtom '\:\n}\]_s)
+      ))
+   )) )))
+   (set l (fragment::set( l 'frame_s (SCons(
+      (close(fragment::get( l 'frame_s )))
+      (close(fragment::get( r 'frame_s )))
+   )) )))
+   l
+) Fragment);
+
+fragment::chain := λ(: fragment-ctx FragmentList)(: e Fragment). (: (
+   (while (non-zero fragment-ctx) (match fragment-ctx (
+      ()
+      ( (FLSeq( rst cf )) (
+         (set e (fragment::chain( cf e )))
+         (set fragment-ctx rst)
+      ))
+   )))
+   e
+) Fragment);
+
+fragment::chain := λ(: l Fragment)(: r Fragment). (: (
+   (set l (fragment::chain-c( l r )))
+   l
+) Fragment);

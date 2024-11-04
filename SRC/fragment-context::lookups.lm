@@ -22,7 +22,7 @@ fragment-context::lookups := λ(: ctx FContext)(: k String)(: ft Type)(: kt Type
                   (if (can-unify( domaint kt )) (
                      (if (non-zero found) (
                         (if (can-unify( found domaint )) (
-                           (if (!=( (is-hook rt) 0_u64 )) (
+                           (if (!=( (is-t( rt 'Hook_s )) 0_u64 )) (
                               (set r (cons( rf r )))
                            ) (
                               (set r (cons( rf (: LEOF List<Fragment>) )))
@@ -30,7 +30,7 @@ fragment-context::lookups := λ(: ctx FContext)(: k String)(: ft Type)(: kt Type
                            ))
                         ) ())
                      ) (
-                        (if (!=( (is-hook rt) 0_u64 )) (
+                        (if (!=( (is-t( rt 'Hook_s )) 0_u64 )) (
                            (set r (cons( rf r )))
                         ) (
                            (set r (cons( rf (: LEOF List<Fragment>) )))
@@ -40,7 +40,7 @@ fragment-context::lookups := λ(: ctx FContext)(: k String)(: ft Type)(: kt Type
                   ) ())
                   (set ctx rst)
                ) (
-                  (if (!=( (is-hook rt) 0_u64 )) (
+                  (if (!=( (is-t( rt 'Hook_s )) 0_u64 )) (
                      (set r (cons( rf r )))
                   ) (
                      (set r (cons( rf (: LEOF List<Fragment>) )))

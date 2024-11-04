@@ -1,21 +1,16 @@
 
 compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
-   (match config-assemble-mode (
-      ()
-      ( AssembleC (compile-global-c( ctx k term )))
-      ( AssembleBlob (compile-global-blob( ctx k term )))
-      ( AssembleGNU (compile-global-gnu( ctx k term )))
-   ))
+   (compile-global-c( ctx k term ))
 ) Nil);
 
 compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
    (let kt (typeof term))
    (match term (
       ()
-      ( (Abs( lhs rhs tlt )) (if (||( (is-open kt) (||( (is-blob tlt) (is-ffi tlt) )) )) () (
+      ( (Abs( lhs rhs tlt )) (if (||( (is-open kt) (||( (is-t( tlt 'Blob_s )) (is-t( tlt 'FFI_s )) )) )) () (
          (let args-type (domain kt))
          (let args-size (sizeof-aligned args-type))
-         (set ctx (compile-destructure-args( args-type ctx lhs 0_i64 (is-blob tlt) )))
+         (set ctx (compile-destructure-args( args-type ctx lhs 0_i64 (is-t( tlt 'Blob_s )) )))
          (set ctx (FCtxBind( (close ctx) 'cdecl::args-size_s TAny
             (fragment::expression(to-string args-size))
          )))
@@ -99,109 +94,6 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
          (set text (SCons( (close text) (close(fragment::get( e 'expression_s ))) )))
          (set text (SCons( (close text) (close(SAtom '\:\n_s)) )))
          (set assemble-global-initializer-section (SCons( (close assemble-global-initializer-section) (close text) )))
-      ))
-   ))
-) Nil);
-
-compile-global-blob := λ(: ctx FContext)(: k String)(: term AST). (: (
-   (print 'TODO\sCompile\sGlobal\sBlob\n_s)(exit 1_u64)
-) Nil);
-
-compile-global-gnu := λ(: ctx FContext)(: k String)(: term AST). (: (
-   (let kt (typeof term))
-   (match term (
-      ()
-      ( (Abs( lhs rhs tlt )) (if (||( (is-open kt) (is-blob tlt) )) () (
-
-         (let args-type (domain kt))
-         (let args-size (sizeof-aligned args-type))
-         (set ctx (compile-destructure-args( args-type ctx lhs 0_i64 (is-blob tlt) )))
-         (set ctx (FCtxBind( (close ctx) 'cdecl::args-size_s TAny
-            (fragment::expression(to-string args-size))
-         )))
-         (let stack-offset 0_i64)
-         (set stack-offset (-( stack-offset 8_i64 )))
-         (set stack-offset (-( stack-offset (as args-size I64) )))
-         (let e (compile-expr( ctx rhs stack-offset Return )))
-         (let text SNil)
-         (if (==( k 'main_s )) (
-            (set main-with True_u8)
-            (match lhs (
-               ()
-               ( ASTNil () )
-               ( _ (set main-with-argv True_u8) )
-            ))
-            (set text (SCons( (close text) (close(SAtom( 'main_s ))) )))
-         ) (
-            (set text (SCons( (close text) (close(SAtom( (mangle-identifier( k kt )) ))) )))
-         ))
-         (set text (SCons( (close text) (close(SAtom( ':\n_s ))) )))
-         (if (==( config-profile-invocations True_u8 )) (
-            (let counter-id (+( (SAtom(mangle-identifier( k kt ))) (SAtom '_COUNTER_s) )))
-            (set assemble-data-section (+( assemble-data-section (+(
-               (+( counter-id (SAtom ':\n.zero\s8\n_s) ))
-               (+(
-                  (+( counter-id (SAtom '_LABEL:\n\t.ascii\t"\\\\t_s) ))
-                  (+( counter-id (SAtom '\\\\n"\n\t.zero\s1\n_s) ))
-               ))
-            )) )))
-            (set text (+( text (+(
-               (+( (SAtom '\tmov\s$_s) (+( counter-id (SAtom ',\s%RBX\n\tmov\s0\[%RBX\],\s%RAX\n_s) )) ))
-               (SAtom '\tinc\s%RAX\n\tmov\s%RAX,\s0\[%RBX\]\n_s)
-            )) )))
-            (set assemble-profile-onexit (+( assemble-profile-onexit (+(
-               (+(
-                  (+( (SAtom '\tmov\s$_s) (+( counter-id (SAtom ',\s%RBX\n\tmov\s0\[%RBX\],\s%RAX\n_s) )) ))
-                  (SAtom '\tpush\s%RBP\n\tmov\s%RSP,\s%RBP\n\tpush\s%RAX\n\tcall\sprint_CL_ArrowNilU64\n\tmov\s%RBP,\s%RSP\n\tpop\s%RBP\n_s)
-               ))
-               (+(
-                  (+( (SAtom '\tpush\s%RBP\n\tmov\s%RSP,\s%RBP\n\tpush\s$_s) (+( counter-id (SAtom '_LABEL\n_s) )) ))
-                  (SAtom '\tcall\sprint_CL_ArrowNilString\n\tmov\s%RBP,\s%RSP\n\tpop\s%RBP\n_s)
-               ))
-            )) )))
-         ) ())
-
-         (let frame (fragment::get( e 'frame_s )))
-         (set text (SCons( (close text) (close frame) )))
-         (let program (fragment::get( e 'program_s )))
-         (set text (SCons( (close text) (close program) )))
-         (set text (SCons( (close text) (close(SAtom '\tmov\s%rbp,\s%rsp\n_s)) )))
-         (set text (SCons( (close text) (close(SAtom '\tsub\s$_s)) )))
-         (set text (SCons( (close text) (close(SAtom (to-string(+( args-size 8_u64 ))) )) )))
-         (set text (SCons( (close text) (close(SAtom ',\s%rsp\n_s)) )))
-         (set text (SCons( (close text) (close(SAtom '\tret\n_s)) )))
-         (set assemble-text-section (SCons( (close assemble-text-section) (close text) )))
-      )))
-      ( (App( (Lit( ':_s ltok )) (App( t (AType tt) )) )) (
-         (let clean-tt (without-representation kt))
-         (let mid (mangle-identifier( k clean-tt )))
-         (set assemble-data-section (SCons(
-            (close assemble-data-section)
-            (close(SAtom mid))
-         )))
-         (set assemble-data-section (SCons(
-            (close assemble-data-section)
-            (close(SAtom ':\n.zero\s_s))
-         )))
-         (set assemble-data-section (SCons(
-            (close assemble-data-section)
-            (close(SAtom (to-string(sizeof-aligned kt))))
-         )))
-         (set assemble-data-section (SCons(
-            (close assemble-data-section)
-            (close(SAtom '\n_s))
-         )))
-
-         (let kterm (Var( k ltok )))
-         (ascript-normal( kterm kt ))
-         (let init-app (App( (close term) (close kterm) )))
-         (ascript-normal( init-app (t3( 'Cons_s kt (and( (without-representation kt) (t1 'GlobalVariable_s) )) )) ))
-         (let init (compile-stack-calls( ctx 'mov_s TAny (t1 'Nil_s) init-app -8_i64 Used )))
-
-         (set assemble-init-section (SCons(
-            (close assemble-init-section)
-            (close(fragment::get( init 'program_s )))
-         )))
       ))
    ))
 ) Nil);

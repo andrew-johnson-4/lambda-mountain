@@ -12,57 +12,22 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64)(: count U64)
             ()
             ( (App( le re )) (
                (let e1 (compile-push-rvalue( ctx le offset count left-assoc )))
-               (if (is( config-assemble-mode AssembleC )) (scope(
-                  (let e2 (compile-expr( ctx re (.offset e1) Used )))
-                  (set r (fragment::chain( e1 e2 )))
-                  (if left-assoc (
-                     (set r (fragment::set( r 'expression_s (
-                        (+( (+( (fragment::get( e1 'expression_s )) (SAtom ',_s) )) (fragment::get( e2 'expression_s )) ))
-                     ))))
-                  ) (
-                     (set r (fragment::set( r 'expression_s (
-                        (+( (+( (fragment::get( e2 'expression_s )) (SAtom ',_s) )) (fragment::get( e1 'expression_s )) ))
-                     ))))
-                  ))
-               )) (scope(
-                  (if (!=( count 0_u64 )) (
-                     (let re-tt (typeof re))
-                     (if (is-rc re-tt) (
-                        (let inc-rc (Var( 'inc_s (token::new 'inc_s) )))
-                        (set re-tt (guess-representation(without-representation re-tt)))
-                        (ascript( inc-rc (t3( 'Arrow_s (typeof re) re-tt )) ))
-                        (set re (App( (close inc-rc) (close re) )))
-                        (ascript( re re-tt ))
-                     ) ())
-                  ) ())
-                  (let e2 (compile-expr( ctx re (.offset e1) Used )))
-                  (set e2 (compile-maybe-push-stack( ctx (.offset e2) e2 p2 rval )))
-                  (let sz (sizeof-type(typeof rval)))
-                  (set e2 (fragment::set-offset( e2 (-( offset (as sz I64) )) )))
-                  (set r (fragment::chain( e1 e2 )))
-               )))
+               (let e2 (compile-expr( ctx re (.offset e1) Used )))
+               (set r (fragment::chain( e1 e2 )))
+               (if left-assoc (
+                  (set r (fragment::set( r 'expression_s (
+                     (+( (+( (fragment::get( e1 'expression_s )) (SAtom ',_s) )) (fragment::get( e2 'expression_s )) ))
+                  ))))
+               ) (
+                  (set r (fragment::set( r 'expression_s (
+                     (+( (+( (fragment::get( e2 'expression_s )) (SAtom ',_s) )) (fragment::get( e1 'expression_s )) ))
+                  ))))
+               ))
             ))
          ))
       ))
       ( _ (
-         (if (is( config-assemble-mode AssembleC )) (
-            (set r (compile-expr( ctx rval offset Used )))
-         ) (
-            (let sz (sizeof-type(typeof rval)))
-            (if (!=( count 0_u64 )) (
-               (let rval-tt (typeof rval))
-               (if (is-rc rval-tt) (
-                  (let inc-rc (Var( 'inc_s (token::new 'inc_s) )))
-                  (set rval-tt (guess-representation(without-representation rval-tt)))
-                  (ascript( inc-rc (t3( 'Arrow_s (typeof rval) rval-tt )) ))
-                  (set rval (App( (close inc-rc) (close rval) )))
-                  (ascript( rval rval-tt ))
-               ) ())
-            ) ())
-            (set r (compile-expr( ctx rval offset Used )))
-            (set r (compile-maybe-push-stack( ctx (.offset r) r (typeof rval) rval )))
-            (set r (fragment::set-offset( r (-( offset (as sz I64) )) )))
-         ))
+         (set r (compile-expr( ctx rval offset Used )))
       ))
    ))
    r

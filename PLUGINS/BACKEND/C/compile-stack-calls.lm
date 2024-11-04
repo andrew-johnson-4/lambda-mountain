@@ -13,7 +13,6 @@ compile-stack-calls := λ(: ctx FContext)(: function-name String)(: function-typ
          (set r (compile-stack-call( ctx f function-name return-type args offset used )))
       ))
    ))
-   (set r (fragment::set-context( r ctx )))
-   (set r (fragment::set-offset( r offset )))
+   (set.context( r (close ctx) ))
    r
 ) Fragment);

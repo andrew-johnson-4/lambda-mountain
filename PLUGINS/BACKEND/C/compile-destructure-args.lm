@@ -3,7 +3,7 @@ compile-destructure-args := λ(: tt Type)(: ctx FContext)(: lhs AST)(: offset I6
    (match lhs (
       ()
       ( (App( rst (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) )) (
-         (if (is-cons tt) (
+         (if (is-t( tt 'Cons_s )) (
             (let rst-tt (p2 tt))
             (set ctx (compile-destructure-args( rst-tt ctx rst offset is-fragment )))
             (let rst-sz (sizeof-aligned rst-tt))
