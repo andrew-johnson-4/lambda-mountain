@@ -25,61 +25,40 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             ) (
                (if (non-zero(class-of-tag val)) (
                   (let tag-index (index-of-tag val))
-                  (if (is( config-assemble-mode AssembleC )) (
-                     (set e (fragment::set( e 'expression_s (
+                  (set e (fragment::set( e 'expression_s (
+                     (+(
                         (+(
+                           (SAtom '\[{_s)
+                           (mangle-c-type ltype)
+                        ))
+                        (+(
+                           (SAtom '\srvalue={_s)
                            (+(
-                              (SAtom '\[{_s)
-                              (mangle-c-type ltype)
-                           ))
-                           (+(
-                              (SAtom '\srvalue={_s)
-                              (+(
-                                 (SAtom(to-string tag-index))
-                                 (SAtom '}\:rvalue\:}\]_s)
-                              ))
+                              (SAtom(to-string tag-index))
+                              (SAtom '}\:rvalue\:}\]_s)
                            ))
                         ))
-                     ))))
-                  ) (
-                     (set e (fragment::expression(to-string tag-index)))
-                     (set e (fragment::set( e 'program_s (SCons( (close SNil) (close SNil) )) )))
-                  ))
+                     ))
+                  ))))
                ) (
                   (match val (
                      ()
-                     ( 'True_s (set e (fragment::expression '1_s)) )
-                     ( 'False_s (set e (fragment::expression '0_s)) )
-                     ( '\\t_s (set e (fragment::expression '9_s)) )
-                     ( '\\n_s (set e (fragment::expression '10_s)) )
-                     ( '\\s_s (set e (fragment::expression '32_s)) )
-                     ( '\\o_s (set e (fragment::expression '35_s)) )
-                     ( '\\`_s (set e (fragment::expression '39_s)) )
-                     ( '\\[_s (set e (fragment::expression '40_s)) )
-                     ( '\\]_s (set e (fragment::expression '41_s)) )
-                     ( '\\:_s (set e (fragment::expression '59_s)) )
-                     ( _ (set e (fragment::expression val)) )
-                  ))
-                  (if (is( config-assemble-mode AssembleC )) (
-                     (match val (
-                        ()
-                        ( 'True_s (set e (fragment::expression '\[1\]_s)) )
-                        ( 'False_s (set e (fragment::expression '\[0\]_s)) )
-                        ( '\\t_s (set e (fragment::expression '\[9\]_s)) )
-                        ( '\\n_s (set e (fragment::expression '\[10\]_s)) )
-                        ( '\\s_s (set e (fragment::expression '\[32\]_s)) )
-                        ( '\\o_s (set e (fragment::expression '\[35\]_s)) )
-                        ( '\\`_s (set e (fragment::expression '\[39\]_s)) )
-                        ( '\\[_s (set e (fragment::expression '\[40\]_s)) )
-                        ( '\\]_s (set e (fragment::expression '\[41\]_s)) )
-                        ( '\\:_s (set e (fragment::expression '\[59\]_s)) )
-                        ( _ (
-                           (set e (fragment::set( e 'expression_s (
-                              (+( (+( (SAtom '\[_s) (SAtom val) )) (SAtom '\]_s) ))
-                           ))))
-                        ))
+                     ( 'True_s (set e (fragment::expression '\[1\]_s)) )
+                     ( 'False_s (set e (fragment::expression '\[0\]_s)) )
+                     ( '\\t_s (set e (fragment::expression '\[9\]_s)) )
+                     ( '\\n_s (set e (fragment::expression '\[10\]_s)) )
+                     ( '\\s_s (set e (fragment::expression '\[32\]_s)) )
+                     ( '\\o_s (set e (fragment::expression '\[35\]_s)) )
+                     ( '\\`_s (set e (fragment::expression '\[39\]_s)) )
+                     ( '\\[_s (set e (fragment::expression '\[40\]_s)) )
+                     ( '\\]_s (set e (fragment::expression '\[41\]_s)) )
+                     ( '\\:_s (set e (fragment::expression '\[59\]_s)) )
+                     ( _ (
+                        (set e (fragment::set( e 'expression_s (
+                           (+( (+( (SAtom '\[_s) (SAtom val) )) (SAtom '\]_s) ))
+                        ))))
                      ))
-                  ) ())
+                  ))
                ))
             ))
          ))
