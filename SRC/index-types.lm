@@ -91,7 +91,6 @@ import SRC/unify-hint.lm;
 import SRC/infer-type-definition.lm;
 import SRC/arity.lm;
 import SRC/cons-arity.lm;
-import SRC/implicit-tail.lm;
 import SRC/typeof-var.lm;
 import SRC/typeof-var-raw.lm;
 

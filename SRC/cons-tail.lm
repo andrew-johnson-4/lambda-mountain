@@ -8,3 +8,12 @@ cons-tail := λ(: tt Type). (: (
    ))
    r
 ) Type);
+
+cons-tail-or-self := λ(: tt Type). (: (
+   (match tt (
+      ()
+      ( (TGround( 'Cons_s (LCons( tl (LCons( hd LEOF )) )) )) (set tt tl) )
+      ( _ () )
+   ))
+   tt
+) Type);

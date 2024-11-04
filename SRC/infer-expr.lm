@@ -204,7 +204,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
             ))
          ))
          (if (is( l-used Unused )) (
-            (set rt (implicit-tail rt))
+            (set rt (cons-tail-or-self rt))
          ) ())
          (ascript-normal( term rt ))
          (if (==( (var-name-if-var l) 'Rc_s )) (
