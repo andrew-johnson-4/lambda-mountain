@@ -243,7 +243,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
       ))
       ( (Abs( lhs rhs tlt )) (
          (set tctx (infer-ctx( tctx lhs )))
-         (if (is-blob tlt) (
+         (if (is-t( tlt 'Blob_s )) (
             (match rhs (
                ()
                ( (App( (Lit( ':_s _ )) (App( inner-rhs (AType return-type) )) )) (
@@ -257,7 +257,7 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
          (let lt (typeof-lhs lhs))
          (let rt (typeof rhs))
          (ascript-normal( term (enrich( (t3( 'Arrow_s lt rt )) tlt )) ))
-         (if (is-blob tlt) () (
+         (if (is-t( tlt 'Blob_s )) () (
             (maybe-specialize( 'cdecl::return_s (typeof-var-raw( term tctx 'cdecl::return_s )) rt term ))
          ))
       ))
