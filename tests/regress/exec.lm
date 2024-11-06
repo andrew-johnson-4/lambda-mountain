@@ -8,6 +8,6 @@ main := λ. (: (
        (as 'stdio.h_s U8[])
        (as '/dev/null_s U8[])
    )))
-   (execvp( (as 'cpp_s U8[]) argv ))
+   # (execvp( (as 'cpp_s U8[]) argv ))
    ()
 ) Nil);
