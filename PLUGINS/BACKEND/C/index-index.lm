@@ -32,3 +32,4 @@ import PLUGINS/BACKEND/C/escape-string.lm;
 import PLUGINS/BACKEND/C/fragment::chain.lm;
 import PLUGINS/BACKEND/C/fragment::local-variable.lm;
 import PLUGINS/BACKEND/C/fragment::label.lm;
+import PLUGINS/BACKEND/C/is-const-array.lm;

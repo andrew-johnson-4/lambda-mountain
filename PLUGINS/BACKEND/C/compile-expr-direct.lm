@@ -173,31 +173,9 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (let fr (fragment::local-variable( bind-offset rtype )))
          (set ctx (fragment-context::bind( ctx lhs rtype fr )))
          (let prepost (mangle-c-declaration rtype))
-         (match rhs (
-            ()
-            ( (App( (Lit( ':_s _ )) (App( (Var( '__uninitialized_s _ )) (AType tt) )) )) () )
-            ( _ (
-               (set e (compile-expr( ctx rhs stack-offset Used )))
-               (set e (fragment::set( e 'expression_s (
-                  (+(
-                     (+(
-                        (SAtom '\[{_s)
-                        (fragment::get( fr 'expression_s ))
-                     ))
-                     (+(
-                        (SAtom '=_s)
-                        (+(
-                           (fragment::get( e 'expression_s ))
-                           (SAtom '\:\[{}\]\:}\]\n_s)
-                        ))
-                     ))
-                  ))
-               ))))
-            ))
-         ))
-         (set e (fragment::set( e 'frame_s (
-            (+(
-               (fragment::get( e 'frame_s ))
+         (if (is-const-array rtype) (
+            (set e (compile-expr( ctx rhs stack-offset Used )))
+            (set e (fragment::set( e 'expression_s (
                (+(
                   (+(
                      (.first prepost)
@@ -206,13 +184,60 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                   (+(
                      (fragment::get( fr 'expression_s ))
                      (+(
-                        (.second prepost)
-                        (SAtom '\:\n_s)
+                        (+(
+                           (.second prepost)
+                           (SAtom '=_s)
+                        ))
+                        (+(
+                           (fragment::get( e 'expression_s ))
+                           (SAtom '\:\n_s)
+                        ))
                      ))
                   ))
                ))
+            ))))
+         ) (
+            (match rhs (
+               ()
+               ( (App( (Lit( ':_s _ )) (App( (Var( '__uninitialized_s _ )) (AType tt) )) )) () )
+               ( _ (
+                  (set e (compile-expr( ctx rhs stack-offset Used )))
+                  (set e (fragment::set( e 'expression_s (
+                     (+(
+                        (+(
+                           (SAtom '\[{_s)
+                           (fragment::get( fr 'expression_s ))
+                        ))
+                        (+(
+                           (SAtom '=_s)
+                           (+(
+                              (fragment::get( e 'expression_s ))
+                              (SAtom '\:\[{}\]\:}\]\n_s)
+                           ))
+                        ))
+                     ))
+                  ))))
+               ))
             ))
-         ))))
+            (set e (fragment::set( e 'frame_s (
+               (+(
+                  (fragment::get( e 'frame_s ))
+                  (+(
+                     (+(
+                        (.first prepost)
+                        (SAtom '\s_s)
+                     ))
+                     (+(
+                        (fragment::get( fr 'expression_s ))
+                        (+(
+                           (.second prepost)
+                           (SAtom '\:\n_s)
+                        ))
+                     ))
+                  ))
+               ))
+            ))))
+         ))
          (set.context( e (close ctx) ))
          (set.type( e (typeof term) ))
       ))
