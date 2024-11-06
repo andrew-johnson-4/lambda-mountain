@@ -1,4 +1,4 @@
 
 compile-c-text-header := λ. (: (
-   (SAtom '\oinclude\s<stdio.h>\n\oinclude\s<stdlib.h>\n\oinclude\s<string.h>\n\n_s)
+   (SAtom '\oinclude\s<stdio.h>\n\oinclude\s<stdlib.h>\n\oinclude\s<string.h>\n\oinclude\s<unistd.h>\n\n_s)
 ) S);
