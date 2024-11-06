@@ -68,22 +68,6 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
          (set e (compile-expr( ctx t stack-offset used )))
       ))
-      ( (App( (Var( 'gensym-label_s _ )) (Var( id _ )) )) (
-         (set ctx (fragment-context::bind(
-            ctx id (t1 'Label_s) (fragment::label( (uuid()) ))
-         )))
-         (set.context( e (close ctx) ))
-         (set.type( e (denormalize(t1 'Nil_s)) ))
-      ))
-      ( (App( (Var( 'label_s _ )) (Var( id _ )) )) (
-         (let l (fragment-context::lookup( ctx id (t1 'Label_s) term )))
-         (let prog (SCons(
-            (close(fragment::get( l 'expression_s )))
-            (close(SAtom ':\n_s))
-         )))
-         (set e (fragment::set( e 'program_s prog )))
-         (set.type( e (denormalize(t1 'Nil_s)) ))
-      ))
       ( (App( (Var( 'scope_s _ )) t )) (
          (set e (compile-expr( ctx t stack-offset Tail )))
          (set.context( e (close ctx) ))
