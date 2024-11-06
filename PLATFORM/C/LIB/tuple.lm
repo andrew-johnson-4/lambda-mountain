@@ -1,5 +1,5 @@
 
-type Tuple<x,y> (Tuple( x , y ));
+type Tuple<x,y> (Tuple( first:x , second:y ));
 
 == := λ(: l Tuple<x,y>)(: r Tuple<x,y>). (: (
    (let return 0_u64)

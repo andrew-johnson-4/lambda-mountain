@@ -37,3 +37,42 @@ mangle-c-type-internal := λ(: tt Type). (: (
    ))
    r
 ) S);
+
+mangle-c-declaration := λ(: tt Type). (: (
+   (set tt (normalize tt))
+   (let r (mangle-c-declaration-internal tt))
+   r
+) Tuple<S,S>);
+
+mangle-c-declaration-internal := λ(: tt Type). (: (
+   (let pre SNil)
+   (let post SNil)
+   (match tt (
+      ()
+      ( (TGround( 'Array_s (LCons( (TGround( 'CONST_s _ )) (LCons( array-base _ )) )) )) (
+         (let rst (mangle-c-declaration-internal array-base))
+         (set pre (.first rst))
+         (set post (+(
+            (.second rst)
+            (SAtom '[]_s)
+         )))
+      ))
+      ( (TGround( 'Array_s (LCons( (TGround( index _ )) (LCons( array-base _ )) )) )) (
+         (let rst (mangle-c-declaration-internal array-base))
+         (set pre (.first rst))
+         (set post (+(
+            (.second rst)
+            (+( (+( (SAtom '[_s) (SAtom index) )) (SAtom ']_s) ))
+         )))
+      ))
+      ( _ (
+         (set pre (mangle-c-type tt))
+      ))
+   ))
+   (Tuple( pre post ))
+) Tuple<S,S>);
+
+
+
+
+

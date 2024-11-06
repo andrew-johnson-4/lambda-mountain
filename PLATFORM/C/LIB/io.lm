@@ -10,6 +10,7 @@ fopen := λ: FFI(: fp U8[])(: mode U8[]). (: () File[]);
 fread := λ: FFI(: buff ?[])(: size U64)(: count U64)(: f File[]). (: () U64);
 fwrite := λ: FFI(: buff ?[])(: size U64)(: count U64)(: f File[]). (: () U64);
 fclose := λ: FFI(: f File[]). (: () U32);
+execvp := λ: FFI(: file U8[])(: argv U8[][]). (: () U32);
 
 exit := λ(: x U64).(: (exit(as x U32)) Nil);
 

@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm --c tests/regress/function-pointers.lm
+	lm --c tests/regress/exec.lm
 	cc tmp.c
 	./a.out
 	echo $?

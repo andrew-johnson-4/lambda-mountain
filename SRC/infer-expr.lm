@@ -139,7 +139,16 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
                (exit-error( 'Variable\sName\sIs\sAlready\sBound\sIn\sOuter\sScope_s term ))
             ) ())
          ) ())
-         (infer-expr( tctx rhs Unscoped TAny Tail ))
+         (match rhs (
+            ()
+            ( (App( (Lit( ':_s _ )) (App( (@( u (Var( '__uninitialized_s _ )) )) (AType tt) )) )) (
+               (ascript-normal( u tt ))
+               (ascript-normal( rhs tt ))
+            ))
+            ( _ (
+               (infer-expr( tctx rhs Unscoped TAny Tail ))
+            ))
+         ))
          (let tt (typeof rhs))
          (if (non-zero tt) () (
             (exit-error( 'Unable\sto\sinfer\stype\sof\sexpression_s rhs ))
