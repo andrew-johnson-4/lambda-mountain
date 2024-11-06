@@ -233,16 +233,24 @@ infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: 
       ))
       ( (Abs( lhs rhs tlt )) (
          (set tctx (infer-ctx( tctx lhs )))
-         (if (is-t( tlt 'Blob_s )) (
-            (match rhs (
-               ()
-               ( (App( (Lit( ':_s _ )) (App( inner-rhs (AType return-type) )) )) (
-                  (infer-expr( tctx inner-rhs Unscoped TAny Tail ))
-                  (ascript-normal( rhs return-type ))
+         (match rhs (
+            ()
+            ( (App( (Lit( ':_s _ )) (App( (Var( '__uninitialized_s _ )) (AType return-type) )) )) (
+               (ascript-normal( rhs return-type ))
+            ))
+            ( _ (
+               (if (is-t( tlt 'Blob_s )) (
+                  (match rhs (
+                     ()
+                     ( (App( (Lit( ':_s _ )) (App( inner-rhs (AType return-type) )) )) (
+                        (infer-expr( tctx inner-rhs Unscoped TAny Tail ))
+                        (ascript-normal( rhs return-type ))
+                     ))
+                  ))
+               ) (
+                  (infer-expr( tctx rhs Unscoped TAny Tail ))
                ))
             ))
-         ) (
-            (infer-expr( tctx rhs Unscoped TAny Tail ))
          ))
          (let lt (typeof-lhs lhs))
          (let rt (typeof rhs))

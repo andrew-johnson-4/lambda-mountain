@@ -2,7 +2,7 @@
 import LIB/default.lm;
 
 main := λ. (: (
-   (let argv (: _ U8[][1024]))
+   (let argv (: __uninitialized U8[][1024]))
    (execvp( (as '/usr/bin/cpp_s U8[]) argv ))
    ()
 ) Nil);
