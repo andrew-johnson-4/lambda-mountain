@@ -51,9 +51,9 @@ mangle-c-declaration-internal := λ(: tt Type). (: (
       ()
       ( (TGround( 'Array_s (LCons( (TGround( index _ )) (LCons( array-base _ )) )) )) (
          (let rst (mangle-c-declaration-internal array-base))
-         (set pre (.2 rst))
+         (set pre (.first rst))
          (set post (+(
-            (.1 rst)
+            (.second rst)
             (+( (+( (SAtom '[_s) (SAtom index) )) (SAtom ']_s) ))
          )))
       ))

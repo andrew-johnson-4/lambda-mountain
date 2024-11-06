@@ -200,13 +200,13 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                (fragment::get( e 'frame_s ))
                (+(
                   (+(
-                     (.2 prepost)
+                     (.first prepost)
                      (SAtom '\s_s)
                   ))
                   (+(
                      (fragment::get( fr 'expression_s ))
                      (+(
-                        (.1 prepost)
+                        (.second prepost)
                         (SAtom '\:\n_s)
                      ))
                   ))
