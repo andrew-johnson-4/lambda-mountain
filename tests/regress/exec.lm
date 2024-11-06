@@ -3,10 +3,11 @@ import LIB/default.lm;
 
 main := λ. (: (
    (let argv (const-cons(
-       (as '-i_s U8[])
+       (as 'cpp_s U8[])
+       (as '-include_s U8[])
        (as 'stdio.h_s U8[])
        (as '/dev/null_s U8[])
    )))
-   (execvp( (as '/usr/bin/cpp_s U8[]) argv ))
+   (execvp( (as 'cpp_s U8[]) argv ))
    ()
 ) Nil);
