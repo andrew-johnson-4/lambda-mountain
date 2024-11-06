@@ -172,21 +172,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (let bind-offset (-( stack-offset (as size I64) )))
          (let fr (fragment::local-variable( bind-offset rtype )))
          (set ctx (fragment-context::bind( ctx lhs rtype fr )))
-         (set e (fragment::set( e 'frame_s (
-            (+(
-               (fragment::get( e 'frame_s ))
-               (+(
-                  (+(
-                     (mangle-c-type rtype)
-                     (SAtom '\s_s)
-                  ))
-                  (+(
-                     (fragment::get( fr 'expression_s ))
-                     (SAtom '\:\n_s)
-                  ))
-               ))
-            ))
-         ))))
+         (let prepost (mangle-c-declaration rtype))
          (match rhs (
             ()
             ( (App( (Lit( ':_s _ )) (App( (Var( '__uninitialized_s _ )) (AType tt) )) )) () )
@@ -209,6 +195,24 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                ))))
             ))
          ))
+         (set e (fragment::set( e 'frame_s (
+            (+(
+               (fragment::get( e 'frame_s ))
+               (+(
+                  (+(
+                     (.2 prepost)
+                     (SAtom '\s_s)
+                  ))
+                  (+(
+                     (fragment::get( fr 'expression_s ))
+                     (+(
+                        (.1 prepost)
+                        (SAtom '\:\n_s)
+                     ))
+                  ))
+               ))
+            ))
+         ))))
          (set.context( e (close ctx) ))
          (set.type( e (typeof term) ))
       ))
