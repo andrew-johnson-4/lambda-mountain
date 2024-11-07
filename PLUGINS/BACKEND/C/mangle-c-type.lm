@@ -17,7 +17,7 @@ mangle-c-type-internal := λ(: tt Type). (: (
       ( (TVar _) () )
       ( (TGround( 'Nil_s _ )) (set r (SAtom 'void_s)) )
       ( (TGround( 'Never_s _ )) (set r (SAtom 'void_s)) )
-      ( (TGround( 'U8_s _ )) (set r (SAtom 'unsigned\schar_s)) )
+      ( (TGround( 'U8_s _ )) (set r (SAtom 'char_s)) )
       ( (TGround( 'U16_s _ )) (set r (SAtom 'unsigned\sshort_s)) )
       ( (TGround( 'U32_s _ )) (set r (SAtom 'unsigned\sint_s)) )
       ( (TGround( 'U64_s _ )) (set r (SAtom 'unsigned\slong_s)) )
@@ -27,6 +27,7 @@ mangle-c-type-internal := λ(: tt Type). (: (
       ( (TGround( 'I64_s _ )) (set r (SAtom 'signed\slong_s)) )
       ( (TGround( 'String_s _ )) (set r (SAtom 'char*_s)) )
       ( (TGround( 'File_s _ )) (set r (SAtom 'FILE_s)) )
+      ( (TGround( 'PID_s _ )) (set r (SAtom 'pid_t_s)) )
       ( (TGround( 'Array_s (LCons( _ (LCons( array-base _ )) )) )) (set r (+( (mangle-c-type array-base) (SAtom '*_s) ))) )
       ( (TGround( _ _ )) (
          (let c-type-name (.lookup( index-c-type-ordinal tt 'UnknownCTypename_s )))

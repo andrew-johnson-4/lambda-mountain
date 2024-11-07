@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm --c tests/regress/exec.lm
+	lm --c t.lm
 	cc tmp.c
 	./a.out
 	echo $?

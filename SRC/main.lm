@@ -46,6 +46,7 @@ main := λ(: argc U64)(: argv String[]). (: (
       ( (SCons( rst (SAtom( fp )) )) ( (frontend fp) (set input rst) ))
       ( (SAtom( fp )) ( (frontend fp) (set continue False_u8) ))
    )))
+   (frontend-flush())
 
    (match config-mode (
       ()

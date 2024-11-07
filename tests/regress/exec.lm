@@ -2,12 +2,19 @@
 import LIB/default.lm;
 
 main := λ. (: (
-   (let argv (const-cons(
-       (as 'cpp_s U8[])
-       (as '-include_s U8[])
-       (as 'stdio.h_s U8[])
-       (as '/dev/null_s U8[])
-   )))
-   # (execvp( (as 'cpp_s U8[]) argv ))
-   ()
+   (let tmp (as (mktemp(as (clone-rope(SAtom '/tmp/lm.tmp.XXXXXX_s)) U8[])) U8[]))
+   (let p (fork()))
+   (if (==( (as p U64) 0_u64 )) (
+      (let argv (const-cons(
+          (as 'cpp_s U8[])
+          (as '-include_s U8[])
+          (as 'stdio.h_s U8[])
+          (as '/dev/null_s U8[])
+          (as '-o_s U8[])
+          (as tmp U8[])
+      )))
+      (execvp( (as 'cpp_s U8[]) argv )) ()
+   ) (
+      (wait(as 0_u64 U32[]))
+   ))
 ) Nil);
