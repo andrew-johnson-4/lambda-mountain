@@ -1,21 +1,21 @@
 
-NULL := λ: Blob(). (: (
+null := λ: Blob(). (: (
    (:expression NULL_l)
 ) Array<?,?>);
 
 const-cons := λ: Blob(: es x...). (: (
    (:expression(
-      '{_s (for-arg (e in es) (
-         (:expression e) ',_s
-       )) 'NULL}_s
+      '{_l (for-arg (e in es) (
+         (:expression e) ',_l
+       )) 'NULL}_l
    ))
 ) Array<x,CONST>);
 
-const-cons := λ: Blob(: v x)(: i U64). (: (
+const-cons := λ: Blob(: v x)(: i L). (: (
    (:expression(
-      '{_s (for-arg (_ in (range( 0_u64 i ))) (
-         (:expression e) ',_s
-       )) 'NULL}_s
+      '{_l (for-atom (e in (range( 0_l i ))) (
+          (:expression v) ',_l
+       )) '}_l
    ))
 ) Array<x,CONST>);
 
