@@ -15,9 +15,6 @@ main := λ. (: (
       )))
       (execvp( (as 'cpp_s U8[]) argv )) ()
    ) (
-      (print 'Read\n_s)
-      (wait(as 0 U32[]))
-      (print(as tmp String))
-      (print(read-file(as tmp String)))
+      (wait(as 0_u64 U32[]))
    ))
 ) Nil);
