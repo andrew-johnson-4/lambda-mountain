@@ -9,15 +9,30 @@ import PLUGINS/BACKEND/C/index-index.lm;
 import PLUGINS/BACKEND/BLOB/index-index.lm;
 
 import PLUGINS/FRONTEND/LM/index-index.lm;
+import PLUGINS/FRONTEND/C/index-index.lm;
+c-input-files := (: LEOF List<String>);
 
 frontend := λ(: fp String). (: (
    (if (has-prefix( fp 'LIB/_s )) (
       (set fp (clone-rope(+( (SAtom config-platform-prefix) (SAtom fp) ))))
    ) ())
-   (let text '_s)
-   (if (is-already-tokenized fp) () (
-      (set text (read-file fp))
-      (set already-tokenized (cons( fp already-tokenized )))
-   ))
-   (lm-frontend( fp text ))
+   (let todo 0_u64)
+   (if (&&( todo (has-suffix( fp '.lm_s )) )) (
+      (let text '_s)
+      (if (is-already-tokenized fp) () (
+         (set text (read-file fp))
+         (set already-tokenized (cons( fp already-tokenized )))
+      ))
+      (lm-frontend( fp text ))
+   ) ())
+   (if (&&( todo (||( (has-suffix( fp '.h_s )) (has-suffix( fp '.c_s )) )) )) (
+      (set c-input-files (cons( fp c-input-files )))
+   ) ())
+   (if todo (
+      (print 'Unable\sto\sfind\sa\ssuitable\sfrontend:\s_s)(print fp)(print '\n_s)(exit 1_u64)
+   ) ())
+) Nil);
+
+frontend-flush := λ. (: (
+   (print 'Parse\sC\s_s)(print c-input-files)(print '\n_s)
 ) Nil);
