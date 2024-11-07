@@ -3,7 +3,7 @@ c-parse-all := λ(: fps List<String>). (: (
    (let tmp (as (mktemp(as (clone-rope(SAtom '/tmp/lm.tmp.XXXXXX_s)) U8[])) U8[]))
    (let p (fork()))
    (if (==( (as p U64) 0_u64 )) (
-      (let argv (const-cons 4096_u64)
+      (let argv (const-cons( (as 0_u64 U8[]) 4096_u64 )))
       (set[]( argv 0_u64 (as 'cpp_s U8[])))
       (set[]( argv 1_u64 (as '/dev/null_s U8[])))
       (set[]( argv 2_u64 (as '-o_s U8[])))
@@ -14,7 +14,7 @@ c-parse-all := λ(: fps List<String>). (: (
          (set[]( argv (+( argvi 1_u64 )) (as fp U8[])))
          (set argvi (+( argvi 2_u64 )))
       ))
-      (set[]( argv argvi (as NULL U8[])))
+      #(set[]( argv argvi (as (NULL()) U8[])))
       (execvp( (as 'cpp_s U8[]) argv )) ()
       # execvp should takeover the process
       (print 'execvp\sfailed\n_s)(exit 1_u64)

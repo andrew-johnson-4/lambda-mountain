@@ -1,7 +1,19 @@
 
+NULL := λ: Blob(). (: (
+   (:expression NULL_l)
+) Array<?,?>);
+
 const-cons := λ: Blob(: es x...). (: (
    (:expression(
       '{_s (for-arg (e in es) (
+         (:expression e) ',_s
+       )) 'NULL}_s
+   ))
+) Array<x,CONST>);
+
+const-cons := λ: Blob(: v x)(: i U64). (: (
+   (:expression(
+      '{_s (for-arg (_ in (range( 0_u64 i ))) (
          (:expression e) ',_s
        )) 'NULL}_s
    ))
