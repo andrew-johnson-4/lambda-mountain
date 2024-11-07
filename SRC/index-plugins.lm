@@ -16,7 +16,7 @@ frontend := λ(: fp String). (: (
    (if (has-prefix( fp 'LIB/_s )) (
       (set fp (clone-rope(+( (SAtom config-platform-prefix) (SAtom fp) ))))
    ) ())
-   (let todo 0_u64)
+   (let todo 1_u64)
    (if (&&( todo (has-suffix( fp '.lm_s )) )) (
       (let text '_s)
       (if (is-already-tokenized fp) () (
@@ -24,9 +24,11 @@ frontend := λ(: fp String). (: (
          (set already-tokenized (cons( fp already-tokenized )))
       ))
       (lm-frontend( fp text ))
+      (set todo 0_u64)
    ) ())
    (if (&&( todo (||( (has-suffix( fp '.h_s )) (has-suffix( fp '.c_s )) )) )) (
       (set c-input-files (cons( fp c-input-files )))
+      (set todo 0_u64)
    ) ())
    (if todo (
       (print 'Unable\sto\sfind\sa\ssuitable\sfrontend:\s_s)(print fp)(print '\n_s)(exit 1_u64)
