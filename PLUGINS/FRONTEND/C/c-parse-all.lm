@@ -1,26 +1,26 @@
 
-#c-parse-all := λ(: fps List<String>). (: (
-#   (let tmp (as (mktemp(as (clone-rope(SAtom '/tmp/lm.tmp.XXXXXX_s)) U8[])) U8[]))
-#   (let p (fork()))
-#   (if (==( (as p U64) 0_u64 )) (
-#      (let argv (const-cons( (as (null()) U8[]) 1024_l )))
-#      (set[]( argv 0_u64 (as 'cpp_s U8[])))
-#      (set[]( argv 1_u64 (as '/dev/null_s U8[])))
-#      (set[]( argv 2_u64 (as '-o_s U8[])))
-#      (set[]( argv 3_u64 (as tmp U8[])))
-#      (let argvi 4_u64)
-#      (for-each (fp in fps) (
-#         (set[]( argv argvi (as '-include_s U8[])))
-#         (set[]( argv (+( argvi 1_u64 )) (as fp U8[])))
-#         (set argvi (+( argvi 2_u64 )))
-#      ))
-#      (execvp( (as 'cpp_s U8[]) argv )) ()
-#      # execvp should takeover the process
-#      (print 'execvp\sfailed\n_s)(exit 1_u64)
-#   ) (
-#      (wait(as (null()) U32[]))
-#   ))
-#   (print(read-file(as tmp String)))
-#) Nil);
+c-parse-all := λ(: fps List<String>). (: (
+   (let tmp (as (mktemp(as (clone-rope(SAtom '/tmp/lm.tmp.XXXXXX_s)) U8[])) U8[]))
+   (let p (fork()))
+   (if (==( (as p U64) 0_u64 )) (
+      (let argv (const-cons( (as (null()) U8[]) 1024_l )))
+      (set[]( argv 0_u64 (as 'cpp_s U8[])))
+      (set[]( argv 1_u64 (as '/dev/null_s U8[])))
+      (set[]( argv 2_u64 (as '-o_s U8[])))
+      (set[]( argv 3_u64 (as tmp U8[])))
+      (let argvi 4_u64)
+      (for-each (fp in fps) (
+         (set[]( argv argvi (as '-include_s U8[])))
+         (set[]( argv (+( argvi 1_u64 )) (as fp U8[])))
+         (set argvi (+( argvi 2_u64 )))
+      ))
+      (execvp( (as 'cpp_s U8[]) argv )) ()
+      # execvp should takeover the process
+      (print 'execvp\sfailed\n_s)(exit 1_u64)
+   ) (
+      (wait(as (null()) U32[]))
+   ))
+   (print(read-file(as tmp String)))
+) Nil);
 
 

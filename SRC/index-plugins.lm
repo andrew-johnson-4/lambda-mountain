@@ -36,5 +36,5 @@ frontend := λ(: fp String). (: (
 ) Nil);
 
 frontend-flush := λ. (: (
-   (print 'Parse\sC\s_s)(print c-input-files)(print '\n_s)
+   (c-parse-all c-input-files)
 ) Nil);
