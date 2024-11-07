@@ -17,7 +17,7 @@ mangle-c-type-internal := λ(: tt Type). (: (
       ( (TVar _) () )
       ( (TGround( 'Nil_s _ )) (set r (SAtom 'void_s)) )
       ( (TGround( 'Never_s _ )) (set r (SAtom 'void_s)) )
-      ( (TGround( 'U8_s _ )) (set r (SAtom 'unsigned\schar_s)) )
+      ( (TGround( 'U8_s _ )) (set r (SAtom 'char_s)) )
       ( (TGround( 'U16_s _ )) (set r (SAtom 'unsigned\sshort_s)) )
       ( (TGround( 'U32_s _ )) (set r (SAtom 'unsigned\sint_s)) )
       ( (TGround( 'U64_s _ )) (set r (SAtom 'unsigned\slong_s)) )

@@ -1,6 +1,7 @@
 
 dev: install-production
-	lm --c tests/regress/import-c.lm
+	lm --c c-parse-all.lm
+	#lm --c tests/regress/import-c.lm
 	cc tmp.c
 	./a.out
 	echo $?
