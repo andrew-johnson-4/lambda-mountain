@@ -20,7 +20,7 @@ c-parse-all := λ(: fps List<String>). (: (
    ) (
       (wait(as (null()) U32[]))
    ))
-   (print(read-file(as tmp String)))
+   (c-parse(c-tokenize(read-file(as tmp String))))
 ) Nil);
 
 
