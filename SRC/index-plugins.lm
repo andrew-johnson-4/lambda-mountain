@@ -9,6 +9,7 @@ import PLUGINS/BACKEND/C/index-index.lm;
 import PLUGINS/BACKEND/BLOB/index-index.lm;
 
 import PLUGINS/FRONTEND/LM/index-index.lm;
+import PLUGINS/FRONTEND/LSTS/index-index.lm;
 import PLUGINS/FRONTEND/C/index-index.lm;
 c-input-files := (: LEOF List<String>);
 
@@ -28,6 +29,10 @@ frontend := λ(: fp String). (: (
    ) ())
    (if (&&( todo (||( (has-suffix( fp '.h_s )) (has-suffix( fp '.c_s )) )) )) (
       (set c-input-files (cons( fp c-input-files )))
+      (set todo 0_u64)
+   ) ())
+   (if (&&( todo (has-suffix( fp '.lsts_s )) )) (
+      (lsts-frontend fp)
       (set todo 0_u64)
    ) ())
    (if todo (

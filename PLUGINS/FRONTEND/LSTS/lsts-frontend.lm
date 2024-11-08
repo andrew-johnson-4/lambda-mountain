@@ -1,0 +1,4 @@
+
+lsts-frontend := λ(: fp String). (: (
+   (lsts-parse(lsts-tokenize fp))
+) Nil);
