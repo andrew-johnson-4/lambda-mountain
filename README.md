@@ -17,7 +17,7 @@ Despite being an assembler, LM provides
 
 ### Why Such a Small Codebase?
 
-LM is currenlty about 4000 lines of code.
+LM is currently about 4000 lines of code.
 LM solves an N by M Problem with language frontends vs language backends.
 The LM project might interface with larger codebases that define frontends or backends, but the core LM Calculus can stay small.
 
