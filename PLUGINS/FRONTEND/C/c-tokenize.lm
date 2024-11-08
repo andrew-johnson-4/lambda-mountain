@@ -3,7 +3,7 @@ c-tokenize := λ(: text String). (: (
    (print text)
    (let tokens (: LEOF List<String>))
    (while (head-string text) (
-      (let at-text text)
+      (let prev-text text)
       # these steps don't need to be ordered, so first-come first-serve
       (if (has-prefix( text '\s_s )) (set text (remove-prefix( text '\s_s ))) ())
       (if (has-prefix( text '\t_s )) (set text (remove-prefix( text '\t_s ))) ())
@@ -14,11 +14,17 @@ c-tokenize := λ(: text String). (: (
       (if (has-prefix( text ']_s )) ( (set text (remove-prefix( text ']_s ))) (set tokens (cons( ']_s tokens ))) ) ())
       (if (has-prefix( text '{_s )) ( (set text (remove-prefix( text '{_s ))) (set tokens (cons( '{_s tokens ))) ) ())
       (if (has-prefix( text '}_s )) ( (set text (remove-prefix( text '}_s ))) (set tokens (cons( '}_s tokens ))) ) ())
+      (if (has-prefix( text ',_s )) ( (set text (remove-prefix( text ',_s ))) (set tokens (cons( ',_s tokens ))) ) ())
       (if (has-prefix( text '->_s )) ( (set text (remove-prefix( text '->_s ))) (set tokens (cons( '->_s tokens ))) ) ())
+      (if (has-prefix( text '!=_s )) ( (set text (remove-prefix( text '!=_s ))) (set tokens (cons( '!=_s tokens ))) ) ())
+      (if (has-prefix( text '!_s )) ( (set text (remove-prefix( text '!_s ))) (set tokens (cons( '!_s tokens ))) ) ())
+      (if (has-prefix( text '==_s )) ( (set text (remove-prefix( text '==_s ))) (set tokens (cons( '==_s tokens ))) ) ())
+      (if (has-prefix( text '=_s )) ( (set text (remove-prefix( text '=_s ))) (set tokens (cons( '=_s tokens ))) ) ())
       (if (has-prefix( text '+=_s )) ( (set text (remove-prefix( text '+=_s ))) (set tokens (cons( '+=_s tokens ))) ) ())
       (if (has-prefix( text '-=_s )) ( (set text (remove-prefix( text '-=_s ))) (set tokens (cons( '-=_s tokens ))) ) ())
       (if (has-prefix( text '/=_s )) ( (set text (remove-prefix( text '/=_s ))) (set tokens (cons( '/=_s tokens ))) ) ())
       (if (has-prefix( text '%=_s )) ( (set text (remove-prefix( text '%=_s ))) (set tokens (cons( '%=_s tokens ))) ) ())
+      (if (has-prefix( text '*=_s )) ( (set text (remove-prefix( text '*=_s ))) (set tokens (cons( '*=_s tokens ))) ) ())
       (if (has-prefix( text '<<=_s )) ( (set text (remove-prefix( text '<<=_s ))) (set tokens (cons( '<<=_s tokens ))) ) ())
       (if (has-prefix( text '>>=_s )) ( (set text (remove-prefix( text '>>=_s ))) (set tokens (cons( '>>=_s tokens ))) ) ())
       (if (has-prefix( text '&=_s )) ( (set text (remove-prefix( text '&=_s ))) (set tokens (cons( '&=_s tokens ))) ) ())
@@ -26,6 +32,7 @@ c-tokenize := λ(: text String). (: (
       (if (has-prefix( text '|=_s )) ( (set text (remove-prefix( text '|=_s ))) (set tokens (cons( '|=_s tokens ))) ) ())
       (if (has-prefix( text '+_s )) ( (set text (remove-prefix( text '+_s ))) (set tokens (cons( '+_s tokens ))) ) ())
       (if (has-prefix( text '-_s )) ( (set text (remove-prefix( text '-_s ))) (set tokens (cons( '-_s tokens ))) ) ())
+      (if (has-prefix( text '*_s )) ( (set text (remove-prefix( text '*_s ))) (set tokens (cons( '*_s tokens ))) ) ())
       (if (has-prefix( text '/_s )) ( (set text (remove-prefix( text '/_s ))) (set tokens (cons( '/_s tokens ))) ) ())
       (if (has-prefix( text '%_s )) ( (set text (remove-prefix( text '%_s ))) (set tokens (cons( '%_s tokens ))) ) ())
       (if (has-prefix( text '<<_s )) ( (set text (remove-prefix( text '<<_s ))) (set tokens (cons( '<<_s tokens ))) ) ())
@@ -36,6 +43,7 @@ c-tokenize := λ(: text String). (: (
       (if (has-prefix( text '~_s )) ( (set text (remove-prefix( text '~_s ))) (set tokens (cons( '~_s tokens ))) ) ())
       (if (has-prefix( text '?_s )) ( (set text (remove-prefix( text '?_s ))) (set tokens (cons( '?_s tokens ))) ) ())
       (if (has-prefix( text ':_s )) ( (set text (remove-prefix( text ':_s ))) (set tokens (cons( ':_s tokens ))) ) ())
+      (if (has-prefix( text '\:_s )) ( (set text (remove-prefix( text '\:_s ))) (set tokens (cons( '\:_s tokens ))) ) ())
       (if (has-prefix( text '._s )) ( (set text (remove-prefix( text '._s ))) (set tokens (cons( '._s tokens ))) ) ())
       (if (has-prefix( text '\o_s )) (
          (while (&&( (!=( (head-string text) 0_u8 )) (!=( (head-string text) 10_u8 )) )) (
@@ -48,6 +56,7 @@ c-tokenize := λ(: text String). (: (
             (set t (+( t (SAtom(clone-rope(head-string text))) )))
             (set text (tail-string text))
          ))
+         (set tokens (cons( (clone-rope t) tokens )))
       ) ())
       (if (==( (as text U64) (as prev-text U64) )) (
          (print 'Unrecognized\sC\sToken\sStart:\s_s)(print (head-string text))(print '\n_s)(exit 1_u64)
