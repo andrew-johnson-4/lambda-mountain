@@ -145,6 +145,13 @@ c-parse-declaration := λ(: tokens List<String>). (: (
       (print 'Declaration\s_s)(print return-type)(print '\s_s)(print name)(print '\n_s)
    ) (
       (if (==( (head tokens) '\[_s )) (
+         (let return-term (App(
+            (close(Lit( ':_s (token::new ':_s) )))
+            (close(App(
+               (close ASTNil)
+               (close(AType(t1 return-type)))
+            )))
+         )))
          (set tokens (tail tokens))
          (let arg-types (: LEOF List<String>))
          (while (&&( (non-zero tokens) (!=( (head tokens) '\]_s )) )) (
