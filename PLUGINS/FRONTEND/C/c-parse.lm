@@ -162,11 +162,12 @@ c-parse-declaration := λ(: tokens List<String>). (: (
             (set tokens (.second at))
             (let arg-name '_s)
             (if (==( arg-type 'C_s )) (
-               (if (non-zero tokens) ((set arg-name (head tokens)) (set tokens (tail tokens))) ())
+               (if (non-zero tokens) (set tokens (tail tokens)) ())
                (print 'Unrecognized\sType\sName\sIn\sFunction\sArgument\s_s)
                (print return-type)(print '\s_s)(print name)(print '\s_s)
                (c-print-token-sequence( original-tokens tokens ))(print '\n_s)(exit 1_u64)
             ) ())
+            (if (&&( (non-zero tokens) (c-is-identifier(head tokens)) )) ((set arg-name (head tokens)) (set tokens (tail tokens))) ())
             (set arg-term (App(
                (close arg-term)
                (close(App(
@@ -178,7 +179,6 @@ c-parse-declaration := λ(: tokens List<String>). (: (
                )))
             )))
             (set arg-types (cons( arg-type arg-types )))
-            (if (&&( (non-zero tokens) (c-is-identifier(head tokens)) )) (set tokens (tail tokens)) ())
             (if (&&( (non-zero tokens) (==( (head tokens) ',_s )) )) (set tokens (tail tokens)) ())
             (if (is( tokens prev-arg-tokens )) (
                (print 'Stuck\sParsing\sFunction\sArgs:\s_s)
