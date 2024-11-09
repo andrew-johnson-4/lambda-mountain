@@ -71,7 +71,7 @@ c-take-type := λ(: tokens List<String>). (: (
                ) ())
                (if (&&( (non-zero tokens) (==( (head tokens) '{_s )) )) (set tokens (c-dump-braces tokens)) ())
             ) (
-               (if (||( (==( (head tokens) 'extern_s )) (==( (head tokens) '__extension___s )) )) () (
+               (if (||( (||( (==( (head tokens) 'extern_s )) (==( (head tokens) '__extension___s )) )) (==( (head tokens) '__restrict_s )) )) () (
                   (set r (cons( (head tokens) r )))
                ))
                (set tokens (tail tokens))
@@ -106,6 +106,12 @@ c-parse-typedef := λ(: tokens List<String>). (: (
       (set tokens (tail tokens))
    ) ())
    (if (non-zero tokens) (
+      (while (&&( (non-zero tokens) (==( (head tokens) '__attribute___s )) )) (
+         (set tokens (tail tokens))
+         (if (&&( (non-zero tokens) (==( (head tokens) '\[_s )) )) (
+            (set tokens (c-dump-parens tokens))
+         ) ())
+      ))
       (if (==( (head tokens) '\:_s )) (set tokens (tail tokens)) (
          (print 'Expected\sSemicolon\sIn\sTypedef_s)
          (c-print-token-sequence( original-tokens tokens ))
