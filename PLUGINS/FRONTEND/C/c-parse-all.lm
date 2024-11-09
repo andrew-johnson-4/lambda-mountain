@@ -1,5 +1,6 @@
 
 c-parse-all := λ(: fps List<String>). (: (
+   (index-c-type( '__attribute___s ))
    (index-c-type( 'extern_s ))
    (index-c-type( 'struct_s ))
    (index-c-type( 'const_s ))

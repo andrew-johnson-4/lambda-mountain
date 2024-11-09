@@ -32,17 +32,37 @@ c-dump-braces := λ(: tokens List<String>). (: (
    tokens
 ) List<String>);
 
+c-dump-parens := λ(: tokens List<String>). (: (
+   (let original-tokens tokens)
+   (set tokens (tail tokens))
+   (let depth 1_u64)
+   (while (&&( (non-zero tokens) (>( depth 0_u64 )) )) (
+      (if (==( (head tokens) '\[_s )) (set depth (+( depth 1_u64 ))) ())
+      (if (==( (head tokens) '\]_s )) (set depth (-( depth 1_u64 ))) ())
+      (set tokens (tail tokens))
+   ))
+   (if (>( depth 0_u64 )) (
+      (print 'Inequal\sParentheses\s_s)(print original-tokens)(print '\n_s)(exit 1_u64)
+   ) ())
+   tokens
+) List<String>);
+
 c-take-type := λ(: tokens List<String>). (: (
    (let r (: LEOF List<String>))
    (while (&&( (non-zero tokens) (c-is-typename(head tokens)) )) (
-      (if (==( (head tokens) 'struct_s )) (
-         (set r (cons( 'struct_s r )))
+      (if (==( (head tokens) '__attribute___s )) (
          (set tokens (tail tokens))
-      ) ())
-      (if (==( (head tokens) 'extern_s )) () (
-         (set r (cons( (head tokens) r )))
+         (set tokens (c-dump-parens tokens))
+      ) (
+         (if (==( (head tokens) 'struct_s )) (
+            (set r (cons( 'struct_s r )))
+            (set tokens (tail tokens))
+         ) ())
+         (if (==( (head tokens) 'extern_s )) () (
+            (set r (cons( (head tokens) r )))
+         ))
+         (set tokens (tail tokens))
       ))
-      (set tokens (tail tokens))
    ))
    (Tuple( (reverse r) tokens ))
 ) Tuple<List<String>,List<String>>);
@@ -127,6 +147,10 @@ c-parse-declaration := λ(: tokens List<String>). (: (
             ) ())
          ))
          (if (non-zero tokens) (set tokens (tail tokens)) ())
+         (let possible-attributes (c-take-type tokens))
+         (set tokens (.second possible-attributes))
+         (if (&&( (non-zero tokens) (==( (head tokens) '{_s )) )) (set tokens (c-dump-braces tokens)) ())
+         (if (&&( (non-zero tokens) (==( (head tokens) '\:_s )) )) (set tokens (tail tokens)) ())
          (set arg-types (reverse arg-types))
          (print 'Declaration\s_s)(print return-type)(print '\s_s)(print name)(print arg-types)(print '\n_s)
       ) (
