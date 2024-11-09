@@ -5,6 +5,7 @@ c-parse-all := λ(: fps List<String>). (: (
    (index-c-type( 'const_s ))
    (index-c-type( 'signed_s ))
    (index-c-type( 'unsigned_s ))
+   (index-c-type( 'void_s ))
    (index-c-type( 'char_s ))
    (index-c-type( 'short_s ))
    (index-c-type( 'int_s ))
