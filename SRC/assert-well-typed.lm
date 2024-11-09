@@ -9,7 +9,7 @@ assert-well-typed := λ(: term AST). (: (
    )))
    (match term (
       ()
-      ( ASTEOF (assert-one-typed term) )
+      ( ASTEOF () )
       ( ASTNil (assert-one-typed term) )
       ( (Glb( k v )) (
          (if (is-open(typeof term)) () (
