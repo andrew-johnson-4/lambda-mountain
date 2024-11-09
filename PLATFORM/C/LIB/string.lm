@@ -16,6 +16,10 @@ tail-string := λ(: x String). (: (
    (==( (strcmp( (as l U8[]) (as r U8[]) )) 0_u32 ))
 ) U64);
 
+!= := λ(: l String)(: r String). (: (
+   (not(==( l r )))
+) U64);
+
 clone-rope := λ(: s S). (: (
    (let buff (new-buffer 64_u64))
    (set buff (clone-rope-impl( buff s )))

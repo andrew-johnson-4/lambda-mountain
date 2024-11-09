@@ -107,7 +107,28 @@ c-parse-declaration := λ(: tokens List<String>). (: (
       (c-print-token-sequence( original-tokens (tail tokens) ))
       (exit 1_u64)
    ))
-   (print 'TODO\sParse\sDeclaration\n_s)(print return-type)(print '\s_s)(print name)(exit 1_u64)
+   (if (==( (head tokens) '\:_s )) (
+      (print 'Declaration\n_s)(print return-type)(print '\s_s)(print name)(print '\n_s)
+   ) (
+      (if (==( (head tokens) '\[_s )) (
+         (set tokens (tail tokens))
+         (let arg-types (: LEOF List<String>))
+         (while (&&( (non-zero tokens) (!=( (head tokens) '\]_s )) )) (
+            (let at (c-take-type tokens))
+            (set arg-types (cons( (c-mangle-typename(.first at)) arg-types )))
+            (if (&&( (non-zero tokens) (c-is-identifier(head tokens)) )) (set tokens (tail tokens)) ())
+            (if (&&( (non-zero tokens) (==( (head tokens) ',_s )) )) (set tokens (tail tokens)) ())
+            (set tokens (.second at))
+         ))
+         (if (non-zero tokens) (set tokens (tail tokens)) ())
+         (set arg-types (reverse arg-types))
+         (print 'Declaration\n_s)(print return-type)(print '\s_s)(print name)(print arg-types)(print '\n_s)
+      ) (
+         (print 'Unknown\sDeclaration_s)
+         (c-print-token-sequence( original-tokens (tail tokens) ))
+         (exit 1_u64)
+      ))
+   ))
    tokens
 ) List<String>);
 
