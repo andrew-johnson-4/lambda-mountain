@@ -58,7 +58,7 @@ c-take-type := λ(: tokens List<String>). (: (
             (set r (cons( 'struct_s r )))
             (set tokens (tail tokens))
          ) ())
-         (if (==( (head tokens) 'extern_s )) () (
+         (if (||( (==( (head tokens) 'extern_s )) (==( (head tokens) '__attribute___s )) )) () (
             (set r (cons( (head tokens) r )))
          ))
          (set tokens (tail tokens))
