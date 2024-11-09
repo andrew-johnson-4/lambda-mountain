@@ -154,17 +154,29 @@ c-parse-declaration := λ(: tokens List<String>). (: (
          )))
          (set tokens (tail tokens))
          (let arg-types (: LEOF List<String>))
+         (let arg-term ASTNil)
          (while (&&( (non-zero tokens) (!=( (head tokens) '\]_s )) )) (
             (let prev-arg-tokens tokens)
             (let at (c-take-type tokens))
             (let arg-type (c-mangle-typename(.first at)))
             (set tokens (.second at))
+            (let arg-name '_s)
             (if (==( arg-type 'C_s )) (
-               (if (non-zero tokens) (set tokens (tail tokens)) ())
+               (if (non-zero tokens) ((set arg-name (head tokens)) (set tokens (tail tokens))) ())
                (print 'Unrecognized\sType\sName\sIn\sFunction\sArgument\s_s)
                (print return-type)(print '\s_s)(print name)(print '\s_s)
                (c-print-token-sequence( original-tokens tokens ))(print '\n_s)(exit 1_u64)
             ) ())
+            (set arg-term (App(
+               (close arg-term)
+               (close(App(
+                  (close(Lit( ':_s (token::new ':_s) )))
+                  (close(App(
+                     (close(Var( arg-name (token::new arg-name) )))
+                     (close(AType(t1 arg-type)))
+                  )))
+               )))
+            )))
             (set arg-types (cons( arg-type arg-types )))
             (if (&&( (non-zero tokens) (c-is-identifier(head tokens)) )) (set tokens (tail tokens)) ())
             (if (&&( (non-zero tokens) (==( (head tokens) ',_s )) )) (set tokens (tail tokens)) ())
@@ -179,6 +191,13 @@ c-parse-declaration := λ(: tokens List<String>). (: (
          (set tokens (.second possible-attributes))
          (if (&&( (non-zero tokens) (==( (head tokens) '{_s )) )) (set tokens (c-dump-braces tokens)) ())
          (if (&&( (non-zero tokens) (==( (head tokens) '\:_s )) )) (set tokens (tail tokens)) ())
+         (let c-term (Glb( (token::new name) (close(Abs(
+            (close arg-term)
+            (close return-term)
+            (t1 'FFI_s)
+         ))) )))
+         (print 'Bind\s_s)(print c-term)(print '\n_s)
+         (set ast-parsed-program (+( ast-parsed-program c-term )))
          (set arg-types (reverse arg-types))
          (print 'Declaration\s_s)(print return-type)(print '\s_s)(print name)(print arg-types)(print '\n_s)
       ) (
