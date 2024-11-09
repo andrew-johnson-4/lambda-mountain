@@ -8,9 +8,9 @@ index-c-type := λ(: s String). (: (
 c-parse := λ(: tokens List<String>). (: (
    (while (non-zero tokens) (
       (let prev-tokens tokens)
-      (if (==( (head tokens) '\:_s )) (set tokens (tail tokens)) ())
-      (if (==( (head tokens) 'typedef_s )) (set tokens (c-parse-typedef tokens)) ())
-      (if (c-is-typename(head tokens)) (set tokens (c-parse-declaration tokens)) ())
+      (if (&&( (non-zero tokens) (==( (head tokens) '\:_s )) )) (set tokens (tail tokens)) ())
+      (if (&&( (non-zero tokens) (==( (head tokens) 'typedef_s )) )) (set tokens (c-parse-typedef tokens)) ())
+      (if (&&( (non-zero tokens) (c-is-typename(head tokens)) )) (set tokens (c-parse-declaration tokens)) ())
       (if (is( prev-tokens tokens )) (
          (print 'Unrecognized\sTop\sLevel\sStatement\s_s)(print (head tokens))(print '\n_s)(exit 1_u64)
       ) ())
