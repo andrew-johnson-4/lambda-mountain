@@ -62,7 +62,7 @@ c-tokenize := λ(: text String). (: (
          (print 'Unrecognized\sC\sToken\sStart:\s_s)(print (head-string text))(print '\n_s)(exit 1_u64)
       ) ())
    ))
-   tokens
+   (reverse tokens)
 ) List<String>);
 
 is-c-ident-char := λ(: text String). (: (

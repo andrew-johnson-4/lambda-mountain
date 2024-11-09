@@ -15,6 +15,15 @@ head := λ(: l List<x>). (: (
    (.2(as l List<x>+Tag<LCons>))
 ) x);
 
+tail := λ(: l List<x>). (: (
+   (match l (
+      ()
+      ( LEOF (fail 'List::head\sis\sfallible\n_s) )
+      ( (LCons( hd tl ))  (set l tl) )
+   ))
+   l
+) List<x>);
+
 + := λ(: hd List<x>)(: tl List<x>). (: (
    (set hd (reverse hd))
    (while (non-zero hd) (match hd (
