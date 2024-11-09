@@ -1,4 +1,26 @@
 
 c-parse := λ(: tokens List<String>). (: (
-   (print tokens)
+#   (while (non-zero tokens) (
+#      (let ht (head tokens))
+#      (if (==( (head tokens) 'typedef_s )) (set tokens (c-parse-typedef tokens)) ())
+#      (if (c-is-typename(head tokens)) (set tokens (c-parse-declaration tokens)) ())
+#      (if (==( (as (head tokens) U64) (as ht U64) )) (
+#         (print 'Unrecognized\sTop\sLevel\sStatement\s_s)(print ht)(print '\n_s)(exit 1_u64)
+#      ) ())
+#   ))
 ) Nil);
+
+c-parse-typedef := λ(: tokens List<String>). (: (
+#   (print 'TODO\sParse\sTypedef\n_s)(exit 1_u64)
+#   tokens
+) List<Tokens>);
+
+c-parse-declaration := λ(: tokens List<String>). (: (
+#   (print 'TODO\sParse\sDeclaration\n_s)(exit 1_u64)
+#   tokens
+) List<Tokens>);
+
+c-is-typename := λ(: s String). (: (
+#   (let r 1_u64)
+#   r
+) U64);
