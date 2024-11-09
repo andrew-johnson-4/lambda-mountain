@@ -1,7 +1,12 @@
 
 preprocess := λ. (: (
+   (print 'Preprocess.1\n_s)
    (index-typedefs ast-parsed-program)
+   (print 'Preprocess.2\n_s)
    (set ast-parsed-program (preprocess-apply-literals ast-parsed-program))
+   (print 'Preprocess.3\n_s)
    (set ast-parsed-program (preprocess-apply ast-parsed-program))
+   (print 'Preprocess.4\n_s)
    (set ast-parsed-program (preprocess-apply-locations ast-parsed-program))
+   (print 'Preprocess.5\n_s)
 ) Nil);
