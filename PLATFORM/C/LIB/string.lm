@@ -16,6 +16,10 @@ tail-string := λ(: x String). (: (
    (==( (strcmp( (as l U8[]) (as r U8[]) )) 0_u32 ))
 ) U64);
 
+!= := λ(: l String)(: r String). (: (
+   (not(==( l r )))
+) U64);
+
 clone-rope := λ(: s S). (: (
    (let buff (new-buffer 64_u64))
    (set buff (clone-rope-impl( buff s )))
@@ -121,6 +125,16 @@ remove-suffix := λ(: base String)(: sfx String). (: (
          )))
       ))
       (set base (tail-string base))
+   ))
+   (clone-rope r)
+) String);
+
+.join :=  λ(: l List<String>)(: sep String). (: (
+   (let r SNil)
+   (while (non-zero l) (
+      (set r (+( r (SAtom(head l)) )))
+      (set l (tail l))
+      (if (non-zero l) (set r (+( r (SAtom sep) ))) ())
    ))
    (clone-rope r)
 ) String);
