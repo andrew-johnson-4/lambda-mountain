@@ -1,4 +1,10 @@
 
+c-type-index := (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<String,U64>[]) )) HashtableEq<String,U64>);
+
+index-c-type := λ(: s String). (: (
+   (set c-type-index (.bind( c-type-index s 1_u64 )))
+) Nil);
+
 c-parse := λ(: tokens List<String>). (: (
    (while (non-zero tokens) (
       (let ht (head tokens))
@@ -22,6 +28,5 @@ c-parse-declaration := λ(: tokens List<String>). (: (
 ) List<String>);
 
 c-is-typename := λ(: s String). (: (
-   (let r 0_u64)
-   r
+   (.lookup( c-type-index s 0_u64 ))
 ) U64);

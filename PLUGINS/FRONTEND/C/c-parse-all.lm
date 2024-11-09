@@ -1,5 +1,14 @@
 
 c-parse-all := λ(: fps List<String>). (: (
+   (index-c-type( 'extern_s ))
+   (index-c-type( 'struct_s ))
+   (index-c-type( 'char_s ))
+   (index-c-type( 'short_s ))
+   (index-c-type( 'int_s ))
+   (index-c-type( 'long_s ))
+   (index-c-type( 'float_s ))
+   (index-c-type( 'double_s ))
+
    (let tmp (as (mktemp(as (clone-rope(SAtom '/tmp/lm.tmp.XXXXXX_s)) U8[])) U8[]))
    (let p (fork()))
    (if (==( (as p U64) 0_u64 )) (
