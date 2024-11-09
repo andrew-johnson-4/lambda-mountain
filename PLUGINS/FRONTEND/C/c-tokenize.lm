@@ -1,6 +1,5 @@
 
 c-tokenize := λ(: text String). (: (
-   (print text)
    (let tokens (: LEOF List<String>))
    (while (head-string text) (
       (let prev-text text)
