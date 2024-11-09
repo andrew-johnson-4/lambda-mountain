@@ -39,7 +39,9 @@ c-take-type := λ(: tokens List<String>). (: (
          (set r (cons( 'struct_s r )))
          (set tokens (tail tokens))
       ) ())
-      (set r (cons( (head tokens) r )))
+      (if (==( (head tokens) 'extern_s )) () (
+         (set r (cons( (head tokens) r )))
+      ))
       (set tokens (tail tokens))
    ))
    (Tuple( (reverse r) tokens ))
@@ -87,10 +89,14 @@ c-print-token-sequence := λ(: from List<String>)(: to List<String>). (: (
    ))
 ) Nil);
 
+c-mangle-typename := λ(: tokens List<String>). (: (
+   (.join( (cons( 'C_s tokens )) '__s ))
+) String);
+
 c-parse-declaration := λ(: tokens List<String>). (: (
    (let original-tokens tokens)
    (let rt (c-take-type tokens))
-   (let return-type (.first rt))
+   (let return-type (c-mangle-typename(.first rt)))
    (set tokens (.second rt))
    (let name '_s)
    (if (&&( (non-zero tokens) (c-is-identifier(head tokens)) )) (
@@ -101,7 +107,7 @@ c-parse-declaration := λ(: tokens List<String>). (: (
       (c-print-token-sequence( original-tokens (tail tokens) ))
       (exit 1_u64)
    ))
-   (print 'TODO\sParse\sDeclaration\n_s)(print return-type)(print name)(exit 1_u64)
+   (print 'TODO\sParse\sDeclaration\n_s)(print return-type)(print '\s_s)(print name)(exit 1_u64)
    tokens
 ) List<String>);
 
