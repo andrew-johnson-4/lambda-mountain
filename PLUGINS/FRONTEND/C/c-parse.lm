@@ -17,11 +17,38 @@ c-parse := λ(: tokens List<String>). (: (
    ))
 ) Nil);
 
+c-dump-braces := λ(: tokens List<String>). (: (
+   (let original-tokens tokens)
+   (set tokens (tail tokens))
+   (let depth 1_u64)
+   (while (&&( (non-zero tokens) (>( depth 0_u64 )) )) (
+      (if (==( (head tokens) '{_s )) (set depth (+( depth 1_u64 ))) ())
+      (if (==( (head tokens) '}_s )) (set depth (-( depth 1_u64 ))) ())
+      (set tokens (tail tokens))
+   ))
+   (if (>( depth 0_u64 )) (
+      (print 'Inequal\sBraces\s_s)(print original-tokens)(print '\n_s)(exit 1_u64)
+   ) ())
+   tokens
+) List<String>);
+
 c-parse-typedef := λ(: tokens List<String>). (: (
    (let original-tokens tokens)
    (set tokens (tail tokens)) # remove typedef token
-   (while (&&( (non-zero tokens) (c-is-typename(head tokens)) )) (
+   (if (==( (head tokens) 'struct_s )) (
       (set tokens (tail tokens))
+      (if (==( (head tokens) '{_s )) (
+         (set tokens (c-dump-braces tokens))
+      ) (
+         (set tokens (tail tokens))
+         (if (==( (head tokens) '{_s )) (
+            (set tokens (c-dump-braces tokens))
+         ) ())
+      ))
+   ) (
+      (while (&&( (non-zero tokens) (c-is-typename(head tokens)) )) (
+         (set tokens (tail tokens))
+      ))
    ))
    (if (non-zero tokens) (
       (print 'Typedef\s_s)(print (head tokens))(print '\n_s)
