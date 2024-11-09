@@ -4,6 +4,7 @@ c-parse-all := λ(: fps List<String>). (: (
    (index-c-type( '__extension___s ))
    (index-c-type( 'extern_s ))
    (index-c-type( 'struct_s ))
+   (index-c-type( 'enum_s ))
    (index-c-type( 'const_s ))
    (index-c-type( 'signed_s ))
    (index-c-type( 'unsigned_s ))

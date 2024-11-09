@@ -7,12 +7,12 @@ index-c-type := λ(: s String). (: (
 
 c-parse := λ(: tokens List<String>). (: (
    (while (non-zero tokens) (
-      (let ht (head tokens))
+      (let prev-tokens tokens)
       (if (==( (head tokens) '\:_s )) (set tokens (tail tokens)) ())
       (if (==( (head tokens) 'typedef_s )) (set tokens (c-parse-typedef tokens)) ())
       (if (c-is-typename(head tokens)) (set tokens (c-parse-declaration tokens)) ())
-      (if (is( (head tokens) ht )) (
-         (print 'Unrecognized\sTop\sLevel\sStatement\s_s)(print ht)(print '\n_s)(exit 1_u64)
+      (if (is( prev-tokens tokens )) (
+         (print 'Unrecognized\sTop\sLevel\sStatement\s_s)(print (head tokens))(print '\n_s)(exit 1_u64)
       ) ())
    ))
 ) Nil);
@@ -55,13 +55,27 @@ c-take-type := λ(: tokens List<String>). (: (
          (set tokens (c-dump-parens tokens))
       ) (
          (if (==( (head tokens) 'struct_s )) (
-            (set r (cons( 'struct_s r )))
             (set tokens (tail tokens))
-         ) ())
-         (if (||( (==( (head tokens) 'extern_s )) (==( (head tokens) '__attribute___s )) )) () (
-            (set r (cons( (head tokens) r )))
+            (if (&&( (non-zero tokens) (c-is-identifier(head tokens)) )) (
+               (set r (cons( 'struct_s (cons( (head tokens) r )) )))
+               (set tokens (tail tokens))
+            ) ())
+            (if (&&( (non-zero tokens) (==( (head tokens) '{_s )) )) (set tokens (c-dump-braces tokens)) ())
+         ) (
+            (if (==( (head tokens) 'enum_s )) (
+               (set tokens (tail tokens))
+               (if (&&( (non-zero tokens) (c-is-identifier(head tokens)) )) (
+                  (set r (cons( 'enum_s (cons( (head tokens) r )) )))
+                  (set tokens (tail tokens))
+               ) ())
+               (if (&&( (non-zero tokens) (==( (head tokens) '{_s )) )) (set tokens (c-dump-braces tokens)) ())
+            ) (
+               (if (||( (==( (head tokens) 'extern_s )) (==( (head tokens) '__attribute___s )) )) () (
+                  (set r (cons( (head tokens) r )))
+               ))
+               (set tokens (tail tokens))
+            ))
          ))
-         (set tokens (tail tokens))
       ))
    ))
    (Tuple( (reverse r) tokens ))
@@ -122,11 +136,7 @@ c-parse-declaration := λ(: tokens List<String>). (: (
    (if (&&( (non-zero tokens) (c-is-identifier(head tokens)) )) (
       (set name (head tokens))
       (set tokens (tail tokens))
-   ) (
-      (print 'Expected\sDeclaration\sIdentifier\sAfter\sType_s)
-      (c-print-token-sequence( original-tokens (tail tokens) ))
-      (exit 1_u64)
-   ))
+   ) ())
    (if (==( (head tokens) '\:_s )) (
       (print 'Declaration\s_s)(print return-type)(print '\s_s)(print name)(print '\n_s)
    ) (
