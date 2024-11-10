@@ -85,6 +85,25 @@ c-take-type := λ(: tokens List<String>). (: (
    (Tuple( (reverse r) tokens ))
 ) Tuple<List<String>,List<String>>);
 
+c-parse-fbinder := λ(: tokens List<String>). (: (
+   (let fname '_s)
+   (let original-tokens tokens)
+   (set tokens (tail tokens))
+   (let depth 1_u64)
+   (while (&&( (non-zero tokens) (>( depth 0_u64 )) )) (
+      (if (==( (head tokens) '\[_s )) (set depth (+( depth 1_u64 ))) ())
+      (if (==( (head tokens) '\]_s )) (set depth (-( depth 1_u64 ))) ())
+      (if (&&( (&&( (==( fname '_s )) (c-is-identifier(head tokens)) )) (!=( (head tokens) '*_s )) )) (
+         (set fname (head tokens))
+      ) ())
+      (set tokens (tail tokens))
+   ))
+   (if (>( depth 0_u64 )) (
+      (print 'Inequal\sParentheses\s_s)(print original-tokens)(print '\n_s)(exit 1_u64)
+   ) ())
+   (Tuple( fname tokens ))
+) Tuple<String,List<String>>);
+
 c-parse-typedef := λ(: tokens List<String>). (: (
    (let original-tokens tokens)
    (set tokens (tail tokens)) # remove typedef token
@@ -103,6 +122,12 @@ c-parse-typedef := λ(: tokens List<String>). (: (
          (set tokens (tail tokens))
       ))
    ))
+   (if (&&( (non-zero tokens) (==( (head tokens) '\[_s )) )) (
+      (let nt (c-parse-fbinder tokens))
+      (print 'Typedef\s_s)(print (.first nt))(print '\n_s)
+      (index-c-type(.first nt))
+      (set tokens (.second nt))
+   ) ())
    (while (&&( (non-zero tokens) (==( (head tokens) '\[_s )) )) (
       (set tokens (c-dump-parens tokens))
    ))
