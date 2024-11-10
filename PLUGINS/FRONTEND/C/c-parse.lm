@@ -78,7 +78,7 @@ c-is-ignored-type := λ(: s String). (: (
 c-take-type := λ(: tokens List<String>). (: (
    (let r (: LEOF List<String>))
    (while (&&( (non-zero tokens) (c-is-typename(head tokens)) )) (
-      (if (==( (head tokens) '__attribute___s )) (
+      (if (||( (==( (head tokens) '__attribute___s )) (==( (head tokens) '__asm___s )) )) (
          (set tokens (tail tokens))
          (set tokens (c-dump-parens tokens))
       ) (
@@ -153,7 +153,7 @@ c-parse-typedef := λ(: tokens List<String>). (: (
       (while (&&( (non-zero tokens) (==( (head tokens) '[_s )) )) (
          (set tokens (c-dump-brackets tokens))
       ))
-      (while (&&( (non-zero tokens) (==( (head tokens) '__attribute___s )) )) (
+      (while (&&( (non-zero tokens) (||( (==( (head tokens) '__attribute___s )) (==( (head tokens) '__asm___s )) )) )) (
          (set tokens (tail tokens))
          (if (&&( (non-zero tokens) (==( (head tokens) '\[_s )) )) (
             (set tokens (c-dump-parens tokens))
