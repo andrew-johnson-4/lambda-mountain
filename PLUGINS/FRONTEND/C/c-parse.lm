@@ -50,6 +50,7 @@ c-dump-parens := λ(: tokens List<String>). (: (
 
 c-is-ignored-type := λ(: s String). (: (
    (let r 0_u64)
+   (if (==( s 'const_s )) (set r 1_u64) ())
    (if (==( s 'extern_s )) (set r 1_u64) ())
    (if (==( s 'static_s )) (set r 1_u64) ())
    (if (==( s 'volatile_s )) (set r 1_u64) ())
@@ -213,16 +214,18 @@ c-parse-declaration := λ(: tokens List<String>). (: (
                (set tokens (tail tokens))
                (if (&&( (non-zero tokens) (==( (head tokens) '\[_s )) )) (set tokens (c-dump-parens tokens)) ())
             ))
-            (set arg-term (App(
-               (close arg-term)
+            (let next-arg-term (App(
+               (close(Lit( ':_s (token::new ':_s) )))
                (close(App(
-                  (close(Lit( ':_s (token::new ':_s) )))
-                  (close(App(
-                     (close(Var( arg-name (token::new arg-name) )))
-                     (close(AType(t1 arg-type)))
-                  )))
+                  (close(Var( 'c_arg_name_s (token::new 'c_arg_name_s) )))
+                  (close(AType(t1 arg-type)))
                )))
             )))
+            (if (is( arg-term ASTNil )) (
+               (set arg-term next-arg-term)
+            ) (
+               (set arg-term (App( (close arg-term) (close next-arg-term) )))
+            ))
             (set arg-types (cons( arg-type arg-types )))
             (if (&&( (non-zero tokens) (==( (head tokens) ',_s )) )) (set tokens (tail tokens)) ())
             (if (is( tokens prev-arg-tokens )) (
