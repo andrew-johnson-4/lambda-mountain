@@ -29,10 +29,14 @@ mangle-c-type-internal := λ(: tt Type). (: (
       ( (TGround( 'File_s _ )) (set r (SAtom 'FILE_s)) )
       ( (TGround( 'PID_s _ )) (set r (SAtom 'pid_t_s)) )
       ( (TGround( 'Array_s (LCons( _ (LCons( array-base _ )) )) )) (set r (+( (mangle-c-type array-base) (SAtom '*_s) ))) )
-      ( (TGround( _ _ )) (
-         (let c-type-name (.lookup( index-c-type-ordinal tt 'UnknownCTypename_s )))
-         (if (==( c-type-name 'UnknownCTypename_s )) () (
-            (set r (SAtom c-type-name))
+      ( (TGround( tag _ )) (
+         (if (has-prefix( tag 'C__s )) (
+            (set r (SAtom (.replace( (remove-prefix( tag 'C__s )) '__s '\s_s )) ))
+         ) (
+            (let c-type-name (.lookup( index-c-type-ordinal tt 'UnknownCTypename_s )))
+            (if (==( c-type-name 'UnknownCTypename_s )) () (
+               (set r (SAtom c-type-name))
+            ))
          ))
       ))
    ))

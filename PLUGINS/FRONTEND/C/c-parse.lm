@@ -125,7 +125,6 @@ c-parse-typedef := λ(: tokens List<String>). (: (
    ))
    (if (&&( (non-zero tokens) (==( (head tokens) '\[_s )) )) (
       (let nt (c-parse-fbinder tokens))
-      (print 'Typedef\s_s)(print (.first nt))(print '\n_s)
       (index-c-type(.first nt))
       (set tokens (.second nt))
    ) ())
@@ -133,7 +132,6 @@ c-parse-typedef := λ(: tokens List<String>). (: (
       (set tokens (c-dump-parens tokens))
    ))
    (if (&&( (non-zero tokens) (c-is-identifier(head tokens)) )) (
-      (print 'Typedef\s_s)(print (head tokens))(print '\n_s)
       (index-c-type(head tokens))
       (set tokens (tail tokens))
    ) ())
@@ -181,7 +179,6 @@ c-parse-declaration := λ(: tokens List<String>). (: (
       (print 'Unrecognized\sType\sName\s_s)(c-print-token-sequence( original-tokens tokens ))(print '\n_s)(exit 1_u64)
    ) ())
    (if (==( (head tokens) '\:_s )) (
-      (print 'Declaration\s_s)(print return-type)(print '\s_s)(print name)(print '\n_s)
    ) (
       (if (==( (head tokens) '\[_s )) (
          (let return-term (App(
@@ -244,10 +241,8 @@ c-parse-declaration := λ(: tokens List<String>). (: (
             (close return-term)
             (t1 'FFI_s)
          ))) )))
-         (print 'Bind\s_s)(print c-term)(print '\n_s)
          (set ast-parsed-program (+( ast-parsed-program c-term )))
          (set arg-types (reverse arg-types))
-         (print 'Declaration\s_s)(print return-type)(print '\s_s)(print name)(print arg-types)(print '\n_s)
       ) (
          (print 'Unknown\sDeclaration_s)
          (c-print-token-sequence( original-tokens (tail tokens) ))
