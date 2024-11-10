@@ -50,14 +50,56 @@ c-tokenize := λ(: text String). (: (
             (set text (tail-string text))
          ))
       ) ())
-      (if (is-c-ident-char( text )) (
+      (if (==( (head-string text) 39_u8 )) (scope(
+         (let t SNil)
+         (set t (+( t (SAtom(clone-rope(head-string text))) )))
+         (set text (tail-string text))
+         (while (&&( (!=( (head-string text) 0_u8 )) (!=( (head-string text) 39_u8 )) )) (
+            (if (==( (head-string text) 92_u8 )) (
+               (set t (+( t (SAtom(clone-rope(head-string text))) )))
+               (set text (tail-string text))
+               (set t (+( t (SAtom(clone-rope(head-string text))) )))
+               (set text (tail-string text))
+            ) (
+               (set t (+( t (SAtom(clone-rope(head-string text))) )))
+               (set text (tail-string text))
+            ))
+         ))
+         (if (==( (head-string text) 39_u8 )) (
+            (set t (+( t (SAtom(clone-rope(head-string text))) )))
+            (set text (tail-string text))
+         ) ())
+         (set tokens (cons( (clone-rope t) tokens )))
+      )) ())
+      (if (==( (head-string text) 34_u8 )) (scope(
+         (let t SNil)
+         (set t (+( t (SAtom(clone-rope(head-string text))) )))
+         (set text (tail-string text))
+         (while (&&( (!=( (head-string text) 0_u8 )) (!=( (head-string text) 34_u8 )) )) (
+            (if (==( (head-string text) 92_u8 )) (
+               (set t (+( t (SAtom(clone-rope(head-string text))) )))
+               (set text (tail-string text))
+               (set t (+( t (SAtom(clone-rope(head-string text))) )))
+               (set text (tail-string text))
+            ) (
+               (set t (+( t (SAtom(clone-rope(head-string text))) )))
+               (set text (tail-string text))
+            ))
+         ))
+         (if (==( (head-string text) 34_u8 )) (
+            (set t (+( t (SAtom(clone-rope(head-string text))) )))
+            (set text (tail-string text))
+         ) ())
+         (set tokens (cons( (clone-rope t) tokens )))
+      )) ())
+      (if (is-c-ident-char( text )) (scope(
          (let t SNil)
          (while (&&( (!=( (head-string text) 0_u8 )) (is-c-ident-char text) )) (
             (set t (+( t (SAtom(clone-rope(head-string text))) )))
             (set text (tail-string text))
          ))
          (set tokens (cons( (clone-rope t) tokens )))
-      ) ())
+      )) ())
       (if (==( (as text U64) (as prev-text U64) )) (
          (print 'Unrecognized\sC\sToken\sStart:\s_s)(print (head-string text))(print '\n_s)(exit 1_u64)
       ) ())
