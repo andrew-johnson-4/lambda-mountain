@@ -1,5 +1,5 @@
 
-#import stdio.h;
+import stdio.h;
 import stdlib.h;
 import string.h;
 import unistd.h;
