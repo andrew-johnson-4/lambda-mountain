@@ -22,6 +22,7 @@ c-parse-all := λ(: fps List<String>). (: (
    (index-c-type( 'float_s ))
    (index-c-type( 'double_s ))
    (index-c-type( '_Float128_s ))
+   (index-c-type( '__builtin_va_list_s ))
    (index-c-type( '*_s ))
    (index-c-type( '..._s ))
    (index-c-type( '[_s ))
