@@ -3,7 +3,7 @@
 import stdlib.h;
 #import string.h;
 import unistd.h;
-#import sys/wait.h;
+import sys/wait.h;
 
 strcmp := λ: FFI(: l U8[])(: r U8[]). (: () U32);
 printf := λ: FFI(: format String)(: arg Meta<Any>). (: () U32);

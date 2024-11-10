@@ -133,10 +133,9 @@ c-parse-typedef := λ(: tokens List<String>). (: (
             (set tokens (c-dump-braces tokens))
          ) ())
       ))
-   ) (
-      (while (&&( (non-zero tokens) (c-is-typename(head tokens)) )) (
-         (set tokens (tail tokens))
-      ))
+   ) ())
+   (while (&&( (non-zero tokens) (c-is-typename(head tokens)) )) (
+      (set tokens (tail tokens))
    ))
    (if (&&( (non-zero tokens) (==( (head tokens) '\[_s )) )) (
       (let nt (c-parse-fbinder tokens))
