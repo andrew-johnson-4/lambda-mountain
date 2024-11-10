@@ -4,7 +4,19 @@ macro ('lsts-try-tokenize-keep pat) (
       (set tokens (cons(
          (with-location( pat (SourceLocation( fp current-line current-column )) )) tokens
       )))
+      (set text (remove-prefix( text pat )))
       (set current-column (+( current-column (.length pat) )))
+   ) ())
+);
+macro ('lsts-try-tokenize-discard pat) (
+   (if (&&( (!=( (head-string text) 0_u8 )) (has-prefix( text pat )) )) (
+      (set text (remove-prefix( text pat )))
+      (if (==( pat '\n_s )) (
+         (set current-line (+( current-line 1_u64 )))
+         (set current-column 0_u64)
+      ) (
+         (set current-column (+( current-column (.length pat) )))
+      ))
    ) ())
 );
 
@@ -15,7 +27,46 @@ lsts-tokenize := λ(: fp String). (: (
    (let current-column 1_u64)
    (while (head-string text) (
       (let prev-text text)
+      (lsts-try-tokenize-keep '~=_s)
       (lsts-try-tokenize-keep '+=_s)
+      (lsts-try-tokenize-keep '-=_s)
+      (lsts-try-tokenize-keep '*=_s)
+      (lsts-try-tokenize-keep '/=_s)
+      (lsts-try-tokenize-keep '%=_s)
+      (lsts-try-tokenize-keep '&=_s)
+      (lsts-try-tokenize-keep '|=_s)
+      (lsts-try-tokenize-keep '<=_s)
+      (lsts-try-tokenize-keep '>=_s)
+      (lsts-try-tokenize-keep '!=_s)
+      (lsts-try-tokenize-keep '==_s)
+      (lsts-try-tokenize-keep '<_s)
+      (lsts-try-tokenize-keep '>_s)
+      (lsts-try-tokenize-keep '{_s)
+      (lsts-try-tokenize-keep '}_s)
+      (lsts-try-tokenize-keep '[_s)
+      (lsts-try-tokenize-keep ']_s)
+      (lsts-try-tokenize-keep '\[_s)
+      (lsts-try-tokenize-keep '\]_s)
+      (lsts-try-tokenize-keep ':_s)
+      (lsts-try-tokenize-keep '\:_s)
+      (lsts-try-tokenize-keep ',_s)
+      (lsts-try-tokenize-keep '?_s)
+      (lsts-try-tokenize-keep '~_s)
+      (lsts-try-tokenize-keep '@_s)
+      (lsts-try-tokenize-keep '+_s)
+      (lsts-try-tokenize-keep '-_s)
+      (lsts-try-tokenize-keep '*_s)
+      (lsts-try-tokenize-keep '/_s)
+      (lsts-try-tokenize-keep '%_s)
+      (lsts-try-tokenize-keep '&_s)
+      (lsts-try-tokenize-keep '|_s)
+      (lsts-try-tokenize-keep '<_s)
+      (lsts-try-tokenize-keep '>_s)
+      (lsts-try-tokenize-keep '!_s)
+      (lsts-try-tokenize-keep '=_s)
+      (lsts-try-tokenize-discard '\s_s)
+      (lsts-try-tokenize-discard '\t_s)
+      (lsts-try-tokenize-discard '\n_s)
       (if (is( text prev-text )) (
          (print 'Unrecognized\sToken\sStart\sIn\sFile\s_s)(print fp)
          (print current-line)(print ',_s)(print current-column)(print ':\s\`_s)(print(clone-rope(head-string text)))(print '\`_s)(print '\n_s)(exit 1_u64)
