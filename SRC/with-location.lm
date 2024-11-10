@@ -62,3 +62,7 @@ with-location := λ(: t Token)(: loc SourceLocation). (: (
    ))
    t
 ) Token);
+
+with-location := λ(: k String)(: loc SourceLocation). (: (
+   (Token( k (iuid()) loc ))
+) Token);

@@ -3,7 +3,7 @@ type CompileMode ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 
 type Type TAny | (TVar String) | (TGround( String , List<Type>[] )) | (TAnd( Type[] , Type[] )); zero Type TAny;
 
-type SourceLocation (SourceLocation( filename:String , U64 , U64 ));
+type SourceLocation (SourceLocation( filename:String , line:U64 , column:U64 ));
 type Token (Token( key:String , nonce:U64 , location:SourceLocation ));
 
 type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String , Token )) | (Lit( String , Token )) | (Abs( AST[] , AST[] , Type )) | (AType( Type ))

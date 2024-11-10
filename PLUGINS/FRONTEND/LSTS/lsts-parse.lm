@@ -1,4 +1,4 @@
 
-lsts-parse := λ(: tokens List<String>). (: (
-   (print tokens)
+lsts-parse := λ(: tokens List<Token>). (: (
+   (print 'TODO\sParse\n_s)(exit 1_u64)
 ) Nil);

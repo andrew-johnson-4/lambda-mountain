@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm --c tests/regress/import-c.lm
+	lm --c tests/regress/lsts-frontend.lsts
 	cc tmp.c
 	./a.out
 	echo $?
