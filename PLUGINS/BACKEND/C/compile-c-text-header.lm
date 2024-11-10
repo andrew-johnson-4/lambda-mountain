@@ -1,11 +1,6 @@
 
 compile-c-text-header := λ. (: (
    (let r SNil)
-   (if (not(.contains( c-input-files 'stdio.h_s ))) (set c-input-files (cons( 'stdio.h_s c-input-files ))) ())
-   (if (not(.contains( c-input-files 'stdlib.h_s ))) (set c-input-files (cons( 'stdlib.h_s c-input-files ))) ())
-   (if (not(.contains( c-input-files 'string.h_s ))) (set c-input-files (cons( 'string.h_s c-input-files ))) ())
-   (if (not(.contains( c-input-files 'unistd.h_s ))) (set c-input-files (cons( 'unistd.h_s c-input-files ))) ())
-   (if (not(.contains( c-input-files 'sys/wait.h.h_s ))) (set c-input-files (cons( 'sys/wait.h_s c-input-files ))) ())
    (for-each (fp in c-input-files) (
       (set r (+( r
          (+( (+( (SAtom '\oinclude\s<_s) (SAtom fp) )) (SAtom '>\n_s) ))
