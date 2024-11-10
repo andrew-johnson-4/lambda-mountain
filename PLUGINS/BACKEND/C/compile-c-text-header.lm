@@ -1,4 +1,10 @@
 
 compile-c-text-header := λ. (: (
-   (SAtom '\oinclude\s<stdio.h>\n\oinclude\s<stdlib.h>\n\oinclude\s<string.h>\n\oinclude\s<unistd.h>\n\oinclude\s<sys/wait.h>\n\n_s)
+   (let r SNil)
+   (for-each (fp in c-input-files) (
+      (set r (+( r
+         (+( (+( (SAtom '\oinclude\s<_s) (SAtom fp) )) (SAtom '>\n_s) ))
+      )))
+   ))
+   r
 ) S);
