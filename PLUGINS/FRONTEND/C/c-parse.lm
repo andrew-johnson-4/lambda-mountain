@@ -103,7 +103,10 @@ c-parse-typedef := λ(: tokens List<String>). (: (
          (set tokens (tail tokens))
       ))
    ))
-   (if (non-zero tokens) (
+   (while (&&( (non-zero tokens) (==( (head tokens) '\[_s )) )) (
+      (set tokens (c-dump-parens tokens))
+   ))
+   (if (&&( (non-zero tokens) (c-is-identifier(head tokens)) )) (
       (print 'Typedef\s_s)(print (head tokens))(print '\n_s)
       (index-c-type(head tokens))
       (set tokens (tail tokens))
@@ -178,6 +181,13 @@ c-parse-declaration := λ(: tokens List<String>). (: (
                (c-print-token-sequence( original-tokens tokens ))(print '\n_s)(exit 1_u64)
             ) ())
             (if (&&( (non-zero tokens) (c-is-identifier(head tokens)) )) ((set arg-name (head tokens)) (set tokens (tail tokens))) ())
+            (while (&&( (non-zero tokens) (==( (head tokens) '\[_s )) )) (
+               (set tokens (c-dump-parens tokens))
+            ))
+            (while (&&( (non-zero tokens) (==( (head tokens) '__attribute___s )) )) (
+               (set tokens (tail tokens))
+               (if (&&( (non-zero tokens) (==( (head tokens) '\[_s )) )) (set tokens (c-dump-parens tokens)) ())
+            ))
             (set arg-term (App(
                (close arg-term)
                (close(App(
