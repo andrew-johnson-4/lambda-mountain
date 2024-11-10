@@ -8,9 +8,10 @@ index-c-type := λ(: s String). (: (
 c-parse := λ(: tokens List<String>). (: (
    (while (non-zero tokens) (
       (let prev-tokens tokens)
+      (if (&&( (non-zero tokens) (==( (head tokens) '__extension___s )) )) (set tokens (tail tokens)) ())
       (if (&&( (non-zero tokens) (==( (head tokens) '\:_s )) )) (set tokens (tail tokens)) ())
       (if (&&( (non-zero tokens) (==( (head tokens) 'typedef_s )) )) (set tokens (c-parse-typedef tokens)) ())
-      (if (&&( (non-zero tokens) (c-is-typename(head tokens)) )) (set tokens (c-parse-declaration tokens)) ())
+      (if (&&( (is( prev-tokens tokens )) (&&( (non-zero tokens) (c-is-typename(head tokens)) )) )) (set tokens (c-parse-declaration tokens)) ())
       (if (is( prev-tokens tokens )) (
          (print 'Unrecognized\sTop\sLevel\sStatement\s_s)(print (head tokens))(print '\n_s)(exit 1_u64)
       ) ())
@@ -47,6 +48,18 @@ c-dump-parens := λ(: tokens List<String>). (: (
    tokens
 ) List<String>);
 
+c-is-ignored-type := λ(: s String). (: (
+   (let r 0_u64)
+   (if (==( s 'const_s )) (set r 1_u64) ())
+   (if (==( s 'extern_s )) (set r 1_u64) ())
+   (if (==( s 'static_s )) (set r 1_u64) ())
+   (if (==( s 'volatile_s )) (set r 1_u64) ())
+   (if (==( s '__extension_s )) (set r 1_u64) ())
+   (if (==( s '__restrict_s )) (set r 1_u64) ())
+   (if (==( s '__inline_s )) (set r 1_u64) ())
+   r
+) U64);
+
 c-take-type := λ(: tokens List<String>). (: (
    (let r (: LEOF List<String>))
    (while (&&( (non-zero tokens) (c-is-typename(head tokens)) )) (
@@ -54,37 +67,48 @@ c-take-type := λ(: tokens List<String>). (: (
          (set tokens (tail tokens))
          (set tokens (c-dump-parens tokens))
       ) (
-         (if (==( (head tokens) 'struct_s )) (
+         (if (||( (||( (==( (head tokens) 'struct_s )) (==( (head tokens) 'enum_s )) )) (==( (head tokens) 'union_s )) )) (
+            (let compound-name (head tokens))
             (set tokens (tail tokens))
             (if (&&( (non-zero tokens) (c-is-identifier(head tokens)) )) (
-               (set r (cons( 'struct_s (cons( (head tokens) r )) )))
+               (set r (cons( compound-name (cons( (head tokens) r )) )))
                (set tokens (tail tokens))
             ) ())
             (if (&&( (non-zero tokens) (==( (head tokens) '{_s )) )) (set tokens (c-dump-braces tokens)) ())
          ) (
-            (if (==( (head tokens) 'enum_s )) (
-               (set tokens (tail tokens))
-               (if (&&( (non-zero tokens) (c-is-identifier(head tokens)) )) (
-                  (set r (cons( 'enum_s (cons( (head tokens) r )) )))
-                  (set tokens (tail tokens))
-               ) ())
-               (if (&&( (non-zero tokens) (==( (head tokens) '{_s )) )) (set tokens (c-dump-braces tokens)) ())
-            ) (
-               (if (||( (==( (head tokens) 'extern_s )) (==( (head tokens) '__attribute___s )) )) () (
-                  (set r (cons( (head tokens) r )))
-               ))
-               (set tokens (tail tokens))
+            (if (c-is-ignored-type(head tokens)) () (
+               (set r (cons( (head tokens) r )))
             ))
+            (set tokens (tail tokens))
          ))
       ))
    ))
    (Tuple( (reverse r) tokens ))
 ) Tuple<List<String>,List<String>>);
 
+c-parse-fbinder := λ(: tokens List<String>). (: (
+   (let fname '_s)
+   (let original-tokens tokens)
+   (set tokens (tail tokens))
+   (let depth 1_u64)
+   (while (&&( (non-zero tokens) (>( depth 0_u64 )) )) (
+      (if (==( (head tokens) '\[_s )) (set depth (+( depth 1_u64 ))) ())
+      (if (==( (head tokens) '\]_s )) (set depth (-( depth 1_u64 ))) ())
+      (if (&&( (&&( (==( fname '_s )) (c-is-identifier(head tokens)) )) (!=( (head tokens) '*_s )) )) (
+         (set fname (head tokens))
+      ) ())
+      (set tokens (tail tokens))
+   ))
+   (if (>( depth 0_u64 )) (
+      (print 'Inequal\sParentheses\s_s)(print original-tokens)(print '\n_s)(exit 1_u64)
+   ) ())
+   (Tuple( fname tokens ))
+) Tuple<String,List<String>>);
+
 c-parse-typedef := λ(: tokens List<String>). (: (
    (let original-tokens tokens)
    (set tokens (tail tokens)) # remove typedef token
-   (if (==( (head tokens) 'struct_s )) (
+   (if (||( (||( (==( (head tokens) 'struct_s )) (==( (head tokens) 'enum_s )) )) (==( (head tokens) 'union_s )) )) (
       (set tokens (tail tokens))
       (if (==( (head tokens) '{_s )) (
          (set tokens (c-dump-braces tokens))
@@ -99,12 +123,25 @@ c-parse-typedef := λ(: tokens List<String>). (: (
          (set tokens (tail tokens))
       ))
    ))
-   (if (non-zero tokens) (
-      (print 'Typedef\s_s)(print (head tokens))(print '\n_s)
+   (if (&&( (non-zero tokens) (==( (head tokens) '\[_s )) )) (
+      (let nt (c-parse-fbinder tokens))
+      (index-c-type(.first nt))
+      (set tokens (.second nt))
+   ) ())
+   (while (&&( (non-zero tokens) (==( (head tokens) '\[_s )) )) (
+      (set tokens (c-dump-parens tokens))
+   ))
+   (if (&&( (non-zero tokens) (c-is-identifier(head tokens)) )) (
       (index-c-type(head tokens))
       (set tokens (tail tokens))
    ) ())
    (if (non-zero tokens) (
+      (while (&&( (non-zero tokens) (==( (head tokens) '__attribute___s )) )) (
+         (set tokens (tail tokens))
+         (if (&&( (non-zero tokens) (==( (head tokens) '\[_s )) )) (
+            (set tokens (c-dump-parens tokens))
+         ) ())
+      ))
       (if (==( (head tokens) '\:_s )) (set tokens (tail tokens)) (
          (print 'Expected\sSemicolon\sIn\sTypedef_s)
          (c-print-token-sequence( original-tokens tokens ))
@@ -137,18 +174,56 @@ c-parse-declaration := λ(: tokens List<String>). (: (
       (set name (head tokens))
       (set tokens (tail tokens))
    ) ())
+   (if (&&( (==( return-type 'C_s )) (!=( name '_s )) )) (
+      (if (non-zero tokens) (set tokens (tail tokens)) ())
+      (print 'Unrecognized\sType\sName\s_s)(c-print-token-sequence( original-tokens tokens ))(print '\n_s)(exit 1_u64)
+   ) ())
    (if (==( (head tokens) '\:_s )) (
-      (print 'Declaration\s_s)(print return-type)(print '\s_s)(print name)(print '\n_s)
    ) (
       (if (==( (head tokens) '\[_s )) (
+         (let return-term (App(
+            (close(Lit( ':_s (token::new ':_s) )))
+            (close(App(
+               (close ASTNil)
+               (close(AType(t1 return-type)))
+            )))
+         )))
          (set tokens (tail tokens))
          (let arg-types (: LEOF List<String>))
+         (let arg-term ASTNil)
          (while (&&( (non-zero tokens) (!=( (head tokens) '\]_s )) )) (
             (let prev-arg-tokens tokens)
             (let at (c-take-type tokens))
+            (let arg-type (c-mangle-typename(.first at)))
             (set tokens (.second at))
-            (set arg-types (cons( (c-mangle-typename(.first at)) arg-types )))
-            (if (&&( (non-zero tokens) (c-is-identifier(head tokens)) )) (set tokens (tail tokens)) ())
+            (let arg-name '_s)
+            (if (==( arg-type 'C_s )) (
+               (if (non-zero tokens) (set tokens (tail tokens)) ())
+               (print 'Unrecognized\sType\sName\sIn\sFunction\sArgument\s_s)
+               (print return-type)(print '\s_s)(print name)(print '\s_s)
+               (c-print-token-sequence( original-tokens tokens ))(print '\n_s)(exit 1_u64)
+            ) ())
+            (if (&&( (non-zero tokens) (c-is-identifier(head tokens)) )) ((set arg-name (head tokens)) (set tokens (tail tokens))) ())
+            (while (&&( (non-zero tokens) (==( (head tokens) '\[_s )) )) (
+               (set tokens (c-dump-parens tokens))
+            ))
+            (while (&&( (non-zero tokens) (==( (head tokens) '__attribute___s )) )) (
+               (set tokens (tail tokens))
+               (if (&&( (non-zero tokens) (==( (head tokens) '\[_s )) )) (set tokens (c-dump-parens tokens)) ())
+            ))
+            (let next-arg-term (App(
+               (close(Lit( ':_s (token::new ':_s) )))
+               (close(App(
+                  (close(Var( 'c_arg_name_s (token::new 'c_arg_name_s) )))
+                  (close(AType(t1 arg-type)))
+               )))
+            )))
+            (if (is( arg-term ASTNil )) (
+               (set arg-term next-arg-term)
+            ) (
+               (set arg-term (App( (close arg-term) (close next-arg-term) )))
+            ))
+            (set arg-types (cons( arg-type arg-types )))
             (if (&&( (non-zero tokens) (==( (head tokens) ',_s )) )) (set tokens (tail tokens)) ())
             (if (is( tokens prev-arg-tokens )) (
                (print 'Stuck\sParsing\sFunction\sArgs:\s_s)
@@ -161,8 +236,13 @@ c-parse-declaration := λ(: tokens List<String>). (: (
          (set tokens (.second possible-attributes))
          (if (&&( (non-zero tokens) (==( (head tokens) '{_s )) )) (set tokens (c-dump-braces tokens)) ())
          (if (&&( (non-zero tokens) (==( (head tokens) '\:_s )) )) (set tokens (tail tokens)) ())
+         (let c-term (Glb( (token::new name) (close(Abs(
+            (close arg-term)
+            (close return-term)
+            (t1 'FFI_s)
+         ))) )))
+         (set ast-parsed-program (+( ast-parsed-program c-term )))
          (set arg-types (reverse arg-types))
-         (print 'Declaration\s_s)(print return-type)(print '\s_s)(print name)(print arg-types)(print '\n_s)
       ) (
          (print 'Unknown\sDeclaration_s)
          (c-print-token-sequence( original-tokens (tail tokens) ))

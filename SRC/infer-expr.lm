@@ -1,10 +1,26 @@
 
+infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: used IsUsed). (: (
+   (if (is-seq term) (
+      (let seqs (: LEOF List<AST>))
+      (while (is-seq term) (match term (
+         ()
+         ( (Seq( l r )) (
+            (set tctx (infer-expr-one( tctx r scoped hint used )))
+            (set term l)
+         ))
+      )))
+   ) (
+      (set tctx (infer-expr-one( tctx term scoped hint used )))
+   ))
+   tctx
+) TContext);
+
 meta
    (description (
       'Use\sa\sContext\sto\sinfer\sthe\stype\sof\san\sexpression.
    ))
 ;
-infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: used IsUsed). (: (
+infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: used IsUsed). (: (
    (match term (
       ()
       ( ASTNil (ascript-normal( term (t1 'Nil_s) )) )

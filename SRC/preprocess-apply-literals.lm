@@ -1,6 +1,27 @@
 
 
 preprocess-apply-literals := λ(: program AST). (: (
+   (if (is-seq program) (
+      (let seqs (: LEOF List<AST>))
+      (while (is-seq program) (match program (
+         ()
+         ( (Seq( l r )) (
+            (set seqs (cons( (preprocess-apply-literals-one r) seqs )))
+            (set program l)
+         ))
+      )))
+      (set program ASTEOF)
+      (while (non-zero seqs) (
+         (set program (+( program (head seqs) )))
+         (set seqs (tail seqs))
+      ))
+   ) (
+      (set program (preprocess-apply-literals-one program))
+   ))
+   program
+) AST);
+
+preprocess-apply-literals-one := λ(: program AST). (: (
    (let r program)
    (match program (
       ()

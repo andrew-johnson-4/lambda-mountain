@@ -138,3 +138,17 @@ remove-suffix := λ(: base String)(: sfx String). (: (
    ))
    (clone-rope r)
 ) String);
+
+.replace := λ(: base String)(: pat String)(: n String). (: (
+   (let r SNil)
+   (while (!=( (head-string base) 0_u8 )) (
+      (if (has-prefix( base pat )) (
+         (set base (remove-prefix( base pat )))
+         (set r (+( r (SAtom n) )))
+      ) (
+         (set r (+( r (SAtom(clone-rope(head-string base))) )))
+         (set base (tail-string base))
+      ))
+   ))
+   (clone-rope r)
+) String);
