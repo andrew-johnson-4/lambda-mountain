@@ -152,3 +152,7 @@ remove-suffix := λ(: base String)(: sfx String). (: (
    ))
    (clone-rope r)
 ) String);
+
++ := λ(: l String)(: r String). (: (
+   (clone-rope(+( (SAtom l) (SAtom r) )))
+) String);
