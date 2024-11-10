@@ -1,6 +1,6 @@
 
 #import stdio.h;
-#import stdlib.h;
+import stdlib.h;
 #import string.h;
 #import unistd.h;
 #import sys/wait.h;
