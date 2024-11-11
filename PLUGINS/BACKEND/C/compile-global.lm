@@ -3,6 +3,8 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
    (compile-global-c( ctx k term ))
 ) Nil);
 
+compile-global-c-has-main := 0_u64;
+
 compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
    (let kt (typeof term))
    (match term (
@@ -27,6 +29,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
          (let text SNil)
 
          (if (==( k 'main_s )) (
+            (set compile-global-c-has-main 1_u64)
             (set text (SCons( (close text) (close(SAtom 'int_s)) )))
          ) (
             (set text (SCons( (close text) (close(mangle-c-type(typeof rhs))) )))
