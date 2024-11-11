@@ -37,6 +37,9 @@ lsts-parse-expect := λ(: expect String)(: tokens List<Token>). (: (
          ( (LCons( t _ )) ((print (.location t))(print '\n_s)))
          ( _ (print 'End\sOf\sFile\n_s) )
       ))
+      (if (!=( (lsts-parse-head tokens) '_s )) (
+         (print 'Found\s"_s)(print (lsts-parse-head tokens))(print '"\n_s)
+      ) ())
       (exit 1_u64)
    ) ())
 ) Nil);
@@ -49,6 +52,9 @@ lsts-parse-expect := λ(: expect String)(: b U64)(: tokens List<Token>). (: (
          ( (LCons( t _ )) ((print (.location t))(print '\n_s)))
          ( _ (print 'End\sOf\sFile\n_s) )
       ))
+      (if (!=( (lsts-parse-head tokens) '_s )) (
+         (print 'Found\s"_s)(print (lsts-parse-head tokens))(print '"\n_s)
+      ) ())
       (exit 1_u64)
    ) ())
 ) Nil);
@@ -99,5 +105,21 @@ lsts-parse-expression := λ(: tokens List<Token>). (: (
 ) Tuple<AST,List<Token>>);
 
 lsts-parse-atom := λ(: tokens List<Token>). (: (
-   (Tuple( ASTEOF tokens ))
+   (let term ASTEOF)
+   (if (is-lit-head(lsts-parse-head tokens)) (
+      (set term (Lit( (lsts-parse-head tokens) (head tokens) )))
+      (set tokens (tail tokens))
+   ) (
+      (if (is-ident-head(lsts-parse-head tokens)) (
+         (set term (Var( (lsts-parse-head tokens) (head tokens) )))
+         (set tokens (tail tokens))
+      ) (
+         (lsts-parse-expect( 'Atom_s 0_u64 tokens ))
+      ))
+   ))
+   (lsts-parse-atom-tail( term tokens ))
+) Tuple<AST,List<Token>>);
+
+lsts-parse-atom-tail := λ(: base AST)(: tokens List<Token>). (: (
+   (Tuple( base tokens ))
 ) Tuple<AST,List<Token>>);
