@@ -11,7 +11,10 @@ assemble-argv-referenced                 := False_u8;
 main-with-argv := False_u8;
 main-with := False_u8;
 
-config-path                  := (: (as (getenv(as 'PATH_s C_char_*)) String) String);
+config-path                  := (: (cons(
+   (+( (as (getenv(as 'HOME_s C_char_*)) String) '.lm/_s )) # /home/username/.lm/
+   (: LEOF List<String>)
+)) List<String>);
 config-platform-prefix       := 'PLATFORM/BLOB/_s;
 config-profile-invocations   := False_u8;
 config-strict                := True_u8;
