@@ -1,4 +1,27 @@
 
+lsts-parse-head :=  λ(: tokens List<Token>). (: (
+   (let r '_s)
+   (match tokens (
+      ()
+      ( (LCons( (Token( tk _ _ )) _ )) (set r tk) )
+      ( _ () )
+   ))
+   r
+) String);
+
 lsts-parse := λ(: tokens List<Token>). (: (
-   (print 'TODO\sParse\n_s)(exit 1_u64)
+   (while (non-zero tokens) (
+      (let prev-tokens tokens)
+      (if (is( prev-tokens tokens )) (
+         (if (==( (lsts-parse-head tokens) 'let_s )) (
+            (set tokens (lsts-parse-let tokens))
+         ) ())
+         (print 'Unrecognized\sToken\sDuring\sParsing\s_s)(print(lsts-parse-head tokens))(print '\n_s)(exit 1_u64)
+      ) ())
+   ))
 ) Nil);
+
+lsts-parse-let := λ(: tokens List<Token>). (: (
+   (assert(==( (lsts-parse-head tokens) 'let_s )))
+   tokens
+) List<Token>);
