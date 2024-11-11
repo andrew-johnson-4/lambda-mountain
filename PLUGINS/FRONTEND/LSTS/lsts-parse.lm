@@ -29,34 +29,46 @@ lsts-unwrap-identifier := λ(: ident String). (: (
    ident
 ) String);
 
+lsts-assert := λ(: b U64)(: tokens List<Token>). (: (
+   (if (not b) (
+      (print 'Parse\sError\sat\s_s)
+      (match tokens (
+         ()
+         ( (LCons( t _ )) ((print (.location t))(print '\n_s)))
+         ( _ (print 'End\sOf\sFile\n_s) )
+      ))
+      (exit 1_u64)
+   ) ())
+) Nil);
+
 lsts-parse-let := λ(: tokens List<Token>). (: (
-   (assert(==( (lsts-parse-head tokens) 'let_s ))) (set tokens (tail tokens))
-   (assert(is-ident-head(lsts-parse-head tokens)))
+   (lsts-assert( (==( (lsts-parse-head tokens) 'let_s )) tokens )) (set tokens (tail tokens))
+   (lsts-assert( (is-ident-head(lsts-parse-head tokens)) tokens ))
    (let name (lsts-parse-head tokens)) (set tokens (tail tokens))
    (if (==( name '._s )) (
-      (assert(is-ident-head(lsts-parse-head tokens)))
+      (lsts-assert( (is-ident-head(lsts-parse-head tokens)) tokens ))
       (set name (+( name (lsts-parse-head tokens) ))) (set tokens (tail tokens))
    ) ())
    (set name (lsts-unwrap-identifier name))
    (let args-list (: LEOF List<Tuple<String,String>>))
    (let return-type '_s)
    (if (==( (lsts-parse-head tokens) '\[_s )) (
-      (assert(==( (lsts-parse-head tokens) '\[_s ))) (set tokens (tail tokens))
+      (lsts-assert( (==( (lsts-parse-head tokens) '\[_s )) tokens )) (set tokens (tail tokens))
       (while (!=( (lsts-parse-head tokens) '\]_s )) (
-         (assert(is-ident-head(lsts-parse-head tokens)))
+         (lsts-assert( (is-ident-head(lsts-parse-head tokens)) tokens ))
          (let arg-name (lsts-parse-head tokens)) (set tokens (tail tokens))
-         (assert(==( (lsts-parse-head tokens) ':_s ))) (set tokens (tail tokens))
-         (assert(is-ident-head(lsts-parse-head tokens)))
+         (lsts-assert( (==( (lsts-parse-head tokens) ':_s )) tokens )) (set tokens (tail tokens))
+         (lsts-assert( (is-ident-head(lsts-parse-head tokens)) tokens ))
          (let arg-type (lsts-parse-head tokens)) (set tokens (tail tokens))
          (if (==( (lsts-parse-head tokens) ',_s )) (set tokens (tail tokens)) ())
          (set args-list (cons( (Tuple( arg-name arg-type )) args-list )))
       ))
-      (assert(==( (lsts-parse-head tokens) '\]_s ))) (set tokens (tail tokens))
-      (assert(==( (lsts-parse-head tokens) ':_s ))) (set tokens (tail tokens))
-      (assert(is-ident-head(lsts-parse-head tokens)))
+      (lsts-assert( (==( (lsts-parse-head tokens) '\]_s )) tokens )) (set tokens (tail tokens))
+      (lsts-assert( (==( (lsts-parse-head tokens) ':_s )) tokens )) (set tokens (tail tokens))
+      (lsts-assert( (is-ident-head(lsts-parse-head tokens)) tokens ))
       (set return-type (lsts-parse-head tokens)) (set tokens (tail tokens))
    ) ())
-   (assert(==( (lsts-parse-head tokens) '=_s ))) (set tokens (tail tokens))
+   (lsts-assert( (==( (lsts-parse-head tokens) '=_s )) tokens )) (set tokens (tail tokens))
    (print 'let\s_s)(print name)(print args-list)(print return-type)(print '\n_s)
    (print 'TODO\sParse\sRHS_s)(exit 1_u64)
    tokens
