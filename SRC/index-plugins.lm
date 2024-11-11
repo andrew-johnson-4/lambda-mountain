@@ -14,6 +14,7 @@ import PLUGINS/FRONTEND/C/index-index.lm;
 c-input-files := (: LEOF List<String>);
 
 frontend := λ(: fp String). (: (
+   (print 'PATH:\s_s)(print config-path)(print '\n_s)
    (if (has-prefix( fp 'LIB/_s )) (
       (set fp (clone-rope(+( (SAtom config-platform-prefix) (SAtom fp) ))))
    ) ())
