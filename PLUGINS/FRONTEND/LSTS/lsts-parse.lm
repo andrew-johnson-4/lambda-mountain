@@ -12,10 +12,15 @@ lsts-parse-head :=  λ(: tokens List<Token>). (: (
 lsts-parse := λ(: tokens List<Token>). (: (
    (while (non-zero tokens) (
       (let prev-tokens tokens)
+      (if (==( (lsts-parse-head tokens) 'let_s )) (
+         (set tokens (lsts-parse-let tokens))
+      ) (
+         (let term-rest (lsts-parse-expression tokens))
+         (let term (.first term-rest))
+         (set tokens (.second term-rest))
+         (print 'Top\sLevel\sExpression\s_s)(print term)(print '\n_s)
+      ))
       (if (is( prev-tokens tokens )) (
-         (if (==( (lsts-parse-head tokens) 'let_s )) (
-            (set tokens (lsts-parse-let tokens))
-         ) ())
          (print 'Unrecognized\sToken\sDuring\sParsing\s_s)(print(lsts-parse-head tokens))(print '\n_s)(exit 1_u64)
       ) ())
    ))
