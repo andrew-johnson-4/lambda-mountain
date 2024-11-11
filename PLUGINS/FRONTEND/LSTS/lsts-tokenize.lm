@@ -116,3 +116,10 @@ is-ident-head := λ(: text String). (: (
    (if (==( (head-string text) 36_u8 )) (set r 1_u64) ()) # $
    r
 ) U64);
+
+is-lit-head := λ(: text String). (: (
+   (let r 0_u64)
+   (if (&&( (>=( (head-string text) 48_u8 )) (<=( (head-string text) 57_u8 )) )) (set r 1_u64) ())  # 0-9
+   (if (&&( (>=( (head-string text) 65_u8 )) (<=( (head-string text) 90_u8 )) )) (set r 1_u64) ())  # A-Z
+   r
+) U64);
