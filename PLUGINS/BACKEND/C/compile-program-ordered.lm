@@ -1,23 +1,29 @@
 
 compile-program-ordered := λ(: global-ctx FContext)(: program AST). (: (
+   (let ordered (: LEOF List<AST>))
    (while (non-zero program) (match program (
       ()
-      ( (Seq( rst (@( g (Glb( k_t rhs )) )) )) (
+      ( (Seq( rst t )) (
+         (set ordered (cons( t ordered )))
+         (set program rst)
+      ))
+   )))
+   (for-each (g in ordered) (match g (
+      ()
+      ( (Glb( k_t rhs )) (
          (if (is-open(typeof g)) () (
             (compile-global( global-ctx k rhs ))
          ))
-         (set program rst)
       ))
-      ( (Seq( rst ASTEOF )) (set program rst) )
-      ( (Seq( rst ASTNil )) (set program rst) )
-      ( (Seq( rst (AType _) )) (set program rst) )
-      ( (Seq( rst (Typedef _) )) (set program rst) )
-      ( (Seq( rst (Meta _) )) (set program rst) )
-      ( (Seq( rst t )) (
+      ( ASTEOF () )
+      ( ASTNil () )
+      ( (AType _) () )
+      ( (Typedef _) () )
+      ( (Meta _) () )
+      ( t (
          (let e (compile-expr( global-ctx t 0_i64 Used )))
          (let text (+( (+( (fragment::get( e 'frame_s )) (fragment::get( e 'expression_s )) )) (SAtom '\:\n_s) )))
          (set assemble-global-initializer-section (SCons( (close assemble-global-initializer-section) (close text) )))
-         (set program rst)
       ))
    )))
 ) Nil);
