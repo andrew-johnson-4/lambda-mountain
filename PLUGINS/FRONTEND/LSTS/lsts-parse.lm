@@ -25,7 +25,10 @@ lsts-parse := λ(: tokens List<Token>). (: (
             (let term-rest (lsts-parse-expression tokens))
             (let term (.first term-rest))
             (set tokens (.second term-rest))
-            (print 'Top\sLevel\sExpression\s_s)(print term)(print '\n_s)
+            (set ast-parsed-program (Seq(
+               (close ast-parsed-program)
+               (close term)
+            )))
          ))
       ))
       (if (is( prev-tokens tokens )) (
@@ -171,7 +174,7 @@ lsts-parse-atom := λ(: tokens List<Token>). (: (
       (set tokens (tail tokens))
    ) (
       (if (is-ident-head(lsts-parse-head tokens)) (
-         (set term (Var( (lsts-parse-head tokens) (head tokens) )))
+         (set term (Var( (lsts-unwrap-identifier(lsts-parse-head tokens)) (head tokens) )))
          (set tokens (tail tokens))
       ) (
          (if (==( (lsts-parse-head tokens) '\[_s )) (
