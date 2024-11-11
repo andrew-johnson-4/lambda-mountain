@@ -1,9 +1,6 @@
 
 dev: install-production
-	lm --c tests/regress/lsts-frontend.lsts
-	cc tmp.c
-	./a.out
-	echo $?
+	cd $${HOME}; lm --c /home/andrew/workspace/lambda-mountain/tests/regress/lsts-frontend.lsts; cc tmp.c; ./a.out
 
 build-docs:
 	lm --blob -o docs/index.html docs/index.html.lm
@@ -44,6 +41,8 @@ install-bootstrap: compile-bootstrap
 install:
 	cc -o lm BOOTSTRAP/cli.c
 	mv lm $${HOME}/bin/lm
+	mkdir -p $${HOME}/.lm/
+	cp -rf PLATFORM $${HOME}/.lm/
 	#lm LMV/cli.lm -o lmv.s
 	#as -o lmv.o lmv.s
 	#ld -o lmv   lmv.o
