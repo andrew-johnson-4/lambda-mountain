@@ -18,6 +18,28 @@ frontend := λ(: fp String). (: (
    (if (has-prefix( fp 'LIB/_s )) (
       (set fp (clone-rope(+( (SAtom config-platform-prefix) (SAtom fp) ))))
    ) ())
+   (let found-file 0_u64)
+   (if (has-prefix( fp 'LIB/_s )) (
+      (if (file-exists fp) (
+         (set found-file 1_u64)
+      ) (
+         (for-each (base-path in config-path) (
+            (if (not found-file) (
+               (if (file-exists(+( base-path fp ))) (
+                  (set found-file 1_u64)
+                  (set fp (+( base-path fp )))
+               ) ())
+            ) ())
+         ))
+      ))
+   ) (
+      (set found-file (file-exists fp))
+   ))
+   (if (not found-file) (
+      (print 'Unable\sTo\sFind\sPath\sTo\sFile:\s_s)(print fp)(print '\n_s)(exit 1_u64)
+   ) ())
+   (print 'READ:\s_s)(print fp)(print '\n_s)
+
    (let todo 1_u64)
    (if (&&( todo (has-suffix( fp '.lm_s )) )) (
       (let text '_s)

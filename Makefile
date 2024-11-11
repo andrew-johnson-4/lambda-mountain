@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm --c tests/regress/lsts-frontend.lsts
+	cd $${HOME}; lm --c /home/andrew/workspace/lambda-mountain/tests/regress/lsts-frontend.lsts
 	cc tmp.c
 	./a.out
 	echo $?
