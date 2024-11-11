@@ -29,3 +29,7 @@ deep-hash := λ(: l Tuple<x,y>). (: (
    ))
    return
 ) U64);
+
+print := λ(: l Tuple<x,y>). (: (
+   (print '\[_s)(print (.first l))(print ',_s)(print (.second l))(print '\n_s)
+) Nil);

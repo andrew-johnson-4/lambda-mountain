@@ -34,7 +34,6 @@ compile-production: compile-bootstrap
 	./bootstrap --c -o production.c SRC/index-index.lm
 	cc -o production production.c
 	rm -f production.c
-	cp production re-production
 
 install-production: compile-production
 	mv production $${HOME}/bin/lm

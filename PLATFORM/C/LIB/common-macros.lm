@@ -34,6 +34,12 @@ macro ( ('for-atom (item 'in iter) loop) ) (
    )))
 );
 
+macro ('assert c) (
+   (if (not c) (
+      (print 'Assertion\sFailed\s_s)(print (: (p :Location:) Constant+Literal+String))(print '\n_s)
+   ) ()) ()
+);
+
 macro ('match t ps) (scope(
    (let (uuid term) (open t))
    (match-pats( (uuid term) ps (fail( 'Pattern\sMatch\sFailure_s (: (p :Location:) Constant+Literal+String) )) ))
