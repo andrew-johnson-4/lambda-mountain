@@ -15,11 +15,11 @@ config-path                  := (: (cons(
    (+( (as (getenv(as 'HOME_s C_char_*)) String) '/.lm/_s )) # /home/username/.lm/
    (: LEOF List<String>)
 )) List<String>);
-config-platform-prefix       := 'PLATFORM/BLOB/_s;
+config-platform-prefix       := 'PLATFORM/C/_s;
 config-profile-invocations   := False_u8;
 config-strict                := True_u8;
 config-preprocess            := True_u8;
-config-target                := '_s;
+config-target                := 'tmp.c_s;
 config-mode                  := (: ModeCompile CompileMode);
 preprocess-macros            := (: MEOF MacroList);
 ast-parsed-program           := (: ASTEOF AST);

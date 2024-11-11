@@ -1,6 +1,8 @@
 
 dev: install-production
-	cd $${HOME}; lm --c /home/andrew/workspace/lambda-mountain/tests/regress/lsts-frontend.lsts; cc tmp.c; ./a.out
+	lm EXAMPLES/hello-world.lsts
+	cc tmp.c
+	./a.out
 
 build-docs:
 	lm --blob -o docs/index.html docs/index.html.lm
