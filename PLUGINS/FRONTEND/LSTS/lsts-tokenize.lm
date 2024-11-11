@@ -6,7 +6,6 @@ macro ('lsts-try-tokenize-keep pat) (
       )))
       (set text (remove-prefix( text pat )))
       (set current-column (+( current-column (.length pat) )))
-      (print 'Token:\s_s)(print pat)(print '\n_s)
    ) ())
 );
 macro ('lsts-try-tokenize-discard pat) (
@@ -93,7 +92,6 @@ lsts-tokenize := λ(: fp String). (: (
          ))
          (let ident-text (clone-rope ident-buffer))
          (set current-column (+( current-column (.length ident-text) )))
-         (print 'Token:\s_s)(print ident-text)(print '\n_s)
          (set tokens (cons(
             (with-location( ident-text (SourceLocation( fp ident-line ident-column )) )) tokens
          )))
