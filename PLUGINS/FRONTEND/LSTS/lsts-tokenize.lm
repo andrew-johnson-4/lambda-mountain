@@ -112,6 +112,7 @@ is-ident-head := λ(: text String). (: (
    (if (&&( (>=( (head-string text) 65_u8 )) (<=( (head-string text) 90_u8 )) )) (set r 1_u64) ())  # A-Z
    (if (&&( (>=( (head-string text) 97_u8 )) (<=( (head-string text) 122_u8 )) )) (set r 1_u64) ()) # a-z
    (if (==( (head-string text) 95_u8 )) (set r 1_u64) ()) # _
+   (if (==( (head-string text) 45_u8 )) (set r 1_u64) ()) # -
    (if (==( (head-string text) 46_u8 )) (set r 1_u64) ()) # .
    (if (==( (head-string text) 36_u8 )) (set r 1_u64) ()) # $
    r
