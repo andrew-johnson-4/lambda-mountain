@@ -223,11 +223,35 @@ lsts-parse-atom := λ(: tokens List<Token>). (: (
                (lsts-parse-expect( '\]_s tokens ))(set tokens (tail tokens))
             ))
          ) (
-            (lsts-parse-expect( 'Atom_s 0_u64 tokens ))
+            (if (==( (lsts-parse-head tokens) '[_s )) (
+               (let l-term-rest (lsts-parse-list tokens))
+               (set term (.first l-term-rest))
+               (set tokens (.second l-term-rest))
+            ) (
+               (if (==( (lsts-parse-head tokens) '{_s )) (
+                  (let m-term-rest (lsts-parse-map tokens))
+                  (set term (.first m-term-rest))
+                  (set tokens (.second m-term-rest))
+               ) (
+                  (lsts-parse-expect( 'Atom_s 0_u64 tokens ))
+               ))
+            ))
          ))
       ))
    ))
    (lsts-parse-atom-tail( term tokens ))
+) Tuple<AST,List<Token>>);
+
+lsts-parse-list := λ(: tokens List<Token>). (: (
+   (let term ASTNil)
+   (print 'TODO\sparse\sList\n_s)(exit 1_u64)
+   (Tuple( term tokens ))
+) Tuple<AST,List<Token>>);
+
+lsts-parse-map := λ(: tokens List<Token>). (: (
+   (let term ASTNil)
+   (print 'TODO\sparse\sMap\n_s)(exit 1_u64)
+   (Tuple( term tokens ))
 ) Tuple<AST,List<Token>>);
 
 lsts-parse-atom-tail := λ(: base AST)(: tokens List<Token>). (: (
