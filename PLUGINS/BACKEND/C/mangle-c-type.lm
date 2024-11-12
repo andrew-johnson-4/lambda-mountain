@@ -25,6 +25,7 @@ mangle-c-type-internal := λ(: tt Type). (: (
       ( (TGround( 'I16_s _ )) (set r (SAtom 'signed\sshort_s)) )
       ( (TGround( 'I32_s _ )) (set r (SAtom 'signed\sint_s)) )
       ( (TGround( 'I64_s _ )) (set r (SAtom 'signed\slong_s)) )
+      ( (TGround( 'F64_s _ )) (set r (SAtom 'double_s)) )
       ( (TGround( 'String_s _ )) (set r (SAtom 'char*_s)) )
       ( (TGround( 'File_s _ )) (set r (SAtom 'FILE_s)) )
       ( (TGround( 'PID_s _ )) (set r (SAtom 'pid_t_s)) )
