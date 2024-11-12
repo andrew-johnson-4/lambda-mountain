@@ -48,7 +48,7 @@ type X implies Y;
 let f(x: X) = x;
 let f(y: Y) = y;
 
-f(x: X)
+f(x: X);
 ```
 
 Now both candidate functions “fit”, however X is a narrower type than Y.
