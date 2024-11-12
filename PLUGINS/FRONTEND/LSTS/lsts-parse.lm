@@ -243,14 +243,36 @@ lsts-parse-atom := λ(: tokens List<Token>). (: (
 ) Tuple<AST,List<Token>>);
 
 lsts-parse-list := λ(: tokens List<Token>). (: (
-   (let term ASTNil)
-   (print 'TODO\sparse\sList\n_s)(exit 1_u64)
+   (let term (Lit( 'LEOF_s (token::new( 'LEOF_s )) )))
+   (lsts-parse-expect( '[_s tokens ))(set tokens (tail tokens))
+   (if (==( (lsts-parse-head tokens) 'for_s )) (
+      (print 'TODO\sList\sComprehension\n_s)(exit 1_u64)
+   ) (
+      (if (==( (lsts-parse-head tokens) ']_s )) () (
+         (while (&&( (non-zero tokens) (!=( (lsts-parse-head tokens) ']_s )) )) (
+            (let item-rest (lsts-parse-expression tokens))
+            (let item (.first item-rest))
+            (set tokens (.second item-rest))
+            (set term (App(
+               (close(Var( 'list::cons_s (token::new 'list::cons_s) )))
+               (close(App(
+                  (close item) (close term)
+               )))
+            )))
+            (if (&&( (non-zero tokens) (!=( (lsts-parse-head tokens) ']_s )) )) (
+               (lsts-parse-expect( ',_s tokens ))(set tokens (tail tokens))
+            ) ())
+         ))
+      ))
+   ))
+   (lsts-parse-expect( ']_s tokens ))(set tokens (tail tokens))
    (Tuple( term tokens ))
 ) Tuple<AST,List<Token>>);
 
 lsts-parse-map := λ(: tokens List<Token>). (: (
    (let term ASTNil)
-   (print 'TODO\sparse\sMap\n_s)(exit 1_u64)
+   (lsts-parse-expect( '{_s tokens ))(set tokens (tail tokens))
+   (lsts-parse-expect( '}_s tokens ))(set tokens (tail tokens))
    (Tuple( term tokens ))
 ) Tuple<AST,List<Token>>);
 
