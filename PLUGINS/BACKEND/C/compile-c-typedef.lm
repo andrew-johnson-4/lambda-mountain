@@ -85,6 +85,7 @@ compile-c-typedef-concrete := λ(: tctx TContext)(: base-type Type)(: body AST).
       (let case-number 0_u64)
       (let cases SNil)
       (let incomplete 0_u64)
+      (let has-case 0_u64)
       (while (non-zero body) (match body (
          ()
          ( (App( (App( rst (Var( '|_s _ )) )) case-definition )) (
@@ -93,6 +94,7 @@ compile-c-typedef-concrete := λ(: tctx TContext)(: base-type Type)(: body AST).
             (set incomplete (||( incomplete (is-incomplete-typedef fields) )))
             (if (is-t( fields 'Nil_s )) () (
                (set cases (+( cases (compile-c-casedef( fields case-number )) )))
+               (set has-case 1_u64)
             ))
             (set case-number (+( case-number 1_u64 )))
             (set body rst)
@@ -103,6 +105,7 @@ compile-c-typedef-concrete := λ(: tctx TContext)(: base-type Type)(: body AST).
             (set incomplete (||( incomplete (is-incomplete-typedef fields) )))
             (if (is-t( fields 'Nil_s )) () (
                (set cases (+( cases (compile-c-casedef( fields case-number )) )))
+               (set has-case 1_u64)
             ))
             (set body ASTEOF)
          ))
@@ -118,9 +121,12 @@ compile-c-typedef-concrete := λ(: tctx TContext)(: base-type Type)(: body AST).
          (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom base-uuid)) )))
          (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '{\n_s)) )))
          (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\tlong\sfield_0\:\n_s)) )))
-         (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\tunion\s{\n_s)) )))
-         (set assemble-header-section (SCons( (close assemble-header-section) (close cases) )))
-         (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\t}\:\n}\:\n_s)) )))
+         (if has-case (
+            (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\tunion\s{\n_s)) )))
+            (set assemble-header-section (SCons( (close assemble-header-section) (close cases) )))
+            (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\t}\:\n_s)) )))
+         ) ())
+         (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '}\:\n_s)) )))
       ))
 ) Nil);
 
