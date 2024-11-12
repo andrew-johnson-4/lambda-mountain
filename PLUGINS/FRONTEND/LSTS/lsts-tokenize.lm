@@ -91,6 +91,13 @@ lsts-tokenize := λ(: fp String). (: (
             ))
          ))
          (let ident-text (clone-rope ident-buffer))
+         (if (||( (&&( (>=( (head-string ident-text) 48_u8 )) (<=( (head-string ident-text) 57_u8 )) )) (==( (head-string ident-text) 45_u8 )) )) (
+            (let tsfx '_u64_s)
+            (if (has-prefix( ident-text '-_s )) (set tsfx '_i64_s) ())
+            (if (.contains( ident-text '._s )) (set tsfx '_f64_s) ())
+            (if (.contains( ident-text 'e_s )) (set tsfx '_f64_s) ())
+            (set ident-text (+( ident-text tsfx )))
+         ) ())
          (set current-column (+( current-column (.length ident-text) )))
          (set tokens (cons(
             (with-location( ident-text (SourceLocation( fp ident-line ident-column )) )) tokens

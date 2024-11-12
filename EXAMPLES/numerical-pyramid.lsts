@@ -1,0 +1,4 @@
+
+import $"LIB/default.lm";
+
+print( 1.0 + 2.0 * 3.4 / 5e10 );

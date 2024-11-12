@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm EXAMPLES/hello-world.lsts
+	lm EXAMPLES/numerical-pyramid.lsts
 	cc tmp.c
 	./a.out
 
