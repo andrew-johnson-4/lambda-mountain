@@ -42,7 +42,7 @@ frontend := λ(: fp String). (: (
    ) ())
 
    (let todo 1_u64)
-   (if (&&( todo (has-suffix( fp '.lm_s )) )) (
+   (if (&&( todo (||( (has-suffix( fp '.lm_s )) (has-suffix( fp '.html_s )) )) )) (
       (let text '_s)
       (if (is-already-tokenized fp) () (
          (set text (read-file fp))

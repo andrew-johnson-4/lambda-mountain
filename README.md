@@ -32,10 +32,10 @@ A fragment is a Key-Value Map of Strings to S-Expressions. This data structure p
 If we have several overloaded functions then specialization lets us choose the best fit for any particular application.
 
 ```
-f := λ(: x X). x;
-f := λ(: y Y). y;
+let f(x: X) = x;
+let f(y: Y) = y;
 
-f (: x X)
+f(x: X);
 ```
 
 In this example the function application does not “fit” the application that expects a Y type argument, so there is only one possible candidate function.
@@ -45,10 +45,10 @@ In this example the function application does not “fit” the application that
 ```
 type X implies Y;
 
-f := λ(: x X). x;
-f := λ(: y Y). y;
+let f(x: X) = x;
+let f(y: Y) = y;
 
-f (: x X)
+f(x: X);
 ```
 
 Now both candidate functions “fit”, however X is a narrower type than Y.
