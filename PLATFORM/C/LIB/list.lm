@@ -6,6 +6,11 @@ cons := λ(: hd x)(: tl List<x>). (: (
    tl
 ) List<x>);
 
+list::cons := λ(: hd x)(: tl List<x>). (: (
+   (set tl (LCons( hd (close tl) )))
+   tl
+) List<x>);
+
 head := λ(: l List<x>). (: (
    (match l (
       ()

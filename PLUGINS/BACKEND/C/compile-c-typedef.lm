@@ -5,22 +5,24 @@ compile-c-typedef-concrete-ordinal := λ(: base-type Type). (: (
    (let base-uuid (uuid()))
    (set index-c-type-ordinal (.bind( index-c-type-ordinal base-type base-uuid )))
    (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom 'typedef\sstruct\s_s)) )))
-   (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom base-uuid)) )))
+   (set assemble-header-section (SCons( (close assemble-header-section) (close(mangle-c-type base-type)) )))
    (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\s_s)) )))
-   (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom base-uuid)) )))
+   (set assemble-header-section (SCons( (close assemble-header-section) (close(mangle-c-type base-type)) )))
    (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\:\n_s)) )))
 ) Nil);
 
 compile-c-typedef-ordinal := λ(: base-type Type). (: (
-   (if (is-open base-type) () (
-      (compile-c-typedef-concrete-ordinal( base-type ))
-   ))
-   (match base-type (
-      ()
-      ( (TGround( tag ts )) (
-         (let k (Tuple( tag (.length ts) )))
-         (for-each (vt in (.lookup( concrete-type-instances-index k (: LEOF List<Type>) ))) (
-            (compile-c-typedef-concrete-ordinal( vt ))
+   (if (is-fragment base-type) () (
+      (if (is-open base-type) () (
+         (compile-c-typedef-concrete-ordinal( base-type ))
+      ))
+      (match base-type (
+         ()
+         ( (TGround( tag ts )) (
+            (let k (Tuple( tag (.length ts) )))
+            (for-each (vt in (.lookup( concrete-type-instances-index k (: LEOF List<Type>) ))) (
+               (compile-c-typedef-concrete-ordinal( vt ))
+            ))
          ))
       ))
    ))
@@ -118,7 +120,7 @@ compile-c-typedef-concrete := λ(: tctx TContext)(: base-type Type)(: body AST).
       ) (
          (set is-cstruct-hard-compiled-index (.bind( is-cstruct-hard-compiled-index base-type 1_u64 )))
          (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom 'struct\s_s)) )))
-         (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom base-uuid)) )))
+         (set assemble-header-section (SCons( (close assemble-header-section) (close(mangle-c-type base-type)) )))
          (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '{\n_s)) )))
          (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\tlong\sfield_0\:\n_s)) )))
          (if has-case (
@@ -131,16 +133,18 @@ compile-c-typedef-concrete := λ(: tctx TContext)(: base-type Type)(: body AST).
 ) Nil);
 
 compile-c-typedef := λ(: base-type Type)(: body AST). (: (
-   (if (is-open base-type) () (
-      (compile-c-typedef-concrete( TCtxEOF base-type body ))
-   ))
-   (match base-type (
-      ()
-      ( (TGround( tag ts )) (
-         (let k (Tuple( tag (.length ts) )))
-         (for-each (vt in (.lookup( concrete-type-instances-index k (: LEOF List<Type>) ))) (
-            (let tctx (unify( base-type vt )))
-            (compile-c-typedef-concrete( tctx vt body ))
+   (if (is-fragment base-type) () (
+      (if (is-open base-type) () (
+         (compile-c-typedef-concrete( TCtxEOF base-type body ))
+      ))
+      (match base-type (
+         ()
+         ( (TGround( tag ts )) (
+            (let k (Tuple( tag (.length ts) )))
+            (for-each (vt in (.lookup( concrete-type-instances-index k (: LEOF List<Type>) ))) (
+               (let tctx (unify( base-type vt )))
+               (compile-c-typedef-concrete( tctx vt body ))
+            ))
          ))
       ))
    ))

@@ -292,10 +292,7 @@ lsts-parse-map := λ(: tokens List<Token>). (: (
             (set term (App(
                (close(Var( 'map::cons_s (with-location( (token::new 'map::cons_s) loc )) )))
                (close(App(
-                  (close(App(
-                     (close(Var( 'Tuple_s (with-location( (token::new 'Tuple_s) loc )) )))
-                     (close(App( (close item) (close mapped) )))
-                  )))
+                  (close(App( (close item) (close mapped) )))
                   (close term)
                )))
             )))
