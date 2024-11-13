@@ -142,3 +142,7 @@ type HashtableEq<k,v> (HashtableEq( occupied:U64 , capacity:U64 , contents:Tuple
    ))
    default
 ) v);
+
+map::cons := λ(: key k)(: val v)(: tl HashtableEq<k,v>). (: (
+   (.bind( tl key val ))
+) HashtableEq<k,v>);
