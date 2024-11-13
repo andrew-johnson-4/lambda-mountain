@@ -195,9 +195,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
                   (match r (
                      ()
                      ( (App( k m )) (
-                        (print 'list::cons\s_s)(print k)(print '\n_s)
                         (infer-expr( tctx k Unscoped TAny Call ))
-                        (print 'list::cons\sm\s_s)(print k)(print '\n_s)
                         (infer-expr( tctx m Unscoped (t2( 'List_s (typeof k) )) Used ))
                      ))
                      ( _ () )
@@ -207,9 +205,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
                   (match r (
                      ()
                      ( (App( kv m )) (
-                        (print 'map::cons\s_s)(print kv)(print '\n_s)
                         (infer-expr( tctx kv Unscoped TAny Call ))
-                        (print 'map::cons\s_s)(print (p2(typeof kv)))(print ',_s)(print (p1(typeof kv)))(print '\n_s)
                         (infer-expr( tctx m Unscoped (t3( 'HashtableEq_s (p2(typeof kv)) (p1(typeof kv)) )) Used ))
                      ))
                      ( _ () )
@@ -221,7 +217,6 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
                (let r-hint TAny)
                (set tctx (infer-expr( tctx r Unscoped TAny r-used )))
                (let lt-fname (find-alias( l-fname (typeof r) )))
-               (print 'Apply\sOr\sCons\s_s)(print l-fname)(print (typeof r))(print r)(print '\n_s)
                (let ftrt (apply-or-cons-and-specialize(
                   lt-fname
                   (typeof-var-raw( term tctx lt-fname ))

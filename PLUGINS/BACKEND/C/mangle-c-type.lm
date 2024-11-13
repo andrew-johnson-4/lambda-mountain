@@ -36,7 +36,10 @@ mangle-c-type-internal := λ(: tt Type). (: (
          ) (
             (let c-type-name (.lookup( index-c-type-ordinal tt 'UnknownCTypename_s )))
             (if (==( c-type-name 'UnknownCTypename_s )) () (
-               (set r (SAtom c-type-name))
+               (set r (+(
+                  (SAtom 'C__s)
+                  (mangle-identifier tt)
+               )))
             ))
          ))
       ))
