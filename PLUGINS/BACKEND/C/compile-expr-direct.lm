@@ -54,9 +54,13 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                      ( '\\]_s (set e (fragment::expression '\[41\]_s)) )
                      ( '\\:_s (set e (fragment::expression '\[59\]_s)) )
                      ( _ (
-                        (set e (fragment::set( e 'expression_s (
-                           (+( (+( (SAtom '\[_s) (SAtom val) )) (SAtom '\]_s) ))
-                        ))))
+                        (if (is-t( ltype 'L_s )) (
+                           (set e (fragment::set( e 'expression_s (SAtom val) )))
+                        ) (
+                           (set e (fragment::set( e 'expression_s (
+                              (+( (+( (SAtom '\[_s) (SAtom val) )) (SAtom '\]_s) ))
+                           ))))
+                        ))
                      ))
                   ))
                ))
