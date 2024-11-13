@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm EXAMPLES/numerical-pyramid.lsts
+	lm EXAMPLES/collections.lsts
 	cc tmp.c
 	./a.out
 
