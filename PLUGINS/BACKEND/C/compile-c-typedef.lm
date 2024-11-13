@@ -133,16 +133,18 @@ compile-c-typedef-concrete := λ(: tctx TContext)(: base-type Type)(: body AST).
 ) Nil);
 
 compile-c-typedef := λ(: base-type Type)(: body AST). (: (
-   (if (is-open base-type) () (
-      (compile-c-typedef-concrete( TCtxEOF base-type body ))
-   ))
-   (match base-type (
-      ()
-      ( (TGround( tag ts )) (
-         (let k (Tuple( tag (.length ts) )))
-         (for-each (vt in (.lookup( concrete-type-instances-index k (: LEOF List<Type>) ))) (
-            (let tctx (unify( base-type vt )))
-            (compile-c-typedef-concrete( tctx vt body ))
+   (if (is-fragment base-type) () (
+      (if (is-open base-type) () (
+         (compile-c-typedef-concrete( TCtxEOF base-type body ))
+      ))
+      (match base-type (
+         ()
+         ( (TGround( tag ts )) (
+            (let k (Tuple( tag (.length ts) )))
+            (for-each (vt in (.lookup( concrete-type-instances-index k (: LEOF List<Type>) ))) (
+               (let tctx (unify( base-type vt )))
+               (compile-c-typedef-concrete( tctx vt body ))
+            ))
          ))
       ))
    ))
