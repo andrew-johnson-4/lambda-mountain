@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm EXAMPLES/collections.lsts
+	lm EXAMPLES/control-flow.lsts
 	cc tmp.c
 	./a.out
 

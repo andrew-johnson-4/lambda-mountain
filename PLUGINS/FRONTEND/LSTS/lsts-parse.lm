@@ -148,9 +148,36 @@ lsts-parse-let := λ(: tokens List<Token>). (: (
 ) List<Token>);
 
 lsts-parse-expression := λ(: tokens List<Token>). (: (
-   (let base-rest (lsts-parse-add tokens))
-   (let base (.first base-rest))
-   (set tokens (.second base-rest))
+   (let base ASTNil)
+   (if (==( (lsts-parse-head tokens) 'if_s )) (scope(
+      (let loc (.location(head tokens)))
+      (set tokens (tail tokens))
+      (let c-rest (lsts-parse-add tokens))
+      (let c (.first c-rest))
+      (set tokens (.second c-rest))
+      (lsts-parse-expect( 'then_s tokens ))(set tokens (tail tokens))
+      (let t-rest (lsts-parse-add tokens))
+      (let t (.first t-rest))
+      (set tokens (.second t-rest))
+      (lsts-parse-expect( 'else_s tokens ))(set tokens (tail tokens))
+      (let f-rest (lsts-parse-add tokens))
+      (let f (.first f-rest))
+      (set tokens (.second f-rest))
+      (set base (App(
+         (close(App(
+            (close(App(
+               (close(Var( 'if_s (with-location( (token::new 'if_s) loc )) )))
+               (close c)
+            )))
+            (close t)
+         )))
+         (close f)
+      )))
+   )) (
+      (let base-rest (lsts-parse-add tokens))
+      (set base (.first base-rest))
+      (set tokens (.second base-rest))
+   ))
    (Tuple( base tokens ))
 ) Tuple<AST,List<Token>>);
 
