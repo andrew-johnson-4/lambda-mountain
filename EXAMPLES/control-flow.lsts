@@ -3,4 +3,4 @@ import $"LIB/default.lm";
 
 print(if 12 then 34 else 56);
 
-(let xyz = 5; while xyz { print(xyz); });
+(let xyz = 5; while xyz { print(xyz); xyz = xyz - 1; });
