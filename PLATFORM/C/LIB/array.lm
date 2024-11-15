@@ -22,6 +22,7 @@ const-cons := λ: Blob(: v x)(: i L). (: (
 (declare-binop( [] Array<base-type,?> U64 base-type ('\[_l x '[_l y ']\]_l) ));
 (declare-ternop( set[] Array<base-type,?> U64 base-type base-type ('\[_l x '[_l y ']=_l z \]_l) ));
 (declare-binop( + Array<base-type,?> U64 Array<base-type,?> ('\[_l x '+_l y '\]_l) ));
+(declare-binop( + Array<base-type,?> I64 Array<base-type,?> ('\[_l x '+_l y '\]_l) ));
 
 (declare-binop( == Array<base-type,?> Array<base-type,?> U64 ('\[_l x '==_l y '\]_l) ));
 (declare-binop( != Array<base-type,?> Array<base-type,?> U64 ('\[_l x '!=_l y '\]_l) ));

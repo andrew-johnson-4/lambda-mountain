@@ -5,6 +5,10 @@ intern := λ(: s String). (: (
    (SmartString( (as s U8[]) (as s U8[]) (+( (as s U8[]) (.length s) )) ))
 ) SmartString);
 
+.length := λ(: x SmartString). (: (
+   (-( (.end x) (.start x) ))
+) U64);
+
 print := λ(: x SmartString). (: (
    (let start (.start x))
    (while (!=( start (.end x) )) (
@@ -12,3 +16,24 @@ print := λ(: x SmartString). (: (
       (set start (+( start 1_u64 )))
    ))
 ) Nil);
+
+[:] := λ(: x SmartString)(: low I64)(: hi I64). (: (
+   (if (<( low 0_i64 )) (
+      (set low (+( (as (.length x) I64) low )))
+   ) ())
+   (if (<( hi 0_i64 )) (
+      (set hi (+( (as (.length x) I64) hi )))
+   ) ())
+   (let lowp (+( (.start x) low )))
+   (let hip (+( (.start x) hi )))
+   (if (<( hip lowp )) (
+      (fail 'Index\sOut\sOf\sBounds:\sSmartString.[:]_s)
+   ) ())
+   (if (<( lowp (.start x) )) (
+      (fail 'Index\sOut\sOf\sBounds:\sSmartString.[:]_s)
+   ) ())
+   (if (>( hip (.end x) )) (
+      (fail 'Index\sOut\sOf\sBounds:\sSmartString.[:]_s)
+   ) ())
+   (SmartString( (.data x) lowp hip ))
+) SmartString);
