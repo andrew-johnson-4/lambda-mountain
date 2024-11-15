@@ -72,3 +72,25 @@ print := λ(: x SmartString). (: (
    ) ())
    (SmartString( (.data x) lowp hip ))
 ) SmartString);
+
+tail-string := λ(: x SmartString). (: (
+   ([:]( 1_i64 (.length x) ))
+) SmartString);
+
+[] := λ(: x SmartString)(: low I64). (: (
+   (if (<( low 0_i64 )) (
+      (set low (+( (as (.length x) I64) low )))
+   ) ())
+   (let lowp (+( (.start x) low )))
+   (if (<( lowp (.start x) )) (
+      (fail 'Index\sOut\sOf\sBounds:\sSmartString.[]_s)
+   ) ())
+   (if (>=( lowp (.end x) )) (
+      (fail 'Index\sOut\sOf\sBounds:\sSmartString.[]_s)
+   ) ())
+   ([]( lowp 0_u64 ))
+) U8);
+
+head-string := λ(: x SmartString). (: (
+   ([]( 0_i64 ))
+) SmartString);
