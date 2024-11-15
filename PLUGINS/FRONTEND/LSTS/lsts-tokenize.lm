@@ -96,7 +96,9 @@ lsts-tokenize := λ(: fp String). (: (
             (if (has-prefix( ident-text '-_s )) (set tsfx '_i64_s) ())
             (if (.contains( ident-text '._s )) (set tsfx '_f64_s) ())
             (if (.contains( ident-text 'e_s )) (set tsfx '_f64_s) ())
-            (set ident-text (+( ident-text tsfx )))
+            (if (==( ident-text '-_s )) () (
+               (set ident-text (+( ident-text tsfx )))
+            ))
          ) ())
          (set current-column (+( current-column (.length ident-text) )))
          (set tokens (cons(
