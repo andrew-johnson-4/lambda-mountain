@@ -4,9 +4,9 @@ type CompileMode ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 type Type TAny | (TVar String) | (TGround( String , List<Type>[] )) | (TAnd( Type[] , Type[] )); zero Type TAny;
 
 type SourceLocation (SourceLocation( filename:String , line:U64 , column:U64 ));
-type Token (Token( key:String , nonce:U64 , location:SourceLocation ));
+type Token (Token( key:SmartString , nonce:U64 , location:SourceLocation ));
 
-type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( String , Token )) | (Lit( String , Token )) | (Abs( AST[] , AST[] , Type )) | (AType( Type ))
+type AST ASTEOF | ASTNil | (App( AST[] , AST[] )) | (Var( SmartString , Token )) | (Lit( SmartString , Token )) | (Abs( AST[] , AST[] , Type )) | (AType( Type ))
                 | (Seq( AST[] , AST[] )) | (Glb( Token , AST[] )) | (Typedef( AST[] , AST[] )) | (Meta( AST[] )); zero AST ASTEOF;
 
 type FragmentKV (FKVEOF) | (FKVSeq( FragmentKV[] , String , S )); zero FragmentKV FKVEOF;

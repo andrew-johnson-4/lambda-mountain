@@ -5,6 +5,10 @@ intern := λ(: s String). (: (
    (SmartString( (as s U8[]) (as s U8[]) (+( (as s U8[]) (.length s) )) ))
 ) SmartString);
 
+intern := λ(: s SmartString). (: (
+   s
+) SmartString);
+
 .length := λ(: x SmartString). (: (
    (-( (.end x) (.start x) ))
 ) U64);
