@@ -16,6 +16,7 @@ import PLATFORM/C/LIB/i64.lm;
 import PLATFORM/C/LIB/f64.lm;
 import PLATFORM/C/LIB/buffer.lm;
 import PLATFORM/C/LIB/string.lm;
+import PLATFORM/C/LIB/smart-string.lm;
 import PLATFORM/C/LIB/s.lm;
 import PLATFORM/C/LIB/tuple.lm;
 import PLATFORM/C/LIB/list.lm;
