@@ -122,7 +122,7 @@ lsts-parse-let := λ(: tokens List<Token>). (: (
          ))
          (if (is( args-list ASTNil )) (
             (set args-list (App(
-               (close(Lit( ':_s (token::new ':_s) )))
+               (close(Lit( (intern ':_s) (token::new ':_s) )))
                (close(App(
                   (close(Var( (.key arg-name) arg-name )))
                   (close(AType arg-type))
@@ -150,7 +150,7 @@ lsts-parse-let := λ(: tokens List<Token>). (: (
    (let rhs-rest (lsts-parse-expression tokens))
    (let rhs (.first rhs-rest))
    (let return-term (App(
-      (close(Lit( ':_s (token::new ':_s) )))
+      (close(Lit( (intern ':_s) (token::new ':_s) )))
       (close(App(
          (close rhs)
          (close(AType return-type))
@@ -369,7 +369,7 @@ lsts-parse-mul := λ(: tokens List<Token>). (: (
 lsts-parse-atom := λ(: tokens List<Token>). (: (
    (let term ASTEOF)
    (if (is-lit-head(lsts-parse-head tokens)) (
-      (set term (Lit( (lsts-parse-head tokens) (head tokens) )))
+      (set term (Lit( (intern(lsts-parse-head tokens)) (head tokens) )))
       (set tokens (tail tokens))
    ) (
       (if (is-ident-head(lsts-parse-head tokens)) (
@@ -409,7 +409,7 @@ lsts-parse-atom := λ(: tokens List<Token>). (: (
 
 lsts-parse-list := λ(: tokens List<Token>). (: (
    (lsts-parse-expect( '[_s tokens ))(let loc (.location(head tokens)))(set tokens (tail tokens))
-   (let term (Lit( 'LEOF_s (with-location( (token::new( 'LEOF_s )) loc )) )))
+   (let term (Lit( (intern 'LEOF_s) (with-location( (token::new( 'LEOF_s )) loc )) )))
    (if (==( (lsts-parse-head tokens) 'for_s )) (
       (print 'TODO\sList\sComprehension\n_s)(exit 1_u64)
    ) (
@@ -440,7 +440,7 @@ lsts-parse-list := λ(: tokens List<Token>). (: (
 
 lsts-parse-map := λ(: tokens List<Token>). (: (
    (lsts-parse-expect( '{_s tokens ))(let loc (.location(head tokens)))(set tokens (tail tokens))
-   (let term (Lit( 'HashtableEqEOF_s (with-location( (token::new( 'HashtableEqEOF_s )) loc )) )))
+   (let term (Lit( (intern 'HashtableEqEOF_s) (with-location( (token::new( 'HashtableEqEOF_s )) loc )) )))
    (if (==( (lsts-parse-head tokens) 'for_s )) (
       (print 'TODO\sMap\sComprehension\n_s)(exit 1_u64)
    ) (
@@ -456,7 +456,7 @@ lsts-parse-map := λ(: tokens List<Token>). (: (
                (set mapped (.first mapped-rest))
                (set tokens (.second mapped-rest))
             ) (
-               (set mapped (Lit( '1_u64_s (with-location( (token::new( '1_u64_s )) loc )) )))
+               (set mapped (Lit( (intern '1_u64_s) (with-location( (token::new( '1_u64_s )) loc )) )))
             ))
             (set term (App(
                (close(Var( (intern 'map::cons_s) (with-location( (token::new 'map::cons_s) loc )) )))
