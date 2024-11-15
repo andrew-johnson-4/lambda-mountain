@@ -1,0 +1,6 @@
+
+import LIB/default.lm;
+
+main := λ. (: (
+   (print (intern 'ABC_s))
+) Nil);
