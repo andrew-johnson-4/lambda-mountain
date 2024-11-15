@@ -1,2 +1,2 @@
 
-type SmartString (SmartString( data:U8[] , start:U64 , end:U64 ));
+type SmartString (SmartString( data:U8[] , start:U8[] , end:U8[] ));
