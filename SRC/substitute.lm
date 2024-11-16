@@ -40,7 +40,8 @@ substitute := λ(: tctx TContext)(: tt List<Type>). (: (
 substitute := λ(: tctx TContext)(: tt Type). (: (
    (match tt (
       ()
-      ( (TVar v) (
+      ( (TVar vs) (
+         (let v (untern vs))
          (while (non-zero tctx) (match tctx (
             ()
             ( TCtxNil (set tctx TCtxEOF) )
@@ -86,7 +87,8 @@ substitute := λ(: tctx Context)(: tt List<Type>). (: (
 substitute := λ(: tctx Context)(: tt Type). (: (
    (match tt (
       ()
-      ( (TVar v) (
+      ( (TVar vs) (
+         (let v (untern vs))
          (while (non-zero tctx) (match tctx (
             ()
             ( CtxNil (set tctx CtxEOF) )

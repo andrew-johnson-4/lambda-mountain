@@ -26,7 +26,7 @@ infer-type-definition := λ(: base-type Type)(: body AST)(: case-number U64). (:
                (match base-type (
                   ()
                   ( (TGround( cls _ )) (
-                     (has-only-child( cls tag ))
+                     (has-only-child( (untern cls) tag ))
                   ))
                ))
             ) ())

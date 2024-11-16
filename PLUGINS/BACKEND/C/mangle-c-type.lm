@@ -32,7 +32,7 @@ mangle-c-type-internal := λ(: tt Type). (: (
       ( (TGround( 'Array_s (LCons( _ (LCons( array-base _ )) )) )) (set r (+( (mangle-c-type array-base) (SAtom '*_s) ))) )
       ( (TGround( tag _ )) (
          (if (has-prefix( tag (intern 'C__s) )) (
-            (set r (SAtom (.replace( (remove-prefix( tag (intern 'C__s) )) '__s '\s_s )) ))
+            (set r (SAtom (.replace( (remove-prefix( tag (intern 'C__s) )) (intern '__s) (intern '\s_s) )) ))
          ) (
             (let c-type-name (.lookup( index-c-type-ordinal tt 'UnknownCTypename_s )))
             (if (==( c-type-name 'UnknownCTypename_s )) () (

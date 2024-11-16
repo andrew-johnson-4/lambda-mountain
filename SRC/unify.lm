@@ -17,9 +17,9 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
       ( (Tuple( (TVar( ltv )) (TGround( tg LEOF )) )) (
          (set ctx (TCtxBind(
             (close TCtxEOF)
-            ltv
+            (untern ltv)
             pt
-            (Lit( tg (token::new tg) ))
+            (Lit( (untern tg) (token::new(untern tg)) ))
          )))
       ))
       ( (Tuple( (TGround( 'Meta_s (LCons( mt LEOF )) )) _ )) (
@@ -28,7 +28,7 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
       ( (Tuple( (TVar( ltv )) rt )) (
          (set ctx (TCtxBind(
             (close TCtxEOF)
-            ltv
+            (untern ltv)
             pt
             ASTEOF
          )))

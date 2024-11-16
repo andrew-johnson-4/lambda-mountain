@@ -10,8 +10,8 @@ with-only-class := λ(: tt Type). (: (
          (if (non-zero rc) (set rt rc) ())
       ))
       ( (TGround( tag _ )) (
-         (if (is-class tag) (
-            (if (not(is-fragment tag)) (
+         (if (is-class(untern tag)) (
+            (if (not(is-fragment(untern tag))) (
                (set rt tt)
             ) ())
          ) ())

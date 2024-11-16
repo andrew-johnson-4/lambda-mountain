@@ -5,7 +5,7 @@ with-tag := λ(: tt Type). (: (
       (match cls-tt (
          ()
          ( (TGround( cls tl )) (
-            (let tag (get-only-child cls))
+            (let tag (get-only-child(untern cls)))
             (if (head-string tag) (
                (set tt (and( tt (t2( 'Tag_s (t1 tag) )) )))
             ) ())
@@ -30,7 +30,7 @@ with-case-number := λ(: tt Type). (: (
          ) (set tt rt))
       ))
       ( (TGround( 'Tag_s (LCons( (TGround( tag _ )) _ )) )) (
-         (set tt (and( tt (t2( 'CaseNumber_s (t1(to-string(index-of-tag tag))) )) )))
+         (set tt (and( tt (t2( 'CaseNumber_s (t1(to-string(index-of-tag(untern tag)))) )) )))
       ))
       ( _ () )
    ))

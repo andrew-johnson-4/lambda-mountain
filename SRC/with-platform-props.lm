@@ -5,7 +5,7 @@ with-platform-props := λ(: tt Type). (: (
       (match cls-tt (
          ()
          ( (TGround( cls _ )) (
-            (if (is-lm-struct cls) (set tt (and( tt (t1 'LMStruct_s) ))) ())
+            (if (is-lm-struct(untern cls)) (set tt (and( tt (t1 'LMStruct_s) ))) ())
          ))
          ( _ () )
       ))
