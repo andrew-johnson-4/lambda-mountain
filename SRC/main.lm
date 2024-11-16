@@ -16,6 +16,7 @@ main := λ(: argc U64)(: argv String[]). (: (
             (set plugin-current-backend (& plugins-backend-blob-compile))          
          ))
          ('--parse_s (set config-mode ModeParse))
+         ('--dev_s (set config-devmode 1_u64))
          ('--preprocess_s (set config-mode ModePreprocess))
          ('--typecheck_s (set config-mode ModeTypecheck))
          ('--compile_s (set config-mode ModeCompile))

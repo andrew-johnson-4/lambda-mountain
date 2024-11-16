@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm tests/regress/smart-string.lm
+	lm --dev tests/regress/import-c.lm
 	cc tmp.c
 	./a.out
 
