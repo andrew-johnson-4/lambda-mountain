@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm EXAMPLES/control-flow.lsts
+	lm tests/regress/smart-string.lm
 	cc tmp.c
 	./a.out
 
