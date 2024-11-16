@@ -90,8 +90,8 @@ parse-toplevel := λ(: tokens List<Token>). (: (
                   suffix
                   (TAnd(
                      (close(TAnd(
-                        (close(TGround( 'Constant_s (close(: LEOF List<Type>)) )))
-                        (close(TGround( 'Literal_s (close(: LEOF List<Type>)) )))
+                        (close(TGround( (intern 'Constant_s) (close(: LEOF List<Type>)) )))
+                        (close(TGround( (intern 'Literal_s) (close(: LEOF List<Type>)) )))
                      )))
                      (close(parse-type atype))
                   ))

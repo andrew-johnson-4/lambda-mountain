@@ -1,13 +1,13 @@
 
 t1 := λ(: tag String). (: (
-   (TGround( tag (close(: LEOF List<Type>)) ))
+   (TGround( (intern tag) (close(: LEOF List<Type>)) ))
 ) Type);
 
 t2 := λ(: tag String)(: p1 Type). (: (
-   (TGround( tag (close(cons( p1 (: LEOF List<Type>) ))) ))
+   (TGround( (intern tag) (close(cons( p1 (: LEOF List<Type>) ))) ))
 ) Type);
 
 t3 := λ(: tag String)(: p1 Type)(: p2 Type). (: (
-   (TGround( tag (close(cons( p2 (cons( p1 (: LEOF List<Type>) )) ))) ))
+   (TGround( (intern tag) (close(cons( p2 (cons( p1 (: LEOF List<Type>) )) ))) ))
 ) Type);
 

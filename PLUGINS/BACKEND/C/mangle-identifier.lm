@@ -49,9 +49,9 @@ mangle-identifier := λ(: kt Type). (: (
    (match kt (
       ()
       ( TAny (set r (mangle-identifier '?_s)) )
-      ( (TVar v) (set r (mangle-identifier v)) )
+      ( (TVar v) (set r (mangle-identifier(untern v))) )
       ( (TGround( tv ps )) (
-         (set r (mangle-identifier tv))
+         (set r (mangle-identifier(untern tv)))
          (while (non-zero ps) (match ps (
             ()
             ( (LCons( p1 rst )) (
