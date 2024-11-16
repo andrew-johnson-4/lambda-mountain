@@ -5,9 +5,9 @@ sizeof-type := λ(: tt Type). (: (
       ()
       ( TAny () )
       ( (TVar _) () )
-      ( (TGround( class LEOF )) (set sz (size-of-class(untern class))) )
+      ( (TGround( class LEOF )) (set sz (size-of-class class)) )
       ( (TGround( 'Sized_s (LCons( (TGround( szp LEOF )) LEOF )) )) (
-         (set sz (to-u64(untern szp)))
+         (set sz (to-u64 szp))
       ))
       ( (TGround( 'Array_s (LCons( TAny (LCons( p1 LEOF )) )) )) (
          (set sz 8_u64)
@@ -19,10 +19,10 @@ sizeof-type := λ(: tt Type). (: (
          )))
       ))
       ( (TGround( 'Field_s (LCons( (TGround( szp LEOF )) (LCons( p1 LEOF )) )) )) (
-         (set sz (*( (sizeof-type p1) (to-u64(untern szp)) )))
+         (set sz (*( (sizeof-type p1) (to-u64 szp) )))
       ))
       ( (TGround( tag _ )) (
-         (match (.lookup( type-complex-fields-index (untern tag) (Tuple( TAny TAny )) )) (
+         (match (.lookup( type-complex-fields-index tag (Tuple( TAny TAny )) )) (
             ()
             ( (Tuple( TAny TAny )) () )
             ( (Tuple( bt at )) (

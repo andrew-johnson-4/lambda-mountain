@@ -1,7 +1,7 @@
 
 type CompileMode ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 
-type Type TAny | (TVar SmartString) | (TGround( SmartString , List<Type>[] )) | (TAnd( Type[] , Type[] )); zero Type TAny;
+type Type TAny | (TVar String) | (TGround( String , List<Type>[] )) | (TAnd( Type[] , Type[] )); zero Type TAny;
 
 type SourceLocation (SourceLocation( filename:String , line:U64 , column:U64 ));
 type Token (Token( key:String , nonce:U64 , location:SourceLocation ));

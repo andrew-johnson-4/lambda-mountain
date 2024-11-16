@@ -20,10 +20,10 @@ mark-constructor-flat-parameters := λ(: base-type Type)(: flat-type Type). (: (
          (mark-constructor-flat-parameters( base-type p2 ))
       ))
       ( (TGround( flat-tag flat-ps )) (
-         (mark-constructor-flat-parameters( base-type (untern flat-tag) (arity flat-type) flat-ps 1_u64 ))
+         (mark-constructor-flat-parameters( base-type flat-tag (arity flat-type) flat-ps 1_u64 ))
       ))
       ( (TVar v) (
-         (mark-parameter-flat( (tag-of base-type) (arity base-type) (parameter-number( base-type (untern v) )) ))
+         (mark-parameter-flat( (tag-of base-type) (arity base-type) (parameter-number( base-type v )) ))
       ))
       ( _ () )
    ))

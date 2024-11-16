@@ -8,7 +8,7 @@ infer-global-context := λ(: td AST). (: (
          (let size (infer-type-definition( bt case-constructors 0_u64 )))
          (match bt (
             ()
-            ( (TGround( class LEOF )) (index-size-of-class( (untern class) size )) )
+            ( (TGround( class LEOF )) (index-size-of-class( class size )) )
             ( _ () )
          ))
       ))

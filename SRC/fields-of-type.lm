@@ -5,7 +5,7 @@ fields-of-type := λ(: tt Type). (: (
       ( TAny (set tt (t1 'Nil_s)) )
       ( (TGround( 'Cons_s (LCons( p2 (LCons( p1 LEOF )) )) )) (
          (set tt (TGround(
-            (intern 'Cons_s)
+            'Cons_s
             (close(cons(
                p2
                (cons(
@@ -17,7 +17,7 @@ fields-of-type := λ(: tt Type). (: (
       ))
       ( _ (
          (set tt (TGround(
-            (intern 'Cons_s)
+            'Cons_s
             (close(cons(
                tt
                (cons(
