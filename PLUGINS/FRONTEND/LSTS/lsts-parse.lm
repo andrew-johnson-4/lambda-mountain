@@ -122,7 +122,7 @@ lsts-parse-let := λ(: tokens List<Token>). (: (
          ))
          (if (is( args-list ASTNil )) (
             (set args-list (App(
-               (close(Lit( (intern ':_s) (token::new ':_s) )))
+               (close(Lit( ':_s (token::new ':_s) )))
                (close(App(
                   (close(Var( (.key arg-name) arg-name )))
                   (close(AType arg-type))
@@ -132,7 +132,7 @@ lsts-parse-let := λ(: tokens List<Token>). (: (
             (set args-list (App(
                (close args-list)
                (close(App(
-                  (close(Lit( (intern ':_s) (token::new ':_s) )))
+                  (close(Lit( ':_s (token::new ':_s) )))
                   (close(App(
                      (close(Var( (.key arg-name) arg-name )))
                      (close(AType arg-type))
@@ -150,7 +150,7 @@ lsts-parse-let := λ(: tokens List<Token>). (: (
    (let rhs-rest (lsts-parse-expression tokens))
    (let rhs (.first rhs-rest))
    (let return-term (App(
-      (close(Lit( (intern ':_s) (token::new ':_s) )))
+      (close(Lit( ':_s (token::new ':_s) )))
       (close(App(
          (close rhs)
          (close(AType return-type))
@@ -188,7 +188,7 @@ lsts-parse-small-expression := λ(: tokens List<Token>). (: (
       (set base (App(
          (close(App(
             (close(App(
-               (close(Var( (intern 'if_s) (with-location( (token::new 'if_s) loc )) )))
+               (close(Var( 'if_s (with-location( (token::new 'if_s) loc )) )))
                (close c)
             )))
             (close t)
@@ -208,7 +208,7 @@ lsts-parse-small-expression := λ(: tokens List<Token>). (: (
          (set tokens (.second rhs-rest))
          (set base (App(
             (close(App(
-               (close(Var( (intern 'let_s) (with-location( (token::new 'let_s) loc )) )))
+               (close(Var( 'let_s (with-location( (token::new 'let_s) loc )) )))
                (close lhs)
             )))
             (close rhs)
@@ -227,7 +227,7 @@ lsts-parse-small-expression := λ(: tokens List<Token>). (: (
             (lsts-parse-expect( '}_s tokens ))(set tokens (tail tokens))
             (set base (App(
                (close(App(
-                  (close(Var( (intern 'while_s) (with-location( (token::new 'while_s) loc )) )))
+                  (close(Var( 'while_s (with-location( (token::new 'while_s) loc )) )))
                   (close c)
                )))
                (close rhs)
@@ -250,11 +250,11 @@ lsts-parse-small-expression := λ(: tokens List<Token>). (: (
                (lsts-parse-expect( '}_s tokens ))(set tokens (tail tokens))
                (set base (App(
                   (close(App(
-                     (close(Var( (intern 'for-each_s) (with-location( (token::new 'for-each_s) loc )) )))
+                     (close(Var( 'for-each_s (with-location( (token::new 'for-each_s) loc )) )))
                      (close(App(
                         (close(App(
                            (close lhs)
-                           (close(Var( (intern 'in_s) (with-location( (token::new 'in_s) loc )) )))
+                           (close(Var( 'in_s (with-location( (token::new 'in_s) loc )) )))
                         )))
                         (close iter)
                      )))
@@ -273,7 +273,7 @@ lsts-parse-small-expression := λ(: tokens List<Token>). (: (
                   (set tokens (.second rhs-rest))
                   (set base (App(
                      (close(App(
-                        (close(Var( (intern 'set_s) (with-location( (token::new 'set_s) loc )) )))
+                        (close(Var( 'set_s (with-location( (token::new 'set_s) loc )) )))
                         (close lhs)
                      )))
                      (close rhs)
@@ -311,7 +311,7 @@ lsts-parse-expression := λ(: tokens List<Token>). (: (
 lsts-parse-lhs := λ(: tokens List<Token>). (: (
    (let base ASTNil)
    (if (is-ident-head(lsts-parse-head tokens)) (
-      (set base (Var( (intern(lsts-unwrap-identifier(lsts-parse-head tokens))) (head tokens) )))
+      (set base (Var( (lsts-unwrap-identifier(lsts-parse-head tokens)) (head tokens) )))
       (set tokens (tail tokens))
    ) (
       (lsts-parse-expect( 'LHS_s 0_u64 tokens ))
@@ -331,7 +331,7 @@ lsts-parse-add := λ(: tokens List<Token>). (: (
       (let term2-rest (lsts-parse-mul tokens))
       (let term2 (.first term2-rest))
       (set term (App(
-         (close(Var( (intern op) op-t )))
+         (close(Var( op op-t )))
          (close(App(
             (close term)
             (close term2)
@@ -355,7 +355,7 @@ lsts-parse-mul := λ(: tokens List<Token>). (: (
       (let term2-rest (lsts-parse-atom tokens))
       (let term2 (.first term2-rest))
       (set term (App(
-         (close(Var( (intern op) op-t )))
+         (close(Var( op op-t )))
          (close(App(
             (close term)
             (close term2)
@@ -369,11 +369,11 @@ lsts-parse-mul := λ(: tokens List<Token>). (: (
 lsts-parse-atom := λ(: tokens List<Token>). (: (
    (let term ASTEOF)
    (if (is-lit-head(lsts-parse-head tokens)) (
-      (set term (Lit( (intern(lsts-parse-head tokens)) (head tokens) )))
+      (set term (Lit( (lsts-parse-head tokens) (head tokens) )))
       (set tokens (tail tokens))
    ) (
       (if (is-ident-head(lsts-parse-head tokens)) (
-         (set term (Var( (intern(lsts-unwrap-identifier(lsts-parse-head tokens))) (head tokens) )))
+         (set term (Var( (lsts-unwrap-identifier(lsts-parse-head tokens)) (head tokens) )))
          (set tokens (tail tokens))
       ) (
          (if (==( (lsts-parse-head tokens) '\[_s )) (
@@ -409,7 +409,7 @@ lsts-parse-atom := λ(: tokens List<Token>). (: (
 
 lsts-parse-list := λ(: tokens List<Token>). (: (
    (lsts-parse-expect( '[_s tokens ))(let loc (.location(head tokens)))(set tokens (tail tokens))
-   (let term (Lit( (intern 'LEOF_s) (with-location( (token::new( 'LEOF_s )) loc )) )))
+   (let term (Lit( 'LEOF_s (with-location( (token::new( 'LEOF_s )) loc )) )))
    (if (==( (lsts-parse-head tokens) 'for_s )) (
       (print 'TODO\sList\sComprehension\n_s)(exit 1_u64)
    ) (
@@ -419,7 +419,7 @@ lsts-parse-list := λ(: tokens List<Token>). (: (
             (let item (.first item-rest))
             (set tokens (.second item-rest))
             (set term (App(
-               (close(Var( (intern 'list::cons_s) (with-location( (token::new 'list::cons_s) loc )) )))
+               (close(Var( 'list::cons_s (with-location( (token::new 'list::cons_s) loc )) )))
                (close(App(
                   (close item) (close term)
                )))
@@ -432,7 +432,7 @@ lsts-parse-list := λ(: tokens List<Token>). (: (
    ))
    (lsts-parse-expect( ']_s tokens ))(set tokens (tail tokens))
    (set term (App(
-      (close(Var( (intern 'reverse_s) (with-location( (token::new 'reverse_s) loc )) )))
+      (close(Var( 'reverse_s (with-location( (token::new 'reverse_s) loc )) )))
       (close term)
    )))
    (Tuple( term tokens ))
@@ -440,7 +440,7 @@ lsts-parse-list := λ(: tokens List<Token>). (: (
 
 lsts-parse-map := λ(: tokens List<Token>). (: (
    (lsts-parse-expect( '{_s tokens ))(let loc (.location(head tokens)))(set tokens (tail tokens))
-   (let term (Lit( (intern 'HashtableEqEOF_s) (with-location( (token::new( 'HashtableEqEOF_s )) loc )) )))
+   (let term (Lit( 'HashtableEqEOF_s (with-location( (token::new( 'HashtableEqEOF_s )) loc )) )))
    (if (==( (lsts-parse-head tokens) 'for_s )) (
       (print 'TODO\sMap\sComprehension\n_s)(exit 1_u64)
    ) (
@@ -456,10 +456,10 @@ lsts-parse-map := λ(: tokens List<Token>). (: (
                (set mapped (.first mapped-rest))
                (set tokens (.second mapped-rest))
             ) (
-               (set mapped (Lit( (intern '1_u64_s) (with-location( (token::new( '1_u64_s )) loc )) )))
+               (set mapped (Lit( '1_u64_s (with-location( (token::new( '1_u64_s )) loc )) )))
             ))
             (set term (App(
-               (close(Var( (intern 'map::cons_s) (with-location( (token::new 'map::cons_s) loc )) )))
+               (close(Var( 'map::cons_s (with-location( (token::new 'map::cons_s) loc )) )))
                (close(App(
                   (close(App( (close item) (close mapped) )))
                   (close term)

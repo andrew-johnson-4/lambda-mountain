@@ -203,7 +203,7 @@ c-parse-declaration := λ(: tokens List<String>). (: (
    ) (
       (if (&&( (non-zero tokens) (==( (head tokens) '\[_s )) )) (
          (let return-term (App(
-            (close(Lit( (intern ':_s) (token::new ':_s) )))
+            (close(Lit( ':_s (token::new ':_s) )))
             (close(App(
                (close ASTNil)
                (close(AType(t1 return-type)))
@@ -233,9 +233,9 @@ c-parse-declaration := λ(: tokens List<String>). (: (
                (if (&&( (non-zero tokens) (==( (head tokens) '\[_s )) )) (set tokens (c-dump-parens tokens)) ())
             ))
             (let next-arg-term (App(
-               (close(Lit( (intern ':_s) (token::new ':_s) )))
+               (close(Lit( ':_s (token::new ':_s) )))
                (close(App(
-                  (close(Var( (intern 'c_arg_name_s) (token::new 'c_arg_name_s) )))
+                  (close(Var( 'c_arg_name_s (token::new 'c_arg_name_s) )))
                   (close(AType(t1 arg-type)))
                )))
             )))
