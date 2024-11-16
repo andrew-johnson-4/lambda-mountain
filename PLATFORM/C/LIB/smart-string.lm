@@ -74,7 +74,7 @@ print := λ(: x SmartString). (: (
 ) SmartString);
 
 tail-string := λ(: x SmartString). (: (
-   ([:]( 1_i64 (.length x) ))
+   ([:]( x 1_i64 (as (.length x) I64) ))
 ) SmartString);
 
 [] := λ(: x SmartString)(: low I64). (: (
@@ -92,13 +92,13 @@ tail-string := λ(: x SmartString). (: (
 ) U8);
 
 head-string := λ(: x SmartString). (: (
-   ([]( 0_i64 ))
-) SmartString);
+   ([]( x 0_i64 ))
+) U8);
 
 has-suffix := λ(: base SmartString)(: sfx SmartString). (: (
-   (==( ([:]( base -3_i64 (.length base) )) sfx ))
+   (==( ([:]( base -3_i64 (as (.length base) I64) )) sfx ))
 ) U64);
 
-remove-suffix := λ(: base String)(: sfx String). (: (
-   ([:]( base 0_i64 (-( (.length base) (.length sfx) )) ))
-) String);
+remove-suffix := λ(: base SmartString)(: sfx SmartString). (: (
+   ([:]( base 0_i64 (as (-( (.length base) (.length sfx) )) I64) ))
+) SmartString);
