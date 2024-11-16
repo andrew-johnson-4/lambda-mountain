@@ -1,6 +1,8 @@
 
 fragment type String; size String 8; atom suffix String _s;
 
+type VariableData (CRAlloc( ptr:?[] , length:U64 , capacity:U64 ));
+
 head-string := λ(: x String). (: (
    ([]( (as x U8[]) 0_u64 ))
 ) U8);
@@ -163,10 +165,3 @@ remove-suffix := λ(: base String)(: sfx String). (: (
 + := λ(: l String)(: r String). (: (
    (clone-rope(+( (SAtom l) (SAtom r) )))
 ) String);
-
-print := λ(: x String). (: (
-   (while (!=( (head-string x) 0_u8 )) (
-      (putchar( (as (head-string x) U32) ))
-      (set x (tail-string x))
-   ))
-) Nil);

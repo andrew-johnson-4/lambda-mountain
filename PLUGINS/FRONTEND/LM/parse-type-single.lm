@@ -17,10 +17,10 @@ parse-type-single := λ(: tt String). (: (
                      (set base-type TAny)
                   ) (
                      (if (is-variable vn) (
-                        (set base-type (TVar(intern vn)))
+                        (set base-type (TVar vn))
                      ) (
                         (set base-type (TGround(
-                           (intern(clone-rope buff))
+                           (clone-rope buff)
                            (close(: LEOF List<Type>))
                         )))
                      ))
@@ -37,10 +37,10 @@ parse-type-single := λ(: tt String). (: (
                      (set base-type TAny)
                   ) (
                      (if (is-variable vn) (
-                        (set base-type (TVar(intern vn)))
+                        (set base-type (TVar vn))
                      ) (
                         (set base-type (TGround(
-                           (intern(clone-rope buff))
+                           (clone-rope buff)
                            (close(: LEOF List<Type>))
                         )))
                      ))
@@ -121,10 +121,10 @@ parse-type-single := λ(: tt String). (: (
          (set base-type TAny)
       ) (
          (if (is-variable vn) (
-            (set base-type (TVar(intern vn)))
+            (set base-type (TVar vn))
          ) (
             (set base-type (TGround(
-               (intern(clone-rope buff))
+               (clone-rope buff)
                (close(: LEOF List<Type>))
             )))
          ))

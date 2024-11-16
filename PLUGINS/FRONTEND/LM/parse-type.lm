@@ -63,7 +63,7 @@ parse-type := λ(: tt String). (: (
       ))
    ) ())
    (if (==( is-vararg True_u8 )) (
-      (set base-type (TGround( (intern '..._s) (close(cons(
+      (set base-type (TGround( '..._s (close(cons(
          base-type (: LEOF List<Type>)
       ))))))
    ) ())
