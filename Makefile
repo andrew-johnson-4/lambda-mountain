@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm --dev tests/regress/import-c.lm
+	lm EXAMPLES/tokenizer.lsts
 	cc tmp.c
 	./a.out
 

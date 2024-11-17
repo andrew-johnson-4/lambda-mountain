@@ -1,4 +1,3 @@
 
 let c-tokenize-new(text: String): Nil = (
-   print(text);
 );
