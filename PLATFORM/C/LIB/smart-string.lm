@@ -1,6 +1,10 @@
 
 type SmartString (SmartString( data:U8[] , start:U8[] , end:U8[] , data-end:U8[] ));
 
+non-zero := λ(: s SmartString). (: (
+   (<( (.start s) (.end s) ))
+) U64);
+
 intern := λ(: s String). (: (
    (let data-end (+( (as s U8[]) (.length s) )))
    (SmartString( (as s U8[]) (as s U8[]) data-end data-end ))

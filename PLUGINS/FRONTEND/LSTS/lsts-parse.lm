@@ -246,7 +246,7 @@ lsts-parse-small-expression := λ(: tokens List<Token>). (: (
          (if (==( (lsts-parse-head tokens) 'while_s )) (scope(
             (let loc (.location(head tokens)))
             (set tokens (tail tokens))
-            (let c-rest (lsts-parse-lhs tokens))
+            (let c-rest (lsts-parse-small-expression tokens))
             (let c (.first c-rest))
             (set tokens (.second c-rest))
             (lsts-parse-expect( '{_s tokens ))(set tokens (tail tokens))
@@ -291,28 +291,64 @@ lsts-parse-small-expression := λ(: tokens List<Token>). (: (
                   (close rhs)
                )))
             )) (
-               (if (lsts-has-assign tokens) (scope(
+               (if (==( (lsts-parse-head tokens) 'match_s )) (scope(
                   (let loc (.location(head tokens)))
-                  (let lhs-rest (lsts-parse-lhs tokens))
-                  (let lhs (.first lhs-rest))
-                  (set tokens (.second lhs-rest))
-                  (lsts-parse-expect( '=_s tokens ))(set tokens (tail tokens))
-                  (let rhs-rest (lsts-parse-small-expression tokens))
-                  (let rhs (.first rhs-rest))
-                  (set tokens (.second rhs-rest))
+                  (set tokens (tail tokens))
+                  (let e-rest (lsts-parse-small-expression tokens))
+                  (let e (.first e-rest))
+                  (set tokens (.second e-rest))
+                  (let pats ASTNil)
+                  (lsts-parse-expect( '{_s tokens ))(set tokens (tail tokens))
+                  (while (&&( (non-zero tokens) (!=( (lsts-parse-head tokens) '}_s )) )) (
+                     (let lhs-rest (lsts-parse-lhs tokens))
+                     (let lhs (.first lhs-rest))
+                     (set tokens (.second lhs-rest))
+                     (lsts-parse-expect( '=_s tokens ))(set tokens (tail tokens))
+                     (lsts-parse-expect( '>_s tokens ))(set tokens (tail tokens))
+                     (let rhs-rest (lsts-parse-small-expression tokens))
+                     (let rhs (.first rhs-rest))
+                     (set tokens (.second rhs-rest))
+                     (lsts-parse-expect( '\:_s tokens ))(set tokens (tail tokens))
+                     (set pats (App(
+                        (close pats)
+                        (close(App(
+                           (close lhs)
+                           (close rhs)
+                        )))
+                     )))
+                  ))
+                  (lsts-parse-expect( '}_s tokens ))(set tokens (tail tokens))
                   (set base (App(
                      (close(App(
-                        (close(Var( 'set_s (with-location( (token::new 'set_s) loc )) )))
-                        (close lhs)
+                        (close(Var( 'match_s (with-location( (token::new 'match_s) loc )) )))
+                        (close e)
                      )))
-                     (close rhs)
+                     (close pats)
                   )))
                )) (
-                  (let base-rest (lsts-parse-add tokens))
-                  (set base (.first base-rest))
-                  (set tokens (.second base-rest))
+                  (if (lsts-has-assign tokens) (scope(
+                     (let loc (.location(head tokens)))
+                     (let lhs-rest (lsts-parse-lhs tokens))
+                     (let lhs (.first lhs-rest))
+                     (set tokens (.second lhs-rest))
+                     (lsts-parse-expect( '=_s tokens ))(set tokens (tail tokens))
+                     (let rhs-rest (lsts-parse-small-expression tokens))
+                     (let rhs (.first rhs-rest))
+                     (set tokens (.second rhs-rest))
+                     (set base (App(
+                        (close(App(
+                           (close(Var( 'set_s (with-location( (token::new 'set_s) loc )) )))
+                           (close lhs)
+                        )))
+                        (close rhs)
+                     )))
+                  )) (
+                     (let base-rest (lsts-parse-add tokens))
+                     (set base (.first base-rest))
+                     (set tokens (.second base-rest))
+                  ))
                ))
-           ))
+            ))
          ))
       ))
    ))
@@ -339,11 +375,27 @@ lsts-parse-expression := λ(: tokens List<Token>). (: (
 
 lsts-parse-lhs := λ(: tokens List<Token>). (: (
    (let base ASTNil)
-   (if (lsts-is-ident-head(lsts-parse-head tokens)) (
-      (set base (Var( (lsts-unwrap-identifier(lsts-parse-head tokens)) (head tokens) )))
+   (if (lsts-is-lit-head(lsts-parse-head tokens)) (
+      (set base (Lit( (lsts-parse-head tokens) (head tokens) )))
       (set tokens (tail tokens))
    ) (
-      (lsts-parse-expect( 'LHS_s 0_u64 tokens ))
+      (if (lsts-is-ident-head(lsts-parse-head tokens)) (
+         (let h (lsts-parse-head tokens))
+         (let is-suffixed 0_u64)
+         (for-each ((Tuple( sfxs sfxtt )) in parse-suffixes) (
+            (if (has-suffix( h sfxs )) (
+               (set is-suffixed 1_u64)
+            ) ())
+         ))
+         (if is-suffixed (
+            (set base (Lit( (lsts-parse-head tokens) (head tokens) )))
+         ) (
+            (set base (Var( (lsts-unwrap-identifier(lsts-parse-head tokens)) (head tokens) )))
+         ))
+         (set tokens (tail tokens))
+      ) (
+         (lsts-parse-expect( 'LHS_s 0_u64 tokens ))
+      ))
    ))
    (Tuple( base tokens ))
 ) Tuple<AST,List<Token>>);
