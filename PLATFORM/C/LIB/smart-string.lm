@@ -1,8 +1,9 @@
 
-type SmartString (SmartString( data:U8[] , start:U8[] , end:U8[] ));
+type SmartString (SmartString( data:U8[] , start:U8[] , end:U8[] , data-end:U8[] ));
 
 intern := λ(: s String). (: (
-   (SmartString( (as s U8[]) (as s U8[]) (+( (as s U8[]) (.length s) )) ))
+   (let data-end (+( (as s U8[]) (.length s) )))
+   (SmartString( (as s U8[]) (as s U8[]) data-end data-end ))
 ) SmartString);
 
 intern := λ(: s SmartString). (: (
@@ -82,7 +83,7 @@ print := λ(: x SmartString). (: (
    (if (>( hip (.end x) )) (
       (fail 'Index\sOut\sOf\sBounds:\sSmartString.[:]_s)
    ) ())
-   (SmartString( (.data x) lowp hip ))
+   (SmartString( (.data x) lowp hip (.data-end x) ))
 ) SmartString);
 
 tail-string := λ(: x SmartString). (: (
