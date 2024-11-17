@@ -98,13 +98,19 @@ lsts-has-assign := λ(: tokens List<Token>). (: (
    has-assign
 ) U64);
 
+lsts-substitute-type-aliases := λ(: s String). (: (
+   (if (==( s 'String_s )) (set s 'SmartString_s) ())
+   (if (==( s 'CString_s )) (set s 'String_s) ())
+   s
+) String);
+
 lsts-parse-type := λ(: tokens List<Token>). (: (
-   (let base (SAtom(lsts-parse-head tokens)))(set tokens (tail tokens))
+   (let base (SAtom(lsts-substitute-type-aliases(lsts-parse-head tokens))))(set tokens (tail tokens))
    (while (||( (==( (lsts-parse-head tokens) '<_s )) (==( (lsts-parse-head tokens) '[_s )) )) (
       (let depth 1_u64)
-      (set base (+( base (SAtom(lsts-parse-head tokens)) )))(set tokens (tail tokens))
+      (set base (+( base (SAtom(lsts-substitute-type-aliases(lsts-parse-head tokens))) )))(set tokens (tail tokens))
       (while (&&( (non-zero tokens) (>( depth 0_u64 )) )) (
-         (set base (+( base (SAtom(lsts-parse-head tokens)) )))
+         (set base (+( base (SAtom(lsts-substitute-type-aliases(lsts-parse-head tokens))) )))
          (if (||( (==( (lsts-parse-head tokens) '<_s )) (==( (lsts-parse-head tokens) '[_s )) )) (
             (set depth (+( depth 1_u64 )))
          ) ())
