@@ -1,4 +1,6 @@
 
+import $"LIB/default.lm";
+
 let c-tokenize-new(text: String): List<String> = (
    let tokens = [] :: List<String>;
    #while text match text {
