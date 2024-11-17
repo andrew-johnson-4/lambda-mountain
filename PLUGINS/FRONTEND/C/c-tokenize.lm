@@ -1,10 +1,10 @@
 
 c-tokenize := λ(: text String). (: (
    (let r (: LEOF List<String>))
-   #(if config-dev-mode 
-   #   (c-tokenize-new text)
+   (if config-devmode 
+      (c-tokenize-new text)
       (set r (c-tokenize-old text))
-   #)
+   )
    r
 ) List<String>);
 
