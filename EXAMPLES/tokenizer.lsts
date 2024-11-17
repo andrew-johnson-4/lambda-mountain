@@ -3,14 +3,14 @@ import $"LIB/default.lm";
 
 let c-tokenize-new(text: String): List<String> = (
    let tokens = [] :: List<String>;
-   while text match text {
+   while text {match text {
    #   "abc" => text = "";
       rst => (print("Default: "); print(rst); text = "";);
    #   "\s"..rst => text = rst;
    #   "\t"..rst => text = rst;
    #   "\n"..rst => text = rst;
    #   rst => fail("Unexpected Character In LSTS Tokenization: '\{rst[0]}'");
-   };
+   }};
    tokens
 );
 
