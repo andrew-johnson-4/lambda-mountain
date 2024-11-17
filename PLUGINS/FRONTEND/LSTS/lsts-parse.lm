@@ -437,27 +437,27 @@ lsts-parse-list := λ(: tokens List<Token>). (: (
       (print 'TODO\sList\sComprehension\n_s)(exit 1_u64)
    ) (
       (if (==( (lsts-parse-head tokens) ']_s )) () (
+         (let add-items (: LEOF List<AST>))
          (while (&&( (non-zero tokens) (!=( (lsts-parse-head tokens) ']_s )) )) (
             (let item-rest (lsts-parse-expression tokens))
             (let item (.first item-rest))
             (set tokens (.second item-rest))
-            (set term (App(
-               (close(Var( 'list::cons_s (with-location( (token::new 'list::cons_s) loc )) )))
-               (close(App(
-                  (close item) (close term)
-               )))
-            )))
+            (set add-items (cons( item add-items )))
             (if (&&( (non-zero tokens) (!=( (lsts-parse-head tokens) ']_s )) )) (
                (lsts-parse-expect( ',_s tokens ))(set tokens (tail tokens))
             ) ())
          ))
+         (for-each (add-item in add-items) (
+            (set term (App(
+               (close(Var( 'list::cons_s (with-location( (token::new 'list::cons_s) loc )) )))
+               (close(App(
+                  (close add-item) (close term)
+               )))
+            )))
+         ))
       ))
    ))
    (lsts-parse-expect( ']_s tokens ))(set tokens (tail tokens))
-   (set term (App(
-      (close(Var( 'reverse_s (with-location( (token::new 'reverse_s) loc )) )))
-      (close term)
-   )))
    (Tuple( term tokens ))
 ) Tuple<AST,List<Token>>);
 
