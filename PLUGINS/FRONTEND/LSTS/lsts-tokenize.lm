@@ -137,6 +137,13 @@ lsts-tokenize := λ(: fp String). (: (
             (with-location( (clone-rope s-buffer) (SourceLocation( fp s-line s-column )) )) tokens
          )))
       ) ())
+      (if (has-prefix( text '\o_s )) (
+         (set text (tail-string text))
+         (while (&&( (!=( (head-string text) 0_u8 )) (not(has-prefix( text '\n_s ))) )) (
+            (set text (tail-string text))
+         ))
+         (if (has-prefix( text '\n_s )) (set text (tail-string text)) ())
+      ) ())
       (if (is( text prev-text )) (
          (print 'Unrecognized\sToken\sStart\sIn\sFile\s_s)(print fp)
          (print current-line)(print ',_s)(print current-column)(print ':\s\`_s)(print(clone-rope(head-string text)))(print '\`_s)(print '\n_s)(exit 1_u64)

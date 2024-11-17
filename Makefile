@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm tests/regress/smart-string.lm
+	lm EXAMPLES/tokenizer.lsts
 	cc tmp.c
 	./a.out
 
