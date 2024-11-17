@@ -11,3 +11,5 @@ let c-tokenize-new(text: String): List<String> = (
    #};
    tokens
 );
+
+print($"[:]"( "hello", -3, -1 ));
