@@ -29327,7 +29327,7 @@ return ({({({({({({({({({({({({({({({({({({({(lsts_SB_parse_SB_expect_CL_ArrowNi
 });
 ({uuid_000000000006b8a1=(tail_CL_ArrowListTokenListToken(uuid_000000000006b8a1));({});});
 });
-({uuid_000000000006b8a7=(lsts_SB_parse_SB_expression_CL_ArrowTupleListTokenASTListToken(uuid_000000000006b8a1));({});})
+({uuid_000000000006b8a7=(lsts_SB_parse_SB_small_SB_expression_CL_ArrowTupleListTokenASTListToken(uuid_000000000006b8a1));({});})
 ;
 });
 ({uuid_000000000006b8a8=(uuid_000000000006b8a7.field_2);({});})
