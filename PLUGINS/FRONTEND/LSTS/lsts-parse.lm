@@ -375,11 +375,27 @@ lsts-parse-expression := λ(: tokens List<Token>). (: (
 
 lsts-parse-lhs := λ(: tokens List<Token>). (: (
    (let base ASTNil)
-   (if (lsts-is-ident-head(lsts-parse-head tokens)) (
-      (set base (Var( (lsts-unwrap-identifier(lsts-parse-head tokens)) (head tokens) )))
+   (if (lsts-is-lit-head(lsts-parse-head tokens)) (
+      (set base (Lit( (lsts-parse-head tokens) (head tokens) )))
       (set tokens (tail tokens))
    ) (
-      (lsts-parse-expect( 'LHS_s 0_u64 tokens ))
+      (if (lsts-is-ident-head(lsts-parse-head tokens)) (
+         (let h (lsts-parse-head tokens))
+         (let is-suffixed 0_u64)
+         (for-each ((Tuple( sfxs sfxtt )) in parse-suffixes) (
+            (if (has-suffix( h sfxs )) (
+               (set is-suffixed 1_u64)
+            ) ())
+         ))
+         (if is-suffixed (
+            (set base (Lit( (lsts-parse-head tokens) (head tokens) )))
+         ) (
+            (set base (Var( (lsts-unwrap-identifier(lsts-parse-head tokens)) (head tokens) )))
+         ))
+         (set tokens (tail tokens))
+      ) (
+         (lsts-parse-expect( 'LHS_s 0_u64 tokens ))
+      ))
    ))
    (Tuple( base tokens ))
 ) Tuple<AST,List<Token>>);

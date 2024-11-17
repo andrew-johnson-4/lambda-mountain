@@ -2,7 +2,7 @@
 type SmartString (SmartString( data:U8[] , start:U8[] , end:U8[] , data-end:U8[] ));
 
 non-zero := λ(: s SmartString). (: (
-   (>=( (.start s) (.end s) ))
+   (<( (.start s) (.end s) ))
 ) U64);
 
 intern := λ(: s String). (: (
