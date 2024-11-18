@@ -36,7 +36,8 @@ c-parse-all := λ(: fps List<String>). (: (
       (set[]( argv 1_u64 (as '/dev/null_s U8[])))
       (set[]( argv 2_u64 (as '-o_s U8[])))
       (set[]( argv 3_u64 (as tmp U8[])))
-      (let argvi 4_u64)
+      (set[]( argv 4_u64 (as '-U__USE_MISC_s U8[])))
+      (let argvi 5_u64)
       (for-each (fp in fps) (
          (set[]( argv argvi (as '-include_s U8[])))
          (set[]( argv (+( argvi 1_u64 )) (as fp U8[])))
