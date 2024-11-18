@@ -1,9 +1,9 @@
 
-main := λ(: argc U64)(: argv String[]). (: (
+main := λ(: argc U32)(: argv String[]). (: (
    (let argi 1_u64)
    (let input SNil)
-   (while (<( argi argc )) (
-      (match ([]( argv argi )) (
+   (while (<( argi (as argc U64) )) (
+      (match ([]( argv (as argi U64) )) (
          ()
          ('--c_s (
             (set config-platform-prefix 'PLATFORM/C/_s)
