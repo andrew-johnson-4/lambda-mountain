@@ -22,7 +22,7 @@ build: compile-production
 	rm -f deploy.c deploy2.c
 	cargo test regression_tests
 
-deploy: build build-docs
+deploy: build build-docs smoke-test
 
 compile-bootstrap:
 	rm -f bootstrap
@@ -39,6 +39,11 @@ install-production: compile-production
 
 install-bootstrap: compile-bootstrap
 	mv bootstrap $${HOME}/bin/lm
+
+smoke-test:
+	clang BOOTSTRAP/cli.c -o tmp
+	gcc BOOTSTRAP/cli.c -o tmp
+	rm tmp
 
 install:
 	cc -o lm BOOTSTRAP/cli.c
