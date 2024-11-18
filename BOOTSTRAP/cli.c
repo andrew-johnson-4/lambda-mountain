@@ -1014,7 +1014,7 @@ void (*plugin_SB_current_SB_backend_CL_Array_QM_ArrowNilNil)(void);
 LM_ListString c_SB_input_SB_files_CL_ListString;
 void frontend_CL_ArrowNilString(char* uuid_000000000006c687);
 void frontend_SB_flush_CL_ArrowNilNil();
-int main(unsigned int uuid_000000000006c691,char** uuid_000000000006c692);
+int main(int uuid_000000000006c691,char** uuid_000000000006c692);
 LM_S* close_CL_ArrowArray_QM_SS(LM_S uuid_000000000006c6b9);
 unsigned long hash_CL_ArrowU64U64(unsigned long uuid_000000000006c6bb);
 unsigned long non_SB_zero_CL_ArrowU64ListString(LM_ListString uuid_000000000006c6c2);
@@ -31228,7 +31228,7 @@ char* uuid_000000000006c690;
 }):({}));
 });}
 void frontend_SB_flush_CL_ArrowNilNil(){((non_SB_zero_CL_ArrowU64ListString(c_SB_input_SB_files_CL_ListString))?(c_SB_parse_SB_all_CL_ArrowNilListString(c_SB_input_SB_files_CL_ListString)):({}));}
-int main(unsigned int uuid_000000000006c691,char** uuid_000000000006c692){assemble_SB_header_SB_section_CL_S=({LM_S rvalue={3};rvalue;});
+int main(int uuid_000000000006c691,char** uuid_000000000006c692){assemble_SB_header_SB_section_CL_S=({LM_S rvalue={3};rvalue;});
 assemble_SB_text_SB_section_CL_S=({LM_S rvalue={3};rvalue;});
 assemble_SB_init_SB_section_CL_S=({LM_S rvalue={3};rvalue;});
 assemble_SB_data_SB_section_CL_S=({LM_S rvalue={3};rvalue;});

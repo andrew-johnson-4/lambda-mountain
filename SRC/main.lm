@@ -1,5 +1,5 @@
 
-main := λ(: argc U32)(: argv String[]). (: (
+main := λ(: argc C_int)(: argv String[]). (: (
    (let argi 1_u64)
    (let input SNil)
    (while (<( argi (as argc U64) )) (
