@@ -147,7 +147,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
                (maybe-specialize( 'push-deref_s (typeof-var-raw( term tctx 'push-deref_s )) deref-type term ))
                (set deref-type (and( array-base (t1 'StackVariable_s) )))
             ))
-            ( _ (maybe-specialize( 'open_s (typeof-var-raw( term tctx 'open_s )) deref-type term )) )
+            ( _ (do-specialize( 'open_s (typeof-var-raw( term tctx 'open_s )) deref-type term )) )
          ))
          (ascript-normal( term deref-type ))
       ))
