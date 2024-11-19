@@ -397,22 +397,28 @@ lsts-parse-lhs := λ(: tokens List<Token>). (: (
 
 lsts-make-maybe-var := λ(: t Token). (: (
    (let base (Var( (lsts-unwrap-identifier(.key t)) t )))
-   (for-each ((Tuple( sfxs sfxtt )) in parse-suffixes) (
-      (if (.has-suffix( (.key t) sfxs )) (
-         (set base (Lit( (.key t) t )))
-      ) ())
-   ))
+   (if (lsts-is-lit(.key t)) (
+      (set base (Lit( (.key t) t )))
+   ) ())
    base
 ) AST);
 
+lsts-is-lit := λ(: s String). (: (
+   (let r 0_u64)
+   (for-each ((Tuple( sfxs sfxtt )) in parse-suffixes) (
+      (if (.has-suffix( s sfxs )) (set r 1_u64) ())
+   ))
+   r
+) U64);
+
 lsts-parse-lhs-one := λ(: tokens List<Token>). (: (
    (let base ASTNil)
-   (if (lsts-is-lit-head(lsts-parse-head tokens)) (
-      (set base (Lit( (.key(head tokens)) (head tokens) )))
+   (if (lsts-is-ident-head(lsts-parse-head tokens)) (
+      (set base (lsts-make-maybe-var( (head tokens) )))
       (set tokens (tail tokens))
    ) (
-      (if (lsts-is-ident-head(lsts-parse-head tokens)) (
-         (set base (lsts-make-maybe-var( (head tokens) )))
+      (if (lsts-is-lit(lsts-parse-head tokens)) (
+         (set base (Lit( (.key(head tokens)) (head tokens) )))
          (set tokens (tail tokens))
       ) (
          (lsts-parse-expect( 'LHS_s 0_u64 tokens ))
@@ -470,35 +476,35 @@ lsts-parse-mul := λ(: tokens List<Token>). (: (
 
 lsts-parse-atom := λ(: tokens List<Token>). (: (
    (let term ASTEOF)
-   (if (lsts-is-lit-head(lsts-parse-head tokens)) (
-      (set term (Lit( (.key(head tokens)) (head tokens) )))
+   (if (lsts-is-ident-head(lsts-parse-head tokens)) (
+      (set term (lsts-make-maybe-var( (head tokens) )))
       (set tokens (tail tokens))
    ) (
-      (if (lsts-is-ident-head(lsts-parse-head tokens)) (
-         (set term (lsts-make-maybe-var( (head tokens) )))
+      (if (==( (lsts-parse-head tokens) '\[_s )) (
          (set tokens (tail tokens))
-      ) (
-         (if (==( (lsts-parse-head tokens) '\[_s )) (
+         (if (==( (lsts-parse-head tokens) '\]_s )) (
+            (set term ASTNil)
             (set tokens (tail tokens))
-            (if (==( (lsts-parse-head tokens) '\]_s )) (
-               (set term ASTNil)
-               (set tokens (tail tokens))
-            ) (
-               (let term-rest (lsts-parse-expression tokens))
-               (set term (.first term-rest))
-               (set tokens (.second term-rest))
-               (lsts-parse-expect( '\]_s tokens ))(set tokens (tail tokens))
-            ))
          ) (
-            (if (==( (lsts-parse-head tokens) '[_s )) (
-               (let l-term-rest (lsts-parse-list tokens))
-               (set term (.first l-term-rest))
-               (set tokens (.second l-term-rest))
+            (let term-rest (lsts-parse-expression tokens))
+            (set term (.first term-rest))
+            (set tokens (.second term-rest))
+            (lsts-parse-expect( '\]_s tokens ))(set tokens (tail tokens))
+         ))
+      ) (
+         (if (==( (lsts-parse-head tokens) '[_s )) (
+            (let l-term-rest (lsts-parse-list tokens))
+            (set term (.first l-term-rest))
+            (set tokens (.second l-term-rest))
+         ) (
+            (if (==( (lsts-parse-head tokens) '{_s )) (
+               (let m-term-rest (lsts-parse-map tokens))
+               (set term (.first m-term-rest))
+               (set tokens (.second m-term-rest))
             ) (
-               (if (==( (lsts-parse-head tokens) '{_s )) (
-                  (let m-term-rest (lsts-parse-map tokens))
-                  (set term (.first m-term-rest))
-                  (set tokens (.second m-term-rest))
+               (if (lsts-is-lit(lsts-parse-head tokens)) (
+                  (set term (Lit( (.key(head tokens)) (head tokens) )))
+                  (set tokens (tail tokens))
                ) (
                   (lsts-parse-expect( 'Atom_s 0_u64 tokens ))
                ))
