@@ -395,6 +395,16 @@ lsts-parse-lhs := λ(: tokens List<Token>). (: (
    (Tuple( base tokens ))
 ) Tuple<AST,List<Token>>);
 
+lsts-make-maybe-var := λ(: t Token). (: (
+   (let base (Var( (lsts-unwrap-identifier(.key t)) t )))
+   (for-each ((Tuple( sfxs sfxtt )) in parse-suffixes) (
+      (if (.has-suffix( (.key t) sfxs )) (
+         (set base (Lit( (.key t) t )))
+      ) ())
+   ))
+   base
+) AST);
+
 lsts-parse-lhs-one := λ(: tokens List<Token>). (: (
    (let base ASTNil)
    (if (lsts-is-lit-head(lsts-parse-head tokens)) (
@@ -402,7 +412,7 @@ lsts-parse-lhs-one := λ(: tokens List<Token>). (: (
       (set tokens (tail tokens))
    ) (
       (if (lsts-is-ident-head(lsts-parse-head tokens)) (
-         (set base (Var( (lsts-unwrap-identifier(lsts-parse-head tokens)) (head tokens) )))
+         (set base (lsts-make-maybe-var( (head tokens) )))
          (set tokens (tail tokens))
       ) (
          (lsts-parse-expect( 'LHS_s 0_u64 tokens ))
@@ -465,7 +475,7 @@ lsts-parse-atom := λ(: tokens List<Token>). (: (
       (set tokens (tail tokens))
    ) (
       (if (lsts-is-ident-head(lsts-parse-head tokens)) (
-         (set term (Var( (lsts-unwrap-identifier(lsts-parse-head tokens)) (head tokens) )))
+         (set term (lsts-make-maybe-var( (head tokens) )))
          (set tokens (tail tokens))
       ) (
          (if (==( (lsts-parse-head tokens) '\[_s )) (

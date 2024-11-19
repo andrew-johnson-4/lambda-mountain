@@ -112,31 +112,31 @@ head-string := λ(: x SmartString). (: (
    ([]( x 0_i64 ))
 ) U8);
 
-has-suffix := λ(: base SmartString)(: sfx SmartString). (: (
+.has-suffix := λ(: base SmartString)(: sfx SmartString). (: (
    (==(
       ([:]( base (as (-( (.length base) (.length sfx) )) I64) (as (.length base) I64) ))
       sfx ))
 ) U64);
 
-remove-suffix := λ(: base SmartString)(: sfx SmartString). (: (
+.remove-suffix := λ(: base SmartString)(: sfx SmartString). (: (
    ([:]( base 0_i64 (as (-( (.length base) (.length sfx) )) I64) ))
 ) SmartString);
 
-has-prefix := λ(: base SmartString)(: pfx SmartString). (: (
+.has-prefix := λ(: base SmartString)(: pfx SmartString). (: (
    (==(
       ([:]( base 0_i64 (as (.length pfx) I64) ))
       pfx ))
 ) U64);
 
-remove-prefix := λ(: base SmartString)(: sfx SmartString). (: (
+.remove-prefix := λ(: base SmartString)(: sfx SmartString). (: (
    ([:]( base (as (.length sfx) I64) (as (.length base) I64) ))
 ) SmartString);
 
 .replace := λ(: base SmartString)(: pat SmartString)(: n SmartString). (: (
    (let r SNil)
    (while (>( (.length base) 0_u64 )) (
-      (if (has-prefix( base pat )) (
-         (set base (remove-prefix( base pat )))
+      (if (.has-prefix( base pat )) (
+         (set base (.remove-prefix( base pat )))
          (set r (+( r (SAtom(untern n)) )))
       ) (
          (set r (+( r (SAtom(clone-rope(head-string base))) )))
