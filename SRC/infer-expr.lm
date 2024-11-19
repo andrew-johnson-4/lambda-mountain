@@ -83,6 +83,9 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
                ))
             ))
          ) ())
+         (if (is-t( tt 'SmartString_s )) () (
+            (maybe-specialize( 'intern_s (typeof-var-raw( term tctx 'intern_s )) tt term ))
+         ))
       ))
       ( (App( (Var( 'gensym-label_s _ )) (Var( lname _ )) )) (
          (set tctx (TCtxBind(

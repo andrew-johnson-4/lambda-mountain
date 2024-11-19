@@ -32,8 +32,8 @@ preprocess-apply-literals-one := λ(: program AST). (: (
          (set r (App( (close(Lit( ':_s (unique ctk) ))) (close(App( (close(preprocess-apply-literals mvar)) (close(AType(parse-type mtype))) ))) )))
       ))
       ( (Lit( l ltk )) (
-         (if (has-suffix( l '_t_s )) (
-            (let lpfx (remove-suffix( l '_t_s )))
+         (if (.has-suffix( l '_t_s )) (
+            (let lpfx (.remove-suffix( l '_t_s )))
             (set r (App(
                (close(Lit( 'Token_s (with-key( ltk 'Token_s )) )))
                (close(App(
@@ -50,8 +50,8 @@ preprocess-apply-literals-one := λ(: program AST). (: (
          ) ())
       ))
       ( (Var( l ltk )) (
-         (if (has-suffix( l '_t_s )) (
-            (let lpfx (remove-suffix( l '_t_s )))
+         (if (.has-suffix( l '_t_s )) (
+            (let lpfx (.remove-suffix( l '_t_s )))
             (set r (App(
                (close(Lit( 'Token_s (with-key( ltk 'Token_s )) )))
                (close(App(

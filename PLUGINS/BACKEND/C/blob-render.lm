@@ -175,7 +175,7 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: off
             (match f (
                ()
                ( (Var( fname _ )) (
-                  (if (has-prefix( fname ':_s )) (
+                  (if (.has-prefix( fname ':_s )) (
                      (let e1 (blob-render-simple( ctx (tail-string fname) a offset )))
                      (set r (.1 e1))
                   ) (
@@ -208,7 +208,7 @@ blob-render := λ(: ctx FContext)(: term AST)(: f Fragment)(: offset I64). (: (
          (set f (blob-render( ctx t f offset )))
       ))
       ( (App( (Var( k _ )) a )) (
-         (if (has-prefix( k ':_s )) (            
+         (if (.has-prefix( k ':_s )) (            
             (let cs1 (blob-render-simple( ctx (tail-string k) a offset )))
             (let s1 (.1 cs1))
             (set f (fragment::set( f (tail-string k) s1 )))
@@ -220,7 +220,7 @@ blob-render := λ(: ctx FContext)(: term AST)(: f Fragment)(: offset I64). (: (
       ))
       ( (App( rst (App( (Var( k _ )) a )) )) (
          (set f (blob-render( ctx rst f offset )))
-         (if (has-prefix( k ':_s )) (            
+         (if (.has-prefix( k ':_s )) (            
             (let cs1 (blob-render-simple( ctx (tail-string k) a offset )))
             (let s1 (.1 cs1))
             (set f (fragment::set( f (tail-string k) s1 )))

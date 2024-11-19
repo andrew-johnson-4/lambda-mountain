@@ -3,7 +3,7 @@ preprocess-is-suffixed := λ(: l String). (: (
    (let r 0_u64)
    (let suffixes parse-suffixes)
    (for-each ((Tuple( sfxs sfxtt )) in parse-suffixes) (
-      (if (has-suffix( l sfxs )) (set r 1_u64) ())
+      (if (.has-suffix( l sfxs )) (set r 1_u64) ())
    ))
    r
 ) U64);

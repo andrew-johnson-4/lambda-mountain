@@ -1,8 +1,8 @@
 
 parse-type := λ(: tt String). (: (
    (let is-vararg False_u8)
-   (if (has-suffix( tt '..._s )) (
-      (set tt (remove-suffix( tt '..._s )))
+   (if (.has-suffix( tt '..._s )) (
+      (set tt (.remove-suffix( tt '..._s )))
       (set is-vararg True_u8)
    ) ())
    (let depth 0_u64)
