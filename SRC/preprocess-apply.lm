@@ -56,8 +56,8 @@ preprocess-apply-one := λ(: program AST). (: (
       ))
       ( (Lit( l ltk )) (
          (for-each ((Tuple( sfxs sfxtt )) in parse-suffixes) (
-            (if (has-suffix( l sfxs )) (
-               (let lpfx (remove-suffix( l sfxs )))
+            (if (.has-suffix( l sfxs )) (
+               (let lpfx (.remove-suffix( l sfxs )))
                (set r (App(
                   (close(Lit( ':_s (with-key( ltk ':_s )) )))
                   (close(App( (close(Lit( lpfx (with-key( ltk lpfx )) ))) (close(AType sfxtt)) )))
@@ -67,8 +67,8 @@ preprocess-apply-one := λ(: program AST). (: (
       ))
       ( (Var( l ltk )) (
          (for-each ((Tuple( sfxs sfxtt )) in parse-suffixes) (
-            (if (has-suffix( l sfxs )) (
-               (let lpfx (remove-suffix( l sfxs )))
+            (if (.has-suffix( l sfxs )) (
+               (let lpfx (.remove-suffix( l sfxs )))
                (set r (App(
                   (close(Lit( ':_s (with-key( ltk ':_s )) )))
                   (close(App( (close(Lit( lpfx (with-key( ltk lpfx )) ))) (close(AType sfxtt)) )))

@@ -39,9 +39,9 @@ lsts-parse := λ(: tokens List<Token>). (: (
 ) Nil);
 
 lsts-unwrap-identifier := λ(: ident String). (: (
-   (if (has-prefix( ident '$"_s )) (
-      (set ident (remove-prefix( ident '$"_s )))
-      (set ident (remove-suffix( ident '"_s )))
+   (if (.has-prefix( ident '$"_s )) (
+      (set ident (.remove-prefix( ident '$"_s )))
+      (set ident (.remove-suffix( ident '"_s )))
    ) ())
    ident
 ) String);
@@ -405,7 +405,7 @@ lsts-parse-lhs-one := λ(: tokens List<Token>). (: (
          (let h (lsts-parse-head tokens))
          (let is-suffixed 0_u64)
          (for-each ((Tuple( sfxs sfxtt )) in parse-suffixes) (
-            (if (has-suffix( h sfxs )) (
+            (if (.has-suffix( h sfxs )) (
                (set is-suffixed 1_u64)
             ) ())
          ))
@@ -473,7 +473,7 @@ lsts-parse-atom := λ(: tokens List<Token>). (: (
    (let term ASTEOF)
    (if (lsts-is-lit-head(lsts-parse-head tokens)) (
       (set term (Lit( (lsts-parse-head tokens) (head tokens) )))
-      (if (has-suffix( (lsts-parse-head tokens) '_s_s )) (
+      (if (.has-suffix( (lsts-parse-head tokens) '_s_s )) (
          (set term (App(
             (close(Var( 'intern_s (token::new 'intern_s) )))
             (close term)
@@ -483,7 +483,7 @@ lsts-parse-atom := λ(: tokens List<Token>). (: (
    ) (
       (if (lsts-is-ident-head(lsts-parse-head tokens)) (
          (set term (Var( (lsts-unwrap-identifier(lsts-parse-head tokens)) (head tokens) )))
-         (if (has-suffix( (lsts-parse-head tokens) '_s_s )) (
+         (if (.has-suffix( (lsts-parse-head tokens) '_s_s )) (
             (set term (App(
                (close(Var( 'intern_s (token::new 'intern_s) )))
                (close term)

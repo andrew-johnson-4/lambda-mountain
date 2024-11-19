@@ -71,7 +71,7 @@ deep-hash := λ(: key String). (: (
    si
 ) U64);
 
-has-prefix := λ(: base String)(: pfx String). (: (
+.has-prefix := λ(: base String)(: pfx String). (: (
    (let r 1_u64)
    (while (head-string pfx) (
       (if (head-string base) (
@@ -92,8 +92,8 @@ has-prefix := λ(: base String)(: pfx String). (: (
    r
 ) U64);
 
-remove-prefix := λ(: base String)(: pfx String). (: (
-   (if (has-prefix( base pfx )) (
+.remove-prefix := λ(: base String)(: pfx String). (: (
+   (if (.has-prefix( base pfx )) (
       (while (head-string pfx) (
          (set base (tail-string base))
          (set pfx (tail-string pfx))
@@ -102,7 +102,7 @@ remove-prefix := λ(: base String)(: pfx String). (: (
    base
 ) String);
 
-has-suffix := λ(: base String)(: sfx String). (: (
+.has-suffix := λ(: base String)(: sfx String). (: (
    (let r 0_u64)
    (while (head-string base) (
       (if (==( base sfx )) (
@@ -113,7 +113,7 @@ has-suffix := λ(: base String)(: sfx String). (: (
    r
 ) U64);
 
-remove-suffix := λ(: base String)(: sfx String). (: (
+.remove-suffix := λ(: base String)(: sfx String). (: (
    (let r SNil)
    (while (head-string base) (
       (if (==( base sfx )) (
@@ -142,8 +142,8 @@ remove-suffix := λ(: base String)(: sfx String). (: (
 .replace := λ(: base String)(: pat String)(: n String). (: (
    (let r SNil)
    (while (!=( (head-string base) 0_u8 )) (
-      (if (has-prefix( base pat )) (
-         (set base (remove-prefix( base pat )))
+      (if (.has-prefix( base pat )) (
+         (set base (.remove-prefix( base pat )))
          (set r (+( r (SAtom n) )))
       ) (
          (set r (+( r (SAtom(clone-rope(head-string base))) )))
@@ -156,7 +156,7 @@ remove-suffix := λ(: base String)(: sfx String). (: (
 .contains := λ(: base String)(: pat String). (: (
    (let r 0_u64)
    (while (!=( (head-string base) 0_u8 )) (
-      (if (has-prefix( base pat )) (set r 1_u64) ())
+      (if (.has-prefix( base pat )) (set r 1_u64) ())
       (set base (tail-string base))
    ))
    r

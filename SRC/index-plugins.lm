@@ -14,14 +14,14 @@ import PLUGINS/FRONTEND/C/index-index.lm;
 c-input-files := (: LEOF List<String>);
 
 frontend := λ(: fp String). (: (
-   (if (has-prefix( fp 'LIB/_s )) (
+   (if (.has-prefix( fp 'LIB/_s )) (
       (set fp (clone-rope(+( (SAtom config-platform-prefix) (SAtom fp) ))))
    ) ())
    (let found-file 0_u64)
-   (if (||( (has-suffix(fp '.c_s)) (has-suffix(fp '.h_s)) )) (
+   (if (||( (.has-suffix(fp '.c_s)) (.has-suffix(fp '.h_s)) )) (
       (set found-file 1_u64)
    ) ())
-   (if (&&( (not found-file) (has-prefix( fp 'PLATFORM/_s )) )) (
+   (if (&&( (not found-file) (.has-prefix( fp 'PLATFORM/_s )) )) (
       (if (file-exists fp) (
          (set found-file 1_u64)
       ) (
@@ -42,7 +42,7 @@ frontend := λ(: fp String). (: (
    ) ())
 
    (let todo 1_u64)
-   (if (&&( todo (||( (has-suffix( fp '.lm_s )) (has-suffix( fp '.html_s )) )) )) (
+   (if (&&( todo (||( (.has-suffix( fp '.lm_s )) (.has-suffix( fp '.html_s )) )) )) (
       (let text '_s)
       (if (is-already-tokenized fp) () (
          (set text (read-file fp))
@@ -51,11 +51,11 @@ frontend := λ(: fp String). (: (
       (lm-frontend( fp text ))
       (set todo 0_u64)
    ) ())
-   (if (&&( todo (||( (has-suffix( fp '.h_s )) (has-suffix( fp '.c_s )) )) )) (
+   (if (&&( todo (||( (.has-suffix( fp '.h_s )) (.has-suffix( fp '.c_s )) )) )) (
       (set c-input-files (cons( fp c-input-files )))
       (set todo 0_u64)
    ) ())
-   (if (&&( todo (has-suffix( fp '.lsts_s )) )) (
+   (if (&&( todo (.has-suffix( fp '.lsts_s )) )) (
       (lsts-frontend fp)
       (set todo 0_u64)
    ) ())
