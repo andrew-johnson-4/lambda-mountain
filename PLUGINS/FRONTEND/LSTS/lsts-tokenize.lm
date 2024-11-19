@@ -132,7 +132,7 @@ lsts-tokenize := λ(: fp String). (: (
             (set text (tail-string text))
             (set current-column (+( current-column 1_u64 )))
          ) ())
-         (set s-buffer (+( s-buffer (SAtom '_s_s) )))
+         (set s-buffer (+( s-buffer (SAtom '_ss_s) )))
          (set tokens (cons(
             (with-location( (clone-rope s-buffer) (SourceLocation( fp s-line s-column )) )) tokens
          )))

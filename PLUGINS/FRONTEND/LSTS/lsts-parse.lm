@@ -398,22 +398,11 @@ lsts-parse-lhs := λ(: tokens List<Token>). (: (
 lsts-parse-lhs-one := λ(: tokens List<Token>). (: (
    (let base ASTNil)
    (if (lsts-is-lit-head(lsts-parse-head tokens)) (
-      (set base (Lit( (lsts-parse-head tokens) (head tokens) )))
+      (set base (Lit( (.key(head tokens)) (head tokens) )))
       (set tokens (tail tokens))
    ) (
       (if (lsts-is-ident-head(lsts-parse-head tokens)) (
-         (let h (lsts-parse-head tokens))
-         (let is-suffixed 0_u64)
-         (for-each ((Tuple( sfxs sfxtt )) in parse-suffixes) (
-            (if (.has-suffix( h sfxs )) (
-               (set is-suffixed 1_u64)
-            ) ())
-         ))
-         (if is-suffixed (
-            (set base (Lit( (lsts-parse-head tokens) (head tokens) )))
-         ) (
-            (set base (Var( (lsts-unwrap-identifier(lsts-parse-head tokens)) (head tokens) )))
-         ))
+         (set base (Var( (lsts-unwrap-identifier(lsts-parse-head tokens)) (head tokens) )))
          (set tokens (tail tokens))
       ) (
          (lsts-parse-expect( 'LHS_s 0_u64 tokens ))
@@ -472,23 +461,11 @@ lsts-parse-mul := λ(: tokens List<Token>). (: (
 lsts-parse-atom := λ(: tokens List<Token>). (: (
    (let term ASTEOF)
    (if (lsts-is-lit-head(lsts-parse-head tokens)) (
-      (set term (Lit( (lsts-parse-head tokens) (head tokens) )))
-      (if (.has-suffix( (lsts-parse-head tokens) '_s_s )) (
-         (set term (App(
-            (close(Var( 'intern_s (token::new 'intern_s) )))
-            (close term)
-         )))
-      ) ())
+      (set term (Lit( (.key(head tokens)) (head tokens) )))
       (set tokens (tail tokens))
    ) (
       (if (lsts-is-ident-head(lsts-parse-head tokens)) (
          (set term (Var( (lsts-unwrap-identifier(lsts-parse-head tokens)) (head tokens) )))
-         (if (.has-suffix( (lsts-parse-head tokens) '_s_s )) (
-            (set term (App(
-               (close(Var( 'intern_s (token::new 'intern_s) )))
-               (close term)
-            )))
-         ) ())
          (set tokens (tail tokens))
       ) (
          (if (==( (lsts-parse-head tokens) '\[_s )) (
