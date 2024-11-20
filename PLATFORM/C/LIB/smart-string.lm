@@ -98,6 +98,10 @@ tail-string := λ(: x SmartString). (: (
    (if (<( low 0_i64 )) (
       (set low (+( (as (.length x) I64) low )))
    ) ())
+   ([]( x (as low U64) ))
+) U8);
+
+[] := λ(: x SmartString)(: low U64). (: (
    (let lowp (+( (.start x) low )))
    (if (<( lowp (.start x) )) (
       (fail 'Index\sOut\sOf\sBounds:\sSmartString.[]_s)
@@ -145,3 +149,20 @@ head-string := λ(: x SmartString). (: (
    ))
    (clone-rope r)
 ) String);
+
++ := λ(: l SmartString)(: r SmartString). (: (
+   (let length (+( (.length l) (.length r) )))
+   (let data (as (malloc( (+( length 1_u64 )) )) U8[]))
+   (let li 0_u64)
+   (while (<( li (.length l) )) (
+      (set[]( data li ([]( l li )) ))
+      (set li (+( li 1_u64 )))
+   ))
+   (let ri 0_u64)
+   (while (<( ri (.length r) )) (
+      (set[]( data (+( li ri )) ([]( r ri )) ))
+      (set ri (+( ri 1_u64 )))
+   ))
+   (set[]( data length 0_u8 ))
+   (SmartString( data data (+( data length )) (+( data length )) ))
+) SmartString);
