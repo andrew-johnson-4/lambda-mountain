@@ -29,6 +29,7 @@ mangle-c-type-internal := λ(: tt Type). (: (
       ( (TGround( 'String_s _ )) (set r (SAtom 'char*_s)) )
       ( (TGround( 'File_s _ )) (set r (SAtom 'FILE_s)) )
       ( (TGround( 'PID_s _ )) (set r (SAtom 'pid_t_s)) )
+      ( (TGround( 'Regex_s _ )) (set r (SAtom 'regex_t_s)) )
       ( (TGround( 'Array_s (LCons( _ (LCons( array-base _ )) )) )) (set r (+( (mangle-c-type array-base) (SAtom '*_s) ))) )
       ( (TGround( tag _ )) (
          (if (.has-prefix( tag 'C__s )) (

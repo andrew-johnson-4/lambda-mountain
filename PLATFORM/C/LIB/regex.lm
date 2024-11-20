@@ -2,3 +2,13 @@
 import regex.h;
 
 atom suffix Regex _rgx;
+
+#.has-prefix := λ(: text SmartString)(: rgx Regex). (: (
+#   0_u64
+#   #int regexec(const regex_t *preg, const char *string, size_t nmatch,
+#   #         regmatch_t pmatch[], int eflags);
+#) U64);
+
+#.remove-prefix := λ(: text SmartString)(: rgx Regex). (: (
+#   text
+#) SmartString);
