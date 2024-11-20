@@ -91,6 +91,24 @@ macro ('match-pats-arm( term ('macro::lhs-prefix-or-suffix( rest (:Literal: l) )
    ))
 );
 
+macro ('match-pats-arm( term ('macro::lhs-prefix-or-suffix( rest ('macro::lhs-bind( (:Variable: b) (:Literal: l) )) )) )) (
+   ( (let (uuid v) term) (
+      (if (.has-suffix( (uuid v) l )) (
+         (let b (.remove-suffix( (uuid v) l )))
+         (match-pats-arm( b rest ))
+      ) (branchfalse()))
+   ))
+);
+
+macro ('match-pats-arm( term ('macro::lhs-prefix-or-suffix( ('macro::lhs-bind( (:Variable: b) (:Literal: l) )) rest )) )) (
+   ( (let (uuid v) term) (
+      (if (.has-prefix( (uuid v) l )) (
+         (let b (.remove-prefix( (uuid v) l )))
+         (match-pats-arm( b rest ))
+      ) (branchfalse()))
+   ))
+);
+
 macro ('match-pats-arm( term ((:Tag: l lt) ( x1 )) )) (
    (
       (let (uuid v) term)
