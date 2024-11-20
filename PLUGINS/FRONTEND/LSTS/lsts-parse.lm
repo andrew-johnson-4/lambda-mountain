@@ -373,10 +373,40 @@ lsts-parse-expression := λ(: tokens List<Token>). (: (
    (Tuple( base tokens ))
 ) Tuple<AST,List<Token>>);
 
-lsts-parse-lhs := λ(: tokens List<Token>). (: (
+lsts-parse-lhs-big := λ(: tokens List<Token>). (: (
    (let base-rest (lsts-parse-lhs-one tokens))
    (let base (.first base-rest))
    (set tokens (.second base-rest))
+   (if (==( (lsts-parse-head tokens) '=_s )) (scope(
+      (let loc (.location(head tokens)))
+      (lsts-parse-expect( '=_s tokens ))(set tokens (tail tokens))
+      (let val-rest (lsts-parse-lhs( tokens )))
+      (let val (.first val-rest))
+      (set tokens (.second val-rest))
+      (set base (App(
+         (close(Var( 'macro::lhs-bind_s (with-location( (token::new 'macro::lhs-bind_s) loc )) )))
+         (close(App(
+            (close base)
+            (close val)
+         )))
+      )))
+   )) ())
+   (Tuple( base tokens ))
+) Tuple<AST,List<Token>>);
+
+lsts-parse-lhs := λ(: tokens List<Token>). (: (
+   (let base ASTEOF)
+   (if (==( (lsts-parse-head tokens) '\[_s )) (scope(
+      (lsts-parse-expect( '\[_s tokens ))(set tokens (tail tokens))
+      (let base-rest (lsts-parse-lhs-big( tokens )))
+      (set base (.first base-rest))
+      (set tokens (.second base-rest))
+      (lsts-parse-expect( '\]_s tokens ))(set tokens (tail tokens))
+   )) (
+      (let base-rest (lsts-parse-lhs-one tokens))
+      (set base (.first base-rest))
+      (set tokens (.second base-rest))
+   ))
    (while (&&( (non-zero tokens) (==( (lsts-parse-head tokens) '._s )) )) (
       (let loc (.location(head tokens)))
       (lsts-parse-expect( '._s tokens ))(set tokens (tail tokens))
@@ -413,15 +443,29 @@ lsts-is-lit := λ(: s String). (: (
 
 lsts-parse-lhs-one := λ(: tokens List<Token>). (: (
    (let base ASTNil)
-   (if (lsts-is-ident-head(lsts-parse-head tokens)) (
-      (set base (lsts-make-maybe-var( (head tokens) )))
-      (set tokens (tail tokens))
+   (if (==( (lsts-parse-head tokens) '/_s )) (
+      (let loc (.location(head tokens)))
+      (lsts-parse-expect( '/_s tokens ))(set tokens (tail tokens))
+      (let pat SNil)
+      (while (&&( (non-zero tokens) (!=( (lsts-parse-head tokens) '/_s )) )) (
+         (set pat (+( pat (SAtom(lsts-parse-head tokens)) )))
+         (set tokens (tail tokens))
+      ))
+      (lsts-parse-expect( '/_s tokens ))(set tokens (tail tokens))
+      (set pat (+( pat (SAtom '_rgx_s) )))
+      (let pats (clone-rope pat))
+      (set base (Lit( pats (with-location( (token::new pats) loc )) )))
    ) (
-      (if (lsts-is-lit(lsts-parse-head tokens)) (
-         (set base (Lit( (.key(head tokens)) (head tokens) )))
+      (if (lsts-is-ident-head(lsts-parse-head tokens)) (
+         (set base (lsts-make-maybe-var( (head tokens) )))
          (set tokens (tail tokens))
       ) (
-         (lsts-parse-expect( 'LHS_s 0_u64 tokens ))
+         (if (lsts-is-lit(lsts-parse-head tokens)) (
+            (set base (Lit( (.key(head tokens)) (head tokens) )))
+            (set tokens (tail tokens))
+         ) (
+            (lsts-parse-expect( 'LHS_s 0_u64 tokens ))
+         ))
       ))
    ))
    (Tuple( base tokens ))

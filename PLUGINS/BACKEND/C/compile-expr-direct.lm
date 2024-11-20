@@ -16,7 +16,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ))
       ( (Lit( val _ )) (
          (let ltype (typeof term))
-         (if (||( (is-t( ltype 'String_s )) (is-t( ltype 'SmartString_s )) )) (
+         (if (||( (||( (is-t( ltype 'String_s )) (is-t( ltype 'SmartString_s )) )) (is-t( ltype 'Regex_s )) )) (
             (if (is-t( ltype 'String_s )) (
                (set e (compile-declare-cstring( val )))
             ) ())
@@ -24,6 +24,20 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                (let lit (Lit( val (token::new val) )))
                (ascript-normal( lit (t1 'String_s) ))
                (set e (compile-stack-calls( ctx 'intern_s TAny (typeof term) lit stack-offset Used )))
+            ) ())
+            (if (is-t( ltype 'Regex_s )) (
+               (let rgx-id (uuid()))
+               (set assemble-header-section (+(
+                  assemble-header-section
+                  (+( (+( (SAtom 'regex_t\s_s) (SAtom rgx-id) )) (SAtom '\:\n_s) ))
+               )))
+               (set assemble-global-initializer-section (+(
+                  assemble-global-initializer-section
+                  (+( (+( (+( (SAtom '{int\sreturn_code\s=\sregcomp\[&_s) (SAtom rgx-id) ))
+                      (+( (SAtom ',\s"_s) (SAtom val) )) ))
+                          (SAtom '",\s0\]\:if\[return_code\]{fprintf\[stderr,"Could\snot\scompile\sregex."\]\:exit\[1\]\:}}\:\n_s) ))
+               )))
+               (set e (fragment::expression rgx-id))
             ) ())
          ) (
             (let isa-fragment False_u8)
