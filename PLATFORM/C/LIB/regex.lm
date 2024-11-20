@@ -4,6 +4,14 @@ import regex.h;
 atom suffix Regex _rgx;
 
 .has-prefix := λ(: text SmartString)(: rgx Regex). (: (
+   #(let matches (malloc(sizeof C_regmatch__t_)))
+   #(let status (regexec(
+   #   (as (& rgx) C_regex_t_*)
+   #   (as (.start text) C_char_*)
+   #   (as 1_u64 C_size_t)
+   #   (as matches C_regmatch_t_*)
+   #   (as 0_u64 C_int)
+   #)))
    0_u64
    #int regexec(const regex_t *preg, const char *string, size_t nmatch,
    #         regmatch_t pmatch[], int eflags);
