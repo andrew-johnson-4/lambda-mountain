@@ -1,2 +1,4 @@
 
- atom suffix Regex _rgx;
+import regex.h;
+
+atom suffix Regex _rgx;
