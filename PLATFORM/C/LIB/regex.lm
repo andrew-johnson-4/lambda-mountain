@@ -24,7 +24,7 @@ atom suffix Regex _rgx;
 ) U64);
 
 .remove-prefix := λ(: text SmartString)(: rgx Regex). (: (
-   (let matches (as (malloc(sizeof C_regmatch__t_)) C_regmatch__t_[]))
+   (let matches (: __uninitialized C_regmatch__t_[1]))
    (let status (regexec(
       (as (& rgx) C_regex__t_*_)
       (as (.start text) C_char_*)
