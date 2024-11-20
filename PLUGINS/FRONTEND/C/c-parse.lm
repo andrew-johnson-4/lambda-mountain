@@ -178,7 +178,18 @@ c-print-token-sequence := λ(: from List<String>)(: to List<String>). (: (
 ) Nil);
 
 c-mangle-typename := λ(: tokens List<String>). (: (
-   (.join( (cons( 'C_s tokens )) '__s ))
+   (let rs (: LEOF List<String>))
+   (for-each (t in (cons( 'C_s tokens ))) (
+      (set rs (cons(
+         (.replace( t '__s '___s ))
+         rs
+      )))
+   ))
+   (let r (.join( (reverse rs) '__s )))
+   (if (.has-suffix( r '_t_s )) (
+      (set r (+( r '__s )))
+   ) ())
+   r
 ) String);
 
 c-parse-declaration := λ(: tokens List<String>). (: (
