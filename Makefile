@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm EXAMPLES/tokenizer.lsts
+	lm EXAMPLES/string-formatting.lsts
 	cc tmp.c
 	./a.out
 
