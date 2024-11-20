@@ -4,8 +4,8 @@ import $"LIB/default.lm";
 let c-tokenize-new(text: String): List<String> = (
    let tokens = [] :: List<String>;
    while non-zero(text) {match text {
+      /^de/..rest => (print("D.."); text = "";);
       "a"..rest => (print("A.."); print(rest); text="";);
-      /^d[e]+/..rest => (print("D.."); text = "";);
       "abc" => (print("ABC"); text = "";);
       rst => (print("Default: "); print(rst); text = "";);
    #   "\s"..rst => text = rst;
