@@ -150,6 +150,7 @@ head-string := λ(: x SmartString). (: (
    (clone-rope r)
 ) String);
 
+# Smart Strings may allocated a hidden null byte after the data to protect against any accidental CString coercions
 + := λ(: l SmartString)(: r SmartString). (: (
    (let length (+( (.length l) (.length r) )))
    (let data (as (malloc( (+( length 1_u64 )) )) U8[]))
