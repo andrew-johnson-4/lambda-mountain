@@ -231,7 +231,7 @@ c-parse-declaration := λ(: tokens List<String>). (: (
             (let arg-type (c-mangle-typename(.first at)))
             (set tokens (.second at))
             (let arg-name '_s)
-            (if (==( arg-type 'C_s )) (
+            (if (==( (.length arg-type) 0_u64 )) (
                (if (non-zero tokens) (set tokens (tail tokens)) ())
                (print 'Unrecognized\sType\sName\sIn\sFunction\sArgument\s_s)
                (print return-type)(print '\s_s)(print name)(print '\s_s)
@@ -240,6 +240,15 @@ c-parse-declaration := λ(: tokens List<String>). (: (
             (if (&&( (non-zero tokens) (c-is-identifier(head tokens)) )) ((set arg-name (head tokens)) (set tokens (tail tokens))) ())
             (while (&&( (non-zero tokens) (==( (head tokens) '\[_s )) )) (
                (set tokens (c-dump-parens tokens))
+            ))
+            (while (&&( (non-zero tokens) (==( (head tokens) '[_s )) )) (
+               (set tokens (tail tokens)) # [
+               (while (&&( (non-zero tokens) (!=( (head tokens) ']_s )) )) (
+                  (set tokens (tail tokens))
+               ))
+               (set tokens (tail tokens)) # ]
+               (if (.has-suffix( arg-type '__s )) (set arg-type (.remove-suffix( arg-type '__s ))) ())
+               (set arg-type (+( arg-type '_*_s )))
             ))
             (while (&&( (non-zero tokens) (==( (head tokens) '__attribute___s )) )) (
                (set tokens (tail tokens))
