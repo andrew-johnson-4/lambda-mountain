@@ -451,11 +451,11 @@ lsts-make-lit := λ(: t Token). (: (
             )) ())
             (set s (.remove-prefix( s '\\{_s )))
             (let t-buffer SNil)
-            (while (&&( (non-zero s) (!=( s '}_s )) )) (
+            (while (&&( (non-zero s) (not(.has-prefix( s '}_s ))) )) (
                (set t-buffer (+( t-buffer (SAtom(clone-rope(head-string s))) )))
                (set s (tail-string s))
             ))
-            (if (&&( (non-zero s) (==( s '}_s )) )) (
+            (if (&&( (non-zero s) (.has-prefix( s '}_s )) )) (
                (set s (tail-string s))
             ) ())
          ) (
