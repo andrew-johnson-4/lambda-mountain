@@ -3,4 +3,4 @@ import $"LIB/default.lm";
 
 let f(x: U64): U64 = x*x;
 
-print("\{f(3)} " "should equal 9.");
+print("this \{f(3)} " "should equal 9.");

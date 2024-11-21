@@ -439,7 +439,6 @@ lsts-make-lit := λ(: t Token). (: (
                (let bs (clone-rope buffer))
                (let be (Lit( bs (with-location( (token::new bs) loc )) )))
                (if (non-zero base) (
-                  (print 'Cat1\s_s)(print base)(print '\n_s)
                   (set base (App(
                      (close(Var( '+_s (with-location( (token::new '+_s) loc )) )))
                      (close(App(
@@ -467,7 +466,6 @@ lsts-make-lit := λ(: t Token). (: (
          (let bs (clone-rope buffer))
          (let be (Lit( bs (with-location( (token::new bs) loc )) )))
          (if (non-zero base) (
-            (print 'Cat2\s_s)(print base)(print '\n_s)
             (set base (App(
                (close(Var( '+_s (with-location( (token::new '+_s) loc )) )))
                (close(App(
@@ -481,13 +479,19 @@ lsts-make-lit := λ(: t Token). (: (
    base
 ) AST);
 
-lsts-make-maybe-var := λ(: t Token). (: (
-   (let base (Var( (lsts-unwrap-identifier(.key t)) t )))
-   (if (lsts-is-lit(.key t)) (
-      (set base (lsts-make-lit t))
-   ) ())
-   base
-) AST);
+lsts-make-maybe-var := λ(: tokens List<Token>). (: (
+   (if (.has-suffix( (lsts-parse-head tokens) '_ss_s )) (
+      (lsts-parse-lit tokens)
+   ) (
+      (let t (head tokens))
+      (let base (Var( (lsts-unwrap-identifier(.key t)) t )))
+      (if (lsts-is-lit(.key t)) (
+         (set base (lsts-make-lit t))
+      ) ())
+      (set tokens (tail tokens))
+      (Tuple( base tokens ))
+   ))
+) Tuple<AST,List<Token>>);
 
 lsts-is-lit := λ(: s String). (: (
    (let r 0_u64)
@@ -512,27 +516,15 @@ lsts-parse-lhs-one := λ(: tokens List<Token>). (: (
       (let pats (clone-rope pat))
       (set base (Lit( pats (with-location( (token::new pats) loc )) )))
    )) (
-      (if (lsts-is-ident-head(lsts-parse-head tokens)) (
-         (set base (lsts-make-maybe-var( (head tokens) )))
-         (set tokens (tail tokens))
-      ) (
+      (if (lsts-is-ident-head(lsts-parse-head tokens)) (scope(
+         (let base-rest (lsts-make-maybe-var tokens))
+         (set base (.first base-rest))
+         (set tokens (.second base-rest))
+      )) (
          (if (lsts-is-lit(lsts-parse-head tokens)) (
-            (let loc (.location(head tokens)))
-            (set base (lsts-make-lit(head tokens)))
-            (set tokens (tail tokens))
-            (while (.has-suffix( (lsts-parse-head tokens) '_ss_s )) (
-               (let cat (lsts-make-lit(head tokens)))
-               (set tokens (tail tokens))
-               (if (non-zero base) (
-                  (set base (App(
-                     (close(Var( '+_s (with-location( (token::new '+_s) loc )) )))
-                     (close(App(
-                        (close base)
-                        (close cat)
-                     )))
-                  )))
-               ) (set base cat))
-            ))
+            (let base-rest (lsts-parse-lit tokens))
+            (set base (.first base-rest))
+            (set tokens (.second base-rest))
          ) (
             (lsts-parse-expect( 'LHS_s 0_u64 tokens ))
          ))
@@ -590,10 +582,11 @@ lsts-parse-mul := λ(: tokens List<Token>). (: (
 
 lsts-parse-atom := λ(: tokens List<Token>). (: (
    (let term ASTEOF)
-   (if (lsts-is-ident-head(lsts-parse-head tokens)) (
-      (set term (lsts-make-maybe-var( (head tokens) )))
-      (set tokens (tail tokens))
-   ) (
+   (if (lsts-is-ident-head(lsts-parse-head tokens)) (scope(
+      (let term-rest (lsts-make-maybe-var tokens))
+      (set term (.first term-rest))
+      (set tokens (.second term-rest))
+   )) (
       (if (==( (lsts-parse-head tokens) '\[_s )) (
          (set tokens (tail tokens))
          (if (==( (lsts-parse-head tokens) '\]_s )) (
@@ -617,22 +610,9 @@ lsts-parse-atom := λ(: tokens List<Token>). (: (
                (set tokens (.second m-term-rest))
             ) (
                (if (lsts-is-lit(lsts-parse-head tokens)) (
-                  (let loc (.location(head tokens)))
-                  (set term (lsts-make-lit(head tokens)))
-                  (set tokens (tail tokens))
-                  (while (.has-suffix( (lsts-parse-head tokens) '_ss_s )) (
-                     (let cat (lsts-make-lit(head tokens)))
-                     (set tokens (tail tokens))
-                     (if (non-zero term) (
-                        (set term (App(
-                           (close(Var( '+_s (with-location( (token::new '+_s) loc )) )))
-                           (close(App(
-                              (close term)
-                              (close cat)
-                           )))
-                        )))
-                     ) (set term cat))
-                  ))
+                  (let term-rest (lsts-parse-lit tokens))
+                  (set term (.first term-rest))
+                  (set tokens (.second term-rest))
                ) (
                   (lsts-parse-expect( 'Atom_s 0_u64 tokens ))
                ))
@@ -641,6 +621,30 @@ lsts-parse-atom := λ(: tokens List<Token>). (: (
       ))
    ))
    (lsts-parse-atom-tail( term tokens ))
+) Tuple<AST,List<Token>>);
+
+lsts-parse-lit :=  λ(: tokens List<Token>). (: (
+   (let loc (.location(head tokens)))
+   (let term ASTEOF)
+   (if (.has-suffix( (lsts-parse-head tokens) '_ss_s )) (
+      (while (.has-suffix( (lsts-parse-head tokens) '_ss_s )) (
+         (let cat (lsts-make-lit(head tokens)))
+         (set tokens (tail tokens))
+         (if (non-zero term) (
+            (set term (App(
+               (close(Var( '+_s (with-location( (token::new '+_s) loc )) )))
+               (close(App(
+                  (close term)
+                  (close cat)
+               )))
+            )))
+         ) (set term cat))
+      ))
+   ) (
+      (set term (lsts-make-lit(head tokens)))
+      (set tokens (tail tokens))
+   ))
+   (Tuple( term tokens ))
 ) Tuple<AST,List<Token>>);
 
 lsts-parse-list := λ(: tokens List<Token>). (: (
