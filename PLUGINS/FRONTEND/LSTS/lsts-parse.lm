@@ -426,9 +426,57 @@ lsts-parse-lhs := λ(: tokens List<Token>). (: (
 ) Tuple<AST,List<Token>>);
 
 lsts-make-lit := λ(: t Token). (: (
+   (let loc (.location t))
    (let base (Lit( (.key t) t )))
    (if (&&( (.has-suffix( (.key t) '_ss_s )) (.contains( (.key t) '\\{_s )) )) (
-      (print 'TODO\sFormat\sString:\s_s)(print (.key t))(print '\n_s)
+      (let s (.key t))
+      (set base ASTEOF)
+      (let buffer SNil)
+      (while (&&( (non-zero s) (!=( s '_s_s )) )) (
+         (if (.has-prefix( s '\\{_s )) (
+            (if (non-zero buffer) (scope(
+               (set buffer (+( buffer (SAtom '_ss_s) )))
+               (let bs (clone-rope buffer))
+               (let be (Lit( bs (with-location( (token::new bs) loc )) )))
+               (if (non-zero base) (
+                  (print 'Cat1\s_s)(print base)(print '\n_s)
+                  (set base (App(
+                     (close(Var( '+_s (with-location( (token::new '+_s) loc )) )))
+                     (close(App(
+                        (close base)
+                        (close be)
+                     )))
+                  )))
+               ) (set base be))
+            )) ())
+            (set s (.remove-prefix( s '\\{_s )))
+            (let t-buffer SNil)
+            (while (&&( (non-zero s) (!=( s '}_s )) )) (
+               (set t-buffer (+( t-buffer (SAtom(clone-rope(head-string s))) )))
+               (set s (tail-string s))
+            ))
+            (if (&&( (non-zero s) (==( s '}_s )) )) (
+               (set s (tail-string s))
+            ) ())
+         ) (
+            (set buffer (+( buffer (SAtom(clone-rope(head-string s))) )))
+         ))
+      ))
+      (if (non-zero buffer) (
+         (set buffer (+( buffer (SAtom '_ss_s) )))
+         (let bs (clone-rope buffer))
+         (let be (Lit( bs (with-location( (token::new bs) loc )) )))
+         (if (non-zero base) (
+            (print 'Cat2\s_s)(print base)(print '\n_s)
+            (set base (App(
+               (close(Var( '+_s (with-location( (token::new '+_s) loc )) )))
+               (close(App(
+                  (close base)
+                  (close be)
+               )))
+            )))
+         ) (set base be))
+      ) ())
    ) ())
    base
 ) AST);
@@ -450,7 +498,7 @@ lsts-is-lit := λ(: s String). (: (
 ) U64);
 
 lsts-parse-lhs-one := λ(: tokens List<Token>). (: (
-   (let base ASTNil)
+   (let base ASTEOF)
    (if (==( (lsts-parse-head tokens) '/_s )) (scope(
       (let loc (.location(head tokens)))
       (lsts-parse-expect( '/_s tokens ))(set tokens (tail tokens))
@@ -475,13 +523,15 @@ lsts-parse-lhs-one := λ(: tokens List<Token>). (: (
             (while (.has-suffix( (lsts-parse-head tokens) '_ss_s )) (
                (let cat (lsts-make-lit(head tokens)))
                (set tokens (tail tokens))
-               (set base (App(
-                  (close(Var( '+_s (with-location( (token::new '+_s) loc )) )))
-                  (close(App(
-                     (close base)
-                     (close cat)
+               (if (non-zero base) (
+                  (set base (App(
+                     (close(Var( '+_s (with-location( (token::new '+_s) loc )) )))
+                     (close(App(
+                        (close base)
+                        (close cat)
+                     )))
                   )))
-               )))
+               ) (set base cat))
             ))
          ) (
             (lsts-parse-expect( 'LHS_s 0_u64 tokens ))
@@ -573,13 +623,15 @@ lsts-parse-atom := λ(: tokens List<Token>). (: (
                   (while (.has-suffix( (lsts-parse-head tokens) '_ss_s )) (
                      (let cat (lsts-make-lit(head tokens)))
                      (set tokens (tail tokens))
-                     (set term (App(
-                        (close(Var( '+_s (with-location( (token::new '+_s) loc )) )))
-                        (close(App(
-                           (close term)
-                           (close cat)
+                     (if (non-zero term) (
+                        (set term (App(
+                           (close(Var( '+_s (with-location( (token::new '+_s) loc )) )))
+                           (close(App(
+                              (close term)
+                              (close cat)
+                           )))
                         )))
-                     )))
+                     ) (set term cat))
                   ))
                ) (
                   (lsts-parse-expect( 'Atom_s 0_u64 tokens ))
