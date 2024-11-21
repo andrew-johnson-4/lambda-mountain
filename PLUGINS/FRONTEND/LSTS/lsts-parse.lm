@@ -432,7 +432,7 @@ lsts-make-lit := λ(: t Token). (: (
       (let s (.key t))
       (set base ASTEOF)
       (let buffer SNil)
-      (while (&&( (non-zero s) (!=( s '_s_s )) )) (
+      (while (&&( (non-zero s) (!=( s '_ss_s )) )) (
          (if (.has-prefix( s '\\{_s )) (
             (if (non-zero buffer) (scope(
                (set buffer (+( buffer (SAtom '_ss_s) )))
@@ -447,6 +447,7 @@ lsts-make-lit := λ(: t Token). (: (
                      )))
                   )))
                ) (set base be))
+               (set buffer SNil)
             )) ())
             (set s (.remove-prefix( s '\\{_s )))
             (let t-buffer SNil)
@@ -459,6 +460,7 @@ lsts-make-lit := λ(: t Token). (: (
             ) ())
          ) (
             (set buffer (+( buffer (SAtom(clone-rope(head-string s))) )))
+            (set s (tail-string s))
          ))
       ))
       (if (non-zero buffer) (
@@ -629,6 +631,7 @@ lsts-parse-lit :=  λ(: tokens List<Token>). (: (
    (if (.has-suffix( (lsts-parse-head tokens) '_ss_s )) (
       (while (.has-suffix( (lsts-parse-head tokens) '_ss_s )) (
          (let cat (lsts-make-lit(head tokens)))
+         (print 'One:\s_s)(print cat)(print '\n_s)
          (set tokens (tail tokens))
          (if (non-zero term) (
             (set term (App(
@@ -644,6 +647,7 @@ lsts-parse-lit :=  λ(: tokens List<Token>). (: (
       (set term (lsts-make-lit(head tokens)))
       (set tokens (tail tokens))
    ))
+   (print 'Parsed:\s_s)(print term)(print '\n_s)
    (Tuple( term tokens ))
 ) Tuple<AST,List<Token>>);
 

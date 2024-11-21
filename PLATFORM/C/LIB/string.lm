@@ -174,5 +174,5 @@ print := λ(: x String). (: (
 ) Nil);
 
 non-zero := λ(: x String). (: (
-   (==( (head-string x) 0_u8 ))
+   (!=( (head-string x) 0_u8 ))
 ) U64);
