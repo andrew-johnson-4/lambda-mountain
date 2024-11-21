@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm EXAMPLES/string-formatting.lsts
+	lm SRC/quick-prop.lsts
 	cc tmp.c
 	./a.out
 
