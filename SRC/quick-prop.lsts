@@ -4,6 +4,6 @@ import $"LIB/default.lm";
 # let quick-prop = {} :: Hashtable<Tuple<String,U64>,Tuple<Type,Type>>;
 
 
-let quick-prop = {} :: Hashtable<U64,U64>;
+let quick-prop = {} :: HashtableEq<U64,U64>;
 
-print(quick-prop.length);
+print(quick-prop.lookup(1,2));
