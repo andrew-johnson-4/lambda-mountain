@@ -22,6 +22,10 @@ macro ('lsts-try-tokenize-discard pat) (
 
 lsts-tokenize := λ(: fp String). (: (
    (let text (read-file fp))
+   (lsts-tokenize-string(fp text))
+) List<Token>);
+
+lsts-tokenize-string := λ(: fp String)(: text String). (: (
    (let tokens (: LEOF List<Token>))
    (let current-line 1_u64)
    (let current-column 1_u64)

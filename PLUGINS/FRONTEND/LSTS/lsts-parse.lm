@@ -458,6 +458,20 @@ lsts-make-lit := λ(: t Token). (: (
             (if (&&( (non-zero s) (.has-prefix( s '}_s )) )) (
                (set s (tail-string s))
             ) ())
+            (let sub-tokens (lsts-tokenize-string( '[Format\sString]_s (clone-rope t-buffer) )))
+            (let se-rest (lsts-parse-expression sub-tokens))
+            (if (non-zero base) (
+               (set base (App(
+                  (close(Var( '+_s (with-location( (token::new '+_s) loc )) )))
+                  (close(App(
+                     (close base)
+                     (close(.first se-rest))
+                  )))
+               )))
+            ) (set base (.first se-rest)))
+            (if (non-zero(.second se-rest)) (
+               (lsts-parse-expect( '[EOF]_s (.second se-rest) ))
+            ) ())
          ) (
             (set buffer (+( buffer (SAtom(clone-rope(head-string s))) )))
             (set s (tail-string s))
