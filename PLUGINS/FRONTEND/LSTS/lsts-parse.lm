@@ -460,12 +460,16 @@ lsts-make-lit := λ(: t Token). (: (
             ) ())
             (let sub-tokens (lsts-tokenize-string( '[Format\sString]_s (clone-rope t-buffer) )))
             (let se-rest (lsts-parse-expression sub-tokens))
+            (let se (App(
+               (close(Var( 'to-smart-string_s (with-location( (token::new 'to-smart-string_s) (.location(head sub-tokens)) )) )))
+               (close(.first se-rest))
+            )))
             (if (non-zero base) (
                (set base (App(
                   (close(Var( '+_s (with-location( (token::new '+_s) loc )) )))
                   (close(App(
                      (close base)
-                     (close(.first se-rest))
+                     (close se)
                   )))
                )))
             ) (set base (.first se-rest)))
@@ -645,7 +649,6 @@ lsts-parse-lit :=  λ(: tokens List<Token>). (: (
    (if (.has-suffix( (lsts-parse-head tokens) '_ss_s )) (
       (while (.has-suffix( (lsts-parse-head tokens) '_ss_s )) (
          (let cat (lsts-make-lit(head tokens)))
-         (print 'One:\s_s)(print cat)(print '\n_s)
          (set tokens (tail tokens))
          (if (non-zero term) (
             (set term (App(
@@ -661,7 +664,6 @@ lsts-parse-lit :=  λ(: tokens List<Token>). (: (
       (set term (lsts-make-lit(head tokens)))
       (set tokens (tail tokens))
    ))
-   (print 'Parsed:\s_s)(print term)(print '\n_s)
    (Tuple( term tokens ))
 ) Tuple<AST,List<Token>>);
 

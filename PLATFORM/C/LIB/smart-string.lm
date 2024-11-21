@@ -167,3 +167,5 @@ head-string := λ(: x SmartString). (: (
    (set[]( data length 0_u8 ))
    (SmartString( data data (+( data length )) (+( data length )) ))
 ) SmartString);
+
+to-smart-string := λ(: s SmartString). (: s SmartString);

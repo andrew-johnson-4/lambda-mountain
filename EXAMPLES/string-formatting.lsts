@@ -1,6 +1,6 @@
 
 import $"LIB/default.lm";
 
-let f(x: U64): U64 = x*x;
+let f(x: U64): SmartString = "test";
 
-print("this \{f(3)} " "should equal 9.");
+print("this \{f(3)} " "should equal test.");
