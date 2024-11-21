@@ -36,7 +36,7 @@ try-continue-compile-c-typedefs := λ. (: (
    (while (non-zero continue) (
       (set continue-compile-c-typedefs-count (+( continue-compile-c-typedefs-count 1_u64 )))
       (if (>( continue-compile-c-typedefs-count 100_u64 )) (
-         (print 'Unable\sTo\sResolve\sCircular\sType\sDependency\sDuring\sCompilation_s)
+         (print 'Unable\sTo\sResolve\sCircular\sType\sDependency\sDuring\sCompilation\n_s)
          (for-each ((Tuple( _ td )) in continue) (
             (print 'Typedef:\s_s)(print td)(print '\n_s)
          ))
