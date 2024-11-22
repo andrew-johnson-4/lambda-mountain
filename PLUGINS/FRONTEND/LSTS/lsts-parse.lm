@@ -604,9 +604,67 @@ lsts-parse-lhs-one := λ(: tokens List<Token>). (: (
             (set tokens (.second base-rest))
          ) (
             (if (&&( (non-zero tokens) (==( (lsts-parse-head(tail tokens)) '{_s )) )) (
-               (print 'LHS\sLit\s_s)(print tokens)(print '\n_s)
+               (let loc (.location(head tokens)))
                (let tag (lsts-parse-head tokens))(set tokens (tail tokens))
                (lsts-parse-expect( '{_s tokens ))(set tokens (tail tokens))
+               (let des-args ASTEOF)
+               (while (&&( (non-zero tokens) (!=( (lsts-parse-head tokens) '}_s )) )) (
+                  (let attr-loc (.location(head tokens)))
+                  (let binding '_s)
+                  (let attr-key '_s)
+                  (if (lsts-is-ident-head(lsts-parse-head tokens)) (
+                     (set attr-key (lsts-parse-head tokens))
+                     (set tokens (tail tokens))
+                  ) ())
+                  (if (==( (lsts-parse-head tokens) '=_s )) (
+                     (set binding attr-key)(set tokens (tail tokens))
+                     (lsts-parse-expect( 'Identifier_s (lsts-is-ident-head(lsts-parse-head tokens)) tokens ))
+                     (if (lsts-is-ident-head(lsts-parse-head tokens)) (
+                        (set attr-key (lsts-parse-head tokens))
+                        (set tokens (tail tokens))
+                     ) ())
+                  ) ())
+                  (let val (Var( '__s (with-location( (token::new '__s) attr-loc )) )))
+                  (if (==( (lsts-parse-head tokens) ':_s )) (
+                     (set tokens (tail tokens))
+                     (let val-rest (lsts-parse-lhs-one tokens))
+                     (set val (.first val-rest))
+                     (set tokens (.second val-rest))
+                  ) ())
+                  (if (non-zero binding) (
+                     (set val (App(
+                        (close(Var( '@_s (with-location( (token::new '@_s) attr-loc )) )))
+                        (close(App(
+                           (close(Var( binding (with-location( (token::new binding) attr-loc )) )))
+                           (close val)
+                        )))
+                     )))
+                  ) ())
+                  (if (non-zero attr-key) (
+                     (set attr-key (+( '._s attr-key )))
+                     (set val (App(
+                        (close(Var( 'macro::bind-field-by-key_s (with-location( (token::new 'macro::bind-field-by-key_s) attr-loc )) )))
+                        (close(App(
+                           (close(Var( attr-key (with-location( (token::new attr-key) attr-loc )) )))
+                           (close val)
+                        )))
+                     )))
+                  ) ())
+                  (if (non-zero des-args) (set des-args val) (
+                     (set des-args (App(
+                        (close des-args)
+                        (close val)
+                     )))
+                  ))
+               ))
+               (if (non-zero des-args) (
+                  (set base (App(
+                     (close(Var( tag (with-location( (token::new tag) loc )) )))
+                     (close des-args)
+                  )))
+               ) (
+                  (close(Lit( tag (with-location( (token::new tag) loc )) )))
+               ))
                (lsts-parse-expect( '}_s tokens ))(set tokens (tail tokens))
             ) (
                (lsts-parse-expect( 'LHS_s 0_u64 tokens ))
