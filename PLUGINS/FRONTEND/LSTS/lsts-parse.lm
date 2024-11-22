@@ -670,7 +670,7 @@ lsts-parse-lhs-one := λ(: tokens List<Token>). (: (
                      (close des-args)
                   )))
                ) (
-                  (close(Lit( tag (with-location( (token::new tag) loc )) )))
+                  (set base (close(Lit( tag (with-location( (token::new tag) loc )) ))))
                ))
                (lsts-parse-expect( '}_s tokens ))(set tokens (tail tokens))
             ) (
