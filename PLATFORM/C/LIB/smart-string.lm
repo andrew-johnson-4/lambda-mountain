@@ -169,3 +169,4 @@ head-string := λ(: x SmartString). (: (
 ) SmartString);
 
 to-smart-string := λ(: s SmartString). (: s SmartString);
+to-smart-string := λ(: s String). (: (intern s) SmartString);

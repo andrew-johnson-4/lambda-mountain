@@ -1,0 +1,33 @@
+
+to-smart-string := λ(: tt Type). (: (
+   (match tt (
+      ()
+      ( TAny (intern '?_s))
+      ( (TVar v) (to-smart-string v) )
+      ( (TGround( tg ps )) (
+         (let r (to-smart-string tg))
+         (if (>( (.length ps) 0_u64 )) (
+            (set r (+( r (intern '<_s) )))
+            (let ri 0_u64)
+            (for-each (p in ps) (
+               (if (>( ri 0_u64 )) (
+                  (set r (+( r (intern ',_s) )))
+               ) ())
+               (set ri (+( ri 1_u64 )))
+               (set r (+( r (to-smart-string p) )))
+            ))
+            (set r (+( r (intern '>_s) )))
+         ) ())
+         r
+      ))
+      ( (TAnd( lt rt )) (
+         (+( 
+            (to-smart-string lt)
+            (+(
+               (intern '+_s)
+               (to-smart-string rt)
+            ))
+         ))
+      ))
+   ))
+) SmartString);
