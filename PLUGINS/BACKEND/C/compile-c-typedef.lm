@@ -99,7 +99,7 @@ compile-c-typedef-concrete := λ(: tctx TContext)(: base-type Type)(: body AST).
             (set fields (substitute( tctx fields )))
             (set incomplete (||( incomplete (is-incomplete-typedef fields) )))
             (if (is-t( fields 'Nil_s )) () (
-               (set cases (+( cases (compile-c-casedef( fields case-number )) )))
+               (set cases (+( cases (compile-c-casedef( tctx fields case-number )) )))
                (set has-case 1_u64)
             ))
             (set case-number (+( case-number 1_u64 )))
@@ -110,7 +110,7 @@ compile-c-typedef-concrete := λ(: tctx TContext)(: base-type Type)(: body AST).
             (set fields (substitute( tctx fields )))
             (set incomplete (||( incomplete (is-incomplete-typedef fields) )))
             (if (is-t( fields 'Nil_s )) () (
-               (set cases (+( cases (compile-c-casedef( fields case-number )) )))
+               (set cases (+( cases (compile-c-casedef( tctx fields case-number )) )))
                (set has-case 1_u64)
             ))
             (set body ASTEOF)
@@ -170,11 +170,11 @@ compile-c-fields-of-case := λ(: base-type Type)(: tag-definition AST)(: case-nu
    ft
 ) Type);
 
-compile-c-casedef := λ(: fields Type)(: case-number U64). (: (
+compile-c-casedef := λ(: tctx TContext)(: fields Type)(: case-number U64). (: (
    (let r (+(
       (SAtom 'struct\s{_s)
       (+(
-         (compile-c-casedef-fields( fields case-number 1_u64 ))
+         (compile-c-casedef-fields( tctx fields case-number 1_u64 ))
          (SAtom '}\:\n_s)
       ))
    )))
@@ -190,27 +190,27 @@ compile-c-mark-field-as-seen := λ(: tt Type). (: (
       (if (&&( (non-zero body) (not(.lookup( is-cstruct-hard-compiled-index tt 0_u64 ))) )) (
          (let tctx (unify( base-type tt )))
          (set continue-compile-c-typedefs-concrete (cons(
-            (Tuple( (Tuple( tctx base-type )) body ))
+            (Tuple( (Tuple( tctx tt )) body ))
             continue-compile-c-typedefs-concrete
          )))
       ) ())
    ) ())
 ) Nil);
 
-compile-c-casedef-fields := λ(: fields Type)(: case-number U64)(: field-index U64). (: (
+compile-c-casedef-fields := λ(: tctx TContext)(: fields Type)(: case-number U64)(: field-index U64). (: (
    (let r SNil)
    (match fields (
       ()
       ( (TGround( 'Nil_s _ )) () )
       ( (TGround( 'Cons_s (LCons( ft (LCons( rst _ )) )) )) (
-         (compile-c-mark-field-as-seen ft)
+         (compile-c-mark-field-as-seen(substitute(tctx ft)))
          (set r (+( (+( (mangle-c-type ft) (SAtom '\sfield__s) )) (+( (SAtom(
             (to-string(+( (*( case-number 1000_u64 )) field-index )))
          )) (SAtom '\:_s) )) )))
-         (set r (+( r (compile-c-casedef-fields( rst case-number (+( field-index 1_u64 )) )) )))
+         (set r (+( r (compile-c-casedef-fields( tctx rst case-number (+( field-index 1_u64 )) )) )))
       ))
       ( ft (
-         (compile-c-mark-field-as-seen ft)
+         (compile-c-mark-field-as-seen(substitute(tctx ft)))
          (set r (+( (+( (mangle-c-type ft) (SAtom '\sfield__s) )) (+( (SAtom(
             (to-string(+( (*( case-number 1000_u64 )) field-index )))
          )) (SAtom '\:_s) )) )))
