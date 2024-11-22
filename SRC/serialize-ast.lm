@@ -2,8 +2,8 @@
 serialize-ast := λ(: t AST). (: (
    (match t (
       ()
-      ( ASTEOF (print '\[\]_s) )
-      ( ASTNil (print 'Nil_s) )
+      ( ASTEOF (print 'EOF_s) )
+      ( ASTNil (print '\[\]_s) )
       ( (Meta _) (print 'Meta_s) )
       ( (Var( a _ )) (
          (print '\[Variable\s_s)
