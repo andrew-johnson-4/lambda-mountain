@@ -193,6 +193,9 @@ compile-c-mark-field-as-seen := λ(: tt Type). (: (
             (Tuple( (Tuple( tctx tt )) body ))
             continue-compile-c-typedefs-concrete
          )))
+         (if (non-zero(.lookup( index-c-type-ordinal tt '_s ))) () (
+            (compile-c-typedef-concrete-ordinal tt)
+         ))
       ) ())
    ) ())
 ) Nil);
