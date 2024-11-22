@@ -122,7 +122,6 @@ compile-c-typedef-concrete := λ(: tctx TContext)(: base-type Type)(: body AST).
             continue-compile-c-typedefs-concrete
          )))
       ) (
-         (print 'Complete\s_s)(print base-type)(print '\n_s)
          (set is-cstruct-hard-compiled-index (.bind( is-cstruct-hard-compiled-index base-type 1_u64 )))
          (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom 'struct\s_s)) )))
          (set assemble-header-section (SCons( (close assemble-header-section) (close(mangle-c-type base-type)) )))
@@ -183,7 +182,15 @@ compile-c-casedef := λ(: tctx TContext)(: fields Type)(: case-number U64). (: (
 
 compile-c-mark-field-as-seen := λ(: tt Type). (: (
    (if (>( (arity tt) 0_u64 )) (
-      (print 'Mark\s_s)(print tt)(print '\n_s)
+      (match tt (
+         ()
+         ( (TGround( 'Array_s tt-ps )) (
+            (for-each (child in tt-ps) (
+               (compile-c-mark-field-as-seen child)
+            ))
+         ))
+         ( _ () )
+      ))
       (let base-body (.lookup( compile-c-type-body-of-base-type (tag-of tt) (Tuple( TAny ASTEOF )) )))
       (let base-type (.first base-body))
       (let body (.second base-body))
@@ -195,6 +202,15 @@ compile-c-mark-field-as-seen := λ(: tt Type). (: (
                (Tuple( (Tuple( tctx tt )) body ))
                continue-compile-c-typedefs-concrete
             )))
+            (match tt (
+               ()
+               ( (TGround( _ tt-ps )) (
+                  (for-each (child in tt-ps) (
+                     (compile-c-mark-field-as-seen child)
+                  ))
+               ))
+               ( _ () )
+            ))
          ))
       ) ())
    ) ())
