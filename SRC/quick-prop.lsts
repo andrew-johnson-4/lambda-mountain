@@ -2,5 +2,5 @@
 import LIB/default.lm;
 import SRC/index-definitions.lm;
 
-#let quick-prop = {} :: Hashtable<Tuple<String,U64>,Tuple<Type,Type>>;
+let quick-prop = {} :: HashtableEq<Tuple<String,U64>,Tuple<Type,Type>>;
 
