@@ -391,7 +391,9 @@ lsts-parse-expression-possibly-tuple := λ(: tokens List<Token>). (: (
    (let base-rest (lsts-parse-expression tokens))
    (let base (.first base-rest))
    (set tokens (.second base-rest))
+   (let is-tuple 0_u64)
    (while (==( (lsts-parse-head tokens) ',_s )) (
+      (set is-tuple 1_u64)
       (set tokens (tail tokens))
       (set base-rest (lsts-parse-expression tokens))
       (set base (App(
@@ -400,10 +402,12 @@ lsts-parse-expression-possibly-tuple := λ(: tokens List<Token>). (: (
       )))
       (set tokens (.second base-rest))
    ))
-   (set base (App(
-      (close(Lit( 'Tuple_s (with-location( (token::new 'Tuple_s) loc )) )))
-      (close base)
-   )))
+   (if is-tuple (
+      (set base (App(
+         (close(Lit( 'Tuple_s (with-location( (token::new 'Tuple_s) loc )) )))
+         (close base)
+      )))
+   ) ())
    (Tuple( base tokens ))
 ) Tuple<AST,List<Token>>);
 
