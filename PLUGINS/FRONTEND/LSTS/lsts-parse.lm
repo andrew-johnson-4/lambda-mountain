@@ -17,7 +17,6 @@ lsts-parse := λ(: tokens List<Token>). (: (
       ) (
          (if (==( (lsts-parse-head tokens) 'import_s )) (
             (set tokens (tail tokens))
-            (lsts-parse-expect( 'Path_s (lsts-is-ident-head(lsts-parse-head tokens)) tokens ))
             (let path SNil)
             (while (&&( (non-zero tokens) (!=( (lsts-parse-head tokens) '\:_s )) )) (
                (set path (+( path (SAtom(lsts-unwrap-identifier(lsts-parse-head tokens))) )))
@@ -166,7 +165,6 @@ lsts-parse-let := λ(: tokens List<Token>). (: (
          (lsts-parse-expect( 'Identifier_s (lsts-is-ident-head(lsts-parse-head tokens)) tokens ))
          (let arg-name (head tokens)) (set tokens (tail tokens))
          (lsts-parse-expect( ':_s tokens )) (set tokens (tail tokens))
-         (lsts-parse-expect( 'Identifier_s (lsts-is-ident-head(lsts-parse-head tokens)) tokens ))
          (let type-rest (lsts-parse-type( tokens )))
          (let arg-type (.first type-rest))
          (set tokens (.second type-rest))
@@ -596,24 +594,23 @@ lsts-parse-lhs-one := λ(: tokens List<Token>). (: (
       (set base (Lit( pats (with-location( (token::new pats) loc )) )))
    )) (
       (if (lsts-is-ident-head(lsts-parse-head tokens)) (scope(
-         (print 'LHS\sIdent\s_s)(print tokens)(print '\n_s)
          (let base-rest (lsts-make-maybe-var tokens))
          (set base (.first base-rest))
          (set tokens (.second base-rest))
       )) (
          (if (lsts-is-lit(lsts-parse-head tokens)) (
-            (print 'LHS\sLit\s_s)(print tokens)(print '\n_s)
-            (if (==( (lsts-parse-head(tail tokens)) '{_s )) (
+            (let base-rest (lsts-parse-lit tokens))
+            (set base (.first base-rest))
+            (set tokens (.second base-rest))
+         ) (
+            (if (&&( (non-zero tokens) (==( (lsts-parse-head(tail tokens)) '{_s )) )) (
+               (print 'LHS\sLit\s_s)(print tokens)(print '\n_s)
                (let tag (lsts-parse-head tokens))(set tokens (tail tokens))
                (lsts-parse-expect( '{_s tokens ))(set tokens (tail tokens))
                (lsts-parse-expect( '}_s tokens ))(set tokens (tail tokens))
             ) (
-               (let base-rest (lsts-parse-lit tokens))
-               (set base (.first base-rest))
-               (set tokens (.second base-rest))
+               (lsts-parse-expect( 'LHS_s 0_u64 tokens ))
             ))
-         ) (
-            (lsts-parse-expect( 'LHS_s 0_u64 tokens ))
          ))
       ))
    ))
