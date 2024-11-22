@@ -656,12 +656,12 @@ lsts-parse-lhs-one := λ(: tokens List<Token>). (: (
                         )))
                      )))
                   ) ())
-                  (if (non-zero des-args) (set des-args val) (
+                  (if (non-zero des-args) (
                      (set des-args (App(
                         (close des-args)
                         (close val)
                      )))
-                  ))
+                  ) (set des-args val))
                   (if (==( (lsts-parse-head tokens) ',_s )) (set tokens (tail tokens)) ())
                ))
                (if (non-zero des-args) (
