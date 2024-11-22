@@ -110,20 +110,24 @@ lsts-substitute-type-aliases := λ(: s String). (: (
 
 lsts-parse-type := λ(: tokens List<Token>). (: (
    (let base SNil)
+   (let tuple-depth 0_u64)
    (if (==( (lsts-parse-head tokens) '\[_s )) (
       (set base (SAtom 'Tuple<_s))
+      (set tuple-depth 1_u64)
    ) (
       (set base (SAtom(lsts-substitute-type-aliases(lsts-parse-head tokens))))(set tokens (tail tokens))
    ))
-   (while (||( (==( (lsts-parse-head tokens) '<_s )) (==( (lsts-parse-head tokens) '[_s )) )) (
+   (while (||( (||( (==( (lsts-parse-head tokens) '<_s )) (==( (lsts-parse-head tokens) '[_s )) )) (>( tuple-depth 0_u64 )) )) (
       (let depth 1_u64)
       (set base (+( base (SAtom(lsts-substitute-type-aliases(lsts-parse-head tokens))) )))(set tokens (tail tokens))
       (while (&&( (non-zero tokens) (>( depth 0_u64 )) )) (
          (if (==( (lsts-parse-head tokens) '\[_s )) (
             (set base (+( base (SAtom 'Tuple<_s) )))
+            (set tuple-depth (+( tuple-depth 1_u64 )))
          ) (
             (if (==( (lsts-parse-head tokens) '\]_s )) (
                (set base (+( base (SAtom '>_s) )))
+               (set tuple-depth (-( tuple-depth 1_u64 )))
             ) (
                (set base (+( base (SAtom(lsts-substitute-type-aliases(lsts-parse-head tokens))) )))
             ))
