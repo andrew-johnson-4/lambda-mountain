@@ -1,7 +1,6 @@
 
 infer-type-definition := λ(: base-type Type)(: body AST)(: case-number U64). (: (
    # This works but is too slow
-   # (add-alias( '.tag_s '.0_s (t3( 'Arrow_s base-type (t1 'U64_s) )) ))
    (mark-class-exists( (tag-of base-type) ))
    (mark-is-lm-struct( (tag-of base-type) ))
    (let r 0_u64)

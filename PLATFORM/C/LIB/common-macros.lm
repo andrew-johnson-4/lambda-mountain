@@ -244,3 +244,85 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( x6 x5 x4 x3 x2 x1 )) )) (
    )
 );
 
+macro ('match-pats-arm( term ( (:Tag: l lt) () ) )) (
+   ( (let (uuid v) term) (==( (.0( (uuid v) )) l )) )
+);
+
+macro ('match-pats-arm( term ((:Tag: l lt) ('macro::bind-field-by-key( x1-key x1 )) ) )) (
+   (
+      (let (uuid v) term)
+      (let (uuid m) 0_u8)
+      (if (==( (.0( (uuid v) )) l ))
+          (if (match-pats-arm( (open(x1-key( (as (uuid v) lt) ))) x1 ))
+              (set (uuid m) 1_u8)
+              ()
+          )
+          ()
+      )
+      (==( (uuid m) 1_u8 ))
+   )
+);
+
+macro ('match-pats-arm( term ((:Tag: l lt) ( ('macro::bind-field-by-key( x2-key x2 )) ('macro::bind-field-by-key( x1-key x1 )) )) )) (
+   (
+      (let (uuid v) term)
+      (let (uuid m) 0_u8)
+      (if (==( (.0( (uuid v) )) l ))
+          (if (match-pats-arm( (open(x1-key( (as (uuid v) lt) ))) x1 ))
+              (if (match-pats-arm( (open(x2-key( (as (uuid v) lt) ))) x2 ))
+                  (set (uuid m) 1_u8)
+                  ()
+              )
+              ()
+          )
+          ()
+      )
+      (==( (uuid m) 1_u8 ))
+   )
+);
+
+macro ('match-pats-arm( term ((:Tag: l lt) ( ('macro::bind-field-by-key( x3-key x3 )) ('macro::bind-field-by-key( x2-key x2 )) ('macro::bind-field-by-key( x1-key x1 )) )) )) (
+   (
+      (let (uuid v) term)
+      (let (uuid m) 0_u8)
+      (if (==( (.0( (uuid v) )) l ))
+          (if (match-pats-arm( (open(x1-key( (as (uuid v) lt) ))) x1 ))
+              (if (match-pats-arm( (open(x2-key( (as (uuid v) lt) ))) x2 ))
+                  (if (match-pats-arm( (open(x3-key( (as (uuid v) lt) ))) x3 ))
+                     (set (uuid m) 1_u8)
+                     ()
+                  )
+                  ()
+              )
+              ()
+          )
+          ()
+      )
+      (==( (uuid m) 1_u8 ))
+   )
+);
+
+macro ('match-pats-arm( term ((:Tag: l lt) ( ('macro::bind-field-by-key( x4-key x4 )) ('macro::bind-field-by-key( x3-key x3 )) ('macro::bind-field-by-key( x2-key x2 )) ('macro::bind-field-by-key( x1-key x1 )) )) )) (
+   (
+      (let (uuid v) term)
+      (let (uuid m) 0_u8)
+      (if (==( (.0( (uuid v) )) l ))
+          (if (match-pats-arm( (open(x1-key( (as (uuid v) lt) ))) x1 ))
+              (if (match-pats-arm( (open(x2-key( (as (uuid v) lt) ))) x2 ))
+                  (if (match-pats-arm( (open(x3-key( (as (uuid v) lt) ))) x3 ))
+                     (if (match-pats-arm( (open(x4-key( (as (uuid v) lt) ))) x4 ))
+                        (set (uuid m) 1_u8)
+                        ()
+                     )
+                     ()
+                  )
+                  ()
+              )
+              ()
+          )
+          ()
+      )
+      (==( (uuid m) 1_u8 ))
+   )
+);
+

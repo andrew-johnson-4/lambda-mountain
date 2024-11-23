@@ -2,13 +2,16 @@
 import LIB/default.lm;
 import SRC/index-definitions.lm;
 
-let quick-prop = {} :: HashtableEq<(String,U64),List<(Type,Type)>>;
+#let quick-prop = {} :: HashtableEq<(String,U64),List<(Type,Type)>>;
 
-#let .ground-tag-and-arity(tt: Type): (String,U64) = (
-#   match tt {
-#      TGround { tag: tag, parameters: parameters } => (tag, parameters.length);
-#   }
-#);
+let .ground-tag-and-arity(tt: Type): (String,U64) = (
+   match tt {
+      TGround {} => ("", 1);
+      TGround { tag=tag } => (intern(tag), 1);
+      TGround { tag=tag, parameters=parameters } => (intern(tag), parameters.length);
+      _ => fail("Called .ground-tag-and-arity on non-ground type: \{tt}");
+   }
+);
 
 let add-quick-prop(pre: Type, post: Type): Nil = (
    (1, 2); ()

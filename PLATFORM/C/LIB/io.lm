@@ -29,6 +29,10 @@ fail := λ(: msg String)(: loc String). (: (
    (exit 1_u32)
 ) Never);
 
+fail := λ(: msg SmartString). (: (
+   (print msg)(exit 1_u32)
+) Never);
+
 fail := λ(: msg String). (: (
    (print msg)
    (exit 1_u32)
