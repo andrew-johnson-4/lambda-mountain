@@ -24,10 +24,13 @@ let add-quick-prop(pre: Type, post: Type): Nil = (
 let enrich-quick-prop(pre: Type): Type = (
    match pre {
       TGround { tag=tag, parameters=parameters } => (
-         #for Tuple { lt, rt } in quick-prop.lookup( pre.ground-tag-and-arity, ([] :: List<(Type,Type)>) ) {
-         #   print("Enrich \{pre} with \{lt} => \{rt}\n");
+         for p in parameters.reverse {
+            print("P \{p}");
+         };
+         for Tuple { lt=first, rt=second } in quick-prop.lookup( pre.ground-tag-and-arity, ([] :: List<(Type,Type)>) ) {
+            print("Enrich \{pre} with \{lt} => \{rt}\n");
             # dont forget to unify and substitute tctx
-         #}
+         }
          # dont forget to recurse into parameters too
       );
       _ => ();

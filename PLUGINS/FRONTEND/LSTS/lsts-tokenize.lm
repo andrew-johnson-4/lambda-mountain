@@ -154,7 +154,7 @@ lsts-tokenize-string := λ(: fp String)(: text String). (: (
          (print current-line)(print ',_s)(print current-column)(print ':\s\`_s)(print(clone-rope(head-string text)))(print '\`_s)(print '\n_s)(exit 1_u64)
       ) ())
    ))
-   (reverse tokens)
+   (.reverse tokens)
 ) List<Token>);
 
 lsts-is-ident-head := λ(: text String). (: (

@@ -14,7 +14,7 @@ remove-parens := λ(: tokens List<Token>). (: (
                (set rst trst)
             ))
          )))
-         (set tokens (reverse r))
+         (set tokens (.reverse r))
       ))
    ))
    tokens

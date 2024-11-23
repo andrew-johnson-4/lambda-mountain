@@ -181,6 +181,6 @@ tokenize := λ(: fp String)(: text String). (: (
       (exit 1_u64)
    ))
 
-   (reverse ast-tokenized-program)
+   (.reverse ast-tokenized-program)
 ) List<Token>);
 
