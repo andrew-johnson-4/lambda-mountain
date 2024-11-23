@@ -6,7 +6,7 @@ import SRC/index-definitions.lm;
 
 let .ground-tag-and-arity(tt: Type): (String,U64) = (
    match tt {
-#      TGround {} => ("", 1);
+      TGround {} => ("", 1);
 #      TGround { tag=tag } => (tag, 1);
       TGround { tag=tag, parameters=parameters } => (tag, parameters.length);
       _ => fail("Called .ground-tag-and-arity on non-ground type: \{tt}");
