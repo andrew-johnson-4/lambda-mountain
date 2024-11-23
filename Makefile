@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm EXAMPLES/tokenizer.lsts
+	lm SRC/quick-prop.lsts
 	cc tmp.c
 	./a.out
 

@@ -781,7 +781,31 @@ lsts-parse-atom := λ(: tokens List<Token>). (: (
                   (set term (.first term-rest))
                   (set tokens (.second term-rest))
                ) (
-                  (lsts-parse-expect( 'Atom_s 0_u64 tokens ))
+                  (if (&&( (non-zero tokens) (==( (lsts-parse-head(tail tokens)) '{_s )) )) (
+                     (let tag (head tokens))(set tokens (tail tokens))
+                     (set term (Lit( (.key tag) tag )))
+                     (lsts-parse-expect( '{_s tokens ))(set tokens (tail tokens))
+                     (let fields ASTEOF)
+                     (while (&&( (non-zero tokens) (!=( (lsts-parse-head tokens) '}_s )) )) (
+                        (let field-rest (lsts-parse-small-expression tokens))
+                        (let field (.first field-rest))
+                        (set tokens (.second field-rest))
+                        (if (non-zero fields) (
+                           (set fields (App( (close fields) (close field) )))
+                        ) (set fields field))
+                        (if (==( (lsts-parse-head tokens) ',_s )) (
+                           (set tokens (tail tokens))
+                        ) (
+                           (lsts-parse-expect( '}_s tokens ))
+                        ))
+                     ))
+                     (lsts-parse-expect( '}_s tokens ))(set tokens (tail tokens))
+                     (if (non-zero fields) (
+                        (set term (App( (close term) (close fields) )))
+                     ) ())
+                  ) (
+                     (lsts-parse-expect( 'Atom_s 0_u64 tokens ))
+                  ))
                ))
             ))
          ))
