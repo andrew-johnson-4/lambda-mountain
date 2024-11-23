@@ -174,11 +174,12 @@ to-smart-string := λ(: s String). (: (intern s) SmartString);
 deep-hash := λ(: key SmartString). (: (
    (let i 0_u64)
    (let hash 0_u64)
-   (while (head-string key) (
-      (set hash (+( hash (as (head-string key) U64) )))
-      (set key (tail-string key))
+   (let key-start (.start key))
+   (while (<( key-start (.end key) )) (
+      (set hash (+( hash (as ([]( key-start 0_u64 )) U64) )))
       (set hash (+( hash (<<( hash 10_u64 )) )))
       (set hash (^( hash (>>( hash 6_u64 )) )))
+      (set key-start (+( key-start 1_u64 )))
    ))
    (set hash (+( hash (<<( hash 3_u64 )) )))
    (set hash (^( hash (>>( hash 11_u64 )) )))

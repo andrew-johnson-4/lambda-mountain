@@ -1,6 +1,9 @@
 
 import LIB/default.lm;
 import SRC/index-definitions.lm;
+import SRC/t.lm;
+
+let print(tt: Type): Nil = print(to-smart-string(tt));
 
 let quick-prop = {} :: HashtableEq<(String,U64),List<(Type,Type)>>;
 
@@ -18,3 +21,8 @@ let add-quick-prop(pre: Type, post: Type): Nil = (
    quick-prop = quick-prop.bind( key, val );
 );
 
+add-quick-prop( t1(untern("A")), TAnd{ close(t1(untern("B"))), close(t1(untern("C"))) } );
+add-quick-prop( t1(untern("B")), TAnd{ close(t1(untern("C"))), close(t1(untern("D"))) } );
+
+print(quick-prop);
+print(quick-prop.lookup( ("A",0), ([] :: List<(Type,Type)>) ));
