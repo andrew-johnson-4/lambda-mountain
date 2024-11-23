@@ -1,8 +1,4 @@
 
-import LIB/default.lm;
-import SRC/index-definitions.lm;
-import SRC/t.lm;
-
 let print(tt: Type): Nil = print(to-smart-string(tt));
 
 let quick-prop = {} :: HashtableEq<(String,U64),List<(Type,Type)>>;
@@ -24,14 +20,18 @@ let add-quick-prop(pre: Type, post: Type): Nil = (
 let enrich-quick-prop(pre: Type): Type = (
    match pre {
       TGround { tag=tag, parameters=parameters } => (
+         let ps = [] :: List<Type>;
          for p in parameters.reverse {
-            print("P \{p}");
+            ps = cons( enrich-quick-prop(p), ps );
          };
+         pre = TGround { tag, close(ps) };
          for Tuple { lt=first, rt=second } in quick-prop.lookup( pre.ground-tag-and-arity, ([] :: List<(Type,Type)>) ) {
-            print("Enrich \{pre} with \{lt} => \{rt}\n");
-            # dont forget to unify and substitute tctx
+            if can-unify(lt, pre) then (
+               let tctx = unify(lt, pre);
+               let post = substitute(tctx, rt);
+               pre = TAnd { close(pre), close(post) };
+            )
          }
-         # dont forget to recurse into parameters too
       );
       _ => ();
    }; pre
