@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm SRC/quick-prop.lsts
+	lm SRC/index-index.lm
 	cc tmp.c
 	./a.out
 
