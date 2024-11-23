@@ -21,8 +21,11 @@ let add-quick-prop(pre: Type, post: Type): Nil = (
    quick-prop = quick-prop.bind( key, val );
 );
 
+let enrich-quick-prop(pre: Type): Type = (
+   pre
+);
+
 add-quick-prop( t1(untern("A")), TAnd{ close(t1(untern("B"))), close(t1(untern("C"))) } );
 add-quick-prop( t1(untern("B")), TAnd{ close(t1(untern("C"))), close(t1(untern("D"))) } );
 
-print(quick-prop);
-print(quick-prop.lookup( ("A",0), ([] :: List<(Type,Type)>) ));
+print(enrich-quick-prop( t1(untern("A")) ));
