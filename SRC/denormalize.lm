@@ -4,5 +4,6 @@ denormalize := λ(: tt Type). (: (
    (set tt (with-tag tt))
    (set tt (with-fields tt))
    (set tt (with-platform-props tt))
+   (set tt (enrich-quick-prop tt))
    tt
 ) Type);
