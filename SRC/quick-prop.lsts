@@ -12,9 +12,9 @@ let .ground-tag-and-arity(tt: Type): (String,U64) = (
 );
 
 let add-quick-prop(pre: Type, post: Type): Nil = (
-   (1, 2); ()
-#   let key = pre.ground-tag-and-arity;
-#   let val = if quick-prop.has(key) then ([] :: List<(Type,Type)>) else quick-prop.lookup(key);
+   let key = pre.ground-tag-and-arity;
+   let val = quick-prop.lookup(key, ([] :: List<(Type,Type)>));
+   ()
 #   val = cons( (pre,post), val );
 #   quick-prop = quick-prop.bind( key, val );
 );
