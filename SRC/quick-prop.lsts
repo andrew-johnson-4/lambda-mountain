@@ -17,13 +17,16 @@ let add-quick-prop(pre: Type, post: Type): Nil = (
 );
 
 let enrich-quick-prop(pre: Type): Type = (
+   let prev-pre = pre;
    match pre {
       TGround { tag=tag, parameters=parameters } => (
-         let ps = [] :: List<Type>;
-         for p in parameters.reverse {
-            ps = cons( enrich-quick-prop(p), ps );
-         };
-         pre = TGround { tag, close(ps) };
+         if parameters.length > 0 (
+            let ps = [] :: List<Type>;
+            for p in parameters.reverse {
+               ps = cons( enrich-quick-prop(p), ps );
+            };
+            pre = TGround { tag, close(ps) };
+         );
          for Tuple { lt=first, rt=second } in quick-prop.lookup( pre.ground-tag-and-arity, ([] :: List<(Type,Type)>) ) {
             if can-unify(lt, pre) then (
                let tctx = unify(lt, pre);
@@ -33,6 +36,8 @@ let enrich-quick-prop(pre: Type): Type = (
          }
       );
       _ => ();
-   }; pre
+   };
+   if not(is(prev-pre, pre)) then print("Infer QuickProp: \{prev-pre} => \{pre}\n");
+   pre
 );
 

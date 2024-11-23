@@ -20,7 +20,9 @@ without-platform-props := λ(: tt Type). (: (
          ))
       ))
       ( (TGround( 'LMStruct_s sz )) (set tt TAny) )
-      ( (TGround( _ _ )) () )
+      ( (TGround( tag _ )) (
+         (if (.has-prefix( tag 'Tag::_s )) (set tt TAny) ())
+      ))
       ( TAny () )
       ( (TVar _) () )
    ))

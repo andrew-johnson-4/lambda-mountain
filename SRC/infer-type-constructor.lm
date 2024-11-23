@@ -7,7 +7,10 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
          (let rtype (and(
             (and(
                base-type
-               (t2( 'Tag_s (t1 tag) ))
+               (and(
+                  (t2( 'Tag_s (t1 tag) ))
+                  (t2( (+( 'Tag::_s tag )) base-type ))
+               ))
             ))
             (and(
                (t1 'Constant_s)
@@ -42,7 +45,10 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
          ) ())
          (let rtype (and(
             base-type
-            (t2( 'Tag_s (t1 tag) ))
+            (and(
+               (t2( 'Tag_s (t1 tag) ))
+               (t2( (+( 'Tag::_s tag )) base-type ))
+            ))
          )))
          (set-type-fields( base-type atype ))
          (index-class-of-tag( tag base-type ))
