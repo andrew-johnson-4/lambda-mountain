@@ -88,23 +88,29 @@ lsts-parse-expect := λ(: expect String)(: b U64)(: tokens List<Token>). (: (
 ) Nil);
 
 lsts-has-assign := λ(: tokens List<Token>). (: (
-   (let depth 0_u64)
+   (let depth 0_i64)
    (let has-assign 0_u64)
    (while (non-zero tokens) (
-      (if (==( (lsts-parse-head tokens) '[_s )) (set depth (+( depth 1_u64 ))) ())
-      (if (==( (lsts-parse-head tokens) '{_s )) (set depth (+( depth 1_u64 ))) ())
-      (if (==( (lsts-parse-head tokens) '\[_s )) (set depth (+( depth 1_u64 ))) ())
-      (if (==( (lsts-parse-head tokens) ']_s )) (set depth (-( depth 1_u64 ))) ())
-      (if (==( (lsts-parse-head tokens) '}_s )) (set depth (-( depth 1_u64 ))) ())
-      (if (==( (lsts-parse-head tokens) '\]_s )) (set depth (-( depth 1_u64 ))) ())
-      (if (&&( (==( (lsts-parse-head tokens) '\:_s )) (<=( depth 0_u64 )) )) (
+      (if (==( (lsts-parse-head tokens) '[_s )) (set depth (+( depth 1_i64 ))) ())
+      (if (==( (lsts-parse-head tokens) '{_s )) (set depth (+( depth 1_i64 ))) ())
+      (if (==( (lsts-parse-head tokens) '\[_s )) (set depth (+( depth 1_i64 ))) ())
+      (if (==( (lsts-parse-head tokens) ']_s )) (set depth (-( depth 1_i64 ))) ())
+      (if (==( (lsts-parse-head tokens) '}_s )) (set depth (-( depth 1_i64 ))) ())
+      (if (==( (lsts-parse-head tokens) '\]_s )) (set depth (-( depth 1_i64 ))) ())
+      (if (&&( (==( (lsts-parse-head tokens) '\:_s )) (<=( depth 0_i64 )) )) (
          (set tokens (: LEOF List<Token>))
       ) ())
-      (if (&&( (==( (lsts-parse-head tokens) '=_s )) (==( depth 0_u64 )) )) (
+      (if (&&( (==( (lsts-parse-head tokens) ',_s )) (<=( depth 0_i64 )) )) (
+         (set tokens (: LEOF List<Token>))
+      ) ())
+      (if (&&( (==( (lsts-parse-head tokens) '=_s )) (==( depth 0_i64 )) )) (
          (set has-assign 1_u64)
          (set tokens (: LEOF List<Token>))
       ) ())
       (if (non-zero tokens) (set tokens (tail tokens)) ())
+      (if (<( depth 0_i64 )) (
+         (set tokens (: LEOF List<Token>))
+      ) ())
    ))
    has-assign
 ) U64);
@@ -340,7 +346,6 @@ lsts-parse-small-expression := λ(: tokens List<Token>). (: (
                   (let pats ASTNil)
                   (lsts-parse-expect( '{_s tokens ))(set tokens (tail tokens))
                   (while (&&( (non-zero tokens) (!=( (lsts-parse-head tokens) '}_s )) )) (
-                     (print 'Case\s_s)(print tokens)(print '\n_s)
                      (let lhs-rest (lsts-parse-lhs tokens))
                      (let lhs (.first lhs-rest))
                      (set tokens (.second lhs-rest))
