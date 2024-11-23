@@ -27,5 +27,5 @@ take-one-expr := λ(: tokens List<Token>). (: (
          (set tokens rem)
       ))
    )))
-   (Tuple( (remove-parens(reverse taken)) remainder ))
+   (Tuple( (remove-parens(.reverse taken)) remainder ))
 ) Tuple<List<Token>,List<Token>>);

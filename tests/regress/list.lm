@@ -13,6 +13,6 @@ main := λ. (: (
    (print 'L2\s_s)(print l2)(print '\n_s)
    (print 'L3\s_s)(print l3)(print '\n_s)
    (print 'L4\s_s)(print l4)(print '\n_s)
-   (print 'Reverse\sL4\s_s)(print(reverse l4))(print '\n_s)
+   (print 'Reverse\sL4\s_s)(print(.reverse l4))(print '\n_s)
    (print 'L2+L4\s_s)(print(+( l2 l4 )))(print '\n_s)
 ) Nil);

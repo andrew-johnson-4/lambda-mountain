@@ -30,7 +30,7 @@ tail := λ(: l List<x>). (: (
 ) List<x>);
 
 + := λ(: hd List<x>)(: tl List<x>). (: (
-   (set hd (reverse hd))
+   (set hd (.reverse hd))
    (while (non-zero hd) (match hd (
       ()
       ( (LCons( hdhd tlhd )) (
@@ -53,7 +53,7 @@ tail := λ(: l List<x>). (: (
    l
 ) U64);
 
-reverse := λ(: l List<x>). (: (
+.reverse := λ(: l List<x>). (: (
    (let r (: LEOF List<x>))
    (while (non-zero l) (match l (
       ()

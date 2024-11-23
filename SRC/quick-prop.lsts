@@ -1,10 +1,4 @@
 
-import LIB/default.lm;
-import SRC/index-definitions.lm;
-import SRC/t.lm;
-
-let print(tt: Type): Nil = print(to-smart-string(tt));
-
 let quick-prop = {} :: HashtableEq<(String,U64),List<(Type,Type)>>;
 
 let .ground-tag-and-arity(tt: Type): (String,U64) = (
@@ -21,8 +15,23 @@ let add-quick-prop(pre: Type, post: Type): Nil = (
    quick-prop = quick-prop.bind( key, val );
 );
 
-add-quick-prop( t1(untern("A")), TAnd{ close(t1(untern("B"))), close(t1(untern("C"))) } );
-add-quick-prop( t1(untern("B")), TAnd{ close(t1(untern("C"))), close(t1(untern("D"))) } );
+let enrich-quick-prop(pre: Type): Type = (
+   match pre {
+      TGround { tag=tag, parameters=parameters } => (
+         let ps = [] :: List<Type>;
+         for p in parameters.reverse {
+            ps = cons( enrich-quick-prop(p), ps );
+         };
+         pre = TGround { tag, close(ps) };
+         for Tuple { lt=first, rt=second } in quick-prop.lookup( pre.ground-tag-and-arity, ([] :: List<(Type,Type)>) ) {
+            if can-unify(lt, pre) then (
+               let tctx = unify(lt, pre);
+               let post = substitute(tctx, rt);
+               pre = TAnd { close(pre), close(post) };
+            )
+         }
+      );
+      _ => ();
+   }; pre
+);
 
-print(quick-prop);
-print(quick-prop.lookup( ("A",0), ([] :: List<(Type,Type)>) ));
