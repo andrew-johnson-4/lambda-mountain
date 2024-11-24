@@ -16,6 +16,7 @@ import LIB/smart-string.lm;
 import LIB/tuple.lm;
 import LIB/array.lm;
 import LIB/s.lm;
+import LIB/list.lm;
 
 open := λ(: x a). (: x a);
 

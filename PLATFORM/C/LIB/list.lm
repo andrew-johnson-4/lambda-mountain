@@ -14,15 +14,19 @@ list::cons := λ(: hd x)(: tl List<x>). (: (
 head := λ(: l List<x>). (: (
    (match l (
       ()
-      ( (LCons( h t )) h )
+      ( LEOF (fail 'List::head\sis\sfallible\n_s) )
+      ( _ () )
    ))
+   (.2(as l List<x>+Tag<LCons>+Tag::LCons))
 ) x);
 
 tail := λ(: l List<x>). (: (
    (match l (
       ()
-      ( (LCons( h t )) t )
+      ( LEOF (fail 'List::head\sis\sfallible\n_s) )
+      ( (LCons( hd tl ))  (set l tl) )
    ))
+   l
 ) List<x>);
 
 + := λ(: hd List<x>)(: tl List<x>). (: (
