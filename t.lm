@@ -19,9 +19,9 @@ import LIB/s.lm;
 
 open := λ(: x a). (: x a);
 
-type A (A( U64 ));
+type A<x,y> (A( x , y ));
 
-(match (A 1_u64) (
+(match (A( -1_i64 (as -2_i64 U64) )) (
    ()
-   ( (A( x )) x )
+   ( (A( x y )) ( (print x) (print y) ))
 ));
