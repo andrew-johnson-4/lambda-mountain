@@ -77,9 +77,9 @@ type HashtableEq<k,v> (HashtableEq( occupied:U64 , capacity:U64 , contents:Tuple
    (if (is( table (: HashtableEqEOF HashtableEq<k,v>) )) (
       (set table (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<k,v>[]) )))
    ) ())
-   (let occupied (.3(as table Tag<HashtableEq>+Tag::HashtableEq)))
-   (let capacity (.2(as table Tag<HashtableEq>+Tag::HashtableEq)))
-   (let contents (.1(as table Tag<HashtableEq>+Tag::HashtableEq)))
+   (let occupied (.3(as table Tag::HashtableEq)))
+   (let capacity (.2(as table Tag::HashtableEq)))
+   (let contents (.1(as table Tag::HashtableEq)))
    (if (>=( (*( occupied 3_u64 )) capacity )) (
       (let new-capacity (max( 1000_u64 (*( occupied 30_u64 )) )))
       (let new-sizeof (*( (sizeof Tuple<k,v>) new-capacity )))
@@ -124,9 +124,9 @@ type HashtableEq<k,v> (HashtableEq( occupied:U64 , capacity:U64 , contents:Tuple
 ) U64);
 
 .lookup := λ(: table HashtableEq<k,v>)(: key k)(: default v). (: (
-   (let capacity (.2(as table Tag<HashtableEq>+Tag::HashtableEq)))
+   (let capacity (.2(as table Tag::HashtableEq)))
    (if (==( capacity 0_u64 )) () (
-      (let contents (.1(as table Tag<HashtableEq>+Tag::HashtableEq)))
+      (let contents (.1(as table Tag::HashtableEq)))
       (let replacing 0_u64)
       (let ki (%( (deep-hash key) capacity )))
       (let old-kv ([]( contents ki )))
@@ -147,10 +147,10 @@ type HashtableEq<k,v> (HashtableEq( occupied:U64 , capacity:U64 , contents:Tuple
 ) v);
 
 .has := λ(: table HashtableEq<k,v>)(: key k). (: (
-   (let capacity (.2(as table Tag<HashtableEq>+Tag::HashtableEq)))
+   (let capacity (.2(as table Tag::HashtableEq)))
    (let replacing 0_u64)
    (if (==( capacity 0_u64 )) () (
-      (let contents (.1(as table Tag<HashtableEq>+Tag::HashtableEq)))
+      (let contents (.1(as table Tag::HashtableEq)))
       (let ki (%( (deep-hash key) capacity )))
       (let old-kv ([]( contents ki )))
       (let old-k (.2 old-kv))
@@ -171,8 +171,8 @@ map::cons := λ(: key k)(: val v)(: tl HashtableEq<k,v>). (: (
 
 print := λ(: table HashtableEq<k,v>). (: (
    (print '{_s)
-   (let capacity (.2(as table Tag<HashtableEq>+Tag::HashtableEq)))
-   (let contents (.1(as table Tag<HashtableEq>+Tag::HashtableEq)))
+   (let capacity (.2(as table Tag::HashtableEq)))
+   (let contents (.1(as table Tag::HashtableEq)))
    (let ki 0_u64)
    (let had-prev 0_u64)
    (while (<( ki capacity )) (

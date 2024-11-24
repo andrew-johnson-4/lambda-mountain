@@ -7,10 +7,7 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
          (let rtype (and(
             (and(
                base-type
-               (and(
-                  (t2( 'Tag_s (t1 tag) ))
-                  (t1( (+( 'Tag::_s tag )) ))
-               ))
+               (t1( (+( 'Tag::_s tag )) ))
             ))
             (and(
                (t1 'Constant_s)
@@ -46,10 +43,7 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
          ) ())
          (let rtype (and(
             base-type
-            (and(
-               (t2( 'Tag_s (t1 tag) ))
-               (t1( (+( 'Tag::_s tag )) ))
-            ))
+            (t1( (+( 'Tag::_s tag )) ))
          )))
          (add-quick-prop( (t1(+( 'Tag::_s tag ))) base-type (t2( 'CaseNumber_s (t1(to-string(index-of-tag tag))) )) ))
          (set-type-fields( base-type atype ))
