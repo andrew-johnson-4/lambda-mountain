@@ -57,7 +57,6 @@ import SRC/has-forward.lm;
 
 import SRC/with-tag.lm;
 import SRC/with-size.lm;
-import SRC/with-fields.lm;
 import SRC/with-platform-props.lm;
 
 import SRC/without-tag.lm;

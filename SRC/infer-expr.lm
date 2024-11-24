@@ -120,7 +120,6 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
             (if (non-zero inner-class) (
                (set tt (and( tt inner-class )))
             ) ())
-            (set tt (with-fields( tt )))
             (ascript-normal( term tt ))
          ) ())
       ))
