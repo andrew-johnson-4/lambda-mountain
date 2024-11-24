@@ -16,6 +16,7 @@ let add-quick-prop(pre: Type, post: Type): Nil = (
 );
 
 let enrich-quick-prop(pre: Type): Type = (
+   let prev-pre = pre;
    match pre {
       TGround { tag=tag, parameters=parameters } => (
          if parameters.length > 0 then (
@@ -25,6 +26,7 @@ let enrich-quick-prop(pre: Type): Type = (
             };
             pre = TGround { tag, close(ps) };
          );
+         if tag.has-prefix(untern("Tag::")) && not(is(prev-pre,pre)) then print("Infer QuickProp: \{prev-pre} => \{pre}\n");
          for Tuple { lt=first, rt=second } in quick-prop.lookup( pre.ground-tag-and-arity, ([] :: List<(Type,Type)>) ) {
             if can-unify(lt, pre) then (
                let tctx = unify(lt, pre);
