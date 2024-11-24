@@ -1,7 +1,7 @@
 
 dev: install-production
 	lm t.lm
-	cc tmp.c
+	cc -O3 tmp.c
 	./a.out
 
 build-docs:
@@ -15,7 +15,7 @@ build-docs:
 
 build: compile-production
 	time ./production --c -o deploy.c SRC/index-index.lm
-	cc deploy.c -o deploy
+	cc -O3 deploy.c -o deploy
 	time ./deploy --c -o deploy2.c SRC/index-index.lm
 	diff deploy.c deploy2.c
 	mv deploy.c BOOTSTRAP/cli.c
@@ -26,12 +26,12 @@ deploy: build build-docs smoke-test
 
 compile-bootstrap:
 	rm -f bootstrap
-	cc -o bootstrap BOOTSTRAP/cli.c
+	cc -O3 -o bootstrap BOOTSTRAP/cli.c
 
 compile-production: compile-bootstrap
 	rm -f production
 	./bootstrap --c -o production.c SRC/index-index.lm
-	cc -o production production.c
+	cc -O3 -o production production.c
 	rm -f production.c
 
 install-production: compile-production
@@ -46,7 +46,7 @@ smoke-test:
 	rm tmp
 
 install:
-	cc -o lm BOOTSTRAP/cli.c
+	cc -O3 -o lm BOOTSTRAP/cli.c
 	mv lm $${HOME}/bin/lm
 	mkdir -p $${HOME}/.lm/
 	cp -rf PLATFORM $${HOME}/.lm/
