@@ -250,17 +250,17 @@ lsts-parse-small-expression := λ(: tokens List<Token>). (: (
    (if (==( (lsts-parse-head tokens) 'if_s )) (scope(
       (let loc (.location(head tokens)))
       (set tokens (tail tokens))
-      (let c-rest (lsts-parse-add tokens))
+      (let c-rest (lsts-parse-andor tokens))
       (let c (.first c-rest))
       (set tokens (.second c-rest))
       (lsts-parse-expect( 'then_s tokens ))(set tokens (tail tokens))
-      (let t-rest (lsts-parse-add tokens))
+      (let t-rest (lsts-parse-andor tokens))
       (let t (.first t-rest))
       (set tokens (.second t-rest))
       (let f ASTNil)
       (if (==( (lsts-parse-head tokens) 'else_s )) (
          (lsts-parse-expect( 'else_s tokens ))(set tokens (tail tokens))
-         (let f-rest (lsts-parse-add tokens))
+         (let f-rest (lsts-parse-andor tokens))
          (set f (.first f-rest))
          (set tokens (.second f-rest))
       ) ())
@@ -396,7 +396,7 @@ lsts-parse-small-expression := λ(: tokens List<Token>). (: (
                         (close rhs)
                      )))
                   )) (
-                     (let base-rest (lsts-parse-add tokens))
+                     (let base-rest (lsts-parse-andor tokens))
                      (set base (.first base-rest))
                      (set tokens (.second base-rest))
                   ))
@@ -726,7 +726,65 @@ lsts-parse-add := λ(: tokens List<Token>). (: (
       )))
       (set tokens (.second term2-rest))
    ))
-   (lsts-parse-atom-tail( term tokens ))
+   (Tuple( term tokens ))
+) Tuple<AST,List<Token>>);
+
+lsts-parse-cmp := λ(: tokens List<Token>). (: (
+   (let term-rest (lsts-parse-add tokens))
+   (let term (.first term-rest))
+   (set tokens (.second term-rest))
+   (while (||(
+      (||( 
+         (==( (lsts-parse-head tokens) '==_s ))
+         (==( (lsts-parse-head tokens) '!=_s ))
+      ))
+      (||( 
+         (||( 
+            (==( (lsts-parse-head tokens) '<_s ))
+            (==( (lsts-parse-head tokens) '<=_s ))
+         ))
+         (||( 
+            (==( (lsts-parse-head tokens) '>_s ))
+            (==( (lsts-parse-head tokens) '>=_s ))
+         ))
+      ))
+   )) (
+      (let op-t (head tokens))(let op (lsts-parse-head tokens))(set tokens (tail tokens))
+      (let term2-rest (lsts-parse-add tokens))
+      (let term2 (.first term2-rest))
+      (set term (App(
+         (close(Var( op op-t )))
+         (close(App(
+            (close term)
+            (close term2)
+         )))
+      )))
+      (set tokens (.second term2-rest))
+   ))
+   (Tuple( term tokens ))
+) Tuple<AST,List<Token>>);
+
+lsts-parse-andor := λ(: tokens List<Token>). (: (
+   (let term-rest (lsts-parse-cmp tokens))
+   (let term (.first term-rest))
+   (set tokens (.second term-rest))
+   (while (||(
+      (==( (lsts-parse-head tokens) '&&_s ))
+      (==( (lsts-parse-head tokens) '||_s ))
+   )) (
+      (let op-t (head tokens))(let op (lsts-parse-head tokens))(set tokens (tail tokens))
+      (let term2-rest (lsts-parse-cmp tokens))
+      (let term2 (.first term2-rest))
+      (set term (App(
+         (close(Var( op op-t )))
+         (close(App(
+            (close term)
+            (close term2)
+         )))
+      )))
+      (set tokens (.second term2-rest))
+   ))
+   (Tuple( term tokens ))
 ) Tuple<AST,List<Token>>);
 
 lsts-parse-mul := λ(: tokens List<Token>). (: (

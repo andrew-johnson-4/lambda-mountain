@@ -2,7 +2,7 @@
 type S (SNil)
      | (SAtom( String ))
      | (SCons( S[] , S[] ))
-     | (SPointer( ?[] ));
+     | (SPointer( U8[] ));
 zero S SNil;
 
 print := λ(: x S). (: (

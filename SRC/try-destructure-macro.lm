@@ -77,10 +77,16 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (
                ))
             ) )))
             (let tag-tt (clone-rope(SCons(
-               (close(SAtom 'Tag<_s))
                (close(SCons(
+                  (close(SAtom 'Tag::_s))
                   (close(SAtom el))
-                  (close(SAtom '>_s))
+               )))
+               (close(SCons(
+                  (close(SAtom '+Tag<_s))
+                  (close(SCons(
+                     (close(SAtom el))
+                     (close(SAtom '>_s))
+                  )))
                )))
             ))))
             (set r (CtxBind( (close r) pt (Lit( tag-tt (with-key( eltk tag-tt )) )) )))
