@@ -1,0 +1,16 @@
+
+import LIB/common-macros.lm;
+import LIB/platform-macros.lm;
+import LIB/primitives.lm;
+import LIB/dev-field-accessors.lm;
+import LIB/u8.lm;
+import LIB/u64.lm;
+
+open := λ(: x a). (: x a);
+
+type A (A( U64 ));
+
+(match (A 1_u64) (
+   ()
+   ( (A( x )) x )
+));

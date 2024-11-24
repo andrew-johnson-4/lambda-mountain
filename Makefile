@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm tests/regress/list.lm
+	lm t.lm
 	cc tmp.c
 	./a.out
 
