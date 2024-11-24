@@ -303,9 +303,6 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
       ( (Var( v vtk )) (
          (let vt (denormalize(typeof-var( term tctx v ))))
          (ascript-normal( term vt ))
-         (if (==( v 'tl_s )) (
-            (print 'tl\s:\s_s)(print vt)(print '\n_s)
-         ) ())
       ))
       ( (Lit( l _ )) (
          (if (non-zero(typeof term)) () (
