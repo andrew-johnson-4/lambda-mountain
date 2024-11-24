@@ -28,6 +28,14 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
          (let frame (fragment::get( e 'frame_s )))
          (let text SNil)
 
+         (let loc (location-of(term)))
+
+         (set text (SCons( (close text) (close(SAtom '\oline\s_s)) )))
+         (set text (SCons( (close text) (close(SAtom (to-string (.line loc)) )) )))
+         (set text (SCons( (close text) (close(SAtom '\s"_s)) )))
+         (set text (SCons( (close text) (close(SAtom (.filename loc))) )))
+         (set text (SCons( (close text) (close(SAtom '"\n_s)) )))
+
          (if (==( k 'main_s )) (
             (set compile-global-c-has-main 1_u64)
             (set text (SCons( (close text) (close(SAtom 'int_s)) )))
@@ -42,6 +50,13 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
          (set assemble-header-section (SCons( (close assemble-header-section) (close text) )))
 
          (set text SNil)
+
+         (set text (SCons( (close text) (close(SAtom '\oline\s_s)) )))
+         (set text (SCons( (close text) (close(SAtom (to-string (.line loc)) )) )))
+         (set text (SCons( (close text) (close(SAtom '\s"_s)) )))
+         (set text (SCons( (close text) (close(SAtom (.filename loc))) )))
+         (set text (SCons( (close text) (close(SAtom '"\n_s)) )))
+
          (if (==( k 'main_s )) (
             (set text (SCons( (close text) (close(SAtom 'int_s)) )))
          ) (
