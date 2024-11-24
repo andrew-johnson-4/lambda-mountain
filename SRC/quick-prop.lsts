@@ -28,7 +28,7 @@ let enrich-quick-prop(pre: Type): Type = (
          for Tuple { lt=first, rt=second } in quick-prop.lookup( pre.ground-tag-and-arity, ([] :: List<(Type,Type)>) ) {
             if can-unify(lt, pre) then (
                let tctx = unify(lt, pre);
-               let post = substitute(tctx, rt);
+               let post = enrich-quick-prop(substitute(tctx, rt));
                pre = TAnd { close(pre), close(post) };
             )
          }
