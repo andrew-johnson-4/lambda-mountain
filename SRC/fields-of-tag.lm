@@ -11,14 +11,14 @@ index-fields-quick-prop := λ(: tag-tt Type)(: fields-tt Type)(: field-index U64
       ()
       ( (TGround( 'Cons_s (LCons( pt (LCons( rst LEOF )) )) )) (
          (add-quick-prop( tag-tt 
-            (t2( (+( 'Field_s (to-string field-index) )) pt ))
+            (t2( (+( 'Field::_s (to-string field-index) )) pt ))
          ))
          (index-fields-quick-prop( tag-tt rst (+( field-index 1_u64 )) ))
       ))
       ( (TGround( 'Nil_s _ )) () )
       ( pt (
          (add-quick-prop( tag-tt 
-            (t2( (+( 'Field_s (to-string field-index) )) pt ))
+            (t2( (+( 'Field::_s (to-string field-index) )) pt ))
          ))
       ))
    ))
