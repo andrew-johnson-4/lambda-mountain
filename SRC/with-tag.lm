@@ -13,26 +13,6 @@ with-tag := λ(: tt Type). (: (
          ( _ () )
       ))
    ) ())
-   (set tt (with-case-number tt))
    tt
 ) Type);
 
-with-case-number := λ(: tt Type). (: (
-   (match tt (
-      ()
-      ( (TAnd( lt rt )) (
-         (set lt (with-case-number lt))
-         (set rt (with-case-number rt))
-         (if (non-zero lt) (
-            (if (non-zero rt) (
-               (set tt (and( lt rt )))
-            ) (set tt lt))
-         ) (set tt rt))
-      ))
-      ( (TGround( 'Tag_s (LCons( (TGround( tag _ )) _ )) )) (
-         (set tt (and( tt (t2( 'CaseNumber_s (t1(to-string(index-of-tag tag))) )) )))
-      ))
-      ( _ () )
-   ))
-   tt
-) Type);
