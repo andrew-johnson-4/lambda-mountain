@@ -1,9 +1,9 @@
 
-type Buffer (Buffer( ptr:?[] , allocated:U64 , capacity:U64 ));
+type Buffer (Buffer( ptr:U8[] , allocated:U64 , capacity:U64 ));
 
 new-buffer := λ(: capacity U64). (: (
    (let ptr (malloc capacity))
-   (Buffer( ptr 0_u64 capacity ))
+   (Buffer( (as ptr U8[]) 0_u64 capacity ))
 ) Buffer);
 
 .calculate-extension-size := λ(: min-size U64). (: (
@@ -20,7 +20,7 @@ new-buffer := λ(: capacity U64). (: (
    ) (
       (let new-sz (.calculate-extension-size( (+( (.allocated buff) sz )) )))
       (let new-ptr (realloc( (.ptr buff) new-sz )))
-      (set buff (Buffer( new-ptr (+( (.allocated buff) sz )) new-sz )))
+      (set buff (Buffer( (as new-ptr U8[]) (+( (.allocated buff) sz )) new-sz )))
    ))
    buff
 ) Buffer);
