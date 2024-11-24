@@ -127,16 +127,6 @@ deep-hash := λ(: key String). (: (
    (clone-rope r)
 ) String);
 
-.join :=  λ(: l List<String>)(: sep String). (: (
-   (let r SNil)
-   (while (non-zero l) (
-      (set r (+( r (SAtom(head l)) )))
-      (set l (tail l))
-      (if (non-zero l) (set r (+( r (SAtom sep) ))) ())
-   ))
-   (clone-rope r)
-) String);
-
 .replace := λ(: base String)(: pat String)(: n String). (: (
    (let r SNil)
    (while (!=( (head-string base) 0_u8 )) (

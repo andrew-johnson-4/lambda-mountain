@@ -118,3 +118,13 @@ print := λ(: l List<x>). (: (
    ))
    r
 ) U64);
+
+.join :=  λ(: l List<String>)(: sep String). (: (
+   (let r SNil)
+   (while (non-zero l) (
+      (set r (+( r (SAtom(head l)) )))
+      (set l (tail l))
+      (if (non-zero l) (set r (+( r (SAtom sep) ))) ())
+   ))
+   (clone-rope r)
+) String);
