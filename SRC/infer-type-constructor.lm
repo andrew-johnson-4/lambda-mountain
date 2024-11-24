@@ -9,7 +9,7 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
                base-type
                (and(
                   (t2( 'Tag_s (t1 tag) ))
-                  (t2( (+( 'Tag::_s tag )) base-type ))
+                  (t1( (+( 'Tag::_s tag )) ))
                ))
             ))
             (and(
@@ -48,7 +48,7 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
             base-type
             (and(
                (t2( 'Tag_s (t1 tag) ))
-               (t2( (+( 'Tag::_s tag )) base-type ))
+               (t1( (+( 'Tag::_s tag )) ))
             ))
          )))
          (add-quick-prop( (t1(+( 'Tag::_s tag ))) base-type (t2( 'CaseNumber_s (t1(to-string(index-of-tag tag))) )) ))

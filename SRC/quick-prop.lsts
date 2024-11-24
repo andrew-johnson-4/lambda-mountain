@@ -34,6 +34,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
             if can-unify(lt, base) then (
                let tctx = unify(lt, pre);
                let post = substitute(tctx, rt);
+               if lt.ground-tag-and-arity.second > 0 then print("Unify \{lt} x \{base} => \{rt}: \{post}\n");
                pre = TAnd { close(pre), close(post) };
             )
          }
