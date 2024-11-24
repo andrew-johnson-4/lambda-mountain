@@ -8,34 +8,39 @@ let .ground-tag-and-arity(tt: Type): (String,U64) = (
    }
 );
 
-let add-quick-prop(pre: Type, post: Type): Nil = (
+let add-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
+   print("Add QuickProp: \{pre} => \{post}\n");
    let key = pre.ground-tag-and-arity;
    let val = quick-prop.lookup(key, ([] :: List<(Type,Type)>));
-   val = cons( (pre,post), val );
+   val = cons( (pat,post), val );
    quick-prop = quick-prop.bind( key, val );
 );
 
-let enrich-quick-prop(pre: Type): Type = (
+let enrich-quick-prop(base: Type): Type = (
+   enrich-quick-prop(base, base)
+);
+
+let enrich-quick-prop(base: Type, pre: Type): Type = (
    match pre {
       TGround { tag=tag, parameters=parameters } => (
          if parameters.length > 0 then (
             let ps = [] :: List<Type>;
             for p in parameters.reverse {
-               ps = cons( enrich-quick-prop(p), ps );
+               ps = cons( enrich-quick-prop(base, p), ps );
             };
             pre = TGround { tag, close(ps) };
          );
          for Tuple { lt=first, rt=second } in quick-prop.lookup( pre.ground-tag-and-arity, ([] :: List<(Type,Type)>) ) {
-            if can-unify(lt, pre) then (
+            if can-unify(lt, base) then (
                let tctx = unify(lt, pre);
-               let post = enrich-quick-prop(substitute(tctx, rt));
+               let post = substitute(tctx, rt);
                pre = TAnd { close(pre), close(post) };
             )
          }
       );
       TAnd { lt=left, rt=right } => (
-         let next-lt = enrich-quick-prop(lt);
-         let next-rt = enrich-quick-prop(rt);
+         let next-lt = enrich-quick-prop(base, lt);
+         let next-rt = enrich-quick-prop(base, rt);
          if not(is(lt,next-lt)) || not(is(rt,next-rt)) then (
             pre = TAnd { close(next-lt), close(next-rt) };
          );
