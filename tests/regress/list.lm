@@ -1,5 +1,5 @@
 
-import LIB/dev.lm;
+import LIB/default.lm;
 
 type A (AA( U64 ));
 type B (B( List<A> ));

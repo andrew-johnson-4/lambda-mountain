@@ -1,23 +1,27 @@
 
-#import LIB/blob.lm;
-#import LIB/common-macros.lm;
-#import LIB/platform-macros.lm;
-#import LIB/primitives.lm;
-#import LIB/dev-field-accessors.lm;
-#import LIB/u8.lm;
-#import LIB/u64.lm;
-#import LIB/io.lm;
-#import LIB/buffer.lm;
-#import LIB/string.lm;
-#import LIB/tuple.lm;
-#import LIB/array.lm;
-#import LIB/s.lm;
+import LIB/blob.lm;
+import LIB/common-macros.lm;
+import LIB/platform-macros.lm;
+import LIB/primitives.lm;
+import LIB/dev-field-accessors.lm;
+import LIB/u8.lm;
+import LIB/u32.lm;
+import LIB/u64.lm;
+import LIB/i64.lm;
+import LIB/sized.lm;
+import LIB/io.lm;
+import LIB/buffer.lm;
+import LIB/string.lm;
+import LIB/smart-string.lm;
+import LIB/tuple.lm;
+import LIB/array.lm;
+import LIB/s.lm;
 
-#open := λ(: x a). (: x a);
+open := λ(: x a). (: x a);
 
-#type A (A( U64 ));
+type A (A( U64 ));
 
-#(match (A 1_u64) (
-#   ()
-#   ( (A( x )) x )
-#));
+(match (A 1_u64) (
+   ()
+   ( (A( x )) x )
+));
