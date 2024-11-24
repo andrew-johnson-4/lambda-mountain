@@ -9,7 +9,6 @@ let .ground-tag-and-arity(tt: Type): (String,U64) = (
 );
 
 let add-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
-   print("Add QuickProp: \{pre} : \{pat} => \{post}\n");
    let key = pre.ground-tag-and-arity;
    let val = quick-prop.lookup(key, ([] :: List<(Type,Type)>));
    val = cons( (pat,post), val );
@@ -35,7 +34,6 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
                let tctx = unify(lt, base);
                let post = substitute(tctx, rt);
                pre = TAnd { close(pre), close(post) };
-               if tag == $"Tag::LCons_s" then print("Infer QuickProp: \{base} x \{lt} => \{post}\n");
             );
          };
       );
