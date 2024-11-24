@@ -34,10 +34,10 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
             if can-unify(lt, base) then (
                let tctx = unify(lt, base);
                let post = substitute(tctx, rt);
-               #if lt.ground-tag-and-arity.second > 0 then print("Unify \{lt} x \{base} => \{rt}: \{post}\n");
                pre = TAnd { close(pre), close(post) };
-            )
-         }
+               if tag == $"Tag::LCons_s" then print("Infer QuickProp: \{base} x \{lt} => \{post}\n");
+            );
+         };
       );
       TAnd { lt=left, rt=right } => (
          let next-lt = enrich-quick-prop(base, lt);
