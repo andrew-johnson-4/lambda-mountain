@@ -17,7 +17,7 @@ head := λ(: l List<x>). (: (
       ( LEOF (fail 'List::head\sis\sfallible\n_s) )
       ( _ () )
    ))
-   (.2(as l List<x>+Tag<LCons>+Tag::LCons))
+   (.2(as l List<x>+Tag::LCons))
 ) x);
 
 tail := λ(: l List<x>). (: (
