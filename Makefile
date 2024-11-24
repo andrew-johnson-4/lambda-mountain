@@ -24,6 +24,10 @@ build: compile-production
 
 deploy: build build-docs smoke-test
 
+profile: install-bootstrap
+	perf record lm SRC/index-index.lm
+	./report.sh
+
 compile-bootstrap:
 	rm -f bootstrap
 	cc -O3 -o bootstrap BOOTSTRAP/cli.c
