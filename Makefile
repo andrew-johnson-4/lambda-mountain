@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm SRC/index-index.lm
+	lm tests/regress/list.lm
 	cc tmp.c
 	./a.out
 
