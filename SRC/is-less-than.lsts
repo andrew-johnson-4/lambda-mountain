@@ -1,0 +1,14 @@
+
+let $"<"(left: Type, right: Type): U64 = (
+   match left {
+      TGround { ltag=tag, lparameters=parameters } => (match right {
+         TGround { rtag=tag, rparameters=parameters } => (
+            if ltag < rtag then 1 else
+            if rtag < ltag then 0 else
+            lparameters < rparameters
+         );
+         _ => 1;
+      });
+      _ => 0;
+   }
+);
