@@ -39,7 +39,7 @@ compile-production: compile-bootstrap
 	rm -f production.c
 
 install-production: compile-production
-ifeq ($(shell sh -c 'if [ -w /usr/local/bin ]; then echo "0"; fi'), 0)
+ifeq ($(shell test -w /usr/local/bin; echo $$?), 0)
 	mv production /usr/local/bin/lm
 else
 	mkdir -p $${HOME}/.local/bin
@@ -47,7 +47,7 @@ else
 endif
 
 install-bootstrap: compile-bootstrap
-ifeq ($(shell sh -c 'if [ -w /usr/local/bin ]; then echo "0"; fi'), 0)
+ifeq ($(shell test -w /usr/local/bin; echo $$?), 0)
 	mv bootstrap /usr/local/bin/lm
 else
 	mkdir -p $${HOME}/.local/bin
@@ -61,7 +61,7 @@ smoke-test:
 
 install:
 	cc -O3 -o lm BOOTSTRAP/cli.c
-ifeq ($(shell sh -c 'if [ -w /usr/local/bin ]; then echo "0"; fi'), 0)
+ifeq ($(shell test -w /usr/local/bin; echo $$?), 0)
 	mv lm /usr/local/bin/lm
 else
 	mkdir -p $${HOME}/.local/bin
