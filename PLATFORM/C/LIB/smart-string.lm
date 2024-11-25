@@ -98,9 +98,13 @@ print := λ(: x SmartString). (: (
    (if (<( low 0_i64 )) (
       (set low (+( (as (.length x) I64) low )))
    ) ())
-   (if (<( hi 0_i64 )) (
-      (set hi (+( (as (.length x) I64) hi )))
-   ) ())
+   (if (==( hi minimum-I64 )) (
+      (set hi (as (.length x) I64))
+   ) (
+      (if (<( hi 0_i64 )) (
+         (set hi (+( (as (.length x) I64) hi )))
+      ) ())
+   ))
    (let lowp (+( (.start x) low )))
    (let hip (+( (.start x) hi )))
    (if (<( hip lowp )) (

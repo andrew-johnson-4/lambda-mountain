@@ -1,8 +1,11 @@
 
 dev: install-production
-	lm tests/regress/sort-type-vector.lsts
+	lm EXAMPLES/tokenizer.lsts
 	cc -O3 tmp.c
-	./a.out
+	./a.out > tokens1.txt
+	cat tokens1.txt
+#	lm --parse EXAMPLES/tokenizer.lsts > tokens2.txt
+#	diff tokens1.txt tokens2.txt
 
 build-docs:
 	lm --blob -o docs/index.html docs/index.html.lm
