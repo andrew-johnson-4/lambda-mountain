@@ -21,6 +21,7 @@ can-unify := λ(: fpt Type)(: pt Type). (: (
    (match (Tuple( fpt pt )) (
       ()
       ( (Tuple( TAny _ )) (set r 1_u64) )
+      ( (Tuple( (TGround( 'Any_ss _ )) _ )) (set r 1_u64) )
       ( (Tuple( (TGround( 'Meta_s (LCons( _ _ )) )) _ )) (set r 1_u64) )
       ( (Tuple( (TVar( ltv )) rt )) (set r 1_u64) )
       ( (Tuple( (TAnd( lt1 lt2 )) rt )) (

@@ -22,6 +22,9 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
             (Lit( tg (token::new tg) ))
          )))
       ))
+      ( (Tuple( (TGround( 'Any_ss _ )) _ )) (
+         (set ctx TCtxNil)
+      ))
       ( (Tuple( (TGround( 'Meta_s (LCons( mt LEOF )) )) _ )) (
          (set ctx TCtxNil)
       ))
