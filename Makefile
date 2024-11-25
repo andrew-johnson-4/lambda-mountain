@@ -39,17 +39,19 @@ compile-production: compile-bootstrap
 	rm -f production.c
 
 install-production: compile-production
-ifeq ($(shell id -u), 0)
+ifeq ($(shell sh -c 'if [ -w /usr/local/bin ]; then echo "0"; fi'), 0)
 	mv production /usr/local/bin/lm
 else
-	mv production $${HOME}/bin/lm
+	mkdir -p $${HOME}/.local/bin
+	mv production $${HOME}/.local/bin/lm
 endif
 
 install-bootstrap: compile-bootstrap
-ifeq ($(shell id -u), 0)
+ifeq ($(shell sh -c 'if [ -w /usr/local/bin ]; then echo "0"; fi'), 0)
 	mv bootstrap /usr/local/bin/lm
 else
-	mv bootstrap $${HOME}/bin/lm
+	mkdir -p $${HOME}/.local/bin
+	mv bootstrap $${HOME}/.local/bin/lm
 endif
 
 smoke-test:
@@ -59,10 +61,11 @@ smoke-test:
 
 install:
 	cc -O3 -o lm BOOTSTRAP/cli.c
-ifeq ($(shell id -u), 0)
+ifeq ($(shell sh -c 'if [ -w /usr/local/bin ]; then echo "0"; fi'), 0)
 	mv lm /usr/local/bin/lm
 else
-	mv lm $${HOME}/bin/lm
+	mkdir -p $${HOME}/.local/bin
+	mv lm $${HOME}/.local/bin/lm
 endif
 	mkdir -p $${HOME}/.lm/
 	cp -rf PLATFORM $${HOME}/.lm/
