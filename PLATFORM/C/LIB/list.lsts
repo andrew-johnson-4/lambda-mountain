@@ -1,0 +1,17 @@
+
+let $"<"(ls: List<x>, rs: List<x>): U64 = (
+   let diff = 0;
+   while non-zero(ls) && non-zero(rs) {
+      if head(ls) < head(rs) then {
+         diff = 1;
+         ls = [] :: List<x>;
+         rs = [] :: List<x>;
+      } else {
+         ls = tail(ls);
+         rs = tail(rs);
+      }
+   };
+   if not(non-zero(ls)) && non-zero(rs) then 1 else
+   if non-zero(ls) && not(non-zero(rs)) then 0 else
+   diff
+);
