@@ -10,12 +10,22 @@ tail-string := λ(: x String). (: (
 ) String);
 
 == := λ(: l String)(: r String). (: (
-   (let rt 0_u64)
-   (==( (strcmp( (as l U8[]) (as r U8[]) )) 0_u32 ))
+   (==( (strcmp( (as l U8[]) (as r U8[]) )) 0_i32 ))
 ) U64);
-
 != := λ(: l String)(: r String). (: (
-   (not(==( l r )))
+   (!=( (strcmp( (as l U8[]) (as r U8[]) )) 0_i32 ))
+) U64);
+< := λ(: l String)(: r String). (: (
+   (<( (strcmp( (as l U8[]) (as r U8[]) )) 0_i32 ))
+) U64);
+<= := λ(: l String)(: r String). (: (
+   (<=( (strcmp( (as l U8[]) (as r U8[]) )) 0_i32 ))
+) U64);
+> := λ(: l String)(: r String). (: (
+   (>( (strcmp( (as l U8[]) (as r U8[]) )) 0_i32 ))
+) U64);
+>= := λ(: l String)(: r String). (: (
+   (>=( (strcmp( (as l U8[]) (as r U8[]) )) 0_i32 ))
 ) U64);
 
 clone-rope := λ(: s S). (: (

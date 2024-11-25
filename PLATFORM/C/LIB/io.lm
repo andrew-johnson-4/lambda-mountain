@@ -5,7 +5,7 @@ import string.h;
 import unistd.h;
 import sys/wait.h;
 
-strcmp := λ: FFI(: l U8[])(: r U8[]). (: () U32);
+strcmp := λ: FFI(: l U8[])(: r U8[]). (: () I32);
 memcmp := λ: FFI(: l ?[])(: r ?[])(: len U64). (: () U32);
 printf := λ: FFI(: format String)(: arg Meta<Any>). (: () U32);
 putchar := λ: FFI(: x U32). (: () U32);

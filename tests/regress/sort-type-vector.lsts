@@ -1,0 +1,17 @@
+
+import LIB/default.lm;
+
+if A_s < B_s then print("A<B\n") else print("B<A\n"); 
+if B_s < A_s then print("B<A\n") else print("A<B\n"); 
+
+if BA_s < B_s then print("BA<B\n") else print("B<BA\n"); 
+if B_s < BA_s then print("B<BA\n") else print("BA<B\n"); 
+
+if "A" == "A" then print("A==A\n") else print("A!=A\n"); 
+if "A" == "B" then print("A==B\n") else print("A!=B\n"); 
+
+if "A" < "B" then print("A<B\n") else print("A>=B\n"); 
+if "B" < "A" then print("B<A\n") else print("B>=A\n"); 
+
+if "BA" < "B" then print("BA<B\n") else print("BA>=B\n"); 
+if "B" < "BA" then print("B<BA\n") else print("B>=BA\n"); 
