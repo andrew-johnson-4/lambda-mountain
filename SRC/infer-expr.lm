@@ -140,8 +140,8 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          (let deref-type (typeof r))
          (match (slot( deref-type 'Array_s )) (
             ()
-            ( (TGround( 'Array_ss (LCons( _ (LCons( TAny LEOF )) )) )) () )
-            ( (TGround( 'Array_ss (LCons( TAny (LCons( array-base LEOF )) )) )) (
+            ( (TGround( 'Array_s (LCons( _ (LCons( TAny LEOF )) )) )) () )
+            ( (TGround( 'Array_s (LCons( TAny (LCons( array-base LEOF )) )) )) (
                (maybe-specialize( 'open_s (typeof-var-raw( term tctx 'open_s )) deref-type term ))
                (maybe-specialize( 'push-deref_s (typeof-var-raw( term tctx 'push-deref_s )) deref-type term ))
                (set deref-type (and( array-base (t1 'StackVariable_s) )))

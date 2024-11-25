@@ -22,7 +22,7 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
             (Lit( tg (token::new tg) ))
          )))
       ))
-      ( (Tuple( (TGround( 'Any_ss _ )) _ )) (
+      ( (Tuple( (TGround( 'Any_s _ )) _ )) (
          (set ctx TCtxNil)
       ))
       ( (Tuple( (TVar( ltv )) rt )) (
@@ -57,11 +57,11 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
 
       # Varargs
       ( (Tuple(
-         (TGround( 'Cons_ss (LCons(
-            (TGround( '..._ss (LCons( lp1 LEOF )) ))
+         (TGround( 'Cons_s (LCons(
+            (TGround( '..._s (LCons( lp1 LEOF )) ))
             (LCons( lpr LEOF ))
          )) ))
-         (TGround( 'Cons_ss (LCons( rp1 (LCons( rpr LEOF )) )) ))
+         (TGround( 'Cons_s (LCons( rp1 (LCons( rpr LEOF )) )) ))
       )) (
          (if (can-unify( lp1 rp1 )) (
             (set ctx (and(
@@ -73,8 +73,8 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          ))
       ))
       ( (Tuple(
-         (TGround( 'Cons_ss (LCons(
-            (TGround( '..._ss (LCons( lp1 LEOF )) ))
+         (TGround( 'Cons_s (LCons(
+            (TGround( '..._s (LCons( lp1 LEOF )) ))
             (LCons( lpr LEOF ))
          )) ))
          rp1
@@ -89,8 +89,8 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          ))
       ))
       ( (Tuple(
-         (TGround( '..._ss (LCons( lp1 LEOF )) ))
-         (TGround( 'Cons_ss (LCons( rp1 (LCons( rpr LEOF )) )) ))
+         (TGround( '..._s (LCons( lp1 LEOF )) ))
+         (TGround( 'Cons_s (LCons( rp1 (LCons( rpr LEOF )) )) ))
       )) (
          (if (can-unify( lp1 rp1 )) (
             (set ctx (and(
@@ -100,17 +100,17 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          ) ())
       ))
       ( (Tuple(
-         (TGround( '..._ss (LCons( lp1 LEOF )) ))
-         (TGround( 'Nil_ss LEOF ))
+         (TGround( '..._s (LCons( lp1 LEOF )) ))
+         (TGround( 'Nil_s LEOF ))
       )) ())
       ( (Tuple(
-         (TGround( '..._ss (LCons( lp1 LEOF )) ))
+         (TGround( '..._s (LCons( lp1 LEOF )) ))
          rp1
       )) (
          (set ctx (unify-inner( lp1 rp1 )))
       ))
 
-      ( (Tuple( (TGround( 'GT_ss (LCons( (TGround( lbase LEOF )) LEOF )) )) (TGround( rbase LEOF )) )) (
+      ( (Tuple( (TGround( 'GT_s (LCons( (TGround( lbase LEOF )) LEOF )) )) (TGround( rbase LEOF )) )) (
          (if (>( (to-i64 rbase) (to-i64 lbase) )) (
             (set ctx TCtxNil)
          ) ())

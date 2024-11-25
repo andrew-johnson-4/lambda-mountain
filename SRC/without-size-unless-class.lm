@@ -62,8 +62,8 @@ without-size-unless-class-inner := λ(: tt Type). (: (
             ))
          ))
       ))
-      ( (TGround( 'FieldsSized_ss _ )) (set tt TAny) )
-      ( (TGround( 'Sized_ss _ )) (set tt TAny) )
+      ( (TGround( 'FieldsSized_s _ )) (set tt TAny) )
+      ( (TGround( 'Sized_s _ )) (set tt TAny) )
       ( (TGround( tag ps )) (
          (set tt (TGround( tag (close(without-size-unless-class ps)) )))
       ))

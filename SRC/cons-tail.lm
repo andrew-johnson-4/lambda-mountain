@@ -3,7 +3,7 @@ cons-tail := λ(: tt Type). (: (
    (let r TAny)
    (match tt (
       ()
-      ( (TGround( 'Cons_ss (LCons( tl (LCons( hd LEOF )) )) )) (set r tl) )
+      ( (TGround( 'Cons_s (LCons( tl (LCons( hd LEOF )) )) )) (set r tl) )
       ( _ () )
    ))
    r
@@ -12,7 +12,7 @@ cons-tail := λ(: tt Type). (: (
 cons-tail-or-self := λ(: tt Type). (: (
    (match tt (
       ()
-      ( (TGround( 'Cons_ss (LCons( tl (LCons( hd LEOF )) )) )) (set tt tl) )
+      ( (TGround( 'Cons_s (LCons( tl (LCons( hd LEOF )) )) )) (set tt tl) )
       ( _ () )
    ))
    tt

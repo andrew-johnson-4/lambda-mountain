@@ -9,7 +9,7 @@ with-only-array := λ(: tt Type). (: (
          (let rc (with-only-array rt1))
          (if (non-zero rc) (set rt rc) ())
       ))
-      ( (TGround( 'Array_ss _ )) (set rt tt) )
+      ( (TGround( 'Array_s _ )) (set rt tt) )
       ( _ () )
    ))
    rt

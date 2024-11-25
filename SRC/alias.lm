@@ -12,7 +12,7 @@ find-alias := λ(: from String)(: pars Type). (: (
          ()
          ( (Tuple(
               (Tuple( alt-from alt-to ))
-              (TGround( 'Arrow_ss (LCons( _ (LCons( alt-domain LEOF )) )) ))
+              (TGround( 'Arrow_s (LCons( _ (LCons( alt-domain LEOF )) )) ))
            )) (
             (if (==( from alt-from )) (
                (if (can-unify( alt-domain pars )) (

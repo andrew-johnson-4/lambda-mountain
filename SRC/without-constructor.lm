@@ -11,8 +11,8 @@ without-constructor := λ(: tt Type). (: (
             ) (set tt lt))
          ) (set tt rt))
       ))
-      ( (TGround( 'Constructor_ss _ )) (set tt TAny) )
-      ( (TGround( 'CaseNumber_ss _ )) (set tt TAny) )
+      ( (TGround( 'Constructor_s _ )) (set tt TAny) )
+      ( (TGround( 'CaseNumber_s _ )) (set tt TAny) )
       ( _ () )
    ))
    tt
