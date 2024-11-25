@@ -35,12 +35,12 @@ with-size-recurse := λ(: tt Type). (: (
             (with-size-recurse rt)
          )))
       ))
-      ( (TGround( 'Tag_s _ )) () )
-      ( (TGround( 'Sized_s _ )) () )
-      ( (TGround( 'CaseNumber_s _ )) () )
-      ( (TGround( 'Fields_s _ )) () )
-      ( (TGround( 'FieldsSized_s _ )) () )
-      ( (TGround( 'Array_s (LCons( array-index (LCons( array-base LEOF )) )) )) (
+      ( (TGround( 'Tag_ss _ )) () )
+      ( (TGround( 'Sized_ss _ )) () )
+      ( (TGround( 'CaseNumber_ss _ )) () )
+      ( (TGround( 'Fields_ss _ )) () )
+      ( (TGround( 'FieldsSized_ss _ )) () )
+      ( (TGround( 'Array_ss (LCons( array-index (LCons( array-base LEOF )) )) )) (
          (set tt (TGround( 'Array_s (close(cons(
             array-index
             (cons( (with-size array-base) (: LEOF List<Type>) ))
