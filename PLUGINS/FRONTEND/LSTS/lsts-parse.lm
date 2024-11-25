@@ -1056,26 +1056,23 @@ lsts-parse-atom-tail := λ(: base AST)(: tokens List<Token>). (: (
                      (set tokens (.second term2-rest))
                   ))
                ) ())
-               (if (non-zero ASTEOF) (
+               (if (non-zero term2) (
                   (set base (App(
-                     (close(Lit( '[:]_s (with-location( (token::new '[:]_s) loc )) )))
+                     (close(Var( '[:]_s (with-location( (token::new '[:]_s) loc )) )))
                      (close(App(
-                        (close base)
                         (close(App(
+                           (close base)
                            (close term1)
-                           (close term2)
                         )))
+                        (close term2)
                      )))
                   )))
                ) (
                   (set base (App(
-                     (close(Lit( '[]_s (with-location( (token::new '[:]_s) loc )) )))
+                     (close(Var( '[]_s (with-location( (token::new '[]_s) loc )) )))
                      (close(App(
                         (close base)
-                        (close(App(
-                           (close term1)
-                           (close term2)
-                        )))
+                        (close term1)
                      )))
                   )))
                ))
