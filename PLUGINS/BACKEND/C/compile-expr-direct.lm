@@ -1,4 +1,6 @@
 
+compile-smart-string-index := (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<String,String>[]) )) HashtableEq<String,String>);
+
 compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used IsUsed). (: (
    (let e (fragment::new()))
    (set.context( e (close ctx) ))
@@ -21,9 +23,31 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                (set e (compile-declare-cstring( val )))
             ) ())
             (if (is-t( ltype 'SmartString_s )) (
-               (let lit (Lit( val (token::new val) )))
-               (ascript-normal( lit (t1 'String_s) ))
-               (set e (compile-stack-calls( ctx 'intern_s TAny (typeof term) lit stack-offset Used )))
+               (let guid (.lookup( compile-smart-string-index val '_s )))
+               (if (non-zero guid) (
+                  (set e (fragment::set( e 'expression_s (SAtom guid) )))
+               ) (
+                  (set guid (uuid()))
+                  (set e (fragment::set( e 'expression_s (SAtom guid) )))
+                  (set compile-smart-string-index (.bind( compile-smart-string-index val guid )))
+                  (let lit (Lit( val (token::new val) )))
+                  (ascript-normal( lit (t1 'String_s) ))
+                  (let intern-ss (compile-stack-calls( ctx 'intern_s TAny (typeof term) lit stack-offset Used )))
+                  (set assemble-header-section (+(
+                     assemble-header-section
+                     (+(
+                        (+( (mangle-c-type ltype) (SAtom '\s_s) ))
+                        (+( (SAtom guid) (SAtom '\:\n_s) ))
+                     ))
+                  )))
+                  (set assemble-global-initializer-section (+(
+                     assemble-global-initializer-section
+                     (+(
+                        (+( (SAtom guid) (SAtom '=_s) ))
+                        (+( (fragment::get( intern-ss 'expression_s )) (SAtom '\:\n_s) ))
+                     ))
+                  )))
+               ))
             ) ())
             (if (is-t( ltype 'Regex_s )) (
                (let rgx-id (uuid()))

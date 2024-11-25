@@ -1,12 +1,12 @@
 
-primitive::while := λ: Blob(: body Meta<Any>)(: cond BranchConditional). (: (
+primitive::while := λ: Blob(: body Any)(: cond BranchConditional). (: (
    (:frame( (:frame body) (:frame cond) ))
    (:expression(
       '\[{while\[_l (:expression cond) '\]{_l (:expression body) '\:}\:}\]_l
    ))
 ) Nil);
 
-primitive::if := λ: Blob(: ictx ImplicitContext)(: f Meta<Any>)(: t Meta<Any>)(: c BranchConditional). (: (
+primitive::if := λ: Blob(: ictx ImplicitContext)(: f Any)(: t Any)(: c BranchConditional). (: (
    (:frame( (:frame c) (:frame t) (:frame f) ))
    (:expression(
       '\[_l (:expression c) '?_l (:expression t) ':_l (:expression f) '\]_l
@@ -20,10 +20,10 @@ primitive::if := λ: Blob(: ictx ImplicitContext)(: f Meta<Any>)(: t Meta<Any>)(
 
 (declare-unop( into-branch-conditional BranchConditional BranchConditional ( x ) ));
 
-(declare-unop( cdecl::return Meta<Any> Nil ( 'return\s_l x '\:_l ) ));
-(declare-unop( cdecl::return Meta<Any>+Nil Nil ( x '\:_l ) ));
+(declare-unop( cdecl::return Any Nil ( 'return\s_l x '\:_l ) ));
+(declare-unop( cdecl::return Nil Nil ( x '\:_l ) ));
 
-primitive::call := λ: Blob(: ictx ImplicitContext)(: args Meta<Any>). (: (
+primitive::call := λ: Blob(: ictx ImplicitContext)(: args Any). (: (
    (:frame( (:frame ictx) (:frame args) ))
    (:expression(
       '\[_l (:function-id ictx) '\[_l (:expression args) '\]\]_l

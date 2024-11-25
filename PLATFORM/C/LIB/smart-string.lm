@@ -33,6 +33,9 @@ untern := λ(: s SmartString). (: (
 == := λ(: x SmartString)(: y String). (: (
    (==( x (intern y) ))
 ) U64);
+== := λ(: x String)(: y SmartString). (: (
+   (==( (intern x) y ))
+) U64);
 
 == := λ(: x SmartString)(: y SmartString). (: (
    (==( (cmp( x y )) 0_i64 ))
@@ -67,8 +70,8 @@ cmp := λ(: x SmartString)(: y SmartString). (: (
             (set x-start (.end x))
             (set y-start (.end y))
          ) (
-            (if (<( ([]( x-start 0_u64 )) ([]( y-start 0_u64 )) )) (
-               (set r -1_i64)
+            (if (>( ([]( x-start 0_u64 )) ([]( y-start 0_u64 )) )) (
+               (set r 1_i64)
                (set x-start (.end x))
                (set y-start (.end y))
             ) (
