@@ -4,9 +4,9 @@ is-constructor := λ(: tt Type). (: (
    (match tt (
       ()
       ( (TAnd( t1 t2 )) (set r (||( (is-constructor t1) (is-constructor t2) ))) )
-      ( (TGround( 'Constructor_s _ )) (set r 1_u64) )
-      ( (TGround( 'Arrow_s _ )) (set r (is-constructor(p2 tt))) )
-      ( (TGround( 'Cons_s _ )) (set r (is-constructor(p2 tt))) )
+      ( (TGround( 'Constructor_ss _ )) (set r 1_u64) )
+      ( (TGround( 'Arrow_ss _ )) (set r (is-constructor(p2 tt))) )
+      ( (TGround( 'Cons_ss _ )) (set r (is-constructor(p2 tt))) )
       ( _ () )
    ))
    r
@@ -17,7 +17,7 @@ is-simple-constructor := λ(: tt Type). (: (
    (match tt (
       ()
       ( (TAnd( t1 t2 )) (set r (||( (is-simple-constructor t1) (is-simple-constructor t2) ))) )
-      ( (TGround( 'Constructor_s _ )) (set r 1_u64) )
+      ( (TGround( 'Constructor_ss _ )) (set r 1_u64) )
       ( _ () )
    ))
    r

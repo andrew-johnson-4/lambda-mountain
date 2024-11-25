@@ -7,8 +7,8 @@ domain := λ(: tt Type). (: (
          (set r (domain t1))
          (if (non-zero r) () (set r (domain t2)))
       ))
-      ( (TGround( 'Arrow_s (LCons( ranget (LCons( domaint _ )) )) )) (set r domaint) )
-      ( (TGround( 'Array_s (LCons( _ (LCons( array-base _ )) )) )) (set r (domain array-base)) )
+      ( (TGround( 'Arrow_ss (LCons( ranget (LCons( domaint _ )) )) )) (set r domaint) )
+      ( (TGround( 'Array_ss (LCons( _ (LCons( array-base _ )) )) )) (set r (domain array-base)) )
       ( _ () )
    ))
    r

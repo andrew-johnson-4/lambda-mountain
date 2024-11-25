@@ -15,7 +15,7 @@ mark-constructor-flat-parameters := λ(: base-type Type)(: flat-tag String)(: fl
 mark-constructor-flat-parameters := λ(: base-type Type)(: flat-type Type). (: (
    (match flat-type (
       ()
-      ( (TGround( 'Cons_s (LCons( p2 (LCons( p1 LEOF )) )) )) (
+      ( (TGround( 'Cons_ss (LCons( p2 (LCons( p1 LEOF )) )) )) (
          (mark-constructor-flat-parameters( base-type p1 ))
          (mark-constructor-flat-parameters( base-type p2 ))
       ))

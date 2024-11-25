@@ -9,14 +9,14 @@ apply-plural := λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (
             (apply-plural( function-name t2 pt blame ))
          )))
       ))
-      ( (TGround( 'Array_s (LCons( _ (LCons(
-         (TGround( 'Arrow_s (LCons( frt (LCons( fpt LEOF )) )) ))
+      ( (TGround( 'Array_ss (LCons( _ (LCons(
+         (TGround( 'Arrow_ss (LCons( frt (LCons( fpt LEOF )) )) ))
          LEOF )) )) )) (
          (if (can-unify( fpt pt )) (
             (set r (cons( ft r )))
          ) ())
       ))
-      ( (TGround( 'Arrow_s (LCons( frt (LCons( fpt LEOF )) )) )) (
+      ( (TGround( 'Arrow_ss (LCons( frt (LCons( fpt LEOF )) )) )) (
          (if (can-unify( fpt pt )) (
             (set r (cons( ft r )))
          ) ())

@@ -7,8 +7,8 @@ range := λ(: tt Type). (: (
          (set r (range t1))
          (if (non-zero r) () (set r (range t2)))
       ))
-      ( (TGround( 'Arrow_s (LCons( ranget (LCons( domaint _ )) )) )) (set r ranget) )
-      ( (TGround( 'Array_s (LCons( _ (LCons( array-base _ )) )) )) (set r (range array-base)) )
+      ( (TGround( 'Arrow_ss (LCons( ranget (LCons( domaint _ )) )) )) (set r ranget) )
+      ( (TGround( 'Array_ss (LCons( _ (LCons( array-base _ )) )) )) (set r (range array-base)) )
       ( _ () )
    ))
    r

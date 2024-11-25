@@ -9,7 +9,7 @@ get-vararg-inner := λ(: tt Type). (: (
          (set t2 (get-vararg-inner t2))
          (if (non-zero t2) (set r t2) ())
       ))
-      ( (TGround( '..._s (LCons( inner _ )) )) (set r inner) )
+      ( (TGround( '..._ss (LCons( inner _ )) )) (set r inner) )
       ( _ () )
    ))
    r
