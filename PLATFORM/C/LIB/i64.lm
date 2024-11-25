@@ -19,7 +19,7 @@ fragment type I64; size I64 8; atom suffix I64 _i64;
 
 (declare-unop( into-branch-conditional I64 BranchConditional ( x ) ));
 
-minimum-I64 := (: (-( 0_i64 1_i64 )) I64);
+minimum-I64 := -2147483648_i64;
 
 print := λ(: x I64). (: (
    (if (<( x 0_i64 )) (
