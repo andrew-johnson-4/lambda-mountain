@@ -35,25 +35,25 @@ untern := λ(: s SmartString). (: (
 ) U64);
 
 == := λ(: x SmartString)(: y SmartString). (: (
-   (==( (strcmp( x y )) 0_i64 ))
+   (==( (cmp( x y )) 0_i64 ))
 ) U64);
 != := λ(: x SmartString)(: y SmartString). (: (
-   (!=( (strcmp( x y )) 0_i64 ))
+   (!=( (cmp( x y )) 0_i64 ))
 ) U64);
 < := λ(: x SmartString)(: y SmartString). (: (
-   (<( (strcmp( x y )) 0_i64 ))
+   (<( (cmp( x y )) 0_i64 ))
 ) U64);
 <= := λ(: x SmartString)(: y SmartString). (: (
-   (<=( (strcmp( x y )) 0_i64 ))
+   (<=( (cmp( x y )) 0_i64 ))
 ) U64);
 > := λ(: x SmartString)(: y SmartString). (: (
-   (>( (strcmp( x y )) 0_i64 ))
+   (>( (cmp( x y )) 0_i64 ))
 ) U64);
 >= := λ(: x SmartString)(: y SmartString). (: (
-   (>=( (strcmp( x y )) 0_i64 ))
+   (>=( (cmp( x y )) 0_i64 ))
 ) U64);
 
-strcmp := λ(: x SmartString)(: y SmartString). (: (
+cmp := λ(: x SmartString)(: y SmartString). (: (
    (let r 0_i64)
    (if (is( x y )) (set r 0_i64) (
       (let x-start (.start x))
