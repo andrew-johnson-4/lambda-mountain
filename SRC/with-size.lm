@@ -7,7 +7,7 @@ with-size := λ(: tt Type). (: (
    ) ())
    (match tt (
       ()
-      ( (TGround( 'Cons_s (LCons( p2 (LCons( p1 LEOF )) )) )) (
+      ( (TGround( 'Cons_ss (LCons( p2 (LCons( p1 LEOF )) )) )) (
          (set tt (t3( 'Cons_s (with-size p1) (with-size p2) )))
       ))
       ( _ () )
@@ -41,10 +41,7 @@ with-size-recurse := λ(: tt Type). (: (
       ( (TGround( 'Fields_ss _ )) () )
       ( (TGround( 'FieldsSized_ss _ )) () )
       ( (TGround( 'Array_ss (LCons( array-index (LCons( array-base LEOF )) )) )) (
-         (set tt (TGround( 'Array_s (close(cons(
-            array-index
-            (cons( (with-size array-base) (: LEOF List<Type>) ))
-         ))) )))
+         (set tt (t3( 'Array_s (with-size array-base) array-index )))
       ))
       ( (TGround( tag ps )) (
          (set tt (TGround( tag (close(with-size ps)) )))

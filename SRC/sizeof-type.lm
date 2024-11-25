@@ -6,19 +6,19 @@ sizeof-type := λ(: tt Type). (: (
       ( TAny () )
       ( (TVar _) () )
       ( (TGround( class LEOF )) (set sz (size-of-class class)) )
-      ( (TGround( 'Sized_s (LCons( (TGround( szp LEOF )) LEOF )) )) (
+      ( (TGround( 'Sized_ss (LCons( (TGround( szp LEOF )) LEOF )) )) (
          (set sz (to-u64 szp))
       ))
-      ( (TGround( 'Array_s (LCons( TAny (LCons( p1 LEOF )) )) )) (
+      ( (TGround( 'Array_ss (LCons( TAny (LCons( p1 LEOF )) )) )) (
          (set sz 8_u64)
       ))
-      ( (TGround( 'Cons_s (LCons( p2 (LCons( p1 LEOF )) )) )) (
+      ( (TGround( 'Cons_ss (LCons( p2 (LCons( p1 LEOF )) )) )) (
          (set sz (+(
             (sizeof-aligned p1)
             (sizeof-aligned p2)
          )))
       ))
-      ( (TGround( 'Field_s (LCons( (TGround( szp LEOF )) (LCons( p1 LEOF )) )) )) (
+      ( (TGround( 'Field_ss (LCons( (TGround( szp LEOF )) (LCons( p1 LEOF )) )) )) (
          (set sz (*( (sizeof-type p1) (to-u64 szp) )))
       ))
       ( (TGround( tag _ )) (
