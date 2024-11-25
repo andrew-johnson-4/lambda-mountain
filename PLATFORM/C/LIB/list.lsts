@@ -1,15 +1,15 @@
 
 let cmp(ls: List<x>, rs: List<x>): I64 = (
-   let diff = 0_i64;
-   while diff==0_i64 && non-zero(ls) && non-zero(rs) {
+   let diff = $"0_i64";
+   while diff==$"0_i64" && non-zero(ls) && non-zero(rs) {
       diff = cmp(head(ls), head(rs));
       ls = tail(ls);
       rs = tail(rs);
    };
    if diff then diff else
-   if not(non-zero(ls)) && non-zero(rs) then -1_i64 else
-   if non-zero(ls) && not(non-zero(rs)) then 1_i64 else
-   0_i64
+   if not(non-zero(ls)) && non-zero(rs) then $"-1_i64" else
+   if non-zero(ls) && not(non-zero(rs)) then $"1_i64" else
+   $"0_i64"
 );
 
 let $"<"(ls: List<x>, rs: List<x>): U64 = (

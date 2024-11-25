@@ -16,4 +16,7 @@ if "B" < "A" then print("B<A\n") else print("B>=A\n");
 if "BA" < "B" then print("BA<B\n") else print("BA>=B\n"); 
 if "B" < "BA" then print("B<BA\n") else print("B>=BA\n"); 
 
-if ["A"] < ["A", "B"] then print("[A]<[A,B]") else print("[A]>=[A,B]");
+if ["A"] < ["A", "B"] then print("[A]<[A,B]\n") else print("[A]>=[A,B]\n");
+if ["A"] < ["A"] then print("[A]<[A]\n") else print("[A]>=[A]\n");
+if ["A"] < ["B"] then print("[A]<[B]\n") else print("[A]>=[B]\n");
+if ["B"] < ["A"] then print("[B]<[A]\n") else print("[B]>=[A]\n");
