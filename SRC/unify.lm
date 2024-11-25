@@ -61,7 +61,7 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
             (TGround( '..._ss (LCons( lp1 LEOF )) ))
             (LCons( lpr LEOF ))
          )) ))
-         (TGround( 'Cons_s (LCons( rp1 (LCons( rpr LEOF )) )) ))
+         (TGround( 'Cons_ss (LCons( rp1 (LCons( rpr LEOF )) )) ))
       )) (
          (if (can-unify( lp1 rp1 )) (
             (set ctx (and(

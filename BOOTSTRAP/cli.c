@@ -887,103 +887,103 @@ LM_Type typeof_CL_ArrowTypeAST(LM_AST uuid_0000000000074d13);
 void ascript_CL_ArrowNilConsTypeAST(LM_AST uuid_0000000000074d14,LM_Type uuid_0000000000074d15);
 #line 2 "SRC/infer-expr.lm"
 LM_TContext infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(LM_TContext uuid_0000000000074d16,LM_AST uuid_0000000000074d17,LM_IsScoped uuid_0000000000074d18,LM_Type uuid_0000000000074d19,LM_IsUsed uuid_0000000000074d1a);
+LM_SmartString uuid_0000000000074da9;
 #line 23 "SRC/infer-expr.lm"
 LM_TContext infer_SB_expr_SB_one_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(LM_TContext uuid_0000000000074d21,LM_AST uuid_0000000000074d22,LM_IsScoped uuid_0000000000074d23,LM_Type uuid_0000000000074d24,LM_IsUsed uuid_0000000000074d25);
 LM_ListTupleTypeTupleStringString alias_SB_index_CL_ListTupleTypeTupleStringString;
 #line 4 "SRC/alias.lm"
-void add_SB_alias_CL_ArrowNilConsTypeConsStringString(char* uuid_0000000000074e15,char* uuid_0000000000074e16,LM_Type uuid_0000000000074e17);
-LM_SmartString uuid_0000000000074e2d;
+void add_SB_alias_CL_ArrowNilConsTypeConsStringString(char* uuid_0000000000074e17,char* uuid_0000000000074e18,LM_Type uuid_0000000000074e19);
+LM_SmartString uuid_0000000000074e2f;
 #line 8 "SRC/alias.lm"
-char* find_SB_alias_CL_ArrowStringConsTypeString(char* uuid_0000000000074e18,LM_Type uuid_0000000000074e19);
+char* find_SB_alias_CL_ArrowStringConsTypeString(char* uuid_0000000000074e1a,LM_Type uuid_0000000000074e1b);
 #line 28 "SRC/alias.lm"
-LM_Type find_SB_alias_SB_type_CL_ArrowTypeString(char* uuid_0000000000074e33);
+LM_Type find_SB_alias_SB_type_CL_ArrowTypeString(char* uuid_0000000000074e35);
 LM_HashtableEqU64String class_SB_exists_SB_index_CL_HashtableEqU64String;
 #line 4 "SRC/class-exists.lm"
-void mark_SB_class_SB_exists_CL_ArrowNilString(char* uuid_0000000000074e43);
+void mark_SB_class_SB_exists_CL_ArrowNilString(char* uuid_0000000000074e45);
 LM_HashtableEqU64TupleU64TupleU64String parameter_SB_is_SB_flat_SB_index_CL_HashtableEqU64TupleU64TupleU64String;
 #line 4 "SRC/is-parameter-flat.lm"
-void mark_SB_parameter_SB_flat_CL_ArrowNilConsU64ConsU64String(char* uuid_0000000000074e44,unsigned long uuid_0000000000074e45,unsigned long uuid_0000000000074e46);
+void mark_SB_parameter_SB_flat_CL_ArrowNilConsU64ConsU64String(char* uuid_0000000000074e46,unsigned long uuid_0000000000074e47,unsigned long uuid_0000000000074e48);
 #line 9 "SRC/is-parameter-flat.lm"
-unsigned long is_SB_parameter_SB_flat_CL_ArrowU64ConsU64ConsU64String(char* uuid_0000000000074e47,unsigned long uuid_0000000000074e48,unsigned long uuid_0000000000074e49);
+unsigned long is_SB_parameter_SB_flat_CL_ArrowU64ConsU64ConsU64String(char* uuid_0000000000074e49,unsigned long uuid_0000000000074e4a,unsigned long uuid_0000000000074e4b);
 LM_HashtableEqU64TupleTypeString is_SB_special_SB_index_CL_HashtableEqU64TupleTypeString;
 #line 4 "SRC/is-special.lm"
-void mark_SB_as_SB_special_CL_ArrowNilConsTypeString(char* uuid_0000000000074e4b,LM_Type uuid_0000000000074e4c);
+void mark_SB_as_SB_special_CL_ArrowNilConsTypeString(char* uuid_0000000000074e4d,LM_Type uuid_0000000000074e4e);
 #line 8 "SRC/is-special.lm"
-unsigned long is_SB_special_CL_ArrowU64ConsTypeString(char* uuid_0000000000074e4d,LM_Type uuid_0000000000074e4e);
+unsigned long is_SB_special_CL_ArrowU64ConsTypeString(char* uuid_0000000000074e4f,LM_Type uuid_0000000000074e50);
 LM_HashtableEqU64String lone_SB_index_CL_HashtableEqU64String;
 #line 4 "SRC/is-lone-tag.lm"
-void index_SB_lone_SB_tag_CL_ArrowNilString(char* uuid_0000000000074e50);
+void index_SB_lone_SB_tag_CL_ArrowNilString(char* uuid_0000000000074e52);
 #line 8 "SRC/is-lone-tag.lm"
-unsigned long is_SB_lone_SB_tag_CL_ArrowU64String(char* uuid_0000000000074e51);
+unsigned long is_SB_lone_SB_tag_CL_ArrowU64String(char* uuid_0000000000074e53);
 LM_HashtableEqU64String tag_SB_is_SB_fragment_SB_index_CL_HashtableEqU64String;
 #line 4 "SRC/is-fragment.lm"
-void index_SB_tag_SB_is_SB_fragment_CL_ArrowNilString(char* uuid_0000000000074e52);
+void index_SB_tag_SB_is_SB_fragment_CL_ArrowNilString(char* uuid_0000000000074e54);
 #line 8 "SRC/is-fragment.lm"
-unsigned long is_SB_fragment_CL_ArrowU64String(char* uuid_0000000000074e53);
+unsigned long is_SB_fragment_CL_ArrowU64String(char* uuid_0000000000074e55);
 #line 12 "SRC/is-fragment.lm"
-unsigned long is_SB_fragment_CL_ArrowU64Type(LM_Type uuid_0000000000074e54);
+unsigned long is_SB_fragment_CL_ArrowU64Type(LM_Type uuid_0000000000074e56);
 LM_HashtableEqU64TupleTypeString global_SB_symbol_SB_registry_CL_HashtableEqU64TupleTypeString;
 #line 4 "SRC/global-is-seen.lm"
-void mark_SB_global_SB_as_SB_seen_CL_ArrowNilConsTypeConsTypeString(char* uuid_0000000000074e55,LM_Type uuid_0000000000074e56,LM_Type uuid_0000000000074e57);
+void mark_SB_global_SB_as_SB_seen_CL_ArrowNilConsTypeConsTypeString(char* uuid_0000000000074e57,LM_Type uuid_0000000000074e58,LM_Type uuid_0000000000074e59);
 #line 13 "SRC/global-is-seen.lm"
-unsigned long global_SB_is_SB_seen_CL_ArrowU64ConsTypeString(char* uuid_0000000000074e58,LM_Type uuid_0000000000074e59);
+unsigned long global_SB_is_SB_seen_CL_ArrowU64ConsTypeString(char* uuid_0000000000074e5a,LM_Type uuid_0000000000074e5b);
 LM_HashtableEqStringString class_SB_to_SB_only_SB_child_CL_HashtableEqStringString;
 #line 4 "SRC/class-only-child.lm"
-void has_SB_only_SB_child_CL_ArrowNilConsStringString(char* uuid_0000000000074e5b,char* uuid_0000000000074e5c);
+void has_SB_only_SB_child_CL_ArrowNilConsStringString(char* uuid_0000000000074e5d,char* uuid_0000000000074e5e);
 #line 8 "SRC/class-only-child.lm"
-char* get_SB_only_SB_child_CL_ArrowStringString(char* uuid_0000000000074e5d);
+char* get_SB_only_SB_child_CL_ArrowStringString(char* uuid_0000000000074e5f);
 LM_HashtableEqU64String tag_SB_to_SB_index_SB_index_CL_HashtableEqU64String;
 unsigned long unknown_SB_index_SB_of_SB_tag_CL_U64;
 #line 6 "SRC/index-of-tag.lm"
-unsigned long index_SB_of_SB_tag_CL_ArrowU64String(char* uuid_0000000000074e5f);
+unsigned long index_SB_of_SB_tag_CL_ArrowU64String(char* uuid_0000000000074e61);
 #line 11 "SRC/index-of-tag.lm"
-void index_SB_index_SB_of_SB_tag_CL_ArrowNilConsU64String(char* uuid_0000000000074e61,unsigned long uuid_0000000000074e62);
+void index_SB_index_SB_of_SB_tag_CL_ArrowNilConsU64String(char* uuid_0000000000074e63,unsigned long uuid_0000000000074e64);
 LM_HashtableEqU64String class_SB_to_SB_size_SB_index_CL_HashtableEqU64String;
 #line 4 "SRC/size-of-class.lm"
-void index_SB_size_SB_of_SB_class_CL_ArrowNilConsU64String(char* uuid_0000000000074e63,unsigned long uuid_0000000000074e64);
+void index_SB_size_SB_of_SB_class_CL_ArrowNilConsU64String(char* uuid_0000000000074e65,unsigned long uuid_0000000000074e66);
 #line 8 "SRC/size-of-class.lm"
-unsigned long size_SB_of_SB_class_CL_ArrowU64String(char* uuid_0000000000074e65);
+unsigned long size_SB_of_SB_class_CL_ArrowU64String(char* uuid_0000000000074e67);
 LM_HashtableEqTypeString tag_SB_to_SB_class_SB_index_CL_HashtableEqTypeString;
 #line 4 "SRC/class-of-tag.lm"
-void index_SB_class_SB_of_SB_tag_CL_ArrowNilConsTypeString(char* uuid_0000000000074e66,LM_Type uuid_0000000000074e67);
+void index_SB_class_SB_of_SB_tag_CL_ArrowNilConsTypeString(char* uuid_0000000000074e68,LM_Type uuid_0000000000074e69);
 #line 18 "SRC/class-of-tag.lm"
-LM_Type class_SB_of_SB_tag_CL_ArrowTypeString(char* uuid_0000000000074e6c);
+LM_Type class_SB_of_SB_tag_CL_ArrowTypeString(char* uuid_0000000000074e6e);
 LM_HashtableEqU64String class_SB_to_SB_yes_SB_index_CL_HashtableEqU64String;
 #line 4 "SRC/is-class.lm"
-unsigned long is_SB_class_CL_ArrowU64String(char* uuid_0000000000074e6e);
+unsigned long is_SB_class_CL_ArrowU64String(char* uuid_0000000000074e70);
 LM_HashtableEqTupleTypeTypeString tag_SB_to_SB_fields_SB_index_CL_HashtableEqTupleTypeTypeString;
 #line 4 "SRC/fields-of-tag.lm"
-void index_SB_fields_SB_of_SB_tag_CL_ArrowNilConsTypeConsTypeConsTypeString(char* uuid_0000000000074e70,LM_Type uuid_0000000000074e71,LM_Type uuid_0000000000074e72,LM_Type uuid_0000000000074e73);
-LM_SmartString uuid_0000000000074e83;
-LM_SmartString uuid_0000000000074e88;
+void index_SB_fields_SB_of_SB_tag_CL_ArrowNilConsTypeConsTypeConsTypeString(char* uuid_0000000000074e72,LM_Type uuid_0000000000074e73,LM_Type uuid_0000000000074e74,LM_Type uuid_0000000000074e75);
+LM_SmartString uuid_0000000000074e85;
+LM_SmartString uuid_0000000000074e8a;
 #line 9 "SRC/fields-of-tag.lm"
-void index_SB_fields_SB_quick_SB_prop_CL_ArrowNilConsU64ConsTypeConsTypeType(LM_Type uuid_0000000000074e74,LM_Type uuid_0000000000074e75,LM_Type uuid_0000000000074e76,unsigned long uuid_0000000000074e77);
+void index_SB_fields_SB_quick_SB_prop_CL_ArrowNilConsU64ConsTypeConsTypeType(LM_Type uuid_0000000000074e76,LM_Type uuid_0000000000074e77,LM_Type uuid_0000000000074e78,unsigned long uuid_0000000000074e79);
 #line 27 "SRC/fields-of-tag.lm"
-LM_TupleTypeType fields_SB_of_SB_tag_CL_ArrowTupleTypeTypeString(char* uuid_0000000000074e8b);
+LM_TupleTypeType fields_SB_of_SB_tag_CL_ArrowTupleTypeTypeString(char* uuid_0000000000074e8d);
 LM_HashtableEqTypeString type_SB_constructors_SB_index_CL_HashtableEqTypeString;
 LM_HashtableEqTupleTypeTypeString type_SB_complex_SB_fields_SB_index_CL_HashtableEqTupleTypeTypeString;
 #line 4 "SRC/type-complex-fields.lm"
-void set_SB_type_SB_fields_CL_ArrowNilConsTypeType(LM_Type uuid_0000000000074e8d,LM_Type uuid_0000000000074e8e);
-LM_SmartString uuid_0000000000074ea1;
+void set_SB_type_SB_fields_CL_ArrowNilConsTypeType(LM_Type uuid_0000000000074e8f,LM_Type uuid_0000000000074e90);
+LM_SmartString uuid_0000000000074ea3;
 #line 2 "SRC/get-vararg-inner.lm"
-LM_Type get_SB_vararg_SB_inner_CL_ArrowTypeType(LM_Type uuid_0000000000074e94);
+LM_Type get_SB_vararg_SB_inner_CL_ArrowTypeType(LM_Type uuid_0000000000074e96);
 #line 2 "SRC/maybe-specialize.lm"
-void maybe_SB_specialize_CL_ArrowNilConsASTConsTypeConsTypeString(char* uuid_0000000000074ea3,LM_Type uuid_0000000000074ea4,LM_Type uuid_0000000000074ea5,LM_AST uuid_0000000000074ea6);
+void maybe_SB_specialize_CL_ArrowNilConsASTConsTypeConsTypeString(char* uuid_0000000000074ea5,LM_Type uuid_0000000000074ea6,LM_Type uuid_0000000000074ea7,LM_AST uuid_0000000000074ea8);
 #line 6 "SRC/maybe-specialize.lm"
-void do_SB_specialize_CL_ArrowNilConsASTConsTypeConsTypeString(char* uuid_0000000000074ea7,LM_Type uuid_0000000000074ea8,LM_Type uuid_0000000000074ea9,LM_AST uuid_0000000000074eaa);
+void do_SB_specialize_CL_ArrowNilConsASTConsTypeConsTypeString(char* uuid_0000000000074ea9,LM_Type uuid_0000000000074eaa,LM_Type uuid_0000000000074eab,LM_AST uuid_0000000000074eac);
 #line 2 "SRC/maybe-local-variable.lm"
-LM_Type maybe_SB_local_SB_variable_CL_ArrowTypeType(LM_Type uuid_0000000000074eab);
-LM_SmartString uuid_0000000000074eb6;
+LM_Type maybe_SB_local_SB_variable_CL_ArrowTypeType(LM_Type uuid_0000000000074ead);
+LM_SmartString uuid_0000000000074eb8;
 #line 2 "SRC/is-constructor.lm"
-unsigned long is_SB_constructor_CL_ArrowU64Type(LM_Type uuid_0000000000074eac);
+unsigned long is_SB_constructor_CL_ArrowU64Type(LM_Type uuid_0000000000074eae);
 #line 15 "SRC/is-constructor.lm"
-unsigned long is_SB_simple_SB_constructor_CL_ArrowU64Type(LM_Type uuid_0000000000074ebe);
+unsigned long is_SB_simple_SB_constructor_CL_ArrowU64Type(LM_Type uuid_0000000000074ec0);
 #line 26 "SRC/is-constructor.lm"
-unsigned long is_SB_tag_CL_ArrowU64Type(LM_Type uuid_0000000000074ec8);
-LM_SmartString uuid_0000000000074ee2;
+unsigned long is_SB_tag_CL_ArrowU64Type(LM_Type uuid_0000000000074eca);
 LM_SmartString uuid_0000000000074ef6;
 #line 2 "SRC/is-open.lm"
-unsigned long is_SB_open_CL_ArrowU64Type(LM_Type uuid_0000000000074ecf);
+unsigned long is_SB_open_CL_ArrowU64Type(LM_Type uuid_0000000000074ed1);
 #line 2 "SRC/is-parameterized.lm"
 unsigned long is_SB_parameterized_CL_ArrowU64Type(LM_Type uuid_0000000000074f01);
 LM_SmartString uuid_0000000000074f19;
@@ -4778,114 +4778,114 @@ char uuid_0000000000074da5;
 LM_ListType uuid_0000000000074da6;
 LM_Type uuid_0000000000074da7;
 char* uuid_0000000000074da8;
-LM_Type uuid_0000000000074da9;
-char uuid_0000000000074daa;
-LM_ListType uuid_0000000000074dab;
+LM_Type uuid_0000000000074dab;
 char uuid_0000000000074dac;
 LM_ListType uuid_0000000000074dad;
 char uuid_0000000000074dae;
 LM_ListType uuid_0000000000074daf;
-LM_Type uuid_0000000000074db0;
-LM_Type uuid_0000000000074db1;
-char* uuid_0000000000074db2;
-LM_AST uuid_0000000000074db3;
-char uuid_0000000000074db4;
+char uuid_0000000000074db0;
+LM_ListType uuid_0000000000074db1;
+LM_Type uuid_0000000000074db2;
+LM_Type uuid_0000000000074db3;
+char* uuid_0000000000074db4;
 LM_AST uuid_0000000000074db5;
-LM_AST uuid_0000000000074db6;
-char uuid_0000000000074db7;
-LM_Type uuid_0000000000074db8;
-LM_AST uuid_0000000000074db9;
-LM_AST uuid_0000000000074dba;
-char uuid_0000000000074dbb;
-char* uuid_0000000000074dbc;
-LM_Type uuid_0000000000074dbd;
-LM_AST uuid_0000000000074dbe;
-LM_AST uuid_0000000000074dbf;
-char uuid_0000000000074dc0;
+char uuid_0000000000074db6;
+LM_AST uuid_0000000000074db7;
+LM_AST uuid_0000000000074db8;
+char uuid_0000000000074db9;
+LM_Type uuid_0000000000074dba;
+LM_AST uuid_0000000000074dbb;
+LM_AST uuid_0000000000074dbc;
+char uuid_0000000000074dbd;
+char* uuid_0000000000074dbe;
+LM_Type uuid_0000000000074dbf;
+LM_AST uuid_0000000000074dc0;
 LM_AST uuid_0000000000074dc1;
 char uuid_0000000000074dc2;
 LM_AST uuid_0000000000074dc3;
 char uuid_0000000000074dc4;
-LM_Type uuid_0000000000074dc5;
-LM_AST uuid_0000000000074dc6;
-LM_AST uuid_0000000000074dc7;
-char uuid_0000000000074dc8;
-char* uuid_0000000000074dc9;
-LM_AST uuid_0000000000074dca;
-char uuid_0000000000074dcb;
-char* uuid_0000000000074dcc;
-LM_Type uuid_0000000000074dcd;
-LM_AST uuid_0000000000074dce;
-LM_AST uuid_0000000000074dcf;
-char uuid_0000000000074dd0;
+LM_AST uuid_0000000000074dc5;
+char uuid_0000000000074dc6;
+LM_Type uuid_0000000000074dc7;
+LM_AST uuid_0000000000074dc8;
+LM_AST uuid_0000000000074dc9;
+char uuid_0000000000074dca;
+char* uuid_0000000000074dcb;
+LM_AST uuid_0000000000074dcc;
+char uuid_0000000000074dcd;
+char* uuid_0000000000074dce;
+LM_Type uuid_0000000000074dcf;
+LM_AST uuid_0000000000074dd0;
 LM_AST uuid_0000000000074dd1;
 char uuid_0000000000074dd2;
 LM_AST uuid_0000000000074dd3;
-LM_AST uuid_0000000000074dd4;
-char uuid_0000000000074dd5;
+char uuid_0000000000074dd4;
+LM_AST uuid_0000000000074dd5;
 LM_AST uuid_0000000000074dd6;
-LM_AST uuid_0000000000074dd7;
-LM_IsUsed uuid_0000000000074dd8;
-LM_IsUsed uuid_0000000000074dd9;
-LM_Type uuid_0000000000074dda;
-LM_AST uuid_0000000000074ddb;
-LM_AST uuid_0000000000074ddc;
-char uuid_0000000000074ddd;
-char* uuid_0000000000074dde;
-LM_AST uuid_0000000000074ddf;
-LM_AST uuid_0000000000074de0;
-char uuid_0000000000074de1;
+char uuid_0000000000074dd7;
+LM_AST uuid_0000000000074dd8;
+LM_AST uuid_0000000000074dd9;
+LM_IsUsed uuid_0000000000074dda;
+LM_IsUsed uuid_0000000000074ddb;
+LM_Type uuid_0000000000074ddc;
+LM_AST uuid_0000000000074ddd;
+LM_AST uuid_0000000000074dde;
+char uuid_0000000000074ddf;
+char* uuid_0000000000074de0;
+LM_AST uuid_0000000000074de1;
 LM_AST uuid_0000000000074de2;
-LM_AST uuid_0000000000074de3;
+char uuid_0000000000074de3;
 LM_AST uuid_0000000000074de4;
 LM_AST uuid_0000000000074de5;
-char uuid_0000000000074de6;
+LM_AST uuid_0000000000074de6;
 LM_AST uuid_0000000000074de7;
-LM_AST uuid_0000000000074de8;
-LM_Type uuid_0000000000074de9;
-char* uuid_0000000000074dea;
-LM_TupleTypeType uuid_0000000000074deb;
-LM_Type uuid_0000000000074dec;
+char uuid_0000000000074de8;
+LM_AST uuid_0000000000074de9;
+LM_AST uuid_0000000000074dea;
+LM_Type uuid_0000000000074deb;
+char* uuid_0000000000074dec;
 LM_TupleTypeType uuid_0000000000074ded;
 LM_Type uuid_0000000000074dee;
-LM_AST uuid_0000000000074def;
-LM_AST uuid_0000000000074df0;
-char uuid_0000000000074df1;
-char* uuid_0000000000074df2;
-unsigned long uuid_0000000000074df3;
-unsigned long uuid_0000000000074df4;
-LM_Type uuid_0000000000074df5;
-LM_AST uuid_0000000000074df6;
-char uuid_0000000000074df7;
-LM_Type uuid_0000000000074df8;
-LM_AST uuid_0000000000074df9;
-LM_AST uuid_0000000000074dfa;
+LM_TupleTypeType uuid_0000000000074def;
+LM_Type uuid_0000000000074df0;
+LM_AST uuid_0000000000074df1;
+LM_AST uuid_0000000000074df2;
+char uuid_0000000000074df3;
+char* uuid_0000000000074df4;
+unsigned long uuid_0000000000074df5;
+unsigned long uuid_0000000000074df6;
+LM_Type uuid_0000000000074df7;
+LM_AST uuid_0000000000074df8;
+char uuid_0000000000074df9;
+LM_Type uuid_0000000000074dfa;
 LM_AST uuid_0000000000074dfb;
 LM_AST uuid_0000000000074dfc;
-char uuid_0000000000074dfd;
+LM_AST uuid_0000000000074dfd;
 LM_AST uuid_0000000000074dfe;
 char uuid_0000000000074dff;
 LM_AST uuid_0000000000074e00;
 char uuid_0000000000074e01;
-LM_Type uuid_0000000000074e02;
-LM_AST uuid_0000000000074e03;
-LM_AST uuid_0000000000074e04;
-char uuid_0000000000074e05;
-char* uuid_0000000000074e06;
-LM_Type uuid_0000000000074e07;
-LM_Type uuid_0000000000074e08;
-LM_AST uuid_0000000000074e09;
-char uuid_0000000000074e0a;
-LM_Token uuid_0000000000074e0b;
-char* uuid_0000000000074e0c;
-LM_Type uuid_0000000000074e0d;
-LM_AST uuid_0000000000074e0e;
-char uuid_0000000000074e0f;
-char* uuid_0000000000074e10;
-LM_Type uuid_0000000000074e11;
-LM_Type uuid_0000000000074e12;
-LM_AST uuid_0000000000074e13;
-char uuid_0000000000074e14;
+LM_AST uuid_0000000000074e02;
+char uuid_0000000000074e03;
+LM_Type uuid_0000000000074e04;
+LM_AST uuid_0000000000074e05;
+LM_AST uuid_0000000000074e06;
+char uuid_0000000000074e07;
+char* uuid_0000000000074e08;
+LM_Type uuid_0000000000074e09;
+LM_Type uuid_0000000000074e0a;
+LM_AST uuid_0000000000074e0b;
+char uuid_0000000000074e0c;
+LM_Token uuid_0000000000074e0d;
+char* uuid_0000000000074e0e;
+LM_Type uuid_0000000000074e0f;
+LM_AST uuid_0000000000074e10;
+char uuid_0000000000074e11;
+char* uuid_0000000000074e12;
+LM_Type uuid_0000000000074e13;
+LM_Type uuid_0000000000074e14;
+LM_AST uuid_0000000000074e15;
+char uuid_0000000000074e16;
 return ({({({({uuid_0000000000074d26=uuid_0000000000074d22;({});})
 ;
 (({({uuid_0000000000074d27=uuid_0000000000074d26;({});})
@@ -5394,102 +5394,97 @@ return ({({({({uuid_0000000000074d26=uuid_0000000000074d22;({});})
 (uuid_0000000000074da3==(1));
 })?(({({uuid_0000000000074da8=(((LM_Type)(uuid_0000000000074da0)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsStringString(uuid_0000000000074da8,"Array"));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074da8,uuid_0000000000074da9));
 })?({uuid_0000000000074da1=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074da1==(1));
-})?({}):(({({({({uuid_0000000000074da9=uuid_0000000000074d9f;({});})
-;
-({uuid_0000000000074daa=(0);({});})
-;
-});
-(((uuid_0000000000074da9.field_0)==(1))?(({({({({uuid_0000000000074dab=(*(((LM_Type)(uuid_0000000000074da9)).field_1001));({});})
+})?({}):(({({({({uuid_0000000000074dab=uuid_0000000000074d9f;({});})
 ;
 ({uuid_0000000000074dac=(0);({});})
 ;
 });
-(((uuid_0000000000074dab.field_0)==(0))?(({({({({uuid_0000000000074dad=(*(((LM_ListType)(uuid_0000000000074dab)).field_1));({});})
+(((uuid_0000000000074dab.field_0)==(1))?(({({({({uuid_0000000000074dad=(*(((LM_Type)(uuid_0000000000074dab)).field_1001));({});})
 ;
 ({uuid_0000000000074dae=(0);({});})
 ;
 });
-(((uuid_0000000000074dad.field_0)==(0))?(({({uuid_0000000000074daf=(*(((LM_ListType)(uuid_0000000000074dad)).field_1));({});})
+(((uuid_0000000000074dad.field_0)==(0))?(({({({({uuid_0000000000074daf=(*(((LM_ListType)(uuid_0000000000074dad)).field_1));({});})
 ;
-((uuid_0000000000074daf.field_0)==(1));
-})?(({({uuid_0000000000074db0=(((LM_ListType)(uuid_0000000000074dad)).field_2);({});})
+({uuid_0000000000074db0=(0);({});})
+;
+});
+(((uuid_0000000000074daf.field_0)==(0))?(({({uuid_0000000000074db1=(*(((LM_ListType)(uuid_0000000000074daf)).field_1));({});})
+;
+((uuid_0000000000074db1.field_0)==(1));
+})?(({({uuid_0000000000074db2=(((LM_ListType)(uuid_0000000000074daf)).field_2);({});})
 ;
 1;
+})?({uuid_0000000000074db0=(1);({});}):({})):({})):({}));
+});
+(uuid_0000000000074db0==(1));
+})?(({({uuid_0000000000074db3=(((LM_ListType)(uuid_0000000000074dad)).field_2);({});})
+;
+((uuid_0000000000074db3.field_0)==(3));
 })?({uuid_0000000000074dae=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074dae==(1));
-})?(({({uuid_0000000000074db1=(((LM_ListType)(uuid_0000000000074dab)).field_2);({});})
+})?(({({uuid_0000000000074db4=(((LM_Type)(uuid_0000000000074dab)).field_1002);({});})
 ;
-((uuid_0000000000074db1.field_0)==(3));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074db4,uuid_0000000000074da9));
 })?({uuid_0000000000074dac=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074dac==(1));
-})?(({({uuid_0000000000074db2=(((LM_Type)(uuid_0000000000074da9)).field_1002);({});})
-;
-(_EQ__EQ__CL_ArrowU64ConsStringString(uuid_0000000000074db2,"Array"));
-})?({uuid_0000000000074daa=(1);({});}):({})):({})):({}));
-});
-(uuid_0000000000074daa==(1));
 })?({({(maybe_SB_specialize_CL_ArrowNilConsASTConsTypeConsTypeString("open",(typeof_SB_var_SB_raw_CL_ArrowTypeConsStringConsTContextAST(uuid_0000000000074d22,uuid_0000000000074d21,"open")),uuid_0000000000074d9e,uuid_0000000000074d22));
 (maybe_SB_specialize_CL_ArrowNilConsASTConsTypeConsTypeString("push-deref",(typeof_SB_var_SB_raw_CL_ArrowTypeConsStringConsTContextAST(uuid_0000000000074d22,uuid_0000000000074d21,"push-deref")),uuid_0000000000074d9e,uuid_0000000000074d22));
 });
-({uuid_0000000000074d9e=(and_CL_ArrowTypeConsTypeType(uuid_0000000000074db0,(t1_CL_ArrowTypeString("StackVariable"))));({});});
+({uuid_0000000000074d9e=(and_CL_ArrowTypeConsTypeType(uuid_0000000000074db2,(t1_CL_ArrowTypeString("StackVariable"))));({});});
 }):(1?(do_SB_specialize_CL_ArrowNilConsASTConsTypeConsTypeString("open",(typeof_SB_var_SB_raw_CL_ArrowTypeConsStringConsTContextAST(uuid_0000000000074d22,uuid_0000000000074d21,"open")),uuid_0000000000074d9e,uuid_0000000000074d22)):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/infer-expr.lm Line: 141 Column: 11")))));
 });
 });
 (ascript_SB_normal_CL_ArrowNilConsTypeAST(uuid_0000000000074d22,uuid_0000000000074d9e));
-}):(({({({({uuid_0000000000074db3=uuid_0000000000074d26;({});})
+}):(({({({({uuid_0000000000074db5=uuid_0000000000074d26;({});})
 ;
-({uuid_0000000000074db4=(0);({});})
+({uuid_0000000000074db6=(0);({});})
 ;
 });
-(((uuid_0000000000074db3.field_0)==(8))?(({({uuid_0000000000074db5=(*(((LM_AST)(uuid_0000000000074db3)).field_8001));({});})
+(((uuid_0000000000074db5.field_0)==(8))?(({({uuid_0000000000074db7=(*(((LM_AST)(uuid_0000000000074db5)).field_8001));({});})
 ;
 1;
-})?(({({({({uuid_0000000000074db6=(*(((LM_AST)(uuid_0000000000074db3)).field_8002));({});})
+})?(({({({({uuid_0000000000074db8=(*(((LM_AST)(uuid_0000000000074db5)).field_8002));({});})
 ;
-({uuid_0000000000074db7=(0);({});})
+({uuid_0000000000074db9=(0);({});})
 ;
 });
-(((uuid_0000000000074db6.field_0)==(5))?(({({uuid_0000000000074db8=(((LM_AST)(uuid_0000000000074db6)).field_5001);({});})
+(((uuid_0000000000074db8.field_0)==(5))?(({({uuid_0000000000074dba=(((LM_AST)(uuid_0000000000074db8)).field_5001);({});})
 ;
 1;
-})?(({({uuid_0000000000074db9=(*(((LM_AST)(uuid_0000000000074db6)).field_5002));({});})
+})?(({({uuid_0000000000074dbb=(*(((LM_AST)(uuid_0000000000074db8)).field_5002));({});})
 ;
-((uuid_0000000000074db9.field_0)==(9));
-})?(({({({({uuid_0000000000074dba=(*(((LM_AST)(uuid_0000000000074db6)).field_5003));({});})
+((uuid_0000000000074dbb.field_0)==(9));
+})?(({({({({uuid_0000000000074dbc=(*(((LM_AST)(uuid_0000000000074db8)).field_5003));({});})
 ;
-({uuid_0000000000074dbb=(0);({});})
+({uuid_0000000000074dbd=(0);({});})
 ;
 });
-(((uuid_0000000000074dba.field_0)==(7))?(1?(({({uuid_0000000000074dbc=(((LM_AST)(uuid_0000000000074dba)).field_7002);({});})
+(((uuid_0000000000074dbc.field_0)==(7))?(1?(({({uuid_0000000000074dbe=(((LM_AST)(uuid_0000000000074dbc)).field_7002);({});})
 ;
 1;
-})?({uuid_0000000000074dbb=(1);({});}):({})):({})):({}));
+})?({uuid_0000000000074dbd=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000074dbb==(1));
-})?({uuid_0000000000074db7=(1);({});}):({})):({})):({})):({}));
+(uuid_0000000000074dbd==(1));
+})?({uuid_0000000000074db9=(1);({});}):({})):({})):({})):({}));
 });
-(uuid_0000000000074db7==(1));
-})?({uuid_0000000000074db4=(1);({});}):({})):({})):({}));
+(uuid_0000000000074db9==(1));
+})?({uuid_0000000000074db6=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000074db4==(1));
-})?({({({({({({({({({({uuid_0000000000074dbd=(typeof_SB_var_SB_raw_CL_ArrowTypeConsStringConsTContextAST(uuid_0000000000074d22,uuid_0000000000074d21,uuid_0000000000074dbc));({});})
+(uuid_0000000000074db6==(1));
+})?({({({({({({({({({({uuid_0000000000074dbf=(typeof_SB_var_SB_raw_CL_ArrowTypeConsStringConsTContextAST(uuid_0000000000074d22,uuid_0000000000074d21,uuid_0000000000074dbe));({});})
 ;
-((non_SB_zero_CL_ArrowU64Type(uuid_0000000000074dbd))?(((!(is_SB_arrow_CL_ArrowU64Type(uuid_0000000000074dbd)))&&(!(is_SB_t_CL_ArrowU64ConsStringType(uuid_0000000000074dbd,"GlobalVariable"))))?(exit_SB_error_CL_ArrowNilConsASTString("Variable Name Is Already Bound In Outer Scope",uuid_0000000000074d22)):({})):({}));
+((non_SB_zero_CL_ArrowU64Type(uuid_0000000000074dbf))?(((!(is_SB_arrow_CL_ArrowU64Type(uuid_0000000000074dbf)))&&(!(is_SB_t_CL_ArrowU64ConsStringType(uuid_0000000000074dbf,"GlobalVariable"))))?(exit_SB_error_CL_ArrowNilConsASTString("Variable Name Is Already Bound In Outer Scope",uuid_0000000000074d22)):({})):({}));
 });
-({({uuid_0000000000074dbe=uuid_0000000000074db5;({});})
+({({uuid_0000000000074dc0=uuid_0000000000074db7;({});})
 ;
-(({({({({uuid_0000000000074dbf=uuid_0000000000074dbe;({});})
-;
-({uuid_0000000000074dc0=(0);({});})
-;
-});
-(((uuid_0000000000074dbf.field_0)==(8))?(({({({({uuid_0000000000074dc1=(*(((LM_AST)(uuid_0000000000074dbf)).field_8001));({});})
+(({({({({uuid_0000000000074dc1=uuid_0000000000074dc0;({});})
 ;
 ({uuid_0000000000074dc2=(0);({});})
 ;
@@ -5499,266 +5494,266 @@ return ({({({({uuid_0000000000074d26=uuid_0000000000074d22;({});})
 ({uuid_0000000000074dc4=(0);({});})
 ;
 });
-(((uuid_0000000000074dc3.field_0)==(4))?(({({uuid_0000000000074dc5=(((LM_AST)(uuid_0000000000074dc3)).field_4001);({});})
+(((uuid_0000000000074dc3.field_0)==(8))?(({({({({uuid_0000000000074dc5=(*(((LM_AST)(uuid_0000000000074dc3)).field_8001));({});})
+;
+({uuid_0000000000074dc6=(0);({});})
+;
+});
+(((uuid_0000000000074dc5.field_0)==(4))?(({({uuid_0000000000074dc7=(((LM_AST)(uuid_0000000000074dc5)).field_4001);({});})
 ;
 1;
-})?({uuid_0000000000074dc4=(1);({});}):({})):({}));
+})?({uuid_0000000000074dc6=(1);({});}):({})):({}));
+});
+(uuid_0000000000074dc6==(1));
+})?(({({uuid_0000000000074dc8=(*(((LM_AST)(uuid_0000000000074dc3)).field_8002));({});})
+;
+({({({({uuid_0000000000074dc9=uuid_0000000000074dc8;({});})
+;
+({uuid_0000000000074dca=(0);({});})
+;
+});
+(((uuid_0000000000074dc9.field_0)==(7))?(1?(({({uuid_0000000000074dcb=(((LM_AST)(uuid_0000000000074dc9)).field_7002);({});})
+;
+(_EQ__EQ__CL_ArrowU64ConsStringString(uuid_0000000000074dcb,"__uninitialized"));
+})?({uuid_0000000000074dca=(1);({});}):({})):({})):({}));
+});
+(uuid_0000000000074dca==(1));
+});
+})?({uuid_0000000000074dc4=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074dc4==(1));
-})?(({({uuid_0000000000074dc6=(*(((LM_AST)(uuid_0000000000074dc1)).field_8002));({});})
+})?(({({({({uuid_0000000000074dcc=(*(((LM_AST)(uuid_0000000000074dc1)).field_8002));({});})
 ;
-({({({({uuid_0000000000074dc7=uuid_0000000000074dc6;({});})
-;
-({uuid_0000000000074dc8=(0);({});})
+({uuid_0000000000074dcd=(0);({});})
 ;
 });
-(((uuid_0000000000074dc7.field_0)==(7))?(1?(({({uuid_0000000000074dc9=(((LM_AST)(uuid_0000000000074dc7)).field_7002);({});})
+(((uuid_0000000000074dcc.field_0)==(6))?(1?(({({uuid_0000000000074dce=(((LM_AST)(uuid_0000000000074dcc)).field_6002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsStringString(uuid_0000000000074dc9,"__uninitialized"));
-})?({uuid_0000000000074dc8=(1);({});}):({})):({})):({}));
+(_EQ__EQ__CL_ArrowU64ConsStringString(uuid_0000000000074dce,":"));
+})?({uuid_0000000000074dcd=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000074dc8==(1));
-});
+(uuid_0000000000074dcd==(1));
 })?({uuid_0000000000074dc2=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074dc2==(1));
-})?(({({({({uuid_0000000000074dca=(*(((LM_AST)(uuid_0000000000074dbf)).field_8002));({});})
-;
-({uuid_0000000000074dcb=(0);({});})
-;
-});
-(((uuid_0000000000074dca.field_0)==(6))?(1?(({({uuid_0000000000074dcc=(((LM_AST)(uuid_0000000000074dca)).field_6002);({});})
-;
-(_EQ__EQ__CL_ArrowU64ConsStringString(uuid_0000000000074dcc,":"));
-})?({uuid_0000000000074dcb=(1);({});}):({})):({})):({}));
-});
-(uuid_0000000000074dcb==(1));
-})?({uuid_0000000000074dc0=(1);({});}):({})):({})):({}));
-});
-(uuid_0000000000074dc0==(1));
-})?({(ascript_SB_normal_CL_ArrowNilConsTypeAST(uuid_0000000000074dc6,uuid_0000000000074dc5));
-(ascript_SB_normal_CL_ArrowNilConsTypeAST(uuid_0000000000074db5,uuid_0000000000074dc5));
-}):(1?(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074db5,({LM_IsScoped rvalue={0};rvalue;}),({LM_Type rvalue={3};rvalue;}),({LM_IsUsed rvalue={2};rvalue;}))):({(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/infer-expr.lm Line: 160 Column: 11"));LM_TContext rvalue;rvalue;})));
+})?({(ascript_SB_normal_CL_ArrowNilConsTypeAST(uuid_0000000000074dc8,uuid_0000000000074dc7));
+(ascript_SB_normal_CL_ArrowNilConsTypeAST(uuid_0000000000074db7,uuid_0000000000074dc7));
+}):(1?(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074db7,({LM_IsScoped rvalue={0};rvalue;}),({LM_Type rvalue={3};rvalue;}),({LM_IsUsed rvalue={2};rvalue;}))):({(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/infer-expr.lm Line: 160 Column: 11"));LM_TContext rvalue;rvalue;})));
 });
 });
-({uuid_0000000000074dcd=(typeof_CL_ArrowTypeAST(uuid_0000000000074db5));({});})
+({uuid_0000000000074dcf=(typeof_CL_ArrowTypeAST(uuid_0000000000074db7));({});})
 ;
 });
-((non_SB_zero_CL_ArrowU64Type(uuid_0000000000074dcd))?({}):(exit_SB_error_CL_ArrowNilConsASTString("Unable to infer type of expression",uuid_0000000000074db5)));
+((non_SB_zero_CL_ArrowU64Type(uuid_0000000000074dcf))?({}):(exit_SB_error_CL_ArrowNilConsASTString("Unable to infer type of expression",uuid_0000000000074db7)));
 });
-({uuid_0000000000074dcd=(maybe_SB_local_SB_variable_CL_ArrowTypeType((without_SB_constructor_CL_ArrowTypeType(uuid_0000000000074dcd))));({});});
+({uuid_0000000000074dcf=(maybe_SB_local_SB_variable_CL_ArrowTypeType((without_SB_constructor_CL_ArrowTypeType(uuid_0000000000074dcf))));({});});
 });
-({({uuid_0000000000074dce=uuid_0000000000074d22;({});})
+({({uuid_0000000000074dd0=uuid_0000000000074d22;({});})
 ;
-(({({({({uuid_0000000000074dcf=uuid_0000000000074dce;({});})
-;
-({uuid_0000000000074dd0=(0);({});})
-;
-});
-(((uuid_0000000000074dcf.field_0)==(8))?(1?(({({({({uuid_0000000000074dd1=(*(((LM_AST)(uuid_0000000000074dcf)).field_8002));({});})
+(({({({({uuid_0000000000074dd1=uuid_0000000000074dd0;({});})
 ;
 ({uuid_0000000000074dd2=(0);({});})
 ;
 });
-(((uuid_0000000000074dd1.field_0)==(5))?(1?(1?(({({uuid_0000000000074dd3=(*(((LM_AST)(uuid_0000000000074dd1)).field_5003));({});})
+(((uuid_0000000000074dd1.field_0)==(8))?(1?(({({({({uuid_0000000000074dd3=(*(((LM_AST)(uuid_0000000000074dd1)).field_8002));({});})
+;
+({uuid_0000000000074dd4=(0);({});})
+;
+});
+(((uuid_0000000000074dd3.field_0)==(5))?(1?(1?(({({uuid_0000000000074dd5=(*(((LM_AST)(uuid_0000000000074dd3)).field_5003));({});})
 ;
 1;
-})?({uuid_0000000000074dd2=(1);({});}):({})):({})):({})):({}));
+})?({uuid_0000000000074dd4=(1);({});}):({})):({})):({})):({}));
+});
+(uuid_0000000000074dd4==(1));
+})?({uuid_0000000000074dd2=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074dd2==(1));
-})?({uuid_0000000000074dd0=(1);({});}):({})):({})):({}));
-});
-(uuid_0000000000074dd0==(1));
-})?(ascript_SB_normal_CL_ArrowNilConsTypeAST(uuid_0000000000074dd3,uuid_0000000000074dcd)):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/infer-expr.lm Line: 175 Column: 11")));
+})?(ascript_SB_normal_CL_ArrowNilConsTypeAST(uuid_0000000000074dd5,uuid_0000000000074dcf)):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/infer-expr.lm Line: 175 Column: 11")));
 });
 });
-({uuid_0000000000074d21=({LM_TContext rvalue={.field_0=0,.field_1=({LM_AST rvalue={10};rvalue;}),.field_2=uuid_0000000000074dcd,.field_3=uuid_0000000000074dbc,.field_4=(close_CL_ArrowArray_QM_TContextTContext(uuid_0000000000074d21))};rvalue;});({});});
+({uuid_0000000000074d21=({LM_TContext rvalue={.field_0=0,.field_1=({LM_AST rvalue={10};rvalue;}),.field_2=uuid_0000000000074dcf,.field_3=uuid_0000000000074dbe,.field_4=(close_CL_ArrowArray_QM_TContextTContext(uuid_0000000000074d21))};rvalue;});({});});
 });
 (ascript_SB_normal_CL_ArrowNilConsTypeAST(uuid_0000000000074d22,(t1_CL_ArrowTypeString("Nil"))));
 });
-(maybe_SB_specialize_CL_ArrowNilConsASTConsTypeConsTypeString("del",(typeof_SB_var_SB_raw_CL_ArrowTypeConsStringConsTContextAST(uuid_0000000000074d22,uuid_0000000000074d21,"del")),uuid_0000000000074dcd,uuid_0000000000074d22));
-}):(({({({({uuid_0000000000074dd4=uuid_0000000000074d26;({});})
+(maybe_SB_specialize_CL_ArrowNilConsASTConsTypeConsTypeString("del",(typeof_SB_var_SB_raw_CL_ArrowTypeConsStringConsTContextAST(uuid_0000000000074d22,uuid_0000000000074d21,"del")),uuid_0000000000074dcf,uuid_0000000000074d22));
+}):(({({({({uuid_0000000000074dd6=uuid_0000000000074d26;({});})
 ;
-({uuid_0000000000074dd5=(0);({});})
+({uuid_0000000000074dd7=(0);({});})
 ;
 });
-(((uuid_0000000000074dd4.field_0)==(8))?(({({uuid_0000000000074dd6=(*(((LM_AST)(uuid_0000000000074dd4)).field_8001));({});})
+(((uuid_0000000000074dd6.field_0)==(8))?(({({uuid_0000000000074dd8=(*(((LM_AST)(uuid_0000000000074dd6)).field_8001));({});})
 ;
 1;
-})?(({({uuid_0000000000074dd7=(*(((LM_AST)(uuid_0000000000074dd4)).field_8002));({});})
+})?(({({uuid_0000000000074dd9=(*(((LM_AST)(uuid_0000000000074dd6)).field_8002));({});})
 ;
 1;
-})?({uuid_0000000000074dd5=(1);({});}):({})):({})):({}));
+})?({uuid_0000000000074dd7=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000074dd5==(1));
-})?({({({({({({({({({({uuid_0000000000074dd8=({LM_IsUsed rvalue={3};rvalue;});({});})
+(uuid_0000000000074dd7==(1));
+})?({({({({({({({({({({uuid_0000000000074dda=({LM_IsUsed rvalue={3};rvalue;});({});})
 ;
-((is_CL_ArrowU64ConsIsUsedIsUsed(uuid_0000000000074d25,({LM_IsUsed rvalue={0};rvalue;})))?({uuid_0000000000074dd8=({LM_IsUsed rvalue={0};rvalue;});({});}):({}));
+((is_CL_ArrowU64ConsIsUsedIsUsed(uuid_0000000000074d25,({LM_IsUsed rvalue={0};rvalue;})))?({uuid_0000000000074dda=({LM_IsUsed rvalue={0};rvalue;});({});}):({}));
 });
-({uuid_0000000000074dd9=({LM_IsUsed rvalue={4};rvalue;});({});})
-;
-});
-({uuid_0000000000074dda=({LM_Type rvalue={3};rvalue;});({});})
+({uuid_0000000000074ddb=({LM_IsUsed rvalue={4};rvalue;});({});})
 ;
 });
-({({uuid_0000000000074ddb=uuid_0000000000074dd7;({});})
-;
-(({({({({uuid_0000000000074ddc=uuid_0000000000074ddb;({});})
-;
-({uuid_0000000000074ddd=(0);({});})
+({uuid_0000000000074ddc=({LM_Type rvalue={3};rvalue;});({});})
 ;
 });
-(((uuid_0000000000074ddc.field_0)==(7))?(1?(({({uuid_0000000000074dde=(((LM_AST)(uuid_0000000000074ddc)).field_7002);({});})
+({({uuid_0000000000074ddd=uuid_0000000000074dd9;({});})
+;
+(({({({({uuid_0000000000074dde=uuid_0000000000074ddd;({});})
+;
+({uuid_0000000000074ddf=(0);({});})
+;
+});
+(((uuid_0000000000074dde.field_0)==(7))?(1?(({({uuid_0000000000074de0=(((LM_AST)(uuid_0000000000074dde)).field_7002);({});})
 ;
 1;
-})?({uuid_0000000000074ddd=(1);({});}):({})):({})):({}));
+})?({uuid_0000000000074ddf=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000074ddd==(1));
-})?({({({({({({({({({({({((_EQ__EQ__CL_ArrowU64ConsStringString(uuid_0000000000074dde,"list::cons"))?({({uuid_0000000000074ddf=uuid_0000000000074dd6;({});})
+(uuid_0000000000074ddf==(1));
+})?({({({({({({({({({({({((_EQ__EQ__CL_ArrowU64ConsStringString(uuid_0000000000074de0,"list::cons"))?({({uuid_0000000000074de1=uuid_0000000000074dd8;({});})
 ;
-(({({({({uuid_0000000000074de0=uuid_0000000000074ddf;({});})
+(({({({({uuid_0000000000074de2=uuid_0000000000074de1;({});})
 ;
-({uuid_0000000000074de1=(0);({});})
+({uuid_0000000000074de3=(0);({});})
 ;
 });
-(((uuid_0000000000074de0.field_0)==(8))?(({({uuid_0000000000074de2=(*(((LM_AST)(uuid_0000000000074de0)).field_8001));({});})
+(((uuid_0000000000074de2.field_0)==(8))?(({({uuid_0000000000074de4=(*(((LM_AST)(uuid_0000000000074de2)).field_8001));({});})
 ;
 1;
-})?(({({uuid_0000000000074de3=(*(((LM_AST)(uuid_0000000000074de0)).field_8002));({});})
+})?(({({uuid_0000000000074de5=(*(((LM_AST)(uuid_0000000000074de2)).field_8002));({});})
 ;
 1;
-})?({uuid_0000000000074de1=(1);({});}):({})):({})):({}));
+})?({uuid_0000000000074de3=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000074de1==(1));
-})?({(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074de3,({LM_IsScoped rvalue={0};rvalue;}),({LM_Type rvalue={3};rvalue;}),({LM_IsUsed rvalue={0};rvalue;})));
-(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074de2,({LM_IsScoped rvalue={0};rvalue;}),(t2_CL_ArrowTypeConsTypeString("List",(normalize_CL_ArrowTypeType((typeof_CL_ArrowTypeAST(uuid_0000000000074de3)))))),({LM_IsUsed rvalue={4};rvalue;})));
+(uuid_0000000000074de3==(1));
+})?({(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074de5,({LM_IsScoped rvalue={0};rvalue;}),({LM_Type rvalue={3};rvalue;}),({LM_IsUsed rvalue={0};rvalue;})));
+(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074de4,({LM_IsScoped rvalue={0};rvalue;}),(t2_CL_ArrowTypeConsTypeString("List",(normalize_CL_ArrowTypeType((typeof_CL_ArrowTypeAST(uuid_0000000000074de5)))))),({LM_IsUsed rvalue={4};rvalue;})));
 }):(1?({}):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/infer-expr.lm Line: 197 Column: 20"))));
 }):({}));
-((_EQ__EQ__CL_ArrowU64ConsStringString(uuid_0000000000074dde,"map::cons"))?({({uuid_0000000000074de4=uuid_0000000000074dd6;({});})
+((_EQ__EQ__CL_ArrowU64ConsStringString(uuid_0000000000074de0,"map::cons"))?({({uuid_0000000000074de6=uuid_0000000000074dd8;({});})
 ;
-(({({({({uuid_0000000000074de5=uuid_0000000000074de4;({});})
+(({({({({uuid_0000000000074de7=uuid_0000000000074de6;({});})
 ;
-({uuid_0000000000074de6=(0);({});})
+({uuid_0000000000074de8=(0);({});})
 ;
 });
-(((uuid_0000000000074de5.field_0)==(8))?(({({uuid_0000000000074de7=(*(((LM_AST)(uuid_0000000000074de5)).field_8001));({});})
+(((uuid_0000000000074de7.field_0)==(8))?(({({uuid_0000000000074de9=(*(((LM_AST)(uuid_0000000000074de7)).field_8001));({});})
 ;
 1;
-})?(({({uuid_0000000000074de8=(*(((LM_AST)(uuid_0000000000074de5)).field_8002));({});})
+})?(({({uuid_0000000000074dea=(*(((LM_AST)(uuid_0000000000074de7)).field_8002));({});})
 ;
 1;
-})?({uuid_0000000000074de6=(1);({});}):({})):({})):({}));
+})?({uuid_0000000000074de8=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000074de6==(1));
-})?({(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074de8,({LM_IsScoped rvalue={0};rvalue;}),({LM_Type rvalue={3};rvalue;}),({LM_IsUsed rvalue={0};rvalue;})));
-(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074de7,({LM_IsScoped rvalue={0};rvalue;}),(t3_CL_ArrowTypeConsTypeConsTypeString("HashtableEq",(p2_CL_ArrowTypeType((normalize_CL_ArrowTypeType((typeof_CL_ArrowTypeAST(uuid_0000000000074de8)))))),(p1_CL_ArrowTypeType((normalize_CL_ArrowTypeType((typeof_CL_ArrowTypeAST(uuid_0000000000074de8)))))))),({LM_IsUsed rvalue={4};rvalue;})));
+(uuid_0000000000074de8==(1));
+})?({(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074dea,({LM_IsScoped rvalue={0};rvalue;}),({LM_Type rvalue={3};rvalue;}),({LM_IsUsed rvalue={0};rvalue;})));
+(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074de9,({LM_IsScoped rvalue={0};rvalue;}),(t3_CL_ArrowTypeConsTypeConsTypeString("HashtableEq",(p2_CL_ArrowTypeType((normalize_CL_ArrowTypeType((typeof_CL_ArrowTypeAST(uuid_0000000000074dea)))))),(p1_CL_ArrowTypeType((normalize_CL_ArrowTypeType((typeof_CL_ArrowTypeAST(uuid_0000000000074dea)))))))),({LM_IsUsed rvalue={4};rvalue;})));
 }):(1?({}):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/infer-expr.lm Line: 207 Column: 20"))));
 }):({}));
 });
-((is_CL_ArrowU64ConsIsUsedIsUsed(uuid_0000000000074d25,({LM_IsUsed rvalue={3};rvalue;})))?({uuid_0000000000074dd9=({LM_IsUsed rvalue={3};rvalue;});({});}):({}));
+((is_CL_ArrowU64ConsIsUsedIsUsed(uuid_0000000000074d25,({LM_IsUsed rvalue={3};rvalue;})))?({uuid_0000000000074ddb=({LM_IsUsed rvalue={3};rvalue;});({});}):({}));
 });
-({uuid_0000000000074d21=(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074dd7,({LM_IsScoped rvalue={0};rvalue;}),({LM_Type rvalue={3};rvalue;}),uuid_0000000000074dd8));({});});
+({uuid_0000000000074d21=(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074dd9,({LM_IsScoped rvalue={0};rvalue;}),({LM_Type rvalue={3};rvalue;}),uuid_0000000000074dda));({});});
 });
-((is_SB_arrow_CL_ArrowU64Type((typeof_CL_ArrowTypeAST(uuid_0000000000074dd7))))?({uuid_0000000000074dd9=({LM_IsUsed rvalue={0};rvalue;});({});}):({}));
+((is_SB_arrow_CL_ArrowU64Type((typeof_CL_ArrowTypeAST(uuid_0000000000074dd9))))?({uuid_0000000000074ddb=({LM_IsUsed rvalue={0};rvalue;});({});}):({}));
 });
-({uuid_0000000000074de9=({LM_Type rvalue={3};rvalue;});({});})
+({uuid_0000000000074deb=({LM_Type rvalue={3};rvalue;});({});})
 ;
 });
-({uuid_0000000000074d21=(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074dd6,({LM_IsScoped rvalue={0};rvalue;}),({LM_Type rvalue={3};rvalue;}),uuid_0000000000074dd9));({});});
+({uuid_0000000000074d21=(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074dd8,({LM_IsScoped rvalue={0};rvalue;}),({LM_Type rvalue={3};rvalue;}),uuid_0000000000074ddb));({});});
 });
-({uuid_0000000000074dea=(find_SB_alias_CL_ArrowStringConsTypeString(uuid_0000000000074dde,(typeof_CL_ArrowTypeAST(uuid_0000000000074dd6))));({});})
+({uuid_0000000000074dec=(find_SB_alias_CL_ArrowStringConsTypeString(uuid_0000000000074de0,(typeof_CL_ArrowTypeAST(uuid_0000000000074dd8))));({});})
 ;
 });
-({uuid_0000000000074deb=(apply_SB_or_SB_cons_SB_and_SB_specialize_CL_ArrowTupleTypeTypeConsASTConsTypeConsTypeString(uuid_0000000000074dea,(typeof_SB_var_SB_raw_CL_ArrowTypeConsStringConsTContextAST(uuid_0000000000074d22,uuid_0000000000074d21,uuid_0000000000074dea)),(typeof_CL_ArrowTypeAST(uuid_0000000000074dd6)),uuid_0000000000074d22));({});})
+({uuid_0000000000074ded=(apply_SB_or_SB_cons_SB_and_SB_specialize_CL_ArrowTupleTypeTypeConsASTConsTypeConsTypeString(uuid_0000000000074dec,(typeof_SB_var_SB_raw_CL_ArrowTypeConsStringConsTContextAST(uuid_0000000000074d22,uuid_0000000000074d21,uuid_0000000000074dec)),(typeof_CL_ArrowTypeAST(uuid_0000000000074dd8)),uuid_0000000000074d22));({});})
 ;
 });
-({uuid_0000000000074dec=(uuid_0000000000074deb.field_2);({});})
+({uuid_0000000000074dee=(uuid_0000000000074ded.field_2);({});})
 ;
 });
-(ascript_SB_normal_CL_ArrowNilConsTypeAST(uuid_0000000000074dd7,uuid_0000000000074dec));
+(ascript_SB_normal_CL_ArrowNilConsTypeAST(uuid_0000000000074dd9,uuid_0000000000074dee));
 });
-({uuid_0000000000074dda=(uuid_0000000000074deb.field_1);({});});
-}):(1?({({({({({({((is_CL_ArrowU64ConsIsUsedIsUsed(uuid_0000000000074d25,({LM_IsUsed rvalue={3};rvalue;})))?({uuid_0000000000074dd9=({LM_IsUsed rvalue={3};rvalue;});({});}):({}));
-({uuid_0000000000074d21=(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074dd7,({LM_IsScoped rvalue={0};rvalue;}),({LM_Type rvalue={3};rvalue;}),uuid_0000000000074dd8));({});});
+({uuid_0000000000074ddc=(uuid_0000000000074ded.field_1);({});});
+}):(1?({({({({({({((is_CL_ArrowU64ConsIsUsedIsUsed(uuid_0000000000074d25,({LM_IsUsed rvalue={3};rvalue;})))?({uuid_0000000000074ddb=({LM_IsUsed rvalue={3};rvalue;});({});}):({}));
+({uuid_0000000000074d21=(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074dd9,({LM_IsScoped rvalue={0};rvalue;}),({LM_Type rvalue={3};rvalue;}),uuid_0000000000074dda));({});});
 });
-((is_SB_arrow_CL_ArrowU64Type((typeof_CL_ArrowTypeAST(uuid_0000000000074dd7))))?({uuid_0000000000074dd9=({LM_IsUsed rvalue={0};rvalue;});({});}):({}));
+((is_SB_arrow_CL_ArrowU64Type((typeof_CL_ArrowTypeAST(uuid_0000000000074dd9))))?({uuid_0000000000074ddb=({LM_IsUsed rvalue={0};rvalue;});({});}):({}));
 });
-({uuid_0000000000074d21=(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074dd6,({LM_IsScoped rvalue={0};rvalue;}),({LM_Type rvalue={3};rvalue;}),uuid_0000000000074dd9));({});});
+({uuid_0000000000074d21=(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074dd8,({LM_IsScoped rvalue={0};rvalue;}),({LM_Type rvalue={3};rvalue;}),uuid_0000000000074ddb));({});});
 });
-({uuid_0000000000074ded=(apply_SB_cons_CL_ArrowTupleTypeTypeConsASTConsTypeConsTypeString((var_SB_name_SB_if_SB_var_CL_ArrowStringAST(uuid_0000000000074dd7)),(typeof_CL_ArrowTypeAST(uuid_0000000000074dd7)),(typeof_CL_ArrowTypeAST(uuid_0000000000074dd6)),uuid_0000000000074d22));({});})
+({uuid_0000000000074def=(apply_SB_cons_CL_ArrowTupleTypeTypeConsASTConsTypeConsTypeString((var_SB_name_SB_if_SB_var_CL_ArrowStringAST(uuid_0000000000074dd9)),(typeof_CL_ArrowTypeAST(uuid_0000000000074dd9)),(typeof_CL_ArrowTypeAST(uuid_0000000000074dd8)),uuid_0000000000074d22));({});})
 ;
 });
-((head_SB_string_CL_ArrowU8String((var_SB_name_SB_if_SB_var_CL_ArrowStringAST(uuid_0000000000074dd7))))?({uuid_0000000000074ded=(apply_SB_or_SB_cons_SB_and_SB_specialize_CL_ArrowTupleTypeTypeConsASTConsTypeConsTypeString((var_SB_name_SB_if_SB_var_CL_ArrowStringAST(uuid_0000000000074dd7)),(typeof_CL_ArrowTypeAST(uuid_0000000000074dd7)),(typeof_CL_ArrowTypeAST(uuid_0000000000074dd6)),uuid_0000000000074d22));({});}):({}));
+((head_SB_string_CL_ArrowU8String((var_SB_name_SB_if_SB_var_CL_ArrowStringAST(uuid_0000000000074dd9))))?({uuid_0000000000074def=(apply_SB_or_SB_cons_SB_and_SB_specialize_CL_ArrowTupleTypeTypeConsASTConsTypeConsTypeString((var_SB_name_SB_if_SB_var_CL_ArrowStringAST(uuid_0000000000074dd9)),(typeof_CL_ArrowTypeAST(uuid_0000000000074dd9)),(typeof_CL_ArrowTypeAST(uuid_0000000000074dd8)),uuid_0000000000074d22));({});}):({}));
 });
-({uuid_0000000000074dda=(uuid_0000000000074ded.field_1);({});});
+({uuid_0000000000074ddc=(uuid_0000000000074def.field_1);({});});
 }):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/infer-expr.lm Line: 193 Column: 11"))));
 });
 });
-((is_CL_ArrowU64ConsIsUsedIsUsed(uuid_0000000000074dd8,({LM_IsUsed rvalue={3};rvalue;})))?({uuid_0000000000074dda=(cons_SB_tail_SB_or_SB_self_CL_ArrowTypeType(uuid_0000000000074dda));({});}):({}));
+((is_CL_ArrowU64ConsIsUsedIsUsed(uuid_0000000000074dda,({LM_IsUsed rvalue={3};rvalue;})))?({uuid_0000000000074ddc=(cons_SB_tail_SB_or_SB_self_CL_ArrowTypeType(uuid_0000000000074ddc));({});}):({}));
 });
-(ascript_SB_normal_CL_ArrowNilConsTypeAST(uuid_0000000000074d22,uuid_0000000000074dda));
+(ascript_SB_normal_CL_ArrowNilConsTypeAST(uuid_0000000000074d22,uuid_0000000000074ddc));
 });
-((_EQ__EQ__CL_ArrowU64ConsStringString((var_SB_name_SB_if_SB_var_CL_ArrowStringAST(uuid_0000000000074dd7)),"Rc"))?(maybe_SB_specialize_CL_ArrowNilConsASTConsTypeConsTypeString("inc",(typeof_SB_var_SB_raw_CL_ArrowTypeConsStringConsTContextAST(uuid_0000000000074d22,uuid_0000000000074d21,"inc")),(t2_CL_ArrowTypeConsTypeString("Rc",(p2_CL_ArrowTypeType((slot_CL_ArrowTypeConsStringType((p2_CL_ArrowTypeType((slot_CL_ArrowTypeConsStringType((p1_CL_ArrowTypeType((typeof_CL_ArrowTypeAST(uuid_0000000000074dd6)))),"Array")))),"Tuple")))))),uuid_0000000000074d22)):({}));
+((_EQ__EQ__CL_ArrowU64ConsStringString((var_SB_name_SB_if_SB_var_CL_ArrowStringAST(uuid_0000000000074dd9)),"Rc"))?(maybe_SB_specialize_CL_ArrowNilConsASTConsTypeConsTypeString("inc",(typeof_SB_var_SB_raw_CL_ArrowTypeConsStringConsTContextAST(uuid_0000000000074d22,uuid_0000000000074d21,"inc")),(t2_CL_ArrowTypeConsTypeString("Rc",(p2_CL_ArrowTypeType((slot_CL_ArrowTypeConsStringType((p2_CL_ArrowTypeType((slot_CL_ArrowTypeConsStringType((p1_CL_ArrowTypeType((typeof_CL_ArrowTypeAST(uuid_0000000000074dd8)))),"Array")))),"Tuple")))))),uuid_0000000000074d22)):({}));
 });
-({uuid_0000000000074dee=(typeof_CL_ArrowTypeAST(uuid_0000000000074dd7));({});})
+({uuid_0000000000074df0=(typeof_CL_ArrowTypeAST(uuid_0000000000074dd9));({});})
 ;
 });
-((is_SB_arrow_CL_ArrowU64Type(uuid_0000000000074dee))?({({uuid_0000000000074def=uuid_0000000000074dd7;({});})
+((is_SB_arrow_CL_ArrowU64Type(uuid_0000000000074df0))?({({uuid_0000000000074df1=uuid_0000000000074dd9;({});})
 ;
-(({({({({uuid_0000000000074df0=uuid_0000000000074def;({});})
+(({({({({uuid_0000000000074df2=uuid_0000000000074df1;({});})
 ;
-({uuid_0000000000074df1=(0);({});})
+({uuid_0000000000074df3=(0);({});})
 ;
 });
-(((uuid_0000000000074df0.field_0)==(6))?(1?(({({uuid_0000000000074df2=(((LM_AST)(uuid_0000000000074df0)).field_6002);({});})
+(((uuid_0000000000074df2.field_0)==(6))?(1?(({({uuid_0000000000074df4=(((LM_AST)(uuid_0000000000074df2)).field_6002);({});})
 ;
 1;
-})?({uuid_0000000000074df1=(1);({});}):({})):({})):({}));
+})?({uuid_0000000000074df3=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000074df1==(1));
-})?({({({({({({({uuid_0000000000074df3=(sizeof_SB_aligned_CL_ArrowU64Type((typeof_CL_ArrowTypeAST(uuid_0000000000074dd6))));({});})
+(uuid_0000000000074df3==(1));
+})?({({({({({({({uuid_0000000000074df5=(sizeof_SB_aligned_CL_ArrowU64Type((typeof_CL_ArrowTypeAST(uuid_0000000000074dd8))));({});})
 ;
-({uuid_0000000000074df4=(sizeof_SB_aligned_CL_ArrowU64Type(uuid_0000000000074dda));({});})
-;
-});
-({uuid_0000000000074df5=(t2_CL_ArrowTypeConsTypeString("Constructor",(t1_CL_ArrowTypeString((var_SB_name_SB_if_SB_var_CL_ArrowStringAST(uuid_0000000000074dd7))))));({});})
+({uuid_0000000000074df6=(sizeof_SB_aligned_CL_ArrowU64Type(uuid_0000000000074ddc));({});})
 ;
 });
-({uuid_0000000000074df5=(and_CL_ArrowTypeConsTypeType(uuid_0000000000074df5,(t2_CL_ArrowTypeConsTypeString("CaseNumber",(t1_CL_ArrowTypeString((to_SB_string_CL_ArrowStringU64((index_SB_of_SB_tag_CL_ArrowU64String(uuid_0000000000074df2))))))))));({});});
+({uuid_0000000000074df7=(t2_CL_ArrowTypeConsTypeString("Constructor",(t1_CL_ArrowTypeString((var_SB_name_SB_if_SB_var_CL_ArrowStringAST(uuid_0000000000074dd9))))));({});})
+;
 });
-({uuid_0000000000074df5=(and_CL_ArrowTypeConsTypeType(uuid_0000000000074df5,(t2_CL_ArrowTypeConsTypeString("Sized",(t1_CL_ArrowTypeString((to_SB_string_CL_ArrowStringU64(uuid_0000000000074df4))))))));({});});
+({uuid_0000000000074df7=(and_CL_ArrowTypeConsTypeType(uuid_0000000000074df7,(t2_CL_ArrowTypeConsTypeString("CaseNumber",(t1_CL_ArrowTypeString((to_SB_string_CL_ArrowStringU64((index_SB_of_SB_tag_CL_ArrowU64String(uuid_0000000000074df4))))))))));({});});
 });
-({uuid_0000000000074df5=(and_CL_ArrowTypeConsTypeType(uuid_0000000000074df5,(t2_CL_ArrowTypeConsTypeString("FieldsSized",(t1_CL_ArrowTypeString((to_SB_string_CL_ArrowStringU64(uuid_0000000000074df3))))))));({});});
+({uuid_0000000000074df7=(and_CL_ArrowTypeConsTypeType(uuid_0000000000074df7,(t2_CL_ArrowTypeConsTypeString("Sized",(t1_CL_ArrowTypeString((to_SB_string_CL_ArrowStringU64(uuid_0000000000074df6))))))));({});});
 });
-(maybe_SB_specialize_CL_ArrowNilConsASTConsTypeConsTypeString("push",(typeof_SB_var_SB_raw_CL_ArrowTypeConsStringConsTContextAST(uuid_0000000000074d22,uuid_0000000000074d21,"push")),uuid_0000000000074df5,uuid_0000000000074d22));
+({uuid_0000000000074df7=(and_CL_ArrowTypeConsTypeType(uuid_0000000000074df7,(t2_CL_ArrowTypeConsTypeString("FieldsSized",(t1_CL_ArrowTypeString((to_SB_string_CL_ArrowStringU64(uuid_0000000000074df5))))))));({});});
+});
+(maybe_SB_specialize_CL_ArrowNilConsASTConsTypeConsTypeString("push",(typeof_SB_var_SB_raw_CL_ArrowTypeConsStringConsTContextAST(uuid_0000000000074d22,uuid_0000000000074d21,"push")),uuid_0000000000074df7,uuid_0000000000074d22));
 }):(1?({}):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/infer-expr.lm Line: 267 Column: 14"))));
 }):({}));
-}):(({({({({uuid_0000000000074df6=uuid_0000000000074d26;({});})
+}):(({({({({uuid_0000000000074df8=uuid_0000000000074d26;({});})
 ;
-({uuid_0000000000074df7=(0);({});})
-;
-});
-(((uuid_0000000000074df6.field_0)==(5))?(({({uuid_0000000000074df8=(((LM_AST)(uuid_0000000000074df6)).field_5001);({});})
-;
-1;
-})?(({({uuid_0000000000074df9=(*(((LM_AST)(uuid_0000000000074df6)).field_5002));({});})
-;
-1;
-})?(({({uuid_0000000000074dfa=(*(((LM_AST)(uuid_0000000000074df6)).field_5003));({});})
-;
-1;
-})?({uuid_0000000000074df7=(1);({});}):({})):({})):({})):({}));
-});
-(uuid_0000000000074df7==(1));
-})?({({({({({({uuid_0000000000074d21=(infer_SB_ctx_CL_ArrowTContextConsASTTContext(uuid_0000000000074d21,uuid_0000000000074dfa));({});});
-((is_SB_t_CL_ArrowU64ConsStringType(uuid_0000000000074df8,"Blob"))?({({uuid_0000000000074dfb=uuid_0000000000074df9;({});})
-;
-(({({({({uuid_0000000000074dfc=uuid_0000000000074dfb;({});})
-;
-({uuid_0000000000074dfd=(0);({});})
+({uuid_0000000000074df9=(0);({});})
 ;
 });
-(((uuid_0000000000074dfc.field_0)==(8))?(({({({({uuid_0000000000074dfe=(*(((LM_AST)(uuid_0000000000074dfc)).field_8001));({});})
+(((uuid_0000000000074df8.field_0)==(5))?(({({uuid_0000000000074dfa=(((LM_AST)(uuid_0000000000074df8)).field_5001);({});})
+;
+1;
+})?(({({uuid_0000000000074dfb=(*(((LM_AST)(uuid_0000000000074df8)).field_5002));({});})
+;
+1;
+})?(({({uuid_0000000000074dfc=(*(((LM_AST)(uuid_0000000000074df8)).field_5003));({});})
+;
+1;
+})?({uuid_0000000000074df9=(1);({});}):({})):({})):({})):({}));
+});
+(uuid_0000000000074df9==(1));
+})?({({({({({({uuid_0000000000074d21=(infer_SB_ctx_CL_ArrowTContextConsASTTContext(uuid_0000000000074d21,uuid_0000000000074dfc));({});});
+((is_SB_t_CL_ArrowU64ConsStringType(uuid_0000000000074dfa,"Blob"))?({({uuid_0000000000074dfd=uuid_0000000000074dfb;({});})
+;
+(({({({({uuid_0000000000074dfe=uuid_0000000000074dfd;({});})
 ;
 ({uuid_0000000000074dff=(0);({});})
 ;
@@ -5768,92 +5763,97 @@ return ({({({({uuid_0000000000074d26=uuid_0000000000074d22;({});})
 ({uuid_0000000000074e01=(0);({});})
 ;
 });
-(((uuid_0000000000074e00.field_0)==(4))?(({({uuid_0000000000074e02=(((LM_AST)(uuid_0000000000074e00)).field_4001);({});})
+(((uuid_0000000000074e00.field_0)==(8))?(({({({({uuid_0000000000074e02=(*(((LM_AST)(uuid_0000000000074e00)).field_8001));({});})
+;
+({uuid_0000000000074e03=(0);({});})
+;
+});
+(((uuid_0000000000074e02.field_0)==(4))?(({({uuid_0000000000074e04=(((LM_AST)(uuid_0000000000074e02)).field_4001);({});})
 ;
 1;
-})?({uuid_0000000000074e01=(1);({});}):({})):({}));
+})?({uuid_0000000000074e03=(1);({});}):({})):({}));
+});
+(uuid_0000000000074e03==(1));
+})?(({({uuid_0000000000074e05=(*(((LM_AST)(uuid_0000000000074e00)).field_8002));({});})
+;
+1;
+})?({uuid_0000000000074e01=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074e01==(1));
-})?(({({uuid_0000000000074e03=(*(((LM_AST)(uuid_0000000000074dfe)).field_8002));({});})
+})?(({({({({uuid_0000000000074e06=(*(((LM_AST)(uuid_0000000000074dfe)).field_8002));({});})
 ;
-1;
+({uuid_0000000000074e07=(0);({});})
+;
+});
+(((uuid_0000000000074e06.field_0)==(6))?(1?(({({uuid_0000000000074e08=(((LM_AST)(uuid_0000000000074e06)).field_6002);({});})
+;
+(_EQ__EQ__CL_ArrowU64ConsStringString(uuid_0000000000074e08,":"));
+})?({uuid_0000000000074e07=(1);({});}):({})):({})):({}));
+});
+(uuid_0000000000074e07==(1));
 })?({uuid_0000000000074dff=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074dff==(1));
-})?(({({({({uuid_0000000000074e04=(*(((LM_AST)(uuid_0000000000074dfc)).field_8002));({});})
-;
-({uuid_0000000000074e05=(0);({});})
-;
-});
-(((uuid_0000000000074e04.field_0)==(6))?(1?(({({uuid_0000000000074e06=(((LM_AST)(uuid_0000000000074e04)).field_6002);({});})
-;
-(_EQ__EQ__CL_ArrowU64ConsStringString(uuid_0000000000074e06,":"));
-})?({uuid_0000000000074e05=(1);({});}):({})):({})):({}));
-});
-(uuid_0000000000074e05==(1));
-})?({uuid_0000000000074dfd=(1);({});}):({})):({})):({}));
-});
-(uuid_0000000000074dfd==(1));
-})?({(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074e03,({LM_IsScoped rvalue={0};rvalue;}),({LM_Type rvalue={3};rvalue;}),({LM_IsUsed rvalue={2};rvalue;})));
-(ascript_SB_normal_CL_ArrowNilConsTypeAST(uuid_0000000000074df9,uuid_0000000000074e02));
+})?({(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074e05,({LM_IsScoped rvalue={0};rvalue;}),({LM_Type rvalue={3};rvalue;}),({LM_IsUsed rvalue={2};rvalue;})));
+(ascript_SB_normal_CL_ArrowNilConsTypeAST(uuid_0000000000074dfb,uuid_0000000000074e04));
 }):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/infer-expr.lm Line: 285 Column: 14")));
-}):(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074df9,({LM_IsScoped rvalue={0};rvalue;}),({LM_Type rvalue={3};rvalue;}),({LM_IsUsed rvalue={2};rvalue;}))));
+}):(infer_SB_expr_CL_ArrowTContextConsIsUsedConsTypeConsIsScopedConsASTTContext(uuid_0000000000074d21,uuid_0000000000074dfb,({LM_IsScoped rvalue={0};rvalue;}),({LM_Type rvalue={3};rvalue;}),({LM_IsUsed rvalue={2};rvalue;}))));
 });
-({uuid_0000000000074e07=(typeof_SB_lhs_CL_ArrowTypeAST(uuid_0000000000074dfa));({});})
+({uuid_0000000000074e09=(typeof_SB_lhs_CL_ArrowTypeAST(uuid_0000000000074dfc));({});})
 ;
 });
-({uuid_0000000000074e08=(typeof_CL_ArrowTypeAST(uuid_0000000000074df9));({});})
+({uuid_0000000000074e0a=(typeof_CL_ArrowTypeAST(uuid_0000000000074dfb));({});})
 ;
 });
-(ascript_SB_normal_CL_ArrowNilConsTypeAST(uuid_0000000000074d22,(enrich_CL_ArrowTypeConsTypeType((t3_CL_ArrowTypeConsTypeConsTypeString("Arrow",uuid_0000000000074e07,uuid_0000000000074e08)),uuid_0000000000074df8))));
+(ascript_SB_normal_CL_ArrowNilConsTypeAST(uuid_0000000000074d22,(enrich_CL_ArrowTypeConsTypeType((t3_CL_ArrowTypeConsTypeConsTypeString("Arrow",uuid_0000000000074e09,uuid_0000000000074e0a)),uuid_0000000000074dfa))));
 });
-((is_SB_t_CL_ArrowU64ConsStringType(uuid_0000000000074df8,"Blob"))?({}):(maybe_SB_specialize_CL_ArrowNilConsASTConsTypeConsTypeString("cdecl::return",(typeof_SB_var_SB_raw_CL_ArrowTypeConsStringConsTContextAST(uuid_0000000000074d22,uuid_0000000000074d21,"cdecl::return")),uuid_0000000000074e08,uuid_0000000000074d22)));
-}):(({({({({uuid_0000000000074e09=uuid_0000000000074d26;({});})
+((is_SB_t_CL_ArrowU64ConsStringType(uuid_0000000000074dfa,"Blob"))?({}):(maybe_SB_specialize_CL_ArrowNilConsASTConsTypeConsTypeString("cdecl::return",(typeof_SB_var_SB_raw_CL_ArrowTypeConsStringConsTContextAST(uuid_0000000000074d22,uuid_0000000000074d21,"cdecl::return")),uuid_0000000000074e0a,uuid_0000000000074d22)));
+}):(({({({({uuid_0000000000074e0b=uuid_0000000000074d26;({});})
 ;
-({uuid_0000000000074e0a=(0);({});})
+({uuid_0000000000074e0c=(0);({});})
 ;
 });
-(((uuid_0000000000074e09.field_0)==(7))?(({({uuid_0000000000074e0b=(((LM_AST)(uuid_0000000000074e09)).field_7001);({});})
+(((uuid_0000000000074e0b.field_0)==(7))?(({({uuid_0000000000074e0d=(((LM_AST)(uuid_0000000000074e0b)).field_7001);({});})
 ;
 1;
-})?(({({uuid_0000000000074e0c=(((LM_AST)(uuid_0000000000074e09)).field_7002);({});})
+})?(({({uuid_0000000000074e0e=(((LM_AST)(uuid_0000000000074e0b)).field_7002);({});})
 ;
 1;
-})?({uuid_0000000000074e0a=(1);({});}):({})):({})):({}));
+})?({uuid_0000000000074e0c=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000074e0a==(1));
-})?({({uuid_0000000000074e0d=(denormalize_CL_ArrowTypeType((typeof_SB_var_CL_ArrowTypeConsStringConsTContextAST(uuid_0000000000074d22,uuid_0000000000074d21,uuid_0000000000074e0c))));({});})
+(uuid_0000000000074e0c==(1));
+})?({({uuid_0000000000074e0f=(denormalize_CL_ArrowTypeType((typeof_SB_var_CL_ArrowTypeConsStringConsTContextAST(uuid_0000000000074d22,uuid_0000000000074d21,uuid_0000000000074e0e))));({});})
 ;
-(ascript_SB_normal_CL_ArrowNilConsTypeAST(uuid_0000000000074d22,uuid_0000000000074e0d));
-}):(({({({({uuid_0000000000074e0e=uuid_0000000000074d26;({});})
+(ascript_SB_normal_CL_ArrowNilConsTypeAST(uuid_0000000000074d22,uuid_0000000000074e0f));
+}):(({({({({uuid_0000000000074e10=uuid_0000000000074d26;({});})
 ;
-({uuid_0000000000074e0f=(0);({});})
+({uuid_0000000000074e11=(0);({});})
 ;
 });
-(((uuid_0000000000074e0e.field_0)==(6))?(1?(({({uuid_0000000000074e10=(((LM_AST)(uuid_0000000000074e0e)).field_6002);({});})
+(((uuid_0000000000074e10.field_0)==(6))?(1?(({({uuid_0000000000074e12=(((LM_AST)(uuid_0000000000074e10)).field_6002);({});})
 ;
 1;
-})?({uuid_0000000000074e0f=(1);({});}):({})):({})):({}));
+})?({uuid_0000000000074e11=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000074e0f==(1));
-})?((non_SB_zero_CL_ArrowU64Type((typeof_CL_ArrowTypeAST(uuid_0000000000074d22))))?({}):({({uuid_0000000000074e11=(typeof_SB_tag_CL_ArrowTypeString(uuid_0000000000074e10));({});})
+(uuid_0000000000074e11==(1));
+})?((non_SB_zero_CL_ArrowU64Type((typeof_CL_ArrowTypeAST(uuid_0000000000074d22))))?({}):({({uuid_0000000000074e13=(typeof_SB_tag_CL_ArrowTypeString(uuid_0000000000074e12));({});})
 ;
-((non_SB_zero_CL_ArrowU64Type(uuid_0000000000074e11))?({({((non_SB_zero_CL_ArrowU64Type(uuid_0000000000074d24))?({uuid_0000000000074e11=(unify_SB_hint_CL_ArrowTypeConsTypeType(uuid_0000000000074d24,uuid_0000000000074e11));({});}):({}));
-(ascript_SB_normal_CL_ArrowNilConsTypeAST(uuid_0000000000074d22,uuid_0000000000074e11));
+((non_SB_zero_CL_ArrowU64Type(uuid_0000000000074e13))?({({((non_SB_zero_CL_ArrowU64Type(uuid_0000000000074d24))?({uuid_0000000000074e13=(unify_SB_hint_CL_ArrowTypeConsTypeType(uuid_0000000000074d24,uuid_0000000000074e13));({});}):({}));
+(ascript_SB_normal_CL_ArrowNilConsTypeAST(uuid_0000000000074d22,uuid_0000000000074e13));
 });
-((is_SB_arrow_CL_ArrowU64Type(uuid_0000000000074e11))?({}):({({uuid_0000000000074e12=(denormalize_CL_ArrowTypeType(uuid_0000000000074e11));({});})
+((is_SB_arrow_CL_ArrowU64Type(uuid_0000000000074e13))?({}):({({uuid_0000000000074e14=(denormalize_CL_ArrowTypeType(uuid_0000000000074e13));({});})
 ;
-(maybe_SB_specialize_CL_ArrowNilConsASTConsTypeConsTypeString("push",(typeof_SB_var_SB_raw_CL_ArrowTypeConsStringConsTContextAST(uuid_0000000000074d22,uuid_0000000000074d21,"push")),uuid_0000000000074e12,uuid_0000000000074d22));
+(maybe_SB_specialize_CL_ArrowNilConsASTConsTypeConsTypeString("push",(typeof_SB_var_SB_raw_CL_ArrowTypeConsStringConsTContextAST(uuid_0000000000074d22,uuid_0000000000074d21,"push")),uuid_0000000000074e14,uuid_0000000000074d22));
 }));
 }):({}));
-})):(({({({({uuid_0000000000074e13=uuid_0000000000074d26;({});})
+})):(({({({({uuid_0000000000074e15=uuid_0000000000074d26;({});})
 ;
-({uuid_0000000000074e14=(0);({});})
+({uuid_0000000000074e16=(0);({});})
 ;
 });
-(((uuid_0000000000074e13.field_0)==(0))?(1?({uuid_0000000000074e14=(1);({});}):({})):({}));
+(((uuid_0000000000074e15.field_0)==(0))?(1?({uuid_0000000000074e16=(1);({});}):({})):({}));
 });
-(uuid_0000000000074e14==(1));
+(uuid_0000000000074e16==(1));
 })?(ascript_SB_normal_CL_ArrowNilConsTypeAST(uuid_0000000000074d22,(t1_CL_ArrowTypeString("Nil")))):(1?({({({(print_CL_ArrowNilString("Unknown Term In Type Inference\n"));
 (print_CL_ArrowNilAST(uuid_0000000000074d22));
 });
@@ -5867,276 +5867,276 @@ return ({({({({uuid_0000000000074d26=uuid_0000000000074d22;({});})
 uuid_0000000000074d21;
 });}
 #line 4 "SRC/alias.lm"
-void add_SB_alias_CL_ArrowNilConsTypeConsStringString(char* uuid_0000000000074e15,char* uuid_0000000000074e16,LM_Type uuid_0000000000074e17){({alias_SB_index_CL_ListTupleTypeTupleStringString=(cons_CL_ArrowListTupleTypeTupleStringStringConsListTupleTypeTupleStringStringTupleTypeTupleStringString(({LM_TupleTypeTupleStringString rvalue={.field_0=0,.field_1=uuid_0000000000074e17,.field_2=({LM_TupleStringString rvalue={.field_0=0,.field_1=uuid_0000000000074e16,.field_2=uuid_0000000000074e15};rvalue;})};rvalue;}),alias_SB_index_CL_ListTupleTypeTupleStringString));({});});}
+void add_SB_alias_CL_ArrowNilConsTypeConsStringString(char* uuid_0000000000074e17,char* uuid_0000000000074e18,LM_Type uuid_0000000000074e19){({alias_SB_index_CL_ListTupleTypeTupleStringString=(cons_CL_ArrowListTupleTypeTupleStringStringConsListTupleTypeTupleStringStringTupleTypeTupleStringString(({LM_TupleTypeTupleStringString rvalue={.field_0=0,.field_1=uuid_0000000000074e19,.field_2=({LM_TupleStringString rvalue={.field_0=0,.field_1=uuid_0000000000074e18,.field_2=uuid_0000000000074e17};rvalue;})};rvalue;}),alias_SB_index_CL_ListTupleTypeTupleStringString));({});});}
 #line 8 "SRC/alias.lm"
-char* find_SB_alias_CL_ArrowStringConsTypeString(char* uuid_0000000000074e18,LM_Type uuid_0000000000074e19){char* uuid_0000000000074e1a;
-LM_ListTupleTypeTupleStringString uuid_0000000000074e1b;
-LM_ListTupleTypeTupleStringString uuid_0000000000074e1c;
+char* find_SB_alias_CL_ArrowStringConsTypeString(char* uuid_0000000000074e1a,LM_Type uuid_0000000000074e1b){char* uuid_0000000000074e1c;
 LM_ListTupleTypeTupleStringString uuid_0000000000074e1d;
-char uuid_0000000000074e1e;
+LM_ListTupleTypeTupleStringString uuid_0000000000074e1e;
 LM_ListTupleTypeTupleStringString uuid_0000000000074e1f;
-LM_TupleTypeTupleStringString uuid_0000000000074e20;
-LM_TupleTypeTupleStringString uuid_0000000000074e21;
+char uuid_0000000000074e20;
+LM_ListTupleTypeTupleStringString uuid_0000000000074e21;
 LM_TupleTypeTupleStringString uuid_0000000000074e22;
-char uuid_0000000000074e23;
-LM_Type uuid_0000000000074e24;
+LM_TupleTypeTupleStringString uuid_0000000000074e23;
+LM_TupleTypeTupleStringString uuid_0000000000074e24;
 char uuid_0000000000074e25;
-LM_ListType uuid_0000000000074e26;
+LM_Type uuid_0000000000074e26;
 char uuid_0000000000074e27;
 LM_ListType uuid_0000000000074e28;
 char uuid_0000000000074e29;
 LM_ListType uuid_0000000000074e2a;
-LM_Type uuid_0000000000074e2b;
-char* uuid_0000000000074e2c;
-LM_TupleStringString uuid_0000000000074e2f;
-char uuid_0000000000074e30;
-char* uuid_0000000000074e31;
-char* uuid_0000000000074e32;
-return ({({({uuid_0000000000074e1a=uuid_0000000000074e18;({});})
+char uuid_0000000000074e2b;
+LM_ListType uuid_0000000000074e2c;
+LM_Type uuid_0000000000074e2d;
+char* uuid_0000000000074e2e;
+LM_TupleStringString uuid_0000000000074e31;
+char uuid_0000000000074e32;
+char* uuid_0000000000074e33;
+char* uuid_0000000000074e34;
+return ({({({uuid_0000000000074e1c=uuid_0000000000074e1a;({});})
 ;
-({({uuid_0000000000074e1b=alias_SB_index_CL_ListTupleTypeTupleStringString;({});})
+({({uuid_0000000000074e1d=alias_SB_index_CL_ListTupleTypeTupleStringString;({});})
 ;
-({while((non_SB_zero_CL_ArrowU64ListTupleTypeTupleStringString(uuid_0000000000074e1b))){((void)(({({uuid_0000000000074e1c=uuid_0000000000074e1b;({});})
+({while((non_SB_zero_CL_ArrowU64ListTupleTypeTupleStringString(uuid_0000000000074e1d))){((void)(({({uuid_0000000000074e1e=uuid_0000000000074e1d;({});})
 ;
-(({({({({uuid_0000000000074e1d=uuid_0000000000074e1c;({});})
+(({({({({uuid_0000000000074e1f=uuid_0000000000074e1e;({});})
 ;
-({uuid_0000000000074e1e=(0);({});})
+({uuid_0000000000074e20=(0);({});})
 ;
 });
-(((uuid_0000000000074e1d.field_0)==(0))?(({({uuid_0000000000074e1f=(*(((LM_ListTupleTypeTupleStringString)(uuid_0000000000074e1d)).field_1));({});})
+(((uuid_0000000000074e1f.field_0)==(0))?(({({uuid_0000000000074e21=(*(((LM_ListTupleTypeTupleStringString)(uuid_0000000000074e1f)).field_1));({});})
 ;
 1;
-})?(({({uuid_0000000000074e20=(((LM_ListTupleTypeTupleStringString)(uuid_0000000000074e1d)).field_2);({});})
+})?(({({uuid_0000000000074e22=(((LM_ListTupleTypeTupleStringString)(uuid_0000000000074e1f)).field_2);({});})
 ;
 1;
-})?({uuid_0000000000074e1e=(1);({});}):({})):({})):({}));
+})?({uuid_0000000000074e20=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000074e1e==(1));
-})?({({({uuid_0000000000074e21=uuid_0000000000074e20;({});})
+(uuid_0000000000074e20==(1));
+})?({({({uuid_0000000000074e23=uuid_0000000000074e22;({});})
 ;
-(({({({({uuid_0000000000074e22=uuid_0000000000074e21;({});})
-;
-({uuid_0000000000074e23=(0);({});})
-;
-});
-(((uuid_0000000000074e22.field_0)==(0))?(({({({({uuid_0000000000074e24=(((LM_TupleTypeTupleStringString)(uuid_0000000000074e22)).field_1);({});})
+(({({({({uuid_0000000000074e24=uuid_0000000000074e23;({});})
 ;
 ({uuid_0000000000074e25=(0);({});})
 ;
 });
-(((uuid_0000000000074e24.field_0)==(1))?(({({({({uuid_0000000000074e26=(*(((LM_Type)(uuid_0000000000074e24)).field_1001));({});})
+(((uuid_0000000000074e24.field_0)==(0))?(({({({({uuid_0000000000074e26=(((LM_TupleTypeTupleStringString)(uuid_0000000000074e24)).field_1);({});})
 ;
 ({uuid_0000000000074e27=(0);({});})
 ;
 });
-(((uuid_0000000000074e26.field_0)==(0))?(({({({({uuid_0000000000074e28=(*(((LM_ListType)(uuid_0000000000074e26)).field_1));({});})
+(((uuid_0000000000074e26.field_0)==(1))?(({({({({uuid_0000000000074e28=(*(((LM_Type)(uuid_0000000000074e26)).field_1001));({});})
 ;
 ({uuid_0000000000074e29=(0);({});})
 ;
 });
-(((uuid_0000000000074e28.field_0)==(0))?(({({uuid_0000000000074e2a=(*(((LM_ListType)(uuid_0000000000074e28)).field_1));({});})
+(((uuid_0000000000074e28.field_0)==(0))?(({({({({uuid_0000000000074e2a=(*(((LM_ListType)(uuid_0000000000074e28)).field_1));({});})
 ;
-((uuid_0000000000074e2a.field_0)==(1));
-})?(({({uuid_0000000000074e2b=(((LM_ListType)(uuid_0000000000074e28)).field_2);({});})
+({uuid_0000000000074e2b=(0);({});})
+;
+});
+(((uuid_0000000000074e2a.field_0)==(0))?(({({uuid_0000000000074e2c=(*(((LM_ListType)(uuid_0000000000074e2a)).field_1));({});})
+;
+((uuid_0000000000074e2c.field_0)==(1));
+})?(({({uuid_0000000000074e2d=(((LM_ListType)(uuid_0000000000074e2a)).field_2);({});})
 ;
 1;
-})?({uuid_0000000000074e29=(1);({});}):({})):({})):({}));
+})?({uuid_0000000000074e2b=(1);({});}):({})):({})):({}));
+});
+(uuid_0000000000074e2b==(1));
+})?(1?({uuid_0000000000074e29=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074e29==(1));
-})?(1?({uuid_0000000000074e27=(1);({});}):({})):({})):({}));
+})?(({({uuid_0000000000074e2e=(((LM_Type)(uuid_0000000000074e26)).field_1002);({});})
+;
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074e2e,uuid_0000000000074e2f));
+})?({uuid_0000000000074e27=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074e27==(1));
-})?(({({uuid_0000000000074e2c=(((LM_Type)(uuid_0000000000074e24)).field_1002);({});})
+})?(({({({({uuid_0000000000074e31=(((LM_TupleTypeTupleStringString)(uuid_0000000000074e24)).field_2);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074e2c,uuid_0000000000074e2d));
+({uuid_0000000000074e32=(0);({});})
+;
+});
+(((uuid_0000000000074e31.field_0)==(0))?(({({uuid_0000000000074e33=(((LM_TupleStringString)(uuid_0000000000074e31)).field_1);({});})
+;
+1;
+})?(({({uuid_0000000000074e34=(((LM_TupleStringString)(uuid_0000000000074e31)).field_2);({});})
+;
+1;
+})?({uuid_0000000000074e32=(1);({});}):({})):({})):({}));
+});
+(uuid_0000000000074e32==(1));
 })?({uuid_0000000000074e25=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074e25==(1));
-})?(({({({({uuid_0000000000074e2f=(((LM_TupleTypeTupleStringString)(uuid_0000000000074e22)).field_2);({});})
-;
-({uuid_0000000000074e30=(0);({});})
-;
+})?((_EQ__EQ__CL_ArrowU64ConsStringString(uuid_0000000000074e1a,uuid_0000000000074e34))?((can_SB_unify_CL_ArrowU64ConsTypeType(uuid_0000000000074e2d,uuid_0000000000074e1b))?({uuid_0000000000074e1c=uuid_0000000000074e33;({});}):({})):({})):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/alias.lm Line: 11 Column: 8")));
 });
-(((uuid_0000000000074e2f.field_0)==(0))?(({({uuid_0000000000074e31=(((LM_TupleStringString)(uuid_0000000000074e2f)).field_1);({});})
-;
-1;
-})?(({({uuid_0000000000074e32=(((LM_TupleStringString)(uuid_0000000000074e2f)).field_2);({});})
-;
-1;
-})?({uuid_0000000000074e30=(1);({});}):({})):({})):({}));
-});
-(uuid_0000000000074e30==(1));
-})?({uuid_0000000000074e23=(1);({});}):({})):({})):({}));
-});
-(uuid_0000000000074e23==(1));
-})?((_EQ__EQ__CL_ArrowU64ConsStringString(uuid_0000000000074e18,uuid_0000000000074e32))?((can_SB_unify_CL_ArrowU64ConsTypeType(uuid_0000000000074e2b,uuid_0000000000074e19))?({uuid_0000000000074e1a=uuid_0000000000074e31;({});}):({})):({})):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/alias.lm Line: 11 Column: 8")));
-});
-({uuid_0000000000074e1b=uuid_0000000000074e1f;({});});
+({uuid_0000000000074e1d=uuid_0000000000074e21;({});});
 }):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/alias.lm Line: 10 Column: 5")));
 })));};});
 });
 });
-uuid_0000000000074e1a;
+uuid_0000000000074e1c;
 });}
 #line 28 "SRC/alias.lm"
-LM_Type find_SB_alias_SB_type_CL_ArrowTypeString(char* uuid_0000000000074e33){LM_Type uuid_0000000000074e34;
-LM_ListTupleTypeTupleStringString uuid_0000000000074e35;
-LM_ListTupleTypeTupleStringString uuid_0000000000074e36;
+LM_Type find_SB_alias_SB_type_CL_ArrowTypeString(char* uuid_0000000000074e35){LM_Type uuid_0000000000074e36;
 LM_ListTupleTypeTupleStringString uuid_0000000000074e37;
-char uuid_0000000000074e38;
+LM_ListTupleTypeTupleStringString uuid_0000000000074e38;
 LM_ListTupleTypeTupleStringString uuid_0000000000074e39;
-LM_TupleTypeTupleStringString uuid_0000000000074e3a;
-LM_TupleTypeTupleStringString uuid_0000000000074e3b;
+char uuid_0000000000074e3a;
+LM_ListTupleTypeTupleStringString uuid_0000000000074e3b;
 LM_TupleTypeTupleStringString uuid_0000000000074e3c;
-char uuid_0000000000074e3d;
-LM_Type uuid_0000000000074e3e;
-LM_TupleStringString uuid_0000000000074e3f;
-char uuid_0000000000074e40;
-char* uuid_0000000000074e41;
-char* uuid_0000000000074e42;
-return ({({({uuid_0000000000074e34=({LM_Type rvalue={3};rvalue;});({});})
+LM_TupleTypeTupleStringString uuid_0000000000074e3d;
+LM_TupleTypeTupleStringString uuid_0000000000074e3e;
+char uuid_0000000000074e3f;
+LM_Type uuid_0000000000074e40;
+LM_TupleStringString uuid_0000000000074e41;
+char uuid_0000000000074e42;
+char* uuid_0000000000074e43;
+char* uuid_0000000000074e44;
+return ({({({uuid_0000000000074e36=({LM_Type rvalue={3};rvalue;});({});})
 ;
-({({uuid_0000000000074e35=alias_SB_index_CL_ListTupleTypeTupleStringString;({});})
+({({uuid_0000000000074e37=alias_SB_index_CL_ListTupleTypeTupleStringString;({});})
 ;
-({while((non_SB_zero_CL_ArrowU64ListTupleTypeTupleStringString(uuid_0000000000074e35))){((void)(({({uuid_0000000000074e36=uuid_0000000000074e35;({});})
+({while((non_SB_zero_CL_ArrowU64ListTupleTypeTupleStringString(uuid_0000000000074e37))){((void)(({({uuid_0000000000074e38=uuid_0000000000074e37;({});})
 ;
-(({({({({uuid_0000000000074e37=uuid_0000000000074e36;({});})
+(({({({({uuid_0000000000074e39=uuid_0000000000074e38;({});})
 ;
-({uuid_0000000000074e38=(0);({});})
+({uuid_0000000000074e3a=(0);({});})
 ;
 });
-(((uuid_0000000000074e37.field_0)==(0))?(({({uuid_0000000000074e39=(*(((LM_ListTupleTypeTupleStringString)(uuid_0000000000074e37)).field_1));({});})
+(((uuid_0000000000074e39.field_0)==(0))?(({({uuid_0000000000074e3b=(*(((LM_ListTupleTypeTupleStringString)(uuid_0000000000074e39)).field_1));({});})
 ;
 1;
-})?(({({uuid_0000000000074e3a=(((LM_ListTupleTypeTupleStringString)(uuid_0000000000074e37)).field_2);({});})
+})?(({({uuid_0000000000074e3c=(((LM_ListTupleTypeTupleStringString)(uuid_0000000000074e39)).field_2);({});})
 ;
 1;
-})?({uuid_0000000000074e38=(1);({});}):({})):({})):({}));
+})?({uuid_0000000000074e3a=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000074e38==(1));
-})?({({({uuid_0000000000074e3b=uuid_0000000000074e3a;({});})
+(uuid_0000000000074e3a==(1));
+})?({({({uuid_0000000000074e3d=uuid_0000000000074e3c;({});})
 ;
-(({({({({uuid_0000000000074e3c=uuid_0000000000074e3b;({});})
+(({({({({uuid_0000000000074e3e=uuid_0000000000074e3d;({});})
 ;
-({uuid_0000000000074e3d=(0);({});})
+({uuid_0000000000074e3f=(0);({});})
 ;
 });
-(((uuid_0000000000074e3c.field_0)==(0))?(({({uuid_0000000000074e3e=(((LM_TupleTypeTupleStringString)(uuid_0000000000074e3c)).field_1);({});})
+(((uuid_0000000000074e3e.field_0)==(0))?(({({uuid_0000000000074e40=(((LM_TupleTypeTupleStringString)(uuid_0000000000074e3e)).field_1);({});})
 ;
 1;
-})?(({({({({uuid_0000000000074e3f=(((LM_TupleTypeTupleStringString)(uuid_0000000000074e3c)).field_2);({});})
+})?(({({({({uuid_0000000000074e41=(((LM_TupleTypeTupleStringString)(uuid_0000000000074e3e)).field_2);({});})
 ;
-({uuid_0000000000074e40=(0);({});})
+({uuid_0000000000074e42=(0);({});})
 ;
 });
-(((uuid_0000000000074e3f.field_0)==(0))?(({({uuid_0000000000074e41=(((LM_TupleStringString)(uuid_0000000000074e3f)).field_1);({});})
-;
-1;
-})?(({({uuid_0000000000074e42=(((LM_TupleStringString)(uuid_0000000000074e3f)).field_2);({});})
+(((uuid_0000000000074e41.field_0)==(0))?(({({uuid_0000000000074e43=(((LM_TupleStringString)(uuid_0000000000074e41)).field_1);({});})
 ;
 1;
-})?({uuid_0000000000074e40=(1);({});}):({})):({})):({}));
+})?(({({uuid_0000000000074e44=(((LM_TupleStringString)(uuid_0000000000074e41)).field_2);({});})
+;
+1;
+})?({uuid_0000000000074e42=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000074e40==(1));
-})?({uuid_0000000000074e3d=(1);({});}):({})):({})):({}));
+(uuid_0000000000074e42==(1));
+})?({uuid_0000000000074e3f=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000074e3d==(1));
-})?((_EQ__EQ__CL_ArrowU64ConsStringString(uuid_0000000000074e33,uuid_0000000000074e42))?((non_SB_zero_CL_ArrowU64Type(uuid_0000000000074e34))?({uuid_0000000000074e34=(and_CL_ArrowTypeConsTypeType(uuid_0000000000074e34,uuid_0000000000074e3e));({});}):({uuid_0000000000074e34=uuid_0000000000074e3e;({});})):({})):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/alias.lm Line: 31 Column: 8")));
+(uuid_0000000000074e3f==(1));
+})?((_EQ__EQ__CL_ArrowU64ConsStringString(uuid_0000000000074e35,uuid_0000000000074e44))?((non_SB_zero_CL_ArrowU64Type(uuid_0000000000074e36))?({uuid_0000000000074e36=(and_CL_ArrowTypeConsTypeType(uuid_0000000000074e36,uuid_0000000000074e40));({});}):({uuid_0000000000074e36=uuid_0000000000074e40;({});})):({})):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/alias.lm Line: 31 Column: 8")));
 });
-({uuid_0000000000074e35=uuid_0000000000074e39;({});});
+({uuid_0000000000074e37=uuid_0000000000074e3b;({});});
 }):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/alias.lm Line: 30 Column: 5")));
 })));};});
 });
 });
-uuid_0000000000074e34;
+uuid_0000000000074e36;
 });}
 #line 4 "SRC/class-exists.lm"
-void mark_SB_class_SB_exists_CL_ArrowNilString(char* uuid_0000000000074e43){({class_SB_exists_SB_index_CL_HashtableEqU64String=(_DT_bind_CL_ArrowHashtableEqU64StringConsU64ConsStringHashtableEqU64String(class_SB_exists_SB_index_CL_HashtableEqU64String,uuid_0000000000074e43,(1)));({});});}
+void mark_SB_class_SB_exists_CL_ArrowNilString(char* uuid_0000000000074e45){({class_SB_exists_SB_index_CL_HashtableEqU64String=(_DT_bind_CL_ArrowHashtableEqU64StringConsU64ConsStringHashtableEqU64String(class_SB_exists_SB_index_CL_HashtableEqU64String,uuid_0000000000074e45,(1)));({});});}
 #line 4 "SRC/is-parameter-flat.lm"
-void mark_SB_parameter_SB_flat_CL_ArrowNilConsU64ConsU64String(char* uuid_0000000000074e44,unsigned long uuid_0000000000074e45,unsigned long uuid_0000000000074e46){({parameter_SB_is_SB_flat_SB_index_CL_HashtableEqU64TupleU64TupleU64String=(_DT_bind_CL_ArrowHashtableEqU64TupleU64TupleU64StringConsU64ConsTupleU64TupleU64StringHashtableEqU64TupleU64TupleU64String(parameter_SB_is_SB_flat_SB_index_CL_HashtableEqU64TupleU64TupleU64String,({LM_TupleU64TupleU64String rvalue={.field_0=0,.field_1=uuid_0000000000074e46,.field_2=({LM_TupleU64String rvalue={.field_0=0,.field_1=uuid_0000000000074e45,.field_2=uuid_0000000000074e44};rvalue;})};rvalue;}),(1)));({});});}
+void mark_SB_parameter_SB_flat_CL_ArrowNilConsU64ConsU64String(char* uuid_0000000000074e46,unsigned long uuid_0000000000074e47,unsigned long uuid_0000000000074e48){({parameter_SB_is_SB_flat_SB_index_CL_HashtableEqU64TupleU64TupleU64String=(_DT_bind_CL_ArrowHashtableEqU64TupleU64TupleU64StringConsU64ConsTupleU64TupleU64StringHashtableEqU64TupleU64TupleU64String(parameter_SB_is_SB_flat_SB_index_CL_HashtableEqU64TupleU64TupleU64String,({LM_TupleU64TupleU64String rvalue={.field_0=0,.field_1=uuid_0000000000074e48,.field_2=({LM_TupleU64String rvalue={.field_0=0,.field_1=uuid_0000000000074e47,.field_2=uuid_0000000000074e46};rvalue;})};rvalue;}),(1)));({});});}
 #line 9 "SRC/is-parameter-flat.lm"
-unsigned long is_SB_parameter_SB_flat_CL_ArrowU64ConsU64ConsU64String(char* uuid_0000000000074e47,unsigned long uuid_0000000000074e48,unsigned long uuid_0000000000074e49){unsigned long uuid_0000000000074e4a;
-return ({({uuid_0000000000074e4a=(_DT_lookup_CL_ArrowU64ConsU64ConsTupleU64TupleU64StringHashtableEqU64TupleU64TupleU64String(parameter_SB_is_SB_flat_SB_index_CL_HashtableEqU64TupleU64TupleU64String,({LM_TupleU64TupleU64String rvalue={.field_0=0,.field_1=uuid_0000000000074e49,.field_2=({LM_TupleU64String rvalue={.field_0=0,.field_1=uuid_0000000000074e48,.field_2=uuid_0000000000074e47};rvalue;})};rvalue;}),(0)));({});})
+unsigned long is_SB_parameter_SB_flat_CL_ArrowU64ConsU64ConsU64String(char* uuid_0000000000074e49,unsigned long uuid_0000000000074e4a,unsigned long uuid_0000000000074e4b){unsigned long uuid_0000000000074e4c;
+return ({({uuid_0000000000074e4c=(_DT_lookup_CL_ArrowU64ConsU64ConsTupleU64TupleU64StringHashtableEqU64TupleU64TupleU64String(parameter_SB_is_SB_flat_SB_index_CL_HashtableEqU64TupleU64TupleU64String,({LM_TupleU64TupleU64String rvalue={.field_0=0,.field_1=uuid_0000000000074e4b,.field_2=({LM_TupleU64String rvalue={.field_0=0,.field_1=uuid_0000000000074e4a,.field_2=uuid_0000000000074e49};rvalue;})};rvalue;}),(0)));({});})
 ;
-uuid_0000000000074e4a;
+uuid_0000000000074e4c;
 });}
 #line 4 "SRC/is-special.lm"
-void mark_SB_as_SB_special_CL_ArrowNilConsTypeString(char* uuid_0000000000074e4b,LM_Type uuid_0000000000074e4c){({is_SB_special_SB_index_CL_HashtableEqU64TupleTypeString=(_DT_bind_CL_ArrowHashtableEqU64TupleTypeStringConsU64ConsTupleTypeStringHashtableEqU64TupleTypeString(is_SB_special_SB_index_CL_HashtableEqU64TupleTypeString,({LM_TupleTypeString rvalue={.field_0=0,.field_1=uuid_0000000000074e4c,.field_2=uuid_0000000000074e4b};rvalue;}),(1)));({});});}
+void mark_SB_as_SB_special_CL_ArrowNilConsTypeString(char* uuid_0000000000074e4d,LM_Type uuid_0000000000074e4e){({is_SB_special_SB_index_CL_HashtableEqU64TupleTypeString=(_DT_bind_CL_ArrowHashtableEqU64TupleTypeStringConsU64ConsTupleTypeStringHashtableEqU64TupleTypeString(is_SB_special_SB_index_CL_HashtableEqU64TupleTypeString,({LM_TupleTypeString rvalue={.field_0=0,.field_1=uuid_0000000000074e4e,.field_2=uuid_0000000000074e4d};rvalue;}),(1)));({});});}
 #line 8 "SRC/is-special.lm"
-unsigned long is_SB_special_CL_ArrowU64ConsTypeString(char* uuid_0000000000074e4d,LM_Type uuid_0000000000074e4e){unsigned long uuid_0000000000074e4f;
-return ({({uuid_0000000000074e4f=(_DT_lookup_CL_ArrowU64ConsU64ConsTupleTypeStringHashtableEqU64TupleTypeString(is_SB_special_SB_index_CL_HashtableEqU64TupleTypeString,({LM_TupleTypeString rvalue={.field_0=0,.field_1=uuid_0000000000074e4e,.field_2=uuid_0000000000074e4d};rvalue;}),(0)));({});})
+unsigned long is_SB_special_CL_ArrowU64ConsTypeString(char* uuid_0000000000074e4f,LM_Type uuid_0000000000074e50){unsigned long uuid_0000000000074e51;
+return ({({uuid_0000000000074e51=(_DT_lookup_CL_ArrowU64ConsU64ConsTupleTypeStringHashtableEqU64TupleTypeString(is_SB_special_SB_index_CL_HashtableEqU64TupleTypeString,({LM_TupleTypeString rvalue={.field_0=0,.field_1=uuid_0000000000074e50,.field_2=uuid_0000000000074e4f};rvalue;}),(0)));({});})
 ;
-uuid_0000000000074e4f;
+uuid_0000000000074e51;
 });}
 #line 4 "SRC/is-lone-tag.lm"
-void index_SB_lone_SB_tag_CL_ArrowNilString(char* uuid_0000000000074e50){({lone_SB_index_CL_HashtableEqU64String=(_DT_bind_CL_ArrowHashtableEqU64StringConsU64ConsStringHashtableEqU64String(lone_SB_index_CL_HashtableEqU64String,uuid_0000000000074e50,(1)));({});});}
+void index_SB_lone_SB_tag_CL_ArrowNilString(char* uuid_0000000000074e52){({lone_SB_index_CL_HashtableEqU64String=(_DT_bind_CL_ArrowHashtableEqU64StringConsU64ConsStringHashtableEqU64String(lone_SB_index_CL_HashtableEqU64String,uuid_0000000000074e52,(1)));({});});}
 #line 8 "SRC/is-lone-tag.lm"
-unsigned long is_SB_lone_SB_tag_CL_ArrowU64String(char* uuid_0000000000074e51){return (_DT_lookup_CL_ArrowU64ConsU64ConsStringHashtableEqU64String(lone_SB_index_CL_HashtableEqU64String,uuid_0000000000074e51,(0)));}
+unsigned long is_SB_lone_SB_tag_CL_ArrowU64String(char* uuid_0000000000074e53){return (_DT_lookup_CL_ArrowU64ConsU64ConsStringHashtableEqU64String(lone_SB_index_CL_HashtableEqU64String,uuid_0000000000074e53,(0)));}
 #line 4 "SRC/is-fragment.lm"
-void index_SB_tag_SB_is_SB_fragment_CL_ArrowNilString(char* uuid_0000000000074e52){({tag_SB_is_SB_fragment_SB_index_CL_HashtableEqU64String=(_DT_bind_CL_ArrowHashtableEqU64StringConsU64ConsStringHashtableEqU64String(tag_SB_is_SB_fragment_SB_index_CL_HashtableEqU64String,uuid_0000000000074e52,(1)));({});});}
+void index_SB_tag_SB_is_SB_fragment_CL_ArrowNilString(char* uuid_0000000000074e54){({tag_SB_is_SB_fragment_SB_index_CL_HashtableEqU64String=(_DT_bind_CL_ArrowHashtableEqU64StringConsU64ConsStringHashtableEqU64String(tag_SB_is_SB_fragment_SB_index_CL_HashtableEqU64String,uuid_0000000000074e54,(1)));({});});}
 #line 8 "SRC/is-fragment.lm"
-unsigned long is_SB_fragment_CL_ArrowU64String(char* uuid_0000000000074e53){return (_DT_lookup_CL_ArrowU64ConsU64ConsStringHashtableEqU64String(tag_SB_is_SB_fragment_SB_index_CL_HashtableEqU64String,uuid_0000000000074e53,(0)));}
+unsigned long is_SB_fragment_CL_ArrowU64String(char* uuid_0000000000074e55){return (_DT_lookup_CL_ArrowU64ConsU64ConsStringHashtableEqU64String(tag_SB_is_SB_fragment_SB_index_CL_HashtableEqU64String,uuid_0000000000074e55,(0)));}
 #line 12 "SRC/is-fragment.lm"
-unsigned long is_SB_fragment_CL_ArrowU64Type(LM_Type uuid_0000000000074e54){return (is_SB_fragment_CL_ArrowU64String((tag_SB_of_CL_ArrowStringType(uuid_0000000000074e54))));}
+unsigned long is_SB_fragment_CL_ArrowU64Type(LM_Type uuid_0000000000074e56){return (is_SB_fragment_CL_ArrowU64String((tag_SB_of_CL_ArrowStringType(uuid_0000000000074e56))));}
 #line 4 "SRC/global-is-seen.lm"
-void mark_SB_global_SB_as_SB_seen_CL_ArrowNilConsTypeConsTypeString(char* uuid_0000000000074e55,LM_Type uuid_0000000000074e56,LM_Type uuid_0000000000074e57){((((global_SB_is_SB_seen_CL_ArrowU64ConsTypeString(uuid_0000000000074e55,uuid_0000000000074e56))&&(!(is_SB_t_CL_ArrowU64ConsStringType(uuid_0000000000074e57,"Hook"))))&&(!(is_SB_t_CL_ArrowU64ConsStringType(uuid_0000000000074e57,"FFI"))))?({({({({({(print_CL_ArrowNilString("Duplicate Global Symbol "));
-(print_CL_ArrowNilString(uuid_0000000000074e55));
+void mark_SB_global_SB_as_SB_seen_CL_ArrowNilConsTypeConsTypeString(char* uuid_0000000000074e57,LM_Type uuid_0000000000074e58,LM_Type uuid_0000000000074e59){((((global_SB_is_SB_seen_CL_ArrowU64ConsTypeString(uuid_0000000000074e57,uuid_0000000000074e58))&&(!(is_SB_t_CL_ArrowU64ConsStringType(uuid_0000000000074e59,"Hook"))))&&(!(is_SB_t_CL_ArrowU64ConsStringType(uuid_0000000000074e59,"FFI"))))?({({({({({(print_CL_ArrowNilString("Duplicate Global Symbol "));
+(print_CL_ArrowNilString(uuid_0000000000074e57));
 });
 (print_CL_ArrowNilString(" : "));
 });
-(print_CL_ArrowNilType(uuid_0000000000074e56));
+(print_CL_ArrowNilType(uuid_0000000000074e58));
 });
 (print_CL_ArrowNilString("\n"));
 });
 (exit_CL_ArrowNilU64((1)));
-}):({global_SB_symbol_SB_registry_CL_HashtableEqU64TupleTypeString=(_DT_bind_CL_ArrowHashtableEqU64TupleTypeStringConsU64ConsTupleTypeStringHashtableEqU64TupleTypeString(global_SB_symbol_SB_registry_CL_HashtableEqU64TupleTypeString,({LM_TupleTypeString rvalue={.field_0=0,.field_1=uuid_0000000000074e56,.field_2=uuid_0000000000074e55};rvalue;}),(1)));({});}));}
+}):({global_SB_symbol_SB_registry_CL_HashtableEqU64TupleTypeString=(_DT_bind_CL_ArrowHashtableEqU64TupleTypeStringConsU64ConsTupleTypeStringHashtableEqU64TupleTypeString(global_SB_symbol_SB_registry_CL_HashtableEqU64TupleTypeString,({LM_TupleTypeString rvalue={.field_0=0,.field_1=uuid_0000000000074e58,.field_2=uuid_0000000000074e57};rvalue;}),(1)));({});}));}
 #line 13 "SRC/global-is-seen.lm"
-unsigned long global_SB_is_SB_seen_CL_ArrowU64ConsTypeString(char* uuid_0000000000074e58,LM_Type uuid_0000000000074e59){unsigned long uuid_0000000000074e5a;
-return ({({uuid_0000000000074e5a=(_DT_lookup_CL_ArrowU64ConsU64ConsTupleTypeStringHashtableEqU64TupleTypeString(global_SB_symbol_SB_registry_CL_HashtableEqU64TupleTypeString,({LM_TupleTypeString rvalue={.field_0=0,.field_1=uuid_0000000000074e59,.field_2=uuid_0000000000074e58};rvalue;}),(0)));({});})
+unsigned long global_SB_is_SB_seen_CL_ArrowU64ConsTypeString(char* uuid_0000000000074e5a,LM_Type uuid_0000000000074e5b){unsigned long uuid_0000000000074e5c;
+return ({({uuid_0000000000074e5c=(_DT_lookup_CL_ArrowU64ConsU64ConsTupleTypeStringHashtableEqU64TupleTypeString(global_SB_symbol_SB_registry_CL_HashtableEqU64TupleTypeString,({LM_TupleTypeString rvalue={.field_0=0,.field_1=uuid_0000000000074e5b,.field_2=uuid_0000000000074e5a};rvalue;}),(0)));({});})
 ;
-uuid_0000000000074e5a;
+uuid_0000000000074e5c;
 });}
 #line 4 "SRC/class-only-child.lm"
-void has_SB_only_SB_child_CL_ArrowNilConsStringString(char* uuid_0000000000074e5b,char* uuid_0000000000074e5c){({class_SB_to_SB_only_SB_child_CL_HashtableEqStringString=(_DT_bind_CL_ArrowHashtableEqStringStringConsStringConsStringHashtableEqStringString(class_SB_to_SB_only_SB_child_CL_HashtableEqStringString,uuid_0000000000074e5b,uuid_0000000000074e5c));({});});}
+void has_SB_only_SB_child_CL_ArrowNilConsStringString(char* uuid_0000000000074e5d,char* uuid_0000000000074e5e){({class_SB_to_SB_only_SB_child_CL_HashtableEqStringString=(_DT_bind_CL_ArrowHashtableEqStringStringConsStringConsStringHashtableEqStringString(class_SB_to_SB_only_SB_child_CL_HashtableEqStringString,uuid_0000000000074e5d,uuid_0000000000074e5e));({});});}
 #line 8 "SRC/class-only-child.lm"
-char* get_SB_only_SB_child_CL_ArrowStringString(char* uuid_0000000000074e5d){char* uuid_0000000000074e5e;
-return ({({uuid_0000000000074e5e=(_DT_lookup_CL_ArrowStringConsStringConsStringHashtableEqStringString(class_SB_to_SB_only_SB_child_CL_HashtableEqStringString,uuid_0000000000074e5d,""));({});})
-;
-uuid_0000000000074e5e;
-});}
-#line 6 "SRC/index-of-tag.lm"
-unsigned long index_SB_of_SB_tag_CL_ArrowU64String(char* uuid_0000000000074e5f){unsigned long uuid_0000000000074e60;
-return ({({uuid_0000000000074e60=(_DT_lookup_CL_ArrowU64ConsU64ConsStringHashtableEqU64String(tag_SB_to_SB_index_SB_index_CL_HashtableEqU64String,uuid_0000000000074e5f,unknown_SB_index_SB_of_SB_tag_CL_U64));({});})
+char* get_SB_only_SB_child_CL_ArrowStringString(char* uuid_0000000000074e5f){char* uuid_0000000000074e60;
+return ({({uuid_0000000000074e60=(_DT_lookup_CL_ArrowStringConsStringConsStringHashtableEqStringString(class_SB_to_SB_only_SB_child_CL_HashtableEqStringString,uuid_0000000000074e5f,""));({});})
 ;
 uuid_0000000000074e60;
 });}
+#line 6 "SRC/index-of-tag.lm"
+unsigned long index_SB_of_SB_tag_CL_ArrowU64String(char* uuid_0000000000074e61){unsigned long uuid_0000000000074e62;
+return ({({uuid_0000000000074e62=(_DT_lookup_CL_ArrowU64ConsU64ConsStringHashtableEqU64String(tag_SB_to_SB_index_SB_index_CL_HashtableEqU64String,uuid_0000000000074e61,unknown_SB_index_SB_of_SB_tag_CL_U64));({});})
+;
+uuid_0000000000074e62;
+});}
 #line 11 "SRC/index-of-tag.lm"
-void index_SB_index_SB_of_SB_tag_CL_ArrowNilConsU64String(char* uuid_0000000000074e61,unsigned long uuid_0000000000074e62){({tag_SB_to_SB_index_SB_index_CL_HashtableEqU64String=(_DT_bind_CL_ArrowHashtableEqU64StringConsU64ConsStringHashtableEqU64String(tag_SB_to_SB_index_SB_index_CL_HashtableEqU64String,uuid_0000000000074e61,uuid_0000000000074e62));({});});}
+void index_SB_index_SB_of_SB_tag_CL_ArrowNilConsU64String(char* uuid_0000000000074e63,unsigned long uuid_0000000000074e64){({tag_SB_to_SB_index_SB_index_CL_HashtableEqU64String=(_DT_bind_CL_ArrowHashtableEqU64StringConsU64ConsStringHashtableEqU64String(tag_SB_to_SB_index_SB_index_CL_HashtableEqU64String,uuid_0000000000074e63,uuid_0000000000074e64));({});});}
 #line 4 "SRC/size-of-class.lm"
-void index_SB_size_SB_of_SB_class_CL_ArrowNilConsU64String(char* uuid_0000000000074e63,unsigned long uuid_0000000000074e64){({class_SB_to_SB_size_SB_index_CL_HashtableEqU64String=(_DT_bind_CL_ArrowHashtableEqU64StringConsU64ConsStringHashtableEqU64String(class_SB_to_SB_size_SB_index_CL_HashtableEqU64String,uuid_0000000000074e63,uuid_0000000000074e64));({});});}
+void index_SB_size_SB_of_SB_class_CL_ArrowNilConsU64String(char* uuid_0000000000074e65,unsigned long uuid_0000000000074e66){({class_SB_to_SB_size_SB_index_CL_HashtableEqU64String=(_DT_bind_CL_ArrowHashtableEqU64StringConsU64ConsStringHashtableEqU64String(class_SB_to_SB_size_SB_index_CL_HashtableEqU64String,uuid_0000000000074e65,uuid_0000000000074e66));({});});}
 #line 8 "SRC/size-of-class.lm"
-unsigned long size_SB_of_SB_class_CL_ArrowU64String(char* uuid_0000000000074e65){return (_DT_lookup_CL_ArrowU64ConsU64ConsStringHashtableEqU64String(class_SB_to_SB_size_SB_index_CL_HashtableEqU64String,uuid_0000000000074e65,(0)));}
+unsigned long size_SB_of_SB_class_CL_ArrowU64String(char* uuid_0000000000074e67){return (_DT_lookup_CL_ArrowU64ConsU64ConsStringHashtableEqU64String(class_SB_to_SB_size_SB_index_CL_HashtableEqU64String,uuid_0000000000074e67,(0)));}
 #line 4 "SRC/class-of-tag.lm"
-void index_SB_class_SB_of_SB_tag_CL_ArrowNilConsTypeString(char* uuid_0000000000074e66,LM_Type uuid_0000000000074e67){LM_Type uuid_0000000000074e68;
-LM_Type uuid_0000000000074e69;
-char uuid_0000000000074e6a;
-char* uuid_0000000000074e6b;
-({({tag_SB_to_SB_class_SB_index_CL_HashtableEqTypeString=(_DT_bind_CL_ArrowHashtableEqTypeStringConsTypeConsStringHashtableEqTypeString(tag_SB_to_SB_class_SB_index_CL_HashtableEqTypeString,uuid_0000000000074e66,uuid_0000000000074e67));({});});
-({({uuid_0000000000074e68=uuid_0000000000074e67;({});})
+void index_SB_class_SB_of_SB_tag_CL_ArrowNilConsTypeString(char* uuid_0000000000074e68,LM_Type uuid_0000000000074e69){LM_Type uuid_0000000000074e6a;
+LM_Type uuid_0000000000074e6b;
+char uuid_0000000000074e6c;
+char* uuid_0000000000074e6d;
+({({tag_SB_to_SB_class_SB_index_CL_HashtableEqTypeString=(_DT_bind_CL_ArrowHashtableEqTypeStringConsTypeConsStringHashtableEqTypeString(tag_SB_to_SB_class_SB_index_CL_HashtableEqTypeString,uuid_0000000000074e68,uuid_0000000000074e69));({});});
+({({uuid_0000000000074e6a=uuid_0000000000074e69;({});})
 ;
-(({({({({uuid_0000000000074e69=uuid_0000000000074e68;({});})
+(({({({({uuid_0000000000074e6b=uuid_0000000000074e6a;({});})
 ;
-({uuid_0000000000074e6a=(0);({});})
+({uuid_0000000000074e6c=(0);({});})
 ;
 });
-(((uuid_0000000000074e69.field_0)==(1))?(1?(({({uuid_0000000000074e6b=(((LM_Type)(uuid_0000000000074e69)).field_1002);({});})
+(((uuid_0000000000074e6b.field_0)==(1))?(1?(({({uuid_0000000000074e6d=(((LM_Type)(uuid_0000000000074e6b)).field_1002);({});})
 ;
 1;
-})?({uuid_0000000000074e6a=(1);({});}):({})):({})):({}));
+})?({uuid_0000000000074e6c=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000074e6a==(1));
-})?({class_SB_to_SB_yes_SB_index_CL_HashtableEqU64String=(_DT_bind_CL_ArrowHashtableEqU64StringConsU64ConsStringHashtableEqU64String(class_SB_to_SB_yes_SB_index_CL_HashtableEqU64String,uuid_0000000000074e6b,(1)));({});}):(1?({({({(print_CL_ArrowNilString("Unexpected Class In index-class-of-tag: "));
-(print_CL_ArrowNilType(uuid_0000000000074e67));
+(uuid_0000000000074e6c==(1));
+})?({class_SB_to_SB_yes_SB_index_CL_HashtableEqU64String=(_DT_bind_CL_ArrowHashtableEqU64StringConsU64ConsStringHashtableEqU64String(class_SB_to_SB_yes_SB_index_CL_HashtableEqU64String,uuid_0000000000074e6d,(1)));({});}):(1?({({({(print_CL_ArrowNilString("Unexpected Class In index-class-of-tag: "));
+(print_CL_ArrowNilType(uuid_0000000000074e69));
 });
 (print_CL_ArrowNilString("\n"));
 });
@@ -6145,122 +6145,122 @@ char* uuid_0000000000074e6b;
 });
 });}
 #line 18 "SRC/class-of-tag.lm"
-LM_Type class_SB_of_SB_tag_CL_ArrowTypeString(char* uuid_0000000000074e6c){LM_Type uuid_0000000000074e6d;
-return ({({uuid_0000000000074e6d=(_DT_lookup_CL_ArrowTypeConsTypeConsStringHashtableEqTypeString(tag_SB_to_SB_class_SB_index_CL_HashtableEqTypeString,uuid_0000000000074e6c,({LM_Type rvalue={3};rvalue;})));({});})
-;
-uuid_0000000000074e6d;
-});}
-#line 4 "SRC/is-class.lm"
-unsigned long is_SB_class_CL_ArrowU64String(char* uuid_0000000000074e6e){unsigned long uuid_0000000000074e6f;
-return ({({uuid_0000000000074e6f=(_DT_lookup_CL_ArrowU64ConsU64ConsStringHashtableEqU64String(class_SB_to_SB_yes_SB_index_CL_HashtableEqU64String,uuid_0000000000074e6e,(0)));({});})
+LM_Type class_SB_of_SB_tag_CL_ArrowTypeString(char* uuid_0000000000074e6e){LM_Type uuid_0000000000074e6f;
+return ({({uuid_0000000000074e6f=(_DT_lookup_CL_ArrowTypeConsTypeConsStringHashtableEqTypeString(tag_SB_to_SB_class_SB_index_CL_HashtableEqTypeString,uuid_0000000000074e6e,({LM_Type rvalue={3};rvalue;})));({});})
 ;
 uuid_0000000000074e6f;
 });}
+#line 4 "SRC/is-class.lm"
+unsigned long is_SB_class_CL_ArrowU64String(char* uuid_0000000000074e70){unsigned long uuid_0000000000074e71;
+return ({({uuid_0000000000074e71=(_DT_lookup_CL_ArrowU64ConsU64ConsStringHashtableEqU64String(class_SB_to_SB_yes_SB_index_CL_HashtableEqU64String,uuid_0000000000074e70,(0)));({});})
+;
+uuid_0000000000074e71;
+});}
 #line 4 "SRC/fields-of-tag.lm"
-void index_SB_fields_SB_of_SB_tag_CL_ArrowNilConsTypeConsTypeConsTypeString(char* uuid_0000000000074e70,LM_Type uuid_0000000000074e71,LM_Type uuid_0000000000074e72,LM_Type uuid_0000000000074e73){({({tag_SB_to_SB_fields_SB_index_CL_HashtableEqTupleTypeTypeString=(_DT_bind_CL_ArrowHashtableEqTupleTypeTypeStringConsTupleTypeTypeConsStringHashtableEqTupleTypeTypeString(tag_SB_to_SB_fields_SB_index_CL_HashtableEqTupleTypeTypeString,uuid_0000000000074e70,({LM_TupleTypeType rvalue={.field_0=0,.field_1=uuid_0000000000074e73,.field_2=uuid_0000000000074e72};rvalue;})));({});});
-(index_SB_fields_SB_quick_SB_prop_CL_ArrowNilConsU64ConsTypeConsTypeType((t1_CL_ArrowTypeString((_AD__CL_ArrowStringConsStringString("Tag::",uuid_0000000000074e70)))),uuid_0000000000074e71,uuid_0000000000074e73,(1)));
+void index_SB_fields_SB_of_SB_tag_CL_ArrowNilConsTypeConsTypeConsTypeString(char* uuid_0000000000074e72,LM_Type uuid_0000000000074e73,LM_Type uuid_0000000000074e74,LM_Type uuid_0000000000074e75){({({tag_SB_to_SB_fields_SB_index_CL_HashtableEqTupleTypeTypeString=(_DT_bind_CL_ArrowHashtableEqTupleTypeTypeStringConsTupleTypeTypeConsStringHashtableEqTupleTypeTypeString(tag_SB_to_SB_fields_SB_index_CL_HashtableEqTupleTypeTypeString,uuid_0000000000074e72,({LM_TupleTypeType rvalue={.field_0=0,.field_1=uuid_0000000000074e75,.field_2=uuid_0000000000074e74};rvalue;})));({});});
+(index_SB_fields_SB_quick_SB_prop_CL_ArrowNilConsU64ConsTypeConsTypeType((t1_CL_ArrowTypeString((_AD__CL_ArrowStringConsStringString("Tag::",uuid_0000000000074e72)))),uuid_0000000000074e73,uuid_0000000000074e75,(1)));
 });}
 #line 9 "SRC/fields-of-tag.lm"
-void index_SB_fields_SB_quick_SB_prop_CL_ArrowNilConsU64ConsTypeConsTypeType(LM_Type uuid_0000000000074e74,LM_Type uuid_0000000000074e75,LM_Type uuid_0000000000074e76,unsigned long uuid_0000000000074e77){LM_Type uuid_0000000000074e78;
-LM_Type uuid_0000000000074e79;
-char uuid_0000000000074e7a;
-LM_ListType uuid_0000000000074e7b;
+void index_SB_fields_SB_quick_SB_prop_CL_ArrowNilConsU64ConsTypeConsTypeType(LM_Type uuid_0000000000074e76,LM_Type uuid_0000000000074e77,LM_Type uuid_0000000000074e78,unsigned long uuid_0000000000074e79){LM_Type uuid_0000000000074e7a;
+LM_Type uuid_0000000000074e7b;
 char uuid_0000000000074e7c;
 LM_ListType uuid_0000000000074e7d;
 char uuid_0000000000074e7e;
 LM_ListType uuid_0000000000074e7f;
-LM_Type uuid_0000000000074e80;
-LM_Type uuid_0000000000074e81;
-char* uuid_0000000000074e82;
-LM_Type uuid_0000000000074e85;
-char uuid_0000000000074e86;
-char* uuid_0000000000074e87;
-LM_Type uuid_0000000000074e8a;
-({({uuid_0000000000074e78=uuid_0000000000074e76;({});})
+char uuid_0000000000074e80;
+LM_ListType uuid_0000000000074e81;
+LM_Type uuid_0000000000074e82;
+LM_Type uuid_0000000000074e83;
+char* uuid_0000000000074e84;
+LM_Type uuid_0000000000074e87;
+char uuid_0000000000074e88;
+char* uuid_0000000000074e89;
+LM_Type uuid_0000000000074e8c;
+({({uuid_0000000000074e7a=uuid_0000000000074e78;({});})
 ;
-(({({({({uuid_0000000000074e79=uuid_0000000000074e78;({});})
-;
-({uuid_0000000000074e7a=(0);({});})
-;
-});
-(((uuid_0000000000074e79.field_0)==(1))?(({({({({uuid_0000000000074e7b=(*(((LM_Type)(uuid_0000000000074e79)).field_1001));({});})
+(({({({({uuid_0000000000074e7b=uuid_0000000000074e7a;({});})
 ;
 ({uuid_0000000000074e7c=(0);({});})
 ;
 });
-(((uuid_0000000000074e7b.field_0)==(0))?(({({({({uuid_0000000000074e7d=(*(((LM_ListType)(uuid_0000000000074e7b)).field_1));({});})
+(((uuid_0000000000074e7b.field_0)==(1))?(({({({({uuid_0000000000074e7d=(*(((LM_Type)(uuid_0000000000074e7b)).field_1001));({});})
 ;
 ({uuid_0000000000074e7e=(0);({});})
 ;
 });
-(((uuid_0000000000074e7d.field_0)==(0))?(({({uuid_0000000000074e7f=(*(((LM_ListType)(uuid_0000000000074e7d)).field_1));({});})
+(((uuid_0000000000074e7d.field_0)==(0))?(({({({({uuid_0000000000074e7f=(*(((LM_ListType)(uuid_0000000000074e7d)).field_1));({});})
 ;
-((uuid_0000000000074e7f.field_0)==(1));
-})?(({({uuid_0000000000074e80=(((LM_ListType)(uuid_0000000000074e7d)).field_2);({});})
+({uuid_0000000000074e80=(0);({});})
+;
+});
+(((uuid_0000000000074e7f.field_0)==(0))?(({({uuid_0000000000074e81=(*(((LM_ListType)(uuid_0000000000074e7f)).field_1));({});})
+;
+((uuid_0000000000074e81.field_0)==(1));
+})?(({({uuid_0000000000074e82=(((LM_ListType)(uuid_0000000000074e7f)).field_2);({});})
+;
+1;
+})?({uuid_0000000000074e80=(1);({});}):({})):({})):({}));
+});
+(uuid_0000000000074e80==(1));
+})?(({({uuid_0000000000074e83=(((LM_ListType)(uuid_0000000000074e7d)).field_2);({});})
 ;
 1;
 })?({uuid_0000000000074e7e=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074e7e==(1));
-})?(({({uuid_0000000000074e81=(((LM_ListType)(uuid_0000000000074e7b)).field_2);({});})
+})?(({({uuid_0000000000074e84=(((LM_Type)(uuid_0000000000074e7b)).field_1002);({});})
 ;
-1;
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074e84,uuid_0000000000074e85));
 })?({uuid_0000000000074e7c=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074e7c==(1));
-})?(({({uuid_0000000000074e82=(((LM_Type)(uuid_0000000000074e79)).field_1002);({});})
+})?({(add_SB_quick_SB_prop_CL_ArrowNilConsTypeConsTypeType(uuid_0000000000074e76,uuid_0000000000074e77,(t2_CL_ArrowTypeConsTypeString((_AD__CL_ArrowStringConsStringString("Field::",(to_SB_string_CL_ArrowStringU64(uuid_0000000000074e79)))),uuid_0000000000074e83))));
+(index_SB_fields_SB_quick_SB_prop_CL_ArrowNilConsU64ConsTypeConsTypeType(uuid_0000000000074e76,uuid_0000000000074e77,uuid_0000000000074e82,(uuid_0000000000074e79+(1))));
+}):(({({({({uuid_0000000000074e87=uuid_0000000000074e7a;({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074e82,uuid_0000000000074e83));
-})?({uuid_0000000000074e7a=(1);({});}):({})):({})):({}));
-});
-(uuid_0000000000074e7a==(1));
-})?({(add_SB_quick_SB_prop_CL_ArrowNilConsTypeConsTypeType(uuid_0000000000074e74,uuid_0000000000074e75,(t2_CL_ArrowTypeConsTypeString((_AD__CL_ArrowStringConsStringString("Field::",(to_SB_string_CL_ArrowStringU64(uuid_0000000000074e77)))),uuid_0000000000074e81))));
-(index_SB_fields_SB_quick_SB_prop_CL_ArrowNilConsU64ConsTypeConsTypeType(uuid_0000000000074e74,uuid_0000000000074e75,uuid_0000000000074e80,(uuid_0000000000074e77+(1))));
-}):(({({({({uuid_0000000000074e85=uuid_0000000000074e78;({});})
-;
-({uuid_0000000000074e86=(0);({});})
+({uuid_0000000000074e88=(0);({});})
 ;
 });
-(((uuid_0000000000074e85.field_0)==(1))?(1?(({({uuid_0000000000074e87=(((LM_Type)(uuid_0000000000074e85)).field_1002);({});})
+(((uuid_0000000000074e87.field_0)==(1))?(1?(({({uuid_0000000000074e89=(((LM_Type)(uuid_0000000000074e87)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074e87,uuid_0000000000074e88));
-})?({uuid_0000000000074e86=(1);({});}):({})):({})):({}));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074e89,uuid_0000000000074e8a));
+})?({uuid_0000000000074e88=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000074e86==(1));
-})?({}):(({({uuid_0000000000074e8a=uuid_0000000000074e78;({});})
+(uuid_0000000000074e88==(1));
+})?({}):(({({uuid_0000000000074e8c=uuid_0000000000074e7a;({});})
 ;
 1;
-})?(add_SB_quick_SB_prop_CL_ArrowNilConsTypeConsTypeType(uuid_0000000000074e74,uuid_0000000000074e75,(t2_CL_ArrowTypeConsTypeString((_AD__CL_ArrowStringConsStringString("Field::",(to_SB_string_CL_ArrowStringU64(uuid_0000000000074e77)))),uuid_0000000000074e8a)))):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/fields-of-tag.lm Line: 10 Column: 5")))));
+})?(add_SB_quick_SB_prop_CL_ArrowNilConsTypeConsTypeType(uuid_0000000000074e76,uuid_0000000000074e77,(t2_CL_ArrowTypeConsTypeString((_AD__CL_ArrowStringConsStringString("Field::",(to_SB_string_CL_ArrowStringU64(uuid_0000000000074e79)))),uuid_0000000000074e8c)))):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/fields-of-tag.lm Line: 10 Column: 5")))));
 });}
 #line 27 "SRC/fields-of-tag.lm"
-LM_TupleTypeType fields_SB_of_SB_tag_CL_ArrowTupleTypeTypeString(char* uuid_0000000000074e8b){LM_TupleTypeType uuid_0000000000074e8c;
-return ({({uuid_0000000000074e8c=(_DT_lookup_CL_ArrowTupleTypeTypeConsTupleTypeTypeConsStringHashtableEqTupleTypeTypeString(tag_SB_to_SB_fields_SB_index_CL_HashtableEqTupleTypeTypeString,uuid_0000000000074e8b,({LM_TupleTypeType rvalue={.field_0=0,.field_1=({LM_Type rvalue={3};rvalue;}),.field_2=({LM_Type rvalue={3};rvalue;})};rvalue;})));({});})
+LM_TupleTypeType fields_SB_of_SB_tag_CL_ArrowTupleTypeTypeString(char* uuid_0000000000074e8d){LM_TupleTypeType uuid_0000000000074e8e;
+return ({({uuid_0000000000074e8e=(_DT_lookup_CL_ArrowTupleTypeTypeConsTupleTypeTypeConsStringHashtableEqTupleTypeTypeString(tag_SB_to_SB_fields_SB_index_CL_HashtableEqTupleTypeTypeString,uuid_0000000000074e8d,({LM_TupleTypeType rvalue={.field_0=0,.field_1=({LM_Type rvalue={3};rvalue;}),.field_2=({LM_Type rvalue={3};rvalue;})};rvalue;})));({});})
 ;
-uuid_0000000000074e8c;
+uuid_0000000000074e8e;
 });}
 #line 4 "SRC/type-complex-fields.lm"
-void set_SB_type_SB_fields_CL_ArrowNilConsTypeType(LM_Type uuid_0000000000074e8d,LM_Type uuid_0000000000074e8e){char* uuid_0000000000074e8f;
-LM_Type uuid_0000000000074e90;
-LM_Type uuid_0000000000074e91;
-char uuid_0000000000074e92;
-char* uuid_0000000000074e93;
-({({({uuid_0000000000074e8f="";({});})
+void set_SB_type_SB_fields_CL_ArrowNilConsTypeType(LM_Type uuid_0000000000074e8f,LM_Type uuid_0000000000074e90){char* uuid_0000000000074e91;
+LM_Type uuid_0000000000074e92;
+LM_Type uuid_0000000000074e93;
+char uuid_0000000000074e94;
+char* uuid_0000000000074e95;
+({({({uuid_0000000000074e91="";({});})
 ;
-({({uuid_0000000000074e90=uuid_0000000000074e8d;({});})
+({({uuid_0000000000074e92=uuid_0000000000074e8f;({});})
 ;
-(({({({({uuid_0000000000074e91=uuid_0000000000074e90;({});})
+(({({({({uuid_0000000000074e93=uuid_0000000000074e92;({});})
 ;
-({uuid_0000000000074e92=(0);({});})
+({uuid_0000000000074e94=(0);({});})
 ;
 });
-(((uuid_0000000000074e91.field_0)==(1))?(1?(({({uuid_0000000000074e93=(((LM_Type)(uuid_0000000000074e91)).field_1002);({});})
+(((uuid_0000000000074e93.field_0)==(1))?(1?(({({uuid_0000000000074e95=(((LM_Type)(uuid_0000000000074e93)).field_1002);({});})
 ;
 1;
-})?({uuid_0000000000074e92=(1);({});}):({})):({})):({}));
+})?({uuid_0000000000074e94=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000074e92==(1));
-})?({uuid_0000000000074e8f=uuid_0000000000074e93;({});}):(1?({({({(print_CL_ArrowNilString("ERROR: set-type-fields\n"));
-(print_CL_ArrowNilType(uuid_0000000000074e8d));
+(uuid_0000000000074e94==(1));
+})?({uuid_0000000000074e91=uuid_0000000000074e95;({});}):(1?({({({(print_CL_ArrowNilString("ERROR: set-type-fields\n"));
+(print_CL_ArrowNilType(uuid_0000000000074e8f));
 });
 (print_CL_ArrowNilString("\n"));
 });
@@ -6268,253 +6268,253 @@ char* uuid_0000000000074e93;
 }):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/type-complex-fields.lm Line: 6 Column: 5"))));
 });
 });
-({type_SB_complex_SB_fields_SB_index_CL_HashtableEqTupleTypeTypeString=(_DT_bind_CL_ArrowHashtableEqTupleTypeTypeStringConsTupleTypeTypeConsStringHashtableEqTupleTypeTypeString(type_SB_complex_SB_fields_SB_index_CL_HashtableEqTupleTypeTypeString,uuid_0000000000074e8f,({LM_TupleTypeType rvalue={.field_0=0,.field_1=uuid_0000000000074e8e,.field_2=uuid_0000000000074e8d};rvalue;})));({});});
+({type_SB_complex_SB_fields_SB_index_CL_HashtableEqTupleTypeTypeString=(_DT_bind_CL_ArrowHashtableEqTupleTypeTypeStringConsTupleTypeTypeConsStringHashtableEqTupleTypeTypeString(type_SB_complex_SB_fields_SB_index_CL_HashtableEqTupleTypeTypeString,uuid_0000000000074e91,({LM_TupleTypeType rvalue={.field_0=0,.field_1=uuid_0000000000074e90,.field_2=uuid_0000000000074e8f};rvalue;})));({});});
 });}
 #line 2 "SRC/get-vararg-inner.lm"
-LM_Type get_SB_vararg_SB_inner_CL_ArrowTypeType(LM_Type uuid_0000000000074e94){LM_Type uuid_0000000000074e95;
-LM_Type uuid_0000000000074e96;
-LM_Type uuid_0000000000074e97;
-char uuid_0000000000074e98;
+LM_Type get_SB_vararg_SB_inner_CL_ArrowTypeType(LM_Type uuid_0000000000074e96){LM_Type uuid_0000000000074e97;
+LM_Type uuid_0000000000074e98;
 LM_Type uuid_0000000000074e99;
-LM_Type uuid_0000000000074e9a;
+char uuid_0000000000074e9a;
 LM_Type uuid_0000000000074e9b;
-char uuid_0000000000074e9c;
-LM_ListType uuid_0000000000074e9d;
+LM_Type uuid_0000000000074e9c;
+LM_Type uuid_0000000000074e9d;
 char uuid_0000000000074e9e;
-LM_Type uuid_0000000000074e9f;
-char* uuid_0000000000074ea0;
-return ({({({uuid_0000000000074e95=({LM_Type rvalue={3};rvalue;});({});})
+LM_ListType uuid_0000000000074e9f;
+char uuid_0000000000074ea0;
+LM_Type uuid_0000000000074ea1;
+char* uuid_0000000000074ea2;
+return ({({({uuid_0000000000074e97=({LM_Type rvalue={3};rvalue;});({});})
 ;
-({({uuid_0000000000074e96=uuid_0000000000074e94;({});})
+({({uuid_0000000000074e98=uuid_0000000000074e96;({});})
 ;
-(({({({({uuid_0000000000074e97=uuid_0000000000074e96;({});})
+(({({({({uuid_0000000000074e99=uuid_0000000000074e98;({});})
 ;
-({uuid_0000000000074e98=(0);({});})
+({uuid_0000000000074e9a=(0);({});})
 ;
 });
-(((uuid_0000000000074e97.field_0)==(0))?(({({uuid_0000000000074e99=(*(((LM_Type)(uuid_0000000000074e97)).field_1));({});})
+(((uuid_0000000000074e99.field_0)==(0))?(({({uuid_0000000000074e9b=(*(((LM_Type)(uuid_0000000000074e99)).field_1));({});})
 ;
 1;
-})?(({({uuid_0000000000074e9a=(*(((LM_Type)(uuid_0000000000074e97)).field_2));({});})
+})?(({({uuid_0000000000074e9c=(*(((LM_Type)(uuid_0000000000074e99)).field_2));({});})
 ;
 1;
-})?({uuid_0000000000074e98=(1);({});}):({})):({})):({}));
+})?({uuid_0000000000074e9a=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000074e98==(1));
-})?({({({({uuid_0000000000074e9a=(get_SB_vararg_SB_inner_CL_ArrowTypeType(uuid_0000000000074e9a));({});});
-((non_SB_zero_CL_ArrowU64Type(uuid_0000000000074e9a))?({uuid_0000000000074e95=uuid_0000000000074e9a;({});}):({}));
+(uuid_0000000000074e9a==(1));
+})?({({({({uuid_0000000000074e9c=(get_SB_vararg_SB_inner_CL_ArrowTypeType(uuid_0000000000074e9c));({});});
+((non_SB_zero_CL_ArrowU64Type(uuid_0000000000074e9c))?({uuid_0000000000074e97=uuid_0000000000074e9c;({});}):({}));
 });
-({uuid_0000000000074e99=(get_SB_vararg_SB_inner_CL_ArrowTypeType(uuid_0000000000074e99));({});});
+({uuid_0000000000074e9b=(get_SB_vararg_SB_inner_CL_ArrowTypeType(uuid_0000000000074e9b));({});});
 });
-((non_SB_zero_CL_ArrowU64Type(uuid_0000000000074e99))?({uuid_0000000000074e95=uuid_0000000000074e99;({});}):({}));
-}):(({({({({uuid_0000000000074e9b=uuid_0000000000074e96;({});})
-;
-({uuid_0000000000074e9c=(0);({});})
-;
-});
-(((uuid_0000000000074e9b.field_0)==(1))?(({({({({uuid_0000000000074e9d=(*(((LM_Type)(uuid_0000000000074e9b)).field_1001));({});})
+((non_SB_zero_CL_ArrowU64Type(uuid_0000000000074e9b))?({uuid_0000000000074e97=uuid_0000000000074e9b;({});}):({}));
+}):(({({({({uuid_0000000000074e9d=uuid_0000000000074e98;({});})
 ;
 ({uuid_0000000000074e9e=(0);({});})
 ;
 });
-(((uuid_0000000000074e9d.field_0)==(0))?(1?(({({uuid_0000000000074e9f=(((LM_ListType)(uuid_0000000000074e9d)).field_2);({});})
+(((uuid_0000000000074e9d.field_0)==(1))?(({({({({uuid_0000000000074e9f=(*(((LM_Type)(uuid_0000000000074e9d)).field_1001));({});})
+;
+({uuid_0000000000074ea0=(0);({});})
+;
+});
+(((uuid_0000000000074e9f.field_0)==(0))?(1?(({({uuid_0000000000074ea1=(((LM_ListType)(uuid_0000000000074e9f)).field_2);({});})
 ;
 1;
+})?({uuid_0000000000074ea0=(1);({});}):({})):({})):({}));
+});
+(uuid_0000000000074ea0==(1));
+})?(({({uuid_0000000000074ea2=(((LM_Type)(uuid_0000000000074e9d)).field_1002);({});})
+;
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074ea2,uuid_0000000000074ea3));
 })?({uuid_0000000000074e9e=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074e9e==(1));
-})?(({({uuid_0000000000074ea0=(((LM_Type)(uuid_0000000000074e9b)).field_1002);({});})
-;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074ea0,uuid_0000000000074ea1));
-})?({uuid_0000000000074e9c=(1);({});}):({})):({})):({}));
-});
-(uuid_0000000000074e9c==(1));
-})?({uuid_0000000000074e95=uuid_0000000000074e9f;({});}):(1?({}):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/get-vararg-inner.lm Line: 4 Column: 5")))));
+})?({uuid_0000000000074e97=uuid_0000000000074ea1;({});}):(1?({}):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/get-vararg-inner.lm Line: 4 Column: 5")))));
 });
 });
-uuid_0000000000074e95;
+uuid_0000000000074e97;
 });}
 #line 2 "SRC/maybe-specialize.lm"
-void maybe_SB_specialize_CL_ArrowNilConsASTConsTypeConsTypeString(char* uuid_0000000000074ea3,LM_Type uuid_0000000000074ea4,LM_Type uuid_0000000000074ea5,LM_AST uuid_0000000000074ea6){({(apply_CL_ArrowTupleTypeTypeConsU64ConsASTConsU64ConsTypeConsTypeString(uuid_0000000000074ea3,uuid_0000000000074ea4,uuid_0000000000074ea5,(1),uuid_0000000000074ea6,(0)));
+void maybe_SB_specialize_CL_ArrowNilConsASTConsTypeConsTypeString(char* uuid_0000000000074ea5,LM_Type uuid_0000000000074ea6,LM_Type uuid_0000000000074ea7,LM_AST uuid_0000000000074ea8){({(apply_CL_ArrowTupleTypeTypeConsU64ConsASTConsU64ConsTypeConsTypeString(uuid_0000000000074ea5,uuid_0000000000074ea6,uuid_0000000000074ea7,(1),uuid_0000000000074ea8,(0)));
 ({});
 });}
 #line 6 "SRC/maybe-specialize.lm"
-void do_SB_specialize_CL_ArrowNilConsASTConsTypeConsTypeString(char* uuid_0000000000074ea7,LM_Type uuid_0000000000074ea8,LM_Type uuid_0000000000074ea9,LM_AST uuid_0000000000074eaa){({(apply_CL_ArrowTupleTypeTypeConsU64ConsASTConsU64ConsTypeConsTypeString(uuid_0000000000074ea7,uuid_0000000000074ea8,uuid_0000000000074ea9,(1),uuid_0000000000074eaa,(1)));
+void do_SB_specialize_CL_ArrowNilConsASTConsTypeConsTypeString(char* uuid_0000000000074ea9,LM_Type uuid_0000000000074eaa,LM_Type uuid_0000000000074eab,LM_AST uuid_0000000000074eac){({(apply_CL_ArrowTupleTypeTypeConsU64ConsASTConsU64ConsTypeConsTypeString(uuid_0000000000074ea9,uuid_0000000000074eaa,uuid_0000000000074eab,(1),uuid_0000000000074eac,(1)));
 ({});
 });}
 #line 2 "SRC/maybe-local-variable.lm"
-LM_Type maybe_SB_local_SB_variable_CL_ArrowTypeType(LM_Type uuid_0000000000074eab){return ({({({({uuid_0000000000074eab=(normalize_CL_ArrowTypeType(uuid_0000000000074eab));({});});
-((non_SB_zero_CL_ArrowU64Type(uuid_0000000000074eab))?({uuid_0000000000074eab=({LM_Type rvalue={.field_0=0,.field_1=(close_CL_ArrowArray_QM_TypeType((t1_CL_ArrowTypeString("LocalVariable")))),.field_2=(close_CL_ArrowArray_QM_TypeType(uuid_0000000000074eab))};rvalue;});({});}):({}));
+LM_Type maybe_SB_local_SB_variable_CL_ArrowTypeType(LM_Type uuid_0000000000074ead){return ({({({({uuid_0000000000074ead=(normalize_CL_ArrowTypeType(uuid_0000000000074ead));({});});
+((non_SB_zero_CL_ArrowU64Type(uuid_0000000000074ead))?({uuid_0000000000074ead=({LM_Type rvalue={.field_0=0,.field_1=(close_CL_ArrowArray_QM_TypeType((t1_CL_ArrowTypeString("LocalVariable")))),.field_2=(close_CL_ArrowArray_QM_TypeType(uuid_0000000000074ead))};rvalue;});({});}):({}));
 });
-({uuid_0000000000074eab=(with_SB_size_CL_ArrowTypeType(uuid_0000000000074eab));({});});
-});
-uuid_0000000000074eab;
-});}
-#line 2 "SRC/is-constructor.lm"
-unsigned long is_SB_constructor_CL_ArrowU64Type(LM_Type uuid_0000000000074eac){unsigned long uuid_0000000000074ead;
-LM_Type uuid_0000000000074eae;
-LM_Type uuid_0000000000074eaf;
-char uuid_0000000000074eb0;
-LM_Type uuid_0000000000074eb1;
-LM_Type uuid_0000000000074eb2;
-LM_Type uuid_0000000000074eb3;
-char uuid_0000000000074eb4;
-char* uuid_0000000000074eb5;
-LM_Type uuid_0000000000074eb8;
-char uuid_0000000000074eb9;
-char* uuid_0000000000074eba;
-LM_Type uuid_0000000000074ebb;
-char uuid_0000000000074ebc;
-char* uuid_0000000000074ebd;
-return ({({({uuid_0000000000074ead=(0);({});})
-;
-({({uuid_0000000000074eae=uuid_0000000000074eac;({});})
-;
-(({({({({uuid_0000000000074eaf=uuid_0000000000074eae;({});})
-;
-({uuid_0000000000074eb0=(0);({});})
-;
-});
-(((uuid_0000000000074eaf.field_0)==(0))?(({({uuid_0000000000074eb1=(*(((LM_Type)(uuid_0000000000074eaf)).field_1));({});})
-;
-1;
-})?(({({uuid_0000000000074eb2=(*(((LM_Type)(uuid_0000000000074eaf)).field_2));({});})
-;
-1;
-})?({uuid_0000000000074eb0=(1);({});}):({})):({})):({}));
-});
-(uuid_0000000000074eb0==(1));
-})?({uuid_0000000000074ead=((is_SB_constructor_CL_ArrowU64Type(uuid_0000000000074eb2))||(is_SB_constructor_CL_ArrowU64Type(uuid_0000000000074eb1)));({});}):(({({({({uuid_0000000000074eb3=uuid_0000000000074eae;({});})
-;
-({uuid_0000000000074eb4=(0);({});})
-;
-});
-(((uuid_0000000000074eb3.field_0)==(1))?(1?(({({uuid_0000000000074eb5=(((LM_Type)(uuid_0000000000074eb3)).field_1002);({});})
-;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074eb5,uuid_0000000000074eb6));
-})?({uuid_0000000000074eb4=(1);({});}):({})):({})):({}));
-});
-(uuid_0000000000074eb4==(1));
-})?({uuid_0000000000074ead=(1);({});}):(({({({({uuid_0000000000074eb8=uuid_0000000000074eae;({});})
-;
-({uuid_0000000000074eb9=(0);({});})
-;
-});
-(((uuid_0000000000074eb8.field_0)==(1))?(1?(({({uuid_0000000000074eba=(((LM_Type)(uuid_0000000000074eb8)).field_1002);({});})
-;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074eba,uuid_0000000000074e2d));
-})?({uuid_0000000000074eb9=(1);({});}):({})):({})):({}));
-});
-(uuid_0000000000074eb9==(1));
-})?({uuid_0000000000074ead=(is_SB_constructor_CL_ArrowU64Type((p2_CL_ArrowTypeType(uuid_0000000000074eac))));({});}):(({({({({uuid_0000000000074ebb=uuid_0000000000074eae;({});})
-;
-({uuid_0000000000074ebc=(0);({});})
-;
-});
-(((uuid_0000000000074ebb.field_0)==(1))?(1?(({({uuid_0000000000074ebd=(((LM_Type)(uuid_0000000000074ebb)).field_1002);({});})
-;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074ebd,uuid_0000000000074e83));
-})?({uuid_0000000000074ebc=(1);({});}):({})):({})):({}));
-});
-(uuid_0000000000074ebc==(1));
-})?({uuid_0000000000074ead=(is_SB_constructor_CL_ArrowU64Type((p2_CL_ArrowTypeType(uuid_0000000000074eac))));({});}):(1?({}):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/is-constructor.lm Line: 4 Column: 5")))))));
-});
+({uuid_0000000000074ead=(with_SB_size_CL_ArrowTypeType(uuid_0000000000074ead));({});});
 });
 uuid_0000000000074ead;
 });}
+#line 2 "SRC/is-constructor.lm"
+unsigned long is_SB_constructor_CL_ArrowU64Type(LM_Type uuid_0000000000074eae){unsigned long uuid_0000000000074eaf;
+LM_Type uuid_0000000000074eb0;
+LM_Type uuid_0000000000074eb1;
+char uuid_0000000000074eb2;
+LM_Type uuid_0000000000074eb3;
+LM_Type uuid_0000000000074eb4;
+LM_Type uuid_0000000000074eb5;
+char uuid_0000000000074eb6;
+char* uuid_0000000000074eb7;
+LM_Type uuid_0000000000074eba;
+char uuid_0000000000074ebb;
+char* uuid_0000000000074ebc;
+LM_Type uuid_0000000000074ebd;
+char uuid_0000000000074ebe;
+char* uuid_0000000000074ebf;
+return ({({({uuid_0000000000074eaf=(0);({});})
+;
+({({uuid_0000000000074eb0=uuid_0000000000074eae;({});})
+;
+(({({({({uuid_0000000000074eb1=uuid_0000000000074eb0;({});})
+;
+({uuid_0000000000074eb2=(0);({});})
+;
+});
+(((uuid_0000000000074eb1.field_0)==(0))?(({({uuid_0000000000074eb3=(*(((LM_Type)(uuid_0000000000074eb1)).field_1));({});})
+;
+1;
+})?(({({uuid_0000000000074eb4=(*(((LM_Type)(uuid_0000000000074eb1)).field_2));({});})
+;
+1;
+})?({uuid_0000000000074eb2=(1);({});}):({})):({})):({}));
+});
+(uuid_0000000000074eb2==(1));
+})?({uuid_0000000000074eaf=((is_SB_constructor_CL_ArrowU64Type(uuid_0000000000074eb4))||(is_SB_constructor_CL_ArrowU64Type(uuid_0000000000074eb3)));({});}):(({({({({uuid_0000000000074eb5=uuid_0000000000074eb0;({});})
+;
+({uuid_0000000000074eb6=(0);({});})
+;
+});
+(((uuid_0000000000074eb5.field_0)==(1))?(1?(({({uuid_0000000000074eb7=(((LM_Type)(uuid_0000000000074eb5)).field_1002);({});})
+;
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074eb7,uuid_0000000000074eb8));
+})?({uuid_0000000000074eb6=(1);({});}):({})):({})):({}));
+});
+(uuid_0000000000074eb6==(1));
+})?({uuid_0000000000074eaf=(1);({});}):(({({({({uuid_0000000000074eba=uuid_0000000000074eb0;({});})
+;
+({uuid_0000000000074ebb=(0);({});})
+;
+});
+(((uuid_0000000000074eba.field_0)==(1))?(1?(({({uuid_0000000000074ebc=(((LM_Type)(uuid_0000000000074eba)).field_1002);({});})
+;
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074ebc,uuid_0000000000074e2f));
+})?({uuid_0000000000074ebb=(1);({});}):({})):({})):({}));
+});
+(uuid_0000000000074ebb==(1));
+})?({uuid_0000000000074eaf=(is_SB_constructor_CL_ArrowU64Type((p2_CL_ArrowTypeType(uuid_0000000000074eae))));({});}):(({({({({uuid_0000000000074ebd=uuid_0000000000074eb0;({});})
+;
+({uuid_0000000000074ebe=(0);({});})
+;
+});
+(((uuid_0000000000074ebd.field_0)==(1))?(1?(({({uuid_0000000000074ebf=(((LM_Type)(uuid_0000000000074ebd)).field_1002);({});})
+;
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074ebf,uuid_0000000000074e85));
+})?({uuid_0000000000074ebe=(1);({});}):({})):({})):({}));
+});
+(uuid_0000000000074ebe==(1));
+})?({uuid_0000000000074eaf=(is_SB_constructor_CL_ArrowU64Type((p2_CL_ArrowTypeType(uuid_0000000000074eae))));({});}):(1?({}):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/is-constructor.lm Line: 4 Column: 5")))))));
+});
+});
+uuid_0000000000074eaf;
+});}
 #line 15 "SRC/is-constructor.lm"
-unsigned long is_SB_simple_SB_constructor_CL_ArrowU64Type(LM_Type uuid_0000000000074ebe){unsigned long uuid_0000000000074ebf;
-LM_Type uuid_0000000000074ec0;
-LM_Type uuid_0000000000074ec1;
-char uuid_0000000000074ec2;
+unsigned long is_SB_simple_SB_constructor_CL_ArrowU64Type(LM_Type uuid_0000000000074ec0){unsigned long uuid_0000000000074ec1;
+LM_Type uuid_0000000000074ec2;
 LM_Type uuid_0000000000074ec3;
-LM_Type uuid_0000000000074ec4;
+char uuid_0000000000074ec4;
 LM_Type uuid_0000000000074ec5;
-char uuid_0000000000074ec6;
-char* uuid_0000000000074ec7;
-return ({({({uuid_0000000000074ebf=(0);({});})
+LM_Type uuid_0000000000074ec6;
+LM_Type uuid_0000000000074ec7;
+char uuid_0000000000074ec8;
+char* uuid_0000000000074ec9;
+return ({({({uuid_0000000000074ec1=(0);({});})
 ;
-({({uuid_0000000000074ec0=uuid_0000000000074ebe;({});})
+({({uuid_0000000000074ec2=uuid_0000000000074ec0;({});})
 ;
-(({({({({uuid_0000000000074ec1=uuid_0000000000074ec0;({});})
+(({({({({uuid_0000000000074ec3=uuid_0000000000074ec2;({});})
 ;
-({uuid_0000000000074ec2=(0);({});})
+({uuid_0000000000074ec4=(0);({});})
 ;
 });
-(((uuid_0000000000074ec1.field_0)==(0))?(({({uuid_0000000000074ec3=(*(((LM_Type)(uuid_0000000000074ec1)).field_1));({});})
+(((uuid_0000000000074ec3.field_0)==(0))?(({({uuid_0000000000074ec5=(*(((LM_Type)(uuid_0000000000074ec3)).field_1));({});})
 ;
 1;
-})?(({({uuid_0000000000074ec4=(*(((LM_Type)(uuid_0000000000074ec1)).field_2));({});})
+})?(({({uuid_0000000000074ec6=(*(((LM_Type)(uuid_0000000000074ec3)).field_2));({});})
 ;
 1;
-})?({uuid_0000000000074ec2=(1);({});}):({})):({})):({}));
+})?({uuid_0000000000074ec4=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000074ec2==(1));
-})?({uuid_0000000000074ebf=((is_SB_simple_SB_constructor_CL_ArrowU64Type(uuid_0000000000074ec4))||(is_SB_simple_SB_constructor_CL_ArrowU64Type(uuid_0000000000074ec3)));({});}):(({({({({uuid_0000000000074ec5=uuid_0000000000074ec0;({});})
+(uuid_0000000000074ec4==(1));
+})?({uuid_0000000000074ec1=((is_SB_simple_SB_constructor_CL_ArrowU64Type(uuid_0000000000074ec6))||(is_SB_simple_SB_constructor_CL_ArrowU64Type(uuid_0000000000074ec5)));({});}):(({({({({uuid_0000000000074ec7=uuid_0000000000074ec2;({});})
 ;
-({uuid_0000000000074ec6=(0);({});})
+({uuid_0000000000074ec8=(0);({});})
 ;
 });
-(((uuid_0000000000074ec5.field_0)==(1))?(1?(({({uuid_0000000000074ec7=(((LM_Type)(uuid_0000000000074ec5)).field_1002);({});})
+(((uuid_0000000000074ec7.field_0)==(1))?(1?(({({uuid_0000000000074ec9=(((LM_Type)(uuid_0000000000074ec7)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074ec7,uuid_0000000000074eb6));
-})?({uuid_0000000000074ec6=(1);({});}):({})):({})):({}));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074ec9,uuid_0000000000074eb8));
+})?({uuid_0000000000074ec8=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000074ec6==(1));
-})?({uuid_0000000000074ebf=(1);({});}):(1?({}):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/is-constructor.lm Line: 17 Column: 5")))));
+(uuid_0000000000074ec8==(1));
+})?({uuid_0000000000074ec1=(1);({});}):(1?({}):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/is-constructor.lm Line: 17 Column: 5")))));
 });
 });
-uuid_0000000000074ebf;
+uuid_0000000000074ec1;
 });}
 #line 26 "SRC/is-constructor.lm"
-unsigned long is_SB_tag_CL_ArrowU64Type(LM_Type uuid_0000000000074ec8){unsigned long uuid_0000000000074ec9;
-LM_Type uuid_0000000000074eca;
-LM_Type uuid_0000000000074ecb;
-char uuid_0000000000074ecc;
+unsigned long is_SB_tag_CL_ArrowU64Type(LM_Type uuid_0000000000074eca){unsigned long uuid_0000000000074ecb;
+LM_Type uuid_0000000000074ecc;
 LM_Type uuid_0000000000074ecd;
-LM_Type uuid_0000000000074ece;
-return ({({({uuid_0000000000074ec9=(0);({});})
+char uuid_0000000000074ece;
+LM_Type uuid_0000000000074ecf;
+LM_Type uuid_0000000000074ed0;
+return ({({({uuid_0000000000074ecb=(0);({});})
 ;
-({({uuid_0000000000074eca=uuid_0000000000074ec8;({});})
+({({uuid_0000000000074ecc=uuid_0000000000074eca;({});})
 ;
-(({({({({uuid_0000000000074ecb=uuid_0000000000074eca;({});})
+(({({({({uuid_0000000000074ecd=uuid_0000000000074ecc;({});})
 ;
-({uuid_0000000000074ecc=(0);({});})
+({uuid_0000000000074ece=(0);({});})
 ;
 });
-(((uuid_0000000000074ecb.field_0)==(0))?(({({uuid_0000000000074ecd=(*(((LM_Type)(uuid_0000000000074ecb)).field_1));({});})
+(((uuid_0000000000074ecd.field_0)==(0))?(({({uuid_0000000000074ecf=(*(((LM_Type)(uuid_0000000000074ecd)).field_1));({});})
 ;
 1;
-})?(({({uuid_0000000000074ece=(*(((LM_Type)(uuid_0000000000074ecb)).field_2));({});})
+})?(({({uuid_0000000000074ed0=(*(((LM_Type)(uuid_0000000000074ecd)).field_2));({});})
 ;
 1;
-})?({uuid_0000000000074ecc=(1);({});}):({})):({})):({}));
+})?({uuid_0000000000074ece=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000074ecc==(1));
-})?({uuid_0000000000074ec9=((is_SB_tag_CL_ArrowU64Type(uuid_0000000000074ece))||(is_SB_tag_CL_ArrowU64Type(uuid_0000000000074ecd)));({});}):(1?({}):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/is-constructor.lm Line: 28 Column: 5"))));
+(uuid_0000000000074ece==(1));
+})?({uuid_0000000000074ecb=((is_SB_tag_CL_ArrowU64Type(uuid_0000000000074ed0))||(is_SB_tag_CL_ArrowU64Type(uuid_0000000000074ecf)));({});}):(1?({}):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/is-constructor.lm Line: 28 Column: 5"))));
 });
 });
-uuid_0000000000074ec9;
+uuid_0000000000074ecb;
 });}
 #line 2 "SRC/is-open.lm"
-unsigned long is_SB_open_CL_ArrowU64Type(LM_Type uuid_0000000000074ecf){unsigned long uuid_0000000000074ed0;
-LM_Type uuid_0000000000074ed1;
-LM_Type uuid_0000000000074ed2;
+unsigned long is_SB_open_CL_ArrowU64Type(LM_Type uuid_0000000000074ed1){unsigned long uuid_0000000000074ed2;
 LM_Type uuid_0000000000074ed3;
-char uuid_0000000000074ed4;
+LM_Type uuid_0000000000074ed4;
 LM_Type uuid_0000000000074ed5;
 char uuid_0000000000074ed6;
 LM_Type uuid_0000000000074ed7;
-LM_Type uuid_0000000000074ed8;
+char uuid_0000000000074ed8;
 LM_Type uuid_0000000000074ed9;
-char uuid_0000000000074eda;
-LM_ListType uuid_0000000000074edb;
+LM_Type uuid_0000000000074eda;
+LM_Type uuid_0000000000074edb;
 char uuid_0000000000074edc;
 LM_ListType uuid_0000000000074edd;
 char uuid_0000000000074ede;
 LM_ListType uuid_0000000000074edf;
-LM_Type uuid_0000000000074ee0;
-char* uuid_0000000000074ee1;
+char uuid_0000000000074ee0;
+LM_ListType uuid_0000000000074ee1;
+LM_Type uuid_0000000000074ee2;
+char* uuid_0000000000074ee3;
 LM_Type uuid_0000000000074ee4;
 char uuid_0000000000074ee5;
 LM_ListType uuid_0000000000074ee6;
@@ -6542,71 +6542,71 @@ LM_ListType uuid_0000000000074efd;
 char uuid_0000000000074efe;
 LM_ListType uuid_0000000000074eff;
 LM_Type uuid_0000000000074f00;
-return ({({({uuid_0000000000074ed0=(0);({});})
+return ({({({uuid_0000000000074ed2=(0);({});})
 ;
-({({uuid_0000000000074ed1=uuid_0000000000074ecf;({});})
+({({uuid_0000000000074ed3=uuid_0000000000074ed1;({});})
 ;
-(({({uuid_0000000000074ed2=uuid_0000000000074ed1;({});})
+(({({uuid_0000000000074ed4=uuid_0000000000074ed3;({});})
 ;
-((uuid_0000000000074ed2.field_0)==(3));
-})?({uuid_0000000000074ed0=(1);({});}):(({({({({uuid_0000000000074ed3=uuid_0000000000074ed1;({});})
-;
-({uuid_0000000000074ed4=(0);({});})
-;
-});
-(((uuid_0000000000074ed3.field_0)==(2))?(1?({uuid_0000000000074ed4=(1);({});}):({})):({}));
-});
-(uuid_0000000000074ed4==(1));
-})?({uuid_0000000000074ed0=(1);({});}):(({({({({uuid_0000000000074ed5=uuid_0000000000074ed1;({});})
+((uuid_0000000000074ed4.field_0)==(3));
+})?({uuid_0000000000074ed2=(1);({});}):(({({({({uuid_0000000000074ed5=uuid_0000000000074ed3;({});})
 ;
 ({uuid_0000000000074ed6=(0);({});})
 ;
 });
-(((uuid_0000000000074ed5.field_0)==(0))?(({({uuid_0000000000074ed7=(*(((LM_Type)(uuid_0000000000074ed5)).field_1));({});})
-;
-1;
-})?(({({uuid_0000000000074ed8=(*(((LM_Type)(uuid_0000000000074ed5)).field_2));({});})
-;
-1;
-})?({uuid_0000000000074ed6=(1);({});}):({})):({})):({}));
+(((uuid_0000000000074ed5.field_0)==(2))?(1?({uuid_0000000000074ed6=(1);({});}):({})):({}));
 });
 (uuid_0000000000074ed6==(1));
-})?({((is_SB_open_CL_ArrowU64Type(uuid_0000000000074ed8))?({uuid_0000000000074ed0=(1);({});}):({}));
-((is_SB_open_CL_ArrowU64Type(uuid_0000000000074ed7))?({uuid_0000000000074ed0=(1);({});}):({}));
-}):(({({({({uuid_0000000000074ed9=uuid_0000000000074ed1;({});})
+})?({uuid_0000000000074ed2=(1);({});}):(({({({({uuid_0000000000074ed7=uuid_0000000000074ed3;({});})
 ;
-({uuid_0000000000074eda=(0);({});})
+({uuid_0000000000074ed8=(0);({});})
 ;
 });
-(((uuid_0000000000074ed9.field_0)==(1))?(({({({({uuid_0000000000074edb=(*(((LM_Type)(uuid_0000000000074ed9)).field_1001));({});})
+(((uuid_0000000000074ed7.field_0)==(0))?(({({uuid_0000000000074ed9=(*(((LM_Type)(uuid_0000000000074ed7)).field_1));({});})
+;
+1;
+})?(({({uuid_0000000000074eda=(*(((LM_Type)(uuid_0000000000074ed7)).field_2));({});})
+;
+1;
+})?({uuid_0000000000074ed8=(1);({});}):({})):({})):({}));
+});
+(uuid_0000000000074ed8==(1));
+})?({((is_SB_open_CL_ArrowU64Type(uuid_0000000000074eda))?({uuid_0000000000074ed2=(1);({});}):({}));
+((is_SB_open_CL_ArrowU64Type(uuid_0000000000074ed9))?({uuid_0000000000074ed2=(1);({});}):({}));
+}):(({({({({uuid_0000000000074edb=uuid_0000000000074ed3;({});})
 ;
 ({uuid_0000000000074edc=(0);({});})
 ;
 });
-(((uuid_0000000000074edb.field_0)==(0))?(({({({({uuid_0000000000074edd=(*(((LM_ListType)(uuid_0000000000074edb)).field_1));({});})
+(((uuid_0000000000074edb.field_0)==(1))?(({({({({uuid_0000000000074edd=(*(((LM_Type)(uuid_0000000000074edb)).field_1001));({});})
 ;
 ({uuid_0000000000074ede=(0);({});})
 ;
 });
-(((uuid_0000000000074edd.field_0)==(0))?(({({uuid_0000000000074edf=(*(((LM_ListType)(uuid_0000000000074edd)).field_1));({});})
+(((uuid_0000000000074edd.field_0)==(0))?(({({({({uuid_0000000000074edf=(*(((LM_ListType)(uuid_0000000000074edd)).field_1));({});})
 ;
-((uuid_0000000000074edf.field_0)==(1));
-})?(({({uuid_0000000000074ee0=(((LM_ListType)(uuid_0000000000074edd)).field_2);({});})
+({uuid_0000000000074ee0=(0);({});})
 ;
-((uuid_0000000000074ee0.field_0)==(3));
-})?({uuid_0000000000074ede=(1);({});}):({})):({})):({}));
+});
+(((uuid_0000000000074edf.field_0)==(0))?(({({uuid_0000000000074ee1=(*(((LM_ListType)(uuid_0000000000074edf)).field_1));({});})
+;
+((uuid_0000000000074ee1.field_0)==(1));
+})?(({({uuid_0000000000074ee2=(((LM_ListType)(uuid_0000000000074edf)).field_2);({});})
+;
+((uuid_0000000000074ee2.field_0)==(3));
+})?({uuid_0000000000074ee0=(1);({});}):({})):({})):({}));
+});
+(uuid_0000000000074ee0==(1));
+})?(1?({uuid_0000000000074ede=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074ede==(1));
-})?(1?({uuid_0000000000074edc=(1);({});}):({})):({})):({}));
+})?(({({uuid_0000000000074ee3=(((LM_Type)(uuid_0000000000074edb)).field_1002);({});})
+;
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074ee3,uuid_0000000000074da9));
+})?({uuid_0000000000074edc=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074edc==(1));
-})?(({({uuid_0000000000074ee1=(((LM_Type)(uuid_0000000000074ed9)).field_1002);({});})
-;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074ee1,uuid_0000000000074ee2));
-})?({uuid_0000000000074eda=(1);({});}):({})):({})):({}));
-});
-(uuid_0000000000074eda==(1));
-})?({}):(({({({({uuid_0000000000074ee4=uuid_0000000000074ed1;({});})
+})?({}):(({({({({uuid_0000000000074ee4=uuid_0000000000074ed3;({});})
 ;
 ({uuid_0000000000074ee5=(0);({});})
 ;
@@ -6635,11 +6635,11 @@ return ({({({uuid_0000000000074ed0=(0);({});})
 (uuid_0000000000074ee7==(1));
 })?(({({uuid_0000000000074eec=(((LM_Type)(uuid_0000000000074ee4)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074eec,uuid_0000000000074ee2));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074eec,uuid_0000000000074da9));
 })?({uuid_0000000000074ee5=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074ee5==(1));
-})?({uuid_0000000000074ed0=(is_SB_open_CL_ArrowU64Type(uuid_0000000000074eeb));({});}):(({({({({uuid_0000000000074eed=uuid_0000000000074ed1;({});})
+})?({uuid_0000000000074ed2=(is_SB_open_CL_ArrowU64Type(uuid_0000000000074eeb));({});}):(({({({({uuid_0000000000074eed=uuid_0000000000074ed3;({});})
 ;
 ({uuid_0000000000074eee=(0);({});})
 ;
@@ -6672,7 +6672,7 @@ return ({({({uuid_0000000000074ed0=(0);({});})
 })?({uuid_0000000000074eee=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074eee==(1));
-})?({uuid_0000000000074ed0=(is_SB_open_CL_ArrowU64Type(uuid_0000000000074ef4));({});}):(({({({({uuid_0000000000074ef8=uuid_0000000000074ed1;({});})
+})?({uuid_0000000000074ed2=(is_SB_open_CL_ArrowU64Type(uuid_0000000000074ef4));({});}):(({({({({uuid_0000000000074ef8=uuid_0000000000074ed3;({});})
 ;
 ({uuid_0000000000074ef9=(0);({});})
 ;
@@ -6701,14 +6701,14 @@ return ({({({uuid_0000000000074ed0=(0);({});})
 })?({uuid_0000000000074efe=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074efe==(1));
-})?({((is_SB_open_CL_ArrowU64Type(uuid_0000000000074f00))?({uuid_0000000000074ed0=(1);({});}):({}));
+})?({((is_SB_open_CL_ArrowU64Type(uuid_0000000000074f00))?({uuid_0000000000074ed2=(1);({});}):({}));
 ({uuid_0000000000074efb=uuid_0000000000074eff;({});});
 }):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/is-open.lm Line: 16 Column: 11")));
 })));};});
 }):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/is-open.lm Line: 4 Column: 5")))))))));
 });
 });
-uuid_0000000000074ed0;
+uuid_0000000000074ed2;
 });}
 #line 2 "SRC/is-parameterized.lm"
 unsigned long is_SB_parameterized_CL_ArrowU64Type(LM_Type uuid_0000000000074f01){unsigned long uuid_0000000000074f02;
@@ -6793,7 +6793,7 @@ return ({({({uuid_0000000000074f0d=(0);({});})
 });
 (((uuid_0000000000074f10.field_0)==(1))?(1?(({({uuid_0000000000074f12=(((LM_Type)(uuid_0000000000074f10)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074f12,uuid_0000000000074e83));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074f12,uuid_0000000000074e85));
 })?({uuid_0000000000074f11=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074f11==(1));
@@ -6804,7 +6804,7 @@ return ({({({uuid_0000000000074f0d=(0);({});})
 });
 (((uuid_0000000000074f13.field_0)==(1))?(1?(({({uuid_0000000000074f15=(((LM_Type)(uuid_0000000000074f13)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074f15,uuid_0000000000074e2d));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074f15,uuid_0000000000074e2f));
 })?({uuid_0000000000074f14=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074f14==(1));
@@ -7401,7 +7401,7 @@ return ({({({uuid_0000000000074f9c=({LM_Type rvalue={3};rvalue;});({});})
 (uuid_0000000000074fa5==(1));
 })?(({({uuid_0000000000074faa=(((LM_Type)(uuid_0000000000074fa2)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074faa,uuid_0000000000074e2d));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074faa,uuid_0000000000074e2f));
 })?({uuid_0000000000074fa3=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074fa3==(1));
@@ -7431,7 +7431,7 @@ return ({({({uuid_0000000000074f9c=({LM_Type rvalue={3};rvalue;});({});})
 (uuid_0000000000074fae==(1));
 })?(({({uuid_0000000000074fb2=(((LM_Type)(uuid_0000000000074fab)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074fb2,uuid_0000000000074ee2));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074fb2,uuid_0000000000074da9));
 })?({uuid_0000000000074fac=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074fac==(1));
@@ -7513,7 +7513,7 @@ return ({({({uuid_0000000000074fb4=({LM_Type rvalue={3};rvalue;});({});})
 (uuid_0000000000074fbd==(1));
 })?(({({uuid_0000000000074fc2=(((LM_Type)(uuid_0000000000074fba)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074fc2,uuid_0000000000074e2d));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074fc2,uuid_0000000000074e2f));
 })?({uuid_0000000000074fbb=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074fbb==(1));
@@ -7543,7 +7543,7 @@ return ({({({uuid_0000000000074fb4=({LM_Type rvalue={3};rvalue;});({});})
 (uuid_0000000000074fc6==(1));
 })?(({({uuid_0000000000074fca=(((LM_Type)(uuid_0000000000074fc3)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074fca,uuid_0000000000074ee2));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000074fca,uuid_0000000000074da9));
 })?({uuid_0000000000074fc4=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000074fc4==(1));
@@ -8149,7 +8149,7 @@ return ({({({uuid_0000000000075026=(0);({});})
 (uuid_000000000007504b==(1));
 })?(({({uuid_0000000000075051=(((LM_Type)(uuid_0000000000075048)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075051,uuid_0000000000074e83));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075051,uuid_0000000000074e85));
 })?({uuid_0000000000075049=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000075049==(1));
@@ -8198,7 +8198,7 @@ return ({({({uuid_0000000000075026=(0);({});})
 (uuid_000000000007505d==(1));
 })?(({({uuid_0000000000075060=(((LM_Type)(uuid_000000000007505a)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075060,uuid_0000000000074ea1));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075060,uuid_0000000000074ea3));
 })?({uuid_000000000007505b=(1);({});}):({})):({})):({}));
 });
 (uuid_000000000007505b==(1));
@@ -8207,7 +8207,7 @@ return ({({({uuid_0000000000075026=(0);({});})
 (uuid_0000000000075055==(1));
 })?(({({uuid_0000000000075061=(((LM_Type)(uuid_0000000000075052)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075061,uuid_0000000000074e83));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075061,uuid_0000000000074e85));
 })?({uuid_0000000000075053=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000075053==(1));
@@ -8267,7 +8267,7 @@ return ({({({uuid_0000000000075026=(0);({});})
 (uuid_0000000000075070==(1));
 })?(({({uuid_0000000000075073=(((LM_Type)(uuid_000000000007506d)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075073,uuid_0000000000074ea1));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075073,uuid_0000000000074ea3));
 })?({uuid_000000000007506e=(1);({});}):({})):({})):({}));
 });
 (uuid_000000000007506e==(1));
@@ -8276,7 +8276,7 @@ return ({({({uuid_0000000000075026=(0);({});})
 (uuid_0000000000075068==(1));
 })?(({({uuid_0000000000075074=(((LM_Type)(uuid_0000000000075065)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075074,uuid_0000000000074e83));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075074,uuid_0000000000074e85));
 })?({uuid_0000000000075066=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000075066==(1));
@@ -8320,7 +8320,7 @@ return ({({({uuid_0000000000075026=(0);({});})
 (uuid_000000000007507a==(1));
 })?(({({uuid_0000000000075080=(((LM_Type)(uuid_0000000000075077)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075080,uuid_0000000000074e83));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075080,uuid_0000000000074e85));
 })?({uuid_0000000000075078=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000075078==(1));
@@ -8345,7 +8345,7 @@ return ({({({uuid_0000000000075026=(0);({});})
 (uuid_0000000000075084==(1));
 })?(({({uuid_0000000000075087=(((LM_Type)(uuid_0000000000075081)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075087,uuid_0000000000074ea1));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075087,uuid_0000000000074ea3));
 })?({uuid_0000000000075082=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000075082==(1));
@@ -8367,7 +8367,7 @@ return ({({({uuid_0000000000075026=(0);({});})
 ((uuid_000000000007508c.field_0)==(1));
 })?(({({uuid_000000000007508d=(((LM_Type)(uuid_000000000007508a)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsStringString(uuid_000000000007508d,"Nil"));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_000000000007508d,uuid_0000000000074e8a));
 })?({uuid_000000000007508b=(1);({});}):({})):({})):({}));
 });
 (uuid_000000000007508b==(1));
@@ -8392,7 +8392,7 @@ return ({({({uuid_0000000000075026=(0);({});})
 (uuid_0000000000075091==(1));
 })?(({({uuid_0000000000075094=(((LM_Type)(uuid_000000000007508e)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075094,uuid_0000000000074ea1));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075094,uuid_0000000000074ea3));
 })?({uuid_000000000007508f=(1);({});}):({})):({})):({}));
 });
 (uuid_000000000007508f==(1));
@@ -8428,7 +8428,7 @@ return ({({({uuid_0000000000075026=(0);({});})
 (uuid_000000000007509b==(1));
 })?(({({uuid_000000000007509e=(((LM_Type)(uuid_0000000000075098)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_000000000007509e,uuid_0000000000074ea1));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_000000000007509e,uuid_0000000000074ea3));
 })?({uuid_0000000000075099=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000075099==(1));
@@ -9017,7 +9017,7 @@ return ({({({uuid_00000000000750c0=({LM_TContext rvalue={2};rvalue;});({});})
 (uuid_000000000007510c==(1));
 })?(({({uuid_0000000000075112=(((LM_Type)(uuid_0000000000075109)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsStringString(uuid_0000000000075112,"Cons"));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075112,uuid_0000000000074e85));
 })?({uuid_000000000007510a=(1);({});}):({})):({})):({}));
 });
 (uuid_000000000007510a==(1));
@@ -9066,7 +9066,7 @@ return ({({({uuid_00000000000750c0=({LM_TContext rvalue={2};rvalue;});({});})
 (uuid_000000000007511e==(1));
 })?(({({uuid_0000000000075121=(((LM_Type)(uuid_000000000007511b)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075121,uuid_0000000000074ea1));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075121,uuid_0000000000074ea3));
 })?({uuid_000000000007511c=(1);({});}):({})):({})):({}));
 });
 (uuid_000000000007511c==(1));
@@ -9075,7 +9075,7 @@ return ({({({uuid_00000000000750c0=({LM_TContext rvalue={2};rvalue;});({});})
 (uuid_0000000000075116==(1));
 })?(({({uuid_0000000000075122=(((LM_Type)(uuid_0000000000075113)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075122,uuid_0000000000074e83));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075122,uuid_0000000000074e85));
 })?({uuid_0000000000075114=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000075114==(1));
@@ -9135,7 +9135,7 @@ return ({({({uuid_00000000000750c0=({LM_TContext rvalue={2};rvalue;});({});})
 (uuid_0000000000075131==(1));
 })?(({({uuid_0000000000075134=(((LM_Type)(uuid_000000000007512e)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075134,uuid_0000000000074ea1));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075134,uuid_0000000000074ea3));
 })?({uuid_000000000007512f=(1);({});}):({})):({})):({}));
 });
 (uuid_000000000007512f==(1));
@@ -9144,7 +9144,7 @@ return ({({({uuid_00000000000750c0=({LM_TContext rvalue={2};rvalue;});({});})
 (uuid_0000000000075129==(1));
 })?(({({uuid_0000000000075135=(((LM_Type)(uuid_0000000000075126)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075135,uuid_0000000000074e83));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075135,uuid_0000000000074e85));
 })?({uuid_0000000000075127=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000075127==(1));
@@ -9188,7 +9188,7 @@ return ({({({uuid_00000000000750c0=({LM_TContext rvalue={2};rvalue;});({});})
 (uuid_000000000007513b==(1));
 })?(({({uuid_0000000000075141=(((LM_Type)(uuid_0000000000075138)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075141,uuid_0000000000074e83));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075141,uuid_0000000000074e85));
 })?({uuid_0000000000075139=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000075139==(1));
@@ -9213,7 +9213,7 @@ return ({({({uuid_00000000000750c0=({LM_TContext rvalue={2};rvalue;});({});})
 (uuid_0000000000075145==(1));
 })?(({({uuid_0000000000075148=(((LM_Type)(uuid_0000000000075142)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075148,uuid_0000000000074ea1));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075148,uuid_0000000000074ea3));
 })?({uuid_0000000000075143=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000075143==(1));
@@ -9235,7 +9235,7 @@ return ({({({uuid_00000000000750c0=({LM_TContext rvalue={2};rvalue;});({});})
 ((uuid_000000000007514d.field_0)==(1));
 })?(({({uuid_000000000007514e=(((LM_Type)(uuid_000000000007514b)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_000000000007514e,uuid_0000000000074e88));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_000000000007514e,uuid_0000000000074e8a));
 })?({uuid_000000000007514c=(1);({});}):({})):({})):({}));
 });
 (uuid_000000000007514c==(1));
@@ -9260,7 +9260,7 @@ return ({({({uuid_00000000000750c0=({LM_TContext rvalue={2};rvalue;});({});})
 (uuid_0000000000075152==(1));
 })?(({({uuid_0000000000075155=(((LM_Type)(uuid_000000000007514f)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075155,uuid_0000000000074ea1));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075155,uuid_0000000000074ea3));
 })?({uuid_0000000000075150=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000075150==(1));
@@ -9296,7 +9296,7 @@ return ({({({uuid_00000000000750c0=({LM_TContext rvalue={2};rvalue;});({});})
 (uuid_000000000007515c==(1));
 })?(({({uuid_000000000007515f=(((LM_Type)(uuid_0000000000075159)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_000000000007515f,uuid_0000000000074ea1));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_000000000007515f,uuid_0000000000074ea3));
 })?({uuid_000000000007515a=(1);({});}):({})):({})):({}));
 });
 (uuid_000000000007515a==(1));
@@ -9530,7 +9530,7 @@ return ({({({uuid_0000000000075196=uuid_0000000000075195;({});})
 (uuid_000000000007519b==(1));
 })?(({({uuid_00000000000751a1=(((LM_Type)(uuid_0000000000075198)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_00000000000751a1,uuid_0000000000074e83));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_00000000000751a1,uuid_0000000000074e85));
 })?({uuid_0000000000075199=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000075199==(1));
@@ -9706,7 +9706,7 @@ return ({({({uuid_00000000000751a3=(0);({});})
 (uuid_00000000000751b9==(1));
 })?(({({uuid_00000000000751bf=(((LM_Type)(uuid_00000000000751b6)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_00000000000751bf,uuid_0000000000074ee2));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_00000000000751bf,uuid_0000000000074da9));
 })?({uuid_00000000000751b7=(1);({});}):({})):({})):({}));
 });
 (uuid_00000000000751b7==(1));
@@ -9742,7 +9742,7 @@ return ({({({uuid_00000000000751a3=(0);({});})
 (uuid_00000000000751c3==(1));
 })?(({({uuid_00000000000751c9=(((LM_Type)(uuid_00000000000751c0)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_00000000000751c9,uuid_0000000000074e83));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_00000000000751c9,uuid_0000000000074e85));
 })?({uuid_00000000000751c1=(1);({});}):({})):({})):({}));
 });
 (uuid_00000000000751c1==(1));
@@ -9954,7 +9954,7 @@ return ({({({({uuid_00000000000751fe=(0);({});})
 });
 (((uuid_0000000000075200.field_0)==(1))?(1?(({({uuid_0000000000075202=(((LM_Type)(uuid_0000000000075200)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075202,uuid_0000000000074ee2));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075202,uuid_0000000000074da9));
 })?({uuid_0000000000075201=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000075201==(1));
@@ -10023,7 +10023,7 @@ return ({({({({uuid_00000000000751fe=(0);({});})
 (uuid_000000000007520f==(1));
 })?(({({uuid_0000000000075215=(((LM_Type)(uuid_000000000007520c)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075215,uuid_0000000000074e83));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075215,uuid_0000000000074e85));
 })?({uuid_000000000007520d=(1);({});}):({})):({})):({}));
 });
 (uuid_000000000007520d==(1));
@@ -10139,7 +10139,7 @@ return ({({({uuid_000000000007522b=(0);({});})
 1;
 })?(({({uuid_0000000000075230=(((LM_Type)(uuid_000000000007522d)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075230,uuid_0000000000074ee2));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075230,uuid_0000000000074da9));
 })?({uuid_000000000007522e=(1);({});}):({})):({})):({}));
 });
 (uuid_000000000007522e==(1));
@@ -10153,7 +10153,7 @@ return ({({({uuid_000000000007522b=(0);({});})
 1;
 })?(({({uuid_0000000000075234=(((LM_Type)(uuid_0000000000075231)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075234,uuid_0000000000074e83));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075234,uuid_0000000000074e85));
 })?({uuid_0000000000075232=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000075232==(1));
@@ -10315,7 +10315,7 @@ return ({({((!(is_SB_sized_CL_ArrowU64Type(uuid_000000000007524f)))?({({({uuid_0
 (uuid_0000000000075255==(1));
 })?(({({uuid_000000000007525b=(((LM_Type)(uuid_0000000000075252)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_000000000007525b,uuid_0000000000074e83));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_000000000007525b,uuid_0000000000074e85));
 })?({uuid_0000000000075253=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000075253==(1));
@@ -10492,7 +10492,7 @@ return ({({({uuid_0000000000075268=uuid_0000000000075267;({});})
 (uuid_0000000000075287==(1));
 })?(({({uuid_000000000007528d=(((LM_Type)(uuid_0000000000075284)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_000000000007528d,uuid_0000000000074ee2));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_000000000007528d,uuid_0000000000074da9));
 })?({uuid_0000000000075285=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000075285==(1));
@@ -10650,7 +10650,7 @@ return ({({({uuid_0000000000075299=uuid_0000000000075298;({});})
 });
 (((uuid_00000000000752ad.field_0)==(1))?(1?(({({uuid_00000000000752af=(((LM_Type)(uuid_00000000000752ad)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_00000000000752af,uuid_0000000000074eb6));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_00000000000752af,uuid_0000000000074eb8));
 })?({uuid_00000000000752ae=(1);({});}):({})):({})):({}));
 });
 (uuid_00000000000752ae==(1));
@@ -10771,7 +10771,7 @@ return ({({({uuid_00000000000752c8=uuid_00000000000752c7;({});})
 });
 (((uuid_00000000000752cd.field_0)==(1))?(1?(({({uuid_00000000000752cf=(((LM_Type)(uuid_00000000000752cd)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_00000000000752cf,uuid_0000000000074eb6));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_00000000000752cf,uuid_0000000000074eb8));
 })?({uuid_00000000000752ce=(1);({});}):({})):({})):({}));
 });
 (uuid_00000000000752ce==(1));
@@ -11497,7 +11497,7 @@ return ({({({uuid_000000000007537d=({LM_Type rvalue={3};rvalue;});({});})
 });
 (((uuid_0000000000075385.field_0)==(1))?(1?(({({uuid_0000000000075387=(((LM_Type)(uuid_0000000000075385)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075387,uuid_0000000000074ee2));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075387,uuid_0000000000074da9));
 })?({uuid_0000000000075386=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000075386==(1));
@@ -12367,7 +12367,7 @@ return ({({({uuid_0000000000075442=({LM_Type rvalue={3};rvalue;});({});})
 (uuid_0000000000075447==(1));
 })?(({({uuid_000000000007544d=(((LM_Type)(uuid_0000000000075444)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_000000000007544d,uuid_0000000000074e83));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_000000000007544d,uuid_0000000000074e85));
 })?({uuid_0000000000075445=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000075445==(1));
@@ -12425,7 +12425,7 @@ return ({({({uuid_000000000007544f=({LM_Type rvalue={3};rvalue;});({});})
 (uuid_0000000000075454==(1));
 })?(({({uuid_000000000007545a=(((LM_Type)(uuid_0000000000075451)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_000000000007545a,uuid_0000000000074e83));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_000000000007545a,uuid_0000000000074e85));
 })?({uuid_0000000000075452=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000075452==(1));
@@ -12480,7 +12480,7 @@ return ({({({uuid_000000000007545c=uuid_000000000007545b;({});})
 (uuid_0000000000075460==(1));
 })?(({({uuid_0000000000075466=(((LM_Type)(uuid_000000000007545d)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075466,uuid_0000000000074e83));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075466,uuid_0000000000074e85));
 })?({uuid_000000000007545e=(1);({});}):({})):({})):({}));
 });
 (uuid_000000000007545e==(1));
@@ -13013,7 +13013,7 @@ return ({({({uuid_00000000000754cd=({LM_ListType rvalue={1};rvalue;});({});})
 (uuid_00000000000754dd==(1));
 })?(({({uuid_00000000000754e3=(((LM_Type)(uuid_00000000000754da)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_00000000000754e3,uuid_0000000000074e2d));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_00000000000754e3,uuid_0000000000074e2f));
 })?({uuid_00000000000754db=(1);({});}):({})):({})):({}));
 });
 (uuid_00000000000754db==(1));
@@ -13025,7 +13025,7 @@ return ({({({uuid_00000000000754cd=({LM_ListType rvalue={1};rvalue;});({});})
 (uuid_00000000000754d6==(1));
 })?(({({uuid_00000000000754e4=(((LM_Type)(uuid_00000000000754d3)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_00000000000754e4,uuid_0000000000074ee2));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_00000000000754e4,uuid_0000000000074da9));
 })?({uuid_00000000000754d4=(1);({});}):({})):({})):({}));
 });
 (uuid_00000000000754d4==(1));
@@ -13061,7 +13061,7 @@ return ({({({uuid_00000000000754cd=({LM_ListType rvalue={1};rvalue;});({});})
 (uuid_00000000000754e8==(1));
 })?(({({uuid_00000000000754ee=(((LM_Type)(uuid_00000000000754e5)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_00000000000754ee,uuid_0000000000074e2d));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_00000000000754ee,uuid_0000000000074e2f));
 })?({uuid_00000000000754e6=(1);({});}):({})):({})):({}));
 });
 (uuid_00000000000754e6==(1));
@@ -13643,7 +13643,7 @@ return ({({({uuid_0000000000075574=(1);({});})
 (uuid_0000000000075579==(1));
 })?(({({uuid_000000000007557f=(((LM_Type)(uuid_0000000000075576)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_000000000007557f,uuid_0000000000074e83));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_000000000007557f,uuid_0000000000074e85));
 })?({uuid_0000000000075577=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000075577==(1));
@@ -15061,7 +15061,7 @@ char* uuid_00000000000756d9;
 (uuid_00000000000756cc==(1));
 })?(({({uuid_00000000000756d2=(((LM_Type)(uuid_00000000000756c9)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_00000000000756d2,uuid_0000000000074e83));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_00000000000756d2,uuid_0000000000074e85));
 })?({uuid_00000000000756ca=(1);({});}):({})):({})):({}));
 });
 (uuid_00000000000756ca==(1));
@@ -16709,7 +16709,7 @@ return ({({({uuid_0000000000075833=(0);({});})
 });
 (((uuid_0000000000075839.field_0)==(1))?(1?(({({uuid_000000000007583b=(((LM_Type)(uuid_0000000000075839)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_000000000007583b,uuid_0000000000074e2d));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_000000000007583b,uuid_0000000000074e2f));
 })?({uuid_000000000007583a=(1);({});}):({})):({})):({}));
 });
 (uuid_000000000007583a==(1));
@@ -16739,7 +16739,7 @@ return ({({({uuid_0000000000075833=(0);({});})
 (uuid_000000000007583f==(1));
 })?(({({uuid_0000000000075843=(((LM_Type)(uuid_000000000007583c)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075843,uuid_0000000000074ee2));
+(_EQ__EQ__CL_ArrowU64ConsSmartStringString(uuid_0000000000075843,uuid_0000000000074da9));
 })?({uuid_000000000007583d=(1);({});}):({})):({})):({}));
 });
 (uuid_000000000007583d==(1));
@@ -33538,8 +33538,9 @@ quick_SB_prop_CL_HashtableEqListTupleTypeTypeTupleU64SmartString=({LM_HashtableE
 uuid_0000000000074cab=(intern_CL_ArrowSmartStringString("Called .ground-tag-and-arity on non-ground type: "));
 concrete_SB_type_SB_instances_SB_index_CL_HashtableEqListTypeTupleU64String=({LM_HashtableEqListTypeTupleU64String rvalue={.field_0=1,.field_1001=((LM_TupleListTypeTupleU64String*)((0))),.field_1002=(0),.field_1003=(0)};rvalue;});
 type_SB_index_CL_HashtableIsTypeAST=({LM_HashtableIsTypeAST rvalue={.field_0=0,.field_1=((LM_TupleTypeAST*)((0))),.field_2=(0),.field_3=(0)};rvalue;});
+uuid_0000000000074da9=(intern_CL_ArrowSmartStringString("Array"));
 alias_SB_index_CL_ListTupleTypeTupleStringString=({LM_ListTupleTypeTupleStringString rvalue={1};rvalue;});
-uuid_0000000000074e2d=(intern_CL_ArrowSmartStringString("Arrow"));
+uuid_0000000000074e2f=(intern_CL_ArrowSmartStringString("Arrow"));
 class_SB_exists_SB_index_CL_HashtableEqU64String=({LM_HashtableEqU64String rvalue={.field_0=1,.field_1001=((LM_TupleU64String*)((0))),.field_1002=(0),.field_1003=(0)};rvalue;});
 parameter_SB_is_SB_flat_SB_index_CL_HashtableEqU64TupleU64TupleU64String=({LM_HashtableEqU64TupleU64TupleU64String rvalue={.field_0=1,.field_1001=((LM_TupleU64TupleU64TupleU64String*)((0))),.field_1002=(0),.field_1003=(0)};rvalue;});
 is_SB_special_SB_index_CL_HashtableEqU64TupleTypeString=({LM_HashtableEqU64TupleTypeString rvalue={.field_0=1,.field_1001=((LM_TupleU64TupleTypeString*)((0))),.field_1002=(0),.field_1003=(0)};rvalue;});
@@ -33553,13 +33554,12 @@ class_SB_to_SB_size_SB_index_CL_HashtableEqU64String=({LM_HashtableEqU64String r
 tag_SB_to_SB_class_SB_index_CL_HashtableEqTypeString=({LM_HashtableEqTypeString rvalue={.field_0=1,.field_1001=((LM_TupleTypeString*)((0))),.field_1002=(0),.field_1003=(0)};rvalue;});
 class_SB_to_SB_yes_SB_index_CL_HashtableEqU64String=({LM_HashtableEqU64String rvalue={.field_0=1,.field_1001=((LM_TupleU64String*)((0))),.field_1002=(0),.field_1003=(0)};rvalue;});
 tag_SB_to_SB_fields_SB_index_CL_HashtableEqTupleTypeTypeString=({LM_HashtableEqTupleTypeTypeString rvalue={.field_0=1,.field_1001=((LM_TupleTupleTypeTypeString*)((0))),.field_1002=(0),.field_1003=(0)};rvalue;});
-uuid_0000000000074e83=(intern_CL_ArrowSmartStringString("Cons"));
-uuid_0000000000074e88=(intern_CL_ArrowSmartStringString("Nil"));
+uuid_0000000000074e85=(intern_CL_ArrowSmartStringString("Cons"));
+uuid_0000000000074e8a=(intern_CL_ArrowSmartStringString("Nil"));
 type_SB_constructors_SB_index_CL_HashtableEqTypeString=({LM_HashtableEqTypeString rvalue={.field_0=1,.field_1001=((LM_TupleTypeString*)((0))),.field_1002=(0),.field_1003=(0)};rvalue;});
 type_SB_complex_SB_fields_SB_index_CL_HashtableEqTupleTypeTypeString=({LM_HashtableEqTupleTypeTypeString rvalue={.field_0=1,.field_1001=((LM_TupleTupleTypeTypeString*)((0))),.field_1002=(0),.field_1003=(0)};rvalue;});
-uuid_0000000000074ea1=(intern_CL_ArrowSmartStringString("..."));
-uuid_0000000000074eb6=(intern_CL_ArrowSmartStringString("Constructor"));
-uuid_0000000000074ee2=(intern_CL_ArrowSmartStringString("Array"));
+uuid_0000000000074ea3=(intern_CL_ArrowSmartStringString("..."));
+uuid_0000000000074eb8=(intern_CL_ArrowSmartStringString("Constructor"));
 uuid_0000000000074ef6=(intern_CL_ArrowSmartStringString("Field"));
 uuid_0000000000074f19=(intern_CL_ArrowSmartStringString("Sized"));
 uuid_0000000000074f29=(intern_CL_ArrowSmartStringString("Constant"));
