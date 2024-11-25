@@ -988,7 +988,8 @@ lsts-parse-map := λ(: tokens List<Token>). (: (
 ) Tuple<AST,List<Token>>);
 
 lsts-parse-atom-tail := λ(: base AST)(: tokens List<Token>). (: (
-   (while (||( (||( (==( (lsts-parse-head tokens) '\[_s )) (==( (lsts-parse-head tokens) '._s )) ))
+   (while (||(
+      (||( (==( (lsts-parse-head tokens) '[_s )) (||( (==( (lsts-parse-head tokens) '\[_s )) (==( (lsts-parse-head tokens) '._s )) )) ))
       (&&( (&&( (==( (lsts-parse-head tokens) ':_s )) (non-zero(tail tokens)) )) (==( (lsts-parse-head(tail tokens)) ':_s )) ))
    )) (
       (if (&&( (&&( (==( (lsts-parse-head tokens) ':_s )) (non-zero(tail tokens)) )) (==( (lsts-parse-head(tail tokens)) ':_s )) )) (scope(
@@ -1033,32 +1034,80 @@ lsts-parse-atom-tail := λ(: base AST)(: tokens List<Token>). (: (
                (close base)
             )))
          )) (
-            (set tokens (tail tokens))
-            (if (==( (lsts-parse-head tokens) '\]_s )) (
-               (set base (App(
-                  (close base)
-                  (close ASTNil)
-               )))
-               (set tokens (tail tokens))
-            ) (
-               (let term2-rest (lsts-parse-expression tokens))
-               (let term2 (.first term2-rest))
-               (set tokens (.second term2-rest))
-               (while (==( (lsts-parse-head tokens) ',_s )) (
-                  (set tokens (tail tokens))
-                  (let term3-rest (lsts-parse-expression tokens))
-                  (let term3 (.first term3-rest))
-                  (set tokens (.second term3-rest))
-                  (set term2 (App(
-                     (close term2)
-                     (close term3)
+            (if (==( (lsts-parse-head tokens) '[_s )) (scope(
+               (let loc (.location(head tokens)))
+               (lsts-parse-expect( '[_s tokens ))(set tokens (tail tokens))
+               (let term1 ASTEOF)
+               (if (==( (lsts-parse-head tokens) ':_s )) (
+                  (set term1 (Lit( '0_i64_s (with-location( (token::new '0_i64_s) loc )) )))
+               ) (
+                  (let term1-rest (lsts-parse-small-expression tokens))
+                  (set term1 (.first term1-rest))
+                  (set tokens (.second term1-rest))
+               ))
+               (let term2 ASTEOF)
+               (if (==( (lsts-parse-head tokens) ':_s )) (
+                  (lsts-parse-expect( ':_s tokens ))(set tokens (tail tokens))                  
+                  (if (==( (lsts-parse-head tokens) ']_s )) (
+                     (set term2 (Var( 'minimum-I64_s (with-location( (token::new 'minimum-I64_s) loc )) )))
+                  ) (
+                     (let term2-rest (lsts-parse-small-expression tokens))
+                     (set term2 (.first term2-rest))
+                     (set tokens (.second term2-rest))
+                  ))
+               ) ())
+               (if (non-zero ASTEOF) (
+                  (set base (App(
+                     (close(Lit( '[:]_s (with-location( (token::new '[:]_s) loc )) )))
+                     (close(App(
+                        (close base)
+                        (close(App(
+                           (close term1)
+                           (close term2)
+                        )))
+                     )))
+                  )))
+               ) (
+                  (set base (App(
+                     (close(Lit( '[]_s (with-location( (token::new '[:]_s) loc )) )))
+                     (close(App(
+                        (close base)
+                        (close(App(
+                           (close term1)
+                           (close term2)
+                        )))
+                     )))
                   )))
                ))
-               (set base (App(
-                  (close base)
-                  (close term2)
-               )))
-               (lsts-parse-expect( '\]_s tokens ))(set tokens (tail tokens))
+               (lsts-parse-expect( ']_s tokens ))(set tokens (tail tokens))
+            )) (
+               (lsts-parse-expect( '\[_s tokens ))(set tokens (tail tokens))
+               (if (==( (lsts-parse-head tokens) '\]_s )) (
+                  (set base (App(
+                     (close base)
+                     (close ASTNil)
+                  )))
+                  (set tokens (tail tokens))
+               ) (
+                  (let term2-rest (lsts-parse-expression tokens))
+                  (let term2 (.first term2-rest))
+                  (set tokens (.second term2-rest))
+                  (while (==( (lsts-parse-head tokens) ',_s )) (
+                     (set tokens (tail tokens))
+                     (let term3-rest (lsts-parse-expression tokens))
+                     (let term3 (.first term3-rest))
+                     (set tokens (.second term3-rest))
+                     (set term2 (App(
+                        (close term2)
+                        (close term3)
+                     )))
+                  ))
+                  (set base (App(
+                     (close base)
+                     (close term2)
+                  )))
+                  (lsts-parse-expect( '\]_s tokens ))(set tokens (tail tokens))
+               ))
             ))
          ))
       ))
