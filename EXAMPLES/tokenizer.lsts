@@ -5,14 +5,55 @@ import SRC/index-definitions.lm;
 let lsts-tokenize(text: String): List<String> = (
    let tokens = [] :: List<String>;
    while non-zero(text) {match text {
-      (m=/^de/)..rest => (print("D.."); print(m); text = "";);
-      "a"..rest => (print("A.."); print(rest); text="";);
-      "abc" => (print("ABC"); text = "";);
-      rst => (print("Default: "); print(rst); text = "";);
-   #   "\s"..rst => text = rst;
-   #   "\t"..rst => text = rst;
-   #   "\n"..rst => text = rst;
-   #   rst => fail("Unexpected Character In LSTS Tokenization: '\{rst[0]}'");
+      "\s".. rest => text = rest;
+      "\t".. rest => text = rest;
+      "\n".. rest => text = rest;
+
+      "~=".. rest => (tokens = cons(text[:"~=".length], tokens); text = rest;);
+      "+=".. rest => (tokens = cons(text[:"+=".length], tokens); text = rest;);
+      "-=".. rest => (tokens = cons(text[:"-=".length], tokens); text = rest;);
+      "*=".. rest => (tokens = cons(text[:"*=".length], tokens); text = rest;);
+      "/=".. rest => (tokens = cons(text[:"/=".length], tokens); text = rest;);
+      "%=".. rest => (tokens = cons(text[:"%=".length], tokens); text = rest;);
+      "&=".. rest => (tokens = cons(text[:"&=".length], tokens); text = rest;);
+      "|=".. rest => (tokens = cons(text[:"|=".length], tokens); text = rest;);
+      "<=".. rest => (tokens = cons(text[:"<=".length], tokens); text = rest;);
+      ">=".. rest => (tokens = cons(text[:">=".length], tokens); text = rest;);
+      "==".. rest => (tokens = cons(text[:"==".length], tokens); text = rest;);
+      "!=".. rest => (tokens = cons(text[:"!=".length], tokens); text = rest;);
+      "&&".. rest => (tokens = cons(text[:"!=".length], tokens); text = rest;);
+      "||".. rest => (tokens = cons(text[:"!=".length], tokens); text = rest;);
+      "<".. rest => (tokens = cons(text[:"<".length], tokens); text = rest;);
+      ">".. rest => (tokens = cons(text[:">".length], tokens); text = rest;);
+      "{".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
+      "}".. rest => (tokens = cons(text[:"}".length], tokens); text = rest;);
+      "[".. rest => (tokens = cons(text[:"[".length], tokens); text = rest;);
+      "]".. rest => (tokens = cons(text[:"]".length], tokens); text = rest;);
+      "(".. rest => (tokens = cons(text[:"(".length], tokens); text = rest;);
+      ")".. rest => (tokens = cons(text[:")".length], tokens); text = rest;);
+      ":".. rest => (tokens = cons(text[:":".length], tokens); text = rest;);
+      ";".. rest => (tokens = cons(text[:";".length], tokens); text = rest;);
+      ",".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
+      "?".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
+      "~".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
+      "@".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
+      "+".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
+      "-".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
+      "*".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
+      "/".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
+      "%".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
+      "&".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
+      "|".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
+      "!".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
+      "=".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
+      "^".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
+
+      #rest => fail("Unexpected Character during LSTS Tokenization: "
+      #             "'\{rest[0]}' "
+      #             "in File \{rest.file-name-of-token}, "
+      #             "Line \{rest.line-of-token}, "
+      #             "Column \{rest.column-of-token}.");
+      rest => ( fail("Unrecognized Token: \{rest}"); );
    }};
    tokens
 );
