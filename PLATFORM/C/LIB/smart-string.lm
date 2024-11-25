@@ -35,31 +35,53 @@ untern := λ(: s SmartString). (: (
 ) U64);
 
 == := λ(: x SmartString)(: y SmartString). (: (
-   (let r 0_u64)
-   (if (is( x y )) (set r 1_u64) (
+   (==( (cmp( x y )) 0_i64 ))
+) U64);
+!= := λ(: x SmartString)(: y SmartString). (: (
+   (!=( (cmp( x y )) 0_i64 ))
+) U64);
+< := λ(: x SmartString)(: y SmartString). (: (
+   (<( (cmp( x y )) 0_i64 ))
+) U64);
+<= := λ(: x SmartString)(: y SmartString). (: (
+   (<=( (cmp( x y )) 0_i64 ))
+) U64);
+> := λ(: x SmartString)(: y SmartString). (: (
+   (>( (cmp( x y )) 0_i64 ))
+) U64);
+>= := λ(: x SmartString)(: y SmartString). (: (
+   (>=( (cmp( x y )) 0_i64 ))
+) U64);
+
+cmp := λ(: x SmartString)(: y SmartString). (: (
+   (let r 0_i64)
+   (if (is( x y )) (set r 0_i64) (
       (let x-start (.start x))
       (let y-start (.start y))
-      (set r 1_u64)
       (while (&&(
          (<( x-start (.end x) ))
          (<( y-start (.end y) ))
       )) (
-         (if (==( ([]( x-start 0_u64 )) ([]( y-start 0_u64 )) )) (
-            (set x-start (+( x-start 1_u64 )))
-            (set y-start (+( y-start 1_u64 )))
-         ) (
-            (set r 0_u64)
+         (if (<( ([]( x-start 0_u64 )) ([]( y-start 0_u64 )) )) (
+            (set r -1_i64)
             (set x-start (.end x))
             (set y-start (.end y))
+         ) (
+            (if (<( ([]( x-start 0_u64 )) ([]( y-start 0_u64 )) )) (
+               (set r -1_i64)
+               (set x-start (.end x))
+               (set y-start (.end y))
+            ) (
+               (set x-start (+( x-start 1_u64 )))
+               (set y-start (+( y-start 1_u64 )))
+            ))
          ))
       ))
-      (if (||(
-         (<( x-start (.end x) ))
-         (<( y-start (.end y) ))
-      )) (set r 0_u64) ())
+      (if (<( x-start (.end x) )) (set r 1_i64) ())
+      (if (<( y-start (.end y) )) (set r -1_i64) ())
    ))
    r
-) U64);
+) I64);
 
 print := λ(: x SmartString). (: (
    (let start (.start x))

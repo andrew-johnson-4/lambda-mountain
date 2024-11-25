@@ -1,0 +1,14 @@
+A<B
+A<B
+B<BA
+B<BA
+A==A
+A!=B
+A<B
+B>=A
+BA>=B
+B<BA
+[A]<[A,B]
+[A]>=[A]
+[A]<[B]
+[B]>=[A]

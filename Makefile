@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm t.lm
+	lm tests/regress/sort-type-vector.lsts
 	cc -O3 tmp.c
 	./a.out
 
