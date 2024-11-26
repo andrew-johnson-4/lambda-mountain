@@ -71,6 +71,7 @@ lsts-tokenize-string := λ(: fp String)(: text String). (: (
       (lsts-try-tokenize-keep '!_s)
       (lsts-try-tokenize-keep '=_s)
       (lsts-try-tokenize-keep '^_s)
+      (lsts-try-tokenize-keep '\\_s)
       (lsts-try-tokenize-discard '\s_s)
       (lsts-try-tokenize-discard '\t_s)
       (lsts-try-tokenize-discard '\n_s)
