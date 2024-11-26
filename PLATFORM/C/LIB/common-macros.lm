@@ -95,7 +95,7 @@ macro ('match-pats-arm( term ('macro::lhs-prefix-or-suffix( rest ('macro::lhs-bi
    ( (let (uuid v) term) (
       (if (.has-suffix( (uuid v) l )) (
          (let b (.remove-suffix( (uuid v) l )))
-         (match-pats-arm( b rest ))
+         (match-pats-arm( ([:]( b 0_i64 (.length b) )) rest ))
       ) (branchfalse()))
    ))
 );
@@ -104,7 +104,7 @@ macro ('match-pats-arm( term ('macro::lhs-prefix-or-suffix( ('macro::lhs-bind( (
    ( (let (uuid v) term) (
       (if (.has-prefix( (uuid v) l )) (
          (let b (.remove-prefix( (uuid v) l )))
-         (match-pats-arm( b rest ))
+         (match-pats-arm( ([:]( b (.length b) minimum-I64 )) rest ))
       ) (branchfalse()))
    ))
 );
