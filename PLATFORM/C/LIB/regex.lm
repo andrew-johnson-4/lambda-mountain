@@ -35,5 +35,5 @@ atom suffix Regex _rgx;
    (if (!=( (.rm_so([]( matches 0_u64 ))) 0_u64 )) (
       (fail 'Remove\sSmartString\sPrefix\sBy\sRegex\sNot\sA\sPrefix_s)
    ) ())
-   ([:]( text 0_i64 (as (.rm_eo([]( matches 0_u64 ))) I64) ))
+   ([:]( text (as (.rm_eo([]( matches 0_u64 ))) I64) (as (.length text) I64) ))
 ) SmartString);

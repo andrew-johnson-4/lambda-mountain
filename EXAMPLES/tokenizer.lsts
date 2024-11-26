@@ -33,25 +33,24 @@ let lsts-tokenize(text: String): List<String> = (
       ")".. rest => (tokens = cons(text[:")".length], tokens); text = rest;);
       ":".. rest => (tokens = cons(text[:":".length], tokens); text = rest;);
       ";".. rest => (tokens = cons(text[:";".length], tokens); text = rest;);
-      ",".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
-      "?".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
-      "~".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
-      "@".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
-      "+".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
-      "-".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
-      "*".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
-      "/".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
-      "%".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
-      "&".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
-      "|".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
-      "!".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
-      "=".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
-      "^".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
+      ",".. rest => (tokens = cons(text[:",".length], tokens); text = rest;);
+      "?".. rest => (tokens = cons(text[:"?".length], tokens); text = rest;);
+      "~".. rest => (tokens = cons(text[:"~".length], tokens); text = rest;);
+      "@".. rest => (tokens = cons(text[:"@".length], tokens); text = rest;);
+      "+".. rest => (tokens = cons(text[:"+".length], tokens); text = rest;);
+      "-".. rest => (tokens = cons(text[:"-".length], tokens); text = rest;);
+      "*".. rest => (tokens = cons(text[:"*".length], tokens); text = rest;);
+      "/".. rest => (tokens = cons(text[:"/".length], tokens); text = rest;);
+      "%".. rest => (tokens = cons(text[:"%".length], tokens); text = rest;);
+      "&".. rest => (tokens = cons(text[:"&".length], tokens); text = rest;);
+      "|".. rest => (tokens = cons(text[:"|".length], tokens); text = rest;);
+      "!".. rest => (tokens = cons(text[:"!".length], tokens); text = rest;);
+      "=".. rest => (tokens = cons(text[:"=".length], tokens); text = rest;);
+      "^".. rest => (tokens = cons(text[:"^".length], tokens); text = rest;);
+      "\".. rest => (tokens = cons(text[:"\".length], tokens); text = rest;);
 
-      #(id=/([:lower:]|[:digit:])[:alnum:]*/).. rest => (
-      #   tokens = cons(text[:id.length], tokens); text = rest;
-      #);
-      (id=/[:alnum:]+/).. rest => (
+      (id=/^([:digit:]|[:alnum:]|[_])+/).. rest => (
+         print("ID: \{id}\n");
          tokens = cons(text[:id.length], tokens); text = rest;
       );
 
