@@ -618,41 +618,6 @@ lsts-is-lit := λ(: s String). (: (
 
 lsts-parse-lhs-one := λ(: tokens List<Token>). (: (
    (let base ASTEOF)
-   (if (==( (lsts-parse-head tokens) '/_s )) (scope(
-      (let loc (.location(head tokens)))
-      (lsts-parse-expect( '/_s tokens ))(set tokens (tail tokens))
-      (let pat SNil)
-      (while (&&( (non-zero tokens) (!=( (lsts-parse-head tokens) '/_s )) )) (
-         (if (==( (lsts-parse-head tokens) '\\_s )) (
-            (if (&&( (non-zero(tail tokens)) (==( (lsts-parse-head(tail tokens)) '/_s )) )) (
-               (set pat (+( pat (SAtom '/_s) )))
-               (set tokens (tail tokens))
-               (set tokens (tail tokens))
-            ) (
-               (if (&&( (non-zero(tail tokens)) (==( (lsts-parse-head(tail tokens)) '\\_s )) )) (
-                  (set pat (+( pat (SAtom '\\\\_s) )))
-                  (set tokens (tail tokens))
-                  (set tokens (tail tokens))
-               ) (
-                  (lsts-parse-expect( '\\_s tokens ))(set tokens (tail tokens))
-                  (lsts-parse-expect( '\\_s tokens ))(set tokens (tail tokens))
-               ))
-            ))
-         ) (
-            (if (==( (lsts-parse-head tokens) '\\"_s )) (
-               (set pat (+( pat (SAtom '"_s) )))
-               (set tokens (tail tokens))
-            ) (
-               (set pat (+( pat (SAtom(lsts-parse-head tokens)) )))
-               (set tokens (tail tokens))
-            ))
-         ))
-      ))
-      (lsts-parse-expect( '/_s tokens ))(set tokens (tail tokens))
-      (set pat (+( pat (SAtom '_rgx_s) )))
-      (let pats (clone-rope pat))
-      (set base (Lit( pats (with-location( (token::new pats) loc )) )))
-   )) (
       (if (lsts-is-ident-head(lsts-parse-head tokens)) (scope(
          (let base-rest (lsts-make-maybe-var tokens))
          (set base (.first base-rest))
@@ -740,7 +705,6 @@ lsts-parse-lhs-one := λ(: tokens List<Token>). (: (
                (lsts-parse-expect( 'LHS_s 0_u64 tokens ))
             ))
          ))
-      ))
    ))
    (Tuple( base tokens ))
 ) Tuple<AST,List<Token>>);

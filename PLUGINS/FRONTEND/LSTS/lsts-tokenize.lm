@@ -82,6 +82,39 @@ lsts-tokenize-string := λ(: fp String)(: text String). (: (
       (lsts-try-tokenize-discard '\t_s)
       (lsts-try-tokenize-discard '\n_s)
       (lsts-try-tokenize-keep '._s) # can be part of an ident literal, so check this last
+      (if (.has-prefix( text 'r/_s )) (scope(
+         (set text (tail-string text))
+         (set text (tail-string text))
+         (let s-line current-line)
+         (let s-column current-column)
+         (let s-buffer SNil)
+         (while (&&( (!=( (head-string text) 0_u8 )) (not(.has-prefix( text '/_s ))) )) (
+            (let s-prev-text text)
+            (if (.has-prefix( text '\\\\_s )) (
+               (set s-buffer (+( s-buffer (SAtom '\\\\_s) )))
+               (set text (tail-string text)) (set text (tail-string text))
+               (set current-column (+( current-column 2_u64 )))
+            ) ())
+            (if (.has-prefix( text '\\/_s )) (
+               (set s-buffer (+( s-buffer (SAtom '/_s) )))
+               (set text (tail-string text)) (set text (tail-string text))
+               (set current-column (+( current-column 2_u64 )))
+            ) ())
+            (if (is( s-prev-text text )) (
+               (set s-buffer (+( s-buffer (SAtom(clone-rope(head-string text))) )))
+               (set text (tail-string text))
+               (set current-column (+( current-column 1_u64 )))
+            ) ())
+         ))
+         (if (.has-prefix( text '/_s )) (
+            (set text (tail-string text))
+            (set current-column (+( current-column 1_u64 )))
+         ) ())
+         (set s-buffer (+( s-buffer (SAtom '_rgx_s) )))
+         (set tokens (cons(
+            (with-location( (clone-rope s-buffer) (SourceLocation( fp s-line s-column )) )) tokens
+         )))
+      )) ())
       (if (lsts-is-ident-body text) (
          (let ident-buffer SNil)
          (let ident-line current-line)
@@ -119,7 +152,7 @@ lsts-tokenize-string := λ(: fp String)(: text String). (: (
             (with-location( ident-text (SourceLocation( fp ident-line ident-column )) )) tokens
          )))
       ) ())
-      (if (.has-prefix( text '"_s )) (
+      (if (.has-prefix( text '"_s )) (scope(
          (set text (tail-string text))
          (let s-line current-line)
          (let s-column current-column)
@@ -150,7 +183,7 @@ lsts-tokenize-string := λ(: fp String)(: text String). (: (
          (set tokens (cons(
             (with-location( (clone-rope s-buffer) (SourceLocation( fp s-line s-column )) )) tokens
          )))
-      ) ())
+      )) ())
       (if (.has-prefix( text '\o_s )) (
          (set text (tail-string text))
          (while (&&( (!=( (head-string text) 0_u8 )) (not(.has-prefix( text '\n_s ))) )) (
