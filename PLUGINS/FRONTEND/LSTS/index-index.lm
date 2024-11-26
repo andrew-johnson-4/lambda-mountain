@@ -1,4 +1,5 @@
 
 import PLUGINS/FRONTEND/LSTS/lsts-frontend.lm;
+import PLUGINS/FRONTEND/LSTS/lsts-smart-tokenize.lsts;
 import PLUGINS/FRONTEND/LSTS/lsts-tokenize.lm;
 import PLUGINS/FRONTEND/LSTS/lsts-parse.lm;

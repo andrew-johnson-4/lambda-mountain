@@ -94,6 +94,16 @@ print := λ(: x SmartString). (: (
    ))
 ) Nil);
 
+[:] := λ(: x SmartString)(: low U64)(: hi U64). (: (
+   ([:]( x (as low I64) (as hi I64) ))
+) SmartString);
+[:] := λ(: x SmartString)(: low I64)(: hi U64). (: (
+   ([:]( x low (as hi I64) ))
+) SmartString);
+[:] := λ(: x SmartString)(: low U64)(: hi I64). (: (
+   ([:]( x (as low I64) hi ))
+) SmartString);
+
 [:] := λ(: x SmartString)(: low I64)(: hi I64). (: (
    (if (<( low 0_i64 )) (
       (set low (+( (as (.length x) I64) low )))
@@ -108,12 +118,15 @@ print := λ(: x SmartString). (: (
    (let lowp (+( (.start x) low )))
    (let hip (+( (.start x) hi )))
    (if (<( hip lowp )) (
+      (print '[_s)(print low)(print ':_s)(print hi)(print ']\sof\s_s)(print(.length x))(print '\n_s)
       (fail 'Index\sOut\sOf\sBounds:\sSmartString.[:]_s)
    ) ())
    (if (<( lowp (.start x) )) (
+      (print '[_s)(print low)(print ':_s)(print hi)(print ']\sof\s_s)(print(.length x))(print '\n_s)
       (fail 'Index\sOut\sOf\sBounds:\sSmartString.[:]_s)
    ) ())
    (if (>( hip (.end x) )) (
+      (print '[_s)(print low)(print ':_s)(print hi)(print ']\sof\s_s)(print(.length x))(print '\n_s)
       (fail 'Index\sOut\sOf\sBounds:\sSmartString.[:]_s)
    ) ())
    (SmartString( (.data x) lowp hip (.data-end x) ))
@@ -146,9 +159,11 @@ head-string := λ(: x SmartString). (: (
 ) U8);
 
 .has-suffix := λ(: base SmartString)(: sfx SmartString). (: (
-   (==(
-      ([:]( base (as (-( (.length base) (.length sfx) )) I64) (as (.length base) I64) ))
-      sfx ))
+   (&&( (>=( (.length base) (.length sfx) ))
+        (==(
+          ([:]( base (as (-( (.length base) (.length sfx) )) I64) (as (.length base) I64) ))
+          sfx ))
+   ))
 ) U64);
 
 .remove-suffix := λ(: base SmartString)(: sfx SmartString). (: (
@@ -156,13 +171,15 @@ head-string := λ(: x SmartString). (: (
 ) SmartString);
 
 .has-prefix := λ(: base SmartString)(: pfx SmartString). (: (
-   (==(
-      ([:]( base 0_i64 (as (.length pfx) I64) ))
-      pfx ))
+   (&&( (>=( (.length base) (.length pfx) ))
+      (==(
+         ([:]( base 0_i64 (as (.length pfx) I64) ))
+         pfx ))
+   ))
 ) U64);
 
-.remove-prefix := λ(: base SmartString)(: sfx SmartString). (: (
-   ([:]( base (as (.length sfx) I64) (as (.length base) I64) ))
+.remove-prefix := λ(: base SmartString)(: pfx SmartString). (: (
+   ([:]( base (as (.length pfx) I64) minimum-I64 ))
 ) SmartString);
 
 .replace := λ(: base SmartString)(: pat SmartString)(: n SmartString). (: (

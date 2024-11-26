@@ -1,8 +1,6 @@
 
-import LIB/default.lm;
-import SRC/index-definitions.lm;
+let lsts-smart-tokenize(file-path: String, text: String): List<String> = (
 
-let lsts-tokenize(text: String): List<String> = (
    let tokens = [] :: List<String>;
    while non-zero(text) {match text {
       "\s".. rest => text = rest;
@@ -58,6 +56,10 @@ let lsts-tokenize(text: String): List<String> = (
          tokens = cons(text[:rgx.length], tokens); text = rest;
       );
 
+      (id=r/^[$]["]([^"\\]|([\\].))*["]/).. rest => (
+         tokens = cons(text[:id.length], tokens); text = rest;
+      );
+
       (id=r/^[a-zA-Z0-9_]+/).. rest => (
          tokens = cons(text[:id.length], tokens); text = rest;
       );
@@ -71,9 +73,8 @@ let lsts-tokenize(text: String): List<String> = (
       #             "in File \{rest.file-name-of-token}, "
       #             "Line \{rest.line-of-token}, "
       #             "Column \{rest.column-of-token}.");
-      rest => ( fail("Unrecognized Token: \{rest}"); );
+      rest => ( fail("Unrecognized Token in File \{file-path}: \{clone-rope(rest[0])}"); );
    }; };
    tokens.reverse
 );
 
-print(lsts-tokenize(intern(read-file(untern("EXAMPLES/tokenizer.lsts")))));
