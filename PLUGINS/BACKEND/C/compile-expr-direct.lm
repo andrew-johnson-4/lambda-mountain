@@ -58,7 +58,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                (set assemble-global-initializer-section (+(
                   assemble-global-initializer-section
                   (+( (+( (+( (SAtom '{int\sreturn_code\s=\sregcomp\[&_s) (SAtom rgx-id) ))
-                      (+( (SAtom ',\s"_s) (SAtom val) )) ))
+                      (+( (SAtom ',\s"_s) (escape-c-string val) )) ))
                           (SAtom '",\sREG_EXTENDED\]\:if\[return_code\]{fprintf\[stderr,"Could\snot\scompile\sregex."\]\:exit\[1\]\:}}\:\n_s) ))
                )))
                (set e (fragment::expression rgx-id))
