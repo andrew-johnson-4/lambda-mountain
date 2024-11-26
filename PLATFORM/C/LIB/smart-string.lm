@@ -94,6 +94,16 @@ print := λ(: x SmartString). (: (
    ))
 ) Nil);
 
+[:] := λ(: x SmartString)(: low U64)(: hi U64). (: (
+   ([:]( x (as low I64) (as hi I64) ))
+) SmartString);
+[:] := λ(: x SmartString)(: low I64)(: hi U64). (: (
+   ([:]( x low (as hi I64) ))
+) SmartString);
+[:] := λ(: x SmartString)(: low U64)(: hi I64). (: (
+   ([:]( x (as low I64) hi ))
+) SmartString);
+
 [:] := λ(: x SmartString)(: low I64)(: hi I64). (: (
    (if (<( low 0_i64 )) (
       (set low (+( (as (.length x) I64) low )))
