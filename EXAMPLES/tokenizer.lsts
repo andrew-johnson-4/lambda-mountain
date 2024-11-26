@@ -51,11 +51,10 @@ let lsts-tokenize(text: String): List<String> = (
       ".".. rest => (tokens = cons(text[:".".length], tokens); text = rest;);
 
       (id=/^[a-zA-Z0-9_]+/).. rest => (
-         print("Rest: \{rest}");
          tokens = cons(text[:id.length], tokens); text = rest;
       );
 
-      (lit=/^[\"][[^\"][\\\"]]*[\"]/).. rest => (
+      (lit=/^[\"]([^\"]|([\\][\"]))*[\"]/).. rest => (
          tokens = cons(text[:lit.length], tokens); text = rest;
       );
 
@@ -66,8 +65,7 @@ let lsts-tokenize(text: String): List<String> = (
       #             "Column \{rest.column-of-token}.");
       rest => ( fail("Unrecognized Token: \{rest}"); );
    }};
-   print(text);
-   tokens
+   tokens.reverse
 );
 
 print(lsts-tokenize(intern(read-file(untern("EXAMPLES/tokenizer.lsts")))));
