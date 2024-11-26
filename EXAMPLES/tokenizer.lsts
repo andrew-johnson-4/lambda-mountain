@@ -54,7 +54,7 @@ let lsts-tokenize(text: String): List<String> = (
          tokens = cons(text[:id.length], tokens); text = rest;
       );
 
-      (lit=/^["][[^"][\\"]]*["]/).. rest => (
+      (lit=/^[\"][[^\"][\\\"]]*[\"]/).. rest => (
          tokens = cons(text[:lit.length], tokens); text = rest;
       );
 
