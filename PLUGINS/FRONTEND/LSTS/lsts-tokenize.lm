@@ -26,6 +26,7 @@ lsts-tokenize := λ(: fp String). (: (
 ) List<Token>);
 
 lsts-tokenize-string := λ(: fp String)(: text String). (: (
+   #(lsts-smart-tokenize( (intern fp) (intern text) ))
    (let tokens (: LEOF List<Token>))
    (let current-line 1_u64)
    (let current-column 1_u64)
