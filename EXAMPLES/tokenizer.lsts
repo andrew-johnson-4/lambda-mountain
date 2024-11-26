@@ -54,11 +54,18 @@ let lsts-tokenize(text: String): List<String> = (
          tokens = cons(text[:id.length], tokens); text = rest;
       );
 
-      (lit=r/^["]([^"]|([\\]["]))*["]/).. rest => (
+      (lit=r/^["]([^"\\]|([\\].))*["]/).. rest => (
          tokens = cons(text[:lit.length], tokens); text = rest;
       );
 
-      (comment=r/^\o[^\n]*[\n]/).. rest => text = rest;
+      (rgx=r/^r\/([^\/]|([\\].))*\//).. rest => (
+         tokens = cons(text[:rgx.length], tokens); text = rest;
+      );
+
+      (comment=r/^#[^\n]*[\n]/).. rest => (
+         print("Comment: \{comment}");
+         text = rest;
+      );
 
       #rest => fail("Unexpected Character during LSTS Tokenization: "
       #             "'\{rest[0]}' "
@@ -66,7 +73,7 @@ let lsts-tokenize(text: String): List<String> = (
       #             "Line \{rest.line-of-token}, "
       #             "Column \{rest.column-of-token}.");
       rest => ( fail("Unrecognized Token: \{rest}"); );
-   }};
+   }; print("\""); if non-zero(tokens) then print(head(tokens)); print("\"\n"); };
    tokens.reverse
 );
 
