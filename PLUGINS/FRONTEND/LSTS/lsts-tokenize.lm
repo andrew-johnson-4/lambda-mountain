@@ -126,7 +126,7 @@ lsts-tokenize-string := λ(: fp String)(: text String). (: (
                (set current-column (+( current-column 2_u64 )))
             ) ())
             (if (.has-prefix( text '\\"_s )) (
-               (set s-buffer (+( s-buffer (SAtom '\\"_s) )))
+               (set s-buffer (+( s-buffer (SAtom '"_s) )))
                (set text (tail-string text)) (set text (tail-string text))
                (set current-column (+( current-column 2_u64 )))
             ) ())

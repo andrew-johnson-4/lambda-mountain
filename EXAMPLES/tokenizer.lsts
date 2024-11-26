@@ -9,6 +9,7 @@ let lsts-tokenize(text: String): List<String> = (
       "\t".. rest => text = rest;
       "\n".. rest => text = rest;
 
+      "\\".. rest => (tokens = cons(text[:"\\".length], tokens); text = rest;);
       "~=".. rest => (tokens = cons(text[:"~=".length], tokens); text = rest;);
       "+=".. rest => (tokens = cons(text[:"+=".length], tokens); text = rest;);
       "-=".. rest => (tokens = cons(text[:"-=".length], tokens); text = rest;);
@@ -47,11 +48,14 @@ let lsts-tokenize(text: String): List<String> = (
       "!".. rest => (tokens = cons(text[:"!".length], tokens); text = rest;);
       "=".. rest => (tokens = cons(text[:"=".length], tokens); text = rest;);
       "^".. rest => (tokens = cons(text[:"^".length], tokens); text = rest;);
-      "\".. rest => (tokens = cons(text[:"\".length], tokens); text = rest;);
+      ".".. rest => (tokens = cons(text[:".".length], tokens); text = rest;);
 
-      (id=/^([:digit:]|[:alnum:]|[_])+/).. rest => (
-         print("ID: \{id}\n");
+      (id=/^[a-zA-Z0-9_]+/).. rest => (
          tokens = cons(text[:id.length], tokens); text = rest;
+      );
+
+      (lit=/^["][[^"][\\"]]*["]/).. rest => (
+         tokens = cons(text[:lit.length], tokens); text = rest;
       );
 
       #rest => fail("Unexpected Character during LSTS Tokenization: "
