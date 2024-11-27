@@ -1,5 +1,8 @@
 
 token::new := λ(: s String). (: (
-   (let tk (Token( s (iuid()) (location::new()) )))
-   tk
+   (Token( s (iuid()) (location::new()) ))
+) Token);
+
+token::new := λ(: s SmartString). (: (
+   (Token( (untern s) (iuid()) (location-of s) ))
 ) Token);

@@ -1,4 +1,8 @@
 
+let location-of(t: String): SourceLocation = (
+   SourceLocation { $"_s", $"0_u64", $"0_u64" }
+);
+
 let lsts-smart-tokenize(file-path: String, text: String): List<String> = (
 
    let tokens = [] :: List<String>;
