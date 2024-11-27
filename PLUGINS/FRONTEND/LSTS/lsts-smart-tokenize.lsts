@@ -18,7 +18,11 @@ let location-of(t: String): SourceLocation = (
 
 let lsts-smart-token-path-index = {} :: HashtableEq<U64,String>;
 
-let lsts-smart-tokenize(file-path: String, text: String): List<Token> = (
+let lsts-tokenize-string(file-path: CString, text: CString): List<Token> = (
+   lsts-tokenize-string( intern(file-path), intern(text) );
+);
+
+let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
    lsts-smart-token-path-index = lsts-smart-token-path-index.bind( text.data as U64, file-path );
 
    let tokens = [] :: List<String>;
