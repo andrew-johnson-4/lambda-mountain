@@ -1,10 +1,9 @@
 
-let c-tokenize-string(file-path: CString, text: CString): List<Token> = (
+let c-tokenize-string(file-path: CString, text: CString): List<CString> = (
    c-tokenize-string( intern(file-path), intern(text) );
 );
 
-let c-tokenize-string(file-path: String, text: String): List<Token> = (
-   lsts-smart-token-path-index = lsts-smart-token-path-index.bind( text.data as U64, file-path );
+let c-tokenize-string(file-path: String, text: String): List<CString> = (
 
    let tokens = [] :: List<String>;
    while non-zero(text) {match text {
@@ -71,9 +70,9 @@ let c-tokenize-string(file-path: String, text: String): List<Token> = (
       rest => ( fail("Unrecognized Token in File \{file-path}: \{clone-rope(rest[0])}"); );
    }; };
 
-   let internal-tokens = [] :: List<Token>;
+   let internal-tokens = [] :: List<CString>;
    for t in tokens {
-      internal-tokens = cons( mk-token(t), internal-tokens );
+      internal-tokens = cons( untern(t), internal-tokens );
    };
 
    internal-tokens;
