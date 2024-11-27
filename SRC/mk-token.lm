@@ -1,4 +1,15 @@
 
 mk-token := λ(: s SmartString). (: (
-   (Token( (untern s) (iuid()) (location-of s) ))
+   (let us (untern s))
+   (if (.has-prefix( s 'r/_ss )) (
+      (set us (.remove-prefix( us 'r/_s )))
+      (set us (.remove-suffix( us '/_s )))
+      (set us (+( us '_rgx_s )))
+   ) ())
+   (if (.has-prefix( s '"_ss )) (
+      (set us (.remove-prefix( us '"_s )))
+      (set us (.remove-suffix( us '"_s )))
+      (set us (+( us '_ss_s )))
+   ) ())
+   (Token( us (iuid()) (location-of s) ))
 ) Token);
