@@ -1,0 +1,4 @@
+
+mk-token := λ(: s SmartString). (: (
+   (Token( (untern s) (iuid()) (location-of s) ))
+) Token);

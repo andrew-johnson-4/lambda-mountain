@@ -3,7 +3,7 @@ let location-of(t: String): SourceLocation = (
    SourceLocation { $"_s", $"0_u64", $"0_u64" }
 );
 
-let lsts-smart-tokenize(file-path: String, text: String): List<String> = (
+let lsts-smart-tokenize(file-path: String, text: String): List<Token> = (
 
    let tokens = [] :: List<String>;
    while non-zero(text) {match text {
@@ -79,6 +79,10 @@ let lsts-smart-tokenize(file-path: String, text: String): List<String> = (
       #             "Column \{rest.column-of-token}.");
       rest => ( fail("Unrecognized Token in File \{file-path}: \{clone-rope(rest[0])}"); );
    }; };
-   tokens.reverse
+
+   let internal-tokens = [] :: List<Token>;
+   for t in tokens { internal-tokens = cons( mk-token(t), internal-tokens ); };
+
+   internal-tokens;
 );
 
