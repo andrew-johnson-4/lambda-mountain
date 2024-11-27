@@ -26,7 +26,7 @@ lsts-tokenize := λ(: fp String). (: (
 ) List<Token>);
 
 lsts-tokenize-string := λ(: fp String)(: text String). (: (
-   (lsts-smart-tokenize( (intern fp) (intern text) ))
+   (let smart-tokens (lsts-smart-tokenize( (intern fp) (intern text) )))
    (let tokens (: LEOF List<Token>))
    (let current-line 1_u64)
    (let current-column 1_u64)
@@ -196,6 +196,16 @@ lsts-tokenize-string := λ(: fp String)(: text String). (: (
          (print 'Unrecognized\sToken\sStart\sIn\sFile\s_s)(print fp)
          (print current-line)(print ',_s)(print current-column)(print ':\s\`_s)(print(clone-rope(head-string text)))(print '\`_s)(print '\n_s)(exit 1_u64)
       ) ())
+   ))
+   (let dumb-tokens (.reverse tokens))
+   (while (&&( (non-zero dumb-tokens) (non-zero smart-tokens) )) (
+      (if (!=( (.key(head dumb-tokens)) (.key(head smart-tokens)) )) (
+         (print 'Diff\n_s)
+         (print 'Diff\sDumb\s_s)(print (.key(head dumb-tokens)))(print '\n_s)
+         (print 'Diff\sSmart\s_s)(print (.key(head smart-tokens)))(print '\n_s)
+      ) ())
+      (set dumb-tokens (tail dumb-tokens))
+      (set smart-tokens (tail smart-tokens))
    ))
    (.reverse tokens)
 ) List<Token>);
