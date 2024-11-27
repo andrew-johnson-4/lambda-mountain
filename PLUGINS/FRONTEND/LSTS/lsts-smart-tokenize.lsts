@@ -1,7 +1,6 @@
 
 let location-of(t: String): SourceLocation = (
-   #let file-path = lsts-smart-token-path-index.lookup( t.data as U64, "[Unknown File]" );
-   let file-path = "";
+   let file-path = lsts-smart-token-path-index.lookup( t.data as U64, "[Unknown File]" );
    let line = 1;
    let column = 1;
    let data = t.data;
@@ -21,7 +20,7 @@ let lsts-smart-token-path-index = {} :: HashtableEq<U64,String>;
 
 let lsts-smart-tokenize(file-path: String, text: String): List<Token> = (
 
-   #lsts-smart-token-path-index = lsts-smart-token-path-index.bind( text.data as U64; file-path );
+   lsts-smart-token-path-index = lsts-smart-token-path-index.bind( text.data as U64, file-path );
 
    let tokens = [] :: List<String>;
    while non-zero(text) {match text {
@@ -82,7 +81,7 @@ let lsts-smart-tokenize(file-path: String, text: String): List<Token> = (
          tokens = cons(text[:id.length], tokens); text = rest;
       );
 
-      (id=r/^[a-zA-Z0-9_]+/).. rest => (
+      (id=r/^[a-zA-Z0-9_-]+/).. rest => (
          tokens = cons(text[:id.length], tokens); text = rest;
       );
 
@@ -101,9 +100,6 @@ let lsts-smart-tokenize(file-path: String, text: String): List<Token> = (
    let internal-tokens = [] :: List<Token>;
    for t in tokens {
       internal-tokens = cons( mk-token(t), internal-tokens );
-      match mk-token(t).location {
-         SourceLocation { fp=filename, ln=line, cl=column } => print("Token \{fp}: \{ln},\{cl}\n");
-      };
    };
 
    internal-tokens;

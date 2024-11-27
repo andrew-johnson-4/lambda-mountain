@@ -975,7 +975,10 @@ lsts-parse-map := λ(: tokens List<Token>). (: (
 
 lsts-parse-atom-tail := λ(: base AST)(: tokens List<Token>). (: (
    (while (||(
-      (||( (==( (lsts-parse-head tokens) '[_s )) (||( (==( (lsts-parse-head tokens) '\[_s )) (==( (lsts-parse-head tokens) '._s )) )) ))
+      (||(
+         (||( (==( (lsts-parse-head tokens) '[_s )) (||( (==( (lsts-parse-head tokens) '\[_s )) (==( (lsts-parse-head tokens) '._s )) )) ))
+         (==( (lsts-parse-head tokens) 'as_s ))
+      ))
       (&&( (&&( (==( (lsts-parse-head tokens) ':_s )) (non-zero(tail tokens)) )) (==( (lsts-parse-head(tail tokens)) ':_s )) ))
    )) (
       (if (&&( (&&( (==( (lsts-parse-head tokens) ':_s )) (non-zero(tail tokens)) )) (==( (lsts-parse-head(tail tokens)) ':_s )) )) (scope(
