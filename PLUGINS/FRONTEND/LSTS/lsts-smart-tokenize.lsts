@@ -1,9 +1,27 @@
 
 let location-of(t: String): SourceLocation = (
-   SourceLocation { $"_s", $"0_u64", $"0_u64" }
+   #let file-path = lsts-smart-token-path-index.lookup( t.data as U64, "[Unknown File]" );
+   let file-path = "";
+   let line = 1;
+   let column = 1;
+   let data = t.data;
+   while data < t.start {
+      if data[0] == $"10_u8" then {
+         line = line + 1;
+         column = 1;
+      } else {
+         column = column + 1;
+      };
+      data = data + 1;
+   };
+   SourceLocation { untern(file-path), line, column }
 );
 
+let lsts-smart-token-path-index = {} :: HashtableEq<U64,String>;
+
 let lsts-smart-tokenize(file-path: String, text: String): List<Token> = (
+
+   #lsts-smart-token-path-index = lsts-smart-token-path-index.bind( text.data as U64; file-path );
 
    let tokens = [] :: List<String>;
    while non-zero(text) {match text {
@@ -81,7 +99,12 @@ let lsts-smart-tokenize(file-path: String, text: String): List<Token> = (
    }; };
 
    let internal-tokens = [] :: List<Token>;
-   for t in tokens { internal-tokens = cons( mk-token(t), internal-tokens ); };
+   for t in tokens {
+      internal-tokens = cons( mk-token(t), internal-tokens );
+      match mk-token(t).location {
+         SourceLocation { fp=filename, ln=line, cl=column } => print("Token \{fp}: \{ln},\{cl}\n");
+      };
+   };
 
    internal-tokens;
 );
