@@ -1,14 +1,13 @@
 
 c-tokenize := λ(: text String). (: (
    (let r (: LEOF List<String>))
-   (if config-devmode 
-      (c-tokenize-new text)
-      (set r (c-tokenize-old text))
-   )
+   (set r (c-tokenize-old text))
    r
 ) List<String>);
 
 c-tokenize-old := λ(: text String). (: (
+   (c-tokenize-string( '[cpp\soutput]_s text ))
+
    (let tokens (: LEOF List<String>))
    (while (head-string text) (
       (let prev-text text)
