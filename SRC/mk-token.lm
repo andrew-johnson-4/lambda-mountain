@@ -1,5 +1,5 @@
 
-mk-token := λ(: s SmartString). (: (
+mk-lsts-token := λ(: s SmartString). (: (
    (let us (untern s))
    # if starts with 0-9 or -
    (if (||( (&&( (>=( (head-string us) 48_u8 )) (<=( (head-string us) 57_u8 )) )) (==( (head-string us) 45_u8 )) )) (
@@ -23,4 +23,8 @@ mk-token := λ(: s SmartString). (: (
       (set us (+( us '_ss_s )))
    ) ())
    (Token( us (iuid()) (location-of s) ))
+) Token);
+
+mk-token := λ(: s SmartString). (: (
+   (Token( (untern s) (iuid()) (location-of s) ))
 ) Token);
