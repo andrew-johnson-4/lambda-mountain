@@ -54,6 +54,10 @@ to-string := λ(: i U64). (: (
    (clone-rope r)
 ) String);
 
+to-smart-string := λ(: i U64). (: (
+   (intern(to-string i))
+) SmartString);
+
 deep-hash := λ(: x U64). (: (hash x) U64);
 
 to-u64 := λ(: s String). (: (

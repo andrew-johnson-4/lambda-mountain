@@ -1,5 +1,29 @@
 
-let lsts-smart-tokenize(file-path: String, text: String): List<String> = (
+let location-of(t: String): SourceLocation = (
+   let file-path = lsts-smart-token-path-index.lookup( t.data as U64, "[Unknown File]" );
+   let line = 1;
+   let column = 1;
+   let data = t.data;
+   while data < t.start {
+      if data[0] == $"10_u8" then {
+         line = line + 1;
+         column = 1;
+      } else {
+         column = column + 1;
+      };
+      data = data + 1;
+   };
+   SourceLocation { untern(file-path), line, column }
+);
+
+let lsts-smart-token-path-index = {} :: HashtableEq<U64,String>;
+
+let lsts-tokenize-string(file-path: CString, text: CString): List<Token> = (
+   lsts-tokenize-string( intern(file-path), intern(text) );
+);
+
+let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
+   lsts-smart-token-path-index = lsts-smart-token-path-index.bind( text.data as U64, file-path );
 
    let tokens = [] :: List<String>;
    while non-zero(text) {match text {
@@ -37,7 +61,6 @@ let lsts-smart-tokenize(file-path: String, text: String): List<String> = (
       "~".. rest => (tokens = cons(text[:"~".length], tokens); text = rest;);
       "@".. rest => (tokens = cons(text[:"@".length], tokens); text = rest;);
       "+".. rest => (tokens = cons(text[:"+".length], tokens); text = rest;);
-      "-".. rest => (tokens = cons(text[:"-".length], tokens); text = rest;);
       "*".. rest => (tokens = cons(text[:"*".length], tokens); text = rest;);
       "/".. rest => (tokens = cons(text[:"/".length], tokens); text = rest;);
       "%".. rest => (tokens = cons(text[:"%".length], tokens); text = rest;);
@@ -60,7 +83,7 @@ let lsts-smart-tokenize(file-path: String, text: String): List<String> = (
          tokens = cons(text[:id.length], tokens); text = rest;
       );
 
-      (id=r/^[a-zA-Z0-9_]+/).. rest => (
+      (id=r/^[a-zA-Z0-9_-]+/).. rest => (
          tokens = cons(text[:id.length], tokens); text = rest;
       );
 
@@ -75,6 +98,12 @@ let lsts-smart-tokenize(file-path: String, text: String): List<String> = (
       #             "Column \{rest.column-of-token}.");
       rest => ( fail("Unrecognized Token in File \{file-path}: \{clone-rope(rest[0])}"); );
    }; };
-   tokens.reverse
+
+   let internal-tokens = [] :: List<Token>;
+   for t in tokens {
+      internal-tokens = cons( mk-token(t), internal-tokens );
+   };
+
+   internal-tokens;
 );
 
