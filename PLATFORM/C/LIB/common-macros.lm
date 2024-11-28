@@ -75,6 +75,16 @@ macro ('match-pats-arm( term (:Tag: l lt) )) (
    ( (let (uuid v) term) (==( (.0( (uuid v) )) l )) )
 );
 
+macro ('match-pats-arm( term ('macro::lhs-head( x rest )) )) (
+   ( (let (uuid v) term) (
+      (if (.has-head( (uuid v) )) (
+         (if (match-pats-arm( (head (uuid v)) x ))
+             (match-pats-arm( (tail (uuid v)) rest ))
+             (branchfalse()))
+      ) (branchfalse()))
+   ))
+);
+
 macro ('match-pats-arm( term ('macro::lhs-prefix-or-suffix( (:Literal: l) rest )) )) (
    ( (let (uuid v) term) (
       (if (.has-prefix( (uuid v) l )) (
