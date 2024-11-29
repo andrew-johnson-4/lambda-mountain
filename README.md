@@ -2,7 +2,7 @@
 
 λ☶ (pronounced Lambda Mountain) is a typed macro assembler that provides a relatively clean implementation of **System F<: with Specialization**.
 
-* [TUTORIAL](https://github.com/andrew-johnson-4/lambda-mountain/blob/main/TUTORIAL/hello-blob.md)
+* [TUTORIAL](https://github.com/andrew-johnson-4/lambda-mountain/blob/main/TUTORIAL/terms-1.md)
 * [WIKI](https://github.com/andrew-johnson-4/-/wiki)
 * [DOCS](https://andrew-johnson-4.github.io/lambda-mountain/)
 
