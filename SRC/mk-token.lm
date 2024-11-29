@@ -7,6 +7,7 @@ mk-lsts-token := λ(: s SmartString). (: (
       (if (.has-prefix( us '-_s )) (set tsfx '_i64_s) ())
       (if (.contains( us '._s )) (set tsfx '_f64_s) ())
       (if (.contains( us 'e_s )) (set tsfx '_f64_s) ())
+      (if (.contains( us '__s )) (set tsfx '_s) ())
       (if (==( us '-_s )) () (
          (set us (+( us tsfx )))
       ))

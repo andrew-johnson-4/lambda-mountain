@@ -5,7 +5,7 @@ let location-of(t: String): SourceLocation = (
    let column = 1;
    let data = t.data;
    while data < t.start {
-      if data[0] == $"10_u8" then {
+      if data[0] == 10_u8 then {
          line = line + 1;
          column = 1;
       } else {
