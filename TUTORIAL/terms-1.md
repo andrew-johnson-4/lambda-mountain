@@ -29,3 +29,35 @@ lm example.lsts -o example.c
 cc example.c -o example
 ./example
 ```
+
+### Print different kinds of values
+
+Now that we are setup, we can explore all the different kinds of values that are available in LSTS.
+
+Like numbers...
+
+```
+print(1 - 3 * -4.5 / 7e23);
+```
+
+Or strings...
+
+```
+print( "abcd"[2:] + "efg"[:-1] );
+```
+
+We have lists, sets, and maps.
+
+```
+print([ 1, 2, 2, 3 ]);
+print({ 1, 2, 2, 3 });
+print({ 1: 2, 2: 3 });
+```
+
+And regular expressions.
+
+```
+r/abc+/.matches("abcccc")
+```
+
+There are many other values available in LSTS, but we'll start with these.
