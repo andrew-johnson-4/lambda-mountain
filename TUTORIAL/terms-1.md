@@ -23,7 +23,7 @@ print("hello world\n");
 ```
 
 To compile this we first call the `lm` command which will output a C source file.
-The we can compile the C source file with `cc` or your favorite C compile.
+The we can compile the C source file with `cc` or your favorite C compiler.
 This will give us an executable which we can finally run.
 
 ```
