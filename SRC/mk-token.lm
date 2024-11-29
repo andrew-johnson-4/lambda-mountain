@@ -23,6 +23,11 @@ mk-lsts-token := λ(: s SmartString). (: (
       (set us (.remove-suffix( us '"_s )))
       (set us (+( us '_ss_s )))
    ) ())
+   (if (.has-prefix( s 'c"_ss )) (
+      (set us (.remove-prefix( us 'c"_s )))
+      (set us (.remove-suffix( us '"_s )))
+      (set us (+( us '_s_s )))
+   ) ())
    (Token( us (iuid()) (location-of s) ))
 ) Token);
 
