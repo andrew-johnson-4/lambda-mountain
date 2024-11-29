@@ -7,6 +7,7 @@ mk-lsts-token := λ(: s SmartString). (: (
       (if (.has-prefix( us '-_s )) (set tsfx '_i64_s) ())
       (if (.contains( us '._s )) (set tsfx '_f64_s) ())
       (if (.contains( us 'e_s )) (set tsfx '_f64_s) ())
+      (if (.contains( us '__s )) (set tsfx '_s) ())
       (if (==( us '-_s )) () (
          (set us (+( us tsfx )))
       ))
@@ -21,6 +22,11 @@ mk-lsts-token := λ(: s SmartString). (: (
       (set us (.remove-prefix( us '"_s )))
       (set us (.remove-suffix( us '"_s )))
       (set us (+( us '_ss_s )))
+   ) ())
+   (if (.has-prefix( s 'c"_ss )) (
+      (set us (.remove-prefix( us 'c"_s )))
+      (set us (.remove-suffix( us '"_s )))
+      (set us (+( us '_s_s )))
    ) ())
    (Token( us (iuid()) (location-of s) ))
 ) Token);

@@ -5,7 +5,7 @@ let location-of(t: String): SourceLocation = (
    let column = 1;
    let data = t.data;
    while data < t.start {
-      if data[0] == $"10_u8" then {
+      if data[0] == 10_u8 then {
          line = line + 1;
          column = 1;
       } else {
@@ -71,7 +71,7 @@ let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
       "^".. rest => (tokens = cons(text[:"^".length], tokens); text = rest;);
       ".".. rest => (tokens = cons(text[:".".length], tokens); text = rest;);
 
-      (lit=r/^["]([^"\\]|([\\].))*["]/).. rest => (
+      (lit=r/c?^["]([^"\\]|([\\].))*["]/).. rest => (
          tokens = cons(text[:lit.length], tokens); text = rest;
       );
 
