@@ -1,4 +1,6 @@
 
+### Getting Started
+
 LSTS is a typed macro assembler that by default compiles to C.
 If you would like to follow along with this tutorial you can download and install it on any Posix operating system.
 
