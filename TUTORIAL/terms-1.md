@@ -75,7 +75,7 @@ let z = [6,7,8];
 print( x + y.length + z.length );
 ```
 
-Functions are also declared with the `let` keyword with a list of arguments after the name.
+Functions are also declared with the `let` keyword with a list of arguments after the function name.
 
 ```
 let f(x: U64, y: U64): U64 = x + y;
