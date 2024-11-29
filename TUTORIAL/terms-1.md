@@ -80,3 +80,73 @@ let f(x: U64, y: U64): U64 = x + y;
 
 print( f(3, 4) );
 ```
+
+### Primitive Control Flow
+
+LSTS has if statements.
+
+```
+if condition { true-case } else { false-case }
+```
+
+and while loops.
+
+```
+while condition { do-something }
+```
+
+and even for-each iteration.
+
+```
+for x in [1,2,3] { print(X); }
+```
+
+### Advanced Control Flow
+
+The pinnacle of control-flow in LSTS is the `match` expression.
+A match expression attempts to destructure a value into a list of cases.
+Each case has a left-hand-side which defines the conditions under which that case should match,
+and a right-hand-side which defines what should be returned when that case matches.
+
+In the simplest case, a match expression just checks equality against a literal value.
+
+```
+match 24 {
+   1 => print("It's One.");
+   4 => print("It's Four.");
+   x => print("It's \{x}.");
+}
+```
+
+However, there is so much more to this expression because left-hand-sides can be complicated.
+
+Take for example string destructuring.
+
+```
+match "abc" {
+
+   "d".. rest => print("Starts with a D.");
+   # check to see if a string starts with a prefix
+
+   r/^[0-9]/.. rest => print("Starts with a DIGIT.");
+   # check to see if a string starts with a regular expression
+}
+```
+
+Lists have a similar syntax for destructuring prefixes.
+
+```
+match [3,4,5] {
+   [3.. 4.. rest] => print("List starts with 3, 4.");
+}
+```
+
+Structured data can also be destructured in a match expression.
+
+```
+match (Point2D { 3, 4 }) {
+   Point2D { y:4 } => print("Y is Four.");
+   Point2d { x-value=x, y-value=y } => print("X is \{x-value}, Y is \{y-value}.");
+}
+```
+
