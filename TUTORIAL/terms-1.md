@@ -61,3 +61,22 @@ r/abc+/.matches("abcccc")
 ```
 
 There are many other values available in LSTS, but we'll start with these.
+
+### Variables and Functions
+
+Variables store values for use later and are declared with the `let` keyword.
+
+```
+let x = 5;
+let y = "abc";
+let z = [6,7,8];
+print( x + y.length + z.length );
+```
+
+Functions are also declared with the `let` keyword with a list of arguments after the name.
+
+```
+let f(x: U64, y: U64): U64 = x + y;
+
+print( f(3, 4) );
+```
