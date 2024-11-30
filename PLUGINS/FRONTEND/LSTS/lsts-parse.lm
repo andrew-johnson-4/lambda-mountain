@@ -1,32 +1,4 @@
 
-lsts-has-assign := λ(: tokens List<Token>). (: (
-   (let depth 0_i64)
-   (let has-assign 0_u64)
-   (while (non-zero tokens) (
-      (if (==( (lsts-parse-head tokens) '[_s )) (set depth (+( depth 1_i64 ))) ())
-      (if (==( (lsts-parse-head tokens) '{_s )) (set depth (+( depth 1_i64 ))) ())
-      (if (==( (lsts-parse-head tokens) '\[_s )) (set depth (+( depth 1_i64 ))) ())
-      (if (==( (lsts-parse-head tokens) ']_s )) (set depth (-( depth 1_i64 ))) ())
-      (if (==( (lsts-parse-head tokens) '}_s )) (set depth (-( depth 1_i64 ))) ())
-      (if (==( (lsts-parse-head tokens) '\]_s )) (set depth (-( depth 1_i64 ))) ())
-      (if (&&( (==( (lsts-parse-head tokens) '\:_s )) (<=( depth 0_i64 )) )) (
-         (set tokens (: LEOF List<Token>))
-      ) ())
-      (if (&&( (==( (lsts-parse-head tokens) ',_s )) (<=( depth 0_i64 )) )) (
-         (set tokens (: LEOF List<Token>))
-      ) ())
-      (if (&&( (==( (lsts-parse-head tokens) '=_s )) (==( depth 0_i64 )) )) (
-         (set has-assign 1_u64)
-         (set tokens (: LEOF List<Token>))
-      ) ())
-      (if (non-zero tokens) (set tokens (tail tokens)) ())
-      (if (<( depth 0_i64 )) (
-         (set tokens (: LEOF List<Token>))
-      ) ())
-   ))
-   has-assign
-) U64);
-
 lsts-substitute-type-aliases := λ(: s String). (: (
    (if (==( s 'String_s )) (set s 'SmartString_s) ())
    (if (==( s 'CString_s )) (set s 'String_s) ())

@@ -24,6 +24,24 @@ let lsts-parse-expect(expect: CString, b: U64, tokens: List<Token>): Nil = (
    }
 );
 
+let lsts-has-assign(tokens: List<Token>): U64 = (
+   let depth = 0_i64;
+   let has-assign = 0;
+   while non-zero(tokens) { match tokens {
+      [Token{key:c"["} .. rest] => (depth = depth + 1_i64; tokens = rest;);
+      [Token{key:c"{"} .. rest] => (depth = depth + 1_i64; tokens = rest;);
+      [Token{key:c"("} .. rest] => (depth = depth + 1_i64; tokens = rest;);
+      [Token{key:c"]"} .. rest] => (depth = depth - 1_i64; tokens = rest;);
+      [Token{key:c"}"} .. rest] => (depth = depth - 1_i64; tokens = rest;);
+      [Token{key:c")"} .. rest] => (depth = depth - 1_i64; tokens = rest;);
+      [Token{key:c";"} .. rest] => (if depth <= 0_i64 {tokens = [] :: List<Token>} else {tokens = rest;});
+      [Token{key:c","} .. rest] => (if depth <= 0_i64 {tokens = [] :: List<Token>} else {tokens = rest;});
+      [Token{key:c"="} .. rest] => (if depth == 0_i64 {has-assign = 1; tokens = [] :: List<Token>;} else {tokens = rest;});
+      [_ .. rest] => tokens = rest;
+   }; if depth < 0_i64 { tokens = [] :: List<Token>; }; };
+   has-assign
+);
+
 let lsts-parse(tokens: List<Token>): Nil = (
    while non-zero(tokens) {
       let prev-tokens = tokens;
