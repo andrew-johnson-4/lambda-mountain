@@ -2,6 +2,6 @@
 let .formatted-location(l: List<Token>): String = (
    match l {
       [] => "End of File";
-#      [hd.. _] => "\{hd.location}";
+      [hd.. _] => "\{hd.location}";
    }
 );
