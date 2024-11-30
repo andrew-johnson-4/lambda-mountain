@@ -6,6 +6,24 @@ let lsts-parse-head(tokens: List<Token>): CString = (
    }
 );
 
+#let lsts-unwrap-identifier(ident: CString): CString = (
+#   if ident.has-prefix(c"$") {
+#      ident.remove-prefix(c"$\"").remove-suffix(c"\"")
+#   } else ident
+#);
+
+#let lsts-parse-expect(expect: CString, tokens: List<Token>): Nil = (
+#   if lsts-parse-head(tokens) != expect {
+#      fail("Parse Error: Expected \{expect} at \{tokens.formatted-location}\n");
+#   }
+#);
+
+#let lsts-parse-expect(expect: CString, b: U64, tokens: List<Token>): Nil = (
+#   if not(b) {
+#      fail("Parse Error: Expected \{expect} at \{tokens.formatted-location}\n")
+#   }
+#);
+
 let lsts-parse(tokens: List<Token>): Nil = (
    while non-zero(tokens) {
       let prev-tokens = tokens;
@@ -32,3 +50,4 @@ let lsts-parse(tokens: List<Token>): Nil = (
       if is(prev-tokens, tokens) { fail("Unrecognized Token During Parsing: \{lsts-parse-head(tokens)}\n") };
    }
 );
+
