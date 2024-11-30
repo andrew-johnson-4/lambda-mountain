@@ -167,9 +167,15 @@ lsts-parse-small-expression := λ(: tokens List<Token>). (: (
                (close(Var( 'if_s (with-location( (token::new 'if_s) loc )) )))
                (close c)
             )))
-            (close t)
+            (close(App(
+               (close(Var( 'scope_s (with-location( (token::new 'scope_s) loc )) )))
+               (close t)
+            )))
          )))
-         (close f)
+         (close(App(
+            (close(Var( 'scope_s (with-location( (token::new 'scope_s) loc )) )))
+            (close f)
+         )))
       )))
    )) (
       (if (==( (lsts-parse-head tokens) 'let_s )) (scope(
@@ -206,7 +212,10 @@ lsts-parse-small-expression := λ(: tokens List<Token>). (: (
                   (close(Var( 'while_s (with-location( (token::new 'while_s) loc )) )))
                   (close c)
                )))
-               (close rhs)
+               (close(App(
+                  (close(Var( 'scope_s (with-location( (token::new 'scope_s) loc )) )))
+                  (close rhs)
+               )))
             )))
          )) (
             (if (==( (lsts-parse-head tokens) 'for_s )) (scope(
@@ -238,7 +247,10 @@ lsts-parse-small-expression := λ(: tokens List<Token>). (: (
                         (close iter)
                      )))
                   )))
-                  (close rhs)
+                  (close(App(
+                     (close(Var( 'scope_s (with-location( (token::new 'scope_s) loc )) )))
+                     (close rhs)
+                  )))
                )))
             )) (
                (if (==( (lsts-parse-head tokens) 'match_s )) (scope(

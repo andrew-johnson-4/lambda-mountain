@@ -75,3 +75,75 @@ let lsts-parse(tokens: List<Token>): Nil = (
    }
 );
 
+#let lsts-parse-type(: tokens List<Token>): Tuple<Type,List<Token>> = (
+#   let tt = if lsts-parse-head(tokens) == c"(" {
+#      lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
+#      let targs-rest = lsts-parse-type(tokens);
+#      let targs = [ targs-rest.first ];
+#      tokens = targs.second;
+#      while lsts-parse-head(tokens) == "," {
+#         lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+#         let tnext-rest = lsts-parse-type(tokens);
+#         targs = cons( tnext-rest.first, targs );
+#         tokens = tnext-rest.second;
+#      };
+#      lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+#      TGround { tag:c"Tuple", parameters:close(args) };
+#   } else {
+#      let base = lsts-substitute-type-aliases(lsts-parse-head(tokens));
+#      lsts-parse-expect(c"Type", lsts-is-lit-head(lsts-parse-head(tokens)), tokens); tokens = tail(tokens);
+#      let args = [] :: List<Type>;
+#      if lsts-parse-head(tokens) == c"<" {
+#         lsts-parse-expect(c"<", tokens); tokens = tail(tokens);
+#         let targs-rest = lsts-parse-type(tokens);
+#         args = cons( targs-rest.first, args );
+#         tokens = targs.second;
+#         while lsts-parse-head(tokens) == "," {
+#            lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+#            let tnext-rest = lsts-parse-type(tokens);
+#            args = cons( tnext-rest.first, args );
+#            tokens = tnext-rest.second;
+#         };
+#         lsts-parse-expect(c">", tokens); tokens = tail(tokens);
+#      };
+#      TGround { tag:base, parameters:close(args) };
+#   };
+#   (let base SNil)
+#   (let depth 0_u64)
+#   (if (==( (lsts-parse-head tokens) '\[_s )) (
+#      (set base (SAtom 'Tuple<_s))(set tokens (tail tokens))
+#      (set depth 1_u64)
+#   ) (
+#      (set base (SAtom(lsts-substitute-type-aliases(lsts-parse-head tokens))))(set tokens (tail tokens))
+#   ))
+#   (if (||( (==( (lsts-parse-head tokens) '<_s )) (==( (lsts-parse-head tokens) '[_s )) )) (
+#      (set base (+( base (SAtom(lsts-substitute-type-aliases(lsts-parse-head tokens))) )))
+#      (set tokens (tail tokens))
+#      (set depth 1_u64)
+#   ) ())
+#   (while (>( depth 0_u64 )) (
+#      (while (&&( (non-zero tokens) (>( depth 0_u64 )) )) (
+#         (if (||( (||( (==( (lsts-parse-head tokens) '\[_s )) (==( (lsts-parse-head tokens) '[_s )) )) (==( (lsts-parse-head tokens) '<_s )) )) (
+#            (if (==( (lsts-parse-head tokens) '\[_s )) (
+#               (set base (+( base (SAtom 'Tuple<_s) )))
+#            ) (
+#               (set base (+( base (SAtom(lsts-parse-head tokens)) )))
+#            ))
+#            (set depth (+( depth 1_u64 )))
+#         ) (
+#            (if (||( (||( (==( (lsts-parse-head tokens) '\]_s )) (==( (lsts-parse-head tokens) ']_s )) )) (==( (lsts-parse-head tokens) '>_s )) )) (
+#               (if (==( (lsts-parse-head tokens) '\]_s )) (
+#                  (set base (+( base (SAtom '>_s) )))
+#               ) (
+#                  (set base (+( base (SAtom(lsts-parse-head tokens)) )))
+#               ))
+#               (set depth (-( depth 1_u64 )))
+#            ) (
+#               (set base (+( base (SAtom(lsts-substitute-type-aliases(lsts-parse-head tokens))) )))
+#            ))
+#         ))
+#         (set tokens (tail tokens))
+#      ))
+#   ) ())
+#   (Tuple( (parse-type(clone-rope base)) tokens ))
+#);
