@@ -123,3 +123,43 @@ let lsts-parse-type(tokens: List<Token>): Tuple<Type,List<Token>> = (
    };
    Tuple { tt, tokens };
 );
+
+#let lsts-parse-expression-possibly-tuple(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   #if not(non-zero(tokens)) { lsts-parse-expect(c"ExpressionPossiblyTuple", tokens); };
+   #let loc = head(tokens).location;
+   #let base-rest = lsts-parse-expression(tokens);
+   #let base = base-rest.first;
+   #tokens = base-rest.second;
+   #let is-tuple = 0;
+   #while lsts-parse-head(tokens) == c"," {
+   #   is-tuple = 1;
+   #   tokens = tail(tokens);
+   #   base-rest = lsts-parse-expression(tokens);
+   #   base = App { close(base), close(base-rest.first) };
+   #   tokens = base-rest.second;
+   #};
+   #if is-tuple {
+#      mk-token("Tuple");
+      #base = App {
+      #   close(Lit{ c"Tuple", with-location(mk-token("Tuple"),loc) }),
+      #   close(base)
+      #};
+   #};
+   #Tuple { base, tokens }
+#   Tuple { ASTEOF {}, tokens }
+#);
+
+#let lsts-parse-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
+#   let base-rest = lsts-parse-small-expression(tokens);
+#   let base = base-rest.first;
+#   tokens = base-rest.second;
+#   while lsts-parse-head(tokens) == c";" {
+#      tokens = tail(tokens);
+#      if lsts-parse-head(tokens)!=c")" && lsts-parse-head(tokens)!=c"}" {
+#         base-rest = lsts-parse-small-expression(tokens);
+#         base = App { close(base), close(base-rest.first) };
+#         tokens = base-rest.second;
+#      }
+#   };
+#   Tuple { base, tokens }
+#);
