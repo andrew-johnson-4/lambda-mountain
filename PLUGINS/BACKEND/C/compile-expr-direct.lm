@@ -18,7 +18,6 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ))
       ( (Lit( val _ )) (
          (let ltype (typeof term))
-         (if (==( val 'Tuple_s )) (print ltype) ())
          (if (||( (||( (is-t( ltype 'String_s )) (is-t( ltype 'SmartString_s )) )) (is-t( ltype 'Regex_s )) )) (
             (if (is-t( ltype 'String_s )) (
                (set e (compile-declare-cstring( val )))
