@@ -572,7 +572,7 @@ lsts-make-lit := λ(: t Token). (: (
                      (close se)
                   )))
                )))
-            ) (set base (.first se-rest)))
+            ) (set base se))
             (if (non-zero(.second se-rest)) (
                (lsts-parse-expect( '[EOF]_s (.second se-rest) ))
             ) ())
