@@ -161,3 +161,39 @@ let lsts-parse-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
    };
    Tuple { base, tokens }
 );
+
+let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   let base = ASTEOF {};
+   lsts-parse-expect(c"[", tokens);
+   let loc = head(tokens).location;
+   tokens = tail(tokens);
+   if lsts-parse-head(tokens) == c"]" {
+      base = Lit { c"LEOF", with-location(mk-token("LEOF"),loc) };
+   } else {
+      let base-rest = lsts-parse-lhs-one(tokens);
+      base = base-rest.first;
+      tokens = base-rest.second;
+      let bases = [base];
+      while non-zero(tokens) && lsts-parse-head(tokens)==c"." {
+         lsts-parse-expect(c".", tokens); tokens = tail(tokens);
+         lsts-parse-expect(c".", tokens); tokens = tail(tokens);
+         if lsts-parse-head(tokens)==c"]" {
+            bases = cons( Lit{ c"LEOF", with-location(mk-token("LEOF"),loc) }, bases );
+         } else {
+            let next-rest = lsts-parse-lhs-one(tokens);
+            let next = next-rest.first;
+            tokens = next-rest.second;
+            bases = cons( next, bases );
+         }
+      };
+      base = head(bases); bases = tail(bases);
+      for b in bases {
+         base = App {
+            close(Var{ c"macro::lhs-head", with-location(mk-token("macro::lhs-head"),loc) }),
+            close(App{ close(b), close(base) })
+         };
+      }
+   };
+   lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
+   Tuple { base, tokens }
+);
