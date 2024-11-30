@@ -197,3 +197,38 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
    lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
    Tuple { base, tokens }
 );
+
+let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   let base = match tokens {
+      [ Token{key:c"["}.. _ ] => (
+         let base-rest = lsts-parse-lhs-list(tokens);
+         tokens = base-rest.second;
+         base-rest.first;
+      );
+      [ Token{key:c"("}.. _] => (
+         lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
+         let base-rest = lsts-parse-lhs-big(tokens);
+         tokens = base-rest.second;
+         lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+         base-rest.first;
+      );
+      _ => (
+         let base-rest = lsts-parse-lhs-one(tokens);
+         tokens = base-rest.second;
+         base-rest.first;         
+      );
+   };
+   while non-zero(tokens) && lsts-parse-head(tokens)==c"." {
+      let loc = head(tokens).location;
+      lsts-parse-expect(c".", tokens); tokens = tail(tokens);
+      lsts-parse-expect(c".", tokens); tokens = tail(tokens);
+      let next-rest = lsts-parse-lhs-one(tokens);
+      let next = next-rest.first;
+      tokens = next-rest.second;
+      base = App {
+         close(Var{ c"macro::lhs-prefix-or-suffix", with-location(mk-token("macro::lhs-prefix-or-suffix"),loc) }),
+         close(App{ close(base), close(next) })
+      };
+   };
+   Tuple { base, tokens }
+);
