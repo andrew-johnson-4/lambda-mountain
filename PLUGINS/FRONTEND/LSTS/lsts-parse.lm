@@ -1,10 +1,4 @@
 
-lsts-substitute-type-aliases := λ(: s String). (: (
-   (if (==( s 'String_s )) (set s 'SmartString_s) ())
-   (if (==( s 'CString_s )) (set s 'String_s) ())
-   s
-) String);
-
 lsts-parse-type := λ(: tokens List<Token>). (: (
    (let base SNil)
    (let depth 0_u64)

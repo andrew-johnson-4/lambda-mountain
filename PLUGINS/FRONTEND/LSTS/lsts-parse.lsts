@@ -42,6 +42,12 @@ let lsts-has-assign(tokens: List<Token>): U64 = (
    has-assign
 );
 
+let lsts-substitute-type-aliases(s: CString): CString = (
+   if s == c"String" then c"SmartString" else
+   if s == c"CString" then c"String" else
+   s
+);
+
 let lsts-parse(tokens: List<Token>): Nil = (
    while non-zero(tokens) {
       let prev-tokens = tokens;
