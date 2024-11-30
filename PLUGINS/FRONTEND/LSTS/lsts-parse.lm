@@ -1,36 +1,4 @@
 
-lsts-parse := λ(: tokens List<Token>). (: (
-   (while (non-zero tokens) (
-      (let prev-tokens tokens)
-      (if (==( (lsts-parse-head tokens) 'let_s )) (
-         (set tokens (lsts-parse-let tokens))
-      ) (
-         (if (==( (lsts-parse-head tokens) 'import_s )) (
-            (set tokens (tail tokens))
-            (let path SNil)
-            (while (&&( (non-zero tokens) (!=( (lsts-parse-head tokens) '\:_s )) )) (
-               (set path (+( path (SAtom(lsts-unwrap-identifier(lsts-parse-head tokens))) )))
-               (set tokens (tail tokens))
-            ))
-            (lsts-parse-expect( '\:_s tokens ))(set tokens (tail tokens))
-            (frontend(clone-rope path))
-         ) (
-            (let term-rest (lsts-parse-small-expression tokens)) # small expression does not consume semicolons
-            (let term (.first term-rest))
-            (set tokens (.second term-rest))
-            (set ast-parsed-program (Seq(
-               (close ast-parsed-program)
-               (close term)
-            )))
-            (lsts-parse-expect( '\:_s tokens ))(set tokens (tail tokens))
-         ))
-      ))
-      (if (is( prev-tokens tokens )) (
-         (print 'Unrecognized\sToken\sDuring\sParsing\s_s)(print(lsts-parse-head tokens))(print '\n_s)(exit 1_u64)
-      ) ())
-   ))
-) Nil);
-
 lsts-unwrap-identifier := λ(: ident String). (: (
    (if (.has-prefix( ident '$"_s )) (
       (set ident (.remove-prefix( ident '$"_s )))

@@ -5,3 +5,30 @@ let lsts-parse-head(tokens: List<Token>): CString = (
       _ => c"";
    }
 );
+
+let lsts-parse(tokens: List<Token>): Nil = (
+   while non-zero(tokens) {
+      let prev-tokens = tokens;
+      match tokens {
+         [ Token{key:c"let"}.. _] => tokens = lsts-parse-let(tokens);
+         [ Token{key:c"import"}.. rest] => (
+            tokens = rest;
+            let path = SNil {};
+            while non-zero(tokens) && lsts-parse-head(tokens) != c";" {
+               path = path + SAtom { lsts-unwrap-identifier(lsts-parse-head(tokens)) };
+               tokens = tail(tokens);
+            };
+            lsts-parse-expect(c";",tokens); tokens = tail(tokens);
+            frontend(clone-rope(path));
+         );
+         _ => (
+            let term-rest = lsts-parse-small-expression(tokens);
+            let term = term-rest.first;
+            tokens = term-rest.second;
+            ast-parsed-program = Seq { close(ast-parsed-program), close(term) };
+            lsts-parse-expect(c";",tokens); tokens = tail(tokens);
+         );
+      };
+      if is(prev-tokens, tokens) { fail("Unrecognized Token During Parsing: \{lsts-parse-head(tokens)}\n") };
+   }
+);
