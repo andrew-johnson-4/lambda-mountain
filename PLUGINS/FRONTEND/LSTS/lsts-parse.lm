@@ -1,14 +1,4 @@
 
-lsts-parse-head :=  λ(: tokens List<Token>). (: (
-   (let r '_s)
-   (match tokens (
-      ()
-      ( (LCons( (Token( tk _ _ )) _ )) (set r tk) )
-      ( _ () )
-   ))
-   r
-) String);
-
 lsts-parse := λ(: tokens List<Token>). (: (
    (while (non-zero tokens) (
       (let prev-tokens tokens)

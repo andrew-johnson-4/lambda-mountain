@@ -1,7 +1,7 @@
 
 let lsts-parse-head(tokens: List<Token>): CString = (
    match tokens {
-      [ Token { key=key } .. ] => key;
+      [ Token { key=key }.. _ ] => key;
       _ => c"";
    }
 );
