@@ -66,30 +66,6 @@ lsts-parse-atom := λ(: tokens List<Token>). (: (
    (lsts-parse-atom-tail( term tokens ))
 ) Tuple<AST,List<Token>>);
 
-lsts-parse-lit :=  λ(: tokens List<Token>). (: (
-   (let loc (.location(head tokens)))
-   (let term ASTEOF)
-   (if (.has-suffix( (lsts-parse-head tokens) '_ss_s )) (
-      (while (.has-suffix( (lsts-parse-head tokens) '_ss_s )) (
-         (let cat (lsts-make-lit(head tokens)))
-         (set tokens (tail tokens))
-         (if (non-zero term) (
-            (set term (App(
-               (close(Var( '+_s (with-location( (token::new '+_s) loc )) )))
-               (close(App(
-                  (close term)
-                  (close cat)
-               )))
-            )))
-         ) (set term cat))
-      ))
-   ) (
-      (set term (lsts-make-lit(head tokens)))
-      (set tokens (tail tokens))
-   ))
-   (Tuple( term tokens ))
-) Tuple<AST,List<Token>>);
-
 lsts-parse-atom-tail := λ(: base AST)(: tokens List<Token>). (: (
    (while (||(
       (||(

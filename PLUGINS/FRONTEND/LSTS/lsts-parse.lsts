@@ -778,3 +778,23 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
    Tuple { base, tokens }
 );
 
+let lsts-parse-lit(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   let loc = head(tokens).location;
+   let term = ASTEOF {};
+   if lsts-parse-head(tokens).has-suffix(c"_ss") {
+      while lsts-parse-head(tokens).has-suffix(c"_ss") {
+         let cat = lsts-make-lit(head(tokens));
+         tokens = tail(tokens);
+         if non-zero(term) {
+            term = App {
+               close(Var{ c"+", with-location(mk-token("+"),loc) }),
+               close(App{ close(term), close(cat) })
+            };
+         } else { term = cat; };
+      }
+   } else {
+      term = lsts-make-lit(head(tokens));
+      tokens = tail(tokens);
+   };
+   Tuple { term, tokens }
+);
