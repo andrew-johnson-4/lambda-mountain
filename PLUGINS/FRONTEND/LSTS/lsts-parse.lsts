@@ -351,3 +351,20 @@ let lsts-parse-map(tokens: List<Token>): Tuple<AST,List<Token>> = (
    lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
    Tuple { term, tokens }
 );
+
+let lsts-parse-lhs-big(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   let base-rest = lsts-parse-lhs-one(tokens);
+   let base = base-rest.first;
+   tokens = base-rest.second;
+   if lsts-parse-head(tokens) == c"=" {
+      let loc = head(tokens).location;
+      lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+      let val-rest = lsts-parse-lhs(tokens);
+      tokens = val-rest.second;
+      base = App {
+         close(Var{ c"macro::lhs-bind", with-location(mk-token("macro::lhs-bind"),loc) }),
+         close(App{ close(base), close(val-rest.first) })
+      };
+   };
+   Tuple { base, tokens }
+);
