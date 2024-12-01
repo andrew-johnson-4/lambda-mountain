@@ -368,3 +368,31 @@ let lsts-parse-lhs-big(tokens: List<Token>): Tuple<AST,List<Token>> = (
    };
    Tuple { base, tokens }
 );
+
+let lsts-parse-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   lsts-parse-expect(c"[", tokens); let loc = head(tokens).location; tokens = tail(tokens);
+   let term = Lit{ c"LEOF", with-location(mk-token("LEOF"),loc) };
+   if lsts-parse-head(tokens)==c"for" {
+      fail("TODO List Comprehension at \{loc}")
+   } else {
+      if lsts-parse-head(tokens)!=c"]" {
+         let add-items = [] :: List<AST>;
+         while non-zero(tokens) && lsts-parse-head(tokens)!=c"]" {
+            let item-rest = lsts-parse-expression(tokens);
+            tokens = item-rest.second;
+            add-items = cons( item-rest.first, add-items );
+            if non-zero(tokens) && lsts-parse-head(tokens)!=c"]" {
+               lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+            }
+         };
+         for add-item in add-items {
+            term = App {
+               close(Var{ c"list::cons", with-location(mk-token("list::cons"),loc) }),
+               close(App{ close(add-item), close(term) })
+            };
+         };
+      }
+   };
+   lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
+   Tuple { term, tokens }
+);
