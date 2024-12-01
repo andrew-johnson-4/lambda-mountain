@@ -700,3 +700,81 @@ let lsts-make-lit(t: Token): AST = (
    base
 );
 
+let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   let base = if lsts-is-ident-head(lsts-parse-head(tokens)) {
+      let base-rest = lsts-make-maybe-var(tokens);
+      tokens = base-rest.second;
+      base-rest.first;
+   } else if lsts-is-lit(lsts-parse-head(tokens)) {
+      let base-rest = lsts-parse-lit(tokens);
+      tokens = base-rest.second;
+      base-rest.first;
+   } else if non-zero(tokens) && lsts-parse-head(tail(tokens))==c"{" {
+      let loc = head(tokens).location;
+      let tag = lsts-parse-head(tokens); tokens = tail(tokens);
+      lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
+      let des-args = ASTEOF {};
+      while non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
+         let attr-loc = head(tokens).location;
+         let binding = c"";
+         let attr-key = c"";
+         if lsts-is-ident-head(lsts-parse-head(tokens)) {
+            attr-key = lsts-parse-head(tokens); tokens = tail(tokens);
+         };
+         if lsts-parse-head(tokens)==c"=" {
+            binding = attr-key; tokens = tail(tokens);
+            if lsts-is-ident-head(lsts-parse-head(tokens)) {
+               attr-key = lsts-parse-head(tokens); tokens = tail(tokens);
+            } else { lsts-parse-expect(c"[Identifier]", tokens); };
+         };
+         let val = if lsts-parse-head(tokens)==c":" {
+            tokens = tail(tokens);
+            let val-rest = lsts-parse-lhs-one(tokens);
+            tokens = val-rest.second;
+            val-rest.first;
+         } else { ASTEOF{} };
+         if not(non-zero(val)) && not(non-zero(binding)) && not(non-zero(attr-key)) {
+            lsts-parse-expect(c"[Struct LHS]", tokens); tokens = tail(tokens);
+         };
+         if not(non-zero(val)) {
+            val = Var{ c"_", with-location(mk-token("_"),attr-loc) };
+         };
+         if non-zero(binding) {
+            val = App{
+               close(Var{ c"@", with-location(mk-token("@"),attr-loc) }),
+               close(App{
+                  close(Var{ binding, with-location(mk-token(binding),attr-loc) }),
+                  close(val)
+               })
+            };
+         };
+         if non-zero(attr-key) {
+            attr-key = c"." + attr-key;
+            val = App{
+               close(Var{ c"macro::bind-field-by-key", with-location(mk-token("macro::bind-field-by-key"),attr-loc) }),
+               close(App{
+                  close(Var{ attr-key, with-location(mk-token(attr-key),attr-loc) }),
+                  close(val)
+               })
+            };
+         };
+         if non-zero(des-args) {
+            des-args = App { close(des-args), close(val) };
+         } else { des-args = val; };
+         if lsts-parse-head(tokens) != c"}" {
+            lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+         };
+      };
+      if not(non-zero(des-args)) { des-args = ASTNil {}; };
+      lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
+      App{
+         close(Lit{ tag, with-location(mk-token(tag),loc) }),
+         close(des-args)
+      };
+   } else {
+      lsts-parse-expect(c"[Left Hand Side]", tokens);
+      ASTEOF {}
+   };
+   Tuple { base, tokens }
+);
+
