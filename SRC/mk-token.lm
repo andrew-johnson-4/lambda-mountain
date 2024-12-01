@@ -36,3 +36,7 @@ mk-lsts-token := λ(: s SmartString). (: (
 mk-token := λ(: s SmartString). (: (
    (Token( (untern s) (iuid()) (location-of s) ))
 ) Token);
+
+mk-token := λ(: s String). (: (
+   (Token( s (iuid()) (location::new()) ))
+) Token);

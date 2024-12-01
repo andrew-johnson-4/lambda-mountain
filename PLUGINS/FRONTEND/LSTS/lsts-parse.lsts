@@ -396,3 +396,67 @@ let lsts-parse-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
    lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
    Tuple { term, tokens }
 );
+
+let lsts-parse-let(tokens: List<Token>): List<Token> = (
+   lsts-parse-expect(c"let", tokens); let loc = head(tokens).location; tokens = tail(tokens);
+   lsts-parse-expect(c"Identifier", lsts-is-ident-head(lsts-parse-head(tokens)) || lsts-parse-head(tokens)==c".", tokens);
+   let name = lsts-unwrap-identifier(lsts-parse-head(tokens)); tokens = tail(tokens);
+   if name == c"." {
+      lsts-parse-expect(c"Identifier", lsts-is-ident-head(lsts-parse-head(tokens)), tokens);
+      name = name + lsts-unwrap-identifier(lsts-parse-head(tokens)); tokens = tail(tokens);
+   };
+   let args-list = ASTEOF {};
+   let return-type = TAny {};
+   if lsts-parse-head(tokens) == c"(" {
+      args-list = ASTNil {};
+      lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
+      while non-zero(tokens) && lsts-parse-head(tokens)!=c")" {
+         lsts-parse-expect(c"Identifier", lsts-is-ident-head(lsts-parse-head(tokens)), tokens);
+         let arg-name = head(tokens); tokens = tail(tokens);
+         lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+         let type-rest = lsts-parse-type(tokens);
+         tokens = type-rest.second;
+         if lsts-parse-head(tokens)==c"," { tokens = tail(tokens); } else { lsts-parse-expect(c")", tokens); };
+         let arg-binding = App {
+            close(Lit{ c":", with-location(mk-token(":"),loc) }),
+            close(App{ close(Var{ arg-name.key, arg-name }), close(AType{ type-rest.first }) })
+         };
+         if is( args-list, ASTNil{} ) {
+            args-list = arg-binding;
+         } else {
+            args-list = App{ close(args-list), close(arg-binding) };
+         };
+      };
+      lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+      lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+      let rtype-rest = lsts-parse-type(tokens);
+      return-type = rtype-rest.first;
+      tokens = rtype-rest.second;
+   };
+   lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+   let rhs-rest = lsts-parse-small-expression(tokens);
+   let return-term = rhs-rest.first;
+   tokens = rhs-rest.second;
+   if non-zero(args-list) {
+      return-term = App {
+         close(Lit{ c":", with-location(mk-token(":"),loc) }),
+         close(App{ close(return-term), close(AType{ return-type }) })
+      };
+   };
+   lsts-parse-expect(c";", tokens); tokens = tail(tokens);
+   if non-zero(args-list) {
+      ast-parsed-program = Seq {
+         close(ast-parsed-program),
+         close(Glb{ with-location(mk-token(name),loc), close(Abs{
+            close(args-list), close(return-term), TAny{}
+         }) })
+      };
+   } else {
+      ast-parsed-program = Seq {
+         close(ast-parsed-program),
+         close(Glb{ with-location(mk-token(name),loc), close(return-term) })
+      };
+   };
+   tokens
+);
+
