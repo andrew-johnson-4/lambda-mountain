@@ -798,3 +798,67 @@ let lsts-parse-lit(tokens: List<Token>): Tuple<AST,List<Token>> = (
    };
    Tuple { term, tokens }
 );
+
+let lsts-parse-atom(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   let term = ASTEOF {};
+   if lsts-is-ident-head(lsts-parse-head(tokens)) {
+      let term-rest = lsts-make-maybe-var(tokens);
+      tokens = term-rest.second;
+      term = term-rest.first;
+   } else if lsts-is-lit(lsts-parse-head(tokens)) {
+      let term-rest = lsts-parse-lit(tokens);
+      tokens = term-rest.second;
+      term = term-rest.first;
+   } else match tokens {
+      [Token{key:c"("}.. rest] => (
+         lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
+         if lsts-parse-head(tokens)==c")" {
+            lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+            term = ASTNil {};
+         } else {
+            let term-rest = lsts-parse-expression-possibly-tuple(tokens);
+            tokens = term-rest.second;
+            lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+            term = term-rest.first;
+         }
+      );
+      [Token{key:c"["}.. rest] => (
+         let term-rest = lsts-parse-list(tokens);
+         tokens = term-rest.second;
+         term = term-rest.first;
+      );
+      [Token{key:c"{"}.. rest] => (
+         let term-rest = lsts-parse-map(tokens);
+         tokens = term-rest.second;
+         term = term-rest.first;
+      );
+      _ => (
+         if non-zero(tokens) && lsts-parse-head(tail(tokens))==c"{" {
+            let tag = head(tokens); tokens = tail(tokens);
+            term = Lit { tag.key, tag };
+            lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
+            let fields = ASTEOF {};
+            while non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
+               let field-rest = lsts-parse-small-expression(tokens);
+               tokens = field-rest.second;
+               if non-zero(fields) {
+                  fields = App{ close(fields), close(field-rest.first) };
+               } else { fields = field-rest.first; };
+               if lsts-parse-head(tokens)==c"," {
+                  tokens = tail(tokens);
+               } else {
+                  lsts-parse-expect(c"}", tokens);
+               };
+            };
+            lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
+            if non-zero(fields) {
+               term = App{ close(term), close(fields) };
+            };
+         } else {
+            lsts-parse-expect(c"[Atom]", tokens);
+         }
+      );
+   };
+   lsts-parse-atom-tail(term,tokens)
+);
+
