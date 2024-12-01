@@ -252,3 +252,19 @@ let lsts-is-lit(s: CString): U64 = (
       r = r || s.has-suffix(sfxs);
    }; r;
 );
+
+let lsts-parse-add(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   let term-rest = lsts-parse-mul(tokens);
+   let term = term-rest.first;
+   tokens = term-rest.second;
+   while lsts-parse-head(tokens)==c"+" || lsts-parse-head(tokens)==c"-" {
+      let op-t = head(tokens); let op = op-t.key; tokens = tail(tokens);
+      let term2-rest = lsts-parse-mul(tokens);
+      tokens = term2-rest.second;
+      term = App { 
+         close(Var{ op, op-t }),
+         close(App{ close(term), close(term2-rest.first) })
+      };
+   };
+   Tuple { term, tokens }
+);
