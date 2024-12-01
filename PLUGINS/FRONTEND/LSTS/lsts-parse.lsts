@@ -319,3 +319,35 @@ let lsts-parse-mul(tokens: List<Token>): Tuple<AST,List<Token>> = (
    lsts-parse-atom-tail( term, tokens )
 );
 
+let lsts-parse-map(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   lsts-parse-expect(c"{", tokens); let loc = head(tokens).location; tokens = tail(tokens);
+   let term = Lit{ c"HashtableEqEOF", with-location(mk-token("HashtableEqEOF"),loc) };
+   if lsts-parse-head(tokens)==c"for" {
+      fail("TODO map comprehension at \{loc}\n")
+   } else {
+      if lsts-parse-head(tokens) != c"}" {
+         while non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
+            let item-rest = lsts-parse-expression(tokens);
+            let item = item-rest.first;
+            tokens = item-rest.second;
+            let mapped = if non-zero(tokens) && lsts-parse-head(tokens)==c":" {
+               lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+               let mapped-rest = lsts-parse-expression(tokens);
+               tokens = mapped-rest.second;
+               mapped-rest.first;
+            } else {
+               Lit{ c"1_u64", with-location(mk-token("1_u64"),loc) }
+            };
+            term = App {
+               close(Var{ c"map::cons", with-location(mk-token("map::cons"),loc) }),
+               close(App{ close(App{ close(item), close(mapped) }), close(term) })
+            };
+            if non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
+               lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+            }
+         };
+      };
+   };
+   lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
+   Tuple { term, tokens }
+);

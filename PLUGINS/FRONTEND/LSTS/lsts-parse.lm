@@ -586,43 +586,6 @@ lsts-parse-list := λ(: tokens List<Token>). (: (
    (Tuple( term tokens ))
 ) Tuple<AST,List<Token>>);
 
-lsts-parse-map := λ(: tokens List<Token>). (: (
-   (lsts-parse-expect( '{_s tokens ))(let loc (.location(head tokens)))(set tokens (tail tokens))
-   (let term (Lit( 'HashtableEqEOF_s (with-location( (token::new( 'HashtableEqEOF_s )) loc )) )))
-   (if (==( (lsts-parse-head tokens) 'for_s )) (
-      (print 'TODO\sMap\sComprehension\n_s)(exit 1_u64)
-   ) (
-      (if (==( (lsts-parse-head tokens) '}_s )) () (
-         (while (&&( (non-zero tokens) (!=( (lsts-parse-head tokens) '}_s )) )) (
-            (let item-rest (lsts-parse-expression tokens))
-            (let item (.first item-rest))
-            (set tokens (.second item-rest))
-            (let mapped ASTNil)
-            (if (&&( (non-zero tokens) (==( (lsts-parse-head tokens) ':_s )) )) (
-               (lsts-parse-expect( ':_s tokens ))(set tokens (tail tokens))
-               (let mapped-rest (lsts-parse-expression tokens))
-               (set mapped (.first mapped-rest))
-               (set tokens (.second mapped-rest))
-            ) (
-               (set mapped (Lit( '1_u64_s (with-location( (token::new( '1_u64_s )) loc )) )))
-            ))
-            (set term (App(
-               (close(Var( 'map::cons_s (with-location( (token::new 'map::cons_s) loc )) )))
-               (close(App(
-                  (close(App( (close item) (close mapped) )))
-                  (close term)
-               )))
-            )))
-            (if (&&( (non-zero tokens) (!=( (lsts-parse-head tokens) '}_s )) )) (
-               (lsts-parse-expect( ',_s tokens ))(set tokens (tail tokens))
-            ) ())
-         ))
-      ))
-   ))
-   (lsts-parse-expect( '}_s tokens ))(set tokens (tail tokens))
-   (Tuple( term tokens ))
-) Tuple<AST,List<Token>>);
-
 lsts-parse-atom-tail := λ(: base AST)(: tokens List<Token>). (: (
    (while (||(
       (||(
