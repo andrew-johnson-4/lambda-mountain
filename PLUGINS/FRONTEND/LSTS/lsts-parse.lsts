@@ -862,3 +862,109 @@ let lsts-parse-atom(tokens: List<Token>): Tuple<AST,List<Token>> = (
    lsts-parse-atom-tail(term,tokens)
 );
 
+let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>> = (
+   while lsts-parse-head(tokens) == c"[" ||
+         lsts-parse-head(tokens) == c"(" ||
+         lsts-parse-head(tokens) == c"." ||
+         lsts-parse-head(tokens) == c"as" ||
+         (lsts-parse-head(tokens) == c":" && non-zero(tokens) && lsts-parse-head(tail(tokens)) == c":") {
+      let loc = head(tokens).location;
+      match tokens {
+         [Token{key:c":"}.. Token{key:c":"}.. rest] => (
+            tokens = rest;
+            let type-rest = lsts-parse-type(tokens);
+            tokens = type-rest.second;
+            base = App {
+               close(Lit{ c":", with-location(mk-token(":"),loc) }),
+               close(App{ close(base), close(AType{ type-rest.first }) })
+            };
+         );
+         [Token{key:"."}.. rest] => (
+            tokens = rest;
+            lsts-parse-expect( c"[Identifier]", lsts-is-ident-head(lsts-parse-head(tokens)), tokens );
+            let method = c"." + head(tokens).key; tokens = tail(tokens);
+            if lsts-parse-head(tokens) == c"(" {
+               lsts-parse-expect( c"(", tokens ); tokens = tail(tokens);
+               while non-zero(tokens) && lsts-parse-head(tokens)!=c")" {
+                  let next-rest = lsts-parse-expression(tokens);
+                  tokens = next-rest.second;
+                  if non-zero(tokens) && lsts-parse-head(tokens)==c"," {
+                     tokens = tail(tokens);
+                  } else {
+                     lsts-parse-expect( c")", tokens );
+                  };
+                  base = App{ close(base), close(next-rest.first) };
+               };
+               lsts-parse-expect( c")", tokens ); tokens = tail(tokens);
+            };
+            base = App {
+               close(Var{ method, with-location(mk-token(method),loc) }),
+               close(base)
+            };
+         );
+         [Token{key:"as"}.. rest] => (
+            tokens = rest;
+            let type-rest = lsts-parse-type(tokens); 
+            tokens = type-rest.second;
+            base = App {
+               close(Var{ c"as", with-location(mk-token("as"),loc) }),
+               close(App{ close(base), close(AType{ type-rest.first }) })
+            };
+         );
+         [Token{key:"["}.. rest] => (
+            tokens = rest;
+            let term1 = if lsts-parse-head(tokens)==c":" {
+               Lit{ c"0_i64", with-location(mk-token("0_i64"),loc) }
+            } else {
+               let term1-rest = lsts-parse-small-expression(tokens);
+               tokens = term1-rest.second;
+               term1-rest.first;
+            };
+            let term2 = ASTEOF {};
+            if lsts-parse-head(tokens)==c":" {
+               lsts-parse-expect( c":", tokens ); tokens = tail(tokens);
+               term2 = if lsts-parse-head(tokens)==c"]" {
+                  Lit{ c"minimum-I64", with-location(mk-token("minimum-I64"),loc) }
+               } else {
+                  let term2-rest = lsts-parse-small-expression(tokens);
+                  tokens = term2-rest.second;
+                  term2-rest.first;
+               };
+            };
+            if non-zero(term2) {
+               base = App {
+                  close(Var{ c"[:]", with-location(mk-token("[:]"),loc) }),
+                  close(App{ close(App{ close(base), close(term1) }), close(term2) })
+               };
+            } else {
+               base = App {
+                  close(Var{ c"[]", with-location(mk-token("[:]"),loc) }),
+                  close(App{ close(base), close(term1) })
+               };
+            };
+            lsts-parse-expect( c"]", tokens ); tokens = tail(tokens);
+         );
+         [Token{key:"("}.. rest] => (
+            tokens = rest;
+            if lsts-parse-head(tokens) == c")" {
+               base = App{ close(base), close(ASTNil {}) };
+            } else {
+               let term2-rest = lsts-parse-expression(tokens);
+               let term2 = term2-rest.first;
+               tokens = term2-rest.second;
+               while lsts-parse-head(tokens)==c"," {
+                  tokens = tail(tokens);
+                  let term3-rest = lsts-parse-expression(tokens);
+                  tokens = term3-rest.second;
+                  term2 = App{ close(term2), close(term3-rest.first) };
+               };
+               base = App{ close(base), close(term2) };
+            };
+            lsts-parse-expect( c")", tokens ); tokens = tail(tokens);
+         );
+      }
+   };
+   Tuple { base, tokens }
+);
+
+
