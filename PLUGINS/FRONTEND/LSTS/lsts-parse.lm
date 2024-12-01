@@ -464,53 +464,6 @@ lsts-parse-lhs-one := λ(: tokens List<Token>). (: (
    (Tuple( base tokens ))
 ) Tuple<AST,List<Token>>);
 
-lsts-parse-andor := λ(: tokens List<Token>). (: (
-   (let term-rest (lsts-parse-cmp tokens))
-   (let term (.first term-rest))
-   (set tokens (.second term-rest))
-   (while (||(
-      (==( (lsts-parse-head tokens) '&&_s ))
-      (==( (lsts-parse-head tokens) '||_s ))
-   )) (
-      (let op-t (head tokens))(let op (lsts-parse-head tokens))(set tokens (tail tokens))
-      (let term2-rest (lsts-parse-cmp tokens))
-      (let term2 (.first term2-rest))
-      (set term (App(
-         (close(Var( op op-t )))
-         (close(App(
-            (close term)
-            (close term2)
-         )))
-      )))
-      (set tokens (.second term2-rest))
-   ))
-   (Tuple( term tokens ))
-) Tuple<AST,List<Token>>);
-
-lsts-parse-mul := λ(: tokens List<Token>). (: (
-   (let term-rest (lsts-parse-atom tokens))
-   (let term (.first term-rest))
-   (set tokens (.second term-rest))
-   (while (||(
-      (||( (==( (lsts-parse-head tokens) '*_s ))
-           (==( (lsts-parse-head tokens) '/_s )) ))
-      (==( (lsts-parse-head tokens) '%_s ))
-   )) (
-      (let op-t (head tokens))(let op (lsts-parse-head tokens))(set tokens (tail tokens))
-      (let term2-rest (lsts-parse-atom tokens))
-      (let term2 (.first term2-rest))
-      (set term (App(
-         (close(Var( op op-t )))
-         (close(App(
-            (close term)
-            (close term2)
-         )))
-      )))
-      (set tokens (.second term2-rest))
-   ))
-   (lsts-parse-atom-tail( term tokens ))
-) Tuple<AST,List<Token>>);
-
 lsts-parse-atom := λ(: tokens List<Token>). (: (
    (let term ASTEOF)
    (if (lsts-is-ident-head(lsts-parse-head tokens)) (scope(
