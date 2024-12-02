@@ -402,6 +402,7 @@ let lsts-parse-typedef(tokens: List<Token>): List<Token> = (
    lsts-parse-expect(c"type", tokens); tokens = tail(tokens);
    let base-rest = lsts-parse-type(tokens);
    tokens = base-rest.second;
+   lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
    let case-rest = lsts-parse-typedef-case(tokens);
    let cases = case-rest.first;
    tokens = case-rest.second;
