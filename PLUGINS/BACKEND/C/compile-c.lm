@@ -51,11 +51,19 @@ plugins-backend-c-compile := λ . (: (
          (compile-c-typedef-ordinal(parse-type lhs)) 
          (set pre-typedefs rst)
       ))
+      ( (Seq( rst (Typedef( (AType( lhs )) rhs )) )) (
+         (compile-c-typedef-ordinal lhs)
+         (set pre-typedefs rst)
+      ))
    )))
    (while (non-zero typedefs) (match typedefs (
       ()
       ( (Seq( rst (Typedef( (Lit( lhs _ )) rhs )) )) (
          (compile-c-typedef( (parse-type lhs) rhs ))
+         (set typedefs rst)
+      ))
+      ( (Seq( rst (Typedef( (AType( lhs )) rhs )) )) (
+         (compile-c-typedef( lhs rhs ))
          (set typedefs rst)
       ))
    )))

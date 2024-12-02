@@ -50,7 +50,7 @@ type-of-s-with-fields := λ(: base-type Type)(: tag String)(: compound AST)(: fi
          (let rtt (type-of-s-with-fields( base-type tag rt field-index )))
          (set r (t3( 'Cons_s ltt rtt )))
       ))
-      ( _ (exit-error( 'Malformed\sType\sDefinition_s compound )))
+      ( _ (exit-error( 'Malformed\sType\sDefinition\sWith\sFields_s compound )))
    ))
    r
 ) Type);
