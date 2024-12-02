@@ -54,7 +54,7 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
          (set r (+( r 8_u64 )))
          (let constructor-tt (t2( 'Constructor_s (t1 tag) )))
       ))
-      ( _ () )
+      ( ASTEOF () )
    ))
    r
 ) U64);
