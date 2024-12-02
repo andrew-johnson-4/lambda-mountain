@@ -1,9 +1,8 @@
 
 dev: install-production
-	lm t.lsts
+	lm EXAMPLES/type-declarations.lsts
 	cc -O3 tmp.c
-	./a.out > tokens1.txt
-	cat tokens1.txt
+	./a.out
 
 build-docs:
 	lm --blob -o docs/index.html docs/index.html.lm
