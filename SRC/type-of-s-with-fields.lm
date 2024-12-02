@@ -3,6 +3,33 @@ type-of-s-with-fields := λ(: base-type Type)(: tag String)(: compound AST)(: fi
    (let r TAny)
    (match compound (
       ()
+      ( (App( (Var(fn _)) (AType ft) )) (
+         (add-alias(
+            (clone-rope(SCons( (close(SAtom '._s)) (close(SAtom fn)) )))
+            (clone-rope(SCons( (close(SAtom '._s)) (close(SAtom(to-string field-index))) )))
+            (t3( 'Arrow_s (and( (t1(+( 'Tag::_s tag ))) base-type )) ft ))
+         ))
+         (add-alias(
+            (clone-rope(SCons( (close(SAtom 'set._s)) (close(SAtom fn)) )))
+            (clone-rope(SCons( (close(SAtom 'set._s)) (close(SAtom(to-string field-index))) )))
+            (t3( 'Arrow_s (t3( 'Cons_s (and( (t1(+( 'Tag::_s tag ))) base-type )) ft )) (t1 'Nil_s) ))
+         ))
+         ft
+      ))
+      ( (App( rst (App( (Var(fn _)) (AType ft) )) )) (
+         (let ltt (type-of-s-with-fields( base-type tag rst (+( field-index 1_u64 )) )))
+         (add-alias(
+            (clone-rope(SCons( (close(SAtom '._s)) (close(SAtom fn)) )))
+            (clone-rope(SCons( (close(SAtom '._s)) (close(SAtom(to-string field-index))) )))
+            (t3( 'Arrow_s (and( (t1(+( 'Tag::_s tag ))) base-type )) ft ))
+         ))
+         (add-alias(
+            (clone-rope(SCons( (close(SAtom 'set._s)) (close(SAtom fn)) )))
+            (clone-rope(SCons( (close(SAtom 'set._s)) (close(SAtom(to-string field-index))) )))
+            (t3( 'Arrow_s (t3( 'Cons_s (and( (t1(+( 'Tag::_s tag ))) base-type )) ft )) (t1 'Nil_s) ))
+         ))
+         (set r (t3( 'Cons_s ltt ft )))
+      ))
       ( (Lit( tt _ )) (
          (let nt TAny)
          (match (parse-field-of tt) (
