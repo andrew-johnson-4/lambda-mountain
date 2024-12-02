@@ -448,7 +448,6 @@ let lsts-parse-typedef-case(tokens: List<Token>): Tuple<AST,List<Token>> = (
    } else {
       Lit{ tag.key, tag }
    };
-   print("Case: ");print(fields);print("\n");
    Tuple{ case, tokens }
 );
 

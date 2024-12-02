@@ -14,7 +14,7 @@ type-of-s-with-fields := λ(: base-type Type)(: tag String)(: compound AST)(: fi
             (clone-rope(SCons( (close(SAtom 'set._s)) (close(SAtom(to-string field-index))) )))
             (t3( 'Arrow_s (t3( 'Cons_s (and( (t1(+( 'Tag::_s tag ))) base-type )) ft )) (t1 'Nil_s) ))
          ))
-         ft
+         (set r ft)
       ))
       ( (App( rst (App( (Var(fn _)) (AType ft) )) )) (
          (let ltt (type-of-s-with-fields( base-type tag rst (+( field-index 1_u64 )) )))
