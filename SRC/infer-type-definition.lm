@@ -19,7 +19,10 @@ infer-type-definition := λ(: base-type Type)(: body AST)(: case-number U64). (:
                ()
                ( (Lit( tg _ )) (set tag tg) )
                ( (App( (Lit( tg _ )) args )) (set tag tg) )
-               ( _ () )
+               ( ASTEOF () )
+               ( _ (
+                  (print 'Unexpected\sType\sCase\s_s)(print base-type)(print case)(print '\n_s)(exit 1_u64)
+               ))
             ))
             (if (head-string tag) (
                (match base-type (

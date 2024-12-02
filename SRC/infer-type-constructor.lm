@@ -29,6 +29,7 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
       ))
       ( (App( (Lit( tag _ )) args )) (
          (let atype (type-of-s-with-fields( base-type tag args 1_u64 )))
+         (print 'Constructor\s_s)(print base-type)(print atype)(print '\n_s)
          (add-concrete-type-instance atype)
          (mark-constructor-flat-parameters( base-type atype ))
          (if (has-forward( atype )) (
@@ -54,7 +55,7 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
          (set r (+( r 8_u64 )))
          (let constructor-tt (t2( 'Constructor_s (t1 tag) )))
       ))
-      ( _ () )
+      ( ASTEOF () )
    ))
    r
 ) U64);
