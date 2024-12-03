@@ -114,7 +114,7 @@ let lsts-parse-type(tokens: List<Token>): Tuple<Type,List<Token>> = (
    };
    while lsts-parse-head(tokens) == c"[" {
       lsts-parse-expect(c"[", tokens); tokens = tail(tokens);
-      let index = if lsts-parse-head(tokens) == c"]" {
+      let index = if lsts-parse-head(tokens) != c"]" {
          let tindex-rest = lsts-parse-type(tokens);
          tokens = tindex-rest.second;
          tindex-rest.first;

@@ -31844,7 +31844,7 @@ return ({({({uuid_000000000007a475=((_EQ__EQ__CL_ArrowU64ConsStringString((lsts_
 ({while((_EQ__EQ__CL_ArrowU64ConsStringString((lsts_SB_parse_SB_head_CL_ArrowStringListToken(uuid_000000000007a474)),"["))){((void)(({({({({({(lsts_SB_parse_SB_expect_CL_ArrowNilConsListTokenString("[",uuid_000000000007a474));
 ({uuid_000000000007a474=(tail_CL_ArrowListTokenListToken(uuid_000000000007a474));({});});
 });
-({uuid_000000000007a47e=((_EQ__EQ__CL_ArrowU64ConsStringString((lsts_SB_parse_SB_head_CL_ArrowStringListToken(uuid_000000000007a474)),"]"))?({({({uuid_000000000007a47f=(lsts_SB_parse_SB_type_CL_ArrowTupleListTokenTypeListToken(uuid_000000000007a474));({});})
+({uuid_000000000007a47e=((_EX__EQ__CL_ArrowU64ConsStringString((lsts_SB_parse_SB_head_CL_ArrowStringListToken(uuid_000000000007a474)),"]"))?({({({uuid_000000000007a47f=(lsts_SB_parse_SB_type_CL_ArrowTupleListTokenTypeListToken(uuid_000000000007a474));({});})
 ;
 ({uuid_000000000007a474=(uuid_000000000007a47f.field_1);({});});
 });
