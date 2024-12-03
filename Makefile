@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm EXAMPLES/type-declarations.lsts
+	lm tests/regress/vector-sort.lsts
 	cc -O3 tmp.c
 	./a.out
 
