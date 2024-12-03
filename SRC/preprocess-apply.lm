@@ -24,6 +24,12 @@ preprocess-apply-one := λ(: program AST). (: (
    (let r program)
    (match program (
       ()
+      ( (App( (App( (Var( 'macro::concat_s ctk )) (App( (Var( lk _ )) (Var( rk _ )) )) )) nt )) (
+         (set r (App(
+            (close(Var( (+( lk rk )) (unique ctk) )))
+            (close(preprocess-apply( nt )))
+         )))
+      ))
       ( (App( (App( (Lit( ':_s ctk )) (App( t (AType tt) )) )) nt )) (
          (set r (App(
             (close(App( (close(Lit( ':_s (unique ctk) ))) (close(App( (close(preprocess-apply t)) (close(AType tt)) ))) )))

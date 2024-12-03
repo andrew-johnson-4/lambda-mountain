@@ -11,7 +11,7 @@ let .push(v: Vector<t>, i: t): Vector<t> = (
       fail("Vector Overflow during .push")
    };
 #   v.data[v.length] = i;
-#   v.length = v.length + 1;
+   v.length = v.length + 1;
    v
 );
 
