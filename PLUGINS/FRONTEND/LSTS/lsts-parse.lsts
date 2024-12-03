@@ -864,6 +864,13 @@ let lsts-parse-atom(tokens: List<Token>): Tuple<AST,List<Token>> = (
       tokens = term-rest.second;
       term = term-rest.first;
    } else match tokens {
+      [Token{key:c"type"}.. Token{key:c"("}.. rest] => (
+         tokens = rest;
+         let term-rest = lsts-parse-type(tokens);
+         tokens = term-rest.second;
+         lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+         term = AType{ t2(c"Type", term-rest.first) };
+      );
       [Token{key:c"("}.. rest] => (
          lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
          if lsts-parse-head(tokens)==c")" {
