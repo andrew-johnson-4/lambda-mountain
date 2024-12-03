@@ -21,6 +21,7 @@ import PLATFORM/C/LIB/s.lm;
 import PLATFORM/C/LIB/tuple.lm;
 import PLATFORM/C/LIB/list.lm;
 import PLATFORM/C/LIB/list.lsts;
+import PLATFORM/C/LIB/vector.lsts;
 import PLATFORM/C/LIB/hashtable.lm;
 import PLATFORM/C/LIB/array.lm;
 import PLATFORM/C/LIB/io.lm;

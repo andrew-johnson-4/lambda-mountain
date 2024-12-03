@@ -1,0 +1,11 @@
+
+type Vector<t> = Vector { data: t[], length: U64, capacity: U64 };
+
+let mk-vector(type: Type<t>, capacity: U64): Vector<t> = (
+   let data-sz = sizeof(t) * capacity;
+   Vector { (malloc(data-sz) as t[]), 0, capacity }
+);
+
+#let .sort(v: Vector<t>): Vector<t> = (
+#   v
+#);
