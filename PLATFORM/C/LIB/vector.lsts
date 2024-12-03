@@ -6,6 +6,15 @@ let mk-vector(type: Type<t>, capacity: U64): Vector<t> = (
    Vector { (malloc(data-sz) as t[]), 0, capacity }
 );
 
+let .push(v: Vector<t>, i: t): Vector<t> = (
+   if v.length >= v.capacity {
+      fail("Vector Overflow during .push")
+   };
+#   v.data[v.length] = i;
+#   v.length = v.length + 1;
+   v
+);
+
 #let .sort(v: Vector<t>): Vector<t> = (
 #   v
 #);
