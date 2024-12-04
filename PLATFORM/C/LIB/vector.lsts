@@ -18,7 +18,7 @@ let .push(v: Vector<t>, i: t): Vector<t> = (
 let .to-vector(l: List<t>): Vector<t> = (
    let v = mk-vector(type(t), l.length);
    for i in l {
-      v.push(i);
+      v = v.push(i);
    };
    v
 );
@@ -28,11 +28,12 @@ let .sort(v: Vector<t>): Vector<t> = (
 );
 
 let print(v: Vector<x>): Nil = (
-   print("WTH");
    let vi = 0;
    print("[");
    while vi < v.length {
+      if vi > 0 then print(",");
       print(v.data[vi]);
+      vi = vi + 1;
    };
    print("]");
 );
