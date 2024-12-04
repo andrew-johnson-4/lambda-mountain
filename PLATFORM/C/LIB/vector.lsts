@@ -63,11 +63,11 @@ let .sort(v: Vector<t>): Vector<t> = (
 
 let print(v: Vector<x>): Nil = (
    let vi = 0;
-   print("[");
+   print(c"[");
    while vi < v.length {
-      if vi > 0 then print(",");
+      if vi > 0 then print(c",");
       print(v.data[vi]);
       vi = vi + 1;
    };
-   print("]");
+   print(c"]");
 );
