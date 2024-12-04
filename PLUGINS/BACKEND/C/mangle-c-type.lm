@@ -15,6 +15,7 @@ mangle-c-type-internal := λ(: tt Type). (: (
       ))
       ( TAny (set r (SAtom 'void_s)) )
       ( (TVar _) () )
+      ( (TGround( 'Type_s (LCons( _ LEOF )) )) (set r (SAtom 'int_s)) )
       ( (TGround( 'Nil_s _ )) (set r (SAtom 'void_s)) )
       ( (TGround( 'Never_s _ )) (set r (SAtom 'void_s)) )
       ( (TGround( 'U8_s _ )) (set r (SAtom 'char_s)) )
