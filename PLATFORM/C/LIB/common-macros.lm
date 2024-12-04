@@ -11,7 +11,7 @@ macro ( ('set ('macro::lhs-field( base field )) rhs) )
       ( (macro::concat( set. field )) (base rhs) );
 
 macro ( ('set ('macro::lhs-index( base index )) rhs) )
-      ( set[] ((macro::lhs-as-rhs base) (macro::lhs-as-rhs index) rhs) );
+      ( set[] ((macro::lhs-as-rhs base) index rhs) );
 
 macro ( ('macro::lhs-as-rhs (:Variable: v)) )
       ( v );
