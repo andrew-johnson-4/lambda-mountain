@@ -324,6 +324,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          ))
       ))
       ( (Meta( _ )) (ascript-normal( term (t1 'Nil_s) )) )
+      ( (AType( tt )) (ascript-normal( term tt )) )
       ( _ (
          (print 'Unknown\sTerm\sIn\sType\sInference\n_s)
          (print term)

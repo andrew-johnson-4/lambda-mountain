@@ -11,23 +11,31 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64)(: count U64)
          (match rval (
             ()
             ( (App( le re )) (
-               (let e1 (compile-push-rvalue( ctx le offset count left-assoc )))
-               (let e2 (compile-expr( ctx re (.offset e1) Used )))
-               (set r (fragment::chain( e1 e2 )))
-               (if left-assoc (
-                  (set r (fragment::set( r 'expression_s (
-                     (+( (+( (fragment::get( e1 'expression_s )) (SAtom ',_s) )) (fragment::get( e2 'expression_s )) ))
-                  ))))
+               (if (&&( (is-t( p2 'Type_s )) (==( (arity p2) 1_u64 )) )) (
+                  (set r (compile-push-rvalue( ctx le offset count left-assoc )))
                ) (
-                  (set r (fragment::set( r 'expression_s (
-                     (+( (+( (fragment::get( e2 'expression_s )) (SAtom ',_s) )) (fragment::get( e1 'expression_s )) ))
-                  ))))
+                  (let e1 (compile-push-rvalue( ctx le offset count left-assoc )))
+                  (let e2 (compile-expr( ctx re (.offset e1) Used )))
+                  (set r (fragment::chain( e1 e2 )))
+                  (if left-assoc (
+                     (set r (fragment::set( r 'expression_s (
+                        (+( (+( (fragment::get( e1 'expression_s )) (SAtom ',_s) )) (fragment::get( e2 'expression_s )) ))
+                     ))))
+                  ) (
+                     (set r (fragment::set( r 'expression_s (
+                        (+( (+( (fragment::get( e2 'expression_s )) (SAtom ',_s) )) (fragment::get( e1 'expression_s )) ))
+                     ))))
+                  ))
                ))
             ))
          ))
       ))
-      ( _ (
-         (set r (compile-expr( ctx rval offset Used )))
+      ( p2 (
+         (if (&&( (is-t( p2 'Type_s )) (==( (arity p2) 1_u64 )) )) (
+            (set r (fragment::new()))
+         ) (
+            (set r (compile-expr( ctx rval offset Used )))
+         ))
       ))
    ))
    r
