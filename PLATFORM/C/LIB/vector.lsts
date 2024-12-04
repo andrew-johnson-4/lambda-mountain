@@ -10,11 +10,64 @@ let .push(v: Vector<t>, i: t): Vector<t> = (
    if v.length >= v.capacity {
       fail("Vector Overflow during .push")
    };
-#   v.data[v.length] = i;
+   v.data[v.length] = i;
    v.length = v.length + 1;
    v
 );
 
-#let .sort(v: Vector<t>): Vector<t> = (
-#   v
-#);
+let .to-vector(l: List<t>): Vector<t> = (
+   let v = mk-vector(type(t), l.length);
+   for i in l {
+      v = v.push(i);
+   };
+   v
+);
+
+let $"[]"( v: Vector<t>, i: U64 ): t = (
+   if i >= v.length {
+      fail("Vector Index Out of Bounds");
+   };
+   v.data[i]
+);
+
+let $"set[]"( v: Vector<t>, i: U64, val: t ): Nil = (
+   if i >= v.length {
+      fail("Vector Index Out of Bounds");
+   };
+   v.data[i] = val; 
+   ()
+);
+
+let .sort(v: Vector<t>): Vector<t> = (
+   let n = v.length;
+   let i = 0;
+   while i < n - 1 {
+      let swapped = 0;
+      let j = 0;
+      while j < n - i - 1 {
+         if v[j + 1] < v[j] {
+            let tmp = v[j];
+            v[j] = v[j + 1];
+            v[j + 1] = tmp;
+            swapped = 1;
+         };
+         j = j + 1;
+      };
+      i = i + 1;
+      if not(swapped) {
+         i = n;
+      };
+   };
+   v
+);
+
+let print(v: Vector<x>): Nil = (
+   let vi = 0;
+   print(c"[");
+   while vi < v.length {
+      if vi > 0 then print(c",");
+      print(v.data[vi]);
+      vi = vi + 1;
+   };
+   print(c"]");
+);

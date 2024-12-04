@@ -27,6 +27,7 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64)(: count U64)
          ))
       ))
       ( _ (
+         (let p2 (typeof rval))
          (set r (compile-expr( ctx rval offset Used )))
       ))
    ))

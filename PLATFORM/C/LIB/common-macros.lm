@@ -11,10 +11,13 @@ macro ( ('set ('macro::lhs-field( base field )) rhs) )
       ( (macro::concat( set. field )) (base rhs) );
 
 macro ( ('set ('macro::lhs-index( base index )) rhs) )
-      ( set[] (base index rhs) );
+      ( set[] ((macro::lhs-as-rhs base) index rhs) );
 
-macro ( ('set ('macro::lhs-index( (macro:lhs-field( base field )) index )) rhs) )
-      ( set[] ( ((macro::concat( . field )) base) index rhs) );
+macro ( ('macro::lhs-as-rhs (:Variable: v)) )
+      ( v );
+
+macro ( ('macro::lhs-as-rhs ('macro::lhs-field( base field )) ) )
+      ( (macro::concat( . field )) base );
 
 macro ( ('while cond body) )
       ( (primitive::while( (as body Nil) (into-branch-conditional cond) )) );
