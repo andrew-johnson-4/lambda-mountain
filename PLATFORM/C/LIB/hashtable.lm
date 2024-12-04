@@ -73,6 +73,10 @@ type HashtableIs<k,v> (HashtableIs( occupied:U64 , capacity:U64 , contents:Tuple
 
 type HashtableEq<k,v> (HashtableEq( occupied:U64 , capacity:U64 , contents:Tuple<k,v>[] )) | HashtableEqEOF;
 
+set[] := λ(: table HashtableEq<k,v>)(: key k)(: value v). (: (
+   (.bind( table key value ))
+) HashtableEq<k,v>);
+
 .bind := λ(: table HashtableEq<k,v>)(: key k)(: value v). (: (
    (if (is( table (: HashtableEqEOF HashtableEq<k,v>) )) (
       (set table (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<k,v>[]) )))
