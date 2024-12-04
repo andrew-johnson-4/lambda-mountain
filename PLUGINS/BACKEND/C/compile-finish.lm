@@ -10,6 +10,7 @@ compile-finish-c := λ. (: (
    (set output (SCons( (close output) (close assemble-text-section) )))
    (if (not compile-global-c-has-main) (
       (set output (+( output (SAtom 'int\smain\[\]{\n_s) )))
+      (set output (+( output assemble-string-initializer-section )))
       (set output (+( output assemble-global-initializer-section )))
       (set output (+( output (SAtom 'return\s0\:\n}\n_s) )))
    ) ())

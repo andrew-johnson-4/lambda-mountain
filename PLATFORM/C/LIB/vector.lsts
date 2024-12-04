@@ -28,6 +28,7 @@ let .sort(v: Vector<t>): Vector<t> = (
 );
 
 let print(v: Vector<x>): Nil = (
+   print("WTH");
    let vi = 0;
    print("[");
    while vi < v.length {
