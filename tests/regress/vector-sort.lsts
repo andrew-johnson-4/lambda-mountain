@@ -1,4 +1,4 @@
 
 import LIB/default.lm;
 
-#print([ 3, 1, 4, 8 ].to-vector().sort());
+print([ 3, 1, 4, 8 ].to-vector().sort());

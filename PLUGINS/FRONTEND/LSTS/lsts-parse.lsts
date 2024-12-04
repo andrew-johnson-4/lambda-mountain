@@ -882,7 +882,14 @@ let lsts-parse-lit(tokens: List<Token>): Tuple<AST,List<Token>> = (
 
 let lsts-parse-atom(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let term = ASTEOF {};
-   if lsts-is-ident-head(lsts-parse-head(tokens)) {
+   if lsts-parse-head(tokens)==c"type" {
+      tokens = tail(tokens);
+      lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
+      let term-rest = lsts-parse-type(tokens);
+      tokens = term-rest.second;
+      lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+      term = AType{ t2(c"Type", term-rest.first) };
+   } else if lsts-is-ident-head(lsts-parse-head(tokens)) {
       let term-rest = lsts-make-maybe-var(tokens);
       tokens = term-rest.second;
       term = term-rest.first;
@@ -891,13 +898,6 @@ let lsts-parse-atom(tokens: List<Token>): Tuple<AST,List<Token>> = (
       tokens = term-rest.second;
       term = term-rest.first;
    } else match tokens {
-      [Token{key:c"type"}.. Token{key:c"("}.. rest] => (
-         tokens = rest;
-         let term-rest = lsts-parse-type(tokens);
-         tokens = term-rest.second;
-         lsts-parse-expect(c")", tokens); tokens = tail(tokens);
-         term = AType{ t2(c"Type", term-rest.first) };
-      );
       [Token{key:c"("}.. rest] => (
          lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
          if lsts-parse-head(tokens)==c")" {

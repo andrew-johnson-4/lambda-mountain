@@ -6,23 +6,32 @@ let mk-vector(type: Type<t>, capacity: U64): Vector<t> = (
    Vector { (malloc(data-sz) as t[]), 0, capacity }
 );
 
-#let .push(v: Vector<t>, i: t): Vector<t> = (
-#   if v.length >= v.capacity {
-#      fail("Vector Overflow during .push")
-#   };
-#   v.data[v.length] = i;
-#   v.length = v.length + 1;
-#   v
-#);
+let .push(v: Vector<t>, i: t): Vector<t> = (
+   if v.length >= v.capacity {
+      fail("Vector Overflow during .push")
+   };
+   v.data[v.length] = i;
+   v.length = v.length + 1;
+   v
+);
 
-#let .to-vector(l: List<t>): Vector<t> = (
-#   let v = mk-vector(type(t), l.length);
-#   for i in l {
-#      v.push(i);
-#   };
-#   v
-#);
+let .to-vector(l: List<t>): Vector<t> = (
+   let v = mk-vector(type(t), l.length);
+   for i in l {
+      v.push(i);
+   };
+   v
+);
 
-#let .sort(v: Vector<t>): Vector<t> = (
-#   v
-#);
+let .sort(v: Vector<t>): Vector<t> = (
+   v
+);
+
+let print(v: Vector<x>): Nil = (
+   let vi = 0;
+   print("[");
+   while vi < v.length {
+      print(v.data[vi]);
+   };
+   print("]");
+);
