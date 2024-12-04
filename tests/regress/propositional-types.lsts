@@ -1,0 +1,18 @@
+
+import LIB/default.lm;
+
+type A = A { x: U64 };
+
+let a = A { 1 } :: A;
+
+let prop quick-prop(a: A): B = ();
+
+let prop .infer-c(a: A): C = ();
+
+let fa(a: A): Nil = ();
+let fb(a: x+B): Nil = ();
+let fc(a: x+C): Nil = ();
+
+fa(a);
+fb(a);
+fc(a.infer-c);

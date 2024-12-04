@@ -228,6 +228,9 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
                (let function-type (.2 ftrt))
                (ascript-normal( l function-type ))
                (set rt (.1 ftrt))
+               (if (is-t( (typeof-var-raw( term tctx lt-fname )) 'Prop_s )) (
+                  (set rt (and( rt (typeof r) )))
+               ) ())
             ))
             ( _ (
                (if (is( used Unused )) (set r-used Unused) ())
