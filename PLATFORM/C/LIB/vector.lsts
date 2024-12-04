@@ -30,6 +30,15 @@ let $"[]"( v: Vector<t>, i: U64 ): t = (
    v.data[i]
 );
 
+let $"+"( vl: Vector<t>, vr: Vector<t> ): t = (
+   let v = mk-vector(type(t), vl.length + vr.length);
+   let vi = 0;
+   while vi < vl.length { v = v.push(vl[vi]); };
+   vi = 0;
+   while vi < vr.length { v = v.push(vr[vi]); };
+   v
+);
+
 let $"set[]"( v: Vector<t>, i: U64, val: t ): Nil = (
    if i >= v.length {
       fail("Vector Index Out of Bounds");
