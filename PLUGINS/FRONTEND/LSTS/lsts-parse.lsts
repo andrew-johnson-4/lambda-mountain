@@ -480,6 +480,11 @@ let lsts-parse-typedef-case(tokens: List<Token>): Tuple<AST,List<Token>> = (
 
 let lsts-parse-let(tokens: List<Token>): List<Token> = (
    lsts-parse-expect(c"let", tokens); let loc = head(tokens).location; tokens = tail(tokens);
+   let prop = 0;
+   if lsts-parse-head(tokens)==c"prop" {
+      prop = 1;
+      lsts-parse-expect(c"prop", tokens); tokens = tail(tokens);
+   };
    lsts-parse-expect(c"Identifier", lsts-is-ident-head(lsts-parse-head(tokens)) || lsts-parse-head(tokens)==c".", tokens);
    let name = lsts-unwrap-identifier(lsts-parse-head(tokens)); tokens = tail(tokens);
    if name == c"." {
@@ -526,11 +531,24 @@ let lsts-parse-let(tokens: List<Token>): List<Token> = (
    };
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
    if non-zero(args-list) {
-      ast-parsed-program = Seq {
-         close(ast-parsed-program),
-         close(Glb{ with-location(mk-token(name),loc), close(Abs{
-            close(args-list), close(return-term), TAny{}
-         }) })
+      let attach-tt = if prop { t1(c"Prop") } else { TAny{} };
+      if name==c"quick-prop" {
+         match args-list {
+            App{ left:Lit{key:c":"}, right:App{right:AType{ pre=tt }} } => (
+               add-quick-prop(pre, TAny{}, return-type);
+            );
+            _ => (
+               print("Malformed quick-prop Argument List: ");
+               print(args-list); print("\n"); exit(1);
+            );
+         };
+      } else {
+         ast-parsed-program = Seq {
+            close(ast-parsed-program),
+            close(Glb{ with-location(mk-token(name),loc), close(Abs{
+               close(args-list), close(return-term), attach-tt
+            }) })
+         };
       };
    } else {
       ast-parsed-program = Seq {

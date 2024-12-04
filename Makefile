@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm tests/regress/vector-sort.lsts
+	lm tests/regress/propositional-types.lsts
 	cc -O3 tmp.c
 	./a.out
 
