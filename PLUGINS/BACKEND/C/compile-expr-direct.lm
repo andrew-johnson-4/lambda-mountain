@@ -43,8 +43,8 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                         (+( (SAtom guid) (SAtom '\:\n_s) ))
                      ))
                   )))
-                  (set assemble-global-initializer-section (+(
-                     assemble-global-initializer-section
+                  (set assemble-string-initializer-section (+(
+                     assemble-string-initializer-section
                      (+(
                         (+( (SAtom guid) (SAtom '=_s) ))
                         (+( (fragment::get( intern-ss 'expression_s )) (SAtom '\:\n_s) ))
