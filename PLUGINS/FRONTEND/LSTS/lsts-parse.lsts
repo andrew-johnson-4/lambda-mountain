@@ -814,7 +814,7 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
       let base-rest = lsts-parse-lit(tokens);
       tokens = base-rest.second;
       base-rest.first;
-   } else if non-zero(tokens) && lsts-parse-head(tail(tokens))==c"[" {
+   } else if non-zero(tokens) && lsts-parse-head(tokens)==c"[" {
       let base-rest = lsts-parse-lhs-list(tokens);
       tokens = base-rest.second;
       base-rest.first; 

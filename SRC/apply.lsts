@@ -55,9 +55,9 @@ let apply(function-name: CString, function-type: Type, parameters: Type, do-spec
             try-specialize(function-name, sft, ctx, closed-type);
          }
       };
-      #if is-t(function-type, c"Prop") {
-      #   r = and(r, cons-root(parameters));
-      #};
+      if is-t(function-type, c"Prop") {
+         r = and(r, cons-root(parameters));
+      };
    };
    Tuple { function-type, r }
 );

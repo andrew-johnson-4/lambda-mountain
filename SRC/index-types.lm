@@ -4,7 +4,7 @@ import SRC/index-definitions.lm;
 import SRC/quick-prop.lsts;
 import SRC/cmp.lsts;
 
-#import SRC/cons-root.lsts;
+import SRC/cons-root.lsts;
 import SRC/is-t.lm;
 import SRC/is-and.lsts;
 import SRC/index-concrete-type-instances.lm;
