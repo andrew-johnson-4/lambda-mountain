@@ -1,0 +1,7 @@
+
+let cons-root(tt: Type): Type = (
+   match tt {
+      TGround{tag:c"Cons", parameters:[tl..hd..]} => cons-root(hd);
+      _ => tt;
+   };
+);
