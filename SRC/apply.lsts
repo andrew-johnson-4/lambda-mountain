@@ -1,0 +1,64 @@
+
+let apply-blame(function-name: CString, function-type: Type, parameters: Type, do-specialize: U64, blame: AST): Tuple<Type,Type> = (
+   let r = apply(function-name, function-type, parameters, do-specialize);
+   if not(non-zero(r.second)) {
+      fail("Function Application Yielded No Matches\n"
+           "\{function-name}\n"
+           "With Arguments \{parameters}\n"
+           "At \{location-of(blame)}\n"
+           "With Candidates:\n"
+           "\{function-type}\n")
+   };
+   if is-t(r.second, c"Error: Did Not Close Before Specialization") {
+      fail("Application\sDid\sNot\sClose\sBefore\sSpecialization:\n"
+           "Function \{function-name}: \{function-type}\n"
+           "Argument \{parameters}\n"
+           "At \{location-of(blame)}\n");
+   };
+   if is-t(r.second, c"Error: Function Application Yielded An Irreducible Plurality Of Matches") {
+      fail("Function Application Yielded An Irreducible Plurality Of Matches\n"
+           "\{function-name}\n"
+           "With Arguments \{parameters}\n"
+           "At \{location-of(blame)}\n"
+           "Matched Candidates:\n"
+           "\{r.first}\n")
+   };
+   r
+);
+
+let apply(function-name: CString, function-type: Type, parameters: Type, do-specialize: U64): Tuple<Type,Type> = (
+   let r = TAny {};
+   let rs = apply-plural(function-name, function-type, parameters);
+   if not(is-t( function-type, c"Hook" )) {
+      rs = reduce-plural(rs);
+   };
+   if rs.length > 1 && not(is-t( function-type, c"Hook" )) {
+      r = t1(c"Error: Function Application Yielded An Irreducible Plurality Of Matches");
+      function-type = head(rs);
+      for candidate in tail(rs) {
+         function-type = TAnd { close(r), close(candidate) };
+      };
+   } else {
+      for sft in rs { # iterate in case this is a hook
+         let frt = range(sft);
+         let fpt = domain(sft);
+         let ctx = normalize(unify(fpt, parameters));
+         let closed-type = substitute( ctx, sft );
+         function-type = closed-type;
+         if not(is-t( r, c"Error: Did Not Close Before Specialization")) {
+            r = substitute(ctx, frt);
+         };
+         if do-specialize && is-open(sft) {
+            if is-open(closed-type) {
+               r = t1(c"Error: Did Not Close Before Specialization");
+            };
+            try-specialize(function-name, sft, ctx, closed-type);
+         }
+      };
+      if is-t(function-type, c"Prop") {
+         r = and(r, cons-root(parameters));
+      };
+   };
+   Tuple { function-type, r }
+);
+

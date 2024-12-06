@@ -4,7 +4,9 @@ import SRC/index-definitions.lm;
 import SRC/quick-prop.lsts;
 import SRC/cmp.lsts;
 
+import SRC/cons-root.lsts;
 import SRC/is-t.lm;
+import SRC/is-and.lsts;
 import SRC/index-concrete-type-instances.lm;
 import SRC/type-index.lm;
 import SRC/infer-expr.lm;
@@ -83,6 +85,7 @@ import SRC/cons-head.lm;
 import SRC/cons-tail.lm;
 import SRC/parameter-number.lm;
 import SRC/apply.lm;
+import SRC/apply.lsts;
 import SRC/apply-plural.lm;
 import SRC/reduce-plural.lm;
 import SRC/apply-or-cons-and-specialize.lm;
