@@ -1,0 +1,7 @@
+
+let is-and(tt: Type): U64 = (
+   match tt {
+      TAnd {} => 1;
+      _ => 0;
+   }
+);

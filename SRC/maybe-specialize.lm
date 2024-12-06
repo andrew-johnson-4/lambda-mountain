@@ -1,8 +1,8 @@
 
-maybe-specialize := λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (
-   (apply( function-name ft pt 1_u64 blame 0_u64 )) ()
+maybe-specialize := λ(: function-name String)(: ft Type)(: pt Type). (: (
+   (apply( function-name ft pt 1_u64 )) ()
 ) Nil);
 
 do-specialize := λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (
-   (apply( function-name ft pt 1_u64 blame 1_u64 )) ()
+   (apply-blame( function-name ft pt 1_u64 blame )) ()
 ) Nil);

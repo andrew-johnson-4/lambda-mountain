@@ -36,7 +36,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
             (let vt (typeof v))
             (if (is-arrow vt) () (
                (let gt (and( (t1 'GlobalVariable_s) (without-representation vt) )))
-               (maybe-specialize( 'mov_s (typeof-var-raw( term tctx 'mov_s )) (t3( 'Cons_s vt gt )) term ))
+               (maybe-specialize( 'mov_s (typeof-var-raw( term tctx 'mov_s )) (t3( 'Cons_s vt gt )) ))
             ))
          ))
       ))
@@ -84,7 +84,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
             ))
          ) ())
          (if (is-t( tt 'SmartString_s )) () (
-            (maybe-specialize( 'intern_s (typeof-var-raw( term tctx 'intern_s )) tt term ))
+            (maybe-specialize( 'intern_s (typeof-var-raw( term tctx 'intern_s )) tt ))
          ))
       ))
       ( (App( (Var( 'gensym-label_s _ )) (Var( lname _ )) )) (
@@ -142,8 +142,8 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
             ()
             ( (TGround( 'Array_s (LCons( _ (LCons( TAny LEOF )) )) )) () )
             ( (TGround( 'Array_s (LCons( TAny (LCons( array-base LEOF )) )) )) (
-               (maybe-specialize( 'open_s (typeof-var-raw( term tctx 'open_s )) deref-type term ))
-               (maybe-specialize( 'push-deref_s (typeof-var-raw( term tctx 'push-deref_s )) deref-type term ))
+               (maybe-specialize( 'open_s (typeof-var-raw( term tctx 'open_s )) deref-type ))
+               (maybe-specialize( 'push-deref_s (typeof-var-raw( term tctx 'push-deref_s )) deref-type ))
                (set deref-type (and( array-base (t1 'StackVariable_s) )))
             ))
             ( _ (do-specialize( 'open_s (typeof-var-raw( term tctx 'open_s )) deref-type term )) )
@@ -183,7 +183,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          )))
          (ascript-normal( term (t1 'Nil_s) ))
 
-         (maybe-specialize( 'del_s (typeof-var-raw( term tctx 'del_s )) tt term ))
+         (maybe-specialize( 'del_s (typeof-var-raw( term tctx 'del_s )) tt ))
       ))
       ( (App( l r )) (
          (let l-used Unused)
@@ -261,7 +261,6 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          (if (==( (var-name-if-var l) 'Rc_s )) (
             (maybe-specialize( 'inc_s (typeof-var-raw( term tctx 'inc_s ))
                (t2( 'Rc_s (p2(slot( (p2(slot( (p1 (typeof r)) 'Array_s ))) 'Tuple_s ))) )) # invert Rc constructor to get type parameter
-               term
             ))
          ) ())
 
@@ -276,7 +275,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
                   (set ct (and( ct (t2( 'CaseNumber_s (t1(to-string(index-of-tag l-name))) )) )))
                   (set ct (and( ct (t2( 'Sized_s (t1(to-string struct-size)) )) )))
                   (set ct (and( ct (t2( 'FieldsSized_s (t1(to-string fields-size)) )) )))
-                  (maybe-specialize( 'push_s (typeof-var-raw( term tctx 'push_s )) ct term ))
+                  (maybe-specialize( 'push_s (typeof-var-raw( term tctx 'push_s )) ct ))
                ))
                ( _ () )
             ))
@@ -299,7 +298,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          (let rt (typeof rhs))
          (ascript-normal( term (enrich( (t3( 'Arrow_s lt rt )) tlt )) ))
          (if (is-t( tlt 'Blob_s )) () (
-            (maybe-specialize( 'cdecl::return_s (typeof-var-raw( term tctx 'cdecl::return_s )) rt term ))
+            (maybe-specialize( 'cdecl::return_s (typeof-var-raw( term tctx 'cdecl::return_s )) rt ))
          ))
       ))
       ( (Var( v vtk )) (
@@ -321,7 +320,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
 
                (if (is-arrow tt) () (
                   (let ct (denormalize tt))
-                  (maybe-specialize( 'push_s (typeof-var-raw( term tctx 'push_s )) ct term ))
+                  (maybe-specialize( 'push_s (typeof-var-raw( term tctx 'push_s )) ct ))
                ))
             ) ())
          ))
@@ -336,7 +335,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
       ))
    ))
    (if (>( (sizeof-type(typeof term)) 0_u64 )) (
-      (maybe-specialize( 'push_s (typeof-var-raw( term tctx 'push_s )) (typeof term) term ))
+      (maybe-specialize( 'push_s (typeof-var-raw( term tctx 'push_s )) (typeof term) ))
    ) ())
    tctx
 ) TContext);
