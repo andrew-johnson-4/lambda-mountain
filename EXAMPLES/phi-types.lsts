@@ -1,7 +1,7 @@
 
 import LIB/default.lm;
 
-let fp = fopen("input-file.txt", "r");
+let fp = fopen(c"input-file.txt", c"r");
 
 # The type system doesn't know that this is always true
 # So fclose may or may not be called
