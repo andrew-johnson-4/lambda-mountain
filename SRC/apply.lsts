@@ -7,7 +7,7 @@ let apply-blame(function-name: CString, function-type: Type, parameters: Type, d
            "With Arguments \{parameters}\n"
            "At \{location-of(blame)}\n"
            "With Candidates:\n"
-           "\{function-type}\n")
+           "\{function-type.pretty}\n")
    };
    if is-t(r.second, c"Error: Did Not Close Before Specialization") {
       fail("Application\sDid\sNot\sClose\sBefore\sSpecialization:\n"
@@ -21,7 +21,7 @@ let apply-blame(function-name: CString, function-type: Type, parameters: Type, d
            "With Arguments \{parameters}\n"
            "At \{location-of(blame)}\n"
            "Matched Candidates:\n"
-           "\{r.first}\n")
+           "\{r.first.pretty}\n")
    };
    r
 );
