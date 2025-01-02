@@ -55,6 +55,23 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          ))
       ))
 
+      # Phi Types
+      ( (Tuple(
+         (TGround( 'Phi_s (LCons( to_phi (LCons( (TGround( from_phi _ )) LEOF )) )) ))
+         (TGround( 'Phi_s (LCons( (TGround( state_phi _ )) (LCons( (TGround( id_phi _ )) LEOF )) )) ))
+      )) (
+         (if (==( from_phi state_phi )) (
+            (set ctx (TCtxBind(
+               (close TCtxEOF)
+               id_phi
+               to_phi
+               (Lit( 'Phi::Transition_s (token::new 'Phi::Transition_s) ))
+            )))
+         ) (
+            TCtxEOF
+         ))
+      ))
+
       # Varargs
       ( (Tuple(
          (TGround( 'Cons_s (LCons(
