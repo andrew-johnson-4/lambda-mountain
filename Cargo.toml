@@ -1,6 +1,6 @@
 [package]
 name = "lambda_mountain"
-version = "1.19.39"
+version = "1.19.40"
 authors = ["Andrew <andrew@subarctic.org>"]
 license = "MIT"
 description = "Typed Macro Assembler (backed by Coq proofs-of-correctness)"

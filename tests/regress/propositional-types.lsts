@@ -3,7 +3,7 @@ import LIB/default.lm;
 
 type A = A { x: U64 };
 
-let a = A { 1 } :: A;
+let a = A { 1 };
 
 let prop quick-prop(a: A): B = ();
 
