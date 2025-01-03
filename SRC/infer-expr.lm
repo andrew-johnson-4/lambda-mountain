@@ -30,16 +30,13 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          (infer-expr( tctx r Unscoped TAny Used ))
       ))
       ( (Typedef( _ _ )) () )
-      ( (Glb( k v )) (
+      ( (Glb( k (@( v (Abs( _ )) )) )) (
          (if (is-open(typeof term)) () (
             (infer-expr( tctx v Unscoped TAny Used ))
             (let vt (typeof v))
-            (if (is-arrow vt) () (
-               (let gt (and( (t1 'GlobalVariable_s) (without-representation vt) )))
-               (maybe-specialize( 'mov_s (typeof-var-raw( term tctx 'mov_s )) (t3( 'Cons_s vt gt )) ))
-            ))
          ))
       ))
+      ( (Glb( k v )) () ) # globals should already be inferred by now
       ( (App( (Lit( ':_s _ )) (App( (Lit( _ _ )) (AType tt) )) )) (
          (add-concrete-type-instance tt)
          (match term (

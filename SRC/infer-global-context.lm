@@ -58,6 +58,7 @@ infer-global-context-2 := λ(: td AST). (: (
          )))
          (mark-global-as-seen( k kt TAny ))
          (ascript-normal( td kt ))
+         (maybe-specialize( 'mov_s (typeof-var-raw( rhs global-type-context 'mov_s )) (t3( 'Cons_s kt kt )) ))
       ))
       ( _ () )
    ))
