@@ -56,8 +56,8 @@ infer-global-context-2 := λ(: td AST). (: (
          (set global-type-context (TCtxBind(
             (close global-type-context) k kt ASTEOF
          )))
-         (print 'Infer\s2\s_s)(print k)(print '\s_s)(print kt)(print '\n_s)
          (mark-global-as-seen( k kt TAny ))
+         (ascript-normal( td kt ))
       ))
       ( _ () )
    ))
