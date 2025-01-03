@@ -11,10 +11,18 @@ typecheck := λ. (: (
          (set p rst)
       ))
    )))
-   (while (non-zero ordered-type-exprs) (match ordered-type-exprs (
+   (let preordered-type-exprs ordered-type-exprs)
+   (while (non-zero preordered-type-exprs) (match preordered-type-exprs (
       ()
       ( (Seq( rst r )) (
          (infer-global-context( r ))
+         (set preordered-type-exprs rst)
+      ))
+   )))
+   (while (non-zero ordered-type-exprs) (match ordered-type-exprs (
+      ()
+      ( (Seq( rst r )) (
+         (infer-global-context-2( r ))
          (set ordered-type-exprs rst)
       ))
    )))

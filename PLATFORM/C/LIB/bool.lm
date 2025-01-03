@@ -1,7 +1,7 @@
 
 fragment type Bool; size Bool 1;
 
-true := (: 1_u8 Bool);
-false := (: 0_u8 Bool);
+true := 1_u8;
+false := 0_u8;
 
 (declare-unop( into-branch-conditional Bool BranchConditional ( x ) ));

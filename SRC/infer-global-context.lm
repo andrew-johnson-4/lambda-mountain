@@ -40,17 +40,24 @@ infer-global-context := λ(: td AST). (: (
             td
          )))
       ))
-      ( (Glb( k_t (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) )) (
-         (add-concrete-type-instance rhst)
+      ( _ () )
+   ))
+) Nil);
+
+infer-global-context-2 := λ(: td AST). (: (
+   (match td (
+      ()
+      ( (Glb( k_t (@( frhs (Abs( lhs (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) tlt )) )) )) (
+      ))
+      ( (Glb( k_t rhs )) (
+         (infer-expr( global-type-context rhs Unscoped TAny Used ))
+         (let rhst (normalize(typeof rhs)))
          (let kt (and( (without-representation rhst) (t1 'GlobalVariable_s) )))
          (set global-type-context (TCtxBind(
             (close global-type-context) k kt ASTEOF
          )))
+         (print 'Infer\s2\s_s)(print k)(print '\s_s)(print kt)(print '\n_s)
          (mark-global-as-seen( k kt TAny ))
-         (ascript-normal( td kt ))
-      ))
-      ( (Glb( _ _ )) (
-         (exit-error( 'Global\sBindings\sMust\sBe\sAscripted_s td ))
       ))
       ( _ () )
    ))
