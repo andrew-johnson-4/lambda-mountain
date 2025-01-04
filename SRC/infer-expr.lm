@@ -216,36 +216,35 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
                (let r-hint TAny)
                (set tctx (infer-expr( tctx r Unscoped TAny r-used )))
                (let lt-fname (find-alias( l-fname (typeof r) )))
-               (let ftrt (apply-or-cons-and-specialize(
+               (let apply-result (apply-or-cons-and-specialize(
                   lt-fname
                   (typeof-var-raw( term tctx lt-fname ))
                   (typeof r)
                   term
                )))
-               (let function-type (.2 ftrt))
-               (ascript-normal( l function-type ))
-               (set rt (.1 ftrt))
+               (ascript-normal( l (.function-type apply-result) ))
+               (set rt (.return-type apply-result))
             ))
             ( _ (
                (if (is( used Unused )) (set r-used Unused) ())
                (set tctx (infer-expr( tctx l Unscoped TAny l-used )))
                (if (is-arrow(typeof l)) (set r-used Call) ())
                (set tctx (infer-expr( tctx r Unscoped TAny r-used )))
-               (let ftrt (apply-cons(
+               (let apply-result (apply-cons(
                   (var-name-if-var l)
                   (typeof l)
                   (typeof r)
                   term
                )))
                (if (head-string(var-name-if-var l)) (
-                  (set ftrt (apply-or-cons-and-specialize(
+                  (set apply-result (apply-or-cons-and-specialize(
                      (var-name-if-var l)
                      (typeof l)
                      (typeof r)
                      term
                   )))
                ) ())
-               (set rt (.1 ftrt))
+               (set rt (.return-type apply-result))
             ))
          ))
          (if (is( l-used Unused )) (

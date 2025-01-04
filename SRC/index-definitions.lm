@@ -35,4 +35,7 @@ type ParsePartial (PME( AST , List<Token> )); # term, remainder
 
 type StackToSpecialize (StackToSpecialize( String , Type , TContext , Type ));
 
+type ApplyResult (ApplyResult( function-type:Type , return-type:Type , phi-types:List<Tuple<String,Type>> ));
+
 import SRC/to-smart-string.lm;
+

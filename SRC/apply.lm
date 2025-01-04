@@ -1,6 +1,6 @@
 apply := λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (
    (apply-blame( function-name ft pt 0_u64 blame ))
-) Tuple<Type,Type>);
+) ApplyResult);
 
 apply := λ(: ctx Context)(: term AST). (: (
    (let return term)

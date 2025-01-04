@@ -1,7 +1,7 @@
 
-let apply-blame(function-name: CString, function-type: Type, parameters: Type, do-specialize: U64, blame: AST): Tuple<Type,Type> = (
+let apply-blame(function-name: CString, function-type: Type, parameters: Type, do-specialize: U64, blame: AST): ApplyResult = (
    let r = apply(function-name, function-type, parameters, do-specialize);
-   if not(non-zero(r.second)) {
+   if not(non-zero(r.return-type)) {
       fail("Function Application Yielded No Matches\n"
            "\{function-name}\n"
            "With Arguments \{parameters}\n"
@@ -9,24 +9,24 @@ let apply-blame(function-name: CString, function-type: Type, parameters: Type, d
            "With Candidates:\n"
            "\{function-type.pretty}\n")
    };
-   if is-t(r.second, c"Error: Did Not Close Before Specialization") {
+   if is-t(r.return-type, c"Error: Did Not Close Before Specialization") {
       fail("Application\sDid\sNot\sClose\sBefore\sSpecialization:\n"
            "Function \{function-name}: \{function-type}\n"
            "Argument \{parameters}\n"
            "At \{location-of(blame)}\n");
    };
-   if is-t(r.second, c"Error: Function Application Yielded An Irreducible Plurality Of Matches") {
+   if is-t(r.return-type, c"Error: Function Application Yielded An Irreducible Plurality Of Matches") {
       fail("Function Application Yielded An Irreducible Plurality Of Matches\n"
            "\{function-name}\n"
            "With Arguments \{parameters}\n"
            "At \{location-of(blame)}\n"
            "Matched Candidates:\n"
-           "\{r.first.pretty}\n")
+           "\{function-type.pretty}\n")
    };
    r
 );
 
-let apply(function-name: CString, function-type: Type, parameters: Type, do-specialize: U64): Tuple<Type,Type> = (
+let apply(function-name: CString, function-type: Type, parameters: Type, do-specialize: U64): ApplyResult = (
    let r = TAny {};
    let rs = apply-plural(function-name, function-type, parameters);
    if not(is-t( function-type, c"Hook" )) {
@@ -59,6 +59,6 @@ let apply(function-name: CString, function-type: Type, parameters: Type, do-spec
          r = and(r, cons-root(parameters));
       };
    };
-   Tuple { function-type, r }
+   ApplyResult { function-type, r, (LEOF {} :: List<Tuple<CString,Type>>) }
 );
 
