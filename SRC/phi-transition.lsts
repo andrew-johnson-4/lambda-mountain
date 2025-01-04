@@ -1,0 +1,5 @@
+
+let phi-transition(ctx: TContext, phi-id: CString, phi-new-type: Type): TContext = (
+   print("Phi Transition \{phi-id} -> \{phi-new-type}\n");
+   ctx
+);

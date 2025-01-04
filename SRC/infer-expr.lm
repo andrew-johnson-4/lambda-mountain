@@ -225,7 +225,9 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
                (ascript-normal( l (.function-type apply-result) ))
                (set rt (.return-type apply-result))
                (if (non-zero (.phi-types apply-result)) (
-                  (print 'Phi\sResult\s_s)(print (.phi-types apply-result))(print '\n_s)
+                  (for-each ((Tuple( phi-id phi-new-type )) in (.phi-types apply-result)) (
+                     (set tctx (phi-transition( tctx phi-id phi-new-type )))
+                  ))
                ) ())
             ))
             ( _ (

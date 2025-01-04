@@ -10,6 +10,7 @@ import SRC/is-and.lsts;
 import SRC/index-concrete-type-instances.lm;
 import SRC/type-index.lm;
 import SRC/infer-expr.lm;
+import SRC/phi-transition.lsts;
 import SRC/alias.lm;
 import SRC/class-exists.lm;
 import SRC/is-parameter-flat.lm;
