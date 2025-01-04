@@ -32,6 +32,7 @@ let apply(function-name: CString, function-type: Type, parameters: Type, do-spec
    if not(is-t( function-type, c"Hook" )) {
       rs = reduce-plural(rs);
    };
+   let phi-types = [] :: List<Tuple<CString,Type>>;
    if rs.length > 1 && not(is-t( function-type, c"Hook" )) {
       r = t1(c"Error: Function Application Yielded An Irreducible Plurality Of Matches");
       function-type = head(rs);
@@ -43,6 +44,17 @@ let apply(function-name: CString, function-type: Type, parameters: Type, do-spec
          let frt = range(sft);
          let fpt = domain(sft);
          let ctx = normalize(unify(fpt, parameters));
+         let phi-ctx = ctx;
+         while non-zero(phi-ctx) { match phi-ctx {
+            TCtxBind { rst=ctx, key:c"Phi::Transition", typ=typ, term:Var{ pid=key } } => (
+               print("Phi::Transition \{pid} : \{typ}\n");
+               phi-ctx = rst;
+            );
+            TCtxBind { rst=ctx, key=key, typ=typ } => (
+               phi-ctx = rst;
+            );
+            _ => (phi-ctx = TCtxEOF {};);
+         } };
          let closed-type = substitute( ctx, sft );
          function-type = closed-type;
          if not(is-t( r, c"Error: Did Not Close Before Specialization")) {
@@ -59,6 +71,6 @@ let apply(function-name: CString, function-type: Type, parameters: Type, do-spec
          r = and(r, cons-root(parameters));
       };
    };
-   ApplyResult { function-type, r, (LEOF {} :: List<Tuple<CString,Type>>) }
+   ApplyResult { function-type, r, phi-types }
 );
 

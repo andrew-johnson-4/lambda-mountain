@@ -17,7 +17,7 @@ type IsUsed Used | Unused | Tail | Return | Call;
 type IsScoped Scoped | Unscoped;
 
 type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST )); zero Context CtxEOF;
-type TContext TCtxEOF | TCtxNil | (TCtxBind( TContext[] , String , Type , AST )); zero TContext TCtxEOF;
+type TContext TCtxEOF | TCtxNil | (TCtxBind( ctx:TContext[] , key:String , typ:Type , term:AST )); zero TContext TCtxEOF;
 type FContext FCtxEOF | (FCtxBind( FContext[] , String , Type , Fragment )); zero FContext FCtxEOF;
 
 type STypeList STEOF | (STSeq( STypeList[] , S , Type )); zero STypeList STEOF;

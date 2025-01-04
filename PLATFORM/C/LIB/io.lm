@@ -22,8 +22,8 @@ mktemp := λ: FFI(: template U8[]). (: () U8[]);
 wait := λ: FFI(: wstatus U32[]). (: () PID);
 fork := λ: FFI().(: () PID);
 
-fopen := λ: FFI(: fp String)(: mode String). (: () File[]+Phi<FileState::Open>);
-fclose := λ: FFI(: fio File[]+Phi<FileState::Open,FileState::Closed>). (: () U32);
+fopen := λ: FFI(: fp String)(: mode String). (: () IO::File+Phi<FileState::Open>);
+fclose := λ: FFI(: fio IO::File+Phi<FileState::Open,FileState::Closed>). (: () U32);
 
 exit := λ(: x U64).(: (exit(as x U32)) Nil);
 
