@@ -40,8 +40,7 @@ can-unify := λ(: fpt Type)(: pt Type). (: (
          (TGround( 'Phi_s (LCons( (TGround( to_phi _ )) (LCons( (TGround( from_phi _ )) LEOF )) )) ))
          (TGround( 'Phi_s (LCons( (TGround( state_phi _ )) (LCons( (TGround( id_phi _ )) LEOF )) )) ))
       )) (
-         (print 'Can\sUnify\s_s)(print from_phi)(print '\s_s)(print to_phi)(print '\o_s)(print id_phi)(print '\n_s)
-         (==( from_phi state_phi ))
+         (set r (==( from_phi state_phi )))
       ))
 
       # Varargs

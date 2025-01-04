@@ -47,7 +47,7 @@ let apply(function-name: CString, function-type: Type, parameters: Type, do-spec
          let phi-ctx = ctx;
          while non-zero(phi-ctx) { match phi-ctx {
             TCtxBind { rst=ctx, key:c"Phi::Transition", typ=typ, term:Var{ pid=key } } => (
-               print("Phi::Transition \{pid} : \{typ}\n");
+               phi-types = cons( Tuple{ pid, typ }, phi-types );
                phi-ctx = rst;
             );
             TCtxBind { rst=ctx, key=key, typ=typ } => (

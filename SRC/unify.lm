@@ -61,7 +61,6 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          (TGround( 'Phi_s (LCons( (TGround( state_phi _ )) (LCons( (TGround( id_phi _ )) LEOF )) )) ))
       )) (
          (if (==( from_phi state_phi )) (
-            (print 'Transition\n_s)(print from_phi)(print '\s_s)(print to_phi)(print '\o_s)(print id_phi)(print '\n_s)
             (set ctx (TCtxBind(
                (close TCtxEOF)
                'Phi::Transition_s
