@@ -5,7 +5,6 @@ let phi-transition(ctx: TContext, phi-id: CString, phi-new-type: Type): TContext
       TCtxBind { rst=ctx, key=key, typ=typ, term=term } => (
          if typ.contains-phi(phi-id) {
             ctx = TCtxBind { close(ctx), key, typ.replace-phi(phi-id, phi-new-type), term };
-            print("Transitioned Phi: \{typ} -> \{typ.replace-phi(phi-id, phi-new-type)}\n");
             iter-ctx = TCtxEOF {};
          } else {
             iter-ctx = rst;

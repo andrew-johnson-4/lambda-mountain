@@ -25,6 +25,9 @@ fork := λ: FFI().(: () PID);
 fopen := λ: FFI(: fp String)(: mode String). (: () IO::File+Phi<FileState::Open>);
 fclose := λ: FFI(: fio IO::File+Phi<FileState::Open,FileState::Closed>). (: () U32);
 
+phi := λ: Blob(: left FileState::Open)(: right FileState::Open). (: () FileState::Open);
+phi := λ: Blob(: left FileState::Closed)(: right FileState::Closed). (: () FileState::Closed);
+
 exit := λ(: x U64).(: (exit(as x U32)) Nil);
 
 fail := λ(: msg String)(: loc String). (: (

@@ -1,1 +1,11 @@
-Error:
+Error: Function Application Yielded No Matches
+phi
+With Arguments Cons<FileState::Closed,FileState::Open>
+At Unknown line 0 column 0
+With Candidates:
+Arrow<Cons<FileState::Closed,FileState::Closed>,FileState::Closed>+
+Blob+
+GlobalVariable+
+Arrow<Cons<FileState::Open,FileState::Open>,FileState::Open>+
+Blob+
+GlobalVariable
