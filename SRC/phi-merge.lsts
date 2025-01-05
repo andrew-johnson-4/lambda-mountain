@@ -1,0 +1,40 @@
+
+let phi-merge(ctx: TContext, weak-ctx: TContext): TContext = (
+   print("Merge Phi Contexts\n");
+   let iter-ctx = ctx;
+   let left-phi-ids = [] :: List<CString>;
+   while non-zero(iter-ctx) { match iter-ctx {
+      TCtxBind { rst=ctx, key=key, typ=typ, term=term } => (
+         left-phi-ids = left-phi-ids + typ.phi-ids;
+         iter-ctx = rst;
+      );
+      _ => (iter-ctx = TCtxEOF {});
+   }};
+   iter-ctx = weak-ctx;
+   let right-phi-ids = [] :: List<CString>;
+   while non-zero(iter-ctx) { match iter-ctx {
+      TCtxBind { rst=ctx, key=key, typ=typ, term=term } => (
+         right-phi-ids = right-phi-ids + typ.phi-ids;
+         iter-ctx = rst;
+      );
+      _ => (iter-ctx = TCtxEOF {});
+   }};
+   print("Left Ids: \{left-phi-ids}\n");
+   print("Right Ids: \{right-phi-ids}\n");
+   ctx
+);
+
+let .phi-ids(tt: Type): List<CString> = (
+   match tt {
+      TAnd { left=left, right=right } => (
+         left.phi-ids + right.phi-ids
+      );
+      TGround { tag:c"Phi", parameters:[p2..TGround{ tag-phi-id=tag }..] } => (
+         if tag-phi-id.has-prefix(c"uuid_") {
+            [ tag-phi-id ]
+         } else { [] :: List<CString> }
+      );
+      _ => ([] :: List<CString>);
+   }
+);
+
