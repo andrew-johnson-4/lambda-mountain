@@ -6,6 +6,7 @@ normalize := λ(: tt Type). (: (
    (set rt (without-tag rt))
    # Sized can serve as a datatype if nothing else is available
    (set rt (without-size-unless-class rt))
+   (set rt (with-phi rt))
    rt
 ) Type);
 

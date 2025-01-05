@@ -1,0 +1,42 @@
+
+let phi-transition(ctx: TContext, phi-id: CString, phi-new-type: Type): TContext = (
+   let iter-ctx = ctx;
+   while non-zero(iter-ctx) { match iter-ctx {
+      TCtxBind { rst=ctx, key=key, typ=typ, term=term } => (
+         if typ.contains-phi(phi-id) {
+            ctx = TCtxBind { close(ctx), key, typ.replace-phi(phi-id, phi-new-type), term };
+            iter-ctx = TCtxEOF {};
+         } else {
+            iter-ctx = rst;
+         }
+      );
+      _ => (iter-ctx = TCtxEOF {});
+   }};
+   ctx
+);
+
+let .contains-phi(tt: Type, phi-id: CString): U64 = (
+   match tt {
+      TAnd { left=left, right=right } => (
+         left.contains-phi(phi-id) || right.contains-phi(phi-id)
+      );
+      TGround { tag:c"Phi", parameters:[p2..TGround{ tag-phi-id=tag }..] } => (
+         tag-phi-id == phi-id
+      );
+      _ => false;
+   }
+);
+
+let .replace-phi(tt: Type, phi-id: CString, phi-new-type: Type): Type = (
+   match tt {
+      TAnd { left=left, right=right } => (
+         TAnd { close(left.replace-phi(phi-id, phi-new-type)), close(right.replace-phi(phi-id, phi-new-type)) }
+      );
+      TGround { tag:c"Phi", parameters:[p2..TGround{ tag-phi-id=tag }..] } => (
+         if tag-phi-id == phi-id {
+            TGround { c"Phi", close([phi-new-type, t1(phi-id)] :: List<Type>) }
+         } else { tt }
+      );
+      _ => tt;
+   }
+);

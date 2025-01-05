@@ -30,16 +30,13 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          (infer-expr( tctx r Unscoped TAny Used ))
       ))
       ( (Typedef( _ _ )) () )
-      ( (Glb( k v )) (
+      ( (Glb( k (@( v (Abs( _ )) )) )) (
          (if (is-open(typeof term)) () (
             (infer-expr( tctx v Unscoped TAny Used ))
             (let vt (typeof v))
-            (if (is-arrow vt) () (
-               (let gt (and( (t1 'GlobalVariable_s) (without-representation vt) )))
-               (maybe-specialize( 'mov_s (typeof-var-raw( term tctx 'mov_s )) (t3( 'Cons_s vt gt )) ))
-            ))
          ))
       ))
+      ( (Glb( k v )) () ) # globals should already be inferred by now
       ( (App( (Lit( ':_s _ )) (App( (Lit( _ _ )) (AType tt) )) )) (
          (add-concrete-type-instance tt)
          (match term (
@@ -97,14 +94,18 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          (ascript-normal( term (t1 'Nil_s) ))
       ))
       ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (
-         (if (is( scoped Scoped )) (
+         (if (is( scoped Scoped )) (scope(
             (let tctx-inner (infer-expr( tctx cond Unscoped TAny Used )))
-            (infer-expr( tctx-inner t Unscoped TAny Tail ))
-         ) (
+            (let tctx-weak-t (infer-expr( tctx-inner t Unscoped TAny Tail )))
+            (let tctx-t (phi-override( tctx tctx-weak-t )))
+            (let tctx-f (infer-expr( tctx f Unscoped TAny Tail )))
+            (set tctx (phi-merge( tctx-t tctx-f )))
+         )) (
             (set tctx (infer-expr( tctx cond Unscoped TAny Used )))
-            (set tctx (infer-expr( tctx t Unscoped TAny Tail )))
+            (let tctx-t (infer-expr( tctx t Unscoped TAny Tail )))
+            (let tctx-f (infer-expr( tctx f Unscoped TAny Tail )))
+            (set tctx (phi-merge( tctx-t tctx-f )))
          ))
-         (infer-expr( tctx f Unscoped TAny Tail ))
          (ascript-normal( term (guess-representation(without-representation(typeof t))) ))
       ))
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
@@ -132,8 +133,9 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          ))
       ))
       ( (App( (Var( 'scope_s _ )) r )) (
-         (infer-expr( tctx r Scoped TAny Tail ))
+         (let weak-ctx (infer-expr( tctx r Scoped TAny Tail )))
          (ascript-normal( term (typeof r) ))
+         (set tctx (phi-override( tctx weak-ctx )))
       ))
       ( (App( (Var( 'open_s _ )) r )) (
          (set tctx (infer-expr( tctx r Unscoped TAny Used )))
@@ -219,36 +221,45 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
                (let r-hint TAny)
                (set tctx (infer-expr( tctx r Unscoped TAny r-used )))
                (let lt-fname (find-alias( l-fname (typeof r) )))
-               (let ftrt (apply-or-cons-and-specialize(
+               (let apply-result (apply-or-cons-and-specialize(
                   lt-fname
                   (typeof-var-raw( term tctx lt-fname ))
                   (typeof r)
                   term
                )))
-               (let function-type (.2 ftrt))
-               (ascript-normal( l function-type ))
-               (set rt (.1 ftrt))
+               (ascript-normal( l (.function-type apply-result) ))
+               (set rt (.return-type apply-result))
+               (if (non-zero (.phi-types apply-result)) (
+                  (for-each ((Tuple( phi-id phi-new-type )) in (.phi-types apply-result)) (
+                     (set tctx (phi-transition( tctx phi-id phi-new-type )))
+                  ))
+               ) ())
             ))
             ( _ (
                (if (is( used Unused )) (set r-used Unused) ())
                (set tctx (infer-expr( tctx l Unscoped TAny l-used )))
                (if (is-arrow(typeof l)) (set r-used Call) ())
                (set tctx (infer-expr( tctx r Unscoped TAny r-used )))
-               (let ftrt (apply-cons(
+               (let apply-result (apply-cons(
                   (var-name-if-var l)
                   (typeof l)
                   (typeof r)
                   term
                )))
                (if (head-string(var-name-if-var l)) (
-                  (set ftrt (apply-or-cons-and-specialize(
+                  (set apply-result (apply-or-cons-and-specialize(
                      (var-name-if-var l)
                      (typeof l)
                      (typeof r)
                      term
                   )))
                ) ())
-               (set rt (.1 ftrt))
+               (set rt (.return-type apply-result))
+               (if (non-zero (.phi-types apply-result)) (
+                  (for-each ((Tuple( phi-id phi-new-type )) in (.phi-types apply-result)) (
+                     (set tctx (phi-transition( tctx phi-id phi-new-type )))
+                  ))
+               ) ())
             ))
          ))
          (if (is( l-used Unused )) (

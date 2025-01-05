@@ -15,3 +15,27 @@ let cmp(ls: List<x>, rs: List<x>): I64 = (
 let $"<"(ls: List<x>, rs: List<x>): U64 = (
    cmp(ls, rs) < $"0_i64"
 );
+
+let to-smart-string(ls: List<x>): String = (
+   let s = "[";
+   let si = 0;
+   for l in ls {
+      if si > 0 {
+         s = s + ",";
+      };
+      s = s + to-smart-string(l);
+      si = si + 1;
+   };
+   s = s + "]";
+   s
+);
+
+let .unique(ls: List<x>): List<x> = (
+   let rs = [] :: List<x>;
+   for l in ls {
+      if not(rs.contains(l)) {
+         rs = cons(l, rs);
+      }
+   };
+   rs
+);

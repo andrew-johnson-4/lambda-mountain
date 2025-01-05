@@ -63,9 +63,9 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          (if (==( from_phi state_phi )) (
             (set ctx (TCtxBind(
                (close TCtxEOF)
-               id_phi
+               'Phi::Transition_s
                to_phi
-               (Lit( 'Phi::Transition_s (token::new 'Phi::Transition_s) ))
+               (Var( id_phi (token::new id_phi) ))
             )))
          ) (
             TCtxEOF

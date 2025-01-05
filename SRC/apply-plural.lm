@@ -13,6 +13,7 @@ apply-plural := λ(: function-name String)(: ft Type)(: pt Type). (: (
          (TGround( 'Arrow_s (LCons( frt (LCons( fpt LEOF )) )) ))
          LEOF )) )) )) (
          (if (can-unify( fpt pt )) (
+            (print 'Unified\n_s)
             (set r (cons( ft r )))
          ) ())
       ))

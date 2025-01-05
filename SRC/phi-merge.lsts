@@ -1,0 +1,149 @@
+
+let phi-merge(ctx: TContext, weak-ctx: TContext): TContext = (
+   let iter-ctx = ctx;
+   let left-phi-ids = [] :: List<CString>;
+   while non-zero(iter-ctx) { match iter-ctx {
+      TCtxBind { rst=ctx, key=key, typ=typ, term=term } => (
+         left-phi-ids = left-phi-ids + typ.phi-ids;
+         iter-ctx = rst;
+      );
+      _ => (iter-ctx = TCtxEOF {});
+   }};
+   iter-ctx = weak-ctx;
+   let right-phi-ids = [] :: List<CString>;
+   while non-zero(iter-ctx) { match iter-ctx {
+      TCtxBind { rst=ctx, key=key, typ=typ, term=term } => (
+         right-phi-ids = right-phi-ids + typ.phi-ids;
+         iter-ctx = rst;
+      );
+      _ => (iter-ctx = TCtxEOF {});
+   }};
+   for lid in left-phi-ids.unique {
+      if right-phi-ids.contains(lid) {
+         iter-ctx = ctx;
+         let left-key = c"";
+         let left-typ = TAny {};
+         let left-term = ASTEOF {};
+         while non-zero(iter-ctx) { match iter-ctx {
+            TCtxBind { rst=ctx, key=key, typ=typ, term=term } => (
+               if typ.contains-phi(lid) {
+                  left-key = key;
+                  left-typ = typ.get-phi(lid);
+                  left-term = term;
+                  iter-ctx = TCtxEOF {};
+               } else {
+                  iter-ctx = rst;
+               }
+            );
+            _ => (iter-ctx = TCtxEOF {});
+         }};
+         iter-ctx = weak-ctx;
+         let right-typ = TAny {};
+         while non-zero(iter-ctx) { match iter-ctx {
+            TCtxBind { rst=ctx, key=key, typ=typ, term=term } => (
+               if typ.contains-phi(lid) {
+                  right-typ = typ.get-phi(lid);
+                  iter-ctx = TCtxEOF {};
+               } else {
+                  iter-ctx = rst;
+               }
+            );
+            _ => (iter-ctx = TCtxEOF {});
+         }};
+         let merge-result = apply-blame(c"phi", typeof-var-raw(left-term, ctx, c"phi"), t3(c"Cons", left-typ, right-typ), 0, left-term);
+         if not(left-typ == merge-result.return-type) {
+            ctx = TCtxBind { close(ctx), left-key, t3(c"Phi", t1(lid), merge-result.return-type), left-term };
+         };
+      }
+   };
+   ctx
+);
+
+let phi-override(ctx: TContext, weak-ctx: TContext): TContext = (
+   let iter-ctx = ctx;
+   let left-phi-ids = [] :: List<CString>;
+   while non-zero(iter-ctx) { match iter-ctx {
+      TCtxBind { rst=ctx, key=key, typ=typ, term=term } => (
+         left-phi-ids = left-phi-ids + typ.phi-ids;
+         iter-ctx = rst;
+      );
+      _ => (iter-ctx = TCtxEOF {});
+   }};
+   iter-ctx = weak-ctx;
+   let right-phi-ids = [] :: List<CString>;
+   while non-zero(iter-ctx) { match iter-ctx {
+      TCtxBind { rst=ctx, key=key, typ=typ, term=term } => (
+         right-phi-ids = right-phi-ids + typ.phi-ids;
+         iter-ctx = rst;
+      );
+      _ => (iter-ctx = TCtxEOF {});
+   }};
+   for lid in left-phi-ids.unique {
+      if right-phi-ids.contains(lid) {
+         iter-ctx = ctx;
+         let left-key = c"";
+         let left-typ = TAny {};
+         let left-term = ASTEOF {};
+         while non-zero(iter-ctx) { match iter-ctx {
+            TCtxBind { rst=ctx, key=key, typ=typ, term=term } => (
+               if typ.contains-phi(lid) {
+                  left-key = key;
+                  left-typ = typ.get-phi(lid);
+                  left-term = term;
+                  iter-ctx = TCtxEOF {};
+               } else {
+                  iter-ctx = rst;
+               }
+            );
+            _ => (iter-ctx = TCtxEOF {});
+         }};
+         iter-ctx = weak-ctx;
+         let right-typ = TAny {};
+         while non-zero(iter-ctx) { match iter-ctx {
+            TCtxBind { rst=ctx, key=key, typ=typ, term=term } => (
+               if typ.contains-phi(lid) {
+                  right-typ = typ.get-phi(lid);
+                  iter-ctx = TCtxEOF {};
+               } else {
+                  iter-ctx = rst;
+               }
+            );
+            _ => (iter-ctx = TCtxEOF {});
+         }};
+         if not(left-typ == right-typ) {
+            ctx = TCtxBind { close(ctx), left-key, t3(c"Phi", t1(lid), right-typ), left-term };
+         };
+      }
+   };
+   ctx
+);
+
+
+let .phi-ids(tt: Type): List<CString> = (
+   match tt {
+      TAnd { left=left, right=right } => (
+         left.phi-ids + right.phi-ids
+      );
+      TGround { tag:c"Phi", parameters:[p2..TGround{ tag-phi-id=tag }..] } => (
+         if tag-phi-id.has-prefix(c"uuid_") {
+            [ tag-phi-id ]
+         } else { [] :: List<CString> }
+      );
+      _ => ([] :: List<CString>);
+   }
+);
+
+let .get-phi(tt: Type, phi-id: CString): Type = (
+   match tt {
+      TAnd { left=left, right=right } => (
+         let left-phi = left.get-phi(phi-id);
+         if non-zero(left-phi) { left-phi } else { right.get-phi(phi-id) };
+      );
+      TGround { tag:c"Phi", parameters:[p2..TGround{ tag-phi-id=tag }..] } => (
+         if tag-phi-id == phi-id {
+            p2
+         } else { TAny {} };
+      );
+      _ => (TAny {});
+   }
+);

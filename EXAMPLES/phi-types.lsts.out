@@ -1,1 +1,11 @@
-Error:
+Error: Function Application Yielded No Matches
+phi
+With Arguments Cons<FileState::Closed,FileState::Open>
+At EXAMPLES/phi-types.lsts line 4 column 1
+With Candidates:
+Arrow<Cons<FileState::Closed,FileState::Closed>,FileState::Closed>+
+Blob+
+GlobalVariable+
+Arrow<Cons<FileState::Open,FileState::Open>,FileState::Open>+
+Blob+
+GlobalVariable

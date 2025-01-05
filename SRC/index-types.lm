@@ -10,6 +10,8 @@ import SRC/is-and.lsts;
 import SRC/index-concrete-type-instances.lm;
 import SRC/type-index.lm;
 import SRC/infer-expr.lm;
+import SRC/phi-transition.lsts;
+import SRC/phi-merge.lsts;
 import SRC/alias.lm;
 import SRC/class-exists.lm;
 import SRC/is-parameter-flat.lm;
@@ -59,10 +61,12 @@ import SRC/has-infinite.lm;
 import SRC/has-forward.lm;
 
 import SRC/with-tag.lm;
+import SRC/with-phi.lsts;
 import SRC/with-size.lm;
 import SRC/with-platform-props.lm;
 
 import SRC/without-tag.lm;
+import SRC/without-phi.lsts;
 import SRC/without-constructor.lm;
 import SRC/without-representation.lm;
 import SRC/without-size-unless-class.lm;

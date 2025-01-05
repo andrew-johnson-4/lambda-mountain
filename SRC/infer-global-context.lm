@@ -54,10 +54,11 @@ infer-global-context-2 := λ(: td AST). (: (
          (let rhst (normalize(typeof rhs)))
          (let kt (and( (without-representation rhst) (t1 'GlobalVariable_s) )))
          (set global-type-context (TCtxBind(
-            (close global-type-context) k kt ASTEOF
+            (close global-type-context) k kt td
          )))
          (mark-global-as-seen( k kt TAny ))
          (ascript-normal( td kt ))
+         (maybe-specialize( 'mov_s (typeof-var-raw( rhs global-type-context 'mov_s )) (t3( 'Cons_s kt kt )) ))
       ))
       ( _ () )
    ))

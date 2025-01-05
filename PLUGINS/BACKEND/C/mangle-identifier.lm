@@ -80,7 +80,7 @@ mangle-identifier := λ(: k String)(: kt Type). (: (
       (close(mangle-identifier k))
       (close(SCons(
          (close(SAtom( '_CL__s )))
-         (close(mangle-identifier(normalize kt)))
+         (close(mangle-identifier(without-phi(normalize kt))))
       )))
    )))
    (clone-rope cs)

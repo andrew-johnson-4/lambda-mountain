@@ -1,0 +1,25 @@
+
+
+let without-phi(tt: Type): Type = (
+   match tt {
+      TAnd { left=left, right=right } => (
+         left = without-phi(left);
+         right = without-phi(right);
+         if non-zero(left) && non-zero(right) {
+            TAnd { close(left), close(right) }
+         } else if non-zero(left) { left } else { right }
+      );
+      TGround { tag:c"Phi" } => (
+         TAny {}
+      );
+      TGround { tag=tag, parameters=parameters } => (
+         let new-parameters = [] :: List<Type>;
+         for p in parameters.reverse {
+            new-parameters = cons( without-phi(p), new-parameters );
+         };
+         TGround { tag, close(new-parameters) }
+      );
+      _ => tt;
+   }
+);
+
