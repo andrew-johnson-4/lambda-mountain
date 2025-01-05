@@ -1,7 +1,7 @@
 Error: Function Application Yielded No Matches
 phi
 With Arguments Cons<FileState::Closed,FileState::Open>
-At Unknown line 0 column 0
+At EXAMPLES/phi-types.lsts line 4 column 1
 With Candidates:
 Arrow<Cons<FileState::Closed,FileState::Closed>,FileState::Closed>+
 Blob+
