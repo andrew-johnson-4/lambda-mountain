@@ -96,13 +96,15 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
       ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (
          (if (is( scoped Scoped )) (
             (let tctx-inner (infer-expr( tctx cond Unscoped TAny Used )))
-            (infer-expr( tctx-inner t Unscoped TAny Tail ))
+            (let tctx-weak-t (infer-expr( tctx-inner t Unscoped TAny Tail )))
+            (phi-merge( tctx-weak-t tctx-weak-t ))
          ) (
             (set tctx (infer-expr( tctx cond Unscoped TAny Used )))
             (set tctx (infer-expr( tctx t Unscoped TAny Tail )))
+            (phi-merge( tctx tctx ))
          ))
          (let weak-tctx (infer-expr( tctx f Unscoped TAny Tail )))
-         (set tctx (phi-merge( tctx weak-tctx )))
+         (phi-merge( weak-tctx weak-tctx ))
          (ascript-normal( term (guess-representation(without-representation(typeof t))) ))
       ))
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
@@ -130,8 +132,9 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          ))
       ))
       ( (App( (Var( 'scope_s _ )) r )) (
-         (infer-expr( tctx r Scoped TAny Tail ))
+         (let weak-ctx (infer-expr( tctx r Scoped TAny Tail )))
          (ascript-normal( term (typeof r) ))
+         (set tctx (phi-override( tctx weak-ctx )))
       ))
       ( (App( (Var( 'open_s _ )) r )) (
          (set tctx (infer-expr( tctx r Unscoped TAny Used )))
@@ -251,6 +254,11 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
                   )))
                ) ())
                (set rt (.return-type apply-result))
+               (if (non-zero (.phi-types apply-result)) (
+                  (for-each ((Tuple( phi-id phi-new-type )) in (.phi-types apply-result)) (
+                     (set tctx (phi-transition( tctx phi-id phi-new-type )))
+                  ))
+               ) ())
             ))
          ))
          (if (is( l-used Unused )) (
