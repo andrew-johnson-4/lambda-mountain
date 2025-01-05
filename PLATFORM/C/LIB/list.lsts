@@ -29,3 +29,13 @@ let to-smart-string(ls: List<x>): String = (
    s = s + "]";
    s
 );
+
+let .unique(ls: List<x>): List<x> = (
+   let rs = [] :: List<x>;
+   for l in ls {
+      if not(rs.contains(l)) {
+         rs = cons(l, rs);
+      }
+   };
+   rs
+);

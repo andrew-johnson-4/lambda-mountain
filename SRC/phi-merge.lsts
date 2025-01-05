@@ -1,6 +1,5 @@
 
 let phi-merge(ctx: TContext, weak-ctx: TContext): TContext = (
-   print("Merge Phi Contexts\n");
    let iter-ctx = ctx;
    let left-phi-ids = [] :: List<CString>;
    while non-zero(iter-ctx) { match iter-ctx {
@@ -19,8 +18,11 @@ let phi-merge(ctx: TContext, weak-ctx: TContext): TContext = (
       );
       _ => (iter-ctx = TCtxEOF {});
    }};
-   print("Left Ids: \{left-phi-ids}\n");
-   print("Right Ids: \{right-phi-ids}\n");
+   for lid in left-phi-ids.unique {
+      if right-phi-ids.contains(lid) {
+         print("Merge \{lid}\n");
+      }
+   };
    ctx
 );
 
