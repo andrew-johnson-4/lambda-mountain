@@ -27,7 +27,7 @@ is := λ(: l t)(: r t). (: (
    return
 ) U64);
 
-mem-is-nonzero := λ(: v t). (: (
+mem-is-non-zero := λ(: v t). (: (
    (let i 0_u64)
    (let r 0_u64)
    (while (<( i (sizeof t) )) (
