@@ -456,26 +456,28 @@ let lsts-parse-typedef(tokens: List<Token>): List<Token> = (
 let lsts-parse-typedef-case(tokens: List<Token>): Tuple<AST,List<Token>> = (
    lsts-parse-expect(c"[Type Case Tag]", lsts-is-lit-head(lsts-parse-head(tokens)), tokens);
    let tag = head(tokens); tokens = tail(tokens);
-   lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
    let fields = ASTEOF {};
-   while non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
-      lsts-parse-expect(c"[Field Name]", lsts-is-ident-head(lsts-parse-head(tokens)), tokens);
-      let field-name = head(tokens); tokens = tail(tokens);
-      lsts-parse-expect(c":", tokens); tokens = tail(tokens);
-      let type-rest = lsts-parse-type(tokens);
-      let field-type = type-rest.first;
-      tokens = type-rest.second;
-      if non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
-         lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+   if lsts-parse-head(tokens) == c"{" {
+      lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
+      while non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
+         lsts-parse-expect(c"[Field Name]", lsts-is-ident-head(lsts-parse-head(tokens)), tokens);
+         let field-name = head(tokens); tokens = tail(tokens);
+         lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+         let type-rest = lsts-parse-type(tokens);
+         let field-type = type-rest.first;
+         tokens = type-rest.second;
+         if non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
+            lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+         };
+         let fkv = App{ close(Var{ field-name.key, field-name }), close(AType{ field-type }) };
+         if non-zero(fields) {
+            fields = App{ close(fields), close(fkv) };
+         } else {
+            fields = fkv;
+         };
       };
-      let fkv = App{ close(Var{ field-name.key, field-name }), close(AType{ field-type }) };
-      if non-zero(fields) {
-         fields = App{ close(fields), close(fkv) };
-      } else {
-         fields = fkv;
-      };
+      lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
    };
-   lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
    let case = if non-zero(fields) {
       App{ close(Lit{ tag.key, tag }), close(fields) }
    } else {

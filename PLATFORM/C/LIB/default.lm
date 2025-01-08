@@ -27,3 +27,4 @@ import PLATFORM/C/LIB/hashtable.lm;
 import PLATFORM/C/LIB/array.lm;
 import PLATFORM/C/LIB/io.lm;
 import PLATFORM/C/LIB/regex.lm;
+import PLATFORM/C/LIB/cmp.lsts;

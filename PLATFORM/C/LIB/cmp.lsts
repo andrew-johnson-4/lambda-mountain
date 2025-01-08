@@ -1,0 +1,2 @@
+
+type CMP = LessThan | Equal | GreaterThan;
