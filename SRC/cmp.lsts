@@ -1,14 +1,14 @@
 
-let cmp(left: Type, right: Type): I64 = (
+let cmp(left: Type, right: Type): Ord = (
    match left {
       TGround { ltag=tag, lparameters=parameters } => (match right {
          TGround { rtag=tag, rparameters=parameters } => (
-            if ltag < rtag then -1 else
-            if rtag < ltag then $"0_i64" else
+            if ltag < rtag then LessThan else
+            if rtag < ltag then Equal else
             cmp(lparameters, rparameters)
          );
-         _ => -1;
+         _ => LessThan;
       });
-      _ => $"0_i64";
+      _ => Equal;
    }
 );
