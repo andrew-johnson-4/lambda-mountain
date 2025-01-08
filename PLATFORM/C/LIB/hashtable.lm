@@ -13,7 +13,7 @@ type HashtableIs<k,v> (HashtableIs( occupied:U64 , capacity:U64 , contents:Tuple
       (let old-i 0_u64)
       (while (<( old-i capacity )) (
          (let old-kv ([]( contents old-i )))
-         (if (mem-is-nonzero old-kv) (
+         (if (mem-is-non-zero old-kv) (
             (match old-kv (
                ()
                ( (Tuple( old-k old-v )) (
@@ -37,7 +37,7 @@ type HashtableIs<k,v> (HashtableIs( occupied:U64 , capacity:U64 , contents:Tuple
    (let old-kv ([]( table ki )))
    (let old-k (.2 old-kv))
    (if (is( old-k key )) (set replacing 1_u64) ())
-   (while (&&( (mem-is-nonzero old-kv) (not replacing) )) (
+   (while (&&( (mem-is-non-zero old-kv) (not replacing) )) (
       (set ki (%( (+( ki 1_u64 )) table-capacity )))
       (set old-kv ([]( table ki )))
       (set old-k (.2 old-kv))
@@ -57,7 +57,7 @@ type HashtableIs<k,v> (HashtableIs( occupied:U64 , capacity:U64 , contents:Tuple
       (let old-kv ([]( contents ki )))
       (let old-k (.2 old-kv))
       (if (is( old-k key )) (set replacing 1_u64) ())
-      (while (&&( (mem-is-nonzero old-kv) (not replacing) )) (
+      (while (&&( (mem-is-non-zero old-kv) (not replacing) )) (
          (set ki (%( (+( ki 1_u64 )) capacity )))
          (set old-kv ([]( contents ki )))
          (set old-k (.2 old-kv))
@@ -92,7 +92,7 @@ set[] := λ(: table HashtableEq<k,v>)(: key k)(: value v). (: (
       (let old-i 0_u64)
       (while (<( old-i capacity )) (
          (let old-kv ([]( contents old-i )))
-         (if (mem-is-nonzero old-kv) (
+         (if (mem-is-non-zero old-kv) (
             (match old-kv (
                ()
                ( (Tuple( old-k old-v )) (
@@ -115,12 +115,12 @@ set[] := λ(: table HashtableEq<k,v>)(: key k)(: value v). (: (
    (let ki (%( (deep-hash key) table-capacity )))
    (let old-kv ([]( table ki )))
    (let old-k (.2 old-kv))
-   (if (&&( (mem-is-nonzero old-kv) (==( old-k key )) )) (set replacing 1_u64) ())
-   (while (&&( (mem-is-nonzero old-kv) (not replacing) )) (
+   (if (&&( (mem-is-non-zero old-kv) (==( old-k key )) )) (set replacing 1_u64) ())
+   (while (&&( (mem-is-non-zero old-kv) (not replacing) )) (
       (set ki (%( (+( ki 1_u64 )) table-capacity )))
       (set old-kv ([]( table ki )))
       (set old-k (.2 old-kv))
-      (if (&&( (mem-is-nonzero old-kv) (==( old-k key )) )) (set replacing 1_u64) ())
+      (if (&&( (mem-is-non-zero old-kv) (==( old-k key )) )) (set replacing 1_u64) ())
    ))
    (let kv (Tuple( key value )))
    (set[]( table ki kv ))
@@ -135,12 +135,12 @@ set[] := λ(: table HashtableEq<k,v>)(: key k)(: value v). (: (
       (let ki (%( (deep-hash key) capacity )))
       (let old-kv ([]( contents ki )))
       (let old-k (.2 old-kv))
-      (if (&&( (mem-is-nonzero old-kv) (==( old-k key )) )) (set replacing 1_u64) ())
-      (while (&&( (mem-is-nonzero old-kv) (not replacing) )) (
+      (if (&&( (mem-is-non-zero old-kv) (==( old-k key )) )) (set replacing 1_u64) ())
+      (while (&&( (mem-is-non-zero old-kv) (not replacing) )) (
          (set ki (%( (+( ki 1_u64 )) capacity )))
          (set old-kv ([]( contents ki )))
          (set old-k (.2 old-kv))
-         (if (&&( (mem-is-nonzero old-kv) (==( old-k key )) )) (set replacing 1_u64) ())
+         (if (&&( (mem-is-non-zero old-kv) (==( old-k key )) )) (set replacing 1_u64) ())
       ))
       (if replacing (
          (let old-v (.1 old-kv))
@@ -158,12 +158,12 @@ set[] := λ(: table HashtableEq<k,v>)(: key k)(: value v). (: (
       (let ki (%( (deep-hash key) capacity )))
       (let old-kv ([]( contents ki )))
       (let old-k (.2 old-kv))
-      (if (&&( (mem-is-nonzero old-kv) (==( old-k key )) )) (set replacing 1_u64) ())
-      (while (&&( (mem-is-nonzero old-kv) (not replacing) )) (
+      (if (&&( (mem-is-non-zero old-kv) (==( old-k key )) )) (set replacing 1_u64) ())
+      (while (&&( (mem-is-non-zero old-kv) (not replacing) )) (
          (set ki (%( (+( ki 1_u64 )) capacity )))
          (set old-kv ([]( contents ki )))
          (set old-k (.2 old-kv))
-         (if (&&( (mem-is-nonzero old-kv) (==( old-k key )) )) (set replacing 1_u64) ())
+         (if (&&( (mem-is-non-zero old-kv) (==( old-k key )) )) (set replacing 1_u64) ())
       ))
    ))
    replacing
@@ -181,7 +181,7 @@ print := λ(: table HashtableEq<k,v>). (: (
    (let had-prev 0_u64)
    (while (<( ki capacity )) (
       (let old-kv ([]( contents ki )))
-      (if (mem-is-nonzero old-kv) (
+      (if (mem-is-non-zero old-kv) (
          (let old-k (.2 old-kv))
          (let old-v (.1 old-kv))
          (if had-prev (print ',_s) ())
