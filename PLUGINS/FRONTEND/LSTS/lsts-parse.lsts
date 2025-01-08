@@ -82,7 +82,7 @@ let lsts-parse-type(tokens: List<Token>): Tuple<Type,List<Token>> = (
       let args-rest = lsts-parse-type(tokens);
       let args = [ args-rest.first ];
       tokens = args-rest.second;
-      while lsts-parse-head(tokens) == "," {
+      while lsts-parse-head(tokens) == c"," {
          lsts-parse-expect(c",", tokens); tokens = tail(tokens);
          let tnext-rest = lsts-parse-type(tokens);
          args = cons( tnext-rest.first, args );
@@ -102,7 +102,7 @@ let lsts-parse-type(tokens: List<Token>): Tuple<Type,List<Token>> = (
          let targs-rest = lsts-parse-type(tokens);
          args = cons( targs-rest.first, args );
          tokens = targs-rest.second;
-         while lsts-parse-head(tokens) == "," {
+         while lsts-parse-head(tokens) == c"," {
             lsts-parse-expect(c",", tokens); tokens = tail(tokens);
             let tnext-rest = lsts-parse-type(tokens);
             args = cons( tnext-rest.first, args );

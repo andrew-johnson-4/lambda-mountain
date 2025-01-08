@@ -1,0 +1,45 @@
+
+let cmp(l: CString, r: String): Ord = (
+   cmp( intern(l), r )
+);
+let $"=="(l: CString, r: String): U64 = cmp(l, r) == Equal;
+let $"!="(l: CString, r: String): U64 = cmp(l, r) != Equal;
+let $"<"(l: CString, r: String): U64 = cmp(l, r)  <  Equal;
+let $"<="(l: CString, r: String): U64 = cmp(l, r) <= Equal;
+let $">"(l: CString, r: String): U64 = cmp(l, r)  >  Equal;
+let $">="(l: CString, r: String): U64 = cmp(l, r) >= Equal;
+
+let cmp(l: String, r: CString): Ord = (
+   cmp( l, intern(r) )
+);
+let $"=="(l: String, r: CString): U64 = cmp(l, r) == Equal;
+let $"!="(l: String, r: CString): U64 = cmp(l, r) != Equal;
+let $"<"(l: String, r: CString): U64 = cmp(l, r)  <  Equal;
+let $"<="(l: String, r: CString): U64 = cmp(l, r) <= Equal;
+let $">"(l: String, r: CString): U64 = cmp(l, r)  >  Equal;
+let $">="(l: String, r: CString): U64 = cmp(l, r) >= Equal;
+
+let cmp(x: String, y: String): Ord = (
+   let r = Equal;
+   if not(is( x, y )) {
+      let x-start = x.start;
+      let y-start = y.start;
+      while x-start < x.end && y-start < y.end {
+         if x-start[0] < y-start[0] {
+            r = LessThan;
+            x-start = x.end;
+            y-start = y.end;
+         } else if x-start[0] > y-start[0] {
+            r = GreaterThan;
+            x-start = x.end;
+            y-start = y.end;
+         } else {
+            x-start = x-start + 1;
+            y-start = y-start + 1;
+         }
+      };
+      if x-start < x.end { r = GreaterThan };
+      if y-start < y.end { r = LessThan };
+   };
+   r
+);
