@@ -1,0 +1,7 @@
+
+let cmp(l: CString, r: CString): Ord = (
+   let c = strcmp( (l as U8[]), (r as U8[]) );
+   if c < 0_i32 { LessThan }
+   else if c > 0_i32 { GreaterThan }
+   else { Equal }
+);
