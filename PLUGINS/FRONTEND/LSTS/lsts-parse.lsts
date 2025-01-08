@@ -951,24 +951,26 @@ let lsts-parse-atom(tokens: List<Token>): Tuple<AST,List<Token>> = (
          term = term-rest.first;
       );
       _ => (
-         if non-zero(tokens) && lsts-parse-head(tail(tokens))==c"{" {
+         if lsts-is-enum-head(lsts-parse-head(tokens)) {
             let tag = head(tokens); tokens = tail(tokens);
             term = Lit { tag.key, tag };
-            lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
             let fields = ASTEOF {};
-            while non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
-               let field-rest = lsts-parse-small-expression(tokens);
-               tokens = field-rest.second;
-               if non-zero(fields) {
-                  fields = App{ close(fields), close(field-rest.first) };
-               } else { fields = field-rest.first; };
-               if lsts-parse-head(tokens)==c"," {
-                  tokens = tail(tokens);
-               } else {
-                  lsts-parse-expect(c"}", tokens);
+            if lsts-parse-head(tokens) == c"{" {
+               lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
+               while non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
+                  let field-rest = lsts-parse-small-expression(tokens);
+                  tokens = field-rest.second;
+                  if non-zero(fields) {
+                     fields = App{ close(fields), close(field-rest.first) };
+                  } else { fields = field-rest.first; };
+                  if lsts-parse-head(tokens)==c"," {
+                     tokens = tail(tokens);
+                  } else {
+                     lsts-parse-expect(c"}", tokens);
+                  };
                };
+               lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
             };
-            lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
             if non-zero(fields) {
                term = App{ close(term), close(fields) };
             };
