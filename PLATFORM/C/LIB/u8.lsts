@@ -1,2 +1,2 @@
 
-declare-binop( $"!=", type(U8), type(U8), type(U64), { l"("; x; l"!="; y; l")"; } );
+#declare-binop( $"!=", type(U8), type(U8), type(U64), { l"("; x; l"!="; y; l")"; } );

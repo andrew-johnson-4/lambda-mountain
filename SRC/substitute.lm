@@ -102,6 +102,12 @@ substitute := λ(: tctx Context)(: tt Type). (: (
                   (set tctx CtxEOF)
                ) (set tctx rst))
             ))
+            ( (CtxBind( rst tk (AType( tv )) )) (
+               (if (==( tk v )) (
+                  (set tt tv)
+                  (set tctx CtxEOF)
+               ) (set tctx rst))
+            ))
             ( (CtxBind( rst tk tv )) (
                (set tctx rst)
             ))
