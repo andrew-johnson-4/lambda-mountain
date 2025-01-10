@@ -39,7 +39,6 @@ infer-global-context := λ(: td AST). (: (
             ft
             td
          )))
-         (print 'Global\s_s)(print k)(print '\s:\s_s)(print ft)(print '\n_s)
       ))
       ( _ () )
    ))
