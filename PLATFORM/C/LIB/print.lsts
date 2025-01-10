@@ -1,0 +1,8 @@
+
+let print(e: x): Nil = (
+   print( stdout(), e );
+);
+
+let eprint(e: x): Nil = (
+   print( stderr(), e );
+);

@@ -1,0 +1,7 @@
+
+import LIB/default.lm;
+
+let main(): Nil = (
+   print(1);
+   eprint(2);
+);
