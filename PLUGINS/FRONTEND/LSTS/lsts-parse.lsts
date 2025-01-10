@@ -919,6 +919,13 @@ let lsts-parse-atom(tokens: List<Token>): Tuple<AST,List<Token>> = (
       tokens = term-rest.second;
       lsts-parse-expect(c")", tokens); tokens = tail(tokens);
       term = AType{ t2(c"Type", term-rest.first) };
+   } else if lsts-parse-head(tokens)==c"raw-type" {
+      tokens = tail(tokens);
+      lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
+      let term-rest = lsts-parse-type(tokens);
+      tokens = term-rest.second;
+      lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+      term = AType{ term-rest.first };
    } else if lsts-is-ident-head(lsts-parse-head(tokens)) {
       let term-rest = lsts-make-maybe-var(tokens);
       tokens = term-rest.second;
