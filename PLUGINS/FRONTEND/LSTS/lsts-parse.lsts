@@ -12,6 +12,12 @@ let lsts-unwrap-identifier(ident: CString): CString = (
    } else ident
 );
 
+let lsts-unwrap-identifier(ident: Token): Token = (
+   match ident {
+      Token { key=key, nonce=nonce, location=location } => Token { lsts-unwrap-identifier(key), iuid(), location };
+   };
+);
+
 let lsts-parse-expect(expect: CString, tokens: List<Token>): Nil = (
    if lsts-parse-head(tokens) != expect {
       fail("Parse Error: Expected \{expect} at \{tokens.formatted-location}\n");
@@ -91,7 +97,7 @@ let lsts-parse-type(tokens: List<Token>): Tuple<Type,List<Token>> = (
       lsts-parse-expect(c")", tokens); tokens = tail(tokens);
       TGround { c"Tuple", close(args) };
    } else if lsts-is-ident-head(lsts-parse-head(tokens)) && not(lsts-is-reserved-word(lsts-parse-head(tokens))) {
-      let varname = lsts-parse-head(tokens); tokens = tail(tokens);
+      let varname = lsts-unwrap-identifier(lsts-parse-head(tokens)); tokens = tail(tokens);
       TVar { varname }
    } else {
       let base = lsts-substitute-type-aliases(lsts-parse-head(tokens));
@@ -461,7 +467,7 @@ let lsts-parse-typedef-case(tokens: List<Token>): Tuple<AST,List<Token>> = (
       lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
       while non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
          lsts-parse-expect(c"[Field Name]", lsts-is-ident-head(lsts-parse-head(tokens)), tokens);
-         let field-name = head(tokens); tokens = tail(tokens);
+         let field-name = lsts-unwrap-identifier(head(tokens)); tokens = tail(tokens);
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          let type-rest = lsts-parse-type(tokens);
          let field-type = type-rest.first;
@@ -830,12 +836,12 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
          let binding = c"";
          let attr-key = c"";
          if lsts-is-ident-head(lsts-parse-head(tokens)) {
-            attr-key = lsts-parse-head(tokens); tokens = tail(tokens);
+            attr-key = lsts-unwrap-identifier(lsts-parse-head(tokens)); tokens = tail(tokens);
          };
          if lsts-parse-head(tokens)==c"=" {
             binding = attr-key; tokens = tail(tokens);
             if lsts-is-ident-head(lsts-parse-head(tokens)) {
-               attr-key = lsts-parse-head(tokens); tokens = tail(tokens);
+               attr-key = lsts-unwrap-identifier(lsts-parse-head(tokens)); tokens = tail(tokens);
             } else { lsts-parse-expect(c"[Identifier]", tokens); };
          };
          let val = if lsts-parse-head(tokens)==c":" {
@@ -1009,7 +1015,7 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
          [Token{key:"."}.. rest] => (
             tokens = rest;
             lsts-parse-expect( c"[Identifier]", lsts-is-ident-head(lsts-parse-head(tokens)), tokens );
-            let method = c"." + head(tokens).key; tokens = tail(tokens);
+            let method = c"." + lsts-unwrap-identifier(head(tokens).key); tokens = tail(tokens);
             if lsts-parse-head(tokens) == c"(" {
                lsts-parse-expect( c"(", tokens ); tokens = tail(tokens);
                while non-zero(tokens) && lsts-parse-head(tokens)!=c")" {
