@@ -25,12 +25,8 @@ fragment type U64; size U64 8; atom suffix U64 _u64;
 
 (declare-unop( into-branch-conditional U64 BranchConditional ( x ) ));
 
-#print := λ(: io IO::File)(: x U64). (: (
-#   (fprintf( io '%lu_s x )) ()
-#) Nil);
-
-print := λ(: x U64). (: (
-   (printf( '%lu_s x )) ()
+print := λ(: io IO::File)(: x U64). (: (
+   (fprintf( io '%lu_s x )) ()
 ) Nil);
 
 max := λ(: x U64)(: y U64). (: (

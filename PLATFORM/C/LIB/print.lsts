@@ -4,5 +4,5 @@ let print(e: x): Nil = (
 );
 
 let eprint(e: x): Nil = (
-   eprint( stderr(), e );
+   print( stderr(), e );
 );
