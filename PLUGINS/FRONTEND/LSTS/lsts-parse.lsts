@@ -278,8 +278,8 @@ let lsts-make-maybe-var(tokens: List<Token>): Tuple<AST,List<Token>> = (
       lsts-parse-lit(tokens)
    } else {
       if not(non-zero(tokens)) { lsts-parse-expect(c"Identifier", tokens); };
-      let t = head(tokens);
-      let base = Var { lsts-unwrap-identifier(t.key), t };
+      let t = lsts-unwrap-identifier(head(tokens));
+      let base = Var { t.key, t };
       if lsts-is-lit(t.key) { base = lsts-make-lit(t); };
       tokens = tail(tokens);
       Tuple { base, tokens }
