@@ -12,6 +12,12 @@ let lsts-unwrap-identifier(ident: CString): CString = (
    } else ident
 );
 
+let lsts-unwrap-identifier(ident: Token): Token = (
+   match ident {
+      Token { key=key, nonce=nonce, location=location } => Token { lsts-unwrap-identifier(key), iuid(), location };
+   };
+);
+
 let lsts-parse-expect(expect: CString, tokens: List<Token>): Nil = (
    if lsts-parse-head(tokens) != expect {
       fail("Parse Error: Expected \{expect} at \{tokens.formatted-location}\n");
@@ -273,7 +279,7 @@ let lsts-make-maybe-var(tokens: List<Token>): Tuple<AST,List<Token>> = (
    } else {
       if not(non-zero(tokens)) { lsts-parse-expect(c"Identifier", tokens); };
       let t = head(tokens);
-      let base = Var { lsts-unwrap-identifier(t.key), t };
+      let base = Var { lsts-unwrap-identifier(t.key), lsts-unwrap-identifier(t) };
       if lsts-is-lit(t.key) { base = lsts-make-lit(t); };
       tokens = tail(tokens);
       Tuple { base, tokens }
@@ -919,6 +925,13 @@ let lsts-parse-atom(tokens: List<Token>): Tuple<AST,List<Token>> = (
       tokens = term-rest.second;
       lsts-parse-expect(c")", tokens); tokens = tail(tokens);
       term = AType{ t2(c"Type", term-rest.first) };
+   } else if lsts-parse-head(tokens)==c"raw-type" {
+      tokens = tail(tokens);
+      lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
+      let term-rest = lsts-parse-type(tokens);
+      tokens = term-rest.second;
+      lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+      term = AType{ term-rest.first };
    } else if lsts-is-ident-head(lsts-parse-head(tokens)) {
       let term-rest = lsts-make-maybe-var(tokens);
       tokens = term-rest.second;
@@ -1086,5 +1099,3 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
    };
    Tuple { base, tokens }
 );
-
-

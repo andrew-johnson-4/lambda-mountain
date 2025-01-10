@@ -1,0 +1,2 @@
+
+declare-binop( $"!=", raw-type(U8), raw-type(U8), raw-type(U64), ( l"("; x; l"!="; y; l")"; ) );

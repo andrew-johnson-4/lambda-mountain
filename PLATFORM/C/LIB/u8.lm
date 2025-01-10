@@ -1,7 +1,7 @@
 
 fragment type U8; size U8 1; atom suffix U8 _u8;
 
-(declare-binop( != U8 U8 U64 ( '\[_l x '!=_l y '\]_l ) ));
+#(declare-binop( != U8 U8 U64 ( '\[_l x '!=_l y '\]_l ) ));
 (declare-binop( == U8 U8 U64 ( '\[_l x '==_l y '\]_l ) ));
 (declare-binop( < U8 U8 U64 ( '\[_l x '<_l y '\]_l ) ));
 (declare-binop( <= U8 U8 U64 ( '\[_l x '<=_l y '\]_l ) ));
