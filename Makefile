@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm EXAMPLES/phi-types.lsts
+	lm tests/regress/eprint.lsts
 	cc -O3 tmp.c
 	./a.out
 

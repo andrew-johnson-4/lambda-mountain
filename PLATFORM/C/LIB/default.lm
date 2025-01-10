@@ -30,3 +30,4 @@ import PLATFORM/C/LIB/array.lm;
 import PLATFORM/C/LIB/io.lm;
 import PLATFORM/C/LIB/regex.lm;
 import PLATFORM/C/LIB/cmp.lsts;
+import PLATFORM/C/LIB/print.lsts;

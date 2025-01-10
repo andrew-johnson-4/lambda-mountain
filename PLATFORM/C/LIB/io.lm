@@ -5,9 +5,14 @@ import string.h;
 import unistd.h;
 import sys/wait.h;
 
+stdin := λ: Blob(). (: (:expression stdin_l) IO::File);
+stdout := λ: Blob(). (: (:expression stdout_l) IO::File);
+stderr := λ: Blob(). (: (:expression stderr_l) IO::File);
+
 strcmp := λ: FFI(: l U8[])(: r U8[]). (: () I32);
 memcmp := λ: FFI(: l ?[])(: r ?[])(: len U64). (: () U32);
 printf := λ: FFI(: format String)(: arg Any). (: () U32);
+fprintf := λ: FFI(: io IO::File)(: format String)(: arg Any). (: () U32);
 putchar := λ: FFI(: x U32). (: () U32);
 exit := λ: FFI(: x U32). (: () Nil);
 malloc := λ: FFI(: sz U64). (: () ?[]);
