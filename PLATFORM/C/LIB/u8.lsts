@@ -1,2 +1,17 @@
 
 declare-binop( $"!=", raw-type(U8), raw-type(U8), raw-type(U64), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( $"==", raw-type(U8), raw-type(U8), raw-type(U64), ( l"("; x; l"=="; y; l")"; ) );
+declare-binop( $"<",  raw-type(U8), raw-type(U8), raw-type(U64), ( l"("; x; l"<"; y; l")"; ) );
+declare-binop( $"<=", raw-type(U8), raw-type(U8), raw-type(U64), ( l"("; x; l"<="; y; l")"; ) );
+declare-binop( $">",  raw-type(U8), raw-type(U8), raw-type(U64), ( l"("; x; l">"; y; l")"; ) );
+declare-binop( $">=", raw-type(U8), raw-type(U8), raw-type(U64), ( l"("; x; l">="; y; l")"; ) );
+
+declare-binop( $"+", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"-", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"^", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"^"; y; l")"; ) );
+declare-binop( $"/", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"/"; y; l")"; ) );
+declare-binop( $"%", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"%"; y; l")"; ) );
+
+declare-unop( not, raw-type(U8), raw-type(U64), ( l"(!"; x; l")"; ) );
+
+declare-unop( into-branch-conditional, raw-type(U8), raw-type(BranchConditional), x );
