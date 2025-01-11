@@ -19,16 +19,9 @@ const-cons := λ: Blob(: v x)(: i L). (: (
    ))
 ) Array<x,CONST>);
 
-(declare-binop( [] Array<base-type,?> U64 base-type ('\[_l x '[_l y ']\]_l) ));
-(declare-ternop( set[] Array<base-type,?> U64 base-type base-type ('\[_l x '[_l y ']=_l z \]_l) ));
-
 close := λ(: x p). (: (
    (let r (as (malloc(sizeof p)) p[]))
    (set[]( r 0_u64 x ))
    r
 ) p[]);
 
-(declare-unop( open t t (x) ));
-(declare-unop( open Array<base-type,?> base-type ('\[*_l x '\]_l) ));
-
-(declare-unop( & t t[] ('\[&_l x '\]_l) ));
