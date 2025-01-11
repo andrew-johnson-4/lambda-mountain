@@ -51,7 +51,7 @@ let lsts-has-assign(tokens: List<Token>): U64 = (
 let lsts-substitute-type-aliases(s: CString): CString = (
    if s == c"String" then c"SmartString" else
    if s == c"CString" then c"String" else
-   s
+   s.remove-suffix(c"_u64")
 );
 
 let lsts-parse(tokens: List<Token>): Nil = (

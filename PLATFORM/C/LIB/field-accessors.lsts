@@ -7,9 +7,9 @@ declare-unop( $".4", raw-type(CaseNumber<cn>+Field::4<a>), raw-type(a), ( l"("; 
 declare-unop( $".5", raw-type(CaseNumber<cn>+Field::5<a>), raw-type(a), ( l"("; x; l".field_"; (cn :: L) * 1000_l + 5_l; l")"; ) );
 declare-unop( $".6", raw-type(CaseNumber<cn>+Field::6<a>), raw-type(a), ( l"("; x; l".field_"; (cn :: L) * 1000_l + 6_l; l")"; ) );
 
-declare-binop( $"set.1", raw-type(CaseNumber<cn>+Field::1<a>), raw-type(a), raw-type(Nil), ( l"({"; x; l".field_"; (cn :: L) * 1000_l + 1_l; l"="; y l";({});})"; ) );
-declare-binop( $"set.2", raw-type(CaseNumber<cn>+Field::2<a>), raw-type(a), raw-type(Nil), ( l"({"; x; l".field_"; (cn :: L) * 1000_l + 2_l; l"="; y l";({});})"; ) );
-declare-binop( $"set.3", raw-type(CaseNumber<cn>+Field::3<a>), raw-type(a), raw-type(Nil), ( l"({"; x; l".field_"; (cn :: L) * 1000_l + 3_l; l"="; y l";({});})"; ) );
-declare-binop( $"set.4", raw-type(CaseNumber<cn>+Field::4<a>), raw-type(a), raw-type(Nil), ( l"({"; x; l".field_"; (cn :: L) * 1000_l + 4_l; l"="; y l";({});})"; ) );
-declare-binop( $"set.5", raw-type(CaseNumber<cn>+Field::5<a>), raw-type(a), raw-type(Nil), ( l"({"; x; l".field_"; (cn :: L) * 1000_l + 5_l; l"="; y l";({});})"; ) );
-declare-binop( $"set.6", raw-type(CaseNumber<cn>+Field::6<a>), raw-type(a), raw-type(Nil), ( l"({"; x; l".field_"; (cn :: L) * 1000_l + 6_l; l"="; y l";({});})"; ) );
+declare-binop( $"set.1", raw-type(CaseNumber<cn>+Field::1<a>), raw-type(a), raw-type(Nil), ( l"({"; x; l".field_"; (cn :: L) * 1000_l + 1_l; l"="; y; l";({});})"; ) );
+declare-binop( $"set.2", raw-type(CaseNumber<cn>+Field::2<a>), raw-type(a), raw-type(Nil), ( l"({"; x; l".field_"; (cn :: L) * 1000_l + 2_l; l"="; y; l";({});})"; ) );
+declare-binop( $"set.3", raw-type(CaseNumber<cn>+Field::3<a>), raw-type(a), raw-type(Nil), ( l"({"; x; l".field_"; (cn :: L) * 1000_l + 3_l; l"="; y; l";({});})"; ) );
+declare-binop( $"set.4", raw-type(CaseNumber<cn>+Field::4<a>), raw-type(a), raw-type(Nil), ( l"({"; x; l".field_"; (cn :: L) * 1000_l + 4_l; l"="; y; l";({});})"; ) );
+declare-binop( $"set.5", raw-type(CaseNumber<cn>+Field::5<a>), raw-type(a), raw-type(Nil), ( l"({"; x; l".field_"; (cn :: L) * 1000_l + 5_l; l"="; y; l";({});})"; ) );
+declare-binop( $"set.6", raw-type(CaseNumber<cn>+Field::6<a>), raw-type(a), raw-type(Nil), ( l"({"; x; l".field_"; (cn :: L) * 1000_l + 6_l; l"="; y; l";({});})"; ) );
