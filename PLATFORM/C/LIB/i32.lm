@@ -1,26 +1,8 @@
 
 fragment type I32; size I32 4; atom suffix I32 _i32;
 
-(declare-binop( != I32 I32 U64 ( '\[_l x '!=_l y '\]_l ) ));
-(declare-binop( == I32 I32 U64 ( '\[_l x '==_l y '\]_l ) ));
-(declare-binop( < I32 I32 U64 ( '\[_l x '<_l y '\]_l ) ));
-(declare-binop( <= I32 I32 U64 ( '\[_l x '<=_l y '\]_l ) ));
-(declare-binop( > I32 I32 U64 ( '\[_l x '>_l y '\]_l ) ));
-(declare-binop( >= I32 I32 U64 ( '\[_l x '>=_l y '\]_l ) ));
-
 (declare-binop( && I32 I32 U64 ( '\[_l x '&&_l y '\]_l ) ));
 (declare-binop( || I32 I32 U64 ( '\[_l x '||_l y '\]_l ) ));
-
-(declare-binop( + I32 I32 I32 ( '\[_l x '+_l y '\]_l ) ));
-(declare-binop( - I32 I32 I32 ( '\[_l x '-_l y '\]_l ) ));
-(declare-binop( ^ I32 I32 I32 ( '\[_l x '^_l y '\]_l ) ));
-(declare-binop( / I32 I32 I32 ( '\[_l x '/_l y '\]_l ) ));
-(declare-binop( % I32 I32 I32 ( '\[_l x '%_l y '\]_l ) ));
-(declare-binop( * I32 I32 I32 ( '\[_l x '*_l y '\]_l ) ));
-
-(declare-unop( not I32 U64 ( '\[!_l x '\]_l ) ));
-
-(declare-unop( into-branch-conditional I32 BranchConditional ( x ) ));
 
 print := λ(: x I32). (: (
    (print (as x I64))
