@@ -1,0 +1,25 @@
+
+declare-binop( $"!=", raw-type(base-type[]), raw-type(base-type[]), raw-type(U64), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( $"==", raw-type(base-type[]), raw-type(base-type[]), raw-type(U64), ( l"("; x; l"=="; y; l")"; ) );
+declare-binop( $"<",  raw-type(base-type[]), raw-type(base-type[]), raw-type(U64), ( l"("; x; l"<"; y; l")"; ) );
+declare-binop( $"<=", raw-type(base-type[]), raw-type(base-type[]), raw-type(U64), ( l"("; x; l"<="; y; l")"; ) );
+declare-binop( $">",  raw-type(base-type[]), raw-type(base-type[]), raw-type(U64), ( l"("; x; l">"; y; l")"; ) );
+declare-binop( $">=", raw-type(base-type[]), raw-type(base-type[]), raw-type(U64), ( l"("; x; l">="; y; l")"; ) );
+
+declare-binop( $"+", raw-type(base-type[]), raw-type(U64), raw-type(base-type[]), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"+", raw-type(base-type[]), raw-type(I64), raw-type(base-type[]), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"-", raw-type(base-type[]), raw-type(U64), raw-type(base-type[]), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"-", raw-type(base-type[]), raw-type(I64), raw-type(base-type[]), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"-", raw-type(base-type[]), raw-type(base-type[]), raw-type(U64), ( l"("; x; l"-"; y; l")"; ) );
+
+declare-unop( not, raw-type(base-type[]), raw-type(U64), ( l"(!"; x; l")"; ) );
+
+declare-unop( into-branch-conditional, raw-type(base-type[]), raw-type(BranchConditional), x );
+
+declare-binop( $"[]", raw-type(base-type[]), raw-type(U64), raw-type(base-type), ( l"("; x; l"["; y; l"])"; ) );
+declare-ternop( $"set[]", raw-type(base-type[]), raw-type(U64), raw-type(base-type), raw-type(base-type), ( l"("; x; l"["; y; l"]="; z; l")"; ) );
+
+declare-unop( open, raw-type(t), raw-type(t), x );
+declare-unop( open, raw-type(base-type[]), raw-type(base-type), (l"(*"; x; l")";) );
+declare-unop( $"&", raw-type(t), raw-type(t[]), (l"(&"; x; l")";) );
+

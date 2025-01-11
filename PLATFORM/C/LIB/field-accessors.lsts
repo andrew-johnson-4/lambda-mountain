@@ -1,0 +1,15 @@
+
+declare-unop( $".0", raw-type(LMStruct), raw-type(U64), ( l"("; x; l".field_0)"; ) );
+declare-unop( $".1", raw-type(CaseNumber<cn>+Field::1<a>), raw-type(a), ( l"("; x; l".field_"; 1_l + 1000_l * (cn :: L); l")"; ) );
+declare-unop( $".2", raw-type(CaseNumber<cn>+Field::2<a>), raw-type(a), ( l"("; x; l".field_"; 2_l + 1000_l * (cn :: L); l")"; ) );
+declare-unop( $".3", raw-type(CaseNumber<cn>+Field::3<a>), raw-type(a), ( l"("; x; l".field_"; 3_l + 1000_l * (cn :: L); l")"; ) );
+declare-unop( $".4", raw-type(CaseNumber<cn>+Field::4<a>), raw-type(a), ( l"("; x; l".field_"; 4_l + 1000_l * (cn :: L); l")"; ) );
+declare-unop( $".5", raw-type(CaseNumber<cn>+Field::5<a>), raw-type(a), ( l"("; x; l".field_"; 5_l + 1000_l * (cn :: L); l")"; ) );
+declare-unop( $".6", raw-type(CaseNumber<cn>+Field::6<a>), raw-type(a), ( l"("; x; l".field_"; 6_l + 1000_l * (cn :: L); l")"; ) );
+
+declare-binop( $"set.1", raw-type(CaseNumber<cn>+Field::1<a>), raw-type(a), raw-type(Nil), ( l"({"; x; l".field_"; 1_l + 1000_l * (cn :: L); l"="; y; l";({});})"; ) );
+declare-binop( $"set.2", raw-type(CaseNumber<cn>+Field::2<a>), raw-type(a), raw-type(Nil), ( l"({"; x; l".field_"; 2_l + 1000_l * (cn :: L); l"="; y; l";({});})"; ) );
+declare-binop( $"set.3", raw-type(CaseNumber<cn>+Field::3<a>), raw-type(a), raw-type(Nil), ( l"({"; x; l".field_"; 3_l + 1000_l * (cn :: L); l"="; y; l";({});})"; ) );
+declare-binop( $"set.4", raw-type(CaseNumber<cn>+Field::4<a>), raw-type(a), raw-type(Nil), ( l"({"; x; l".field_"; 4_l + 1000_l * (cn :: L); l"="; y; l";({});})"; ) );
+declare-binop( $"set.5", raw-type(CaseNumber<cn>+Field::5<a>), raw-type(a), raw-type(Nil), ( l"({"; x; l".field_"; 5_l + 1000_l * (cn :: L); l"="; y; l";({});})"; ) );
+declare-binop( $"set.6", raw-type(CaseNumber<cn>+Field::6<a>), raw-type(a), raw-type(Nil), ( l"({"; x; l".field_"; 6_l + 1000_l * (cn :: L); l"="; y; l";({});})"; ) );

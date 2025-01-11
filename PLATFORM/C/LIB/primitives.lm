@@ -13,16 +13,6 @@ primitive::if := λ: Blob(: ictx ImplicitContext)(: f Any)(: t Any)(: c BranchCo
    ))
 ) Nil);
 
-(declare-binop( mov datatype datatype Nil ('\[{_l y '=_l x '\:\[{}\]\:}\]_l) ));
-
-(declare-unop( branchtrue Nil BranchConditional ('1_l) ));
-(declare-unop( branchfalse Nil BranchConditional ('0_l) ));
-
-(declare-unop( into-branch-conditional BranchConditional BranchConditional ( x ) ));
-
-(declare-unop( cdecl::return Any Nil ( 'return\s_l x '\:_l ) ));
-(declare-unop( cdecl::return Nil Nil ( x '\:_l ) ));
-
 primitive::call := λ: Blob(: ictx ImplicitContext)(: args Any). (: (
    (:frame( (:frame ictx) (:frame args) ))
    (:expression(

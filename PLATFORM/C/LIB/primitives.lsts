@@ -1,0 +1,11 @@
+
+declare-binop( mov, raw-type(datatype), raw-type(datatype), raw-type(Nil), ( l"({"; y; l"="; x; l";({});})"; ) );
+
+declare-unop( branchtrue, raw-type(Nil), raw-type(BranchConditional), l"1" );
+declare-unop( branchfalse, raw-type(Nil), raw-type(BranchConditional), l"0" );
+
+declare-unop( into-branch-conditional, raw-type(BranchConditional), raw-type(BranchConditional), x );
+
+declare-unop( $"cdecl::return", raw-type(Any), raw-type(Nil), (l"return "; x; l";";) );
+declare-unop( $"cdecl::return", raw-type(Nil), raw-type(Nil), (x; l";";) );
+
