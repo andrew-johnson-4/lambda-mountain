@@ -13,6 +13,14 @@ declare-binop( $"/", raw-type(F64), raw-type(F64), raw-type(F64), ( l"("; x; l"/
 declare-binop( $"%", raw-type(F64), raw-type(F64), raw-type(F64), ( l"("; x; l"%"; y; l")"; ) );
 declare-binop( $"*", raw-type(F64), raw-type(F64), raw-type(F64), ( l"("; x; l"*"; y; l")"; ) );
 
+declare-binop( $"&&", raw-type(F64), raw-type(F64), raw-type(U64), ( l"("; x; l"&&"; y; l")"; ) );
+declare-binop( $"||", raw-type(F64), raw-type(F64), raw-type(U64), ( l"("; x; l"||"; y; l")"; ) );
+
+declare-binop( $"<<", raw-type(F64), raw-type(U64+Constant), raw-type(F64), ( l"("; x; l"<<"; y; l")"; ) );
+declare-binop( $">>", raw-type(F64), raw-type(U64+Constant), raw-type(F64), ( l"("; x; l">>"; y; l")"; ) );
+
 declare-unop( not, raw-type(F64), raw-type(U64), ( l"(!"; x; l")"; ) );
 
 declare-unop( into-branch-conditional, raw-type(F64), raw-type(BranchConditional), x );
+
+

@@ -1,12 +1,6 @@
 
 fragment type F64; size F64 8; atom suffix F64 _f64;
 
-(declare-binop( && F64 F64 U64 ( '\[_l x '&&_l y '\]_l ) ));
-(declare-binop( || F64 F64 U64 ( '\[_l x '||_l y '\]_l ) ));
-
-(declare-binop( << F64 U64+Constant F64 ( '\[_l x '<<_l y '\]_l ) ));
-(declare-binop( >> F64 U64+Constant F64 ( '\[_l x '>>_l y '\]_l ) ));
-
 print := λ(: x F64). (: (
    (printf( '%lf_s x )) ()
 ) Nil);
