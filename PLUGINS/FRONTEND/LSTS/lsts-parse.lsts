@@ -102,6 +102,13 @@ let lsts-parse-type(tokens: List<Token>): Tuple<Type,List<Token>> = (
    } else {
       let base = lsts-substitute-type-aliases(lsts-parse-head(tokens));
       lsts-parse-expect(c"Type", lsts-is-lit-head(lsts-parse-head(tokens)), tokens); tokens = tail(tokens);
+      while non-zero(tokens) && lsts-parse-head(tokens)==c":" {
+         lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+         lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+         lsts-parse-expect(c"Type", non-zero(tokens), tokens);
+         base = base + c"::" + lsts-substitute-type-aliases(lsts-parse-head(tokens));
+         tokens = tail(tokens);
+      };
       let args = [] :: List<Type>;
       if lsts-parse-head(tokens) == c"<" {
          lsts-parse-expect(c"<", tokens); tokens = tail(tokens);
