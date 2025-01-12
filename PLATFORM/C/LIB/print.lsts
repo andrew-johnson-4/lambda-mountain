@@ -6,3 +6,7 @@ let print(e: x): Nil = (
 let eprint(e: x): Nil = (
    print( stderr(), e );
 );
+
+let fprint(io: IO::File, e: x): Nil = (
+   print( io, e );
+);
