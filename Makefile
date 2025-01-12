@@ -54,10 +54,19 @@ else
 	mv bootstrap $${HOME}/.local/bin/lm
 endif
 
-smoke-test:
+smoke-test-clang:
 	clang BOOTSTRAP/cli.c -o tmp
+	rm tmp
+
+smoke-test-gcc:
 	gcc BOOTSTRAP/cli.c -o tmp
 	rm tmp
+
+smoke-test-musl:
+	musl-gcc BOOTSTRAP/cli.c -o tmp
+	rm tmp
+
+smoke-test: smoke-test-clang smoke-test-gcc smoke-test-musl
 
 install:
 	cc -O3 -o lm BOOTSTRAP/cli.c
