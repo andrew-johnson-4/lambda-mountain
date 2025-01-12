@@ -19,3 +19,5 @@ let $"<"(l: x, r: x): U64  = cmp(l, r) <  Equal;
 let $"<="(l: x, r: x): U64 = cmp(l, r) <= Equal;
 let $">"(l: x, r: x): U64  = cmp(l, r) >  Equal;
 let $">="(l: x, r: x): U64 = cmp(l, r) >= Equal;
+
+let $"&&"(l: Ord, r: Ord): Ord = if is(l, Equal) then r else l;
