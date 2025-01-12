@@ -1,15 +1,15 @@
 
 type S = SNil | SAtom { atom: CString } | SCons { left: S[], right: S[] } | SPointer { pointer: U8[] };
 
-let print(x: S): Nil = (
+let print(io: IO::File, x: S): Nil = (
    match x {
-      SNil {} => print("()");
-      SAtom { atom=atom } => print(atom);
+      SNil {} => print(io, "()");
+      SAtom { atom=atom } => print(io, atom);
       SCons { left=left, right=right } => (
-         print("("); print(left); print(" "); print(right); print(")");
+         print(io, "("); print(left); print(io, " "); print(right); print(io, ")");
       );
       SPointer { pointer=pointer } => (
-         print("&["); print(pointer as U64); print("]");
+         print(io, "&["); print(pointer as U64); print(io, "]");
       );
    }
 );

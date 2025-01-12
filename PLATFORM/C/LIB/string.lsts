@@ -5,3 +5,10 @@ let cmp(l: CString, r: CString): Ord = (
    else if c > 0_i32 { GreaterThan }
    else { Equal }
 );
+
+let print(io: IO::File, x: CString): Nil = (
+   while head-string(x) != 0_u8 {
+      fwrite(x as U8[], 1, 1, stdout());
+      x = tail-string(x);
+   };
+);
