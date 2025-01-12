@@ -842,11 +842,18 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
          let attr-loc = head(tokens).location;
          let binding = c"";
          let attr-key = c"";
+         let raw = false;
+         if lsts-parse-head(tokens) == c"raw" {
+            raw = true; tokens = tail(tokens);
+         };
          if lsts-is-ident-head(lsts-parse-head(tokens)) {
             attr-key = lsts-parse-head(tokens); tokens = tail(tokens);
          };
          if lsts-parse-head(tokens)==c"=" {
             binding = attr-key; tokens = tail(tokens);
+            if lsts-parse-head(tokens) == c"raw" {
+               raw = true; tokens = tail(tokens);
+            };
             if lsts-is-ident-head(lsts-parse-head(tokens)) {
                attr-key = lsts-parse-head(tokens); tokens = tail(tokens);
             } else { lsts-parse-expect(c"[Identifier]", tokens); };
@@ -870,6 +877,12 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
                   close(Var{ binding, with-location(mk-token(binding),attr-loc) }),
                   close(val)
                })
+            };
+            if raw {
+               val = App{
+                  close(Var{ c"macro::bind-raw", with-location(mk-token("macro::bind-raw"),attr-loc) }),
+                  close(val)
+               };
             };
          };
          if non-zero(attr-key) {
