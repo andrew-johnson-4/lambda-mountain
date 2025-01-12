@@ -20,10 +20,10 @@ let $"<="(l: x, r: x): U64 = cmp(l, r) <= Equal;
 let $">"(l: x, r: x): U64  = cmp(l, r) >  Equal;
 let $">="(l: x, r: x): U64 = cmp(l, r) >= Equal;
 
-let $"&&"(l: Ord, r: Ord): Ord = if is(l, Equal) then r else l;
+let $"&&"(l: Ord, r: Ord): Ord = if l == Equal then r else l;
 
-let print(io: IO::File, o: Ord): Nil = (
-   if is(o,GreaterThan) then print(io, "GreaterThan") else
-   if is(o,Equal) then print(io, "Equal") else
-   print(io, "LessThan");
-);
+#let print(io: IO::File, o: Ord): Nil = (
+#   if is(o,GreaterThan) then print(io, "GreaterThan") else
+#   if is(o,Equal) then print(io, "Equal") else
+#   print(io, "LessThan");
+#);
