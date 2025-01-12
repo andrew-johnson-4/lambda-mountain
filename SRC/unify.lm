@@ -55,6 +55,14 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          ))
       ))
 
+      # Literal Constants
+      ( (Tuple(
+         (TGround( 'CONST_s LEOF ))
+         (TGround( c LEOF ))
+      )) (
+         (if (||( (.is-digit c) (==( c 'CONST_s )) )) (set ctx TCtxNil) ())
+      ))
+
       # Phi Types
       ( (Tuple(
          (TGround( 'Phi_s (LCons( to_phi (LCons( (TGround( from_phi _ )) LEOF )) )) ))

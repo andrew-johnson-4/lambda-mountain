@@ -37,10 +37,9 @@ type UmbraShortLong = UmbraShort { arr: U8[12] } | UmbraLong { prefix: U8[4], pt
 
 type Umbra = Umbra { len: U32, backing: UmbraShortLong };
 
-
-#let .length(s: Umbra): U64 = (
-#    s.len as U64
-#);
+let .length(s: Umbra): U64 = (
+    s.len as U64
+);
 
 # using this in a vectorizable loop can break vectorization 
 # if you know that your loop is vectorizable, consider using [addr]

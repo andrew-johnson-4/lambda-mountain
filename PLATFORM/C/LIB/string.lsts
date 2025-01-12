@@ -12,3 +12,14 @@ let print(io: IO::File, x: CString): Nil = (
       x = tail-string(x);
    };
 );
+
+let .is-digit(base: CString): U64 = (
+   if non-zero(base) {
+      let r = true;
+      while head-string(base) != 0_u8 && r {
+         r = 48_u8 <= head-string(base) && head-string(base) <= 57_u8;
+         base = tail-string(base);
+      };
+      r
+   } else false
+);
