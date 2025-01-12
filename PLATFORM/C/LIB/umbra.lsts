@@ -43,20 +43,20 @@ let .length(s: Umbra): U64 = (
 
 # using this in a vectorizable loop can break vectorization 
 # if you know that your loop is vectorizable, consider using [addr]
-#let $"[]"(s: Umbra, i: U64): U8 = (
-#    let u = s.backing;
-#    match u {
-#        UmbraShort { arr=arr } => arr[i];
-#        UmbraLong { prefix=prefix, ptr=ptr } => (
-#            1_u8
+let $"[]"(s: Umbra, i: U64): U8 = (
+    let u = s.backing;
+    match u {
+        UmbraShort { arr=arr } => arr[i];
+        UmbraLong { prefix=prefix, ptr=ptr } => (
+            1_u8
 #            #if i < 4 {
 #            #    prefix[i]
 #            #} else {
 #            #    ptr[i]
 #            #}
-#        );
-#    }
-#);
+        );
+    }
+);
 
 # DOES NOT CLONE THE STRING
 #let $"set[]"(s: Umbra, i: U64, v: U8): Umbra = (
