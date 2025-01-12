@@ -35,6 +35,14 @@ can-unify := λ(: fpt Type)(: pt Type). (: (
          (if r () (set r (can-unify( lt rt2 ))))
       ))
 
+      # Literal Constants
+      ( (Tuple(
+         (TGround( 'CONST_s LEOF ))
+         (TGround( c LEOF ))
+      )) (
+         (set r (||( (.is-digit c) (==( c 'CONST_s )) )))
+      ))
+
       # Phi Types
       ( (Tuple(
          (TGround( 'Phi_s (LCons( (TGround( to_phi _ )) (LCons( (TGround( from_phi _ )) LEOF )) )) ))

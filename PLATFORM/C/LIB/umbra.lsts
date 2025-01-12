@@ -1,0 +1,235 @@
+
+# string type optimized for use in databases and small strings
+#
+# this is a implementation of the UmbraDB string type (also known as german string)
+#
+# when to use:
+# -you know that your strings tend to be short (<= 12 bytes)
+# - you need to use [.has-prefix] or [==] on a lot of strings:
+#   if you have a hash table of strings, remember that it only uses
+#   the comparision operators if there are hash collissions
+#
+# how it works:
+# - the length of the string is stored on the stack (4B)
+# - if the string fits into 12 bytes, it is stored as [UmbraShort] string,
+#   which stores the 12 bytes of the string on the stack
+# - if the string does not fit into 12 bytes, it is stored as [UmbraLong] string,
+#   which stores the first 4 bytes of the string on the stack,
+#   and the whole string (including the first 4 bytes!) on the heap
+#
+# problems with the implementation:
+# - the compiler stores the type of the variant in the struct,
+#   even though it can be gotten from the length.
+#   that does not have a big performance impact in most applications
+# - for [UmbraLong]: the [.nth] implementation loads from the prefix if the index is less than 4,
+#   which is good in many scenarios, but the compiler does not know that it is
+#   just as safe to load from the memory directly (because of the if expression),
+#   which hurts vectorization a lot.
+#   If you know that that might happen, you might be able to use the [addr] function
+#
+# TODOs:
+# - there should be an alternative string implementation optimizes for even shorter strings (8 bytes),
+#   which does not store the prefix
+# - maybe null-terminate the string if, any only if, it is stored as [UmbraLong]
+# - maybe padd the short array with zeros
+
+type UmbraShortLong = UmbraShort { arr: U8[12] } | UmbraLong { prefix: U8[4], ptr: U8[] };
+
+type Umbra = Umbra { len: U32, backing: UmbraShortLong };
+
+let .length(s: Umbra): U64 = (
+    s.len as U64
+);
+
+# using this in a vectorizable loop can break vectorization 
+# if you know that your loop is vectorizable, consider using [addr]
+let $"[]"(s: Umbra, i: U64): U8 = (
+    let u = s.backing;
+    match u {
+        UmbraShort { arr=arr } => arr[i];
+        UmbraLong { prefix=prefix, ptr=ptr } => (
+            1_u8
+#            #if i < 4 {
+#            #    prefix[i]
+#            #} else {
+#            #    ptr[i]
+#            #}
+        );
+    }
+);
+
+# DOES NOT CLONE THE STRING
+#let $"set[]"(s: Umbra, i: U64, v: U8): Umbra = (
+#   match s.backing {
+#      UmbraShort { arr=arr } => ( 
+#          arr[i] = v; 
+#      );
+#      UmbraLong { prefix=prefix, ptr=ptr } => (
+#         if i < 4 {
+#            prefix[i] = v;
+#         } else {
+#            ptr[i] = v;
+#         };
+#      );
+#   };
+#   s
+#);
+
+# the returned array is NOT a C string!
+# the returned array is only valid for [.length] bytes
+# the returned array is READ ONLY
+# for [UmbraLong], returns the pointer to the heap data 
+# for [UmbraShort], returns the pointer to the on-stack data
+#let addr(s: Umbra): U8[] = (
+#    match s.backing {
+#        UmbraShort { arr=arr } => (
+#            (arr as U8[])
+#        );
+
+#        UmbraLong { ptr=ptr } => (
+#            ptr
+#        );
+#    }
+#);
+
+# like [clone-len], except that if the input string is a UmbraLong, 
+# it does NOT copy the heap allocation
+#let view-len(u: Umbra, len: U64): Umbra = (
+#    if (len <= 12) && (u.len > 12) {
+#        # shrinks to UmbraShort
+#        let res = new-umbra(len);
+#        let idx = 0;
+#        while i < len {
+#            res[i] = u[i];
+#            i = i + 1;
+#        };
+#        res
+#    } else {
+#        u.len = len as U32;
+#        u
+#    }
+#);
+
+#let print(x: Umbra): Nil = (
+#    let idx = 0;
+#    let ptr = addr(x);
+#    while i < x.length() {
+#        putchar(ptr[i] as U32);
+#        idx = idx +1;
+#    };
+#);
+
+#let short-prefix-matches(a: Umbra, b: Umbra): U64 = (
+#    (a[0] == b[0]) &&
+#    (a[1] == b[1]) &&
+#    (a[2] == b[2]) &&
+#    (a[3] == b[3])
+#);
+
+# performance note: this is extremly fast if the pfx string is known to be <= 4 bytes at compile time
+#let .has-prefix(base: Umbra, pfx: Umbra): U64 = (
+#    if pfx.length() > base.length() {
+#        0
+#    } else {
+#        short-prefix-matches(base, pfx) &&
+#        memcmp(addr(base), addr(pfx), pfx.length()) == 0
+#    }
+#);
+
+#let .has-prefix(base: Umbra, pfx: t): U64 = (
+#    let pfxlen = pfx.length();
+#    if pfxlen > base.length() {
+#        0
+#    } else {
+#        view-len(base, pfxlen) == pfx
+#    }
+#);
+
+#let $"=="(l: Umbra, r: t): U64 = (
+#    if l.length() != r.length() {
+#        0
+#    } else {
+#        l.has-prefix(r)
+#    }
+#);
+
+#let $"=="(l: t, r: Umbra): U64 = (
+#    r == l
+#);
+
+#let $"!="(l: t, r: Umbra): U64 = (
+#    not(l == r)
+#);
+
+#let $"!="(l: Umbra, r: t): U64 = (
+#    not(l == r)
+#);
+
+#let deep-hash(key: Umbra): U64 = (
+#    let hash = 0;
+#    let idx = 0;
+#    let ptr = addr(key);
+#    while idx < key.length() {
+#        hash = hash + ptr[idx];
+#        hash = hash + "<<"(hash, 10);
+#        hash = "^"(hash, ">>"(hash, 6));
+#        idx = idx + 1;
+#    };
+#    hash = hash + "<<"(hash, 3);
+#    hash = "^"(hash, ">>"(hash, 11);
+#    hash = hash + "<<"(hash, 15);
+#    hash
+#);
+
+#let new-umbra(length: U64): Umbra = (
+#    if length <= 12 {
+#        Umbra(length as U32,
+#            UmbraShort(const-cons(12, 0 as U8) as U8[12]))
+#    } else {
+#        Umbra(length as U32,
+#            UmbraLong(const-cons(4, 0 as U8) as U8[4],
+#                malloc(length) as U8[])))
+#    }
+#);
+
+# clones input to umbra string
+#let to-umbra(s: t): Umbra = (
+#    to-umbra(s, s.length())
+#);
+
+# clones input to umbra string BUT only includes the first [len] characters
+#let to-umbra(s: Umbra, len: U64): Umbra = (
+#    let out = new-umbra(len);
+#    let i = 0;
+#    while i < len {
+#        out[i] = s[i];
+#        i = i + 1;
+#    };
+#    out
+#);
+
+#let concat-to-umbra(l: tl, r: tr): Umbra = (
+#    let out = new-umbra(l.length() + r.length());
+
+#    let i = 0;
+#    while i < l.length() {
+#        out[i] = l[i];
+#        i = i + 1;
+#    };
+
+#    i = 0;
+#    while i < r.length() {
+#        out[i + l.length()] = r[i];
+#        i = i + 1;
+#    };
+
+#    out
+#);
+
+#let $"+"(l: t, r: Umbra): Umbra = (
+#    concat-to-umbra(l, r)
+#);
+
+#let $"+"(l: Umbra, r: t): Umbra = (
+#    concat-to-umbra(l, r)
+#);
