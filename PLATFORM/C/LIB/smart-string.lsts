@@ -43,3 +43,11 @@ let cmp(x: String, y: String): Ord = (
    };
    r
 );
+
+let print(io: IO::File, x: SmartString): Nil = (
+   let start = x.start;
+   while start != x.end {
+      fputc(io, start[0]);
+      start = start + 1;
+   };
+);
