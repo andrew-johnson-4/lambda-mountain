@@ -1,0 +1,42 @@
+
+type Tuple<x,y> = Tuple { first: x, second: y };
+
+let cmp(l: Tuple<x,y>, r: Tuple<x,y>): Ord = (
+   cmp(l.first, r.first) && cmp(l.second, r.second)
+);
+
+let deep-hash(l: Tuple<x,y>): U64 = (
+   deep-hash(l.first) + deep-hash(l.second)
+);
+
+let print(io: IO::File, l: Tuple<x,y>): Nil = (
+   print(io, "("); print(io, l.first); print(io, ","); print(io, l.second); print(io, ")");
+);
+
+let $"=="(l: Tuple<x,y>, r: Tuple<x,y>): U64 = (
+   l.first == r.first && l.second == r.second
+);
+
+let $"!="(l: Tuple<x,y>, r: Tuple<x,y>): U64 = (
+   l.first != r.first || l.second != r.second
+);
+
+let $"<"(l: Tuple<x,y>, r: Tuple<x,y>): U64 = (
+   l.first < r.first ||
+   (l.first == r.first && l.second < r.second)
+);
+
+let $"<="(l: Tuple<x,y>, r: Tuple<x,y>): U64 = (
+   l.first < r.first ||
+   (l.first == r.first && l.second <= r.second)
+);
+
+let $">"(l: Tuple<x,y>, r: Tuple<x,y>): U64 = (
+   l.first > r.first ||
+   (l.first == r.first && l.second > r.second)
+);
+
+let $">="(l: Tuple<x,y>, r: Tuple<x,y>): U64 = (
+   l.first > r.first ||
+   (l.first == r.first && l.second >= r.second)
+);
