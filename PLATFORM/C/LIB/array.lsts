@@ -21,6 +21,6 @@ declare-ternop( $"set[]", raw-type(base-type[]), raw-type(U64), raw-type(base-ty
 
 declare-unop( open, raw-type(t), raw-type(t), x );
 declare-unop( open, raw-type(base-type[]), raw-type(base-type), (l"(*"; x; l")";) );
-declare-unop( open, raw-type(base-type[CONST]), raw-type(base-type[CONST]), x );
+#declare-unop( open, raw-type(base-type[CONST]), raw-type(base-type[CONST]), x );
 declare-unop( $"&", raw-type(t), raw-type(t[]), (l"(&"; x; l")";) );
 

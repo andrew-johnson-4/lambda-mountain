@@ -48,11 +48,12 @@ let .length(s: Umbra): U64 = (
 #    match u {
 #        UmbraShort { arr=arr } => arr[i];
 #        UmbraLong { prefix=prefix, ptr=ptr } => (
-#            if i < 4 {
-#                prefix[i]
-#            } else {
-#                ptr[i]
-#            }
+#            1_u8
+#            #if i < 4 {
+#            #    prefix[i]
+#            #} else {
+#            #    ptr[i]
+#            #}
 #        );
 #    }
 #);
