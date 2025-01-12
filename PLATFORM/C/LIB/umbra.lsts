@@ -47,13 +47,13 @@ let $"[]"(s: Umbra, i: U64): U8 = (
     let u = s.backing;
     match u {
         UmbraShort { arr=arr } => arr[i];
-        #UmbraLong { prefix=prefix, raw ptr=ptr } => (
-        #    if i < 4 {
-        #        prefix[i]
-        #    } else {
-        #        ptr[i]
-        #    }
-        #);
+        UmbraLong { prefix=prefix, raw ptr=ptr } => (
+            if i < 4 {
+                prefix[i]
+            } else {
+                ptr[i]
+            }
+        );
     }
 );
 
