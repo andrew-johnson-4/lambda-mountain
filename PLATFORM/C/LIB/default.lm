@@ -6,7 +6,7 @@ import PLATFORM/C/LIB/primitives.lm;
 import PLATFORM/C/LIB/primitives.lsts;
 import PLATFORM/C/LIB/field-accessors.lsts;
 import PLATFORM/C/LIB/sized.lm;
-import PLATFORM/C/LIB/bool.lm;
+import PLATFORM/C/LIB/bool.lsts;
 import PLATFORM/C/LIB/u8.lm;
 import PLATFORM/C/LIB/i8.lm;
 import PLATFORM/C/LIB/u16.lm;
