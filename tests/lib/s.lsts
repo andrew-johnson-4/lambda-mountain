@@ -1,0 +1,9 @@
+
+import LIB/default.lm;
+
+assert( SNil == SNil );
+assert( SNil != SAtom{ c"A" } );
+assert( SAtom{ c"A" } == SAtom{ c"A" } );
+assert( SAtom{ c"A" } != SAtom{ c"B" } );
+
+print("Success\n");

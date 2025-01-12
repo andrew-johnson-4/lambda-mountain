@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm tests/lib/tuple.lsts
+	lm tests/lib/s.lsts
 	cc -O3 tmp.c
 	./a.out
 
