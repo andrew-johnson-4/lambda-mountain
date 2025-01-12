@@ -13,6 +13,8 @@ lsts-is-reserved-word := λ(: text String). (: (
    (if (==( text 'while_s )) (set r 1_u64) ()) # $
    (if (==( text 'for_s )) (set r 1_u64) ()) # $
    (if (==( text 'type_s )) (set r 1_u64) ()) # $
+   (if (==( text 'raw_s )) (set r 1_u64) ()) # $
+   (if (==( text 'match_s )) (set r 1_u64) ()) # $
    r
 ) U64);
 

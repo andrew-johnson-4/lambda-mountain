@@ -49,6 +49,7 @@ let $"[]"(s: Umbra, i: U64): U8 = (
         UmbraShort { arr=arr } => arr[i];
         UmbraLong { prefix=prefix, ptr=ptr } => (
             1_u8
+#            TODO
 #            #if i < 4 {
 #            #    prefix[i]
 #            #} else {
