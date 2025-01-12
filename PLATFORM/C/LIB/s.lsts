@@ -6,10 +6,10 @@ let print(io: IO::File, x: S): Nil = (
       SNil {} => print(io, "()");
       SAtom { atom=atom } => print(io, atom);
       SCons { left=left, right=right } => (
-         print(io, "("); print(left); print(io, " "); print(right); print(io, ")");
+         print(io, "("); print(io, left); print(io, " "); print(io, right); print(io, ")");
       );
       SPointer { pointer=pointer } => (
-         print(io, "&["); print(pointer as U64); print(io, "]");
+         print(io, "&["); print(io, pointer as U64); print(io, "]");
       );
    }
 );
