@@ -896,6 +896,9 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
                })
             };
          };
+         if raw {
+            print("Raw: "); print(val); print("\n");
+         };
          if non-zero(des-args) {
             des-args = App { close(des-args), close(val) };
          } else { des-args = val; };
