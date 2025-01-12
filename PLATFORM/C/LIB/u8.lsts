@@ -16,3 +16,12 @@ declare-binop( $"*", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"*"; 
 declare-unop( not, raw-type(U8), raw-type(U64), ( l"(!"; x; l")"; ) );
 
 declare-unop( into-branch-conditional, raw-type(U8), raw-type(BranchConditional), x );
+
+let print(x: U8): Nil = print(x as U64);
+
+let clone-rope(s: U8): CString = (
+   let x = malloc(2) as U8[];
+   x[0] = s;
+   x[1] = 0_u8;
+   x as CString;
+);
