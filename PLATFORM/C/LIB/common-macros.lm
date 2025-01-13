@@ -48,7 +48,7 @@ macro ( ('for-atom (item 'in iter) loop) ) (
 
 macro ('assert c) (
    (if (not c) (
-      (print 'Assertion\sFailed\s_s)(print (: (p :Location:) Constant+Literal+String))(print '\n_s)
+      (print 'Assertion\sFailed\s_s)(print (: (p :Location:) Constant+Literal+String))(print '\n_s)(exit 1_u64)
    ) ()) ()
 );
 

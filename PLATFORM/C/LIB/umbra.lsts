@@ -226,6 +226,7 @@ let to-umbra(s: t, len: U64): Umbra = (
     let out = new-umbra(len);
     let i = 0;
     while i < len {
+        print("Copy \{s[i]}\n");
         out[i] = s[i];
         i = i + 1;
     };
