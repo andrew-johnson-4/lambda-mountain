@@ -58,177 +58,180 @@ let $"[]"(s: Umbra, i: U64): U8 = (
 );
 
 # DOES NOT CLONE THE STRING
-#let $"set[]"(s: Umbra, i: U64, v: U8): Umbra = (
-#   match s.backing {
-#      UmbraShort { arr=arr } => ( 
-#          arr[i] = v; 
-#      );
-#      UmbraLong { prefix=prefix, ptr=ptr } => (
-#         if i < 4 {
-#            prefix[i] = v;
-#         } else {
-#            ptr[i] = v;
-#         };
-#      );
-#   };
-#   s
-#);
+let $"set[]"(s: Umbra, i: U64, v: U8): Umbra = (
+   match s.backing {
+      UmbraShort { arr=arr } => ( 
+          arr[i] = v; 
+      );
+      UmbraLong { prefix=prefix, raw ptr=ptr } => (
+         if i < 4 {
+            prefix[i] = v;
+         } else {
+            ptr[i] = v;
+         };
+      );
+   };
+   s
+);
 
 # the returned array is NOT a C string!
 # the returned array is only valid for [.length] bytes
 # the returned array is READ ONLY
 # for [UmbraLong], returns the pointer to the heap data 
 # for [UmbraShort], returns the pointer to the on-stack data
-#let addr(s: Umbra): U8[] = (
-#    match s.backing {
-#        UmbraShort { arr=arr } => (
-#            (arr as U8[])
-#        );
+let addr(s: Umbra): U8[] = (
+    match s.backing {
+        UmbraShort { arr=arr } => (
+            (arr as U8[])
+        );
 
-#        UmbraLong { ptr=ptr } => (
-#            ptr
-#        );
-#    }
-#);
+        UmbraLong { raw ptr=ptr } => (
+            ptr
+        );
+    }
+);
 
 # like [clone-len], except that if the input string is a UmbraLong, 
 # it does NOT copy the heap allocation
-#let view-len(u: Umbra, len: U64): Umbra = (
-#    if (len <= 12) && (u.len > 12) {
-#        # shrinks to UmbraShort
-#        let res = new-umbra(len);
-#        let idx = 0;
-#        while i < len {
-#            res[i] = u[i];
-#            i = i + 1;
-#        };
-#        res
-#    } else {
-#        u.len = len as U32;
-#        u
-#    }
-#);
+let view-len(u: Umbra, len: U64): Umbra = (
+    if (len <= 12) && (u.len > 12_u32) {
+        # shrinks to UmbraShort
+        let res = new-umbra(len);
+        let idx = 0;
+        while idx < len {
+            res[idx] = u[idx];
+            idx = idx + 1;
+        };
+        res
+    } else {
+        u.len = len as U32;
+        u
+    }
+);
 
-#let print(x: Umbra): Nil = (
-#    let idx = 0;
-#    let ptr = addr(x);
-#    while i < x.length() {
-#        putchar(ptr[i] as U32);
-#        idx = idx +1;
-#    };
-#);
+let print(x: Umbra): Nil = (
+    let idx = 0;
+    let ptr = addr(x);
+    while idx < x.length() {
+        putchar(ptr[idx] as U32);
+        idx = idx + 1;
+    };
+);
 
-#let short-prefix-matches(a: Umbra, b: Umbra): U64 = (
-#    (a[0] == b[0]) &&
-#    (a[1] == b[1]) &&
-#    (a[2] == b[2]) &&
-#    (a[3] == b[3])
-#);
+let short-prefix-matches(a: Umbra, b: Umbra): U64 = (
+    (a[0] == b[0]) &&
+    (a[1] == b[1]) &&
+    (a[2] == b[2]) &&
+    (a[3] == b[3])
+);
 
 # performance note: this is extremly fast if the pfx string is known to be <= 4 bytes at compile time
-#let .has-prefix(base: Umbra, pfx: Umbra): U64 = (
-#    if pfx.length() > base.length() {
-#        0
-#    } else {
-#        short-prefix-matches(base, pfx) &&
-#        memcmp(addr(base), addr(pfx), pfx.length()) == 0
-#    }
-#);
+let .has-prefix(base: Umbra, pfx: Umbra): U64 = (
+    if pfx.length() > base.length() {
+        0
+    } else {
+        short-prefix-matches(base, pfx) &&
+        memcmp(addr(base), addr(pfx), pfx.length()) == 0_u32
+    }
+);
 
-#let .has-prefix(base: Umbra, pfx: t): U64 = (
-#    let pfxlen = pfx.length();
-#    if pfxlen > base.length() {
-#        0
-#    } else {
-#        view-len(base, pfxlen) == pfx
-#    }
-#);
+let .has-prefix(base: Umbra, pfx: t): U64 = (
+    let pfxlen = pfx.length();
+    if pfxlen > base.length() {
+        0
+    } else {
+        view-len(base, pfxlen) == pfx
+    }
+);
 
-#let $"=="(l: Umbra, r: t): U64 = (
-#    if l.length() != r.length() {
-#        0
-#    } else {
-#        l.has-prefix(r)
-#    }
-#);
+let $"=="(l: Umbra, r: t): U64 = (
+    if l.length() != r.length() {
+        0
+    } else {
+        l.has-prefix(r)
+    }
+);
 
-#let $"=="(l: t, r: Umbra): U64 = (
-#    r == l
-#);
+let $"=="(l: t, r: Umbra): U64 = (
+    r == l
+);
 
-#let $"!="(l: t, r: Umbra): U64 = (
-#    not(l == r)
-#);
+let $"!="(l: t, r: Umbra): U64 = (
+    not(l == r)
+);
 
-#let $"!="(l: Umbra, r: t): U64 = (
-#    not(l == r)
-#);
+let $"!="(l: Umbra, r: t): U64 = (
+    not(l == r)
+);
 
-#let deep-hash(key: Umbra): U64 = (
-#    let hash = 0;
-#    let idx = 0;
-#    let ptr = addr(key);
-#    while idx < key.length() {
-#        hash = hash + ptr[idx];
-#        hash = hash + "<<"(hash, 10);
-#        hash = "^"(hash, ">>"(hash, 6));
-#        idx = idx + 1;
-#    };
-#    hash = hash + "<<"(hash, 3);
-#    hash = "^"(hash, ">>"(hash, 11);
-#    hash = hash + "<<"(hash, 15);
-#    hash
-#);
+let deep-hash(key: Umbra): U64 = (
+    let hash = 0;
+    let idx = 0;
+    let ptr = addr(key);
+    while idx < key.length() {
+        hash = hash + (ptr[idx] as U64);
+        hash = hash + (hash << 10);
+        hash = hash ^ (hash >> 6);
+        idx = idx + 1;
+    };
+    hash = hash + (hash << 3);
+    hash = hash ^ (hash >> 11);
+    hash = hash + (hash << 15);
+    hash
+);
 
-#let new-umbra(length: U64): Umbra = (
-#    if length <= 12 {
-#        Umbra(length as U32,
-#            UmbraShort(const-cons(12, 0 as U8) as U8[12]))
-#    } else {
-#        Umbra(length as U32,
-#            UmbraLong(const-cons(4, 0 as U8) as U8[4],
-#                malloc(length) as U8[])))
-#    }
-#);
+let new-umbra(length: U64): Umbra = (
+    if length <= 12 {
+        # const-cons can't be used in expression position atm
+        let cs = const-cons(0_u8, 12_l);
+        Umbra(length as U32,
+            UmbraShort(cs as U8[12]))
+    } else {
+        let cs = const-cons(0_u8, 4_l);
+        Umbra(length as U32,
+            UmbraLong(cs as U8[4],
+                malloc(length) as U8[]))
+    }
+);
 
 # clones input to umbra string
-#let to-umbra(s: t): Umbra = (
-#    to-umbra(s, s.length())
-#);
+let to-umbra(s: t): Umbra = (
+    to-umbra(s, s.length())
+);
 
 # clones input to umbra string BUT only includes the first [len] characters
-#let to-umbra(s: Umbra, len: U64): Umbra = (
-#    let out = new-umbra(len);
-#    let i = 0;
-#    while i < len {
-#        out[i] = s[i];
-#        i = i + 1;
-#    };
-#    out
-#);
+let to-umbra(s: Umbra, len: U64): Umbra = (
+    let out = new-umbra(len);
+    let i = 0;
+    while i < len {
+        out[i] = s[i];
+        i = i + 1;
+    };
+    out
+);
 
-#let concat-to-umbra(l: tl, r: tr): Umbra = (
-#    let out = new-umbra(l.length() + r.length());
+let concat-to-umbra(l: tl, r: tr): Umbra = (
+    let out = new-umbra(l.length() + r.length());
 
-#    let i = 0;
-#    while i < l.length() {
-#        out[i] = l[i];
-#        i = i + 1;
-#    };
+    let i = 0;
+    while i < l.length() {
+        out[i] = l[i];
+        i = i + 1;
+    };
 
-#    i = 0;
-#    while i < r.length() {
-#        out[i + l.length()] = r[i];
-#        i = i + 1;
-#    };
+    i = 0;
+    while i < r.length() {
+        out[i + l.length()] = r[i];
+        i = i + 1;
+    };
 
-#    out
-#);
+    out
+);
 
-#let $"+"(l: t, r: Umbra): Umbra = (
-#    concat-to-umbra(l, r)
-#);
+let $"+"(l: t, r: Umbra): Umbra = (
+    concat-to-umbra(l, r)
+);
 
-#let $"+"(l: Umbra, r: t): Umbra = (
-#    concat-to-umbra(l, r)
-#);
+let $"+"(l: Umbra, r: t): Umbra = (
+    concat-to-umbra(l, r)
+);
