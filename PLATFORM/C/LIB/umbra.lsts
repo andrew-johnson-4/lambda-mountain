@@ -164,21 +164,21 @@ let $"!="(l: Umbra, r: t): U64 = (
     not(l == r)
 );
 
-#let deep-hash(key: Umbra): U64 = (
-#    let hash = 0;
-#    let idx = 0;
-#    let ptr = addr(key);
-#    while idx < key.length() {
-#        hash = hash + ptr[idx];
-#        hash = hash + "<<"(hash, 10);
-#        hash = "^"(hash, ">>"(hash, 6));
-#        idx = idx + 1;
-#    };
-#    hash = hash + "<<"(hash, 3);
-#    hash = "^"(hash, ">>"(hash, 11);
-#    hash = hash + "<<"(hash, 15);
-#    hash
-#);
+let deep-hash(key: Umbra): U64 = (
+    let hash = 0;
+    let idx = 0;
+    let ptr = addr(key);
+    while idx < key.length() {
+        hash = hash + (ptr[idx] as U64);
+        #hash = hash + (hash << 10);
+        #hash = hash ^ (hash >> 6));
+        idx = idx + 1;
+    };
+    #hash = hash + (hash << 3);
+    #hash = hash ^ (hash >> 11);
+    #hash = hash + (hash << 15);
+    hash
+);
 
 let new-umbra(length: U64): Umbra = (
     if length <= 12 {
