@@ -66,9 +66,8 @@ let $"set[]"(s: Umbra, i: U64, v: U8): Umbra = (
       UmbraLong { prefix=prefix, raw ptr=ptr } => (
          if i < 4 {
             prefix[i] = v;
-         } else {
-            ptr[i] = v;
          };
+         ptr[i] = v;
       );
    };
    s
@@ -140,7 +139,30 @@ let .has-prefix(base: Umbra, pfx: t): U64 = (
     if pfxlen > base.length() {
         0
     } else {
-        view-len(base, pfxlen) == pfx
+        # this seems unoptimal, but trust me, this is extremly fast
+        # do NOT add a break into the whole loops (bc vectorization)
+        if pfxlen > 4 {
+            let a = addr(base);
+            let matches = 1;
+            let i = 0;
+            while i < pfxlen {
+                if pfx[i] != a[i] {
+                    matches = 0;
+                };
+                i = i + 1;
+            };
+            matches
+        } else {
+            let i = 0;
+            let matches = 1;
+            while i < pfxlen {
+                if pfx[i] != base[i] {
+                    matches = 0;
+                };
+                i = i + 1;
+            };
+            matches
+        }
     }
 );
 
@@ -200,7 +222,7 @@ let to-umbra(s: t): Umbra = (
 );
 
 # clones input to umbra string BUT only includes the first [len] characters
-let to-umbra(s: Umbra, len: U64): Umbra = (
+let to-umbra(s: t, len: U64): Umbra = (
     let out = new-umbra(len);
     let i = 0;
     while i < len {
