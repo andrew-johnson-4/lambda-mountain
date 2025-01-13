@@ -96,7 +96,7 @@ let lsts-parse-type(tokens: List<Token>): Tuple<Type,List<Token>> = (
       };
       lsts-parse-expect(c")", tokens); tokens = tail(tokens);
       TGround { c"Tuple", close(args) };
-   } else if lsts-is-ident-head(lsts-parse-head(tokens)) && not(lsts-is-reserved-word(lsts-parse-head(tokens))) {
+   } else if lsts-is-ident-head(lsts-parse-head(tokens)) && not(lsts-parse-head(tokens).is-digit) {
       let varname = lsts-parse-head(tokens); tokens = tail(tokens);
       TVar { varname }
    } else {

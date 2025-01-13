@@ -59,6 +59,7 @@ let $"[]"(s: Umbra, i: U64): U8 = (
 
 # DOES NOT CLONE THE STRING
 let $"set[]"(s: Umbra, i: U64, v: U8): Umbra = (
+   print("set[\{i}] = \{v}\n");
    match s.backing {
       UmbraShort { arr=arr } => ( 
           arr[i] = v; 
