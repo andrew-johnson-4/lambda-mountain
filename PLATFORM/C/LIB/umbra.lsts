@@ -44,33 +44,35 @@ let .length(s: Umbra): U64 = (
 # using this in a vectorizable loop can break vectorization 
 # if you know that your loop is vectorizable, consider using [addr]
 let $"[]"(s: Umbra, i: U64): U8 = (
-    let u = s.backing;
-    match u {
-        UmbraShort { arr=arr } => arr[i];
-        UmbraLong { prefix=prefix, raw ptr=ptr } => (
-            if i < 4 {
-                prefix[i]
-            } else {
-                ptr[i]
-            }
-        );
-    }
+    # TODO
+    #let u = s.backing;
+    #match u {
+    #    UmbraShort { arr=arr } => arr[i];
+    #    UmbraLong { prefix=prefix, raw ptr=ptr } => (
+    #        if i < 4 {
+    #            prefix[i]
+    #        } else {
+    #            ptr[i]
+    #        }
+    #    );
+    #}
+    0_u8
 );
 
 # DOES NOT CLONE THE STRING
 let $"set[]"(s: Umbra, i: U64, v: U8): Umbra = (
-   print("set[\{i}] = \{v}\n");
-   match s.backing {
-      UmbraShort { arr=arr } => ( 
-          arr[i] = v; 
-      );
-      UmbraLong { prefix=prefix, raw ptr=ptr } => (
-         if i < 4 {
-            prefix[i] = v;
-         };
-         ptr[i] = v;
-      );
-   };
+   # TODO
+   #match s.backing {
+   #   UmbraShort { arr=arr } => ( 
+   #       arr[i] = v; 
+   #   );
+   #   UmbraLong { prefix=prefix, raw ptr=ptr } => (
+   #      if i < 4 {
+   #         prefix[i] = v;
+   #      };
+   #      ptr[i] = v;
+   #   );
+   #};
    s
 );
 
@@ -80,15 +82,17 @@ let $"set[]"(s: Umbra, i: U64, v: U8): Umbra = (
 # for [UmbraLong], returns the pointer to the heap data 
 # for [UmbraShort], returns the pointer to the on-stack data
 let addr(s: Umbra): U8[] = (
-    match s.backing {
-        UmbraShort { arr=arr } => (
-            (arr as U8[])
-        );
-
-        UmbraLong { raw ptr=ptr } => (
-            ptr
-        );
-    }
+    0 as U8[]
+    #TODO
+    #match s.backing {
+    #    UmbraShort { arr=arr } => (
+    #        (arr as U8[])
+    #    );
+    #
+    #    UmbraLong { raw ptr=ptr } => (
+    #        ptr
+    #    );
+    #}
 );
 
 # like [clone-len], except that if the input string is a UmbraLong, 

@@ -228,7 +228,6 @@ compile-c-casedef-fields := λ(: tctx TContext)(: fields Type)(: case-number U64
       ( (TGround( 'Cons_s (LCons( ft (LCons( rst _ )) )) )) (
          (compile-c-mark-field-as-seen(substitute(tctx ft)))
          (let def-type (mangle-c-declaration ft))
-         (print 'DefType\s_s)(print fields)(print def-type)(print '\n_s)
          (set r (+( (+( (.first def-type) (SAtom '\sfield__s) )) (+(
             (+(
                (SAtom(to-string(+( (*( case-number 1000_u64 )) field-index ))))
@@ -241,7 +240,6 @@ compile-c-casedef-fields := λ(: tctx TContext)(: fields Type)(: case-number U64
       ( ft (
          (compile-c-mark-field-as-seen(substitute(tctx ft)))
          (let def-type (mangle-c-declaration ft))
-         (print 'DefType\s_s)(print fields)(print def-type)(print '\n_s)
          (set r (+( (+( (.first def-type) (SAtom '\sfield__s) )) (+(
             (+(
                (SAtom(to-string(+( (*( case-number 1000_u64 )) field-index ))))
