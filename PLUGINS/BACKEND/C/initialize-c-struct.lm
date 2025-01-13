@@ -7,7 +7,7 @@ initialize-c-struct := λ(: ctx FContext)(: rval AST)(: case-number U64)(: field
          (match rval (
             ()
             ( (App( le re )) (
-               (if (is-const-array p1) (
+               (if (is-sized-array p1) (
                   (print 'Const\sArray\s_s)(print p1)(print '\n_s)
                ) (
                   (let e1 (compile-expr( ctx re 0_i64 Used )))
@@ -28,7 +28,7 @@ initialize-c-struct := λ(: ctx FContext)(: rval AST)(: case-number U64)(: field
       ))
       ( _ (
          (let p1 (typeof rval))
-         (if (is-const-array p1) (
+         (if (is-sized-array p1) (
             (print 'Const\sArray\s_s)(print p1)(print '\n_s)
          ) (
             (set r (compile-expr( ctx rval 0_i64 Used )))

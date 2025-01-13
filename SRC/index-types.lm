@@ -24,6 +24,7 @@ import SRC/index-of-tag.lm;
 import SRC/size-of-class.lm;
 import SRC/class-of-tag.lm;
 import SRC/is-class.lm;
+import SRC/is-sized-array.lsts;
 import SRC/fields-of-tag.lm;
 import SRC/type-constructors.lm;
 import SRC/type-complex-fields.lm;
