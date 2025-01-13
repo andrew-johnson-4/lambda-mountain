@@ -195,20 +195,20 @@ let new-umbra(length: U64): Umbra = (
 );
 
 # clones input to umbra string
-#let to-umbra(s: t): Umbra = (
-#    to-umbra(s, s.length())
-#);
+let to-umbra(s: t): Umbra = (
+    to-umbra(s, s.length())
+);
 
 # clones input to umbra string BUT only includes the first [len] characters
-#let to-umbra(s: Umbra, len: U64): Umbra = (
-#    let out = new-umbra(len);
-#    let i = 0;
-#    while i < len {
-#        out[i] = s[i];
-#        i = i + 1;
-#    };
-#    out
-#);
+let to-umbra(s: Umbra, len: U64): Umbra = (
+    let out = new-umbra(len);
+    let i = 0;
+    while i < len {
+        out[i] = s[i];
+        i = i + 1;
+    };
+    out
+);
 
 #let concat-to-umbra(l: tl, r: tr): Umbra = (
 #    let out = new-umbra(l.length() + r.length());
