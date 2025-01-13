@@ -210,28 +210,28 @@ let to-umbra(s: Umbra, len: U64): Umbra = (
     out
 );
 
-#let concat-to-umbra(l: tl, r: tr): Umbra = (
-#    let out = new-umbra(l.length() + r.length());
+let concat-to-umbra(l: tl, r: tr): Umbra = (
+    let out = new-umbra(l.length() + r.length());
 
-#    let i = 0;
-#    while i < l.length() {
-#        out[i] = l[i];
-#        i = i + 1;
-#    };
+    let i = 0;
+    while i < l.length() {
+        out[i] = l[i];
+        i = i + 1;
+    };
 
-#    i = 0;
-#    while i < r.length() {
-#        out[i + l.length()] = r[i];
-#        i = i + 1;
-#    };
+    i = 0;
+    while i < r.length() {
+        out[i + l.length()] = r[i];
+        i = i + 1;
+    };
 
-#    out
-#);
+    out
+);
 
-#let $"+"(l: t, r: Umbra): Umbra = (
-#    concat-to-umbra(l, r)
-#);
+let $"+"(l: t, r: Umbra): Umbra = (
+    concat-to-umbra(l, r)
+);
 
-#let $"+"(l: Umbra, r: t): Umbra = (
-#    concat-to-umbra(l, r)
-#);
+let $"+"(l: Umbra, r: t): Umbra = (
+    concat-to-umbra(l, r)
+);
