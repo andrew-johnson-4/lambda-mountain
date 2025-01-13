@@ -109,14 +109,14 @@ let view-len(u: Umbra, len: U64): Umbra = (
     }
 );
 
-#let print(x: Umbra): Nil = (
-#    let idx = 0;
-#    let ptr = addr(x);
-#    while i < x.length() {
-#        putchar(ptr[i] as U32);
-#        idx = idx +1;
-#    };
-#);
+let print(x: Umbra): Nil = (
+    let idx = 0;
+    let ptr = addr(x);
+    while idx < x.length() {
+        putchar(ptr[idx] as U32);
+        idx = idx + 1;
+    };
+);
 
 #let short-prefix-matches(a: Umbra, b: Umbra): U64 = (
 #    (a[0] == b[0]) &&
