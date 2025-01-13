@@ -61,18 +61,17 @@ let $"[]"(s: Umbra, i: U64): U8 = (
 
 # DOES NOT CLONE THE STRING
 let $"set[]"(s: Umbra, i: U64, v: U8): Umbra = (
-   # TODO
-   #match s.backing {
-   #   UmbraShort { arr=arr } => ( 
-   #       arr[i] = v; 
-   #   );
-   #   UmbraLong { prefix=prefix, raw ptr=ptr } => (
-   #      if i < 4 {
-   #         prefix[i] = v;
-   #      };
-   #      ptr[i] = v;
-   #   );
-   #};
+   match s.backing {
+      UmbraShort { raw arr=arr } => ( 
+          arr[i] = v; 
+      );
+      UmbraLong { raw prefix=prefix, raw ptr=ptr } => (
+         if i < 4 {
+            prefix[i] = v;
+         };
+         ptr[i] = v;
+      );
+   };
    s
 );
 
