@@ -118,22 +118,22 @@ let print(x: Umbra): Nil = (
     };
 );
 
-#let short-prefix-matches(a: Umbra, b: Umbra): U64 = (
-#    (a[0] == b[0]) &&
-#    (a[1] == b[1]) &&
-#    (a[2] == b[2]) &&
-#    (a[3] == b[3])
-#);
+let short-prefix-matches(a: Umbra, b: Umbra): U64 = (
+    (a[0] == b[0]) &&
+    (a[1] == b[1]) &&
+    (a[2] == b[2]) &&
+    (a[3] == b[3])
+);
 
 # performance note: this is extremly fast if the pfx string is known to be <= 4 bytes at compile time
-#let .has-prefix(base: Umbra, pfx: Umbra): U64 = (
-#    if pfx.length() > base.length() {
-#        0
-#    } else {
-#        short-prefix-matches(base, pfx) &&
-#        memcmp(addr(base), addr(pfx), pfx.length()) == 0
-#    }
-#);
+let .has-prefix(base: Umbra, pfx: Umbra): U64 = (
+    if pfx.length() > base.length() {
+        0
+    } else {
+        short-prefix-matches(base, pfx) &&
+        memcmp(addr(base), addr(pfx), pfx.length()) == 0_u32
+    }
+);
 
 #let .has-prefix(base: Umbra, pfx: t): U64 = (
 #    let pfxlen = pfx.length();
@@ -152,17 +152,17 @@ let print(x: Umbra): Nil = (
 #    }
 #);
 
-#let $"=="(l: t, r: Umbra): U64 = (
-#    r == l
-#);
+let $"=="(l: t, r: Umbra): U64 = (
+    r == l
+);
 
-#let $"!="(l: t, r: Umbra): U64 = (
-#    not(l == r)
-#);
+let $"!="(l: t, r: Umbra): U64 = (
+    not(l == r)
+);
 
-#let $"!="(l: Umbra, r: t): U64 = (
-#    not(l == r)
-#);
+let $"!="(l: Umbra, r: t): U64 = (
+    not(l == r)
+);
 
 #let deep-hash(key: Umbra): U64 = (
 #    let hash = 0;
