@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm tests/lib/s.lsts
+	lm tests/lib/umbra.lsts
 	cc -O3 tmp.c
 	./a.out
 

@@ -25,3 +25,8 @@ let clone-rope(s: U8): CString = (
    x[1] = 0_u8;
    x as CString;
 );
+
+let to-smart-string(i: U8): String = (
+   intern(to-string(i as U64))
+);
+

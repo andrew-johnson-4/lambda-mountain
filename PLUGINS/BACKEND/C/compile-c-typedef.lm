@@ -227,16 +227,26 @@ compile-c-casedef-fields := λ(: tctx TContext)(: fields Type)(: case-number U64
       ( (TGround( 'Nil_s _ )) () )
       ( (TGround( 'Cons_s (LCons( ft (LCons( rst _ )) )) )) (
          (compile-c-mark-field-as-seen(substitute(tctx ft)))
-         (set r (+( (+( (mangle-c-type ft) (SAtom '\sfield__s) )) (+( (SAtom(
-            (to-string(+( (*( case-number 1000_u64 )) field-index )))
-         )) (SAtom '\:_s) )) )))
+         (let def-type (mangle-c-declaration ft))
+         (set r (+( (+( (.first def-type) (SAtom '\sfield__s) )) (+(
+            (+(
+               (SAtom(to-string(+( (*( case-number 1000_u64 )) field-index ))))
+               (.second def-type)
+            ))
+            (SAtom '\:_s)
+         )))))
          (set r (+( r (compile-c-casedef-fields( tctx rst case-number (+( field-index 1_u64 )) )) )))
       ))
       ( ft (
          (compile-c-mark-field-as-seen(substitute(tctx ft)))
-         (set r (+( (+( (mangle-c-type ft) (SAtom '\sfield__s) )) (+( (SAtom(
-            (to-string(+( (*( case-number 1000_u64 )) field-index )))
-         )) (SAtom '\:_s) )) )))
+         (let def-type (mangle-c-declaration ft))
+         (set r (+( (+( (.first def-type) (SAtom '\sfield__s) )) (+(
+            (+(
+               (SAtom(to-string(+( (*( case-number 1000_u64 )) field-index ))))
+               (.second def-type)
+            ))
+            (SAtom '\:_s)
+         )))))
       ))
    ))
    r
