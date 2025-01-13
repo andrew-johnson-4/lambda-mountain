@@ -25,3 +25,9 @@ close := λ(: x p). (: (
    r
 ) p[]);
 
+#declare-binop( mov, raw-type(base[CONST+array-len]), raw-type(base[CONST+array-len]), raw-type(Nil), (
+#   l"({memcpy(&"; y;
+#   l","; x;
+#   l"sizeof("; base_l; l")*"; x-len_l;
+#   l");({});})";
+#));
