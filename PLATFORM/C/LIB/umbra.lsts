@@ -79,17 +79,17 @@ let $"set[]"(s: Umbra, i: U64, v: U8): Umbra = (
 # the returned array is READ ONLY
 # for [UmbraLong], returns the pointer to the heap data 
 # for [UmbraShort], returns the pointer to the on-stack data
-#let addr(s: Umbra): U8[] = (
-#    match s.backing {
-#        UmbraShort { arr=arr } => (
-#            (arr as U8[])
-#        );
+let addr(s: Umbra): U8[] = (
+    match s.backing {
+        UmbraShort { arr=arr } => (
+            (arr as U8[])
+        );
 
-#        UmbraLong { ptr=ptr } => (
-#            ptr
-#        );
-#    }
-#);
+        UmbraLong { raw ptr=ptr } => (
+            ptr
+        );
+    }
+);
 
 # like [clone-len], except that if the input string is a UmbraLong, 
 # it does NOT copy the heap allocation
