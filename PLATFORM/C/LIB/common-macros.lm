@@ -57,6 +57,11 @@ macro ('match t ps) (scope(
    (match-pats( (uuid term) ps (fail( 'Pattern\sMatch\sFailure_s (: (p :Location:) Constant+Literal+String) )) ))
 ));
 
+macro ('match ('macro::bind-raw t) ps) (scope(
+   (let (uuid term) t)
+   (match-pats( (uuid term) ps (fail( 'Pattern\sMatch\sFailure_s (: (p :Location:) Constant+Literal+String) )) ))
+));
+
 macro ('match-pats( term () remainder )) (
    remainder
 );
