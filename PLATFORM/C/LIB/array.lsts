@@ -26,3 +26,4 @@ declare-unop( $"&", raw-type(t), raw-type(t[]), (l"(&"; x; l")";) );
 
 declare-unop( raw, raw-type(t), raw-type(t), x );
 declare-unop( raw, raw-type(base-type[]), raw-type(base-type[]), x );
+#declare-unop( raw, raw-type(base-type[]), raw-type(base-type[]+Raw), x );
