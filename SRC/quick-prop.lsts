@@ -19,6 +19,7 @@ let .ground-tag-and-arity(tt: Type): (CString,U64) = (
 );
 
 let add-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
+   print("quick-prop \{pre} x \{pat} => \{post}\n");
    let key = pre.ground-tag-and-arity;
    let val = quick-prop.lookup(key, ([] :: List<(Type,Type)>));
    val = cons( (pat,post), val );

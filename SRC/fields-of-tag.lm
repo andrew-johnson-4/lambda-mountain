@@ -4,6 +4,7 @@ tag-to-fields-index := (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<String,Tuple
 index-fields-of-tag := λ(: tag String)(: base-type Type)(: fields-params Type)(: fields-rhs Type). (: (
    (set tag-to-fields-index (.bind( tag-to-fields-index tag (Tuple( fields-params fields-rhs )) )))
    (index-fields-quick-prop( (t1( (+( 'Tag::_s tag )) )) base-type fields-rhs 1_u64 ))
+   (index-fields-quick-prop( (t1( (+( 'Tag::_s tag )) )) (t3( 'Array_s base-type TAny )) fields-rhs 1_u64 ))
 ) Nil);
 
 index-fields-quick-prop := λ(: tag-tt Type)(: base-type Type)(: fields-tt Type)(: field-index U64). (: (
