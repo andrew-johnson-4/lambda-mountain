@@ -61,13 +61,16 @@ let $"[]"(s: Umbra, i: U64): U8 = (
 let $"set[]"(s: Umbra[], i: U64, v: U8): Nil = (
    match raw s.backing {
       UmbraShort { raw arr=arr } => ( 
-          arr[i] = v; 
+          arr[i] = v;
+          print("Short set[] = \{arr[i]}\n");
       );
       UmbraLong { raw prefix=prefix, raw ptr=ptr } => (
          if i < 4 {
             prefix[i] = v;
+            print("Long set[] prefix = \{prefix[i]}\n");
          };
          ptr[i] = v;
+         print("Long set[] = \{ptr[i]}\n");
       );
    };
 );
@@ -226,6 +229,7 @@ let to-umbra(s: t, len: U64): Umbra = (
     while i < len {
         print("Copy \{s[i]}\n");
         &out[i] = s[i];
+        print("Copied \{out[i]}\n");
         i = i + 1;
     };
     out

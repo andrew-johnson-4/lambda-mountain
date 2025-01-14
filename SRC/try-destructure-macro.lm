@@ -57,6 +57,11 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (
              ()
          )
       ))
+      ( (Tuple( (App( (Lit( ':Field:_s _ )) (Var( pv _ )) )) (Var( el eltk )) )) (
+         (if (.has-prefix( el '._s )) (
+            (set r (CtxBind( (close CtxNil) pv (with-location( term (.location eltk) )) )))
+         ) ())
+      ))
       ( (Tuple( (App( (Lit( ':Variable:_s _ )) (Var( _ _ )) )) (Var( '__s _ )) )) (
          ()
       ))
