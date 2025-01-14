@@ -10,9 +10,24 @@ with-tag := λ(: tt Type). (: (
                (set tt (and( tt (t1( (+( 'Tag::_s tag )) )) )))
             ) ())
          ))
+         ( (TGround( 'Array_s tl )) (
+            (set tt (TGround(
+               'Array_s (close(with-tag tl))
+            )))
+         ))
          ( _ () )
       ))
    ) ())
    tt
 ) Type);
 
+with-tag := λ(: tt List<Type>). (: (
+   (match tt (
+      ()
+      ( LEOF () )
+      ( (LCons( p1 ps )) (
+         (set tt (cons( (with-tag p1) (with-tag ps) )))
+      ))
+   ))
+   tt
+) List<Type>);
