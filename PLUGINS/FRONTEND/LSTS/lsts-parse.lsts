@@ -96,6 +96,9 @@ let lsts-parse-type(tokens: List<Token>): Tuple<Type,List<Token>> = (
       };
       lsts-parse-expect(c")", tokens); tokens = tail(tokens);
       TGround { c"Tuple", close(args) };
+   } else if lsts-parse-head(tokens)==c"?" {
+      tokens = tail(tokens);
+      TAny {}
    } else if lsts-is-ident-head(lsts-parse-head(tokens)) && not(lsts-parse-head(tokens).has-suffix(c"_u64")) {
       let varname = lsts-parse-head(tokens); tokens = tail(tokens);
       TVar { varname }
