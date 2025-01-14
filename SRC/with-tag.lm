@@ -4,6 +4,12 @@ with-tag := λ(: tt Type). (: (
    (if (non-zero cls-tt) (
       (match cls-tt (
          ()
+         ( (TAnd( lt rt )) (
+            (set tt (TAnd(
+               (close(with-tag lt))
+               (close(with-tag rt))
+            )))
+         ))
          ( (TGround( 'Array_s tl )) (
             (set tt (TGround(
                'Array_s (close(with-tag tl))
