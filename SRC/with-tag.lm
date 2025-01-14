@@ -1,44 +1,17 @@
 
 with-tag := λ(: tt Type). (: (
-   (match tt (
-      ()
-      ( (TAnd( lt rt )) (
-         (set tt (TAnd(
-            (close(with-tag lt))
-            (close(with-tag rt))
-         )))
+   (let cls-tt (with-only-class tt))
+   (if (non-zero cls-tt) (
+      (match cls-tt (
+         ()
+         ( (TGround( cls tl )) (
+            (let tag (get-only-child cls))
+            (if (head-string tag) (
+               (set tt (and( tt (t1( (+( 'Tag::_s tag )) )) )))
+            ) ())
+         ))
+         ( _ () )
       ))
-      ( (TGround( 'Array_s tl )) (
-         (set tt (TGround(
-            'Array_s (close(with-tag tl))
-         )))
-      ))
-      ( _ (
-         (let cls-tt (with-only-class tt))
-         (if (non-zero cls-tt) (
-            (match cls-tt (
-               ()
-               ( (TGround( cls tl )) (
-                  (let tag (get-only-child cls))
-                  (if (head-string tag) (
-                     (set tt (and( tt (t1( (+( 'Tag::_s tag )) )) )))
-                  ) ())
-               ))
-               ( _ () )
-            ))
-         ) ())
-      ))
-   ))
+   ) ())
    tt
 ) Type);
-
-with-tag := λ(: tt List<Type>). (: (
-   (match tt (
-      ()
-      ( LEOF () )
-      ( (LCons( p1 ps )) (
-         (set tt (cons( (with-tag p1) (with-tag ps) )))
-      ))
-   ))
-   tt
-) List<Type>);

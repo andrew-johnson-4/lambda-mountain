@@ -13,12 +13,12 @@ add-field-aliases := λ(: fn String)(: field-index U64)(: base-type Type)(: ft T
    (add-alias(
       (clone-rope(SCons( (close(SAtom '._s)) (close(SAtom fn)) )))
       (clone-rope(SCons( (close(SAtom '._s)) (close(SAtom(to-string field-index))) )))
-      (t3( 'Arrow_s (t2( 'Array_s (and( (t1(+( 'Tag::_s tag ))) base-type )) )) ft ))
+      (t3( 'Arrow_s (t2( 'Array_s base-type )) ft ))
    ))
    (add-alias(
       (clone-rope(SCons( (close(SAtom 'set._s)) (close(SAtom fn)) )))
       (clone-rope(SCons( (close(SAtom 'set._s)) (close(SAtom(to-string field-index))) )))
-      (t3( 'Arrow_s (t3( 'Cons_s (t2( 'Array_s (and( (t1(+( 'Tag::_s tag ))) base-type )) )) ft )) (t1 'Nil_s) ))
+      (t3( 'Arrow_s (t3( 'Cons_s (t2( 'Array_s base-type )) ft )) (t1 'Nil_s) ))
    ))
 ) Nil);
 
