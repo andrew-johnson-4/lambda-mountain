@@ -12,7 +12,6 @@ infer-type-definition := λ(: base-type Type)(: body AST)(: case-number U64). (:
          (set r (max( r1 r2 )))
       ))
       ( case (
-         (set r (infer-type-constructor( base-type case )))
          (if (==( case-number 0_u64 )) (
             (let tag '_s)
             (match case (
@@ -33,7 +32,13 @@ infer-type-definition := λ(: base-type Type)(: body AST)(: case-number U64). (:
                ))
             ) ())
          ) ())
+         (set r (infer-type-constructor( base-type case )))
       ))
    ))
+   (if (is-only-child base-type) (
+      (add-quick-prop( (t3( 'Array_s base-type TAny )) (t3( 'Array_s base-type TAny ))
+         (t2( 'CaseNumber_s (t1 '0_s) ))
+      ))
+   ) ())
    r
 ) U64);

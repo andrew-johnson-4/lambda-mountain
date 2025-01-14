@@ -15,4 +15,3 @@ with-tag := λ(: tt Type). (: (
    ) ())
    tt
 ) Type);
-

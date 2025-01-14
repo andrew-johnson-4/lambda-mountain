@@ -58,8 +58,8 @@ let $"[]"(s: Umbra, i: U64): U8 = (
 );
 
 # DOES NOT CLONE THE STRING
-let $"set[]"(s: Umbra, i: U64, v: U8): Umbra = (
-   match s.backing {
+let $"set[]"(s: Umbra[], i: U64, v: U8): Nil = (
+   match raw s.backing {
       UmbraShort { raw arr=arr } => ( 
           arr[i] = v; 
       );
@@ -70,7 +70,6 @@ let $"set[]"(s: Umbra, i: U64, v: U8): Umbra = (
          ptr[i] = v;
       );
    };
-   s
 );
 
 # the returned array is NOT a C string!
@@ -97,7 +96,7 @@ let view-len(u: Umbra, len: U64): Umbra = (
         let res = new-umbra(len);
         let idx = 0;
         while idx < len {
-            res[idx] = u[idx];
+            &res[idx] = u[idx];
             idx = idx + 1;
         };
         res
@@ -226,7 +225,7 @@ let to-umbra(s: t, len: U64): Umbra = (
     let i = 0;
     while i < len {
         print("Copy \{s[i]}\n");
-        out[i] = s[i];
+        &out[i] = s[i];
         i = i + 1;
     };
     out

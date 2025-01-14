@@ -16,6 +16,9 @@ macro ( ('set ('macro::lhs-index( base index )) rhs) )
 macro ( ('macro::lhs-as-rhs (:Variable: v)) )
       ( v );
 
+macro ( ('macro::lhs-as-rhs ('& v)) )
+      ( & v );
+
 macro ( ('macro::lhs-as-rhs ('macro::lhs-field( base field )) ) )
       ( (macro::concat( . field )) base );
 
@@ -54,6 +57,11 @@ macro ('assert c) (
 
 macro ('match t ps) (scope(
    (let (uuid term) (open t))
+   (match-pats( (uuid term) ps (fail( 'Pattern\sMatch\sFailure_s (: (p :Location:) Constant+Literal+String) )) ))
+));
+
+macro ('match ('macro::bind-raw t) ps) (scope(
+   (let (uuid term) t)
    (match-pats( (uuid term) ps (fail( 'Pattern\sMatch\sFailure_s (: (p :Location:) Constant+Literal+String) )) ))
 ));
 
