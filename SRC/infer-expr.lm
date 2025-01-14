@@ -118,6 +118,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
                (set tt (and( tt inner-repr )))
             ) ())
             (let inner-class (with-only-class inner-tt))
+            (set inner-class (without-t( inner-tt (tag-of tt) )))
             (if (non-zero inner-class) (
                (set tt (and( tt inner-class )))
             ) ())
