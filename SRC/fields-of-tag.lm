@@ -13,6 +13,12 @@ index-fields-quick-prop := λ(: tag-tt Type)(: base-type Type)(: fields-tt Type)
          (add-quick-prop( tag-tt base-type
             (t2( (+( 'Field::_s (to-string field-index) )) pt ))
          ))
+         (if (non-zero(get-only-child(tag-of(class-of-tag(tag-of tag-tt))))) (
+            (print 'Only\sChild\s_s)(print base-type)(print '\n_s)
+            (add-quick-prop( (t3( 'Array_s base-type TAny )) (t3( 'Array_s base-type TAny ))
+               (t2( (+( 'Field::_s (to-string field-index) )) pt ))
+            ))
+         ) ())
          (index-fields-quick-prop( tag-tt base-type rst (+( field-index 1_u64 )) ))
       ))
       ( (TGround( 'Nil_s _ )) () )
@@ -20,6 +26,12 @@ index-fields-quick-prop := λ(: tag-tt Type)(: base-type Type)(: fields-tt Type)
          (add-quick-prop( tag-tt base-type
             (t2( (+( 'Field::_s (to-string field-index) )) pt ))
          ))
+         (if (non-zero(get-only-child(tag-of(class-of-tag(tag-of tag-tt))))) (
+            (print 'Only\sChild\s_s)(print base-type)(print '\n_s)
+            (add-quick-prop( (t3( 'Array_s base-type TAny )) (t3( 'Array_s base-type TAny ))
+               (t2( (+( 'Field::_s (to-string field-index) )) pt ))
+            ))
+         ) ())
       ))
    ))
 ) Nil);
