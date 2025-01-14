@@ -1,16 +1,35 @@
 
 with-platform-props := λ(: tt Type). (: (
    (if (not(is-t( tt 'LMStruct_s ))) (
-      (let cls-tt (with-only-class tt))
-      (if (non-zero cls-tt) (
-         (match cls-tt (
+      (if (is-t( tt 'Array_s )) (
+         (match (slot( tt 'Array_s )) (
             ()
-            ( (TGround( cls _ )) (
-               (if (is-lm-struct cls) (set tt (and( tt (t1 'LMStruct_s) ))) ())
+            ( (TGround( 'Array_s (LCons( _ (LCons( base-type LEOF )) )) )) (
+               (let cls-tt (with-only-class base-type))
+               (if (non-zero cls-tt) (
+                  (match cls-tt (
+                     ()
+                     ( (TGround( cls _ )) (
+                        (if (is-lm-struct cls) (set tt (and( tt (t1 'LMStruct_s) ))) ())
+                     ))
+                     ( _ () )
+                  ))
+               ) ())
+               
             ))
-            ( _ () )
          ))
-      ) ())
+      ) (
+         (let cls-tt (with-only-class tt))
+         (if (non-zero cls-tt) (
+            (match cls-tt (
+               ()
+               ( (TGround( cls _ )) (
+                  (if (is-lm-struct cls) (set tt (and( tt (t1 'LMStruct_s) ))) ())
+               ))
+               ( _ () )
+            ))
+         ) ())
+      ))
    ) ())
    tt
 ) Type);
