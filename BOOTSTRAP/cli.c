@@ -12246,10 +12246,10 @@ LM_Type uuid_0000000000089c07;
 char uuid_0000000000089c08;
 LM_ListType uuid_0000000000089c09;
 char* uuid_0000000000089c0a;
-char* uuid_0000000000089c0b;
-LM_Type uuid_0000000000089c0c;
-char uuid_0000000000089c0d;
-LM_ListType uuid_0000000000089c0e;
+LM_Type uuid_0000000000089c0b;
+char uuid_0000000000089c0c;
+LM_ListType uuid_0000000000089c0d;
+char* uuid_0000000000089c0e;
 char* uuid_0000000000089c0f;
 return ({({({uuid_0000000000089c05=(with_SB_only_SB_class_CL_ArrowTypeType(uuid_0000000000089c04));({});})
 ;
@@ -12265,28 +12265,28 @@ return ({({({uuid_0000000000089c05=(with_SB_only_SB_class_CL_ArrowTypeType(uuid_
 1;
 })?(({({uuid_0000000000089c0a=(((LM_Type)(uuid_0000000000089c07)).field_1002);({});})
 ;
-1;
+(_EQ__EQ__CL_ArrowU64ConsStringString(uuid_0000000000089c0a,"Array"));
 })?({uuid_0000000000089c08=(1);({});}):({})):({})):({}));
 });
 (uuid_0000000000089c08==(1));
-})?({({uuid_0000000000089c0b=(get_SB_only_SB_child_CL_ArrowStringString(uuid_0000000000089c0a));({});})
+})?({uuid_0000000000089c04=({LM_Type rvalue={.field_0=1};rvalue.field_1001=(close_CL_ArrowArray_QM_ListTypeListType((with_SB_tag_CL_ArrowListTypeListType(uuid_0000000000089c09))));rvalue.field_1002="Array";rvalue;});({});}):(({({({({uuid_0000000000089c0b=uuid_0000000000089c06;({});})
 ;
-((head_SB_string_CL_ArrowU8String(uuid_0000000000089c0b))?({uuid_0000000000089c04=(and_CL_ArrowTypeConsTypeType(uuid_0000000000089c04,(t1_CL_ArrowTypeString((_AD__CL_ArrowStringConsStringString("Tag::",uuid_0000000000089c0b))))));({});}):({}));
-}):(({({({({uuid_0000000000089c0c=uuid_0000000000089c06;({});})
-;
-({uuid_0000000000089c0d=(0);({});})
+({uuid_0000000000089c0c=(0);({});})
 ;
 });
-(((uuid_0000000000089c0c.field_0)==(1))?(({({uuid_0000000000089c0e=(*(((LM_Type)(uuid_0000000000089c0c)).field_1001));({});})
+(((uuid_0000000000089c0b.field_0)==(1))?(({({uuid_0000000000089c0d=(*(((LM_Type)(uuid_0000000000089c0b)).field_1001));({});})
 ;
 1;
-})?(({({uuid_0000000000089c0f=(((LM_Type)(uuid_0000000000089c0c)).field_1002);({});})
+})?(({({uuid_0000000000089c0e=(((LM_Type)(uuid_0000000000089c0b)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsStringString(uuid_0000000000089c0f,"Array"));
-})?({uuid_0000000000089c0d=(1);({});}):({})):({})):({}));
+1;
+})?({uuid_0000000000089c0c=(1);({});}):({})):({})):({}));
 });
-(uuid_0000000000089c0d==(1));
-})?({uuid_0000000000089c04=({LM_Type rvalue={.field_0=1};rvalue.field_1001=(close_CL_ArrowArray_QM_ListTypeListType((with_SB_tag_CL_ArrowListTypeListType(uuid_0000000000089c0e))));rvalue.field_1002="Array";rvalue;});({});}):(1?({}):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/with-tag.lm Line: 5 Column: 8")))));
+(uuid_0000000000089c0c==(1));
+})?({({uuid_0000000000089c0f=(get_SB_only_SB_child_CL_ArrowStringString(uuid_0000000000089c0e));({});})
+;
+((head_SB_string_CL_ArrowU8String(uuid_0000000000089c0f))?({uuid_0000000000089c04=(and_CL_ArrowTypeConsTypeType(uuid_0000000000089c04,(t1_CL_ArrowTypeString((_AD__CL_ArrowStringConsStringString("Tag::",uuid_0000000000089c0f))))));({});}):({}));
+}):(1?({}):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/with-tag.lm Line: 5 Column: 8")))));
 }):({}));
 });
 uuid_0000000000089c04;
