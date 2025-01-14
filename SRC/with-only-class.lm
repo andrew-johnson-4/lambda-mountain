@@ -9,6 +9,9 @@ with-only-class := λ(: tt Type). (: (
          (let rc (with-only-class rt1))
          (if (non-zero rc) (set rt rc) ())
       ))
+      ( (TGround( 'Array_s _ )) (
+         (set rt tt)
+      ))
       ( (TGround( tag _ )) (
          (if (is-class tag) (
             (if (not(is-fragment tag)) (
