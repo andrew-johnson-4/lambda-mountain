@@ -117,10 +117,14 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
             (if (non-zero inner-repr) (
                (set tt (and( tt inner-repr )))
             ) ())
-            (let inner-class (with-only-class inner-tt))
-            (if (non-zero inner-class) (
-               (set tt (and( tt inner-class )))
-            ) ())
+            (if (.has-prefix( (tag-of tt) 'Tag::_s )) (
+               (set tt (and( tt inner-tt )))
+            ) (
+               (let inner-class (with-only-class inner-tt))
+               (if (non-zero inner-class) (
+                  (set tt (and( tt inner-class )))
+               ) ())
+            ))
             (ascript-normal( term tt ))
          ) ())
       ))
