@@ -706,8 +706,18 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
       );
       [Token{key:c"match"}.. rest] => (
          let loc = head(tokens).location; tokens = rest;
+         
+         let raw = if lsts-parse-head(tokens)==c"raw" {
+            tokens = tail(tokens); true;
+         } else false;
          let e-rest = lsts-parse-small-expression(tokens);
          tokens = e-rest.second;
+         if raw {
+            e-rest.first = App {
+               close(Var{ c"macro::bind-raw", with-location(mk-token("macro::bind-raw"),loc) }),
+               close(e-rest.first)
+            };
+         };
          let pats = ASTNil {};
          lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
          while non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
