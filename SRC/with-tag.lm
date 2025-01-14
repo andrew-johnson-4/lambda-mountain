@@ -1,29 +1,34 @@
 
 with-tag := λ(: tt Type). (: (
-   (let cls-tt (with-only-class tt))
-   (if (non-zero cls-tt) (
-      (match cls-tt (
-         ()
-         ( (TAnd( lt rt )) (
-            (set tt (TAnd(
-               (close(with-tag lt))
-               (close(with-tag rt))
-            )))
-         ))
-         ( (TGround( 'Array_s tl )) (
-            (set tt (TGround(
-               'Array_s (close(with-tag tl))
-            )))
-         ))
-         ( (TGround( cls tl )) (
-            (let tag (get-only-child cls))
-            (if (head-string tag) (
-               (set tt (and( tt (t1( (+( 'Tag::_s tag )) )) )))
-            ) ())
-         ))
-         ( _ () )
+   (match tt (
+      ()
+      ( (TAnd( lt rt )) (
+         (set tt (TAnd(
+            (close(with-tag lt))
+            (close(with-tag rt))
+         )))
       ))
-   ) ())
+      ( (TGround( 'Array_s tl )) (
+         (set tt (TGround(
+            'Array_s (close(with-tag tl))
+         )))
+      ))
+      ( _ (
+         (let cls-tt (with-only-class tt))
+         (if (non-zero cls-tt) (
+            (match cls-tt (
+               ()
+               ( (TGround( cls tl )) (
+                  (let tag (get-only-child cls))
+                  (if (head-string tag) (
+                     (set tt (and( tt (t1( (+( 'Tag::_s tag )) )) )))
+                  ) ())
+               ))
+               ( _ () )
+            ))
+         ) ())
+      ))
+   ))
    tt
 ) Type);
 
