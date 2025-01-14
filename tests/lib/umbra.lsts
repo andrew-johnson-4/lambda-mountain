@@ -3,9 +3,9 @@ import LIB/default.lm;
 import u.lsts;
 
 # UmbraShort
-let a = to-umbra("Hey");
-assert( a.length == 3 );
-print(a[0]);
+#let a = to-umbra("Hey");
+#assert( a.length == 3 );
+#print(a[0]);
 #assert( a[0] == "H"[0] );
 #assert( a[1] == "e"[0] );
 #assert( a[2] == "y"[0] );

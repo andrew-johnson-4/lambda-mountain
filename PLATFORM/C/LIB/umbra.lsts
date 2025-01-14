@@ -60,10 +60,10 @@ let $"[]"(s: Umbra, i: U64): U8 = (
 # DOES NOT CLONE THE STRING
 let $"set[]"(s: Umbra[], i: U64, v: U8): Nil = (
    match raw s.backing {
-      UmbraShort { raw arr=arr } => ( 
+      #UmbraShort { raw arr=arr } => ( 
       #    arr[i] = v;
       #    print("Short set[] = \{arr[i]}\n");
-      );
+      #);
       #UmbraLong { raw prefix=prefix, raw ptr=ptr } => (
       #   if i < 4 {
       #      prefix[i] = v;
