@@ -77,6 +77,7 @@ let lsts-parse(tokens: List<Token>): Nil = (
             if not(non-zero(tokens)) || not(lsts-is-lit-head(lsts-parse-head(tokens))) { 
                lsts-parse-expect(c"[Type Constructor]", tokens);
             };
+            lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
             let constructor = head(tokens); tokens = tail(tokens);
             lsts-parse-expect(c";", tokens); tokens = tail(tokens);
             ast-parsed-program = Seq { close(ast-parsed-program),

@@ -4,4 +4,4 @@ type Type = TAny
           | TGround { tag: CString, parameters: List<Type>[] }
           | TAnd { left: Type[], right: Type[] };
 
-# TODO: zero Type = TAny;
+# zero Type = TAny;
