@@ -961,7 +961,7 @@ let lsts-parse-lit(tokens: List<Token>): Tuple<AST,List<Token>> = (
    Tuple { term, tokens }
 );
 
-let lsts-parse-atom(tokens: List<Token>): Tuple<AST,List<Token>> = (
+let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let term = ASTEOF {};
    if lsts-parse-head(tokens)==c"type" {
       tokens = tail(tokens);
@@ -980,12 +980,15 @@ let lsts-parse-atom(tokens: List<Token>): Tuple<AST,List<Token>> = (
    } else if lsts-parse-head(tokens)==c"&" {
       let amp = head(tokens);
       tokens = tail(tokens);
-      let term-rest = lsts-parse-atom(tokens);
+      let term-rest = lsts-parse-atom-without-tail(tokens);
       tokens = term-rest.second;
       term = App {
          close(Var{ amp.key, amp }),
          close(term-rest.first)
       };
+      term-rest = lsts-parse-atom-tail(term, tokens);
+      term = term-rest.first;
+      tokens = term-rest.second;
    } else if lsts-is-ident-head(lsts-parse-head(tokens)) {
       let term-rest = lsts-make-maybe-var(tokens);
       tokens = term-rest.second;
@@ -1046,7 +1049,12 @@ let lsts-parse-atom(tokens: List<Token>): Tuple<AST,List<Token>> = (
          }
       );
    };
-   lsts-parse-atom-tail(term,tokens)
+   Tuple { term, tokens };
+);
+
+let lsts-parse-atom(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   let atom-rest = lsts-parse-atom-without-tail(tokens);
+   lsts-parse-atom-tail(atom-rest.first,atom-rest.second);
 );
 
 let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>> = (
