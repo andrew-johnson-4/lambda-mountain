@@ -79,8 +79,8 @@ let $"set[]"(s: Umbra[], i: U64, v: U8): Nil = (
 # the returned array is READ ONLY
 # for [UmbraLong], returns the pointer to the heap data 
 # for [UmbraShort], returns the pointer to the on-stack data
-let addr(s: Umbra): U8[] = (
-    match s.backing {
+let addr(s: Umbra[]): U8[] = (
+    match raw s.backing {
         UmbraShort { raw arr=arr } => (
             (arr as U8[])
         );
@@ -98,7 +98,7 @@ let view-len(u: Umbra, len: U64): Umbra = (
         let res = new-umbra(len);
         let idx = 0;
         while idx < len {
-            (&res)[idx] = (&u)[idx];
+            &res[idx] = &u[idx];
             idx = idx + 1;
         };
         res
@@ -118,14 +118,14 @@ let print(x: Umbra): Nil = (
 );
 
 let short-prefix-matches(a: Umbra, b: Umbra): U64 = (
-    ((&a)[0] == (&b)[0]) &&
-    ((&a)[1] == (&b)[1]) &&
-    ((&a)[2] == (&b)[2]) &&
-    ((&a)[3] == (&b)[3])
+    (&a[0] == &b[0]) &&
+    (&a[1] == &b[1]) &&
+    (&a[2] == &b[2]) &&
+    (&a[3] == &b[3])
 );
 
 # performance note: this is extremly fast if the pfx string is known to be <= 4 bytes at compile time
-let .has-prefix(base: Umbra, pfx: Umbra): U64 = (
+let .has-prefix(base: Umbra[], pfx: Umbra[]): U64 = (
     if pfx.length() > base.length() {
         0
     } else {
@@ -134,7 +134,7 @@ let .has-prefix(base: Umbra, pfx: Umbra): U64 = (
     }
 );
 
-let .has-prefix(base: Umbra, pfx: t): U64 = (
+let .has-prefix(base: Umbra[], pfx: t): U64 = (
     let pfxlen = pfx.length();
     if pfxlen > base.length() {
         0
