@@ -2,7 +2,7 @@
 compile-maybe-push-stack := λ(: ctx FContext)(: offset I64)(: fragment Fragment)(: expression-type Type)(: sloc AST). (: (
    (let ft (.type( fragment )))
    (if (non-zero ft) () (set ft expression-type))
-   (if (is-t( ft 'StackVariable_s )) () (
+   (if (.is-t( ft 'StackVariable_s )) () (
       (let callee-ctx ctx)
       (set callee-ctx (fragment-context::bind( callee-ctx 'src_s (denormalize ft) fragment )))
       (set fragment (cc-blob( callee-ctx 'push_s (denormalize ft) offset sloc )))

@@ -5,7 +5,6 @@ import SRC/quick-prop.lsts;
 import SRC/cmp.lsts;
 
 import SRC/cons-root.lsts;
-import SRC/is-t.lm;
 import SRC/is-and.lsts;
 import SRC/index-concrete-type-instances.lm;
 import SRC/type-index.lm;
@@ -49,8 +48,6 @@ import SRC/typeof.lm;
 import SRC/to-s.lm;
 import SRC/domain.lm;
 import SRC/range.lm;
-import SRC/t.lm;
-import SRC/p.lm;
 import SRC/and.lm;
 import SRC/union.lm;
 import SRC/tag-of.lm;

@@ -1,0 +1,9 @@
+
+let .p(tt: Type, i: U64): Type = (
+   match tt {
+      TGround { parameters=parameters } => parameters.nth(i, TAny);
+      _ => TAny;
+   }
+);
+let .p1(tt: Type): Type = tt.p(0);
+let .p2(tt: Type): Type = tt.p(1);

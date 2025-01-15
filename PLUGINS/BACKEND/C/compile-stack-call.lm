@@ -4,11 +4,11 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
    (let function-type (.type f))
    (let r (fragment::new()))
 
-   (if (is-t( function-type 'Blob_s )) (
+   (if (.is-t( function-type 'Blob_s )) (
       (set r (cc-blob( ctx function-name args offset )))
       (set.context( r (close ctx) ))
    ) (
-      (if (is-t( function-type 'Prop_s )) (
+      (if (.is-t( function-type 'Prop_s )) (
          (set r (compile-expr( ctx args offset Used )))
       ) (
          (if (is( used Tail )) (set used Used) ())
@@ -21,7 +21,7 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
          (let ictx (fragment::new()))
 
          (let function-id function-name)
-         (if (is-t( function-type 'FFI_s )) () (
+         (if (.is-t( function-type 'FFI_s )) () (
             (set function-id (mangle-identifier( function-name function-type )))
          ))
 

@@ -1,7 +1,7 @@
 
 with-platform-props := λ(: tt Type). (: (
-   (if (not(is-t( tt 'LMStruct_s ))) (
-      (if (is-t( tt 'Array_s )) (
+   (if (not(.is-t( tt 'LMStruct_s ))) (
+      (if (.is-t( tt 'Array_s )) (
          (match (slot( tt 'Array_s )) (
             ()
             ( (TGround( 'Array_s (LCons( _ (LCons( base-type LEOF )) )) )) (

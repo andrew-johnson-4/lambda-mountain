@@ -24,12 +24,12 @@ initialize-c-struct := λ(: ctx FContext)(: rval AST)(: case-number U64)(: field
                            (+(
                               (+(
                                  (SAtom ',sizeof\[_s)
-                                 (mangle-c-type(p2(slot( par1 'Array_s ))))
+                                 (mangle-c-type(.p2(slot( par1 'Array_s ))))
                               ))
                               (+(
                                  (SAtom '\]*_s)
                                  (+(
-                                    (SAtom(tag-of(p1(slot( par1 'Array_s )))))
+                                    (SAtom(tag-of(.p1(slot( par1 'Array_s )))))
                                     (SAtom '\]\:_s)
                                  ))
                               ))
@@ -70,12 +70,12 @@ initialize-c-struct := λ(: ctx FContext)(: rval AST)(: case-number U64)(: field
                      (+(
                         (+(
                            (SAtom ',sizeof\[_s)
-                           (mangle-c-type(p2(slot( par1 'Array_s ))))
+                           (mangle-c-type(.p2(slot( par1 'Array_s ))))
                         ))
                         (+(
                            (SAtom '\]*_s)
                            (+(
-                              (SAtom(tag-of(p1(slot( par1 'Array_s )))))
+                              (SAtom(tag-of(.p1(slot( par1 'Array_s )))))
                               (SAtom '\]\:_s)
                            ))
                         ))
