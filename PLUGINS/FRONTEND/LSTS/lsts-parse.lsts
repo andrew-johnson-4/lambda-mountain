@@ -70,6 +70,53 @@ let lsts-parse(tokens: List<Token>): Nil = (
             lsts-parse-expect(c";",tokens); tokens = tail(tokens);
             frontend(clone-rope(path));
          );
+         [ Token{key:c"zero"}.. rest] => (
+            let loc = head(tokens).location;
+            tokens = rest;
+            let base-type-rest = lsts-parse-type(tokens); tokens = base-type-rest.second;
+            if not(non-zero(tokens)) || not(lsts-is-lit-head(lsts-parse-head(tokens))) { 
+               lsts-parse-expect(c"[Type Constructor]", tokens);
+            };
+            let constructor = head(tokens); tokens = tail(tokens);
+            lsts-parse-expect(c";", tokens); tokens = tail(tokens);
+            ast-parsed-program = Seq { close(ast-parsed-program),
+               close(Glb{ with-key(constructor, c"non-zero"), close(Abs{
+                  close(App{
+                     close(Lit{ c":", with-key(constructor, c":") }),
+                     close(App{
+                        close(Var{ c"t", with-key(constructor, c"t") }),
+                        close(AType{ base-type-rest.first })
+                     })
+                  }),
+                  close(App{
+                     close(Lit{ c":", with-key(constructor, c":") }),
+                     close(App{
+                        close(App{
+                           close(Var{ c"!=", with-key(constructor, c"!=") }),
+                           close(App{
+                              close(App{
+                                 close(Var{ c".0", with-key(constructor, c".0") }),
+                                 close(Var{ c"t", with-key(constructor, c"t") }),
+                              }),
+                              close(App{
+                                 close(Var{ c".0", with-key(constructor, c".0") }),
+                                 close(App{
+                                    close(Lit{ c":", with-key(constructor, c":") }),
+                                    close(App{
+                                       close(Lit{ constructor.key, constructor }),
+                                       close(AType{ base-type-rest.first })
+                                    })
+                                 })
+                              })
+                           })
+                        }),
+                        close(AType{ t1(c"U64") })
+                     })
+                  }),
+                  TAny {}
+               }) })
+            };
+         );
          _ => (
             let term-rest = lsts-parse-small-expression(tokens);
             let term = term-rest.first;
