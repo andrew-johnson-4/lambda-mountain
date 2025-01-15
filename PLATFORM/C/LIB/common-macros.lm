@@ -13,6 +13,12 @@ macro ( ('set ('macro::lhs-field( base field )) rhs) )
 macro ( ('set ('macro::lhs-index( base index )) rhs) )
       ( set[] ((macro::lhs-as-rhs base) index rhs) );
 
+macro ( ('macro::define-zero (base-type constructor)) ) (
+   non-zero := λ(: t base-type). (: (
+      (!=( (.0 t) (.0(: constructor base-type)) ))
+   ) U64);
+);
+
 macro ( ('macro::lhs-as-rhs (:Variable: v)) )
       ( v );
 

@@ -1,5 +1,6 @@
 
 type S = SNil | SAtom { atom: CString } | SCons { left: S[], right: S[] } | SPointer { pointer: U8[] };
+zero S = SNil;
 
 let print(io: IO::File, x: S): Nil = (
    match x {

@@ -30,7 +30,6 @@ import PLATFORM/C/LIB/string.lm;
 import PLATFORM/C/LIB/string.lsts;
 import PLATFORM/C/LIB/smart-string.lm;
 import PLATFORM/C/LIB/smart-string.lsts;
-import PLATFORM/C/LIB/s.lm;
 import PLATFORM/C/LIB/s.lsts;
 import PLATFORM/C/LIB/tuple.lsts;
 import PLATFORM/C/LIB/list.lm;

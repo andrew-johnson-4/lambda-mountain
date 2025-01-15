@@ -1,0 +1,6 @@
+
+type Type = TAny
+          | TVar { name: CString }
+          | TGround { tag: CString, parameters: List<Type>[] }
+          | TAnd { left: Type[], right: Type[] };
+zero Type = TAny;

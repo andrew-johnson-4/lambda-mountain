@@ -70,6 +70,24 @@ let lsts-parse(tokens: List<Token>): Nil = (
             lsts-parse-expect(c";",tokens); tokens = tail(tokens);
             frontend(clone-rope(path));
          );
+         [ Token{key:c"zero"}.. rest] => (
+            let loc = head(tokens).location;
+            tokens = rest;
+            let base-type-rest = lsts-parse-type(tokens); tokens = base-type-rest.second;
+            lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+            if not(non-zero(tokens)) || not(lsts-is-lit-head(lsts-parse-head(tokens))) { 
+               lsts-parse-expect(c"[Type Constructor]", tokens);
+            };
+            let constructor = head(tokens); tokens = tail(tokens);
+            lsts-parse-expect(c";", tokens); tokens = tail(tokens);
+            ast-parsed-program = Seq { close(ast-parsed-program), close(App{
+               close(Var{ c"macro::define-zero", with-key(constructor, c"macro::define-zero") }),
+               close(App{
+                  close(AType{ base-type-rest.first }),
+                  close(Lit{ constructor.key, constructor })
+               })
+            }) };
+         );
          _ => (
             let term-rest = lsts-parse-small-expression(tokens);
             let term = term-rest.first;
