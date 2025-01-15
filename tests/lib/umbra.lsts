@@ -1,23 +1,21 @@
 
 import LIB/default.lm;
-import u.lsts;
 
 # UmbraShort
-#let a = to-umbra("Hey");
-#assert( a.length == 3 );
-#print(a[0]);
-#assert( a[0] == "H"[0] );
-#assert( a[1] == "e"[0] );
-#assert( a[2] == "y"[0] );
-#assert( a == "Hey" );
-#a = to-umbra(a);
-#assert( a.length == 3 );
-#print(a);
-#assert( a == "Hey" );
-#a = a + "!";
-#let hash = deep-hash(a);
-#assert( a.length == 4 );
-#assert( a == "Hey!" );
-#assert( a != "Hey" );
-#assert( a.has-prefix("He") );
-#assert( not(a.has-prefix("Ho")) );
+let a = to-umbra("Hey");
+assert( &a.length == 3 );
+assert( &a[0] == "H"[0] );
+assert( &a[1] == "e"[0] );
+assert( &a[2] == "y"[0] );
+assert( &a == "Hey" );
+a = to-umbra(&a);
+assert( &a.length == 3 );
+print(&a);
+assert( &a == "Hey" );
+a = &a + "!";
+let hash = deep-hash(&a);
+assert( &a.length == 4 );
+assert( &a == "Hey!" );
+assert( &a != "Hey" );
+assert( &a.has-prefix("He") );
+assert( not(&a.has-prefix("Ho")) );
