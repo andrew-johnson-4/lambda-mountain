@@ -5,7 +5,6 @@ import SRC/quick-prop.lsts;
 import SRC/cmp.lsts;
 
 import SRC/cons-root.lsts;
-import SRC/is-and.lsts;
 import SRC/index-concrete-type-instances.lm;
 import SRC/type-index.lm;
 import SRC/infer-expr.lm;
