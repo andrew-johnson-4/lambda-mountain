@@ -1,0 +1,30 @@
+
+import LIB/default.lm;
+import SRC/unit-types.lsts;
+
+let t-A = t1(c"A");
+let t-B = t2(c"B", t-A);
+let t-AB = t-A + t-B;
+let t-x = tv(c"x");
+let t-Ax = t-A + t-x;
+let t-C = t2(c"C", t-x);
+
+# .is-t tests
+assert( t-A.is-t(c"A") );
+assert( not(t-A.is-t(c"B")) );
+assert( t-B.is-t(c"B") );
+assert( not(t-B.is-t(c"A")) );
+assert( t-B.p1.is-t(c"A") );
+assert( not(t-B.p1.is-t(c"B")) );
+assert( t-AB.is-t(c"A") );
+assert( t-AB.is-t(c"B") );
+assert( not(t-x.is-t(c"x")) );
+
+# .is-open tests
+assert( not(t-A.is-open) );
+assert( not(t-B.is-open) );
+assert( not(t-AB.is-open) );
+assert( t-x.is-open );
+assert( t-Ax.is-open );
+assert( t-C.is-open );
+
