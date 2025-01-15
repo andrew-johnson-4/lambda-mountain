@@ -2,5 +2,10 @@
 # Type Definitions
 import SRC/types-definitions.lsts;
 
+# Constructors / Destructors
+import SRC/t.lsts;
+import SRC/p.lsts;
+
 # Boolean Queries
 import SRC/is-t.lsts;
+

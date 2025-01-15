@@ -48,7 +48,6 @@ import SRC/typeof.lm;
 import SRC/to-s.lm;
 import SRC/domain.lm;
 import SRC/range.lm;
-import SRC/t.lm;
 import SRC/p.lm;
 import SRC/and.lm;
 import SRC/union.lm;
