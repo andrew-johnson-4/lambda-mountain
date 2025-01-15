@@ -12,7 +12,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                   (if (.is-t( kt '..._s )) (
                      (set kt (get-vararg-inner kt))
                      (if (can-unify( kt (typeof re) )) (scope(
-                        (if (is-open kt) (
+                        (if (.is-open kt) (
                            (set callee-ctx (union( callee-ctx (unify( kt (typeof re) )) )))
                         ) ())
                         (let c1 (compile-expr( caller-ctx re offset Used )))
@@ -27,7 +27,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                         (set offset (.2 e1))
                      ))
                   ) (scope(
-                     (if (is-open kt) (
+                     (if (.is-open kt) (
                         (set callee-ctx (union( callee-ctx (unify( kt (typeof re) )) )))
                      ) ())
                      (let c1 (compile-expr( caller-ctx re offset Used )))
@@ -43,7 +43,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
             (if (.is-t( kt '..._s )) (
                (set kt (get-vararg-inner kt))
                (if (can-unify( kt (typeof rhs) )) (scope(
-                  (if (is-open kt) (
+                  (if (.is-open kt) (
                      (set callee-ctx (union( callee-ctx (unify( kt (typeof rhs) )) )))
                   ) ())
                   (let c1 (compile-expr( caller-ctx rhs offset Used )))
@@ -55,7 +55,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                   (set offset (.2 e1))
                ))
             ) (
-               (if (is-open kt) (
+               (if (.is-open kt) (
                   (set callee-ctx (union( callee-ctx (unify( kt (typeof rhs) )) )))
                ) ())
                (let c1 (compile-expr( caller-ctx rhs offset Used )))
@@ -71,7 +71,7 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
                ( (App( le re )) (
                   (if (.is-t( kt '..._s )) (scope(
                      (set kt (get-vararg-inner kt))
-                     (if (is-open kt) (
+                     (if (.is-open kt) (
                         (set callee-ctx (union( callee-ctx (unify( kt (typeof re) )) )))
                      ) ())
                      (let c1 (compile-expr( caller-ctx re offset Used )))
@@ -89,14 +89,14 @@ cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST
          ) (
             (if (.is-t( kt '..._s )) (scope(
                (set kt (get-vararg-inner kt))
-               (if (is-open kt) (
+               (if (.is-open kt) (
                   (set callee-ctx (union( callee-ctx (unify( kt (typeof rhs) )) )))
                ) ())
                (let c1 (compile-expr( caller-ctx rhs offset Used )))
                (set caller-ctx (open(.context c1)))
                (set callee-ctx (bind-vararg( callee-ctx k kt c1 )))
             )) (scope(
-               (if (is-open kt) (
+               (if (.is-open kt) (
                   (set callee-ctx (union( callee-ctx (unify( kt (typeof rhs) )) )))
                ) ())
                (let c1 (compile-expr( caller-ctx rhs offset Used )))

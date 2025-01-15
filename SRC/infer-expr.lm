@@ -31,7 +31,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
       ))
       ( (Typedef( _ _ )) () )
       ( (Glb( k (@( v (Abs( _ )) )) )) (
-         (if (is-open(typeof term)) () (
+         (if (.is-open(typeof term)) () (
             (infer-expr( tctx v Unscoped TAny Used ))
             (let vt (typeof v))
          ))

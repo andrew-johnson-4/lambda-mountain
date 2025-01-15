@@ -12,7 +12,7 @@ assert-well-typed := λ(: term AST). (: (
       ( ASTEOF () )
       ( ASTNil (assert-one-typed term) )
       ( (Glb( k v )) (
-         (if (is-open(typeof term)) () (
+         (if (.is-open(typeof term)) () (
             (assert-well-typed v)
          ))
       ))

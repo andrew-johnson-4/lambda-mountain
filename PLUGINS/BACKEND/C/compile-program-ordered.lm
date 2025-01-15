@@ -11,7 +11,7 @@ compile-program-ordered := λ(: global-ctx FContext)(: program AST). (: (
    (for-each (g in ordered) (match g (
       ()
       ( (Glb( k_t rhs )) (
-         (if (is-open(typeof g)) () (
+         (if (.is-open(typeof g)) () (
             (compile-global( global-ctx k rhs ))
          ))
       ))
