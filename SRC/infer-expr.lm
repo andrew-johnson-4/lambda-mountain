@@ -214,7 +214,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
                      ()
                      ( (App( kv m )) (
                         (infer-expr( tctx kv Unscoped TAny Call ))
-                        (infer-expr( tctx m Unscoped (t3( 'HashtableEq_s (p2(normalize(typeof kv))) (p1(normalize(typeof kv))) )) Used ))
+                        (infer-expr( tctx m Unscoped (t3( 'HashtableEq_s (.p2(normalize(typeof kv))) (.p1(normalize(typeof kv))) )) Used ))
                      ))
                      ( _ () )
                   ))
@@ -272,7 +272,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          (ascript-normal( term rt ))
          (if (==( (var-name-if-var l) 'Rc_s )) (
             (maybe-specialize( 'inc_s (typeof-var-raw( term tctx 'inc_s ))
-               (t2( 'Rc_s (p2(slot( (p2(slot( (p1 (typeof r)) 'Array_s ))) 'Tuple_s ))) )) # invert Rc constructor to get type parameter
+               (t2( 'Rc_s (.p2(slot( (.p2(slot( (.p1 (typeof r)) 'Array_s ))) 'Tuple_s ))) )) # invert Rc constructor to get type parameter
             ))
          ) ())
 

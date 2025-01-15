@@ -15,7 +15,7 @@ destructure-lhs := λ(: ctx FContext)(: tt Type)(: lhs S)(: args FragmentList). 
          ))
       ))
       ( (SCons( (SAtom 'App_s) (SCons( lhs-rst (SCons( (SAtom 'Var_s) (SAtom k) )) )) )) (
-         (let a-type (p1 tt))
+         (let a-type (.p1 tt))
          (match args (
             ()
             ( (FLSeq( fl-rst f )) (
@@ -26,7 +26,7 @@ destructure-lhs := λ(: ctx FContext)(: tt Type)(: lhs S)(: args FragmentList). 
                (set args fl-rst)
             ))
          ))
-         (set ctx (destructure-lhs( ctx (p2 tt) lhs-rst args )))
+         (set ctx (destructure-lhs( ctx (.p2 tt) lhs-rst args )))
       ))
       ( SNil () )
       ( _ (
