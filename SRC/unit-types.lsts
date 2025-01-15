@@ -1,2 +1,6 @@
 
+# Type Definitions
 import SRC/types-definitions.lsts;
+
+# Boolean Queries
+import SRC/is-t.lsts;

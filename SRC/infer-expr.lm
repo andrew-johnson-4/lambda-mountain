@@ -42,7 +42,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          (match term (
             ()
             ( (App( _ (App( t _ )) )) (
-               (if (is-t( tt 'String_s )) () (
+               (if (.is-t( tt 'String_s )) () (
                   (infer-expr( tctx t Unscoped tt used ))
                ))
                (let inner-tt (typeof t))
@@ -80,7 +80,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
                ))
             ))
          ) ())
-         (if (is-t( tt 'SmartString_s )) () (
+         (if (.is-t( tt 'SmartString_s )) () (
             (maybe-specialize( 'intern_s (typeof-var-raw( term tctx 'intern_s )) tt ))
          ))
       ))
@@ -159,7 +159,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
       ( (App( (Abs( (Var( lname _ )) ASTNil tlt )) rhs )) (
          (let prev-tt (typeof-var-raw( term tctx lname )))
          (if (non-zero prev-tt) (
-            (if (&&( (not(is-arrow prev-tt)) (not(is-t( prev-tt 'GlobalVariable_s ))) )) (
+            (if (&&( (not(is-arrow prev-tt)) (not(.is-t( prev-tt 'GlobalVariable_s ))) )) (
                (exit-error( 'Variable\sName\sIs\sAlready\sBound\sIn\sOuter\sScope_s term ))
             ) ())
          ) ())
@@ -295,7 +295,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
       ))
       ( (Abs( lhs rhs tlt )) (
          (set tctx (infer-ctx( tctx lhs )))
-         (if (is-t( tlt 'Blob_s )) (
+         (if (.is-t( tlt 'Blob_s )) (
             (match rhs (
                ()
                ( (App( (Lit( ':_s _ )) (App( inner-rhs (AType return-type) )) )) (
@@ -309,7 +309,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          (let lt (typeof-lhs lhs))
          (let rt (typeof rhs))
          (ascript-normal( term (enrich( (t3( 'Arrow_s lt rt )) tlt )) ))
-         (if (is-t( tlt 'Blob_s )) () (
+         (if (.is-t( tlt 'Blob_s )) () (
             (maybe-specialize( 'cdecl::return_s (typeof-var-raw( term tctx 'cdecl::return_s )) rt ))
          ))
       ))
@@ -322,7 +322,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
             (let tt (typeof-tag l))
             (if (non-zero tt) (
                (if (non-zero hint) (
-                  (if (||( (is-t( hint 'String_s )) (is-t( hint 'SmartString_s )) )) (
+                  (if (||( (.is-t( hint 'String_s )) (.is-t( hint 'SmartString_s )) )) (
                      (set tt hint)
                   ) (
                      (set tt (unify-hint( hint tt )))

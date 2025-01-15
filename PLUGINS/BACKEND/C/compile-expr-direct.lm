@@ -21,11 +21,11 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ))
       ( (Lit( val _ )) (
          (let ltype (typeof term))
-         (if (||( (||( (is-t( ltype 'String_s )) (is-t( ltype 'SmartString_s )) )) (is-t( ltype 'Regex_s )) )) (
-            (if (is-t( ltype 'String_s )) (
+         (if (||( (||( (.is-t( ltype 'String_s )) (.is-t( ltype 'SmartString_s )) )) (.is-t( ltype 'Regex_s )) )) (
+            (if (.is-t( ltype 'String_s )) (
                (set e (compile-declare-cstring( val )))
             ) ())
-            (if (is-t( ltype 'SmartString_s )) (
+            (if (.is-t( ltype 'SmartString_s )) (
                (let guid (.lookup( compile-smart-string-index val '_s )))
                (if (non-zero guid) (
                   (set e (fragment::set( e 'expression_s (SAtom guid) )))
@@ -52,7 +52,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                   )))
                ))
             ) ())
-            (if (is-t( ltype 'Regex_s )) (
+            (if (.is-t( ltype 'Regex_s )) (
                (let rgx-id (uuid()))
                (set assemble-header-section (+(
                   assemble-header-section
@@ -102,7 +102,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                      ( '\\]_s (set e (fragment::expression '\[41\]_s)) )
                      ( '\\:_s (set e (fragment::expression '\[59\]_s)) )
                      ( _ (
-                        (if (is-t( ltype 'L_s )) (
+                        (if (.is-t( ltype 'L_s )) (
                            (set e (fragment::set( e 'expression_s (SAtom val) )))
                         ) (
                            (set e (fragment::set( e 'expression_s (
@@ -126,7 +126,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ))
       ( (App( (Var( 'open_s _ )) t )) (
          (let tt (typeof t))
-         (if (is-t( tt 'Array_s )) (
+         (if (.is-t( tt 'Array_s )) (
             (match (slot( tt 'Array_s )) (
                ()
                ( (TGround( 'Array_s (LCons( _ (LCons( TAny LEOF )) )) )) (
@@ -190,7 +190,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set.type( et (typeof t) ))
          (let ef (compile-expr( (open(.context ec)) f (.offset ec) Tail )))
          (set.type( ef (typeof f) ))
-         (if (is-t( (typeof f) 'Never_s )) (
+         (if (.is-t( (typeof f) 'Never_s )) (
             (set ef (never-as-expr-type( ef (typeof t) )))
          ) ())
 
