@@ -1,8 +1,6 @@
 
 type CompileMode ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 
-zero Type TAny;
-
 type SourceLocation (SourceLocation( filename:String , line:U64 , column:U64 ));
 type Token (Token( key:String , nonce:U64 , location:SourceLocation ));
 
