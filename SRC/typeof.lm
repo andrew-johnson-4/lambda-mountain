@@ -5,11 +5,6 @@ typeof := λ(: args FragmentList). (: (
       ()
       ( (FLSeq( rst f )) (
          (set r (typeof rst))
-         (if (non-zero r) (
-            (set r (t3( 'Cons_s r (with-size(.type f)) )))
-         ) (
-            (set r (with-size(.type f)))
-         ))
       ))
       ( _ () )
    ))
