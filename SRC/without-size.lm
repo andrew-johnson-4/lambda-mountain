@@ -34,7 +34,6 @@ without-size := λ(: tt Type). (: (
          ))
       ))
       ( (TGround( 'Sized_s sz )) (set tt TAny) )
-      ( (TGround( 'FieldsSized_s sz )) (set tt TAny) )
       ( (TGround( tag ps )) (
          (set tt (TGround( tag (close(without-size ps)) )))
       ))

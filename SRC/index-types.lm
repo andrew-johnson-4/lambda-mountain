@@ -32,10 +32,6 @@ import SRC/maybe-specialize.lm;
 import SRC/maybe-local-variable.lm;
 
 import SRC/is-constructor.lm;
-import SRC/is-parameterized.lm;
-import SRC/is-sized.lm;
-import SRC/has-representation.lm;
-import SRC/guess-representation.lm;
 
 import SRC/as-constant.lm;
 import SRC/deep-hash.lm;
@@ -50,8 +46,6 @@ import SRC/tag-of.lm;
 import SRC/can-unify.lm;
 import SRC/unify.lm;
 import SRC/fields-of-type.lm;
-import SRC/sizeof-type.lm;
-import SRC/sizeof-aligned.lm;
 import SRC/has-infinite.lm;
 import SRC/has-forward.lm;
 

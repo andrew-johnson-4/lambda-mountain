@@ -47,3 +47,13 @@ assert( t-f.domain.is-t(c"A") );
 assert( t-f.range.is-t(c"B") );
 assert( t-g.domain.is-t(c"A") );
 assert( t-g.range.is-t(c"B") );
+
+# .has-class tests
+assert( t-A.has-class );
+assert( t-B.has-class );
+assert( t-AB.has-class );
+assert( not(t-x.has-class) );
+assert( t-Ax.has-class );
+assert( t-C.has-class );
+assert( t-f.has-class );
+assert( t-g.has-class );

@@ -1,18 +1,23 @@
 
 with-size := λ(: tt Type). (: (
-   (if (not(is-sized tt)) (
-      (let sz (sizeof-type tt))
-      (set tt (with-size-recurse tt))
-      (set tt (and( tt (t2( 'Sized_s (t1(to-string sz)) )) )))
-   ) ())
    (match tt (
       ()
       ( (TGround( 'Cons_s (LCons( p2 (LCons( p1 LEOF )) )) )) (
-         (set tt (t3( 'Cons_s (with-size p1) (with-size p2) )))
+         (t3( 'Cons_s (with-size p1) (with-size p2) ))
       ))
-      ( _ () )
+      ( _ (
+         (if (&&(
+            (&&(
+               (not(.is-t( tt 'Sized_s )))
+               (not(is( tt TAny )))
+            ))
+            (not(.is-t( tt 'Arrow_s )))
+         )) (
+            (+( tt (t1( 'Sized_s )) ))
+         ) tt)
+      ))
+      ( _ tt )
    ))
-   tt
 ) Type);
 
 with-size := λ(: tt List<Type>). (: (
@@ -25,29 +30,3 @@ with-size := λ(: tt List<Type>). (: (
    ))
    tt
 ) List<Type>);
-
-with-size-recurse := λ(: tt Type). (: (
-   (match tt (
-      ()
-      ( (TAnd( lt rt )) (
-         (set tt (and(
-            (with-size-recurse lt)
-            (with-size-recurse rt)
-         )))
-      ))
-      ( (TGround( 'Phi_s _ )) () )
-      ( (TGround( 'Tag_s _ )) () )
-      ( (TGround( 'Sized_s _ )) () )
-      ( (TGround( 'CaseNumber_s _ )) () )
-      ( (TGround( 'Fields_s _ )) () )
-      ( (TGround( 'FieldsSized_s _ )) () )
-      ( (TGround( 'Array_s (LCons( array-index (LCons( array-base LEOF )) )) )) (
-         (set tt (t3( 'Array_s (with-size array-base) array-index )))
-      ))
-      ( (TGround( tag ps )) (
-         (set tt (TGround( tag (close(with-size ps)) )))
-      ))
-      ( _ () )
-   ))
-   tt
-) Type);

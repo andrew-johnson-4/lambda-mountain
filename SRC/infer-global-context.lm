@@ -23,7 +23,6 @@ infer-global-context := λ(: td AST). (: (
       ( (Glb( k_t (@( frhs (Abs( lhs (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) tlt )) )) )) (
          (let lt (typeof-lhs lhs))
          (let return-type rhst)
-         (if (.is-t( tlt 'Blob_s )) () (set return-type (guess-representation(without-representation rhst))))
          (let ft (t3( 'Arrow_s lt return-type )))
          (set ft (enrich( ft tlt )))
          (set ft (and( ft (t1 'GlobalVariable_s) )))

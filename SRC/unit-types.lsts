@@ -12,4 +12,5 @@ import SRC/domain.lsts;
 import SRC/is-t.lsts;
 import SRC/is-open.lsts;
 import SRC/is-arrow.lsts;
+import SRC/has-class.lsts;
 
