@@ -11,9 +11,7 @@ with-size := λ(: tt Type). (: (
           ))
        ))
    (
-      (let sz (sizeof-type tt))
-      (set tt (with-size-recurse tt))
-      (set tt (and( tt (t2( 'Sized_s (t1(to-string sz)) )) )))
+      (set tt (and( tt (t2( 'Sized_s (t1 '0_s) )) )))
    ) ())
    (match tt (
       ()
@@ -35,27 +33,3 @@ with-size := λ(: tt List<Type>). (: (
    ))
    tt
 ) List<Type>);
-
-with-size-recurse := λ(: tt Type). (: (
-   (match tt (
-      ()
-      ( (TAnd( lt rt )) (
-         (set tt (and(
-            (with-size-recurse lt)
-            (with-size-recurse rt)
-         )))
-      ))
-      ( (TGround( 'Phi_s _ )) () )
-      ( (TGround( 'Tag_s _ )) () )
-      ( (TGround( 'Sized_s _ )) () )
-      ( (TGround( 'CaseNumber_s _ )) () )
-      ( (TGround( 'Array_s (LCons( array-index (LCons( array-base LEOF )) )) )) (
-         (set tt (t3( 'Array_s (with-size array-base) array-index )))
-      ))
-      ( (TGround( tag ps )) (
-         (set tt (TGround( tag (close(with-size ps)) )))
-      ))
-      ( _ () )
-   ))
-   tt
-) Type);
