@@ -49,8 +49,6 @@ with-size-recurse := λ(: tt Type). (: (
       ( (TGround( 'Tag_s _ )) () )
       ( (TGround( 'Sized_s _ )) () )
       ( (TGround( 'CaseNumber_s _ )) () )
-      ( (TGround( 'Fields_s _ )) () )
-      ( (TGround( 'FieldsSized_s _ )) () )
       ( (TGround( 'Array_s (LCons( array-index (LCons( array-base LEOF )) )) )) (
          (set tt (t3( 'Array_s (with-size array-base) array-index )))
       ))
