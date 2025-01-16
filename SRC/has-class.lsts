@@ -1,0 +1,8 @@
+
+let .has-class(tt: Type): U64 = (
+   match tt {
+      TGround {} => true;
+      TAnd { left=left, right=right } => left.has-class || right.has-class;
+      _ => false;
+   }
+);

@@ -1,26 +1,23 @@
 
 with-size := λ(: tt Type). (: (
-   (if (&&(
-          (&&(
-             (not(.is-t( tt 'Sized_s )))
-             (not(is( tt TAny )))
-          ))
-          (&&(
-             (not(.is-t( tt 'Cons_s )))
-             (not(.is-t( tt 'Arrow_s )))
-          ))
-       ))
-   (
-      (set tt (and( tt (t2( 'Sized_s (t1 '0_s) )) )))
-   ) ())
    (match tt (
       ()
       ( (TGround( 'Cons_s (LCons( p2 (LCons( p1 LEOF )) )) )) (
-         (set tt (t3( 'Cons_s (with-size p1) (with-size p2) )))
+         (t3( 'Cons_s (with-size p1) (with-size p2) ))
       ))
-      ( _ () )
+      ( _ (
+         (if (&&(
+            (&&(
+               (not(.is-t( tt 'Sized_s )))
+               (not(is( tt TAny )))
+            ))
+            (not(.is-t( tt 'Arrow_s )))
+         )) (
+            (+( tt (t1( 'Sized_s )) ))
+         ) tt)
+      ))
+      ( _ tt )
    ))
-   tt
 ) Type);
 
 with-size := λ(: tt List<Type>). (: (
