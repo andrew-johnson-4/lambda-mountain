@@ -8,6 +8,8 @@ let t-AB = t-A + t-B;
 let t-x = tv(c"x");
 let t-Ax = t-A + t-x;
 let t-C = t2(c"C", t-x);
+let t-f = t3(c"Arrow", t-A, t-B);
+let t-g = t3(c"Array", t-f, TAny);
 
 # .is-t tests
 assert( t-A.is-t(c"A") );
@@ -26,5 +28,22 @@ assert( not(t-B.is-open) );
 assert( not(t-AB.is-open) );
 assert( t-x.is-open );
 assert( t-Ax.is-open );
+assert( t-Ax.p1.is-open );
 assert( t-C.is-open );
 
+# .is-arrow tests
+assert( not(t-A.is-arrow) );
+assert( not(t-B.is-arrow) );
+assert( not(t-AB.is-arrow) );
+assert( not(t-x.is-arrow) );
+assert( not(t-Ax.is-arrow) );
+assert( not(t-C.is-arrow) );
+assert( t-f.is-arrow );
+assert( t-g.is-arrow );
+assert( t-g.p2.is-arrow );
+
+# domain / range tests
+assert( t-f.domain.is-t(c"A") );
+assert( t-f.range.is-t(c"B") );
+assert( t-g.domain.is-t(c"A") );
+assert( t-g.range.is-t(c"B") );
