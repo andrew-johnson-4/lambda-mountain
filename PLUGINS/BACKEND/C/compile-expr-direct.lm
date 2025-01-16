@@ -144,7 +144,6 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          ))
       ))
       ( (App( (Var( 'sizeof_s _ )) (AType tt) )) (
-         (let sz (sizeof-type( tt )))
          (set e (fragment::expression(
             (+( (SAtom '\[sizeof\[_s)
                 (+( (mangle-c-type tt) (SAtom '\]\]_s) ))
@@ -192,9 +191,6 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          ) ())
 
          (let ictx (fragment::new()))
-         (set ictx (fragment::set( ictx 'rsp-offset_s (SAtom(to-string rsp-offset)) ))) 
-         (set ictx (fragment::set( ictx 'end-offset_s (SAtom(to-string end-offset)) ))) 
-         (set ictx (fragment::set( ictx 'return-size_s (SAtom(to-string(sizeof-type(typeof term)))) ))) 
          (set.type( ictx (t1( 'ImplicitContext_s )) ))
         
          (set ctx (fragment-context::bind( ctx 'ictx_s (t1 'ImplicitContext_s) ictx )))
@@ -212,17 +208,11 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set e (cc-blob( ctx 'primitive::if_s a-tt stack-offset term )))
 
          (set.context( e (.context et) ))
-         (if (>( (sizeof-type(typeof term)) 8_u64 )) (
-            (set.type( e (and( (typeof term) (t1 'StackVariable_s) )) ))
-         ) (
-            (set.type( e (typeof term) ))
-         ))
+         (set.type( e (typeof term) ))
       ))
       ( (App( (Abs( (@( lhs-t (Var( lhs _ )) )) ASTNil tlt )) rhs )) (
          (let rtype (typeof lhs-t))
-         (let size (sizeof-aligned rtype))
-         (let bind-offset (-( stack-offset (as size I64) )))
-         (let fr (fragment::local-variable( bind-offset rtype )))
+         (let fr (fragment::local-variable( 0_i64 rtype )))
          (set ctx (fragment-context::bind( ctx lhs rtype fr )))
          (let prepost (mangle-c-declaration rtype))
          (if (is-const-array rtype) (
