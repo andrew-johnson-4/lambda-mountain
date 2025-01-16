@@ -11,11 +11,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
       ()
       ( (Abs( lhs rhs tlt )) (if (||( (.is-open kt) (||( (.is-t( tlt 'Blob_s )) (||( (.is-t( tlt 'FFI_s )) (.is-t( tlt 'Prop_s )) )) )) )) () (
          (let args-type (.domain kt))
-         (let args-size (sizeof-aligned args-type))
          (set ctx (compile-destructure-args( args-type ctx lhs 0_i64 (.is-t( tlt 'Blob_s )) )))
-         (set ctx (FCtxBind( (close ctx) 'cdecl::args-size_s TAny
-            (fragment::expression(to-string args-size))
-         )))
          (let e (fragment::new()))
          (let function-name 'main_s)
          (if (==( k 'main_s )) (
