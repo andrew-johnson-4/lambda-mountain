@@ -171,7 +171,7 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: off
          ))) # TODO, render the binding as non-simple blob?
       ))
       ( (App( f a )) (
-         (if (is-arrow(typeof f)) (
+         (if (.is-arrow(typeof f)) (
             (match f (
                ()
                ( (Var( fname _ )) (

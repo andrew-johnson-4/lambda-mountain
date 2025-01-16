@@ -159,7 +159,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
       ( (App( (Abs( (Var( lname _ )) ASTNil tlt )) rhs )) (
          (let prev-tt (typeof-var-raw( term tctx lname )))
          (if (non-zero prev-tt) (
-            (if (&&( (not(is-arrow prev-tt)) (not(.is-t( prev-tt 'GlobalVariable_s ))) )) (
+            (if (&&( (not(.is-arrow prev-tt)) (not(.is-t( prev-tt 'GlobalVariable_s ))) )) (
                (exit-error( 'Variable\sName\sIs\sAlready\sBound\sIn\sOuter\sScope_s term ))
             ) ())
          ) ())
@@ -221,7 +221,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
                ) ())
                (if (is( used Unused )) (set r-used Unused) ())
                (set tctx (infer-expr( tctx l Unscoped TAny l-used )))
-               (if (is-arrow(typeof l)) (set r-used Call) ())
+               (if (.is-arrow(typeof l)) (set r-used Call) ())
                (let r-hint TAny)
                (set tctx (infer-expr( tctx r Unscoped TAny r-used )))
                (let lt-fname (find-alias( l-fname (typeof r) )))
@@ -242,7 +242,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
             ( _ (
                (if (is( used Unused )) (set r-used Unused) ())
                (set tctx (infer-expr( tctx l Unscoped TAny l-used )))
-               (if (is-arrow(typeof l)) (set r-used Call) ())
+               (if (.is-arrow(typeof l)) (set r-used Call) ())
                (set tctx (infer-expr( tctx r Unscoped TAny r-used )))
                (let apply-result (apply-cons(
                   (var-name-if-var l)
@@ -277,7 +277,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          ) ())
 
          (let lt (typeof l))
-         (if (is-arrow lt) (
+         (if (.is-arrow lt) (
             (match l (
                ()
                ( (Lit( l-name _ )) (
@@ -330,7 +330,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
                ) ())
                (ascript-normal( term tt ))
 
-               (if (is-arrow tt) () (
+               (if (.is-arrow tt) () (
                   (let ct (denormalize tt))
                   (maybe-specialize( 'push_s (typeof-var-raw( term tctx 'push_s )) ct ))
                ))

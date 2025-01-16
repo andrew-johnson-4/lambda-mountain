@@ -69,7 +69,7 @@ print := λ(: tt Type). (: (match tt (
    ( (TVar( vn )) (print vn) )
    ( (TGround( tag LEOF )) (print tag) )
    ( (TAnd( lt rt )) (
-      (if (is-arrow lt) (
+      (if (.is-arrow lt) (
          (print lt)
          (print '\s+\n_s)
          (print rt)

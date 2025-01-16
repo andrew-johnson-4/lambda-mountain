@@ -7,7 +7,7 @@ typeof-var-raw := λ(: sloc AST)(: tctx TContext)(: vname String). (: (
       ( (TCtxBind( rst k vt _ )) (
          (if (==( k vname )) (
             (if (non-zero found) (
-               (if (is-arrow vt) (
+               (if (.is-arrow vt) (
                   (set found (and( found vt )))
                ) (
                   (set found vt)
@@ -15,7 +15,7 @@ typeof-var-raw := λ(: sloc AST)(: tctx TContext)(: vname String). (: (
             ) (
                (set found vt)
             ))
-            (if (is-arrow vt) (
+            (if (.is-arrow vt) (
                (set tctx rst)
             ) (
                (set tctx TCtxEOF)

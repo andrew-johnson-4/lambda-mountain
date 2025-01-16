@@ -20,7 +20,7 @@ plugins-backend-c-compile := λ . (: (
                (let mid (mangle-identifier( k clean-tt )))
                (set fragment (fragment::set( fragment 'fragment-type_s (SAtom 'Global_s) )))
                (set fragment (fragment::set( fragment 'expression_s (SAtom mid) )))
-               (if (is-arrow kt) (
+               (if (.is-arrow kt) (
                   (set.type( fragment kt ))
                   (set global-ctx (fragment-context::bind(
                      global-ctx k kt fragment

@@ -1,0 +1,10 @@
+
+let .is-arrow(tt: Type): U64 = (
+   match tt {
+      TAnd { left=left, right=right } => left.is-arrow || right.is-arrow;
+      TGround { tag:c"Arrow" } => true;
+      TGround { tag:c"Array", parameters:[_.. array-base..] } => array-base.is-arrow;
+      _ => false;
+   }
+);
+
