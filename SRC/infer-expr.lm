@@ -280,8 +280,6 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
             (match l (
                ()
                ( (Lit( l-name _ )) (
-                  (let fields-size (sizeof-aligned(typeof r)))
-                  (let struct-size (sizeof-aligned rt))
                   (let ct (t2( 'Constructor_s (t1(var-name-if-var l)) )))
                   (set ct (and( ct (t2( 'CaseNumber_s (t1(to-string(index-of-tag l-name))) )) )))
                ))
@@ -337,9 +335,6 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          (exit 1_u64)
       ))
    ))
-   (if (>( (sizeof-type(typeof term)) 0_u64 )) (
-      (maybe-specialize( 'push_s (typeof-var-raw( term tctx 'push_s )) (typeof term) ))
-   ) ())
    tctx
 ) TContext);
 
