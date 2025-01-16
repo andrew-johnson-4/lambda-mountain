@@ -106,7 +106,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
             (let tctx-f (infer-expr( tctx f Unscoped TAny Tail )))
             (set tctx (phi-merge( tctx-t tctx-f )))
          ))
-         (ascript-normal( term (guess-representation(without-representation(typeof t))) ))
+         (ascript-normal( term (typeof t) ))
       ))
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
          (add-concrete-type-instance tt)

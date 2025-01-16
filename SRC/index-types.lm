@@ -32,8 +32,6 @@ import SRC/maybe-specialize.lm;
 import SRC/maybe-local-variable.lm;
 
 import SRC/is-constructor.lm;
-import SRC/has-representation.lm;
-import SRC/guess-representation.lm;
 
 import SRC/as-constant.lm;
 import SRC/deep-hash.lm;

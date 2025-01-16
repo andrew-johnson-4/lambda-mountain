@@ -154,10 +154,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             (close(t1 'Literal_s))
             (close(TAnd(
                (close(t1 'Constant_s))
-               (close(TAnd(
-                  (close(t1 'U64_s))
-                  (close(t2( 'Sized_s (t1 '8_s) )))
-               )))
+               (close(t1 'U64_s))
             )))
          )))
          (set.type( e et ))
