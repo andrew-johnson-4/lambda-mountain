@@ -298,7 +298,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set.type( e (typeof term) ))
       ))
       ( (App( f a )) (
-         (if (is-arrow(typeof f)) (
+         (if (.is-arrow(typeof f)) (
             (match f (
                ()
                ( (Var( fname _ )) (

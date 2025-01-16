@@ -5,7 +5,6 @@ import SRC/quick-prop.lsts;
 import SRC/cmp.lsts;
 
 import SRC/cons-root.lsts;
-import SRC/is-and.lsts;
 import SRC/index-concrete-type-instances.lm;
 import SRC/type-index.lm;
 import SRC/infer-expr.lm;
@@ -33,7 +32,6 @@ import SRC/maybe-specialize.lm;
 import SRC/maybe-local-variable.lm;
 
 import SRC/is-constructor.lm;
-import SRC/is-open.lm;
 import SRC/is-parameterized.lm;
 import SRC/is-sized.lm;
 import SRC/has-representation.lm;
@@ -46,8 +44,6 @@ import SRC/ascript.lm;
 import SRC/ascript-normal.lm;
 import SRC/typeof.lm;
 import SRC/to-s.lm;
-import SRC/domain.lm;
-import SRC/range.lm;
 import SRC/and.lm;
 import SRC/union.lm;
 import SRC/tag-of.lm;

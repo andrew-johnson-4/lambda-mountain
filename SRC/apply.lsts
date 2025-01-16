@@ -41,8 +41,8 @@ let apply(function-name: CString, function-type: Type, parameters: Type, do-spec
       };
    } else {
       for sft in rs { # iterate in case this is a hook
-         let frt = range(sft);
-         let fpt = domain(sft);
+         let frt = sft.range;
+         let fpt = sft.domain;
          let ctx = normalize(unify(fpt, parameters));
          let phi-ctx = ctx;
          while non-zero(phi-ctx) { match phi-ctx {
@@ -60,8 +60,8 @@ let apply(function-name: CString, function-type: Type, parameters: Type, do-spec
          if not(r.is-t( c"Error: Did Not Close Before Specialization")) {
             r = substitute(ctx, frt);
          };
-         if do-specialize && is-open(sft) {
-            if is-open(closed-type) {
+         if do-specialize && sft.is-open {
+            if closed-type.is-open {
                r = t1(c"Error: Did Not Close Before Specialization");
             };
             try-specialize(function-name, sft, ctx, closed-type);

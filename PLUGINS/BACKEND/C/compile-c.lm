@@ -8,7 +8,7 @@ plugins-backend-c-compile := λ . (: (
          (if (==( k 'main_s )) (set assemble-argv-referenced True_u8) ())
          (let kt (typeof rhs))
          (let fragment (fragment::new()))
-         (if (is-open kt) () (
+         (if (.is-open kt) () (
             (if (.is-t( kt 'Blob_s )) (
                (set.term( fragment rhs ))
                (set.type( fragment kt ))
@@ -20,7 +20,7 @@ plugins-backend-c-compile := λ . (: (
                (let mid (mangle-identifier( k clean-tt )))
                (set fragment (fragment::set( fragment 'fragment-type_s (SAtom 'Global_s) )))
                (set fragment (fragment::set( fragment 'expression_s (SAtom mid) )))
-               (if (is-arrow kt) (
+               (if (.is-arrow kt) (
                   (set.type( fragment kt ))
                   (set global-ctx (fragment-context::bind(
                      global-ctx k kt fragment

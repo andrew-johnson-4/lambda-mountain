@@ -16,7 +16,7 @@ cc-blob := λ(: caller-ctx FContext)(: function-name String)(: args AST)(: offse
          ) ())
          (set r (blob-render( callee-ctx rhs r offset )))
          (let t (.term f))
-         (set.type( r (range(typeof t)) ))
+         (set.type( r (.range(typeof t)) ))
          (set.context( r (close caller-ctx) ))
       ))
    ))
@@ -31,7 +31,7 @@ cc-blob := λ(: callee-ctx FContext)(: function-name String)(: args-tt Type)(: o
       ( (Abs( lhs rhs tlt )) (
          (set r (blob-render( callee-ctx rhs r offset )))
          (let t (.term f))
-         (set.type( r (range(typeof t)) ))
+         (set.type( r (.range(typeof t)) ))
          (set.context( r (close callee-ctx) ))
       ))
    ))

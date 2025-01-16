@@ -21,8 +21,6 @@ re-strict
 strict.s
 tmp.s
 tmp
-unit
-unit.s
 *.cmx
 *.cmi
 benchmarks/*.s

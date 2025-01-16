@@ -16,9 +16,9 @@ fragment-context::lookups := λ(: ctx FContext)(: k String)(: ft Type)(: kt Type
                (set r (cons( rf (: LEOF List<Fragment>) )))
                (set ctx FCtxEOF)
             ) (
-               (if (is-arrow rt) (
-                  (let domaint (domain rt))
-                  (let ranget (range rt))
+               (if (.is-arrow rt) (
+                  (let domaint (.domain rt))
+                  (let ranget (.range rt))
                   (if (can-unify( domaint kt )) (
                      (if (non-zero found) (
                         (if (can-unify( found domaint )) (

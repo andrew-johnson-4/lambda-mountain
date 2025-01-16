@@ -1,7 +1,7 @@
 
 apply-or-cons-and-specialize := λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (
    (let r (ApplyResult( TAny TAny (: LEOF List<Tuple<String,Type>>) )))
-   (if (is-arrow ft) (
+   (if (.is-arrow ft) (
       (set r (apply-blame( function-name ft pt 1_u64 blame )))
    ) (
       (if (&&( (non-zero ft) (non-zero pt) )) (

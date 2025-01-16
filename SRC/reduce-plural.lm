@@ -18,7 +18,7 @@ reduce-plural := λ(: pts List<Type>). (: (
          (set pts tlt)
          (for-each (tst in tlt) (
             (if (non-zero try) (
-               (if (can-unify( (domain try) (domain tst) )) (
+               (if (can-unify( (.domain try) (.domain tst) )) (
                   (set try TAny)
                ) ())
             ) ())
@@ -36,7 +36,7 @@ reduce-plural := λ(: pts List<Type>). (: (
          (set pts tlt)
          (for-each (tst in tlt) (
             (if (non-zero try) (
-               (if (can-unify( (domain try) (domain tst) )) (
+               (if (can-unify( (.domain try) (.domain tst) )) (
                   (set try TAny)
                ) ())
             ) ())

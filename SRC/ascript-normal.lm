@@ -3,7 +3,7 @@ ascript-normal := λ(: t AST)(: tt Type). (: (
    (if (non-zero tt) (
       (let prev-tt (normalize(typeof t)))
       (if (non-zero prev-tt) (
-         (if (is-arrow tt) () (
+         (if (.is-arrow tt) () (
             (let norm-tt (normalize tt))
             (if (&&( (can-unify( prev-tt norm-tt )) (can-unify( norm-tt prev-tt )) )) () (
                (print prev-tt)

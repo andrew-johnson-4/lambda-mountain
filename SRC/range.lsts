@@ -1,0 +1,9 @@
+
+let .range(tt: Type): Type = (
+   match tt {
+      TAnd { left=left, right=right } => left.range || right.range;
+      TGround { tag:c"Arrow", parameters:[rng.. dom..] } => rng;
+      TGround { tag:c"Array", parameters:[_.. array-base..] } => array-base.range;
+      _ => TAny;
+   }
+);
