@@ -1,6 +1,16 @@
 
 with-size := λ(: tt Type). (: (
-   (if (not(is-sized tt)) (
+   (if (&&(
+          (&&(
+             (not(.is-t( tt 'Sized_s )))
+             (not(is( tt TAny )))
+          ))
+          (&&(
+             (not(.is-t( tt 'Cons_s )))
+             (not(.is-t( tt 'Arrow_s )))
+          ))
+       ))
+   (
       (let sz (sizeof-type tt))
       (set tt (with-size-recurse tt))
       (set tt (and( tt (t2( 'Sized_s (t1(to-string sz)) )) )))

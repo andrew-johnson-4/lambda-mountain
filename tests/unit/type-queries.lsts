@@ -47,3 +47,4 @@ assert( t-f.domain.is-t(c"A") );
 assert( t-f.range.is-t(c"B") );
 assert( t-g.domain.is-t(c"A") );
 assert( t-g.range.is-t(c"B") );
+
