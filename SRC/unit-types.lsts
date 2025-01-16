@@ -5,6 +5,8 @@ import SRC/types-definitions.lsts;
 # Constructors / Destructors
 import SRC/t.lsts;
 import SRC/p.lsts;
+import SRC/range.lsts;
+import SRC/domain.lsts;
 
 # Boolean Queries
 import SRC/is-t.lsts;

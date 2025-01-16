@@ -44,8 +44,6 @@ import SRC/ascript.lm;
 import SRC/ascript-normal.lm;
 import SRC/typeof.lm;
 import SRC/to-s.lm;
-import SRC/domain.lm;
-import SRC/range.lm;
 import SRC/and.lm;
 import SRC/union.lm;
 import SRC/tag-of.lm;

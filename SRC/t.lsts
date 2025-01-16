@@ -4,4 +4,5 @@ let t2(tag: CString, p1: Type): Type = TGround{ tag, close([p1]) };
 let t3(tag: CString, p1: Type, p2: Type): Type = TGround{ tag, close([p2, p1]) };
 let tv(v: CString): Type = TVar{ v };
 let $"+"(lt: Type, rt: Type): Type = TAnd{ close(lt), close(rt) };
+let $"||"(lt: Type, rt: Type): Type = if non-zero(lt) then lt else rt;
 

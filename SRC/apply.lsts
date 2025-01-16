@@ -41,8 +41,8 @@ let apply(function-name: CString, function-type: Type, parameters: Type, do-spec
       };
    } else {
       for sft in rs { # iterate in case this is a hook
-         let frt = range(sft);
-         let fpt = domain(sft);
+         let frt = sft.range;
+         let fpt = sft.domain;
          let ctx = normalize(unify(fpt, parameters));
          let phi-ctx = ctx;
          while non-zero(phi-ctx) { match phi-ctx {
