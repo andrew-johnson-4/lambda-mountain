@@ -1,6 +1,0 @@
-
-import $"LIB/default.lm";
-
-let f(x: U64): SmartString = "test";
-
-print("this \{f(3)} " "should equal test.");

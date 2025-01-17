@@ -1,7 +1,0 @@
-
-import LIB/default.lm;
-
-match [1,2,3] {
-   [x.. 3.. ] => print("Bad: \{x}\n");
-   [x.. 2.. rst] => print("Good: \{x}\n");
-};
