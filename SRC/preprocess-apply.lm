@@ -100,24 +100,27 @@ preprocess-apply-one := λ(: program AST). (: (
             ) ())
          ))
       ))
-      ( (App( (Var( vn vntk )) vt )) (
+      ( (App( is-cons (Var( vn vntk )) vt )) (
          if (is-macro-head( vn 1_u64 )) (
             (let applied (preprocess-apply-hard( vn 1_u64 program )))
             (set r applied)
          ) (
             (set r (App(
+               is-cons
                (close(preprocess-apply(Var( vn (unique vntk) ))))
                (close(preprocess-apply vt))
             )))
          )
       ))
-      ( (App( (App( (Var( vn vntk )) vt1 )) vt2 )) (
+      ( (App( is-cons-1 (App( is-cons-2 (Var( vn vntk )) vt1 )) vt2 )) (
          if (is-macro-head( vn 2_u64 )) (
             (let applied (preprocess-apply-hard( vn 2_u64 program )))
             (set r applied)
          ) (
             (set r (App(
+               is-cons-1
                (close(preprocess-apply(App(
+                  is-cons-2
                   (close(Var( vn (unique vntk) )))
                   (close vt1)
                ))))
@@ -129,7 +132,8 @@ preprocess-apply-one := λ(: program AST). (: (
          (preprocess-apply al)
          (preprocess-apply ar)
       ))))
-      ( (App( al ar )) (set r (App(
+      ( (App( is-cons al ar )) (set r (App(
+         is-cons
          (close(preprocess-apply al))
          (close(preprocess-apply ar))
       ))))

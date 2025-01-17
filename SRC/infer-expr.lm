@@ -191,9 +191,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          (maybe-specialize( 'del_s (typeof-var-raw( term tctx 'del_s )) tt ))
       ))
       ( (App( is-cons l r )) (
-         (print 'Cons\s_s)(print is-cons)(print '\n_s)
          (if is-cons (
-            (print 'IS\sCons\n_s)
             (set tctx (infer-expr( tctx l Unscoped TAny Used )))
             (set tctx (infer-expr( tctx r Unscoped TAny Used )))
             (let rt (t3( 'Cons_s (typeof l) (typeof r) )))
