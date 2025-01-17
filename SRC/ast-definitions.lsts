@@ -14,3 +14,6 @@ type AST = ASTEOF
          | Typedef { lhs: AST[] , rhs: AST[] }
          | Meta { description: AST[] };
 zero AST = ASTEOF;
+
+# constructor with a default argument
+#let $"App"(left: AST[], right: AST[]): AST = App { left, right };
