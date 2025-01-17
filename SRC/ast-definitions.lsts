@@ -4,7 +4,7 @@ type Token = Token { key: CString, nonce: U64, location: SourceLocation };
 
 type AST = ASTEOF
          | ASTNil
-         | App { left: AST[], right: AST[] }
+         | App { is-cons: U64, left: AST[], right: AST[] }
          | Var { key: CString, token: Token }
          | Lit { key: CString, token: Token }
          | Abs { lhs: AST[], rhs: AST[], tt: Type }
@@ -16,4 +16,4 @@ type AST = ASTEOF
 zero AST = ASTEOF;
 
 # constructor with a default argument
-#let $"App"(left: AST[], right: AST[]): AST = App { left, right };
+let $"App"(left: AST[], right: AST[]): AST = App { false, left, right };
