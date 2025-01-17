@@ -2,6 +2,7 @@
 import LIB/default.lm;
 
 import SRC/unit-types.lsts;
+import SRC/unit-drivers.lsts;
 
 import SRC/index-definitions.lm;
 import SRC/index-globals.lm;
