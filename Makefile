@@ -13,7 +13,7 @@ build: compile-production
 	rm -f deploy.c deploy2.c
 	cargo test regression_tests
 
-deploy: build build-docs smoke-test
+deploy: build smoke-test
 
 profile: install-bootstrap
 	perf record lm SRC/index-index.lm
