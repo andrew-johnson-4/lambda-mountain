@@ -6,6 +6,6 @@ let plugin-null-frontend(fp: CString): Nil = (
    exit(1);
 );
 
-#let register-frontend(extension: CString, hook: Arrow<CString,Nil>): Nil = (
-#   plugins-frontend-index = plugins-frontends-index.bind(extension, hook);
-#);
+let register-frontend(extension: CString, hook: Arrow<CString,Nil>): Nil = (
+   plugins-frontends-index = plugins-frontends-index.bind(extension, hook);
+);
