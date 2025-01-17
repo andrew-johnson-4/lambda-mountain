@@ -1169,7 +1169,7 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
                   tokens = tail(tokens);
                   let term3-rest = lsts-parse-expression(tokens);
                   tokens = term3-rest.second;
-                  term2 = App{ close(term2), close(term3-rest.first) };
+                  term2 = App{ true, close(term2), close(term3-rest.first) };
                };
                base = App{ close(base), close(term2) };
             };
