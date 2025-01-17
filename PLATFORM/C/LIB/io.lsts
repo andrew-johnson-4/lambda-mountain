@@ -1,0 +1,7 @@
+
+let .file-extension(path: CString): CString = (
+   while head-string(path) != 0_u8 && head-string(path) != 46_u8 {
+      path = tail-string(path);
+   };
+   path
+);
