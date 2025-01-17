@@ -1106,7 +1106,7 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
                   } else {
                      lsts-parse-expect( c")", tokens );
                   };
-                  base = App{ close(base), close(next-rest.first) };
+                  base = App{ true, close(base), close(next-rest.first) };
                };
                lsts-parse-expect( c")", tokens ); tokens = tail(tokens);
             };

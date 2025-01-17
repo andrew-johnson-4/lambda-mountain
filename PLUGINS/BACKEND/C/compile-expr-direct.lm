@@ -284,8 +284,8 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set.context( e (close ctx) ))
          (set.type( e (typeof term) ))
       ))
-      ( (App( f a )) (
-         (if (.is-arrow(typeof f)) (
+      ( (App( is-cons f a )) (
+         (if (&&( (not is-cons) (.is-arrow(typeof f)) )) (
             (match f (
                ()
                ( (Var( fname _ )) (
