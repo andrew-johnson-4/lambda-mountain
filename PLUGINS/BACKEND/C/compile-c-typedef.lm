@@ -77,6 +77,7 @@ is-incomplete-typedef := λ(: tt Type). (: (
       ( (TGround( 'String_s _ )) () )
       ( (TGround( 'File_s _ )) () )
       ( (TGround( 'Array_s _ )) () )
+      ( (TGround( 'Arrow_s _ )) () )
       ( (TGround( _ _ )) (
          (if (.lookup( is-cstruct-hard-compiled-index tt 0_u64 )) () (
             (set r 1_u64)
