@@ -80,6 +80,12 @@ mangle-c-declaration-internal := λ(: tt Type). (: (
             (+( (+( (SAtom '[_s) (SAtom index) )) (SAtom ']_s) ))
          )))
       ))
+      ( (TGround( 'Arrow_s (LCons( rng (LCons( dom _ )) )) )) (
+         (let returns (mangle-c-type-internal rng))
+         (let accepts (mangle-c-type-internal dom))
+         (set pre (+( returns (SAtom '\[*_s) )))
+         (set post (+( (SAtom '\]\[_s) (+( accepts (SAtom '\]_s) )) )))
+      ))
       ( _ (
          (set pre (mangle-c-type tt))
       ))
