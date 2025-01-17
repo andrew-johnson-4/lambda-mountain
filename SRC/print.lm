@@ -26,12 +26,20 @@ print := λ(: t AST). (: (
          (print '\s:=\s_s)
          (print v)
       ))
-      ( (App( l r )) (
-         (print '\[_s)
-         (print l)
-         (print '\s_s)
-         (print r)
-         (print '\]_s)
+      ( (App( is-cons l r )) (
+         (if is-cons (
+            (print '{_s)
+            (print l)
+            (print '\s_s)
+            (print r)
+            (print '}_s)
+         ) (
+            (print '\[_s)
+            (print l)
+            (print '\s_s)
+            (print r)
+            (print '\]_s)
+         ))
       ))
       ( (Abs( lhs rhs tlt )) (
          (print '\[_s)

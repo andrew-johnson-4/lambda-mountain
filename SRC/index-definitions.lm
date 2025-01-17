@@ -1,12 +1,6 @@
 
 type CompileMode ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 
-type SourceLocation (SourceLocation( filename:String , line:U64 , column:U64 ));
-type Token (Token( key:String , nonce:U64 , location:SourceLocation ));
-
-type AST ASTEOF | ASTNil | (App( left:AST[] , right:AST[] )) | (Var( key:String , Token )) | (Lit( key:String , Token )) | (Abs( AST[] , AST[] , Type )) | (AType( tt:Type ))
-                | (Seq( AST[] , AST[] )) | (Glb( Token , AST[] )) | (Typedef( AST[] , AST[] )) | (Meta( AST[] )); zero AST ASTEOF;
-
 type FragmentKV (FKVEOF) | (FKVSeq( FragmentKV[] , String , S )); zero FragmentKV FKVEOF;
 type Fragment (Fragment( term:AST , FragmentKV[] , offset:I64 , type:Type , context:FContext[] , vararg:List<Fragment[]> ));
 type FragmentList (FLEOF) | (FLSeq( FragmentList[] , Fragment )); zero FragmentList FLEOF;

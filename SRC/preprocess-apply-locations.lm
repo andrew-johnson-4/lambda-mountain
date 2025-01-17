@@ -55,17 +55,14 @@ preprocess-apply-locations-one := λ(: program AST). (: (
       ( (Var( l ltk )) (
          (set r (Var( l (unique ltk) )))
       ) )
-      ( (App( t1 t2 )) (
+      ( (App( is-cons t1 t2 )) (
          (set r (App(
+            is-cons
             (close(preprocess-apply-locations t1))
             (close(preprocess-apply-locations t2))
          )))
       ))
       ( (Seq( al ar )) (set r (Seq(
-         (close(preprocess-apply-locations al))
-         (close(preprocess-apply-locations ar))
-      ))))
-      ( (App( al ar )) (set r (App(
          (close(preprocess-apply-locations al))
          (close(preprocess-apply-locations ar))
       ))))
