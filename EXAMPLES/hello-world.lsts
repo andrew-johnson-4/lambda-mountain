@@ -1,4 +1,0 @@
-
-import $"LIB/default.lm";
-
-print("hello world\n");

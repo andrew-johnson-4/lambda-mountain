@@ -1,8 +1,0 @@
-
-import LIB/default.lm;
-
-type A<x> = A { x: x };
-type AB = AA { a: A<U64> } | BB { a: A<I64> };
-
-let x = AA { A { 1 } } :: AB;
-let y = BB { A { -1 } } :: AB;

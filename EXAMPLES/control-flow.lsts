@@ -1,8 +1,0 @@
-
-import $"LIB/default.lm";
-
-print(if 12 then 34 else 56);
-
-(let xyz = 5; while xyz { print(xyz); xyz = xyz - 1; });
-
-for abc in [3, 2, 1] { print(abc); };
