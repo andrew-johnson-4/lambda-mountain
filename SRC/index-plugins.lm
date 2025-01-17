@@ -24,6 +24,9 @@ frontend := λ(: fp String). (: (
    (if (||( (.has-suffix(fp '.c_s)) (.has-suffix(fp '.h_s)) )) (
       (set found-file 1_u64)
    ) ())
+   (if (.has( plugins-frontends-index (.file-extension fp) )) (
+      (set found-file 1_u64)
+   ) ())
    (if (&&( (not found-file) (.has-prefix( fp 'PLATFORM/_s )) )) (
       (if (file-exists fp) (
          (set found-file 1_u64)
@@ -62,9 +65,7 @@ frontend := λ(: fp String). (: (
       (lsts-frontend fp)
       (set todo 0_u64)
    ) ())
-   (if todo (
-      (print 'Unable\sto\sfind\sa\ssuitable\sfrontend:\s_s)(print fp)(print '\n_s)(exit 1_u64)
-   ) ())
+   (.lookup( plugins-frontends-index (.file-extension fp) plugin-null-frontend ))
 ) Nil);
 
 frontend-flush := λ. (: (

@@ -1,0 +1,35 @@
+
+let .lookup(table: HashtableEq<k,v>, key: k, default: v): v = (
+   let capacity = (table as Tag::HashtableEq).capacity;
+   if capacity > 0 {
+      let contents = (table as Tag::HashtableEq).contents;
+      let replacing = false;
+      let ki = deep-hash(key) % capacity;
+      let old-kv = contents[ki];
+      if mem-is-non-zero(old-kv) && old-kv.first==key { replacing = true; };
+      while mem-is-non-zero(old-kv) && not(replacing) {
+         ki = (ki + 1) % capacity;
+         old-kv = contents[ki];
+         if mem-is-non-zero(old-kv) && old-kv.first==key { replacing = true; };
+      };
+      if replacing { default = old-kv.second; };
+   };
+   default
+);
+
+let .has(table: HashtableEq<k,v>, key: k): U64 = (
+   let capacity = (table as Tag::HashtableEq).capacity;
+   let replacing = false;
+   if capacity > 0 {
+      let contents = (table as Tag::HashtableEq).contents;
+      let ki = deep-hash(key) % capacity;
+      let old-kv = contents[ki];
+      if mem-is-non-zero(old-kv) && old-kv.first==key { replacing = true; };
+      while mem-is-non-zero(old-kv) && not(replacing) {
+         ki = (ki + 1) % capacity;
+         old-kv = contents[ki];
+         if mem-is-non-zero(old-kv) && old-kv.first==key { replacing = true; };
+      };
+   };
+   replacing
+);

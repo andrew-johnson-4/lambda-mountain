@@ -127,48 +127,6 @@ set[] := λ(: table HashtableEq<k,v>)(: key k)(: value v). (: (
    replacing
 ) U64);
 
-.lookup := λ(: table HashtableEq<k,v>)(: key k)(: default v). (: (
-   (let capacity (.2(as table Tag::HashtableEq)))
-   (if (==( capacity 0_u64 )) () (
-      (let contents (.1(as table Tag::HashtableEq)))
-      (let replacing 0_u64)
-      (let ki (%( (deep-hash key) capacity )))
-      (let old-kv ([]( contents ki )))
-      (let old-k (.2 old-kv))
-      (if (&&( (mem-is-non-zero old-kv) (==( old-k key )) )) (set replacing 1_u64) ())
-      (while (&&( (mem-is-non-zero old-kv) (not replacing) )) (
-         (set ki (%( (+( ki 1_u64 )) capacity )))
-         (set old-kv ([]( contents ki )))
-         (set old-k (.2 old-kv))
-         (if (&&( (mem-is-non-zero old-kv) (==( old-k key )) )) (set replacing 1_u64) ())
-      ))
-      (if replacing (
-         (let old-v (.1 old-kv))
-         (set default old-v)
-      ) ())
-   ))
-   default
-) v);
-
-.has := λ(: table HashtableEq<k,v>)(: key k). (: (
-   (let capacity (.2(as table Tag::HashtableEq)))
-   (let replacing 0_u64)
-   (if (==( capacity 0_u64 )) () (
-      (let contents (.1(as table Tag::HashtableEq)))
-      (let ki (%( (deep-hash key) capacity )))
-      (let old-kv ([]( contents ki )))
-      (let old-k (.2 old-kv))
-      (if (&&( (mem-is-non-zero old-kv) (==( old-k key )) )) (set replacing 1_u64) ())
-      (while (&&( (mem-is-non-zero old-kv) (not replacing) )) (
-         (set ki (%( (+( ki 1_u64 )) capacity )))
-         (set old-kv ([]( contents ki )))
-         (set old-k (.2 old-kv))
-         (if (&&( (mem-is-non-zero old-kv) (==( old-k key )) )) (set replacing 1_u64) ())
-      ))
-   ))
-   replacing
-) U64);
-
 map::cons := λ(: key k)(: val v)(: tl HashtableEq<k,v>). (: (
    (.bind( tl key val ))
 ) HashtableEq<k,v>);
