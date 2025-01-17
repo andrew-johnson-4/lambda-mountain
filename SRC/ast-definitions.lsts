@@ -1,0 +1,16 @@
+
+type SourceLocation = SourceLocation { filename: CString, line: U64, column: U64 };
+type Token = Token { key: CString, nonce: U64, location: SourceLocation };
+
+type AST = ASTEOF
+         | ASTNil
+         | App { left: AST[], right: AST[] }
+         | Var { key: CString, token: Token }
+         | Lit { key: CString, token: Token }
+         | Abs { lhs: AST[], rhs: AST[], tt: Type }
+         | AType { tt: Type }
+         | Seq { left: AST[], right: AST[] }
+         | Glb { key: Token , val: AST[] }
+         | Typedef { lhs: AST[] , rhs: AST[] }
+         | Meta { description: AST[] };
+zero AST = ASTEOF;
