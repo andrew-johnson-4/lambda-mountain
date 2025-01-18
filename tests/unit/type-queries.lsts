@@ -57,3 +57,14 @@ assert( t-Ax.has-class );
 assert( t-C.has-class );
 assert( t-f.has-class );
 assert( t-g.has-class );
+
+# .arity synthesized field
+assert( t-A.arity == 0 );
+assert( t-B.arity == 1 );
+assert( t-AB.arity == 0 );
+assert( t-x.arity == 0 );
+assert( t-Ax.arity == 0 );
+assert( t-C.arity == 1 );
+assert( t-f.arity == 2 );
+assert( t-g.arity == 2 );
+

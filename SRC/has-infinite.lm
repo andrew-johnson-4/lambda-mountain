@@ -34,7 +34,7 @@ has-infinite := λ(: base-type Type)(: active Type). (: (
          )))
       ))
       ( (TGround( cls ps )) (
-         (set return (has-infinite( base-type (tag-of active) (arity active) ps 1_u64 )))
+         (set return (has-infinite( base-type (tag-of active) (.length ps) ps 1_u64 )))
       ))
       ( (TAnd( lt rt )) (
          (set return (max(
