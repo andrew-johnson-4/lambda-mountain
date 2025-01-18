@@ -1,3 +1,5 @@
 
-type Fragment = Fragment { term: AST, keyvals: List<Tuple<CString,S>>[], offset: I64, type: Type, context: FContext[], vararg: List<Fragment[]> };
+type Fragment = Fragment { term: AST, keyvals: List<Tuple<CString,S>>[], type: Type, context: FContext[], vararg: List<Fragment[]> };
+
+let .offset(f: Fragment): I64 = 0_i64; # dummy until this is removed entirely
 
