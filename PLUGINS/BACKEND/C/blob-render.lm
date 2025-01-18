@@ -53,7 +53,7 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: off
          (while (non-zero rngs) (match rngs (
             ()
             ( (SCons( a rst )) (
-               (let f (fragment::expression a))
+               (let f (mk-expression a))
                (let inner-ctx (fragment-context::bind( ctx lhs (t1 'L_s) f )))
                (let cs (blob-render-simple( inner-ctx context-key iter offset )))
                (let s (.1 cs))

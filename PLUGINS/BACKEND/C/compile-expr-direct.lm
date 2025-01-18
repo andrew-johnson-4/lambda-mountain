@@ -64,12 +64,12 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                       (+( (SAtom ',\s"_s) (escape-c-string val) )) ))
                           (SAtom '",\sREG_EXTENDED\]\:if\[return_code\]{fprintf\[stderr,"Could\snot\scompile\sregex."\]\:exit\[1\]\:}}\:\n_s) ))
                )))
-               (set e (fragment::expression rgx-id))
+               (set e (mk-expression rgx-id))
             ) ())
          ) (
             (let isa-fragment False_u8)
             (if (==( isa-fragment True_u8 )) (
-               (set e (fragment::expression val))
+               (set e (mk-expression val))
             ) (
                (if (non-zero(class-of-tag val)) (
                   (let tag-index (index-of-tag val))
@@ -91,16 +91,16 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                ) (
                   (match val (
                      ()
-                     ( 'True_s (set e (fragment::expression '\[1\]_s)) )
-                     ( 'False_s (set e (fragment::expression '\[0\]_s)) )
-                     ( '\\t_s (set e (fragment::expression '\[9\]_s)) )
-                     ( '\\n_s (set e (fragment::expression '\[10\]_s)) )
-                     ( '\\s_s (set e (fragment::expression '\[32\]_s)) )
-                     ( '\\o_s (set e (fragment::expression '\[35\]_s)) )
-                     ( '\\`_s (set e (fragment::expression '\[39\]_s)) )
-                     ( '\\[_s (set e (fragment::expression '\[40\]_s)) )
-                     ( '\\]_s (set e (fragment::expression '\[41\]_s)) )
-                     ( '\\:_s (set e (fragment::expression '\[59\]_s)) )
+                     ( 'True_s (set e (mk-expression '\[1\]_s)) )
+                     ( 'False_s (set e (mk-expression '\[0\]_s)) )
+                     ( '\\t_s (set e (mk-expression '\[9\]_s)) )
+                     ( '\\n_s (set e (mk-expression '\[10\]_s)) )
+                     ( '\\s_s (set e (mk-expression '\[32\]_s)) )
+                     ( '\\o_s (set e (mk-expression '\[35\]_s)) )
+                     ( '\\`_s (set e (mk-expression '\[39\]_s)) )
+                     ( '\\[_s (set e (mk-expression '\[40\]_s)) )
+                     ( '\\]_s (set e (mk-expression '\[41\]_s)) )
+                     ( '\\:_s (set e (mk-expression '\[59\]_s)) )
                      ( _ (
                         (if (.is-t( ltype 'L_s )) (
                            (set e (.set( e 'expression_s (SAtom val) )))
@@ -144,7 +144,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          ))
       ))
       ( (App( (Var( 'sizeof_s _ )) (AType tt) )) (
-         (set e (fragment::expression(
+         (set e (mk-expression(
             (+( (SAtom '\[sizeof\[_s)
                 (+( (mangle-c-type tt) (SAtom '\]\]_s) ))
             ))
