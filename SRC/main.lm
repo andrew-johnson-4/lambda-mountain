@@ -15,9 +15,7 @@ main := λ(: argc C_int)(: argv String[]). (: (
             (if (==( config-target '_s )) (set config-target 'tmp.txt_s) ())
             (set plugin-current-backend (& plugins-backend-blob-compile))          
          ))
-         ('--parse_s (set config-mode ModeParse))
          ('--dev_s (set config-devmode 1_u64))
-         ('--preprocess_s (set config-mode ModePreprocess))
          ('--typecheck_s (set config-mode ModeTypecheck))
          ('--compile_s (set config-mode ModeCompile))
          ('--strict_s (set config-strict True_u8))
@@ -51,13 +49,6 @@ main := λ(: argc C_int)(: argv String[]). (: (
 
    (match config-mode (
       ()
-      ( ModeParse (
-         (serialize-ast ast-parsed-program)
-      ))
-      ( ModePreprocess (
-         (preprocess())
-         (serialize-ast ast-parsed-program)
-      ))
       ( ModeTypecheck (
          (preprocess())
          (typecheck())
