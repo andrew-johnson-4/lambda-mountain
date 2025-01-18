@@ -1,7 +1,6 @@
 
 type CompileMode ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 
-type Fragment (Fragment( term:AST , keyvals:List<Tuple<String,S>>[] , offset:I64 , type:Type , context:FContext[] , vararg:List<Fragment[]> ));
 type FragmentList (FLEOF) | (FLSeq( FragmentList[] , Fragment )); zero FragmentList FLEOF;
 
 type IsUsed Used | Unused | Tail | Return | Call;

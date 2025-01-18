@@ -5,12 +5,12 @@ dev: install-production
 	./a.out
 
 build: compile-production
-	time ./production --c -o deploy.c SRC/index-index.lm
-	cc -O3 deploy.c -o deploy
-	time ./deploy --c -o deploy2.c SRC/index-index.lm
-	diff deploy.c deploy2.c
-	mv deploy.c BOOTSTRAP/cli.c
-	rm -f deploy.c deploy2.c
+	time ./production --c -o deploy1.c SRC/index-index.lm
+	cc -O3 deploy1.c -o deploy1
+	time ./deploy1 --c -o deploy2.c SRC/index-index.lm
+	diff deploy1.c deploy2.c
+	mv deploy1.c BOOTSTRAP/cli.c
+	rm -f deploy1 deploy1.c deploy2.c
 	cargo test regression_tests
 
 deploy: build smoke-test
