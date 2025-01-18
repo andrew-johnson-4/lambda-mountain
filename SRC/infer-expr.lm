@@ -63,14 +63,6 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          (set tctx (infer-expr( tctx t Unscoped tt used )))
          (let inner-tt (typeof t))
          (if (non-zero inner-tt) (
-            (let nn (with-only-representation inner-tt))
-            (if (non-zero nn) (
-               (let tt-2 (and(
-                  tt
-                  nn
-               )))
-               (set tt tt-2)
-            ) ())
             (ascript-normal( term tt ))
             (match term (
                ()
@@ -116,10 +108,6 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
             (if (.has-prefix( (tag-of tt) 'Tag::_s )) (
                (set tt (and( tt inner-tt )))
             ) (
-               (let inner-repr (with-only-representation inner-tt))
-               (if (non-zero inner-repr) (
-                  (set tt (and( tt inner-repr )))
-               ) ())
                (let inner-class (with-only-class inner-tt))
                (if (non-zero inner-class) (
                   (set tt (and( tt inner-class )))

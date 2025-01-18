@@ -63,9 +63,7 @@ import SRC/without-size-unless-class.lm;
 import SRC/without-size.lm;
 import SRC/without-platform-props.lm;
 
-import SRC/with-only-array.lm;
 import SRC/with-only-class.lm;
-import SRC/with-only-representation.lm;
 
 import SRC/normalize.lm;
 import SRC/denormalize.lm;
