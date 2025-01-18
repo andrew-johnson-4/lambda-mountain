@@ -69,13 +69,3 @@ else
 endif
 	mkdir -p $${HOME}/.lm/
 	cp -rf PLATFORM $${HOME}/.lm/
-	#lm LMV/cli.lm -o lmv.s
-	#as -o lmv.o lmv.s
-	#ld -o lmv   lmv.o
-	#mv lmv /usr/local/bin
-	#rm lmv.s lmv.o
-	#lm DOBY/cli.lm -o doby.s
-	#as -o doby.o doby.s
-	#ld -o doby   doby.o
-	#mv doby /usr/local/bin
-	#rm doby.s doby.o
