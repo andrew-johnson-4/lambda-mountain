@@ -1,6 +1,6 @@
 
 fragment::local-variable := λ(: offset I64)(: tt Type). (: (
-   (let r (fragment::new()))
+   (let r (mk-fragment()))
    (set r (.set( r 'expression_s (SAtom(uuid())) )))
    (set r (.set( r 'fragment-type_s (SAtom 'LocalVariable_s) )))
    (set.type( r tt ))

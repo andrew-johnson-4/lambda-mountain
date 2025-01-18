@@ -12,7 +12,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
       ( (Abs( lhs rhs tlt )) (if (||( (.is-open kt) (||( (.is-t( tlt 'Blob_s )) (||( (.is-t( tlt 'FFI_s )) (.is-t( tlt 'Prop_s )) )) )) )) () (
          (let args-type (.domain kt))
          (set ctx (compile-destructure-args( args-type ctx lhs 0_i64 (.is-t( tlt 'Blob_s )) )))
-         (let e (fragment::new()))
+         (let e (mk-fragment()))
          (let function-name 'main_s)
          (if (==( k 'main_s )) (
             (set e (compile-expr( ctx rhs 0_i64 Unused )))

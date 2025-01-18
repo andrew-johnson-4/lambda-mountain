@@ -19,7 +19,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
          (set ctx (FCtxBind( (close ctx) 'cdecl::args-size_s TAny
             (fragment::expression(to-string args-size))
          )))
-         (let e (fragment::new()))
+         (let e (mk-fragment()))
          (let function-name 'main_s)
          (if (==( k 'main_s )) (
             (set e (compile-expr( ctx rhs 0_i64 Unused )))

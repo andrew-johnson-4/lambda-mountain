@@ -1,5 +1,5 @@
 
-fragment::new := λ . (: (
+mk-fragment := λ . (: (
    (let r (Fragment(
       ASTEOF
       (close FKVEOF)

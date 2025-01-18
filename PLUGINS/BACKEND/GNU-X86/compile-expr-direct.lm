@@ -1,6 +1,6 @@
 
 compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used IsUsed). (: (
-   (let e (fragment::new()))
+   (let e (mk-fragment()))
    (set e (.set-context( e ctx )))
    (set e (.set-offset( e stack-offset )))
    (match term (
@@ -214,7 +214,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             (set ef (never-as-expr-type( ef (typeof t) )))
          ) ())
 
-         (let ictx (fragment::new()))
+         (let ictx (mk-fragment()))
          (set ictx (.set( ictx 'rsp-offset_s (SAtom(to-string rsp-offset)) ))) 
          (set ictx (.set( ictx 'end-offset_s (SAtom(to-string end-offset)) ))) 
          (set ictx (.set( ictx 'return-size_s (SAtom(to-string(sizeof-type(typeof term)))) ))) 

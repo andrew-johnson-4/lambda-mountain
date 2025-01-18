@@ -10,7 +10,7 @@ compile-blob := λ. (: (
          (match rhs (
             ()
             ( (Abs( _ _ _ )) (
-               (let fragment (fragment::new()))
+               (let fragment (mk-fragment()))
                (set fragment (.set( fragment 'fragment-type_s (SAtom 'Function_s) )))
                (set fragment (.set-term( fragment rhs )))
                (set fragment (.set-type( fragment (typeof rhs) )))

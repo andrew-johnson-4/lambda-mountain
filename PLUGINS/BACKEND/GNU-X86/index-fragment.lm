@@ -5,7 +5,7 @@ import SRC/fragment::expression.lm;
 import SRC/.get.lm;
 import SRC/fragment::label.lm;
 import SRC/fragment::local-variable.lm;
-import SRC/fragment::new.lm;
+import SRC/mk-fragment.lm;
 import SRC/.set-context.lm;
 import SRC/.set-offset.lm;
 import SRC/.set-term.lm;

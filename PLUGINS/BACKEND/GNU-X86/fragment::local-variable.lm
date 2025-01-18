@@ -1,6 +1,6 @@
 
 fragment::local-variable := λ(: offset I64)(: tt Type). (: (
-   (let r (fragment::new()))
+   (let r (mk-fragment()))
    (match config-assemble-mode (
       ()
       ( AssembleGNU (set r (.set( r 'expression_s (SAtom(to-string offset)) ))) )

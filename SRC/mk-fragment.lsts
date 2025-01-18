@@ -1,0 +1,8 @@
+
+let mk-fragment(): Fragment = (
+   Fragment {
+      ASTEOF, close([] :: List<Tuple<CString,S>>),
+      0_i64, TAny, close($"fragment-context::new"()),
+      ([] :: List<Fragment[]>)
+   }
+);

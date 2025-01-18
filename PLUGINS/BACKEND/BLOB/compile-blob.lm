@@ -10,7 +10,7 @@ plugins-backend-blob-compile := λ. (: (
          (match rhs (
             ()
             ( (Abs( _ _ _ )) (
-               (let fragment (fragment::new()))
+               (let fragment (mk-fragment()))
                (set fragment (.set( fragment 'fragment-type_s (SAtom 'Function_s) )))
                (set.term( fragment rhs ))
                (set.type( fragment (typeof rhs) ))

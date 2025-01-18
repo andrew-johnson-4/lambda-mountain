@@ -1,6 +1,6 @@
 
 fragment::label := λ(: id String). (: (
-   (let r (fragment::new()))
+   (let r (mk-fragment()))
    (set r (.set( r 'expression_s (SAtom id) )))
    (set r (.set( r 'fragment-type_s (SAtom 'Label_s) )))
    (set.type( r (t1 'Label_s) ))
