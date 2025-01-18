@@ -4,6 +4,7 @@ import SRC/index-definitions.lm;
 import SRC/quick-prop.lsts;
 import SRC/cmp.lsts;
 
+import SRC/and.lm;
 import SRC/cons-root.lsts;
 import SRC/index-concrete-type-instances.lm;
 import SRC/type-index.lm;
@@ -40,7 +41,6 @@ import SRC/ascript.lm;
 import SRC/ascript-normal.lm;
 import SRC/typeof.lm;
 import SRC/to-s.lm;
-import SRC/and.lm;
 import SRC/union.lm;
 import SRC/tag-of.lm;
 import SRC/can-unify.lm;

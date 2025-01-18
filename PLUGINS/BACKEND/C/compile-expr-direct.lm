@@ -2,7 +2,7 @@
 compile-smart-string-index := (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<String,String>[]) )) HashtableEq<String,String>);
 
 compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used IsUsed). (: (
-   (let e (fragment::new()))
+   (let e (mk-fragment()))
    (set.context( e (close ctx) ))
    (match term (
       ()
@@ -64,12 +64,12 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                       (+( (SAtom ',\s"_s) (escape-c-string val) )) ))
                           (SAtom '",\sREG_EXTENDED\]\:if\[return_code\]{fprintf\[stderr,"Could\snot\scompile\sregex."\]\:exit\[1\]\:}}\:\n_s) ))
                )))
-               (set e (fragment::expression rgx-id))
+               (set e (mk-expression rgx-id))
             ) ())
          ) (
             (let isa-fragment False_u8)
             (if (==( isa-fragment True_u8 )) (
-               (set e (fragment::expression val))
+               (set e (mk-expression val))
             ) (
                (if (non-zero(class-of-tag val)) (
                   (let tag-index (index-of-tag val))
@@ -91,16 +91,16 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                ) (
                   (match val (
                      ()
-                     ( 'True_s (set e (fragment::expression '\[1\]_s)) )
-                     ( 'False_s (set e (fragment::expression '\[0\]_s)) )
-                     ( '\\t_s (set e (fragment::expression '\[9\]_s)) )
-                     ( '\\n_s (set e (fragment::expression '\[10\]_s)) )
-                     ( '\\s_s (set e (fragment::expression '\[32\]_s)) )
-                     ( '\\o_s (set e (fragment::expression '\[35\]_s)) )
-                     ( '\\`_s (set e (fragment::expression '\[39\]_s)) )
-                     ( '\\[_s (set e (fragment::expression '\[40\]_s)) )
-                     ( '\\]_s (set e (fragment::expression '\[41\]_s)) )
-                     ( '\\:_s (set e (fragment::expression '\[59\]_s)) )
+                     ( 'True_s (set e (mk-expression '\[1\]_s)) )
+                     ( 'False_s (set e (mk-expression '\[0\]_s)) )
+                     ( '\\t_s (set e (mk-expression '\[9\]_s)) )
+                     ( '\\n_s (set e (mk-expression '\[10\]_s)) )
+                     ( '\\s_s (set e (mk-expression '\[32\]_s)) )
+                     ( '\\o_s (set e (mk-expression '\[35\]_s)) )
+                     ( '\\`_s (set e (mk-expression '\[39\]_s)) )
+                     ( '\\[_s (set e (mk-expression '\[40\]_s)) )
+                     ( '\\]_s (set e (mk-expression '\[41\]_s)) )
+                     ( '\\:_s (set e (mk-expression '\[59\]_s)) )
                      ( _ (
                         (if (.is-t( ltype 'L_s )) (
                            (set e (.set( e 'expression_s (SAtom val) )))
@@ -144,7 +144,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          ))
       ))
       ( (App( (Var( 'sizeof_s _ )) (AType tt) )) (
-         (set e (fragment::expression(
+         (set e (mk-expression(
             (+( (SAtom '\[sizeof\[_s)
                 (+( (mangle-c-type tt) (SAtom '\]\]_s) ))
             ))
@@ -181,16 +181,16 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (
          (let rsp-offset (+( stack-offset -8_i64 )))
          (let ec (cc-blob( ctx 'into-branch-conditional_s cond rsp-offset )))
-         (let et (compile-expr( (open(.context ec)) t (.offset ec) Tail )))
-         (let end-offset (.offset et))
+         (let et (compile-expr( (open(.context ec)) t 0_i64 Tail )))
+         (let end-offset 0_i64)
          (set.type( et (typeof t) ))
-         (let ef (compile-expr( (open(.context ec)) f (.offset ec) Tail )))
+         (let ef (compile-expr( (open(.context ec)) f 0_i64 Tail )))
          (set.type( ef (typeof f) ))
          (if (.is-t( (typeof f) 'Never_s )) (
             (set ef (never-as-expr-type( ef (typeof t) )))
          ) ())
 
-         (let ictx (fragment::new()))
+         (let ictx (mk-fragment()))
          (set.type( ictx (t1( 'ImplicitContext_s )) ))
         
          (set ctx (fragment-context::bind( ctx 'ictx_s (t1 'ImplicitContext_s) ictx )))
@@ -313,12 +313,12 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          ) (
             (if (is( used Unused )) (scope(
                (let e1 (compile-expr( ctx f stack-offset Unused )))
-               (let e2 (compile-expr( (open(.context e1)) a (.offset e1) Unused )))
+               (let e2 (compile-expr( (open(.context e1)) a 0_i64 Unused )))
                (set e (fragment::chain( e1 e2 )))
                (set.type( e (typeof term) ))
             )) (scope(
                (let e1 (compile-expr( ctx f stack-offset Unused )))
-               (let e2 (compile-expr( (open(.context e1)) a (.offset e1) Used )))
+               (let e2 (compile-expr( (open(.context e1)) a 0_i64 Used )))
                (set e (fragment::chain( e1 e2 )))
                (set.type( e (typeof term) ))
             )))

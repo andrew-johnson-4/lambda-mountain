@@ -2,7 +2,7 @@
 compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(: return-type Type)(: args AST)(: offset I64)(: used IsUsed). (: (
    (let original-ctx ctx)
    (let function-type (.type f))
-   (let r (fragment::new()))
+   (let r (mk-fragment()))
 
    (if (.is-t( function-type 'Blob_s )) (
       (set r (cc-blob( ctx function-name args offset )))
@@ -17,7 +17,7 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
          (set.type( push-args (t1( 'FunctionArguments_s )) ))
          (let call SNil)
 
-         (let ictx (fragment::new()))
+         (let ictx (mk-fragment()))
 
          (let function-id function-name)
          (if (.is-t( function-type 'FFI_s )) () (

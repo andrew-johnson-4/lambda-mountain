@@ -33,7 +33,7 @@ find-alias-type := λ(: from String). (: (
          ( (Tuple( (Tuple( alt-from alt-to )) alt-tt )) (
             (if (==( from alt-from )) (
                (if (non-zero to) (
-                  (set to (and( to alt-tt )))
+                  (set to (+( to alt-tt )))
                ) (
                   (set to alt-tt)
                ))

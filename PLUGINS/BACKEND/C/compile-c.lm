@@ -7,7 +7,7 @@ plugins-backend-c-compile := λ . (: (
       ( (Seq( rst (Glb( k_t rhs )) )) (
          (if (==( k 'main_s )) (set assemble-argv-referenced True_u8) ())
          (let kt (typeof rhs))
-         (let fragment (fragment::new()))
+         (let fragment (mk-fragment()))
          (if (.is-open kt) () (
             (if (.is-t( kt 'Blob_s )) (
                (set.term( fragment rhs ))
@@ -26,7 +26,7 @@ plugins-backend-c-compile := λ . (: (
                      global-ctx k kt fragment
                   )))
                ) (
-                  (let repr-tt (and( clean-tt (t1 'GlobalVariable_s) )))
+                  (let repr-tt (+( clean-tt (t1 'GlobalVariable_s) )))
                   (set.type( fragment (without-constructor repr-tt) ))
                   (set global-ctx (fragment-context::bind(
                      global-ctx k (without-constructor repr-tt) fragment

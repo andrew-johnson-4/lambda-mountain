@@ -11,8 +11,3 @@ and := λ(: lctx TContext)(: rctx TContext). (: (
    ))
    lctx
 ) TContext);
-
-and := λ(: lt Type)(: rt Type). (: (
-   (let tt (TAnd( (close lt) (close rt) )))
-   tt
-) Type);

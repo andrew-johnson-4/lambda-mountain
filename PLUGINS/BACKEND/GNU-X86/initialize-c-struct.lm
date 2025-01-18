@@ -1,6 +1,6 @@
 
 initialize-c-struct := λ(: ctx FContext)(: rval AST)(: case-number U64)(: field-index U64). (: (
-   (let r (fragment::new()))
+   (let r (mk-fragment()))
    (match (slot( (typeof rval) 'Cons_s )) (
       ()
       ( (TGround( 'Cons_s (LCons( p2 (LCons( p1 LEOF )) )) )) (

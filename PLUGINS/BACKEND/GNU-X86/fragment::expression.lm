@@ -1,12 +1,12 @@
 
-fragment::expression := λ(: val String). (: (
-   (let r (fragment::new()))
+mk-expression := λ(: val String). (: (
+   (let r (mk-fragment()))
    (set r (.set( r 'expression_s (SAtom val) )))
    r
 ) Fragment);
 
-fragment::expression := λ(: val S). (: (
-   (let r (fragment::new()))
+mk-expression := λ(: val S). (: (
+   (let r (mk-fragment()))
    (set r (.set( r 'expression_s val )))
    r
 ) Fragment);

@@ -6,7 +6,7 @@ compile-gnu := λ. (: (
       ( (Seq( rst (Glb( k_t rhs )) )) (
          (if (==( k 'main_s )) (set assemble-argv-referenced True_u8) ())
          (let kt (typeof rhs))
-         (let fragment (fragment::new()))
+         (let fragment (mk-fragment()))
          (if (is-open kt) () (
             (if (is-blob kt) (
                (set fragment (.set-term( fragment rhs )))

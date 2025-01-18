@@ -1,7 +1,7 @@
 
 cstring-cache := (: SSEOF StringStringList);
 compile-declare-cstring := λ(: val String). (: (
-   (let r (fragment::new()))
+   (let r (mk-fragment()))
    (match config-assemble-mode (
       ()
       ( AssembleC (set r (compile-declare-cstring-c( val ))))
@@ -12,13 +12,13 @@ compile-declare-cstring := λ(: val String). (: (
 ) Fragment);
 
 compile-declare-cstring-blob := λ(: val String). (: (
-   (let r (fragment::new()))
+   (let r (mk-fragment()))
    (print 'TODO\sdeclare\scstring\sblob\n_s)(exit 1_u64)
    r 
 ) Fragment);
 
 compile-declare-cstring-c := λ(: val String). (: (
-   (let r (fragment::new()))
+   (let r (mk-fragment()))
    (set r (.set( r 'expression_s (
       (+(
          (SAtom '"_s)
@@ -67,7 +67,7 @@ escape-c-string := λ(: s String). (: (
 ) S);
 
 compile-declare-cstring-gnu := λ(: val String). (: (
-   (let r (fragment::new()))
+   (let r (mk-fragment()))
    (if (is( config-assemble-mode AssembleBlob )) (
       (set r (.set( r 'expression_s (SAtom val) )))
    ) (

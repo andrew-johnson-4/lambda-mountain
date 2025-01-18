@@ -38,7 +38,7 @@ union := λ(: ctx FContext)(: tctx TContext). (: (
       ( TCtxNil (set tctx TCtxEOF) )
       ( (TCtxBind( rst k vt _ )) (
          (set r (FCtxBind(
-            (close r) k TAny (fragment::new())
+            (close r) k TAny (mk-fragment())
          )))
          (set tctx rst)
       ))

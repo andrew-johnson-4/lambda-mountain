@@ -4,7 +4,7 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64). (: (
 ) Fragment);
 
 compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64)(: count U64)(: left-assoc U64). (: (
-   (let r (fragment::new()))
+   (let r (mk-fragment()))
    (match (slot( (typeof rval) 'Cons_s )) (
       ()
       ( (TGround( 'Cons_s (LCons( p2 (LCons( p1 LEOF )) )) )) (
@@ -12,7 +12,7 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64)(: count U64)
             ()
             ( (App( le re )) (
                (let e1 (compile-push-rvalue( ctx le offset count left-assoc )))
-               (let e2 (compile-expr( ctx re (.offset e1) Used )))
+               (let e2 (compile-expr( ctx re 0_i64 Used )))
                (set r (fragment::chain( e1 e2 )))
                (if left-assoc (
                   (set r (.set( r 'expression_s (
