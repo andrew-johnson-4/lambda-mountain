@@ -8,7 +8,7 @@ typeof-var-raw := λ(: sloc AST)(: tctx TContext)(: vname String). (: (
          (if (==( k vname )) (
             (if (non-zero found) (
                (if (.is-arrow vt) (
-                  (set found (and( found vt )))
+                  (set found (+( found vt )))
                ) (
                   (set found vt)
                ))

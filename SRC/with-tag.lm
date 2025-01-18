@@ -7,7 +7,7 @@ with-tag := λ(: tt Type). (: (
          ( (TGround( cls tl )) (
             (let tag (get-only-child cls))
             (if (head-string tag) (
-               (set tt (and( tt (t1( (+( 'Tag::_s tag )) )) )))
+               (set tt (+( tt (t1( (+( 'Tag::_s tag )) )) )))
             ) ())
          ))
          ( _ () )
