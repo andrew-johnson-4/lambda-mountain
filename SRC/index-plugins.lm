@@ -61,11 +61,9 @@ frontend := λ(: fp String). (: (
       (set c-input-files (cons( fp c-input-files )))
       (set todo 0_u64)
    ) ())
-   (if (&&( todo (.has-suffix( fp '.lsts_s )) )) (
-      (lsts-frontend fp)
-      (set todo 0_u64)
+   (if todo (
+      ((.lookup( plugins-frontends-index (.file-extension fp) plugin-null-frontend )) fp)
    ) ())
-   (.lookup( plugins-frontends-index (.file-extension fp) plugin-null-frontend ))
 ) Nil);
 
 frontend-flush := λ. (: (
