@@ -25,7 +25,6 @@ infer-global-context := λ(: td AST). (: (
          (let return-type rhst)
          (let ft (t3( 'Arrow_s lt return-type )))
          (set ft (enrich( ft tlt )))
-         (set ft (+( ft (t1 'GlobalVariable_s) )))
          (if (&&( (.is-t( tlt 'Hook_s )) (not(.is-t( rhst 'Nil_s ))) )) (
             (exit-error( 'Hooks\sMust\sNot\sReturn\sValues._s td ))
          ) ())
