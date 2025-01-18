@@ -5,15 +5,15 @@ translate-local-variables := λ(: ctx FContext)(: delta I64). (: (
       ( FCtxEOF () )
       ( (FCtxBind( rst k kt f )) (
          (set rst (translate-local-variables( rst delta )))
-         (match (fragment::get( f 'fragment-type_s )) (
+         (match (.get( f 'fragment-type_s )) (
             ()
             ( (SAtom 'LocalVariable_s) (
-               (match (fragment::get( f 'expression_s )) (
+               (match (.get( f 'expression_s )) (
                   ()
                   ( (SAtom previous-offset) (
                      (let p-offset (to-i64 previous-offset))
                      (let new-offset (+( p-offset delta )))
-                     (set f (fragment::set( f 'expression_s (SAtom(to-string new-offset)) )))
+                     (set f (.set( f 'expression_s (SAtom(to-string new-offset)) )))
                      (set ctx (FCtxBind( (close rst) k kt f )))
                   ))
                ))

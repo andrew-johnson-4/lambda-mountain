@@ -1,0 +1,3 @@
+
+type Fragment = Fragment { term: AST, keyvals: List<Tuple<CString,S>>[], offset: I64, type: Type, context: FContext[], vararg: List<Fragment[]> };
+

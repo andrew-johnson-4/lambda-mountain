@@ -1,5 +1,5 @@
 
-fragment::set-context := λ(: e Fragment)(: ctx FContext). (: (
+.set-context := λ(: e Fragment)(: ctx FContext). (: (
    (let r e)
    (match e (
       ()

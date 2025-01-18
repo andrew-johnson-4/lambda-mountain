@@ -1,5 +1,5 @@
 
-fragment::set-term := λ(: e Fragment)(: t AST). (: (
+.set-term := λ(: e Fragment)(: t AST). (: (
    (match e (
       ()
       ( (Fragment( e-t e-kvs e-offset e-tt e-ctx e-vs )) (

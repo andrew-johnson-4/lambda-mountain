@@ -5,12 +5,12 @@ dev: install-production
 	./a.out
 
 build: compile-production
-	time ./production --c -o deploy.c SRC/index-index.lm
-	cc -O3 deploy.c -o deploy
-	time ./deploy --c -o deploy2.c SRC/index-index.lm
-	diff deploy.c deploy2.c
-	mv deploy.c BOOTSTRAP/cli.c
-	rm -f deploy.c deploy2.c
+	time ./production --c -o deploy1.c SRC/index-index.lm
+	cc -O3 deploy1.c -o deploy1
+	time ./deploy1 --c -o deploy2.c SRC/index-index.lm
+	diff deploy1.c deploy2.c
+	mv deploy1.c BOOTSTRAP/cli.c
+	rm -f deploy1 deploy1.c deploy2.c
 	cargo test regression_tests
 
 deploy: build smoke-test
@@ -69,13 +69,3 @@ else
 endif
 	mkdir -p $${HOME}/.lm/
 	cp -rf PLATFORM $${HOME}/.lm/
-	#lm LMV/cli.lm -o lmv.s
-	#as -o lmv.o lmv.s
-	#ld -o lmv   lmv.o
-	#mv lmv /usr/local/bin
-	#rm lmv.s lmv.o
-	#lm DOBY/cli.lm -o doby.s
-	#as -o doby.o doby.s
-	#ld -o doby   doby.o
-	#mv doby /usr/local/bin
-	#rm doby.s doby.o

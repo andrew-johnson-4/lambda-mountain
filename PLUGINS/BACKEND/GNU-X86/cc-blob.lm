@@ -16,9 +16,9 @@ cc-blob := λ(: caller-ctx FContext)(: function-name String)(: args AST)(: offse
          ) ())
          (set r (blob-render( callee-ctx rhs r offset )))
          (let t (.term f))
-         (set r (fragment::set-type( r (range(typeof t)) )))
-         (set r (fragment::set-offset( r offset )))
-         (set r (fragment::set-context( r caller-ctx )))
+         (set r (.set-type( r (range(typeof t)) )))
+         (set r (.set-offset( r offset )))
+         (set r (.set-context( r caller-ctx )))
       ))
    ))
    r
@@ -32,9 +32,9 @@ cc-blob := λ(: callee-ctx FContext)(: function-name String)(: args-tt Type)(: o
       ( (Abs( lhs rhs tlt )) (
          (set r (blob-render( callee-ctx rhs r offset )))
          (let t (.term f))
-         (set r (fragment::set-type( r (range(typeof t)) )))
-         (set r (fragment::set-offset( r offset )))
-         (set r (fragment::set-context( r callee-ctx )))
+         (set r (.set-type( r (range(typeof t)) )))
+         (set r (.set-offset( r offset )))
+         (set r (.set-context( r callee-ctx )))
       ))
    ))
    r

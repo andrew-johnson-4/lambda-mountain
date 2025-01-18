@@ -7,7 +7,7 @@ compile-declare-cstring := λ(: val String). (: (
 
 compile-declare-cstring-c := λ(: val String). (: (
    (let r (fragment::new()))
-   (set r (fragment::set( r 'expression_s (
+   (set r (.set( r 'expression_s (
       (+(
          (SAtom '"_s)
          (+(

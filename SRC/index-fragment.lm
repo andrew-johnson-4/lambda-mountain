@@ -1,6 +1,4 @@
 
 import SRC/destructure-lhs.lm;
 import SRC/fragment::expression.lm;
-import SRC/fragment::get.lm;
 import SRC/fragment::new.lm;
-import SRC/fragment::set.lm;

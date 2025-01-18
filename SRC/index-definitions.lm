@@ -1,8 +1,6 @@
 
 type CompileMode ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 
-type FragmentKV (FKVEOF) | (FKVSeq( FragmentKV[] , String , S )); zero FragmentKV FKVEOF;
-type Fragment (Fragment( term:AST , FragmentKV[] , offset:I64 , type:Type , context:FContext[] , vararg:List<Fragment[]> ));
 type FragmentList (FLEOF) | (FLSeq( FragmentList[] , Fragment )); zero FragmentList FLEOF;
 
 type IsUsed Used | Unused | Tail | Return | Call;

@@ -2,7 +2,7 @@
 fragment::new := λ . (: (
    (let r (Fragment(
       ASTEOF
-      (close FKVEOF)
+      (close(: LEOF List<Tuple<String,S>>))
       0_i64
       TAny
       (close(fragment-context::new()))

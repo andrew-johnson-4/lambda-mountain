@@ -1,5 +1,5 @@
 
-fragment::set-vararg := λ(: e Fragment)(: vs List<Fragment[]>). (: (
+.set-vararg := λ(: e Fragment)(: vs List<Fragment[]>). (: (
    (match e (
       ()
       ( (Fragment( e-t e-kvs e-offset e-tt e-ctx e-vs )) (

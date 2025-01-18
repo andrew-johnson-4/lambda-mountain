@@ -8,7 +8,7 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: off
       ( ASTEOF () )
       ( (Var( id _ )) (
          (let e (fragment-context::lookup( ctx id (typeof term) term )))
-         (set r (fragment::get( e context-key )))
+         (set r (.get( e context-key )))
       ))
       ( (Lit( val _ )) (
          (set r (SAtom val))
@@ -164,8 +164,8 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: off
          (let f (fragment::new()))
          (let cs (blob-render-simple( ctx context-key rhs offset )))
          (let s (.1 cs))
-         (set f (fragment::set( f context-key s )))
-         (set f (fragment::set( f 'expression_s s )))
+         (set f (.set( f context-key s )))
+         (set f (.set( f 'expression_s s )))
          (set ctx (fragment-context::bind(
             ctx lhs (typeof rhs) f
          ))) # TODO, render the binding as non-simple blob?
@@ -180,7 +180,7 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: off
                      (set r (.1 e1))
                   ) (
                      (let e (cc-blob( ctx fname a offset )))
-                     (set r (fragment::get( e context-key )))
+                     (set r (.get( e context-key )))
                   ))
                ))
             ))
@@ -211,11 +211,11 @@ blob-render := λ(: ctx FContext)(: term AST)(: f Fragment)(: offset I64). (: (
          (if (has-prefix( k ':_s )) (            
             (let cs1 (blob-render-simple( ctx (tail-string k) a offset )))
             (let s1 (.1 cs1))
-            (set f (fragment::set( f (tail-string k) s1 )))
+            (set f (.set( f (tail-string k) s1 )))
          ) (
             (let cs2 (blob-render-simple( ctx 'expression_s term offset )))
             (let s2 (.1 cs2))
-            (set f (fragment::set( f 'expression_s s2 )))
+            (set f (.set( f 'expression_s s2 )))
          ))
       ))
       ( (App( rst (App( (Var( k _ )) a )) )) (
@@ -223,17 +223,17 @@ blob-render := λ(: ctx FContext)(: term AST)(: f Fragment)(: offset I64). (: (
          (if (has-prefix( k ':_s )) (            
             (let cs1 (blob-render-simple( ctx (tail-string k) a offset )))
             (let s1 (.1 cs1))
-            (set f (fragment::set( f (tail-string k) s1 )))
+            (set f (.set( f (tail-string k) s1 )))
          ) (
             (let cs2 (blob-render-simple( ctx 'expression_s term offset )))
             (let s2 (.1 cs2))
-            (set f (fragment::set( f 'expression_s s2 )))
+            (set f (.set( f 'expression_s s2 )))
          ))
       ))
       ( _ (
          (let cs2 (blob-render-simple( ctx 'expression_s term offset )))
          (let s2 (.1 cs2))
-         (set f (fragment::set( f 'expression_s s2 )))
+         (set f (.set( f 'expression_s s2 )))
       ))
    ))
    f

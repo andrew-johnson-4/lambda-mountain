@@ -6,10 +6,10 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
       (let c-type-name (.lookup( index-c-type-ordinal (normalize bare-ordinal) 'UnknownCTypename_s )))
       (let case-number (index-of-tag tag-name))
       (set r (initialize-c-struct( ctx args case-number 1_u64 )))
-      (set r (fragment::set( r 'expression_s (
+      (set r (.set( r 'expression_s (
          (+(
             (+( (+( (SAtom '\[{_s) (SAtom c-type-name) )) (SAtom '\srvalue={.field_0=_s) ))
-            (+( (+( (SAtom(to-string case-number)) (fragment::get( r 'expression_s )) )) (SAtom '}\:rvalue\:}\]_s) ))
+            (+( (+( (SAtom(to-string case-number)) (.get( r 'expression_s )) )) (SAtom '}\:rvalue\:}\]_s) ))
          ))
       ))))
    ) (
@@ -31,8 +31,8 @@ compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)
       (set r (cc-blob( callee-ctx 'push_s constructor-parms offset args )))
    ))
    (let new-offset (-( offset (as (sizeof-type return-type) I64) )))
-   (set r (fragment::set-offset( r new-offset )))
-   (set r (fragment::set-context( r ctx )))
-   (set r (fragment::set-type( r (denormalize return-type) )))
+   (set r (.set-offset( r new-offset )))
+   (set r (.set-context( r ctx )))
+   (set r (.set-type( r (denormalize return-type) )))
    r
 ) Fragment);
