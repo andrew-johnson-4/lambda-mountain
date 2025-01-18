@@ -1,5 +1,5 @@
 
-fragment::set := λ(: e Fragment)(: k String)(: v S). (: (
+.set := λ(: e Fragment)(: k String)(: v S). (: (
    (match e (
       ()
       ( (Fragment( e-t kvs offset ft ctx vs )) (

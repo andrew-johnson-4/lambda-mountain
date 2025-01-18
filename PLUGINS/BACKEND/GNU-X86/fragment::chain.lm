@@ -1,71 +1,71 @@
 
 fragment::chain-gnu := λ(: l Fragment)(: r Fragment). (: (
-   (set l (fragment::set-context( l (open(.context r)) )))
-   (set l (fragment::set-offset( l (.offset r) )))
-   (set l (fragment::set-type( l (.type r) )))
-   (set l (fragment::set( l 'expression_s (fragment::get( r 'expression_s )) )))
-   (set l (fragment::set( l 'frame_s (SCons(
-      (close(fragment::get( l 'frame_s )))
-      (close(fragment::get( r 'frame_s )))
+   (set l (.set-context( l (open(.context r)) )))
+   (set l (.set-offset( l (.offset r) )))
+   (set l (.set-type( l (.type r) )))
+   (set l (.set( l 'expression_s (.get( r 'expression_s )) )))
+   (set l (.set( l 'frame_s (SCons(
+      (close(.get( l 'frame_s )))
+      (close(.get( r 'frame_s )))
    )) )))
-   (set l (fragment::set( l 'del_s (SCons(
-      (close(fragment::get( l 'del_s )))
-      (close(fragment::get( r 'del_s )))
+   (set l (.set( l 'del_s (SCons(
+      (close(.get( l 'del_s )))
+      (close(.get( r 'del_s )))
    )) )))
-   (set l (fragment::set( l 'unframe_s (SCons(
-      (close(fragment::get( l 'unframe_s )))
-      (close(fragment::get( r 'unframe_s )))
+   (set l (.set( l 'unframe_s (SCons(
+      (close(.get( l 'unframe_s )))
+      (close(.get( r 'unframe_s )))
    )) )))
-   (set l (fragment::set( l 'program_s (SCons(
-      (close(fragment::get( l 'program_s )))
-      (close(fragment::get( r 'program_s )))
+   (set l (.set( l 'program_s (SCons(
+      (close(.get( l 'program_s )))
+      (close(.get( r 'program_s )))
    )) )))
    l
 ) Fragment);
 
 fragment::chain-blob := λ(: l Fragment)(: r Fragment). (: (
-   (set l (fragment::set-context( l (open(.context r)) )))
-   (set l (fragment::set-offset( l (.offset r) )))
-   (set l (fragment::set-type( l (.type r) )))
-   (set l (fragment::set( l 'expression_s (fragment::get( r 'expression_s )) )))
-   (set l (fragment::set( l 'frame_s (SCons(
-      (close(fragment::get( l 'frame_s )))
-      (close(fragment::get( r 'frame_s )))
+   (set l (.set-context( l (open(.context r)) )))
+   (set l (.set-offset( l (.offset r) )))
+   (set l (.set-type( l (.type r) )))
+   (set l (.set( l 'expression_s (.get( r 'expression_s )) )))
+   (set l (.set( l 'frame_s (SCons(
+      (close(.get( l 'frame_s )))
+      (close(.get( r 'frame_s )))
    )) )))
-   (set l (fragment::set( l 'del_s (SCons(
-      (close(fragment::get( l 'del_s )))
-      (close(fragment::get( r 'del_s )))
+   (set l (.set( l 'del_s (SCons(
+      (close(.get( l 'del_s )))
+      (close(.get( r 'del_s )))
    )) )))
-   (set l (fragment::set( l 'unframe_s (SCons(
-      (close(fragment::get( l 'unframe_s )))
-      (close(fragment::get( r 'unframe_s )))
+   (set l (.set( l 'unframe_s (SCons(
+      (close(.get( l 'unframe_s )))
+      (close(.get( r 'unframe_s )))
    )) )))
-   (set l (fragment::set( l 'program_s (SCons(
-      (close(fragment::get( l 'program_s )))
-      (close(fragment::get( r 'program_s )))
+   (set l (.set( l 'program_s (SCons(
+      (close(.get( l 'program_s )))
+      (close(.get( r 'program_s )))
    )) )))
    l
 ) Fragment);
 
 fragment::chain-c := λ(: l Fragment)(: r Fragment). (: (
-   (set l (fragment::set-context( l (open(.context r)) )))
-   (set l (fragment::set-type( l (.type r) )))
-   (set l (fragment::set( l 'expression_s (+(
+   (set l (.set-context( l (open(.context r)) )))
+   (set l (.set-type( l (.type r) )))
+   (set l (.set( l 'expression_s (+(
       (+(
          (SAtom '\[{_s)
-         (fragment::get( l 'expression_s ))
+         (.get( l 'expression_s ))
       ))
       (+(
          (+(
             (SAtom '\:\n_s)
-            (fragment::get( r 'expression_s ))
+            (.get( r 'expression_s ))
          ))
          (SAtom '\:\n}\]_s)
       ))
    )) )))
-   (set l (fragment::set( l 'frame_s (SCons(
-      (close(fragment::get( l 'frame_s )))
-      (close(fragment::get( r 'frame_s )))
+   (set l (.set( l 'frame_s (SCons(
+      (close(.get( l 'frame_s )))
+      (close(.get( r 'frame_s )))
    )) )))
    l
 ) Fragment);

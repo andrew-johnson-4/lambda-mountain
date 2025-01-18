@@ -1,5 +1,5 @@
 
-fragment::set-type := λ(: e Fragment)(: tt Type). (: (
+.set-type := λ(: e Fragment)(: tt Type). (: (
    (match e (
       ()
       ( (Fragment( e-t e-kvs e-offset e-tt e-ctx e-vs )) (

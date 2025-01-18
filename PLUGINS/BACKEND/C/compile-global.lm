@@ -20,8 +20,8 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
             (set e (compile-expr( ctx rhs 0_i64 Return )))
             (set function-name (mangle-identifier( k kt )))
          ))
-         (let program (fragment::get( e 'expression_s )))
-         (let frame (fragment::get( e 'frame_s )))
+         (let program (.get( e 'expression_s )))
+         (let frame (.get( e 'frame_s )))
          (let text SNil)
 
          (let loc (location-of(term)))
@@ -106,7 +106,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
 
          (set text (SAtom mid))
          (set text (SCons( (close text) (close(SAtom '=_s)) )))
-         (set text (SCons( (close text) (close(fragment::get( e 'expression_s ))) )))
+         (set text (SCons( (close text) (close(.get( e 'expression_s ))) )))
          (set text (SCons( (close text) (close(SAtom '\:\n_s)) )))
          (set assemble-global-initializer-section (SCons( (close assemble-global-initializer-section) (close text) )))
       ))

@@ -1,5 +1,5 @@
 
-fragment::get := λ(: e Fragment)(: k String). (: (
+.get := λ(: e Fragment)(: k String). (: (
    (let r SNil)
    (match e (
       ()

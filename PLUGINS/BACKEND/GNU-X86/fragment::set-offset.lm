@@ -1,5 +1,5 @@
 
-fragment::set-offset := λ(: e Fragment)(: offset I64). (: (
+.set-offset := λ(: e Fragment)(: offset I64). (: (
    (let r e)
    (match e (
       ()

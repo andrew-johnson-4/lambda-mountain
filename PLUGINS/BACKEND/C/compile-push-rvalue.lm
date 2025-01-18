@@ -15,12 +15,12 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64)(: count U64)
                (let e2 (compile-expr( ctx re (.offset e1) Used )))
                (set r (fragment::chain( e1 e2 )))
                (if left-assoc (
-                  (set r (fragment::set( r 'expression_s (
-                     (+( (+( (fragment::get( e1 'expression_s )) (SAtom ',_s) )) (fragment::get( e2 'expression_s )) ))
+                  (set r (.set( r 'expression_s (
+                     (+( (+( (.get( e1 'expression_s )) (SAtom ',_s) )) (.get( e2 'expression_s )) ))
                   ))))
                ) (
-                  (set r (fragment::set( r 'expression_s (
-                     (+( (+( (fragment::get( e2 'expression_s )) (SAtom ',_s) )) (fragment::get( e1 'expression_s )) ))
+                  (set r (.set( r 'expression_s (
+                     (+( (+( (.get( e2 'expression_s )) (SAtom ',_s) )) (.get( e1 'expression_s )) ))
                   ))))
                ))
             ))

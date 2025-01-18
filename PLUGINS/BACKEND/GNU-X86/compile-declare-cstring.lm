@@ -19,7 +19,7 @@ compile-declare-cstring-blob := λ(: val String). (: (
 
 compile-declare-cstring-c := λ(: val String). (: (
    (let r (fragment::new()))
-   (set r (fragment::set( r 'expression_s (
+   (set r (.set( r 'expression_s (
       (+(
          (SAtom '"_s)
          (+(
@@ -69,7 +69,7 @@ escape-c-string := λ(: s String). (: (
 compile-declare-cstring-gnu := λ(: val String). (: (
    (let r (fragment::new()))
    (if (is( config-assemble-mode AssembleBlob )) (
-      (set r (fragment::set( r 'expression_s (SAtom val) )))
+      (set r (.set( r 'expression_s (SAtom val) )))
    ) (
       (let cache cstring-cache)
       (let id '_s)
@@ -92,7 +92,7 @@ compile-declare-cstring-gnu := λ(: val String). (: (
             (close cstring-cache) val id
          )))
       ))
-      (set r (fragment::set( r 'expression_s (SAtom id) )))
+      (set r (.set( r 'expression_s (SAtom id) )))
    ))
    r
 ) Fragment);

@@ -7,11 +7,11 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
    (match term (
       ()
       ( (AType _) (
-         (set e (fragment::set( e 'expression_s (SAtom '0_s) )))
+         (set e (.set( e 'expression_s (SAtom '0_s) )))
       ))
       ( ASTNil (
          (set.type( e (denormalize(t1 'Nil_s)) ))
-         (set e (fragment::set( e 'expression_s (SAtom '\[{}\]_s) )))
+         (set e (.set( e 'expression_s (SAtom '\[{}\]_s) )))
       ))
       ( ASTEOF () )
       ( (Var( id _ )) (
@@ -28,10 +28,10 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             (if (.is-t( ltype 'SmartString_s )) (
                (let guid (.lookup( compile-smart-string-index val '_s )))
                (if (non-zero guid) (
-                  (set e (fragment::set( e 'expression_s (SAtom guid) )))
+                  (set e (.set( e 'expression_s (SAtom guid) )))
                ) (
                   (set guid (uuid()))
-                  (set e (fragment::set( e 'expression_s (SAtom guid) )))
+                  (set e (.set( e 'expression_s (SAtom guid) )))
                   (set compile-smart-string-index (.bind( compile-smart-string-index val guid )))
                   (let lit (Lit( val (token::new val) )))
                   (ascript-normal( lit (t1 'String_s) ))
@@ -47,7 +47,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                      assemble-string-initializer-section
                      (+(
                         (+( (SAtom guid) (SAtom '=_s) ))
-                        (+( (fragment::get( intern-ss 'expression_s )) (SAtom '\:\n_s) ))
+                        (+( (.get( intern-ss 'expression_s )) (SAtom '\:\n_s) ))
                      ))
                   )))
                ))
@@ -73,7 +73,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             ) (
                (if (non-zero(class-of-tag val)) (
                   (let tag-index (index-of-tag val))
-                  (set e (fragment::set( e 'expression_s (
+                  (set e (.set( e 'expression_s (
                      (+(
                         (+(
                            (SAtom '\[{_s)
@@ -103,9 +103,9 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                      ( '\\:_s (set e (fragment::expression '\[59\]_s)) )
                      ( _ (
                         (if (.is-t( ltype 'L_s )) (
-                           (set e (fragment::set( e 'expression_s (SAtom val) )))
+                           (set e (.set( e 'expression_s (SAtom val) )))
                         ) (
-                           (set e (fragment::set( e 'expression_s (
+                           (set e (.set( e 'expression_s (
                               (+( (+( (SAtom '\[_s) (SAtom val) )) (SAtom '\]_s) ))
                            ))))
                         ))
@@ -162,7 +162,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
          (set e (compile-expr( ctx t stack-offset used )))
          (set.type( e (typeof term) ))
-         (set e (fragment::set( e 'expression_s (
+         (set e (.set( e 'expression_s (
             (+(
                (+(
                   (SAtom '\[\[_s)
@@ -171,7 +171,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                (+(
                   (SAtom '\]\[_s)
                   (+(
-                     (fragment::get( e 'expression_s ))
+                     (.get( e 'expression_s ))
                      (SAtom '\]\]_s)
                   ))
                ))
@@ -217,44 +217,44 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (let prepost (mangle-c-declaration rtype))
          (if (is-const-array rtype) (
             (set e (compile-expr( ctx rhs stack-offset Used )))
-            (set e (fragment::set( e 'frame_s (
+            (set e (.set( e 'frame_s (
                (+(
                   (+(
                      (.first prepost)
                      (SAtom '\s_s)
                   ))
                   (+(
-                     (fragment::get( fr 'expression_s ))
+                     (.get( fr 'expression_s ))
                      (+(
                         (+(
                            (.second prepost)
                            (SAtom '=_s)
                         ))
                         (+(
-                           (fragment::get( e 'expression_s ))
+                           (.get( e 'expression_s ))
                            (SAtom '\:\n_s)
                         ))
                      ))
                   ))
                ))
             ))))
-            (set e (fragment::set( e 'expression_s SNil )))
+            (set e (.set( e 'expression_s SNil )))
          ) (
             (match rhs (
                ()
                ( (App( (Lit( ':_s _ )) (App( (Var( '__uninitialized_s _ )) (AType tt) )) )) () )
                ( _ (
                   (set e (compile-expr( ctx rhs stack-offset Used )))
-                  (set e (fragment::set( e 'expression_s (
+                  (set e (.set( e 'expression_s (
                      (+(
                         (+(
                            (SAtom '\[{_s)
-                           (fragment::get( fr 'expression_s ))
+                           (.get( fr 'expression_s ))
                         ))
                         (+(
                            (SAtom '=_s)
                            (+(
-                              (fragment::get( e 'expression_s ))
+                              (.get( e 'expression_s ))
                               (SAtom '\:\[{}\]\:}\]\n_s)
                            ))
                         ))
@@ -262,16 +262,16 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                   ))))
                ))
             ))
-            (set e (fragment::set( e 'frame_s (
+            (set e (.set( e 'frame_s (
                (+(
-                  (fragment::get( e 'frame_s ))
+                  (.get( e 'frame_s ))
                   (+(
                      (+(
                         (.first prepost)
                         (SAtom '\s_s)
                      ))
                      (+(
-                        (fragment::get( fr 'expression_s ))
+                        (.get( fr 'expression_s ))
                         (+(
                            (.second prepost)
                            (SAtom '\:\n_s)
@@ -304,9 +304,9 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                   (let call (compile-expr( ctx f stack-offset Unused )))
                   (let args (compile-push-rvalue( ctx a stack-offset )))
                   (set e (fragment::chain( call args )))
-                  (set e (fragment::set( e 'expression_s (+(
-                     (+( (fragment::get( call 'expression_s )) (SAtom '\[_s) ))
-                     (+( (fragment::get( args 'expression_s )) (SAtom '\]_s) ))
+                  (set e (.set( e 'expression_s (+(
+                     (+( (.get( call 'expression_s )) (SAtom '\[_s) ))
+                     (+( (.get( args 'expression_s )) (SAtom '\]_s) ))
                   )))))
                ))
             ))

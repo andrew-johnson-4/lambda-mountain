@@ -1423,12 +1423,12 @@ LM_FContext destructure_SB_lhs_CL_ArrowFContextConsFragmentListConsSConsTypeFCon
 LM_Fragment fragment_CL__CL_expression_CL_ArrowFragmentString(char* uuid_0000000000091c5b);
 #line 8 "SRC/fragment::expression.lm"
 LM_Fragment fragment_CL__CL_expression_CL_ArrowFragmentS(LM_S uuid_0000000000091c5d);
-#line 2 "SRC/fragment::get.lm"
-LM_S fragment_CL__CL_get_CL_ArrowSConsStringFragment(LM_Fragment uuid_0000000000091c5f,char* uuid_0000000000091c60);
+#line 2 "SRC/fragment-get.lm"
+LM_S _DT_get_CL_ArrowSConsStringFragment(LM_Fragment uuid_0000000000091c5f,char* uuid_0000000000091c60);
 #line 2 "SRC/fragment::new.lm"
 LM_Fragment fragment_CL__CL_new_CL_ArrowFragmentNil();
-#line 2 "SRC/fragment::set.lm"
-LM_Fragment fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(LM_Fragment uuid_0000000000091c72,char* uuid_0000000000091c73,LM_S uuid_0000000000091c74);
+#line 2 "SRC/fragment-set.lm"
+LM_Fragment _DT_set_CL_ArrowFragmentConsSConsStringFragment(LM_Fragment uuid_0000000000091c72,char* uuid_0000000000091c73,LM_S uuid_0000000000091c74);
 #line 2 "PLUGINS/BACKEND/C/compile-c.lm"
 void plugins_SB_backend_SB_c_SB_compile_CL_ArrowNilNil();
 #line 2 "PLUGINS/BACKEND/C/compile-expr.lm"
@@ -22817,7 +22817,7 @@ uuid_0000000000091c2e;
 LM_Fragment fragment_CL__CL_expression_CL_ArrowFragmentString(char* uuid_0000000000091c5b){LM_Fragment uuid_0000000000091c5c;
 return ({({({uuid_0000000000091c5c=(fragment_CL__CL_new_CL_ArrowFragmentNil());({});})
 ;
-({uuid_0000000000091c5c=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091c5c,"expression",({LM_S rvalue={.field_0=2};rvalue.field_2001=uuid_0000000000091c5b;rvalue;})));({});});
+({uuid_0000000000091c5c=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091c5c,"expression",({LM_S rvalue={.field_0=2};rvalue.field_2001=uuid_0000000000091c5b;rvalue;})));({});});
 });
 uuid_0000000000091c5c;
 });}
@@ -22825,12 +22825,12 @@ uuid_0000000000091c5c;
 LM_Fragment fragment_CL__CL_expression_CL_ArrowFragmentS(LM_S uuid_0000000000091c5d){LM_Fragment uuid_0000000000091c5e;
 return ({({({uuid_0000000000091c5e=(fragment_CL__CL_new_CL_ArrowFragmentNil());({});})
 ;
-({uuid_0000000000091c5e=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091c5e,"expression",uuid_0000000000091c5d));({});});
+({uuid_0000000000091c5e=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091c5e,"expression",uuid_0000000000091c5d));({});});
 });
 uuid_0000000000091c5e;
 });}
-#line 2 "SRC/fragment::get.lm"
-LM_S fragment_CL__CL_get_CL_ArrowSConsStringFragment(LM_Fragment uuid_0000000000091c5f,char* uuid_0000000000091c60){LM_S uuid_0000000000091c61;
+#line 2 "SRC/fragment-get.lm"
+LM_S _DT_get_CL_ArrowSConsStringFragment(LM_Fragment uuid_0000000000091c5f,char* uuid_0000000000091c60){LM_S uuid_0000000000091c61;
 LM_Fragment uuid_0000000000091c62;
 LM_Fragment uuid_0000000000091c63;
 char uuid_0000000000091c64;
@@ -22897,8 +22897,8 @@ return ({({({uuid_0000000000091c61=({LM_S rvalue={3};rvalue;});({});})
 (uuid_0000000000091c6d==(1));
 })?((_EQ__EQ__CL_ArrowU64ConsStringString(uuid_0000000000091c60,uuid_0000000000091c6f))?({({uuid_0000000000091c61=uuid_0000000000091c6e;({});});
 ({uuid_0000000000091c69=({LM_FragmentKV rvalue={1};rvalue;});({});});
-}):({uuid_0000000000091c69=uuid_0000000000091c70;({});})):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/fragment::get.lm Line: 7 Column: 33")));
-})));};}):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/fragment::get.lm Line: 4 Column: 5")));
+}):({uuid_0000000000091c69=uuid_0000000000091c70;({});})):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/fragment-get.lm Line: 7 Column: 33")));
+})));};}):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/fragment-get.lm Line: 4 Column: 5")));
 });
 });
 uuid_0000000000091c61;
@@ -22909,8 +22909,8 @@ return ({({uuid_0000000000091c71=({LM_Fragment rvalue={.field_0=0};rvalue.field_
 ;
 uuid_0000000000091c71;
 });}
-#line 2 "SRC/fragment::set.lm"
-LM_Fragment fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(LM_Fragment uuid_0000000000091c72,char* uuid_0000000000091c73,LM_S uuid_0000000000091c74){LM_Fragment uuid_0000000000091c75;
+#line 2 "SRC/fragment-set.lm"
+LM_Fragment _DT_set_CL_ArrowFragmentConsSConsStringFragment(LM_Fragment uuid_0000000000091c72,char* uuid_0000000000091c73,LM_S uuid_0000000000091c74){LM_Fragment uuid_0000000000091c75;
 LM_Fragment uuid_0000000000091c76;
 char uuid_0000000000091c77;
 LM_ListArray_QM_Fragment uuid_0000000000091c78;
@@ -22947,7 +22947,7 @@ return ({({({uuid_0000000000091c75=uuid_0000000000091c72;({});})
 })?({uuid_0000000000091c77=(1);({});}):({})):({})):({})):({})):({})):({})):({}));
 });
 (uuid_0000000000091c77==(1));
-})?({uuid_0000000000091c72=({LM_Fragment rvalue={.field_0=0};rvalue.field_1=uuid_0000000000091c78;rvalue.field_2=(close_CL_ArrowArray_QM_FContextFContext(uuid_0000000000091c79));rvalue.field_3=uuid_0000000000091c7a;rvalue.field_4=uuid_0000000000091c7b;rvalue.field_5=(close_CL_ArrowArray_QM_FragmentKVFragmentKV(({LM_FragmentKV rvalue={.field_0=0};rvalue.field_1=uuid_0000000000091c74;rvalue.field_2=uuid_0000000000091c73;rvalue.field_3=(close_CL_ArrowArray_QM_FragmentKVFragmentKV(uuid_0000000000091c7c));rvalue;})));rvalue.field_6=uuid_0000000000091c7d;rvalue;});({});}):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/fragment::set.lm Line: 3 Column: 5")));
+})?({uuid_0000000000091c72=({LM_Fragment rvalue={.field_0=0};rvalue.field_1=uuid_0000000000091c78;rvalue.field_2=(close_CL_ArrowArray_QM_FContextFContext(uuid_0000000000091c79));rvalue.field_3=uuid_0000000000091c7a;rvalue.field_4=uuid_0000000000091c7b;rvalue.field_5=(close_CL_ArrowArray_QM_FragmentKVFragmentKV(({LM_FragmentKV rvalue={.field_0=0};rvalue.field_1=uuid_0000000000091c74;rvalue.field_2=uuid_0000000000091c73;rvalue.field_3=(close_CL_ArrowArray_QM_FragmentKVFragmentKV(uuid_0000000000091c7c));rvalue;})));rvalue.field_6=uuid_0000000000091c7d;rvalue;});({});}):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/fragment-set.lm Line: 3 Column: 5")));
 });
 uuid_0000000000091c72;
 });}
@@ -23073,9 +23073,9 @@ LM_AST uuid_0000000000091cbe;
 ({uuid_0000000000091c8d=(mangle_SB_identifier_CL_ArrowStringConsTypeString(uuid_0000000000091c88,uuid_0000000000091c8c));({});})
 ;
 });
-({uuid_0000000000091c8b=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091c8b,"fragment-type",({LM_S rvalue={.field_0=2};rvalue.field_2001="Global";rvalue;})));({});});
+({uuid_0000000000091c8b=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091c8b,"fragment-type",({LM_S rvalue={.field_0=2};rvalue.field_2001="Global";rvalue;})));({});});
 });
-({uuid_0000000000091c8b=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091c8b,"expression",({LM_S rvalue={.field_0=2};rvalue.field_2001=uuid_0000000000091c8d;rvalue;})));({});});
+({uuid_0000000000091c8b=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091c8b,"expression",({LM_S rvalue={.field_0=2};rvalue.field_2001=uuid_0000000000091c8d;rvalue;})));({});});
 });
 ((_DT_is_SB_arrow_CL_ArrowU64Type(uuid_0000000000091c8a))?({({uuid_0000000000091c8b.field_3=uuid_0000000000091c8a;({});});
 ({global_SB_ctx_CL_FContext=(fragment_SB_context_CL__CL_bind_CL_ArrowFContextConsFragmentConsTypeConsStringFContext(global_SB_ctx_CL_FContext,uuid_0000000000091c88,uuid_0000000000091c8a,uuid_0000000000091c8b));({});});
@@ -23514,11 +23514,11 @@ return ({({({({uuid_0000000000091cd2=(fragment_CL__CL_new_CL_ArrowFragmentNil())
 (((uuid_0000000000091cd4.field_0)==(4))?(1?({uuid_0000000000091cd5=(1);({});}):({})):({}));
 });
 (uuid_0000000000091cd5==(1));
-})?({uuid_0000000000091cd2=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",({LM_S rvalue={.field_0=2};rvalue.field_2001="0";rvalue;})));({});}):(({({uuid_0000000000091cd6=uuid_0000000000091cd3;({});})
+})?({uuid_0000000000091cd2=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",({LM_S rvalue={.field_0=2};rvalue.field_2001="0";rvalue;})));({});}):(({({uuid_0000000000091cd6=uuid_0000000000091cd3;({});})
 ;
 ((uuid_0000000000091cd6.field_0)==(9));
 })?({({uuid_0000000000091cd2.field_3=(denormalize_CL_ArrowTypeType((t1_CL_ArrowTypeString("Nil"))));({});});
-({uuid_0000000000091cd2=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",({LM_S rvalue={.field_0=2};rvalue.field_2001="({})";rvalue;})));({});});
+({uuid_0000000000091cd2=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",({LM_S rvalue={.field_0=2};rvalue.field_2001="({})";rvalue;})));({});});
 }):(({({uuid_0000000000091cd7=uuid_0000000000091cd3;({});})
 ;
 ((uuid_0000000000091cd7.field_0)==(10));
@@ -23551,8 +23551,8 @@ return ({({({({uuid_0000000000091cd2=(fragment_CL__CL_new_CL_ArrowFragmentNil())
 ((((_DT_is_SB_t_CL_ArrowU64ConsStringType(uuid_0000000000091cde,"String"))||(_DT_is_SB_t_CL_ArrowU64ConsStringType(uuid_0000000000091cde,"SmartString")))||(_DT_is_SB_t_CL_ArrowU64ConsStringType(uuid_0000000000091cde,"Regex")))?({({((_DT_is_SB_t_CL_ArrowU64ConsStringType(uuid_0000000000091cde,"String"))?({uuid_0000000000091cd2=(compile_SB_declare_SB_cstring_CL_ArrowFragmentString(uuid_0000000000091cdd));({});}):({}));
 ((_DT_is_SB_t_CL_ArrowU64ConsStringType(uuid_0000000000091cde,"SmartString"))?({({uuid_0000000000091cdf=(_DT_lookup_CL_ArrowStringConsStringConsStringHashtableEqStringString(compile_SB_smart_SB_string_SB_index_CL_HashtableEqStringString,uuid_0000000000091cdd,""));({});})
 ;
-((non_SB_zero_CL_ArrowU64String(uuid_0000000000091cdf))?({uuid_0000000000091cd2=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",({LM_S rvalue={.field_0=2};rvalue.field_2001=uuid_0000000000091cdf;rvalue;})));({});}):({({({({({({({({uuid_0000000000091cdf=(uuid_CL_ArrowStringNil());({});});
-({uuid_0000000000091cd2=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",({LM_S rvalue={.field_0=2};rvalue.field_2001=uuid_0000000000091cdf;rvalue;})));({});});
+((non_SB_zero_CL_ArrowU64String(uuid_0000000000091cdf))?({uuid_0000000000091cd2=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",({LM_S rvalue={.field_0=2};rvalue.field_2001=uuid_0000000000091cdf;rvalue;})));({});}):({({({({({({({({uuid_0000000000091cdf=(uuid_CL_ArrowStringNil());({});});
+({uuid_0000000000091cd2=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",({LM_S rvalue={.field_0=2};rvalue.field_2001=uuid_0000000000091cdf;rvalue;})));({});});
 });
 ({compile_SB_smart_SB_string_SB_index_CL_HashtableEqStringString=(_DT_bind_CL_ArrowHashtableEqStringStringConsStringConsStringHashtableEqStringString(compile_SB_smart_SB_string_SB_index_CL_HashtableEqStringString,uuid_0000000000091cdd,uuid_0000000000091cdf));({});});
 });
@@ -23566,7 +23566,7 @@ return ({({({({uuid_0000000000091cd2=(fragment_CL__CL_new_CL_ArrowFragmentNil())
 });
 ({assemble_SB_header_SB_section_CL_S=(_AD__CL_ArrowSConsSS(assemble_SB_header_SB_section_CL_S,(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS((mangle_SB_c_SB_type_CL_ArrowSType(uuid_0000000000091cde)),({LM_S rvalue={.field_0=2};rvalue.field_2001=" ";rvalue;}))),(_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=uuid_0000000000091cdf;rvalue;}),({LM_S rvalue={.field_0=2};rvalue.field_2001=";\n";rvalue;})))))));({});});
 });
-({assemble_SB_string_SB_initializer_SB_section_CL_S=(_AD__CL_ArrowSConsSS(assemble_SB_string_SB_initializer_SB_section_CL_S,(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=uuid_0000000000091cdf;rvalue;}),({LM_S rvalue={.field_0=2};rvalue.field_2001="=";rvalue;}))),(_AD__CL_ArrowSConsSS((fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091ce1,"expression")),({LM_S rvalue={.field_0=2};rvalue.field_2001=";\n";rvalue;})))))));({});});
+({assemble_SB_string_SB_initializer_SB_section_CL_S=(_AD__CL_ArrowSConsSS(assemble_SB_string_SB_initializer_SB_section_CL_S,(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=uuid_0000000000091cdf;rvalue;}),({LM_S rvalue={.field_0=2};rvalue.field_2001="=";rvalue;}))),(_AD__CL_ArrowSConsSS((_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091ce1,"expression")),({LM_S rvalue={.field_0=2};rvalue.field_2001=";\n";rvalue;})))))));({});});
 }));
 }):({}));
 });
@@ -23582,7 +23582,7 @@ return ({({({({uuid_0000000000091cd2=(fragment_CL__CL_new_CL_ArrowFragmentNil())
 ;
 ((uuid_0000000000091ce3==(1))?({uuid_0000000000091cd2=(fragment_CL__CL_expression_CL_ArrowFragmentString(uuid_0000000000091cdd));({});}):((non_SB_zero_CL_ArrowU64Type((class_SB_of_SB_tag_CL_ArrowTypeString(uuid_0000000000091cdd))))?({({uuid_0000000000091ce4=(index_SB_of_SB_tag_CL_ArrowU64String(uuid_0000000000091cdd));({});})
 ;
-({uuid_0000000000091cd2=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="({";rvalue;}),(mangle_SB_c_SB_type_CL_ArrowSType(uuid_0000000000091cde)))),(_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=" rvalue={";rvalue;}),(_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=(to_SB_string_CL_ArrowStringU64(uuid_0000000000091ce4));rvalue;}),({LM_S rvalue={.field_0=2};rvalue.field_2001="};rvalue;})";rvalue;})))))))));({});});
+({uuid_0000000000091cd2=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="({";rvalue;}),(mangle_SB_c_SB_type_CL_ArrowSType(uuid_0000000000091cde)))),(_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=" rvalue={";rvalue;}),(_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=(to_SB_string_CL_ArrowStringU64(uuid_0000000000091ce4));rvalue;}),({LM_S rvalue={.field_0=2};rvalue.field_2001="};rvalue;})";rvalue;})))))))));({});});
 }):({({uuid_0000000000091ce5=uuid_0000000000091cdd;({});})
 ;
 (({({uuid_0000000000091ce6=uuid_0000000000091ce5;({});})
@@ -23615,7 +23615,7 @@ return ({({({({uuid_0000000000091cd2=(fragment_CL__CL_new_CL_ArrowFragmentNil())
 })?({uuid_0000000000091cd2=(fragment_CL__CL_expression_CL_ArrowFragmentString("(41)"));({});}):(({({uuid_0000000000091cef=uuid_0000000000091ce5;({});})
 ;
 (_EQ__EQ__CL_ArrowU64ConsStringString(uuid_0000000000091cef,"\\:"));
-})?({uuid_0000000000091cd2=(fragment_CL__CL_expression_CL_ArrowFragmentString("(59)"));({});}):(1?((_DT_is_SB_t_CL_ArrowU64ConsStringType(uuid_0000000000091cde,"L"))?({uuid_0000000000091cd2=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",({LM_S rvalue={.field_0=2};rvalue.field_2001=uuid_0000000000091cdd;rvalue;})));({});}):({uuid_0000000000091cd2=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="(";rvalue;}),({LM_S rvalue={.field_0=2};rvalue.field_2001=uuid_0000000000091cdd;rvalue;}))),({LM_S rvalue={.field_0=2};rvalue.field_2001=")";rvalue;})))));({});})):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: PLUGINS/BACKEND/C/compile-expr-direct.lm Line: 92 Column: 20")))))))))))));
+})?({uuid_0000000000091cd2=(fragment_CL__CL_expression_CL_ArrowFragmentString("(59)"));({});}):(1?((_DT_is_SB_t_CL_ArrowU64ConsStringType(uuid_0000000000091cde,"L"))?({uuid_0000000000091cd2=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",({LM_S rvalue={.field_0=2};rvalue.field_2001=uuid_0000000000091cdd;rvalue;})));({});}):({uuid_0000000000091cd2=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="(";rvalue;}),({LM_S rvalue={.field_0=2};rvalue.field_2001=uuid_0000000000091cdd;rvalue;}))),({LM_S rvalue={.field_0=2};rvalue.field_2001=")";rvalue;})))));({});})):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: PLUGINS/BACKEND/C/compile-expr-direct.lm Line: 92 Column: 20")))))))))))));
 })));
 }));
 });
@@ -23901,7 +23901,7 @@ return ({({({({uuid_0000000000091cd2=(fragment_CL__CL_new_CL_ArrowFragmentNil())
 })?({({({uuid_0000000000091cd2=(compile_SB_expr_CL_ArrowFragmentConsIsUsedConsI64ConsASTFContext(uuid_0000000000091cce,uuid_0000000000091d36,uuid_0000000000091cd0,uuid_0000000000091cd1));({});});
 ({uuid_0000000000091cd2.field_3=(typeof_CL_ArrowTypeAST(uuid_0000000000091ccf));({});});
 });
-({uuid_0000000000091cd2=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="((";rvalue;}),(mangle_SB_c_SB_type_CL_ArrowSType((typeof_CL_ArrowTypeAST(uuid_0000000000091ccf)))))),(_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=")(";rvalue;}),(_AD__CL_ArrowSConsSS((fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091cd2,"expression")),({LM_S rvalue={.field_0=2};rvalue.field_2001="))";rvalue;})))))))));({});});
+({uuid_0000000000091cd2=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="((";rvalue;}),(mangle_SB_c_SB_type_CL_ArrowSType((typeof_CL_ArrowTypeAST(uuid_0000000000091ccf)))))),(_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=")(";rvalue;}),(_AD__CL_ArrowSConsSS((_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091cd2,"expression")),({LM_S rvalue={.field_0=2};rvalue.field_2001="))";rvalue;})))))))));({});});
 }):(({({({({uuid_0000000000091d3a=uuid_0000000000091cd3;({});})
 ;
 ({uuid_0000000000091d3b=(0);({});})
@@ -24037,9 +24037,9 @@ return ({({({({uuid_0000000000091cd2=(fragment_CL__CL_new_CL_ArrowFragmentNil())
 ;
 });
 ((is_SB_const_SB_array_CL_ArrowU64Type(uuid_0000000000091d58))?({({({uuid_0000000000091cd2=(compile_SB_expr_CL_ArrowFragmentConsIsUsedConsI64ConsASTFContext(uuid_0000000000091cce,uuid_0000000000091d4f,uuid_0000000000091cd0,({LM_IsUsed rvalue={4};rvalue;})));({});});
-({uuid_0000000000091cd2=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"frame",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS((uuid_0000000000091d5a.field_2),({LM_S rvalue={.field_0=2};rvalue.field_2001=" ";rvalue;}))),(_AD__CL_ArrowSConsSS((fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091d59,"expression")),(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS((uuid_0000000000091d5a.field_1),({LM_S rvalue={.field_0=2};rvalue.field_2001="=";rvalue;}))),(_AD__CL_ArrowSConsSS((fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091cd2,"expression")),({LM_S rvalue={.field_0=2};rvalue.field_2001=";\n";rvalue;})))))))))));({});});
+({uuid_0000000000091cd2=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"frame",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS((uuid_0000000000091d5a.field_2),({LM_S rvalue={.field_0=2};rvalue.field_2001=" ";rvalue;}))),(_AD__CL_ArrowSConsSS((_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091d59,"expression")),(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS((uuid_0000000000091d5a.field_1),({LM_S rvalue={.field_0=2};rvalue.field_2001="=";rvalue;}))),(_AD__CL_ArrowSConsSS((_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091cd2,"expression")),({LM_S rvalue={.field_0=2};rvalue.field_2001=";\n";rvalue;})))))))))));({});});
 });
-({uuid_0000000000091cd2=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",({LM_S rvalue={3};rvalue;})));({});});
+({uuid_0000000000091cd2=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",({LM_S rvalue={3};rvalue;})));({});});
 }):({({({uuid_0000000000091d67=uuid_0000000000091d4f;({});})
 ;
 (({({({({uuid_0000000000091d68=uuid_0000000000091d67;({});})
@@ -24092,10 +24092,10 @@ return ({({({({uuid_0000000000091cd2=(fragment_CL__CL_new_CL_ArrowFragmentNil())
 });
 (uuid_0000000000091d69==(1));
 })?({}):(1?({({uuid_0000000000091cd2=(compile_SB_expr_CL_ArrowFragmentConsIsUsedConsI64ConsASTFContext(uuid_0000000000091cce,uuid_0000000000091d4f,uuid_0000000000091cd0,({LM_IsUsed rvalue={4};rvalue;})));({});});
-({uuid_0000000000091cd2=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="({";rvalue;}),(fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091d59,"expression")))),(_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="=";rvalue;}),(_AD__CL_ArrowSConsSS((fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091cd2,"expression")),({LM_S rvalue={.field_0=2};rvalue.field_2001=";({});})\n";rvalue;})))))))));({});});
+({uuid_0000000000091cd2=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="({";rvalue;}),(_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091d59,"expression")))),(_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="=";rvalue;}),(_AD__CL_ArrowSConsSS((_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091cd2,"expression")),({LM_S rvalue={.field_0=2};rvalue.field_2001=";({});})\n";rvalue;})))))))));({});});
 }):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: PLUGINS/BACKEND/C/compile-expr-direct.lm Line: 243 Column: 14"))));
 });
-({uuid_0000000000091cd2=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"frame",(_AD__CL_ArrowSConsSS((fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091cd2,"frame")),(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS((uuid_0000000000091d5a.field_2),({LM_S rvalue={.field_0=2};rvalue.field_2001=" ";rvalue;}))),(_AD__CL_ArrowSConsSS((fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091d59,"expression")),(_AD__CL_ArrowSConsSS((uuid_0000000000091d5a.field_1),({LM_S rvalue={.field_0=2};rvalue.field_2001=";\n";rvalue;})))))))))));({});});
+({uuid_0000000000091cd2=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"frame",(_AD__CL_ArrowSConsSS((_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091cd2,"frame")),(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS((uuid_0000000000091d5a.field_2),({LM_S rvalue={.field_0=2};rvalue.field_2001=" ";rvalue;}))),(_AD__CL_ArrowSConsSS((_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091d59,"expression")),(_AD__CL_ArrowSConsSS((uuid_0000000000091d5a.field_1),({LM_S rvalue={.field_0=2};rvalue.field_2001=";\n";rvalue;})))))))))));({});});
 }));
 });
 ({uuid_0000000000091cd2.field_2=(close_CL_ArrowArray_QM_FContextFContext(uuid_0000000000091cce));({});});
@@ -24247,7 +24247,7 @@ return ({({({({uuid_0000000000091cd2=(fragment_CL__CL_new_CL_ArrowFragmentNil())
 });
 ({uuid_0000000000091cd2=(fragment_CL__CL_chain_CL_ArrowFragmentConsFragmentFragment(uuid_0000000000091d9b,uuid_0000000000091d9c));({});});
 });
-({uuid_0000000000091cd2=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS((fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091d9b,"expression")),({LM_S rvalue={.field_0=2};rvalue.field_2001="(";rvalue;}))),(_AD__CL_ArrowSConsSS((fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091d9c,"expression")),({LM_S rvalue={.field_0=2};rvalue.field_2001=")";rvalue;})))))));({});});
+({uuid_0000000000091cd2=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091cd2,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS((_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091d9b,"expression")),({LM_S rvalue={.field_0=2};rvalue.field_2001="(";rvalue;}))),(_AD__CL_ArrowSConsSS((_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091d9c,"expression")),({LM_S rvalue={.field_0=2};rvalue.field_2001=")";rvalue;})))))));({});});
 }):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: PLUGINS/BACKEND/C/compile-expr-direct.lm Line: 289 Column: 14")))))));
 }):((is_CL_ArrowU64ConsIsUsedIsUsed(uuid_0000000000091cd1,({LM_IsUsed rvalue={3};rvalue;})))?({({({({uuid_0000000000091d9d=(compile_SB_expr_CL_ArrowFragmentConsIsUsedConsI64ConsASTFContext(uuid_0000000000091cce,uuid_0000000000091d78,uuid_0000000000091cd0,({LM_IsUsed rvalue={3};rvalue;})));({});})
 ;
@@ -24287,7 +24287,7 @@ uuid_0000000000091da3;
 LM_Fragment compile_SB_declare_SB_cstring_SB_c_CL_ArrowFragmentString(char* uuid_0000000000091da4){LM_Fragment uuid_0000000000091da5;
 return ({({({uuid_0000000000091da5=(fragment_CL__CL_new_CL_ArrowFragmentNil());({});})
 ;
-({uuid_0000000000091da5=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091da5,"expression",(_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="\"";rvalue;}),(_AD__CL_ArrowSConsSS((escape_SB_c_SB_string_CL_ArrowSString(uuid_0000000000091da4)),({LM_S rvalue={.field_0=2};rvalue.field_2001="\"";rvalue;})))))));({});});
+({uuid_0000000000091da5=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091da5,"expression",(_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="\"";rvalue;}),(_AD__CL_ArrowSConsSS((escape_SB_c_SB_string_CL_ArrowSString(uuid_0000000000091da4)),({LM_S rvalue={.field_0=2};rvalue.field_2001="\"";rvalue;})))))));({});});
 });
 uuid_0000000000091da5;
 });}
@@ -24437,10 +24437,10 @@ char* uuid_0000000000091ddd;
 ({uuid_0000000000091dc3=(mangle_SB_identifier_CL_ArrowStringConsTypeString(uuid_0000000000091db8,uuid_0000000000091dba));({});});
 }));
 });
-({uuid_0000000000091dc4=(fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091dc2,"expression"));({});})
+({uuid_0000000000091dc4=(_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091dc2,"expression"));({});})
 ;
 });
-({uuid_0000000000091dc5=(fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091dc2,"frame"));({});})
+({uuid_0000000000091dc5=(_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091dc2,"frame"));({});})
 ;
 });
 ({uuid_0000000000091dc6=({LM_S rvalue={3};rvalue;});({});})
@@ -24615,7 +24615,7 @@ char* uuid_0000000000091ddd;
 });
 ({uuid_0000000000091dcc=({LM_S rvalue={.field_0=1};rvalue.field_1001=(close_CL_ArrowArray_QM_SS(({LM_S rvalue={.field_0=2};rvalue.field_2001="=";rvalue;})));rvalue.field_1002=(close_CL_ArrowArray_QM_SS(uuid_0000000000091dcc));rvalue;});({});});
 });
-({uuid_0000000000091dcc=({LM_S rvalue={.field_0=1};rvalue.field_1001=(close_CL_ArrowArray_QM_SS((fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091dcb,"expression"))));rvalue.field_1002=(close_CL_ArrowArray_QM_SS(uuid_0000000000091dcc));rvalue;});({});});
+({uuid_0000000000091dcc=({LM_S rvalue={.field_0=1};rvalue.field_1001=(close_CL_ArrowArray_QM_SS((_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091dcb,"expression"))));rvalue.field_1002=(close_CL_ArrowArray_QM_SS(uuid_0000000000091dcc));rvalue;});({});});
 });
 ({uuid_0000000000091dcc=({LM_S rvalue={.field_0=1};rvalue.field_1001=(close_CL_ArrowArray_QM_SS(({LM_S rvalue={.field_0=2};rvalue.field_2001=";\n";rvalue;})));rvalue.field_1002=(close_CL_ArrowArray_QM_SS(uuid_0000000000091dcc));rvalue;});({});});
 });
@@ -24709,7 +24709,7 @@ return ({({({uuid_0000000000091de6=(fragment_CL__CL_new_CL_ArrowFragmentNil());(
 });
 ({uuid_0000000000091de6=(fragment_CL__CL_chain_CL_ArrowFragmentConsFragmentFragment(uuid_0000000000091df7,uuid_0000000000091df8));({});});
 });
-(uuid_0000000000091de5?({uuid_0000000000091de6=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091de6,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS((fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091df7,"expression")),({LM_S rvalue={.field_0=2};rvalue.field_2001=",";rvalue;}))),(fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091df8,"expression"))))));({});}):({uuid_0000000000091de6=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091de6,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS((fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091df8,"expression")),({LM_S rvalue={.field_0=2};rvalue.field_2001=",";rvalue;}))),(fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091df7,"expression"))))));({});}));
+(uuid_0000000000091de5?({uuid_0000000000091de6=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091de6,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS((_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091df7,"expression")),({LM_S rvalue={.field_0=2};rvalue.field_2001=",";rvalue;}))),(_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091df8,"expression"))))));({});}):({uuid_0000000000091de6=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091de6,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS((_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091df8,"expression")),({LM_S rvalue={.field_0=2};rvalue.field_2001=",";rvalue;}))),(_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091df7,"expression"))))));({});}));
 }):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: PLUGINS/BACKEND/C/compile-push-rvalue.lm Line: 11 Column: 11")));
 }):(1?({({uuid_0000000000091df9=(typeof_CL_ArrowTypeAST(uuid_0000000000091de2));({});})
 ;
@@ -24757,11 +24757,11 @@ return ({({({({({uuid_0000000000091e01=uuid_0000000000091dfa;({});})
 });
 ((_DT_is_SB_t_CL_ArrowU64ConsStringType(uuid_0000000000091e02,"FFI"))?({}):({uuid_0000000000091e07=(mangle_SB_identifier_CL_ArrowStringConsTypeString(uuid_0000000000091dfc,uuid_0000000000091e02));({});}));
 });
-({uuid_0000000000091e06=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091e06,"function-id",({LM_S rvalue={.field_0=2};rvalue.field_2001=uuid_0000000000091e07;rvalue;})));({});});
+({uuid_0000000000091e06=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091e06,"function-id",({LM_S rvalue={.field_0=2};rvalue.field_2001=uuid_0000000000091e07;rvalue;})));({});});
 });
-({uuid_0000000000091e06=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091e06,"function-name",({LM_S rvalue={.field_0=2};rvalue.field_2001=uuid_0000000000091dfc;rvalue;})));({});});
+({uuid_0000000000091e06=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091e06,"function-name",({LM_S rvalue={.field_0=2};rvalue.field_2001=uuid_0000000000091dfc;rvalue;})));({});});
 });
-({uuid_0000000000091e06=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091e06,"used",({LM_S rvalue={.field_0=2};rvalue.field_2001=(to_SB_string_CL_ArrowStringIsUsed(uuid_0000000000091e00));rvalue;})));({});});
+({uuid_0000000000091e06=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091e06,"used",({LM_S rvalue={.field_0=2};rvalue.field_2001=(to_SB_string_CL_ArrowStringIsUsed(uuid_0000000000091e00));rvalue;})));({});});
 });
 ({uuid_0000000000091e06.field_3=(t1_CL_ArrowTypeString("ImplicitContext"));({});});
 });
@@ -24826,7 +24826,7 @@ return ({({({uuid_0000000000091e0b=uuid_0000000000091e09;({});})
 });
 (uuid_0000000000091e0e==(1));
 })?({({uuid_0000000000091e12=(translate_SB_local_SB_variables_CL_ArrowFContextConsI64FContext(uuid_0000000000091e12,uuid_0000000000091e0a));({});});
-({({uuid_0000000000091e13=(fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091e0f,"fragment-type"));({});})
+({({uuid_0000000000091e13=(_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091e0f,"fragment-type"));({});})
 ;
 (({({({({uuid_0000000000091e14=uuid_0000000000091e13;({});})
 ;
@@ -24839,7 +24839,7 @@ return ({({({uuid_0000000000091e0b=uuid_0000000000091e09;({});})
 })?({uuid_0000000000091e15=(1);({});}):({})):({}));
 });
 (uuid_0000000000091e15==(1));
-})?({({uuid_0000000000091e17=(fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091e0f,"expression"));({});})
+})?({({uuid_0000000000091e17=(_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091e0f,"expression"));({});})
 ;
 (({({({({uuid_0000000000091e18=uuid_0000000000091e17;({});})
 ;
@@ -24857,7 +24857,7 @@ return ({({({uuid_0000000000091e0b=uuid_0000000000091e09;({});})
 ({uuid_0000000000091e1c=(uuid_0000000000091e1b+uuid_0000000000091e0a);({});})
 ;
 });
-({uuid_0000000000091e0f=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091e0f,"expression",({LM_S rvalue={.field_0=2};rvalue.field_2001=(to_SB_string_CL_ArrowStringI64(uuid_0000000000091e1c));rvalue;})));({});});
+({uuid_0000000000091e0f=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091e0f,"expression",({LM_S rvalue={.field_0=2};rvalue.field_2001=(to_SB_string_CL_ArrowStringI64(uuid_0000000000091e1c));rvalue;})));({});});
 });
 ({uuid_0000000000091e09=({LM_FContext rvalue={.field_0=0};rvalue.field_1=uuid_0000000000091e0f;rvalue.field_2=uuid_0000000000091e10;rvalue.field_3=uuid_0000000000091e11;rvalue.field_4=(close_CL_ArrowArray_QM_FContextFContext(uuid_0000000000091e12));rvalue;});({});});
 }):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: PLUGINS/BACKEND/C/translate-local-variables.lm Line: 11 Column: 17")));
@@ -24881,7 +24881,7 @@ return ({({({({({({({({uuid_0000000000091e23=(fragment_CL__CL_new_CL_ArrowFragme
 });
 ({uuid_0000000000091e23=(initialize_SB_c_SB_struct_CL_ArrowFragmentConsU64ConsU64ConsASTFContext(uuid_0000000000091e1d,uuid_0000000000091e21,uuid_0000000000091e25,(1)));({});});
 });
-({uuid_0000000000091e23=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091e23,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="({";rvalue;}),(mangle_SB_c_SB_type_CL_ArrowSType((normalize_CL_ArrowTypeType(uuid_0000000000091e24)))))),({LM_S rvalue={.field_0=2};rvalue.field_2001=" rvalue={.field_0=";rvalue;}))),(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=(to_SB_string_CL_ArrowStringU64(uuid_0000000000091e25));rvalue;}),({LM_S rvalue={.field_0=2};rvalue.field_2001="};";rvalue;}))),(_AD__CL_ArrowSConsSS((fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091e23,"expression")),({LM_S rvalue={.field_0=2};rvalue.field_2001="rvalue;})";rvalue;})))))))));({});});
+({uuid_0000000000091e23=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091e23,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="({";rvalue;}),(mangle_SB_c_SB_type_CL_ArrowSType((normalize_CL_ArrowTypeType(uuid_0000000000091e24)))))),({LM_S rvalue={.field_0=2};rvalue.field_2001=" rvalue={.field_0=";rvalue;}))),(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=(to_SB_string_CL_ArrowStringU64(uuid_0000000000091e25));rvalue;}),({LM_S rvalue={.field_0=2};rvalue.field_2001="};";rvalue;}))),(_AD__CL_ArrowSConsSS((_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091e23,"expression")),({LM_S rvalue={.field_0=2};rvalue.field_2001="rvalue;})";rvalue;})))))))));({});});
 });
 ({uuid_0000000000091e23.field_2=(close_CL_ArrowArray_QM_FContextFContext(uuid_0000000000091e1d));({});});
 });
@@ -25113,7 +25113,7 @@ uuid_0000000000091e57;
 LM_Fragment never_SB_as_SB_expr_SB_type_CL_ArrowFragmentConsTypeFragment(LM_Fragment uuid_0000000000091e60,LM_Type uuid_0000000000091e61){LM_S uuid_0000000000091e62;
 return ({({({uuid_0000000000091e62=(mangle_SB_c_SB_type_CL_ArrowSType(uuid_0000000000091e61));({});})
 ;
-((!(_EQ__EQ__CL_ArrowU64ConsSS(uuid_0000000000091e62,({LM_S rvalue={.field_0=2};rvalue.field_2001="void";rvalue;}))))?({uuid_0000000000091e60=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091e60,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="({";rvalue;}),(fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091e60,"expression")))),(_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=";";rvalue;}),(_AD__CL_ArrowSConsSS(uuid_0000000000091e62,({LM_S rvalue={.field_0=2};rvalue.field_2001=" rvalue;rvalue;})";rvalue;})))))))));({});}):({}));
+((!(_EQ__EQ__CL_ArrowU64ConsSS(uuid_0000000000091e62,({LM_S rvalue={.field_0=2};rvalue.field_2001="void";rvalue;}))))?({uuid_0000000000091e60=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000091e60,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="({";rvalue;}),(_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091e60,"expression")))),(_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=";";rvalue;}),(_AD__CL_ArrowSConsSS(uuid_0000000000091e62,({LM_S rvalue={.field_0=2};rvalue.field_2001=" rvalue;rvalue;})";rvalue;})))))))));({});}):({}));
 });
 uuid_0000000000091e60;
 });}
@@ -25230,7 +25230,7 @@ return ({({({uuid_0000000000091e65=({LM_S rvalue={3};rvalue;});({});})
 ({uuid_0000000000091e84=(fragment_SB_context_CL__CL_lookup_CL_ArrowFragmentConsASTConsTypeConsStringFContext(uuid_0000000000091e63,uuid_0000000000091e72,({LM_Type rvalue={3};rvalue;}),uuid_0000000000091e64));({});})
 ;
 });
-({uuid_0000000000091e65=(_AD__CL_ArrowSConsSS(uuid_0000000000091e65,(fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091e84,"expression"))));({});});
+({uuid_0000000000091e65=(_AD__CL_ArrowSConsSS(uuid_0000000000091e65,(_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091e84,"expression"))));({});});
 });
 ({uuid_0000000000091e65=(_AD__CL_ArrowSConsSS(uuid_0000000000091e65,(uuid_0000000000091e77.field_1)));({});});
 }):(({({({({uuid_0000000000091e85=uuid_0000000000091e66;({});})
@@ -25291,7 +25291,7 @@ return ({({({uuid_0000000000091e65=({LM_S rvalue={3};rvalue;});({});})
 ({uuid_0000000000091e9f=(fragment_SB_context_CL__CL_lookup_CL_ArrowFragmentConsASTConsTypeConsStringFContext(uuid_0000000000091e63,uuid_0000000000091e8e,({LM_Type rvalue={3};rvalue;}),uuid_0000000000091e64));({});})
 ;
 });
-({uuid_0000000000091e65=(_AD__CL_ArrowSConsSS(uuid_0000000000091e65,(fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000091e9f,"expression"))));({});});
+({uuid_0000000000091e65=(_AD__CL_ArrowSConsSS(uuid_0000000000091e65,(_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000091e9f,"expression"))));({});});
 });
 ({uuid_0000000000091e65=(_AD__CL_ArrowSConsSS(uuid_0000000000091e65,(uuid_0000000000091e92.field_1)));({});});
 }):(1?({}):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: PLUGINS/BACKEND/C/compile-c-function-args.lm Line: 4 Column: 5")))));
@@ -26430,7 +26430,7 @@ LM_S uuid_000000000009204a;
 1;
 })?({({({uuid_0000000000092049=(compile_SB_expr_CL_ArrowFragmentConsIsUsedConsI64ConsASTFContext(uuid_000000000009202a,uuid_0000000000092048,(0),({LM_IsUsed rvalue={4};rvalue;})));({});})
 ;
-({uuid_000000000009204a=(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS((fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000092049,"frame")),(fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000092049,"expression")))),({LM_S rvalue={.field_0=2};rvalue.field_2001=";\n";rvalue;})));({});})
+({uuid_000000000009204a=(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS((_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000092049,"frame")),(_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000092049,"expression")))),({LM_S rvalue={.field_0=2};rvalue.field_2001=";\n";rvalue;})));({});})
 ;
 });
 ({assemble_SB_global_SB_initializer_SB_section_CL_S=({LM_S rvalue={.field_0=1};rvalue.field_1001=(close_CL_ArrowArray_QM_SS(uuid_000000000009204a));rvalue.field_1002=(close_CL_ArrowArray_QM_SS(assemble_SB_global_SB_initializer_SB_section_CL_S));rvalue;});({});});
@@ -26525,18 +26525,18 @@ return ({({({uuid_000000000009204f=(fragment_CL__CL_new_CL_ArrowFragmentNil());(
 ({uuid_0000000000092061=(compile_SB_expr_CL_ArrowFragmentConsIsUsedConsI64ConsASTFContext(uuid_000000000009204b,uuid_000000000009205e,(0),({LM_IsUsed rvalue={4};rvalue;})));({});})
 ;
 });
-((is_SB_sized_SB_array_CL_ArrowU64Type(uuid_0000000000092058))?({uuid_0000000000092061=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000092061,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="memcpy(&rvalue.field_";rvalue;}),({LM_S rvalue={.field_0=2};rvalue.field_2001=(to_SB_string_CL_ArrowStringU64(((uuid_000000000009204d*(1000))+uuid_000000000009204e)));rvalue;}))),(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=",";rvalue;}),(fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000092061,"expression")))),(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=",sizeof(";rvalue;}),(mangle_SB_c_SB_type_CL_ArrowSType((_DT_p2_CL_ArrowTypeType((slot_CL_ArrowTypeConsStringType(uuid_0000000000092058,"Array")))))))),(_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=")*";rvalue;}),(_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=(tag_SB_of_CL_ArrowStringType((_DT_p1_CL_ArrowTypeType((slot_CL_ArrowTypeConsStringType(uuid_0000000000092058,"Array"))))));rvalue;}),({LM_S rvalue={.field_0=2};rvalue.field_2001=");";rvalue;})))))))))))));({});}):({uuid_0000000000092061=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000092061,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="rvalue.field_";rvalue;}),({LM_S rvalue={.field_0=2};rvalue.field_2001=(to_SB_string_CL_ArrowStringU64(((uuid_000000000009204d*(1000))+uuid_000000000009204e)));rvalue;}))),(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="=";rvalue;}),(fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000092061,"expression")))),({LM_S rvalue={.field_0=2};rvalue.field_2001=";";rvalue;})))))));({});}));
+((is_SB_sized_SB_array_CL_ArrowU64Type(uuid_0000000000092058))?({uuid_0000000000092061=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000092061,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="memcpy(&rvalue.field_";rvalue;}),({LM_S rvalue={.field_0=2};rvalue.field_2001=(to_SB_string_CL_ArrowStringU64(((uuid_000000000009204d*(1000))+uuid_000000000009204e)));rvalue;}))),(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=",";rvalue;}),(_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000092061,"expression")))),(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=",sizeof(";rvalue;}),(mangle_SB_c_SB_type_CL_ArrowSType((_DT_p2_CL_ArrowTypeType((slot_CL_ArrowTypeConsStringType(uuid_0000000000092058,"Array")))))))),(_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=")*";rvalue;}),(_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=(tag_SB_of_CL_ArrowStringType((_DT_p1_CL_ArrowTypeType((slot_CL_ArrowTypeConsStringType(uuid_0000000000092058,"Array"))))));rvalue;}),({LM_S rvalue={.field_0=2};rvalue.field_2001=");";rvalue;})))))))))))));({});}):({uuid_0000000000092061=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000092061,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="rvalue.field_";rvalue;}),({LM_S rvalue={.field_0=2};rvalue.field_2001=(to_SB_string_CL_ArrowStringU64(((uuid_000000000009204d*(1000))+uuid_000000000009204e)));rvalue;}))),(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="=";rvalue;}),(_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000092061,"expression")))),({LM_S rvalue={.field_0=2};rvalue.field_2001=";";rvalue;})))))));({});}));
 });
 ({uuid_000000000009204f=(fragment_CL__CL_chain_CL_ArrowFragmentConsFragmentFragment(uuid_0000000000092061,uuid_0000000000092060));({});});
 });
-({uuid_000000000009204f=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_000000000009204f,"expression",(_AD__CL_ArrowSConsSS((fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000092061,"expression")),(fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000092060,"expression"))))));({});});
+({uuid_000000000009204f=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_000000000009204f,"expression",(_AD__CL_ArrowSConsSS((_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000092061,"expression")),(_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000092060,"expression"))))));({});});
 }):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: PLUGINS/BACKEND/C/initialize-c-struct.lm Line: 7 Column: 11")));
 }):(1?({({uuid_0000000000092062=(typeof_CL_ArrowTypeAST(uuid_000000000009204c));({});})
 ;
 ((is_SB_sized_SB_array_CL_ArrowU64Type(uuid_0000000000092062))?({({uuid_000000000009204f=(compile_SB_expr_CL_ArrowFragmentConsIsUsedConsI64ConsASTFContext(uuid_000000000009204b,uuid_000000000009204c,(0),({LM_IsUsed rvalue={4};rvalue;})));({});});
-({uuid_000000000009204f=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_000000000009204f,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="memcpy(&rvalue.field_";rvalue;}),({LM_S rvalue={.field_0=2};rvalue.field_2001=(to_SB_string_CL_ArrowStringU64(((uuid_000000000009204d*(1000))+uuid_000000000009204e)));rvalue;}))),(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=",";rvalue;}),(fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_000000000009204f,"expression")))),(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=",sizeof(";rvalue;}),(mangle_SB_c_SB_type_CL_ArrowSType((_DT_p2_CL_ArrowTypeType((slot_CL_ArrowTypeConsStringType(uuid_0000000000092062,"Array")))))))),(_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=")*";rvalue;}),(_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=(tag_SB_of_CL_ArrowStringType((_DT_p1_CL_ArrowTypeType((slot_CL_ArrowTypeConsStringType(uuid_0000000000092062,"Array"))))));rvalue;}),({LM_S rvalue={.field_0=2};rvalue.field_2001=");";rvalue;})))))))))))));({});});
+({uuid_000000000009204f=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_000000000009204f,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="memcpy(&rvalue.field_";rvalue;}),({LM_S rvalue={.field_0=2};rvalue.field_2001=(to_SB_string_CL_ArrowStringU64(((uuid_000000000009204d*(1000))+uuid_000000000009204e)));rvalue;}))),(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=",";rvalue;}),(_DT_get_CL_ArrowSConsStringFragment(uuid_000000000009204f,"expression")))),(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=",sizeof(";rvalue;}),(mangle_SB_c_SB_type_CL_ArrowSType((_DT_p2_CL_ArrowTypeType((slot_CL_ArrowTypeConsStringType(uuid_0000000000092062,"Array")))))))),(_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=")*";rvalue;}),(_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=(tag_SB_of_CL_ArrowStringType((_DT_p1_CL_ArrowTypeType((slot_CL_ArrowTypeConsStringType(uuid_0000000000092062,"Array"))))));rvalue;}),({LM_S rvalue={.field_0=2};rvalue.field_2001=");";rvalue;})))))))))))));({});});
 }):({({uuid_000000000009204f=(compile_SB_expr_CL_ArrowFragmentConsIsUsedConsI64ConsASTFContext(uuid_000000000009204b,uuid_000000000009204c,(0),({LM_IsUsed rvalue={4};rvalue;})));({});});
-({uuid_000000000009204f=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_000000000009204f,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="rvalue.field_";rvalue;}),({LM_S rvalue={.field_0=2};rvalue.field_2001=(to_SB_string_CL_ArrowStringU64(((uuid_000000000009204d*(1000))+uuid_000000000009204e)));rvalue;}))),(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="=";rvalue;}),(fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_000000000009204f,"expression")))),({LM_S rvalue={.field_0=2};rvalue.field_2001=";";rvalue;})))))));({});});
+({uuid_000000000009204f=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_000000000009204f,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="rvalue.field_";rvalue;}),({LM_S rvalue={.field_0=2};rvalue.field_2001=(to_SB_string_CL_ArrowStringU64(((uuid_000000000009204d*(1000))+uuid_000000000009204e)));rvalue;}))),(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="=";rvalue;}),(_DT_get_CL_ArrowSConsStringFragment(uuid_000000000009204f,"expression")))),({LM_S rvalue={.field_0=2};rvalue.field_2001=";";rvalue;})))))));({});});
 }));
 }):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: PLUGINS/BACKEND/C/initialize-c-struct.lm Line: 4 Column: 5"))));
 });
@@ -27306,7 +27306,7 @@ return ({({({uuid_0000000000092104=({LM_S rvalue={3};rvalue;});({});})
 (uuid_0000000000092109==(1));
 })?({({uuid_000000000009210b=(fragment_SB_context_CL__CL_lookup_CL_ArrowFragmentConsASTConsTypeConsStringFContext(uuid_0000000000092100,uuid_000000000009210a,(typeof_CL_ArrowTypeAST(uuid_0000000000092102)),uuid_0000000000092102));({});})
 ;
-({uuid_0000000000092104=(fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_000000000009210b,uuid_0000000000092101));({});});
+({uuid_0000000000092104=(_DT_get_CL_ArrowSConsStringFragment(uuid_000000000009210b,uuid_0000000000092101));({});});
 }):(({({({({uuid_000000000009210c=uuid_0000000000092105;({});})
 ;
 ({uuid_000000000009210d=(0);({});})
@@ -28293,9 +28293,9 @@ return ({({({uuid_0000000000092104=({LM_S rvalue={3};rvalue;});({});})
 ({uuid_0000000000092366=(uuid_0000000000092359.field_1);({});})
 ;
 });
-({uuid_0000000000092358=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000092358,uuid_0000000000092101,uuid_0000000000092366));({});});
+({uuid_0000000000092358=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000092358,uuid_0000000000092101,uuid_0000000000092366));({});});
 });
-({uuid_0000000000092358=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000092358,"expression",uuid_0000000000092366));({});});
+({uuid_0000000000092358=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000092358,"expression",uuid_0000000000092366));({});});
 });
 ({uuid_0000000000092100=(fragment_SB_context_CL__CL_bind_CL_ArrowFContextConsFragmentConsTypeConsStringFContext(uuid_0000000000092100,uuid_0000000000092357,(typeof_CL_ArrowTypeAST(uuid_0000000000092350)),uuid_0000000000092358));({});});
 }):(({({({({uuid_0000000000092367=uuid_0000000000092105;({});})
@@ -28330,7 +28330,7 @@ return ({({({uuid_0000000000092104=({LM_S rvalue={3};rvalue;});({});})
 ({uuid_0000000000092104=(uuid_000000000009236f.field_1);({});});
 }):({({uuid_000000000009237c=(cc_SB_blob_CL_ArrowFragmentConsI64ConsASTConsStringFContext(uuid_0000000000092100,uuid_000000000009236e,uuid_0000000000092369,uuid_0000000000092103));({});})
 ;
-({uuid_0000000000092104=(fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_000000000009237c,uuid_0000000000092101));({});});
+({uuid_0000000000092104=(_DT_get_CL_ArrowSConsStringFragment(uuid_000000000009237c,uuid_0000000000092101));({});});
 })):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: PLUGINS/BACKEND/C/blob-render.lm Line: 175 Column: 14")));
 }):({({({({({({({uuid_000000000009237d=(blob_SB_render_SB_simple_CL_ArrowTupleSFContextConsI64ConsASTConsStringFContext(uuid_0000000000092100,uuid_0000000000092101,uuid_000000000009236a,uuid_0000000000092103));({});})
 ;
@@ -28461,13 +28461,13 @@ return ({({({uuid_00000000000923af=uuid_00000000000923ac;({});})
 ({uuid_00000000000923cd=(uuid_00000000000923c0.field_1);({});})
 ;
 });
-({uuid_00000000000923ad=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_00000000000923ad,(tail_SB_string_CL_ArrowStringString(uuid_00000000000923bf)),uuid_00000000000923cd));({});});
+({uuid_00000000000923ad=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_00000000000923ad,(tail_SB_string_CL_ArrowStringString(uuid_00000000000923bf)),uuid_00000000000923cd));({});});
 }):({({({uuid_00000000000923ce=(blob_SB_render_SB_simple_CL_ArrowTupleSFContextConsI64ConsASTConsStringFContext(uuid_00000000000923ab,"expression",uuid_00000000000923ac,uuid_00000000000923ae));({});})
 ;
 ({uuid_00000000000923db=(uuid_00000000000923ce.field_1);({});})
 ;
 });
-({uuid_00000000000923ad=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_00000000000923ad,"expression",uuid_00000000000923db));({});});
+({uuid_00000000000923ad=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_00000000000923ad,"expression",uuid_00000000000923db));({});});
 })):(({({({({uuid_00000000000923dc=uuid_00000000000923af;({});})
 ;
 ({uuid_00000000000923dd=(0);({});})
@@ -28507,20 +28507,20 @@ return ({({({uuid_00000000000923af=uuid_00000000000923ac;({});})
 ({uuid_00000000000923f2=(uuid_00000000000923e5.field_1);({});})
 ;
 });
-({uuid_00000000000923ad=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_00000000000923ad,(tail_SB_string_CL_ArrowStringString(uuid_00000000000923e3)),uuid_00000000000923f2));({});});
+({uuid_00000000000923ad=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_00000000000923ad,(tail_SB_string_CL_ArrowStringString(uuid_00000000000923e3)),uuid_00000000000923f2));({});});
 }):({({({uuid_00000000000923f3=(blob_SB_render_SB_simple_CL_ArrowTupleSFContextConsI64ConsASTConsStringFContext(uuid_00000000000923ab,"expression",uuid_00000000000923ac,uuid_00000000000923ae));({});})
 ;
 ({uuid_0000000000092400=(uuid_00000000000923f3.field_1);({});})
 ;
 });
-({uuid_00000000000923ad=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_00000000000923ad,"expression",uuid_0000000000092400));({});});
+({uuid_00000000000923ad=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_00000000000923ad,"expression",uuid_0000000000092400));({});});
 }));
 }):(1?({({({uuid_0000000000092401=(blob_SB_render_SB_simple_CL_ArrowTupleSFContextConsI64ConsASTConsStringFContext(uuid_00000000000923ab,"expression",uuid_00000000000923ac,uuid_00000000000923ae));({});})
 ;
 ({uuid_000000000009240e=(uuid_0000000000092401.field_1);({});})
 ;
 });
-({uuid_00000000000923ad=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_00000000000923ad,"expression",uuid_000000000009240e));({});});
+({uuid_00000000000923ad=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_00000000000923ad,"expression",uuid_000000000009240e));({});});
 }):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: PLUGINS/BACKEND/C/blob-render.lm Line: 205 Column: 5"))))));
 });
 uuid_00000000000923ad;
@@ -29507,9 +29507,9 @@ uuid_000000000009251f;
 LM_Fragment fragment_CL__CL_chain_SB_c_CL_ArrowFragmentConsFragmentFragment(LM_Fragment uuid_0000000000092528,LM_Fragment uuid_0000000000092529){return ({({({({({uuid_0000000000092528.field_2=(uuid_0000000000092529.field_2);({});});
 ({uuid_0000000000092528.field_3=(uuid_0000000000092529.field_3);({});});
 });
-({uuid_0000000000092528=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000092528,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="({";rvalue;}),(fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000092528,"expression")))),(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=";\n";rvalue;}),(fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000092529,"expression")))),({LM_S rvalue={.field_0=2};rvalue.field_2001=";\n})";rvalue;})))))));({});});
+({uuid_0000000000092528=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000092528,"expression",(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001="({";rvalue;}),(_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000092528,"expression")))),(_AD__CL_ArrowSConsSS((_AD__CL_ArrowSConsSS(({LM_S rvalue={.field_0=2};rvalue.field_2001=";\n";rvalue;}),(_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000092529,"expression")))),({LM_S rvalue={.field_0=2};rvalue.field_2001=";\n})";rvalue;})))))));({});});
 });
-({uuid_0000000000092528=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000092528,"frame",({LM_S rvalue={.field_0=1};rvalue.field_1001=(close_CL_ArrowArray_QM_SS((fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000092529,"frame"))));rvalue.field_1002=(close_CL_ArrowArray_QM_SS((fragment_CL__CL_get_CL_ArrowSConsStringFragment(uuid_0000000000092528,"frame"))));rvalue;})));({});});
+({uuid_0000000000092528=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000092528,"frame",({LM_S rvalue={.field_0=1};rvalue.field_1001=(close_CL_ArrowArray_QM_SS((_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000092529,"frame"))));rvalue.field_1002=(close_CL_ArrowArray_QM_SS((_DT_get_CL_ArrowSConsStringFragment(uuid_0000000000092528,"frame"))));rvalue;})));({});});
 });
 uuid_0000000000092528;
 });}
@@ -29549,9 +29549,9 @@ uuid_0000000000092531;
 LM_Fragment fragment_CL__CL_local_SB_variable_CL_ArrowFragmentConsTypeI64(signed long uuid_0000000000092533,LM_Type uuid_0000000000092534){LM_Fragment uuid_0000000000092535;
 return ({({({({({uuid_0000000000092535=(fragment_CL__CL_new_CL_ArrowFragmentNil());({});})
 ;
-({uuid_0000000000092535=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000092535,"expression",({LM_S rvalue={.field_0=2};rvalue.field_2001=(uuid_CL_ArrowStringNil());rvalue;})));({});});
+({uuid_0000000000092535=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000092535,"expression",({LM_S rvalue={.field_0=2};rvalue.field_2001=(uuid_CL_ArrowStringNil());rvalue;})));({});});
 });
-({uuid_0000000000092535=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000092535,"fragment-type",({LM_S rvalue={.field_0=2};rvalue.field_2001="LocalVariable";rvalue;})));({});});
+({uuid_0000000000092535=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000092535,"fragment-type",({LM_S rvalue={.field_0=2};rvalue.field_2001="LocalVariable";rvalue;})));({});});
 });
 ({uuid_0000000000092535.field_3=uuid_0000000000092534;({});});
 });
@@ -29561,9 +29561,9 @@ uuid_0000000000092535;
 LM_Fragment fragment_CL__CL_label_CL_ArrowFragmentString(char* uuid_0000000000092536){LM_Fragment uuid_0000000000092537;
 return ({({({({({uuid_0000000000092537=(fragment_CL__CL_new_CL_ArrowFragmentNil());({});})
 ;
-({uuid_0000000000092537=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000092537,"expression",({LM_S rvalue={.field_0=2};rvalue.field_2001=uuid_0000000000092536;rvalue;})));({});});
+({uuid_0000000000092537=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000092537,"expression",({LM_S rvalue={.field_0=2};rvalue.field_2001=uuid_0000000000092536;rvalue;})));({});});
 });
-({uuid_0000000000092537=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000092537,"fragment-type",({LM_S rvalue={.field_0=2};rvalue.field_2001="Label";rvalue;})));({});});
+({uuid_0000000000092537=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_0000000000092537,"fragment-type",({LM_S rvalue={.field_0=2};rvalue.field_2001="Label";rvalue;})));({});});
 });
 ({uuid_0000000000092537.field_3=(t1_CL_ArrowTypeString("Label"));({});});
 });
@@ -29781,7 +29781,7 @@ LM_S uuid_000000000009258c;
 (uuid_000000000009255e==(1));
 })?({({({({({uuid_000000000009255f=(fragment_CL__CL_new_CL_ArrowFragmentNil());({});})
 ;
-({uuid_000000000009255f=(fragment_CL__CL_set_CL_ArrowFragmentConsSConsStringFragment(uuid_000000000009255f,"fragment-type",({LM_S rvalue={.field_0=2};rvalue.field_2001="Function";rvalue;})));({});});
+({uuid_000000000009255f=(_DT_set_CL_ArrowFragmentConsSConsStringFragment(uuid_000000000009255f,"fragment-type",({LM_S rvalue={.field_0=2};rvalue.field_2001="Function";rvalue;})));({});});
 });
 ({uuid_000000000009255f.field_6=uuid_0000000000092557;({});});
 });
