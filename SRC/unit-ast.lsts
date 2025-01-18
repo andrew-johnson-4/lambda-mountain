@@ -1,3 +1,6 @@
 
 # type definitions
 import SRC/ast-definitions.lsts;
+
+# boolean queries
+import SRC/is-seq.lsts;

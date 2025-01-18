@@ -1,8 +1,8 @@
 
 infer-expr := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type)(: used IsUsed). (: (
-   (if (is-seq term) (
+   (if (.is-seq term) (
       (let seqs (: LEOF List<AST>))
-      (while (is-seq term) (match term (
+      (while (.is-seq term) (match term (
          ()
          ( (Seq( l r )) (
             (set tctx (infer-expr-one( tctx r scoped hint used )))
