@@ -17,7 +17,6 @@ import PLUGINS/BACKEND/C/never-as-expr-type.lm;
 import PLUGINS/BACKEND/C/compile-c-function-args.lm;
 import PLUGINS/BACKEND/C/compile-c-text-header.lm;
 import PLUGINS/BACKEND/C/compile-c-typedef.lm;
-import PLUGINS/BACKEND/C/compile-exit-cleanup.lm;
 import PLUGINS/BACKEND/C/compile-finish.lm;
 import PLUGINS/BACKEND/C/compile-program-ordered.lm;
 import PLUGINS/BACKEND/C/compile-write.lm;
