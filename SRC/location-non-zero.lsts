@@ -1,0 +1,4 @@
+
+let non-zero(loc: SourceLocation): U64 = (
+   loc.line != 0
+);

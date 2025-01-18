@@ -4,3 +4,4 @@ import SRC/ast-definitions.lsts;
 
 # boolean queries
 import SRC/is-seq.lsts;
+import SRC/location-non-zero.lsts;
