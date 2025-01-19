@@ -71,37 +71,3 @@ print := λ(: loc SourceLocation). (: (
    ))
 ) Nil);
 
-print := λ(: tt Type). (: (match tt (
-   ()
-   ( TAny (print '?_s) )
-   ( (TVar( vn )) (print vn) )
-   ( (TGround( tag LEOF )) (print tag) )
-   ( (TAnd( lt rt )) (
-      (if (.is-arrow lt) (
-         (print lt)
-         (print '\s+\n_s)
-         (print rt)
-      ) (
-         (print lt)
-         (print '\s+\s_s)
-         (print rt)
-      ))
-   ))
-   ( (TGround( tag ps )) (
-      (print tag)
-      (print '<_s)
-      (print ps)
-      (print '>_s)
-   ))
-)) Nil);
-
-print := λ(: tt List<Type>). (: (match tt (
-   ()
-   ( LEOF () )
-   ( (LCons( p1 LEOF )) (print p1) )
-   ( (LCons( p1 rst )) (
-      (print rst)
-      (print ',_s)
-      (print p1)
-   ))
-)) Nil);

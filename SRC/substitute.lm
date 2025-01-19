@@ -23,52 +23,6 @@ substitute := λ(: ctx Context)(: v Token). (: (
    v
 ) Token);
 
-substitute := λ(: tctx TContext)(: tt List<Type>). (: (
-   (match tt (
-      ()
-      ( LEOF () )
-      ( (LCons( par rst )) (
-         (set tt (cons(
-            (substitute( tctx par ))
-            (substitute( tctx rst ))
-         )))
-      ))
-   ))
-   tt
-) List<Type>);
-
-substitute := λ(: tctx TContext)(: tt Type). (: (
-   (match tt (
-      ()
-      ( (TVar v) (
-         (while (non-zero tctx) (match tctx (
-            ()
-            ( TCtxNil (set tctx TCtxEOF) )
-            ( (TCtxBind( rst tk tv _ )) (
-               (if (==( tk v )) (
-                  (set tt tv)
-                  (set tctx TCtxEOF)
-               ) (set tctx rst))
-            ))
-         )))
-      ))
-      ( (TGround( tag pars )) (
-         (set tt (TGround(
-            tag
-            (close(substitute( tctx pars )))
-         )))
-      ))
-      ( (TAnd( lt rt )) (
-         (set tt (TAnd(
-            (close(substitute( tctx lt )))
-            (close(substitute( tctx rt )))
-         )))
-      ))
-      ( _ () )
-   ))
-   tt
-) Type);
-
 substitute := λ(: tctx Context)(: tt List<Type>). (: (
    (match tt (
       ()

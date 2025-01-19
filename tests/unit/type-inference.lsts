@@ -1,0 +1,19 @@
+
+import LIB/default.lm;
+import SRC/unit-inference.lsts;
+
+let t-A = t1(c"A");
+let t-B = t2(c"B", t-A);
+let t-C = t1(c"C");
+
+add-quick-prop(t-A, TAny, t-C);
+
+# simple inferences
+
+let ti1 = enrich-quick-prop(t-A,t-A);
+let ti2 = enrich-quick-prop(ti1,ti1);
+print(ti2); print("\n");
+
+let ti3 = enrich-quick-prop(t-B,t-B);
+let ti4 = enrich-quick-prop(ti3,ti3);
+print(ti4); print("\n");
