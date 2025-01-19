@@ -16,7 +16,7 @@ plugins-backend-c-compile := λ . (: (
                   global-ctx k kt fragment
                )))
             ) (
-               (let clean-tt (without-representation kt))
+               (let clean-tt (.without-tag kt))
                (let mid (mangle-identifier( k clean-tt )))
                (set fragment (.set( fragment 'fragment-type_s (SAtom 'Global_s) )))
                (set fragment (.set( fragment 'expression_s (SAtom mid) )))

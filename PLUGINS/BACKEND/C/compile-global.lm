@@ -76,7 +76,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
          (set assemble-text-section (SCons( (close assemble-text-section) (close text) )))
       )))
       ( t (
-         (let clean-tt (without-representation kt))
+         (let clean-tt (.without-tag kt))
          (let mid (mangle-identifier( k clean-tt )))
 
          (let e (compile-expr( ctx t 0_i64 Used )))

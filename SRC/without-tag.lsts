@@ -6,7 +6,14 @@ let .without-tag(tt: Type): Type = (
       TGround { tag:c"Constructor" } => TAny;
       TGround { tag:c"CaseNumber" } => TAny;
       TGround { tag:c"Raw" } => TAny;
-      TGround { tag:tag } => if tag.has-prefix(c"Tag::") then TAny else tt;
+      TGround { tag:c"LMStruct" } => TAny;
+      TGround { tag:c"Constant" } => TAny;
+      TGround { tag:c"Literal" } => TAny;
+      TGround { tag:c"LocalVariable" } => TAny;
+      TGround { tag:c"GlobalVariable" } => TAny;
+      TGround { tag:tag } => if tag.has-prefix(c"Tag::") then TAny
+                        else if tag.has-prefix(c"Field::") then TAny
+                        else tt;
       _ => tt;
    }
 );

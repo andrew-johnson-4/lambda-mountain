@@ -50,7 +50,7 @@ infer-global-context-2 := λ(: td AST). (: (
       ( (Glb( k_t rhs )) (
          (infer-expr( global-type-context rhs Unscoped TAny Used ))
          (let rhst (normalize(typeof rhs)))
-         (let kt (&&( (without-representation rhst) (t1 'GlobalVariable_s) )))
+         (let kt (&&( rhst (t1 'GlobalVariable_s) )))
          (set global-type-context (TCtxBind(
             (close global-type-context) k kt td
          )))
