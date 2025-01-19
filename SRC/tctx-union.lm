@@ -1,0 +1,14 @@
+
+# TODO: this stinks
+union := λ(: lctx TContext)(: rctx TContext). (: (
+   (match rctx (
+      ()
+      ( TCtxNil (set rctx TCtxEOF) )
+      ( TCtxEOF () )
+      ( (TCtxBind( rst k v t )) (
+         (set lctx (union( lctx rst )))
+         (set lctx (TCtxBind( (close lctx) k v t )))
+      ))
+   ))
+   lctx
+) TContext);

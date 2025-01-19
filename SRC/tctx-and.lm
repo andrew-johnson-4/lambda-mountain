@@ -1,5 +1,6 @@
 
 # TODO: this stinks
+# I think the difference between union and this is the difference between && and ||
 and := λ(: lctx TContext)(: rctx TContext). (: (
    (match (Tuple( lctx rctx )) (
       ()
