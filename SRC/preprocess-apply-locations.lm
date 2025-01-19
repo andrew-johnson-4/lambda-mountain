@@ -1,8 +1,8 @@
 
 preprocess-apply-locations := λ(: program AST). (: (
-   (if (is-seq program) (
+   (if (.is-seq program) (
       (let seqs (: LEOF List<AST>))
-      (while (is-seq program) (match program (
+      (while (.is-seq program) (match program (
          ()
          ( (Seq( l r )) (
             (set seqs (cons( (preprocess-apply-locations-one r) seqs )))
