@@ -1,6 +1,6 @@
 
 import LIB/default.lm;
-import SRC/unit-types.lsts;
+import SRC/unit-inference.lsts;
 
 let t-A = t1(c"A");
 let t-B = t2(c"B", t-A);

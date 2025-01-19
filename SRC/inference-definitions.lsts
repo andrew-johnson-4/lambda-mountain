@@ -1,0 +1,5 @@
+
+type TContext = TCtxEOF | TCtxNil
+              | TCtxBind { ctx: TContext[], key: CString, typ: Type, term: AST };
+zero TContext = TCtxEOF;
+
