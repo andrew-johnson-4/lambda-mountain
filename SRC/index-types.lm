@@ -52,7 +52,6 @@ import SRC/has-forward.lm;
 import SRC/with-tag.lm;
 import SRC/with-phi.lsts;
 import SRC/with-size.lm;
-import SRC/with-platform-props.lm;
 
 import SRC/without-t.lm;
 import SRC/without-phi.lsts;
