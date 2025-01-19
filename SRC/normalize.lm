@@ -1,7 +1,6 @@
 
 normalize := λ(: tt Type). (: (
    (let rt tt)
-   (set rt (without-representation rt))
    (set rt (.without-tag rt))
    # Sized can serve as a datatype if nothing else is available
    (set rt (without-size-unless-class rt))
