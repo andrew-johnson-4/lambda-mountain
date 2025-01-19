@@ -16,7 +16,7 @@ parse-type-single := λ(: tt String). (: (
                   (if (==( vn '?_s )) (
                      (set base-type TAny)
                   ) (
-                     (if (is-variable vn) (
+                     (if (lm-is-variable vn) (
                         (set base-type (TVar vn))
                      ) (
                         (set base-type (TGround(
@@ -36,7 +36,7 @@ parse-type-single := λ(: tt String). (: (
                   (if (==( vn '?_s )) (
                      (set base-type TAny)
                   ) (
-                     (if (is-variable vn) (
+                     (if (lm-is-variable vn) (
                         (set base-type (TVar vn))
                      ) (
                         (set base-type (TGround(
@@ -120,7 +120,7 @@ parse-type-single := λ(: tt String). (: (
       (if (==( vn '?_s )) (
          (set base-type TAny)
       ) (
-         (if (is-variable vn) (
+         (if (lm-is-variable vn) (
             (set base-type (TVar vn))
          ) (
             (set base-type (TGround(

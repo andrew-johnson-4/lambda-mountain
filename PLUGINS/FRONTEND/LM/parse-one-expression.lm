@@ -36,7 +36,7 @@ parse-one-expression := λ(: tokens List<Token>). (: (
          (set remainder r)
       ))
       ( (LCons( a r )) (
-         (if (is-variable (.key a)) (
+         (if (lm-is-variable (.key a)) (
             (set expr (Var( (.key a) a )))
          ) (
             (set expr (Lit( (.key a) a )))
