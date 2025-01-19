@@ -12,5 +12,8 @@ add-quick-prop(t-A, TAny, t-C);
 
 let ti1 = enrich-quick-prop(t-A,t-A);
 let ti2 = enrich-quick-prop(ti1,ti1);
+print(ti2); print("\n");
 
-print(ti2);
+let ti3 = enrich-quick-prop(t-B,t-B);
+let ti4 = enrich-quick-prop(ti3,ti3);
+print(ti4); print("\n");

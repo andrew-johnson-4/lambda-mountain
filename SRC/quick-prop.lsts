@@ -31,14 +31,7 @@ let enrich-quick-prop(base: Type): Type = (
 
 let enrich-quick-prop(base: Type, pre: Type): Type = (
    match pre {
-      TGround { tag=tag, parameters=parameters } => (
-         if parameters.length > 0 then (
-            let ps = [] :: List<Type>;
-            for p in parameters.reverse {
-               ps = cons( enrich-quick-prop(base, p), ps );
-            };
-            pre = TGround { tag, close(ps) };
-         );
+      TGround {} => (
          for Tuple { lt=first, rt=second } in quick-prop.lookup( pre.ground-tag-and-arity, ([] :: List<(Type,Type)>) ) {
             if can-unify(lt, base) then (
                let tctx = unify(lt, base);
@@ -60,4 +53,3 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
    };
    pre
 );
-
