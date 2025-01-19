@@ -1030,17 +1030,17 @@ LM_SmartString to_SB_smart_SB_string_CL_ArrowSmartStringSourceLocation(LM_Source
 LM_SmartString uuid_000000000008d6d5;
 #line 2 "SRC/formatted-location.lsts"
 LM_SmartString _DT_formatted_SB_location_CL_ArrowSmartStringListToken(LM_ListToken uuid_000000000008d6d2);
+#line 2 "SRC/cmp.lsts"
+LM_Ord cmp_CL_ArrowOrdConsTypeType(LM_Type uuid_000000000008d6d9,LM_Type uuid_000000000008d6da);
 LM_HashtableEqListTupleTypeTypeTupleU64String quick_SB_prop_CL_HashtableEqListTupleTypeTypeTupleU64String;
 #line 4 "SRC/quick-prop.lsts"
-LM_TupleU64String _DT_ground_SB_tag_SB_and_SB_arity_CL_ArrowTupleU64StringType(LM_Type uuid_000000000008d6d9);
+LM_TupleU64String _DT_ground_SB_tag_SB_and_SB_arity_CL_ArrowTupleU64StringType(LM_Type uuid_000000000008d6e5);
 #line 21 "SRC/quick-prop.lsts"
-void add_SB_quick_SB_prop_CL_ArrowNilConsTypeConsTypeType(LM_Type uuid_000000000008d76f,LM_Type uuid_000000000008d770,LM_Type uuid_000000000008d771);
+void add_SB_quick_SB_prop_CL_ArrowNilConsTypeConsTypeType(LM_Type uuid_000000000008d77b,LM_Type uuid_000000000008d77c,LM_Type uuid_000000000008d77d);
 #line 28 "SRC/quick-prop.lsts"
-LM_Type enrich_SB_quick_SB_prop_CL_ArrowTypeType(LM_Type uuid_000000000008d792);
+LM_Type enrich_SB_quick_SB_prop_CL_ArrowTypeType(LM_Type uuid_000000000008d79e);
 #line 32 "SRC/quick-prop.lsts"
-LM_Type enrich_SB_quick_SB_prop_CL_ArrowTypeConsTypeType(LM_Type uuid_000000000008d793,LM_Type uuid_000000000008d794);
-#line 2 "SRC/cmp.lsts"
-LM_Ord cmp_CL_ArrowOrdConsTypeType(LM_Type uuid_000000000008d7bf,LM_Type uuid_000000000008d7c0);
+LM_Type enrich_SB_quick_SB_prop_CL_ArrowTypeConsTypeType(LM_Type uuid_000000000008d79f,LM_Type uuid_000000000008d7a0);
 #line 3 "SRC/and.lm"
 LM_TContext and_CL_ArrowTContextConsTContextTContext(LM_TContext uuid_000000000008d7cb,LM_TContext uuid_000000000008d7cc);
 #line 2 "SRC/cons-root.lsts"
@@ -1867,34 +1867,34 @@ LM_AST* close_CL_ArrowArray_QM_ASTAST(LM_AST uuid_000000000008fb84);
 LM_Token head_CL_ArrowTokenListToken(LM_ListToken uuid_000000000008fb86);
 #line 23 "PLATFORM/C/LIB/list.lm"
 unsigned long _DT_has_SB_head_CL_ArrowU64ListToken(LM_ListToken uuid_000000000008fb89);
-#line 40 "PLATFORM/C/LIB/hashtable.lsts"
-LM_HashtableEqListTupleTypeTypeTupleU64String _DT_bind_CL_ArrowHashtableEqListTupleTypeTypeTupleU64StringConsListTupleTypeTypeConsTupleU64StringHashtableEqListTupleTypeTypeTupleU64String(LM_HashtableEqListTupleTypeTypeTupleU64String uuid_000000000008fb8c,LM_TupleU64String uuid_000000000008fb93,LM_ListTupleTypeType uuid_000000000008fb94);
-#line 68 "PLATFORM/C/LIB/hashtable.lsts"
-unsigned long _DT_bind_SB_eq_CL_ArrowU64ConsListTupleTypeTypeConsTupleU64StringConsU64Array_QM_TupleListTupleTypeTypeTupleU64String(LM_TupleListTupleTypeTypeTupleU64String* uuid_000000000008fb9e,unsigned long uuid_000000000008fb9f,LM_TupleU64String uuid_000000000008fba6,LM_ListTupleTypeType uuid_000000000008fba7);
-#line 30 "PLATFORM/C/LIB/sized.lm"
-unsigned long mem_SB_is_SB_non_SB_zero_CL_ArrowU64TupleListTupleTypeTypeTupleU64String(LM_TupleListTupleTypeTypeTupleU64String uuid_000000000008fbab);
-#line 16 "PLATFORM/C/LIB/tuple.lsts"
-unsigned long _EQ__EQ__CL_ArrowU64ConsTupleU64StringTupleU64String(LM_TupleU64String uuid_000000000008fbb4,LM_TupleU64String uuid_000000000008fbbb);
-#line 8 "PLATFORM/C/LIB/tuple.lsts"
-unsigned long deep_SB_hash_CL_ArrowU64TupleU64String(LM_TupleU64String uuid_000000000008fbc2);
-#line 18 "PLATFORM/C/LIB/sized.lm"
-unsigned long is_CL_ArrowU64ConsHashtableEqListTupleTypeTypeTupleU64StringHashtableEqListTupleTypeTypeTupleU64String(LM_HashtableEqListTupleTypeTypeTupleU64String uuid_000000000008fbc3,LM_HashtableEqListTupleTypeTypeTupleU64String uuid_000000000008fbc4);
-#line 4 "PLATFORM/C/LIB/list.lm"
-LM_ListTupleTypeType cons_CL_ArrowListTupleTypeTypeConsListTupleTypeTypeTupleTypeType(LM_TupleTypeType uuid_000000000008fbcf,LM_ListTupleTypeType uuid_000000000008fbd0);
-#line 22 "PLATFORM/C/LIB/array.lm"
-LM_ListTupleTypeType* close_CL_ArrowArray_QM_ListTupleTypeTypeListTupleTypeType(LM_ListTupleTypeType uuid_000000000008fbd1);
-#line 5 "PLATFORM/C/LIB/hashtable.lsts"
-LM_ListTupleTypeType _DT_lookup_CL_ArrowListTupleTypeTypeConsListTupleTypeTypeConsTupleU64StringHashtableEqListTupleTypeTypeTupleU64String(LM_HashtableEqListTupleTypeTypeTupleU64String uuid_000000000008fbd3,LM_TupleU64String uuid_000000000008fbda,LM_ListTupleTypeType uuid_000000000008fbdb);
-#line 18 "PLATFORM/C/LIB/sized.lm"
-unsigned long is_CL_ArrowU64ConsTypeType(LM_Type uuid_000000000008fbe1,LM_Type uuid_000000000008fbe2);
-#line 2 "PLATFORM/C/LIB/list.lm"
-unsigned long non_SB_zero_CL_ArrowU64ListTupleTypeType(LM_ListTupleTypeType uuid_000000000008fbe7);
 #line 2 "PLATFORM/C/LIB/list.lsts"
-LM_Ord cmp_CL_ArrowOrdConsListTypeListType(LM_ListType uuid_000000000008fbe8,LM_ListType uuid_000000000008fbe9);
+LM_Ord cmp_CL_ArrowOrdConsListTypeListType(LM_ListType uuid_000000000008fb8c,LM_ListType uuid_000000000008fb8d);
 #line 18 "PLATFORM/C/LIB/sized.lm"
-unsigned long is_CL_ArrowU64ConsOrdOrd(LM_Ord uuid_000000000008fbeb,LM_Ord uuid_000000000008fbec);
+unsigned long is_CL_ArrowU64ConsOrdOrd(LM_Ord uuid_000000000008fb8f,LM_Ord uuid_000000000008fb90);
 #line 18 "PLATFORM/C/LIB/cmp.lsts"
-unsigned long _LT__CL_ArrowU64ConsStringString(char* uuid_000000000008fbf1,char* uuid_000000000008fbf2);
+unsigned long _LT__CL_ArrowU64ConsStringString(char* uuid_000000000008fb95,char* uuid_000000000008fb96);
+#line 40 "PLATFORM/C/LIB/hashtable.lsts"
+LM_HashtableEqListTupleTypeTypeTupleU64String _DT_bind_CL_ArrowHashtableEqListTupleTypeTypeTupleU64StringConsListTupleTypeTypeConsTupleU64StringHashtableEqListTupleTypeTypeTupleU64String(LM_HashtableEqListTupleTypeTypeTupleU64String uuid_000000000008fb97,LM_TupleU64String uuid_000000000008fb9e,LM_ListTupleTypeType uuid_000000000008fb9f);
+#line 68 "PLATFORM/C/LIB/hashtable.lsts"
+unsigned long _DT_bind_SB_eq_CL_ArrowU64ConsListTupleTypeTypeConsTupleU64StringConsU64Array_QM_TupleListTupleTypeTypeTupleU64String(LM_TupleListTupleTypeTypeTupleU64String* uuid_000000000008fba9,unsigned long uuid_000000000008fbaa,LM_TupleU64String uuid_000000000008fbb1,LM_ListTupleTypeType uuid_000000000008fbb2);
+#line 30 "PLATFORM/C/LIB/sized.lm"
+unsigned long mem_SB_is_SB_non_SB_zero_CL_ArrowU64TupleListTupleTypeTypeTupleU64String(LM_TupleListTupleTypeTypeTupleU64String uuid_000000000008fbb6);
+#line 16 "PLATFORM/C/LIB/tuple.lsts"
+unsigned long _EQ__EQ__CL_ArrowU64ConsTupleU64StringTupleU64String(LM_TupleU64String uuid_000000000008fbbf,LM_TupleU64String uuid_000000000008fbc6);
+#line 8 "PLATFORM/C/LIB/tuple.lsts"
+unsigned long deep_SB_hash_CL_ArrowU64TupleU64String(LM_TupleU64String uuid_000000000008fbcd);
+#line 18 "PLATFORM/C/LIB/sized.lm"
+unsigned long is_CL_ArrowU64ConsHashtableEqListTupleTypeTypeTupleU64StringHashtableEqListTupleTypeTypeTupleU64String(LM_HashtableEqListTupleTypeTypeTupleU64String uuid_000000000008fbce,LM_HashtableEqListTupleTypeTypeTupleU64String uuid_000000000008fbcf);
+#line 4 "PLATFORM/C/LIB/list.lm"
+LM_ListTupleTypeType cons_CL_ArrowListTupleTypeTypeConsListTupleTypeTypeTupleTypeType(LM_TupleTypeType uuid_000000000008fbda,LM_ListTupleTypeType uuid_000000000008fbdb);
+#line 22 "PLATFORM/C/LIB/array.lm"
+LM_ListTupleTypeType* close_CL_ArrowArray_QM_ListTupleTypeTypeListTupleTypeType(LM_ListTupleTypeType uuid_000000000008fbdc);
+#line 5 "PLATFORM/C/LIB/hashtable.lsts"
+LM_ListTupleTypeType _DT_lookup_CL_ArrowListTupleTypeTypeConsListTupleTypeTypeConsTupleU64StringHashtableEqListTupleTypeTypeTupleU64String(LM_HashtableEqListTupleTypeTypeTupleU64String uuid_000000000008fbde,LM_TupleU64String uuid_000000000008fbe5,LM_ListTupleTypeType uuid_000000000008fbe6);
+#line 18 "PLATFORM/C/LIB/sized.lm"
+unsigned long is_CL_ArrowU64ConsTypeType(LM_Type uuid_000000000008fbec,LM_Type uuid_000000000008fbed);
+#line 2 "PLATFORM/C/LIB/list.lm"
+unsigned long non_SB_zero_CL_ArrowU64ListTupleTypeType(LM_ListTupleTypeType uuid_000000000008fbf2);
 #line 40 "PLATFORM/C/LIB/hashtable.lsts"
 LM_HashtableEqListTypeTupleU64String _DT_bind_CL_ArrowHashtableEqListTypeTupleU64StringConsListTypeConsTupleU64StringHashtableEqListTypeTupleU64String(LM_HashtableEqListTypeTupleU64String uuid_000000000008fbf3,LM_TupleU64String uuid_000000000008fbfa,LM_ListType uuid_000000000008fbfb);
 #line 68 "PLATFORM/C/LIB/hashtable.lsts"
@@ -5288,305 +5288,305 @@ return ({({uuid_000000000008d6d3=uuid_000000000008d6d2;({});})
 })?1:0):0);
 })?(to_SB_smart_SB_string_CL_ArrowSmartStringSourceLocation((uuid_000000000008d6d8.field_1))):({(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/formatted-location.lsts Line: 3 Column: 4"));LM_SmartString rvalue;rvalue;})));
 });}
-#line 4 "SRC/quick-prop.lsts"
-LM_TupleU64String _DT_ground_SB_tag_SB_and_SB_arity_CL_ArrowTupleU64StringType(LM_Type uuid_000000000008d6d9){LM_Type uuid_000000000008d6da;
-LM_Type uuid_000000000008d6db;
-char uuid_000000000008d6dc;
-LM_ListType uuid_000000000008d6dd;
+#line 2 "SRC/cmp.lsts"
+LM_Ord cmp_CL_ArrowOrdConsTypeType(LM_Type uuid_000000000008d6d9,LM_Type uuid_000000000008d6da){LM_Type uuid_000000000008d6db;
+LM_Type uuid_000000000008d6dc;
+char uuid_000000000008d6dd;
 LM_ListType uuid_000000000008d6de;
-LM_Type uuid_000000000008d6df;
-LM_ListType uuid_000000000008d6e0;
-char* uuid_000000000008d6e1;
-LM_TupleU64String uuid_000000000008d6e2;
-LM_Type uuid_000000000008d701;
-char uuid_000000000008d702;
-char* uuid_000000000008d703;
-LM_Type uuid_000000000008d716;
-char uuid_000000000008d717;
-LM_ListType uuid_000000000008d718;
-char* uuid_000000000008d719;
-LM_Type uuid_000000000008d72c;
-LM_Type uuid_000000000008d73f;
-LM_Type uuid_000000000008d752;
-char uuid_000000000008d753;
-LM_Type uuid_000000000008d754;
-LM_Type uuid_000000000008d755;
-LM_TupleU64String uuid_000000000008d756;
-return ({({uuid_000000000008d6da=uuid_000000000008d6d9;({});})
+char* uuid_000000000008d6df;
+LM_Type uuid_000000000008d6e0;
+LM_Type uuid_000000000008d6e1;
+char uuid_000000000008d6e2;
+LM_ListType uuid_000000000008d6e3;
+char* uuid_000000000008d6e4;
+return ({({uuid_000000000008d6db=uuid_000000000008d6d9;({});})
 ;
-(({({({({uuid_000000000008d6db=uuid_000000000008d6da;({});})
+(({({({({uuid_000000000008d6dc=uuid_000000000008d6db;({});})
 ;
-({uuid_000000000008d6dc=(0);({});})
+({uuid_000000000008d6dd=(0);({});})
 ;
 });
-(((uuid_000000000008d6db.field_0)==(1))?(({({uuid_000000000008d6dd=(*(((LM_Type)(uuid_000000000008d6db)).field_1001));({});})
-;
-((_DT_has_SB_head_CL_ArrowU64ListType(uuid_000000000008d6dd))?(1?({({uuid_000000000008d6de=(tail_CL_ArrowListTypeListType(uuid_000000000008d6dd));({});})
-;
-((_DT_has_SB_head_CL_ArrowU64ListType(uuid_000000000008d6de))?(({({uuid_000000000008d6df=(head_CL_ArrowTypeListType(uuid_000000000008d6de));({});})
+(((uuid_000000000008d6dc.field_0)==(1))?(({({uuid_000000000008d6de=(*(((LM_Type)(uuid_000000000008d6dc)).field_1001));({});})
 ;
 1;
-})?({({uuid_000000000008d6e0=(tail_CL_ArrowListTypeListType(uuid_000000000008d6de));({});})
+})?(({({uuid_000000000008d6df=(((LM_Type)(uuid_000000000008d6dc)).field_1002);({});})
 ;
-((uuid_000000000008d6e0.field_0)==(1));
+1;
+})?({uuid_000000000008d6dd=(1);({});}):({})):({})):({}));
+});
+(uuid_000000000008d6dd==(1));
+})?({({uuid_000000000008d6e0=uuid_000000000008d6da;({});})
+;
+(({({({({uuid_000000000008d6e1=uuid_000000000008d6e0;({});})
+;
+({uuid_000000000008d6e2=(0);({});})
+;
+});
+(((uuid_000000000008d6e1.field_0)==(1))?(({({uuid_000000000008d6e3=(*(((LM_Type)(uuid_000000000008d6e1)).field_1001));({});})
+;
+1;
+})?(({({uuid_000000000008d6e4=(((LM_Type)(uuid_000000000008d6e1)).field_1002);({});})
+;
+1;
+})?({uuid_000000000008d6e2=(1);({});}):({})):({})):({}));
+});
+(uuid_000000000008d6e2==(1));
+})?((_LT__CL_ArrowU64ConsStringString(uuid_000000000008d6df,uuid_000000000008d6e4))?({LM_Ord rvalue={0};rvalue;}):((_LT__CL_ArrowU64ConsStringString(uuid_000000000008d6e4,uuid_000000000008d6df))?({LM_Ord rvalue={1};rvalue;}):(cmp_CL_ArrowOrdConsListTypeListType(uuid_000000000008d6de,uuid_000000000008d6e3)))):(1?({LM_Ord rvalue={0};rvalue;}):({(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/cmp.lsts Line: 4 Column: 56"));LM_Ord rvalue;rvalue;})));
+}):(1?({LM_Ord rvalue={1};rvalue;}):({(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/cmp.lsts Line: 3 Column: 4"));LM_Ord rvalue;rvalue;})));
+});}
+#line 4 "SRC/quick-prop.lsts"
+LM_TupleU64String _DT_ground_SB_tag_SB_and_SB_arity_CL_ArrowTupleU64StringType(LM_Type uuid_000000000008d6e5){LM_Type uuid_000000000008d6e6;
+LM_Type uuid_000000000008d6e7;
+char uuid_000000000008d6e8;
+LM_ListType uuid_000000000008d6e9;
+LM_ListType uuid_000000000008d6ea;
+LM_Type uuid_000000000008d6eb;
+LM_ListType uuid_000000000008d6ec;
+char* uuid_000000000008d6ed;
+LM_TupleU64String uuid_000000000008d6ee;
+LM_Type uuid_000000000008d70d;
+char uuid_000000000008d70e;
+char* uuid_000000000008d70f;
+LM_Type uuid_000000000008d722;
+char uuid_000000000008d723;
+LM_ListType uuid_000000000008d724;
+char* uuid_000000000008d725;
+LM_Type uuid_000000000008d738;
+LM_Type uuid_000000000008d74b;
+LM_Type uuid_000000000008d75e;
+char uuid_000000000008d75f;
+LM_Type uuid_000000000008d760;
+LM_Type uuid_000000000008d761;
+LM_TupleU64String uuid_000000000008d762;
+return ({({uuid_000000000008d6e6=uuid_000000000008d6e5;({});})
+;
+(({({({({uuid_000000000008d6e7=uuid_000000000008d6e6;({});})
+;
+({uuid_000000000008d6e8=(0);({});})
+;
+});
+(((uuid_000000000008d6e7.field_0)==(1))?(({({uuid_000000000008d6e9=(*(((LM_Type)(uuid_000000000008d6e7)).field_1001));({});})
+;
+((_DT_has_SB_head_CL_ArrowU64ListType(uuid_000000000008d6e9))?(1?({({uuid_000000000008d6ea=(tail_CL_ArrowListTypeListType(uuid_000000000008d6e9));({});})
+;
+((_DT_has_SB_head_CL_ArrowU64ListType(uuid_000000000008d6ea))?(({({uuid_000000000008d6eb=(head_CL_ArrowTypeListType(uuid_000000000008d6ea));({});})
+;
+1;
+})?({({uuid_000000000008d6ec=(tail_CL_ArrowListTypeListType(uuid_000000000008d6ea));({});})
+;
+((uuid_000000000008d6ec.field_0)==(1));
 }):0):0);
 }):0):0);
-})?(({({uuid_000000000008d6e1=(((LM_Type)(uuid_000000000008d6db)).field_1002);({});})
+})?(({({uuid_000000000008d6ed=(((LM_Type)(uuid_000000000008d6e7)).field_1002);({});})
 ;
-(_EQ__EQ__CL_ArrowU64ConsStringString(uuid_000000000008d6e1,"Array"));
-})?({uuid_000000000008d6dc=(1);({});}):({})):({})):({}));
+(_EQ__EQ__CL_ArrowU64ConsStringString(uuid_000000000008d6ed,"Array"));
+})?({uuid_000000000008d6e8=(1);({});}):({})):({})):({}));
 });
-(uuid_000000000008d6dc==(1));
-})?({({uuid_000000000008d6e2=(_DT_ground_SB_tag_SB_and_SB_arity_CL_ArrowTupleU64StringType(uuid_000000000008d6df));({});})
+(uuid_000000000008d6e8==(1));
+})?({({uuid_000000000008d6ee=(_DT_ground_SB_tag_SB_and_SB_arity_CL_ArrowTupleU64StringType(uuid_000000000008d6eb));({});})
 ;
-({LM_TupleU64String rvalue={.field_0=0};rvalue.field_1=((uuid_000000000008d6e2.field_1)+(1000));rvalue.field_2=(uuid_000000000008d6e2.field_2);rvalue;});
-}):(({({({({uuid_000000000008d701=uuid_000000000008d6da;({});})
+({LM_TupleU64String rvalue={.field_0=0};rvalue.field_1=((uuid_000000000008d6ee.field_1)+(1000));rvalue.field_2=(uuid_000000000008d6ee.field_2);rvalue;});
+}):(({({({({uuid_000000000008d70d=uuid_000000000008d6e6;({});})
 ;
-({uuid_000000000008d702=(0);({});})
-;
-});
-(((uuid_000000000008d701.field_0)==(1))?(({({uuid_000000000008d703=(((LM_Type)(uuid_000000000008d701)).field_1002);({});})
-;
-(_EQ__EQ__CL_ArrowU64ConsStringString(uuid_000000000008d703,"Sized"));
-})?({uuid_000000000008d702=(1);({});}):({})):({}));
-});
-(uuid_000000000008d702==(1));
-})?({LM_TupleU64String rvalue={.field_0=0};rvalue.field_1=(9999999);rvalue.field_2="";rvalue;}):(({({({({uuid_000000000008d716=uuid_000000000008d6da;({});})
-;
-({uuid_000000000008d717=(0);({});})
+({uuid_000000000008d70e=(0);({});})
 ;
 });
-(((uuid_000000000008d716.field_0)==(1))?(({({uuid_000000000008d718=(*(((LM_Type)(uuid_000000000008d716)).field_1001));({});})
+(((uuid_000000000008d70d.field_0)==(1))?(({({uuid_000000000008d70f=(((LM_Type)(uuid_000000000008d70d)).field_1002);({});})
+;
+(_EQ__EQ__CL_ArrowU64ConsStringString(uuid_000000000008d70f,"Sized"));
+})?({uuid_000000000008d70e=(1);({});}):({})):({}));
+});
+(uuid_000000000008d70e==(1));
+})?({LM_TupleU64String rvalue={.field_0=0};rvalue.field_1=(9999999);rvalue.field_2="";rvalue;}):(({({({({uuid_000000000008d722=uuid_000000000008d6e6;({});})
+;
+({uuid_000000000008d723=(0);({});})
+;
+});
+(((uuid_000000000008d722.field_0)==(1))?(({({uuid_000000000008d724=(*(((LM_Type)(uuid_000000000008d722)).field_1001));({});})
 ;
 1;
-})?(({({uuid_000000000008d719=(((LM_Type)(uuid_000000000008d716)).field_1002);({});})
+})?(({({uuid_000000000008d725=(((LM_Type)(uuid_000000000008d722)).field_1002);({});})
 ;
 1;
-})?({uuid_000000000008d717=(1);({});}):({})):({})):({}));
+})?({uuid_000000000008d723=(1);({});}):({})):({})):({}));
 });
-(uuid_000000000008d717==(1));
-})?({LM_TupleU64String rvalue={.field_0=0};rvalue.field_1=(_DT_length_CL_ArrowU64ListType(uuid_000000000008d718));rvalue.field_2=uuid_000000000008d719;rvalue;}):(({({uuid_000000000008d72c=uuid_000000000008d6da;({});})
+(uuid_000000000008d723==(1));
+})?({LM_TupleU64String rvalue={.field_0=0};rvalue.field_1=(_DT_length_CL_ArrowU64ListType(uuid_000000000008d724));rvalue.field_2=uuid_000000000008d725;rvalue;}):(({({uuid_000000000008d738=uuid_000000000008d6e6;({});})
 ;
-((uuid_000000000008d72c.field_0)==(3));
-})?({LM_TupleU64String rvalue={.field_0=0};rvalue.field_1=(0);rvalue.field_2="?";rvalue;}):(({({uuid_000000000008d73f=uuid_000000000008d6da;({});})
+((uuid_000000000008d738.field_0)==(3));
+})?({LM_TupleU64String rvalue={.field_0=0};rvalue.field_1=(0);rvalue.field_2="?";rvalue;}):(({({uuid_000000000008d74b=uuid_000000000008d6e6;({});})
 ;
-((uuid_000000000008d73f.field_0)==(2));
-})?({LM_TupleU64String rvalue={.field_0=0};rvalue.field_1=(9999999);rvalue.field_2="";rvalue;}):(({({({({uuid_000000000008d752=uuid_000000000008d6da;({});})
+((uuid_000000000008d74b.field_0)==(2));
+})?({LM_TupleU64String rvalue={.field_0=0};rvalue.field_1=(9999999);rvalue.field_2="";rvalue;}):(({({({({uuid_000000000008d75e=uuid_000000000008d6e6;({});})
 ;
-({uuid_000000000008d753=(0);({});})
+({uuid_000000000008d75f=(0);({});})
 ;
 });
-(((uuid_000000000008d752.field_0)==(0))?(({({uuid_000000000008d754=(*(((LM_Type)(uuid_000000000008d752)).field_1));({});})
+(((uuid_000000000008d75e.field_0)==(0))?(({({uuid_000000000008d760=(*(((LM_Type)(uuid_000000000008d75e)).field_1));({});})
 ;
 1;
-})?(({({uuid_000000000008d755=(*(((LM_Type)(uuid_000000000008d752)).field_2));({});})
+})?(({({uuid_000000000008d761=(*(((LM_Type)(uuid_000000000008d75e)).field_2));({});})
 ;
 1;
-})?({uuid_000000000008d753=(1);({});}):({})):({})):({}));
+})?({uuid_000000000008d75f=(1);({});}):({})):({})):({}));
 });
-(uuid_000000000008d753==(1));
-})?({({uuid_000000000008d756=(_DT_ground_SB_tag_SB_and_SB_arity_CL_ArrowTupleU64StringType(uuid_000000000008d755));({});})
+(uuid_000000000008d75f==(1));
+})?({({uuid_000000000008d762=(_DT_ground_SB_tag_SB_and_SB_arity_CL_ArrowTupleU64StringType(uuid_000000000008d761));({});})
 ;
-(((uuid_000000000008d756.field_1)==(9999999))?(_DT_ground_SB_tag_SB_and_SB_arity_CL_ArrowTupleU64StringType(uuid_000000000008d754)):uuid_000000000008d756);
+(((uuid_000000000008d762.field_1)==(9999999))?(_DT_ground_SB_tag_SB_and_SB_arity_CL_ArrowTupleU64StringType(uuid_000000000008d760)):uuid_000000000008d762);
 }):({(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/quick-prop.lsts Line: 5 Column: 4"));LM_TupleU64String rvalue;rvalue;})))))));
 });}
 #line 21 "SRC/quick-prop.lsts"
-void add_SB_quick_SB_prop_CL_ArrowNilConsTypeConsTypeType(LM_Type uuid_000000000008d76f,LM_Type uuid_000000000008d770,LM_Type uuid_000000000008d771){LM_TupleU64String uuid_000000000008d772;
-LM_ListTupleTypeType uuid_000000000008d77f;
-({({({({uuid_000000000008d772=(_DT_ground_SB_tag_SB_and_SB_arity_CL_ArrowTupleU64StringType(uuid_000000000008d76f));({});})
+void add_SB_quick_SB_prop_CL_ArrowNilConsTypeConsTypeType(LM_Type uuid_000000000008d77b,LM_Type uuid_000000000008d77c,LM_Type uuid_000000000008d77d){LM_TupleU64String uuid_000000000008d77e;
+LM_ListTupleTypeType uuid_000000000008d78b;
+({({({({uuid_000000000008d77e=(_DT_ground_SB_tag_SB_and_SB_arity_CL_ArrowTupleU64StringType(uuid_000000000008d77b));({});})
 ;
-({uuid_000000000008d77f=(_DT_lookup_CL_ArrowListTupleTypeTypeConsListTupleTypeTypeConsTupleU64StringHashtableEqListTupleTypeTypeTupleU64String(quick_SB_prop_CL_HashtableEqListTupleTypeTypeTupleU64String,uuid_000000000008d772,({LM_ListTupleTypeType rvalue={1};rvalue;})));({});})
+({uuid_000000000008d78b=(_DT_lookup_CL_ArrowListTupleTypeTypeConsListTupleTypeTypeConsTupleU64StringHashtableEqListTupleTypeTypeTupleU64String(quick_SB_prop_CL_HashtableEqListTupleTypeTypeTupleU64String,uuid_000000000008d77e,({LM_ListTupleTypeType rvalue={1};rvalue;})));({});})
 ;
 });
-({uuid_000000000008d77f=(cons_CL_ArrowListTupleTypeTypeConsListTupleTypeTypeTupleTypeType(({LM_TupleTypeType rvalue={.field_0=0};rvalue.field_1=uuid_000000000008d771;rvalue.field_2=uuid_000000000008d770;rvalue;}),uuid_000000000008d77f));({});});
+({uuid_000000000008d78b=(cons_CL_ArrowListTupleTypeTypeConsListTupleTypeTypeTupleTypeType(({LM_TupleTypeType rvalue={.field_0=0};rvalue.field_1=uuid_000000000008d77d;rvalue.field_2=uuid_000000000008d77c;rvalue;}),uuid_000000000008d78b));({});});
 });
-({quick_SB_prop_CL_HashtableEqListTupleTypeTypeTupleU64String=(_DT_bind_CL_ArrowHashtableEqListTupleTypeTypeTupleU64StringConsListTupleTypeTypeConsTupleU64StringHashtableEqListTupleTypeTypeTupleU64String(quick_SB_prop_CL_HashtableEqListTupleTypeTypeTupleU64String,uuid_000000000008d772,uuid_000000000008d77f));({});});
+({quick_SB_prop_CL_HashtableEqListTupleTypeTypeTupleU64String=(_DT_bind_CL_ArrowHashtableEqListTupleTypeTypeTupleU64StringConsListTupleTypeTypeConsTupleU64StringHashtableEqListTupleTypeTypeTupleU64String(quick_SB_prop_CL_HashtableEqListTupleTypeTypeTupleU64String,uuid_000000000008d77e,uuid_000000000008d78b));({});});
 });}
 #line 28 "SRC/quick-prop.lsts"
-LM_Type enrich_SB_quick_SB_prop_CL_ArrowTypeType(LM_Type uuid_000000000008d792){return (enrich_SB_quick_SB_prop_CL_ArrowTypeConsTypeType(uuid_000000000008d792,uuid_000000000008d792));}
+LM_Type enrich_SB_quick_SB_prop_CL_ArrowTypeType(LM_Type uuid_000000000008d79e){return (enrich_SB_quick_SB_prop_CL_ArrowTypeConsTypeType(uuid_000000000008d79e,uuid_000000000008d79e));}
 #line 32 "SRC/quick-prop.lsts"
-LM_Type enrich_SB_quick_SB_prop_CL_ArrowTypeConsTypeType(LM_Type uuid_000000000008d793,LM_Type uuid_000000000008d794){LM_Type uuid_000000000008d795;
-LM_Type uuid_000000000008d796;
-char uuid_000000000008d797;
-LM_ListType uuid_000000000008d798;
-char* uuid_000000000008d799;
-LM_ListType uuid_000000000008d79a;
-LM_ListType uuid_000000000008d79c;
-LM_ListType uuid_000000000008d79d;
-LM_ListType uuid_000000000008d79e;
-char uuid_000000000008d79f;
-LM_ListType uuid_000000000008d7a0;
-LM_Type uuid_000000000008d7a1;
-LM_ListTupleTypeType uuid_000000000008d7a2;
-LM_ListTupleTypeType uuid_000000000008d7af;
-LM_ListTupleTypeType uuid_000000000008d7b0;
-char uuid_000000000008d7b1;
-LM_ListTupleTypeType uuid_000000000008d7b2;
-LM_TupleTypeType uuid_000000000008d7b3;
-char uuid_000000000008d7b4;
-LM_Type uuid_000000000008d7b5;
-LM_Type uuid_000000000008d7b6;
-LM_TContext uuid_000000000008d7b7;
-LM_Type uuid_000000000008d7b8;
-LM_Type uuid_000000000008d7b9;
-char uuid_000000000008d7ba;
-LM_Type uuid_000000000008d7bb;
-LM_Type uuid_000000000008d7bc;
-LM_Type uuid_000000000008d7bd;
-LM_Type uuid_000000000008d7be;
-return ({({({uuid_000000000008d795=uuid_000000000008d794;({});})
+LM_Type enrich_SB_quick_SB_prop_CL_ArrowTypeConsTypeType(LM_Type uuid_000000000008d79f,LM_Type uuid_000000000008d7a0){LM_Type uuid_000000000008d7a1;
+LM_Type uuid_000000000008d7a2;
+char uuid_000000000008d7a3;
+LM_ListType uuid_000000000008d7a4;
+char* uuid_000000000008d7a5;
+LM_ListType uuid_000000000008d7a6;
+LM_ListType uuid_000000000008d7a8;
+LM_ListType uuid_000000000008d7a9;
+LM_ListType uuid_000000000008d7aa;
+char uuid_000000000008d7ab;
+LM_ListType uuid_000000000008d7ac;
+LM_Type uuid_000000000008d7ad;
+LM_ListTupleTypeType uuid_000000000008d7ae;
+LM_ListTupleTypeType uuid_000000000008d7bb;
+LM_ListTupleTypeType uuid_000000000008d7bc;
+char uuid_000000000008d7bd;
+LM_ListTupleTypeType uuid_000000000008d7be;
+LM_TupleTypeType uuid_000000000008d7bf;
+char uuid_000000000008d7c0;
+LM_Type uuid_000000000008d7c1;
+LM_Type uuid_000000000008d7c2;
+LM_TContext uuid_000000000008d7c3;
+LM_Type uuid_000000000008d7c4;
+LM_Type uuid_000000000008d7c5;
+char uuid_000000000008d7c6;
+LM_Type uuid_000000000008d7c7;
+LM_Type uuid_000000000008d7c8;
+LM_Type uuid_000000000008d7c9;
+LM_Type uuid_000000000008d7ca;
+return ({({({uuid_000000000008d7a1=uuid_000000000008d7a0;({});})
 ;
-(({({({({uuid_000000000008d796=uuid_000000000008d795;({});})
+(({({({({uuid_000000000008d7a2=uuid_000000000008d7a1;({});})
 ;
-({uuid_000000000008d797=(0);({});})
-;
-});
-(((uuid_000000000008d796.field_0)==(1))?(({({uuid_000000000008d798=(*(((LM_Type)(uuid_000000000008d796)).field_1001));({});})
-;
-1;
-})?(({({uuid_000000000008d799=(((LM_Type)(uuid_000000000008d796)).field_1002);({});})
-;
-1;
-})?({uuid_000000000008d797=(1);({});}):({})):({})):({}));
-});
-(uuid_000000000008d797==(1));
-})?({(((_DT_length_CL_ArrowU64ListType(uuid_000000000008d798))>(0))?({({({uuid_000000000008d79a=({LM_ListType rvalue={1};rvalue;});({});})
-;
-({({uuid_000000000008d79c=(_DT_reverse_CL_ArrowListTypeListType(uuid_000000000008d798));({});})
-;
-({while((non_SB_zero_CL_ArrowU64ListType(uuid_000000000008d79c))){((void)(({({uuid_000000000008d79d=uuid_000000000008d79c;({});})
-;
-(({({({({uuid_000000000008d79e=uuid_000000000008d79d;({});})
-;
-({uuid_000000000008d79f=(0);({});})
+({uuid_000000000008d7a3=(0);({});})
 ;
 });
-(((uuid_000000000008d79e.field_0)==(0))?(({({uuid_000000000008d7a0=(*(((LM_ListType)(uuid_000000000008d79e)).field_1));({});})
+(((uuid_000000000008d7a2.field_0)==(1))?(({({uuid_000000000008d7a4=(*(((LM_Type)(uuid_000000000008d7a2)).field_1001));({});})
 ;
 1;
-})?(({({uuid_000000000008d7a1=(((LM_ListType)(uuid_000000000008d79e)).field_2);({});})
+})?(({({uuid_000000000008d7a5=(((LM_Type)(uuid_000000000008d7a2)).field_1002);({});})
 ;
 1;
-})?({uuid_000000000008d79f=(1);({});}):({})):({})):({}));
+})?({uuid_000000000008d7a3=(1);({});}):({})):({})):({}));
 });
-(uuid_000000000008d79f==(1));
-})?({({uuid_000000000008d79a=(cons_CL_ArrowListTypeConsListTypeType((enrich_SB_quick_SB_prop_CL_ArrowTypeConsTypeType(uuid_000000000008d793,uuid_000000000008d7a1)),uuid_000000000008d79a));({});});
-({uuid_000000000008d79c=uuid_000000000008d7a0;({});});
+(uuid_000000000008d7a3==(1));
+})?({(((_DT_length_CL_ArrowU64ListType(uuid_000000000008d7a4))>(0))?({({({uuid_000000000008d7a6=({LM_ListType rvalue={1};rvalue;});({});})
+;
+({({uuid_000000000008d7a8=(_DT_reverse_CL_ArrowListTypeListType(uuid_000000000008d7a4));({});})
+;
+({while((non_SB_zero_CL_ArrowU64ListType(uuid_000000000008d7a8))){((void)(({({uuid_000000000008d7a9=uuid_000000000008d7a8;({});})
+;
+(({({({({uuid_000000000008d7aa=uuid_000000000008d7a9;({});})
+;
+({uuid_000000000008d7ab=(0);({});})
+;
+});
+(((uuid_000000000008d7aa.field_0)==(0))?(({({uuid_000000000008d7ac=(*(((LM_ListType)(uuid_000000000008d7aa)).field_1));({});})
+;
+1;
+})?(({({uuid_000000000008d7ad=(((LM_ListType)(uuid_000000000008d7aa)).field_2);({});})
+;
+1;
+})?({uuid_000000000008d7ab=(1);({});}):({})):({})):({}));
+});
+(uuid_000000000008d7ab==(1));
+})?({({uuid_000000000008d7a6=(cons_CL_ArrowListTypeConsListTypeType((enrich_SB_quick_SB_prop_CL_ArrowTypeConsTypeType(uuid_000000000008d79f,uuid_000000000008d7ad)),uuid_000000000008d7a6));({});});
+({uuid_000000000008d7a8=uuid_000000000008d7ac;({});});
 }):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/quick-prop.lsts Line: 37 Column: 13")));
 })));};});
 });
 });
-({uuid_000000000008d794=({LM_Type rvalue={.field_0=1};rvalue.field_1001=(close_CL_ArrowArray_QM_ListTypeListType(uuid_000000000008d79a));rvalue.field_1002=uuid_000000000008d799;rvalue;});({});});
+({uuid_000000000008d7a0=({LM_Type rvalue={.field_0=1};rvalue.field_1001=(close_CL_ArrowArray_QM_ListTypeListType(uuid_000000000008d7a6));rvalue.field_1002=uuid_000000000008d7a5;rvalue;});({});});
 }):({}));
-({({uuid_000000000008d7a2=(_DT_lookup_CL_ArrowListTupleTypeTypeConsListTupleTypeTypeConsTupleU64StringHashtableEqListTupleTypeTypeTupleU64String(quick_SB_prop_CL_HashtableEqListTupleTypeTypeTupleU64String,(_DT_ground_SB_tag_SB_and_SB_arity_CL_ArrowTupleU64StringType(uuid_000000000008d794)),({LM_ListTupleTypeType rvalue={1};rvalue;})));({});})
+({({uuid_000000000008d7ae=(_DT_lookup_CL_ArrowListTupleTypeTypeConsListTupleTypeTypeConsTupleU64StringHashtableEqListTupleTypeTypeTupleU64String(quick_SB_prop_CL_HashtableEqListTupleTypeTypeTupleU64String,(_DT_ground_SB_tag_SB_and_SB_arity_CL_ArrowTupleU64StringType(uuid_000000000008d7a0)),({LM_ListTupleTypeType rvalue={1};rvalue;})));({});})
 ;
-({while((non_SB_zero_CL_ArrowU64ListTupleTypeType(uuid_000000000008d7a2))){((void)(({({uuid_000000000008d7af=uuid_000000000008d7a2;({});})
+({while((non_SB_zero_CL_ArrowU64ListTupleTypeType(uuid_000000000008d7ae))){((void)(({({uuid_000000000008d7bb=uuid_000000000008d7ae;({});})
 ;
-(({({({({uuid_000000000008d7b0=uuid_000000000008d7af;({});})
+(({({({({uuid_000000000008d7bc=uuid_000000000008d7bb;({});})
 ;
-({uuid_000000000008d7b1=(0);({});})
+({uuid_000000000008d7bd=(0);({});})
 ;
 });
-(((uuid_000000000008d7b0.field_0)==(0))?(({({uuid_000000000008d7b2=(*(((LM_ListTupleTypeType)(uuid_000000000008d7b0)).field_1));({});})
+(((uuid_000000000008d7bc.field_0)==(0))?(({({uuid_000000000008d7be=(*(((LM_ListTupleTypeType)(uuid_000000000008d7bc)).field_1));({});})
 ;
 1;
-})?(({({({({uuid_000000000008d7b3=(((LM_ListTupleTypeType)(uuid_000000000008d7b0)).field_2);({});})
+})?(({({({({uuid_000000000008d7bf=(((LM_ListTupleTypeType)(uuid_000000000008d7bc)).field_2);({});})
 ;
-({uuid_000000000008d7b4=(0);({});})
+({uuid_000000000008d7c0=(0);({});})
 ;
 });
-(((uuid_000000000008d7b3.field_0)==(0))?(({({uuid_000000000008d7b5=(((LM_TupleTypeType)(uuid_000000000008d7b3)).field_1);({});})
+(((uuid_000000000008d7bf.field_0)==(0))?(({({uuid_000000000008d7c1=(((LM_TupleTypeType)(uuid_000000000008d7bf)).field_1);({});})
 ;
 1;
-})?(({({uuid_000000000008d7b6=(((LM_TupleTypeType)(uuid_000000000008d7b3)).field_2);({});})
+})?(({({uuid_000000000008d7c2=(((LM_TupleTypeType)(uuid_000000000008d7bf)).field_2);({});})
 ;
 1;
-})?({uuid_000000000008d7b4=(1);({});}):({})):({})):({}));
+})?({uuid_000000000008d7c0=(1);({});}):({})):({})):({}));
 });
-(uuid_000000000008d7b4==(1));
-})?({uuid_000000000008d7b1=(1);({});}):({})):({})):({}));
+(uuid_000000000008d7c0==(1));
+})?({uuid_000000000008d7bd=(1);({});}):({})):({})):({}));
 });
-(uuid_000000000008d7b1==(1));
-})?({((can_SB_unify_CL_ArrowU64ConsTypeType(uuid_000000000008d7b6,uuid_000000000008d793))?({({({uuid_000000000008d7b7=(unify_CL_ArrowTContextConsTypeType(uuid_000000000008d7b6,uuid_000000000008d793));({});})
+(uuid_000000000008d7bd==(1));
+})?({((can_SB_unify_CL_ArrowU64ConsTypeType(uuid_000000000008d7c2,uuid_000000000008d79f))?({({({uuid_000000000008d7c3=(unify_CL_ArrowTContextConsTypeType(uuid_000000000008d7c2,uuid_000000000008d79f));({});})
 ;
-({uuid_000000000008d7b8=(substitute_CL_ArrowTypeConsTypeTContext(uuid_000000000008d7b7,uuid_000000000008d7b5));({});})
+({uuid_000000000008d7c4=(substitute_CL_ArrowTypeConsTypeTContext(uuid_000000000008d7c3,uuid_000000000008d7c1));({});})
 ;
 });
-((!(can_SB_unify_CL_ArrowU64ConsTypeType(uuid_000000000008d7b8,uuid_000000000008d793)))?({uuid_000000000008d794=({LM_Type rvalue={.field_0=0};rvalue.field_1=(close_CL_ArrowArray_QM_TypeType(uuid_000000000008d7b8));rvalue.field_2=(close_CL_ArrowArray_QM_TypeType(uuid_000000000008d794));rvalue;});({});}):({}));
+((!(can_SB_unify_CL_ArrowU64ConsTypeType(uuid_000000000008d7c4,uuid_000000000008d79f)))?({uuid_000000000008d7a0=({LM_Type rvalue={.field_0=0};rvalue.field_1=(close_CL_ArrowArray_QM_TypeType(uuid_000000000008d7c4));rvalue.field_2=(close_CL_ArrowArray_QM_TypeType(uuid_000000000008d7a0));rvalue;});({});}):({}));
 }):({}));
-({uuid_000000000008d7a2=uuid_000000000008d7b2;({});});
+({uuid_000000000008d7ae=uuid_000000000008d7be;({});});
 }):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/quick-prop.lsts Line: 42 Column: 10")));
 })));};});
 });
-}):(({({({({uuid_000000000008d7b9=uuid_000000000008d795;({});})
+}):(({({({({uuid_000000000008d7c5=uuid_000000000008d7a1;({});})
 ;
-({uuid_000000000008d7ba=(0);({});})
+({uuid_000000000008d7c6=(0);({});})
 ;
 });
-(((uuid_000000000008d7b9.field_0)==(0))?(({({uuid_000000000008d7bb=(*(((LM_Type)(uuid_000000000008d7b9)).field_1));({});})
+(((uuid_000000000008d7c5.field_0)==(0))?(({({uuid_000000000008d7c7=(*(((LM_Type)(uuid_000000000008d7c5)).field_1));({});})
 ;
 1;
-})?(({({uuid_000000000008d7bc=(*(((LM_Type)(uuid_000000000008d7b9)).field_2));({});})
+})?(({({uuid_000000000008d7c8=(*(((LM_Type)(uuid_000000000008d7c5)).field_2));({});})
 ;
 1;
-})?({uuid_000000000008d7ba=(1);({});}):({})):({})):({}));
+})?({uuid_000000000008d7c6=(1);({});}):({})):({})):({}));
 });
-(uuid_000000000008d7ba==(1));
-})?({({({uuid_000000000008d7bd=(enrich_SB_quick_SB_prop_CL_ArrowTypeConsTypeType(uuid_000000000008d793,uuid_000000000008d7bc));({});})
+(uuid_000000000008d7c6==(1));
+})?({({({uuid_000000000008d7c9=(enrich_SB_quick_SB_prop_CL_ArrowTypeConsTypeType(uuid_000000000008d79f,uuid_000000000008d7c8));({});})
 ;
-({uuid_000000000008d7be=(enrich_SB_quick_SB_prop_CL_ArrowTypeConsTypeType(uuid_000000000008d793,uuid_000000000008d7bb));({});})
+({uuid_000000000008d7ca=(enrich_SB_quick_SB_prop_CL_ArrowTypeConsTypeType(uuid_000000000008d79f,uuid_000000000008d7c7));({});})
 ;
 });
-(((!(is_CL_ArrowU64ConsTypeType(uuid_000000000008d7bc,uuid_000000000008d7bd)))||(!(is_CL_ArrowU64ConsTypeType(uuid_000000000008d7bb,uuid_000000000008d7be))))?({uuid_000000000008d794=({LM_Type rvalue={.field_0=0};rvalue.field_1=(close_CL_ArrowArray_QM_TypeType(uuid_000000000008d7be));rvalue.field_2=(close_CL_ArrowArray_QM_TypeType(uuid_000000000008d7bd));rvalue;});({});}):({}));
+(((!(is_CL_ArrowU64ConsTypeType(uuid_000000000008d7c8,uuid_000000000008d7c9)))||(!(is_CL_ArrowU64ConsTypeType(uuid_000000000008d7c7,uuid_000000000008d7ca))))?({uuid_000000000008d7a0=({LM_Type rvalue={.field_0=0};rvalue.field_1=(close_CL_ArrowArray_QM_TypeType(uuid_000000000008d7ca));rvalue.field_2=(close_CL_ArrowArray_QM_TypeType(uuid_000000000008d7c9));rvalue;});({});}):({}));
 }):(1?({}):(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/quick-prop.lsts Line: 33 Column: 4")))));
 });
-uuid_000000000008d794;
-});}
-#line 2 "SRC/cmp.lsts"
-LM_Ord cmp_CL_ArrowOrdConsTypeType(LM_Type uuid_000000000008d7bf,LM_Type uuid_000000000008d7c0){LM_Type uuid_000000000008d7c1;
-LM_Type uuid_000000000008d7c2;
-char uuid_000000000008d7c3;
-LM_ListType uuid_000000000008d7c4;
-char* uuid_000000000008d7c5;
-LM_Type uuid_000000000008d7c6;
-LM_Type uuid_000000000008d7c7;
-char uuid_000000000008d7c8;
-LM_ListType uuid_000000000008d7c9;
-char* uuid_000000000008d7ca;
-return ({({uuid_000000000008d7c1=uuid_000000000008d7bf;({});})
-;
-(({({({({uuid_000000000008d7c2=uuid_000000000008d7c1;({});})
-;
-({uuid_000000000008d7c3=(0);({});})
-;
-});
-(((uuid_000000000008d7c2.field_0)==(1))?(({({uuid_000000000008d7c4=(*(((LM_Type)(uuid_000000000008d7c2)).field_1001));({});})
-;
-1;
-})?(({({uuid_000000000008d7c5=(((LM_Type)(uuid_000000000008d7c2)).field_1002);({});})
-;
-1;
-})?({uuid_000000000008d7c3=(1);({});}):({})):({})):({}));
-});
-(uuid_000000000008d7c3==(1));
-})?({({uuid_000000000008d7c6=uuid_000000000008d7c0;({});})
-;
-(({({({({uuid_000000000008d7c7=uuid_000000000008d7c6;({});})
-;
-({uuid_000000000008d7c8=(0);({});})
-;
-});
-(((uuid_000000000008d7c7.field_0)==(1))?(({({uuid_000000000008d7c9=(*(((LM_Type)(uuid_000000000008d7c7)).field_1001));({});})
-;
-1;
-})?(({({uuid_000000000008d7ca=(((LM_Type)(uuid_000000000008d7c7)).field_1002);({});})
-;
-1;
-})?({uuid_000000000008d7c8=(1);({});}):({})):({})):({}));
-});
-(uuid_000000000008d7c8==(1));
-})?((_LT__CL_ArrowU64ConsStringString(uuid_000000000008d7c5,uuid_000000000008d7ca))?({LM_Ord rvalue={0};rvalue;}):((_LT__CL_ArrowU64ConsStringString(uuid_000000000008d7ca,uuid_000000000008d7c5))?({LM_Ord rvalue={1};rvalue;}):(cmp_CL_ArrowOrdConsListTypeListType(uuid_000000000008d7c4,uuid_000000000008d7c9)))):(1?({LM_Ord rvalue={0};rvalue;}):({(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/cmp.lsts Line: 4 Column: 56"));LM_Ord rvalue;rvalue;})));
-}):(1?({LM_Ord rvalue={1};rvalue;}):({(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: SRC/cmp.lsts Line: 3 Column: 4"));LM_Ord rvalue;rvalue;})));
+uuid_000000000008d7a0;
 });}
 #line 3 "SRC/and.lm"
 LM_TContext and_CL_ArrowTContextConsTContextTContext(LM_TContext uuid_000000000008d7cb,LM_TContext uuid_000000000008d7cc){LM_TupleTContextTContext uuid_000000000008d7cd;
@@ -37106,226 +37106,226 @@ return ({({uuid_000000000008fb8a=uuid_000000000008fb89;({});})
 ((uuid_000000000008fb8b.field_0)==(1));
 })?(0):(1?(1):({(fail_CL_ArrowNeverConsStringString("Pattern Match Failure","File: PLATFORM/C/LIB/list.lm Line: 24 Column: 5"));unsigned long rvalue;rvalue;})));
 });}
-#line 40 "PLATFORM/C/LIB/hashtable.lsts"
-LM_HashtableEqListTupleTypeTypeTupleU64String _DT_bind_CL_ArrowHashtableEqListTupleTypeTypeTupleU64StringConsListTupleTypeTypeConsTupleU64StringHashtableEqListTupleTypeTypeTupleU64String(LM_HashtableEqListTupleTypeTypeTupleU64String uuid_000000000008fb8c,LM_TupleU64String uuid_000000000008fb93,LM_ListTupleTypeType uuid_000000000008fb94){unsigned long uuid_000000000008fb95;
-unsigned long uuid_000000000008fb96;
-LM_TupleListTupleTypeTypeTupleU64String* uuid_000000000008fb97;
-unsigned long uuid_000000000008fb98;
-unsigned long uuid_000000000008fb99;
-LM_TupleListTupleTypeTypeTupleU64String* uuid_000000000008fb9a;
-unsigned long uuid_000000000008fb9b;
-LM_TupleListTupleTypeTypeTupleU64String uuid_000000000008fb9c;
-unsigned long uuid_000000000008fb9d;
-return ({({({({({({({((is_CL_ArrowU64ConsHashtableEqListTupleTypeTypeTupleU64StringHashtableEqListTupleTypeTypeTupleU64String(uuid_000000000008fb8c,({LM_HashtableEqListTupleTypeTypeTupleU64String rvalue={0};rvalue;})))?({uuid_000000000008fb8c=({LM_HashtableEqListTupleTypeTypeTupleU64String rvalue={.field_0=1};rvalue.field_1001=((LM_TupleListTupleTypeTypeTupleU64String*)((0)));rvalue.field_1002=(0);rvalue.field_1003=(0);rvalue;});({});}):({}));
-({uuid_000000000008fb95=(((LM_HashtableEqListTupleTypeTypeTupleU64String)(uuid_000000000008fb8c)).field_1003);({});})
-;
-});
-({uuid_000000000008fb96=(((LM_HashtableEqListTupleTypeTypeTupleU64String)(uuid_000000000008fb8c)).field_1002);({});})
-;
-});
-({uuid_000000000008fb97=(((LM_HashtableEqListTupleTypeTypeTupleU64String)(uuid_000000000008fb8c)).field_1001);({});})
-;
-});
-(((uuid_000000000008fb95*(3))>=uuid_000000000008fb96)?({({({({({({({({uuid_000000000008fb98=(max_CL_ArrowU64ConsU64U64((1000),(uuid_000000000008fb95*(30))));({});})
-;
-({uuid_000000000008fb99=((sizeof(LM_TupleListTupleTypeTypeTupleU64String))*uuid_000000000008fb98);({});})
-;
-});
-({uuid_000000000008fb9a=((LM_TupleListTupleTypeTypeTupleU64String*)((malloc(uuid_000000000008fb99))));({});})
-;
-});
-(memset(uuid_000000000008fb9a,(0),uuid_000000000008fb99));
-});
-({uuid_000000000008fb9b=(0);({});})
-;
-});
-({while((uuid_000000000008fb9b<uuid_000000000008fb96)){((void)(({({({uuid_000000000008fb9c=(uuid_000000000008fb97[uuid_000000000008fb9b]);({});})
-;
-((mem_SB_is_SB_non_SB_zero_CL_ArrowU64TupleListTupleTypeTypeTupleU64String(uuid_000000000008fb9c))?(_DT_bind_SB_eq_CL_ArrowU64ConsListTupleTypeTypeConsTupleU64StringConsU64Array_QM_TupleListTupleTypeTypeTupleU64String(uuid_000000000008fb9a,uuid_000000000008fb98,(uuid_000000000008fb9c.field_2),(uuid_000000000008fb9c.field_1))):({}));
-});
-({uuid_000000000008fb9b=(uuid_000000000008fb9b+(1));({});});
-})));};});
-});
-({uuid_000000000008fb97=uuid_000000000008fb9a;({});});
-});
-({uuid_000000000008fb96=uuid_000000000008fb98;({});});
-}):({}));
-});
-({uuid_000000000008fb9d=(_DT_bind_SB_eq_CL_ArrowU64ConsListTupleTypeTypeConsTupleU64StringConsU64Array_QM_TupleListTupleTypeTypeTupleU64String(uuid_000000000008fb97,uuid_000000000008fb96,uuid_000000000008fb93,uuid_000000000008fb94));({});})
-;
-});
-((!uuid_000000000008fb9d)?({uuid_000000000008fb95=(uuid_000000000008fb95+(1));({});}):({}));
-});
-({LM_HashtableEqListTupleTypeTypeTupleU64String rvalue={.field_0=1};rvalue.field_1001=uuid_000000000008fb97;rvalue.field_1002=uuid_000000000008fb96;rvalue.field_1003=uuid_000000000008fb95;rvalue;});
-});}
-#line 68 "PLATFORM/C/LIB/hashtable.lsts"
-unsigned long _DT_bind_SB_eq_CL_ArrowU64ConsListTupleTypeTypeConsTupleU64StringConsU64Array_QM_TupleListTupleTypeTypeTupleU64String(LM_TupleListTupleTypeTypeTupleU64String* uuid_000000000008fb9e,unsigned long uuid_000000000008fb9f,LM_TupleU64String uuid_000000000008fba6,LM_ListTupleTypeType uuid_000000000008fba7){unsigned long uuid_000000000008fba8;
-unsigned long uuid_000000000008fba9;
-LM_TupleListTupleTypeTypeTupleU64String uuid_000000000008fbaa;
-return ({({({({({({({uuid_000000000008fba8=false_CL_U64;({});})
-;
-({uuid_000000000008fba9=((deep_SB_hash_CL_ArrowU64TupleU64String(uuid_000000000008fba6))%uuid_000000000008fb9f);({});})
-;
-});
-({uuid_000000000008fbaa=(uuid_000000000008fb9e[uuid_000000000008fba9]);({});})
-;
-});
-(((mem_SB_is_SB_non_SB_zero_CL_ArrowU64TupleListTupleTypeTypeTupleU64String(uuid_000000000008fbaa))&&(_EQ__EQ__CL_ArrowU64ConsTupleU64StringTupleU64String((uuid_000000000008fbaa.field_2),uuid_000000000008fba6)))?({uuid_000000000008fba8=true_CL_U64;({});}):({}));
-});
-({while(((mem_SB_is_SB_non_SB_zero_CL_ArrowU64TupleListTupleTypeTypeTupleU64String(uuid_000000000008fbaa))&&(!uuid_000000000008fba8))){((void)(({({({uuid_000000000008fba9=((uuid_000000000008fba9+(1))%uuid_000000000008fb9f);({});});
-({uuid_000000000008fbaa=(uuid_000000000008fb9e[uuid_000000000008fba9]);({});});
-});
-(((mem_SB_is_SB_non_SB_zero_CL_ArrowU64TupleListTupleTypeTypeTupleU64String(uuid_000000000008fbaa))&&(_EQ__EQ__CL_ArrowU64ConsTupleU64StringTupleU64String((uuid_000000000008fbaa.field_2),uuid_000000000008fba6)))?({uuid_000000000008fba8=true_CL_U64;({});}):({}));
-})));};});
-});
-(uuid_000000000008fb9e[uuid_000000000008fba9]=({LM_TupleListTupleTypeTypeTupleU64String rvalue={.field_0=0};rvalue.field_1=uuid_000000000008fba7;rvalue.field_2=uuid_000000000008fba6;rvalue;}));
-});
-uuid_000000000008fba8;
-});}
-#line 30 "PLATFORM/C/LIB/sized.lm"
-unsigned long mem_SB_is_SB_non_SB_zero_CL_ArrowU64TupleListTupleTypeTypeTupleU64String(LM_TupleListTupleTypeTypeTupleU64String uuid_000000000008fbab){unsigned long uuid_000000000008fbac;
-unsigned long uuid_000000000008fbad;
-return ({({({({uuid_000000000008fbac=(0);({});})
-;
-({uuid_000000000008fbad=(0);({});})
-;
-});
-({while((uuid_000000000008fbac<(sizeof(LM_TupleListTupleTypeTypeTupleU64String)))){((void)(({(((((char*)((&uuid_000000000008fbab)))[uuid_000000000008fbac])!=(0))?({uuid_000000000008fbad=(1);({});}):({}));
-({uuid_000000000008fbac=(uuid_000000000008fbac+(1));({});});
-})));};});
-});
-uuid_000000000008fbad;
-});}
-#line 16 "PLATFORM/C/LIB/tuple.lsts"
-unsigned long _EQ__EQ__CL_ArrowU64ConsTupleU64StringTupleU64String(LM_TupleU64String uuid_000000000008fbb4,LM_TupleU64String uuid_000000000008fbbb){return ((_EQ__EQ__CL_ArrowU64ConsStringString((uuid_000000000008fbb4.field_2),(uuid_000000000008fbbb.field_2)))&&((uuid_000000000008fbb4.field_1)==(uuid_000000000008fbbb.field_1)));}
-#line 8 "PLATFORM/C/LIB/tuple.lsts"
-unsigned long deep_SB_hash_CL_ArrowU64TupleU64String(LM_TupleU64String uuid_000000000008fbc2){return ((deep_SB_hash_CL_ArrowU64String((uuid_000000000008fbc2.field_2)))+(deep_SB_hash_CL_ArrowU64U64((uuid_000000000008fbc2.field_1))));}
-#line 18 "PLATFORM/C/LIB/sized.lm"
-unsigned long is_CL_ArrowU64ConsHashtableEqListTupleTypeTypeTupleU64StringHashtableEqListTupleTypeTypeTupleU64String(LM_HashtableEqListTupleTypeTypeTupleU64String uuid_000000000008fbc3,LM_HashtableEqListTupleTypeTypeTupleU64String uuid_000000000008fbc4){unsigned long uuid_000000000008fbc5;
-unsigned long uuid_000000000008fbc6;
-char uuid_000000000008fbc7;
-char uuid_000000000008fbc8;
-return ({({({({uuid_000000000008fbc5=(0);({});})
-;
-({uuid_000000000008fbc6=(1);({});})
-;
-});
-({while((uuid_000000000008fbc5<(sizeof(LM_HashtableEqListTupleTypeTypeTupleU64String)))){((void)(({({({({uuid_000000000008fbc7=(((char*)((&uuid_000000000008fbc3)))[uuid_000000000008fbc5]);({});})
-;
-({uuid_000000000008fbc8=(((char*)((&uuid_000000000008fbc4)))[uuid_000000000008fbc5]);({});})
-;
-});
-((uuid_000000000008fbc7==uuid_000000000008fbc8)?({}):({uuid_000000000008fbc6=(0);({});}));
-});
-({uuid_000000000008fbc5=(uuid_000000000008fbc5+(1));({});});
-})));};});
-});
-uuid_000000000008fbc6;
-});}
-#line 4 "PLATFORM/C/LIB/list.lm"
-LM_ListTupleTypeType cons_CL_ArrowListTupleTypeTypeConsListTupleTypeTypeTupleTypeType(LM_TupleTypeType uuid_000000000008fbcf,LM_ListTupleTypeType uuid_000000000008fbd0){return ({({uuid_000000000008fbd0=({LM_ListTupleTypeType rvalue={.field_0=0};rvalue.field_1=(close_CL_ArrowArray_QM_ListTupleTypeTypeListTupleTypeType(uuid_000000000008fbd0));rvalue.field_2=uuid_000000000008fbcf;rvalue;});({});});
-uuid_000000000008fbd0;
-});}
-#line 22 "PLATFORM/C/LIB/array.lm"
-LM_ListTupleTypeType* close_CL_ArrowArray_QM_ListTupleTypeTypeListTupleTypeType(LM_ListTupleTypeType uuid_000000000008fbd1){LM_ListTupleTypeType* uuid_000000000008fbd2;
-return ({({({uuid_000000000008fbd2=((LM_ListTupleTypeType*)((malloc((sizeof(LM_ListTupleTypeType))))));({});})
-;
-(uuid_000000000008fbd2[(0)]=uuid_000000000008fbd1);
-});
-uuid_000000000008fbd2;
-});}
-#line 5 "PLATFORM/C/LIB/hashtable.lsts"
-LM_ListTupleTypeType _DT_lookup_CL_ArrowListTupleTypeTypeConsListTupleTypeTypeConsTupleU64StringHashtableEqListTupleTypeTypeTupleU64String(LM_HashtableEqListTupleTypeTypeTupleU64String uuid_000000000008fbd3,LM_TupleU64String uuid_000000000008fbda,LM_ListTupleTypeType uuid_000000000008fbdb){unsigned long uuid_000000000008fbdc;
-LM_TupleListTupleTypeTypeTupleU64String* uuid_000000000008fbdd;
-unsigned long uuid_000000000008fbde;
-unsigned long uuid_000000000008fbdf;
-LM_TupleListTupleTypeTypeTupleU64String uuid_000000000008fbe0;
-return ({({({uuid_000000000008fbdc=(((LM_HashtableEqListTupleTypeTypeTupleU64String)(uuid_000000000008fbd3)).field_1002);({});})
-;
-((uuid_000000000008fbdc>(0))?({({({({({({({uuid_000000000008fbdd=(((LM_HashtableEqListTupleTypeTypeTupleU64String)(uuid_000000000008fbd3)).field_1001);({});})
-;
-({uuid_000000000008fbde=false_CL_U64;({});})
-;
-});
-({uuid_000000000008fbdf=((deep_SB_hash_CL_ArrowU64TupleU64String(uuid_000000000008fbda))%uuid_000000000008fbdc);({});})
-;
-});
-({uuid_000000000008fbe0=(uuid_000000000008fbdd[uuid_000000000008fbdf]);({});})
-;
-});
-(((mem_SB_is_SB_non_SB_zero_CL_ArrowU64TupleListTupleTypeTypeTupleU64String(uuid_000000000008fbe0))&&(_EQ__EQ__CL_ArrowU64ConsTupleU64StringTupleU64String((uuid_000000000008fbe0.field_2),uuid_000000000008fbda)))?({uuid_000000000008fbde=true_CL_U64;({});}):({}));
-});
-({while(((mem_SB_is_SB_non_SB_zero_CL_ArrowU64TupleListTupleTypeTypeTupleU64String(uuid_000000000008fbe0))&&(!uuid_000000000008fbde))){((void)(({({({uuid_000000000008fbdf=((uuid_000000000008fbdf+(1))%uuid_000000000008fbdc);({});});
-({uuid_000000000008fbe0=(uuid_000000000008fbdd[uuid_000000000008fbdf]);({});});
-});
-(((mem_SB_is_SB_non_SB_zero_CL_ArrowU64TupleListTupleTypeTypeTupleU64String(uuid_000000000008fbe0))&&(_EQ__EQ__CL_ArrowU64ConsTupleU64StringTupleU64String((uuid_000000000008fbe0.field_2),uuid_000000000008fbda)))?({uuid_000000000008fbde=true_CL_U64;({});}):({}));
-})));};});
-});
-(uuid_000000000008fbde?({uuid_000000000008fbdb=(uuid_000000000008fbe0.field_1);({});}):({}));
-}):({}));
-});
-uuid_000000000008fbdb;
-});}
-#line 18 "PLATFORM/C/LIB/sized.lm"
-unsigned long is_CL_ArrowU64ConsTypeType(LM_Type uuid_000000000008fbe1,LM_Type uuid_000000000008fbe2){unsigned long uuid_000000000008fbe3;
-unsigned long uuid_000000000008fbe4;
-char uuid_000000000008fbe5;
-char uuid_000000000008fbe6;
-return ({({({({uuid_000000000008fbe3=(0);({});})
-;
-({uuid_000000000008fbe4=(1);({});})
-;
-});
-({while((uuid_000000000008fbe3<(sizeof(LM_Type)))){((void)(({({({({uuid_000000000008fbe5=(((char*)((&uuid_000000000008fbe1)))[uuid_000000000008fbe3]);({});})
-;
-({uuid_000000000008fbe6=(((char*)((&uuid_000000000008fbe2)))[uuid_000000000008fbe3]);({});})
-;
-});
-((uuid_000000000008fbe5==uuid_000000000008fbe6)?({}):({uuid_000000000008fbe4=(0);({});}));
-});
-({uuid_000000000008fbe3=(uuid_000000000008fbe3+(1));({});});
-})));};});
-});
-uuid_000000000008fbe4;
-});}
-#line 2 "PLATFORM/C/LIB/list.lm"
-unsigned long non_SB_zero_CL_ArrowU64ListTupleTypeType(LM_ListTupleTypeType uuid_000000000008fbe7){return ((uuid_000000000008fbe7.field_0)!=(({LM_ListTupleTypeType rvalue={1};rvalue;}).field_0));}
 #line 2 "PLATFORM/C/LIB/list.lsts"
-LM_Ord cmp_CL_ArrowOrdConsListTypeListType(LM_ListType uuid_000000000008fbe8,LM_ListType uuid_000000000008fbe9){LM_Ord uuid_000000000008fbea;
-return ({({({uuid_000000000008fbea=({LM_Ord rvalue={1};rvalue;});({});})
+LM_Ord cmp_CL_ArrowOrdConsListTypeListType(LM_ListType uuid_000000000008fb8c,LM_ListType uuid_000000000008fb8d){LM_Ord uuid_000000000008fb8e;
+return ({({({uuid_000000000008fb8e=({LM_Ord rvalue={1};rvalue;});({});})
 ;
-({while((((is_CL_ArrowU64ConsOrdOrd(uuid_000000000008fbea,({LM_Ord rvalue={1};rvalue;})))&&(non_SB_zero_CL_ArrowU64ListType(uuid_000000000008fbe8)))&&(non_SB_zero_CL_ArrowU64ListType(uuid_000000000008fbe9)))){((void)(({({({uuid_000000000008fbea=(cmp_CL_ArrowOrdConsTypeType((head_CL_ArrowTypeListType(uuid_000000000008fbe8)),(head_CL_ArrowTypeListType(uuid_000000000008fbe9))));({});});
-({uuid_000000000008fbe8=(tail_CL_ArrowListTypeListType(uuid_000000000008fbe8));({});});
+({while((((is_CL_ArrowU64ConsOrdOrd(uuid_000000000008fb8e,({LM_Ord rvalue={1};rvalue;})))&&(non_SB_zero_CL_ArrowU64ListType(uuid_000000000008fb8c)))&&(non_SB_zero_CL_ArrowU64ListType(uuid_000000000008fb8d)))){((void)(({({({uuid_000000000008fb8e=(cmp_CL_ArrowOrdConsTypeType((head_CL_ArrowTypeListType(uuid_000000000008fb8c)),(head_CL_ArrowTypeListType(uuid_000000000008fb8d))));({});});
+({uuid_000000000008fb8c=(tail_CL_ArrowListTypeListType(uuid_000000000008fb8c));({});});
 });
-({uuid_000000000008fbe9=(tail_CL_ArrowListTypeListType(uuid_000000000008fbe9));({});});
+({uuid_000000000008fb8d=(tail_CL_ArrowListTypeListType(uuid_000000000008fb8d));({});});
 })));};});
 });
-((!(is_CL_ArrowU64ConsOrdOrd(uuid_000000000008fbea,({LM_Ord rvalue={1};rvalue;}))))?uuid_000000000008fbea:(((!(non_SB_zero_CL_ArrowU64ListType(uuid_000000000008fbe8)))&&(non_SB_zero_CL_ArrowU64ListType(uuid_000000000008fbe9)))?({LM_Ord rvalue={0};rvalue;}):(((non_SB_zero_CL_ArrowU64ListType(uuid_000000000008fbe8))&&(!(non_SB_zero_CL_ArrowU64ListType(uuid_000000000008fbe9))))?({LM_Ord rvalue={2};rvalue;}):({LM_Ord rvalue={1};rvalue;}))));
+((!(is_CL_ArrowU64ConsOrdOrd(uuid_000000000008fb8e,({LM_Ord rvalue={1};rvalue;}))))?uuid_000000000008fb8e:(((!(non_SB_zero_CL_ArrowU64ListType(uuid_000000000008fb8c)))&&(non_SB_zero_CL_ArrowU64ListType(uuid_000000000008fb8d)))?({LM_Ord rvalue={0};rvalue;}):(((non_SB_zero_CL_ArrowU64ListType(uuid_000000000008fb8c))&&(!(non_SB_zero_CL_ArrowU64ListType(uuid_000000000008fb8d))))?({LM_Ord rvalue={2};rvalue;}):({LM_Ord rvalue={1};rvalue;}))));
 });}
 #line 18 "PLATFORM/C/LIB/sized.lm"
-unsigned long is_CL_ArrowU64ConsOrdOrd(LM_Ord uuid_000000000008fbeb,LM_Ord uuid_000000000008fbec){unsigned long uuid_000000000008fbed;
-unsigned long uuid_000000000008fbee;
-char uuid_000000000008fbef;
-char uuid_000000000008fbf0;
-return ({({({({uuid_000000000008fbed=(0);({});})
+unsigned long is_CL_ArrowU64ConsOrdOrd(LM_Ord uuid_000000000008fb8f,LM_Ord uuid_000000000008fb90){unsigned long uuid_000000000008fb91;
+unsigned long uuid_000000000008fb92;
+char uuid_000000000008fb93;
+char uuid_000000000008fb94;
+return ({({({({uuid_000000000008fb91=(0);({});})
 ;
-({uuid_000000000008fbee=(1);({});})
-;
-});
-({while((uuid_000000000008fbed<(sizeof(LM_Ord)))){((void)(({({({({uuid_000000000008fbef=(((char*)((&uuid_000000000008fbeb)))[uuid_000000000008fbed]);({});})
-;
-({uuid_000000000008fbf0=(((char*)((&uuid_000000000008fbec)))[uuid_000000000008fbed]);({});})
+({uuid_000000000008fb92=(1);({});})
 ;
 });
-((uuid_000000000008fbef==uuid_000000000008fbf0)?({}):({uuid_000000000008fbee=(0);({});}));
+({while((uuid_000000000008fb91<(sizeof(LM_Ord)))){((void)(({({({({uuid_000000000008fb93=(((char*)((&uuid_000000000008fb8f)))[uuid_000000000008fb91]);({});})
+;
+({uuid_000000000008fb94=(((char*)((&uuid_000000000008fb90)))[uuid_000000000008fb91]);({});})
+;
 });
-({uuid_000000000008fbed=(uuid_000000000008fbed+(1));({});});
+((uuid_000000000008fb93==uuid_000000000008fb94)?({}):({uuid_000000000008fb92=(0);({});}));
+});
+({uuid_000000000008fb91=(uuid_000000000008fb91+(1));({});});
 })));};});
 });
-uuid_000000000008fbee;
+uuid_000000000008fb92;
 });}
 #line 18 "PLATFORM/C/LIB/cmp.lsts"
-unsigned long _LT__CL_ArrowU64ConsStringString(char* uuid_000000000008fbf1,char* uuid_000000000008fbf2){return (_LT__CL_ArrowU64ConsOrdOrd((cmp_CL_ArrowOrdConsStringString(uuid_000000000008fbf1,uuid_000000000008fbf2)),({LM_Ord rvalue={1};rvalue;})));}
+unsigned long _LT__CL_ArrowU64ConsStringString(char* uuid_000000000008fb95,char* uuid_000000000008fb96){return (_LT__CL_ArrowU64ConsOrdOrd((cmp_CL_ArrowOrdConsStringString(uuid_000000000008fb95,uuid_000000000008fb96)),({LM_Ord rvalue={1};rvalue;})));}
+#line 40 "PLATFORM/C/LIB/hashtable.lsts"
+LM_HashtableEqListTupleTypeTypeTupleU64String _DT_bind_CL_ArrowHashtableEqListTupleTypeTypeTupleU64StringConsListTupleTypeTypeConsTupleU64StringHashtableEqListTupleTypeTypeTupleU64String(LM_HashtableEqListTupleTypeTypeTupleU64String uuid_000000000008fb97,LM_TupleU64String uuid_000000000008fb9e,LM_ListTupleTypeType uuid_000000000008fb9f){unsigned long uuid_000000000008fba0;
+unsigned long uuid_000000000008fba1;
+LM_TupleListTupleTypeTypeTupleU64String* uuid_000000000008fba2;
+unsigned long uuid_000000000008fba3;
+unsigned long uuid_000000000008fba4;
+LM_TupleListTupleTypeTypeTupleU64String* uuid_000000000008fba5;
+unsigned long uuid_000000000008fba6;
+LM_TupleListTupleTypeTypeTupleU64String uuid_000000000008fba7;
+unsigned long uuid_000000000008fba8;
+return ({({({({({({({((is_CL_ArrowU64ConsHashtableEqListTupleTypeTypeTupleU64StringHashtableEqListTupleTypeTypeTupleU64String(uuid_000000000008fb97,({LM_HashtableEqListTupleTypeTypeTupleU64String rvalue={0};rvalue;})))?({uuid_000000000008fb97=({LM_HashtableEqListTupleTypeTypeTupleU64String rvalue={.field_0=1};rvalue.field_1001=((LM_TupleListTupleTypeTypeTupleU64String*)((0)));rvalue.field_1002=(0);rvalue.field_1003=(0);rvalue;});({});}):({}));
+({uuid_000000000008fba0=(((LM_HashtableEqListTupleTypeTypeTupleU64String)(uuid_000000000008fb97)).field_1003);({});})
+;
+});
+({uuid_000000000008fba1=(((LM_HashtableEqListTupleTypeTypeTupleU64String)(uuid_000000000008fb97)).field_1002);({});})
+;
+});
+({uuid_000000000008fba2=(((LM_HashtableEqListTupleTypeTypeTupleU64String)(uuid_000000000008fb97)).field_1001);({});})
+;
+});
+(((uuid_000000000008fba0*(3))>=uuid_000000000008fba1)?({({({({({({({({uuid_000000000008fba3=(max_CL_ArrowU64ConsU64U64((1000),(uuid_000000000008fba0*(30))));({});})
+;
+({uuid_000000000008fba4=((sizeof(LM_TupleListTupleTypeTypeTupleU64String))*uuid_000000000008fba3);({});})
+;
+});
+({uuid_000000000008fba5=((LM_TupleListTupleTypeTypeTupleU64String*)((malloc(uuid_000000000008fba4))));({});})
+;
+});
+(memset(uuid_000000000008fba5,(0),uuid_000000000008fba4));
+});
+({uuid_000000000008fba6=(0);({});})
+;
+});
+({while((uuid_000000000008fba6<uuid_000000000008fba1)){((void)(({({({uuid_000000000008fba7=(uuid_000000000008fba2[uuid_000000000008fba6]);({});})
+;
+((mem_SB_is_SB_non_SB_zero_CL_ArrowU64TupleListTupleTypeTypeTupleU64String(uuid_000000000008fba7))?(_DT_bind_SB_eq_CL_ArrowU64ConsListTupleTypeTypeConsTupleU64StringConsU64Array_QM_TupleListTupleTypeTypeTupleU64String(uuid_000000000008fba5,uuid_000000000008fba3,(uuid_000000000008fba7.field_2),(uuid_000000000008fba7.field_1))):({}));
+});
+({uuid_000000000008fba6=(uuid_000000000008fba6+(1));({});});
+})));};});
+});
+({uuid_000000000008fba2=uuid_000000000008fba5;({});});
+});
+({uuid_000000000008fba1=uuid_000000000008fba3;({});});
+}):({}));
+});
+({uuid_000000000008fba8=(_DT_bind_SB_eq_CL_ArrowU64ConsListTupleTypeTypeConsTupleU64StringConsU64Array_QM_TupleListTupleTypeTypeTupleU64String(uuid_000000000008fba2,uuid_000000000008fba1,uuid_000000000008fb9e,uuid_000000000008fb9f));({});})
+;
+});
+((!uuid_000000000008fba8)?({uuid_000000000008fba0=(uuid_000000000008fba0+(1));({});}):({}));
+});
+({LM_HashtableEqListTupleTypeTypeTupleU64String rvalue={.field_0=1};rvalue.field_1001=uuid_000000000008fba2;rvalue.field_1002=uuid_000000000008fba1;rvalue.field_1003=uuid_000000000008fba0;rvalue;});
+});}
+#line 68 "PLATFORM/C/LIB/hashtable.lsts"
+unsigned long _DT_bind_SB_eq_CL_ArrowU64ConsListTupleTypeTypeConsTupleU64StringConsU64Array_QM_TupleListTupleTypeTypeTupleU64String(LM_TupleListTupleTypeTypeTupleU64String* uuid_000000000008fba9,unsigned long uuid_000000000008fbaa,LM_TupleU64String uuid_000000000008fbb1,LM_ListTupleTypeType uuid_000000000008fbb2){unsigned long uuid_000000000008fbb3;
+unsigned long uuid_000000000008fbb4;
+LM_TupleListTupleTypeTypeTupleU64String uuid_000000000008fbb5;
+return ({({({({({({({uuid_000000000008fbb3=false_CL_U64;({});})
+;
+({uuid_000000000008fbb4=((deep_SB_hash_CL_ArrowU64TupleU64String(uuid_000000000008fbb1))%uuid_000000000008fbaa);({});})
+;
+});
+({uuid_000000000008fbb5=(uuid_000000000008fba9[uuid_000000000008fbb4]);({});})
+;
+});
+(((mem_SB_is_SB_non_SB_zero_CL_ArrowU64TupleListTupleTypeTypeTupleU64String(uuid_000000000008fbb5))&&(_EQ__EQ__CL_ArrowU64ConsTupleU64StringTupleU64String((uuid_000000000008fbb5.field_2),uuid_000000000008fbb1)))?({uuid_000000000008fbb3=true_CL_U64;({});}):({}));
+});
+({while(((mem_SB_is_SB_non_SB_zero_CL_ArrowU64TupleListTupleTypeTypeTupleU64String(uuid_000000000008fbb5))&&(!uuid_000000000008fbb3))){((void)(({({({uuid_000000000008fbb4=((uuid_000000000008fbb4+(1))%uuid_000000000008fbaa);({});});
+({uuid_000000000008fbb5=(uuid_000000000008fba9[uuid_000000000008fbb4]);({});});
+});
+(((mem_SB_is_SB_non_SB_zero_CL_ArrowU64TupleListTupleTypeTypeTupleU64String(uuid_000000000008fbb5))&&(_EQ__EQ__CL_ArrowU64ConsTupleU64StringTupleU64String((uuid_000000000008fbb5.field_2),uuid_000000000008fbb1)))?({uuid_000000000008fbb3=true_CL_U64;({});}):({}));
+})));};});
+});
+(uuid_000000000008fba9[uuid_000000000008fbb4]=({LM_TupleListTupleTypeTypeTupleU64String rvalue={.field_0=0};rvalue.field_1=uuid_000000000008fbb2;rvalue.field_2=uuid_000000000008fbb1;rvalue;}));
+});
+uuid_000000000008fbb3;
+});}
+#line 30 "PLATFORM/C/LIB/sized.lm"
+unsigned long mem_SB_is_SB_non_SB_zero_CL_ArrowU64TupleListTupleTypeTypeTupleU64String(LM_TupleListTupleTypeTypeTupleU64String uuid_000000000008fbb6){unsigned long uuid_000000000008fbb7;
+unsigned long uuid_000000000008fbb8;
+return ({({({({uuid_000000000008fbb7=(0);({});})
+;
+({uuid_000000000008fbb8=(0);({});})
+;
+});
+({while((uuid_000000000008fbb7<(sizeof(LM_TupleListTupleTypeTypeTupleU64String)))){((void)(({(((((char*)((&uuid_000000000008fbb6)))[uuid_000000000008fbb7])!=(0))?({uuid_000000000008fbb8=(1);({});}):({}));
+({uuid_000000000008fbb7=(uuid_000000000008fbb7+(1));({});});
+})));};});
+});
+uuid_000000000008fbb8;
+});}
+#line 16 "PLATFORM/C/LIB/tuple.lsts"
+unsigned long _EQ__EQ__CL_ArrowU64ConsTupleU64StringTupleU64String(LM_TupleU64String uuid_000000000008fbbf,LM_TupleU64String uuid_000000000008fbc6){return ((_EQ__EQ__CL_ArrowU64ConsStringString((uuid_000000000008fbbf.field_2),(uuid_000000000008fbc6.field_2)))&&((uuid_000000000008fbbf.field_1)==(uuid_000000000008fbc6.field_1)));}
+#line 8 "PLATFORM/C/LIB/tuple.lsts"
+unsigned long deep_SB_hash_CL_ArrowU64TupleU64String(LM_TupleU64String uuid_000000000008fbcd){return ((deep_SB_hash_CL_ArrowU64String((uuid_000000000008fbcd.field_2)))+(deep_SB_hash_CL_ArrowU64U64((uuid_000000000008fbcd.field_1))));}
+#line 18 "PLATFORM/C/LIB/sized.lm"
+unsigned long is_CL_ArrowU64ConsHashtableEqListTupleTypeTypeTupleU64StringHashtableEqListTupleTypeTypeTupleU64String(LM_HashtableEqListTupleTypeTypeTupleU64String uuid_000000000008fbce,LM_HashtableEqListTupleTypeTypeTupleU64String uuid_000000000008fbcf){unsigned long uuid_000000000008fbd0;
+unsigned long uuid_000000000008fbd1;
+char uuid_000000000008fbd2;
+char uuid_000000000008fbd3;
+return ({({({({uuid_000000000008fbd0=(0);({});})
+;
+({uuid_000000000008fbd1=(1);({});})
+;
+});
+({while((uuid_000000000008fbd0<(sizeof(LM_HashtableEqListTupleTypeTypeTupleU64String)))){((void)(({({({({uuid_000000000008fbd2=(((char*)((&uuid_000000000008fbce)))[uuid_000000000008fbd0]);({});})
+;
+({uuid_000000000008fbd3=(((char*)((&uuid_000000000008fbcf)))[uuid_000000000008fbd0]);({});})
+;
+});
+((uuid_000000000008fbd2==uuid_000000000008fbd3)?({}):({uuid_000000000008fbd1=(0);({});}));
+});
+({uuid_000000000008fbd0=(uuid_000000000008fbd0+(1));({});});
+})));};});
+});
+uuid_000000000008fbd1;
+});}
+#line 4 "PLATFORM/C/LIB/list.lm"
+LM_ListTupleTypeType cons_CL_ArrowListTupleTypeTypeConsListTupleTypeTypeTupleTypeType(LM_TupleTypeType uuid_000000000008fbda,LM_ListTupleTypeType uuid_000000000008fbdb){return ({({uuid_000000000008fbdb=({LM_ListTupleTypeType rvalue={.field_0=0};rvalue.field_1=(close_CL_ArrowArray_QM_ListTupleTypeTypeListTupleTypeType(uuid_000000000008fbdb));rvalue.field_2=uuid_000000000008fbda;rvalue;});({});});
+uuid_000000000008fbdb;
+});}
+#line 22 "PLATFORM/C/LIB/array.lm"
+LM_ListTupleTypeType* close_CL_ArrowArray_QM_ListTupleTypeTypeListTupleTypeType(LM_ListTupleTypeType uuid_000000000008fbdc){LM_ListTupleTypeType* uuid_000000000008fbdd;
+return ({({({uuid_000000000008fbdd=((LM_ListTupleTypeType*)((malloc((sizeof(LM_ListTupleTypeType))))));({});})
+;
+(uuid_000000000008fbdd[(0)]=uuid_000000000008fbdc);
+});
+uuid_000000000008fbdd;
+});}
+#line 5 "PLATFORM/C/LIB/hashtable.lsts"
+LM_ListTupleTypeType _DT_lookup_CL_ArrowListTupleTypeTypeConsListTupleTypeTypeConsTupleU64StringHashtableEqListTupleTypeTypeTupleU64String(LM_HashtableEqListTupleTypeTypeTupleU64String uuid_000000000008fbde,LM_TupleU64String uuid_000000000008fbe5,LM_ListTupleTypeType uuid_000000000008fbe6){unsigned long uuid_000000000008fbe7;
+LM_TupleListTupleTypeTypeTupleU64String* uuid_000000000008fbe8;
+unsigned long uuid_000000000008fbe9;
+unsigned long uuid_000000000008fbea;
+LM_TupleListTupleTypeTypeTupleU64String uuid_000000000008fbeb;
+return ({({({uuid_000000000008fbe7=(((LM_HashtableEqListTupleTypeTypeTupleU64String)(uuid_000000000008fbde)).field_1002);({});})
+;
+((uuid_000000000008fbe7>(0))?({({({({({({({uuid_000000000008fbe8=(((LM_HashtableEqListTupleTypeTypeTupleU64String)(uuid_000000000008fbde)).field_1001);({});})
+;
+({uuid_000000000008fbe9=false_CL_U64;({});})
+;
+});
+({uuid_000000000008fbea=((deep_SB_hash_CL_ArrowU64TupleU64String(uuid_000000000008fbe5))%uuid_000000000008fbe7);({});})
+;
+});
+({uuid_000000000008fbeb=(uuid_000000000008fbe8[uuid_000000000008fbea]);({});})
+;
+});
+(((mem_SB_is_SB_non_SB_zero_CL_ArrowU64TupleListTupleTypeTypeTupleU64String(uuid_000000000008fbeb))&&(_EQ__EQ__CL_ArrowU64ConsTupleU64StringTupleU64String((uuid_000000000008fbeb.field_2),uuid_000000000008fbe5)))?({uuid_000000000008fbe9=true_CL_U64;({});}):({}));
+});
+({while(((mem_SB_is_SB_non_SB_zero_CL_ArrowU64TupleListTupleTypeTypeTupleU64String(uuid_000000000008fbeb))&&(!uuid_000000000008fbe9))){((void)(({({({uuid_000000000008fbea=((uuid_000000000008fbea+(1))%uuid_000000000008fbe7);({});});
+({uuid_000000000008fbeb=(uuid_000000000008fbe8[uuid_000000000008fbea]);({});});
+});
+(((mem_SB_is_SB_non_SB_zero_CL_ArrowU64TupleListTupleTypeTypeTupleU64String(uuid_000000000008fbeb))&&(_EQ__EQ__CL_ArrowU64ConsTupleU64StringTupleU64String((uuid_000000000008fbeb.field_2),uuid_000000000008fbe5)))?({uuid_000000000008fbe9=true_CL_U64;({});}):({}));
+})));};});
+});
+(uuid_000000000008fbe9?({uuid_000000000008fbe6=(uuid_000000000008fbeb.field_1);({});}):({}));
+}):({}));
+});
+uuid_000000000008fbe6;
+});}
+#line 18 "PLATFORM/C/LIB/sized.lm"
+unsigned long is_CL_ArrowU64ConsTypeType(LM_Type uuid_000000000008fbec,LM_Type uuid_000000000008fbed){unsigned long uuid_000000000008fbee;
+unsigned long uuid_000000000008fbef;
+char uuid_000000000008fbf0;
+char uuid_000000000008fbf1;
+return ({({({({uuid_000000000008fbee=(0);({});})
+;
+({uuid_000000000008fbef=(1);({});})
+;
+});
+({while((uuid_000000000008fbee<(sizeof(LM_Type)))){((void)(({({({({uuid_000000000008fbf0=(((char*)((&uuid_000000000008fbec)))[uuid_000000000008fbee]);({});})
+;
+({uuid_000000000008fbf1=(((char*)((&uuid_000000000008fbed)))[uuid_000000000008fbee]);({});})
+;
+});
+((uuid_000000000008fbf0==uuid_000000000008fbf1)?({}):({uuid_000000000008fbef=(0);({});}));
+});
+({uuid_000000000008fbee=(uuid_000000000008fbee+(1));({});});
+})));};});
+});
+uuid_000000000008fbef;
+});}
+#line 2 "PLATFORM/C/LIB/list.lm"
+unsigned long non_SB_zero_CL_ArrowU64ListTupleTypeType(LM_ListTupleTypeType uuid_000000000008fbf2){return ((uuid_000000000008fbf2.field_0)!=(({LM_ListTupleTypeType rvalue={1};rvalue;}).field_0));}
 #line 40 "PLATFORM/C/LIB/hashtable.lsts"
 LM_HashtableEqListTypeTupleU64String _DT_bind_CL_ArrowHashtableEqListTypeTupleU64StringConsListTypeConsTupleU64StringHashtableEqListTypeTupleU64String(LM_HashtableEqListTypeTupleU64String uuid_000000000008fbf3,LM_TupleU64String uuid_000000000008fbfa,LM_ListType uuid_000000000008fbfb){unsigned long uuid_000000000008fbfc;
 unsigned long uuid_000000000008fbfd;

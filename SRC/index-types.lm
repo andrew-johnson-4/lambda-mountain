@@ -1,8 +1,8 @@
 
 import SRC/index-definitions.lm;
 
-import SRC/quick-prop.lsts;
 import SRC/cmp.lsts;
+import SRC/quick-prop.lsts;
 
 import SRC/and.lm;
 import SRC/cons-root.lsts;
