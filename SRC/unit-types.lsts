@@ -16,3 +16,6 @@ import SRC/is-open.lsts;
 import SRC/is-arrow.lsts;
 import SRC/has-class.lsts;
 
+# set operations
+import SRC/without-tag.lsts;
+

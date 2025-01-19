@@ -55,7 +55,6 @@ import SRC/with-size.lm;
 import SRC/with-platform-props.lm;
 
 import SRC/without-t.lm;
-import SRC/without-tag.lm;
 import SRC/without-phi.lsts;
 import SRC/without-constructor.lm;
 import SRC/without-representation.lm;
