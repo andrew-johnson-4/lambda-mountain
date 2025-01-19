@@ -4,14 +4,14 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
    (match body (
       ()
       ( (Lit( tag _ )) (
-         (let rtype (+(
-            (+(
+         (let rtype (&&(
+            (&&(
                base-type
                (t1( (+( 'Tag::_s tag )) ))
             ))
-            (+(
+            (&&(
                (t1 'Constant_s)
-               (+(
+               (&&(
                   (t2( 'Constructor_s (t1 tag) ))
                   (t2( 'CaseNumber_s (t1(to-string(index-of-tag tag))) ))
                ))
@@ -39,7 +39,7 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
             (print tag)(print '\n_s)
             (exit 1_u64)
          ) ())
-         (let rtype (+(
+         (let rtype (&&(
             base-type
             (t1( (+( 'Tag::_s tag )) ))
          )))

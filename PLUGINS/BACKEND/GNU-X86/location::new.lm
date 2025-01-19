@@ -1,5 +1,0 @@
-
-location::new := λ. (: (
-   (let loc (SourceLocation( 'Unknown_s 0_u64 0_u64 )))
-   loc
-) SourceLocation);

@@ -7,7 +7,7 @@ without-constructor := λ(: tt Type). (: (
          (set rt (without-constructor rt))
          (if (non-zero lt) (
             (if (non-zero rt) (
-               (set tt (+( lt rt )))
+               (set tt (&&( lt rt )))
             ) (set tt lt))
          ) (set tt rt))
       ))

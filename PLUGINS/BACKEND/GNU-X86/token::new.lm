@@ -1,5 +1,0 @@
-
-token::new := λ(: s String). (: (
-   (let tk (Token( s (iuid()) (location::new()) )))
-   tk
-) Token);

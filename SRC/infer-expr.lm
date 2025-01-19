@@ -50,7 +50,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
                   (if (can-unify( tt inner-tt )) (
                      (set tt inner-tt)
                   ) (
-                     (set tt (+( inner-tt tt )))
+                     (set tt (&&( inner-tt tt )))
                   ))
                ) (
                   (ascript-normal( t tt ))
@@ -106,11 +106,11 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          (let inner-tt (typeof t))
          (if (non-zero inner-tt) (
             (if (.has-prefix( (tag-of tt) 'Tag::_s )) (
-               (set tt (+( tt inner-tt )))
+               (set tt (&&( tt inner-tt )))
             ) (
                (let inner-class (with-only-class inner-tt))
                (if (non-zero inner-class) (
-                  (set tt (+( tt inner-class )))
+                  (set tt (&&( tt inner-class )))
                ) ())
             ))
             (ascript-normal( term tt ))
@@ -137,7 +137,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
             ( (TGround( 'Array_s (LCons( _ (LCons( TAny LEOF )) )) )) () )
             ( (TGround( 'Array_s (LCons( TAny (LCons( array-base LEOF )) )) )) (
                (maybe-specialize( 'open_s (typeof-var-raw( term tctx 'open_s )) deref-type ))
-               (set deref-type (+( array-base (t1 'StackVariable_s) )))
+               (set deref-type (&&( array-base (t1 'StackVariable_s) )))
             ))
             ( _ (do-specialize( 'open_s (typeof-var-raw( term tctx 'open_s )) deref-type term )) )
          ))
@@ -275,7 +275,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
                   ()
                   ( (Lit( l-name _ )) (
                      (let ct (t2( 'Constructor_s (t1(var-name-if-var l)) )))
-                     (set ct (+( ct (t2( 'CaseNumber_s (t1(to-string(index-of-tag l-name))) )) )))
+                     (set ct (&&( ct (t2( 'CaseNumber_s (t1(to-string(index-of-tag l-name))) )) )))
                   ))
                   ( _ () )
                ))
@@ -297,7 +297,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          ))
          (let lt (typeof-lhs lhs))
          (let rt (typeof rhs))
-         (ascript-normal( term (enrich( (t3( 'Arrow_s lt rt )) tlt )) ))
+         (ascript-normal( term (&&( (t3( 'Arrow_s lt rt )) tlt )) ))
          (if (.is-t( tlt 'Blob_s )) () (
             (maybe-specialize( 'cdecl::return_s (typeof-var-raw( term tctx 'cdecl::return_s )) rt ))
          ))

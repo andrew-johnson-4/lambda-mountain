@@ -1,2 +1,0 @@
-
-domain := λ(: tt Type). (: (p2(slot( tt 'Arrow_s ))) Type);

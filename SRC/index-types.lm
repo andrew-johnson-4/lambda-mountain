@@ -55,7 +55,6 @@ import SRC/with-size.lm;
 import SRC/with-platform-props.lm;
 
 import SRC/without-t.lm;
-import SRC/without-tag.lm;
 import SRC/without-phi.lsts;
 import SRC/without-constructor.lm;
 import SRC/without-representation.lm;
@@ -67,7 +66,6 @@ import SRC/with-only-class.lm;
 
 import SRC/normalize.lm;
 import SRC/denormalize.lm;
-import SRC/enrich.lm;
 import SRC/type-of-s.lm;
 import SRC/type-of-s-with-fields.lm;
 

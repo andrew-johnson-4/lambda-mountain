@@ -216,7 +216,7 @@ c-parse-declaration := λ(: tokens List<String>). (: (
    ) (
       (if (&&( (non-zero tokens) (==( (head tokens) '\[_s )) )) (
          (let return-term (App(
-            (close(Lit( ':_s (token::new ':_s) )))
+            (close(Lit( ':_s (mk-token ':_s) )))
             (close(App(
                (close ASTNil)
                (close(AType(t1 return-type)))
@@ -255,9 +255,9 @@ c-parse-declaration := λ(: tokens List<String>). (: (
                (if (&&( (non-zero tokens) (==( (head tokens) '\[_s )) )) (set tokens (c-dump-parens tokens)) ())
             ))
             (let next-arg-term (App(
-               (close(Lit( ':_s (token::new ':_s) )))
+               (close(Lit( ':_s (mk-token ':_s) )))
                (close(App(
-                  (close(Var( 'c_arg_name_s (token::new 'c_arg_name_s) )))
+                  (close(Var( 'c_arg_name_s (mk-token 'c_arg_name_s) )))
                   (close(AType(t1 arg-type)))
                )))
             )))
@@ -279,7 +279,7 @@ c-parse-declaration := λ(: tokens List<String>). (: (
          (set tokens (.second possible-attributes))
          (if (&&( (non-zero tokens) (==( (head tokens) '{_s )) )) (set tokens (c-dump-braces tokens)) ())
          (if (&&( (non-zero tokens) (==( (head tokens) '\:_s )) )) (set tokens (tail tokens)) ())
-         (let c-term (Glb( (token::new name) (close(Abs(
+         (let c-term (Glb( (mk-token name) (close(Abs(
             (close arg-term)
             (close return-term)
             (t1 'FFI_s)

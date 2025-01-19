@@ -37,7 +37,7 @@ let apply(function-name: CString, function-type: Type, parameters: Type, do-spec
       r = t1(c"Error: Function Application Yielded An Irreducible Plurality Of Matches");
       function-type = head(rs);
       for candidate in tail(rs) {
-         function-type = r + candidate;
+         function-type = r && candidate;
       };
    } else {
       for sft in rs { # iterate in case this is a hook
@@ -68,7 +68,7 @@ let apply(function-name: CString, function-type: Type, parameters: Type, do-spec
          }
       };
       if function-type.is-t(c"Prop") {
-         r = r + cons-root(parameters);
+         r = r && cons-root(parameters);
       };
    };
    ApplyResult { function-type, r, phi-types }

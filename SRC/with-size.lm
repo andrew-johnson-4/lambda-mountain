@@ -13,7 +13,7 @@ with-size := λ(: tt Type). (: (
             ))
             (not(.is-t( tt 'Arrow_s )))
          )) (
-            (+( tt (t1( 'Sized_s )) ))
+            (&&( tt (t1( 'Sized_s )) ))
          ) tt)
       ))
       ( _ tt )

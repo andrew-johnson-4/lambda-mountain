@@ -1,8 +1,0 @@
-
-compile-exit-cleanup := λ . (: (
-   (let r SNil)
-   (set r (SCons( (close r) (close(SAtom '\tmov\s$60,\s%rax\n_s)) )))
-   (set r (SCons( (close r) (close(SAtom '\tmov\s$0,\s%rdi\n_s)) )))
-   (set r (SCons( (close r) (close(SAtom '\tsyscall\n_s)) )))
-   r
-) S);

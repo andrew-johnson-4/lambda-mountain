@@ -1,7 +1,0 @@
-
-as-constant := λ(: tt Type). (: (
-   (if (non-zero tt) (
-      (set tt (TAnd( (close tt) (close(t1 'Constant_s)) )))
-   ) ())
-   tt
-) Type);
