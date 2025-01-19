@@ -4,9 +4,9 @@ import SRC/unit-types.lsts;
 
 let t-A = t1(c"A");
 let t-B = t2(c"B", t-A);
-let t-AB = t-A + t-B;
+let t-AB = t-A && t-B;
 let t-x = tv(c"x");
-let t-Ax = t-A + t-x;
+let t-Ax = t-A && t-x;
 let t-C = t2(c"C", t-x);
 let t-f = t3(c"Arrow", t-A, t-B);
 let t-g = t3(c"Array", t-f, TAny);
@@ -80,4 +80,11 @@ assert( is(t-Ax.slot(c"A"), t-A) );
 assert( is(t-C.slot(c"C"), t-C) );
 assert( is(t-f.slot(c"Arrow"), t-f) );
 assert( is(t-g.slot(c"Array"), t-g) );
+
+# .without-tag synthesized field
+assert( is(t-A.without-tag, t-A) );
+assert( is(t2(c"Constructor", t-A).without-tag, TAny) );
+assert( is(t2(c"CaseNumber", t1(c"0")).without-tag, TAny) );
+assert( is(t2(c"Tag", t-A).without-tag, TAny) );
+assert( is(t2(c"Raw", t-A).without-tag, TAny) );
 

@@ -1,7 +1,0 @@
-
-enrich := λ(: base-tt Type)(: new-tt Type). (: (
-   (if (non-zero new-tt) (
-      (set base-tt (+( base-tt new-tt )))
-   ) ())
-   base-tt
-) Type);

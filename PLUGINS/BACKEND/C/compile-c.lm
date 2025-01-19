@@ -26,7 +26,7 @@ plugins-backend-c-compile := λ . (: (
                      global-ctx k kt fragment
                   )))
                ) (
-                  (let repr-tt (+( clean-tt (t1 'GlobalVariable_s) )))
+                  (let repr-tt (&&( clean-tt (t1 'GlobalVariable_s) )))
                   (set.type( fragment (without-constructor repr-tt) ))
                   (set global-ctx (fragment-context::bind(
                      global-ctx k (without-constructor repr-tt) fragment

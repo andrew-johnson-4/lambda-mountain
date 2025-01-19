@@ -1,6 +1,0 @@
-
-compile-data-header := λ . (: (
-   (let output SNil)
-   (set output (SCons( (close output) (close(SAtom '.data\n_s )) )))
-   output
-) S);

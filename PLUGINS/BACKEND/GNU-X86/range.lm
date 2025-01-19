@@ -1,2 +1,0 @@
-
-range := λ(: tt Type). (: (p1(slot( tt 'Arrow_s ))) Type);
