@@ -5,7 +5,7 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64). (: (
 
 compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64)(: count U64)(: left-assoc U64). (: (
    (let r (mk-fragment()))
-   (match (slot( (typeof rval) 'Cons_s )) (
+   (match (.slot( (typeof rval) 'Cons_s )) (
       ()
       ( (TGround( 'Cons_s (LCons( p2 (LCons( p1 LEOF )) )) )) (
          (match rval (

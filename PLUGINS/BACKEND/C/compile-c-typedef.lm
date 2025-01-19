@@ -186,7 +186,7 @@ compile-c-casedef := λ(: tctx TContext)(: fields Type)(: case-number U64). (: (
 ) S);
 
 compile-c-mark-field-as-seen := λ(: tt Type). (: (
-   (if (>( (arity tt) 0_u64 )) (
+   (if (>( (.arity tt) 0_u64 )) (
       (match tt (
          ()
          ( (TGround( 'Array_s tt-ps )) (

@@ -11,7 +11,7 @@ add-concrete-type-instance := λ(: tt Type). (: (
       ) ()))
    ))
    (set tt (normalize tt))
-   (let lt (slot( tt 'Array_s )))
+   (let lt (.slot( tt 'Array_s )))
    (if (non-zero lt) (set tt lt) (set tt (with-only-class tt)))
    (if (non-zero tt) (match tt (
       ()
