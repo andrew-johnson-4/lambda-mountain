@@ -44,5 +44,5 @@ mk-token := λ(: s SmartString). (: (
 ) Token);
 
 mk-token := λ(: s String). (: (
-   (Token( s (iuid()) (location::new()) ))
+   (Token( s (iuid()) (mk-location()) ))
 ) Token);

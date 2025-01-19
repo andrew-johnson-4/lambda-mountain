@@ -5,7 +5,6 @@ import SRC/with-key.lm;
 import SRC/location-of.lm;
 import SRC/unique.lm;
 import SRC/token::new.lm;
-import SRC/location::new.lm;
 import SRC/non-zero.lm;
 import SRC/mk-token.lm;
 import SRC/to-smart-string.lsts;
