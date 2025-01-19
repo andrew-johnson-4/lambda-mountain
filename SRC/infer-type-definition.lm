@@ -40,5 +40,7 @@ infer-type-definition := λ(: base-type Type)(: body AST)(: case-number U64). (:
          (t2( 'CaseNumber_s (t1 '0_s) ))
       ))
    ) ())
+   #(add-quick-prop( (t3( 'Array_s base-type TAny )) (t3( 'Array_s base-type TAny )) (t1 'LMStruct_s) ))
+   #(add-quick-prop( base-type base-type (t1 'LMStruct_s) ))
    r
 ) U64);

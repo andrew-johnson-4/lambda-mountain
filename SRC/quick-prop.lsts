@@ -43,7 +43,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
             if can-unify(lt, base) then (
                let tctx = unify(lt, base);
                let post = substitute(tctx, rt);
-               if not(can-unify(post, pre)) {
+               if not(can-unify(post, base)) {
                   pre = TAnd { close(pre), close(post) };
                };
             );
