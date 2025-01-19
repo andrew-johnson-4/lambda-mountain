@@ -13,4 +13,5 @@ import PLUGINS/FRONTEND/LM/parse-one-expression.lm;
 import PLUGINS/FRONTEND/LM/parse-type-comma-sep.lm;
 import PLUGINS/FRONTEND/LM/parse-type.lm;
 import PLUGINS/FRONTEND/LM/parse.lm;
+import PLUGINS/FRONTEND/LM/lm-is-variable.lm;
 

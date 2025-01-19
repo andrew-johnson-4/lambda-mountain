@@ -7,7 +7,7 @@ meta
 exit-error := λ(: msg String)(: t AST). (: (
    (print msg)
    (print '\n_s)
-   (print (location-of( t )))
+   (print (.location( t )))
    (print '\n_s)
    (match t (
       ()

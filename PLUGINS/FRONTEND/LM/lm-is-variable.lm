@@ -4,7 +4,7 @@ meta
       'Test\swhether\sa\sstring\sis\sa\ssimple\svariable\sname.
    ))
 ;
-is-variable := λ(: s String). (: (
+lm-is-variable := λ(: s String). (: (
    (let r False_u8)
    (match (head-string s) (
       ()
@@ -19,7 +19,7 @@ is-variable := λ(: s String). (: (
       ( 47_u8 (set r True_u8) )   # /
       ( 58_u8 (                   # :
          (if (==( (head-string(tail-string s)) 58_u8 )) (set r True_u8) ())
-         (if (is-variable(tail-string s)) (set r True_u8) ())
+         (if (lm-is-variable(tail-string s)) (set r True_u8) ())
       ))
       ( 59_u8 (set r True_u8) )   # ;
       ( 60_u8 (set r True_u8) )   # <

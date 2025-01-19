@@ -1,5 +1,5 @@
 
-let location-of(t: String): SourceLocation = (
+let .location(t: String): SourceLocation = (
    let file-path = lsts-smart-token-path-index.lookup( t.data as U64, "[Unknown File]" );
    let line = 1;
    let column = 1;
