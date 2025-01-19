@@ -19,7 +19,7 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
             (close TCtxEOF)
             ltv
             pt
-            (Lit( tg (token::new tg) ))
+            (Lit( tg (mk-token tg) ))
          )))
       ))
       ( (Tuple( (TGround( 'Any_s _ )) _ )) (
@@ -73,7 +73,7 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
                (close TCtxEOF)
                'Phi::Transition_s
                to_phi
-               (Var( id_phi (token::new id_phi) ))
+               (Var( id_phi (mk-token id_phi) ))
             )))
          ) (
             TCtxEOF

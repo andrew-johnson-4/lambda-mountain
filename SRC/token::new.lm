@@ -1,5 +1,0 @@
-
-token::new := λ(: s String). (: (
-   (Token( s (iuid()) (mk-location()) ))
-) Token);
-

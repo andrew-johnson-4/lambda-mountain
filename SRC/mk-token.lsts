@@ -1,0 +1,9 @@
+
+let mk-token(s: CString): Token = (
+   Token { s, iuid(), mk-location() }
+);
+
+let mk-token(s: String): Token = (
+   Token { untern(s), iuid(), location-of(s) }
+);
+

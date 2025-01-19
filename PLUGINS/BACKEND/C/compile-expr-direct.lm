@@ -33,7 +33,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                   (set guid (uuid()))
                   (set e (.set( e 'expression_s (SAtom guid) )))
                   (set compile-smart-string-index (.bind( compile-smart-string-index val guid )))
-                  (let lit (Lit( val (token::new val) )))
+                  (let lit (Lit( val (mk-token val) )))
                   (ascript-normal( lit (t1 'String_s) ))
                   (let intern-ss (compile-stack-calls( ctx 'intern_s TAny (typeof term) lit stack-offset Used )))
                   (set assemble-header-section (+(
