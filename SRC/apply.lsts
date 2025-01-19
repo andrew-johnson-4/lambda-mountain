@@ -5,7 +5,7 @@ let apply-blame(function-name: CString, function-type: Type, parameters: Type, d
       fail("Function Application Yielded No Matches\n"
            "\{function-name}\n"
            "With Arguments \{parameters}\n"
-           "At \{location-of(blame)}\n"
+           "At \{blame.location}\n"
            "With Candidates:\n"
            "\{function-type.pretty}\n")
    };
@@ -13,13 +13,13 @@ let apply-blame(function-name: CString, function-type: Type, parameters: Type, d
       fail("Application\sDid\sNot\sClose\sBefore\sSpecialization:\n"
            "Function \{function-name}: \{function-type}\n"
            "Argument \{parameters}\n"
-           "At \{location-of(blame)}\n");
+           "At \{blame.location}\n");
    };
    if r.return-type.is-t(c"Error: Function Application Yielded An Irreducible Plurality Of Matches") {
       fail("Function Application Yielded An Irreducible Plurality Of Matches\n"
            "\{function-name}\n"
            "With Arguments \{parameters}\n"
-           "At \{location-of(blame)}\n"
+           "At \{blame.location}\n"
            "Matched Candidates:\n"
            "\{function-type.pretty}\n")
    };

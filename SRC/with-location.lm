@@ -42,7 +42,7 @@ with-location := λ(: term AST)(: loc SourceLocation). (: (
          )))
       ))
       ( (Glb( k t )) (
-         (if (non-zero(location-of t)) () (
+         (if (non-zero(.location t)) () (
             (set k (with-location( k loc )))
             (set t (with-location( t loc )))
          ))

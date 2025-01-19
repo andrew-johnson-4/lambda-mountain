@@ -1,0 +1,13 @@
+
+let .location(term: AST): SourceLocation = (
+   match term {
+      Var{ token=token } => token.location;
+      Lit{ token=token } => token.location;
+      App{ left=left, right=right } => left.location || right.location;
+      Abs{ lhs=lhs, rhs=rhs } => lhs.location || rhs.location;
+      Seq{ left=left, right=right } => left.location || right.location;
+      Glb{ key=key, val=val } => key.location || val.location;
+      Typedef{ lhs=lhs, rhs=rhs } => lhs.location || rhs.location;
+      _ => mk-location();
+   }
+);

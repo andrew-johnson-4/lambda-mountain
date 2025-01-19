@@ -1,6 +1,7 @@
 
 # type definitions
 import SRC/ast-definitions.lsts;
+import SRC/ast-location.lsts;
 import SRC/mk-location.lsts;
 import SRC/mk-token.lsts;
 import SRC/is-seq.lsts;

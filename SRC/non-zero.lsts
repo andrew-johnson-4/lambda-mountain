@@ -2,3 +2,7 @@
 let non-zero(loc: SourceLocation): U64 = (
    loc.line != 0
 );
+
+let $"||"(lloc: SourceLocation, rloc: SourceLocation): SourceLocation = (
+   if non-zero(lloc) then lloc else rloc
+);

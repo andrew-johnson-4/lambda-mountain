@@ -24,7 +24,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
          (let frame (.get( e 'frame_s )))
          (let text SNil)
 
-         (let loc (location-of(term)))
+         (let loc (.location(term)))
 
          (set text (SCons( (close text) (close(SAtom '\oline\s_s)) )))
          (set text (SCons( (close text) (close(SAtom (to-string (.line loc)) )) )))
