@@ -127,7 +127,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ( (App( (Var( 'open_s _ )) t )) (
          (let tt (typeof t))
          (if (.is-t( tt 'Array_s )) (
-            (match (slot( tt 'Array_s )) (
+            (match (.slot( tt 'Array_s )) (
                ()
                ( (TGround( 'Array_s (LCons( _ (LCons( TAny LEOF )) )) )) (
                   (set e (compile-expr( ctx t stack-offset Used )))

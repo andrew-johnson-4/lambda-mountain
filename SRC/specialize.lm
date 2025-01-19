@@ -8,7 +8,7 @@ specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Ty
          ()
          ( TCtxNil (set global-tctx TCtxEOF) )
          ( (TCtxBind( rst k kt t )) (
-            (set kt (slot( kt 'Arrow_s )))
+            (set kt (.slot( kt 'Arrow_s )))
             (if (==( k key )) (
                (if (==( ft kt )) (
                   (match t (

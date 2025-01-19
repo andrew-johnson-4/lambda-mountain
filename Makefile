@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm tests/regress/functions-as-arguments.lsts
+	lm tests/unit/type-queries.lsts
 	cc -O3 tmp.c
 	./a.out
 

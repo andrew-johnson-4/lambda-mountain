@@ -4,7 +4,6 @@ import SRC/is-seq.lm;
 import SRC/is-lm-struct.lm;
 import SRC/plus.lm;
 import SRC/print.lm;
-import SRC/slot.lm;
 import SRC/uuid.lm;
 import SRC/var-name-if-var.lm;
 import SRC/remove-parens.lm;

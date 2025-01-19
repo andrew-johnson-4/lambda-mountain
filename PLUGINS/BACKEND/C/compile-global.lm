@@ -82,7 +82,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
          (let e (compile-expr( ctx t 0_i64 Used )))
 
          (let text SNil)
-         (match (slot( kt 'Array_s )) (
+         (match (.slot( kt 'Array_s )) (
             ()
             ( (TGround( 'Array_s (LCons( _ (LCons(
                  (TGround( 'Arrow_s (LCons( ranget (LCons( domaint _ )) )) )) _

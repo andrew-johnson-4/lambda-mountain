@@ -12,7 +12,7 @@ try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx TContext)(: 
                (set special-type (normalize special-type))
             ))
             (if (is-special( function-name special-type )) () (
-               (set kt (slot( kt 'Arrow_s )))
+               (set kt (.slot( kt 'Arrow_s )))
                (if (==( ft kt )) (
                   (match t (
                      ()

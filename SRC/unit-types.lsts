@@ -8,6 +8,7 @@ import SRC/p.lsts;
 import SRC/range.lsts;
 import SRC/domain.lsts;
 import SRC/arity.lsts;
+import SRC/slot.lsts;
 
 # Boolean Queries
 import SRC/is-t.lsts;
