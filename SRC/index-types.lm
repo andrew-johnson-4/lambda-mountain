@@ -59,7 +59,6 @@ import SRC/without-constructor.lm;
 import SRC/without-representation.lm;
 import SRC/without-size-unless-class.lm;
 import SRC/without-size.lm;
-import SRC/without-platform-props.lm;
 
 import SRC/with-only-class.lm;
 

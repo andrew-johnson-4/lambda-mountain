@@ -7,7 +7,9 @@ let .without-tag(tt: Type): Type = (
       TGround { tag:c"CaseNumber" } => TAny;
       TGround { tag:c"Raw" } => TAny;
       TGround { tag:c"LMStruct" } => TAny;
-      TGround { tag:tag } => if tag.has-prefix(c"Tag::") then TAny else tt;
+      TGround { tag:tag } => if tag.has-prefix(c"Tag::") then TAny
+                        else if tag.has-prefix(c"Field::") then TAny
+                        else tt;
       _ => tt;
    }
 );
