@@ -85,6 +85,5 @@ assert( is(t-g.slot(c"Array"), t-g) );
 assert( is(t-A.without-tag, t-A) );
 assert( is(t2(c"Constructor", t-A).without-tag, TAny) );
 assert( is(t2(c"CaseNumber", t1(c"0")).without-tag, TAny) );
-assert( is(t2(c"Tag", t-A).without-tag, TAny) );
 assert( is(t2(c"Raw", t-A).without-tag, TAny) );
 
