@@ -14,7 +14,7 @@ plugins-backend-blob-compile := λ. (: (
                (set fragment (.set( fragment 'fragment-type_s (SAtom 'Function_s) )))
                (set.term( fragment rhs ))
                (set.type( fragment (typeof rhs) ))
-               (set global-ctx (fragment-context::bind(
+               (set global-ctx (.bind(
                   global-ctx k (typeof rhs) fragment
                )))
             ))

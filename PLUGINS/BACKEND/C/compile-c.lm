@@ -12,7 +12,7 @@ plugins-backend-c-compile := λ . (: (
             (if (.is-t( kt 'Blob_s )) (
                (set.term( fragment rhs ))
                (set.type( fragment kt ))
-               (set global-ctx (fragment-context::bind(
+               (set global-ctx (.bind(
                   global-ctx k kt fragment
                )))
             ) (
@@ -22,13 +22,13 @@ plugins-backend-c-compile := λ . (: (
                (set fragment (.set( fragment 'expression_s (SAtom mid) )))
                (if (.is-arrow kt) (
                   (set.type( fragment kt ))
-                  (set global-ctx (fragment-context::bind(
+                  (set global-ctx (.bind(
                      global-ctx k kt fragment
                   )))
                ) (
                   (let repr-tt (&&( clean-tt (t1 'GlobalVariable_s) )))
                   (set.type( fragment (without-constructor repr-tt) ))
-                  (set global-ctx (fragment-context::bind(
+                  (set global-ctx (.bind(
                      global-ctx k (without-constructor repr-tt) fragment
                   )))
                ))

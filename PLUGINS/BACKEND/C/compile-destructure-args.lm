@@ -11,7 +11,7 @@ compile-destructure-args := λ(: tt Type)(: ctx FContext)(: lhs AST)(: offset I6
             ) (
                (set kt (maybe-local-variable(denormalize kt)))
             ))
-            (set ctx (fragment-context::bind(
+            (set ctx (.bind(
                ctx k kt (fragment::local-variable( 0_i64 kt ))
             )))
          ) ())
@@ -22,7 +22,7 @@ compile-destructure-args := λ(: tt Type)(: ctx FContext)(: lhs AST)(: offset I6
          ) (
             (set kt (maybe-local-variable(denormalize kt)))
          ))
-         (set ctx (fragment-context::bind(
+         (set ctx (.bind(
             ctx k kt (fragment::local-variable( 0_i64 kt ))
          )))
       ))

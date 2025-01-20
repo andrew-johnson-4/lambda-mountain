@@ -1,8 +1,0 @@
-
-fragment-context::bind := λ(: ctx FContext)(: k String)(: kt Type)(: f Fragment). (: (
-   (let new-ctx (FCtxBind(
-      (close ctx)
-      k kt f
-   )))
-   new-ctx
-) FContext);

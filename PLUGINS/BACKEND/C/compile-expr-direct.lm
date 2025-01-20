@@ -193,10 +193,10 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (let ictx (mk-fragment()))
          (set.type( ictx (t1( 'ImplicitContext_s )) ))
         
-         (set ctx (fragment-context::bind( ctx 'ictx_s (t1 'ImplicitContext_s) ictx )))
-         (set ctx (fragment-context::bind( ctx 'c_s (t1 'BranchConditional_s) ec )))
-         (set ctx (fragment-context::bind( ctx 't_s (typeof t) et )))
-         (set ctx (fragment-context::bind( ctx 'f_s (typeof f) ef )))
+         (set ctx (.bind( ctx 'ictx_s (t1 'ImplicitContext_s) ictx )))
+         (set ctx (.bind( ctx 'c_s (t1 'BranchConditional_s) ec )))
+         (set ctx (.bind( ctx 't_s (typeof t) et )))
+         (set ctx (.bind( ctx 'f_s (typeof f) ef )))
          (let a-tt (t3( 'Cons_s 
             (t3( 'Cons_s 
                (t3( 'Cons_s (t1 'ImplicitContext_s) (typeof f) ))
@@ -213,7 +213,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ( (App( (Abs( (@( lhs-t (Var( lhs _ )) )) ASTNil tlt )) rhs )) (
          (let rtype (typeof lhs-t))
          (let fr (fragment::local-variable( 0_i64 rtype )))
-         (set ctx (fragment-context::bind( ctx lhs rtype fr )))
+         (set ctx (.bind( ctx lhs rtype fr )))
          (let prepost (mangle-c-declaration rtype))
          (if (is-const-array rtype) (
             (set e (compile-expr( ctx rhs stack-offset Used )))
