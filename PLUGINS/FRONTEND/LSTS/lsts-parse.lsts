@@ -196,7 +196,7 @@ let lsts-parse-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
       tokens = tail(tokens);
       if lsts-parse-head(tokens)!=c")" && lsts-parse-head(tokens)!=c"}" {
          base-rest = lsts-parse-small-expression(tokens);
-         base = App { close(base), close(base-rest.first) };
+         base = App { true, close(base), close(base-rest.first) };
          tokens = base-rest.second;
       }
    };
