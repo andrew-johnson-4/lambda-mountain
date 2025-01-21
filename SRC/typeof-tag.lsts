@@ -1,0 +1,4 @@
+
+let typeof-tag(tag: CString): Type = (
+   typeof-var-raw(ASTEOF, global-type-context, tag)
+);

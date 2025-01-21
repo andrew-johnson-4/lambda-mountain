@@ -1,9 +1,0 @@
-
-typeof-tag := λ(: tag String). (: (
-   (let r (.lookup( type-constructors-index tag TAny )))
-   (let r2 (typeof-var-raw( ASTEOF global-type-context tag )))
-   (if (non-zero r) (
-      (if (non-zero r2) (set r (&&( r r2 ))) ())
-      r
-   ) r2)
-) Type);
