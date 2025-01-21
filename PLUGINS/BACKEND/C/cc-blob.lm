@@ -2,7 +2,7 @@
 cc-blob := λ(: caller-ctx FContext)(: function-name String)(: args AST)(: offset I64). (: (
    # callee context starts as global-ctx
    # caller context is provided but not propagated
-   (let f (fragment-context::lookup( caller-ctx function-name (typeof args) args )))
+   (let f (.lookup( caller-ctx function-name (typeof args) args )))
    (let r (mk-fragment()))
    (match (.term f) (
       ()
@@ -20,7 +20,7 @@ cc-blob := λ(: caller-ctx FContext)(: function-name String)(: args AST)(: offse
 ) Fragment);
 
 cc-blob := λ(: callee-ctx FContext)(: function-name String)(: args-tt Type)(: offset I64)(: blame AST). (: (
-   (let f (fragment-context::lookup( callee-ctx function-name args-tt blame )))
+   (let f (.lookup( callee-ctx function-name args-tt blame )))
    (let r (mk-fragment()))
    (match (.term f) (
       ()

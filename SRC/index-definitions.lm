@@ -5,7 +5,7 @@ type IsUsed Used | Unused | Tail | Return | Call;
 type IsScoped Scoped | Unscoped;
 
 type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST )); zero Context CtxEOF;
-type FContext FCtxEOF | (FCtxBind( FContext[] , String , Type , Fragment )); zero FContext FCtxEOF;
+type FContext FCtxEOF | (FCtxBind( remainder:FContext[] , k:String , kt:Type , kv:Fragment )); zero FContext FCtxEOF;
 
 type STypeList STEOF | (STSeq( STypeList[] , S , Type )); zero STypeList STEOF;
 type StringTypeList StrTEOF | (StrTSeq( StringTypeList[] , String , Type )); zero StringTypeList StrTEOF;

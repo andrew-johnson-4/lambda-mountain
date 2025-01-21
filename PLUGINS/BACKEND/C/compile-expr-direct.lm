@@ -16,7 +16,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ( ASTEOF () )
       ( (Var( id _ )) (
          # TODO, this is being called instead of function
-         (set e (fragment-context::lookup( ctx id (typeof term) term )))
+         (set e (.lookup( ctx id (typeof term) term )))
          (set.context( e (close ctx) ))
       ))
       ( (Lit( val _ )) (
