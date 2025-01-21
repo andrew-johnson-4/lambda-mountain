@@ -1,0 +1,5 @@
+
+let typeof-tag(tag: CString): Type = (
+   type-constructors-index.lookup(tag, TAny) &&
+   typeof-var-raw(ASTEOF, global-type-context, tag)
+);

@@ -66,7 +66,6 @@ import SRC/type-of-s.lm;
 import SRC/type-of-s-with-fields.lm;
 
 import SRC/typeof-lhs.lm;
-import SRC/typeof-tag.lm;
 import SRC/cons-head.lm;
 import SRC/cons-tail.lm;
 import SRC/parameter-number.lm;
