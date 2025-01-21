@@ -1,5 +1,4 @@
 
-import SRC/fragment-context::new.lm;
 import SRC/fragment-context::lookup.lm;
 import SRC/fragment-context::lookup-soft.lm;
 import SRC/fragment-context::lookups.lm;
