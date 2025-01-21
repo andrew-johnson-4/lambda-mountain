@@ -1,9 +1,9 @@
 
-fragment-context::lookups := λ(: ctx FContext)(: k String)(: ft Type)(: kt Type)(: sloc AST). (: (
-   (fragment-context::lookups( ctx k ft kt sloc True_u8 ))
+.lookups := λ(: ctx FContext)(: k String)(: ft Type)(: kt Type)(: sloc AST). (: (
+   (.lookups( ctx k ft kt sloc True_u8 ))
 ) List<Fragment>);
 
-fragment-context::lookups := λ(: ctx FContext)(: k String)(: ft Type)(: kt Type)(: sloc AST)(: hard U8). (: (
+.lookups := λ(: ctx FContext)(: k String)(: ft Type)(: kt Type)(: sloc AST)(: hard U8). (: (
    (let original-ctx ctx)
    (set k (find-alias( k kt )))
    (let r (: LEOF List<Fragment>))

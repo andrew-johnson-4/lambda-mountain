@@ -1,7 +1,7 @@
 
 compile-stack-calls := λ(: ctx FContext)(: function-name String)(: function-type Type)(: return-type Type)(: args AST)(: offset I64)(: used IsUsed). (: (
    (let r (mk-fragment()))
-   (let fs (fragment-context::lookups( ctx function-name function-type (typeof args) args )))
+   (let fs (.lookups( ctx function-name function-type (typeof args) args )))
    (for-each (f in fs) (
       (let r-tt (.type r))
       (if (non-zero r-tt) (
