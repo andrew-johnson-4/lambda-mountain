@@ -10,4 +10,3 @@ import SRC/mk-expression.lsts;
 import SRC/mk-fctx.lsts;
 import SRC/fctx-bind.lsts;
 import SRC/fctx-lookup.lsts;
-import SRC/fctx-lookups.lm;
