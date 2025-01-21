@@ -7,7 +7,7 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: off
       ( ASTNil () )
       ( ASTEOF () )
       ( (Var( id _ )) (
-         (let e (fragment-context::lookup( ctx id (typeof term) term )))
+         (let e (.lookup( ctx id (typeof term) term )))
          (set r (.get( e context-key )))
       ))
       ( (Lit( val _ )) (
@@ -33,7 +33,7 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: off
            iter
         ))
       )) (
-         (let vs (fragment-context::lookup-soft( ctx vsk TAny ASTEOF )))
+         (let vs (.lookup-soft( ctx vsk TAny ASTEOF )))
          (for-each (vi in (.vararg vs)) (
             (let inner-ctx (.bind( ctx lhs (.type vs) vi )))
             (let fs (blob-render-simple( inner-ctx context-key iter offset )))
