@@ -2,5 +2,4 @@
 import SRC/fragment-context::lookup.lm;
 import SRC/fragment-context::lookup-soft.lm;
 import SRC/fragment-context::lookups.lm;
-import SRC/fragment-context::lookup-vararg.lm;
 import SRC/bind-vararg.lm;
