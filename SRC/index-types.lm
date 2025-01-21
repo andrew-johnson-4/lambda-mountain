@@ -26,7 +26,6 @@ import SRC/is-class.lm;
 import SRC/is-only-child.lsts;
 import SRC/is-sized-array.lsts;
 import SRC/fields-of-tag.lm;
-import SRC/type-constructors.lm;
 import SRC/type-complex-fields.lm;
 import SRC/get-vararg-inner.lm;
 import SRC/maybe-specialize.lm;

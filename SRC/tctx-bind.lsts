@@ -1,0 +1,4 @@
+
+let .bind(tctx: TContext, k: CString, kt: Type, kv: AST): TContext = (
+   TCtxBind { close(tctx), k, kt, kv }
+);
