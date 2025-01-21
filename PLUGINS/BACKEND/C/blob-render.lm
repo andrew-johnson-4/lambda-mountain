@@ -35,7 +35,7 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: off
       )) (
          (let vs (fragment-context::lookup-soft( ctx vsk TAny ASTEOF )))
          (for-each (vi in (.vararg vs)) (
-            (let inner-ctx (fragment-context::bind( ctx lhs (.type vs) vi )))
+            (let inner-ctx (.bind( ctx lhs (.type vs) vi )))
             (let fs (blob-render-simple( inner-ctx context-key iter offset )))
             (let s (.1 fs))
             (set r (+( r s )))
@@ -54,7 +54,7 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: off
             ()
             ( (SCons( a rst )) (
                (let f (mk-expression a))
-               (let inner-ctx (fragment-context::bind( ctx lhs (t1 'L_s) f )))
+               (let inner-ctx (.bind( ctx lhs (t1 'L_s) f )))
                (let cs (blob-render-simple( inner-ctx context-key iter offset )))
                (let s (.1 cs))
                (set r (+( r s )))
@@ -160,7 +160,7 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: off
          (let s (.1 cs))
          (set f (.set( f context-key s )))
          (set f (.set( f 'expression_s s )))
-         (set ctx (fragment-context::bind(
+         (set ctx (.bind(
             ctx lhs (typeof rhs) f
          ))) # TODO, render the binding as non-simple blob?
       ))

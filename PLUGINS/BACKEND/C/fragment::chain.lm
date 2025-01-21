@@ -22,17 +22,6 @@ fragment::chain-c := λ(: l Fragment)(: r Fragment). (: (
    l
 ) Fragment);
 
-fragment::chain := λ(: fragment-ctx FragmentList)(: e Fragment). (: (
-   (while (non-zero fragment-ctx) (match fragment-ctx (
-      ()
-      ( (FLSeq( rst cf )) (
-         (set e (fragment::chain( cf e )))
-         (set fragment-ctx rst)
-      ))
-   )))
-   e
-) Fragment);
-
 fragment::chain := λ(: l Fragment)(: r Fragment). (: (
    (set l (fragment::chain-c( l r )))
    l

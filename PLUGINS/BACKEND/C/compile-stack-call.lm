@@ -28,10 +28,10 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
          (set ictx (.set( ictx 'function-name_s (SAtom function-name) )))
          (set ictx (.set( ictx 'used_s (SAtom(to-string used)) )))
          (set.type( ictx (t1( 'ImplicitContext_s )) ))
-         (set ctx (fragment-context::bind( ctx 'ictx_s (t1 'ImplicitContext_s) ictx )))
+         (set ctx (.bind( ctx 'ictx_s (t1 'ImplicitContext_s) ictx )))
 
          (let args-tt (.type push-args))
-         (set ctx (fragment-context::bind( ctx 'args_s args-tt push-args )))
+         (set ctx (.bind( ctx 'args_s args-tt push-args )))
 
          (set r (cc-blob( ctx 'primitive::call_s (t3( 'Cons_s (t1 'ImplicitContext_s) args-tt )) offset args )))
 
