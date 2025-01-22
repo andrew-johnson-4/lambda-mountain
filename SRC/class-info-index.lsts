@@ -1,0 +1,7 @@
+
+type ClassInfo = ClassInfo { is-lm-struct: U64 };
+let class-info-index = {} :: HashtableEq<Tuple<CString,U64>,ClassInfo>;
+
+let add-class-info(cls: Type, info: ClassInfo): Nil = (
+   class-info-index = class-info-index.bind( cls.ground-tag-and-arity, info );
+);
