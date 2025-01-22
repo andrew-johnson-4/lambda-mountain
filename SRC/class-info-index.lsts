@@ -25,6 +25,7 @@ let .is-fragment(cls: Type): U64 = (
    let ta = cls.ground-tag-and-arity;
    is(class-info-index.lookup(ta, class-info-default).layout, FragmentStyle)
 );
+let .exists(cls: Type): U64 = class-info-index.has(cls.ground-tag-and-arity);
 
 let index-fields-of-tag(tag: CString, base-type: Type, fields-params: Type, fields-rhs: Type): Nil = (
    index-fields-quick-prop( t1(c"Tag::" + tag), base-type, fields-rhs, 1 );

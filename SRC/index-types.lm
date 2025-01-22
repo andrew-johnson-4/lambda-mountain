@@ -11,7 +11,6 @@ import SRC/infer-expr.lm;
 import SRC/phi-transition.lsts;
 import SRC/phi-merge.lsts;
 import SRC/alias.lm;
-import SRC/class-exists.lm;
 import SRC/is-parameter-flat.lm;
 import SRC/is-special.lm;
 import SRC/is-lone-tag.lm;
