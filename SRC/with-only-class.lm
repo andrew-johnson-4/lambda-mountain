@@ -11,7 +11,7 @@ with-only-class := λ(: tt Type). (: (
       ))
       ( (TGround( tag _ )) (
          (if (.is-class tt) (
-            (if (not(is-fragment tag)) (
+            (if (not(.is-fragment tt)) (
                (set rt tt)
             ) ())
          ) ())

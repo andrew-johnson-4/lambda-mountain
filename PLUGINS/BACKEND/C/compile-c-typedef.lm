@@ -12,7 +12,7 @@ compile-c-typedef-concrete-ordinal := λ(: base-type Type). (: (
 ) Nil);
 
 compile-c-typedef-ordinal := λ(: base-type Type). (: (
-   (if (is-fragment base-type) () (
+   (if (.is-lm-struct base-type) (
       (if (.is-open base-type) () (
          (compile-c-typedef-concrete-ordinal( base-type ))
       ))
@@ -25,7 +25,7 @@ compile-c-typedef-ordinal := λ(: base-type Type). (: (
             ))
          ))
       ))
-   ))
+   ) ())
 ) Nil);
 
 continue-compile-c-typedefs-concrete := (: LEOF List<Tuple<Tuple<TContext,Type>,AST>>);
@@ -145,7 +145,7 @@ compile-c-type-body-of-base-type :=  (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tupl
 
 compile-c-typedef := λ(: base-type Type)(: body AST). (: (
    (set compile-c-type-body-of-base-type (.bind( compile-c-type-body-of-base-type (tag-of base-type) (Tuple( base-type body )) )))
-   (if (is-fragment base-type) () (
+   (if (.is-lm-struct base-type) (
       (if (.is-open base-type) () (
          (compile-c-typedef-concrete( TCtxEOF base-type body ))
       ))
@@ -159,7 +159,7 @@ compile-c-typedef := λ(: base-type Type)(: body AST). (: (
             ))
          ))
       ))
-   ))
+   ) ())
 ) Nil);
 
 compile-c-fields-of-case := λ(: base-type Type)(: tag-definition AST)(: case-number U64). (: (
