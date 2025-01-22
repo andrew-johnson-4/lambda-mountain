@@ -43,7 +43,6 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
          )))
          (add-quick-prop( (t1(+( 'Tag::_s tag ))) base-type (t2( 'CaseNumber_s (t1(to-string(index-of-tag tag))) )) ))
          (add-quick-prop( (t1(+( 'Tag::_s tag ))) (t3( 'Array_s base-type TAny )) (t2( 'CaseNumber_s (t1(to-string(index-of-tag tag))) )) ))
-         (set-type-fields( base-type atype ))
          (index-fields-of-tag( tag base-type base-type atype ))
          (set global-type-context (.bind( global-type-context tag (t3( 'Arrow_s atype rtype )) body )))
       ))

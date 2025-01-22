@@ -20,7 +20,6 @@ import SRC/index-of-tag.lm;
 import SRC/size-of-class.lm;
 import SRC/is-only-child.lsts;
 import SRC/is-sized-array.lsts;
-import SRC/type-complex-fields.lm;
 import SRC/get-vararg-inner.lm;
 import SRC/maybe-specialize.lm;
 import SRC/maybe-local-variable.lm;
