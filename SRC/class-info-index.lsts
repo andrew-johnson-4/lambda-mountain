@@ -1,27 +1,18 @@
 
 type StructLayout = LM1Style | CStyle | FragmentStyle | UnknownStyle;
 
-type ClassInfo = ClassInfo { layout: StructLayout, tag-structs:List<Tuple<CString,Tuple<Type,Type>>> };
+type ClassInfo = ClassInfo { layout: StructLayout };
 let class-info-index = {} :: HashtableEq<Tuple<CString,U64>,ClassInfo>;
 
-let class-info-default = ClassInfo{ UnknownStyle, [] :: List<Tuple<CString,Tuple<Type,Type>>> };
+let class-info-default = ClassInfo{ UnknownStyle };
 let .with-layout(ci: ClassInfo, layout: StructLayout): ClassInfo = (
-   ClassInfo{ layout, ci.tag-structs }
-);
-let .with-tag-struct(ci: ClassInfo, ts: Tuple<CString,Tuple<Type,Type>>): ClassInfo = (
-   ClassInfo{ ci.layout, cons(ts, ci.tag-structs) }
+   ClassInfo{ layout }
 );
 
 let add-class-info-layout(cls: Type, layout: StructLayout): Nil = (
    class-info-index = class-info-index.bind(
       cls.ground-tag-and-arity,
       class-info-index.lookup(cls.ground-tag-and-arity,class-info-default).with-layout(layout)
-   );
-);
-let add-class-info-tag-struct(cls: Type, ts: Tuple<CString,Tuple<Type,Type>>): Nil = (
-   class-info-index = class-info-index.bind(
-      cls.ground-tag-and-arity,
-      class-info-index.lookup(cls.ground-tag-and-arity,class-info-default).with-tag-struct(ts)
    );
 );
 
@@ -36,7 +27,6 @@ let .is-fragment(cls: Type): U64 = (
 );
 
 let index-fields-of-tag(tag: CString, base-type: Type, fields-params: Type, fields-rhs: Type): Nil = (
-   add-class-info-tag-struct( base-type, Tuple{tag, Tuple{fields-params, fields-rhs}} );
    index-fields-quick-prop( t1(c"Tag::" + tag), base-type, fields-rhs, 1 );
    index-fields-quick-prop( t1(c"Tag::" + tag), t3( c"Array", base-type, TAny), fields-rhs, 1 );
 );
@@ -64,13 +54,4 @@ let index-fields-quick-prop(tag-tt: Type, base-type: Type, fields-tt: Type, fiel
          )
       );
    }
-);
-
-let fields-of-tag(base-type: Type, tag: CString): Tuple<Type,Type> = (
-   let lr = Tuple{ TAny, TAny };
-   for Tuple{ stag=first, slr=second } in
-      class-info-index.lookup(base-type.ground-tag-and-arity,class-info-default).tag-structs {
-      if tag==stag { lr = slr; }
-   };
-   lr
 );
