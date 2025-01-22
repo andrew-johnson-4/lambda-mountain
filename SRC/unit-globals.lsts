@@ -4,3 +4,4 @@ import SRC/typeof-tag.lsts;
 import SRC/tctx-bind.lsts;
 
 # global indexes
+import SRC/class-info-index.lsts;

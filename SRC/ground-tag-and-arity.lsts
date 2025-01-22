@@ -1,0 +1,17 @@
+
+let .ground-tag-and-arity(tt: Type): (CString,U64) = (
+   match tt {
+      TGround { tag:c"Array", parameters:[_.. array-base..] } => (
+         let ga = array-base.ground-tag-and-arity;
+         ( ga.first, ga.second + 1000 )
+      );
+      TGround { tag:c"Sized" } => (c"", 9999999);
+      TGround { tag=tag, parameters=parameters } => (tag, parameters.length);
+      TAny {} => (c"?", 0);
+      TVar {} => (c"", 9999999);
+      TAnd { left=left, right=right } => (
+         let lga = left.ground-tag-and-arity;
+         if lga.second==9999999 then right.ground-tag-and-arity else lga
+      );
+   }
+);
