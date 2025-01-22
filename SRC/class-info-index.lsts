@@ -9,7 +9,7 @@ let .with-layout(ci: ClassInfo, layout: StructLayout): ClassInfo = (
    ClassInfo{ layout, ci.tag-structs }
 );
 let .with-tag-struct(ci: ClassInfo, ts: Tuple<CString,Tuple<Type,Type>>): ClassInfo = (
-   ClassInfo{ layout, cons(ts, ci.tag-structs) }
+   ClassInfo{ ci.layout, cons(ts, ci.tag-structs) }
 );
 
 let add-class-info-layout(cls: Type, layout: StructLayout): Nil = (
@@ -18,7 +18,7 @@ let add-class-info-layout(cls: Type, layout: StructLayout): Nil = (
       class-info-index.lookup(cls.ground-tag-and-arity,class-info-default).with-layout(layout)
    );
 );
-let add-class-tag-struct(cls: Type, ts: Type<CString,Tuple<Type,Type>>): Nil = (
+let add-class-info-tag-struct(cls: Type, ts: Tuple<CString,Tuple<Type,Type>>): Nil = (
    class-info-index = class-info-index.bind(
       cls.ground-tag-and-arity,
       class-info-index.lookup(cls.ground-tag-and-arity,class-info-default).with-tag-struct(ts)
@@ -36,14 +36,14 @@ let .is-fragment(cls: Type): U64 = (
 );
 
 let index-fields-of-tag(tag: CString, base-type: Type, fields-params: Type, fields-rhs: Type): Nil = (
-   add-class-tag-struct( base-type, Tuple{tag, Tuple{fields-params, fields-rhs}} );
+   add-class-info-tag-struct( base-type, Tuple{tag, Tuple{fields-params, fields-rhs}} );
    index-fields-quick-prop( t1(c"Tag::" + tag), base-type, fields-rhs, 1 );
    index-fields-quick-prop( t1(c"Tag::" + tag), t3( c"Array", base-type, TAny), fields-rhs, 1 );
-) Nil);
+);
 
 let index-fields-quick-prop(tag-tt: Type, base-type: Type, fields-tt: Type, field-index: U64): Nil = (
    match fields-tt {
-      TGround{ tag:c"Cons", [pt.. rst..] } => (
+      TGround{ tag:c"Cons", parameters:[pt.. rst..] } => (
          add-quick-prop( tag-tt, base-type,
             t2( c"Field::" + to-string(field-index), pt )
          );
@@ -62,14 +62,14 @@ let index-fields-quick-prop(tag-tt: Type, base-type: Type, fields-tt: Type, fiel
          add-quick-prop( t3( c"Array", base-type, TAny ), t3( c"Array", base-type, TAny ),
             t2( c"Field::" + to-string(field-index), pt )
          )
-      )
+      );
    }
 );
 
 let fields-of-tag(base-type: Type, tag: CString): Tuple<Type,Type> = (
    let lr = Tuple{ TAny, TAny };
    for Tuple{ stag=first, slr=second } in
-       tag-to-fields-index.lookup(base-type.ground-tag-and-arity,class-info-default).tag-structs {
+      class-info-index.lookup(base-type.ground-tag-and-arity,class-info-default).tag-structs {
       if tag==stag { lr = slr; }
    };
    lr
