@@ -25,3 +25,36 @@ let .is-fragment(cls: Type): U64 = (
    let ta = cls.ground-tag-and-arity;
    is(class-info-index.lookup(ta, class-info-default).layout, FragmentStyle)
 );
+
+let index-fields-of-tag(tag: CString, base-type: Type, fields-params: Type, fields-rhs: Type): Nil = (
+   add-class-info-structure( base-type, tag, fields-rhs );
+   index-fields-quick-prop( (t1( (+( 'Tag::_s tag )) )), base-type, fields-rhs, 1 );
+   index-fields-quick-prop( (t1( (+( 'Tag::_s tag )) )), (t3( 'Array_s base-type TAny )), fields-rhs, 1 );
+) Nil);
+
+let index-fields-quick-prop(tag-tt: Type, base-type: Type, fields-tt: Type, field-index: U64): Nil = (
+   match fields-tt {
+      TGround{ tag:c"Cons", [pt.. rst..] } => (
+         add-quick-prop( tag-tt, base-type,
+            t2( c"Field::" + to-string(field-index), pt )
+         );
+         if is-only-child(base-type) {
+            add-quick-prop( t3( c"Array", base-type, TAny ), t3( c"Array", base-type, TAny ),
+               t2( c"Field::" + to-string(field-index), pt )
+            )
+         };
+         index-fields-quick-prop( tag-tt, base-type, rst, field-index + 1)
+      );
+      TGround{ tag:c"Nil" } => ();
+      pt => (
+         add-quick-prop( tag-tt, base-type,
+            t2( c"Field::" + to-string(field-index), pt )
+         );
+         add-quick-prop( t3( c"Array", base-type, TAny ), t3( c"Array", base-type, TAny ),
+            t2( c"Field::" + to-string(field-index), pt )
+         )
+      )
+   }
+);
+
+let fields-of-tag(tag: CString): Tuple<Type,Type> = tag-to-fields-index.lookup(tag, Tuple{TAny,TAny});
