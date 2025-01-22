@@ -55,8 +55,6 @@ import SRC/without-constructor.lm;
 import SRC/without-size-unless-class.lm;
 import SRC/without-size.lm;
 
-import SRC/with-only-class.lm;
-
 import SRC/normalize.lm;
 import SRC/denormalize.lm;
 import SRC/type-of-s.lm;

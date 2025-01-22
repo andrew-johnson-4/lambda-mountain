@@ -1,6 +1,6 @@
 
 with-tag := λ(: tt Type). (: (
-   (let cls-tt (with-only-class tt))
+   (let cls-tt (.with-only-class tt))
    (if (non-zero cls-tt) (
       (match cls-tt (
          ()
