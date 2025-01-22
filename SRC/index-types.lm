@@ -7,7 +7,6 @@ import SRC/quick-prop.lsts;
 import SRC/substitute.lm;
 import SRC/cons-root.lsts;
 import SRC/index-concrete-type-instances.lm;
-import SRC/type-index.lm;
 import SRC/infer-expr.lm;
 import SRC/phi-transition.lsts;
 import SRC/phi-merge.lsts;
