@@ -2,6 +2,9 @@
 infer-type-definition := λ(: base-type Type)(: body AST)(: case-number U64). (: (
    # This works but is too slow
    (let r 0_u64)
+   (if (non-zero body) (
+      (add-class-info-layout( base-type LM1Style ))
+   ) ())
    (match body (
       ()
       ( (App( (App( tds (Var( '|_s _ )) )) case )) (
