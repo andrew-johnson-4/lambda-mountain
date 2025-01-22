@@ -1,0 +1,13 @@
+
+let .with-only-class(tt: Type): Type = (
+   match tt {
+      TAnd{ left=left, right=right } => (
+         let lc = left.with-only-class;
+         if non-zero(lc) then lc else right.with-only-class;
+      );
+      TGround{ tag=tag, parameters=parameters } => (
+         if tt.is-class && not(tt.is-fragment) then tt else TAny
+      );
+      _ => TAny;
+   }
+);

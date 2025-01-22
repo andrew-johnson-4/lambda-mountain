@@ -16,7 +16,6 @@ import SRC/class-exists.lm;
 import SRC/is-parameter-flat.lm;
 import SRC/is-special.lm;
 import SRC/is-lone-tag.lm;
-import SRC/is-fragment.lm;
 import SRC/global-is-seen.lm;
 import SRC/class-only-child.lm;
 import SRC/index-of-tag.lm;
@@ -55,8 +54,6 @@ import SRC/without-phi.lsts;
 import SRC/without-constructor.lm;
 import SRC/without-size-unless-class.lm;
 import SRC/without-size.lm;
-
-import SRC/with-only-class.lm;
 
 import SRC/normalize.lm;
 import SRC/denormalize.lm;

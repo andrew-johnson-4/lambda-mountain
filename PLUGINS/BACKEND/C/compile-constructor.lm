@@ -1,7 +1,7 @@
 
 compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)(: args-type Type)(: args AST)(: offset I64). (: (
    (let r (mk-fragment()))
-   (let bare-ordinal (with-only-class return-type))
+   (let bare-ordinal (.with-only-class return-type))
    (let case-number (index-of-tag tag-name))
    (set r (initialize-c-struct( ctx args case-number 1_u64 )))
    (set r (.set( r 'expression_s (

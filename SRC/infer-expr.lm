@@ -108,7 +108,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
             (if (.has-prefix( (tag-of tt) 'Tag::_s )) (
                (set tt (&&( tt inner-tt )))
             ) (
-               (let inner-class (with-only-class inner-tt))
+               (let inner-class (.with-only-class inner-tt))
                (if (non-zero inner-class) (
                   (set tt (&&( tt inner-class )))
                ) ())
