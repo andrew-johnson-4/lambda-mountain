@@ -1,18 +1,27 @@
 
 type StructLayout = LM1Style | CStyle | FragmentStyle | UnknownStyle;
 
-type ClassInfo = ClassInfo { layout: StructLayout };
+type ClassInfo = ClassInfo { layout: StructLayout, tag-structs:List<Tuple<CString,Tuple<Type,Type>>> };
 let class-info-index = {} :: HashtableEq<Tuple<CString,U64>,ClassInfo>;
 
-let class-info-default = ClassInfo{ UnknownStyle };
+let class-info-default = ClassInfo{ UnknownStyle, [] :: List<Tuple<CString,Tuple<Type,Type>>> };
 let .with-layout(ci: ClassInfo, layout: StructLayout): ClassInfo = (
-   ClassInfo{ layout }
+   ClassInfo{ layout, ci.tag-structs }
+);
+let .with-tag-struct(ci: ClassInfo, ts: Tuple<CString,Tuple<Type,Type>>): ClassInfo = (
+   ClassInfo{ layout, cons(ts, ci.tag-structs) }
 );
 
 let add-class-info-layout(cls: Type, layout: StructLayout): Nil = (
    class-info-index = class-info-index.bind(
       cls.ground-tag-and-arity,
       class-info-index.lookup(cls.ground-tag-and-arity,class-info-default).with-layout(layout)
+   );
+);
+let add-class-tag-struct(cls: Type, ts: Type<CString,Tuple<Type,Type>>): Nil = (
+   class-info-index = class-info-index.bind(
+      cls.ground-tag-and-arity,
+      class-info-index.lookup(cls.ground-tag-and-arity,class-info-default).with-tag-struct(ts)
    );
 );
 
@@ -27,9 +36,9 @@ let .is-fragment(cls: Type): U64 = (
 );
 
 let index-fields-of-tag(tag: CString, base-type: Type, fields-params: Type, fields-rhs: Type): Nil = (
-   add-class-info-structure( base-type, tag, fields-rhs );
-   index-fields-quick-prop( (t1( (+( 'Tag::_s tag )) )), base-type, fields-rhs, 1 );
-   index-fields-quick-prop( (t1( (+( 'Tag::_s tag )) )), (t3( 'Array_s base-type TAny )), fields-rhs, 1 );
+   add-class-tag-struct( base-type, Tuple{tag, Tuple{fields-params, fields-rhs}} );
+   index-fields-quick-prop( t1(c"Tag::" + tag), base-type, fields-rhs, 1 );
+   index-fields-quick-prop( t1(c"Tag::" + tag), t3( c"Array", base-type, TAny), fields-rhs, 1 );
 ) Nil);
 
 let index-fields-quick-prop(tag-tt: Type, base-type: Type, fields-tt: Type, field-index: U64): Nil = (
@@ -57,4 +66,11 @@ let index-fields-quick-prop(tag-tt: Type, base-type: Type, fields-tt: Type, fiel
    }
 );
 
-let fields-of-tag(tag: CString): Tuple<Type,Type> = tag-to-fields-index.lookup(tag, Tuple{TAny,TAny});
+let fields-of-tag(base-type: Type, tag: CString): Tuple<Type,Type> = (
+   let lr = Tuple{ TAny, TAny };
+   for Tuple{ stag=first, slr=second } in
+       tag-to-fields-index.lookup(base-type.ground-tag-and-arity,class-info-default).tag-structs {
+      if tag==stag { lr = slr; }
+   };
+   lr
+);
