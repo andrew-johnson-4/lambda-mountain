@@ -1,8 +1,10 @@
 
-type StructLayout = LM1Style | CStyle | FragmentStyle;
+type StructLayout = LM1Style | CStyle | FragmentStyle | UnknownStyle;
 
 type ClassInfo = ClassInfo { layout: StructLayout };
 let class-info-index = {} :: HashtableEq<Tuple<CString,U64>,ClassInfo>;
+
+let class-info-default = ClassInfo{ UnknownStyle };
 
 let add-class-info(cls: Type, info: ClassInfo): Nil = (
    class-info-index = class-info-index.bind( cls.ground-tag-and-arity, info );
@@ -11,9 +13,9 @@ let add-class-info(cls: Type, info: ClassInfo): Nil = (
 let .is-class(cls: Type): U64 = class-info-index.has(cls.ground-tag-and-arity);
 let .is-lm-struct(cls: Type): U64 = (
    let ta = cls.ground-tag-and-arity;
-   is(class-info-index.lookup(ta, ClassInfo{ FragmentStyle }).layout, LM1Style)
+   is(class-info-index.lookup(ta, class-info-default).layout, LM1Style)
 );
 let .is-fragment(cls: Type): U64 = (
    let ta = cls.ground-tag-and-arity;
-   is(class-info-index.lookup(ta, ClassInfo{ LM1Style }).layout, FragmentStyle)
+   is(class-info-index.lookup(ta, class-info-default).layout, FragmentStyle)
 );
