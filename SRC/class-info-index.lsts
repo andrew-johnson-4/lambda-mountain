@@ -1,19 +1,57 @@
 
-type StructLayout = LM1Style | CStyle | FragmentStyle;
+type StructLayout = LM1Style | CStyle | FragmentStyle | UnknownStyle;
 
 type ClassInfo = ClassInfo { layout: StructLayout };
 let class-info-index = {} :: HashtableEq<Tuple<CString,U64>,ClassInfo>;
 
-let add-class-info(cls: Type, info: ClassInfo): Nil = (
-   class-info-index = class-info-index.bind( cls.ground-tag-and-arity, info );
+let class-info-default = ClassInfo{ UnknownStyle };
+let .with-layout(ci: ClassInfo, layout: StructLayout): ClassInfo = (
+   ClassInfo{ layout }
+);
+
+let add-class-info-layout(cls: Type, layout: StructLayout): Nil = (
+   class-info-index = class-info-index.bind(
+      cls.ground-tag-and-arity,
+      class-info-index.lookup(cls.ground-tag-and-arity,class-info-default).with-layout(layout)
+   );
 );
 
 let .is-class(cls: Type): U64 = class-info-index.has(cls.ground-tag-and-arity);
 let .is-lm-struct(cls: Type): U64 = (
    let ta = cls.ground-tag-and-arity;
-   is(class-info-index.lookup(ta, ClassInfo{ FragmentStyle }).layout, LM1Style)
+   is(class-info-index.lookup(ta, class-info-default).layout, LM1Style)
 );
 let .is-fragment(cls: Type): U64 = (
    let ta = cls.ground-tag-and-arity;
-   is(class-info-index.lookup(ta, ClassInfo{ LM1Style }).layout, FragmentStyle)
+   is(class-info-index.lookup(ta, class-info-default).layout, FragmentStyle)
+);
+
+let index-fields-of-tag(tag: CString, base-type: Type, fields-params: Type, fields-rhs: Type): Nil = (
+   index-fields-quick-prop( t1(c"Tag::" + tag), base-type, fields-rhs, 1 );
+   index-fields-quick-prop( t1(c"Tag::" + tag), t3( c"Array", base-type, TAny), fields-rhs, 1 );
+);
+
+let index-fields-quick-prop(tag-tt: Type, base-type: Type, fields-tt: Type, field-index: U64): Nil = (
+   match fields-tt {
+      TGround{ tag:c"Cons", parameters:[pt.. rst..] } => (
+         add-quick-prop( tag-tt, base-type,
+            t2( c"Field::" + to-string(field-index), pt )
+         );
+         if is-only-child(base-type) {
+            add-quick-prop( t3( c"Array", base-type, TAny ), t3( c"Array", base-type, TAny ),
+               t2( c"Field::" + to-string(field-index), pt )
+            )
+         };
+         index-fields-quick-prop( tag-tt, base-type, rst, field-index + 1)
+      );
+      TGround{ tag:c"Nil" } => ();
+      pt => (
+         add-quick-prop( tag-tt, base-type,
+            t2( c"Field::" + to-string(field-index), pt )
+         );
+         add-quick-prop( t3( c"Array", base-type, TAny ), t3( c"Array", base-type, TAny ),
+            t2( c"Field::" + to-string(field-index), pt )
+         )
+      );
+   }
 );
