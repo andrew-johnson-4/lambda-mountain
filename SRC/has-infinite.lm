@@ -6,10 +6,8 @@ has-infinite := λ(: base-type Type)(: tag String)(: arity U64)(: tt List<Type>)
       ()
       ( LEOF () )
       ( (LCons( p1 ts )) (
-         (if (is-parameter-flat( tag arity pi )) (
-            (if (==( base-type p1 )) (
-               (set return 1_u64)
-            ) ())
+         (if (==( base-type p1 )) (
+            (set return 1_u64)
          ) ())
          (set return (max(
             (has-infinite( base-type tag arity ts (+( pi 1_u64 )) ))
