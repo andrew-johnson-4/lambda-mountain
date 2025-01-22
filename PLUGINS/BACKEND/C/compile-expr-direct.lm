@@ -71,7 +71,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             (if (==( isa-fragment True_u8 )) (
                (set e (mk-expression val))
             ) (
-               (if (non-zero(class-of-tag val)) (
+               (if (.is-lm-struct(.with-only-class(typeof term))) (
                   (let tag-index (index-of-tag val))
                   (set e (.set( e 'expression_s (
                      (+(
