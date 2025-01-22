@@ -2,7 +2,6 @@
 infer-type-definition := λ(: base-type Type)(: body AST)(: case-number U64). (: (
    # This works but is too slow
    (mark-class-exists( (tag-of base-type) ))
-   (mark-is-lm-struct( (tag-of base-type) ))
    (let r 0_u64)
    (match body (
       ()
