@@ -5,9 +5,15 @@ type ClassInfo = ClassInfo { layout: StructLayout };
 let class-info-index = {} :: HashtableEq<Tuple<CString,U64>,ClassInfo>;
 
 let class-info-default = ClassInfo{ UnknownStyle };
+let .with-layout(ci: ClassInfo, layout: StructLayout): ClassInfo = (
+   ClassInfo{ layout }
+);
 
-let add-class-info(cls: Type, info: ClassInfo): Nil = (
-   class-info-index = class-info-index.bind( cls.ground-tag-and-arity, info );
+let add-class-info-layout(cls: Type, layout: StructLayout): Nil = (
+   class-info-index = class-info-index.bind(
+      cls.ground-tag-and-arity,
+      class-info-index.lookup(cls.ground-tag-and-arity,class-info-default).with-layout(layout)
+   );
 );
 
 let .is-class(cls: Type): U64 = class-info-index.has(cls.ground-tag-and-arity);
