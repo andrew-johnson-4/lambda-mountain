@@ -1,5 +1,6 @@
 
 type Tuple<x,y> = Tuple { first: x, second: y };
+type Tuple<x,y,z> = Tuple { first: x, second: y, third: z };
 
 let cmp(l: Tuple<x,y>, r: Tuple<x,y>): Ord = (
    cmp(l.first, r.first) && cmp(l.second, r.second)
@@ -11,6 +12,10 @@ let deep-hash(l: Tuple<x,y>): U64 = (
 
 let print(io: IO::File, l: Tuple<x,y>): Nil = (
    print(io, "("); print(io, l.first); print(io, ","); print(io, l.second); print(io, ")");
+);
+
+let print(io: IO::File, l: Tuple<x,y,z>): Nil = (
+   print(io, "("); print(io, l.first); print(io, ","); print(io, l.second); print(io, ","); print(io, l.third); print(io, ")");
 );
 
 let $"=="(l: Tuple<x,y>, r: Tuple<x,y>): U64 = (
