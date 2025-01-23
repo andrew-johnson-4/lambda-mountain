@@ -102,7 +102,6 @@ parse-toplevel := λ(: tokens List<Token>). (: (
             (set tokens remainder)
          ))
          ( (LCons( 'size_t (LCons( class_t (LCons( sz_t remainder )) )) )) (
-            (index-size-of-class( class (to-u64 sz) ))
             (set tokens remainder)
          ))
          ( (LCons( 'import_t (LCons( relative-path_t remainder )) )) (

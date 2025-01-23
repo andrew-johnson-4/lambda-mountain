@@ -5,20 +5,10 @@ infer-global-context := λ(: td AST). (: (
       ()
       ( (Typedef( (Lit( base-type _ )) case-constructors )) (
          (let bt (parse-type base-type))
-         (let size (infer-type-definition( bt case-constructors 0_u64 )))
-         (match bt (
-            ()
-            ( (TGround( class LEOF )) (index-size-of-class( class size )) )
-            ( _ () )
-         ))
+         (infer-type-definition( bt case-constructors 0_u64 ))
       ))
       ( (Typedef( (AType( bt )) case-constructors )) (
-         (let size (infer-type-definition( bt case-constructors 0_u64 )))
-         (match bt (
-            ()
-            ( (TGround( class LEOF )) (index-size-of-class( class size )) )
-            ( _ () )
-         ))
+         (infer-type-definition( bt case-constructors 0_u64 ))
       ))
       ( (Glb( k_t (@( frhs (Abs( lhs (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) tlt )) )) )) (
          (let lt (typeof-lhs lhs))

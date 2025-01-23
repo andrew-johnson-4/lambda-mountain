@@ -16,7 +16,6 @@ import SRC/is-lone-tag.lm;
 import SRC/global-is-seen.lm;
 import SRC/class-only-child.lm;
 import SRC/index-of-tag.lm;
-import SRC/size-of-class.lm;
 import SRC/is-only-child.lsts;
 import SRC/is-sized-array.lsts;
 import SRC/get-vararg-inner.lm;
