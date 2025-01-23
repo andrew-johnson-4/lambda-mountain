@@ -52,6 +52,7 @@ mangle-identifier := λ(: kt Type). (: (
       ( (TVar v) (set r (mangle-identifier v)) )
       ( (TGround( tv ps )) (
          (set r (mangle-identifier tv))
+         (set r (SCons( (close(SAtom '_LT__s)) (close r) )))
          (while (non-zero ps) (match ps (
             ()
             ( (LCons( p1 rst )) (
@@ -59,6 +60,7 @@ mangle-identifier := λ(: kt Type). (: (
                (set ps rst)
             )))
          ))
+         (set r (SCons( (close r) (close(SAtom '_GT__s)) )))
       ))
       ( (TAnd( tl tr )) (
          (set r (SCons(
