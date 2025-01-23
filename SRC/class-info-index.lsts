@@ -40,6 +40,12 @@ let .is-fragment(cls: Type): U64 = (
    is(class-info-index.lookup(ta, class-info-default).layout, FragmentStyle)
 );
 let .exists(cls: Type): U64 = class-info-index.has(cls.ground-tag-and-arity);
+let .only-child(cls: Type): CString = (
+   match class-info-index.lookup(cls.ground-tag-and-arity, class-info-default) {
+      ClassInfo { cases:[Tuple{ tag=first }..] } => tag;
+      _ => c"";
+   }
+);
 
 let index-fields-of-tag(tag: CString, base-type: Type, fields-params: Type, fields-rhs: Type): Nil = (
    add-class-info-case(base-type, tag, fields-rhs);
@@ -53,11 +59,9 @@ let index-fields-quick-prop(tag-tt: Type, base-type: Type, fields-tt: Type, fiel
          add-quick-prop( tag-tt, base-type,
             t2( c"Field::" + to-string(field-index), pt )
          );
-         if is-only-child(base-type) {
-            add-quick-prop( t3( c"Array", base-type, TAny ), t3( c"Array", base-type, TAny ),
-               t2( c"Field::" + to-string(field-index), pt )
-            )
-         };
+         add-quick-prop( t3( c"Array", base-type, TAny ), t3( c"Array", base-type, TAny ),
+            t2( c"Field::" + to-string(field-index), pt )
+         );
          index-fields-quick-prop( tag-tt, base-type, rst, field-index + 1)
       );
       TGround{ tag:c"Nil" } => ();
