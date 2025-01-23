@@ -1,12 +1,26 @@
 
 type StructLayout = LM1Style | CStyle | FragmentStyle | UnknownStyle;
 
-type ClassInfo = ClassInfo { layout: StructLayout };
+type ClassInfo = ClassInfo { layout: StructLayout, lhs: Type, cases: List<Tuple<CString,Type>> };
 let class-info-index = {} :: HashtableEq<Tuple<CString,U64>,ClassInfo>;
 
-let class-info-default = ClassInfo{ UnknownStyle };
+let class-info-default = ClassInfo{ UnknownStyle, TAny, [] :: List<Tuple<CString,Type>> };
 let .with-layout(ci: ClassInfo, layout: StructLayout): ClassInfo = (
-   ClassInfo{ layout }
+   ClassInfo{ layout, ci.lhs, [] :: List<Tuple<CString,Type>> }
+);
+let .with-lhs(ci: ClassInfo, lhs: Type): ClassInfo = (
+   ClassInfo{ ci.layout, lhs, ci.cases }
+);
+let .with-case(ci: ClassInfo, case-tag: CString, case-struct: Type): ClassInfo = (
+   ClassInfo{ ci.layout, ci.lhs, cons(Tuple{case-tag,case-struct}, ci.cases) }
+);
+
+let add-class-info-case(cls: Type, case-tag: CString, case-struct: Type): Nil = (
+   class-info-index = class-info-index.bind(
+      cls.ground-tag-and-arity,
+      class-info-index.lookup(cls.ground-tag-and-arity,class-info-default)
+                      .with-lhs(cls).with-case(case-tag, case-struct)
+   );
 );
 
 let add-class-info-layout(cls: Type, layout: StructLayout): Nil = (
@@ -28,6 +42,7 @@ let .is-fragment(cls: Type): U64 = (
 let .exists(cls: Type): U64 = class-info-index.has(cls.ground-tag-and-arity);
 
 let index-fields-of-tag(tag: CString, base-type: Type, fields-params: Type, fields-rhs: Type): Nil = (
+   add-class-info-case(base-type, tag, fields-rhs);
    index-fields-quick-prop( t1(c"Tag::" + tag), base-type, fields-rhs, 1 );
    index-fields-quick-prop( t1(c"Tag::" + tag), t3( c"Array", base-type, TAny), fields-rhs, 1 );
 );
