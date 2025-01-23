@@ -24,23 +24,13 @@ infer-type-definition := λ(: base-type Type)(: body AST)(: case-number U64). (:
                   (print 'Unexpected\sType\sCase\s_s)(print base-type)(print case)(print '\n_s)(exit 1_u64)
                ))
             ))
-            (if (head-string tag) (
-               (match base-type (
-                  ()
-                  ( (TGround( cls _ )) (
-                     (has-only-child( cls tag ))
-                  ))
-               ))
-            ) ())
+            (add-quick-prop( (t3( 'Array_s base-type TAny )) (t3( 'Array_s base-type TAny ))
+               (t2( 'CaseNumber_s (t1 '0_s) ))
+            ))
          ) ())
          (set r (infer-type-constructor( base-type case )))
       ))
    ))
-   (if (is-only-child base-type) (
-      (add-quick-prop( (t3( 'Array_s base-type TAny )) (t3( 'Array_s base-type TAny ))
-         (t2( 'CaseNumber_s (t1 '0_s) ))
-      ))
-   ) ())
    (add-quick-prop( (t3( 'Array_s base-type TAny )) TAny (t1 'LMStruct_s) ))
    (add-quick-prop( base-type TAny (t1 'LMStruct_s) ))
    r
