@@ -1,0 +1,7 @@
+
+import LIB/default.lm;
+
+let t2 = Tuple{ 1, 2 };
+print(t2);
+let t3 = Tuple{ 1, 2, 3 };
+print(t3);
