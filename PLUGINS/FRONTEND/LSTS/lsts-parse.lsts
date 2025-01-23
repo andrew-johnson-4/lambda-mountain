@@ -556,6 +556,7 @@ let lsts-parse-let(tokens: List<Token>): List<Token> = (
          if is( args-list, ASTNil{} ) {
             args-list = arg-binding;
          } else {
+         lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
             args-list = App{ close(args-list), close(arg-binding) };
          };
       };
@@ -608,6 +609,31 @@ let lsts-parse-let(tokens: List<Token>): List<Token> = (
 let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let base = ASTEOF {};
    match tokens {
+#      [Token{key:c"if"}.. Token{key:c"let"}.. rest] => (
+#         print("head: \{tokens}");
+#         let loc = head(tokens).location; tokens = rest;
+#         let lhs-rest = lsts-parse-lhs(tokens); tokens = lhs-rest.second;
+#         lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+#         let expr-rest = lsts-parse-expression(tokens); tokens = expr-rest.second;
+#         lsts-parse-expect(c"then", tokens); tokens = tail(tokens);
+#         let matched-rest = lsts-parse-expression(tokens); tokens = matched-rest.second;
+#         let default-rest = if lsts-parse-head(tokens)==c"else" {
+#            lsts-parse-expect(c"else", tokens); tokens = tail(tokens);
+#            let default-rest = lsts-parse-small-expression(tokens); tokens = default-rest.second;
+#            default-rest.first;
+#         } else ASTEOF;
+#         let cases = App{ close(ASTNil), close(App{ close(lhs-rest.first), close(matched-rest.first) }) };
+#         if non-zero(default-rest) {
+#            cases = App{ close(cases), close(App{
+#               close(Var{ c"_", with-location(mk-token(c"_"),loc) }),
+#               close(default-rest)
+#            }) };
+#         };
+#         base = App{
+#            close(Var{ c"match", with-location(mk-token(c"match"),loc) }),
+#            close(cases)
+#         };
+#      );
       [Token{key:c"if"}.. rest] => (
          let loc = head(tokens).location; tokens = rest;
          let c-rest = lsts-parse-andor(tokens);

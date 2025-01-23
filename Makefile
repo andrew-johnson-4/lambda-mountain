@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm tests/regress/3tuple.lsts
+	lm tests/regress/if-let.lsts
 	cc -O3 tmp.c
 	./a.out
 

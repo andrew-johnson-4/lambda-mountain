@@ -3,3 +3,7 @@ let to-smart-string(loc: SourceLocation): String = (
    "\{loc.filename} line \{loc.line} column \{loc.column}"
 );
 
+let to-smart-string(loc: Token): String = (
+   to-smart-string(loc.key)
+);
+
