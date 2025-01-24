@@ -1,8 +1,15 @@
 
-type USize is U64;
+#type USize is U64;
+#type U32 => U64;
+import LIB/default.lm;
 
 let f(x: U64): U64 = x + x;
-let g(x: Usize): U64 = x + x + 1;
+let g(x: USize): U64 = x + x + 1;
 
-print(f(1));
-print(g(1));
+print(f(1));     # normal
+print(f(1_sz));  # alias
+print(f(1_u32)); # inference
+
+print(g(1));     # normal
+print(g(1_sz));  # alias
+print(g(1_u32)); # inference
