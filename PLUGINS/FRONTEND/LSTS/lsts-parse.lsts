@@ -88,6 +88,20 @@ let lsts-parse(tokens: List<Token>): Nil = (
                })
             }) };
          );
+         [ Token{key:c"atom"}.. Token{key:c"suffix"}.. rest] => (
+            tokens = rest;
+            let base-rest = lsts-parse-type(tokens); tokens = base-rest.second;
+            lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+            if not(non-zero(tokens)) || not(lsts-is-ident-head(lsts-parse-head(tokens))) { 
+               lsts-parse-expect(c"[Suffix]", tokens);
+            };
+            let suffix = head(tokens).key; tokens = tail(tokens);
+            lsts-parse-expect(c";", tokens); tokens = tail(tokens);
+            parse-suffixes = cons(
+               Tuple{ suffix, base-rest.first && t1(c"Constant") && t1(c"Literal") },
+               parse-suffixes
+            );
+         );
          _ => (
             let term-rest = lsts-parse-small-expression(tokens);
             let term = term-rest.first;
