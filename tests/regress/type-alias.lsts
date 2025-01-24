@@ -1,0 +1,8 @@
+
+type USize is U64;
+
+let f(x: U64): U64 = x + x;
+let g(x: Usize): U64 = x + x + 1;
+
+print(f(1));
+print(g(1));

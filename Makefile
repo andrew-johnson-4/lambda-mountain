@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm tests/regress/if-let.lsts
+	lm tests/regress/type-alias.lsts
 	cc -O3 tmp.c
 	./a.out
 
