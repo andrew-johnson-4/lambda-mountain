@@ -4,10 +4,10 @@ typeof-lhs := λ(: lhs AST). (: (
    (match lhs (
       ()
       ( (App( (Lit( ':_s _ )) (App( _ (AType tt) )) )) (
-         (set r tt)
+         (set r (.rewrite-type-alias tt))
       ))
       ( (App( ps (App( (Lit( ':_s _ )) (App( _ (AType tt) )) )) )) (
-         (set r (t3( 'Cons_s (typeof-lhs ps) tt )))
+         (set r (t3( 'Cons_s (typeof-lhs ps) (.rewrite-type-alias tt) )))
       ))
       ( ASTNil (
          (set r (t1 'Nil_s))
