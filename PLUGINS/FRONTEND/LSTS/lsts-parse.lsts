@@ -473,20 +473,31 @@ let lsts-parse-typedef(tokens: List<Token>): List<Token> = (
    lsts-parse-expect(c"type", tokens); tokens = tail(tokens);
    let base-rest = lsts-parse-type(tokens);
    tokens = base-rest.second;
-   lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-   let case-rest = lsts-parse-typedef-case(tokens);
-   let cases = case-rest.first;
-   tokens = case-rest.second;
-   while non-zero(tokens) && lsts-parse-head(tokens)!=c";" {
-      lsts-parse-expect(c"|", tokens); let bar = head(tokens); tokens = tail(tokens);
-      case-rest = lsts-parse-typedef-case(tokens);
-      tokens = case-rest.second;
-      cases = App{ close(App{ close(cases), close(Var{ bar.key, bar }) }), close(case-rest.first) };
-   };
-   lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-   ast-parsed-program = Seq {
-      close(ast-parsed-program),
-      close(Typedef{ close(AType{ base-rest.first }), close(cases) })
+   match tokens {
+      [Token{key:c"is"}.. rest] => (
+         lsts-parse-expect(c"is", tokens); tokens = tail(tokens);
+         let rt-rest = lsts-parse-type(tokens);
+         tokens = rt-rest.second;
+         lsts-parse-expect(c";", tokens); tokens = tail(tokens);
+         add-type-alias(base-rest.first, rt-rest.first);
+      );
+      _ => (
+         lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+         let case-rest = lsts-parse-typedef-case(tokens);
+         let cases = case-rest.first;
+         tokens = case-rest.second;
+         while non-zero(tokens) && lsts-parse-head(tokens)!=c";" {
+            lsts-parse-expect(c"|", tokens); let bar = head(tokens); tokens = tail(tokens);
+            case-rest = lsts-parse-typedef-case(tokens);
+            tokens = case-rest.second;
+            cases = App{ close(App{ close(cases), close(Var{ bar.key, bar }) }), close(case-rest.first) };
+         };
+         lsts-parse-expect(c";", tokens); tokens = tail(tokens);
+         ast-parsed-program = Seq {
+            close(ast-parsed-program),
+            close(Typedef{ close(AType{ base-rest.first }), close(cases) })
+         };
+      );
    };
    tokens
 );
