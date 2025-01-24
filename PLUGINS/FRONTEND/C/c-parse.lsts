@@ -1,0 +1,7 @@
+
+# Loosely based on this EBNF for ANSI C
+# https://gist.github.com/Chubek/52884d1fa766fa16ae8d8f226ba105ad
+#
+# The naming of production rules try to follow this format.
+# However, there are also a large number of compiler-specific extensions that are parsed but mostly ignored
+# Example: __extension__ ( f, g )
