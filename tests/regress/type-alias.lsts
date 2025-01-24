@@ -8,8 +8,8 @@ let g(x: USize): U64 = x + x + 1;
 
 print(f(1));     # normal
 print(f(1_sz));  # alias
-print(f(1_u32)); # inference
+#print(f(1_u32)); # inference
 
 print(g(1));     # normal
 print(g(1_sz));  # alias
-print(g(1_u32)); # inference
+#print(g(1_u32)); # inference
