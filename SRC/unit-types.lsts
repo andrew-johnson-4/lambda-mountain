@@ -13,6 +13,7 @@ import SRC/domain.lsts;
 import SRC/arity.lsts;
 import SRC/ground-tag-and-arity.lsts;
 import SRC/slot.lsts;
+import SRC/remove-info.lsts;
 
 # Boolean Queries
 import SRC/is-t.lsts;

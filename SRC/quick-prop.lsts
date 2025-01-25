@@ -36,3 +36,34 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
    };
    pre
 );
+
+#let weaken-quick-prop = {} :: HashtableEq<(CString,U64),List<(Type,Type)>>;
+
+#let add-weaken-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
+#   let key = pre.ground-tag-and-arity;
+#   let val = weaken-quick-prop.lookup(key, ([] :: List<(Type,Type)>));
+#   val = cons( (pat,post), val );
+#   weaken-quick-prop = weaken-quick-prop.bind( key, val );
+#);
+
+#let weaken-quick-prop(base: Type): Type = (
+#   weaken-quick-prop(base, base)
+#);
+
+#let weaken-quick-prop(base: Type, pre: Type): Type = (
+#   match pre {
+#      TGround {} => (
+#         for Tuple { lt=first, rt=second } in weaken-quick-prop.lookup( pre.ground-tag-and-arity, ([] :: List<(Type,Type)>) ) {
+#            if can-unify(lt, base) then (
+#               base = remove-info(base, rt);
+#            );
+#         };
+#      );
+#      TAnd { lt=left, rt=right } => (
+#         base = weaken-quick-prop(base, lt);
+#         base = weaken-quick-prop(base, rt);
+#      );
+#      _ => ();
+#   };
+#   base
+#);

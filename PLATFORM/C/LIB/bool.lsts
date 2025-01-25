@@ -1,3 +1,5 @@
 
+type Bool is U64;
+
 let true = 1;
 let false = 0;
