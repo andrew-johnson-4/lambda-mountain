@@ -18,7 +18,6 @@ import SRC/index-of-tag.lm;
 import SRC/is-sized-array.lsts;
 import SRC/get-vararg-inner.lm;
 import SRC/maybe-specialize.lm;
-import SRC/maybe-local-variable.lm;
 
 import SRC/is-constructor.lm;
 
@@ -41,8 +40,6 @@ import SRC/with-phi.lsts;
 import SRC/with-size.lm;
 
 import SRC/without-t.lm;
-import SRC/without-phi.lsts;
-import SRC/without-constructor.lm;
 import SRC/without-size-unless-class.lm;
 import SRC/without-size.lm;
 

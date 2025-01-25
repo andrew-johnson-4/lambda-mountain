@@ -164,7 +164,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          (if (non-zero tt) () (
             (exit-error( 'Unable\sto\sinfer\stype\sof\sexpression_s rhs ))
          ))
-         (set tt (maybe-local-variable(without-constructor tt)))
+         (set tt (&&( (normalize tt) (t1 'LocalVariable_s) )))
          (match term (
             ()
             ( (App( (Abs( lname-var _ _ )) _ )) (
