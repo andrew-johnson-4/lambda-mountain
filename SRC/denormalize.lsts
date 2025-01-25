@@ -1,4 +1,18 @@
 
+let denormalize-cache = mk-hashtable-is(type(Type), type(Type));
+
+let denormalize(tt: Type): Type = (
+   let ct = denormalize-cache.lookup(tt, TAny);
+   if non-zero(ct) then ct else (
+      ct = tt.rewrite-type-alias;
+      ct = with-size(ct);
+      ct = with-tag(ct);
+      ct = enrich-quick-prop(ct);
+      denormalize-cache = denormalize-cache.bind(tt, ct);
+      ct
+   )
+);
+
 let denormalize-arrow(pt: Type): Type = (
    match pt {
       TAnd{ left=left, right=right } => denormalize-arrow(left) && denormalize-arrow(right);

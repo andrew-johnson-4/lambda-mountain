@@ -1,8 +1,0 @@
-
-denormalize := λ(: tt Type). (: (
-   (set tt (.rewrite-type-alias tt))
-   (set tt (with-size tt))
-   (set tt (with-tag tt))
-   (set tt (enrich-quick-prop tt))
-   tt
-) Type);
