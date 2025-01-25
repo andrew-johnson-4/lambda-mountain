@@ -1,0 +1,25 @@
+
+let denormalize-arrow(pt: Type): Type = (
+   match pt {
+      TAnd{ left=left, right=right } => denormalize-arrow(left) && denormalize-arrow(right);
+      TGround{tag:c"Arrow", parameters:[rng.. dom..]} => (
+         t3( c"Arrow", denormalize-cons(dom), rng )
+      );
+      TGround{tag:c"Array", parameters:[rng.. dom..]} => (
+         t3( c"Array", denormalize-arrow(dom), rng )
+      );
+      TGround{} => denormalize(pt);
+      _ => pt;
+   }
+);
+
+let denormalize-cons(pt: Type): Type = (
+   match pt {
+      TAnd{ left=left, right=right } => denormalize-cons(left) && denormalize-cons(right);
+      TGround{tag:c"Cons", parameters:[rng.. dom..]} => (
+         t3( c"Cons", denormalize-cons(dom), denormalize-cons(rng) )
+      );
+      TGround{} => denormalize(pt);
+      _ => pt;
+   }
+);

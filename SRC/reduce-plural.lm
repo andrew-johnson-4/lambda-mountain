@@ -2,16 +2,18 @@
 reduce-plural := λ(: pts List<Type>). (: (
    (let dpts (: LEOF List<Type>))
    (for-each (pt in pts) (
-      (set dpts (cons( (denormalize pt) dpts )))
+      (print 'Normal\s_s)(print pt)(print '\n_s)
+      (print 'DeNormal\s_s)(print pt)(print '\n_s)
+      (set dpts (cons( (Tuple( (denormalize-arrow pt) pt )) dpts )))
    ))
    (set pts (.reverse dpts))
    (let r (: LEOF List<Type>))
    (let maybe-constructor pts)
    (while (non-zero maybe-constructor) (match maybe-constructor (
       ()
-      ( (LCons( try tlt )) (
+      ( (LCons( (Tuple( try-denormal try )) tlt )) (
          (if (is-constructor try) (
-            (set r (cons( try r )))
+            (set r (cons( (Tuple( try-denormal try )) r )))
          ) ())
          (set maybe-constructor tlt)
       ))
@@ -19,17 +21,17 @@ reduce-plural := λ(: pts List<Type>). (: (
    (if (non-zero r) (set pts (: LEOF List<Type>)) ())
    (while (non-zero pts) (match pts (
       ()
-      ( (LCons( try tlt )) (
+      ( (LCons( (Tuple( try-denormal try )) tlt )) (
          (set pts tlt)
-         (for-each (tst in tlt) (
+         (for-each ((Tuple( tst-denormal tst )) in tlt) (
             (if (non-zero try) (
-               (if (can-unify( (.domain try) (.domain tst) )) (
+               (if (can-unify( (.domain try-denormal) (.domain tst-denormal) )) (
                   (set try TAny)
                ) ())
             ) ())
          ))
          (if (non-zero try) (
-            (set r (cons( try r )))
+            (set r (cons( (Tuple( try-denormal try )) r )))
          ) ())
       ))
    )))
@@ -37,11 +39,11 @@ reduce-plural := λ(: pts List<Type>). (: (
    (set r (: LEOF List<Type>))
    (while (non-zero pts) (match pts (
       ()
-      ( (LCons( try tlt )) (
+      ( (LCons( (Tuple( try-denormal try )) tlt )) (
          (set pts tlt)
-         (for-each (tst in tlt) (
+         (for-each ((Tuple( tst-denormal tst )) in tlt) (
             (if (non-zero try) (
-               (if (can-unify( (.domain try) (.domain tst) )) (
+               (if (can-unify( (.domain try-denormal) (.domain tst-denormal) )) (
                   (set try TAny)
                ) ())
             ) ())
