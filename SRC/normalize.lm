@@ -1,15 +1,4 @@
 
-normalize := λ(: tt Type). (: (
-   (let rt tt)
-   (set rt (.rewrite-type-alias rt))
-   (set rt (.without-tag rt))
-   # Sized can serve as a datatype if nothing else is available
-   (set rt (without-size-unless-class rt))
-   (set rt (with-phi rt))
-   (set rt (weaken-quick-prop rt))
-   rt
-) Type);
-
 normalize := λ(: tctx TContext). (: (
    (match tctx (
       ()

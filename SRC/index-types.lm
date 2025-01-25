@@ -47,6 +47,7 @@ import SRC/without-size-unless-class.lm;
 import SRC/without-size.lm;
 
 import SRC/normalize.lm;
+import SRC/normalize.lsts;
 import SRC/denormalize.lsts;
 import SRC/type-of-s.lm;
 import SRC/type-of-s-with-fields.lm;
