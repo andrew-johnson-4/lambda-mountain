@@ -1,6 +1,10 @@
 
 type HashtableIs<k,v> (HashtableIs( occupied:U64 , capacity:U64 , contents:Tuple<k,v>[] ));
 
+mk-hashtable-is := λ(: key Type<k>)(: value Type<v>). (: (
+   (HashtableIs( 0_u64 0_u64 (as 0_u64 Tuple<k,v>[]) ))
+) HashtableIs<k,v>);
+
 .bind := λ(: table HashtableIs<k,v>)(: key k)(: value v). (: (
    (let occupied (.3 table))
    (let capacity (.2 table))
