@@ -3,14 +3,14 @@ infer-ctx := λ(: tctx TContext)(: lhs AST). (: (
    (match lhs (
       ()
       ( (App( (Lit( ':_s _ )) (App( (Var( v vtk )) (AType tt) )) )) (
-         (set tt (&&( (normalize(denormalize tt)) (t1 'LocalVariable_s) )))
+         (set tt (&&( (normalize tt) (t1 'LocalVariable_s) )))
          (set tctx (TCtxBind(
             (close tctx) v tt (Var( v vtk ))
          )))
          (set tctx (infer-tctx( tctx tt )))
       ))
       ( (App( ps (App( (Lit( ':_s _ )) (App( (Var( v vtk )) (AType tt) )) )) )) (
-         (set tt (&&( (normalize(denormalize tt)) (t1 'LocalVariable_s) )))
+         (set tt (&&( (normalize tt) (t1 'LocalVariable_s) )))
          (set tctx (TCtxBind(
             (close tctx) v tt (Var( v vtk ))
          )))
