@@ -15,3 +15,4 @@ import SRC/tctx-and.lm;
 
 # corollaries
 import SRC/quick-prop.lsts;
+import SRC/remove-info.lsts;

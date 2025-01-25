@@ -25,16 +25,17 @@ let .lookup(ctx: FContext, k: CString, kt: Type, sloc: AST, hard: U64): Fragment
             } else {
                if ctx-kt.is-arrow {
                   let domaint = ctx-kt.domain;
+                  let domaind = denormalize(ctx-kt.domain);
                   let ranget = ctx-kt.range;
                   if can-unify( domaint, kt ) {
                      if non-zero(found) {
-                        if can-unify(found,domaint) {
+                        if can-unify(found,domaind) {
                            r = ctx-kv;
-                           found = domaint;
+                           found = domaind;
                         }
                      } else {
                         r = ctx-kv;
-                        found = domaint;
+                        found = domaind;
                      }
                   };
                   ctx = remainder;

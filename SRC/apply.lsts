@@ -33,7 +33,7 @@ let apply(function-name: CString, function-type: Type, parameters: Type, do-spec
       rs = reduce-plural(rs);
    };
    let phi-types = [] :: List<Tuple<CString,Type>>;
-   if rs.length > 1 && not(function-type.is-t( c"Hook" )) {
+   if rs.length > 1 {
       r = t1(c"Error: Function Application Yielded An Irreducible Plurality Of Matches");
       function-type = head(rs);
       for candidate in tail(rs) {

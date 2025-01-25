@@ -3,7 +3,7 @@ null := λ: Blob(). (: (
    (:expression NULL_l)
 ) Array<?,?>);
 
-const-cons := λ: Blob(: es x...). (: (
+vararg-cons := λ: Blob(: es x...). (: (
    (:expression(
       '{_l (for-arg (e in es) (
          (:expression e) ',_l

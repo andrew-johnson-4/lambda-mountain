@@ -6,6 +6,7 @@ normalize := λ(: tt Type). (: (
    # Sized can serve as a datatype if nothing else is available
    (set rt (without-size-unless-class rt))
    (set rt (with-phi rt))
+   (set rt (weaken-quick-prop rt))
    rt
 ) Type);
 
