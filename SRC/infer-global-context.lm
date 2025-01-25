@@ -21,12 +21,7 @@ infer-global-context := λ(: td AST). (: (
          (mark-global-as-seen( k ft tlt ))
          (ascript-normal( td ft ))
          (ascript-normal( frhs ft ))
-         (set global-type-context (TCtxBind(
-            (close global-type-context)
-            k
-            ft
-            td
-         )))
+         (set global-type-context (.bind( global-type-context k ft td )))
       ))
       ( _ () )
    ))
@@ -38,15 +33,13 @@ infer-global-context-2 := λ(: td AST). (: (
       ( (Glb( k_t (@( frhs (Abs( lhs (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) tlt )) )) )) (
       ))
       ( (Glb( k_t rhs )) (
-         (infer-expr( global-type-context rhs Unscoped TAny Used ))
+         (infer-expr( TCtxEOF rhs Unscoped TAny Used ))
          (let rhst (normalize(typeof rhs)))
          (let kt (&&( rhst (t1 'GlobalVariable_s) )))
-         (set global-type-context (TCtxBind(
-            (close global-type-context) k kt td
-         )))
+         (set global-type-context (.bind( global-type-context k kt td )))
          (mark-global-as-seen( k kt TAny ))
          (ascript-normal( td kt ))
-         (maybe-specialize( 'mov_s (typeof-var-raw( rhs global-type-context 'mov_s )) (t3( 'Cons_s kt kt )) ))
+         (maybe-specialize( 'mov_s (typeof-var-raw( rhs TCtxEOF 'mov_s )) (t3( 'Cons_s kt kt )) ))
       ))
       ( _ () )
    ))

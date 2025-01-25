@@ -25,7 +25,6 @@ config-mode                  := (: ModeCompile CompileMode);
 config-devmode               := 0_u64;
 preprocess-macros            := (: MEOF MacroList);
 ast-parsed-program           := (: ASTEOF AST);
-global-type-context          := (: TCtxEOF TContext);
 global-ctx                   := (: FCtxEOF FContext);
 
 parse-suffixes := (: LEOF List<Tuple<String,Type>>);
