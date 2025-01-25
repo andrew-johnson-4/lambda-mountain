@@ -1,0 +1,2 @@
+
+let global-type-context = {} :: HashtableEq<CString,List<Tuple<Type,AST>>>;
