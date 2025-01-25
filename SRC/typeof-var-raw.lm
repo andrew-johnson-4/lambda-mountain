@@ -25,9 +25,13 @@ typeof-var-raw := λ(: sloc AST)(: tctx TContext)(: vname String). (: (
          ))
       ))
    )))
-   (if (non-zero found) () (
-      (for-each ((Tuple( kt t )) in (.lookup( global-type-context vname ))) (
-         (set found (&&( found kt )))
+   (for-each ((Tuple( kt t )) in (.lookup( global-type-context vname (: LEOF List<Tuple<Type,AST>>) ))) (
+      (if (non-zero found) (
+         (if (.is-arrow found) (
+            (set found (&&( found kt )))
+         ) ())
+      ) (
+         (set found kt)
       ))
    ))
    (denormalize found)
