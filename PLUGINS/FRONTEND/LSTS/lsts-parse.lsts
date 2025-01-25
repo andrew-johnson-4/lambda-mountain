@@ -499,6 +499,7 @@ let lsts-parse-typedef(tokens: List<Token>): List<Token> = (
          tokens = rest;
          let rt-rest = lsts-parse-type(tokens);
          tokens = rt-rest.second;
+         lsts-parse-expect(c";", tokens); tokens = tail(tokens);
          add-quick-prop(base-rest.first, base-rest.first, rt-rest.first);
          add-weaken-quick-prop(base-rest.first, rt-rest.first, rt-rest.first);
       );
