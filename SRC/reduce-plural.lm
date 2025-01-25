@@ -1,13 +1,11 @@
 
-reduce-plural := λ(: pts List<Type>). (: (
-   (let dpts (: LEOF List<Type>))
-   (for-each (pt in pts) (
-      (print 'Normal\s_s)(print pt)(print '\n_s)
-      (print 'DeNormal\s_s)(print pt)(print '\n_s)
-      (set dpts (cons( (Tuple( (denormalize-arrow pt) pt )) dpts )))
+reduce-plural := λ(: dpts List<Type>). (: (
+   (let pts (: LEOF List<Tuple<Type,Type>>))
+   (for-each (pt in dpts) (
+      (set pts (cons( (Tuple( (denormalize-arrow pt) pt )) pts )))
    ))
-   (set pts (.reverse dpts))
-   (let r (: LEOF List<Type>))
+   (set pts (.reverse pts))
+   (let r (: LEOF List<Tuple<Type,Type>>))
    (let maybe-constructor pts)
    (while (non-zero maybe-constructor) (match maybe-constructor (
       ()
@@ -18,7 +16,7 @@ reduce-plural := λ(: pts List<Type>). (: (
          (set maybe-constructor tlt)
       ))
    )))
-   (if (non-zero r) (set pts (: LEOF List<Type>)) ())
+   (if (non-zero r) (set pts (: LEOF List<Tuple<Type,Type>>)) ())
    (while (non-zero pts) (match pts (
       ()
       ( (LCons( (Tuple( try-denormal try )) tlt )) (
@@ -36,7 +34,7 @@ reduce-plural := λ(: pts List<Type>). (: (
       ))
    )))
    (set pts r)
-   (set r (: LEOF List<Type>))
+   (let return (: LEOF List<Type>))
    (while (non-zero pts) (match pts (
       ()
       ( (LCons( (Tuple( try-denormal try )) tlt )) (
@@ -49,9 +47,9 @@ reduce-plural := λ(: pts List<Type>). (: (
             ) ())
          ))
          (if (non-zero try) (
-            (set r (cons( try r )))
+            (set return (cons( try return )))
          ) ())
       ))
    )))
-   r
+   return
 ) List<Type>);
