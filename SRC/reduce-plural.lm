@@ -1,5 +1,10 @@
 
 reduce-plural := λ(: pts List<Type>). (: (
+   (let dpts (: LEOF List<Type>))
+   (for-each (pt in pts) (
+      (set dpts (cons( (denormalize pt) dpts )))
+   ))
+   (set pts (.reverse dpts))
    (let r (: LEOF List<Type>))
    (let maybe-constructor pts)
    (while (non-zero maybe-constructor) (match maybe-constructor (
