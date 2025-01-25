@@ -5,6 +5,10 @@ import LIB/default.lm;
 
 let f(x: U64): U64 = x + x;
 let g(x: USize): U64 = x + x + 1;
+let h(x: U32): U64 = 1;
+let h(x: U64): U64 = 2;
+let i(x: U64): U64 = 1;
+let i(x: U32): U64 = 2;
 
 print(f(1));     # normal
 print(f(1_sz));  # alias
@@ -13,3 +17,9 @@ print(f(1_u32)); # inference
 print(g(1));     # normal
 print(g(1_sz));  # alias
 print(g(1_u32)); # inference
+
+print(h(1_u32)); # inference
+print(h(1_u64)); # inference
+
+print(i(1_u32)); # inference
+print(i(1_u64)); # inference
