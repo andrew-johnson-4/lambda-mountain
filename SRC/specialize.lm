@@ -1,7 +1,6 @@
 
 specialize := λ(: key String)(: ft Type)(: unify-ctx TContext)(: result-type Type). (: (
    (if (is-special( key result-type )) () (
-      (set unify-ctx (normalize unify-ctx))
       (let term ASTEOF)
       (for-each ((Tuple( kt t )) in (.lookup( global-type-context key (: LEOF List<Tuple<Type,AST>>) ))) (
          (set kt (.slot( kt 'Arrow_s )))

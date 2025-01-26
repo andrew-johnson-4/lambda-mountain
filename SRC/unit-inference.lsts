@@ -16,3 +16,6 @@ import SRC/tctx-and.lm;
 # corollaries
 import SRC/quick-prop.lsts;
 import SRC/remove-info.lsts;
+import SRC/normalize.lsts;
+import SRC/denormalize.lsts;
+import SRC/type-alias-index.lsts;
