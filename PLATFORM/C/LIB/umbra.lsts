@@ -93,7 +93,7 @@ let view-len(u: Umbra[], len: U64): Umbra = (
     if (len <= 12) && (u.len > 12_u32) {
         # shrinks to UmbraShort
         let res = new-umbra(len);
-        let idx = 0;
+        let idx = 0_u64;
         while idx < len {
             &res[idx] = u[idx];
             idx = idx + 1;
@@ -106,7 +106,7 @@ let view-len(u: Umbra[], len: U64): Umbra = (
 );
 
 let print(x: Umbra[]): Nil = (
-    let idx = 0;
+    let idx = 0_u64;
     let ptr = addr(x);
     while idx < x.length() {
         putchar(ptr[idx] as U32);
@@ -115,10 +115,10 @@ let print(x: Umbra[]): Nil = (
 );
 
 let short-prefix-matches(a: Umbra[], b: Umbra[]): U64 = (
-    (a[0] == b[0]) &&
-    (a[1] == b[1]) &&
-    (a[2] == b[2]) &&
-    (a[3] == b[3])
+    (a[0_u64] == b[0_u64]) &&
+    (a[1_u64] == b[1_u64]) &&
+    (a[2_u64] == b[2_u64]) &&
+    (a[3_u64] == b[3_u64])
 );
 
 # performance note: this is extremly fast if the pfx string is known to be <= 4 bytes at compile time
@@ -141,7 +141,7 @@ let .has-prefix(base: Umbra[], pfx: t): U64 = (
         if pfxlen > 4 {
             let a = addr(base);
             let matches = 1;
-            let i = 0;
+            let i = 0_u64;
             while i < pfxlen {
                 if pfx[i] != a[i] {
                     matches = 0;
@@ -150,7 +150,7 @@ let .has-prefix(base: Umbra[], pfx: t): U64 = (
             };
             matches
         } else {
-            let i = 0;
+            let i = 0_u64;
             let matches = 1;
             while i < pfxlen {
                 if pfx[i] != base[i] {
@@ -184,8 +184,8 @@ let $"!="(l: Umbra[], r: t): U64 = (
 );
 
 let deep-hash(key: Umbra[]): U64 = (
-    let hash = 0;
-    let idx = 0;
+    let hash = 0_u64;
+    let idx = 0_u64;
     let ptr = addr(key);
     while idx < key.length() {
         hash = hash + (ptr[idx] as U64);
@@ -221,7 +221,7 @@ let to-umbra(s: t): Umbra = (
 # clones input to umbra string BUT only includes the first [len] characters
 let to-umbra(s: t, len: U64): Umbra = (
     let out = new-umbra(len);
-    let i = 0;
+    let i = 0_u64;
     while i < len {
         &out[i] = s[i];
         i = i + 1;
@@ -232,7 +232,7 @@ let to-umbra(s: t, len: U64): Umbra = (
 let concat-to-umbra(l: tl, r: tr): Umbra = (
     let out = new-umbra(l.length() + r.length());
 
-    let i = 0;
+    let i = 0_u64;
     while i < l.length() {
         &out[i] = l[i];
         i = i + 1;

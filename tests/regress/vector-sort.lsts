@@ -2,5 +2,5 @@
 import LIB/default.lm;
 
 let main(): Nil = (
-   print(([3, 1] + [4, 8]).to-vector().sort());
+   print(([3_u64, 1_u64] + [4_u64, 8_u64]).to-vector().sort());
 );

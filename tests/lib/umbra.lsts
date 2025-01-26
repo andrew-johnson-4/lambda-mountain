@@ -4,9 +4,9 @@ import LIB/default.lm;
 # UmbraShort
 let a = to-umbra("Hey");
 assert( &a.length == 3 );
-assert( &a[0] == "H"[0] );
-assert( &a[1] == "e"[0] );
-assert( &a[2] == "y"[0] );
+assert( &a[0_u64] == "H"[0_u64] );
+assert( &a[1_u64] == "e"[0_u64] );
+assert( &a[2_u64] == "y"[0_u64] );
 assert( &a == "Hey" );
 a = to-umbra(&a);
 assert( &a.length == 3 );
