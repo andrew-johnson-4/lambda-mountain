@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm tests/regress/numerical-pyramid.lsts
+	lm tests/lib/umbra.lsts
 	cc -O3 tmp.c
 	./a.out
 

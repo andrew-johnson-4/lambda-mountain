@@ -3376,7 +3376,7 @@ return ({({uuid__00000000000863b7=(&uuid__00000000000863b6->field_1);({});})
 });}
 #line 92 "PLATFORM/C/LIB/umbra.lsts"
 LM__LT_Umbra_GT_ view_SB_len_CL__LT_Arrow_LT_Umbra_GT__LT_Cons_LT_U64_GT__LT_Array_QM__LT_Umbra_GT__GT__GT__GT_(LM__LT_Umbra_GT_* uuid__00000000000863be,unsigned long uuid__00000000000863bf){LM__LT_Umbra_GT_ uuid__00000000000863c0;
-char uuid__00000000000863c1;
+unsigned long uuid__00000000000863c1;
 return (((uuid__00000000000863bf<=(12))&&((uuid__00000000000863be->field_2)>(12)))?({({({({uuid__00000000000863c0=(new_SB_umbra_CL__LT_Arrow_LT_Umbra_GT__LT_U64_GT__GT_(uuid__00000000000863bf));({});})
 ;
 ({uuid__00000000000863c1=(0);({});})
@@ -3391,7 +3391,7 @@ uuid__00000000000863c0;
 (*uuid__00000000000863be);
 }));}
 #line 108 "PLATFORM/C/LIB/umbra.lsts"
-void print_CL__LT_Arrow_LT_Nil_GT__LT_Array_QM__LT_Umbra_GT__GT__GT_(LM__LT_Umbra_GT_* uuid__00000000000863c2){char uuid__00000000000863c3;
+void print_CL__LT_Arrow_LT_Nil_GT__LT_Array_QM__LT_Umbra_GT__GT__GT_(LM__LT_Umbra_GT_* uuid__00000000000863c2){unsigned long uuid__00000000000863c3;
 char* uuid__00000000000863c4;
 ({({({uuid__00000000000863c3=(0);({});})
 ;
@@ -3407,8 +3407,8 @@ unsigned long short_SB_prefix_SB_matches_CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_Arra
 #line 125 "PLATFORM/C/LIB/umbra.lsts"
 unsigned long _DT_has_SB_prefix_CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_Array_QM__LT_Umbra_GT__GT__LT_Array_QM__LT_Umbra_GT__GT__GT__GT_(LM__LT_Umbra_GT_* uuid__00000000000863c7,LM__LT_Umbra_GT_* uuid__00000000000863c8){return (((_DT_length_CL__LT_Arrow_LT_U64_GT__LT_Array_QM__LT_Umbra_GT__GT__GT_(uuid__00000000000863c8))>(_DT_length_CL__LT_Arrow_LT_U64_GT__LT_Array_QM__LT_Umbra_GT__GT__GT_(uuid__00000000000863c7)))?(0):((short_SB_prefix_SB_matches_CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_Array_QM__LT_Umbra_GT__GT__LT_Array_QM__LT_Umbra_GT__GT__GT__GT_(uuid__00000000000863c7,uuid__00000000000863c8))&&((memcmp((addr_CL__LT_Arrow_LT_Array_QM__LT_U8_GT__GT__LT_Array_QM__LT_Umbra_GT__GT__GT_(uuid__00000000000863c7)),(addr_CL__LT_Arrow_LT_Array_QM__LT_U8_GT__GT__LT_Array_QM__LT_Umbra_GT__GT__GT_(uuid__00000000000863c8)),(_DT_length_CL__LT_Arrow_LT_U64_GT__LT_Array_QM__LT_Umbra_GT__GT__GT_(uuid__00000000000863c8))))==(0))));}
 #line 186 "PLATFORM/C/LIB/umbra.lsts"
-unsigned long deep_SB_hash_CL__LT_Arrow_LT_U64_GT__LT_Array_QM__LT_Umbra_GT__GT__GT_(LM__LT_Umbra_GT_* uuid__00000000000863c9){char uuid__00000000000863ca;
-char uuid__00000000000863cb;
+unsigned long deep_SB_hash_CL__LT_Arrow_LT_U64_GT__LT_Array_QM__LT_Umbra_GT__GT__GT_(LM__LT_Umbra_GT_* uuid__00000000000863c9){unsigned long uuid__00000000000863ca;
+unsigned long uuid__00000000000863cb;
 char* uuid__00000000000863cc;
 return ({({({({({({({({uuid__00000000000863ca=(0);({});})
 ;

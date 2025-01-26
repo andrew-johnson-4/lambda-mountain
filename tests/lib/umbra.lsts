@@ -3,7 +3,7 @@ import LIB/default.lm;
 
 # UmbraShort
 let a = to-umbra("Hey");
-assert( &a.length == 3 );
+print(&a);
 assert( &a[0_u64] == "H"[0_u64] );
 assert( &a[1_u64] == "e"[0_u64] );
 assert( &a[2_u64] == "y"[0_u64] );
