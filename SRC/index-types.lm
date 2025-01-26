@@ -20,7 +20,6 @@ import SRC/maybe-specialize.lm;
 
 import SRC/is-constructor.lm;
 
-import SRC/as-constant.lm;
 import SRC/deep-hash.lm;
 
 import SRC/ascript.lm;
@@ -34,13 +33,11 @@ import SRC/fields-of-type.lm;
 import SRC/has-infinite.lm;
 import SRC/has-forward.lm;
 
-import SRC/type-of-s.lm;
 import SRC/type-of-s-with-fields.lm;
 
 import SRC/typeof-lhs.lm;
 import SRC/cons-head.lm;
 import SRC/cons-tail.lm;
-import SRC/parameter-number.lm;
 import SRC/apply.lm;
 import SRC/apply.lsts;
 import SRC/apply-plural.lm;
