@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm tests/unit/type-inference.lsts
+	lm tests/regress/phi.lsts
 	cc -O3 tmp.c
 	./a.out
 

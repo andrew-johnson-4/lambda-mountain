@@ -1,0 +1,12 @@
+
+import LIB/default.lm;
+
+let fp = fopen(c"input-file.txt", c"r");
+
+# The type system doesn't know that this is always true
+# So fclose may or may not be called
+# This creates an error because the φ-type can't be merged
+if false {
+   fclose(fp);
+};
+
