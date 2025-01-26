@@ -3,7 +3,7 @@ type Vector<t> = Vector { data: t[], length: U64, capacity: U64 };
 
 let mk-vector(type: Type<t>, capacity: U64): Vector<t> = (
    let data-sz = sizeof(t) * capacity;
-   Vector { (malloc(data-sz) as t[]), 0, capacity }
+   Vector { (malloc(data-sz) as t[]), 0_u64, capacity }
 );
 
 let .push(v: Vector<t>, i: t): Vector<t> = (
@@ -11,7 +11,7 @@ let .push(v: Vector<t>, i: t): Vector<t> = (
       fail("Vector Overflow during .push")
    };
    v.data[v.length] = i;
-   v.length = v.length + 1;
+   v.length = v.length + 1_u64;
    v
 );
 
@@ -32,9 +32,9 @@ let $"[]"( v: Vector<t>, i: U64 ): t = (
 
 let $"+"( vl: Vector<t>, vr: Vector<t> ): t = (
    let v = mk-vector(type(t), vl.length + vr.length);
-   let vi = 0;
+   let vi = 0_u64;
    while vi < vl.length { v = v.push(vl[vi]); };
-   vi = 0;
+   vi = 0_u64;
    while vi < vr.length { v = v.push(vr[vi]); };
    v
 );
@@ -49,20 +49,20 @@ let $"set[]"( v: Vector<t>, i: U64, val: t ): Nil = (
 
 let .sort(v: Vector<t>): Vector<t> = (
    let n = v.length;
-   let i = 0;
-   while i < n - 1 {
+   let i = 0_u64;
+   while i < n - 1_u64 {
       let swapped = 0;
       let j = 0;
-      while j < n - i - 1 {
-         if v[j + 1] < v[j] {
+      while j < n - i - 1_u64 {
+         if v[j + 1_u64] < v[j] {
             let tmp = v[j];
-            v[j] = v[j + 1];
-            v[j + 1] = tmp;
+            v[j] = v[j + 1_u64];
+            v[j + 1_u64] = tmp;
             swapped = 1;
          };
-         j = j + 1;
+         j = j + 1_u64;
       };
-      i = i + 1;
+      i = i + 1_u64;
       if not(swapped) {
          i = n;
       };
@@ -71,12 +71,12 @@ let .sort(v: Vector<t>): Vector<t> = (
 );
 
 let print(v: Vector<x>): Nil = (
-   let vi = 0;
+   let vi = 0_u64;
    print(c"[");
    while vi < v.length {
-      if vi > 0 then print(c",");
+      if vi > 0_u64 then print(c",");
       print(v.data[vi]);
-      vi = vi + 1;
+      vi = vi + 1_u64;
    };
    print(c"]");
 );

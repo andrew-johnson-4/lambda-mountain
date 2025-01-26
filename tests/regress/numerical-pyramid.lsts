@@ -1,0 +1,53 @@
+
+import LIB/default.lm;
+
+let a(x: U8): Nil = print(x);
+let b(x: I8): Nil = print(x);
+let c(x: U16): Nil = print(x);
+let d(x: I16): Nil = print(x);
+let e(x: U32): Nil = print(x);
+let f(x: I32): Nil = print(x);
+let g(x: U64): Nil = print(x);
+let h(x: I64): Nil = print(x);
+
+# U8
+a(1_u8);
+
+# I8
+b(2_i8);
+
+# U16
+c(3_u8);
+c(3_u16);
+
+# I16
+d(4_u8);
+d(4_i8);
+d(4_i16);
+
+# U32
+e(5_u8);
+e(5_u16);
+e(5_u32);
+
+# I32
+f(6_u8);
+f(6_i8);
+f(6_u16);
+f(6_i16);
+f(6_i32);
+
+# U64
+g(7_u8);
+g(7_u16);
+g(7_u32);
+g(7_u64);
+
+# I64
+h(8_u8);
+h(8_u16);
+h(8_u32);
+h(8_i8);
+h(8_i16);
+h(8_i32);
+h(8_i64);

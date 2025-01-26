@@ -25,17 +25,17 @@ let cmp(x: String, y: String): Ord = (
       let x-start = x.start;
       let y-start = y.start;
       while x-start < x.end && y-start < y.end {
-         if x-start[0] < y-start[0] {
+         if x-start[0_u64] < y-start[0_u64] {
             r = LessThan;
             x-start = x.end;
             y-start = y.end;
-         } else if x-start[0] > y-start[0] {
+         } else if x-start[0_u64] > y-start[0_u64] {
             r = GreaterThan;
             x-start = x.end;
             y-start = y.end;
          } else {
-            x-start = x-start + 1;
-            y-start = y-start + 1;
+            x-start = x-start + 1_u64;
+            y-start = y-start + 1_u64;
          }
       };
       if x-start < x.end { r = GreaterThan };
@@ -47,7 +47,7 @@ let cmp(x: String, y: String): Ord = (
 let print(io: IO::File, x: SmartString): Nil = (
    let start = x.start;
    while start != x.end {
-      fwrite(start, 1, 1, stdout());
-      start = start + 1;
+      fwrite(start, 1_u64, 1_u64, stdout());
+      start = start + 1_u64;
    };
 );

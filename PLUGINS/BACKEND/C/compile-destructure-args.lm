@@ -9,7 +9,7 @@ compile-destructure-args := λ(: tt Type)(: ctx FContext)(: lhs AST)(: offset I6
             (if is-fragment (
                (set kt (denormalize kt))
             ) (
-               (set kt (&&( (normalize(denormalize kt)) (t1 'LocalVariable_s) )))
+               (set kt (&&( (normalize kt) (t1 'LocalVariable_s) )))
             ))
             (set ctx (.bind(
                ctx k kt (fragment::local-variable( 0_i64 kt ))
@@ -20,7 +20,7 @@ compile-destructure-args := λ(: tt Type)(: ctx FContext)(: lhs AST)(: offset I6
          (if is-fragment (
             (set kt (denormalize kt))
          ) (
-            (set kt (&&( (normalize(denormalize kt)) (t1 'LocalVariable_s) )))
+            (set kt (&&( (normalize kt) (t1 'LocalVariable_s) )))
          ))
          (set ctx (.bind(
             ctx k kt (fragment::local-variable( 0_i64 kt ))

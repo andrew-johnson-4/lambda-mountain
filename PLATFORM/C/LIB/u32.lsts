@@ -1,5 +1,6 @@
 
 type U32 => U64;
+type U32 => I64;
 
 declare-binop( $"!=", raw-type(U32), raw-type(U32), raw-type(U64), ( l"("; x; l"!="; y; l")"; ) );
 declare-binop( $"==", raw-type(U32), raw-type(U32), raw-type(U64), ( l"("; x; l"=="; y; l")"; ) );

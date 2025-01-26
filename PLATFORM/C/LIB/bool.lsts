@@ -1,5 +1,5 @@
 
-type Bool is U64;
+type Bool is U8;
 
-let true = 1;
-let false = 0;
+let true = 1_u8;
+let false = 0_u8;

@@ -2,14 +2,50 @@
 mk-lsts-token := λ(: s SmartString). (: (
    (let us (untern s))
    # if starts with 0-9 or -
-   (if (||( (&&( (>=( (head-string us) 48_u8 )) (<=( (head-string us) 57_u8 )) )) (==( (head-string us) 45_u8 )) )) (
-      (let tsfx '_u64_s)
-      (if (.has-prefix( us '-_s )) (set tsfx '_i64_s) ())
-      (if (.contains( us '._s )) (set tsfx '_f64_s) ())
-      (if (.contains( us 'e_s )) (set tsfx '_f64_s) ())
-      (if (.contains( us '__s )) (set tsfx '_s) ())
-      (if (==( us '-_s )) () (
-         (set us (+( us tsfx )))
+   (if (||( (.is-digit us)
+       (&&( (.has-prefix( us '-_s )) (.is-digit(tail-string us)) )) )) (
+      (let ds us)
+      (let is-negative 0_u64)
+      (let order 64_u64)
+      (if (==( ds '-9223372036854775808_s )) (
+         (set is-negative 1_u64)
+      ) (
+         (if (.has-prefix( ds '-_s )) (
+            (set is-negative 1_u64)
+            (set ds (tail-string ds))
+         ) ())
+         (let magnitude (to-u64 ds))
+         (if (||(
+            (&&( is-negative (<=( magnitude 128_u64 )) ))
+            (<=( magnitude 255_u64 ))
+         )) (
+            (set order 8_u64)
+         ) (
+            (if (||(
+               (&&( is-negative (<=( magnitude 32768_u64 )) ))
+               (<=( magnitude 65535_u64 ))
+            )) (
+               (set order 16_u64)
+            ) (
+               (if (||(
+                  (&&( is-negative (<=( magnitude 2147483648_u64 )) ))
+                  (<=( magnitude 4294967295_u64 ))
+               )) (
+                  (set order 32_u64)
+               ) ())
+            ))
+         ))
+      ))
+      (match (Tuple( is-negative order )) (
+         ()
+         ( (Tuple( 0_u64 8_u64 )) (set us (+( us '_u8_s ))) )
+         ( (Tuple( 1_u64 8_u64 )) (set us (+( us '_i8_s ))) )
+         ( (Tuple( 0_u64 16_u64 )) (set us (+( us '_u16_s ))) )
+         ( (Tuple( 1_u64 16_u64 )) (set us (+( us '_i16_s ))) )
+         ( (Tuple( 0_u64 32_u64 )) (set us (+( us '_u32_s ))) )
+         ( (Tuple( 1_u64 32_u64 )) (set us (+( us '_i32_s ))) )
+         ( (Tuple( 0_u64 64_u64 )) (set us (+( us '_u64_s ))) )
+         ( (Tuple( 1_u64 64_u64 )) (set us (+( us '_i64_s ))) )
       ))
    ) ())
    (if (.has-prefix( s 'r/_ss )) (

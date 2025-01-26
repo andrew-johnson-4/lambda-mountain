@@ -1,4 +1,11 @@
 
+type U8 => U16;
+type U8 => U32;
+type U8 => U64;
+type U8 => I16;
+type U8 => I32;
+type U8 => I64;
+
 declare-binop( $"!=", raw-type(U8), raw-type(U8), raw-type(U64), ( l"("; x; l"!="; y; l")"; ) );
 declare-binop( $"==", raw-type(U8), raw-type(U8), raw-type(U64), ( l"("; x; l"=="; y; l")"; ) );
 declare-binop( $"<",  raw-type(U8), raw-type(U8), raw-type(U64), ( l"("; x; l"<"; y; l")"; ) );
