@@ -6,57 +6,6 @@ print := λ(: t Token). (: (
    ))
 ) Nil);
 
-print := λ(: t AST). (: (
-   (match t (
-      ()
-      ( ASTEOF (print 'EOF_s) )
-      ( ASTNil (print '\[\]_s) )
-      ( (Var( a _ )) (print a) )
-      ( (Lit( a _ )) ( (print '\`_s) (print a) ))
-      ( (AType a) (print a) )
-      ( (Meta _) (print 'Meta_s) )
-      ( (Typedef( lhs rhs )) (
-         (print 'type\s_s)
-         (print lhs)
-         (print '\s=\s_s)
-         (print rhs)
-      ))
-      ( (Glb( k v )) (
-         (print k)
-         (print '\s:=\s_s)
-         (print v)
-      ))
-      ( (App( is-cons l r )) (
-         (if is-cons (
-            (print '{_s)
-            (print l)
-            (print '\s_s)
-            (print r)
-            (print '}_s)
-         ) (
-            (print '\[_s)
-            (print l)
-            (print '\s_s)
-            (print r)
-            (print '\]_s)
-         ))
-      ))
-      ( (Abs( lhs rhs tlt )) (
-         (print '\[_s)
-         (print '\l_s)
-         (print lhs)
-         (print '._s)
-         (print rhs)
-         (print '\]_s)
-      ))
-      ( (Seq( l r )) (
-         (print l)
-         (print '\:\n_s)
-         (print r)
-      ))
-   ))
-) Nil);
-
 print := λ(: loc SourceLocation). (: (
    (match loc (
       ()
