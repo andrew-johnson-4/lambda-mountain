@@ -1,7 +1,6 @@
 
 import SRC/index-definitions.lm;
 
-import SRC/cmp.lsts;
 import SRC/quick-prop.lsts;
 
 import SRC/substitute.lm;
