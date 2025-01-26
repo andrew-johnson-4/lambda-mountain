@@ -27,8 +27,6 @@ import SRC/ascript-normal.lm;
 import SRC/to-s.lm;
 import SRC/union.lm;
 import SRC/tag-of.lm;
-import SRC/can-unify.lm;
-import SRC/unify.lm;
 import SRC/fields-of-type.lm;
 import SRC/has-infinite.lm;
 import SRC/has-forward.lm;

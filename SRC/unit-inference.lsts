@@ -7,7 +7,7 @@ import SRC/unit-ast.lsts;
 import SRC/inference-definitions.lsts;
 
 # unification
-import SRC/can-unify.lm;
+import SRC/can-unify.lsts;
 import SRC/unify.lm;
 import SRC/tctx-substitute.lm;
 import SRC/tctx-union.lm;
