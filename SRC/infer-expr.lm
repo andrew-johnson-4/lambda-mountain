@@ -117,7 +117,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          ) ())
       ))
       ( (App( (Var( 'sizeof_s _ )) (AType _) )) (
-         (let tt (as-constant(parse-type 'U64_s)))
+         (let tt (&&( (&&( (t1 'U64_s) (t1 'Literal_s) )) (t1 'Constant_s) )))
          (ascript-normal( term tt ))
          (match term (
             ()
