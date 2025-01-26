@@ -14,13 +14,13 @@ let cmp(ls: List<x>, rs: List<x>): Ord = (
 
 let to-smart-string(ls: List<x>): String = (
    let s = "[";
-   let si = 0;
+   let si = 0_u64;
    for l in ls {
-      if si > 0 {
+      if si > 0_u64 {
          s = s + ",";
       };
       s = s + to-smart-string(l);
-      si = si + 1;
+      si = si + 1_u64;
    };
    s = s + "]";
    s

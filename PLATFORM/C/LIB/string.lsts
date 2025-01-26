@@ -8,7 +8,7 @@ let cmp(l: CString, r: CString): Ord = (
 
 let print(io: IO::File, x: CString): Nil = (
    while head-string(x) != 0_u8 {
-      fwrite(x as U8[], 1, 1, stdout());
+      fwrite(x as U8[], 1_u64, 1_u64, stdout());
       x = tail-string(x);
    };
 );

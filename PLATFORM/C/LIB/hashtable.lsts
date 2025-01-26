@@ -4,14 +4,14 @@ type HashtableEq<k,v> = HashtableEq { occupied: U64, capacity: U64, contents: Tu
 
 let .lookup(table: HashtableEq<k,v>, key: k, default: v): v = (
    let capacity = (table as Tag::HashtableEq).capacity;
-   if capacity > 0 {
+   if capacity > 0_u64 {
       let contents = (table as Tag::HashtableEq).contents;
       let replacing = false;
       let ki = deep-hash(key) % capacity;
       let old-kv = contents[ki];
       if mem-is-non-zero(old-kv) && old-kv.first==key { replacing = true; };
       while mem-is-non-zero(old-kv) && not(replacing) {
-         ki = (ki + 1) % capacity;
+         ki = (ki + 1_u64) % capacity;
          old-kv = contents[ki];
          if mem-is-non-zero(old-kv) && old-kv.first==key { replacing = true; };
       };
@@ -23,13 +23,13 @@ let .lookup(table: HashtableEq<k,v>, key: k, default: v): v = (
 let .has(table: HashtableEq<k,v>, key: k): U64 = (
    let capacity = (table as Tag::HashtableEq).capacity;
    let replacing = false;
-   if capacity > 0 {
+   if capacity > 0_u64 {
       let contents = (table as Tag::HashtableEq).contents;
       let ki = deep-hash(key) % capacity;
       let old-kv = contents[ki];
       if mem-is-non-zero(old-kv) && old-kv.first==key { replacing = true; };
       while mem-is-non-zero(old-kv) && not(replacing) {
-         ki = (ki + 1) % capacity;
+         ki = (ki + 1_u64) % capacity;
          old-kv = contents[ki];
          if mem-is-non-zero(old-kv) && old-kv.first==key { replacing = true; };
       };
@@ -39,13 +39,13 @@ let .has(table: HashtableEq<k,v>, key: k): U64 = (
 
 let .bind(table: HashtableEq<k,v>, key: k, value: v): HashtableEq<k,v> = (
    if is(table, (HashtableEqEOF :: HashtableEq<k,v>)) {
-      table = HashtableEq { 0, 0, (0 as Tuple<k,v>[]) };
+      table = HashtableEq { 0_u64, 0_u64, (0_u64 as Tuple<k,v>[]) };
    };
    let occupied = (table as Tag::HashtableEq).occupied;
    let capacity = (table as Tag::HashtableEq).capacity;
    let contents = (table as Tag::HashtableEq).contents;
    if occupied * 3 >= capacity {
-      let new-capacity = max( 1000, occupied * 30 );
+      let new-capacity = max( 1000_u64, occupied * 30_u64 );
       let new-sizeof = sizeof(Tuple<k,v>) * new-capacity;
       let new-contents = malloc(new-sizeof) as Tuple<k,v>[]; 
       memset( new-contents, 0_u32, new-sizeof );
@@ -55,13 +55,13 @@ let .bind(table: HashtableEq<k,v>, key: k, value: v): HashtableEq<k,v> = (
          if mem-is-non-zero(old-kv) {
              new-contents.bind-eq( new-capacity, old-kv.first, old-kv.second );
          };
-         old-i = old-i + 1;
+         old-i = old-i + 1_u64;
       };
       contents = new-contents;
       capacity = new-capacity;
    };
    let replacing = contents.bind-eq( capacity, key, value );
-   if not(replacing) { occupied = occupied + 1; };
+   if not(replacing) { occupied = occupied + 1_u64; };
    HashtableEq { occupied, capacity, contents } 
 );
 
@@ -71,7 +71,7 @@ let .bind-eq(contents: Tuple<k,v>[], capacity: U64, key: k, value: v): U64 = (
    let old-kv = contents[ki];
    if mem-is-non-zero(old-kv) && old-kv.first==key { replacing = true; };
    while mem-is-non-zero(old-kv) && not(replacing) {
-      ki = (ki + 1) % capacity;
+      ki = (ki + 1_u64) % capacity;
       old-kv = contents[ki];
       if mem-is-non-zero(old-kv) && old-kv.first==key { replacing = true; };
    };
