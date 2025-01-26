@@ -34,13 +34,7 @@ import SRC/fields-of-type.lm;
 import SRC/has-infinite.lm;
 import SRC/has-forward.lm;
 
-import SRC/with-tag.lm;
 import SRC/with-phi.lsts;
-import SRC/with-size.lm;
-
-import SRC/without-t.lm;
-import SRC/without-size-unless-class.lm;
-import SRC/without-size.lm;
 
 import SRC/type-of-s.lm;
 import SRC/type-of-s-with-fields.lm;

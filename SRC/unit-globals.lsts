@@ -5,7 +5,6 @@ import SRC/tctx-bind.lsts;
 
 # global indexes
 import SRC/global-type-context.lsts;
-import SRC/class-info-index.lsts;
 import SRC/type-index.lsts;
 
 # queries dependent on index information
