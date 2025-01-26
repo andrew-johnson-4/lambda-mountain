@@ -624,8 +624,8 @@ let lsts-parse-let(tokens: List<Token>): List<Token> = (
                add-quick-prop(pre, TAny{}, return-type);
             );
             _ => (
-               print("Malformed quick-prop Argument List: ");
-               print(args-list); print("\n"); exit(1);
+               print("Malformed quick-prop Argument List at \{loc}\n");
+               exit(1);
             );
          };
       } else {

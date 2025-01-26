@@ -188,9 +188,6 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: off
             (set r (+( s1 s2 )))
          ))
       ))
-      ( _ (
-         (print 'Unknown\sRender\sTerm\s_s)(print term)(exit 1_u64)
-      ))
    ))
    (Tuple( ctx r ))
 ) Tuple<FContext,S>);

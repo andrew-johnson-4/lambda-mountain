@@ -64,10 +64,6 @@ assert-well-typed := λ(: term AST). (: (
          (assert-well-typed r)
       ))
       ( (Meta( _ )) () )
-      ( _ (
-         (print 'Unknown\sTerm\sIn\sAssert\sWell\sTyped\s_s)(print term)(print '\n_s)
-         (exit 1_u64)
-      ))
    ))
 ) Nil);
 

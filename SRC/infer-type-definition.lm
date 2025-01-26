@@ -21,7 +21,7 @@ infer-type-definition := λ(: base-type Type)(: body AST)(: case-number U64). (:
                ( (App( (Lit( tg _ )) args )) (set tag tg) )
                ( ASTEOF () )
                ( _ (
-                  (print 'Unexpected\sType\sCase\s_s)(print base-type)(print case)(print '\n_s)(exit 1_u64)
+                  (print 'Unexpected\sType\sCase\s_s)(print base-type)(print '\n_s)(exit 1_u64)
                ))
             ))
             (add-quick-prop( (t3( 'Array_s base-type TAny )) (t3( 'Array_s base-type TAny ))

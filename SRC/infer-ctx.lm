@@ -18,10 +18,6 @@ infer-ctx := λ(: tctx TContext)(: lhs AST). (: (
          (set tctx (infer-tctx( tctx tt )))
       ))
       ( ASTNil () )
-      ( _ (
-         (print 'LHS:\s_s)(print lhs)(print '\n_s)
-         (exit-error( 'Invalid\sLHS_s lhs ))
-      ))
    ))
    tctx
 ) TContext);
