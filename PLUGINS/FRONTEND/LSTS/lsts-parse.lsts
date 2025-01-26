@@ -52,6 +52,13 @@ let lsts-substitute-type-aliases(s: CString): CString = (
    if s == c"String" then c"SmartString" else
    if s == c"CString" then c"String" else
    s.remove-suffix(c"_u64")
+    .remove-suffix(c"_u32")
+    .remove-suffix(c"_u16")
+    .remove-suffix(c"_u8")
+    .remove-suffix(c"_i64")
+    .remove-suffix(c"_i32")
+    .remove-suffix(c"_i16")
+    .remove-suffix(c"_i8")
 );
 
 let lsts-parse(tokens: List<Token>): Nil = (

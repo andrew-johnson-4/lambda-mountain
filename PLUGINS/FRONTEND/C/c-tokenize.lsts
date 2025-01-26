@@ -67,7 +67,7 @@ let c-tokenize-string(file-path: String, text: String): List<CString> = (
          text = rest;
       );
 
-      rest => ( fail("Unrecognized Token in File \{file-path}: \{clone-rope(rest[0])}"); );
+      rest => ( fail("Unrecognized Token in File \{file-path}: \{clone-rope(rest[0_u64])}"); );
    }; };
 
    let internal-tokens = [] :: List<CString>;

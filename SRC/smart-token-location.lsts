@@ -13,7 +13,7 @@ let .location(t: String): SourceLocation = (
       } else {
          column = column + 1;
       };
-      data = data + 1;
+      data = data + 1_u64;
    };
    SourceLocation { untern(file-path), line, column }
 );
