@@ -49,7 +49,7 @@ let .bind(table: HashtableEq<k,v>, key: k, value: v): HashtableEq<k,v> = (
       let new-sizeof = sizeof(Tuple<k,v>) * new-capacity;
       let new-contents = malloc(new-sizeof) as Tuple<k,v>[]; 
       memset( new-contents, 0_u32, new-sizeof );
-      let old-i = 0;
+      let old-i = 0_u64;
       while old-i < capacity {
          let old-kv = contents[old-i];
          if mem-is-non-zero(old-kv) {
