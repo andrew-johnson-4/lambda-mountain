@@ -34,8 +34,8 @@ let cmp(x: String, y: String): Ord = (
             x-start = x.end;
             y-start = y.end;
          } else {
-            x-start = x-start + 1;
-            y-start = y-start + 1;
+            x-start = x-start + 1_u64;
+            y-start = y-start + 1_u64;
          }
       };
       if x-start < x.end { r = GreaterThan };
