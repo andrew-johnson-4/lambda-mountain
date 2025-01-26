@@ -15,6 +15,7 @@ import SRC/ground-tag-and-arity.lsts;
 import SRC/slot.lsts;
 
 # Boolean Queries
+import SRC/type-cmp.lsts;
 import SRC/is-t.lsts;
 import SRC/is-open.lsts;
 import SRC/is-arrow.lsts;

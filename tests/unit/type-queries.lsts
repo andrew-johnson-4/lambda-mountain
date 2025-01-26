@@ -69,17 +69,17 @@ assert( t-f.arity == 2 );
 assert( t-g.arity == 2 );
 
 # .arity synthesized field
-assert( is(t-A.slot(c"A"), t-A) );
-assert( is(t-A.slot(c"B"), TAny) );
-assert( is(t-B.slot(c"A"), TAny) );
-assert( is(t-B.slot(c"B"), t-B) );
-assert( is(t-AB.slot(c"A"), t-A) );
-assert( is(t-AB.slot(c"B"), t-B) );
-assert( is(t-x.slot(c"A"), TAny) );
-assert( is(t-Ax.slot(c"A"), t-A) );
-assert( is(t-C.slot(c"C"), t-C) );
-assert( is(t-f.slot(c"Arrow"), t-f) );
-assert( is(t-g.slot(c"Array"), t-g) );
+assert( t-A.slot(c"A") == t-A );
+assert( t-A.slot(c"B") == TAny );
+assert( t-B.slot(c"A") == TAny );
+assert( t-B.slot(c"B") == t-B );
+assert( t-AB.slot(c"A") == t-A );
+assert( t-AB.slot(c"B") == t-B );
+assert( t-x.slot(c"A") == TAny );
+assert( t-Ax.slot(c"A") == t-A );
+assert( t-C.slot(c"C") == t-C );
+assert( t-f.slot(c"Arrow") == t-f );
+assert( t-g.slot(c"Array") == t-g );
 
 # .without-tag synthesized field
 assert( is(t-A.without-tag, t-A) );

@@ -18,7 +18,7 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          (set ctx (TCtxBind(
             (close TCtxEOF)
             ltv
-            pt
+            (normalize pt)
             (Lit( tg (mk-token tg) ))
          )))
       ))
@@ -29,7 +29,7 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          (set ctx (TCtxBind(
             (close TCtxEOF)
             ltv
-            pt
+            (normalize pt)
             ASTEOF
          )))
       ))

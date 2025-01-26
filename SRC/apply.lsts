@@ -43,7 +43,7 @@ let apply(function-name: CString, function-type: Type, parameters: Type, do-spec
       for sft in rs { # iterate in case this is a hook
          let frt = sft.range;
          let fpt = sft.domain;
-         let ctx = normalize(unify(fpt, parameters));
+         let ctx = unify(fpt, parameters);
          let phi-ctx = ctx;
          while non-zero(phi-ctx) { match phi-ctx {
             TCtxBind { rst=ctx, key:c"Phi::Transition", typ=typ, term:Var{ pid=key } } => (
