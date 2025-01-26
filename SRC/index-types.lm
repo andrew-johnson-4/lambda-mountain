@@ -33,7 +33,6 @@ import SRC/fields-of-type.lm;
 import SRC/has-infinite.lm;
 import SRC/has-forward.lm;
 
-import SRC/type-of-s.lm;
 import SRC/type-of-s-with-fields.lm;
 
 import SRC/typeof-lhs.lm;

@@ -57,7 +57,7 @@ parse-toplevel := λ(: tokens List<Token>). (: (
                            (close e2)
                         )))
                      )))
-                     (let base-type (type-of-s e1))
+                     (let base-type (lm-type-of-s e1))
                      (add-class-info-layout( base-type FragmentStyle ))
                      (set tokens r2)
                   ))
