@@ -1,6 +1,7 @@
 
 mangle-c-type := λ(: tt Type). (: (
    (set tt (normalize tt))
+   (set tt (.rewrite-opaque-type-alias tt))
    (let r (mangle-c-type-internal tt))
    r
 ) S);
