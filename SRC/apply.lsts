@@ -45,16 +45,14 @@ let apply(function-name: CString, function-type: Type, parameters: Type, do-spec
          let fpt = sft.domain;
          let ctx = unify(fpt, parameters);
          let phi-ctx = ctx;
-         while non-zero(phi-ctx) { match phi-ctx {
-            TCtxBind { rst=ctx, key:c"Phi::Transition", typ=typ, term:Var{ pid=key } } => (
-               phi-types = cons( Tuple{ pid, typ }, phi-types );
-               phi-ctx = rst;
-            );
-            TCtxBind { rst=ctx, key=key, typ=typ } => (
-               phi-ctx = rst;
-            );
-            _ => (phi-ctx = TCtxEOF {};);
-         } };
+         for phi-row in phi-ctx.get-or([] :: List<Tuple<CString,Type,AST>>) {
+            match phi-row {
+               Tuple{ first:c"Phi::Transition", typ=second, third:Var{pid=key} } => (
+                  phi-types = cons( Tuple{ pid, typ }, phi-types );
+               );
+               _ => ();
+            }
+         };
          let closed-type = substitute( ctx, sft );
          function-type = closed-type;
          if not(r.is-t( c"Error: Did Not Close Before Specialization")) {
