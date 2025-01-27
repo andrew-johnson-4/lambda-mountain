@@ -49,10 +49,10 @@ let .lookup(ctx: FContext, k: CString, kt: Type, sloc: AST, hard: U64): Fragment
       );
    }};
    if not(non-zero(found)) && hard {
-      print("Context::lookup \{k} : "); print(kt); print("\nCandidates:\n");
+      print("Context::lookup \{k} : \{kt}\nCandidates:\n");
       while non-zero(original-ctx) { match original-ctx {
          FCtxBind { remainder=remainder, ctx-k=k, ctx-kt=kt } => (
-            if k==ctx-k { print("\{k} : "); print(kt); print("\n"); };
+            if k==ctx-k { print("\{k} : \{ctx-kt}\n"); };
             original-ctx = remainder;
          );
       }};
