@@ -504,13 +504,6 @@ let lsts-parse-typedef(tokens: List<Token>): List<Token> = (
    let base-rest = lsts-parse-type(tokens);
    tokens = base-rest.second;
    match tokens {
-      [Token{key:c"is"}.. rest] => (
-         tokens = rest;
-         let rt-rest = lsts-parse-type(tokens);
-         tokens = rt-rest.second;
-         lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-         add-type-alias(base-rest.first, rt-rest.first);
-      );
       [Token{key:c"="}.. Token{key:c">"}.. rest] => (
          tokens = rest;
          let rt-rest = lsts-parse-type(tokens);
