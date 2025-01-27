@@ -6,11 +6,13 @@ let add-type-alias(lt: Type, rt: Type): Nil = (
 );
 let .rewrite-type-alias(lt: Type): Type = (
    match lt {
-      TGround{} => (
+      TGround{ tag=tag, parameters=parameters } => (
          let lt-rt = type-alias-index.lookup( lt.ground-tag-and-arity, Tuple{ TAny, TAny } );
          if non-zero(lt-rt.first) {
             let tctx = unify(lt-rt.first, lt);
             if non-zero(tctx) { lt = substitute(tctx, lt-rt.second); };
+         } else {
+            lt = TGround{ tag, close(parameters.rewrite-type-alias) };
          };
          lt
       );
@@ -24,3 +26,10 @@ let .rewrite-type-alias(lt: Type): Type = (
       _ => lt;
    }
 );
+let .rewrite-type-alias(lt: List<Type>): List<Type> = (
+   match lt {
+      LCons{ head=head, tail=tail } => cons( head.rewrite-type-alias, tail.rewrite-type-alias );
+      _ => lt;
+   }
+);
+
