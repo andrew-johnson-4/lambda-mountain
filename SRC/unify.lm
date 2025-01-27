@@ -1,6 +1,6 @@
 
 unify := λ(: fpt Type)(: pt Type). (: (
-   (let ctx TCtxEOF)
+   (let ctx (: None TContext))
    (if (can-unify( fpt pt )) (
       (set ctx (unify-inner( fpt pt )))
    ) ())
