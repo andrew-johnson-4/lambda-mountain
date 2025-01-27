@@ -89,7 +89,7 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          (TGround( 'Cons_s (LCons( rp1 (LCons( rpr LEOF )) )) ))
       )) (
          (if (can-unify( lp1 rp1 )) (
-            (set ctx (and(
+            (set ctx (&&(
                (unify-inner( lpr rpr ))
                (unify-inner( lp1 rp1 ))
             )))
@@ -105,7 +105,7 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          rp1
       )) (
          (if (can-unify( lp1 rp1 )) (
-            (set ctx (and(
+            (set ctx (&&(
                (unify-inner( lp1 rp1 ))
                (unify-inner( lpr (t1 'Nil_s) ))
             )))
@@ -118,7 +118,7 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          (TGround( 'Cons_s (LCons( rp1 (LCons( rpr LEOF )) )) ))
       )) (
          (if (can-unify( lp1 rp1 )) (
-            (set ctx (and(
+            (set ctx (&&(
                (unify-inner( fpt rpr ))
                (unify-inner( lp1 rp1 ))
             )))
@@ -135,11 +135,6 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          (set ctx (unify-inner( lp1 rp1 )))
       ))
 
-      ( (Tuple( (TGround( 'GT_s (LCons( (TGround( lbase LEOF )) LEOF )) )) (TGround( rbase LEOF )) )) (
-         (if (>( (to-i64 rbase) (to-i64 lbase) )) (
-            (set ctx TCtxNil)
-         ) ())
-      ))
       ( (Tuple( (TGround( ltn lps )) (TGround( rtn rps )) )) (
          (if (==( ltn rtn )) (
             (set ctx (unify( lps rps )))
