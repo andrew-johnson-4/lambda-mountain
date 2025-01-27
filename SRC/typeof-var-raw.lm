@@ -1,30 +1,18 @@
 
 typeof-var-raw := λ(: sloc AST)(: tctx TContext)(: vname String). (: (
    (let found (find-alias-type vname))
-   (while (non-zero tctx) (match tctx (
-      ()
-      ( TCtxNil (set tctx TCtxEOF) )
-      ( (TCtxBind( rst k vt _ )) (
-         (if (==( k vname )) (
-            (if (non-zero found) (
-               (if (.is-arrow vt) (
-                  (set found (&&( found vt )))
-               ) (
-                  (set found vt)
-               ))
-            ) (
-               (set found vt)
-            ))
+   (for-each ( (Tuple( k vt _ )) in 
+               (.get-or( tctx (: LEOF List<Tuple<String,Type,AST>>) )) ) (
+      (if (==( k vname )) (
+         (if (non-zero found) (
             (if (.is-arrow vt) (
-               (set tctx rst)
-            ) (
-               (set tctx TCtxEOF)
-            ))
+               (set found (&&( found vt )))
+            ) ())
          ) (
-            (set tctx rst)
+            (set found vt)
          ))
-      ))
-   )))
+      ) ())
+   )) 
    (for-each ((Tuple( kt t )) in (.lookup( global-type-context vname (: LEOF List<Tuple<Type,AST>>) ))) (
       (if (non-zero found) (
          (if (.is-arrow found) (
