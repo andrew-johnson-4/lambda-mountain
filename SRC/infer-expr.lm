@@ -94,6 +94,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          (ascript-normal( term (typeof t) ))
       ))
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
+         (set tt (.rewrite-type-alias tt))
          (add-concrete-type-instance tt)
          (set tctx (infer-expr( tctx t Unscoped TAny used )))
          (let inner-tt (typeof t))
