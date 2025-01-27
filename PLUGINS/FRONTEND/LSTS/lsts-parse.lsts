@@ -502,6 +502,13 @@ let lsts-parse-typedef(tokens: List<Token>): List<Token> = (
          lsts-parse-expect(c";", tokens); tokens = tail(tokens);
          add-type-alias(base-rest.first, rt-rest.first);
       );
+      [Token{key:c"is"}.. Token{key:c"opaque"}.. rest] => (
+         tokens = rest;
+         let rt-rest = lsts-parse-type(tokens);
+         tokens = rt-rest.second;
+         lsts-parse-expect(c";", tokens); tokens = tail(tokens);
+         add-opaque-type-alias(base-rest.first, rt-rest.first);
+      );
       [Token{key:c"="}.. Token{key:c">"}.. rest] => (
          tokens = rest;
          let rt-rest = lsts-parse-type(tokens);
