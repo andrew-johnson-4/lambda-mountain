@@ -52,7 +52,7 @@ let phi-merge(ctx: TContext, weak-ctx: TContext): TContext = (
          }};
          let merge-result = apply-blame(c"phi", typeof-var-raw(left-term, ctx, c"phi"), t3(c"Cons", left-typ, right-typ), 0, left-term);
          if not(left-typ == merge-result.return-type) {
-            ctx = TCtxBind { close(ctx), left-key, t3(c"Phi", t1(lid), merge-result.return-type), left-term };
+            ctx = ctx.bind( left-key, t3(c"Phi", t1(lid), merge-result.return-type), left-term );
          };
       }
    };
@@ -111,7 +111,7 @@ let phi-override(ctx: TContext, weak-ctx: TContext): TContext = (
             _ => (iter-ctx = TCtxEOF {});
          }};
          if not(left-typ == right-typ) {
-            ctx = TCtxBind { close(ctx), left-key, t3(c"Phi", t1(lid), right-typ), left-term };
+            ctx = ctx.bind( left-key, t3(c"Phi", t1(lid), right-typ), left-term );
          };
       }
    };

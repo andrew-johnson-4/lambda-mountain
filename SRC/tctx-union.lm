@@ -7,7 +7,7 @@ union := λ(: lctx TContext)(: rctx TContext). (: (
       ( TCtxEOF () )
       ( (TCtxBind( rst k v t )) (
          (set lctx (union( lctx rst )))
-         (set lctx (TCtxBind( (close lctx) k v t )))
+         (set lctx (.bind( lctx k v t )))
       ))
    ))
    lctx

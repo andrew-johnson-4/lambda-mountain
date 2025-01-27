@@ -1,8 +1,6 @@
 
 import SRC/typeof-tag.lsts;
 
-import SRC/tctx-bind.lsts;
-
 # global indexes
 import SRC/global-type-context.lsts;
 import SRC/type-index.lsts;
