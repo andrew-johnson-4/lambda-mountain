@@ -16,17 +16,3 @@ union := λ(: l Context)(: r Context). (: (
    return
 ) Context);
 
-union := λ(: ctx FContext)(: tctx TContext). (: (
-   (let r ctx)
-   (while (non-zero tctx) (match tctx (
-      ()
-      ( TCtxNil (set tctx TCtxEOF) )
-      ( (TCtxBind( rst k vt _ )) (
-         (set r (FCtxBind(
-            (close r) k TAny (mk-fragment())
-         )))
-         (set tctx rst)
-      ))
-   )))
-   r
-) FContext);
