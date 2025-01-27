@@ -3,7 +3,7 @@
 import SRC/types-definitions.lsts;
 
 # Convenience
-import SRC/type-print.lm;
+import SRC/type-print.lsts;
 
 # Constructors / Destructors
 import SRC/t.lsts;
