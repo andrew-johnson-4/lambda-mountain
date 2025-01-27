@@ -17,16 +17,15 @@ substitute := λ(: tctx TContext)(: tt Type). (: (
    (match tt (
       ()
       ( (TVar v) (
-         (while (non-zero tctx) (match tctx (
-            ()
-            ( TCtxNil (set tctx TCtxEOF) )
-            ( (TCtxBind( rst tk tv _ )) (
-               (if (==( tk v )) (
-                  (set tt tv)
-                  (set tctx TCtxEOF)
-               ) (set tctx rst))
-            ))
-         )))
+         (let found 0_u64)
+         (for-each ( (Tuple( tk tv _ )) in
+             (.get-or( tctx (: LEOF List<Tuple<String,Type,AST>>) ))
+         ) (
+            (if (&&( (not found) (==( tk v )) )) (
+               (set tt tv)
+               (set found 1_u64)
+            ) ())
+         ))
       ))
       ( (TGround( tag pars )) (
          (set tt (TGround(

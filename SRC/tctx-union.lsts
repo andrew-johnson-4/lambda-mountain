@@ -1,5 +1,5 @@
 
-let union(lctx: TContext, rctx TContext): TContext = (
+let union(lctx: TContext, rctx: TContext): TContext = (
    Some{ lctx.get-or([] :: List<Tuple<CString,Type,AST>>) +
          rctx.get-or([] :: List<Tuple<CString,Type,AST>>) }
 );
