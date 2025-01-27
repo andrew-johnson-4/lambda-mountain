@@ -125,38 +125,36 @@ substitute := λ(: tctx TContext)(: t AST). (: (
             (close(Lit( v (unique vtk) )))
             (close(AType( (substitute( tctx vt )) )))
          ))) )))
-         (while (non-zero tctx) (match tctx (
-            ()
-            ( TCtxNil (set tctx TCtxEOF) )
-            ( (TCtxBind( rst tk tv ta )) (
-               (if (==( tk v )) (
-                  (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
-                     (close(substitute( tctx ta )))
-                     (close(AType( (substitute( tctx vt )) )))
-                  ))) )))
-                  (set tctx TCtxEOF)
-               ) (set tctx rst))
-            ))
-         )))
+         (let found 0_u64)
+         (for-each ( (Tuple( tk tv ta )) in
+             (.get-or( tctx (: LEOF List<Tuple<String,Type,AST>>) ))
+         ) (
+            (if (&&( (not found) (==( tk v )) )) (
+               (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
+                  (close(substitute( tctx ta )))
+                  (close(AType( (substitute( tctx vt )) )))
+               ))) )))
+               (set found 1_u64)
+            ) ())
+         ))
       ))
       ( (App( (Lit( ':_s ctk )) (App( (Var( v vtk )) (AType vt) )) )) (
          (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
             (close(Var( v (unique vtk) )))
             (close(AType( (substitute( tctx vt )) )))
          ))) )))
-         (while (non-zero tctx) (match tctx (
-            ()
-            ( TCtxNil (set tctx TCtxEOF) )
-            ( (TCtxBind( rst tk tv ta )) (
-               (if (==( tk v )) (
-                  (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
-                     (close(substitute( tctx ta )))
-                     (close(AType( (substitute( tctx vt )) )))
-                  ))) )))
-                  (set tctx TCtxEOF)
-               ) (set tctx rst))
-            ))
-         )))
+         (let found 0_u64)
+         (for-each ( (Tuple( tk tv ta )) in
+             (.get-or( tctx (: LEOF List<Tuple<String,Type,AST>>) ))
+         ) (
+            (if (&&( (not found) (==( tk v )) )) (
+               (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
+                  (close(substitute( tctx ta )))
+                  (close(AType( (substitute( tctx vt )) )))
+               ))) )))
+               (set found 1_u64)
+            ) ())
+         ))
       ))
       ( (Lit( v vtk )) (set t (Lit( v (unique vtk) ))) )
       ( (Var( v vtk )) (set t (Var( v (unique vtk) ))) )

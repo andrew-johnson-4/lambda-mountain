@@ -1,0 +1,8 @@
+
+let union(ctx: FContext, tctx: TContext): FContext = (
+   let r = ctx;
+   for Tuple{ k=first, vt=second } in tctx.get-or([] :: List<Tuple<CString,Type,AST>>) {
+      r = FCtxBind{ close(r), k, TAny, mk-fragment() };
+   };
+   r
+);

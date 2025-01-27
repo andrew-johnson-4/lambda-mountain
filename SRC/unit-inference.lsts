@@ -10,8 +10,8 @@ import SRC/inference-definitions.lsts;
 import SRC/can-unify.lsts;
 import SRC/unify.lm;
 import SRC/tctx-substitute.lm;
-import SRC/tctx-union.lm;
-import SRC/tctx-and.lm;
+import SRC/tctx-union.lsts;
+import SRC/tctx-and.lsts;
 import SRC/tctx-bind.lsts;
 
 # corollaries

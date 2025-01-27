@@ -17,3 +17,5 @@ zero AST = ASTEOF;
 
 # constructor with a default argument
 let $"App"(left: AST[], right: AST[]): AST = App { false, left, right };
+
+type TContext is Maybe<List<Tuple<CString,Type,AST>>>;

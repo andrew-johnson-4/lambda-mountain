@@ -26,7 +26,7 @@ typecheck := λ. (: (
          (set ordered-type-exprs rst)
       ))
    )))
-   (infer-expr( TCtxEOF ast-parsed-program Unscoped TAny Used ))
+   (infer-expr( (: None TContext) ast-parsed-program Unscoped TAny Used ))
    (while (non-zero stack-to-specialize) (match stack-to-specialize (
       ()
       ( (LCons( (StackToSpecialize( function-name ft unify-ctx special-type )) rst )) (

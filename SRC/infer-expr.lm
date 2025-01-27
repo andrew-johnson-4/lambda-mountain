@@ -38,6 +38,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
       ))
       ( (Glb( k v )) () ) # globals should already be inferred by now
       ( (App( (Lit( ':_s _ )) (App( (Lit( _ _ )) (AType tt) )) )) (
+         (set tt (.rewrite-type-alias tt))
          (add-concrete-type-instance tt)
          (match term (
             ()
@@ -60,6 +61,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          ))
       ))
       ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
+         (set tt (.rewrite-type-alias tt))
          (set tctx (infer-expr( tctx t Unscoped tt used )))
          (let inner-tt (typeof t))
          (if (non-zero inner-tt) (
@@ -92,6 +94,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
          (ascript-normal( term (typeof t) ))
       ))
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
+         (set tt (.rewrite-type-alias tt))
          (add-concrete-type-instance tt)
          (set tctx (infer-expr( tctx t Unscoped TAny used )))
          (let inner-tt (typeof t))
