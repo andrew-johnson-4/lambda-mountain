@@ -15,8 +15,8 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          (set ctx TCtxNil)
       ))
       ( (Tuple( (TVar( ltv )) (TGround( tg LEOF )) )) (
-         (set ctx (TCtxBind(
-            (close TCtxEOF)
+         (set ctx (.bind(
+            TCtxEOF
             ltv
             (normalize pt)
             (Lit( tg (mk-token tg) ))
@@ -26,8 +26,8 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          (set ctx TCtxNil)
       ))
       ( (Tuple( (TVar( ltv )) rt )) (
-         (set ctx (TCtxBind(
-            (close TCtxEOF)
+         (set ctx (.bind(
+            TCtxEOF
             ltv
             (normalize pt)
             ASTEOF
@@ -69,8 +69,8 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
          (TGround( 'Phi_s (LCons( (TGround( state_phi _ )) (LCons( (TGround( id_phi _ )) LEOF )) )) ))
       )) (
          (if (==( from_phi state_phi )) (
-            (set ctx (TCtxBind(
-               (close TCtxEOF)
+            (set ctx (.bind(
+               TCtxEOF
                'Phi::Transition_s
                to_phi
                (Var( id_phi (mk-token id_phi) ))

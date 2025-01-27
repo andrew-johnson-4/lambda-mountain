@@ -19,8 +19,8 @@ infer-tctx := λ(: tctx TContext)(: tt Type). (: (
          (set tctx (infer-tctx( tctx rt )))
       ))
       ( (TVar( tv )) (
-         (set tctx (TCtxBind(
-            (close tctx)
+         (set tctx (.bind(
+            tctx
             tv
             (t1 'Constant_s)
             ASTEOF

@@ -4,3 +4,7 @@ let .bind(tctx: HashtableEq<CString,List<Tuple<Type,AST>>>, k: CString, kt: Type
    row = cons(Tuple{kt, kv}, row);
    tctx.bind(k, row);
 );
+
+let .bind(tctx: TContext, k: CString, kt: Type, kv: AST): TContext = (
+   TCtxBind{ close(tctx), k, kt, kv }
+);

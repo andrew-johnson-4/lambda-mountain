@@ -76,15 +76,6 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
             (maybe-specialize( 'intern_s (typeof-var-raw( term tctx 'intern_s )) tt ))
          ))
       ))
-      ( (App( (Var( 'gensym-label_s _ )) (Var( lname _ )) )) (
-         (set tctx (TCtxBind(
-            (close tctx) lname (t1 'Label_s) ASTEOF
-         )))
-         (ascript-normal( term (t1 'Nil_s) ))
-      ))
-      ( (App( (Var( 'label_s _ )) (Var( lname _ )) )) (
-         (ascript-normal( term (t1 'Nil_s) ))
-      ))
       ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (
          (if (is( scoped Scoped )) (scope(
             (let tctx-inner (infer-expr( tctx cond Unscoped TAny Used )))
@@ -171,9 +162,7 @@ infer-expr-one := λ(: tctx TContext)(: term AST)(: scoped IsScoped)(: hint Type
                (ascript-normal( lname-var tt ))
             ))
          ))
-         (set tctx (TCtxBind(
-            (close tctx) lname tt ASTEOF
-         )))
+         (set tctx (.bind( tctx lname tt ASTEOF )))
          (ascript-normal( term (t1 'Nil_s) ))
 
          (maybe-specialize( 'del_s (typeof-var-raw( term tctx 'del_s )) tt ))
