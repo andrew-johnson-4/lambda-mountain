@@ -2,7 +2,7 @@
 type Maybe<x> = Some { content:x } | None;
 zero Maybe<x> = None;
 
-let .get-or(m: Maybe<x>, default: x): Maybe<x> = (
+let .get-or(m: Maybe<x>, default: x): x = (
    match m {
       Some{content=content} => content;
       None{} => default;
