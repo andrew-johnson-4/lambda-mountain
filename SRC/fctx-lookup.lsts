@@ -56,7 +56,8 @@ let .lookup(ctx: FContext, k: CString, kt: Type, sloc: AST, hard: U64): Fragment
             original-ctx = remainder;
          );
       }};
-      print("Context::lookup Could Not Find Symbol\n"); exit(1);
+      print("Context::lookup Could Not Find Symbol at \{sloc.location}\n");
+      exit(1);
    };
    r
 );
