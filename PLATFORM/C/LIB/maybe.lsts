@@ -8,3 +8,17 @@ let .get-or(m: Maybe<x>, default: x): Maybe<x> = (
       None{} => default;
    }
 );
+
+let .is-none(m: Maybe<x>): U64 = (
+   match m {
+      Some{} => false;
+      None{} => true;
+   }
+);
+
+let .is-some(m: Maybe<x>): U64 = (
+   match m {
+      Some{} => true;
+      None{} => false;
+   }
+);

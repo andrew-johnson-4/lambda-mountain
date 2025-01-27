@@ -1,0 +1,4 @@
+
+let &&(lctx: TContext, rctx: TContext): TContext = (
+   if lctx.is-none then lctx else if rctx.is-none then rctx else union(lctx, rctx)
+);
