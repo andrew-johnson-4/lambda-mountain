@@ -133,9 +133,10 @@ unify-inner := λ(: fpt Type)(: pt Type). (: (
 
 unify := λ(: fpt List<Type>)(: pt List<Type>). (: (
    (let ctx (: None TContext))
+   (let yes (Some( (: LEOF List<Tuple<String,Type,AST>>) )))
    (match (Tuple( fpt pt )) (
       ()
-      ( (Tuple( LEOF LEOF )) (set ctx TCtxNil) )
+      ( (Tuple( LEOF LEOF )) (set ctx yes))
       ( (Tuple( (LCons( lp1 lps )) (LCons( rp1 rps )) )) (
          (set ctx (unify( lp1 rp1 )))
          (if (non-zero ctx) (
