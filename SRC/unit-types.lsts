@@ -4,6 +4,7 @@ import SRC/types-definitions.lsts;
 
 # Convenience
 import SRC/type-print.lsts;
+import SRC/to-smart-string.lm;
 
 # Constructors / Destructors
 import SRC/t.lsts;

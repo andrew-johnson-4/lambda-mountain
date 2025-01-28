@@ -24,5 +24,3 @@ type StackToSpecialize (StackToSpecialize( String , Type , Maybe<List<Tuple<Stri
 
 type ApplyResult (ApplyResult( function-type:Type , return-type:Type , phi-types:List<Tuple<String,Type>> ));
 
-import SRC/to-smart-string.lm;
-
