@@ -35,3 +35,13 @@ let .unique(ls: List<x>): List<x> = (
    };
    rs
 );
+
+let .next(ls: Array<List<x>,?>): Maybe<x> = (
+   match open(ls) {
+      [i.. rst] => (
+         ls[0_u64] = rst;
+         Some(i)
+      );
+      [] => (None :: Maybe<x>);
+   };
+);

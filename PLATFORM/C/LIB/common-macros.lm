@@ -33,12 +33,11 @@ macro ( ('while cond body) )
 
 macro ( ('for-each (item 'in iter) loop) ) (
    (let (uuid iter-term) iter)
-   (while (non-zero (uuid iter-term)) (match (uuid iter-term) (
+   (let (uuid continue-iter) true)
+   (while (uuid continue-iter) (match (.next(&(uuid iter-term))) (
       ()
-      ( (LCons( item (uuid iter-rst) )) (
-         loop
-         (set (uuid iter-term) (uuid iter-rst))
-      ))
+      ( (Some( item )) (loop ()) )
+      ( None (set (uuid continue-iter) false) )
    )))
 );
 
