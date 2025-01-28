@@ -5,15 +5,39 @@ import SRC/unit-inference.lsts;
 let t-A = t1(c"A");
 let t-B = t2(c"B", t-A);
 let t-C = t1(c"C");
+let t-x = tv(c"x");
+let t-array-x = t3(c"Array", t-x, TAny);
+let t-array-A = t3(c"Array", t-A, TAny);
+let t-f = t3(c"Arrow", t-array-x, t-x);
+let t-g = t3(c"Arrow", t-x, t-array-x);
 
 add-quick-prop(t-A, TAny, t-C);
+add-weaken-quick-prop(t-A, t-C, t-C);
+let t-AC = t-A && t-C;
+
+let t-array-A-d = denormalize(t3(c"Array", denormalize(t-A), TAny));
 
 # simple inferences
 
-let ti1 = enrich-quick-prop(t-A,t-A);
-let ti2 = enrich-quick-prop(ti1,ti1);
-print(ti2); print("\n");
+assert( normalize(t-AC) == t-A );
 
-let ti3 = enrich-quick-prop(t-B,t-B);
-let ti4 = enrich-quick-prop(ti3,ti3);
-print(ti4); print("\n");
+let ti1 = denormalize(t-A);
+let ti2 = denormalize(ti1);
+assert( denormalize(denormalize(t-A)) == t-AC );
+assert( normalize(denormalize(t-A)) == t-A );
+
+let ti3 = denormalize(t-B);
+let ti4 = denormalize(ti3);
+assert( denormalize(denormalize(t-B)) == t-B );
+
+if true {
+   let tctx = unify(t-array-x, t-array-A-d);
+   print( substitute(tctx, t-array-x) ); print("\n");
+   assert( substitute(tctx, t-array-x) == t-array-A );
+};
+
+if true {
+   let tctx = unify(t-array-x, t-array-A-d);
+   print( substitute(tctx, t-x) ); print("\n");
+   assert( substitute(tctx, t-x) == t-A );
+};
