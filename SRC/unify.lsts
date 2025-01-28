@@ -13,6 +13,9 @@ let unify-inner(fpt: Type, pt: Type): TContext = (
    match (Tuple{fpt, pt}) {
       Tuple{ first:TAny{} } => ctx = yes;
       Tuple{ first:TGround{tag:c"Any"} } => ctx = yes;
+      Tuple{ first:TVar{name=name}, second:TGround{tag=tag} } => (
+         ctx = ctx.bind(name, normalize(pt), Lit{tag, mk-token(tag)});
+      );
       Tuple{ first:TVar{name=name} } => ctx = ctx.bind(name, normalize(pt), ASTEOF);
       Tuple{ first:TAnd{ lt1=left,lt2=right }, rt=second } => (
          ctx = unify-inner(lt1, rt) && unify-inner(lt2, rt);
@@ -31,7 +34,7 @@ let unify-inner(fpt: Type, pt: Type): TContext = (
          first:TGround{tag:c"Phi", parameters:[to_phi.. TGround{from_phi=tag}..]},
          second:TGround{tag:c"Phi", parameters:[TGround{state_phi=tag}.. TGround{id_phi=tag}..]}
       } => (
-         if from_phi == state_phi { ctx = ctx.bind(c"Phi::Transition", to_phi, ASTEOF); }
+         if from_phi == state_phi { ctx = ctx.bind(c"Phi::Transition", to_phi, Var{id_phi, mk-token(id_phi)}); }
       );
 
       # Varargs
@@ -82,13 +85,13 @@ let unify-inner(fpt: Type, pt: Type): TContext = (
 let unify(fpt: List<Type>, pt: List<Type>): TContext = (
    let ctx = None :: TContext;
    let yes = Some([] :: List<Tuple<CString,Type,AST>>);
-   if fpt.length == pt.length {
-      let ok = true;
-      while ok && non-zero(fpt) {
-         ctx = union( unify-inner(head(fpt),head(pt)), ctx );
-         fpt = tail(fpt); pt = tail(pt);
-      };
-      ok
+   match Tuple{ fpt, pt } {
+      Tuple{ first:[lp1..lps], second:[rp1..rps] } => (
+         ctx = unify-inner(lp1,rp1);
+         if non-zero(ctx) { ctx = union(ctx, unify(lps,rps)); }
+      );
+      Tuple{ first:[], second:[] } => ctx = yes;
+      Tuple{} => ();
    };
    ctx
 );
