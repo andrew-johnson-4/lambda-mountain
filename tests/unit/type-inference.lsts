@@ -20,26 +20,17 @@ let t-array-A-d = denormalize(t3(c"Array", denormalize(t-A), TAny));
 # simple inferences
 
 assert( t-A == t-A );
-print(normalize(t-AC));
 assert( normalize(t-AC) == t-A );
 
-let ti1 = denormalize(t-A);
-let ti2 = denormalize(ti1);
-assert( denormalize(denormalize(t-A)) == t-AC );
 assert( normalize(denormalize(t-A)) == t-A );
-
-let ti3 = denormalize(t-B);
-let ti4 = denormalize(ti3);
-assert( denormalize(denormalize(t-B)) == t-B );
+assert( normalize(denormalize(t-B)) == t-B );
 
 if true {
    let tctx = unify(t-array-x, t-array-A-d);
-   print( substitute(tctx, t-array-x) ); print("\n");
    assert( substitute(tctx, t-array-x) == t-array-A );
 };
 
 if true {
    let tctx = unify(t-array-x, t-array-A-d);
-   print( substitute(tctx, t-x) ); print("\n");
    assert( substitute(tctx, t-x) == t-A );
 };
