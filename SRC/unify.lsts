@@ -1,0 +1,98 @@
+
+let unify(fpt: Type, pt: Type): TContext = (
+   let ctx = None :: TContext;
+   if can-unify(fpt, pt) {
+      ctx = unify-inner(fpt, pt);
+   };
+   ctx
+);
+
+let unify-inner(fpt: Type, pt: Type): TContext = (
+   let ctx = None :: TContext;
+   let yes = Some([] :: List<Tuple<CString,Type,AST>>);
+   match (Tuple{fpt, pt}) {
+      Tuple{ first:TAny{} } => ctx = yes;
+      Tuple{ first:TGround{tag:c"Any"} } => ctx = yes;
+      Tuple{ first:TVar{name=name}, second:TGround{tag=tag} } => (
+         ctx = ctx.bind(name, normalize(pt), Lit{tag, mk-token(tag)});
+      );
+      Tuple{ first:TVar{name=name} } => ctx = ctx.bind(name, normalize(pt), ASTEOF);
+      Tuple{ first:TAnd{ lt1=left,lt2=right }, rt=second } => (
+         ctx = unify-inner(lt1, rt) && unify-inner(lt2, rt);
+      );
+      Tuple{ lt=first, second:TAnd{ rt1=left,rt2=right } } => (
+         ctx = union(unify-inner(lt, rt1), unify-inner(lt, rt2));
+      );
+
+      # Literal Constants
+      Tuple{ first:TGround{tag:c"CONST"}, second:TGround{c=tag} } => (
+         if c.is-digit || c==c"CONST" { ctx = yes; }
+      );
+
+      # Phi Types
+      Tuple{
+         first:TGround{tag:c"Phi", parameters:[to_phi.. TGround{from_phi=tag}..]},
+         second:TGround{tag:c"Phi", parameters:[TGround{state_phi=tag}.. TGround{id_phi=tag}..]}
+      } => (
+         if from_phi == state_phi { ctx = ctx.bind(c"Phi::Transition", to_phi, Var{id_phi, mk-token(id_phi)}); }
+      );
+
+      # Varargs
+      Tuple{
+          first:TGround{tag:c"Cons", parameters:[
+             TGround{tag:c"...", parameters:[lp1..]}..
+             lpr..
+          ]},
+          second:TGround{tag:c"Cons", parameters:[rp1..rpr..]}
+      } => (
+         ctx = unify-inner(lpr, pt);
+      );
+      Tuple{
+          first:TGround{tag:c"Cons", parameters:[
+             TGround{tag:c"...", parameters:[lp1..]}..
+             lpr..
+          ]},
+          second:rp1
+      } => (
+         if can-unify(lp1, rp1)
+         then { ctx = unify-inner(lp1,rp1) && unify-inner(lpr, t1(c"Nil")); }
+         else { ctx = unify-inner(lpr,rp1); }
+      );
+      Tuple{
+          first:TGround{tag:c"...", parameters:[lp1..]},
+          second:TGround{tag:c"Cons", parameters:[rp1..rpr..]}
+      } => (
+         if can-unify(lp1,rp1) { ctx = unify-inner(fpt,rpr) && unify-inner(lp1,rp1); };
+      );
+      Tuple{
+          first:TGround{tag:c"...", parameters:[lp1..]},
+          second:TGround{tag:c"Nil", parameters:[]}
+      } => ctx = yes;
+      Tuple{
+          first:TGround{tag:c"...", parameters:[lp1..]},
+          second:rp1
+      } => ctx = unify-inner(lp1,rp1);
+
+      Tuple{
+          first:TGround{ltn=tag, lps=parameters},
+          second:TGround{rtn=tag, rps=parameters}
+      } => if ltn==rtn then { ctx = unify(lps,rps) };
+      _ => ();
+   };
+   ctx
+);
+
+let unify(fpt: List<Type>, pt: List<Type>): TContext = (
+   let ctx = None :: TContext;
+   let yes = Some([] :: List<Tuple<CString,Type,AST>>);
+   match Tuple{ fpt, pt } {
+      Tuple{ first:[lp1..lps], second:[rp1..rps] } => (
+         ctx = unify-inner(lp1,rp1);
+         if non-zero(ctx) { ctx = union(ctx, unify(lps,rps)); }
+      );
+      Tuple{ first:[], second:[] } => ctx = yes;
+      Tuple{} => ();
+   };
+   ctx
+);
+
