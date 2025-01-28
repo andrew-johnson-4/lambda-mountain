@@ -3,12 +3,25 @@ let cmp(left: Type, right: Type): Ord = (
    match left {
       TGround { ltag=tag, lparameters=parameters } => (match right {
          TGround { rtag=tag, rparameters=parameters } => (
-            if ltag < rtag then LessThan else
-            if rtag < ltag then Equal else
-            cmp(lparameters, rparameters)
+            cmp(ltag,rtag) && cmp(lparameters, rparameters)
          );
-         _ => LessThan;
+         _ => cmp($".0"(left), $".0"(right));
       });
-      _ => Equal;
+      TAnd{ left-left=left, left-right=right } => (match right {
+         TAnd{ right-left=left, right-right=right } => (
+            cmp(left-left,right-left) && cmp(right-left, right-right);
+         );
+         _ => cmp($".0"(left), $".0"(right));
+      });
+      TVar{ left-name=name } => (match right {
+         TVar{ right-name=name } => (
+            cmp(left-name,right-name)
+         );
+         _ => cmp($".0"(left), $".0"(right));
+      });
+      TAny{} => (match right {
+         TAny{} => Equal;
+         _ => cmp($".0"(left), $".0"(right));
+      });
    }
 );

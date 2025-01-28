@@ -19,6 +19,8 @@ let t-array-A-d = denormalize(t3(c"Array", denormalize(t-A), TAny));
 
 # simple inferences
 
+assert( t-A == t-A );
+print(normalize(t-AC));
 assert( normalize(t-AC) == t-A );
 
 let ti1 = denormalize(t-A);
