@@ -2,4 +2,3 @@
 import SRC/index-definitions.lm;
 
 import SRC/error-formatting.lm;
-import SRC/is-equal.lm;
