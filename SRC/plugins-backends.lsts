@@ -1,0 +1,13 @@
+
+let plugins-backends-index = {} :: HashtableEq<CString,Array<Arrow<Nil,Nil>,?>>;
+
+let plugin-null-backend(): Nil = (
+   print("Unable to find a suitable backend\n");
+   exit(1);
+);
+
+let register-backend(flag: CString, hook: Arrow<Nil,Nil>): Nil = (
+   plugins-backends-index = plugins-backends-index.bind(flag, hook);
+);
+
+register-backend(c"--c",  &plugins-backend-c-compile);
