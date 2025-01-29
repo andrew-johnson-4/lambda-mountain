@@ -18,8 +18,8 @@ main := λ(: argc C_int)(: argv String[]). (: (
             (set config-target ([]( argv argi )))
          ))
          (fp (
-            (if (.has( plugins-backends fp )) (
-               plugin-current-backend = (.lookup( plugins-backends fp plugin-null-backend ))
+            (if (.has( plugins-backends-index fp )) (
+               (set plugin-current-backend (.lookup( plugins-backends-index fp (& plugin-null-backend) )))
             ) (
                (set input (SCons(
                   (close input)
