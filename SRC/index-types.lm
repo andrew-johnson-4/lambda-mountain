@@ -34,7 +34,6 @@ import SRC/has-forward.lm;
 import SRC/type-of-s-with-fields.lm;
 
 import SRC/typeof-lhs.lm;
-import SRC/cons-head.lm;
 import SRC/cons-tail.lm;
 import SRC/apply.lm;
 import SRC/apply.lsts;
@@ -45,7 +44,6 @@ import SRC/try-specialize.lm;
 
 import SRC/unify-hint.lm;
 import SRC/infer-type-definition.lm;
-import SRC/cons-arity.lm;
 import SRC/typeof-var.lm;
 import SRC/typeof-var-raw.lm;
 

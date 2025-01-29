@@ -9,7 +9,7 @@ let cmp(left: Type, right: Type): Ord = (
       });
       TAnd{ left-left=left, left-right=right } => (match right {
          TAnd{ right-left=left, right-right=right } => (
-            cmp(left-left,right-left) && cmp(right-left, right-right);
+            cmp(left-left,right-left) && cmp(left-right, right-right);
          );
          _ => cmp($".0"(left), $".0"(right));
       });
