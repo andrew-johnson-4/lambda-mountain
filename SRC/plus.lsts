@@ -1,0 +1,11 @@
+
+let $"+"(l: AST, r: AST): AST = (
+   match r {
+      ASTEOF{} => ();
+      Seq{left=left,right=right} => (
+         l = l + left;
+         l = l + right;
+      );
+      re => l = Seq{close(l), close(re)};
+   }; l
+);
