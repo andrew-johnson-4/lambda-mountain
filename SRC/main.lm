@@ -5,16 +5,6 @@ main := λ(: argc C_int)(: argv String[]). (: (
    (while (<( argi (as argc U64) )) (
       (match ([]( argv (as argi U64) )) (
          ()
-         ('--c_s (
-            (set config-platform-prefix 'PLATFORM/C/_s)
-            (if (==( config-target '_s )) (set config-target 'tmp.c_s) ())
-            (set plugin-current-backend (& plugins-backend-c-compile))
-         ))
-         ('--blob_s (
-            (set config-platform-prefix 'PLATFORM/BLOB/_s)
-            (if (==( config-target '_s )) (set config-target 'tmp.txt_s) ())
-            (set plugin-current-backend (& plugins-backend-blob-compile))          
-         ))
          ('--dev_s (set config-devmode 1_u64))
          ('--typecheck_s (set config-mode ModeTypecheck))
          ('--compile_s (set config-mode ModeCompile))
@@ -28,10 +18,14 @@ main := λ(: argc C_int)(: argv String[]). (: (
             (set config-target ([]( argv argi )))
          ))
          (fp (
-            (set input (SCons(
-               (close input)
-               (close (SAtom( fp )))
-            )))
+            (if (.has( plugins-backends-index fp )) (
+               (set plugin-current-backend (.lookup( plugins-backends-index fp (& plugin-null-backend) )))
+            ) (
+               (set input (SCons(
+                  (close input)
+                  (close (SAtom( fp )))
+               )))
+            ))
          ))
       ))
       (set argi (+( argi 1_u64 )))

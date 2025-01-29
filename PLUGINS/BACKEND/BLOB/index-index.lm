@@ -1,2 +1,3 @@
 
 import PLUGINS/BACKEND/BLOB/compile-blob.lm;
+import PLUGINS/BACKEND/BLOB/register-hook.lsts;

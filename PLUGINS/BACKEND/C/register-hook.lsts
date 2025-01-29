@@ -1,0 +1,2 @@
+
+register-backend(c"--c",  &plugins-backend-c-compile);

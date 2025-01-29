@@ -33,7 +33,13 @@ mangle-c-type-internal := λ(: tt Type). (: (
       ( (TGround( 'IO::File_s _ )) (set r (SAtom 'FILE*_s)) )
       ( (TGround( 'PID_s _ )) (set r (SAtom 'pid_t_s)) )
       ( (TGround( 'Regex_s _ )) (set r (SAtom 'regex_t_s)) )
-      ( (TGround( 'Array_s (LCons( _ (LCons( array-base _ )) )) )) (set r (+( (mangle-c-type array-base) (SAtom '*_s) ))) )
+      ( (TGround( 'Array_s (LCons( _ (LCons( array-base _ )) )) )) (
+         (if (.is-arrow array-base) (
+            (set r (mangle-c-type array-base))
+         ) (
+            (set r (+( (mangle-c-type array-base) (SAtom '*_s) )))
+         ))
+      ))
       ( (TGround( 'Arrow_s _ )) (
          (let pre-post (mangle-c-declaration-internal tt))
          (let td-id (uuid()))
