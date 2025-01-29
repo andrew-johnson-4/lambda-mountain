@@ -26,8 +26,6 @@ compile-stack-call := λ(: ctx FContext)(: f Fragment)(: function-name String)(:
 
          (set ictx (.set( ictx 'function-id_s (SAtom function-id) )))  
          (set ictx (.set( ictx 'function-name_s (SAtom function-name) )))
-         (set ictx (.set( ictx 'used_s (SAtom(to-string used)) )))
-         (set.type( ictx (t1( 'ImplicitContext_s )) ))
          (set ctx (.bind( ctx 'ictx_s (t1 'ImplicitContext_s) ictx )))
 
          (let args-tt (.type push-args))
