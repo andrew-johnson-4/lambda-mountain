@@ -15,4 +15,5 @@ import PLUGINS/FRONTEND/LM/parse-type.lm;
 import PLUGINS/FRONTEND/LM/parse.lm;
 import PLUGINS/FRONTEND/LM/lm-is-variable.lm;
 import PLUGINS/FRONTEND/LM/lm-type-of-s.lm;
+import PLUGINS/FRONTEND/LM/remove-parens.lm;
 
