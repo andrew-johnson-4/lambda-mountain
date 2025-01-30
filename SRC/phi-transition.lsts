@@ -1,5 +1,5 @@
 
-let phi-transition(ctx: TContext, phi-id: CString, phi-new-type: Type): TContext = (
+let phi-transition(ctx: Maybe<TContext>, phi-id: CString, phi-new-type: Type): Maybe<TContext> = (
    let iter-ctx = ctx;
    let found = false;
    for Tuple{ key=first, typ=second, term=third } in iter-ctx.get-or([] :: TContext) {

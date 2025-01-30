@@ -1,6 +1,6 @@
 
 let unify(fpt: Type, pt: Type): Maybe<TContext> = (
-   let ctx = None :: TContext;
+   let ctx = None :: Maybe<TContext>;
    if can-unify(fpt, pt) {
       ctx = unify-inner(fpt, pt);
    };
@@ -8,7 +8,7 @@ let unify(fpt: Type, pt: Type): Maybe<TContext> = (
 );
 
 let unify-inner(fpt: Type, pt: Type): Maybe<TContext> = (
-   let ctx = None :: TContext;
+   let ctx = None :: Maybe<TContext>;
    let yes = Some([] :: TContext);
    match (Tuple{fpt, pt}) {
       Tuple{ first:TAny{} } => ctx = yes;
@@ -83,7 +83,7 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TContext> = (
 );
 
 let unify(fpt: List<Type>, pt: List<Type>): Maybe<TContext> = (
-   let ctx = None :: TContext;
+   let ctx = None :: Maybe<TContext>;
    let yes = Some([] :: TContext);
    match Tuple{ fpt, pt } {
       Tuple{ first:[lp1..lps], second:[rp1..rps] } => (

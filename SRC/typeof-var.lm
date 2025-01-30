@@ -1,5 +1,5 @@
 
-typeof-var := λ(: sloc AST)(: tctx TContext)(: vname String). (: (
+typeof-var := λ(: sloc AST)(: tctx Maybe<TContext>)(: vname String). (: (
    (let found (typeof-var-raw( sloc tctx vname )))
    (if (non-zero found) () (
       (exit-error( (+( 'Unknown\sReferenced\sVariable:\s_s vname )) sloc ))

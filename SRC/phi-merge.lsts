@@ -1,5 +1,5 @@
 
-let phi-merge(ctx: TContext, weak-ctx: TContext): TContext = (
+let phi-merge(ctx: Maybe<TContext>, weak-ctx: Maybe<TContext>): Maybe<TContext> = (
    let iter-ctx = ctx;
    let left-phi-ids = [] :: List<CString>;
    for Tuple{ key=first, typ=second, term=third } in iter-ctx.get-or([] :: TContext) {
@@ -43,7 +43,7 @@ let phi-merge(ctx: TContext, weak-ctx: TContext): TContext = (
    ctx
 );
 
-let phi-override(ctx: TContext, weak-ctx: TContext): TContext = (
+let phi-override(ctx: Maybe<TContext>, weak-ctx: Maybe<TContext>): Maybe<TContext> = (
    let iter-ctx = ctx;
    let left-phi-ids = [] :: List<CString>;
    for Tuple{ key=first, typ=second, term=third } in iter-ctx.get-or([] :: TContext) {

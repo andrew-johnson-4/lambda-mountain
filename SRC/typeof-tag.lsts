@@ -1,4 +1,4 @@
 
 let typeof-tag(tag: CString): Type = (
-   typeof-var-raw(ASTEOF, None :: TContext, tag)
+   typeof-var-raw(ASTEOF, None :: Maybe<TContext>, tag)
 );

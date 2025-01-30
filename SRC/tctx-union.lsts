@@ -1,5 +1,5 @@
 
-let union(lctx: TContext, rctx: TContext): TContext = (
+let union(lctx: Maybe<TContext>, rctx: Maybe<TContext>): Maybe<TContext> = (
    Some{ rctx.get-or([] :: TContext) +
          lctx.get-or([] :: TContext) }
 );
