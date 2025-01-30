@@ -1,6 +1,4 @@
 
-types-have-changed := True_u8;
-
 typecheck := λ. (: (
    (let p ast-parsed-program)
    (let ordered-type-exprs ASTEOF)

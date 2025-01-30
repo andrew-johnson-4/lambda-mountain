@@ -1,12 +1,13 @@
 
 import LIB/default.lm;
 
+import SRC/unit-drivers.lsts;
+
 import SRC/unit-types.lsts;
 import SRC/unit-ast.lsts;
 import SRC/unit-inference.lsts;
 import SRC/unit-fragments.lsts;
 import SRC/unit-globals.lsts;
-import SRC/unit-drivers.lsts;
 
 import SRC/index-definitions.lm;
 import SRC/index-globals.lm;
@@ -18,4 +19,4 @@ import SRC/index-ast.lm;
 import SRC/index-preprocess.lm;
 import SRC/index-plugins.lm;
 
-import SRC/main.lm;
+import SRC/main.lsts;

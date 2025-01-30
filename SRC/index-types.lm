@@ -5,7 +5,6 @@ import SRC/quick-prop.lsts;
 
 import SRC/substitute.lm;
 import SRC/cons-root.lsts;
-import SRC/index-concrete-type-instances.lm;
 import SRC/infer-expr.lm;
 import SRC/phi-transition.lsts;
 import SRC/phi-merge.lsts;
@@ -21,7 +20,6 @@ import SRC/is-constructor.lm;
 
 import SRC/deep-hash.lm;
 
-import SRC/ascript-normal.lm;
 import SRC/union.lm;
 import SRC/tag-of.lm;
 import SRC/has-infinite.lm;
