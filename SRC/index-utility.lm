@@ -1,4 +1,2 @@
 
 import SRC/index-definitions.lm;
-
-import SRC/error-formatting.lm;
