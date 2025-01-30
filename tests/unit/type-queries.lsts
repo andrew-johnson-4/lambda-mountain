@@ -16,8 +16,8 @@ assert( t-A.is-t(c"A") );
 assert( not(t-A.is-t(c"B")) );
 assert( t-B.is-t(c"B") );
 assert( not(t-B.is-t(c"A")) );
-assert( t-B.p1.is-t(c"A") );
-assert( not(t-B.p1.is-t(c"B")) );
+assert( t-B.r1.is-t(c"A") );
+assert( not(t-B.r1.is-t(c"B")) );
 assert( t-AB.is-t(c"A") );
 assert( t-AB.is-t(c"B") );
 assert( not(t-x.is-t(c"x")) );
@@ -28,7 +28,7 @@ assert( not(t-B.is-open) );
 assert( not(t-AB.is-open) );
 assert( t-x.is-open );
 assert( t-Ax.is-open );
-assert( t-Ax.p1.is-open );
+assert( t-Ax.r1.is-open );
 assert( t-C.is-open );
 
 # .is-arrow tests
