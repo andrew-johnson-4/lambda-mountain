@@ -22,12 +22,9 @@ import SRC/is-constructor.lm;
 
 import SRC/deep-hash.lm;
 
-import SRC/ascript.lm;
 import SRC/ascript-normal.lm;
-import SRC/to-s.lm;
 import SRC/union.lm;
 import SRC/tag-of.lm;
-import SRC/fields-of-type.lm;
 import SRC/has-infinite.lm;
 import SRC/has-forward.lm;
 

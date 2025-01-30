@@ -1,3 +1,2 @@
 
-import SRC/print.lm;
 import SRC/var-name-if-var.lm;
