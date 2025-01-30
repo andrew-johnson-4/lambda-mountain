@@ -28,7 +28,7 @@ c-dump-braces := λ(: tokens List<String>). (: (
       (set tokens (tail tokens))
    ))
    (if (>( depth 0_u64 )) (
-      (print 'Inequal\sBraces\s_s)(print original-tokens)(print '\n_s)(exit 1_u64)
+      (print 'Inequal\sBraces\s_s)(print '\n_s)(exit 1_u64)
    ) ())
    tokens
 ) List<String>);
@@ -43,7 +43,7 @@ c-dump-brackets := λ(: tokens List<String>). (: (
       (set tokens (tail tokens))
    ))
    (if (>( depth 0_u64 )) (
-      (print 'Inequal\sBrackets\s_s)(print original-tokens)(print '\n_s)(exit 1_u64)
+      (print 'Inequal\sBrackets\s_s)(print '\n_s)(exit 1_u64)
    ) ())
    tokens
 ) List<String>);
@@ -58,7 +58,7 @@ c-dump-parens := λ(: tokens List<String>). (: (
       (set tokens (tail tokens))
    ))
    (if (>( depth 0_u64 )) (
-      (print 'Inequal\sParentheses\s_s)(print original-tokens)(print '\n_s)(exit 1_u64)
+      (print 'Inequal\sParentheses\s_s)(print '\n_s)(exit 1_u64)
    ) ())
    tokens
 ) List<String>);
@@ -115,7 +115,7 @@ c-parse-fbinder := λ(: tokens List<String>). (: (
       (set tokens (tail tokens))
    ))
    (if (>( depth 0_u64 )) (
-      (print 'Inequal\sParentheses\s_s)(print original-tokens)(print '\n_s)(exit 1_u64)
+      (print 'Inequal\sParentheses\s_s)(print '\n_s)(exit 1_u64)
    ) ())
    (Tuple( fname tokens ))
 ) Tuple<String,List<String>>);
@@ -165,14 +165,14 @@ c-parse-typedef := λ(: tokens List<String>). (: (
          (print '\n_s)(exit 1_u64)
       ))
    ) (
-      (print 'Malformed\sTypedef\s_s)(print original-tokens)(print '\n_s)(exit 1_u64)
+      (print 'Malformed\sTypedef\s_s)(print '\n_s)(exit 1_u64)
    ))
    tokens
 ) List<String>);
 
 c-print-token-sequence := λ(: from List<String>)(: to List<String>). (: (
    (while (not(is( (head from) (head to) ))) (
-      (print '\s_s)(print (head from))
+      (print '\s_s)
       (set from (tail from))
    ))
 ) Nil);
