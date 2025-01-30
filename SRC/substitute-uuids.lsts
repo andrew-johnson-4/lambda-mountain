@@ -1,6 +1,9 @@
 
 let substitute-uuids(ctx: AContext, term: AST): AST = (
    match term {
+      App{left:Var{key:c"uuid"}, right:Var{x=key}} => (
+         ctx.lookup(x,term)
+      );
       Seq{left=left,right=right} => (
          Seq{close(substitute-uuids(ctx,left)), close(substitute-uuids(ctx,right))}
       );
