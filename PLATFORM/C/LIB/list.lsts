@@ -45,3 +45,11 @@ let .next(ls: Array<List<x>,?>): Maybe<x> = (
       [] => (None :: Maybe<x>);
    };
 );
+
+let .lookup(ls: List<Tuple<k,v>>, key: k, default: v): v = (
+   let found = false;
+   for Tuple{lkey=left, rval=right} in ls {
+      if not(found) && key==lkey { default=rval; found=true; }
+   };
+   default;
+);

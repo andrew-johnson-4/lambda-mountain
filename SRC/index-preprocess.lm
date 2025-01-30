@@ -8,5 +8,4 @@ import SRC/preprocess-apply-locations.lm;
 import SRC/preprocess-apply.lm;
 import SRC/preprocess-is-suffixed.lm;
 import SRC/preprocess.lm;
-import SRC/substitute-uuids.lm;
 import SRC/try-destructure-macro.lm;

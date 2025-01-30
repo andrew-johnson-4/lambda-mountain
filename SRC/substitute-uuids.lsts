@@ -1,0 +1,21 @@
+
+let substitute-uuids(ctx: Context, term: AST): AST = (
+   match term {
+      Seq{left=left,right=right} => (
+         Seq{close(substitute-uuids(ctx,left)), close(substitute-uuids(ctx,right))}
+      );
+      Typedef{lhs=lhs,rhs=rhs} => (
+         Typedef{close(substitute-uuids(ctx,lhs)), close(substitute-uuids(ctx,rhs))}
+      );
+      Abs{lhs=lhs,rhs=rhs} => (
+         Abs{close(substitute-uuids(ctx,lhs)), close(substitute-uuids(ctx,rhs))}
+      );
+      App{is-cons=is-cons,left=left,right=right} => (
+         App{is-cons,close(substitute-uuids(ctx,left)), close(substitute-uuids(ctx,right))}
+      );
+      Glb{key=key,val=val} => (
+         Glb{key, close(substitute-uuids(ctx,val))}
+      );
+      _ => term;
+   }
+);

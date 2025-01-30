@@ -19,3 +19,4 @@ zero AST = ASTEOF;
 let $"App"(left: AST[], right: AST[]): AST = App { false, left, right };
 
 type alias TContext = Maybe<List<Tuple<CString,Type,AST>>>;
+type alias AContext = List<Tuple<CString,AST>>;

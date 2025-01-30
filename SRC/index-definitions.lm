@@ -4,7 +4,6 @@ type CompileMode ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 type IsUsed Used | Unused | Tail | Return | Call;
 type IsScoped Scoped | Unscoped;
 
-type Context CtxEOF | CtxNil | (CtxBind( Context[] , String , AST )); zero Context CtxEOF;
 type FContext FCtxEOF | (FCtxBind( remainder:FContext[] , k:String , kt:Type , kv:Fragment )); zero FContext FCtxEOF;
 
 type STypeList STEOF | (STSeq( STypeList[] , S , Type )); zero STypeList STEOF;
