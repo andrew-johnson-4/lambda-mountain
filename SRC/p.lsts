@@ -1,9 +1,22 @@
 
-let .p(tt: Type, i: U64): Type = (
+let .r(tt: Type, i: U64): Type = (
    match tt {
       TGround { parameters=parameters } => parameters.nth(i, TAny);
       _ => TAny;
    }
 );
-let .p1(tt: Type): Type = tt.p(0);
-let .p2(tt: Type): Type = tt.p(1);
+let .r1(tt: Type): Type = tt.r(0);
+let .r2(tt: Type): Type = tt.r(1);
+let .r3(tt: Type): Type = tt.r(2);
+let .r4(tt: Type): Type = tt.r(3);
+
+let .l(tt: Type, i: U64): Type = (
+   match tt {
+      TGround { parameters=parameters } => parameters.reverse.nth(i, TAny);
+      _ => TAny;
+   }
+);
+let .l1(tt: Type): Type = tt.l(0);
+let .l2(tt: Type): Type = tt.l(1);
+let .l3(tt: Type): Type = tt.l(2);
+let .l4(tt: Type): Type = tt.l(3);
