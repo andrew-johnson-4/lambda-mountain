@@ -40,7 +40,7 @@ assert( not(t-Ax.is-arrow) );
 assert( not(t-C.is-arrow) );
 assert( t-f.is-arrow );
 assert( t-g.is-arrow );
-assert( t-g.p2.is-arrow );
+assert( t-g.r2.is-arrow );
 
 # domain / range tests
 assert( t-f.domain.is-t(c"A") );
