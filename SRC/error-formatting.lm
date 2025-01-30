@@ -6,7 +6,7 @@ meta
 ;
 exit-error := λ(: msg String)(: t AST). (: (
    (print msg)
-   (print '\nin\sFile\s_s)
+   (print '\n_s)
    (print (to-smart-string(.location( t ))))
    (print '\n_s)
    (exit 1_u64)
