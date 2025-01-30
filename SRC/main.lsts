@@ -1,0 +1,26 @@
+
+let main(argc: C_int, argv: CString[]): Nil = (
+   let argi = 1_u64;
+   let input = [] :: List<CString>;
+   while argi < (argc as U64) {
+      match argv[argi] {
+         c"--typecheck" => config-mode = ModeTypecheck;
+         c"--compile" => config-mode = ModeCompile;
+         c"-o" => (
+            argi = argi + 1;
+            config-target = argv[argi];
+         );
+         fp => (
+            if plugins-backends-index.has(fp) {
+               plugin-current-backend = plugins-backends-index.lookup(fp,&plugin-null-backend);
+            } else { input = cons(fp, input); };
+         );
+      };
+      argi = argi + 1;
+   };
+   for fp in input.reverse { frontend(fp); }; frontend-flush();
+   match config-mode {
+      ModeTypecheck{} => (preprocess(); typecheck(););
+      ModeCompile{} => (preprocess(); typecheck(); plugin-current-backend(););
+   };
+);
