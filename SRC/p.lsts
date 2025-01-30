@@ -1,5 +1,5 @@
 
-let .r(tt: Type, i: U64): Type = (
+let .r(tt: Type, i: USize): Type = (
    match tt {
       TGround { parameters=parameters } => parameters.nth(i, TAny);
       _ => TAny;
@@ -10,7 +10,7 @@ let .r2(tt: Type): Type = tt.r(1);
 let .r3(tt: Type): Type = tt.r(2);
 let .r4(tt: Type): Type = tt.r(3);
 
-let .l(tt: Type, i: U64): Type = (
+let .l(tt: Type, i: USize): Type = (
    match tt {
       TGround { parameters=parameters } => parameters.reverse.nth(i, TAny);
       _ => TAny;
