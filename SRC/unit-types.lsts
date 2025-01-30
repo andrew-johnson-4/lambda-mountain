@@ -5,6 +5,7 @@ import SRC/types-definitions.lsts;
 # Convenience
 import SRC/type-print.lsts;
 import SRC/to-smart-string.lm;
+import SRC/deep-hash.lsts;
 
 # Constructors / Destructors
 import SRC/t.lsts;

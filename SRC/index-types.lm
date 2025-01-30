@@ -18,8 +18,6 @@ import SRC/maybe-specialize.lm;
 
 import SRC/is-constructor.lm;
 
-import SRC/deep-hash.lm;
-
 import SRC/union.lm;
 import SRC/tag-of.lm;
 import SRC/has-infinite.lm;
