@@ -30,3 +30,5 @@ import SRC/with-phi.lsts;
 # APIs
 import SRC/ascript-normal.lsts;
 import SRC/type-index.lsts;
+import SRC/index-concrete-type-instances.lm;
+import SRC/typecheck.lsts;
