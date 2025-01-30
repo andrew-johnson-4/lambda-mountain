@@ -28,11 +28,11 @@ compile-c-typedef-ordinal := λ(: base-type Type). (: (
    ) ())
 ) Nil);
 
-continue-compile-c-typedefs-concrete := (: LEOF List<Tuple<Tuple<Maybe<List<Tuple<String,Type,AST>>>,Type>,AST>>);
+continue-compile-c-typedefs-concrete := (: LEOF List<Tuple<Tuple<Maybe<TContext>,Type>,AST>>);
 continue-compile-c-typedefs-count := 0_u64;
 try-continue-compile-c-typedefs := λ. (: (
    (let continue continue-compile-c-typedefs-concrete)
-   (set continue-compile-c-typedefs-concrete (: LEOF List<Tuple<Tuple<Maybe<List<Tuple<String,Type,AST>>>,Type>,AST>>))
+   (set continue-compile-c-typedefs-concrete (: LEOF List<Tuple<Tuple<Maybe<TContext>,Type>,AST>>))
    (while (non-zero continue) (
       (set continue-compile-c-typedefs-count (+( continue-compile-c-typedefs-count 1_u64 )))
       (if (>( continue-compile-c-typedefs-count 100_u64 )) (
@@ -48,7 +48,7 @@ try-continue-compile-c-typedefs := λ. (: (
          ))
       ))
       (set continue continue-compile-c-typedefs-concrete)
-      (set continue-compile-c-typedefs-concrete (: LEOF List<Tuple<Tuple<Maybe<List<Tuple<String,Type,AST>>>,Type>,AST>>))
+      (set continue-compile-c-typedefs-concrete (: LEOF List<Tuple<Tuple<Maybe<TContext>,Type>,AST>>))
    ))
 ) Nil);
 
@@ -88,7 +88,7 @@ is-incomplete-typedef := λ(: tt Type). (: (
 ) U64);
 
 is-cstruct-hard-compiled-index := (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<Type,U64>[]) )) HashtableEq<Type,U64>);
-compile-c-typedef-concrete := λ(: tctx TContext)(: base-type Type)(: body AST). (: (
+compile-c-typedef-concrete := λ(: tctx Maybe<TContext>)(: base-type Type)(: body AST). (: (
    (if (.is-open base-type) () (
       (let original-body body)
       (let base-uuid (.lookup( index-c-type-ordinal base-type 'UnknownCTypename_s )))
@@ -147,7 +147,7 @@ compile-c-typedef := λ(: base-type Type)(: body AST). (: (
    (set compile-c-type-body-of-base-type (.bind( compile-c-type-body-of-base-type (tag-of base-type) (Tuple( base-type body )) )))
    (if (.is-lm-struct base-type) (
       (if (.is-open base-type) () (
-         (compile-c-typedef-concrete( (: None TContext) base-type body ))
+         (compile-c-typedef-concrete( (: None Maybe<TContext>) base-type body ))
       ))
       (match base-type (
          ()
@@ -174,7 +174,7 @@ compile-c-fields-of-case := λ(: base-type Type)(: tag-definition AST)(: case-nu
    ft
 ) Type);
 
-compile-c-casedef := λ(: tctx TContext)(: fields Type)(: case-number U64). (: (
+compile-c-casedef := λ(: tctx Maybe<TContext>)(: fields Type)(: case-number U64). (: (
    (let r (+(
       (SAtom 'struct\s{_s)
       (+(
@@ -221,7 +221,7 @@ compile-c-mark-field-as-seen := λ(: tt Type). (: (
    ) ())
 ) Nil);
 
-compile-c-casedef-fields := λ(: tctx TContext)(: fields Type)(: case-number U64)(: field-index U64). (: (
+compile-c-casedef-fields := λ(: tctx Maybe<TContext>)(: fields Type)(: case-number U64)(: field-index U64). (: (
    (let r SNil)
    (match fields (
       ()

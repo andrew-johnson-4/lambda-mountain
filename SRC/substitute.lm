@@ -84,7 +84,7 @@ substitute := λ(: tctx Context)(: tt Type). (: (
    tt
 ) Type);
 
-substitute-lhs := λ(: tctx TContext)(: t AST). (: (
+substitute-lhs := λ(: tctx Maybe<TContext>)(: t AST). (: (
    (match t (
       ()
       ( (App( ps (App( (Lit( ':_s ctk )) (App( (Var( v vtk )) (AType vt) )) )) )) (
@@ -115,7 +115,7 @@ substitute-lhs := λ(: tctx TContext)(: t AST). (: (
    t
 ) AST);
 
-substitute := λ(: tctx TContext)(: t AST). (: (
+substitute := λ(: tctx Maybe<TContext>)(: t AST). (: (
    (match t (
       ()
       ( ASTEOF () )

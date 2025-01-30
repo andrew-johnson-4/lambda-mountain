@@ -1,5 +1,5 @@
 
-substitute := λ(: tctx TContext)(: tt List<Type>). (: (
+substitute := λ(: tctx Maybe<TContext>)(: tt List<Type>). (: (
    (match tt (
       ()
       ( LEOF () )
@@ -13,7 +13,7 @@ substitute := λ(: tctx TContext)(: tt List<Type>). (: (
    tt
 ) List<Type>);
 
-substitute := λ(: tctx TContext)(: tt Type). (: (
+substitute := λ(: tctx Maybe<TContext>)(: tt Type). (: (
    (match tt (
       ()
       ( (TVar v) (

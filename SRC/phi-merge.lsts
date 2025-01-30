@@ -2,12 +2,12 @@
 let phi-merge(ctx: TContext, weak-ctx: TContext): TContext = (
    let iter-ctx = ctx;
    let left-phi-ids = [] :: List<CString>;
-   for Tuple{ key=first, typ=second, term=third } in iter-ctx.get-or([] :: List<Tuple<CString,Type,AST>>) {
+   for Tuple{ key=first, typ=second, term=third } in iter-ctx.get-or([] :: TContext) {
       left-phi-ids = left-phi-ids + typ.phi-ids;
    };
    iter-ctx = weak-ctx;
    let right-phi-ids = [] :: List<CString>;
-   for Tuple{ key=first, typ=second, term=third } in iter-ctx.get-or([] :: List<Tuple<CString,Type,AST>>) {
+   for Tuple{ key=first, typ=second, term=third } in iter-ctx.get-or([] :: TContext) {
       right-phi-ids = right-phi-ids + typ.phi-ids;
    };
    for lid in left-phi-ids.unique {
@@ -17,7 +17,7 @@ let phi-merge(ctx: TContext, weak-ctx: TContext): TContext = (
          let left-typ = TAny {};
          let left-term = ASTEOF {};
          let found = false;
-         for Tuple{ key=first, typ=second, term=third } in iter-ctx.get-or([] :: List<Tuple<CString,Type,AST>>) {
+         for Tuple{ key=first, typ=second, term=third } in iter-ctx.get-or([] :: TContext) {
             if not(found) && typ.contains-phi(lid) {
                left-key = key;
                left-typ = typ.get-phi(lid);
@@ -28,7 +28,7 @@ let phi-merge(ctx: TContext, weak-ctx: TContext): TContext = (
          iter-ctx = weak-ctx;
          let right-typ = TAny {};
          found = false;
-         for Tuple{ key=first, typ=second, term=third } in iter-ctx.get-or([] :: List<Tuple<CString,Type,AST>>) {
+         for Tuple{ key=first, typ=second, term=third } in iter-ctx.get-or([] :: TContext) {
             if not(found) && typ.contains-phi(lid) {
                right-typ = typ.get-phi(lid);
                found = true;
@@ -46,12 +46,12 @@ let phi-merge(ctx: TContext, weak-ctx: TContext): TContext = (
 let phi-override(ctx: TContext, weak-ctx: TContext): TContext = (
    let iter-ctx = ctx;
    let left-phi-ids = [] :: List<CString>;
-   for Tuple{ key=first, typ=second, term=third } in iter-ctx.get-or([] :: List<Tuple<CString,Type,AST>>) {
+   for Tuple{ key=first, typ=second, term=third } in iter-ctx.get-or([] :: TContext) {
       left-phi-ids = left-phi-ids + typ.phi-ids;
    };
    iter-ctx = weak-ctx;
    let right-phi-ids = [] :: List<CString>;
-   for Tuple{ key=first, typ=second, term=third } in iter-ctx.get-or([] :: List<Tuple<CString,Type,AST>>) {
+   for Tuple{ key=first, typ=second, term=third } in iter-ctx.get-or([] :: TContext) {
       right-phi-ids = right-phi-ids + typ.phi-ids;
    };
    for lid in left-phi-ids.unique {
@@ -61,7 +61,7 @@ let phi-override(ctx: TContext, weak-ctx: TContext): TContext = (
          let left-typ = TAny {};
          let left-term = ASTEOF {};
          let found = false;
-         for Tuple{ key=first, typ=second, term=third } in iter-ctx.get-or([] :: List<Tuple<CString,Type,AST>>) {
+         for Tuple{ key=first, typ=second, term=third } in iter-ctx.get-or([] :: TContext) {
             if not(found) && typ.contains-phi(lid) {
                left-key = key;
                left-typ = typ.get-phi(lid);
@@ -72,7 +72,7 @@ let phi-override(ctx: TContext, weak-ctx: TContext): TContext = (
          iter-ctx = weak-ctx;
          let right-typ = TAny {};
          found = false;
-         for Tuple{ key=first, typ=second, term=third } in iter-ctx.get-or([] :: List<Tuple<CString,Type,AST>>) {
+         for Tuple{ key=first, typ=second, term=third } in iter-ctx.get-or([] :: TContext) {
             if not(found) && typ.contains-phi(lid) {
                right-typ = typ.get-phi(lid);
                found = true;

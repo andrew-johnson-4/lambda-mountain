@@ -45,7 +45,7 @@ let apply(function-name: CString, function-type: Type, parameters: Type, do-spec
          let fpt = sft.domain;
          let ctx = unify(fpt, parameters);
          let phi-ctx = ctx;
-         for phi-row in phi-ctx.get-or([] :: List<Tuple<CString,Type,AST>>) {
+         for phi-row in phi-ctx.get-or([] :: TContext) {
             match phi-row {
                Tuple{ first:c"Phi::Transition", typ=second, third:Var{pid=key} } => (
                   phi-types = cons( Tuple{ pid, typ }, phi-types );
