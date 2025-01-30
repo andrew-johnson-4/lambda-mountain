@@ -31,7 +31,7 @@ preprocess-apply-hard := λ(: macro-name String)(: arity U64)(: program AST). (:
                   (let p (apply( ctx rhs )))
                   (let c (extract-uuids( (.location program) CtxEOF p )))
                   (if (non-zero c) (
-                     (set p (substitute-uuids( c p )))
+                     (set p (substitute-uuids( (context-to-acontext c) p )))
                   ) ())
                   (set return (preprocess-apply p))
                   (set macros MEOF)

@@ -1,5 +1,5 @@
 
-typeof-var-raw := λ(: sloc AST)(: tctx TContext)(: vname String). (: (
+typeof-var-raw := λ(: sloc AST)(: tctx Maybe<TContext>)(: vname String). (: (
    (let found (find-alias-type vname))
    (let continue 1_u64)
    (for-each ( (Tuple( k vt _ )) in 

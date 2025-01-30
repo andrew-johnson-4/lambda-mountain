@@ -8,6 +8,8 @@ import SRC/unit-ast.lsts;
 import SRC/unit-inference.lsts;
 import SRC/unit-fragments.lsts;
 import SRC/unit-globals.lsts;
+import SRC/unit-error.lsts;
+import SRC/unit-preprocess.lsts;
 
 import SRC/index-definitions.lm;
 import SRC/index-globals.lm;
@@ -18,5 +20,7 @@ import SRC/index-context.lm;
 import SRC/index-ast.lm;
 import SRC/index-preprocess.lm;
 import SRC/index-plugins.lm;
+
+import SRC/context-to-acontext.lm;
 
 import SRC/main.lsts;

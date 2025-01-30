@@ -5,6 +5,6 @@ let .bind(tctx: HashtableEq<CString,List<Tuple<Type,AST>>>, k: CString, kt: Type
    tctx.bind(k, row);
 );
 
-let .bind(tctx: TContext, k: CString, kt: Type, kv: AST): TContext = (
-   Some{ cons(Tuple{k, kt, kv}, tctx.get-or([] :: List<Tuple<CString,Type,AST>>)) };
+let .bind(tctx: Maybe<TContext>, k: CString, kt: Type, kv: AST): Maybe<TContext> = (
+   Some{ cons(Tuple{k, kt, kv}, tctx.get-or([] :: TContext)) };
 );

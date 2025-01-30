@@ -1,5 +1,5 @@
 
-infer-ctx := λ(: tctx TContext)(: lhs AST). (: (
+infer-ctx := λ(: tctx Maybe<TContext>)(: lhs AST). (: (
    (match lhs (
       ()
       ( (App( (Lit( ':_s _ )) (App( (Var( v vtk )) (AType tt) )) )) (
@@ -16,4 +16,4 @@ infer-ctx := λ(: tctx TContext)(: lhs AST). (: (
       ( ASTNil () )
    ))
    tctx
-) TContext);
+) Maybe<TContext>);

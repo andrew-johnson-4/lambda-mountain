@@ -1,5 +1,5 @@
 
-infer-tctx := λ(: tctx TContext)(: tt List<Type>). (: (
+infer-tctx := λ(: tctx Maybe<TContext>)(: tt List<Type>). (: (
    (match tt (
       ()
       ( LEOF () )
@@ -9,9 +9,9 @@ infer-tctx := λ(: tctx TContext)(: tt List<Type>). (: (
       ))
    ))
    tctx
-) TContext);
+) Maybe<TContext>);
 
-infer-tctx := λ(: tctx TContext)(: tt Type). (: (
+infer-tctx := λ(: tctx Maybe<TContext>)(: tt Type). (: (
    (match tt (
       ()
       ( (TAnd( lt rt )) (
@@ -32,4 +32,4 @@ infer-tctx := λ(: tctx TContext)(: tt Type). (: (
       ( TAny () )
    ))
    tctx
-) TContext);
+) Maybe<TContext>);

@@ -1,0 +1,16 @@
+
+let deep-hash(tt: Type): U64 = (
+   match tt {
+      TAny{} => 0_u64;
+      TVar{name=name} => deep-hash(name);
+      TAnd{lt=left,rt=right} => deep-hash(lt) + deep-hash(rt);
+      TGround{tag=tag,parameters=parameters} => deep-hash(tag) + deep-hash(parameters);
+   }
+);
+
+let deep-hash(ts: List<Type>): U64 = (
+   let return = 0_u64;
+   for t1 in ts { return = return + deep-hash(t1); };
+   return;
+);
+

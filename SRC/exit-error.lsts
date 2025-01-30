@@ -1,0 +1,4 @@
+
+let exit-error(msg: CString, t: AST): Nil = (
+   print("\{msg}\n\{t.location}\n"); exit(1);
+);
