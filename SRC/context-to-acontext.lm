@@ -1,0 +1,13 @@
+
+context-to-acontext := λ(: ctx Context). (: (
+   (let cs (: LEOF AContext))
+   (while (non-zero ctx) (match ctx (
+      ()
+      ( (CtxBind( rst k v )) (
+         (set cs (cons( (Tuple( k v )) cs )))
+         (set ctx rst)
+      ))
+      ( _ (set ctx CtxEOF) )
+   )))
+   cs
+) AContext);
