@@ -29,10 +29,8 @@ preprocess-apply-hard := λ(: macro-name String)(: arity U64)(: program AST). (:
                   (set rhs (with-location( rhs (.location program) )))
                   (set rhs (preprocess-apply-literals( rhs )))
                   (let p (apply( ctx rhs )))
-                  (let c (extract-uuids( (.location program) CtxEOF p )))
-                  (if (non-zero c) (
-                     (set p (substitute-uuids( (context-to-acontext c) p )))
-                  ) ())
+                  (let c (extract-uuids( p )))
+                  (set p (substitute-uuids( c p )))
                   (set return (preprocess-apply p))
                   (set macros MEOF)
                   (set matched True_u8)

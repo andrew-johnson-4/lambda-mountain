@@ -1,5 +1,4 @@
 
-import SRC/extract-uuids.lm;
 import SRC/index-typedefs.lm;
 import SRC/is-macro-head.lm;
 import SRC/preprocess-apply-hard.lm;
