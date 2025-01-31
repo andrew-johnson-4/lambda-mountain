@@ -13,6 +13,7 @@ import SRC/tctx-substitute.lm;
 import SRC/tctx-union.lsts;
 import SRC/tctx-and.lsts;
 import SRC/tctx-bind.lsts;
+import SRC/reduce-plural.lsts;
 
 # corollaries
 import SRC/quick-prop.lsts;
