@@ -4,19 +4,8 @@ reduce-plural := λ(: dpts List<Type>). (: (
    (for-each (pt in dpts) (
       (set pts (cons( (Tuple( (denormalize-arrow pt) pt )) pts )))
    ))
-   (set pts (.reverse pts))
    (let r (: LEOF List<Tuple<Type,Type>>))
-   (let maybe-constructor pts)
-   (while (non-zero maybe-constructor) (match maybe-constructor (
-      ()
-      ( (LCons( (Tuple( try-denormal try )) tlt )) (
-         (if (is-constructor try) (
-            (set r (cons( (Tuple( try-denormal try )) r )))
-         ) ())
-         (set maybe-constructor tlt)
-      ))
-   )))
-   (if (non-zero r) (set pts (: LEOF List<Tuple<Type,Type>>)) ())
+   (set pts (.reverse pts))
    (while (non-zero pts) (match pts (
       ()
       ( (LCons( (Tuple( try-denormal try )) tlt )) (
