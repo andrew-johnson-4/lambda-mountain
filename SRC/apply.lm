@@ -2,7 +2,7 @@ apply := λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (
    (apply-blame( function-name ft pt 0_u64 blame ))
 ) ApplyResult);
 
-apply := λ(: ctx Context)(: term AST). (: (
+apply := λ(: ctx AContext)(: term AST). (: (
    (let return term)
    (match term (
       ()
@@ -13,18 +13,8 @@ apply := λ(: ctx Context)(: term AST). (: (
          (set return (AType( (substitute( ctx tt )) )))
       ))
       ( (Var( n _ )) (
-         (while (non-zero ctx) (match ctx (
-            ()
-            ( (CtxBind( rst k v )) (
-               (if (==( k n )) (
-                  (set return v)
-                  (set ctx CtxEOF)
-               ) (
-                  (set ctx rst)
-               ))
-            ))
-            ( _ (set ctx CtxEOF))
-         )))
+         (let nr (.lookup( ctx n ASTEOF )))
+         (if (non-zero nr) (set return nr) ())
       ))
       ( (App( vl vr )) (
          (set return (App(

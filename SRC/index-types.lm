@@ -16,7 +16,6 @@ import SRC/index-of-tag.lm;
 import SRC/is-sized-array.lsts;
 import SRC/maybe-specialize.lm;
 
-import SRC/union.lm;
 import SRC/tag-of.lm;
 import SRC/has-infinite.lm;
 import SRC/has-forward.lm;
