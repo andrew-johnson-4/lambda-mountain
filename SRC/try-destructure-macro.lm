@@ -1,12 +1,13 @@
 
 try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (
-   (let r CtxEOF)
+   (let r (: None Maybe<AContext>))
+   (let yes (Some(: LEOF AContext)))
    (match (Tuple( lhs term )) (
       ()
-      ( (Tuple( ASTNil ASTNil )) (set r CtxNil) )
+      ( (Tuple( ASTNil ASTNil )) (set r yes) )
       ( (Tuple( (App( (App( (Var( _ _ )) (Var( _ _ )) )) (Var( _ _ )) )) (App( (App( (Lit( possibly-tag _ )) _ )) _ )) )) () )
       ( (Tuple( (App( (Lit( ':Literal:_s _ )) (Var( pv _ )) )) (App( (Lit( ':_s ctk )) (App( (Lit( _ _ )) (AType _) )) )) )) (
-         (set r (CtxBind( (close CtxNil) pv (with-location( term (.location ctk) )) )))
+         (set r (.bind( r pv (with-location( term (.location ctk) )) )))
       ))
       ( (Tuple( (App( (Var( _ _ )) (Var( _ _ )) )) (App( (Lit( tag _ )) _ )) )) (
          (if (||( (is-lone-tag tag) (preprocess-is-suffixed tag) )) (
@@ -43,36 +44,36 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (
          ) ())
       ))
       ( (Tuple( (Lit( ':Any:_s _ )) (Var( '__s _ )) )) (
-         (set r CtxNil)
+         (set r yes)
       ))
       ( (Tuple( (Lit( pl _ )) (Var( el _ )) )) (
-         (if (==( pl el )) (set r CtxNil) ())
+         (if (==( pl el )) (set r yes) ())
       ))
       ( (Tuple( (Lit( pl _ )) (Lit( el _ )) )) (
-         (if (==( pl el )) (set r CtxNil) ())
+         (if (==( pl el )) (set r yes) ())
       ))
       ( (Tuple( (App( (Lit( ':Literal:_s _ )) (Var( pv _ )) )) (Lit( el eltk )) )) (
          (if (==( (index-of-tag el) unknown-index-of-tag ))
-             (set r (CtxBind( (close CtxNil) pv (with-location( term (.location eltk) )) )))
+             (set r (.bind( r pv (with-location( term (.location eltk) )) )))
              ()
          )
       ))
       ( (Tuple( (App( (Lit( ':Field:_s _ )) (Var( pv _ )) )) (Var( el eltk )) )) (
          (if (.has-prefix( el '._s )) (
-            (set r (CtxBind( (close CtxNil) pv (with-location( term (.location eltk) )) )))
+            (set r (.bind( r pv (with-location( term (.location eltk) )) )))
          ) ())
       ))
       ( (Tuple( (App( (Lit( ':Variable:_s _ )) (Var( _ _ )) )) (Var( '__s _ )) )) (
          ()
       ))
       ( (Tuple( (App( (Lit( ':Variable:_s _ )) (Var( pv _ )) )) (Var( el eltk )) )) (
-         (set r (CtxBind( (close CtxNil) pv (with-location( term (.location eltk) )) )))
+         (set r (.bind( r pv (with-location( term (.location eltk) )) )))
       ))
       ( (Tuple( (App( (App( (Lit( ':Tag:_s _ )) (Var( pv _ )) )) (Var( pt _ )) )) (Lit( el eltk )) )) (
          (if (==( (index-of-tag el) unknown-index-of-tag )) () (
-            (set r CtxNil)
+            (set r yes)
             (let tag-i (to-string(index-of-tag el)))
-            (set r (CtxBind( (close r) pv (
+            (set r (.bind( r pv (
                (App(
                   (close(Lit( ':_s (with-key( eltk ':_s )) )))
                   (close(App(
@@ -85,14 +86,14 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (
                (close(SAtom 'Tag::_s))
                (close(SAtom el))
             ))))
-            (set r (CtxBind( (close r) pt (Lit( tag-tt (with-key( eltk tag-tt )) )) )))
+            (set r (.bind( r pt (Lit( tag-tt (with-key( eltk tag-tt )) )) )))
          ))
       ))
       ( (Tuple( (Var( pv _ )) t )) (
-         (set r (CtxBind( (close CtxNil) pv (with-location( term (.location t) )) )))
+         (set r (.bind( r pv (with-location( term (.location t) )) )))
       ))
       ( _ () )
    ))
    r
-) Context);
+) Maybe<AContext>);
 

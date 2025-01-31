@@ -1,0 +1,31 @@
+
+let substitute(ctx: AContext, v: Token): Token = (
+   match ctx.lookup(v.key, ASTEOF) {
+      Lit{t=token} => t;
+      Var{t=token} => t;
+      _ => v;
+   }
+);
+
+let substitute(ctx: AContext, tt: Type): Type = (
+   match tt {
+      TVar{v=name} => match ctx.lookup(v, ASTEOF) {
+         Lit{tv=key} => parse-type(tv);
+         Var{tv=key} => parse-type(tv);
+         AType{tv=tt} => tv;
+         _ => tt;
+      };
+      TGround{tag=tag,parameters=parameters} => (
+         TGround{ tag, close(substitute(ctx,parameters)) }
+      );
+      TAnd{left=left,right=right} => substitute(ctx,left) && substitute(ctx,right);
+      _ => tt;
+   }
+);
+
+let substitute(ctx: AContext, tt: List<Type>): List<Type> = (
+   match tt {
+      LCons{head=head,tail=tail} => cons( substitute(ctx,head), substitute(ctx,tail) );
+      _ => tt;
+   }
+);
