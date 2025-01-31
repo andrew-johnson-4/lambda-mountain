@@ -21,6 +21,4 @@ import SRC/index-ast.lm;
 import SRC/index-preprocess.lm;
 import SRC/index-plugins.lm;
 
-import SRC/context-to-acontext.lm;
-
 import SRC/main.lsts;
