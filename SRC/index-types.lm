@@ -16,8 +16,6 @@ import SRC/index-of-tag.lm;
 import SRC/is-sized-array.lsts;
 import SRC/maybe-specialize.lm;
 
-import SRC/is-constructor.lm;
-
 import SRC/union.lm;
 import SRC/tag-of.lm;
 import SRC/has-infinite.lm;
@@ -30,7 +28,6 @@ import SRC/cons-tail.lm;
 import SRC/apply.lm;
 import SRC/apply.lsts;
 import SRC/apply-plural.lm;
-import SRC/reduce-plural.lm;
 import SRC/apply-or-cons-and-specialize.lm;
 import SRC/try-specialize.lm;
 
