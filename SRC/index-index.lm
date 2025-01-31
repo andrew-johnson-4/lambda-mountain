@@ -23,4 +23,7 @@ import SRC/index-plugins.lm;
 
 import SRC/main.lsts;
 
-import SRC/context-to-acontext.lm;
+# TODO: remove Core dependency on "parse-type" function
+import SRC/substitute.lsts;
+import SRC/union.lsts;
+import SRC/actx-bind.lsts;
