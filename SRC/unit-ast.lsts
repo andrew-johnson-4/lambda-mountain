@@ -11,3 +11,4 @@ import SRC/smart-token-location.lsts;
 import SRC/plus.lsts;
 import SRC/unique.lsts;
 import SRC/without-location.lsts;
+import SRC/var-name-if-var.lsts;
