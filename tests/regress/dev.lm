@@ -1,5 +1,5 @@
 
-import LIB/default.lm;
+import LIB/default.lsts;
 import LIB/dev-u64.lm;
 
 main := λ.(: (

@@ -1,5 +1,5 @@
 
-import LIB/default.lm;
+import LIB/default.lsts;
 
 main := λ. (: (
    (let tmp (as (mktemp(as (clone-rope(SAtom '/tmp/lm.tmp.XXXXXX_s)) U8[])) U8[]))

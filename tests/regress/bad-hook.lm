@@ -1,5 +1,5 @@
 
-import LIB/default.lm;
+import LIB/default.lsts;
 
 f := λ: Hook+HookPriority<-1>(: a U64). (: (
    a

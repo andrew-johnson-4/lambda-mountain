@@ -1,5 +1,5 @@
 
-import LIB/default.lm;
+import LIB/default.lsts;
 
 type A (AA( U64 ));
 type B (B( List<A> ));

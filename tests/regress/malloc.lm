@@ -1,5 +1,5 @@
 
-import LIB/default.lm;
+import LIB/default.lsts;
 
 main := λ. (: (
    (let region1 (malloc 11_u64))

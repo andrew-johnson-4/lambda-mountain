@@ -1,5 +1,5 @@
 
-import LIB/default.lm;
+import LIB/default.lsts;
 
 let a(x: U8): Nil = print(x);
 let b(x: I8): Nil = print(x);
