@@ -30,7 +30,6 @@ import SRC/apply-plural.lm;
 import SRC/apply-or-cons-and-specialize.lm;
 import SRC/try-specialize.lm;
 
-import SRC/unify-hint.lm;
 import SRC/infer-type-definition.lm;
 import SRC/typeof-var.lm;
 import SRC/typeof-var-raw.lm;
