@@ -1,5 +1,5 @@
 
-import LIB/default.lm;
+import LIB/default.lsts;
 import SRC/unit-types.lsts;
 
 let t-A = t1(c"A");

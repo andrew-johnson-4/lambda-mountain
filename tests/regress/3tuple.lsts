@@ -1,5 +1,5 @@
 
-import LIB/default.lm;
+import LIB/default.lsts;
 
 let t2 = Tuple{ 1, 2 };
 print(t2);

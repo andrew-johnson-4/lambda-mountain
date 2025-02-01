@@ -1,5 +1,5 @@
 
-import LIB/default.lm;
+import LIB/default.lsts;
 
 type XY X | (Y( U64 ));
 type XYZ (Z( XY , U64 ));

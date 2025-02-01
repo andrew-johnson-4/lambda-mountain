@@ -1,5 +1,5 @@
 
-import LIB/default.lm;
+import LIB/default.lsts;
 
 type A (A( U64 ));
 type B (B( A ));

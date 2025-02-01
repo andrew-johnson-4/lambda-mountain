@@ -1,5 +1,5 @@
 
-import LIB/default.lm;
+import LIB/default.lsts;
 
 macro ('my-seq base-type v ) (
    a := λ(: t base-type+base-type). v;

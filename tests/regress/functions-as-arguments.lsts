@@ -1,5 +1,5 @@
 
-import LIB/default.lm;
+import LIB/default.lsts;
 
 let f(x: U64): U64 = x;
 let g(f: Arrow<U64,U64>, x: U64): U64 = x + 1;

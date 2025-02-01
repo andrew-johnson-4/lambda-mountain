@@ -1,5 +1,5 @@
 
-import LIB/default.lm;
+import LIB/default.lsts;
 
 macro ('my-seq x) (
    a := λ. 1_u64;
