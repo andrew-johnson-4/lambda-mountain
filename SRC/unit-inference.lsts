@@ -9,7 +9,7 @@ import SRC/inference-definitions.lsts;
 # unification
 import SRC/can-unify.lsts;
 import SRC/unify.lsts;
-import SRC/tctx-substitute.lm;
+import SRC/tctx-substitute.lsts;
 import SRC/tctx-union.lsts;
 import SRC/tctx-and.lsts;
 import SRC/tctx-bind.lsts;

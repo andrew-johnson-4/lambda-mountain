@@ -99,7 +99,7 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
          (set tctx (infer-expr( tctx t Unscoped TAny used )))
          (let inner-tt (typeof t))
          (if (non-zero inner-tt) (
-            (if (.has-prefix( (tag-of tt) 'Tag::_s )) (
+            (if (.has-prefix( (.tag tt) 'Tag::_s )) (
                (set tt (&&( tt inner-tt )))
             ) (
                (let inner-class (.with-only-class inner-tt))

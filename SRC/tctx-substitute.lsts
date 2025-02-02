@@ -1,0 +1,19 @@
+
+let substitute(tctx: Maybe<TContext>, tt: List<Type>): List<Type> = (
+   match tt {
+      LCons{head=head,tail=tail} => cons( substitute(tctx,head), substitute(tctx,tail) );
+      _ => tt;
+   }
+);
+
+let substitute(tctx: Maybe<TContext>, tt: Type): Type = (
+   match tt {
+      TAnd{left=left,right=right} => TAnd{close(substitute(tctx,left)), close(substitute(tctx,right))};
+      TGround{tag=tag,parameters=parameters} => TGround{tag,close(substitute(tctx,parameters))};
+      TVar{name=name} => (
+         let ta = tctx.get-or([] :: List<Tuple<CString,Type,AST>>).lookup(name,Tuple{TAny,ASTEOF});
+         if non-zero(ta.first) then ta.first else tt;
+      );
+      _ => tt;
+   }
+);
