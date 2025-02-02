@@ -1,5 +1,4 @@
 
-cstring-cache := (: SSEOF StringStringList);
 compile-declare-cstring := λ(: val String). (: (
    (let r (compile-declare-cstring-c( val )))
    r

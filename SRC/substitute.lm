@@ -111,30 +111,3 @@ substitute := λ(: tctx Maybe<TContext>)(: t AST). (: (
    ))
    t
 ) AST);
-
-substitute := λ(: tctx StringSList)(: t S). (: (
-   (match t (
-      ()
-      ( SNil (set t SNil) )
-      ( (SAtom a) (
-         (while (non-zero tctx) (match tctx (
-            ()
-            ( (SSLSeq( rst k v )) (
-               (if (==( a k )) (
-                  (set t v)
-               ) ())
-               (set tctx rst)
-            )))
-         ))
-      ))
-      ( (SCons( lt rt )) (
-         (set t (SCons(
-            (close(substitute( tctx lt )))
-            (close(substitute( tctx rt )))
-         )))
-      ))
-   ))
-   (let rt t)
-   rt
-) S);
-

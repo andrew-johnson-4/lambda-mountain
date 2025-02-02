@@ -4,8 +4,8 @@ import SRC/types-definitions.lsts;
 
 # Convenience
 import SRC/type-print.lsts;
-import SRC/to-smart-string.lm;
 import SRC/deep-hash.lsts;
+import SRC/type-to-smart-string.lsts;
 
 # Constructors / Destructors
 import SRC/t.lsts;
@@ -27,3 +27,4 @@ import SRC/has-class.lsts;
 
 # set operations
 import SRC/without-tag.lsts;
+import SRC/without-size-unless-class.lsts;
