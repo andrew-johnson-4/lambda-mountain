@@ -1,0 +1,17 @@
+
+let with-location(term: AST, loc: SourceLocation): AST = (
+   match term {
+      Var{key=key,token=token} => Var{key,with-location(token,loc)};
+      Lit{key=key,token=token} => Lit{key,with-location(token,loc)};
+      App{left=left,right=right} => App{close(with-location(left,loc)),close(with-location(right,loc))};
+      Seq{left=left,right=right} => Seq{close(with-location(left,loc)),close(with-location(right,loc))};
+      Abs{lhs=lhs,rhs=rhs,tt=tt} => Abs{close(with-location(lhs,loc)),close(with-location(rhs,loc)),tt};
+      Typedef{lhs=lhs,rhs=rhs} => Typedef{close(with-location(lhs,loc)),close(with-location(rhs,loc))};
+      Glb{key=key,val=val} => Glb{with-location(key,loc),close(with-location(val,loc))};
+      _ => term;
+   }
+);
+
+let with-location(t: Token, loc: SourceLocation): Token = (
+   if non-zero(t.location) then t else Token{ t.key, iuid(), loc }
+);
