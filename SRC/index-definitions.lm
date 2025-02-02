@@ -6,13 +6,11 @@ type IsScoped Scoped | Unscoped;
 
 type FContext FCtxEOF | (FCtxBind( remainder:FContext[] , k:String , kt:Type , kv:Fragment )); zero FContext FCtxEOF;
 
-type STypeList STEOF | (STSeq( STypeList[] , S , Type )); zero STypeList STEOF;
 type StringTypeList StrTEOF | (StrTSeq( StringTypeList[] , String , Type )); zero StringTypeList StrTEOF;
 
 type StringList SLEOF | (SLSeq( StringList[] , String )); zero StringList SLEOF;
 type StringU64List SUEOF | (SUSeq( StringU64List[] , String , U64 )); zero StringU64List SUEOF;
 type StringStringList SSEOF | (SSSeq( StringStringList[] , String , String )); zero StringStringList SSEOF;
-type StringSList SSLEOF | (SSLSeq( StringSList[] , String , S )); zero StringSList SSLEOF;
 
 type Macro (Macro( AST , AST ));
 type MacroList MEOF | (MSeq( MacroList[] , Macro )); zero MacroList MEOF;
