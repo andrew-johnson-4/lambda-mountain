@@ -2,3 +2,45 @@
 let to-smart-string(loc: SourceLocation): String = (
    "In File \{loc.filename} Line \{loc.line} Column \{loc.column}"
 );
+
+let to-smart-string(tt: Type): SmartString = (
+   match tt {
+      TAny{} => "?";
+      TVar{name=name} => intern(name);
+      TGround{tag=tag,parameters=parameters} => (
+         let r = intern(tag);
+         if parameters.length > 0 {
+            let pc = 0_u64;
+            r = r + "<";
+            for p in parameters.reverse {
+               if pc > 0 { r = r + ","; };
+               r = r + to-smart-string(p);
+               pc = pc + 1;
+            };
+            r = r + ">";
+         }; r
+      );
+      TAnd{left=left,right=right} => "\{left}+\{right}";
+   }
+);
+
+let .pretty(tt: Type): SmartString = (
+   match tt {
+      TAny{} => "?";
+      TVar{name=name} => intern(name);
+      TGround{tag=tag,parameters=parameters} => (
+         let r = intern(tag);
+         if parameters.length > 0 {
+            let pc = 0_u64;
+            r = r + "<";
+            for p in parameters.reverse {
+               if pc > 0 { r = r + ","; };
+               r = r + to-smart-string(p);
+               pc = pc + 1;
+            };
+            r = r + ">";
+         }; r
+      );
+      TAnd{left=left,right=right} => "\{left.pretty}+\n\{right.pretty}";
+   }
+);
