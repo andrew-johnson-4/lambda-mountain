@@ -1,8 +1,4 @@
 
-let to-smart-string(loc: SourceLocation): String = (
-   "In File \{loc.filename} Line \{loc.line} Column \{loc.column}"
-);
-
 let to-smart-string(tt: Type): SmartString = (
    match tt {
       TAny{} => "?";
