@@ -16,6 +16,7 @@ import SRC/arity.lsts;
 import SRC/ground-tag-and-arity.lsts;
 import SRC/slot.lsts;
 import SRC/type-tag.lsts;
+import SRC/cons-tail-or-self.lsts;
 
 # Boolean Queries
 import SRC/type-cmp.lsts;
