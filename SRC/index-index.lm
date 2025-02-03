@@ -15,7 +15,6 @@ import SRC/index-definitions.lm;
 import SRC/index-globals.lm;
 import SRC/index-tokenize.lm;
 import SRC/index-types.lm;
-import SRC/index-context.lm;
 import SRC/index-preprocess.lm;
 import SRC/index-plugins.lm;
 

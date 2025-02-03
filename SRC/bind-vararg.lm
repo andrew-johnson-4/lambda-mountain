@@ -1,9 +1,0 @@
-
-
-bind-vararg := λ(: ctx FContext)(: k String)(: kt Type)(: f Fragment). (: (
-   (let binding (.lookup-soft( ctx k kt ASTEOF )))
-   (set.vararg( binding (cons( (close f) (.vararg binding) )) ))
-   (set.type( binding kt ))
-   (set ctx (.bind( ctx k kt binding )))
-   ctx
-) FContext);
