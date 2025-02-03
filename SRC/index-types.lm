@@ -8,7 +8,6 @@ import SRC/cons-root.lsts;
 import SRC/infer-expr.lm;
 import SRC/phi-transition.lsts;
 import SRC/phi-merge.lsts;
-import SRC/alias.lm;
 import SRC/is-special.lm;
 import SRC/is-lone-tag.lm;
 import SRC/global-is-seen.lm;
