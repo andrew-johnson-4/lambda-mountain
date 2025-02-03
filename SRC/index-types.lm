@@ -9,7 +9,6 @@ import SRC/infer-expr.lm;
 import SRC/phi-transition.lsts;
 import SRC/phi-merge.lsts;
 import SRC/is-special.lm;
-import SRC/is-lone-tag.lm;
 import SRC/global-is-seen.lm;
 import SRC/index-of-tag.lm;
 import SRC/is-sized-array.lsts;
