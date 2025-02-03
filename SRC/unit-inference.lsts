@@ -23,10 +23,11 @@ import SRC/normalize.lsts;
 import SRC/denormalize.lsts;
 import SRC/type-alias-index.lsts;
 import SRC/class-info-index.lsts;
-import SRC/with-size.lm;
+import SRC/with-size.lsts;
 import SRC/with-tag.lm;
 import SRC/with-only-class.lsts;
 import SRC/with-phi.lsts;
+import SRC/alias.lsts;
 
 # APIs
 import SRC/ascript-normal.lsts;

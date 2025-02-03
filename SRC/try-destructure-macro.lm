@@ -10,7 +10,7 @@ try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (
          (set r (.bind( r pv (with-location( term (.location ctk) )) )))
       ))
       ( (Tuple( (App( (Var( _ _ )) (Var( _ _ )) )) (App( (Lit( tag _ )) _ )) )) (
-         (if (||( (is-lone-tag tag) (preprocess-is-suffixed tag) )) (
+         (if (||( (is-lone-tag tag) (.is-suffixed tag) )) (
             (match (Tuple( lhs term )) (
                ()
                ( (Tuple( (App(pl pr)) (App(el er)) )) (
