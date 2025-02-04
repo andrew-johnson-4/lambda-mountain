@@ -57,11 +57,20 @@ let std-c-parse-declaration-specifiers(tokens: List<Token>): Tuple<Maybe<List<CS
    } else Tuple{ (None :: Maybe<List<CSpecifier>>), tokens };
 );
 
-declaration-specifier = storage-class-specifier
-                      | type-specifier
-                      | type-qualifier
-                      | function-specifier
-                      | alignment-specifier;
+let std-c-parse-declaration-specifier(tokens: List<Token>): Tuple<Maybe<CSpecifier>,List<Token>> = (
+   let storage-class-specifier = std-c-parse-storage-class-specifier(tokens);
+   if storage-class-specifier.first.is-some then storage-class-specifier else {
+      let type-specifier = std-c-parse-type-specifier(tokens);
+      if type-specifier.first.is-some then type-specifier else {
+         let type-qualifier = std-c-parse-type-qualifier(tokens);
+         if type-qualifier.first.is-some then type-qualifier else {
+            let function-specifier = std-c-parse-function-specifier(tokens);
+            if function-specifier.first.is-some then function-specifier
+            else std-c-parse-alignment-specifier(tokens);
+         }
+      }
+   }
+);
 
 declarator = [pointer], direct-declarator;
 
