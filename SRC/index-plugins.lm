@@ -20,7 +20,7 @@ frontend := λ(: fp String). (: (
          (set fp (clone-rope(+( (SAtom config-platform-prefix) (SAtom fp) ))))
       ) ())
       (let found-file 0_u64)
-      (if (||( (.has-suffix(fp '.c_s)) (.has-suffix(fp '.h_s)) )) (
+      (if (.has-suffix(fp '.h_s)) (
          (set found-file 1_u64)
       ) ())
       (if (.has( plugins-frontends-index (.file-extension fp) )) (
@@ -56,7 +56,7 @@ frontend := λ(: fp String). (: (
          (lm-frontend( fp text ))
          (set todo 0_u64)
       ) ())
-      (if (&&( todo (||( (.has-suffix( fp '.h_s )) (.has-suffix( fp '.c_s )) )) )) (
+      (if (&&( todo (.has-suffix( fp '.h_s )) )) (
          (set c-input-files (cons( fp c-input-files )))
          (set todo 0_u64)
       ) ())

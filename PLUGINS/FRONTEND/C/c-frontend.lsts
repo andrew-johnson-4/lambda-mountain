@@ -1,0 +1,6 @@
+
+let c-frontend(fp: CString): Nil = (
+   print("TODO: parse \{fp}\n"); exit(1);
+);
+
+register-frontend(c".c", c-frontend);

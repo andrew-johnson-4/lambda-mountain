@@ -3,3 +3,4 @@ import PLUGINS/FRONTEND/C/c-parse-all.lm;
 import PLUGINS/FRONTEND/C/c-tokenize.lm;
 import PLUGINS/FRONTEND/C/c-parse.lm;
 import PLUGINS/FRONTEND/C/c-tokenize.lsts;
+import PLUGINS/FRONTEND/C/c-frontend.lsts;
