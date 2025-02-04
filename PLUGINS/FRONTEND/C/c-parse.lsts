@@ -43,8 +43,19 @@ let std-c-parse-declaration(tokens: List<Token>): List<Token> = (
    tokens;
 );
 
-
-declaration-specifiers = declaration-specifier, {declaration-specifier};
+let std-c-parse-declaration-specifiers(tokens: List<Token>): Tuple<Maybe<List<CSpecifier>>,List<Token>> = (
+   let declaration-specifier = std-c-parse-declaration-specifier(tokens); tokens = declaration-specifier.second;
+   if let Some{spec=content} = declaration-specifier.first {
+      let specs = [spec];
+      while declaration-specifier.first.is-some {
+         declaration-specifier = std-c-parse-declaration-specifier(tokens); tokens = declaration-specifier.second;
+         if let Some(next-spec=content) = declaration-specifier.first {
+            specs = cons( next-spec, specs );
+         };
+      };
+      Tuple{ Some{specs}, tokens }
+   } else Tuple{ (None :: Maybe<List<CSpecifier>>), tokens };
+);
 
 declaration-specifier = storage-class-specifier
                       | type-specifier
