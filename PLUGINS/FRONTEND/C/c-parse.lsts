@@ -1,7 +1,44 @@
 
 # Loosely based on this EBNF for ANSI C
-# https://gist.github.com/Chubek/52884d1fa766fa16ae8d8f226ba105ad
+# https://gist.github.com/Chubek/52884d1fa766fa16ae8d8f226ba105ad (Katayama Hirofumi MZ. License: MIT)
 #
 # The naming of production rules try to follow this format.
 # However, there are also a large number of compiler-specific extensions that are parsed but mostly ignored
 # Example: __extension__ ( f, g )
+
+let std-c-parse(tokens: List<Token>): Nil = (
+   while non-zero(tokens) { tokens = std-c-parse-external-declaration(tokens); }
+);
+
+let std-c-parse-external-declaration(tokens: List<Token>): Nil = (
+   tokens = std-c-parse-function-definition();
+   tokens = std-c-parse-declaration();
+   tokens;
+);
+
+let std-c-parse-function-definition(tokens: List<Token>): List<Token> = (
+   let declaration-specifiers = std-c-parse-declaration-specifiers(tokens); tokens = declaration-specifiers.second;
+   if declaration-specifiers.first.is-some {
+      let declarator = std-c-parse-declarator(tokens); tokens = declarator.second;
+      if declarator.first.is-some {
+         let declaration-list = std-c-parse-declaration-list(tokens); tokens = declaration-list.second;
+         let compound-statement = std-c-parse-compound-statement(tokens); tokens = compound-statement.second;
+         if compound-statement.first.is-some {
+            # TODO Add to namespace
+         }
+      }
+   };
+   tokens;
+);
+
+let std-c-parse-declaration(tokens: List<Token>): List<Token> = (
+   let declaration-specifiers = std-c-parse-declaration-specifiers(tokens); tokens = declaration-specifiers.second;
+   if declaration-specifiers.first.is-some {
+      let init-declarator-list = std-parse-init-declarator-list(tokens); tokens = init-declarator-list.second;
+      tokens = std-c-take-expect(tokens, c";");
+      # TODO Add to namespace
+   };
+   tokens = std-c-parse-static-assert-declaration(tokens);
+   tokens = std-c-take-maybe(tokens, c";");
+   tokens;
+);

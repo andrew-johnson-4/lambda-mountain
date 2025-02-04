@@ -139,7 +139,7 @@ fn regression_tests() {
          }
       }
    }
-   for entry in glob("tests/unit/*.c").unwrap() {
+   for entry in glob("tests/c/*.c").unwrap() {
       let path = entry.unwrap().display().to_string();
       if !std::path::Path::new(&(path.clone() + ".skip")).exists() {
          let expected = std::fs::read_to_string(path.clone() + ".out")
