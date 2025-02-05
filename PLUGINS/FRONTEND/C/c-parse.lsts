@@ -106,9 +106,24 @@ let std-c-parse-compound-statement(tokens: List<Token>): Tuple<Maybe<CDeclaratio
    } else Tuple{(None :: Maybe<CDeclarationOrStatement>), tokens}
 );
 
-declaration-or-statement = declaration | statement;
+let std-c-parse-declaration-or-statement(tokens: List<Token>): Tuple<Maybe<CDeclarationOrStatement>,List<Token>> = (
+   let declaration = std-c-parse-declaration(tokens);
+   if declaration.first.is-some then declaration else std-c-parse-statement(tokens);
+);
 
-init-declarator-list = init-declarator, {',', init-declarator};
+let std-c-parse-init-declarator-list(tokens: List<Token>): Tuple<Maybe<List<CInitDeclarator>>,List<Token>> = (
+   let init-declarator = std-c-parse-init-declarator(tokens);
+   if let Some{dc=content} = init-declarator {
+      let dcs = [dc];
+      while init-declarator.first.is-some {
+         init-declarator = std-c-parse-init-declarator(tokens);
+         if let Some{dc2=content} = init-declarator {
+            dcs = cons(dc, dcs);
+         }
+      };
+      Tuple{ Some{dcs}, tokens }
+   } else init-declarator;
+);
 
 init-declarator = declarator, ['=', initializer];
 
