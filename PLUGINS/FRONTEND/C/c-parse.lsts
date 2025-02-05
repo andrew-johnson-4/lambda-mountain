@@ -153,12 +153,15 @@ let std-c-parse-static-assert-declaration(tokens: List<Token>): Tuple<Maybe<CSta
    } else Tuple{ (None :: Maybe<CStaticAssertDeclaration>), tokens }
 );
 
-storage-class-specifier = 'typedef'
-                        | 'extern'
-                        | 'static'
-                        | '_Thread_local'
-                        | 'auto'
-                        | 'register';
+let std-c-parse-storage-class-specifier(tokens: List<Token): Tuple<Maybe<CStorageClassSpecifier>,List<Token>> = (
+   if std-c-can-take("typedef") then (tokens = std-c-take-expect("typedef"); Tuple{Some{CStorageClassTypedef}, tokens} )
+   else if std-c-can-take("extern") then (tokens = std-c-take-expect("extern"); Tuple{Some{CStorageClassExtern}, tokens} )
+   else if std-c-can-take("static") then (tokens = std-c-take-expect("static"); Tuple{Some{CStorageClassStatic}, tokens} )
+   else if std-c-can-take("_Thread_local") then (tokens = std-c-take-expect("_Thread_local"); Tuple{Some{CStorageClassThreadLocal}, tokens} )
+   else if std-c-can-take("auto") then (tokens = std-c-take-expect("auto"); Tuple{Some{CStorageClassAuto}, tokens} )
+   else if std-c-can-take("register") then (tokens = std-c-take-expect("register"); Tuple{Some{CStorageClassRegister}, tokens} )
+   else Tuple{None :: Maybe<CStorageClassSpecifier>, tokens}
+);
 
 type-specifier = 'void'
                | 'char'
