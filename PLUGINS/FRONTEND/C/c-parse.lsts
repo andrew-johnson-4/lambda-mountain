@@ -125,7 +125,14 @@ let std-c-parse-init-declarator-list(tokens: List<Token>): Tuple<Maybe<List<CIni
    } else init-declarator;
 );
 
-init-declarator = declarator, ['=', initializer];
+let std-c-parse-init-declarator(tokens: List<Token>): Tuple<Maybe<CInitDeclarator>,List<Token>> = (
+   let declarator = c-parse-declarator(tokens); tokens = declarator.second;
+   if declarator.first.is-some {
+      tokens = std-c-take-expect(tokens, c"=");
+      let initializer = std-c-parse-initializer(tokens); tokens = declarator.second;
+      Tuple{ CInitDeclarator{ declarator.first, initializer.first }, tokens }
+   } else declarator
+);
 
 static-assert-declaration = '_Static_assert', '(', constant-expression, ',', string-literal, ')', ';';
 
