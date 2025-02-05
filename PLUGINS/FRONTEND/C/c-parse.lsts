@@ -49,7 +49,7 @@ let std-c-parse-declaration-specifiers(tokens: List<Token>): Tuple<Maybe<List<CS
       let specs = [spec];
       while declaration-specifier.first.is-some {
          declaration-specifier = std-c-parse-declaration-specifier(tokens); tokens = declaration-specifier.second;
-         if let Some(next-spec=content) = declaration-specifier.first {
+         if let Some{next-spec=content} = declaration-specifier.first {
             specs = cons( next-spec, specs );
          };
       };
@@ -72,9 +72,30 @@ let std-c-parse-declaration-specifier(tokens: List<Token>): Tuple<Maybe<CSpecifi
    }
 );
 
-declarator = [pointer], direct-declarator;
+let std-c-parse-declarator(tokens: List<Token>): Tuple<Maybe<CDeclarator>,List<Token>> = (
+   let original-tokens = tokens;
+   let pointer = std-c-parse-pointer(tokens); tokens = pointer.second;
+   let direct-declarator = std-c-direct-declarator(tokens);
+   if let Some{dd=content} = direct-declarator.first {
+      Tuple{ Some{CDeclarator{ pointer.first, dd }}, direct-declarator.second }
+   } else {
+      Tuple{ (None :: Maybe<CDeclarator>), original-tokens }
+   }
+);
 
-declaration-list = declaration, {declaration};
+let std-c-declaration-list(tokens: List<Token>): Tuple<Maybe<List<CDeclaration>>,List<Token>> = (
+   let declaration = std-c-parse-declaration(tokens); tokens = declaration.second;
+   if let Some{decl=content} = declaration.first {
+      let decls = [decl];
+      declaration = std-c-parse-declaration(tokens); tokens = declaration.second;
+      while declaration.first.is-some {
+         if let Some{decl-next=content} = declaration.first {
+            decls = cons(decl-next, decls);
+         }
+      };
+      Tuple{ Some{decls}, tokens }
+   } else (Tuple{ (None :: Maybe<List<CDeclaration>>), tokens })
+);
 
 compound-statement = '{', {declaration-or-statement}, '}';
 
