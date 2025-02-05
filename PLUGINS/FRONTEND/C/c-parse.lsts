@@ -97,7 +97,14 @@ let std-c-declaration-list(tokens: List<Token>): Tuple<Maybe<List<CDeclaration>>
    } else (Tuple{ (None :: Maybe<List<CDeclaration>>), tokens })
 );
 
-compound-statement = '{', {declaration-or-statement}, '}';
+let std-c-parse-compound-statement(tokens: List<Token>): Tuple<Maybe<CDeclarationOrStatement>,List<Token>> = (
+   if std-c-can-take(c"{") {
+      tokens = std-c-take-maybe(tokens, c"{");
+      let declaration-or-statement = std-c-parse-declaration-or-statement(tokens); tokens = declaration-or-statement.second;
+      tokens = std-c-take-maybe(tokens, c"}");
+      Tuple{ declaration-or-statement.first, tokens };
+   } else Tuple{(None :: Maybe<CDeclarationOrStatement>), tokens}
+);
 
 declaration-or-statement = declaration | statement;
 
