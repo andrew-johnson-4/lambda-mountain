@@ -216,8 +216,14 @@ let std-c-parse-alignment-specifier(tokens: List<Token>): Tuple<Maybe<CAlignment
    } else Tuple{None :: Maybe<CFunctionSpecifier>, tokens}
 );
 
-
-pointer = '*', [type-qualifier-list], [pointer];
+let std-c-parse-pointer(tokens: List<Token>): Tuple<Maybe<CPointer>,List<Token>> = (
+   if std-c-can-take(c"*") then }
+      tokens = std-c-take-expect("*", tokens);
+      let type-qualifier-list = std-c-parse-type-qualifier-list(tokens); tokens = type-qualifier-list.second;
+      let next-pointer = std-c-parse-pointer(tokens); tokens = next-pointer.second;
+      Some{ CPointer{ type-qualifier-list.first, next-pointer.first }, tokens }
+   } else Tuple{None :: Maybe<CPointer>, tokens}   
+);
 
 direct-declarator = identifier
                   | '(', declarator, ')'
