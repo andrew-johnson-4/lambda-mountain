@@ -179,8 +179,7 @@ let std-c-parse-type-specifier(tokens: List<Token>): Tuple<Maybe<CTypeSpecifier>
    else if let Tuple{Some{ats=contents}=first,tokens2=second} = std-c-atomic-type-specifier(tokens) then Tuple{Some{ats}, tokens2}
    else if let Tuple{Some{sou=contents}=first,tokens3=second} = std-c-struct-or-union-specifier(tokens) then Tuple{Some{sou}, tokens3}
    else if let Tuple{Some{enm=contents}=first,tokens4=second} = std-c-enum-specifier(tokens) then Tuple{Some{enm}, tokens4}
-   else if let Tuple{Some{tpd=contents}=first,tokens5=second} = std-c-typedef-name(tokens) then Tuple{Some{tpd}, tokens5}
-   else std-c-take-expect("[Type Specifier]", tokens);
+   else std-c-typedef-name(tokens)
 );
 
 let std-c-typedef-name-index = {} :: HashtableEq<CString,U64>;
@@ -190,10 +189,14 @@ let std-c-parse-typedef-name(tokens: List<Token>): Tuple<Maybe<CType>,List<Token
    } else Tuple{ None :: Maybe<CType>, tokens }
 );
 
-type-qualifier = 'const'
-               | 'restrict'
-               | 'volatile'
-               | '_Atomic';
+let std-c-parse-type-qualifier(tokens: List<Token>): Tuple<Maybe<CTypeQualifier>,List<Token>> = (
+   if std-c-can-take("const", tokens) then (tokens = std-c-take-expect("const", tokens); Tuple{Some{CType{c"const"}}, tokens} )
+   else if std-c-can-take("restrict", tokens) then (tokens = std-c-take-expect("restrict", tokens); Tuple{Some{CType{c"restrict"}}, tokens} )
+   else if std-c-can-take("volatile", tokens) then (tokens = std-c-take-expect("volatile", tokens); Tuple{Some{CType{c"volatile"}}, tokens} )
+   else if std-c-can-take("_Atomic", tokens) then (tokens = std-c-take-expect("_Atomic", tokens); Tuple{Some{CType{c"Atomic"}}, tokens} )
+   else Tuple{None :: Maybe<CTypeQualifier>, tokens}
+);
+
 
 function-specifier = 'inline'
                    | '_Noreturn';
