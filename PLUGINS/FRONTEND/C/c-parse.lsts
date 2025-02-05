@@ -154,34 +154,41 @@ let std-c-parse-static-assert-declaration(tokens: List<Token>): Tuple<Maybe<CSta
 );
 
 let std-c-parse-storage-class-specifier(tokens: List<Token): Tuple<Maybe<CStorageClassSpecifier>,List<Token>> = (
-   if std-c-can-take("typedef") then (tokens = std-c-take-expect("typedef"); Tuple{Some{CStorageClassTypedef}, tokens} )
-   else if std-c-can-take("extern") then (tokens = std-c-take-expect("extern"); Tuple{Some{CStorageClassExtern}, tokens} )
-   else if std-c-can-take("static") then (tokens = std-c-take-expect("static"); Tuple{Some{CStorageClassStatic}, tokens} )
-   else if std-c-can-take("_Thread_local") then (tokens = std-c-take-expect("_Thread_local"); Tuple{Some{CStorageClassThreadLocal}, tokens} )
-   else if std-c-can-take("auto") then (tokens = std-c-take-expect("auto"); Tuple{Some{CStorageClassAuto}, tokens} )
-   else if std-c-can-take("register") then (tokens = std-c-take-expect("register"); Tuple{Some{CStorageClassRegister}, tokens} )
+   if std-c-can-take("typedef", tokens) then (tokens = std-c-take-expect("typedef", tokens); Tuple{Some{CStorageClassTypedef}, tokens} )
+   else if std-c-can-take("extern", tokens) then (tokens = std-c-take-expect("extern", tokens); Tuple{Some{CStorageClassExtern}, tokens} )
+   else if std-c-can-take("static", tokens) then (tokens = std-c-take-expect("static", tokens); Tuple{Some{CStorageClassStatic}, tokens} )
+   else if std-c-can-take("_Thread_local", tokens) then (tokens = std-c-take-expect("_Thread_local", tokens); Tuple{Some{CStorageClassThreadLocal}, tokens} )
+   else if std-c-can-take("auto", tokens) then (tokens = std-c-take-expect("auto", tokens); Tuple{Some{CStorageClassAuto}, tokens} )
+   else if std-c-can-take("register", tokens) then (tokens = std-c-take-expect("register", tokens); Tuple{Some{CStorageClassRegister}, tokens} )
    else Tuple{None :: Maybe<CStorageClassSpecifier>, tokens}
 );
 
-type-specifier = 'void'
-               | 'char'
-               | 'short'
-               | 'int'
-               | 'long'
-               | 'float'
-               | 'double'
-               | 'signed'
-               | 'unsigned'
-               | '_Bool'
-               | '_Complex'
-               | '_Imaginary'       (* non-mandated extension *)
-               | atomic-type-specifier
-               | struct-or-union-specifier
-               | enum-specifier
-               | typedef-name;
+let std-c-parse-type-specifier(tokens: List<Token>): Tuple<Maybe<CTypeSpecifier>,List<Token>> = (
+   if std-c-can-take("void", tokens) then (tokens = std-c-take-expect("void", tokens); Tuple{Some{CType{c"void"}}, tokens} )
+   else if std-c-can-take("char", tokens) then (tokens = std-c-take-expect("char", tokens); Tuple{Some{CType{c"char"}}, tokens} )
+   else if std-c-can-take("short", tokens) then (tokens = std-c-take-expect("short", tokens); Tuple{Some{CType{c"short"}}, tokens} )
+   else if std-c-can-take("int", tokens) then (tokens = std-c-take-expect("int", tokens); Tuple{Some{CType{c"int"}}, tokens} )
+   else if std-c-can-take("long", tokens) then (tokens = std-c-take-expect("long", tokens); Tuple{Some{CType{c"long"}}, tokens} )
+   else if std-c-can-take("float", tokens) then (tokens = std-c-take-expect("float", tokens); Tuple{Some{CType{c"float"}}, tokens} )
+   else if std-c-can-take("double", tokens) then (tokens = std-c-take-expect("double", tokens); Tuple{Some{CType{c"double"}}, tokens} )
+   else if std-c-can-take("signed", tokens) then (tokens = std-c-take-expect("signed", tokens); Tuple{Some{CType{c"signed"}}, tokens} )
+   else if std-c-can-take("unsigned", tokens) then (tokens = std-c-take-expect("unsigned", tokens); Tuple{Some{CType{c"unsigned"}}, tokens} )
+   else if std-c-can-take("_Bool", tokens) then (tokens = std-c-take-expect("_Bool", tokens); Tuple{Some{CType{c"_Bool"}}, tokens} )
+   else if std-c-can-take("_Complex", tokens) then (tokens = std-c-take-expect("_Complex", tokens); Tuple{Some{CType{c"_Complex"}}, tokens} )
+   else if std-c-can-take("_Imaginary", tokens) then (tokens = std-c-take-expect("_Imaginary", tokens); Tuple{Some{CType{c"_Imaginary"}}, tokens} )
+   else if let Tuple{Some{ats=contents}=first,tokens2=second} = std-c-atomic-type-specifier(tokens) then Tuple{Some{ats}, tokens2}
+   else if let Tuple{Some{sou=contents}=first,tokens3=second} = std-c-struct-or-union-specifier(tokens) then Tuple{Some{sou}, tokens3}
+   else if let Tuple{Some{enm=contents}=first,tokens4=second} = std-c-enum-specifier(tokens) then Tuple{Some{enm}, tokens4}
+   else if let Tuple{Some{tpd=contents}=first,tokens5=second} = std-c-typedef-name(tokens) then Tuple{Some{tpd}, tokens5}
+   else std-c-take-expect("[Type Specifier]", tokens);
+);
 
-(* NOTE: Please define typedef-name as result of 'typedef'. *)
-typedef-name = identifier;
+let std-c-typedef-name-index = {} :: HashtableEq<CString,U64>;
+let std-c-parse-typedef-name(tokens: List<Token>): Tuple<Maybe<CType>,List<Token>> = (
+   if non-zero(tokens) && std-c-typedef-name.has(head(tokens).key) {
+      Tuple{ Some{CType{head(tokens).key}}, tokens }
+   } else Tuple{ None :: Maybe<CType>, tokens }
+);
 
 type-qualifier = 'const'
                | 'restrict'
