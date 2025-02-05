@@ -197,12 +197,25 @@ let std-c-parse-type-qualifier(tokens: List<Token>): Tuple<Maybe<CTypeQualifier>
    else Tuple{None :: Maybe<CTypeQualifier>, tokens}
 );
 
+let std-c-parse-function-specifier(tokens: List<Token>): Tuple<Maybe<CFunctionSpecifier>,List<Token>> = (
+   if std-c-can-take("inline", tokens) then (tokens = std-c-take-expect("inline", tokens); Tuple{Some{CType{c"inline"}}, tokens} )
+   else if std-c-can-take("_Noreturn", tokens) then (tokens = std-c-take-expect("_Noreturn", tokens); Tuple{Some{CType{c"_Noreturn"}}, tokens} )
+   else Tuple{None :: Maybe<CTypeQualifier>, tokens}
+);
 
-function-specifier = 'inline'
-                   | '_Noreturn';
+let std-c-parse-alignment-specifier(tokens: List<Token>): Tuple<Maybe<CAlignmentSpecifier>,List<Token>> = (
+   if std-c-can-take("_Alignas", tokens) then {
+      tokens = std-c-take-expect("_Alignas", tokens);
+      tokens = std-c-take-expect("(", tokens);
+      if let Tuple{first:Some{tn=content},tokens2=second} = std-c-parse-type-name(tokens) {
+         tokens = std-c-take-expect(")", tokens);
+         Tuple{ Some{ tn }, tokens }
+      } else if let Tuple{first:Some{ce=content},tokens2=second} = std-c-parse-constant-expression(tokens) {
+         Tuple{ Some{ ce }, tokens }
+      } else std-c-take-expect(c"[Alignment Specifier]");
+   } else Tuple{None :: Maybe<CFunctionSpecifier>, tokens}
+);
 
-alignment-specifier = '_Alignas', '(', type-name, ')'
-                    | '_Alignas', '(', constant-expression, ')';
 
 pointer = '*', [type-qualifier-list], [pointer];
 
