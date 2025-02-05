@@ -134,7 +134,24 @@ let std-c-parse-init-declarator(tokens: List<Token>): Tuple<Maybe<CInitDeclarato
    } else declarator
 );
 
-static-assert-declaration = '_Static_assert', '(', constant-expression, ',', string-literal, ')', ';';
+let std-c-parse-static-assert-declaration(tokens: List<Token>): Tuple<Maybe<CStaticAssertDeclaration>,List<Token>> = (
+   if std-c-can-take(tokens, c"_Static_assert") {
+      tokens = std-c-take-expect(tokens, c"_Static_assert");
+      tokens = std-c-take-expect(tokens, c"(");
+      let constant-expression = std-c-parse-constant-expression(tokens);
+      if constant-expression.first.is-none { std-c-take-expect(tokens, c"[Constant Expression]"); };
+      tokens = std-c-take-expect(tokens, c",");
+      tokens = std-c-take-expect(tokens, c")");
+      tokens = std-c-take-expect(tokens, c";");
+      let string-literal = std-c-parse-string-literal(tokens);
+      if let Some{ce=content} = constant-expression {
+         if let Some{sl=content} = string-literal {
+            Tuple{ Some{CStaticAssertDeclaration{ ce, sl }}, tokens }
+         } else Tuple{ (None :: Maybe<CStaticAssertDeclaration>), tokens };
+      } else Tuple{ (None :: Maybe<CStaticAssertDeclaration>), tokens };
+      Tuple{ Some{CStaticAssertDeclaration{ constant-expression. }} }
+   } else Tuple{ (None :: Maybe<CStaticAssertDeclaration>), tokens }
+);
 
 storage-class-specifier = 'typedef'
                         | 'extern'
