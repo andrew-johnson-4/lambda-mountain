@@ -1,8 +1,11 @@
 
 dev: install-production
-	lm tests/c/main.c
+	lm tests/c/c-parse.lsts
 	cc -O3 tmp.c
 	./a.out
+	#lm tests/c/main.c
+	#cc -O3 tmp.c
+	#./a.out
 
 build: compile-production
 	time ./production --c -o deploy1.c SRC/index-index.lm

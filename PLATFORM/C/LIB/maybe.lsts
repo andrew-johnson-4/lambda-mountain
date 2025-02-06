@@ -9,6 +9,12 @@ let .get-or(m: Maybe<x>, default: x): x = (
    }
 );
 
+let .get-or-panic(m: Maybe<x>): x = (
+   match m {
+      Some{content=content} => content;
+   }
+);
+
 let .is-none(m: Maybe<x>): U64 = (
    match m {
       Some{} => false;
@@ -21,4 +27,10 @@ let .is-some(m: Maybe<x>): U64 = (
       Some{} => true;
       None{} => false;
    }
+);
+
+let cmp(l: Maybe<x>, r: Maybe<x>): Ord = (
+   if $".0"(l) != $".0"(r) then cmp($".0"(l), $".0"(r))
+   else if l.is-some then cmp(l.get-or-panic, r.get-or-panic)
+   else Equal
 );
