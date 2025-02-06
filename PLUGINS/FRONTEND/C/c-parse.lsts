@@ -225,16 +225,61 @@ let std-c-parse-pointer(tokens: List<Token>): Tuple<Maybe<CPointer>,List<Token>>
    } else Tuple{None :: Maybe<CPointer>, tokens}   
 );
 
-direct-declarator = identifier
-                  | '(', declarator, ')'
-                  | direct-declarator, '[', ['*'], ']'
-                  | direct-declarator, '[', 'static', [type-qualifier-list], assignment-expression, ']'
-                  | direct-declarator, '[', type-qualifier-list, ['*'], ']'
-                  | direct-declarator, '[', type-qualifier-list, ['static'], assignment-expression, ']'
-                  | direct-declarator, '[', assignment-expression, ']'
-                  | direct-declarator, '(', parameter-type-list, ')'
-                  | direct-declarator, '(', identifier-list, ')'
-                  | direct-declarator, '(', ')';
+let std-c-parse-direct-declarator(tokens: List<Token>): Tuple<Maybe<CDeclarator>,List<Token>> = (
+   let base-declarator = if let Tuple{Some{ident=contents}=first,tokens2=second} = std-c-parse-identifier(tokens) then {
+      tokens = tokens2;
+      CDeclaratorIdentifier{ ident }
+   } else if std-c-can-take(c"(") then {
+      tokens = std-c-take-expect(c"(");
+      let declarator = std-c-parse-declarator(tokens); tokens = declarator.second;
+      if declarator.is-none { tokens = std-c-take-expect("[Declarator]", tokens); };
+      tokens = std-c-take-expect(c")");
+      declarator;
+   } else std-c-take-expect("[Direct Declarator]", tokens);
+   while std-c-can-take("(") || std-c-can-take("[") {
+      if std-c-can-take("(") {
+         tokens = std-c-take-expect("(");
+         if let Tuple{first:Some{tl=content},tokens3=second} = std-c-parse-type-list(tokens) {
+            tokens = std-c-take-expect(")");
+            tokens = tokens3;
+            base-declarator = CDeclaratorParamList{ base-declarator, tl };
+         } else if let Tuple{first:Some{tl=content},tokens4=second} = std-c-parse-identifier-list(tokens) {
+            tokens = std-c-take-expect(")");
+            tokens = tokens4;
+            base-declarator = CDeclaratorParamList{ base-declarator, tl };
+         } else {
+            tokens = std-c-take-expect(")");
+            base-declarator = CDeclaratorParamList{ base-declarator, [] :: List<Tuple<CString,CType>> };
+         };
+      } else {
+         tokens = std-c-take-expect("[");
+         let type-qualifiers = [] :: List<CType>;
+         if std-c-can-take(c"static", tokens) then {
+            tokens = std-c-take-expect("static");
+            type-qualifiers = cons( CType{c"static"}, type-qualifiers );
+         };
+         if let Tuple{first:Some{tq=content},tokens5=second} = std-c-parse-type-qualifier-list(tokens) {
+            type-qualifiers = type-qualifiers + tq;
+         };
+         if std-c-can-take(c"static", tokens) then {
+            tokens = std-c-take-expect("static");
+            type-qualifiers = cons( CType{c"static"}, type-qualifiers );
+         };
+         let indirect = if std-c-can-take(c"*", tokens) then {
+            tokens = std-c-take-expect("*");
+            true;
+         } else false;
+         let assignment-expression = None :: Maybe<CAssignmentExpression>;
+         if let Tuple{first:Some{ae=content},tokens6=second} = std-c-parse-assignment-expression(tokens) {
+            tokens = tokens6;
+            assignment-expression = ae;
+         };
+         tokens = std-c-take-expect("]");
+         base-declarator = CDeclaratorBracket{ base-declarator, type-qualifiers, indirect, assignment-expression };
+      };
+   };
+   Tuple{ Some{base-declarator}, tokens };
+);
 
 identifier-list = identifier, {',', identifier};
 
