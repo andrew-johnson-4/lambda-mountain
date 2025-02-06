@@ -1,6 +1,6 @@
 
 dev: install-production
-	lm tests/unit/type-inference.lsts
+	lm tests/c/main.c
 	cc -O3 tmp.c
 	./a.out
 

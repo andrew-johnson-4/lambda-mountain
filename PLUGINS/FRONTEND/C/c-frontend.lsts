@@ -1,0 +1,10 @@
+
+let c-frontend(fp: CString): Nil = (
+   let tokens = std-c-tokenize-string(fp, read-file(fp));
+   for t in tokens {
+      print("token: \{t.key}\n");
+   };
+   print("TODO: parse \{fp}\n"); exit(1);
+);
+
+register-frontend(c".c", c-frontend);
