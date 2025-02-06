@@ -10,6 +10,7 @@ import SRC/unit-error.lsts;
 import PLUGINS/FRONTEND/C/index-index.lm;
 import PLUGINS/FRONTEND/C/index-index.lm;
 
+# helpers
 if true then { 
    let tokens = std-c-tokenize-string("[+]", "+");
    assert( tokens.length == 1 );
@@ -18,4 +19,54 @@ if true then {
    assert( std-c-can-take(tokens, "+") == true );
    assert( is(tail(tokens), std-c-take-expect(tokens, "+")) );
    assert( is(tail(tokens), std-c-take-maybe(tokens, "+")) );
+};
+
+# assignment operators
+if true then { 
+   let abc = std-c-tokenize-string("abc", "abc");
+   assert( std-c-parse-assignment-operator(abc).first == None :: Maybe<CString> );
+   if true then {
+      let tokens = std-c-tokenize-string("[=]", "=");
+      assert( std-c-parse-assignment-operator(tokens).first == Some{c"="} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[*=]", "*=");
+      assert( std-c-parse-assignment-operator(tokens).first == Some{c"*="} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[/=]", "/=");
+      assert( std-c-parse-assignment-operator(tokens).first == Some{c"/="} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[%=]", "%=");
+      assert( std-c-parse-assignment-operator(tokens).first == Some{c"%="} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[+=]", "+=");
+      assert( std-c-parse-assignment-operator(tokens).first == Some{c"+="} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[-=]", "-=");
+      assert( std-c-parse-assignment-operator(tokens).first == Some{c"-="} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[<<=]", "<<=");
+      assert( std-c-parse-assignment-operator(tokens).first == Some{c"<<="} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[>>=]", ">>=");
+      assert( std-c-parse-assignment-operator(tokens).first == Some{c">>="} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[&=]", "&=");
+      assert( std-c-parse-assignment-operator(tokens).first == Some{c"&="} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[^=]", "^=");
+      assert( std-c-parse-assignment-operator(tokens).first == Some{c"^="} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[|=]", "|=");
+      assert( std-c-parse-assignment-operator(tokens).first == Some{c"|="} );
+   };
 };
