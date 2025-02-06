@@ -141,7 +141,7 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
          (let prev-tt (typeof-var-raw( term tctx lname )))
          (if (non-zero prev-tt) (
             (if (.is-t( prev-tt 'LocalVariable_s )) (
-               (exit-error( 'Variable\sName\sIs\sAlready\sBound\sIn\sOuter\sScope_s term ))
+               (exit-error( (+( 'Variable\sName\sIs\sAlready\sBound\sIn\sOuter\sScope\s_s lname )) term ))
             ) ())
          ) ())
          (match rhs (

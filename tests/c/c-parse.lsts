@@ -8,3 +8,14 @@ import SRC/unit-fragments.lsts;
 import SRC/unit-orphans.lsts;
 import SRC/unit-error.lsts;
 import PLUGINS/FRONTEND/C/index-index.lm;
+import PLUGINS/FRONTEND/C/index-index.lm;
+
+if true then { 
+   let tokens = std-c-tokenize-string("[+]", "+");
+   assert( tokens.length == 1 );
+   assert( is(tokens, std-c-take-maybe(tokens, "-")) );
+   assert( std-c-can-take(tokens, "-") == false );
+   assert( std-c-can-take(tokens, "+") == true );
+   assert( is(tail(tokens), std-c-take-expect(tokens, "+")) );
+   assert( is(tail(tokens), std-c-take-maybe(tokens, "+")) );
+};

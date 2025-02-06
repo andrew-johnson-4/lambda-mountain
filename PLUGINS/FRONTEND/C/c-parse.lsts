@@ -10,6 +10,24 @@ let std-c-parse(tokens: List<Token>): Nil = (
 #   while non-zero(tokens) { tokens = std-c-parse-external-declaration(tokens); }
 );
 
+let std-c-has-class(tk: CString, cls: String): U64 = (
+   tk == cls
+);
+
+let std-c-can-take(tokens: List<Token>, cls: String): U64 = (
+   non-zero(tokens) && std-c-has-class(head(tokens).key, cls)
+);
+
+let std-c-take-expect(tokens: List<Token>, cls: String): List<Token> = (
+   if non-zero(tokens) && std-c-has-class(head(tokens).key, cls) then tail(tokens)
+   else (print("Expected token [\{cls}] at \{tokens.formatted-location}\n"); exit(1); tokens);
+);
+
+let std-c-take-maybe(tokens: List<Token>, cls: String): List<Token> = (
+   if non-zero(tokens) && std-c-has-class(head(tokens).key, cls) then tail(tokens)
+   else tokens;
+);
+
 #let std-c-parse-external-declaration(tokens: List<Token>): Nil = (
 #   tokens = std-c-parse-function-definition();
 #   tokens = std-c-parse-declaration();
