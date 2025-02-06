@@ -7,467 +7,467 @@
 # Example: __extension__ ( f, g )
 
 let std-c-parse(tokens: List<Token>): Nil = (
-   while non-zero(tokens) { tokens = std-c-parse-external-declaration(tokens); }
+#   while non-zero(tokens) { tokens = std-c-parse-external-declaration(tokens); }
 );
 
-let std-c-parse-external-declaration(tokens: List<Token>): Nil = (
-   tokens = std-c-parse-function-definition();
-   tokens = std-c-parse-declaration();
-   tokens;
-);
-
-let std-c-parse-function-definition(tokens: List<Token>): List<Token> = (
-   let declaration-specifiers = std-c-parse-declaration-specifiers(tokens); tokens = declaration-specifiers.second;
-   if declaration-specifiers.first.is-some {
-      let declarator = std-c-parse-declarator(tokens); tokens = declarator.second;
-      if declarator.first.is-some {
-         let declaration-list = std-c-parse-declaration-list(tokens); tokens = declaration-list.second;
-         let compound-statement = std-c-parse-compound-statement(tokens); tokens = compound-statement.second;
-         if compound-statement.first.is-some {
-            # TODO Add to namespace
-         }
-      }
-   };
-   tokens;
-);
-
-let std-c-parse-declaration(tokens: List<Token>): List<Token> = (
-   let declaration-specifiers = std-c-parse-declaration-specifiers(tokens); tokens = declaration-specifiers.second;
-   if declaration-specifiers.first.is-some {
-      let init-declarator-list = std-parse-init-declarator-list(tokens); tokens = init-declarator-list.second;
-      tokens = std-c-take-expect(tokens, c";");
-      # TODO Add to namespace
-   };
-   tokens = std-c-parse-static-assert-declaration(tokens);
-   tokens = std-c-take-maybe(tokens, c";");
-   tokens;
-);
-
-let std-c-parse-declaration-specifiers(tokens: List<Token>): Tuple<Maybe<List<CSpecifier>>,List<Token>> = (
-   let declaration-specifier = std-c-parse-declaration-specifier(tokens); tokens = declaration-specifier.second;
-   if let Some{spec=content} = declaration-specifier.first {
-      let specs = [spec];
-      while declaration-specifier.first.is-some {
-         declaration-specifier = std-c-parse-declaration-specifier(tokens); tokens = declaration-specifier.second;
-         if let Some{next-spec=content} = declaration-specifier.first {
-            specs = cons( next-spec, specs );
-         };
-      };
-      Tuple{ Some{specs}, tokens }
-   } else Tuple{ (None :: Maybe<List<CSpecifier>>), tokens };
-);
-
-let std-c-parse-declaration-specifier(tokens: List<Token>): Tuple<Maybe<CSpecifier>,List<Token>> = (
-   let storage-class-specifier = std-c-parse-storage-class-specifier(tokens);
-   if storage-class-specifier.first.is-some then storage-class-specifier else {
-      let type-specifier = std-c-parse-type-specifier(tokens);
-      if type-specifier.first.is-some then type-specifier else {
-         let type-qualifier = std-c-parse-type-qualifier(tokens);
-         if type-qualifier.first.is-some then type-qualifier else {
-            let function-specifier = std-c-parse-function-specifier(tokens);
-            if function-specifier.first.is-some then function-specifier
-            else std-c-parse-alignment-specifier(tokens);
-         }
-      }
-   }
-);
-
-let std-c-parse-declarator(tokens: List<Token>): Tuple<Maybe<CDeclarator>,List<Token>> = (
-   let original-tokens = tokens;
-   let pointer = std-c-parse-pointer(tokens); tokens = pointer.second;
-   let direct-declarator = std-c-direct-declarator(tokens);
-   if let Some{dd=content} = direct-declarator.first {
-      Tuple{ Some{CDeclarator{ pointer.first, dd }}, direct-declarator.second }
-   } else {
-      Tuple{ (None :: Maybe<CDeclarator>), original-tokens }
-   }
-);
-
-let std-c-declaration-list(tokens: List<Token>): Tuple<Maybe<List<CDeclaration>>,List<Token>> = (
-   let declaration = std-c-parse-declaration(tokens); tokens = declaration.second;
-   if let Some{decl=content} = declaration.first {
-      let decls = [decl];
-      declaration = std-c-parse-declaration(tokens); tokens = declaration.second;
-      while declaration.first.is-some {
-         if let Some{decl-next=content} = declaration.first {
-            decls = cons(decl-next, decls);
-         }
-      };
-      Tuple{ Some{decls}, tokens }
-   } else (Tuple{ (None :: Maybe<List<CDeclaration>>), tokens })
-);
-
-let std-c-parse-compound-statement(tokens: List<Token>): Tuple<Maybe<CDeclarationOrStatement>,List<Token>> = (
-   if std-c-can-take(c"{") {
-      tokens = std-c-take-maybe(tokens, c"{");
-      let declaration-or-statement = std-c-parse-declaration-or-statement(tokens); tokens = declaration-or-statement.second;
-      tokens = std-c-take-maybe(tokens, c"}");
-      Tuple{ declaration-or-statement.first, tokens };
-   } else Tuple{(None :: Maybe<CDeclarationOrStatement>), tokens}
-);
-
-let std-c-parse-declaration-or-statement(tokens: List<Token>): Tuple<Maybe<CDeclarationOrStatement>,List<Token>> = (
-   let declaration = std-c-parse-declaration(tokens);
-   if declaration.first.is-some then declaration else std-c-parse-statement(tokens);
-);
-
-let std-c-parse-init-declarator-list(tokens: List<Token>): Tuple<Maybe<List<CInitDeclarator>>,List<Token>> = (
-   let init-declarator = std-c-parse-init-declarator(tokens);
-   if let Some{dc=content} = init-declarator {
-      let dcs = [dc];
-      while init-declarator.first.is-some {
-         init-declarator = std-c-parse-init-declarator(tokens);
-         if let Some{dc2=content} = init-declarator {
-            dcs = cons(dc, dcs);
-         }
-      };
-      Tuple{ Some{dcs}, tokens }
-   } else init-declarator;
-);
-
-let std-c-parse-init-declarator(tokens: List<Token>): Tuple<Maybe<CInitDeclarator>,List<Token>> = (
-   let declarator = c-parse-declarator(tokens); tokens = declarator.second;
-   if declarator.first.is-some {
-      tokens = std-c-take-expect(tokens, c"=");
-      let initializer = std-c-parse-initializer(tokens); tokens = declarator.second;
-      Tuple{ CInitDeclarator{ declarator.first, initializer.first }, tokens }
-   } else declarator
-);
-
-let std-c-parse-static-assert-declaration(tokens: List<Token>): Tuple<Maybe<CStaticAssertDeclaration>,List<Token>> = (
-   if std-c-can-take(tokens, c"_Static_assert") {
-      tokens = std-c-take-expect(tokens, c"_Static_assert");
-      tokens = std-c-take-expect(tokens, c"(");
-      let constant-expression = std-c-parse-constant-expression(tokens);
-      if constant-expression.first.is-none { std-c-take-expect(tokens, c"[Constant Expression]"); };
-      tokens = std-c-take-expect(tokens, c",");
-      tokens = std-c-take-expect(tokens, c")");
-      tokens = std-c-take-expect(tokens, c";");
-      let string-literal = std-c-parse-string-literal(tokens);
-      if let Some{ce=content} = constant-expression {
-         if let Some{sl=content} = string-literal {
-            Tuple{ Some{CStaticAssertDeclaration{ ce, sl }}, tokens }
-         } else Tuple{ (None :: Maybe<CStaticAssertDeclaration>), tokens };
-      } else Tuple{ (None :: Maybe<CStaticAssertDeclaration>), tokens };
-      Tuple{ Some{CStaticAssertDeclaration{ constant-expression. }} }
-   } else Tuple{ (None :: Maybe<CStaticAssertDeclaration>), tokens }
-);
-
-let std-c-parse-storage-class-specifier(tokens: List<Token): Tuple<Maybe<CStorageClassSpecifier>,List<Token>> = (
-   if std-c-can-take("typedef", tokens) then (tokens = std-c-take-expect("typedef", tokens); Tuple{Some{CStorageClassTypedef}, tokens} )
-   else if std-c-can-take("extern", tokens) then (tokens = std-c-take-expect("extern", tokens); Tuple{Some{CStorageClassExtern}, tokens} )
-   else if std-c-can-take("static", tokens) then (tokens = std-c-take-expect("static", tokens); Tuple{Some{CStorageClassStatic}, tokens} )
-   else if std-c-can-take("_Thread_local", tokens) then (tokens = std-c-take-expect("_Thread_local", tokens); Tuple{Some{CStorageClassThreadLocal}, tokens} )
-   else if std-c-can-take("auto", tokens) then (tokens = std-c-take-expect("auto", tokens); Tuple{Some{CStorageClassAuto}, tokens} )
-   else if std-c-can-take("register", tokens) then (tokens = std-c-take-expect("register", tokens); Tuple{Some{CStorageClassRegister}, tokens} )
-   else Tuple{None :: Maybe<CStorageClassSpecifier>, tokens}
-);
-
-let std-c-parse-type-specifier(tokens: List<Token>): Tuple<Maybe<CTypeSpecifier>,List<Token>> = (
-   if std-c-can-take("void", tokens) then (tokens = std-c-take-expect("void", tokens); Tuple{Some{CType{c"void"}}, tokens} )
-   else if std-c-can-take("char", tokens) then (tokens = std-c-take-expect("char", tokens); Tuple{Some{CType{c"char"}}, tokens} )
-   else if std-c-can-take("short", tokens) then (tokens = std-c-take-expect("short", tokens); Tuple{Some{CType{c"short"}}, tokens} )
-   else if std-c-can-take("int", tokens) then (tokens = std-c-take-expect("int", tokens); Tuple{Some{CType{c"int"}}, tokens} )
-   else if std-c-can-take("long", tokens) then (tokens = std-c-take-expect("long", tokens); Tuple{Some{CType{c"long"}}, tokens} )
-   else if std-c-can-take("float", tokens) then (tokens = std-c-take-expect("float", tokens); Tuple{Some{CType{c"float"}}, tokens} )
-   else if std-c-can-take("double", tokens) then (tokens = std-c-take-expect("double", tokens); Tuple{Some{CType{c"double"}}, tokens} )
-   else if std-c-can-take("signed", tokens) then (tokens = std-c-take-expect("signed", tokens); Tuple{Some{CType{c"signed"}}, tokens} )
-   else if std-c-can-take("unsigned", tokens) then (tokens = std-c-take-expect("unsigned", tokens); Tuple{Some{CType{c"unsigned"}}, tokens} )
-   else if std-c-can-take("_Bool", tokens) then (tokens = std-c-take-expect("_Bool", tokens); Tuple{Some{CType{c"_Bool"}}, tokens} )
-   else if std-c-can-take("_Complex", tokens) then (tokens = std-c-take-expect("_Complex", tokens); Tuple{Some{CType{c"_Complex"}}, tokens} )
-   else if std-c-can-take("_Imaginary", tokens) then (tokens = std-c-take-expect("_Imaginary", tokens); Tuple{Some{CType{c"_Imaginary"}}, tokens} )
-   else if let Tuple{Some{ats=contents}=first,tokens2=second} = std-c-atomic-type-specifier(tokens) then Tuple{Some{ats}, tokens2}
-   else if let Tuple{Some{sou=contents}=first,tokens3=second} = std-c-struct-or-union-specifier(tokens) then Tuple{Some{sou}, tokens3}
-   else if let Tuple{Some{enm=contents}=first,tokens4=second} = std-c-enum-specifier(tokens) then Tuple{Some{enm}, tokens4}
-   else std-c-typedef-name(tokens)
-);
-
-let std-c-typedef-name-index = {} :: HashtableEq<CString,U64>;
-let std-c-parse-typedef-name(tokens: List<Token>): Tuple<Maybe<CType>,List<Token>> = (
-   if non-zero(tokens) && std-c-typedef-name.has(head(tokens).key) {
-      Tuple{ Some{CType{head(tokens).key}}, tokens }
-   } else Tuple{ None :: Maybe<CType>, tokens }
-);
-
-let std-c-parse-type-qualifier(tokens: List<Token>): Tuple<Maybe<CTypeQualifier>,List<Token>> = (
-   if std-c-can-take("const", tokens) then (tokens = std-c-take-expect("const", tokens); Tuple{Some{CType{c"const"}}, tokens} )
-   else if std-c-can-take("restrict", tokens) then (tokens = std-c-take-expect("restrict", tokens); Tuple{Some{CType{c"restrict"}}, tokens} )
-   else if std-c-can-take("volatile", tokens) then (tokens = std-c-take-expect("volatile", tokens); Tuple{Some{CType{c"volatile"}}, tokens} )
-   else if std-c-can-take("_Atomic", tokens) then (tokens = std-c-take-expect("_Atomic", tokens); Tuple{Some{CType{c"Atomic"}}, tokens} )
-   else Tuple{None :: Maybe<CTypeQualifier>, tokens}
-);
-
-let std-c-parse-function-specifier(tokens: List<Token>): Tuple<Maybe<CFunctionSpecifier>,List<Token>> = (
-   if std-c-can-take("inline", tokens) then (tokens = std-c-take-expect("inline", tokens); Tuple{Some{CType{c"inline"}}, tokens} )
-   else if std-c-can-take("_Noreturn", tokens) then (tokens = std-c-take-expect("_Noreturn", tokens); Tuple{Some{CType{c"_Noreturn"}}, tokens} )
-   else Tuple{None :: Maybe<CTypeQualifier>, tokens}
-);
-
-let std-c-parse-alignment-specifier(tokens: List<Token>): Tuple<Maybe<CAlignmentSpecifier>,List<Token>> = (
-   if std-c-can-take("_Alignas", tokens) then {
-      tokens = std-c-take-expect("_Alignas", tokens);
-      tokens = std-c-take-expect("(", tokens);
-      if let Tuple{first:Some{tn=content},tokens2=second} = std-c-parse-type-name(tokens) {
-         tokens = std-c-take-expect(")", tokens);
-         Tuple{ Some{ tn }, tokens }
-      } else if let Tuple{first:Some{ce=content},tokens2=second} = std-c-parse-constant-expression(tokens) {
-         Tuple{ Some{ ce }, tokens }
-      } else std-c-take-expect(c"[Alignment Specifier]");
-   } else Tuple{None :: Maybe<CFunctionSpecifier>, tokens}
-);
-
-let std-c-parse-pointer(tokens: List<Token>): Tuple<Maybe<CPointer>,List<Token>> = (
-   if std-c-can-take(c"*") then }
-      tokens = std-c-take-expect("*", tokens);
-      let type-qualifier-list = std-c-parse-type-qualifier-list(tokens); tokens = type-qualifier-list.second;
-      let next-pointer = std-c-parse-pointer(tokens); tokens = next-pointer.second;
-      Some{ CPointer{ type-qualifier-list.first, next-pointer.first }, tokens }
-   } else Tuple{None :: Maybe<CPointer>, tokens}   
-);
-
-let std-c-parse-direct-declarator(tokens: List<Token>): Tuple<Maybe<CDeclarator>,List<Token>> = (
-   let base-declarator = if let Tuple{Some{ident=contents}=first,tokens2=second} = std-c-parse-identifier(tokens) then {
-      tokens = tokens2;
-      CDeclaratorIdentifier{ ident }
-   } else if std-c-can-take(c"(") then {
-      tokens = std-c-take-expect(c"(");
-      let declarator = std-c-parse-declarator(tokens); tokens = declarator.second;
-      if declarator.is-none { tokens = std-c-take-expect("[Declarator]", tokens); };
-      tokens = std-c-take-expect(c")");
-      declarator;
-   } else std-c-take-expect("[Direct Declarator]", tokens);
-   while std-c-can-take("(") || std-c-can-take("[") {
-      if std-c-can-take("(") {
-         tokens = std-c-take-expect("(");
-         if let Tuple{first:Some{tl=content},tokens3=second} = std-c-parse-type-list(tokens) {
-            tokens = std-c-take-expect(")");
-            tokens = tokens3;
-            base-declarator = CDeclaratorParamList{ base-declarator, tl };
-         } else if let Tuple{first:Some{tl=content},tokens4=second} = std-c-parse-identifier-list(tokens) {
-            tokens = std-c-take-expect(")");
-            tokens = tokens4;
-            base-declarator = CDeclaratorParamList{ base-declarator, tl };
-         } else {
-            tokens = std-c-take-expect(")");
-            base-declarator = CDeclaratorParamList{ base-declarator, [] :: List<Tuple<CString,CType>> };
-         };
-      } else {
-         tokens = std-c-take-expect("[");
-         let type-qualifiers = [] :: List<CType>;
-         if std-c-can-take(c"static", tokens) then {
-            tokens = std-c-take-expect("static");
-            type-qualifiers = cons( CType{c"static"}, type-qualifiers );
-         };
-         if let Tuple{first:Some{tq=content},tokens5=second} = std-c-parse-type-qualifier-list(tokens) {
-            type-qualifiers = type-qualifiers + tq;
-         };
-         if std-c-can-take(c"static", tokens) then {
-            tokens = std-c-take-expect("static");
-            type-qualifiers = cons( CType{c"static"}, type-qualifiers );
-         };
-         let indirect = if std-c-can-take(c"*", tokens) then {
-            tokens = std-c-take-expect("*");
-            true;
-         } else false;
-         let assignment-expression = None :: Maybe<CAssignmentExpression>;
-         if let Tuple{first:Some{ae=content},tokens6=second} = std-c-parse-assignment-expression(tokens) {
-            tokens = tokens6;
-            assignment-expression = ae;
-         };
-         tokens = std-c-take-expect("]");
-         base-declarator = CDeclaratorBracket{ base-declarator, type-qualifiers, indirect, assignment-expression };
-      };
-   };
-   Tuple{ Some{base-declarator}, tokens };
-);
-
-identifier-list = identifier, {',', identifier};
-
-initializer-list = designative-initializer, {',', designative-initializer};
-
-designative-initializer = [designation], initializer;
-
-initializer = '{', initializer-list, [','], '}'
-            | assignment-expression;
-
-constant-expression = conditional-expression;  (* with constraints *)
-
-atomic-type-specifier = '_Atomic', '(', type-name, ')';
-
-struct-or-union-specifier = struct-or-union, '{', struct-declaration-list, '}'
-                          | struct-or-union, identifier, ['{', struct-declaration-list, '}'];
-
-struct-or-union = 'struct'
-                | 'union';
-
-struct-declaration-list = struct-declaration, {struct-declaration};
-
-struct-declaration = specifier-qualifier-list, ';'     (* for anonymous struct/union *)
-                   | specifier-qualifier-list, struct-declarator-list, ';'
-                   | static-assert-declaration;
-
-enum-specifier = 'enum', '{', enumerator-list, [','], '}'
-               | 'enum', identifier, ['{', enumerator-list, [','], '}'];
-
-enumerator-list = enumerator, {',', enumerator};
-
-(* NOTE: Please define enumeration-constant for identifier inside enum { ... }. *)
-enumerator = enumeration-constant, ['=', constant-expression];
-
-enumeration-constant = identifier;
-
-type-name = specifier-qualifier-list, [abstract-declarator];
-
-specifier-qualifier-list = specifier-qualifier, {specifier-qualifier};
-
-specifier-qualifier = type-specifier | type-qualifier;
-
-abstract-declarator = pointer, [direct-abstract-declarator]
-                    | direct-abstract-declarator;
-
-direct-abstract-declarator = '(', abstract-declarator, ')'
-                           | '(', parameter-type-list, ')'
-                           | '(', ')'
-                           | '[', ['*'], ']'
-                           | '[', 'static', [type-qualifier-list], assignment-expression, ']'
-                           | '[', type-qualifier-list, [['static'], assignment-expression], ']'
-                           | '[', assignment-expression, ']'
-                           | direct-abstract-declarator, '[', ['*'], ']'
-                           | direct-abstract-declarator, '[', 'static', [type-qualifier-list], assignment-expression, ']'
-                           | direct-abstract-declarator, '[', type-qualifier-list, [['static'], assignment-expression], ']'
-                           | direct-abstract-declarator, '[', assignment-expression, ']'
-                           | direct-abstract-declarator, '(', parameter-type-list, ')'
-                           | direct-abstract-declarator, '(', ')';
-
-struct-declarator-list = struct-declarator, {',', struct-declarator};
-
-type-qualifier-list = type-qualifier, {type-qualifier};
-
-parameter-type-list = parameter-list, [',', '...'];
-
-struct-declarator = ':', constant-expression
-                  | declarator, [':', constant-expression];
-
-assignment-operator = '=' 
-                    | '*=' 
-                    | '/=' 
-                    | '%=' 
-                    | '+=' 
-                    | '-=' 
-                    | '<<=' 
-                    | '>>=' 
-                    | '&=' 
-                    | '^=' 
-                    | '|=';
-
-parameter-list = parameter-declaration, {',', parameter-declaration};
-
-parameter-declaration = declaration-specifiers, [declarator | abstract-declarator];
-
-expression = assignment-expression, {',', assignment-expression};
-
-assignment-expression = conditional-expression
-                      | unary-expression, assignment-operator, assignment-expression;
-
-conditional-expression = logical-or-expression, ['?', expression, ':', conditional-expression];
-
-logical-or-expression = logical-and-expression, {'||', logical-and-expression};
-
-logical-and-expression = inclusive-or-expression, {'&&', inclusive-or-expression};
-
-inclusive-or-expression = exclusive-or-expression, {'|', exclusive-or-expression};
-
-exclusive-or-expression = and-expression, {'^', and-expression};
-
-and-expression = equality-expression, {'&', equality-expression};
-
-equality-expression = relational-expression, {('==' | '!='), relational-expression};
-
-relational-expression = shift-expression, {('<' | '>' | '<=' | '>='), shift-expression};
-
-shift-expression = additive-expression, {('<<' | '>>'), additive-expression};
-
-additive-expression = multiplicative-expression, {('+' | '-'), multiplicative-expression};
-
-multiplicative-expression = cast-expression, {('*' | '/' | '%'), cast-expression};
-
-cast-expression = unary-expression
-                | '(', type-name, ')', cast-expression;
-
-unary-expression = postfix-expression
-                 | ('++' | '--'), unary-expression
-                 | unary-operator, cast-expression
-                 | 'sizeof', unary-expression
-                 | 'sizeof', '(', type-name, ')'
-                 | '_Alignof', '(', type-name, ')';
-
-postfix-expression = primary-expression
-                   | postfix-expression, '[', expression, ']'
-                   | postfix-expression, '(', [argument-expression-list], ')'
-                   | postfix-expression, ('.' | '->'), identifier
-                   | postfix-expression, ('++' | '--')
-                   | '(', type-name, ')', '{', initializer-list, [','], '}';
-
-unary-operator = '&'
-               | '*'
-               | '+'
-               | '-'
-               | '~'
-               | '!';
-
-primary-expression = identifier
-                   | constant
-                   | string
-                   | '(', expression, ')'
-                   | generic-selection;
-
-argument-expression-list = assignment-expression, {',', assignment-expression};
-
-constant = integer-constant
-         | character-constant
-         | floating-constant
-         | enumeration-constant;
-
-string = string-literal
-       | '__func__';
-
-generic-selection = '_Generic', '(', assignment-expression, ',', generic-assoc-list, ')';
-
-generic-assoc-list = generic-association, {',', generic-association};
-
-generic-association = type-name, ':', assignment-expression
-                    | 'default', ':', assignment-expression;
-
-designation = designator-list, '=';
-
-designator-list = designator, {designator};
-
-designator = '[', constant-expression, ']'
-           | '.', identifier;
-
-statement = labeled-statement
-          | compound-statement
-          | expression-statement
-          | selection-statement
-          | iteration-statement
-          | jump-statement;
-
-labeled-statement = identifier, ':', statement
-                  | 'case', constant-expression, ':', statement
-                  | 'default', ':', statement;
-
-expression-statement = [expression], ';';
-
-selection-statement = 'if', '(', expression, ')', statement, 'else', statement
-                    | 'if', '(', expression, ')', statement
-                    | 'switch', '(', expression, ')', statement;
-
- iteration-statement = 'while', '(', expression, ')', statement
-                     | 'do', statement, 'while', '(', expression, ')', ';'
-                     | 'for', '(', [expression], ';', [expression], ';', [expression], ')', statement
-                     | 'for', '(', declaration, [expression], ';', [expression], ')', statement;
-
-jump-statement = 'goto', identifier, ';'
-               | 'continue', ';'
-               | 'break', ';'
-               | 'return', [expression], ';';
+#let std-c-parse-external-declaration(tokens: List<Token>): Nil = (
+#   tokens = std-c-parse-function-definition();
+#   tokens = std-c-parse-declaration();
+#   tokens;
+#);
+
+#let std-c-parse-function-definition(tokens: List<Token>): List<Token> = (
+#   let declaration-specifiers = std-c-parse-declaration-specifiers(tokens); tokens = declaration-specifiers.second;
+#   if declaration-specifiers.first.is-some {
+#      let declarator = std-c-parse-declarator(tokens); tokens = declarator.second;
+#      if declarator.first.is-some {
+#         let declaration-list = std-c-parse-declaration-list(tokens); tokens = declaration-list.second;
+#         let compound-statement = std-c-parse-compound-statement(tokens); tokens = compound-statement.second;
+#         if compound-statement.first.is-some {
+#            # TODO Add to namespace
+#         }
+#      }
+#   };
+#   tokens;
+#);
+
+#let std-c-parse-declaration(tokens: List<Token>): List<Token> = (
+#   let declaration-specifiers = std-c-parse-declaration-specifiers(tokens); tokens = declaration-specifiers.second;
+#   if declaration-specifiers.first.is-some {
+#      let init-declarator-list = std-parse-init-declarator-list(tokens); tokens = init-declarator-list.second;
+#      tokens = std-c-take-expect(tokens, c";");
+#      # TODO Add to namespace
+#   };
+#   tokens = std-c-parse-static-assert-declaration(tokens);
+#   tokens = std-c-take-maybe(tokens, c";");
+#   tokens;
+#);
+
+#let std-c-parse-declaration-specifiers(tokens: List<Token>): Tuple<Maybe<List<CSpecifier>>,List<Token>> = (
+#   let declaration-specifier = std-c-parse-declaration-specifier(tokens); tokens = declaration-specifier.second;
+#   if let Some{spec=content} = declaration-specifier.first {
+#      let specs = [spec];
+#      while declaration-specifier.first.is-some {
+#         declaration-specifier = std-c-parse-declaration-specifier(tokens); tokens = declaration-specifier.second;
+#         if let Some{next-spec=content} = declaration-specifier.first {
+#            specs = cons( next-spec, specs );
+#         };
+#      };
+#      Tuple{ Some{specs}, tokens }
+#   } else Tuple{ (None :: Maybe<List<CSpecifier>>), tokens };
+#);
+
+#let std-c-parse-declaration-specifier(tokens: List<Token>): Tuple<Maybe<CSpecifier>,List<Token>> = (
+#   let storage-class-specifier = std-c-parse-storage-class-specifier(tokens);
+#   if storage-class-specifier.first.is-some then storage-class-specifier else {
+#      let type-specifier = std-c-parse-type-specifier(tokens);
+#      if type-specifier.first.is-some then type-specifier else {
+#         let type-qualifier = std-c-parse-type-qualifier(tokens);
+#         if type-qualifier.first.is-some then type-qualifier else {
+#            let function-specifier = std-c-parse-function-specifier(tokens);
+#            if function-specifier.first.is-some then function-specifier
+#            else std-c-parse-alignment-specifier(tokens);
+#         }
+#      }
+#   }
+#);
+
+#let std-c-parse-declarator(tokens: List<Token>): Tuple<Maybe<CDeclarator>,List<Token>> = (
+#   let original-tokens = tokens;
+#   let pointer = std-c-parse-pointer(tokens); tokens = pointer.second;
+#   let direct-declarator = std-c-direct-declarator(tokens);
+#   if let Some{dd=content} = direct-declarator.first {
+#      Tuple{ Some{CDeclarator{ pointer.first, dd }}, direct-declarator.second }
+#   } else {
+#      Tuple{ (None :: Maybe<CDeclarator>), original-tokens }
+#   }
+#);
+
+#let std-c-declaration-list(tokens: List<Token>): Tuple<Maybe<List<CDeclaration>>,List<Token>> = (
+#   let declaration = std-c-parse-declaration(tokens); tokens = declaration.second;
+#   if let Some{decl=content} = declaration.first {
+#      let decls = [decl];
+#      declaration = std-c-parse-declaration(tokens); tokens = declaration.second;
+#      while declaration.first.is-some {
+#         if let Some{decl-next=content} = declaration.first {
+#            decls = cons(decl-next, decls);
+#         }
+#      };
+#      Tuple{ Some{decls}, tokens }
+#   } else (Tuple{ (None :: Maybe<List<CDeclaration>>), tokens })
+#);
+
+#let std-c-parse-compound-statement(tokens: List<Token>): Tuple<Maybe<CDeclarationOrStatement>,List<Token>> = (
+#   if std-c-can-take(c"{") {
+#      tokens = std-c-take-maybe(tokens, c"{");
+#      let declaration-or-statement = std-c-parse-declaration-or-statement(tokens); tokens = declaration-or-statement.second;
+#      tokens = std-c-take-maybe(tokens, c"}");
+#      Tuple{ declaration-or-statement.first, tokens };
+#   } else Tuple{(None :: Maybe<CDeclarationOrStatement>), tokens}
+#);
+
+#let std-c-parse-declaration-or-statement(tokens: List<Token>): Tuple<Maybe<CDeclarationOrStatement>,List<Token>> = (
+#   let declaration = std-c-parse-declaration(tokens);
+#   if declaration.first.is-some then declaration else std-c-parse-statement(tokens);
+#);
+
+#let std-c-parse-init-declarator-list(tokens: List<Token>): Tuple<Maybe<List<CInitDeclarator>>,List<Token>> = (
+#   let init-declarator = std-c-parse-init-declarator(tokens);
+#   if let Some{dc=content} = init-declarator {
+#      let dcs = [dc];
+#      while init-declarator.first.is-some {
+#         init-declarator = std-c-parse-init-declarator(tokens);
+#         if let Some{dc2=content} = init-declarator {
+#            dcs = cons(dc, dcs);
+#         }
+#      };
+#      Tuple{ Some{dcs}, tokens }
+#   } else init-declarator;
+#);
+
+#let std-c-parse-init-declarator(tokens: List<Token>): Tuple<Maybe<CInitDeclarator>,List<Token>> = (
+#   let declarator = c-parse-declarator(tokens); tokens = declarator.second;
+#   if declarator.first.is-some {
+#      tokens = std-c-take-expect(tokens, c"=");
+#      let initializer = std-c-parse-initializer(tokens); tokens = declarator.second;
+#      Tuple{ CInitDeclarator{ declarator.first, initializer.first }, tokens }
+#   } else declarator
+#);
+
+#let std-c-parse-static-assert-declaration(tokens: List<Token>): Tuple<Maybe<CStaticAssertDeclaration>,List<Token>> = (
+#   if std-c-can-take(tokens, c"_Static_assert") {
+#      tokens = std-c-take-expect(tokens, c"_Static_assert");
+#      tokens = std-c-take-expect(tokens, c"(");
+#      let constant-expression = std-c-parse-constant-expression(tokens);
+#      if constant-expression.first.is-none { std-c-take-expect(tokens, c"[Constant Expression]"); };
+#      tokens = std-c-take-expect(tokens, c",");
+#      tokens = std-c-take-expect(tokens, c")");
+#      tokens = std-c-take-expect(tokens, c";");
+#      let string-literal = std-c-parse-string-literal(tokens);
+#      if let Some{ce=content} = constant-expression {
+#         if let Some{sl=content} = string-literal {
+#            Tuple{ Some{CStaticAssertDeclaration{ ce, sl }}, tokens }
+#         } else Tuple{ (None :: Maybe<CStaticAssertDeclaration>), tokens };
+#      } else Tuple{ (None :: Maybe<CStaticAssertDeclaration>), tokens };
+#      Tuple{ Some{CStaticAssertDeclaration{ constant-expression. }} }
+#   } else Tuple{ (None :: Maybe<CStaticAssertDeclaration>), tokens }
+#);
+
+#let std-c-parse-storage-class-specifier(tokens: List<Token): Tuple<Maybe<CStorageClassSpecifier>,List<Token>> = (
+#   if std-c-can-take("typedef", tokens) then (tokens = std-c-take-expect("typedef", tokens); Tuple{Some{CStorageClassTypedef}, tokens} )
+#   else if std-c-can-take("extern", tokens) then (tokens = std-c-take-expect("extern", tokens); Tuple{Some{CStorageClassExtern}, tokens} )
+#   else if std-c-can-take("static", tokens) then (tokens = std-c-take-expect("static", tokens); Tuple{Some{CStorageClassStatic}, tokens} )
+#   else if std-c-can-take("_Thread_local", tokens) then (tokens = std-c-take-expect("_Thread_local", tokens); Tuple{Some{CStorageClassThreadLocal}, tokens} )
+#   else if std-c-can-take("auto", tokens) then (tokens = std-c-take-expect("auto", tokens); Tuple{Some{CStorageClassAuto}, tokens} )
+#   else if std-c-can-take("register", tokens) then (tokens = std-c-take-expect("register", tokens); Tuple{Some{CStorageClassRegister}, tokens} )
+#   else Tuple{None :: Maybe<CStorageClassSpecifier>, tokens}
+#);
+
+#let std-c-parse-type-specifier(tokens: List<Token>): Tuple<Maybe<CTypeSpecifier>,List<Token>> = (
+#   if std-c-can-take("void", tokens) then (tokens = std-c-take-expect("void", tokens); Tuple{Some{CType{c"void"}}, tokens} )
+#   else if std-c-can-take("char", tokens) then (tokens = std-c-take-expect("char", tokens); Tuple{Some{CType{c"char"}}, tokens} )
+#   else if std-c-can-take("short", tokens) then (tokens = std-c-take-expect("short", tokens); Tuple{Some{CType{c"short"}}, tokens} )
+#   else if std-c-can-take("int", tokens) then (tokens = std-c-take-expect("int", tokens); Tuple{Some{CType{c"int"}}, tokens} )
+#   else if std-c-can-take("long", tokens) then (tokens = std-c-take-expect("long", tokens); Tuple{Some{CType{c"long"}}, tokens} )
+#   else if std-c-can-take("float", tokens) then (tokens = std-c-take-expect("float", tokens); Tuple{Some{CType{c"float"}}, tokens} )
+#   else if std-c-can-take("double", tokens) then (tokens = std-c-take-expect("double", tokens); Tuple{Some{CType{c"double"}}, tokens} )
+#   else if std-c-can-take("signed", tokens) then (tokens = std-c-take-expect("signed", tokens); Tuple{Some{CType{c"signed"}}, tokens} )
+#   else if std-c-can-take("unsigned", tokens) then (tokens = std-c-take-expect("unsigned", tokens); Tuple{Some{CType{c"unsigned"}}, tokens} )
+#   else if std-c-can-take("_Bool", tokens) then (tokens = std-c-take-expect("_Bool", tokens); Tuple{Some{CType{c"_Bool"}}, tokens} )
+#   else if std-c-can-take("_Complex", tokens) then (tokens = std-c-take-expect("_Complex", tokens); Tuple{Some{CType{c"_Complex"}}, tokens} )
+#   else if std-c-can-take("_Imaginary", tokens) then (tokens = std-c-take-expect("_Imaginary", tokens); Tuple{Some{CType{c"_Imaginary"}}, tokens} )
+#   else if let Tuple{Some{ats=contents}=first,tokens2=second} = std-c-atomic-type-specifier(tokens) then Tuple{Some{ats}, tokens2}
+#   else if let Tuple{Some{sou=contents}=first,tokens3=second} = std-c-struct-or-union-specifier(tokens) then Tuple{Some{sou}, tokens3}
+#   else if let Tuple{Some{enm=contents}=first,tokens4=second} = std-c-enum-specifier(tokens) then Tuple{Some{enm}, tokens4}
+#   else std-c-typedef-name(tokens)
+#);
+
+#let std-c-typedef-name-index = {} :: HashtableEq<CString,U64>;
+#let std-c-parse-typedef-name(tokens: List<Token>): Tuple<Maybe<CType>,List<Token>> = (
+#   if non-zero(tokens) && std-c-typedef-name.has(head(tokens).key) {
+#      Tuple{ Some{CType{head(tokens).key}}, tokens }
+#   } else Tuple{ None :: Maybe<CType>, tokens }
+#);
+
+#let std-c-parse-type-qualifier(tokens: List<Token>): Tuple<Maybe<CTypeQualifier>,List<Token>> = (
+#   if std-c-can-take("const", tokens) then (tokens = std-c-take-expect("const", tokens); Tuple{Some{CType{c"const"}}, tokens} )
+#   else if std-c-can-take("restrict", tokens) then (tokens = std-c-take-expect("restrict", tokens); Tuple{Some{CType{c"restrict"}}, tokens} )
+#   else if std-c-can-take("volatile", tokens) then (tokens = std-c-take-expect("volatile", tokens); Tuple{Some{CType{c"volatile"}}, tokens} )
+#   else if std-c-can-take("_Atomic", tokens) then (tokens = std-c-take-expect("_Atomic", tokens); Tuple{Some{CType{c"Atomic"}}, tokens} )
+#   else Tuple{None :: Maybe<CTypeQualifier>, tokens}
+#);
+
+#let std-c-parse-function-specifier(tokens: List<Token>): Tuple<Maybe<CFunctionSpecifier>,List<Token>> = (
+#   if std-c-can-take("inline", tokens) then (tokens = std-c-take-expect("inline", tokens); Tuple{Some{CType{c"inline"}}, tokens} )
+#   else if std-c-can-take("_Noreturn", tokens) then (tokens = std-c-take-expect("_Noreturn", tokens); Tuple{Some{CType{c"_Noreturn"}}, tokens} )
+#   else Tuple{None :: Maybe<CTypeQualifier>, tokens}
+#);
+
+#let std-c-parse-alignment-specifier(tokens: List<Token>): Tuple<Maybe<CAlignmentSpecifier>,List<Token>> = (
+#   if std-c-can-take("_Alignas", tokens) then {
+#      tokens = std-c-take-expect("_Alignas", tokens);
+#      tokens = std-c-take-expect("(", tokens);
+#      if let Tuple{first:Some{tn=content},tokens2=second} = std-c-parse-type-name(tokens) {
+#         tokens = std-c-take-expect(")", tokens);
+#         Tuple{ Some{ tn }, tokens }
+#      } else if let Tuple{first:Some{ce=content},tokens2=second} = std-c-parse-constant-expression(tokens) {
+#         Tuple{ Some{ ce }, tokens }
+#      } else std-c-take-expect(c"[Alignment Specifier]");
+#   } else Tuple{None :: Maybe<CFunctionSpecifier>, tokens}
+#);
+
+#let std-c-parse-pointer(tokens: List<Token>): Tuple<Maybe<CPointer>,List<Token>> = (
+#   if std-c-can-take(c"*") then }
+#      tokens = std-c-take-expect("*", tokens);
+#      let type-qualifier-list = std-c-parse-type-qualifier-list(tokens); tokens = type-qualifier-list.second;
+#      let next-pointer = std-c-parse-pointer(tokens); tokens = next-pointer.second;
+#      Some{ CPointer{ type-qualifier-list.first, next-pointer.first }, tokens }
+#   } else Tuple{None :: Maybe<CPointer>, tokens}   
+#);
+
+#let std-c-parse-direct-declarator(tokens: List<Token>): Tuple<Maybe<CDeclarator>,List<Token>> = (
+#   let base-declarator = if let Tuple{Some{ident=contents}=first,tokens2=second} = std-c-parse-identifier(tokens) then {
+#      tokens = tokens2;
+#      CDeclaratorIdentifier{ ident }
+#   } else if std-c-can-take(c"(") then {
+#      tokens = std-c-take-expect(c"(");
+#      let declarator = std-c-parse-declarator(tokens); tokens = declarator.second;
+#      if declarator.is-none { tokens = std-c-take-expect("[Declarator]", tokens); };
+#      tokens = std-c-take-expect(c")");
+#      declarator;
+#   } else std-c-take-expect("[Direct Declarator]", tokens);
+#   while std-c-can-take("(") || std-c-can-take("[") {
+#      if std-c-can-take("(") {
+#         tokens = std-c-take-expect("(");
+#         if let Tuple{first:Some{tl=content},tokens3=second} = std-c-parse-type-list(tokens) {
+#            tokens = std-c-take-expect(")");
+#            tokens = tokens3;
+#            base-declarator = CDeclaratorParamList{ base-declarator, tl };
+#         } else if let Tuple{first:Some{tl=content},tokens4=second} = std-c-parse-identifier-list(tokens) {
+#            tokens = std-c-take-expect(")");
+#            tokens = tokens4;
+#            base-declarator = CDeclaratorParamList{ base-declarator, tl };
+#         } else {
+#            tokens = std-c-take-expect(")");
+#            base-declarator = CDeclaratorParamList{ base-declarator, [] :: List<Tuple<CString,CType>> };
+#         };
+#      } else {
+#         tokens = std-c-take-expect("[");
+#         let type-qualifiers = [] :: List<CType>;
+#         if std-c-can-take(c"static", tokens) then {
+#            tokens = std-c-take-expect("static");
+#            type-qualifiers = cons( CType{c"static"}, type-qualifiers );
+#         };
+#         if let Tuple{first:Some{tq=content},tokens5=second} = std-c-parse-type-qualifier-list(tokens) {
+#            type-qualifiers = type-qualifiers + tq;
+#         };
+#         if std-c-can-take(c"static", tokens) then {
+#            tokens = std-c-take-expect("static");
+#            type-qualifiers = cons( CType{c"static"}, type-qualifiers );
+#         };
+#         let indirect = if std-c-can-take(c"*", tokens) then {
+#            tokens = std-c-take-expect("*");
+#            true;
+#         } else false;
+#         let assignment-expression = None :: Maybe<CAssignmentExpression>;
+#         if let Tuple{first:Some{ae=content},tokens6=second} = std-c-parse-assignment-expression(tokens) {
+#            tokens = tokens6;
+#            assignment-expression = ae;
+#         };
+#         tokens = std-c-take-expect("]");
+#         base-declarator = CDeclaratorBracket{ base-declarator, type-qualifiers, indirect, assignment-expression };
+#      };
+#   };
+#   Tuple{ Some{base-declarator}, tokens };
+#);
+
+#identifier-list = identifier, {',', identifier};
+
+#initializer-list = designative-initializer, {',', designative-initializer};
+
+#designative-initializer = [designation], initializer;
+
+#initializer = '{', initializer-list, [','], '}'
+#            | assignment-expression;
+
+#constant-expression = conditional-expression;  (* with constraints *)
+
+#atomic-type-specifier = '_Atomic', '(', type-name, ')';
+
+#struct-or-union-specifier = struct-or-union, '{', struct-declaration-list, '}'
+#                          | struct-or-union, identifier, ['{', struct-declaration-list, '}'];
+
+#struct-or-union = 'struct'
+#                | 'union';
+
+#struct-declaration-list = struct-declaration, {struct-declaration};
+
+#struct-declaration = specifier-qualifier-list, ';'     (* for anonymous struct/union *)
+#                   | specifier-qualifier-list, struct-declarator-list, ';'
+#                   | static-assert-declaration;
+
+#enum-specifier = 'enum', '{', enumerator-list, [','], '}'
+#               | 'enum', identifier, ['{', enumerator-list, [','], '}'];
+
+#enumerator-list = enumerator, {',', enumerator};
+
+#(* NOTE: Please define enumeration-constant for identifier inside enum { ... }. *)
+#enumerator = enumeration-constant, ['=', constant-expression];
+
+#enumeration-constant = identifier;
+
+#type-name = specifier-qualifier-list, [abstract-declarator];
+
+#specifier-qualifier-list = specifier-qualifier, {specifier-qualifier};
+
+#specifier-qualifier = type-specifier | type-qualifier;
+
+#abstract-declarator = pointer, [direct-abstract-declarator]
+#                    | direct-abstract-declarator;
+
+#direct-abstract-declarator = '(', abstract-declarator, ')'
+#                           | '(', parameter-type-list, ')'
+#                           | '(', ')'
+#                           | '[', ['*'], ']'
+#                           | '[', 'static', [type-qualifier-list], assignment-expression, ']'
+#                           | '[', type-qualifier-list, [['static'], assignment-expression], ']'
+#                           | '[', assignment-expression, ']'
+#                           | direct-abstract-declarator, '[', ['*'], ']'
+#                           | direct-abstract-declarator, '[', 'static', [type-qualifier-list], assignment-expression, ']'
+#                           | direct-abstract-declarator, '[', type-qualifier-list, [['static'], assignment-expression], ']'
+#                           | direct-abstract-declarator, '[', assignment-expression, ']'
+#                           | direct-abstract-declarator, '(', parameter-type-list, ')'
+#                           | direct-abstract-declarator, '(', ')';
+
+#struct-declarator-list = struct-declarator, {',', struct-declarator};
+
+#type-qualifier-list = type-qualifier, {type-qualifier};
+
+#parameter-type-list = parameter-list, [',', '...'];
+
+#struct-declarator = ':', constant-expression
+#                  | declarator, [':', constant-expression];
+
+#assignment-operator = '=' 
+#                    | '*=' 
+#                    | '/=' 
+#                    | '%=' 
+#                    | '+=' 
+#                    | '-=' 
+#                    | '<<=' 
+#                    | '>>=' 
+#                    | '&=' 
+#                    | '^=' 
+#                    | '|=';
+
+#parameter-list = parameter-declaration, {',', parameter-declaration};
+
+#parameter-declaration = declaration-specifiers, [declarator | abstract-declarator];
+
+#expression = assignment-expression, {',', assignment-expression};
+
+#assignment-expression = conditional-expression
+#                      | unary-expression, assignment-operator, assignment-expression;
+
+#conditional-expression = logical-or-expression, ['?', expression, ':', conditional-expression];
+
+#logical-or-expression = logical-and-expression, {'||', logical-and-expression};
+
+#logical-and-expression = inclusive-or-expression, {'&&', inclusive-or-expression};
+
+#inclusive-or-expression = exclusive-or-expression, {'|', exclusive-or-expression};
+
+#exclusive-or-expression = and-expression, {'^', and-expression};
+
+#and-expression = equality-expression, {'&', equality-expression};
+
+#equality-expression = relational-expression, {('==' | '!='), relational-expression};
+
+#relational-expression = shift-expression, {('<' | '>' | '<=' | '>='), shift-expression};
+
+#shift-expression = additive-expression, {('<<' | '>>'), additive-expression};
+
+#additive-expression = multiplicative-expression, {('+' | '-'), multiplicative-expression};
+
+#multiplicative-expression = cast-expression, {('*' | '/' | '%'), cast-expression};
+
+#cast-expression = unary-expression
+#                | '(', type-name, ')', cast-expression;
+
+#unary-expression = postfix-expression
+#                 | ('++' | '--'), unary-expression
+#                 | unary-operator, cast-expression
+#                 | 'sizeof', unary-expression
+#                 | 'sizeof', '(', type-name, ')'
+#                 | '_Alignof', '(', type-name, ')';
+
+#postfix-expression = primary-expression
+#                   | postfix-expression, '[', expression, ']'
+#                   | postfix-expression, '(', [argument-expression-list], ')'
+#                   | postfix-expression, ('.' | '->'), identifier
+#                   | postfix-expression, ('++' | '--')
+#                   | '(', type-name, ')', '{', initializer-list, [','], '}';
+
+#unary-operator = '&'
+#               | '*'
+#               | '+'
+#               | '-'
+#               | '~'
+#               | '!';
+
+#primary-expression = identifier
+#                   | constant
+#                   | string
+#                   | '(', expression, ')'
+#                   | generic-selection;
+
+#argument-expression-list = assignment-expression, {',', assignment-expression};
+
+#constant = integer-constant
+#         | character-constant
+#         | floating-constant
+#         | enumeration-constant;
+
+#string = string-literal
+#       | '__func__';
+
+#generic-selection = '_Generic', '(', assignment-expression, ',', generic-assoc-list, ')';
+
+#generic-assoc-list = generic-association, {',', generic-association};
+
+#generic-association = type-name, ':', assignment-expression
+#                    | 'default', ':', assignment-expression;
+
+#designation = designator-list, '=';
+
+#designator-list = designator, {designator};
+
+#designator = '[', constant-expression, ']'
+#           | '.', identifier;
+
+#statement = labeled-statement
+#          | compound-statement
+#          | expression-statement
+#          | selection-statement
+#          | iteration-statement
+#          | jump-statement;
+
+#labeled-statement = identifier, ':', statement
+#                  | 'case', constant-expression, ':', statement
+#                  | 'default', ':', statement;
+
+#expression-statement = [expression], ';';
+
+#selection-statement = 'if', '(', expression, ')', statement, 'else', statement
+#                    | 'if', '(', expression, ')', statement
+#                    | 'switch', '(', expression, ')', statement;
+
+# iteration-statement = 'while', '(', expression, ')', statement
+#                     | 'do', statement, 'while', '(', expression, ')', ';'
+#                     | 'for', '(', [expression], ';', [expression], ';', [expression], ')', statement
+#                     | 'for', '(', declaration, [expression], ';', [expression], ')', statement;
+
+#jump-statement = 'goto', identifier, ';'
+#               | 'continue', ';'
+#               | 'break', ';'
+#               | 'return', [expression], ';';
