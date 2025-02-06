@@ -70,3 +70,33 @@ if true then {
       assert( std-c-parse-assignment-operator(tokens).first == Some{c"|="} );
    };
 };
+
+if true then { 
+   let abc = std-c-tokenize-string("abc", "abc");
+   assert( std-c-parse-unary-operator(abc).first == None :: Maybe<CString> );
+   if true then {
+      let tokens = std-c-tokenize-string("[&]", "&");
+      assert( std-c-parse-unary-operator(tokens).first == Some{c"&"} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[*]", "*");
+      assert( std-c-parse-unary-operator(tokens).first == Some{c"*"} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[+]", "+");
+      assert( std-c-parse-unary-operator(tokens).first == Some{c"+"} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[-]", "-");
+      assert( std-c-parse-unary-operator(tokens).first == Some{c"-"} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[~]", "~");
+      assert( std-c-parse-unary-operator(tokens).first == Some{c"~"} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[!]", "!");
+      assert( std-c-parse-unary-operator(tokens).first == Some{c"!"} );
+   };
+};
+
