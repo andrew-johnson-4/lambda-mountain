@@ -1,3 +1,8 @@
 
 import SRC/typeof-var.lsts;
 import SRC/bind-varargs.lsts;
+import SRC/index-types.lm;
+import PLUGINS/FRONTEND/LM/index-index.lm;
+import SRC/index-plugins.lm;
+import SRC/index-tokenize.lm;
+import SRC/substitute.lsts;

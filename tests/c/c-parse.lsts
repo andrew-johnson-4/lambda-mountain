@@ -1,4 +1,10 @@
 
 import LIB/default.lsts;
 import SRC/unit-ast.lsts;
+import SRC/unit-drivers.lsts;
+import SRC/unit-globals.lsts;
+import SRC/unit-inference.lsts;
+import SRC/unit-fragments.lsts;
+import SRC/unit-orphans.lsts;
+import SRC/unit-error.lsts;
 import PLUGINS/FRONTEND/C/index-index.lm;
