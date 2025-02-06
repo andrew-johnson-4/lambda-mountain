@@ -100,3 +100,16 @@ if true then {
    };
 };
 
+if true then { 
+   let abc = std-c-tokenize-string("abc", "abc");
+   assert( std-c-parse-struct-or-union(abc).first == None :: Maybe<CString> );
+   if true then {
+      let tokens = std-c-tokenize-string("[struct]", "struct");
+      assert( std-c-parse-struct-or-union(tokens).first == Some{c"struct"} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[union]", "union");
+      assert( std-c-parse-struct-or-union(tokens).first == Some{c"union"} );
+   };
+};
+

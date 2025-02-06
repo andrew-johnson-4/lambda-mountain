@@ -315,9 +315,6 @@ let std-c-take-maybe(tokens: List<Token>, cls: String): List<Token> = (
 #struct-or-union-specifier = struct-or-union, '{', struct-declaration-list, '}'
 #                          | struct-or-union, identifier, ['{', struct-declaration-list, '}'];
 
-#struct-or-union = 'struct'
-#                | 'union';
-
 #struct-declaration-list = struct-declaration, {struct-declaration};
 
 #struct-declaration = specifier-qualifier-list, ';'     (* for anonymous struct/union *)
@@ -394,6 +391,15 @@ let std-c-parse-unary-operator(tokens: List<Token>): Tuple<Maybe<CString>,List<T
    else if head(tokens).key == c"!" then Tuple{ Some{c"!"}, tail(tokens) }
    else Tuple{ no, tokens }
 );
+
+let std-c-parse-struct-or-union(tokens: List<Token>): Tuple<Maybe<CString>,List<Token>> = (
+   let no = None :: Maybe<CString>;
+   if not(non-zero(tokens)) then Tuple{ no, tokens }
+   else if head(tokens).key == c"struct" then Tuple{ Some{c"struct"}, tail(tokens) }
+   else if head(tokens).key == c"union" then Tuple{ Some{c"union"}, tail(tokens) }
+   else Tuple{ no, tokens }
+);
+
 
 #parameter-list = parameter-declaration, {',', parameter-declaration};
 
