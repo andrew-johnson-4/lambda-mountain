@@ -77,11 +77,11 @@ let std-c-is-reserved-word(tk: CString): U64 = (
 let std-c-has-class(tk: CString, cls: String): U64 = (
    match cls {
       "identifier" => tk == r/^[a-zA-Z_][a-zA-Z0-9_]*/ && not(std-c-is-reserved-word(tk));
-      "integer" => tk == r/^[0-9]+([uU]|[lL]|wb|WB)*/             # decimal constant
-                || tk == r/^[0][0-7]+([uU]|[lL]|wb|WB)*/          # octal constant
-                || tk == r/^[0][x][0-9a-fA-F]+([uU]|[lL]|wb|WB)*/ # hexadecimal constant
-                || tk == r/^[0][bB][01]+([uU]|[lL]|wb|WB)*/;      # binary constant
-      "character" => tk == r/^(u8|u|U|L)?[']([^']|[\\][']))+[']/;    # character constant
+      "integer" => tk == r/^[0-9]+([uU]|[lL]|wb|WB)*/                # decimal constant
+                || tk == r/^[0][0-7]+([uU]|[lL]|wb|WB)*/             # octal constant
+                || tk == r/^[0][x][0-9a-fA-F]+([uU]|[lL]|wb|WB)*/    # hexadecimal constant
+                || tk == r/^[0][bB][01]+([uU]|[lL]|wb|WB)*/;         # binary constant
+      "character" => tk == r/^(u8|u|U|L)?[']([^']|([\\][']))+[']/;    # character constant
       _ => tk == cls;
    }
 );
