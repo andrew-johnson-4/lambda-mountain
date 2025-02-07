@@ -56,8 +56,17 @@ let std-c-tokenize-string(file-path: String, text: String): List<Token> = (
       ".".. rest => (tokens = cons(text[:".".length], tokens); text = rest;);
       "-".. rest => (tokens = cons(text[:"-".length], tokens); text = rest;);
 
-      (lit=r/^["]([^"\\]|([\\].))*["]/).. rest => (
-         tokens = cons(text[:lit.length], tokens); text = rest;
+      (cl=r/^[0][x][0-9a-fA-F]+([.][0-9a-fA-F]+)?([eE][0-9a-fA-F]+)?([pP][0-9]+)(fF)?/).. rest => (
+         tokens = cons(text[:cl.length], tokens); text = rest;
+      );
+      (cl=r/^[0][x][0-9a-fA-F]+([uU]|[lL]|wb|WB)*/).. rest => (
+         tokens = cons(text[:cl.length], tokens); text = rest;
+      );
+      (cl=r/^[0][bB][01]+([uU]|[lL]|wb|WB)*/).. rest => (
+         tokens = cons(text[:cl.length], tokens); text = rest;
+      );
+      (cl=r/^[0-9]+([uU]|[lL]|wb|WB)*([.][0-9]+)?([eE][0-9]+)?[fF]?/).. rest => (
+         tokens = cons(text[:cl.length], tokens); text = rest;
       );
       (cl=r/^(u8|u|U|L)?[']([^']|([\\][']))+[']/).. rest => (
          tokens = cons(text[:cl.length], tokens); text = rest;
@@ -65,6 +74,10 @@ let std-c-tokenize-string(file-path: String, text: String): List<Token> = (
 
       (id=r/^[a-zA-Z0-9_]+/).. rest => (
          tokens = cons(text[:id.length], tokens); text = rest;
+      );
+
+      (lit=r/^["]([^"\\]|([\\].))*["]/).. rest => (
+         tokens = cons(text[:lit.length], tokens); text = rest;
       );
 
       (comment=r/^#[^\n]*[\n]/).. rest => (

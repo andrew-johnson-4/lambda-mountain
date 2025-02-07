@@ -165,10 +165,6 @@ if true then {
    };
    if true then {
       let tokens = std-c-tokenize-string("'a'", "'a'");
-      match std-c-parse-constant(tokens).first {
-         Some{content:CConstantCharacter{value=value}} => print(value);
-         None{} => print("None");
-      };
       assert( std-c-parse-constant(tokens).first == Some{CConstantCharacter{c"'a'"}} );
    };
    if true then {
@@ -182,5 +178,17 @@ if true then {
    if true then {
       let tokens = std-c-tokenize-string("u'\\u123'", "u'\\u123'");
       assert( std-c-parse-constant(tokens).first == Some{CConstantCharacter{c"u'\\u123'"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("0.2", "0.2");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantFloating{c"0.2"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("1e2f", "1e2f");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantFloating{c"1e2f"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("0x3p2", "0x3p2");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantFloating{c"0x3p2"}} );
    };
 };

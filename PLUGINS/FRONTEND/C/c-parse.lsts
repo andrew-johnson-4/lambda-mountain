@@ -82,6 +82,8 @@ let std-c-has-class(tk: CString, cls: String): U64 = (
                 || tk == r/^[0][x][0-9a-fA-F]+([uU]|[lL]|wb|WB)*/    # hexadecimal constant
                 || tk == r/^[0][bB][01]+([uU]|[lL]|wb|WB)*/;         # binary constant
       "character" => tk == r/^(u8|u|U|L)?[']([^']|([\\][']))+[']/;    # character constant
+      "floating" => tk == r/^[0-9]+([.][0-9]+)?([eE][0-9]+)?[fF]?/                                        # decimal constant
+                 || tk == r/^[0][x][0-9a-fA-F]+([.][0-9a-fA-F]+)?([eE][0-9a-fA-F]+)?([pP][0-9]+)[fF]?/;   # hexadecimal constant
       _ => tk == cls;
    }
 );
@@ -482,7 +484,7 @@ let std-c-parse-constant(tokens: List<Token>): Tuple<Maybe<CConstant>,List<Token
    let no = None :: Maybe<CConstant>;
    if std-c-can-take(tokens, "integer") then Tuple{ Some{CConstantInteger{head(tokens).key}}, tail(tokens) }
    else if std-c-can-take(tokens, "character") then Tuple{ Some{CConstantCharacter{head(tokens).key}}, tail(tokens) }
-   #else if std-c-can-take(tokens, "floating") then Tuple{ Some{CConstantFloating{head(tokens).key}}, tail(tokens) }
+   else if std-c-can-take(tokens, "floating") then Tuple{ Some{CConstantFloating{head(tokens).key}}, tail(tokens) }
    #else if std-c-can-take(tokens, "enumeration") then Tuple{ Some{CConstantFloating{head(tokens).key}}, tail(tokens) }
    else Tuple{ no, tokens }
 );
