@@ -15,5 +15,5 @@ let without-location(term: AST): AST = (
 );
 
 let without-location(t: Token): Token = (
-   Token{ t.key, t.nonce, mk-location() }
+   Token{ t.skey, t.key, t.nonce, mk-location() }
 );

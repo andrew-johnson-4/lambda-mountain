@@ -14,7 +14,7 @@ let lsts-unwrap-identifier(ident: CString): CString = (
 
 let lsts-unwrap-identifier(ident: Token): Token = (
    match ident {
-      Token { key=key, nonce=nonce, location=location } => Token { lsts-unwrap-identifier(key), iuid(), location };
+      Token { skey=skey, key=key, nonce=nonce, location=location } => Token { skey, lsts-unwrap-identifier(key), iuid(), location };
    };
 );
 
