@@ -113,3 +113,22 @@ if true then {
    };
 };
 
+if true then { 
+   if true then {
+      let tokens = std-c-tokenize-string("[abc]", "abc");
+      assert( std-c-parse-identifier(tokens).first == Some{c"abc"} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[ABC]", "ABC");
+      assert( std-c-parse-identifier(tokens).first == Some{c"ABC"} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("_0", "_0");
+      assert( std-c-parse-identifier(tokens).first == Some{c"_0"} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[int]", "int");
+      assert( std-c-parse-identifier(tokens).first == None :: Maybe<CString> );
+   };
+};
+
