@@ -6,10 +6,10 @@
 # However, there are also a large number of compiler-specific extensions that are parsed but mostly ignored
 # Example: __extension__ ( f, g )
 
-type CConstant = CConstantInteger{value:CString}
-               | CConstantCharacter{value:CString}
-               | CConstantFloating{value:CString}
-               | CConstantEnumeration{value:CString};
+type CConstant = CConstantInteger{value:String}
+               | CConstantCharacter{value:String}
+               | CConstantFloating{value:String}
+               | CConstantEnumeration{value:String};
 
 let cmp(l: CConstant, r: CConstant): Ord = (
    if $".0"(l) != $".0"(r) then cmp($".0"(l), $".0"(r))
@@ -25,58 +25,59 @@ let std-c-parse(tokens: List<Token>): Nil = (
 #   while non-zero(tokens) { tokens = std-c-parse-external-declaration(tokens); }
 );
 
-let std-c-is-reserved-word(tk: CString): U64 = (
+let std-c-is-reserved-word(tk: String): U64 = (
    let reserved = false;
-   if tk == c"auto" then (reserved = true);
-   if tk == c"double" then (reserved = true);
-   if tk == c"int" then (reserved = true);
-   if tk == c"struct" then (reserved = true);
-   if tk == c"break" then (reserved = true);
-   if tk == c"else" then (reserved = true);
-   if tk == c"long" then (reserved = true);
-   if tk == c"switch" then (reserved = true);
-   if tk == c"case" then (reserved = true);
-   if tk == c"enum" then (reserved = true);
-   if tk == c"register" then (reserved = true);
-   if tk == c"typedef" then (reserved = true);
-   if tk == c"char" then (reserved = true);
-   if tk == c"extern" then (reserved = true);
-   if tk == c"return" then (reserved = true);
-   if tk == c"union" then (reserved = true);
-   if tk == c"const" then (reserved = true);
-   if tk == c"float" then (reserved = true);
-   if tk == c"short" then (reserved = true);
-   if tk == c"unsigned" then (reserved = true);
-   if tk == c"continue" then (reserved = true);
-   if tk == c"for" then (reserved = true);
-   if tk == c"signed" then (reserved = true);
-   if tk == c"void" then (reserved = true);
-   if tk == c"default" then (reserved = true);
-   if tk == c"goto" then (reserved = true);
-   if tk == c"sizeof" then (reserved = true);
-   if tk == c"volatile" then (reserved = true);
-   if tk == c"do" then (reserved = true);
-   if tk == c"if" then (reserved = true);
-   if tk == c"static" then (reserved = true);
-   if tk == c"while" then (reserved = true);
-   if tk == c"_Bool" then (reserved = true);
-   if tk == c"_Imaginary" then (reserved = true);
-   if tk == c"restrict" then (reserved = true);
-   if tk == c"_Complex" then (reserved = true);
-   if tk == c"inline" then (reserved = true);
-   if tk == c"_Alignas" then (reserved = true);
-   if tk == c"_Generic" then (reserved = true);
-   if tk == c"_Thread_local" then (reserved = true);
-   if tk == c"_Alignof" then (reserved = true);
-   if tk == c"_Noreturn" then (reserved = true);
-   if tk == c"_Atomic" then (reserved = true);
-   if tk == c"_Static_assert" then (reserved = true);
+   if tk == "auto" then (reserved = true);
+   if tk == "double" then (reserved = true);
+   if tk == "int" then (reserved = true);
+   if tk == "struct" then (reserved = true);
+   if tk == "break" then (reserved = true);
+   if tk == "else" then (reserved = true);
+   if tk == "long" then (reserved = true);
+   if tk == "switch" then (reserved = true);
+   if tk == "case" then (reserved = true);
+   if tk == "enum" then (reserved = true);
+   if tk == "register" then (reserved = true);
+   if tk == "typedef" then (reserved = true);
+   if tk == "char" then (reserved = true);
+   if tk == "extern" then (reserved = true);
+   if tk == "return" then (reserved = true);
+   if tk == "union" then (reserved = true);
+   if tk == "const" then (reserved = true);
+   if tk == "float" then (reserved = true);
+   if tk == "short" then (reserved = true);
+   if tk == "unsigned" then (reserved = true);
+   if tk == "continue" then (reserved = true);
+   if tk == "for" then (reserved = true);
+   if tk == "signed" then (reserved = true);
+   if tk == "void" then (reserved = true);
+   if tk == "default" then (reserved = true);
+   if tk == "goto" then (reserved = true);
+   if tk == "sizeof" then (reserved = true);
+   if tk == "volatile" then (reserved = true);
+   if tk == "do" then (reserved = true);
+   if tk == "if" then (reserved = true);
+   if tk == "static" then (reserved = true);
+   if tk == "while" then (reserved = true);
+   if tk == "_Bool" then (reserved = true);
+   if tk == "_Imaginary" then (reserved = true);
+   if tk == "restrict" then (reserved = true);
+   if tk == "_Complex" then (reserved = true);
+   if tk == "inline" then (reserved = true);
+   if tk == "_Alignas" then (reserved = true);
+   if tk == "_Generic" then (reserved = true);
+   if tk == "_Thread_local" then (reserved = true);
+   if tk == "_Alignof" then (reserved = true);
+   if tk == "_Noreturn" then (reserved = true);
+   if tk == "_Atomic" then (reserved = true);
+   if tk == "_Static_assert" then (reserved = true);
    reserved
 );
 
-let std-c-has-class(tk: CString, cls: String): U64 = (
+let std-c-has-class(tks: String, cls: String): U64 = (
+   let tk = untern(tks);
    match cls {
-      "identifier" => tk == r/^[a-zA-Z_][a-zA-Z0-9_]*/ && not(std-c-is-reserved-word(tk));
+      "identifier" => tk == r/^[a-zA-Z_][a-zA-Z0-9_]*/ && not(std-c-is-reserved-word(tks));
       "integer" => tk == r/^[0-9]+([uU]|[lL]|wb|WB)*/                # decimal constant
                 || tk == r/^[0][0-7]+([uU]|[lL]|wb|WB)*/             # octal constant
                 || tk == r/^[0][x][0-9a-fA-F]+([uU]|[lL]|wb|WB)*/    # hexadecimal constant
@@ -89,16 +90,16 @@ let std-c-has-class(tk: CString, cls: String): U64 = (
 );
 
 let std-c-can-take(tokens: List<Token>, cls: String): U64 = (
-   non-zero(tokens) && std-c-has-class(head(tokens).key, cls)
+   non-zero(tokens) && std-c-has-class(head(tokens).skey, cls)
 );
 
 let std-c-take-expect(tokens: List<Token>, cls: String): List<Token> = (
-   if non-zero(tokens) && std-c-has-class(head(tokens).key, cls) then tail(tokens)
+   if non-zero(tokens) && std-c-has-class(head(tokens).skey, cls) then tail(tokens)
    else (print("Expected token [\{cls}] at \{tokens.formatted-location}\n"); exit(1); tokens);
 );
 
 let std-c-take-maybe(tokens: List<Token>, cls: String): List<Token> = (
-   if non-zero(tokens) && std-c-has-class(head(tokens).key, cls) then tail(tokens)
+   if non-zero(tokens) && std-c-has-class(head(tokens).skey, cls) then tail(tokens)
    else tokens;
 );
 
@@ -437,54 +438,54 @@ let std-c-take-maybe(tokens: List<Token>, cls: String): List<Token> = (
 #struct-declarator = ':', constant-expression
 #                  | declarator, [':', constant-expression];
 
-let std-c-parse-assignment-operator(tokens: List<Token>): Tuple<Maybe<CString>,List<Token>> = (
-   let no = None :: Maybe<CString>;
+let std-c-parse-assignment-operator(tokens: List<Token>): Tuple<Maybe<String>,List<Token>> = (
+   let no = None :: Maybe<String>;
    if not(non-zero(tokens)) then Tuple{ no, tokens }
-   else if head(tokens).key == c"=" then Tuple{ Some{c"="}, tail(tokens) }
-   else if head(tokens).key == c"*=" then Tuple{ Some{c"*="}, tail(tokens) }
-   else if head(tokens).key == c"/=" then Tuple{ Some{c"/="}, tail(tokens) }
-   else if head(tokens).key == c"%=" then Tuple{ Some{c"%="}, tail(tokens) }
-   else if head(tokens).key == c"+=" then Tuple{ Some{c"+="}, tail(tokens) }
-   else if head(tokens).key == c"-=" then Tuple{ Some{c"-="}, tail(tokens) }
-   else if head(tokens).key == c"<<=" then Tuple{ Some{c"<<="}, tail(tokens) }
-   else if head(tokens).key == c">>=" then Tuple{ Some{c">>="}, tail(tokens) }
-   else if head(tokens).key == c"&=" then Tuple{ Some{c"&="}, tail(tokens) }
-   else if head(tokens).key == c"^=" then Tuple{ Some{c"^="}, tail(tokens) }
-   else if head(tokens).key == c"|=" then Tuple{ Some{c"|="}, tail(tokens) }
+   else if head(tokens).skey == "=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
+   else if head(tokens).skey == "*=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
+   else if head(tokens).skey == "/=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
+   else if head(tokens).skey == "%=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
+   else if head(tokens).skey == "+=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
+   else if head(tokens).skey == "-=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
+   else if head(tokens).skey == "<<=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
+   else if head(tokens).skey == ">>=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
+   else if head(tokens).skey == "&=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
+   else if head(tokens).skey == "^=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
+   else if head(tokens).skey == "|=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
    else Tuple{ no, tokens }
 );
 
-let std-c-parse-unary-operator(tokens: List<Token>): Tuple<Maybe<CString>,List<Token>> = (
-   let no = None :: Maybe<CString>;
+let std-c-parse-unary-operator(tokens: List<Token>): Tuple<Maybe<String>,List<Token>> = (
+   let no = None :: Maybe<String>;
    if not(non-zero(tokens)) then Tuple{ no, tokens }
-   else if head(tokens).key == c"&" then Tuple{ Some{c"&"}, tail(tokens) }
-   else if head(tokens).key == c"*" then Tuple{ Some{c"*"}, tail(tokens) }
-   else if head(tokens).key == c"+" then Tuple{ Some{c"+"}, tail(tokens) }
-   else if head(tokens).key == c"-" then Tuple{ Some{c"-"}, tail(tokens) }
-   else if head(tokens).key == c"~" then Tuple{ Some{c"~"}, tail(tokens) }
-   else if head(tokens).key == c"!" then Tuple{ Some{c"!"}, tail(tokens) }
+   else if head(tokens).skey == "&" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
+   else if head(tokens).skey == "*" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
+   else if head(tokens).skey == "+" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
+   else if head(tokens).skey == "-" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
+   else if head(tokens).skey == "~" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
+   else if head(tokens).skey == "!" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
    else Tuple{ no, tokens }
 );
 
-let std-c-parse-struct-or-union(tokens: List<Token>): Tuple<Maybe<CString>,List<Token>> = (
-   let no = None :: Maybe<CString>;
+let std-c-parse-struct-or-union(tokens: List<Token>): Tuple<Maybe<String>,List<Token>> = (
+   let no = None :: Maybe<String>;
    if not(non-zero(tokens)) then Tuple{ no, tokens }
-   else if head(tokens).key == c"struct" then Tuple{ Some{c"struct"}, tail(tokens) }
-   else if head(tokens).key == c"union" then Tuple{ Some{c"union"}, tail(tokens) }
+   else if head(tokens).skey == "struct" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
+   else if head(tokens).skey == "union" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
    else Tuple{ no, tokens }
 );
 
-let std-c-parse-identifier(tokens: List<Token>): Tuple<Maybe<CString>,List<Token>> = (
-   let no = None :: Maybe<CString>;
-   if std-c-can-take(tokens, "identifier") then Tuple{ Some{head(tokens).key}, tail(tokens) }
+let std-c-parse-identifier(tokens: List<Token>): Tuple<Maybe<String>,List<Token>> = (
+   let no = None :: Maybe<String>;
+   if std-c-can-take(tokens, "identifier") then Tuple{ Some{head(tokens).skey}, tail(tokens) }
    else Tuple{ no, tokens }
 );
 
 let std-c-parse-constant(tokens: List<Token>): Tuple<Maybe<CConstant>,List<Token>> = (
    let no = None :: Maybe<CConstant>;
-   if std-c-can-take(tokens, "integer") then Tuple{ Some{CConstantInteger{head(tokens).key}}, tail(tokens) }
-   else if std-c-can-take(tokens, "character") then Tuple{ Some{CConstantCharacter{head(tokens).key}}, tail(tokens) }
-   else if std-c-can-take(tokens, "floating") then Tuple{ Some{CConstantFloating{head(tokens).key}}, tail(tokens) }
+   if std-c-can-take(tokens, "integer") then Tuple{ Some{CConstantInteger{head(tokens).skey}}, tail(tokens) }
+   else if std-c-can-take(tokens, "character") then Tuple{ Some{CConstantCharacter{head(tokens).skey}}, tail(tokens) }
+   else if std-c-can-take(tokens, "floating") then Tuple{ Some{CConstantFloating{head(tokens).skey}}, tail(tokens) }
    #else if std-c-can-take(tokens, "enumeration") then Tuple{ Some{CConstantFloating{head(tokens).key}}, tail(tokens) }
    else Tuple{ no, tokens }
 );
