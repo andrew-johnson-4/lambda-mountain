@@ -6,12 +6,84 @@
 # However, there are also a large number of compiler-specific extensions that are parsed but mostly ignored
 # Example: __extension__ ( f, g )
 
+type CConstant = CConstantInteger{value:CString}
+               | CConstantCharacter{value:CString}
+               | CConstantFloating{value:CString}
+               | CConstantEnumeration{value:CString};
+
+let cmp(l: CConstant, r: CConstant): Ord = (
+   if $".0"(l) != $".0"(r) then cmp($".0"(l), $".0"(r))
+   else match Tuple{l, r} {
+      Tuple{ first:CConstantInteger{lv=value}, second:CConstantInteger{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CConstantCharacter{lv=value}, second:CConstantCharacter{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CConstantFloating{lv=value}, second:CConstantFloating{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CConstantEnumeration{lv=value}, second:CConstantEnumeration{rv=value} } => cmp(lv, rv);
+   }
+);
+
 let std-c-parse(tokens: List<Token>): Nil = (
 #   while non-zero(tokens) { tokens = std-c-parse-external-declaration(tokens); }
 );
 
+let std-c-is-reserved-word(tk: CString): U64 = (
+   let reserved = false;
+   if tk == c"auto" then (reserved = true);
+   if tk == c"double" then (reserved = true);
+   if tk == c"int" then (reserved = true);
+   if tk == c"struct" then (reserved = true);
+   if tk == c"break" then (reserved = true);
+   if tk == c"else" then (reserved = true);
+   if tk == c"long" then (reserved = true);
+   if tk == c"switch" then (reserved = true);
+   if tk == c"case" then (reserved = true);
+   if tk == c"enum" then (reserved = true);
+   if tk == c"register" then (reserved = true);
+   if tk == c"typedef" then (reserved = true);
+   if tk == c"char" then (reserved = true);
+   if tk == c"extern" then (reserved = true);
+   if tk == c"return" then (reserved = true);
+   if tk == c"union" then (reserved = true);
+   if tk == c"const" then (reserved = true);
+   if tk == c"float" then (reserved = true);
+   if tk == c"short" then (reserved = true);
+   if tk == c"unsigned" then (reserved = true);
+   if tk == c"continue" then (reserved = true);
+   if tk == c"for" then (reserved = true);
+   if tk == c"signed" then (reserved = true);
+   if tk == c"void" then (reserved = true);
+   if tk == c"default" then (reserved = true);
+   if tk == c"goto" then (reserved = true);
+   if tk == c"sizeof" then (reserved = true);
+   if tk == c"volatile" then (reserved = true);
+   if tk == c"do" then (reserved = true);
+   if tk == c"if" then (reserved = true);
+   if tk == c"static" then (reserved = true);
+   if tk == c"while" then (reserved = true);
+   if tk == c"_Bool" then (reserved = true);
+   if tk == c"_Imaginary" then (reserved = true);
+   if tk == c"restrict" then (reserved = true);
+   if tk == c"_Complex" then (reserved = true);
+   if tk == c"inline" then (reserved = true);
+   if tk == c"_Alignas" then (reserved = true);
+   if tk == c"_Generic" then (reserved = true);
+   if tk == c"_Thread_local" then (reserved = true);
+   if tk == c"_Alignof" then (reserved = true);
+   if tk == c"_Noreturn" then (reserved = true);
+   if tk == c"_Atomic" then (reserved = true);
+   if tk == c"_Static_assert" then (reserved = true);
+   reserved
+);
+
 let std-c-has-class(tk: CString, cls: String): U64 = (
-   tk == cls
+   match cls {
+      "identifier" => tk == r/^[a-zA-Z_][a-zA-Z0-9_]*/ && not(std-c-is-reserved-word(tk));
+      "integer" => tk == r/^[0-9]+([uU]|[lL]|wb|WB)*/                # decimal constant
+                || tk == r/^[0][0-7]+([uU]|[lL]|wb|WB)*/             # octal constant
+                || tk == r/^[0][x][0-9a-fA-F]+([uU]|[lL]|wb|WB)*/    # hexadecimal constant
+                || tk == r/^[0][bB][01]+([uU]|[lL]|wb|WB)*/;         # binary constant
+      "character" => tk == r/^(u8|u|U|L)?[']([^']|([\\][']))+[']/;    # character constant
+      _ => tk == cls;
+   }
 );
 
 let std-c-can-take(tokens: List<Token>, cls: String): U64 = (
@@ -315,9 +387,6 @@ let std-c-take-maybe(tokens: List<Token>, cls: String): List<Token> = (
 #struct-or-union-specifier = struct-or-union, '{', struct-declaration-list, '}'
 #                          | struct-or-union, identifier, ['{', struct-declaration-list, '}'];
 
-#struct-or-union = 'struct'
-#                | 'union';
-
 #struct-declaration-list = struct-declaration, {struct-declaration};
 
 #struct-declaration = specifier-qualifier-list, ';'     (* for anonymous struct/union *)
@@ -383,6 +452,47 @@ let std-c-parse-assignment-operator(tokens: List<Token>): Tuple<Maybe<CString>,L
    else Tuple{ no, tokens }
 );
 
+let std-c-parse-unary-operator(tokens: List<Token>): Tuple<Maybe<CString>,List<Token>> = (
+   let no = None :: Maybe<CString>;
+   if not(non-zero(tokens)) then Tuple{ no, tokens }
+   else if head(tokens).key == c"&" then Tuple{ Some{c"&"}, tail(tokens) }
+   else if head(tokens).key == c"*" then Tuple{ Some{c"*"}, tail(tokens) }
+   else if head(tokens).key == c"+" then Tuple{ Some{c"+"}, tail(tokens) }
+   else if head(tokens).key == c"-" then Tuple{ Some{c"-"}, tail(tokens) }
+   else if head(tokens).key == c"~" then Tuple{ Some{c"~"}, tail(tokens) }
+   else if head(tokens).key == c"!" then Tuple{ Some{c"!"}, tail(tokens) }
+   else Tuple{ no, tokens }
+);
+
+let std-c-parse-struct-or-union(tokens: List<Token>): Tuple<Maybe<CString>,List<Token>> = (
+   let no = None :: Maybe<CString>;
+   if not(non-zero(tokens)) then Tuple{ no, tokens }
+   else if head(tokens).key == c"struct" then Tuple{ Some{c"struct"}, tail(tokens) }
+   else if head(tokens).key == c"union" then Tuple{ Some{c"union"}, tail(tokens) }
+   else Tuple{ no, tokens }
+);
+
+let std-c-parse-identifier(tokens: List<Token>): Tuple<Maybe<CString>,List<Token>> = (
+   let no = None :: Maybe<CString>;
+   if std-c-can-take(tokens, "identifier") then Tuple{ Some{head(tokens).key}, tail(tokens) }
+   else Tuple{ no, tokens }
+);
+
+let std-c-parse-constant(tokens: List<Token>): Tuple<Maybe<CConstant>,List<Token>> = (
+   let no = None :: Maybe<CConstant>;
+   if std-c-can-take(tokens, "integer") then Tuple{ Some{CConstantInteger{head(tokens).key}}, tail(tokens) }
+   else if std-c-can-take(tokens, "character") then Tuple{ Some{CConstantCharacter{head(tokens).key}}, tail(tokens) }
+   #else if std-c-can-take(tokens, "floating") then Tuple{ Some{CConstantFloating{head(tokens).key}}, tail(tokens) }
+   #else if std-c-can-take(tokens, "enumeration") then Tuple{ Some{CConstantFloating{head(tokens).key}}, tail(tokens) }
+   else Tuple{ no, tokens }
+);
+
+#constant = integer-constant
+#         | character-constant
+#         | floating-constant
+#         | enumeration-constant;
+
+
 #parameter-list = parameter-declaration, {',', parameter-declaration};
 
 #parameter-declaration = declaration-specifiers, [declarator | abstract-declarator];
@@ -431,12 +541,6 @@ let std-c-parse-assignment-operator(tokens: List<Token>): Tuple<Maybe<CString>,L
 #                   | postfix-expression, ('++' | '--')
 #                   | '(', type-name, ')', '{', initializer-list, [','], '}';
 
-#unary-operator = '&'
-#               | '*'
-#               | '+'
-#               | '-'
-#               | '~'
-#               | '!';
 
 #primary-expression = identifier
 #                   | constant
@@ -446,10 +550,6 @@ let std-c-parse-assignment-operator(tokens: List<Token>): Tuple<Maybe<CString>,L
 
 #argument-expression-list = assignment-expression, {',', assignment-expression};
 
-#constant = integer-constant
-#         | character-constant
-#         | floating-constant
-#         | enumeration-constant;
 
 #string = string-literal
 #       | '__func__';

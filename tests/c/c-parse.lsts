@@ -70,3 +70,117 @@ if true then {
       assert( std-c-parse-assignment-operator(tokens).first == Some{c"|="} );
    };
 };
+
+if true then { 
+   let abc = std-c-tokenize-string("abc", "abc");
+   assert( std-c-parse-unary-operator(abc).first == None :: Maybe<CString> );
+   if true then {
+      let tokens = std-c-tokenize-string("[&]", "&");
+      assert( std-c-parse-unary-operator(tokens).first == Some{c"&"} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[*]", "*");
+      assert( std-c-parse-unary-operator(tokens).first == Some{c"*"} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[+]", "+");
+      assert( std-c-parse-unary-operator(tokens).first == Some{c"+"} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[-]", "-");
+      assert( std-c-parse-unary-operator(tokens).first == Some{c"-"} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[~]", "~");
+      assert( std-c-parse-unary-operator(tokens).first == Some{c"~"} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[!]", "!");
+      assert( std-c-parse-unary-operator(tokens).first == Some{c"!"} );
+   };
+};
+
+if true then { 
+   let abc = std-c-tokenize-string("abc", "abc");
+   assert( std-c-parse-struct-or-union(abc).first == None :: Maybe<CString> );
+   if true then {
+      let tokens = std-c-tokenize-string("[struct]", "struct");
+      assert( std-c-parse-struct-or-union(tokens).first == Some{c"struct"} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[union]", "union");
+      assert( std-c-parse-struct-or-union(tokens).first == Some{c"union"} );
+   };
+};
+
+if true then { 
+   if true then {
+      let tokens = std-c-tokenize-string("[abc]", "abc");
+      assert( std-c-parse-identifier(tokens).first == Some{c"abc"} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[ABC]", "ABC");
+      assert( std-c-parse-identifier(tokens).first == Some{c"ABC"} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("_0", "_0");
+      assert( std-c-parse-identifier(tokens).first == Some{c"_0"} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[int]", "int");
+      assert( std-c-parse-identifier(tokens).first == None :: Maybe<CString> );
+   };
+};
+
+if true then { 
+   let abc = std-c-tokenize-string("abc", "abc");
+   assert( std-c-parse-constant(abc).first == None :: Maybe<CConstant> );
+   if true then {
+      let tokens = std-c-tokenize-string("[0123456789]", "0123456789");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{c"0123456789"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[0x0123456789aAbBcCdDeEfF]", "0x0123456789aAbBcCdDeEfF");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{c"0x0123456789aAbBcCdDeEfF"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[0b01]", "0b01");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{c"0b01"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[0ulwb]", "0ulwb");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{c"0ulwb"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[0UllWB]", "0UllWB");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{c"0UllWB"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[0ULLWB]", "0ULLWB");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{c"0ULLWB"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[0ULWB]", "0ULWB");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{c"0ULWB"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("'a'", "'a'");
+      match std-c-parse-constant(tokens).first {
+         Some{content:CConstantCharacter{value=value}} => print(value);
+         None{} => print("None");
+      };
+      assert( std-c-parse-constant(tokens).first == Some{CConstantCharacter{c"'a'"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("u8'\\''", "u8'\\''");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantCharacter{c"u8'\\''"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("L'\\0'", "L'\\0'");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantCharacter{c"L'\\0'"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("u'\\u123'", "u'\\u123'");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantCharacter{c"u'\\u123'"}} );
+   };
+};
