@@ -134,9 +134,33 @@ if true then {
 
 if true then { 
    let abc = std-c-tokenize-string("abc", "abc");
-   assert( std-c-parse-constant(abc).first == None :: Maybe<CString> );
+   assert( std-c-parse-constant(abc).first == None :: Maybe<CConstant> );
    if true then {
       let tokens = std-c-tokenize-string("[0123456789]", "0123456789");
-      assert( std-c-parse-struct-or-union(tokens).first == Some{CConstantInteger{c"0123456789"}} );
+      assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{c"0123456789"}} );
    };
-}
+   if true then {
+      let tokens = std-c-tokenize-string("[0x0123456789aAbBcCdDeEfF]", "0x0123456789aAbBcCdDeEfF");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{c"0x0123456789aAbBcCdDeEfF"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[0b01]", "0b01");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{c"0b01"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[0ulwb]", "0ulwb");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{c"0ulwb"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[0UllWB]", "0UllWB");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{c"0UllWB"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[0ULLWB]", "0ULLWB");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{c"0ULLWB"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("[0ULWB]", "0ULWB");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{c"0ULWB"}} );
+   };
+};
