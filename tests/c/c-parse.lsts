@@ -132,3 +132,11 @@ if true then {
    };
 };
 
+if true then { 
+   let abc = std-c-tokenize-string("abc", "abc");
+   assert( std-c-parse-constant(abc).first == None :: Maybe<CString> );
+   if true then {
+      let tokens = std-c-tokenize-string("[0123456789]", "0123456789");
+      assert( std-c-parse-struct-or-union(tokens).first == Some{CConstantInteger{c"0123456789"}} );
+   };
+}
