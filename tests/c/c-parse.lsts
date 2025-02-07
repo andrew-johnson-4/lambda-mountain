@@ -192,3 +192,19 @@ if true then {
       assert( std-c-parse-constant(tokens).first == Some{CConstantFloating{"0x3p2"}} );
    };
 };
+
+if true then { 
+   if true then {
+      let tokens = std-c-tokenize-string("123", "123");
+      assert( std-c-parse-identifier-list(tokens).first.is-none );
+      assert( is(std-c-parse-identifier-list(tokens).second, tokens) );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a", "a");
+      assert( std-c-parse-identifier-list(tokens).first == Some{["a"]} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a, _1", "a, _1");
+      assert( std-c-parse-identifier-list(tokens).first == Some{["a","_1"]} );
+   };
+};

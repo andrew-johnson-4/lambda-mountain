@@ -374,7 +374,21 @@ let std-c-take-maybe(tokens: List<Token>, cls: String): List<Token> = (
 #   Tuple{ Some{base-declarator}, tokens };
 #);
 
-#identifier-list = identifier, {',', identifier};
+let std-c-parse-identifier-list(tokens: List<Token>): Tuple<Maybe<List<String>>,List<Token>> = (
+   let no = None :: Maybe<List<String>>;
+   if std-c-can-take(tokens, "identifier") then {
+      let ids = [head(tokens).skey];
+      tokens = std-c-take-expect(tokens, "identifier");
+      while std-c-can-take(tokens, ",") {
+         tokens = std-c-take-expect(tokens, ",");
+         if non-zero(tokens) {
+            ids = cons( head(tokens).skey, ids );
+         };
+         tokens = std-c-take-expect(tokens, "identifier");
+      };
+      Tuple{ Some{ids.reverse}, tokens }
+   } else Tuple{no, tokens};
+);
 
 #initializer-list = designative-initializer, {',', designative-initializer};
 
