@@ -163,4 +163,20 @@ if true then {
       let tokens = std-c-tokenize-string("[0ULWB]", "0ULWB");
       assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{c"0ULWB"}} );
    };
+   if true then {
+      let tokens = std-c-tokenize-string("'a'", "'a'");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantCharacter{c"'a'"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("u8'\\''", "u8'\\''");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantCharacter{c"u8'\\''"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("L'\\0'", "L'\\0'");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantCharacter{c"L'\\0'"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("u'\\u123'", "u'\\u123'");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantCharacter{c"u'\\u123'"}} );
+   };
 };
