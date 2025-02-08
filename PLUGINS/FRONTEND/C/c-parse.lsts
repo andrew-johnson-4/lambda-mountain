@@ -6,20 +6,22 @@
 # However, there are also a large number of compiler-specific extensions that are parsed but mostly ignored
 # Example: __extension__ ( f, g )
 
-type CConstant = CConstantInteger{value:String}
-               | CConstantCharacter{value:String}
-               | CConstantFloating{value:String}
-               | CConstantEnumeration{value:String}
-               | CConstantString{value:String};
+type CTerm = CInteger{value:String}
+           | CCharacter{value:String}
+           | CFloating{value:String}
+           | CEnumeration{value:String}
+           | CString{value:String}
+           | CIdentifier{value:String};
 
-let cmp(l: CConstant, r: CConstant): Ord = (
+let cmp(l: CTerm, r: CTerm): Ord = (
    if $".0"(l) != $".0"(r) then cmp($".0"(l), $".0"(r))
    else match Tuple{l, r} {
-      Tuple{ first:CConstantInteger{lv=value}, second:CConstantInteger{rv=value} } => cmp(lv, rv);
-      Tuple{ first:CConstantCharacter{lv=value}, second:CConstantCharacter{rv=value} } => cmp(lv, rv);
-      Tuple{ first:CConstantFloating{lv=value}, second:CConstantFloating{rv=value} } => cmp(lv, rv);
-      Tuple{ first:CConstantEnumeration{lv=value}, second:CConstantEnumeration{rv=value} } => cmp(lv, rv);
-      Tuple{ first:CConstantString{lv=value}, second:CConstantString{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CInteger{lv=value}, second:CInteger{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CCharacter{lv=value}, second:CCharacter{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CFloating{lv=value}, second:CFloating{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CEnumeration{lv=value}, second:CEnumeration{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CString{lv=value}, second:CString{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CIdentifier{lv=value}, second:CIdentifier{rv=value} } => cmp(lv, rv);
    }
 );
 
@@ -491,28 +493,37 @@ let std-c-parse-struct-or-union(tokens: List<Token>): Tuple<Maybe<String>,List<T
    else Tuple{ no, tokens }
 );
 
-let std-c-parse-identifier(tokens: List<Token>): Tuple<Maybe<String>,List<Token>> = (
-   let no = None :: Maybe<String>;
-   if std-c-can-take(tokens, "identifier") then Tuple{ Some{head(tokens).skey}, tail(tokens) }
+let std-c-parse-identifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "identifier") then Tuple{ Some{CIdentifier{head(tokens).skey}}, tail(tokens) }
    else Tuple{ no, tokens }
 );
 
 let std-c-enumeration-constant-index = {} :: HashtableEq<String,Bool>;
 
-let std-c-parse-constant(tokens: List<Token>): Tuple<Maybe<CConstant>,List<Token>> = (
-   let no = None :: Maybe<CConstant>;
-   if std-c-can-take(tokens, "integer") then Tuple{ Some{CConstantInteger{head(tokens).skey}}, tail(tokens) }
-   else if std-c-can-take(tokens, "character") then Tuple{ Some{CConstantCharacter{head(tokens).skey}}, tail(tokens) }
-   else if std-c-can-take(tokens, "floating") then Tuple{ Some{CConstantFloating{head(tokens).skey}}, tail(tokens) }
-   else if std-c-can-take(tokens, "enumeration") then Tuple{ Some{CConstantEnumeration{head(tokens).skey}}, tail(tokens) }
+let std-c-parse-constant(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "integer") then Tuple{ Some{CInteger{head(tokens).skey}}, tail(tokens) }
+   else if std-c-can-take(tokens, "character") then Tuple{ Some{CCharacter{head(tokens).skey}}, tail(tokens) }
+   else if std-c-can-take(tokens, "floating") then Tuple{ Some{CFloating{head(tokens).skey}}, tail(tokens) }
+   else if std-c-can-take(tokens, "enumeration") then Tuple{ Some{CEnumeration{head(tokens).skey}}, tail(tokens) }
    else Tuple{ no, tokens }
 );
 
-let std-c-parse-string(tokens: List<Token>): Tuple<Maybe<CConstant>,List<Token>> = (
-   let no = None :: Maybe<CConstant>;
-   if std-c-can-take(tokens, "string") then Tuple{ Some{CConstantString{head(tokens).skey}}, tail(tokens) }
-   else if std-c-can-take(tokens, "__func__") then Tuple{ Some{CConstantString{head(tokens).skey}}, tail(tokens) }
+let std-c-parse-string(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "string") then Tuple{ Some{CString{head(tokens).skey}}, tail(tokens) }
+   else if std-c-can-take(tokens, "__func__") then Tuple{ Some{CString{head(tokens).skey}}, tail(tokens) }
    else Tuple{ no, tokens }
+);
+
+let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let ts = std-c-parse-constant(tokens);
+   if ts.first.is-none then (ts = std-c-parse-identifier(tokens));
+   if ts.first.is-none then (ts = std-c-parse-string(tokens));
+   # TODO '(', expression, ')'
+   # TODO generic-selection
+   ts
 );
 
 #parameter-list = parameter-declaration, {',', parameter-declaration};
@@ -564,11 +575,6 @@ let std-c-parse-string(tokens: List<Token>): Tuple<Maybe<CConstant>,List<Token>>
 #                   | '(', type-name, ')', '{', initializer-list, [','], '}';
 
 
-#primary-expression = identifier
-#                   | constant
-#                   | string
-#                   | '(', expression, ')'
-#                   | generic-selection;
 
 #argument-expression-list = assignment-expression, {',', assignment-expression};
 
