@@ -249,3 +249,25 @@ if true then {
       assert( std-c-parse-primary-expression(tokens).first == Some{CString{"\"a\""}} );
    };
 };
+
+if true then {
+   if true then {
+      let tokens = std-c-tokenize-string("a++", "a++");
+      for t in tokens {
+         print("Token: \{t.skey}\n");
+      };
+      assert( std-c-parse-primary-expression(tokens).first == Some{CUnaryPostfix{"++",close(CIdentifier{"a"})}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a--", "a--");
+      assert( std-c-parse-primary-expression(tokens).first == Some{CUnaryPostfix{"--",close(CIdentifier{"a"})}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a.f", "a.f");
+      assert( std-c-parse-primary-expression(tokens).first == Some{CAccessor{".","f",close(CIdentifier{"a"})}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a->f", "a->f");
+      assert( std-c-parse-primary-expression(tokens).first == Some{CAccessor{"->","f",close(CIdentifier{"a"})}} );
+   };
+};
