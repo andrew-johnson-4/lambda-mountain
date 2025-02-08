@@ -11,7 +11,10 @@ type CTerm = CInteger{value:String}
            | CFloating{value:String}
            | CEnumeration{value:String}
            | CString{value:String}
-           | CIdentifier{value:String};
+           | CIdentifier{value:String}
+           | CUnaryPostfix{op:String, arg:CTerm[]}
+           | CUnaryPrefix{op:String, arg:CTerm[]}
+           | CAccessor{accessor:String, field:String, arg:CTerm[]};
 
 let cmp(l: CTerm, r: CTerm): Ord = (
    if $".0"(l) != $".0"(r) then cmp($".0"(l), $".0"(r))
@@ -22,6 +25,9 @@ let cmp(l: CTerm, r: CTerm): Ord = (
       Tuple{ first:CEnumeration{lv=value}, second:CEnumeration{rv=value} } => cmp(lv, rv);
       Tuple{ first:CString{lv=value}, second:CString{rv=value} } => cmp(lv, rv);
       Tuple{ first:CIdentifier{lv=value}, second:CIdentifier{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CUnaryPrefix{lop=op,larg=arg}, second:CUnaryPrefix{rop=op,rarg=arg} } => cmp(lop, rop) && cmp(larg,rarg);
+      Tuple{ first:CUnaryPostfix{lop=op,larg=arg}, second:CUnaryPostfix{rop=op,rarg=arg} } => cmp(lop, rop) && cmp(larg,rarg);
+      Tuple{ first:CAccessor{lacc=accessor,lf=field,larg=arg}, second:CAccessor{racc=accessor,rf=field,rarg=arg} } => cmp(lacc, racc) && cmp(lf,rf) && cmp(larg,rarg);
    }
 );
 
@@ -567,13 +573,34 @@ let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 #                 | 'sizeof', '(', type-name, ')'
 #                 | '_Alignof', '(', type-name, ')';
 
-#postfix-expression = primary-expression
+let std-c-parse-postfix-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let expression = std-c-parse-primary-expression(tokens);
+   while expression.first.is-some && (
+      std-c-can-take(tokens, "[") || std-c-can-take(tokens, "(") ||
+      std-c-can-take(tokens, ".") || std-c-can-take(tokens, "->") ||
+      std-c-can-take(tokens, "++") || std-c-can-take(tokens, "--")
+   ) {
+      if std-c-can-take(tokens, "++") || std-c-can-take(tokens, "--") {
+         let e = CUnaryPostfix{ head(tokens).skey, close(expression.first.get-or-panic) };
+         tokens = tail(tokens);
+         expression = Tuple{ Some{e}, tokens };
+      } else if std-c-can-take(tokens, ".") || std-c-can-take(tokens, "->") {
+         let accessor = head(tokens).skey; tokens = tail(tokens);
+         if non-zero(tokens) {
+            let e = CAccessor{ accessor, head(tokens).skey, close(expression.first.get-or-panic) };
+            tokens = std-c-take-expect(tokens, "identifier");
+            expression = Tuple{ Some{e}, tokens };
+         } else std-c-take-expect(tokens, "identifier");
+      } else {
+         print("TODO: parse-postfix \{head(tokens).skey}"); exit(1);
 #                   | postfix-expression, '[', expression, ']'
-#                   | postfix-expression, '(', [argument-expression-list], ')'
-#                   | postfix-expression, ('.' | '->'), identifier
-#                   | postfix-expression, ('++' | '--')
+#                   | postfix-expression, '(', [argument-expression-list], ')'         
+      }
+   };
+#postfix-expression = primary-expression
 #                   | '(', type-name, ')', '{', initializer-list, [','], '}';
-
+   expression
+);
 
 
 #argument-expression-list = assignment-expression, {',', assignment-expression};
