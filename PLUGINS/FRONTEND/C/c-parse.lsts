@@ -576,9 +576,18 @@ let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 
 #shift-expression = additive-expression, {('<<' | '>>'), additive-expression};
 
-#additive-expression = multiplicative-expression, {('+' | '-'), multiplicative-expression};
-
-#multiplicative-expression = cast-expression, {('*' | '/' | '%'), cast-expression};
+let std-c-parse-additive-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let expression = std-c-parse-multiplicative-expression(tokens); tokens = expression.second;
+   while expression.first.is-some && (
+      std-c-can-take(tokens, "+") || std-c-can-take(tokens, "-")
+   ) {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      let re = std-c-parse-multiplicative-expression(tokens); tokens = re.second;
+      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
+      expression = Tuple{ Some{e}, tokens };
+   };
+   expression
+);
 
 let std-c-parse-multiplicative-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let expression = std-c-parse-cast-expression(tokens); tokens = expression.second;
