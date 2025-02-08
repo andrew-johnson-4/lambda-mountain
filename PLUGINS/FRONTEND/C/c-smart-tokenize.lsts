@@ -33,6 +33,8 @@ let std-c-tokenize-string(file-path: String, text: String): List<Token> = (
       "!=".. rest => (tokens = cons(text[:"!=".length], tokens); text = rest;);
       "&&".. rest => (tokens = cons(text[:"!=".length], tokens); text = rest;);
       "||".. rest => (tokens = cons(text[:"!=".length], tokens); text = rest;);
+      "<<".. rest => (tokens = cons(text[:"<<".length], tokens); text = rest;);
+      ">>".. rest => (tokens = cons(text[:">>".length], tokens); text = rest;);
       "<".. rest => (tokens = cons(text[:"<".length], tokens); text = rest;);
       ">".. rest => (tokens = cons(text[:">".length], tokens); text = rest;);
       "{".. rest => (tokens = cons(text[:"{".length], tokens); text = rest;);
