@@ -85,6 +85,7 @@ let std-c-has-class(tks: String, cls: String): U64 = (
       "character" => tk == r/^(u8|u|U|L)?[']([^']|([\\][']))+[']/;    # character constant
       "floating" => tk == r/^[0-9]+([.][0-9]+)?([eE][0-9]+)?[fF]?/                                        # decimal constant
                  || tk == r/^[0][x][0-9a-fA-F]+([.][0-9a-fA-F]+)?([eE][0-9a-fA-F]+)?([pP][0-9]+)[fF]?/;   # hexadecimal constant
+      "enumeration" => std-c-enumeration-constant-index.has(tks);
       _ => tk == cls;
    }
 );
@@ -495,12 +496,14 @@ let std-c-parse-identifier(tokens: List<Token>): Tuple<Maybe<String>,List<Token>
    else Tuple{ no, tokens }
 );
 
+let std-c-enumeration-constant-index = {} :: HashtableEq<String,Bool>;
+
 let std-c-parse-constant(tokens: List<Token>): Tuple<Maybe<CConstant>,List<Token>> = (
    let no = None :: Maybe<CConstant>;
    if std-c-can-take(tokens, "integer") then Tuple{ Some{CConstantInteger{head(tokens).skey}}, tail(tokens) }
    else if std-c-can-take(tokens, "character") then Tuple{ Some{CConstantCharacter{head(tokens).skey}}, tail(tokens) }
    else if std-c-can-take(tokens, "floating") then Tuple{ Some{CConstantFloating{head(tokens).skey}}, tail(tokens) }
-   #else if std-c-can-take(tokens, "enumeration") then Tuple{ Some{CConstantFloating{head(tokens).key}}, tail(tokens) }
+   else if std-c-can-take(tokens, "enumeration") then Tuple{ Some{CConstantEnumeration{head(tokens).skey}}, tail(tokens) }
    else Tuple{ no, tokens }
 );
 

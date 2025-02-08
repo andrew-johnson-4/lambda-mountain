@@ -10,6 +10,8 @@ import SRC/unit-error.lsts;
 import PLUGINS/FRONTEND/C/index-index.lm;
 import PLUGINS/FRONTEND/C/index-index.lm;
 
+std-c-enumeration-constant-index = std-c-enumeration-constant-index.bind("enum1case", true);
+
 # helpers
 if true then { 
    let tokens = std-c-tokenize-string("[+]", "+");
@@ -190,6 +192,10 @@ if true then {
    if true then {
       let tokens = std-c-tokenize-string("0x3p2", "0x3p2");
       assert( std-c-parse-constant(tokens).first == Some{CConstantFloating{"0x3p2"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("enum1case", "enum1case");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantEnumeration{"enum1case"}} );
    };
 };
 
