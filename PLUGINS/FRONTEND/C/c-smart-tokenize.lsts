@@ -72,12 +72,12 @@ let std-c-tokenize-string(file-path: String, text: String): List<Token> = (
          tokens = cons(text[:cl.length], tokens); text = rest;
       );
 
-      (id=r/^[a-zA-Z0-9_]+/).. rest => (
-         tokens = cons(text[:id.length], tokens); text = rest;
+      (lit=r/^[RLuU8]*["]([^"\\]|([\\].))*["]/).. rest => (
+         tokens = cons(text[:lit.length], tokens); text = rest;
       );
 
-      (lit=r/^["]([^"\\]|([\\].))*["]/).. rest => (
-         tokens = cons(text[:lit.length], tokens); text = rest;
+      (id=r/^[a-zA-Z0-9_]+/).. rest => (
+         tokens = cons(text[:id.length], tokens); text = rest;
       );
 
       (comment=r/^#[^\n]*[\n]/).. rest => (

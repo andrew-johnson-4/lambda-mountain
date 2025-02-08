@@ -9,7 +9,8 @@
 type CConstant = CConstantInteger{value:String}
                | CConstantCharacter{value:String}
                | CConstantFloating{value:String}
-               | CConstantEnumeration{value:String};
+               | CConstantEnumeration{value:String}
+               | CConstantString{value:String};
 
 let cmp(l: CConstant, r: CConstant): Ord = (
    if $".0"(l) != $".0"(r) then cmp($".0"(l), $".0"(r))
@@ -18,6 +19,7 @@ let cmp(l: CConstant, r: CConstant): Ord = (
       Tuple{ first:CConstantCharacter{lv=value}, second:CConstantCharacter{rv=value} } => cmp(lv, rv);
       Tuple{ first:CConstantFloating{lv=value}, second:CConstantFloating{rv=value} } => cmp(lv, rv);
       Tuple{ first:CConstantEnumeration{lv=value}, second:CConstantEnumeration{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CConstantString{lv=value}, second:CConstantString{rv=value} } => cmp(lv, rv);
    }
 );
 
@@ -85,6 +87,8 @@ let std-c-has-class(tks: String, cls: String): U64 = (
       "character" => tk == r/^(u8|u|U|L)?[']([^']|([\\][']))+[']/;    # character constant
       "floating" => tk == r/^[0-9]+([.][0-9]+)?([eE][0-9]+)?[fF]?/                                        # decimal constant
                  || tk == r/^[0][x][0-9a-fA-F]+([.][0-9a-fA-F]+)?([eE][0-9a-fA-F]+)?([pP][0-9]+)[fF]?/;   # hexadecimal constant
+      "string" => tk == r/^[RLuU8]*["]([^"\\]|([\\].))*["]/;
+      "enumeration" => std-c-enumeration-constant-index.has(tks);
       _ => tk == cls;
    }
 );
@@ -374,7 +378,21 @@ let std-c-take-maybe(tokens: List<Token>, cls: String): List<Token> = (
 #   Tuple{ Some{base-declarator}, tokens };
 #);
 
-#identifier-list = identifier, {',', identifier};
+let std-c-parse-identifier-list(tokens: List<Token>): Tuple<Maybe<List<String>>,List<Token>> = (
+   let no = None :: Maybe<List<String>>;
+   if std-c-can-take(tokens, "identifier") then {
+      let ids = [head(tokens).skey];
+      tokens = std-c-take-expect(tokens, "identifier");
+      while std-c-can-take(tokens, ",") {
+         tokens = std-c-take-expect(tokens, ",");
+         if non-zero(tokens) {
+            ids = cons( head(tokens).skey, ids );
+         };
+         tokens = std-c-take-expect(tokens, "identifier");
+      };
+      Tuple{ Some{ids.reverse}, tokens }
+   } else Tuple{no, tokens};
+);
 
 #initializer-list = designative-initializer, {',', designative-initializer};
 
@@ -403,8 +421,6 @@ let std-c-take-maybe(tokens: List<Token>, cls: String): List<Token> = (
 
 #(* NOTE: Please define enumeration-constant for identifier inside enum { ... }. *)
 #enumerator = enumeration-constant, ['=', constant-expression];
-
-#enumeration-constant = identifier;
 
 #type-name = specifier-qualifier-list, [abstract-declarator];
 
@@ -481,20 +497,23 @@ let std-c-parse-identifier(tokens: List<Token>): Tuple<Maybe<String>,List<Token>
    else Tuple{ no, tokens }
 );
 
+let std-c-enumeration-constant-index = {} :: HashtableEq<String,Bool>;
+
 let std-c-parse-constant(tokens: List<Token>): Tuple<Maybe<CConstant>,List<Token>> = (
    let no = None :: Maybe<CConstant>;
    if std-c-can-take(tokens, "integer") then Tuple{ Some{CConstantInteger{head(tokens).skey}}, tail(tokens) }
    else if std-c-can-take(tokens, "character") then Tuple{ Some{CConstantCharacter{head(tokens).skey}}, tail(tokens) }
    else if std-c-can-take(tokens, "floating") then Tuple{ Some{CConstantFloating{head(tokens).skey}}, tail(tokens) }
-   #else if std-c-can-take(tokens, "enumeration") then Tuple{ Some{CConstantFloating{head(tokens).key}}, tail(tokens) }
+   else if std-c-can-take(tokens, "enumeration") then Tuple{ Some{CConstantEnumeration{head(tokens).skey}}, tail(tokens) }
    else Tuple{ no, tokens }
 );
 
-#constant = integer-constant
-#         | character-constant
-#         | floating-constant
-#         | enumeration-constant;
-
+let std-c-parse-string(tokens: List<Token>): Tuple<Maybe<CConstant>,List<Token>> = (
+   let no = None :: Maybe<CConstant>;
+   if std-c-can-take(tokens, "string") then Tuple{ Some{CConstantString{head(tokens).skey}}, tail(tokens) }
+   else if std-c-can-take(tokens, "__func__") then Tuple{ Some{CConstantString{head(tokens).skey}}, tail(tokens) }
+   else Tuple{ no, tokens }
+);
 
 #parameter-list = parameter-declaration, {',', parameter-declaration};
 
@@ -554,8 +573,6 @@ let std-c-parse-constant(tokens: List<Token>): Tuple<Maybe<CConstant>,List<Token
 #argument-expression-list = assignment-expression, {',', assignment-expression};
 
 
-#string = string-literal
-#       | '__func__';
 
 #generic-selection = '_Generic', '(', assignment-expression, ',', generic-assoc-list, ')';
 

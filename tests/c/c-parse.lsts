@@ -10,6 +10,8 @@ import SRC/unit-error.lsts;
 import PLUGINS/FRONTEND/C/index-index.lm;
 import PLUGINS/FRONTEND/C/index-index.lm;
 
+std-c-enumeration-constant-index = std-c-enumeration-constant-index.bind("enum1case", true);
+
 # helpers
 if true then { 
    let tokens = std-c-tokenize-string("[+]", "+");
@@ -190,5 +192,37 @@ if true then {
    if true then {
       let tokens = std-c-tokenize-string("0x3p2", "0x3p2");
       assert( std-c-parse-constant(tokens).first == Some{CConstantFloating{"0x3p2"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("enum1case", "enum1case");
+      assert( std-c-parse-constant(tokens).first == Some{CConstantEnumeration{"enum1case"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("\"abc\"", "\"abc\"");
+      assert( std-c-parse-string(tokens).first == Some{CConstantString{"\"abc\""}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("u8\"abc\"", "u8\"abc\"");
+      assert( std-c-parse-string(tokens).first == Some{CConstantString{"u8\"abc\""}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("__func__", "__func__");
+      assert( std-c-parse-string(tokens).first == Some{CConstantString{"__func__"}} );
+   };
+};
+
+if true then { 
+   if true then {
+      let tokens = std-c-tokenize-string("123", "123");
+      assert( std-c-parse-identifier-list(tokens).first.is-none );
+      assert( is(std-c-parse-identifier-list(tokens).second, tokens) );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a", "a");
+      assert( std-c-parse-identifier-list(tokens).first == Some{["a"]} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a, _1", "a, _1");
+      assert( std-c-parse-identifier-list(tokens).first == Some{["a","_1"]} );
    };
 };
