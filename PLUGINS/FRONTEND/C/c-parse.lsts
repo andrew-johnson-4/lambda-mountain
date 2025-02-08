@@ -27,7 +27,21 @@ let cmp(l: CTerm, r: CTerm): Ord = (
       Tuple{ first:CIdentifier{lv=value}, second:CIdentifier{rv=value} } => cmp(lv, rv);
       Tuple{ first:CUnaryPrefix{lop=op,larg=arg}, second:CUnaryPrefix{rop=op,rarg=arg} } => cmp(lop, rop) && cmp(larg,rarg);
       Tuple{ first:CUnaryPostfix{lop=op,larg=arg}, second:CUnaryPostfix{rop=op,rarg=arg} } => cmp(lop, rop) && cmp(larg,rarg);
-      Tuple{ first:CAccessor{lacc=accessor,lf=field,larg=arg}, second:CAccessor{racc=accessor,rf=field,rarg=arg} } => cmp(lacc, racc) && cmp(lf,rf) && cmp(larg,rarg);
+      Tuple{ first:CAccessor{lacc=accessor,lf=field,larg=arg}, second:CAccessor{racc=accessor,rf=field,rarg=arg} } => cmp(lacc,racc) && cmp(lf,rf) && cmp(larg,rarg);
+   }
+);
+
+let to-smart-string(l: CTerm): String = (
+   match l {
+      CInteger{rv=value} => "{Integer \{rv}}";
+      CCharacter{rv=value} => "{Character \{rv}}";
+      CFloating{rv=value} => "{Floating \{rv}}";
+      CEnumeration{rv=value} => "{Enumeration \{rv}}";
+      CString{rv=value} => "{String \{rv}}";
+      CIdentifier{rv=value} => "{Identifier \{rv}}";
+      CUnaryPrefix{rop=op,rarg=arg} => "{Prefix \{rop} \{rarg}}";
+      CUnaryPostfix{rop=op,rarg=arg} => "{Postfix \{rop} \{rarg}}";
+      CAccessor{racc=accessor,rf=field,rarg=arg} => "{Accessor \{racc} \{rf} \{rarg}}";
    }
 );
 
@@ -574,7 +588,7 @@ let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 #                 | '_Alignof', '(', type-name, ')';
 
 let std-c-parse-postfix-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let expression = std-c-parse-primary-expression(tokens);
+   let expression = std-c-parse-primary-expression(tokens); tokens = expression.second;
    while expression.first.is-some && (
       std-c-can-take(tokens, "[") || std-c-can-take(tokens, "(") ||
       std-c-can-take(tokens, ".") || std-c-can-take(tokens, "->") ||
@@ -595,7 +609,7 @@ let std-c-parse-postfix-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
          print("TODO: parse-postfix \{head(tokens).skey}"); exit(1);
 #                   | postfix-expression, '[', expression, ']'
 #                   | postfix-expression, '(', [argument-expression-list], ')'         
-      }
+      };
    };
 #postfix-expression = primary-expression
 #                   | '(', type-name, ')', '{', initializer-list, [','], '}';
