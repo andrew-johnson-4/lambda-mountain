@@ -197,6 +197,18 @@ if true then {
       let tokens = std-c-tokenize-string("enum1case", "enum1case");
       assert( std-c-parse-constant(tokens).first == Some{CConstantEnumeration{"enum1case"}} );
    };
+   if true then {
+      let tokens = std-c-tokenize-string("\"abc\"", "\"abc\"");
+      assert( std-c-parse-string(tokens).first == Some{CConstantString{"\"abc\""}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("u8\"abc\"", "u8\"abc\"");
+      assert( std-c-parse-string(tokens).first == Some{CConstantString{"u8\"abc\""}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("__func__", "__func__");
+      assert( std-c-parse-string(tokens).first == Some{CConstantString{"__func__"}} );
+   };
 };
 
 if true then { 
