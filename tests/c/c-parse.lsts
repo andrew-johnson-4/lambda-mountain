@@ -283,3 +283,36 @@ if true then {
       assert( std-c-parse-unary-expression(tokens).first == Some{CUnaryPrefix{"sizeof",close(CUnaryPostfix{"++",close(CIdentifier{"a"})})}} );
    };
 };
+
+if true then {
+   if true then {
+      let tokens = std-c-tokenize-string("a * b * c", "a * b * c");
+      assert( std-c-parse-multiplicative-expression(tokens).first == Some{CBinaryOp{"*",
+         close(CBinaryOp{"*",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a / b / c", "a / b / c");
+      assert( std-c-parse-multiplicative-expression(tokens).first == Some{CBinaryOp{"/",
+         close(CBinaryOp{"/",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a % b % c", "a % b % c");
+      assert( std-c-parse-multiplicative-expression(tokens).first == Some{CBinaryOp{"%",
+         close(CBinaryOp{"%",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+};

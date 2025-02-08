@@ -14,6 +14,7 @@ type CTerm = CInteger{value:String}
            | CIdentifier{value:String}
            | CUnaryPostfix{op:String, arg:CTerm[]}
            | CUnaryPrefix{op:String, arg:CTerm[]}
+           | CBinaryOp{op:String, arg1:CTerm[], arg2:CTerm[]}
            | CAccessor{accessor:String, field:String, arg:CTerm[]};
 
 let cmp(l: CTerm, r: CTerm): Ord = (
@@ -27,6 +28,7 @@ let cmp(l: CTerm, r: CTerm): Ord = (
       Tuple{ first:CIdentifier{lv=value}, second:CIdentifier{rv=value} } => cmp(lv, rv);
       Tuple{ first:CUnaryPrefix{lop=op,larg=arg}, second:CUnaryPrefix{rop=op,rarg=arg} } => cmp(lop, rop) && cmp(larg,rarg);
       Tuple{ first:CUnaryPostfix{lop=op,larg=arg}, second:CUnaryPostfix{rop=op,rarg=arg} } => cmp(lop, rop) && cmp(larg,rarg);
+      Tuple{ first:CBinaryOp{lop=op,larg1=arg1,larg2=arg2}, second:CBinaryOp{rop=op,rarg1=arg1,rarg2=arg2} } => cmp(lop, rop) && cmp(larg1,rarg1) && cmp(larg2,rarg2);
       Tuple{ first:CAccessor{lacc=accessor,lf=field,larg=arg}, second:CAccessor{racc=accessor,rf=field,rarg=arg} } => cmp(lacc,racc) && cmp(lf,rf) && cmp(larg,rarg);
    }
 );
@@ -41,6 +43,7 @@ let to-smart-string(l: CTerm): String = (
       CIdentifier{rv=value} => "{Identifier \{rv}}";
       CUnaryPrefix{rop=op,rarg=arg} => "{Prefix \{rop} \{rarg}}";
       CUnaryPostfix{rop=op,rarg=arg} => "{Postfix \{rop} \{rarg}}";
+      CBinaryOp{op=op,arg1=arg1,arg2=arg2} => "{BinaryOp \{op} \{arg1} \{arg2}}";
       CAccessor{racc=accessor,rf=field,rarg=arg} => "{Accessor \{racc} \{rf} \{rarg}}";
    }
 );
@@ -577,8 +580,25 @@ let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 
 #multiplicative-expression = cast-expression, {('*' | '/' | '%'), cast-expression};
 
+let std-c-parse-multiplicative-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let expression = std-c-parse-cast-expression(tokens); tokens = expression.second;
+   while expression.first.is-some && (
+      std-c-can-take(tokens, "*") || std-c-can-take(tokens, "/") || std-c-can-take(tokens, "%")
+   ) {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      let re = std-c-parse-cast-expression(tokens); tokens = re.second;
+      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
+      expression = Tuple{ Some{e}, tokens };
+   };
+   expression
+);
+
+
+let std-c-parse-cast-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
 #cast-expression = unary-expression
 #                | '(', type-name, ')', cast-expression;
+   std-c-parse-unary-expression(tokens);
+);
 
 
 let std-c-parse-unary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
