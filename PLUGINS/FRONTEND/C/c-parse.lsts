@@ -580,12 +580,29 @@ let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 #cast-expression = unary-expression
 #                | '(', type-name, ')', cast-expression;
 
+
+let std-c-parse-unary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
 #unary-expression = postfix-expression
-#                 | ('++' | '--'), unary-expression
 #                 | unary-operator, cast-expression
-#                 | 'sizeof', unary-expression
 #                 | 'sizeof', '(', type-name, ')'
 #                 | '_Alignof', '(', type-name, ')';
+   if std-c-can-take(tokens, "++") || std-c-can-take(tokens, "--") {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      let inner = std-c-parse-unary-expression(tokens);
+      if inner.first.is-some then Tuple{ Some{CUnaryPrefix{op, close(inner.first.get-or-panic)}}, inner.second }
+      else inner;
+   } else if std-c-can-take(tokens, "sizeof") {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      if std-c-can-take(tokens, "(") {
+         print("TODO: C parse unary expression sizeof(type)"); exit(1); std-c-parse-postfix-expression(tokens);
+      } else {
+         let inner = std-c-parse-unary-expression(tokens);
+         if inner.first.is-some then Tuple{ Some{CUnaryPrefix{op, close(inner.first.get-or-panic)}}, inner.second }
+         else inner;
+      };
+   } else std-c-parse-postfix-expression(tokens)
+);
+
 
 let std-c-parse-postfix-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let expression = std-c-parse-primary-expression(tokens); tokens = expression.second;

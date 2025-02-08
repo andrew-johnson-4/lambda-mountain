@@ -268,3 +268,18 @@ if true then {
       assert( std-c-parse-postfix-expression(tokens).first == Some{CAccessor{"->","f",close(CIdentifier{"a"})}} );
    };
 };
+
+if true then {
+   if true then {
+      let tokens = std-c-tokenize-string("++a++", "++a++");
+      assert( std-c-parse-unary-expression(tokens).first == Some{CUnaryPrefix{"++",close(CUnaryPostfix{"++",close(CIdentifier{"a"})})}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("--a++", "--a++");
+      assert( std-c-parse-unary-expression(tokens).first == Some{CUnaryPrefix{"--",close(CUnaryPostfix{"++",close(CIdentifier{"a"})})}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("sizeof a++", "sizeof a++");
+      assert( std-c-parse-unary-expression(tokens).first == Some{CUnaryPrefix{"sizeof",close(CUnaryPostfix{"++",close(CIdentifier{"a"})})}} );
+   };
+};
