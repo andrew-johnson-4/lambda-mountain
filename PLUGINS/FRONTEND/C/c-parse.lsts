@@ -566,8 +566,20 @@ let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 
 #inclusive-or-expression = exclusive-or-expression, {'|', exclusive-or-expression};
 
-#exclusive-or-expression = and-expression, {'^', and-expression};
 
+
+let std-c-parse-inclusive-or-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let expression = std-c-parse-exclusive-or-expression(tokens); tokens = expression.second;
+   while expression.first.is-some && (
+      std-c-can-take(tokens, "|")
+   ) {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      let re = std-c-parse-exclusive-or-expression(tokens); tokens = re.second;
+      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
+      expression = Tuple{ Some{e}, tokens };
+   };
+   expression
+);
 
 let std-c-parse-exclusive-or-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let expression = std-c-parse-and-expression(tokens); tokens = expression.second;
