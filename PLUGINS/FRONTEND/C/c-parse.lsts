@@ -338,15 +338,6 @@ let std-c-take-maybe(tokens: List<Token>, cls: String): List<Token> = (
 #   } else Tuple{None :: Maybe<CFunctionSpecifier>, tokens}
 #);
 
-#let std-c-parse-pointer(tokens: List<Token>): Tuple<Maybe<CPointer>,List<Token>> = (
-#   if std-c-can-take(c"*") then }
-#      tokens = std-c-take-expect("*", tokens);
-#      let type-qualifier-list = std-c-parse-type-qualifier-list(tokens); tokens = type-qualifier-list.second;
-#      let next-pointer = std-c-parse-pointer(tokens); tokens = next-pointer.second;
-#      Some{ CPointer{ type-qualifier-list.first, next-pointer.first }, tokens }
-#   } else Tuple{None :: Maybe<CPointer>, tokens}   
-#);
-
 #let std-c-parse-direct-declarator(tokens: List<Token>): Tuple<Maybe<CDeclarator>,List<Token>> = (
 #   let base-declarator = if let Tuple{Some{ident=contents}=first,tokens2=second} = std-c-parse-identifier(tokens) then {
 #      tokens = tokens2;
@@ -453,9 +444,29 @@ let std-c-parse-identifier-list(tokens: List<Token>): Tuple<Maybe<List<String>>,
 
 #specifier-qualifier = type-specifier | type-qualifier;
 
+
+let std-c-parse-pointer(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   #if std-c-can-take(tokens, "*") then {
+      #tokens = std-c-take-expect(tokens, "*");
+      #let type-qualifier-list = std-c-parse-type-qualifier-list(tokens); tokens = type-qualifier-list.second;
+      #let next-pointer = std-c-parse-pointer(tokens); tokens = next-pointer.second;
+      #Some{ CPointer{ type-qualifier-list.first, next-pointer.first }, tokens }
+   #} else Tuple{None :: Maybe<CPointer>, tokens}   
+   let no = None :: Maybe<CTerm>;
+   Tuple{ no, tokens }      
+);
+
+let std-c-parse-abstract-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let p = std-c-parse-pointer(tokens);
+   let dac = std-c-parse-direct-abstract-declarator(p.second);
+
 #abstract-declarator = pointer, [direct-abstract-declarator]
 #                    | direct-abstract-declarator;
+   let no = None :: Maybe<CTerm>;
+   Tuple{ no, tokens }      
+);
 
+let std-c-parse-direct-abstract-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
 #direct-abstract-declarator = '(', abstract-declarator, ')'
 #                           | '(', parameter-type-list, ')'
 #                           | '(', ')'
@@ -469,6 +480,9 @@ let std-c-parse-identifier-list(tokens: List<Token>): Tuple<Maybe<List<String>>,
 #                           | direct-abstract-declarator, '[', assignment-expression, ']'
 #                           | direct-abstract-declarator, '(', parameter-type-list, ')'
 #                           | direct-abstract-declarator, '(', ')';
+   let no = None :: Maybe<CTerm>;
+   Tuple{ no, tokens }   
+);
 
 #struct-declarator-list = struct-declarator, {',', struct-declarator};
 
