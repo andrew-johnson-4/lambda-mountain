@@ -570,8 +570,19 @@ let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 
 #and-expression = equality-expression, {'&', equality-expression};
 
-#equality-expression = relational-expression, {('==' | '!='), relational-expression};
 
+let std-c-parse-and-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let expression = std-c-parse-equality-expression(tokens); tokens = expression.second;
+   while expression.first.is-some && (
+      std-c-can-take(tokens, "&")
+   ) {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      let re = std-c-parse-equality-expression(tokens); tokens = re.second;
+      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
+      expression = Tuple{ Some{e}, tokens };
+   };
+   expression
+);
 
 let std-c-parse-equality-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let expression = std-c-parse-relational-expression(tokens); tokens = expression.second;
