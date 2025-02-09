@@ -544,7 +544,11 @@ let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
    let ts = std-c-parse-constant(tokens);
    if ts.first.is-none then (ts = std-c-parse-identifier(tokens));
    if ts.first.is-none then (ts = std-c-parse-string(tokens));
-   # TODO '(', expression, ')'
+   if ts.first.is-none && std-c-can-take(tokens, "(") {
+      let tokens2 = std-c-take-expect(tokens, "(");
+      ts = std-c-parse-expression(tokens2);
+      ts.second = std-c-take-expect(ts.second, ")");
+   };
    # TODO generic-selection
    ts
 );
