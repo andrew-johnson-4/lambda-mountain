@@ -11,6 +11,7 @@ import PLUGINS/FRONTEND/C/index-index.lm;
 import PLUGINS/FRONTEND/C/index-index.lm;
 
 std-c-enumeration-constant-index = std-c-enumeration-constant-index.bind("enum1case", true);
+std-c-typedef-name-index = std-c-typedef-name-index.bind("td1", true);
 
 # helpers
 if true then { 
@@ -791,4 +792,21 @@ if true then {
          close(CIdentifier{"c"})
       }} );
    };
+};
+
+if true then {
+   assert( std-c-parse-type-specifier(std-c-tokenize-string("void", "void")).first == Some{CType1{"void"}} );
+   assert( std-c-parse-type-specifier(std-c-tokenize-string("char", "char")).first == Some{CType1{"char"}} );
+   assert( std-c-parse-type-specifier(std-c-tokenize-string("short", "short")).first == Some{CType1{"short"}} );
+   assert( std-c-parse-type-specifier(std-c-tokenize-string("int", "int")).first == Some{CType1{"int"}} );
+   assert( std-c-parse-type-specifier(std-c-tokenize-string("long", "long")).first == Some{CType1{"long"}} );
+   assert( std-c-parse-type-specifier(std-c-tokenize-string("float", "float")).first == Some{CType1{"float"}} );
+   assert( std-c-parse-type-specifier(std-c-tokenize-string("double", "double")).first == Some{CType1{"double"}} );
+   assert( std-c-parse-type-specifier(std-c-tokenize-string("signed", "signed")).first == Some{CType1{"signed"}} );
+   assert( std-c-parse-type-specifier(std-c-tokenize-string("unsigned", "unsigned")).first == Some{CType1{"unsigned"}} );
+   assert( std-c-parse-type-specifier(std-c-tokenize-string("_Bool", "_Bool")).first == Some{CType1{"_Bool"}} );
+   assert( std-c-parse-type-specifier(std-c-tokenize-string("_Complex", "_Complex")).first == Some{CType1{"_Complex"}} );
+   assert( std-c-parse-type-specifier(std-c-tokenize-string("_Imaginary", "_Imaginary")).first == Some{CType1{"_Imaginary"}} );
+   assert( std-c-parse-type-specifier(std-c-tokenize-string("td1", "td1")).first == Some{CType1{"td1"}} );
+   assert( std-c-parse-type-specifier(std-c-tokenize-string("td2", "td2")).first == (None :: Maybe<CTerm>) );
 };
