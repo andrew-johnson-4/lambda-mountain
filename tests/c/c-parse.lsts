@@ -581,3 +581,36 @@ if true then {
       }} );
    };
 };
+
+if true then {
+   if true then {
+      let tokens = std-c-tokenize-string("a ^ b ^ c", "a ^ b ^ c");
+      assert( std-c-parse-exclusive-or-expression(tokens).first == Some{CBinaryOp{"^",
+         close(CBinaryOp{"^",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a ^ b & c", "a ^ b & c");
+      assert( std-c-parse-exclusive-or-expression(tokens).first == Some{CBinaryOp{"^",
+         close(CIdentifier{"a"}),
+         close(CBinaryOp{"&",
+            close(CIdentifier{"b"}),
+            close(CIdentifier{"c"})
+         })
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a & b ^ c", "a & b ^ c");
+      assert( std-c-parse-exclusive-or-expression(tokens).first == Some{CBinaryOp{"^",
+         close(CBinaryOp{"&",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+};
