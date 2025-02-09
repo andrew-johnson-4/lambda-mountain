@@ -306,13 +306,14 @@ let std-c-take-maybe(tokens: List<Token>, cls: String): List<Token> = (
 #   else std-c-typedef-name(tokens)
 #);
 
-#let std-c-parse-type-qualifier(tokens: List<Token>): Tuple<Maybe<CTypeQualifier>,List<Token>> = (
-#   if std-c-can-take("const", tokens) then (tokens = std-c-take-expect("const", tokens); Tuple{Some{CType{c"const"}}, tokens} )
-#   else if std-c-can-take("restrict", tokens) then (tokens = std-c-take-expect("restrict", tokens); Tuple{Some{CType{c"restrict"}}, tokens} )
-#   else if std-c-can-take("volatile", tokens) then (tokens = std-c-take-expect("volatile", tokens); Tuple{Some{CType{c"volatile"}}, tokens} )
-#   else if std-c-can-take("_Atomic", tokens) then (tokens = std-c-take-expect("_Atomic", tokens); Tuple{Some{CType{c"Atomic"}}, tokens} )
-#   else Tuple{None :: Maybe<CTypeQualifier>, tokens}
-#);
+let std-c-parse-type-qualifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "const") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "const"); Tuple{Some{CType1{t}}, tokens} )
+   else if std-c-can-take(tokens, "restrict") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "restrict"); Tuple{Some{CType1{t}}, tokens} )
+   else if std-c-can-take(tokens, "volatile") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "volatile"); Tuple{Some{CType1{t}}, tokens} )
+   else if std-c-can-take(tokens, "_Atomic") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "_Atomic"); Tuple{Some{CType1{t}}, tokens} )
+   else Tuple{no, tokens}
+);
 
 #let std-c-parse-function-specifier(tokens: List<Token>): Tuple<Maybe<CFunctionSpecifier>,List<Token>> = (
 #   if std-c-can-take("inline", tokens) then (tokens = std-c-take-expect("inline", tokens); Tuple{Some{CType{c"inline"}}, tokens} )
@@ -437,7 +438,11 @@ let std-c-parse-identifier-list(tokens: List<Token>): Tuple<Maybe<List<String>>,
 
 #specifier-qualifier-list = specifier-qualifier, {specifier-qualifier};
 
-#specifier-qualifier = type-specifier | type-qualifier;
+let std-c-parse-specifier-qualifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let sq = std-c-parse-type-specifier(tokens);
+   if sq.first.is-none { sq = std-c-parse-type-qualifier(tokens); };
+   sq
+);
 
 let std-c-typedef-name-index = {} :: HashtableEq<String,Bool>;
 let std-c-parse-typedef-name(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (

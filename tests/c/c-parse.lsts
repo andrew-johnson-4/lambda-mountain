@@ -810,3 +810,11 @@ if true then {
    assert( std-c-parse-type-specifier(std-c-tokenize-string("td1", "td1")).first == Some{CType1{"td1"}} );
    assert( std-c-parse-type-specifier(std-c-tokenize-string("td2", "td2")).first == (None :: Maybe<CTerm>) );
 };
+
+if true then {
+   assert( std-c-parse-specifier-qualifier(std-c-tokenize-string("void", "void")).first == Some{CType1{"void"}} );
+   assert( std-c-parse-specifier-qualifier(std-c-tokenize-string("const", "const")).first == Some{CType1{"const"}} );
+   assert( std-c-parse-specifier-qualifier(std-c-tokenize-string("volatile", "volatile")).first == Some{CType1{"volatile"}} );
+   assert( std-c-parse-specifier-qualifier(std-c-tokenize-string("restrict", "restrict")).first == Some{CType1{"restrict"}} );
+   assert( std-c-parse-specifier-qualifier(std-c-tokenize-string("_Atomic", "_Atomic")).first == Some{CType1{"_Atomic"}} );
+};
