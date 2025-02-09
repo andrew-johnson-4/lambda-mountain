@@ -118,96 +118,96 @@ if true then {
 if true then { 
    if true then {
       let tokens = std-c-tokenize-string("[abc]", "ab");
-      assert( std-c-parse-identifier(tokens).first == Some{"ab"} );
+      assert( std-c-parse-identifier(tokens).first == Some{CIdentifier{"ab"}} );
    };
    if true then {
       let tokens = std-c-tokenize-string("[ABC]", "AB");
-      assert( std-c-parse-identifier(tokens).first == Some{"AB"} );
+      assert( std-c-parse-identifier(tokens).first == Some{CIdentifier{"AB"}} );
    };
    if true then {
       let tokens = std-c-tokenize-string("_0", "_0");
-      assert( std-c-parse-identifier(tokens).first == Some{"_0"} );
+      assert( std-c-parse-identifier(tokens).first == Some{CIdentifier{"_0"}} );
    };
    if true then {
       let tokens = std-c-tokenize-string("[int]", "int");
-      assert( std-c-parse-identifier(tokens).first == None :: Maybe<String> );
+      assert( std-c-parse-identifier(tokens).first == None :: Maybe<CTerm> );
    };
 };
 
 if true then { 
    let abc = std-c-tokenize-string("ab", "ab");
-   assert( std-c-parse-constant(abc).first == None :: Maybe<CConstant> );
+   assert( std-c-parse-constant(abc).first == None :: Maybe<CTerm> );
    if true then {
       let tokens = std-c-tokenize-string("[0123456789]", "0123456789");
-      assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{"0123456789"}} );
+      assert( std-c-parse-constant(tokens).first == Some{CInteger{"0123456789"}} );
    };
    if true then {
       let tokens = std-c-tokenize-string("[0x0123456789aAbBcCdDeEfF]", "0x0123456789aAbBcCdDeEfF");
-      assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{"0x0123456789aAbBcCdDeEfF"}} );
+      assert( std-c-parse-constant(tokens).first == Some{CInteger{"0x0123456789aAbBcCdDeEfF"}} );
    };
    if true then {
       let tokens = std-c-tokenize-string("[0b01]", "0b01");
-      assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{"0b01"}} );
+      assert( std-c-parse-constant(tokens).first == Some{CInteger{"0b01"}} );
    };
    if true then {
       let tokens = std-c-tokenize-string("[0ulwb]", "0ulwb");
-      assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{"0ulwb"}} );
+      assert( std-c-parse-constant(tokens).first == Some{CInteger{"0ulwb"}} );
    };
    if true then {
       let tokens = std-c-tokenize-string("[0UllWB]", "0UllWB");
-      assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{"0UllWB"}} );
+      assert( std-c-parse-constant(tokens).first == Some{CInteger{"0UllWB"}} );
    };
    if true then {
       let tokens = std-c-tokenize-string("[0ULLWB]", "0ULLWB");
-      assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{"0ULLWB"}} );
+      assert( std-c-parse-constant(tokens).first == Some{CInteger{"0ULLWB"}} );
    };
    if true then {
       let tokens = std-c-tokenize-string("[0ULWB]", "0ULWB");
-      assert( std-c-parse-constant(tokens).first == Some{CConstantInteger{"0ULWB"}} );
+      assert( std-c-parse-constant(tokens).first == Some{CInteger{"0ULWB"}} );
    };
    if true then {
       let tokens = std-c-tokenize-string("'a'", "'a'");
-      assert( std-c-parse-constant(tokens).first == Some{CConstantCharacter{"'a'"}} );
+      assert( std-c-parse-constant(tokens).first == Some{CCharacter{"'a'"}} );
    };
    if true then {
       let tokens = std-c-tokenize-string("u8'\\''", "u8'\\''");
-      assert( std-c-parse-constant(tokens).first == Some{CConstantCharacter{"u8'\\''"}} );
+      assert( std-c-parse-constant(tokens).first == Some{CCharacter{"u8'\\''"}} );
    };
    if true then {
       let tokens = std-c-tokenize-string("L'\\0'", "L'\\0'");
-      assert( std-c-parse-constant(tokens).first == Some{CConstantCharacter{"L'\\0'"}} );
+      assert( std-c-parse-constant(tokens).first == Some{CCharacter{"L'\\0'"}} );
    };
    if true then {
       let tokens = std-c-tokenize-string("u'\\u123'", "u'\\u123'");
-      assert( std-c-parse-constant(tokens).first == Some{CConstantCharacter{"u'\\u123'"}} );
+      assert( std-c-parse-constant(tokens).first == Some{CCharacter{"u'\\u123'"}} );
    };
    if true then {
       let tokens = std-c-tokenize-string("0.2", "0.2");
-      assert( std-c-parse-constant(tokens).first == Some{CConstantFloating{"0.2"}} );
+      assert( std-c-parse-constant(tokens).first == Some{CFloating{"0.2"}} );
    };
    if true then {
       let tokens = std-c-tokenize-string("1e2f", "1e2f");
-      assert( std-c-parse-constant(tokens).first == Some{CConstantFloating{"1e2f"}} );
+      assert( std-c-parse-constant(tokens).first == Some{CFloating{"1e2f"}} );
    };
    if true then {
       let tokens = std-c-tokenize-string("0x3p2", "0x3p2");
-      assert( std-c-parse-constant(tokens).first == Some{CConstantFloating{"0x3p2"}} );
+      assert( std-c-parse-constant(tokens).first == Some{CFloating{"0x3p2"}} );
    };
    if true then {
       let tokens = std-c-tokenize-string("enum1case", "enum1case");
-      assert( std-c-parse-constant(tokens).first == Some{CConstantEnumeration{"enum1case"}} );
+      assert( std-c-parse-constant(tokens).first == Some{CEnumeration{"enum1case"}} );
    };
    if true then {
       let tokens = std-c-tokenize-string("\"abc\"", "\"abc\"");
-      assert( std-c-parse-string(tokens).first == Some{CConstantString{"\"abc\""}} );
+      assert( std-c-parse-string(tokens).first == Some{CString{"\"abc\""}} );
    };
    if true then {
       let tokens = std-c-tokenize-string("u8\"abc\"", "u8\"abc\"");
-      assert( std-c-parse-string(tokens).first == Some{CConstantString{"u8\"abc\""}} );
+      assert( std-c-parse-string(tokens).first == Some{CString{"u8\"abc\""}} );
    };
    if true then {
       let tokens = std-c-tokenize-string("__func__", "__func__");
-      assert( std-c-parse-string(tokens).first == Some{CConstantString{"__func__"}} );
+      assert( std-c-parse-string(tokens).first == Some{CString{"__func__"}} );
    };
 };
 
@@ -224,5 +224,492 @@ if true then {
    if true then {
       let tokens = std-c-tokenize-string("a, _1", "a, _1");
       assert( std-c-parse-identifier-list(tokens).first == Some{["a","_1"]} );
+   };
+};
+
+if true then {
+   if true then {
+      let tokens = std-c-tokenize-string("a", "a");
+      assert( std-c-parse-primary-expression(tokens).first == Some{CIdentifier{"a"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("1", "1");
+      assert( std-c-parse-primary-expression(tokens).first == Some{CInteger{"1"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("1.0", "1.0");
+      assert( std-c-parse-primary-expression(tokens).first == Some{CFloating{"1.0"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("enum1case", "enum1case");
+      assert( std-c-parse-primary-expression(tokens).first == Some{CEnumeration{"enum1case"}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("\"a\"", "\"a\"");
+      assert( std-c-parse-primary-expression(tokens).first == Some{CString{"\"a\""}} );
+   };
+};
+
+if true then {
+   if true then {
+      let tokens = std-c-tokenize-string("a++", "a++");
+      assert( std-c-parse-postfix-expression(tokens).first == Some{CUnaryPostfix{"++",close(CIdentifier{"a"})}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a--", "a--");
+      assert( std-c-parse-postfix-expression(tokens).first == Some{CUnaryPostfix{"--",close(CIdentifier{"a"})}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a.f", "a.f");
+      assert( std-c-parse-postfix-expression(tokens).first == Some{CAccessor{".","f",close(CIdentifier{"a"})}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a->f", "a->f");
+      assert( std-c-parse-postfix-expression(tokens).first == Some{CAccessor{"->","f",close(CIdentifier{"a"})}} );
+   };
+};
+
+if true then {
+   if true then {
+      let tokens = std-c-tokenize-string("++a++", "++a++");
+      assert( std-c-parse-unary-expression(tokens).first == Some{CUnaryPrefix{"++",close(CUnaryPostfix{"++",close(CIdentifier{"a"})})}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("--a++", "--a++");
+      assert( std-c-parse-unary-expression(tokens).first == Some{CUnaryPrefix{"--",close(CUnaryPostfix{"++",close(CIdentifier{"a"})})}} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("sizeof a++", "sizeof a++");
+      assert( std-c-parse-unary-expression(tokens).first == Some{CUnaryPrefix{"sizeof",close(CUnaryPostfix{"++",close(CIdentifier{"a"})})}} );
+   };
+};
+
+if true then {
+   if true then {
+      let tokens = std-c-tokenize-string("a * b * c", "a * b * c");
+      assert( std-c-parse-multiplicative-expression(tokens).first == Some{CBinaryOp{"*",
+         close(CBinaryOp{"*",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a / b / c", "a / b / c");
+      assert( std-c-parse-multiplicative-expression(tokens).first == Some{CBinaryOp{"/",
+         close(CBinaryOp{"/",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a % b % c", "a % b % c");
+      assert( std-c-parse-multiplicative-expression(tokens).first == Some{CBinaryOp{"%",
+         close(CBinaryOp{"%",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+};
+
+if true then {
+   if true then {
+      let tokens = std-c-tokenize-string("a + b + c", "a + b + c");
+      assert( std-c-parse-additive-expression(tokens).first == Some{CBinaryOp{"+",
+         close(CBinaryOp{"+",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a - b - c", "a - b - c");
+      assert( std-c-parse-additive-expression(tokens).first == Some{CBinaryOp{"-",
+         close(CBinaryOp{"-",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a + b * c", "a + b * c");
+      assert( std-c-parse-additive-expression(tokens).first == Some{CBinaryOp{"+",
+         close(CIdentifier{"a"}),
+         close(CBinaryOp{"*",
+            close(CIdentifier{"b"}),
+            close(CIdentifier{"c"})
+         })
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a - b * c", "a - b * c");
+      assert( std-c-parse-additive-expression(tokens).first == Some{CBinaryOp{"-",
+         close(CIdentifier{"a"}),
+         close(CBinaryOp{"*",
+            close(CIdentifier{"b"}),
+            close(CIdentifier{"c"})
+         })
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a * b + c", "a * b + c");
+      assert( std-c-parse-additive-expression(tokens).first == Some{CBinaryOp{"+",
+         close(CBinaryOp{"*",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a * b - c", "a * b - c");
+      assert( std-c-parse-additive-expression(tokens).first == Some{CBinaryOp{"-",
+         close(CBinaryOp{"*",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+};
+
+if true then {
+   if true then {
+      let tokens = std-c-tokenize-string("a >> b >> c", "a >> b >> c");
+      assert( std-c-parse-shift-expression(tokens).first == Some{CBinaryOp{">>",
+         close(CBinaryOp{">>",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a << b << c", "a << b << c");
+      assert( std-c-parse-shift-expression(tokens).first == Some{CBinaryOp{"<<",
+         close(CBinaryOp{"<<",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a >> b + c", "a >> b + c");
+      assert( std-c-parse-shift-expression(tokens).first == Some{CBinaryOp{">>",
+         close(CIdentifier{"a"}),
+         close(CBinaryOp{"+",
+            close(CIdentifier{"b"}),
+            close(CIdentifier{"c"})
+         })
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a << b + c", "a << b + c");
+      assert( std-c-parse-shift-expression(tokens).first == Some{CBinaryOp{"<<",
+         close(CIdentifier{"a"}),
+         close(CBinaryOp{"+",
+            close(CIdentifier{"b"}),
+            close(CIdentifier{"c"})
+         })
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a + b >> c", "a + b >> c");
+      assert( std-c-parse-shift-expression(tokens).first == Some{CBinaryOp{">>",
+         close(CBinaryOp{"+",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a + b << c", "a + b << c");
+      assert( std-c-parse-shift-expression(tokens).first == Some{CBinaryOp{"<<",
+         close(CBinaryOp{"+",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+};
+
+if true then {
+   if true then {
+      let tokens = std-c-tokenize-string("a > b > c", "a > b > c");
+      assert( std-c-parse-relational-expression(tokens).first == Some{CBinaryOp{">",
+         close(CBinaryOp{">",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a < b < c", "a < b < c");
+      assert( std-c-parse-relational-expression(tokens).first == Some{CBinaryOp{"<",
+         close(CBinaryOp{"<",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a >= b >= c", "a >= b >= c");
+      assert( std-c-parse-relational-expression(tokens).first == Some{CBinaryOp{">=",
+         close(CBinaryOp{">=",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a <= b <= c", "a <= b <= c");
+      assert( std-c-parse-relational-expression(tokens).first == Some{CBinaryOp{"<=",
+         close(CBinaryOp{"<=",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a > b >> c", "a > b >> c");
+      assert( std-c-parse-relational-expression(tokens).first == Some{CBinaryOp{">",
+         close(CIdentifier{"a"}),
+         close(CBinaryOp{">>",
+            close(CIdentifier{"b"}),
+            close(CIdentifier{"c"})
+         })
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a >> b > c", "a >> b > c");
+      assert( std-c-parse-relational-expression(tokens).first == Some{CBinaryOp{">",
+         close(CBinaryOp{">>",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+};
+
+if true then {
+   if true then {
+      let tokens = std-c-tokenize-string("a == b == c", "a == b == c");
+      assert( std-c-parse-equality-expression(tokens).first == Some{CBinaryOp{"==",
+         close(CBinaryOp{"==",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a != b != c", "a != b != c");
+      assert( std-c-parse-equality-expression(tokens).first == Some{CBinaryOp{"!=",
+         close(CBinaryOp{"!=",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a == b > c", "a == b > c");
+      assert( std-c-parse-equality-expression(tokens).first == Some{CBinaryOp{"==",
+         close(CIdentifier{"a"}),
+         close(CBinaryOp{">",
+            close(CIdentifier{"b"}),
+            close(CIdentifier{"c"})
+         })
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a > b == c", "a > b == c");
+      assert( std-c-parse-equality-expression(tokens).first == Some{CBinaryOp{"==",
+         close(CBinaryOp{">",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+};
+
+if true then {
+   if true then {
+      let tokens = std-c-tokenize-string("a & b & c", "a & b & c");
+      assert( std-c-parse-and-expression(tokens).first == Some{CBinaryOp{"&",
+         close(CBinaryOp{"&",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a & b == c", "a & b == c");
+      assert( std-c-parse-and-expression(tokens).first == Some{CBinaryOp{"&",
+         close(CIdentifier{"a"}),
+         close(CBinaryOp{"==",
+            close(CIdentifier{"b"}),
+            close(CIdentifier{"c"})
+         })
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a == b & c", "a == b & c");
+      assert( std-c-parse-and-expression(tokens).first == Some{CBinaryOp{"&",
+         close(CBinaryOp{"==",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+};
+
+if true then {
+   if true then {
+      let tokens = std-c-tokenize-string("a ^ b ^ c", "a ^ b ^ c");
+      assert( std-c-parse-exclusive-or-expression(tokens).first == Some{CBinaryOp{"^",
+         close(CBinaryOp{"^",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a ^ b & c", "a ^ b & c");
+      assert( std-c-parse-exclusive-or-expression(tokens).first == Some{CBinaryOp{"^",
+         close(CIdentifier{"a"}),
+         close(CBinaryOp{"&",
+            close(CIdentifier{"b"}),
+            close(CIdentifier{"c"})
+         })
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a & b ^ c", "a & b ^ c");
+      assert( std-c-parse-exclusive-or-expression(tokens).first == Some{CBinaryOp{"^",
+         close(CBinaryOp{"&",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+};
+
+if true then {
+   if true then {
+      let tokens = std-c-tokenize-string("a | b | c", "a | b | c");
+      assert( std-c-parse-inclusive-or-expression(tokens).first == Some{CBinaryOp{"|",
+         close(CBinaryOp{"|",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a | b ^ c", "a | b ^ c");
+      assert( std-c-parse-inclusive-or-expression(tokens).first == Some{CBinaryOp{"|",
+         close(CIdentifier{"a"}),
+         close(CBinaryOp{"^",
+            close(CIdentifier{"b"}),
+            close(CIdentifier{"c"})
+         })
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a ^ b | c", "a ^ b | c");
+      assert( std-c-parse-inclusive-or-expression(tokens).first == Some{CBinaryOp{"|",
+         close(CBinaryOp{"^",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+};
+
+if true then {
+   if true then {
+      let tokens = std-c-tokenize-string("a && b && c", "a && b && c");
+      assert( std-c-parse-logical-and-expression(tokens).first == Some{CBinaryOp{"&&",
+         close(CBinaryOp{"&&",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a && b | c", "a && b | c");
+      assert( std-c-parse-logical-and-expression(tokens).first == Some{CBinaryOp{"&&",
+         close(CIdentifier{"a"}),
+         close(CBinaryOp{"|",
+            close(CIdentifier{"b"}),
+            close(CIdentifier{"c"})
+         })
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a | b && c", "a | b && c");
+      assert( std-c-parse-logical-and-expression(tokens).first == Some{CBinaryOp{"&&",
+         close(CBinaryOp{"|",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+};
+
+if true then {
+   if true then {
+      let tokens = std-c-tokenize-string("a || b || c", "a || b || c");
+      assert( std-c-parse-logical-or-expression(tokens).first == Some{CBinaryOp{"||",
+         close(CBinaryOp{"||",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a || b && c", "a || b && c");
+      assert( std-c-parse-logical-or-expression(tokens).first == Some{CBinaryOp{"||",
+         close(CIdentifier{"a"}),
+         close(CBinaryOp{"&&",
+            close(CIdentifier{"b"}),
+            close(CIdentifier{"c"})
+         })
+      }} );
+   };
+   if true then {
+      let tokens = std-c-tokenize-string("a && b || c", "a && b || c");
+      assert( std-c-parse-logical-or-expression(tokens).first == Some{CBinaryOp{"||",
+         close(CBinaryOp{"&&",
+            close(CIdentifier{"a"}),
+            close(CIdentifier{"b"})
+         }),
+         close(CIdentifier{"c"})
+      }} );
    };
 };

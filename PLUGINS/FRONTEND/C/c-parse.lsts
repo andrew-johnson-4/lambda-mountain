@@ -6,20 +6,45 @@
 # However, there are also a large number of compiler-specific extensions that are parsed but mostly ignored
 # Example: __extension__ ( f, g )
 
-type CConstant = CConstantInteger{value:String}
-               | CConstantCharacter{value:String}
-               | CConstantFloating{value:String}
-               | CConstantEnumeration{value:String}
-               | CConstantString{value:String};
+type CTerm = CInteger{value:String}
+           | CCharacter{value:String}
+           | CFloating{value:String}
+           | CEnumeration{value:String}
+           | CString{value:String}
+           | CIdentifier{value:String}
+           | CUnaryPostfix{op:String, arg:CTerm[]}
+           | CUnaryPrefix{op:String, arg:CTerm[]}
+           | CBinaryOp{op:String, arg1:CTerm[], arg2:CTerm[]}
+           | CAccessor{accessor:String, field:String, arg:CTerm[]};
 
-let cmp(l: CConstant, r: CConstant): Ord = (
+let cmp(l: CTerm, r: CTerm): Ord = (
    if $".0"(l) != $".0"(r) then cmp($".0"(l), $".0"(r))
    else match Tuple{l, r} {
-      Tuple{ first:CConstantInteger{lv=value}, second:CConstantInteger{rv=value} } => cmp(lv, rv);
-      Tuple{ first:CConstantCharacter{lv=value}, second:CConstantCharacter{rv=value} } => cmp(lv, rv);
-      Tuple{ first:CConstantFloating{lv=value}, second:CConstantFloating{rv=value} } => cmp(lv, rv);
-      Tuple{ first:CConstantEnumeration{lv=value}, second:CConstantEnumeration{rv=value} } => cmp(lv, rv);
-      Tuple{ first:CConstantString{lv=value}, second:CConstantString{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CInteger{lv=value}, second:CInteger{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CCharacter{lv=value}, second:CCharacter{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CFloating{lv=value}, second:CFloating{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CEnumeration{lv=value}, second:CEnumeration{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CString{lv=value}, second:CString{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CIdentifier{lv=value}, second:CIdentifier{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CUnaryPrefix{lop=op,larg=arg}, second:CUnaryPrefix{rop=op,rarg=arg} } => cmp(lop, rop) && cmp(larg,rarg);
+      Tuple{ first:CUnaryPostfix{lop=op,larg=arg}, second:CUnaryPostfix{rop=op,rarg=arg} } => cmp(lop, rop) && cmp(larg,rarg);
+      Tuple{ first:CBinaryOp{lop=op,larg1=arg1,larg2=arg2}, second:CBinaryOp{rop=op,rarg1=arg1,rarg2=arg2} } => cmp(lop, rop) && cmp(larg1,rarg1) && cmp(larg2,rarg2);
+      Tuple{ first:CAccessor{lacc=accessor,lf=field,larg=arg}, second:CAccessor{racc=accessor,rf=field,rarg=arg} } => cmp(lacc,racc) && cmp(lf,rf) && cmp(larg,rarg);
+   }
+);
+
+let to-smart-string(l: CTerm): String = (
+   match l {
+      CInteger{rv=value} => "{Integer \{rv}}";
+      CCharacter{rv=value} => "{Character \{rv}}";
+      CFloating{rv=value} => "{Floating \{rv}}";
+      CEnumeration{rv=value} => "{Enumeration \{rv}}";
+      CString{rv=value} => "{String \{rv}}";
+      CIdentifier{rv=value} => "{Identifier \{rv}}";
+      CUnaryPrefix{rop=op,rarg=arg} => "{Prefix \{rop} \{rarg}}";
+      CUnaryPostfix{rop=op,rarg=arg} => "{Postfix \{rop} \{rarg}}";
+      CBinaryOp{op=op,arg1=arg1,arg2=arg2} => "{BinaryOp \{op} \{arg1} \{arg2}}";
+      CAccessor{racc=accessor,rf=field,rarg=arg} => "{Accessor \{racc} \{rf} \{rarg}}";
    }
 );
 
@@ -491,28 +516,37 @@ let std-c-parse-struct-or-union(tokens: List<Token>): Tuple<Maybe<String>,List<T
    else Tuple{ no, tokens }
 );
 
-let std-c-parse-identifier(tokens: List<Token>): Tuple<Maybe<String>,List<Token>> = (
-   let no = None :: Maybe<String>;
-   if std-c-can-take(tokens, "identifier") then Tuple{ Some{head(tokens).skey}, tail(tokens) }
+let std-c-parse-identifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "identifier") then Tuple{ Some{CIdentifier{head(tokens).skey}}, tail(tokens) }
    else Tuple{ no, tokens }
 );
 
 let std-c-enumeration-constant-index = {} :: HashtableEq<String,Bool>;
 
-let std-c-parse-constant(tokens: List<Token>): Tuple<Maybe<CConstant>,List<Token>> = (
-   let no = None :: Maybe<CConstant>;
-   if std-c-can-take(tokens, "integer") then Tuple{ Some{CConstantInteger{head(tokens).skey}}, tail(tokens) }
-   else if std-c-can-take(tokens, "character") then Tuple{ Some{CConstantCharacter{head(tokens).skey}}, tail(tokens) }
-   else if std-c-can-take(tokens, "floating") then Tuple{ Some{CConstantFloating{head(tokens).skey}}, tail(tokens) }
-   else if std-c-can-take(tokens, "enumeration") then Tuple{ Some{CConstantEnumeration{head(tokens).skey}}, tail(tokens) }
+let std-c-parse-constant(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "integer") then Tuple{ Some{CInteger{head(tokens).skey}}, tail(tokens) }
+   else if std-c-can-take(tokens, "character") then Tuple{ Some{CCharacter{head(tokens).skey}}, tail(tokens) }
+   else if std-c-can-take(tokens, "floating") then Tuple{ Some{CFloating{head(tokens).skey}}, tail(tokens) }
+   else if std-c-can-take(tokens, "enumeration") then Tuple{ Some{CEnumeration{head(tokens).skey}}, tail(tokens) }
    else Tuple{ no, tokens }
 );
 
-let std-c-parse-string(tokens: List<Token>): Tuple<Maybe<CConstant>,List<Token>> = (
-   let no = None :: Maybe<CConstant>;
-   if std-c-can-take(tokens, "string") then Tuple{ Some{CConstantString{head(tokens).skey}}, tail(tokens) }
-   else if std-c-can-take(tokens, "__func__") then Tuple{ Some{CConstantString{head(tokens).skey}}, tail(tokens) }
+let std-c-parse-string(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "string") then Tuple{ Some{CString{head(tokens).skey}}, tail(tokens) }
+   else if std-c-can-take(tokens, "__func__") then Tuple{ Some{CString{head(tokens).skey}}, tail(tokens) }
    else Tuple{ no, tokens }
+);
+
+let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let ts = std-c-parse-constant(tokens);
+   if ts.first.is-none then (ts = std-c-parse-identifier(tokens));
+   if ts.first.is-none then (ts = std-c-parse-string(tokens));
+   # TODO '(', expression, ')'
+   # TODO generic-selection
+   ts
 );
 
 #parameter-list = parameter-declaration, {',', parameter-declaration};
@@ -526,49 +560,197 @@ let std-c-parse-string(tokens: List<Token>): Tuple<Maybe<CConstant>,List<Token>>
 
 #conditional-expression = logical-or-expression, ['?', expression, ':', conditional-expression];
 
-#logical-or-expression = logical-and-expression, {'||', logical-and-expression};
+let std-c-parse-logical-or-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let expression = std-c-parse-logical-and-expression(tokens); tokens = expression.second;
+   while expression.first.is-some && (
+      std-c-can-take(tokens, "||")
+   ) {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      let re = std-c-parse-logical-and-expression(tokens); tokens = re.second;
+      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
+      expression = Tuple{ Some{e}, tokens };
+   };
+   expression
+);
 
-#logical-and-expression = inclusive-or-expression, {'&&', inclusive-or-expression};
+let std-c-parse-logical-and-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let expression = std-c-parse-inclusive-or-expression(tokens); tokens = expression.second;
+   while expression.first.is-some && (
+      std-c-can-take(tokens, "&&")
+   ) {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      let re = std-c-parse-inclusive-or-expression(tokens); tokens = re.second;
+      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
+      expression = Tuple{ Some{e}, tokens };
+   };
+   expression
+);
 
-#inclusive-or-expression = exclusive-or-expression, {'|', exclusive-or-expression};
+let std-c-parse-inclusive-or-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let expression = std-c-parse-exclusive-or-expression(tokens); tokens = expression.second;
+   while expression.first.is-some && (
+      std-c-can-take(tokens, "|")
+   ) {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      let re = std-c-parse-exclusive-or-expression(tokens); tokens = re.second;
+      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
+      expression = Tuple{ Some{e}, tokens };
+   };
+   expression
+);
 
-#exclusive-or-expression = and-expression, {'^', and-expression};
+let std-c-parse-exclusive-or-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let expression = std-c-parse-and-expression(tokens); tokens = expression.second;
+   while expression.first.is-some && (
+      std-c-can-take(tokens, "^")
+   ) {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      let re = std-c-parse-and-expression(tokens); tokens = re.second;
+      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
+      expression = Tuple{ Some{e}, tokens };
+   };
+   expression
+);
 
-#and-expression = equality-expression, {'&', equality-expression};
+let std-c-parse-and-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let expression = std-c-parse-equality-expression(tokens); tokens = expression.second;
+   while expression.first.is-some && (
+      std-c-can-take(tokens, "&")
+   ) {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      let re = std-c-parse-equality-expression(tokens); tokens = re.second;
+      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
+      expression = Tuple{ Some{e}, tokens };
+   };
+   expression
+);
 
-#equality-expression = relational-expression, {('==' | '!='), relational-expression};
+let std-c-parse-equality-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let expression = std-c-parse-relational-expression(tokens); tokens = expression.second;
+   while expression.first.is-some && (
+      std-c-can-take(tokens, "==")  || std-c-can-take(tokens, "!=")
+   ) {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      let re = std-c-parse-relational-expression(tokens); tokens = re.second;
+      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
+      expression = Tuple{ Some{e}, tokens };
+   };
+   expression
+);
 
-#relational-expression = shift-expression, {('<' | '>' | '<=' | '>='), shift-expression};
+let std-c-parse-relational-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let expression = std-c-parse-shift-expression(tokens); tokens = expression.second;
+   while expression.first.is-some && (
+      std-c-can-take(tokens, "<")  || std-c-can-take(tokens, ">") ||
+      std-c-can-take(tokens, "<=") || std-c-can-take(tokens, ">=")
+   ) {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      let re = std-c-parse-shift-expression(tokens); tokens = re.second;
+      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
+      expression = Tuple{ Some{e}, tokens };
+   };
+   expression
+);
 
-#shift-expression = additive-expression, {('<<' | '>>'), additive-expression};
+let std-c-parse-shift-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let expression = std-c-parse-additive-expression(tokens); tokens = expression.second;
+   while expression.first.is-some && (
+      std-c-can-take(tokens, "<<") || std-c-can-take(tokens, ">>")
+   ) {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      let re = std-c-parse-additive-expression(tokens); tokens = re.second;
+      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
+      expression = Tuple{ Some{e}, tokens };
+   };
+   expression
+);
 
-#additive-expression = multiplicative-expression, {('+' | '-'), multiplicative-expression};
+let std-c-parse-additive-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let expression = std-c-parse-multiplicative-expression(tokens); tokens = expression.second;
+   while expression.first.is-some && (
+      std-c-can-take(tokens, "+") || std-c-can-take(tokens, "-")
+   ) {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      let re = std-c-parse-multiplicative-expression(tokens); tokens = re.second;
+      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
+      expression = Tuple{ Some{e}, tokens };
+   };
+   expression
+);
 
-#multiplicative-expression = cast-expression, {('*' | '/' | '%'), cast-expression};
+let std-c-parse-multiplicative-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let expression = std-c-parse-cast-expression(tokens); tokens = expression.second;
+   while expression.first.is-some && (
+      std-c-can-take(tokens, "*") || std-c-can-take(tokens, "/") || std-c-can-take(tokens, "%")
+   ) {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      let re = std-c-parse-cast-expression(tokens); tokens = re.second;
+      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
+      expression = Tuple{ Some{e}, tokens };
+   };
+   expression
+);
 
+
+let std-c-parse-cast-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
 #cast-expression = unary-expression
 #                | '(', type-name, ')', cast-expression;
+   std-c-parse-unary-expression(tokens);
+);
 
+
+let std-c-parse-unary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
 #unary-expression = postfix-expression
-#                 | ('++' | '--'), unary-expression
 #                 | unary-operator, cast-expression
-#                 | 'sizeof', unary-expression
 #                 | 'sizeof', '(', type-name, ')'
 #                 | '_Alignof', '(', type-name, ')';
+   if std-c-can-take(tokens, "++") || std-c-can-take(tokens, "--") {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      let inner = std-c-parse-unary-expression(tokens);
+      if inner.first.is-some then Tuple{ Some{CUnaryPrefix{op, close(inner.first.get-or-panic)}}, inner.second }
+      else inner;
+   } else if std-c-can-take(tokens, "sizeof") {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      if std-c-can-take(tokens, "(") {
+         print("TODO: C parse unary expression sizeof(type)"); exit(1); std-c-parse-postfix-expression(tokens);
+      } else {
+         let inner = std-c-parse-unary-expression(tokens);
+         if inner.first.is-some then Tuple{ Some{CUnaryPrefix{op, close(inner.first.get-or-panic)}}, inner.second }
+         else inner;
+      };
+   } else std-c-parse-postfix-expression(tokens)
+);
 
-#postfix-expression = primary-expression
+
+let std-c-parse-postfix-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let expression = std-c-parse-primary-expression(tokens); tokens = expression.second;
+   while expression.first.is-some && (
+      std-c-can-take(tokens, "[") || std-c-can-take(tokens, "(") ||
+      std-c-can-take(tokens, ".") || std-c-can-take(tokens, "->") ||
+      std-c-can-take(tokens, "++") || std-c-can-take(tokens, "--")
+   ) {
+      if std-c-can-take(tokens, "++") || std-c-can-take(tokens, "--") {
+         let e = CUnaryPostfix{ head(tokens).skey, close(expression.first.get-or-panic) };
+         tokens = tail(tokens);
+         expression = Tuple{ Some{e}, tokens };
+      } else if std-c-can-take(tokens, ".") || std-c-can-take(tokens, "->") {
+         let accessor = head(tokens).skey; tokens = tail(tokens);
+         if non-zero(tokens) {
+            let e = CAccessor{ accessor, head(tokens).skey, close(expression.first.get-or-panic) };
+            tokens = std-c-take-expect(tokens, "identifier");
+            expression = Tuple{ Some{e}, tokens };
+         } else std-c-take-expect(tokens, "identifier");
+      } else {
+         print("TODO: parse-postfix \{head(tokens).skey}"); exit(1);
 #                   | postfix-expression, '[', expression, ']'
-#                   | postfix-expression, '(', [argument-expression-list], ')'
-#                   | postfix-expression, ('.' | '->'), identifier
-#                   | postfix-expression, ('++' | '--')
+#                   | postfix-expression, '(', [argument-expression-list], ')'         
+      };
+   };
+#postfix-expression = primary-expression
 #                   | '(', type-name, ')', '{', initializer-list, [','], '}';
+   expression
+);
 
-
-#primary-expression = identifier
-#                   | constant
-#                   | string
-#                   | '(', expression, ')'
-#                   | generic-selection;
 
 #argument-expression-list = assignment-expression, {',', assignment-expression};
 
