@@ -436,7 +436,22 @@ let std-c-parse-identifier-list(tokens: List<Token>): Tuple<Maybe<List<String>>,
 
 #type-name = specifier-qualifier-list, [abstract-declarator];
 
-#specifier-qualifier-list = specifier-qualifier, {specifier-qualifier};
+let std-c-parse-specifier-qualifier-list(tokens: List<Token>): Tuple<Maybe<List<CTerm>>,List<Token>> = (
+   let no = None :: Maybe<List<CTerm>>;
+   let sq = std-c-parse-specifier-qualifier(tokens);
+   if sq.first.is-some {
+      let sql = [sq.first.get-or-panic];
+      tokens = sq.second;
+      while sq.first.is-some {
+         sq = std-c-parse-specifier-qualifier(tokens);
+         if sq.first.is-some {
+            sql = cons( sq.first.get-or-panic, sql );
+            tokens = sq.second;
+         };
+      };
+      Tuple{ Some{sql.reverse}, tokens }
+   } else Tuple { no, tokens }
+);
 
 let std-c-parse-specifier-qualifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let sq = std-c-parse-type-specifier(tokens);
