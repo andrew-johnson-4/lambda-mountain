@@ -560,9 +560,6 @@ let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 
 #conditional-expression = logical-or-expression, ['?', expression, ':', conditional-expression];
 
-#logical-or-expression = logical-and-expression, {'||', logical-and-expression};
-
-
 let std-c-parse-logical-or-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let expression = std-c-parse-logical-and-expression(tokens); tokens = expression.second;
    while expression.first.is-some && (
