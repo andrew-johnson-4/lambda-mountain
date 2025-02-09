@@ -555,10 +555,32 @@ let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 
 #expression = assignment-expression, {',', assignment-expression};
 
-#assignment-expression = conditional-expression
-#                      | unary-expression, assignment-operator, assignment-expression;
+let std-c-parse-assignment-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let ue = std-c-parse-unary-expression(tokens);
+   if ue.first.is-some && (
+      std-c-can-take(ue.second, "=")
+   || std-c-can-take(ue.second, "*=")
+   || std-c-can-take(ue.second, "/=")
+   || std-c-can-take(ue.second, "%=")
+   || std-c-can-take(ue.second, "+=")
+   || std-c-can-take(ue.second, "-=")
+   || std-c-can-take(ue.second, "<<=")
+   || std-c-can-take(ue.second, ">>=")
+   || std-c-can-take(ue.second, "&=")
+   || std-c-can-take(ue.second, "^=")
+   || std-c-can-take(ue.second, "|=")) {
+      let op = head(ue.second).skey;
+      let rest = std-c-parse-assignment-expression(tail(ue.second));
+      if rest.first.is-some {
+         Tuple{ Some{CBinaryOp{op, close(ue.first.get-or-panic), close(rest.first.get-or-panic)}}, rest.second }
+      } else std-c-parse-conditional-expression(tokens);
+   } else std-c-parse-conditional-expression(tokens);
+);
 
+let std-c-parse-conditional-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
 #conditional-expression = logical-or-expression, ['?', expression, ':', conditional-expression];
+   std-c-parse-logical-or-expression(tokens);   
+);
 
 let std-c-parse-logical-or-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let expression = std-c-parse-logical-and-expression(tokens); tokens = expression.second;
