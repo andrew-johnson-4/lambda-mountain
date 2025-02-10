@@ -845,3 +845,9 @@ if true then {
    assert( std-c-parse-statement(std-c-tokenize-string("for(a;b;c)d;", "for(a;b;c)d;")).first ==
            Some{CFor{"for",close(Some{CIdentifier{"a"}}),close(Some{CIdentifier{"b"}}),close(Some{CIdentifier{"c"}}),close(CIdentifier{"d"})}} );
 };
+
+if true then {
+   assert( std-c-parse-statement(std-c-tokenize-string("if(a) b;", "if(a) b;")).first == Some{CTernaryOp{"if",close(CIdentifier{"a"}),close(CIdentifier{"b"}),close(CZOp{";"})}} );
+   assert( std-c-parse-statement(std-c-tokenize-string("if(a) b; else c;", "if(a) b; else c;")).first == Some{CTernaryOp{"if",close(CIdentifier{"a"}),close(CIdentifier{"b"}),close(CIdentifier{"c"})}} );
+   assert( std-c-parse-statement(std-c-tokenize-string("switch(a) b;", "switch(a) b;")).first == Some{CBinaryOp{"switch",close(CIdentifier{"a"}),close(CIdentifier{"b"})}} );
+};
