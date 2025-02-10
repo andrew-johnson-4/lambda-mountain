@@ -17,6 +17,8 @@ type CTerm = CInteger{value:String}
            | CUnaryPostfix{op:String, arg:CTerm[]}
            | CUnaryPrefix{op:String, arg:CTerm[]}
            | CBinaryOp{op:String, arg1:CTerm[], arg2:CTerm[]}
+           | CTernaryOp{op:String, arg1:CTerm[], arg2:CTerm[], arg3: CTerm[]}
+           | CFor{op:String, arg1:Maybe<CTerm>[], arg2:Maybe<CTerm>[], arg3: Maybe<CTerm>[], stmt:CTerm[]}
            | CAccessor{accessor:String, field:String, arg:CTerm[]};
 
 let cmp(l: CTerm, r: CTerm): Ord = (
@@ -33,6 +35,9 @@ let cmp(l: CTerm, r: CTerm): Ord = (
       Tuple{ first:CUnaryPrefix{lop=op,larg=arg}, second:CUnaryPrefix{rop=op,rarg=arg} } => cmp(lop, rop) && cmp(larg,rarg);
       Tuple{ first:CUnaryPostfix{lop=op,larg=arg}, second:CUnaryPostfix{rop=op,rarg=arg} } => cmp(lop, rop) && cmp(larg,rarg);
       Tuple{ first:CBinaryOp{lop=op,larg1=arg1,larg2=arg2}, second:CBinaryOp{rop=op,rarg1=arg1,rarg2=arg2} } => cmp(lop, rop) && cmp(larg1,rarg1) && cmp(larg2,rarg2);
+      Tuple{ first:CTernaryOp{lop=op,larg1=arg1,larg2=arg2,larg3=arg3}, second:CTernaryOp{rop=op,rarg1=arg1,rarg2=arg2,rarg3=arg3} } => cmp(lop, rop) && cmp(larg1,rarg1) && cmp(larg2,rarg2) && cmp(larg3,rarg3);
+      Tuple{ first:CFor{lop=op,larg1=arg1,larg2=arg2,larg3=arg3,lst=stmt}, second:CFor{rop=op,rarg1=arg1,rarg2=arg2,rarg3=arg3,rst=stmt} } =>
+      cmp(lop, rop) && cmp(larg1,rarg1) && cmp(larg2,rarg2) && cmp(larg3,rarg3) && cmp(lst,rst);
       Tuple{ first:CAccessor{lacc=accessor,lf=field,larg=arg}, second:CAccessor{racc=accessor,rf=field,rarg=arg} } => cmp(lacc,racc) && cmp(lf,rf) && cmp(larg,rarg);
    }
 );
@@ -874,6 +879,7 @@ let std-c-parse-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> 
 #          | jump-statement
    
    let e = std-c-parse-jump-statement(tokens);
+   if e.first.is-none { e = std-c-parse-iteration-statement(tokens); };
    if e.first.is-none { e = std-c-parse-expression-statement(tokens); };
    if e.first.is-none && std-c-can-take(tokens,";") {
       tokens = std-c-take-expect(tokens,";");
@@ -900,6 +906,54 @@ let std-c-parse-expression-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,Li
 #                     | 'do', statement, 'while', '(', expression, ')', ';'
 #                     | 'for', '(', [expression], ';', [expression], ';', [expression], ')', statement
 #                     | 'for', '(', declaration, [expression], ';', [expression], ')', statement;
+
+let std-c-parse-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   Tuple{ no, tokens }
+);
+
+let std-c-parse-iteration-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "while") {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      tokens = std-c-take-expect(tokens, "(");
+      let expr = std-c-parse-expression(tokens); tokens = expr.second;
+      tokens = std-c-take-expect(tokens, ")");
+      let stmt = std-c-parse-statement(tokens); tokens = stmt.second;
+      if expr.first.is-some && stmt.first.is-some
+      then Tuple{ Some{CBinaryOp{op,close(expr.first.get-or-panic),close(stmt.first.get-or-panic)}}, tokens }
+      else Tuple{ no, tokens };
+   } else if std-c-can-take(tokens, "do") {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      let stmt = std-c-parse-statement(tokens); tokens = stmt.second;
+      tokens = std-c-take-expect(tokens, "while");
+      tokens = std-c-take-expect(tokens, "(");
+      let expr = std-c-parse-expression(tokens); tokens = expr.second;
+      tokens = std-c-take-expect(tokens, ")");
+      tokens = std-c-take-expect(tokens, ";");
+      if expr.first.is-some && stmt.first.is-some
+      then Tuple{ Some{CBinaryOp{op,close(stmt.first.get-or-panic),close(expr.first.get-or-panic)}}, tokens }
+      else Tuple{ no, tokens };
+   } else if std-c-can-take(tokens, "for") {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      tokens = std-c-take-expect(tokens, "(");
+      let decl = std-c-parse-declaration(tokens); tokens = decl.second;
+      let expr1 = std-c-parse-expression(tokens); tokens = expr1.second;
+      tokens = std-c-take-expect(tokens, ";");
+      let expr2 = std-c-parse-expression(tokens); tokens = expr2.second;
+      let expr3 = if std-c-can-take(tokens, ";") {
+         tokens = std-c-take-expect(tokens, ";");
+         std-c-parse-expression(tokens);
+      } else Tuple{ no, tokens }; tokens = expr3.second;
+      tokens = std-c-take-expect(tokens, ")");
+      let stmt = std-c-parse-statement(tokens); tokens = stmt.second;
+      if decl.first.is-some && stmt.first.is-some
+      then Tuple{ Some{CFor{op,close(decl.first),close(expr1.first),close(expr2.first),close(stmt.first.get-or-panic)}}, tokens }
+      else if stmt.first.is-some
+      then Tuple{ Some{CFor{op,close(expr1.first),close(expr2.first),close(expr3.first),close(stmt.first.get-or-panic)}}, tokens }
+      else Tuple{ no, tokens };
+   } else Tuple{ no, tokens };
+);
 
 let std-c-parse-jump-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
