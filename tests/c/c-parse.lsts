@@ -818,3 +818,30 @@ if true then {
    assert( std-c-parse-specifier-qualifier(std-c-tokenize-string("restrict", "restrict")).first == Some{CType1{"restrict"}} );
    assert( std-c-parse-specifier-qualifier(std-c-tokenize-string("_Atomic", "_Atomic")).first == Some{CType1{"_Atomic"}} );
 };
+
+if true then {
+   assert( std-c-parse-specifier-qualifier-list(std-c-tokenize-string("td2", "td2")).first == (None :: Maybe<List<CTerm>>) );
+   assert( std-c-parse-specifier-qualifier-list(std-c-tokenize-string("void", "void")).first == Some{[CType1{"void"}]} );
+   assert( std-c-parse-specifier-qualifier-list(std-c-tokenize-string("void void", "void void")).first == Some{[CType1{"void"},CType1{"void"}]} );
+};
+
+if true then {
+   assert( std-c-parse-jump-statement(std-c-tokenize-string("continue;", "continue;")).first == Some{CZOp{"continue"}} );
+   assert( std-c-parse-jump-statement(std-c-tokenize-string("break;", "break;")).first == Some{CZOp{"break"}} );
+   assert( std-c-parse-jump-statement(std-c-tokenize-string("return;", "return;")).first == Some{CZOp{"return"}} );
+   assert( std-c-parse-jump-statement(std-c-tokenize-string("goto a;", "goto a;")).first == Some{CUnaryPrefix{"goto",close(CIdentifier{"a"})}} );
+   assert( std-c-parse-jump-statement(std-c-tokenize-string("return a;", "return a;")).first == Some{CUnaryPrefix{"return",close(CIdentifier{"a"})}} );
+};
+
+if true then {
+   assert( std-c-parse-statement(std-c-tokenize-string(";", ";")).first == Some{CZOp{";"}} );
+   assert( std-c-parse-statement(std-c-tokenize-string("a;", "a;")).first == Some{CIdentifier{"a"}} );
+   assert( std-c-parse-statement(std-c-tokenize-string("return a;", "return a;")).first == Some{CUnaryPrefix{"return",close(CIdentifier{"a"})}} );
+};
+
+if true then {
+   assert( std-c-parse-statement(std-c-tokenize-string("while(a) b;", "while(a) b;")).first == Some{CBinaryOp{"while",close(CIdentifier{"a"}),close(CIdentifier{"b"})}} );
+   assert( std-c-parse-statement(std-c-tokenize-string("do a; while(b);", "do a; while(b);")).first == Some{CBinaryOp{"do",close(CIdentifier{"a"}),close(CIdentifier{"b"})}} );
+   assert( std-c-parse-statement(std-c-tokenize-string("for(a;b;c)d;", "for(a;b;c)d;")).first ==
+           Some{CFor{"for",close(Some{CIdentifier{"a"}}),close(Some{CIdentifier{"b"}}),close(Some{CIdentifier{"c"}}),close(CIdentifier{"d"})}} );
+};
