@@ -902,11 +902,6 @@ let std-c-parse-expression-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,Li
 #                    | 'if', '(', expression, ')', statement
 #                    | 'switch', '(', expression, ')', statement;
 
-# iteration-statement = 'while', '(', expression, ')', statement
-#                     | 'do', statement, 'while', '(', expression, ')', ';'
-#                     | 'for', '(', [expression], ';', [expression], ';', [expression], ')', statement
-#                     | 'for', '(', declaration, [expression], ';', [expression], ')', statement;
-
 let std-c-parse-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
    Tuple{ no, tokens }
