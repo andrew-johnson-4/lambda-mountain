@@ -851,3 +851,9 @@ if true then {
    assert( std-c-parse-statement(std-c-tokenize-string("if(a) b; else c;", "if(a) b; else c;")).first == Some{CTernaryOp{"if",close(CIdentifier{"a"}),close(CIdentifier{"b"}),close(CIdentifier{"c"})}} );
    assert( std-c-parse-statement(std-c-tokenize-string("switch(a) b;", "switch(a) b;")).first == Some{CBinaryOp{"switch",close(CIdentifier{"a"}),close(CIdentifier{"b"})}} );
 };
+
+if true then {
+   assert( std-c-parse-statement(std-c-tokenize-string("a: b;", "a: b;")).first == Some{CBinaryOp{":",close(CIdentifier{"a"}),close(CIdentifier{"b"})}} );
+   assert( std-c-parse-statement(std-c-tokenize-string("case 1: b;", "case 1: b;")).first == Some{CBinaryOp{"case",close(CInteger{"1"}),close(CIdentifier{"b"})}} );
+   assert( std-c-parse-statement(std-c-tokenize-string("default: b;", "default: b;")).first == Some{CUnaryPrefix{"default",close(CIdentifier{"b"})}} );
+};
