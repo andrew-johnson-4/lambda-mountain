@@ -824,3 +824,11 @@ if true then {
    assert( std-c-parse-specifier-qualifier-list(std-c-tokenize-string("void", "void")).first == Some{[CType1{"void"}]} );
    assert( std-c-parse-specifier-qualifier-list(std-c-tokenize-string("void void", "void void")).first == Some{[CType1{"void"},CType1{"void"}]} );
 };
+
+if true then {
+   assert( std-c-parse-jump-statement(std-c-tokenize-string("continue;", "continue;")).first == Some{CZOp{"continue"}} );
+   assert( std-c-parse-jump-statement(std-c-tokenize-string("break;", "break;")).first == Some{CZOp{"break"}} );
+   assert( std-c-parse-jump-statement(std-c-tokenize-string("return;", "return;")).first == Some{CZOp{"return"}} );
+   assert( std-c-parse-jump-statement(std-c-tokenize-string("goto a;", "goto a;")).first == Some{CUnaryPrefix{"goto",close(CIdentifier{"a"})}} );
+   assert( std-c-parse-jump-statement(std-c-tokenize-string("return a;", "return a;")).first == Some{CUnaryPrefix{"return",close(CIdentifier{"a"})}} );
+};

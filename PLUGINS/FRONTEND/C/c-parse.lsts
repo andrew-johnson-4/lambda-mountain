@@ -13,6 +13,7 @@ type CTerm = CInteger{value:String}
            | CString{value:String}
            | CIdentifier{value:String}
            | CType1{value:String}
+           | CZOp{op:String}
            | CUnaryPostfix{op:String, arg:CTerm[]}
            | CUnaryPrefix{op:String, arg:CTerm[]}
            | CBinaryOp{op:String, arg1:CTerm[], arg2:CTerm[]}
@@ -28,6 +29,7 @@ let cmp(l: CTerm, r: CTerm): Ord = (
       Tuple{ first:CString{lv=value}, second:CString{rv=value} } => cmp(lv, rv);
       Tuple{ first:CIdentifier{lv=value}, second:CIdentifier{rv=value} } => cmp(lv, rv);
       Tuple{ first:CType1{lv=value}, second:CType1{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CZOp{lv=op}, second:CZOp{rv=op} } => cmp(lv, rv);
       Tuple{ first:CUnaryPrefix{lop=op,larg=arg}, second:CUnaryPrefix{rop=op,rarg=arg} } => cmp(lop, rop) && cmp(larg,rarg);
       Tuple{ first:CUnaryPostfix{lop=op,larg=arg}, second:CUnaryPostfix{rop=op,rarg=arg} } => cmp(lop, rop) && cmp(larg,rarg);
       Tuple{ first:CBinaryOp{lop=op,larg1=arg1,larg2=arg2}, second:CBinaryOp{rop=op,rarg1=arg1,rarg2=arg2} } => cmp(lop, rop) && cmp(larg1,rarg1) && cmp(larg2,rarg2);
@@ -884,7 +886,28 @@ let std-c-parse-postfix-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 #                     | 'for', '(', [expression], ';', [expression], ';', [expression], ')', statement
 #                     | 'for', '(', declaration, [expression], ';', [expression], ')', statement;
 
-#jump-statement = 'goto', identifier, ';'
-#               | 'continue', ';'
-#               | 'break', ';'
-#               | 'return', [expression], ';';
+let std-c-parse-jump-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "goto") {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      let id = head(tokens).skey; tokens = std-c-take-expect(tokens, "identifier");
+      tokens = std-c-take-expect(tokens, ";");
+      Tuple{ Some{CUnaryPrefix{op,close(CIdentifier{id})}}, tokens }
+   } else if std-c-can-take(tokens, "continue") {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      tokens = std-c-take-expect(tokens, ";");
+      Tuple{ Some{CZOp{op}}, tokens }
+   } else if std-c-can-take(tokens, "break") {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      tokens = std-c-take-expect(tokens, ";");
+      Tuple{ Some{CZOp{op}}, tokens }
+   } else if std-c-can-take(tokens, "return") {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      let e = std-c-parse-expression(tokens); tokens = e.second;
+      tokens = std-c-take-expect(tokens, ";");
+      if e.first.is-some
+      then Tuple{ Some{CUnaryPrefix{op,close(e.first.get-or-panic)}}, tokens }
+      else Tuple{ Some{CZOp{op}}, tokens }
+   } else Tuple{ no, tokens };
+);
+
