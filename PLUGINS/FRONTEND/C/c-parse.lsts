@@ -864,18 +864,33 @@ let std-c-parse-postfix-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 #designator = '[', constant-expression, ']'
 #           | '.', identifier;
 
+
+let std-c-parse-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
 #statement = labeled-statement
 #          | compound-statement
 #          | expression-statement
 #          | selection-statement
 #          | iteration-statement
-#          | jump-statement;
+#          | jump-statement
+   
+   let e = std-c-parse-jump-statement(tokens);
+   if e.first.is-none { e = std-c-parse-expression-statement(tokens); };
+   if e.first.is-none && std-c-can-take(tokens,";") {
+      tokens = std-c-take-expect(tokens,";");
+      e = Tuple{ Some{CZOp{";"}}, tokens };
+   };
+   e;
+);
+
+let std-c-parse-expression-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let e = std-c-parse-expression(tokens);
+   if e.first.is-some { e.second = std-c-take-expect(e.second, ";"); };
+   e;
+);
 
 #labeled-statement = identifier, ':', statement
 #                  | 'case', constant-expression, ':', statement
 #                  | 'default', ':', statement;
-
-#expression-statement = [expression], ';';
 
 #selection-statement = 'if', '(', expression, ')', statement, 'else', statement
 #                    | 'if', '(', expression, ')', statement

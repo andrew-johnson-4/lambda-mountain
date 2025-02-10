@@ -832,3 +832,9 @@ if true then {
    assert( std-c-parse-jump-statement(std-c-tokenize-string("goto a;", "goto a;")).first == Some{CUnaryPrefix{"goto",close(CIdentifier{"a"})}} );
    assert( std-c-parse-jump-statement(std-c-tokenize-string("return a;", "return a;")).first == Some{CUnaryPrefix{"return",close(CIdentifier{"a"})}} );
 };
+
+if true then {
+   assert( std-c-parse-statement(std-c-tokenize-string(";", ";")).first == Some{CZOp{";"}} );
+   assert( std-c-parse-statement(std-c-tokenize-string("a;", "a;")).first == Some{CIdentifier{"a"}} );
+   assert( std-c-parse-statement(std-c-tokenize-string("return a;", "return a;")).first == Some{CUnaryPrefix{"return",close(CIdentifier{"a"})}} );
+};
