@@ -14,6 +14,7 @@ type CTerm = CInteger{value:String}
            | CIdentifier{value:String}
            | CType1{value:String}
            | CZOp{op:String}
+           | CCompound{terms:List<CTerm>[]}
            | CUnaryPostfix{op:String, arg:CTerm[]}
            | CUnaryPrefix{op:String, arg:CTerm[]}
            | CBinaryOp{op:String, arg1:CTerm[], arg2:CTerm[]}
@@ -32,6 +33,7 @@ let cmp(l: CTerm, r: CTerm): Ord = (
       Tuple{ first:CIdentifier{lv=value}, second:CIdentifier{rv=value} } => cmp(lv, rv);
       Tuple{ first:CType1{lv=value}, second:CType1{rv=value} } => cmp(lv, rv);
       Tuple{ first:CZOp{lv=op}, second:CZOp{rv=op} } => cmp(lv, rv);
+      Tuple{ first:CCompound{lterms=terms}, second:CCompound{rterms=terms} } => cmp(lterms, rterms);
       Tuple{ first:CUnaryPrefix{lop=op,larg=arg}, second:CUnaryPrefix{rop=op,rarg=arg} } => cmp(lop, rop) && cmp(larg,rarg);
       Tuple{ first:CUnaryPostfix{lop=op,larg=arg}, second:CUnaryPostfix{rop=op,rarg=arg} } => cmp(lop, rop) && cmp(larg,rarg);
       Tuple{ first:CBinaryOp{lop=op,larg1=arg1,larg2=arg2}, second:CBinaryOp{rop=op,rarg1=arg1,rarg2=arg2} } => cmp(lop, rop) && cmp(larg1,rarg1) && cmp(larg2,rarg2);
@@ -228,19 +230,27 @@ let std-c-take-maybe(tokens: List<Token>, cls: String): List<Token> = (
 #   } else (Tuple{ (None :: Maybe<List<CDeclaration>>), tokens })
 #);
 
-#let std-c-parse-compound-statement(tokens: List<Token>): Tuple<Maybe<CDeclarationOrStatement>,List<Token>> = (
-#   if std-c-can-take(c"{") {
-#      tokens = std-c-take-maybe(tokens, c"{");
-#      let declaration-or-statement = std-c-parse-declaration-or-statement(tokens); tokens = declaration-or-statement.second;
-#      tokens = std-c-take-maybe(tokens, c"}");
-#      Tuple{ declaration-or-statement.first, tokens };
-#   } else Tuple{(None :: Maybe<CDeclarationOrStatement>), tokens}
-#);
+let std-c-parse-compound-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "{") {
+      let stmts = [] :: List<CTerm>;
+      tokens = std-c-take-expect(tokens, "{");
+      let declaration-or-statement = std-c-parse-declaration-or-statement(tokens); tokens = declaration-or-statement.second;
+      while declaration-or-statement.first.is-some {
+         stmts = cons( declaration-or-statement.first.get-or-panic, stmts );
+         declaration-or-statement = std-c-parse-declaration-or-statement(tokens); tokens = declaration-or-statement.second;
+      };
+      tokens = std-c-take-expect(tokens, "}");
+      Tuple{ Some{CCompound{close(stmts.reverse)}}, tokens };
+   } else Tuple{ no, tokens}
+);
 
-#let std-c-parse-declaration-or-statement(tokens: List<Token>): Tuple<Maybe<CDeclarationOrStatement>,List<Token>> = (
+let std-c-parse-declaration-or-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+#   TODO: declaration?
 #   let declaration = std-c-parse-declaration(tokens);
 #   if declaration.first.is-some then declaration else std-c-parse-statement(tokens);
-#);
+   std-c-parse-statement(tokens);
+);
 
 #let std-c-parse-init-declarator-list(tokens: List<Token>): Tuple<Maybe<List<CInitDeclarator>>,List<Token>> = (
 #   let init-declarator = std-c-parse-init-declarator(tokens);
@@ -873,14 +883,8 @@ let std-c-parse-postfix-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 
 
 let std-c-parse-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-#statement = labeled-statement
-#          | compound-statement
-#          | expression-statement
-#          | selection-statement
-#          | iteration-statement
-#          | jump-statement
-   
    let e = std-c-parse-jump-statement(tokens);
+   if e.first.is-none { e = std-c-parse-compound-statement(tokens); };
    if e.first.is-none { e = std-c-parse-iteration-statement(tokens); };
    if e.first.is-none { e = std-c-parse-selection-statement(tokens); };
    if e.first.is-none { e = std-c-parse-labeled-statement(tokens); };
