@@ -894,3 +894,7 @@ if true then {
       )}}
    );
 };
+
+if true then {
+   assert( std-c-parse-abstract-declarator(std-c-tokenize-string("()", "()")).first == Some{CZOp{"("}} );
+};

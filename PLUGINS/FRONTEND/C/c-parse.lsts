@@ -558,7 +558,16 @@ let std-c-parse-direct-abstract-declarator(tokens: List<Token>): Tuple<Maybe<CTe
 #                           | direct-abstract-declarator, '(', parameter-type-list, ')'
 #                           | direct-abstract-declarator, '(', ')';
    let no = None :: Maybe<CTerm>;
-   Tuple{ no, tokens }   
+   if std-c-can-take(tokens, "(") then {
+      let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "(");
+      let ad = std-c-parse-abstract-declarator(tokens);
+      # '(', parameter-type-list, ')'
+      if ad.first.is-none {
+         ad.first = Some{CZOp{ op }};
+      };
+      ad.second = std-c-take-expect(tokens, ")");
+      ad
+   } else Tuple{ no, tokens }   
 );
 
 #struct-declarator-list = struct-declarator, {',', struct-declarator};
