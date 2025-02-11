@@ -310,25 +310,6 @@ let std-c-parse-declaration-or-statement(tokens: List<Token>): Tuple<Maybe<CTerm
 #   else Tuple{None :: Maybe<CStorageClassSpecifier>, tokens}
 #);
 
-#let std-c-parse-type-specifier(tokens: List<Token>): Tuple<Maybe<CTypeSpecifier>,List<Token>> = (
-#   if std-c-can-take("void", tokens) then (tokens = std-c-take-expect("void", tokens); Tuple{Some{CType{c"void"}}, tokens} )
-#   else if std-c-can-take("char", tokens) then (tokens = std-c-take-expect("char", tokens); Tuple{Some{CType{c"char"}}, tokens} )
-#   else if std-c-can-take("short", tokens) then (tokens = std-c-take-expect("short", tokens); Tuple{Some{CType{c"short"}}, tokens} )
-#   else if std-c-can-take("int", tokens) then (tokens = std-c-take-expect("int", tokens); Tuple{Some{CType{c"int"}}, tokens} )
-#   else if std-c-can-take("long", tokens) then (tokens = std-c-take-expect("long", tokens); Tuple{Some{CType{c"long"}}, tokens} )
-#   else if std-c-can-take("float", tokens) then (tokens = std-c-take-expect("float", tokens); Tuple{Some{CType{c"float"}}, tokens} )
-#   else if std-c-can-take("double", tokens) then (tokens = std-c-take-expect("double", tokens); Tuple{Some{CType{c"double"}}, tokens} )
-#   else if std-c-can-take("signed", tokens) then (tokens = std-c-take-expect("signed", tokens); Tuple{Some{CType{c"signed"}}, tokens} )
-#   else if std-c-can-take("unsigned", tokens) then (tokens = std-c-take-expect("unsigned", tokens); Tuple{Some{CType{c"unsigned"}}, tokens} )
-#   else if std-c-can-take("_Bool", tokens) then (tokens = std-c-take-expect("_Bool", tokens); Tuple{Some{CType{c"_Bool"}}, tokens} )
-#   else if std-c-can-take("_Complex", tokens) then (tokens = std-c-take-expect("_Complex", tokens); Tuple{Some{CType{c"_Complex"}}, tokens} )
-#   else if std-c-can-take("_Imaginary", tokens) then (tokens = std-c-take-expect("_Imaginary", tokens); Tuple{Some{CType{c"_Imaginary"}}, tokens} )
-#   else if let Tuple{Some{ats=contents}=first,tokens2=second} = std-c-atomic-type-specifier(tokens) then Tuple{Some{ats}, tokens2}
-#   else if let Tuple{Some{sou=contents}=first,tokens3=second} = std-c-struct-or-union-specifier(tokens) then Tuple{Some{sou}, tokens3}
-#   else if let Tuple{Some{enm=contents}=first,tokens4=second} = std-c-enum-specifier(tokens) then Tuple{Some{enm}, tokens4}
-#   else std-c-typedef-name(tokens)
-#);
-
 let std-c-parse-type-qualifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
    if std-c-can-take(tokens, "const") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "const"); Tuple{Some{CType1{t}}, tokens} )
