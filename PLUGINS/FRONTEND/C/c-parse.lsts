@@ -15,6 +15,7 @@ type CTerm = CInteger{value:String}
            | CType1{value:String}
            | CZOp{op:String}
            | CCompound{terms:List<CTerm>[]}
+           | CPointer{qualifiers:Maybe<List<CTerm>>[], next:Maybe<CTerm>[]}
            | CInitializer{designator:List<CTerm>[], initializer:CTerm[]}
            | CInitializerList{terms:List<CTerm>[]}
            | CUnaryPostfix{op:String, arg:CTerm[]}
@@ -36,6 +37,7 @@ let cmp(l: CTerm, r: CTerm): Ord = (
       Tuple{ first:CType1{lv=value}, second:CType1{rv=value} } => cmp(lv, rv);
       Tuple{ first:CZOp{lv=op}, second:CZOp{rv=op} } => cmp(lv, rv);
       Tuple{ first:CCompound{lterms=terms}, second:CCompound{rterms=terms} } => cmp(lterms, rterms);
+      Tuple{ first:CPointer{lq=qualifiers,ln=next}, second:CPointer{rq=qualifiers,rn=next} } => cmp(lq,rq) && cmp(ln,rn);
       Tuple{ first:CInitializer{ld=designator,li=initializer}, second:CInitializer{rd=designator,ri=initializer} } => cmp(ld,rd) && cmp(li,ri);
       Tuple{ first:CInitializerList{lterms=terms}, second:CInitializerList{rterms=terms} } => cmp(lterms, rterms);
       Tuple{ first:CUnaryPrefix{lop=op,larg=arg}, second:CUnaryPrefix{rop=op,rarg=arg} } => cmp(lop, rop) && cmp(larg,rarg);
@@ -55,6 +57,8 @@ let to-smart-string(l: CTerm): String = (
       CFloating{rv=value} => "{Floating \{rv}}";
       CEnumeration{rv=value} => "{Enumeration \{rv}}";
       CString{rv=value} => "{String \{rv}}";
+      CType1{rv=value} => "{Type \{rv}}";
+      CZOp{op=op} => "{ZOp \{op}}";
       CIdentifier{rv=value} => "{Identifier \{rv}}";
       CUnaryPrefix{rop=op,rarg=arg} => "{Prefix \{rop} \{rarg}}";
       CUnaryPostfix{rop=op,rarg=arg} => "{Postfix \{rop} \{rarg}}";
@@ -298,34 +302,16 @@ let std-c-parse-declaration-or-statement(tokens: List<Token>): Tuple<Maybe<CTerm
 #   } else Tuple{ (None :: Maybe<CStaticAssertDeclaration>), tokens }
 #);
 
-#let std-c-parse-storage-class-specifier(tokens: List<Token): Tuple<Maybe<CStorageClassSpecifier>,List<Token>> = (
-#   if std-c-can-take("typedef", tokens) then (tokens = std-c-take-expect("typedef", tokens); Tuple{Some{CStorageClassTypedef}, tokens} )
-#   else if std-c-can-take("extern", tokens) then (tokens = std-c-take-expect("extern", tokens); Tuple{Some{CStorageClassExtern}, tokens} )
-#   else if std-c-can-take("static", tokens) then (tokens = std-c-take-expect("static", tokens); Tuple{Some{CStorageClassStatic}, tokens} )
-#   else if std-c-can-take("_Thread_local", tokens) then (tokens = std-c-take-expect("_Thread_local", tokens); Tuple{Some{CStorageClassThreadLocal}, tokens} )
-#   else if std-c-can-take("auto", tokens) then (tokens = std-c-take-expect("auto", tokens); Tuple{Some{CStorageClassAuto}, tokens} )
-#   else if std-c-can-take("register", tokens) then (tokens = std-c-take-expect("register", tokens); Tuple{Some{CStorageClassRegister}, tokens} )
-#   else Tuple{None :: Maybe<CStorageClassSpecifier>, tokens}
-#);
-
-#let std-c-parse-type-specifier(tokens: List<Token>): Tuple<Maybe<CTypeSpecifier>,List<Token>> = (
-#   if std-c-can-take("void", tokens) then (tokens = std-c-take-expect("void", tokens); Tuple{Some{CType{c"void"}}, tokens} )
-#   else if std-c-can-take("char", tokens) then (tokens = std-c-take-expect("char", tokens); Tuple{Some{CType{c"char"}}, tokens} )
-#   else if std-c-can-take("short", tokens) then (tokens = std-c-take-expect("short", tokens); Tuple{Some{CType{c"short"}}, tokens} )
-#   else if std-c-can-take("int", tokens) then (tokens = std-c-take-expect("int", tokens); Tuple{Some{CType{c"int"}}, tokens} )
-#   else if std-c-can-take("long", tokens) then (tokens = std-c-take-expect("long", tokens); Tuple{Some{CType{c"long"}}, tokens} )
-#   else if std-c-can-take("float", tokens) then (tokens = std-c-take-expect("float", tokens); Tuple{Some{CType{c"float"}}, tokens} )
-#   else if std-c-can-take("double", tokens) then (tokens = std-c-take-expect("double", tokens); Tuple{Some{CType{c"double"}}, tokens} )
-#   else if std-c-can-take("signed", tokens) then (tokens = std-c-take-expect("signed", tokens); Tuple{Some{CType{c"signed"}}, tokens} )
-#   else if std-c-can-take("unsigned", tokens) then (tokens = std-c-take-expect("unsigned", tokens); Tuple{Some{CType{c"unsigned"}}, tokens} )
-#   else if std-c-can-take("_Bool", tokens) then (tokens = std-c-take-expect("_Bool", tokens); Tuple{Some{CType{c"_Bool"}}, tokens} )
-#   else if std-c-can-take("_Complex", tokens) then (tokens = std-c-take-expect("_Complex", tokens); Tuple{Some{CType{c"_Complex"}}, tokens} )
-#   else if std-c-can-take("_Imaginary", tokens) then (tokens = std-c-take-expect("_Imaginary", tokens); Tuple{Some{CType{c"_Imaginary"}}, tokens} )
-#   else if let Tuple{Some{ats=contents}=first,tokens2=second} = std-c-atomic-type-specifier(tokens) then Tuple{Some{ats}, tokens2}
-#   else if let Tuple{Some{sou=contents}=first,tokens3=second} = std-c-struct-or-union-specifier(tokens) then Tuple{Some{sou}, tokens3}
-#   else if let Tuple{Some{enm=contents}=first,tokens4=second} = std-c-enum-specifier(tokens) then Tuple{Some{enm}, tokens4}
-#   else std-c-typedef-name(tokens)
-#);
+let std-c-parse-storage-class-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "typedef") then (tokens = std-c-take-expect(tokens, "typedef"); Tuple{Some{CType1{"typedef"}}, tokens} )
+   else if std-c-can-take(tokens, "extern") then (tokens = std-c-take-expect(tokens, "extern"); Tuple{Some{CType1{"extern"}}, tokens} )
+   else if std-c-can-take(tokens, "static") then (tokens = std-c-take-expect(tokens, "static"); Tuple{Some{CType1{"static"}}, tokens} )
+   else if std-c-can-take(tokens, "_Thread_local") then (tokens = std-c-take-expect(tokens, "_Thread_local"); Tuple{Some{CType1{"_Thread_local"}}, tokens} )
+   else if std-c-can-take(tokens, "auto") then (tokens = std-c-take-expect(tokens, "auto"); Tuple{Some{CType1{"auto"}}, tokens} )
+   else if std-c-can-take(tokens, "register") then (tokens = std-c-take-expect(tokens, "register"); Tuple{Some{CType1{"register"}}, tokens} )
+   else Tuple{no, tokens}
+);
 
 let std-c-parse-type-qualifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
@@ -540,24 +526,24 @@ let std-c-parse-type-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Tok
 );
 
 let std-c-parse-pointer(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   #if std-c-can-take(tokens, "*") then {
-      #tokens = std-c-take-expect(tokens, "*");
-      #let type-qualifier-list = std-c-parse-type-qualifier-list(tokens); tokens = type-qualifier-list.second;
-      #let next-pointer = std-c-parse-pointer(tokens); tokens = next-pointer.second;
-      #Some{ CPointer{ type-qualifier-list.first, next-pointer.first }, tokens }
-   #} else Tuple{None :: Maybe<CPointer>, tokens}   
    let no = None :: Maybe<CTerm>;
-   Tuple{ no, tokens }      
+   if std-c-can-take(tokens, "*") then {
+      tokens = std-c-take-expect(tokens, "*");
+      let type-qualifier-list = std-c-parse-type-qualifier-list(tokens); tokens = type-qualifier-list.second;
+      let next-pointer = std-c-parse-pointer(tokens); tokens = next-pointer.second;
+      Tuple{ Some{CPointer{ close(type-qualifier-list.first), close(next-pointer.first) }}, tokens }
+   } else Tuple{no, tokens}   
 );
 
 let std-c-parse-abstract-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let p = std-c-parse-pointer(tokens);
-   let dac = std-c-parse-direct-abstract-declarator(p.second);
-
-#abstract-declarator = pointer, [direct-abstract-declarator]
-#                    | direct-abstract-declarator;
    let no = None :: Maybe<CTerm>;
-   Tuple{ no, tokens }      
+   let p = std-c-parse-pointer(tokens); tokens = p.second;
+   let dac = std-c-parse-direct-abstract-declarator(tokens); tokens = dac.second;
+   if p.first.is-some && dac.first.is-some
+   then Tuple{ Some{CBinaryOp{"AbstractDeclarator",close(p.first.get-or-panic),close(dac.first.get-or-panic)}}, tokens }
+   else if dac.first.is-some
+   then Tuple{ dac.first, tokens }
+   else Tuple{ no, tokens }
 );
 
 let std-c-parse-direct-abstract-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
@@ -575,12 +561,47 @@ let std-c-parse-direct-abstract-declarator(tokens: List<Token>): Tuple<Maybe<CTe
 #                           | direct-abstract-declarator, '(', parameter-type-list, ')'
 #                           | direct-abstract-declarator, '(', ')';
    let no = None :: Maybe<CTerm>;
-   Tuple{ no, tokens }   
+   if std-c-can-take(tokens, "(") then {
+      let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "(");
+      let ad = std-c-parse-abstract-declarator(tokens);
+      # '(', parameter-type-list, ')'
+      if ad.first.is-none {
+         ad.first = Some{CUnaryPrefix{"AbstractDeclarator",close(CZOp{op})}};
+      };
+      ad.second = std-c-take-expect(tokens, ")");
+      ad
+   } else if std-c-can-take(tokens, "[") then {
+      let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "[");
+      if std-c-can-take(tokens, "*") {
+         let p = head(tokens).skey; tokens = std-c-take-expect(tokens, "*");
+         tokens = std-c-take-expect(tokens, "]");
+         Tuple{ Some{CBinaryOp{"AbstractDeclarator",close(CZOp{op}),close(CType1{p})}}, tokens }
+      } else if std-c-can-take(tokens, "]") {
+         tokens = std-c-take-expect(tokens, "]");
+         Tuple{ Some{CUnaryPrefix{"AbstractDeclarator",close(CZOp{op})}}, tokens }
+      } else if std-c-can-take(tokens, "static") {
+         Tuple{ no, tokens }
+      } else {
+         Tuple{ no, tokens }
+      }
+   } else Tuple{ no, tokens }   
 );
 
 #struct-declarator-list = struct-declarator, {',', struct-declarator};
 
-#type-qualifier-list = type-qualifier, {type-qualifier};
+let std-c-parse-type-qualifier-list(tokens: List<Token>): Tuple<Maybe<List<CTerm>>,List<Token>> = (
+   let no = None :: Maybe<List<CTerm>>;
+   let tq = std-c-parse-type-qualifier(tokens);
+   if tq.first.is-some {
+      tokens = tq.second;
+      let tqs = [tq.first.get-or-panic];
+      while tq.first.is-some {
+         tq = std-c-parse-type-qualifier(tokens); tokens = tq.second;
+         if tq.first.is-some { tqs = cons(tq.first.get-or-panic, tqs); };
+      };
+      Tuple{ Some{tqs.reverse}, tokens }
+   } else Tuple{ no, tokens }
+);
 
 #parameter-type-list = parameter-list, [',', '...'];
 

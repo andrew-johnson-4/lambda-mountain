@@ -880,3 +880,38 @@ if true then {
       ])}}
    );
 };
+
+if true then {
+   assert( std-c-parse-pointer(std-c-tokenize-string("*", "*")).first ==
+      Some{CPointer{ close(None :: Maybe<List<CTerm>>), close(None :: Maybe<CTerm>) }}
+   );
+   assert( std-c-parse-pointer(std-c-tokenize-string("*const", "*const")).first ==
+      Some{CPointer{ close(Some{[ CType1("const") ]}), close(None :: Maybe<CTerm>) }}
+   );
+   assert( std-c-parse-pointer(std-c-tokenize-string("*const*", "*const*")).first ==
+      Some{CPointer{ close(Some{[ CType1("const") ]}), close(
+         Some{CPointer{ close(None :: Maybe<List<CTerm>>), close(None :: Maybe<CTerm>) }}
+      )}}
+   );
+};
+
+if true then {
+   assert( std-c-parse-abstract-declarator(std-c-tokenize-string("()", "()")).first == Some{CUnaryPrefix{
+      "AbstractDeclarator",
+      close(CZOp{"("})
+   }} );
+   assert( std-c-parse-abstract-declarator(std-c-tokenize-string("*()", "*()")).first == Some{CBinaryOp{
+      "AbstractDeclarator",
+      close(CPointer{ close(None :: Maybe<List<CTerm>>), close(None :: Maybe<CTerm>) }),
+      close(CUnaryPrefix{"AbstractDeclarator", close(CZOp{"("}) })
+   }} );
+   assert( std-c-parse-abstract-declarator(std-c-tokenize-string("[]", "[]")).first == Some{CUnaryPrefix{
+      "AbstractDeclarator",
+      close(CZOp{"["})
+   }} );
+   assert( std-c-parse-abstract-declarator(std-c-tokenize-string("[*]", "[*]")).first == Some{CBinaryOp{
+      "AbstractDeclarator",
+      close(CZOp{"["}),
+      close(CType1{"*"})
+   }} );
+};
