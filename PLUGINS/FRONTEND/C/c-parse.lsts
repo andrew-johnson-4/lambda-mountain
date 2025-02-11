@@ -15,6 +15,8 @@ type CTerm = CInteger{value:String}
            | CType1{value:String}
            | CZOp{op:String}
            | CCompound{terms:List<CTerm>[]}
+           | CInitializer{designator:CTerm[], initializer:CTerm[]}
+           | CInitializerList{terms:List<CTerm>[]}
            | CUnaryPostfix{op:String, arg:CTerm[]}
            | CUnaryPrefix{op:String, arg:CTerm[]}
            | CBinaryOp{op:String, arg1:CTerm[], arg2:CTerm[]}
@@ -34,6 +36,8 @@ let cmp(l: CTerm, r: CTerm): Ord = (
       Tuple{ first:CType1{lv=value}, second:CType1{rv=value} } => cmp(lv, rv);
       Tuple{ first:CZOp{lv=op}, second:CZOp{rv=op} } => cmp(lv, rv);
       Tuple{ first:CCompound{lterms=terms}, second:CCompound{rterms=terms} } => cmp(lterms, rterms);
+      Tuple{ first:CInitializer{ld=designator,li=initializer}, second:CInitializer{rd=designator,ri=initializer} } => cmp(ld,rd) && cmp(li,ri);
+      Tuple{ first:CInitializerList{lterms=terms}, second:CInitializerList{rterms=terms} } => cmp(lterms, rterms);
       Tuple{ first:CUnaryPrefix{lop=op,larg=arg}, second:CUnaryPrefix{rop=op,rarg=arg} } => cmp(lop, rop) && cmp(larg,rarg);
       Tuple{ first:CUnaryPostfix{lop=op,larg=arg}, second:CUnaryPostfix{rop=op,rarg=arg} } => cmp(lop, rop) && cmp(larg,rarg);
       Tuple{ first:CBinaryOp{lop=op,larg1=arg1,larg2=arg2}, second:CBinaryOp{rop=op,rarg1=arg1,rarg2=arg2} } => cmp(lop, rop) && cmp(larg1,rarg1) && cmp(larg2,rarg2);
@@ -423,12 +427,44 @@ let std-c-parse-identifier-list(tokens: List<Token>): Tuple<Maybe<List<String>>,
    } else Tuple{no, tokens};
 );
 
-#initializer-list = designative-initializer, {',', designative-initializer};
+let std-c-parse-designative-initializer(tokens: List<Token>): Tuple<Maybe<List<String>>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   let designation = std-c-parse-designation(tokens); tokens = designation.second;
+   let initializer = std-c-parse-initializer(tokens); tokens = initializer.second;
+   if designation.first.is-some && initializer.first.is-some
+   then Tuple{ CInitializer{close(designation),close(initializer)} }
+   else Tuple{ no, tokens };
+);
 
-#designative-initializer = [designation], initializer;
+let std-c-parse-initializer-list(tokens: List<Token>): Tuple<Maybe<List<CTerm>>,List<Token>> = (
+   let no = None :: Maybe<List<CTerm>>;
+   let di = std-c-parse-designative-initializer(tokens); tokens = di.second;
+   if di.first.is-some {
+      let dis = [di.first.get-or-panic];
+      while std-c-can-take(tokens, ",") {
+         tokens = std-c-take-expect(tokens, ",");
+         di = std-c-parse-designative-initializer(tokens); tokens = di.second;
+         if di.first-is-some { dis = cons(di.first.get-or-panic, dis); };
+      };
+      Tuple{ Some{dis}, tokens }
+   } else Tuple{ no, tokens }
+);
 
-#initializer = '{', initializer-list, [','], '}'
-#            | assignment-expression;
+let std-c-parse-initializer(tokens: List<Token>): Tuple<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "{") {
+      tokens = std-c-take-expect(tokens, "{");
+      let initializer-list = std-c-parse-initializer-list(tokens);
+      if std-c-can-take(tokens, ",") {
+         initializer-list.second = std-c-take-expect(tokens, ",");
+      };
+      initializer-list.second = std-c-take-expect(tokens, "}");
+      if initializer-list.first.is-some
+      then Tuple{ Some{CInitializerList{close(initializer-list.first.get-or-panic)}}, tokens };
+      else Tuple{ no, tokens };
+   } else std-c-parse-assignment-expression(tokens);
+);
+
 
 #atomic-type-specifier = '_Atomic', '(', type-name, ')';
 
@@ -881,6 +917,42 @@ let std-c-parse-postfix-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 #designator = '[', constant-expression, ']'
 #           | '.', identifier;
 
+let std-c-parse-designator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "[") {
+      let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "[");
+      let ce = std-c-parse-constant-expression(tokens); tokens = ce.second;
+      tokens = std-c-take-expect(tokens, "]");
+      if ce.first.is-some
+      then Tuple{ Some{CUnaryPrefix{op,close(ce.first.get-or-panic)}} }
+      else Tuple{ no, tokens }
+   } else if std-c-can-take(tokens,".") {
+      let op = head(tokens).skey; tokens = std-c-take-expect(tokens, ".");
+      let id = head(tokens).skey; tokens = std-c-take-expect(tokens, "identifier");
+      Tuple{ Some{CUnaryPrefix{op,close(CIdentifier{id})}} }
+   } else Tuple{ no, tokens }
+);
+
+let std-c-parse-designator-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<List<CTerm>>;
+   let des = std-c-parse-designator(tokens); tokens = des.second;
+   if des.first.is-some {
+      let dess = [des.first.get-or-panic];
+      while des.first.is-some {
+         des = std-c-parse-designator(tokens); tokens = des.second;
+         if des.first.is-some { dess = cons(des.first.get-or-panic, dess); };
+      };
+      Tuple{ dess.reverse, tokens }
+   } else Tuple{ no, tokens };
+);
+
+let std-c-parse-designation(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   let dl = std-c-parse-designation-list(tokens); tokens = dl.second;
+   tokens = std-c-take-expect("=");
+   if dl.first.is-some then Tuple{ Some{dl.first.get-or-panic}, tokens }
+   else Tuple{ no, tokens }
+);
 
 let std-c-parse-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let e = std-c-parse-jump-statement(tokens);
