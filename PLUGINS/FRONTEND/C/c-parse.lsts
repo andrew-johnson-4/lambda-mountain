@@ -539,7 +539,8 @@ let std-c-parse-abstract-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
    let dac = std-c-parse-direct-abstract-declarator(tokens); tokens = dac.second;
    if p.first.is-some && dac.first.is-some
    then Tuple{ Some{CBinaryOp{"AbstractDeclarator",close(p.first.get-or-panic),close(dac.first.get-or-panic)}}, tokens }
-   else if dac.first.is-some then dac
+   else if dac.first.is-some
+   then Tuple{ Some{CUnaryPrefix{"AbstractDeclarator",close(dac.first.get-or-panic)}}, tokens }
    else Tuple{ no, tokens }
 );
 
