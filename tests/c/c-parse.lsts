@@ -871,4 +871,12 @@ if true then {
          CInitializer{ close([] :: List<CTerm>), close(CIdentifier{"b"}) }
       ])}}
    );
+   assert( std-c-parse-initializer(std-c-tokenize-string("{.a[b]=c}", "{.a[b]=c}")).first ==
+      Some{CInitializerList{close([
+         CInitializer{ close([
+            CUnaryPrefix{".",close(CIdentifier{"a"})},
+            CUnaryPrefix{"[",close(CIdentifier{"b"})}
+         ]), close(CIdentifier{"c"}) },
+      ])}}
+   );
 };
