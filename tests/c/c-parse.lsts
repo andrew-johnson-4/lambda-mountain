@@ -863,3 +863,20 @@ if true then {
    assert( std-c-parse-statement(std-c-tokenize-string("{a;}", "{a;}")).first == Some{CCompound{close([CIdentifier{"a"}])}} );
    assert( std-c-parse-statement(std-c-tokenize-string("{a; b;}", "{a; b;}")).first == Some{CCompound{close([CIdentifier{"a"},CIdentifier{"b"}])}} );
 };
+
+if true then {
+   assert( std-c-parse-initializer(std-c-tokenize-string("{a,b}", "{a,b}")).first ==
+      Some{CInitializerList{close([
+         CInitializer{ close([] :: List<CTerm>), close(CIdentifier{"a"}) },
+         CInitializer{ close([] :: List<CTerm>), close(CIdentifier{"b"}) }
+      ])}}
+   );
+   assert( std-c-parse-initializer(std-c-tokenize-string("{.a[b]=c}", "{.a[b]=c}")).first ==
+      Some{CInitializerList{close([
+         CInitializer{ close([
+            CUnaryPrefix{".",close(CIdentifier{"a"})},
+            CUnaryPrefix{"[",close(CIdentifier{"b"})}
+         ]), close(CIdentifier{"c"}) },
+      ])}}
+   );
+};
