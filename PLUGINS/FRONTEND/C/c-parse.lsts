@@ -57,6 +57,8 @@ let to-smart-string(l: CTerm): String = (
       CFloating{rv=value} => "{Floating \{rv}}";
       CEnumeration{rv=value} => "{Enumeration \{rv}}";
       CString{rv=value} => "{String \{rv}}";
+      CType1{rv=value} => "{Type \{rv}}";
+      CZOp{op=op} => "{ZOp \{op}}";
       CIdentifier{rv=value} => "{Identifier \{rv}}";
       CUnaryPrefix{rop=op,rarg=arg} => "{Prefix \{rop} \{rarg}}";
       CUnaryPostfix{rop=op,rarg=arg} => "{Postfix \{rop} \{rarg}}";
@@ -540,7 +542,7 @@ let std-c-parse-abstract-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
    if p.first.is-some && dac.first.is-some
    then Tuple{ Some{CBinaryOp{"AbstractDeclarator",close(p.first.get-or-panic),close(dac.first.get-or-panic)}}, tokens }
    else if dac.first.is-some
-   then Tuple{ Some{CUnaryPrefix{"AbstractDeclarator",close(dac.first.get-or-panic)}}, tokens }
+   then Tuple{ dac.first, tokens }
    else Tuple{ no, tokens }
 );
 
@@ -564,10 +566,24 @@ let std-c-parse-direct-abstract-declarator(tokens: List<Token>): Tuple<Maybe<CTe
       let ad = std-c-parse-abstract-declarator(tokens);
       # '(', parameter-type-list, ')'
       if ad.first.is-none {
-         ad.first = Some{CZOp{ op }};
+         ad.first = Some{CUnaryPrefix{"AbstractDeclarator",close(CZOp{op})}};
       };
       ad.second = std-c-take-expect(tokens, ")");
       ad
+   } else if std-c-can-take(tokens, "[") then {
+      let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "[");
+      if std-c-can-take(tokens, "*") {
+         let p = head(tokens).skey; tokens = std-c-take-expect(tokens, "*");
+         tokens = std-c-take-expect(tokens, "]");
+         Tuple{ Some{CBinaryOp{"AbstractDeclarator",close(CZOp{op}),close(CType1{p})}}, tokens }
+      } else if std-c-can-take(tokens, "]") {
+         tokens = std-c-take-expect(tokens, "]");
+         Tuple{ Some{CUnaryPrefix{"AbstractDeclarator",close(CZOp{op})}}, tokens }
+      } else if std-c-can-take(tokens, "static") {
+         Tuple{ no, tokens }
+      } else {
+         Tuple{ no, tokens }
+      }
    } else Tuple{ no, tokens }   
 );
 

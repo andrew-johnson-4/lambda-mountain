@@ -903,6 +903,15 @@ if true then {
    assert( std-c-parse-abstract-declarator(std-c-tokenize-string("*()", "*()")).first == Some{CBinaryOp{
       "AbstractDeclarator",
       close(CPointer{ close(None :: Maybe<List<CTerm>>), close(None :: Maybe<CTerm>) }),
-      close(CZOp{"("})
+      close(CUnaryPrefix{"AbstractDeclarator", close(CZOp{"("}) })
+   }} );
+   assert( std-c-parse-abstract-declarator(std-c-tokenize-string("[]", "[]")).first == Some{CUnaryPrefix{
+      "AbstractDeclarator",
+      close(CZOp{"["})
+   }} );
+   assert( std-c-parse-abstract-declarator(std-c-tokenize-string("[*]", "[*]")).first == Some{CBinaryOp{
+      "AbstractDeclarator",
+      close(CZOp{"["}),
+      close(CType1{"*"})
    }} );
 };
