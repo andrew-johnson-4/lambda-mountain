@@ -534,13 +534,13 @@ let std-c-parse-pointer(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = 
 );
 
 let std-c-parse-abstract-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let p = std-c-parse-pointer(tokens);
-   let dac = std-c-parse-direct-abstract-declarator(p.second);
-
-#abstract-declarator = pointer, [direct-abstract-declarator]
-#                    | direct-abstract-declarator;
    let no = None :: Maybe<CTerm>;
-   Tuple{ no, tokens }      
+   let p = std-c-parse-pointer(tokens); tokens = p.second;
+   let dac = std-c-parse-direct-abstract-declarator(tokens); tokens = dac.second;
+   if p.first.is-some && dac.first.is-some
+   then Tuple{ Some{CBinaryOp{"AbstractDeclarator",close(p.first.get-or-panic),close(dac.first.get-or-panic)}}, tokens }
+   else if dac.first.is-some then dac
+   else Tuple{ no, tokens }
 );
 
 let std-c-parse-direct-abstract-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
