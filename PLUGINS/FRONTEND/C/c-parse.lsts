@@ -15,6 +15,7 @@ type CTerm = CInteger{value:String}
            | CType1{value:String}
            | CZOp{op:String}
            | CCompound{terms:List<CTerm>[]}
+           | CPointer{qualifiers:Maybe<List<CTerm>>[], next:Maybe<CTerm>[]}
            | CInitializer{designator:List<CTerm>[], initializer:CTerm[]}
            | CInitializerList{terms:List<CTerm>[]}
            | CUnaryPostfix{op:String, arg:CTerm[]}
@@ -36,6 +37,7 @@ let cmp(l: CTerm, r: CTerm): Ord = (
       Tuple{ first:CType1{lv=value}, second:CType1{rv=value} } => cmp(lv, rv);
       Tuple{ first:CZOp{lv=op}, second:CZOp{rv=op} } => cmp(lv, rv);
       Tuple{ first:CCompound{lterms=terms}, second:CCompound{rterms=terms} } => cmp(lterms, rterms);
+      Tuple{ first:CPointer{lq=qualifiers,ln=next}, second:CPointer{rq=qualifiers,rn=next} } => cmp(lq,rq) && cmp(ln,rn);
       Tuple{ first:CInitializer{ld=designator,li=initializer}, second:CInitializer{rd=designator,ri=initializer} } => cmp(ld,rd) && cmp(li,ri);
       Tuple{ first:CInitializerList{lterms=terms}, second:CInitializerList{rterms=terms} } => cmp(lterms, rterms);
       Tuple{ first:CUnaryPrefix{lop=op,larg=arg}, second:CUnaryPrefix{rop=op,rarg=arg} } => cmp(lop, rop) && cmp(larg,rarg);
@@ -540,14 +542,13 @@ let std-c-parse-type-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Tok
 );
 
 let std-c-parse-pointer(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   #if std-c-can-take(tokens, "*") then {
-      #tokens = std-c-take-expect(tokens, "*");
-      #let type-qualifier-list = std-c-parse-type-qualifier-list(tokens); tokens = type-qualifier-list.second;
-      #let next-pointer = std-c-parse-pointer(tokens); tokens = next-pointer.second;
-      #Some{ CPointer{ type-qualifier-list.first, next-pointer.first }, tokens }
-   #} else Tuple{None :: Maybe<CPointer>, tokens}   
    let no = None :: Maybe<CTerm>;
-   Tuple{ no, tokens }      
+   if std-c-can-take(tokens, "*") then {
+      tokens = std-c-take-expect(tokens, "*");
+      let type-qualifier-list = std-c-parse-type-qualifier-list(tokens); tokens = type-qualifier-list.second;
+      let next-pointer = std-c-parse-pointer(tokens); tokens = next-pointer.second;
+      Tuple{ Some{CPointer{ close(type-qualifier-list.first), close(next-pointer.first) }}, tokens }
+   } else Tuple{no, tokens}   
 );
 
 let std-c-parse-abstract-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
@@ -580,7 +581,19 @@ let std-c-parse-direct-abstract-declarator(tokens: List<Token>): Tuple<Maybe<CTe
 
 #struct-declarator-list = struct-declarator, {',', struct-declarator};
 
-#type-qualifier-list = type-qualifier, {type-qualifier};
+let std-c-parse-type-qualifier-list(tokens: List<Token>): Tuple<Maybe<List<CTerm>>,List<Token>> = (
+   let no = None :: Maybe<List<CTerm>>;
+   let tq = std-c-parse-type-qualifier(tokens);
+   if tq.first.is-some {
+      tokens = tq.second;
+      let tqs = [tq.first.get-or-panic];
+      while tq.first.is-some {
+         tq = std-c-parse-type-qualifier(tokens); tokens = tq.second;
+         if tq.first.is-some { tqs = cons(tq.first.get-or-panic, tqs); };
+      };
+      Tuple{ Some{tqs.reverse}, tokens }
+   } else Tuple{ no, tokens }
+);
 
 #parameter-type-list = parameter-list, [',', '...'];
 
