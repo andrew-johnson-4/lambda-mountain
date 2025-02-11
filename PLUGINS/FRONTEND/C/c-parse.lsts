@@ -300,15 +300,16 @@ let std-c-parse-declaration-or-statement(tokens: List<Token>): Tuple<Maybe<CTerm
 #   } else Tuple{ (None :: Maybe<CStaticAssertDeclaration>), tokens }
 #);
 
-#let std-c-parse-storage-class-specifier(tokens: List<Token): Tuple<Maybe<CStorageClassSpecifier>,List<Token>> = (
-#   if std-c-can-take("typedef", tokens) then (tokens = std-c-take-expect("typedef", tokens); Tuple{Some{CStorageClassTypedef}, tokens} )
-#   else if std-c-can-take("extern", tokens) then (tokens = std-c-take-expect("extern", tokens); Tuple{Some{CStorageClassExtern}, tokens} )
-#   else if std-c-can-take("static", tokens) then (tokens = std-c-take-expect("static", tokens); Tuple{Some{CStorageClassStatic}, tokens} )
-#   else if std-c-can-take("_Thread_local", tokens) then (tokens = std-c-take-expect("_Thread_local", tokens); Tuple{Some{CStorageClassThreadLocal}, tokens} )
-#   else if std-c-can-take("auto", tokens) then (tokens = std-c-take-expect("auto", tokens); Tuple{Some{CStorageClassAuto}, tokens} )
-#   else if std-c-can-take("register", tokens) then (tokens = std-c-take-expect("register", tokens); Tuple{Some{CStorageClassRegister}, tokens} )
-#   else Tuple{None :: Maybe<CStorageClassSpecifier>, tokens}
-#);
+let std-c-parse-storage-class-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "typedef") then (tokens = std-c-take-expect(tokens, "typedef"); Tuple{Some{CType1{"typedef"}}, tokens} )
+   else if std-c-can-take(tokens, "extern") then (tokens = std-c-take-expect(tokens, "extern"); Tuple{Some{CType1{"extern"}}, tokens} )
+   else if std-c-can-take(tokens, "static") then (tokens = std-c-take-expect(tokens, "static"); Tuple{Some{CType1{"static"}}, tokens} )
+   else if std-c-can-take(tokens, "_Thread_local") then (tokens = std-c-take-expect(tokens, "_Thread_local"); Tuple{Some{CType1{"_Thread_local"}}, tokens} )
+   else if std-c-can-take(tokens, "auto") then (tokens = std-c-take-expect(tokens, "auto"); Tuple{Some{CType1{"auto"}}, tokens} )
+   else if std-c-can-take(tokens, "register") then (tokens = std-c-take-expect(tokens, "register"); Tuple{Some{CType1{"register"}}, tokens} )
+   else Tuple{no, tokens}
+);
 
 let std-c-parse-type-qualifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
