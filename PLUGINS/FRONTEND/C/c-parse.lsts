@@ -963,8 +963,7 @@ let std-c-parse-generic-assoc-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List
       let gas = [ga.first.get-or-panic];
       while std-c-can-take(tokens, ",") {
          tokens = std-c-take-expect(tokens, ",");
-         ga = std-c-parse-generic-association(tokens);
-         tokens = ga.second;
+         ga = std-c-parse-generic-association(tokens); tokens = ga.second;
          if ga.first.is-some then { gas = cons( ga.first.get-or-panic, gas ); };
       };
       Tuple{ Some{CList{close(gas.reverse)}}, tokens }
@@ -976,14 +975,14 @@ let std-c-parse-generic-association(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
    if std-c-can-take(tokens, "default") {
       tokens = std-c-take-expect(tokens, "default");
       tokens = std-c-take-expect(tokens, ":");
-      let ae = std-c-parse-assignment-expression(tokens);
+      let ae = std-c-parse-assignment-expression(tokens); tokens = ae.second;
       if ae.first.is-some
       then Tuple{ Some{CUnaryPrefix{"GenericAssociation", close(ae.first.get-or-panic)}}, tokens }
       else Tuple{ no, tokens }
    } else {
       let tn = std-c-parse-type-name(tokens); tokens = tn.second;
       tokens = std-c-take-expect(tokens, ":");
-      let ae = std-c-parse-assignment-expression(tokens);
+      let ae = std-c-parse-assignment-expression(tokens); tokens = ae.second;
       if tn.first.is-some && ae.first.is-some
       then Tuple{ Some{CBinaryOp{"GenericAssociation", close(tn.first.get-or-panic), close(ae.first.get-or-panic)}}, tokens }
       else Tuple{ no, tokens }
