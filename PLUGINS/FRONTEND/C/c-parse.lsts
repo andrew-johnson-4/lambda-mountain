@@ -686,7 +686,8 @@ let std-c-parse-string(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
 );
 
 let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let ts = std-c-parse-constant(tokens);
+   let ts = std-c-parse-generic-selection(tokens);
+   if ts.first.is-none then (ts = std-c-parse-constant(tokens));
    if ts.first.is-none then (ts = std-c-parse-identifier(tokens));
    if ts.first.is-none then (ts = std-c-parse-string(tokens));
    if ts.first.is-none && std-c-can-take(tokens, "(") {
@@ -694,7 +695,6 @@ let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
       ts = std-c-parse-expression(tokens2);
       ts.second = std-c-take-expect(ts.second, ")");
    };
-   # TODO generic-selection
    ts
 );
 
@@ -940,11 +940,36 @@ let std-c-parse-postfix-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 
 #argument-expression-list = assignment-expression, {',', assignment-expression};
 
+let std-c-parse-generic-selection(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "_Generic") {
+      let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "_Generic");
+      tokens = std-c-take-expect(tokens, "(");
+      let ae = std-c-parse-assignment-expression(tokens); tokens = ae.second;
+      tokens = std-c-take-expect(tokens, ",");
+      let ga = std-c-parse-generic-assoc-list(tokens); tokens = ga.second;
+      tokens = std-c-take-expect(tokens, ")");
+      if ae.first.is-some && ga.first.is-some
+      then Tuple{ Some{CBinaryOp{op, close(ae.first.get-or-panic), close(ga.first.get-or-panic)}}, tokens }
+      else Tuple{ no, tokens }
+   } else Tuple{ no, tokens }
+);
 
-
-#generic-selection = '_Generic', '(', assignment-expression, ',', generic-assoc-list, ')';
-
-#generic-assoc-list = generic-association, {',', generic-association};
+let std-c-parse-generic-assoc-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   let ga = std-c-parse-generic-association(tokens);
+   if ga.first.is-some then {
+      tokens = ga.second;
+      let gas = [ga.first.get-or-panic];
+      while std-c-can-take(tokens, ",") {
+         tokens = std-c-take-expect(tokens, ",");
+         ga = std-c-parse-generic-association(tokens);
+         tokens = ga.second;
+         if ga.first.is-some then { gas = cons( ga.first.get-or-panic, gas ); };
+      };
+      Tuple{ Some{CList{close(gas.reverse)}}, tokens }
+   } else Tuple{ no, tokens }
+);
 
 let std-c-parse-generic-association(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
