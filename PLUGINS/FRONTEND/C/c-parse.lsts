@@ -13,6 +13,8 @@ type CTerm = CInteger{value:String}
            | CString{value:String}
            | CIdentifier{value:String}
            | CType1{value:String}
+           | CList{value:List<CTerm>[]}
+           | CMaybe{value:Maybe<CTerm>[]}
            | CZOp{op:String}
            | CCompound{terms:List<CTerm>[]}
            | CPointer{qualifiers:Maybe<List<CTerm>>[], next:Maybe<CTerm>[]}
@@ -35,6 +37,8 @@ let cmp(l: CTerm, r: CTerm): Ord = (
       Tuple{ first:CString{lv=value}, second:CString{rv=value} } => cmp(lv, rv);
       Tuple{ first:CIdentifier{lv=value}, second:CIdentifier{rv=value} } => cmp(lv, rv);
       Tuple{ first:CType1{lv=value}, second:CType1{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CList{lv=value}, second:CList{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CMaybe{lv=value}, second:CMaybe{rv=value} } => cmp(lv, rv);
       Tuple{ first:CZOp{lv=op}, second:CZOp{rv=op} } => cmp(lv, rv);
       Tuple{ first:CCompound{lterms=terms}, second:CCompound{rterms=terms} } => cmp(lterms, rterms);
       Tuple{ first:CPointer{lq=qualifiers,ln=next}, second:CPointer{rq=qualifiers,rn=next} } => cmp(lq,rq) && cmp(ln,rn);
@@ -56,6 +60,8 @@ let to-smart-string(l: CTerm): String = (
       CCharacter{rv=value} => "{Character \{rv}}";
       CFloating{rv=value} => "{Floating \{rv}}";
       CEnumeration{rv=value} => "{Enumeration \{rv}}";
+      CMaybe{rv=value} => "{Maybe \{rv}}";
+      CList{rv=value} => "{List \{rv}}";
       CString{rv=value} => "{String \{rv}}";
       CType1{rv=value} => "{Type \{rv}}";
       CZOp{op=op} => "{ZOp \{op}}";
@@ -474,6 +480,16 @@ let std-c-parse-initializer(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>
 #enumerator = enumeration-constant, ['=', constant-expression];
 
 #type-name = specifier-qualifier-list, [abstract-declarator];
+
+let std-c-parse-type-name(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   let sql = std-c-parse-specifier-qualifier-list(tokens);
+   if sql.first.is-some then {
+      tokens = sql.second;
+      let ad = std-c-parse-abstract-declarator(tokens); tokens = ad.second;
+      Tuple{ Some{CBinaryOp{ "TypeName", close(CList{close(sql.first.get-or-panic)}), close(CMaybe{close(ad.first)}) }}, tokens }
+   } else Tuple{ no, tokens }
+);
 
 let std-c-parse-specifier-qualifier-list(tokens: List<Token>): Tuple<Maybe<List<CTerm>>,List<Token>> = (
    let no = None :: Maybe<List<CTerm>>;

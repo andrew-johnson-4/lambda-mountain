@@ -915,3 +915,11 @@ if true then {
       close(CType1{"*"})
    }} );
 };
+
+if true then {
+   assert( std-c-parse-type-name(std-c-tokenize-string("short int", "short int")).first == Some{CBinaryOp{
+      "TypeName",
+      close(CList{close([ CType1{"short"}, CType1{"int"} ])}),
+      close(CMaybe{close( None :: Maybe<CTerm> )})
+   }} );
+};
