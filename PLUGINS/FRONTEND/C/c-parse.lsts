@@ -479,8 +479,6 @@ let std-c-parse-initializer(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>
 #(* NOTE: Please define enumeration-constant for identifier inside enum { ... }. *)
 #enumerator = enumeration-constant, ['=', constant-expression];
 
-#type-name = specifier-qualifier-list, [abstract-declarator];
-
 let std-c-parse-type-name(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
    let sql = std-c-parse-specifier-qualifier-list(tokens);
