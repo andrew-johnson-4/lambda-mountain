@@ -946,8 +946,24 @@ let std-c-parse-postfix-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 
 #generic-assoc-list = generic-association, {',', generic-association};
 
-#generic-association = type-name, ':', assignment-expression
-#                    | 'default', ':', assignment-expression;
+let std-c-parse-generic-association(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "default") {
+      tokens = std-c-take-expect(tokens, "default");
+      tokens = std-c-take-expect(tokens, ":");
+      let ae = std-c-parse-assignment-expression(tokens);
+      if ae.first.is-some
+      then Tuple{ Some{CUnaryPrefix{"GenericAssociation", close(ae.first.get-or-panic)}}, tokens }
+      else Tuple{ no, tokens }
+   } else {
+      let tn = std-c-parse-type-name(tokens); tokens = tn.second;
+      tokens = std-c-take-expect(tokens, ":");
+      let ae = std-c-parse-assignment-expression(tokens);
+      if tn.first.is-some && ae.first.is-some
+      then Tuple{ Some{CBinaryOp{"GenericAssociation", close(tn.first.get-or-panic), close(ae.first.get-or-panic)}}, tokens }
+      else Tuple{ no, tokens }
+   }
+);
 
 let std-c-parse-designator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;

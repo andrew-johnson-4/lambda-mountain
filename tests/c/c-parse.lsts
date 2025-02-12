@@ -923,3 +923,19 @@ if true then {
       close(CMaybe{close( None :: Maybe<CTerm> )})
    }} );
 };
+
+if true then {
+   assert( std-c-parse-generic-association(std-c-tokenize-string("default: a", "default: a")).first == Some{CUnaryPrefix{
+      "GenericAssociation",
+      close(CIdentifier{"a"})
+   }} );
+   assert( std-c-parse-generic-association(std-c-tokenize-string("short int: a", "short int: a")).first == Some{CBinaryOp{
+      "GenericAssociation",
+      close(CBinaryOp{
+         "TypeName",
+         close(CList{close([ CType1{"short"}, CType1{"int"} ])}),
+         close(CMaybe{close( None :: Maybe<CTerm> )})
+      }),
+      close(CIdentifier{"a"})
+   }} );
+};
