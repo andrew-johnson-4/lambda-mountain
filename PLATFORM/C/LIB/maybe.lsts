@@ -34,3 +34,10 @@ let cmp(l: Maybe<x>, r: Maybe<x>): Ord = (
    else if l.is-some then cmp(l.get-or-panic, r.get-or-panic)
    else Equal
 );
+
+let to-smart-string(l: Maybe<x>): String = (
+   match l {
+      Some{content=content} => "Some{\{content}}";
+      None{} => "None";
+   }
+);

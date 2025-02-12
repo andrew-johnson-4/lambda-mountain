@@ -915,3 +915,75 @@ if true then {
       close(CType1{"*"})
    }} );
 };
+
+if true then {
+   assert( std-c-parse-type-name(std-c-tokenize-string("short int", "short int")).first == Some{CBinaryOp{
+      "TypeName",
+      close(CList{close([ CType1{"short"}, CType1{"int"} ])}),
+      close(CMaybe{close( None :: Maybe<CTerm> )})
+   }} );
+};
+
+if true then {
+   assert( std-c-parse-generic-association(std-c-tokenize-string("default: a", "default: a")).first == Some{CUnaryPrefix{
+      "GenericAssociation",
+      close(CIdentifier{"a"})
+   }} );
+   assert( std-c-parse-generic-association(std-c-tokenize-string("short int: a", "short int: a")).first == Some{CBinaryOp{
+      "GenericAssociation",
+      close(CBinaryOp{
+         "TypeName",
+         close(CList{close([ CType1{"short"}, CType1{"int"} ])}),
+         close(CMaybe{close( None :: Maybe<CTerm> )})
+      }),
+      close(CIdentifier{"a"})
+   }} );
+};
+
+if true then {
+   assert( std-c-parse-generic-association(std-c-tokenize-string("default: a", "default: a")).first == Some{CUnaryPrefix{
+      "GenericAssociation",
+      close(CIdentifier{"a"})
+   }} );
+   assert( std-c-parse-generic-association(std-c-tokenize-string("short int: a", "short int: a")).first == Some{CBinaryOp{
+      "GenericAssociation",
+      close(CBinaryOp{
+         "TypeName",
+         close(CList{close([ CType1{"short"}, CType1{"int"} ])}),
+         close(CMaybe{close( None :: Maybe<CTerm> )})
+      }),
+      close(CIdentifier{"a"})
+   }} );
+};
+
+if true then {
+   assert( std-c-parse-expression(std-c-tokenize-string("_Generic(1, default: a)", "_Generic(1, default: a)")).first == Some{CBinaryOp{
+      "_Generic",
+      close(CInteger{"1"}),
+      close(CList{close([
+         CUnaryPrefix{
+            "GenericAssociation",
+            close(CIdentifier{"a"})
+         }
+      ])})
+   }} );
+   assert( std-c-parse-expression(std-c-tokenize-string("_Generic(1, short int: a, default: b)", "_Generic(1, short int: a, default: b)")).first == Some{CBinaryOp{
+      "_Generic",
+      close(CInteger{"1"}),
+      close(CList{close([
+         CBinaryOp{
+            "GenericAssociation",
+            close(CBinaryOp{
+               "TypeName",
+               close(CList{close([ CType1{"short"}, CType1{"int"} ])}),
+               close(CMaybe{close( None :: Maybe<CTerm> )})
+            }),
+            close(CIdentifier{"a"})
+         },
+         CUnaryPrefix{
+            "GenericAssociation",
+            close(CIdentifier{"b"})
+         }
+      ])})
+   }} );
+};
