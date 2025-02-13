@@ -925,6 +925,23 @@ if true then {
 };
 
 if true then {
+   assert( std-c-parse-type-name(std-c-tokenize-string("_Atomic(short int)", "_Atomic(short int)")).first == Some{CBinaryOp{
+      "TypeName",
+      close(CList{close([
+         CUnaryPrefix{
+            "_Atomic",
+            close(CBinaryOp{
+               "TypeName",
+               close(CList{close([ CType1{"short"}, CType1{"int"} ])}),
+               close(CMaybe{close( None :: Maybe<CTerm> )})
+            })
+         }
+      ])}),
+      close(CMaybe{close( None :: Maybe<CTerm> )})
+   }});
+};
+
+if true then {
    assert( std-c-parse-generic-association(std-c-tokenize-string("default: a", "default: a")).first == Some{CUnaryPrefix{
       "GenericAssociation",
       close(CIdentifier{"a"})

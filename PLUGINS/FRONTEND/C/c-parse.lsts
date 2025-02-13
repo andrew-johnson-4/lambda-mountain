@@ -324,7 +324,8 @@ let std-c-parse-type-qualifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Tok
    if std-c-can-take(tokens, "const") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "const"); Tuple{Some{CType1{t}}, tokens} )
    else if std-c-can-take(tokens, "restrict") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "restrict"); Tuple{Some{CType1{t}}, tokens} )
    else if std-c-can-take(tokens, "volatile") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "volatile"); Tuple{Some{CType1{t}}, tokens} )
-   else if std-c-can-take(tokens, "_Atomic") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "_Atomic"); Tuple{Some{CType1{t}}, tokens} )
+   else if std-c-can-take(tokens, "_Atomic") && not(std-c-can-take(tail(tokens), "("))
+   then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "_Atomic"); Tuple{Some{CType1{t}}, tokens} )
    else Tuple{no, tokens}
 );
 
@@ -473,8 +474,18 @@ let std-c-parse-initializer(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>
    } else std-c-parse-assignment-expression(tokens);
 );
 
-
-#atomic-type-specifier = '_Atomic', '(', type-name, ')';
+let std-c-parse-atomic-type-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "_Atomic") && std-c-can-take(tail(tokens), "(") then {
+      let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "_Atomic");
+      tokens = std-c-take-expect(tokens, "(");
+      let tn = std-c-parse-type-name(tokens); tokens = tn.second;
+      tokens = std-c-take-expect(tokens, ")");
+      if tn.first.is-some
+      then Tuple{ Some{CUnaryPrefix{op, close(tn.first.get-or-panic)}}, tokens }
+      else Tuple{ no, tokens }
+   } else Tuple{ no, tokens }
+);
 
 #struct-or-union-specifier = struct-or-union, '{', struct-declaration-list, '}'
 #                          | struct-or-union, identifier, ['{', struct-declaration-list, '}'];
@@ -547,7 +558,7 @@ let std-c-parse-type-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Tok
    else if std-c-can-take(tokens, "_Bool") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "_Bool"); Tuple{Some{CType1{t}}, tokens} )
    else if std-c-can-take(tokens, "_Complex") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "_Complex"); Tuple{Some{CType1{t}}, tokens} )
    else if std-c-can-take(tokens, "_Imaginary") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "_Imaginary"); Tuple{Some{CType1{t}}, tokens} )
-#   else if let Tuple{Some{ats=contents}=first,tokens2=second} = std-c-atomic-type-specifier(tokens) then Tuple{Some{ats}, tokens2}
+   else if let Tuple{first:Some{ats=content},tokens2=second} = std-c-parse-atomic-type-specifier(tokens) then Tuple{Some{ats}, tokens2}
 #   else if let Tuple{Some{sou=contents}=first,tokens3=second} = std-c-struct-or-union-specifier(tokens) then Tuple{Some{sou}, tokens3}
 #   else if let Tuple{Some{enm=contents}=first,tokens4=second} = std-c-enum-specifier(tokens) then Tuple{Some{enm}, tokens4}
    else std-c-parse-typedef-name(tokens)
