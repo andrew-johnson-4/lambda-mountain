@@ -23,12 +23,12 @@ profile: install-bootstrap
 	./report.sh
 
 compile-bootstrap:
-	rm -f bootstrap
-	cc -O3 -o bootstrap BOOTSTRAP/cli.c
+	rm -f bootstrap.exe
+	cc -O3 -o bootstrap.exe BOOTSTRAP/cli.c
 
 compile-production: compile-bootstrap
 	rm -f production
-	./bootstrap --c -o production.c SRC/index-index.lm
+	./bootstrap.exe --c -o production.c SRC/index-index.lm
 	cc -O3 -o production production.c
 	rm -f production.c
 
@@ -42,10 +42,10 @@ endif
 
 install-bootstrap: compile-bootstrap
 ifeq ($(shell test -w /usr/local/bin; echo $$?), 0)
-	mv bootstrap /usr/local/bin/lm
+	mv bootstrap.exe /usr/local/bin/lm
 else
 	mkdir -p $${HOME}/.local/bin
-	mv bootstrap $${HOME}/.local/bin/lm
+	mv bootstrap.exe $${HOME}/.local/bin/lm
 endif
 
 smoke-test-clang:
