@@ -192,21 +192,18 @@ let std-c-take-maybe(tokens: List<Token>, cls: String): List<Token> = (
 #   tokens;
 #);
 
-#let std-c-parse-declaration-specifiers(tokens: List<Token>): Tuple<Maybe<List<CSpecifier>>,List<Token>> = (
-#   let declaration-specifier = std-c-parse-declaration-specifier(tokens); tokens = declaration-specifier.second;
-#   if let Some{spec=content} = declaration-specifier.first {
-#      let specs = [spec];
-#      while declaration-specifier.first.is-some {
-#         declaration-specifier = std-c-parse-declaration-specifier(tokens); tokens = declaration-specifier.second;
-#         if let Some{next-spec=content} = declaration-specifier.first {
-#            specs = cons( next-spec, specs );
-#         };
-#      };
-#      Tuple{ Some{specs}, tokens }
-#   } else Tuple{ (None :: Maybe<List<CSpecifier>>), tokens };
-#);
-
-# declaration-specifiers = declaration-specifier, {declaration-specifier};
+let std-c-parse-declaration-specifiers(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   let spec = std-c-parse-declaration-specifier(tokens); tokens = spec.second;
+   if spec.first.is-some {
+      let specs = [spec.first.get-or-panic];
+      while spec.first.is-some {
+         spec = std-c-parse-declaration-specifier(tokens); tokens = spec.second;
+         if spec.first.is-some { specs = cons( spec.first.get-or-panic, specs ); };
+      };
+      Tuple{ Some{CList{close(specs.reverse)}}, tokens }
+   } else Tuple{ no, tokens }
+);
 
 let std-c-parse-declaration-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let spec = std-c-parse-storage-class-specifier(tokens);
