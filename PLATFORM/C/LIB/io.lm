@@ -2,8 +2,6 @@
 import stdio.h;
 import stdlib.h;
 import string.h;
-import unistd.h;
-import sys/wait.h;
 
 stdin := λ: Blob(). (: (:expression stdin_l) IO::File);
 stdout := λ: Blob(). (: (:expression stdout_l) IO::File);
@@ -24,8 +22,7 @@ fwrite := λ: FFI(: buff ?[])(: size U64)(: count U64)(: f File[]). (: () U64);
 fclose := λ: FFI(: f File[]). (: () U32);
 execvp := λ: FFI(: file U8[])(: argv U8[][]). (: () U32);
 mktemp := λ: FFI(: template U8[]). (: () U8[]);
-wait := λ: FFI(: wstatus U32[]). (: () PID);
-fork := λ: FFI().(: () PID);
+system := λ: FFI(: command U8[]). (: () U32);
 
 fopen := λ: FFI(: fp String)(: mode String). (: () IO::File+Phi<FileState::Open>);
 fclose := λ: FFI(: fio IO::File+Phi<FileState::Open,FileState::Closed>). (: () U32);
