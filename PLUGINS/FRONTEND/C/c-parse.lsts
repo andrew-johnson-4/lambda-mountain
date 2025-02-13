@@ -14,6 +14,7 @@ type CTerm = CInteger{value:String}
            | CIdentifier{value:String}
            | CType1{value:String}
            | CList{value:List<CTerm>[]}
+           | CIList{value:List<String>[]}
            | CMaybe{value:Maybe<CTerm>[]}
            | CZOp{op:String}
            | CCompound{terms:List<CTerm>[]}
@@ -38,6 +39,7 @@ let cmp(l: CTerm, r: CTerm): Ord = (
       Tuple{ first:CIdentifier{lv=value}, second:CIdentifier{rv=value} } => cmp(lv, rv);
       Tuple{ first:CType1{lv=value}, second:CType1{rv=value} } => cmp(lv, rv);
       Tuple{ first:CList{lv=value}, second:CList{rv=value} } => cmp(lv, rv);
+      Tuple{ first:CIList{lv=value}, second:CIList{rv=value} } => cmp(lv, rv);
       Tuple{ first:CMaybe{lv=value}, second:CMaybe{rv=value} } => cmp(lv, rv);
       Tuple{ first:CZOp{lv=op}, second:CZOp{rv=op} } => cmp(lv, rv);
       Tuple{ first:CCompound{lterms=terms}, second:CCompound{rterms=terms} } => cmp(lterms, rterms);
@@ -219,16 +221,14 @@ let std-c-take-maybe(tokens: List<Token>, cls: String): List<Token> = (
 #   }
 #);
 
-#let std-c-parse-declarator(tokens: List<Token>): Tuple<Maybe<CDeclarator>,List<Token>> = (
-#   let original-tokens = tokens;
-#   let pointer = std-c-parse-pointer(tokens); tokens = pointer.second;
-#   let direct-declarator = std-c-direct-declarator(tokens);
-#   if let Some{dd=content} = direct-declarator.first {
-#      Tuple{ Some{CDeclarator{ pointer.first, dd }}, direct-declarator.second }
-#   } else {
-#      Tuple{ (None :: Maybe<CDeclarator>), original-tokens }
-#   }
-#);
+let std-c-parse-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   let pointer = std-c-parse-pointer(tokens); tokens = pointer.second;
+   let dd = std-c-parse-direct-declarator(tokens); tokens = dd.second;
+   if pointer.first.is-some && dd.first.is-some
+   then Tuple{ Some{CBinaryOp{"Declarator*", close(pointer.first.get-or-panic), close(dd.first.get-or-panic)}}, tokens }
+   else dd
+);
 
 #let std-c-declaration-list(tokens: List<Token>): Tuple<Maybe<List<CDeclaration>>,List<Token>> = (
 #   let declaration = std-c-parse-declaration(tokens); tokens = declaration.second;
@@ -347,61 +347,75 @@ let std-c-parse-type-qualifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Tok
 #   } else Tuple{None :: Maybe<CFunctionSpecifier>, tokens}
 #);
 
-#let std-c-parse-direct-declarator(tokens: List<Token>): Tuple<Maybe<CDeclarator>,List<Token>> = (
-#   let base-declarator = if let Tuple{Some{ident=contents}=first,tokens2=second} = std-c-parse-identifier(tokens) then {
-#      tokens = tokens2;
-#      CDeclaratorIdentifier{ ident }
-#   } else if std-c-can-take(c"(") then {
-#      tokens = std-c-take-expect(c"(");
-#      let declarator = std-c-parse-declarator(tokens); tokens = declarator.second;
-#      if declarator.is-none { tokens = std-c-take-expect("[Declarator]", tokens); };
-#      tokens = std-c-take-expect(c")");
-#      declarator;
-#   } else std-c-take-expect("[Direct Declarator]", tokens);
-#   while std-c-can-take("(") || std-c-can-take("[") {
-#      if std-c-can-take("(") {
-#         tokens = std-c-take-expect("(");
-#         if let Tuple{first:Some{tl=content},tokens3=second} = std-c-parse-type-list(tokens) {
-#            tokens = std-c-take-expect(")");
-#            tokens = tokens3;
-#            base-declarator = CDeclaratorParamList{ base-declarator, tl };
-#         } else if let Tuple{first:Some{tl=content},tokens4=second} = std-c-parse-identifier-list(tokens) {
-#            tokens = std-c-take-expect(")");
-#            tokens = tokens4;
-#            base-declarator = CDeclaratorParamList{ base-declarator, tl };
-#         } else {
-#            tokens = std-c-take-expect(")");
-#            base-declarator = CDeclaratorParamList{ base-declarator, [] :: List<Tuple<CString,CType>> };
-#         };
-#      } else {
-#         tokens = std-c-take-expect("[");
-#         let type-qualifiers = [] :: List<CType>;
-#         if std-c-can-take(c"static", tokens) then {
-#            tokens = std-c-take-expect("static");
-#            type-qualifiers = cons( CType{c"static"}, type-qualifiers );
-#         };
-#         if let Tuple{first:Some{tq=content},tokens5=second} = std-c-parse-type-qualifier-list(tokens) {
-#            type-qualifiers = type-qualifiers + tq;
-#         };
-#         if std-c-can-take(c"static", tokens) then {
-#            tokens = std-c-take-expect("static");
-#            type-qualifiers = cons( CType{c"static"}, type-qualifiers );
-#         };
-#         let indirect = if std-c-can-take(c"*", tokens) then {
-#            tokens = std-c-take-expect("*");
-#            true;
-#         } else false;
-#         let assignment-expression = None :: Maybe<CAssignmentExpression>;
-#         if let Tuple{first:Some{ae=content},tokens6=second} = std-c-parse-assignment-expression(tokens) {
-#            tokens = tokens6;
-#            assignment-expression = ae;
-#         };
-#         tokens = std-c-take-expect("]");
-#         base-declarator = CDeclaratorBracket{ base-declarator, type-qualifiers, indirect, assignment-expression };
-#      };
-#   };
-#   Tuple{ Some{base-declarator}, tokens };
-#);
+let std-c-parse-direct-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   let be = if std-c-can-take(tokens, "identifier") then {
+      let id = head(tokens).skey; tokens = std-c-take-expect(tokens, "identifier");
+      Tuple{ Some{CIdentifier{id}}, tokens }
+   } else if std-c-can-take(tokens, "(") then {
+      tokens = std-c-take-expect(tokens, "(");
+      let decl = std-c-parse-declarator(tokens);
+      tokens = std-c-take-expect(tokens, ")");
+      Tuple{ decl.first, tokens }
+   } else Tuple{ no, tokens };
+   while be.first.is-some && (std-c-can-take(tokens,"(") || std-c-can-take(tokens, "[")) {
+      if std-c-can-take(tokens,"[") && std-c-can-take(tail(tokens),"*") {
+         tokens = std-c-take-expect(tokens, "[");
+         tokens = std-c-take-expect(tokens, "*");
+         tokens = std-c-take-expect(tokens, "]");
+         be = Tuple{ Some{CUnaryPrefix{"Declarator:*", close(be.first.get-or-panic)}}, tokens }
+      } else if std-c-can-take(tokens,"[") && std-c-can-take(tail(tokens),"static") {
+         tokens = std-c-take-expect(tokens, "[");
+         tokens = std-c-take-expect(tokens, "static");
+         let tql = std-c-parse-type-qualifier-list(tokens); tokens = tql.second;
+         let ae = std-c-parse-assignment-expression(tokens); tokens = ae.second;
+         tokens = std-c-take-expect(tokens, "]");
+         if ae.first.is-some && tql.first.is-some
+         then { be = Tuple{ Some{CTernaryOp{
+            "Declarator:static",
+             close(be.first.get-or-panic),
+             close(CList{close(tql.first.get-or-panic)}),
+             close(ae.first.get-or-panic)
+         }}, tokens }}
+         else if ae.first.is-some
+         then { be = Tuple{ Some{CBinaryOp{
+            "Declarator:static",
+             close(be.first.get-or-panic),
+             close(ae.first.get-or-panic)
+         }}, tokens }}
+         else {be = Tuple{ no, tokens }}
+      } else if std-c-can-take(tokens,"[") {
+         tokens = std-c-take-expect(tokens, "[");
+         let tql = std-c-parse-type-qualifier-list(tokens); tokens = tql.second;
+         let static = if std-c-can-take(tokens, "static")
+         then { tokens = std-c-take-expect(tokens, "static"); true; }
+         else { false; };
+         let pointer = if std-c-can-take(tokens, "*")
+         then { tokens = std-c-take-expect(tokens, "*"); true; }
+         else { false; };
+         let ae = std-c-parse-assignment-expression(tokens); tokens = ae.second;
+         tokens = std-c-take-expect(tokens, "]");
+         if tql.first.is-some && pointer
+         then {be = Tuple{ Some{CBinaryOp{"Declarator:*", close(be.first.get-or-panic), close(CList{close(tql.first.get-or-panic)})}}, tokens }}
+         else if tql.first.is-some && static && ae.first.is-some
+         then {be = Tuple{ Some{CTernaryOp{"Declarator:*", close(be.first.get-or-panic), close(CList{close(tql.first.get-or-panic)}), close(ae.first.get-or-panic)}}, tokens }}
+         else if tql.first.is-some && ae.first.is-some
+         then {be = Tuple{ Some{CTernaryOp{"Declarator", close(be.first.get-or-panic), close(CList{close(tql.first.get-or-panic)}), close(ae.first.get-or-panic)}}, tokens }}
+         else if ae.first.is-some
+         then {be = Tuple{ Some{CBinaryOp{"Declarator", close(be.first.get-or-panic), close(ae.first.get-or-panic)}}, tokens }}
+         else {be = Tuple{ no, tokens }}
+      } else if std-c-can-take(tokens,"(") {
+         tokens = std-c-take-expect(tokens, "(");
+         # TODO parameter-type-list
+         let il = std-c-parse-identifier-list(tokens); tokens = il.second;
+         tokens = std-c-take-expect(tokens, ")");
+         if il.first.is-some
+         then {be = Tuple{ Some{CBinaryOp{"Declarator(", close(be.first.get-or-panic), close(CIList{close(il.first.get-or-panic)})}}, tokens }}
+         else {be = Tuple{ Some{CUnaryPrefix{"Declarator(", close(be.first.get-or-panic)}}, tokens }}
+      }
+   };
+   be
+);
 
 let std-c-parse-identifier-list(tokens: List<Token>): Tuple<Maybe<List<String>>,List<Token>> = (
    let no = None :: Maybe<List<String>>;
