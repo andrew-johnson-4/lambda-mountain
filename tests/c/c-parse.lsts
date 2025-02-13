@@ -1004,3 +1004,10 @@ if true then {
       ])})
    }} );
 };
+
+if true then {
+   assert( std-c-parse-declaration-specifiers(std-c-tokenize-string("extern _Noreturn", "extern _Noreturn")).first == Some{CList{close([
+      CType1{"extern"},
+      CType1{"_Noreturn"}
+   ])}} );
+};
