@@ -1,7 +1,8 @@
+CC = cc
 
 dev: install-production
 	lm tests/c/c-parse.lsts
-	cc -O3 tmp.c
+	$(CC) -O3 tmp.c
 	./a.out
 	#lm tests/c/main.c
 	#cc -O3 tmp.c
@@ -9,7 +10,7 @@ dev: install-production
 
 build: compile-production
 	time ./production --c -o deploy1.c SRC/index-index.lm
-	cc -O3 deploy1.c -o deploy1
+	$(CC) -O3 deploy1.c -o deploy1
 	time ./deploy1 --c -o deploy2.c SRC/index-index.lm
 	diff deploy1.c deploy2.c
 	mv deploy1.c BOOTSTRAP/cli.c
@@ -24,12 +25,12 @@ profile: install-bootstrap
 
 compile-bootstrap:
 	rm -f bootstrap.exe
-	cc -O3 -o bootstrap.exe BOOTSTRAP/cli.c
+	$(CC) -O3 -o bootstrap.exe BOOTSTRAP/cli.c
 
 compile-production: compile-bootstrap
 	rm -f production
 	./bootstrap.exe --c -o production.c SRC/index-index.lm
-	cc -O3 -o production production.c
+	$(CC) -O3 -o production production.c
 	rm -f production.c
 
 install-production: compile-production
@@ -63,7 +64,7 @@ smoke-test-musl:
 smoke-test: smoke-test-clang smoke-test-gcc smoke-test-musl
 
 install:
-	cc -O3 -o lm BOOTSTRAP/cli.c
+	$(CC) -O3 -o lm BOOTSTRAP/cli.c
 ifeq ($(shell test -w /usr/local/bin; echo $$?), 0)
 	mv lm /usr/local/bin/lm
 else
