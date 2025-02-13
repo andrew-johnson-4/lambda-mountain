@@ -206,20 +206,16 @@ let std-c-take-maybe(tokens: List<Token>, cls: String): List<Token> = (
 #   } else Tuple{ (None :: Maybe<List<CSpecifier>>), tokens };
 #);
 
-#let std-c-parse-declaration-specifier(tokens: List<Token>): Tuple<Maybe<CSpecifier>,List<Token>> = (
-#   let storage-class-specifier = std-c-parse-storage-class-specifier(tokens);
-#   if storage-class-specifier.first.is-some then storage-class-specifier else {
-#      let type-specifier = std-c-parse-type-specifier(tokens);
-#      if type-specifier.first.is-some then type-specifier else {
-#         let type-qualifier = std-c-parse-type-qualifier(tokens);
-#         if type-qualifier.first.is-some then type-qualifier else {
-#            let function-specifier = std-c-parse-function-specifier(tokens);
-#            if function-specifier.first.is-some then function-specifier
-#            else std-c-parse-alignment-specifier(tokens);
-#         }
-#      }
-#   }
-#);
+# declaration-specifiers = declaration-specifier, {declaration-specifier};
+
+let std-c-parse-declaration-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let spec = std-c-parse-storage-class-specifier(tokens);
+   if spec.first.is-none then { spec = std-c-parse-type-specifier(tokens); };
+   if spec.first.is-none then { spec = std-c-parse-type-qualifier(tokens); };
+   if spec.first.is-none then { spec = std-c-parse-function-specifier(tokens); };
+   if spec.first.is-none then { spec = std-c-parse-alignment-specifier(tokens); };
+   spec
+);
 
 let std-c-parse-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
@@ -329,24 +325,28 @@ let std-c-parse-type-qualifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Tok
    else Tuple{no, tokens}
 );
 
-#let std-c-parse-function-specifier(tokens: List<Token>): Tuple<Maybe<CFunctionSpecifier>,List<Token>> = (
-#   if std-c-can-take("inline", tokens) then (tokens = std-c-take-expect("inline", tokens); Tuple{Some{CType{c"inline"}}, tokens} )
-#   else if std-c-can-take("_Noreturn", tokens) then (tokens = std-c-take-expect("_Noreturn", tokens); Tuple{Some{CType{c"_Noreturn"}}, tokens} )
-#   else Tuple{None :: Maybe<CTypeQualifier>, tokens}
-#);
+let std-c-parse-function-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "inline") {
+      let spec = head(tokens).skey; tokens = std-c-take-expect(tokens, "inline");
+      Tuple{ Some{CType1{spec}}, tokens }
+   } else if std-c-can-take(tokens, "_Noreturn") {
+      let spec = head(tokens).skey; tokens = std-c-take-expect(tokens, "_Noreturn");
+      Tuple{ Some{CType1{spec}}, tokens }
+   } else Tuple{ no, tokens }
+);
 
-#let std-c-parse-alignment-specifier(tokens: List<Token>): Tuple<Maybe<CAlignmentSpecifier>,List<Token>> = (
-#   if std-c-can-take("_Alignas", tokens) then {
-#      tokens = std-c-take-expect("_Alignas", tokens);
-#      tokens = std-c-take-expect("(", tokens);
-#      if let Tuple{first:Some{tn=content},tokens2=second} = std-c-parse-type-name(tokens) {
-#         tokens = std-c-take-expect(")", tokens);
-#         Tuple{ Some{ tn }, tokens }
-#      } else if let Tuple{first:Some{ce=content},tokens2=second} = std-c-parse-constant-expression(tokens) {
-#         Tuple{ Some{ ce }, tokens }
-#      } else std-c-take-expect(c"[Alignment Specifier]");
-#   } else Tuple{None :: Maybe<CFunctionSpecifier>, tokens}
-#);
+let std-c-parse-alignment-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "_Alignas") then {
+      tokens = std-c-take-expect(tokens, "_Alignas");
+      tokens = std-c-take-expect(tokens, "(");
+      let tn = std-c-parse-type-name(tokens);
+      if tn.first.is-none { tn = std-c-parse-constant-expression(tokens); tokens = tn.second; };
+      if tn.first.is-none { tokens = std-c-take-expect(tokens, "[Alignment Specifier]"); };
+      Tuple{ Some{ CUnaryPrefix{"_Alignas",close(tn.first.get-or-panic)} }, tokens }
+   } else Tuple{no, tokens}
+);
 
 let std-c-parse-direct-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
