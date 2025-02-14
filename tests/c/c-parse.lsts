@@ -1011,3 +1011,16 @@ if true then {
       CType1{"_Noreturn"}
    ])}} );
 };
+
+if true then {
+   assert( std-c-parse-enumerator(std-c-tokenize-string("abc = 1", "abc = 1")).first == Some{CBinaryOp{
+      "Enumerator",
+      close(CIdentifier{"abc"}),
+      close(CMaybe{close(Some{ CInteger{"1"} })})
+   }} );
+   assert( std-c-parse-enumerator(std-c-tokenize-string("abc", "abc")).first == Some{CBinaryOp{
+      "Enumerator",
+      close(CIdentifier{"abc"}),
+      close(CMaybe{close( None :: Maybe<CTerm> )})
+   }} );
+};
