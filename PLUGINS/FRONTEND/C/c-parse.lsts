@@ -501,6 +501,22 @@ let std-c-parse-atomic-type-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,L
 #(* NOTE: Please define enumeration-constant for identifier inside enum { ... }. *)
 #enumerator = enumeration-constant, ['=', constant-expression];
 
+let std-c-enumeration-constant-index = {} :: HashtableEq<String,Bool>;
+
+let std-c-parse-enumerator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "identifier") {
+      let ec = head(tokens).skey; tokens = std-c-take-expect(tokens, "identifier");
+      std-c-enumeration-constant-index = std-c-enumeration-constant-index.bind(ec, true);
+      let ce = if std-c-can-take(tokens,"=") {
+         tokens = std-c-take-expect(tokens, "=");
+         std-c-parse-constant-expression(tokens);
+      } else Tuple{ no, tokens };
+      tokens = ce.second;
+      Tuple{ Some{CBinaryOp{"Enumerator", close(CIdentifier{ec}), close(CMaybe{close(ce.first)}) }}, tokens }
+   } else Tuple{ no, tokens }
+);
+
 let std-c-parse-type-name(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
    let sql = std-c-parse-specifier-qualifier-list(tokens);
@@ -686,8 +702,6 @@ let std-c-parse-identifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>>
    if std-c-can-take(tokens, "identifier") then Tuple{ Some{CIdentifier{head(tokens).skey}}, tail(tokens) }
    else Tuple{ no, tokens }
 );
-
-let std-c-enumeration-constant-index = {} :: HashtableEq<String,Bool>;
 
 let std-c-parse-constant(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
