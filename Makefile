@@ -19,6 +19,16 @@ build: compile-production
 
 deploy: build smoke-test
 
+gprof:
+	$(CC) -O3 -pg -o bootstrap.exe BOOTSTRAP/cli.c
+	./bootstrap.exe SRC/index-index.lm
+
+gprof-view-count:
+	gprof bootstrap.exe gmon.out | less
+
+gprof-view-call-graph:
+	gprof -q bootstrap.exe gmon.out
+
 profile: install-bootstrap
 	perf record lm SRC/index-index.lm
 	./report.sh
