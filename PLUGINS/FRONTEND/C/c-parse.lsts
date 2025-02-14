@@ -493,13 +493,40 @@ let std-c-parse-atomic-type-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,L
 #                   | specifier-qualifier-list, struct-declarator-list, ';'
 #                   | static-assert-declaration;
 
-#enum-specifier = 'enum', '{', enumerator-list, [','], '}'
-#               | 'enum', identifier, ['{', enumerator-list, [','], '}'];
+let std-c-parse-enumerator-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "enum") {
+      let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "enum");
+      let id = if std-c-can-take(tokens, "identifier") {
+         let id = head(tokens).skey; tokens = std-c-take-expect(tokens, "identifier");
+         id
+      } else "";
+      let es = if std-c-can-take(tokens, "{") {
+         let el = std-c-parse-enumerator-list(tokens);
+         tokens = el.second;
+         if el.first.is-some
+         then el.first.get-or-panic
+         else CList{close([] :: List<CTerm>)};
+      } else CList{close([] :: List<CTerm>)};
+      Tuple{ Some{CBinaryOp{op, close(CIdentifier{id}), close(es) }}, tokens }
+   } else Tuple{ no, tokens }
+);
 
-#enumerator-list = enumerator, {',', enumerator};
-
-#(* NOTE: Please define enumeration-constant for identifier inside enum { ... }. *)
-#enumerator = enumeration-constant, ['=', constant-expression];
+let std-c-parse-enumerator-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let e = std-c-parse-enumerator(tokens);
+   if e.first.is-some {
+      tokens = e.second;
+      let es = [e.first.get-or-panic];
+      while std-c-can-take(tokens, ",") {
+         tokens = std-c-take-expect(tokens, ",");
+         e = std-c-parse-enumerator(tokens);
+         tokens = e.second;
+         if e.first.is-some { es = cons( e.first.get-or-panic, es ); };
+      };
+      e = Tuple{ Some{CList{close(es)}}, tokens };
+   };
+   e
+);
 
 let std-c-enumeration-constant-index = {} :: HashtableEq<String,Bool>;
 
