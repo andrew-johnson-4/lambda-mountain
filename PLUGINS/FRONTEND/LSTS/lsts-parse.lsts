@@ -67,6 +67,7 @@ let lsts-parse(tokens: List<Token>): Nil = (
       match tokens {
          [ Token{key:c"let"}.. _] => tokens = lsts-parse-let(tokens);
          [ Token{key:c"type"}.. _] => tokens = lsts-parse-typedef(tokens);
+         [ Token{key:c"interface"}.. _] => tokens = lsts-parse-interface(tokens);
          [ Token{key:c"import"}.. rest] => (
             tokens = rest;
             let path = SNil {};
@@ -490,6 +491,46 @@ let lsts-parse-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
    Tuple { term, tokens }
 );
 
+let lsts-parse-interface(tokens: List<Token>): List<Token> = (
+   lsts-parse-expect(c"interface", tokens); tokens = tail(tokens);
+   lsts-parse-expect(c"<", tokens); tokens = tail(tokens);
+
+   lsts-parse-expect(c"Identifier", lsts-is-ident-head(lsts-parse-head(tokens)), tokens);
+   let self-name = lsts-unwrap-identifier(lsts-parse-head(tokens)); tokens = tail(tokens);
+
+   lsts-parse-expect(c">", tokens); tokens = tail(tokens);
+
+   let interface-type-t = lsts-parse-type(tokens);
+   tokens = interface-type-t.second;
+   let interface-type = interface-type-t.first;
+
+   lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
+
+   while lsts-parse-head(tokens) == c"let" {
+      lsts-parse-expect(c"let", tokens); let loc = head(tokens).location; tokens = tail(tokens);
+
+      lsts-parse-expect(c"Identifier", lsts-is-ident-head(lsts-parse-head(tokens)) || lsts-parse-head(tokens)==c".", tokens);
+      let name = lsts-unwrap-identifier(lsts-parse-head(tokens)); tokens = tail(tokens);
+      if name == c"." {
+         lsts-parse-expect(c"Identifier", lsts-is-ident-head(lsts-parse-head(tokens)), tokens);
+         name = name + lsts-unwrap-identifier(lsts-parse-head(tokens)); tokens = tail(tokens);
+      };
+
+      let sig = lsts-parse-function-signature(tokens, loc);
+      tokens = sig.second;
+      let args-list = sig.first.args-list;
+      let return-type = sig.first.return-type;
+
+      lsts-parse-expect(c";", tokens); tokens = tail(tokens);
+   };
+
+   lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
+
+   fail("interfaces are currently not supported");
+
+   tokens
+);
+
 let lsts-parse-typedef(tokens: List<Token>): List<Token> = (
    lsts-parse-expect(c"type", tokens); tokens = tail(tokens);
    let mode = c"=";
@@ -580,6 +621,42 @@ let lsts-parse-typedef-case(tokens: List<Token>): Tuple<AST,List<Token>> = (
    Tuple{ case, tokens }
 );
 
+type LstsFnSignature = LstsFnSignature { args-list: AST, return-type: Type };
+
+# parses:    (a: I32, b: I32): U64
+let lsts-parse-function-signature(tokens: List<Token>, loc: SourceLocation): Tuple<LstsFnSignature, List<Token>> = (
+   let out = LstsFnSignature { ASTNil, TAny };
+
+   lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
+   while non-zero(tokens) && lsts-parse-head(tokens)!=c")" {
+      lsts-parse-expect(c"Identifier", lsts-is-ident-head(lsts-parse-head(tokens)), tokens);
+      let arg-name = head(tokens); tokens = tail(tokens);
+      lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+      let type-rest = lsts-parse-type(tokens);
+      tokens = type-rest.second;
+      if lsts-parse-head(tokens)==c"," { tokens = tail(tokens); } else { lsts-parse-expect(c")", tokens); };
+      let arg-binding = App {
+         close(Lit{ c":", with-location(mk-token(":"),loc) }),
+         close(App{ close(Var{ arg-name.key, arg-name }), close(AType{ type-rest.first }) })
+      };
+      if is( out.args-list, ASTNil{} ) {
+         out.args-list = arg-binding;
+      } else {
+         out.args-list = App{ close(out.args-list), close(arg-binding) };
+      };
+   };
+   lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+
+   if lsts-parse-head(tokens) == c":" {
+       lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+       let rtype-rest = lsts-parse-type(tokens);
+       out.return-type = rtype-rest.first;
+       tokens = rtype-rest.second;
+   };
+
+   Tuple { out, tokens }
+);
+
 let lsts-parse-let(tokens: List<Token>): List<Token> = (
    lsts-parse-expect(c"let", tokens); let loc = head(tokens).location; tokens = tail(tokens);
    let prop = 0;
@@ -596,30 +673,10 @@ let lsts-parse-let(tokens: List<Token>): List<Token> = (
    let args-list = ASTEOF {};
    let return-type = TAny {};
    if lsts-parse-head(tokens) == c"(" {
-      args-list = ASTNil {};
-      lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
-      while non-zero(tokens) && lsts-parse-head(tokens)!=c")" {
-         lsts-parse-expect(c"Identifier", lsts-is-ident-head(lsts-parse-head(tokens)), tokens);
-         let arg-name = head(tokens); tokens = tail(tokens);
-         lsts-parse-expect(c":", tokens); tokens = tail(tokens);
-         let type-rest = lsts-parse-type(tokens);
-         tokens = type-rest.second;
-         if lsts-parse-head(tokens)==c"," { tokens = tail(tokens); } else { lsts-parse-expect(c")", tokens); };
-         let arg-binding = App {
-            close(Lit{ c":", with-location(mk-token(":"),loc) }),
-            close(App{ close(Var{ arg-name.key, arg-name }), close(AType{ type-rest.first }) })
-         };
-         if is( args-list, ASTNil{} ) {
-            args-list = arg-binding;
-         } else {
-            args-list = App{ close(args-list), close(arg-binding) };
-         };
-      };
-      lsts-parse-expect(c")", tokens); tokens = tail(tokens);
-      lsts-parse-expect(c":", tokens); tokens = tail(tokens);
-      let rtype-rest = lsts-parse-type(tokens);
-      return-type = rtype-rest.first;
-      tokens = rtype-rest.second;
+      let sig = lsts-parse-function-signature(tokens, loc);
+      tokens = sig.second;
+      args-list = sig.first.args-list;
+      return-type = sig.first.return-type;
    };
    lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
    let rhs-rest = lsts-parse-small-expression(tokens);
