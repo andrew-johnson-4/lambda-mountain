@@ -493,12 +493,6 @@ let lsts-parse-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
 
 let lsts-parse-interface(tokens: List<Token>): List<Token> = (
    lsts-parse-expect(c"interface", tokens); tokens = tail(tokens);
-   lsts-parse-expect(c"<", tokens); tokens = tail(tokens);
-
-   lsts-parse-expect(c"Identifier", lsts-is-ident-head(lsts-parse-head(tokens)), tokens);
-   let self-name = lsts-unwrap-identifier(lsts-parse-head(tokens)); tokens = tail(tokens);
-
-   lsts-parse-expect(c">", tokens); tokens = tail(tokens);
 
    let interface-type-t = lsts-parse-type(tokens);
    tokens = interface-type-t.second;
