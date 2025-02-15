@@ -666,8 +666,6 @@ let std-c-parse-direct-abstract-declarator(tokens: List<Token>): Tuple<Maybe<CTe
    } else Tuple{ no, tokens }   
 );
 
-#struct-declarator-list = struct-declarator, {',', struct-declarator};
-
 let std-c-parse-type-qualifier-list(tokens: List<Token>): Tuple<Maybe<List<CTerm>>,List<Token>> = (
    let no = None :: Maybe<List<CTerm>>;
    let tq = std-c-parse-type-qualifier(tokens);
@@ -684,8 +682,44 @@ let std-c-parse-type-qualifier-list(tokens: List<Token>): Tuple<Maybe<List<CTerm
 
 #parameter-type-list = parameter-list, [',', '...'];
 
-#struct-declarator = ':', constant-expression
-#                  | declarator, [':', constant-expression];
+let std-c-parse-struct-declarator-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   let sq = std-c-parse-struct-declarator-list(tokens);
+   if sq.first.is-some {
+      let sql = [sq.first.get-or-panic];
+      tokens = sq.second;
+      while sq.first.is-some {
+         sq = std-c-parse-struct-declarator-list(tokens);
+         if sq.first.is-some {
+            sql = cons( sq.first.get-or-panic, sql );
+            tokens = sq.second;
+         };
+      };
+      Tuple{ Some{CList{close(sql.reverse)}}, tokens }
+   } else Tuple { no, tokens }
+);
+
+let std-c-parse-struct-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, ":") {
+      let op = head(tokens).skey; tokens = std-c-take-expect(tokens, ":");
+      let ce = std-c-parse-constant-expression(tokens);
+      if ce.first.is-some
+      then Tuple{ Some{CUnaryPrefix{"StructDeclarator:", close(ce.first.get-or-panic)}}, tokens }
+      else Tuple{ no, tokens }
+   } else {
+      let decl = std-c-parse-declarator(tokens);
+      let ce = if std-c-can-take(tokens,":") {
+         let ce-next = std-c-parse-constant-expression(tokens); tokens = ce-next.second;
+         ce-next.first;
+      } else no;
+      if decl.first.is-some && ce.is-some
+      then Tuple{ Some{CBinaryOp{"StructDeclarator:", close(decl.first.get-or-panic), close(ce.get-or-panic)}}, tokens }
+      else if decl.first.is-some
+      then Tuple{ Some{CUnaryPrefix{"StructDeclarator", close(decl.first.get-or-panic)}}, tokens }
+      else Tuple{ no, tokens }
+   }
+);
 
 let std-c-parse-assignment-operator(tokens: List<Token>): Tuple<Maybe<String>,List<Token>> = (
    let no = None :: Maybe<String>;
