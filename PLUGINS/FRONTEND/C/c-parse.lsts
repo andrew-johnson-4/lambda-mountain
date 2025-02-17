@@ -282,24 +282,22 @@ let std-c-parse-declaration-or-statement(tokens: List<Token>): Tuple<Maybe<CTerm
 #   } else declarator
 #);
 
-#let std-c-parse-static-assert-declaration(tokens: List<Token>): Tuple<Maybe<CStaticAssertDeclaration>,List<Token>> = (
-#   if std-c-can-take(tokens, c"_Static_assert") {
-#      tokens = std-c-take-expect(tokens, c"_Static_assert");
-#      tokens = std-c-take-expect(tokens, c"(");
-#      let constant-expression = std-c-parse-constant-expression(tokens);
-#      if constant-expression.first.is-none { std-c-take-expect(tokens, c"[Constant Expression]"); };
-#      tokens = std-c-take-expect(tokens, c",");
-#      tokens = std-c-take-expect(tokens, c")");
-#      tokens = std-c-take-expect(tokens, c";");
-#      let string-literal = std-c-parse-string-literal(tokens);
-#      if let Some{ce=content} = constant-expression {
-#         if let Some{sl=content} = string-literal {
-#            Tuple{ Some{CStaticAssertDeclaration{ ce, sl }}, tokens }
-#         } else Tuple{ (None :: Maybe<CStaticAssertDeclaration>), tokens };
-#      } else Tuple{ (None :: Maybe<CStaticAssertDeclaration>), tokens };
-#      Tuple{ Some{CStaticAssertDeclaration{ constant-expression. }} }
-#   } else Tuple{ (None :: Maybe<CStaticAssertDeclaration>), tokens }
-#);
+let std-c-parse-static-assert-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "_Static_assert") {
+      let op = head(tokens).skey;
+      tokens = std-c-take-expect(tokens, "_Static_assert");
+      tokens = std-c-take-expect(tokens, "(");
+      let constant-expression = std-c-parse-constant-expression(tokens);
+      if constant-expression.first.is-none { std-c-take-expect(tokens, "[Constant Expression]"); };
+      tokens = std-c-take-expect(tokens, ",");
+      let s = if non-zero(tokens) then head(tokens).skey else "";
+      tokens = std-c-take-expect(tokens, "string");
+      tokens = std-c-take-expect(tokens, ")");
+      tokens = std-c-take-expect(tokens, ";");
+      Tuple{ Some{CBinaryOp{ op, close(constant-expression.first.get-or-panic), close(CString{s}) }}, tokens }
+   } else Tuple{ no, tokens }
+);
 
 let std-c-parse-storage-class-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
@@ -484,14 +482,53 @@ let std-c-parse-atomic-type-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,L
    } else Tuple{ no, tokens }
 );
 
-#struct-or-union-specifier = struct-or-union, '{', struct-declaration-list, '}'
-#                          | struct-or-union, identifier, ['{', struct-declaration-list, '}'];
+let std-c-parse-struct-or-union-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   if std-c-can-take(tokens, "struct") || std-c-can-take(tokens, "union") {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      let id = if std-c-can-take(tokens, "identifier") {
+         let id = head(tokens).skey;
+         tokens = std-c-take-expect(tokens, "identifier");
+         id
+      } else "";
+      let sdl = no;
+      if std-c-can-take(tokens, "{") {
+         tokens = std-c-take-expect(tokens, "{");
+         let sdlm = std-c-parse-struct-declaration-list(tokens); tokens = sdlm.second;
+         sdl = sdlm.first;
+         tokens = std-c-take-expect(tokens, "}");
+      };
+      Tuple{ Some{CBinaryOp{op, close(CIdentifier{id}), close(CMaybe{close(sdl)})}}, tokens }
+   } else Tuple{ no, tokens }
+);
 
-#struct-declaration-list = struct-declaration, {struct-declaration};
+let std-c-parse-struct-declaration-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   let sq = std-c-parse-struct-declaration(tokens);
+   if sq.first.is-some {
+      let sql = [sq.first.get-or-panic];
+      tokens = sq.second;
+      while sq.first.is-some {
+         sq = std-c-parse-struct-declaration(tokens);
+         if sq.first.is-some {
+            sql = cons( sq.first.get-or-panic, sql );
+            tokens = sq.second;
+         };
+      };
+      Tuple{ Some{CList{close(sql.reverse)}}, tokens }
+   } else Tuple { no, tokens }
+);
 
-#struct-declaration = specifier-qualifier-list, ';'     (* for anonymous struct/union *)
-#                   | specifier-qualifier-list, struct-declarator-list, ';'
-#                   | static-assert-declaration;
+let std-c-parse-struct-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let sql = std-c-parse-specifier-qualifier-list(tokens); tokens = sql.second;
+   if sql.first.is-some {
+      let sdl = std-c-parse-struct-declarator-list(tokens); tokens = sdl.second;
+      tokens = std-c-take-expect(tokens, ";");
+      if sdl.first.is-some
+      then Tuple{ Some{CBinaryOp{ "StructDeclaration", close(CList{close(sql.first.get-or-panic)}), close(sdl.first.get-or-panic) }}, tokens }
+      else Tuple{ Some{CUnaryPrefix{ "StructDeclaration", close(CList{close(sql.first.get-or-panic)}) }}, tokens }
+   } else std-c-parse-static-assert-declaration(tokens);
+);
 
 let std-c-parse-enumerator-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
