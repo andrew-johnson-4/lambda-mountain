@@ -1069,8 +1069,23 @@ let std-c-parse-postfix-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
    expression
 );
 
-
-#argument-expression-list = assignment-expression, {',', assignment-expression};
+let std-c-parse-argument-expression-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   let sq = std-c-parse-assignment-expression(tokens);
+   if sq.first.is-some {
+      let sql = [sq.first.get-or-panic];
+      tokens = sq.second;
+      while std-c-can-take(tokens,",") {
+         tokens = std-c-take-expect(tokens,",");
+         sq = std-c-parse-assignment-expression(tokens);
+         if sq.first.is-some {
+            sql = cons( sq.first.get-or-panic, sql );
+            tokens = sq.second;
+         };
+      };
+      Tuple{ Some{CList{close(sql.reverse)}}, tokens }
+   } else Tuple { no, tokens }
+);
 
 let std-c-parse-generic-selection(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
