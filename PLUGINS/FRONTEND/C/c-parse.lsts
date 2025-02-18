@@ -259,28 +259,31 @@ let std-c-parse-declaration-or-statement(tokens: List<Token>): Tuple<Maybe<CTerm
    std-c-parse-statement(tokens);
 );
 
-#let std-c-parse-init-declarator-list(tokens: List<Token>): Tuple<Maybe<List<CInitDeclarator>>,List<Token>> = (
-#   let init-declarator = std-c-parse-init-declarator(tokens);
-#   if let Some{dc=content} = init-declarator {
-#      let dcs = [dc];
-#      while init-declarator.first.is-some {
-#         init-declarator = std-c-parse-init-declarator(tokens);
-#         if let Some{dc2=content} = init-declarator {
-#            dcs = cons(dc, dcs);
-#         }
-#      };
-#      Tuple{ Some{dcs}, tokens }
-#   } else init-declarator;
-#);
+let std-c-parse-init-declarator-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   let id = std-c-parse-init-declarator(tokens);
+   if id.first.is-some {
+      let ids = [id.first.get-or-panic];
+      tokens = id.second;
+      while std-c-can-take(tokens, ",") {
+         tokens = std-c-take-expect(tokens, ",");
+         id = std-c-parse-init-declarator(tokens); tokens = id.second;
+         if id.first.is-some { ids = cons( id.first.get-or-panic, ids ) };
+      };
+      Tuple{ Some{CList{close(ids.reverse)}}, tokens }
+   } else Tuple{no, tokens};
+);
 
-#let std-c-parse-init-declarator(tokens: List<Token>): Tuple<Maybe<CInitDeclarator>,List<Token>> = (
-#   let declarator = c-parse-declarator(tokens); tokens = declarator.second;
-#   if declarator.first.is-some {
-#      tokens = std-c-take-expect(tokens, c"=");
-#      let initializer = std-c-parse-initializer(tokens); tokens = declarator.second;
-#      Tuple{ CInitDeclarator{ declarator.first, initializer.first }, tokens }
-#   } else declarator
-#);
+let std-c-parse-init-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let declarator = std-c-parse-declarator(tokens); tokens = declarator.second;
+   if declarator.first.is-some {
+      let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "=");
+      let initializer = std-c-parse-initializer(tokens); tokens = declarator.second;
+      if initializer.first.is-some 
+      then Tuple{ Some{CBinaryOp{ op, close(declarator.first.get-or-panic), close(initializer.first.get-or-panic) }}, tokens }
+      else declarator
+   } else declarator
+);
 
 let std-c-parse-static-assert-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
@@ -717,7 +720,18 @@ let std-c-parse-type-qualifier-list(tokens: List<Token>): Tuple<Maybe<List<CTerm
    } else Tuple{ no, tokens }
 );
 
-#parameter-type-list = parameter-list, [',', '...'];
+let std-c-parse-parameter-type-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   let ptl = std-c-parse-parameter-type-list(tokens);
+   if ptl.first.is-some {
+      tokens = ptl.second;
+      if std-c-can-take(tokens, ",") && std-c-can-take(tail(tokens),"...") {
+         tokens = std-c-take-expect(tokens, ",");
+         tokens = std-c-take-expect(tokens, "...");
+         Tuple{ Some{CUnaryPrefix{ "ParameterTypeList...", close(ptl.first.get-or-panic) }}, tokens }
+      } else ptl
+   } else Tuple{ no, tokens }
+);
 
 let std-c-parse-struct-declarator-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
@@ -830,9 +844,33 @@ let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
    ts
 );
 
-#parameter-list = parameter-declaration, {',', parameter-declaration};
+let std-c-parse-parameter-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   let ptl = std-c-parse-parameter-declaration(tokens);
+   if ptl.first.is-some {
+      let pts = [ptl.first.get-or-panic];
+      tokens = ptl.second;
+      while std-c-can-take(tokens, ",") && not(std-c-can-take(tokens, ",") && std-c-can-take(tail(tokens),"...")) {
+         tokens = std-c-take-expect(tokens, ",");
+         ptl = std-c-parse-parameter-declaration(tokens); tokens = ptl.second;
+         if ptl.first.is-some { pts = cons( ptl.first.get-or-panic, pts ); };
+      };
+      Tuple{ Some{CList{close(pts.reverse)}}, tokens }
+   } else Tuple{ no, tokens }
+);
 
-#parameter-declaration = declaration-specifiers, [declarator | abstract-declarator];
+let std-c-parse-parameter-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   let ds = std-c-parse-declaration-specifiers(tokens);
+   if ds.first.is-some {
+      let declarator = std-c-parse-declarator(tokens);
+      if declarator.first.is-none { declarator = std-c-parse-abstract-declarator(tokens); };
+      tokens = declarator.second;
+      if declarator.first.is-some {
+         Tuple{ Some{CBinaryOp{"ParameterDeclaration", close(ds.first.get-or-panic), close(declarator.first.get-or-panic) }}, tokens }
+      } else Tuple{ no, tokens };
+   } else Tuple{ no, tokens }
+);
 
 let std-c-parse-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let expression = std-c-parse-assignment-expression(tokens); tokens = expression.second;
@@ -1069,8 +1107,23 @@ let std-c-parse-postfix-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
    expression
 );
 
-
-#argument-expression-list = assignment-expression, {',', assignment-expression};
+let std-c-parse-argument-expression-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   let sq = std-c-parse-assignment-expression(tokens);
+   if sq.first.is-some {
+      let sql = [sq.first.get-or-panic];
+      tokens = sq.second;
+      while std-c-can-take(tokens,",") {
+         tokens = std-c-take-expect(tokens,",");
+         sq = std-c-parse-assignment-expression(tokens);
+         if sq.first.is-some {
+            sql = cons( sq.first.get-or-panic, sql );
+            tokens = sq.second;
+         };
+      };
+      Tuple{ Some{CList{close(sql.reverse)}}, tokens }
+   } else Tuple { no, tokens }
+);
 
 let std-c-parse-generic-selection(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
