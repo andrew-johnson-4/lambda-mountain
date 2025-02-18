@@ -880,6 +880,9 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
             tokens = lhs-rest.second;
             lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
             lsts-parse-expect(c">", tokens); tokens = tail(tokens);
+            if lsts-parse-head(tokens) == c"{" {
+               fail("Please wrap map literals in match cases in parenthesis. At \{tokens.formatted-location}\n");
+            };
             let rhs-rest = lsts-parse-small-expression(tokens);
             tokens = rhs-rest.second;
             lsts-parse-expect(c";", tokens); tokens = tail(tokens);
