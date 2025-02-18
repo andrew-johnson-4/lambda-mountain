@@ -717,7 +717,18 @@ let std-c-parse-type-qualifier-list(tokens: List<Token>): Tuple<Maybe<List<CTerm
    } else Tuple{ no, tokens }
 );
 
-#parameter-type-list = parameter-list, [',', '...'];
+let std-c-parse-parameter-type-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   let ptl = std-c-parse-parameter-type-list(tokens);
+   if ptl.first.is-some {
+      tokens = ptl.second;
+      if std-c-can-take(tokens, ",") && std-c-can-take(tail(tokens),"...") {
+         tokens = std-c-take-expect(tokens, ",");
+         tokens = std-c-take-expect(tokens, "...");
+         Tuple{ Some{CUnaryPrefix{ "ParameterTypeList...", close(ptl.first.get-or-panic) }}, tokens }
+      } else ptl
+   } else Tuple{ no, tokens }
+);
 
 let std-c-parse-struct-declarator-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
@@ -830,9 +841,33 @@ let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
    ts
 );
 
-#parameter-list = parameter-declaration, {',', parameter-declaration};
+let std-c-parse-parameter-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   let ptl = std-c-parse-parameter-declaration(tokens);
+   if ptl.first.is-some {
+      let pts = [ptl.first.get-or-panic];
+      tokens = ptl.second;
+      while std-c-can-take(tokens, ",") && not(std-c-can-take(tokens, ",") && std-c-can-take(tail(tokens),"...")) {
+         tokens = std-c-take-expect(tokens, ",");
+         ptl = std-c-parse-parameter-declaration(tokens); tokens = ptl.second;
+         if ptl.first.is-some { pts = cons( ptl.first.get-or-panic, pts ); };
+      };
+      Tuple{ Some{CList{close(pts.reverse)}}, tokens }
+   } else Tuple{ no, tokens }
+);
 
-#parameter-declaration = declaration-specifiers, [declarator | abstract-declarator];
+let std-c-parse-parameter-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   let ds = std-c-parse-declaration-specifiers(tokens);
+   if ds.first.is-some {
+      let declarator = std-c-parse-declarator(tokens);
+      if declarator.first.is-none { declarator = std-c-parse-abstract-declarator(tokens); };
+      tokens = declarator.second;
+      if declarator.first.is-some {
+         Tuple{ Some{CBinaryOp{"ParameterDeclaration", close(ds.first.get-or-panic), close(declarator.first.get-or-panic) }}, tokens }
+      } else Tuple{ no, tokens };
+   } else Tuple{ no, tokens }
+);
 
 let std-c-parse-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let expression = std-c-parse-assignment-expression(tokens); tokens = expression.second;
