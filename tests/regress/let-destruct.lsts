@@ -1,0 +1,10 @@
+
+import LIB/default.lsts;
+
+let main(): Nil = (
+   (let a, let b) = Tuple { 1, 2 };
+   assert(a == 1);
+   assert(b == 2);
+   (a, _) = Tuple { 2, 1 };
+   assert(a == 2);
+);
