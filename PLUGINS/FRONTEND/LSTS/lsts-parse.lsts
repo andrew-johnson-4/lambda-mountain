@@ -906,7 +906,7 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
             if lsts-parse-head(tokens) == c"(" {
                lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
 
-               let lefts = LEOF :: List<ASTOrIdent>;
+               let lefts = [] :: List<ASTOrIdent>;
 
                let loop = true;
                while loop {
