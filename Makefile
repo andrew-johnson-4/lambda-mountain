@@ -1,7 +1,7 @@
 CC = cc
 
 dev: install-production
-	lm tests/c/c-parse.lsts
+	lm tests/regress/let-destruct.lsts
 	$(CC) -O3 tmp.c
 	./a.out
 	#lm tests/c/main.c
