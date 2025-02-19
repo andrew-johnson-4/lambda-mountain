@@ -254,10 +254,8 @@ let std-c-parse-compound-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 );
 
 let std-c-parse-declaration-or-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-#   TODO: declaration?
-#   let declaration = std-c-parse-declaration(tokens);
-#   if declaration.first.is-some then declaration else std-c-parse-statement(tokens);
-   std-c-parse-statement(tokens);
+   let declaration = std-c-parse-declaration(tokens);
+   if declaration.first.is-some then declaration else std-c-parse-statement(tokens);
 );
 
 let std-c-parse-init-declarator-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
