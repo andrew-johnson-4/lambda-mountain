@@ -26,6 +26,7 @@ type CTerm = CInteger{value:String}
            | CBinaryOp{op:String, arg1:CTerm[], arg2:CTerm[]}
            | CTernaryOp{op:String, arg1:CTerm[], arg2:CTerm[], arg3: CTerm[]}
            | CFor{op:String, arg1:Maybe<CTerm>[], arg2:Maybe<CTerm>[], arg3: Maybe<CTerm>[], stmt:CTerm[]}
+           | CFunctionDefinition{specifiers:CTerm[], declarator:CTerm[], declaration-list:CTerm[], statement:CTerm[]}
            | CAccessor{accessor:String, field:String, arg:CTerm[]};
 
 let cmp(l: CTerm, r: CTerm): Ord = (
@@ -165,20 +166,23 @@ let std-c-take-maybe(tokens: List<Token>, cls: String): List<Token> = (
 #   tokens;
 #);
 
-#let std-c-parse-function-definition(tokens: List<Token>): List<Token> = (
-#   let declaration-specifiers = std-c-parse-declaration-specifiers(tokens); tokens = declaration-specifiers.second;
-#   if declaration-specifiers.first.is-some {
-#      let declarator = std-c-parse-declarator(tokens); tokens = declarator.second;
-#      if declarator.first.is-some {
-#         let declaration-list = std-c-parse-declaration-list(tokens); tokens = declaration-list.second;
-#         let compound-statement = std-c-parse-compound-statement(tokens); tokens = compound-statement.second;
-#         if compound-statement.first.is-some {
-#            # TODO Add to namespace
-#         }
-#      }
-#   };
-#   tokens;
-#);
+let std-c-parse-function-definition(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   let declaration-specifiers = std-c-parse-declaration-specifiers(tokens); tokens = declaration-specifiers.second;
+   if declaration-specifiers.first.is-some {
+      let declarator = std-c-parse-declarator(tokens); tokens = declarator.second;
+      let declaration-list = std-c-parse-declaration-list(tokens); tokens = declaration-list.second;
+      let compound-statement = std-c-parse-compound-statement(tokens); tokens = compound-statement.second;
+      if declarator.first.is-some && compound-statement.first.is-some
+      then Tuple{ Some{CFunctionDefinition{
+         close(declaration-specifiers.first.get-or-panic),
+         close(declarator.first.get-or-panic),
+         close(CMaybe{close(declaration-list.first)}),
+         close(compound-statement.first.get-or-panic),
+      }}, tokens }
+      else Tuple{ no, tokens }
+   } else Tuple{ no, tokens }
+);
 
 let std-c-parse-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let declaration-specifiers = std-c-parse-declaration-specifiers(tokens); tokens = declaration-specifiers.second;
@@ -224,7 +228,7 @@ let std-c-parse-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>>
    else dd
 );
 
-let std-c-declaration-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+let std-c-parse-declaration-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
    let declaration = std-c-parse-declaration(tokens); tokens = declaration.second;
    if declaration.first.is-some {
