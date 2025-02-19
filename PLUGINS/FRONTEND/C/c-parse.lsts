@@ -180,17 +180,18 @@ let std-c-take-maybe(tokens: List<Token>, cls: String): List<Token> = (
 #   tokens;
 #);
 
-#let std-c-parse-declaration(tokens: List<Token>): List<Token> = (
-#   let declaration-specifiers = std-c-parse-declaration-specifiers(tokens); tokens = declaration-specifiers.second;
-#   if declaration-specifiers.first.is-some {
-#      let init-declarator-list = std-parse-init-declarator-list(tokens); tokens = init-declarator-list.second;
-#      tokens = std-c-take-expect(tokens, c";");
-#      # TODO Add to namespace
-#   };
-#   tokens = std-c-parse-static-assert-declaration(tokens);
-#   tokens = std-c-take-maybe(tokens, c";");
-#   tokens;
-#);
+let std-c-parse-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let declaration-specifiers = std-c-parse-declaration-specifiers(tokens); tokens = declaration-specifiers.second;
+   if declaration-specifiers.first.is-some {
+      let init-declarator-list = std-c-parse-init-declarator-list(tokens); tokens = init-declarator-list.second;
+      tokens = std-c-take-expect(tokens, ";");
+      Tuple{ Some{CBinaryOp{"Declaration", close(declaration-specifiers.first.get-or-panic), close(CMaybe{close(init-declarator-list.first)}) }}, tokens }
+   } else {
+      let ad = std-c-parse-static-assert-declaration(tokens); tokens = ad.second;
+      tokens = std-c-take-maybe(tokens, ";");
+      Tuple{ ad.first, tokens }
+   };
+);
 
 let std-c-parse-declaration-specifiers(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
@@ -1229,11 +1230,6 @@ let std-c-parse-expression-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,Li
    let e = std-c-parse-expression(tokens);
    if e.first.is-some { e.second = std-c-take-expect(e.second, ";"); };
    e;
-);
-
-let std-c-parse-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
-   Tuple{ no, tokens }
 );
 
 let std-c-parse-labeled-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
