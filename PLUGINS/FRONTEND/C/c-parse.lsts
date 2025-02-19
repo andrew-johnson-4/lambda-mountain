@@ -224,19 +224,19 @@ let std-c-parse-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>>
    else dd
 );
 
-#let std-c-declaration-list(tokens: List<Token>): Tuple<Maybe<List<CDeclaration>>,List<Token>> = (
-#   let declaration = std-c-parse-declaration(tokens); tokens = declaration.second;
-#   if let Some{decl=content} = declaration.first {
-#      let decls = [decl];
-#      declaration = std-c-parse-declaration(tokens); tokens = declaration.second;
-#      while declaration.first.is-some {
-#         if let Some{decl-next=content} = declaration.first {
-#            decls = cons(decl-next, decls);
-#         }
-#      };
-#      Tuple{ Some{decls}, tokens }
-#   } else (Tuple{ (None :: Maybe<List<CDeclaration>>), tokens })
-#);
+let std-c-declaration-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   let declaration = std-c-parse-declaration(tokens); tokens = declaration.second;
+   if declaration.first.is-some {
+      let decls = [declaration.first.get-or-panic];
+      declaration = std-c-parse-declaration(tokens); tokens = declaration.second;
+      while declaration.first.is-some {
+         decls = cons(declaration.first.get-or-panic, decls);
+         declaration = std-c-parse-declaration(tokens); tokens = declaration.second;
+      };
+      Tuple{ Some{CList{close(decls)}}, tokens }
+   } else Tuple{ no, tokens }
+);
 
 let std-c-parse-compound-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
