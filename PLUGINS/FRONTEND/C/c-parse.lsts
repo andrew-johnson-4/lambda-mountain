@@ -77,7 +77,7 @@ let to-smart-string(l: CTerm): String = (
 );
 
 let std-c-parse(tokens: List<Token>): Nil = (
-#   while non-zero(tokens) { tokens = std-c-parse-external-declaration(tokens); }
+   while non-zero(tokens) { tokens = std-c-parse-external-declaration(tokens); }
 );
 
 let std-c-is-reserved-word(tk: String): U64 = (
@@ -160,11 +160,13 @@ let std-c-take-maybe(tokens: List<Token>, cls: String): List<Token> = (
    else tokens;
 );
 
-#let std-c-parse-external-declaration(tokens: List<Token>): Nil = (
-#   tokens = std-c-parse-function-definition();
-#   tokens = std-c-parse-declaration();
-#   tokens;
-#);
+let std-c-parse-external-declaration(tokens: List<Token>): List<Token> = (
+   let fd = std-c-parse-function-definition(tokens); tokens = fd.second;
+   if fd.first.is-some { print("TODO: declare function \{fd.first.get-or-panic}\n"); };
+   let d = std-c-parse-declaration(tokens); tokens = d.second;
+   if d.first.is-some { print("TODO: declare \{d.first.get-or-panic}\n"); };
+   tokens;
+);
 
 let std-c-parse-function-definition(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
