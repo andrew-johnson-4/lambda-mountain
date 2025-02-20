@@ -28,3 +28,7 @@ An assembler takes pieces of data and sticks them together. Assemblers don't alw
 
 A fragment is a Key-Value Map of Strings to S-Expressions. This data structure permits more detailed manipulation of code than a typical assembler.
 
+### IDE Support
+
+Currently, there is only Vim and NeoVim syntax highlighting.
+[instructions](./vim/README.md)
