@@ -21,7 +21,7 @@ let apply-blame(function-name: CString, function-type: Type, parameters: Type, d
            "With Arguments \{parameters}\n"
            "At \{blame.location}\n"
            "Matched Candidates:\n"
-           "\{function-type.pretty}\n")
+           "\{r.function-type.pretty}\n")
    };
    r
 );
