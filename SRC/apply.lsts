@@ -21,7 +21,7 @@ let apply-blame(function-name: CString, function-type: Type, parameters: Type, d
            "With Arguments \{parameters}\n"
            "At \{blame.location}\n"
            "Matched Candidates:\n"
-           "\{function-type.pretty}\n")
+           "\{r.function-type.pretty}\n")
    };
    r
 );
@@ -37,7 +37,7 @@ let apply(function-name: CString, function-type: Type, parameters: Type, do-spec
       r = t1(c"Error: Function Application Yielded An Irreducible Plurality Of Matches");
       function-type = head(rs);
       for candidate in tail(rs) {
-         function-type = r && candidate;
+         function-type = function-type && candidate;
       };
    } else {
       for sft in rs { # iterate in case this is a hook
