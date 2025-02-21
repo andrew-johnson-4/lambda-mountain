@@ -34,3 +34,10 @@ if true {
    let tctx = unify(t-array-x, t-array-A-d);
    assert( substitute(tctx, t-x) == t-A );
 };
+
+let t-f1 = normalize(t3(c"Arrow", t-A, t-A));
+let t-f2 = normalize(t3(c"Arrow", t-C, t-A));
+let t-f3 = normalize(t3(c"Arrow", t-A, t-C));
+
+assert( not(can-unify(t-f2, t-f1)) );
+assert( can-unify(t-f3, t-f1) );

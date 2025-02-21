@@ -68,6 +68,11 @@ let can-unify(fpt: Type, pt: Type): U64 = (
       } => can-unify(lp1,rp1);
 
       Tuple{
+          first:TGround{tag:c"Arrow", parameters:[lrng.. ldom..]},
+          second:TGround{tag:c"Arrow", parameters:[rrng.. rdom..]}
+      } => can-unify(rdom, ldom) && can-unify(ldom, rdom);
+
+      Tuple{
           first:TGround{ltn=tag, lps=parameters},
           second:TGround{rtn=tag, rps=parameters}
       } => ltn==rtn && can-unify(lps,rps);
