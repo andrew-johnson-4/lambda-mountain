@@ -1,7 +1,7 @@
 CC = cc
 
 dev: install-production
-	lm tests/unit/type-inference.lsts
+	lm tests/regress/syntax-bugs.lsts
 	$(CC) -O3 tmp.c
 	./a.out
 	#lm tests/c/main.c
