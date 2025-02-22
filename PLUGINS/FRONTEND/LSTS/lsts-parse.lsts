@@ -960,13 +960,22 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
          lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
          let rhs-rest = lsts-parse-small-expression(tokens);
          tokens = rhs-rest.second;
+         let rhs-tmp-name = uuid();
+         let rhs-tmp = Var{ rhs-tmp-name, with-location(mk-token(rhs-tmp-name),loc) };
+         base = App{
+            close(App{
+               close(Var{ c"let", with-location(mk-token(c"let"),loc) }),
+               close(rhs-tmp)
+            }),
+            close(rhs-rest.first)
+         };
 
          let i = 0_u64;
          for lhs in lefts {
             let fieldstr = c"." + to-string(i+1);
             let rexpr = close(App {
                close(Var{ fieldstr, with-location(mk-token(fieldstr),loc) }),
-               close(rhs-rest.first)
+               close(rhs-tmp)
             });
 
             match lhs {
@@ -980,11 +989,7 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
                      }),
                      rexpr
                   };
-                  if non-zero(base) {
-                     base = App { close(base), close(x) };
-                  } else {
-                     base = x;
-                  };
+                  base = App { close(base), close(x) };
                );
 
                ASTOrIdentId { id=id } => (
@@ -995,11 +1000,7 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
                      }),
                      rexpr
                   };
-                  if non-zero(base) {
-                     base = App { close(base), close(x) };
-                  } else {
-                     base = x;
-                  };
+                  base = App { close(base), close(x) };
                );
             };
             i = i + 1;

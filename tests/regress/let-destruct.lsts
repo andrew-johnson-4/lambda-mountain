@@ -1,10 +1,19 @@
 
 import LIB/default.lsts;
 
+let global_a = 5;
+let f(): Tuple<U8,U8> = (
+   global_a = global_a + 1;
+   Tuple{ global_a, global_a }
+);
+
 let main(): Nil = (
    (let a, let b) = Tuple { 1, 2 };
    assert(a == 1);
    assert(b == 2);
    (a, _) = Tuple { 2, 1 };
    assert(a == 2);
+   (a, b) = f();
+   assert(a == 6);
+   assert(b == 6);
 );
