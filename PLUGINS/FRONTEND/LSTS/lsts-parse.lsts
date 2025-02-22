@@ -43,6 +43,7 @@ let lsts-has-assign(tokens: List<Token>): U64 = (
       [Token{key:c";"} .. rest] => (if depth <= 0_i64 {tokens = [] :: List<Token>} else {tokens = rest;});
       [Token{key:c","} .. rest] => (if depth <= 0_i64 {tokens = [] :: List<Token>} else {tokens = rest;});
       [Token{key:c"="} .. rest] => (if depth == 0_i64 {has-assign = 1; tokens = [] :: List<Token>;} else {tokens = rest;});
+      [Token{key:c"if"} .. rest] => (if depth == 0_i64 {tokens = [] :: List<Token>;} else {tokens = rest;});
       [_ .. rest] => tokens = rest;
    }; if depth < 0_i64 { tokens = [] :: List<Token>; }; };
    has-assign
@@ -766,7 +767,7 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
             lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
             t-rest.first;
          } else {
-            let t-rest = lsts-parse-andor(tokens);
+            let t-rest = lsts-parse-assign(tokens);
             tokens = t-rest.second;
             t-rest.first;
          };
@@ -907,112 +908,120 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
          };
       );
       _ => (
-         if lsts-has-assign(tokens) {
-            let loc = head(tokens).location;
-
-            if lsts-parse-head(tokens) == c"(" {
-               lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
-
-               let lefts = [] :: List<ASTOrIdent>;
-
-               let loop = true;
-               while loop {
-                  match lsts-parse-head(tokens) {
-                     c"_" => (
-                        tokens = tail(tokens);
-                        lefts = cons(ASTOrIdentIgnore {}, lefts);
-                     );
-
-                     c"let" => (
-                        tokens = tail(tokens);
-                        let lhs = lsts-parse-lhs(tokens);
-                        tokens = lhs.second;
-                        lefts = cons(ASTOrIdentId { lhs.first }, lefts);
-                     );
-
-                     hd => (
-                        let lhs = lsts-parse-lhs(tokens);
-                        tokens = lhs.second;
-                        lefts = cons(ASTOrIdentAST { lhs.first }, lefts);
-                     );
-                  };
-
-                  if lsts-parse-head(tokens) == c"," {
-                     tokens = tail(tokens);
-                  } else {
-                     loop = false;
-                  };
-               };
-
-               lsts-parse-expect(c")", tokens); tokens = tail(tokens);
-
-               lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-               let rhs-rest = lsts-parse-small-expression(tokens);
-               tokens = rhs-rest.second;
-
-               let i = 0_u64;
-               for lhs in lefts {
-                  let fieldstr = c"." + to-string(i+1);
-                  let rexpr = close(App {
-                     close(Var{ fieldstr, with-location(mk-token(fieldstr),loc) }),
-                     close(rhs-rest.first)
-                  });
-
-                  match lhs {
-                     ASTOrIdentIgnore {} => ();
-
-                     ASTOrIdentAST { ast=ast } => (
-                        let x = App {
-                           close(App{
-                              close(Var{ c"set", with-location(mk-token("set"),loc) }),
-                              close(ast)
-                           }),
-                           rexpr
-                        };
-                        if non-zero(base) {
-                           base = App { close(base), close(x) };
-                        } else {
-                           base = x;
-                        };
-                     );
-
-                     ASTOrIdentId { id=id } => (
-                        let x = App {
-                           close(App{
-                              close(Var{ c"let", with-location(mk-token("let"),loc) }),
-                              close(id)
-                           }),
-                           rexpr
-                        };
-                        if non-zero(base) {
-                           base = App { close(base), close(x) };
-                        } else {
-                           base = x;
-                        };
-                     );
-                  };
-                  i = i + 1;
-               };
-            } else {
-               let lhs-rest = lsts-parse-lhs(tokens);
-               tokens = lhs-rest.second;
-               lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-               let rhs-rest = lsts-parse-small-expression(tokens);
-               tokens = rhs-rest.second;
-               base = App {
-                  close(App{
-                     close(Var{ c"set", with-location(mk-token("set"),loc) }),
-                     close(lhs-rest.first)
-                  }),
-                  close(rhs-rest.first)
-               };
-            };
-         } else {
-            let base-rest = lsts-parse-andor(tokens);
-            base = base-rest.first;
-            tokens = base-rest.second;
-         }
+         let assign-rest = lsts-parse-assign(tokens);
+         base = assign-rest.first;
+         tokens = assign-rest.second;
       );
+   };
+   Tuple { base, tokens }
+);
+
+let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   let base = ASTEOF;
+   if lsts-has-assign(tokens) {
+      let loc = head(tokens).location;
+
+      if lsts-parse-head(tokens) == c"(" {
+         lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
+
+         let lefts = [] :: List<ASTOrIdent>;
+
+         let loop = true;
+         while loop {
+            match lsts-parse-head(tokens) {
+               c"_" => (
+                  tokens = tail(tokens);
+                  lefts = cons(ASTOrIdentIgnore {}, lefts);
+               );
+
+               c"let" => (
+                  tokens = tail(tokens);
+                  let lhs = lsts-parse-lhs(tokens);
+                  tokens = lhs.second;
+                  lefts = cons(ASTOrIdentId { lhs.first }, lefts);
+               );
+
+               hd => (
+                  let lhs = lsts-parse-lhs(tokens);
+                  tokens = lhs.second;
+                  lefts = cons(ASTOrIdentAST { lhs.first }, lefts);
+               );
+            };
+
+            if lsts-parse-head(tokens) == c"," {
+               tokens = tail(tokens);
+            } else {
+               loop = false;
+            };
+         };
+
+         lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+
+         lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+         let rhs-rest = lsts-parse-small-expression(tokens);
+         tokens = rhs-rest.second;
+
+         let i = 0_u64;
+         for lhs in lefts {
+            let fieldstr = c"." + to-string(i+1);
+            let rexpr = close(App {
+               close(Var{ fieldstr, with-location(mk-token(fieldstr),loc) }),
+               close(rhs-rest.first)
+            });
+
+            match lhs {
+               ASTOrIdentIgnore {} => ();
+
+               ASTOrIdentAST { ast=ast } => (
+                  let x = App {
+                     close(App{
+                        close(Var{ c"set", with-location(mk-token("set"),loc) }),
+                        close(ast)
+                     }),
+                     rexpr
+                  };
+                  if non-zero(base) {
+                     base = App { close(base), close(x) };
+                  } else {
+                     base = x;
+                  };
+               );
+
+               ASTOrIdentId { id=id } => (
+                  let x = App {
+                     close(App{
+                        close(Var{ c"let", with-location(mk-token("let"),loc) }),
+                        close(id)
+                     }),
+                     rexpr
+                  };
+                  if non-zero(base) {
+                     base = App { close(base), close(x) };
+                  } else {
+                     base = x;
+                  };
+               );
+            };
+            i = i + 1;
+         };
+      } else {
+         let lhs-rest = lsts-parse-lhs(tokens);
+         tokens = lhs-rest.second;
+         lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+         let rhs-rest = lsts-parse-small-expression(tokens);
+         tokens = rhs-rest.second;
+         base = App {
+            close(App{
+               close(Var{ c"set", with-location(mk-token("set"),loc) }),
+               close(lhs-rest.first)
+            }),
+            close(rhs-rest.first)
+         };
+      };
+   } else {
+      let base-rest = lsts-parse-andor(tokens);
+      base = base-rest.first;
+      tokens = base-rest.second;
    };
    Tuple { base, tokens }
 );

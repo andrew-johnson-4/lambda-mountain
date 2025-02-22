@@ -1,0 +1,7 @@
+
+import LIB/minimal.lsts;
+
+if true {
+   let a = 3;
+   if true then a = 5;
+};
