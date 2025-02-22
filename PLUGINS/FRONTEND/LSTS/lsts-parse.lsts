@@ -251,7 +251,7 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
          }
       };
       base = head(bases); bases = tail(bases);
-      for b in bases {
+      for b in bases.iter() {
          base = App {
             close(Var{ c"macro::lhs-head", with-location(mk-token("macro::lhs-head"),loc) }),
             close(App{ close(b), close(base) })
@@ -339,7 +339,7 @@ let lsts-make-maybe-var(tokens: List<Token>): Tuple<AST,List<Token>> = (
 
 let lsts-is-lit(s: CString): U64 = (
    let r = 0;
-   for Tuple { sfxs=first } in parse-suffixes {
+   for Tuple { sfxs=first } in parse-suffixes.unsafe-iter() {
       r = r || s.has-suffix(sfxs);
    }; r;
 );
@@ -480,7 +480,7 @@ let lsts-parse-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
                lsts-parse-expect(c",", tokens); tokens = tail(tokens);
             }
          };
-         for add-item in add-items {
+         for add-item in add-items.unsafe-iter() {
             term = App {
                close(Var{ c"list::cons", with-location(mk-token("list::cons"),loc) }),
                close(App{ close(add-item), close(term) })

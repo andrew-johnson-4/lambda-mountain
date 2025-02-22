@@ -9,34 +9,6 @@ tail-string := λ(: x String). (: (
    (+( (as x U8[]) 1_u64 ))
 ) String);
 
-clone-rope := λ(: s S). (: (
-   (let buff (new-buffer 64_u64))
-   (set buff (clone-rope-impl( buff s )))
-   (set buff (.write( buff 0_u8 )))
-   (as (.ptr buff) String)
-) String);
-
-clone-rope-impl := λ(: buff Buffer)(: s S). (: (
-   (match s (
-      ()
-      ( SNil () )
-      ( (SCons( l r )) (
-         (set buff (clone-rope-impl( buff l )))
-         (set buff (clone-rope-impl( buff r )))
-      ))
-      ( (SAtom a) (
-         (let ci 0_u64)
-         (let c ([]( (as a U8[]) ci )))
-         (while (!=( c 0_u8 )) (
-            (set buff (.write( buff c )))
-            (set ci (+( ci 1_u64 )))
-            (set c ([]( (as a U8[]) ci )))
-         ))
-      ))
-   ))
-   buff
-) Buffer);
-
 deep-hash := λ(: key String). (: (
    (let i 0_u64)
    (let hash 0_u64)
@@ -60,27 +32,6 @@ deep-hash := λ(: key String). (: (
    si
 ) U64);
 
-.has-prefix := λ(: base String)(: pfx String). (: (
-   (let r 1_u64)
-   (while (head-string pfx) (
-      (if (head-string base) (
-         (let bc (head-string base))
-         (let pc (head-string pfx))
-         (if (==( bc pc )) (
-            (set base (tail-string base))
-            (set pfx (tail-string pfx))
-         ) (
-            (set r 0_u64)
-            (set pfx '_s)
-         ))
-      ) (
-         (set r 0_u64)
-         (set pfx '_s)
-      ))
-   ))
-   r
-) U64);
-
 .remove-prefix := λ(: base String)(: pfx String). (: (
    (if (.has-prefix( base pfx )) (
       (while (head-string pfx) (
@@ -90,17 +41,6 @@ deep-hash := λ(: key String). (: (
    ) ())
    base
 ) String);
-
-.has-suffix := λ(: base String)(: sfx String). (: (
-   (let r 0_u64)
-   (while (head-string base) (
-      (if (==( base sfx )) (
-         (set r 1_u64)
-      ) ())
-      (set base (tail-string base))
-   ))
-   r
-) U64);
 
 .remove-suffix := λ(: base String)(: sfx String). (: (
    (let r SNil)
@@ -131,15 +71,6 @@ deep-hash := λ(: key String). (: (
    ))
    (clone-rope r)
 ) String);
-
-.contains := λ(: base String)(: pat String). (: (
-   (let r 0_u64)
-   (while (!=( (head-string base) 0_u8 )) (
-      (if (.has-prefix( base pat )) (set r 1_u64) ())
-      (set base (tail-string base))
-   ))
-   r
-) U64);
 
 + := λ(: l String)(: r String). (: (
    (clone-rope(+( (SAtom l) (SAtom r) )))

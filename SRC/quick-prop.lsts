@@ -15,7 +15,7 @@ let enrich-quick-prop(base: Type): Type = (
 let enrich-quick-prop(base: Type, pre: Type): Type = (
    match pre {
       TGround {} => (
-         for Tuple { lt=first, rt=second } in quick-prop.lookup( pre.ground-tag-and-arity, ([] :: List<(Type,Type)>) ) {
+         for Tuple { lt=first, rt=second } in quick-prop.lookup( pre.ground-tag-and-arity, ([] :: List<(Type,Type)>) ).iter() {
             if can-unify(lt, base) then (
                let tctx = unify(lt, base);
                let post = substitute(tctx, rt);
@@ -58,7 +58,7 @@ let weaken-quick-prop(base: Type): Type = (
 let weaken-quick-prop(base: Type, pre: Type): Type = (
    match pre {
       TGround {} => (
-         for Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( pre.ground-tag-and-arity, ([] :: List<(Type,Type)>) ) {
+         for Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( pre.ground-tag-and-arity, ([] :: List<(Type,Type)>) ).iter() {
             if can-unify(lt, base) then (
                base = remove-info(base, rt);
             );
