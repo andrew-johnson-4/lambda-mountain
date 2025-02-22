@@ -9,7 +9,10 @@ let add-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
 );
 
 let enrich-quick-prop(base: Type): Type = (
-   enrich-quick-prop(base, base)
+   # call twice to infer second-degree props without risk of diverging
+   base = enrich-quick-prop(base, base);
+   base = enrich-quick-prop(base, base);
+   base
 );
 
 let enrich-quick-prop(base: Type, pre: Type): Type = (
