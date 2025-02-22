@@ -520,7 +520,11 @@ let lsts-parse-interface(tokens: List<Token>): List<Token> = (
 
    lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
 
-   fail("interfaces are currently not supported");
+   if lsts-parse-head(tokens) == c";" {
+      lsts-parse-expect(c";", tokens); tokens = tail(tokens);
+   };
+
+   # ignored for now
 
    tokens
 );
