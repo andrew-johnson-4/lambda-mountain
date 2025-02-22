@@ -7,4 +7,7 @@ let main(): Nil = (
    assert(b == 2);
    (a, _) = Tuple { 2, 1 };
    assert(a == 2);
+   (a, b) = Tuple { 3, 4 };
+   assert(a == 3);
+   assert(b == 4);
 );
