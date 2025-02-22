@@ -74,6 +74,11 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TContext> = (
       } => ctx = unify-inner(lp1,rp1);
 
       Tuple{
+          first:TGround{tag:c"Arrow", parameters:[lrng.. ldom..]},
+          second:TGround{tag:c"Arrow", parameters:[rrng.. rdom..]}
+      } => (ctx = unify-inner(rdom, ldom) && unify-inner(ldom, rdom));
+
+      Tuple{
           first:TGround{ltn=tag, lps=parameters},
           second:TGround{rtn=tag, rps=parameters}
       } => if ltn==rtn then { ctx = unify(lps,rps) };
