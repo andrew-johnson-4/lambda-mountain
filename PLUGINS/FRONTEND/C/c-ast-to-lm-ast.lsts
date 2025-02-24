@@ -10,6 +10,7 @@ let std-c-declare-function(specifiers: CTerm, declarator: CTerm, declaration-lis
    (let return-type, let misc-types) = std-c-type-of-specifiers(specifiers);
    (let name, let pointer) = std-c-name-of-declarator(declarator);
    let params = std-c-lhs-of-parameter-list(declaration-list);
+   let body = std-c-expr-of-statement(statement);
    print("Name: \{name}\n");
    print("Return Type: \{return-type}\n");
    print("Misc Type: \{misc-types}\n");
@@ -39,3 +40,44 @@ let std-c-lhs-of-parameter-list(declaration-list: CTerm): AST = (
    };
 );
 
+let std-c-expr-of-statement(t: CTerm): AST = (
+   match t {
+      CCompound{terms=terms} => (
+         let inner = ASTNil;
+         for it in terms {
+            inner = App{ true, close(inner), close(std-c-expr-of-statement(it)) };
+         };
+         App{ false, close(Var{c"c::compound", mk-token(c"c::compound")}), close(inner) }
+      );
+      CUnaryPrefix{op:"return", arg=arg} => (
+         let inner = std-c-expr-of-statement(arg);
+         App{ false, close(Var{c"c::return", mk-token(c"c::return")}), close(inner) }
+      );
+      CInteger{value=value} => (
+         App{ false,
+            close(Var{c":", mk-token(c":")}),
+            close(App{
+               close(Lit{ untern(value), mk-token(value) }),
+               close(AType{ std-c-type-of-integer(value) })
+            })
+         }
+      );
+      _ => fail("Unsupported C Statement:\n\{t}\n");
+   };
+);
+
+let std-c-type-of-integer(i: String): Type = (
+   if i.has-prefix("-") {
+      let n = to-u64(untern(tail-string(i)));
+      if n <= 128 then t2(c"C",t1(c"uint8_t")) else
+      if n <= 32768 then t2(c"C",t1(c"uint16_t")) else
+      if n <= 2147483648 then t2(c"C",t1(c"uint32_t")) else
+      t2(c"C",t1(c"uint64_t"))
+   } else {
+      let n = to-u64(untern(i));
+      if n <= 255 then t2(c"C",t1(c"int8_t")) else
+      if n <= 65535 then t2(c"C",t1(c"int16_t")) else
+      if n <= 4294967295 then t2(c"C",t1(c"int32_t")) else
+      t2(c"C",t1(c"int64_t"))
+   };
+);
