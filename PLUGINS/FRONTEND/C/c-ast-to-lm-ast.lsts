@@ -9,6 +9,7 @@ let std-c-declare(t: CTerm): Nil = (
 let std-c-declare-function(specifiers: CTerm, declarator: CTerm, declaration-list: CTerm, statement: CTerm): Nil = (
    (let return-type, let misc-types) = std-c-type-of-specifiers(specifiers);
    (let name, let pointer) = std-c-name-of-declarator(declarator);
+   let params = std-c-lhs-of-parameter-list(declaration-list);
    print("Name: \{name}\n");
    print("Return Type: \{return-type}\n");
    print("Misc Type: \{misc-types}\n");
@@ -28,6 +29,13 @@ let std-c-name-of-declarator(declarator: CTerm): Tuple<String,Type> = (
    match declarator {
       CUnaryPrefix{op:"Declarator(", arg:CIdentifier{name=value}} => (name, TAny);
       _ => fail("Unsupported C Declarator:\n\{declarator}\n");
+   };
+);
+
+let std-c-lhs-of-parameter-list(declaration-list: CTerm): AST = (
+   match declaration-list {
+      CMaybe{value:None{}} => ASTNil;
+      _ => fail("Unsupported C Parameter List:\n\{declaration-list}\n");
    };
 );
 
