@@ -170,9 +170,9 @@ let std-c-take-maybe(tokens: List<Token>, cls: String): List<Token> = (
 
 let std-c-parse-external-declaration(tokens: List<Token>): List<Token> = (
    let fd = std-c-parse-function-definition(tokens); tokens = fd.second;
-   if fd.first.is-some { print("TODO: declare function\n\{fd.first.get-or-panic}\n"); };
+   if fd.first.is-some { std-c-declare(fd.first.get-or-panic); };
    let d = std-c-parse-declaration(tokens); tokens = d.second;
-   if d.first.is-some { print("TODO: declare \{d.first.get-or-panic}\n"); };
+   if d.first.is-some { std-c-declare(d.first.get-or-panic); };
    tokens;
 );
 
