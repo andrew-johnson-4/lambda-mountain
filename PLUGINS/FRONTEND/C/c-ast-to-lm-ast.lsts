@@ -11,10 +11,6 @@ let std-c-declare-function(specifiers: CTerm, declarator: CTerm, declaration-lis
    (let name, let pointer) = std-c-name-of-declarator(declarator);
    let params = std-c-lhs-of-parameter-list(declaration-list);
    let body = std-c-expr-of-statement(statement);
-   print("Name: \{name}\n");
-   print("Return Type: \{return-type}\n");
-   print("Misc Type: \{misc-types}\n");
-   exit(1);
 );
 
 let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
