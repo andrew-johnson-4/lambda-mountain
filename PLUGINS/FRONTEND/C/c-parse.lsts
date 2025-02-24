@@ -79,7 +79,7 @@ let to-smart-string(l: CTerm): String = (
       CBinaryOp{op=op,arg1=arg1,arg2=arg2} => "{BinaryOp \{op} \{arg1} \{arg2}}";
       CTernaryOp{op=op,arg1=arg1,arg2=arg2,arg3=arg3} => "{TernaryOp \{op} \{arg1} \{arg2} \{arg3}}";
       CFor{op=op,arg1=arg1,arg2=arg2,arg3=arg3,stmt=stmt} => "{For \{op} \{arg1} \{arg2} \{arg3} \{stmt}}";
-      CFunctionDefinition{spec=specifiers,decl=declarator,dl=declaration-list,stmt=statement} => "{For \{spec} \{decl} \{dl} \{stmt}}";
+      CFunctionDefinition{spec=specifiers,decl=declarator,dl=declaration-list,stmt=statement} => "{Function\n\t\{spec}\n\t\{decl}\n\t\{dl}\n\t\{stmt}\n}";
       CAccessor{racc=accessor,rf=field,rarg=arg} => "{Accessor \{racc} \{rf} \{rarg}}";
    }
 );
@@ -170,7 +170,7 @@ let std-c-take-maybe(tokens: List<Token>, cls: String): List<Token> = (
 
 let std-c-parse-external-declaration(tokens: List<Token>): List<Token> = (
    let fd = std-c-parse-function-definition(tokens); tokens = fd.second;
-   if fd.first.is-some { print("TODO: declare function \{fd.first.get-or-panic}\n"); };
+   if fd.first.is-some { print("TODO: declare function\n\{fd.first.get-or-panic}\n"); };
    let d = std-c-parse-declaration(tokens); tokens = d.second;
    if d.first.is-some { print("TODO: declare \{d.first.get-or-panic}\n"); };
    tokens;
