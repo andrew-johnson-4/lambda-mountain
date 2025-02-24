@@ -1,7 +1,7 @@
 CC = cc
 
 dev: install-production
-	lm tests/regress/numerical-pyramid.lsts
+	lm tests/c/main.c
 	$(CC) -O3 tmp.c
 	./a.out
 	#lm tests/c/main.c
