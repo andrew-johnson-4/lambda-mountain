@@ -149,6 +149,16 @@ fn regression_tests() {
          let actual = actual.trim().to_string();
          if expected != actual {
             failures.push(( "--compile", path, expected, actual ));
+         } else {
+            let original_c = std::fs::read_to_string(path.clone())
+                          .expect(&format!("Could not load expected output {}", path));
+            let result_c = std::fs::read_to_string("tmp.c")
+                          .expect(&format!("Could not load expected output tmp.c during {}", path));
+            let o1 = original_c.chars().filter(|c| !c.is_whitespace()).collect();
+            let r1 = result_c.chars().filter(|c| !c.is_whitespace()).collect();
+            if o1 != r1 {
+               failures.push(( "--compile", path, o1, r1 ));
+            };
          }
       }
    }
