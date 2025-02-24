@@ -8,6 +8,8 @@ let std-c-declare(t: CTerm): Nil = (
 
 let std-c-declare-function(specifiers: CTerm, declarator: CTerm, declaration-list: CTerm, statement: CTerm): Nil = (
    (let return-type, let misc-types) = std-c-type-of-specifiers(specifiers);
+   (let name, let pointer) = std-c-name-of-declarator(declarator);
+   print("Name: \{name}\n");
    print("Return Type: \{return-type}\n");
    print("Misc Type: \{misc-types}\n");
    exit(1);
@@ -16,8 +18,16 @@ let std-c-declare-function(specifiers: CTerm, declarator: CTerm, declaration-lis
 let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
    let misc = TAny;
    let rtype = match specifiers {
-      CList{value:[CType1{rv=value}..]} => t1(untern(rv));
+      CList{value:[CType1{rv=value}..]} => t2(c"C", t1(untern(rv)));
       _ => fail("Unsupported C Specifiers:\n\{specifiers}\n");
    };
    (rtype, misc);
 );
+
+let std-c-name-of-declarator(declarator: CTerm): Tuple<String,Type> = (
+   match declarator {
+      CUnaryPrefix{op:"Declarator(", arg:CIdentifier{name=value}} => (name, TAny);
+      _ => fail("Unsupported C Declarator:\n\{declarator}\n");
+   };
+);
+
