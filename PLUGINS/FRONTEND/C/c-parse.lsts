@@ -63,15 +63,23 @@ let to-smart-string(l: CTerm): String = (
       CCharacter{rv=value} => "{Character \{rv}}";
       CFloating{rv=value} => "{Floating \{rv}}";
       CEnumeration{rv=value} => "{Enumeration \{rv}}";
-      CMaybe{rv=value} => "{Maybe \{rv}}";
-      CList{rv=value} => "{List \{rv}}";
       CString{rv=value} => "{String \{rv}}";
-      CType1{rv=value} => "{Type \{rv}}";
-      CZOp{op=op} => "{ZOp \{op}}";
       CIdentifier{rv=value} => "{Identifier \{rv}}";
-      CUnaryPrefix{rop=op,rarg=arg} => "{Prefix \{rop} \{rarg}}";
+      CType1{rv=value} => "{Type \{rv}}";
+      CList{rv=value} => "{List \{rv}}";
+      CIList{rv=value} => "{IList \{rv}}";
+      CMaybe{rv=value} => "{Maybe \{rv}}";
+      CZOp{op=op} => "{ZOp \{op}}";
+      CCompound{rv=terms} => "{Compound \{rv}}";
+      CPointer{q=qualifiers,n=next} => "{Pointer \{q} \{n}}";
+      CInitializer{q=designator,n=initializer} => "{Initializer \{q} \{n}}";
+      CInitializerList{q=terms} => "{InitializerList \{q}}";
       CUnaryPostfix{rop=op,rarg=arg} => "{Postfix \{rop} \{rarg}}";
+      CUnaryPrefix{rop=op,rarg=arg} => "{Prefix \{rop} \{rarg}}";
       CBinaryOp{op=op,arg1=arg1,arg2=arg2} => "{BinaryOp \{op} \{arg1} \{arg2}}";
+      CTernaryOp{op=op,arg1=arg1,arg2=arg2,arg3=arg3} => "{TernaryOp \{op} \{arg1} \{arg2} \{arg3}}";
+      CFor{op=op,arg1=arg1,arg2=arg2,arg3=arg3,stmt=stmt} => "{For \{op} \{arg1} \{arg2} \{arg3} \{stmt}}";
+      CFunctionDefinition{spec=specifiers,decl=declarator,dl=declaration-list,stmt=statement} => "{For \{spec} \{decl} \{dl} \{stmt}}";
       CAccessor{racc=accessor,rf=field,rarg=arg} => "{Accessor \{racc} \{rf} \{rarg}}";
    }
 );
