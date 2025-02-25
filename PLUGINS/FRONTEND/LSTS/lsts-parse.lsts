@@ -663,6 +663,11 @@ let lsts-parse-let(tokens: List<Token>): List<Token> = (
       prop = 1;
       lsts-parse-expect(c"prop", tokens); tokens = tail(tokens);
    };
+   let misc-tt = TAny;
+   if lsts-parse-head(tokens)==c":" {
+      lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+      (misc-tt, tokens) = lsts-parse-type(tokens);
+   };
    lsts-parse-expect(c"Identifier", lsts-is-ident-head(lsts-parse-head(tokens)) || lsts-parse-head(tokens)==c".", tokens);
    let name = lsts-unwrap-identifier(lsts-parse-head(tokens)); tokens = tail(tokens);
    if name == c"." {
@@ -704,7 +709,7 @@ let lsts-parse-let(tokens: List<Token>): List<Token> = (
          ast-parsed-program = Seq {
             close(ast-parsed-program),
             close(Glb{ with-location(mk-token(name),loc), close(Abs{
-               close(args-list), close(return-term), attach-tt
+               close(args-list), close(return-term), misc-tt && attach-tt
             }) })
          };
       };
