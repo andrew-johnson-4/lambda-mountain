@@ -34,3 +34,4 @@ import PLUGINS/BACKEND/C/is-const-array.lm;
 import PLUGINS/BACKEND/C/register-hook.lsts;
 import PLUGINS/BACKEND/C/std-c-compile-global.lsts;
 import PLUGINS/BACKEND/C/std-c-mangle-type.lsts;
+import PLUGINS/BACKEND/C/std-c-compile-function-args.lsts;
