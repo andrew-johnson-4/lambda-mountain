@@ -1,5 +1,6 @@
 
 let c-frontend(fp: CString): Nil = (
+   frontend(c"LIB/c-primitives.lsts"); # hard coded dependency
    let tokens = std-c-tokenize-string(fp, read-file(fp));
    std-c-parse(tokens);
 );

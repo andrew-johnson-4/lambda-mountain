@@ -11,6 +11,19 @@ let std-c-declare-function(specifiers: CTerm, declarator: CTerm, declaration-lis
    (let name, let pointer) = std-c-name-of-declarator(declarator);
    let params = std-c-lhs-of-parameter-list(declaration-list);
    let body = std-c-expr-of-statement(statement);
+   ast-parsed-program = ast-parsed-program + Glb{
+      mk-token(name), close(Abs{
+         close(params),
+         close(App{ false,
+            close(Lit{c":", mk-token(c":")}),
+            close(App{
+               close(body),
+               close(AType{ return-type })
+            })
+         }),
+         misc-types && t1(c"C")
+      })
+   };
 );
 
 let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
@@ -51,7 +64,7 @@ let std-c-expr-of-statement(t: CTerm): AST = (
       );
       CInteger{value=value} => (
          App{ false,
-            close(Var{c":", mk-token(c":")}),
+            close(Lit{c":", mk-token(c":")}),
             close(App{
                close(Lit{ untern(value), mk-token(value) }),
                close(AType{ std-c-type-of-integer(value) })
