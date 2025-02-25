@@ -36,8 +36,9 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          text = text + SAtom{c"("};
          text = text + std-c-compile-function-args(ctx, lhs);
          text = text + SAtom{c")"};
+         let inner-ctx = ctx;
          #let inner-ctx = std-c-compile-destructure-args( ctx, lhs );
-         #let inner-expr = std-c-compile-expr( ctx, term );
+         let inner-expr = std-c-compile-expr( ctx, term );
          text = text + SAtom{c";"};
          assemble-text-section = assemble-text-section + text;
       );
