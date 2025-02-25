@@ -1,0 +1,9 @@
+
+let std-c-mangle-type(tt: Type): S = (
+   tt = normalize(tt).rewrite-opaque-type-alias;
+   std-c-mangle-type-internal(tt)
+);
+
+let std-c-mangle-type-internal(tt: Type): S = (
+   SAtom{c"TODO:MangleCType"}
+);
