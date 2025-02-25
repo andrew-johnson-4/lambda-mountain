@@ -36,3 +36,4 @@ let $"=="(ls: S, rs: S): U64 = (
 );
 
 let $"!="(ls: S, rs: S): U64 = not(ls == rs);
+let $"||"(ls: S, rs: S): S = if non-zero(ls) then ls else rs;

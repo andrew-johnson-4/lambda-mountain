@@ -20,6 +20,7 @@ config-platform-prefix       := 'PLATFORM/C/_s;
 config-profile-invocations   := False_u8;
 config-target                := 'tmp.c_s;
 config-mode                  := (: ModeCompile CompileMode);
+config-strip-debug           := False_u8;
 preprocess-macros            := (: MEOF MacroList);
 ast-parsed-program           := (: ASTEOF AST);
 global-ctx                   := (: FCtxEOF FContext);

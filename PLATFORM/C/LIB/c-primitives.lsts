@@ -1,0 +1,12 @@
+
+import PLATFORM/C/LIB/common-macros.lm;
+import PLATFORM/C/LIB/platform-macros.lm;
+import PLATFORM/C/LIB/blob.lm;
+import PLATFORM/C/LIB/primitives.lm;
+import PLATFORM/C/LIB/primitives.lsts;
+
+let :Blob $"c::compound"(ts: Cons<?,last>): last = (
+);
+
+let :Blob $"c::compound"(ts: last): last = (
+);

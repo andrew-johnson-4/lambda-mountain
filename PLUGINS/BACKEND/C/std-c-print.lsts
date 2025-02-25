@@ -1,0 +1,17 @@
+
+let std-c-print(t: AST): Nil = (
+   match t {
+      ASTEOF{} => print("[EOF]");
+      ASTNil{} => print("()");
+      App{left=left,right=right} => (
+         std-c-print(left); print("("); std-c-print(right); print(")");
+      );
+      Var{key=key} => print(key);
+      Lit{key=key} => (print("'"); print(key););
+      Abs{lhs=lhs,rhs=rhs} => (
+         print("(fn "); std-c-print(lhs); print(" = "); std-c-print(rhs); print(")");
+      );
+      AType{tt=tt} => print(tt);
+   };
+);
+

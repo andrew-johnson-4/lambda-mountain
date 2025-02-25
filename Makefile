@@ -1,12 +1,11 @@
 CC = cc
 
 dev: install-production
-	lm tests/c/main.c
-	$(CC) -O3 tmp.c
-	./a.out
-	#lm tests/c/main.c
-	#cc -O3 tmp.c
-	#./a.out
+	lm --stripdebug tests/c/main.c
+	cp tests/c/main.c original.c
+	cat original.c | python3 -c 'import sys; print("".join(sys.stdin.read().split()))' > diff1.c
+	cat tmp.c | python3 -c 'import sys; print("".join(sys.stdin.read().split()))' > diff2.c
+	diff diff1.c diff2.c
 
 build: compile-production
 	time ./production --c -o deploy1.c SRC/index-index.lm

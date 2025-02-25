@@ -1,0 +1,18 @@
+
+let std-c-compile-expr(ctx: FContext, t: AST): Fragment = (
+   match t {
+      App{ left:Lit{key:c":"}, right:App{ inner-term=left, right:AType{tt=tt} } } => (
+         std-c-compile-expr(ctx, inner-term);
+      );
+      App{ left:Var{key:c"c::compound"}, terms=right } => (
+         let e = mk-fragment();
+         e = e.set(c"expression", SAtom{c"{}"});
+         e
+      );
+      _ => (
+         print("TODO: std-c-compile-expr\n");
+         std-c-print(t); exit(1); mk-fragment();
+      );
+   }
+);
+

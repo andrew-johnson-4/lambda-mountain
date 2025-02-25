@@ -1,0 +1,34 @@
+
+let std-c-mangle-type(tt: Type): S = (
+   tt = normalize(tt).rewrite-opaque-type-alias;
+   std-c-mangle-type-internal(tt)
+);
+
+let std-c-mangle-type-internal(tt: Type): S = (
+   match tt {
+      TAnd{ left=left, right=right } => std-c-mangle-type-internal(left) || std-c-mangle-type-internal(right);
+      TAny{} => SNil;
+      TGround{tag:c"Array", parameters:[_.. array-base..]} => (
+         if array-base.is-arrow
+         then std-c-mangle-type-internal(array-base)
+         else ( std-c-mangle-type-internal(array-base) + SAtom{c"*"} );
+      );
+      TGround{tag:c"Arrow"} => (
+         (let pre, let post) = std-c-mangle-declaration-internal(tt);
+         let td-id = uuid();
+         assemble-header-section = assemble-header-section
+                                 + SAtom{c"typedef "}
+                                 + pre
+                                 + SAtom{c" "}
+                                 + SAtom{td-id}
+                                 + SAtom{c" "}
+                                 + post
+                                 + SAtom{c";\n"};
+         SAtom{td-id}
+      );
+      TGround{tag:c"C", parameters:[TGround{tag1=tag}..]} => (
+         SAtom{tag1}
+      );
+      _ => fail("TODO: std-c-mangle-type \{tt}\n");
+   }
+);
