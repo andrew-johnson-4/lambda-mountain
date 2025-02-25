@@ -18,20 +18,25 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             text = text + SAtom{c");"};
             assemble-header-section = assemble-header-section + text;
          };
-         print("TODO compile global: \{k}\n"); exit(1);
 
-         #      (set text (SCons( (close text) (close(SAtom '\]{_s)) )))
-         #      (if (==( k 'main_s )) (
-         #         (set text (SCons( (close text) (close assemble-string-initializer-section) )))
-         #         (set text (SCons( (close text) (close assemble-global-initializer-section) )))
-         #      ) ())
-         #      (set text (SCons( (close text) (close frame) )))
-         #      (set text (SCons( (close text) (close program) )))
-         #      (if (==( k 'main_s )) (
-         #         (set text (SCons( (close text) (close(SAtom '\:return\s0\:\n_s)) )))
-         #      ) ())
-         #      (set text (SCons( (close text) (close(SAtom '}\n_s)) )))
-         #      (set assemble-text-section (SCons( (close assemble-text-section) (close text) )))
+         let text = SNil;
+         if not(config-strip-debug) {
+            text = text + SAtom{c"#line "};
+            text = text + SAtom{to-string(loc.line)};
+            text = text + SAtom{c" "};
+            text = text + SAtom{loc.filename};
+            text = text + SAtom{c"\n"};
+         };
+         text = text + std-c-mangle-type(typeof(rhs));
+         text = text + SAtom{c" "};
+         text = text + SAtom{k};
+         text = text + SAtom{c"("};
+         text = text + std-c-compile-function-args(ctx, lhs);
+         text = text + SAtom{c")"};
+         #let inner-ctx = std-c-compile-destructure-args( ctx, lhs );
+         #let inner-expr = std-c-compile-expr( ctx, term );
+         text = text + SAtom{c";"};
+         assemble-text-section = assemble-text-section + text;
       );
    }
 );

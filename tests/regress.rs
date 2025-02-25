@@ -34,6 +34,7 @@ fn run_bootstrap(target: &str, leave_tmp: bool) -> String {
            .stdout(std::process::Stdio::piped())
            .stderr(std::process::Stdio::piped())
            .arg("--c")
+           .arg("--stripdebug")
            .arg("-o")
            .arg("tmp.c")
            .arg(target)
