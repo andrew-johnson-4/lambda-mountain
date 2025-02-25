@@ -32,3 +32,4 @@ import PLUGINS/BACKEND/C/fragment-local-variable.lm;
 import PLUGINS/BACKEND/C/fragment-label.lm;
 import PLUGINS/BACKEND/C/is-const-array.lm;
 import PLUGINS/BACKEND/C/register-hook.lsts;
+import PLUGINS/BACKEND/C/std-c-compile-global.lsts;

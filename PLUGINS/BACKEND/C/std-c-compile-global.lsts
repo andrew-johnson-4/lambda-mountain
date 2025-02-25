@@ -1,0 +1,4 @@
+
+let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
+   print("TODO compile global: \{k}\n"); exit(1);
+);
