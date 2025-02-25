@@ -1,7 +1,7 @@
 CC = cc
 
 dev: install-production
-	lm tests/c/main.c
+	lm --stripdebug tests/c/main.c
 	cp tests/c/main.c original.c
 	cat original.c | python3 -c 'import sys; print("".join(sys.stdin.read().split()))' > diff1.c
 	cat tmp.c | python3 -c 'import sys; print("".join(sys.stdin.read().split()))' > diff2.c

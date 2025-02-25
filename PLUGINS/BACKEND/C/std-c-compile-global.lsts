@@ -1,5 +1,8 @@
 
 let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
+   if k == c"main" {
+      compile-global-c-has-main = true;
+   };
    match term {
       Abs{lhs=lhs,rhs=rhs,tt=tt} => (
          let loc = term.location;
