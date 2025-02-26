@@ -1,7 +1,16 @@
 
 let std-c-compile-call(ctx: FContext, fname: CString, fterm: AST, args: AST): Fragment = (
    if typeof(fterm).is-t(c"Blob") {
-      fail("TODO std-c-compile-call Blob"); mk-fragment();
+      let f = ctx.lookup(fname, typeof(args), args);
+      let r = mk-fragment();
+      match f.term {
+         Abs{lhs=lhs, rhs=rhs} => (
+            (let callee-ctx, let caller-ctx) = std-c-compile-args(global-ctx, ctx, lhs, args);
+            #r = blob-render(callee-ctx, std-c-compile-call, rhs, r);
+            r.context = close(caller-ctx);
+         );
+      };
+      r
    } else {
       fail("TODO std-c-compile-call Function"); mk-fragment();
    }

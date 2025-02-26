@@ -1,0 +1,124 @@
+
+
+let std-c-compile-args(callee-ctx: FContext, caller-ctx: FContext, lhs: AST, rhs: AST): Tuple<FContext,FContext> = (
+   match lhs {
+      App{lhs-rst=left, right:App{ left:Lit{key:c":"}, right:App{left:Var{k=key}, right:AType{kt=tt}} }} => (
+         fail("TODO std-c-compile-args 1");
+         (callee-ctx, caller-ctx)
+      );
+      App{ left:Lit{key:c":"}, right:App{left:Var{k=key}, right:AType{kt=tt}} } => (
+         fail("TODO std-c-compile-args 2");
+         (callee-ctx, caller-ctx)
+      );
+   }
+);
+
+#cc-args := λ(: callee-ctx FContext)(: caller-ctx FContext)(: lhs AST)(: rhs AST)(: offset I64). (: (
+#   # for varargs, even if there is nothing to bind, the binding still needs to exist as an empty vararg list
+#   (match lhs (
+#      ()
+#      ( (App( lhs-rst (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) )) (
+#         (if (.is-t( (typeof rhs) 'Cons_s )) (scope(
+#            (match rhs (
+#               ()
+#               ( (App( le re )) (
+#                  (if (.is-t( kt '..._s )) (
+#                     (set kt (.r1(.slot( kt '..._s ))))
+#                     (if (can-unify( kt (typeof re) )) (scope(
+#                        (if (.is-open kt) (
+#                           (set callee-ctx (union( callee-ctx (unify( kt (typeof re) )) )))
+#                        ) ())
+#                        (let c1 (compile-expr( caller-ctx re offset Used )))
+#                        (set caller-ctx (open(.context c1)))
+#                        (set callee-ctx (bind-vararg( callee-ctx k kt c1 )))
+#                        (let e1 (cc-args( callee-ctx caller-ctx lhs le offset )))
+#                        (let tmp-cc-e1 (.1 e1)) (set callee-ctx (.2 tmp-cc-e1)) (set caller-ctx (.1 tmp-cc-e1))
+#                        (set offset (.2 e1))
+#                     )) (
+#                        (let e1 (cc-args( callee-ctx caller-ctx lhs-rst rhs offset )))
+#                        (let tmp-cc-e1 (.1 e1)) (set callee-ctx (.2 tmp-cc-e1)) (set caller-ctx (.1 tmp-cc-e1))
+#                        (set offset (.2 e1))
+#                     ))
+#                  ) (scope(
+#                     (if (.is-open kt) (
+#                        (set callee-ctx (union( callee-ctx (unify( kt (typeof re) )) )))
+#                     ) ())
+#                     (let c1 (compile-expr( caller-ctx re offset Used )))
+#                     (set caller-ctx (open(.context c1)))
+#                     (set callee-ctx (FCtxBind( (close callee-ctx) k kt c1 )))
+#                     (let e1 (cc-args( callee-ctx caller-ctx lhs-rst le offset )))
+#                     (let tmp-cc-e1 (.1 e1)) (set callee-ctx (.2 tmp-cc-e1)) (set caller-ctx (.1 tmp-cc-e1))
+#                     (set offset (.2 e1))
+#                  )))
+#               ))
+#            ))
+#         )) (
+#            (if (.is-t( kt '..._s )) (
+#               (set kt (.r1(.slot( kt '..._s ))))
+#               (if (can-unify( kt (typeof rhs) )) (scope(
+#                  (if (.is-open kt) (
+#                     (set callee-ctx (union( callee-ctx (unify( kt (typeof rhs) )) )))
+#                  ) ())
+#                  (let c1 (compile-expr( caller-ctx rhs offset Used )))
+#                  (set caller-ctx (open(.context c1)))
+#                  (set callee-ctx (bind-vararg( callee-ctx k kt c1 )))
+#               )) (
+#                  (let e1 (cc-args( callee-ctx caller-ctx lhs-rst rhs offset )))
+#                  (let tmp-cc-e1 (.1 e1)) (set callee-ctx (.2 tmp-cc-e1)) (set caller-ctx (.1 tmp-cc-e1))
+#                  (set offset (.2 e1))
+#               ))
+#            ) (
+#               (if (.is-open kt) (
+#                  (set callee-ctx (union( callee-ctx (unify( kt (typeof rhs) )) )))
+#               ) ())
+#               (let c1 (compile-expr( caller-ctx rhs offset Used )))
+#               (set caller-ctx (open(.context c1)))
+#               (set callee-ctx (FCtxBind( (close callee-ctx) k kt c1 )))
+#            ))
+#         ))
+#      ))
+#      ( (App( (Lit( ':_s _ )) (App( (Var( k _ )) (AType kt) )) )) (
+#         (if (.is-t( (typeof rhs) 'Cons_s )) (
+#            (match rhs (
+#               ()
+#               ( (App( le re )) (
+#                  (if (.is-t( kt '..._s )) (scope(
+#                     (set kt (.r1(.slot( kt '..._s ))))
+#                     (if (.is-open kt) (
+#                        (set callee-ctx (union( callee-ctx (unify( kt (typeof re) )) )))
+#                     ) ())
+#                     (let c1 (compile-expr( caller-ctx re offset Used )))
+#                     (set caller-ctx (open(.context c1)))
+#                     (set callee-ctx (bind-vararg( callee-ctx k kt c1 )))
+#                     (let e1 (cc-args( callee-ctx caller-ctx lhs le offset )))
+#                     (let tmp-cc-e1 (.1 e1)) (set callee-ctx (.2 tmp-cc-e1)) (set caller-ctx (.1 tmp-cc-e1))
+#                     (set offset (.2 e1))
+#                  )) (
+#                     (print (typeof rhs))
+#                     (exit-error( 'Codegen\sUnexpected\sRHS_s rhs ))
+#                  ))
+#               ))
+#            ))
+#         ) (
+#            (if (.is-t( kt '..._s )) (scope(
+#               (set kt (.r1(.slot( kt '..._s ))))
+#               (if (.is-open kt) (
+#                  (set callee-ctx (union( callee-ctx (unify( kt (typeof rhs) )) )))
+#               ) ())
+#               (let c1 (compile-expr( caller-ctx rhs offset Used )))
+#               (set caller-ctx (open(.context c1)))
+#               (set callee-ctx (bind-vararg( callee-ctx k kt c1 )))
+#            )) (scope(
+#               (if (.is-open kt) (
+#                  (set callee-ctx (union( callee-ctx (unify( kt (typeof rhs) )) )))
+#               ) ())
+#               (let c1 (compile-expr( caller-ctx rhs offset Used )))
+#               (set caller-ctx (open(.context c1)))
+#               (set callee-ctx (FCtxBind( (close callee-ctx) k kt c1 )))
+#            )))
+#         ))
+#      ))
+#      ( ASTNil () )
+#   ))
+#   (Tuple( offset (Tuple( callee-ctx caller-ctx )) ))
+#) Tuple<I64,Tuple<FContext,FContext>>);
