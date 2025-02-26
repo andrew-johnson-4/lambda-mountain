@@ -22,6 +22,21 @@ let std-c-compile-expr(ctx: FContext, t: AST): Fragment = (
          e = e.set(c"expression", SAtom{c"{"} + e.get(c"expression") + SAtom{c"}"} );
          e
       );
+      App{ is-cons=is-cons, left=left, right=right } => (
+          if not(is-cons) && typeof(left).is-arrow {
+             match left {
+                Var{fname=key} => std-c-compile-call(ctx, fname, right);
+                App{ left:Var{fname=key}, right:App{ inner-term=left, right:AType{tt=tt} } } => std-c-compile-call(ctx, fname, inner-term);
+                Lit{fname=key} => std-c-compile-constructor(ctx, fname, right);
+                App{ left:Lit{fname=key}, right:App{ inner-term=left, right:AType{tt=tt} } } => std-c-compile-constructor(ctx, fname, inner-term);
+                _ => (
+                   print("TODO: std-c-misc-call "); std-c-print(right); print("\n"); exit(1); mk-fragment();
+                );
+             }
+          } else {
+             fail("TODO: std-c-compile-expr cons"); mk-fragment();
+          }
+      );
       _ => (
          print("TODO: std-c-compile-expr\n");
          std-c-print(t); exit(1); mk-fragment();
