@@ -25,10 +25,10 @@ let std-c-compile-expr(ctx: FContext, t: AST): Fragment = (
       App{ is-cons=is-cons, left=left, right=right } => (
           if not(is-cons) && typeof(left).is-arrow {
              match left {
-                Var{fname=key} => std-c-compile-call(ctx, fname, right);
-                App{ left:Var{fname=key}, right:App{ inner-term=left, right:AType{tt=tt} } } => std-c-compile-call(ctx, fname, inner-term);
-                Lit{fname=key} => std-c-compile-constructor(ctx, fname, right);
-                App{ left:Lit{fname=key}, right:App{ inner-term=left, right:AType{tt=tt} } } => std-c-compile-constructor(ctx, fname, inner-term);
+                Var{fname=key} => std-c-compile-call(ctx, fname, left, right);
+                App{ left:Var{fname=key}, right:App{ inner-term=left, right:AType{tt=tt} } } => std-c-compile-call(ctx, fname, left, inner-term);
+                Lit{fname=key} => std-c-compile-constructor(ctx, fname, left, right);
+                App{ left:Lit{fname=key}, right:App{ inner-term=left, right:AType{tt=tt} } } => std-c-compile-constructor(ctx, fname, left, inner-term);
                 _ => (
                    print("TODO: std-c-misc-call "); std-c-print(right); print("\n"); exit(1); mk-fragment();
                 );
