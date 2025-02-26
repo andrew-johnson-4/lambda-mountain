@@ -6,7 +6,20 @@ let std-c-compile-expr(ctx: FContext, t: AST): Fragment = (
       );
       App{ left:Var{key:c"c::compound"}, terms=right } => (
          let e = mk-fragment();
-         e = e.set(c"expression", SAtom{c"{}"});
+         let terms-list = [] :: List<AST>;
+         while non-zero(terms) {match terms {
+            App{left=left, right=right} => (
+               terms-list = cons( right, terms-list );
+               terms = left;
+            );
+            _ => terms = ASTEOF;
+         }};
+         for ct in terms-list.reverse {
+            let f = std-c-compile-expr(ctx, ct);
+            ctx = open(f.context);
+            e = std-c-chain( e, f );
+         };
+         e = e.set(c"expression", SAtom{c"{"} + e.get(c"expression") + SAtom{c"}"} );
          e
       );
       _ => (

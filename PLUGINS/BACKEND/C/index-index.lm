@@ -38,3 +38,4 @@ import PLUGINS/BACKEND/C/std-c-mangle-declaration.lsts;
 import PLUGINS/BACKEND/C/std-c-compile-function-args.lsts;
 import PLUGINS/BACKEND/C/std-c-compile-expr.lsts;
 import PLUGINS/BACKEND/C/std-c-print.lsts;
+import PLUGINS/BACKEND/C/std-c-chain.lsts;
