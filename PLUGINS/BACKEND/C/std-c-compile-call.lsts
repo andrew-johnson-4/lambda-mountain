@@ -6,7 +6,7 @@ let std-c-compile-call(ctx: FContext, fname: CString, fterm: AST, args: AST): Fr
       match f.term {
          Abs{lhs=lhs, rhs=rhs} => (
             (let callee-ctx, let caller-ctx) = std-c-compile-args(global-ctx, ctx, lhs, args);
-            #r = blob-render(callee-ctx, std-c-compile-call, rhs, r);
+            r = blob-render(callee-ctx, rhs, r, 0);
             r.context = close(caller-ctx);
          );
       };
