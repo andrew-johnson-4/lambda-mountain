@@ -1,0 +1,4 @@
+
+let std-c-compile-constructor(ctx: FContext, fname: CString, fterm: AST, args: AST): Fragment = (
+   mk-fragment();
+);
