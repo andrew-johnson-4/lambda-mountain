@@ -41,7 +41,7 @@ let std-c-compile-args(callee-ctx: FContext, caller-ctx: FContext, lhs: AST, rhs
                if kt.is-open { callee-ctx = union(callee-ctx, unify(kt, typeof(rhs))); };
                let c1 = std-c-compile-expr(caller-ctx, rhs);
                caller-ctx = open(c1.context);
-               callee-ctx = bind-vararg(callee-ctx, k, kt, c1);
+               callee-ctx = callee-ctx.bind(k, kt, c1);
             }
          };
          (callee-ctx, caller-ctx)
@@ -77,7 +77,7 @@ let std-c-compile-args(callee-ctx: FContext, caller-ctx: FContext, lhs: AST, rhs
                if kt.is-open { callee-ctx = union(callee-ctx, unify(kt, typeof(rhs))); };
                let c1 = std-c-compile-expr(caller-ctx, rhs);
                caller-ctx = open(c1.context);
-               callee-ctx = bind-vararg(callee-ctx, k, kt, c1);
+               callee-ctx = callee-ctx.bind(k, kt, c1);
             }
          };
          (callee-ctx, caller-ctx)
