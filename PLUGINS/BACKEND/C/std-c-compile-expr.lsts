@@ -1,6 +1,17 @@
 
 let std-c-compile-expr(ctx: FContext, t: AST): Fragment = (
    match t {
+      App{ left:Lit{key:c":"}, right:App{ left:Lit{val=key}, right:AType{tt=tt} } } => (
+         if tt.is-t(c"C") && tt.r1.is-t(c"uint8_t") then mk-expression(val)
+         else if tt.is-t(c"C") && tt.r1.is-t(c"uint16_t") then mk-expression(val)
+         else if tt.is-t(c"C") && tt.r1.is-t(c"uint32_t") then mk-expression(val)
+         else if tt.is-t(c"C") && tt.r1.is-t(c"uint64_t") then mk-expression(val)
+         else if tt.is-t(c"C") && tt.r1.is-t(c"int8_t") then mk-expression(val)
+         else if tt.is-t(c"C") && tt.r1.is-t(c"int16_t") then mk-expression(val)
+         else if tt.is-t(c"C") && tt.r1.is-t(c"int32_t") then mk-expression(val)
+         else if tt.is-t(c"C") && tt.r1.is-t(c"int64_t") then mk-expression(val)
+         else (fail("Unknown C Literal Type: \{tt}"); mk-fragment());
+      );
       App{ left:Lit{key:c":"}, right:App{ inner-term=left, right:AType{tt=tt} } } => (
          std-c-compile-expr(ctx, inner-term);
       );
