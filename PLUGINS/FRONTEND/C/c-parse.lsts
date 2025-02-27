@@ -85,7 +85,13 @@ let to-smart-string(l: CTerm): String = (
 );
 
 let std-c-parse(tokens: List<Token>): Nil = (
-   while non-zero(tokens) { tokens = std-c-parse-external-declaration(tokens); }
+   while non-zero(tokens) {
+      let original-tokens = tokens;
+      tokens = std-c-parse-external-declaration(tokens);
+      if is(tokens, original-tokens) {
+         fail("Expected token '\{head(tokens).key}' at \{tokens.formatted-location}\n");
+      };
+   }
 );
 
 let std-c-is-reserved-word(tk: String): U64 = (
