@@ -85,7 +85,13 @@ let to-smart-string(l: CTerm): String = (
 );
 
 let std-c-parse(tokens: List<Token>): Nil = (
-   while non-zero(tokens) { tokens = std-c-parse-external-declaration(tokens); }
+   while non-zero(tokens) {
+      let original-tokens = tokens;
+      tokens = std-c-parse-external-declaration(tokens);
+      if is(tokens, original-tokens) {
+         fail("Expected token '\{head(tokens).key}' at \{tokens.formatted-location}\n");
+      };
+   }
 );
 
 let std-c-is-reserved-word(tk: String): U64 = (
@@ -177,6 +183,7 @@ let std-c-parse-external-declaration(tokens: List<Token>): List<Token> = (
 );
 
 let std-c-parse-function-definition(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let original-tokens = tokens;
    let no = None :: Maybe<CTerm>;
    let declaration-specifiers = std-c-parse-declaration-specifiers(tokens); tokens = declaration-specifiers.second;
    if declaration-specifiers.first.is-some {
@@ -190,13 +197,14 @@ let std-c-parse-function-definition(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
          close(CMaybe{close(declaration-list.first)}),
          close(compound-statement.first.get-or-panic),
       }}, tokens }
-      else Tuple{ no, tokens }
-   } else Tuple{ no, tokens }
+      else Tuple{ no, original-tokens }
+   } else Tuple{ no, original-tokens }
 );
 
 let std-c-parse-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let declaration-specifiers = std-c-parse-declaration-specifiers(tokens); tokens = declaration-specifiers.second;
+   let declaration-specifiers = std-c-parse-declaration-specifiers(tokens);
    if declaration-specifiers.first.is-some {
+      tokens = declaration-specifiers.second;
       let init-declarator-list = std-c-parse-init-declarator-list(tokens); tokens = init-declarator-list.second;
       tokens = std-c-take-expect(tokens, ";");
       Tuple{ Some{CBinaryOp{"Declaration", close(declaration-specifiers.first.get-or-panic), close(CMaybe{close(init-declarator-list.first)}) }}, tokens }
@@ -288,13 +296,15 @@ let std-c-parse-init-declarator-list(tokens: List<Token>): Tuple<Maybe<CTerm>,Li
 );
 
 let std-c-parse-init-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let declarator = std-c-parse-declarator(tokens); tokens = declarator.second;
+   let declarator = std-c-parse-declarator(tokens);
    if declarator.first.is-some {
-      let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "=");
-      let initializer = std-c-parse-initializer(tokens); tokens = declarator.second;
-      if initializer.first.is-some 
-      then Tuple{ Some{CBinaryOp{ op, close(declarator.first.get-or-panic), close(initializer.first.get-or-panic) }}, tokens }
-      else declarator
+      tokens = declarator.second;
+      if std-c-can-take(tokens, "=") {
+         let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "=");
+         let initializer = std-c-parse-initializer(tokens); tokens = initializer.second;
+         if initializer.first.is-none then std-c-take-expect(tokens, "[Initializer]");
+         Tuple{ Some{CBinaryOp{ op, close(declarator.first.get-or-panic), close(initializer.first.get-or-panic) }}, tokens }
+      } else declarator
    } else declarator
 );
 
