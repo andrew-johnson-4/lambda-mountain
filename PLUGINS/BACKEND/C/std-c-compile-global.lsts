@@ -4,6 +4,28 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
       compile-global-c-has-main = true;
    };
    match term {
+      Glb{ key=key, val:App{left:Var{key:c":"}, right:App{left:Var{key:c"__uninitialized"}, right:AType{tt=tt}}} } => (
+         (let pre-decl, let post-decl) = std-c-mangle-declaration(tt);
+         let text = SNil;
+         text = text + pre-decl;
+         text = text + SAtom{c" "};
+         text = text + SAtom{key.key};
+         text = text + post-decl;
+         text = text + SAtom{c";"};
+         assemble-header-section = assemble-header-section + text;
+      );
+      Glb{ key=key, val:App{left:Var{key:c":"}, right:App{t=left, right:AType{tt=tt}}} } => (
+         (let pre-decl, let post-decl) = std-c-mangle-declaration(tt);
+         let text = SNil;
+         text = text + pre-decl;
+         text = text + SAtom{c" "};
+         text = text + SAtom{key.key};
+         text = text + post-decl;
+         text = text + SAtom{c" = "};
+         let inner-expr = std-c-compile-expr( ctx, t );
+         text = text + SAtom{c";"};
+         assemble-header-section = assemble-header-section + text;
+      );
       Abs{lhs=lhs,rhs=rhs,tt=tt} => (
          let loc = term.location;
          if not(config-strip-debug) {
@@ -41,6 +63,9 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          let inner-expr = std-c-compile-expr( ctx, rhs );
          text = text + inner-expr.get(c"expression");
          assemble-text-section = assemble-text-section + text;
+      );
+      t => (
+         print("Unknown std-c-compile-global "); std-c-print(t); print("\n");
       );
    }
 );
