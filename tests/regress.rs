@@ -153,6 +153,7 @@ fn regression_tests() {
          } else {
             let original_c = std::fs::read_to_string(path.clone())
                           .expect(&format!("Could not load expected output {}", path));
+            if expected.length > 0 { original_c = expected; };
             let result_c = std::fs::read_to_string("tmp.c")
                           .expect(&format!("Could not load expected output tmp.c during {}", path));
             let o1 = original_c.chars().filter(|c| !c.is_whitespace()).collect();

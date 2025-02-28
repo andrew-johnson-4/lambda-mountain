@@ -23,6 +23,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          text = text + post-decl;
          text = text + SAtom{c" = "};
          let inner-expr = std-c-compile-expr( ctx, t );
+         text = text + inner-expr.get(c"expression");
          text = text + SAtom{c";"};
          assemble-header-section = assemble-header-section + text;
       );
