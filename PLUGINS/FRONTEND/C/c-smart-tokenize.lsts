@@ -85,10 +85,6 @@ let std-c-tokenize-string(file-path: String, text: String): List<Token> = (
          tokens = cons(text[:id.length], tokens); text = rest;
       );
 
-      (comment=r/^#[^\n]*[\n]/).. rest => (
-         text = rest;
-      );
-
       rest => ( fail("Unrecognized Token in File \{file-path}: \{clone-rope(rest[0_u64])}"); );
    }; };
 
