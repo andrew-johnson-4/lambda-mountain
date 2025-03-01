@@ -1,2 +1,2 @@
 
-#include "tests/c/main.c"
+#include "main.c"
