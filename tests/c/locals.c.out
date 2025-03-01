@@ -1,0 +1,6 @@
+
+int main() {
+   int local_x = 3
+   int local_y;
+   int local_z = 4;
+}
