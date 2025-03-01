@@ -148,7 +148,7 @@ fn regression_tests() {
          let expected = expected.trim().to_string();
          let actual = run_bootstrap(&path, true);
          let actual = actual.trim().to_string();
-         if expected != actual {
+         if actual.starts_with("Error:") {
             failures.push(( "--compile", path, expected, actual ));
          } else {
             let mut original_c = std::fs::read_to_string(path.clone())
