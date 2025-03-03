@@ -1,6 +1,5 @@
 
 let std-c-compile-expr(ctx: FContext, t: AST): Fragment = (
-   print("Compile "); std-c-print(t); print("\n");
    let f = match t {
       App{ left:Abs{lhs=lhs:Var{name=key}, rhs:ASTNil{}}, rhs=right } => (
          let lt = typeof(lhs);
