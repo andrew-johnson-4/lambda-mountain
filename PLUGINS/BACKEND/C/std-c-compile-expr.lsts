@@ -10,8 +10,7 @@ let std-c-compile-expr(ctx: FContext, t: AST): Fragment = (
          (let pre, let post) = std-c-mangle-declaration(lt);
          f = f.set(c"frame", f.get(c"frame") + pre + SAtom{c" "}
                  + (if lt.is-t(c"C") then SAtom{name} else v.get(c"expression"))
-                 + SAtom{c" "} + post + SAtom{c";"}
-         );
+                 + SAtom{c" "} + post + SAtom{c";"});
          match rhs {
             App{ left:Lit{key:c":"}, right:App{ left:Var{key:c"__uninitialized"}, right:AType{tt=tt} } } => ();
             _ => (
@@ -19,7 +18,7 @@ let std-c-compile-expr(ctx: FContext, t: AST): Fragment = (
                f = f.set(c"frame", f.get(c"frame") + rf.get(c"frame"));
                f = f.set(c"expression", SAtom(c"(")
                  + (if lt.is-t(c"C") then SAtom{name} else v.get(c"expression"))
-                 + SAtom{c"="} + rf.get(c"expression") + SAtom{c")"};
+                 + SAtom{c"="} + rf.get(c"expression") + SAtom{c")"});
             );
          };
          f
@@ -50,10 +49,12 @@ let std-c-compile-expr(ctx: FContext, t: AST): Fragment = (
          }};
          for ct in terms-list.reverse {
             let f = std-c-compile-expr(ctx, ct);
+            f = f.set(c"expression", f.get(c"expression") + SAtom{c";"});
             ctx = open(f.context);
             e = std-c-chain( e, f );
          };
-         e = e.set(c"expression", SAtom{c"{"} + e.get(c"expression") + SAtom{c"}"} );
+         e = e.set(c"expression", SAtom{c"{"} + e.get(c"frame") + e.get(c"expression") + SAtom{c"}"} );
+         e = e.set(c"frame", SNil );
          e
       );
       App{ is-cons=is-cons, left=left, right=right } => (

@@ -1,5 +1,6 @@
 
 let std-c-chain(f1: Fragment, f2: Fragment): Fragment = (
+   f2 = f2.set( c"expression", f1.get(c"frame") + f2.get(c"frame") );
    f2 = f2.set( c"expression", f1.get(c"expression") + f2.get(c"expression") );
    f2
 );

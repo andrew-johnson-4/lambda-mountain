@@ -62,7 +62,6 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          let inner-ctx = ctx;
          #let inner-ctx = std-c-compile-destructure-args( ctx, lhs );
          let inner-expr = std-c-compile-expr( ctx, rhs );
-         text = text + inner-expr.get(c"frame");
          text = text + inner-expr.get(c"expression");
          assemble-text-section = assemble-text-section + text;
       );

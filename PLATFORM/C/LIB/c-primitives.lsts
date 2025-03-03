@@ -12,5 +12,5 @@ let :Blob $"c::compound"(ts: last): last = (
 );
 
 let :Blob $"c::return"(ts: x): x = (
-   l"return "; ts; l";";
+   l"return "; ts;
 );
