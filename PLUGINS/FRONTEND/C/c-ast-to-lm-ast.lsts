@@ -99,6 +99,49 @@ let std-c-expr-of-statement(t: CTerm): AST = (
             })
          }
       );
+      CBinaryOp{op:c"Declaration", spec=arg1, arg2:CMaybe{value:Some{content:CList{decls=value}}} } => (
+         (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
+         let expr = ASTEOF;
+         for decl in decls {match decl {
+            CIdentifier{name=value} => (
+               let d = App{
+                  close(App{
+                     close(Var{ c"let", mk-token(c"let") }),
+                     close(Var{ untern(name), mk-token(name) })
+                  }),
+                  close(App{
+                     close(Lit{ c":", mk-token(c":") }),
+                     close(App{
+                        close(Var{ c"__uninitialized", mk-token(c"__uninitialized") }),
+                        close(AType{ return-type })
+                     })
+                  })
+               };
+               if non-zero(expr) {
+                  expr = App{ close(expr), close(d) };
+               } else expr = d;
+            );
+            CBinaryOp{op:c"=", arg1:CIdentifier{name=value}, value=arg2 } => (
+               let d = App{
+                  close(App{
+                     close(Var{ c"let", mk-token(c"let") }),
+                     close(Var{ untern(name), mk-token(name) })
+                  }),
+                  close(App{
+                     close(Lit{ c":", mk-token(c":") }),
+                     close(App{
+                        close(std-c-expr-of-statement(value)),
+                        close(AType{ return-type })
+                     })
+                  })
+               };
+               if non-zero(expr) {
+                  expr = App{ close(expr), close(d) };
+               } else expr = d;
+            );
+         }};
+         expr;
+      );
       _ => fail("Unsupported C Statement:\n\{t}\n");
    };
 );
