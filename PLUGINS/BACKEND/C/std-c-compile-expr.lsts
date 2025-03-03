@@ -1,5 +1,5 @@
 
-let std-c-compile-expr(ctx: FContext, t: AST): Fragment = (
+let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
    let f = match t {
       App{ left:Abs{lhs=lhs:Var{name=key}, rhs:ASTNil{}}, rhs=right } => (
          let lt = typeof(lhs);
@@ -13,7 +13,7 @@ let std-c-compile-expr(ctx: FContext, t: AST): Fragment = (
          match rhs {
             App{ left:Lit{key:c":"}, right:App{ left:Var{key:c"__uninitialized"}, right:AType{tt=tt} } } => ();
             _ => (
-               let rf = std-c-compile-expr(ctx, rhs);
+               let rf = std-c-compile-expr(ctx, rhs, false);
                f = f.set(c"frame", f.get(c"frame") + rf.get(c"frame"));
                f = f.set(c"expression", SAtom(c"(")
                  + (if lt.is-t(c"C") then SAtom{name} else v.get(c"expression"))
@@ -34,7 +34,7 @@ let std-c-compile-expr(ctx: FContext, t: AST): Fragment = (
          else (fail("Unknown C Literal Type: \{tt}"); mk-fragment());
       );
       App{ left:Lit{key:c":"}, right:App{ inner-term=left, right:AType{tt=tt} } } => (
-         std-c-compile-expr(ctx, inner-term);
+         std-c-compile-expr(ctx, inner-term, is-stmt);
       );
       App{ left:Var{key:c"c::compound"}, terms=right } => (
          let e = mk-fragment();
@@ -47,7 +47,7 @@ let std-c-compile-expr(ctx: FContext, t: AST): Fragment = (
             _ => terms = ASTEOF;
          }};
          for ct in terms-list.reverse {
-            let f = std-c-compile-expr(ctx, ct);
+            let f = std-c-compile-expr(ctx, ct, true);
             f = f.set(c"expression", f.get(c"expression") + SAtom{c";"});
             ctx = open(f.context);
             e = std-c-chain( e, f );
@@ -68,10 +68,11 @@ let std-c-compile-expr(ctx: FContext, t: AST): Fragment = (
                 );
              }
           } else {
-             let f1 = std-c-compile-expr(ctx, left);
+             let f1 = std-c-compile-expr(ctx, left, is-stmt);
              ctx = open(f1.context);
-             let f2 = std-c-compile-expr(ctx, right);
-             std-c-chain(f1, f2);
+             let f2 = std-c-compile-expr(ctx, right, is-stmt);
+             let f3 = std-c-chain(f1, f2);
+             f3;
           }
       );
       _ => (
@@ -79,6 +80,7 @@ let std-c-compile-expr(ctx: FContext, t: AST): Fragment = (
          std-c-print(t); exit(1); mk-fragment();
       );
    };
+   if is-stmt && non-zero(f.get(c"expression")) then f = f.set(c"expression", f.get(c"expression") + SAtom{c";"});
    f.type = typeof(t); f
 );
 
