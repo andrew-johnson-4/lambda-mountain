@@ -13,10 +13,13 @@ let std-c-compile-expr(ctx: FContext, t: AST): Fragment = (
                  + SAtom{c" "} + post + SAtom{c";"}
          );
          match rhs {
-            App{ left:Lit{key:c":"}, right:App{ left:Var{key:c"__uninitialized"}, right:AType{tt=tt} } } => (
-            );
+            App{ left:Lit{key:c":"}, right:App{ left:Var{key:c"__uninitialized"}, right:AType{tt=tt} } } => ();
             _ => (
                let rf = std-c-compile-expr(ctx, rhs);
+               f = f.set(c"frame", f.get(c"frame") + rf.get(c"frame"));
+               f = f.set(c"expression", SAtom(c"(")
+                 + (if lt.is-t(c"C") then SAtom{name} else v.get(c"expression"))
+                 + SAtom{c"="} + rf.get(c"expression") + SAtom{c")"};
             );
          };
          f
