@@ -2,11 +2,12 @@
 let std-c-compile-expr(ctx: FContext, t: AST): Fragment = (
    print("Compile "); std-c-print(t); print("\n");
    let f = match t {
-      App{ left:Var{name=key}, terms=Abs{lhs=lhs:ASTNil{}, rhs=rhs} } => (
+      App{ left:Var{name=key}, right:Abs{lhs=lhs:ASTNil{}, rhs=rhs} } => (
          let lt = typeof(lhs);
          let v = mk-fragment().set(c"expression",SAtom{uuid()});
-         f.context = ctx.bind( name, lt, f );
-         let (pre, post) = std-c-mangle-declaration(lt);
+         let f = mk-fragment();
+         f.context = close(ctx.bind( name, lt, f ));
+         (let pre, let post) = std-c-mangle-declaration(lt);
          f = f.set(c"frame", f.get(c"frame") + pre + SAtom{c" "}
                  + (if lt.is-t(c"C") then SAtom{name} else v.get(c"expression"))
                  + SAtom{c" "} + post + SAtom{c";"}
