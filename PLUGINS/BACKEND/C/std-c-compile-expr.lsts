@@ -1,6 +1,25 @@
 
 let std-c-compile-expr(ctx: FContext, t: AST): Fragment = (
-   match t {
+   print("Compile "); std-c-print(t); print("\n");
+   let f = match t {
+      App{ left:Var{name=key}, terms=Abs{lhs=lhs:ASTNil{}, rhs=rhs} } => (
+         let lt = typeof(lhs);
+         let v = mk-fragment().set(c"expression",SAtom{uuid()});
+         f.context = ctx.bind( name, lt, f );
+         let (pre, post) = std-c-mangle-declaration(lt);
+         f = f.set(c"frame", f.get(c"frame") + pre + SAtom{c" "}
+                 + (if lt.is-t(c"C") then SAtom{name} else v.get(c"expression"))
+                 + SAtom{c" "} + post + SAtom{c";"}
+         );
+         match rhs {
+            App{ left:Lit{key:c":"}, right:App{ left:Var{key:c"__uninitialized"}, right:AType{tt=tt} } } => (
+            );
+            _ => (
+               let rf = std-c-compile-expr(ctx, rhs);
+            );
+         };
+         f
+      );
       App{ left:Lit{key:c":"}, right:App{ left:Lit{val=key}, right:AType{tt=tt} } } => (
          if tt.is-t(c"C") && tt.r1.is-t(c"uint8_t") then mk-expression(val)
          else if tt.is-t(c"C") && tt.r1.is-t(c"uint16_t") then mk-expression(val)
@@ -45,13 +64,17 @@ let std-c-compile-expr(ctx: FContext, t: AST): Fragment = (
                 );
              }
           } else {
-             fail("TODO: std-c-compile-expr cons"); mk-fragment();
+             let f1 = std-c-compile-expr(ctx, left);
+             ctx = open(f1.context);
+             let f2 = std-c-compile-expr(ctx, right);
+             std-c-chain(f1, f2);
           }
       );
       _ => (
          print("TODO: std-c-compile-expr\n");
          std-c-print(t); exit(1); mk-fragment();
       );
-   }
+   };
+   f.type = typeof(t); f
 );
 
