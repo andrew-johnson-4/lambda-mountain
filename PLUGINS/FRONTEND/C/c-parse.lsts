@@ -1072,7 +1072,7 @@ let std-c-parse-unary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<T
 #                 | 'sizeof', '(', type-name, ')'
 #                 | '_Alignof', '(', type-name, ')';
    if std-c-can-take(tokens, "++") || std-c-can-take(tokens, "--") || std-c-can-take(tokens,"+") || std-c-can-take(tokens,"-")
-   || std-c-can-take(tokens, "&") || std-c-can-take(tokens, "*") {
+   || std-c-can-take(tokens, "&") || std-c-can-take(tokens, "*") || std-c-can-take(tokens,"!") || std-c-can-take(tokens, "~") {
       let op = head(tokens).skey; tokens = tail(tokens);
       let inner = std-c-parse-unary-expression(tokens);
       if inner.first.is-some then Tuple{ Some{CUnaryPrefix{op, close(inner.first.get-or-panic)}}, inner.second }
