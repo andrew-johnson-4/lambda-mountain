@@ -1108,10 +1108,20 @@ let std-c-parse-postfix-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
             tokens = std-c-take-expect(tokens, "identifier");
             expression = Tuple{ Some{e}, tokens };
          } else std-c-take-expect(tokens, "identifier");
+      } else if std-c-can-take(tokens,"[") {
+         let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "[");
+         (let inner, tokens) = std-c-parse-expression(tokens);
+         tokens = std-c-take-expect(tokens, "]");
+         if inner.is-some {
+            expression = Tuple{ Some{CBinaryOp{op, close(expression.first.get-or-panic), close(inner.get-or-panic)}}, tokens };
+         };
       } else {
-         print("TODO: parse-postfix \{head(tokens).skey}"); exit(1);
-#                   | postfix-expression, '[', expression, ']'
-#                   | postfix-expression, '(', [argument-expression-list], ')'         
+         let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "(");
+         (let inner, tokens) = std-c-parse-argument-expression-list(tokens);
+         tokens = std-c-take-expect(tokens, ")");
+         if inner.is-some {
+            expression = Tuple{ Some{CBinaryOp{op, close(expression.first.get-or-panic), close(inner.get-or-panic)}}, tokens };
+         };
       };
    };
 #postfix-expression = primary-expression
