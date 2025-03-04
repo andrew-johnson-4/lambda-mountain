@@ -812,18 +812,6 @@ let std-c-parse-assignment-operator(tokens: List<Token>): Tuple<Maybe<String>,Li
    else Tuple{ no, tokens }
 );
 
-let std-c-parse-unary-operator(tokens: List<Token>): Tuple<Maybe<String>,List<Token>> = (
-   let no = None :: Maybe<String>;
-   if not(non-zero(tokens)) then Tuple{ no, tokens }
-   else if head(tokens).skey == "&" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
-   else if head(tokens).skey == "*" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
-   else if head(tokens).skey == "+" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
-   else if head(tokens).skey == "-" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
-   else if head(tokens).skey == "~" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
-   else if head(tokens).skey == "!" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
-   else Tuple{ no, tokens }
-);
-
 let std-c-parse-struct-or-union(tokens: List<Token>): Tuple<Maybe<String>,List<Token>> = (
    let no = None :: Maybe<String>;
    if not(non-zero(tokens)) then Tuple{ no, tokens }
@@ -1083,7 +1071,8 @@ let std-c-parse-unary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<T
 #                 | unary-operator, cast-expression
 #                 | 'sizeof', '(', type-name, ')'
 #                 | '_Alignof', '(', type-name, ')';
-   if std-c-can-take(tokens, "++") || std-c-can-take(tokens, "--") || std-can-take(tokens,"+") || std-can-take(tokens,"-") {
+   if std-c-can-take(tokens, "++") || std-c-can-take(tokens, "--") || std-can-take(tokens,"+") || std-can-take(tokens,"-")
+   || std-c-can-take(tokens, "&") || std-can-take(tokens, "*") {
       let op = head(tokens).skey; tokens = tail(tokens);
       let inner = std-c-parse-unary-expression(tokens);
       if inner.first.is-some then Tuple{ Some{CUnaryPrefix{op, close(inner.first.get-or-panic)}}, inner.second }
