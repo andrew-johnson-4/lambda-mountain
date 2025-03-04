@@ -1076,8 +1076,6 @@ let std-c-parse-cast-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<To
 let std-c-parse-unary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
 #unary-expression = postfix-expression
 #                 | unary-operator, cast-expression
-#                 | 'sizeof', '(', type-name, ')'
-#                 | '_Alignof', '(', type-name, ')';
    if std-c-can-take(tokens, "++") || std-c-can-take(tokens, "--") || std-c-can-take(tokens,"+") || std-c-can-take(tokens,"-")
    || std-c-can-take(tokens, "&") || std-c-can-take(tokens, "*") || std-c-can-take(tokens,"!") || std-c-can-take(tokens, "~") {
       let op = head(tokens).skey; tokens = tail(tokens);
@@ -1087,7 +1085,24 @@ let std-c-parse-unary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<T
    } else if std-c-can-take(tokens, "sizeof") {
       let op = head(tokens).skey; tokens = tail(tokens);
       if std-c-can-take(tokens, "(") {
-         print("TODO: C parse unary expression sizeof(type)"); exit(1); std-c-parse-postfix-expression(tokens);
+         tokens = std-c-take-expect(tokens, "(");
+         (let tt, tokens) = std-c-parse-type-name(tokens);
+         tokens = std-c-take-expect(tokens, ")");
+         if tt.is-some then Tuple{ Some{CUnaryPrefix{op, close(tt.get-or-panic)}}, tokens }
+         else Tuple{ tt, tokens };
+      } else {
+         let inner = std-c-parse-unary-expression(tokens);
+         if inner.first.is-some then Tuple{ Some{CUnaryPrefix{op, close(inner.first.get-or-panic)}}, inner.second }
+         else inner;
+      };
+   } else if std-c-can-take(tokens, "alignof") || std-c-can-take(tokens, "_Alignof") {
+      let op = head(tokens).skey; tokens = tail(tokens);
+      if std-c-can-take(tokens, "(") {
+         tokens = std-c-take-expect(tokens, "(");
+         (let tt, tokens) = std-c-parse-type-name(tokens);
+         tokens = std-c-take-expect(tokens, ")");
+         if tt.is-some then Tuple{ Some{CUnaryPrefix{op, close(tt.get-or-panic)}}, tokens }
+         else Tuple{ tt, tokens };
       } else {
          let inner = std-c-parse-unary-expression(tokens);
          if inner.first.is-some then Tuple{ Some{CUnaryPrefix{op, close(inner.first.get-or-panic)}}, inner.second }
