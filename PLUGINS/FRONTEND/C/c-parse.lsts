@@ -923,8 +923,15 @@ let std-c-parse-constant-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
 );
 
 let std-c-parse-conditional-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-#conditional-expression = logical-or-expression, ['?', expression, ':', conditional-expression];
-   std-c-parse-logical-or-expression(tokens);   
+   let base = std-c-parse-logical-or-expression(tokens); tokens = base.second;
+   if base.first.is-some && std-c-can-take(tokens, "?") {
+      let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "?");
+      (let e1, tokens) = std-c-parse-expression(tokens);
+      tokens = std-c-take-expect(tokens, ":");
+      (let e2, tokens) = std-c-parse-conditional-expression(tokens);
+      base = Tuple{ Some{CTernaryOp{op, close(base.first.get-or-panic), close(e1.get-or-panic), close(e2.get-or-panic)}}, tokens };
+   };
+   base
 );
 
 let std-c-parse-logical-or-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
