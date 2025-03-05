@@ -55,12 +55,11 @@ let std-c-declare-function(specifiers: CTerm, declarator: CTerm, declaration-lis
 );
 
 let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
-   let misc = TAny;
-   let rtype = match specifiers {
-      CList{value:[CType1{rv=value}..]} => t2(c"C", t1(untern(rv)));
+   match specifiers {
+      CMaybe{value:Some{content=content}} => std-c-type-of-specifiers(content);
+      CList{value:[CType1{rv=value}..]} => ( t2(c"C", t1(untern(rv))), TAny );
       _ => fail("Unsupported C Specifiers:\n\{specifiers}\n");
    };
-   (rtype, misc);
 );
 
 let std-c-name-of-declarator(declarator: CTerm): Tuple<String,Type> = (
@@ -78,7 +77,6 @@ let std-c-lhs-of-parameter-list(declaration-list: CTerm): AST = (
 );
 
 let std-c-expr-of-statement(t: CTerm): AST = (
-   print("Compile expr \{t}\n");
    match t {
       CCompound{terms=terms} => (
          let inner = ASTNil;
@@ -179,6 +177,10 @@ let std-c-expr-of-statement(t: CTerm): AST = (
                close(std-c-expr-of-statement(arg3))
             })
          };
+      );
+      CBinaryOp{op:c"TypeName", arg1=arg1, arg2=arg2 } => (
+         (let rt, let mt) = std-c-type-of-specifiers(arg1);
+         AType{rt}
       );
       CBinaryOp{op=op, arg1=arg1, arg2=arg2 } => (
          App{
