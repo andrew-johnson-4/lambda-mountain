@@ -3,15 +3,11 @@ import LIB/minimal.lsts;
 
 let v = mk-vector(type(String), 4);
 
-print("part 0 done\n");
-
 let ai = 0_u64;
 while ai < 128 {
    v = v.push(to-smart-string(ai));
    ai = ai + 1;
 };
-
-print("part 1 done\n");
 
 assert(v.length == 128);
 let last-cap = v.capacity;
@@ -23,15 +19,11 @@ while ai < v.length {
    ai = ai + 1;
 };
 
-print("part 2 done\n");
-
 ai = 0_u64;
 while ai < 100 {
    v = v.pop().first;
    ai = ai + 1;
 };
-
-print("part 3 done\n");
 
 # should have shrunk from the pop() s
 assert(v.capacity < last-cap);
@@ -43,6 +35,4 @@ while ai < v.length {
    assert(x == to-smart-string(ai));
    ai = ai + 1;
 };
-
-print("part 4 done\n");
 
