@@ -371,14 +371,17 @@ let std-c-parse-alignment-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
 
 let std-c-parse-direct-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
+   let original-tokens = tokens;
    let be = if std-c-can-take(tokens, "identifier") then {
       let id = head(tokens).skey; tokens = std-c-take-expect(tokens, "identifier");
       Tuple{ Some{CIdentifier{id}}, tokens }
    } else if std-c-can-take(tokens, "(") then {
       tokens = std-c-take-expect(tokens, "(");
       let decl = std-c-parse-declarator(tokens);
-      tokens = std-c-take-expect(tokens, ")");
-      Tuple{ decl.first, tokens }
+      if decl.first.is-some then {
+         tokens = std-c-take-expect(tokens, ")");
+         Tuple{ decl.first, tokens }
+      } else Tuple{ no, original-tokens }
    } else Tuple{ no, tokens };
    while be.first.is-some && (std-c-can-take(tokens,"(") || std-c-can-take(tokens, "[")) {
       if std-c-can-take(tokens,"[") && std-c-can-take(tail(tokens),"*") {
@@ -703,6 +706,7 @@ let std-c-parse-direct-abstract-declarator(tokens: List<Token>): Tuple<Maybe<CTe
 #                           | direct-abstract-declarator, '(', parameter-type-list, ')'
 #                           | direct-abstract-declarator, '(', ')';
    let no = None :: Maybe<CTerm>;
+   let original-tokens = tokens;
    if std-c-can-take(tokens, "(") then {
       let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "(");
       let ad = std-c-parse-abstract-declarator(tokens);
@@ -843,6 +847,8 @@ let std-c-parse-string(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
 );
 
 let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let no = None :: Maybe<CTerm>;
+   let original-tokens = tokens;
    let ts = std-c-parse-generic-selection(tokens);
    if ts.first.is-none then (ts = std-c-parse-constant(tokens));
    if ts.first.is-none then (ts = std-c-parse-identifier(tokens));
@@ -850,7 +856,10 @@ let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
    if ts.first.is-none && std-c-can-take(tokens, "(") {
       let tokens2 = std-c-take-expect(tokens, "(");
       ts = std-c-parse-expression(tokens2);
-      ts.second = std-c-take-expect(ts.second, ")");
+      if ts.first.is-some {
+         ts.second = std-c-take-expect(ts.second, ")");
+         ts;
+      } else Tuple{ no, original-tokens };
    };
    ts
 );
@@ -1067,19 +1076,23 @@ let std-c-parse-multiplicative-expression(tokens: List<Token>): Tuple<Maybe<CTer
 
 
 let std-c-parse-cast-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-#cast-expression = unary-expression
-#                | '(', type-name, ')', cast-expression;
-   std-c-parse-unary-expression(tokens);
+   if std-c-can-take(tokens, "(") {
+      let scan-tokens = std-c-take-expect(tokens, "(");
+      (let tt, scan-tokens) = std-c-parse-type-name(scan-tokens);
+      scan-tokens = std-c-take-expect(scan-tokens, ")");
+      (let ca, scan-tokens) = std-c-parse-cast-expression(scan-tokens);
+      if tt.is-some && ca.is-some
+      then Tuple{ Some{CBinaryOp{"cast", close(tt.get-or-panic), close(ca.get-or-panic)}}, scan-tokens }
+      else std-c-parse-unary-expression(tokens);
+   } else std-c-parse-unary-expression(tokens);
 );
 
 
 let std-c-parse-unary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-#unary-expression = postfix-expression
-#                 | unary-operator, cast-expression
    if std-c-can-take(tokens, "++") || std-c-can-take(tokens, "--") || std-c-can-take(tokens,"+") || std-c-can-take(tokens,"-")
    || std-c-can-take(tokens, "&") || std-c-can-take(tokens, "*") || std-c-can-take(tokens,"!") || std-c-can-take(tokens, "~") {
       let op = head(tokens).skey; tokens = tail(tokens);
-      let inner = std-c-parse-unary-expression(tokens);
+      let inner = std-c-parse-cast-expression(tokens);
       if inner.first.is-some then Tuple{ Some{CUnaryPrefix{op, close(inner.first.get-or-panic)}}, inner.second }
       else inner;
    } else if std-c-can-take(tokens, "sizeof") {
