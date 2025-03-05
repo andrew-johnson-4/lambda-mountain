@@ -139,11 +139,41 @@ let std-c-expr-of-statement(t: CTerm): AST = (
                   expr = App{ close(expr), close(d) };
                } else expr = d;
             );
+            CBinaryOp{op:c"Declarator*", ptr=arg1, arg2:CIdentifier{name=value}} => (
+               return-type = std-c-decorate-pointer(return-type, ptr);
+               let d = App{
+                  close(App{
+                     close(Var{ c"let", mk-token(c"let") }),
+                     close(Var{ untern(name), mk-token(name) })
+                  }),
+                  close(App{
+                     close(Lit{ c":", mk-token(c":") }),
+                     close(App{
+                        close(Var{ c"__uninitialized", mk-token(c"__uninitialized") }),
+                        close(AType{ return-type })
+                     })
+                  })
+               };
+               if non-zero(expr) {
+                  expr = App{ close(expr), close(d) };
+               } else expr = d;
+            );
+            _ => fail("Unsupported Declaration: \{decl}\n");
          }};
          expr;
       );
       _ => fail("Unsupported C Statement:\n\{t}\n");
    };
+);
+
+let std-c-decorate-pointer(tt: Type, ptr: CTerm): Type = (
+   match ptr {
+      CPointer{ qualifiers=qualifiers, next=next } => (
+         if next.is-some then tt = std-c-decorate-pointer(tt, next.get-or-panic);
+         tt = t3(c"Array", tt, TAny);
+      );
+   };
+   tt
 );
 
 let std-c-type-of-integer(i: String): Type = (
