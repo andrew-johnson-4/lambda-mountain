@@ -9,34 +9,6 @@ tail-string := λ(: x String). (: (
    (+( (as x U8[]) 1_u64 ))
 ) String);
 
-clone-rope := λ(: s S). (: (
-   (let buff (new-buffer 64_u64))
-   (set buff (clone-rope-impl( buff s )))
-   (set buff (.write( buff 0_u8 )))
-   (as (.ptr buff) String)
-) String);
-
-clone-rope-impl := λ(: buff Buffer)(: s S). (: (
-   (match s (
-      ()
-      ( SNil () )
-      ( (SCons( l r )) (
-         (set buff (clone-rope-impl( buff l )))
-         (set buff (clone-rope-impl( buff r )))
-      ))
-      ( (SAtom a) (
-         (let ci 0_u64)
-         (let c ([]( (as a U8[]) ci )))
-         (while (!=( c 0_u8 )) (
-            (set buff (.write( buff c )))
-            (set ci (+( ci 1_u64 )))
-            (set c ([]( (as a U8[]) ci )))
-         ))
-      ))
-   ))
-   buff
-) Buffer);
-
 deep-hash := λ(: key String). (: (
    (let i 0_u64)
    (let hash 0_u64)

@@ -33,9 +33,9 @@ let .reserve-additional(v: Vector<t>, additional: U64): Vector<t> = (
 let .push(v: Vector<t>, i: t): Vector<t> = (
    if v.length >= v.capacity {
       let new-cap = if v.capacity == 0 {
-         4
+         4_u64
       } else { # mul 1.5
-         (v.capacity << 1) + v.capacity
+         (v.length >> 1_u64) + v.length
       };
       v = v.realloc(new-cap);
    };
@@ -55,7 +55,7 @@ let .to-vector(l: List<t>): Vector<t> = (
 # shrinks the vector if it has way too many elements. shouldn't be called manually
 let .shrink(v: Vector<t>): Vector<t> = (
     let too-much = v.capacity - v.length;
-    let minimum = (v.length << 1) + v.length; # mul 1.5
+    let minimum = (v.length >> 1) + v.length; # mul 1.5
     if too-much > minimum {
        v = v.realloc(minimum);
     };
@@ -123,6 +123,17 @@ let $"set[]"( v: Vector<t>, i: U64, val: t ): Nil = (
    ()
 );
 
+let .reverse-self(v: Vector<t>): Nil = (
+   let i = 0_u64;
+   while i < (v.length >> 1) {
+      let ri = v.length - i - 1;
+      let temp = v[i];
+      v[i] = v[ri];
+      v[ri] = temp;
+      i = i + 1;
+   };
+);
+
 let .sort(v: Vector<t>): Vector<t> = (
    let n = v.length;
    let i = 0_u64;
@@ -166,6 +177,7 @@ type CString => FromVector<U8>;
 # MAKES INPUT VECTOR INVALID
 let .move-to(self: Vector<U8>, res: Type<CString>): CString = (
    self = self.push(0_u8);
+   self = self.shrink();
    (self.data as U8[]) as CString
 );
 
