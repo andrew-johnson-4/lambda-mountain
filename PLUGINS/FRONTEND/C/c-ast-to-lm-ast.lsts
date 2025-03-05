@@ -78,6 +78,7 @@ let std-c-lhs-of-parameter-list(declaration-list: CTerm): AST = (
 );
 
 let std-c-expr-of-statement(t: CTerm): AST = (
+   print("Compile expr \{t}\n");
    match t {
       CCompound{terms=terms} => (
          let inner = ASTNil;
@@ -89,6 +90,9 @@ let std-c-expr-of-statement(t: CTerm): AST = (
       CUnaryPrefix{op:"return", arg=arg} => (
          let inner = std-c-expr-of-statement(arg);
          App{ false, close(Var{c"c::return", mk-token(c"c::return")}), close(inner) }
+      );
+      CIdentifier{value=value} => (
+         Var{ untern(value), mk-token(value) }
       );
       CInteger{value=value} => (
          App{ false,
@@ -162,6 +166,20 @@ let std-c-expr-of-statement(t: CTerm): AST = (
          }};
          expr;
       );
+      CTernaryOp{op=op, arg1=arg1, arg2=arg2, arg3=arg3 } => (
+         App{
+            close(Var{ untern(op), mk-token(op) }),
+            close(App{
+               true,
+               close(App{
+                  true,
+                  close(std-c-expr-of-statement(arg1)),
+                  close(std-c-expr-of-statement(arg2))
+               }),
+               close(std-c-expr-of-statement(arg3))
+            })
+         };
+      );
       CBinaryOp{op=op, arg1=arg1, arg2=arg2 } => (
          App{
             close(Var{ untern(op), mk-token(op) }),
@@ -170,6 +188,18 @@ let std-c-expr-of-statement(t: CTerm): AST = (
                close(std-c-expr-of-statement(arg1)),
                close(std-c-expr-of-statement(arg2))
             })
+         };
+      );
+      CUnaryPrefix{op=op, arg=arg } => (
+         App{
+            close(Var{ untern(op), mk-token(op) }),
+            close(std-c-expr-of-statement(arg))
+         };
+      );
+      CUnaryPostfix{op=op, arg=arg } => (
+         App{
+            close(Var{ untern(op), mk-token(op) }),
+            close(std-c-expr-of-statement(arg))
          };
       );
       _ => fail("Unsupported C Statement:\n\{t}\n");
