@@ -1,8 +1,8 @@
 CC = cc
 
 dev: install-production
-	lm --stripdebug tests/c/locals.c
-	cp tests/c/locals.c.out original.c
+	lm --stripdebug tests/c/operators.c
+	cp tests/c/operators.c original.c
 	cat original.c | python3 -c 'import sys; print("".join(sys.stdin.read().split()))' > diff1.c
 	cat tmp.c | python3 -c 'import sys; print("".join(sys.stdin.read().split()))' > diff2.c
 	diff diff1.c diff2.c
