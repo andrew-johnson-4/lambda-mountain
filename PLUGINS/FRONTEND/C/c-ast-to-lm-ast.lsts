@@ -162,6 +162,16 @@ let std-c-expr-of-statement(t: CTerm): AST = (
          }};
          expr;
       );
+      CBinaryOp{op=op, arg1=arg1, arg2=arg2 } => (
+         App{
+            close(Var{ untern(op), mk-token(op) }),
+            close(App{
+               true,
+               close(std-c-expr-of-statement(arg1)),
+               close(std-c-expr-of-statement(arg2))
+            })
+         };
+      );
       _ => fail("Unsupported C Statement:\n\{t}\n");
    };
 );
