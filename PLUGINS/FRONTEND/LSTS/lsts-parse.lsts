@@ -30,22 +30,121 @@ let lsts-parse-expect(expect: CString, b: U64, tokens: List<Token>): Nil = (
    }
 );
 
-# TODO: return tags too
-let lsts-parse-doc(tokens: List<Token>): Tuple<Vector<CString>, List<Token>> = (
+let lsts-parse-doc-wordf(tokens: List<Token>, begin: CString, end: CString): Tuple<CString, List<Token>> = (
+   lsts-parse-expect(begin, tokens); tokens = tail(tokens);
+   let text = mk-vector(type(U8), 16);
+   while lsts-parse-head(tokens) != end {
+      if lsts-parse-head(tokens) == c"\n" {
+         lsts-parse-expect(end, 0, tokens);
+      };
+      if text.length > 0 {
+         text = text.push(32_u8);
+      };
+      let h = lsts-parse-head(tokens);
+      while non-zero(h) {
+         text = text.push(head-string(h));
+         h = tail-string(h);
+      };
+      tokens = tail(tokens);
+   };
+   Tuple { text.move-to(type(CString)), tokens }
+);
+
+let lsts-parse-doc-expr(tokens: List<Token>, tags: HashtableEq<CString,Maybe<AST[]>>): Tuple<Maybe<AST>, HashtableEq<CString,Maybe<AST[]>>, List<Token>> = (
+   let val = match lsts-parse-head(tokens) {
+      c"__" => (
+         (let s, tokens) = lsts-parse-doc-wordf(tokens, c"__", c"__");
+         Some { DocUnderline { s } }
+      );
+
+      c"**" => (
+         (let s, tokens) = lsts-parse-doc-wordf(tokens, c"**", c"**");
+         Some { DocBold { s } }
+      );
+
+      c"[" => (
+         tokens = tail(tokens);
+         let v = if lsts-parse-head(tokens) == c"[" {
+            tokens = tail(tokens);
+            let key = lsts-parse-head(tokens); tokens = tail(tokens);
+            let val = None {} :: Maybe<AST[]>;
+            if lsts-parse-head(tokens) == c":" {
+               tokens = tail(tokens);
+               (let expr, tokens) = lsts-parse-expression(tokens);
+               val = Some { close(expr) };
+            };
+            lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
+            tags = tags.bind(key, val);
+            None {} :: Maybe<AST>
+         } else {
+            (let v, tokens) = lsts-parse-expression(tokens);
+            Some { v }
+         };
+         lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
+         v
+      );
+
+      word => (
+         tokens = tail(tokens);
+         print("got \{word}\n");
+         Some { DocWord { word } }
+      );
+   };
+   Tuple { val, tags, tokens }
+);
+
+let lsts-parse-doc(tokens: List<Token>): Tuple<DocMeta, List<Token>> = (
    let ast = ASTEOF;
+   let para = ASTEOF;
+
+   let tags = {} :: HashtableEq<CString, Maybe<AST[]>>;
 
    while lsts-parse-head(tokens) == c"##" {
       tokens = tail(tokens);
 
+      let line = ASTEOF;
       # special token inserted by the lexer only in doc strings
       while lsts-parse-head(tokens) != c"\n" {
-         # TODO
-         tokens = tail(tokens);
-      };
+         print("loop: ");
+         (let ax, tags, tokens) = lsts-parse-doc-expr(tokens, tags);
+         match ax {
+            Some { a=content } => (
+               if non-zero(line) {
+                  line = Seq { close(line), close(a) };
+               } else {
+                  line = a;
+               };
+            );
 
+            _ => (
+               print("bad");
+            );
+         };
+         print("\n");
+      };
+      tokens = tail(tokens);
+
+      if non-zero(line) {
+         if non-zero(para) {
+            para = Seq { close(para), close(line) };
+         } else {
+            para = line;
+         };
+      } else {
+         # empty line => new paragraph
+         if non-zero(para) {
+            para = DocParagraph { close(para) };
+            if non-zero(ast) {
+               ast = Seq { close(ast), close(para) };
+            } else {
+               ast = para;
+            };
+            para = ASTEOF;
+         };
+      };
    };
 
-   Tuple { cose(ast), tokens }
+   Tuple { DocMeta { close(ast), tags }, tokens }
 );
 
 let lsts-has-assign(tokens: List<Token>): U64 = (
@@ -83,7 +182,7 @@ let lsts-substitute-type-aliases(s: CString): CString = (
 
 let lsts-parse(tokens: List<Token>): Nil = (
    while non-zero(tokens) {
-      (let docstr, tokens) = lsts-parse-doc(tokens);
+      (let docx, tokens) = lsts-parse-doc(tokens);
       let prev-tokens = tokens;
       match tokens {
          [ Token{key:c"let"}.. _] => tokens = lsts-parse-let(tokens);
@@ -140,8 +239,8 @@ let lsts-parse(tokens: List<Token>): Nil = (
          );
       };
       if is(prev-tokens, tokens) { fail("Unrecognized Token During Parsing: \{lsts-parse-head(tokens)}\n") };
-      if docstr.length > 0 {
-         ast-parsed-program = Seq { close(ast-parsed-program), close(Meta { docstr }) };
+      if non-zero(open(docx.doc)) || non-zero(docx.tags) { 
+         ast-parsed-program = Seq { close(ast-parsed-program), close(Meta { docx }) };
       };
    }
 );

@@ -2,6 +2,8 @@
 type SourceLocation = SourceLocation { filename: CString, line: U64, column: U64 };
 type Token = Token { skey: String, key: CString, nonce: U64, location: SourceLocation };
 
+type DocMeta = DocMeta { doc: AST[], tags: HashtableEq<CString, Maybe<AST[]>> };
+
 type AST = ASTEOF
          | ASTNil
          | App { is-cons: U64, left: AST[], right: AST[] }
@@ -12,10 +14,11 @@ type AST = ASTEOF
          | Seq { left: AST[], right: AST[] }
          | Glb { key: Token , val: AST[] }
          | Typedef { lhs: AST[] , rhs: AST[] }
-         | Meta { doc: AST[], tags: HashtableEq<CString, Maybe<AST[]>> }
+         | Meta { val: DocMeta }
          | DocWord { val: CString }
          | DocBold { val: CString }
          | DocUnderline { val: CString }
+         | DocParagraph { val: AST[] }
          ;
 zero AST = ASTEOF;
 
