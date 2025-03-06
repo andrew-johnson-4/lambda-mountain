@@ -6,9 +6,38 @@ let mk-vector(type: Type<t>, capacity: U64): Vector<t> = (
    Vector { (malloc(data-sz) as t[]), 0_u64, capacity }
 );
 
+let fill-vector(value: t, len: U64): Vector<t> = (
+   let v = mk-vector(type(t), len);
+   while len > 0 {
+      v[len-1] = value;
+      len = len - 1;
+   };
+   v
+);
+
+# does not change length, or destroy old elems!
+let .realloc(v: Vector<t>, target-capacity: U64): Vector<t> = (
+   let data-sz = sizeof(t) * target-capacity;
+   let newp = realloc(v.data as ?[], data-sz) as t[];
+   Vector { newp, v.length, target-capacity }
+);
+
+let .reserve-additional(v: Vector<t>, additional: U64): Vector<t> = (
+   if (v.capacity - v.length) < additional {
+      v.realloc(v.length + additional)
+   } else {
+      v
+   }
+);
+
 let .push(v: Vector<t>, i: t): Vector<t> = (
    if v.length >= v.capacity {
-      fail("Vector Overflow during .push")
+      let new-cap = if v.capacity == 0 {
+         4_u64
+      } else {
+         v.length * 3_u64
+      };
+      v = v.realloc(new-cap);
    };
    v.data[v.length] = i;
    v.length = v.length + 1_u64;
@@ -21,6 +50,53 @@ let .to-vector(l: List<t>): Vector<t> = (
       v = v.push(i);
    };
    v
+);
+
+# shrinks the vector if it has way too many elements. shouldn't be called manually
+let .shrink(v: Vector<t>): Vector<t> = (
+    let too-much = v.capacity - v.length;
+    let minimum = (v.length >> 1) + v.length; # mul 1.5
+    if too-much > minimum {
+       v = v.realloc(minimum);
+    };
+    v
+);
+
+let .remove-front(v: Vector<t>, num: U64): Vector<t> = (
+    if num > v.length() {
+        fail("tried to remove \{num} elements from vector, but only have \{v.length()}");
+    };
+
+    let i = num;
+    while i < v.length() {
+        v[i-num] = v[i];
+        i = i + 1;
+    };
+    v.length = v.length - num;
+
+    v.shrink();
+);
+
+let .remove-back(v: Vector<t>, num: U64): Vector<t> = (
+    if num > v.length() {
+        fail("tried to remove \{num} elements from vector, but only have \{v.length()}");
+    };
+
+    v.length = v.length - num;
+
+    v.shrink();
+);
+
+let .pop(v: Vector<t>): Tuple<Vector<t>, t> = (
+    if v.length() == 0 {
+        fail("Tried to pop from empty Vector.");
+    };
+
+    let lasti = v.length - 1;
+    let last = v[lasti];
+    v = v.remove-back(1);
+
+    Tuple { v, last }
 );
 
 let $"[]"( v: Vector<t>, i: U64 ): t = (
@@ -45,6 +121,17 @@ let $"set[]"( v: Vector<t>, i: U64, val: t ): Nil = (
    };
    v.data[i] = val; 
    ()
+);
+
+let .reverse-self(v: Vector<t>): Nil = (
+   let i = 0_u64;
+   while i < (v.length >> 1) {
+      let ri = v.length - i - 1;
+      let temp = v[i];
+      v[i] = v[ri];
+      v[ri] = temp;
+      i = i + 1;
+   };
 );
 
 let .sort(v: Vector<t>): Vector<t> = (
@@ -79,4 +166,16 @@ let print(v: Vector<x>): Nil = (
       vi = vi + 1_u64;
    };
    print(c"]");
+);
+
+let .into(in: Vector<U8>, res: Type<CString>): CString = (
+   let out = mk-vector(type(U8), in.length+1);
+   let i = 0_u64;
+   while i < in.length { out = out.push(in[i]); i = i + 1; };
+   out = out.push(0_u8);
+   ((out.data as U8[]) as CString)
+);
+
+let .into(self: Vector<U8>, res: Type<SmartString>): SmartString = (
+   intern(self.into(type(CString)))
 );
