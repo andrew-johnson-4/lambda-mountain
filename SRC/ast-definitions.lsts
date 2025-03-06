@@ -12,7 +12,11 @@ type AST = ASTEOF
          | Seq { left: AST[], right: AST[] }
          | Glb { key: Token , val: AST[] }
          | Typedef { lhs: AST[] , rhs: AST[] }
-         | Meta { description: AST[] };
+         | Meta { doc: AST[], tags: HashtableEq<CString, Maybe<AST[]>> }
+         | DocWord { val: CString }
+         | DocBold { val: CString }
+         | DocUnderline { val: CString }
+         ;
 zero AST = ASTEOF;
 
 # constructor with a default argument

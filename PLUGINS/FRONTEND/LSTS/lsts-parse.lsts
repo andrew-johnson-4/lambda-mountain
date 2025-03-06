@@ -30,6 +30,24 @@ let lsts-parse-expect(expect: CString, b: U64, tokens: List<Token>): Nil = (
    }
 );
 
+# TODO: return tags too
+let lsts-parse-doc(tokens: List<Token>): Tuple<Vector<CString>, List<Token>> = (
+   let ast = ASTEOF;
+
+   while lsts-parse-head(tokens) == c"##" {
+      tokens = tail(tokens);
+
+      # special token inserted by the lexer only in doc strings
+      while lsts-parse-head(tokens) != c"\n" {
+         # TODO
+         tokens = tail(tokens);
+      };
+
+   };
+
+   Tuple { cose(ast), tokens }
+);
+
 let lsts-has-assign(tokens: List<Token>): U64 = (
    let depth = 0_i64;
    let has-assign = 0;
@@ -65,6 +83,7 @@ let lsts-substitute-type-aliases(s: CString): CString = (
 
 let lsts-parse(tokens: List<Token>): Nil = (
    while non-zero(tokens) {
+      (let docstr, tokens) = lsts-parse-doc(tokens);
       let prev-tokens = tokens;
       match tokens {
          [ Token{key:c"let"}.. _] => tokens = lsts-parse-let(tokens);
@@ -121,6 +140,9 @@ let lsts-parse(tokens: List<Token>): Nil = (
          );
       };
       if is(prev-tokens, tokens) { fail("Unrecognized Token During Parsing: \{lsts-parse-head(tokens)}\n") };
+      if docstr.length > 0 {
+         ast-parsed-program = Seq { close(ast-parsed-program), close(Meta { docstr }) };
+      };
    }
 );
 

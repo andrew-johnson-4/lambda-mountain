@@ -15,13 +15,14 @@ let fill-vector(value: t, len: U64): Vector<t> = (
    v
 );
 
-# does not change length, or destroy old elems!
+## does not change the length length, or destroy old elements!
 let .realloc(v: Vector<t>, target-capacity: U64): Vector<t> = (
    let data-sz = sizeof(t) * target-capacity;
    let newp = realloc(v.data as ?[], data-sz) as t[];
    Vector { newp, v.length, target-capacity }
 );
 
+## reserve additional num elements to the current length
 let .reserve-additional(v: Vector<t>, additional: U64): Vector<t> = (
    if (v.capacity - v.length) < additional {
       v.realloc(v.length + additional)
@@ -44,15 +45,7 @@ let .push(v: Vector<t>, i: t): Vector<t> = (
    v
 );
 
-let .to-vector(l: List<t>): Vector<t> = (
-   let v = mk-vector(type(t), l.length);
-   for i in l {
-      v = v.push(i);
-   };
-   v
-);
-
-# shrinks the vector if it has way too many elements. shouldn't be called manually
+## shrinks the vector if it has way too many elements. shouldn't be called manually
 let .shrink(v: Vector<t>): Vector<t> = (
     let too-much = v.capacity - v.length;
     let minimum = (v.length >> 1) + v.length; # mul 1.5
@@ -174,7 +167,7 @@ interface FromVector<t> {
 
 type CString => FromVector<U8>;
 
-# MAKES INPUT VECTOR INVALID
+## MAKES INPUT VECTOR INVALID
 let .move-to(self: Vector<U8>, res: Type<CString>): CString = (
    self = self.push(0_u8);
    self = self.shrink();
@@ -183,7 +176,7 @@ let .move-to(self: Vector<U8>, res: Type<CString>): CString = (
 
 type SmartString => FromVector<U8>;
 
-# MAKES INPUT VECTOR INVALID
+## MAKES INPUT VECTOR INVALID
 let .move-to(self: Vector<U8>, res: Type<SmartString>): SmartString = (
    intern(self.move-to(type(CString)))
 );

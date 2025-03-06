@@ -2,6 +2,8 @@
 # TODO: instead do U8 iterator for S
 
 # TODO: deprecate this in favor of Vector
+
+##[deprecated: use vector instead]
 let clone-rope(s: S): CString = (
    let out = mk-vector(type(U8), 64);
    out = clone-rope-impl(s, out);
