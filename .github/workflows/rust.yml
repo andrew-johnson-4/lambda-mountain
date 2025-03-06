@@ -21,4 +21,4 @@ jobs:
     - name: Run tests
       run: cargo test --verbose
     - name: Run deploy
-      run: make deploy
+      run: make deploy-lite
