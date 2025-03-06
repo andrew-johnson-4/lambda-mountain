@@ -86,7 +86,6 @@ let lsts-parse-doc-expr(tokens: List<Token>, tags: HashtableEq<CString,Maybe<AST
 
       word => (
          tokens = tail(tokens);
-         print("got \{word}\n");
          Some { DocWord { word } }
       );
    };
@@ -105,7 +104,6 @@ let lsts-parse-doc(tokens: List<Token>): Tuple<DocMeta, List<Token>> = (
       let line = ASTEOF;
       # special token inserted by the lexer only in doc strings
       while lsts-parse-head(tokens) != c"\n" {
-         print("loop: ");
          (let ax, tags, tokens) = lsts-parse-doc-expr(tokens, tags);
          match ax {
             Some { a=content } => (
@@ -116,11 +114,8 @@ let lsts-parse-doc(tokens: List<Token>): Tuple<DocMeta, List<Token>> = (
                };
             );
 
-            _ => (
-               print("bad");
-            );
+            _ => ();
          };
-         print("\n");
       };
       tokens = tail(tokens);
 
