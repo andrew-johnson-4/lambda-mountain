@@ -17,6 +17,7 @@ build: compile-production
 	cargo test regression_tests
 
 deploy: build smoke-test
+deploy-lite: build smoke-test-lite
 
 gprof:
 	$(CC) -O3 -pg -o bootstrap.exe BOOTSTRAP/cli.c
@@ -71,6 +72,7 @@ smoke-test-musl:
 	rm tmp
 
 smoke-test: smoke-test-clang smoke-test-gcc smoke-test-musl
+smoke-test-lite: smoke-test-clang smoke-test-gcc
 
 install:
 	$(CC) -O3 -o lm BOOTSTRAP/cli.c
