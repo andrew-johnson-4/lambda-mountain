@@ -55,12 +55,11 @@ let std-c-declare-function(specifiers: CTerm, declarator: CTerm, declaration-lis
 );
 
 let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
-   let misc = TAny;
-   let rtype = match specifiers {
-      CList{value:[CType1{rv=value}..]} => t2(c"C", t1(untern(rv)));
+   match specifiers {
+      CMaybe{value:Some{content=content}} => std-c-type-of-specifiers(content);
+      CList{value:[CType1{rv=value}..]} => ( t2(c"C", t1(untern(rv))), TAny );
       _ => fail("Unsupported C Specifiers:\n\{specifiers}\n");
    };
-   (rtype, misc);
 );
 
 let std-c-name-of-declarator(declarator: CTerm): Tuple<String,Type> = (
@@ -89,6 +88,9 @@ let std-c-expr-of-statement(t: CTerm): AST = (
       CUnaryPrefix{op:"return", arg=arg} => (
          let inner = std-c-expr-of-statement(arg);
          App{ false, close(Var{c"c::return", mk-token(c"c::return")}), close(inner) }
+      );
+      CIdentifier{value=value} => (
+         Var{ untern(value), mk-token(value) }
       );
       CInteger{value=value} => (
          App{ false,
@@ -139,11 +141,81 @@ let std-c-expr-of-statement(t: CTerm): AST = (
                   expr = App{ close(expr), close(d) };
                } else expr = d;
             );
+            CBinaryOp{op:c"Declarator*", ptr=arg1, arg2:CIdentifier{name=value}} => (
+               return-type = std-c-decorate-pointer(return-type, ptr);
+               let d = App{
+                  close(App{
+                     close(Var{ c"let", mk-token(c"let") }),
+                     close(Var{ untern(name), mk-token(name) })
+                  }),
+                  close(App{
+                     close(Lit{ c":", mk-token(c":") }),
+                     close(App{
+                        close(Var{ c"__uninitialized", mk-token(c"__uninitialized") }),
+                        close(AType{ return-type })
+                     })
+                  })
+               };
+               if non-zero(expr) {
+                  expr = App{ close(expr), close(d) };
+               } else expr = d;
+            );
+            _ => fail("Unsupported Declaration: \{decl}\n");
          }};
          expr;
       );
+      CTernaryOp{op=op, arg1=arg1, arg2=arg2, arg3=arg3 } => (
+         App{
+            close(Var{ untern(op), mk-token(op) }),
+            close(App{
+               true,
+               close(App{
+                  true,
+                  close(std-c-expr-of-statement(arg1)),
+                  close(std-c-expr-of-statement(arg2))
+               }),
+               close(std-c-expr-of-statement(arg3))
+            })
+         };
+      );
+      CBinaryOp{op:c"TypeName", arg1=arg1, arg2=arg2 } => (
+         (let rt, let mt) = std-c-type-of-specifiers(arg1);
+         AType{rt}
+      );
+      CBinaryOp{op=op, arg1=arg1, arg2=arg2 } => (
+         App{
+            close(Var{ untern(op), mk-token(op) }),
+            close(App{
+               true,
+               close(std-c-expr-of-statement(arg1)),
+               close(std-c-expr-of-statement(arg2))
+            })
+         };
+      );
+      CUnaryPrefix{op=op, arg=arg } => (
+         App{
+            close(Var{ untern(op), mk-token(op) }),
+            close(std-c-expr-of-statement(arg))
+         };
+      );
+      CUnaryPostfix{op=op, arg=arg } => (
+         App{
+            close(Var{ untern(op), mk-token(op) }),
+            close(std-c-expr-of-statement(arg))
+         };
+      );
       _ => fail("Unsupported C Statement:\n\{t}\n");
    };
+);
+
+let std-c-decorate-pointer(tt: Type, ptr: CTerm): Type = (
+   match ptr {
+      CPointer{ qualifiers=qualifiers, next=next } => (
+         if next.is-some then tt = std-c-decorate-pointer(tt, next.get-or-panic);
+         tt = t3(c"Array", tt, TAny);
+      );
+   };
+   tt
 );
 
 let std-c-type-of-integer(i: String): Type = (
