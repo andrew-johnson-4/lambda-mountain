@@ -1,4 +1,6 @@
 
+type List<x> => Collection<x>;
+
 let cmp(ls: List<x>, rs: List<x>): Ord = (
    let diff = Equal;
    while is(diff, Equal) && non-zero(ls) && non-zero(rs) {
