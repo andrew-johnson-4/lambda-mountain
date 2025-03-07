@@ -1,0 +1,13 @@
+
+interface Collection<t> {
+   let .length(self: Collection<t>): U64;
+   let $"[]"(self: Collection<t>, idx: U64): t;
+};
+
+let .last(self: t+Collection<x>): x = (
+   let ln = self.length();
+   if ln == 0 {
+      fail("cannot get .last() from empty element");
+   };
+   self[(ln-1)]
+);
