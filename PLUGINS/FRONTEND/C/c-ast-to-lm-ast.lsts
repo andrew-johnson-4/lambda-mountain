@@ -194,13 +194,13 @@ let std-c-expr-of-statement(t: CTerm): AST = (
       );
       CUnaryPrefix{op=op, arg=arg } => (
          App{
-            close(Var{ untern(op), mk-token(op) }),
+            close(Var{ c"prefix:" + untern(op), mk-token("prefix:" + op) }),
             close(std-c-expr-of-statement(arg))
          };
       );
       CUnaryPostfix{op=op, arg=arg } => (
          App{
-            close(Var{ untern(op), mk-token(op) }),
+            close(Var{ c"postfix:" + untern(op), mk-token("postfix:" + op) }),
             close(std-c-expr-of-statement(arg))
          };
       );
