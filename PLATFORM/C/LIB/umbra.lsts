@@ -28,7 +28,7 @@
 #   If you know that that might happen, you might be able to use the [addr] function
 #
 # TODOs:
-# - there should be an alternative string implementation optimizes for even shorter strings (8 bytes),
+# - maybe there should be an alternative string implementation optimizes for even shorter strings (8 bytes),
 #   which does not store the prefix
 # - maybe null-terminate the string if, any only if, it is stored as [UmbraLong]
 # - maybe padd the short array with zeros
@@ -36,6 +36,9 @@
 type UmbraShortLong = UmbraShort { arr: U8[12] } | UmbraLong { prefix: U8[4], ptr: U8[] };
 
 type Umbra = Umbra { len: U32, backing: UmbraShortLong };
+
+type Umbra => Collection<U8>;
+type Umbra => Iterable<U8>;
 
 let .length(s: Umbra[]): U64 = (
     s.len as U64
@@ -254,3 +257,12 @@ let $"+"(l: t, r: Umbra[]): Umbra = (
 let $"+"(l: Umbra[], r: t): Umbra = (
     concat-to-umbra(l, r)
 );
+
+let .iter(self: Umbra): CollectionIteratorBase<Umbra> = (
+   to-umbra(self).unsafe-iter()
+);
+
+let .unsafe-iter(self: Umbra): CollectionIteratorBase<Umbra> = (
+   CollectionIteratorBase { self, 0_u64 }
+);
+
