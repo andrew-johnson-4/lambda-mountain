@@ -220,7 +220,7 @@ let .into(s: t, t: Type<Umbra>): Umbra = (
 
 let .into(self: Umbra, t: Type<Vector<U8>>): Vector<U8> = (
    let out = mk-vector(type(U8), (&self).length + 1);
-   let ptr = (&self).addr;
+   let ptr = addr(&self);
    let i = 0_u64;
    while i < (&self).length() {
       out = out.push(ptr[i]);
