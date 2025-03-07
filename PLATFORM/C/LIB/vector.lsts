@@ -35,7 +35,7 @@ let .push(v: Vector<t>, i: t): Vector<t> = (
       let new-cap = if v.capacity == 0 {
          4_u64
       } else {
-         v.length * 3_u64
+         (v.length >> 1_u64) + v.length # this is mul 1.5, not 3
       };
       v = v.realloc(new-cap);
    };
