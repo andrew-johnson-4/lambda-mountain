@@ -5,8 +5,6 @@ import PLATFORM/C/LIB/blob.lm;
 import PLATFORM/C/LIB/primitives.lm;
 import PLATFORM/C/LIB/primitives.lsts;
 
-#type C<$"int8_t"> => C<$"int16_t">;
-
 let :Blob $"c::compound"(ts: Cons<Any,last>): last = (
 );
 
@@ -16,3 +14,36 @@ let :Blob $"c::compound"(ts: last): last = (
 let :Blob $"c::return"(ts: x): x = (
    l"return "; ts;
 );
+
+# U8
+type C<$"uint8_t"> => C<$"int16_t">;
+type C<$"uint8_t"> => C<$"uint16_t">;
+type C<$"uint8_t"> => C<$"int32_t">;
+type C<$"uint8_t"> => C<$"uint32_t">;
+type C<$"uint8_t"> => C<$"int64_t">;
+type C<$"uint8_t"> => C<$"uint64_t">;
+
+# I8
+type C<$"int8_t"> => C<$"int16_t">;
+type C<$"int8_t"> => C<$"int32_t">;
+type C<$"int8_t"> => C<$"int64_t">;
+
+# U16
+type C<$"uint16_t"> => C<$"int32_t">;
+type C<$"uint16_t"> => C<$"uint32_t">;
+type C<$"uint16_t"> => C<$"int64_t">;
+type C<$"uint16_t"> => C<$"uint64_t">;
+
+# I16
+type C<$"int16_t"> => C<$"int32_t">;
+type C<$"int16_t"> => C<$"int64_t">;
+
+# U32
+type C<$"uint32_t"> => C<$"int64_t">;
+type C<$"uint32_t"> => C<$"uint64_t">;
+
+# I32
+type C<$"int32_t"> => C<$"int64_t">;
+
+let :Blob $"+"(x: C<$"uint8_t">, y: C<$"uint8_t">): C<$"uint8_t"> = (l"("; x; l"+"; y; l")";);
+let :Blob $"+"(x: C<$"int8_t">, y: C<$"int8_t">): C<$"int8_t"> = (l"("; x; l"+"; y; l")";);
