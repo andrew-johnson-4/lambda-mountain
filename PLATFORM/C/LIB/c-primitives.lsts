@@ -15,6 +15,9 @@ let :Blob $"c::return"(ts: x): x = (
    l"return "; ts;
 );
 
+# for 64 bit machines: TODO replace with architecture specific types
+type C<$"int"> => C<$"int32_t">;
+
 # U8
 type C<$"uint8_t"> => C<$"int16_t">;
 type C<$"uint8_t"> => C<$"uint16_t">;
@@ -269,3 +272,104 @@ let :Blob $"prefix:~"(x: C<$"uint32_t">): C<$"uint32_t"> = (l"(~"; x; l")";);
 let :Blob $"prefix:~"(x: C<$"int32_t">): C<$"int32_t"> = (l"(~"; x; l")";);
 let :Blob $"prefix:~"(x: C<$"uint64_t">): C<$"uint64_t"> = (l"(~"; x; l")";);
 let :Blob $"prefix:~"(x: C<$"int64_t">): C<$"int64_t"> = (l"(~"; x; l")";);
+
+let :Blob $"*="(x: C<$"uint8_t">, y: C<$"uint8_t">): C<$"uint8_t"> = (l"("; x; l"*="; y; l")";);
+let :Blob $"*="(x: C<$"int8_t">, y: C<$"int8_t">): C<$"int8_t"> = (l"("; x; l"*="; y; l")";);
+let :Blob $"*="(x: C<$"uint16_t">, y: C<$"uint16_t">): C<$"uint16_t"> = (l"("; x; l"*="; y; l")";);
+let :Blob $"*="(x: C<$"int16_t">, y: C<$"int16_t">): C<$"int16_t"> = (l"("; x; l"*="; y; l")";);
+let :Blob $"*="(x: C<$"uint32_t">, y: C<$"uint32_t">): C<$"uint32_t"> = (l"("; x; l"*="; y; l")";);
+let :Blob $"*="(x: C<$"int32_t">, y: C<$"int32_t">): C<$"int32_t"> = (l"("; x; l"*="; y; l")";);
+let :Blob $"*="(x: C<$"uint64_t">, y: C<$"uint64_t">): C<$"uint64_t"> = (l"("; x; l"*="; y; l")";);
+let :Blob $"*="(x: C<$"int64_t">, y: C<$"int64_t">): C<$"int64_t"> = (l"("; x; l"*="; y; l")";);
+
+let :Blob $"/="(x: C<$"uint8_t">, y: C<$"uint8_t">): C<$"uint8_t"> = (l"("; x; l"/="; y; l")";);
+let :Blob $"/="(x: C<$"int8_t">, y: C<$"int8_t">): C<$"int8_t"> = (l"("; x; l"/="; y; l")";);
+let :Blob $"/="(x: C<$"uint16_t">, y: C<$"uint16_t">): C<$"uint16_t"> = (l"("; x; l"/="; y; l")";);
+let :Blob $"/="(x: C<$"int16_t">, y: C<$"int16_t">): C<$"int16_t"> = (l"("; x; l"/="; y; l")";);
+let :Blob $"/="(x: C<$"uint32_t">, y: C<$"uint32_t">): C<$"uint32_t"> = (l"("; x; l"/="; y; l")";);
+let :Blob $"/="(x: C<$"int32_t">, y: C<$"int32_t">): C<$"int32_t"> = (l"("; x; l"/="; y; l")";);
+let :Blob $"/="(x: C<$"uint64_t">, y: C<$"uint64_t">): C<$"uint64_t"> = (l"("; x; l"/="; y; l")";);
+let :Blob $"/="(x: C<$"int64_t">, y: C<$"int64_t">): C<$"int64_t"> = (l"("; x; l"/="; y; l")";);
+
+let :Blob $"%="(x: C<$"uint8_t">, y: C<$"uint8_t">): C<$"uint8_t"> = (l"("; x; l"%="; y; l")";);
+let :Blob $"%="(x: C<$"int8_t">, y: C<$"int8_t">): C<$"int8_t"> = (l"("; x; l"%="; y; l")";);
+let :Blob $"%="(x: C<$"uint16_t">, y: C<$"uint16_t">): C<$"uint16_t"> = (l"("; x; l"%="; y; l")";);
+let :Blob $"%="(x: C<$"int16_t">, y: C<$"int16_t">): C<$"int16_t"> = (l"("; x; l"%="; y; l")";);
+let :Blob $"%="(x: C<$"uint32_t">, y: C<$"uint32_t">): C<$"uint32_t"> = (l"("; x; l"%="; y; l")";);
+let :Blob $"%="(x: C<$"int32_t">, y: C<$"int32_t">): C<$"int32_t"> = (l"("; x; l"%="; y; l")";);
+let :Blob $"%="(x: C<$"uint64_t">, y: C<$"uint64_t">): C<$"uint64_t"> = (l"("; x; l"%="; y; l")";);
+let :Blob $"%="(x: C<$"int64_t">, y: C<$"int64_t">): C<$"int64_t"> = (l"("; x; l"%="; y; l")";);
+
+let :Blob $"+="(x: C<$"uint8_t">, y: C<$"uint8_t">): C<$"uint8_t"> = (l"("; x; l"+="; y; l")";);
+let :Blob $"+="(x: C<$"int8_t">, y: C<$"int8_t">): C<$"int8_t"> = (l"("; x; l"+="; y; l")";);
+let :Blob $"+="(x: C<$"uint16_t">, y: C<$"uint16_t">): C<$"uint16_t"> = (l"("; x; l"+="; y; l")";);
+let :Blob $"+="(x: C<$"int16_t">, y: C<$"int16_t">): C<$"int16_t"> = (l"("; x; l"+="; y; l")";);
+let :Blob $"+="(x: C<$"uint32_t">, y: C<$"uint32_t">): C<$"uint32_t"> = (l"("; x; l"+="; y; l")";);
+let :Blob $"+="(x: C<$"int32_t">, y: C<$"int32_t">): C<$"int32_t"> = (l"("; x; l"+="; y; l")";);
+let :Blob $"+="(x: C<$"uint64_t">, y: C<$"uint64_t">): C<$"uint64_t"> = (l"("; x; l"+="; y; l")";);
+let :Blob $"+="(x: C<$"int64_t">, y: C<$"int64_t">): C<$"int64_t"> = (l"("; x; l"+="; y; l")";);
+
+let :Blob $"-="(x: C<$"uint8_t">, y: C<$"uint8_t">): C<$"uint8_t"> = (l"("; x; l"-="; y; l")";);
+let :Blob $"-="(x: C<$"int8_t">, y: C<$"int8_t">): C<$"int8_t"> = (l"("; x; l"-="; y; l")";);
+let :Blob $"-="(x: C<$"uint16_t">, y: C<$"uint16_t">): C<$"uint16_t"> = (l"("; x; l"-="; y; l")";);
+let :Blob $"-="(x: C<$"int16_t">, y: C<$"int16_t">): C<$"int16_t"> = (l"("; x; l"-="; y; l")";);
+let :Blob $"-="(x: C<$"uint32_t">, y: C<$"uint32_t">): C<$"uint32_t"> = (l"("; x; l"-="; y; l")";);
+let :Blob $"-="(x: C<$"int32_t">, y: C<$"int32_t">): C<$"int32_t"> = (l"("; x; l"-="; y; l")";);
+let :Blob $"-="(x: C<$"uint64_t">, y: C<$"uint64_t">): C<$"uint64_t"> = (l"("; x; l"-="; y; l")";);
+let :Blob $"-="(x: C<$"int64_t">, y: C<$"int64_t">): C<$"int64_t"> = (l"("; x; l"-="; y; l")";);
+
+let :Blob $"~="(x: C<$"uint8_t">, y: C<$"uint8_t">): C<$"uint8_t"> = (l"("; x; l"~="; y; l")";);
+let :Blob $"~="(x: C<$"int8_t">, y: C<$"int8_t">): C<$"int8_t"> = (l"("; x; l"~="; y; l")";);
+let :Blob $"~="(x: C<$"uint16_t">, y: C<$"uint16_t">): C<$"uint16_t"> = (l"("; x; l"~="; y; l")";);
+let :Blob $"~="(x: C<$"int16_t">, y: C<$"int16_t">): C<$"int16_t"> = (l"("; x; l"~="; y; l")";);
+let :Blob $"~="(x: C<$"uint32_t">, y: C<$"uint32_t">): C<$"uint32_t"> = (l"("; x; l"~="; y; l")";);
+let :Blob $"~="(x: C<$"int32_t">, y: C<$"int32_t">): C<$"int32_t"> = (l"("; x; l"~="; y; l")";);
+let :Blob $"~="(x: C<$"uint64_t">, y: C<$"uint64_t">): C<$"uint64_t"> = (l"("; x; l"~="; y; l")";);
+let :Blob $"~="(x: C<$"int64_t">, y: C<$"int64_t">): C<$"int64_t"> = (l"("; x; l"~="; y; l")";);
+
+let :Blob $"&="(x: C<$"uint8_t">, y: C<$"uint8_t">): C<$"uint8_t"> = (l"("; x; l"&="; y; l")";);
+let :Blob $"&="(x: C<$"int8_t">, y: C<$"int8_t">): C<$"int8_t"> = (l"("; x; l"&="; y; l")";);
+let :Blob $"&="(x: C<$"uint16_t">, y: C<$"uint16_t">): C<$"uint16_t"> = (l"("; x; l"&="; y; l")";);
+let :Blob $"&="(x: C<$"int16_t">, y: C<$"int16_t">): C<$"int16_t"> = (l"("; x; l"&="; y; l")";);
+let :Blob $"&="(x: C<$"uint32_t">, y: C<$"uint32_t">): C<$"uint32_t"> = (l"("; x; l"&="; y; l")";);
+let :Blob $"&="(x: C<$"int32_t">, y: C<$"int32_t">): C<$"int32_t"> = (l"("; x; l"&="; y; l")";);
+let :Blob $"&="(x: C<$"uint64_t">, y: C<$"uint64_t">): C<$"uint64_t"> = (l"("; x; l"&="; y; l")";);
+let :Blob $"&="(x: C<$"int64_t">, y: C<$"int64_t">): C<$"int64_t"> = (l"("; x; l"&="; y; l")";);
+
+let :Blob $"|="(x: C<$"uint8_t">, y: C<$"uint8_t">): C<$"uint8_t"> = (l"("; x; l"|="; y; l")";);
+let :Blob $"|="(x: C<$"int8_t">, y: C<$"int8_t">): C<$"int8_t"> = (l"("; x; l"|="; y; l")";);
+let :Blob $"|="(x: C<$"uint16_t">, y: C<$"uint16_t">): C<$"uint16_t"> = (l"("; x; l"|="; y; l")";);
+let :Blob $"|="(x: C<$"int16_t">, y: C<$"int16_t">): C<$"int16_t"> = (l"("; x; l"|="; y; l")";);
+let :Blob $"|="(x: C<$"uint32_t">, y: C<$"uint32_t">): C<$"uint32_t"> = (l"("; x; l"|="; y; l")";);
+let :Blob $"|="(x: C<$"int32_t">, y: C<$"int32_t">): C<$"int32_t"> = (l"("; x; l"|="; y; l")";);
+let :Blob $"|="(x: C<$"uint64_t">, y: C<$"uint64_t">): C<$"uint64_t"> = (l"("; x; l"|="; y; l")";);
+let :Blob $"|="(x: C<$"int64_t">, y: C<$"int64_t">): C<$"int64_t"> = (l"("; x; l"|="; y; l")";);
+
+let :Blob $"^="(x: C<$"uint8_t">, y: C<$"uint8_t">): C<$"uint8_t"> = (l"("; x; l"^="; y; l")";);
+let :Blob $"^="(x: C<$"int8_t">, y: C<$"int8_t">): C<$"int8_t"> = (l"("; x; l"^="; y; l")";);
+let :Blob $"^="(x: C<$"uint16_t">, y: C<$"uint16_t">): C<$"uint16_t"> = (l"("; x; l"^="; y; l")";);
+let :Blob $"^="(x: C<$"int16_t">, y: C<$"int16_t">): C<$"int16_t"> = (l"("; x; l"^="; y; l")";);
+let :Blob $"^="(x: C<$"uint32_t">, y: C<$"uint32_t">): C<$"uint32_t"> = (l"("; x; l"^="; y; l")";);
+let :Blob $"^="(x: C<$"int32_t">, y: C<$"int32_t">): C<$"int32_t"> = (l"("; x; l"^="; y; l")";);
+let :Blob $"^="(x: C<$"uint64_t">, y: C<$"uint64_t">): C<$"uint64_t"> = (l"("; x; l"^="; y; l")";);
+let :Blob $"^="(x: C<$"int64_t">, y: C<$"int64_t">): C<$"int64_t"> = (l"("; x; l"^="; y; l")";);
+
+let :Blob $"<<="(x: C<$"uint8_t">, y: C<$"uint8_t">): C<$"uint8_t"> = (l"("; x; l"<<="; y; l")";);
+let :Blob $"<<="(x: C<$"int8_t">, y: C<$"int8_t">): C<$"int8_t"> = (l"("; x; l"<<="; y; l")";);
+let :Blob $"<<="(x: C<$"uint16_t">, y: C<$"uint16_t">): C<$"uint16_t"> = (l"("; x; l"<<="; y; l")";);
+let :Blob $"<<="(x: C<$"int16_t">, y: C<$"int16_t">): C<$"int16_t"> = (l"("; x; l"<<="; y; l")";);
+let :Blob $"<<="(x: C<$"uint32_t">, y: C<$"uint32_t">): C<$"uint32_t"> = (l"("; x; l"<<="; y; l")";);
+let :Blob $"<<="(x: C<$"int32_t">, y: C<$"int32_t">): C<$"int32_t"> = (l"("; x; l"<<="; y; l")";);
+let :Blob $"<<="(x: C<$"uint64_t">, y: C<$"uint64_t">): C<$"uint64_t"> = (l"("; x; l"<<="; y; l")";);
+let :Blob $"<<="(x: C<$"int64_t">, y: C<$"int64_t">): C<$"int64_t"> = (l"("; x; l"<<="; y; l")";);
+
+let :Blob $">>="(x: C<$"uint8_t">, y: C<$"uint8_t">): C<$"uint8_t"> = (l"("; x; l">>="; y; l")";);
+let :Blob $">>="(x: C<$"int8_t">, y: C<$"int8_t">): C<$"int8_t"> = (l"("; x; l">>="; y; l")";);
+let :Blob $">>="(x: C<$"uint16_t">, y: C<$"uint16_t">): C<$"uint16_t"> = (l"("; x; l">>="; y; l")";);
+let :Blob $">>="(x: C<$"int16_t">, y: C<$"int16_t">): C<$"int16_t"> = (l"("; x; l">>="; y; l")";);
+let :Blob $">>="(x: C<$"uint32_t">, y: C<$"uint32_t">): C<$"uint32_t"> = (l"("; x; l">>="; y; l")";);
+let :Blob $">>="(x: C<$"int32_t">, y: C<$"int32_t">): C<$"int32_t"> = (l"("; x; l">>="; y; l")";);
+let :Blob $">>="(x: C<$"uint64_t">, y: C<$"uint64_t">): C<$"uint64_t"> = (l"("; x; l">>="; y; l")";);
+let :Blob $">>="(x: C<$"int64_t">, y: C<$"int64_t">): C<$"int64_t"> = (l"("; x; l">>="; y; l")";);
+
+let :Blob $"="(x: C<x>, y: C<x>): C<x> = (l"("; x; l"="; y; l")";);
