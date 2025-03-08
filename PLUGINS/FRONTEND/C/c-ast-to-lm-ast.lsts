@@ -109,6 +109,15 @@ let std-c-expr-of-statement(t: CTerm): AST = (
             );
          }
       );
+      CBinaryOp{op=op:"cast", arg1=arg1, arg2=arg2} => (
+         App{
+            close(Var{c"as", mk-token(c"as")}),
+            close(App{
+               close(std-c-expr-of-statement(arg2)),
+               close(std-c-expr-of-statement(arg1))
+            })
+         }
+      );
       CIdentifier{value=value} => (
          Var{ untern(value), mk-token(value) }
       );
