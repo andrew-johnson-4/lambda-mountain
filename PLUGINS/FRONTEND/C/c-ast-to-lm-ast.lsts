@@ -89,11 +89,40 @@ let std-c-expr-of-statement(t: CTerm): AST = (
          let inner = std-c-expr-of-statement(arg);
          App{ false, close(Var{c"c::return", mk-token(c"c::return")}), close(inner) }
       );
+      CUnaryPrefix{op:"sizeof", arg=arg} => (
+         match std-c-expr-of-statement(arg) {
+            AType{tt=tt} => (
+               App{ false, close(Var{c"prefix:sizeof", mk-token(c"prefix:sizeof")}), close(AType{t2(c"Type", tt)}) }
+            );
+            inner => (
+               App{ false, close(Var{c"prefix:sizeof", mk-token(c"prefix:sizeof")}), close(inner) }
+            );
+         }
+      );
+      CUnaryPrefix{op:"alignof", arg=arg} => (
+         match std-c-expr-of-statement(arg) {
+            AType{tt=tt} => (
+               App{ false, close(Var{c"prefix:alignof", mk-token(c"prefix:alignof")}), close(AType{t2(c"Type", tt)}) }
+            );
+            inner => (
+               App{ false, close(Var{c"prefix:alignof", mk-token(c"prefix:alignof")}), close(inner) }
+            );
+         }
+      );
+      CBinaryOp{op=op:"cast", arg1=arg1, arg2=arg2} => (
+         App{
+            close(Var{c"as", mk-token(c"as")}),
+            close(App{
+               close(std-c-expr-of-statement(arg2)),
+               close(std-c-expr-of-statement(arg1))
+            })
+         }
+      );
       CIdentifier{value=value} => (
          Var{ untern(value), mk-token(value) }
       );
       CInteger{value=value} => (
-         App{ false,
+         App{
             close(Lit{c":", mk-token(c":")}),
             close(App{
                close(Lit{ untern(value), mk-token(value) }),
@@ -194,13 +223,13 @@ let std-c-expr-of-statement(t: CTerm): AST = (
       );
       CUnaryPrefix{op=op, arg=arg } => (
          App{
-            close(Var{ untern(op), mk-token(op) }),
+            close(Var{ c"prefix:" + untern(op), mk-token("prefix:" + op) }),
             close(std-c-expr-of-statement(arg))
          };
       );
       CUnaryPostfix{op=op, arg=arg } => (
          App{
-            close(Var{ untern(op), mk-token(op) }),
+            close(Var{ c"postfix:" + untern(op), mk-token("postfix:" + op) }),
             close(std-c-expr-of-statement(arg))
          };
       );
