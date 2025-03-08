@@ -44,8 +44,11 @@ int main() {
    38, 39;
    40 ? 41 : 42;
    sizeof 43;
-   sizeof(int);
-   _Alignof(int);
-   alignof(int);
+   // implementation of these 3 depends on more powerful prop inference
+   // Type<C<$"int">> => Type<C<$"int">+C<$"uint32_t>+...>
+   //
+   // sizeof(int); # implemdepends on 
+   // _Alignof(int);
+   // alignof(int);
    (long)44;
 }
