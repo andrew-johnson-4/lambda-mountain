@@ -197,6 +197,9 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: off
             (set r (+( s1 s2 )))
          ))
       ))
+      ( (AType tt) (
+         (set r (std-c-mangle-type tt))
+      ))
       ( orphan (
          (print 'Orphan\sTerm\sIn\sblob-render\s_s)(std-c-print orphan)(print '\n_s)(exit 1_u64)
       ))

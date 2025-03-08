@@ -43,5 +43,8 @@ int main(){
    (38,39);
    (40?41:42);
    (sizeof 43);
+   (sizeof(int));
+   (alignof(int));
+   (alignof(int));
    ((long)44);
 }

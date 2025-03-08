@@ -8,6 +8,7 @@ let std-c-mangle-type-internal(tt: Type): S = (
    match tt {
       TAnd{ left=left, right=right } => std-c-mangle-type-internal(left) || std-c-mangle-type-internal(right);
       TAny{} => SNil;
+      TGround{tag:c"Type", parameters:[inner-tt..]} => std-c-mangle-type-internal(inner-tt);
       TGround{tag:c"Array", parameters:[_.. array-base..]} => (
          if array-base.is-arrow
          then std-c-mangle-type-internal(array-base)
