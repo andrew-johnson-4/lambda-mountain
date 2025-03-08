@@ -169,11 +169,13 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
       ))
       ( (App( is-cons l r )) (
          (if is-cons (
+            (print 'ISCONS\s_s)(std-c-print term)(print '\n_s)
             (set tctx (infer-expr( tctx l Unscoped TAny Used )))
             (set tctx (infer-expr( tctx r Unscoped TAny Used )))
             (let rt (t3( 'Cons_s (typeof l) (typeof r) )))
             (ascript-normal( term rt ))
          ) (
+            (print 'ISNOTCONS\s_s)(std-c-print term)(print '\n_s)
             (let l-used Unused)
             (if (is( used Call )) (set l-used Call) ())
             (let r-used Used)
@@ -313,6 +315,7 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
       ( (Meta( _ )) (ascript-normal( term (t1 'Nil_s) )) )
       ( (AType( tt )) (ascript-normal( term tt )) )
    ))
+   (std-c-print term) (print '\s:\s_s) (print (typeof term)) (print '\n_s)
    tctx
 ) Maybe<TContext>);
 

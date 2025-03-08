@@ -1148,7 +1148,7 @@ let std-c-parse-postfix-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
          (let inner, tokens) = std-c-parse-expression(tokens);
          tokens = std-c-take-expect(tokens, "]");
          if inner.is-some {
-            expression = Tuple{ Some{CBinaryOp{op, close(expression.first.get-or-panic), close(inner.get-or-panic)}}, tokens };
+            expression = Tuple{ Some{CBinaryOp{"[]", close(expression.first.get-or-panic), close(inner.get-or-panic)}}, tokens };
          };
       } else {
          let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "(");

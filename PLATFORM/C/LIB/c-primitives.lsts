@@ -373,3 +373,8 @@ let :Blob $">>="(x: C<$"uint64_t">, y: C<$"uint64_t">): C<$"uint64_t"> = (l"("; 
 let :Blob $">>="(x: C<$"int64_t">, y: C<$"int64_t">): C<$"int64_t"> = (l"("; x; l">>="; y; l")";);
 
 let :Blob $"="(x: C<x>, y: C<x>): C<x> = (l"("; x; l"="; y; l")";);
+let :Blob $"[]"(x: C<x>[], y: C<$"int64_t">): C<x> = (l"("; x; l"["; y; l"])";);
+let :Blob $"prefix:*"(x: C<x>[]): C<x> = (l"(*"; x; l")";);
+let :Blob $"prefix:&"(x: C<x>): C<x>[] = (l"(&"; x; l")";);
+let :Blob $","(x: C<x>, y: C<y>): C<y> = (l"("; x; l","; y; l")";);
+let :Blob $"?"(x: C<c>, y: C<x>, z: C<x>): C<x> = (l"("; x; l"?"; y; l":"; z; l")";);

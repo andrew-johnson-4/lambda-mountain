@@ -93,7 +93,7 @@ let std-c-expr-of-statement(t: CTerm): AST = (
          Var{ untern(value), mk-token(value) }
       );
       CInteger{value=value} => (
-         App{ false,
+         App{
             close(Lit{c":", mk-token(c":")}),
             close(App{
                close(Lit{ untern(value), mk-token(value) }),
