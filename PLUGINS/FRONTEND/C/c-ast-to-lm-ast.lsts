@@ -89,6 +89,26 @@ let std-c-expr-of-statement(t: CTerm): AST = (
          let inner = std-c-expr-of-statement(arg);
          App{ false, close(Var{c"c::return", mk-token(c"c::return")}), close(inner) }
       );
+      CUnaryPrefix{op:"sizeof", arg=arg} => (
+         match std-c-expr-of-statement(arg) {
+            AType{tt=tt} => (
+               App{ false, close(Var{c"prefix:sizeof", mk-token(c"prefix:sizeof")}), close(AType{t2(c"Type", tt)}) }
+            );
+            inner => (
+               App{ false, close(Var{c"prefix:sizeof", mk-token(c"prefix:sizeof")}), close(inner) }
+            );
+         }
+      );
+      CUnaryPrefix{op:"alignof", arg=arg} => (
+         match std-c-expr-of-statement(arg) {
+            AType{tt=tt} => (
+               App{ false, close(Var{c"prefix:alignof", mk-token(c"prefix:alignof")}), close(AType{t2(c"Type", tt)}) }
+            );
+            inner => (
+               App{ false, close(Var{c"prefix:alignof", mk-token(c"prefix:alignof")}), close(inner) }
+            );
+         }
+      );
       CIdentifier{value=value} => (
          Var{ untern(value), mk-token(value) }
       );

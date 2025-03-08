@@ -2,7 +2,6 @@
 let apply-blame(function-name: CString, function-type: Type, parameters: Type, do-specialize: U64, blame: AST): ApplyResult = (
    let r = apply(function-name, function-type, parameters, do-specialize);
    if not(non-zero(r.return-type)) {
-      print("Blame: "); std-c-print(blame);
       fail("Function Application Yielded No Matches\n"
            "\{function-name}\n"
            "With Arguments \{parameters}\n"

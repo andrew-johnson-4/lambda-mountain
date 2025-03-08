@@ -378,3 +378,7 @@ let :Blob $"prefix:*"(x: C<x>[]): C<x> = (l"(*"; x; l")";);
 let :Blob $"prefix:&"(x: C<x>): C<x>[] = (l"(&"; x; l")";);
 let :Blob $","(x: C<x>, y: C<y>): C<y> = (l"("; x; l","; y; l")";);
 let :Blob $"?"(x: C<c>, y: C<x>, z: C<x>): C<x> = (l"("; x; l"?"; y; l":"; z; l")";);
+
+let :Blob $"prefix:sizeof"(x: C<xt>): C<$"uint32_t"> = (l"(sizeof "; x; l")";);
+let :Blob $"prefix:sizeof"(x: Type<xt>): C<$"uint32_t"> = (l"(sizeof("; type(xt); l"))";);
+let :Blob $"prefix:alignof"(x: Type<xt>): C<$"uint32_t"> = (l"(alignof("; type(xt); l"))";);
