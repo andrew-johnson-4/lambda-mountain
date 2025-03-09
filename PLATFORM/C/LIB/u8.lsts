@@ -37,3 +37,4 @@ let to-smart-string(i: U8): String = (
    intern(to-string(i as U64))
 );
 
+type U8 => DefaultPrintable<U8>;

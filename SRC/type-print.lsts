@@ -1,4 +1,6 @@
 
+type Type => DefaultPrintable<Type>;
+
 let print(io: IO::File, tt: Type): Nil = (
    match tt {
       TAny{} => print(io, "?");
