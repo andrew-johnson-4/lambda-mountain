@@ -16,7 +16,11 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ( ASTEOF () )
       ( (Var( id _ )) (
          # TODO, this is being called instead of function
-         (set e (.lookup( ctx id (typeof term) term )))
+         (let def (.lookup( var-to-def-index term ASTEOF )))
+         (if (not(non-zero def)) (
+            (exit-error( (+( 'Unable\sTo\sFind\sVariable\sIn\sContext\s_s id )) term ))
+         ) ())
+         (set e (.lookup( std-c-fragment-context def e )))
          (set.context( e (close ctx) ))
       ))
       ( (Lit( val _ )) (

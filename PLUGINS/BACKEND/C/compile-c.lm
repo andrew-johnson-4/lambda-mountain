@@ -15,6 +15,7 @@ plugins-backend-c-compile := λ . (: (
                (set global-ctx (.bind(
                   global-ctx k kt fragment
                )))
+               (set std-c-fragment-context (.bind( std-c-fragment-context rhs fragment )))
             ) (
                (let clean-tt (.without-tag kt))
                (let mid (mangle-identifier( k clean-tt )))
@@ -25,11 +26,13 @@ plugins-backend-c-compile := λ . (: (
                   (set global-ctx (.bind(
                      global-ctx k kt fragment
                   )))
+                  (set std-c-fragment-context (.bind( std-c-fragment-context rhs fragment )))
                ) (
                   (let repr-tt (&&( clean-tt (t1 'GlobalVariable_s) )))
                   (set global-ctx (.bind(
                      global-ctx k repr-tt fragment
                   )))
+                  (set std-c-fragment-context (.bind( std-c-fragment-context rhs fragment )))
                ))
             ))
          ))
