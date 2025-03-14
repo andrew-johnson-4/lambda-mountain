@@ -51,5 +51,42 @@ defof-var := λ(: sloc AST)(: tctx Maybe<TContext>)(: vname String). (: (
          ) ())
       ) ())
    ))
+   (for-each ((Tuple( kt t )) in (.lookup( global-type-context vname (: LEOF List<Tuple<Type,AST>>) ))) (
+      (set found t)
+   ))
+   (if (not(non-zero found)) (
+      (exit-error( (+( 'Unknown\sReferenced\sVariable:\s_s vname )) sloc ))
+   ) ())
+   found
+) AST);
+
+defof-var := λ(: sloc AST)(: tctx Maybe<TContext>)(: vname String)(: tt Type). (: (
+   (let f-type (typeof-var-raw( sloc tctx vname )))
+   (set f-type (.function-type(apply( (var-name-if-var sloc) f-type tt false ))))
+   (let found ASTEOF)
+   (let continue 1_u64)
+   (for-each ( (Tuple( k vt def )) in
+               (.get-or( tctx (: LEOF List<Tuple<String,Type,AST>>) )) ) (
+      (if (&&( continue (==( k vname )) )) (
+         (if (non-zero found) (
+            (if (==( f-type vt )) (set found def) ())
+         ) (
+            (set found def)
+         ))
+         (if (not(.is-arrow vt)) (
+            (set continue 0_u64)
+         ) ())
+      ) ())
+   ))
+   (for-each ((Tuple( kt t )) in (.lookup( global-type-context vname (: LEOF List<Tuple<Type,AST>>) ))) (
+      (if (non-zero found) (
+         (if (==( f-type kt )) (set found t) ())
+      ) (
+         (set found t)
+      ))
+   ))
+   (if (not(non-zero found)) (
+      (exit-error( (+( (+( (+( 'Unknown\sReferenced\sVariable:\s_s vname )) '\s:\s_s )) (untern(to-smart-string tt)) )) sloc ))
+   ) ())
    found
 ) AST);
