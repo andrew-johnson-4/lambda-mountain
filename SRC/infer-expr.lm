@@ -270,9 +270,8 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
                ))
             ) ())
          ))
-         (let function-type (typeof l))
          (let arg-type (typeof r))
-         (if (&&( (non-zero(var-name-if-var l)) (.is-arrow function-type) )) (
+         (if (&&( (non-zero(var-name-if-var l)) (.is-arrow(typeof l)) )) (
             (let def (defof-var( term tctx (var-name-if-var l) arg-type )))
             (set var-to-def-index (.bind( var-to-def-index term def )))
          ) ())

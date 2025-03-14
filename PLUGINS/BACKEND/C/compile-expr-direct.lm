@@ -21,6 +21,9 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             (exit-error( (+( 'Unable\sTo\sFind\sVariable\sIn\sContext\s_s id )) term ))
          ) ())
          (set e (.lookup( std-c-fragment-context def e )))
+         (if (not(non-zero e)) (
+            (exit-error( (+( 'Unable\sTo\sFind\sVariable\sIn\sContext\s_s id )) term ))
+         ) ())
          (set.context( e (close ctx) ))
       ))
       ( (Lit( val _ )) (

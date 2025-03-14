@@ -54,13 +54,11 @@ defof-var := λ(: sloc AST)(: tctx Maybe<TContext>)(: vname String). (: (
    (for-each ((Tuple( kt t )) in (.lookup( global-type-context vname (: LEOF List<Tuple<Type,AST>>) ))) (
       (set found t)
    ))
-   (if (not(non-zero found)) (
-      (exit-error( (+( 'Unknown\sReferenced\sVariable:\s_s vname )) sloc ))
-   ) ())
    found
 ) AST);
 
 defof-var := λ(: sloc AST)(: tctx Maybe<TContext>)(: vname String)(: tt Type). (: (
+   (set vname (find-alias( vname tt )))
    (let f-type (typeof-var-raw( sloc tctx vname )))
    (set f-type (.function-type(apply( (var-name-if-var sloc) f-type tt false ))))
    (let found ASTEOF)
