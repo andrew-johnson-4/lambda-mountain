@@ -37,13 +37,7 @@ defof-var := λ(: sloc AST)(: tctx Maybe<TContext>)(: vname String). (: (
    (for-each ( (Tuple( k vt def )) in
                (.get-or( tctx (: LEOF List<Tuple<String,Type,AST>>) )) ) (
       (if (&&( continue (==( k vname )) )) (
-         (if (non-zero found) (
-            (if (.is-arrow vt) (
-               (set found def)
-            ) (
-               (set found def)
-            ))
-         ) (
+         (if (non-zero found) () (
             (set found def)
          ))
          (if (not(.is-arrow vt)) (
@@ -52,7 +46,9 @@ defof-var := λ(: sloc AST)(: tctx Maybe<TContext>)(: vname String). (: (
       ) ())
    ))
    (for-each ((Tuple( kt t )) in (.lookup( global-type-context vname (: LEOF List<Tuple<Type,AST>>) ))) (
-      (set found t)
+      (if (non-zero found) () (
+         (set found t)
+      ))
    ))
    found
 ) AST);
