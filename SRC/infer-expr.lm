@@ -83,6 +83,9 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
          (if (.is-t( tt 'SmartString_s )) () (
             (maybe-specialize( 'intern_s (typeof-var-raw( term tctx 'intern_s )) tt ))
          ))
+         (if (!=( (var-name-if-var t) '__uninitialized_s )) (
+            (ascript-normal( t tt ))
+         ) ())
       ))
       ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (
          (if (is( scoped Scoped )) (scope(

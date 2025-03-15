@@ -6,8 +6,7 @@ let ascript-normal(t: AST, tt: Type): Nil = (
          if not(tt.is-arrow) {
             let norm-tt = normalize(tt);
             if not(can-unify(prev-tt,norm-tt)) || not(can-unify(norm-tt,prev-tt)) {
-               print("\{prev-tt} != \{norm-tt}\nType Ascription Inequality");
-               exit(1);
+               exit-error("Type Ascription Inequality\n\{prev-tt} != \{norm-tt}", t);
             }
          }
       } else {
