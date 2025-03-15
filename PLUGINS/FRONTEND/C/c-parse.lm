@@ -218,7 +218,7 @@ c-parse-declaration := λ(: tokens List<String>). (: (
          (let return-term (App(
             (close(Lit( ':_s (mk-token ':_s) )))
             (close(App(
-               (close(Var( '__uninitialized_s (mk-token '__uninitialized_s) ))
+               (close(Var( '__uninitialized_s (mk-token '__uninitialized_s) )))
                (close(AType(t1 return-type)))
             )))
          )))
