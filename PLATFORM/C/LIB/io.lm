@@ -36,16 +36,16 @@ exit := λ(: x U64).(: (exit(as x U32)) Nil);
 fail := λ(: msg String)(: loc String). (: (
    (print msg)(print '\sat\s_s)(print loc)
    (exit 1_u32)
-) Never);
+) Nil);
 
 fail := λ(: msg SmartString). (: (
    (print msg)(exit 1_u32)
-) Never);
+) Nil);
 
 fail := λ(: msg String). (: (
    (print msg)
    (exit 1_u32)
-) Never);
+) Nil);
 
 read-file := λ(: fp String). (: (
    (let buff-sz 0_u64)
