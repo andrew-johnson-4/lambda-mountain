@@ -28,9 +28,6 @@ fopen := λ: FFI(: fp String)(: mode String). (: __uninitialized IO::File+Phi<Fi
 fclose := λ: FFI(: fio IO::File+Phi<FileState::Open,FileState::Closed>). (: __uninitialized U32);
 fwrite := λ: FFI(: c U8[])(: c-size U64)(: c-len U64)(: f IO::File). (: __uninitialized U32);
 
-phi := λ: Blob(: left FileState::Open)(: right FileState::Open). (: __uninitialized FileState::Open);
-phi := λ: Blob(: left FileState::Closed)(: right FileState::Closed). (: __uninitialized FileState::Closed);
-
 exit := λ(: x U64).(: (exit(as x U32)) Nil);
 
 fail := λ(: msg String)(: loc String). (: (
