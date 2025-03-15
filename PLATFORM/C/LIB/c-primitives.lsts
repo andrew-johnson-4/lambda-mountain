@@ -17,6 +17,7 @@ let :Blob $"c::return"(ts: x): x = (
 
 # for 64 bit machines: TODO replace with architecture specific types
 type C<$"int"> => C<$"int32_t">;
+type C<$"int32_t"> => C<$"int">;
 
 # U8
 type C<$"uint8_t"> => C<$"int16_t">;
