@@ -67,7 +67,7 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
             ( (Var( '__uninitialized_s _ )) (
                (ascript-normal( t tt ))
             ))
-            ( _ (set tctx (infer-expr( tctx t Unscoped tt used ))) )
+            ( _ (set tctx (infer-expr( tctx t Unscoped tt Tail ))) )
          ))
          (let inner-tt (typeof t))
          (if (non-zero inner-tt) (
@@ -174,7 +174,11 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
          (if is-cons (
             (set tctx (infer-expr( tctx l Unscoped TAny Used )))
             (set tctx (infer-expr( tctx r Unscoped TAny Used )))
-            (let rt (t3( 'Cons_s (typeof l) (typeof r) )))
+            (let rt (if (is( used Tail )) (
+               (typeof r)
+            ) (
+               (t3( 'Cons_s (typeof l) (typeof r) ))
+            )))
             (ascript-normal( term rt ))
          ) (
             (let l-used Unused)

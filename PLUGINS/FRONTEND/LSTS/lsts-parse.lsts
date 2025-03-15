@@ -340,7 +340,7 @@ let lsts-make-maybe-var(tokens: List<Token>): Tuple<AST,List<Token>> = (
 );
 
 let lsts-is-lit(s: CString): U64 = (
-   let r = 0;
+   let r = 0_u64;
    for Tuple { sfxs=first } in parse-suffixes {
       r = r || s.has-suffix(sfxs);
    }; r;
