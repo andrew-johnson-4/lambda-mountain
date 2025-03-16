@@ -1,7 +1,8 @@
 
 let std-c-mangle-type(tt: Type): S = (
    tt = normalize(tt).rewrite-opaque-type-alias;
-   std-c-mangle-type-internal(tt)
+   let r = std-c-mangle-type-internal(tt);
+   r
 );
 
 let std-c-mangle-type-internal(tt: Type): S = (

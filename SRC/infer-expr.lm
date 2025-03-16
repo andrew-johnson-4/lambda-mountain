@@ -67,7 +67,7 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
             ( (Var( '__uninitialized_s _ )) (
                (ascript-normal( t tt ))
             ))
-            ( _ (set tctx (infer-expr( tctx t Unscoped tt used ))) )
+            ( _ (set tctx (infer-expr( tctx t Unscoped tt Tail ))) )
          ))
          (let inner-tt (typeof t))
          (if (non-zero inner-tt) (
@@ -83,6 +83,9 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
          (if (.is-t( tt 'SmartString_s )) () (
             (maybe-specialize( 'intern_s (typeof-var-raw( term tctx 'intern_s )) tt ))
          ))
+         (if (&&( (!=( (var-name-if-var t) '__uninitialized_s )) (not(is( used C ))) )) (
+            (ascript-normal( t tt ))
+         ) ())
       ))
       ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (
          (if (is( scoped Scoped )) (scope(
@@ -171,7 +174,11 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
          (if is-cons (
             (set tctx (infer-expr( tctx l Unscoped TAny Used )))
             (set tctx (infer-expr( tctx r Unscoped TAny Used )))
-            (let rt (t3( 'Cons_s (typeof l) (typeof r) )))
+            (let rt (if (is( used Tail )) (
+               (typeof r)
+            ) (
+               (t3( 'Cons_s (typeof l) (typeof r) ))
+            )))
             (ascript-normal( term rt ))
          ) (
             (let l-used Unused)
@@ -287,7 +294,11 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
                ))
             ))
          ) (
-            (infer-expr( tctx rhs Unscoped TAny Tail ))
+            (if (.is-t( tlt 'C_s )) (
+               (infer-expr( tctx rhs Unscoped TAny C ))
+            ) (
+               (infer-expr( tctx rhs Unscoped TAny Tail ))
+            ))
          ))
          (let lt (typeof-lhs lhs))
          (let rt (typeof rhs))

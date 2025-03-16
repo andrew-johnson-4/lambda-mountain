@@ -68,7 +68,7 @@ let $"set[]"(s: Umbra[], i: U64, v: U8): Nil = (
          };
          ptr[i] = v;
       );
-   };
+   }; ()
 );
 
 # the returned array is NOT a C string!
