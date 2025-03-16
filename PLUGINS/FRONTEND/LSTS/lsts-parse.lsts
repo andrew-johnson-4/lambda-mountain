@@ -50,7 +50,7 @@ let lsts-has-assign(tokens: List<Token>): U64 = (
 );
 
 let lsts-substitute-type-aliases(s: CString): CString = (
-   if s.has-prefix(c"\"") then untern(intern(s)[1_i64:-1_i64]) else
+   if s.has-suffix(c"_ss") then untern(intern(s)[:-3_i64]) else
    if s == c"String" then c"SmartString" else
    if s == c"CString" then c"String" else
    s.remove-suffix(c"_u64")
@@ -142,7 +142,7 @@ let lsts-parse-type(tokens: List<Token>): Tuple<Type,List<Token>> = (
       tokens = tail(tokens);
       TAny {}
    } else if lsts-is-ident-head(lsts-parse-head(tokens)) && not(lsts-parse-head(tokens).has-suffix(c"_u64"))
-          && not(lsts-parse-head(tokens).has-prefix(c"$")) {
+          && not(lsts-parse-head(tokens).has-suffix(c"_ss")) {
       let varname = lsts-parse-head(tokens); tokens = tail(tokens);
       TVar { varname }
    } else {

@@ -2,7 +2,6 @@
 let std-c-mangle-type(tt: Type): S = (
    tt = normalize(tt).rewrite-opaque-type-alias;
    let r = std-c-mangle-type-internal(tt);
-   if not(non-zero(r)) then fail("Unable to mangle type: \{tt}\n");
    r
 );
 

@@ -52,7 +52,6 @@ let std-c-declare-function(specifiers: CTerm, declarator: CTerm, declaration-lis
          misc-types && t1(c"C")
       })
    };
-   print("Declare: "); std-c-print(symbol); print("\n");
    ast-parsed-program = ast-parsed-program + symbol;
 );
 
