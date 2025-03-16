@@ -497,9 +497,8 @@ let lsts-parse-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
 let lsts-parse-interface(tokens: List<Token>): List<Token> = (
    lsts-parse-expect(c"interface", tokens); tokens = tail(tokens);
 
-   let interface-type-t = lsts-parse-type(tokens);
-   tokens = interface-type-t.second;
-   let interface-type = interface-type-t.first;
+   (let interface-type, tokens) = lsts-parse-type(tokens);
+   interface-index = interface-index.bind(interface-type.ground-tag-and-arity, true);
 
    lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
 
@@ -553,6 +552,13 @@ let lsts-parse-typedef(tokens: List<Token>): List<Token> = (
          lsts-parse-expect(c";", tokens); tokens = tail(tokens);
          add-quick-prop(base-rest.first, base-rest.first, rt-rest.first);
          add-weaken-quick-prop(base-rest.first, base-rest.first, rt-rest.first);
+      );
+      [Token{key:c"implements"}.. rest] => (
+         tokens = rest;
+         (let rt, tokens) = lsts-parse-type(tokens);
+         lsts-parse-expect(c";", tokens); tokens = tail(tokens);
+         add-quick-prop(base-rest.first, base-rest.first, rt);
+         add-weaken-quick-prop(base-rest.first, base-rest.first, rt);
       );
       _ => (
          if mode==c"=" {
