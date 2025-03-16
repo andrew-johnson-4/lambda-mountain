@@ -3,7 +3,7 @@
 let .without-tag(tt: Type): Type = (
    match tt {
       TAnd { left=left, right=right } => left.without-tag && right.without-tag;
-      TGround { tag:c"C" } => TAny;
+      TGround { tag:c"C", parameters:[] } => TAny;
       TGround { tag:c"Constructor" } => TAny;
       TGround { tag:c"CaseNumber" } => TAny;
       TGround { tag:c"Raw" } => TAny;
