@@ -30,7 +30,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
 
                (let loc (.location(term)))
 
-               (set text (SCons( (close text) (close(SAtom '\oline\s_s)) )))
+               (set text (SCons( (close text) (close(SAtom '\n\oline\s_s)) )))
                (set text (SCons( (close text) (close(SAtom (to-string (.line loc)) )) )))
                (set text (SCons( (close text) (close(SAtom '\s"_s)) )))
                (set text (SCons( (close text) (close(SAtom (.filename loc))) )))
@@ -51,7 +51,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
 
                (set text SNil)
 
-               (set text (SCons( (close text) (close(SAtom '\oline\s_s)) )))
+               (set text (SCons( (close text) (close(SAtom '\n\oline\s_s)) )))
                (set text (SCons( (close text) (close(SAtom (to-string (.line loc)) )) )))
                (set text (SCons( (close text) (close(SAtom '\s"_s)) )))
                (set text (SCons( (close text) (close(SAtom (.filename loc))) )))
