@@ -1,0 +1,14 @@
+
+let .accept-interface(tt: Type): Type = (
+   if tt.should-accept-interface
+   then tt && tv(uuid())
+   else tt
+);
+
+let .should-accept-interface(tt: Type): U64 = (
+   match tt {
+      TAnd{ lt=left, rt=right } => lt.should-accept-interface || rt.should-accept-interface;
+      TGround{} => interface-index.has(tt.ground-tag-and-arity);
+      _ => false;
+   }
+);
