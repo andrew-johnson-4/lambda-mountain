@@ -55,7 +55,9 @@ let add-weaken-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
 );
 
 let weaken-quick-prop(base: Type): Type = (
-   weaken-quick-prop(base, base)
+   let r = weaken-quick-prop(base, base);
+   if base.is-t(c"C") then print("Weaken \{base} yields \{r}\n");
+   r
 );
 
 let weaken-quick-prop(base: Type, pre: Type): Type = (

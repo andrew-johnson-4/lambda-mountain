@@ -53,3 +53,9 @@ let .is-digit(base: CString): U64 = (
       r
    } else false
 );
+
+let $"[]"(base: CString, idx: U64): U8 = (
+   if idx < base.length
+   then (base as U8[])[idx]
+   else fail("Index Out Of Bounds in String[]");
+);
