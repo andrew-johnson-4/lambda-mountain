@@ -27,4 +27,5 @@ import SRC/has-class.lsts;
 
 # set operations
 import SRC/without-tag.lsts;
+import SRC/without-modifiers.lsts;
 import SRC/without-size-unless-class.lsts;
