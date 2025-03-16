@@ -50,7 +50,7 @@ let lsts-has-assign(tokens: List<Token>): U64 = (
 );
 
 let lsts-substitute-type-aliases(s: CString): CString = (
-   if s.has-prefix(c"$") then untern(intern(s)[2_i64:-1_i64]) else
+   if s.has-prefix(c"\"") then untern(intern(s)[1_i64:-1_i64]) else
    if s == c"String" then c"SmartString" else
    if s == c"CString" then c"String" else
    s.remove-suffix(c"_u64")
