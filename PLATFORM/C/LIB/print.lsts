@@ -1,5 +1,5 @@
 
-let print(e: x+DefaultPrintable<y>): Nil = (
+let print(e: x+DefaultPrintable<x>): Nil = (
    print( stdout(), e );
 );
 
@@ -11,6 +11,6 @@ let fprint(io: IO::File, e: x+DefaultPrintable<y>): Nil = (
    print( io, e );
 );
 
-interface DefaultPrintable<x> {
-   let print( f: IO::File, p: x ): Nil;
+interface self implements DefaultPrintable {
+   let print( f: IO::File, p: self ): Nil;
 }
