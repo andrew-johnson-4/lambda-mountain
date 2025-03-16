@@ -39,7 +39,7 @@ let std-c-declare-function(specifiers: CTerm, declarator: CTerm, declaration-lis
    (let name, let pointer) = std-c-name-of-declarator(declarator);
    let params = std-c-lhs-of-parameter-list(declaration-list);
    let body = std-c-expr-of-statement(statement);
-   ast-parsed-program = ast-parsed-program + Glb{
+   let symbol = Glb{
       mk-token(name), close(Abs{
          close(params),
          close(App{ false,
@@ -52,6 +52,8 @@ let std-c-declare-function(specifiers: CTerm, declarator: CTerm, declaration-lis
          misc-types && t1(c"C")
       })
    };
+   print("Declare: "); std-c-print(symbol); print("\n");
+   ast-parsed-program = ast-parsed-program + symbol;
 );
 
 let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (

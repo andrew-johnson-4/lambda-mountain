@@ -7,10 +7,10 @@ compile-global-c-has-main := 0_u64;
 
 compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
    (let kt (typeof term))
+   (print 'Global\s_s)(print k)(print '\s_s)(std-c-print term)(print '\n_s)
    (match term (
       ()
       ( (Abs( lhs rhs tlt )) (
-         (print 'Global\s_s)(print k)(print '\s_s)(std-c-print term)(print '\n_s)
          (if (.is-t( tlt 'C_s )) (
             (std-c-compile-global( ctx k term ))
          ) (
