@@ -22,4 +22,4 @@ declare-unop( not, raw-type(I32), raw-type(U64), ( l"(!"; x; l")"; ) );
 
 declare-unop( into-branch-conditional, raw-type(I32), raw-type(BranchConditional), x );
 
-type I32 implements DefaultPrintable<I32>;
+type I32 implements DefaultPrintable;

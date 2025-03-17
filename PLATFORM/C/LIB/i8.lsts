@@ -21,4 +21,4 @@ declare-unop( not, raw-type(I8), raw-type(U64), ( l"(!"; x; l")"; ) );
 
 declare-unop( into-branch-conditional, raw-type(I8), raw-type(BranchConditional), x );
 
-type I8 implements DefaultPrintable<I8>;
+type I8 implements DefaultPrintable;

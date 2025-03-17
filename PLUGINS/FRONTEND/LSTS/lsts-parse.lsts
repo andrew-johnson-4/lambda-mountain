@@ -499,13 +499,13 @@ let lsts-parse-interface(tokens: List<Token>): List<Token> = (
 
    let self-type = tv(c"self");
    (let interface-type, tokens) = lsts-parse-type(tokens);
-   interface-index = interface-index.bind(interface-type.ground-tag-and-arity, true);
 
    if lsts-parse-head(tokens)==c"implements" {
       lsts-parse-expect(c"implements", tokens); tokens = tail(tokens);
       self-type = interface-type;
       (interface-type, tokens) = lsts-parse-type(tokens);
    };
+   interface-index = interface-index.bind(interface-type.ground-tag-and-arity, true);
 
    lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
 
