@@ -1,7 +1,7 @@
 
 let std-c-is-ctype(tt: Type): Bool = (
    match tt {
-      TGround{tag:c"C"} => true;
+      TGround{tag:c"C-FFI"} => true;
       TGround{tag:c"Array", parameters:[_.. base-type..]} => std-c-is-ctype(base-type);
       TAnd{ left=left, right=right } => if std-c-is-ctype(left) then true else std-c-is-ctype(right);
       _ => false;

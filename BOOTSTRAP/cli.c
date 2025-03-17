@@ -6539,7 +6539,7 @@ return ({({uuid__00000000000c6b9f=uuid__00000000000c6b9e;({});})
 ((uuid__00000000000c6bac.field_0)==(1));
 })?(({({uuid__00000000000c6bad=(((LM__LT_Type_GT_)(uuid__00000000000c6baa)).field_1002);({});})
 ;
-(_EQ__EQ__CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_String_GT__LT_String_GT__GT__GT_(uuid__00000000000c6bad,"C"));
+(_EQ__EQ__CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_String_GT__LT_String_GT__GT__GT_(uuid__00000000000c6bad,"C-FFI"));
 })?({uuid__00000000000c6bab=(1);({});}):({})):({})):({}));
 });
 (uuid__00000000000c6bab==(1));
@@ -21530,7 +21530,7 @@ char* uuid__00000000000c824e;
 })?({uuid__00000000000c822e=(1);({});}):({})):({})):({})):({}));
 });
 (uuid__00000000000c822e==(1));
-})?((_DT_is_SB_t_CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_String_GT__LT_Type_GT__GT__GT_(uuid__00000000000c822f,"C"))?(std_SB_c_SB_compile_SB_global_CL__LT_Arrow_LT_Nil_GT__LT_Cons_LT_AST_GT__LT_Cons_LT_String_GT__LT_FContext_GT__GT__GT__GT_(uuid__00000000000c8228,uuid__00000000000c8229,uuid__00000000000c822a)):(((_DT_is_SB_open_CL__LT_Arrow_LT_U64_GT__LT_Type_GT__GT_(uuid__00000000000c822b))||((_DT_is_SB_t_CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_String_GT__LT_Type_GT__GT__GT_(uuid__00000000000c822f,"Blob"))||((_DT_is_SB_t_CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_String_GT__LT_Type_GT__GT__GT_(uuid__00000000000c822f,"FFI"))||(_DT_is_SB_t_CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_String_GT__LT_Type_GT__GT__GT_(uuid__00000000000c822f,"Prop")))))?({}):({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({uuid__00000000000c8232=(_DT_domain_CL__LT_Arrow_LT_Type_GT__LT_Type_GT__GT_(uuid__00000000000c822b));({});})
+})?((_DT_is_SB_t_CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_String_GT__LT_Type_GT__GT__GT_(uuid__00000000000c822f,"C-FFI"))?(std_SB_c_SB_compile_SB_global_CL__LT_Arrow_LT_Nil_GT__LT_Cons_LT_AST_GT__LT_Cons_LT_String_GT__LT_FContext_GT__GT__GT__GT_(uuid__00000000000c8228,uuid__00000000000c8229,uuid__00000000000c822a)):(((_DT_is_SB_open_CL__LT_Arrow_LT_U64_GT__LT_Type_GT__GT_(uuid__00000000000c822b))||((_DT_is_SB_t_CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_String_GT__LT_Type_GT__GT__GT_(uuid__00000000000c822f,"Blob"))||((_DT_is_SB_t_CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_String_GT__LT_Type_GT__GT__GT_(uuid__00000000000c822f,"FFI"))||(_DT_is_SB_t_CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_String_GT__LT_Type_GT__GT__GT_(uuid__00000000000c822f,"Prop")))))?({}):({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({({uuid__00000000000c8232=(_DT_domain_CL__LT_Arrow_LT_Type_GT__LT_Type_GT__GT_(uuid__00000000000c822b));({});})
 ;
 ({uuid__00000000000c8228=(compile_SB_destructure_SB_args_CL__LT_Arrow_LT_FContext_GT__LT_Cons_LT_U64_GT__LT_Cons_LT_I64_GT__LT_Cons_LT_AST_GT__LT_Cons_LT_FContext_GT__LT_Type_GT__GT__GT__GT__GT__GT_(uuid__00000000000c8232,uuid__00000000000c8228,uuid__00000000000c8231,(0),(_DT_is_SB_t_CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_String_GT__LT_Type_GT__GT__GT_(uuid__00000000000c822f,"Blob"))));({});});
 });
@@ -21622,7 +21622,7 @@ char* uuid__00000000000c824e;
 }))):(({({uuid__00000000000c8239=uuid__00000000000c822c;({});})
 ;
 1;
-})?((_DT_is_SB_t_CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_String_GT__LT_Type_GT__GT__GT_((typeof_CL__LT_Arrow_LT_Type_GT__LT_AST_GT__GT_(uuid__00000000000c8239)),"C"))?(std_SB_c_SB_compile_SB_global_CL__LT_Arrow_LT_Nil_GT__LT_Cons_LT_AST_GT__LT_Cons_LT_String_GT__LT_FContext_GT__GT__GT__GT_(uuid__00000000000c8228,uuid__00000000000c8229,uuid__00000000000c822a)):({({({({({({({({({({uuid__00000000000c823a=(_DT_without_SB_tag_CL__LT_Arrow_LT_Type_GT__LT_Type_GT__GT_(uuid__00000000000c822b));({});})
+})?((_DT_is_SB_t_CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_String_GT__LT_Type_GT__GT__GT_((typeof_CL__LT_Arrow_LT_Type_GT__LT_AST_GT__GT_(uuid__00000000000c8239)),"C-FFI"))?(std_SB_c_SB_compile_SB_global_CL__LT_Arrow_LT_Nil_GT__LT_Cons_LT_AST_GT__LT_Cons_LT_String_GT__LT_FContext_GT__GT__GT__GT_(uuid__00000000000c8228,uuid__00000000000c8229,uuid__00000000000c822a)):({({({({({({({({({({uuid__00000000000c823a=(_DT_without_SB_tag_CL__LT_Arrow_LT_Type_GT__LT_Type_GT__GT_(uuid__00000000000c822b));({});})
 ;
 ({uuid__00000000000c823b=(mangle_SB_identifier_CL__LT_Arrow_LT_String_GT__LT_Cons_LT_Type_GT__LT_String_GT__GT__GT_(uuid__00000000000c8229,uuid__00000000000c823a));({});})
 ;
@@ -28882,7 +28882,7 @@ return ({({uuid__00000000000c927e=uuid__00000000000c927d;({});})
 });
 (((uuid__00000000000c927f.field_0)==(1))?(({({uuid__00000000000c9281=(((LM__LT_Type_GT_)(uuid__00000000000c927f)).field_1002);({});})
 ;
-(_EQ__EQ__CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_String_GT__LT_String_GT__GT__GT_(uuid__00000000000c9281,"C"));
+(_EQ__EQ__CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_String_GT__LT_String_GT__GT__GT_(uuid__00000000000c9281,"C-FFI"));
 })?({uuid__00000000000c9280=(1);({});}):({})):({}));
 });
 (uuid__00000000000c9280==(1));
@@ -39020,7 +39020,7 @@ LM__LT_Maybe_LT_CTerm_GT__GT_ uuid__00000000000cbfe3;
 ({uuid__00000000000cbfd1=(uuid__00000000000cbfb3.field_2);({});})
 ;
 });
-({uuid__00000000000cbfd1=(_AM__AM__CL__LT_Arrow_LT_Type_GT__LT_Cons_LT_Type_GT__LT_Type_GT__GT__GT_(uuid__00000000000cbfd1,(t1_CL__LT_Arrow_LT_Type_GT__LT_String_GT__GT_("C"))));({});});
+({uuid__00000000000cbfd1=(_AM__AM__CL__LT_Arrow_LT_Type_GT__LT_Cons_LT_Type_GT__LT_Type_GT__GT__GT_(uuid__00000000000cbfd1,(t1_CL__LT_Arrow_LT_Type_GT__LT_String_GT__GT_("C-FFI"))));({});});
 });
 ({({({uuid__00000000000cbfd2=uuid__00000000000cbfb0;({});})
 ;
@@ -39123,7 +39123,7 @@ LM__LT_AST_GT_ uuid__00000000000cc02a;
 ({uuid__00000000000cc029=(std_SB_c_SB_expr_SB_of_SB_statement_CL__LT_Arrow_LT_AST_GT__LT_CTerm_GT__GT_(uuid__00000000000cbfe9));({});})
 ;
 });
-({uuid__00000000000cc02a=({LM__LT_AST_GT_ rvalue={.field_0=2};rvalue.field_2001=(close_CL__LT_Arrow_LT_Array_QM__LT_AST_GT__GT__LT_AST_GT__GT_(({LM__LT_AST_GT_ rvalue={.field_0=5};rvalue.field_5001=(_AM__AM__CL__LT_Arrow_LT_Type_GT__LT_Cons_LT_Type_GT__LT_Type_GT__GT__GT_(uuid__00000000000cc007,(t1_CL__LT_Arrow_LT_Type_GT__LT_String_GT__GT_("C"))));rvalue.field_5002=(close_CL__LT_Arrow_LT_Array_QM__LT_AST_GT__GT__LT_AST_GT__GT_(({LM__LT_AST_GT_ rvalue={.field_0=8};rvalue.field_8001=(close_CL__LT_Arrow_LT_Array_QM__LT_AST_GT__GT__LT_AST_GT__GT_(({LM__LT_AST_GT_ rvalue={.field_0=8};rvalue.field_8001=(close_CL__LT_Arrow_LT_Array_QM__LT_AST_GT__GT__LT_AST_GT__GT_(({LM__LT_AST_GT_ rvalue={.field_0=4};rvalue.field_4001=uuid__00000000000cc008;rvalue;})));rvalue.field_8002=(close_CL__LT_Arrow_LT_Array_QM__LT_AST_GT__GT__LT_AST_GT__GT_(uuid__00000000000cc029));rvalue;})));rvalue.field_8002=(close_CL__LT_Arrow_LT_Array_QM__LT_AST_GT__GT__LT_AST_GT__GT_(({LM__LT_AST_GT_ rvalue={.field_0=6};rvalue.field_6001=(mk_SB_token_CL__LT_Arrow_LT_Token_GT__LT_String_GT__GT_(":"));rvalue.field_6002=":";rvalue;})));rvalue.field_8003=false_CL__LT_U8_GT_;rvalue;})));rvalue.field_5003=(close_CL__LT_Arrow_LT_Array_QM__LT_AST_GT__GT__LT_AST_GT__GT_(uuid__00000000000cc028));rvalue;})));rvalue.field_2002=(mk_SB_token_CL__LT_Arrow_LT_Token_GT__LT_SmartString_GT__GT_(uuid__00000000000cc027));rvalue;});({});})
+({uuid__00000000000cc02a=({LM__LT_AST_GT_ rvalue={.field_0=2};rvalue.field_2001=(close_CL__LT_Arrow_LT_Array_QM__LT_AST_GT__GT__LT_AST_GT__GT_(({LM__LT_AST_GT_ rvalue={.field_0=5};rvalue.field_5001=(_AM__AM__CL__LT_Arrow_LT_Type_GT__LT_Cons_LT_Type_GT__LT_Type_GT__GT__GT_(uuid__00000000000cc007,(t1_CL__LT_Arrow_LT_Type_GT__LT_String_GT__GT_("C-FFI"))));rvalue.field_5002=(close_CL__LT_Arrow_LT_Array_QM__LT_AST_GT__GT__LT_AST_GT__GT_(({LM__LT_AST_GT_ rvalue={.field_0=8};rvalue.field_8001=(close_CL__LT_Arrow_LT_Array_QM__LT_AST_GT__GT__LT_AST_GT__GT_(({LM__LT_AST_GT_ rvalue={.field_0=8};rvalue.field_8001=(close_CL__LT_Arrow_LT_Array_QM__LT_AST_GT__GT__LT_AST_GT__GT_(({LM__LT_AST_GT_ rvalue={.field_0=4};rvalue.field_4001=uuid__00000000000cc008;rvalue;})));rvalue.field_8002=(close_CL__LT_Arrow_LT_Array_QM__LT_AST_GT__GT__LT_AST_GT__GT_(uuid__00000000000cc029));rvalue;})));rvalue.field_8002=(close_CL__LT_Arrow_LT_Array_QM__LT_AST_GT__GT__LT_AST_GT__GT_(({LM__LT_AST_GT_ rvalue={.field_0=6};rvalue.field_6001=(mk_SB_token_CL__LT_Arrow_LT_Token_GT__LT_String_GT__GT_(":"));rvalue.field_6002=":";rvalue;})));rvalue.field_8003=false_CL__LT_U8_GT_;rvalue;})));rvalue.field_5003=(close_CL__LT_Arrow_LT_Array_QM__LT_AST_GT__GT__LT_AST_GT__GT_(uuid__00000000000cc028));rvalue;})));rvalue.field_2002=(mk_SB_token_CL__LT_Arrow_LT_Token_GT__LT_SmartString_GT__GT_(uuid__00000000000cc027));rvalue;});({});})
 ;
 });
 ({ast_SB_parsed_SB_program_CL__LT_AST_GT_=(_AD__CL__LT_Arrow_LT_AST_GT__LT_Cons_LT_AST_GT__LT_AST_GT__GT__GT_(ast_SB_parsed_SB_program_CL__LT_AST_GT_,uuid__00000000000cc02a));({});});
