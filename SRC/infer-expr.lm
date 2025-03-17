@@ -294,7 +294,7 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
                ))
             ))
          ) (
-            (if (.is-t( tlt 'C_s )) (
+            (if (.is-t( tlt 'C-FFI_s )) (
                (infer-expr( tctx rhs Unscoped TAny C ))
             ) (
                (infer-expr( tctx rhs Unscoped TAny Tail ))
