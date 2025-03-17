@@ -1,7 +1,6 @@
 
 specialize := λ(: key String)(: ft Type)(: unify-ctx Maybe<TContext>)(: result-type Type). (: (
    (if (is-special( key result-type )) () (
-      (print 'Specialize\s_s)(print key)(print '\s:\s_s)(print ft)(print '\sresult\s_s)(print result-type)(print '\n_s)
       (let term ASTEOF)
       (for-each ((Tuple( kt t )) in (.lookup( global-type-context key (: LEOF List<Tuple<Type,AST>>) ))) (
          (set kt (.slot( kt 'Arrow_s )))
@@ -17,8 +16,7 @@ specialize := λ(: key String)(: ft Type)(: unify-ctx Maybe<TContext>)(: result-
       (if (non-zero term) (
          (let special-term (substitute( unify-ctx term )))
          (infer-global-context( special-term ))
-         (print 'Special\s_s)(std-c-print special-term)(print '\n_s)
-         (infer-expr( (: None Maybe<TContext>) special-term Unscoped TAny Used ))
+         (infer-expr( (: None Maybe<TContext>) special-term Unscoped (t1 'Specialize_s) Used ))
          (set ast-parsed-program (Seq(
             (close ast-parsed-program)
             (close special-term)
