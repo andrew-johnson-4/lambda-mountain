@@ -1,13 +1,13 @@
 
-let print(e: x): Nil = (
+let print(e: DefaultPrintable): Nil = (
    print( stdout(), e );
 );
 
-let eprint(e: x): Nil = (
+let eprint(e: DefaultPrintable): Nil = (
    print( stderr(), e );
 );
 
-let fprint(io: IO::File, e: x): Nil = (
+let fprint(io: IO::File, e: DefaultPrintable): Nil = (
    print( io, e );
 );
 

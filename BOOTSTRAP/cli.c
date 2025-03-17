@@ -2984,7 +2984,7 @@ LM__LT_Maybe_LT_List_LT_Tuple_LT_AST_GT__LT_String_GT__GT__GT__GT_ union_CL__LT_
 LM__LT_Maybe_LT_List_LT_Tuple_LT_AST_GT__LT_String_GT__GT__GT__GT_ _DT_bind_CL__LT_Arrow_LT_Maybe_LT_List_LT_Tuple_LT_AST_GT__LT_String_GT__GT__GT__GT__LT_Cons_LT_AST_GT__LT_Cons_LT_String_GT__LT_Maybe_LT_List_LT_Tuple_LT_AST_GT__LT_String_GT__GT__GT__GT__GT__GT__GT_(LM__LT_Maybe_LT_List_LT_Tuple_LT_AST_GT__LT_String_GT__GT__GT__GT_ uuid__00000000000cc8c5,char* uuid__00000000000cc8c6,LM__LT_AST_GT_ uuid__00000000000cc8c7);
 
 #line 2 "PLATFORM/C/LIB/print.lsts"
-void print_CL__LT_Arrow_LT_Nil_GT__LT_U64_GT__GT_(unsigned long uuid__00000000000cc8f4);
+void print_CL__LT_Arrow_LT_Nil_GT__LT_DefaultPrintable_GT__LT_U64_GT__GT_(unsigned long uuid__00000000000cc8f4);
 
 #line 3 "PLATFORM/C/LIB/sized.lm"
 unsigned long hash_CL__LT_Arrow_LT_U64_GT__LT_U64_GT__GT_(unsigned long uuid__00000000000cc8f5);
@@ -3490,7 +3490,7 @@ unsigned long is_CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_HashtableEq_LT_U64_GT__LT_Tu
 unsigned long _DT_lookup_CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_U64_GT__LT_Cons_LT_Tuple_LT_Type_GT__LT_String_GT__GT__LT_HashtableEq_LT_U64_GT__LT_Tuple_LT_Type_GT__LT_String_GT__GT__GT__GT__GT__GT_(LM__LT_HashtableEq_LT_U64_GT__LT_Tuple_LT_Type_GT__LT_String_GT__GT__GT_ uuid__00000000000cd1bc,LM__LT_Tuple_LT_Type_GT__LT_String_GT__GT_ uuid__00000000000cd1bd,unsigned long uuid__00000000000cd1be);
 
 #line 2 "PLATFORM/C/LIB/print.lsts"
-void print_CL__LT_Arrow_LT_Nil_GT__LT_Type_GT__GT_(LM__LT_Type_GT_ uuid__00000000000cd1c4);
+void print_CL__LT_Arrow_LT_Nil_GT__LT_DefaultPrintable_GT__LT_Type_GT__GT_(LM__LT_Type_GT_ uuid__00000000000cd1c4);
 
 #line 40 "PLATFORM/C/LIB/list.lm"
 LM__LT_List_LT_Type_GT__GT_ _AD__CL__LT_Arrow_LT_List_LT_Type_GT__GT__LT_Cons_LT_List_LT_Type_GT__GT__LT_List_LT_Type_GT__GT__GT__GT_(LM__LT_List_LT_Type_GT__GT_ uuid__00000000000cd1c5,LM__LT_List_LT_Type_GT__GT_ uuid__00000000000cd1c6);
@@ -3885,10 +3885,10 @@ LM__LT_HashtableIs_LT_Type_GT__LT_AST_GT__GT_ mk_SB_hashtable_SB_is_CL__LT_Arrow
 LM__LT_HashtableIs_LT_Type_GT__LT_Type_GT__GT_ mk_SB_hashtable_SB_is_CL__LT_Arrow_LT_HashtableIs_LT_Type_GT__LT_Type_GT__GT__LT_Cons_LT_Type_LT_Type_GT__GT__LT_Type_LT_Type_GT__GT__GT__GT_(int uuid__00000000000cd74f,int uuid__00000000000cd750);
 
 #line 4 "PLATFORM/C/LIB/u16.lm"
-void print_CL__LT_Arrow_LT_Nil_GT__LT_U16_GT__GT_(unsigned short uuid__00000000000c6965){(print_CL__LT_Arrow_LT_Nil_GT__LT_U64_GT__GT_(((unsigned long)(uuid__00000000000c6965))));}
+void print_CL__LT_Arrow_LT_Nil_GT__LT_U16_GT__GT_(unsigned short uuid__00000000000c6965){(print_CL__LT_Arrow_LT_Nil_GT__LT_DefaultPrintable_GT__LT_U64_GT__GT_(((unsigned long)(uuid__00000000000c6965))));}
 
 #line 4 "PLATFORM/C/LIB/u32.lm"
-void print_CL__LT_Arrow_LT_Nil_GT__LT_U32_GT__GT_(unsigned int uuid__00000000000c6966){(print_CL__LT_Arrow_LT_Nil_GT__LT_U64_GT__GT_(((unsigned long)(uuid__00000000000c6966))));}
+void print_CL__LT_Arrow_LT_Nil_GT__LT_U32_GT__GT_(unsigned int uuid__00000000000c6966){(print_CL__LT_Arrow_LT_Nil_GT__LT_DefaultPrintable_GT__LT_U64_GT__GT_(((unsigned long)(uuid__00000000000c6966))));}
 
 #line 4 "PLATFORM/C/LIB/u64.lm"
 void print_CL__LT_Arrow_LT_Nil_GT__LT_Cons_LT_U64_GT__LT_IO_CL__CL_File_GT__GT__GT_(FILE* uuid__00000000000c6967,unsigned long uuid__00000000000c6968){({(fprintf(uuid__00000000000c6967,"%lu",uuid__00000000000c6968));
@@ -4053,7 +4053,7 @@ void print_CL__LT_Arrow_LT_Nil_GT__LT_I32_GT__GT_(signed int uuid__00000000000c6
 void print_CL__LT_Arrow_LT_Nil_GT__LT_I64_GT__GT_(signed long uuid__00000000000c6b14){({((uuid__00000000000c6b14<(0))?({(print_CL__LT_Arrow_LT_Nil_GT__LT_String_GT__GT_("-"));
 ({uuid__00000000000c6b14=((0)-uuid__00000000000c6b14);({});});
 }):({}));
-(print_CL__LT_Arrow_LT_Nil_GT__LT_U64_GT__GT_(((unsigned long)(uuid__00000000000c6b14))));
+(print_CL__LT_Arrow_LT_Nil_GT__LT_DefaultPrintable_GT__LT_U64_GT__GT_(((unsigned long)(uuid__00000000000c6b14))));
 });}
 
 #line 14 "PLATFORM/C/LIB/i64.lm"
@@ -4109,7 +4109,7 @@ signed long max_CL__LT_Arrow_LT_I64_GT__LT_Cons_LT_I64_GT__LT_I64_GT__GT__GT_(si
 signed long min_CL__LT_Arrow_LT_I64_GT__LT_Cons_LT_I64_GT__LT_I64_GT__GT__GT_(signed long uuid__00000000000c6b1f,signed long uuid__00000000000c6b20){return ((uuid__00000000000c6b1f<=uuid__00000000000c6b20)?uuid__00000000000c6b1f:uuid__00000000000c6b20);}
 
 #line 27 "PLATFORM/C/LIB/u8.lsts"
-void print_CL__LT_Arrow_LT_Nil_GT__LT_U8_GT__GT_(char uuid__00000000000c6b21){(print_CL__LT_Arrow_LT_Nil_GT__LT_U64_GT__GT_(((unsigned long)(uuid__00000000000c6b21))));}
+void print_CL__LT_Arrow_LT_Nil_GT__LT_U8_GT__GT_(char uuid__00000000000c6b21){(print_CL__LT_Arrow_LT_Nil_GT__LT_DefaultPrintable_GT__LT_U64_GT__GT_(((unsigned long)(uuid__00000000000c6b21))));}
 
 #line 29 "PLATFORM/C/LIB/u8.lsts"
 char* clone_SB_rope_CL__LT_Arrow_LT_String_GT__LT_U8_GT__GT_(char uuid__00000000000c6b22){char* uuid__00000000000c6b23;
@@ -4438,7 +4438,7 @@ return ({({({({({({({((uuid__00000000000c6c01<(0))?({uuid__00000000000c6c01=(((s
 });
 (print_CL__LT_Arrow_LT_Nil_GT__LT_String_GT__GT_("] of "));
 });
-(print_CL__LT_Arrow_LT_Nil_GT__LT_U64_GT__GT_((_DT_length_CL__LT_Arrow_LT_U64_GT__LT_SmartString_GT__GT_(uuid__00000000000c6c00))));
+(print_CL__LT_Arrow_LT_Nil_GT__LT_DefaultPrintable_GT__LT_U64_GT__GT_((_DT_length_CL__LT_Arrow_LT_U64_GT__LT_SmartString_GT__GT_(uuid__00000000000c6c00))));
 });
 (print_CL__LT_Arrow_LT_Nil_GT__LT_String_GT__GT_("\n"));
 });
@@ -4454,7 +4454,7 @@ return ({({({({({({({((uuid__00000000000c6c01<(0))?({uuid__00000000000c6c01=(((s
 });
 (print_CL__LT_Arrow_LT_Nil_GT__LT_String_GT__GT_("] of "));
 });
-(print_CL__LT_Arrow_LT_Nil_GT__LT_U64_GT__GT_((_DT_length_CL__LT_Arrow_LT_U64_GT__LT_SmartString_GT__GT_(uuid__00000000000c6c00))));
+(print_CL__LT_Arrow_LT_Nil_GT__LT_DefaultPrintable_GT__LT_U64_GT__GT_((_DT_length_CL__LT_Arrow_LT_U64_GT__LT_SmartString_GT__GT_(uuid__00000000000c6c00))));
 });
 (print_CL__LT_Arrow_LT_Nil_GT__LT_String_GT__GT_("\n"));
 });
@@ -4470,7 +4470,7 @@ return ({({({({({({({((uuid__00000000000c6c01<(0))?({uuid__00000000000c6c01=(((s
 });
 (print_CL__LT_Arrow_LT_Nil_GT__LT_String_GT__GT_("] of "));
 });
-(print_CL__LT_Arrow_LT_Nil_GT__LT_U64_GT__GT_((_DT_length_CL__LT_Arrow_LT_U64_GT__LT_SmartString_GT__GT_(uuid__00000000000c6c00))));
+(print_CL__LT_Arrow_LT_Nil_GT__LT_DefaultPrintable_GT__LT_U64_GT__GT_((_DT_length_CL__LT_Arrow_LT_U64_GT__LT_SmartString_GT__GT_(uuid__00000000000c6c00))));
 });
 (print_CL__LT_Arrow_LT_Nil_GT__LT_String_GT__GT_("\n"));
 });
@@ -14084,7 +14084,7 @@ void mark_SB_global_SB_as_SB_seen_CL__LT_Arrow_LT_Nil_GT__LT_Cons_LT_Type_GT__LT
 });
 (print_CL__LT_Arrow_LT_Nil_GT__LT_String_GT__GT_(" : "));
 });
-(print_CL__LT_Arrow_LT_Nil_GT__LT_Type_GT__GT_(uuid__00000000000c7e6b));
+(print_CL__LT_Arrow_LT_Nil_GT__LT_DefaultPrintable_GT__LT_Type_GT__GT_(uuid__00000000000c7e6b));
 });
 (print_CL__LT_Arrow_LT_Nil_GT__LT_String_GT__GT_("\n"));
 });
@@ -15691,7 +15691,7 @@ return ({({({({({({uuid__00000000000c8075=(0);({});})
 ;
 ((uuid__00000000000c808e.field_0)==(10));
 })?({}):(1?({({({(print_CL__LT_Arrow_LT_Nil_GT__LT_String_GT__GT_("Unexpected Type Case "));
-(print_CL__LT_Arrow_LT_Nil_GT__LT_Type_GT__GT_(uuid__00000000000c8072));
+(print_CL__LT_Arrow_LT_Nil_GT__LT_DefaultPrintable_GT__LT_Type_GT__GT_(uuid__00000000000c8072));
 });
 (print_CL__LT_Arrow_LT_Nil_GT__LT_String_GT__GT_("\n"));
 });
@@ -18992,7 +18992,7 @@ return ({({({({({({({uuid__00000000000c83db=(0);({});})
 })?({({uuid__00000000000c83de=({LM__LT_Type_GT_ rvalue={.field_0=1};rvalue.field_1001=(close_CL__LT_Arrow_LT_Array_QM__LT_List_LT_Type_GT__GT__GT__LT_List_LT_Type_GT__GT__GT_((parse_SB_type_SB_comma_SB_sep_CL__LT_Arrow_LT_List_LT_Type_GT__GT__LT_String_GT__GT_((clone_SB_rope_CL__LT_Arrow_LT_String_GT__LT_S_GT__GT_(uuid__00000000000c83dd))))));rvalue.field_1002=uuid__00000000000c8400;rvalue;});({});});
 ({uuid__00000000000c83dd=({LM__LT_S_GT_ rvalue={3};rvalue;});({});});
 }):(1?({({(print_CL__LT_Arrow_LT_Nil_GT__LT_String_GT__GT_("Unexpected Parameterized Type: "));
-(print_CL__LT_Arrow_LT_Nil_GT__LT_Type_GT__GT_(uuid__00000000000c83de));
+(print_CL__LT_Arrow_LT_Nil_GT__LT_DefaultPrintable_GT__LT_Type_GT__GT_(uuid__00000000000c83de));
 });
 (exit_CL__LT_Arrow_LT_Nil_GT__LT_U64_GT__GT_((1)));
 }):(fail_CL__LT_Arrow_LT_Never_GT__LT_Cons_LT_String_GT__LT_String_GT__GT__GT_("Pattern Match Failure","File: PLUGINS/FRONTEND/LM/parse-type-single.lm Line: 86 Column: 25")))));
@@ -22620,7 +22620,7 @@ LM__LT_Maybe_LT_Tuple_LT_AST_GT__LT_Tuple_LT_Type_GT__LT_Maybe_LT_List_LT_Tuple_
 });
 (uuid__00000000000c8862==(1));
 })?({({({(print_CL__LT_Arrow_LT_Nil_GT__LT_String_GT__GT_("Typedef: "));
-(print_CL__LT_Arrow_LT_Nil_GT__LT_Type_GT__GT_(uuid__00000000000c8868));
+(print_CL__LT_Arrow_LT_Nil_GT__LT_DefaultPrintable_GT__LT_Type_GT__GT_(uuid__00000000000c8868));
 });
 (print_CL__LT_Arrow_LT_Nil_GT__LT_String_GT__GT_("\n"));
 });
@@ -24019,7 +24019,7 @@ return ({({({uuid__00000000000c8ae8=uuid__00000000000c8ae7;({});})
 ({uuid__00000000000c8ae4=(uuid__00000000000c8bab.field_1);({});});
 });
 ({uuid__00000000000c8ae7=(uuid__00000000000c8b8e.field_2);({});});
-}):({(print_CL__LT_Arrow_LT_Nil_GT__LT_Type_GT__GT_((typeof_CL__LT_Arrow_LT_Type_GT__LT_AST_GT__GT_(uuid__00000000000c8ae6))));
+}):({(print_CL__LT_Arrow_LT_Nil_GT__LT_DefaultPrintable_GT__LT_Type_GT__GT_((typeof_CL__LT_Arrow_LT_Type_GT__LT_AST_GT__GT_(uuid__00000000000c8ae6))));
 (exit_SB_error_CL__LT_Arrow_LT_Nil_GT__LT_Cons_LT_AST_GT__LT_String_GT__GT__GT_("Codegen Unexpected RHS",uuid__00000000000c8ae6));
 })):(fail_CL__LT_Arrow_LT_Never_GT__LT_Cons_LT_String_GT__LT_String_GT__GT__GT_("Pattern Match Failure","File: PLUGINS/BACKEND/C/cc-args.lm Line: 69 Column: 14")));
 }):((_DT_is_SB_t_CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_String_GT__LT_Type_GT__GT__GT_(uuid__00000000000c8b81,"..."))?({({({({({uuid__00000000000c8b81=(_DT_r1_CL__LT_Arrow_LT_Type_GT__LT_Type_GT__GT_((_DT_slot_CL__LT_Arrow_LT_Type_GT__LT_Cons_LT_String_GT__LT_Type_GT__GT__GT_(uuid__00000000000c8b81,"..."))));({});});
@@ -28382,7 +28382,7 @@ LM__LT_Type_GT_ uuid__00000000000c95a2;
 })?({({(std_SB_c_SB_print_CL__LT_Arrow_LT_Nil_GT__LT_AST_GT__GT_(uuid__00000000000c9579));
 (print_CL__LT_Arrow_LT_Nil_GT__LT_SmartString_GT__GT_(uuid__00000000000c957d));
 });
-(print_CL__LT_Arrow_LT_Nil_GT__LT_Type_GT__GT_(uuid__00000000000c9578));
+(print_CL__LT_Arrow_LT_Nil_GT__LT_DefaultPrintable_GT__LT_Type_GT__GT_(uuid__00000000000c9578));
 }):(({({({({uuid__00000000000c957f=uuid__00000000000c956d;({});})
 ;
 ({uuid__00000000000c9580=(0);({});})
@@ -28503,7 +28503,7 @@ LM__LT_Type_GT_ uuid__00000000000c95a2;
 })?({uuid__00000000000c95a1=(1);({});}):({})):({}));
 });
 (uuid__00000000000c95a1==(1));
-})?(print_CL__LT_Arrow_LT_Nil_GT__LT_Type_GT__GT_(uuid__00000000000c95a2)):(fail_CL__LT_Arrow_LT_Never_GT__LT_Cons_LT_String_GT__LT_String_GT__GT__GT_("Pattern Match Failure","File: PLUGINS/BACKEND/C/std-c-print.lsts Line: 3 Column: 4"))))))))))));
+})?(print_CL__LT_Arrow_LT_Nil_GT__LT_DefaultPrintable_GT__LT_Type_GT__GT_(uuid__00000000000c95a2)):(fail_CL__LT_Arrow_LT_Never_GT__LT_Cons_LT_String_GT__LT_String_GT__GT__GT_("Pattern Match Failure","File: PLUGINS/BACKEND/C/std-c-print.lsts Line: 3 Column: 4"))))))))))));
 });}
 
 #line 2 "PLUGINS/BACKEND/C/std-c-chain.lsts"
@@ -43798,7 +43798,7 @@ LM__LT_Maybe_LT_List_LT_Tuple_LT_AST_GT__LT_String_GT__GT__GT__GT_ union_CL__LT_
 LM__LT_Maybe_LT_List_LT_Tuple_LT_AST_GT__LT_String_GT__GT__GT__GT_ _DT_bind_CL__LT_Arrow_LT_Maybe_LT_List_LT_Tuple_LT_AST_GT__LT_String_GT__GT__GT__GT__LT_Cons_LT_AST_GT__LT_Cons_LT_String_GT__LT_Maybe_LT_List_LT_Tuple_LT_AST_GT__LT_String_GT__GT__GT__GT__GT__GT__GT_(LM__LT_Maybe_LT_List_LT_Tuple_LT_AST_GT__LT_String_GT__GT__GT__GT_ uuid__00000000000cc8c5,char* uuid__00000000000cc8c6,LM__LT_AST_GT_ uuid__00000000000cc8c7){return ({LM__LT_Maybe_LT_List_LT_Tuple_LT_AST_GT__LT_String_GT__GT__GT__GT_ rvalue={.field_0=1};rvalue.field_1001=(cons_CL__LT_Arrow_LT_List_LT_Tuple_LT_AST_GT__LT_String_GT__GT__GT__LT_Cons_LT_List_LT_Tuple_LT_AST_GT__LT_String_GT__GT__GT__LT_Tuple_LT_AST_GT__LT_String_GT__GT__GT__GT_(({LM__LT_Tuple_LT_AST_GT__LT_String_GT__GT_ rvalue={.field_0=0};rvalue.field_1=uuid__00000000000cc8c7;rvalue.field_2=uuid__00000000000cc8c6;rvalue;}),(_DT_get_SB_or_CL__LT_Arrow_LT_List_LT_Tuple_LT_AST_GT__LT_String_GT__GT__GT__LT_Cons_LT_List_LT_Tuple_LT_AST_GT__LT_String_GT__GT__GT__LT_Maybe_LT_List_LT_Tuple_LT_AST_GT__LT_String_GT__GT__GT__GT__GT__GT_(uuid__00000000000cc8c5,({LM__LT_List_LT_Tuple_LT_AST_GT__LT_String_GT__GT__GT_ rvalue={1};rvalue;})))));rvalue;});}
 
 #line 2 "PLATFORM/C/LIB/print.lsts"
-void print_CL__LT_Arrow_LT_Nil_GT__LT_U64_GT__GT_(unsigned long uuid__00000000000cc8f4){(print_CL__LT_Arrow_LT_Nil_GT__LT_Cons_LT_U64_GT__LT_IO_CL__CL_File_GT__GT__GT_(stdout,uuid__00000000000cc8f4));}
+void print_CL__LT_Arrow_LT_Nil_GT__LT_DefaultPrintable_GT__LT_U64_GT__GT_(unsigned long uuid__00000000000cc8f4){(print_CL__LT_Arrow_LT_Nil_GT__LT_Cons_LT_U64_GT__LT_IO_CL__CL_File_GT__GT__GT_(stdout,uuid__00000000000cc8f4));}
 
 #line 3 "PLATFORM/C/LIB/sized.lm"
 unsigned long hash_CL__LT_Arrow_LT_U64_GT__LT_U64_GT__GT_(unsigned long uuid__00000000000cc8f5){unsigned long uuid__00000000000cc8f6;
@@ -47389,7 +47389,7 @@ uuid__00000000000cd1be;
 });}
 
 #line 2 "PLATFORM/C/LIB/print.lsts"
-void print_CL__LT_Arrow_LT_Nil_GT__LT_Type_GT__GT_(LM__LT_Type_GT_ uuid__00000000000cd1c4){(print_CL__LT_Arrow_LT_Nil_GT__LT_Cons_LT_Type_GT__LT_IO_CL__CL_File_GT__GT__GT_(stdout,uuid__00000000000cd1c4));}
+void print_CL__LT_Arrow_LT_Nil_GT__LT_DefaultPrintable_GT__LT_Type_GT__GT_(LM__LT_Type_GT_ uuid__00000000000cd1c4){(print_CL__LT_Arrow_LT_Nil_GT__LT_Cons_LT_Type_GT__LT_IO_CL__CL_File_GT__GT__GT_(stdout,uuid__00000000000cd1c4));}
 
 #line 40 "PLATFORM/C/LIB/list.lm"
 LM__LT_List_LT_Type_GT__GT_ _AD__CL__LT_Arrow_LT_List_LT_Type_GT__GT__LT_Cons_LT_List_LT_Type_GT__GT__LT_List_LT_Type_GT__GT__GT__GT_(LM__LT_List_LT_Type_GT__GT_ uuid__00000000000cd1c5,LM__LT_List_LT_Type_GT__GT_ uuid__00000000000cd1c6){LM__LT_List_LT_Type_GT__GT_ uuid__00000000000cd1c7;
