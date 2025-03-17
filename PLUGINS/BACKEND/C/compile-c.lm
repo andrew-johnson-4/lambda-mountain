@@ -7,6 +7,7 @@ plugins-backend-c-compile := λ . (: (
       ( (Seq( rst (@( g-t (Glb( k_t rhs )) )) )) (
          (if (==( k 'main_s )) (set assemble-argv-referenced True_u8) ())
          (let kt (typeof rhs))
+         (print 'Global\s_s)(print k)(print '\s:\s_s)(std-c-print rhs)(print '\s:\s_s)(print kt)(print '\n_s)
          (let fragment (mk-fragment()))
          (if (.is-open kt) () (
             (if (.is-t( kt 'Blob_s )) (
