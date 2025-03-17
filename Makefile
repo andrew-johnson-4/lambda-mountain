@@ -1,8 +1,9 @@
 CC = cc
 
 dev: install-production
-	lm --stripdebug tests/c/main.c
-	cat tmp.c
+	lm t.lsts
+	gcc tmp.c
+	./a.out
 
 build: compile-production
 	time ./production --c -o deploy1.c SRC/index-index.lm
