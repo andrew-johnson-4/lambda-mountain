@@ -1,0 +1,6 @@
+
+let interface-index = {} :: HashtableEq<(CString,U64),U64>;
+
+# TODO: remove this lookup
+# ((CString,U64),U64) needed to be reified, but the compiler should infer that
+interface-index.lookup((c"",0_u64),0_u64);

@@ -204,7 +204,7 @@ c-parse-declaration := λ(: tokens List<String>). (: (
       (set name (head tokens))
       (set tokens (tail tokens))
    ) ())
-   (if (&&( (==( return-type 'C_s )) (!=( name '_s )) )) (
+   (if (&&( (==( return-type 'C-FFI_s )) (!=( name '_s )) )) (
       (if (non-zero tokens) (set tokens (tail tokens)) ())
       (print 'Unrecognized\sType\sName\s_s)(c-print-token-sequence( original-tokens tokens ))(print '\n_s)(exit 1_u64)
    ) ())
