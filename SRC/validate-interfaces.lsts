@@ -5,7 +5,7 @@ let validate-interfaces(): Nil = (
       let tctx = unify(self-type, base-type);
       for Tuple{ symbol-name=first, args-type=second, return-type=third } in
           interface-shape-index.lookup(interface-type.ground-tag-and-arity, [] :: List<(CString,Type,Type)>) {
-         args-type = substitute(tctx, args-type).reify-type-variables;
+         args-type = denormalize(substitute(tctx, args-type).reify-type-variables);
          return-type = substitute(tctx, return-type).reify-type-variables;
          let function-type = typeof-var-raw( blame, None :: Maybe<TContext>, symbol-name );
          let apply-result = apply-blame(symbol-name, function-type, args-type, false, blame);
