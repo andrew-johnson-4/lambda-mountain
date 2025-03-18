@@ -506,6 +506,7 @@ let lsts-parse-interface(tokens: List<Token>): List<Token> = (
       (interface-type, tokens) = lsts-parse-type(tokens);
    };
    interface-index = interface-index.bind(interface-type.ground-tag-and-arity, true);
+   interface-self-index = interface-self-index.bind(interface-type.ground-tag-and-arity, (self-type, interface-type));
 
    lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
 
@@ -525,7 +526,9 @@ let lsts-parse-interface(tokens: List<Token>): List<Token> = (
       let args-list = sig.first.args-list;
       let return-type = sig.first.return-type;
 
-      print("Interface Symbol \{name} \{args-type} -> \{return-type}\n");
+      let shapes = interface-shape-index.lookup(interface-type.ground-tag-and-arity,[] :: List<(CString,Type,Type)>);
+      shapes = cons( (name, args-type, return-type), shapes );
+      interface-shape-index = interface-shape-index.bind(interface-type.ground-tag-and-arity, shapes);
 
       lsts-parse-expect(c";", tokens); tokens = tail(tokens);
    };
@@ -569,6 +572,7 @@ let lsts-parse-typedef(tokens: List<Token>): List<Token> = (
          lsts-parse-expect(c";", tokens); tokens = tail(tokens);
          add-quick-prop(base-rest.first, base-rest.first, rt);
          add-weaken-quick-prop(base-rest.first, base-rest.first, rt);
+         interface-implementors = cons((base-rest.first, rt), interface-implementors);
       );
       _ => (
          if mode==c"=" {
