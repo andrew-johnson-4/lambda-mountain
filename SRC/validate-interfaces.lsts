@@ -1,12 +1,16 @@
 
 let validate-interfaces(): Nil = (
-   for Tuple{ base-type=first, reified-interface-type=second } in interface-implementors {
+   for Tuple{ base-type=first, reified-interface-type=second, blame=third } in interface-implementors {
       print("Validate \{base-type} implements \{reified-interface-type}\n");
       (let self-type, let interface-type) = interface-self-index.lookup(reified-interface-type.ground-tag-and-arity, (TAny, TAny));
       print("Defined \{self-type} implements \{interface-type}\n");
+      let tctx = unify(self-type, base-type);
       for Tuple{ symbol-name=first, args-type=second, return-type=third } in
           interface-shape-index.lookup(interface-type.ground-tag-and-arity, [] :: List<(CString,Type,Type)>) {
+         args-type = substitute(tctx, args-type);
+         return-type = substitute(tctx, return-type);
          print("Expect defined: \{symbol-name} : \{args-type} -> \{return-type}\n");
+         # exit-error("Invalid Interface Implementation: Base Type \{base-type} Not Accepted By Self Type \{self-type}", blame);
       };
       print("\n");
    };

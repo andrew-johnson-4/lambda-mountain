@@ -545,7 +545,7 @@ let lsts-parse-interface(tokens: List<Token>): List<Token> = (
 );
 
 let lsts-parse-typedef(tokens: List<Token>): List<Token> = (
-   lsts-parse-expect(c"type", tokens); tokens = tail(tokens);
+   lsts-parse-expect(c"type", tokens); let blame = Var{head(tokens).key, head(tokens)}; tokens = tail(tokens);
    let mode = c"=";
    if lsts-parse-head(tokens)==c"opaque" {
       lsts-parse-expect(c"opaque", tokens); tokens = tail(tokens);
@@ -572,7 +572,7 @@ let lsts-parse-typedef(tokens: List<Token>): List<Token> = (
          lsts-parse-expect(c";", tokens); tokens = tail(tokens);
          add-quick-prop(base-rest.first, base-rest.first, rt);
          add-weaken-quick-prop(base-rest.first, base-rest.first, rt);
-         interface-implementors = cons((base-rest.first, rt), interface-implementors);
+         interface-implementors = cons((base-rest.first, rt, blame), interface-implementors);
       );
       _ => (
          if mode==c"=" {
