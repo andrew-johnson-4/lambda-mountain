@@ -1,7 +1,7 @@
 CC = cc
 
 dev: install-production
-	lm t.lsts
+	lm tests/regress/type-alias.lsts
 	gcc tmp.c
 	./a.out
 
