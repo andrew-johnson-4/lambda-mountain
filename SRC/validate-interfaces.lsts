@@ -7,8 +7,8 @@ let validate-interfaces(): Nil = (
       let tctx = unify(self-type, base-type);
       for Tuple{ symbol-name=first, args-type=second, return-type=third } in
           interface-shape-index.lookup(interface-type.ground-tag-and-arity, [] :: List<(CString,Type,Type)>) {
-         args-type = substitute(tctx, args-type);
-         return-type = substitute(tctx, return-type);
+         args-type = substitute(tctx, args-type).reify-type-variables;
+         return-type = substitute(tctx, return-type).reify-type-variables;
          print("Expect defined: \{symbol-name} : \{args-type} -> \{return-type}\n");
          # exit-error("Invalid Interface Implementation: Base Type \{base-type} Not Accepted By Self Type \{self-type}", blame);
       };
