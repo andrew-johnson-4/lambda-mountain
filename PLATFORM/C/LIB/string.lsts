@@ -1,5 +1,5 @@
 
-type String => Collection<U8>;
+type String implements Collection<U8>;
 
 # TODO: instead do U8 iterator for S
 
