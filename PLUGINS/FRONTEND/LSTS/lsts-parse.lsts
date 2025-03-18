@@ -506,6 +506,7 @@ let lsts-parse-interface(tokens: List<Token>): List<Token> = (
       (interface-type, tokens) = lsts-parse-type(tokens);
    };
    interface-index = interface-index.bind(interface-type.ground-tag-and-arity, true);
+   interface-self-index = interface-self-index.bind(interface-type.ground-tag-and-arity, (self-type, interface-type));
 
    lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
 
@@ -521,8 +522,13 @@ let lsts-parse-interface(tokens: List<Token>): List<Token> = (
 
       let sig = lsts-parse-function-signature(tokens, loc);
       tokens = sig.second;
+      let args-type = sig.first.args-type;
       let args-list = sig.first.args-list;
       let return-type = sig.first.return-type;
+
+      let shapes = interface-shape-index.lookup(interface-type.ground-tag-and-arity,[] :: List<(CString,Type,Type)>);
+      shapes = cons( (name, args-type, return-type), shapes );
+      interface-shape-index = interface-shape-index.bind(interface-type.ground-tag-and-arity, shapes);
 
       lsts-parse-expect(c";", tokens); tokens = tail(tokens);
    };
@@ -539,7 +545,7 @@ let lsts-parse-interface(tokens: List<Token>): List<Token> = (
 );
 
 let lsts-parse-typedef(tokens: List<Token>): List<Token> = (
-   lsts-parse-expect(c"type", tokens); tokens = tail(tokens);
+   lsts-parse-expect(c"type", tokens); let blame = Var{head(tokens).key, head(tokens)}; tokens = tail(tokens);
    let mode = c"=";
    if lsts-parse-head(tokens)==c"opaque" {
       lsts-parse-expect(c"opaque", tokens); tokens = tail(tokens);
@@ -566,6 +572,7 @@ let lsts-parse-typedef(tokens: List<Token>): List<Token> = (
          lsts-parse-expect(c";", tokens); tokens = tail(tokens);
          add-quick-prop(base-rest.first, base-rest.first, rt);
          add-weaken-quick-prop(base-rest.first, base-rest.first, rt);
+         interface-implementors = cons((base-rest.first, rt, blame), interface-implementors);
       );
       _ => (
          if mode==c"=" {
@@ -635,11 +642,11 @@ let lsts-parse-typedef-case(tokens: List<Token>): Tuple<AST,List<Token>> = (
    Tuple{ case, tokens }
 );
 
-type LstsFnSignature = LstsFnSignature { args-list: AST, return-type: Type };
+type LstsFnSignature = LstsFnSignature { args-list: AST, args-type: Type, return-type: Type };
 
 # parses:    (a: I32, b: I32): U64
 let lsts-parse-function-signature(tokens: List<Token>, loc: SourceLocation): Tuple<LstsFnSignature, List<Token>> = (
-   let out = LstsFnSignature { ASTNil, TAny };
+   let out = LstsFnSignature { ASTNil, TAny, TAny };
 
    lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
    while non-zero(tokens) && lsts-parse-head(tokens)!=c")" {
@@ -655,8 +662,10 @@ let lsts-parse-function-signature(tokens: List<Token>, loc: SourceLocation): Tup
       };
       if is( out.args-list, ASTNil{} ) {
          out.args-list = arg-binding;
+         out.args-type = type-rest.first;
       } else {
          out.args-list = App{ close(out.args-list), close(arg-binding) };
+         out.args-type = t3(c"Cons", out.args-type, type-rest.first);
       };
    };
    lsts-parse-expect(c")", tokens); tokens = tail(tokens);
