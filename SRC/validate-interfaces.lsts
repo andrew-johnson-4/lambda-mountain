@@ -10,7 +10,16 @@ let validate-interfaces(): Nil = (
          args-type = substitute(tctx, args-type).reify-type-variables;
          return-type = substitute(tctx, return-type).reify-type-variables;
          print("Expect defined: \{symbol-name} : \{args-type} -> \{return-type}\n");
-         # exit-error("Invalid Interface Implementation: Base Type \{base-type} Not Accepted By Self Type \{self-type}", blame);
+         let function-type = typeof-var-raw( blame, None :: Maybe<TContext>, symbol-name );
+         let apply-result = apply-blame(symbol-name, function-type, args-type, false, blame);
+         if not(can-unify(return-type, apply-result.return-type)) {
+            fail("Function Application Yielded Unexpected Return Value\n"
+                 "\{symbol-name}\n"
+                 "With Arguments \{args-type}\n"
+                 "At \{blame.location}\n"
+                 "Expected: \{return-type}\n"
+                 "Received: \{apply-result.return-type}\n");
+         };
       };
       print("\n");
    };
