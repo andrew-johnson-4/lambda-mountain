@@ -2,8 +2,6 @@
 type Vector<t> = Vector { data: t[], length: U64, capacity: U64 };
 type Vector<t> implements Collection<t>;
 
-let .length(self: Vector<t>) = ( self.length );
-
 let mk-vector(type: Type<t>, capacity: U64): Vector<t> = (
    let data-sz = sizeof(t) * capacity;
    Vector { (malloc(data-sz) as t[]), 0_u64, capacity }
