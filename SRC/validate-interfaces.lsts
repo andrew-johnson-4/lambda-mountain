@@ -9,7 +9,7 @@ let validate-interfaces(): Nil = (
          return-type = substitute(tctx, return-type).reify-type-variables;
          let function-type = typeof-var-raw( blame, None :: Maybe<TContext>, symbol-name );
          let apply-result = apply-blame(symbol-name, function-type, args-type, false, blame);
-         if not(can-unify(return-type, apply-result.return-type)) {
+         if not(can-unify(return-type, denormalize(apply-result.return-type))) {
             fail("Function Application Yielded Unexpected Return Value\n"
                  "\{symbol-name}\n"
                  "With Arguments \{args-type}\n"
