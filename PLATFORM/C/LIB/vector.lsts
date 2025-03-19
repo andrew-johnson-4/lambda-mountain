@@ -1,5 +1,6 @@
 
 type Vector<t> = Vector { data: t[], length: U64, capacity: U64 };
+type Vector<t> implements Collection<t>;
 
 let mk-vector(type: Type<t>, capacity: U64): Vector<t> = (
    let data-sz = sizeof(t) * capacity;
@@ -44,7 +45,7 @@ let .push(v: Vector<t>, i: t): Vector<t> = (
    v
 );
 
-let .to-vector(l: List<t>): Vector<t> = (
+let .into(l: List<t>, out: Type<Vector<t>>): Vector<t> = (
    let v = mk-vector(type(t), l.length);
    for i in l {
       v = v.push(i);
