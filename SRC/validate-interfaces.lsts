@@ -14,7 +14,7 @@ let validate-interfaces(): Nil = (
                  "\{symbol-name}\n"
                  "With Arguments \{args-type}\n"
                  "At \{blame.location}\n"
-                 "Expected: \{return-type}\n"
+                 "Expected: \{symbol-name} : \{args-type} -> \{return-type}\n"
                  "Received: \{apply-result.return-type}\n");
          };
       };
