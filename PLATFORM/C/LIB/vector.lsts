@@ -2,6 +2,9 @@
 type Vector<t> = Vector { data: t[], length: U64, capacity: U64 };
 type Vector<t> implements Collection<t>;
 
+type Vector<t> implements Collection<t>;
+type Vector<t> implements Iterable<t>;
+
 let mk-vector(type: Type<t>, capacity: U64): Vector<t> = (
    let data-sz = sizeof(t) * capacity;
    Vector { (malloc(data-sz) as t[]), 0_u64, capacity }
@@ -45,18 +48,10 @@ let .push(v: Vector<t>, i: t): Vector<t> = (
    v
 );
 
-let .into(l: List<t>, out: Type<Vector<t>>): Vector<t> = (
-   let v = mk-vector(type(t), l.length);
-   for i in l {
-      v = v.push(i);
-   };
-   v
-);
-
 # shrinks the vector if it has way too many elements. shouldn't be called manually
 let .shrink(v: Vector<t>): Vector<t> = (
     let too-much = v.capacity - v.length;
-    let minimum = (v.length >> 1) + v.length; # mul 1.5
+    let minimum = (v.length << 1) + v.length; # mul 1.5
     if too-much > minimum {
        v = v.realloc(minimum);
     };
@@ -100,6 +95,10 @@ let .pop(v: Vector<t>): Tuple<Vector<t>, t> = (
     Tuple { v, last }
 );
 
+let .clone(self: Vector<t>): Vector<t> = (
+    self.to-vector();
+);
+
 let $"[]"( v: Vector<t>, i: U64 ): t = (
    if i >= v.length {
       fail("Vector Index Out of Bounds");
@@ -108,12 +107,7 @@ let $"[]"( v: Vector<t>, i: U64 ): t = (
 );
 
 let $"+"( vl: Vector<t>, vr: Vector<t> ): t = (
-   let v = mk-vector(type(t), vl.length + vr.length);
-   let vi = 0_u64;
-   while vi < vl.length { v = v.push(vl[vi]); };
-   vi = 0_u64;
-   while vi < vr.length { v = v.push(vr[vi]); };
-   v
+   concat-to-vector(vl, vr)
 );
 
 let $"set[]"( v: Vector<t>, i: U64, val: t ): Nil = (
@@ -122,6 +116,17 @@ let $"set[]"( v: Vector<t>, i: U64, val: t ): Nil = (
    };
    v.data[i] = val; 
    ()
+);
+
+# for safety, we clone the vector
+# All modifications done to the vector after creating the iterator will not be seen
+let .iter(v: Vector<t>): CollectionIteratorBase<Vector<t>> = (
+   v.clone().unsafe-iter()
+);
+
+# If you modify the vector after creating the iterator, weird things will happen
+let .unsafe-iter(v: Vector<t>): CollectionIteratorBase<Vector<t>> = (
+   VectorIter { v, 0_u64 }
 );
 
 let .reverse-self(v: Vector<t>): Nil = (
@@ -159,15 +164,37 @@ let .sort(v: Vector<t>): Vector<t> = (
 );
 
 let print(v: Vector<x>): Nil = (
-   let vi = 0_u64;
-   print(c"[");
-   while vi < v.length {
-      if vi > 0_u64 then print(c",");
-      print(v.data[vi]);
-      vi = vi + 1_u64;
-   };
-   print(c"]");
+   print(untern(to-smart-string(v)));
 );
+
+let .push-all(self: Vector<t>, val: Iterable<t>): Vector<t> = (
+   let ln = length-or-null(val);
+   if ln != 0 {
+      self = self.reserve-additional(ln);
+   };
+   self = val.unsafe-iter().collect(self);
+   self
+);
+
+let .collect(x: Iterator<t>, to: Vector<t>): Vector<t> = (
+   let rem = remaining-or-zero(x);
+   if rem != 0 {
+      to = to.reserve-additional(rem);
+   };
+
+   for item in x {
+      to = to.push(item);
+   };
+   to
+);
+
+let .collect(x: Iterator<t>, tot: Type<Vector<t>>): Vector<t> = (
+   let to = mk-vector(type(t), 0);
+   to = x.collect(to);
+   to
+);
+
+# TODO: once we have move values, add .into() variant that does not clone the data first
 
 let .into(in: Vector<U8>, res: Type<CString>): CString = (
    let out = mk-vector(type(U8), in.length+1);
@@ -179,4 +206,8 @@ let .into(in: Vector<U8>, res: Type<CString>): CString = (
 
 let .into(self: Vector<U8>, res: Type<SmartString>): SmartString = (
    intern(self.into(type(CString)))
+);
+
+let .into(l: Iterable<t>, out: Type<Vector<t>>): Vector<t> = (
+   l.iterator().collect(type(Vector<t>))
 );
