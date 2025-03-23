@@ -15,6 +15,10 @@ let :Blob $"c::return"(ts: x): x = (
    l"return "; ts;
 );
 
+let :Blob $"c::if"(cond: c, tb: x, fb: x): x = (
+   l"if("; cond; l"){"; tb; l"}else{"; fb; l"}";
+);
+
 # for 64 bit machines: TODO replace with architecture specific types
 type alias C<"int"> = C<"int32_t">;
 type opaque alias C<"int32_t"> = C<"int">;
