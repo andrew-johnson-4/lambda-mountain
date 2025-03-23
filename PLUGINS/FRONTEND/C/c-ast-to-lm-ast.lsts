@@ -235,6 +235,12 @@ let std-c-expr-of-statement(t: CTerm): AST = (
             close(std-c-expr-of-statement(arg))
          };
       );
+      CZOp{op=op} => (
+         App{
+            close(Var{ c"c::" + untern(op), mk-token("c::" + op) }),
+            close(ASTNil)
+         };
+      );
       _ => fail("Unsupported C Statement:\n\{t}\n");
    };
 );
