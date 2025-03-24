@@ -1,0 +1,10 @@
+
+let .ascript(t: AST, tt: Type): AST = (
+   App{
+      close(Lit{ c":", mk-token(c":") }),
+      close(App{
+         close(t),
+         close(AType{ tt })
+      })
+   }
+);

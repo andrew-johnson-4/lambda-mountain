@@ -19,6 +19,10 @@ let :Blob $"c::if"(cond: c, tb: x, fb: x): x = (
    l"if("; cond; l"){"; tb; l"}else{"; fb; l"}";
 );
 
+let :Blob $"c::for"(l1: l1t, l2: l2t, l3: l3t, stmt: stmtt): Nil = (
+   l"for("; l1; l";"; l2; l";"; l3; l"){"; stmt; l"}";
+);
+
 let :Blob $"c::;"(): Nil = ();
 
 # for 64 bit machines: TODO replace with architecture specific types

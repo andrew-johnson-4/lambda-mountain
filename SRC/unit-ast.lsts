@@ -18,3 +18,6 @@ import SRC/with-location.lsts;
 import SRC/with-key.lsts;
 import SRC/var-name-if-var.lsts;
 import SRC/loc-to-smart-string.lsts;
+import SRC/mk-lit.lsts;
+import SRC/mk-var.lsts;
+import SRC/mk-ascript.lsts;

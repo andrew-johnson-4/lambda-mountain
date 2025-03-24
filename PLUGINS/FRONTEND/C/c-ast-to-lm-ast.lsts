@@ -284,10 +284,14 @@ let std-c-expr-of-statement(t: CTerm): AST = (
          let preamble = ASTEOF;
          if arg1.is-some then {
             (preamble, let arg1-rhs) = std-c-lift-lhs(std-c-expr-of-statement(arg1.get-or-panic));
-            args = cons(arg1-rhs, args);
-         };
-         if arg2.is-some then args = cons(std-c-expr-of-statement(arg2.get-or-panic), args);
-         if arg3.is-some then args = cons(std-c-expr-of-statement(arg3.get-or-panic), args);
+            if non-zero(arg1-rhs)
+            then (args = cons(arg1-rhs, args))
+            else (args = cons(mk-lit(c"").ascript(t1(c"L")), args))
+         } else { args = cons(mk-lit(c"").ascript(t1(c"L")), args) };
+         if arg2.is-some then args = cons(std-c-expr-of-statement(arg2.get-or-panic), args)
+         else { args = cons(mk-lit(c"").ascript(t1(c"L")), args) };
+         if arg3.is-some then args = cons(std-c-expr-of-statement(arg3.get-or-panic), args)
+         else { args = cons(mk-lit(c"").ascript(t1(c"L")), args) };
          args = cons(std-c-expr-of-statement(stmt), args);
          let c-args = ASTNil;
          for a in args.reverse {
@@ -302,6 +306,7 @@ let std-c-expr-of-statement(t: CTerm): AST = (
          for-expr = if non-zero(preamble)
          then App{ true, close(preamble), close(for-expr) }
          else for-expr;
+         print("For: "); std-c-print(for-expr); print("\n");
          for-expr;
       );
       _ => fail("Unsupported C Statement:\n\{t}\n");
