@@ -106,6 +106,7 @@ let std-c-lift-lhs(rhs: AST): (AST, AST) = (
              })
           };
           rhs = mk-app( mk-var(c"mov"), mk-cons(assignment, binding) );
+          print("mov "); std-c-print(rhs); print("\n");
           if is(lhs, ASTEOF) then (lhs = new-lhs) else (lhs = App{ true, close(lhs), close(new-lhs) });
        );
        _ => ();
