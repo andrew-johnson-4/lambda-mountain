@@ -86,10 +86,6 @@ let std-c-expr-of-statement(t: CTerm): AST = (
          };
          App{ false, close(Var{c"c::compound", mk-token(c"c::compound")}), close(inner) }
       );
-      CUnaryPrefix{op:"return", arg=arg} => (
-         let inner = std-c-expr-of-statement(arg);
-         App{ false, close(Var{c"c::return", mk-token(c"c::return")}), close(inner) }
-      );
       CUnaryPrefix{op:"sizeof", arg=arg} => (
          match std-c-expr-of-statement(arg) {
             AType{tt=tt} => (
@@ -234,6 +230,29 @@ let std-c-expr-of-statement(t: CTerm): AST = (
             close(Var{ c"postfix:" + untern(op), mk-token("postfix:" + op) }),
             close(std-c-expr-of-statement(arg))
          };
+      );
+      CZOp{op=op} => (
+         App{
+            close(Var{ c"c::" + untern(op), mk-token("c::" + op) }),
+            close(ASTNil)
+         };
+      );
+      CFor{op=op, arg1=arg1, arg2=arg2, arg3=arg3, stmt=stmt} => (
+         let args = [] :: List<AST>;
+         if arg1.is-some then args = cons(std-c-expr-of-statement(arg1.get-or-panic), args);
+         if arg2.is-some then args = cons(std-c-expr-of-statement(arg2.get-or-panic), args);
+         if arg3.is-some then args = cons(std-c-expr-of-statement(arg3.get-or-panic), args);
+         args = cons(std-c-expr-of-statement(stmt), args);
+         let c-args = ASTNil;
+         for a in args.reverse {
+            if is(c-args, ASTNil)
+            then (c-args = a)
+            else (c-args = App{ true, close(c-args), close(a) })
+         };
+         App{
+            close(Var{ c"c::for", with-location(mk-token("c::for"),op.location) }),
+            close(c-args)
+         }
       );
       _ => fail("Unsupported C Statement:\n\{t}\n");
    };
