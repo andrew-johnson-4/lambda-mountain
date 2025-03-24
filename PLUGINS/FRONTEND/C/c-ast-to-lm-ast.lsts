@@ -280,29 +280,26 @@ let std-c-expr-of-statement(t: CTerm): AST = (
          };
       );
       CFor{op=op, arg1=arg1, arg2=arg2, arg3=arg3, stmt=stmt} => (
-         let args = [] :: List<AST>;
          let preamble = ASTEOF;
-         if arg1.is-some then {
+         let args = if arg1.is-some then {
             (preamble, let arg1-rhs) = std-c-lift-lhs(std-c-expr-of-statement(arg1.get-or-panic));
             if non-zero(arg1-rhs)
-            then (args = cons(arg1-rhs, args))
-            else (args = cons(mk-lit(c"").ascript(t1(c"L")), args))
-         } else { args = cons(mk-lit(c"").ascript(t1(c"L")), args) };
-         if arg2.is-some then args = cons(std-c-expr-of-statement(arg2.get-or-panic), args)
-         else { args = cons(mk-lit(c"").ascript(t1(c"L")), args) };
-         if arg3.is-some then args = cons(std-c-expr-of-statement(arg3.get-or-panic), args)
-         else { args = cons(mk-lit(c"").ascript(t1(c"L")), args) };
-         args = cons(std-c-expr-of-statement(stmt), args);
-         let c-args = ASTNil;
-         for a in args.reverse {
-            if is(c-args, ASTNil)
-            then (c-args = a)
-            else (c-args = App{ true, close(c-args), close(a) })
-         };
-         let for-expr = App{
-            close(Var{ c"c::for", with-location(mk-token("c::for"),op.location) }),
-            close(c-args)
-         };
+            then arg1-rhs
+            else mk-lit(c"").ascript(t1(c"L"))
+         } else { mk-lit(c"").ascript(t1(c"L")) };
+         print("Arg1: "); std-c-print(args); print("\n");
+         if arg2.is-some then { args = mk-cons(args, std-c-expr-of-statement(arg2.get-or-panic)); }
+         else { args = mk-cons(args, mk-lit(c"").ascript(t1(c"L"))); };
+         print("Arg2: "); std-c-print(args); print("\n");
+         if arg3.is-some then { args = mk-cons(args, std-c-expr-of-statement(arg3.get-or-panic)); }
+         else { args = mk-cons(args, mk-lit(c"").ascript(t1(c"L"))); };
+         print("Arg3: "); std-c-print(args); print("\n");
+         args = mk-cons(args, std-c-expr-of-statement(stmt));
+         print("STMT: "); std-c-print(args); print("\n");
+         let for-expr = mk-app(
+            Var{ c"c::for", with-location(mk-token("c::for"),op.location) },
+            args
+         );
          for-expr = if non-zero(preamble)
          then App{ true, close(preamble), close(for-expr) }
          else for-expr;

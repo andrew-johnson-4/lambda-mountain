@@ -171,6 +171,7 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
          (maybe-specialize( 'del_s (typeof-var-raw( term tctx 'del_s )) tt ))
       ))
       ( (App( is-cons l r )) (
+         (print 'App:\s_s)(std-c-print term)(print '\n_s)
          (if is-cons (
             (set tctx (infer-expr( tctx l Unscoped TAny Used )))
             (set tctx (infer-expr( tctx r Unscoped TAny Used )))
