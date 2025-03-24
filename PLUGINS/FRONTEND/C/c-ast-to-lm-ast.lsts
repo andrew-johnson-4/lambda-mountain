@@ -105,13 +105,7 @@ let std-c-lift-lhs(rhs: AST): (AST, AST) = (
                 })
              })
           };
-          rhs = App{
-             close(Var{ c"mov", mk-token(c"mov") }),
-             close(App{ true,
-                close(assignment),
-                close(binding)
-             })
-          };
+          rhs = mk-app( mk-var(c"mov"), mk-cons(assignment, binding) );
           if is(lhs, ASTEOF) then (lhs = new-lhs) else (lhs = App{ true, close(lhs), close(new-lhs) });
        );
        _ => ();
@@ -287,15 +281,11 @@ let std-c-expr-of-statement(t: CTerm): AST = (
             then arg1-rhs
             else mk-lit(c"").ascript(t1(c"L"))
          } else { mk-lit(c"").ascript(t1(c"L")) };
-         print("Arg1: "); std-c-print(args); print("\n");
          if arg2.is-some then { args = mk-cons(args, std-c-expr-of-statement(arg2.get-or-panic)); }
          else { args = mk-cons(args, mk-lit(c"").ascript(t1(c"L"))); };
-         print("Arg2: "); std-c-print(args); print("\n");
          if arg3.is-some then { args = mk-cons(args, std-c-expr-of-statement(arg3.get-or-panic)); }
          else { args = mk-cons(args, mk-lit(c"").ascript(t1(c"L"))); };
-         print("Arg3: "); std-c-print(args); print("\n");
          args = mk-cons(args, std-c-expr-of-statement(stmt));
-         print("STMT: "); std-c-print(args); print("\n");
          let for-expr = mk-app(
             Var{ c"c::for", with-location(mk-token("c::for"),op.location) },
             args
@@ -303,7 +293,6 @@ let std-c-expr-of-statement(t: CTerm): AST = (
          for-expr = if non-zero(preamble)
          then App{ true, close(preamble), close(for-expr) }
          else for-expr;
-         print("For: "); std-c-print(for-expr); print("\n");
          for-expr;
       );
       _ => fail("Unsupported C Statement:\n\{t}\n");

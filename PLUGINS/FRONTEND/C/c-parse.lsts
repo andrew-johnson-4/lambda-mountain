@@ -1367,7 +1367,7 @@ let std-c-parse-iteration-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
    } else if std-c-can-take(tokens, "for") {
       let op = head(tokens).skey; tokens = tail(tokens);
       tokens = std-c-take-expect(tokens, "(");
-      let decl = std-c-parse-declaration(tokens); tokens = decl.second;
+      let decl = std-c-parse-declaration(tokens); if decl.first.is-some then tokens = decl.second;
       let expr1 = std-c-parse-expression(tokens); tokens = expr1.second;
       tokens = std-c-take-expect(tokens, ";");
       let expr2 = std-c-parse-expression(tokens); tokens = expr2.second;
