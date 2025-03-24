@@ -11,7 +11,7 @@ let :Blob $"c::compound"(ts: Cons<Any,last>): last = (
 let :Blob $"c::compound"(ts: last): last = (
 );
 
-let :Blob $"c::return"(ts: x): x = (
+let :Blob $"prefix:c::return"(ts: x): x = (
    l"return "; ts;
 );
 

@@ -86,10 +86,6 @@ let std-c-expr-of-statement(t: CTerm): AST = (
          };
          App{ false, close(Var{c"c::compound", mk-token(c"c::compound")}), close(inner) }
       );
-      CUnaryPrefix{op:"return", arg=arg} => (
-         let inner = std-c-expr-of-statement(arg);
-         App{ false, close(Var{c"c::return", mk-token(c"c::return")}), close(inner) }
-      );
       CUnaryPrefix{op:"sizeof", arg=arg} => (
          match std-c-expr-of-statement(arg) {
             AType{tt=tt} => (
