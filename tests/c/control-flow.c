@@ -13,8 +13,10 @@ int main() {
    for(int z;x;x){ x; };
    while(x){ x; };
    do{x;} while(x);
-   break;
-   continue;
+   switch(1){
+      case 1: continue;
+      default: break;
+   };
    return;
    return 0;
    label_0:

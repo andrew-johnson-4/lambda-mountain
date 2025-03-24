@@ -1326,7 +1326,7 @@ let std-c-parse-selection-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
       let stmt2 = if std-c-can-take(tokens, "else") {
          tokens = std-c-take-expect(tokens, "else");
          std-c-parse-statement(tokens);
-      } else Tuple{ Some{CZOp{intern(c";")}}, tokens }; tokens = stmt2.second;
+      } else Tuple{ Some{CZOp{";"}}, tokens }; tokens = stmt2.second;
       if expr.first.is-some && stmt1.first.is-some && stmt2.first.is-some
       then Tuple{ Some{CTernaryOp{op,close(expr.first.get-or-panic),close(stmt1.first.get-or-panic),close(stmt2.first.get-or-panic)}}, tokens }
       else Tuple{ no, tokens };
