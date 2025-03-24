@@ -77,6 +77,48 @@ let std-c-lhs-of-parameter-list(declaration-list: CTerm): AST = (
    };
 );
 
+let std-c-lift-lhs(rhs: AST): (AST, AST) = (
+    let lhs = ASTEOF;
+    match rhs {
+       App{ is-cons:1_u8, left=left, right=right } => (
+          (lhs, rhs) = std-c-lift-lhs(left);
+          (let new-lhs, let new-rhs) = std-c-lift-lhs(right);
+          if is(lhs, ASTEOF) then (lhs = new-lhs) else (lhs = App{ true, close(lhs), close(new-lhs) });
+          if is(rhs, ASTEOF) then (rhs = new-rhs) else (rhs = App{ true, close(rhs), close(new-rhs) });
+       );
+       App{ left:App{ left:Var{key:c"let"}, binding=right }, right:App{ left:Lit{key:c":"}, right:App{ left:Var{key:c"__uninitialized"}, right:AType{tt=tt}  } } } => (
+          let new-lhs = rhs;
+          rhs = ASTEOF;
+          if is(lhs, ASTEOF) then (lhs = new-lhs) else (lhs = App{ true, close(lhs), close(new-lhs) });
+       );
+       App{ left:App{ left:Var{key:c"let"}, binding=right }, right:App{ left:Lit{key:c":"}, right:App{ assignment=left, right:AType{tt=tt}  } } } => (
+          let new-lhs = App {
+             close(App{
+                close(Var{ c"let", mk-token(c"let") }),
+                close(binding)
+             }),
+             close(App{
+                close(Lit{ c":", mk-token(c":") }),
+                close(App{
+                   close(Var{ c"__uninitialized", mk-token(c"__uninitialized") }),
+                   close(AType{ tt })
+                })
+             })
+          };
+          rhs = App{
+             close(Var{ c"mov", mk-token(c"mov") }),
+             close(App{ true,
+                close(assignment),
+                close(binding)
+             })
+          };
+          if is(lhs, ASTEOF) then (lhs = new-lhs) else (lhs = App{ true, close(lhs), close(new-lhs) });
+       );
+       _ => ();
+    };
+    (lhs, rhs)
+);
+
 let std-c-expr-of-statement(t: CTerm): AST = (
    match t {
       CCompound{terms=terms} => (
@@ -239,7 +281,11 @@ let std-c-expr-of-statement(t: CTerm): AST = (
       );
       CFor{op=op, arg1=arg1, arg2=arg2, arg3=arg3, stmt=stmt} => (
          let args = [] :: List<AST>;
-         if arg1.is-some then args = cons(std-c-expr-of-statement(arg1.get-or-panic), args);
+         let preamble = ASTEOF;
+         if arg1.is-some then {
+            (preamble, let arg1-rhs) = std-c-lift-lhs(std-c-expr-of-statement(arg1.get-or-panic));
+            args = cons(arg1-rhs, args);
+         };
          if arg2.is-some then args = cons(std-c-expr-of-statement(arg2.get-or-panic), args);
          if arg3.is-some then args = cons(std-c-expr-of-statement(arg3.get-or-panic), args);
          args = cons(std-c-expr-of-statement(stmt), args);
@@ -249,10 +295,15 @@ let std-c-expr-of-statement(t: CTerm): AST = (
             then (c-args = a)
             else (c-args = App{ true, close(c-args), close(a) })
          };
-         App{
+         let for-expr = App{
             close(Var{ c"c::for", with-location(mk-token("c::for"),op.location) }),
             close(c-args)
-         }
+         };
+         for-expr = if non-zero(preamble)
+         then App{ true, close(preamble), close(for-expr) }
+         else for-expr;
+         print("For expr: "); std-c-print(for-expr); print("\n");
+         for-expr;
       );
       _ => fail("Unsupported C Statement:\n\{t}\n");
    };
