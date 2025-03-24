@@ -2,7 +2,7 @@
 int main() {
    int x, y;
    if(x){ y; };
-   if(x){ y; } else { z; };
+   if(x){ y; } else { y; };
    for(;;){ x; };
    for(int z;;){ x; };
    for(;x;){ x; };
