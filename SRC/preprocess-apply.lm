@@ -59,14 +59,12 @@ preprocess-apply-one := λ(: program AST). (: (
             (set r (App( is-cons-1 (close(App( is-cons-2 (close(Lit( ':_s ctk ))) (close(preprocess-apply mvar))  ))) (close(Lit( mtype mtk ))) )))
             (set r (App( (close(Lit( ':_s (unique ctk) ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
          )
-         (print 'PostProcess\s_s)(std-c-print r)(print '\n_s)
       ))
       ( (App( is-cons-1 (App( is-cons-2 (Lit( ':_s ctk )) mvar )) (Var( mtype mtk )) )) (
          (if is-cons-1
             (set r (App( is-cons-1 (close(App( is-cons-2 (close(Lit( ':_s ctk ))) (close(preprocess-apply mvar))  ))) (close(Lit( mtype mtk ))) )))
             (set r (App( (close(Lit( ':_s (unique ctk) ))) (close(App( (close(preprocess-apply mvar)) (close(AType(parse-type mtype))) ))) )))
          )
-         (print 'PostProcess\s_s)(std-c-print r)(print '\n_s)
       ))
       ( (App( (App( (Var( 'as_s atk )) (App( t (AType tt) )) )) nt )) (
          (set r (App(

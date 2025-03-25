@@ -293,7 +293,6 @@ let std-c-expr-of-statement(t: CTerm): AST = (
          for-expr = if non-zero(preamble)
          then App{ true, close(preamble), close(for-expr) }
          else for-expr;
-         print("For: "); std-c-print(for-expr); print("\n");
          for-expr;
       );
       _ => fail("Unsupported C Statement:\n\{t}\n");
