@@ -37,4 +37,8 @@ let to-smart-string(i: U8): String = (
    intern(to-string(i as U64))
 );
 
+let .is-space(self: U8): U64 = (
+   ((self >= 1) && (self <= 40)) || (self == 177)
+);
+
 type U8 implements DefaultPrintable;

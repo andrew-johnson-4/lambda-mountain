@@ -1,7 +1,7 @@
 
 let .is-suffixed(l: CString): Bool = (
    let r = false;
-   for Tuple{sfx=first} in parse-suffixes {
+   for Tuple{sfx=first} in parse-suffixes.unsafe-iter() {
       if l.has-suffix(sfx) { r = true; }
    }; r
 );

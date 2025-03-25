@@ -28,7 +28,7 @@
 #   If you know that that might happen, you might be able to use the [addr] function
 #
 # TODOs:
-# - there should be an alternative string implementation optimizes for even shorter strings (8 bytes),
+# - maybe there should be an alternative string implementation optimizes for even shorter strings (8 bytes),
 #   which does not store the prefix
 # - maybe null-terminate the string if, any only if, it is stored as [UmbraLong]
 # - maybe padd the short array with zeros
@@ -36,6 +36,9 @@
 type UmbraShortLong = UmbraShort { arr: U8[12] } | UmbraLong { prefix: U8[4], ptr: U8[] };
 
 type Umbra = Umbra { len: U32, backing: UmbraShortLong };
+
+type Umbra implements Collection<U8>;
+type Umbra implements Iterable<U8>;
 
 let .length(s: Umbra[]): U64 = (
     s.len as U64
@@ -214,8 +217,14 @@ let new-umbra(length: U64): Umbra = (
 );
 
 # clones input to umbra string
-let .into(s: t, t: Type<Umbra>): Umbra = (
-    to-umbra(s, s.length())
+let .into(s: st+Collection<t>, t: Type<Umbra>): Umbra = (
+    let out = new-umbra(s.length);
+    let i = 0_u64;
+    while i < s.length {
+        &out[i] = s[i];
+        i = i + 1_u64;
+    };
+    out
 );
 
 let .into(self: Umbra, t: Type<Vector<U8>>): Vector<U8> = (
@@ -238,17 +247,6 @@ let .into(self: Umbra, t: Type<CString>): CString = (
 let .into(self: Umbra, t: Type<SmartString>): SmartString = (
    let v = self.into(type(CString));
    intern(v);
-);
-
-# clones input to umbra string BUT only includes the first [len] characters
-let to-umbra(s: t, len: U64): Umbra = (
-    let out = new-umbra(len);
-    let i = 0_u64;
-    while i < len {
-        &out[i] = s[i];
-        i = i + 1_u64;
-    };
-    out
 );
 
 let concat-to-umbra(l: tl, r: tr): Umbra = (
@@ -276,3 +274,12 @@ let $"+"(l: t, r: Umbra[]): Umbra = (
 let $"+"(l: Umbra[], r: t): Umbra = (
     concat-to-umbra(l, r)
 );
+
+let .iter(self: Umbra): CollectionIteratorBase<Umbra> = (
+   self.into(type(Umbra)).unsafe-iter()
+);
+
+let .unsafe-iter(self: Umbra): CollectionIteratorBase<Umbra> = (
+   CollectionIteratorBase { self, 0_u64 }
+);
+
