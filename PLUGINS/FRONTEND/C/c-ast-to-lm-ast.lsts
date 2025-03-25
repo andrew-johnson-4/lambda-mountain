@@ -122,6 +122,16 @@ let std-c-expr-of-statement(t: CTerm): AST = (
          };
          App{ false, close(Var{c"c::compound", mk-token(c"c::compound")}), close(inner) }
       );
+      CBinaryOp{op:"c::label", arg1=arg1, arg2=arg2} => (
+         match std-c-expr-of-statement(arg1) {
+            Var{key=key} => (
+               mk-cons(
+                  mk-app( mk-app( mk-var("let"), mk-var(key) ), mk-var("__uninitialized").ascript(t1(c"Label")) ),
+                  std-c-expr-of-statement(arg2)
+               )
+            );
+         }
+      );
       CUnaryPrefix{op:"sizeof", arg=arg} => (
          match std-c-expr-of-statement(arg) {
             AType{tt=tt} => (

@@ -40,6 +40,10 @@ let :Blob $"c::case"(e: et, stmt: stmtt): Nil = (
    l"case "; e; l":"; stmt;
 );
 
+let :Blob $"c::label"(e: et): Nil = (
+   e; l":";
+);
+
 let :Blob $"prefix:c::default"(stmt: stmtt): Nil = (
    l"default:"; stmt;
 );

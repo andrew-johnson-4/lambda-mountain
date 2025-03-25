@@ -1292,7 +1292,7 @@ let std-c-parse-labeled-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<
    let no = None :: Maybe<CTerm>;
    if std-c-can-take(tokens, "identifier") && std-c-can-take(tail(tokens), ":") {
       let lname = head(tokens).skey; tokens = std-c-take-expect(tokens, "identifier");
-      let op = head(tokens).skey; tokens = std-c-take-expect(tokens, ":");
+      let op = "c::label"; tokens = std-c-take-expect(tokens, ":");
       let stmt = std-c-parse-statement(tokens); tokens = stmt.second;
       if stmt.first.is-some
       then Tuple{ Some{CBinaryOp{op,close(CIdentifier{lname}),close(stmt.first.get-or-panic)}}, tokens }
