@@ -126,7 +126,7 @@ let std-c-expr-of-statement(t: CTerm): AST = (
          match std-c-expr-of-statement(arg1) {
             Var{key=key} => (
                mk-cons(
-                  mk-app( mk-app( mk-var("let"), mk-var(key) ), mk-var("__uninitialized").ascript(t1(c"Label")) ),
+                  mk-app( mk-app( mk-var("let"), mk-var(key) ), mk-var("__uninitialized").ascript(t2(c"C",t1(c":Label"))) ),
                   std-c-expr-of-statement(arg2)
                )
             );

@@ -17,10 +17,14 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          let f = mk-fragment();
          std-c-fragment-context = std-c-fragment-context.bind( lhs, v );
          ctx = ctx.bind( name, lt, v );
-         (let pre, let post) = std-c-mangle-declaration(lt);
-         f = f.set(c"frame", f.get(c"frame") + pre + SAtom{c" "}
-                 + v.get(c"expression")
-                 + SAtom{c" "} + post + SAtom{c";"});
+         if lt.is-t(c"C") && lt.slot(c"C").r1.is-t(c":Label") {
+            f = f.set(c"expression", v.get(c"expression") + SAtom{c":"});
+         } else {
+            (let pre, let post) = std-c-mangle-declaration(lt);
+            f = f.set(c"frame", f.get(c"frame") + pre + SAtom{c" "}
+                    + v.get(c"expression")
+                    + SAtom{c" "} + post + SAtom{c";"});
+         };
          match rhs {
             App{ left:Lit{key:c":"}, right:App{ left:Var{key:c"__uninitialized"}, right:AType{tt=tt} } } => ();
             _ => (
@@ -48,6 +52,8 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          else if tt.is-t(c"C") && tt.r1.is-t(c"int16_t") then mk-expression(val)
          else if tt.is-t(c"C") && tt.r1.is-t(c"int32_t") then mk-expression(val)
          else if tt.is-t(c"C") && tt.r1.is-t(c"int64_t") then mk-expression(val)
+         else if tt.is-t(c"C") && tt.r1.is-t(c":Label") then mk-expression(val)
+         else if tt.is-t(c"L") then mk-expression(val)
          else (fail("Unknown C Literal Type: \{tt}"); mk-fragment());
       );
       App{ left:Lit{key:c":"}, right:App{ inner-term=left, right:AType{tt=tt} } } => (

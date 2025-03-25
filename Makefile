@@ -1,7 +1,7 @@
 CC = cc
 
 dev: install-production
-	lm tests/c/control-flow.c
+	lm --stripdebug tests/c/control-flow.c
 	cat tmp.c
 
 build: compile-production

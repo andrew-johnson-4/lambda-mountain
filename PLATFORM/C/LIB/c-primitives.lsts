@@ -16,7 +16,7 @@ let :Blob $"prefix:c::return"(ts: x): x = (
 );
 
 
-let :Blob $"c::if"(cond: c, tb: x, fb: x): x = (
+let :Blob $"c::if"(cond: c, tb: tbt, fb: fbt): Nil = (
    l"if("; cond; l"){"; tb; l"}else{"; fb; l"}";
 );
 
