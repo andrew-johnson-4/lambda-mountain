@@ -1,4 +1,6 @@
 
+type SmartString implements Collection<U8>;
+
 let cmp(l: CString, r: String): Ord = (
    cmp( intern(l), r )
 );

@@ -1,6 +1,7 @@
 
 ## faster than [type(List<t>)]. should be used when you append or remove data a lot
 type Vector<t> = Vector { data: t[], length: U64, capacity: U64 };
+type Vector<t> implements Collection<t>;
 
 let mk-vector(type: Type<t>, capacity: U64): Vector<t> = (
    let data-sz = sizeof(t) * capacity;
@@ -38,8 +39,8 @@ let .push(v: Vector<t>, i: t): Vector<t> = (
    if v.length >= v.capacity {
       let new-cap = if v.capacity == 0 {
          4_u64
-      } else { # mul 1.5
-         (v.length >> 1_u64) + v.length
+      } else {
+         (v.length >> 1_u64) + v.length # this is mul 1.5, not 3
       };
       v = v.realloc(new-cap);
    };
@@ -48,7 +49,15 @@ let .push(v: Vector<t>, i: t): Vector<t> = (
    v
 );
 
-## shrinks the vector if it has way too many elements. shouldnt be called manually
+let .into(l: List<t>, out: Type<Vector<t>>): Vector<t> = (
+   let v = mk-vector(type(t), l.length);
+   for i in l {
+      v = v.push(i);
+   };
+   v
+);
+
+## shrinks the vector if it has way too many elements. shouldn't be called manually
 let .shrink(v: Vector<t>): Vector<t> = (
     let too-much = v.capacity - v.length;
     let minimum = (v.length >> 1) + v.length; # mul 1.5
@@ -167,22 +176,16 @@ let print(v: Vector<x>): Nil = (
    print(c"]");
 );
 
-interface FromVector<t> {
-   let .move-to(self: Vector<t>, out: Type<FromVector<t>>): FromVector<t>;
-};
-
-type CString => FromVector<U8>;
-
-## MAKES INPUT VECTOR INVALID
-let .move-to(self: Vector<U8>, res: Type<CString>): CString = (
-   self = self.push(0_u8);
-   self = self.shrink();
-   (self.data as U8[]) as CString
+## does not destory input vec
+let .into(in: Vector<U8>, res: Type<CString>): CString = (
+   let out = mk-vector(type(U8), in.length+1);
+   let i = 0_u64;
+   while i < in.length { out = out.push(in[i]); i = i + 1; };
+   out = out.push(0_u8);
+   ((out.data as U8[]) as CString)
 );
 
-type SmartString => FromVector<U8>;
-
-## MAKES INPUT VECTOR INVALID
-let .move-to(self: Vector<U8>, res: Type<SmartString>): SmartString = (
-   intern(self.move-to(type(CString)))
+## does not destory input vec
+let .into(self: Vector<U8>, res: Type<SmartString>): SmartString = (
+   intern(self.into(type(CString)))
 );
