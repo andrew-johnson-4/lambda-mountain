@@ -1,5 +1,5 @@
 
-declare-binop( mov, raw-type(datatype), raw-type(datatype), raw-type(Nil), ( l"({"; y; l"="; x; l";({});})"; ) );
+declare-binop( mov, raw-type(datatype-rhs), raw-type(datatype-lhs), raw-type(Nil), ( l"({"; y; l"="; x; l";({});})"; ) );
 
 declare-unop( branchtrue, raw-type(Nil), raw-type(BranchConditional), l"1" );
 declare-unop( branchfalse, raw-type(Nil), raw-type(BranchConditional), l"0" );
