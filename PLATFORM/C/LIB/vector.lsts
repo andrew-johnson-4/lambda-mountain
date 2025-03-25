@@ -95,6 +95,18 @@ let .remove-back(v: Vector<t>, num: U64): Vector<t> = (
 );
 
 ## INPUT VECTOR GETS POISONED
+let .pop-front(v: Vector<t>): Tuple<t, Vector<t>> = (
+    if v.length() == 0 {
+        fail("Tried to pop from empty Vector.");
+    };
+
+    let x = v[0];
+    v = v.remove-front(1);
+
+    Tuple { v, x }
+);
+
+## INPUT VECTOR GETS POISONED
 let .pop(v: Vector<t>): Tuple<Vector<t>, t> = (
     if v.length() == 0 {
         fail("Tried to pop from empty Vector.");

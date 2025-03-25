@@ -77,6 +77,42 @@ let std-c-lhs-of-parameter-list(declaration-list: CTerm): AST = (
    };
 );
 
+let std-c-lift-lhs(rhs: AST): (AST, AST) = (
+    let lhs = ASTEOF;
+    match rhs {
+       App{ is-cons:1_u8, left=left, right=right } => (
+          (lhs, rhs) = std-c-lift-lhs(left);
+          (let new-lhs, let new-rhs) = std-c-lift-lhs(right);
+          if is(lhs, ASTEOF) then (lhs = new-lhs) else (lhs = App{ true, close(lhs), close(new-lhs) });
+          if is(rhs, ASTEOF) then (rhs = new-rhs) else (rhs = App{ true, close(rhs), close(new-rhs) });
+       );
+       App{ left:App{ left:Var{key:c"let"}, binding=right }, right:App{ left:Lit{key:c":"}, right:App{ left:Var{key:c"__uninitialized"}, right:AType{tt=tt}  } } } => (
+          let new-lhs = rhs;
+          rhs = ASTEOF;
+          if is(lhs, ASTEOF) then (lhs = new-lhs) else (lhs = App{ true, close(lhs), close(new-lhs) });
+       );
+       App{ left:App{ left:Var{key:c"let"}, binding=right }, right:App{ left:Lit{key:c":"}, right:App{ assignment=left, right:AType{tt=tt}  } } } => (
+          let new-lhs = App {
+             close(App{
+                close(Var{ c"let", mk-token(c"let") }),
+                close(binding)
+             }),
+             close(App{
+                close(Lit{ c":", mk-token(c":") }),
+                close(App{
+                   close(Var{ c"__uninitialized", mk-token(c"__uninitialized") }),
+                   close(AType{ tt })
+                })
+             })
+          };
+          rhs = mk-app(mk-app( mk-var(c"set"), binding), assignment);
+          if is(lhs, ASTEOF) then (lhs = new-lhs) else (lhs = App{ true, close(lhs), close(new-lhs) });
+       );
+       _ => ();
+    };
+    (lhs, rhs)
+);
+
 let std-c-expr-of-statement(t: CTerm): AST = (
    match t {
       CCompound{terms=terms} => (
@@ -86,9 +122,15 @@ let std-c-expr-of-statement(t: CTerm): AST = (
          };
          App{ false, close(Var{c"c::compound", mk-token(c"c::compound")}), close(inner) }
       );
-      CUnaryPrefix{op:"return", arg=arg} => (
-         let inner = std-c-expr-of-statement(arg);
-         App{ false, close(Var{c"c::return", mk-token(c"c::return")}), close(inner) }
+      CBinaryOp{op:"c::label", arg1=arg1, arg2=arg2} => (
+         match std-c-expr-of-statement(arg1) {
+            Var{key=key} => (
+               mk-cons(
+                  mk-app( mk-app( mk-var("let"), mk-var(key) ), mk-var("__uninitialized").ascript(t1(c"Label")) ),
+                  std-c-expr-of-statement(arg2)
+               )
+            );
+         }
       );
       CUnaryPrefix{op:"sizeof", arg=arg} => (
          match std-c-expr-of-statement(arg) {
@@ -234,6 +276,34 @@ let std-c-expr-of-statement(t: CTerm): AST = (
             close(Var{ c"postfix:" + untern(op), mk-token("postfix:" + op) }),
             close(std-c-expr-of-statement(arg))
          };
+      );
+      CZOp{op=op} => (
+         App{
+            close(Var{ untern("c::" + op), mk-token("c::" + op) }),
+            close(ASTNil)
+         };
+      );
+      CFor{op=op, arg1=arg1, arg2=arg2, arg3=arg3, stmt=stmt} => (
+         let preamble = ASTEOF;
+         let args = if arg1.is-some then {
+            (preamble, let arg1-rhs) = std-c-lift-lhs(std-c-expr-of-statement(arg1.get-or-panic));
+            if non-zero(arg1-rhs)
+            then arg1-rhs
+            else mk-lit(c"").ascript(t1(c"L"))
+         } else { mk-lit(c"").ascript(t1(c"L")) };
+         if arg2.is-some then { args = mk-cons(args, std-c-expr-of-statement(arg2.get-or-panic)); }
+         else { args = mk-cons(args, mk-lit(c"").ascript(t1(c"L"))); };
+         if arg3.is-some then { args = mk-cons(args, std-c-expr-of-statement(arg3.get-or-panic)); }
+         else { args = mk-cons(args, mk-lit(c"").ascript(t1(c"L"))); };
+         args = mk-cons(args, std-c-expr-of-statement(stmt));
+         let for-expr = mk-app(
+            Var{ c"c::for", with-location(mk-token("c::for"),op.location) },
+            args
+         );
+         for-expr = if non-zero(preamble)
+         then App{ true, close(preamble), close(for-expr) }
+         else for-expr;
+         for-expr;
       );
       _ => fail("Unsupported C Statement:\n\{t}\n");
    };
