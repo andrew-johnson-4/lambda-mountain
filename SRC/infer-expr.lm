@@ -21,6 +21,7 @@ meta
    ))
 ;
 infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hint Type)(: used IsUsed). (: (
+   (print 'Infer:\s_s)(std-c-print term)(print '\n_s)
    (match term (
       ()
       ( ASTNil (ascript-normal( term (t1 'Nil_s) )) )

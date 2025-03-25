@@ -1298,7 +1298,7 @@ let std-c-parse-labeled-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<
       then Tuple{ Some{CBinaryOp{op,close(CIdentifier{lname}),close(stmt.first.get-or-panic)}}, tokens }
       else Tuple{ no, tokens };
    } else if std-c-can-take(tokens, "case") {
-      let op = head(tokens).skey; tokens = tail(tokens);
+      let op = "c::case"; tokens = tail(tokens);
       let expr = std-c-parse-constant-expression(tokens); tokens = expr.second;
       tokens = std-c-take-expect(tokens, ":");
       let stmt = std-c-parse-statement(tokens); tokens = stmt.second;
@@ -1306,7 +1306,7 @@ let std-c-parse-labeled-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<
       then Tuple{ Some{CBinaryOp{op,close(expr.first.get-or-panic),close(stmt.first.get-or-panic)}}, tokens }
       else Tuple{ no, tokens };
    } else if std-c-can-take(tokens, "default") {
-      let op = head(tokens).skey; tokens = tail(tokens);
+      let op = "c::default"; tokens = tail(tokens);
       tokens = std-c-take-expect(tokens, ":");
       let stmt = std-c-parse-statement(tokens); tokens = stmt.second;
       if stmt.first.is-some
@@ -1331,7 +1331,7 @@ let std-c-parse-selection-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
       then Tuple{ Some{CTernaryOp{op,close(expr.first.get-or-panic),close(stmt1.first.get-or-panic),close(stmt2.first.get-or-panic)}}, tokens }
       else Tuple{ no, tokens };
    } else if std-c-can-take(tokens, "switch") {
-      let op = head(tokens).skey; tokens = tail(tokens);
+      let op = "c::switch"; tokens = tail(tokens);
       tokens = std-c-take-expect(tokens, "(");
       let expr = std-c-parse-expression(tokens); tokens = expr.second;
       tokens = std-c-take-expect(tokens, ")");
@@ -1393,19 +1393,19 @@ let std-c-parse-jump-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Tok
       tokens = std-c-take-expect(tokens, ";");
       Tuple{ Some{CUnaryPrefix{op,close(CIdentifier{id})}}, tokens }
    } else if std-c-can-take(tokens, "continue") {
-      let op = intern(c"c::continue"); tokens = tail(tokens);
+      let op = intern(c"continue"); tokens = tail(tokens);
       tokens = std-c-take-expect(tokens, ";");
       Tuple{ Some{CZOp{op}}, tokens }
    } else if std-c-can-take(tokens, "break") {
-      let op = head(tokens).skey; tokens = tail(tokens);
+      let op = "break"; tokens = tail(tokens);
       tokens = std-c-take-expect(tokens, ";");
       Tuple{ Some{CZOp{op}}, tokens }
    } else if std-c-can-take(tokens, "return") {
-      let op = intern(c"c::return"); tokens = tail(tokens);
+      let op = intern(c"return"); tokens = tail(tokens);
       let e = std-c-parse-expression(tokens); tokens = e.second;
       tokens = std-c-take-expect(tokens, ";");
       if e.first.is-some
-      then Tuple{ Some{CUnaryPrefix{op,close(e.first.get-or-panic)}}, tokens }
+      then Tuple{ Some{CUnaryPrefix{"c::"+op,close(e.first.get-or-panic)}}, tokens }
       else Tuple{ Some{CZOp{op}}, tokens }
    } else Tuple{ no, tokens };
 );

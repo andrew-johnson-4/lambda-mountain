@@ -269,7 +269,7 @@ let std-c-expr-of-statement(t: CTerm): AST = (
       );
       CZOp{op=op} => (
          App{
-            close(Var{ c"c::" + untern(op), mk-token("c::" + op) }),
+            close(Var{ untern("c::" + op), mk-token("c::" + op) }),
             close(ASTNil)
          };
       );
