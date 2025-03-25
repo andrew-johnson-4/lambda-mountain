@@ -85,5 +85,10 @@ let std-c-compile-args(callee-ctx: FContext, caller-ctx: FContext, lhs: AST, rhs
          };
          (callee-ctx, caller-ctx)
       );
+      ASTNil{} => (callee-ctx, caller-ctx);
+      _ => (
+         print("std-c-compile-args Invalid Args: "); std-c-print(lhs); print("\n"); exit(1);
+         (callee-ctx, caller-ctx)
+      );
    }
 );
