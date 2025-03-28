@@ -1,8 +1,10 @@
 CC = cc
 
 dev: install-production
-	lm --stripdebug tests/c/control-flow.c
-	cat tmp.c
+	lm --stripdebug tests/c/modifiers.c
+	cp tests/c/modifiers.c.out original.c
+	cp tmp.c result.c
+	diff original.c result.c
 
 build: compile-production
 	time ./production --c -o deploy1.c SRC/index-index.lm
