@@ -9,9 +9,9 @@ const int f8;
 volatile int f9;
 _Atomic int f10;
 
-//int f11(int *restrict a1, int ** restrict a2, int * restrict * a3) {};
-//inline int f12(int *restrict a1, int ** restrict a2, int * restrict * a3) {};
-//_Noreturn int f13(int *restrict a1, int ** restrict a2, int * restrict * a3);
+int f11(int *restrict a1, int ** restrict a2, int * restrict * a3) {};
+inline int f12(int *restrict a1, int ** restrict a2, int * restrict * a3) {};
+_Noreturn int f13(int *restrict a1, int ** restrict a2, int * restrict * a3);
 
 int main(){
    auto int f6;
