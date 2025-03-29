@@ -28,6 +28,20 @@ let std-c-declare(t: CTerm): Nil = (
                   })
                };
             );
+            CUnaryPrefix{op:c"Declarator(", arg:CBinaryOp{op:c"Declarator*", ptr=arg1, arg2:CIdentifier{name=value}}} => (
+               return-type = std-c-decorate-pointer(return-type, ptr);
+               print("Declarator \{name} : \{return-type}\n");
+               ast-parsed-program = ast-parsed-program + Glb{
+                  mk-token(name), close(App{ false,
+                     close(Lit{c":", mk-token(c":")}),
+                     close(App{ false,
+                        close(Var{c"__uninitialized", mk-token(c"__uninitialized")}),
+                        close(AType{ return-type })
+                     })
+                  })
+               };
+            );
+            _ => fail("Unsupported C Declaration Init\n\{init}\n");
          }};
       );
       _ => fail("Unsupported C Declaration:\n\{t}\n");
