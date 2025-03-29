@@ -185,16 +185,11 @@ let std-c-parse-external-declaration(tokens: List<Token>): List<Token> = (
 let std-c-parse-function-definition(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let original-tokens = tokens;
    let no = None :: Maybe<CTerm>;
-   print("Function Definition .1 \n");
    let declaration-specifiers = std-c-parse-declaration-specifiers(tokens); tokens = declaration-specifiers.second;
-   print("Function Definition .2 \n");
    let return = if declaration-specifiers.first.is-some {
       let declarator = std-c-parse-declarator(tokens); tokens = declarator.second;
-      print("Function Definition .3 \n");
       let declaration-list = std-c-parse-declaration-list(tokens); tokens = declaration-list.second;
-      print("Function Definition .4 \n");
       let compound-statement = std-c-parse-compound-statement(tokens); tokens = compound-statement.second;
-      print("Function Definition .5 \n");
       if declarator.first.is-some && compound-statement.first.is-some
       then Tuple{ Some{CFunctionDefinition{
          close(declaration-specifiers.first.get-or-panic),
@@ -245,11 +240,8 @@ let std-c-parse-declaration-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,L
 
 let std-c-parse-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
-   print("Parse Declarator .1 \{head(tokens).key} \n");
    let pointer = std-c-parse-pointer(tokens); tokens = pointer.second;
-   print("Parse Declarator .2 \{head(tokens).key} \n");
    let dd = std-c-parse-direct-declarator(tokens); tokens = dd.second;
-   print("Parse Declarator .3 \{head(tokens).key} \n");
    if pointer.first.is-some && dd.first.is-some
    then Tuple{ Some{CBinaryOp{"Declarator*", close(pointer.first.get-or-panic), close(dd.first.get-or-panic)}}, tokens }
    else dd
@@ -379,7 +371,6 @@ let std-c-parse-alignment-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
 );
 
 let std-c-parse-direct-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   print("Direct Declarator .1 \{head(tokens).key} \n");
    let no = None :: Maybe<CTerm>;
    let original-tokens = tokens;
    let be = if std-c-can-take(tokens, "identifier") then {
@@ -394,7 +385,6 @@ let std-c-parse-direct-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<
       } else Tuple{ no, original-tokens }
    } else Tuple{ no, tokens };
    tokens = be.second;
-   print("Direct Declarator .2 \{head(tokens).key} \n");
    while be.first.is-some && (std-c-can-take(tokens,"(") || std-c-can-take(tokens, "[")) {
       if std-c-can-take(tokens,"[") && std-c-can-take(tail(tokens),"*") {
          tokens = std-c-take-expect(tokens, "[");
@@ -442,11 +432,9 @@ let std-c-parse-direct-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<
          then {be = Tuple{ Some{CBinaryOp{"Declarator", close(be.first.get-or-panic), close(ae.first.get-or-panic)}}, tokens }}
          else {be = Tuple{ no, tokens }}
       } else if std-c-can-take(tokens,"(") {
-         print("Declarator( .1");
          tokens = std-c-take-expect(tokens, "(");
          let te = None :: Maybe<CTerm>;
          let ptl = std-c-parse-parameter-type-list(tokens);
-         print("Declarator( .2");
          if ptl.first.is-some {
             te = ptl.first;
             tokens = ptl.second;
@@ -888,20 +876,16 @@ let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 );
 
 let std-c-parse-parameter-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   print("Parse Parameter List .1\n");
    let no = None :: Maybe<CTerm>;
    let ptl = std-c-parse-parameter-declaration(tokens);
-   print("Parse Parameter List .2\n");
    if ptl.first.is-some {
       let pts = [ptl.first.get-or-panic];
       tokens = ptl.second;
       while std-c-can-take(tokens, ",") && not(std-c-can-take(tail(tokens),"...")) {
-         print("Parse Parameter List .3\n");
          tokens = std-c-take-expect(tokens, ",");
          ptl = std-c-parse-parameter-declaration(tokens); tokens = ptl.second;
          if ptl.first.is-some { pts = cons( ptl.first.get-or-panic, pts ); };
       };
-      print("Parse Parameter List .4\n");
       Tuple{ Some{CList{close(pts.reverse)}}, tokens }
    } else Tuple{ no, tokens }
 );
@@ -910,6 +894,7 @@ let std-c-parse-parameter-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,L
    let no = None :: Maybe<CTerm>;
    let ds = std-c-parse-declaration-specifiers(tokens);
    if ds.first.is-some {
+      tokens = ds.second;
       let declarator = std-c-parse-declarator(tokens);
       if declarator.first.is-none { declarator = std-c-parse-abstract-declarator(tokens); };
       tokens = declarator.second;

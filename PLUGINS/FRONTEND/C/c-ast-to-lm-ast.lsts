@@ -41,10 +41,10 @@ let std-c-declare(t: CTerm): Nil = (
                   })
                };
             );
-            _ => fail("Unsupported C Declaration Init\n\{init}\n");
+            _ => print("Unsupported C Declaration Init\n\{init}\n");
          }};
       );
-      _ => fail("Unsupported C Declaration:\n\{t}\n");
+      _ => print("Unsupported C Declaration:\n\{t}\n");
    };
 );
 
@@ -92,6 +92,7 @@ let std-c-type-of-specifiers(specifiers: List<CTerm>): Tuple<Type,Type> = (
 let std-c-name-of-declarator(declarator: CTerm): Tuple<String,Type> = (
    match declarator {
       CUnaryPrefix{op:"Declarator(", arg:CIdentifier{name=value}} => (name, TAny);
+      CBinaryOp{op:"Declarator(", arg1:CIdentifier{name=value}} => (name, TAny);
       _ => fail("Unsupported C Declarator:\n\{declarator}\n");
    };
 );
