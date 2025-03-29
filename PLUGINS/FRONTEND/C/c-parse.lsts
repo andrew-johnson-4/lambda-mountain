@@ -186,7 +186,7 @@ let std-c-parse-function-definition(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
    let original-tokens = tokens;
    let no = None :: Maybe<CTerm>;
    let declaration-specifiers = std-c-parse-declaration-specifiers(tokens); tokens = declaration-specifiers.second;
-   if declaration-specifiers.first.is-some {
+   let return = if declaration-specifiers.first.is-some {
       let declarator = std-c-parse-declarator(tokens); tokens = declarator.second;
       let declaration-list = std-c-parse-declaration-list(tokens); tokens = declaration-list.second;
       let compound-statement = std-c-parse-compound-statement(tokens); tokens = compound-statement.second;
@@ -198,7 +198,8 @@ let std-c-parse-function-definition(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
          close(compound-statement.first.get-or-panic),
       }}, tokens }
       else Tuple{ no, original-tokens }
-   } else Tuple{ no, original-tokens }
+   } else Tuple{ no, original-tokens };
+   return
 );
 
 let std-c-parse-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
@@ -377,7 +378,7 @@ let std-c-parse-direct-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<
       Tuple{ Some{CIdentifier{id}}, tokens }
    } else if std-c-can-take(tokens, "(") then {
       tokens = std-c-take-expect(tokens, "(");
-      let decl = std-c-parse-declarator(tokens);
+      let decl = std-c-parse-declarator(tokens); tokens = decl.second;
       if decl.first.is-some then {
          tokens = std-c-take-expect(tokens, ")");
          Tuple{ decl.first, tokens }

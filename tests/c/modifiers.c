@@ -1,6 +1,6 @@
 
 typedef int Integer;
-//typedef int(*f1)();
+typedef int(*f1)();
 extern int f2(){}
 static int f3;
 _Thread_local int f4;
