@@ -442,9 +442,11 @@ let std-c-parse-direct-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<
          then {be = Tuple{ Some{CBinaryOp{"Declarator", close(be.first.get-or-panic), close(ae.first.get-or-panic)}}, tokens }}
          else {be = Tuple{ no, tokens }}
       } else if std-c-can-take(tokens,"(") {
+         print("Declarator( .1");
          tokens = std-c-take-expect(tokens, "(");
          let te = None :: Maybe<CTerm>;
          let ptl = std-c-parse-parameter-type-list(tokens);
+         print("Declarator( .2");
          if ptl.first.is-some {
             te = ptl.first;
             tokens = ptl.second;
@@ -452,7 +454,7 @@ let std-c-parse-direct-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<
             if let Tuple{first:Some{content=content}, second=second} = std-c-parse-identifier-list(tokens) then (
                te = Some{CIList{close(content)}};
                tokens = second;
-            );
+            ) else ();
          };
          tokens = std-c-take-expect(tokens, ")");
          if te.is-some
@@ -770,7 +772,7 @@ let std-c-parse-type-qualifier-list(tokens: List<Token>): Tuple<Maybe<List<CTerm
 
 let std-c-parse-parameter-type-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
-   let ptl = std-c-parse-parameter-type-list(tokens);
+   let ptl = std-c-parse-parameter-list(tokens);
    if ptl.first.is-some {
       tokens = ptl.second;
       if std-c-can-take(tokens, ",") && std-c-can-take(tail(tokens),"...") {
@@ -886,16 +888,20 @@ let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 );
 
 let std-c-parse-parameter-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   print("Parse Parameter List .1\n");
    let no = None :: Maybe<CTerm>;
    let ptl = std-c-parse-parameter-declaration(tokens);
+   print("Parse Parameter List .2\n");
    if ptl.first.is-some {
       let pts = [ptl.first.get-or-panic];
       tokens = ptl.second;
-      while std-c-can-take(tokens, ",") && not(std-c-can-take(tokens, ",") && std-c-can-take(tail(tokens),"...")) {
+      while std-c-can-take(tokens, ",") && not(std-c-can-take(tail(tokens),"...")) {
+         print("Parse Parameter List .3\n");
          tokens = std-c-take-expect(tokens, ",");
          ptl = std-c-parse-parameter-declaration(tokens); tokens = ptl.second;
          if ptl.first.is-some { pts = cons( ptl.first.get-or-panic, pts ); };
       };
+      print("Parse Parameter List .4\n");
       Tuple{ Some{CList{close(pts.reverse)}}, tokens }
    } else Tuple{ no, tokens }
 );
