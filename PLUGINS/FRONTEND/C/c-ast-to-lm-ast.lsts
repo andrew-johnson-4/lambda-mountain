@@ -30,12 +30,12 @@ let std-c-declare(t: CTerm): Nil = (
             );
             CUnaryPrefix{op:c"Declarator(", arg=arg} => (
                (let name, let body) = std-c-sig-of-declarator(return-type, arg, None :: Maybe<CTerm>);
-               print("Declarator \{name} =\n");
+               print("Declarator \{name} = ");
                std-c-print(body); print("\n");
             );
             CBinaryOp{op:c"Declarator(", arg1=arg1, arg2=arg2 } => (
                (let name, let body) = std-c-sig-of-declarator(return-type, arg1, Some(arg2));
-               print("Declarator \{name} =\n");
+               print("Declarator \{name} = ");
                std-c-print(body); print("\n");
             );
             _ => print("Unsupported C Declaration Init\n\{init}\n");
