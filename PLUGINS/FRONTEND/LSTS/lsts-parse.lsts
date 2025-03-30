@@ -762,7 +762,7 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
          let expr-rest = lsts-parse-small-expression(tokens); tokens = expr-rest.second;
          let matched-rest = if lsts-parse-head(tokens)==c"{" {
             lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
-            let matched-rest = lsts-parse-expression(tokens);
+            let matched-rest = lsts-parse-expression(tokens); tokens = matched-rest.second;
             lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
             Tuple{ matched-rest.first, tokens }
          } else {
