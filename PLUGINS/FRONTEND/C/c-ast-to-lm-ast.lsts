@@ -18,6 +18,9 @@ let std-c-declare(t: CTerm): Nil = (
                };
             );
             CIdentifier{name=value} => (
+               if can-unify( t2(c"C",t1(c"typedef")), return-type ) {
+                  std-c-typedef-name-index = std-c-typedef-name-index.bind(name, true);
+               };
                ast-parsed-program = ast-parsed-program + Glb{
                   mk-token(name), close(App{ false,
                      close(Lit{c":", mk-token(c":")}),
@@ -30,12 +33,18 @@ let std-c-declare(t: CTerm): Nil = (
             );
             CUnaryPrefix{op:c"Declarator(", arg=arg} => (
                (let name, let body) = std-c-sig-of-declarator(return-type, arg, None :: Maybe<CTerm>);
-               print("Declarator \{name} =\n");
+               if can-unify( t2(c"C",t1(c"typedef")), return-type ) {
+                  std-c-typedef-name-index = std-c-typedef-name-index.bind(name.into(type(String)), true);
+               };
                std-c-print(body); print("\n");
             );
             CBinaryOp{op:c"Declarator(", arg1=arg1, arg2=arg2 } => (
                (let name, let body) = std-c-sig-of-declarator(return-type, arg1, Some(arg2));
-               print("Declarator \{name} =\n");
+               if can-unify( t2(c"C",t1(c"typedef")), return-type ) {
+                  print("typedef \{name}\n");
+                  std-c-typedef-name-index = std-c-typedef-name-index.bind(name.into(type(String)), true);
+               };
+               print("Declarator \{name} = ");
                std-c-print(body); print("\n");
             );
             _ => print("Unsupported C Declaration Init\n\{init}\n");

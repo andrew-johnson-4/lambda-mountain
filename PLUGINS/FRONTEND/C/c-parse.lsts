@@ -658,7 +658,7 @@ let std-c-typedef-name-index = {} :: HashtableEq<String,Bool>;
 let std-c-parse-typedef-name(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
    if non-zero(tokens) && std-c-typedef-name-index.has(head(tokens).skey) {
-      Tuple{ Some{CType1{head(tokens).skey}}, tokens }
+      Tuple{ Some{CType1{head(tokens).skey}}, tail(tokens) }
    } else Tuple{ no, tokens }
 );
 
