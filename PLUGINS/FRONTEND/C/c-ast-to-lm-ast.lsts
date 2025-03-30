@@ -28,24 +28,35 @@ let std-c-declare(t: CTerm): Nil = (
                   })
                };
             );
-            CUnaryPrefix{op:c"Declarator(", arg:CBinaryOp{op:c"Declarator*", ptr=arg1, arg2:CIdentifier{name=value}}} => (
-               return-type = std-c-decorate-pointer(return-type, ptr);
-               print("Declarator \{name} : \{return-type}\n");
-               ast-parsed-program = ast-parsed-program + Glb{
-                  mk-token(name), close(App{ false,
-                     close(Lit{c":", mk-token(c":")}),
-                     close(App{ false,
-                        close(Var{c"__uninitialized", mk-token(c"__uninitialized")}),
-                        close(AType{ return-type })
-                     })
-                  })
-               };
+            CUnaryPrefix{op:c"Declarator(", arg=arg} => (
+               (let name, let body) = std-c-sig-of-declarator(return-type, arg);
+               print("Declarator \{name} =\n");
+               std-c-print(body); print("\n");
             );
             _ => print("Unsupported C Declaration Init\n\{init}\n");
          }};
       );
       _ => print("Unsupported C Declaration:\n\{t}\n");
    };
+);
+
+let std-c-sig-of-declarator(return-type: Type, declarator: CTerm): (CString, AST) = (
+   match declarator {
+      CBinaryOp{op:c"Declarator*", ptr=arg1, arg2:CIdentifier{name=value}} => (
+         (untern(name), Abs{ close(ASTNil), close(App{ false,
+               close(Lit{c":", mk-token(c":")}),
+               close(App{ false,
+                  close(Var{c"__uninitialized", mk-token(c"__uninitialized")}),
+                  close(AType{ return-type })
+               })
+            }), TAny
+         })
+      );
+      _ => (
+         fail("std-c-sig-of-declarator: Unkown Declarator\n\{declarator}\n");
+         (c"", ASTEOF)
+      );
+   }
 );
 
 let std-c-declare-function(specifiers: CTerm, declarator: CTerm, declaration-list: CTerm, statement: CTerm): Nil = (
