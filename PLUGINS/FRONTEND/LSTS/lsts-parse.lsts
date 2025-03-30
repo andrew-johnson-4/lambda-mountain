@@ -767,14 +767,21 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
             Tuple{ matched-rest.first, tokens }
          } else {
             lsts-parse-expect(c"then", tokens); tokens = tail(tokens);
-            let matched-rest = lsts-parse-small-expression(tokens); tokens = matched-rest.second;
-            matched-rest;
+            if lsts-parse-head(tokens)==c"{" {
+               lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
+               let matched-rest = lsts-parse-expression(tokens); tokens = matched-rest.second;
+               lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
+               Tuple{ matched-rest.first, tokens }
+            } else {
+               let matched-rest = lsts-parse-small-expression(tokens); tokens = matched-rest.second;
+               matched-rest;
+            }
          };
          let default-rest = if lsts-parse-head(tokens)==c"else" {
             lsts-parse-expect(c"else", tokens); tokens = tail(tokens);
             let default-rest = lsts-parse-small-expression(tokens); tokens = default-rest.second;
             default-rest.first;
-         } else ASTEOF;
+         } else ASTNil;
          let cases = App{ close(ASTNil), close(App{ close(lhs-rest.first), close(matched-rest.first) }) };
          if non-zero(default-rest) {
             cases = App{ close(cases), close(App{
