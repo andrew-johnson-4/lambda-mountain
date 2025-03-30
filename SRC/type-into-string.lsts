@@ -1,5 +1,7 @@
 
-let to-smart-string(tt: Type): SmartString = (
+type Type implements DefaultFormattable;
+
+let .into(tt: Type, tgt: Type<String>): String = (
    match tt {
       TAny{} => "?";
       TVar{name=name} => intern(name);
@@ -20,7 +22,7 @@ let to-smart-string(tt: Type): SmartString = (
    }
 );
 
-let .pretty(tt: Type): SmartString = (
+let .pretty(tt: Type): String = (
    match tt {
       TAny{} => "?";
       TVar{name=name} => intern(name);
