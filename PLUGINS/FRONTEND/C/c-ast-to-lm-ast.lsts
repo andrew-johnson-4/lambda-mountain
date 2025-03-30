@@ -1,6 +1,5 @@
 
 let std-c-declare(t: CTerm): Nil = (
-   print("Declare: \{t}\n");
    match t {
       CFunctionDefinition{spec=specifiers,decl=declarator,dl=declaration-list,stmt=statement} => std-c-declare-function(spec, decl, dl, stmt);
       CBinaryOp{op:c"Declaration",spec=arg1,arg2:CMaybe{value:Some{content:CList{inits=value}}}} => (
@@ -51,6 +50,22 @@ let std-c-sig-of-params-list(params: List<CTerm>): AST = (
    for p in params { match p {
       CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CIdentifier{name=value}} => (
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
+         let pe = App{ false,
+            close(Lit{c":", mk-token(c":")}),
+            close(App{ false,
+               close(Var{untern(name), mk-token(name)}),
+               close(AType{ return-type })
+            })
+         };
+         if non-zero(return) {
+            return = App{ false, close(return), close(pe) };
+         } else {
+            return = pe;
+         }
+      );
+      CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CBinaryOp{op:c"Declarator*",ptr=arg1,arg2:CIdentifier{name=value}}} => (
+         (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
+         return-type = std-c-decorate-pointer(return-type, ptr);
          let pe = App{ false,
             close(Lit{c":", mk-token(c":")}),
             close(App{ false,
