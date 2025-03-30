@@ -439,10 +439,10 @@ let std-c-parse-direct-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<
             te = ptl.first;
             tokens = ptl.second;
          } else {
-            if let Tuple{first:Some{content=content}, second=second} = std-c-parse-identifier-list(tokens) then (
+            if let Tuple{first:Some{content=content}, second=second} = std-c-parse-identifier-list(tokens) {
                te = Some{CIList{close(content)}};
                tokens = second;
-            ) else ();
+            };
          };
          tokens = std-c-take-expect(tokens, ")");
          if te.is-some
