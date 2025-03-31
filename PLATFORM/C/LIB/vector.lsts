@@ -1,4 +1,5 @@
 
+## faster than [type(List<t>)]. should be used when you append or remove data a lot
 type Vector<t> = Vector { data: t[], length: U64, capacity: U64 };
 type Vector<t> implements Collection<t>;
 
@@ -7,6 +8,7 @@ let mk-vector(type: Type<t>, capacity: U64): Vector<t> = (
    Vector { (malloc(data-sz) as t[]), 0_u64, capacity }
 );
 
+## generate a [type(Vector<t>)], in which each element is [value]
 let fill-vector(value: t, len: U64): Vector<t> = (
    let v = mk-vector(type(t), len);
    while len > 0 {
@@ -16,13 +18,14 @@ let fill-vector(value: t, len: U64): Vector<t> = (
    v
 );
 
-# does not change length, or destroy old elems!
+## does not change the length length, or destroy old elements!
 let .realloc(v: Vector<t>, target-capacity: U64): Vector<t> = (
    let data-sz = sizeof(t) * target-capacity;
    let newp = realloc(v.data as ?[], data-sz) as t[];
    Vector { newp, v.length, target-capacity }
 );
 
+## reserve additional num elements to the current length
 let .reserve-additional(v: Vector<t>, additional: U64): Vector<t> = (
    if (v.capacity - v.length) < additional {
       v.realloc(v.length + additional)
@@ -31,6 +34,7 @@ let .reserve-additional(v: Vector<t>, additional: U64): Vector<t> = (
    }
 );
 
+## INPUT VECTOR GETS POISONED
 let .push(v: Vector<t>, i: t): Vector<t> = (
    if v.length >= v.capacity {
       let new-cap = if v.capacity == 0 {
@@ -53,7 +57,7 @@ let .into(l: List<t>, out: Type<Vector<t>>): Vector<t> = (
    v
 );
 
-# shrinks the vector if it has way too many elements. shouldn't be called manually
+## shrinks the vector if it has way too many elements. shouldn't be called manually
 let .shrink(v: Vector<t>): Vector<t> = (
     let too-much = v.capacity - v.length;
     let minimum = (v.length >> 1) + v.length; # mul 1.5
@@ -63,6 +67,7 @@ let .shrink(v: Vector<t>): Vector<t> = (
     v
 );
 
+## INPUT VECTOR GETS POISONED
 let .remove-front(v: Vector<t>, num: U64): Vector<t> = (
     if num > v.length() {
         fail("tried to remove \{num} elements from vector, but only have \{v.length()}");
@@ -78,6 +83,7 @@ let .remove-front(v: Vector<t>, num: U64): Vector<t> = (
     v.shrink();
 );
 
+## INPUT VECTOR GETS POISONED
 let .remove-back(v: Vector<t>, num: U64): Vector<t> = (
     if num > v.length() {
         fail("tried to remove \{num} elements from vector, but only have \{v.length()}");
@@ -88,6 +94,7 @@ let .remove-back(v: Vector<t>, num: U64): Vector<t> = (
     v.shrink();
 );
 
+## INPUT VECTOR GETS POISONED
 let .pop-front(v: Vector<t>): Tuple<t, Vector<t>> = (
     if v.length() == 0 {
         fail("Tried to pop from empty Vector.");
@@ -99,6 +106,7 @@ let .pop-front(v: Vector<t>): Tuple<t, Vector<t>> = (
     Tuple { v, x }
 );
 
+## INPUT VECTOR GETS POISONED
 let .pop(v: Vector<t>): Tuple<Vector<t>, t> = (
     if v.length() == 0 {
         fail("Tried to pop from empty Vector.");
@@ -180,6 +188,7 @@ let print(v: Vector<x>): Nil = (
    print(c"]");
 );
 
+## does not destory input vec
 let .into(in: Vector<U8>, res: Type<CString>): CString = (
    let out = mk-vector(type(U8), in.length+1);
    let i = 0_u64;
@@ -188,6 +197,7 @@ let .into(in: Vector<U8>, res: Type<CString>): CString = (
    ((out.data as U8[]) as CString)
 );
 
+## does not destory input vec
 let .into(self: Vector<U8>, res: Type<SmartString>): SmartString = (
    intern(self.into(type(CString)))
 );
