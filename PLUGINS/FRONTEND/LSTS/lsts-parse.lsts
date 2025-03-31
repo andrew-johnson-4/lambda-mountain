@@ -54,12 +54,12 @@ let lsts-parse-doc-expr(tokens: List<Token>, tags: HashtableEq<CString,Maybe<AST
    let val = match lsts-parse-head(tokens) {
       c"__" => (
          (let s, tokens) = lsts-parse-doc-wordf(tokens, c"__", c"__");
-         Some { DocUnderline { s } }
+         mk-app( mk-var("meta::style::underline"), mk-lit(s) )
       );
 
       c"**" => (
          (let s, tokens) = lsts-parse-doc-wordf(tokens, c"**", c"**");
-         Some { DocBold { s } }
+         mk-app( mk-var("meta::style::bold"), mk-lit(s) )
       );
 
       c"[" => (
@@ -67,18 +67,17 @@ let lsts-parse-doc-expr(tokens: List<Token>, tags: HashtableEq<CString,Maybe<AST
          let v = if lsts-parse-head(tokens) == c"[" {
             tokens = tail(tokens);
             let key = lsts-parse-head(tokens); tokens = tail(tokens);
-            let val = None {} :: Maybe<AST[]>;
+            let val = ASTNil;
             if lsts-parse-head(tokens) == c":" {
                tokens = tail(tokens);
-               (let expr, tokens) = lsts-parse-expression(tokens);
-               val = Some { close(expr) };
+               (val, tokens) = lsts-parse-expression(tokens);
             };
             lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
             tags = tags.bind(key, val);
-            None {} :: Maybe<AST>
+            val
          } else {
             (let v, tokens) = lsts-parse-expression(tokens);
-            Some { v }
+            v
          };
          lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
          v
@@ -86,17 +85,17 @@ let lsts-parse-doc-expr(tokens: List<Token>, tags: HashtableEq<CString,Maybe<AST
 
       word => (
          tokens = tail(tokens);
-         Some { DocWord { word } }
+         mk-lit(word);
       );
    };
    Tuple { val, tags, tokens }
 );
 
-let lsts-parse-doc(tokens: List<Token>): Tuple<DocMeta, List<Token>> = (
+let lsts-parse-doc(tokens: List<Token>): Tuple<AST, List<Token>> = (
    let ast = ASTEOF;
    let para = ASTEOF;
 
-   let tags = {} :: HashtableEq<CString, Maybe<AST[]>>;
+   let tags = [] :: List<(CString, AST)>;
 
    while lsts-parse-head(tokens) == c"##" {
       tokens = tail(tokens);
@@ -104,7 +103,8 @@ let lsts-parse-doc(tokens: List<Token>): Tuple<DocMeta, List<Token>> = (
       let line = ASTEOF;
       # special token inserted by the lexer only in doc strings
       while lsts-parse-head(tokens) != c"\n" {
-         (let ax, tags, tokens) = lsts-parse-doc-expr(tokens, tags);
+         (let ax, let new-tags, tokens) = lsts-parse-doc-expr(tokens, tags);
+         tags = tags + new-tags;
          match ax {
             Some { a=content } => (
                if non-zero(line) {
@@ -139,7 +139,11 @@ let lsts-parse-doc(tokens: List<Token>): Tuple<DocMeta, List<Token>> = (
       };
    };
 
-   Tuple { DocMeta { close(ast), tags }, tokens }
+   for Tuple{key=first, val=second} in tags {
+      ast = mk-app( mk-var("Meta::with-tag"), mk-cons( mk-lit(key), val ) );
+   };
+
+   Tuple { ast, tokens }
 );
 
 let lsts-has-assign(tokens: List<Token>): U64 = (
