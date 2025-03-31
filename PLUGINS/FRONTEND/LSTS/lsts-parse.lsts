@@ -1425,6 +1425,10 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
       let term-rest = lsts-make-maybe-var(tokens);
       tokens = term-rest.second;
       term = term-rest.first;
+   } else if lsts-parse-head(tokens)==c"." && lsts-is-ident-head(lsts-parse-head(tail(tokens))) {
+      let t = head(tokens).key + head(tail(tokens)).key;
+      tokens = tail(tokens); tokens = tail(tokens);
+      Tuple{ Var{ t, mk-token(t) }, tokens }
    } else if lsts-is-lit(lsts-parse-head(tokens)) {
       let term-rest = lsts-parse-lit(tokens);
       tokens = term-rest.second;
