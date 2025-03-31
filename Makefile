@@ -1,7 +1,10 @@
 CC = cc
 
 dev: install-production
-	lm PLATFORM/C/LIB/default.lsts
+	lm --stripdebug tests/c/modifiers.c
+	cp tmp.c result.c
+	cp tests/c/modifiers.c original.c
+	diff result.c original.c
 
 build: compile-production
 	time ./production --c -o deploy1.c SRC/index-index.lm
