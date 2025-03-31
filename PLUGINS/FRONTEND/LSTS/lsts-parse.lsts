@@ -237,7 +237,7 @@ let lsts-parse(tokens: List<Token>): Nil = (
       if non-zero(open(docx.doc)) || non-zero(docx.tags) { 
          ast-parsed-program = Seq { close(ast-parsed-program), close(Meta { docx }) };
       };
-   }
+   };
 );
 
 let lsts-parse-type(tokens: List<Token>): Tuple<Type,List<Token>> = (
