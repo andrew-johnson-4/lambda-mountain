@@ -1,7 +1,7 @@
 
 let std-c-compile-function-args(ctx: FContext, lhs: AST): S = (
    match lhs {
-      App{ rest=left, right:App{ left:Var{k=key}, right:AType{kt=tt} } } => (
+      App{ rest=left, right:App{ left:Lit{key:c":"}, right:App{ left:Var{k=key}, right:AType{kt=tt} } } } => (
          let decl = std-c-mangle-declaration(kt);
          let text = std-c-compile-function-args(ctx, rest);
          text = text + SAtom{c","};
@@ -11,7 +11,7 @@ let std-c-compile-function-args(ctx: FContext, lhs: AST): S = (
          text = text + decl.second;
          text
       );
-      App{ left:Var{k=key}, right:AType{kt=tt} } => (
+      App{ left:Lit{key:c":"}, right:App{ left:Var{k=key}, right:AType{kt=tt} } } => (
          let decl = std-c-mangle-declaration(kt);
          let text = decl.first;
          text = text + SAtom{c" "};
