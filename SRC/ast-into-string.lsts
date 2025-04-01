@@ -24,6 +24,8 @@ let .into(t: AST, tgt: Type<String>): String = (
       );
       AType{tt=tt} => tt.into(type(String));
       Seq{left=left,right=right} => left.into(type(String)) + "\n" + right.into(type(String));
+      Typedef{lhs=lhs,rhs=rhs} => "type \{lhs} = \{rhs};";
+      Meta{val=val} => "meta \{val}\n";
    };
 );
 

@@ -1,7 +1,7 @@
 
 typedef int Integer;
 typedef Integer(*f1)();
-typedef Integer(*f2)(Integer x);
+typedef Integer(f2)(Integer x);
 extern f1 f3(){}
 static f2 f4;
 _Thread_local int f5;

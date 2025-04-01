@@ -16,7 +16,7 @@ interface self implements DefaultPrintable {
 }
 
 let print(f: IO::File, e: DefaultFormattable): Nil = (
-   print( f, e );
+   print( f, e.into(type(String)) );
 );
 
 let to-smart-string(e: DefaultFormattable): String = e.into(type(String));

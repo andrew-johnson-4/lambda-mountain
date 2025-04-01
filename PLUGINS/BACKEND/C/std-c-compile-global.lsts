@@ -3,6 +3,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
    if k == c"main" {
       compile-global-c-has-main = true;
    };
+   print("Compile Global \{term}\n");
    match term {
       App{left:Lit{key:c":"}, right:App{left:Var{key:c"__uninitialized"}, right:AType{tt=tt}}} => (
          (let pre-decl, let post-decl) = std-c-mangle-declaration(tt);
@@ -28,14 +29,21 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          assemble-header-section = assemble-header-section + text;
       );
       Abs{lhs=lhs,rhs=rhs,tt=tt} => (
+         ctx = std-c-compile-destructure-args( ctx, lhs, tt.is-t(c"Blob") );
          let loc = term.location;
-         if not(config-strip-debug) {
+         let initialized = match rhs {
+            App{ left:Lit{key:c":"}, right:App{ left:Var{key:c"__uninitialized"}, right:AType{} } } => false;
+            _ => true;
+         };
+         if not(config-strip-debug) || not(initialized) {
             let text = SNil;
-            text = text + SAtom{c"\n#line "};
-            text = text + SAtom{to-string(loc.line)};
-            text = text + SAtom{c" "};
-            text = text + SAtom{loc.filename};
-            text = text + SAtom{c"\n"};
+            if not(config-strip-debug) {
+               text = text + SAtom{c"\n#line "};
+               text = text + SAtom{to-string(loc.line)};
+               text = text + SAtom{c" "};
+               text = text + SAtom{loc.filename};
+               text = text + SAtom{c"\n"};
+            };
             text = text + std-c-mangle-type(typeof(rhs));
             text = text + SAtom{c" "};
             text = text + SAtom{k};
@@ -45,25 +53,26 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             assemble-header-section = assemble-header-section + text;
          };
 
-         let text = SNil;
-         if not(config-strip-debug) {
-            text = text + SAtom{c"\n#line "};
-            text = text + SAtom{to-string(loc.line)};
+         if initialized {
+            let text = SNil;
+            if not(config-strip-debug) {
+               text = text + SAtom{c"\n#line "};
+               text = text + SAtom{to-string(loc.line)};
+               text = text + SAtom{c" "};
+               text = text + SAtom{loc.filename};
+               text = text + SAtom{c"\n"};
+            };
+            text = text + std-c-mangle-type(typeof(rhs));
             text = text + SAtom{c" "};
-            text = text + SAtom{loc.filename};
-            text = text + SAtom{c"\n"};
+            text = text + SAtom{k};
+            text = text + SAtom{c"("};
+            text = text + std-c-compile-function-args(ctx, lhs);
+            text = text + SAtom{c")"};
+
+            let inner-expr = std-c-compile-expr( ctx, rhs, false );
+            text = text + inner-expr.get(c"expression");
+            assemble-text-section = assemble-text-section + text;
          };
-         text = text + std-c-mangle-type(typeof(rhs));
-         text = text + SAtom{c" "};
-         text = text + SAtom{k};
-         text = text + SAtom{c"("};
-         text = text + std-c-compile-function-args(ctx, lhs);
-         text = text + SAtom{c")"};
-         let inner-ctx = ctx;
-         #let inner-ctx = std-c-compile-destructure-args( ctx, lhs );
-         let inner-expr = std-c-compile-expr( ctx, rhs, false );
-         text = text + inner-expr.get(c"expression");
-         assemble-text-section = assemble-text-section + text;
       );
       t => (
          print("Unknown std-c-compile-global "); std-c-print(t); print("\n");
