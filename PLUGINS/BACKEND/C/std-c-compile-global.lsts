@@ -3,6 +3,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
    if k == c"main" {
       compile-global-c-has-main = true;
    };
+   print("Compile Global \{term}\n");
    match term {
       App{left:Lit{key:c":"}, right:App{left:Var{key:c"__uninitialized"}, right:AType{tt=tt}}} => (
          (let pre-decl, let post-decl) = std-c-mangle-declaration(tt);
@@ -59,10 +60,17 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          text = text + SAtom{c"("};
          text = text + std-c-compile-function-args(ctx, lhs);
          text = text + SAtom{c")"};
-         let inner-ctx = ctx;
-         #let inner-ctx = std-c-compile-destructure-args( ctx, lhs );
-         let inner-expr = std-c-compile-expr( ctx, rhs, false );
-         text = text + inner-expr.get(c"expression");
+         match rhs {
+            App{ left:Lit{key:c":"}, right:App{ left:Var{key:c"__uninitialized"}, right:AType{} } } => (
+               text = text + SAtom{c";"};
+            );
+            _ => (
+               let inner-ctx = ctx;
+               #let inner-ctx = std-c-compile-destructure-args( ctx, lhs );
+               let inner-expr = std-c-compile-expr( ctx, rhs, false );
+               text = text + inner-expr.get(c"expression");
+            );
+         };
          assemble-text-section = assemble-text-section + text;
       );
       t => (
