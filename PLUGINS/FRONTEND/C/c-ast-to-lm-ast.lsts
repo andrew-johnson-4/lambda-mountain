@@ -32,20 +32,22 @@ let std-c-declare(t: CTerm): Nil = (
                };
             );
             CUnaryPrefix{op:c"Declarator(", arg=arg} => (
-               (let name, let body) = std-c-sig-of-declarator(return-type, arg, None :: Maybe<CTerm>);
+               (let name, let body) = std-c-sig-of-declarator(return-type, arg, TAny, None :: Maybe<CTerm>);
                if can-unify( t2(c"C",t1(c"typedef")), return-type ) {
                   std-c-typedef-name-index = std-c-typedef-name-index.bind(name.into(type(String)), true);
                };
-               std-c-print(body); print("\n");
+               ast-parsed-program = ast-parsed-program + Glb{
+                  mk-token(name), close(body)
+               };
             );
             CBinaryOp{op:c"Declarator(", arg1=arg1, arg2=arg2 } => (
-               (let name, let body) = std-c-sig-of-declarator(return-type, arg1, Some(arg2));
+               (let name, let body) = std-c-sig-of-declarator(return-type, arg1, TAny, Some(arg2));
                if can-unify( t2(c"C",t1(c"typedef")), return-type ) {
-                  print("typedef \{name}\n");
                   std-c-typedef-name-index = std-c-typedef-name-index.bind(name.into(type(String)), true);
                };
-               print("Declarator \{name} = ");
-               std-c-print(body); print("\n");
+               ast-parsed-program = ast-parsed-program + Glb{
+                  mk-token(name), close(body)
+               };
             );
             _ => print("Unsupported C Declaration Init\n\{init}\n");
          }};
@@ -93,21 +95,21 @@ let std-c-sig-of-params-list(params: List<CTerm>): AST = (
    if non-zero(return) then return else ASTNil
 );
 
-let std-c-sig-of-declarator(return-type: Type, declarator: CTerm, ps: Maybe<CTerm>): (CString, AST) = (
+let std-c-sig-of-declarator(return-type: Type, declarator: CTerm, misc-type: Type, ps: Maybe<CTerm>): (CString, AST) = (
    let params = match ps {
       None{} => ASTNil;
       Some{content:CList{value=value}} => std-c-sig-of-params-list(value);
    };
    match declarator {
       CBinaryOp{op:c"Declarator*", ptr=arg1, arg2:CIdentifier{name=value}} => (
-         return-type = std-c-decorate-pointer(return-type, ptr);
+         misc-type = std-c-decorate-pointer(misc-type, ptr);
          (untern(name), Abs{ close(params), close(App{ false,
                close(Lit{c":", mk-token(c":")}),
                close(App{ false,
                   close(Var{c"__uninitialized", mk-token(c"__uninitialized")}),
                   close(AType{ return-type })
                })
-            }), TAny
+            }), misc-type
          })
       );
       CIdentifier{name=value} => (
@@ -117,7 +119,7 @@ let std-c-sig-of-declarator(return-type: Type, declarator: CTerm, ps: Maybe<CTer
                   close(Var{c"__uninitialized", mk-token(c"__uninitialized")}),
                   close(AType{ return-type })
                })
-            }), TAny
+            }), misc-type
          })
       );
       _ => (
