@@ -109,7 +109,7 @@ let std-c-sig-of-declarator(return-type: Type, declarator: CTerm, misc-type: Typ
                   close(Var{c"__uninitialized", mk-token(c"__uninitialized")}),
                   close(AType{ return-type })
                })
-            }), misc-type
+            }), misc-type && t1(c"C-FFI")
          })
       );
       CIdentifier{name=value} => (
@@ -119,7 +119,7 @@ let std-c-sig-of-declarator(return-type: Type, declarator: CTerm, misc-type: Typ
                   close(Var{c"__uninitialized", mk-token(c"__uninitialized")}),
                   close(AType{ return-type })
                })
-            }), misc-type
+            }), misc-type && t1(c"C-FFI")
          })
       );
       _ => (
