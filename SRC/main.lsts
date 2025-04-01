@@ -7,6 +7,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
          c"--typecheck" => config-mode = ModeTypecheck;
          c"--compile" => config-mode = ModeCompile;
          c"--stripdebug" => config-strip-debug = true;
+         c"--swap-c-frontend" => config-swap-c-frontend = true;
          c"-o" => (
             argi = argi + 1;
             config-target = argv[argi];

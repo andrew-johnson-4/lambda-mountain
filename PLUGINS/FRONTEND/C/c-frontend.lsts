@@ -19,3 +19,4 @@ let c-frontend(fp: CString): Nil = (
 
 
 register-frontend(c".c", c-frontend);
+register-frontend(c".h", c-frontend);
