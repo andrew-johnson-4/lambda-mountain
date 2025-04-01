@@ -14,7 +14,7 @@ let c-frontend(fp: CString): Nil = (
    };
 
    let file-contents = read-file(untern(tmp));
-   print("C File Contents:\n");
+   print("C File Contents:\n\{file-contents}\n");
    let tokens = std-c-tokenize-string(fp, file-contents);
    std-c-parse(tokens);
 );
