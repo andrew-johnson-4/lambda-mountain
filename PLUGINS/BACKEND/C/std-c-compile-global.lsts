@@ -29,6 +29,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          assemble-header-section = assemble-header-section + text;
       );
       Abs{lhs=lhs,rhs=rhs,tt=tt} => (
+         ctx = std-c-compile-destructure-args( ctx, lhs, tt.is-t(c"Blob") );
          let loc = term.location;
          if not(config-strip-debug) {
             let text = SNil;
@@ -65,8 +66,6 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
                text = text + SAtom{c";"};
             );
             _ => (
-               let inner-ctx = ctx;
-               #let inner-ctx = std-c-compile-destructure-args( ctx, lhs );
                let inner-expr = std-c-compile-expr( ctx, rhs, false );
                text = text + inner-expr.get(c"expression");
             );
