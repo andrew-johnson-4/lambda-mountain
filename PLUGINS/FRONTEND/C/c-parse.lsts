@@ -655,6 +655,10 @@ let std-c-parse-specifier-qualifier(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
 );
 
 let std-c-typedef-name-index = {} :: HashtableEq<String,Bool>;
+
+# some C things are non-standard but still just hard-coded
+std-c-typedef-name-index = std-c-typedef-name-index.bind("__builtin_va_list", true);
+
 let std-c-parse-typedef-name(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
    if non-zero(tokens) && std-c-typedef-name-index.has(head(tokens).skey) {
