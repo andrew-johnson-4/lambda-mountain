@@ -186,7 +186,7 @@ let std-c-parse-attribute(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> 
    # https://gcc.gnu.org/onlinedocs/gcc/Attribute-Syntax.html
    # just ignore attributes for now
    let no = None :: Maybe<CTerm>;
-   if std-c-can-take(tokens, "__attribute__") {
+   while std-c-can-take(tokens, "__attribute__") {
       tokens = std-c-take-expect(tokens, "__attribute__");
       tokens = std-c-take-expect(tokens, "(");
       tokens = std-c-take-expect(tokens, "(");
@@ -196,8 +196,8 @@ let std-c-parse-attribute(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> 
          if head(tokens).key == c")" then depth = depth - 1;
          tokens = tail(tokens);
       };
-      Tuple{ no, tokens }
-   } else Tuple{ no, tokens }
+   };
+   Tuple{ no, tokens }
 );
 
 let std-c-parse-function-definition(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
