@@ -187,16 +187,27 @@ let std-c-parse-attribute(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> 
    # https://gcc.gnu.org/onlinedocs/gcc/Attribute-Syntax.html
    # just ignore attributes for now
    let no = None :: Maybe<CTerm>;
-   while std-c-can-take(tokens, "__attribute__") {
-      tokens = std-c-take-expect(tokens, "__attribute__");
-      tokens = std-c-take-expect(tokens, "(");
-      tokens = std-c-take-expect(tokens, "(");
-      let depth = 2_u64;
-      while non-zero(tokens) && depth > 0 {
-         if head(tokens).key == c"(" then depth = depth + 1;
-         if head(tokens).key == c")" then depth = depth - 1;
-         tokens = tail(tokens);
-      };
+   while std-c-can-take(tokens, "__attribute__") || std-c-can-take(tokens, "__asm__") {
+      if std-c-can-take(tokens, "__attribute__") {
+         tokens = std-c-take-expect(tokens, "__attribute__");
+         tokens = std-c-take-expect(tokens, "(");
+         tokens = std-c-take-expect(tokens, "(");
+         let depth = 2_u64;
+         while non-zero(tokens) && depth > 0 {
+            if head(tokens).key == c"(" then depth = depth + 1;
+            if head(tokens).key == c")" then depth = depth - 1;
+            tokens = tail(tokens);
+         };
+      } else {
+         tokens = std-c-take-expect(tokens, "__asm__");
+         tokens = std-c-take-expect(tokens, "(");
+         let depth = 1_u64;
+         while non-zero(tokens) && depth > 0 {
+            if head(tokens).key == c"(" then depth = depth + 1;
+            if head(tokens).key == c")" then depth = depth - 1;
+            tokens = tail(tokens);
+         };
+      }
    };
    Tuple{ no, tokens }
 );
