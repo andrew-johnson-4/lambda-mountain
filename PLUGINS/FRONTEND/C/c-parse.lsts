@@ -131,6 +131,7 @@ let std-c-is-reserved-word(tk: String): U64 = (
    if tk == "_Bool" then (reserved = true);
    if tk == "_Imaginary" then (reserved = true);
    if tk == "restrict" then (reserved = true);
+   if tk == "__restrict" then (reserved = true);
    if tk == "_Complex" then (reserved = true);
    if tk == "inline" then (reserved = true);
    if tk == "_Alignas" then (reserved = true);
@@ -363,6 +364,7 @@ let std-c-parse-type-qualifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Tok
    let no = None :: Maybe<CTerm>;
    if std-c-can-take(tokens, "const") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "const"); Tuple{Some{CType1{t}}, tokens} )
    else if std-c-can-take(tokens, "restrict") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "restrict"); Tuple{Some{CType1{t}}, tokens} )
+   else if std-c-can-take(tokens, "__restrict") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "__restrict"); Tuple{Some{CType1{t}}, tokens} )
    else if std-c-can-take(tokens, "volatile") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "volatile"); Tuple{Some{CType1{t}}, tokens} )
    else if std-c-can-take(tokens, "_Atomic") && not(std-c-can-take(tail(tokens), "("))
    then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "_Atomic"); Tuple{Some{CType1{t}}, tokens} )
@@ -393,6 +395,7 @@ let std-c-parse-alignment-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
 );
 
 let std-c-parse-direct-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   let yes = Some{CIdentifier{""}} :: Maybe<CTerm>; # syntax extension: in parameter lists the identifier can be empty
    let no = None :: Maybe<CTerm>;
    let original-tokens = tokens;
    let be = if std-c-can-take(tokens, "identifier") then {
@@ -405,7 +408,7 @@ let std-c-parse-direct-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<
          tokens = std-c-take-expect(tokens, ")");
          Tuple{ decl.first, tokens }
       } else Tuple{ no, original-tokens }
-   } else Tuple{ no, tokens };
+   } else Tuple{ yes, tokens };
    tokens = be.second;
    while be.first.is-some && (std-c-can-take(tokens,"(") || std-c-can-take(tokens, "[")) {
       if std-c-can-take(tokens,"[") && std-c-can-take(tail(tokens),"*") {
