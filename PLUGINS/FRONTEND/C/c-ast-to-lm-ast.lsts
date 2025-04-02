@@ -99,6 +99,7 @@ let std-c-sig-of-declarator(return-type: Type, declarator: CTerm, misc-type: Typ
    let params = match ps {
       None{} => ASTNil;
       Some{content:CList{value=value}} => std-c-sig-of-params-list(value);
+      Some{content=content} => (print("std-c-sig-of-declarator unrecognized params \{content}\n"); ASTNil);
    };
    match declarator {
       CBinaryOp{op:c"Declarator*", ptr=arg1, arg2:CIdentifier{name=value}} => (
