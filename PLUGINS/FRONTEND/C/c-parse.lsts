@@ -931,7 +931,7 @@ let std-c-parse-parameter-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,L
       tokens = declarator.second;
       if declarator.first.is-some {
          Tuple{ Some{CBinaryOp{"ParameterDeclaration", close(ds.first.get-or-panic), close(declarator.first.get-or-panic) }}, tokens }
-      } else Tuple{ no, tokens };
+      } else Tuple{ Some{CUnaryPrefix{"ParameterDeclaration", close(ds.first.get-or-panic) }}, tokens };
    } else Tuple{ no, tokens }
 );
 
