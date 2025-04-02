@@ -310,18 +310,27 @@ let std-c-parse-init-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<To
 );
 
 let std-c-parse-static-assert-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   print("Static Assert .1\n");
    let no = None :: Maybe<CTerm>;
    if std-c-can-take(tokens, "_Static_assert") {
+      print("Static Assert .2\n");
       let op = head(tokens).skey;
       tokens = std-c-take-expect(tokens, "_Static_assert");
       tokens = std-c-take-expect(tokens, "(");
+      print("Static Assert .3\n");
       let constant-expression = std-c-parse-constant-expression(tokens);
+      print("Static Assert .4\n");
       if constant-expression.first.is-none { std-c-take-expect(tokens, "[Constant Expression]"); };
       tokens = std-c-take-expect(tokens, ",");
+      print("Static Assert .5\n");
       let s = if non-zero(tokens) then head(tokens).skey else "";
+      print("Static Assert .6\n");
       tokens = std-c-take-expect(tokens, "string");
+      print("Static Assert .7\n");
       tokens = std-c-take-expect(tokens, ")");
+      print("Static Assert .8\n");
       tokens = std-c-take-expect(tokens, ";");
+      print("Static Assert .9\n");
       Tuple{ Some{CBinaryOp{ op, close(constant-expression.first.get-or-panic), close(CString{s}) }}, tokens }
    } else Tuple{ no, tokens }
 );
@@ -523,21 +532,26 @@ let std-c-parse-atomic-type-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,L
 );
 
 let std-c-parse-struct-or-union-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   print("Struct or Union Start\n");
    let no = None :: Maybe<CTerm>;
    if std-c-can-take(tokens, "struct") || std-c-can-take(tokens, "union") {
+      print("Struct or Union .1\n");
       let op = head(tokens).skey; tokens = tail(tokens);
+      print("Struct or Union .2\n");
       let id = if std-c-can-take(tokens, "identifier") {
          let id = head(tokens).skey;
          tokens = std-c-take-expect(tokens, "identifier");
          id
       } else "";
       let sdl = no;
+      print("Struct or Union .3\n");
       if std-c-can-take(tokens, "{") {
          tokens = std-c-take-expect(tokens, "{");
          let sdlm = std-c-parse-struct-declaration-list(tokens); tokens = sdlm.second;
          sdl = sdlm.first;
          tokens = std-c-take-expect(tokens, "}");
       };
+      print("Struct or Union Specifier End\n");
       Tuple{ Some{CBinaryOp{op, close(CIdentifier{id}), close(CMaybe{close(sdl)})}}, tokens }
    } else Tuple{ no, tokens }
 );
@@ -560,10 +574,15 @@ let std-c-parse-struct-declaration-list(tokens: List<Token>): Tuple<Maybe<CTerm>
 );
 
 let std-c-parse-struct-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let sql = std-c-parse-specifier-qualifier-list(tokens); tokens = sql.second;
+   print("Parse Struct Declaration .1\n");
+   let sql = std-c-parse-specifier-qualifier-list(tokens);
    if sql.first.is-some {
+      print("Parse Struct Declaration .2\n");
+      tokens = sql.second;
       let sdl = std-c-parse-struct-declarator-list(tokens); tokens = sdl.second;
+      print("Parse Struct Declaration .3\n");
       tokens = std-c-take-expect(tokens, ";");
+      print("Parse Struct Declaration .4\n");
       if sdl.first.is-some
       then Tuple{ Some{CBinaryOp{ "StructDeclaration", close(CList{close(sql.first.get-or-panic)}), close(sdl.first.get-or-panic) }}, tokens }
       else Tuple{ Some{CUnaryPrefix{ "StructDeclaration", close(CList{close(sql.first.get-or-panic)}) }}, tokens }
@@ -571,6 +590,7 @@ let std-c-parse-struct-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 );
 
 let std-c-parse-enumerator-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   print("Enumerator Specifier Start\n");
    let no = None :: Maybe<CTerm>;
    if std-c-can-take(tokens, "enum") {
       let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "enum");
@@ -585,6 +605,7 @@ let std-c-parse-enumerator-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,Li
          then el.first.get-or-panic
          else CList{close([] :: List<CTerm>)};
       } else CList{close([] :: List<CTerm>)};
+      print("Enumerator Specifier End\n");
       Tuple{ Some{CBinaryOp{op, close(CIdentifier{id}), close(es) }}, tokens }
    } else Tuple{ no, tokens }
 );
@@ -680,8 +701,8 @@ let std-c-parse-type-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Tok
    else if std-c-can-take(tokens, "_Complex") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "_Complex"); Tuple{Some{CType1{t}}, tokens} )
    else if std-c-can-take(tokens, "_Imaginary") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "_Imaginary"); Tuple{Some{CType1{t}}, tokens} )
    else if let Tuple{first:Some{ats=content},tokens2=second} = std-c-parse-atomic-type-specifier(tokens) then Tuple{Some{ats}, tokens2}
-#   else if let Tuple{Some{sou=contents}=first,tokens3=second} = std-c-struct-or-union-specifier(tokens) then Tuple{Some{sou}, tokens3}
-#   else if let Tuple{Some{enm=contents}=first,tokens4=second} = std-c-enum-specifier(tokens) then Tuple{Some{enm}, tokens4}
+   else if std-c-can-take(tokens, "struct") || std-c-can-take(tokens, "union") then std-c-parse-struct-or-union-specifier(tokens)
+   else if std-c-can-take(tokens, "enum") then std-c-parse-enumerator-specifier(tokens)
    else std-c-parse-typedef-name(tokens)
 );
 
@@ -777,12 +798,13 @@ let std-c-parse-parameter-type-list(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
 
 let std-c-parse-struct-declarator-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
-   let sq = std-c-parse-struct-declarator-list(tokens);
+   let sq = std-c-parse-struct-declarator(tokens);
    if sq.first.is-some {
       let sql = [sq.first.get-or-panic];
       tokens = sq.second;
-      while sq.first.is-some {
-         sq = std-c-parse-struct-declarator-list(tokens);
+      while sq.first.is-some && std-c-can-take(tokens, ",") {
+         tokens = std-c-take-expect(tokens, ",");
+         sq = std-c-parse-struct-declarator(tokens);
          if sq.first.is-some {
             sql = cons( sq.first.get-or-panic, sql );
             tokens = sq.second;
