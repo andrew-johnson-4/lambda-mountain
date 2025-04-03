@@ -108,6 +108,7 @@ let std-c-is-reserved-word(tk: String): U64 = (
    if tk == "enum" then (reserved = true);
    if tk == "register" then (reserved = true);
    if tk == "typedef" then (reserved = true);
+   if tk == "__extension__" then (reserved = true);
    if tk == "char" then (reserved = true);
    if tk == "extern" then (reserved = true);
    if tk == "return" then (reserved = true);
@@ -363,6 +364,7 @@ let std-c-parse-static-assert-declaration(tokens: List<Token>): Tuple<Maybe<CTer
 let std-c-parse-storage-class-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = None :: Maybe<CTerm>;
    if std-c-can-take(tokens, "typedef") then (tokens = std-c-take-expect(tokens, "typedef"); Tuple{Some{CType1{"typedef"}}, tokens} )
+   else if std-c-can-take(tokens, "__extension__") then (tokens = std-c-take-expect(tokens, "__extension__"); Tuple{Some{CType1{"__extension__"}}, tokens} )
    else if std-c-can-take(tokens, "extern") then (tokens = std-c-take-expect(tokens, "extern"); Tuple{Some{CType1{"extern"}}, tokens} )
    else if std-c-can-take(tokens, "static") then (tokens = std-c-take-expect(tokens, "static"); Tuple{Some{CType1{"static"}}, tokens} )
    else if std-c-can-take(tokens, "_Thread_local") then (tokens = std-c-take-expect(tokens, "_Thread_local"); Tuple{Some{CType1{"_Thread_local"}}, tokens} )
