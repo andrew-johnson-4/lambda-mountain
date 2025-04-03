@@ -176,6 +176,16 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
          print("TODO typedef C struct \{cname} \{decl}\n");
          (t1(cname), TAny)
       );
+      CBinaryOp{op:c"union", arg1:CIdentifier{name=value}, decl=arg2} => (
+         let cname = if name=="" then uuid() else name.into(type(CString));
+         print("TODO typedef C union \{cname} \{decl}\n");
+         (t1(cname), TAny)
+      );
+      CBinaryOp{op:c"enum", arg1:CIdentifier{name=value}, decl=arg2} => (
+         let cname = if name=="" then uuid() else name.into(type(CString));
+         print("TODO typedef C enum \{cname} \{decl}\n");
+         (t1(cname), TAny)
+      );
       _ => fail("Unsupported C Specifiers:\n\{specifiers}\n");
    };
 );

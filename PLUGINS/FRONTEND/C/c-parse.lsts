@@ -620,8 +620,9 @@ let std-c-parse-enumerator-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,Li
          id
       } else "";
       let es = if std-c-can-take(tokens, "{") {
-         let el = std-c-parse-enumerator-list(tokens);
-         tokens = el.second;
+         tokens = std-c-take-expect(tokens, "{");
+         let el = std-c-parse-enumerator-list(tokens); tokens = el.second;
+         tokens = std-c-take-expect(tokens, "}");
          if el.first.is-some
          then el.first.get-or-panic
          else CList{close([] :: List<CTerm>)};
