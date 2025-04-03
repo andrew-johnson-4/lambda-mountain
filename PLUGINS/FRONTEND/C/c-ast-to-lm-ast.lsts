@@ -1,4 +1,6 @@
 
+let std-c-declare-dedup-index = {} :: HashtableEq<String,Bool>;
+
 let std-c-declare(t: CTerm): Nil = (
    match t {
       CFunctionDefinition{spec=specifiers,decl=declarator,dl=declaration-list,stmt=statement} => std-c-declare-function(spec, decl, dl, stmt);
@@ -17,7 +19,8 @@ let std-c-declare(t: CTerm): Nil = (
                   })
                };
             );
-            CIdentifier{name=value} => (
+            CIdentifier{name=value} => (if not(std-c-declare-dedup-index.has(name)) {
+               std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name, true);
                if can-unify( t2(c"C",t1(c"typedef")), return-type ) {
                   std-c-typedef-name-index = std-c-typedef-name-index.bind(name, true);
                };
@@ -30,39 +33,48 @@ let std-c-declare(t: CTerm): Nil = (
                      })
                   })
                };
-            );
+            });
             CUnaryPrefix{op:c"Declarator(", arg=arg} => (
                (let name, let body) = std-c-sig-of-declarator(return-type, arg, TAny, None :: Maybe<CTerm>);
-               if can-unify( t2(c"C",t1(c"typedef")), return-type ) {
-                  std-c-typedef-name-index = std-c-typedef-name-index.bind(name.into(type(String)), true);
-               };
-               ast-parsed-program = ast-parsed-program + Glb{
-                  mk-token(name), close(body)
-               };
+               if not(std-c-declare-dedup-index.has(name.into(type(String)))) {
+                  std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name.into(type(String)), true);
+                  if can-unify( t2(c"C",t1(c"typedef")), return-type ) {
+                     std-c-typedef-name-index = std-c-typedef-name-index.bind(name.into(type(String)), true);
+                  };
+                  ast-parsed-program = ast-parsed-program + Glb{
+                     mk-token(name), close(body)
+                  };
+               }
             );
             CBinaryOp{op:c"Declarator(", arg1=arg1, arg2=arg2 } => (
                (let name, let body) = std-c-sig-of-declarator(return-type, arg1, TAny, Some(arg2));
-               if can-unify( t2(c"C",t1(c"typedef")), return-type ) {
-                  std-c-typedef-name-index = std-c-typedef-name-index.bind(name.into(type(String)), true);
-               };
-               ast-parsed-program = ast-parsed-program + Glb{
-                  mk-token(name), close(body)
-               };
+               if not(std-c-declare-dedup-index.has(name.into(type(String)))) {
+                  std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name.into(type(String)), true);
+                  if can-unify( t2(c"C",t1(c"typedef")), return-type ) {
+                     std-c-typedef-name-index = std-c-typedef-name-index.bind(name.into(type(String)), true);
+                  };
+                  ast-parsed-program = ast-parsed-program + Glb{
+                     mk-token(name), close(body)
+                  };
+               }
             );
             CBinaryOp{op:c"Declarator*", ptr=arg1, arg2:CIdentifier{name=value} } => (
-               if can-unify( t2(c"C",t1(c"typedef")), return-type ) {
-                  std-c-typedef-name-index = std-c-typedef-name-index.bind(name, true);
-               };
-               return-type = std-c-decorate-pointer(return-type, ptr);
-               ast-parsed-program = ast-parsed-program + Glb{
-                  mk-token(name), close(App{ false,
-                     close(Lit{c":", mk-token(c":")}),
-                     close(App{ false,
-                        close(Var{c"__uninitialized", mk-token(c"__uninitialized")}),
-                        close(AType{ return-type })
+               if not(std-c-declare-dedup-index.has(name)) {
+                  std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name, true);
+                  if can-unify( t2(c"C",t1(c"typedef")), return-type ) {
+                     std-c-typedef-name-index = std-c-typedef-name-index.bind(name, true);
+                  };
+                  return-type = std-c-decorate-pointer(return-type, ptr);
+                  ast-parsed-program = ast-parsed-program + Glb{
+                     mk-token(name), close(App{ false,
+                        close(Lit{c":", mk-token(c":")}),
+                        close(App{ false,
+                           close(Var{c"__uninitialized", mk-token(c"__uninitialized")}),
+                           close(AType{ return-type })
+                        })
                      })
-                  })
-               };
+                  };
+               }
             );
             _ => print("Unsupported C Declaration Init\n\{init}\n");
          }};
