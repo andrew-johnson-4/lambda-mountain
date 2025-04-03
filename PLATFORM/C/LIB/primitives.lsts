@@ -1,4 +1,7 @@
 
+# TODO remove after porting to new C frontend
+type "C_regex__t_*" => C<"regex_t">[];
+
 declare-binop( mov, raw-type(datatype-rhs), raw-type(datatype-lhs), raw-type(Nil), ( l"({"; y; l"="; x; l";({});})"; ) );
 
 declare-unop( branchtrue, raw-type(Nil), raw-type(BranchConditional), l"1" );
