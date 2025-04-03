@@ -847,6 +847,7 @@ let std-c-parse-struct-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<
    } else {
       let decl = std-c-parse-declarator(tokens); tokens = decl.second;
       let ce = if std-c-can-take(tokens,":") {
+         tokens = std-c-take-expect(tokens, ":");
          let ce-next = std-c-parse-constant-expression(tokens); tokens = ce-next.second;
          ce-next.first;
       } else no;
