@@ -9,6 +9,7 @@ compile-global-c-main-term := ASTEOF;
 
 compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
    (let kt (typeof term))
+   (print 'Compile\sGlobal\s_s)(print k)(print '\s:\s_s)(print kt)(print '\n_s)(print term)(print '\n_s)
    (match term (
       ()
       ( (Abs( lhs rhs tlt )) (
