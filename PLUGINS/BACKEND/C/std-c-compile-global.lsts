@@ -3,7 +3,6 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
    if k == c"main" {
       compile-global-c-has-main = true;
    };
-   print("Compile Global \{k} : \{typeof(term)}\n");
    match term {
       App{left:Lit{key:c":"}, right:App{left:Var{key:c"__uninitialized"}, right:AType{tt=tt}}} => (
          (let pre-decl, let post-decl) = std-c-mangle-declaration(tt);

@@ -66,15 +66,8 @@ let std-c-declare(t: CTerm): Nil = (
                   if can-unify( t2(c"C",t1(c"typedef")), return-type ) {
                      std-c-typedef-name-index = std-c-typedef-name-index.bind(name.into(type(String)), true);
                   };
-                  return-type = std-c-decorate-pointer(return-type, ptr);
                   ast-parsed-program = ast-parsed-program + Glb{
-                     mk-token(name), close(App{ false,
-                        close(Lit{c":", mk-token(c":")}),
-                        close(App{ false,
-                           close(Var{c"__uninitialized", mk-token(c"__uninitialized")}),
-                           close(AType{ return-type && t1(c"C-FFI") })
-                        })
-                     })
+                     mk-token(name), close(body)
                   };
                }
             );
