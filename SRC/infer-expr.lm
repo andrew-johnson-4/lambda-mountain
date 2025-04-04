@@ -282,11 +282,6 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
             (let def (defof-var( term tctx (var-name-if-var l) arg-type )))
             (set var-to-def-index (.bind( var-to-def-index term def )))
          ) ())
-         (if (==( (var-name-if-var l) 'fopen_s )) (
-            (print 'fopen\s:\s_s)(print(typeof l))(print '\n_s)
-            (print 'fopen\sarg\s:\s_s)(print(typeof r))(print '\n_s)
-            (print 'fopen\sreturn\s:\s_s)(print(typeof term))(print '\n_s)
-         ) ())
       ))
       ( (Abs( lhs rhs tlt )) (
          (set tctx (infer-ctx( tctx lhs )))
