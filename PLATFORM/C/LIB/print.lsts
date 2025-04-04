@@ -1,10 +1,10 @@
 
 let print(e: DefaultPrintable): Nil = (
-   print( stdout(), e );
+   print( $"io::file::stdout"(), e );
 );
 
 let eprint(e: DefaultPrintable): Nil = (
-   print( stderr(), e );
+   print( $"io::file::stderr"(), e );
 );
 
 let fprint(io: IO::File, e: DefaultPrintable): Nil = (
