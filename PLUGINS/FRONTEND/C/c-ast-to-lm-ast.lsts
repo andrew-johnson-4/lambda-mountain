@@ -210,6 +210,12 @@ let std-c-declare-function(specifiers: CTerm, declarator: CTerm, declaration-lis
    ast-parsed-program = ast-parsed-program + symbol;
 );
 
+let std-c-fragment-of-struct-definition-body(body: CTerm): CString = (
+   match body {
+      _ => fail("TODO: std-c-fragment-of-struct-definition-body \{body}\n");
+   }
+);
+
 let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
    match specifiers {
       CMaybe{value:Some{content=content}} => std-c-type-of-specifiers(content);
@@ -218,12 +224,18 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
       CType1{value=value} => ( t2(c"C",t1(untern(value))), TAny );
       CBinaryOp{op:c"struct", arg1:CIdentifier{name=value}, decl=arg2} => (
          let cname = if name=="" then uuid() else name.into(type(CString));
-         ast-parsed-program = ast-parsed-program + Glb{
-            mk-token(uuid()), close(
-               mk-lit(c"struct " + cname + c"{};\n").ascript(
-                  t1(c"C-Fragment") && t1(c"C-FFI")
-               )
-            )
+         print("TODO \{cname} = \{decl}\n");
+         match decl {
+            CMaybe{value:None{}} => ();
+            CMaybe{value:Some{def=content}} => (
+               ast-parsed-program = ast-parsed-program + Glb{
+                  mk-token(uuid()), close(
+                     mk-lit(c"struct " + cname + c"{" + std-c-fragment-of-struct-definition-body(def) + c"};\n").ascript(
+                        t1(c"C-Fragment") && t1(c"C-FFI")
+                     )
+                  )
+               };
+            );
          };
          (t2(c"C",t1(c"struct " + cname)), TAny)
       );
