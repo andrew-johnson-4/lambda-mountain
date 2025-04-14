@@ -218,7 +218,13 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
       CType1{value=value} => ( t2(c"C",t1(untern(value))), TAny );
       CBinaryOp{op:c"struct", arg1:CIdentifier{name=value}, decl=arg2} => (
          let cname = if name=="" then uuid() else name.into(type(CString));
-         print("TODO typedef C struct \{cname} \{decl}\n");
+         ast-parsed-program = ast-parsed-program + Glb{
+            mk-token(uuid()), close(
+               mk-lit(c"struct " + cname + c"{};\n").ascript(
+                  t1(c"C-Fragment") && t1(c"C-FFI")
+               )
+            )
+         };
          (t2(c"C",t1(c"struct " + cname)), TAny)
       );
       CBinaryOp{op:c"union", arg1:CIdentifier{name=value}, decl=arg2} => (
