@@ -5,6 +5,9 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
    };
    match term {
       App{left:Lit{key:c":"}, right:App{left:Var{key:c"__uninitialized"}, right:AType{tt=tt}}} => (
+         if can-unify( t2(c"C",t1(c"typedef")), tt ) {
+            print("typedef \{k} = \{tt}\n");
+         }; 
          (let pre-decl, let post-decl) = std-c-mangle-declaration(tt);
          let text = SNil;
          text = text + pre-decl;
