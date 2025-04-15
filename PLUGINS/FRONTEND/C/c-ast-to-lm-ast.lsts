@@ -215,31 +215,42 @@ let std-c-fragment-of-struct-definition-body(body: CTerm): CString = (
       CUnaryPrefix{op:c"StructDeclarator", arg=arg} => (
          std-c-fragment-of-struct-definition-body(arg)
       );
+      CUnaryPrefix{op:c"sizeof", arg=arg} => (
+         c"sizeof(" + std-c-fragment-of-struct-definition-body(arg) + c")"
+      );
       CBinaryOp{op:c"Declarator[", arg1:CIdentifier{id=value}, arg2=arg2} => (
          id.into(type(CString)) + c"[" + std-c-fragment-of-struct-definition-body(arg2) + c"]"
       );
       CBinaryOp{op:c"Declarator*", arg2=arg2} => (
          c"*" + std-c-fragment-of-struct-definition-body(arg2)
       );
-      CBinaryOp{op:c"-", arg1=arg1 arg2=arg2} => (
+      CBinaryOp{op:c"TypeName", spec=arg1, arg2=arg2} => (
+         (let return-type, let misc-type) = std-c-type-of-specifiers(spec);
+         clone-rope(std-c-mangle-type(return-type))
+      );
+      CBinaryOp{op:c"-", arg1=arg1, arg2=arg2} => (
          c"(" + std-c-fragment-of-struct-definition-body(arg1) + c"-" + std-c-fragment-of-struct-definition-body(arg2) + c")"
       );
-      CBinaryOp{op:c"+", arg1=arg1 arg2=arg2} => (
+      CBinaryOp{op:c"+", arg1=arg1, arg2=arg2} => (
          c"(" + std-c-fragment-of-struct-definition-body(arg1) + c"+" + std-c-fragment-of-struct-definition-body(arg2) + c")"
       );
-      CBinaryOp{op:c"*", arg1=arg1 arg2=arg2} => (
+      CBinaryOp{op:c"*", arg1=arg1, arg2=arg2} => (
          c"(" + std-c-fragment-of-struct-definition-body(arg1) + c"*" + std-c-fragment-of-struct-definition-body(arg2) + c")"
       );
-      CBinaryOp{op:c"/", arg1=arg1 arg2=arg2} => (
+      CBinaryOp{op:c"/", arg1=arg1, arg2=arg2} => (
          c"(" + std-c-fragment-of-struct-definition-body(arg1) + c"/" + std-c-fragment-of-struct-definition-body(arg2) + c")"
       );
-      CBinaryOp{op:c"%", arg1=arg1 arg2=arg2} => (
+      CBinaryOp{op:c"%", arg1=arg1, arg2=arg2} => (
          c"(" + std-c-fragment-of-struct-definition-body(arg1) + c"%" + std-c-fragment-of-struct-definition-body(arg2) + c")"
       );
       CBinaryOp{op:c"StructDeclaration", spec=arg1, decl=arg2} => (
          (let return-type, let misc-type) = std-c-type-of-specifiers(spec);
          clone-rope(std-c-mangle-type(return-type)) + c" " + std-c-fragment-of-struct-definition-body(decl) + c";"
       );
+      CBinaryOp{op:c"StructDeclarator:", arg1=arg1, arg2=arg2} => (
+         std-c-fragment-of-struct-definition-body(arg1) + c" : " + std-c-fragment-of-struct-definition-body(arg2)
+      );
+      CInteger{value=value} => value.into(type(CString));
       CIdentifier{value=value} => value.into(type(CString));
       CList{decls=value} => (
          let inner = c"";
