@@ -149,7 +149,8 @@ let std-c-sig-of-params-list(params: List<CTerm>): AST = (
             return = pe;
          }
       );
-      _ => print("std-c-sig-of-params-list: Unexpected Parameter \{p}\n");
+      _ => ();
+      #_ => print("std-c-sig-of-params-list: Unexpected Parameter \{p}\n");
    }};
    if non-zero(return) then return else ASTNil
 );
@@ -158,7 +159,8 @@ let std-c-sig-of-declarator(return-type: Type, declarator: CTerm, misc-type: Typ
    let params = match ps {
       None{} => ASTNil;
       Some{content:CList{value=value}} => std-c-sig-of-params-list(value);
-      Some{content=content} => (print("std-c-sig-of-declarator unrecognized params \{content}\n"); ASTNil);
+      #Some{content=content} => (print("std-c-sig-of-declarator unrecognized params \{content}\n"); ASTNil);
+      Some{content=content} => ASTNil;
    };
    match declarator {
       CBinaryOp{op:c"Declarator*", ptr=arg1, arg2:CIdentifier{name=value}} => (
