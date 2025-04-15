@@ -276,7 +276,7 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
          if cname == c"_G_fpos_t" then ()
          else if cname == c"_G_fpos64_t" then ()
          else if cname == c"_IO_FILE" then ()
-         match decl {
+         else match decl {
             CMaybe{value:None{}} => ();
             CMaybe{value:Some{def=content}} => (
                ast-parsed-program = ast-parsed-program + Glb{
