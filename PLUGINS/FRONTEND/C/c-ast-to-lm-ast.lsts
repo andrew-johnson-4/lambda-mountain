@@ -100,7 +100,7 @@ let std-c-sig-of-params-list(params: List<CTerm>): AST = (
    let return = ASTEOF;
    for p in params { match p {
       CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CIdentifier{name=value}} => (
-         name = name + "_"; # C names can end with _s or other literal type suffixes
+         name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          let pe = App{ false,
             close(Lit{c":", mk-token(c":")}),
@@ -116,7 +116,7 @@ let std-c-sig-of-params-list(params: List<CTerm>): AST = (
          }
       );
       CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CBinaryOp{op:c"Declarator*",ptr=arg1,arg2:CIdentifier{name=value}}} => (
-         name = name + "_"; # C names can end with _s or other literal type suffixes
+         name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          return-type = std-c-decorate-pointer(return-type, ptr);
          let pe = App{ false,
@@ -133,7 +133,7 @@ let std-c-sig-of-params-list(params: List<CTerm>): AST = (
          }
       );
       CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CTernaryOp{op:c"Declarator[",arg1:CIdentifier{name=value}}} => (
-         name = name + "_"; # C names can end with _s or other literal type suffixes
+         name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          return-type = t3(c"Array", return-type, TAny);
          let pe = App{ false,
@@ -149,7 +149,8 @@ let std-c-sig-of-params-list(params: List<CTerm>): AST = (
             return = pe;
          }
       );
-      _ => print("std-c-sig-of-params-list: Unexpected Parameter \{p}\n");
+      _ => ();
+      #_ => print("std-c-sig-of-params-list: Unexpected Parameter \{p}\n");
    }};
    if non-zero(return) then return else ASTNil
 );
@@ -158,7 +159,8 @@ let std-c-sig-of-declarator(return-type: Type, declarator: CTerm, misc-type: Typ
    let params = match ps {
       None{} => ASTNil;
       Some{content:CList{value=value}} => std-c-sig-of-params-list(value);
-      Some{content=content} => (print("std-c-sig-of-declarator unrecognized params \{content}\n"); ASTNil);
+      #Some{content=content} => (print("std-c-sig-of-declarator unrecognized params \{content}\n"); ASTNil);
+      Some{content=content} => ASTNil;
    };
    match declarator {
       CBinaryOp{op:c"Declarator*", ptr=arg1, arg2:CIdentifier{name=value}} => (
@@ -210,6 +212,61 @@ let std-c-declare-function(specifiers: CTerm, declarator: CTerm, declaration-lis
    ast-parsed-program = ast-parsed-program + symbol;
 );
 
+let std-c-fragment-of-struct-definition-body(body: CTerm): CString = (
+   match body {
+      CUnaryPrefix{op:c"StructDeclarator", arg=arg} => (
+         std-c-fragment-of-struct-definition-body(arg)
+      );
+      CUnaryPrefix{op:c"sizeof", arg=arg} => (
+         c"sizeof(" + std-c-fragment-of-struct-definition-body(arg) + c")"
+      );
+      CBinaryOp{op:c"Declarator[", arg1:CIdentifier{id=value}, arg2=arg2} => (
+         id.into(type(CString)) + c"[" + std-c-fragment-of-struct-definition-body(arg2) + c"]"
+      );
+      CBinaryOp{op:c"Declarator*", arg2=arg2} => (
+         c"*" + std-c-fragment-of-struct-definition-body(arg2)
+      );
+      CBinaryOp{op:c"TypeName", spec=arg1, arg2=arg2} => (
+         (let return-type, let misc-type) = std-c-type-of-specifiers(spec);
+         clone-rope(std-c-mangle-type(return-type))
+      );
+      CBinaryOp{op:c"-", arg1=arg1, arg2=arg2} => (
+         c"(" + std-c-fragment-of-struct-definition-body(arg1) + c"-" + std-c-fragment-of-struct-definition-body(arg2) + c")"
+      );
+      CBinaryOp{op:c"+", arg1=arg1, arg2=arg2} => (
+         c"(" + std-c-fragment-of-struct-definition-body(arg1) + c"+" + std-c-fragment-of-struct-definition-body(arg2) + c")"
+      );
+      CBinaryOp{op:c"*", arg1=arg1, arg2=arg2} => (
+         c"(" + std-c-fragment-of-struct-definition-body(arg1) + c"*" + std-c-fragment-of-struct-definition-body(arg2) + c")"
+      );
+      CBinaryOp{op:c"/", arg1=arg1, arg2=arg2} => (
+         c"(" + std-c-fragment-of-struct-definition-body(arg1) + c"/" + std-c-fragment-of-struct-definition-body(arg2) + c")"
+      );
+      CBinaryOp{op:c"%", arg1=arg1, arg2=arg2} => (
+         c"(" + std-c-fragment-of-struct-definition-body(arg1) + c"%" + std-c-fragment-of-struct-definition-body(arg2) + c")"
+      );
+      CBinaryOp{op:c"StructDeclaration", spec=arg1, decl=arg2} => (
+         (let return-type, let misc-type) = std-c-type-of-specifiers(spec);
+         c"\t" + clone-rope(std-c-mangle-type(return-type)) + c" " + std-c-fragment-of-struct-definition-body(decl) + c";\n"
+      );
+      CBinaryOp{op:c"StructDeclarator:", arg1=arg1, arg2=arg2} => (
+         std-c-fragment-of-struct-definition-body(arg1) + c" : " + std-c-fragment-of-struct-definition-body(arg2)
+      );
+      CInteger{value=value} => value.into(type(CString));
+      CIdentifier{value=value} => value.into(type(CString));
+      CList{decls=value} => (
+         let inner = c"";
+         for sd in decls {
+            inner = inner + std-c-fragment-of-struct-definition-body(sd);
+         }; inner
+      );
+      _ => (
+         fail("TODO: std-c-fragment-of-struct-definition-body \{body}\n");
+         c""
+      );
+   }
+);
+
 let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
    match specifiers {
       CMaybe{value:Some{content=content}} => std-c-type-of-specifiers(content);
@@ -218,18 +275,43 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
       CType1{value=value} => ( t2(c"C",t1(untern(value))), TAny );
       CBinaryOp{op:c"struct", arg1:CIdentifier{name=value}, decl=arg2} => (
          let cname = if name=="" then uuid() else name.into(type(CString));
-         print("TODO typedef C struct \{cname} \{decl}\n");
-         (t1(cname), TAny)
+         if cname == c"_G_fpos_t" then ()
+         else if cname == c"_G_fpos64_t" then ()
+         else if cname == c"_IO_FILE" then ()
+         else if cname == c"re_pattern_buffer" then ()
+         else match decl {
+            CMaybe{value:None{}} => ();
+            CMaybe{value:Some{def=content}} => (
+               ast-parsed-program = ast-parsed-program + Glb{
+                  mk-token(uuid()), close(
+                     mk-lit(c"struct " + cname + c"{\n" + std-c-fragment-of-struct-definition-body(def) + c"};\n").ascript(
+                        t1(c"C-Fragment") && t1(c"C-FFI")
+                     )
+                  )
+               };
+            );
+         };
+         (t2(c"C",t1(c"struct " + cname)), TAny)
       );
       CBinaryOp{op:c"union", arg1:CIdentifier{name=value}, decl=arg2} => (
          let cname = if name=="" then uuid() else name.into(type(CString));
-         print("TODO typedef C union \{cname} \{decl}\n");
-         (t1(cname), TAny)
+         match decl {
+            CMaybe{value:None{}} => ();
+            CMaybe{value:Some{def=content}} => (
+               ast-parsed-program = ast-parsed-program + Glb{
+                  mk-token(uuid()), close(
+                     mk-lit(c"union " + cname + c"{\n" + std-c-fragment-of-struct-definition-body(def) + c"};\n").ascript(
+                        t1(c"C-Fragment") && t1(c"C-FFI")
+                     )
+                  )
+               };
+            );
+         };
+         (t2(c"C",t1(c"union " + cname)), TAny)
       );
       CBinaryOp{op:c"enum", arg1:CIdentifier{name=value}, decl=arg2} => (
          let cname = if name=="" then uuid() else name.into(type(CString));
-         print("TODO typedef C enum \{cname} \{decl}\n");
-         (t1(cname), TAny)
+         (t2(c"C",t1(c"enum " + cname)), TAny)
       );
       _ => fail("Unsupported C Specifiers:\n\{specifiers}\n");
    };
