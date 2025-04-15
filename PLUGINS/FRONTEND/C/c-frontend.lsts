@@ -14,12 +14,6 @@ let c-frontend(fp: CString): Nil = (
    };
 
    let file-contents = read-file(untern(tmp));
-   print("C File Contents: \{fp}\n");
-   let line-no = 0_u64;
-   for line in file-contents.into(type(String)).split("\n") {
-      print("Line \{line-no+1}: \{line}\n");
-      line-no = line-no + 1;
-   };
    let tokens = std-c-tokenize-string(fp, file-contents);
    std-c-parse(tokens);
 );
