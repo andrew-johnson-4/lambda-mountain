@@ -2,6 +2,7 @@
 import stdio.h;
 import stdlib.h;
 import string.h;
+import regex.h;
 
 strcmp := λ: FFI(: l U8[])(: r U8[]). (: __uninitialized I32);
 memcmp := λ: FFI(: l ?[])(: r ?[])(: len U64). (: __uninitialized U32);

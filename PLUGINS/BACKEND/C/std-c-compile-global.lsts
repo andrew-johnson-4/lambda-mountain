@@ -7,7 +7,8 @@ let std-c-force-import-clib(lib: CString): Nil = (
 
 let std-c-finish-forced-imports(): S = (
    (if std-c-force-imports.has(c"stdlib.h") then SAtom{c"#include <stdlib.h>\n"} else SNil{}) +
-   (if std-c-force-imports.has(c"stdio.h") then SAtom{c"#include <stdio.h>\n"} else SNil{})
+   (if std-c-force-imports.has(c"stdio.h") then SAtom{c"#include <stdio.h>\n"} else SNil{}) +
+   (if std-c-force-imports.has(c"regex.h") then SAtom{c"#include <regex.h>\n"} else SNil{})
 );
 
 let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
@@ -95,6 +96,9 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
    else if k==c"__compar_fn_t" then std-c-force-import-clib(c"stdlib.h")
    else if k==c"__fsid_t" then std-c-force-import-clib(c"stdlib.h")
    else if k==c"__mbstate_t" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"regexec" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"regcomp" then std-c-force-import-clib(c"regex.h")
+   else if k==c"regexec" then std-c-force-import-clib(c"regex.h")
    else match term {
       App{left:Lit{key:c":"}, right:App{left:Var{key:c"__uninitialized"}, right:AType{tt=tt}}} => (
          (let pre-decl, let post-decl) = std-c-mangle-declaration(tt);
