@@ -1,9 +1,28 @@
 
+let std-c-force-imports = {} :: HashtableEq<CString,Bool>;
+
+let std-c-force-import-clib(lib: CString): Nil = (
+   std-c-force-imports = std-c-force-imports.bind(lib, true);
+);
+
+let std-c-finish-forced-imports(): S = (
+   (if std-c-force-imports.has(c"stdlib.h") then SAtom{c"#include <stdlib.h>\n"} else SNil{}) +
+   (if std-c-force-imports.has(c"stdio.h") then SAtom{c"#include <stdlib.h>\n"} else SNil{})
+);
+
 let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
    if k == c"main" {
       compile-global-c-has-main = true;
    };
-   match term {
+   if k==c"abort" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"scanf" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"fscanf" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"sscanf" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"printf" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"fprintf" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"sprintf" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"snprintf" then std-c-force-import-clib(c"stdio.h")
+   else match term {
       App{left:Lit{key:c":"}, right:App{left:Var{key:c"__uninitialized"}, right:AType{tt=tt}}} => (
          (let pre-decl, let post-decl) = std-c-mangle-declaration(tt);
          let text = SNil;
@@ -60,7 +79,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             text = text + SAtom{k};
             text = text + SAtom{c"("};
             text = text + std-c-compile-function-args(ctx, lhs);
-            text = text + SAtom{c");"};
+            text = text + SAtom{c");\n"};
             assemble-header-section = assemble-header-section + text;
          };
 
@@ -82,7 +101,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
 
             let inner-expr = std-c-compile-expr( ctx, rhs, false );
             text = text + inner-expr.get(c"expression");
-            assemble-text-section = assemble-text-section + text;
+            assemble-text-section = assemble-text-section + text + SAtom{"\n"};
          };
       );
       t => (
