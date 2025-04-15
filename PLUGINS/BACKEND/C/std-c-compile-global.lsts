@@ -7,7 +7,7 @@ let std-c-force-import-clib(lib: CString): Nil = (
 
 let std-c-finish-forced-imports(): S = (
    (if std-c-force-imports.has(c"stdlib.h") then SAtom{c"#include <stdlib.h>\n"} else SNil{}) +
-   (if std-c-force-imports.has(c"stdio.h") then SAtom{c"#include <stdlib.h>\n"} else SNil{})
+   (if std-c-force-imports.has(c"stdio.h") then SAtom{c"#include <stdio.h>\n"} else SNil{})
 );
 
 let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
@@ -22,6 +22,45 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
    else if k==c"fprintf" then std-c-force-import-clib(c"stdio.h")
    else if k==c"sprintf" then std-c-force-import-clib(c"stdio.h")
    else if k==c"snprintf" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"vfprintf" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"vprintf" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"vsprintf" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"vsnprintf" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"vfscanf" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"vfscanf" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"vscanf" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"vsscanf" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"fgetc" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"getc" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"getchar" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"fputc" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"putc" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"putchar" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"fgets" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"fputs" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"ungetc" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"fread" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"fwrite" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"fseek" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"ftell" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"rewind" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"fgetpos" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"fsetpos" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"clearerr" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"feof" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"ferror" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"perror" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"div" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"ldiv" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"lldiv" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"mblen" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"mbtowc" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"mbtowcs" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"mbstowcs" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"wcstombs" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"register_t" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"bsearch" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"qsort" then std-c-force-import-clib(c"stdlib.h")
    else match term {
       App{left:Lit{key:c":"}, right:App{left:Var{key:c"__uninitialized"}, right:AType{tt=tt}}} => (
          (let pre-decl, let post-decl) = std-c-mangle-declaration(tt);
@@ -101,7 +140,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
 
             let inner-expr = std-c-compile-expr( ctx, rhs, false );
             text = text + inner-expr.get(c"expression");
-            assemble-text-section = assemble-text-section + text + SAtom{"\n"};
+            assemble-text-section = assemble-text-section + text + SAtom{c"\n"};
          };
       );
       t => (

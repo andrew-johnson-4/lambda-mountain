@@ -100,7 +100,7 @@ let std-c-sig-of-params-list(params: List<CTerm>): AST = (
    let return = ASTEOF;
    for p in params { match p {
       CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CIdentifier{name=value}} => (
-         name = name + "_"; # C names can end with _s or other literal type suffixes
+         name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          let pe = App{ false,
             close(Lit{c":", mk-token(c":")}),
@@ -116,7 +116,7 @@ let std-c-sig-of-params-list(params: List<CTerm>): AST = (
          }
       );
       CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CBinaryOp{op:c"Declarator*",ptr=arg1,arg2:CIdentifier{name=value}}} => (
-         name = name + "_"; # C names can end with _s or other literal type suffixes
+         name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          return-type = std-c-decorate-pointer(return-type, ptr);
          let pe = App{ false,
@@ -133,7 +133,7 @@ let std-c-sig-of-params-list(params: List<CTerm>): AST = (
          }
       );
       CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CTernaryOp{op:c"Declarator[",arg1:CIdentifier{name=value}}} => (
-         name = name + "_"; # C names can end with _s or other literal type suffixes
+         name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          return-type = t3(c"Array", return-type, TAny);
          let pe = App{ false,
