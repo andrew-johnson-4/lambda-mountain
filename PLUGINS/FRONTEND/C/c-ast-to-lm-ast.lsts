@@ -245,7 +245,7 @@ let std-c-fragment-of-struct-definition-body(body: CTerm): CString = (
       );
       CBinaryOp{op:c"StructDeclaration", spec=arg1, decl=arg2} => (
          (let return-type, let misc-type) = std-c-type-of-specifiers(spec);
-         clone-rope(std-c-mangle-type(return-type)) + c" " + std-c-fragment-of-struct-definition-body(decl) + c";"
+         c"\t" + clone-rope(std-c-mangle-type(return-type)) + c" " + std-c-fragment-of-struct-definition-body(decl) + c";\n"
       );
       CBinaryOp{op:c"StructDeclarator:", arg1=arg1, arg2=arg2} => (
          std-c-fragment-of-struct-definition-body(arg1) + c" : " + std-c-fragment-of-struct-definition-body(arg2)
@@ -273,13 +273,12 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
       CType1{value=value} => ( t2(c"C",t1(untern(value))), TAny );
       CBinaryOp{op:c"struct", arg1:CIdentifier{name=value}, decl=arg2} => (
          let cname = if name=="" then uuid() else name.into(type(CString));
-         print("TODO \{cname} = \{decl}\n");
          match decl {
             CMaybe{value:None{}} => ();
             CMaybe{value:Some{def=content}} => (
                ast-parsed-program = ast-parsed-program + Glb{
                   mk-token(uuid()), close(
-                     mk-lit(c"struct " + cname + c"{" + std-c-fragment-of-struct-definition-body(def) + c"};\n").ascript(
+                     mk-lit(c"struct " + cname + c"{\n" + std-c-fragment-of-struct-definition-body(def) + c"};\n").ascript(
                         t1(c"C-Fragment") && t1(c"C-FFI")
                      )
                   )
