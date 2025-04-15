@@ -273,6 +273,9 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
       CType1{value=value} => ( t2(c"C",t1(untern(value))), TAny );
       CBinaryOp{op:c"struct", arg1:CIdentifier{name=value}, decl=arg2} => (
          let cname = if name=="" then uuid() else name.into(type(CString));
+         if cname == c"_G_fpos_t" then ()
+         else if cname == c"_G_fpos64_t" then ()
+         else if cname == c"_IO_FILE" then ()
          match decl {
             CMaybe{value:None{}} => ();
             CMaybe{value:Some{def=content}} => (
