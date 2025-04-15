@@ -289,7 +289,18 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
       );
       CBinaryOp{op:c"union", arg1:CIdentifier{name=value}, decl=arg2} => (
          let cname = if name=="" then uuid() else name.into(type(CString));
-         print("TODO typedef C union \{cname} \{decl}\n");
+         match decl {
+            CMaybe{value:None{}} => ();
+            CMaybe{value:Some{def=content}} => (
+               ast-parsed-program = ast-parsed-program + Glb{
+                  mk-token(uuid()), close(
+                     mk-lit(c"union " + cname + c"{\n" + std-c-fragment-of-struct-definition-body(def) + c"};\n").ascript(
+                        t1(c"C-Fragment") && t1(c"C-FFI")
+                     )
+                  )
+               };
+            );
+         };
          (t2(c"C",t1(c"union " + cname)), TAny)
       );
       CBinaryOp{op:c"enum", arg1:CIdentifier{name=value}, decl=arg2} => (
