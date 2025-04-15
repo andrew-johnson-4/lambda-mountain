@@ -61,6 +61,23 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
    else if k==c"register_t" then std-c-force-import-clib(c"stdlib.h")
    else if k==c"bsearch" then std-c-force-import-clib(c"stdlib.h")
    else if k==c"qsort" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"rand" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"system" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"getenv" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"strtold" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"strtol" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"strtoul" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"strtoll" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"strtoull" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"atof" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"atoi" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"atol" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"atoll" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"strtod" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"strtof" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"strtold" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"strtol" then std-c-force-import-clib(c"stdlib.h")
+   else if k==c"strtoul" then std-c-force-import-clib(c"stdlib.h")
    else match term {
       App{left:Lit{key:c":"}, right:App{left:Var{key:c"__uninitialized"}, right:AType{tt=tt}}} => (
          (let pre-decl, let post-decl) = std-c-mangle-declaration(tt);
