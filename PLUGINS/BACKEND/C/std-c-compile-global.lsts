@@ -99,6 +99,11 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
    else if k==c"regexec" then std-c-force-import-clib(c"stdlib.h")
    else if k==c"regcomp" then std-c-force-import-clib(c"regex.h")
    else if k==c"regexec" then std-c-force-import-clib(c"regex.h")
+   else if k==c"regfree" then std-c-force-import-clib(c"regex.h")
+   else if k==c"regerror" then std-c-force-import-clib(c"regex.h")
+   else if k==c"regmatch_t" then std-c-force-import-clib(c"regex.h")
+   else if k==c"regex_t" then std-c-force-import-clib(c"regex.h")
+   else if k==c"reg_errcode_t" then std-c-force-import-clib(c"regex.h")
    else match term {
       App{left:Lit{key:c":"}, right:App{left:Var{key:c"__uninitialized"}, right:AType{tt=tt}}} => (
          (let pre-decl, let post-decl) = std-c-mangle-declaration(tt);
