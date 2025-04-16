@@ -122,7 +122,7 @@ let std-c-nametypes-of-params-list(params: List<CTerm>, is-vararg: Bool): List<(
          return-type = t3(c"Array", return-type, sz-t);
          nametypes = cons((name, return-type), nametypes);
       );
-      CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CBinaryOp{op:c"Declarator(",decl=arg1,params=arg2}} => (
+      CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CBinaryOp{op:c"Declarator(",decl=arg1,arg2:CList{params=value}}} => (
          (let name, let base-arrow-type) = std-c-type-of-arrow(spec, decl, params);
          name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          nametypes = cons((name, base-arrow-type), nametypes);
@@ -149,11 +149,32 @@ let std-c-sig-of-params-list(params: List<CTerm>, is-vararg: Bool): AST = (
    if non-zero(return) then return else ASTNil
 );
 
-let std-c-type-of-arrow(spec: CTerm, decl: CTerm, params: CTerm): (CString, Type) = (
+let std-c-paramstype-of-params-list(params: List<CTerm>, is-vararg: Bool): Type = (
+   let nametypes = std-c-nametypes-of-params-list(params, is-vararg);
+   let return = TAny;
+   for Tuple{n=first, tt=second} in std-c-nametypes-of-params-list(params, is-vararg) {
+      if non-zero(return) {
+         return = t3(c"Cons", return, tt);
+      } else {
+         return = tt;
+      }
+   };
+   if non-zero(return) then return else t2(c"C",t1("void"))
+);
+
+let std-c-type-of-arrow(spec: CTerm, decl: CTerm, params: List<CTerm>): (CString, Type) = (
    (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
-   
+   let params-type = std-c-paramstype-of-params-list(params, false);
+   let base-arrow-type = t3(c"Arrow", params-type, return-type);
    (let name, let type-with-ptr) = std-c-nametype-of-decl(base-arrow-type, decl);
    (name, type-with-ptr)
+);
+
+let std-c-nametype-of-decl(base-type: Type, decl: CTerm): (CString, Type) = (
+   match decl {
+      CIdentifier{value=value} => (value, base-type);
+      _ => (fail("Unexpected std-c-nametype-of-decl \{decl}\n"); (c"", TAny))
+   }
 );
 
 let std-c-sig-of-declarator(return-type: Type, declarator: CTerm, misc-type: Type, ps: Maybe<CTerm>): (CString, AST) = (
