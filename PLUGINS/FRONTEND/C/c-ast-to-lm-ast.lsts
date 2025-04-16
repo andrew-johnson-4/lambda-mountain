@@ -96,64 +96,64 @@ let std-c-declare(t: CTerm): Nil = (
    };
 );
 
-let std-c-sig-of-params-list(params: List<CTerm>, is-vararg: Bool): AST = (
-   let return = ASTEOF;
+let std-c-nametypes-of-params-list(params: List<CTerm>, is-vararg: Bool): List<(CString,Type)> = (
+   let nametypes = [] :: List<(CString,Type)>;
    for p in params { match p {
       CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CIdentifier{name=value}} => (
-         name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
-         let pe = mk-var(name).ascript(return-type);
-         if non-zero(return) {
-            return = App{ false, close(return), close(pe) };
-         } else {
-            return = pe;
-         }
+         nametypes = cons((name, return-type), nametypes);
       );
       CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CBinaryOp{op:c"Declarator*",ptr=arg1,arg2:CIdentifier{name=value}}} => (
          name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          return-type = std-c-decorate-pointer(return-type, ptr);
-         let pe = mk-var(name).ascript(return-type);
-         if non-zero(return) {
-            return = App{ false, close(return), close(pe) };
-         } else {
-            return = pe;
-         }
+         nametypes = cons((name, return-type), nametypes);
       );
       CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CTernaryOp{op:c"Declarator[",arg1:CIdentifier{name=value}}} => (
          name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          return-type = t3(c"Array", return-type, TAny);
-         let pe = mk-var(name).ascript(return-type);
-         if non-zero(return) {
-            return = App{ false, close(return), close(pe) };
-         } else {
-            return = pe;
-         }
+         nametypes = cons((name, return-type), nametypes);
       );
       CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CBinaryOp{op:c"Declarator[",arg1:CIdentifier{name=value},sz=arg2}} => (
          name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          let sz-t = t2(c"C",t1(std-c-fragment-of-struct-definition-body(sz)));
          return-type = t3(c"Array", return-type, sz-t);
-         let pe = mk-var(name).ascript(return-type);
-         if non-zero(return) {
-            return = App{ false, close(return), close(pe) };
-         } else {
-            return = pe;
-         }
+         nametypes = cons((name, return-type), nametypes);
+      );
+      CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CBinaryOp{op:c"Declarator(",decl=arg1,params=arg2}} => (
+         (let name, let base-arrow-type) = std-c-type-of-arrow(spec, decl, params);
+         name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
+         nametypes = cons((name, base-arrow-type), nametypes);
       );
       _ => print("std-c-sig-of-params-list: Unexpected Parameter \{p}\n");
    }};
    if is-vararg {
-      let va = mk-var(uuid()).ascript(t2(c"C",t1(c"...")));
+      nametypes = cons((uuid(), t2(c"C",t1(c"..."))), nametypes);
+   };
+   nametypes.reverse
+);
+
+let std-c-sig-of-params-list(params: List<CTerm>, is-vararg: Bool): AST = (
+   let nametypes = std-c-nametypes-of-params-list(params, is-vararg);
+   let return = ASTEOF;
+   for Tuple{n=first, tt=second} in std-c-nametypes-of-params-list(params, is-vararg) {
+      let pe = mk-var(name).ascript(return-type);
       if non-zero(return) {
-         return = App{ false, close(return), close(va) };
+         return = mk-cons( return, pe );
       } else {
-         return = va;
+         return = pe;
       }
    };
    if non-zero(return) then return else ASTNil
+);
+
+let std-c-type-of-arrow(spec: CTerm, decl: CTerm, params: CTerm): (CString, Type) = (
+   (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
+   
+   (let name, let type-with-ptr) = std-c-nametype-of-decl(base-arrow-type, decl);
+   (name, type-with-ptr)
 );
 
 let std-c-sig-of-declarator(return-type: Type, declarator: CTerm, misc-type: Type, ps: Maybe<CTerm>): (CString, AST) = (
