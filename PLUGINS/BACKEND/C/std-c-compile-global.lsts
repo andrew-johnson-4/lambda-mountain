@@ -16,7 +16,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
       compile-global-c-has-main = true;
    };
    if k==c"abort" then std-c-force-import-clib(c"stdlib.h")
-   else if k==c"scanf" then std-c-force-import-clib(c"stdio.h")
+   else if k==c"scanf" && not(config-swap-c-frontend) then std-c-force-import-clib(c"stdio.h")
    else if k==c"fscanf" then std-c-force-import-clib(c"stdio.h")
    else if k==c"sscanf" then std-c-force-import-clib(c"stdio.h")
    else if k==c"printf" then std-c-force-import-clib(c"stdio.h")
