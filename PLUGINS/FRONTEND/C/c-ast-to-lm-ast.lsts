@@ -101,30 +101,30 @@ let std-c-nametypes-of-params-list(params: List<CTerm>, is-vararg: Bool): List<(
    for p in params { match p {
       CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CIdentifier{name=value}} => (
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
-         nametypes = cons((name, return-type), nametypes);
+         nametypes = cons((name.into(type(CString)), return-type), nametypes);
       );
       CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CBinaryOp{op:c"Declarator*",ptr=arg1,arg2:CIdentifier{name=value}}} => (
          name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          return-type = std-c-decorate-pointer(return-type, ptr);
-         nametypes = cons((name, return-type), nametypes);
+         nametypes = cons((name.into(type(CString)), return-type), nametypes);
       );
       CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CTernaryOp{op:c"Declarator[",arg1:CIdentifier{name=value}}} => (
          name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          return-type = t3(c"Array", return-type, TAny);
-         nametypes = cons((name, return-type), nametypes);
+         nametypes = cons((name.into(type(CString)), return-type), nametypes);
       );
       CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CBinaryOp{op:c"Declarator[",arg1:CIdentifier{name=value},sz=arg2}} => (
          name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          let sz-t = t2(c"C",t1(std-c-fragment-of-struct-definition-body(sz)));
          return-type = t3(c"Array", return-type, sz-t);
-         nametypes = cons((name, return-type), nametypes);
+         nametypes = cons((name.into(type(CString)), return-type), nametypes);
       );
       CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CBinaryOp{op:c"Declarator(",decl=arg1,arg2:CList{dparams=value}}} => (
          (let name, let base-arrow-type) = std-c-type-of-arrow(spec, decl, dparams);
-         name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
+         name = name + c"_" + uuid(); # C names can end with _s or other literal type suffixes
          nametypes = cons((name, base-arrow-type), nametypes);
       );
       _ => print("std-c-sig-of-params-list: Unexpected Parameter \{p}\n");
@@ -173,6 +173,7 @@ let std-c-type-of-arrow(spec: CTerm, decl: CTerm, params: List<CTerm>): (CString
 let std-c-nametype-of-decl(base-type: Type, decl: CTerm): (CString, Type) = (
    match decl {
       CIdentifier{value=value} => (value.into(type(CString)), base-type);
+      CBinaryOp{op:c"Declarator*",ptr=arg1,arg2:CIdentifier{value=value}} => (value.into(type(CString)), std-c-decorate-pointer(base-type, ptr));
       _ => (fail("Unexpected std-c-nametype-of-decl \{decl}\n"); (c"", TAny));
    }
 );
