@@ -7,6 +7,8 @@ let std-c-compile-function-args(ctx: FContext, lhs: AST): S = (
          text = text + SAtom{c","};
          if can-unify( t2(c"C",t1(c"...")), kt ) {
             text = text + SAtom{c"..."};
+         } else if can-unify( t2(c"C",t1(c"void")), kt ) {
+            text = text + SAtom{c"void"};
          } else {
             text = text + decl.first;
             text = text + SAtom{c" "};
@@ -20,6 +22,8 @@ let std-c-compile-function-args(ctx: FContext, lhs: AST): S = (
          let text = SNil{};
          if can-unify( t2(c"C",t1(c"...")), kt ) {
             text = text + SAtom{c"..."};
+         } else if can-unify( t2(c"C",t1(c"void")), kt ) {
+            text = text + SAtom{c"void"};
          } else {
             text = text + decl.first;
             text = text + SAtom{c" "};
