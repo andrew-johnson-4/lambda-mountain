@@ -24,6 +24,9 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TContext> = (
          ctx = union(unify-inner(lt, rt1), unify-inner(lt, rt2));
       );
 
+      # Ignore C Access Modifiers For Now
+      Tuple{ first:TGround{tag:c"C", parameters:[TGround{tag:c"const"}..]} } => yes;
+
       # Literal Constants
       Tuple{ first:TGround{tag:c"CONST"}, second:TGround{c=tag} } => (
          if c.is-digit || c==c"CONST" { ctx = yes; }
