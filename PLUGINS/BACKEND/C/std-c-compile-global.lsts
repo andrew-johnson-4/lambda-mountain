@@ -16,10 +16,6 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
       compile-global-c-has-main = true;
    };
    if k==c"abort" then std-c-force-import-clib(c"stdlib.h")
-   else if k==c"fread" then std-c-force-import-clib(c"stdio.h")
-   else if k==c"fwrite" then std-c-force-import-clib(c"stdio.h")
-   else if k==c"fseek" then std-c-force-import-clib(c"stdio.h")
-   else if k==c"ftell" then std-c-force-import-clib(c"stdio.h")
    else if k==c"rewind" then std-c-force-import-clib(c"stdio.h")
    else if k==c"fgetpos" then std-c-force-import-clib(c"stdio.h")
    else if k==c"fsetpos" then std-c-force-import-clib(c"stdio.h")

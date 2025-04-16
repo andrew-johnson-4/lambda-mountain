@@ -102,13 +102,7 @@ let std-c-sig-of-params-list(params: List<CTerm>, is-vararg: Bool): AST = (
       CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CIdentifier{name=value}} => (
          name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
-         let pe = App{ false,
-            close(Lit{c":", mk-token(c":")}),
-            close(App{ false,
-               close(Var{untern(name), mk-token(name)}),
-               close(AType{ return-type })
-            })
-         };
+         let pe = mk-var(name).ascript(return-type);
          if non-zero(return) {
             return = App{ false, close(return), close(pe) };
          } else {
@@ -119,13 +113,7 @@ let std-c-sig-of-params-list(params: List<CTerm>, is-vararg: Bool): AST = (
          name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          return-type = std-c-decorate-pointer(return-type, ptr);
-         let pe = App{ false,
-            close(Lit{c":", mk-token(c":")}),
-            close(App{ false,
-               close(Var{untern(name), mk-token(name)}),
-               close(AType{ return-type })
-            })
-         };
+         let pe = mk-var(name).ascript(return-type);
          if non-zero(return) {
             return = App{ false, close(return), close(pe) };
          } else {
@@ -136,13 +124,19 @@ let std-c-sig-of-params-list(params: List<CTerm>, is-vararg: Bool): AST = (
          name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          return-type = t3(c"Array", return-type, TAny);
-         let pe = App{ false,
-            close(Lit{c":", mk-token(c":")}),
-            close(App{ false,
-               close(Var{untern(name), mk-token(name)}),
-               close(AType{ return-type })
-            })
-         };
+         let pe = mk-var(name).ascript(return-type);
+         if non-zero(return) {
+            return = App{ false, close(return), close(pe) };
+         } else {
+            return = pe;
+         }
+      );
+      CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CBinaryOp{op:c"Declarator[",arg1:CIdentifier{name=value},sz=arg2}} => (
+         name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
+         (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
+         let sz-t = t2(c"C",t1(std-c-fragment-of-struct-definition-body(sz)));
+         return-type = t3(c"Array", return-type, sz-t);
+         let pe = mk-var(name).ascript(return-type);
          if non-zero(return) {
             return = App{ false, close(return), close(pe) };
          } else {
