@@ -96,7 +96,7 @@ let std-c-declare(t: CTerm): Nil = (
    };
 );
 
-let std-c-sig-of-params-list(params: List<CTerm>): AST = (
+let std-c-sig-of-params-list(params: List<CTerm>, is-vararg: Bool): AST = (
    let return = ASTEOF;
    for p in params { match p {
       CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CIdentifier{name=value}} => (
@@ -149,18 +149,25 @@ let std-c-sig-of-params-list(params: List<CTerm>): AST = (
             return = pe;
          }
       );
-      _ => ();
-      #_ => print("std-c-sig-of-params-list: Unexpected Parameter \{p}\n");
+      _ => print("std-c-sig-of-params-list: Unexpected Parameter \{p}\n");
    }};
+   if is-vararg {
+      let va = mk-var(uuid()).ascript(t2(c"C",t1(c"...")));
+      if non-zero(return) {
+         return = App{ false, close(return), close(va) };
+      } else {
+         return = va;
+      }
+   };
    if non-zero(return) then return else ASTNil
 );
 
 let std-c-sig-of-declarator(return-type: Type, declarator: CTerm, misc-type: Type, ps: Maybe<CTerm>): (CString, AST) = (
    let params = match ps {
       None{} => ASTNil;
-      Some{content:CList{value=value}} => std-c-sig-of-params-list(value);
-      #Some{content=content} => (print("std-c-sig-of-declarator unrecognized params \{content}\n"); ASTNil);
-      Some{content=content} => ASTNil;
+      Some{content:CList{value=value}} => std-c-sig-of-params-list(value, false);
+      Some{content:CUnaryPrefix{op:"ParameterTypeList...",arg:CList{value=value}}} => std-c-sig-of-params-list(value, true);
+      Some{content=content} => (print("std-c-sig-of-declarator unrecognized params \{content}\n"); ASTNil);
    };
    match declarator {
       CBinaryOp{op:c"Declarator*", ptr=arg1, arg2:CIdentifier{name=value}} => (
