@@ -149,7 +149,8 @@ let std-c-sig-of-params-list(params: List<CTerm>, is-vararg: Bool): AST = (
             return = pe;
          }
       );
-      _ => print("std-c-sig-of-params-list: Unexpected Parameter \{p}\n");
+      _ => ();
+      # _ => print("std-c-sig-of-params-list: Unexpected Parameter \{p}\n");
    }};
    if is-vararg {
       let va = mk-var(uuid()).ascript(t2(c"C",t1(c"...")));
