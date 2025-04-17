@@ -28,5 +28,3 @@ global-ctx                   := (: FCtxEOF FContext);
 parse-suffixes := (: LEOF List<Tuple<String,Type>>);
 
 stack-to-specialize          := (: LEOF List<StackToSpecialize>);
-
-config-swap-c-frontend       := True_u8;

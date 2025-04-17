@@ -15,7 +15,6 @@ import PLUGINS/BACKEND/C/compile-stack-call-push-args.lm;
 import PLUGINS/BACKEND/C/compile-stack-calls.lm;
 import PLUGINS/BACKEND/C/never-as-expr-type.lm;
 import PLUGINS/BACKEND/C/compile-c-function-args.lm;
-import PLUGINS/BACKEND/C/compile-c-text-header.lm;
 import PLUGINS/BACKEND/C/compile-c-typedef.lm;
 import PLUGINS/BACKEND/C/compile-finish.lm;
 import PLUGINS/BACKEND/C/compile-program-ordered.lm;
