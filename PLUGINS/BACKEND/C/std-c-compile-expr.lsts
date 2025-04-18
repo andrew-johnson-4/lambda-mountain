@@ -47,7 +47,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
             c"\\o" => mk-expression(c"(35)");
             c"\\`" => mk-expression(c"(39)");
             c"\\[" => mk-expression(c"(40)");
-            c"\\]" => mk-expression(c"(51)");
+            c"\\]" => mk-expression(c"(41)");
             c"\\:" => mk-expression(c"(59)");
             _ => (
                if typeof(t).is-t(c"L")
