@@ -11,15 +11,15 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       Lit{ key=key } => (
          if typeof(t).is-t(c"String") { compile-declare-cstring(key)
          } else if typeof(t).is-t(c"SmartString") { 
-            let guid = compile-smart-string-index.lookup(val,c"");
+            let guid = compile-smart-string-index.lookup(key,c"");
             if non-zero(guid) then mk-expression(guid) else {
                guid = uuid();
-               compile-smart-string-index = compile-smart-string-index.bind(val,guid);
+               compile-smart-string-index = compile-smart-string-index.bind(key,guid);
                let lit = mk-lit(key);
                ascript-normal(lit, t1(c"String"));
                let intern-ss = compile-stack-calls(ctx, c"intern", TAny, typeof(t), lit, 0, Used);
                assemble-header-section = assemble-header-section +
-               mangle-c-type(ltype) + SAtom{c" "} + SAtom{guid} + SAtom{c";\n"};
+               mangle-c-type(typeof(t)) + SAtom{c" "} + SAtom{guid} + SAtom{c";\n"};
                assemble-string-initializer-section = assemble-string-initializer-section +
                SAtom{guid} + SAtom{c"="} + intern-ss.get(c"expression") + SAtom{c";\n"};
                mk-expression(SAtom{guid});
@@ -27,16 +27,14 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          } else if typeof(t).is-t(c"Regex") {
             let rgx-id = uuid();
             assemble-header-section = assemble-header-section +
-            SAtom{c"regex_t "} + SAtom{rgx-id} + SAtom{c";\n"};
-            
+            SAtom{c"regex_t "} + SAtom{rgx-id} + SAtom{c";\n"};            
             assemble-global-initializer-section = assemble-global-initializer-section +
-            SAtom{c"{int return_code = regcomp(&"} + SAtom{rgx-id} + SAtom{c", "} +
-            escape-c-string(key) + SAtom{c", REG_EXTENDED); if(return_code){ fprintf(stderr,\"Could not compile regex.\"); exit(1);}};\n"};
-
+            SAtom{c"{int return_code = regcomp(&"} + SAtom{rgx-id} + SAtom{c", \""} +
+            escape-c-string(key) + SAtom{c"\", REG_EXTENDED); if(return_code){ fprintf(stderr,\"Could not compile regex.\"); exit(1);}};\n"};
             mk-expression(rgx-id);
          } else if typeof(t).with-only-class.is-lm-struct {
             let tag-index = index-of-tag(key);
-            mk-fragment.set(c"expression",
+            mk-expression(
                SAtom{c"({"} + mangle-c-type(typeof(t)) + SAtom{c" rvalue={"} +
                SAtom{to-string(tag-index)} + SAtom{c"};rvalue;})"}
             )
