@@ -1,7 +1,7 @@
 CC = cc
 
 dev: install-production
-	lm --swap-c-frontend SRC/index-index.lm
+	lm SRC/index-index.lm
 	cc tmp.c
 
 build: compile-production

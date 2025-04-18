@@ -6,9 +6,6 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
    (set.context( e (close ctx) ))
    (match term (
       ()
-      ( (AType _) (
-         (set e (.set( e 'expression_s (SAtom '0_s) )))
-      ))
       ( ASTNil (
          (set.type( e (denormalize(t1 'Nil_s)) ))
          (set e (.set( e 'expression_s (SAtom '\[{}\]_s) )))
@@ -332,6 +329,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             )))
          ))
       ))
+      ( _ (std-c-compile-expr( ctx term false )) )
    ))
    e
 ) Fragment);
