@@ -6,26 +6,6 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
    (set.context( e (close ctx) ))
    (match term (
       ()
-      ( (AType _) (
-         (set e (.set( e 'expression_s (SAtom '0_s) )))
-      ))
-      ( ASTNil (
-         (set.type( e (denormalize(t1 'Nil_s)) ))
-         (set e (.set( e 'expression_s (SAtom '\[{}\]_s) )))
-      ))
-      ( ASTEOF () )
-      ( (Var( id _ )) (
-         # TODO, this is being called instead of function
-         (let def (.lookup( var-to-def-index term ASTEOF )))
-         (if (not(non-zero def)) (
-            (exit-error( (+( 'Unable\sTo\sFind\sVariable\sIn\sContext\s_s id )) term ))
-         ) ())
-         (set e (.lookup( std-c-fragment-context def e )))
-         (if (not(non-zero e)) (
-            (exit-error( (+( 'Unable\sTo\sFind\sVariable\sFragment\sIn\sContext\s_s id )) term ))
-         ) ())
-         (set.context( e (close ctx) ))
-      ))
       ( (Lit( val _ )) (
          (let ltype (typeof term))
          (if (||( (||( (.is-t( ltype 'String_s )) (.is-t( ltype 'SmartString_s )) )) (.is-t( ltype 'Regex_s )) )) (
@@ -332,6 +312,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             )))
          ))
       ))
+      ( _ (set e (std-c-compile-expr( ctx term false ))) )
    ))
    e
 ) Fragment);
