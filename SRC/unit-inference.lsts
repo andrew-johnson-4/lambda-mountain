@@ -39,4 +39,3 @@ import SRC/index-concrete-type-instances.lm;
 import SRC/typecheck.lsts;
 import SRC/var-to-def-index.lsts;
 import SRC/reify-type-variables.lsts;
-import SRC/find-global-callable.lsts;
