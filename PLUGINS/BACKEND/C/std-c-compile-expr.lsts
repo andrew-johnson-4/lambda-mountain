@@ -9,7 +9,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          }; e
       );
       Lit{ key=key } => (
-         if typeof(t).is-t(c"String") { compile-declare-cstring(key)
+         if typeof(t).is-t(c"String") { mk-expression(key.escape-as-cstring)
          } else if typeof(t).is-t(c"SmartString") { 
             let guid = compile-smart-string-index.lookup(key,c"");
             if non-zero(guid) then mk-expression(guid) else {
@@ -29,8 +29,8 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
             assemble-header-section = assemble-header-section +
             SAtom{c"regex_t "} + SAtom{rgx-id} + SAtom{c";\n"};            
             assemble-global-initializer-section = assemble-global-initializer-section +
-            SAtom{c"{int return_code = regcomp(&"} + SAtom{rgx-id} + SAtom{c", \""} +
-            escape-c-string(key) + SAtom{c"\", REG_EXTENDED); if(return_code){ fprintf(stderr,\"Could not compile regex.\"); exit(1);}};\n"};
+            SAtom{c"{int return_code = regcomp(&"} + SAtom{rgx-id} + SAtom{c", "} +
+            key.escape-as-cstring + SAtom{c", REG_EXTENDED); if(return_code){ fprintf(stderr,\"Could not compile regex.\"); exit(1);}};\n"};
             mk-expression(rgx-id);
          } else if typeof(t).with-only-class.is-lm-struct {
             let tag-index = index-of-tag(key);
