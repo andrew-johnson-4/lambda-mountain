@@ -923,10 +923,13 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
          };
          let t = if lsts-parse-head(tokens) == c"{" {
             lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
-            let t-rest = lsts-parse-expression(tokens);
-            tokens = t-rest.second;
+            let true-expr = if lsts-parse-head(tokens) == c"}" then ASTNil else {
+               let t-rest = lsts-parse-expression(tokens);
+               tokens = t-rest.second;
+               t-rest.first;
+            };
             lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
-            t-rest.first;
+            true-expr;
          } else {
             let t-rest = lsts-parse-assign(tokens);
             tokens = t-rest.second;
@@ -937,10 +940,13 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
             lsts-parse-expect(c"else", tokens); tokens = tail(tokens);
             f = if lsts-parse-head(tokens) == c"{" {
                lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
-               let f-rest = lsts-parse-expression(tokens);
-               tokens = f-rest.second;
+               let false-expr = if lsts-parse-head(tokens) == c"}" then ASTNil else {
+                  let f-rest = lsts-parse-expression(tokens);
+                  tokens = f-rest.second;
+                  f-rest.first;
+               };
                lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
-               f-rest.first;
+               false-expr;
             } else {
                let f-rest = lsts-parse-small-expression(tokens);
                tokens = f-rest.second;
