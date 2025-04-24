@@ -6,6 +6,9 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
    (set.context( e (close ctx) ))
    (match term (
       ()
+      ( (App( (Lit( ':_s _ )) (App( (Lit( _ _ )) (AType tt) )) )) (
+         (set e (std-c-compile-expr( ctx term false )))
+      ))
       ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
          (set e (compile-expr( ctx t stack-offset used )))
       ))
