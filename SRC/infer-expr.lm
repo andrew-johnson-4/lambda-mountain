@@ -308,7 +308,7 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
          ))
       ))
       ( (Var( v vtk )) (
-         (let vt (denormalize(typeof-var( term tctx v ))))
+         (let vt (typeof-var( term tctx v )))
          (ascript-normal( term vt ))
          (let def (defof-var( term tctx v )))
          (set var-to-def-index (.bind( var-to-def-index term def )))

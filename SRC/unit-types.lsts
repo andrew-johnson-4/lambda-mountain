@@ -24,6 +24,7 @@ import SRC/is-t.lsts;
 import SRC/is-open.lsts;
 import SRC/is-arrow.lsts;
 import SRC/has-class.lsts;
+import SRC/is-var.lsts;
 
 # set operations
 import SRC/without-tag.lsts;

@@ -22,11 +22,6 @@ let denormalize-strong-inner(tt: Type): Type = (
    match tt {
       TAnd{left=left, right=right} => denormalize-strong-inner(left) && denormalize-strong-inner(right);
       TGround{tag:c"C", parameters:[TGround{tag:c"const"}..]} => tt;
-      TGround{tag:c"Array", parameters=parameters} => (
-         let new-parameters = [] :: List<Type>;
-         for pt in parameters { new-parameters = cons(without-size-unless-class(denormalize(pt)),new-parameters); };
-         TGround{c"Array", close(new-parameters.reverse)};
-      );
       TGround{tag=tag, parameters=parameters} => (
          let new-parameters = [] :: List<Type>;
          for pt in parameters { new-parameters = cons(denormalize(pt),new-parameters); };

@@ -5,7 +5,7 @@ let with-size(tt: Type): Type = (
          t3(c"Cons", with-size(p1), with-size(p2))
       );
       _ => (
-         if non-zero(tt) && not(tt.is-t(c"Sized"))
+         if non-zero(tt) && not(tt.is-var) && not(tt.is-t(c"Sized")) && not(tt.is-t(c"Arrow"))
          then tt && t1(c"Sized")
          else tt
       );

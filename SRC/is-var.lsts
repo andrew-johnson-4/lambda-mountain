@@ -1,0 +1,7 @@
+
+let .is-var(tt: Type): Bool = (
+   match tt {
+      TVar{} => true;
+      _ => false;
+   }
+);
