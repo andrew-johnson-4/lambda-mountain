@@ -1,0 +1,18 @@
+
+# specialization does not always choose the lowest on the subsumption hierarchy
+# for example: x -> x <: A -> A
+# but for specialization we choose: A -> A
+
+let most-special(t1: Type, t2: Type): Type = (
+   if can-unify(t1, t2) {
+      if t1.is-open && t2.is-open then t2
+      else if t1.is-open then t2
+      else if t2.is-open then t1
+      else t2
+   } else if can-unify(t2, t1) {
+      if t1.is-open && t2.is-open then t1
+      else if t1.is-open then t2
+      else if t2.is-open then t1
+      else t1
+   } else TAny
+);

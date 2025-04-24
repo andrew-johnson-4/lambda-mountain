@@ -16,6 +16,7 @@ import SRC/tctx-and.lsts;
 import SRC/tctx-bind.lsts;
 import SRC/reduce-plural.lsts;
 import SRC/unify-hint.lsts;
+import SRC/most-special.lsts;
 
 # corollaries
 import SRC/quick-prop.lsts;
