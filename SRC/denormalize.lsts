@@ -1,7 +1,11 @@
 
 let denormalize-cache = mk-hashtable-is(type(Type), type(Type));
 
-let denormalize(tt: Type): Type = (
+let denormalize(tt: type): Type = (
+   denormalize-weak(denormalize-strong-inner(tt))
+);
+
+let denormalize-weak(tt: Type): Type = (
    let ct = denormalize-cache.lookup(tt, TAny);
    if non-zero(ct) then ct else (
       ct = tt.rewrite-type-alias;
@@ -14,27 +18,20 @@ let denormalize(tt: Type): Type = (
    )
 );
 
-let denormalize-arrow(pt: Type): Type = (
-   match pt {
-      TAnd{ left=left, right=right } => denormalize-arrow(left) && denormalize-arrow(right);
-      TGround{tag:c"Arrow", parameters:[rng.. dom..]} => (
-         t3( c"Arrow", denormalize-cons(dom), rng )
+let denormalize-strong-inner(tt: Type): Type = (
+   match tt {
+      TAnd{left=left, right=right} => denormalize-strong-inner(left) && denormalize-strong-inner(right);
+      TGround{tag:c"C", parameters:[TGround{tag:c"const"}..]} => tt;
+      TGround{tag:c"Array", parameters=parameters} => (
+         let new-parameters = [] :: List<Type>;
+         for pt in parameters { new-parameters = cons(without-size-unless-class(denormalize(pt)),new-parameters); };
+         TGround{c"Array", close(new-parameters.reverse)};
       );
-      TGround{tag:c"Array", parameters:[rng.. dom..]} => (
-         t3( c"Array", denormalize-arrow(dom), rng )
+      TGround{tag=tag, parameters=parameters} => (
+         let new-parameters = [] :: List<Type>;
+         for pt in parameters { new-parameters = cons(denormalize(pt),new-parameters); };
+         TGround{tag, close(new-parameters.reverse)};
       );
-      TGround{} => denormalize(pt);
-      _ => pt;
-   }
-);
-
-let denormalize-cons(pt: Type): Type = (
-   match pt {
-      TAnd{ left=left, right=right } => denormalize-cons(left) && denormalize-cons(right);
-      TGround{tag:c"Cons", parameters:[rng.. dom..]} => (
-         t3( c"Cons", denormalize-cons(dom), denormalize-cons(rng) )
-      );
-      TGround{} => denormalize(pt);
-      _ => pt;
+      _ => tt;
    }
 );

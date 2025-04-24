@@ -28,7 +28,7 @@ typeof-var-raw := λ(: sloc AST)(: tctx Maybe<TContext>)(: vname String). (: (
          (set found kt)
       ))
    ))
-   (denormalize found)
+   found
 ) Type);
 
 defof-var := λ(: sloc AST)(: tctx Maybe<TContext>)(: vname String). (: (

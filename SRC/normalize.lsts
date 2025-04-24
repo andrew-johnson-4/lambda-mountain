@@ -1,7 +1,11 @@
 
 let normalize-cache = mk-hashtable-is(type(Type), type(Type));
 
-let normalize(tt: Type): Type = (
+let normalize(tt: type): Type = (
+   normalize-weak(normalize-strong-inner(tt))
+);
+
+let normalize-weak(tt: Type): Type = (
    let ct = normalize-cache.lookup(tt, TAny);
    if non-zero(ct) then ct else ( 
       ct = tt.rewrite-type-alias;
@@ -11,4 +15,16 @@ let normalize(tt: Type): Type = (
       normalize-cache = normalize-cache.bind(tt, ct);
       ct
    );
+);
+
+let normalize-strong-inner(tt: Type): Type = (
+   match tt {
+      TAnd{left=left, right=right} => normalize-strong-inner(left) && normalize-strong-inner(right);
+      TGround{tag=tag, parameters=parameters} => (
+         let new-parameters = [] :: List<Type>;
+         for pt in parameters { new-parameters = cons(normalize(pt),new-parameters); };
+         TGround{tag, close(new-parameters.reverse)};
+      );
+      _ => tt;
+   }
 );

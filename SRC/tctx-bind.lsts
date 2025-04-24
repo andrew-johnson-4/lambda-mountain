@@ -1,10 +1,12 @@
 
 let .bind(tctx: HashtableEq<CString,List<Tuple<Type,AST>>>, k: CString, kt: Type, kv: AST): HashtableEq<CString,List<Tuple<Type,AST>>> = (
+   kt = denormalize(kt);
    let row = tctx.lookup(k, [] :: List<Tuple<Type,AST>>);
    row = cons(Tuple{kt, kv}, row);
    tctx.bind(k, row);
 );
 
 let .bind(tctx: Maybe<TContext>, k: CString, kt: Type, kv: AST): Maybe<TContext> = (
+   kt = denormalize(kt);
    Some{ cons(Tuple{k, kt, kv}, tctx.get-or([] :: TContext)) };
 );

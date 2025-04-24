@@ -27,6 +27,7 @@ let apply-blame(function-name: CString, function-type: Type, parameters: Type, d
 );
 
 let apply(function-name: CString, function-type: Type, parameters: Type, do-specialize: U64): ApplyResult = (
+   parameters = denormalize(parameters);
    let r = TAny {};
    let rs = apply-plural(function-type, parameters);
    if not(function-type.is-t( c"Hook" )) {
