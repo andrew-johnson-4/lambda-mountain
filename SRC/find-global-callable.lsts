@@ -3,6 +3,7 @@ let find-global-callable(fname: CString, arg-types: Type): AST = (
    let result = ASTEOF;
    let result-type = TAny;
    for Tuple{kt=first, t=second} in global-type-context.lookup(fname, [] :: List<Tuple<Type,AST>>) {
+      kt = denormalize-strong(kt);
       if non-zero(apply-plural(kt, arg-types)) {
          if non-zero(result) {
             if can-unify(result-type, kt) || can-unify(kt, result-type) {

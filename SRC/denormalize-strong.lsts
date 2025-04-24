@@ -1,0 +1,9 @@
+
+let denormalize-strong(tt: Type): Type = (
+   match tt {
+      TAnd{left=left, right=right} => denormalize-strong(left) && denormalize-strong(right);
+      TGround{tag:c"Arrow", parameters:[rng..dom..]} => t3(c"Arrow",denormalize-strong(dom),denormalize-strong(rng));
+      TGround{tag:c"Cons", parameters:[p2..p1..]} => t3(c"Arrow",denormalize-strong(p1),denormalize-strong(p2));
+      _ => denormalize(tt);
+   }
+);
