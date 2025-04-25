@@ -318,11 +318,7 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
             (let tt (typeof-tag l))
             (if (non-zero tt) (
                (if (non-zero hint) (
-                  (if (||( (.is-t( hint 'String_s )) (.is-t( hint 'SmartString_s )) )) (
-                     (set tt hint)
-                  ) (
-                     (set tt (unify-hint( hint tt )))
-                  ))
+                  (set tt hint)
                ) ())
                (ascript-normal( term tt ))
             ) ())
