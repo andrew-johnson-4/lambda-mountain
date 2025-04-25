@@ -4,8 +4,7 @@ type Vector<t> = Vector { data: t[], length: U64, capacity: U64 };
 type Vector<t> implements Collection<t>;
 
 let mk-vector(type: Type<t>, capacity: U64): Vector<t> = (
-   let data-sz = sizeof(t) * capacity;
-   Vector { (malloc(data-sz) as t[]), 0_u64, capacity }
+   Vector { safe-alloc(capacity, type(t)), 0_u64, capacity }
 );
 
 ## generate a [type(Vector<t>)], in which each element is [value]
@@ -20,8 +19,7 @@ let fill-vector(value: t, len: U64): Vector<t> = (
 
 ## does not change the length length, or destroy old elements!
 let .realloc(v: Vector<t>, target-capacity: U64): Vector<t> = (
-   let data-sz = sizeof(t) * target-capacity;
-   let newp = realloc(v.data as ?[], data-sz) as t[];
+   let newp = safe-realloc(v.data, target-capacity, type(t));
    Vector { newp, v.length, target-capacity }
 );
 
