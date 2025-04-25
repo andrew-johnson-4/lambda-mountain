@@ -32,14 +32,6 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TContext> = (
          if c.is-digit || c==c"CONST" { ctx = yes; }
       );
 
-      # Phi Types
-      Tuple{
-         first:TGround{tag:c"Phi", parameters:[to_phi.. TGround{from_phi=tag}..]},
-         second:TGround{tag:c"Phi", parameters:[TGround{state_phi=tag}.. TGround{id_phi=tag}..]}
-      } => (
-         if from_phi == state_phi { ctx = ctx.bind(c"Phi::Transition", to_phi, Var{id_phi, mk-token(id_phi)}); }
-      );
-
       # Varargs
       Tuple{
           first:TGround{tag:c"Cons", parameters:[

@@ -30,12 +30,6 @@ let can-unify(fpt: Type, pt: Type): U64 = (
          c.is-digit || c==c"CONST"
       );
 
-      # Phi Types
-      Tuple{
-         first:TGround{tag:c"Phi", parameters:[TGround{to_phi=tag}.. TGround{from_phi=tag}..]},
-         second:TGround{tag:c"Phi", parameters:[TGround{state_phi=tag}.. TGround{id_phi=tag}..]}
-      } => from_phi == state_phi;
-
       # Varargs
       Tuple{
           first:TGround{tag:c"Cons", parameters:[
