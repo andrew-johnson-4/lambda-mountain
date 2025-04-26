@@ -16,12 +16,10 @@ let .rewrite-type-alias(lt: Type): Type = (
          };
          lt
       );
-      TAnd{ left=left, right=right } => (
-         let new-left = left.rewrite-type-alias;
-         let new-right = right.rewrite-type-alias;
-         if not(is(left, new-left)) || not(is(right, new-right)) {
-            new-left && new-right
-         } else lt;
+      TAnd{ conjugate=conjugate } => (
+         let result = TAny;
+         for vector c in conjugate { result = result && c.rewrite-type-alias };
+         result
       );
       _ => lt;
    }
@@ -50,12 +48,10 @@ let .rewrite-opaque-type-alias(lt: Type): Type = (
          };
          lt
       );
-      TAnd{ left=left, right=right } => (
-         let new-left = left.rewrite-opaque-type-alias;
-         let new-right = right.rewrite-opaque-type-alias;
-         if not(is(left, new-left)) || not(is(right, new-right)) {
-            new-left && new-right
-         } else lt;
+      TAnd{ conjugate=conjugate } => (
+         let result = TAny;
+         for vector c in conjugate { result = result && c.rewrite-opaque-type-alias };
+         result
       );
       _ => lt;
    }

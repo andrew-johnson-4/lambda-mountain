@@ -15,7 +15,11 @@ let denormalize(tt: Type): Type = (
 
 let denormalize-arrow(pt: Type): Type = (
    match pt {
-      TAnd{ left=left, right=right } => denormalize-arrow(left) && denormalize-arrow(right);
+      TAnd{ conjugate=conjugate } => (
+         let result = TAny;
+         for vector c in conjugate { result = result && denormalize-arrow(c) };
+         result
+      );
       TGround{tag:c"Arrow", parameters:[rng.. dom..]} => (
          t3( c"Arrow", denormalize-cons(dom), rng )
       );
@@ -29,7 +33,11 @@ let denormalize-arrow(pt: Type): Type = (
 
 let denormalize-cons(pt: Type): Type = (
    match pt {
-      TAnd{ left=left, right=right } => denormalize-cons(left) && denormalize-cons(right);
+      TAnd{ conjugate=conjugate } => (
+         let result = TAny;
+         for vector c in conjugate { result = result && denormalize-cons(c) };
+         result
+      );
       TGround{tag:c"Cons", parameters:[rng.. dom..]} => (
          t3( c"Cons", denormalize-cons(dom), denormalize-cons(rng) )
       );
