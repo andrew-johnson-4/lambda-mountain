@@ -4,13 +4,11 @@ is-const-array := λ(: tt Type). (: (
    (match tt (
       ()
       ( (TAnd( conjugate )) (
-         (let result 0_u64)
          (for-each-v (c in conjugate) (
-            (set result (||( result (is-const-array( c )) )))
+            (set r (||( r (is-const-array( c )) )))
          ))
-         result
       ))
-      ( (TGround( 'Array_s (LCons( array-size (LCons( array-base _ )) )) )) (set r (.is-t( array-size 'CONST_s ))) )
+      ( (TGround( 'Array_s (LCons( (TGround( 'CONST_s _ )) (LCons( array-base _ )) )) )) (set r 1_u64) )
       ( _ () )
    ))
    r
