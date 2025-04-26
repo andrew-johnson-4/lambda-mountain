@@ -1,8 +1,9 @@
 CC = cc
 
-dev: install-production
-	lm SRC/index-index.lm
+dev: install-bootstrap
+	lm t.lsts
 	cc tmp.c
+	./a.out
 
 build: compile-production
 	time ./production --c -o deploy1.c SRC/index-index.lm

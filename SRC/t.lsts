@@ -26,6 +26,12 @@ let $"&&"(lt: Type, rt: Type): Type = (
          result = result.push(second);
          TAnd{result}
       );
+      Tuple{first=first,second=second} => (
+         let result = mk-vector(type(Type), 2);
+         result = result.push(first);
+         result = result.push(second);
+         TAnd{result}
+      );
    }
 );
 let $"||"(lt: Type, rt: Type): Type = if non-zero(lt) then lt else rt;
