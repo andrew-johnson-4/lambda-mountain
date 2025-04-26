@@ -31,7 +31,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
       TAnd { conjugate=conjugate } => (
          let result = TAny;
          for vector c in conjugate { result = result && enrich-quick-prop(base, c) };
-         result
+         pre = result
       );
       _ => ();
    };
