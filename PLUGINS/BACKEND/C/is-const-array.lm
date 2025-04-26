@@ -10,7 +10,7 @@ is-const-array := λ(: tt Type). (: (
          ))
          result
       ))
-      ( (TGround( 'Array_s (LCons( (TGround( 'CONST_s _ )) (LCons( array-base _ )) )) )) (set r 1_u64) )
+      ( (TGround( 'Array_s (LCons( array-size (LCons( array-base _ )) )) )) (set r (.is-t( array-size 'CONST_s ))) )
       ( _ () )
    ))
    r

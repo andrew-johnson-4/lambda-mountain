@@ -1,7 +1,7 @@
 CC = cc
 
-dev: install-bootstrap
-	lm t.lsts
+dev: install-production
+	lm tests/regress/seq-macro.lm
 	cc tmp.c
 	./a.out
 
