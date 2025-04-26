@@ -15,7 +15,11 @@ let without-size-unless-class(tt: Type): Type = (
 
 let without-size-unless-class-inner(tt: Type): Type = (
    match tt {
-      TAnd{left=left,right=right} => without-size-unless-class-inner(left) && without-size-unless-class-inner(right);
+      TAnd{conjugate=conjugate} => (
+         let result = TAny;
+         for vector c in conjugate { result = result && without-size-unless-class-inner(c) };
+         result
+      );
       TGround{tag:c"Sized"} => TAny;
       TGround{tag=tag,parameters=parameters} => TGround{tag,close(without-size-unless-class(parameters))};
       _ => tt;      

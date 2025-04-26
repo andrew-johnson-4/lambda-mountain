@@ -1,7 +1,11 @@
 
 let .without-modifiers(tt: Type): Type = (
    match tt {
-      TAnd { left=left, right=right } => left.without-modifiers && right.without-modifiers;
+      TAnd { conjugate=conjugate } => (
+         let result = TAny;
+         for vector c in conjugate { result = result && c.without-modifiers };
+         result
+      );
       TGround { tag:c"C", parameters:[TGround{tag:c"extern"}..] } => TAny;
       _ => tt;
    }

@@ -15,11 +15,15 @@ let can-unify(fpt: Type, pt: Type): U64 = (
       Tuple{ first:TAny{} } => true;
       Tuple{ first:TGround{tag:c"Any"} } => true;
       Tuple{ first:TVar{} } => true;
-      Tuple{ first:TAnd{ lt1=left,lt2=right }, rt=second } => (
-         can-unify(lt1,rt) && can-unify(lt2,rt)
+      Tuple{ first:TAnd{ lconjugate=conjugate }, rt=second } => (
+         let result = true as U64;
+         for vector c in lconjugate { result = result && can-unify(c,rt) };
+         result
       );
-      Tuple{ lt=first, second:TAnd{ rt1=left,rt2=right } } => (
-         can-unify(lt,rt1) || can-unify(lt,rt2)
+      Tuple{ lt=first, second:TAnd{ rconjugate=conjugate } } => (
+         let result = false as U64;
+         for vector c in rconjugate { result = result || can-unify(lt,c) };
+         result
       );
 
       # Ignore C Access Modifiers For Now
