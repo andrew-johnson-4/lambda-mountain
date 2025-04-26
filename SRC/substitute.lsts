@@ -18,7 +18,11 @@ let substitute(ctx: AContext, tt: Type): Type = (
       TGround{tag=tag,parameters=parameters} => (
          TGround{ tag, close(substitute(ctx,parameters)) }
       );
-      TAnd{left=left,right=right} => substitute(ctx,left) && substitute(ctx,right);
+      TAnd{conjugate=conjugate} => (
+         let result = TAny;
+         for vector c in conjugate { result = result && substitute(ctx,c) };
+         result;
+      );
       _ => tt;
    }
 );

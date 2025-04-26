@@ -2,5 +2,5 @@
 type Type = TAny
           | TVar { name: CString }
           | TGround { tag: CString, parameters: List<Type>[] }
-          | TAnd { left: Type[], right: Type[] };
+          | TAnd { conjugate:Vector<Type> };
 zero Type = TAny;
