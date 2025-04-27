@@ -15,6 +15,41 @@ let can-unify(fpt: Type, pt: Type): U64 = (
       Tuple{ first:TAny{} } => true;
       Tuple{ first:TGround{tag:c"Any"} } => true;
       Tuple{ first:TVar{} } => true;
+      Tuple{ first:TAnd{ lconjugate=conjugate }, second:TAnd{ rconjugate=conjugate } } => (
+         let result = true as U64;
+         let ri = 0_u64;
+         for vector lc in lconjugate {
+            if result then (match lc {
+               TGround{tag:c"Any"} => ();
+               TGround{ltag=tag} => (
+                  let rc = rconjugate[ri];
+                  let rtag = rc.simple-tag;
+                  if not(non-zero(rtag)) then () else (
+                     while ri<rconjugate.length && rtag < ltag {
+                        ri = ri + 1;
+                        if ri < rconjugate.length {
+                           rc = rconjugate[ri];
+                           rtag = rc.simple-tag;
+                        }
+                     };
+                     let r-can-unify = false as U64;
+                     let scan-ri = ri;
+                     while scan-ri<rconjugate.length && rtag==ltag {
+                        r-can-unify = r-can-unify || can-unify(lc,rc);
+                        scan-ri = scan-ri + 1;
+                        if scan-ri < rconjugate.length {
+                           rc = rconjugate[scan-ri];
+                           rtag = rc.simple-tag;
+                        }
+                     };
+                     result = result && r-can-unify;
+                  );
+               );
+               _ => result = result && can-unify(lc,pt);
+            });
+         };
+         result;
+      );
       Tuple{ first:TAnd{ lconjugate=conjugate }, rt=second } => (
          let result = true as U64;
          for vector c in lconjugate { result = result && can-unify(c,rt) };
