@@ -6,9 +6,16 @@ let normalize-strong(tt: type): Type = (
 let normalize-strong-inner(tt: Type): Type = (
    match tt {
       TAnd{conjugate=conjugate} => (
-         let result = TAny;
-         for vector c in conjugate { result = result && normalize-strong-inner(c) };
-         result
+         let result = mk-vector(type(Type), 5_u64);
+         for vector c in conjugate {
+            match normalize-strong-inner(c) {
+               TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
+               rc => ( result = result.push(rc); () );
+            }
+         };
+         if result.length==0 then TAny
+         else if result.length==1 then result[0]
+         else TAnd{result}
       );
       TGround{tag:c"Arrow", parameters:[rng..dom..]} => t3(c"Arrow",normalize-strong(dom),normalize-strong(rng));
       TGround{tag:c"Cons", parameters:[p2..p1..]} => t3(c"Cons",normalize-strong(p1),normalize-strong(p2));
