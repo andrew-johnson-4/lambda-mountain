@@ -20,6 +20,7 @@ let can-unify(fpt: Type, pt: Type): U64 = (
          let ri = 0_u64;
          for vector lc in lconjugate {
             if result then (match lc {
+               TGround{tag:c"Any"} => ();
                TGround{ltag=tag} => (
                   let rc = rconjugate[ri];
                   let rtag = rc.simple-tag;
