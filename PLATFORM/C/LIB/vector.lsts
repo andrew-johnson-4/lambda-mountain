@@ -1,10 +1,15 @@
 
 ## faster than [type(List<t>)]. should be used when you append or remove data a lot
-type Vector<t> = Vector { data: t[], length: U64, capacity: U64 };
+type Vector<t> = Vector { data: t[], length: U32, capacity: U32 };
 type Vector<t> implements Collection<t>;
 
 let mk-vector(type: Type<t>, capacity: U64): Vector<t> = (
-   Vector { safe-alloc(capacity, type(t)), 0_u64, capacity }
+   let ptr = if (capacity == 0_u64) then (0_u64 as t[]) else (safe-alloc(capacity, type(t)));
+   Vector { ptr, 0_u32, capacity as U32 }
+);
+
+let mk-vector(ty: Type<t>): Vector<t> = (
+   mk-vector(ty, 0_u64)
 );
 
 ## generate a [type(Vector<t>)], in which each element is [value]
@@ -19,8 +24,8 @@ let fill-vector(value: t, len: U64): Vector<t> = (
 
 ## does not change the length length, or destroy old elements!
 let .realloc(v: Vector<t>, target-capacity: U64): Vector<t> = (
-   let newp = safe-realloc(v.data, target-capacity, type(t));
-   Vector { newp, v.length, target-capacity }
+   let newp = if (target-capacity == 0_u64) then (0_u64 as t[]) else (safe-realloc(v.data, target-capacity, type(t)));
+   Vector { newp, v.length, target-capacity as U32 }
 );
 
 ## reserve additional num elements to the current length
@@ -43,7 +48,7 @@ let .push(v: Vector<t>, i: t): Vector<t> = (
       v = v.realloc(new-cap);
    };
    v.data[v.length] = i;
-   v.length = v.length + 1_u64;
+   v.length = v.length + 1_u32;
    v
 );
 
