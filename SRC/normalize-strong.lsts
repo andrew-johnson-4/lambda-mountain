@@ -10,6 +10,7 @@ let normalize-strong-inner(tt: Type): Type = (
          for vector c in conjugate {
             match normalize-strong-inner(c) {
                TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
+               TAny{} => ();
                rc => ( result = result.push(rc); () );
             }
          };

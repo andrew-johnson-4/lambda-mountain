@@ -20,6 +20,7 @@ let denormalize-arrow(pt: Type): Type = (
          for vector c in conjugate {
             match denormalize-arrow(c) {
                TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
+               TAny{} => ();
                rc => ( result = result.push(rc); () );
             }
          };
@@ -45,6 +46,7 @@ let denormalize-cons(pt: Type): Type = (
          for vector c in conjugate {
             match denormalize-cons(c) {
                TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
+               TAny{} => ();
                rc => ( result = result.push(rc); () );
             }
          };

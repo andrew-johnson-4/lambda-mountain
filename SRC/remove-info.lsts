@@ -2,9 +2,17 @@
 let remove-info(base: Type, rm: Type): Type = (
    match base {
       TAnd{ conjugate=conjugate } => (
-         let result = TAny;
-         for vector c in conjugate { result = result && remove-info(c,rm) };
-         result;
+         let result = mk-vector(type(Type), 5_u64);
+         for vector c in conjugate {
+            match remove-info(c,rm) {
+               TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
+               TAny{} => ();
+               rc => ( result = result.push(rc); () );
+            }
+         };
+         if result.length==0 then TAny
+         else if result.length==1 then result[0]
+         else TAnd{result}
       );
       TGround{} => (
          if can-unify(rm,base) then TAny else base
