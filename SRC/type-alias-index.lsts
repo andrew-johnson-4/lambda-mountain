@@ -27,7 +27,7 @@ let .rewrite-type-alias(lt: Type): Type = (
          };
          if result.length==0 then TAny
          else if result.length==1 then result[0]
-         else TAnd{result}
+         else tand(result)
       );
       _ => lt;
    }
@@ -67,7 +67,7 @@ let .rewrite-opaque-type-alias(lt: Type): Type = (
          };
          if result.length==0 then TAny
          else if result.length==1 then result[0]
-         else TAnd{result}
+         else tand(result)
       );
       _ => lt;
    }
