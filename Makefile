@@ -1,8 +1,9 @@
 CC = cc
 
 dev: install-production
-	lm SRC/index-index.lm
+	lm tests/regress/seq-macro.lm
 	cc tmp.c
+	./a.out
 
 build: compile-production
 	time ./production --c -o deploy1.c SRC/index-index.lm

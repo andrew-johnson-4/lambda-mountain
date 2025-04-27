@@ -17,11 +17,15 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TContext> = (
          ctx = ctx.bind(name, normalize(pt), Lit{tag, mk-token(tag)});
       );
       Tuple{ first:TVar{name=name} } => ctx = ctx.bind(name, normalize(pt), ASTEOF);
-      Tuple{ first:TAnd{ lt1=left,lt2=right }, rt=second } => (
-         ctx = unify-inner(lt1, rt) && unify-inner(lt2, rt);
+      Tuple{ first:TAnd{ lconjugate=conjugate }, rt=second } => (
+         ctx = yes;
+         for vector c in lconjugate { ctx = ctx && unify-inner(c,rt) };
+         ctx
       );
-      Tuple{ lt=first, second:TAnd{ rt1=left,rt2=right } } => (
-         ctx = union(unify-inner(lt, rt1), unify-inner(lt, rt2));
+      Tuple{ lt=first, second:TAnd{ rconjugate=conjugate } } => (
+         ctx = yes;
+         for vector c in rconjugate { ctx = union(ctx, unify-inner(lt,c)) };
+         ctx
       );
 
       # Ignore C Access Modifiers For Now
