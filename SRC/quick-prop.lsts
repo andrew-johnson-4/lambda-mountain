@@ -16,6 +16,7 @@ let enrich-quick-prop(base: Type): Type = (
 );
 
 let enrich-quick-prop(base: Type, pre: Type): Type = (
+   let original-pre = pre;
    match pre {
       TGround {} => (
          for Tuple { lt=first, rt=second } in quick-prop.lookup( pre.ground-tag-and-arity, ([] :: List<(Type,Type)>) ) {
@@ -29,9 +30,16 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
          };
       );
       TAnd { conjugate=conjugate } => (
-         let result = TAny;
-         for vector c in conjugate { result = result && enrich-quick-prop(base, c) };
-         pre = result
+         let result = mk-vector(type(Type), 5_u64);
+         for vector c in conjugate {
+            match enrich-quick-prop(base, c) {
+               TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
+               rc => ( result = result.push(rc); () );
+            }
+         };
+         if result.length==0 then (pre = TAny)
+         else if result.length==1 then (pre = result[0])
+         else (pre = TAnd{result});
       );
       _ => ();
    };
