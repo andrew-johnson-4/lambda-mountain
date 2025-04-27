@@ -16,7 +16,7 @@ let normalize-strong-inner(tt: Type): Type = (
          };
          if result.length==0 then TAny
          else if result.length==1 then result[0]
-         else TAnd{result}
+         else tand(result)
       );
       TGround{tag:c"Arrow", parameters:[rng..dom..]} => t3(c"Arrow",normalize-strong(dom),normalize-strong(rng));
       TGround{tag:c"Cons", parameters:[p2..p1..]} => t3(c"Cons",normalize-strong(p1),normalize-strong(p2));

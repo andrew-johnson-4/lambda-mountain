@@ -40,7 +40,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
          };
          if result.length==0 then (pre = TAny)
          else if result.length==1 then (pre = result[0])
-         else (pre = TAnd{result});
+         else (pre = tand(result));
       );
       _ => ();
    };
