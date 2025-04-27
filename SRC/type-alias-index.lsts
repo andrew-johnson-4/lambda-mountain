@@ -17,9 +17,17 @@ let .rewrite-type-alias(lt: Type): Type = (
          lt
       );
       TAnd{ conjugate=conjugate } => (
-         let result = TAny;
-         for vector c in conjugate { result = result && c.rewrite-type-alias };
-         result
+         let result = mk-vector(type(Type), 5_u64);
+         for vector c in conjugate {
+            match c.rewrite-type-alias {
+               TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
+               TAny{} => ();
+               rc => ( result = result.push(rc); () );
+            }
+         };
+         if result.length==0 then TAny
+         else if result.length==1 then result[0]
+         else TAnd{result}
       );
       _ => lt;
    }
@@ -49,9 +57,17 @@ let .rewrite-opaque-type-alias(lt: Type): Type = (
          lt
       );
       TAnd{ conjugate=conjugate } => (
-         let result = TAny;
-         for vector c in conjugate { result = result && c.rewrite-opaque-type-alias };
-         result
+         let result = mk-vector(type(Type), 5_u64);
+         for vector c in conjugate {
+            match c.rewrite-opaque-type-alias {
+               TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
+               TAny{} => ();
+               rc => ( result = result.push(rc); () );
+            }
+         };
+         if result.length==0 then TAny
+         else if result.length==1 then result[0]
+         else TAnd{result}
       );
       _ => lt;
    }
