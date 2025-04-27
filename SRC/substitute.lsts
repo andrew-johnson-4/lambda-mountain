@@ -19,7 +19,7 @@ let substitute(ctx: AContext, tt: Type): Type = (
          TGround{ tag, close(substitute(ctx,parameters)) }
       );
       TAnd{conjugate=conjugate} => (
-         let result = mk-vector(type(Type), 5_u64);
+         let result = mk-vector(type(Type), 0_u64);
          for vector c in conjugate {
             match substitute(ctx,c) {
                TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };

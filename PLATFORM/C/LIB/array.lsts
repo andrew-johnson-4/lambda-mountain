@@ -28,12 +28,14 @@ declare-unop( raw, raw-type(t), raw-type(t), x );
 declare-unop( raw, raw-type(base-type[]), raw-type(base-type[]+Raw), x );
 
 let safe-alloc(len: U64, ty: Type<t>): t[] = (
-   let nb = len * sizeof(t);
-   let ptr = malloc(nb);
-   if ptr as U64 == 0_u64 {
-      fail("malloc(\{nb}) fail");
-   };
-   ptr as t[]
+   if len==0 then (0 as t[]) else (
+      let nb = len * sizeof(t);
+      let ptr = malloc(nb);
+      if ptr as U64 == 0_u64 {
+         fail("malloc(\{nb}) fail");
+      };
+      ptr as t[]
+   )
 );
 
 let safe-realloc(ptr: t[], len: U64, ty: Type<t>): t[] = (
