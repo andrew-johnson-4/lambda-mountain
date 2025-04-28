@@ -10,6 +10,7 @@ let unify(fpt: Type, pt: Type): Maybe<TContext> = (
 let unify-inner(fpt: Type, pt: Type): Maybe<TContext> = (
    let ctx = None :: Maybe<TContext>;
    let yes = Some([] :: TContext);
+   let no = None :: Maybe<TContext>;
    match (Tuple{fpt, pt}) {
       Tuple{ first:TAny{} } => ctx = yes;
       Tuple{ first:TGround{tag:c"Any"} } => ctx = yes;
@@ -17,6 +18,46 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TContext> = (
          ctx = ctx.bind(name, normalize(pt), Lit{tag, mk-token(tag)});
       );
       Tuple{ first:TVar{name=name} } => ctx = ctx.bind(name, normalize(pt), ASTEOF);
+      Tuple{ first:TAnd{ lconjugate=conjugate }, second:TAnd{ rconjugate=conjugate } } => (
+         let result = yes;
+         let ri = 0_u64;
+         for vector lc in lconjugate {
+            if result.is-some then (match lc {
+               TGround{tag:c"Any"} => ();
+               TGround{ltag=tag} => (
+                  let rc = rconjugate[ri];
+                  let rtag = rc.simple-tag;
+                  if not(non-zero(rtag)) then () else (
+                     while ri<rconjugate.length && rtag < ltag {
+                        ri = ri + 1;
+                        if ri < rconjugate.length {
+                           rc = rconjugate[ri];
+                           rtag = rc.simple-tag;
+                        }
+                     };
+                     let r-can-unify = no;
+                     let scan-ri = ri;
+                     while scan-ri<rconjugate.length && rtag==ltag {
+                        r-can-unify = r-can-unify || unify-inner(lc,rc);
+                        scan-ri = scan-ri + 1;
+                        if scan-ri < rconjugate.length {
+                           rc = rconjugate[scan-ri];
+                           rtag = rc.simple-tag;
+                        }
+                     };
+                     result = result && r-can-unify;
+                  );
+               );
+               _ => result = result && unify-inner(lc,pt);
+            });
+         };
+         print("unify \{fpt} x \{pt} =>\n");
+         match result {
+            None{} => print("None\n");
+            Some{content:content} => for Tuple{first=first,second=second} in content { print("\{first} : \{second}\n") };
+         };
+         result;
+      );
       Tuple{ first:TAnd{ lconjugate=conjugate }, rt=second } => (
          ctx = yes;
          for vector c in lconjugate { ctx = ctx && unify-inner(c,rt) };
