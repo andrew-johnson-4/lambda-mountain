@@ -38,7 +38,7 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TContext> = (
                      };
                      let scan-ri = ri;
                      while scan-ri<rconjugate.length && rtag==ltag {
-                        this-result-ok = this-result-ok || unify-inner(lc,rc);
+                        this-result-ok = this-result-ok || unify(lc,rc);
                         scan-ri = scan-ri + 1;
                         if scan-ri < rconjugate.length {
                            rc = rconjugate[scan-ri];
@@ -48,7 +48,7 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TContext> = (
                   );
                   result = result && this-result-ok;
                );
-               _ => result = result && unify-inner(lc,pt);
+               _ => result = result && unify(lc,pt);
             });
          };
          ctx = result;
