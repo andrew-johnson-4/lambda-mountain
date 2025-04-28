@@ -25,6 +25,7 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TContext> = (
             if result.is-some then (match lc {
                TGround{tag:c"Any"} => ();
                TGround{ltag=tag} => (
+                  let this-result-ok = no;
                   let rc = rconjugate[ri];
                   let rtag = rc.simple-tag;
                   if not(non-zero(rtag)) then () else (
@@ -35,18 +36,17 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TContext> = (
                            rtag = rc.simple-tag;
                         }
                      };
-                     let r-can-unify = no;
                      let scan-ri = ri;
                      while scan-ri<rconjugate.length && rtag==ltag {
-                        r-can-unify = r-can-unify || unify-inner(lc,rc);
+                        this-result-ok = this-result-ok || unify-inner(lc,rc);
                         scan-ri = scan-ri + 1;
                         if scan-ri < rconjugate.length {
                            rc = rconjugate[scan-ri];
                            rtag = rc.simple-tag;
                         }
                      };
-                     result = result && r-can-unify;
                   );
+                  result = result && this-result-ok;
                );
                _ => result = result && unify-inner(lc,pt);
             });

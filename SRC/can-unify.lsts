@@ -22,6 +22,7 @@ let can-unify(fpt: Type, pt: Type): U64 = (
             if result then (match lc {
                TGround{tag:c"Any"} => ();
                TGround{ltag=tag} => (
+                  let this-result-ok = false as U64;
                   let rc = rconjugate[ri];
                   let rtag = rc.simple-tag;
                   if not(non-zero(rtag)) then () else (
@@ -32,18 +33,17 @@ let can-unify(fpt: Type, pt: Type): U64 = (
                            rtag = rc.simple-tag;
                         }
                      };
-                     let r-can-unify = false as U64;
                      let scan-ri = ri;
                      while scan-ri<rconjugate.length && rtag==ltag {
-                        r-can-unify = r-can-unify || can-unify(lc,rc);
+                        this-result-ok = this-result-ok || can-unify(lc,rc);
                         scan-ri = scan-ri + 1;
                         if scan-ri < rconjugate.length {
                            rc = rconjugate[scan-ri];
                            rtag = rc.simple-tag;
                         }
                      };
-                     result = result && r-can-unify;
                   );
+                  result = result && this-result-ok;
                );
                _ => result = result && can-unify(lc,pt);
             });
