@@ -51,12 +51,7 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TContext> = (
                _ => result = result && unify-inner(lc,pt);
             });
          };
-         print("unify \{fpt} x \{pt} =>\n");
-         match result {
-            None{} => print("None\n");
-            Some{content:content} => for Tuple{first=first,second=second} in content { print("\{first} : \{second}\n") };
-         };
-         result;
+         ctx = result;
       );
       Tuple{ first:TAnd{ lconjugate=conjugate }, rt=second } => (
          ctx = yes;

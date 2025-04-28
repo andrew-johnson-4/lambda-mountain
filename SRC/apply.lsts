@@ -50,10 +50,6 @@ let apply(function-name: CString, function-type: Type, parameters: Type, do-spec
          };
          if do-specialize && sft.is-open {
             if closed-type.is-open {
-               print("Application\sDid\sNot\sClose\sBefore\sSpecialization:\n"
-                    "Function \{function-name}: \{function-type}\n"
-                    "Argument \{parameters}\n"
-                    "Result \{r}\n");
                r = t1(c"Error: Did Not Close Before Specialization");
             };
             try-specialize(function-name, sft, ctx, closed-type);
