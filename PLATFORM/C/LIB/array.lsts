@@ -44,3 +44,9 @@ let safe-realloc(ptr: t[], len: U64, ty: Type<t>): t[] = (
    };
    new_ptr as t[]
 );
+
+let close(x: p): p[] = (
+   let r = safe-alloc(1_u64, type(p));
+   r[0_u64] = x;
+   r
+);

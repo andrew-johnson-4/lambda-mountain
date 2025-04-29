@@ -3,6 +3,10 @@
 type Vector<t> = Vector { data: t[], length: U64, capacity: U64 };
 type Vector<t> implements Collection<t>;
 
+let mk-vector(ty: Type<t>): Vector<t> = (
+   mk-vector(ty, 0_u64)
+);
+
 let mk-vector(type: Type<t>, capacity: U64): Vector<t> = (
    Vector { safe-alloc(capacity, type(t)), 0_u64, capacity }
 );
@@ -198,4 +202,11 @@ let .into(in: Vector<U8>, res: Type<CString>): CString = (
 ## does not destory input vec
 let .into(self: Vector<U8>, res: Type<SmartString>): SmartString = (
    intern(self.into(type(CString)))
+);
+
+let .ptr(v: Vector<t>, toelem: U64): t[] = (
+   if toelem >= v.capacity {
+      fail("Vector.ptr() index out of capacity bounds");
+   };
+   ((v.data as U64) + sizeof(t) * toelem) as t[]
 );
