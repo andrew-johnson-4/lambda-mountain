@@ -1,6 +1,5 @@
 CC = cc
-CFLAGS = -O3
-#CFLAGS = -O3 -march=native -mtune=native
+CFLAGS = -O3 -march=native -mtune=native
 
 dev: install-production
 	lm tests/regress/seq-macro.lm
