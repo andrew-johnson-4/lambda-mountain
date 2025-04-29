@@ -16,7 +16,7 @@ let read-binary-file-to(out: Vector<U8>, path: CString): Vector<U8> = (
       let increment = 1024_u64;
       out = out.reserve-additional(increment);
       by = fread(out.ptr(out.length), 1_u64, increment, fp);
-      out.length = out.length + by;
+      out._length = (out.length + by) as U32;
    };
    fclose(fp);
    out
