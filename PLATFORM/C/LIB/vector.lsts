@@ -208,3 +208,10 @@ let .into(in: Vector<U8>, res: Type<CString>): CString = (
 let .into(self: Vector<U8>, res: Type<SmartString>): SmartString = (
    intern(self.into(type(CString)))
 );
+
+let .ptr(v: Vector<t>, toelem: U64): t[] = (
+   if toelem >= v.capacity {
+      fail("Vector.ptr() index out of capacity bounds");
+   };
+   ((v.data as U64) + sizeof(t) * toelem) as t[]
+);
