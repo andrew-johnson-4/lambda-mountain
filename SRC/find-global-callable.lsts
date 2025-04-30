@@ -12,7 +12,8 @@ let find-global-callable(fname: CString, arg-types: Type): AST = (
    for vector Tuple{kt1=first, t1=second} in match-set { if not(non-zero(result)) {
       let all-accept = true;
       for vector Tuple{kt2=first, t2=second} in match-set {
-         if not(is(t1,t2) || most-special(kt1,kt2)!=kt1 ) then all-accept = false;
+         if is(t1,t2) then ()
+         else if most-special(kt1,kt2)!=kt1 then all-accept = false;
       };
       if all-accept { result = t1 };
    }};
