@@ -1,5 +1,6 @@
 
 let .bind(tctx: HashtableEq<CString,List<Tuple<Type,AST>>>, k: CString, kt: Type, kv: AST): HashtableEq<CString,List<Tuple<Type,AST>>> = (
+   kt = denormalize-strong(kt);
    let row = tctx.lookup(k, [] :: List<Tuple<Type,AST>>);
    row = cons(Tuple{kt, kv}, row);
    tctx.bind(k, row);
