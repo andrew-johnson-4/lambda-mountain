@@ -16,7 +16,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set e (compile-expr( ctx t stack-offset Tail )))
          (set.context( e (close ctx) ))
       ))
-      ( (App( (Var( 'open_s _ )) t )) (
+      ( (App( (@( o-t (Var( 'open_s _ )) )) t )) (
          (let tt (typeof t))
          (if (.is-t( tt 'Array_s )) (
             (match (.slot( tt 'Array_s )) (
@@ -25,14 +25,16 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                   (set e (compile-expr( ctx t stack-offset Used )))
                ) )
                ( (TGround( 'Array_s (LCons( TAny (LCons( inner-tt LEOF )) )) )) (
-                  (set e (std-c-compile-call( ctx 'open_s (find-global-callable( 'open_s (typeof t) )) t )))
+                  (let fterm (.lookup( var-to-def-index o-t ASTEOF )))
+                  (set e (std-c-compile-call( ctx 'open_s fterm t )))
                ))
                ( (TGround( 'Array_s (LCons( array-length (LCons( inner-tt LEOF )) )) )) (
                   (set e (compile-expr( ctx t stack-offset Used )))
                ))
             ))
          ) (
-            (set e (std-c-compile-call( ctx 'open_s (find-global-callable( 'open_s (typeof t) )) t )))
+            (let fterm (.lookup( var-to-def-index o-t ASTEOF )))
+            (set e (std-c-compile-call( ctx 'open_s fterm t )))
          ))
       ))
       ( (App( (Var( 'sizeof_s _ )) (AType tt) )) (
