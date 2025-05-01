@@ -22,7 +22,7 @@ valgrind: install-bootstrap
 	valgrind --tool=callgrind lm SRC/index-index.lm
 
 valgrind-view:
-	callgrind_annotate callgrind.out.6386
+	callgrind_annotate callgrind.out.18778
 
 gprof:
 	$(CC) $(CFLAGS) -pg -o bootstrap.exe BOOTSTRAP/cli.c
