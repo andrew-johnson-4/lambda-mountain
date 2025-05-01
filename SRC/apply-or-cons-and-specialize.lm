@@ -13,14 +13,3 @@ apply-or-cons-and-specialize := λ(: function-name String)(: ft Type)(: pt Type)
    ))
    r
 ) ApplyResult);
-
-apply-cons :=  λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (
-   (let r (ApplyResult( TAny TAny )))
-   (if (&&( (non-zero ft) (non-zero pt) )) (
-      (set r (ApplyResult(
-         ft
-         (t3( 'Cons_s ft pt ))
-      )))
-   ) ())
-   r
-) ApplyResult);

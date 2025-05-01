@@ -7,9 +7,6 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
             tctx = infer-expr(tctx, r, Unscoped, TAny, Used);
             ascript-normal(term, if is(used, Tail) then typeof(r) else t3(c"Cons", typeof(l), typeof(r)));
          } else {
-            let l-used = Unused;
-            if is(used, Call) { l-used = Call };
-            let r-used = Used;
             let rt = TAny;
             if var-name-if-var(l)==c"list::cons" { match r {
                App{k=left, m=right} => (
@@ -29,42 +26,61 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
             # stuff above the line has been reviewd
             # stuff below the line has not been reviewed
 
-            match l {
-               Var{l-fname=key} => (
-                  if is(used, Unused) { r-used = Unused };
-                  tctx = infer-expr(tctx, l, Unscoped, TAny, l-used);
-                  if typeof(l).is-arrow { r-used = Call };
-                  let r-hint = TAny;
-                  tctx = infer-expr(tctx, r, Unscoped, TAny, r-used);
-                  let lt-fname = find-alias(l-fname, typeof(r));
-                  let apply-result = apply-or-cons-and-specialize(
-                     lt-fname,
-                     typeof-var-raw(term, tctx, lt-fname),
-                     typeof(r),
-                     term
-                  );
-                  ascript-normal(l, apply-result.function-type);
-                  rt = apply-result.return-type;
-               );
-               _ => (
-                  if is(used, Unused) { r-used = Unused };
-                  tctx = infer-expr(tctx, l, Unscoped, TAny, l-used);
-
-                  if typeof(l).is-arrow { r-used = Call };
-                  tctx = infer-expr(tctx, r, Unscoped, TAny, r-used);
-                  let apply-result = apply-cons(
-                     var-name-if-var(l), typeof(l), typeof(r), term
-                  );
-                  if head-string(var-name-if-var(l)) {
-                     apply-result = apply-or-cons-and-specialize(
-                        var-name-if-var(l), typeof(l), typeof(r), term
-                     );
-                  };
-                  rt = apply-result.return-type;
-               );
+            tctx = infer-expr(tctx, l, Unscoped, TAny, used);
+            if typeof(l).is-arrow {
+               tctx = infer-expr(tctx, r, Unscoped, TAny, Call);            
+            } else {
+               tctx = infer-expr(tctx, r, Unscoped, TAny, Used);
             };
 
-            if is(l-used, Unused) { rt = cons-tail-or-self(rt) };
+            rt = if non-zero(var-name-if-var(l)) {
+               let fname = find-alias(var-name-if-var(l), typeof(r));
+               apply-or-cons-and-specialize(
+                  fname,
+                  typeof-var-raw(term, tctx, fname),
+                  typeof(r),
+                  term
+               ).return-type
+            } else {
+               t3(c"Cons", typeof(l), typeof(r))
+            };
+            
+            #match l {
+            #   Var{l-fname=key} => (
+            #      if is(used, Unused) { r-used = Unused };
+            #      tctx = infer-expr(tctx, l, Unscoped, TAny, l-used);
+            #      if typeof(l).is-arrow { r-used = Call };
+            #      let r-hint = TAny;
+            #      tctx = infer-expr(tctx, r, Unscoped, TAny, r-used);
+            #      let lt-fname = find-alias(l-fname, typeof(r));
+            #      let apply-result = apply-or-cons-and-specialize(
+            #         lt-fname,
+            #         typeof-var-raw(term, tctx, lt-fname),
+            #         typeof(r),
+            #         term
+            #      );
+            #      ascript-normal(l, apply-result.function-type);
+            #      rt = apply-result.return-type;
+            #   );
+            #   _ => (
+            #      if is(used, Unused) { r-used = Unused };
+            #      tctx = infer-expr(tctx, l, Unscoped, TAny, l-used);
+            #
+            #      if typeof(l).is-arrow { r-used = Call };
+            #      tctx = infer-expr(tctx, r, Unscoped, TAny, r-used);
+            #      let apply-result = apply-cons(
+            #         var-name-if-var(l), typeof(l), typeof(r), term
+            #      );
+            #      if head-string(var-name-if-var(l)) {
+            #         apply-result = apply-or-cons-and-specialize(
+            #            var-name-if-var(l), typeof(l), typeof(r), term
+            #         );
+            #      };
+            #      rt = apply-result.return-type;
+            #   );
+            #};
+
+            if not(is(used,Call)) { rt = cons-tail-or-self(rt); };
             ascript-normal(term, rt);
 
             let lt = typeof(l);
