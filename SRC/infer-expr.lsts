@@ -30,7 +30,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
                      match r {
                         App{kv=left,m=right} => (
                            infer-expr(tctx, kv, Unscoped, TAny, Call);
-                           infer-expr(tctx, m, Unscoped, t3(c"HashtableEq",normalize(typeof(kv)).l1,normalize(typeof(kv)).l2), Used);
+                           infer-expr(tctx, m, Unscoped, t3(c"HashtableEq",normalize(typeof(kv)).r2,normalize(typeof(kv)).r1), Used);
                         );
                         _ => ();
                      }
@@ -51,11 +51,13 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
                   rt = apply-result.return-type;
                );
                _ => (
+                  if is(used, Unused) { r-used = Unused };
                   tctx = infer-expr(tctx, l, Unscoped, TAny, l-used);
+
                   if typeof(l).is-arrow { r-used = Call };
                   tctx = infer-expr(tctx, r, Unscoped, TAny, r-used);
                   let apply-result = apply-cons(
-                     var-name-if-var(l), typeof(l), typeof(l), term
+                     var-name-if-var(l), typeof(l), typeof(r), term
                   );
                   if head-string(var-name-if-var(l)) {
                      apply-result = apply-or-cons-and-specialize(
@@ -65,6 +67,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
                   rt = apply-result.return-type;
                );
             };
+
             if is(l-used, Unused) { rt = cons-tail-or-self(rt) };
             ascript-normal(term, rt);
 
