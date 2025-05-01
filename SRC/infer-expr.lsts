@@ -1,0 +1,92 @@
+
+let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUsed): Maybe<TContext> = (
+   match term {
+      App{ is-cons=is-cons, l=left, r=right } => (
+         if is-cons {
+            tctx = infer-expr(tctx, l, Unscoped, TAny, Used);
+            tctx = infer-expr(tctx, r, Unscoped, TAny, Used);
+            ascript-normal(term, if is(used, Tail) { 
+               typeof(r)
+            } else {
+               t3(c"Cons", typeof(l), typeof(r))
+            });
+         } else {
+            let l-used = Unused;
+            if is(used, Call) { l-used = Call };
+            let r-used = Used;
+            let rt = TAny;
+            match l {
+               Var{l-fname=key} => (
+                  if l-fname==c"list::cons" {
+                     match r {
+                        App{k=left,m=right} => (
+                           infer-expr(tctx, k, Unscoped, TAny, Call);
+                           infer-expr(tctx, m, Unscoped, t2(c"List",normalize(typeof(k))), Used);
+                        );
+                        _ => ();
+                     }
+                  };
+                  if l-fname==c"map::cons" {
+                     match r {
+                        App{kv=left,m=right} => (
+                           infer-expr(tctx, kv, Unscoped, TAny, Call);
+                           infer-expr(tctx, m, Unscoped, t3(c"HashtableEq",normalize(typeof(kv)).l1,normalize(typeof(kv)).l2), Used);
+                        );
+                        _ => ();
+                     }
+                  };
+                  if is(used, Unused) { r-used = Unused };
+                  tctx = infer-expr(tctx, l, Unscoped, TAny, l-used);
+                  if typeof(l).is-arrow { r-used = Call };
+                  let r-hint = TAny;
+                  tctx = infer-expr(tctx, r, Unscoped, TAny, r-used);
+                  let lt-fname = find-alias(l-fname, typeof(r));
+                  let apply-result = apply-or-cons-and-specialize(
+                     lt-fname,
+                     typeof-var-raw(term, tctx, lt-fname),
+                     typeof(r),
+                     term
+                  );
+                  ascript-normal(l, apply-result.function-type);
+                  rt = apply-result.return-type;
+               );
+               _ => (
+                  tctx = infer-expr(tctx, l, Unscoped, TAny, l-used);
+                  if typeof(l).is-arrow { r-used = Call };
+                  tctx = infer-expr(tctx, r, Unscoped, TAny, r-used);
+                  let apply-result = apply-cons(
+                     var-name-if-var(l), typeof(l), typeof(l), term
+                  );
+                  if head-string(var-name-if-var(l)) {
+                     apply-result = apply-or-cons-and-specialize(
+                        var-name-if-var(l), typeof(l), typeof(r), term
+                     );
+                  };
+                  rt = apply-result.return-type;
+               );
+            };
+            if is(l-used, Unused) { rt = cons-tail-or-self(rt) };
+            ascript-normal(term, rt);
+
+            let lt = typeof(l);
+            if lt.is-arrow {
+               match l {
+                  Lit{l-name=key} => (
+                     let ct = t2(c"Constructor", t1(var-name-if-var(l)));
+                     ct = ct && t2(c"CaseNumber", t1(to-string(index-of-tag(l-name))));
+                  );
+                  _ => ();
+               }
+            };
+         };
+
+         let arg-type = typeof(r);
+         if not(is-cons) && non-zero(var-name-if-var(l)) && typeof(l).is-arrow {
+            let def = defof-var(term, tctx, var-name-if-var(l), arg-type);
+            var-to-def-index = var-to-def-index.bind(l,def);
+         };
+      );
+   };
+   tctx;
+);
+
