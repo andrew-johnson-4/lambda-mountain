@@ -5,36 +5,32 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
          if is-cons {
             tctx = infer-expr(tctx, l, Unscoped, TAny, Used);
             tctx = infer-expr(tctx, r, Unscoped, TAny, Used);
-            ascript-normal(term, if is(used, Tail) { 
-               typeof(r)
-            } else {
-               t3(c"Cons", typeof(l), typeof(r))
-            });
+            ascript-normal(term, if is(used, Tail) then typeof(r) else t3(c"Cons", typeof(l), typeof(r)));
          } else {
             let l-used = Unused;
             if is(used, Call) { l-used = Call };
             let r-used = Used;
             let rt = TAny;
+            if var-name-if-var(l)==c"list::cons" { match r {
+               App{k=left, m=right} => (
+                  infer-expr(tctx, k, Unscoped, TAny, Call);
+                  infer-expr(tctx, m, Unscoped, t2(c"List",normalize(typeof(k))), Used);
+               );
+               _ => ();
+            }};
+            if var-name-if-var(l)==c"map::cons" { match r {
+               App{kv=left, m=right} => (
+                  infer-expr(tctx, kv, Unscoped, TAny, Call);
+                  infer-expr(tctx, m, Unscoped, t3(c"HashtableEq",normalize(typeof(kv)).r2,normalize(typeof(kv)).r1), Used);
+               );
+               _ => ();
+            }};
+            # demarcation line
+            # stuff above the line has been reviewd
+            # stuff below the line has not been reviewed
+
             match l {
                Var{l-fname=key} => (
-                  if l-fname==c"list::cons" {
-                     match r {
-                        App{k=left,m=right} => (
-                           infer-expr(tctx, k, Unscoped, TAny, Call);
-                           infer-expr(tctx, m, Unscoped, t2(c"List",normalize(typeof(k))), Used);
-                        );
-                        _ => ();
-                     }
-                  };
-                  if l-fname==c"map::cons" {
-                     match r {
-                        App{kv=left,m=right} => (
-                           infer-expr(tctx, kv, Unscoped, TAny, Call);
-                           infer-expr(tctx, m, Unscoped, t3(c"HashtableEq",normalize(typeof(kv)).r2,normalize(typeof(kv)).r1), Used);
-                        );
-                        _ => ();
-                     }
-                  };
                   if is(used, Unused) { r-used = Unused };
                   tctx = infer-expr(tctx, l, Unscoped, TAny, l-used);
                   if typeof(l).is-arrow { r-used = Call };
