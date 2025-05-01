@@ -1,6 +1,6 @@
 
 let apply-and-specialize(fname: CString, ft: Type, at: Type, blame: AST): Type = (
-   if not(can-apply(ft, at)) then fail("Unable to apply and specialize: \{fname} \{at}\nAt \{blame.location}\n");
+   if not(can-apply(ft, at)) then fail("Unable to apply and specialize: \{fname}\nFunction: \{ft}\nArguments: \{at}\nAt \{blame.location}\n");
    let tctx = unify(ft.domain, at);
    let closed-type = substitute(tctx, ft);
    if closed-type.is-open then fail("Error: Unification Did Not Closed Before Specialization\nfunction: \{ft}\nargs: \{at}\nAt \{blame.location}\n");
