@@ -7,16 +7,13 @@ try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx Maybe<TConte
          (set special-type (normalize special-type))
       ))
       (if (is-special( function-name special-type )) () (
-         (set kt (.slot( kt 'Arrow_s )))
-         (if (==( ft kt )) (
-            (match t (
-               ()
-               ( (Glb( _ (Abs( _ _ _ )) )) (
-                  (set stack-to-specialize (cons( (StackToSpecialize( function-name ft unify-ctx special-type )) stack-to-specialize )))
-               ))
-               ( _ () )
+         (match t (
+            ()
+            ( (Glb( _ (Abs( _ _ _ )) )) (
+               (set stack-to-specialize (cons( (StackToSpecialize( function-name ft unify-ctx special-type )) stack-to-specialize )))
             ))
-         ) ())
+            ( _ () )
+         ))
       ))
    ))
 ) Nil);
