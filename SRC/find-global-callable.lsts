@@ -4,7 +4,7 @@ let find-global-callable(fname: CString, arg-types: Type): AST = (
    fname = find-alias(fname, arg-types);
    let match-set = mk-vector(type((Type,AST)), 16);
    for Tuple{kt=second, t=third} in global-type-context.lookup(fname, [] :: List<Tuple<Type,Type,AST>>) {
-      if non-zero(apply-plural(kt, arg-types)) {
+      if can-apply(kt, arg-types) {
          match-set = match-set.push( (kt, t) );
       }
    };
@@ -22,7 +22,37 @@ let find-global-callable(fname: CString, arg-types: Type): AST = (
       for vector Tuple{kt=first, t=second} in match-set {
          eprint("\{kt}\n");
       };
+      exit(1);
    };
    if not(non-zero(result)) then fail("Unable to find appropriate global callable: \{fname} \{arg-types}\n");
    result
+);
+
+let apply-global-callable(fname: CString, arg-types: Type, blame: AST): Type = (
+   arg-types = denormalize-strong(arg-types);
+   fname = find-alias(fname, arg-types);
+   let match-set = mk-vector(type((Type,AST)), 16);
+   for Tuple{kt=second, t=third} in global-type-context.lookup(fname, [] :: List<Tuple<Type,Type,AST>>) {
+      if can-apply(kt, arg-types) {
+         match-set = match-set.push( (kt, t) );
+      }
+   };
+   let result = TAny;
+   for vector Tuple{kt1=first, t1=second} in match-set { if not(non-zero(result)) {
+      let all-accept = true;
+      for vector Tuple{kt2=first, t2=second} in match-set {
+         if is(t1,t2) then ()
+         else if most-special(kt1,kt2)!=kt1 then all-accept = false;
+      };
+      if all-accept { result = kt1 };
+   }};
+   if not(non-zero(result)) && match-set.length > 0 {
+      eprint("Unable to find unambiguous global callable: \{fname} \{arg-types}\nAt \{blame.location}\n");
+      for vector Tuple{kt=first, t=second} in match-set {
+         eprint("\{kt}\n");
+      };
+      exit(1);
+   };
+   if not(non-zero(result)) then fail("Unable to find appropriate global callable: \{fname} \{arg-types}\nAt \{blame.location}\n");
+   apply-and-specialize(fname, result, arg-types, blame)
 );
