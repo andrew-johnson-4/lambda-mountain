@@ -3,20 +3,28 @@
 try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx Maybe<TContext>)(: result-type Type). (: (
    (for-each ((Tuple( kt _ t )) in (.lookup( global-type-context function-name (: LEOF List<Tuple<Type,Type,AST>>) ))) (
       (if (==( kt ft )) (
-         (let special-type result-type)
-         (if (.is-t( kt 'Blob_s )) () (
-            (set special-type (normalize special-type))
-         ))
-         (if (is-special( function-name special-type )) () (
+         (if (is-special( function-name result-type )) () (
             (match t (
                ()
                ( (Glb( _ (Abs( _ _ _ )) )) (
-                  (set stack-to-specialize (cons( (StackToSpecialize( function-name ft unify-ctx special-type )) stack-to-specialize )))
+                  (set stack-to-specialize (cons( (StackToSpecialize( function-name ft unify-ctx result-type )) stack-to-specialize )))
                ))
                ( _ () )
             ))
          ))
-      ) ())
+
+         (if (==( function-name 'mov_s )) (
+            (print 'Try\sSpecialize\sMatch\s_s)(print function-name)(print '\n_s)
+            (print 'Function:\s_s)(print function-name)(print '\s:\s_s)(print ft)(print '\n_s)
+            (print 'Result:\s_s)(print function-name)(print '\s:\s_s)(print result-type)(print '\n_s)
+         ) ())
+      ) (
+         (if (==( function-name 'mov_s )) (       
+            (print 'Try\sSpecialize\sReject\s_s)(print function-name)(print '\n_s)
+            (print 'Function:\s_s)(print function-name)(print '\s:\s_s)(print ft)(print '\n_s)
+            (print 'Result:\s_s)(print function-name)(print '\s:\s_s)(print result-type)(print '\n_s)
+         ) ())
+      ))
    ))
 ) Nil);
 

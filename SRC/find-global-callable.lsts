@@ -37,22 +37,23 @@ let apply-global-callable(fname: CString, arg-types: Type, blame: AST): Type = (
          match-set = match-set.push( (ot, kt, t) );
       }
    };
-   let result = TAny;
-   for vector Tuple{ot1=first, kt1=second, t1=third} in match-set { if not(non-zero(result)) {
+   let result-normal = TAny;
+   let result-denormal = TAny;
+   for vector Tuple{ot1=first, kt1=second, t1=third} in match-set { if not(non-zero(result-normal)) {
       let all-accept = true;
       for vector Tuple{kt2=second, t2=third} in match-set {
          if is(t1,t2) then ()
          else if most-special(kt1,kt2)!=kt1 then all-accept = false;
       };
-      if all-accept { result = ot1 };
+      if all-accept { result-normal = ot1; result-denormal = kt1; };
    }};
-   if not(non-zero(result)) && match-set.length > 0 {
+   if not(non-zero(result-normal)) && match-set.length > 0 {
       eprint("Unable to find unambiguous global callable: \{fname} \{arg-types}\nAt \{blame.location}\n");
       for vector Tuple{kt=second, t=third} in match-set {
          eprint("\{kt}\n");
       };
       exit(1);
    };
-   if not(non-zero(result)) then fail("Unable to find appropriate global callable: \{fname} \{arg-types}\nAt \{blame.location}\n");
-   apply-and-specialize(fname, result, arg-types, blame)
+   if not(non-zero(result-normal)) then fail("Unable to find appropriate global callable: \{fname} \{arg-types}\nAt \{blame.location}\n");
+   apply-and-specialize(fname, result-normal, result-denormal, arg-types, blame)
 );
