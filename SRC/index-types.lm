@@ -18,7 +18,6 @@ import SRC/type-of-s-with-fields.lm;
 
 import SRC/typeof-lhs.lm;
 import SRC/apply.lm;
-import SRC/apply.lsts;
 import SRC/apply-plural.lm;
 import SRC/try-specialize.lm;
 
