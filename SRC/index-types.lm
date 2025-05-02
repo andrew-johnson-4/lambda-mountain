@@ -6,12 +6,10 @@ import SRC/quick-prop.lsts;
 import SRC/substitute.lm;
 import SRC/cons-root.lsts;
 import SRC/infer-expr.lm;
-import SRC/infer-expr.lsts;
 import SRC/is-special.lm;
 import SRC/global-is-seen.lm;
 import SRC/index-of-tag.lm;
 import SRC/is-sized-array.lsts;
-import SRC/maybe-specialize.lm;
 
 import SRC/has-infinite.lm;
 import SRC/has-forward.lm;
@@ -22,7 +20,6 @@ import SRC/typeof-lhs.lm;
 import SRC/apply.lm;
 import SRC/apply.lsts;
 import SRC/apply-plural.lm;
-import SRC/apply-or-cons-and-specialize.lm;
 import SRC/try-specialize.lm;
 
 import SRC/infer-type-definition.lm;

@@ -39,7 +39,7 @@ infer-global-context-2 := λ(: td AST). (: (
          (set global-type-context (.bind( global-type-context (.key k) kt td )))
          (mark-global-as-seen( (.key k) kt TAny ))
          (ascript-normal( td kt ))
-         (maybe-specialize( 'mov_s (typeof-var-raw( rhs (: None Maybe<TContext>) 'mov_s )) (t3( 'Cons_s kt kt )) ))
+         (maybe-apply-global-callable( 'mov_s (t3( 'Cons_s kt kt )) td ))
       ))
       ( _ () )
    ))

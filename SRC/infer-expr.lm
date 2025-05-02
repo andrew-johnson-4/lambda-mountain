@@ -81,7 +81,7 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
             ))
          ) ())
          (if (.is-t( tt 'SmartString_s )) () (
-            (maybe-specialize( 'intern_s (typeof-var-raw( term tctx 'intern_s )) tt ))
+            (maybe-apply-global-callable( 'intern_s tt term ))
          ))
          (if (&&( (!=( (var-name-if-var t) '__uninitialized_s )) (not(is( used C ))) )) (
             (ascript-normal( t tt ))
@@ -138,13 +138,13 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
             ( (TGround( 'Array_s (LCons( TAny (LCons( array-base LEOF )) )) )) (
                (let def (defof-var( term tctx 'open_s deref-type )))
                (set var-to-def-index (.bind( var-to-def-index o-t def )))
-               (maybe-specialize( 'open_s (typeof-var-raw( term tctx 'open_s )) deref-type ))
+               (maybe-apply-global-callable( 'open_s deref-type term ))
                (set deref-type array-base)
             ))
             ( _ (
                (let def (defof-var( term tctx 'open_s deref-type )))
                (set var-to-def-index (.bind( var-to-def-index o-t def )))
-               (do-specialize( 'open_s (typeof-var-raw( term tctx 'open_s )) deref-type term ))
+               (apply-global-callable( 'open_s deref-type term ))
             ))
          ))
          (ascript-normal( term deref-type ))
@@ -170,8 +170,6 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
          ))
          (set tctx (.bind( tctx lname tt def )))
          (ascript-normal( term (t1 'Nil_s) ))
-
-         (maybe-specialize( 'del_s (typeof-var-raw( term tctx 'del_s )) tt ))
       ))
       ( (App( is-cons l r )) (
          (set tctx (std-infer-expr( tctx term false used )))
@@ -196,8 +194,9 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
          (let lt (typeof-lhs lhs))
          (let rt (typeof rhs))
          (ascript-normal( term (&&( (t3( 'Arrow_s lt rt )) tlt )) ))
+
          (if (.is-t( tlt 'Blob_s )) () (
-            (maybe-specialize( 'cdecl::return_s (typeof-var-raw( term tctx 'cdecl::return_s )) rt ))
+            (maybe-apply-global-callable( 'cdecl::return_s rt term ))
          ))
       ))
       ( (Var( v vtk )) (
