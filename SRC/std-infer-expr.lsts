@@ -22,9 +22,6 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
                );
                _ => ();
             }};
-            # demarcation line
-            # stuff above the line has been reviewd
-            # stuff below the line has not been reviewed
 
             tctx = infer-expr(tctx, l, Unscoped, TAny, used);
             if typeof(l).is-arrow {
@@ -38,10 +35,14 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
             } else {
                t3(c"Cons", typeof(l), typeof(r))
             };
-            
+
             if not(is(used,Call)) { rt = cons-tail-or-self(rt); };
             ascript-normal(term, rt);
 
+            # demarcation line
+            # stuff above the line has been reviewd
+            # stuff below the line has not been reviewed
+            
             let lt = typeof(l);
             if lt.is-arrow {
                match l {
