@@ -21,7 +21,6 @@ import SRC/typeof-lhs.lm;
 import SRC/apply.lm;
 import SRC/apply.lsts;
 import SRC/apply-plural.lm;
-import SRC/apply-or-cons-and-specialize.lm;
 import SRC/try-specialize.lm;
 
 import SRC/infer-type-definition.lm;
