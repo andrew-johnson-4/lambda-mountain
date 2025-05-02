@@ -1,7 +1,3 @@
-apply := λ(: function-name String)(: ft Type)(: pt Type)(: blame AST). (: (
-   (apply-blame( function-name ft pt 0_u64 blame ))
-) ApplyResult);
-
 apply := λ(: ctx AContext)(: term AST). (: (
    (let return term)
    (match term (

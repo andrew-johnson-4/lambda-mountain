@@ -34,5 +34,4 @@ typecheck := λ. (: (
    )))
    (validate-interfaces())
    (assert-well-typed ast-parsed-program)
-   (print 'typechecked\n_s)
 ) Nil);
