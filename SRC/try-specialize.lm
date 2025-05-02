@@ -12,19 +12,7 @@ try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx Maybe<TConte
                ( _ () )
             ))
          ))
-
-         (if (==( function-name 'mov_s )) (
-            (print 'Try\sSpecialize\sMatch\s_s)(print function-name)(print '\n_s)
-            (print 'Function:\s_s)(print function-name)(print '\s:\s_s)(print ft)(print '\n_s)
-            (print 'Result:\s_s)(print function-name)(print '\s:\s_s)(print result-type)(print '\n_s)
-         ) ())
-      ) (
-         (if (==( function-name 'mov_s )) (       
-            (print 'Try\sSpecialize\sReject\s_s)(print function-name)(print '\n_s)
-            (print 'Function:\s_s)(print function-name)(print '\s:\s_s)(print ft)(print '\n_s)
-            (print 'Result:\s_s)(print function-name)(print '\s:\s_s)(print result-type)(print '\n_s)
-         ) ())
-      ))
+      ) ())
    ))
 ) Nil);
 

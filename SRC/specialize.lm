@@ -12,9 +12,6 @@ specialize := λ(: key String)(: ft Type)(: unify-ctx Maybe<TContext>)(: result-
          ) ())
       ))
       (if (non-zero term) (
-         (if (==( key 'mov_s )) (
-            (print 'Specialize\s_s)(print key)(print '\s:\s_s)(print result-type)(print '\n_s)
-         ) ())
          (mark-as-special( key result-type ))
          (let special-term (substitute( unify-ctx term )))
          (infer-global-context( special-term ))
