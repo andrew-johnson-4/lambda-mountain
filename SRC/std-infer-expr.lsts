@@ -38,26 +38,10 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
 
             if not(is(used,Call)) { rt = cons-tail-or-self(rt); };
             ascript-normal(term, rt);
-
-            # demarcation line
-            # stuff above the line has been reviewd
-            # stuff below the line has not been reviewed
-            
-            let lt = typeof(l);
-            if lt.is-arrow {
-               match l {
-                  Lit{l-name=key} => (
-                     let ct = t2(c"Constructor", t1(var-name-if-var(l)));
-                     ct = ct && t2(c"CaseNumber", t1(to-string(index-of-tag(l-name))));
-                  );
-                  _ => ();
-               }
-            };
          };
 
-         let arg-type = typeof(r);
          if not(is-cons) && non-zero(var-name-if-var(l)) && typeof(l).is-arrow {
-            let def = defof-var(term, tctx, var-name-if-var(l), arg-type);
+            let def = defof-var(term, tctx, var-name-if-var(l), typeof(r));
             var-to-def-index = var-to-def-index.bind(l,def);
          };
       );
