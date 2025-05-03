@@ -70,7 +70,7 @@ defof-var := λ(: sloc AST)(: tctx Maybe<TContext>)(: vname String)(: tt Type). 
          (if (.is-arrow kt) (
             (if (non-zero tt) (
                (set found (find-global-callable( vname tt )))
-            ) ())
+            ) (set found t))
          ) (
             (set found t)
          ))
