@@ -200,7 +200,7 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
       ( (Var( v vtk )) (
          (let vt (denormalize(typeof-var( term tctx v ))))
          (ascript-normal( term vt ))
-         (mark-var-to-def-todo( tctx 'open_s vt o-t ))
+         (mark-var-to-def-todo( tctx 'open_s vt term ))
       ))
       ( (Lit( l _ )) (
          (if (non-zero(typeof term)) () (

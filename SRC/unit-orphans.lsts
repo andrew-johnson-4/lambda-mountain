@@ -11,3 +11,4 @@ import SRC/find-global-callable.lsts;
 import SRC/tctx-to-string.lsts;
 import SRC/std-infer-expr.lsts;
 import SRC/apply-and-specialize.lsts;
+import SRC/decorate-var-to-def.lsts;
