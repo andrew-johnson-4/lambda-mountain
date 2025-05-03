@@ -13,7 +13,8 @@ let std-c-compile-call(ctx: FContext, fname: CString, fterm: AST, args: AST): Fr
    } else if typeof(fterm).is-t(c"Prop") { std-c-compile-expr(ctx, args, false)
    } else {
       let push-args = std-c-compile-push-args(ctx, args);
-      let ictx = mk-fragment().set(c"function-id", SAtom{mangle-identifier(fname, typeof(fterm))});
+      let function-id = if typeof(fterm).is-t(c"FFI") then fname else mangle-identifier(fname, typeof(fterm));
+      let ictx = mk-fragment().set(c"function-id", SAtom{function-id});
       let inner-ctx = mk-fctx().bind(c"ictx", t1(c"ImplicitContext"), ictx)
                                .bind(c"args", typeof(args), push-args);
       let r = mk-fragment();

@@ -16,6 +16,7 @@ specialize := λ(: key String)(: ft Type)(: unify-ctx Maybe<TContext>)(: result-
          (let special-term (substitute( unify-ctx term )))
          (infer-global-context( special-term ))
          (infer-expr( (: None Maybe<TContext>) special-term Unscoped (t1 'Specialize_s) Used ))
+         (set global-type-context (.bind( global-type-context key result-type special-term )))
          (set ast-parsed-program (Seq(
             (close ast-parsed-program)
             (close special-term)
