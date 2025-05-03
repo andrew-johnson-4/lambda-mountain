@@ -34,4 +34,5 @@ typecheck := λ. (: (
    )))
    (validate-interfaces())
    (assert-well-typed ast-parsed-program)
+   (decorate-var-to-def())
 ) Nil);
