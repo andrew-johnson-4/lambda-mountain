@@ -66,18 +66,12 @@ defof-var := λ(: sloc AST)(: tctx Maybe<TContext>)(: vname String)(: tt Type). 
       ) ())
    ))
    (for-each ((Tuple( kt _ t )) in (.lookup( global-type-context vname (: LEOF List<Tuple<Type,Type,AST>>) ))) (
-      (if (.is-arrow kt) (
-         (if (can-unify( (.domain kt) tt )) (
-            (if (non-zero found-type) (
-               (set found-type (most-special( found-type kt )))
-               (if (==( found-type kt )) (set found t) ())
-            ) (
-               (set found-type kt)
-               (set found t)
-            ))
-         ) ())
-      ) (
-         (set found t)
+      (if (non-zero found) () (
+         (if (.is-arrow kt) (
+            (set found (find-global-callable( vname tt )))
+         ) (
+            (set found t)
+         ))
       ))
    ))
    (if (not(non-zero found)) (
