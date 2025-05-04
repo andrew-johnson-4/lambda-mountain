@@ -1,7 +1,7 @@
 
 let std-c-compile-call(ctx: FContext, fname: CString, fterm: AST, args: AST): Fragment = (
    if not(non-zero(fterm)) then fail("std-c-compile-call Function was null: \{fterm}\nArguments: \{typeof(args)}\n");
-   if fname==c"hash" then print("Call \{fname} : \{typeof(fterm)}\nArguments: \{typeof(args)}\n");
+   if fname==c"hash" then print("Call \{fname} : \{typeof(fterm)}\nArguments: \{typeof(args)}\nFound: \{fterm}\n");
    if typeof(fterm).is-t(c"Blob") {
       let r = mk-fragment();
       match fterm {
