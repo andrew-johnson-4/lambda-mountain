@@ -41,8 +41,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
          };
 
          if not(is-cons) && non-zero(var-name-if-var(l)) && typeof(l).is-arrow {
-            let def = defof-var(term, tctx, var-name-if-var(l), typeof(r));
-            var-to-def-index = var-to-def-index.bind(l,def);
+            mark-var-to-def-todo(tctx, var-name-if-var(l), typeof(r), l);
          };
       );
    };

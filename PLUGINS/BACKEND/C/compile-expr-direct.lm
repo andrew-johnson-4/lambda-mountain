@@ -184,10 +184,8 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             (match f (
                ()
                ( (Var( fname _ )) (
-                  (set e (compile-stack-calls( ctx fname (typeof f) (typeof term) a stack-offset used )))
-               ))
-               ( (App( (Lit( ':_s _ )) (App( (Var( fname _ )) (AType ft) )) )) (
-                  (set e (compile-stack-calls( ctx fname (typeof f) (typeof term) a stack-offset used )))
+                  (let fterm (.lookup( var-to-def-index f ASTEOF )))
+                  (set e (std-c-compile-call( ctx fname fterm a )))
                ))
                ( (Lit( fname _ )) (
                   (set e (compile-constructor( ctx fname (typeof term) (typeof a) a stack-offset )))
