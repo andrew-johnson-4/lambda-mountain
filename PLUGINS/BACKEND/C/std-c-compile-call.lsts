@@ -1,7 +1,6 @@
 
 let std-c-compile-call(ctx: FContext, fname: CString, fterm: AST, args: AST): Fragment = (
    if not(non-zero(fterm)) then fail("std-c-compile-call Function was null: \{fterm}\nArguments: \{typeof(args)}\n");
-   if fname==c"hash" then print("Call \{fname} : \{typeof(fterm)}\nArguments: \{typeof(args)}\nFound: \{fterm}\n");
    if typeof(fterm).is-t(c"Blob") {
       let r = mk-fragment();
       match fterm {
@@ -15,7 +14,8 @@ let std-c-compile-call(ctx: FContext, fname: CString, fterm: AST, args: AST): Fr
    } else if typeof(fterm).is-t(c"Prop") { std-c-compile-expr(ctx, args, false)
    } else {
       let push-args = std-c-compile-push-args(ctx, args);
-      let function-id = if typeof(fterm).is-t(c"FFI") then fname else mangle-identifier(fname, typeof(fterm));
+      let function-id = if typeof(fterm).is-t(c"FFI") || typeof(fterm).is-t(c"C-FFI")
+                        then fname else mangle-identifier(fname, typeof(fterm));
       let ictx = mk-fragment().set(c"function-id", SAtom{function-id});
       let inner-ctx = mk-fctx().bind(c"ictx", t1(c"ImplicitContext"), ictx)
                                .bind(c"args", typeof(args), push-args);

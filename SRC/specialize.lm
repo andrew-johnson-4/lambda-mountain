@@ -22,8 +22,5 @@ specialize := λ(: key String)(: ft Type)(: unify-ctx Maybe<TContext>)(: result-
             (close special-term)
          )))
       ) ())
-      (if (==( key 'hash_s )) (
-         (print 'specialize\shash\s:\s_s)(print result-type)(print '\n_s)
-      ) ())
    ))
 ) Nil);
