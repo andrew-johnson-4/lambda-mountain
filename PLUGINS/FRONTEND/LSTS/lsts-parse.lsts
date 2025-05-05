@@ -287,15 +287,20 @@ let lsts-parse-type(tokens: List<Token>): Tuple<Type,List<Token>> = (
       };
       TGround { base, close(args) };
    };
-   while lsts-parse-head(tokens) == c"[" {
-      lsts-parse-expect(c"[", tokens); tokens = tail(tokens);
-      let index = if lsts-parse-head(tokens) != c"]" {
-         let tindex-rest = lsts-parse-type(tokens);
-         tokens = tindex-rest.second;
-         tindex-rest.first;
-      } else { TAny {} };
-      lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
-      tt = TGround { c"Array", close([ index, tt ]) };
+   while lsts-parse-head(tokens) == c"[" || lsts-parse-head(tokens)==c"?" {
+      if lsts-parse-head(tokens)==c"[" {
+         lsts-parse-expect(c"[", tokens); tokens = tail(tokens);
+         let index = if lsts-parse-head(tokens) != c"]" {
+            let tindex-rest = lsts-parse-type(tokens);
+            tokens = tindex-rest.second;
+            tindex-rest.first;
+         } else { TAny {} };
+         lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
+         tt = t3(c"Array", tt, index);
+      } else {
+         lsts-parse-expect(c"?", tokens); tokens = tail(tokens);
+         tt = t2(c"Maybe", tt);
+      }
    };
    if lsts-parse-head(tokens)==c"+" {
       tokens = tail(tokens);
