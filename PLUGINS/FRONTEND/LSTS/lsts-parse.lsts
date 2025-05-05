@@ -218,13 +218,13 @@ let lsts-parse(tokens: List<Token>): Nil = (
             };
             let constructor = head(tokens); tokens = tail(tokens);
             lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-            ast-parsed-program = Seq { close(ast-parsed-program), close(App{
-               close(Var{ c"macro::define-zero", with-key(constructor, c"macro::define-zero") }),
-               close(App{
-                  close(AType{ base-type-rest.first }),
-                  close(Lit{ constructor.key, constructor })
-               })
-            }) };
+            ast-parsed-program = mk-seq(ast-parsed-program, mk-app(
+               Var{ c"macro::define-zero", with-key(constructor, c"macro::define-zero") },
+               mk-cons(
+                  AType{ base-type-rest.first },
+                  Lit{ constructor.key, constructor }
+               )
+            ));
          );
          [ Token{key:c"atom"}.. Token{key:c"suffix"}.. rest] => (
             tokens = rest;
@@ -352,14 +352,14 @@ let lsts-parse-expression-possibly-tuple(tokens: List<Token>): Tuple<AST,List<To
       is-tuple = 1;
       tokens = tail(tokens);
       base-rest = lsts-parse-expression(tokens);
-      base = App { close(base), close(base-rest.first) };
+      base = mk-cons(base, base-rest.first);
       tokens = base-rest.second;
    };
    if is-tuple {
-      base = App {
-         close(Lit{ c"Tuple", with-location(mk-token("Tuple"),loc) }),
-         close(base)
-      };
+      base = mk-app(
+         Lit{ c"Tuple", with-location(mk-token("Tuple"),loc) },
+         base
+      );
    };
    Tuple { base, tokens }
 );

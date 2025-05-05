@@ -6,3 +6,11 @@ let mk-app(f: AST, a: AST): AST = (
 let mk-cons(f: AST, a: AST): AST = (
    App{ true, close(f), close(a) }
 );
+
+let mk-glb(k: Token, v: AST): AST = (
+   Glb{ k, close(v) }
+);
+
+let mk-seq(l: AST, r: AST): AST = (
+   Seq{ close(l), close(r) }
+);
