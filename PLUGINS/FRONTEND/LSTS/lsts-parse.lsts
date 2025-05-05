@@ -178,7 +178,7 @@ let lsts-substitute-type-aliases(s: CString): CString = (
 );
 
 let lsts-is-type-tag(s: CString): U64 = (
-   if s.has-suffix(c"_ss")
+      s.has-suffix(c"_ss")
    || s.has-suffix(c"_u64")
    || s.has-suffix(c"_u32")
    || s.has-suffix(c"_u16")
@@ -295,7 +295,7 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          lsts-parse-expect(c"Type", non-zero(tokens), tokens);
-         if not(lsts-is-type-tag(lsts-parse-head(tokens))) || lsts-is-ident-head(lsts-parse-head(tokens)) {
+         if not(lsts-is-type-tag(lsts-parse-head(tokens))) && not(lsts-is-ident-head(lsts-parse-head(tokens))) {
             lsts-parse-expect(c"[Type Tag or Variable]", tokens);
          };
          base = base + c"::" + lsts-substitute-type-aliases(lsts-parse-head(tokens));
