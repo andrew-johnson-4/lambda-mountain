@@ -1511,7 +1511,7 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
                   let field-rest = lsts-parse-small-expression(tokens);
                   tokens = field-rest.second;
                   if non-zero(fields) {
-                     fields = App{ close(fields), close(field-rest.first) };
+                     fields = mk-cons(fields, field-rest.first);
                   } else { fields = field-rest.first; };
                   if lsts-parse-head(tokens)==c"," {
                      tokens = tail(tokens);
@@ -1522,7 +1522,7 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
                lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
             };
             if non-zero(fields) {
-               term = App{ close(term), close(fields) };
+               term = mk-app(term, fields);
             };
          } else {
             lsts-parse-expect(c"[Atom]", tokens);
