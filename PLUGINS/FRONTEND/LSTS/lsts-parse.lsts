@@ -241,6 +241,17 @@ let lsts-parse(tokens: List<Token>): Nil = (
 );
 
 let lsts-parse-type(tokens: List<Token>): Tuple<Type,List<Token>> = (
+   (let base-type, tokens) = lsts-parse-type-conjugate(tokens);
+   while lsts-parse-head(tokens)==c"-" && lsts-parse-head(tail(tokens))==c">" {
+      lsts-parse-expect(c"-", tokens); tokens = tail(tokens);
+      lsts-parse-expect(c">", tokens); tokens = tail(tokens);
+      (let tail-type, tokens) = lsts-parse-type-conjugate(tokens);
+      base-type = t3(c"Arrow", base-type, tail-type);
+   };
+   (base-type, tokens)
+);
+
+let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
    let tt = if lsts-parse-head(tokens) == c"(" {
       lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
       let args-rest = lsts-parse-type(tokens);
@@ -302,15 +313,9 @@ let lsts-parse-type(tokens: List<Token>): Tuple<Type,List<Token>> = (
          tt = t2(c"Maybe", tt);
       }
    };
-   while lsts-parse-head(tokens) == c"-" && lsts-parse-head(tail(tokens))==c">" {
-      lsts-parse-expect(c"-", tokens); tokens = tail(tokens);
-      lsts-parse-expect(c">", tokens); tokens = tail(tokens);
-      (let arrow-tail, tokens) = lsts-parse-type(tokens);
-      tt = t3(c"Arrow", tt, arrow-tail);
-   };
    if lsts-parse-head(tokens)==c"+" {
       tokens = tail(tokens);
-      let ntt-rest = lsts-parse-type(tokens);
+      let ntt-rest = lsts-parse-type-conjugate(tokens);
       tt = ntt-rest.first && tt;
       tokens = ntt-rest.second;
    };
