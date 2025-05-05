@@ -14,3 +14,7 @@ let mk-glb(k: Token, v: AST): AST = (
 let mk-seq(l: AST, r: AST): AST = (
    Seq{ close(l), close(r) }
 );
+
+let mk-meta(l: AST): AST = (
+   Meta{ close(l) }
+);

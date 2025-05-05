@@ -108,7 +108,7 @@ let lsts-parse-doc(tokens: List<Token>): Tuple<AST, List<Token>> = (
          tags = tags + new-tags;
          if non-zero(ax) {
             if non-zero(line) {
-               line = Seq { close(line), close(ax) };
+               line = mk-seq(line, ax);
             } else {
                line = ax;
             };
@@ -118,7 +118,7 @@ let lsts-parse-doc(tokens: List<Token>): Tuple<AST, List<Token>> = (
 
       if non-zero(line) {
          if non-zero(para) {
-            para = Seq { close(para), close(line) };
+            para = mk-seq(para, line);
          } else {
             para = line;
          };
@@ -126,7 +126,7 @@ let lsts-parse-doc(tokens: List<Token>): Tuple<AST, List<Token>> = (
          # empty line => new paragraph
          if non-zero(para) {
             if non-zero(ast) {
-               ast = Seq { close(ast), close(para) };
+               ast = mk-seq(ast, para);
             } else {
                ast = para;
             };
@@ -244,13 +244,13 @@ let lsts-parse(tokens: List<Token>): Nil = (
             let term-rest = lsts-parse-small-expression(tokens);
             let term = term-rest.first;
             tokens = term-rest.second;
-            ast-parsed-program = Seq { close(ast-parsed-program), close(term) };
+            ast-parsed-program = mk-seq(ast-parsed-program, term);
             lsts-parse-expect(c";",tokens); tokens = tail(tokens);
          );
       };
       if is(prev-tokens, tokens) { fail("Unrecognized Token During Parsing: \{lsts-parse-head(tokens)}\n") };
       if non-zero(docx) { 
-         ast-parsed-program = Seq { close(ast-parsed-program), close(Meta { close(docx) }) };
+         ast-parsed-program = mk-seq(ast-parsed-program, mk-meta(docx));
       };
    };
 );
