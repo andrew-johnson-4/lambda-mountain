@@ -302,6 +302,12 @@ let lsts-parse-type(tokens: List<Token>): Tuple<Type,List<Token>> = (
          tt = t2(c"Maybe", tt);
       }
    };
+   while lsts-parse-head(tokens) == c"-" && lsts-parse-head(tail(tokens))==c">" {
+      lsts-parse-expect(c"-", tokens); tokens = tail(tokens);
+      lsts-parse-expect(c">", tokens); tokens = tail(tokens);
+      (let arrow-tail, tokens) = lsts-parse-type(tokens);
+      tt = t3(c"Arrow", tt, arrow-tail);
+   };
    if lsts-parse-head(tokens)==c"+" {
       tokens = tail(tokens);
       let ntt-rest = lsts-parse-type(tokens);
