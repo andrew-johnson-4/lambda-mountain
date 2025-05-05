@@ -177,6 +177,19 @@ let lsts-substitute-type-aliases(s: CString): CString = (
     .remove-suffix(c"_i8")
 );
 
+let lsts-is-type-tag(s: CString): U64 = (
+   if s.has-suffix(c"_ss")
+   || s.has-suffix(c"_u64")
+   || s.has-suffix(c"_u32")
+   || s.has-suffix(c"_u16")
+   || s.has-suffix(c"_u8")
+   || s.has-suffix(c"_i64")
+   || s.has-suffix(c"_i32")
+   || s.has-suffix(c"_i16")
+   || s.has-suffix(c"_i8")
+   || lsts-is-lit-head(s) 
+);
+
 let lsts-parse(tokens: List<Token>): Nil = (
    while non-zero(tokens) {
       (let docx, tokens) = lsts-parse-doc(tokens);
@@ -268,19 +281,23 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
       lsts-parse-expect(c")", tokens); tokens = tail(tokens);
       if args.length==1 then head(args) else TGround { c"Tuple", close(args) };
    } else if lsts-parse-head(tokens)==c"?" {
-      tokens = tail(tokens);
+      lsts-parse-expect(c"?", tokens); tokens = tail(tokens);
       TAny {}
-   } else if lsts-is-ident-head(lsts-parse-head(tokens)) && not(lsts-parse-head(tokens).has-suffix(c"_u64"))
-          && not(lsts-parse-head(tokens).has-suffix(c"_ss")) {
+   } else if lsts-is-ident-head(lsts-parse-head(tokens)) && not(lsts-is-type-tag(lsts-parse-head(tokens))) {
       let varname = lsts-parse-head(tokens); tokens = tail(tokens);
       TVar { varname }
    } else {
-      let base = lsts-substitute-type-aliases(lsts-parse-head(tokens));
-      tokens = tail(tokens);
+      if not(lsts-is-type-tag(lsts-parse-head(tokens))) {
+         lsts-parse-expect(c"[Type Tag]", tokens);
+      };
+      let base = lsts-substitute-type-aliases(lsts-parse-head(tokens)); tokens = tail(tokens);
       while non-zero(tokens) && lsts-parse-head(tokens)==c":" {
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          lsts-parse-expect(c"Type", non-zero(tokens), tokens);
+         if not(lsts-is-type-tag(lsts-parse-head(tokens))) || lsts-is-ident-head(lsts-parse-head(tokens)) {
+            lsts-parse-expect(c"[Type Tag or Variable]", tokens);
+         };
          base = base + c"::" + lsts-substitute-type-aliases(lsts-parse-head(tokens));
          tokens = tail(tokens);
       };
