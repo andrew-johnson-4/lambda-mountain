@@ -264,7 +264,7 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          tokens = tnext-rest.second;
       };
       lsts-parse-expect(c")", tokens); tokens = tail(tokens);
-      TGround { c"Tuple", close(args) };
+      if args.length==1 then head(args) else TGround { c"Tuple", close(args) };
    } else if lsts-parse-head(tokens)==c"?" {
       tokens = tail(tokens);
       TAny {}
