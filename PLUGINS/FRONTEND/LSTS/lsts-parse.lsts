@@ -372,7 +372,7 @@ let lsts-parse-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
       tokens = tail(tokens);
       if lsts-parse-head(tokens)!=c")" && lsts-parse-head(tokens)!=c"}" {
          base-rest = lsts-parse-small-expression(tokens);
-         base = App { true, close(base), close(base-rest.first) };
+         base = mk-cons(base, base-rest.first);
          tokens = base-rest.second;
       }
    };
@@ -405,10 +405,10 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
       };
       base = head(bases); bases = tail(bases);
       for b in bases {
-         base = App {
-            close(Var{ c"macro::lhs-head", with-location(mk-token("macro::lhs-head"),loc) }),
-            close(App{ close(b), close(base) })
-         };
+         base = mk-app(
+            Var{ c"macro::lhs-head", with-location(mk-token("macro::lhs-head"),loc) },
+            mk-cons(b, base)
+         );
       }
    };
    lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
@@ -444,10 +444,10 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
             let next-rest = lsts-parse-lhs-one(tokens);
             let next = next-rest.first;
             tokens = next-rest.second;
-            base = App {
-               close(Var{ c"macro::lhs-prefix-or-suffix", with-location(mk-token("macro::lhs-prefix-or-suffix"),loc) }),
-               close(App{ close(base), close(next) })
-            };
+            base = mk-app(
+               Var{ c"macro::lhs-prefix-or-suffix", with-location(mk-token("macro::lhs-prefix-or-suffix"),loc) },
+               mk-cons(base, next)
+            );
          );
          [Token{key:c"."}.. rest] => (
             let loc = head(tokens).location;
@@ -455,10 +455,10 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
             let next-rest = lsts-parse-lhs-one(tokens);
             let next = next-rest.first;
             tokens = next-rest.second;
-            base = App {
-               close(Var{ c"macro::lhs-field", with-location(mk-token("macro::lhs-field"),loc) }),
-               close(App{ close(base), close(next) })
-            };
+            base = mk-app(
+               Var{ c"macro::lhs-field", with-location(mk-token("macro::lhs-field"),loc) },
+               mk-cons(base, next)
+            );
          );
          [Token{key:c"["}.. rest] => (
             let loc = head(tokens).location;
@@ -467,10 +467,10 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
             let next = next-rest.first;
             tokens = next-rest.second;
             lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
-            base = App {
-               close(Var{ c"macro::lhs-index", with-location(mk-token("macro::lhs-index"),loc) }),
-               close(App{ close(base), close(next) })
-            };
+            base = mk-app(
+               Var{ c"macro::lhs-index", with-location(mk-token("macro::lhs-index"),loc) },
+               mk-cons(base, next)
+            );
          );
       }
    };
