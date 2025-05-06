@@ -37,6 +37,6 @@ let .ast-params-into(t: AST, tgt: Type<String>): String = (
       App{left=left, right:App{left:Lit{key:c":"},right:App{left:Var{key=key}, right:AType{tt=tt}}}} => (
          "\{left.ast-params-into(type(String))}, \{key}: \{tt}"
       );
-      _ => "";
+      _ => t.into(type(String));
    }
 );

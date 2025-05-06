@@ -30,6 +30,19 @@ let lsts-parse-expect(expect: CString, b: U64, tokens: List<Token>): Nil = (
    }; ();
 );
 
+let lsts-parse-identifier(tokens: List<Token>): Tuple<CString, List<Token>> = (
+   let name = c"";
+   if lsts-parse-head(tokens)==c"." { name = c"."; tokens = tail(tokens); };
+   lsts-parse-expect(c"Identifier", lsts-is-ident-head(lsts-parse-head(tokens)), tokens);
+   name = name + lsts-unwrap-identifier(lsts-parse-head(tokens)); tokens = tail(tokens);
+   while lsts-parse-head(tokens)==c":" && lsts-parse-head(tail(tokens))==c":" {
+      name = name + c"::"; tokens = tail(tokens); tokens = tail(tokens);
+      lsts-parse-expect(c"Identifier", lsts-is-ident-head(lsts-parse-head(tokens)), tokens);
+      name = name + lsts-unwrap-identifier(lsts-parse-head(tokens)); tokens = tail(tokens);
+   };
+   (name, tokens);
+);
+
 let lsts-parse-doc-wordf(tokens: List<Token>, begin: CString, end: CString): Tuple<CString, List<Token>> = (
    lsts-parse-expect(begin, tokens); tokens = tail(tokens);
    let text = mk-vector(type(U8), 16);
@@ -197,6 +210,11 @@ let lsts-parse(tokens: List<Token>): Nil = (
       match tokens {
          [ Token{key:c"let"}.. _] => tokens = lsts-parse-let(tokens);
          [ Token{key:c"type"}.. _] => tokens = lsts-parse-typedef(tokens);
+         [ Token{key:c"typed"}.. Token{key:c"macro"}.. _] => (
+            (let bind, tokens) = lsts-parse-typed-macro(tokens);
+            print("Define Typed Macro: \{bind}\n");
+            ast-parsed-program = mk-seq(ast-parsed-program, bind);
+         );
          [ Token{key:c"interface"}.. _] => tokens = lsts-parse-interface(tokens);
          [ Token{key:c"import"}.. rest] => (
             tokens = rest;
@@ -253,6 +271,40 @@ let lsts-parse(tokens: List<Token>): Nil = (
          ast-parsed-program = mk-seq(ast-parsed-program, mk-meta(docx));
       };
    };
+);
+
+let lsts-parse-top-level(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   # TODO, accept all top-level expressions here
+   lsts-parse-small-expression(tokens);
+);
+
+let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
+   lsts-parse-expect(c"typed", tokens); tokens = tail(tokens);
+   lsts-parse-expect(c"macro", tokens); tokens = tail(tokens);
+   (let mname, tokens) = lsts-parse-identifier(tokens);
+   let margs = ASTNil;
+   lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
+   while lsts-parse-head(tokens)!=c")" {
+      if not(is(margs,ASTNil)) then { lsts-parse-expect(c",", tokens); tokens = tail(tokens); };
+      (let mbind, tokens) = lsts-parse-atom-without-tail(tokens);
+      lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+      (let mbindt, tokens) = lsts-parse-type(tokens);
+      let marg = mk-app(mk-lit(c":"), mk-cons(mbind, mk-atype(mbindt)));
+      if is(margs,ASTNil) then margs = marg
+                          else margs = mk-cons(margs, marg);
+   };
+   lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+   lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+   (let mrett, tokens) = lsts-parse-type(tokens);
+   lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+   lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
+   (let mbody, tokens) = lsts-parse-top-level(tokens);
+   lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+   lsts-parse-expect(c";", tokens); tokens = tail(tokens);
+   (mk-glb(
+      mk-token(mname),
+      mk-abs(margs, mk-app(mk-lit(c":"), mk-cons(mbody,mk-atype(mrett))), t1(c"TypedMacro"))
+   ), tokens)
 );
 
 let lsts-parse-type(tokens: List<Token>): Tuple<Type,List<Token>> = (
