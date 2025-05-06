@@ -1413,10 +1413,10 @@ let lsts-parse-lit(tokens: List<Token>): Tuple<AST,List<Token>> = (
          let cat = lsts-make-lit(head(tokens));
          tokens = tail(tokens);
          if non-zero(term) {
-            term = App {
-               close(Var{ c"+", with-location(mk-token("+"),loc) }),
-               close(App{ close(term), close(cat) })
-            };
+            term = mk-app(
+               Var{ c"+", with-location(mk-token("+"),loc) },
+               mk-cons(term, cat)
+            );
          } else { term = cat; };
       }
    } else {
@@ -1449,19 +1449,19 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
       let term-rest = lsts-parse-type(tokens);
       tokens = term-rest.second;
       lsts-parse-expect(c")", tokens); tokens = tail(tokens);
-      term = App {
-         close(Var{ c"sizeof", with-location(mk-token(c"sizeof"),loc) }),
-         close(AType{ term-rest.first })
-      };
+      term = mk-app(
+         Var{ c"sizeof", with-location(mk-token(c"sizeof"),loc) },
+         mk-atype(term-rest.first)
+      );
    } else if lsts-parse-head(tokens)==c"&" {
       let amp = head(tokens);
       tokens = tail(tokens);
       let term-rest = lsts-parse-atom-without-tail(tokens);
       tokens = term-rest.second;
-      term = App {
-         close(Var{ amp.key, amp }),
-         close(term-rest.first)
-      };
+      term = mk-app(
+         Var{ amp.key, amp },
+         term-rest.first
+      );
       term-rest = lsts-parse-atom-tail(term, tokens);
       term = term-rest.first;
       tokens = term-rest.second;
@@ -1549,10 +1549,10 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
             tokens = rest;
             let type-rest = lsts-parse-type(tokens);
             tokens = type-rest.second;
-            base = App {
-               close(Lit{ c":", with-location(mk-token(":"),loc) }),
-               close(App{ close(base), close(AType{ type-rest.first }) })
-            };
+            base = mk-app(
+               Lit{ c":", with-location(mk-token(":"),loc) },
+               mk-cons(base, mk-atype(type-rest.first))
+            );
          );
          [Token{key:"."}.. rest] => (
             tokens = rest;
@@ -1568,23 +1568,23 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
                   } else {
                      lsts-parse-expect( c")", tokens );
                   };
-                  base = App{ true, close(base), close(next-rest.first) };
+                  base = mk-cons(base, next-rest.first);
                };
                lsts-parse-expect( c")", tokens ); tokens = tail(tokens);
             };
-            base = App {
-               close(Var{ method, with-location(mk-token(method),loc) }),
-               close(base)
-            };
+            base = mk-app(
+               Var{ method, with-location(mk-token(method),loc) },
+               base
+            );
          );
          [Token{key:"as"}.. rest] => (
             tokens = rest;
             let type-rest = lsts-parse-type(tokens); 
             tokens = type-rest.second;
-            base = App {
-               close(Var{ c"as", with-location(mk-token("as"),loc) }),
-               close(App{ close(base), close(AType{ type-rest.first }) })
-            };
+            base = mk-app(
+               Var{ c"as", with-location(mk-token("as"),loc) },
+               mk-cons(base, mk-atype(type-rest.first))
+            );
          );
          [Token{key:"["}.. rest] => (
             tokens = rest;
@@ -1607,22 +1607,22 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
                };
             };
             if non-zero(term2) {
-               base = App {
-                  close(Var{ c"[:]", with-location(mk-token("[:]"),loc) }),
-                  close(App{ close(App{ close(base), close(term1) }), close(term2) })
-               };
+               base = mk-app(
+                  Var{ c"[:]", with-location(mk-token("[:]"),loc) },
+                  mk-cons(mk-cons(base, term1), term2)
+               );
             } else {
-               base = App {
-                  close(Var{ c"[]", with-location(mk-token("[:]"),loc) }),
-                  close(App{ close(base), close(term1) })
-               };
+               base = mk-app(
+                  Var{ c"[]", with-location(mk-token("[:]"),loc) },
+                  mk-cons(base, term1)
+               );
             };
             lsts-parse-expect( c"]", tokens ); tokens = tail(tokens);
          );
          [Token{key:"("}.. rest] => (
             tokens = rest;
             if lsts-parse-head(tokens) == c")" {
-               base = App{ close(base), close(ASTNil {}) };
+               base = mk-app(base, ASTNil);
             } else {
                let term2-rest = lsts-parse-expression(tokens);
                let term2 = term2-rest.first;
@@ -1631,9 +1631,9 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
                   tokens = tail(tokens);
                   let term3-rest = lsts-parse-expression(tokens);
                   tokens = term3-rest.second;
-                  term2 = App{ true, close(term2), close(term3-rest.first) };
+                  term2 = mk-cons(term2, term3-rest.first);
                };
-               base = App{ close(base), close(term2) };
+               base = mk-app(base, term2);
             };
             lsts-parse-expect( c")", tokens ); tokens = tail(tokens);
          );
