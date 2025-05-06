@@ -1,9 +1,9 @@
 
-let index-macro-table = {} :: List<CString,List<AST>>;
+let index-macro-table = {} :: HashtableEq<CString,List<AST>>;
 
 let bind-new-macro(mname: CString, mterm: AST): Nil = (
    print("Bind New Macro: \{mname} = \{mterm}\n");
-   let row = index-macro-table.get-or(mname, [] :: List<AST>);
+   let row = index-macro-table.lookup(mname, [] :: List<AST>);
    row = cons(mterm, row);
    index-macro-table = index-macro-table.bind(mname, row);
 );
