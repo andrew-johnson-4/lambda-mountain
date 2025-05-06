@@ -2,7 +2,7 @@ CC = cc
 CFLAGS = -O3 -march=native -mtune=native
 
 dev: install-production
-	lm tests/regress/seq-macro.lm
+	lm tests/unit/ast-macros.lsts
 	cc tmp.c
 	./a.out
 
