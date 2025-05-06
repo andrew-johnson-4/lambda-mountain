@@ -15,6 +15,10 @@ let mk-seq(l: AST, r: AST): AST = (
    Seq{ close(l), close(r) }
 );
 
+let mk-typedef(l: AST, r: AST): AST = (
+   Typedef{ close(l), close(r) }
+);
+
 let mk-meta(l: AST): AST = (
    Meta{ close(l) }
 );
