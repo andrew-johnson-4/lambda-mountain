@@ -1057,22 +1057,22 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
             tokens = rhs-rest.second;
          };
          lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
-         base = App {
-            close(App{
-               close(Var{ if is-vector then c"for-each-v" else c"for-each", with-location(mk-token("for-each"),loc) }),
-               close(App{
-                  close(App{
-                     close(lhs-rest.first),
-                     close(Var{ c"in", with-location(mk-token("in"),loc) }),
-                  }),
-                  close(iter-rest.first)
-               })
-            }),
-            close(App{
-               close(Var{ c"scope", with-location(mk-token("scope"),loc) }),
-               close(rhs)
-            })
-         };         
+         base = mk-app(
+            mk-app(
+               Var{ if is-vector then c"for-each-v" else c"for-each", with-location(mk-token("for-each"),loc) },
+               mk-cons(
+                  mk-cons(
+                     lhs-rest.first,
+                     Var{ c"in", with-location(mk-token("in"),loc) }
+                  ),
+                  iter-rest.first
+               )
+            ),
+            mk-app(
+               Var{ c"scope", with-location(mk-token("scope"),loc) },
+               rhs
+            )
+         );         
       );
       [Token{key:c"match"}.. rest] => (
          let loc = head(tokens).location; tokens = rest;
@@ -1083,10 +1083,10 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
          let e-rest = lsts-parse-small-expression(tokens);
          tokens = e-rest.second;
          if raw {
-            e-rest.first = App {
-               close(Var{ c"macro::bind-raw", with-location(mk-token("macro::bind-raw"),loc) }),
-               close(e-rest.first)
-            };
+            e-rest.first = mk-app(
+               Var{ c"macro::bind-raw", with-location(mk-token("macro::bind-raw"),loc) },
+               e-rest.first
+            );
          };
          let pats = ASTNil {};
          lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
@@ -1101,16 +1101,16 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
             let rhs-rest = lsts-parse-small-expression(tokens);
             tokens = rhs-rest.second;
             lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-            pats = App { close(pats), close(App{ close(lhs-rest.first), close(rhs-rest.first) }) };
+            pats = mk-cons(pats, mk-cons(lhs-rest.first, rhs-rest.first));
          };
          lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
-         base = App {
-            close(App{
-               close(Var{ c"match", with-location(mk-token("match"),loc) }),
-               close(e-rest.first)
-            }),
-            close(pats)
-         };
+         base = mk-app(
+            mk-app(
+               Var{ c"match", with-location(mk-token("match"),loc) },
+               e-rest.first
+            ),
+            pats
+         );
       );
       _ => (
          let assign-rest = lsts-parse-assign(tokens);
@@ -1167,45 +1167,45 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
          tokens = rhs-rest.second;
          let rhs-tmp-name = uuid();
          let rhs-tmp = Var{ rhs-tmp-name, with-location(mk-token(rhs-tmp-name),loc) };
-         base = App{
-            close(App{
-               close(Var{ c"let", with-location(mk-token(c"let"),loc) }),
-               close(rhs-tmp)
-            }),
-            close(rhs-rest.first)
-         };
+         base = mk-app(
+            mk-app(
+               Var{ c"let", with-location(mk-token(c"let"),loc) },
+               rhs-tmp
+            ),
+            rhs-rest.first
+         );
 
          let i = 0_u64;
          for lhs in lefts {
             let fieldstr = c"." + to-string(i+1);
-            let rexpr = close(App {
-               close(Var{ fieldstr, with-location(mk-token(fieldstr),loc) }),
-               close(rhs-tmp)
-            });
+            let rexpr = mk-app(
+               Var{ fieldstr, with-location(mk-token(fieldstr),loc) },
+               rhs-tmp
+            );
 
             match lhs {
                ASTOrIdentIgnore {} => ();
 
                ASTOrIdentAST { ast=ast } => (
-                  let x = App {
-                     close(App{
-                        close(Var{ c"set", with-location(mk-token("set"),loc) }),
-                        close(ast)
-                     }),
+                  let x = mk-cons(
+                     mk-cons(
+                        Var{ c"set", with-location(mk-token("set"),loc) },
+                        ast
+                     ),
                      rexpr
-                  };
-                  base = App { close(base), close(x) };
+                  );
+                  base = mk-cons(base, x);
                );
 
                ASTOrIdentId { id=id } => (
-                  let x = App {
-                     close(App{
-                        close(Var{ c"let", with-location(mk-token("let"),loc) }),
-                        close(id)
-                     }),
+                  let x = mk-app(
+                     mk-app(
+                        Var{ c"let", with-location(mk-token("let"),loc) },
+                        id
+                     ),
                      rexpr
-                  };
-                  base = App { close(base), close(x) };
+                  );
+                  base = mk-cons(base, x);
                );
             };
             i = i + 1;
@@ -1216,13 +1216,13 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
          lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
          let rhs-rest = lsts-parse-small-expression(tokens);
          tokens = rhs-rest.second;
-         base = App {
-            close(App{
-               close(Var{ c"set", with-location(mk-token("set"),loc) }),
-               close(lhs-rest.first)
-            }),
-            close(rhs-rest.first)
-         };
+         base = mk-cons(
+            mk-cons(
+               Var{ c"set", with-location(mk-token("set"),loc) },
+               lhs-rest.first
+            ),
+            rhs-rest.first
+         );
       };
    } else {
       let base-rest = lsts-parse-andor(tokens);
