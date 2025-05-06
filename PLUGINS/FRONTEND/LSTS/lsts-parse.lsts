@@ -890,10 +890,10 @@ let lsts-parse-let(tokens: List<Token>): List<Token> = (
          );
       };
    } else {
-      ast-parsed-program = Seq {
-         close(ast-parsed-program),
-         close(Glb{ with-location(mk-token(name),loc), close(return-term) })
-      };
+      ast-parsed-program = mk-seq(
+         ast-parsed-program,
+         mk-glb( with-location(mk-token(name),loc), return-term )
+      );
    };
    tokens
 );
@@ -933,20 +933,20 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
             let default-rest = lsts-parse-small-expression(tokens); tokens = default-rest.second;
             default-rest.first;
          } else ASTNil;
-         let cases = App{ close(ASTNil), close(App{ close(lhs-rest.first), close(matched-rest.first) }) };
+         let cases = mk-cons(ASTNil, mk-cons(lhs-rest.first, matched-rest.first));
          if non-zero(default-rest) {
-            cases = App{ close(cases), close(App{
-               close(Var{ c"_", with-location(mk-token(c"_"),loc) }),
-               close(default-rest)
-            }) };
+            cases = mk-cons(cases, mk-cons(
+               Var{ c"_", with-location(mk-token(c"_"),loc) },
+               default-rest
+            ));
          };
-         base = App {
-            close(App{
-               close(Var{ c"match", with-location(mk-token("match"),loc) }),
-               close(expr-rest.first)
-            }),
-            close(cases)
-         };
+         base = mk-cons(
+            mk-cons(
+               Var{ c"match", with-location(mk-token("match"),loc) },
+               expr-rest.first
+            ),
+            cases
+         );
       );
       [Token{key:c"if"}.. rest] => (
          let loc = head(tokens).location; tokens = rest;
@@ -988,22 +988,22 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
                f-rest.first;
             };
          };
-         base = App {
-            close(App{
-               close(App{
-                  close(Var{ c"if", with-location(mk-token("if"),loc) }),
-                  close(c)
-               }),
-               close(App{
-                  close(Var{ c"scope", with-location(mk-token("scope"),loc) }),
-                  close(t)
-               })
-            }),
-            close(App{
-               close(Var{ c"scope", with-location(mk-token("scope"),loc) }),
-               close(f)
-            })
-         };
+         base = mk-app(
+            mk-app(
+               mk-app(
+                  Var{ c"if", with-location(mk-token("if"),loc) },
+                  c
+               ),
+               mk-app(
+                  Var{ c"scope", with-location(mk-token("scope"),loc) },
+                  t
+               )
+            ),
+            mk-app(
+               Var{ c"scope", with-location(mk-token("scope"),loc) },
+               f
+            )
+         );
       );
       [Token{key:c"let"}.. rest] => (
          let loc = head(tokens).location; tokens = rest;
@@ -1012,13 +1012,13 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
          lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
          let rhs-rest = lsts-parse-small-expression(tokens);
          tokens = rhs-rest.second;
-         base = App {
-            close(App{
-               close(Var{ c"let", with-location(mk-token("let"),loc) }),
-               close(lhs-rest.first)
-            }),
-            close(rhs-rest.first)
-         };
+         base = mk-app(
+            mk-app(
+               Var{ c"let", with-location(mk-token("let"),loc) },
+               lhs-rest.first
+            ),
+            rhs-rest.first
+         );
       );
       [Token{key:c"while"}.. rest] => (
          let loc = head(tokens).location; tokens = rest;
@@ -1028,16 +1028,16 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
          let rhs-rest = lsts-parse-expression(tokens);
          tokens = rhs-rest.second;
          lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
-         base = App {
-            close(App{
-               close(Var{ c"while", with-location(mk-token("while"),loc) }),
-               close(c-rest.first)
-            }),
-            close(App{
-               close(Var{ c"scope", with-location(mk-token("scope"),loc) }),
-               close(rhs-rest.first)
-            })
-         };         
+         base = mk-app(
+            mk-app(
+               Var{ c"while", with-location(mk-token("while"),loc) },
+               c-rest.first
+            ),
+            mk-app(
+               Var{ c"scope", with-location(mk-token("scope"),loc) },
+               rhs-rest.first
+            )
+         );         
       );
       [Token{key:c"for"}.. rest] => (
          let loc = head(tokens).location; tokens = rest;
