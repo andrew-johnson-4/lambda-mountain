@@ -212,7 +212,6 @@ let lsts-parse(tokens: List<Token>): Nil = (
          [ Token{key:c"type"}.. _] => tokens = lsts-parse-typedef(tokens);
          [ Token{key:c"typed"}.. Token{key:c"macro"}.. _] => (
             (let bind, tokens) = lsts-parse-typed-macro(tokens);
-            print("Define Typed Macro: \{bind}\n");
             ast-parsed-program = mk-seq(ast-parsed-program, bind);
          );
          [ Token{key:c"interface"}.. _] => tokens = lsts-parse-interface(tokens);
