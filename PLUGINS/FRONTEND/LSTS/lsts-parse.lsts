@@ -863,10 +863,10 @@ let lsts-parse-let(tokens: List<Token>): List<Token> = (
       (return-term, tokens) = lsts-parse-small-expression(tokens);
    };
    if non-zero(args-list) {
-      return-term = App {
-         close(Lit{ c":", with-location(mk-token(":"),loc) }),
-         close(App{ close(return-term), close(AType{ return-type }) })
-      };
+      return-term = mk-cons(
+         Lit{ c":", with-location(mk-token(":"),loc) },
+         mk-cons(return-term, mk-atype(return-type))
+      );
    };
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
    if non-zero(args-list) {
@@ -882,12 +882,12 @@ let lsts-parse-let(tokens: List<Token>): List<Token> = (
             );
          };
       } else {
-         ast-parsed-program = Seq {
-            close(ast-parsed-program),
-            close(Glb{ with-location(mk-token(name),loc), close(Abs{
-               close(args-list), close(return-term), misc-tt && attach-tt
-            }) })
-         };
+         ast-parsed-program = mk-seq(
+            ast-parsed-program,
+            mk-glb( with-location(mk-token(name),loc), mk-abs(
+               args-list, return-term, misc-tt && attach-tt
+            ) )
+         );
       };
    } else {
       ast-parsed-program = Seq {
