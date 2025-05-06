@@ -1,0 +1,12 @@
+
+import LIB/default.lsts;
+
+typed macro ast-macros-test-add(x: U64, y: lazy): lazy = (
+   x + y
+);
+typed macro ast-macros-test-add(x: I64, y: lazy): lazy = (
+   x + y
+);
+
+assert( ast-macros-test-add(1_u64, 2_u64) == 3_u64 );
+assert( ast-macros-test-add(2_i64, 3_i64) == 5_i64 );
