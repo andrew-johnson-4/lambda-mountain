@@ -1246,10 +1246,10 @@ let lsts-make-lit(t: Token): AST = (
                let bs = clone-rope(buffer);
                let be = Lit { bs, with-location(mk-token(bs),loc) };
                if non-zero(base) {
-                  base = App {
-                     close(Var{ c"+", with-location(mk-token("+"),loc) }),
-                     close(App{ close(base), close(be) })
-                  };
+                  base = mk-app(
+                     Var{ c"+", with-location(mk-token("+"),loc) },
+                     mk-cons(base, be)
+                  );
                } else { base = be; };
                buffer = SNil {};
             };
@@ -1265,15 +1265,15 @@ let lsts-make-lit(t: Token): AST = (
             };
             let sub-tokens = lsts-tokenize-string(c"[Format String]", clone-rope(t-buffer));
             let se-rest = lsts-parse-expression(sub-tokens);
-            let se = App{
-               close(Var{ c"to-smart-string", with-location(mk-token("to-smart-string"),loc) }),
-               close(se-rest.first)
-            };
+            let se = mk-app(
+               Var{ c"to-smart-string", with-location(mk-token("to-smart-string"),loc) },
+               se-rest.first
+            );
             if non-zero(base) {
-               base = App{
-                  close(Var{ c"+", with-location(mk-token("+"),loc) }),
-                  close(App{ close(base), close(se) })
-               };
+               base = mk-app(
+                  Var{ c"+", with-location(mk-token("+"),loc) },
+                  mk-cons(base, se)
+               );
             } else {
                base = se;
             };
@@ -1290,10 +1290,10 @@ let lsts-make-lit(t: Token): AST = (
          let bs = clone-rope(buffer);
          let be = Lit{ bs, with-location(mk-token(bs),loc) };
          if non-zero(base) {
-            base = App{
-               close(Var{ c"+", with-location(mk-token("+"),loc) }),
-               close(App{ close(base), close(be) })
-            };
+            base = mk-app(
+               Var{ c"+", with-location(mk-token("+"),loc) },
+               mk-cons(base, be)
+            );
          } else {
             base = be;
          };
@@ -1311,10 +1311,10 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
       let amp = head(tokens); tokens = tail(tokens);
       let base-rest = lsts-parse-lhs-one(tokens);
       tokens = base-rest.second;
-      App{
-         close(Var{ amp.key, amp }),
-         close(base-rest.first)
-      };
+      mk-cons(
+         Var{ amp.key, amp },
+         base-rest.first
+      );
    } else if lsts-is-lit(lsts-parse-head(tokens)) {
       let base-rest = lsts-parse-lit(tokens);
       tokens = base-rest.second;
@@ -1361,32 +1361,32 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
             val = Var{ c"_", with-location(mk-token("_"),attr-loc) };
          };
          if non-zero(binding) {
-            val = App{
-               close(Var{ c"@", with-location(mk-token("@"),attr-loc) }),
-               close(App{
-                  close(Var{ binding, with-location(mk-token(binding),attr-loc) }),
-                  close(val)
-               })
-            };
+            val = mk-app(
+               Var{ c"@", with-location(mk-token("@"),attr-loc) },
+               mk-cons(
+                  Var{ binding, with-location(mk-token(binding),attr-loc) },
+                  val
+               )
+            );
             if raw {
-               val = App{
-                  close(Var{ c"macro::bind-raw", with-location(mk-token("macro::bind-raw"),attr-loc) }),
-                  close(val)
-               };
+               val = mk-app(
+                  Var{ c"macro::bind-raw", with-location(mk-token("macro::bind-raw"),attr-loc) },
+                  val
+               );
             };
          };
          if non-zero(attr-key) {
             attr-key = c"." + attr-key;
-            val = App{
-               close(Var{ c"macro::bind-field-by-key", with-location(mk-token("macro::bind-field-by-key"),attr-loc) }),
-               close(App{
-                  close(Var{ attr-key, with-location(mk-token(attr-key),attr-loc) }),
-                  close(val)
-               })
-            };
+            val = mk-app(
+               Var{ c"macro::bind-field-by-key", with-location(mk-token("macro::bind-field-by-key"),attr-loc) },
+               mk-cons(
+                  Var{ attr-key, with-location(mk-token(attr-key),attr-loc) },
+                  val
+               )
+            );
          };
          if non-zero(des-args) {
-            des-args = App { close(des-args), close(val) };
+            des-args = mk-cons(des-args, val);
          } else { des-args = val; };
          if lsts-parse-head(tokens) != c"}" {
             lsts-parse-expect(c",", tokens); tokens = tail(tokens);
@@ -1394,10 +1394,10 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
       };
       if not(non-zero(des-args)) { des-args = ASTNil {}; };
       lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
-      App{
-         close(Lit{ tag, with-location(mk-token(tag),loc) }),
-         close(des-args)
-      };
+      mk-app(
+         Lit{ tag, with-location(mk-token(tag),loc) },
+         des-args
+      );
    } else {
       lsts-parse-expect(c"[Left Hand Side]", tokens);
       ASTEOF {}
