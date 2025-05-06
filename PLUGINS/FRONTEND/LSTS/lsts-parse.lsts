@@ -786,7 +786,7 @@ let lsts-parse-typedef-case(tokens: List<Token>): Tuple<AST,List<Token>> = (
       lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
    };
    let case = if non-zero(fields) {
-      App{ close(Lit{ tag.key, tag }), close(fields) }
+      mk-cons(Lit{ tag.key, tag }, fields)
    } else {
       Lit{ tag.key, tag }
    };
@@ -807,15 +807,15 @@ let lsts-parse-function-signature(tokens: List<Token>, loc: SourceLocation): Tup
       let type-rest = lsts-parse-type(tokens);
       tokens = type-rest.second;
       if lsts-parse-head(tokens)==c"," { tokens = tail(tokens); } else { lsts-parse-expect(c")", tokens); };
-      let arg-binding = App {
-         close(Lit{ c":", with-location(mk-token(":"),loc) }),
-         close(App{ close(Var{ arg-name.key, arg-name }), close(AType{ type-rest.first }) })
-      };
+      let arg-binding = mk-cons(
+         Lit{ c":", with-location(mk-token(":"),loc) },
+         mk-cons(Var{ arg-name.key, arg-name }, AType{ type-rest.first })
+      );
       if is( out.args-list, ASTNil{} ) {
          out.args-list = arg-binding;
          out.args-type = type-rest.first;
       } else {
-         out.args-list = App{ close(out.args-list), close(arg-binding) };
+         out.args-list = mk-cons(out.args-list, arg-binding);
          out.args-type = t3(c"Cons", out.args-type, type-rest.first);
       };
    };
