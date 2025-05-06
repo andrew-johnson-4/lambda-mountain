@@ -505,10 +505,10 @@ let lsts-parse-add(tokens: List<Token>): Tuple<AST,List<Token>> = (
       let op-t = head(tokens); let op = op-t.key; tokens = tail(tokens);
       let term2-rest = lsts-parse-mul(tokens);
       tokens = term2-rest.second;
-      term = App { 
-         close(Var{ op, op-t }),
-         close(App{ close(term), close(term2-rest.first) })
-      };
+      term = mk-app( 
+         Var{ op, op-t },
+         mk-cons(term, term2-rest.first)
+      );
    };
    Tuple { term, tokens }
 );
@@ -527,10 +527,10 @@ let lsts-parse-cmp(tokens: List<Token>): Tuple<AST,List<Token>> = (
       };
       let term2-rest = lsts-parse-add(tokens);
       tokens = term2-rest.second;
-      term = App { 
-         close(Var{ op, op-t }),
-         close(App{ close(term), close(term2-rest.first) })
-      };
+      term = mk-app( 
+         Var{ op, op-t },
+         mk-cons(term, term2-rest.first)
+      );
    };
    Tuple { term, tokens }
 );
@@ -543,10 +543,10 @@ let lsts-parse-andor(tokens: List<Token>): Tuple<AST,List<Token>> = (
       let op-t = head(tokens); let op = op-t.key; tokens = tail(tokens);
       let term2-rest = lsts-parse-cmp(tokens);
       tokens = term2-rest.second;
-      term = App { 
-         close(Var{ op, op-t }),
-         close(App{ close(term), close(term2-rest.first) })
-      };
+      term = mk-app( 
+         Var{ op, op-t },
+         mk-cons(term, term2-rest.first)
+      );
    };
    Tuple { term, tokens }
 );
@@ -559,10 +559,10 @@ let lsts-parse-mul(tokens: List<Token>): Tuple<AST,List<Token>> = (
       let op-t = head(tokens); let op = op-t.key; tokens = tail(tokens);
       let term2-rest = lsts-parse-atom(tokens);
       tokens = term2-rest.second;
-      term = App { 
-         close(Var{ op, op-t }),
-         close(App{ close(term), close(term2-rest.first) })
-      };
+      term = mk-app( 
+         Var{ op, op-t },
+         mk-cons(term, term2-rest.first)
+      );
    };
    lsts-parse-atom-tail( term, tokens )
 );
@@ -586,10 +586,10 @@ let lsts-parse-map(tokens: List<Token>): Tuple<AST,List<Token>> = (
             } else {
                Lit{ c"1_u64", with-location(mk-token("1_u64"),loc) }
             };
-            term = App {
-               close(Var{ c"map::cons", with-location(mk-token("map::cons"),loc) }),
-               close(App{ close(App{ close(item), close(mapped) }), close(term) })
-            };
+            term = mk-app(
+               Var{ c"map::cons", with-location(mk-token("map::cons"),loc) },
+               mk-cons(mk-cons(item, mapped), term)
+            );
             if non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
                lsts-parse-expect(c",", tokens); tokens = tail(tokens);
             }
