@@ -18,7 +18,7 @@ let std-infer-macro(tctx: Maybe<TContext>, t: AST): Maybe<TContext> = (
          print("Peep: \{peep-holes}\n");
          print("Peeped Type: \{peeped-type}\n");
 
-         let matched = [] :: List<(Type,Term)>;
+         let matched = [] :: List<(Type,AST)>;
          for Tuple{mtype=first, mterm=third} in row {
             if can-unify(mtype, peeped-type) then matched = cons( (mtype,mterm), matched );
          }; 
