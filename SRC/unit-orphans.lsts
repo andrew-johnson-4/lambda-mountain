@@ -13,3 +13,4 @@ import SRC/std-infer-expr.lsts;
 import SRC/apply-and-specialize.lsts;
 import SRC/decorate-var-to-def.lsts;
 import SRC/macro-table.lsts;
+import SRC/std-infer-macro.lsts;

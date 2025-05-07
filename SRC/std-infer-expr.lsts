@@ -23,11 +23,15 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
                _ => ();
             }};
 
-            tctx = infer-expr(tctx, l, Unscoped, TAny, used);
-            if typeof(l).is-arrow {
-               tctx = infer-expr(tctx, r, Unscoped, TAny, Call);            
+            if index-macro-table.has(var-name-if-var(l)) {
+               tctx = std-infer-macro(tctx, term);
             } else {
-               tctx = infer-expr(tctx, r, Unscoped, TAny, Used);
+               tctx = infer-expr(tctx, l, Unscoped, TAny, used);
+               if typeof(l).is-arrow {
+                  tctx = infer-expr(tctx, r, Unscoped, TAny, Call);            
+               } else {
+                  tctx = infer-expr(tctx, r, Unscoped, TAny, Used);
+               };
             };
 
             rt = if typeof(l).is-arrow && non-zero(var-name-if-var(l)) {
