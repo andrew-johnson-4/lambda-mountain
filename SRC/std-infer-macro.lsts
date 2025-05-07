@@ -3,10 +3,29 @@ let std-infer-macro(tctx: Maybe<TContext>, t: AST): Maybe<TContext> = (
    print("Infer macro: \{t}\n");
    match t {
       App{left:Var{mname=key}, r=right} => (
-         let row = index-macro-table.lookup(mname, [] :: List<(Type,AST)>);
-         for Tuple{mtype=first, mterm=second} in row {
-            print("Candidate: \{mname}(\{mtype}) => \{mterm}\n");
+         let row = index-macro-table.lookup(mname, [] :: List<(Type,Type,AST)>);
+         let peep-holes = TAny;
+         let peeped = TAny;
+         for Tuple{mtype=first, peep=second, mterm=third} in row {
+            if non-zero(peep-holes) {
+               if peep-holes != peep then fail("Invalid attempt to peep macro\n\{mname} : \{peeped}\n\{mname} : \{mtype}\n");
+            } else {
+               peep-holes = peep;
+               peeped = mtype;
+            };
          };
+         print("Peep: \{peep-holes}\n");
+         #let dominant-type = TAny;
+         #let candidates = [] :: List<(Type,AST)>;
+         #for Tuple{mtype=first, mterm=second} in row {
+         #   if non-zero(dominant-type) {
+         #   } else {
+         #      dominant-type = 
+         #   }
+         #};
+         #for Tuple{mtype=first, mterm=second} in candidates {
+         #   print("Candidate: \{mname}(\{mtype}) => \{mterm}\n");
+         #}
       );
    };
    tctx
