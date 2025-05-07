@@ -8,13 +8,15 @@ let std-infer-macro(tctx: Maybe<TContext>, t: AST): Maybe<TContext> = (
          let peeped = TAny;
          for Tuple{mtype=first, peep=second, mterm=third} in row {
             if non-zero(peep-holes) {
-               if peep-holes != peep then fail("Invalid attempt to peep macro\n\{mname} : \{peeped}\n\{mname} : \{mtype}\n");
+               if peep-holes != peep then fail("Error: Macros must have the same pre-inference expectation.\n\{mname} : \{peeped}\n\{mname} : \{mtype}\n");
             } else {
                peep-holes = peep;
                peeped = mtype;
             };
          };
+         let peeped-type = std-infer-peeped-arguments(tctx, r, peep-holes);
          print("Peep: \{peep-holes}\n");
+         print("Peeped Type: \{peeped-type}\n");
          #let dominant-type = TAny;
          #let candidates = [] :: List<(Type,AST)>;
          #for Tuple{mtype=first, mterm=second} in row {
@@ -29,4 +31,22 @@ let std-infer-macro(tctx: Maybe<TContext>, t: AST): Maybe<TContext> = (
       );
    };
    tctx
+);
+
+let std-infer-peeped-arguments(tctx: Maybe<TContext>, t: AST, peep: Type): Type = (
+   match peep {
+      TGround{tag:c"Cons", parameters:[p2.. p1..]} => (
+         match t {
+            App{left=left, right=right} => (
+               t3(c"Cons",
+                  std-infer-peeped-arguments(tctx, left, p1),
+                  std-infer-peeped-arguments(tctx, right, p2)
+               )
+            );
+            _ => fail("std-infer-peeped-arguments expected cons term: \{t}\n");
+         }
+      );
+      TAny{} => ta;
+      _ => ( infer-expr(tctx, t, Unscoped, TAny, Used); typeof(t) );
+   }
 );
