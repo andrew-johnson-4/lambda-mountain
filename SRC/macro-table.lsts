@@ -1,9 +1,17 @@
 
-let index-macro-table = {} :: HashtableEq<CString,List<AST>>;
+let index-macro-table = {} :: HashtableEq<CString,List<(Type,AST)>>;
 
 let bind-new-macro(mname: CString, mterm: AST): Nil = (
    print("Bind New Macro: \{mname} = \{mterm}\n");
-   let row = index-macro-table.lookup(mname, [] :: List<AST>);
-   row = cons(mterm, row);
+   let row = index-macro-table.lookup(mname, [] :: List<(Type,AST)>);
+   row = cons( (param-types-of-macro(mterm),mterm) , row);
    index-macro-table = index-macro-table.bind(mname, row);
+);
+
+let param-types-of-macro(mterm: AST): Type = (
+   match mterm {
+      Abs{lhs=lhs} => param-types-of-macro(lhs);
+      App{ rst=left, right:App{left:Lit{key:c":"}, right:App{right:AType{tt=tt}}}  } => t3(c"Cons",param-types-of-macro(rst),tt);
+      App{left:Lit{key:c":"}, right:App{right:AType{tt=tt}}} => tt;
+   }
 );

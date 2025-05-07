@@ -1,5 +1,13 @@
 
 let std-infer-macro(tctx: Maybe<TContext>, t: AST): Maybe<TContext> = (
    print("Infer macro: \{t}\n");
+   match t {
+      App{left:Var{mname=key}, r=right} => (
+         let row = index-macro-table.lookup(mname, [] :: List<(Type,AST)>);
+         for Tuple{mtype=first, mterm=second} in row {
+            print("Candidate: \{mname}(\{mtype}) => \{mterm}\n");
+         };
+      );
+   };
    tctx
 );
