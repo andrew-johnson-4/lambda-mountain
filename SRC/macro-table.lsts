@@ -5,7 +5,7 @@ let bind-new-macro(mname: CString, mterm: AST): Nil = (
    print("Bind New Macro: \{mname} = \{mterm}\n");
    let row = index-macro-table.lookup(mname, [] :: List<(Type,Type,AST)>);
    let mtype = param-types-of-macro(mterm);
-   row = cons( (mtype, macro-type-peep-holes(mtype), mterm), row);
+   row = cons( (denormalize(mtype), macro-type-peep-holes(mtype), mterm), row);
    index-macro-table = index-macro-table.bind(mname, row);
 );
 

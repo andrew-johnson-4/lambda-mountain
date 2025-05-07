@@ -17,17 +17,31 @@ let std-infer-macro(tctx: Maybe<TContext>, t: AST): Maybe<TContext> = (
          let peeped-type = std-infer-peeped-arguments(tctx, r, peep-holes);
          print("Peep: \{peep-holes}\n");
          print("Peeped Type: \{peeped-type}\n");
-         #let dominant-type = TAny;
-         #let candidates = [] :: List<(Type,AST)>;
-         #for Tuple{mtype=first, mterm=second} in row {
-         #   if non-zero(dominant-type) {
-         #   } else {
-         #      dominant-type = 
-         #   }
-         #};
-         #for Tuple{mtype=first, mterm=second} in candidates {
-         #   print("Candidate: \{mname}(\{mtype}) => \{mterm}\n");
-         #}
+
+         let matched = [] :: List<(Type,AST)>;
+         for Tuple{mtype=first, mterm=third} in row {
+            if can-unify(mtype, peeped-type) then matched = cons( (mtype,mterm), matched );
+         }; 
+
+         let dominant-type = TAny;
+         let candidates = [] :: List<(Type,AST)>;
+         for Tuple{mtype=first, mterm=second} in matched {
+            if non-zero(dominant-type) {
+               if can-unify(mtype,dominant-type) && can-unify(dominant-type,mtype) {
+                  candidates = cons( (mtype,mterm), candidates );
+               } else if can-unify(dominant-type,mtype) {
+                  dominant-type = mtype;
+                  candidates = [(mtype,mterm)];
+               } else if can-unify(mtype,dominant-type) { # existing is dominant, keep existing and ignore new
+               } else fail("Conflicting type candidates encountered during macro specialization:\n\{mname} : \{dominant-type}\n\{mname} : \{mtype}\n");
+            } else {
+               dominant-type = mtype;
+               candidates = [(mtype,mterm)];
+            }
+         };
+         for Tuple{mtype=first, mterm=second} in candidates {
+            print("Candidate: \{mname}(\{mtype}) => \{mterm}\n");
+         }
       );
    };
    tctx
