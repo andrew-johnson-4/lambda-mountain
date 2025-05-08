@@ -37,8 +37,8 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
                } else {
                   t3(c"Cons", typeof(l), typeof(r))
                };
-               ascript-normal(term, rt);
                if not(is(used,Call)) { rt = cons-tail-or-self(rt); };
+               ascript-normal(term, rt);
             };
          };
 
