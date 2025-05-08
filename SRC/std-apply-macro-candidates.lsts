@@ -21,10 +21,9 @@ let std-try-destructure-macro(tctx: TContext?, margs: AST, mtype: Type, mcandida
                App{left=left, right=right} => (
                   match mcandidate {
                      App{cleft=left, cright=right} => (
-                        (tctx, union(
-                           std-try-destructure-macro(tctx, left, p1, cleft),
-                           std-try-destructure-macro(tctx, right, p2, cright)
-                        ))
+                        (tctx, let mctx1) = std-try-destructure-macro(tctx, left, p1, cleft);
+                        (tctx, let mctx2) = std-try-destructure-macro(tctx, right, p2, cright);
+                        (tctx, union(mctx1, mctx2))
                      );
                      _ => (tctx, no);
                   }
@@ -44,4 +43,18 @@ let std-try-destructure-macro(tctx: TContext?, margs: AST, mtype: Type, mcandida
          );
       }
    }
+);
+
+let std-macro-helper-name(tt: Type): CString = (
+   match tt {
+      TVar{name=name} => if name.has-prefix(c"macro::") then name else c"";
+      TAnd{conjugate=conjugate} => (
+         let name = c"";
+         for vector c in conjugate {
+            if not(non-zero(name)) then name = std-macro-helper-name(c);
+         };
+         name
+      );
+      _ => c"";
+   };
 );
