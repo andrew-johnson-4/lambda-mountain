@@ -19,29 +19,28 @@ let std-apply-macro-candidates(tctx: TContext?, t: AST, candidates: List<(Type,A
 let std-try-destructure-macro(tctx: TContext?, margs: AST, mtype: Type, mcandidate: AST): AContext? = (
    print("Try destructure: \{margs} :: \{mtype}\nCandidate: \{mcandidate}\n");
    let no = None :: AContext?;
-   no
-   #if let Abs{lhs=lhs, rhs=rhs} = mcandidate then std-try-destructure-macro(tctx, margs, mtype, lhs)
-   #else {
-   #   match mtype {
-   #      TGround{tag:c"Cons", parameters:[p2.. p1..]} => (
-   #         match margs {
-   #            App{left=left, right=right} => (
-   #               match mcandidate {
-   #                  App{cleft=left, cright=right} => (
-   #                     union(
-   #                        std-try-destructure-macro(tctx, left, p1, cleft),
-   #                        std-try-destructure-macro(tctx, right, p2, cright)
-   #                     )
-   #                  );
-   #                  _ => no;
-   #               }
-   #            );
-   #            _ => no;
-   #         }
-   #      );
-   #      _ => (
-   #         fail("TODO: destructure \{mcandidate} :: \{mtype}\n");
-   #      );
-   #   }
-   #}
+   if let Abs{lhs=lhs, rhs=rhs} = mcandidate then std-try-destructure-macro(tctx, margs, mtype, lhs)
+   else {
+      match mtype {
+         TGround{tag:c"Cons", parameters:[p2.. p1..]} => (
+            match margs {
+               App{left=left, right=right} => (
+                  match mcandidate {
+                     App{cleft=left, cright=right} => (
+                        union(
+                           std-try-destructure-macro(tctx, left, p1, cleft),
+                           std-try-destructure-macro(tctx, right, p2, cright)
+                        )
+                     );
+                     _ => no;
+                  }
+               );
+               _ => no;
+            }
+         );
+         _ => (
+            fail("TODO: destructure \{mcandidate} :: \{mtype}\n");
+         );
+      }
+   }
 );
