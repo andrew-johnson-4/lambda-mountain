@@ -1,0 +1,7 @@
+
+let std-apply-macro-candidates(tctx: TContext?, t: AST, candidates: List<(Type,AST)>): (TContext?, AST) = (
+   for Tuple{ctype=first, cterm=second} in candidates {
+      print("Try Apply macro candidate: \{ctype} : \{cterm}\n");
+   };
+   (tctx, t)
+);

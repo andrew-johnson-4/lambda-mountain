@@ -39,9 +39,7 @@ let std-infer-macro(tctx: Maybe<TContext>, t: AST): (TContext?, AST) = (
                candidates = [(mtype,mterm)];
             }
          };
-         for Tuple{mtype=first, mterm=second} in candidates {
-            print("Candidate: \{mname}(\{mtype}) => \{mterm}\n");
-         }
+         (tctx, t) = std-apply-macro-candidates(tctx, t, candidates);
       );
    };
    (tctx, t)
