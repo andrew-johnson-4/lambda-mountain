@@ -1,22 +1,16 @@
 
-let std-apply-macro-candidates(tctx: TContext?, t: AST, candidates: List<(Type,AST)>): (TContext?, AST) = (
+let std-apply-macro-candidates(tctx: TContext?, mname: CString, margs: AST, candidates: List<(Type,AST)>): (TContext?, AST) = (
    print("Try Apply Candidates \{t}\n");
    let found = false;
-   let mname = c"";
    for Tuple{ctype=first, cterm=second} in candidates {
-      match t {
-         App{left:Var{mname-k=key}, margs=right} => (
-            mname = mname-k;
-            let mctx = std-try-destructure-macro(tctx, margs, ctype, cterm);
-            if mctx.is-some then fail("TODO: found macro match, now apply 'std-apply-macro-candidates'");
-         );
-      }
+      (let new-tctx, let mctx) = std-try-destructure-macro(tctx, margs, ctype, cterm);
+      if mctx.is-some then fail("TODO: found macro match, now apply 'std-apply-macro-candidates'");
    };
    if not(found) then fail("Macro Application failed during destructuring: \{mname}\n");
    (tctx, t)
 );
 
-let std-try-destructure-macro(tctx: TContext?, margs: AST, mtype: Type, mcandidate: AST): AContext? = (
+let std-try-destructure-macro(tctx: TContext?, margs: AST, mtype: Type, mcandidate: AST): (TContext?, AContext?) = (
    print("Try destructure: \{margs} :: \{mtype}\nCandidate: \{mcandidate}\n");
    let no = None :: AContext?;
    if let Abs{lhs=lhs, rhs=rhs} = mcandidate then std-try-destructure-macro(tctx, margs, mtype, lhs)
@@ -27,19 +21,26 @@ let std-try-destructure-macro(tctx: TContext?, margs: AST, mtype: Type, mcandida
                App{left=left, right=right} => (
                   match mcandidate {
                      App{cleft=left, cright=right} => (
-                        union(
+                        (tctx, union(
                            std-try-destructure-macro(tctx, left, p1, cleft),
                            std-try-destructure-macro(tctx, right, p2, cright)
-                        )
+                        ))
                      );
-                     _ => no;
+                     _ => (tctx, no);
                   }
                );
-               _ => no;
+               _ => (tctx, no);
             }
          );
          _ => (
-            fail("TODO: destructure \{mcandidate} :: \{mtype}\n");
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt=tt}}} => (
+                  if non-zero(std-macro-helper-name(tt))
+                  then (tctx, std-direct-destructure-macro(tctx, std-apply-macro(tctx, std-macro-helper-name(tt), margs), mstruct))
+                  else (tctx, std-direct-destructure-macro(margs, mstruct))
+               );
+               _ => (tctx, no);
+            }
          );
       }
    }
