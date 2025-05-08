@@ -1,5 +1,5 @@
 
-let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUsed): Maybe<TContext> = (
+let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUsed): (TContext?, AST) = (
    match term {
       App{ is-cons=is-cons, l=left, r=right } => (
          if is-cons {
@@ -24,7 +24,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
             }};
 
             if index-macro-table.has(var-name-if-var(l)) {
-               tctx = std-infer-macro(tctx, term);
+               (tctx, term) = std-infer-macro(tctx, term);
             } else {
                tctx = infer-expr(tctx, l, Unscoped, TAny, used);
                if typeof(l).is-arrow {
@@ -32,23 +32,21 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
                } else {
                   tctx = infer-expr(tctx, r, Unscoped, TAny, Used);
                };
+               rt = if typeof(l).is-arrow && non-zero(var-name-if-var(l)) {
+                  apply-global-callable(var-name-if-var(l), typeof(r), term);
+               } else {
+                  t3(c"Cons", typeof(l), typeof(r))
+               };
+               ascript-normal(term, rt);
+               if not(is(used,Call)) { rt = cons-tail-or-self(rt); };
             };
-
-            rt = if typeof(l).is-arrow && non-zero(var-name-if-var(l)) {
-               apply-global-callable(var-name-if-var(l), typeof(r), term);
-            } else {
-               t3(c"Cons", typeof(l), typeof(r))
-            };
-
-            if not(is(used,Call)) { rt = cons-tail-or-self(rt); };
-            ascript-normal(term, rt);
          };
 
-         if not(is-cons) && non-zero(var-name-if-var(l)) && typeof(l).is-arrow {
+         if not(index-macro-table.has(var-name-if-var(l))) && not(is-cons) && non-zero(var-name-if-var(l)) && typeof(l).is-arrow {
             mark-var-to-def-todo(tctx, var-name-if-var(l), typeof(r), l);
          };
       );
    };
-   tctx;
+   (tctx, term);
 );
 

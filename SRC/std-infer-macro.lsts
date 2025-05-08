@@ -1,5 +1,5 @@
 
-let std-infer-macro(tctx: Maybe<TContext>, t: AST): Maybe<TContext> = (
+let std-infer-macro(tctx: Maybe<TContext>, t: AST): (TContext?, AST) = (
    print("Infer macro: \{t}\n");
    match t {
       App{left:Var{mname=key}, r=right} => (
@@ -44,7 +44,7 @@ let std-infer-macro(tctx: Maybe<TContext>, t: AST): Maybe<TContext> = (
          }
       );
    };
-   tctx
+   (tctx, t)
 );
 
 let std-infer-peeped-arguments(tctx: Maybe<TContext>, t: AST, peep: Type): Type = (
