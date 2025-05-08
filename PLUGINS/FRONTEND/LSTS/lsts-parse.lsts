@@ -979,10 +979,22 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
                matched-rest;
             }
          };
-         let default-rest = if lsts-parse-head(tokens)==c"else" {
+         let default-rest = if lsts-parse-head(tokens) == c"else" {
             lsts-parse-expect(c"else", tokens); tokens = tail(tokens);
-            let default-rest = lsts-parse-small-expression(tokens); tokens = default-rest.second;
-            default-rest.first;
+            if lsts-parse-head(tokens) == c"{" {
+               lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
+               let false-expr = if lsts-parse-head(tokens) == c"}" then ASTNil else {
+                  let f-rest = lsts-parse-expression(tokens);
+                  tokens = f-rest.second;
+                  f-rest.first;
+               };
+               lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
+               false-expr;
+            } else {
+               let f-rest = lsts-parse-small-expression(tokens);
+               tokens = f-rest.second;
+               f-rest.first;
+            };
          } else ASTNil;
          let cases = mk-cons(ASTNil, mk-cons(lhs-rest.first, matched-rest.first));
          if non-zero(default-rest) {
