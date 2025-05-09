@@ -1,0 +1,67 @@
+
+let std-apply-macro(tctx: Maybe<TContext>, t: AST): (TContext?, AST) = (
+   print("Infer macro: \{t}\n");
+   match t {
+      App{left:Var{mname=key}, margs=right} => (
+         std-apply-macro(tctx, mname, margs);
+      );
+   }
+);
+
+let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
+   let row = index-macro-table.lookup(mname, [] :: List<(Type,Type,AST)>);
+   let peep-holes = TAny;
+   let peeped = TAny;
+   for Tuple{mtype=first, peep=second, mterm=third} in row {
+      if non-zero(peep-holes) {
+         if peep-holes != peep then fail("Error: Macros must have the same pre-inference expectation.\n\{mname} : \{peeped}\n\{mname} : \{mtype}\n");
+      } else {
+         peep-holes = peep;
+         peeped = mtype;
+      };
+   };
+   let peeped-type = std-infer-peeped-arguments(tctx, margs, peep-holes);
+   print("Peep: \{peep-holes}\n");
+   print("Peeped Type: \{peeped-type}\n");
+
+   let matched = [] :: List<(Type,AST)>;
+   for Tuple{mtype=first, mterm=third} in row {
+      if can-unify(mtype, peeped-type) then matched = cons( (mtype,mterm), matched );
+   }; 
+
+   let dominant-type = TAny;
+   let candidates = [] :: List<(Type,AST)>;
+   for Tuple{mtype=first, mterm=second} in matched {
+      if non-zero(dominant-type) {
+         if can-unify(mtype,dominant-type) && can-unify(dominant-type,mtype) {
+            candidates = cons( (mtype,mterm), candidates );
+         } else if can-unify(dominant-type,mtype) {
+            dominant-type = mtype;
+            candidates = [(mtype,mterm)];
+         } else if can-unify(mtype,dominant-type) { # existing is dominant, keep existing and ignore new
+         } else fail("Conflicting type candidates encountered during macro specialization:\n\{mname} : \{dominant-type}\n\{mname} : \{mtype}\n");
+      } else {
+         dominant-type = mtype;
+         candidates = [(mtype,mterm)];
+      }
+   };
+   std-apply-macro-candidates(tctx, mname, margs, candidates);
+);
+
+let std-infer-peeped-arguments(tctx: Maybe<TContext>, t: AST, peep: Type): Type = (
+   match peep {
+      TGround{tag:c"Cons", parameters:[p2.. p1..]} => (
+         match t {
+            App{left=left, right=right} => (
+               t3(c"Cons",
+                  std-infer-peeped-arguments(tctx, left, p1),
+                  std-infer-peeped-arguments(tctx, right, p2)
+               )
+            );
+            _ => fail("std-infer-peeped-arguments expected cons term: \{t}\n");
+         }
+      );
+      TAny{} => ta;
+      _ => ( infer-expr(tctx, t, Unscoped, TAny, Used); typeof(t) );
+   }
+);

@@ -1,0 +1,65 @@
+
+let std-apply-macro-candidates(tctx: TContext?, mname: CString, margs: AST, candidates: List<(Type,AST)>): (TContext?, AST) = (
+   print("Try Apply Candidates \{mname} \{margs}\n");
+   let found = false;
+   let t = ASTEOF;
+   for Tuple{ctype=first, cterm=second} in candidates {
+      if not(non-zero(t)) {
+         (let new-tctx, let mctx) = std-try-destructure-macro(tctx, margs, ctype, cterm);
+         if mctx.is-some then fail("TODO: found macro match, now apply 'std-apply-macro-candidates'");
+      }
+   };
+   if not(found) then fail("Macro Application failed during destructuring: \{mname}\n");
+   (tctx, t)
+);
+
+let std-try-destructure-macro(tctx: TContext?, margs: AST, mtype: Type, mcandidate: AST): (TContext?, AContext?) = (
+   print("Try destructure: \{margs} :: \{mtype}\nCandidate: \{mcandidate}\n");
+   let no = None :: AContext?;
+   if let Abs{lhs=lhs, rhs=rhs} = mcandidate then std-try-destructure-macro(tctx, margs, mtype, lhs)
+   else {
+      match mtype {
+         TGround{tag:c"Cons", parameters:[p2.. p1..]} => (
+            match margs {
+               App{left=left, right=right} => (
+                  match mcandidate {
+                     App{cleft=left, cright=right} => (
+                        (tctx, let mctx1) = std-try-destructure-macro(tctx, left, p1, cleft);
+                        (tctx, let mctx2) = std-try-destructure-macro(tctx, right, p2, cright);
+                        (tctx, union(mctx1, mctx2))
+                     );
+                     _ => (tctx, no);
+                  }
+               );
+               _ => (tctx, no);
+            }
+         );
+         _ => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt=tt}}} => (
+                  if non-zero(std-macro-helper-name(tt))
+                  then {
+                     (tctx, let helped) = std-apply-macro(tctx, std-macro-helper-name(tt), margs);
+                     (tctx, std-direct-destructure-macro(helped, mstruct))
+                  } else (tctx, std-direct-destructure-macro(margs, mstruct))
+               );
+               _ => (tctx, no);
+            }
+         );
+      }
+   }
+);
+
+let std-macro-helper-name(tt: Type): CString = (
+   match tt {
+      TVar{name=name} => if name.has-prefix(c"macro::") then name else c"";
+      TAnd{conjugate=conjugate} => (
+         let name = c"";
+         for vector c in conjugate {
+            if not(non-zero(name)) then name = std-macro-helper-name(c);
+         };
+         name
+      );
+      _ => c"";
+   };
+);

@@ -170,7 +170,11 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
          (ascript-normal( term (t1 'Nil_s) ))
       ))
       ( (App( is-cons l r )) (
-         (set tctx (std-infer-expr( tctx term false used )))
+         (let tctx-term (std-infer-expr( tctx term false used )))
+         (if (not(is( term (.second tctx-term) ))) (
+            (print 'TODO:\sinfer-expr\sreplace\sterm\sin\scontext\n_s)(exit 1_u64)
+         ) ())
+         (set tctx (.first tctx-term))
       ))
       ( (Abs( lhs rhs tlt )) (
          (set tctx (infer-ctx( tctx lhs )))
