@@ -6,7 +6,12 @@ let std-apply-macro-candidates(tctx: TContext?, mname: CString, margs: AST, cand
    for Tuple{ctype=first, cterm=second} in candidates {
       if not(non-zero(t)) {
          (let new-tctx, let mctx) = std-try-destructure-macro(tctx, margs, ctype, cterm);
-         if mctx.is-some then fail("TODO: found macro match, now apply 'std-apply-macro-candidates'");
+         if mctx.is-some then {
+            for Tuple{k=first,v=second} in mctx.get-or-panic {
+               print("\{k} : \{v}\n");
+            };
+            fail("TODO: found macro match, now apply 'std-apply-macro-candidates'\n\{ctype} : \{cterm}\n");
+         }
       }
    };
    if not(found) then fail("Macro Application failed during destructuring: \{mname}\n");
