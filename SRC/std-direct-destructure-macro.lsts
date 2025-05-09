@@ -1,0 +1,6 @@
+
+let std-direct-destructure-macro(margs: AST, mstruct: AST): AContext? = (
+   let no = None :: AContext?;
+   fail("Direct Destructure:\nargs: \{margs}\nlhs: \{mstruct}\n");
+   no
+);

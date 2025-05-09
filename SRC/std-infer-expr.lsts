@@ -24,7 +24,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
             }};
 
             if index-macro-table.has(var-name-if-var(l)) {
-               (tctx, term) = std-infer-macro(tctx, term);
+               (tctx, term) = std-apply-macro(tctx, term);
             } else {
                tctx = infer-expr(tctx, l, Unscoped, TAny, used);
                if typeof(l).is-arrow {

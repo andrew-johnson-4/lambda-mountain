@@ -1,14 +1,14 @@
 
-let std-infer-macro(tctx: Maybe<TContext>, t: AST): (TContext?, AST) = (
+let std-apply-macro(tctx: Maybe<TContext>, t: AST): (TContext?, AST) = (
    print("Infer macro: \{t}\n");
    match t {
       App{left:Var{mname=key}, margs=right} => (
-         std-infer-macro(tctx, mname, margs);
+         std-apply-macro(tctx, mname, margs);
       );
    }
 );
 
-let std-infer-macro(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
+let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
    let row = index-macro-table.lookup(mname, [] :: List<(Type,Type,AST)>);
    let peep-holes = TAny;
    let peeped = TAny;

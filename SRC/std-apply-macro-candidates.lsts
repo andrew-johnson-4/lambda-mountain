@@ -1,10 +1,13 @@
 
 let std-apply-macro-candidates(tctx: TContext?, mname: CString, margs: AST, candidates: List<(Type,AST)>): (TContext?, AST) = (
-   print("Try Apply Candidates \{t}\n");
+   print("Try Apply Candidates \{mname} \{margs}\n");
    let found = false;
+   let t = ASTEOF;
    for Tuple{ctype=first, cterm=second} in candidates {
-      (let new-tctx, let mctx) = std-try-destructure-macro(tctx, margs, ctype, cterm);
-      if mctx.is-some then fail("TODO: found macro match, now apply 'std-apply-macro-candidates'");
+      if not(non-zero(t)) {
+         (let new-tctx, let mctx) = std-try-destructure-macro(tctx, margs, ctype, cterm);
+         if mctx.is-some then fail("TODO: found macro match, now apply 'std-apply-macro-candidates'");
+      }
    };
    if not(found) then fail("Macro Application failed during destructuring: \{mname}\n");
    (tctx, t)
@@ -35,8 +38,10 @@ let std-try-destructure-macro(tctx: TContext?, margs: AST, mtype: Type, mcandida
             match mcandidate {
                App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt=tt}}} => (
                   if non-zero(std-macro-helper-name(tt))
-                  then (tctx, std-direct-destructure-macro(tctx, std-apply-macro(tctx, std-macro-helper-name(tt), margs), mstruct))
-                  else (tctx, std-direct-destructure-macro(margs, mstruct))
+                  then {
+                     (tctx, let helped) = std-apply-macro(tctx, std-macro-helper-name(tt), margs);
+                     (tctx, std-direct-destructure-macro(helped, mstruct))
+                  } else (tctx, std-direct-destructure-macro(margs, mstruct))
                );
                _ => (tctx, no);
             }
