@@ -23,8 +23,6 @@ meta
 infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hint Type)(: used IsUsed). (: (
    (match term (
       ()
-      ( ASTNil (ascript-normal( term (t1 'Nil_s) )) )
-      ( ASTEOF (ascript-normal( term (t1 'Nil_s) )) )
       ( (Seq( l r )) (
          (infer-expr( tctx l Unscoped TAny Used ))
          (infer-expr( tctx r Unscoped TAny Used ))
@@ -219,8 +217,10 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
             ) ())
          ))
       ))
-      ( (Meta( _ )) (ascript-normal( term (t1 'Nil_s) )) )
-      ( (AType( tt )) (ascript-normal( term tt )) )
+      ( _ (
+         (let tctx-term (std-infer-expr( tctx term false used )))
+         (set tctx (.first tctx-term)) 
+      ))
    ))
    tctx
 ) Maybe<TContext>);
