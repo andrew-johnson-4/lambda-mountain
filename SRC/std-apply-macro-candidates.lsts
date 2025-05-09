@@ -1,20 +1,24 @@
 
 let std-apply-macro-candidates(tctx: TContext?, mname: CString, margs: AST, candidates: List<(Type,AST)>): (TContext?, AST) = (
-   print("Try Apply Candidates \{mname} \{margs}\n");
-   let found = false;
+   # candidates must be in last-most-first order
+   # Example: Source Definitions
+   # define macro candidate 1
+   # define macro candidate 2
+   # should be sent as
+   # [ candidate 2, candidate 1 ]
    let t = ASTEOF;
-   for Tuple{ctype=first, cterm=second} in candidates {
+   for Tuple{ctype=first, second:Abs{mlhs=lhs,rhs:App{left:Lit{key:c":"},right:App{mrhs=left}}}} in candidates {
       if not(non-zero(t)) {
-         (let new-tctx, let mctx) = std-try-destructure-macro(tctx, margs, ctype, cterm);
-         if mctx.is-some then fail("TODO: found macro match, now apply 'std-apply-macro-candidates'");
+         (let new-tctx, let mctx) = std-try-destructure-macro(tctx, margs, ctype, mlhs);
+         if mctx.is-some then mctx = union(mctx, Some{extract-uuids(mrhs)});
+         if mctx.is-some then t = substitute(mctx.get-or-panic, mrhs);
       }
    };
-   if not(found) then fail("Macro Application failed during destructuring: \{mname}\n");
+   if not(non-zero(t)) then fail("Macro Application failed match during destructuring: \{mname}\n");
    (tctx, t)
 );
 
 let std-try-destructure-macro(tctx: TContext?, margs: AST, mtype: Type, mcandidate: AST): (TContext?, AContext?) = (
-   print("Try destructure: \{margs} :: \{mtype}\nCandidate: \{mcandidate}\n");
    let no = None :: AContext?;
    if let Abs{lhs=lhs, rhs=rhs} = mcandidate then std-try-destructure-macro(tctx, margs, mtype, lhs)
    else {

@@ -1,6 +1,8 @@
 
 let std-direct-destructure-macro(margs: AST, mstruct: AST): AContext? = (
    let no = None :: AContext?;
-   fail("Direct Destructure:\nargs: \{margs}\nlhs: \{mstruct}\n");
-   no
+   match (margs, mstruct) {
+      Tuple{ val=first, second:Var{key=key} } => Some{[(key,val)]};
+      _ => (fail("Unexpected Pattern std-direct-destructure-macro:\nargs: \{margs}\nlhs: \{mstruct}\n"); no);
+   }
 );

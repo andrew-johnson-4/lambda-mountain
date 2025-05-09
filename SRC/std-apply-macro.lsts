@@ -1,6 +1,5 @@
 
 let std-apply-macro(tctx: Maybe<TContext>, t: AST): (TContext?, AST) = (
-   print("Infer macro: \{t}\n");
    match t {
       App{left:Var{mname=key}, margs=right} => (
          std-apply-macro(tctx, mname, margs);
@@ -21,8 +20,6 @@ let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContex
       };
    };
    let peeped-type = std-infer-peeped-arguments(tctx, margs, peep-holes);
-   print("Peep: \{peep-holes}\n");
-   print("Peeped Type: \{peeped-type}\n");
 
    let matched = [] :: List<(Type,AST)>;
    for Tuple{mtype=first, mterm=third} in row {
