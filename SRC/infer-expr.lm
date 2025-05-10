@@ -23,36 +23,9 @@ meta
 infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hint Type)(: used IsUsed). (: (
    (match term (
       ()
-      ( (App( (Lit( ':_s _ )) (App( (Lit( _ _ )) (AType tt) )) )) (
+      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
          (let tctx-term (std-infer-expr( tctx term false used hint )))
          (set tctx (.first tctx-term)) 
-      ))
-      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
-         (set tt (.rewrite-type-alias tt))
-         (match t (
-            ()
-            ( (Var( '__uninitialized_s _ )) (
-               (ascript-normal( t tt ))
-            ))
-            ( _ (set tctx (infer-expr( tctx t Unscoped tt Tail ))) )
-         ))
-         (let inner-tt (typeof t))
-         (if (non-zero inner-tt) (
-            (ascript-normal( term tt ))
-            (match term (
-               ()
-               ( (App( las ras )) (
-                  (ascript-normal( las tt ))
-                  (ascript-normal( ras tt ))
-               ))
-            ))
-         ) ())
-         (if (.is-t( tt 'SmartString_s )) () (
-            (maybe-apply-global-callable( 'intern_s tt term ))
-         ))
-         (if (&&( (!=( (var-name-if-var t) '__uninitialized_s )) (not(is( used C ))) )) (
-            (ascript-normal( t tt ))
-         ) ())
       ))
       ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (
          (if (is( scoped Scoped )) (scope(
@@ -136,15 +109,6 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
          (set tctx (.bind( tctx lname tt def )))
          (ascript-normal( term (t1 'Nil_s) ))
       ))
-      ( (App( is-cons l r )) (
-         (let tctx-term (std-infer-expr( tctx term false used hint )))
-         (if (not(is( term (.second tctx-term) ))) (
-            (print 'TODO:\sinfer-expr\sreplace\sterm\sin\scontext\n_s)
-            (print (.second tctx-term))(print '\n_s)
-            (exit 1_u64)
-         ) ())
-         (set tctx (.first tctx-term))
-      ))
       ( (Abs( lhs rhs tlt )) (
          (set tctx (infer-ctx( tctx lhs )))
          (if (.is-t( tlt 'Blob_s )) (
@@ -173,6 +137,11 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
       ( _ (
          (let tctx-term (std-infer-expr( tctx term false used hint )))
          (set tctx (.first tctx-term)) 
+         (if (not(is( term (.second tctx-term) ))) (
+            (print 'TODO:\sinfer-expr\sreplace\sterm\sin\scontext\n_s)
+            (print (.second tctx-term))(print '\n_s)
+            (exit 1_u64)
+         ) ())
       ))
    ))
    tctx

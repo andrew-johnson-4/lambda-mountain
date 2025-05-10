@@ -15,6 +15,22 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
          };
          ascript-normal(term, tt);
       );
+      App{left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
+         tt = tt.rewrite-type-alias;
+         if var-name-if-var(t)==c"__uninitialized" {
+            ascript-normal(t, tt);
+         } else {
+            tctx = infer-expr(tctx, t, Unscoped, tt, Tail);
+         };
+         let inner-tt = typeof(t);
+         if non-zero(inner-tt) {
+            ascript-normal(term, tt);
+         };
+         if tt.is-t(c"SmartString") then maybe-apply-global-callable(c"intern", tt, term);
+         if var-name-if-var(t)!=c"__uninitialized" && not(is(used, C)) {
+            ascript-normal(t, tt);
+         }
+      );
       ASTEOF{} => ascript-normal(term, t1(c"Nil"));
       ASTNil{} => ascript-normal(term, t1(c"Nil"));
       Meta{} => ascript-normal(term, t1(c"Nil"));
