@@ -7,10 +7,19 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
       Typedef{} => ();
       AType{tt=tt} => ascript-normal(term, tt);
       Seq{left=left, right=right} => (
-         (tctx, let new-left) = std-infer-expr(tctx, left, is-scoped, Used);
-         (tctx, let new-right) = std-infer-expr(tctx, right, is-scoped, Used);
+         (tctx, let new-left) = std-infer-expr(tctx, left, false, Used);
+         (tctx, let new-right) = std-infer-expr(tctx, right, false, Used);
          if not(is(left,new-left)) || not(is(right,new-right))
          then term = mk-seq(new-left, new-right);
+      );
+      Glb{key=key, val=val} => (
+         # TODO: remove after infer-expr.lm is ported
+         #(tctx, let new-val) = std-infer-expr(tctx, val, false, Used);
+         #if not(is(val,new-val)) then term = mk-glb(key, val);
+         let rough-tt = typeof(term);
+         if rough-tt.is-arrow && not(rough-tt.is-open) {
+            infer-expr(tctx, val, if is-scoped then Scoped else Unscoped, TAny, used);
+         };
       );
       App{ is-cons=is-cons, l=left, r=right } => (
          if is-cons {
@@ -56,6 +65,10 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
          if not(index-macro-table.has(var-name-if-var(l))) && not(is-cons) && non-zero(var-name-if-var(l)) && typeof(l).is-arrow {
             mark-var-to-def-todo(tctx, var-name-if-var(l), typeof(r), l);
          };
+      );
+      _ => (
+         # TODO: remove after infer-expr.lm is ported
+         infer-expr(tctx, term, if is-scoped then Scoped else Unscoped, TAny, used);
       );
    };
    (tctx, term);

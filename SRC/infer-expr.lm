@@ -23,13 +23,6 @@ meta
 infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hint Type)(: used IsUsed). (: (
    (match term (
       ()
-      ( (Glb( k (@( v (Abs( _ )) )) )) (
-         (if (.is-open(typeof term)) () (
-            (infer-expr( tctx v Unscoped TAny Used ))
-            (let vt (typeof v))
-         ))
-      ))
-      ( (Glb( k v )) () ) # globals should already be inferred by now
       ( (App( (Lit( ':_s _ )) (App( (Lit( _ _ )) (AType tt) )) )) (
          (set tt (.rewrite-type-alias tt))
          (add-concrete-type-instance tt)
