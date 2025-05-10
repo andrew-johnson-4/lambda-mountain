@@ -4,7 +4,6 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
       App{left:Lit{key:c":"}, right:App{t=left:Lit{},right:AType{tt=tt}}} => (
          tt = tt.rewrite-type-alias;
          add-concrete-type-instance(tt);
-         if tt.is-t(c"String") then infer-expr(tctx, t, Unscoped, tt, used);
          let inner-tt = typeof(t);
          if non-zero(inner-tt) {
             if can-unify(tt, inner-tt)
