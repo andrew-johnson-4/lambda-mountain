@@ -1,25 +1,16 @@
 
 let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TContext?, AST) = (
    match term {
-      App{left:Lit{key:c":"}, right:App{t=left:Lit{},right:AType{tt=tt}}} => (
-         tt = tt.rewrite-type-alias;
-         add-concrete-type-instance(tt);
-         let inner-tt = typeof(t);
-         if non-zero(inner-tt) {
-            if can-unify(tt, inner-tt)
-            then tt = inner-tt
-            else tt = inner-tt && tt;
-         } else {
-            ascript-normal(t, tt);
-         };
-         ascript-normal(term, tt);
-      );
       App{left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
          tt = tt.rewrite-type-alias;
+         add-concrete-type-instance(tt);
          if var-name-if-var(t)==c"__uninitialized" {
             ascript-normal(t, tt);
          } else {
-            tctx = infer-expr(tctx, t, Unscoped, tt, Tail);
+            match t {
+               Lit{} => ascript-normal(t, tt);
+               _ => (tctx = infer-expr(tctx, t, Unscoped, tt, Tail));
+            }
          };
          let inner-tt = typeof(t);
          if non-zero(inner-tt) {
