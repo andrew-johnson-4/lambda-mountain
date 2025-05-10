@@ -156,7 +156,7 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
          (ascript-normal( term (t1 'Nil_s) ))
       ))
       ( (App( is-cons l r )) (
-         (let tctx-term (std-infer-expr( tctx term false used )))
+         (let tctx-term (std-infer-expr( tctx term false used hint )))
          (if (not(is( term (.second tctx-term) ))) (
             (print 'TODO:\sinfer-expr\sreplace\sterm\sin\scontext\n_s)
             (print (.second tctx-term))(print '\n_s)
@@ -189,19 +189,8 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
             (maybe-apply-global-callable( 'cdecl::return_s rt term ))
          ))
       ))
-      ( (Lit( l _ )) (
-         (if (non-zero(typeof term)) () (
-            (let tt (typeof-tag l))
-            (if (non-zero tt) (
-               (if (non-zero hint) (
-                  (set tt hint)
-               ) ())
-               (ascript-normal( term tt ))
-            ) ())
-         ))
-      ))
       ( _ (
-         (let tctx-term (std-infer-expr( tctx term false used )))
+         (let tctx-term (std-infer-expr( tctx term false used hint )))
          (set tctx (.first tctx-term)) 
       ))
    ))

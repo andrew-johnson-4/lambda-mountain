@@ -1,5 +1,5 @@
 
-let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUsed): (TContext?, AST) = (
+let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TContext?, AST) = (
    match term {
       ASTEOF{} => ascript-normal(term, t1(c"Nil"));
       ASTNil{} => ascript-normal(term, t1(c"Nil"));
@@ -7,8 +7,8 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
       Typedef{} => ();
       AType{tt=tt} => ascript-normal(term, tt);
       Seq{left=left, right=right} => (
-         (tctx, let new-left) = std-infer-expr(tctx, left, false, Used);
-         (tctx, let new-right) = std-infer-expr(tctx, right, false, Used);
+         (tctx, let new-left) = std-infer-expr(tctx, left, false, Used, TAny);
+         (tctx, let new-right) = std-infer-expr(tctx, right, false, Used, TAny);
          if not(is(left,new-left)) || not(is(right,new-right))
          then term = mk-seq(new-left, new-right);
       );
@@ -25,6 +25,15 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
          let vt = denormalize(typeof-var(term, tctx, key));
          ascript-normal(term, vt);
          mark-var-to-def-todo(tctx, key, TAny, term);
+      );
+      Lit{key=key, token=token} => (
+         if not(non-zero(typeof(term))) {
+            let tt = typeof-tag(key);
+            if non-zero(tt) {
+               if non-zero(hint) then tt = hint;
+               ascript-normal(term,tt);
+            }
+         }
       );
       App{ is-cons=is-cons, l=left, r=right } => (
          if is-cons {
