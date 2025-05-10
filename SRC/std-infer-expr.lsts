@@ -4,7 +4,14 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
       ASTEOF{} => ascript-normal(term, t1(c"Nil"));
       ASTNil{} => ascript-normal(term, t1(c"Nil"));
       Meta{} => ascript-normal(term, t1(c"Nil"));
+      Typedef{} => ();
       AType{tt=tt} => ascript-normal(term, tt);
+      Seq{left=left, right=right} => (
+         (tctx, let new-left) = std-infer-expr(tctx, left, is-scoped, Used);
+         (tctx, let new-right) = std-infer-expr(tctx, right, is-scoped, Used);
+         if not(is(left,new-left)) || not(is(right,new-right))
+         then term = mk-seq(new-left, new-right);
+      );
       App{ is-cons=is-cons, l=left, r=right } => (
          if is-cons {
             tctx = infer-expr(tctx, l, Unscoped, TAny, Used);

@@ -23,11 +23,6 @@ meta
 infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hint Type)(: used IsUsed). (: (
    (match term (
       ()
-      ( (Seq( l r )) (
-         (infer-expr( tctx l Unscoped TAny Used ))
-         (infer-expr( tctx r Unscoped TAny Used ))
-      ))
-      ( (Typedef( _ _ )) () )
       ( (Glb( k (@( v (Abs( _ )) )) )) (
          (if (.is-open(typeof term)) () (
             (infer-expr( tctx v Unscoped TAny Used ))
