@@ -12,10 +12,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
                _ => (tctx = infer-expr(tctx, t, Unscoped, tt, Tail));
             }
          };
-         let inner-tt = typeof(t);
-         if non-zero(inner-tt) {
-            ascript-normal(term, tt);
-         };
+         ascript-normal(term, tt);
          if tt.is-t(c"SmartString") then maybe-apply-global-callable(c"intern", tt, term);
          if var-name-if-var(t)!=c"__uninitialized" && not(is(used, C)) {
             ascript-normal(t, tt);
