@@ -96,8 +96,8 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
                } else {
                   tctx = infer-expr(tctx, r, Unscoped, TAny, Used);
                };
-               rt = if typeof(l).is-arrow && non-zero(var-name-if-var(l)) {
-                  apply-global-callable(var-name-if-var(l), typeof(r), term);
+               rt = if typeof(l).is-arrow && non-zero(var-name-if-var-or-lit(l)) {
+                  apply-global-callable(var-name-if-var-or-lit(l), typeof(r), term);
                } else {
                   t3(c"Cons", typeof(l), typeof(r))
                };
