@@ -21,6 +21,11 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
             infer-expr(tctx, val, if is-scoped then Scoped else Unscoped, TAny, used);
          };
       );
+      Var{key=key, token=token} => (
+         let vt = denormalize(typeof-var(term, tctx, key));
+         ascript-normal(term, vt);
+         mark-var-to-def-todo(tctx, key, TAny, term);
+      );
       App{ is-cons=is-cons, l=left, r=right } => (
          if is-cons {
             tctx = infer-expr(tctx, l, Unscoped, TAny, Used);
