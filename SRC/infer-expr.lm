@@ -23,10 +23,6 @@ meta
 infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hint Type)(: used IsUsed). (: (
    (match term (
       ()
-      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
-         (let tctx-term (std-infer-expr( tctx term false used hint )))
-         (set tctx (.first tctx-term)) 
-      ))
       ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (
          (if (is( scoped Scoped )) (scope(
             (let tctx-inner (infer-expr( tctx cond Unscoped TAny Used )))
@@ -108,31 +104,6 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
          ))
          (set tctx (.bind( tctx lname tt def )))
          (ascript-normal( term (t1 'Nil_s) ))
-      ))
-      ( (Abs( lhs rhs tlt )) (
-         (set tctx (infer-ctx( tctx lhs )))
-         (if (.is-t( tlt 'Blob_s )) (
-            (match rhs (
-               ()
-               ( (App( (Lit( ':_s _ )) (App( inner-rhs (AType return-type) )) )) (
-                  (infer-expr( tctx inner-rhs Unscoped TAny Tail ))
-                  (ascript-normal( rhs return-type ))
-               ))
-            ))
-         ) (
-            (if (.is-t( tlt 'C-FFI_s )) (
-               (infer-expr( tctx rhs Unscoped TAny C ))
-            ) (
-               (infer-expr( tctx rhs Unscoped TAny Tail ))
-            ))
-         ))
-         (let lt (typeof-lhs lhs))
-         (let rt (typeof rhs))
-         (ascript-normal( term (&&( (t3( 'Arrow_s lt rt )) tlt )) ))
-
-         (if (.is-t( tlt 'Blob_s )) () (
-            (maybe-apply-global-callable( 'cdecl::return_s rt term ))
-         ))
       ))
       ( _ (
          (let tctx-term (std-infer-expr( tctx term false used hint )))
