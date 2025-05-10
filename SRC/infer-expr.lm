@@ -23,19 +23,6 @@ meta
 infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hint Type)(: used IsUsed). (: (
    (match term (
       ()
-      ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (
-         (if (is( scoped Scoped )) (scope(
-            (let tctx-inner (infer-expr( tctx cond Unscoped TAny Used )))
-            (let tctx-weak-t (infer-expr( tctx-inner t Unscoped TAny Tail )))
-            (let tctx-f (infer-expr( tctx f Unscoped TAny Tail )))
-         )) (
-            (set tctx (infer-expr( tctx cond Unscoped TAny Used )))
-            (let tctx-t (infer-expr( tctx t Unscoped TAny Tail )))
-            (let tctx-f (infer-expr( tctx f Unscoped TAny Tail )))
-            (set tctx tctx-t)
-         ))
-         (ascript-normal( term (typeof t) ))
-      ))
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
          (set tt (.rewrite-type-alias tt))
          (add-concrete-type-instance tt)
@@ -106,7 +93,7 @@ infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hi
          (ascript-normal( term (t1 'Nil_s) ))
       ))
       ( _ (
-         (let tctx-term (std-infer-expr( tctx term false used hint )))
+         (let tctx-term (std-infer-expr( tctx term (as (is( scoped Scoped )) Bool) used hint )))
          (set tctx (.first tctx-term)) 
          (if (not(is( term (.second tctx-term) ))) (
             (print 'TODO:\sinfer-expr\sreplace\sterm\sin\scontext\n_s)

@@ -4,19 +4,26 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
       App{left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
          tt = tt.rewrite-type-alias;
          add-concrete-type-instance(tt);
-         if var-name-if-var(t)==c"__uninitialized" {
-            ascript-normal(t, tt);
-         } else {
-            match t {
-               Lit{} => ascript-normal(t, tt);
-               _ => (tctx = infer-expr(tctx, t, Unscoped, tt, Tail));
-            }
+         match t {
+            Lit{} => ();
+            _ => (tctx = infer-expr(tctx, t, Unscoped, tt, Tail));
          };
+         ascript-normal(t, tt);
          ascript-normal(term, tt);
          if tt.is-t(c"SmartString") then maybe-apply-global-callable(c"intern", tt, term);
-         if var-name-if-var(t)!=c"__uninitialized" && not(is(used, C)) {
-            ascript-normal(t, tt);
-         }
+      );
+      App{left:App{ left:App{ left:Var{key:c"if"}, cond=right }, t=right }, f=right} => (
+         if is-scoped {
+            let tctx-inner = infer-expr(tctx, cond, Unscoped, TAny, Used);
+            infer-expr(tctx-inner, t, Unscoped, TAny, Tail);
+            infer-expr(tctx, f, Unscoped, TAny, Tail);
+         } else {
+            tctx = infer-expr(tctx, cond, Unscoped, TAny, Used);
+            let tctx-t = infer-expr(tctx, t, Unscoped, TAny, Tail);
+            infer-expr(tctx, f, Unscoped, TAny, Tail);
+            tctx = tctx-t;
+         };
+         ascript-normal(term, typeof(t)); # TODO: use MGU to merge true and false branches
       );
       ASTEOF{} => ascript-normal(term, t1(c"Nil"));
       ASTNil{} => ascript-normal(term, t1(c"Nil"));
