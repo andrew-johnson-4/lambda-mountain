@@ -26,3 +26,6 @@ let mk-abs(l: AST, r: AST, t: Type): AST = (
 let mk-meta(l: AST): AST = (
    Meta{ close(l) }
 );
+
+let mk-nil(): AST = ASTNil{};
+let mk-eof(): AST = ASTEOF{};

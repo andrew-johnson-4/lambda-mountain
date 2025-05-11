@@ -1,10 +1,11 @@
 
 let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TContext?, AST) = (
    match term {
-      App{ left:Abs{def=lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => (
+      App{ left:Abs{def=lhs:Var{lname=key}, rhs:ASTNil{}, misc-tt=tt}, rhs=right } => (
          if typeof-var-raw(term, tctx, lname).is-t(c"LocalVariable")
          then exit-error("Variable Name Is Already Bound In Outer Scope \{lname}", term);
-         infer-expr(tctx, rhs, Unscoped, TAny, Tail);
+         (tctx, let new-rhs) = std-infer-expr(tctx, rhs, false, Tail, TAny);
+         if not(is(rhs,new-rhs)) then { rhs = new-rhs; term = mk-app(mk-abs(def,mk-nil(),misc-tt),rhs); };
          let tt = typeof(rhs);
          tt = normalize(tt) && t1(c"LocalVariable");
          ascript-normal(def, tt);
@@ -12,7 +13,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
          ascript-normal(term, t1(c"Nil"));
       );
       App{o-t=left:Var{key:c"open"}, r=right} => (
-         tctx = infer-expr(tctx, r, Unscoped, TAny, Used);
+         (tctx, let new-r) = std-infer-expr(tctx, r, false, Used, TAny);
          let deref-type = typeof(r);
          match deref-type.slot(c"Array") {
             TGround{tag:c"Array", parameters:[_.. TAny{}..]} => ();
@@ -34,7 +35,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
          ascript-normal(szof, tt);
       );
       App{szof=left:Var{key:c"scope"}, r=right} => (
-         infer-expr(tctx, r, Scoped, TAny, Tail);
+         (_, let new-r) = std-infer-expr(tctx, r, true, Tail, TAny);
          ascript-normal(term, typeof(r));
       );
       App{left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
@@ -42,7 +43,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
          add-concrete-type-instance(tt);
          match t {
             Lit{} => ();
-            _ => (tctx = infer-expr(tctx, t, Unscoped, tt, Tail));
+            _ => ((tctx, let new-t) = std-infer-expr(tctx, t, false, Tail, tt));
          };
          ascript-normal(t, tt);
          ascript-normal(term, tt);
@@ -51,7 +52,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
       App{left:Var{key:c"as"}, right:App{t=left,right:AType{tt=tt}}} => (
          tt = tt.rewrite-type-alias;
          add-concrete-type-instance(tt);
-         tctx = infer-expr(tctx, t, Unscoped, TAny, used);
+         (tctx, let new-t) = std-infer-expr(tctx, t, false, used, TAny);
          let inner-tt = typeof(t);
          if tt.tag.has-prefix(c"Tag::") then tt = tt && inner-tt
          else tt = tt && inner-tt.with-only-class;
@@ -59,13 +60,13 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
       );
       App{left:App{ left:App{ left:Var{key:c"if"}, cond=right }, t=right }, f=right} => (
          if is-scoped {
-            let tctx-inner = infer-expr(tctx, cond, Unscoped, TAny, Used);
-            infer-expr(tctx-inner, t, Unscoped, TAny, Tail);
-            infer-expr(tctx, f, Unscoped, TAny, Tail);
+            (let tctx-inner, let new-cond) = std-infer-expr(tctx, cond, false, Used, TAny);
+            (_, let new-t) = std-infer-expr(tctx-inner, t, false, Tail, TAny);
+            (_, let new-f) = std-infer-expr(tctx, f, false, Tail, TAny);
          } else {
-            tctx = infer-expr(tctx, cond, Unscoped, TAny, Used);
-            let tctx-t = infer-expr(tctx, t, Unscoped, TAny, Tail);
-            infer-expr(tctx, f, Unscoped, TAny, Tail);
+            (tctx, let new-cond) = std-infer-expr(tctx, cond, false, Used, TAny);
+            (let tctx-t, let new-t) = std-infer-expr(tctx, t, false, Tail, TAny);
+            (_, let new-f) = std-infer-expr(tctx, f, false, Tail, TAny);
             tctx = tctx-t;
          };
          ascript-normal(term, typeof(t)); # TODO: use MGU to merge true and false branches
@@ -87,7 +88,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
          #if not(is(val,new-val)) then term = mk-glb(key, val);
          let rough-tt = typeof(term);
          if rough-tt.is-arrow && not(rough-tt.is-open) {
-            infer-expr(tctx, val, if is-scoped then Scoped else Unscoped, TAny, used);
+            (_, let new-val) = std-infer-expr(tctx, val, is-scoped, Used, TAny);
          };
       );
       Var{key=key, token=token} => (
@@ -106,29 +107,29 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
       );
       Abs{lhs=lhs, rhs=rhs:App{left:Lit{key:c":"},right:App{inner-rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} => (
          tctx = infer-ctx(tctx, lhs);
-         infer-expr(tctx, inner-rhs, Unscoped, return-type, Tail);
+         (_, let new-inner-rhs) = std-infer-expr(tctx, inner-rhs, false, Tail, return-type);
          ascript-normal(rhs, return-type);
          let domain-tt = typeof-lhs(lhs);
          ascript-normal(term, t3(c"Arrow", typeof-lhs(lhs), return-type) && misc-tt);
       );
       App{ is-cons=is-cons, l=left, r=right } => (
          if is-cons {
-            tctx = infer-expr(tctx, l, Unscoped, TAny, Used);
-            tctx = infer-expr(tctx, r, Unscoped, TAny, Used);
+            (tctx, let new-l) = std-infer-expr(tctx, l, false, Used, TAny);
+            (tctx, let new-r) = std-infer-expr(tctx, r, false, Used, TAny);
             ascript-normal(term, if is(used, Tail) then typeof(r) else t3(c"Cons", typeof(l), typeof(r)));
          } else {
             let rt = TAny;
             if var-name-if-var(l)==c"list::cons" { match r {
                App{k=left, m=right} => (
-                  infer-expr(tctx, k, Unscoped, TAny, Call);
-                  infer-expr(tctx, m, Unscoped, t2(c"List",normalize(typeof(k))), Used);
+                  (_, let new-k) = std-infer-expr(tctx, k, false, Call, TAny);
+                  (_, let new-m) = std-infer-expr(tctx, m, false, Used, t2(c"List",normalize(typeof(k))));
                );
                _ => ();
             }};
             if var-name-if-var(l)==c"map::cons" { match r {
                App{kv=left, m=right} => (
-                  infer-expr(tctx, kv, Unscoped, TAny, Call);
-                  infer-expr(tctx, m, Unscoped, t3(c"HashtableEq",normalize(typeof(kv)).r2,normalize(typeof(kv)).r1), Used);
+                  (_, let new-kv) = std-infer-expr(tctx, kv, false, Call, TAny);
+                  (_, let new-m) = std-infer-expr(tctx, m, false, Used, t3(c"HashtableEq",normalize(typeof(kv)).r2,normalize(typeof(kv)).r1));
                );
                _ => ();
             }};
@@ -136,11 +137,11 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
             if index-macro-table.has(var-name-if-var(l)) {
                (tctx, term) = std-apply-macro(tctx, term);
             } else {
-               tctx = infer-expr(tctx, l, Unscoped, TAny, used);
+               (tctx, let new-l) = std-infer-expr(tctx, l, false, used, TAny);
                if typeof(l).is-arrow {
-                  tctx = infer-expr(tctx, r, Unscoped, TAny, Call);            
+                  (tctx, let new-r) = std-infer-expr(tctx, r, false, Call, TAny);
                } else {
-                  tctx = infer-expr(tctx, r, Unscoped, TAny, Used);
+                  (tctx, let new-r) = std-infer-expr(tctx, r, false, Used, TAny);
                };
                rt = if typeof(l).is-arrow && non-zero(var-name-if-var-or-lit(l)) {
                   apply-global-callable(var-name-if-var-or-lit(l), typeof(r), term);
@@ -155,10 +156,6 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
          if not(index-macro-table.has(var-name-if-var(l))) && not(is-cons) && non-zero(var-name-if-var(l)) && typeof(l).is-arrow {
             mark-var-to-def-todo(tctx, var-name-if-var(l), typeof(r), l);
          };
-      );
-      _ => (
-         # TODO: remove after infer-expr.lm is ported
-         infer-expr(tctx, term, if is-scoped then Scoped else Unscoped, TAny, used);
       );
    };
    (tctx, term);
