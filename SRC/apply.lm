@@ -25,11 +25,12 @@ apply := λ(: ctx AContext)(: term AST). (: (
             tlt
          )))
       ))
-      ( (Seq( vl vr )) (
-         (set return (Seq(
-            (close(apply( ctx vl )))
-            (close(apply( ctx vr )))
-         )))
+      ( (Seq( seq )) (
+         (let contents (mk-vector( (type AST) (.length seq) )))
+         (for-each-v (s in seq) (
+            (set contents (.push( contents (apply( ctx s )) )))
+         ))
+         (Seq contents)
       ))
       ( (Typedef( vl vr )) (
          (set return (Typedef(
