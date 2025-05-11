@@ -1,6 +1,23 @@
 
 let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TContext?, AST) = (
    match term {
+      App{o-t=left:Var{key:c"open"}, r=right} => (
+         tctx = infer-expr(tctx, r, Unscoped, TAny, Used);
+         let deref-type = typeof(r);
+         match deref-type.slot(c"Array") {
+            TGround{tag:c"Array", parameters:[_.. TAny{}..]} => ();
+            TGround{tag:c"Array", parameters:[TAny{}.. array-base..]} => (
+               mark-var-to-def-todo(tctx, c"open", deref-type, o-t);
+               maybe-apply-global-callable(c"open", deref-type, term);
+               deref-type = array-base;
+            );
+            _ => (
+               mark-var-to-def-todo(tctx, c"open", deref-type, o-t);
+               apply-global-callable(c"open", deref-type, term);
+            );
+         };
+         ascript-normal(term, deref-type);
+      );
       App{szof=left:Var{key:c"sizeof"}, right:AType{}} => (
          let tt = t1(c"U64");
          ascript-normal(term, tt);
