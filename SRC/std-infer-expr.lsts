@@ -37,7 +37,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
       );
       App{szof=left:Var{key:c"scope"}, r=right} => (
          (_, let new-r) = std-infer-expr(tctx, r, true, Tail, TAny);
-         if not(is(r,new-r)) then { r = new-r; term = mk-app(sz-of, r); };
+         if not(is(r,new-r)) then { r = new-r; term = mk-app(szof, r); };
          ascript-normal(term, typeof(r));
       );
       App{asc=left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
@@ -46,7 +46,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
          match t {
             Lit{} => ();
             _ => (
-               (tctx, let new-t) = std-infer-expr(tctx, t, false, Tail, tt)
+               (tctx, let new-t) = std-infer-expr(tctx, t, false, Tail, tt);
                if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
             );
          };
