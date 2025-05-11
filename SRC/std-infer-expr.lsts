@@ -78,19 +78,23 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
       AType{tt=tt} => ascript-normal(term, tt);
       Seq{} => (
          let seqs = [] :: List<AST>;
+         let is-diff = false as U64;
          while term.is-seq { match term {
             Seq{l=left, r=right} => (
-               (tctx, r) = std-infer-expr(tctx, r, false, Used, hint);
-               seqs = cons(r,seqs);
+               (tctx, let new-r) = std-infer-expr(tctx, r, false, Used, hint);
+               is-diff = is-diff || not(is(r,new-r));
+               seqs = cons(new-r,seqs);
                term = l;
             );
          }};
-         term = ASTEOF;
-         for r in seqs {
-            if non-zero(term)
-            then term = mk-seq(term, r)
-            else term = r
-         };
+         if is-diff {
+            term = ASTEOF;
+            for r in seqs {
+               if non-zero(term)
+               then term = mk-seq(term, r)
+               else term = r
+            };
+         }
       );
       Glb{key=key, val=val} => (
          # TODO: remove after infer-expr.lm is ported
