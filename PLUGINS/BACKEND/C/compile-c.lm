@@ -1,11 +1,7 @@
 
 plugins-backend-c-compile := λ . (: (
-   (let program (match ast-parsed-program (
-      ()
-      ( (Seq( seq )) seq )
-   )))
    (let typedefs ASTEOF)
-   (for-each-v (program-term in program) (match program-term (
+   (for-each-v (program-term in (.unroll-seq ast-parsed-program)) (match program-term (
       ()
       ( (@( g-t (Glb( k_t rhs )) )) (
          (if (==( k 'main_s )) (set assemble-argv-referenced True_u8) ())
@@ -45,11 +41,7 @@ plugins-backend-c-compile := λ . (: (
       ))
       ( _ () )
    )))
-   (let pre-typedefs (match typedefs (
-      ()
-      ( (Seq( seq )) seq )
-   )))
-   (for-each-v (td in pre-typedefs) (match td (
+   (for-each-v (td in (.unroll-seq typedefs)) (match td (
       ()
       ( (Typedef( (Lit( lhs _ )) rhs )) (
          (compile-c-typedef-ordinal(parse-type lhs)) 
@@ -58,7 +50,7 @@ plugins-backend-c-compile := λ . (: (
          (compile-c-typedef-ordinal lhs)
       ))
    )))
-   (for-each-v (td in pre-typedefs) (match td (
+   (for-each-v (td in (.unroll-seq typedefs)) (match td (
       ()
       ( (Typedef( (Lit( lhs _ )) rhs )) (
          (compile-c-typedef( (parse-type lhs) rhs ))

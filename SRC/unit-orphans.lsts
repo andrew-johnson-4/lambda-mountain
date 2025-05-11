@@ -29,3 +29,10 @@ let lsts-apply-seq(ctx: AContext, seq: Vector<AST>): Vector<AST> = (
    for vector s in seq { ret = ret.push(apply(ctx, s)) };
    ret
 );
+
+let .unroll-seq(t: AST): Vector<AST> = (
+   match t {
+      Seq{seq=seq} => seq;
+      _ => mk-vector(type(AST));
+   }
+);
