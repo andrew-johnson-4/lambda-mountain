@@ -23,7 +23,11 @@ let .into(t: AST, tgt: Type<String>): String = (
          "let \{key.key} = " + val.into(type(String)) + ";";
       );
       AType{tt=tt} => tt.into(type(String));
-      Seq{left=left,right=right} => left.into(type(String)) + "\n" + right.into(type(String));
+      Seq{seq=seq} => (
+         let ret = "";
+         for vector s in seq { if non-zero(ret) then ret = ret + "\n"; ret = ret + s.into(type(String)) };
+         ret
+      );
       Typedef{lhs=lhs,rhs=rhs} => "type \{lhs} = \{rhs};";
       Meta{val=val} => "meta \{val}\n";
    };
