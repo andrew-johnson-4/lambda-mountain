@@ -16,3 +16,4 @@ import SRC/macro-table.lsts;
 import SRC/std-apply-macro.lsts;
 import SRC/std-apply-macro-candidates.lsts;
 import SRC/std-direct-destructure-macro.lsts;
+import SRC/infer-global-terms.lsts;
