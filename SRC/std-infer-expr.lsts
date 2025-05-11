@@ -87,29 +87,35 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
       Typedef{} => ();
       AType{tt=tt} => ascript-normal(term, tt);
       Seq{} => (
-         let seqs = [] :: List<AST>;
-         let is-diff = false as U64;
+         let seqs = mk-vector(type(AST));
          while term.is-seq { match term {
             Seq{l=left, r=right} => (
-               (tctx, let new-r) = std-infer-expr(tctx, r, false, Used, hint);
-               is-diff = is-diff || not(is(r,new-r));
-               seqs = cons(new-r,seqs);
-               term = l;
+               seqs = seqs.push(r);
+               if l.is-seq
+               then term = l
+               else (term = ASTEOF; seqs = seqs.push(l));
             );
          }};
+         let is-diff = false as U64;
+         let def-i = seqs.length - 1;
+         while def-i > 0 {
+            let r = seqs[def-i];
+            (_, let new-r) = std-infer-expr(tctx, seqs[def-i], false, Used, hint);
+            if not(is(r,new-r)) then { is-diff = true; seqs[def-i] = new-r; };
+            def-i = def-i - 1;
+         };
          if is-diff {
             term = ASTEOF;
-            for r in seqs {
+            let def-order-i = seqs.length - 1;
+            while def-order-i > 0 {
                if non-zero(term)
-               then term = mk-seq(term, r)
-               else term = r
+               then term = mk-seq(term, seqs[def-order-i])
+               else term = seqs[def-order-i];
+               def-order-i = def-order-i - 1;
             };
          }
       );
       Glb{key=key, val=val} => (
-         # TODO: remove after infer-expr.lm is ported
-         #(tctx, let new-val) = std-infer-expr(tctx, val, false, Used);
-         #if not(is(val,new-val)) then term = mk-glb(key, val);
          let rough-tt = typeof(term);
          if rough-tt.is-arrow && not(rough-tt.is-open) {
             (_, let new-val) = std-infer-expr(tctx, val, is-scoped, Used, TAny);
