@@ -37,7 +37,8 @@ infer-global-context-2 := λ(: td AST). (: (
       ( (Glb( k (@( frhs (Abs( lhs (App( (Lit( ':_s _ )) (App( rhs (AType rhst) )) )) tlt )) )) )) (
       ))
       ( (Glb( k rhs )) (
-         (infer-expr( (: None Maybe<TContext>) rhs Unscoped TAny Used ))
+         (let tctx-rhs (std-infer-expr( (: None Maybe<TContext>) rhs false Used TAny )))
+         # TODO: make this rewrite terms if the subtree has changes
          (let rhst (normalize(typeof rhs)))
          (let kt (&&( rhst (t1 'GlobalVariable_s) )))
          (set global-type-context (.bind( global-type-context (.key k) kt td )))

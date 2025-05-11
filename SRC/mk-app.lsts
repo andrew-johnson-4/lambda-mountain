@@ -3,6 +3,10 @@ let mk-app(f: AST, a: AST): AST = (
    App{ close(f), close(a) }
 );
 
+let mk-cons-or-app(is-cons: U64, f: AST, a: AST): AST = (
+   App{ is-cons, close(f), close(a) }
+);
+
 let mk-cons(f: AST, a: AST): AST = (
    App{ true, close(f), close(a) }
 );
@@ -26,3 +30,6 @@ let mk-abs(l: AST, r: AST, t: Type): AST = (
 let mk-meta(l: AST): AST = (
    Meta{ close(l) }
 );
+
+let mk-nil(): AST = ASTNil{};
+let mk-eof(): AST = ASTEOF{};
