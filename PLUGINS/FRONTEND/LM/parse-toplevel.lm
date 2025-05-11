@@ -17,8 +17,8 @@ parse-toplevel := λ(: tokens List<Token>). (: (
                         (let mrhs (parse-toplevel mrhs-tokens))
                         (match mrhs (
                            ()
-                           ( (Seq( ASTEOF m-expr )) (
-                              (set mrhs m-expr)
+                           ( (Seq( seq )) (
+                              (for-each-v (s in seq) (set mrhs s))
                            ))
                            ( _ () )
                         ))
@@ -47,13 +47,7 @@ parse-toplevel := λ(: tokens List<Token>). (: (
                ( (PME( e1 r1 )) (match (parse-many-expressions r1) (
                   ()
                   ( (PME( e2 r2 )) (
-                     (set program (Seq(
-                        (close program)
-                        (close (Typedef(
-                           (close e1)
-                           (close e2)
-                        )))
-                     )))
+                     (set program (+( program (Typedef( (close e1) (close e2) )) )))
                      (let base-type (lm-type-of-s e1))
                      (add-class-info-layout( base-type FragmentStyle ))
                      (set tokens r2)
@@ -67,13 +61,7 @@ parse-toplevel := λ(: tokens List<Token>). (: (
                ( (PME( e1 r1 )) (match (parse-many-expressions r1) (
                   ()
                   ( (PME( e2 r2 )) (
-                     (set program (Seq(
-                        (close program)
-                        (close (Typedef(
-                           (close e1)
-                           (close e2)
-                        )))
-                     )))
+                     (set program (+( program (Typedef( (close e1) (close e2) )) )))
                      (set tokens r2)
                   ))
                )))
@@ -106,9 +94,9 @@ parse-toplevel := λ(: tokens List<Token>). (: (
             (set tokens remainder)
          ))
          ( (LCons( 'zero_t (LCons( base-type (LCons( tag-type_t remainder )) )) )) (
-            (set program (Seq(
-               (close program)
-               (close (Glb( (with-key( base-type 'non-zero_s )) (close(Abs(
+            (set program (+(
+               program
+               (Glb( (with-key( base-type 'non-zero_s )) (close(Abs(
                   (close(App(
                      (close(Lit( ':_s (with-key( base-type ':_s )) )))
                      (close(App( (close(Var( 't_s (with-key( base-type 't_s )) ))) (close(AType(parse-type(.key base-type)))) )))
@@ -139,7 +127,7 @@ parse-toplevel := λ(: tokens List<Token>). (: (
                      )))
                   )))
                   TAny
-               ))) )))
+               ))) ))
             )))
             (set tokens remainder)
          ))
@@ -147,9 +135,9 @@ parse-toplevel := λ(: tokens List<Token>). (: (
             (match (parse-many-expressions remainder) (
                ()
                ( (PME( re rr )) (
-                  (set program (Seq(
-                     (close program)
-                     (close (Glb( key (close re) )))
+                  (set program (+(
+                     program
+                     (Glb( key (close re) ))
                   )))
                   (set tokens rr)
                ))
@@ -159,9 +147,9 @@ parse-toplevel := λ(: tokens List<Token>). (: (
             (match (parse-many-expressions remainder) (
                ()
                ( (PME( term r1 )) (
-                  (set program (Seq(
-                     (close program)
-                     (close term)
+                  (set program (+(
+                     program
+                     term
                   )))
                   (set tokens r1)
                ))
