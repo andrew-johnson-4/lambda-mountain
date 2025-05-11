@@ -23,18 +23,6 @@ meta
 infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hint Type)(: used IsUsed). (: (
    (match term (
       ()
-      ( (App( (Var( 'sizeof_s _ )) (AType _) )) (
-         (let tt (&&( (&&( (t1 'U64_s) (t1 'Literal_s) )) (t1 'Constant_s) )))
-         (ascript-normal( term tt ))
-         (match term (
-            ()
-            ( (App( s _ )) (ascript-normal( s tt )) )
-         ))
-      ))
-      ( (App( (Var( 'scope_s _ )) r )) (
-         (let weak-ctx (infer-expr( tctx r Scoped TAny Tail )))
-         (ascript-normal( term (typeof r) ))
-      ))
       ( (App( (@( o-t (Var( 'open_s _ )) )) r )) (
          (set tctx (infer-expr( tctx r Unscoped TAny Used )))
          (let deref-type (typeof r))

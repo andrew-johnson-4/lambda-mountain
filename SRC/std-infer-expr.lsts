@@ -1,6 +1,15 @@
 
 let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TContext?, AST) = (
    match term {
+      App{szof=left:Var{key:c"sizeof"}, right:AType{}} => (
+         let tt = t1(c"U64");
+         ascript-normal(term, tt);
+         ascript-normal(szof, tt);
+      );
+      App{szof=left:Var{key:c"scope"}, r=right} => (
+         infer-expr(tctx, r, Scoped, TAny, Tail);
+         ascript-normal(term, typeof(r));
+      );
       App{left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
          tt = tt.rewrite-type-alias;
          add-concrete-type-instance(tt);
