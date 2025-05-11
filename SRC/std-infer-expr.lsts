@@ -76,11 +76,21 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
       Meta{} => ascript-normal(term, t1(c"Nil"));
       Typedef{} => ();
       AType{tt=tt} => ascript-normal(term, tt);
-      Seq{left=left, right=right} => (
-         (tctx, let new-left) = std-infer-expr(tctx, left, false, Used, TAny);
-         (tctx, let new-right) = std-infer-expr(tctx, right, false, Used, TAny);
-         if not(is(left,new-left)) || not(is(right,new-right))
-         then term = mk-seq(new-left, new-right);
+      Seq{} => (
+         let seqs = [] :: List<AST>;
+         while term.is-seq { match term {
+            Seq{l=left, r=right} => (
+               (tctx, r) = std-infer-expr(tctx, r, false, Used, hint);
+               seqs = cons(r,seqs);
+               term = l;
+            );
+         }};
+         term = ASTEOF;
+         for r in seqs {
+            if non-zero(term)
+            then term = mk-seq(term, r)
+            else term = r
+         };
       );
       Glb{key=key, val=val} => (
          # TODO: remove after infer-expr.lm is ported

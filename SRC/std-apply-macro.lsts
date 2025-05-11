@@ -19,7 +19,7 @@ let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContex
          peeped = mtype;
       };
    };
-   let peeped-type = std-infer-peeped-arguments(tctx, margs, peep-holes);
+   (let peeped-type, _) = std-infer-peeped-arguments(tctx, margs, peep-holes);
 
    let matched = [] :: List<(Type,AST)>;
    for Tuple{mtype=first, mterm=third} in row {
@@ -45,20 +45,24 @@ let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContex
    std-apply-macro-candidates(tctx, mname, margs, candidates);
 );
 
-let std-infer-peeped-arguments(tctx: Maybe<TContext>, t: AST, peep: Type): Type = (
+let std-infer-peeped-arguments(tctx: Maybe<TContext>, t: AST, peep: Type): (Type, AST) = (
    match peep {
       TGround{tag:c"Cons", parameters:[p2.. p1..]} => (
          match t {
-            App{left=left, right=right} => (
-               t3(c"Cons",
-                  std-infer-peeped-arguments(tctx, left, p1),
-                  std-infer-peeped-arguments(tctx, right, p2)
-               )
+            App{is-cons=is-cons, left=left, right=right} => (
+               (let lt, let new-left) = std-infer-peeped-arguments(tctx, left, p1);
+               (let rt, let new-right) = std-infer-peeped-arguments(tctx, right, p2);
+               if not(is(left,new-left)) || not(is(right,new-right))
+               then t = mk-cons-or-app(is-cons,new-left,new-right);
+               (t3(c"Cons",lt,rt), t)
             );
             _ => fail("std-infer-peeped-arguments expected cons term: \{t}\n");
          }
       );
-      TAny{} => ta;
-      _ => ( infer-expr(tctx, t, Unscoped, TAny, Used); typeof(t) );
+      TAny{} => (ta, t);
+      _ => (
+         (_, t) = std-infer-expr(tctx, t, false, Used, TAny);
+         (typeof(t), t);
+      );
    }
 );
