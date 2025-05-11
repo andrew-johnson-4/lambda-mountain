@@ -1,6 +1,16 @@
 
 let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TContext?, AST) = (
    match term {
+      App{ left:Abs{def=lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => (
+         if typeof-var-raw(term, tctx, lname).is-t(c"LocalVariable")
+         then exit-error("Variable Name Is Already Bound In Outer Scope \{lname}", term);
+         infer-expr(tctx, rhs, Unscoped, TAny, Tail);
+         let tt = typeof(rhs);
+         tt = normalize(tt) && t1(c"LocalVariable");
+         ascript-normal(def, tt);
+         tctx = tctx.bind(lname, tt, def);
+         ascript-normal(term, t1(c"Nil"));
+      );
       App{o-t=left:Var{key:c"open"}, r=right} => (
          tctx = infer-expr(tctx, r, Unscoped, TAny, Used);
          let deref-type = typeof(r);

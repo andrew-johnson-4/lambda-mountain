@@ -23,28 +23,6 @@ meta
 infer-expr-one := λ(: tctx Maybe<TContext>)(: term AST)(: scoped IsScoped)(: hint Type)(: used IsUsed). (: (
    (match term (
       ()
-      ( (App( (Abs( (@( def (Var( lname _ )) )) ASTNil tlt )) rhs )) (
-         (let prev-tt (typeof-var-raw( term tctx lname )))
-         (if (non-zero prev-tt) (
-            (if (.is-t( prev-tt 'LocalVariable_s )) (
-               (exit-error( (+( 'Variable\sName\sIs\sAlready\sBound\sIn\sOuter\sScope\s_s lname )) term ))
-            ) ())
-         ) ())
-         (infer-expr( tctx rhs Unscoped TAny Tail ))
-         (let tt (typeof rhs))
-         (if (non-zero tt) () (
-            (exit-error( 'Unable\sto\sinfer\stype\sof\sexpression_s rhs ))
-         ))
-         (set tt (&&( (normalize tt) (t1 'LocalVariable_s) )))
-         (match term (
-            ()
-            ( (App( (Abs( lname-var _ _ )) _ )) (
-               (ascript-normal( lname-var tt ))
-            ))
-         ))
-         (set tctx (.bind( tctx lname tt def )))
-         (ascript-normal( term (t1 'Nil_s) ))
-      ))
       ( _ (
          (let tctx-term (std-infer-expr( tctx term (as (is( scoped Scoped )) Bool) used hint )))
          (set tctx (.first tctx-term)) 
