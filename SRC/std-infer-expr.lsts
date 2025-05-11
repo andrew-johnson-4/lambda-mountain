@@ -88,32 +88,25 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
       AType{tt=tt} => ascript-normal(term, tt);
       Seq{} => (
          let seqs = mk-vector(type(AST));
-         while term.is-seq { match term {
+         while non-zero(term) { match term {
             Seq{l=left, r=right} => (
                seqs = seqs.push(r);
-               if l.is-seq
-               then term = l
-               else (term = ASTEOF; seqs = seqs.push(l));
+               term = l
             );
          }};
-         let is-diff = false as U64;
-         let def-i = seqs.length - 1;
+         let def-i = seqs.length;
          while def-i > 0 {
+            def-i = def-i - 1;
             let r = seqs[def-i];
             (_, let new-r) = std-infer-expr(tctx, seqs[def-i], false, Used, hint);
-            if not(is(r,new-r)) then { is-diff = true; seqs[def-i] = new-r; };
-            def-i = def-i - 1;
+            if not(is(r,new-r)) then { seqs[def-i] = new-r; };
          };
-         if is-diff {
-            term = ASTEOF;
-            let def-order-i = seqs.length - 1;
-            while def-order-i > 0 {
-               if non-zero(term)
-               then term = mk-seq(term, seqs[def-order-i])
-               else term = seqs[def-order-i];
-               def-order-i = def-order-i - 1;
-            };
-         }
+         term = ASTEOF;
+         let def-order-i = seqs.length;
+         while def-order-i > 0 {
+            def-order-i = def-order-i - 1;
+            term = term + seqs[def-order-i]
+         };
       );
       Glb{key=key, val=val} => (
          let rough-tt = typeof(term);

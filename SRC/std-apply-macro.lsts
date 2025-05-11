@@ -19,7 +19,7 @@ let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContex
          peeped = mtype;
       };
    };
-   (let peeped-type, _) = std-infer-peeped-arguments(tctx, margs, peep-holes);
+   (let peeped-type, margs) = std-infer-peeped-arguments(tctx, margs, peep-holes);
 
    let matched = [] :: List<(Type,AST)>;
    for Tuple{mtype=first, mterm=third} in row {
