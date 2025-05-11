@@ -122,6 +122,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
       Abs{lhs=lhs, rhs=rhs:App{left:Lit{key:c":"},right:App{inner-rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} => (
          tctx = infer-ctx(tctx, lhs);
          (_, let new-inner-rhs) = std-infer-expr(tctx, inner-rhs, false, Tail, return-type);
+         if not(misc-tt.is-t(c"Blob")) && not(misc-tt.is-t(c"C-FFI")) then ascript-normal(inner-rhs, return-type);
          ascript-normal(rhs, return-type);
          let domain-tt = typeof-lhs(lhs);
          ascript-normal(term, t3(c"Arrow", typeof-lhs(lhs), return-type) && misc-tt);
