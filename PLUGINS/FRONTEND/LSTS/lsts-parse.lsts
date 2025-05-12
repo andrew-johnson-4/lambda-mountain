@@ -120,29 +120,17 @@ let lsts-parse-doc(tokens: List<Token>): Tuple<AST, List<Token>> = (
          (let ax, let new-tags, tokens) = lsts-parse-doc-expr(tokens);
          tags = tags + new-tags;
          if non-zero(ax) {
-            if non-zero(line) {
-               line = mk-seq(line, ax);
-            } else {
-               line = ax;
-            };
+            line = line + ax;
          };
       };
       tokens = tail(tokens);
 
       if non-zero(line) {
-         if non-zero(para) {
-            para = mk-seq(para, line);
-         } else {
-            para = line;
-         };
+         para = para + line;
       } else {
          # empty line => new paragraph
          if non-zero(para) {
-            if non-zero(ast) {
-               ast = mk-seq(ast, para);
-            } else {
-               ast = para;
-            };
+            ast = ast + para;
             para = ASTEOF;
          };
       };
@@ -212,7 +200,7 @@ let lsts-parse(tokens: List<Token>): Nil = (
          [ Token{key:c"type"}.. _] => tokens = lsts-parse-typedef(tokens);
          [ Token{key:c"typed"}.. Token{key:c"macro"}.. _] => (
             (let bind, tokens) = lsts-parse-typed-macro(tokens);
-            ast-parsed-program = mk-seq(ast-parsed-program, bind);
+            ast-parsed-program = ast-parsed-program + bind;
          );
          [ Token{key:c"interface"}.. _] => tokens = lsts-parse-interface(tokens);
          [ Token{key:c"import"}.. rest] => (
@@ -235,13 +223,13 @@ let lsts-parse(tokens: List<Token>): Nil = (
             };
             let constructor = head(tokens); tokens = tail(tokens);
             lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-            ast-parsed-program = mk-seq(ast-parsed-program, mk-app(
+            ast-parsed-program = ast-parsed-program + mk-app(
                Var{ c"macro::define-zero", with-key(constructor, c"macro::define-zero") },
                mk-cons(
                   AType{ base-type-rest.first },
                   Lit{ constructor.key, constructor }
                )
-            ));
+            );
          );
          [ Token{key:c"atom"}.. Token{key:c"suffix"}.. rest] => (
             tokens = rest;
@@ -261,13 +249,13 @@ let lsts-parse(tokens: List<Token>): Nil = (
             let term-rest = lsts-parse-small-expression(tokens);
             let term = term-rest.first;
             tokens = term-rest.second;
-            ast-parsed-program = mk-seq(ast-parsed-program, term);
+            ast-parsed-program = ast-parsed-program + term;
             lsts-parse-expect(c";",tokens); tokens = tail(tokens);
          );
       };
       if is(prev-tokens, tokens) { fail("Unrecognized Token During Parsing: \{lsts-parse-head(tokens)}\n") };
       if non-zero(docx) { 
-         ast-parsed-program = mk-seq(ast-parsed-program, mk-meta(docx));
+         ast-parsed-program = ast-parsed-program + mk-meta(docx);
       };
    };
 );
@@ -789,10 +777,7 @@ let lsts-parse-typedef(tokens: List<Token>): List<Token> = (
                cases = mk-cons(mk-cons(cases, Var{ bar.key, bar }), case-rest.first);
             };
             lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-            ast-parsed-program = mk-seq(
-               ast-parsed-program,
-               mk-typedef(AType{ base-rest.first }, cases)
-            );
+            ast-parsed-program = ast-parsed-program + mk-typedef(AType{ base-rest.first }, cases);
          } else if mode==c"alias" {
             lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
             let case-rest = lsts-parse-type(tokens);
@@ -933,18 +918,14 @@ let lsts-parse-let(tokens: List<Token>): List<Token> = (
             );
          };
       } else {
-         ast-parsed-program = mk-seq(
-            ast-parsed-program,
+         ast-parsed-program = ast-parsed-program +
             mk-glb( with-location(mk-token(name),loc), mk-abs(
                args-list, return-term, misc-tt && attach-tt
-            ) )
-         );
+            ) );
       };
    } else {
-      ast-parsed-program = mk-seq(
-         ast-parsed-program,
-         mk-glb( with-location(mk-token(name),loc), return-term )
-      );
+      ast-parsed-program = ast-parsed-program +
+         mk-glb( with-location(mk-token(name),loc), return-term );
    };
    tokens
 );

@@ -86,26 +86,12 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
       Meta{} => ascript-normal(term, t1(c"Nil"));
       Typedef{} => ();
       AType{tt=tt} => ascript-normal(term, tt);
-      Seq{} => (
-         let seqs = mk-vector(type(AST));
-         while non-zero(term) { match term {
-            Seq{l=left, r=right} => (
-               seqs = seqs.push(r);
-               term = l
-            );
-         }};
-         let def-i = seqs.length;
-         while def-i > 0 {
-            def-i = def-i - 1;
-            let r = seqs[def-i];
-            (_, let new-r) = std-infer-expr(tctx, seqs[def-i], false, Used, hint);
-            if not(is(r,new-r)) then { seqs[def-i] = new-r; };
-         };
-         term = ASTEOF;
-         let def-order-i = seqs.length;
-         while def-order-i > 0 {
-            def-order-i = def-order-i - 1;
-            term = term + seqs[def-order-i]
+      Seq{seq=seq} => (
+         let def-i = 0_u64;
+         while def-i < seq.length {
+            (_, let new-r) = std-infer-expr(tctx, seq[def-i], false, Used, hint);
+            seq[def-i] = new-r;
+            def-i = def-i + 1;
          };
       );
       Glb{key=key, val=val} => (

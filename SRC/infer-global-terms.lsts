@@ -1,26 +1,11 @@
 
 let infer-global-terms(term: AST): AST = (
    match term {
-      Seq{} => (
-         let seqs = mk-vector(type(AST));
-         while non-zero(term) { match term {
-            Seq{l=left, r=right} => (
-               seqs = seqs.push(r);
-               term = l;
-            );
-         }};
-         let def-i = seqs.length;
-         while def-i > 0 {
-            def-i = def-i - 1;
-            let r = seqs[def-i];
-            let new-r = infer-global-terms(r);
-            if not(is(r,new-r)) then { seqs[def-i] = new-r; };
-         };
-         term = ASTEOF;
-         let def-order-i = seqs.length;
-         while def-order-i > 0 {
-            def-order-i = def-order-i - 1;
-            term = term + seqs[def-order-i];
+      Seq{seq=seq} => (
+         let def-i = 0_u64;
+         while def-i < seq.length {
+            seq[def-i] = infer-global-terms(seq[def-i]);
+            def-i = def-i + 1;
          };
       );
       Glb{val:Abs{}} => ();
@@ -39,21 +24,8 @@ let infer-global-terms(term: AST): AST = (
 
 let infer-global-context(term: AST): Nil = (
    match term {
-      Seq{} => (
-         let seqs = mk-vector(type(AST));
-         while term.is-seq { match term {
-            Seq{l=left, r=right} => (
-               seqs = seqs.push(r);
-               if l.is-seq
-               then term = l
-               else (term = ASTEOF; seqs = seqs.push(l));
-            );
-         }};
-         let def-i = seqs.length;
-         while def-i > 0 {
-            def-i = def-i - 1;
-            infer-global-context(seqs[def-i]);
-         };
+      Seq{seq=seq} => (
+         for vector s in seq { infer-global-context(s) }
       );
       Typedef{ lhs:Lit{base-type=key}, case-constructors=rhs } => (
          # TODO: remove when LM frontend is removed
