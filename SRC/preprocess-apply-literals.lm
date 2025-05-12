@@ -58,11 +58,10 @@ preprocess-apply-literals := λ(: program AST). (: (
          )))
       ))
       ( (Seq( seqs )) (
-         (let ret ASTEOF)
+         (set r ASTEOF)
          (for-each-v (p in seqs) (
-            (set ret (+( ret (preprocess-apply-literals p) )))
+            (set r (+( r (preprocess-apply-literals p) )))
          ))
-         ret
       ))
       ( (Abs( al ar tlt )) (set r (Abs(
          (close(preprocess-apply-literals al))

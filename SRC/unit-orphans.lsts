@@ -18,18 +18,6 @@ import SRC/std-apply-macro-candidates.lsts;
 import SRC/std-direct-destructure-macro.lsts;
 import SRC/infer-global-terms.lsts;
 
-let lsts-substitute-seq(tctx: TContext?, seq: Vector<AST>): Vector<AST> = (
-   let ret = mk-vector( type(AST), seq.length );
-   for vector s in seq { ret = ret.push(substitute(tctx, s)) };
-   ret
-);
-
-let lsts-apply-seq(ctx: AContext, seq: Vector<AST>): Vector<AST> = (
-   let ret = mk-vector( type(AST), seq.length );
-   for vector s in seq { ret = ret.push(apply(ctx, s)) };
-   ret
-);
-
 let .unroll-seq(t: AST): Vector<AST> = (
    match t {
       Seq{seq=seq} => seq;

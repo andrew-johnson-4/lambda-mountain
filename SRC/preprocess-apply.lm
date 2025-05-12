@@ -114,11 +114,10 @@ preprocess-apply := λ(: program AST). (: (
          )
       ))
       ( (Seq( seq )) (
-         (let ret ASTEOF)
+         (set r ASTEOF)
          (for-each-v (s in seq) (
-            (set ret (+( ret (preprocess-apply s) )))
+            (set r (+( r (preprocess-apply s) )))
          ))
-         ret
       ))
       ( (App( is-cons al ar )) (set r (App(
          is-cons

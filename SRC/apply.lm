@@ -26,7 +26,10 @@ apply := λ(: ctx AContext)(: term AST). (: (
          )))
       ))
       ( (Seq( seq )) (
-         (Seq(lsts-apply-seq( ctx seq )))
+         (set return ASTEOF)
+         (for-each-v (s in seq) (
+            (set return (+( return (apply( ctx s )) )))
+         ))
       ))
       ( (Typedef( vl vr )) (
          (set return (Typedef(
