@@ -1,26 +1,5 @@
 
 preprocess-apply := λ(: program AST). (: (
-   (if (.is-seq program) (
-      (let seqs (: LEOF List<AST>))
-      (while (.is-seq program) (match program (
-         ()
-         ( (Seq( l r )) (
-            (set seqs (cons( (preprocess-apply r) seqs )))
-            (set program l)
-         ))
-      )))
-      (set program ASTEOF)
-      (while (non-zero seqs) (
-         (set program (+( program (head seqs) )))
-         (set seqs (tail seqs))
-      ))
-   ) (
-      (set program (preprocess-apply-one program))
-   ))
-   program
-) AST);
-
-preprocess-apply-one := λ(: program AST). (: (
    (let r program)
    (match program (
       ()
@@ -134,10 +113,12 @@ preprocess-apply-one := λ(: program AST). (: (
             )))
          )
       ))
-      ( (Seq( al ar )) (set r (+(
-         (preprocess-apply al)
-         (preprocess-apply ar)
-      ))))
+      ( (Seq( seq )) (
+         (set r ASTEOF)
+         (for-each-v (s in seq) (
+            (set r (+( r (preprocess-apply s) )))
+         ))
+      ))
       ( (App( is-cons al ar )) (set r (App(
          is-cons
          (close(preprocess-apply al))

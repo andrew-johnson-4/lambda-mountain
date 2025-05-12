@@ -17,3 +17,10 @@ import SRC/std-apply-macro.lsts;
 import SRC/std-apply-macro-candidates.lsts;
 import SRC/std-direct-destructure-macro.lsts;
 import SRC/infer-global-terms.lsts;
+
+let .unroll-seq(t: AST): Vector<AST> = (
+   match t {
+      Seq{seq=seq} => seq;
+      _ => mk-vector(type(AST));
+   }
+);

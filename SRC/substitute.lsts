@@ -47,7 +47,11 @@ let substitute(ctx: AContext, term: AST): AST = (
       App{left:Var{key:c"uuid"}, right:Var{x=key}} => ctx.lookup(x,term).unique;
       Var{x=key} => ctx.lookup(x,term).unique;
       Lit{} => term.unique;
-      Seq{left=left,right=right} => mk-seq(substitute(ctx,left), substitute(ctx,right));
+      Seq{seq=seq} => (
+         let ret = mk-vector(type(AST), seq.length);
+         for vector s in seq { ret = ret.push(substitute(ctx,s)) };
+         Seq{ret}
+      );
       App{is-cons=is-cons,left=left,right=right} => if is-cons
       then mk-cons(substitute(ctx,left), substitute(ctx,right))
       else mk-app(substitute(ctx,left), substitute(ctx,right));

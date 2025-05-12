@@ -15,8 +15,8 @@ let mk-glb(k: Token, v: AST): AST = (
    Glb{ k, close(v) }
 );
 
-let mk-seq(l: AST, r: AST): AST = (
-   Seq{ close(l), close(r) }
+let mk-seq(): AST = (
+   Seq{ mk-vector(type(AST)) }
 );
 
 let mk-typedef(l: AST, r: AST): AST = (
