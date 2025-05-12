@@ -8,6 +8,9 @@ let $"+"(l: AST, r: AST): AST = (
          );
          _ => Seq{seq.push(r)};
       });
-      ASTEOF{} => Seq{mk-vector(type(AST)).push(r)};
+      ASTEOF{} => (
+         l = Seq{mk-vector(type(AST))};
+         l + r
+      );
    };
 );
