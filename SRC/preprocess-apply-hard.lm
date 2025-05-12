@@ -1,5 +1,6 @@
 
 preprocess-apply-hard := λ(: macro-name String)(: arity U64)(: program AST). (: (
+   (print Apply\s_s)(print macro-name)(print '\s_s)(print program)(print '\n_s)
    (let return program)
    (let macros preprocess-macros)
    (let matched False_u8)
@@ -39,6 +40,15 @@ preprocess-apply-hard := λ(: macro-name String)(: arity U64)(: program AST). (:
       ( _ (set macros MEOF) )
    )))
    (if (not matched) (
+      (let macro-list preprocess-macros)
+      (while (non-zero macro-list) (match macro-list (
+         ()
+         ( (MSeq( rst (Macro( ml mr )) )) (
+            (print 'Macro\s_s)(print ml)(print '\s=>\s_s)(print mr)(print '\n_s)
+            (set macro-list rst)
+         ))
+      )))
+      (print 'Args\s_s)(print program)(print '\n_s)
       (exit-error( (+( 'Invalid\sMacro\sApplication\s_s macro-name )) program ))
    ) ())
    return

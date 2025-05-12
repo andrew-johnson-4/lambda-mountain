@@ -15,17 +15,12 @@ parse-toplevel := λ(: tokens List<Token>). (: (
                      ()
                      ( (Tuple( mrhs-tokens mremainder2 )) (
                         (let mrhs (parse-toplevel mrhs-tokens))
-                        (match mrhs (
-                           ()
-                           ( (Seq( seq )) (
-                              (for-each-v (s in seq) (set mrhs s))
-                           ))
-                           ( _ () )
+                        (for-each-v (s in (.unroll-seq mrhs)) (
+                           (set preprocess-macros (MSeq(
+                              (close preprocess-macros)
+                              (Macro( (without-location mlhs) (without-location s) ))
+                           )))
                         ))
-                        (set preprocess-macros (MSeq(
-                           (close preprocess-macros)
-                           (Macro( (without-location mlhs) (without-location mrhs) ))
-                        )))
                         (set tokens mremainder2)
                      ))
                   ))
