@@ -1359,6 +1359,16 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
          Var{ amp.key, amp },
          base-rest.first
       );
+   } else if lsts-parse-head(tokens)==c"uuid" {
+      let u = head(tokens); tokens = tail(tokens);
+      lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
+      let base-rest = lsts-parse-lhs-one(tokens);
+      tokens = base-rest.second;
+      lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+      mk-cons(
+         Var{ u.key, u },
+         base-rest.first
+      );
    } else if lsts-is-lit(lsts-parse-head(tokens)) {
       let base-rest = lsts-parse-lit(tokens);
       tokens = base-rest.second;
