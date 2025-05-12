@@ -15,6 +15,7 @@ let std-apply-macro-candidates(tctx: TContext?, mname: CString, margs: AST, cand
       }
    };
    if not(non-zero(t)) then fail("Macro Application failed match during destructuring: \{mname}\n");
+   (tctx, t) = std-infer-expr(tctx, t, false, Used, TAny);
    (tctx, t)
 );
 
