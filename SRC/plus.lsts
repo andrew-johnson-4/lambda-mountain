@@ -2,6 +2,6 @@
 let $"+"(l: AST, r: AST): AST = (
    match l {
       Seq{seq=seq} => l = Seq{seq.push(r)};
-      ASTEOF{} => Seq{mk-vector(type(AST),1).push(r)};
+      ASTEOF{} => l = Seq{mk-vector(type(AST)).push(r)};
    }; l
 );

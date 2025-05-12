@@ -24,3 +24,12 @@ let .unroll-seq(t: AST): Vector<AST> = (
       _ => mk-vector(type(AST));
    }
 );
+
+let scan-ast(state: CString): Nil = (
+   let found = false;
+   for vector tc in ast-parsed-program.unroll-seq { match tc {
+      Glb{key=key} => if key.key==c".into" then found = true;
+      _ => ();
+   }};
+   if not(found) then fail("Not found .into at \{state}\n"); ()
+);
