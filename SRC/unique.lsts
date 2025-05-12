@@ -9,9 +9,9 @@ let .unique(term: AST): AST = (
       Var{key=key, token=token} => Var{key, token.unique};
       Lit{key=key, token=token} => Lit{key, token.unique};
       Seq{seq=seq} => (
-         let ret = mk-vector(type(AST), seq.length+1);
+         let ret = mk-vector(type(AST), seq.length);
          for vector s in seq { ret = ret.push(s.unique) };
-         Seq{ret.push(term)}
+         Seq{ret}
       );
       App{is-cons=is-cons,left=left,right=right} => mk-cons-or-app(is-cons,left.unique,right.unique);
       Typedef{lhs=lhs,rhs=rhs} => mk-typedef(lhs.unique, rhs.unique);
