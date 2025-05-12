@@ -1,13 +1,9 @@
 
 typecheck := λ. (: (
-   (print 'Typecheck.1\n_s)
-   (scan-ast 'Start\sTypecheck_s)
    (infer-global-context ast-parsed-program)
    (set ast-parsed-program (infer-global-terms ast-parsed-program))
-   (scan-ast 'Post\sInfer\sTerms_s)
    (let tctx-ast (std-infer-expr( (: None Maybe<TContext>) ast-parsed-program false Used TAny )))
    (set ast-parsed-program (.second tctx-ast))
-   (scan-ast 'Post\sInfer\sExpr_s)
    (while (non-zero stack-to-specialize) (match stack-to-specialize (
       ()
       ( (LCons( (StackToSpecialize( function-name ft unify-ctx special-type )) rst )) (

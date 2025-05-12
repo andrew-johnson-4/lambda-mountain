@@ -5,9 +5,7 @@ index-typedefs := λ(: program AST). (: (
       ( (Typedef( lhs rhs )) (
          (index-typedefs( rhs 0_u64 ))
       ))
-      ( _ (
-         (print 'Ignore\s_s)(print p)(print '\n_s)
-      ))
+      ( _ () )
    )))
 ) Nil);
 
