@@ -839,20 +839,24 @@ let lsts-parse-function-signature(tokens: List<Token>, loc: SourceLocation): Tup
    while non-zero(tokens) && lsts-parse-head(tokens)!=c")" {
       lsts-parse-expect(c"Identifier", lsts-is-ident-head(lsts-parse-head(tokens)), tokens);
       let arg-name = head(tokens); tokens = tail(tokens);
-      lsts-parse-expect(c":", tokens); tokens = tail(tokens);
-      let type-rest = lsts-parse-type(tokens);
-      tokens = type-rest.second;
+      let had-type = false;
+      let arg-type = TAny;
+      if lsts-parse-head(tokens)==c":" {
+         had-type = true;
+         lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+         (arg-type, tokens) = lsts-parse-type(tokens);
+      };
       if lsts-parse-head(tokens)==c"," { tokens = tail(tokens); } else { lsts-parse-expect(c")", tokens); };
-      let arg-binding = mk-cons(
+      let arg-binding = if had-type then mk-cons(
          Lit{ c":", with-location(mk-token(":"),loc) },
-         mk-cons(Var{ arg-name.key, arg-name }, AType{ type-rest.first })
-      );
+         mk-cons(mk-var(arg-name), mk-atype(arg-type))
+      ) else mk-var(arg-name);
       if is( out.args-list, ASTNil{} ) {
          out.args-list = arg-binding;
-         out.args-type = type-rest.first;
+         out.args-type = arg-type;
       } else {
          out.args-list = mk-cons(out.args-list, arg-binding);
-         out.args-type = t3(c"Cons", out.args-type, type-rest.first);
+         out.args-type = t3(c"Cons", out.args-type, arg-type);
       };
    };
    lsts-parse-expect(c")", tokens); tokens = tail(tokens);
