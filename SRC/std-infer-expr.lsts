@@ -175,6 +175,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
             mark-var-to-def-todo(tctx, var-name-if-var(l), typeof(r), l);
          };
       );
+      _ => fail("Unexpected Term in std-infer-expr\n\{term}\n");
    };
    (tctx, term);
 );

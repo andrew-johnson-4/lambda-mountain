@@ -159,6 +159,7 @@ let lsts-has-assign(tokens: List<Token>): U64 = (
       [Token{key:c"if"} .. rest] => (if depth == 0_i64 {tokens = [] :: List<Token>;} else {tokens = rest;});
       [Token{key:c"then"} .. rest] => (if depth == 0_i64 {tokens = [] :: List<Token>;} else {tokens = rest;});
       [Token{key:c"else"} .. rest] => (if depth == 0_i64 {tokens = [] :: List<Token>;} else {tokens = rest;});
+      [Token{key:c"fn"} .. rest] => (if depth == 0_i64 {tokens = [] :: List<Token>;} else {tokens = rest;});
       [_ .. rest] => tokens = rest;
    }; if depth < 0_i64 { tokens = [] :: List<Token>; }; };
    has-assign
