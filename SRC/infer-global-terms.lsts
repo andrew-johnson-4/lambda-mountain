@@ -11,7 +11,11 @@ let infer-global-terms(term: AST): AST = (
       Glb{val:Abs{}} => ();
       Glb{k=key, rhs=val} => (
          (_, let new-rhs) = std-infer-expr((None :: TContext?), rhs, false, Used, TAny);
-         if not(is(rhs,new-rhs)) then term = mk-glb(k, new-rhs);
+         if not(is(rhs,new-rhs)) then {
+            let new-term = mk-glb(k, new-rhs);
+            var-to-def-index = var-to-def-index.bind(term,new-term);
+            term = new-term;
+         };
          let kt = normalize(typeof(rhs)) && t1(c"GlobalVariable");
          global-type-context = global-type-context.bind(k.key, kt, term);
          mark-global-as-seen(k.key, kt, TAny);
