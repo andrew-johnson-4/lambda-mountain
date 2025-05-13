@@ -70,14 +70,14 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
             (_, let new-t) = std-infer-expr(tctx-inner, t, false, Tail, TAny);
             (_, let new-f) = std-infer-expr(tctx, f, false, Tail, TAny);
             if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
-            then { term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
+            then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
          } else {
             (tctx, let new-cond) = std-infer-expr(tctx, cond, false, Used, TAny);
             (let tctx-t, let new-t) = std-infer-expr(tctx, t, false, Tail, TAny);
             (_, let new-f) = std-infer-expr(tctx, f, false, Tail, TAny);
             tctx = tctx-t;
             if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
-            then { term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
+            then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
          };
          ascript-normal(term, typeof(t)); # TODO: use MGU to merge true and false branches
       );

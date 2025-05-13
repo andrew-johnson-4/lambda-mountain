@@ -11,11 +11,10 @@ let std-apply-macro-candidates(tctx: TContext?, mname: CString, margs: AST, cand
       if not(non-zero(t)) {
          (let new-tctx, let mctx) = std-try-destructure-macro(tctx, margs, ctype, mlhs);
          if mctx.is-some then mctx = union(mctx, Some{extract-uuids(mrhs)});
-         if mctx.is-some then t = with-location(substitute(mctx.get-or-panic, mrhs.unique), margs.location);
+         if mctx.is-some then t = with-location(substitute(mctx.get-or-panic, mrhs), margs.location);
       }
    };
    if not(non-zero(t)) then fail("Macro Application failed match during destructuring: \{mname}\n");
-   print("Applied Macro: \{mname}\nTerm: \{t}\n");
    (tctx, t) = std-infer-expr(tctx, t, false, Used, TAny);
    (tctx, t)
 );

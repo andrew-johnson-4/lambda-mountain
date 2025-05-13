@@ -1061,16 +1061,16 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
          lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
          let rhs-rest = lsts-parse-small-expression(tokens);
          tokens = rhs-rest.second;
-         #base = mk-app(
-         #   mk-var(with-location(mk-token("macro::let"),loc)),
-         #   mk-cons(lhs-rest.first, rhs-rest.first)
-         #);
          base = mk-app(
-            mk-app(
-               mk-var(with-location(mk-token("let"),loc)),
-               lhs-rest.first
-            ), rhs-rest.first
+            mk-var(with-location(mk-token("macro::let"),loc)),
+            mk-cons(lhs-rest.first, rhs-rest.first)
          );
+         #base = mk-app(
+         #   mk-app(
+         #      mk-var(with-location(mk-token("let"),loc)),
+         #      lhs-rest.first
+         #   ), rhs-rest.first
+         #);
       );
       [Token{key:c"while"}.. rest] => (
          let loc = head(tokens).location; tokens = rest;
