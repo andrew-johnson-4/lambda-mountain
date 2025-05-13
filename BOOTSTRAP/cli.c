@@ -33889,8 +33889,8 @@ uuid__0000000000135162;
 });}
 
 #line 1349 "PLUGINS/FRONTEND/LSTS/lsts-parse.lsts"
-LM__LT_Tuple_LT_List_LT_Token_GT__GT__LT_AST_GT__GT_ lsts_SB_parse_SB_lhs_SB_one_CL__LT_Arrow_LT_Tuple_LT_List_LT_Token_GT__GT__LT_AST_GT__GT__LT_List_LT_Token_GT__GT__GT_(LM__LT_List_LT_Token_GT__GT_ uuid__000000000013518b){LM__LT_Tuple_LT_List_LT_Token_GT__GT__LT_AST_GT__GT_ uuid__00000000001351a9;
-LM__LT_Token_GT_ uuid__00000000001351c6;
+LM__LT_Tuple_LT_List_LT_Token_GT__GT__LT_AST_GT__GT_ lsts_SB_parse_SB_lhs_SB_one_CL__LT_Arrow_LT_Tuple_LT_List_LT_Token_GT__GT__LT_AST_GT__GT__LT_List_LT_Token_GT__GT__GT_(LM__LT_List_LT_Token_GT__GT_ uuid__000000000013518b){LM__LT_Token_GT_ uuid__00000000001351a9;
+LM__LT_Tuple_LT_List_LT_Token_GT__GT__LT_AST_GT__GT_ uuid__00000000001351aa;
 LM__LT_Tuple_LT_List_LT_Token_GT__GT__LT_AST_GT__GT_ uuid__00000000001351c7;
 LM__LT_Token_GT_ uuid__00000000001351e4;
 LM__LT_Tuple_LT_List_LT_Token_GT__GT__LT_AST_GT__GT_ uuid__00000000001351e5;
@@ -33906,22 +33906,7 @@ char uuid__0000000000135242;
 LM__LT_Tuple_LT_List_LT_Token_GT__GT__LT_AST_GT__GT_ uuid__0000000000135244;
 LM__LT_AST_GT_ uuid__0000000000135243;
 LM__LT_AST_GT_ uuid__00000000001351a8;
-return ({({uuid__00000000001351a8=((lsts_SB_is_SB_ident_SB_head_CL__LT_Arrow_LT_U64_GT__LT_String_GT__GT_((lsts_SB_parse_SB_head_CL__LT_Arrow_LT_String_GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b))))?({({({uuid__00000000001351a9=(lsts_SB_make_SB_maybe_SB_var_CL__LT_Arrow_LT_Tuple_LT_List_LT_Token_GT__GT__LT_AST_GT__GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b));({});})
-;
-({uuid__000000000013518b=(uuid__00000000001351a9.field_1);({});});
-});
-(uuid__00000000001351a9.field_2);
-}):((_EQ__EQ__CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_String_GT__LT_String_GT__GT__GT_((lsts_SB_parse_SB_head_CL__LT_Arrow_LT_String_GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b)),"&"))?({({({({({uuid__00000000001351c6=(head_CL__LT_Arrow_LT_Token_GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b));({});})
-;
-({uuid__000000000013518b=(tail_CL__LT_Arrow_LT_List_LT_Token_GT__GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b));({});});
-});
-({uuid__00000000001351c7=(lsts_SB_parse_SB_lhs_SB_one_CL__LT_Arrow_LT_Tuple_LT_List_LT_Token_GT__GT__LT_AST_GT__GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b));({});})
-;
-});
-({uuid__000000000013518b=(uuid__00000000001351c7.field_1);({});});
-});
-(mk_SB_cons_CL__LT_Arrow_LT_AST_GT__LT_Cons_LT_AST_GT__LT_AST_GT__GT__GT_(({LM__LT_AST_GT_ rvalue={.field_0=7};rvalue.field_7001=uuid__00000000001351c6;rvalue.field_7002=(uuid__00000000001351c6.field_3);rvalue;}),(uuid__00000000001351c7.field_2)));
-}):((_EQ__EQ__CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_String_GT__LT_String_GT__GT__GT_((lsts_SB_parse_SB_head_CL__LT_Arrow_LT_String_GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b)),"uuid"))?({({({({({({({({({uuid__00000000001351e4=(head_CL__LT_Arrow_LT_Token_GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b));({});})
+return ({({uuid__00000000001351a8=((_EQ__EQ__CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_String_GT__LT_String_GT__GT__GT_((lsts_SB_parse_SB_head_CL__LT_Arrow_LT_String_GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b)),"uuid"))?({({({({({({({({({uuid__00000000001351a9=(head_CL__LT_Arrow_LT_Token_GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b));({});})
 ;
 ({uuid__000000000013518b=(tail_CL__LT_Arrow_LT_List_LT_Token_GT__GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b));({});});
 });
@@ -33929,14 +33914,29 @@ return ({({uuid__00000000001351a8=((lsts_SB_is_SB_ident_SB_head_CL__LT_Arrow_LT_
 });
 ({uuid__000000000013518b=(tail_CL__LT_Arrow_LT_List_LT_Token_GT__GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b));({});});
 });
-({uuid__00000000001351e5=(lsts_SB_parse_SB_lhs_SB_one_CL__LT_Arrow_LT_Tuple_LT_List_LT_Token_GT__GT__LT_AST_GT__GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b));({});})
+({uuid__00000000001351aa=(lsts_SB_parse_SB_lhs_SB_one_CL__LT_Arrow_LT_Tuple_LT_List_LT_Token_GT__GT__LT_AST_GT__GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b));({});})
 ;
 });
-({uuid__000000000013518b=(uuid__00000000001351e5.field_1);({});});
+({uuid__000000000013518b=(uuid__00000000001351aa.field_1);({});});
 });
 (lsts_SB_parse_SB_expect_CL__LT_Arrow_LT_Nil_GT__LT_Cons_LT_List_LT_Token_GT__GT__LT_String_GT__GT__GT_(")",uuid__000000000013518b));
 });
 ({uuid__000000000013518b=(tail_CL__LT_Arrow_LT_List_LT_Token_GT__GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b));({});});
+});
+(mk_SB_cons_CL__LT_Arrow_LT_AST_GT__LT_Cons_LT_AST_GT__LT_AST_GT__GT__GT_(({LM__LT_AST_GT_ rvalue={.field_0=7};rvalue.field_7001=uuid__00000000001351a9;rvalue.field_7002=(uuid__00000000001351a9.field_3);rvalue;}),(uuid__00000000001351aa.field_2)));
+}):((lsts_SB_is_SB_ident_SB_head_CL__LT_Arrow_LT_U64_GT__LT_String_GT__GT_((lsts_SB_parse_SB_head_CL__LT_Arrow_LT_String_GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b))))?({({({uuid__00000000001351c7=(lsts_SB_make_SB_maybe_SB_var_CL__LT_Arrow_LT_Tuple_LT_List_LT_Token_GT__GT__LT_AST_GT__GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b));({});})
+;
+({uuid__000000000013518b=(uuid__00000000001351c7.field_1);({});});
+});
+(uuid__00000000001351c7.field_2);
+}):((_EQ__EQ__CL__LT_Arrow_LT_U64_GT__LT_Cons_LT_String_GT__LT_String_GT__GT__GT_((lsts_SB_parse_SB_head_CL__LT_Arrow_LT_String_GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b)),"&"))?({({({({({uuid__00000000001351e4=(head_CL__LT_Arrow_LT_Token_GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b));({});})
+;
+({uuid__000000000013518b=(tail_CL__LT_Arrow_LT_List_LT_Token_GT__GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b));({});});
+});
+({uuid__00000000001351e5=(lsts_SB_parse_SB_lhs_SB_one_CL__LT_Arrow_LT_Tuple_LT_List_LT_Token_GT__GT__LT_AST_GT__GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b));({});})
+;
+});
+({uuid__000000000013518b=(uuid__00000000001351e5.field_1);({});});
 });
 (mk_SB_cons_CL__LT_Arrow_LT_AST_GT__LT_Cons_LT_AST_GT__LT_AST_GT__GT__GT_(({LM__LT_AST_GT_ rvalue={.field_0=7};rvalue.field_7001=uuid__00000000001351e4;rvalue.field_7002=(uuid__00000000001351e4.field_3);rvalue;}),(uuid__00000000001351e5.field_2)));
 }):((lsts_SB_is_SB_lit_CL__LT_Arrow_LT_U64_GT__LT_String_GT__GT_((lsts_SB_parse_SB_head_CL__LT_Arrow_LT_String_GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b))))?({({({uuid__0000000000135202=(lsts_SB_parse_SB_lit_CL__LT_Arrow_LT_Tuple_LT_List_LT_Token_GT__GT__LT_AST_GT__GT__LT_List_LT_Token_GT__GT__GT_(uuid__000000000013518b));({});})
