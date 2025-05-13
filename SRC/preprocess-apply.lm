@@ -124,11 +124,15 @@ preprocess-apply := λ(: program AST). (: (
          (close(preprocess-apply al))
          (close(preprocess-apply ar))
       ))))
-      ( (Abs( al ar tlt )) (set r (Abs(
-         (close(preprocess-apply al))
-         (close(preprocess-apply ar))
-         tlt
-      ))))
+      ( (Abs( al ar tlt )) (
+         (if (not(.is-t( tlt 'TypedMacro_s ))) (
+            (set r (Abs(
+               (close(preprocess-apply al))
+               (close(preprocess-apply ar))
+               tlt
+            )))
+         ) ())
+      ))
       ( (Glb( k ar )) (set r (Glb(
          (unique k)
          (close(preprocess-apply ar))

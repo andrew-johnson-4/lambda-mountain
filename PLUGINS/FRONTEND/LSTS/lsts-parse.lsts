@@ -262,7 +262,7 @@ let lsts-parse(tokens: List<Token>): Nil = (
 
 let lsts-parse-top-level(tokens: List<Token>): Tuple<AST,List<Token>> = (
    # TODO, accept all top-level expressions here
-   lsts-parse-small-expression(tokens);
+   lsts-parse-expression(tokens);
 );
 
 let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
@@ -1347,7 +1347,14 @@ let lsts-make-lit(t: Token): AST = (
 );
 
 let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
-   let base = if lsts-is-ident-head(lsts-parse-head(tokens)) {
+   let base = if lsts-parse-head(tokens)==c"uuid" {
+      let u = head(tokens); tokens = tail(tokens);
+      lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
+      let base-rest = lsts-parse-lhs-one(tokens);
+      tokens = base-rest.second;
+      lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+      mk-cons( Var{ u.key, u }, base-rest.first );
+   } else if lsts-is-ident-head(lsts-parse-head(tokens)) {
       let base-rest = lsts-make-maybe-var(tokens);
       tokens = base-rest.second;
       base-rest.first;
