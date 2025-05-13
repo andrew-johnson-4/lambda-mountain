@@ -130,10 +130,11 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
          ascript-normal(term, t3(c"Arrow", typeof-lhs(lhs), return-type) && misc-tt);
       );
       App{ is-cons=is-cons, l=left, r=right } => (
+         let is-macro = false;
          if is-cons {
             (tctx, let new-l) = std-infer-expr(tctx, l, false, Used, TAny);
             (tctx, let new-r) = std-infer-expr(tctx, r, false, Used, TAny);
-            if not(is(l,new-l)) || not(is(r,new-r)) then { term = mk-cons(new-l, new-r) };
+            if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-cons(new-l, new-r) };
             ascript-normal(term, if is(used, Tail) then typeof(r) else t3(c"Cons", typeof(l), typeof(r)));
          } else {
             let rt = TAny;
@@ -156,6 +157,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
 
             if index-macro-table.has(var-name-if-var(l)) {
                (tctx, term) = std-apply-macro(tctx, term);
+               is-macro = true;
             } else {
                (tctx, let new-l) = std-infer-expr(tctx, l, false, used, TAny);
                if typeof(l).is-arrow {
@@ -175,7 +177,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
             };
          };
 
-         if not(index-macro-table.has(var-name-if-var(l))) && not(is-cons) && non-zero(var-name-if-var(l)) && typeof(l).is-arrow {
+         if not(is-macro) && not(is-cons) && non-zero(var-name-if-var(l)) && typeof(l).is-arrow {
             mark-var-to-def-todo(tctx, var-name-if-var(l), typeof(r), l);
          };
       );
