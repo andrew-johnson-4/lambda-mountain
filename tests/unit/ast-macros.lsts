@@ -19,3 +19,5 @@ typed macro macro::for(item: lazy, iter: List<?>, loop: lazy): lazy = (
       );
    }}
 );
+
+$"macro::for"(x, [1, 2], print(x));
