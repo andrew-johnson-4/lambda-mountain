@@ -159,6 +159,7 @@ let lsts-has-assign(tokens: List<Token>): U64 = (
       [Token{key:c"if"} .. rest] => (if depth == 0_i64 {tokens = [] :: List<Token>;} else {tokens = rest;});
       [Token{key:c"then"} .. rest] => (if depth == 0_i64 {tokens = [] :: List<Token>;} else {tokens = rest;});
       [Token{key:c"else"} .. rest] => (if depth == 0_i64 {tokens = [] :: List<Token>;} else {tokens = rest;});
+      [Token{key:c"fn"} .. rest] => (if depth == 0_i64 {tokens = [] :: List<Token>;} else {tokens = rest;});
       [_ .. rest] => tokens = rest;
    }; if depth < 0_i64 { tokens = [] :: List<Token>; }; };
    has-assign
@@ -839,20 +840,24 @@ let lsts-parse-function-signature(tokens: List<Token>, loc: SourceLocation): Tup
    while non-zero(tokens) && lsts-parse-head(tokens)!=c")" {
       lsts-parse-expect(c"Identifier", lsts-is-ident-head(lsts-parse-head(tokens)), tokens);
       let arg-name = head(tokens); tokens = tail(tokens);
-      lsts-parse-expect(c":", tokens); tokens = tail(tokens);
-      let type-rest = lsts-parse-type(tokens);
-      tokens = type-rest.second;
+      let had-type = false;
+      let arg-type = TAny;
+      if lsts-parse-head(tokens)==c":" {
+         had-type = true;
+         lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+         (arg-type, tokens) = lsts-parse-type(tokens);
+      };
       if lsts-parse-head(tokens)==c"," { tokens = tail(tokens); } else { lsts-parse-expect(c")", tokens); };
-      let arg-binding = mk-cons(
+      let arg-binding = if had-type then mk-cons(
          Lit{ c":", with-location(mk-token(":"),loc) },
-         mk-cons(Var{ arg-name.key, arg-name }, AType{ type-rest.first })
-      );
+         mk-cons(mk-var(arg-name), mk-atype(arg-type))
+      ) else mk-var(arg-name);
       if is( out.args-list, ASTNil{} ) {
          out.args-list = arg-binding;
-         out.args-type = type-rest.first;
+         out.args-type = arg-type;
       } else {
          out.args-list = mk-cons(out.args-list, arg-binding);
-         out.args-type = t3(c"Cons", out.args-type, type-rest.first);
+         out.args-type = t3(c"Cons", out.args-type, arg-type);
       };
    };
    lsts-parse-expect(c")", tokens); tokens = tail(tokens);
@@ -1056,12 +1061,15 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
          lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
          let rhs-rest = lsts-parse-small-expression(tokens);
          tokens = rhs-rest.second;
+         #base = mk-app(
+         #   mk-var(with-location(mk-token("macro::let"),loc)),
+         #   mk-cons(lhs-rest.first, rhs-rest.first)
+         #);
          base = mk-app(
             mk-app(
-               Var{ c"let", with-location(mk-token("let"),loc) },
+               mk-var(with-location(mk-token("let"),loc)),
                lhs-rest.first
-            ),
-            rhs-rest.first
+            ), rhs-rest.first
          );
       );
       [Token{key:c"while"}.. rest] => (
@@ -1504,6 +1512,21 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
          Var{ c"sizeof", with-location(mk-token(c"sizeof"),loc) },
          mk-atype(term-rest.first)
       );
+   } else if lsts-parse-head(tokens)==c"fn" {
+      lsts-parse-expect(c"fn", tokens); let loc = head(tokens).location; tokens = tail(tokens);
+      let misc-type = TAny;
+      if lsts-parse-head(tokens)==c":" {
+         lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+         (misc-type, tokens) = lsts-parse-type(tokens);
+      };
+      let rec-id = c"";
+      if lsts-parse-head(tokens)!=c"(" then (rec-id, tokens) = lsts-parse-identifier(tokens);
+      if non-zero(rec-id) then fail("TODO: recursive let \{rec-id}\n");
+      (let func-sig, tokens) = lsts-parse-function-signature(tokens, loc);
+      lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+      (let rhs, tokens) = lsts-parse-small-expression(tokens);
+      if non-zero(func-sig.return-type) then rhs = mk-app(mk-lit(c":"), mk-cons(rhs, mk-atype(func-sig.return-type)));
+      term = mk-abs(func-sig.args-list, rhs, misc-type);
    } else if lsts-parse-head(tokens)==c"&" {
       let amp = head(tokens);
       tokens = tail(tokens);
