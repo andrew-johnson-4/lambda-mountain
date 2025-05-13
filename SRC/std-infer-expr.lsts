@@ -98,7 +98,11 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
          let rough-tt = typeof(term);
          if rough-tt.is-arrow && not(rough-tt.is-open) {
             (_, let new-val) = std-infer-expr(tctx, val, is-scoped, Used, TAny);
-            if not(is(val,new-val)) then { term = mk-glb(key,new-val); };
+            if not(is(val,new-val)) then {
+               let new-term = mk-glb(key,new-val);
+               mark-var-to-def(new-term, term);
+               term = new-term;
+            };
          };
       );
       Var{key=key, token=token} => (

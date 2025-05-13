@@ -13,7 +13,7 @@ let infer-global-terms(term: AST): AST = (
          (_, let new-rhs) = std-infer-expr((None :: TContext?), rhs, false, Used, TAny);
          if not(is(rhs,new-rhs)) then {
             let new-term = mk-glb(k, new-rhs);
-            var-to-def-index = var-to-def-index.bind(term,new-term);
+            mark-var-to-def(new-term, term);
             term = new-term;
          };
          let kt = normalize(typeof(rhs)) && t1(c"GlobalVariable");

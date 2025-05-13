@@ -6,8 +6,12 @@ let var-to-def(k: AST): AST = (
    if not(non-zero(def)) {
       exit-error( untern("Unable to Find Symlink in Context: \{k}"), k );
    };
-   let sym = var-to-def-index.lookup(def, ASTEOF);
-   if non-zero(sym) then sym else def
+   def-to-sym(def)
+);
+
+let def-to-sym(k: AST): AST = (
+   let sym = var-to-def-index.lookup(k, ASTEOF);
+   if non-zero(sym) then sym else k
 );
 
 let mark-var-to-def(k: AST, v: AST): Nil = (
