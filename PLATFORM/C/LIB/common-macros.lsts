@@ -7,9 +7,9 @@ typed macro macro::set(lhs: lazy, rhs: lazy): lazy = (
    mov(rhs, lhs)
 );
 
-typed macro macro::set(base field: macro::lhs-field, rhs: lazy): lazy = (
-   macro::concat(l"set.", field) (base, rhs)
-);
+#typed macro macro::set(base field: macro::lhs-field, rhs: lazy): lazy = (
+#   macro::concat(l"set.", field) (base, rhs)
+#);
 
 typed macro macro::set(base index: macro::lhs-index, rhs: lazy): lazy = (
    $"set[]"( $"macro::lhs-as-rhs"(base), index, rhs )
