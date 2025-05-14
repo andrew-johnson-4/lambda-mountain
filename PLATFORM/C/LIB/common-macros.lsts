@@ -26,3 +26,7 @@ typed macro macro::for(item: lazy, iter: Vector<?>, loop: lazy): lazy = (
       );
    }}
 );
+
+typed macro macro::while(cond: lazy, body: lazy): lazy = (
+   $"primitive::while"( body as Nil, into-branch-conditional(cond) )
+);

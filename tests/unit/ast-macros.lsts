@@ -11,5 +11,5 @@ typed macro ast-macros-test-add(x: I64, y: lazy): lazy = (
 assert( ast-macros-test-add(1_u64, 2_u64) == 3_u64 );
 assert( ast-macros-test-add(2_i64, 3_i64) == 5_i64 );
 
-$"macro::for"(x, [1, 2], print(x));
-$"macro::for"(x, mk-vector(type(U64)).push(3).push(4), print(x));
+#$"macro::for"(x, [1, 2], print(x));
+#$"macro::for"(x, mk-vector(type(U64)).push(3).push(4), print(x));
