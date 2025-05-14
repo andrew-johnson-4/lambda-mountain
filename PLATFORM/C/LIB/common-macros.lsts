@@ -3,6 +3,10 @@ typed macro macro::let(lhs: lazy, rhs: lazy): lazy = (
    (fn(lhs) = ()) (rhs)
 );
 
+typed macro macro::set(lhs: lazy, rhs: lazy): lazy = (
+   mov(rhs, lhs)
+);
+
 typed macro macro::for(item: lazy, iter: List<?>, loop: lazy): lazy = (
    let uuid(iter-term) = iter;
    while uuid(iter-term).has-head { match uuid(iter-term) {
