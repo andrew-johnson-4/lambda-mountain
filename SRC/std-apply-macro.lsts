@@ -47,6 +47,7 @@ let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST, strong: B
    };
    (tctx, let result) = std-apply-macro-candidates(tctx, mname, margs, candidates);
    if strong && not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}", margs);
+   print("Apply Macro \{mname} \{margs}\nResult: \{result}\n");
    (tctx, result)
 );
 

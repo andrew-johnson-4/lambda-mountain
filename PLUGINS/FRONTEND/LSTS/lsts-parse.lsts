@@ -1080,13 +1080,13 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
          tokens = rhs-rest.second;
          lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
          base = mk-app(
-            Var{ c"macro::while", with-location(mk-token("macro::while"),loc) },
-            mk-cons(
-               c-rest.first,
-               mk-app(
-                  Var{ c"scope", with-location(mk-token("scope"),loc) },
-                  rhs-rest.first
-               )
+            mk-app(
+               Var{ c"while", with-location(mk-token("while"),loc) },
+               c-rest.first
+            ),
+            mk-app(
+               Var{ c"scope", with-location(mk-token("scope"),loc) },
+               rhs-rest.first
             )
          );         
       );
