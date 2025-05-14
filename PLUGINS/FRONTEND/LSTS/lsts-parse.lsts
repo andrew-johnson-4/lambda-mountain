@@ -1065,12 +1065,6 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
             mk-var(with-location(mk-token("macro::let"),loc)),
             mk-cons(lhs-rest.first, rhs-rest.first)
          );
-         #base = mk-app(
-         #   mk-app(
-         #      mk-var(with-location(mk-token("let"),loc)),
-         #      lhs-rest.first
-         #   ), rhs-rest.first
-         #);
       );
       [Token{key:c"while"}.. rest] => (
          let loc = head(tokens).location; tokens = rest;
@@ -1081,13 +1075,13 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
          tokens = rhs-rest.second;
          lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
          base = mk-app(
-            mk-app(
-               Var{ c"while", with-location(mk-token("while"),loc) },
-               c-rest.first
-            ),
-            mk-app(
-               Var{ c"scope", with-location(mk-token("scope"),loc) },
-               rhs-rest.first
+            Var{ c"macro::while", with-location(mk-token("macro::while"),loc) },
+            mk-cons(
+               c-rest.first,
+               mk-app(
+                  Var{ c"scope", with-location(mk-token("scope"),loc) },
+                  rhs-rest.first
+               )
             )
          );         
       );
@@ -1220,11 +1214,8 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
          let rhs-tmp-name = uuid();
          let rhs-tmp = Var{ rhs-tmp-name, with-location(mk-token(rhs-tmp-name),loc) };
          base = mk-app(
-            mk-app(
-               Var{ c"let", with-location(mk-token(c"let"),loc) },
-               rhs-tmp
-            ),
-            rhs-rest.first
+            Var{ c"macro::let", with-location(mk-token(c"macro::let"),loc) },
+            mk-cons( rhs-tmp, rhs-rest.first )
          );
 
          let i = 0_u64;
@@ -1251,11 +1242,8 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
 
                ASTOrIdentId { id=id } => (
                   let x = mk-app(
-                     mk-app(
-                        Var{ c"let", with-location(mk-token("let"),loc) },
-                        id
-                     ),
-                     rexpr
+                     Var{ c"macro::let", with-location(mk-token("macro::let"),loc) },
+                     mk-cons( id, rexpr )
                   );
                   base = mk-cons(base, x);
                );
