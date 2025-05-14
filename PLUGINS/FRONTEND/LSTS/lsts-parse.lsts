@@ -329,7 +329,7 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
       lsts-parse-expect(c"?", tokens); tokens = tail(tokens);
       TAny {}
    } else if lsts-is-ident-head(lsts-parse-head(tokens)) && not(lsts-is-type-tag(lsts-parse-head(tokens))) {
-      let varname = lsts-parse-head(tokens); tokens = tail(tokens);
+      (let varname, tokens) = lsts-parse-identifier(tokens);
       TVar { varname }
    } else {
       if not(lsts-is-type-tag(lsts-parse-head(tokens))) {

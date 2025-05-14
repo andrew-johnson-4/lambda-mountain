@@ -20,17 +20,21 @@ typed macro macro::set(lhs: lazy, rhs: lazy): lazy = (
 #   v
 #);
 
-#typed macro macro::lhs-as-rhs(_: macro::literal<"&">, v: lazy): lazy = (
+#typed macro macro::lhs-as-rhs(base: macro::lhs-address-of): lazy = (
 #   &v
+#);
+
+#typed macro macro::lhs-address-of(base: lazy): lazy = (
+#   base
 #);
 
 #typed macro macro::lhs-as-rhs(base field: macro::lhs-index): lazy = (
 #   macro::concat(l".", field)(base)
 #);
 
-#typed macro macro::lhs-index(base: lazy, field: lazy): lazy = (
-#   base; field
-#);
+typed macro macro::lhs-index(base: lazy, field: lazy): lazy = (
+   base; field
+);
 
 typed macro macro::for(item: lazy, iter: List<?>, loop: lazy): lazy = (
    let uuid(iter-term) = iter;
