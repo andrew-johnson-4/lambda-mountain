@@ -1,5 +1,6 @@
 
 let std-c-compile-call(ctx: FContext, fname: CString, fterm: AST, args: AST): Fragment = (
+   fterm = find-global-callable(fname, typeof(args));
    if not(non-zero(fterm)) then fail("std-c-compile-call Function was null: \{fterm}\nArguments: \{typeof(args)}\n");
    if typeof(fterm).is-t(c"Blob") {
       let r = mk-fragment();

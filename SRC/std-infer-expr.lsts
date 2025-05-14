@@ -70,14 +70,14 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
             (_, let new-t) = std-infer-expr(tctx-inner, t, false, Tail, TAny);
             (_, let new-f) = std-infer-expr(tctx, f, false, Tail, TAny);
             if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
-            then { term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
+            then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
          } else {
             (tctx, let new-cond) = std-infer-expr(tctx, cond, false, Used, TAny);
             (let tctx-t, let new-t) = std-infer-expr(tctx, t, false, Tail, TAny);
             (_, let new-f) = std-infer-expr(tctx, f, false, Tail, TAny);
             tctx = tctx-t;
             if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
-            then { term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
+            then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
          };
          ascript-normal(term, typeof(t)); # TODO: use MGU to merge true and false branches
       );
@@ -98,7 +98,11 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
          let rough-tt = typeof(term);
          if rough-tt.is-arrow && not(rough-tt.is-open) {
             (_, let new-val) = std-infer-expr(tctx, val, is-scoped, Used, TAny);
-            if not(is(val,new-val)) then { term = mk-glb(key,new-val); };
+            if not(is(val,new-val)) then {
+               let new-term = mk-glb(key,new-val);
+               mark-var-to-def(new-term, term);
+               term = new-term;
+            };
          };
       );
       Var{key=key, token=token} => (
@@ -119,17 +123,22 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
          tctx = infer-ctx(tctx, lhs);
          (_, let new-inner-rhs) = std-infer-expr(tctx, inner-rhs, false, Tail, return-type);
          if not(is(inner-rhs,new-inner-rhs))
-         then { inner-rhs = new-inner-rhs; term = mk-abs(lhs, mk-app(asc,mk-app(inner-rhs,mk-atype(return-type))), misc-tt) };
+         then {
+            inner-rhs = new-inner-rhs;
+            rhs = mk-app(asc.unique,mk-app(inner-rhs,mk-atype(return-type)));
+            term = mk-abs(lhs,rhs,misc-tt);
+         };
          if not(misc-tt.is-t(c"Blob")) && not(misc-tt.is-t(c"C-FFI")) then ascript-normal(inner-rhs, return-type);
          ascript-normal(rhs, return-type);
          let domain-tt = typeof-lhs(lhs);
          ascript-normal(term, t3(c"Arrow", typeof-lhs(lhs), return-type) && misc-tt);
       );
       App{ is-cons=is-cons, l=left, r=right } => (
+         let is-macro = false;
          if is-cons {
             (tctx, let new-l) = std-infer-expr(tctx, l, false, Used, TAny);
             (tctx, let new-r) = std-infer-expr(tctx, r, false, Used, TAny);
-            if not(is(l,new-l)) || not(is(r,new-r)) then { term = mk-cons(new-l, new-r) };
+            if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-cons(new-l, new-r) };
             ascript-normal(term, if is(used, Tail) then typeof(r) else t3(c"Cons", typeof(l), typeof(r)));
          } else {
             let rt = TAny;
@@ -152,6 +161,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
 
             if index-macro-table.has(var-name-if-var(l)) {
                (tctx, term) = std-apply-macro(tctx, term);
+               is-macro = true;
             } else {
                (tctx, let new-l) = std-infer-expr(tctx, l, false, used, TAny);
                if typeof(l).is-arrow {
@@ -171,8 +181,9 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
             };
          };
 
-         if not(index-macro-table.has(var-name-if-var(l))) && not(is-cons) && non-zero(var-name-if-var(l)) && typeof(l).is-arrow {
+         if not(is-macro) && not(is-cons) && non-zero(var-name-if-var(l)) && typeof(l).is-arrow {
             mark-var-to-def-todo(tctx, var-name-if-var(l), typeof(r), l);
+            apply-global-callable(var-name-if-var(l),typeof(r),term);
          };
       );
       _ => fail("Unexpected Term in std-infer-expr\n\{term}\n");
