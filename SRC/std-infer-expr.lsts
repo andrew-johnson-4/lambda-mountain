@@ -96,7 +96,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
       );
       Glb{key=key, val=val} => (
          let rough-tt = typeof(term);
-         if rough-tt.is-arrow && not(rough-tt.is-open) {
+         if rough-tt.is-arrow && not(rough-tt.is-open) && not(rough-tt.is-t(c"TypedMacro")) {
             (_, let new-val) = std-infer-expr(tctx, val, is-scoped, Used, TAny);
             if not(is(val,new-val)) then {
                let new-term = mk-glb(key,new-val);

@@ -15,3 +15,14 @@ typed macro macro::for(item: lazy, iter: List<?>, loop: lazy): lazy = (
       );
    }}
 );
+
+typed macro macro::for(item: lazy, iter: Vector<?>, loop: lazy): lazy = (
+   let uuid(iter-term) = iter;
+   let uuid(iter-i) = 0_u64;
+   let uuid(iter-length) = uuid(iter-term).length;
+   while uuid(iter-i) < uuid(iter-length) { match uuid(iter-term)[uuid(iter-i)] {
+      item => (
+         loop; uuid(iter-i) = uuid(iter-i) + 1;
+      );
+   }}
+);

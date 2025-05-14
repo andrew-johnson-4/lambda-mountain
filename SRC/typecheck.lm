@@ -1,9 +1,13 @@
 
 typecheck := λ. (: (
+   (print 'Typecheck\s1\n_s)
    (infer-global-context ast-parsed-program)
+   (print 'Typecheck\s2\n_s)
    (set ast-parsed-program (infer-global-terms ast-parsed-program))
+   (print 'Typecheck\s3\n_s)
    (let tctx-ast (std-infer-expr( (: None Maybe<TContext>) ast-parsed-program false Used TAny )))
    (set ast-parsed-program (.second tctx-ast))
+   (print 'Typecheck\s4\n_s)
    (while (non-zero stack-to-specialize) (match stack-to-specialize (
       ()
       ( (LCons( (StackToSpecialize( function-name ft unify-ctx special-type )) rst )) (
@@ -11,7 +15,9 @@ typecheck := λ. (: (
          (specialize( function-name ft unify-ctx special-type ))
       ))
    )))
+   (print 'Typecheck\s5\sn_s)
    (validate-interfaces())
    (assert-well-typed ast-parsed-program)
    (decorate-var-to-def())
+   (print 'Typecheck\sEnd\sn_s)
 ) Nil);
