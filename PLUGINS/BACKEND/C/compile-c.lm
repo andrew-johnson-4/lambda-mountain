@@ -7,14 +7,16 @@ plugins-backend-c-compile := λ . (: (
          (if (==( k 'main_s )) (set assemble-argv-referenced True_u8) ())
          (let kt (typeof rhs))
          (let fragment (mk-fragment()))
-         (if (.is-open kt) () (
+         (if (.is-open kt) (
+            (print 'Ignore\sGlobal\s_s)(print g-t)(print '\n_s)
+         ) (
             (if (.is-t( kt 'Blob_s )) (
                (set.term( fragment rhs ))
                (set.type( fragment kt ))
                (set global-ctx (.bind(
                   global-ctx k kt fragment
                )))
-               (set std-c-fragment-context (.bind( std-c-fragment-context g-t fragment )))
+               (set std-c-fragment-context (.bind( std-c-fragment-context (def-to-sym g-t) fragment )))
             ) (
                (let clean-tt (.without-tag kt))
                (let mid (mangle-identifier( k clean-tt )))
@@ -25,13 +27,13 @@ plugins-backend-c-compile := λ . (: (
                   (set global-ctx (.bind(
                      global-ctx k kt fragment
                   )))
-                  (set std-c-fragment-context (.bind( std-c-fragment-context g-t fragment )))
+                  (set std-c-fragment-context (.bind( std-c-fragment-context (def-to-sym g-t) fragment )))
                ) (
                   (let repr-tt (&&( clean-tt (t1 'GlobalVariable_s) )))
                   (set global-ctx (.bind(
                      global-ctx k repr-tt fragment
                   )))
-                  (set std-c-fragment-context (.bind( std-c-fragment-context g-t fragment )))
+                  (set std-c-fragment-context (.bind( std-c-fragment-context (def-to-sym g-t) fragment )))
                ))
             ))
          ))
