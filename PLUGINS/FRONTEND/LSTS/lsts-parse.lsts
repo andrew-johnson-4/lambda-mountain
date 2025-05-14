@@ -274,7 +274,12 @@ let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
    lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
    while lsts-parse-head(tokens)!=c")" {
       if not(is(margs,ASTNil)) then { lsts-parse-expect(c",", tokens); tokens = tail(tokens); };
-      (let mbind, tokens) = lsts-parse-atom-without-tail(tokens);
+      (let binding, tokens) = lsts-parse-identifier(tokens);
+      let mbind = mk-var(binding);
+      while lsts-parse-head(tokens) != c":" {
+         (binding, tokens) = lsts-parse-identifier(tokens);
+         mbind = mk-cons(mbind, mk-var(binding));
+      };
       lsts-parse-expect(c":", tokens); tokens = tail(tokens);
       (let mbindt, tokens) = lsts-parse-type(tokens);
       let marg = mk-app(mk-lit(c":"), mk-cons(mbind, mk-atype(mbindt)));
