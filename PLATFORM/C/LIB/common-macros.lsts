@@ -40,7 +40,7 @@ typed macro macro::lhs-index(base: lazy, index: lazy): lazy = (
 );
 
 typed macro macro::lhs-index(base field: macro::lhs-field, index: lazy): lazy = (
-   $"macro::concat"($".", field); index
+   $"macro::concat"($".", field)(base); index
 );
 
 typed macro macro::for(item: lazy, iter: List<?>, loop: lazy): lazy = (
