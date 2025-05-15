@@ -8,7 +8,7 @@ typed macro macro::set(lhs: lazy, rhs: lazy): lazy = (
 );
 
 typed macro macro::set(base index: macro::lhs-index, rhs: lazy): lazy = (
-   $"set[]"( $"macro::lhs-as-rhs"(base), index, rhs )
+   $"set[]"( base, index, rhs )
 );
 
 #typed macro macro::set(base field: macro::lhs-field, rhs: lazy): lazy = (
