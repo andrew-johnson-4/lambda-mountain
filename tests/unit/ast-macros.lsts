@@ -18,5 +18,12 @@ assert( ast-macros-test-add(2_i64, 3_i64) == 5_i64 );
    print(x);
 );
 
+type A = A{a:U64};
+(
+   let a = A{1};
+   $"macro::set"($"macro::lhs-field"(a,set.a), 2);
+   print(a.a);
+);
+
 #$"macro::for"(x, [1, 2], print(x));
 #$"macro::for"(x, mk-vector(type(U64)).push(3).push(4), print(x));
