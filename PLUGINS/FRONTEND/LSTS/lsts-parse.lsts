@@ -497,12 +497,10 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
          [Token{key:c"."}.. rest] => (
             let loc = head(tokens).location;
             lsts-parse-expect(c".", tokens); tokens = tail(tokens);
-            let next-rest = lsts-parse-lhs-one(tokens);
-            let next = next-rest.first;
-            tokens = next-rest.second;
+            (let field-name, tokens) = lsts-parse-identifier(tokens);
             base = mk-app(
                Var{ c"macro::lhs-field", with-location(mk-token("macro::lhs-field"),loc) },
-               mk-cons(base, next)
+               mk-cons(base, mk-var(field-name))
             );
          );
          [Token{key:c"["}.. rest] => (
@@ -1235,12 +1233,9 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
                ASTOrIdentIgnore {} => ();
 
                ASTOrIdentAST { ast=ast } => (
-                  let x = mk-cons(
-                     mk-cons(
-                        Var{ c"set", with-location(mk-token("set"),loc) },
-                        ast
-                     ),
-                     rexpr
+                  let x = mk-app(
+                     Var{ c"macro::set", with-location(mk-token("macro::set"),loc) },
+                     mk-cons(ast, rexpr)
                   );
                   base = mk-cons(base, x);
                );
@@ -1261,12 +1256,12 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
          lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
          let rhs-rest = lsts-parse-small-expression(tokens);
          tokens = rhs-rest.second;
-         base = mk-cons(
+         base = mk-app(
+            Var{ c"macro::set", with-location(mk-token("macro::set"),loc) },
             mk-cons(
-               Var{ c"set", with-location(mk-token("set"),loc) },
-               lhs-rest.first
-            ),
-            rhs-rest.first
+               lhs-rest.first,
+               rhs-rest.first
+            )
          );
       };
    } else {
