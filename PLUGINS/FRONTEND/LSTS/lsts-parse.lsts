@@ -35,7 +35,7 @@ let lsts-parse-identifier(tokens: List<Token>): Tuple<CString, List<Token>> = (
    if lsts-parse-head(tokens)==c"." { name = c"."; tokens = tail(tokens); };
    lsts-parse-expect(c"Identifier", lsts-is-ident-head(lsts-parse-head(tokens)), tokens);
    name = name + lsts-unwrap-identifier(lsts-parse-head(tokens)); tokens = tail(tokens);
-   while lsts-parse-head(tokens)==c":" && lsts-parse-head(tail(tokens))==c":" {
+   while lsts-parse-head(tokens)==c":" && lsts-parse-head(tail(tokens))==c":" && lsts-is-ident-head(lsts-parse-head(tail(tail(tokens)))) {
       name = name + c"::"; tokens = tail(tokens); tokens = tail(tokens);
       lsts-parse-expect(c"Identifier", lsts-is-ident-head(lsts-parse-head(tokens)), tokens);
       name = name + lsts-unwrap-identifier(lsts-parse-head(tokens)); tokens = tail(tokens);
@@ -525,10 +525,14 @@ let lsts-make-maybe-var(tokens: List<Token>): Tuple<AST,List<Token>> = (
       lsts-parse-lit(tokens)
    } else {
       if not(non-zero(tokens)) { lsts-parse-expect(c"Identifier", tokens); };
-      let t = head(tokens);
-      let base = Var { lsts-unwrap-identifier(t.key), lsts-unwrap-identifier(t) };
-      if lsts-is-lit(t.key) { base = lsts-make-lit(t); };
-      tokens = tail(tokens);
+      let base = ASTEOF;
+      if lsts-is-lit(head(tokens).key) {
+         base = lsts-make-lit(head(tokens));
+         tokens = tail(tokens);
+      } else {
+         (let var-name, tokens) = lsts-parse-identifier(tokens);
+         base = mk-var(var-name);
+      };
       Tuple { base, tokens }
    }
 );

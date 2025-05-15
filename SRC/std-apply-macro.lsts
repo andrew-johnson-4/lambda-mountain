@@ -60,6 +60,7 @@ let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST, strong: B
    };
    if strong && not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}\nArgs: \{margs}\n", margs);
    if strong then (tctx, result) = std-infer-expr(tctx, result, false, Used, TAny);
+   print("Applied \{mname} \{margs}\nResult \{result}\n");
    (tctx, result)
 );
 

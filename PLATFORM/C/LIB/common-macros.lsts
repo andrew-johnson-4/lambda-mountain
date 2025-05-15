@@ -32,11 +32,15 @@ typed macro macro::lhs-field(base: lazy, field: lazy): lazy = (
 );
 
 typed macro macro::lhs-as-rhs(base field: macro::lhs-index): lazy = (
-   macro::concat(l".", field)(base)
+   $"macro::concat"(l".", field)(base)
 );
 
-typed macro macro::lhs-index(base: lazy, field: lazy): lazy = (
-   base; field
+typed macro macro::lhs-index(base: lazy, index: lazy): lazy = (
+   base; index
+);
+
+typed macro macro::lhs-index(base field: macro::lhs-field, index: lazy): lazy = (
+   $"macro::concat"($".", field); index
 );
 
 typed macro macro::for(item: lazy, iter: List<?>, loop: lazy): lazy = (
