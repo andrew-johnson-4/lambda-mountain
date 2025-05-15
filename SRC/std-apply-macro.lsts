@@ -7,7 +7,10 @@ let std-apply-macro(tctx: Maybe<TContext>, t: AST): (TContext?, AST) = (
    }
 );
 
-let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
+let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = std-apply-macro(tctx, mname, margs, true);
+let std-apply-macro-weak(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = std-apply-macro(tctx, mname, margs, false);
+
+let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST, strong: Bool): (TContext?, AST) = (
    let row = index-macro-table.lookup(mname, [] :: List<(Type,Type,AST)>);
    let peep-holes = TAny;
    let peeped = TAny;
@@ -42,7 +45,10 @@ let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContex
          candidates = [(mtype,mterm)];
       }
    };
-   std-apply-macro-candidates(tctx, mname, margs, candidates);
+   (tctx, let result) = std-apply-macro-candidates(tctx, mname, margs, candidates);
+   if strong && not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}", margs);
+   if strong then (tctx, result) = std-infer-expr(tctx, result, false, Used, TAny);
+   (tctx, result)
 );
 
 let std-infer-peeped-arguments(tctx: Maybe<TContext>, t: AST, peep: Type): (Type, AST) = (
@@ -60,6 +66,7 @@ let std-infer-peeped-arguments(tctx: Maybe<TContext>, t: AST, peep: Type): (Type
          }
       );
       TAny{} => (ta, t);
+      TVar{} => (ta, t);
       _ => (
          (_, t) = std-infer-expr(tctx, t, false, Used, TAny);
          (typeof(t), t);

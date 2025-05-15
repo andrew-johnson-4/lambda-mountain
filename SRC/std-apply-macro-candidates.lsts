@@ -11,11 +11,9 @@ let std-apply-macro-candidates(tctx: TContext?, mname: CString, margs: AST, cand
       if not(non-zero(t)) {
          (let new-tctx, let mctx) = std-try-destructure-macro(tctx, margs, ctype, mlhs);
          if mctx.is-some then mctx = union(mctx, Some{extract-uuids(mrhs)});
-         if mctx.is-some then t = with-location(substitute(mctx.get-or-panic, mrhs), margs.location);
+         if mctx.is-some then t = with-location-preserve(substitute(mctx.get-or-panic, mrhs), margs.location);
       }
    };
-   if not(non-zero(t)) then fail("Macro Application failed match during destructuring: \{mname}\n");
-   (tctx, t) = std-infer-expr(tctx, t, false, Used, TAny);
    (tctx, t)
 );
 
@@ -44,8 +42,18 @@ let std-try-destructure-macro(tctx: TContext?, margs: AST, mtype: Type, mcandida
                App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt=tt}}} => (
                   if non-zero(std-macro-helper-name(tt))
                   then {
-                     (tctx, let helped) = std-apply-macro(tctx, std-macro-helper-name(tt), margs);
-                     (tctx, std-direct-destructure-macro(helped, mstruct))
+                     let macro-helper = std-macro-helper-name(tt);
+                     match margs {
+                        App{left:Var{maybe-helper=key}, helper-args=right} => (
+                           if macro-helper==maybe-helper {
+                              (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, helper-args);
+                              if non-zero(helped)
+                              then (tctx, std-direct-destructure-macro(helped, mstruct))
+                              else (tctx, no)
+                           } else (tctx, no)
+                        );
+                        _ => (tctx, no);
+                     }
                   } else (tctx, std-direct-destructure-macro(margs, mstruct))
                );
                _ => (tctx, no);
