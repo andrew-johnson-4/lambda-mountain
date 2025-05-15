@@ -11,9 +11,9 @@ typed macro macro::set(base index: macro::lhs-index, rhs: lazy): lazy = (
    $"set[]"( base, index, rhs )
 );
 
-#typed macro macro::set(base field: macro::lhs-field, rhs: lazy): lazy = (
-#   macro::concat(l"set.", field) (base, rhs)
-#);
+typed macro macro::set(base field: macro::lhs-field, rhs: lazy): lazy = (
+   macro::concat($"set.", field) (base, rhs)
+);
 
 typed macro macro::lhs-as-rhs(v: macro::variable): lazy = (
    v
@@ -27,12 +27,20 @@ typed macro macro::lhs-address-of(base: lazy): lazy = (
    base
 );
 
+typed macro macro::lhs-field(base: lazy, field: lazy): lazy = (
+   base; field
+);
+
 typed macro macro::lhs-as-rhs(base field: macro::lhs-index): lazy = (
    macro::concat(l".", field)(base)
 );
 
-typed macro macro::lhs-index(base: lazy, field: lazy): lazy = (
-   base; field
+typed macro macro::lhs-index(base: lazy, index: lazy): lazy = (
+   base; index
+);
+
+typed macro macro::lhs-index(base field: macro::lhs-field, index: lazy): lazy = (
+   macro::concat($".", field)(base); index
 );
 
 typed macro macro::for(item: lazy, iter: List<?>, loop: lazy): lazy = (

@@ -3,10 +3,7 @@ let std-direct-destructure-macro(margs: AST, mstruct: AST): AContext? = (
    let no = None :: AContext?;
    match (margs, mstruct) {
       Tuple{ val=first, second:Var{key=key} } => Some{[(key,val)]};
-      Tuple{
-         first:App{is-cons:1_u8, lrest=left, val=right },
-         second:App{is-cons:1_u8, rrest=left, right:Var{key=key} }
-      } => (
+      Tuple{ first:App{lrest=left, val=right}, second:App{rrest=left, right:Var{key=key}} } => (
          let ctx = std-direct-destructure-macro(lrest, rrest);
          if ctx.is-some then Some{cons((key,val), ctx.get-or-panic)} else no;
       );
