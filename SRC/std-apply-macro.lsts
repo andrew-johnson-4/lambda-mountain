@@ -1,14 +1,14 @@
 
-let std-apply-macro(tctx: Maybe<TContext>, t: AST): (TContext?, AST) = (
+let std-apply-macro(tctx: Maybe<TContext>, t: AST, used: IsUsed): (TContext?, AST) = (
    match t {
       App{left:Var{mname=key}, margs=right} => (
-         std-apply-macro(tctx, mname, margs);
+         std-apply-macro(tctx, mname, margs, used);
       );
    }
 );
 
-let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = std-apply-macro(tctx, mname, margs, true);
-let std-apply-macro-weak(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = std-apply-macro(tctx, mname, margs, false);
+let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST, used: IsUsed): (TContext?, AST) = std-apply-macro(tctx, mname, margs, used, true);
+let std-apply-macro-weak(tctx: Maybe<TContext>, mname: CString, margs: AST, used: IsUsed): (TContext?, AST) = std-apply-macro(tctx, mname, margs, used, false);
 
 let std-apply-macro-concat(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
    match margs {
@@ -28,7 +28,7 @@ let std-apply-macro-location(tctx: Maybe<TContext>, mname: CString, margs: AST):
    (tctx, mk-lit(to-smart-string(margs.location)).ascript(t1(c"SmartString")))
 );
 
-let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST, strong: Bool): (TContext?, AST) = (
+let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST, used: IsUsed, strong: Bool): (TContext?, AST) = (
    let result = ASTEOF;
    if mname==c"macro::concat" then (tctx, result) = std-apply-macro-concat(tctx, mname, margs)
    else if mname==c"macro::location" then (tctx, result) = std-apply-macro-location(tctx, mname, margs)
@@ -71,7 +71,7 @@ let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST, strong: B
       (tctx, result) = std-apply-macro-candidates(tctx, mname, margs, candidates);
    };
    if strong && not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}\nArgs: \{margs}\n", margs);
-   if strong then (tctx, result) = std-infer-expr(tctx, result, false, Used, TAny);
+   if strong then (tctx, result) = std-infer-expr(tctx, result, false, used, TAny);
    (tctx, result)
 );
 

@@ -4,7 +4,7 @@ compile-expr := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used IsUsed
    (match used (
       ()
       ( Return (
-         (let fterm (find-global-callable( 'cdecl::return_s (typeof term) )))
+         (let fterm (find-global-callable( 'cdecl::return_s (typeof term) term )))
          (set e (std-c-compile-call( ctx 'cdecl::return_s fterm term )))
       ))
       ( _ (
