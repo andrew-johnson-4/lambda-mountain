@@ -525,13 +525,14 @@ let lsts-make-maybe-var(tokens: List<Token>): Tuple<AST,List<Token>> = (
       lsts-parse-lit(tokens)
    } else {
       if not(non-zero(tokens)) { lsts-parse-expect(c"Identifier", tokens); };
+      let loc = head(tokens).location;
       let base = ASTEOF;
       if lsts-is-lit(head(tokens).key) {
          base = lsts-make-lit(head(tokens));
          tokens = tail(tokens);
       } else {
          (let var-name, tokens) = lsts-parse-identifier(tokens);
-         base = mk-var(var-name);
+         base = with-location(mk-var(var-name), loc);
       };
       Tuple { base, tokens }
    }

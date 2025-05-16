@@ -68,5 +68,5 @@ typed macro macro::while(cond: lazy, body: lazy): lazy = (
 );
 
 typed macro macro::assert(cond: lazy): lazy = (
-   if not(cond) then fail("Assertion Failed", macro::location(here))
+   if not(cond) then fail("Assertion Failed", macro::location(cond))
 );
