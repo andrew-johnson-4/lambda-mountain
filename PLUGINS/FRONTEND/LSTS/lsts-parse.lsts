@@ -1286,9 +1286,7 @@ let lsts-make-lit(t: Token): AST = (
       while non-zero(s) && s != c"_ss" {
          if s.has-prefix(c"\\{") {
             if non-zero(buffer) {
-               buffer = buffer + SAtom{c"_ss"};
-               let bs = clone-rope(buffer);
-               let be = Lit { bs, with-location(mk-token(bs),loc) };
+               let be = mk-lit(with-location(mk-token(clone-rope(buffer)),loc)).ascript(t1(c"SmartString"));
                if non-zero(base) {
                   base = mk-app(
                      Var{ c"+", with-location(mk-token("+"),loc) },
@@ -1330,9 +1328,7 @@ let lsts-make-lit(t: Token): AST = (
          }
       };
       if non-zero(buffer) {
-         buffer = buffer + SAtom{ c"_ss" };
-         let bs = clone-rope(buffer);
-         let be = Lit{ bs, with-location(mk-token(bs),loc) };
+         let be = mk-lit(with-location(mk-token(clone-rope(buffer)),loc)).ascript(t1(c"SmartString"));
          if non-zero(base) {
             base = mk-app(
                Var{ c"+", with-location(mk-token("+"),loc) },
@@ -1342,6 +1338,8 @@ let lsts-make-lit(t: Token): AST = (
             base = be;
          };
       };
+   } else if t.key.has-suffix(c"_ss") {
+      base = with-location(mk-lit(t.key.remove-suffix(c"_ss")),loc).ascript(t1(c"SmartString"));
    };
    base
 );
@@ -1493,6 +1491,8 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
       tokens = term-rest.second;
       lsts-parse-expect(c")", tokens); tokens = tail(tokens);
       term = AType{ term-rest.first };
+   } else if lsts-parse-head(tokens).has-suffix(c"_ss") {
+      (term, tokens) = lsts-parse-lit(tokens);
    } else if lsts-parse-head(tokens)==c"sizeof" {
       let loc = head(tokens).location;
       tokens = tail(tokens);
