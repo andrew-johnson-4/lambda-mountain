@@ -24,7 +24,7 @@ let find-global-callable(fname: CString, arg-types: Type, blame: AST): AST = (
       };
       exit(1);
    };
-   if not(non-zero(result)) then fail("Unable to find appropriate global callable: \{fname} \{arg-types}\nAt: \{blame.location}\n\{blame}\n");
+   if not(non-zero(result)) then fail("Unable to find appropriate global callable: \{fname} \{arg-types}\nAt: \{blame.location}\n");
    result
 );
 
