@@ -10,6 +10,7 @@ let std-apply-macro-candidates(tctx: TContext?, mname: CString, margs: AST, cand
    for Tuple{ctype=first, second:Abs{mlhs=lhs,rhs:App{left:Lit{key:c":"},right:App{mrhs=left}}}} in candidates {
       if not(non-zero(t)) {
          (let new-tctx, let mctx) = std-try-destructure-macro(tctx, margs, ctype, mlhs);
+         print("Apply Candidate \{mname} \{mlhs}\nContext: \{new-tctx}\n");
          if mctx.is-some then mctx = union(mctx, Some{extract-uuids(mrhs)});
          if mctx.is-some then t = with-location-preserve(substitute(mctx.get-or-panic, mrhs), margs.location);
       }
@@ -18,6 +19,7 @@ let std-apply-macro-candidates(tctx: TContext?, mname: CString, margs: AST, cand
 );
 
 let std-try-destructure-macro(tctx: TContext?, margs: AST, mtype: Type, mcandidate: AST): (TContext?, AContext?) = (
+   print("Destructure \{mtype}\nArgs: \{margs}\nCandidate \{mcandidate}\n");
    let no = None :: AContext?;
    if let Abs{lhs=lhs, rhs=rhs} = mcandidate then std-try-destructure-macro(tctx, margs, mtype, lhs)
    else {
@@ -47,12 +49,21 @@ let std-try-destructure-macro(tctx: TContext?, margs: AST, mtype: Type, mcandida
                         App{left:Var{maybe-helper=key}, helper-args=right} => (
                            if macro-helper==maybe-helper {
                               (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, helper-args);
+                              print("Macro Helper \{macro-helper}: \{helped}\n");
                               if non-zero(helped)
                               then (tctx, std-direct-destructure-macro(helped, mstruct))
                               else (tctx, no)
                            } else (tctx, no)
                         );
-                        _ => (tctx, no);
+                        _ => (
+                           if macro-helper==c"macro::variable" {
+                              (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, margs);
+                              print("Macro Helper \{macro-helper}: \{helped}\n");
+                              if non-zero(helped)
+                              then (tctx, std-direct-destructure-macro(helped, mcandidate))
+                              else (tctx, no)
+                           } else (tctx, no)
+                        );
                      }
                   } else (tctx, std-direct-destructure-macro(margs, mstruct))
                );

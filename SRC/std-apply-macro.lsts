@@ -17,14 +17,23 @@ let std-apply-macro-concat(tctx: Maybe<TContext>, mname: CString, margs: AST): (
    }
 );
 
+let std-apply-macro-variable(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
+   match margs {
+      Var{} => (tctx, margs);
+      _ => (tctx, ASTEOF);
+   }
+);
+
 let std-apply-macro-location(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
    (tctx, mk-lit(to-smart-string(margs.location)).ascript(t1(c"SmartString")))
 );
 
 let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST, strong: Bool): (TContext?, AST) = (
    let result = ASTEOF;
+   print("Apply Macro: \{mname} \{margs}\n");
    if mname==c"macro::concat" then (tctx, result) = std-apply-macro-concat(tctx, mname, margs)
    else if mname==c"macro::location" then (tctx, result) = std-apply-macro-location(tctx, mname, margs)
+   else if mname==c"macro::variable" then (tctx, result) = std-apply-macro-variable(tctx, mname, margs)
    else {
       let row = index-macro-table.lookup(mname, [] :: List<(Type,Type,AST)>);
       let peep-holes = TAny;
@@ -62,6 +71,7 @@ let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST, strong: B
       };
       (tctx, result) = std-apply-macro-candidates(tctx, mname, margs, candidates);
    };
+   print("Applied Macro: \{mname} \{margs}\nResult: \{result}\n");
    if strong && not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}\nArgs: \{margs}\n", margs);
    if strong then (tctx, result) = std-infer-expr(tctx, result, false, Used, TAny);
    (tctx, result)
