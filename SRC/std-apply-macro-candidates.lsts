@@ -60,7 +60,7 @@ let std-try-destructure-macro(tctx: TContext?, margs: AST, mtype: Type, mcandida
                               (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, margs);
                               print("Macro Helper \{macro-helper}: \{helped}\n");
                               if non-zero(helped)
-                              then (tctx, std-direct-destructure-macro(helped, mcandidate))
+                              then (tctx, std-direct-destructure-macro(helped, mstruct))
                               else (tctx, no)
                            } else (tctx, no)
                         );
