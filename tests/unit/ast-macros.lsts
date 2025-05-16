@@ -25,5 +25,10 @@ type A = A{a:U64};
    print(a.a);
 );
 
+(
+   let wi = 0_u64;
+   macro::while( wi < 4, ( print(wi); wi = wi + 1; ) )
+);
+
 #$"macro::for"(x, [1, 2], print(x));
 #$"macro::for"(x, mk-vector(type(U64)).push(3).push(4), print(x));
