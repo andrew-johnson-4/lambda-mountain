@@ -68,5 +68,26 @@ typed macro macro::while(cond: lazy, body: lazy): lazy = (
 );
 
 typed macro macro::assert(cond: lazy): lazy = (
-   if not(cond) then fail("Assertion Failed", macro::location(cond))
+   if not(cond) then fail("Assertion Failed", macro::location(here))
+);
+
+typed macro macro::match(t: lazy, ps: lazy): lazy = (
+   let uuid(term) = open(t);
+   macro::match-pats( uuid(term), ps );
+);
+
+typed macro macro::match-case(lhs: lazy, rhs: lazy, remainder: lazy): lazy = (
+   lhs; rhs; remainder
+);
+
+typed macro macro::match-pats(term: lazy, remainder: lazy): lazy = (
+   remainder
+);
+
+typed macro macro::match-pats(term: lazy, lhs rhs remainder: macro::match-case): lazy = (
+   scope(if macro::match-arm(lhs,term) then rhs else macro::match-pats(term,remainder))
+);
+
+typed macro macro::match-arm(v: macro::variable, term: lazy): lazy = (
+   let v = term; true
 );
