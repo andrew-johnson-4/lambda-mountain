@@ -64,5 +64,9 @@ typed macro macro::for(item: lazy, iter: Vector<?>, loop: lazy): lazy = (
 );
 
 typed macro macro::while(cond: lazy, body: lazy): lazy = (
-   $"primitive::while"( body as Nil, into-branch-conditional(cond) )
+   primitive::while( body as Nil, into-branch-conditional(cond) )
+);
+
+typed macro macro::assert(cond: lazy): lazy = (
+   if not(cond) then fail("Assertion Failed", macro::location(cond))
 );

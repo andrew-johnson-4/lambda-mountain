@@ -1,6 +1,7 @@
 
 let index-macro-table = {} :: HashtableEq<CString,List<(Type,Type,AST)>>;
 index-macro-table = index-macro-table.bind(c"macro::concat", [] :: List<(Type,Type,AST)>);
+index-macro-table = index-macro-table.bind(c"macro::location", [] :: List<(Type,Type,AST)>);
 
 let bind-new-macro(mname: CString, mterm: AST): Nil = (
    let row = index-macro-table.lookup(mname, [] :: List<(Type,Type,AST)>);
