@@ -27,12 +27,26 @@ preprocess-apply := λ(: program AST). (: (
             (close(preprocess-apply( nt )))
          )))
       ))
+      ( (App( is-cons-1 (App( is-cons-2 (Lit( ':_s ctk )) (App( is-cons-3 (@( t (Lit( l ltk )) )) (AType tt) )) )) nt )) (
+         (if (not(.is-t( tt 'SmartString_s ))) (set t (preprocess-apply t)) ())
+         (set r (App( is-cons-1
+            (close(App( is-cons-2 (close(Lit( ':_s (unique ctk) ))) (close(App( is-cons-3 (close t) (close(AType tt)) ))) )))
+            (close(preprocess-apply( nt )))
+         )))
+      ) )
       ( (App( is-cons-1 (App( is-cons-2 (Lit( ':_s ctk )) (App( is-cons-3 t (AType tt) )) )) nt )) (
          (set r (App( is-cons-1
             (close(App( is-cons-2 (close(Lit( ':_s (unique ctk) ))) (close(App( is-cons-3 (close(preprocess-apply t)) (close(AType tt)) ))) )))
             (close(preprocess-apply( nt )))
          )))
       ))
+      ( (App( is-cons-2 (Lit( ':_s ctk )) (App( is-cons-3 (@( t (Lit _) )) (AType tt) )) )) (
+         (if (not(.is-t( tt 'SmartString_s ))) (set t (preprocess-apply t)) ())
+         (set r (App( is-cons-2
+            (close(Lit( ':_s (unique ctk) )))
+            (close(App( is-cons-3 (close t) (close(AType tt)) )))
+         )))
+      ) )
       ( (App( is-cons-1 (App( is-cons-2 (Lit( ':_s ctk )) mvar )) (Lit( mtype mtk )) )) (
          (if is-cons-1
             (set r (App( is-cons-1 (close(App( is-cons-2 (close(Lit( ':_s ctk ))) (close(preprocess-apply mvar))  ))) (close(Lit( mtype mtk ))) )))
