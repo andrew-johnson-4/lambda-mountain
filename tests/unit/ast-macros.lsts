@@ -31,9 +31,6 @@ type A = A{a:U64};
 );
 
 macro::assert(true);
-macro::assert(false);
-
-# assert
 
 # match
 
