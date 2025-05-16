@@ -66,13 +66,13 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
       );
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, t=right }, f=right} => (
          if is-scoped {
-            (let tctx-inner, let new-cond) = std-infer-expr(tctx, cond, false, Used, TAny);
+            (let tctx-inner, let new-cond) = std-infer-expr(tctx, cond, false, Tail, TAny);
             (_, let new-t) = std-infer-expr(tctx-inner, t, false, Tail, TAny);
             (_, let new-f) = std-infer-expr(tctx, f, false, Tail, TAny);
             if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
             then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
          } else {
-            (tctx, let new-cond) = std-infer-expr(tctx, cond, false, Used, TAny);
+            (tctx, let new-cond) = std-infer-expr(tctx, cond, false, Tail, TAny);
             (let tctx-t, let new-t) = std-infer-expr(tctx, t, false, Tail, TAny);
             (_, let new-f) = std-infer-expr(tctx, f, false, Tail, TAny);
             tctx = tctx-t;
@@ -160,7 +160,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
             }};
 
             if index-macro-table.has(var-name-if-var(l)) {
-               (tctx, term) = std-apply-macro(tctx, term);
+               (tctx, term) = std-apply-macro(tctx, term, used);
                is-macro = true;
             } else {
                (tctx, let new-l) = std-infer-expr(tctx, l, false, used, TAny);

@@ -32,6 +32,12 @@ type A = A{a:U64};
 
 macro::assert(true);
 
+(
+   macro::match(123, macro::match-case(
+      x, print(x), fail("Pattern Match Failure",macro::location(here))
+   ));
+);
+
 # match
 
 # for

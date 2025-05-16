@@ -4,7 +4,7 @@ cc-blob := λ(: caller-ctx FContext)(: function-name String)(: args AST)(: offse
    # caller context is provided but not propagated
    (let r (mk-fragment()))
 
-   (let f (find-global-callable( function-name (typeof args) )))
+   (let f (find-global-callable( function-name (typeof args) args )))
    (match f (
       ()
       ( (Glb( _ (Abs( lhs rhs tlt )) )) (
@@ -21,7 +21,7 @@ cc-blob := λ(: caller-ctx FContext)(: function-name String)(: args AST)(: offse
 
 cc-blob := λ(: callee-ctx FContext)(: function-name String)(: args-tt Type)(: offset I64)(: blame AST). (: (
    (let r (mk-fragment()))
-   (let f (find-global-callable( function-name args-tt )))
+   (let f (find-global-callable( function-name args-tt blame )))
    (match f (
       ()
       ( (Glb( _ (Abs( lhs rhs tlt )) )) (

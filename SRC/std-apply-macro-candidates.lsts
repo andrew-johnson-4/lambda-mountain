@@ -46,13 +46,20 @@ let std-try-destructure-macro(tctx: TContext?, margs: AST, mtype: Type, mcandida
                      match margs {
                         App{left:Var{maybe-helper=key}, helper-args=right} => (
                            if macro-helper==maybe-helper {
-                              (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, helper-args);
+                              (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, helper-args, Used);
                               if non-zero(helped)
                               then (tctx, std-direct-destructure-macro(helped, mstruct))
                               else (tctx, no)
                            } else (tctx, no)
                         );
-                        _ => (tctx, no);
+                        _ => (
+                           if macro-helper==c"macro::variable" {
+                              (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, margs, Used);
+                              if non-zero(helped)
+                              then (tctx, std-direct-destructure-macro(helped, mstruct))
+                              else (tctx, no)
+                           } else (tctx, no)
+                        );
                      }
                   } else (tctx, std-direct-destructure-macro(margs, mstruct))
                );

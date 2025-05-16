@@ -1,5 +1,5 @@
 
-let find-global-callable(fname: CString, arg-types: Type): AST = (
+let find-global-callable(fname: CString, arg-types: Type, blame: AST): AST = (
    arg-types = denormalize-strong(arg-types);
    fname = find-alias(fname, arg-types);
    let match-set = mk-vector(type((Type,AST)), 16);
@@ -24,7 +24,7 @@ let find-global-callable(fname: CString, arg-types: Type): AST = (
       };
       exit(1);
    };
-   if not(non-zero(result)) then fail("Unable to find appropriate global callable: \{fname} \{arg-types}\n");
+   if not(non-zero(result)) then fail("Unable to find appropriate global callable: \{fname} \{arg-types}\nAt: \{blame.location}\n");
    result
 );
 
