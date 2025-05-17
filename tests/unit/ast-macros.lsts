@@ -44,6 +44,24 @@ macro::assert(true);
    ));
 );
 
+(
+   macro::match(5, macro::match-case(
+      _, print(5), fail("Pattern Match Failure",macro::location(here))
+   ));
+);
+
+(
+   macro::match(c"ABC", macro::match-case(
+      macro::lhs-prefix(c"A", x), print(x), fail("Pattern Match Failure",macro::location(here))
+   ));
+);
+
+(
+   macro::match(c"ABC", macro::match-case(
+      macro::lhs-suffix(c"BC", x), print(x), fail("Pattern Match Failure",macro::location(here))
+   ));
+);
+
 # match
 
 # for
