@@ -92,6 +92,10 @@ typed macro macro::match-arm(v: macro::variable, term: lazy): lazy = (
    (let v = term; true)
 );
 
+typed macro macro::match-arm(v: macro::underscore, term: lazy): lazy = (
+   true
+);
+
 typed macro macro::match-arm(c: macro::constant, term: lazy): lazy = (
    (c == term)
 );
