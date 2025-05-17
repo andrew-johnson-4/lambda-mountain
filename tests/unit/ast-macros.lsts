@@ -38,6 +38,12 @@ macro::assert(true);
    ));
 );
 
+(
+   macro::match(4, macro::match-case(
+      4, print(4), fail("Pattern Match Failure",macro::location(here))
+   ));
+);
+
 # match
 
 # for
