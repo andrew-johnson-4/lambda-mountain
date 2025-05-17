@@ -24,6 +24,13 @@ let std-apply-macro-variable(tctx: Maybe<TContext>, mname: CString, margs: AST):
    }
 );
 
+let std-apply-macro-constant(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
+   match margs {
+      App{ left:Lit{key:c":"}, right:App{left:Lit{},right:AType{}} } => (tctx, margs);
+      _ => (tctx, ASTEOF);
+   }
+);
+
 let std-apply-macro-location(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
    (tctx, mk-lit(to-smart-string(margs.location)).ascript(t1(c"SmartString")))
 );
@@ -33,6 +40,7 @@ let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST, used: IsU
    if mname==c"macro::concat" then (tctx, result) = std-apply-macro-concat(tctx, mname, margs)
    else if mname==c"macro::location" then (tctx, result) = std-apply-macro-location(tctx, mname, margs)
    else if mname==c"macro::variable" then (tctx, result) = std-apply-macro-variable(tctx, mname, margs)
+   else if mname==c"macro::constant" then (tctx, result) = std-apply-macro-constant(tctx, mname, margs)
    else {
       let row = index-macro-table.lookup(mname, [] :: List<(Type,Type,AST)>);
       let peep-holes = TAny;

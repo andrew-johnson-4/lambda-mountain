@@ -91,3 +91,7 @@ typed macro macro::match-pats(term: lazy, lhs rhs remainder: macro::match-case):
 typed macro macro::match-arm(v: macro::variable, term: lazy): lazy = (
    (let v = term; true)
 );
+
+typed macro macro::match-arm(c: macro::constant, term: lazy): lazy = (
+   (c == term)
+);
