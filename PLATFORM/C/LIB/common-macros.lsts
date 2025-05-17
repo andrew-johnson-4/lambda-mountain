@@ -99,3 +99,22 @@ typed macro macro::match-arm(v: macro::underscore, term: lazy): lazy = (
 typed macro macro::match-arm(c: macro::constant, term: lazy): lazy = (
    (c == term)
 );
+
+typed macro macro::match-arm(prefix rest: macro::lhs-prefix, term: lazy): lazy = (
+   (let uuid(v) = term;
+      $"if"(uuid(v).has-prefix(prefix))
+           (macro::match-arm(rest, uuid(v).remove-prefix(prefix)))
+           (false)
+   )
+);
+
+typed macro macro::match-arm(suffix rest: macro::lhs-suffix, term: lazy): lazy = (
+   (let uuid(v) = term;
+      $"if"(uuid(v).has-suffix(suffix))
+           (macro::match-arm(rest, uuid(v).remove-suffix(suffix)))
+           (false)
+   )
+);
+
+typed macro macro::lhs-prefix(prefix: lazy, rest: lazy): lazy = (prefix; rest);
+typed macro macro::lhs-suffix(suffix: lazy, rest: lazy): lazy = (suffix; rest);
