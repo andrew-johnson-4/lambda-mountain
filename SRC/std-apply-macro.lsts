@@ -33,7 +33,14 @@ let std-apply-macro-underscore(tctx: Maybe<TContext>, mname: CString, margs: AST
 
 let std-apply-macro-tag(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
    match margs {
-      Lit{} => (tctx, margs);
+      Lit{key=key} => (
+         if index-of-tag(key)==unknown-index-of-tag then (tctx, ASTEOF) else {
+            let tag-name    = mk-lit(to-string(index-of-tag(key)));
+            let tag-ordinal = tag-name.ascript(t1(c"Constant") && t1(c"Literal") && t1(c"U64"));
+            let tag-type    = mk-atype(t1(c"Tag::" + key));
+            (tctx, mk-cons(mk-cons(tag-name, tag-ordinal), tag-type))
+         }
+      );
       _ => (tctx, ASTEOF);
    }
 );

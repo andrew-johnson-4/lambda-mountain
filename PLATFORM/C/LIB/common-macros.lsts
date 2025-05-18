@@ -177,11 +177,11 @@ typed macro macro::match-arm(head-lhs tail-lhs: macro::lhs-head, term: lazy): la
 );
 
 typed macro macro::match-arm(case rest: macro::lhs-struct, term: lazy): lazy = (
-   (let uuid(v) = term; macro::lhs-s)
+   (let uuid(v) = term; macro::lhs-struct-post(case, rest, term))
 );
 
 typed macro macro::lhs-struct(case: lazy, rest: lazy): lazy = (case; rest);
 
-typed macro macro::lhs-struct(tag: macro::tag, rest: macro::underscore, term: lazy): lazy = (
-   term.0 == tag
+typed macro macro::lhs-struct-post(tag-name tag-ordinal tag-type: macro::tag, rest: macro::underscore, term: lazy): lazy = (
+   $".0"(term) == tag-ordinal
 );
