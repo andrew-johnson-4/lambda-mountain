@@ -79,6 +79,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
             if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
             then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
          };
+         apply-global-callable(c"into-branch-conditional", typeof(cond), cond);
          ascript-normal(term, typeof(t)); # TODO: use MGU to merge true and false branches
       );
       ASTEOF{} => ascript-normal(term, t1(c"Nil"));
@@ -137,7 +138,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
          let is-macro = false;
          if is-cons {
             (tctx, let new-l) = std-infer-expr(tctx, l, false, Used, TAny);
-            (tctx, let new-r) = std-infer-expr(tctx, r, false, Used, TAny);
+            (tctx, let new-r) = std-infer-expr(tctx, r, false, if is(used,Tail) then used else Used, TAny);
             if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-cons(new-l, new-r) };
             ascript-normal(term, if is(used, Tail) then typeof(r) else t3(c"Cons", typeof(l), typeof(r)));
          } else {
