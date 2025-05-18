@@ -162,3 +162,16 @@ typed macro macro::match-arm(bind suffix rest: macro::lhs-bound-suffix, term: la
    )
 );
 
+typed macro macro::lhs-head(head-lhs: lazy, tail-lhs: lazy): lazy = (head-lhs; tail-lhs);
+
+typed macro macro::match-arm(head-lhs tail-lhs: macro::lhs-head, term: lazy): lazy = (
+   (let uuid(v) = term;
+      $"if"(uuid(v).has-head)
+           (
+              $"if"(macro::match-arm( head-lhs, head(uuid(v)) ))
+                   (macro::match-arm( tail-lhs, tail(uuid(v)) ))
+                   (false)
+           )
+           (false)
+   )
+);

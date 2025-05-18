@@ -74,6 +74,12 @@ macro::assert(true);
    ));
 );
 
+(
+   macro::match([1,2], macro::match-case(
+      macro::lhs-head(x, y), (print(x); print(y)), fail("Pattern Match Failure",macro::location(here))
+   ));
+);
+
 # match
 
 # for
