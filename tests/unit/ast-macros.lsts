@@ -86,6 +86,12 @@ macro::assert(true);
    ));
 );
 
+(
+   macro::match(A{123}, macro::match-case(
+      macro::lhs-struct(A, macro::lhs-struct(macro::lhs-struct-field(x,a,123), _) ), print(x), fail("Pattern Match Failure",macro::location(here))
+   ));
+);
+
 # match
 
 # for
