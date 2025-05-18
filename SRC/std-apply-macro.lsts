@@ -31,6 +31,20 @@ let std-apply-macro-underscore(tctx: Maybe<TContext>, mname: CString, margs: AST
    }
 );
 
+let std-apply-macro-tag(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
+   match margs {
+      Lit{key=key} => (
+         if index-of-tag(key)==unknown-index-of-tag then (tctx, ASTEOF) else {
+            let tag-name    = mk-lit(to-string(index-of-tag(key)));
+            let tag-ordinal = tag-name.ascript(t1(c"Constant") && t1(c"Literal") && t1(c"U64"));
+            let tag-type    = mk-atype(t1(c"Tag::" + key));
+            (tctx, mk-cons(mk-cons(tag-name, tag-ordinal), tag-type))
+         }
+      );
+      _ => (tctx, ASTEOF);
+   }
+);
+
 let std-apply-macro-constant(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
    match margs {
       App{ left:Lit{key:c":"}, right:App{left:Lit{},right:AType{}} } => (tctx, margs);
@@ -49,6 +63,7 @@ let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST, used: IsU
    else if mname==c"macro::variable" then (tctx, result) = std-apply-macro-variable(tctx, mname, margs)
    else if mname==c"macro::underscore" then (tctx, result) = std-apply-macro-underscore(tctx, mname, margs)
    else if mname==c"macro::constant" then (tctx, result) = std-apply-macro-constant(tctx, mname, margs)
+   else if mname==c"macro::tag" then (tctx, result) = std-apply-macro-tag(tctx, mname, margs)
    else {
       let row = index-macro-table.lookup(mname, [] :: List<(Type,Type,AST)>);
       let peep-holes = TAny;
