@@ -62,6 +62,18 @@ macro::assert(true);
    ));
 );
 
+(
+   macro::match(c"ABC", macro::match-case(
+      macro::lhs-bound-prefix(x, c"A", y), (print(x); print(y)), fail("Pattern Match Failure",macro::location(here))
+   ));
+);
+
+(
+   macro::match(c"ABC", macro::match-case(
+      macro::lhs-bound-suffix(y, c"BC", x), (print(x); print(y)), fail("Pattern Match Failure",macro::location(here))
+   ));
+);
+
 # match
 
 # for
