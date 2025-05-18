@@ -31,6 +31,13 @@ let std-apply-macro-underscore(tctx: Maybe<TContext>, mname: CString, margs: AST
    }
 );
 
+let std-apply-macro-tag(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
+   match margs {
+      Lit{} => (tctx, margs);
+      _ => (tctx, ASTEOF);
+   }
+);
+
 let std-apply-macro-constant(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
    match margs {
       App{ left:Lit{key:c":"}, right:App{left:Lit{},right:AType{}} } => (tctx, margs);
@@ -49,6 +56,7 @@ let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST, used: IsU
    else if mname==c"macro::variable" then (tctx, result) = std-apply-macro-variable(tctx, mname, margs)
    else if mname==c"macro::underscore" then (tctx, result) = std-apply-macro-underscore(tctx, mname, margs)
    else if mname==c"macro::constant" then (tctx, result) = std-apply-macro-constant(tctx, mname, margs)
+   else if mname==c"macro::tag" then (tctx, result) = std-apply-macro-tag(tctx, mname, margs)
    else {
       let row = index-macro-table.lookup(mname, [] :: List<(Type,Type,AST)>);
       let peep-holes = TAny;

@@ -80,6 +80,12 @@ macro::assert(true);
    ));
 );
 
+(
+   macro::match(A{123}, macro::match-case(
+      macro::lhs-struct(A, _), print("A"), fail("Pattern Match Failure",macro::location(here))
+   ));
+);
+
 # match
 
 # for

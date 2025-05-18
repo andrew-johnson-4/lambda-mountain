@@ -175,3 +175,13 @@ typed macro macro::match-arm(head-lhs tail-lhs: macro::lhs-head, term: lazy): la
            (false)
    )
 );
+
+typed macro macro::match-arm(case rest: macro::lhs-struct, term: lazy): lazy = (
+   (let uuid(v) = term; macro::lhs-s)
+);
+
+typed macro macro::lhs-struct(case: lazy, rest: lazy): lazy = (case; rest);
+
+typed macro macro::lhs-struct(tag: macro::tag, rest: macro::underscore, term: lazy): lazy = (
+   term.0 == tag
+);
