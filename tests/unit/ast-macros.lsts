@@ -92,6 +92,18 @@ macro::assert(true);
    ));
 );
 
+(
+   macro::match(A{123}, macro::match-case(
+      macro::lhs-struct(A, macro::lhs-struct(macro::lhs-struct-raw-field(x,a), _) ), print("Raw"), fail("Pattern Match Failure",macro::location(here))
+   ));
+);
+
+(
+   macro::match(A{123}, macro::match-case(
+      macro::lhs-struct(A, macro::lhs-struct(macro::lhs-struct-raw-field-with-val(x,a,123), _) ), print("Raw"), fail("Pattern Match Failure",macro::location(here))
+   ));
+);
+
 # match
 
 # for
