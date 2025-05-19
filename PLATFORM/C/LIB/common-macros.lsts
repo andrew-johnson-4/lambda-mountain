@@ -183,6 +183,8 @@ typed macro macro::match-arm(case rest: macro::lhs-struct, term: lazy): lazy = (
 typed macro macro::lhs-struct(case: lazy, rest: lazy): lazy = (case; rest);
 typed macro macro::lhs-struct-field(bind: lazy, field: lazy, val: lazy): lazy = (bind; field; val);
 typed macro macro::lhs-struct-field(bind: macro::underscore, field: lazy, val: lazy): lazy = (uuid(x); field; val);
+typed macro macro::lhs-struct-raw-field(bind: lazy, field: lazy): lazy = (bind; field);
+typed macro macro::lhs-struct-raw-field-with-val(bind: lazy, field: lazy, val: lazy): lazy = (bind; field; val);
 
 typed macro macro::lhs-struct-post(tag-name tag-ordinal tag-type: macro::tag, rest: lazy, term: lazy): lazy = (
    $"if"($".0"(term) == tag-ordinal)
@@ -199,4 +201,22 @@ typed macro macro::lhs-struct-post(bind field val: macro::lhs-struct-field, rest
            (false)
    )
 );
+
+typed macro macro::lhs-struct-post(bind field: macro::lhs-struct-raw-field, rest: rest, term: lazy): lazy = (
+   (
+      let bind = macro::concat($".", field)(term);
+      true
+   )
+);
+
+typed macro macro::lhs-struct-post(bind field val: macro::lhs-struct-raw-field-with-val, rest: rest, term: lazy): lazy = (
+   (
+      let bind = macro::concat($".", field)(term);
+      let uuid(b) = open(bind);
+      $"if"(macro::match-arm( val, uuid(b) ))
+           (macro::match-arm( rest, term ))
+           (false)
+   )
+);
+
 
