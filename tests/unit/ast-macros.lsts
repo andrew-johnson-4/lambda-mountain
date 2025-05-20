@@ -104,7 +104,16 @@ macro::assert(true);
    ));
 );
 
-# match
+type B = B { b: A[] };
+
+(
+   macro::match(B{close(A{123})}, macro::match-case(
+      macro::lhs-struct(B, macro::lhs-struct(macro::lhs-struct-field(_,b,
+         macro::lhs-struct(A, macro::lhs-struct(macro::lhs-struct-raw-field-with-val(x,a,123), _) )
+      ), _) ),
+      print("Raw\{x}"), fail("Pattern Match Failure",macro::location(here))
+   ));
+);
 
 # for
 #$"macro::for"(x, [1, 2], print(x));
