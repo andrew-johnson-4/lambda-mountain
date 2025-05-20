@@ -1183,14 +1183,15 @@ let lsts-parse-match2(tokens: List<Token>): Tuple<AST,List<Token>> = (
    lsts-parse-expect(c"match2", tokens); tokens = tail(tokens);
    let raw = lsts-parse-head(tokens)==c"raw"; if raw { tokens = tail(tokens); };
    (let expr, tokens) = lsts-parse-small-expression(tokens);
+   if raw then expr = mk-app(mk-var(c"macro::bind-raw"), expr);
    let case-root = mk-app(mk-var(c"fail"),mk-cons(
       mk-lit(c"Pattern Match Failure").ascript(t1(c"SmartString")),
       mk-app(mk-var(c"macro::location"),mk-var(c"here").with-location(loc))
    ));
    lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
    lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
-   let result-expr = mk-app(mk-var(c"macro::match"), case-root);
-   (case-root, tokens);
+   let result-expr = mk-app(mk-var(c"macro::match"), mk-cons(expr, case-root));
+   (result-expr, tokens);
 );
 
 let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
