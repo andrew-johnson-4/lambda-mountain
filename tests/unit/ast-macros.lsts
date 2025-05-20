@@ -32,92 +32,91 @@ type A = A{a:U64};
 
 macro::assert(true);
 
-(
-   macro::match(123, macro::match-case(
-      x, print(x), fail("Pattern Match Failure",macro::location(here))
-   ));
-);
+match2 123 { _ => print("_"); };
 
-(
-   macro::match(4, macro::match-case(
-      4, print(4), fail("Pattern Match Failure",macro::location(here))
-   ));
-);
+#(
+#   macro::match(123, macro::match-case(
+#      x, print(x), fail("Pattern Match Failure",macro::location(here))
+#   ));
+#);
 
-(
-   macro::match(5, macro::match-case(
-      _, print(5), fail("Pattern Match Failure",macro::location(here))
-   ));
-);
+#(
+#   macro::match(4, macro::match-case(
+#      4, print(4), fail("Pattern Match Failure",macro::location(here))
+#   ));
+#);
 
-(
-   macro::match(c"ABC", macro::match-case(
-      macro::lhs-prefix(c"A", x), print(x), fail("Pattern Match Failure",macro::location(here))
-   ));
-);
+#(
+#   macro::match(5, macro::match-case(
+#      _, print(5), fail("Pattern Match Failure",macro::location(here))
+#   ));
+#);
 
-(
-   macro::match(c"ABC", macro::match-case(
-      macro::lhs-suffix(c"BC", x), print(x), fail("Pattern Match Failure",macro::location(here))
-   ));
-);
+#(
+#   macro::match(c"ABC", macro::match-case(
+#      macro::lhs-prefix(c"A", x), print(x), fail("Pattern Match Failure",macro::location(here))
+#   ));
+#);
 
-(
-   macro::match(c"ABC", macro::match-case(
-      macro::lhs-bound-prefix(x, c"A", y), (print(x); print(y)), fail("Pattern Match Failure",macro::location(here))
-   ));
-);
+#(
+#   macro::match(c"ABC", macro::match-case(
+#      macro::lhs-suffix(c"BC", x), print(x), fail("Pattern Match Failure",macro::location(here))
+#   ));
+#);
 
-(
-   macro::match(c"ABC", macro::match-case(
-      macro::lhs-bound-suffix(y, c"BC", x), (print(x); print(y)), fail("Pattern Match Failure",macro::location(here))
-   ));
-);
+#(
+#   macro::match(c"ABC", macro::match-case(
+#      macro::lhs-bound-prefix(x, c"A", y), (print(x); print(y)), fail("Pattern Match Failure",macro::location(here))
+#   ));
+#);
 
-(
-   macro::match([1,2], macro::match-case(
-      macro::lhs-head(x, y), (print(x); print(y)), fail("Pattern Match Failure",macro::location(here))
-   ));
-);
+#(
+#   macro::match(c"ABC", macro::match-case(
+#      macro::lhs-bound-suffix(y, c"BC", x), (print(x); print(y)), fail("Pattern Match Failure",macro::location(here))
+#   ));
+#);
 
-(
-   macro::match(A{123}, macro::match-case(
-      macro::lhs-struct(A, _), print("A"), fail("Pattern Match Failure",macro::location(here))
-   ));
-);
+#(
+#   macro::match([1,2], macro::match-case(
+#      macro::lhs-head(x, y), (print(x); print(y)), fail("Pattern Match Failure",macro::location(here))
+#   ));
+#);
 
-(
-   macro::match(A{123}, macro::match-case(
-      macro::lhs-struct(A, macro::lhs-struct(macro::lhs-struct-field(x,a,123), _) ), print(x), fail("Pattern Match Failure",macro::location(here))
-   ));
-);
+#(
+#   macro::match(A{123}, macro::match-case(
+#      macro::lhs-struct(A, _), print("A"), fail("Pattern Match Failure",macro::location(here))
+#   ));
+#);
 
-(
-   macro::match(A{123}, macro::match-case(
-      macro::lhs-struct(A, macro::lhs-struct(macro::lhs-struct-raw-field(x,a), _) ), print("Raw"), fail("Pattern Match Failure",macro::location(here))
-   ));
-);
+#(
+#   macro::match(A{123}, macro::match-case(
+#      macro::lhs-struct(A, macro::lhs-struct(macro::lhs-struct-field(x,a,123), _) ), print(x), fail("Pattern Match Failure",macro::location(here))
+#   ));
+#);
 
-(
-   macro::match(A{123}, macro::match-case(
-      macro::lhs-struct(A, macro::lhs-struct(macro::lhs-struct-raw-field-with-val(x,a,123), _) ), print("Raw"), fail("Pattern Match Failure",macro::location(here))
-   ));
-);
+#(
+#   macro::match(A{123}, macro::match-case(
+#      macro::lhs-struct(A, macro::lhs-struct(macro::lhs-struct-raw-field(x,a), _) ), print("Raw"), fail("Pattern Match Failure",macro::location(here))
+#   ));
+#);
 
-type B = B { b: A[] };
+#(
+#   macro::match(A{123}, macro::match-case(
+#      macro::lhs-struct(A, macro::lhs-struct(macro::lhs-struct-raw-field-with-val(x,a,123), _) ), print("Raw"), fail("Pattern Match Failure",macro::location(here))
+#   ));
+#);
 
-(
-   macro::match(B{close(A{123})}, macro::match-case(
-      macro::lhs-struct(B, macro::lhs-struct(macro::lhs-struct-field(_,b,
-         macro::lhs-struct(A, macro::lhs-struct(macro::lhs-struct-raw-field-with-val(x,a,123), _) )
-      ), _) ),
-      print("Raw\{x}"), fail("Pattern Match Failure",macro::location(here))
-   ));
-);
+#type B = B { b: A[] };
 
-(
-   match2 123 {};
-);
+#(
+#   macro::match(B{close(A{123})}, macro::match-case(
+#      macro::lhs-struct(B, macro::lhs-struct(macro::lhs-struct-field(_,b,
+#         macro::lhs-struct(A, macro::lhs-struct(macro::lhs-struct-raw-field-with-val(x,a,123), _) )
+#      ), _) ),
+#      print("Raw\{x}"), fail("Pattern Match Failure",macro::location(here))
+#   ));
+#);
+
 
 # for
 #$"macro::for"(x, [1, 2], print(x));

@@ -1178,6 +1178,17 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
    Tuple { base, tokens }
 );
 
+let lsts-parse-match2-case-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   let expr = ASTEOF;
+   if lsts-parse-head(tokens)==c"_" {
+      expr = mk-var(c"_").with-location(head(tokens).location);
+      lsts-parse-expect("_", tokens); tokens = tail(tokens);
+   } else {
+      lsts-parse-expect("[LHS]", tokens);
+   };
+   (expr, tokens)
+);
+
 let lsts-parse-match2(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let loc = head(tokens).location;
    lsts-parse-expect(c"match2", tokens); tokens = tail(tokens);
@@ -1189,6 +1200,15 @@ let lsts-parse-match2(tokens: List<Token>): Tuple<AST,List<Token>> = (
       mk-app(mk-var(c"macro::location"),mk-var(c"here").with-location(loc))
    ));
    lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
+   while non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
+      (let lhs, tokens) = lsts-parse-match2-case-lhs(tokens);
+      lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+      lsts-parse-expect(c">", tokens); tokens = tail(tokens);
+      if lsts-parse-head(tokens) == c"{" {
+         fail("Please wrap map literals in match cases in parenthesis. At \{tokens.formatted-location}\n");
+      };
+      (let rhs, tokens) = lsts-parse-small-expression(tokens);
+   };
    lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
    let result-expr = mk-app(mk-var(c"macro::match"), mk-cons(expr, case-root));
    (result-expr, tokens);
