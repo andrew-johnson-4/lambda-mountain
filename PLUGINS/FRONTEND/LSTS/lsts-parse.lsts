@@ -1184,7 +1184,7 @@ let lsts-parse-match2-case-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
       expr = mk-var(c"_").with-location(head(tokens).location);
       lsts-parse-expect(c"_", tokens); tokens = tail(tokens);
    } else {
-      lsts-parse-expect(c"[LHS]", tokens);
+      lsts-parse-expect(c"[Left Hand Side]", tokens);
    };
    (expr, tokens)
 );
