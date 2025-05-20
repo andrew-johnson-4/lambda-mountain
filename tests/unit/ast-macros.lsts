@@ -33,6 +33,8 @@ type A = A{a:U64};
 macro::assert(true);
 
 match2 123 { _ => print("_"); };
+match2 123 { 123 => print(123); };
+match2 456 { x => print(x); };
 
 #(
 #   macro::match(123, macro::match-case(
