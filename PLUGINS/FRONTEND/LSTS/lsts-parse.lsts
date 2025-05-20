@@ -1181,9 +1181,16 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
 let lsts-parse-match2(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let loc = head(tokens).location;
    lsts-parse-expect(c"match2", tokens); tokens = tail(tokens);
-   fail("TODO: gradual match2 transition");
-   let mexpr = ASTEOF;
-   (mexpr, tokens);
+   let raw = lsts-parse-head(tokens)==c"raw"; if raw { tokens = tail(tokens); };
+   (let expr, tokens) = lsts-parse-small-expression(tokens);
+   let case-root = mk-app(mk-var(c"fail"),mk-cons(
+      mk-lit(c"Pattern Match Failure").ascript(t1(c"SmartString")),
+      mk-app(mk-var(c"macro::location"),mk-var(c"here").with-location(loc))
+   ));
+   lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
+   lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
+   let result-expr = mk-app(mk-var(c"macro::match"), case-root);
+   (case-root, tokens);
 );
 
 let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
