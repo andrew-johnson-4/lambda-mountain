@@ -115,6 +115,8 @@ type B = B { b: A[] };
    ));
 );
 
+match2 123 { 123 => print(123) };
+
 # for
 #$"macro::for"(x, [1, 2], print(x));
 #$"macro::for"(x, mk-vector(type(U64)).push(3).push(4), print(x));

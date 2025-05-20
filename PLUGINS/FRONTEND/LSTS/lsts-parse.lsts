@@ -1128,6 +1128,9 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
             )
          );         
       );
+      [Token{key:c"match2"}.. rest] => (
+         (base, tokens) = lsts-parse-match2(tokens);
+      );
       [Token{key:c"match"}.. rest] => (
          let loc = head(tokens).location; tokens = rest;
          
@@ -1173,6 +1176,14 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
       );
    };
    Tuple { base, tokens }
+);
+
+let lsts-parse-match2(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   let loc = head(tokens).location;
+   lsts-parse-expect(c"match2", tokens); tokens = tail(tokens);
+   fail("TODO: gradual match2 transition");
+   let mexpr = ASTEOF;
+   (mexpr, tokens);
 );
 
 let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
