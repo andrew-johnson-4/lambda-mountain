@@ -16,6 +16,8 @@ let with-location(term: AST, loc: SourceLocation): AST = (
    }
 );
 
+let .with-location(term: AST, loc: SourceLocation): AST = with-location(term, loc);
+
 let with-location(t: Token, loc: SourceLocation): Token = (
    if non-zero(t.location) then t else Token{ t.skey, t.key, iuid(), loc }
 );
