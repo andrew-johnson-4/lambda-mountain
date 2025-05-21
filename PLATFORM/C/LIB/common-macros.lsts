@@ -142,6 +142,16 @@ typed macro macro::match-arm(suffix rest: macro::lhs-suffix, term: lazy): lazy =
    )
 );
 
+typed macro macro::lhs-guard(base: lazy, post-condition: lazy): lazy = (base; post-condition);
+
+typed macro macro::match-arm(cond post-condition: macro::lhs-guard, term: lazy): lazy = (
+   (
+      $"if"(macro::match-arm(cond, term))
+           (post-condition)
+           (false)
+   )
+);
+
 typed macro macro::lhs-bound-prefix(bind: macro::variable, prefix: lazy, rest: lazy): lazy = (bind; prefix; rest);
 typed macro macro::lhs-bound-suffix(bind: macro::variable, suffix: lazy, rest: lazy): lazy = (bind; suffix; rest);
 

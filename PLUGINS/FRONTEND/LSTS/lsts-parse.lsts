@@ -1218,7 +1218,13 @@ let lsts-parse-match2-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
    # list-likes
    # tuples
    # objects
-   lsts-parse-match2-lhs-one(tokens)
+   (let lhs, tokens) = lsts-parse-match2-lhs-one(tokens)
+   if lsts-parse-head(tokens)==c"where" {
+      lsts-parse-expect(c"where", tokens); tokens = tail(tokens);
+      (let cond, tokens) = lsts-parse-small-expression(tokens);
+      lhs = mk-app( mk-var(c"macro::lhs-guard"), mk-cons(lhs,cond) );
+   };
+   (lhs, tokens)
 );
 
 let lsts-parse-match2(tokens: List<Token>): Tuple<AST,List<Token>> = (
