@@ -1212,18 +1212,57 @@ let lsts-parse-match2-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
    (expr, tokens)
 );
 
+let lsts-parse-match2-lhs-one-bind(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   lsts-parse-match2-lhs-one(tokens);
+);
+
+let .is-assign-lit(t: AST): AST = (
+   match t {
+      App{ left:Var{key:c"macro::let-bind"} } => true;
+      App{ left:Var{key:c"macro::set-bind"} } => true;
+      _ => false;
+   }
+);
+
 let lsts-parse-match2-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
    # prefixes
    # suffixes
    # list-likes
    # tuples
    # objects
+   let original-tokens = tokens;
    (let lhs, tokens) = lsts-parse-match2-lhs-one(tokens);
+   let presufs = mk-vector(type(AST)).push(lhs);
+   while lsts-parse-head(tokens)==c"." && lsts-parse-head(tail(tokens)) {
+      lsts-parse-expect(c".", tokens); tokens = tail(tokens);
+      lsts-parse-expect(c".", tokens); tokens = tail(tokens);
+      (let lhs, tokens) = lsts-parse-match2-lhs-one-bind(tokens);
+      presufs = presufs.push(lhs);
+   };
+   let prefixes = mk-vector(type(AST));
+   let suffixes = mk-vector(type(AST));
+   while presufs.length > 1 &&  presufs[0].is-lit || presufs[0].is-assign-lit {
+      (let p, presufs) = presufs.pop-front;
+      prefixes = prefixes.push(p);
+   };
+   while presufs.length > 1 &&  presufs[presufs.length-1].is-lit || presufs[presufx.length-1].is-assign-lit {
+      (let p, presufs) = presufs.pop;
+      suffixes = suffixes.push(p);
+   };
+   if presufs.length > 1 then fail("Invalid Prefix/Suffix Chain", original-tokens.formatted-location);
+   lhs = presufs[0];
+   for p in prefixes {
+      lhs = mk-app(mk-var(c"macro::prefix"), mk-cons(p, lhs));
+   };
+   while suffixes.length > 0 {
+      (let p, suffixes) = suffixes.pop();
+      lhs = mk-app(mk-var(c"macro::suffix"), mk-cons(p, lhs));
+   };
    if lsts-parse-head(tokens)==c"where" {
       lsts-parse-expect(c"where", tokens); tokens = tail(tokens);
       (let cond, tokens) = lsts-parse-andor(tokens);
       lhs = mk-app( mk-var(c"macro::lhs-guard"), mk-cons(lhs,cond) );
-   };
+   }
    (lhs, tokens)
 );
 
