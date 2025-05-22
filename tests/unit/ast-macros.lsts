@@ -57,36 +57,36 @@ match2 (A{123}) {
    A{a:123} => print(".");
 };
 match2 (A{123}) {
-   A{a=a} => print(".");
+   A{a=a} => print(a);
 };
-#match2 (A{123}) {
-#   A{a=a:123} => print(".");
-#};
-#match2 (A{123}) {
-#   A{let a=a} => print(".");
-#};
-#match2 (A{123}) {
-#   A{let raw a=a} => print(".");
-#};
-#match2 (A{123}) {
-#   A{let a=a:123} => print(".");
-#};
-#match2 (A{123}) {
-#   A{let raw a=a:123} => print(".");
-#};
-#(
-#   let x = 555;
-#   match2 (A{123}) {
-#      A{set x=a} => print(".");
-#   };
-#   match2 (A{123}) {
-#      A{set x=a:123} => print(".");
-#   };
-#   match2 (A{123}) {
-#      A{set raw x=a} => print(".");
-#   };
-#   match2 (A{123}) {
-#      A{set raw x=a:123} => print(".");
-#   };
-#);
+match2 (A{123}) {
+   A{a=a:123} => print(a);
+};
+match2 (A{123}) {
+   A{let a=a} => print(a);
+};
+match2 (A{123}) {
+   A{let raw a=a} => print(a);
+};
+match2 (A{123}) {
+   A{let a=a:123} => print(a);
+};
+match2 (A{123}) {
+   A{let raw a=a:123} => print(a);
+};
+(
+   let x = 555;
+   match2 (A{123}) {
+      A{set x=a} => print(x);
+   };
+   match2 (A{123}) {
+      A{set x=a:123} => print(x);
+   };
+   match2 (A{123}) {
+      A{set raw x=a} => print(x);
+   };
+   match2 (A{123}) {
+      A{set raw x=a:123} => print(x);
+   };
+);
 
