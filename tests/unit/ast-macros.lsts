@@ -36,6 +36,10 @@ match2 123 { _ => print("_"); };
 match2 123 { 123 => print(123); };
 match2 456 { x => print(x); };
 match2 789 { x where x < 100 => print("no"); x where x > 456 => print(x); };
+match2 "abc" { "a"..bc => print("a\{bc}"); };
+match2 "def" { d.."ef" => print("\{d}ef"); };
+match2 "abc" { a="a"..bc => print("\{a}\{bc}"); };
+match2 "def" { d..ef="ef" => print("\{d}\{ef}"); };
 
 #(
 #   macro::match(123, macro::match-case(
