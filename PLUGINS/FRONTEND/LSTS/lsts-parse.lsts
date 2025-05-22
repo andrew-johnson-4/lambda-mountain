@@ -1182,10 +1182,7 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
 
 let lsts-parse-match2-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let expr = ASTEOF;
-   if lsts-parse-head(tokens)==c"_" {
-      expr = mk-var(c"_").with-location(head(tokens).location);
-      lsts-parse-expect(c"_", tokens); tokens = tail(tokens);
-   } else if lsts-parse-head(tokens)==c"[" {
+   if lsts-parse-head(tokens)==c"[" {
       let loc = head(tokens).location;
       lsts-parse-expect(c"[", tokens); tokens = tail(tokens);
       expr = mk-app(mk-var(c"macro::lhs-tail").with-location(loc), mk-nil());
@@ -1205,6 +1202,23 @@ let lsts-parse-match2-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
          expr = mk-app( mk-var(c"macro::lhs-head"), mk-cons(s,expr) );
       };
       lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
+   } else if lsts-is-enum-head(lsts-parse-head(tokens)) || (lsts-parse-head(tokens)==c"_" && lsts-parse-head(tail(tokens))==c"{") {
+      let loc = head(tokens).location;
+      let tag = lsts-parse-head(tokens); tokens = tail(tokens);
+      let suffix-condition = mk-var(c"_").with-location(loc);
+      if lsts-parse-head(tokens)==c"{" {
+         lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
+         # TODO expand suffix condition
+         lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
+      };
+      if tag == c"_" {
+         expr = suffix-condition;
+      } else {
+         expr = mk-app(mk-var(c"macro::lhs-struct"), mk-cons( mk-lit(tag).with-location(loc), suffix-condition ));
+      };
+   } else if lsts-parse-head(tokens)==c"_" {
+      expr = mk-var(c"_").with-location(head(tokens).location);
+      lsts-parse-expect(c"_", tokens); tokens = tail(tokens);
    } else if lsts-parse-head(tokens).has-suffix(c"_ss") {
       expr = lsts-make-lit(head(tokens)); tokens = tail(tokens);
    } else if lsts-parse-head(tokens).has-suffix(c"_s") {

@@ -45,11 +45,13 @@ match2 [1,2,3] { [x=1.. y.. z] => print("\{x}\{y}\{z}"); };
 match2 [4,5,6] { [xyz] => print("\{xyz}"); };
 match2 [] :: List<U64> { [] => print("[]"); };
 
-#(
-#   macro::match([1,2], macro::match-case(
-#      macro::lhs-head(x, y), (print(x); print(y)), fail("Pattern Match Failure",macro::location(here))
-#   ));
-#);
+match2 (A{123}) {
+   _{} => print("_");
+};
+
+match2 (A{123}) {
+   A => print("A");
+};
 
 #(
 #   macro::match(A{123}, macro::match-case(
