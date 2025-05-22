@@ -123,21 +123,50 @@ typed macro macro::match-arm(suffix rest: macro::lhs-suffix, term: lazy): lazy =
    )
 );
 
-typed macro macro::lhs-prefix(prefix: lazy, rest: lazy): lazy = (prefix; rest);
-typed macro macro::lhs-suffix(suffix: lazy, rest: lazy): lazy = (suffix; rest);
+typed macro macro::bind(lhs: macro::let-name, rhs: lazy): lazy = (
+   (macro::let( lhs, rhs ))
+);
 
-typed macro macro::match-arm(prefix rest: macro::lhs-prefix, term: lazy): lazy = (
+typed macro macro::bind(lhs: macro::set-name, rhs: lazy): lazy = (
+   (mov( rhs, lhs ))
+);
+
+typed macro macro::bind(lhs: macro::underscore, rhs: lazy): lazy = (
+   ()
+);
+
+typed macro macro::let-name(name: lazy): lazy = (name);
+typed macro macro::set-name(name: lazy): lazy = (name);
+
+typed macro macro::let-bind(rest: lazy, bind: lazy): lazy = (rest; macro::let-name(bind));
+typed macro macro::set-bind(rest: lazy, bind: lazy): lazy = (rest; macro::set-name(bind));
+
+typed macro macro::lhs-prefix(prefix: lazy, rest: lazy): lazy = (prefix; rest; _);
+typed macro macro::lhs-suffix(suffix: lazy, rest: lazy): lazy = (suffix; rest; _);
+
+typed macro macro::lhs-prefix(lhs bind: macro::set-bind, rest: lazy): lazy = (lhs; rest; bind);
+typed macro macro::lhs-prefix(lhs bind: macro::let-bind, rest: lazy): lazy = (lhs; rest; bind);
+typed macro macro::lhs-suffix(lhs bind: macro::set-bind, rest: lazy): lazy = (lhs; rest; bind);
+typed macro macro::lhs-suffix(lhs bind: macro::let-bind, rest: lazy): lazy = (lhs; rest; bind);
+
+typed macro macro::match-arm(prefix rest bind: macro::lhs-prefix, term: lazy): lazy = (
    (let uuid(v) = term;
       $"if"(uuid(v).has-prefix(prefix))
-           (macro::match-arm(rest, uuid(v).remove-prefix(prefix)))
+           (
+              macro::bind( bind, uuid(v).get-prefix(prefix) );
+              (macro::match-arm(rest, uuid(v).remove-prefix(prefix)))
+           )
            (false)
    )
 );
 
-typed macro macro::match-arm(suffix rest: macro::lhs-suffix, term: lazy): lazy = (
+typed macro macro::match-arm(suffix rest bind: macro::lhs-suffix, term: lazy): lazy = (
    (let uuid(v) = term;
       $"if"(uuid(v).has-suffix(suffix))
-           (macro::match-arm(rest, uuid(v).remove-suffix(suffix)))
+           (
+              macro::bind( bind, uuid(v).get-suffix(suffix) );
+              (macro::match-arm(rest, uuid(v).remove-suffix(suffix)))
+           )
            (false)
    )
 );

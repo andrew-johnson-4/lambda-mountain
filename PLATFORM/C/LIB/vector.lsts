@@ -110,11 +110,11 @@ let .pop-front(v: Vector<t>): Tuple<t, Vector<t>> = (
     let x = v[0];
     v = v.remove-front(1);
 
-    Tuple { v, x }
+    Tuple { x, v }
 );
 
 ## INPUT VECTOR GETS POISONED
-let .pop(v: Vector<t>): Tuple<Vector<t>, t> = (
+let .pop(v: Vector<t>): Tuple<t, Vector<t>> = (
     if v.length() == 0 {
         fail("Tried to pop from empty Vector.");
     };
@@ -123,7 +123,7 @@ let .pop(v: Vector<t>): Tuple<Vector<t>, t> = (
     let last = v[lasti as U64];
     v = v.remove-back(1);
 
-    Tuple { v, last }
+    Tuple { last, v }
 );
 
 let $"[]"( v: Vector<t>, i: U64 ): t = (
@@ -207,6 +207,17 @@ let .into(in: Vector<U8>, res: Type<CString>): CString = (
 ## does not destory input vec
 let .into(self: Vector<U8>, res: Type<SmartString>): SmartString = (
    intern(self.into(type(CString)))
+);
+
+let to-smart-string(self: Vector<x>): String = (
+   let rval = "[";
+   let has-item = false;
+   for vector v in self {
+      if has-item then rval = rval + ",";
+      has-item = true;
+      rval = rval + v.into(type(String));
+   };
+   rval + "]"
 );
 
 let .ptr(v: Vector<t>, toelem: U64): t[] = (
