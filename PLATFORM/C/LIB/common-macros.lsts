@@ -151,18 +151,22 @@ typed macro macro::lhs-suffix(lhs bind: macro::let-bind, rest: lazy): lazy = (lh
 
 typed macro macro::match-arm(prefix rest bind: macro::lhs-prefix, term: lazy): lazy = (
    (let uuid(v) = term;
-      macro::bind( bind, uuid(v) );
       $"if"(uuid(v).has-prefix(prefix))
-           (macro::match-arm(rest, uuid(v).remove-prefix(prefix)))
+           (
+              macro::bind( bind, uuid(v).get-prefix(prefix) );
+              (macro::match-arm(rest, uuid(v).remove-prefix(prefix)))
+           )
            (false)
    )
 );
 
 typed macro macro::match-arm(suffix rest bind: macro::lhs-suffix, term: lazy): lazy = (
    (let uuid(v) = term;
-      macro::bind( bind, uuid(v) );
       $"if"(uuid(v).has-suffix(suffix))
-           (macro::match-arm(rest, uuid(v).remove-suffix(suffix)))
+           (
+              macro::bind( bind, uuid(v).get-suffix(suffix) );
+              (macro::match-arm(rest, uuid(v).remove-suffix(suffix)))
+           )
            (false)
    )
 );
