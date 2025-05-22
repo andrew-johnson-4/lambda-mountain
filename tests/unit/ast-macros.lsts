@@ -53,43 +53,40 @@ match2 (A{123}) {
    A => print("A");
 };
 
+match2 (A{123}) {
+   A{a:123} => print(".");
+};
+#match2 (A{123}) {
+#   A{a=a} => print(".");
+#};
+#match2 (A{123}) {
+#   A{a=a:123} => print(".");
+#};
+#match2 (A{123}) {
+#   A{let a=a} => print(".");
+#};
+#match2 (A{123}) {
+#   A{let raw a=a} => print(".");
+#};
+#match2 (A{123}) {
+#   A{let a=a:123} => print(".");
+#};
+#match2 (A{123}) {
+#   A{let raw a=a:123} => print(".");
+#};
 #(
-#   macro::match(A{123}, macro::match-case(
-#      macro::lhs-struct(A, _), print("A"), fail("Pattern Match Failure",macro::location(here))
-#   ));
+#   let x = 555;
+#   match2 (A{123}) {
+#      A{set x=a} => print(".");
+#   };
+#   match2 (A{123}) {
+#      A{set x=a:123} => print(".");
+#   };
+#   match2 (A{123}) {
+#      A{set raw x=a} => print(".");
+#   };
+#   match2 (A{123}) {
+#      A{set raw x=a:123} => print(".");
+#   };
 #);
-
-#(
-#   macro::match(A{123}, macro::match-case(
-#      macro::lhs-struct(A, macro::lhs-struct(macro::lhs-struct-field(x,a,123), _) ), print(x), fail("Pattern Match Failure",macro::location(here))
-#   ));
-#);
-
-#(
-#   macro::match(A{123}, macro::match-case(
-#      macro::lhs-struct(A, macro::lhs-struct(macro::lhs-struct-raw-field(x,a), _) ), print("Raw"), fail("Pattern Match Failure",macro::location(here))
-#   ));
-#);
-
-#(
-#   macro::match(A{123}, macro::match-case(
-#      macro::lhs-struct(A, macro::lhs-struct(macro::lhs-struct-raw-field-with-val(x,a,123), _) ), print("Raw"), fail("Pattern Match Failure",macro::location(here))
-#   ));
-#);
-
-#type B = B { b: A[] };
-
-#(
-#   macro::match(B{close(A{123})}, macro::match-case(
-#      macro::lhs-struct(B, macro::lhs-struct(macro::lhs-struct-field(_,b,
-#         macro::lhs-struct(A, macro::lhs-struct(macro::lhs-struct-raw-field-with-val(x,a,123), _) )
-#      ), _) ),
-#      print("Raw\{x}"), fail("Pattern Match Failure",macro::location(here))
-#   ));
-#);
-
-
-# for
-#$"macro::for"(x, [1, 2], print(x));
-#$"macro::for"(x, mk-vector(type(U64)).push(3).push(4), print(x));
 
