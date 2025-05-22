@@ -41,47 +41,7 @@ match2 "def" { d.."ef" => print("\{d}ef"); };
 match2 "abc" { a="a"..bc => print("\{a}\{bc}"); };
 match2 "def" { d..ef="ef" => print("\{d}\{ef}"); };
 
-#(
-#   macro::match(123, macro::match-case(
-#      x, print(x), fail("Pattern Match Failure",macro::location(here))
-#   ));
-#);
-
-#(
-#   macro::match(4, macro::match-case(
-#      4, print(4), fail("Pattern Match Failure",macro::location(here))
-#   ));
-#);
-
-#(
-#   macro::match(5, macro::match-case(
-#      _, print(5), fail("Pattern Match Failure",macro::location(here))
-#   ));
-#);
-
-#(
-#   macro::match(c"ABC", macro::match-case(
-#      macro::lhs-prefix(c"A", x), print(x), fail("Pattern Match Failure",macro::location(here))
-#   ));
-#);
-
-#(
-#   macro::match(c"ABC", macro::match-case(
-#      macro::lhs-suffix(c"BC", x), print(x), fail("Pattern Match Failure",macro::location(here))
-#   ));
-#);
-
-#(
-#   macro::match(c"ABC", macro::match-case(
-#      macro::lhs-bound-prefix(x, c"A", y), (print(x); print(y)), fail("Pattern Match Failure",macro::location(here))
-#   ));
-#);
-
-#(
-#   macro::match(c"ABC", macro::match-case(
-#      macro::lhs-bound-suffix(y, c"BC", x), (print(x); print(y)), fail("Pattern Match Failure",macro::location(here))
-#   ));
-#);
+match2 [1,2,3] { [x.. y.. z] => print("\{x}\{y}\{z}"); };
 
 #(
 #   macro::match([1,2], macro::match-case(
