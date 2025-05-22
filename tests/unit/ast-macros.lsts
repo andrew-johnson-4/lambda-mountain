@@ -42,6 +42,8 @@ match2 "abc" { a="a"..bc => print("\{a}\{bc}"); };
 match2 "def" { d..ef="ef" => print("\{d}\{ef}"); };
 
 match2 [1,2,3] { [x.. y.. z] => print("\{x}\{y}\{z}"); };
+match2 [4,5,6] { [xyz] => print("\{xyz}"); };
+match2 [] :: List<U64> { [] => print("[]"); };
 
 #(
 #   macro::match([1,2], macro::match-case(

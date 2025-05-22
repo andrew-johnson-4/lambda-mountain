@@ -1185,6 +1185,26 @@ let lsts-parse-match2-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
    if lsts-parse-head(tokens)==c"_" {
       expr = mk-var(c"_").with-location(head(tokens).location);
       lsts-parse-expect(c"_", tokens); tokens = tail(tokens);
+   } else if lsts-parse-head(tokens)==c"[" {
+      let loc = head(tokens).location;
+      lsts-parse-expect(c"[", tokens); tokens = tail(tokens);
+      expr = mk-app(mk-var(c"macro::lhs-tail").with-location(loc), mk-nil());
+      let seq = [] :: List<AST>;
+      while non-zero(tokens) && lsts-parse-head(tokens)!=c"]" {
+         (let head, tokens) = lsts-parse-match2-lhs-one-bind(tokens);
+         if lsts-parse-head(tokens)==c"." && lsts-parse-head(tail(tokens))==c"." {
+            lsts-parse-expect(c".", tokens); tokens = tail(tokens);
+            lsts-parse-expect(c".", tokens); tokens = tail(tokens);
+            seq = cons(head, seq);
+         } else {
+            lsts-parse-expect(c"]", tokens);
+            expr = head;
+         }
+      };
+      for s in seq {
+         expr = mk-app( mk-var(c"macro::lhs-head"), mk-cons(s,expr) );
+      };
+      lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
    } else if lsts-parse-head(tokens).has-suffix(c"_ss") {
       expr = lsts-make-lit(head(tokens)); tokens = tail(tokens);
    } else if lsts-parse-head(tokens).has-suffix(c"_s") {

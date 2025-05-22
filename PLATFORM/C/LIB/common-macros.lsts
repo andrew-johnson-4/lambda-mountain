@@ -222,6 +222,12 @@ typed macro macro::match-arm(head-lhs tail-lhs: macro::lhs-head, term: lazy): la
    )
 );
 
+typed macro macro::lhs-tail(tail-lhs: lazy): lazy = (tail-lhs);
+
+typed macro macro::match-arm(tail-lhs: macro::lhs-tail, term: lazy): lazy = (
+   ( not(term.has-head) )
+);
+
 typed macro macro::match-arm(case rest: macro::lhs-struct, term: lazy): lazy = (
    (let uuid(v) = term; macro::lhs-struct-post(case, rest, term))
 );
