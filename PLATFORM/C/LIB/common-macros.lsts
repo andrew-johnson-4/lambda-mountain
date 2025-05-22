@@ -132,7 +132,7 @@ typed macro macro::bind(lhs: macro::set-name, rhs: lazy): lazy = (
 );
 
 typed macro macro::bind(lhs: macro::underscore, rhs: lazy): lazy = (
-   (_)
+   ()
 );
 
 typed macro macro::let-name(name: lazy): lazy = (name);

@@ -155,6 +155,7 @@ let lsts-has-assign(tokens: List<Token>): U64 = (
       [Token{key:c")"} .. rest] => (depth = depth - 1_i64; tokens = rest;);
       [Token{key:c";"} .. rest] => (if depth <= 0_i64 {tokens = [] :: List<Token>} else {tokens = rest;});
       [Token{key:c","} .. rest] => (if depth <= 0_i64 {tokens = [] :: List<Token>} else {tokens = rest;});
+      [Token{key:c"."}.. Token{key:c"."} .. rest] => (if depth == 0_i64 {tokens = [] :: List<Token>;} else {tokens = rest;});
       [Token{key:c"="}.. Token{key:c">"} .. rest] => (if depth == 0_i64 {tokens = [] :: List<Token>;} else {tokens = rest;});
       [Token{key:c"="} .. rest] => (if depth == 0_i64 {has-assign = 1; tokens = [] :: List<Token>;} else {tokens = rest;});
       [Token{key:c"if"} .. rest] => (if depth == 0_i64 {tokens = [] :: List<Token>;} else {tokens = rest;});
@@ -1215,9 +1216,9 @@ let lsts-parse-match2-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
 
 let lsts-parse-match2-lhs-one-bind(tokens: List<Token>): Tuple<AST,List<Token>> = (
    if lsts-has-assign(tokens) {
-      let mode = c"set::bind";
-      if lsts-parse-head(tokens)==c"set" { mode = c"set::bind"; tokens = tail(tokens) }
-      else if lsts-parse-head(tokens)==c"let" { mode = c"let::bind"; tokens = tail(tokens) };
+      let mode = c"macro::set-bind";
+      if lsts-parse-head(tokens)==c"set" { mode = c"macro::set-bind"; tokens = tail(tokens) }
+      else if lsts-parse-head(tokens)==c"let" { mode = c"macro::let-bind"; tokens = tail(tokens) };
       (let name, tokens) = lsts-parse-identifier(tokens);
       lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
       (let rest, tokens) = lsts-parse-match2-lhs-one(tokens);
@@ -1270,10 +1271,14 @@ let lsts-parse-match2-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
       suffixes = suffixes.push(presufs[endi]);
       endi = endi - 1;
    };
-   if endi != starti then fail("Invalid Prefix/Suffix Chain", original-tokens.formatted-location);
+   if endi != starti then {
+      print("presufs \{presufs}\n");
+      print("prefixes \{prefixes}\n");
+      print("suffixes \{suffixes}\n");
+      fail("Invalid Prefix/Suffix Chain", original-tokens.formatted-location);
+   };
    lhs = presufs[starti];
    for vector p in prefixes {
-      print("presufs \{presufs}\n");
       lhs = mk-app(mk-var(c"macro::lhs-prefix"), mk-cons(p, lhs));
    };
    while suffixes.length > 0 {
