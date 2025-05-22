@@ -1209,9 +1209,9 @@ let lsts-parse-match2-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
       if lsts-parse-head(tokens)==c"{" {
          lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
          while non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
-            let mode = c"macro::let-bind";
-            if lsts-parse-head(tokens)==c"set" { mode = c"macro::set-bind"; tokens = tail(tokens) }
-            else if lsts-parse-head(tokens)==c"let" { mode = c"macro::let-bind"; tokens = tail(tokens) };
+            let mode = c"macro::let-name";
+            if lsts-parse-head(tokens)==c"set" { mode = c"macro::set-name"; tokens = tail(tokens) }
+            else if lsts-parse-head(tokens)==c"let" { mode = c"macro::let-name"; tokens = tail(tokens) };
             let raw = false;
             if lsts-parse-head(tokens)==c"raw" { raw = true; tokens = tail(tokens) };
             let bind-name = c"_";
@@ -1228,10 +1228,12 @@ let lsts-parse-match2-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
             } else {
                mk-var(c"_").with-location(loc)
             };
+            let bind = if bind-name==c"_" then mk-var(bind-name).with-location(loc)
+            else mk-app( mk-var(mode), mk-var(bind-name).with-location(loc) );
             let new-cond = if raw {
                mk-app( mk-var(c"macro::lhs-raw-struct-field"), mk-cons(
                   mk-cons(
-                     mk-app( mk-var(mode), mk-var(bind-name).with-location(loc) ),
+                     bind,
                      mk-var(field-name)
                   ),
                   val
@@ -1239,7 +1241,7 @@ let lsts-parse-match2-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
             } else {
                mk-app( mk-var(c"macro::lhs-struct-field"), mk-cons(
                   mk-cons(
-                     mk-app( mk-var(mode), mk-var(bind-name).with-location(loc) ),
+                     bind,
                      mk-var(field-name)
                   ),
                   val

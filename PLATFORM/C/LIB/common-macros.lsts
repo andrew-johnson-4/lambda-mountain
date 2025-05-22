@@ -244,10 +244,9 @@ typed macro macro::match-arm(case rest: macro::lhs-struct, term: lazy): lazy = (
 );
 
 typed macro macro::lhs-struct-field(bind: lazy, field: lazy, val: lazy): lazy = (bind; field; val);
+typed macro macro::lhs-raw-struct-field(bind: lazy, field: lazy, val: lazy): lazy = (bind; field; val);
 
 typed macro macro::lhs-struct(case: lazy, rest: lazy): lazy = (case; rest);
-typed macro macro::lhs-struct-raw-field(bind: lazy, field: lazy): lazy = (bind; field);
-typed macro macro::lhs-struct-raw-field-with-val(bind: lazy, field: lazy, val: lazy): lazy = (bind; field; val);
 
 typed macro macro::lhs-struct-post(tag-name tag-ordinal tag-type: macro::tag, rest: lazy, term: lazy): lazy = (
    $"if"($".0"(term) == tag-ordinal)
