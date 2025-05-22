@@ -1216,7 +1216,7 @@ let lsts-parse-match2-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
 
 let lsts-parse-match2-lhs-one-bind(tokens: List<Token>): Tuple<AST,List<Token>> = (
    if lsts-has-assign(tokens) {
-      let mode = c"macro::set-bind";
+      let mode = c"macro::let-bind";
       if lsts-parse-head(tokens)==c"set" { mode = c"macro::set-bind"; tokens = tail(tokens) }
       else if lsts-parse-head(tokens)==c"let" { mode = c"macro::let-bind"; tokens = tail(tokens) };
       (let name, tokens) = lsts-parse-identifier(tokens);
@@ -1272,9 +1272,6 @@ let lsts-parse-match2-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
       endi = endi - 1;
    };
    if endi != starti then {
-      print("presufs \{presufs}\n");
-      print("prefixes \{prefixes}\n");
-      print("suffixes \{suffixes}\n");
       fail("Invalid Prefix/Suffix Chain", original-tokens.formatted-location);
    };
    lhs = presufs[starti];
