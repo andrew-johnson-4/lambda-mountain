@@ -84,10 +84,10 @@ let .split(s: String, sep: String): List<String> = (
    r.reverse;
 );
 
-#let .get-prefix(s: String, pre: String): String = (
-#   s[:pre.length]
-#);
+let .get-prefix(s: String, pre: String): String = (
+   s[:pre.length]
+);
 
-#let .get-suffix(s: String, pre: String): String = (
-#   s[s.length - pre.length:]
-#);
+let .get-suffix(s: String, pre: String): String = (
+   s[s.length - pre.length:]
+);
