@@ -208,17 +208,32 @@ typed macro macro::match-arm(bind suffix rest: macro::lhs-bound-suffix, term: la
    )
 );
 
-typed macro macro::lhs-head(head-lhs: lazy, tail-lhs: lazy): lazy = (head-lhs; tail-lhs);
+typed macro macro::lhs-head(head-lhs: lazy, tail-lhs: lazy): lazy = (head-lhs; tail-lhs; _);
+typed macro macro::lhs-head(lhs bind: macro::let-bind, tail-lhs: lazy): lazy = (head-lhs; tail-lhs; bind);
+typed macro macro::lhs-head(lhs bind: macro::set-bind, tail-lhs: lazy): lazy = (head-lhs; tail-lhs; bind);
 
-typed macro macro::match-arm(head-lhs tail-lhs: macro::lhs-head, term: lazy): lazy = (
+typed macro macro::match-arm(head-lhs tail-lhs bind: macro::lhs-head, term: lazy): lazy = (
    (let uuid(v) = term;
       $"if"(uuid(v).has-head)
            (
-              $"if"(macro::match-arm( head-lhs, head(uuid(v)) ))
+              macro::let(uuid(h), head(uuid(v)));
+              macro::bind( bind, uuid(h) );
+              $"if"(macro::match-arm( head-lhs, uuid(h) ))
                    (macro::match-arm( tail-lhs, tail(uuid(v)) ))
                    (false)
            )
            (false)
+   )
+);
+
+typed macro macro::lhs-tail(tail-lhs: lazy): lazy = (tail-lhs; _);
+typed macro macro::lhs-tail(tail-lhs bind: macro::let-bind): lazy = (tail-lhs; bind);
+typed macro macro::lhs-tail(tail-lhs bind: macro::set-bind): lazy = (tail-lhs; bind);
+
+typed macro macro::match-arm(tail-lhs bind: macro::lhs-tail, term: lazy): lazy = (
+   (let uuid(v) = term;
+    macro::bind( bind, uuid(v) );
+    not(uuid(v).has-head)
    )
 );
 
