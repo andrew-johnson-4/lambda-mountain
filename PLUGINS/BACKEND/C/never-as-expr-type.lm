@@ -1,6 +1,6 @@
 
 never-as-expr-type := λ(: e Fragment)(: et Type). (: (
-   (let into-c-type (mangle-c-type et))
+   (let into-c-type (mangle-c-type( et ASTEOF )))
    (if (not(==( into-c-type (SAtom 'void_s) ))) (
       (set e (.set( e 'expression_s (
          (+(
