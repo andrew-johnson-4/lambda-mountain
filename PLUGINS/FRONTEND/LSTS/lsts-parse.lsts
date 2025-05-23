@@ -1202,7 +1202,7 @@ let lsts-parse-match2-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
          expr = mk-app( mk-var(c"macro::lhs-head"), mk-cons(s,expr) );
       };
       lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
-   } else if lsts-parse-head(tail(tokens))==c"uuid" {
+   } else if lsts-parse-head(tokens)==c"uuid" {
       let loc = head(tokens).location;
       lsts-parse-expect(c"uuid", tokens); tokens = tail(tokens);
       lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
