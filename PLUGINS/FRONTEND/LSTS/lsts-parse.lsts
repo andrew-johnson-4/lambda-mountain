@@ -1202,6 +1202,13 @@ let lsts-parse-match2-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
          expr = mk-app( mk-var(c"macro::lhs-head"), mk-cons(s,expr) );
       };
       lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
+   } else if lsts-parse-head(tail(tokens))==c"uuid" {
+      let loc = head(tokens).location;
+      lsts-parse-expect(c"uuid", tokens); tokens = tail(tokens);
+      lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
+      (let name, tokens) = lsts-parse-identifier(tokens);
+      lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+      expr = mk-app( mk-var(c"uuid").with-location(loc), mk-var(name).with-location(loc) );
    } else if lsts-is-enum-head(lsts-parse-head(tokens)) || (lsts-parse-head(tokens)==c"_" && lsts-parse-head(tail(tokens))==c"{") {
       let loc = head(tokens).location;
       let tag = lsts-parse-head(tokens); tokens = tail(tokens);
