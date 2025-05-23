@@ -1213,6 +1213,8 @@ let lsts-parse-match2-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
       (let name, tokens) = lsts-parse-identifier(tokens);
       lsts-parse-expect(c")", tokens); tokens = tail(tokens);
       expr = mk-app( mk-var(c"uuid").with-location(loc), mk-var(name).with-location(loc) );
+   } else if lsts-parse-head(tokens).is-lsts-constant {
+      expr = lsts-make-lit(head(tokens)); tokens = tail(tokens);
    } else if lsts-is-enum-head(lsts-parse-head(tokens)) || (lsts-parse-head(tokens)==c"_" && lsts-parse-head(tail(tokens))==c"{") {
       let loc = head(tokens).location;
       let tag = lsts-parse-head(tokens); tokens = tail(tokens);
@@ -1273,28 +1275,6 @@ let lsts-parse-match2-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
    } else if lsts-parse-head(tokens)==c"_" {
       expr = mk-var(c"_").with-location(head(tokens).location);
       lsts-parse-expect(c"_", tokens); tokens = tail(tokens);
-   } else if lsts-parse-head(tokens).has-suffix(c"_ss") {
-      expr = lsts-make-lit(head(tokens)); tokens = tail(tokens);
-   } else if lsts-parse-head(tokens).has-suffix(c"_s") {
-      expr = lsts-make-lit(head(tokens)); tokens = tail(tokens);
-   } else if lsts-parse-head(tokens).has-suffix(c"_u8") {
-      expr = lsts-make-lit(head(tokens)); tokens = tail(tokens);
-   } else if lsts-parse-head(tokens).has-suffix(c"_u16") {
-      expr = lsts-make-lit(head(tokens)); tokens = tail(tokens);
-   } else if lsts-parse-head(tokens).has-suffix(c"_u32") {
-      expr = lsts-make-lit(head(tokens)); tokens = tail(tokens);
-   } else if lsts-parse-head(tokens).has-suffix(c"_u64") {
-      expr = lsts-make-lit(head(tokens)); tokens = tail(tokens);
-   } else if lsts-parse-head(tokens).has-suffix(c"_i8") {
-      expr = lsts-make-lit(head(tokens)); tokens = tail(tokens);
-   } else if lsts-parse-head(tokens).has-suffix(c"_i16") {
-      expr = lsts-make-lit(head(tokens)); tokens = tail(tokens);
-   } else if lsts-parse-head(tokens).has-suffix(c"_i32") {
-      expr = lsts-make-lit(head(tokens)); tokens = tail(tokens);
-   } else if lsts-parse-head(tokens).has-suffix(c"_i64") {
-      expr = lsts-make-lit(head(tokens)); tokens = tail(tokens);
-   } else if lsts-parse-head(tokens).has-suffix(c"_rgx") {
-      expr = lsts-make-lit(head(tokens)); tokens = tail(tokens);
    } else if lsts-is-ident-head(lsts-parse-head(tokens)) {
       (let name, tokens) = lsts-parse-identifier(tokens);
       expr = mk-var(name).with-location(head(tokens).location);
@@ -1327,31 +1307,25 @@ let .is-assign-lit(t: AST): U64 = (
    }
 );
 
+let .is-lsts-constant(key: CString): U64 = (
+      key.has-suffix(c"_ss")
+   || key.has-suffix(c"_s")
+   || key.has-suffix(c"_rgx")
+   || key.has-suffix(c"_u8")
+   || key.has-suffix(c"_u16")
+   || key.has-suffix(c"_u32")
+   || key.has-suffix(c"_u64")
+   || key.has-suffix(c"_i8")
+   || key.has-suffix(c"_i16")
+   || key.has-suffix(c"_i32")
+   || key.has-suffix(c"_i64");
+);
+
 let .is-constant(t: AST): U64 = (
    match t {
       App{ left:Lit{key:c":"}, right:App{ left:Lit{}, right:AType{} } } => true;
-      Lit{key=key} => key.has-suffix(c"_ss")
-                   || key.has-suffix(c"_s")
-                   || key.has-suffix(c"_rgx")
-                   || key.has-suffix(c"_u8")
-                   || key.has-suffix(c"_u16")
-                   || key.has-suffix(c"_u32")
-                   || key.has-suffix(c"_u64")
-                   || key.has-suffix(c"_i8")
-                   || key.has-suffix(c"_i16")
-                   || key.has-suffix(c"_i32")
-                   || key.has-suffix(c"_i64");
-      Var{key=key} => key.has-suffix(c"_ss")
-                   || key.has-suffix(c"_s")
-                   || key.has-suffix(c"_rgx")
-                   || key.has-suffix(c"_u8")
-                   || key.has-suffix(c"_u16")
-                   || key.has-suffix(c"_u32")
-                   || key.has-suffix(c"_u64")
-                   || key.has-suffix(c"_i8")
-                   || key.has-suffix(c"_i16")
-                   || key.has-suffix(c"_i32")
-                   || key.has-suffix(c"_i64");
+      Lit{key=key} => key.is-lsts-constant;
+      Var{key=key} => key.is-lsts-constant;
       _ => false;
    }
 );
