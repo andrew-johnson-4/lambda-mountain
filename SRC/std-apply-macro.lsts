@@ -58,7 +58,6 @@ let std-apply-macro-location(tctx: Maybe<TContext>, mname: CString, margs: AST):
 
 let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST, used: IsUsed, strong: Bool): (TContext?, AST) = (
    let result = ASTEOF;
-   print("Apply \{mname} \{margs}\n");
    if mname==c"macro::concat" then (tctx, result) = std-apply-macro-concat(tctx, mname, margs)
    else if mname==c"macro::location" then (tctx, result) = std-apply-macro-location(tctx, mname, margs)
    else if mname==c"macro::variable" then (tctx, result) = std-apply-macro-variable(tctx, mname, margs)
