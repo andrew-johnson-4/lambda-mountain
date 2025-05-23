@@ -90,3 +90,7 @@ match2 (A{123}) {
    };
 );
 
+type ABCD = AB{ab:U64} | CD{cd:U64};
+
+match2 AB{1} { AB{ab=ab} => print(ab); };
+match2 CD{1} { CD{cd=cd} => print(cd); };
