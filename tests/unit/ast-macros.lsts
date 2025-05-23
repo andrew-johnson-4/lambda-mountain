@@ -97,3 +97,9 @@ match2 CD{1} { CD{cd=cd} => print(cd); };
 
 type ABC = ABC{ a:U64, b:U64, c:U64 };
 match2 ABC{1,2,3} { ABC{a:1, b=b, let c=c} => print("1\{b}\{c}"); };
+
+print(match2 ABC{1,2,3} {
+   ABC{a:1, b=b, let c=c} => ((1,"a"); match2 AB{1} {
+      AB{ab=ab} => ((2,3,"A"); (4, 5));
+   });
+});
