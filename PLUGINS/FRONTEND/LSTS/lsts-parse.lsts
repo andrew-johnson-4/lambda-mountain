@@ -1130,7 +1130,7 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
             )
          );         
       );
-      [Token{key:c"match2"}.. rest] => (
+      [Token{key:c"match"}.. rest] => (
          (base, tokens) = lsts-parse-match2(tokens);
       );
       [Token{key:c"match"}.. rest] => (
@@ -1202,6 +1202,10 @@ let lsts-parse-match2-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
          expr = mk-app( mk-var(c"macro::lhs-head"), mk-cons(s,expr) );
       };
       lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
+   } else if lsts-parse-head(tokens)==c"(" {
+      lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
+      (expr, tokens) = lsts-parse-match2-lhs-one-bind(tokens);
+      lsts-parse-expect(c")", tokens); tokens = tail(tokens);
    } else if lsts-parse-head(tokens)==c"uuid" {
       let loc = head(tokens).location;
       lsts-parse-expect(c"uuid", tokens); tokens = tail(tokens);
@@ -1289,6 +1293,8 @@ let lsts-parse-match2-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
       expr = lsts-make-lit(head(tokens)); tokens = tail(tokens);
    } else if lsts-parse-head(tokens).has-suffix(c"_i64") {
       expr = lsts-make-lit(head(tokens)); tokens = tail(tokens);
+   } else if lsts-parse-head(tokens).has-suffix(c"_rgx") {
+      expr = lsts-make-lit(head(tokens)); tokens = tail(tokens);
    } else if lsts-is-ident-head(lsts-parse-head(tokens)) {
       (let name, tokens) = lsts-parse-identifier(tokens);
       expr = mk-var(name).with-location(head(tokens).location);
@@ -1324,6 +1330,28 @@ let .is-assign-lit(t: AST): U64 = (
 let .is-constant(t: AST): U64 = (
    match t {
       App{ left:Lit{key:c":"}, right:App{ left:Lit{}, right:AType{} } } => true;
+      Lit{key=key} => key.has-suffix(c"_ss")
+                   || key.has-suffix(c"_s")
+                   || key.has-suffix(c"_rgx")
+                   || key.has-suffix(c"_u8")
+                   || key.has-suffix(c"_u16")
+                   || key.has-suffix(c"_u32")
+                   || key.has-suffix(c"_u64")
+                   || key.has-suffix(c"_i8")
+                   || key.has-suffix(c"_i16")
+                   || key.has-suffix(c"_i32")
+                   || key.has-suffix(c"_i64");
+      Var{key=key} => key.has-suffix(c"_ss")
+                   || key.has-suffix(c"_s")
+                   || key.has-suffix(c"_rgx")
+                   || key.has-suffix(c"_u8")
+                   || key.has-suffix(c"_u16")
+                   || key.has-suffix(c"_u32")
+                   || key.has-suffix(c"_u64")
+                   || key.has-suffix(c"_i8")
+                   || key.has-suffix(c"_i16")
+                   || key.has-suffix(c"_i32")
+                   || key.has-suffix(c"_i64");
       _ => false;
    }
 );
@@ -1356,6 +1384,7 @@ let lsts-parse-match2-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
       endi = endi - 1;
    };
    if endi != starti then {
+      print("Presufs: \{presufs}\n");
       fail("Invalid Prefix/Suffix Chain", original-tokens.formatted-location);
    };
    lhs = presufs[starti];
@@ -1376,7 +1405,7 @@ let lsts-parse-match2-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
 
 let lsts-parse-match2(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let loc = head(tokens).location;
-   lsts-parse-expect(c"match2", tokens); tokens = tail(tokens);
+   lsts-parse-expect(c"match", tokens); tokens = tail(tokens);
    let raw = lsts-parse-head(tokens)==c"raw"; if raw { tokens = tail(tokens); };
    (let expr, tokens) = lsts-parse-small-expression(tokens);
    if raw then expr = mk-app(mk-var(c"macro::bind-raw"), expr);
