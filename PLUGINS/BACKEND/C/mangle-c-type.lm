@@ -6,6 +6,7 @@ mangle-c-type := λ(: tt Type)(: blame AST). (: (
    (if (not(non-zero r)) (
       (print 'Failed\sTo\sMangle\s_s)(print tt)(print '\n_s)
       (print 'At\s_s)(print (to-smart-string(.location blame)))(print '\n_s)
+      (print blame)(print '\n_s)
       (exit 1_u64)
    ) ())
    r
