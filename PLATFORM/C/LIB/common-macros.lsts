@@ -72,8 +72,10 @@ typed macro macro::assert(cond: lazy): lazy = (
 );
 
 typed macro macro::match(t: lazy, ps: lazy): lazy = (
-   let uuid(term) = open(t);
-   macro::match-pats( uuid(term), ps );
+   scope(
+      let uuid(term) = open(t);
+      macro::match-pats( uuid(term), ps );
+   )
 );
 
 typed macro macro::bind-raw(t: lazy): lazy = (t);
