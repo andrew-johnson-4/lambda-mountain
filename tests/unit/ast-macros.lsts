@@ -32,73 +32,73 @@ type A = A{a:U64};
 
 macro::assert(true);
 
-match 123 { _ => print("_"); };
-match 123 { 123 => print(123); };
-match 456 { x => print(x); };
-match 789 { x where x < 100 => print("no"); x where x > 456 => print(x); };
-match "abc" { "a"..bc => print("a\{bc}"); };
-match "def" { d.."ef" => print("\{d}ef"); };
-match "abc" { a="a"..bc => print("\{a}\{bc}"); };
-match "def" { d..ef="ef" => print("\{d}\{ef}"); };
+match2 123 { _ => print("_"); };
+match2 123 { 123 => print(123); };
+match2 456 { x => print(x); };
+match2 789 { x where x < 100 => print("no"); x where x > 456 => print(x); };
+match2 "abc" { "a"..bc => print("a\{bc}"); };
+match2 "def" { d.."ef" => print("\{d}ef"); };
+match2 "abc" { a="a"..bc => print("\{a}\{bc}"); };
+match2 "def" { d..ef="ef" => print("\{d}\{ef}"); };
 
-match [1,2,3] { [x=1.. y.. z] => print("\{x}\{y}\{z}"); };
-match [4,5,6] { [xyz] => print("\{xyz}"); };
-match [] :: List<U64> { [] => print("[]"); };
+match2 [1,2,3] { [x=1.. y.. z] => print("\{x}\{y}\{z}"); };
+match2 [4,5,6] { [xyz] => print("\{xyz}"); };
+match2 [] :: List<U64> { [] => print("[]"); };
 
-match (A{123}) {
+match2 (A{123}) {
    _{} => print("_");
 };
 
-match (A{123}) {
+match2 (A{123}) {
    A => print("A");
 };
 
-match (A{123}) {
+match2 (A{123}) {
    A{a:123} => print(".");
 };
-match (A{123}) {
+match2 (A{123}) {
    A{a=a} => print(a);
 };
-match (A{123}) {
+match2 (A{123}) {
    A{a=a:123} => print(a);
 };
-match (A{123}) {
+match2 (A{123}) {
    A{let a=a} => print(a);
 };
-match (A{123}) {
+match2 (A{123}) {
    A{let raw a=a} => print(a);
 };
-match (A{123}) {
+match2 (A{123}) {
    A{let a=a:123} => print(a);
 };
-match (A{123}) {
+match2 (A{123}) {
    A{let raw a=a:123} => print(a);
 };
 (
    let x = 555;
-   match (A{123}) {
+   match2 (A{123}) {
       A{set x=a} => print(x);
    };
-   match (A{123}) {
+   match2 (A{123}) {
       A{set x=a:123} => print(x);
    };
-   match (A{123}) {
+   match2 (A{123}) {
       A{set raw x=a} => print(x);
    };
-   match (A{123}) {
+   match2 (A{123}) {
       A{set raw x=a:123} => print(x);
    };
 );
 
 type ABCD = AB{ab:U64} | CD{cd:U64};
 
-match AB{1} { AB{ab=ab} => print(ab); };
-match CD{1} { CD{cd=cd} => print(cd); };
+match2 AB{1} { AB{ab=ab} => print(ab); };
+match2 CD{1} { CD{cd=cd} => print(cd); };
 
 type ABC = ABC{ a:U64, b:U64, c:U64 };
-match ABC{1,2,3} { ABC{a:1, b=b, let c=c} => print("1\{b}\{c}"); };
+match2 ABC{1,2,3} { ABC{a:1, b=b, let c=c} => print("1\{b}\{c}"); };
 
-print(match ABC{1,2,3} {
+print(match2 ABC{1,2,3} {
    ABC{} => (1; 2);
 });
 
