@@ -18,7 +18,7 @@ mangle-c-type-internal := λ(: tt Type)(: blame AST). (: (
       ()
       ( (TAnd( conjugate )) (
          (for-each-v (c in conjugate) (
-            (if (non-zero r) () (set r (mangle-c-type( c blame ))))
+            (if (non-zero r) () (set r (mangle-c-type-internal( c blame ))))
          ))
       ))
       ( TAny (set r (SAtom 'void_s)) )
