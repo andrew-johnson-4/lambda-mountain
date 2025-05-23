@@ -24,7 +24,7 @@ let find-global-callable(fname: CString, arg-types: Type, blame: AST): AST = (
       };
       exit(1);
    };
-   if not(non-zero(result)) then fail("Unable to find appropriate global callable: \{fname} \{arg-types}\nAt: \{blame.location}\n");
+   if not(non-zero(result)) then fail("Unable to find appropriate global callable: \{fname} \{arg-types}\nAt: \{blame.location}\n\{blame}\n");
    result
 );
 
@@ -57,6 +57,6 @@ let apply-global-callable(fname: CString, arg-types: Type, blame: AST, can-fail:
       };
       exit(1);
    };
-   if can-fail && not(non-zero(result-normal)) then fail("Unable to find appropriate global callable: \{fname} \{arg-types}\nAt \{blame.location}\n");
+   if can-fail && not(non-zero(result-normal)) then fail("Unable to find appropriate global callable: \{fname} \{arg-types}\nAt \{blame.location}\n\{blame}\n");
    if non-zero(result-normal) then apply-and-specialize(fname, result-normal, result-denormal, arg-types, blame) else TAny
 );
