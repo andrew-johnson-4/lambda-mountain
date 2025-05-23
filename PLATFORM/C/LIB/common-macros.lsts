@@ -254,6 +254,10 @@ typed macro macro::lhs-struct-post(tag-name tag-ordinal tag-type: macro::tag, re
         (false)
 );
 
+typed macro macro::lhs-struct-post(c: macro::constant, rest: macro::underscore, term: lazy): lazy = (
+   (c == term)
+);
+
 typed macro macro::lhs-struct-post(bind field val: macro::lhs-struct-field, rest: rest, term: lazy): lazy = (
    (
       let uuid(b) = open(macro::concat($".", field)(term));
