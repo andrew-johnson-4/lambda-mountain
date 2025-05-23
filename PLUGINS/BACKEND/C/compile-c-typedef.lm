@@ -5,9 +5,9 @@ compile-c-typedef-concrete-ordinal := λ(: base-type Type). (: (
    (let base-uuid (uuid()))
    (set index-c-type-ordinal (.bind( index-c-type-ordinal base-type base-uuid )))
    (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom 'typedef\sstruct\s_s)) )))
-   (set assemble-header-section (SCons( (close assemble-header-section) (close(mangle-c-type base-type)) )))
+   (set assemble-header-section (SCons( (close assemble-header-section) (close(mangle-c-type( base-type ASTEOF ))) )))
    (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\s_s)) )))
-   (set assemble-header-section (SCons( (close assemble-header-section) (close(mangle-c-type base-type)) )))
+   (set assemble-header-section (SCons( (close assemble-header-section) (close(mangle-c-type( base-type ASTEOF ))) )))
    (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\:\n_s)) )))
 ) Nil);
 
@@ -128,7 +128,7 @@ compile-c-typedef-concrete := λ(: tctx Maybe<TContext>)(: base-type Type)(: bod
       ) (
          (set is-cstruct-hard-compiled-index (.bind( is-cstruct-hard-compiled-index base-type 1_u64 )))
          (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom 'struct\s_s)) )))
-         (set assemble-header-section (SCons( (close assemble-header-section) (close(mangle-c-type base-type)) )))
+         (set assemble-header-section (SCons( (close assemble-header-section) (close(mangle-c-type( base-type body ))) )))
          (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '{\n_s)) )))
          (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\tlong\sfield_0\:\n_s)) )))
          (if has-case (
@@ -228,7 +228,7 @@ compile-c-casedef-fields := λ(: tctx Maybe<TContext>)(: fields Type)(: case-num
       ( (TGround( 'Nil_s _ )) () )
       ( (TGround( 'Cons_s (LCons( ft (LCons( rst _ )) )) )) (
          (compile-c-mark-field-as-seen(substitute(tctx ft)))
-         (let def-type (mangle-c-declaration ft))
+         (let def-type (mangle-c-declaration( ft ASTEOF )))
          (set r (+( (+( (.first def-type) (SAtom '\sfield__s) )) (+(
             (+(
                (SAtom(to-string(+( (*( case-number 1000_u64 )) field-index ))))
@@ -240,7 +240,7 @@ compile-c-casedef-fields := λ(: tctx Maybe<TContext>)(: fields Type)(: case-num
       ))
       ( ft (
          (compile-c-mark-field-as-seen(substitute(tctx ft)))
-         (let def-type (mangle-c-declaration ft))
+         (let def-type (mangle-c-declaration( ft ASTEOF )))
          (set r (+( (+( (.first def-type) (SAtom '\sfield__s) )) (+(
             (+(
                (SAtom(to-string(+( (*( case-number 1000_u64 )) field-index ))))

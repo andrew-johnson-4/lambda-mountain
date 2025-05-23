@@ -1130,7 +1130,7 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
             )
          );         
       );
-      [Token{key:c"match2"}.. rest] => (
+      [Token{key:c"match"}.. rest] => (
          (base, tokens) = lsts-parse-match2(tokens);
       );
       [Token{key:c"match"}.. rest] => (
@@ -1379,7 +1379,7 @@ let lsts-parse-match2-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
 
 let lsts-parse-match2(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let loc = head(tokens).location;
-   lsts-parse-expect(c"match2", tokens); tokens = tail(tokens);
+   lsts-parse-expect(c"match", tokens); tokens = tail(tokens);
    let raw = lsts-parse-head(tokens)==c"raw"; if raw { tokens = tail(tokens); };
    (let expr, tokens) = lsts-parse-small-expression(tokens);
    if raw then expr = mk-app(mk-var(c"macro::bind-raw"), expr);
