@@ -9,3 +9,7 @@ type2 A = { a: A, b: B };
 type2 A = { a: A, b: B } A1 { c: C, d: D} | A2 { e: E, f: f };
 type2 phi A = B | C;
 type2 A :C = B | C;
+type2 A<x,y>;
+type2 A<x: Number,y>;
+type2 A size 8_B;
+type2 A size 8_b;
