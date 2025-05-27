@@ -1,0 +1,7 @@
+
+import LIB/default.lsts;
+
+type2 alias A = B;
+type2 opaque alias A = B;
+type2 A => B;
+type2 A implements B;

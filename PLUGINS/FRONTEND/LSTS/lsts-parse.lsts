@@ -201,6 +201,7 @@ let lsts-parse(tokens: List<Token>): Nil = (
       match tokens {
          [ Token{key:c"let"}.. _] => tokens = lsts-parse-let(tokens);
          [ Token{key:c"type"}.. _] => tokens = lsts-parse-typedef(tokens);
+         [ Token{key:c"type2"}.. _] => tokens = lsts-parse-typedef2(tokens);
          [ Token{key:c"typed"}.. Token{key:c"macro"}.. _] => (
             (let bind, tokens) = lsts-parse-typed-macro(tokens);
             ast-parsed-program = ast-parsed-program + bind;
@@ -743,6 +744,13 @@ let lsts-parse-interface(tokens: List<Token>): List<Token> = (
    # ignored for now
 
    tokens
+);
+
+let lsts-parse-typedef(tokens: List<Token>): List<Token> = (
+   lsts-parse-expect(c"type2", tokens); let loc = head(tokens).location; tokens = tail(tokens);
+   (let lhs-type, tokens) = lsts-parse-type(tokens);
+   lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+   lsts-parse-expect(c";", tokens); tokens = tail(tokens);
 );
 
 let lsts-parse-typedef(tokens: List<Token>): List<Token> = (
