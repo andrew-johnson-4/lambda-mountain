@@ -760,30 +760,40 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
       mode = c"alias";
    };
    (let lhs-type, tokens) = lsts-parse-type(tokens);
-   let td = match tokens {
-      [Token{key:c"="}.. Token{key:c">"}.. rest] => (
-         tokens = rest;
-         (let rt, tokens) = lsts-parse-type(tokens);
-         td2-implies(lhs-type, rt);
-      );
-      [Token{key:c"implements"}.. rest] => (
-         tokens = rest;
-         (let rt, tokens) = lsts-parse-type(tokens);
-         td2-implements(lhs-type, rt);
-      );
-      [Token{key:c"="}.. rest] => (
-         tokens = rest;
-         if mode==c"opaque" {
-            (let rt, tokens) = lsts-parse-type(tokens);
-            td2-opaque-alias(lhs-type, rt);
-         } else if mode==c"alias" {
-            (let rt, tokens) = lsts-parse-type(tokens);
-            td2-alias(lhs-type, rt);
-         } else {
-            fail("TODO: type2 struct definition"); ASTEOF
-         }
-      );
+   let impls = mk-vector(type(Type));
+   if lsts-parse-head(tokens)==c"implements" {
+      lsts-parse-expect(c"implements", tokens); tokens = tail(tokens);
+      (let i, tokens) = lsts-parse-type(tokens);
+      impls = impls.push(i);
+      while lsts-parse-head(tokens)==c"," {
+         lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+         (i, tokens) = lsts-parse-type(tokens);
+         impls = impls.push(i);
+      }
    };
+   let infers = mk-vector(type(Type));
+   if lsts-parse-head(tokens)==c"=" && lsts-parse-head(tail(tokens))==c">" {
+      lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+      lsts-parse-expect(c">", tokens); tokens = tail(tokens);
+      (let i, tokens) = lsts-parse-type(tokens);
+      infers = infers.push(i);
+      while lsts-parse-head(tokens)==c"," {
+         lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+         (i, tokens) = lsts-parse-type(tokens);
+         infers = infers.push(i);
+      }
+   };
+   if lsts-parse-head(tokens)==c"=" {
+      lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+      if mode==c"opaque" {
+         (let rt, tokens) = lsts-parse-type(tokens);
+      } else if mode==c"alias" {
+         (let rt, tokens) = lsts-parse-type(tokens);
+      } else {
+         fail("TODO: parse type2 struct body");   
+      }
+   };
+   let td = ASTEOF;
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
    (td, tokens);
 );
