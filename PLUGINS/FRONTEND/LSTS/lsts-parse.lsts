@@ -201,7 +201,9 @@ let lsts-parse(tokens: List<Token>): Nil = (
       match tokens {
          [ Token{key:c"let"}.. _] => tokens = lsts-parse-let(tokens);
          [ Token{key:c"type"}.. _] => tokens = lsts-parse-typedef(tokens);
-         [ Token{key:c"type2"}.. _] => tokens = lsts-parse-typedef2(tokens);
+         [ Token{key:c"type2"}.. _] => (
+            (let td, tokens) = lsts-parse-typedef2(tokens);
+         );
          [ Token{key:c"typed"}.. Token{key:c"macro"}.. _] => (
             (let bind, tokens) = lsts-parse-typed-macro(tokens);
             ast-parsed-program = ast-parsed-program + bind;
@@ -746,11 +748,44 @@ let lsts-parse-interface(tokens: List<Token>): List<Token> = (
    tokens
 );
 
-let lsts-parse-typedef(tokens: List<Token>): List<Token> = (
+let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
    lsts-parse-expect(c"type2", tokens); let loc = head(tokens).location; tokens = tail(tokens);
+   let mode = c"=";
+   if lsts-parse-head(tokens)==c"opaque" {
+      lsts-parse-expect(c"opaque", tokens); tokens = tail(tokens);
+      lsts-parse-expect(c"alias", tokens); tokens = tail(tokens);
+      mode = c"opaque";
+   } else if lsts-parse-head(tokens)==c"alias" {
+      lsts-parse-expect(c"alias", tokens); tokens = tail(tokens);
+      mode = c"alias";
+   };
    (let lhs-type, tokens) = lsts-parse-type(tokens);
-   lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+   let td = match tokens {
+      [Token{key:c"="}.. Token{key:c">"}.. rest] => (
+         tokens = rest;
+         (let rt, tokens) = lsts-parse-type(tokens);
+         td2-implies(lhs-type, rt);
+      );
+      [Token{key:c"implements"}.. rest] => (
+         tokens = rest;
+         (let rt, tokens) = lsts-parse-type(tokens);
+         td2-implements(lhs-type, rt);
+      );
+      [Token{key:c"="}.. rest] => (
+         tokens = rest;
+         if mode==c"opaque" {
+            (let rt, tokens) = lsts-parse-type(tokens);
+            td2-opaque-alias(lhs-type, rt);
+         } else if mode==c"alias" {
+            (let rt, tokens) = lsts-parse-type(tokens);
+            td2-alias(lhs-type, rt);
+         } else {
+            fail("TODO: type2 struct definition"); ASTEOF
+         }
+      );
+   };
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
+   (td, tokens);
 );
 
 let lsts-parse-typedef(tokens: List<Token>): List<Token> = (
