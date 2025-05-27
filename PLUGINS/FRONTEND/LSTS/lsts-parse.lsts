@@ -201,6 +201,9 @@ let lsts-parse(tokens: List<Token>): Nil = (
       match tokens {
          [ Token{key:c"let"}.. _] => tokens = lsts-parse-let(tokens);
          [ Token{key:c"type"}.. _] => tokens = lsts-parse-typedef(tokens);
+         [ Token{key:c"type2"}.. _] => (
+            (let td, tokens) = lsts-parse-typedef2(tokens);
+         );
          [ Token{key:c"typed"}.. Token{key:c"macro"}.. _] => (
             (let bind, tokens) = lsts-parse-typed-macro(tokens);
             ast-parsed-program = ast-parsed-program + bind;
@@ -338,7 +341,7 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          lsts-parse-expect(c"[Type Tag]", tokens);
       };
       let base = lsts-substitute-type-aliases(lsts-parse-head(tokens)); tokens = tail(tokens);
-      while non-zero(tokens) && lsts-parse-head(tokens)==c":" {
+      while non-zero(tokens) && lsts-parse-head(tokens)==c":" && lsts-parse-head(tail(tokens))==c":" {
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          lsts-parse-expect(c"Type", non-zero(tokens), tokens);
@@ -743,6 +746,107 @@ let lsts-parse-interface(tokens: List<Token>): List<Token> = (
    # ignored for now
 
    tokens
+);
+
+let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
+   lsts-parse-expect(c"type2", tokens); let loc = head(tokens).location; tokens = tail(tokens);
+   let mode = c"=";
+   let misc-type = TAny;
+   if lsts-parse-head(tokens)==c"opaque" {
+      lsts-parse-expect(c"opaque", tokens); tokens = tail(tokens);
+      lsts-parse-expect(c"alias", tokens); tokens = tail(tokens);
+      mode = c"opaque";
+      misc-type = misc-type && t1(c"OpaqueAlias");
+   } else if lsts-parse-head(tokens)==c"alias" {
+      lsts-parse-expect(c"alias", tokens); tokens = tail(tokens);
+      mode = c"alias";
+      misc-type = misc-type && t1(c"Alias");
+   } else if lsts-parse-head(tokens)==c"phi" {
+      lsts-parse-expect(c"phi", tokens); tokens = tail(tokens);
+      misc-type = misc-type && t1(c"Phi");
+   };
+   (let lhs-type, tokens) = lsts-parse-type(tokens);
+   if lsts-parse-head(tokens)==c":" {
+      lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+      (let mt, tokens) = lsts-parse-type(tokens);
+      misc-type = misc-type && mt;
+   };
+   let impls = mk-vector(type(Type));
+   if lsts-parse-head(tokens)==c"implements" {
+      lsts-parse-expect(c"implements", tokens); tokens = tail(tokens);
+      (let i, tokens) = lsts-parse-type(tokens);
+      impls = impls.push(i);
+      while lsts-parse-head(tokens)==c"," {
+         lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+         (i, tokens) = lsts-parse-type(tokens);
+         impls = impls.push(i);
+      }
+   };
+   let infers = mk-vector(type(Type));
+   if lsts-parse-head(tokens)==c"=" && lsts-parse-head(tail(tokens))==c">" {
+      lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+      lsts-parse-expect(c">", tokens); tokens = tail(tokens);
+      (let i, tokens) = lsts-parse-type(tokens);
+      infers = infers.push(i);
+      while lsts-parse-head(tokens)==c"," {
+         lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+         (i, tokens) = lsts-parse-type(tokens);
+         infers = infers.push(i);
+      }
+   };
+   let cases = mk-vector(type( (CString,Vector<(CString,Type)>) ));
+   let rhs-type = TAny;
+   if lsts-parse-head(tokens)==c"=" {
+      lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+      if mode==c"opaque" {
+         (rhs-type, tokens) = lsts-parse-type(tokens);
+      } else if mode==c"alias" {
+         (rhs-type, tokens) = lsts-parse-type(tokens);
+      } else {
+         if lsts-parse-head(tokens)==c"{" {
+            (let row, tokens) = lsts-parse-typedef2-case-body(tokens);
+            cases = cases.push((c"", row));
+         };
+         if lsts-parse-head(tokens)!=c";" {
+            lsts-parse-expect(c"[Tag]", lsts-is-enum-head(lsts-parse-head(tokens)), tokens);
+            let row-tag = head(tokens).key; tokens = tail(tokens);
+            (let row, tokens) = lsts-parse-typedef2-case-body(tokens);
+            cases = cases.push((row-tag, row));
+            while lsts-parse-head(tokens)==c"|" {
+               lsts-parse-expect(c"|", tokens); tokens = tail(tokens);
+               lsts-parse-expect(c"[Tag]", lsts-is-enum-head(lsts-parse-head(tokens)), tokens);
+               row-tag = head(tokens).key; tokens = tail(tokens);
+               (row, tokens) = lsts-parse-typedef2-case-body(tokens);
+               cases = cases.push((row-tag, row));
+            };
+         };
+      }
+   };
+   let td = ASTEOF;
+   lsts-parse-expect(c";", tokens); tokens = tail(tokens);
+   (td, tokens);
+);
+
+let lsts-parse-typedef2-case-body(tokens: List<Token>): (Vector<(CString, Type)>, List<Token>) = (
+   let fields = mk-vector(type((CString, Type)));
+   if lsts-parse-head(tokens)==c"{" {
+      lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
+      if lsts-parse-head(tokens)!=c"}" {
+         (let field-name, tokens) = lsts-parse-identifier(tokens);
+         lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+         (let field-type, tokens) = lsts-parse-type(tokens);
+         fields = fields.push( (field-name, field-type) );
+         while lsts-parse-head(tokens)==c"," {
+            lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+            (field-name, tokens) = lsts-parse-identifier(tokens);
+            lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+            (field-type, tokens) = lsts-parse-type(tokens);
+            fields = fields.push( (field-name, field-type) );
+         };
+      };
+      lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
+   };
+   (fields, tokens)
 );
 
 let lsts-parse-typedef(tokens: List<Token>): List<Token> = (

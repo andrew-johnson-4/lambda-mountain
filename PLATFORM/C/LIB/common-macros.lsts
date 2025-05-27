@@ -81,8 +81,10 @@ typed macro macro::match(t: lazy, ps: lazy): lazy = (
 typed macro macro::bind-raw(t: lazy): lazy = (t);
 
 typed macro macro::match(t: macro::bind-raw, ps: lazy): lazy = (
-   let uuid(term) = t;
-   macro::match-pats( uuid(term), ps );
+   scope(
+      let uuid(term) = t;
+      macro::match-pats( uuid(term), ps );
+   )
 );
 
 typed macro macro::match-case(lhs: lazy, rhs: lazy, remainder: lazy): lazy = (
