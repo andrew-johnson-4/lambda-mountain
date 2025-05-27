@@ -7,3 +7,5 @@ type2 A => B;
 type2 A implements B;
 type2 A = { a: A, b: B };
 type2 A = { a: A, b: B } A1 { c: C, d: D} | A2 { e: E, f: f };
+type2 phi A = B | C;
+type2 A :C = B | C;
