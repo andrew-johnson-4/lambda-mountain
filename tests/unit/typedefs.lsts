@@ -3,7 +3,7 @@ import LIB/default.lsts;
 
 type2 alias A = B;
 type2 opaque alias A = B;
-type2 A => B;
+type2 A implies B;
 type2 A implements B;
 type2 A = { a: A, b: B };
 type2 A = { a: A, b: B } A1 { c: C, d: D} | A2 { e: E, f: f };
