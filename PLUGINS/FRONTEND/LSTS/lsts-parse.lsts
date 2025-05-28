@@ -765,7 +765,32 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
       lsts-parse-expect(c"phi", tokens); tokens = tail(tokens);
       misc-type = misc-type && t1(c"Phi");
    };
-   (let lhs-type, tokens) = lsts-parse-type(tokens);
+   lsts-parse-expect(c"[Typename]", lsts-is-enum-head(lsts-parse-head(tokens)), tokens);
+   let typename = lsts-parse-head(tokens); tokens = tail(tokens);
+   let typeconstraints = mk-vector(type((CString,Type)));
+   let lhs-type = if lsts-parse-head(tokens)==c"<" {
+      let pars = [] :: List<Type>;
+      lsts-parse-expect(c"<", tokens); tokens = tail(tokens);
+      (let v, tokens) = lsts-parse-identifier(tokens);
+      if lsts-parse-head(tokens)==c":" {
+         lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+         (let vt, tokens) = lsts-parse-type(tokens);
+         typeconstraints = typeconstraints.push((v,vt));
+      };
+      pars = cons(tv(v), pars);
+      while lsts-parse-head(tokens)==c"," {
+         lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+         (v, tokens) = lsts-parse-identifier(tokens);
+         if lsts-parse-head(tokens)==c":" {
+            lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+            (let vt, tokens) = lsts-parse-type(tokens);
+            typeconstraints = typeconstraints.push((v,vt));
+         };
+         pars = cons(tv(v), pars);
+      };
+      lsts-parse-expect(c">", tokens); tokens = tail(tokens);
+      ts(typename, pars);
+   } else t1(typename);
    let infers = mk-vector(type(Type));
    let impls = mk-vector(type(Type));
    let size = TAny;
