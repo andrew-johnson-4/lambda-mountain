@@ -859,7 +859,7 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
          };
       }
    };
-   let td = mk-typedef2();
+   let td = mk-typedef2(lhs-type).with-implies(infers).with-implements(impls);
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
    (td, tokens);
 );

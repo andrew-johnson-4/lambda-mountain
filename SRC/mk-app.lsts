@@ -23,8 +23,21 @@ let mk-typedef(l: AST, r: AST): AST = (
    Typedef{ close(l), close(r) }
 );
 
-let mk-typedef2(): AST = (
-   Typedef2{}
+let mk-typedef2(lhs-type: Type): AST = (
+   Typedef2{ lhs-type, mk-vector(type(Type)), mk-vector(type(Type)) }
+);
+
+let .with-implies(t: AST, implies: Vector<Type>): AST = (
+   match t {
+      Typedef2{ lhs-type=lhs-type, implements=implements } => Typedef2{ lhs-type, implies, implements };
+      _ => t;
+   }
+);
+let .with-implements(t: AST, implements: Vector<Type>): AST = (
+   match t {
+      Typedef2{ lhs-type=lhs-type, implies=implies } => Typedef2{ lhs-type, implies, implements };
+      _ => t;
+   }
 );
 
 let mk-abs(l: AST, r: AST, t: Type): AST = (
