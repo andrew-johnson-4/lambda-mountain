@@ -23,6 +23,10 @@ let mk-typedef(l: AST, r: AST): AST = (
    Typedef{ close(l), close(r) }
 );
 
+let mk-typedef2(): AST = (
+   Typedef2{}
+);
+
 let mk-abs(l: AST, r: AST, t: Type): AST = (
    Abs{ close(l), close(r), t }
 );
