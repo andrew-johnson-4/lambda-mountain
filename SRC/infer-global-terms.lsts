@@ -39,6 +39,7 @@ let infer-global-context(term: AST): Nil = (
       Typedef{ lhs:AType{bt=tt}, case-constructors=rhs } => (
          infer-type-definition(bt, case-constructors, 0);
       );
+      Typedef2{} => infer-type2-definition(term);
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
          if misc-tt.is-t(c"TypedMacro") then bind-new-macro(k.key, frhs)
          else {
