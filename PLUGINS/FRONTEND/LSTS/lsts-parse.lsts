@@ -766,33 +766,44 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
       misc-type = misc-type && t1(c"Phi");
    };
    (let lhs-type, tokens) = lsts-parse-type(tokens);
-   if lsts-parse-head(tokens)==c":" {
-      lsts-parse-expect(c":", tokens); tokens = tail(tokens);
-      (let mt, tokens) = lsts-parse-type(tokens);
-      misc-type = misc-type && mt;
-   };
-   let impls = mk-vector(type(Type));
-   if lsts-parse-head(tokens)==c"implements" {
-      lsts-parse-expect(c"implements", tokens); tokens = tail(tokens);
-      (let i, tokens) = lsts-parse-type(tokens);
-      impls = impls.push(i);
-      while lsts-parse-head(tokens)==c"," {
-         lsts-parse-expect(c",", tokens); tokens = tail(tokens);
-         (i, tokens) = lsts-parse-type(tokens);
-         impls = impls.push(i);
-      }
-   };
    let infers = mk-vector(type(Type));
-   if lsts-parse-head(tokens)==c"=" && lsts-parse-head(tail(tokens))==c">" {
-      lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-      lsts-parse-expect(c">", tokens); tokens = tail(tokens);
-      (let i, tokens) = lsts-parse-type(tokens);
-      infers = infers.push(i);
-      while lsts-parse-head(tokens)==c"," {
-         lsts-parse-expect(c",", tokens); tokens = tail(tokens);
-         (i, tokens) = lsts-parse-type(tokens);
+   let impls = mk-vector(type(Type));
+   let size = TAny;
+   while lsts-parse-head(tokens)==c":" || lsts-parse-head(tokens)==c"implies"
+      || lsts-parse-head(tokens)==c"implements" || lsts-parse-head(tokens)==c"size" {
+      if lsts-parse-head(tokens)==c":" {
+         lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+         (let mt, tokens) = lsts-parse-type(tokens);
+         misc-type = misc-type && mt;
+      };
+      if lsts-parse-head(tokens)==c"size" {
+         lsts-parse-expect(c"size", tokens); tokens = tail(tokens);
+         lsts-parse-expect(c"[Size]", lsts-parse-head(tokens).has-suffix(c"_B")
+                                   || lsts-parse-head(tokens).has-suffix(c"_b"), tokens);
+         let sz = lsts-parse-head(tokens); tokens = tail(tokens);
+         if sz.has-suffix(c"_B") then size = t2(c"Bytes", t1(sz.remove-suffix(c"_B")))
+                                 else size = t2(c"Bits", t1(sz.remove-suffix(c"_b")));
+      };
+      if lsts-parse-head(tokens)==c"implements" {
+         lsts-parse-expect(c"implements", tokens); tokens = tail(tokens);
+         (let i, tokens) = lsts-parse-type(tokens);
+         impls = impls.push(i);
+         while lsts-parse-head(tokens)==c"," {
+            lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+            (i, tokens) = lsts-parse-type(tokens);
+            impls = impls.push(i);
+         }
+      };
+      if lsts-parse-head(tokens)==c"implies" {
+         lsts-parse-expect(c"implies", tokens); tokens = tail(tokens);
+         (let i, tokens) = lsts-parse-type(tokens);
          infers = infers.push(i);
-      }
+         while lsts-parse-head(tokens)==c"," {
+            lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+            (i, tokens) = lsts-parse-type(tokens);
+            infers = infers.push(i);
+         }
+      };
    };
    let cases = mk-vector(type( (CString,Vector<(CString,Type)>) ));
    let rhs-type = TAny;
