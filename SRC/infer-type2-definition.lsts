@@ -1,4 +1,9 @@
 
+let visit-field-template(field-name: CString, base-type: Type, field-type: Type): Nil = (
+   print("Expand field template: \{field-name} \{base-type} . \{field-type}\n");
+);
+
+
 let infer-type2-definition(term: AST): Nil = (
    match term { Typedef2{} => (); };
    let lhs-type = (term as Tag::Typedef2).lhs-type;
@@ -31,7 +36,7 @@ let infer-type2-definition(term: AST): Nil = (
          let field-wrapped-type = t2(c"Field::"+field-name, field-type);
          add-quick-prop(lhs-type, guard, field-wrapped-type);
          add-weaken-quick-prop(lhs-type, guard, field-wrapped-type);
-         print("\tField \{field-name} : \{field-type}\n");
+         visit-field-template(field-name, guard, field-type);
       };
    };
 );
