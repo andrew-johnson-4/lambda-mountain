@@ -1,6 +1,17 @@
 
-let visit-field-template(field-name: CString, base-type: Type, field-type: Type): Nil = (
+let visit-field-template(field-name: CString, base-type: Type, field-type: Type, blame: AST): Nil = (
    print("Expand field template: \{field-name} \{base-type} . \{field-type}\n");
+   let ctx = None :: Maybe<TContext>;
+   let field-get = find-global-callable(c"primitive::field-get", base-type, blame);
+   let field-set = find-global-callable(c"primitive::field-set", t3(c"Cons", base-type, field-type), blame);
+   let field-get-indirect = find-global-callable(c"primitive::field-get-indirect", t3(c"Array",base-type,TAny), blame);
+   let field-set-indirect = find-global-callable(c"primitive::field-set-indirect", t3(c"Cons", t3(c"Array",base-type,TAny), field-type), blame);
+
+   print("Get: \{field-get}\n");   
+   print("Set: \{field-set}\n");   
+   print("Get Indirect: \{field-get-indirect}\n");   
+   print("Set Indirect: \{field-set-indirect}\n");   
+   #(let special-term (substitute( unify-ctx term )))
 );
 
 
@@ -36,7 +47,7 @@ let infer-type2-definition(term: AST): Nil = (
          let field-wrapped-type = t2(c"Field::"+field-name, field-type);
          add-quick-prop(lhs-type, guard, field-wrapped-type);
          add-weaken-quick-prop(lhs-type, guard, field-wrapped-type);
-         visit-field-template(field-name, guard, field-type);
+         visit-field-template(field-name, guard, field-type, term);
       };
    };
 );

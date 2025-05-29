@@ -21,4 +21,3 @@ declare-binop( $"primitive::field-set", raw-type(base-type), raw-type(field-type
 
 declare-unop( $"primitive::field-get-indirect", raw-type(base-type[]), raw-type(field-type), ( l"("; x; l"->"; field-name; l")"; ) );
 declare-binop( $"primitive::field-set-indirect", raw-type(base-type[]), raw-type(field-type), raw-type(Nil), ( l"("; x; l"->"; field-name; l"="; y; l")"; ) );
-
