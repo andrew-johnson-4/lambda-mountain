@@ -24,31 +24,91 @@ let mk-typedef(l: AST, r: AST): AST = (
 );
 
 let mk-typedef2(lhs-type: Type): AST = (
-   Typedef2{ lhs-type, mk-vector(type(Type)), mk-vector(type(Type)), mk-vector(type((CString,Type))), TAny }
+   Typedef2{ lhs-type, mk-vector(type(Type)), mk-vector(type(Type)), mk-vector(type((CString,Type))), TAny, TAny, TAny }
 );
 
-let .with-implies(t: AST, implies: Vector<Type>): AST = (
-   match t {
-      Typedef2{ lhs-type=lhs-type, implements=implements, constraints=constraints, size=size } => Typedef2{ lhs-type, implies, implements, constraints, size };
-      _ => t;
+let .with-implies(term: AST, implies: Vector<Type>): AST = (
+   match term {
+      Typedef2{} => (
+         let lhs-type = (term as Tag::Typedef2).lhs-type;
+         let implements = (term as Tag::Typedef2).implements;
+         let constraints = (term as Tag::Typedef2).constraints;
+         let size = (term as Tag::Typedef2).size;
+         let alias = (term as Tag::Typedef2).alias;
+         let opaque-alias = (term as Tag::Typedef2).opaque-alias;
+         Typedef2{ lhs-type, implies, implements, constraints, size, alias, opaque-alias };
+      );
+      _ => term;
    }
 );
-let .with-implements(t: AST, implements: Vector<Type>): AST = (
-   match t {
-      Typedef2{ lhs-type=lhs-type, implies=implies, constraints=constraints, size=size } => Typedef2{ lhs-type, implies, implements, constraints, size };
-      _ => t;
+let .with-implements(term: AST, implements: Vector<Type>): AST = (
+   match term {
+      Typedef2{} => (
+         let lhs-type = (term as Tag::Typedef2).lhs-type;
+         let implies = (term as Tag::Typedef2).implies;
+         let constraints = (term as Tag::Typedef2).constraints;
+         let size = (term as Tag::Typedef2).size;
+         let alias = (term as Tag::Typedef2).alias;
+         let opaque-alias = (term as Tag::Typedef2).opaque-alias;
+         Typedef2{ lhs-type, implies, implements, constraints, size, alias, opaque-alias };
+      );
+      _ => term;
    }
 );
-let .with-constraints(t: AST, constraints: Vector<(CString,Type)>): AST = (
-   match t {
-      Typedef2{ lhs-type=lhs-type, implies=implies, implements=implements, size=size } => Typedef2{ lhs-type, implies, implements, constraints, size };
-      _ => t;
+let .with-constraints(term: AST, constraints: Vector<(CString,Type)>): AST = (
+   match term {
+      Typedef2{} => (
+         let lhs-type = (term as Tag::Typedef2).lhs-type;
+         let implies = (term as Tag::Typedef2).implies;
+         let implements = (term as Tag::Typedef2).implements;
+         let size = (term as Tag::Typedef2).size;
+         let alias = (term as Tag::Typedef2).alias;
+         let opaque-alias = (term as Tag::Typedef2).opaque-alias;
+         Typedef2{ lhs-type, implies, implements, constraints, size, alias, opaque-alias };
+      );
+      _ => term;
    }
 );
-let .with-size(t: AST, size: Type): AST = (
-   match t {
-      Typedef2{ lhs-type=lhs-type, implies=implies, implements=implements, constraints=constraints } => Typedef2{ lhs-type, implies, implements, constraints, size };
-      _ => t;
+let .with-size(term: AST, size: Type): AST = (
+   match term {
+      Typedef2{} => (
+         let lhs-type = (term as Tag::Typedef2).lhs-type;
+         let implies = (term as Tag::Typedef2).implies;
+         let implements = (term as Tag::Typedef2).implements;
+         let constraints = (term as Tag::Typedef2).constraints;
+         let alias = (term as Tag::Typedef2).alias;
+         let opaque-alias = (term as Tag::Typedef2).opaque-alias;
+         Typedef2{ lhs-type, implies, implements, constraints, size, alias, opaque-alias };
+      );
+      _ => term;
+   }
+);
+let .with-alias(term: AST, alias: Type): AST = (
+   match term {
+      Typedef2{} => (
+         let lhs-type = (term as Tag::Typedef2).lhs-type;
+         let implies = (term as Tag::Typedef2).implies;
+         let implements = (term as Tag::Typedef2).implements;
+         let constraints = (term as Tag::Typedef2).constraints;
+         let size = (term as Tag::Typedef2).size;
+         let opaque-alias = (term as Tag::Typedef2).opaque-alias;
+         Typedef2{ lhs-type, implies, implements, constraints, size, alias, opaque-alias };
+      );
+      _ => term;
+   }
+);
+let .with-opaque-alias(term: AST, opaque-alias: Type): AST = (
+   match term {
+      Typedef2{} => (
+         let lhs-type = (term as Tag::Typedef2).lhs-type;
+         let implies = (term as Tag::Typedef2).implies;
+         let implements = (term as Tag::Typedef2).implements;
+         let constraints = (term as Tag::Typedef2).constraints;
+         let size = (term as Tag::Typedef2).size;
+         let alias = (term as Tag::Typedef2).alias;
+         Typedef2{ lhs-type, implies, implements, constraints, size, alias, opaque-alias };
+      );
+      _ => term;
    }
 );
 
