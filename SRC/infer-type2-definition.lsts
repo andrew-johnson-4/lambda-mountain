@@ -1,8 +1,8 @@
 
 let infer-type2-definition(term: AST): Nil = (
-   (let lhs-type, let implies, let implements) = match term {
-      Typedef2{ lhs-type=lhs-type, implies=implies, implements=implements } =>
-      (lhs-type, implies, implements);
+   (let lhs-type, let implies, let implements, let constraints) = match term {
+      Typedef2{ lhs-type=lhs-type, implies=implies, implements=implements, constraints=constraints } =>
+      (lhs-type, implies, implements, constraints);
    };
    for vector rhs-type in implies {
       add-quick-prop(lhs-type, lhs-type, rhs-type);
@@ -12,5 +12,8 @@ let infer-type2-definition(term: AST): Nil = (
       add-quick-prop(lhs-type, lhs-type, rhs-type);
       add-weaken-quick-prop(lhs-type, lhs-type, rhs-type);
       interface-implementors = cons( (lhs-type, rhs-type, term), interface-implementors );
+   };
+   for vector Tuple{v=first, ct=second} in constraints {
+      print("Constraint: \{lhs-type} where \{v} : \{ct}\n");
    };
 );

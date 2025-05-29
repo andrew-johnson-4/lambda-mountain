@@ -24,18 +24,24 @@ let mk-typedef(l: AST, r: AST): AST = (
 );
 
 let mk-typedef2(lhs-type: Type): AST = (
-   Typedef2{ lhs-type, mk-vector(type(Type)), mk-vector(type(Type)) }
+   Typedef2{ lhs-type, mk-vector(type(Type)), mk-vector(type(Type)), mk-vector(type((CString,Type))) }
 );
 
 let .with-implies(t: AST, implies: Vector<Type>): AST = (
    match t {
-      Typedef2{ lhs-type=lhs-type, implements=implements } => Typedef2{ lhs-type, implies, implements };
+      Typedef2{ lhs-type=lhs-type, implements=implements, constraints=constraints } => Typedef2{ lhs-type, implies, implements, constraints };
       _ => t;
    }
 );
 let .with-implements(t: AST, implements: Vector<Type>): AST = (
    match t {
-      Typedef2{ lhs-type=lhs-type, implies=implies } => Typedef2{ lhs-type, implies, implements };
+      Typedef2{ lhs-type=lhs-type, implies=implies, constraints=constraints } => Typedef2{ lhs-type, implies, implements, constraints };
+      _ => t;
+   }
+);
+let .with-constraints(t: AST, constraints: Vector<(CString,Type)>): AST = (
+   match t {
+      Typedef2{ lhs-type=lhs-type, implies=implies, implements=implements } => Typedef2{ lhs-type, implies, implements, constraints };
       _ => t;
    }
 );
