@@ -27,6 +27,10 @@ let infer-type2-definition(term: AST): Nil = (
    for vector Tuple{ case-tag=first, case-fields=second } in cases {
       print("Case '\{case-tag}'\n");
       for vector Tuple{ field-name=first, field-type=second } in case-fields {
+         let guard = lhs-type && (if non-zero(case-tag) then t1(c"Tag::"+case-tag) else TAny);
+         let field-wrapped-type = t2(c"Field::"+field-name, field-type);
+         add-quick-prop(lhs-type, guard, field-wrapped-type);
+         add-weaken-quick-prop(lhs-type, guard, field-wrapped-type);
          print("\tField \{field-name} : \{field-type}\n");
       };
    };
