@@ -16,6 +16,6 @@ declare-unop( into-branch-conditional, raw-type(BranchConditional), raw-type(Bra
 declare-unop( $"cdecl::return", raw-type(Any), raw-type(Nil), (l"return "; x; l";";) );
 declare-unop( $"cdecl::return", raw-type(Nil), raw-type(Nil), (x; l";";) );
 
-declare-unop( $"primitive::field-get", raw-type(Field<field-name,field-type>), raw-type(field-type), ( l"("; x; l"."; field-name; l")"; ) );
-declare-binop( $"primitive::field-set", raw-type(Field<field-name,field-type>), raw-type(field-type), raw-type(Nil), ( l"("; x; l"."; field-name; l"="; y; l")"; ) );
+declare-unop( $"primitive::field-get", raw-type(Field::field-name<field-type>), raw-type(field-type), ( l"("; x; l"."; field-name; l")"; ) );
+declare-binop( $"primitive::field-set", raw-type(Field::field-name<field-type>), raw-type(field-type), raw-type(Nil), ( l"("; x; l"."; field-name; l"="; y; l")"; ) );
 
