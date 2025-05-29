@@ -1,0 +1,16 @@
+
+let infer-type2-definition(term: AST): Nil = (
+   (let lhs-type, let implies, let implements) = match term {
+      Typedef2{ lhs-type=lhs-type, implies=implies, implements=implements } =>
+      (lhs-type, implies, implements);
+   };
+   for vector rhs-type in implies {
+      add-quick-prop(lhs-type, lhs-type, rhs-type);
+      add-weaken-quick-prop(lhs-type, lhs-type, rhs-type);
+   };
+   for vector rhs-type in implements {
+      add-quick-prop(lhs-type, lhs-type, rhs-type);
+      add-weaken-quick-prop(lhs-type, lhs-type, rhs-type);
+      interface-implementors = cons( (lhs-type, rhs-type, term), interface-implementors );
+   };
+);
