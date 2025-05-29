@@ -1,9 +1,11 @@
 
 let infer-type2-definition(term: AST): Nil = (
-   (let lhs-type, let implies, let implements, let constraints) = match term {
-      Typedef2{ lhs-type=lhs-type, implies=implies, implements=implements, constraints=constraints } =>
-      (lhs-type, implies, implements, constraints);
-   };
+   match term { Typedef2{} => (); };
+   let lhs-type = (term as Tag::Typedef2).lhs-type;
+   let implies = (term as Tag::Typedef2).implies;
+   let implements = (term as Tag::Typedef2).implements;
+   let constraints = (term as Tag::Typedef2).constraints;
+   let size = (term as Tag::Typedef2).size;
    for vector rhs-type in implies {
       add-quick-prop(lhs-type, lhs-type, rhs-type);
       add-weaken-quick-prop(lhs-type, lhs-type, rhs-type);
@@ -16,4 +18,5 @@ let infer-type2-definition(term: AST): Nil = (
    for vector Tuple{v=first, ct=second} in constraints {
       print("Constraint: \{lhs-type} where \{v} : \{ct}\n");
    };
+   if non-zero(size) then print("sizeof(\{lhs-type}) = \{size}\n");
 );

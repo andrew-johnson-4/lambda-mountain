@@ -860,7 +860,7 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
       }
    };
    let td = mk-typedef2(lhs-type).with-implies(infers).with-implements(impls)
-            .with-constraints(typeconstraints);
+            .with-constraints(typeconstraints).with-size(size);
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
    (td, tokens);
 );
