@@ -8,6 +8,7 @@ let infer-type2-definition(term: AST): Nil = (
    let size = (term as Tag::Typedef2).size;
    let alias = (term as Tag::Typedef2).alias;
    let opaque-alias = (term as Tag::Typedef2).opaque-alias;
+   let cases = (term as Tag::Typedef2).cases;
    for vector rhs-type in implies {
       add-quick-prop(lhs-type, lhs-type, rhs-type);
       add-weaken-quick-prop(lhs-type, lhs-type, rhs-type);
@@ -21,6 +22,12 @@ let infer-type2-definition(term: AST): Nil = (
       print("Constraint: \{lhs-type} where \{v} : \{ct}\n");
    };
    if non-zero(size) then print("sizeof(\{lhs-type}) = \{size}\n");
-   if non-zero(alias) then print("alias \{lhs-type} = \{alias}\n");
-   if non-zero(opaque-alias) then print("opaque-alias \{lhs-type} = \{opaque-alias}\n");
+   if non-zero(alias) then add-type-alias(lhs-type, alias);
+   if non-zero(opaque-alias) then add-opaque-type-alias(lhs-type, opaque-alias);
+   for vector Tuple{ case-tag=first, case-fields=second } in cases {
+      print("Case '\{case-tag}'\n");
+      for vector Tuple{ field-name=first, field-type=second } in case-fields {
+         print("\tField \{field-name} : \{field-type}\n");
+      };
+   };
 );
