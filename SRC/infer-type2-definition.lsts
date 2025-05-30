@@ -53,4 +53,32 @@ let infer-type2-definition(term: AST): Nil = (
          visit-field-template(field-name, guard, field-type, term);
       };
    };
+   let common-fields = [] :: List<(CString,Type)>;
+   let has-tag-case = false;
+   for vector Tuple{ case-tag=first, case-fields=second } in cases {
+      if case-tag==c"" {
+         for vector Tuple{ field-name=first, field-type=second } in case-fields {
+            common-fields = cons((field-name, field-type), common-fields);
+         };
+      } else has-tag-case = true;
+   };
+   if not(has-tag-case) then infer-type2-yield-constructor(lhs-type, lhs-type.simple-tag, 0, common-fields);
+   let case-index = 0_u64;
+   for vector Tuple{ case-tag=first, case-fields=second } in cases {
+      if case-tag!=c"" {
+         let o-case-fields = common-fields;
+         for vector Tuple{ field-name=first, field-type=second } in case-fields {
+            o-case-fields = cons((field-name, field-type), o-case-fields);
+         };
+         infer-type2-yield-constructor(lhs-type, case-tag, case-index, o-case-fields);
+         case-index = case-index + 1;
+      };
+   };
+);
+
+let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-number: U64, case-fields: List<(CString,Type)>): Nil = (
+   print("Yield constructor \{case-tag}#\{case-number} : \{base-type}\n");
+   for Tuple{field-name=first, field-type=second} in case-fields {
+      print("\t\{field-name} : \{field-type}\n");
+   };
 );
