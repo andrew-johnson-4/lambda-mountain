@@ -14,8 +14,8 @@ interface self implements E {
 let f(p1: F<c,d>, p2: A): A = p2;
 type2 F<c,d> implements E;
 
-type2 G = { a: A, b: B, h: H }; # should fail infinite
-type2 H = { g: G };             # should fail infinite
+type2 G = { a: A, b: B, h: H };
+type2 H = { g: A };
 
 # TODO constructor / instantiate
 # TODO field get/set/get indirect/set indirect

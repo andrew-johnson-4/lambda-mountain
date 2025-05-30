@@ -21,7 +21,6 @@ let assert-no-infinite-types(): Nil = (
       );
       _ => ();
    }};
-   fail("TODO: assert no infinite types"); ()
 );
 
 let assert-no-infinite-type(fields-of-type: HashtableEq<(CString,U64),Vector<Type>>,
