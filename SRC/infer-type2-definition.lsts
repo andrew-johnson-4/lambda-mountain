@@ -1,4 +1,26 @@
 
+let visit-field-template(field-name: CString, base-type: Type, field-type: Type, blame: AST): Nil = (
+   print("Expand field template: \{field-name} \{base-type} . \{field-type}\n");
+   let ctx = None :: Maybe<TContext>;
+   ctx = ctx.bind( c"base-type", base-type, ASTEOF );
+   ctx = ctx.bind( c"field-type", field-type, ASTEOF );
+   ctx = ctx.bind( c"primitive::field-get", TAny, mk-var(c"."+field-name) );
+   ctx = ctx.bind( c"primitive::field-set", TAny, mk-var(c"set."+field-name) );
+   ctx = ctx.bind( c"primitive::field-get-indirect", TAny, mk-var(c"."+field-name) );
+   ctx = ctx.bind( c"primitive::field-set-indirect", TAny, mk-var(c"set."+field-name) );
+   let field-get = substitute(ctx, find-global-callable(c"primitive::field-get", base-type, blame));
+   let field-set = substitute(ctx, find-global-callable(c"primitive::field-set", t3(c"Cons", base-type, field-type), blame));
+   let field-get-indirect = substitute(ctx, find-global-callable(c"primitive::field-get-indirect", t3(c"Array",base-type,TAny), blame));
+   let field-set-indirect = substitute(ctx, find-global-callable(c"primitive::field-set-indirect", t3(c"Cons", t3(c"Array",base-type,TAny), field-type), blame));
+
+   ast-parsed-program = ast-parsed-program + field-get + field-set + field-get-indirect + field-set-indirect;
+   print("Get: \{field-get}\n");
+   print("Set: \{field-set}\n");
+   print("Get Indirect: \{field-get-indirect}\n");
+   print("Set Indirect: \{field-set-indirect}\n");
+);
+
+
 let infer-type2-definition(term: AST): Nil = (
    match term { Typedef2{} => (); };
    let lhs-type = (term as Tag::Typedef2).lhs-type;
@@ -27,7 +49,11 @@ let infer-type2-definition(term: AST): Nil = (
    for vector Tuple{ case-tag=first, case-fields=second } in cases {
       print("Case '\{case-tag}'\n");
       for vector Tuple{ field-name=first, field-type=second } in case-fields {
-         print("\tField \{field-name} : \{field-type}\n");
+         let guard = lhs-type && (if non-zero(case-tag) then t1(c"Tag::"+case-tag) else TAny);
+         let field-wrapped-type = t2(c"Field::"+field-name, field-type);
+         add-quick-prop(lhs-type, guard, field-wrapped-type);
+         add-weaken-quick-prop(lhs-type, guard, field-wrapped-type);
+         visit-field-template(field-name, guard, field-type, term);
       };
    };
 );
