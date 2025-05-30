@@ -1,6 +1,5 @@
 
 let visit-field-template(field-name: CString, base-type: Type, field-type: Type, blame: AST): Nil = (
-   print("Expand field template: \{field-name} \{base-type} . \{field-type}\n");
    let ctx = None :: Maybe<TContext>;
    ctx = ctx.bind( c"base-type", base-type, ASTEOF );
    ctx = ctx.bind( c"field-type", field-type, ASTEOF );
@@ -19,10 +18,6 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    infer-global-context(field-set-indirect);
 
    ast-parsed-program = ast-parsed-program + field-get + field-set + field-get-indirect + field-set-indirect;
-   print("Get: \{field-get}\n");
-   print("Set: \{field-set}\n");
-   print("Get Indirect: \{field-get-indirect}\n");
-   print("Set Indirect: \{field-set-indirect}\n");
 );
 
 
@@ -44,9 +39,6 @@ let infer-type2-definition(term: AST): Nil = (
       add-quick-prop(lhs-type, lhs-type, rhs-type);
       add-weaken-quick-prop(lhs-type, lhs-type, rhs-type);
       interface-implementors = cons( (lhs-type, rhs-type, term), interface-implementors );
-   };
-   for vector Tuple{v=first, ct=second} in constraints {
-      print("Constraint: \{lhs-type} where \{v} : \{ct}\n");
    };
    if non-zero(size) then print("sizeof(\{lhs-type}) = \{size}\n");
    if non-zero(alias) then add-type-alias(lhs-type, alias);
