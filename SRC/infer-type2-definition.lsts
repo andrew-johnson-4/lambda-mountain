@@ -76,9 +76,13 @@ let infer-type2-definition(term: AST): Nil = (
    };
 );
 
+let type-constructor-tag-ordinal-index = {} :: HashtableEq<(CString,U64,CString),U64>;
+
 let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-number: U64, case-fields: List<(CString,Type)>): Nil = (
    print("Yield constructor \{case-tag}#\{case-number} : \{base-type}\n");
    for Tuple{field-name=first, field-type=second} in case-fields {
       print("\t\{field-name} : \{field-type}\n");
    };
+   (let base-tag, let base-arity) = base-type.ground-tag-and-arity;
+   type-constructor-tag-ordinal-index = type-constructor-tag-ordinal-index.bind( (base-tag,base-arity,case-tag), case-number );
 );
