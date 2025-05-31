@@ -22,6 +22,11 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
 
 let type2-base-type-index = {} :: HashtableEq<(CString,U64),U64>;
 
+let is-type2(tt: Type): U64 = (
+   let gta = normalize(tt).ground-tag-and-arity;
+   type2-base-type-index.has(gta)
+);
+
 let infer-type2-definition(term: AST): Nil = (
    match term { Typedef2{} => (); };
    let lhs-type = (term as Tag::Typedef2).lhs-type;

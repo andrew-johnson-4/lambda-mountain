@@ -183,7 +183,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
             };
          };
 
-         if not(is-macro) && not(is-cons) && non-zero(var-name-if-var(l)) && typeof(l).is-arrow {
+         if not(is-macro) && not(is-cons) && typeof(l).is-arrow && (non-zero(var-name-if-var(l)) || is-type2(typeof(term))) {
             mark-var-to-def-todo(tctx, var-name-if-var(l), typeof(r), l);
             apply-global-callable(var-name-if-var(l),typeof(r),term);
          };
