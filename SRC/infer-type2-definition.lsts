@@ -95,9 +95,9 @@ let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-numbe
    if not(non-zero(args)) then args = mk-nil();
 
    let body = mk-lit(c"{").ascript(t1(c"L"));
-   body = mk-cons(body, mk-app(mk-var(c"mangle-pre"),mk-atype(base-type)) );
+   body = mk-cons(body, mk-app(mk-var(c"mangle-pre"),mk-atype(t2(c"Type",base-type))) );
    body = mk-cons(body, mk-lit(c" ").ascript(t1(c"L")));
-   body = mk-cons(body, mk-app(mk-var(c"mangle-post"),mk-atype(base-type)) );
+   body = mk-cons(body, mk-app(mk-var(c"mangle-post"),mk-atype(t2(c"Type",base-type))) );
    body = mk-cons(body, mk-lit(c";").ascript(t1(c"L")));
  
    if case-number >= 0 {
@@ -109,7 +109,11 @@ let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-numbe
 
    for Tuple{field-name=first, field-type=second} in case-fields.reverse {
       body = mk-cons(body, mk-app(mk-var(c"uuid"),mk-var(c"return")) );
-      body = mk-cons(body, mk-lit(c"." + field-name + c"=" + field-name + c";").ascript(t1(c"L")));
+      body = mk-cons(body, mk-lit(c".").ascript(t1(c"L")));
+      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(field-name).ascript(t1(c"L"))) );
+      body = mk-cons(body, mk-lit(c"=").ascript(t1(c"L")));
+      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(field-name).ascript(t1(c"L"))) );
+      body = mk-cons(body, mk-lit(c";").ascript(t1(c"L")));
    };
 
    body = mk-cons(body, mk-lit(c"return;}").ascript(t1(c"L")));

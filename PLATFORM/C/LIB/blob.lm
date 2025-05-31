@@ -27,3 +27,7 @@ align := λ: Blob(: hi L). (: () L);
 uuid := λ: Blob(: t L). (: () L);
 
 remove-trailing-comma := λ: Blob(: t L). (: () L);
+
+mangle := λ: Blob(: t L). (: () L);
+mangle-pre := λ: Blob(: t Type<Any>). (: () L);
+mangle-post := λ: Blob(: t Type<Any>). (: () L);
