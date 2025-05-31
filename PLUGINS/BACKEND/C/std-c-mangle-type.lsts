@@ -41,6 +41,17 @@ let std-c-mangle-type-internal(tt: Type, blame: AST): S = (
       TGround{tag:c"C", parameters:[TGround{tag1=tag}..]} => (
          SAtom{tag1}
       );
+      TGround{tag=tag, parameters=parameters} => (
+         let r = mangle-identifier(tag);
+         if parameters.length > 0 {
+            r = r + mangle-identifier(c"<");
+            for p in parameters {
+               r = r + std-c-mangle-type-internal(p, blame);
+            };
+            r = r + mangle-identifier(c">");
+         };
+         r;
+      );
       _ => SNil;
    }
 );

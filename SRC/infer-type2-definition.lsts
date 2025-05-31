@@ -20,6 +20,7 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    ast-parsed-program = ast-parsed-program + field-get + field-set + field-get-indirect + field-set-indirect;
 );
 
+let type2-base-type-index = {} :: HashtableEq<(CString,U64),U64>;
 
 let infer-type2-definition(term: AST): Nil = (
    match term { Typedef2{} => (); };
@@ -44,7 +45,8 @@ let infer-type2-definition(term: AST): Nil = (
    if non-zero(alias) then add-type-alias(lhs-type, alias);
    if non-zero(opaque-alias) then add-opaque-type-alias(lhs-type, opaque-alias);
    for vector Tuple{ case-tag=first, case-fields=second } in cases {
-      print("Case '\{case-tag}'\n");
+      type2-base-type-index = type2-base-type-index.bind( lhs-type.ground-tag-and-arity, 1 );
+      print("Ground "); print(lhs-type.ground-tag-and-arity); print("\n");
       for vector Tuple{ field-name=first, field-type=second } in case-fields {
          let guard = lhs-type && (if non-zero(case-tag) then t1(c"Tag::"+case-tag) else TAny);
          let field-wrapped-type = t2(c"Field::"+field-name, field-type);
@@ -121,7 +123,6 @@ let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-numbe
    body = mk-cons(body, mk-lit(c"return;}").ascript(t1(c"L")));
 
    let constructor = mk-glb( mk-token(case-tag).with-location(blame.location), mk-abs(args, body.ascript(base-type), t1(c"Blob")) );
-   print("Constructor \{case-tag} : \{base-type}\n\{constructor}\n");
    infer-global-context(constructor);
    ast-parsed-program = ast-parsed-program + constructor;
 );
