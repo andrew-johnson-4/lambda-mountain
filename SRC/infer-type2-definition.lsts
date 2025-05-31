@@ -41,12 +41,10 @@ let infer-type2-definition(term: AST): Nil = (
       add-weaken-quick-prop(lhs-type, lhs-type, rhs-type);
       interface-implementors = cons( (lhs-type, rhs-type, term), interface-implementors );
    };
-   if non-zero(size) then print("sizeof(\{lhs-type}) = \{size}\n");
    if non-zero(alias) then add-type-alias(lhs-type, alias);
    if non-zero(opaque-alias) then add-opaque-type-alias(lhs-type, opaque-alias);
    for vector Tuple{ case-tag=first, case-fields=second } in cases {
       type2-base-type-index = type2-base-type-index.bind( lhs-type.ground-tag-and-arity, 1 );
-      print("Ground "); print(lhs-type.ground-tag-and-arity); print("\n");
       for vector Tuple{ field-name=first, field-type=second } in case-fields {
          let guard = lhs-type && (if non-zero(case-tag) then t1(c"Tag::"+case-tag) else TAny);
          let field-wrapped-type = t2(c"Field::"+field-name, field-type);
@@ -120,7 +118,8 @@ let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-numbe
       body = mk-cons(body, mk-lit(c";").ascript(t1(c"L")));
    };
 
-   body = mk-cons(body, mk-lit(c"return;}").ascript(t1(c"L")));
+   body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")));
+   body = mk-cons(body, mk-lit(c";}").ascript(t1(c"L")));
 
    let constructor = mk-glb( mk-token(case-tag).with-location(blame.location), mk-abs(args, body.ascript(base-type), t1(c"Blob")) );
    infer-global-context(constructor);

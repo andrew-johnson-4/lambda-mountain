@@ -1,8 +1,7 @@
 
 compile-constructor := λ(: ctx FContext)(: tag-name String)(: return-type Type)(: args-type Type)(: args AST)(: offset I64). (: (
    (let r (mk-fragment()))
-   (let gta (.ground-tag-and-arity return-type))
-   (if (.has( type-constructor-tag-ordinal-index (Tuple( (.first gta) (.second gta) tag-name )) )) (
+   (if (.has( type2-base-type-index (.ground-tag-and-arity return-type) )) (
       (print 'Compile\sType2\sConstructor\s_s)(print tag-name)(print '\n_s)
    ) (
       (let bare-ordinal (.with-only-class return-type))

@@ -9,12 +9,15 @@ let std-c-mangle-type(tt: Type, blame: AST): S = (
 let std-c-mangle-type-internal(tt: Type, blame: AST): S = (
    match tt {
       TAnd{ conjugate=conjugate } => (
+         let is-c = can-unify(t2(c"C",TAny), tt);
          let result = SNil;
          for vector c in conjugate {
-            let rt = std-c-mangle-type-internal(c, blame);
-            result = if non-zero(result) && non-zero(rt) then result + SAtom{c" "} + rt
-            else if non-zero(result) then result
-            else rt;
+            if is-c && c.simple-tag != c"C" {} else {
+               let rt = std-c-mangle-type-internal(c, blame);
+               result = if non-zero(result) && non-zero(rt) then result + SAtom{c" "} + rt
+               else if non-zero(result) then result
+               else rt;
+            }
          };
          result;
       );
@@ -45,8 +48,11 @@ let std-c-mangle-type-internal(tt: Type, blame: AST): S = (
          let r = mangle-identifier(tag);
          if parameters.length > 0 {
             r = r + mangle-identifier(c"<");
+            let pi = 0;
             for p in parameters {
+               if pi > 0 then r = r + mangle-identifier(c",");
                r = r + std-c-mangle-type-internal(p, blame);
+               pi = pi + 1;
             };
             r = r + mangle-identifier(c">");
          };
