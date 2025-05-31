@@ -87,8 +87,8 @@ substitute := λ(: tctx Maybe<TContext>)(: t AST). (: (
       ( (AType( tt )) (
          (set t (AType( (substitute( tctx tt )) )))
       ))
-      ( (App( lt rt )) (
-         (set t (App(
+      ( (App( is-cons lt rt )) (
+         (set t (App( is-cons
             (close(substitute( tctx lt )))
             (close(substitute( tctx rt )))
          )))
