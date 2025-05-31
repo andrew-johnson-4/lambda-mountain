@@ -62,27 +62,61 @@ let infer-type2-definition(term: AST): Nil = (
          };
       } else has-tag-case = true;
    };
-   if not(has-tag-case) then infer-type2-yield-constructor(lhs-type, lhs-type.simple-tag, 0, common-fields);
-   let case-index = 0_u64;
+   if not(has-tag-case) then infer-type2-yield-constructor(lhs-type, lhs-type.simple-tag, -1_i64, common-fields, term);
+   let case-index = 0_i64;
    for vector Tuple{ case-tag=first, case-fields=second } in cases {
       if case-tag!=c"" {
          let o-case-fields = common-fields;
          for vector Tuple{ field-name=first, field-type=second } in case-fields {
             o-case-fields = cons((field-name, field-type), o-case-fields);
          };
-         infer-type2-yield-constructor(lhs-type, case-tag, case-index, o-case-fields);
+         infer-type2-yield-constructor(lhs-type, case-tag, case-index, o-case-fields, term);
          case-index = case-index + 1;
       };
    };
 );
 
-let type-constructor-tag-ordinal-index = {} :: HashtableEq<(CString,U64,CString),U64>;
+let type-constructor-tag-ordinal-index = {} :: HashtableEq<(CString,U64,CString),I64>;
 
-let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-number: U64, case-fields: List<(CString,Type)>): Nil = (
-   print("Yield constructor \{case-tag}#\{case-number} : \{base-type}\n");
-   for Tuple{field-name=first, field-type=second} in case-fields {
-      print("\t\{field-name} : \{field-type}\n");
-   };
+let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-number: I64, case-fields: List<(CString,Type)>, blame: AST): Nil = (
    (let base-tag, let base-arity) = base-type.ground-tag-and-arity;
    type-constructor-tag-ordinal-index = type-constructor-tag-ordinal-index.bind( (base-tag,base-arity,case-tag), case-number );
+
+   # The constructor is hard-coded for now
+   # This only works for C-backend...
+
+   let args = mk-eof();
+   for Tuple{field-name=first, field-type=second} in case-fields.reverse {
+      let par = mk-var(field-name).ascript(field-type);
+      if non-zero(args)
+      then args = mk-cons(args, par)
+      else args = par
+   };
+   if not(non-zero(args)) then args = mk-nil();
+
+   let body = mk-lit(c"{").ascript(t1(c"L"));
+   body = mk-cons(body, mk-app(mk-var(c"mangle-pre"),mk-atype(base-type)) );
+   body = mk-cons(body, mk-lit(c" ").ascript(t1(c"L")));
+   body = mk-cons(body, mk-app(mk-var(c"mangle-post"),mk-atype(base-type)) );
+   body = mk-cons(body, mk-lit(c";").ascript(t1(c"L")));
+ 
+   if case-number >= 0 {
+      body = mk-cons(body, mk-app(mk-var(c"uuid"),mk-var(c"return")) );
+      body = mk-cons(body, mk-lit(c".discriminator_case_tag=").ascript(t1(c"L")));
+      body = mk-cons(body, mk-lit(to-string(case-number)).ascript(t1(c"L")) );
+      body = mk-cons(body, mk-lit(c";").ascript(t1(c"L")));
+   };
+
+   for Tuple{field-name=first, field-type=second} in case-fields.reverse {
+      body = mk-cons(body, mk-app(mk-var(c"uuid"),mk-var(c"return")) );
+      body = mk-cons(body, mk-lit(c"." + field-name + c"=" + field-name + c";").ascript(t1(c"L")));
+   };
+
+   body = mk-cons(body, mk-lit(c"return;}").ascript(t1(c"L")));
+
+   let constructor = mk-glb( mk-token(case-tag).with-location(blame.location), mk-abs(args, body.ascript(base-type), t1(c"Blob")) );
+   print("Constructor \{case-tag} : \{base-type}\n\{constructor}\n");
+   infer-global-context(constructor);
+   ast-parsed-program = ast-parsed-program + constructor;
 );
+
