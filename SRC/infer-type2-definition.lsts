@@ -114,7 +114,7 @@ let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-numbe
       body = mk-cons(body, mk-lit(c".").ascript(t1(c"L")));
       body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(field-name).ascript(t1(c"L"))) );
       body = mk-cons(body, mk-lit(c"=").ascript(t1(c"L")));
-      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(field-name).ascript(t1(c"L"))) );
+      body = mk-cons(body, mk-var(field-name) );
       body = mk-cons(body, mk-lit(c";").ascript(t1(c"L")));
    };
 
