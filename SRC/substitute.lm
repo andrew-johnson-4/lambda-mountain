@@ -39,24 +39,24 @@ substitute := λ(: tctx Maybe<TContext>)(: t AST). (: (
       ()
       ( ASTEOF () )
       ( ASTNil () )
-      ( (App( (Lit( ':_s ctk )) (App( (Lit( v vtk )) (AType vt) )) )) (
-         (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
-            (close(Lit( v (unique vtk) )))
-            (close(AType( (substitute( tctx vt )) )))
-         ))) )))
-         (let found 0_u64)
-         (for-each ( (Tuple( tk tv ta )) in
-             (.get-or( tctx (: LEOF List<Tuple<String,Type,AST>>) ))
-         ) (
-            (if (&&( (not found) (==( tk v )) )) (
-               (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
-                  (close(substitute( tctx ta )))
-                  (close(AType( (substitute( tctx vt )) )))
-               ))) )))
-               (set found 1_u64)
-            ) ())
-         ))
-      ))
+#      ( (App( (Lit( ':_s ctk )) (App( (Lit( v vtk )) (AType vt) )) )) (
+#         (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
+#            (close(Lit( v (unique vtk) )))
+#            (close(AType( (substitute( tctx vt )) )))
+#         ))) )))
+#         (let found 0_u64)
+#         (for-each ( (Tuple( tk tv ta )) in
+#             (.get-or( tctx (: LEOF List<Tuple<String,Type,AST>>) ))
+#         ) (
+#            (if (&&( (not found) (==( tk v )) )) (
+#               (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
+#                  (close(substitute( tctx ta )))
+#                  (close(AType( (substitute( tctx vt )) )))
+#               ))) )))
+#               (set found 1_u64)
+#            ) ())
+#         ))
+#      ))
       ( (App( (Lit( ':_s ctk )) (App( (Var( v vtk )) (AType vt) )) )) (
          (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
             (close(Var( v (unique vtk) )))

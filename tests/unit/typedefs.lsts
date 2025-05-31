@@ -17,6 +17,10 @@ type2 F<c,d> implements E;
 type2 TT<a,b> = { a: a, b: b };
 type2 G = { a: A, b: B, h: H };
 type2 H = { g: TT<A,A> } H1 { g2: A } | H2 { g3: B };
+type2 I = { i: U64 } I1 { j: U64 };
+
+let t1 = TT{ 1, 2 };
+let t2 = I1{ 1, 2 };
 
 # TODO constructor / instantiate
 # TODO field get/set/get indirect/set indirect

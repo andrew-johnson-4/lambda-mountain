@@ -15,6 +15,7 @@ mangle-identifier := λ(: k String). (: (
          ( 38_u8 (set cs (SCons( (close cs) (close(SAtom( '_AM__s ))) ))))   # &
          ( 42_u8 (set cs (SCons( (close cs) (close(SAtom( '_ML__s ))) ))))   # *
          ( 43_u8 (set cs (SCons( (close cs) (close(SAtom( '_AD__s ))) ))))   # +
+         ( 44_u8 (set cs (SCons( (close cs) (close(SAtom( '_CM__s ))) ))))   # ,
          ( 45_u8 (set cs (SCons( (close cs) (close(SAtom( '_SB__s ))) ))))   # -
          ( 46_u8 (set cs (SCons( (close cs) (close(SAtom( '_DT__s ))) ))))   # .
          ( 47_u8 (set cs (SCons( (close cs) (close(SAtom( '_DV__s ))) ))))   # /

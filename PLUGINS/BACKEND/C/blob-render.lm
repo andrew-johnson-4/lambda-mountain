@@ -80,6 +80,15 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: off
       ( (App( (Var( 'uuid_s _ )) _ )) (
          (set r (SAtom(uuid())))
       ))
+      ( (App( (Var( 'mangle_s _ )) (App( (Lit( ':_s _ )) (App( (Lit( id _ )) (AType _) )) )) )) (
+         (set r (mangle-identifier id))
+      ))
+      ( (App( (Var( 'mangle-pre_s _ )) (AType tt) )) (
+         (set r (.first(std-c-mangle-declaration-internal( tt term ))))
+      ))
+      ( (App( (Var( 'mangle-post_s _ )) (AType tt) )) (
+         (set r (.second(std-c-mangle-declaration-internal( tt term ))))
+      ))
       ( (App( (Var( '==_s _ )) (App( le re )) )) (
          (let lcs (blob-render-simple( ctx context-key le offset )))
          (let ls (.1 lcs))
