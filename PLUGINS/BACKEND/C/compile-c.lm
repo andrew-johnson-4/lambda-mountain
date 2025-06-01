@@ -39,6 +39,9 @@ plugins-backend-c-compile := λ . (: (
       ( (@( td (Typedef( _ _ )) )) (
          (set typedefs (+( typedefs td )))
       ))
+      ( (@( td (Typedef2( _ )) )) (
+         (std-c-compile-type2-typedef td)
+      ))
       ( _ () )
    )))
    (for-each-v (td in (.unroll-seq typedefs)) (match td (

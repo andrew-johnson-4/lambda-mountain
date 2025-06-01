@@ -42,3 +42,4 @@ import PLUGINS/BACKEND/C/std-c-compile-destructure-args.lsts;
 import PLUGINS/BACKEND/C/escape-as-cstring.lsts;
 import PLUGINS/BACKEND/C/escape-string.lm;
 import PLUGINS/BACKEND/C/std-c-compile-push-args.lsts;
+import PLUGINS/BACKEND/C/std-c-compile-type2-typedef.lsts;

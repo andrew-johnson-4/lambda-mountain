@@ -5,7 +5,7 @@ syntax lsts "\.lsts$"
 magic "LSTS "
 comment "#"
 
-color green "[;,\t\n ]\<(let|match|if|then|else|while|for|set|type|fn)\>"
+color green "[;,\t\n(){} ]\<(let|match|if|then|else|while|for|set|type|fn)\>"
 color cyan ""[^"]*""
 
 color blue "#.*"

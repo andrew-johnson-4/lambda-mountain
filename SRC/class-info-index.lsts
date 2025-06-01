@@ -30,7 +30,7 @@ let add-class-info-layout(cls: Type, layout: StructLayout): Nil = (
    );
 );
 
-let .is-class(cls: Type): U64 = class-info-index.has(cls.ground-tag-and-arity);
+let .is-class(cls: Type): U64 = class-info-index.has(cls.ground-tag-and-arity) || cls.is-type2;
 let .is-lm-struct(cls: Type): U64 = (
    let ta = cls.ground-tag-and-arity;
    is(class-info-index.lookup(ta, class-info-default).layout, LM1Style)
