@@ -17,11 +17,12 @@ type2 F<c,d> implements E;
 type2 TT<a,b> = { a: a, b: b };
 type2 G = { a: I64, b: I32, h: H[] };
 type2 H = { g: TT<U64,U64> } H1 { g2: I64 } | H2 { g3: U32 };
-type2 I = { i: U64 } I1 { j: U64 };
+type2 I = { i: U64 } I1 { j: U64 } | I2;
 
 let t1 = TT{ 1, 2 };
 let t2 = I1{ 3, 4 };
+let t3 = I2{1};
 
-print("TT a=\{t1.a}, b=\{t1.b}\n");
-print("I a=\{t2.i}, b=\{(t2 as Tag::I1).j}\n");
-
+print("TT a=\{t1.a}, b=\{t1.b} discriminator \{t1.discriminator-case-tag}\n");
+print("I1 a=\{t2.i}, b=\{(t2 as Tag::I1).j} discriminator: \{t2.discriminator-case-tag}\n");
+print("I2 discriminator: \{t3.discriminator-case-tag}\n");
