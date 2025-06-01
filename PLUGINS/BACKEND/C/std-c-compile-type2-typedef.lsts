@@ -1,0 +1,18 @@
+
+let std-c-compile-type2-typedef(td: AST): Nil = (
+   match td { Typedef2{} => (); };
+   let location = (td as Tag::Typedef2).location;
+   let lhs-type = (td as Tag::Typedef2).lhs-type;
+   let implements = (td as Tag::Typedef2).implements;
+   let implies = (td as Tag::Typedef2).implies;
+   let constraints = (td as Tag::Typedef2).constraints;
+   let size = (td as Tag::Typedef2).size;
+   let alias = (td as Tag::Typedef2).alias;
+   let opaque-alias = (td as Tag::Typedef2).opaque-alias;
+   let cases = (td as Tag::Typedef2).cases;
+
+   print("Try Compile \{lhs-type}\n");
+   for concrete-type in concrete-type-instances-index.lookup(lhs-type.ground-tag-and-arity, [] :: List<Type>) {
+      print("Compile \{concrete-type}\n");
+   };
+);
