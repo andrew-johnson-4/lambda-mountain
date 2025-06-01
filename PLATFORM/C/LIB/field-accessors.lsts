@@ -1,4 +1,8 @@
 
+declare-unop( $".discriminator-case-tag", raw-type(LM2Struct+LM2StructFlat), raw-type(USize), ( l"(0)"; ) );
+declare-unop( $".discriminator-case-tag", raw-type(LM2Struct), raw-type(USize), ( l"("; x; l".discriminator_case_tag)"; ) );
+declare-unop( $".discriminator-case-tag", raw-type(LMStruct), raw-type(USize), ( l"("; x; l".field_0)"; ) );
+
 declare-unop( $".0", raw-type(LMStruct), raw-type(U64), ( l"("; x; l".field_0)"; ) );
 declare-unop( $".1", raw-type(CaseNumber<cn>+Field::1<a>), raw-type(a), ( l"("; x; l".field_"; 1_l + 1000_l * (cn :: L); l")"; ) );
 declare-unop( $".2", raw-type(CaseNumber<cn>+Field::2<a>), raw-type(a), ( l"("; x; l".field_"; 2_l + 1000_l * (cn :: L); l")"; ) );

@@ -22,6 +22,5 @@ type2 I = { i: U64 } I1 { j: U64 };
 let t1 = TT{ 1, 2 };
 let t2 = I1{ 3, 4 };
 
-print("TT a=\{t1.a}, b=\{t1.b}\n");
-print("I a=\{t2.i}, b=\{(t2 as Tag::I1).j}\n");
-
+print("TT a=\{t1.a}, b=\{t1.b} discriminator \{t1.discriminator-case-tag}\n");
+print("I a=\{t2.i}, b=\{(t2 as Tag::I1).j} discriminator: \{t2.discriminator-case-tag}\n");
