@@ -45,7 +45,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
                (set text (SCons( (close text) (close(compile-c-function-args(ctx lhs))) )))
                (set text (SCons( (close text) (close(SAtom '\]\:\n_s)) )))
                (if (==( k 'main_s )) () (
-                  (set assemble-header-section (SCons( (close assemble-header-section) (close text) )))
+                  (set assemble-gdecl-section (SCons( (close assemble-gdecl-section) (close text) )))
                ))
 
                (set text SNil)
@@ -92,14 +92,14 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
                   (set text (SCons( (close text) (close(SAtom '\]\[_s)) )))
                   (set text (SCons( (close text) (close(mangle-c-type( domaint term ))) )))
                   (set text (SCons( (close text) (close(SAtom '\]\:\n_s)) )))
-                  (set assemble-header-section (SCons( (close assemble-header-section) (close text) )))
+                  (set assemble-gdecl-section (SCons( (close assemble-gdecl-section) (close text) )))
                ))
                ( _ (
                   (set text (SCons( (close text) (close(mangle-c-type( clean-tt term ))) )))
                   (set text (SCons( (close text) (close(SAtom '\s_s)) )))
                   (set text (SCons( (close text) (close(SAtom mid)) )))
                   (set text (SCons( (close text) (close(SAtom '\:\n_s)) )))
-                  (set assemble-header-section (SCons( (close assemble-header-section) (close text) )))
+                  (set assemble-gdecl-section (SCons( (close assemble-gdecl-section) (close text) )))
                ))
             ))
 
@@ -141,7 +141,7 @@ compile-global-main := λ(: ctx FContext)(: k String)(: term AST). (: (
          (set text (SCons( (close text) (close(SAtom '\[_s)) )))
          (set text (SCons( (close text) (close(compile-c-function-args(ctx lhs))) )))
          (set text (SCons( (close text) (close(SAtom '\]\:\n_s)) )))
-         (set assemble-header-section (SCons( (close assemble-header-section) (close text) )))
+         (set assemble-gdecl-section (SCons( (close assemble-gdecl-section) (close text) )))
 
          (set text SNil)
 
