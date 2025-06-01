@@ -15,12 +15,13 @@ let f(p1: F<c,d>, p2: A): A = p2;
 type2 F<c,d> implements E;
 
 type2 TT<a,b> = { a: a, b: b };
-type2 G = { a: I64, b: I32, h: H };
+type2 G = { a: I64, b: I32, h: H[] };
 type2 H = { g: TT<U64,U64> } H1 { g2: I64 } | H2 { g3: U32 };
 type2 I = { i: U64 } I1 { j: U64 };
 
 let t1 = TT{ 1, 2 };
-let t2 = I1{ 1, 2 };
+let t2 = I1{ 3, 4 };
 
-# TODO constructor / instantiate
-# TODO field get/set/get indirect/set indirect
+print("TT a=\{t1.a}, b=\{t1.b}\n");
+print("I a=\{t2.i}, b=\{(t2 as Tag::I1).j}\n");
+
