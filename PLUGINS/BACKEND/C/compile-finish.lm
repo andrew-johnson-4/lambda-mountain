@@ -7,6 +7,8 @@ compile-finish-c := λ. (: (
    (let output SNil)
    (set output (SCons( (close output) (close(std-c-finish-forced-imports())) )))
    (set output (SCons( (close output) (close assemble-header-section) )))
+   (set output (SCons( (close output) (close assemble-types-section) )))
+   (set output (SCons( (close output) (close assemble-gdecl-section) )))
    (set output (+( output assemble-text-section )))
    (if (not compile-global-c-has-main) (
       (set output (+( output (SAtom 'int\smain\[\]{\n_s) )))

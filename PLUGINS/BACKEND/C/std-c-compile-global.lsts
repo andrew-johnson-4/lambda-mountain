@@ -44,14 +44,14 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          text = text + SAtom{k};
          text = text + post-decl;
          text = text + SAtom{c";\n"};
-         assemble-header-section = assemble-header-section + text;
+         assemble-gdecl-section = assemble-gdecl-section + text;
       );
       App{left:Lit{key:c":"}, right:App{t=left, right:AType{tt=tt}}} => (
          let gend = false;
          if tt.is-t(c"C-Fragment") {
             match t {
                Lit{key=key} => (
-                  assemble-header-section = assemble-header-section + SAtom{key};
+                  assemble-gdecl-section = assemble-gdecl-section + SAtom{key};
                   gend = true;
                );
                _ => ();
@@ -68,7 +68,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             let inner-expr = std-c-compile-expr( ctx, t, false );
             text = text + inner-expr.get(c"expression");
             text = text + SAtom{c";\n"};
-            assemble-header-section = assemble-header-section + text;
+            assemble-gdecl-section = assemble-gdecl-section + text;
          }
       );
       Abs{lhs=lhs,rhs=rhs,tt=tt} => (
@@ -93,7 +93,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             text = text + SAtom{c"("};
             text = text + std-c-compile-function-args(ctx, lhs);
             text = text + SAtom{c");\n"};
-            assemble-header-section = assemble-header-section + text;
+            assemble-gdecl-section = assemble-gdecl-section + text;
          };
 
          if initialized {
