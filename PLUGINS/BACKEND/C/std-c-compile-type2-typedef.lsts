@@ -11,11 +11,43 @@ let std-c-compile-type2-typedef(td: AST): Nil = (
    let opaque-alias = (td as Tag::Typedef2).opaque-alias;
    let cases = (td as Tag::Typedef2).cases;
 
-   print("Try Compile \{lhs-type}\n");
    for concrete-type in concrete-type-instances-index.lookup(lhs-type.ground-tag-and-arity, [] :: List<Type>) {
       assemble-header-section = assemble-header-section + SAtom{c"typedef struct "} + mangle-c-type(concrete-type, td)
                               + SAtom{c" "} + mangle-c-type(concrete-type, td) + SAtom{c";\n"};
+   };
 
-      print("Compile \{concrete-type}\n");
+   for concrete-type in concrete-type-instances-index.lookup(lhs-type.ground-tag-and-arity, [] :: List<Type>) {
+      let tctx = unify(lhs-type, concrete-type);
+      assemble-header-section = assemble-header-section + SAtom{c"struct "} + mangle-c-type(concrete-type, td) + SAtom{c"{\n"};
+      
+      let has-cases = false;
+      for vector Tuple{case-tag=first, case-fields=second} in cases {
+         if case-tag==c"" {
+            for vector Tuple{field-name=first, field-type=second} in case-fields {
+               field-type = substitute(tctx, field-type);
+               (let pre-tt, let post-tt) = mangle-c-declaration(field-type, td);
+               assemble-header-section = assemble-header-section + pre-tt + SAtom{c" "} + mangle-identifier(field-name) + post-tt + SAtom{c";\n"};
+            }
+         } else has-cases = true;
+      };
+
+      if has-cases {
+         assemble-header-section = assemble-header-section + SAtom{c"unsigned int discriminator_case_tag"} + SAtom{c";\n"};
+
+         assemble-header-section = assemble-header-section + SAtom{c"union {\n"};
+         for vector Tuple{case-tag=first, case-fields=second} in cases {
+            if case-tag!=c"" && case-fields.length > 0 {
+               assemble-header-section = assemble-header-section + SAtom{c"struct {\n"};
+               for vector Tuple{field-name=first, field-type=second} in case-fields {
+                  field-type = substitute(tctx, field-type);
+                  (let pre-tt, let post-tt) = mangle-c-declaration(field-type, td);
+                  assemble-header-section = assemble-header-section + pre-tt + SAtom{c" "} + mangle-identifier(field-name) + post-tt + SAtom{c";\n"};
+               };
+               assemble-header-section = assemble-header-section + SAtom{c"};\n"};
+            };
+         };
+         assemble-header-section = assemble-header-section + SAtom{c"};\n"};
+      };
+
    };
 );
