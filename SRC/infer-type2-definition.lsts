@@ -22,7 +22,7 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
 
 let type2-base-type-index = {} :: HashtableEq<(CString,U64),U64>;
 
-let is-type2(tt: Type): U64 = (
+let .is-type2(tt: Type): U64 = (
    let gta = normalize(tt).ground-tag-and-arity;
    type2-base-type-index.has(gta)
 );
