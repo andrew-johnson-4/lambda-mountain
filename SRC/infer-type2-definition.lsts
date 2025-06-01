@@ -101,7 +101,7 @@ let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-numbe
 
    let return-id = uuid();
  
-   let body = mk-lit(c"{").ascript(t1(c"L"));
+   let body = mk-lit(c"({").ascript(t1(c"L"));
    body = mk-cons(body, mk-app(mk-var(c"mangle-pre"),mk-atype(t2(c"Type",base-type))) );
    body = mk-cons(body, mk-lit(c" ").ascript(t1(c"L")));
    body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")));
@@ -125,7 +125,7 @@ let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-numbe
    };
 
    body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")));
-   body = mk-cons(body, mk-lit(c";}").ascript(t1(c"L")));
+   body = mk-cons(body, mk-lit(c";})").ascript(t1(c"L")));
 
    let constructor = mk-glb( mk-token(case-tag).with-location(blame.location), mk-abs(args, body.ascript(base-type), t1(c"Blob")) );
    infer-global-context(constructor);
